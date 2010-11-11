@@ -1,0 +1,12 @@
+import FWCore.ParameterSet.Config as cms
+
+from CMGTools.Common.selections.kinematics_cfi import kinematics
+
+cmgPFCand = cms.EDFilter("cmgGenericPOProducer",
+    cfg = cms.PSet(
+                 inputCollection = cms.InputTag("selectedPatPFParticlesPFlow","","PAT")
+       ),
+    cuts = cms.PSet(
+                kinematics = kinematics.clone()
+           ),    
+)
