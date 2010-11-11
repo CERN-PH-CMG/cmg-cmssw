@@ -1,0 +1,64 @@
+<lcgdict>
+  
+  <class name="cmg::AbstractPhysicsObject" />
+  
+  <class name="cmg::DiMuon"/>
+  <class name="cmg::PhysicsObject" />
+  <class name="std::vector<cmg::PhysicsObject>" />
+  <class name="edm::Wrapper<std::vector<cmg::PhysicsObject> >" />
+  <class name="std::vector<cmg::DiMuon>"/>
+  <class name="edm::Wrapper<cmg::DiMuon>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiMuon> >"/>	
+
+  <class name="cmg::Electron"/>
+  <class name="cmg::Lepton<pat::ElectronPtr>" />
+  <class name="cmg::PhysicsObjectWithPtr<pat::ElectronPtr>" />
+  <class name="std::vector<cmg::Electron>"/>
+  <class name="edm::Wrapper<cmg::Electron>"/>
+  <class name="edm::Wrapper<std::vector<cmg::Electron> >"/>
+
+  <class name="cmg::Muon"/>
+  <class name="cmg::Lepton<pat::MuonPtr>" />
+  <class name="cmg::PhysicsObjectWithPtr<pat::MuonPtr>" />
+  <class name="std::vector<cmg::Muon>"/>
+  <class name="edm::Wrapper<cmg::Muon>"/>
+  <class name="edm::Wrapper<std::vector<cmg::Muon> >"/>
+  
+  <class name="cmg::Generic"/>
+  <class name="std::vector< cmg::Generic >"/>
+  <class name="edm::Wrapper< cmg::Generic >"/>
+  <class name="edm::Ptr< cmg::Generic >"/>
+  <class name="edm::Wrapper<std::vector< cmg::Generic > >"/>
+  
+  <class name="cmg::BaseJet"/>
+  <class name="cmg::PhysicsObjectWithPtr<pat::JetPtr>" />
+  <class name="std::vector<cmg::BaseJet>"/>
+  <class name="edm::Wrapper<cmg::BaseJet>"/>
+  <class name="edm::Wrapper<std::vector<cmg::BaseJet> >"/>
+  
+  <class name="cmg::PFJet"/>
+  <class name="std::vector<cmg::PFJet>"/>
+  <class name="edm::Wrapper<cmg::PFJet>"/>
+  <class name="edm::Wrapper<std::vector<cmg::PFJet> >"/>
+
+  <class name="cmg::PFJetComponent"/>
+  <class name="std::vector<cmg::PFJetComponent>"/>
+ 
+  <class name="cmg::BaseMET"/>
+  <class name="std::vector<cmg::BaseMET>"/>
+  <class name="edm::Wrapper<cmg::BaseMET>"/>
+  <class name="edm::Wrapper<std::vector<cmg::BaseMET> >"/>
+ 
+  <class name="pat::JetPtr"/>
+  <class name="pat::MuonPtr"/>
+  <class name="pat::ElectronPtr"/>
+  <class name="pat::METPtr"/>
+
+  <enum name="cmg::TriBool"/>
+  
+  <function name="cmg::unset" />
+  
+  <class name="pat::strbitset" />
+  <class name="std::map<std::basic_string<char>,unsigned int>" />
+
+</lcgdict>
