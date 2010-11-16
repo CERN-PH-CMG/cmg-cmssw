@@ -62,7 +62,7 @@ process.baseMETSelector = cms.EDFilter(
 process.analysisSequence = cms.Sequence(
     process.electronSequence + 
     process.muonSequence + 
-    process.diMuonSequence +
+#    process.diMuonSequence +
     process.jetSequence +
     process.cmgMHTPFJets +
     process.baseMETSelector +
