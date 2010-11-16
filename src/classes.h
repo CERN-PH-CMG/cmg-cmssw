@@ -17,10 +17,6 @@
 namespace {
   struct CMGTools_AnalysisDataFormats {
 
-    cmg::PhysicsObject   po; 
-    std::vector<cmg::PhysicsObject>   vpo;
-    edm::Wrapper<std::vector<cmg::PhysicsObject> >  wvpo;
-
     cmg::DiMuon d_;
     std::vector<cmg::DiMuon> dv;
     edm::Wrapper<cmg::DiMuon> ed;

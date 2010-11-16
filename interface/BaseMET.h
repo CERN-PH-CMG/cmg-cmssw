@@ -1,16 +1,17 @@
 #ifndef _AnalysisDataFormats_CMGTools_BaseMET_h_
 #define _AnalysisDataFormats_CMGTools_BaseMET_h_
 
-#include "AnalysisDataFormats/CMGTools/interface/PhysicsObject.h"
+#include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
 
 #include <vector>
 
 namespace cmg{
 
-  class BaseMET : public PhysicsObject {
+  class BaseMET : public AbstractPhysicsObject{
   public:
-    BaseMET(const math::PtEtaPhiMLorentzVector& p4, double sumEt ):
-      PhysicsObject::PhysicsObject( p4 ), sumEt_(sumEt) {}
+    BaseMET(const reco::LeafCandidate& cand, double sumEt ):
+      AbstractPhysicsObject(cand),
+      sumEt_(sumEt) {}
 
     BaseMET() : sumEt_(-1) {}
 
