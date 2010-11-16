@@ -13,7 +13,8 @@ if runPF2PAT:
 else:
     #process.load("PFAnalyses.DijetAnalysis.Sources.QCD_Pt_80to120_Tune1_7TeV_pythia8.Fall10_START38_V12_v1.AODSIM.source_cff")
     process.source.fileNames = cms.untracked.vstring(
-         'file:/afs/cern.ch/user/w/wreece/public/patTuple_PF2PAT.root'
+#         'file:/afs/cern.ch/user/w/wreece/public/patTuple_PF2PAT.root'
+         'file:/afs/cern.ch/user/c/cbern/public/patTuple_PATandPF2PAT.root'
     #    'file:patTuple_PF2PAT.root '
     )
     process.setName_('ANA')
@@ -64,11 +65,20 @@ process.analysisSequence = cms.Sequence(
     process.muonSequence + 
 #    process.diMuonSequence +
     process.jetSequence +
-    process.cmgMHTPFJets +
+    process.metSequence +
     process.baseMETSelector +
     process.pfcandsSequence +
     process.runInfoAccounting
     )
+
+
+PFCandidatesAvailable = True
+if PFCandidatesAvailable == False:
+    # the following are removed from the sequence as they take PFCandidates
+    process.analysisSequence.remove( process.cmgMETPFCandidates )
+    process.analysisSequence.remove( process.cmgMETPFCandidates2 )
+    process.analysisSequence.remove( process.pfMETLorentzVector )
+    process.analysisSequence.remove( process.pfMET2LorentzVector )
 
 process.p += process.analysisSequence
 

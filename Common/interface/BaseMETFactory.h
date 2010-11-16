@@ -15,12 +15,15 @@ namespace cmg{
 class BaseMETFactory : public Factory<cmg::BaseMET>{
   public:
     BaseMETFactory(const edm::ParameterSet& ps):
-      inputLabel_(ps.getParameter<edm::InputTag>("inputCollection")){
+      inputLabel_(ps.getParameter<edm::InputTag>("inputCollection")),
+      ptThreshold_(ps.getParameter<double>("ptThreshold"))
+      {
     }
     virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
     
   private:
     const edm::InputTag inputLabel_;
+    double ptThreshold_;
   };
   
 }

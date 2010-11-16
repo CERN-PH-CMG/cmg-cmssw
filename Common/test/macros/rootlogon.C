@@ -69,40 +69,31 @@ void initPF2PAT(const char* process, TTree* tree) {
 }
 
 
-void initPAT(const char* process, TTree* tree) {
-  string taus = "patTaus_selectedPatTausPFlow__"; taus += process;
-  string jets = "patJets_selectedPatJetsPFlow__"; jets += process;
-  string met = "patMETs_patMETsPFlow__";  met+= process;
-  string mus = "patMuons_selectedPatMuonsPFlow__"; mus += process;
-  string eles = "patElectrons_selectedPatElectronsPFlow__"; eles += process;
-  
-  string patCaloJets = "patJets_selectedPatJets__"; patCaloJets += process;
-  string patCaloMet = "patMETs_patMETs__"; patCaloMet += process;
-
-  tree->SetAlias("patTaus", taus.c_str() );
-  tree->SetAlias("patJets", jets.c_str() );
-  tree->SetAlias("patCaloJets", patCaloJets.c_str() );
-  tree->SetAlias("patMET", met.c_str() );
-  tree->SetAlias("patCaloMET", patCaloMet.c_str() );
-  tree->SetAlias("patMuons", mus.c_str() );
-  tree->SetAlias("patElectrons", eles.c_str() );
-}
-
 void initCMG(const char* process, TTree* tree) {
   string pfJets = "cmgPFJets_cmgPFJet__"; pfJets += process;
   string pfBaseJets = "cmgBaseJets_cmgPFBaseJet__"; pfBaseJets += process;
   string mhtPFJets = "cmgBaseMETs_cmgMHTPFJets__"; mhtPFJets += process;
+  string mhtPFJets30 = "cmgBaseMETs_cmgMHTPFJets30__"; mhtPFJets30 += "MHT";
+  string mhtPFJets50 = "cmgBaseMETs_cmgMHTPFJets50__"; mhtPFJets50 += "MHT";
   string metPF = "cmgBaseMETs_cmgMETPFCandidates__"; metPF += process;
-
+  string metPF2 = "cmgBaseMETs_cmgMETPFCandidates2__"; metPF2 += "MHT";
+  
   string caloBaseJets = "cmgBaseJets_cmgCaloBaseJet__"; caloBaseJets += process;
   string mhtCaloJets = "cmgBaseMETs_cmgMHTCaloJets__"; mhtCaloJets += process;
+  string mhtCaloJets30 = "cmgBaseMETs_cmgMHTCaloJets30__"; mhtCaloJets30 += "MHT";
+  string mhtCaloJets50 = "cmgBaseMETs_cmgMHTCaloJets50__"; mhtCaloJets50 += "MHT";
   
   tree->SetAlias("cmgPFJets", pfJets.c_str() );
   tree->SetAlias("cmgPFBaseJets", pfBaseJets.c_str() );
   tree->SetAlias("cmgPFMHT", mhtPFJets.c_str() );
+  tree->SetAlias("cmgPFMHT30", mhtPFJets30.c_str() );
+  tree->SetAlias("cmgPFMHT50", mhtPFJets50.c_str() );
   tree->SetAlias("cmgPFMET", metPF.c_str() );
+  tree->SetAlias("cmgPFMET2", metPF2.c_str() );
   
   tree->SetAlias("cmgCaloBaseJets", caloBaseJets.c_str() );
   tree->SetAlias("cmgCaloMHT", mhtCaloJets.c_str() );
+  tree->SetAlias("cmgCaloMHT30", mhtCaloJets30.c_str() );
+  tree->SetAlias("cmgCaloMHT50", mhtCaloJets50.c_str() );
 }
 

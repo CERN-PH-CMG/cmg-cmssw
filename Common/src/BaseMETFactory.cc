@@ -21,6 +21,7 @@ cmg::BaseMETFactory::event_ptr cmg::BaseMETFactory::create(const edm::Event& iEv
 
     const reco::Candidate& cand = *mi;
 
+    if(cand.pt()<ptThreshold_ ) continue;
     
     double phi = cand.phi();
     double cosphi = cos(phi);
