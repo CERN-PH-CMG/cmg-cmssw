@@ -6,10 +6,9 @@
    \brief    Selects PhysicsObjects basing on cuts provided with string cut parser
 
    \author   Giovanni Petrucciani
-   \version  $Id: GenericPhysicsObjectSelectorDefinition.h,v 1.2 2010/11/04 13:23:57 cbern Exp $
+   \version  $Id: GenericPhysicsObjectSelectorDefinition.h,v 1.1 2010/11/11 14:09:03 wreece Exp $
 */
 
-#include "AnalysisDataFormats/CMGTools/interface/PhysicsObjectFwd.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
 #include "CommonTools/Utils/interface/StringCutObjectSelector.h"
 #include "boost/iterator/transform_iterator.hpp"
