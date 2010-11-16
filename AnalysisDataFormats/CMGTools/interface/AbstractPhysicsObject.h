@@ -19,7 +19,12 @@ namespace cmg{
     AbstractPhysicsObject(const reco::LeafCandidate& cand):
       reco::LeafCandidate(cand){
     }
-    AbstractPhysicsObject(){}
+    AbstractPhysicsObject(const reco::LeafCandidate& cand1, const reco::LeafCandidate& cand2):
+      reco::LeafCandidate(cand1.charge()+cand2.charge(),cand1.p4()+cand2.p4()){
+    }
+    AbstractPhysicsObject(){
+    }
+    virtual ~AbstractPhysicsObject(){}
       
     //interface for itteration over daughters
     struct AbstractPhysicsObjectVisitor{
@@ -35,6 +40,15 @@ namespace cmg{
     
     //default for sorting and comparison
     virtual bool operator<(const AbstractPhysicsObject& other) const;
+    virtual bool operator<=(const AbstractPhysicsObject& other) const{
+        return ( operator<(other) || operator==(other) );
+    }
+    virtual bool operator>(const AbstractPhysicsObject& other) const{
+        return !( operator<(other) || operator==(other) );
+    }
+    virtual bool operator>=(const AbstractPhysicsObject& other) const{
+        return ( operator>(other) || operator==(other) );
+    }
     virtual bool operator==(const AbstractPhysicsObject& other) const;
     virtual bool operator!=(const AbstractPhysicsObject& other) const {
       return !operator==(other);

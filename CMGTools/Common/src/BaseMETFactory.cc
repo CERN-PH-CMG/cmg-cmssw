@@ -14,6 +14,7 @@ cmg::BaseMETFactory::event_ptr cmg::BaseMETFactory::create(const edm::Event& iEv
   double sumEx = 0;
   double sumEy = 0;
   double sumEt = 0;
+  int sumCharge = 0;  
 
   for(ViewType::const_iterator mi = inputs->begin();
       mi != inputs->end(); ++mi) {
@@ -37,17 +38,14 @@ cmg::BaseMETFactory::event_ptr cmg::BaseMETFactory::create(const edm::Event& iEv
     sumEx += ex;
     sumEy += ey;
     sumEt += et;
+    sumCharge += cand.charge();
   		     
   }
 
   double Et = sqrt( sumEx*sumEx + sumEy*sumEy);
   math::XYZTLorentzVector missingEt( -sumEx, -sumEy, 0, Et);
 
-  // now turning it into a PtEtaPhiLorentzVector to make a physics object
-  // that's suboptimal...
-  reco::Particle::PolarLorentzVector metLV(missingEt);
-  
-  cmg::BaseMET met( metLV, sumEt );
+  cmg::BaseMET met(reco::LeafCandidate(sumCharge,missingEt), sumEt );
   result->push_back(met);
 
   return result;

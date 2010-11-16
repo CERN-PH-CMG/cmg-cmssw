@@ -11,21 +11,6 @@
 
 namespace cmg{
 
-/// A class for a PhysicsObjects made from a factory
-class PhysicsObject : public AbstractPhysicsObject {
-  public:
-    
-    PhysicsObject(const math::PtEtaPhiMLorentzVector& cand):
-      AbstractPhysicsObject( reco::LeafCandidate(0, cand) ){
-    }
-      PhysicsObject(int charge, const math::PtEtaPhiMLorentzVector& cand):
-      AbstractPhysicsObject( reco::LeafCandidate(charge, cand) ){
-    }
-
-      
-    PhysicsObject() {}
-};
-
 /// A class for a PhysicsObjects, which have a pointer to a pat Candidate, made from a factory
 template <class PATPtr >
 class PhysicsObjectWithPtr : public AbstractPhysicsObject {

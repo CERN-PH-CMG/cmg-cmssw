@@ -3,9 +3,6 @@
   <class name="cmg::AbstractPhysicsObject" />
   
   <class name="cmg::DiMuon"/>
-  <class name="cmg::PhysicsObject" />
-  <class name="std::vector<cmg::PhysicsObject>" />
-  <class name="edm::Wrapper<std::vector<cmg::PhysicsObject> >" />
   <class name="std::vector<cmg::DiMuon>"/>
   <class name="edm::Wrapper<cmg::DiMuon>"/>
   <class name="edm::Wrapper<std::vector<cmg::DiMuon> >"/>	
