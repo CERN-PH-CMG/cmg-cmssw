@@ -1,6 +1,5 @@
 #include "DataFormats/Common/interface/Wrapper.h"
 
-#include "AnalysisDataFormats/CMGTools/interface/DiMuon.h"
 #include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
