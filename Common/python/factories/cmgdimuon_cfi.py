@@ -2,12 +2,8 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.Common.factories.cmgmuon_cfi import cmgMuon
 
 dimuonFactory = cms.PSet(
-        leg1 = cms.PSet(
-       inputCollection = cms.InputTag("cmgMuon")
-       ),
-        leg2 = cms.PSet(
-       inputCollection = cms.InputTag("cmgMuon")
-       )
+       leg1Collection = cms.InputTag("cmgMuon"),
+       leg2Collection = cms.InputTag("cmgMuon")
 )
 from CMGTools.Common.selections.kinematics_cfi import kinematics
 from CMGTools.Common.selections.zmumu_cfi import zmumu
