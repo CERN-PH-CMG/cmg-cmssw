@@ -7,7 +7,7 @@
 
   gROOT->LoadMacro("RiaInfo.C");
   gROOT->LoadMacro("InitChain.C");
-  gROOT->LoadMacro("../Common/test/macros/rootlogon.C");
+  gROOT->LoadMacro("rootlogon.C");
 
 }
 
