@@ -5,6 +5,7 @@
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
 
 namespace pat {
   
@@ -12,6 +13,7 @@ namespace pat {
   typedef edm::Ptr< pat::Muon > MuonPtr;
   typedef edm::Ptr< pat::Electron > ElectronPtr;
   typedef edm::Ptr< pat::MET > METPtr;
+  typedef edm::Ptr< pat::Tau > TauPtr;
 
 }
 

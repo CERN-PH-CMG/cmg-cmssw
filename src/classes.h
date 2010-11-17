@@ -32,6 +32,11 @@ namespace {
     edm::Wrapper<cmg::Muon> em;
     edm::Wrapper<std::vector<cmg::Muon> > emv;
     
+    cmg::Tau t;
+    std::vector<cmg::Tau> tv;
+    edm::Wrapper<cmg::Tau> et;
+    edm::Wrapper<std::vector<cmg::Tau> > etv;
+    
     cmg::BaseJet j_;
     std::vector<cmg::BaseJet> jv;
     edm::Wrapper<cmg::BaseJet> ej;
