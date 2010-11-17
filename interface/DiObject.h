@@ -21,8 +21,16 @@ class DiObject : public AbstractPhysicsObject{
         AbstractPhysicsObject(){
     }
     DiObject(const T& leg1, const U& leg2):
-        AbstractPhysicsObject(leg1,leg2){
+        AbstractPhysicsObject(leg1,leg2),
+        leg1_(leg1),
+        leg2_(leg2){
     }
+    DiObject(const DiObject<T,U>& other):
+        AbstractPhysicsObject(other),
+        leg1_(other.leg1()),
+        leg2_(other.leg2()){
+    }
+    
     virtual ~DiObject(){}
     
     T leg1() const{
