@@ -3,7 +3,6 @@
 #include "AnalysisDataFormats/CMGTools/interface/DiMuon.h"
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
-#include "AnalysisDataFormats/CMGTools/interface/Generic.h"
 #include "AnalysisDataFormats/CMGTools/interface/GenericTypes.h"
 #include "AnalysisDataFormats/CMGTools/interface/BaseJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
@@ -38,12 +37,6 @@ namespace {
     edm::Wrapper<cmg::BaseJet> ej;
     edm::Wrapper<std::vector<cmg::BaseJet> > ejv;
 
-    cmg::Generic o_;
-    std::vector< cmg::Generic > ov_;
-    edm::Wrapper< cmg::Generic > ow_;
-    edm::Ptr< cmg::Generic > op_;
-    edm::Wrapper<std::vector< cmg::Generic > > ovw_;
-	
     cmg::PFJet pfj_;
     std::vector<cmg::PFJet> pfjv;
     edm::Wrapper<cmg::PFJet> epfj;

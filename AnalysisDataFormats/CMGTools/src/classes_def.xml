@@ -21,12 +21,6 @@
   <class name="edm::Wrapper<cmg::Muon>"/>
   <class name="edm::Wrapper<std::vector<cmg::Muon> >"/>
   
-  <class name="cmg::Generic"/>
-  <class name="std::vector< cmg::Generic >"/>
-  <class name="edm::Wrapper< cmg::Generic >"/>
-  <class name="edm::Ptr< cmg::Generic >"/>
-  <class name="edm::Wrapper<std::vector< cmg::Generic > >"/>
-  
   <class name="cmg::BaseJet"/>
   <class name="cmg::PhysicsObjectWithPtr<pat::JetPtr>" />
   <class name="std::vector<cmg::BaseJet>"/>
