@@ -15,7 +15,8 @@ particleFlowMET = cms.untracked.vstring(
     )
 
 particleFlowMuons = cms.untracked.vstring(
-    'keep *_cmgMuon_*_*'
+    'keep *_cmgMuon_*_*',
+    'keep *_cmgDiMuon_*_*'
     )
 
 particleFlowElectrons = cms.untracked.vstring(

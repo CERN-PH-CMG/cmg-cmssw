@@ -1,8 +1,5 @@
 #include "CMGTools/Common/interface/CompoundFactories.h"
 
-#include "AnalysisDataFormats/CMGTools/interface/DiMuon.h"
-#include "CMGTools/Common/interface/DiMuonFactory.h"
-
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "CMGTools/Common/interface/ElectronFactory.h"
 

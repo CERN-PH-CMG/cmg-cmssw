@@ -27,28 +27,18 @@ class Muon;
       Muon(){
       }
       Muon(const value& m):
-	cmg::Lepton<value>::Lepton(m),
-	isGlobal_(cmg::unset(cmg::TriBool())),
-	isTracker_(cmg::unset(cmg::TriBool())),
-	muonID_(cmg::unset(cmg::TriBool())),
-	pixelHits_(UnSet(int)),
-	trackerHits_(UnSet(int)),
-	globalNormChi2_(UnSet(double)),
-	muonHits_(UnSet(int)),
-	nMatches_(UnSet(int)){
+	   cmg::Lepton<value>::Lepton(m),
+	   isGlobal_(cmg::unset(cmg::TriBool())),
+	   isTracker_(cmg::unset(cmg::TriBool())),
+	   muonID_(cmg::unset(cmg::TriBool())),
+	   pixelHits_(UnSet(int)),
+	   trackerHits_(UnSet(int)),
+	   globalNormChi2_(UnSet(double)),
+	   muonHits_(UnSet(int)),
+	   nMatches_(UnSet(int)){
       }
-      Muon(const Muon& other):
-	isGlobal_( other.isGlobal_ ),
-	isTracker_( other.isTracker_ ),
-	muonID_( other.muonID_ ),
-	pixelHits_( other.pixelHits_ ),
-	trackerHits_( other.trackerHits_ ),
-	globalNormChi2_( other.globalNormChi2_ ),
-	muonHits_( other.muonHits_ ),
-	nMatches_( other.nMatches_ ){
-      }
-     virtual ~Muon(){
-	}
+      virtual ~Muon(){
+	  }
 	
      //getters for VBTF selection
      cmg::TriBool isGlobal() const{

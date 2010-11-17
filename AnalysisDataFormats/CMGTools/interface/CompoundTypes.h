@@ -10,7 +10,9 @@
 
 namespace cmg{
     
+ typedef cmg::DiObject<cmg::Electron,cmg::Electron> DiElectron;   
  typedef cmg::DiObject<cmg::BaseJet,cmg::BaseJet> DiJet;   
+ typedef cmg::DiObject<cmg::Muon,cmg::Muon> DiMuon;
  typedef cmg::DiObject<cmg::PFJet,cmg::PFJet> DiPFJet;
  typedef cmg::DiObject<cmg::Electron,cmg::BaseMET> WENu;
  typedef cmg::DiObject<cmg::Muon,cmg::BaseMET> WMuNu;   

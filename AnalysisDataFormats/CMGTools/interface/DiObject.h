@@ -40,7 +40,10 @@ class DiObject : public AbstractPhysicsObject{
         return leg2_;
     }
     
-    friend class BaseJetFactory;
+    virtual void accept(AbstractPhysicsObjectVisitor const * const v) const{
+      v->visit(&leg1_);
+      v->visit(&leg2_);
+    }
     
   private:
     
