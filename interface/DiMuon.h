@@ -31,6 +31,11 @@ namespace cmg{
 	cmg::Muon leg2() const{
 	  return _leg2;
 	}
+    
+    virtual void accept(AbstractPhysicsObjectVisitor const * const v) const{
+      v->visit(&_leg1);
+      v->visit(&_leg2);
+    }
 		
 	
   private:

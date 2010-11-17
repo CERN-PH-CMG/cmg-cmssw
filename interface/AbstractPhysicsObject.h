@@ -1,6 +1,7 @@
 #ifndef ABSTRACTPHYSICSOBJECT_H_
 #define ABSTRACTPHYSICSOBJECT_H_
 
+#include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Candidate/interface/LeafCandidate.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 
@@ -16,22 +17,28 @@ namespace cmg{
   class AbstractPhysicsObject : public reco::LeafCandidate {
 
   public:
-    AbstractPhysicsObject(const reco::LeafCandidate& cand):
+    explicit AbstractPhysicsObject(const reco::Candidate& cand):
       reco::LeafCandidate(cand){
     }
-    AbstractPhysicsObject(const reco::LeafCandidate& cand1, const reco::LeafCandidate& cand2):
+    explicit AbstractPhysicsObject(const reco::Candidate& cand1, const reco::Candidate& cand2):
       reco::LeafCandidate(cand1.charge()+cand2.charge(),cand1.p4()+cand2.p4()){
     }
+    //need to define a copy constructor because of first constructor
+    AbstractPhysicsObject(const AbstractPhysicsObject& other):
+      reco::LeafCandidate(other),
+      selections(other.selections){
+    }      
     AbstractPhysicsObject(){
     }
     virtual ~AbstractPhysicsObject(){}
       
     //interface for itteration over daughters
     struct AbstractPhysicsObjectVisitor{
-      virtual void visit(AbstractPhysicsObject*) = 0;
+      virtual void visit(AbstractPhysicsObject const * const) const{
+      }
     };
     //this should be updated for compound objects
-    virtual void accept(AbstractPhysicsObjectVisitor* v){
+    virtual void accept(AbstractPhysicsObjectVisitor const * const v) const{
       v->visit(this);
     }
     
@@ -66,7 +73,10 @@ namespace cmg{
     bool getSelection(const char* s) const{
       return getSelection(std::string(s));
     }
-    
+    typedef std::vector<std::string> Strings;
+    Strings getSelectionNames() const{
+      return selections.strings();           
+    }
 		
   protected:
     ///Used to copy selections

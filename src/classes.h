@@ -4,6 +4,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 #include "AnalysisDataFormats/CMGTools/interface/Generic.h"
+#include "AnalysisDataFormats/CMGTools/interface/GenericTypes.h"
 #include "AnalysisDataFormats/CMGTools/interface/BaseJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJetComponent.h"
@@ -59,6 +60,11 @@ namespace {
     static const cmg::TriBool u_ = cmg::tbUnset;
     static const cmg::TriBool f_ = cmg::tbFalse;
     static const cmg::TriBool t_ = cmg::tbTrue;
+    
+    cmg::PFCand pfcand_;
+    std::vector<cmg::PFCand> pfcandv_;
+    edm::Wrapper<cmg::PFCand> wpfcand_;
+    edm::Wrapper<std::vector<cmg::PFCand> > wpfcandv_;
 	
   };
   
