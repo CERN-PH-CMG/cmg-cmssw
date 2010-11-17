@@ -59,3 +59,6 @@ DEFINE_FWK_MODULE(PFJetHistogramsAnalyzer);
 typedef cmg::RunInfoAccountingAnalyzer RunInfoAccountingAnalyzer;
 DEFINE_FWK_MODULE(RunInfoAccountingAnalyzer);
 
+#include "CMGTools/Common/interface/GenericFactories.h"
+typedef PhysicsObjectProducer<cmg::PFCandFactory> PFCandidatePOProducer;
+DEFINE_FWK_MODULE(PFCandidatePOProducer);
