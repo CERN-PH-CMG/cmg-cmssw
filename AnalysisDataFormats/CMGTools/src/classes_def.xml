@@ -57,5 +57,10 @@
   
   <class name="pat::strbitset" />
   <class name="std::map<std::basic_string<char>,unsigned int>" />
+  
+  <class name="cmg::PFCand"/>
+  <class name="std::vector<cmg::PFCand>"/>
+  <class name="edm::Wrapper<cmg::PFCand>"/>
+  <class name="edm::Wrapper<std::vector<cmg::PFCand> >"/>
 
 </lcgdict>

@@ -11,8 +11,11 @@
 
 namespace cmg{
 
+template <class PATPtr> class PhysicsObjectWithPtr;
+template <class PATPtr> class PhysicsObjectFactory;
+
 /// A class for a PhysicsObjects, which have a pointer to a pat Candidate, made from a factory
-template <class PATPtr >
+template <class PATPtr>
 class PhysicsObjectWithPtr : public AbstractPhysicsObject {
 	
   public:
@@ -20,7 +23,7 @@ class PhysicsObjectWithPtr : public AbstractPhysicsObject {
   typedef PATPtr value;
   
   PhysicsObjectWithPtr(const PATPtr& sourcePtr):
-    AbstractPhysicsObject::AbstractPhysicsObject( reco::LeafCandidate(0, sourcePtr->polarP4()) ), sourcePtr_(sourcePtr)
+    AbstractPhysicsObject::AbstractPhysicsObject( *sourcePtr ), sourcePtr_(sourcePtr)
     {
     }
   PhysicsObjectWithPtr():
@@ -35,6 +38,8 @@ class PhysicsObjectWithPtr : public AbstractPhysicsObject {
   
   private:
   PATPtr sourcePtr_;
+  
+  friend class cmg::PhysicsObjectFactory<PATPtr>;
   
 };
 
