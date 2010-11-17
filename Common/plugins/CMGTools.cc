@@ -1,3 +1,5 @@
+#include "CMGTools/Common/interface/CompoundFactories.h"
+
 #include "AnalysisDataFormats/CMGTools/interface/DiMuon.h"
 #include "CMGTools/Common/interface/DiMuonFactory.h"
 
@@ -26,6 +28,9 @@
 
 typedef PhysicsObjectProducer<cmg::DiMuonFactory> DiMuonPOProducer;
 DEFINE_FWK_MODULE(DiMuonPOProducer);
+
+typedef PhysicsObjectProducer<cmg::DiJetFactory> DiJetPOProducer;
+DEFINE_FWK_MODULE(DiJetPOProducer);
 
 typedef PhysicsObjectProducer<cmg::ElectronFactory> ElectronPOProducer;
 DEFINE_FWK_MODULE(ElectronPOProducer);

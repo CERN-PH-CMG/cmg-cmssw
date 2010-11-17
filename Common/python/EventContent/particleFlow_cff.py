@@ -2,7 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 particleFlowJets = cms.untracked.vstring(
     'keep *_cmgPFJet_*_*',
-    'keep *_cmgPFBaseJet_*_*'
+    'keep *_cmgPFBaseJet_*_*',
+    'keep *_cmgDiJet_*_*'
     # here add all PF jet objects, even the base ones. 
     )
 
