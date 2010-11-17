@@ -7,9 +7,6 @@
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 #include "CMGTools/Common/interface/MuonFactory.h"
 
-#include "AnalysisDataFormats/CMGTools/interface/Generic.h"
-#include "CMGTools/Common/interface/GenericFactory.h"
-
 #include "AnalysisDataFormats/CMGTools/interface/BaseJet.h"
 #include "CMGTools/Common/interface/BaseJetFactory.h"
 
@@ -33,9 +30,6 @@ DEFINE_FWK_MODULE(ElectronPOProducer);
 
 typedef PhysicsObjectProducer<cmg::MuonFactory> MuonPOProducer;
 DEFINE_FWK_MODULE(MuonPOProducer);
-
-typedef PhysicsObjectProducer<cmg::GenericFactory> cmgGenericPOProducer;
-DEFINE_FWK_MODULE(cmgGenericPOProducer);
 
 typedef PhysicsObjectProducer<cmg::BaseJetFactory> BaseJetPOProducer;
 DEFINE_FWK_MODULE(BaseJetPOProducer);
