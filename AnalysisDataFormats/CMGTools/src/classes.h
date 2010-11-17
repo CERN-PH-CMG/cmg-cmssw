@@ -1,6 +1,7 @@
 #include "DataFormats/Common/interface/Wrapper.h"
 
 #include "AnalysisDataFormats/CMGTools/interface/DiMuon.h"
+#include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 #include "AnalysisDataFormats/CMGTools/interface/GenericTypes.h"
@@ -21,6 +22,11 @@ namespace {
     std::vector<cmg::DiMuon> dv;
     edm::Wrapper<cmg::DiMuon> ed;
     edm::Wrapper<std::vector<cmg::DiMuon> > edv;
+    
+    cmg::DiJet dj_;
+    std::vector<cmg::DiJet> djv;
+    edm::Wrapper<cmg::DiJet> edj;
+    edm::Wrapper<std::vector<cmg::DiJet> > edjv;
 
     cmg::Electron e_;
     std::vector<cmg::Electron> ev;
