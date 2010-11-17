@@ -7,6 +7,8 @@
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 #include "CMGTools/Common/interface/MuonFactory.h"
 
+#include "CMGTools/Common/interface/GenericFactories.h"
+
 #include "AnalysisDataFormats/CMGTools/interface/BaseJet.h"
 #include "CMGTools/Common/interface/BaseJetFactory.h"
 
@@ -31,6 +33,9 @@ DEFINE_FWK_MODULE(ElectronPOProducer);
 typedef PhysicsObjectProducer<cmg::MuonFactory> MuonPOProducer;
 DEFINE_FWK_MODULE(MuonPOProducer);
 
+typedef PhysicsObjectProducer<cmg::TauFactory> TauPOProducer;
+DEFINE_FWK_MODULE(TauPOProducer);
+
 typedef PhysicsObjectProducer<cmg::BaseJetFactory> BaseJetPOProducer;
 DEFINE_FWK_MODULE(BaseJetPOProducer);
 
@@ -53,6 +58,5 @@ DEFINE_FWK_MODULE(PFJetHistogramsAnalyzer);
 typedef cmg::RunInfoAccountingAnalyzer RunInfoAccountingAnalyzer;
 DEFINE_FWK_MODULE(RunInfoAccountingAnalyzer);
 
-#include "CMGTools/Common/interface/GenericFactories.h"
 typedef PhysicsObjectProducer<cmg::PFCandFactory> PFCandidatePOProducer;
 DEFINE_FWK_MODULE(PFCandidatePOProducer);

@@ -7,6 +7,7 @@
 namespace cmg{
     
     typedef PhysicsObjectFactory< PFCandPtr > PFCandFactory;
+    typedef PhysicsObjectFactory< pat::TauPtr > TauFactory;
     
 }
 
