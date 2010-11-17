@@ -1,0 +1,1 @@
+/data/c/cbern/Analysis/Susy/CMSSW_3_8_5/bin/slc5_ia32_gcc434/cmsBatch.py 1 RA2_patTuple_cfg.py -b nohup ./batchScript.sh & -r /castor/cern.ch/user/c/cbern/cmst3/Test
