@@ -5,7 +5,12 @@
   <class name="cmg::DiMuon"/>
   <class name="std::vector<cmg::DiMuon>"/>
   <class name="edm::Wrapper<cmg::DiMuon>"/>
-  <class name="edm::Wrapper<std::vector<cmg::DiMuon> >"/>	
+  <class name="edm::Wrapper<std::vector<cmg::DiMuon> >"/>
+  
+  <class name="cmg::DiJet"/>
+  <class name="std::vector<cmg::DiJet>"/>
+  <class name="edm::Wrapper<cmg::DiJet>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiJet> >"/>	
 
   <class name="cmg::Electron"/>
   <class name="cmg::Lepton<pat::ElectronPtr>" />
