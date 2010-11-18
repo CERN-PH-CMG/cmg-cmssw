@@ -53,6 +53,6 @@ os.system( mkdir )
 
 # copy
 
-rfcp = 'rfcpMany.py %s %s "%s"' % ( cdir, ldir, pattern ) 
+rfcp = 'rfcpMany.py -x %s %s "%s"' % ( cdir, ldir, pattern ) 
 print rfcp
 os.system( rfcp )

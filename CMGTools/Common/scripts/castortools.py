@@ -285,4 +285,27 @@ def cp( absDestDir, files ):
         
         
 
+def xrdcp( absDestDir, files ):
+    cp = 'cp'
+    destIsCastorDir = isCastorDir(absDestDir)
+    if destIsCastorDir: 
+        cp = 'xrdcp'
+        createCastorDir( absDestDir )
+        
+    for file in files:
 
+        cpfile = '%s %s %s' % (cp, file,absDestDir)
+        
+        if destIsCastorDir == False:
+            if isCastorDir( os.path.abspath(file) ):
+                cp = 'xrdcp'
+                cpfile = '%s "root://castorcms/%s?svcClass=cmst3&stageHost=castorcms" %s' % (cp, file,absDestDir)
+
+        print cpfile
+        os.system(cpfile)
+
+        
+        
+
+
+# xrdcp  "root://castorcms//castor/cern.ch/user/c/cbern/cmst3/RA2SusyJetMET/QCD_Pt_470to600_TuneZ2_7TeV_pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO/NoMETSkim/susyJetMET_histograms_RA2_CMG_1.root?svcClass=cmst3&stageHost=castorcms" ./
