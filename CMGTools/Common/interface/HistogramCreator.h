@@ -18,11 +18,6 @@
 
 namespace cmg{
 
-  /**
-   * The second template argument
-   * allows the use of edm::Views
-   * rather than std::vectors.
-   */
    template <class T>
    class HistogramCreator : public AnalysisHistograms{
     public:
@@ -36,17 +31,16 @@ namespace cmg{
         }
 
         void init(){
-/* 	  AnalysisHistograms::init(fs_.operator->(),name_); */
-	  AnalysisHistograms::init( fs_.operator->() );
+	       AnalysisHistograms::init( fs_.operator->() );
         }
 
         // fill the histograms after getting a collection from the event
         virtual void fill(const edm::Event& iEvent, const edm::EventSetup&){
-	  edm::Handle<view> cands;
-	  iEvent.getByLabel(label_,cands);
-	  for(typename view::const_iterator it = cands->begin(); it != cands->end(); ++it){
-	    fill(*it);	
-	  }
+	       edm::Handle<view> cands;
+	       iEvent.getByLabel(label_,cands);
+	       for(typename view::const_iterator it = cands->begin(); it != cands->end(); ++it){
+	           fill(*it);	
+	       }
         }
 		
         // fill on a per PhysicsObject basis

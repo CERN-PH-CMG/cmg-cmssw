@@ -34,11 +34,10 @@ namespace cmg{
       
     //interface for itteration over daughters
     struct AbstractPhysicsObjectVisitor{
-      virtual void visit(AbstractPhysicsObject const * const) const{
-      }
+      virtual void visit(AbstractPhysicsObject const *) = 0;
     };
     //this should be updated for compound objects
-    virtual void accept(AbstractPhysicsObjectVisitor const * const v) const{
+    virtual void accept(AbstractPhysicsObjectVisitor* v) const{
       v->visit(this);
     }
     
@@ -77,7 +76,10 @@ namespace cmg{
     Strings getSelectionNames() const{
       return selections.strings();           
     }
-		
+	
+    typedef std::vector<AbstractPhysicsObject const *> Daughters;
+    Daughters getDaughters(const bool include_this = false) const;
+    	
   protected:
     ///Used to copy selections
     pat::strbitset selections;
