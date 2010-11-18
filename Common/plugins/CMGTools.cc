@@ -1,4 +1,5 @@
 #include "CMGTools/Common/interface/CompoundFactories.h"
+#include "CMGTools/Common/interface/CutSummaryAnalyzer.h"
 
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "CMGTools/Common/interface/ElectronFactory.h"
@@ -83,3 +84,6 @@ DEFINE_FWK_MODULE(WMuNuPOProducer);
 
 typedef PhysicsObjectProducer<cmg::WTauNuFactory> WTauNuPOProducer;
 DEFINE_FWK_MODULE(WTauNuPOProducer);
+
+typedef cmg::CutSummaryAnalyzer CutSummaryAnalyzer;
+DEFINE_FWK_MODULE(CutSummaryAnalyzer);

@@ -50,6 +50,8 @@ process.load('CMGTools.Common.jet_cff')
 process.load('CMGTools.Common.met_cff')
 process.load('CMGTools.Common.pfcands_cff')
 
+process.load('CMGTools.Common.cutsummary_cff')
+
 process.cmgPFJet.verbose = cms.untracked.bool( False )
 
 process.load("CMGTools.Common.runInfoAccounting_cfi")
@@ -68,7 +70,8 @@ process.analysisSequence = cms.Sequence(
     process.metSequence +
     process.baseMETSelector +
     process.pfcandsSequence +
-    process.runInfoAccounting
+    process.runInfoAccounting + 
+    process.cutsummary
     )
 
 
