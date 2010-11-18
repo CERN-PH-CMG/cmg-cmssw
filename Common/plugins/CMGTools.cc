@@ -23,11 +23,20 @@
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
+typedef PhysicsObjectProducer<cmg::DiElectronFactory> DiElectronPOProducer;
+DEFINE_FWK_MODULE(DiElectronPOProducer);
+
 typedef PhysicsObjectProducer<cmg::DiMuonFactory> DiMuonPOProducer;
 DEFINE_FWK_MODULE(DiMuonPOProducer);
 
 typedef PhysicsObjectProducer<cmg::DiJetFactory> DiJetPOProducer;
 DEFINE_FWK_MODULE(DiJetPOProducer);
+
+typedef PhysicsObjectProducer<cmg::DiPFJetFactory> DiPFJetPOProducer;
+DEFINE_FWK_MODULE(DiPFJetPOProducer);
+
+typedef PhysicsObjectProducer<cmg::DiTauFactory> DiTauPOProducer;
+DEFINE_FWK_MODULE(DiTauPOProducer);
 
 typedef PhysicsObjectProducer<cmg::ElectronFactory> ElectronPOProducer;
 DEFINE_FWK_MODULE(ElectronPOProducer);
@@ -37,6 +46,9 @@ DEFINE_FWK_MODULE(MuonPOProducer);
 
 typedef PhysicsObjectProducer<cmg::TauFactory> TauPOProducer;
 DEFINE_FWK_MODULE(TauPOProducer);
+
+typedef PhysicsObjectProducer<cmg::QuadMuonFactory> QuadMuonPOProducer;
+DEFINE_FWK_MODULE(QuadMuonPOProducer);
 
 typedef PhysicsObjectProducer<cmg::BaseJetFactory> BaseJetPOProducer;
 DEFINE_FWK_MODULE(BaseJetPOProducer);
@@ -62,3 +74,12 @@ DEFINE_FWK_MODULE(RunInfoAccountingAnalyzer);
 
 typedef PhysicsObjectProducer<cmg::PFCandFactory> PFCandidatePOProducer;
 DEFINE_FWK_MODULE(PFCandidatePOProducer);
+
+typedef PhysicsObjectProducer<cmg::WENuFactory> WENuPOProducer;
+DEFINE_FWK_MODULE(WENuPOProducer);
+
+typedef PhysicsObjectProducer<cmg::WMuNuFactory> WMuNuPOProducer;
+DEFINE_FWK_MODULE(WMuNuPOProducer);
+
+typedef PhysicsObjectProducer<cmg::WTauNuFactory> WTauNuPOProducer;
+DEFINE_FWK_MODULE(WTauNuPOProducer);

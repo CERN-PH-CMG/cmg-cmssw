@@ -10,18 +10,13 @@
 
 namespace cmg{
 
-//used to check whether T == U - used template specialization
-template< typename T, typename U > struct same{ enum { yes = 0}; };
-template< typename T > struct same<T,T>{ enum { yes = 1}; };
-
 template< typename T, typename U >
 class DiObjectFactory : public cmg::Factory< cmg::DiObject<T,U> >{
     public:
 
         DiObjectFactory(const edm::ParameterSet& ps):
             leg1Label_(ps.getParameter<edm::InputTag>("leg1Collection")),
-            leg2Label_(ps.getParameter<edm::InputTag>("leg2Collection")),
-            same_type_(cmg::same<T,U>::yes){
+            leg2Label_(ps.getParameter<edm::InputTag>("leg2Collection")){
         }
 
         //need to override from Factory to insert "typename"
@@ -31,9 +26,22 @@ class DiObjectFactory : public cmg::Factory< cmg::DiObject<T,U> >{
     private:
         const edm::InputTag leg1Label_;
         const edm::InputTag leg2Label_;
-        //is T == U - the types not the objects
-        const bool same_type_;
 };
+
+///Make when the types are different
+template< typename T, typename U >
+cmg::DiObject<T,U> make(const T& l1, const U& l2){
+    return cmg::DiObject<T,U>(l1,l2);
+}
+///Make when the types are the same - sorts the legs
+template< typename T >
+cmg::DiObject<T,T> make(const T& l1, const T& l2){
+    if(l1 >= l2){
+        return cmg::DiObject<T,T>(l1,l2);
+    }else{
+        return cmg::DiObject<T,T>(l2,l1);
+    }
+}
 
 }
 
@@ -41,11 +49,8 @@ template< typename T, typename U >
 typename cmg::DiObjectFactory<T,U>::event_ptr cmg::DiObjectFactory<T,U>::create(const edm::Event& iEvent, const edm::EventSetup&) const{
     
     typedef typename std::vector<typename cmg::DiObject<T,U> > collection;
-    //typedef std::vector<T> collection1;
-    //typedef std::vector<U> collection2;
     typedef edm::View<T> collection1;
     typedef edm::View<U> collection2;
-    
     
     edm::Handle<collection1> leg1Cands;
     iEvent.getByLabel(leg1Label_,leg1Cands);
@@ -65,18 +70,7 @@ typename cmg::DiObjectFactory<T,U>::event_ptr cmg::DiObjectFactory<T,U>::create(
             const U& l2 = leg2Cands->at(i);
             //we skip if its the same object
             if( sameCollection && (l1 == l2) ) continue;
-      
-            //if T == U then sort so leg1 is greater than leg2 
-            if(same_type_){
-                if(l1 >= l2){
-                    result->push_back(cmg::DiObject<T,U>(l1,l2));
-                }else{
-                    result->push_back(cmg::DiObject<T,U>(l2,l1));
-                }
-            }else{
-                //stick to the default ordering
-               result->push_back(cmg::DiObject<T,U>(l1,l2)); 
-            }
+            result->push_back(cmg::make(l1,l2));      
       }
     }
     return result;
