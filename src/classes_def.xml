@@ -2,6 +2,11 @@
   
   <class name="cmg::AbstractPhysicsObject" />
   
+  <class name="cmg::DiElectron"/>
+  <class name="std::vector<cmg::DiElectron>"/>
+  <class name="edm::Wrapper<cmg::DiElectron>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiElectron> >"/>
+  
   <class name="cmg::DiMuon"/>
   <class name="std::vector<cmg::DiMuon>"/>
   <class name="edm::Wrapper<cmg::DiMuon>"/>
@@ -10,7 +15,17 @@
   <class name="cmg::DiJet"/>
   <class name="std::vector<cmg::DiJet>"/>
   <class name="edm::Wrapper<cmg::DiJet>"/>
-  <class name="edm::Wrapper<std::vector<cmg::DiJet> >"/>	
+  <class name="edm::Wrapper<std::vector<cmg::DiJet> >"/>
+  
+  <class name="cmg::DiPFJet"/>
+  <class name="std::vector<cmg::DiPFJet>"/>
+  <class name="edm::Wrapper<cmg::DiPFJet>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiPFJet> >"/>	
+  
+  <class name="cmg::DiTau"/>
+  <class name="std::vector<cmg::DiTau>"/>
+  <class name="edm::Wrapper<cmg::DiTau>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiTau> >"/>
 
   <class name="cmg::Electron"/>
   <class name="cmg::Lepton<pat::ElectronPtr>" />
@@ -44,6 +59,11 @@
 
   <class name="cmg::PFJetComponent"/>
   <class name="std::vector<cmg::PFJetComponent>"/>
+  
+  <class name="cmg::QuadMuon"/>
+  <class name="std::vector<cmg::QuadMuon>"/>
+  <class name="edm::Wrapper<cmg::QuadMuon>"/>
+  <class name="edm::Wrapper<std::vector<cmg::QuadMuon> >"/>
  
   <class name="cmg::BaseMET"/>
   <class name="std::vector<cmg::BaseMET>"/>
@@ -54,6 +74,7 @@
   <class name="pat::MuonPtr"/>
   <class name="pat::ElectronPtr"/>
   <class name="pat::METPtr"/>
+  <class name="pat::TauPtr"/>
 
   <enum name="cmg::TriBool"/>
   
@@ -66,5 +87,15 @@
   <class name="std::vector<cmg::PFCand>"/>
   <class name="edm::Wrapper<cmg::PFCand>"/>
   <class name="edm::Wrapper<std::vector<cmg::PFCand> >"/>
+  
+  <class name="cmg::WENu"/>
+  <class name="std::vector<cmg::WENu>"/>
+  <class name="edm::Wrapper<cmg::WENu>"/>
+  <class name="edm::Wrapper<std::vector<cmg::WENu> >"/>
+  
+  <class name="cmg::WTauNu"/>
+  <class name="std::vector<cmg::WTauNu>"/>
+  <class name="edm::Wrapper<cmg::WTauNu>"/>
+  <class name="edm::Wrapper<std::vector<cmg::WTauNu> >"/>
 
 </lcgdict>
