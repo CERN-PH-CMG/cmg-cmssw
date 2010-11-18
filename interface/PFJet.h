@@ -29,6 +29,8 @@ namespace cmg {
     
     const PFJetComponent& component(unsigned ci) const; 
 
+    const int nConstituents() const;
+
     friend class PFJetFactory;
     
   private:
