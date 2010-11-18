@@ -13,7 +13,7 @@
 //   chain.Draw("cmgBaseJet_cmgjet__PAT.obj.pt()");
 
   gROOT->LoadMacro("macros/rootlogon.C");
-  initCMG("ANA");
+  initCMG("ANA", &chain);
 
   chain.Draw("cmgPFJet.obj.pt()");
   chain.Draw("cmgPFJet.obj.pt()","cmgPFJet.obj.getSelection(\"cuts_jetKinematics_pt\")","same");
