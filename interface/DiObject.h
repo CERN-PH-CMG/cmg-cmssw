@@ -40,7 +40,7 @@ class DiObject : public AbstractPhysicsObject{
         return leg2_;
     }
     
-    virtual void accept(AbstractPhysicsObjectVisitor const * const v) const{
+    virtual void accept(AbstractPhysicsObjectVisitor* v) const{
       v->visit(&leg1_);
       v->visit(&leg2_);
     }

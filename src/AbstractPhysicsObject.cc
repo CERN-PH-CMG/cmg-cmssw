@@ -23,3 +23,34 @@ std::ostream& cmg::AbstractPhysicsObject::printSelections(std::ostream& o) const
   }
   return o;
 }
+
+/// Itterate over the daughters and return a list, excluding the parent
+cmg::AbstractPhysicsObject::Daughters cmg::AbstractPhysicsObject::getDaughters(const bool include_this) const{
+    
+    class DaughterVisitor : public cmg::AbstractPhysicsObject::AbstractPhysicsObjectVisitor{
+    public:
+        DaughterVisitor(cmg::AbstractPhysicsObject const * const parent = 0):
+            parent_(parent){
+        }
+        virtual void visit(AbstractPhysicsObject const * o){
+            //Compare the addresses of the daughter and parent
+            if(parent_ && (parent_ == o) ) return;
+            daughters_.push_back(o);
+        }
+        cmg::AbstractPhysicsObject::Daughters daughters() const{
+            return daughters_;  
+        }
+      private:
+        cmg::AbstractPhysicsObject const * const parent_;
+        cmg::AbstractPhysicsObject::Daughters daughters_;
+    };
+    
+    cmg::AbstractPhysicsObject const * parent = 0;
+    if( !include_this ){
+        parent = this;  
+    }
+    DaughterVisitor dv(parent);
+    accept(&dv);
+    return dv.daughters();
+    
+}
