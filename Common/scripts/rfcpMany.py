@@ -11,6 +11,10 @@ parser.add_option("-n", "--negate", action="store_true",
                   dest="negate",
                   help="do not proceed",
                   default=False)
+parser.add_option("-x", "--xrdcp", action="store_true",
+                  dest="xrdcp",
+                  help="use xrdcp",
+                  default=False)
 
 (options,args) = parser.parse_args()
 
@@ -33,7 +37,10 @@ if options.negate:
 else:
     print 'Copying ',  
     pprint.pprint(files)
-    castortools.cp( dir2, files )
+    if options.xrdcp: 
+        castortools.xrdcp( dir2, files )
+    else:
+        castortools.cp( dir2, files )
 
 print 'from:', dir1
 print 'to  :', dir2
