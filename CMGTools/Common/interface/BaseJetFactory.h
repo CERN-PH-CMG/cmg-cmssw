@@ -14,19 +14,19 @@
 
 namespace cmg{
 
-class BaseJetFactory : public Factory<cmg::BaseJet>, public SettingTool<pat::JetPtr,cmg::BaseJet>{
-	public:
-		BaseJetFactory(const edm::ParameterSet& ps):
-			jetLabel_(ps.getParameter<edm::InputTag>("inputCollection")),
-            btagType_(ps.getParameter<std::string>("btagType")){
-		}
-		virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
-        virtual void set(const pat::JetPtr& input, cmg::BaseJet* const output) const;
+  class BaseJetFactory : public Factory<cmg::BaseJet>, public SettingTool<pat::JetPtr,cmg::BaseJet>{
+  public:
+    BaseJetFactory(const edm::ParameterSet& ps):
+      jetLabel_(ps.getParameter<edm::InputTag>("inputCollection")),
+      btagType_(ps.getParameter<std::string>("btagType")){
+    }
+    virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
+    virtual void set(const pat::JetPtr& input, cmg::BaseJet* const output) const;
 		
-	private:
-		const edm::InputTag jetLabel_;
-        const std::string btagType_;
-};
+  private:
+    const edm::InputTag jetLabel_;
+    const std::string btagType_;
+  };
 
 }
 

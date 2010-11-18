@@ -35,10 +35,11 @@ class Cut {
 template<class CutType >
 class CutTree {
  public:
-
+  /// a Node is a sub-cuttree. Each CutTree can contain several CutTrees.
   typedef typename std::vector< CutTree<CutType> > Nodes;
   typedef typename Nodes::const_iterator NI;
 
+  /// Type for the set of leaves, each of them being a Cut. 
   typedef typename std::vector< CutType > Cuts;
   typedef typename Cuts::const_iterator CI;
   
@@ -78,11 +79,13 @@ class CutTree {
   }
 
  private:
- 
+  /// Cuts directly declared at this level
   Cuts cuts_;
 
+  /// Sub-CutTrees
   Nodes nodes_;
-
+  
+  /// name of this CutTree
   std::string name_;
 };
 

@@ -25,7 +25,9 @@ class PhysicsObjectProducer : public edm::EDFilter{
     factory_(ps.getParameter<edm::ParameterSet>("cfg")), 
     verbose_(ps.getUntrackedParameter<bool>("verbose",false)),
     cutTree_("All Cuts") {
-
+    
+    std::cout<<"Initializing PhysicsObjectProducer for "<<ps<<std::endl;
+    
     produces<typename FactoryClass::collection>("");
 
     edm::ParameterSet cutsPSet = ps_.getParameter< edm::ParameterSet >("cuts");
@@ -126,7 +128,8 @@ void PhysicsObjectProducer<FactoryClass>::unpack( const edm::ParameterSet& ps,
     newBaseName += "_";
     newBaseName += subPSets[i];
     
-    cutTree.addNode( CutTreeType(subPSets[i]) );   
+/*     cutTree.addNode( CutTreeType(subPSets[i]) );    */
+    cutTree.addNode( CutTreeType( newBaseName )) ;
 
     unpack( subPSet, newBaseName, cutTree.lastNode() );
   }
