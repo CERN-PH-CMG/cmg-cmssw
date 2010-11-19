@@ -93,7 +93,7 @@ for line in ifile.readlines():
         localDir = options.localBaseDir
         localDir += sampleName
 
-        allSampleInfo( sampleName, options.listLevel)
+        allSampleInfo( sampleName, int(options.listLevel) )
 
 
     
