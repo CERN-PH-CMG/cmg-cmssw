@@ -11,24 +11,29 @@ import castortools
 import pdb
 
 
-def allSampleInfo( sampleName, listFiles ):
-    print
-    print
+def allSampleInfo( sampleName, listLevel ):
+    
     print sampleName
-    print '------------------------------------------------------------------------------------------------------------'
-    print 'castor:'
-    print castorDir
-    if listFiles: 
+
+    if listLevel>0:
+        print '------------------------------------------------------------------------------------------------------------'
+        print 'castor:'
+        print castorDir
+    if listLevel>1: 
         os.system('rfdir ' + castorDir )
-    print 'local:'
-    print localDir
+    if listLevel>0:
+        print 'local:'
+        print localDir
     if os.path.isdir( localDir ):
-        if listFiles:
+        if listLevel>0:
             os.system('ls -l ' + localDir )
             print localDir + '*.root'
     else:
-        print 'TO BE IMPORTED'
-       
+        if listLevel>0:
+            print 'TO BE IMPORTED'
+    if listLevel>0:
+        print
+        print
 
 
 parser = OptionParser()
@@ -45,9 +50,9 @@ parser.add_option("-d", "--localBaseDir",
                   dest="localBaseDir",
                   help="Local directory.",
                   default="/afs/cern.ch/user/c/cbern/localscratch/Data/Analysis/SusyJetMET")
-parser.add_option("-l", "--listFiles", 
-                  dest="listFiles", action="store_true",
-                  help="list files",
+parser.add_option("-l", "--listLevel", 
+                  dest="listLevel", 
+                  help="list level",
                   default=False)
 ## parser.add_option("-p", "--pattern", 
 ##                   dest="pattern",
@@ -88,9 +93,9 @@ for line in ifile.readlines():
         localDir = options.localBaseDir
         localDir += sampleName
 
-        allSampleInfo( sampleName, options.listFiles)
+        allSampleInfo( sampleName, options.listLevel)
 
 
     
 
-# allSampleInfo( sampleName, options.listFiles)
+# allSampleInfo( sampleName, options.listLevel)
