@@ -6,7 +6,7 @@ traditionalJets = cms.untracked.vstring(
     )
 
 traditionalMET = cms.untracked.vstring(
-    'keep  *_cmgMHTCaloJets_*_*',
+    'keep  *_cmgMHTCaloJets*_*_*',
     'keep  patMETs_patMETs_*_*'
     # here add the other PF-based MET / MHT objects, even the base ones. 
     )

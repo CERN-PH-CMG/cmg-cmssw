@@ -8,8 +8,8 @@ particleFlowJets = cms.untracked.vstring(
     )
 
 particleFlowMET = cms.untracked.vstring(
-    'keep  *_cmgMHTPFJets_*_*',
-    'keep  *_cmgMETPFCandidates_*_*',
+    'keep  *_cmgMHTPFJets*_*_*',
+    'keep  *_cmgMETPFCandidates*_*_*',
     'keep  patMETs_patMETsPFlow_*_*',
     # here add the other PF-based MET / MHT objects, even the base ones. 
     )
