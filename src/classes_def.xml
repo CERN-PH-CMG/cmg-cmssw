@@ -1,6 +1,9 @@
 <lcgdict>
   
   <class name="cmg::AbstractPhysicsObject" />
+  <class name="edm::Wrapper<cmg::AbstractPhysicsObject>" />
+  <class name="std::vector<cmg::AbstractPhysicsObject>" />
+  <class name="edm::Wrapper<std::vector<cmg::AbstractPhysicsObject> >" />
   
   <class name="cmg::DiElectron"/>
   <class name="std::vector<cmg::DiElectron>"/>

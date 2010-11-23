@@ -1,5 +1,6 @@
 #include "DataFormats/Common/interface/Wrapper.h"
 
+#include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
 #include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
@@ -16,6 +17,11 @@
 
 namespace {
   struct CMGTools_AnalysisDataFormats {
+
+    cmg::AbstractPhysicsObject a_;
+    std::vector<cmg::AbstractPhysicsObject> av;
+    edm::Wrapper<cmg::AbstractPhysicsObject> ae;
+    edm::Wrapper<std::vector<cmg::AbstractPhysicsObject> > aev;
 
     cmg::DiElectron de_;
     std::vector<cmg::DiElectron> dev;
