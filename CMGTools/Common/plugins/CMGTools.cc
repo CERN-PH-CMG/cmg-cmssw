@@ -87,3 +87,9 @@ DEFINE_FWK_MODULE(WTauNuPOProducer);
 
 typedef cmg::CutSummaryAnalyzer CutSummaryAnalyzer;
 DEFINE_FWK_MODULE(CutSummaryAnalyzer);
+
+#include "AnalysisDataFormats/CMGTools/interface/PhysicsObject.h"
+#include "CMGTools/Common/plugins/SingleObjectCollectionSelector.h"
+typedef cmg::SingleObjectCollectionSelector<cmg::AbstractPhysicsObject> POCollectionSelector;
+DEFINE_FWK_MODULE(POCollectionSelector);
+
