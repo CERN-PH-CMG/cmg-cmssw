@@ -9,6 +9,8 @@
 #include <memory>
 #include <vector>
 
+#include "TAxis.h"
+
 namespace cmg{
   
   template<class T>
@@ -23,9 +25,10 @@ namespace cmg{
                 float low_;
                 float high_;
                 int nbins_;
-                HistogramAxis(const std::string& obs,const float low,const float high,const int nbins):
+                std::string title_;
+                HistogramAxis(const std::string& obs,const float low,const float high,const int nbins, const std::string& title):
                     fn_(obs),
-                    obs_(obs),low_(low),high_(high),nbins_(nbins){
+                    obs_(obs),low_(low),high_(high),nbins_(nbins),title_(title){
                     }
         };
         typedef std::map<std::string, std::vector<HistogramAxis> > Histograms;
@@ -68,8 +71,9 @@ void cmg::GenericHistograms<T>::initHistograms(const edm::ParameterSet& ps){
             const double low = a->getParameter<double>("low");
             const double high = a->getParameter<double>("high");
             const int nbins = a->getParameter<int>("nbins");
-            ax.push_back(HistogramAxis(var,low,high,nbins));
-            std::cout << name << " Axis: " << var << "\t" << low << "\t" << high << "\t" << nbins << std::endl;
+            const std::string title = a->getUntrackedParameter<std::string>("title",var);
+            ax.push_back(HistogramAxis(var,low,high,nbins,title));
+            //std::cout << name << " Axis: " << var << "\t" << low << "\t" << high << "\t" << nbins << std::endl;
         }
         (*histos_)[name] = ax;
     }    
@@ -87,6 +91,8 @@ void cmg::GenericHistograms<T>::defineHistograms(){
                         add1DHistogram(it->first,it->first,
                         axis.nbins_,axis.low_,axis.high_,
                         cmg::HistogramCreator<T>::fs_.operator->());
+                        
+                        get1DHistogram(it->first)->GetXaxis()->SetTitle(axis.title_.c_str());
                         break;
                     }
                 case 2:
@@ -97,6 +103,9 @@ void cmg::GenericHistograms<T>::defineHistograms(){
                         axisX.nbins_,axisX.low_,axisX.high_,
                         axisY.nbins_,axisY.low_,axisY.high_,
                         cmg::HistogramCreator<T>::fs_.operator->());
+                        
+                        get2DHistogram(it->first)->GetXaxis()->SetTitle(axisX.title_.c_str());
+                        get2DHistogram(it->first)->GetYaxis()->SetTitle(axisY.title_.c_str());
                         break;
                     }                   
                 case 3:
@@ -110,6 +119,10 @@ void cmg::GenericHistograms<T>::defineHistograms(){
                         axisY.nbins_,axisY.low_,axisY.high_,
                         axisZ.nbins_,axisZ.low_,axisZ.high_,
                         cmg::HistogramCreator<T>::fs_.operator->());
+                        
+                        get3DHistogram(it->first)->GetXaxis()->SetTitle(axisX.title_.c_str());
+                        get3DHistogram(it->first)->GetYaxis()->SetTitle(axisY.title_.c_str());
+                        get3DHistogram(it->first)->GetZaxis()->SetTitle(axisZ.title_.c_str());
                         break;
                     }
                 default:
