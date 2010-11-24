@@ -7,10 +7,10 @@
 #include "CMGTools/Common/interface/BaseJetFactory.h"
 #include "CMGTools/Common/interface/BaseMETFactory.h"
 #include "CMGTools/Common/interface/CompoundFactories.h"
-//#include "CMGTools/Common/interface/CollectionSelector.h"
 #include "CMGTools/Common/interface/CutSummaryAnalyzer.h"
 #include "CMGTools/Common/interface/ElectronFactory.h"
 #include "CMGTools/Common/interface/GenericFactories.h"
+#include "CMGTools/Common/interface/GenericHistograms.h"
 #include "CMGTools/Common/interface/MuonFactory.h"
 #include "CMGTools/Common/interface/PFJetFactory.h"
 
@@ -85,3 +85,6 @@ DEFINE_FWK_MODULE(CutSummaryAnalyzer);
 
 typedef cmg::SingleObjectCollectionSelector<cmg::AbstractPhysicsObject> POCollectionSelector;
 DEFINE_FWK_MODULE(POCollectionSelector);
+
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Muon> > GenericMuonHistograms;
+DEFINE_FWK_MODULE(GenericMuonHistograms);
