@@ -73,15 +73,15 @@ void initCMG(const char* process, TTree* tree) {
   string pfJets = "cmgPFJets_cmgPFJet__"; pfJets += process;
   string pfBaseJets = "cmgBaseJets_cmgPFBaseJet__"; pfBaseJets += process;
   string mhtPFJets = "cmgBaseMETs_cmgMHTPFJets__"; mhtPFJets += process;
-  string mhtPFJets30 = "cmgBaseMETs_cmgMHTPFJets30__"; mhtPFJets30 += "MHT";
-  string mhtPFJets50 = "cmgBaseMETs_cmgMHTPFJets50__"; mhtPFJets50 += "MHT";
+  string mhtPFJets30 = "cmgBaseMETs_cmgMHTPFJets30__"; mhtPFJets30 += process;
+  string mhtPFJets50 = "cmgBaseMETs_cmgMHTPFJets50__"; mhtPFJets50 += process;
   string metPF = "cmgBaseMETs_cmgMETPFCandidates__"; metPF += process;
-  string metPF2 = "cmgBaseMETs_cmgMETPFCandidates2__"; metPF2 += "MHT";
+  string metPF2 = "cmgBaseMETs_cmgMETPFCandidates2__"; metPF2 += process;
   
   string caloBaseJets = "cmgBaseJets_cmgCaloBaseJet__"; caloBaseJets += process;
   string mhtCaloJets = "cmgBaseMETs_cmgMHTCaloJets__"; mhtCaloJets += process;
-  string mhtCaloJets30 = "cmgBaseMETs_cmgMHTCaloJets30__"; mhtCaloJets30 += "MHT";
-  string mhtCaloJets50 = "cmgBaseMETs_cmgMHTCaloJets50__"; mhtCaloJets50 += "MHT";
+  string mhtCaloJets30 = "cmgBaseMETs_cmgMHTCaloJets30__"; mhtCaloJets30 += process;
+  string mhtCaloJets50 = "cmgBaseMETs_cmgMHTCaloJets50__"; mhtCaloJets50 += process;
   
   tree->SetAlias("cmgPFJets", pfJets.c_str() );
   tree->SetAlias("cmgPFBaseJets", pfBaseJets.c_str() );

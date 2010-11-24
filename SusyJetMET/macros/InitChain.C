@@ -1,5 +1,5 @@
 
-TTree* InitChain( const std::string& pathToSample, float intLumi, const std::string& pathToRia) {
+TTree* InitChain( const std::string& pathToSample, float intLumi, const std::string& pathToRia ) {
 
   string stree = pathToSample;
   stree += "/*tree*root";
