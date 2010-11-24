@@ -1,26 +1,25 @@
-#include "CMGTools/Common/interface/CompoundFactories.h"
-#include "CMGTools/Common/interface/CutSummaryAnalyzer.h"
-
-#include "AnalysisDataFormats/CMGTools/interface/Electron.h"
-#include "CMGTools/Common/interface/ElectronFactory.h"
-
-#include "AnalysisDataFormats/CMGTools/interface/Muon.h"
-#include "CMGTools/Common/interface/MuonFactory.h"
-
-#include "CMGTools/Common/interface/GenericFactories.h"
-
 #include "AnalysisDataFormats/CMGTools/interface/BaseJet.h"
-#include "CMGTools/Common/interface/BaseJetFactory.h"
-
+#include "AnalysisDataFormats/CMGTools/interface/Electron.h"
+#include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
+#include "AnalysisDataFormats/CMGTools/interface/PhysicsObject.h"
+
+#include "CMGTools/Common/interface/BaseJetFactory.h"
+#include "CMGTools/Common/interface/BaseMETFactory.h"
+#include "CMGTools/Common/interface/CompoundFactories.h"
+//#include "CMGTools/Common/interface/CollectionSelector.h"
+#include "CMGTools/Common/interface/CutSummaryAnalyzer.h"
+#include "CMGTools/Common/interface/ElectronFactory.h"
+#include "CMGTools/Common/interface/GenericFactories.h"
+#include "CMGTools/Common/interface/MuonFactory.h"
 #include "CMGTools/Common/interface/PFJetFactory.h"
 
-#include "CMGTools/Common/interface/BaseMETFactory.h"
-
+#include "CMGTools/Common/plugins/HistogramAnalyzer.h"
+#include "CMGTools/Common/interface/JetHistograms.h"
+#include "CMGTools/Common/interface/LorentzHistograms.h"
 #include "CMGTools/Common/plugins/PhysicsObjectProducer.h"
-
 #include "CMGTools/Common/plugins/RunInfoAccountingAnalyzer.h"
-
+#include "CMGTools/Common/plugins/SingleObjectCollectionSelector.h"
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
@@ -60,10 +59,6 @@ DEFINE_FWK_MODULE(PFJetPOProducer);
 typedef PhysicsObjectProducer<cmg::BaseMETFactory> BaseMETPOProducer;
 DEFINE_FWK_MODULE(BaseMETPOProducer);
 
-#include "CMGTools/Common/plugins/HistogramAnalyzer.h"
-#include "CMGTools/Common/interface/LorentzHistograms.h"
-#include "CMGTools/Common/interface/JetHistograms.h"
-
 typedef cmg::HistogramAnalyzer<cmg::LorentzHistogramsFF> LorentzHistogramsAnalyzer;
 DEFINE_FWK_MODULE(LorentzHistogramsAnalyzer);
 
@@ -88,8 +83,5 @@ DEFINE_FWK_MODULE(WTauNuPOProducer);
 typedef cmg::CutSummaryAnalyzer CutSummaryAnalyzer;
 DEFINE_FWK_MODULE(CutSummaryAnalyzer);
 
-#include "AnalysisDataFormats/CMGTools/interface/PhysicsObject.h"
-#include "CMGTools/Common/plugins/SingleObjectCollectionSelector.h"
 typedef cmg::SingleObjectCollectionSelector<cmg::AbstractPhysicsObject> POCollectionSelector;
 DEFINE_FWK_MODULE(POCollectionSelector);
-
