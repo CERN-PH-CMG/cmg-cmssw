@@ -17,9 +17,9 @@ namespace cmg{
 /**
  * A class to select the events from 0 to index in a collection.
  * 
- * if index is negative, count backwards as in python. If the
- * index calculated is larger than the collection length, we
- * return an empty collection.
+ * If the index is negative, or greater than the number of entries
+ * in the collection, we copy all elements.
+ * 
  */
 template <class T>
 class SingleObjectCollectionSelector : public edm::EDProducer {
@@ -32,7 +32,6 @@ class SingleObjectCollectionSelector : public edm::EDProducer {
   
   explicit SingleObjectCollectionSelector(const edm::ParameterSet& ps):
     src_(ps.getUntrackedParameter<edm::InputTag>("inputCollection")),
-    start_(ps.getUntrackedParameter<int>("start",0)),
     index_(ps.getUntrackedParameter<int>("index",-1)),
     verbose_(ps.getUntrackedParameter<bool>("verbose",false)){
     produces<collection>("");
@@ -42,7 +41,6 @@ class SingleObjectCollectionSelector : public edm::EDProducer {
  private:
 
   const edm::InputTag src_;
-  const int start_;
   const int index_;
   const bool verbose_ ;
 
@@ -60,29 +58,19 @@ void cmg::SingleObjectCollectionSelector<T>::produce(edm::Event& iEvent, const e
     }
     typename cmg::SingleObjectCollectionSelector<T>::event_ptr result(new collection());
     if(cands->size()){
-        
-        //the first index
-        unsigned int start = 0;
-        if(start_ < 0){
-            start = cands->size() + start_;
-        }else{
-            start = static_cast<unsigned int>(start_);   
-        }
-        //the second index
+
+        //the index
         unsigned int index = 0;
-        if(index_ < 0){
-            index = cands->size() + index_;
+        if( (index_ < 0) || (static_cast<unsigned int>(index_) > cands->size()) ){
+            index = cands->size();
         }else{
-            index = static_cast<unsigned int>(index_);   
+            index = static_cast<unsigned int>(index_);
         }
         if(verbose_){
-            std::cout << "The selected index range was " << start << " - " << index << std::endl;
+            std::cout << "The selected index was " << index << std::endl;
         }
-        //only copy if the indexes are in range
-        if( (start < cands->size()) && (index < cands->size()) ){
-            for(unsigned int i = start; i <= index; i++){
-                result->push_back(cands->at(i));
-            }
+        for(unsigned int i = 0; i < index; i++){
+            result->push_back(cands->at(i));
         }
         if(verbose_){
             std::cout << "Copied " << result->size() << " events" << std::endl;
