@@ -3,9 +3,9 @@ import FWCore.ParameterSet.Config as cms
 
 import pprint
 
-
+#warning
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(-1)
+        input = cms.untracked.int32(1000)
         )
 
 selectEvents = False
@@ -18,7 +18,7 @@ cut_highMET = 'pt()>50'
 # sourceExt = 'LM0'
 # sourceExt = 'QCD_50to80'
 # sourceExt = 'QCD_80to120'
-# sourceExt = 'QCD_120to170'
+sourceExt = 'QCD_120to170'
 # sourceExt = 'QCD_170to300'
 # sourceExt = 'QCD_300to470'
 # sourceExt = 'QCD_470to600'
@@ -29,7 +29,7 @@ cut_highMET = 'pt()>50'
 
 # sourceExt = 'Z3J_100to300'
 # sourceExt = 'Z3J_300to800'
-sourceExt = 'Z3J_800to1600'
+# sourceExt = 'Z3J_800to1600'
 # sourceExt = 'Test'
 
 if sourceExt == 'StevenNov9':
@@ -97,10 +97,9 @@ process.out.SelectEvents.SelectEvents = cms.vstring()
 process.load("CMGTools.Common.countingSequences_cff")
 
 
-from CMGTools.Common.EventContent.everything_cff import everything
-process.out.outputCommands += everything    
-process.out.outputCommands.append('keep TriggerResults_*_*_*') 
-    
+from CMGTools.SusyJetMET.EventContent.susyJetMET_cff import susyJetMET
+process.out.outputCommands += susyJetMET    
+ 
 process.load('CMGTools.Common.jet_cff')
 process.load('CMGTools.Common.met_cff')
 
