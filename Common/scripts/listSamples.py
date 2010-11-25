@@ -8,7 +8,6 @@ import os, sys,  imp, re, pprint, string
 from optparse import OptionParser
 
 import castortools
-import pdb
 
 
 def allSampleInfo( sampleName, listLevel ):
@@ -47,10 +46,13 @@ parser.add_option("-n", "--negate", action="store_true",
                   dest="negate",
                   help="do not proceed",
                   default=False)
+
+import colin
+
 parser.add_option("-c", "--castorBaseDir", 
                   dest="castorBaseDir",
                   help="Base castor directory.",
-                  default="/castor/cern.ch/cms/store/cmst3/user/cbern/RA2SusyJetMET")
+                  default=colin.defaultCastorBaseDir)
 parser.add_option("-d", "--localBaseDir", 
                   dest="localBaseDir",
                   help="Local directory.",

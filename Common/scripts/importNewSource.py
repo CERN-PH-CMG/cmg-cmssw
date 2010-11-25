@@ -15,10 +15,13 @@ parser.add_option("-n", "--negate", action="store_true",
                   dest="negate",
                   help="do not proceed",
                   default=False)
+
+import colin
+
 parser.add_option("-c", "--castorBaseDir", 
                   dest="castorBaseDir",
                   help="Base castor directory. Subdirectories will be created automatically for each prod",
-                  default="/castor/cern.ch/user/c/cbern/cmst3/RA2SusyJetMET")
+                  default=colin.defaultCastorBaseDir)
 parser.add_option("-p", "--pattern", 
                   dest="pattern",
                   help="pattern for root files in castor dir",
