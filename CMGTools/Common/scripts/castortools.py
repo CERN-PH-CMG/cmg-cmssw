@@ -308,4 +308,3 @@ def xrdcp( absDestDir, files ):
         
 
 
-# xrdcp  "root://castorcms//castor/cern.ch/user/c/cbern/cmst3/RA2SusyJetMET/QCD_Pt_470to600_TuneZ2_7TeV_pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO/NoMETSkim/susyJetMET_histograms_RA2_CMG_1.root?svcClass=cmst3&stageHost=castorcms" ./
