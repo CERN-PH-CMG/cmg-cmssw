@@ -21,5 +21,15 @@ baseMETHistograms = cms.EDAnalyzer(
                high = cms.double(2000)
                )
             ),
+        
+        phi = cms.VPSet(
+            cms.PSet( 
+               var = cms.string('phi()'),
+               nbins = cms.int32(100),
+               low = cms.double(-3.15),
+               high = cms.double(3.15)
+               )
+            ),
         )
+    
     )
