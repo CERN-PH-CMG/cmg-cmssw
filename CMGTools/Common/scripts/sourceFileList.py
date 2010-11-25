@@ -59,6 +59,9 @@ print ")"
 
 print 'source.fileNames.extend(['
 for file in files:
+
+    file = file.replace( protocol+'/castor/cern.ch/cms/store', '/store')
+    
     fileLine = "\t\t'%s'," % file
     print fileLine
 print "])"
