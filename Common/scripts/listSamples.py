@@ -13,6 +13,11 @@ import pdb
 
 def allSampleInfo( sampleName, listLevel ):
     
+
+    if listLevel == 3:
+        os.system("rfdir %s | awk '{print \"%s/\"$9}'" % (castorDir,castorDir) )
+        return
+
     print sampleName
 
     if listLevel>0:
@@ -45,7 +50,7 @@ parser.add_option("-n", "--negate", action="store_true",
 parser.add_option("-c", "--castorBaseDir", 
                   dest="castorBaseDir",
                   help="Base castor directory.",
-                  default="/castor/cern.ch/user/c/cbern/cmst3/RA2SusyJetMET")
+                  default="/castor/cern.ch/cms/store/cmst3/user/cbern/RA2SusyJetMET")
 parser.add_option("-d", "--localBaseDir", 
                   dest="localBaseDir",
                   help="Local directory.",
