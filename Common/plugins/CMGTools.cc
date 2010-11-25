@@ -65,6 +65,12 @@ DEFINE_FWK_MODULE(LorentzHistogramsAnalyzer);
 typedef cmg::HistogramAnalyzer<cmg::JetHistograms> PFJetHistogramsAnalyzer;
 DEFINE_FWK_MODULE(PFJetHistogramsAnalyzer);
 
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Muon> > GenericMuonHistograms;
+DEFINE_FWK_MODULE(GenericMuonHistograms);
+
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::BaseMET> > GenericBaseMETHistograms;
+DEFINE_FWK_MODULE(GenericBaseMETHistograms);
+
 typedef cmg::RunInfoAccountingAnalyzer RunInfoAccountingAnalyzer;
 DEFINE_FWK_MODULE(RunInfoAccountingAnalyzer);
 
@@ -86,5 +92,9 @@ DEFINE_FWK_MODULE(CutSummaryAnalyzer);
 typedef cmg::SingleObjectCollectionSelector<cmg::AbstractPhysicsObject> POCollectionSelector;
 DEFINE_FWK_MODULE(POCollectionSelector);
 
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Muon> > GenericMuonHistograms;
-DEFINE_FWK_MODULE(GenericMuonHistograms);
+typedef cmg::SingleObjectCollectionSelector<cmg::BaseJet> BaseJetCollectionSelector;
+DEFINE_FWK_MODULE(BaseJetCollectionSelector);
+
+typedef cmg::SingleObjectCollectionSelector<cmg::PFJet> PFJetCollectionSelector;
+DEFINE_FWK_MODULE(PFJetCollectionSelector);
+
