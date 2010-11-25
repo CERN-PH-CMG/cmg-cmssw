@@ -13,14 +13,14 @@ doSkimHighMET = False
 cut_highMET = 'pt()>50'
 
 
-sourceExt = 'StevenNov9'
+# sourceExt = 'StevenNov9'
 # sourceExt = 'LM1'
 # sourceExt = 'LM0'
 # sourceExt = 'QCD_50to80'
 # sourceExt = 'QCD_80to120'
-sourceExt = 'QCD_120to170'
+# sourceExt = 'QCD_120to170'
 # sourceExt = 'QCD_170to300'
-# sourceExt = 'QCD_300to470'
+sourceExt = 'QCD_300to470'
 # sourceExt = 'QCD_470to600'
 # sourceExt = 'QCD_600to800'
 # sourceExt = 'QCD_800to1000'
@@ -67,7 +67,7 @@ if sourceExt == 'QCD_120to170':
 if sourceExt == 'QCD_170to300':
     process.load("CMGTools.SusyJetMET.Sources.QCD_Pt_170to300_TuneZ2_7TeV_pythia6.Fall10_START38_V12_v1.GEN_SIM_RECO.source_cff")
 if sourceExt == 'QCD_300to470':
-    process.load("CMGTools.SusyJetMET.Sources.QCD_Pt_300to470_TuneZ2_7TeV_pythia6.Fall10_START38_V12_v1.GEN_SIM_RECO.PatTuple.source_cff")
+    process.load("CMGTools.SusyJetMET.Sources.QCD_Pt_300to470_TuneZ2_7TeV_pythia6.Fall10_START38_V12_v1.GEN_SIM_RECO.source_cff")
 if sourceExt == 'QCD_470to600':
     process.load("CMGTools.SusyJetMET.Sources.QCD_Pt_470to600_TuneZ2_7TeV_pythia6.Fall10_START38_V12_v1.GEN_SIM_RECO.source_cff")
 if sourceExt == 'QCD_600to800':
