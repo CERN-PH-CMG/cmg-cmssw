@@ -60,10 +60,10 @@ pfMET2Histograms.inputCollection = 'cmgMETPFCandidates2'
 
 
 metHistograms = cms.Sequence(
-    mhtPFJetsHistograms +
+#    mhtPFJetsHistograms +
     mhtPFJets30Histograms +
     mhtPFJets50Histograms +
-    mhtCaloJetsHistograms +
+#    mhtCaloJetsHistograms +
     mhtCaloJets30Histograms +
     mhtCaloJets50Histograms +
     pfMETHistograms +
@@ -71,10 +71,10 @@ metHistograms = cms.Sequence(
     )
 
 metSequence = cms.Sequence(
-    cmgMHTPFJets +
+#    cmgMHTPFJets +
     cmgMHTPFJets30 +
     cmgMHTPFJets50 +
-    cmgMHTCaloJets +    
+#    cmgMHTCaloJets +    
     cmgMHTCaloJets30 +    
     cmgMHTCaloJets50 +    
     cmgMETPFCandidates +
