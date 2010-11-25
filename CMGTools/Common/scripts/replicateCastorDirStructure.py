@@ -58,18 +58,3 @@ castorDir1 = args[0]
 castorDir2 = args[1]
 
 replicateDirStructure( castorDir1, castorDir2 ) 
-
-sys.exit(1)
-
-files = castortools.matchingFiles( castorDir, regexp )
-
-if options.negate:
-    print 'NOT removing ',  
-    pprint.pprint(files)
-else:
-    if options.kill == False:
-        pprint.pprint(files)
-        trash = castortools.createSubDir( castorDir, 'Trash')
-        castortools.move( trash, files )
-    else:
-        castortools.remove( files )
