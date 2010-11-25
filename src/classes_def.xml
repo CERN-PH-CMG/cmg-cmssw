@@ -96,6 +96,11 @@
   <class name="edm::Wrapper<cmg::WENu>"/>
   <class name="edm::Wrapper<std::vector<cmg::WENu> >"/>
   
+  <class name="cmg::WMuNu"/>
+  <class name="std::vector<cmg::WMuNu>"/>
+  <class name="edm::Wrapper<cmg::WMuNu>"/>
+  <class name="edm::Wrapper<std::vector<cmg::WMuNu> >"/>
+  
   <class name="cmg::WTauNu"/>
   <class name="std::vector<cmg::WTauNu>"/>
   <class name="edm::Wrapper<cmg::WTauNu>"/>
