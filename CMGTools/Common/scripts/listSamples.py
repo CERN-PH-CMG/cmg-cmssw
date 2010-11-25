@@ -25,7 +25,7 @@ def allSampleInfo( sampleName, listLevel ):
         print 'local:'
         print localDir
     if os.path.isdir( localDir ):
-        if listLevel>0:
+        if listLevel>1:
             os.system('ls -l ' + localDir )
             print localDir + '*.root'
     else:

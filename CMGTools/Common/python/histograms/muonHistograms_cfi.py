@@ -2,7 +2,6 @@ import FWCore.ParameterSet.Config as cms
 
 muonHistograms = cms.EDAnalyzer(
                 "GenericMuonHistograms",
-                name = cms.string('MuonHistograms'),
                 inputCollection = cms.InputTag("cmgMuon"),
                 histograms = cms.PSet(
                              pt_eta = cms.VPSet(

@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 from CMGTools.Common.factories.cmgBaseMET_cfi import cmgBaseMET
 from CMGTools.Common.histograms.baseJetLorentzVector_cfi import baseJetLorentzVector
+from CMGTools.Common.histograms.baseMETHistograms_cfi import baseMETHistograms
 
 
 # MHT from PFJets
@@ -66,7 +67,8 @@ metHistograms = cms.Sequence(
     mhtCaloJets30LorentzVector +
     mhtCaloJets50LorentzVector +
     pfMETLorentzVector +
-    pfMET2LorentzVector
+    pfMET2LorentzVector +
+    baseMETHistograms
     )
 
 metSequence = cms.Sequence(
