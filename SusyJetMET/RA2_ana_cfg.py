@@ -13,7 +13,7 @@ doSkimHighMET = False
 cut_highMET = 'pt()>50'
 
 
-# sourceExt = 'StevenNov9'
+sourceExt = 'StevenNov9'
 # sourceExt = 'LM1'
 # sourceExt = 'LM0'
 # sourceExt = 'QCD_50to80'
@@ -39,10 +39,25 @@ if sourceExt == 'SueAnnHot':
     process.source.fileNames = cms.untracked.vstring('file:susypat_sueann_Hot_RA2.root')
 if sourceExt == 'Test':
     process.source.fileNames = cms.untracked.vstring('file:susypat_RA2.root')
+
 if sourceExt == 'LM0':
     process.load("CMGTools.SusyJetMET.Sources.LM0_SUSY_sftsht_7TeV_pythia6.Fall10_START38_V12_v1.GEN_SIM_RECO.source_cff")
 if sourceExt == 'LM1':
     process.load("CMGTools.SusyJetMET.Sources.LM1_SUSY_sftsht_7TeV_pythia6.Fall10_START38_V12_v1.GEN_SIM_RECO.source_cff")
+
+if sourceExt == 'PUQCD_120to170':
+    process.load("CMGTools.SusyJetMET.Sources.QCD_Pt_120to170_TuneZ2_7TeV_pythia6.Fall10_E7TeV_ProbDist_2010Data_BX156_START38_V12_v1.GEN_SIM_RECO.source_cff")
+if sourceExt == 'PUQCD_170to300':
+    process.load("CMGTools.SusyJetMET.Sources.QCD_Pt_170to300_TuneZ2_7TeV_pythia6.Fall10_E7TeV_ProbDist_2010Data_BX156_START38_V12_v1.GEN_SIM_RECO.source_cff")
+if sourceExt == 'PUQCD_300to470':
+    process.load("CMGTools.SusyJetMET.Sources.QCD_Pt_300to470_TuneZ2_7TeV_pythia6.Fall10_E7TeV_ProbDist_2010Data_BX156_START38_V12_v1.GEN_SIM_RECO.source_cff")
+if sourceExt == 'PUQCD_470to600':
+    process.load("CMGTools.SusyJetMET.Sources.QCD_Pt_470to600_TuneZ2_7TeV_pythia6.Fall10_E7TeV_ProbDist_2010Data_BX156_START38_V12_v1.GEN_SIM_RECO.source_cff")
+if sourceExt == 'PUQCD_600to800':
+    process.load("CMGTools.SusyJetMET.Sources.QCD_Pt_600to800_TuneZ2_7TeV_pythia6.Fall10_E7TeV_ProbDist_2010Data_BX156_START38_V12_v1.GEN_SIM_RECO.source_cff")
+
+
+
 if sourceExt == 'QCD_50to80':
     process.load("CMGTools.SusyJetMET.Sources.QCD_Pt_50to80_TuneZ2_7TeV_pythia6.Fall10_START38_V12_v1.GEN_SIM_RECO.source_cff")
 if sourceExt == 'QCD_80to120':
@@ -66,12 +81,33 @@ if sourceExt == 'TT':
     process.load("CMGTools.SusyJetMET.Sources.TTbarJets_madgraph.Spring10_START3X_V26_S09_v1.GEN_SIM_RECO.source_cff")
 
 
-if sourceExt == 'Z3J_100to300':
+if sourceExt == 'Z3J_100to300': # ok
     process.load("CMGTools.SusyJetMET.Sources.Z3Jets_Pt100to300_alpgen.Spring10_START3X_V26_S09_v1.GEN_SIM_RECO.source_cff")
-if sourceExt == 'Z3J_300to800':
+if sourceExt == 'Z3J_300to800': # Need to reprocess pattuples
     process.load("CMGTools.SusyJetMET.Sources.Z3Jets_Pt300to800_alpgen.Spring10_START3X_V26_S09_v1.GEN_SIM_RECO.source_cff")
-if sourceExt == 'Z3J_800to1600':
+if sourceExt == 'Z3J_800to1600': # ok
     process.load("CMGTools.SusyJetMET.Sources.Z3Jets_Pt800to1600_alpgen.Spring10_START3X_V26_S09_v1.GEN_SIM_RECO.source_cff")
+
+# need to reprocess pattuples for the whole Z4Jets? 
+if sourceExt == 'Z4J_100to300':
+    process.load("CMGTools.SusyJetMET.Sources.Z4Jets_Pt100to300_alpgen.Spring10_START3X_V26_S09_v1.GEN_SIM_RECO.source_cff")
+if sourceExt == 'Z4J_300to800':
+    process.load("CMGTools.SusyJetMET.Sources.Z4Jets_Pt300to800_alpgen.Spring10_START3X_V26_S09_v1.GEN_SIM_RECO.source_cff")
+if sourceExt == 'Z4J_800to1600': 
+    process.load("CMGTools.SusyJetMET.Sources.Z4Jets_Pt800to1600_alpgen.Spring10_START3X_V26_S09_v1.GEN_SIM_RECO.source_cff")
+
+
+# WJets
+
+if sourceExt == 'W3J_100to300': # ok
+    process.load("CMGTools.SusyJetMET.Sources.W3Jets_Pt100to300_alpgen.Spring10_START3X_V26_S09_v1.GEN_SIM_RECO.source_cff")
+if sourceExt == 'W3J_300to800': # Need to reprocess pattuples
+    process.load("CMGTools.SusyJetMET.Sources.W3Jets_Pt300to800_alpgen.Spring10_START3X_V26_S09_v1.GEN_SIM_RECO.source_cff")
+if sourceExt == 'W3J_800to1600': # ok
+    process.load("CMGTools.SusyJetMET.Sources.W3Jets_Pt800to1600_alpgen.Spring10_START3X_V26_S09_v1.GEN_SIM_RECO.source_cff")
+
+
+
 
 ext = 'RA2_CMG'
 
