@@ -49,6 +49,7 @@ process.load('CMGTools.Common.diMuon_cff')
 process.load('CMGTools.Common.jet_cff')
 process.load('CMGTools.Common.met_cff')
 process.load('CMGTools.Common.pfcands_cff')
+process.load('CMGTools.Common.w_cff')
 
 process.load('CMGTools.Common.cutsummary_cff')
 process.load('CMGTools.Common.Tools.indexSelector_cfi')
@@ -71,6 +72,7 @@ process.analysisSequence = cms.Sequence(
     process.metSequence +
     process.baseMETSelector +
     process.pfcandsSequence +
+    process.wSequence +
     process.indexSelector +
     process.runInfoAccounting + 
     process.cutsummary

@@ -4,9 +4,14 @@
 #include "AnalysisDataFormats/CMGTools/interface/DiObject.h"
 #include "CMGTools/Common/interface/Factory.h"
 #include "DataFormats/Common/interface/View.h"
+#include "DataFormats/Math/interface/deltaR.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
+
+#include <algorithm>
+#include <set>
+#include <utility>
 
 namespace cmg{
 
@@ -49,6 +54,7 @@ template< typename T, typename U >
 typename cmg::DiObjectFactory<T,U>::event_ptr cmg::DiObjectFactory<T,U>::create(const edm::Event& iEvent, const edm::EventSetup&) const{
     
     typedef typename std::vector<typename cmg::DiObject<T,U> > collection;
+    typedef typename std::set<typename cmg::DiObject<T,U> > set;
     typedef edm::View<T> collection1;
     typedef edm::View<U> collection2;
     
@@ -64,15 +70,21 @@ typename cmg::DiObjectFactory<T,U>::event_ptr cmg::DiObjectFactory<T,U>::create(
     }
     const bool sameCollection = (leg1Cands.id () == leg2Cands.id());
     for(typename collection1::const_iterator it = leg1Cands->begin(); it != leg1Cands->end(); ++it){
-    
-        const T& l1 = *it;
-        for(typename collection2::size_type i = 0; i < (leg2Cands->size()/2); i++){
-            const U& l2 = leg2Cands->at(i);
+        for(typename collection2::const_iterator jt = leg2Cands->begin(); jt != leg2Cands->end(); ++jt){
             //we skip if its the same object
-            if( sameCollection && (l1 == l2) ) continue;
-            result->push_back(cmg::make(l1,l2));      
+            if( sameCollection && (*it == *jt) ) continue;
+            result->push_back(cmg::make(*it,*jt));
       }
     }
+    //finally, remove duplicates while preserving order
+    set diObjects;
+    for(typename collection::iterator it = result->begin(); it != result->end(); ++it){
+        std::pair<typename set::iterator,bool> set_it = diObjects.insert(*it);
+        if(!set_it.second){
+            it = result->erase(it);
+            --it;   
+        }
+    } 
     return result;
     
 }

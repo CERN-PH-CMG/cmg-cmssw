@@ -82,6 +82,8 @@ void cmg::GenericHistograms<T>::initHistograms(const edm::ParameterSet& ps){
 template<class T>
 void cmg::GenericHistograms<T>::defineHistograms(){
     
+    if(cmg::HistogramCreator<T>::histosInitialized_) return;
+    
     for(typename Histograms::const_iterator it = histos_->begin(); it != histos_->end(); it++){
            const unsigned int size = it->second.size();
            switch(size){
@@ -129,6 +131,7 @@ void cmg::GenericHistograms<T>::defineHistograms(){
                         std::cerr << "Unsupported number of variables for histogram " << it->first << std::endl;
            }         
     }
+    cmg::HistogramCreator<T>::histosInitialized_ = true;
 }
 
 template<class T>

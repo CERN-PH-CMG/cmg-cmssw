@@ -24,11 +24,17 @@ particleFlowMuons = cms.untracked.vstring(
     )
 
 particleFlowElectrons = cms.untracked.vstring(
-    'keep *_cmgElectron_*_*'
+    'keep *_cmgElectron_*_*',
+    'keep *_cmgDiElectron_*_*'
     )
 
-particleFlow = particleFlowJets + particleFlowMET + particleFlowMuons + particleFlowElectrons
+particleFlowW = cms.untracked.vstring(
+    'keep *_cmgWENu_*_*',
+    'keep *_cmgWMuNu_*_*',
+    'keep *_cmgWTauNu_*_*'                                  
+    )
 
+particleFlow = particleFlowJets + particleFlowMET + particleFlowMuons + particleFlowElectrons + particleFlowW
 
 particleFlowBase = cms.untracked.vstring(
     'keep *_cmgPFBaseJet_*_*',
