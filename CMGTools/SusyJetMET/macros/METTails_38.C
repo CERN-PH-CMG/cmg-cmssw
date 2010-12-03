@@ -4,7 +4,7 @@
   
 
 //   Chain chain("Events","AllFilters/susyJetMET_tree_RA2_CMG.root");
-  Chain chain("Events","SusyPatNoPFMuonFiltering/susyJetMET_tree_RA2_CMG.root");
+  Chain chain("Events","SusyPatNoPFMuonFiltering/susyJetMET_tree_RA2_CMG_noSel.root");
   // Chain chain("Events","susyJetMET_tree_sueAnn_hot_patrickFiltered.root");
   // Chain chain("Events","susyJetMET_tree_steven.root");
   //  Chain chain("Events","susyJetMET_tree_LM0.root");
