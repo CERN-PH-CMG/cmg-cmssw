@@ -14,16 +14,18 @@ process.maxEvents = cms.untracked.PSet(
 # sourceExt = 'Test'
 sourceExt = 'SueAnnHot'
 
-if sourceExt == 'StevenNov9':
-    process.load("CMGTools.SusyJetMET.Sources.Data.Steven.Nov9.susypat_cff")
-if sourceExt == 'SueAnnHot':
-    #    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_cff")
-    # process.source.fileNames = cms.untracked.vstring('file:susypat_sueann_Hot_RA2.root')
-    process.source.fileNames = cms.untracked.vstring('file:susypat_RA2.root')
-if sourceExt == 'Test':
-    process.source.fileNames = cms.untracked.vstring('file:susypat_RA2.root')
+process.load('CMGTools.SusyJetMET.Sources.QCD_SueAnn_HotSkim.SusyPat.allHotSkims_cff')
 
-ext = 'RA2_CMG'
+from CMGTools.SusyJetMET.Sources.QCD_SueAnn_HotSkim.SusyPat.hotSkim_cff import hotSkim
+
+hotSkim( process.source, sourceExt ) 
+
+#if sourceExt == 'SueAnnHot':
+#    #    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_cff")
+#    # process.source.fileNames = cms.untracked.vstring('file:susypat_sueann_Hot_RA2.root')
+#    process.source.fileNames = cms.untracked.vstring('file:susypat_RA2.root')
+
+ext = 'RA2_CMG_newMHT'
 
 # processing steps
 doSkimHighMET = False
@@ -34,15 +36,11 @@ selectEvents = False
 
 print 'processing:'
 
-
-# from CMGTools.Common.Tools.inputFiles import restrictInput as restrictInput
-# process.source.fileNames = restrictInput( process.source.fileNames, 1)
-
 process.setName_('ANA')
 
 print process.source.fileNames
 
-outFileNameExt = ext
+outFileNameExt = ext + '_' + sourceExt 
 
 # reinitializing stuff defined in patTemplate_cfg
 process.out.outputCommands = cms.untracked.vstring( 'drop *' )
@@ -51,9 +49,9 @@ process.out.SelectEvents.SelectEvents = cms.vstring()
 process.load("CMGTools.Common.countingSequences_cff")
 
 
-from CMGTools.Common.EventContent.everything_cff import everything
-process.out.outputCommands += everything    
-    
+from CMGTools.SusyJetMET.EventContent.susyJetMET_cff import susyJetMET
+process.out.outputCommands += susyJetMET    
+ 
 process.load('CMGTools.Common.jet_cff')
 process.load('CMGTools.Common.met_cff')
 
@@ -62,19 +60,24 @@ from CMGTools.SusyJetMET.adaptCMGtoRA2_cff import adaptCMGtoRA2
 adaptCMGtoRA2(process)
 # else if sourceExt == 'SueAnnHot':
 #    adaptCMGtoRECO(process)
-    
+
+# delta pt filter
 process.load("RecoParticleFlow.PostProcessing.selectGoodPFEvents_cff")
+process.load("RecoParticleFlow.PostProcessing.selectEventsWithSmallDeltaPtMuons_cff")
 process.load("RecoParticleFlow.PostProcessing.allPFMuons_cfi")
+
 process.load("CMGTools.Common.runInfoAccounting_cfi")
 
 
-process.load("SandBox.Skims.badPFMuonFilter_cfi")
 
 process.cmgTuple = cms.Sequence(
-    process.selectGoodPFEventsSequence +
     process.jetSequence +
     process.metSequence +
-    process.allPFMuons 
+    process.allPFMuons +
+    # the filtering should be done at the end so that we have the objects to study it!
+    # not necessary
+    process.selectEventsWithSmallDeltaPtMuons + 
+    process.selectGoodPFEventsSequence 
     )
  
 if doSkimHighMET:

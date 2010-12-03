@@ -15,17 +15,49 @@ ext = 'RA2'
 
 doPATTuple = True
 selectEvents = True
+Spring10 = False
+process.setName_('PAT2')
 
 print 'processing:'
 
-sourceExt = 'Test'
+sourceExt = 'SueAnnHot'
+
 if sourceExt == 'Test':
     #process.source.fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/user/c/cbern/cmst3/RA2SusyJetMET/QCD_Pt_300to470_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/RECO_1_2_v6F.root')
     # process.source.fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/user/c/cbern/cmst3/RA2SusyJetMET/ZinvisibleJets-madgraph/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/RECO_1_1_Gqw.root')
     process.source.fileNames = cms.untracked.vstring('file:/tmp/RECO.root')
 if sourceExt == 'SueAnnHot':
     process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_cff")
-    process.setName_('PAT2')
+if sourceExt == 'SueAnnHot_0to5':
+    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_0to5_cff")
+if sourceExt == 'SueAnnHot_5to15':
+    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_5to15_cff")
+if sourceExt == 'SueAnnHot_15to30':
+    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_15to30_cff")
+if sourceExt == 'SueAnnHot_30to50':
+    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_30to50_cff")
+if sourceExt == 'SueAnnHot_50to80':
+    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_50to80_cff")
+if sourceExt == 'SueAnnHot_80to120':
+    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_80to120_cff")
+if sourceExt == 'SueAnnHot_120to170':
+    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_120to170_cff")
+if sourceExt == 'SueAnnHot_170to300':
+    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_170to300_cff")
+if sourceExt == 'SueAnnHot_300to470':
+    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_300to470_cff")
+if sourceExt == 'SueAnnHot_470to600':
+    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_470to600_cff")
+if sourceExt == 'SueAnnHot_600to800':
+    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_600to800_cff")
+if sourceExt == 'SueAnnHot_800to1000':
+    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_800to1000_cff")
+if sourceExt == 'SueAnnHot_1000to1400':
+    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_1000to1400_cff")
+if sourceExt == 'SueAnnHot_1400to1800':
+    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_1400to1800_cff")
+if sourceExt == 'SueAnnHot_1800toInf':
+    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_1800toInf_cff")
  
 
 # process.source.eventsToProcess = cms.untracked.VEventRange( '1:243087' )
@@ -33,7 +65,7 @@ if sourceExt == 'SueAnnHot':
 print process.source.fileNames
 
 
-outFileNameExt = ext
+outFileNameExt = ext + '_' + sourceExt
 
 # reinitializing stuff defined in patTemplate_cfg
 
@@ -46,10 +78,15 @@ from CMGTools.SusyJetMET.RA2OfficialSequence_cff import addSUSYPATRA2
 # for Fall10 samples 
 # addSUSYPATRA2( process, 'REDIGI38X')
 
-# WARNING 
-addSUSYPATRA2( process, 'REDIGI')
-process.patJets.addTagInfos     = False
-process.patJets.addBTagInfo = False
+# WARNING
+
+if Spring10:
+    addSUSYPATRA2( process, 'REDIGI')
+    process.patJets.addTagInfos     = False
+    process.patJets.addBTagInfo = False
+else: #Fall 10
+    addSUSYPATRA2( process, 'REDIGI38X')
+
 process.pfseq.remove( process.badPFMuonFilter ) 
 
  
@@ -112,4 +149,4 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 
 
-# print process.dumpPython()
+
