@@ -8,24 +8,21 @@ process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(-1)
         )
 
-# process.source.fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/user/l/lowette/grid/MultiJetRun2010BPromptReco3/susypat_74_1_yMC.root')
+# sourceExt = 'SueAnnHot'
+sourceExt = 'LM1'
 
-# sourceExt = 'StevenNov9'
-# sourceExt = 'Test'
-sourceExt = 'SueAnnHot'
+if sourceExt == 'SueAnnHot':
+    process.load('CMGTools.SusyJetMET.Sources.QCD_SueAnn_HotSkim.SusyPatPFPath.allHotSkims_cff')
+    from CMGTools.SusyJetMET.Sources.QCD_SueAnn_HotSkim.hotSkim_cff import hotSkim
+    hotSkim( process.source, sourceExt ) 
+if sourceExt == 'StevenHot':
+    sourceExt = 'StevenHot'
+    process.load("CMGTools.SusyJetMET.Sources.Data.HotSkim.source_cff")
+if sourceExt == 'LM1':
+    process.load("CMGTools.SusyJetMET.Sources.LM1_SUSY_sftsht_7TeV_pythia6.Fall10_START38_V12_v1.GEN_SIM_RECO.RECO.SusyPat.susypat_cff")
+    
 
-process.load('CMGTools.SusyJetMET.Sources.QCD_SueAnn_HotSkim.SusyPat.allHotSkims_cff')
-
-from CMGTools.SusyJetMET.Sources.QCD_SueAnn_HotSkim.SusyPat.hotSkim_cff import hotSkim
-
-hotSkim( process.source, sourceExt ) 
-
-#if sourceExt == 'SueAnnHot':
-#    #    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_cff")
-#    # process.source.fileNames = cms.untracked.vstring('file:susypat_sueann_Hot_RA2.root')
-#    process.source.fileNames = cms.untracked.vstring('file:susypat_RA2.root')
-
-ext = 'RA2_CMG_newMHT'
+ext = 'RA2_CMG_InconsMuon'
 
 # processing steps
 doSkimHighMET = False
@@ -76,7 +73,9 @@ process.cmgTuple = cms.Sequence(
     process.allPFMuons +
     # the filtering should be done at the end so that we have the objects to study it!
     # not necessary
-    process.selectEventsWithSmallDeltaPtMuons + 
+    # process.selectEventsWithSmallDeltaPtMuons + 
+    process.largeDeltaPtMuons +
+    cms.ignore( process.filterLargeDeltaPtMuons ) + 
     process.selectGoodPFEventsSequence 
     )
  

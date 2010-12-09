@@ -7,5 +7,7 @@ METTailStudies = [
     'keep *_largeDeltaPtMuons_*_*' ,
     'keep recoPFMETs_pfMet_*_*' ,
     'keep recoCaloMETs_corMetGlobalMuons_*_*' ,
-    'keep *_greedyMuons_*_*' 
+    'keep *_greedyMuons_*_*',
+    'keep *_inconsistentMuons_*_*', 
+    'keep *_pfEventFilter_*_*'
 ]

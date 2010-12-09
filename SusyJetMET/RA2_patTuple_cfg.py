@@ -15,17 +15,16 @@ ext = 'RA2'
 
 doPATTuple = True
 selectEvents = True
+selectForDisplay = 'Greedy'
 Spring10 = False
+
 process.setName_('PAT2')
 
 print 'processing:'
 
 sourceExt = 'SueAnnHot'
+# sourceExt = 'LM1'
 
-if sourceExt == 'Test':
-    #process.source.fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/user/c/cbern/cmst3/RA2SusyJetMET/QCD_Pt_300to470_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/RECO_1_2_v6F.root')
-    # process.source.fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/user/c/cbern/cmst3/RA2SusyJetMET/ZinvisibleJets-madgraph/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO/RECO_1_1_Gqw.root')
-    process.source.fileNames = cms.untracked.vstring('file:/tmp/RECO.root')
 if sourceExt == 'SueAnnHot':
     process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_cff")
 if sourceExt == 'SueAnnHot_0to5':
@@ -58,11 +57,19 @@ if sourceExt == 'SueAnnHot_1400to1800':
     process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_1400to1800_cff")
 if sourceExt == 'SueAnnHot_1800toInf':
     process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_1800toInf_cff")
- 
+if sourceExt == 'LM1':
+    process.load("CMGTools.SusyJetMET.Sources.LM1_SUSY_sftsht_7TeV_pythia6.Fall10_START38_V12_v1.GEN_SIM_RECO.RECO.source_cff")
+
 
 # process.source.eventsToProcess = cms.untracked.VEventRange( '1:243087' )
 
 print process.source.fileNames
+
+
+if selectForDisplay!=None:
+    from CMGTools.SusyJetMET.selectEvents_cff import selectEvents as addVEventRange
+    addVEventRange( selectForDisplay, process.source )
+
 
 
 outFileNameExt = ext + '_' + sourceExt
@@ -114,8 +121,11 @@ process.schedule = cms.Schedule(
 # process.p += process.dump
 
 
-process.out.SelectEvents.SelectEvents.append('pcalo')
 if selectEvents:
+    # IMPORTANT:
+    # pcalo lets a new tail event enter. It is probably filtered in the pf path, but I don't know where....
+    
+    # process.out.SelectEvents.SelectEvents.append('pcalo')
     process.out.SelectEvents.SelectEvents.append('p')
 
 process.out.fileName = cms.untracked.string('susypat_%s.root' %  outFileNameExt)
