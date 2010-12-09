@@ -13,13 +13,13 @@ cfgFileName = 'RA2_ana_HotSkimSueAnn_cfg.py'
 
 # sourceModule = 'CMGTools.SusyJetMET.Sources.HotSkims.'
 sources = [
-    'SueAnnHot_0to5',
-    'SueAnnHot_5to15',
-    'SueAnnHot_15to30',
-    'SueAnnHot_30to50',
-    'SueAnnHot_50to80',
-    'SueAnnHot_80to120',
-    'SueAnnHot_120to170',
+#    'SueAnnHot_0to5',
+#    'SueAnnHot_5to15',
+#    'SueAnnHot_15to30',
+#    'SueAnnHot_30to50',
+#    'SueAnnHot_50to80',
+#    'SueAnnHot_80to120',
+#    'SueAnnHot_120to170',
     'SueAnnHot_170to300',
     'SueAnnHot_300to470',
     'SueAnnHot_470to600',
@@ -35,4 +35,4 @@ for source in sources:
     tmpFileName = 'tmp_%s_cfg.py' % source
     
     os.system("cat %s | sed -e \"s/sourceExt = 'SueAnnHot'/sourceExt = '%s'/\" > %s" % (cfgFileName, source,tmpFileName))
-    os.system('cmsRun ' + tmpFileName )
+    os.system('nohup cmsRun %s &' % tmpFileName )
