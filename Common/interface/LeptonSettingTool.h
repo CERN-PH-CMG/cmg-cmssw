@@ -99,7 +99,7 @@ class LeptonSettingTool : public SettingTool<LeptonType,cmg::Lepton<LeptonType> 
 template <class LeptonType>
 void cmg::LeptonSettingTool<LeptonType>::set(const LeptonType& lepton, cmg::Lepton<LeptonType>* const obj, 
     const edm::Event& iEvent, const edm::EventSetup&) const{
-    
+
   obj->charge_ = lepton->charge();
     
   const double Eta = lepton->p4().eta();
@@ -127,17 +127,16 @@ void cmg::LeptonSettingTool<LeptonType>::set(const LeptonType& lepton, cmg::Lept
   obj->chargedIso_ = (lepton->isoDeposit(charged_)->depositAndCountWithin( chargedIsoPar_.coneSize(), chargedVetos, false ).first);
   obj->neutralIso_ = (lepton->isoDeposit(neutral_)->depositAndCountWithin( neutralIsoPar_.coneSize(), neutralVetos, false ).first);
   obj->photonIso_ = (lepton->isoDeposit(photon_)->depositAndCountWithin( photonsIsoPar_.coneSize(), photonsVetos ,false ).first);
-
 }
 
 template <class LeptonType> template <class TrackType>
 void cmg::LeptonSettingTool<LeptonType>::set(const TrackType& track, cmg::Lepton<LeptonType>* const obj, 
     const edm::Event& iEvent, const edm::EventSetup& iSetup) const{
-        
-        reco::TrackBase::Point vertex = getVertex(iEvent,iSetup);
-        obj->dxy_ = track->dxy(vertex);
-        obj->dz_ = track->dz(vertex);
-        
+        if(!track.isNull()){
+            reco::TrackBase::Point vertex = getVertex(iEvent,iSetup);
+            obj->dxy_ = track->dxy(vertex);
+            obj->dz_ = track->dz(vertex);
+        }
 }
 
 
