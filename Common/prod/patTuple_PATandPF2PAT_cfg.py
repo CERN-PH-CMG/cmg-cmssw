@@ -57,13 +57,16 @@ if runOnMC == False:
     removeMCMatchingPF2PAT( process, '' ) 
 
 # Let it run
+process.load("CMGTools.Common.countingSequences_cff")
 process.p = cms.Path(
+    process.startupSequence*                     
     getattr(process,"patPF2PATSequence"+postfix)
 #    second PF2PAT
 #    + getattr(process,"patPF2PATSequence"+postfix2)
 )
 if not postfix=="":
     process.p += process.patDefaultSequence
+process.p += process.finalSequence
 
 # Add PF2PAT output to the created file
 from PhysicsTools.PatAlgos.patEventContent_cff import patEventContentNoCleaning
@@ -84,15 +87,15 @@ process.out.outputCommands = cms.untracked.vstring('drop *',
 
 # top projections in PF2PAT:
 
-process.pfNoPileUpPFlow.enable = True 
-process.pfNoMuonPFlow.enable = True 
-process.pfNoElectronPFlow.enable = True 
-process.pfNoTauPFlow.enable = True 
-process.pfNoJetPFlow.enable = True 
+process.pfNoPileUpPFlow.enable = cms.bool(True) 
+process.pfNoMuonPFlow.enable = cms.bool(True) 
+process.pfNoElectronPFlow.enable = cms.bool(True)
+process.pfNoTauPFlow.enable = cms.bool(True)
+process.pfNoJetPFlow.enable = cms.bool(True)
 
 # verbose flags for the PF2PAT modules
 
-process.pfNoMuon.verbose = True
+process.pfNoMuon.verbose = cms.bool(True)
 
 ## ------------------------------------------------------
 #  In addition you usually want to change the following

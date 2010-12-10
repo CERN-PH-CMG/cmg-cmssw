@@ -12,6 +12,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 
 namespace cmg{
 
@@ -23,9 +24,7 @@ class CutSummaryAnalyzer : public edm::EDAnalyzer{
     virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup);
     virtual void endJob();
 
-    //TODO: This is a bit of a hack and needs to be improved
-    typedef std::map< std::string, unsigned int> CutCounts;
-    //static CutCounts counter_;
+    typedef std::map< std::string, std::pair<unsigned int, unsigned int> > CutCounts;
     
   private:
 

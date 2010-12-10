@@ -4,8 +4,6 @@
 #include <algorithm>
 #include <iostream>
 
-//cmg::CutSummaryAnalyzer::CutCounts cmg::CutSummaryAnalyzer::counter_;
-
 void cmg::CutSummaryAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
     
     typedef edm::View<cmg::AbstractPhysicsObject> view;
@@ -20,13 +18,14 @@ void cmg::CutSummaryAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
             for(cmg::AbstractPhysicsObject::Strings::const_iterator s = strings.begin(); s != strings.end(); ++s){
                     //create the entry if needed
                     if( !counter_.count(*s) ){
-                        counter_[*s] = 0;
+                        counter_[*s] = std::make_pair(0,0);
                     }
                     //increment the counter if it passed
                     const bool result = (*d)->getSelection(s->c_str());
                     if(result){
-                        counter_[*s]++;   
+                        counter_[*s].first++;   
                     }
+                    counter_[*s].second++;
                 }
         }
     }
@@ -37,6 +36,8 @@ void cmg::CutSummaryAnalyzer::endJob(){
     
     std::cout << "cmg::CutSummaryAnalyzer\tSummary of cuts results for collection \"" <<    inputLabel_.label() << "\"." << std::endl; 
     for(CutCounts::const_iterator it = counter_.begin(); it != counter_.end(); ++it){
-        std::cout << "\t" << it->first << "\t" << it->second << std::endl;
+        const unsigned int before = it->second.second;
+        const unsigned int after = it->second.first;
+        std::cout << "\t" << it->first << "\t\t\t" << after << "/" << before << "\t(" << after/(1.*before) << ")"  <<std::endl;
     }
 }
