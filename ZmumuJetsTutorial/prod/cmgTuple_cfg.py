@@ -15,7 +15,6 @@ process.load('CMGTools.Common.muon_cff')
 process.load('CMGTools.Common.diMuon_cff')
 process.load('CMGTools.Common.jet_cff')
 process.load('CMGTools.Common.runInfoAccounting_cfi')
-##process.zmumusummary = process.cutsummary.clone(inputCollection = cms.InputTag("cmgDiMuon"))
 
 #config the pat trigger matching
 process.load('CMGTools.ZmumuJetsTutorial.patTriggerMatching_cff')
@@ -32,13 +31,21 @@ process.out.outputCommands.append( 'keep *_triggeredPatMuons_*_*' ) # we keep th
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("histograms.root"))
 
+### Produce a summary of cuts on the DiMuon
+##process.zmumusummary = process.cutsummary.clone(inputCollection = cms.InputTag("cmgDiMuon"))
+
 ### Run the trigger matching selections
 ##from CMGTools.ZmumuJetsTutorial.selections.muontrigger_cfi import muontrigger
 ##process.cmgMuon.cuts.muontrigger = muontrigger.clone()
 ###
 
 ###The jet counting histograms
-process.load('CMGTools.ZmumuJetsTutorial.histograms.jetcounting_cfi')
+##process.load('CMGTools.ZmumuJetsTutorial.histograms.jetcounting_cfi')
+##process.load('CMGTools.ZmumuJetsTutorial.skims.selEventsPFJet_cff')
+##process.jetCountingClean = process.jetCounting.clone(inputCollection = cms.InputTag("jetIDJet"))
+##process.jetCountingSequence = cms.Sequence(process.jetCounting+process.jetIDJet+process.jetCountingClean)
+### The Z skimming
+##process.load('CMGTools.ZmumuJetsTutorial.skims.selEventsZ_cff')
 ###
 
 process.analysisSequence = cms.Sequence(
@@ -46,10 +53,11 @@ process.analysisSequence = cms.Sequence(
     process.muonSequence + 
     process.diMuonSequence +
     process.pfJetSequence +
-    process.runInfoAccounting + 
+    process.runInfoAccounting +
     process.cutsummary## + 
-##    process.zmumusummary
-##    process.jetCounting
+##    process.zmumusummary +
+##    process.jetCountingSequence +
+##    process.selectedZSequence
 )
 process.p = cms.Path(process.analysisSequence)
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
