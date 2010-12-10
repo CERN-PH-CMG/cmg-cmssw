@@ -41,6 +41,7 @@ class DiObject : public AbstractPhysicsObject{
     }
     
     virtual void accept(AbstractPhysicsObjectVisitor* v) const{
+      v->visit(this);  
       v->visit(&leg1_);
       v->visit(&leg2_);
     }
