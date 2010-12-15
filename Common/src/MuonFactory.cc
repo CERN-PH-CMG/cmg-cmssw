@@ -39,8 +39,6 @@ void cmg::MuonFactory::set(const pat::MuonPtr& input, cmg::Muon* const output) c
         output->trackerHits_ = combinedMuon->hitPattern().numberOfValidTrackerHits();
         output->globalNormChi2_ = combinedMuon->normalizedChi2();
         output->muonHits_ = combinedMuon->hitPattern().numberOfValidMuonHits();   
-    }else{
-        edm::LogWarning("cmg::MuonFactory") << "The specified track type was null: " << type_ <<  std::endl;
     }
 }
 

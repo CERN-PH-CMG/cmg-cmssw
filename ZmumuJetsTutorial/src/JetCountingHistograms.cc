@@ -5,7 +5,6 @@ void cmg::JetCountingHistograms::defineHistograms(){
   if(!histosInitialized_){
    
     add1DHistogram("NjetsEx", "Exclusive Numbers of Jets", 10, 0., 10, file_);
-    add1DHistogram("NjetsIn", "Inclusive Numbers of Jets", 10, 0., 10, file_);
 
     histosInitialized_ = true;
   }
