@@ -16,7 +16,12 @@ traditionalMHT = cms.untracked.vstring(
     'keep  *_cmgMHTCaloJets*_*_*'
     )
 
-traditional = traditionalJets + traditionalMET 
+
+traditionalVBF = cms.untracked.vstring(
+    'keep *_vbfEventJetJetCalo_*_*'                                 
+    )
+
+traditional = traditionalJets + traditionalMET + traditionalVBF
 
 
 traditionalBase = cms.untracked.vstring(
