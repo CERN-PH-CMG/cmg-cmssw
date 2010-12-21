@@ -12,6 +12,8 @@
 #include "AnalysisDataFormats/CMGTools/interface/TriBool.h"
 #include "AnalysisDataFormats/CMGTools/interface/UnSet.h"
 #include "AnalysisDataFormats/CMGTools/interface/PatTypes.h"
+#include "AnalysisDataFormats/CMGTools/interface/VBFEventT1T2.h"
+#include "AnalysisDataFormats/CMGTools/interface/VBFEventT1T2Fwd.h"
 
 #include <vector>
 
@@ -110,6 +112,47 @@ namespace {
     edm::Wrapper<cmg::WTauNu> wwtn_;
     edm::Wrapper<std::vector<cmg::WTauNu> > wwtnv_;
     
+    /// create dictionaries for Jet Jet objects
+    cmg::VBFEventJetJet dummyVBFEventJetJet;
+    edm::Wrapper<cmg::VBFEventJetJet> dummyVBFEventJetJetWrapper;
+    cmg::VBFEventJetJetCollection dummyVBFEventJetJetCollection;
+    edm::Wrapper<cmg::VBFEventJetJetCollection> dummyVBFEventJetJetCollectionWrapper;
+
+    /// create dictionaries for Jet PFCandidate objects
+    cmg::VBFEventJetJet dummyVBFEventJetPFCand;
+    edm::Wrapper<cmg::VBFEventJetPFCand> dummyVBFEventJetPFCandWrapper;
+    cmg::VBFEventJetPFCandCollection dummyVBFEventJetPFCandCollection;
+    edm::Wrapper<cmg::VBFEventJetPFCandCollection> dummyVBFEventJetPFCandCollectionWrapper;
+
+    /// create dictionaries for Jet PFParticle objects
+    cmg::VBFEventJetJet dummyVBFEventJetPFPart;
+    edm::Wrapper<cmg::VBFEventJetPFPart> dummyVBFEventJetPFPartWrapper;
+    cmg::VBFEventJetPFPartCollection dummyVBFEventJetPFPartCollection;
+    edm::Wrapper<cmg::VBFEventJetPFPartCollection> dummyVBFEventJetPFPartCollectionWrapper;
+
+    /// create dictionaries for PFJet PFJet objects
+    cmg::VBFEventPFJetPFJet dummyVBFEventPFJetPFJet;
+    edm::Wrapper<cmg::VBFEventPFJetPFJet> dummyVBFEventPFJetPFJetWrapper;
+    cmg::VBFEventPFJetPFJetCollection dummyVBFEventPFJetPFJetCollection;
+    edm::Wrapper<cmg::VBFEventPFJetPFJetCollection> dummyVBFEventPFJetPFJetCollectionWrapper;
+
+    /// create dictionaries for PFJet PFCandidate objects
+    cmg::VBFEventPFJetPFJet dummyVBFEventPFJetPFCand;
+    edm::Wrapper<cmg::VBFEventPFJetPFCand> dummyVBFEventPFJetPFCandWrapper;
+    cmg::VBFEventPFJetPFCandCollection dummyVBFEventPFJetPFCandCollection;
+    edm::Wrapper<cmg::VBFEventPFJetPFCandCollection> dummyVBFEventPFJetPFCandCollectionWrapper;
+
+    /// create dictionaries for GenJet GenJet objects
+    cmg::VBFEventGenJetGenJet dummyVBFEventGenJetGenJet;
+    edm::Wrapper<cmg::VBFEventGenJetGenJet> dummyVBFEventGenJetGenJetWrapper;
+    cmg::VBFEventGenJetGenJetCollection dummyVBFEventGenJetGenJetCollection;
+    edm::Wrapper<cmg::VBFEventGenJetGenJetCollection> dummyVBFEventGenJetGenJetCollectionWrapper;
+
+    /// used by the VBFEvents
+    edm::PtrVector<reco::GenJet> dummyGenJetPtrVector;
+    edm::PtrVector<pat::Jet> dummyPATJetPtrVector;
+    edm::PtrVector<reco::PFCandidate> dummyPFCandPtrVector;
+    edm::PtrVector<pat::PFParticle> dummyPFPartPtrVector;
 	
   };
   
