@@ -106,4 +106,47 @@
   <class name="edm::Wrapper<cmg::WTauNu>"/>
   <class name="edm::Wrapper<std::vector<cmg::WTauNu> >"/>
 
+ <!-- create dictionaries for Jet Jet objects -->
+  <class name="cmg::VBFEventT1T2<pat::Jet, pat::Jet>"/>
+  <class name="std::vector<cmg::VBFEventT1T2<pat::Jet, pat::Jet> >"/>
+  <class name="edm::Wrapper<cmg::VBFEventT1T2<pat::Jet, pat::Jet> >"/>
+  <class name="edm::Wrapper<std::vector<cmg::VBFEventT1T2<pat::Jet, pat::Jet> > >"/>
+
+ <!-- create dictionaries for Jet PFCandidate objects -->
+  <class name="cmg::VBFEventT1T2<pat::Jet, reco::PFCandidate>"/>
+  <class name="std::vector<cmg::VBFEventT1T2<pat::Jet, reco::PFCandidate> >"/>
+  <class name="edm::Wrapper<cmg::VBFEventT1T2<pat::Jet, reco::PFCandidate> >"/>
+  <class name="edm::Wrapper<std::vector<cmg::VBFEventT1T2<pat::Jet, reco::PFCandidate> > >"/>
+
+ <!-- create dictionaries for Jet PFParticle objects -->
+  <class name="cmg::VBFEventT1T2<pat::Jet, pat::PFParticle>"/>
+  <class name="std::vector<cmg::VBFEventT1T2<pat::Jet, pat::PFParticle> >"/>
+  <class name="edm::Wrapper<cmg::VBFEventT1T2<pat::Jet, pat::PFParticle> >"/>
+  <class name="edm::Wrapper<std::vector<cmg::VBFEventT1T2<pat::Jet, pat::PFParticle> > >"/>
+
+<!-- create dictionaries for PFJet PFJet objects -->
+  <class name="cmg::VBFEventT1T2<reco::PFJet, reco::PFJet>"/>
+  <class name="std::vector<cmg::VBFEventT1T2<reco::PFJet, reco::PFJet> >"/>
+  <class name="edm::Wrapper<cmg::VBFEventT1T2<reco::PFJet, reco::PFJet> >"/>
+  <class name="edm::Wrapper<std::vector<cmg::VBFEventT1T2<reco::PFJet, reco::PFJet> > >"/>
+
+<!-- create dictionaries for PFJet PFCandidate objects -->
+  <class name="cmg::VBFEventT1T2<reco::PFJet, reco::PFCandidate>"/>
+  <class name="std::vector<cmg::VBFEventT1T2<reco::PFJet, reco::PFCandidate> >"/>
+  <class name="edm::Wrapper<cmg::VBFEventT1T2<reco::PFJet, reco::PFCandidate> >"/>
+  <class name="edm::Wrapper<std::vector<cmg::VBFEventT1T2<reco::PFJet, reco::PFCandidate> > >"/>
+
+
+ <!-- create dictionaries for GenJet GenJet objects -->
+  <class name="cmg::VBFEventT1T2<reco::GenJet, reco::GenJet>"/>
+  <class name="std::vector<cmg::VBFEventT1T2<reco::GenJet, reco::GenJet> >"/>
+  <class name="edm::Wrapper<cmg::VBFEventT1T2<reco::GenJet, reco::GenJet> >"/>
+  <class name="edm::Wrapper<std::vector<cmg::VBFEventT1T2<reco::GenJet, reco::GenJet> > >"/>
+
+  <class name="edm::PtrVector<reco::GenJet>"/>
+  <class name="edm::PtrVector<pat::Jet>"/>
+  <class name="edm::PtrVector<pat::PFParticle>"/>
+  <class name="edm::PtrVector<reco::PFCandidate>"/>
+
+
 </lcgdict>
