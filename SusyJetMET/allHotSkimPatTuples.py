@@ -13,26 +13,22 @@ cfgFileName = 'RA2_patTuple_cfg.py'
 
 sourceModule = 'CMGTools.SusyJetMET.Sources.HotSkims.'
 sources = [
-#    'SueAnnHot_0to5',
-#    'SueAnnHot_5to15',
-#    'SueAnnHot_15to30',
-#    'SueAnnHot_30to50',
-#    'SueAnnHot_50to80',
-#    'SueAnnHot_80to120',
-#    'SueAnnHot_120to170',
-    'SueAnnHot_170to300',
-    'SueAnnHot_300to470',
-    'SueAnnHot_470to600',
-    'SueAnnHot_600to800',
-    'SueAnnHot_800to1000',
-    'SueAnnHot_1000to1400',
-    'SueAnnHot_1400to1800',
-    'SueAnnHot_1800toInf'
+    'hotskim_QCD170to300',
+    'hotskim_QCD300to470',
+    'hotskim_QCD470to600',
+    'hotskim_QCD600to800',
+    'hotskim_QCD800to1000',
+    'hotskim_QCD1000to1400',
+    'hotskim_QCD1400to1800',
+    'hotskim_QCD1800toInf'
     ]
+
+
+# sources = [ sources[0] ]
 
 for source in sources:
 
     tmpFileName = 'tmp_%s_cfg.py' % source
     
-    os.system("cat RA2_patTuple_cfg.py | sed -e \"s/sourceExt = 'SueAnnHot'/sourceExt = '%s'/\" > %s" % (source,tmpFileName))
+    os.system("cat RA2_patTuple_cfg.py | sed -e \"s/sourceExt = 'hotskim_QCD'/sourceExt = '%s'/\" > %s" % (source,tmpFileName))
     os.system('nohup cmsRun %s &' % tmpFileName)

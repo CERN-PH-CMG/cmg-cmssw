@@ -1,7 +1,7 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 import FWCore.ParameterSet.Config as cms
 
-import pprint
+import pprint,sys
 
 
 process.maxEvents = cms.untracked.PSet(
@@ -9,25 +9,35 @@ process.maxEvents = cms.untracked.PSet(
         )
 
 # sourceExt = 'SueAnnHot'
-sourceExt = 'LM1'
+# sourceExt = 'LM1'
+sourceExt = 'StevenHot'
+# sourceExt = 'MuonAndBEFiltered'
+fileStr = ''
 
-if sourceExt == 'SueAnnHot':
+from CMGTools.SusyJetMET.Sources.QCD_SueAnn_HotSkim.hotSkim_cff import hotSkim
+
+if sourceExt.find('SueAnnHot')!=-1:
+    # need to move these files to their standard place
     process.load('CMGTools.SusyJetMET.Sources.QCD_SueAnn_HotSkim.SusyPatPFPath.allHotSkims_cff')
-    from CMGTools.SusyJetMET.Sources.QCD_SueAnn_HotSkim.hotSkim_cff import hotSkim
-    hotSkim( process.source, sourceExt ) 
-if sourceExt == 'StevenHot':
+    hotSkim( process.source, sourceExt )
+elif sourceExt.find('MuonAndBEFiltered')!=-1:
+    process.load("CMGTools.SusyJetMET.Sources.QCD_SueAnn_HotSkim.MuonAndBEFiltered.source_cff")
+    hotSkim( process.source, fileStr )
+elif sourceExt == 'StevenHot':
     sourceExt = 'StevenHot'
     process.load("CMGTools.SusyJetMET.Sources.Data.HotSkim.source_cff")
-if sourceExt == 'LM1':
+elif sourceExt == 'LM1':
     process.load("CMGTools.SusyJetMET.Sources.LM1_SUSY_sftsht_7TeV_pythia6.Fall10_START38_V12_v1.GEN_SIM_RECO.RECO.SusyPat.susypat_cff")
-    
+else:
+    print "bad source label!"
+    sys.exit(1)
 
-ext = 'RA2_CMG_InconsMuon'
+ext = 'RA2_CMG' 
 
 # processing steps
 doSkimHighMET = False
 cut_highMET = 'pt()>50'
-selectEvents = False
+selectEvents = True
 
 # output to be stored
 
@@ -37,7 +47,7 @@ process.setName_('ANA')
 
 print process.source.fileNames
 
-outFileNameExt = ext + '_' + sourceExt 
+outFileNameExt = ext + '_' + sourceExt + '_' + fileStr
 
 # reinitializing stuff defined in patTemplate_cfg
 process.out.outputCommands = cms.untracked.vstring( 'drop *' )
@@ -61,6 +71,11 @@ adaptCMGtoRA2(process)
 # delta pt filter
 process.load("RecoParticleFlow.PostProcessing.selectGoodPFEvents_cff")
 process.load("RecoParticleFlow.PostProcessing.selectEventsWithSmallDeltaPtMuons_cff")
+
+process.load("RecoParticleFlow.PostProcessing.METCorrelationFilter_cfi")
+process.METCorrelationFilter.MET1 = 'cmgMHTPFJets30'
+process.METCorrelationFilter.MET2 = 'cmgMHTCaloJets30'
+
 process.load("RecoParticleFlow.PostProcessing.allPFMuons_cfi")
 
 process.load("CMGTools.Common.runInfoAccounting_cfi")
@@ -71,12 +86,10 @@ process.cmgTuple = cms.Sequence(
     process.jetSequence +
     process.metSequence +
     process.allPFMuons +
-    # the filtering should be done at the end so that we have the objects to study it!
-    # not necessary
-    # process.selectEventsWithSmallDeltaPtMuons + 
+    # still keeping the large delta pt muons, even though we don't filter on them. 
     process.largeDeltaPtMuons +
-    cms.ignore( process.filterLargeDeltaPtMuons ) + 
     process.selectGoodPFEventsSequence 
+    # process.METCorrelationFilter
     )
  
 if doSkimHighMET:

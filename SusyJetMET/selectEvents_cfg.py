@@ -6,7 +6,8 @@ process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_cff")
 
 print process.source.fileNames
 
-selectForDisplay = 'DeltaPt'
+# selectForDisplay = 'DeltaPt'
+selectForDisplay = 'METCor1_200'
 
 if selectForDisplay!=None:
     from CMGTools.SusyJetMET.selectEvents_cff import selectEvents as addVEventRange
@@ -41,4 +42,4 @@ process.endpath = cms.EndPath(
 
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
