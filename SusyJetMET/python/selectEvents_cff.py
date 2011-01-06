@@ -81,6 +81,28 @@ def selectEvents( label, source ) :
             '1:254794',
             '1:1090284'
             )
+    elif label == 'METCor1_200':
+        source.eventsToProcess = cms.untracked.VEventRange(
+            '1:133486',
+            '1:510379',
+            '1:697017',
+            '1:835190',
+            '1:872929',
+            '1:327621',
+            '1:791424',
+            '1:829412',
+            '1:538915',
+            '1:367155',
+            '1:308509',
+            '1:484335',
+            '1:155655',
+            '1:91984',
+            '1:1573468',
+            '1:967690',
+            '1:1529362',
+            '1:1542308',
+
+            )
         
     else:
         print label, "does not correspond to any list of events to select"

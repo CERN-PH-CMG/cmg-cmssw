@@ -1,0 +1,404 @@
+TrigReport ---------- Event  Summary ------------
+TrigReport Events total = 243 passed = 192 failed = 51
+
+TrigReport ---------- Path   Summary ------------
+TrigReport  Trig Bit#        Run     Passed     Failed      Error Name
+TrigReport     1    0        243        187         56          0 pcalo
+TrigReport     1    1        243         83        160          0 p
+
+TrigReport -------End-Path   Summary ------------
+TrigReport  Trig Bit#        Run     Passed     Failed      Error Name
+TrigReport     0    0        243        243          0          0 outpath
+
+TrigReport ---------- Modules in Path: pcalo ------------
+TrigReport  Trig Bit#    Visited     Passed     Failed      Error Name
+TrigReport     1    0        243        243          0          0 simpleEleId95relIso
+TrigReport     1    0        243        243          0          0 simpleEleId90relIso
+TrigReport     1    0        243        243          0          0 simpleEleId85relIso
+TrigReport     1    0        243        243          0          0 simpleEleId80relIso
+TrigReport     1    0        243        243          0          0 simpleEleId70relIso
+TrigReport     1    0        243        243          0          0 simpleEleId60relIso
+TrigReport     1    0        243        243          0          0 simpleEleId95cIso
+TrigReport     1    0        243        243          0          0 simpleEleId90cIso
+TrigReport     1    0        243        243          0          0 simpleEleId85cIso
+TrigReport     1    0        243        243          0          0 simpleEleId80cIso
+TrigReport     1    0        243        243          0          0 simpleEleId70cIso
+TrigReport     1    0        243        243          0          0 simpleEleId60cIso
+TrigReport     1    0        243        243          0          0 patElectrons
+TrigReport     1    0        243        243          0          0 patMuons
+TrigReport     1    0        243        243          0          0 pfPileUp
+TrigReport     1    0        243        243          0          0 pfNoPileUp
+TrigReport     1    0        243        243          0          0 pfAllNeutralHadrons
+TrigReport     1    0        243        243          0          0 pfAllChargedHadrons
+TrigReport     1    0        243        243          0          0 pfAllPhotons
+TrigReport     1    0        243        243          0          0 tauIsoDepositPFCandidates
+TrigReport     1    0        243        243          0          0 tauIsoDepositPFChargedHadrons
+TrigReport     1    0        243        243          0          0 tauIsoDepositPFNeutralHadrons
+TrigReport     1    0        243        243          0          0 tauIsoDepositPFGammas
+TrigReport     1    0        243        243          0          0 shrinkingConePFTauDecayModeProducer
+TrigReport     1    0        243        243          0          0 patTaus
+TrigReport     1    0        243        243          0          0 patPhotons
+TrigReport     1    0        243        243          0          0 patJetCorrFactors
+TrigReport     1    0        243        243          0          0 patJetCorrFactorsAK5PF
+TrigReport     1    0        243        243          0          0 patJetCorrFactorsAK5Calo
+TrigReport     1    0        243        243          0          0 jetTracksAssociatorAtVertexAK5Calo
+TrigReport     1    0        243        243          0          0 impactParameterTagInfosAK5Calo
+TrigReport     1    0        243        243          0          0 secondaryVertexTagInfosAK5Calo
+TrigReport     1    0        243        243          0          0 softMuonTagInfosAK5Calo
+TrigReport     1    0        243        243          0          0 jetBProbabilityBJetTagsAK5Calo
+TrigReport     1    0        243        243          0          0 jetProbabilityBJetTagsAK5Calo
+TrigReport     1    0        243        243          0          0 trackCountingHighPurBJetTagsAK5Calo
+TrigReport     1    0        243        243          0          0 trackCountingHighEffBJetTagsAK5Calo
+TrigReport     1    0        243        243          0          0 simpleSecondaryVertexHighEffBJetTagsAK5Calo
+TrigReport     1    0        243        243          0          0 simpleSecondaryVertexHighPurBJetTagsAK5Calo
+TrigReport     1    0        243        243          0          0 combinedSecondaryVertexBJetTagsAK5Calo
+TrigReport     1    0        243        243          0          0 combinedSecondaryVertexMVABJetTagsAK5Calo
+TrigReport     1    0        243        243          0          0 softMuonBJetTagsAK5Calo
+TrigReport     1    0        243        243          0          0 softMuonByPtBJetTagsAK5Calo
+TrigReport     1    0        243        243          0          0 softMuonByIP3dBJetTagsAK5Calo
+TrigReport     1    0        243        243          0          0 jetTracksAssociatorAtVertexAK5PF
+TrigReport     1    0        243        243          0          0 impactParameterTagInfosAK5PF
+TrigReport     1    0        243        243          0          0 secondaryVertexTagInfosAK5PF
+TrigReport     1    0        243        243          0          0 softMuonTagInfosAK5PF
+TrigReport     1    0        243        243          0          0 jetBProbabilityBJetTagsAK5PF
+TrigReport     1    0        243        243          0          0 jetProbabilityBJetTagsAK5PF
+TrigReport     1    0        243        243          0          0 trackCountingHighPurBJetTagsAK5PF
+TrigReport     1    0        243        243          0          0 trackCountingHighEffBJetTagsAK5PF
+TrigReport     1    0        243        243          0          0 simpleSecondaryVertexHighEffBJetTagsAK5PF
+TrigReport     1    0        243        243          0          0 simpleSecondaryVertexHighPurBJetTagsAK5PF
+TrigReport     1    0        243        243          0          0 combinedSecondaryVertexBJetTagsAK5PF
+TrigReport     1    0        243        243          0          0 combinedSecondaryVertexMVABJetTagsAK5PF
+TrigReport     1    0        243        243          0          0 softMuonBJetTagsAK5PF
+TrigReport     1    0        243        243          0          0 softMuonByPtBJetTagsAK5PF
+TrigReport     1    0        243        243          0          0 softMuonByIP3dBJetTagsAK5PF
+TrigReport     1    0        243        243          0          0 patJetCharge
+TrigReport     1    0        243        243          0          0 patJetChargeAK5PF
+TrigReport     1    0        243        243          0          0 patJetChargeAK5Calo
+TrigReport     1    0        243        243          0          0 patJets
+TrigReport     1    0        243        243          0          0 patJetsAK5PF
+TrigReport     1    0        243        243          0          0 patJetsAK5Calo
+TrigReport     1    0        243        243          0          0 metJESCorAK5CaloJetTypeII
+TrigReport     1    0        243        243          0          0 metJESCorAK5CaloJetMuonsTypeII
+TrigReport     1    0        243        243          0          0 metJESCorAK5CaloJet
+TrigReport     1    0        243        243          0          0 metJESCorAK5CaloJetMuons
+TrigReport     1    0        243        243          0          0 patMETsAK5Calo
+TrigReport     1    0        243        243          0          0 patMETsAK5CaloTypeII
+TrigReport     1    0        243        243          0          0 patMETsTC
+TrigReport     1    0        243        243          0          0 patMETsAK5Calo
+TrigReport     1    0        243        243          0          0 patMETsAK5CaloTypeII
+TrigReport     1    0        243        243          0          0 patCandidateSummary
+TrigReport     1    0        243        243          0          0 patTrigger
+TrigReport     1    0        243        243          0          0 metJESCorPFAK5
+TrigReport     1    0        243        243          0          0 patMETsPF
+TrigReport     1    0        243        243          0          0 pfAllNeutralHadronsPF
+TrigReport     1    0        243        243          0          0 pfAllChargedHadronsPF
+TrigReport     1    0        243        243          0          0 pfAllPhotonsPF
+TrigReport     1    0        243        243          0          0 pfAllMuonsPF
+TrigReport     1    0        243        243          0          0 isoDepMuonWithChargedPF
+TrigReport     1    0        243        243          0          0 isoDepMuonWithNeutralPF
+TrigReport     1    0        243        243          0          0 isoDepMuonWithPhotonsPF
+TrigReport     1    0        243        243          0          0 isoValMuonWithChargedPF
+TrigReport     1    0        243        243          0          0 isoValMuonWithNeutralPF
+TrigReport     1    0        243        243          0          0 isoValMuonWithPhotonsPF
+TrigReport     1    0        243        243          0          0 patMuonsPF
+TrigReport     1    0        243        243          0          0 pfAllElectronsPF
+TrigReport     1    0        243        243          0          0 isoDepElectronWithChargedPF
+TrigReport     1    0        243        243          0          0 isoDepElectronWithNeutralPF
+TrigReport     1    0        243        243          0          0 isoDepElectronWithPhotonsPF
+TrigReport     1    0        243        243          0          0 isoValElectronWithChargedPF
+TrigReport     1    0        243        243          0          0 isoValElectronWithNeutralPF
+TrigReport     1    0        243        243          0          0 isoValElectronWithPhotonsPF
+TrigReport     1    0        243        243          0          0 patElectronsPF
+TrigReport     1    0        243        243          0          0 badEcalRecHits
+TrigReport     1    0        243        243          0          0 badHcalRecHits
+TrigReport     1    0        243        243          0          0 badTowers
+TrigReport     1    0        243        243          0          0 badMET
+TrigReport     1    0        243        243          0          0 badPFMET
+TrigReport     1    0        243        243          0          0 patJetsAK5CaloPt30
+TrigReport     1    0        243        243          0          0 patJetsAK5CaloPt30ID
+TrigReport     1    0        243        243          0          0 patJetsAK5CaloPt50Eta25
+TrigReport     1    0        243        243          0          0 patJetsAK5CaloPt50Eta25ID
+TrigReport     1    0        243        243          0          0 patJetsAK5PFPt30
+TrigReport     1    0        243        243          0          0 patJetsAK5PFPt30ID
+TrigReport     1    0        243        243          0          0 patJetsAK5PFPt50Eta25
+TrigReport     1    0        243        243          0          0 patJetsAK5PFPt50Eta25ID
+TrigReport     1    0        243        243          0          0 htCalo
+TrigReport     1    0        243        243          0          0 htPF
+TrigReport     1    0        243        243          0          0 mhtCalo
+TrigReport     1    0        243        243          0          0 mhtPF
+TrigReport     1    0        243        241          2          0 HBHENoiseFilter
+TrigReport     1    0        241        241          0          0 noscraping
+TrigReport     1    0        241        241          0          0 goodVertices
+TrigReport     1    0        241        240          1          0 caloJetOverIDFilter
+TrigReport     1    0        240        240          0          0 caloOverCleaningFilter
+TrigReport     1    0        240        187         53          0 countJetsAK5CaloPt50Eta25ID
+TrigReport     1    0        187        187          0          0 htCaloFilter
+
+TrigReport ---------- Modules in Path: p ------------
+TrigReport  Trig Bit#    Visited     Passed     Failed      Error Name
+TrigReport     1    1        243        243          0          0 startupCounter
+TrigReport     1    1        243        243          0          0 simpleEleId95relIso
+TrigReport     1    1        243        243          0          0 simpleEleId90relIso
+TrigReport     1    1        243        243          0          0 simpleEleId85relIso
+TrigReport     1    1        243        243          0          0 simpleEleId80relIso
+TrigReport     1    1        243        243          0          0 simpleEleId70relIso
+TrigReport     1    1        243        243          0          0 simpleEleId60relIso
+TrigReport     1    1        243        243          0          0 simpleEleId95cIso
+TrigReport     1    1        243        243          0          0 simpleEleId90cIso
+TrigReport     1    1        243        243          0          0 simpleEleId85cIso
+TrigReport     1    1        243        243          0          0 simpleEleId80cIso
+TrigReport     1    1        243        243          0          0 simpleEleId70cIso
+TrigReport     1    1        243        243          0          0 simpleEleId60cIso
+TrigReport     1    1        243        243          0          0 patElectrons
+TrigReport     1    1        243        243          0          0 patMuons
+TrigReport     1    1        243        243          0          0 pfPileUp
+TrigReport     1    1        243        243          0          0 pfNoPileUp
+TrigReport     1    1        243        243          0          0 pfAllNeutralHadrons
+TrigReport     1    1        243        243          0          0 pfAllChargedHadrons
+TrigReport     1    1        243        243          0          0 pfAllPhotons
+TrigReport     1    1        243        243          0          0 tauIsoDepositPFCandidates
+TrigReport     1    1        243        243          0          0 tauIsoDepositPFChargedHadrons
+TrigReport     1    1        243        243          0          0 tauIsoDepositPFNeutralHadrons
+TrigReport     1    1        243        243          0          0 tauIsoDepositPFGammas
+TrigReport     1    1        243        243          0          0 shrinkingConePFTauDecayModeProducer
+TrigReport     1    1        243        243          0          0 patTaus
+TrigReport     1    1        243        243          0          0 patPhotons
+TrigReport     1    1        243        243          0          0 patJetCorrFactors
+TrigReport     1    1        243        243          0          0 patJetCorrFactorsAK5PF
+TrigReport     1    1        243        243          0          0 patJetCorrFactorsAK5Calo
+TrigReport     1    1        243        243          0          0 jetTracksAssociatorAtVertexAK5Calo
+TrigReport     1    1        243        243          0          0 impactParameterTagInfosAK5Calo
+TrigReport     1    1        243        243          0          0 secondaryVertexTagInfosAK5Calo
+TrigReport     1    1        243        243          0          0 softMuonTagInfosAK5Calo
+TrigReport     1    1        243        243          0          0 jetBProbabilityBJetTagsAK5Calo
+TrigReport     1    1        243        243          0          0 jetProbabilityBJetTagsAK5Calo
+TrigReport     1    1        243        243          0          0 trackCountingHighPurBJetTagsAK5Calo
+TrigReport     1    1        243        243          0          0 trackCountingHighEffBJetTagsAK5Calo
+TrigReport     1    1        243        243          0          0 simpleSecondaryVertexHighEffBJetTagsAK5Calo
+TrigReport     1    1        243        243          0          0 simpleSecondaryVertexHighPurBJetTagsAK5Calo
+TrigReport     1    1        243        243          0          0 combinedSecondaryVertexBJetTagsAK5Calo
+TrigReport     1    1        243        243          0          0 combinedSecondaryVertexMVABJetTagsAK5Calo
+TrigReport     1    1        243        243          0          0 softMuonBJetTagsAK5Calo
+TrigReport     1    1        243        243          0          0 softMuonByPtBJetTagsAK5Calo
+TrigReport     1    1        243        243          0          0 softMuonByIP3dBJetTagsAK5Calo
+TrigReport     1    1        243        243          0          0 jetTracksAssociatorAtVertexAK5PF
+TrigReport     1    1        243        243          0          0 impactParameterTagInfosAK5PF
+TrigReport     1    1        243        243          0          0 secondaryVertexTagInfosAK5PF
+TrigReport     1    1        243        243          0          0 softMuonTagInfosAK5PF
+TrigReport     1    1        243        243          0          0 jetBProbabilityBJetTagsAK5PF
+TrigReport     1    1        243        243          0          0 jetProbabilityBJetTagsAK5PF
+TrigReport     1    1        243        243          0          0 trackCountingHighPurBJetTagsAK5PF
+TrigReport     1    1        243        243          0          0 trackCountingHighEffBJetTagsAK5PF
+TrigReport     1    1        243        243          0          0 simpleSecondaryVertexHighEffBJetTagsAK5PF
+TrigReport     1    1        243        243          0          0 simpleSecondaryVertexHighPurBJetTagsAK5PF
+TrigReport     1    1        243        243          0          0 combinedSecondaryVertexBJetTagsAK5PF
+TrigReport     1    1        243        243          0          0 combinedSecondaryVertexMVABJetTagsAK5PF
+TrigReport     1    1        243        243          0          0 softMuonBJetTagsAK5PF
+TrigReport     1    1        243        243          0          0 softMuonByPtBJetTagsAK5PF
+TrigReport     1    1        243        243          0          0 softMuonByIP3dBJetTagsAK5PF
+TrigReport     1    1        243        243          0          0 patJetCharge
+TrigReport     1    1        243        243          0          0 patJetChargeAK5PF
+TrigReport     1    1        243        243          0          0 patJetChargeAK5Calo
+TrigReport     1    1        243        243          0          0 patJets
+TrigReport     1    1        243        243          0          0 patJetsAK5PF
+TrigReport     1    1        243        243          0          0 patJetsAK5Calo
+TrigReport     1    1        243        243          0          0 metJESCorAK5CaloJetTypeII
+TrigReport     1    1        243        243          0          0 metJESCorAK5CaloJetMuonsTypeII
+TrigReport     1    1        243        243          0          0 metJESCorAK5CaloJet
+TrigReport     1    1        243        243          0          0 metJESCorAK5CaloJetMuons
+TrigReport     1    1        243        243          0          0 patMETsAK5Calo
+TrigReport     1    1        243        243          0          0 patMETsAK5CaloTypeII
+TrigReport     1    1        243        243          0          0 patMETsTC
+TrigReport     1    1        243        243          0          0 patMETsAK5Calo
+TrigReport     1    1        243        243          0          0 patMETsAK5CaloTypeII
+TrigReport     1    1        243        243          0          0 patCandidateSummary
+TrigReport     1    1        243        243          0          0 patTrigger
+TrigReport     1    1        243        243          0          0 metJESCorPFAK5
+TrigReport     1    1        243        243          0          0 patMETsPF
+TrigReport     1    1        243        243          0          0 pfAllNeutralHadronsPF
+TrigReport     1    1        243        243          0          0 pfAllChargedHadronsPF
+TrigReport     1    1        243        243          0          0 pfAllPhotonsPF
+TrigReport     1    1        243        243          0          0 pfAllMuonsPF
+TrigReport     1    1        243        243          0          0 isoDepMuonWithChargedPF
+TrigReport     1    1        243        243          0          0 isoDepMuonWithNeutralPF
+TrigReport     1    1        243        243          0          0 isoDepMuonWithPhotonsPF
+TrigReport     1    1        243        243          0          0 isoValMuonWithChargedPF
+TrigReport     1    1        243        243          0          0 isoValMuonWithNeutralPF
+TrigReport     1    1        243        243          0          0 isoValMuonWithPhotonsPF
+TrigReport     1    1        243        243          0          0 patMuonsPF
+TrigReport     1    1        243        243          0          0 pfAllElectronsPF
+TrigReport     1    1        243        243          0          0 isoDepElectronWithChargedPF
+TrigReport     1    1        243        243          0          0 isoDepElectronWithNeutralPF
+TrigReport     1    1        243        243          0          0 isoDepElectronWithPhotonsPF
+TrigReport     1    1        243        243          0          0 isoValElectronWithChargedPF
+TrigReport     1    1        243        243          0          0 isoValElectronWithNeutralPF
+TrigReport     1    1        243        243          0          0 isoValElectronWithPhotonsPF
+TrigReport     1    1        243        243          0          0 patElectronsPF
+TrigReport     1    1        243        243          0          0 badEcalRecHits
+TrigReport     1    1        243        243          0          0 badHcalRecHits
+TrigReport     1    1        243        243          0          0 badTowers
+TrigReport     1    1        243        243          0          0 badMET
+TrigReport     1    1        243        243          0          0 badPFMET
+TrigReport     1    1        243        243          0          0 patJetsAK5CaloPt30
+TrigReport     1    1        243        243          0          0 patJetsAK5CaloPt30ID
+TrigReport     1    1        243        243          0          0 patJetsAK5CaloPt50Eta25
+TrigReport     1    1        243        243          0          0 patJetsAK5CaloPt50Eta25ID
+TrigReport     1    1        243        243          0          0 patJetsAK5PFPt30
+TrigReport     1    1        243        243          0          0 patJetsAK5PFPt30ID
+TrigReport     1    1        243        243          0          0 patJetsAK5PFPt50Eta25
+TrigReport     1    1        243        243          0          0 patJetsAK5PFPt50Eta25ID
+TrigReport     1    1        243        243          0          0 htCalo
+TrigReport     1    1        243        243          0          0 htPF
+TrigReport     1    1        243        243          0          0 mhtCalo
+TrigReport     1    1        243        243          0          0 mhtPF
+TrigReport     1    1        243        241          2          0 HBHENoiseFilter
+TrigReport     1    1        241        241          0          0 noscraping
+TrigReport     1    1        241        241          0          0 goodVertices
+TrigReport     1    1        241        238          3          0 pfJetOverIDFilter
+TrigReport     1    1        238        238          0          0 pfOverCleaningFilter
+TrigReport     1    1        238        191         47          0 countJetsAK5PFPt50Eta25ID
+TrigReport     1    1        191        191          0          0 htPFFilter
+TrigReport     1    1        191        188          3          0 greedyMuons
+TrigReport     1    1        188        164         24          0 inconsistentMuons
+TrigReport     1    1        164         83         81          0 EcalAnomalousEventFilter
+TrigReport     1    1         83         83          0          0 finalCounter
+
+TrigReport ------ Modules in End-Path: outpath ------------
+TrigReport  Trig Bit#    Visited     Passed     Failed      Error Name
+TrigReport     0    0        243        243          0          0 out
+TrigReport     0    0        243        243          0          0 MEtoEDMConverter
+
+TrigReport ---------- Module Summary ------------
+TrigReport    Visited        Run     Passed     Failed      Error Name
+TrigReport        486        243        243          0          0 simpleEleId95relIso
+TrigReport        486        243        243          0          0 simpleEleId90relIso
+TrigReport        486        243        243          0          0 simpleEleId85relIso
+TrigReport        486        243        243          0          0 simpleEleId80relIso
+TrigReport        486        243        243          0          0 simpleEleId70relIso
+TrigReport        486        243        243          0          0 simpleEleId60relIso
+TrigReport        486        243        243          0          0 simpleEleId95cIso
+TrigReport        486        243        243          0          0 simpleEleId90cIso
+TrigReport        486        243        243          0          0 simpleEleId85cIso
+TrigReport        486        243        243          0          0 simpleEleId80cIso
+TrigReport        486        243        243          0          0 simpleEleId70cIso
+TrigReport        486        243        243          0          0 simpleEleId60cIso
+TrigReport        486        243        243          0          0 patElectrons
+TrigReport        486        243        243          0          0 patMuons
+TrigReport        486        243        243          0          0 pfPileUp
+TrigReport        486        243        243          0          0 pfNoPileUp
+TrigReport        486        243        243          0          0 pfAllNeutralHadrons
+TrigReport        486        243        243          0          0 pfAllChargedHadrons
+TrigReport        486        243        243          0          0 pfAllPhotons
+TrigReport        486        243        243          0          0 tauIsoDepositPFCandidates
+TrigReport        486        243        243          0          0 tauIsoDepositPFChargedHadrons
+TrigReport        486        243        243          0          0 tauIsoDepositPFNeutralHadrons
+TrigReport        486        243        243          0          0 tauIsoDepositPFGammas
+TrigReport        486        243        243          0          0 shrinkingConePFTauDecayModeProducer
+TrigReport        486        243        243          0          0 patTaus
+TrigReport        486        243        243          0          0 patPhotons
+TrigReport        486        243        243          0          0 patJetCorrFactors
+TrigReport        486        243        243          0          0 patJetCorrFactorsAK5PF
+TrigReport        486        243        243          0          0 patJetCorrFactorsAK5Calo
+TrigReport        486        243        243          0          0 jetTracksAssociatorAtVertexAK5Calo
+TrigReport        486        243        243          0          0 impactParameterTagInfosAK5Calo
+TrigReport        486        243        243          0          0 secondaryVertexTagInfosAK5Calo
+TrigReport        486        243        243          0          0 softMuonTagInfosAK5Calo
+TrigReport        486        243        243          0          0 jetBProbabilityBJetTagsAK5Calo
+TrigReport        486        243        243          0          0 jetProbabilityBJetTagsAK5Calo
+TrigReport        486        243        243          0          0 trackCountingHighPurBJetTagsAK5Calo
+TrigReport        486        243        243          0          0 trackCountingHighEffBJetTagsAK5Calo
+TrigReport        486        243        243          0          0 simpleSecondaryVertexHighEffBJetTagsAK5Calo
+TrigReport        486        243        243          0          0 simpleSecondaryVertexHighPurBJetTagsAK5Calo
+TrigReport        486        243        243          0          0 combinedSecondaryVertexBJetTagsAK5Calo
+TrigReport        486        243        243          0          0 combinedSecondaryVertexMVABJetTagsAK5Calo
+TrigReport        486        243        243          0          0 softMuonBJetTagsAK5Calo
+TrigReport        486        243        243          0          0 softMuonByPtBJetTagsAK5Calo
+TrigReport        486        243        243          0          0 softMuonByIP3dBJetTagsAK5Calo
+TrigReport        486        243        243          0          0 jetTracksAssociatorAtVertexAK5PF
+TrigReport        486        243        243          0          0 impactParameterTagInfosAK5PF
+TrigReport        486        243        243          0          0 secondaryVertexTagInfosAK5PF
+TrigReport        486        243        243          0          0 softMuonTagInfosAK5PF
+TrigReport        486        243        243          0          0 jetBProbabilityBJetTagsAK5PF
+TrigReport        486        243        243          0          0 jetProbabilityBJetTagsAK5PF
+TrigReport        486        243        243          0          0 trackCountingHighPurBJetTagsAK5PF
+TrigReport        486        243        243          0          0 trackCountingHighEffBJetTagsAK5PF
+TrigReport        486        243        243          0          0 simpleSecondaryVertexHighEffBJetTagsAK5PF
+TrigReport        486        243        243          0          0 simpleSecondaryVertexHighPurBJetTagsAK5PF
+TrigReport        486        243        243          0          0 combinedSecondaryVertexBJetTagsAK5PF
+TrigReport        486        243        243          0          0 combinedSecondaryVertexMVABJetTagsAK5PF
+TrigReport        486        243        243          0          0 softMuonBJetTagsAK5PF
+TrigReport        486        243        243          0          0 softMuonByPtBJetTagsAK5PF
+TrigReport        486        243        243          0          0 softMuonByIP3dBJetTagsAK5PF
+TrigReport        486        243        243          0          0 patJetCharge
+TrigReport        486        243        243          0          0 patJetChargeAK5PF
+TrigReport        486        243        243          0          0 patJetChargeAK5Calo
+TrigReport        486        243        243          0          0 patJets
+TrigReport        486        243        243          0          0 patJetsAK5PF
+TrigReport        486        243        243          0          0 patJetsAK5Calo
+TrigReport        486        243        243          0          0 metJESCorAK5CaloJetTypeII
+TrigReport        486        243        243          0          0 metJESCorAK5CaloJetMuonsTypeII
+TrigReport        486        243        243          0          0 metJESCorAK5CaloJet
+TrigReport        486        243        243          0          0 metJESCorAK5CaloJetMuons
+TrigReport        972        243        243          0          0 patMETsAK5Calo
+TrigReport        972        243        243          0          0 patMETsAK5CaloTypeII
+TrigReport        486        243        243          0          0 patMETsTC
+TrigReport        486        243        243          0          0 patCandidateSummary
+TrigReport        486        243        243          0          0 patTrigger
+TrigReport        486        243        243          0          0 metJESCorPFAK5
+TrigReport        486        243        243          0          0 patMETsPF
+TrigReport        486        243        243          0          0 pfAllNeutralHadronsPF
+TrigReport        486        243        243          0          0 pfAllChargedHadronsPF
+TrigReport        486        243        243          0          0 pfAllPhotonsPF
+TrigReport        486        243        243          0          0 pfAllMuonsPF
+TrigReport        486        243        243          0          0 isoDepMuonWithChargedPF
+TrigReport        486        243        243          0          0 isoDepMuonWithNeutralPF
+TrigReport        486        243        243          0          0 isoDepMuonWithPhotonsPF
+TrigReport        486        243        243          0          0 isoValMuonWithChargedPF
+TrigReport        486        243        243          0          0 isoValMuonWithNeutralPF
+TrigReport        486        243        243          0          0 isoValMuonWithPhotonsPF
+TrigReport        486        243        243          0          0 patMuonsPF
+TrigReport        486        243        243          0          0 pfAllElectronsPF
+TrigReport        486        243        243          0          0 isoDepElectronWithChargedPF
+TrigReport        486        243        243          0          0 isoDepElectronWithNeutralPF
+TrigReport        486        243        243          0          0 isoDepElectronWithPhotonsPF
+TrigReport        486        243        243          0          0 isoValElectronWithChargedPF
+TrigReport        486        243        243          0          0 isoValElectronWithNeutralPF
+TrigReport        486        243        243          0          0 isoValElectronWithPhotonsPF
+TrigReport        486        243        243          0          0 patElectronsPF
+TrigReport        486        243        243          0          0 badEcalRecHits
+TrigReport        486        243        243          0          0 badHcalRecHits
+TrigReport        486        243        243          0          0 badTowers
+TrigReport        486        243        243          0          0 badMET
+TrigReport        486        243        243          0          0 badPFMET
+TrigReport        486        243        243          0          0 patJetsAK5CaloPt30
+TrigReport        486        243        243          0          0 patJetsAK5CaloPt30ID
+TrigReport        486        243        243          0          0 patJetsAK5CaloPt50Eta25
+TrigReport        486        243        243          0          0 patJetsAK5CaloPt50Eta25ID
+TrigReport        486        243        243          0          0 patJetsAK5PFPt30
+TrigReport        486        243        243          0          0 patJetsAK5PFPt30ID
+TrigReport        486        243        243          0          0 patJetsAK5PFPt50Eta25
+TrigReport        486        243        243          0          0 patJetsAK5PFPt50Eta25ID
+TrigReport        486        243        243          0          0 htCalo
+TrigReport        486        243        243          0          0 htPF
+TrigReport        486        243        243          0          0 mhtCalo
+TrigReport        486        243        243          0          0 mhtPF
+TrigReport        486        243        241          2          0 HBHENoiseFilter
+TrigReport        482        241        241          0          0 noscraping
+TrigReport        482        241        241          0          0 goodVertices
+TrigReport        241        241        240          1          0 caloJetOverIDFilter
+TrigReport        240        240        240          0          0 caloOverCleaningFilter
+TrigReport        240        240        187         53          0 countJetsAK5CaloPt50Eta25ID
+TrigReport        187        187        187          0          0 htCaloFilter
+TrigReport        243        243        243          0          0 startupCounter
+TrigReport        241        241        238          3          0 pfJetOverIDFilter
+TrigReport        238        238        238          0          0 pfOverCleaningFilter
+TrigReport        238        238        191         47          0 countJetsAK5PFPt50Eta25ID
+TrigReport        191        191        191          0          0 htPFFilter
+TrigReport        191        191          3        188          0 greedyMuons
+TrigReport        188        188         24        164          0 inconsistentMuons
+TrigReport        164        164         83         81          0 EcalAnomalousEventFilter
+TrigReport         83         83         83          0          0 finalCounter
+TrigReport        243        243        243          0          0 TriggerResults
+TrigReport        243        243        243          0          0 out
+TrigReport        243        243        243          0          0 MEtoEDMConverter
+

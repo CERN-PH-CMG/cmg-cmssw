@@ -8,6 +8,7 @@ def hotSkim( source, label ):
     source.fileNames = []
     
     for sourceItem in sourceAll.fileNames:
+        print sourceItem, label
         if sourceItem.find( label ) != -1:
             source.fileNames.append( sourceItem )
 
