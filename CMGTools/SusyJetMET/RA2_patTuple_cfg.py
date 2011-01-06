@@ -1,7 +1,7 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 import FWCore.ParameterSet.Config as cms
 
-import pprint
+import pprint,sys
 
 process.out.SelectEvents.SelectEvents = cms.vstring()
 
@@ -15,51 +15,28 @@ ext = 'RA2'
 
 doPATTuple = True
 selectEvents = True
-selectForDisplay = 'Greedy'
+selectForDisplay = None
 Spring10 = False
 
 process.setName_('PAT2')
 
 print 'processing:'
 
-sourceExt = 'SueAnnHot'
+sourceExt = 'hotskim_QCD'
 # sourceExt = 'LM1'
+# sourceExt = 'hotskim_Data'
 
-if sourceExt == 'SueAnnHot':
-    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_cff")
-if sourceExt == 'SueAnnHot_0to5':
-    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_0to5_cff")
-if sourceExt == 'SueAnnHot_5to15':
-    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_5to15_cff")
-if sourceExt == 'SueAnnHot_15to30':
-    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_15to30_cff")
-if sourceExt == 'SueAnnHot_30to50':
-    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_30to50_cff")
-if sourceExt == 'SueAnnHot_50to80':
-    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_50to80_cff")
-if sourceExt == 'SueAnnHot_80to120':
-    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_80to120_cff")
-if sourceExt == 'SueAnnHot_120to170':
-    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_120to170_cff")
-if sourceExt == 'SueAnnHot_170to300':
-    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_170to300_cff")
-if sourceExt == 'SueAnnHot_300to470':
-    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_300to470_cff")
-if sourceExt == 'SueAnnHot_470to600':
-    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_470to600_cff")
-if sourceExt == 'SueAnnHot_600to800':
-    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_600to800_cff")
-if sourceExt == 'SueAnnHot_800to1000':
-    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_800to1000_cff")
-if sourceExt == 'SueAnnHot_1000to1400':
-    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_1000to1400_cff")
-if sourceExt == 'SueAnnHot_1400to1800':
-    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_1400to1800_cff")
-if sourceExt == 'SueAnnHot_1800toInf':
-    process.load("CMGTools.SusyJetMET.Sources.HotSkims.sueann_highMHT_skim_1800toInf_cff")
-if sourceExt == 'LM1':
+if sourceExt.find('hotskim_QCD')!=-1:
+    process.load("CMGTools.SusyJetMET.Sources.QCD_SueAnn_HotSkim.sueann_highMHT_skim_cff")
+    from CMGTools.SusyJetMET.Sources.QCD_SueAnn_HotSkim.hotSkim_cff import hotSkim
+    hotSkim( process.source, sourceExt ) 
+elif sourceExt == 'LM1':
     process.load("CMGTools.SusyJetMET.Sources.LM1_SUSY_sftsht_7TeV_pythia6.Fall10_START38_V12_v1.GEN_SIM_RECO.RECO.source_cff")
-
+# elif sourceExt == 'hotskim_Data':
+#    process.load("CMGTools.SusyJetMET.Sources.Data.HotSkim.source_cff")    
+else:
+    print 'no such source definition: ', sourceExt
+    sys.exit(1)
 
 # process.source.eventsToProcess = cms.untracked.VEventRange( '1:243087' )
 
@@ -101,12 +78,19 @@ process.pcalo = cms.Path(
     process.caloseq
     )
 
+# loading filters
 process.load("RecoParticleFlow.PostProcessing.METCorrelationFilter_cfi")
+process.load("CMGTools.SusyJetMET.eventCleaningFilters_cff")
+
+# adding counters and filters to the particle flow path
+
 process.p = cms.Path(
     process.startupSequence +
     #WARNING
-    # process.METCorrelationFilter + 
+    # process.METCorrelationFilter +
+    # process.eventCleaningFiltersIgnore +
     process.pfseq +
+    process.eventCleaningFilters +
     process.finalSequence  
     )
 process.outpath += process.saveHistosInRunInfo

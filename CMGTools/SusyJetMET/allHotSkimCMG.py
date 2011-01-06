@@ -20,19 +20,19 @@ sources = [
 #    'SueAnnHot_50to80',
 #    'SueAnnHot_80to120',
 #    'SueAnnHot_120to170',
-    'SueAnnHot_170to300',
-    'SueAnnHot_300to470',
-    'SueAnnHot_470to600',
-    'SueAnnHot_600to800',
-    'SueAnnHot_800to1000',
-    'SueAnnHot_1000to1400',
-    'SueAnnHot_1400to1800',
-    'SueAnnHot_1800toInf'
+    'hotskim_QCD170to300',
+    'hotskim_QCD300to470',
+    'hotskim_QCD470to600',
+    'hotskim_QCD600to800',
+    'hotskim_QCD800to1000',
+    'hotskim_QCD1000to1400',
+    'hotskim_QCD1400to1800',
+    'hotskim_QCD1800toInf'
     ]
 
 for source in sources:
 
     tmpFileName = 'tmp_%s_cfg.py' % source
     
-    os.system("cat %s | sed -e \"s/sourceExt = 'SueAnnHot'/sourceExt = '%s'/\" > %s" % (cfgFileName, source,tmpFileName))
+    os.system("cat %s | sed -e \"s/fileStr = ''/fileStr = '%s'/\" > %s" % (cfgFileName, source,tmpFileName))
     os.system('nohup cmsRun %s &' % tmpFileName )
