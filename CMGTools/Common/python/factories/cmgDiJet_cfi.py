@@ -3,12 +3,15 @@ diJetFactory = cms.PSet(
        leg1Collection = cms.InputTag("cmgPFJet"),
        leg2Collection = cms.InputTag("cmgPFJet"),
        )
-from CMGTools.Common.selections.kinematics_cfi import kinematics
+
+
+from CMGTools.Common.selections.kinematics_cfi import dijetKinematics
 cmgDiJet = cms.EDFilter(
     "DiJetPOProducer",
     cfg = diJetFactory.clone(),
     cuts = cms.PSet(
-       jetKinematics = kinematics.clone()
+       dijetKinematics = dijetKinematics.clone()
        ),
     verbose = cms.untracked.bool( False )
 )
+
