@@ -29,7 +29,7 @@ process.source.fileNames.extend([
 ])
 
 
-print 'Printing events in file:'
+# print 'Printing events in file:'
 fileName = process.source.fileNames[0]
 fileName = fileName.replace('file:','')
 print fileName 
