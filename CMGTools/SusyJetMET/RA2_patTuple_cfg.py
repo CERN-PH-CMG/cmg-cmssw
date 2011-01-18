@@ -108,8 +108,8 @@ process.p = cms.Path(
     process.mainSequence +
     #WARNING
     # process.ra2PFCleaningIgnore + 
-    # process.ra2PFCleaning + 
-    process.selectGoodPFEventsSequence +
+    process.ra2PFCleaning + 
+    # process.selectGoodPFEventsSequence +
     # process.eventCleaningFilters +
     process.finalSequence  
     )
