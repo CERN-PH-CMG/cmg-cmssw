@@ -1,28 +1,18 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
-def addSUSYPATRA2( process, triggerProcessName = 'HLT'):
-    process.GlobalTag.globaltag = 'GR10_P_V10::All'
+def addSUSYPATRA2( process, hltMenu = 'HLT', runningOnMC = True ):
+    # process.GlobalTag.globaltag = 'GR10_P_V10::All'
 
-    from PhysicsTools.Configuration.SUSY_pattuple_cff import addDefaultSUSYPAT
-
-    addDefaultSUSYPAT(process,False,triggerProcessName,'Spring10','',['AK5Calo','AK5PF'],doSusyTopProjection=True)
-    # switch off some embedding
-    process.patJetsAK5Calo.embedCaloTowers = False
-    process.patJetsAK5Calo.embedPFCandidates = False
-    process.patJetsAK5PF.embedCaloTowers = False
-    process.patJetsAK5PF.embedPFCandidates = False
-    # process.patJetsIC5Calo.embedCaloTowers = False
-    # process.patJetsIC5Calo.embedPFCandidates = False
+    # should be an argument of the function
     
-    # replace trigger sequence
-    process.patDefaultSequence.remove(process.patTrigger)
-    process.load("PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff")
-    process.patTriggerSequence = cms.Sequence(process.patTrigger)
+    jetMetCorr = ['L2Relative', 'L3Absolute']
+    if runningOnMC == False: jetMetCorr.append('L2L3Residual')
+    theJetColls = ['AK5Calo','AK5PF','IC5Calo']
+
     
     from SandBox.Skims.RA2PAT_cff import defRA2PATSequence
-    defRA2PATSequence(process, False)
-    process.load('SandBox.Skims.RA2Objects_cff')
-    process.ra2PATSequence *= process.ra2Objects
+    defRA2PATSequence( process, mcInfo=runningOnMC, HLTMenu=hltMenu, jetMetCorrections=jetMetCorr, mcVersion='', theJetNames=theJetColls )
+    
 
     process.prefilterCounter        = cms.EDProducer("EventCountProducer")
     process.postStdCleaningCounter  = cms.EDProducer("EventCountProducer")
@@ -40,36 +30,39 @@ def addSUSYPATRA2( process, triggerProcessName = 'HLT'):
 #        process.postStdCleaningCounter
         )
 
+
     process.caloseq = cms.Sequence(
         process.cleanpatseq *
         process.ra2CaloCleaning *
-#        process.postCaloCleaningCounter *
-        process.countJetsAK5CaloPt50Eta25ID *
-#        process.postCaloJetsCounter *
+        process.countJetsAK5CaloPt50Eta25 *
         process.htCaloFilter 
-#        process.postCaloHTCounter
         )
 
 
     process.pcalo = cms.Path( process.caloseq )
 
-#    process.dummy = cms.Sequence()
-#    process.pcalo.replace(process.patJetCorrFactorsIC5Calo, process.dummy )
-#    process.pcalo.replace(process.patJetsIC5Calo, process.dummy )
-#    process.pcalo.replace(process.jetTracksAssociatorAtVertexIC5Calo, process.dummy )
-#    process.pcalo.replace(process.impactParameterTagInfosIC5Calo, process.dummy )
-#    process.pcalo.replace(process.secondaryVertexTagInfosIC5Calo, process.dummy )
-
-    process.pfseq = cms.Sequence(
-        process.cleanpatseq *
-        process.ra2PFCleaning *
- #       process.postPFCleaningCounter *
-        process.countJetsAK5PFPt50Eta25ID *
- #       process.postPFJetsCounter *
-        process.htPFFilter 
- #       process.postPFHTCounter
+    process.pfJetID = cms.Sequence(
+        process.ra2IDPFJets +
+        process.countJetsAK5PFPt50Eta25ID +
+        process.mhtPFID +
+        process.mhtPFIDFilter +
+        process.htPFID + 
+        process.htPFIDFilter 
         )
 
+    process.pfseq = cms.Sequence(
+        process.cleanpatseq +
+        #       process.ra2PFCleaning +
+        process.countJetsAK5PFPt50Eta25 +
+        # process.pfJetID +
+        process.htPFFilter 
+        )
+
+    if runningOnMC==True:
+        # trigger primitive information is not available in MC.
+        # must remove the TP filter from the various sequences
+        process.pfseq.remove( process.ecalDeadCellTPonlyFilter )
+        process.caloseq.remove( process.ecalDeadCellTPonlyFilter )
 
     process.ppf = cms.Path( process.pfseq )
 
