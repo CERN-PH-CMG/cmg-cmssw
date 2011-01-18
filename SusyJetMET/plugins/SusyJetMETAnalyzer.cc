@@ -19,11 +19,12 @@ void cmg::SusyJetMETAnalyzer::analyze(const edm::Event& iEvent,
   for(ITO ito = triggerObjects->begin(); ito!=triggerObjects->end(); ++ito) {
     const pat::TriggerObjectStandAlone& trigObj = *ito;
 
-    // printing 
-    cout<<"TO "<<trigObj.pt()<<" "<<trigObj.pdgId()<<endl;
-    printPaths(trigObj.pathNames());
+//     // printing 
+//     cout<<"TO "<<trigObj.pt()<<" "<<trigObj.pdgId()<<endl;
+//     printPaths(trigObj.pathNames());
 
   }
+
 }
 
 
