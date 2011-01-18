@@ -8,9 +8,9 @@ process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(-1)
         )
 
-# sourceExt = 'SueAnnHot'
+sourceExt = 'SueAnnHot'
 # sourceExt = 'LM1'
-sourceExt = 'StevenHot'
+# sourceExt = 'hotskim_Data'
 # sourceExt = 'MuonAndBEFiltered'
 fileStr = ''
 
@@ -18,14 +18,15 @@ from CMGTools.SusyJetMET.Sources.QCD_SueAnn_HotSkim.hotSkim_cff import hotSkim
 
 if sourceExt.find('SueAnnHot')!=-1:
     # need to move these files to their standard place
-    process.load('CMGTools.SusyJetMET.Sources.QCD_SueAnn_HotSkim.SusyPatPFPath.allHotSkims_cff')
-    hotSkim( process.source, sourceExt )
+    # process.load('CMGTools.SusyJetMET.Sources.QCD_SueAnn_HotSkim.SusyPatPFPath.allHotSkims_cff')
+    process.load("CMGTools.SusyJetMET.Sources.QCD_SueAnn_HotSkim.SusyPatLeptonVeto.source_cff")
+    hotSkim( process.source, fileStr )
 elif sourceExt.find('MuonAndBEFiltered')!=-1:
     process.load("CMGTools.SusyJetMET.Sources.QCD_SueAnn_HotSkim.MuonAndBEFiltered.source_cff")
     hotSkim( process.source, fileStr )
-elif sourceExt == 'StevenHot':
-    sourceExt = 'StevenHot'
-    process.load("CMGTools.SusyJetMET.Sources.Data.HotSkim.source_cff")
+elif sourceExt == 'hotskim_Data':
+    # process.load("CMGTools.SusyJetMET.Sources.Data.HotSkim.source_cff")
+    process.load("CMGTools.SusyJetMET.Sources.Data.HotSkim.SusyPat387.source_cff")
 elif sourceExt == 'LM1':
     process.load("CMGTools.SusyJetMET.Sources.LM1_SUSY_sftsht_7TeV_pythia6.Fall10_START38_V12_v1.GEN_SIM_RECO.RECO.SusyPat.susypat_cff")
 else:
@@ -68,13 +69,16 @@ adaptCMGtoRA2(process)
 # else if sourceExt == 'SueAnnHot':
 #    adaptCMGtoRECO(process)
 
-# delta pt filter
+# greedy and inconsistent muon filters 
 process.load("RecoParticleFlow.PostProcessing.selectGoodPFEvents_cff")
+
+# delta pt muon filter
 process.load("RecoParticleFlow.PostProcessing.selectEventsWithSmallDeltaPtMuons_cff")
 
 process.load("RecoParticleFlow.PostProcessing.METCorrelationFilter_cfi")
 process.METCorrelationFilter.MET1 = 'cmgMHTPFJets30'
 process.METCorrelationFilter.MET2 = 'cmgMHTCaloJets30'
+
 
 process.load("RecoParticleFlow.PostProcessing.allPFMuons_cfi")
 
@@ -87,8 +91,8 @@ process.cmgTuple = cms.Sequence(
     process.metSequence +
     process.allPFMuons +
     # still keeping the large delta pt muons, even though we don't filter on them. 
-    process.largeDeltaPtMuons +
-    process.selectGoodPFEventsSequence 
+    process.selectEventsWithSmallDeltaPtMuonsIgnore +
+    process.selectGoodPFEventsSequenceIgnore
     # process.METCorrelationFilter
     )
  
