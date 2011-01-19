@@ -9,9 +9,9 @@ kinematics = cms.PSet(
                     
 
 dijetKinematics = cms.PSet(
-    looseMass = cms.string('mass() > 180'),
+    looseMass = cms.string('mass() > 200'),
     tightMass = cms.string('mass() > 220'),
     deltaEta = cms.string('abs(leg1().eta()-leg2.eta()) < 1.3'),
-    looseDeltaEta = cms.string('abs(leg1().eta()-leg2.eta()) < 2.5'),
+    looseDeltaEta = cms.string('abs(leg1().eta()-leg2.eta()) < 1.7'),
     tightDeltaEta = cms.string('abs(leg1().eta()-leg2.eta()) < 1.3')
     )
