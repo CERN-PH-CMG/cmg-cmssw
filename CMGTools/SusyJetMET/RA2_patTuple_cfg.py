@@ -14,9 +14,9 @@ ext = 'RA2'
 
 ## Main control flags ################################################
 
-doPATTuple = True        # is that still necessary? 
-selectEvents = True      # write out in SUSYPAT format only events passing the pf path
-rejectedOutput = False   # store evemts rejected by the various filters in separate RECO files
+doPATTuple = True       # is that still necessary?
+selectEvents = True     # write out in SUSYPAT format only events passing the pf path
+rejectedOutput = True   # store events rejected by the various filters in separate RECO files
 
 MHTCut = 300
 
@@ -38,7 +38,8 @@ HLT = 'REDIGI38X' #Fall10
 if sourceExt.find('hotskim_QCD')!=-1:
     process.load("CMGTools.SusyJetMET.Sources.QCD_SueAnn_HotSkim.sueann_highMHT_skim_cff")
     from CMGTools.SusyJetMET.Sources.QCD_SueAnn_HotSkim.hotSkim_cff import hotSkim
-    hotSkim( process.source, sourceExt ) 
+    hotSkim( process.source, sourceExt )
+
 elif sourceExt == 'LM1':
     process.load("CMGTools.SusyJetMET.Sources.LM1_SUSY_sftsht_7TeV_pythia6.Fall10_START38_V12_v1.GEN_SIM_RECO.RECO.source_cff")
 elif sourceExt == 'hotskim_Data':
@@ -167,7 +168,7 @@ process.outInconsistentMuons = cms.OutputModule(
 ## PF PostProcessing 
 
 process.pPfEventFilter = cms.Path(
-    process.mainSequence + 
+    process.mainSequence +
     ~process.pfEventFilter
     )
 
@@ -179,26 +180,37 @@ process.outPfEventFilter = cms.OutputModule(
     )
 
 
-## TP filter
+## TP filter.
 
-process.pTPFilter = cms.Path(
-    process.mainSequence + 
-    ~process.ecalDeadCellTPonlyFilter
-    )
+# The filter itself only runs on data. For the QCD MC there is a
+# hard-coded list of events that would have been rejected by the TP
+# filter (obtained by using the raw events files).
+
+process.pTPFilter = cms.Path()
+if not runningOnMC:
+    process.pTPFilter = cms.Path(
+        process.mainSequence +
+        ~process.ecalDeadCellTPonlyFilter
+        )
+elif sourceExt == "hotskim_QCD":
+    process.pTPFilter = cms.Path(
+        process.mainSequence +
+        ~process.ecalDeadCellTPonlyFilterPythia6
+        )
 
 process.outTPFilter = cms.OutputModule(
     "PoolOutputModule",
     process.RECOSIMEventContent,
     fileName = cms.untracked.string('rejected_TPFilter.root'),
-    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('pTPFilter') ),
+    SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('pTPFilter')),
     )
 
 
-## BE filter
+## BE filter.
 
 process.pBEFilter = cms.Path(
     process.mainSequence +
-    process.ecalAnomalousFilter + 
+    process.ecalAnomalousFilter +
     ~process.ecalDeadCellBEonlyFilter
     )
 
@@ -294,10 +306,6 @@ process.outAcceptedPlusPFEventFilter = cms.OutputModule(
     )
 
 
-if runningOnMC:
-    process.p.remove( process.ecalDeadCellTPonlyFilter )
-
-
 process.outpath += process.saveHistosInRunInfo
 
 
@@ -325,7 +333,7 @@ if rejectedOutput:
     process.outpath += process.outGreedyMuons
     process.outpath += process.outInconsistentMuons
     process.outpath += process.outPfEventFilter
-    if not runningOnMC:
+    if sourceExt != "LM1":
         process.outpath += process.outTPFilter
     process.outpath += process.outBEFilter
     process.outpath += process.outHCALNoiseFilter
@@ -337,10 +345,9 @@ if rejectedOutput:
     if not runningOnMC:
         process.outpath += process.outAcceptedPlusPFEventFilter
 
-    
 
-if not runningOnMC:
-    process.schedule.append( process.pAcceptedPlusPFEventFilter )    
+if sourceExt != "LM1":
+    process.schedule.append( process.pAcceptedPlusPFEventFilter )
     process.schedule.append( process.pTPFilter )
 
 process.schedule.append( process.outpath )
