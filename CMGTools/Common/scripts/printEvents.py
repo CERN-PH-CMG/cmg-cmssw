@@ -8,14 +8,14 @@ from optparse import OptionParser
 parser = OptionParser()
 parser.usage = "%prog <file> : prints all events in an EDM file"
 
-(options,args) = parser.parse_args()
+(options, args) = parser.parse_args()
 
 process = cms.Process("COPY")
 
-if len(args)!=1:
+if len(args) != 1:
     parser.print_help()
     sys.exit(1)
-    
+
 file = args[0]
 
 process.source = cms.Source(
@@ -28,11 +28,9 @@ process.source.fileNames.extend([
                 'file:%s' % file,
 ])
 
-
-# print 'Printing events in file:'
 fileName = process.source.fileNames[0]
-fileName = fileName.replace('file:','')
-print fileName 
+fileName = fileName.replace('file:', '')
+print "Building list of events in file '%s'" % fileName
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
@@ -55,14 +53,32 @@ p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=Tru
 
 pattern = re.compile('Run\s+(\d+), Event\s+(\d+), LumiSection\s+(\d+)')
 
-while 1:
+events = []
+while True:
     line = p.stdout.readline()
     if line:
         line.rstrip()
-        m = pattern.search( line )
-        if m:
-            print 'Run: ',m.group(1).rjust(7), '\tEvent: ', m.group(2).rjust(12), '\tLumi: ', m.group(3).rjust(10)
+        match = pattern.search( line )
+        if match:
+            events.append((int(match.group(1)),
+                           int(match.group(3)),
+                           int(match.group(2))))
+#             print 'Run: ',match.group(1).rjust(7), \
+#                   '\tEvent: ', match.group(2).rjust(12), \
+#                   '\tLumi: ', match.group(3).rjust(10)
     else:
         break
+
+# Dump the events all nicely sorted.
+if len(events):
+    events.sort()
+    if len(events) == 1:
+        print "Found 1 event:"
+    else:
+        print "Found %d events:" % len(events)
+    for (run, ls, evt) in events:
+        print "Run:  %7d\tEvent:  %12d\tLumi:  %10d" % (run, evt, ls)
+else:
+    print "No events found"
 
 print
