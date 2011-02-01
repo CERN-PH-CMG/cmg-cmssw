@@ -205,8 +205,8 @@ batchManager.parser_.add_option("-p", "--program", dest="prog",
                                 help="program to run on your cfg file",
                                 default="cmsRun")
 batchManager.parser_.add_option("-b", "--batch", dest="batch",
-                                help="batch command. default is: bsub -q cmst3 < batchScript.sh",
-                                default="bsub -q cmst3 < batchScript.sh")
+                                help="batch command. default is: bsub -q 1nh < batchScript.sh",
+                                default="bsub -q 1nh < batchScript.sh")
 
 (options,args) = batchManager.parser_.parse_args()
 batchManager.ParseOptions()

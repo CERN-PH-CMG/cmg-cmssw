@@ -40,7 +40,7 @@ parser.add_option("-N", "--numberOfInputFiles",
 parser.add_option("-q", "--queue", 
                   dest="queue",
                   help="batch queue",
-                  default="cmst3")
+                  default="1nh")
 
 
 (options,args) = parser.parse_args()
