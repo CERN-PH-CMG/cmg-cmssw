@@ -9,7 +9,8 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 process.out = cms.OutputModule("PoolOutputModule",
-                               outputCommands =  cms.untracked.vstring('keep *'),
+#                                outputCommands =  cms.untracked.vstring('keep *'),
+                               outputCommands =  cms.untracked.vstring('keep recoPFCandidates_*_*_*'),
                                fileName = cms.untracked.string('gen.root'),
                                SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('p') )
                                )
@@ -25,10 +26,12 @@ process.out = cms.OutputModule("PoolOutputModule",
 process.load("CMGTools.Susy.GeneratorSources.pythia_LM0_cff")
 
 process.load("CMGTools.Susy.gen_cff")
+process.load("CMGTools.Susy.genToPFConverter_cfi")
 
 process.p = cms.Path(
     process.ProductionFilterSequence + 
-    process.gen
+    process.gen + 
+    process.particleFlow
     )
 
 process.outpath = cms.EndPath(
