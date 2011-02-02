@@ -8,12 +8,16 @@ process = cms.Process("GEN")
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
-process.out = cms.OutputModule("PoolOutputModule",
-#                                outputCommands =  cms.untracked.vstring('keep *'),
-                               outputCommands =  cms.untracked.vstring('keep recoPFCandidates_*_*_*'),
-                               fileName = cms.untracked.string('gen.root'),
-                               SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('p') )
-                               )
+process.out = cms.OutputModule(
+    "PoolOutputModule",
+    outputCommands =  cms.untracked.vstring('keep *'),
+#    outputCommands =  cms.untracked.vstring(
+#      'keep recoPFCandidates_*_*_*',
+#      'keep *_genParticles_*_*',
+#      'keep *_genMetTrue_*_*'),
+    fileName = cms.untracked.string('gen.root'),
+    SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('p') )
+    )
 
 
 #process.load("PhysicsTools.HepMCCandAlgos.genParticles_cfi")
