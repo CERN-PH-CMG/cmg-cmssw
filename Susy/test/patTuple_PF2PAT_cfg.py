@@ -33,6 +33,9 @@ process.pfSelectedElectronsPFlow.src = 'pfAllElectronsPFlow'
 process.PF2PATPFlow.remove( process.pfTauSequencePFlow )
 process.PF2PATPFlow.remove( process.pfNoTauPFlow )
 
+process.pfNoMuonPFlow.enable = False
+process.pfNoElectronPFlow.enable = False
+
 # before PAT: matching the PFCandidate to the gen particles, not
 # the object reconstructed in the traditional way. 
 process.electronMatchPFlow.src = 'pfIsolatedElectronsPFlow'
@@ -50,6 +53,8 @@ process.patDefaultSequencePFlow.remove( process.patJetCorrFactorsPFlow )
 
 # swithToPFJets( process, cms.InputTag('pfJetsPFlow'), 'AK5', 'PFlow', None ) 
 
+process.ak5GenJetsNoNu.src = 'particleFlow:GEN'
+# process.patJetGenJetMatchPFlow.matched = 'ak5GenJetsNoNu2'
 process.patJetsPFlow.addAssociatedTracks = False
 process.patJetsPFlow.addBTagInfo = False
 process.patJetsPFlow.addDiscriminators = False
@@ -62,8 +67,6 @@ process.patJetsPFlow.addTagInfos = False
 process.patDefaultSequencePFlow.remove( process.jetTracksAssociatorAtVertexPFlow )
 process.patDefaultSequencePFlow.remove( process.btaggingAODPFlow )
 process.patDefaultSequencePFlow.remove( process.patJetChargePFlow )
-# process.patDefaultSequencePFlow.remove()
-# process.patDefaultSequencePFlow.remove()
 
 
 # turn to false when running on data

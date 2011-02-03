@@ -12,6 +12,7 @@ void GenToPFConverter::produce(edm::Event& iEvent, const edm::EventSetup&) {
   iEvent.getByLabel(src_,gens);
     
   std::auto_ptr< reco::PFCandidateCollection> result( new reco::PFCandidateCollection);
+  std::auto_ptr< reco::GenParticleCollection> resultGen( new reco::GenParticleCollection);
 
   for( unsigned i=0; i<gens->size(); ++i) {
     
@@ -41,12 +42,14 @@ void GenToPFConverter::produce(edm::Event& iEvent, const edm::EventSetup&) {
       continue; // neutrinos
 
     result->push_back( reco::PFCandidate( charge, gen.p4(), pfId) );
-
+    resultGen->push_back( gen );
+    
   }
 
 
   iEvent.put(result);
-  return;
+  iEvent.put(resultGen, "GEN");
+ return;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
