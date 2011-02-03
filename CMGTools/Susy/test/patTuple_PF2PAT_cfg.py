@@ -24,50 +24,8 @@ from PhysicsTools.PatAlgos.tools.pfTools import *
 postfix = "PFlow"
 usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=True, postfix=postfix) 
 
-process.pfPileUpPFlow.Enable = False
-
-process.PF2PATPFlow.remove( process.pfMuonsFromVertexPFlow )
-process.pfSelectedMuonsPFlow.src = 'pfAllMuonsPFlow'
-process.PF2PATPFlow.remove( process.pfElectronsFromVertexPFlow )
-process.pfSelectedElectronsPFlow.src = 'pfAllElectronsPFlow'
-process.PF2PATPFlow.remove( process.pfTauSequencePFlow )
-process.PF2PATPFlow.remove( process.pfNoTauPFlow )
-
-process.pfNoMuonPFlow.enable = False
-process.pfNoElectronPFlow.enable = False
-
-# before PAT: matching the PFCandidate to the gen particles, not
-# the object reconstructed in the traditional way. 
-process.electronMatchPFlow.src = 'pfIsolatedElectronsPFlow'
-process.muonMatchPFlow.src = 'pfIsolatedMuonsPFlow'
-
-process.patDefaultSequencePFlow.remove( process.makePatTausPFlow )
-process.patDefaultSequencePFlow.remove( process.selectedPatTausPFlow )
-process.patDefaultSequencePFlow.remove( process.countPatTausPFlow )
-
-process.patDefaultSequencePFlow.remove( process.makePatPhotonsPFlow )
-process.patDefaultSequencePFlow.remove( process.selectedPatPhotonsPFlow )
-process.patDefaultSequencePFlow.remove( process.countPatPhotonsPFlow )
-
-process.patDefaultSequencePFlow.remove( process.patJetCorrFactorsPFlow )
-
-# swithToPFJets( process, cms.InputTag('pfJetsPFlow'), 'AK5', 'PFlow', None ) 
-
-process.ak5GenJetsNoNu.src = 'particleFlow:GEN'
-# process.patJetGenJetMatchPFlow.matched = 'ak5GenJetsNoNu2'
-process.patJetsPFlow.addAssociatedTracks = False
-process.patJetsPFlow.addBTagInfo = False
-process.patJetsPFlow.addDiscriminators = False
-process.patJetsPFlow.addEfficiencies = False
-process.patJetsPFlow.addJetCharge = False
-process.patJetsPFlow.addJetCorrFactors = False
-process.patJetsPFlow.addJetID = False
-process.patJetsPFlow.addTagInfos = False
-
-process.patDefaultSequencePFlow.remove( process.jetTracksAssociatorAtVertexPFlow )
-process.patDefaultSequencePFlow.remove( process.btaggingAODPFlow )
-process.patDefaultSequencePFlow.remove( process.patJetChargePFlow )
-
+from CMGTools.Susy.PF2PATonGEN_cff import * 
+PF2PATonGEN(process)
 
 # turn to false when running on data
 getattr(process, "patElectrons"+postfix).embedGenMatch = True
@@ -77,14 +35,7 @@ process.dump = cms.EDAnalyzer("EventContentAnalyzer")
 
 # Let it run
 process.p = cms.Path(
-#    process.patDefaultSequence  +
-    # getattr(process,"patPF2PATSequence"+postfix)
-    process.PF2PATPFlow +
-    process.genForPF2PATSequence +
-    process.makePatJetsPFlow +
-    process.selectedPatJetsPFlow +
-    process.makePatMETsPFlow
-    # + process.dump
+    process.PF2PATonGENSequence
 )
 
 # Add PF2PAT output to the created file
