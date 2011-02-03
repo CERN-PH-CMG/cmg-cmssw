@@ -26,7 +26,7 @@ void GenToPFConverter::produce(edm::Event& iEvent, const edm::EventSetup&) {
     
     reco::PFCandidate::ParticleType pfId = reco::PFCandidate::X; 
 
-    if( pdgId>100 ) { // hadrons
+    if( pdgId>100 && pdgId<1000000) { // hadrons, and not a susy particle...
       if(charge==0) pfId = reco::PFCandidate::h0;
       else pfId = reco::PFCandidate::h;
     }
@@ -36,7 +36,7 @@ void GenToPFConverter::produce(edm::Event& iEvent, const edm::EventSetup&) {
       pfId = reco::PFCandidate::mu;
     else if(pdgId==22)
       pfId = reco::PFCandidate::gamma;
-    else if(pdgId!=12 && pdgId!=14 && pdgId != 16)
+    else if(pdgId!=12 && pdgId!=14 && pdgId != 16 && pdgId<1000000)
       cout<<"WARNING! "<<pdgId<<" "<<charge<<endl;
     else
       continue; // neutrinos
