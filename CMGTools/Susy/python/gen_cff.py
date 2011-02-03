@@ -8,11 +8,15 @@ from RecoMET.Configuration.RecoGenMET_cff import genMetTrue
 
 from PhysicsTools.PFCandProducer.genForPF2PAT_cff import *
 
+from CMGTools.Susy.genToPFConverter_cfi import *
+
+genMetTrue.src = 'particleFlow:GEN'
+genMetTrueEt = genMetTrue.clone()
+genMetTrueEt.usePt = False
+
 gen = cms.Sequence(
-    genParticles 
-    # genForPF2PATSequence + 
-    # genJetParticles +
-    # ak5GenJets +
-#    genMETParticles +
-#    genMetTrue 
+    genParticles +
+    particleFlow +
+    genMetTrue +
+    genMetTrueEt
     )
