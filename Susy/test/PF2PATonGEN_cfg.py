@@ -19,7 +19,7 @@ process.load("CMGTools.Susy.GeneratorSources.pythia_LM0_cff")
 # gen sequences: convert gen particles to PFCandidates 
 
 process.load("CMGTools.Susy.gen_cff")
-process.load("CMGTools.Susy.genToPFConverter_cfi")
+# process.load("CMGTools.Susy.genToPFConverter_cfi")
 
 # PF2PAT + PAT, working at gen level
 
@@ -31,23 +31,15 @@ usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=True, postfix=postfix)
 from CMGTools.Susy.PF2PATonGEN_cff import * 
 PF2PATonGEN(process)
 
+# CMG RA2 analysis
+
 process.dump = cms.EDAnalyzer("EventContentAnalyzer")
-
-
-process.genMetTrue.src = 'particleFlow:GEN'
-process.genMetTrueEt = process.genMetTrue.clone()
-process.genMetTrueEt.usePt = False
 
 process.p = cms.Path(
     process.ProductionFilterSequence + 
     process.gen + 
-    process.particleFlow +
-    process.genMetTrue +
-    process.genMetTrueEt +
     process.PF2PATonGENSequence
     )
-
-
 
 process.outGen = cms.OutputModule(
     "PoolOutputModule",
@@ -66,6 +58,7 @@ from PhysicsTools.PatAlgos.patEventContent_cff import patEventContentNoCleaning
 process.out.fileName = 'PF2PATonGEN.root'
 process.out.outputCommands = cms.untracked.vstring( *patEventContentNoCleaning) 
 process.out.outputCommands.append( 'keep *_genMetTrue*_*_*' )
+process.out.outputCommands.append( 'keep recoPFCandidates_particleFlow_*_*' )
 
 process.outpath = cms.EndPath(
     process.out
