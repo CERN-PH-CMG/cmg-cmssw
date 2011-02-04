@@ -58,26 +58,32 @@ pfMET2Histograms = baseMETHistograms.clone()
 pfMET2Histograms.inputCollection = 'cmgMETPFCandidates2'
 
 
-
-metHistograms = cms.Sequence(
-#    mhtPFJetsHistograms +
+pfMetHistograms = cms.Sequence(
     mhtPFJets30Histograms +
-    mhtPFJets50Histograms +
-#    mhtCaloJetsHistograms +
+    mhtPFJets50Histograms 
+    # pfMETHistograms 
+    )
+
+pfMetSequence = cms.Sequence(
+    cmgMHTPFJets30 +
+    cmgMHTPFJets50 +
+    # cmgMETPFCandidates +
+    pfMetHistograms
+    )
+
+caloMetHistograms = cms.Sequence(
     mhtCaloJets30Histograms +
-    mhtCaloJets50Histograms +
-    pfMETHistograms +
-    pfMET2Histograms
+    mhtCaloJets50Histograms 
+    )
+
+caloMetSequence = cms.Sequence(
+    cmgMHTCaloJets30 +
+    cmgMHTCaloJets50 +
+    caloMetHistograms
     )
 
 metSequence = cms.Sequence(
-#    cmgMHTPFJets +
-    cmgMHTPFJets30 +
-    cmgMHTPFJets50 +
-#    cmgMHTCaloJets +    
-    cmgMHTCaloJets30 +    
-    cmgMHTCaloJets50 +    
-    cmgMETPFCandidates +
-    cmgMETPFCandidates2 +
-    metHistograms
-    )
+    pfMetSequence +
+    caloMetSequence
+    ) 
+
