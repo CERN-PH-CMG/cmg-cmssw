@@ -17,7 +17,7 @@ cut_highMET = 'pt()>50'
 
 process.source = cms.Source(
     "PoolSource",
-    fileNames = cms.untracked.vstring( 'file:PF2PATonGEN.root' ) 
+    fileNames = cms.untracked.vstring( 'file:GENandPF2PAT.root' ) 
     )
 
 ext = 'GENCMG'
@@ -40,8 +40,8 @@ process.out.SelectEvents.SelectEvents = cms.vstring()
 process.load("CMGTools.Common.countingSequences_cff")
 
 
-from CMGTools.SusyJetMET.EventContent.susyJetMET_cff import susyJetMET
-process.out.outputCommands += susyJetMET    
+from CMGTools.Common.eventContent.particleFlow_cff import particleFlow
+process.out.outputCommands += particleFlow   
  
 process.load('CMGTools.SusyJetMET.cmg_cff')
 
@@ -65,14 +65,14 @@ process.p = cms.Path(
 
 if selectEvents:
     process.out.SelectEvents.SelectEvents.append('p')
-process.out.fileName = cms.untracked.string('susyJetMET_tree_%s.root' %  outFileNameExt)
+process.out.fileName = cms.untracked.string('susy_tree_%s.root' %  outFileNameExt)
 
 process.TFileService = cms.Service(
     "TFileService",
-    fileName = cms.string("susyJetMET_histograms_%s.root" %  outFileNameExt )
+    fileName = cms.string("susy_histograms_%s.root" %  outFileNameExt )
     )
 
-# print process.out.dumpPython()
+print process.out.dumpPython()
 
 print 'output file: ', process.out.fileName
 # print process.schedule
