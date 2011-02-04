@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 particleFlowJets = cms.untracked.vstring(
-    'keep cmgPFJets_*_*_*',
-    'keep cmgBaseJets_*PF*Jet*_*_*',
+    'keep cmgPFJetsSel_*_*_*',
+    'keep cmgBaseJetsSel_*PF*Jet*_*_*',
     'keep cmgAbstractPhysicsObjects_*PF*Jet*_*_*'
     # here add all PF jet objects, even the base ones. 
     )
@@ -44,7 +44,7 @@ particleFlowVBF = cms.untracked.vstring(
 particleFlow = particleFlowJets + particleFlowMET + particleFlowMuons + particleFlowElectrons + particleFlowW + particleFlowVBF
 
 particleFlowBase = cms.untracked.vstring(
-    'keep *_cmgPFBaseJet_*_*',
+    'keep *_cmgPFBaseJetSel_*_*',
     'keep *_cmgPFCand_*_*'
     # here add the other generic PF objects
     )
