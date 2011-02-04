@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 from CMGTools.Common.factories.cmgPFJet_cfi import cmgPFJet
 from CMGTools.Common.skims.cmgPFJetSel_cfi import cmgPFJetSel
+from CMGTools.Common.skims.cmgPFJetCount_cfi import cmgPFJetCount
 from CMGTools.Common.skims.cmgPFBaseJetSel_cfi import cmgPFBaseJetSel
 from CMGTools.Common.factories.cmgBaseJet_cfi import cmgBaseJet
 from CMGTools.Common.histograms.pfJetLorentzVector_cfi import pfJetLorentzVector
@@ -45,6 +46,7 @@ pfJetSequence = cms.Sequence(
     cmgPFJet +
     cmgPFJetSel + 
     cmgPFJetLead +
+    cmgPFJetCount +  #SKIM!
     cmgPFBaseJet +
     cmgPFBaseJetSel + 
     cmgPFBaseJetLead + 
