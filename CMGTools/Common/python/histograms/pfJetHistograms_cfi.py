@@ -2,5 +2,5 @@ import FWCore.ParameterSet.Config as cms
 
 pfJetHistograms = cms.EDAnalyzer(
     "PFJetHistogramsAnalyzer",
-    inputCollection = cms.InputTag("cmgPFJetLead")
+    inputCollection = cms.InputTag("cmgPFJetSel")
     )
