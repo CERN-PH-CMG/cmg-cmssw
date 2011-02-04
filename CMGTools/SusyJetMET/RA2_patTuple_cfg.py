@@ -18,7 +18,7 @@ doPATTuple = True       # is that still necessary?
 selectEvents = True     # write out in SUSYPAT format only events passing the pf path
 rejectedOutput = True   # store events rejected by the various filters in separate RECO files
 
-MHTCut = 300
+MHTCut = 300             # skimming cut on MHT
 
 
 sourceExt = 'hotskim_QCD'
@@ -110,7 +110,7 @@ process.p = cms.Path(
     #WARNING
     # process.ra2PFCleaningIgnore + 
     process.ra2PFCleaning + 
-    # process.selectGoodPFEventsSequence +
+    #process.selectGoodPFEventsSequence +
     # process.eventCleaningFilters +
     process.finalSequence  
     )
