@@ -15,8 +15,11 @@ DEFINE_FWK_MODULE(PFJetPOProducer);
 DEFINE_FWK_MODULE(BaseMETPOProducer);
 DEFINE_FWK_MODULE(LorentzHistogramsAnalyzer);
 DEFINE_FWK_MODULE(PFJetHistogramsAnalyzer);
+
 DEFINE_FWK_MODULE(GenericMuonHistograms);
 DEFINE_FWK_MODULE(GenericBaseMETHistograms);
+DEFINE_FWK_MODULE(GenericPatMETHistograms);
+
 DEFINE_FWK_MODULE(RunInfoAccountingAnalyzer);
 DEFINE_FWK_MODULE(PFCandidatePOProducer);
 DEFINE_FWK_MODULE(WENuPOProducer);

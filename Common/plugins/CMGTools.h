@@ -53,6 +53,7 @@ typedef cmg::HistogramAnalyzer<cmg::LorentzHistogramsFF> LorentzHistogramsAnalyz
 typedef cmg::HistogramAnalyzer<cmg::JetHistograms> PFJetHistogramsAnalyzer;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Muon> > GenericMuonHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::BaseMET> > GenericBaseMETHistograms;
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<pat::MET> > GenericPatMETHistograms;
 typedef cmg::RunInfoAccountingAnalyzer RunInfoAccountingAnalyzer;
 typedef cmg::CutSummaryAnalyzer CutSummaryAnalyzer;
 
