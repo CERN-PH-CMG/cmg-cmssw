@@ -1,5 +1,5 @@
-#ifndef SinglePATMuonPairProducer_h
-#define SinglePATMuonNuPairProducer_h
+#ifndef __CMGTools_Common_LeadingObjectsSelector_h__
+#define __CMGTools_Common_LeadingObjectsSelector_h__
 
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -22,7 +22,7 @@ namespace cmg{
  * 
  */
 template <class T>
-class SingleObjectCollectionSelector : public edm::EDProducer {
+class LeadingObjectsSelector : public edm::EDProducer {
 
  public:
   
@@ -30,7 +30,7 @@ class SingleObjectCollectionSelector : public edm::EDProducer {
   typedef std::auto_ptr<collection> event_ptr;
   typedef edm::View<T> view;
   
-  explicit SingleObjectCollectionSelector(const edm::ParameterSet& ps):
+  explicit LeadingObjectsSelector(const edm::ParameterSet& ps):
     src_(ps.getUntrackedParameter<edm::InputTag>("inputCollection")),
     index_(ps.getUntrackedParameter<int>("index",-1)),
     verbose_(ps.getUntrackedParameter<bool>("verbose",false)){
@@ -48,7 +48,7 @@ class SingleObjectCollectionSelector : public edm::EDProducer {
 }
 
 template <class T>
-void cmg::SingleObjectCollectionSelector<T>::produce(edm::Event& iEvent, const edm::EventSetup&){
+void cmg::LeadingObjectsSelector<T>::produce(edm::Event& iEvent, const edm::EventSetup&){
    
     edm::Handle<view> cands;
     iEvent.getByLabel(src_,cands);
@@ -56,7 +56,7 @@ void cmg::SingleObjectCollectionSelector<T>::produce(edm::Event& iEvent, const e
     if(verbose_){
       std::cout << "The collection " << src_.label() << " has " << cands->size() << " entries." << std::endl;
     }
-    typename cmg::SingleObjectCollectionSelector<T>::event_ptr result(new collection());
+    typename cmg::LeadingObjectsSelector<T>::event_ptr result(new collection());
     if(cands->size()){
 
         //the index
