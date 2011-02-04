@@ -43,18 +43,13 @@ process.load("CMGTools.Common.countingSequences_cff")
 from CMGTools.Common.eventContent.particleFlow_cff import particleFlow
 process.out.outputCommands += particleFlow   
  
-process.load('CMGTools.SusyJetMET.cmg_cff')
-
- 
-# if doSkimHighMET:
-#    outFileNameExt += '_HighMET'
-#    process.load('CMGTools.Common.Skims.selEventsHighMET_cff')
-#    process.CMGTupleSequence += process.selEventsHighMETSequence
-#    process.highMET.cut = cut_highMET
+process.load('CMGTools.SusyJetMET.RA2CMG_cff')
+process.RA2CMGSequence.remove( process.caloJetSequence)
+process.RA2CMGSequence.remove( process.caloMetSequence)
 
 
 process.p = cms.Path(
-    process.cmgSequence 
+    process.RA2CMGSequence
     )
 
 
