@@ -18,42 +18,20 @@ process.load("CMGTools.Susy.GeneratorSources.pythia_LM0_cff")
 
 # gen sequences: convert gen particles to PFCandidates 
 
-process.load("CMGTools.Susy.gen_cff")
-process.load("CMGTools.Susy.genToPFConverter_cfi")
-
+process.load("CMGTools.Susy.GEN_cff")
 
 process.dump = cms.EDAnalyzer("EventContentAnalyzer")
 
-process.genMetTrue.src = 'particleFlow:GEN'
-
-process.genMetTrueEt = process.genMetTrue.clone()
-
-# this one fits with the "reconstructed" MET: 
-process.genMetTrueEt.usePt = False
-
 process.p = cms.Path(
     process.ProductionFilterSequence + 
-    process.gen + 
-    process.particleFlow +
-    process.genMetTrue +
-    process.genMetTrueEt
+    process.GENSequence
     )
 
 
-
-process.outGen = cms.OutputModule(
-    "PoolOutputModule",
-    outputCommands =  cms.untracked.vstring('keep *'),
-#    outputCommands =  cms.untracked.vstring(
-#      'keep recoPFCandidates_*_*_*',
-#      'keep *_genParticles_*_*',
-#      'keep *_genMetTrue_*_*'),
-    fileName = cms.untracked.string('gen.root'),
-    SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('p') )
-    )
+process.load("CMGTools.Susy.outputGEN_cfi")
 
 process.outpath = cms.EndPath(
-    process.outGen
+    process.outputGEN
     )
 
 # Add the top decay to the output file
