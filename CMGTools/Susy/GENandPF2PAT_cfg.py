@@ -18,10 +18,9 @@ process.load("CMGTools.Susy.GeneratorSources.pythia_LM0_cff")
 
 # gen sequences: convert gen particles to PFCandidates 
 
-process.load("CMGTools.Susy.gen_cff")
-# process.load("CMGTools.Susy.genToPFConverter_cfi")
+process.load("CMGTools.Susy.GEN_cff")
 
-# PF2PAT + PAT, working at gen level
+# PF2PAT + PAT, working at GENlevel
 
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 
@@ -37,31 +36,23 @@ process.dump = cms.EDAnalyzer("EventContentAnalyzer")
 
 process.p = cms.Path(
     process.ProductionFilterSequence + 
-    process.gen + 
+    process.GENSequence + 
     process.PF2PATonGENSequence
     )
 
-process.outGen = cms.OutputModule(
-    "PoolOutputModule",
-#    outputCommands =  cms.untracked.vstring('keep *'),
-    outputCommands =  cms.untracked.vstring(
-      'keep recoPFCandidates_*_*_*',
-      'keep *_genParticles_*_*',
-      'keep *_genMetTrue_*_*'),
-    fileName = cms.untracked.string('gen.root'),
-    SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('p') )
-    )
+process.load("CMGTools.Susy.outputGEN_cfi")
 
 from PhysicsTools.PatAlgos.patEventContent_cff import patEventContentNoCleaning
 #process.load("PhysicsTools.PFCandProducer.PF2PAT_EventContent_cff")
 #process.out.outputCommands =  cms.untracked.vstring('drop *')
-process.out.fileName = 'PF2PATonGEN.root'
+process.out.fileName = 'GENandPF2PAT.root'
 process.out.outputCommands = cms.untracked.vstring( *patEventContentNoCleaning) 
 process.out.outputCommands.append( 'keep *_genMetTrue*_*_*' )
 process.out.outputCommands.append( 'keep recoPFCandidates_particleFlow_*_*' )
 
 process.outpath = cms.EndPath(
     process.out
+    # + process.outputGEN  
     )
 
 # Add the top decay to the output file
