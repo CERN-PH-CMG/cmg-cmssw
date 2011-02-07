@@ -46,6 +46,23 @@ class DiObject : public AbstractPhysicsObject{
       v->visit(&leg2_);
     }
     
+   ///Overides the methods reco::Candidate so that it can be used with the TopProjector
+   virtual reco::Candidate::size_type numberOfSourceCandidatePtrs() const{
+    return leg1().numberOfSourceCandidatePtrs() + leg2().numberOfSourceCandidatePtrs();
+   }
+   ///Overides the methods reco::Candidate so that it can be used with the TopProjector
+   virtual reco::CandidatePtr sourceCandidatePtr( reco::Candidate::size_type i ) const{
+    reco::Candidate::size_type leg1Size = leg1().numberOfSourceCandidatePtrs();
+    reco::Candidate::size_type leg2Size = leg2().numberOfSourceCandidatePtrs();
+    if(i < leg1Size){
+     return leg1().sourceCandidatePtr(i);
+    }else if(i < (leg1Size + leg2Size) ){
+     return leg2().sourceCandidatePtr(i-leg1Size);   
+    }else{
+     return reco::Candidate::sourceCandidatePtr(i);  
+    }
+   }
+    
   private:
     
     T leg1_;

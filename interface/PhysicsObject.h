@@ -36,6 +36,19 @@ class PhysicsObjectWithPtr : public AbstractPhysicsObject {
     //return 0;
   }
   
+  ///Overides the methods reco::Candidate so that it can be used with the TopProjector
+  virtual reco::Candidate::size_type numberOfSourceCandidatePtrs() const{
+    reco::Candidate::size_type result = 0;
+    if (sourcePtr_.isNonnull()){
+         result = 1;
+    }
+    return result;
+  }
+  ///Overides the methods reco::Candidate so that it can be used with the TopProjector
+  virtual reco::CandidatePtr sourceCandidatePtr( reco::Candidate::size_type i ) const{
+    return reco::CandidatePtr( sourcePtr_.id(), sourcePtr_.get(), sourcePtr_.key() );
+  }
+  
   private:
   PATPtr sourcePtr_;
   
