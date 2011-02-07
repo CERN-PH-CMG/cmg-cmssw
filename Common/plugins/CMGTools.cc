@@ -1,4 +1,5 @@
 #include "CMGTools/Common/plugins/CMGTools.h"
+#include "CMGTools/Common/plugins/TopProjector.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 DEFINE_FWK_MODULE(DiElectronPOProducer);
