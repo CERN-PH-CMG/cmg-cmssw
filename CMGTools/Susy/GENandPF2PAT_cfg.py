@@ -34,14 +34,19 @@ PF2PATonGEN(process)
 
 process.dump = cms.EDAnalyzer("EventContentAnalyzer")
 
+process.load("CMGTools.Common.countingSequences_cff")
+
 process.p = cms.Path(
     process.ProductionFilterSequence + 
+    process.startupSequence +
     process.GENSequence + 
-    process.PF2PATonGENSequence
+    process.PF2PATonGENSequence +
+    process.finalSequence 
     )
 
 process.load("CMGTools.Susy.outputGEN_cfi")
 
+from CMGTools.Common.eventContent.runInfoAccounting_cff import runInfoAccounting
 from PhysicsTools.PatAlgos.patEventContent_cff import patEventContentNoCleaning
 #process.load("PhysicsTools.PFCandProducer.PF2PAT_EventContent_cff")
 #process.out.outputCommands =  cms.untracked.vstring('drop *')
@@ -49,9 +54,11 @@ process.out.fileName = 'GENandPF2PAT.root'
 process.out.outputCommands = cms.untracked.vstring( *patEventContentNoCleaning) 
 process.out.outputCommands.append( 'keep *_genMetTrue*_*_*' )
 process.out.outputCommands.append( 'keep recoPFCandidates_particleFlow_*_*' )
+process.out.outputCommands += runInfoAccounting
 
 process.outpath = cms.EndPath(
-    process.out
+    process.out +
+    process.saveHistosInRunInfo
     # + process.outputGEN  
     )
 
