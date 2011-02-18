@@ -157,6 +157,19 @@
   <class name="edm::PtrVector<pat::Jet>"/>
   <class name="edm::PtrVector<pat::PFParticle>"/>
   <class name="edm::PtrVector<reco::PFCandidate>"/>
+  
+  <!-- create dictionaries for the composite candidates from PFAnalysis -->
+  <class name="PATMuPair"/>
+  <class name="std::vector<PATMuPair>"/>
+  <class name="edm::Wrapper<PATMuPair>"/>
+  <class name="edm::Wrapper<std::vector<PATMuPair> >"/>
+    
+  <class name="PATMuonNuPair"/>
+  <class name="std::vector<PATMuonNuPair>"/>
+  <class name="edm::Wrapper<PATMuonNuPair>"/>
+  <class name="edm::Wrapper<std::vector<PATMuonNuPair> >"/>
+  
+  
 
 
 </lcgdict>
