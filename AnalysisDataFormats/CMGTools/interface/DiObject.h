@@ -21,7 +21,7 @@ class DiObject : public AbstractPhysicsObject{
         AbstractPhysicsObject(){
     }
     DiObject(const T& leg1, const U& leg2):
-        AbstractPhysicsObject(leg1,leg2),
+        AbstractPhysicsObject(reco::LeafCandidate(leg1.charge()+leg2.charge(),leg1.p4()+leg2.p4())),
         leg1_(leg1),
         leg2_(leg2){
     }

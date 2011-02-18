@@ -20,9 +20,6 @@ namespace cmg{
     explicit AbstractPhysicsObject(const reco::Candidate& cand):
       reco::LeafCandidate(cand){
     }
-    explicit AbstractPhysicsObject(const reco::Candidate& cand1, const reco::Candidate& cand2):
-      reco::LeafCandidate(cand1.charge()+cand2.charge(),cand1.p4()+cand2.p4()){
-    }
     //need to define a copy constructor because of first constructor
     AbstractPhysicsObject(const AbstractPhysicsObject& other):
       reco::LeafCandidate(other),
