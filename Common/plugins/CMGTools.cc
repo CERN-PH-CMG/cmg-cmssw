@@ -13,6 +13,8 @@ DEFINE_FWK_MODULE(TauPOProducer);
 DEFINE_FWK_MODULE(QuadMuonPOProducer);
 DEFINE_FWK_MODULE(BaseJetPOProducer);
 DEFINE_FWK_MODULE(PFJetPOProducer);
+DEFINE_FWK_MODULE(GenParticlePOProducer);
+DEFINE_FWK_MODULE(GenJetPOProducer);
 DEFINE_FWK_MODULE(BaseMETPOProducer);
 DEFINE_FWK_MODULE(LorentzHistogramsAnalyzer);
 DEFINE_FWK_MODULE(PFJetHistogramsAnalyzer);
