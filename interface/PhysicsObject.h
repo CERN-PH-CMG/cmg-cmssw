@@ -33,7 +33,6 @@ class PhysicsObjectWithPtr : public AbstractPhysicsObject {
 
   PATPtr const* sourcePtr() const{
     return &sourcePtr_; 
-    //return 0;
   }
   
   ///Overides the methods reco::Candidate so that it can be used with the TopProjector
