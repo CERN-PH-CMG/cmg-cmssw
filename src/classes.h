@@ -97,6 +97,16 @@ namespace {
     edm::Wrapper<cmg::PFCand> wpfcand_;
     edm::Wrapper<std::vector<cmg::PFCand> > wpfcandv_;
     
+    cmg::GenParticle genpart_;
+    std::vector<cmg::GenParticle> genpartv_;
+    edm::Wrapper<cmg::GenParticle> wgenpart_;
+    edm::Wrapper<std::vector<cmg::GenParticle> > wgenpartv_;
+    
+    cmg::GenJet genjet_;
+    std::vector<cmg::GenJet> genjetv_;
+    edm::Wrapper<cmg::GenJet> wgenjet_;
+    edm::Wrapper<std::vector<cmg::GenJet> > wgenjetv_;
+    
     cmg::WENu wen;
     std::vector<cmg::WENu> wenv_;
     edm::Wrapper<cmg::WENu> wwen_;
