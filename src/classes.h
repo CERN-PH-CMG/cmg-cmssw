@@ -2,6 +2,8 @@
 
 #include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
 #include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
+#include "AnalysisDataFormats/CMGTools/interface/CompositePtrCandidateTMEt.h"
+#include "AnalysisDataFormats/CMGTools/interface/CompositePtrCandidateT1T2MEt.h"
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 #include "AnalysisDataFormats/CMGTools/interface/GenericTypes.h"
@@ -163,7 +165,18 @@ namespace {
     edm::PtrVector<pat::Jet> dummyPATJetPtrVector;
     edm::PtrVector<reco::PFCandidate> dummyPFCandPtrVector;
     edm::PtrVector<pat::PFParticle> dummyPFPartPtrVector;
-	
+    
+    /// create dictionaries for the composite objects from PFAnalysis
+    PATMuPair dummyPATMuPair_;
+    std::vector<PATMuPair> dummyPATMuPairVector_;
+    edm::Wrapper<PATMuPair> dummyPATMuPairWrapper_;
+    edm::Wrapper<std::vector<PATMuPair> > dummyPATMuPairVectorWrapper_;
+    
+    PATMuonNuPair dummyPATMuNuPair_;
+    std::vector<PATMuonNuPair> dummyPATMuNuPairVector_;
+    edm::Wrapper<PATMuonNuPair> dummyPATMuNuPairWrapper_;
+    edm::Wrapper<std::vector<PATMuonNuPair> > dummyPATMuNuPairVectorWrapper_;
+    
   };
   
 
