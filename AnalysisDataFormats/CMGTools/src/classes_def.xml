@@ -90,7 +90,17 @@
   <class name="std::vector<cmg::PFCand>"/>
   <class name="edm::Wrapper<cmg::PFCand>"/>
   <class name="edm::Wrapper<std::vector<cmg::PFCand> >"/>
+
+  <class name="cmg::GenParticle"/>
+  <class name="std::vector<cmg::GenParticle>"/>
+  <class name="edm::Wrapper<cmg::GenParticle>"/>
+  <class name="edm::Wrapper<std::vector<cmg::GenParticle> >"/>
   
+  <class name="cmg::GenJet"/>
+  <class name="std::vector<cmg::GenJet>"/>
+  <class name="edm::Wrapper<cmg::GenJet>"/>
+  <class name="edm::Wrapper<std::vector<cmg::GenJet> >"/>
+
   <class name="cmg::WENu"/>
   <class name="std::vector<cmg::WENu>"/>
   <class name="edm::Wrapper<cmg::WENu>"/>
