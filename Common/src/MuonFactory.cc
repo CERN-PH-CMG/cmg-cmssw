@@ -12,22 +12,19 @@ cmg::MuonFactory::event_ptr cmg::MuonFactory::create(const edm::Event& iEvent, c
   			
     pat::MuonPtr muonPtr(muonCands, index);
     cmg::Muon mu(muonPtr);
-    
-    //set the generic quantities first
-    leptonFactory_.set(muonPtr,&mu,iEvent,iSetup);
-    leptonFactory_.set(getTrack(muonPtr),&mu,iEvent,iSetup);
-    
-    //now the muon like ones
-    set(muonPtr,&mu);
-  
- 		
+    set(muonPtr,&mu,iEvent,iSetup);
     result->push_back(mu);
   }
   return result;
 }
 
-void cmg::MuonFactory::set(const pat::MuonPtr& input, cmg::Muon* const output) const{
-    
+void cmg::MuonFactory::set(const pat::MuonPtr& input, cmg::Muon* const output, const edm::Event& iEvent, const edm::EventSetup& iSetup) const{
+        
+    //set the generic quantities first
+    leptonFactory_.set(input,output,iEvent,iSetup);
+    leptonFactory_.set(getTrack(input),output,iEvent,iSetup);
+
+    //now the muon like ones
     output->isGlobal_ = cmg::toTriBool(input->isGlobalMuon());
     output->isTracker_ = cmg::toTriBool(input->isTrackerMuon());
     output->muonID_ = cmg::toTriBool(input->muonID(muonIDType_));
