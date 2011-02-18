@@ -45,6 +45,8 @@ typedef PhysicsObjectProducer<cmg::BaseJetFactory> BaseJetPOProducer;
 typedef PhysicsObjectProducer<cmg::PFJetFactory> PFJetPOProducer;
 typedef PhysicsObjectProducer<cmg::BaseMETFactory> BaseMETPOProducer;
 typedef PhysicsObjectProducer<cmg::PFCandFactory> PFCandidatePOProducer;
+typedef PhysicsObjectProducer<cmg::GenParticleFactory> GenParticlePOProducer;
+typedef PhysicsObjectProducer<cmg::GenJetFactory> GenJetPOProducer;
 typedef PhysicsObjectProducer<cmg::WENuFactory> WENuPOProducer;
 typedef PhysicsObjectProducer<cmg::WMuNuFactory> WMuNuPOProducer;
 typedef PhysicsObjectProducer<cmg::WTauNuFactory> WTauNuPOProducer;
