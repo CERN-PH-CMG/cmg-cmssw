@@ -1,6 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
-cutsummary = cms.EDAnalyzer(
-    "CutSummaryAnalyzer",
-    inputCollection = cms.InputTag("cmgMuon")
-)
+from CMGTools.Common.selections.cutsummarymuon_cfi import *
+
+cutsummary = cms.Sequence(
+    cutsummarymuon
+    )
+
