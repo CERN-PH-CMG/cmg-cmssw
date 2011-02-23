@@ -4,7 +4,7 @@ import FWCore.ParameterSet.Config as cms
 process.setName_('ANA')
 
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(-1)
+        input = cms.untracked.int32(2000)
         )
 
 process.source.fileNames = cms.untracked.vstring(
@@ -14,14 +14,9 @@ process.source.fileNames = cms.untracked.vstring(
 
 # output module for EDM event (ntuple)
 process.out.fileName = cms.untracked.string('testCMGTools.root')
-from CMGTools.Common.eventContent.particleFlow_cff import particleFlow as particleFlowEventContent  
-from CMGTools.Common.eventContent.particleFlow_cff import particleFlowBase as particleFlowEventContentBase  
-from CMGTools.Common.eventContent.traditional_cff import traditional as traditionalEventContent  
+from CMGTools.Common.eventContent.everything_cff import everything 
 process.out.outputCommands = cms.untracked.vstring( 'drop *')
-process.out.outputCommands.extend( particleFlowEventContent ) 
-process.out.outputCommands.extend( particleFlowEventContentBase )
-process.out.outputCommands.extend( traditionalEventContent ) 
-process.out.outputCommands.append( 'keep cmgBaseMETs_*_*_*' )
+process.out.outputCommands.extend( everything ) 
     
 
 #output file for histograms etc
@@ -29,16 +24,20 @@ process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("histograms.root"))
 
 
-    
+# default analysis sequence    
 process.load('CMGTools.Common.analysis_cff')
 
-process.cmgPFJetSel.verbose = cms.untracked.bool( False )
+# now, we're going to tune the default analysis sequence to our needs
+# by modifying the parameters of the modules present in this sequence. 
 
-process.baseMETSelector = cms.EDFilter(
-    'BaseMETSelector',
-    src = cms.InputTag('cmgMHTPFJets'),
-    cut = cms.string('pt()>20')
-    )
+# Select events with 2 jets ...  
+process.cmgPFJetCount.minNumber = 3
+# with pT > 70.
+process.cmgPFJetSel.cut = "pt()>50"
+# and MET larger than 50
+process.cmgPFMETSel.cut = "pt()>50"
+
+# note: we're reading ttbar events
 
 process.analysisSequence = cms.Sequence(
     process.analysis 
@@ -49,4 +48,4 @@ process.p = cms.Path(
 )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
-process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) ) 
+process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) ) 
