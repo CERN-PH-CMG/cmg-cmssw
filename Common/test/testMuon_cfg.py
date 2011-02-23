@@ -53,8 +53,22 @@ process.muonSequence = cms.Sequence(
     process.cmgMuonHistograms
     )
 
+process.load("CMGTools.Common.factories.cmgDiMuon_cfi")
+process.load("CMGTools.Common.skims.cmgDiMuonSel_cfi")
+process.load("CMGTools.Common.skims.cmgDiMuonCount_cfi")
+process.load("CMGTools.Common.histograms.cmgDiMuonHistograms_cfi")
+
+process.diMuonSequence = cms.Sequence(
+    process.muonSequence +
+    process.cmgDiMuon +
+    process.cmgDiMuonSel +
+    process.cmgDiMuonCount +
+    process.cmgDiMuonHistograms 
+    )
+
 process.analysisSequence = cms.Sequence(
-    process.muonSequence
+    process.muonSequence +
+    process.diMuonSequence
     )
 
 process.p = cms.Path(

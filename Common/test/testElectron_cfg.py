@@ -53,8 +53,23 @@ process.electronSequence = cms.Sequence(
     process.cmgElectronHistograms
     )
 
+process.load("CMGTools.Common.factories.cmgDiElectron_cfi")
+process.load("CMGTools.Common.skims.cmgDiElectronSel_cfi")
+process.load("CMGTools.Common.skims.cmgDiElectronCount_cfi")
+process.load("CMGTools.Common.histograms.cmgDiElectronHistograms_cfi")
+
+process.diElectronSequence = cms.Sequence(
+    process.electronSequence +
+    process.cmgDiElectron +
+    process.cmgDiElectronSel +
+    process.cmgDiElectronCount +
+    process.cmgDiElectronHistograms 
+    )
+
+
 process.analysisSequence = cms.Sequence(
-    process.electronSequence
+    process.electronSequence +
+    process.diElectronSequence
     )
 
 process.p = cms.Path(

@@ -57,6 +57,8 @@ typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::BaseMET> > GenericBas
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<pat::MET> > GenericPatMETHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Electron> > CmgElectronHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Muon> > CmgMuonHistograms;
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiMuon> > CmgDiMuonHistograms;
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiElectron> > CmgDiElectronHistograms;
 
 typedef cmg::RunInfoAccountingAnalyzer RunInfoAccountingAnalyzer;
 typedef cmg::CutSummaryAnalyzer CutSummaryAnalyzer;
@@ -89,6 +91,16 @@ typedef SingleObjectSelector<
   std::vector<cmg::Muon>,
   StringCutObjectSelector<cmg::Muon>
   > CmgMuonSelector;
+
+typedef SingleObjectSelector<
+  std::vector<cmg::DiMuon>,
+  StringCutObjectSelector<cmg::DiMuon>
+  > CmgDiMuonSelector;
+
+typedef SingleObjectSelector<
+  std::vector<cmg::DiElectron>,
+  StringCutObjectSelector<cmg::DiElectron>
+  > CmgDiElectronSelector;
 
 
 #endif
