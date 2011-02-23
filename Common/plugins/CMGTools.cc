@@ -22,6 +22,7 @@ DEFINE_FWK_MODULE(PFJetHistogramsAnalyzer);
 DEFINE_FWK_MODULE(GenericMuonHistograms);
 DEFINE_FWK_MODULE(GenericBaseMETHistograms);
 DEFINE_FWK_MODULE(GenericPatMETHistograms);
+DEFINE_FWK_MODULE(CmgElectronHistograms);
 
 DEFINE_FWK_MODULE(RunInfoAccountingAnalyzer);
 DEFINE_FWK_MODULE(PFCandidatePOProducer);
@@ -35,3 +36,4 @@ DEFINE_FWK_MODULE(LeadingCMGPFJetSelector);
 
 DEFINE_FWK_MODULE(CmgPFJetSelector);
 DEFINE_FWK_MODULE(CmgBaseJetSelector);
+DEFINE_FWK_MODULE(CmgElectronSelector);
