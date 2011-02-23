@@ -53,10 +53,10 @@ typedef PhysicsObjectProducer<cmg::WTauNuFactory> WTauNuPOProducer;
 
 typedef cmg::HistogramAnalyzer<cmg::LorentzHistogramsFF> LorentzHistogramsAnalyzer;
 typedef cmg::HistogramAnalyzer<cmg::JetHistograms> PFJetHistogramsAnalyzer;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Muon> > GenericMuonHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::BaseMET> > GenericBaseMETHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<pat::MET> > GenericPatMETHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Electron> > CmgElectronHistograms;
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Muon> > CmgMuonHistograms;
 
 typedef cmg::RunInfoAccountingAnalyzer RunInfoAccountingAnalyzer;
 typedef cmg::CutSummaryAnalyzer CutSummaryAnalyzer;
@@ -84,6 +84,11 @@ typedef SingleObjectSelector<
   std::vector<cmg::Electron>,
   StringCutObjectSelector<cmg::Electron>
   > CmgElectronSelector;
+
+typedef SingleObjectSelector<
+  std::vector<cmg::Muon>,
+  StringCutObjectSelector<cmg::Muon>
+  > CmgMuonSelector;
 
 
 #endif
