@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
-# from CMGTools.Common.vbfEventGenJetGenJet_cfi import vbfEventGenJetGenJet
-from CMGTools.Common.vbfEventJetJet_cfi import vbfEventJetJet
+# from CMGTools.Common.factories.vbfEventGenJetGenJet_cfi import vbfEventGenJetGenJet
+from CMGTools.Common.factories.vbfEventJetJet_cfi import vbfEventJetJet
 
 vbfEventJetJetPF = vbfEventJetJet.clone()
 vbfEventJetJetPF.ForwardJets = 'selectedPatJetsPFlow'

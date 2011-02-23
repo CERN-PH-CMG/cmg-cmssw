@@ -7,7 +7,7 @@ import FWCore.ParameterSet.Config as cms
 cmgPFJetSel = cms.EDFilter(
     "CmgPFJetSelector",
     src = cms.InputTag("cmgPFJet"),
-    cut = cms.string( "30" )
+    cut = cms.string( "pt()>30" )
     )
 
 
