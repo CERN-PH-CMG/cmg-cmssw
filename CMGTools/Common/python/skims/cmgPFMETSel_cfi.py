@@ -7,7 +7,7 @@ import FWCore.ParameterSet.Config as cms
 cmgPFMETSel = cms.EDFilter(
     "CandViewSelector",
     src = cms.InputTag("patMETsPFlow"),
-    cut = cms.string( "0" )
+    cut = cms.string( "pt()>0" )
     )
 
 
