@@ -4,10 +4,10 @@ import FWCore.ParameterSet.Config as cms
 # as they are subject to change. 
 # you should override these cuts in your analysis.
 
-cmgMuonSel = cms.EDFilter(
-    "CmgMuonSelector",
-    src = cms.InputTag( "cmgMuon" ),
-    cut = cms.string( "pt()>5" )
+cmgDiMuonCount = cms.EDFilter(
+    "CandViewCountFilter",
+    src = cms.InputTag("cmgDiMuonSel"),
+    minNumber = cms.uint32(0),
     )
 
 
