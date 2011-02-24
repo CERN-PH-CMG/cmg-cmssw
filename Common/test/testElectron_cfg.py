@@ -76,6 +76,10 @@ process.p = cms.Path(
     process.analysisSequence
 )
 
+process.schedule = cms.Schedule(
+    process.p
+    )
+
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) ) 
 
