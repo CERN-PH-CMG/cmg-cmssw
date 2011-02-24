@@ -5,6 +5,11 @@
   <class name="std::vector<cmg::AbstractPhysicsObject>" />
   <class name="edm::Wrapper<std::vector<cmg::AbstractPhysicsObject> >" />
   
+  <class name="cmg::DiHemisphere"/>
+  <class name="std::vector<cmg::DiHemisphere>"/>
+  <class name="edm::Wrapper<cmg::DiHemisphere>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiHemisphere> >"/>
+  
   <class name="cmg::DiElectron"/>
   <class name="std::vector<cmg::DiElectron>"/>
   <class name="edm::Wrapper<cmg::DiElectron>"/>
@@ -115,6 +120,16 @@
   <class name="std::vector<cmg::WTauNu>"/>
   <class name="edm::Wrapper<cmg::WTauNu>"/>
   <class name="edm::Wrapper<std::vector<cmg::WTauNu> >"/>
+
+  <class name="cmg::MultiObject"/>
+  <class name="std::vector<cmg::MultiObject>"/>
+  <class name="edm::Wrapper<cmg::MultiObject>"/>
+  <class name="edm::Wrapper<std::vector<cmg::MultiObject> >"/>
+
+  <class name="cmg::Hemisphere"/>
+  <class name="std::vector<cmg::Hemisphere>"/>
+  <class name="edm::Wrapper<cmg::Hemisphere>"/>
+  <class name="edm::Wrapper<std::vector<cmg::Hemisphere> >"/>
 
  <!-- create dictionaries for Jet Jet objects -->
   <class name="cmg::VBFEventT1T2<pat::Jet, pat::Jet>"/>

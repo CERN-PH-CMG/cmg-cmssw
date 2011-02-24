@@ -3,6 +3,8 @@
 
 #include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
 
+#include "AnalysisDataFormats/CMGTools/interface/UnSet.h"
+
 #include <vector>
 
 namespace cmg {
@@ -18,17 +20,19 @@ class DiObject : public AbstractPhysicsObject{
     typedef U type2;
     
     DiObject():
-        AbstractPhysicsObject(){
+      AbstractPhysicsObject(), alphaT_(UnSet(Double_t)) {
     }
     DiObject(const T& leg1, const U& leg2):
         AbstractPhysicsObject(reco::LeafCandidate(leg1.charge()+leg2.charge(),leg1.p4()+leg2.p4())),
         leg1_(leg1),
-        leg2_(leg2){
+        leg2_(leg2),
+        alphaT_(UnSet(Double_t)){
     }
     DiObject(const DiObject<T,U>& other):
         AbstractPhysicsObject(other),
         leg1_(other.leg1()),
-        leg2_(other.leg2()){
+        leg2_(other.leg2()),
+        alphaT_(other.alphaT_){
     }
     
     virtual ~DiObject(){}
@@ -39,7 +43,13 @@ class DiObject : public AbstractPhysicsObject{
     U leg2() const{
         return leg2_;
     }
-    
+
+    Double_t
+      const alphaT() const
+    {
+      return alphaT_;
+    }
+
     virtual void accept(AbstractPhysicsObjectVisitor* v) const{
       v->visit(this);  
       v->visit(&leg1_);
@@ -62,14 +72,16 @@ class DiObject : public AbstractPhysicsObject{
      return reco::Candidate::sourceCandidatePtr(i);  
     }
    }
-    
+
   private:
-    
+
     T leg1_;
     U leg2_;
-    
+
+    Double_t alphaT_;
+
     friend class cmg::DiObjectFactory<T,U>;
-        
+
 };
 
 }
