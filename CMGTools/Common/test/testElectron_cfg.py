@@ -77,7 +77,9 @@ process.p = cms.Path(
 )
 
 process.schedule = cms.Schedule(
-    process.p
+    process.p,
+    process.outpath
+
     )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100

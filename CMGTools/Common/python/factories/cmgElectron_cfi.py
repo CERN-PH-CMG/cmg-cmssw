@@ -11,6 +11,9 @@ from CMGTools.Common.selections.kinematics_cfi import kinematics
 cmgElectron = cms.EDFilter("ElectronPOProducer",
     cfg = electronFactory.clone(),
     cuts = cms.PSet(
-                kinematics = kinematics.clone()
+       # the following needs the electron core to be in the input file
+       # ecalDriven = cms.string('sourcePtr().ecalDriven()'),
+       # but this one is ok: 
+       isEB = cms.string('sourcePtr().isEB()'),
        )    
 )
