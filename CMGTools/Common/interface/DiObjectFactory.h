@@ -5,6 +5,7 @@
 #include "CMGTools/Common/interface/Factory.h"
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/Math/interface/deltaPhi.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
@@ -27,8 +28,11 @@ class DiObjectFactory : public cmg::Factory< cmg::DiObject<T,U> >{
         //need to override from Factory to insert "typename"
         typedef typename cmg::Factory<typename cmg::DiObject<T,U> >::event_ptr event_ptr;
         virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
-        
+
     private:
+
+        double alphaT(T const& l1, U const& l2) const;
+
         const edm::InputTag leg1Label_;
         const edm::InputTag leg2Label_;
 };
@@ -73,7 +77,9 @@ typename cmg::DiObjectFactory<T,U>::event_ptr cmg::DiObjectFactory<T,U>::create(
         for(typename collection2::const_iterator jt = leg2Cands->begin(); jt != leg2Cands->end(); ++jt){
             //we skip if its the same object
             if( sameCollection && (*it == *jt) ) continue;
-            result->push_back(cmg::make(*it,*jt));
+            cmg::DiObject<T, U> cmgTmp = cmg::make(*it,*jt);
+            cmgTmp.alphaT_ = alphaT(*it, *jt);
+            result->push_back(cmgTmp);
       }
     }
     //finally, remove duplicates while preserving order
@@ -86,7 +92,18 @@ typename cmg::DiObjectFactory<T,U>::event_ptr cmg::DiObjectFactory<T,U>::create(
         }
     } 
     return result;
-    
+}
+
+template<typename T, typename U>
+  double cmg::DiObjectFactory<T, U>::alphaT(T const& l1, U const& l2) const
+{
+  // Alpha_T as defined on p. 3 of AN2008-114-v1.
+  double num = std::min(l1.et(), l2.et());
+  double deltaPhi = reco::deltaPhi(l1.p4().Phi(),
+                                   l2.p4().Phi());
+  double den = sqrt(2. * l1.et() * l2.et() *
+                    (1. - cos(deltaPhi)));
+  return num / den;
 }
 
 #endif /*DIOBJECTFACTORY_H_*/

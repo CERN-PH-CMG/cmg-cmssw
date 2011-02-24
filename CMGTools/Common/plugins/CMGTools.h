@@ -12,6 +12,7 @@
 #include "CMGTools/Common/interface/JetHistograms.h"
 #include "CMGTools/Common/interface/LorentzHistograms.h"
 #include "CMGTools/Common/interface/CompoundFactories.h"
+#include "CMGTools/Common/interface/HemiFactory.h"
 #include "CMGTools/Common/interface/GenericFactories.h"
 #include "CMGTools/Common/interface/ElectronFactory.h"
 #include "CMGTools/Common/interface/MuonFactory.h"
@@ -32,6 +33,8 @@
 
 //colin: should add cmg to the type names where applicable
 
+typedef PhysicsObjectProducer<cmg::HemisphereFactory> HemispherePOProducer;
+typedef PhysicsObjectProducer<cmg::DiHemisphereFactory> DiHemispherePOProducer;
 typedef PhysicsObjectProducer<cmg::DiElectronFactory> DiElectronPOProducer;
 typedef PhysicsObjectProducer<cmg::DiMuonFactory> DiMuonPOProducer;
 typedef PhysicsObjectProducer<cmg::DiJetFactory> DiJetPOProducer;
