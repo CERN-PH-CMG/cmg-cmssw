@@ -46,6 +46,9 @@ process.out.outputCommands += particleFlow
 process.load('CMGTools.SusyJetMET.RA2CMG_cff')
 process.RA2CMGSequence.remove( process.caloJetSequence)
 process.RA2CMGSequence.remove( process.caloMetSequence)
+process.RA2CMGSequence.remove( process.electronSequence)
+process.RA2CMGSequence.remove( process.muonSequence)
+process.RA2CMGSequence.remove( process.cutsummarymuon)
 
 
 process.p = cms.Path(
