@@ -42,30 +42,8 @@ process.cmgPFMETSel.cut = "pt()>50"
 
 # note: we're reading ttbar events
 
-process.load("CMGTools.Common.skims.cmgElectronSel_cfi")
-process.load("CMGTools.Common.skims.cmgElectronCount_cfi")
-process.load("CMGTools.Common.histograms.cmgElectronHistograms_cfi")
-
-process.electronSequence = cms.Sequence(
-    process.cmgElectron +
-    process.cmgElectronSel +
-    process.cmgElectronCount +
-    process.cmgElectronHistograms
-    )
-
-process.load("CMGTools.Common.factories.cmgDiElectron_cfi")
-process.load("CMGTools.Common.skims.cmgDiElectronSel_cfi")
-process.load("CMGTools.Common.skims.cmgDiElectronCount_cfi")
-process.load("CMGTools.Common.histograms.cmgDiElectronHistograms_cfi")
-
-process.diElectronSequence = cms.Sequence(
-    process.electronSequence +
-    process.cmgDiElectron +
-    process.cmgDiElectronSel +
-    process.cmgDiElectronCount +
-    process.cmgDiElectronHistograms 
-    )
-
+process.load("CMGTools.Common.electron_cff")
+process.load("CMGTools.Common.diElectron_cff")
 
 process.analysisSequence = cms.Sequence(
     process.electronSequence +
