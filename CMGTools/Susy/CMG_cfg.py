@@ -4,10 +4,10 @@ import pprint
 
 #warning
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(-1)
+        input = cms.untracked.int32(1000)
         )
 
-# message logger setup 
+# Message logger setup.
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
@@ -34,7 +34,9 @@ print process.source.fileNames
 outFileNameExt = ext
 
 # reinitializing stuff defined in patTemplate_cfg
-process.out.outputCommands = cms.untracked.vstring( 'drop *' )
+process.out.outputCommands = cms.untracked.vstring('drop *')
+process.out.outputCommands.append('keep *_cmgHemi*_*_*')
+process.out.outputCommands.append('keep *_cmgDiHemi*_*_*')
 process.out.SelectEvents.SelectEvents = cms.vstring()
 
 process.load("CMGTools.Common.countingSequences_cff")
@@ -50,6 +52,15 @@ process.RA2CMGSequence.remove( process.electronSequence)
 process.RA2CMGSequence.remove( process.muonSequence)
 process.RA2CMGSequence.remove( process.cutsummarymuon)
 
+from CMGTools.Common.factories.cmgHemi_cfi import cmgHemi
+from CMGTools.Common.factories.cmgDiHemi_cfi import cmgDiHemi
+
+process.cmgHemi = cmgHemi.clone()
+process.cmgDiHemi = cmgDiHemi.clone()
+
+process.hemiSequence = cms.Sequence(process.cmgHemi * process.cmgDiHemi)
+process.RA2CMGSequence.replace(process.skimSequence,
+                               process.skimSequence + process.hemiSequence)
 
 process.p = cms.Path(
     process.RA2CMGSequence
