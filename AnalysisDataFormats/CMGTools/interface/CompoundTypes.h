@@ -7,24 +7,25 @@
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
+#include "AnalysisDataFormats/CMGTools/interface/Hemisphere.h"
 
 #include "AnalysisDataFormats/CMGTools/interface/GenericTypes.h"
 
-namespace cmg{
-    
- typedef cmg::DiObject<cmg::Electron,cmg::Electron> DiElectron;   
- typedef cmg::DiObject<cmg::BaseJet,cmg::BaseJet> DiJet;   
- typedef cmg::DiObject<cmg::Muon,cmg::Muon> DiMuon;
- typedef cmg::DiObject<cmg::PFJet,cmg::PFJet> DiPFJet;
- typedef cmg::DiObject<cmg::Tau,cmg::Tau> DiTau;
- typedef cmg::DiObject<cmg::Electron,cmg::BaseMET> WENu;
- typedef cmg::DiObject<cmg::Muon,cmg::BaseMET> WMuNu;
- typedef cmg::DiObject<cmg::Tau,cmg::BaseMET> WTauNu;
- 
- //mainly for testing rather than Higgs discovery!   
- typedef cmg::DiObject<cmg::DiMuon,cmg::DiMuon> QuadMuon;
-    
-}
+namespace cmg {
 
+  typedef cmg::DiObject<cmg::Hemisphere, cmg::Hemisphere> DiHemisphere;
+  typedef cmg::DiObject<cmg::Electron,cmg::Electron> DiElectron;
+  typedef cmg::DiObject<cmg::BaseJet,cmg::BaseJet> DiJet;
+  typedef cmg::DiObject<cmg::Muon,cmg::Muon> DiMuon;
+  typedef cmg::DiObject<cmg::PFJet,cmg::PFJet> DiPFJet;
+  typedef cmg::DiObject<cmg::Tau,cmg::Tau> DiTau;
+  typedef cmg::DiObject<cmg::Electron,cmg::BaseMET> WENu;
+  typedef cmg::DiObject<cmg::Muon,cmg::BaseMET> WMuNu;
+  typedef cmg::DiObject<cmg::Tau,cmg::BaseMET> WTauNu;
+
+  // Mainly for testing rather than Higgs discovery!
+  typedef cmg::DiObject<cmg::DiMuon,cmg::DiMuon> QuadMuon;
+
+}
 
 #endif /*COMPOUNDTYPES_H_*/

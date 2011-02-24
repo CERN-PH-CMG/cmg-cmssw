@@ -16,6 +16,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/PatTypes.h"
 #include "AnalysisDataFormats/CMGTools/interface/VBFEventT1T2.h"
 #include "AnalysisDataFormats/CMGTools/interface/VBFEventT1T2Fwd.h"
+#include "AnalysisDataFormats/CMGTools/interface/Hemisphere.h"
 
 #include <vector>
 
@@ -26,6 +27,11 @@ namespace {
     std::vector<cmg::AbstractPhysicsObject> av;
     edm::Wrapper<cmg::AbstractPhysicsObject> ae;
     edm::Wrapper<std::vector<cmg::AbstractPhysicsObject> > aev;
+
+    cmg::DiHemisphere dh_;
+    std::vector<cmg::DiHemisphere> dhv;
+    edm::Wrapper<cmg::DiHemisphere> wdh;
+    edm::Wrapper<std::vector<cmg::DiHemisphere> > wdhv;
 
     cmg::DiElectron de_;
     std::vector<cmg::DiElectron> dev;
@@ -41,7 +47,7 @@ namespace {
     std::vector<cmg::DiJet> djv;
     edm::Wrapper<cmg::DiJet> edj;
     edm::Wrapper<std::vector<cmg::DiJet> > edjv;
-    
+
     cmg::DiPFJet dpfj_;
     std::vector<cmg::DiPFJet> dpfjv;
     edm::Wrapper<cmg::DiPFJet> epfdj;
@@ -61,12 +67,12 @@ namespace {
     std::vector<cmg::Muon> mv;
     edm::Wrapper<cmg::Muon> em;
     edm::Wrapper<std::vector<cmg::Muon> > emv;
-    
+
     cmg::Tau t;
     std::vector<cmg::Tau> tv;
     edm::Wrapper<cmg::Tau> et;
     edm::Wrapper<std::vector<cmg::Tau> > etv;
-    
+
     cmg::BaseJet j_;
     std::vector<cmg::BaseJet> jv;
     edm::Wrapper<cmg::BaseJet> ej;
@@ -89,7 +95,7 @@ namespace {
     std::vector<cmg::BaseMET> metv_;
     edm::Wrapper<cmg::BaseMET> wmet_;
     edm::Wrapper<std::vector<cmg::BaseMET> > wmetv_;
-		
+
     static const cmg::TriBool u_ = cmg::tbUnset;
     static const cmg::TriBool f_ = cmg::tbFalse;
     static const cmg::TriBool t_ = cmg::tbTrue;
@@ -123,7 +129,17 @@ namespace {
     std::vector<cmg::WTauNu> wtnv_;
     edm::Wrapper<cmg::WTauNu> wwtn_;
     edm::Wrapper<std::vector<cmg::WTauNu> > wwtnv_;
-    
+
+    cmg::MultiObject mp_;
+    std::vector<cmg::MultiObject> vmp_;
+    edm::Wrapper<cmg::MultiObject> wmp_;
+    edm::Wrapper<std::vector<cmg::MultiObject> > wvmp_;
+
+    cmg::Hemisphere hp_;
+    std::vector<cmg::Hemisphere> vhp_;
+    edm::Wrapper<cmg::Hemisphere> whp_;
+    edm::Wrapper<std::vector<cmg::Hemisphere> > wvhp_;
+
     /// create dictionaries for Jet Jet objects
     cmg::VBFEventJetJet dummyVBFEventJetJet;
     edm::Wrapper<cmg::VBFEventJetJet> dummyVBFEventJetJetWrapper;
