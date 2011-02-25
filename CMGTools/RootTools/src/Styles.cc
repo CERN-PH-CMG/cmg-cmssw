@@ -1,4 +1,4 @@
-#include "PFAnalyses/RootTools/interface/Styles.h"
+#include "CMGTools/RootTools/interface/Styles.h"
 
 #include <TROOT.h>
 #include <TClass.h>

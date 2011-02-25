@@ -1,6 +1,6 @@
-#include "PFAnalyses/RootTools/interface/Plot.h"
-#include "PFAnalyses/RootTools/interface/TmpHistName.h"
-#include "PFAnalyses/RootTools/interface/Styles.h"
+#include "CMGTools/RootTools/interface/Plot.h"
+#include "CMGTools/RootTools/interface/TmpHistName.h"
+#include "CMGTools/RootTools/interface/Styles.h"
 
 #include <TH1F.h> 
 #include <THStack.h> 
