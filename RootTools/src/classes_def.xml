@@ -1,0 +1,12 @@
+<lcgdict>
+  <class name="Chain"/>
+  <class name="Styles"/>
+  <class name="TmpHistName"/>
+  <class name="EventSummary"/>
+  <class name="Samples"/>
+  <class name="Plot"/>
+  <class name="DataSet"/>
+  <class name="std::vector<DataSet*>"/>
+  <class name="DataSets"/>
+  <class name="Aliases"/>
+</lcgdict>
