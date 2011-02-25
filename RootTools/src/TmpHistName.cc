@@ -1,4 +1,4 @@
-#include "PFAnalyses/RootTools/interface/TmpHistName.h"
+#include "CMGTools/RootTools/interface/TmpHistName.h"
 
 #include<sstream>
 

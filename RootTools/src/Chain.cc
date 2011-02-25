@@ -1,4 +1,4 @@
-#include "PFAnalyses/RootTools/interface/Chain.h"
+#include "CMGTools/RootTools/interface/Chain.h"
 #include "TFile.h"
 #include "TObjArray.h"
 #include "TCollection.h"

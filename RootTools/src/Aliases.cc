@@ -1,4 +1,4 @@
-#include "PFAnalyses/RootTools/interface/Aliases.h"
+#include "CMGTools/RootTools/interface/Aliases.h"
 
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"

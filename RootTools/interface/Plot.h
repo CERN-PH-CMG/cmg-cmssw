@@ -12,7 +12,7 @@
   \author Colin Bernet, september 2010
 */
 
-#include "PFAnalyses/RootTools/interface/StyleAndOpt.h"
+#include "CMGTools/RootTools/interface/StyleAndOpt.h"
 
 
 #include <map>

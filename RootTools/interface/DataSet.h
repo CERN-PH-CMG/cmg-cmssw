@@ -8,7 +8,7 @@
   \author Colin Bernet, september 2010
 */
 
-#include "PFAnalyses/RootTools/interface/Chain.h"
+#include "CMGTools/RootTools/interface/Chain.h"
 
 
 #include <TTree.h>

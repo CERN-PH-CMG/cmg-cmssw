@@ -1,7 +1,7 @@
 #ifndef __PFAnalyses_RootTools_StyleAndOpt__
 #define __PFAnalyses_RootTools_StyleAndOpt__
 
-#include "PFAnalyses/RootTools/interface/Styles.h"
+#include "CMGTools/RootTools/interface/Styles.h"
 
 class StyleAndOpt {
  public: 

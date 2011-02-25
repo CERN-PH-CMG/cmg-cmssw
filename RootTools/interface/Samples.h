@@ -11,9 +11,9 @@
   \author Colin Bernet, september 2010
 */
 
-#include "PFAnalyses/RootTools/interface/Plot.h"
-#include "PFAnalyses/RootTools/interface/DataSet.h"
-#include "PFAnalyses/RootTools/interface/StyleAndOpt.h"
+#include "CMGTools/RootTools/interface/Plot.h"
+#include "CMGTools/RootTools/interface/DataSet.h"
+#include "CMGTools/RootTools/interface/StyleAndOpt.h"
 
 
 #include "TTree.h"

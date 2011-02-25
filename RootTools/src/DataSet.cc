@@ -1,5 +1,5 @@
-#include "PFAnalyses/RootTools/interface/DataSet.h"
-#include "PFAnalyses/RootTools/interface/TmpHistName.h"
+#include "CMGTools/RootTools/interface/DataSet.h"
+#include "CMGTools/RootTools/interface/TmpHistName.h"
 
 #include <TH1F.h> 
 #include <sstream>

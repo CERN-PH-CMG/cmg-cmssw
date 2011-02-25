@@ -1,4 +1,4 @@
-#include "PFAnalyses/RootTools/interface/EventSummary.h"
+#include "CMGTools/RootTools/interface/EventSummary.h"
 
 #include <TTree.h>
 #include <TH1F.h>
