@@ -1,5 +1,6 @@
 <lcgdict>
   <class name="Chain"/>
+  <class name="Style"/>
   <class name="Styles"/>
   <class name="TmpHistName"/>
   <class name="EventSummary"/>
