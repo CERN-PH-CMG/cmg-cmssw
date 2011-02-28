@@ -1,5 +1,4 @@
 import FWCore.ParameterSet.Config as cms
-from CMGTools.Common.factories.cmgmuon_cfi import cmgMuon
 
 dimuonFactory = cms.PSet(
        leg1Collection = cms.InputTag("cmgElectron"),
