@@ -30,41 +30,10 @@ process.TFileService = cms.Service("TFileService",
 # default analysis sequence    
 process.load('CMGTools.Common.analysis_cff')
 
-# now, we're going to tune the default analysis sequence to our needs
-# by modifying the parameters of the modules present in this sequence. 
-
-# Select events with 2 jets ...  
-process.cmgPFJetCount.minNumber = 3
-# with pT > 70.
-process.cmgPFJetSel.cut = "pt()>50"
-# and MET larger than 50
-process.cmgPFMETSel.cut = "pt()>50"
-
 # note: we're reading ttbar events
 
-process.load("CMGTools.Common.skims.cmgMuonSel_cfi")
-process.load("CMGTools.Common.skims.cmgMuonCount_cfi")
-process.load("CMGTools.Common.histograms.cmgMuonHistograms_cfi")
-
-process.muonSequence = cms.Sequence(
-    process.cmgMuon +
-    process.cmgMuonSel +
-    process.cmgMuonCount +
-    process.cmgMuonHistograms
-    )
-
-process.load("CMGTools.Common.factories.cmgDiMuon_cfi")
-process.load("CMGTools.Common.skims.cmgDiMuonSel_cfi")
-process.load("CMGTools.Common.skims.cmgDiMuonCount_cfi")
-process.load("CMGTools.Common.histograms.cmgDiMuonHistograms_cfi")
-
-process.diMuonSequence = cms.Sequence(
-    process.muonSequence +
-    process.cmgDiMuon +
-    process.cmgDiMuonSel +
-    process.cmgDiMuonCount +
-    process.cmgDiMuonHistograms 
-    )
+process.load("CMGTools.Common.muon_cff")
+process.load("CMGTools.Common.diMuon_cff")
 
 process.analysisSequence = cms.Sequence(
     process.muonSequence +
@@ -78,6 +47,7 @@ process.p = cms.Path(
 process.schedule = cms.Schedule(
     process.p,
     process.outpath
+
     )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100

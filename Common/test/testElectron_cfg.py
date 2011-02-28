@@ -30,16 +30,6 @@ process.TFileService = cms.Service("TFileService",
 # default analysis sequence    
 process.load('CMGTools.Common.analysis_cff')
 
-# now, we're going to tune the default analysis sequence to our needs
-# by modifying the parameters of the modules present in this sequence. 
-
-# Select events with 2 jets ...  
-process.cmgPFJetCount.minNumber = 3
-# with pT > 70.
-process.cmgPFJetSel.cut = "pt()>50"
-# and MET larger than 50
-process.cmgPFMETSel.cut = "pt()>50"
-
 # note: we're reading ttbar events
 
 process.load("CMGTools.Common.electron_cff")

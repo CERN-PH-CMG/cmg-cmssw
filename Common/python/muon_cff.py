@@ -1,11 +1,13 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.Common.factories.cmgmuon_cfi import cmgMuon
-from CMGTools.Common.histograms.muonLorentzVector_cfi import muonLorentzVector
-from CMGTools.Common.histograms.cmgMuonHistograms_cfi import cmgMuonHistograms
+from CMGTools.Common.factories.cmgMuon_cfi import *
+from CMGTools.Common.skims.cmgMuonSel_cfi import *
+from CMGTools.Common.skims.cmgMuonCount_cfi import *
+from CMGTools.Common.histograms.cmgMuonHistograms_cfi import *
 
 muonSequence = cms.Sequence(
-    cmgMuon +
-    muonLorentzVector +
+    cmgMuon + 
+    cmgMuonSel +
+    cmgMuonCount +
     cmgMuonHistograms
-    )
+)
