@@ -61,7 +61,7 @@ namespace cmg{
       selections.push_back(name);
       selections.set(name,value);	
     }
-    std::ostream& printSelections(std::ostream&) const;
+    std::ostream& printSelections(std::ostream&, const std::string indent = "") const;
     bool getSelection(const std::string& s) const{
       //TODO: Understand how to make this a TriBool - i.e. unset? 
       return selections[s];

@@ -15,11 +15,11 @@ bool cmg::AbstractPhysicsObject::operator==(const AbstractPhysicsObject& other) 
   return (p4() == other.p4()) && (charge() == other.charge());
 }
 
-std::ostream& cmg::AbstractPhysicsObject::printSelections(std::ostream& o) const{
+std::ostream& cmg::AbstractPhysicsObject::printSelections(std::ostream& o, const std::string indent) const{
   const std::vector<std::string> strings = selections.strings();
   for(std::vector<std::string>::const_iterator it = strings.begin();
       it != strings.end(); ++it){
-    o << *it << "\t" << selections.test(*it) << std::endl;
+    o << indent << *it << "\t" << selections.test(*it) << std::endl;
   }
   return o;
 }
