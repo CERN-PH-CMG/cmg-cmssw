@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 leptonFactory = cms.PSet(
 
     # set this to false to use pat::TrackIso, pat::HcalIso, and pat::EcalIso
-    useParticleFlowIso = cms.bool(False),
+    useParticleFlowIso = cms.bool(True),
 
     ## each IsoPar has a coneSize parameter (radius of the cone inside which
     ## the isolation is computed) plus a VPSet called vetoes, made of any of the following
