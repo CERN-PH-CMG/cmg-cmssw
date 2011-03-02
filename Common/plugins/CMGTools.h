@@ -25,6 +25,7 @@
 #include "CMGTools/Common/interface/CutSummaryAnalyzer.h"
 #include "CMGTools/Common/plugins/RunInfoAccountingAnalyzer.h"
 #include "CMGTools/Common/plugins/LeadingObjectsSelector.h"
+#include "CMGTools/Common/plugins/PhysicsObjectPrinter.h"
 
 #include "CommonTools/UtilAlgos/interface/StringCutObjectSelector.h"
 #include "CommonTools/UtilAlgos/interface/SingleObjectSelector.h"
@@ -65,6 +66,7 @@ typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiElectron> > CmgDiEl
 
 typedef cmg::RunInfoAccountingAnalyzer RunInfoAccountingAnalyzer;
 typedef cmg::CutSummaryAnalyzer CutSummaryAnalyzer;
+typedef cmg::PhysicsObjectPrinter PhysicsObjectPrinter;
 
 
 // leading objects selectors 
