@@ -62,7 +62,7 @@ namespace cmg{
             cmg::GenericHistograms<T>::GenericHistograms(ps),
             vars_(new RealVars),
             dataset_(0){
-                initArgSet(ps.getParameter<edm::ParameterSet>("argset"));
+                initArgSet(ps.getUntrackedParameter<edm::ParameterSet>("argset",edm::ParameterSet()));
                 std::auto_ptr<RooArgSet> args = argSet();
                 const TFileDirectory* myDir = cmg::HistogramCreator<T>::fs_.operator->();
                 dataset_ = myDir->make<RooDataSet>("GenericDataSet","GenericDataSet",*args);
@@ -95,7 +95,7 @@ void cmg::GenericRooDataSets<T>::initArgSet(const edm::ParameterSet& ps){
     std::vector<std::string> parameterNames = ps.getParameterNames();
     for(std::vector<std::string>::const_iterator n = parameterNames.begin(); n != parameterNames.end(); n++){
         std::string name = *n;
-        std::vector<edm::ParameterSet> axes = ps.getParameter<std::vector<edm::ParameterSet> >(name);
+        std::vector<edm::ParameterSet> axes = ps.getUntrackedParameter<std::vector<edm::ParameterSet> >(name);
         for(std::vector<edm::ParameterSet>::const_iterator a = axes.begin(); a != axes.end(); a++){
             //parameters for the RooRealVar
             const std::string var = a->getUntrackedParameter<std::string>("var");

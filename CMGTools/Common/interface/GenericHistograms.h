@@ -38,7 +38,7 @@ namespace cmg{
         GenericHistograms(const edm::ParameterSet& ps):
             cmg::HistogramCreator<T>::HistogramCreator(ps),
             histos_(new Histograms){
-                initHistograms(ps.getParameter<edm::ParameterSet>("histograms"));
+                initHistograms(ps.getUntrackedParameter<edm::ParameterSet>("histograms",edm::ParameterSet()));
         }
         
         virtual void fill(const T& cand);
@@ -63,14 +63,14 @@ void cmg::GenericHistograms<T>::initHistograms(const edm::ParameterSet& ps){
     std::vector<std::string> parameterNames = ps.getParameterNames();
     for(std::vector<std::string>::const_iterator n = parameterNames.begin(); n != parameterNames.end(); n++){
         std::string name = *n;
-        std::vector<edm::ParameterSet> axes = ps.getParameter<std::vector<edm::ParameterSet> >(name);
+        std::vector<edm::ParameterSet> axes = ps.getUntrackedParameter<std::vector<edm::ParameterSet> >(name);
         std::vector<HistogramAxis> ax;
         for(std::vector<edm::ParameterSet>::const_iterator a = axes.begin(); a != axes.end(); a++){
             //parameters for the histogram
-            const std::string var = a->getParameter<std::string>("var");
-            const double low = a->getParameter<double>("low");
-            const double high = a->getParameter<double>("high");
-            const int nbins = a->getParameter<int>("nbins");
+            const std::string var = a->getUntrackedParameter<std::string>("var");
+            const double low = a->getUntrackedParameter<double>("low");
+            const double high = a->getUntrackedParameter<double>("high");
+            const int nbins = a->getUntrackedParameter<int>("nbins");
             const std::string title = a->getUntrackedParameter<std::string>("title",var);
             ax.push_back(HistogramAxis(var,low,high,nbins,title));
             //std::cout << name << " Axis: " << var << "\t" << low << "\t" << high << "\t" << nbins << std::endl;
