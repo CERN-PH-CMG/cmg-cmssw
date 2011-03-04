@@ -28,6 +28,8 @@ DEFINE_FWK_MODULE(CmgMuonHistograms);
 DEFINE_FWK_MODULE(CmgDiMuonHistograms);
 DEFINE_FWK_MODULE(CmgDiElectronHistograms);
 
+DEFINE_FWK_MODULE(CmgDiMuonDataSet);
+
 DEFINE_FWK_MODULE(RunInfoAccountingAnalyzer);
 DEFINE_FWK_MODULE(PhysicsObjectPrinter);
 DEFINE_FWK_MODULE(PFCandidatePOProducer);

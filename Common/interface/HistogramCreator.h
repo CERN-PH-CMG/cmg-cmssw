@@ -23,9 +23,7 @@ namespace cmg{
     public:
         HistogramCreator(const edm::ParameterSet& ps):
             AnalysisHistograms::AnalysisHistograms(),
-            label_(ps.getParameter<edm::InputTag>("inputCollection"))
-	  // name_(ps.getParameter<std::string>("name"))
-	      {
+            label_(ps.getParameter<edm::InputTag>("inputCollection")){
         }
 		
         virtual ~HistogramCreator(){

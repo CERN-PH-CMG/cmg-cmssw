@@ -8,6 +8,7 @@
 <use name="AnalysisDataFormats/CMGTools"/>
 
 <use name="rootrflx"/>
+<use name="roofitcore"/>
 
 <export>
   <lib   name="1"/>

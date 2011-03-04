@@ -9,6 +9,7 @@
 
 #include "CMGTools/Common/plugins/HistogramAnalyzer.h"
 #include "CMGTools/Common/interface/GenericHistograms.h"
+#include "CMGTools/Common/interface/GenericRooDataSets.h"
 #include "CMGTools/Common/interface/JetHistograms.h"
 #include "CMGTools/Common/interface/LorentzHistograms.h"
 #include "CMGTools/Common/interface/CompoundFactories.h"
@@ -63,6 +64,9 @@ typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Electron> > CmgElectr
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Muon> > CmgMuonHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiMuon> > CmgDiMuonHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiElectron> > CmgDiElectronHistograms;
+
+//for datasets
+typedef cmg::HistogramAnalyzer<cmg::GenericRooDataSets<cmg::DiMuon> > CmgDiMuonDataSet;
 
 typedef cmg::RunInfoAccountingAnalyzer RunInfoAccountingAnalyzer;
 typedef cmg::CutSummaryAnalyzer CutSummaryAnalyzer;
