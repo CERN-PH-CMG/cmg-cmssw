@@ -1,0 +1,150 @@
+{
+    "proc" : [
+	{
+	"tag" : "WW",
+        "isdata" : false,
+	"color":"kYellow-10",
+        "lcolor":1,
+	"marker":1,
+	"data" : [
+	     {	
+		"dir" :"/castor/cern.ch/user/p/psilva/WWToAnything",
+		"xsec":28.0,
+		"origevents":1004080
+	     }
+	]
+    	},
+	{
+	"tag" : "WZ",
+        "isdata" : false,
+	"color":"kYellow-8",
+        "lcolor":1,
+	"marker":1,
+	"data" : [
+	     {	
+		"dir" :"WZToAnything",
+		"xsec":10.4,
+		"origevents":1
+	     }
+	]
+    	},
+	{
+	"tag" : "ZZ",
+        "isdata" : false,
+	"color":"kWhite",
+        "lcolor":1,
+	"marker":1,
+	"data" : [
+	     {	
+		"dir" :"/castor/cern.ch/user/p/psilva/ZZToAnything",
+		"xsec":5.9,
+		"origevents":1256640
+	     }
+	]
+    	},
+	{
+	"tag":"Single top",
+        "isdata":false,
+        "color":"kMagenta",
+        "data":[
+             {
+               "dir":"/castor/cern.ch/user/p/psilva/SingleTop_tW",
+               "xsec":10.6,
+	       "origevents":200000
+             },
+             {
+               "dir":"/castor/cern.ch/user/p/psilva/SingleTop_t",
+               "xsec":64.6,
+	       "origevents":200000
+             },
+             {
+               "dir":"/castor/cern.ch/user/p/psilva/SingleTop_s",
+               "xsec":4.21,
+	       "origevents":200000
+             }
+           ]
+	},
+	{
+	 "tag":"t#bar{t} (D6T tune)",
+         "isdata":false,
+         "color":"kRed+1",
+         "data":[
+		{
+                "dir":"/castor/cern.ch/user/p/psilva/TTbarD6T",
+                "xsec":157.7,
+		"origevents":300000
+                }
+	  ]
+	},
+	{
+	 "tag":"Z/#gamma^{*}+jets",
+         "isdata":false,
+         "color":"kAzure-2",
+         "data":[
+	      {
+               "dir":"/castor/cern.ch/user/p/psilva/ZJets",
+               "xsec":3048,
+	       "origevents":315000
+              }
+	    ]
+	},
+	{
+	 "tag":"W+jets",
+         "isdata":false,
+         "color":"kGreen-3",
+         "data":[
+		{
+                 "dir":"/castor/cern.ch/user/p/psilva/WJets",
+                 "xsec":31314,
+	         "origevents":570000
+                }
+	 ]
+	},
+	{
+	 "tag":"QCD",
+         "isdata":false,
+         "color":"kYellow",
+         "data":[
+		{
+                  "dir":"/castor/cern.ch/user/p/psilva/QCDMu15",
+                  "xsec":296600000,
+		  "br":0.0002855,
+   	          "origevents":500000
+                }
+	   ]	
+	},
+	{
+          "tag":"gg #rightarrow H(400) #rightarrow 2l2#nu x 100",
+          "isdata":false,
+	  "spimpose":true,
+          "color":"1",
+	  "lwidth":2,
+	  "fill":0,
+	  "marker":1,	
+          "data":[
+                 {
+                 "dir":"/castor/cern.ch/user/p/psilva/GluGluToHToZZTo2L2Nu_M_400",
+		 "xsec":2.035,
+		 "br":0.0118,
+		 "origevents":66435,
+		 "sfactor":100
+                 }
+           ]
+	},
+	{
+           "tag":"data",
+           "isdata":true,
+           "color":1,
+	   "fill":0,
+  	   "marker":20,
+           "data":[
+                {
+                  "dir":"/castor/cern.ch/user/p/psilva/Run2010A_7Jan"
+                },
+                {
+                  "dir":"Run2010B_7Jan"
+                }
+             ]
+	}
+    ]	
+}
