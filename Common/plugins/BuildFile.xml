@@ -1,3 +1,5 @@
+<use name="AnalysisDataFormats/CMGTools"/>
+
 <export></export>
 <library name="CMGToolsCommonPlugins" file="*.cc">
   <use name="CMGTools/Common"/>
