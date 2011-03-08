@@ -72,6 +72,26 @@ class DiObject : public AbstractPhysicsObject{
      return reco::Candidate::sourceCandidatePtr(i);  
     }
    }
+   
+   ///Overrides the methods for read only access to daughters as in CompositeCandidate
+   virtual reco::Candidate::size_type numberOfDaughters() const{
+        return 2;
+   }
+   /// return daughter at a given position, i = 0, ... numberOfDaughters() - 1 (read only mode)
+   virtual const reco::Candidate * daughter( reco::Candidate::size_type i ) const{
+        const reco::Candidate* result = 0;
+        switch(i){
+         case 0:
+            result = &leg1_;
+            break;
+         case 1:
+            result = &leg2_;
+            break;
+         default:
+            result = 0;
+        };
+        return result;
+   }
 
   private:
 
