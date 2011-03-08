@@ -3,14 +3,18 @@
 
 #include "AnalysisDataFormats/CMGTools/interface/UnSet.h"
 #include "CommonTools/Utils/interface/StringObjectFunction.h"
+#include "CommonTools/Utils/interface/StringCutObjectSelector.h"
 #include "CMGTools/Common/interface/GenericHistograms.h"
 
 #include <cfloat>
+#include <climits>
+#include <list>
 #include <string>
+#include <map>
 #include <memory>
-#include <vector>
 
 #include "RooArgSet.h"
+#include "RooCategory.h"
 #include "RooDataSet.h"
 #include "RooRealVar.h"
 
@@ -54,15 +58,32 @@ namespace cmg{
                     setrange_(setrange){
                     }
         };
-        typedef std::vector<RealVar> RealVars;
+        typedef std::list<RealVar> RealVars;
+        
+        typedef StringCutObjectSelector<T> selector;
+        struct Category{
+          public:
+            /// selector used to decide cat
+            selector sel_;
+            /// name of the category
+            std::string name_;
+            /// the index of the object in the ordered collection
+            unsigned int index_;
+            Category(const std::string& cut, const std::string& name, const unsigned int index):
+                sel_(cut),name_(name),index_(index){
+                }
+        };
+        typedef std::map<std::string, std::list<Category> > Categories;
 
     public:
  
         GenericRooDataSets(const edm::ParameterSet& ps):
             cmg::GenericHistograms<T>::GenericHistograms(ps),
             vars_(new RealVars),
+            cats_(new Categories),
             dataset_(0){
                 initArgSet(ps.getUntrackedParameter<edm::ParameterSet>("argset",edm::ParameterSet()));
+                initCategories(ps.getUntrackedParameter<edm::ParameterSet>("categories",edm::ParameterSet()));
                 std::auto_ptr<RooArgSet> args = argSet();
                 const TFileDirectory* myDir = cmg::HistogramCreator<T>::fs_.operator->();
                 dataset_ = myDir->make<RooDataSet>("GenericDataSet","GenericDataSet",*args);
@@ -79,7 +100,9 @@ namespace cmg{
 
      protected:
         void initArgSet(const edm::ParameterSet& ps);
+        void initCategories(const edm::ParameterSet& ps);
         const std::auto_ptr<RealVars> vars_;
+        const std::auto_ptr<Categories> cats_;
         RooDataSet* dataset_;
 
 };
@@ -95,19 +118,39 @@ void cmg::GenericRooDataSets<T>::initArgSet(const edm::ParameterSet& ps){
     std::vector<std::string> parameterNames = ps.getParameterNames();
     for(std::vector<std::string>::const_iterator n = parameterNames.begin(); n != parameterNames.end(); n++){
         std::string name = *n;
-        std::vector<edm::ParameterSet> axes = ps.getUntrackedParameter<std::vector<edm::ParameterSet> >(name);
-        for(std::vector<edm::ParameterSet>::const_iterator a = axes.begin(); a != axes.end(); a++){
-            //parameters for the RooRealVar
-            const std::string var = a->getUntrackedParameter<std::string>("var");
+        
+        edm::ParameterSet a = ps.getUntrackedParameter<edm::ParameterSet>(name);
+        //parameters for the RooRealVar
+        const std::string var = a.getUntrackedParameter<std::string>("var");
+        const unsigned int index = a.getUntrackedParameter<unsigned int>("index",0);
+        const double low = a.getUntrackedParameter<double>("low",DBL_MIN);
+        const double high = a.getUntrackedParameter<double>("high",DBL_MAX);
+        const int nbins = a.getUntrackedParameter<int>("nbins",-1);
+        const std::string title = a.getUntrackedParameter<std::string>("title",var);
+        const std::string unit = a.getUntrackedParameter<std::string>("unit","");
+        const bool setrange = a.getUntrackedParameter<bool>("setrange",true);
+        vars_->push_back(RealVar(var,index,low,high,nbins,name,title,unit,setrange));
+    }    
+}
+
+template<class T>
+void cmg::GenericRooDataSets<T>::initCategories(const edm::ParameterSet& ps){
+    
+    std::vector<std::string> parameterNames = ps.getParameterNames();
+    for(std::vector<std::string>::const_iterator n = parameterNames.begin(); n != parameterNames.end(); n++){
+        
+        std::string name = *n;
+        std::list<Category> categories;
+        
+        std::vector<edm::ParameterSet> cats = ps.getUntrackedParameter<std::vector<edm::ParameterSet> >(name);
+        for(std::vector<edm::ParameterSet>::const_iterator a = cats.begin(); a != cats.end(); a++){
+            //parameters for the RooCategory
+            const std::string cut = a->getUntrackedParameter<std::string>("cut");
+            const std::string catname = a->getUntrackedParameter<std::string>("name");
             const unsigned int index = a->getUntrackedParameter<unsigned int>("index",0);
-            const double low = a->getUntrackedParameter<double>("low",DBL_MIN);
-            const double high = a->getUntrackedParameter<double>("high",DBL_MAX);
-            const int nbins = a->getUntrackedParameter<int>("nbins",-1);
-            const std::string title = a->getUntrackedParameter<std::string>("title",var);
-            const std::string unit = a->getUntrackedParameter<std::string>("unit","");
-            const bool setrange = a->getUntrackedParameter<bool>("setrange",true);
-            vars_->push_back(RealVar(var,index,low,high,nbins,name,title,unit,setrange));
+            categories.push_back(Category(cut,catname,index));
         }
+        (*cats_)[name] = categories;
     }    
 }
 
@@ -115,6 +158,7 @@ template<class T>
 std::auto_ptr<RooArgSet> cmg::GenericRooDataSets<T>::argSet() const{
     
     RooArgSet* set = new RooArgSet();
+    //define the RooRealVars
     for(typename RealVars::const_iterator it = vars_->begin(); it != vars_->end(); ++it){
         RooRealVar v(it->name_.c_str(),it->title_.c_str(),UnSet(double));
         if(it->nbins_ > 0){
@@ -126,9 +170,28 @@ std::auto_ptr<RooArgSet> cmg::GenericRooDataSets<T>::argSet() const{
         }
         set->addClone(v);
     }
+    
+    //define the RooCategories
+    for(typename Categories::const_iterator it = cats_->begin(); it != cats_->end(); ++it){
+        RooCategory c(it->first.c_str(),it->first.c_str());    
+        for(typename Categories::mapped_type::const_iterator jt = it->second.begin(); jt != it->second.end(); ++jt){
+            c.defineType(jt->name_.c_str());
+        }      
+        set->addClone(c);
+    }
+        
     //also add a standard weight var
     RooRealVar w(cmg::GenericRooDataSets<T>::weightVarName_.c_str(),"Weight var",1);
     set->addClone(w);
+    
+    RooRealVar run("Run","Run Number",0);
+    set->addClone(run);
+    
+    RooRealVar lumi("Lumi","Lumi Section",0);
+    set->addClone(lumi);
+    
+    RooRealVar event("Event","Event Number",0);
+    set->addClone(event);
     
     return std::auto_ptr<RooArgSet>(set);
 }
@@ -139,6 +202,10 @@ void cmg::GenericRooDataSets<T>::fill(const edm::Event& iEvent, const edm::Event
 
     edm::Handle<typename cmg::HistogramCreator<T>::view> cands;
     iEvent.getByLabel(cmg::HistogramCreator<T>::label_,cands);
+    
+    const unsigned int run = iEvent.id().run();
+    const unsigned int lumi = iEvent.id().luminosityBlock();
+    const unsigned int event = iEvent.id().event();
 
     std::auto_ptr<RooArgSet> args = argSet();
     for(typename RealVars::const_iterator it = vars_->begin(); it != vars_->end(); ++it){
@@ -146,6 +213,25 @@ void cmg::GenericRooDataSets<T>::fill(const edm::Event& iEvent, const edm::Event
         if(cands->size() > index){
             args->setRealValue(it->name_.c_str(),it->fn_(cands->at(index)));
         }
+    }
+    args->setRealValue("Run",run);
+    args->setRealValue("Lumi",lumi);
+    args->setRealValue("Event",event);
+    
+    for(typename Categories::const_iterator it = cats_->begin(); it != cats_->end(); ++it){
+        for(typename Categories::mapped_type::const_iterator jt = it->second.begin(); jt != it->second.end(); ++jt){
+            unsigned int index = jt->index_;
+            //categories set according to index in collection
+            if(cands->size() > index){
+                //test the cut
+                const bool set = jt->sel_(cands->at(index));
+                //if its true, set the cat to this one and break. Categories should be exclusive
+                if(set){
+                    args->setCatLabel(it->first.c_str(),jt->name_.c_str());
+                    break;
+                }
+            }
+        }      
     }
     dataset_->add(*args);
 }
