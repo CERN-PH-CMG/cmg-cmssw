@@ -78,3 +78,22 @@ TmpHistName.__doc__ = """
 Utility class to generate unique histogram names given a label
 """
 
+class stliter(object):
+    """
+Defines a python iterator for stl types    
+    """
+    def __init__(self, stl):
+        self.stl = stl
+        self.index = 0
+    
+    def __iter__(self):
+        return self
+    def next(self):
+        if self.index < self.stl.size() - 1:
+            self.index += 1
+        else:
+            raise StopIteration()
+        return self.stl.at(self.index)
+    
+    def __len__(self):
+        return self.stl.size()
