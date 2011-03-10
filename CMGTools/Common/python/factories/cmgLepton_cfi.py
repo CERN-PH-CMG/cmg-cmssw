@@ -1,7 +1,10 @@
 import FWCore.ParameterSet.Config as cms
 
 leptonFactory = cms.PSet(
-
+                         
+    # set this to use the isoDeposits rather than the userIsolation
+    useIsoDeposits = cms.bool(False),
+    
     # set this to false to use pat::TrackIso, pat::HcalIso, and pat::EcalIso
     useParticleFlowIso = cms.bool(True),
 

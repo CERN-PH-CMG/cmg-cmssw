@@ -42,6 +42,10 @@ class cmgTuple(rt.TObject):
     def __iter__(self):
         return self
     
+    def __del__(self):
+        if self.tree is not None:
+            self.tree.Delete()
+    
     def next(self):
         if(self.currentEntry < len(self)):
             self.tree.GetEntry(self.currentEntry)
@@ -76,13 +80,8 @@ if __name__ == '__main__':
     cmg = cmgTuple(events)
     print cmg.branches
     print cmg.aliases
-    
-    for event in cmg:
-        pt1 = [m.pt() for m in tools.stliter(event.get('patMuons_triggeredPatMuons__CMG'))]
-        pt2 = [m.pt() for m in tools.stliter(event.get('triggeredPatMuons'))]
-        assert pt1 == pt2
 
-    input.Close()
+    
 
     
     

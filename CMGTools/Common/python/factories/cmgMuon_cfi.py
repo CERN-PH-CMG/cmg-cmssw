@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.Common.factories.cmglepton_cfi import leptonFactory
+from CMGTools.Common.factories.cmgLepton_cfi import leptonFactory
 muonFactory = cms.PSet(
        inputCollection = cms.InputTag("selectedPatMuonsPFlow"),
        trackType = cms.int32(0),#use the global track,
