@@ -24,6 +24,19 @@ class TestMuon(TestTools.CFGTest):
         
         cmg = cmgTuple.cmgTuple(events)
         self.assertTrue(cmg.aliases.has_key('cmgDiMuon'),'We are expecting a branch called cmgDiMuon')
+        
+    def testMuonIsolation(self):
+        """Verify that the isolation variables are set"""
+        
+        output = self.__class__.cfgsRunOnceCache['CMGTools/Common/test/testMuon_cfg.py']
+        events = TestTools.getObject(output[1], 'Events')
+        
+        cmg = cmgTuple.cmgTuple(events)
+        self.assertEqual(cmg.Draw("abs(cmgMuonSel.absIso() + 3)","abs(cmgMuonSel.absIso() + 3) < 1e-6","goff"),0,\
+                         'There must be no isolations unset by pat')
+        #9999 is the value of Unset(double)
+        self.assertEqual(cmg.Draw("abs(cmgMuonSel.absIso() + 9999*3)","abs(cmgMuonSel.absIso() + 9999*3) < 1e-6","goff"),0,\
+                         'There must be no isolations unset by cmgTools')
 
 if __name__ == '__main__':
     

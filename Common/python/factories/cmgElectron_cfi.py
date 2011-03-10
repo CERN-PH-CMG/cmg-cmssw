@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.Common.factories.cmglepton_cfi import leptonFactory
+from CMGTools.Common.factories.cmgLepton_cfi import leptonFactory
 electronFactory = cms.PSet(
        inputCollection = cms.InputTag("selectedPatElectronsPFlow","","PAT"),
        leptonFactory = leptonFactory.clone()

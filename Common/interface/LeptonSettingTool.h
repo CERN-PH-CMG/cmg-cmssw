@@ -32,6 +32,7 @@ class LeptonSettingTool : public SettingTool<LeptonType,cmg::Lepton<LeptonType> 
             charged_(pat::PfChargedHadronIso),
             neutral_(pat::PfNeutralHadronIso),
             photon_(pat::PfGammaIso),
+            useIsoDeposits_(ps.getParameter<bool>("useIsoDeposits")),
             vertexTag_(ps.getParameter<edm::InputTag>("vertexCollection")),
             vertexType_(convert_vertex_types(ps.getParameter<int>("vertexType"))){
             chargedIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("chargedIsoPar"));
@@ -87,6 +88,7 @@ class LeptonSettingTool : public SettingTool<LeptonType,cmg::Lepton<LeptonType> 
         pat::IsolationKeys charged_;
         pat::IsolationKeys neutral_;
         pat::IsolationKeys photon_;
+        const bool useIsoDeposits_;
         
         //tags for the dxy
         edm::InputTag vertexTag_;
@@ -101,32 +103,42 @@ void cmg::LeptonSettingTool<LeptonType>::set(const LeptonType& lepton, cmg::Lept
     const edm::Event& iEvent, const edm::EventSetup&) const{
 
   obj->charge_ = lepton->charge();
+
+  if(useIsoDeposits_){
+    //use all the vetos etc to recalcuate the isolation
     
-  const double Eta = lepton->p4().eta();
-  const double Phi = lepton->p4().phi();
+    const double Eta = lepton->p4().eta();
+    const double Phi = lepton->p4().phi();
 
-  // computing isolation value in cone for each
-  // type of particle. 
+    // computing isolation value in cone for each
+    // type of particle. 
 
-  // retrieve the AbsVetos from the SpecificIsolation
-  AbsVetos chargedVetos = chargedIsoPar_.getAbsVetoes();
-  AbsVetos neutralVetos = neutralIsoPar_.getAbsVetoes();
-  AbsVetos photonsVetos = photonsIsoPar_.getAbsVetoes();
+    // retrieve the AbsVetos from the SpecificIsolation
+    AbsVetos chargedVetos = chargedIsoPar_.getAbsVetoes();
+    AbsVetos neutralVetos = neutralIsoPar_.getAbsVetoes();
+    AbsVetos photonsVetos = photonsIsoPar_.getAbsVetoes();
 
-  // center the deposits around the lepton
-  for(unsigned int i = 0; i<chargedVetos.size(); i++){
-    chargedVetos[i]->centerOn(Eta,Phi);
+    // center the deposits around the lepton
+    for(unsigned int i = 0; i<chargedVetos.size(); i++){
+        chargedVetos[i]->centerOn(Eta,Phi);
+    }
+    for(unsigned int i = 0; i<neutralVetos.size(); i++){
+        neutralVetos[i]->centerOn(Eta,Phi);
+    }
+    for(unsigned int i = 0; i<photonsVetos.size(); i++){
+        photonsVetos[i]->centerOn(Eta,Phi);
+    }
+
+    obj->chargedIso_ = (lepton->isoDeposit(charged_)->depositAndCountWithin( chargedIsoPar_.coneSize(), chargedVetos, false ).first);
+    obj->neutralIso_ = (lepton->isoDeposit(neutral_)->depositAndCountWithin( neutralIsoPar_.coneSize(), neutralVetos, false ).first);
+    obj->photonIso_ = (lepton->isoDeposit(photon_)->depositAndCountWithin( photonsIsoPar_.coneSize(), photonsVetos ,false ).first);
+  
+  }else{
+    //ignore everything and just taked the cached value from pat
+    obj->chargedIso_ = lepton->userIsolation(charged_);
+    obj->neutralIso_ = lepton->userIsolation(neutral_);
+    obj->photonIso_ = lepton->userIsolation(photon_);
   }
-  for(unsigned int i = 0; i<neutralVetos.size(); i++){
-    neutralVetos[i]->centerOn(Eta,Phi);
-  }
-  for(unsigned int i = 0; i<photonsVetos.size(); i++){
-    photonsVetos[i]->centerOn(Eta,Phi);
-  }
-
-  obj->chargedIso_ = (lepton->isoDeposit(charged_)->depositAndCountWithin( chargedIsoPar_.coneSize(), chargedVetos, false ).first);
-  obj->neutralIso_ = (lepton->isoDeposit(neutral_)->depositAndCountWithin( neutralIsoPar_.coneSize(), neutralVetos, false ).first);
-  obj->photonIso_ = (lepton->isoDeposit(photon_)->depositAndCountWithin( photonsIsoPar_.coneSize(), photonsVetos ,false ).first);
 }
 
 template <class LeptonType> template <class TrackType>
