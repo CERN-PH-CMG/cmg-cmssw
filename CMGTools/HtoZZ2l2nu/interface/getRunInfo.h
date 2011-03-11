@@ -4,6 +4,7 @@
 #if !defined(__CINT__) || defined(__MAKECINT__)
 
 #include "DataFormats/FWLite/interface/Handle.h"
+#include "DataFormats/FWLite/interface/Run.h"
 #include "DataFormats/Histograms/interface/MEtoEDMFormat.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
 #include <vector>
