@@ -11,7 +11,6 @@
 #include "CMGTools/Common/interface/GenericHistograms.h"
 #include "CMGTools/Common/interface/GenericRooDataSets.h"
 #include "CMGTools/Common/interface/JetHistograms.h"
-#include "CMGTools/Common/interface/LorentzHistograms.h"
 #include "CMGTools/Common/interface/CompoundFactories.h"
 #include "CMGTools/Common/interface/HemiFactory.h"
 #include "CMGTools/Common/interface/GenericFactories.h"
@@ -56,9 +55,9 @@ typedef PhysicsObjectProducer<cmg::WENuFactory> WENuPOProducer;
 typedef PhysicsObjectProducer<cmg::WMuNuFactory> WMuNuPOProducer;
 typedef PhysicsObjectProducer<cmg::WTauNuFactory> WTauNuPOProducer;
 
-typedef cmg::HistogramAnalyzer<cmg::LorentzHistogramsFF> LorentzHistogramsAnalyzer;
 typedef cmg::HistogramAnalyzer<cmg::JetHistograms> PFJetHistogramsAnalyzer;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::BaseMET> > GenericBaseMETHistograms;
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::AbstractPhysicsObject> > GenericPOHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<pat::MET> > GenericPatMETHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Electron> > CmgElectronHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Muon> > CmgMuonHistograms;
@@ -111,5 +110,9 @@ typedef SingleObjectSelector<
   StringCutObjectSelector<cmg::DiElectron>
   > CmgDiElectronSelector;
 
+typedef SingleObjectSelector<
+  std::vector<cmg::WMuNu>,
+  StringCutObjectSelector<cmg::WMuNu>
+  > CmgWMuNuSelector;
 
 #endif

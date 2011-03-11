@@ -11,7 +11,6 @@ cmgPFJet = cms.EDFilter(
     "PFJetPOProducer",
     cfg = pfJetFactory.clone(),
     cuts = cms.PSet(
-       jetKinematics = kinematics.clone(),
        looseJetId = looseJetId.clone()
        ),
     verbose = cms.untracked.bool( False )

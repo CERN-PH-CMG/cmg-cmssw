@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-pfJetLorentzVector = cms.EDAnalyzer(
-    "LorentzHistogramsAnalyzer",
-    inputCollection = cms.InputTag("cmgPFJetSel")
-    )
+from CMGTools.Common.histograms.cmgGenericPOHistograms_cfi import cmgGenericPOHistograms
+pfJetLorentzVector = cmgGenericPOHistograms.clone(
+                                                    inputCollection = cms.InputTag("cmgPFJetSel")
+                                                    )

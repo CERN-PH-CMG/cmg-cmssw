@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-electronLorentzVector = cms.EDAnalyzer(
-    "LorentzHistogramsAnalyzer",
-    inputCollection = cms.InputTag("cmgElectron")
-    )
+from CMGTools.Common.histograms.cmgGenericPOHistograms_cfi import cmgGenericPOHistograms
+electronLorentzVector = cmgGenericPOHistograms.clone(
+                                                    inputCollection = cms.InputTag("cmgElectronSel")
+                                                    )

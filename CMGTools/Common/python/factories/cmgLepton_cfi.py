@@ -34,7 +34,7 @@ leptonFactory = cms.PSet(
      )
    ),
     
-    vertexCollection = cms.InputTag("offlinePrimaryVertices"),
-    vertexType = cms.int32(0)#use the primary vertex    
+    vertexCollection = cms.InputTag("offlineBeamSpot"),
+    vertexType = cms.int32(1)#use the beam spot by default
                               
 )

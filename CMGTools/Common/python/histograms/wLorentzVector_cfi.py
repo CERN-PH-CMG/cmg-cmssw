@@ -1,13 +1,11 @@
 import FWCore.ParameterSet.Config as cms
 
-wenuLorentzVector = cms.EDAnalyzer(
-                "LorentzHistogramsAnalyzer",
-                inputCollection = cms.InputTag("cmgWENu"),
-                name = cms.string("WENu")
-)
+from CMGTools.Common.histograms.cmgGenericPOHistograms_cfi import cmgGenericPOHistograms
 
-wmunuLorentzVector = cms.EDAnalyzer(
-                "LorentzHistogramsAnalyzer",
-                inputCollection = cms.InputTag("cmgWMuNu"),
-                name = cms.string("WMuNu")
-)
+wenuLorentzVector = cmgGenericPOHistograms.clone(
+                                                    inputCollection = cms.InputTag("cmgWENuSel")
+                                                    )
+
+wmunuLorentzVector = cmgGenericPOHistograms.clone(
+                                                    inputCollection = cms.InputTag("cmgWMuNuSel")
+                                                    )

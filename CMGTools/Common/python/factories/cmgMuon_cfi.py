@@ -8,13 +8,13 @@ muonFactory = cms.PSet(
        leptonFactory = leptonFactory.clone()
        )
 
-from CMGTools.Common.selections.kinematics_cfi import kinematics
+from CMGTools.Common.selections.isolation_cfi import isomuon
 from CMGTools.Common.selections.vbtfmuon_cfi import vbtfmuon
 
 cmgMuon = cms.EDFilter("MuonPOProducer",
     cfg = muonFactory.clone(),
     cuts = cms.PSet(
-                kinematics = kinematics.clone(),
+                isomuon = isomuon.clone(),
                 vbtfmuon = vbtfmuon.clone()
        )    
 )
