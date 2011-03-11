@@ -18,10 +18,10 @@ DEFINE_FWK_MODULE(PFJetPOProducer);
 DEFINE_FWK_MODULE(GenParticlePOProducer);
 DEFINE_FWK_MODULE(GenJetPOProducer);
 DEFINE_FWK_MODULE(BaseMETPOProducer);
-DEFINE_FWK_MODULE(LorentzHistogramsAnalyzer);
 DEFINE_FWK_MODULE(PFJetHistogramsAnalyzer);
 
 DEFINE_FWK_MODULE(GenericBaseMETHistograms);
+DEFINE_FWK_MODULE(GenericPOHistograms);
 DEFINE_FWK_MODULE(GenericPatMETHistograms);
 DEFINE_FWK_MODULE(CmgElectronHistograms);
 DEFINE_FWK_MODULE(CmgMuonHistograms);
@@ -47,3 +47,4 @@ DEFINE_FWK_MODULE(CmgElectronSelector);
 DEFINE_FWK_MODULE(CmgMuonSelector);
 DEFINE_FWK_MODULE(CmgDiMuonSelector);
 DEFINE_FWK_MODULE(CmgDiElectronSelector);
+DEFINE_FWK_MODULE(CmgWMuNuSelector);

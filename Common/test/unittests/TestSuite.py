@@ -15,12 +15,14 @@ class CMGTestLoader(unittest.TestLoader):
         import TestElectron
         import TestMET
         import TestMuon
+        import TestWMuNu
     
         loader = unittest.TestLoader()
         suites = []
         suites.append(loader.loadTestsFromModule(TestElectron))
         suites.append(loader.loadTestsFromModule(TestMET))
         suites.append(loader.loadTestsFromModule(TestMuon))
+        suites.append(loader.loadTestsFromModule(TestWMuNu))
     
         tests = unittest.TestSuite()
         tests.addTests(suites)

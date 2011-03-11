@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-dimuonLorentzVector = cms.EDAnalyzer(
-    "LorentzHistogramsAnalyzer",
-    inputCollection = cms.InputTag("cmgDiMuon")
-    )
+from CMGTools.Common.histograms.cmgGenericPOHistograms_cfi import cmgGenericPOHistograms
+dimuonLorentzVector = cmgGenericPOHistograms.clone(
+                                                    inputCollection = cms.InputTag("cmgDiMuonSel")
+                                                    )

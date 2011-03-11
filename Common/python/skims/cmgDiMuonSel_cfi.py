@@ -7,7 +7,7 @@ import FWCore.ParameterSet.Config as cms
 cmgDiMuonSel = cms.EDFilter(
     "CmgDiMuonSelector",
     src = cms.InputTag( "cmgDiMuon" ),
-    cut = cms.string( "mass()>10" )
+    cut = cms.string( "getSelection(\"cuts_zmumu\")" )
     )
 
 
