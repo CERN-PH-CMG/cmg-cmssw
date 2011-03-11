@@ -33,7 +33,7 @@ void cmg::PhysicsObjectPrinter::analyze(const edm::Event& iEvent, const edm::Eve
         for(cmg::AbstractPhysicsObject::Daughters::const_iterator d = daughters.begin(); d != daughters.end(); ++d, dcount++){
             std::cout << "\t\t" << count << ":" << dcount << ": " << **d << std::endl;
             if(printSelections_){
-                it->printSelections(std::cout,"\t\t\t");   
+                (*d)->printSelections(std::cout,"\t\t\t");   
             } 
         }
     }
