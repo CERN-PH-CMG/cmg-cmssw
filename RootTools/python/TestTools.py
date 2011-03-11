@@ -8,7 +8,7 @@ def cmsRun(cfgFile):
     """Run the specified cmsRun"""
     if not os.path.exists(cfgFile):
         raise IOError("The file '%s' does not exist" % cfgFile)
-    return subprocess.Popen(['cmsRun',cfgFile], stdout=subprocess.PIPE).communicate()[0]
+    return subprocess.Popen(['cmsRun',cfgFile], stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
 
 def getObject(rootFile, objectName):
     """Get an object from a Root file"""
@@ -77,9 +77,9 @@ class CFGTest(unittest.TestCase):
         for c in self.cfgsRunOnce:
             cfg = getCfg(c)
             tupleFile, histFile = getOutputFiles(cfg)
-            stdout = cmsRun(cfg)
+            stdout,stderr = cmsRun(cfg)
             
-            self.__class__.cfgsRunOnceCache[c] = (stdout,tupleFile,histFile)
+            self.__class__.cfgsRunOnceCache[c] = (stdout,tupleFile,histFile,stderr)
             
     def tearDownOnce(self):
         """Like tearDown, but only called at the end of all test cases"""
@@ -94,7 +94,7 @@ class CFGTest(unittest.TestCase):
         
     def __del__(self):
         self.tearDownOnce()
-        
+
     def testSetupOnceFilesExist(self):
         """Tests that the files created by setUpOnce exist"""
         for key, val in self.__class__.cfgsRunOnceCache.iteritems():
@@ -106,15 +106,27 @@ class CFGTest(unittest.TestCase):
         for key, val in self.cfgsCache.iteritems():
             self.assertTrue(os.path.exists(val[1]),"The file '%s' is missing" % val[1])
             self.assertTrue(os.path.exists(val[2]),"The file '%s' is missing" % val[2])
+            
+    def testSetupOnceExceptions(self):
+        """Looks in the stdout for the word 'Exception'"""
+        for key, val in self.__class__.cfgsRunOnceCache.iteritems():
+            self.assertFalse('Exception' in val[0],'The stdout should not have any exceptions')
+            self.assertFalse('Exception' in val[3],'The stderr should not have any exceptions')
+            
+    def testSetupExceptions(self):
+        """Looks in the stdout for the word 'Exception'"""
+        for key, val in self.cfgsCache.iteritems():
+            self.assertFalse('Exception' in val[0],'The stdout should not have any exceptions')
+            self.assertFalse('Exception' in val[3],'The stderr should not have any exceptions')
         
     def setUp(self):
         self.setupOnce()
         for c in self.cfgs:
             cfg = getCfg(c)
             tupleFile, histFile = getOutputFiles(cfg)
-            stdout = cmsRun(cfg)
+            stdout,stderr = cmsRun(cfg)
 
-            self.cfgsCache[c] = (stdout,tupleFile,histFile)
+            self.cfgsCache[c] = (stdout,tupleFile,histFile,stderr)
             
     def tearDown(self):
         for key, val in self.cfgsCache.iteritems():
