@@ -20,36 +20,44 @@ def getControlPlots(url) :
     jetHandle  = Handle ('std::vector<cmg::BaseJet>')
     jetLabel = ('cmgPFBaseJetSel')
 
-    hcandHandle  = Handle ('std::vector<cmg::DiObject<cmg::DiObject<cmg::Muon,cmg::Muon>,cmg::BaseMET> >')
-    hcandLabel = ('cmgDiMuonPlusMET')
+    mumuHandle  = Handle ('std::vector<cmg::DiObject<cmg::Muon,cmg::Muon> >')
+    mumuLabel = ('cmgDiMuon')
+
+    eeHandle  = Handle ('std::vector<cmg::DiObject<cmg::Electron,cmg::Electron> >')
+    eeLabel = ('cmgDiElectron')
+
+    metHandle  = Handle ('std::vector<cmg::BaseMET>')
+    metLabel = ('cmgMETPFCandidates')
        
     #book histograms
     results={}
-    results['cutflow']          = formatPlot( ROOT.TH1F("cutflow", ";Cut flow; Events", 6, 0.,6.), 1, 1, 1, 20, 0, True, True, 1,1,1)
-    cutflowsteps=['reco','p_{T}>20','fid.trigger','ID','RelIso<0.15','M_{ll}>50']
-    for i in xrange(0,len(cutflowsteps)): results['cutflow'].GetXaxis().SetBinLabel(i+1,cutflowsteps[i])
-    results['muon_pt']      = formatPlot( ROOT.TH1F("muon_pt", ";p_{T} [GeV/c]; Muons", 100, 0.,200.), 1, 1, 1, 20, 0, True, True, 1,1,1)
-    results['muon_reliso']      = formatPlot( ROOT.TH1F("muon_reliso", ";Relative Isolation; Muons", 100, 0.,2.), 1, 1, 1, 20, 0, True, True, 1,1,1)
-    results['dimuon_dz']        = formatPlot( ROOT.TH1F("dimuon_dz", ";#Delta z(#mu,#mu) [cm]; Events", 100, -0.02,0.02), 1, 1, 1, 20, 0, True, True, 1,1,1)
-    results['dimuon_mass']      = formatPlot( ROOT.TH1F("dimuon_mass", ";Invariant Mass(#mu,#mu) [GeV/c^{2}]; Events", 100, 0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
-    results['dimuon_pt']        = formatPlot( ROOT.TH1F("dimuon_pt", ";|#Sigma #vec{p}_{T}| [GeV/c]; Events", 100, 0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
-    results['dimuon_dphi']      = formatPlot( ROOT.TH1F("dimuon_dphi", ";#Delta #phi [rad]; Events", 100, 0,3.2), 1, 1, 1, 20, 0, True, True, 1,1,1)
-    results['met2muon_mindphi'] = formatPlot( ROOT.TH1F("met2muon_mindphi", ";min #Delta #phi(#slash{E}_{T},#mu) [rad]; Events", 100, 0,3.2), 1, 1, 1, 20, 0, True, True, 1,1,1)
-    results['met']              = formatPlot( ROOT.TH1F("met", ";#slash{E}_{T} [GeV/c]; Events", 100,  0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
-    results['st']               = formatPlot( ROOT.TH1F("st", ";S_{T} [GeV/c]; Events", 100,  0.,1000.), 1, 1, 1, 20, 0, True, True, 1,1,1)
-    results['dimuon2met_dphi']  = formatPlot( ROOT.TH1F("dimuon2met_dphi", ";#Delta #phi [rad]; Events", 100, 0,3.2), 1, 1, 1, 20, 0, True, True, 1,1,1)
-    results['projmet']          = formatPlot( ROOT.TH1F("projmet", ";projected #slash{E}_{T} [GeV/c]; Events", 100,  0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
-    results['mT']               = formatPlot( ROOT.TH1F("mT",";Transverse mass [GeV/c^{2}]; Events",100,0,1000), 1, 1, 1, 20, 0, True, True, 1,1,1)
-    results['njets']            = formatPlot( ROOT.TH1F("njets",";Jet multiplicity; Events",4,0,4), 1, 1, 1, 20, 0, True, True, 1,1,1)
-#    results['bmult']            = formatPlot( ROOT.TH1F("bmult",";b tag multiplicity; Events",4,0,4), 1, 1, 1, 20, 0, True, True, 1,1,1)
-    for ibin in xrange(0,results['njets'].GetXaxis().GetNbins()) :
-        ilabel=str(ibin)
-        if(ibin==results['njets'].GetXaxis().GetNbins()-1) : ilabel='#geq'+ilabel
-        results['njets'].GetXaxis().SetBinLabel(ibin+1,ilabel)
-#        results['bmult'].GetXaxis().SetBinLabel(ibin+1,ilabel)
-#    results['btags']           = formatPlot( ROOT.TH1F("btags",";b tags (SSVHE); Jets",100,-0.5,2), 1, 1, 1, 20, 0, True, True, 1,1,1)
-    results['jetpt']           = formatPlot( ROOT.TH1F("jetpt",";p_{T} [GeV/c]; Jets",100,0,200), 1, 1, 1, 20, 0, True, True, 1,1,1)
-    results['jet2zcand_mindphi']  = formatPlot( ROOT.TH1F("jet2zcand_mindphi", ";min #Delta #phi(jet,#slash{E}_{T} or #mu#mu) [rad]; Events", 100, 0,3.2), 1, 1, 1, 20, 0, True, True, 1,1,1)
+    streams=['e','mu']
+    for istream in streams :
+        results[istream+'_cutflow']          = formatPlot( ROOT.TH1F(istream+"_cutflow", ";Cut flow; Events", 6, 0.,6.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        cutflowsteps=['reco','p_{T}>20','fid.trigger','ID','Isolation','M_{ll}>50']
+        for i in xrange(0,len(cutflowsteps)): results[istream+'_cutflow'].GetXaxis().SetBinLabel(i+1,cutflowsteps[i])
+        results[istream+'_pt']      = formatPlot( ROOT.TH1F(istream+"_pt", ";p_{T} [GeV/c]; Leptons", 100, 0.,200.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_reliso'] = formatPlot( ROOT.TH1F(istream+"_reliso", ";Relative Isolation; Leptons", 100, 0.,2.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_dilepton_dz']     = formatPlot( ROOT.TH1F(istream+"_dilepton_dz", ";#Delta z(l,l') [cm]; Events", 100, -0.02,0.02), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_dilepton_mass']   = formatPlot( ROOT.TH1F(istream+"_dilepton_mass", ";Invariant Mass(l,l') [GeV/c^{2}]; Events", 100, 0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_dilepton_pt']     = formatPlot( ROOT.TH1F(istream+"_dilepton_pt", ";|#Sigma #vec{p}_{T}| [GeV/c]; Events", 100, 0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_dilepton_dphi']   = formatPlot( ROOT.TH1F(istream+"_dilepton_dphi", ";#Delta #phi(l,l') [rad]; Events", 100, 0,3.2), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results['met2'+istream+'_mindphi'] = formatPlot( ROOT.TH1F("met2'+istream+'_mindphi", ";min #Delta #phi(#slash{E}_{T},l) [rad]; Events", 100, 0,3.2), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_met']            = formatPlot( ROOT.TH1F(istream+"_met", ";#slash{E}_{T} [GeV/c]; Events", 100,  0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_st']             = formatPlot( ROOT.TH1F(istream+"_st", ";S_{T} [GeV/c]; Events", 100,  0.,1000.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_dilepton2met_dphi']  = formatPlot( ROOT.TH1F(istream+"dilepton2met_dphi", ";#Delta #phi [rad]; Events", 100, 0,3.2), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_projmet']        = formatPlot( ROOT.TH1F(istream+"_projmet", ";projected #slash{E}_{T} [GeV/c]; Events", 100,  0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_mT']             = formatPlot( ROOT.TH1F(istream+"_mT",";Transverse mass [GeV/c^{2}]; Events",100,0,1000), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_njets']          = formatPlot( ROOT.TH1F(istream+"_njets",";Jet multiplicity; Events",4,0,4), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        #    results['bmult']            = formatPlot( ROOT.TH1F("bmult",";b tag multiplicity; Events",4,0,4), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        for ibin in xrange(0,results[istream+'_njets'].GetXaxis().GetNbins()) :
+            ilabel=str(ibin)
+            if(ibin==results[istream+'_njets'].GetXaxis().GetNbins()-1) : ilabel='#geq'+ilabel
+            results[istream+'_njets'].GetXaxis().SetBinLabel(ibin+1,ilabel)
+            #        results['bmult'].GetXaxis().SetBinLabel(ibin+1,ilabel)
+            #    results['btags']           = formatPlot( ROOT.TH1F("btags",";b tags (SSVHE); Jets",100,-0.5,2), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_jetpt']           = formatPlot( ROOT.TH1F(istream+"_jetpt",";p_{T} [GeV/c]; Jets",100,0,200), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_jet2zll_mindphi'] = formatPlot( ROOT.TH1F(istream+"_jet2zcand_mindphi", ";min #Delta #phi(jet,#slash{E}_{T} or ll) [rad]; Events", 100, 0,3.2), 1, 1, 1, 20, 0, True, True, 1,1,1)
      
     #build the list of files
     import os
@@ -80,73 +88,94 @@ def getControlPlots(url) :
         # loop over events
         for event in events:
             
-            #get the dimuon+met level
-            event.getByLabel(hcandLabel,hcandHandle)
-            hcands=hcandHandle.product()
-            if(hcands.size()==0): continue
+            #get the dimuon
+            event.getByLabel(eeLabel,eeHandle)
+            event.getByLabel(mumuLabel,mumuHandle)
+            event.getByLabel(metLabel,metHandle)
 
-            #get the dimuon+met candidate
-            muP=[]
-            recodimu=ROOT.TLorentzVector(0,0,0,0)
+            """
+            this requires work: first select leptons carefully,
+            then loop over the dilepton candidates,
+            for now, i'm just taking the leading one...
+            """
+            dilCand=None
+            istream=''
+            if(mumuHandle.product().size()>0):
+                dilCand = mumuHandle.product()[0]
+                istream='mu'
+            elif(eeHandle.product().size()>0):
+                dilCand=eeHandle.product()[0]
+                istream='e'
+            if(dilCand is None): continue
+            if(metHandle.product().size()==0): continue
+            
+            #analyze the dilepton+met candidate
+            dilP=[]
+            recodil=ROOT.TLorentzVector(0,0,0,0)
             recomet=ROOT.TLorentzVector(0,0,0,0)
-            mu1=hcands[0].leg1().leg1()
-            muP.append(ROOT.TLorentzVector(mu1.px(),mu1.py(),mu1.pz(),mu1.energy()))
-            mu2=hcands[0].leg1().leg2()
-            muP.append(ROOT.TLorentzVector(mu2.px(),mu2.py(),mu2.pz(),mu2.energy()))
-            recodimu=muP[0]+muP[1]
-            themet=hcands[0].leg2()
+            lepton1=dilCand.leg1()
+            dilP.append(ROOT.TLorentzVector(lepton1.px(),lepton1.py(),lepton1.pz(),lepton1.energy()))
+            lepton2=dilCand.leg2()
+            dilP.append(ROOT.TLorentzVector(lepton2.px(),lepton2.py(),lepton2.pz(),lepton2.energy()))
+            recodil=dilP[0]+dilP[1]
+            themet=metHandle.product()[0]
             recomet=ROOT.TLorentzVector(-themet.px(),-themet.py(),-themet.pz(),themet.energy())
       
-            dphimin = min( [ abs(recomet.DeltaPhi(muP[0])) , abs(recomet.DeltaPhi(muP[1])) ] )
+            dphimin = min( [ abs(recomet.DeltaPhi(dilP[0])) , abs(recomet.DeltaPhi(dilP[1])) ] )
             projmet=recomet.Pt()
             if(dphimin<math.pi/2) : projmet = projmet*sin(dphimin)
 
             #reco
-            results['cutflow'].Fill(0)
+            results[istream+'_cutflow'].Fill(0)
 
             #basic kinematics
-            results['muon_pt'].Fill(mu1.pt())
-            results['muon_pt'].Fill(mu2.pt())
-            if(mu1.pt()<20 or mu2.pt()<20 or abs(mu1.eta())>2.4 or abs(mu2.eta())>2.4) : continue
-            results['cutflow'].Fill(1)
+            results[istream+'_pt'].Fill(lepton1.pt())
+            results[istream+'_pt'].Fill(lepton2.pt())
+            if(lepton1.pt()<20 or lepton2.pt()<20 or abs(lepton1.eta())>2.4 or abs(lepton2.eta())>2.4) : continue
+            results[istream+'_cutflow'].Fill(1)
             
             #one muon trigger fiducial region
-            if(abs(mu1.eta())>2.1 and abs(mu2.eta())>2.1) : continue
-            results['cutflow'].Fill(2)
+            if(istream=='mu') :
+                if(abs(lepton1.eta())>2.1 and abs(lepton2.eta())>2.1) : continue
+            results[istream+'_cutflow'].Fill(2)
 
             #id cuts
-            if( not mu1.isGlobal() or not mu1.isTracker() ) : continue
-            if( not mu2.isGlobal() or not mu2.isTracker() ) : continue
-            if( mu1.numberOfValidTrackerHits()<10 or mu2.numberOfValidTrackerHits()<10 ): continue
-            if( not mu1.muonID() or not mu2.muonID() ) : continue
-            results['cutflow'].Fill(3)
+            if(istream=='mu') :
+                if( not lepton1.isGlobal() or not lepton1.isTracker() ) : continue
+                if( not lepton2.isGlobal() or not lepton2.isTracker() ) : continue
+                if( lepton1.numberOfValidTrackerHits()<10 or lepton2.numberOfValidTrackerHits()<10 ): continue
+                if( not lepton1.muonID() or not lepton2.muonID() ) : continue
+            else :
+                #if( not lepton1.electronID() or not electron2.muonID() ) : continue
+                a=1
+            results[istream+'_cutflow'].Fill(3)
 
-            results['muon_reliso'].Fill(mu1.relIso())
-            results['muon_reliso'].Fill(mu2.relIso())
-            results['dimuon_dz'].Fill(mu1.dz()-mu2.dz())
-            if(mu1.relIso()>0.15 or mu2.relIso()>0.15) : continue
-            results['cutflow'].Fill(4)
+            results[istream+'_reliso'].Fill(lepton1.relIso())
+            results[istream+'_reliso'].Fill(lepton2.relIso())
+            results[istream+'_dilepton_dz'].Fill(lepton1.dz()-lepton2.dz())
+            if(lepton1.relIso()>0.25 or lepton2.relIso()>0.25) : continue
+            results[istream+'_cutflow'].Fill(4)
             
             #veto low mass dileptons
-            if(recodimu.M()<50) : continue
-            results['cutflow'].Fill(5)
+            if(recodil.M()<50) : continue
+            results[istream+'_cutflow'].Fill(5)
 
             #compute the transverse mass
-            transvSum=recodimu+recomet
-            transvMass=pow(sqrt(pow(recodimu.Pt(),2)+pow(recodimu.M(),2))+sqrt(pow(recomet.Pt(),2)+pow(recodimu.M(),2)),2)
+            transvSum=recodil+recomet
+            transvMass=pow(sqrt(pow(recodil.Pt(),2)+pow(recodil.M(),2))+sqrt(pow(recomet.Pt(),2)+pow(recodil.M(),2)),2)
             transvMass-=pow(transvSum.Pt(),2)
             transvMass=sqrt(transvMass)
 
             #fill the histograms
-            results['dimuon_mass'].Fill(recodimu.M())
-            results['dimuon_pt'].Fill(recodimu.Pt())
-            results['dimuon_dphi'].Fill(abs(muP[0].DeltaPhi(muP[1])))
-            results['met'].Fill(recomet.Pt())
-            results['st'].Fill(recomet.Pt()+muP[0].Pt()+muP[1].Pt())
-            results['dimuon2met_dphi'].Fill(abs(recodimu.DeltaPhi(recomet)))
-            results['met2muon_mindphi'].Fill(dphimin)
-            results['projmet'].Fill(projmet)
-            results['mT'].Fill(transvMass)
+            results[istream+'_dilepton_mass'].Fill(recodil.M())
+            results[istream+'_dilepton_pt'].Fill(recodil.Pt())
+            results[istream+'_dilepton_dphi'].Fill(abs(dilP[0].DeltaPhi(dilP[1])))
+            results[istream+'_met'].Fill(recomet.Pt())
+            results[istream+'_st'].Fill(recomet.Pt()+dilP[0].Pt()+dilP[1].Pt())
+            results[istream+'_dilepton2met_dphi'].Fill(abs(recodil.DeltaPhi(recomet)))
+            results['met2'+istream+'_mindphi'].Fill(dphimin)
+            results[istream+'_projmet'].Fill(projmet)
+            results[istream+'_mT'].Fill(transvMass)
 
             event.getByLabel(jetLabel,jetHandle)
             njets=0
@@ -157,11 +186,11 @@ def getControlPlots(url) :
 #                btag=j.btag()
 #                if(btag>1.7) : nbjets+=1 #medium point
  #               results['btags'].Fill(btag)
-                results['jetpt'].Fill(j.pt())
+                results[istream+'_jetpt'].Fill(j.pt())
                 jetMom = ROOT.TLorentzVector(j.px(),j.py(),j.pz(),j.energy())
-                jet2zcand_mindphi = min( [ abs(jetMom.DeltaPhi(recodimu)), abs(jetMom.DeltaPhi(recomet)) ] )
-                results['jet2zcand_mindphi'].Fill(jet2zcand_mindphi)
-            results['njets'].Fill(njets)
+                jet2zcand_mindphi = min( [ abs(jetMom.DeltaPhi(recodil)), abs(jetMom.DeltaPhi(recomet)) ] )
+                results[istream+'_jet2zll_mindphi'].Fill(jet2zcand_mindphi)
+            results[istream+'_njets'].Fill(njets)
 #            results['bmult'].Fill(nbjets)
 
         file.Close()

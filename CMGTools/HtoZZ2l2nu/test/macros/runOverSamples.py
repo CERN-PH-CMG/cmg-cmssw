@@ -54,7 +54,9 @@ def runOverSamples(samplesDB,func,debugFunc=None,integratedLumi=1.0) :
     dataplots=[]
 
     generalLabel='CMS preliminary,#sqrt{s}=7 TeV, #int L=' +str(integratedLumi)+' pb^{-1}'
-    print generalLabel
+
+    from CMGTools.HtoZZ2l2nu.localPatTuples_cff import fillFromCastor
+    from getRunInfoForLocalSample import getTotalRunInfo
 
     #run over sample
     for proc in procList :
@@ -94,11 +96,14 @@ def runOverSamples(samplesDB,func,debugFunc=None,integratedLumi=1.0) :
                     sfactor = getByLabel(d,'sfactor',1)
                     xsec = getByLabel(d,'xsec',-1)
                     br = getByLabel(d,'br',1)
-                    origevents = getByLabel(d,'origevents',-1)
+                    fnames = fillFromCastor(dir)
+                    origevents=getTotalRunInfo(fnames,0,len(fnames))[0]
+                    if(origevents==0) : continue
+                    #origevents = getByLabel(d,'origevents',-1)
                     normto = getByLabel(d,'normto',-1)
-                    if(xsec>0 and origevents>0):
+                    if(xsec>0 and origevents>0) :
                         weight = integratedLumi*sfactor*xsec*br/origevents
-                    elif(normto>0):
+                    elif(normto>0) :
                         weight = sfactor*normto
                         absNorm=True
 

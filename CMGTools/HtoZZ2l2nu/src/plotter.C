@@ -57,6 +57,7 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
 
 
   //prepare the sum and build the stack
+  //....correct me first element might be null...
   TH1 *p=(TH1 *) stack.First();
   TH1 *refFrame=(TH1 *) p->Clone(name+"_frame");
   formatPlot(refFrame,1,1,1,0,0,true,true,1,1,1);
