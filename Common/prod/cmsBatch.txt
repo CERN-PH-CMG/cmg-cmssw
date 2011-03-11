@@ -1,1 +1,0 @@
-/data/c/cbern/Analysis/LocalInstall/CMSSW_3_8_4_patch2/bin/slc5_ia32_gcc434/cmsBatch.py 5 patTuple_PATandPF2PAT_cfg.py -b nohup ./batchScript.sh& -n
