@@ -1,18 +1,8 @@
-import sys
+import os,sys
 import ROOT
 from DataFormats.FWLite import Events, Handle
 ROOT.gSystem.Load('${CMSSW_BASE}/lib/${SCRAM_ARCH}/libCMGToolsHtoZZ2l2nu.so')
 from CMGTools.HtoZZ2l2nu.localPatTuples_cff import fillFromCastor
-
-if(len(sys.argv)<2):
-    print 'python getRunInfoForLocalSample.py directory <first_file=0 last_file=total files in directory>'
-
-#configure
-fnames = fillFromCastor(sys.argv[1])
-ffile=0
-if(len(sys.argv)>2) : ffile=int(sys.argv[2])
-lfile=len(fnames)
-if(len(sys.argv)>3) : lfile=int(sys.argv[3])
 
 #total run information
 def getTotalRunInfo(fnames,ffile,lfile) :
@@ -26,10 +16,22 @@ def getTotalRunInfo(fnames,ffile,lfile) :
         file.Close()
     return totalRunInfo
 
-#final results
-totalRunInfo = getTotalRunInfo(fnames,ffile,lfile)
-print ' ***** TOTAL ****** '
-for i in xrange(0,4):
-    print str(i) + ' ' + str(totalRunInfo[i])
+# info
+if(len(sys.argv)<2):
+    print 'python getRunInfoForLocalSample.py directory <first_file=0 last_file=total files in directory>'
+    exit
 
-    
+url=sys.argv[1]
+if(os.path.isdir(url)):
+    #configure
+    fnames = fillFromCastor(sys.argv[1])
+    ffile=0
+    if(len(sys.argv)>2) : ffile=int(sys.argv[2])
+    lfile=len(fnames)
+    if(len(sys.argv)>3) : lfile=int(sys.argv[3])
+   
+    #final results
+    totalRunInfo = getTotalRunInfo(fnames,ffile,lfile)
+    print ' ***** TOTAL ****** '
+    for i in xrange(0,4):
+        print str(i) + ' ' + str(totalRunInfo[i])

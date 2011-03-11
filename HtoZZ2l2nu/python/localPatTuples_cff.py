@@ -7,7 +7,8 @@ def fillFromCastor(dir):
     localdataset=cms.untracked.vstring()
     for line in inFile.readlines():
         if(len(line)==0) : continue
-        localdataset.extend( [ 'rfio://' + dir + '/' + line.split()[0] ] )
+        sline=str('rfio://' + dir + '/' + line.split()[0])
+        localdataset.extend( [ sline ] )
     os.system('rm /tmp/castordump')
     return localdataset
 
