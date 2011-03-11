@@ -39,6 +39,7 @@ cmgMETPFCandidates2.cfg.ptThreshold = 2.0
 # FOR EVENT SELECTION:
 
 pfMetSequence = cms.Sequence(
+    cmgMETPFCandidates +                          
     cmgMHTPFJets30 +
     # cmgMHTPFJets50 +
     cmgPFMETSel
