@@ -1,9 +1,9 @@
 import sys
 import ROOT
 from DataFormats.FWLite import Events, Handle
-ROOT.gSystem.Load('${CMSSW_BASE}/lib/${SCRAM_ARCH}/libpsilvah2zz.so')
-from psilva.h2zz.localPatTuples_cff import getLocalSourceFor
-fnames, trigMenu, isData = getLocalSourceFor( sys.argv[1] )
+ROOT.gSystem.Load('${CMSSW_BASE}/lib/${SCRAM_ARCH}/libCMGToolsHtoZZ2l2nu.so')
+from CMGTools.HtoZZ2l2nu.localPatTuples_cff import fillFromCastor
+fnames = fillFromCastor(sys.argv[1])
 
 ffile=0
 if(len(sys.argv)>2) : ffile=int(sys.argv[2])

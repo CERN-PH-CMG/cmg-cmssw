@@ -23,31 +23,20 @@ std::vector<float> getRunInfo(TFile *f)
       const MEtoEDM<double>::MEtoEdmObjectVector objects = hist->getMEtoEdmObject();
       for(MEtoEDM<double>::MEtoEdmObjectVector::const_iterator it = objects.begin(); it != objects.end(); ++it )
 	{
-	  if(it->name == "initialEvents") evInfo[INITIAL_EVTS] += it->object;
-	  else if(it->name == "finalEvents" ) evInfo[FINAL_EVTS] += it->object;
-	  else continue;
+	  if(it->name == "ric_initialEvents")          evInfo[INITIAL_EVTS] += it->object;
+	  else if(it->name == "ric_finalEvents" )      evInfo[FINAL_EVTS] += it->object;
+	  else if(it->name == "ric_crossSection" )     evInfo[XSECTION] += it->object;
+	  else if(it->name == "ric_filterEfficiency" ) evInfo[GENERATOR_EFF] += it->object;
 	}
-
-      //get generator level cross section
-      edm::Handle<GenRunInfoProduct> genInfo;
-      try{
-	r.getByLabel(edm::InputTag("generator"),genInfo);
-	evInfo[XSECTION] += genInfo->crossSection();
-	evInfo[GENERATOR_EFF] += genInfo->filterEfficiency();
-      }catch(std::exception &e){
-	cout << "[getRunInfo] " << e.what() << endl;
-      }
     }
 
-  //take the average for cross section ...
+  //take the average for cross section and filter efficiency...
   if(nRuns>0)
     {
       evInfo[XSECTION] /= nRuns;
       evInfo[GENERATOR_EFF] /= nRuns;
     }
-  
-
-
+     
   //return summary
   return evInfo;
 }
