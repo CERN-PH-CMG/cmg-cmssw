@@ -57,30 +57,31 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
 
 
   //prepare the sum and build the stack
-  //....correct me first element might be null...
-  TH1 *p=(TH1 *) stack.First();
-  TH1 *refFrame=(TH1 *) p->Clone(name+"_frame");
-  formatPlot(refFrame,1,1,1,0,0,true,true,1,1,1);
-  refFrame->Reset("ICE");  
-  refFrame->SetTitle(title+"_stackcontour");
-  TIterator *stackIt = stack.MakeIterator();
-  while ( (key = stackIt->Next()) ) 
-    {
-      TH1 *p = (TH1 *) key;
-      refFrame->Add(p);
-      hstack->Add( p );
-    }
- 
-
-  //draw the frame and the stack
   bool canvasFilled(false);
-  if(refFrame->Integral()>0)
+  TH1 *p=(TH1 *) stack.First();
+  if(p)
     {
-      refFrame->Draw("hist");  
-      hstack->Draw("histsame"); 
-      canvasFilled=true;
-    }
+      TH1 *refFrame=(TH1 *) p->Clone(name+"_frame");
+      formatPlot(refFrame,1,1,1,0,0,true,true,1,1,1);
+      refFrame->Reset("ICE");  
+      refFrame->SetTitle(title+"_stackcontour");
+      TIterator *stackIt = stack.MakeIterator();
+      while ( (key = stackIt->Next()) ) 
+	{
+	  TH1 *p = (TH1 *) key;
+	  refFrame->Add(p);
+	  hstack->Add( p );
+	}
 
+      //draw the frame and the stack
+      if(refFrame->Integral()>0)
+	{
+	  refFrame->Draw("hist");  
+	  hstack->Draw("histsame"); 
+	  canvasFilled=true;
+	}
+    }
+  
   //draw the super impose distributions
   spimposeIt = spimpose.MakeIterator();
   while ( (key = spimposeIt->Next()) ) 
@@ -89,7 +90,7 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
       if(canvasFilled) p->Draw("histsame");
       else { p->Draw("hist"); canvasFilled=true; }
     }
-
+  
   //draw the data
   dataIt = data.MakeIterator();
   while ( (key = dataIt->Next()) ) 

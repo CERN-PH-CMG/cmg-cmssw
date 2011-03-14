@@ -141,10 +141,18 @@ def runOverSamples(samplesDB,func,debugFunc=None,integratedLumi=1.0) :
     if(debugFunc != None) : debugFunc(stackplots,spimposeplots,dataplots,generalLabel)
 
 # steer script
-#from genControlPlots import getControlPlots, showControlPlots
-from recoControlPlots import getControlPlots, showControlPlots
+#script = sys.argv[1]
 samplesDB = sys.argv[1]
 integratedLumi=1.0
 if(len(sys.argv)>2): integratedLumi = float(sys.argv[2])
+
+#import pkgutil
+#i = pkgutil.ImpImporter(".")
+#l = i.find_module(o.source)
+#source = l.load_module(o.source)
+
+#from genControlPlots import getControlPlots, showControlPlots
+from recoControlPlots import getControlPlots, showControlPlots
+
 print ' ********* INTEGRATED LUMI IS:' + str(integratedLumi)
 runOverSamples( samplesDB, getControlPlots, showControlPlots, integratedLumi )

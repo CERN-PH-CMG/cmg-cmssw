@@ -7,11 +7,13 @@ def fillFromCastor(dir):
     localdataset=cms.untracked.vstring()
     for line in inFile.readlines():
         if(len(line)==0) : continue
+        if(line.find('histograms')>0 or line.find('monitor')>0): continue
         sline=str('rfio://' + dir + '/' + line.split()[0])
         localdataset.extend( [ sline ] )
     os.system('rm /tmp/castordump')
     return localdataset
 
+Mu2010B_4thNov=fillFromCastor('/castor/cern.ch/cms/store/data/Run2010B/Mu/RECO/Nov4ReReco_v1/0008')
 GluGluToH200ToZZTo2L2Nu = fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/GluGluToH200ToZZTo2L2Nu')
 GluGluToH250ToZZTo2L2Nu = fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/GluGluToH250ToZZTo2L2Nu')
 GluGluToH300ToZZTo2L2Nu = fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/GluGluToH300ToZZTo2L2Nu')

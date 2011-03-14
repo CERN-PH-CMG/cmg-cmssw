@@ -247,9 +247,14 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
         if(len(dataLists)>iplot): data=dataLists[iplot]
         leg=showPlots(c,stack,spimpose,data)
         formatForCmsPublic(c,leg,generalLabel,nplots)
+        pname=''
+        if(stack.At(0) is not None) :      pname=stack.At(0).GetName()
+        elif(spimpose.At(0) is not None) : pname=spimpose.At(0).GetName()
+        elif(data.At(0) is not None) :     pname=data.At(0).GetName()
+        if(len(pname)<=0): continue
         raw_input('Any key to continue...')
-        c.SaveAs('plots/'+stack.At(0).GetName()+'.png')
-        c.SaveAs('plots/'+stack.At(0).GetName()+'.C')
+        c.SaveAs('plots/'+pname+'.png')
+        c.SaveAs('plots/'+pname+'.C')
 
         
     
