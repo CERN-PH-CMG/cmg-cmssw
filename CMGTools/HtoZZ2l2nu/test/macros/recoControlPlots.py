@@ -1,7 +1,7 @@
 import sys,os
 import commands
 import math
-from math import sqrt,pow,sin
+from math import sqrt,pow,sin,cos
 import ROOT
 ROOT.gSystem.Load('${CMSSW_BASE}/lib/${SCRAM_ARCH}/libCMGToolsHtoZZ2l2nu.so')
 from ROOT import setStyle, getNewCanvas, formatPlot, formatForCmsPublic, fixExtremities, showPlots
@@ -36,26 +36,30 @@ def getControlPlots(url) :
         results[istream+'_cutflow']          = formatPlot( ROOT.TH1F(istream+"_cutflow", ";Cut flow; Events", 6, 0.,6.), 1, 1, 1, 20, 0, True, True, 1,1,1)
         cutflowsteps=['reco','p_{T}>20','fid.trigger','ID','Isolation','M_{ll}>50']
         for i in xrange(0,len(cutflowsteps)): results[istream+'_cutflow'].GetXaxis().SetBinLabel(i+1,cutflowsteps[i])
-        results[istream+'_pt']      = formatPlot( ROOT.TH1F(istream+"_pt", ";p_{T} [GeV/c]; Leptons", 100, 0.,200.), 1, 1, 1, 20, 0, True, True, 1,1,1)
-        results[istream+'_reliso'] = formatPlot( ROOT.TH1F(istream+"_reliso", ";Relative Isolation; Leptons", 100, 0.,2.), 1, 1, 1, 20, 0, True, True, 1,1,1)
-        results[istream+'_dilepton_dz']     = formatPlot( ROOT.TH1F(istream+"_dilepton_dz", ";#Delta z(l,l') [cm]; Events", 100, -0.02,0.02), 1, 1, 1, 20, 0, True, True, 1,1,1)
-        results[istream+'_dilepton_mass']   = formatPlot( ROOT.TH1F(istream+"_dilepton_mass", ";Invariant Mass(l,l') [GeV/c^{2}]; Events", 100, 0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
-        results[istream+'_dilepton_pt']     = formatPlot( ROOT.TH1F(istream+"_dilepton_pt", ";|#Sigma #vec{p}_{T}| [GeV/c]; Events", 100, 0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
-        results[istream+'_dilepton_dphi']   = formatPlot( ROOT.TH1F(istream+"_dilepton_dphi", ";#Delta #phi(l,l') [rad]; Events", 100, 0,3.2), 1, 1, 1, 20, 0, True, True, 1,1,1)
-        results['met2'+istream+'_mindphi'] = formatPlot( ROOT.TH1F("met2'+istream+'_mindphi", ";min #Delta #phi(#slash{E}_{T},l) [rad]; Events", 100, 0,3.2), 1, 1, 1, 20, 0, True, True, 1,1,1)
-        results[istream+'_met']            = formatPlot( ROOT.TH1F(istream+"_met", ";#slash{E}_{T} [GeV/c]; Events", 100,  0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
-        results[istream+'_st']             = formatPlot( ROOT.TH1F(istream+"_st", ";S_{T} [GeV/c]; Events", 100,  0.,1000.), 1, 1, 1, 20, 0, True, True, 1,1,1)
-        results[istream+'_dilepton2met_dphi']  = formatPlot( ROOT.TH1F(istream+"dilepton2met_dphi", ";#Delta #phi [rad]; Events", 100, 0,3.2), 1, 1, 1, 20, 0, True, True, 1,1,1)
-        results[istream+'_projmet']        = formatPlot( ROOT.TH1F(istream+"_projmet", ";projected #slash{E}_{T} [GeV/c]; Events", 100,  0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
-        results[istream+'_mT']             = formatPlot( ROOT.TH1F(istream+"_mT",";Transverse mass [GeV/c^{2}]; Events",100,0,1000), 1, 1, 1, 20, 0, True, True, 1,1,1)
-        results[istream+'_njets']          = formatPlot( ROOT.TH1F(istream+"_njets",";Jet multiplicity; Events",4,0,4), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_pt']                = formatPlot( ROOT.TH1F(istream+"_pt", ";p_{T} [GeV/c]; Leptons", 100, 0.,200.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_reliso']            = formatPlot( ROOT.TH1F(istream+"_reliso", ";Relative Isolation; Leptons", 100, 0.,2.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_dilepton_dz']       = formatPlot( ROOT.TH1F(istream+"_dilepton_dz", ";#Delta z(l,l') [cm]; Events", 100, -0.02,0.02), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_dilepton_mass']     = formatPlot( ROOT.TH1F(istream+"_dilepton_mass", ";Invariant Mass(l,l') [GeV/c^{2}]; Events", 100, 0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_dilepton_pt']       = formatPlot( ROOT.TH1F(istream+"_dilepton_pt", ";|#Sigma #vec{p}_{T}| [GeV/c]; Events", 100, 0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_dilepton_dphi']     = formatPlot( ROOT.TH1F(istream+"_dilepton_dphi", ";#Delta #phi(l,l') [rad]; Events", 100, 0,3.2), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results['met2'+istream+'_mindphi']    = formatPlot( ROOT.TH1F("met2'+istream+'_mindphi", ";min #Delta #phi(#slash{E}_{T},l) [rad]; Events", 100, 0,3.2), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_met']               = formatPlot( ROOT.TH1F(istream+"_met", ";#slash{E}_{T} [GeV/c]; Events", 100,  0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_st']                = formatPlot( ROOT.TH1F(istream+"_st", ";S_{T} [GeV/c]; Events", 100,  0.,1000.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_dilepton2met_dphi'] = formatPlot( ROOT.TH1F(istream+"dilepton2met_dphi", ";#Delta #phi [rad]; Events", 100, 0,3.2), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_projmet']           = formatPlot( ROOT.TH1F(istream+"_projmet", ";projected #slash{E}_{T} [GeV/c]; Events", 100,  0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_mT']                = formatPlot( ROOT.TH1F(istream+"_mT",";Transverse mass(dilepton,MET) [GeV/c^{2}]; Events",100,0,1000), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_mT_individual']     = formatPlot( ROOT.TH1F(istream+"_mT_individual",";Transverse mass(lepton,MET) [GeV/c^{2}]; Events",100,0,500), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_mT_individualsum']  = formatPlot( ROOT.TH1F(istream+"_mT_individualsum",";#Sigma Transverse mass(lepton,MET) [GeV/c^{2}]; Events",100,0,500), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_projmT_individual']     = formatPlot( ROOT.TH1F(istream+"_projmT_individual",";Transverse mass(lepton,projected MET) [GeV/c^{2}]; Events",100,0,500), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_projmT_individualsum']  = formatPlot( ROOT.TH1F(istream+"_projmT_individualsum",";#Sigma Transverse mass(lepton,projected MET) [GeV/c^{2}]; Events",100,0,500), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[istream+'_njets']             = formatPlot( ROOT.TH1F(istream+"_njets",";Jet multiplicity; Events",4,0,4), 1, 1, 1, 20, 0, True, True, 1,1,1)
         #    results['bmult']            = formatPlot( ROOT.TH1F("bmult",";b tag multiplicity; Events",4,0,4), 1, 1, 1, 20, 0, True, True, 1,1,1)
         for ibin in xrange(0,results[istream+'_njets'].GetXaxis().GetNbins()) :
             ilabel=str(ibin)
             if(ibin==results[istream+'_njets'].GetXaxis().GetNbins()-1) : ilabel='#geq'+ilabel
             results[istream+'_njets'].GetXaxis().SetBinLabel(ibin+1,ilabel)
             #        results['bmult'].GetXaxis().SetBinLabel(ibin+1,ilabel)
-            #    results['btags']           = formatPlot( ROOT.TH1F("btags",";b tags (SSVHE); Jets",100,-0.5,2), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results['btags']                    = formatPlot( ROOT.TH1F("btags",";b tags (SSVHE); Jets",100,-0.5,2), 1, 1, 1, 20, 0, True, True, 1,1,1)
         results[istream+'_jetpt']           = formatPlot( ROOT.TH1F(istream+"_jetpt",";p_{T} [GeV/c]; Jets",100,0,200), 1, 1, 1, 20, 0, True, True, 1,1,1)
         results[istream+'_jet2zll_mindphi'] = formatPlot( ROOT.TH1F(istream+"_jet2zcand_mindphi", ";min #Delta #phi(jet,#slash{E}_{T} or ll) [rad]; Events", 100, 0,3.2), 1, 1, 1, 20, 0, True, True, 1,1,1)
      
@@ -120,11 +124,19 @@ def getControlPlots(url) :
             recodil=dilP[0]+dilP[1]
             themet=metHandle.product()[0]
             recomet=ROOT.TLorentzVector(-themet.px(),-themet.py(),-themet.pz(),themet.energy())
-      
-            dphimin = min( [ abs(recomet.DeltaPhi(dilP[0])) , abs(recomet.DeltaPhi(dilP[1])) ] )
-            projmet=recomet.Pt()
-            if(dphimin<math.pi/2) : projmet = projmet*sin(dphimin)
 
+            dphil2met=[ abs(recomet.DeltaPhi(dilP[0])) , abs(recomet.DeltaPhi(dilP[1])) ]
+            mTlmet=[sqrt(2*recomet.Pt()*dilP[0].Pt()*(1-cos(dphil2met[0]))),
+                    sqrt(2*recomet.Pt()*dilP[1].Pt()*(1-cos(dphil2met[1])))]
+            dphimin = min( dphil2met )
+            projmet=recomet.Pt()
+#            recoprojmet=recomet
+            if(dphimin<math.pi/2) :
+                projmet = projmet*sin(dphimin)
+#            dphil2projmet=[ abs(recoprojmet.DeltaPhi(dilP[0])) , abs(recoprojmet.DeltaPhi(dilP[1])) ]
+#            mTlprojmet=[sqrt(2*recoprojmet.Pt()*dilP[0].Pt()*(1-cos(dphil2projmet[0]))),
+#                        sqrt(2*recoprojmet.Pt()*dilP[1].Pt()*(1-cos(dphil2projmet[1])))]
+         
             #reco
             results[istream+'_cutflow'].Fill(0)
 
@@ -176,6 +188,9 @@ def getControlPlots(url) :
             results['met2'+istream+'_mindphi'].Fill(dphimin)
             results[istream+'_projmet'].Fill(projmet)
             results[istream+'_mT'].Fill(transvMass)
+            results[istream+'_mT_individual'].Fill(mTlmet[0])
+            results[istream+'_mT_individual'].Fill(mTlmet[1])
+            results[istream+'_mT_individualsum'].Fill(mTlmet[0]+mTlmet[1])
 
             event.getByLabel(jetLabel,jetHandle)
             njets=0
