@@ -1,5 +1,4 @@
 #include "CMGTools/Common/interface/BaseJetFactory.h"
-#include "DataFormats/BTauReco/interface/SecondaryVertexTagInfo.h"
 
 #include <iostream>
 
@@ -21,18 +20,12 @@ cmg::BaseJetFactory::event_ptr cmg::BaseJetFactory::create(const edm::Event& iEv
  
     result->push_back(jet);
   }
-//   for(cmg::BaseJetFactory::collection::const_iterator it = result->begin(); it != result->end(); ++it){
-//     std::cout << "Created a jet: " << *it << std::endl;
-//   }
   return result;
 }
 
 /// refactor out the setting of properties so that it can be used elsewhere
 void cmg::BaseJetFactory::set(const pat::JetPtr& input, cmg::BaseJet* const output) const{
     
-    const reco::SecondaryVertexTagInfo* info = input->tagInfoSecondaryVertex();
-    if(info){
-        output->btag_ = input->bDiscriminator(btagType_);
-    }
+    output->btag_ = input->bDiscriminator(btagType_);
     
 }
