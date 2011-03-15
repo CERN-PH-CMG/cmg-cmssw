@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 wmunuFactory = cms.PSet(
        leg1Collection = cms.InputTag('cmgMuon'),
-       leg2Collection = cms.InputTag('cmgMETPFCandidates')
+       leg2Collection = cms.InputTag('cmgPFMET')
 )
 from CMGTools.Common.selections.wmunu_cfi import wmunu
 cmgWMuNu = cms.EDFilter(
