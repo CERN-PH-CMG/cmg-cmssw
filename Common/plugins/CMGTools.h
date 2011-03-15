@@ -6,6 +6,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/PhysicsObject.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
 
 #include "CMGTools/Common/plugins/HistogramAnalyzer.h"
 #include "CMGTools/Common/interface/GenericHistograms.h"
@@ -47,7 +48,8 @@ typedef PhysicsObjectProducer<cmg::TauFactory> TauPOProducer;
 typedef PhysicsObjectProducer<cmg::QuadMuonFactory> QuadMuonPOProducer;
 typedef PhysicsObjectProducer<cmg::BaseJetFactory> BaseJetPOProducer;
 typedef PhysicsObjectProducer<cmg::PFJetFactory> PFJetPOProducer;
-typedef PhysicsObjectProducer<cmg::BaseMETFactory> BaseMETPOProducer;
+typedef PhysicsObjectProducer<cmg::BaseMETFactory<> > BaseMETPOProducer;
+typedef PhysicsObjectProducer<cmg::BaseMETFactory<pat::MET> > PATMETPOProducer;
 typedef PhysicsObjectProducer<cmg::PFCandFactory> PFCandidatePOProducer;
 typedef PhysicsObjectProducer<cmg::GenParticleFactory> GenParticlePOProducer;
 typedef PhysicsObjectProducer<cmg::GenJetFactory> GenJetPOProducer;

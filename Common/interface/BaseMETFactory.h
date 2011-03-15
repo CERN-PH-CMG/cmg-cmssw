@@ -1,6 +1,9 @@
 #ifndef _CMGTools_CommonTools_BaseMetFactory_H_
 #define _CMGTools_CommonTools_BaseMetFactory_H_
 
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
+
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
@@ -12,6 +15,7 @@
 
 namespace cmg{
 
+template <class T = reco::Candidate>
 class BaseMETFactory : public Factory<cmg::BaseMET>{
   public:
     BaseMETFactory(const edm::ParameterSet& ps):
@@ -25,8 +29,79 @@ class BaseMETFactory : public Factory<cmg::BaseMET>{
     const edm::InputTag inputLabel_;
     double ptThreshold_;
   };
+
+///Include a template specialization so that we can also convert the pat::MET - in this case ptThreshold is ignored 
+template <>
+BaseMETFactory<pat::MET>::event_ptr BaseMETFactory<pat::MET>::create(const edm::Event& iEvent, const edm::EventSetup&) const{
+  // here read a view 
+  typedef edm::View<pat::MET> ViewType; 
+  edm::Handle< ViewType > inputs;
+  iEvent.getByLabel(inputLabel_,inputs);
+  
+  BaseMETFactory<pat::MET>::event_ptr result(new BaseMETFactory<pat::MET>::collection);
+  for(ViewType::const_iterator met = inputs->begin(); met != inputs->end(); ++met) {
+
+    const pat::MET& cand = *met;
+    cmg::BaseMET m(cand);
+    m.sumEt_ = cand.sumEt();
+    m.significance_ = cand.significance();
+    result->push_back(m);
+  }
+  return result;
+}
   
 }
 
+///Recalculate the MET using any collection of candidates
+template <class T>
+typename cmg::BaseMETFactory<T>::event_ptr cmg::BaseMETFactory<T>::create(const edm::Event& iEvent, const edm::EventSetup&) const{
+  // here read a view 
+  typedef typename edm::View<T> ViewType; 
+  edm::Handle< ViewType > inputs;
+  iEvent.getByLabel(inputLabel_,inputs);
+  
+  typename cmg::BaseMETFactory<T>::event_ptr result(new typename cmg::BaseMETFactory<T>::collection);
 
-#endif /*JETFACTORY_H_*/
+  double sumEx = 0;
+  double sumEy = 0;
+  double sumEt = 0;
+  int sumCharge = 0;  
+
+  for(typename ViewType::const_iterator mi = inputs->begin();
+      mi != inputs->end(); ++mi) {
+
+    const reco::Candidate& cand = *mi;
+
+    if(cand.pt()<ptThreshold_ ) continue;
+    
+    double phi = cand.phi();
+    double cosphi = cos(phi);
+    double sinphi = sin(phi);
+
+    double theta = cand.theta();
+    double sintheta = sin(theta);
+    
+    double E = cand.energy();
+
+    double et = E*sintheta;
+    double ex = et*cosphi;
+    double ey = et*sinphi;
+    
+    sumEx += ex;
+    sumEy += ey;
+    sumEt += et;
+    sumCharge += cand.charge();
+             
+  }
+
+  double Et = sqrt( sumEx*sumEx + sumEy*sumEy);
+  math::XYZTLorentzVector missingEt( -sumEx, -sumEy, 0, Et);
+
+  cmg::BaseMET met(reco::LeafCandidate(sumCharge,missingEt));
+  met.sumEt_ = sumEt;
+  result->push_back(met);
+
+  return result;
+}
+
+#endif /*_CMGTools_CommonTools_BaseMetFactory_H_*/
