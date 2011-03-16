@@ -113,6 +113,11 @@ typedef SingleObjectSelector<
   > CmgDiElectronSelector;
 
 typedef SingleObjectSelector<
+  std::vector<cmg::WENu>,
+  StringCutObjectSelector<cmg::WENu>
+  > CmgWENuSelector;
+
+typedef SingleObjectSelector<
   std::vector<cmg::WMuNu>,
   StringCutObjectSelector<cmg::WMuNu>
   > CmgWMuNuSelector;

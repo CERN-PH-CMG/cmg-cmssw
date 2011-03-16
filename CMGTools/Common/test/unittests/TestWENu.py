@@ -4,26 +4,26 @@ import ROOT as rt
 
 import unittest
 
-class TestWMuNu(TestTools.CFGTest):
+class TestWENu(TestTools.CFGTest):
     
     def __init__(self,methodName):
         TestTools.CFGTest.__init__(self,methodName)
-        self.cfgsRunOnce.append('CMGTools/Common/test/testWMuNu_cfg.py')
+        self.cfgsRunOnce.append('CMGTools/Common/test/testWENu_cfg.py')
     
     def testTreeEntries(self):
         """Test that the Events tree has some content"""
         
-        output = self.__class__.cfgsRunOnceCache['CMGTools/Common/test/testWMuNu_cfg.py']
+        output = self.__class__.cfgsRunOnceCache['CMGTools/Common/test/testWENu_cfg.py']
         self.assert_(TestTools.getEntries(output[1]) > 0,'The CMGTuple must contain some entries')
         
-    def testWMuNuBranchExists(self):
-        """Tests that the cmgWMuNu branch exists"""
+    def testWENuBranchExists(self):
+        """Tests that the cmgWENu branch exists"""
         
-        output = self.__class__.cfgsRunOnceCache['CMGTools/Common/test/testWMuNu_cfg.py']
+        output = self.__class__.cfgsRunOnceCache['CMGTools/Common/test/testWENu_cfg.py']
         events = TestTools.getObject(output[1], 'Events')
         
         cmg = cmgTuple.cmgTuple(events)
-        self.assertTrue(cmg.aliases.has_key('cmgWMuNu'),'We are expecting a branch called cmgWMuNu')
+        self.assertTrue(cmg.aliases.has_key('cmgWENu'),'We are expecting a branch called cmgWENu')
         
  
  
