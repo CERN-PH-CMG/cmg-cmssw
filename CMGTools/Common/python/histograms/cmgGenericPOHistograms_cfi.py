@@ -96,7 +96,7 @@ cmgGenericPOHistograms = cms.EDAnalyzer(
             cms.untracked.PSet( 
                var = cms.untracked.string('theta()'),
                nbins = cms.untracked.int32(50),
-               low = cms.untracked.double(-3.15),
+               low = cms.untracked.double(0),
                high = cms.untracked.double(3.15)
                )
             ),
