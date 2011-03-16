@@ -37,6 +37,16 @@ class TestMuon(TestTools.CFGTest):
         #9999 is the value of Unset(double)
         self.assertEqual(cmg.Draw("abs(cmgMuonSel.absIso() + 9999*3)","abs(cmgMuonSel.absIso() + 9999*3) < 1e-6","goff"),0,\
                          'There must be no isolations unset by cmgTools')
+        
+    def testZID(self):
+        """Verify that the Z id is applied"""
+        
+        output = self.__class__.cfgsRunOnceCache['CMGTools/Common/test/testMuon_cfg.py']
+        events = TestTools.getObject(output[1], 'Events')
+        
+        cmg = cmgTuple.cmgTuple(events)
+        self.assertTrue(cmg.Draw("cmgDiMuon.pt()","cmgDiMuon.getSelection(\"cuts_zmumu\")","goff") > 0,\
+                         'The Z id should be applied')
 
 if __name__ == '__main__':
     
