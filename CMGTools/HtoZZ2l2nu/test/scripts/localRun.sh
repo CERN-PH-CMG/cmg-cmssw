@@ -13,13 +13,13 @@ if [ -z $ffile]; then
 fi
 lfile=$3
 echo "Starting at first file: $ffile"
-cmsRun runCMGTuple_cfg.py $localSrc $ffile $lfile
+cmsRun produceCMGTuple_cfg.py $localSrc $ffile $lfile
 outdir="/castor/cern.ch/user/p/psilva/${localSrc}"
 output="/tmp/${ME}/${localSrc}_${ffile}_cmgTuple.root"
-outmon="/tmp/${ME}/${localSrc}_${ffile}_histograms.root"
+#outmon="/tmp/${ME}/${localSrc}_${ffile}_histograms.root"
 rfmkdir $outdir
 rfcp $output $outdir/
-rfcp $outmon $outdir/
+#rfcp $outmon $outdir/
 rm $output
 rm $outmon
 rfdir $outdir

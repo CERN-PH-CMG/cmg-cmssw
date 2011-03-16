@@ -20,19 +20,21 @@ genPath = cms.Path( runInfoCounterSequence+genHiggsFinalState )
 
 ### SINGLE LEPTON
 from CMGTools.Common.muon_cff import *
-cmgMuon.cfg.inputCollection = cms.InputTag("selectedPatMuonsPFlow")
+cmgMuon.cfg.inputCollection = cms.InputTag('selectedPatMuonsPFlow')
+cmgMuon.cfg.muonIDType = cms.string('TMLastStationLoose')
 cmgMuon.cuts = cms.PSet( pt = cms.string('pt()>15 && abs(eta())<2.4'),
-                                 id = cms.string('sourcePtr().muonID(\"AllGlobalMuons\") && sourcePtr().muonID(\"AllTrackerMuons\")')
-                                 )
+                         id = cms.string('sourcePtr().muonID(\"AllGlobalMuons\") && sourcePtr().muonID(\"AllTrackerMuons\")') #tracker && global
+                         )
 from CMGTools.Common.electron_cff import *
-cmgElectron.cfg.inputCollection = cms.InputTag("selectedPatElectronsPFlow")
+cmgElectron.cfg.inputCollection = cms.InputTag('selectedPatElectronsPFlow')
+cmgElectron.cfg.electronIDType = cms.string('simpleEleId90relIso')
 cmgElectron.cuts = cms.PSet( pt = cms.string('pt()>15 && abs(eta())<2.5'),
-#                                     id = cms.string('sourcePtr().isEcalDriven()')
-                                     id = cms.string('')
-                                     )
+                             id = cms.string('sourcePtr().electronID(\"simpleEleId90relIso\")>=4') #no conversions
+                             )
 
 ### DI-MUON selection
 from CMGTools.Common.diMuon_cff import *
+cmgDiMuon.cuts.zmumu.isolation=cms.string('')
 cmgDiMuon.cuts.zmumu.pt = cms.string('pt() >= 0')
 cmgDiMuon.cuts.zmumu.mass = cms.string('mass() >= 50')
 cmgDiMuon.cuts.zmumu.leg1_quality = cms.string('')

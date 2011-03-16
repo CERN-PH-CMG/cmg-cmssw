@@ -115,32 +115,49 @@
          "color":"kYellow",
          "data":[
 		{
-		  "dtag":"QCD",	
-                  "dir":"/castor/cern.ch/user/p/psilva/QCDMu15",
-                  "xsec":296600000,
-		  "br":0.0002855
+		  "dtag":"QCD_Pt_15to30",	
+		  "dset":"/QCD_Pt_15to30_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO",
+                  "dir":"/castor/cern.ch/user/p/psilva/QCD_Pt_15to30",
+                  "xsec":815900000,
+		  "br":1
+                },
+		{
+		  "dtag":"QCD_Pt_30to50",	
+		  "dset":"/QCD_Pt_30to50_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO",
+                  "dir":"/castor/cern.ch/user/p/psilva/QCD_Pt_30to50",
+                  "xsec":53120000,
+		  "br":1
+                },
+		{
+		  "dtag":"QCD_Pt_50to80",	
+		  "dset":"/QCD_Pt_50to80_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO",
+                  "dir":"/castor/cern.ch/user/p/psilva/QCD_Pt_50to80",
+                  "xsec":6359000,
+		  "br":1
+                },
+		{
+		  "dtag":"QCD_Pt_80to120",	
+		  "dset":"/QCD_Pt_80to120_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO",
+                  "dir":"/castor/cern.ch/user/p/psilva/QCD_Pt_80to120",
+                  "xsec":784300,
+		  "br":1
+                },
+	         {
+                  "dtag":"QCD_Pt_120to170",
+                  "dset":"/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO",
+                  "dir":"/castor/cern.ch/user/p/psilva/QCD_Pt_120to170",
+                  "xsec":115100,
+                  "br":0.0002855
+                },
+               {
+                  "dtag":"QCD_Pt_170to300",
+                  "dset":"/QCD_Pt_170to300_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO",
+                  "dir":"/castor/cern.ch/user/p/psilva/QCD_Pt_170to300",
+                  "xsec":24260,
+                  "br":1
                 }
 	   ]	
 	},
-	{
-          "tag":"gg #rightarrow H(400) #rightarrow 2l2#nu x10",
-          "isdata":false,
-          "spimpose":true,
-          "color":"kBlue+4",
-          "lwidth":2,
-          "fill":0,
-          "marker":1,
-          "data":[
-                 {
-                 "dtag":"GluGluToH400ToZZTo2L2Nu",
-                 "dset":"/GluGluToHToZZTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO",
-                 "dir":"/castor/cern.ch/user/p/psilva/GluGluToH400ToZZTo2L2Nu",
-                 "xsec":2.035,
-                 "br":0.0118,
-                 "sfactor":10
-                 }
-           ]
-        },
 	{
           "tag":"gg #rightarrow H(400) #rightarrow 2l2#nu x10",
           "isdata":false,

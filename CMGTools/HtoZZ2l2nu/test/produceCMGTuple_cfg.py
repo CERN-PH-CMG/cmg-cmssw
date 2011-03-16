@@ -16,12 +16,12 @@ if(len(sys.argv)>3 ): ffile = int(sys.argv[3])
 fstep=-1
 if(len(sys.argv)>4 ): fstep = int(sys.argv[4])
 fnames = getLocalSourceFor( theLocalSrc, ffile, fstep ) 
-fnames = cms.untracked.vstring('/store/cmst3/user/wreece/VJets/3_8_7/020211/Zmumu/PF2PAT_MuonFilter_99_1_8aQ.root')
+#fnames = cms.untracked.vstring('/store/cmst3/user/wreece/VJets/3_8_7/020211/Zmumu/PF2PAT_MuonFilter_99_1_8aQ.root')
 process.source.fileNames=fnames
 print ' ***** Local source is defined for ' + theLocalSrc + ' with ' + str(len(process.source.fileNames)) + ' files'
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
-
+### common selection
 process.load('CMGTools.HtoZZ2l2nu.StandardSelection_cff')
 
 ### configure the process
@@ -38,14 +38,16 @@ print '*** Scheduling the following sequence: '
 print process.schedule
 
 ### output file for histograms etc
+import getpass
+outdir='/tmp/'+getpass.getuser()+'/'+theLocalSrc+'_'+str(ffile)
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string('/tmp/cerminar/'+theLocalSrc+'_'+str(ffile)+'_histograms.root'))
+                                   fileName = cms.string(outdir+'_histograms.root'))
 
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 process.out.outputCommands = process.outputConfig.outputCommandsHtoZZ
-process.out.fileName = cms.untracked.string('/tmp/cerminar/'+theLocalSrc+'_'+str(ffile)+'_cmgTuple.root')
+process.out.fileName = cms.untracked.string(outdir+'_cmgTuple.root')
 process.out.SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('eePath','mumuPath','emuPath') )
 
 
