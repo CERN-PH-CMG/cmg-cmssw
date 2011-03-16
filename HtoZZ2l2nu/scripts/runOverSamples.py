@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os,sys
 import json
 
@@ -140,19 +142,32 @@ def runOverSamples(samplesDB,func,debugFunc=None,integratedLumi=1.0) :
 
     if(debugFunc != None) : debugFunc(stackplots,spimposeplots,dataplots,generalLabel)
 
+
 # steer script
-#script = sys.argv[1]
-samplesDB = sys.argv[1]
+if(len(sys.argv)<2):
+    print 'runOverSamples.py analysisScript.py samples.json integratedLumi=1'
+    exit()
+
+#import the module
+script = sys.argv[1]
+scriptdir =  os.path.dirname(script)
+modname = os.path.splitext(os.path.basename(script))[0]
+import pkgutil
+i = pkgutil.ImpImporter(scriptdir)
+l = i.find_module(modname)
+mysource = l.load_module(modname)
+if (mysource is None):
+    print 'Unable to find ' + modname + ' in ' +scriptdir
+    exit();
+
+
+#configure 
+samplesDB = sys.argv[2]
 integratedLumi=1.0
-if(len(sys.argv)>2): integratedLumi = float(sys.argv[2])
+if(len(sys.argv)>3): integratedLumi = float(sys.argv[3])
 
-#import pkgutil
-#i = pkgutil.ImpImporter(".")
-#l = i.find_module(o.source)
-#source = l.load_module(o.source)
-
-#from genControlPlots import getControlPlots, showControlPlots
-from recoControlPlots import getControlPlots, showControlPlots
-
-print ' ********* INTEGRATED LUMI IS:' + str(integratedLumi)
-runOverSamples( samplesDB, getControlPlots, showControlPlots, integratedLumi )
+#run the script
+print ' Integrated lumi is:' + str(integratedLumi) + ' /pb'
+print ' Running the following module: ' + modname
+print ' Samples defined in: ' +  samplesDB
+runOverSamples( samplesDB, mysource.getControlPlots, mysource.showControlPlots, integratedLumi )
