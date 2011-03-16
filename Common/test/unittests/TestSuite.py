@@ -15,6 +15,7 @@ class CMGTestLoader(unittest.TestLoader):
         import TestElectron
         import TestMET
         import TestMuon
+        import TestJet
         import TestWENu
         import TestWMuNu
     
@@ -23,6 +24,7 @@ class CMGTestLoader(unittest.TestLoader):
         suites.append(loader.loadTestsFromModule(TestElectron))
         suites.append(loader.loadTestsFromModule(TestMET))
         suites.append(loader.loadTestsFromModule(TestMuon))
+        suites.append(loader.loadTestsFromModule(TestJet))
         suites.append(loader.loadTestsFromModule(TestWENu))
         suites.append(loader.loadTestsFromModule(TestWMuNu))
     
