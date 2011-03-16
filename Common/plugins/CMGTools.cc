@@ -48,4 +48,5 @@ DEFINE_FWK_MODULE(CmgElectronSelector);
 DEFINE_FWK_MODULE(CmgMuonSelector);
 DEFINE_FWK_MODULE(CmgDiMuonSelector);
 DEFINE_FWK_MODULE(CmgDiElectronSelector);
+DEFINE_FWK_MODULE(CmgWENuSelector);
 DEFINE_FWK_MODULE(CmgWMuNuSelector);

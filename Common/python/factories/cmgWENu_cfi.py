@@ -2,13 +2,12 @@ import FWCore.ParameterSet.Config as cms
 
 wenuFactory = cms.PSet(
        leg1Collection = cms.InputTag('cmgElectron'),
-       leg2Collection = cms.InputTag('cmgMETPFCandidates')
+       leg2Collection = cms.InputTag('cmgPFMET')
 )
-from CMGTools.Common.selections.kinematics_cfi import kinematics
+
 cmgWENu = cms.EDFilter(
     "WENuPOProducer",
     cfg = wenuFactory.clone(),
     cuts = cms.PSet(
-       kinematics = kinematics.clone(),
       ),
     )
