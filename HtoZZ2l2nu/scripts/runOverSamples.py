@@ -152,9 +152,12 @@ if(len(sys.argv)<2):
 script = sys.argv[1]
 scriptdir =  os.path.dirname(script)
 modname = os.path.splitext(os.path.basename(script))[0]
+print script +' ' + scriptdir + ' ' +modname
 import pkgutil
 i = pkgutil.ImpImporter(scriptdir)
+print i
 l = i.find_module(modname)
+print l
 mysource = l.load_module(modname)
 if (mysource is None):
     print 'Unable to find ' + modname + ' in ' +scriptdir
