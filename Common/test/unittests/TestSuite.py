@@ -12,6 +12,7 @@ class CMGTestLoader(unittest.TestLoader):
         if testDir not in sys.path:
             sys.path.append(testDir)
     
+        import TestBuild
         import TestElectron
         import TestMET
         import TestMuon
@@ -21,6 +22,7 @@ class CMGTestLoader(unittest.TestLoader):
     
         loader = unittest.TestLoader()
         suites = []
+        suites.append(loader.loadTestsFromModule(TestBuild))
         suites.append(loader.loadTestsFromModule(TestElectron))
         suites.append(loader.loadTestsFromModule(TestMET))
         suites.append(loader.loadTestsFromModule(TestMuon))
