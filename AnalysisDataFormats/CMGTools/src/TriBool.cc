@@ -5,5 +5,5 @@ bool cmg::toBool(const cmg::TriBool& b){
 }
 
 cmg::TriBool cmg::toTriBool(const bool& b){
-		return b ? tbTrue : tbFalse;
+		return b ? tbTrue : tbFalse
 }
