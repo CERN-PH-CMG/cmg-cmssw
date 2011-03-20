@@ -33,7 +33,7 @@ def getControlPlots(url) :
        
     #book histograms (...need to add emu)
     results={}
-    streams=['e','mu']
+    streams=['ee','mumu']
     jetmult=['eq0jets','eq1jets','geq2jets']
     for istream in streams :
 
@@ -45,16 +45,20 @@ def getControlPlots(url) :
         for i in xrange(0,len(cutflowsteps)): results[cat+'_cutflow'].GetXaxis().SetBinLabel(i+1,cutflowsteps[i])
 
         #lepton control
-        results[cat+'_pt']                = formatPlot( ROOT.TH1F(cat+"_pt", ";p_{T} [GeV/c]; Muons", 100, 0.,200.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        if(istream!='emu') :
+            part=''
+            if(istream=='ee'):
+                part='e'
+                results[part+'_sietaieta']   = formatPlot( ROOT.TH1F(part+"_sietaieta", ";#sigma_{i#eta-i#eta}; Electrons", 100, 0.,0.1), 1, 1, 1, 20, 0, True, True, 1,1,1)
+                results[part+'_eoverp']     = formatPlot( ROOT.TH1F(part+"_eoverp", ";E/p; Electrons", 100, 0.,5.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+            if(istream=='mumu'):
+                part='mu'
+                results[part+'_chi2']     = formatPlot( ROOT.TH1F(part+"_chi2", ";#chi^{2}; Leptons", 100, 0.,20.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+            results[part+'_pt']                = formatPlot( ROOT.TH1F(part+"_pt", ";p_{T} [GeV/c]; Muons", 100, 0.,200.), 1, 1, 1, 20, 0, True, True, 1,1,1)        
+            results[part+'_eta']               = formatPlot( ROOT.TH1F(part+"_eta", ";#eta; Leptons", 100, -2.5, 2.5), 1, 1, 1, 20, 0, True, True, 1,1,1)
+            results[part+'_reliso']            = formatPlot( ROOT.TH1F(part+"_reliso", ";Relative Isolation; Leptons", 100, 0.,2.), 1, 1, 1, 20, 0, True, True, 1,1,1)
 
-        if(istream=='e'):
-            results[cat+'_sietaieta']   = formatPlot( ROOT.TH1F(cat+"_sietaieta", ";#sigma_{i#eta-i#eta}; Electrons", 100, 0.,0.1), 1, 1, 1, 20, 0, True, True, 1,1,1)
-            results[cat+'_eoverp']     = formatPlot( ROOT.TH1F(cat+"_eoverp", ";E/p; Electrons", 100, 0.,5.), 1, 1, 1, 20, 0, True, True, 1,1,1)
-        if(istream=='mu'):
-            results[cat+'_chi2']     = formatPlot( ROOT.TH1F(cat+"_chi2", ";#chi^{2}; Leptons", 100, 0.,20.), 1, 1, 1, 20, 0, True, True, 1,1,1)
-        
-        results[cat+'_eta']               = formatPlot( ROOT.TH1F(cat+"_eta", ";#eta; Leptons", 100, -2.5, 2.5), 1, 1, 1, 20, 0, True, True, 1,1,1)
-        results[cat+'_reliso']            = formatPlot( ROOT.TH1F(cat+"_reliso", ";Relative Isolation; Leptons", 100, 0.,2.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        #dilepton control
         results[cat+"_dilepton_mass"]     = formatPlot( ROOT.TH1F(cat+"_dilepton_mass", ";Invariant Mass(l,l') [GeV/c^{2}]; Events", 100, 0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
         results[cat+"_dilepton_sumpt"]    = formatPlot( ROOT.TH1F(cat+"_dilepton_sumpt", ";#Sigma |#vec{p}_{T}| [GeV/c]; Events", 100, 0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
         results[cat+"_dilepton_pt"]       = formatPlot( ROOT.TH1F(cat+"_dilepton_pt", ";|#Sigma #vec{p}_{T}| [GeV/c]; Events", 100, 0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
@@ -80,8 +84,10 @@ def getControlPlots(url) :
             results["met2"+subcat+"_mindphi"]    = formatPlot( ROOT.TH1F("met2"+subcat+"_mindphi", ";min #Delta #phi(#slash{E}_{T},l) [rad]; Events", 100, 0,3.2), 1, 1, 1, 20, 0, True, True, 1,1,1)
             results[subcat+"_met"]               = formatPlot( ROOT.TH1F(subcat+"_met", ";#slash{E}_{T} [GeV/c]; Events", 100,  0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
             results[subcat+"_dilepton2met_dphi"] = formatPlot( ROOT.TH1F(subcat+"dilepton2met_dphi", ";#Delta #phi [rad]; Events", 100, 0,3.2), 1, 1, 1, 20, 0, True, True, 1,1,1)
+            results[subcat+"_relmet"]            = formatPlot( ROOT.TH1F(subcat+"_relmet", ";#slash{E}_{T,rel} [GeV/c]; Events", 100,  0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
             results[subcat+"_mT"]                = formatPlot( ROOT.TH1F(subcat+"_mT",";Transverse mass(dilepton,MET) [GeV/c^{2}]; Events",100,0,1000), 1, 1, 1, 20, 0, True, True, 1,1,1)
             results[subcat+"_mT_individual"]     = formatPlot( ROOT.TH1F(subcat+"_mT_individual",";Transverse mass(lepton,MET) [GeV/c^{2}]; Events",100,0,500), 1, 1, 1, 20, 0, True, True, 1,1,1)
+            results[subcat+"_mT_corr"]           = formatPlot( ROOT.TH2F(subcat+"_mT_corr",";Transverse mass(leading lepton,MET) [GeV/c^{2}];Transverse mass(trailer lepton,MET) [GeV/c^{2}]; Events",50,0,500,50,0,500), 1, 1, 1, 20, 0, True, True, 1,1,1)
             results[subcat+"_mT_individualsum"]  = formatPlot( ROOT.TH1F(subcat+"_mT_individualsum",";#Sigma Transverse mass(lepton,MET) [GeV/c^{2}]; Events",100,0,500), 1, 1, 1, 20, 0, True, True, 1,1,1)
 
     #build the list of files
@@ -126,9 +132,10 @@ def getControlPlots(url) :
             
             # prefer di-muons
             if(mumuHandle.product().size()>0):
-                istream='mu'
+                istream='mumu'
                 for dil in mumuHandle.product() :
 
+                    selSetp=0
                     lepton1=dil.leg1()
                     lepton2=dil.leg2()
 
@@ -160,12 +167,11 @@ def getControlPlots(url) :
                     selStep=selStep+1
                     
                     #mass cut
-                    results['mu_dilepton_mass'].Fill(dil.mass())
                     if(dil.mass()<50) : continue
                     selStep=selStep+1
-
-                    results['mu_dilepton_sumpt'].Fill(lepton1.pt()+lepton2.pt())
-                    results['mu_dilepton_pt'].Fill(dil.pt())
+                    results['mumu_dilepton_mass'].Fill(dil.mass())
+                    results['mumu_dilepton_sumpt'].Fill(lepton1.pt()+lepton2.pt())
+                    results['mumu_dilepton_pt'].Fill(dil.pt())
 
                     if(dilCand is None) : dilCand=dil
                     else :
@@ -175,11 +181,10 @@ def getControlPlots(url) :
 
             #revert to di-electron if none found
             if(dilCand is None and eeHandle.product().size()>0) :
-
-                istream='e'
-                selStep=0
+                istream='ee'
                 for dil in eeHandle.product() :
 
+                    selStep=0
                     lepton1=dil.leg1()
                     lepton2=dil.leg2()
 
@@ -211,12 +216,12 @@ def getControlPlots(url) :
                     selStep=selStep+1
                     
                     #mass cut
-                    results['e_dilepton_mass'].Fill(dil.mass())
                     if(dil.mass()<50) : continue
                     selStep=selStep+1
 
-                    results['e_dilepton_sumpt'].Fill(lepton1.pt()+lepton2.pt())
-                    results['e_dilepton_pt'].Fill(dil.pt())
+                    results['ee_dilepton_mass'].Fill(dil.mass())
+                    results['ee_dilepton_sumpt'].Fill(lepton1.pt()+lepton2.pt())
+                    results['ee_dilepton_pt'].Fill(dil.pt())
 
                     if(dilCand is None) : dilCand=dil
                     else :
@@ -226,6 +231,7 @@ def getControlPlots(url) :
 
             #cutflow up to dilepton selection
             if(len(istream)==0) : continue
+            if(dilCand is not None): selStep=5
             for iselstep in xrange(0,selStep+1) : results[istream+'_cutflow'].Fill(iselstep)
             if(dilCand is None): continue
 
@@ -284,6 +290,8 @@ def getControlPlots(url) :
                 sqrt(2*recomet.Pt()*lepP[1].Pt()*(1-cos(dphil2met[1])))
                 ]
             dphimin=min(dphil2met)
+            relMET=recomet.Pt()
+            if(abs(dphimin)<math.pi/2) : relMET = relMET*math.sin(dphimin)
 
             #dilepton vs MET kinematics
             transvSum=recoDil+recomet
@@ -293,8 +301,11 @@ def getControlPlots(url) :
             
             #control histograms
             results['met2'+substream+'_mindphi'].Fill(dphimin)
+            results[substream+"_relmet"].Fill(relMET)
             results[substream+'_mT_individual'].Fill(mTlmet[0])
             results[substream+'_mT_individual'].Fill(mTlmet[1])
+            if(lepP[0].Pt()>lepP[1].Pt()): results[substream+'_mT_corr'].Fill(mTlmet[0],mTlmet[1])
+            else : results[substream+'_mT_corr'].Fill(mTlmet[1],mTlmet[0])
             results[substream+'_mT_individualsum'].Fill(mTlmet[0]+mTlmet[1])
             results[substream+"_dilepton_mass"].Fill(dilCand.mass())
             results[substream+"_dilepton_sumpt"].Fill(lepP[0].Pt()+lepP[1].Pt())
@@ -321,6 +332,8 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
             if(len(stackLists)<=i):
                 newlist=ROOT.TList()
                 stackLists.append(newlist)
+            if( p[i].IsA().InheritsFrom("TH1") ):
+                if(p[i].GetEntries()==0) : continue
             stackLists[i].Add(p[i])
             
     spimposeLists=[]
@@ -329,6 +342,8 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
             if(len(spimposeLists)<=i):
                 newlist=ROOT.TList()
                 spimposeLists.append(newlist)
+            if( p[i].IsA().InheritsFrom("TH1") ):
+                if(p[i].GetEntries()==0) : continue
             spimposeLists[i].Add(p[i])
 
     dataLists=[]
@@ -337,6 +352,9 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
             if(len(dataLists)<=i):
                 newlist=ROOT.TList()
                 dataLists.append(newlist)
+            if( p[i].IsA().InheritsFrom("TH1") ):
+                print p[i].GetEntries()
+                if(p[i].GetEntries()==0) : continue
             dataLists[i].Add(p[i])
 
     #draw result
@@ -364,9 +382,9 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
         elif(spimpose.At(0) is not None) : pname=spimpose.At(0).GetName()
         elif(data.At(0) is not None) :     pname=data.At(0).GetName()
         if(len(pname)<=0): continue
-        #raw_input('Any key to continue...')
         c.SaveAs(outdir+'/'+pname+'.png')
         c.SaveAs(outdir+'/'+pname+'.C')
+        #raw_input('Any key to continue...')
 
         
     
