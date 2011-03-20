@@ -3,11 +3,10 @@
 <use name="FWCore/FWLite">
 <use name="DataFormats/FWLite">
 <use name="DataFormats/Histograms">
-<use name="SimDataFormats/GeneratorProducts">
 <use name="root">
 <use name="roottmva">
 <use name="rootrflx">
 <use name="roofit">
 <export>
-  <lib  name="CMGToolsHtoZZto2l2nu">
+  <lib  name="CMGToolsHtoZZ2l2nu">
 </export>

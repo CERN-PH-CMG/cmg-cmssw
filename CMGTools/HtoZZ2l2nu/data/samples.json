@@ -211,7 +211,7 @@
                  "dir":"/castor/cern.ch/user/p/psilva/GluGluToH200ToZZTo2L2Nu",
 		 "xsec":5.249,
 		 "br":0.011031,
-		 "sfactor":1
+		 "sfactor":10
                  }
            ]
 	},

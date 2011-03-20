@@ -1,6 +1,7 @@
 #include "CMGTools/HtoZZ2l2nu/interface/getRunInfo.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
 #include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
+#include "CMGTools/HtoZZ2l2nu/interface/KinAnalyzer.h"
 
 #ifdef __CINT__
 
@@ -8,8 +9,6 @@
 #pragma link off all function; 
 #pragma link off all global; 
 #pragma link off all typedef;
-
-#pragma link C++ class std::vector<float>;
 
 #pragma link C++ function getRunInfo;
 #pragma link C++ function setStyle;
@@ -20,6 +19,7 @@
 #pragma link C++ function showPlots;
 #pragma link C++ function showStackPlot;
 #pragma link C++ function showSimplePlot;
+#pragma link C++ class KinAnalyzer;
 
 #endif
 

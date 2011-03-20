@@ -17,6 +17,8 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
   TString name=c->GetName();
   TString title=c->GetTitle();
   
+  bool th2dfound(false), graphfound(false);
+
   //start with the legend with the data
   std::vector<std::pair<TObject *,TString> > allKeys;
   TObject *key = 0; 
@@ -24,6 +26,8 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
   while ( (key = dataIt->Next()) ) 
     {
       TH1 *p = (TH1 *) key;
+      th2dfound |= ((TClass*)key->IsA())->InheritsFrom("TH2");
+      graphfound |= ((TClass*)key->IsA())->InheritsFrom("TGraph");
       allKeys.push_back(std::pair<TObject *,TString>(p,p->GetTitle()));
     }
   
@@ -32,6 +36,8 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
   while ( (key = spimposeIt->Next()) ) 
     {
       TH1 *p = (TH1 *) key;
+      th2dfound |= ((TClass*)key->IsA())->InheritsFrom("TH2");
+      graphfound |= ((TClass*)key->IsA())->InheritsFrom("TGraph");
       allKeys.push_back(std::pair<TObject *,TString>(p,p->GetTitle()));
     }
 
@@ -41,6 +47,8 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
   while ( (key = reverseStackIt->Next()) ) 
     {
       TH1 *p = (TH1 *) key;
+      th2dfound |= ((TClass*)key->IsA())->InheritsFrom("TH2");
+      graphfound |= ((TClass*)key->IsA())->InheritsFrom("TGraph");
       allKeys.push_back(std::pair<TObject *,TString>(p,p->GetTitle()));
     }
 
@@ -55,53 +63,93 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
       kIt++)
     leg->AddEntry( kIt->first, kIt->second, legopt );      
 
-
-  //prepare the sum and build the stack
-  bool canvasFilled(false);
-  TH1 *p=(TH1 *) stack.First();
-  if(p)
+  
+  if(th2dfound || graphfound)
     {
-      TH1 *refFrame=(TH1 *) p->Clone(name+"_frame");
-      formatPlot(refFrame,1,1,1,0,0,true,true,1,1,1);
-      refFrame->Reset("ICE");  
-      refFrame->SetTitle(title+"_stackcontour");
-      TIterator *stackIt = stack.MakeIterator();
-      while ( (key = stackIt->Next()) ) 
+      int nplots=allKeys.size();
+      int nx = nplots/2;
+      int ny = ( nplots%2 ? nx : nx+1);
+      c->Divide(nx,ny);
+      int ipad(0);
+
+      reverseStackIt = stack.MakeIterator(kIterBackward);
+      while ( (key = reverseStackIt->Next()) ) 
+	{
+	  ipad++;
+	  c->cd(ipad);
+	  key->Draw( th2dfound ? "box" : "ap");
+	}
+	  
+      spimposeIt = spimpose.MakeIterator();
+      while ( (key = spimposeIt->Next()) ) 
+	{
+	  ipad++;
+	  c->cd(ipad);
+	  key->Draw( th2dfound ? "box" : "ap");
+	}
+
+      //draw the data
+      dataIt = data.MakeIterator();
+      while ( (key = dataIt->Next()) ) 
+	{
+	  ipad++;
+	  c->cd(ipad);
+	  key->Draw( th2dfound ? "box" : "ap");
+	}
+      
+      //draw the legend
+      c->cd(1);
+      leg->Draw("same");
+    }
+  else
+    {
+      //prepare the sum and build the stack
+      bool canvasFilled(false);
+      TH1 *p=(TH1 *) stack.First();
+      if(p)
+	{
+	  TH1 *refFrame=(TH1 *) p->Clone(name+"_frame");
+	  formatPlot(refFrame,1,1,1,0,0,true,true,1,1,1);
+	  refFrame->Reset("ICE");  
+	  refFrame->SetTitle(title+"_stackcontour");
+	  TIterator *stackIt = stack.MakeIterator();
+	  while ( (key = stackIt->Next()) ) 
+	    {
+	      TH1 *p = (TH1 *) key;
+	      refFrame->Add(p);
+	      hstack->Add( p );
+	    }
+	  
+	  //draw the frame and the stack
+	  if(refFrame->Integral()>0)
+	    {
+	      refFrame->Draw("hist");  
+	      hstack->Draw("histsame"); 
+	      canvasFilled=true;
+	    }
+	}
+      
+      //draw the super impose distributions
+      spimposeIt = spimpose.MakeIterator();
+      while ( (key = spimposeIt->Next()) ) 
 	{
 	  TH1 *p = (TH1 *) key;
-	  refFrame->Add(p);
-	  hstack->Add( p );
+	  if(canvasFilled) p->Draw("histsame");
+	  else { p->Draw("hist"); canvasFilled=true; }
 	}
-
-      //draw the frame and the stack
-      if(refFrame->Integral()>0)
+      
+      //draw the data
+      dataIt = data.MakeIterator();
+      while ( (key = dataIt->Next()) ) 
 	{
-	  refFrame->Draw("hist");  
-	  hstack->Draw("histsame"); 
-	  canvasFilled=true;
+	  TH1 *p = (TH1 *) key;
+	  if(canvasFilled) p->Draw("e1same");
+	  else { p->Draw("e1"); canvasFilled=true; }
 	}
+      
+      //draw the legend
+      if(canvasFilled) leg->Draw("same");
     }
-  
-  //draw the super impose distributions
-  spimposeIt = spimpose.MakeIterator();
-  while ( (key = spimposeIt->Next()) ) 
-    {
-      TH1 *p = (TH1 *) key;
-      if(canvasFilled) p->Draw("histsame");
-      else { p->Draw("hist"); canvasFilled=true; }
-    }
-  
-  //draw the data
-  dataIt = data.MakeIterator();
-  while ( (key = dataIt->Next()) ) 
-    {
-      TH1 *p = (TH1 *) key;
-      if(canvasFilled) p->Draw("e1same");
-      else { p->Draw("e1"); canvasFilled=true; }
-    }
-
-  //draw the legend
-  if(canvasFilled) leg->Draw("same");
 
   c->Modified();
   c->Update();
