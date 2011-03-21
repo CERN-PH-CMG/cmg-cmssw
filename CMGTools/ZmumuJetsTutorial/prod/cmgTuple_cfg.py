@@ -34,7 +34,7 @@ process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("histograms.root"))
 
 ### Produce a summary of cuts on the DiMuon
-##process.zmumusummary = process.cutsummary.clone(inputCollection = cms.InputTag("cmgDiMuon"))
+##process.zmumusummary = process.cutsummarymuon.clone(inputCollection = cms.InputTag("cmgDiMuon"))
 
 ### Run the trigger matching selections
 ##from CMGTools.ZmumuJetsTutorial.selections.muontrigger_cfi import muontrigger
