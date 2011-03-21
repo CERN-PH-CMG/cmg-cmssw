@@ -21,7 +21,7 @@ modified things to use the pattern functionality from TChain.
 #include <string>
 
 class Chain : public TChain {
-
+    ClassDef(Chain, 1);
 public:
   // If the testFiles flags is set, all files are opened after being
   // added to the chain to verify that the requested tree

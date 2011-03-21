@@ -5,6 +5,7 @@
 #include <TPad.h>
 
 class Style : public TH1 {
+    ClassDef(Style, 1);
 };
 
 

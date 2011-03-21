@@ -279,7 +279,7 @@ std::string Samples::StripHistInfo( const char* var) const {
   
   string svar = var; 
 
-  unsigned pos = svar.find(">>"); 
+  const std::string::size_type pos = svar.find(">>"); 
   if(pos==string::npos )  // search failed, values not provided
     return svar;
   else 

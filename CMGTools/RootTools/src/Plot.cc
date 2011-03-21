@@ -165,14 +165,14 @@ void Plot::Draw( bool stack ) {
 
 
 bool Plot::IsData(const string& histName) const {
-  unsigned pos = histName.find("DATA"); 
+  const std::string::size_type pos = histName.find("DATA"); 
   if(pos!=string::npos ) 
     return true;
   else return false;
 }
 
 std::string Plot::StripOffExtension( const string& histName) const {
-  unsigned pos = histName.find("_"); 
+  const std::string::size_type pos = histName.find("_"); 
   if(pos!=string::npos ) 
     return histName.substr(0, pos) ;
   else return histName;
