@@ -5,7 +5,7 @@ process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(-1)
 )
 process.source.fileNames = cms.untracked.vstring(
-        'file:patTuple_PATandPF2PAT.root'
+        os.path.expandvars('file:/tmp/${USER}/patTuple_PATandPF2PAT.root')
 )
 process.setName_('CMG')
 process.out.fileName = cms.untracked.string('cmgTuple.root')

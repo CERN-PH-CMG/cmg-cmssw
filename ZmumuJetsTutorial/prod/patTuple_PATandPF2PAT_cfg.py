@@ -11,7 +11,7 @@ if runOnMC:
     process.source.fileNames = cms.untracked.vstring('rfio:///castor/cern.ch/user/w/wreece/SDMUONFILTER/ZmumuSummer10/1E16ABCD-0986-DF11-B57C-90E6BA442F1E.root')
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
-process.out.fileName = cms.untracked.string('patTuple_PATandPF2PAT.root')
+process.out.fileName = cms.untracked.string(os.path.expandvars('/tmp/${USER}/patTuple_PATandPF2PAT.root'))
 
 # load the PAT config
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
@@ -36,7 +36,7 @@ process.dimuonSkim = cms.Sequence(process.patMuonSelector+process.patMuonFilter)
 #this is used for bookeeping 
 process.load("CMGTools.Common.countingSequences_cff")
 process.p = cms.Path(
-    process.startupSequence* #Store the number of events we start with                    
+    process.startupSequence* #Store the number of events we start with
     getattr(process,"patPF2PATSequence"+postfix)* #Run PF2PAT
     process.dimuonSkim* #Skim for events with two muons
     process.finalSequence #Store the number of events we end with
