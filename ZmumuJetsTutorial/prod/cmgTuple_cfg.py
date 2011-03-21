@@ -1,6 +1,8 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 import FWCore.ParameterSet.Config as cms
 
+import os.path
+
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(-1)
 )
@@ -20,8 +22,8 @@ process.load('CMGTools.Common.runInfoAccounting_cfi')
 process.load('CMGTools.ZmumuJetsTutorial.patTriggerMatching_cff')
 process.cmgMuon.cfg.inputCollection = cms.InputTag("triggeredPatMuons")
 
-from CMGTools.Common.EventContent.particleFlow_cff import particleFlow as particleFlowEventContent  
-from CMGTools.Common.EventContent.particleFlow_cff import particleFlowBase as particleFlowEventContentBase  
+from CMGTools.Common.eventContent.particleFlow_cff import particleFlow as particleFlowEventContent  
+from CMGTools.Common.eventContent.particleFlow_cff import particleFlowBase as particleFlowEventContentBase  
 process.out.outputCommands = cms.untracked.vstring( 'drop *')
 process.out.outputCommands.extend( particleFlowEventContent ) 
 process.out.outputCommands.extend( particleFlowEventContentBase )
