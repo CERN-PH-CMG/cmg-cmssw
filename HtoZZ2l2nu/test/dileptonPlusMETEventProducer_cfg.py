@@ -8,8 +8,10 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 from CMGTools.HtoZZ2l2nu.StandardSelections_cfi import *
 process.cleanEvent = cms.EDProducer("DileptonPlusMETEventProducer",
+                                    Vertices = BaseVertexSelection.clone(),
                                     Muons = BaseMuonsSelection.clone(),
                                     Electrons = BaseElectronsSelection.clone(),
+                                    Dileptons = BaseDileptonSelection.clone(),
                                     Jets = BaseJetSelection.clone(),
                                     MET = BaseMetSelection.clone()
                                     )

@@ -10,6 +10,10 @@
   <use name="DataFormats/JetReco">
   <use name="DataFormats/PatCandidates">
   <use name="DataFormats/Common">
+  <use name=TrackingTools/TransientTrack>
+  <use name=TrackingTools/Records>
+  <use name=TrackingTools/IPTools>
+  <use name=FWCore/ServiceRegistry>
   <use name="root">
   <use name="roottmva">
   <use name="rootrflx">
