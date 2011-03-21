@@ -44,32 +44,38 @@ process.endCounter = process.startCounter.clone()
 # ==================================================================================
 # run the deterministic annealing vertex
 # cf. https://twiki.cern.ch/twiki/bin/view/CMS/PrimaryVertex2011
-process.pixelVertices = cms.EDProducer("PrimaryVertexProducer",
-                                       verbose = cms.untracked.bool(False),
-                                       algorithm = cms.string('AdaptiveVertexFitter'),
-                                       TrackLabel = cms.InputTag("pixelTracks"),
-                                       useBeamConstraint = cms.bool(False),
-                                       beamSpotLabel = cms.InputTag("offlineBeamSpot"),
-                                       minNdof  = cms.double(2.0),   #  <----- this has been tighter than offlinePV since 2010
-                                       PVSelParameters = cms.PSet( maxDistanceToBeam = cms.double(1.0)  # <----- this was 2.0 in 2010 (also for offlinePV)
-                                                                   ),
-                                       TkFilterParameters = cms.PSet( algorithm=cms.string('filter'),
-                                                                      maxNormalizedChi2 = cms.double(100.0),  # <---- this was 100 also in 2010 (offlinePV is moving from 20 to 5 from 2010 to 2011)
-                                                                      minPixelLayersWithHits=cms.int32(3),
-                                                                      minSiliconLayersWithHits = cms.int32(3),
-                                                                      maxD0Significance = cms.double(100.0),   # <--- this was 100 also in 2010 (offlinePV is moving from 100 to 5 from 2010 to 2011)
-                                                                      minPt = cms.double(0.0),
-                                                                      trackQuality = cms.string("any")
-                                                                      ),
-                                       TkClusParameters = cms.PSet( algorithm   = cms.string("DA"),
-                                                                    TkDAClusParameters = cms.PSet( verbose = cms.untracked.bool(False),
-                                                                                                   coolingFactor = cms.double(0.6),  #  rather slow annealing for now
-                                                                                                   Tmin = cms.double(4.),            #  end of annealing
-                                                                                                   vertexSize = cms.double(0.01)     #  ~ resolution      <----- is it ok for pixel vertices ??
-                                                                                                   )
-                                                                    )
-                                       )
-process.runVertexing = cms.Sequence( process.pixelVertices )
+process.offlinePrimaryVerticesDA = cms.EDProducer("PrimaryVertexProducer",
+    verbose = cms.untracked.bool(False),
+    algorithm = cms.string('AdaptiveVertexFitter'),
+    TrackLabel = cms.InputTag("generalTracks"),
+    useBeamConstraint = cms.bool(False),
+    beamSpotLabel = cms.InputTag("offlineBeamSpot"),
+    minNdof  = cms.double(0.0),
+    PVSelParameters = cms.PSet(
+        maxDistanceToBeam = cms.double(1.0)
+    ),
+    TkFilterParameters = cms.PSet(
+        algorithm=cms.string('filter'),
+        maxNormalizedChi2 = cms.double(20.0),
+        minPixelLayersWithHits=cms.int32(2),
+        minSiliconLayersWithHits = cms.int32(5),
+        maxD0Significance = cms.double(5.0), 
+        minPt = cms.double(0.0),
+        trackQuality = cms.string("any")
+    ),
+
+    TkClusParameters = cms.PSet(
+        algorithm   = cms.string("DA"),
+        TkDAClusParameters = cms.PSet(
+            coolingFactor = cms.double(0.6),  #  moderate annealing speed
+            Tmin = cms.double(4.),            #  end of annealing
+            vertexSize = cms.double(0.01),    #  ~ resolution / sqrt(Tmin)
+            d0CutOff = cms.double(3.),        # downweight high IP tracks 
+            dzCutOff = cms.double(4.)         # outlier rejection after freeze-out (T<Tmin)
+        )
+    )
+)
+process.runVertexing = cms.Sequence( process.offlinePrimaryVerticesDA )
 
 
 # ==================================================================================
@@ -431,7 +437,7 @@ process.out.outputCommands = cms.untracked.vstring('drop *',
                                                    'keep *_pfMet_*_*',
                                                    ##### Tracking
                                                    'keep *_offlinePrimaryVertices_*_*',
-                                                   'keep *_pixelVertices_*_*',
+                                                   'keep *_offlinePrimaryVerticesDA_*_*',
                                                    'keep *_offlinePrimaryVerticesWithBS_*_*',
                                                    'keep *_offlineBeamSpot_*_*',
                                                    ###### Trigger
