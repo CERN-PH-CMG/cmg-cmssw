@@ -5,10 +5,10 @@ using namespace std;
 namespace dilepton{
   
   //
-  std::vector<reco::CandidatePtr> filter(std::vector<reco::CandidatePtr> &selMuons, 
-					 std::vector<reco::CandidatePtr> &selElectrons, 
+  std::vector<reco::CandidatePtr> filter(std::vector<reco::CandidatePtr> &selLeptons, 
 					 std::vector<reco::CandidatePtr> &selVertices, 
-					 const edm::ParameterSet &iConfig)
+					 const edm::ParameterSet &iConfig,
+					 const edm::EventSetup &iSetup)
   {
     std::vector<reco::CandidatePtr> selDilepton;
     
@@ -18,44 +18,54 @@ namespace dilepton{
       double minDileptonMass = iConfig.getParameter<double>("minDileptonMass");
       double maxDileptonMass = iConfig.getParameter<double>("maxDileptonMass");
       
-      //di-muon selection
-      std::vector<reco::CandidatePtr> mumuCand;
-      if(selMuons.size()>1)
+      for(size_t ilep=0; ilep<selLeptons.size(); ilep++)
 	{
-	  for(size_t imu=0; imu<selMuons.size(); imu++)
+	  reco::CandidatePtr lep1Ptr = selLeptons[ilep];
+	  reco::CandidatePtr v1=
+	    dynamic_cast<const pat::Electron *>( lep1Ptr.get() ) ?
+	    vertex::getClosestVertexTo<pat::Electron>( dynamic_cast<const pat::Electron *>(lep1Ptr.get()), selVertices, iSetup,true) :
+	    vertex::getClosestVertexTo<pat::Muon>( dynamic_cast<const pat::Muon *>(lep1Ptr.get()), selVertices, iSetup,true) ;
+	  if(v1.get()==0) continue;
+
+	  //iterate over the second lepton
+	  for(size_t jlep=ilep+1; jlep<selLeptons.size(); jlep++)
 	    {
-	      for(size_t jmu=imu+1; jmu<selMuons.size(); jmu++)
+	      reco::CandidatePtr lep2Ptr = selLeptons[jlep];
+	      reco::CandidatePtr v2=
+		dynamic_cast<const pat::Electron *>( lep2Ptr.get() ) ?
+		vertex::getClosestVertexTo<pat::Electron>( dynamic_cast<const pat::Electron *>(lep2Ptr.get()), selVertices, iSetup,true) :
+		vertex::getClosestVertexTo<pat::Muon>( dynamic_cast<const pat::Muon *>(lep2Ptr.get()), selVertices, iSetup,true) ;
+	      if(v2.get()==0) continue;	      
+
+	      //same vertex must be assigned
+	      if(v1.get()!=v2.get()) continue;
+
+	      //compute the mass
+	      double en = lep1Ptr->energy() + lep2Ptr->energy();
+	      double px = lep1Ptr->px() + lep2Ptr->px();
+	      double py = lep1Ptr->py() + lep2Ptr->py();
+	      double pz = lep1Ptr->pz() + lep2Ptr->pz();
+	      double mass = sqrt(en*en - px*px - py*py - pz*pz);
+	      if(mass<minDileptonMass || mass >maxDileptonMass) continue;
+	      
+	      //build the dilepton candidate
+	      std::vector<reco::CandidatePtr> dilCand;
+	      dilCand.push_back(v1);
+	      dilCand.push_back(lep1Ptr);
+	      dilCand.push_back(lep2Ptr);
+
+	      //take if leading in sum pT
+	      if(selDilepton.size()==0) selDilepton=dilCand;
+	      else
 		{
-		  
+		  double sumpt=selDilepton[1]->pt()+selDilepton[2]->pt();
+		  double candsumpt=dilCand[1]->pt()+dilCand[2]->pt();
+		  if(sumpt>candsumpt) continue;
+		  selDilepton=dilCand;
 		}
+
 	    }
 	}
-
-      //di-electron selection
-      std::vector<reco::CandidatePtr> eeCand;
-      if(selElectrons.size()>1)
-	{
-	  for(size_t iele=0; iele<selElectrons.size(); iele++)
-	    {
-	      for(size_t jele=iele+1; jele<selElectrons.size(); jele++)
-		{
-		}
-	    }
-	}
-
-      //emu selection
-      std::vector<reco::CandidatePtr> emuCand;
-      if(selElectrons.size()>0 && selMuons.size()>0)
-	{
-	  for(size_t iele=0; iele<selElectrons.size(); iele++)
-	    {
-	      for(size_t jmu=0; jmu<selMuons.size(); jmu++)
-		{
-		}
-	    }
-	}
-      
-
     }
     catch(std::exception &e){
       cout << "[dilepton::filter] failed with : " << e.what() << endl;

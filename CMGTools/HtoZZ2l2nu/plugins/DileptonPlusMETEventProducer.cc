@@ -50,10 +50,13 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   auto_ptr<int> selectionPath(new int);
   auto_ptr<int> selectionStep(new int);
   
+  *selectionStep=0;
+
   //pre-select vertices
   Handle<View<Candidate> > hVtx;
   iEvent.getByLabel(objConfig["Dileptons"].getParameter<edm::InputTag>("vtxsource"), hVtx);  
   std::vector<CandidatePtr> selVertices = vertex::filter(hVtx,objConfig["Vertices"]);
+  if(selVertices.size()>0) *selectionStep=1;
 
   //select muons
   Handle<View<Candidate> > hMu; 
@@ -66,11 +69,12 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   std::vector<CandidatePtr> selElectrons = electron::filter(hEle, hMu, objConfig["Electrons"]);
 
   //build inclusive collection
-  std::vector<CandidatePtr> allLeptons = selMuons;
-  allLeptons.insert(allLeptons.end(), selElectrons.begin(), selElectrons.end());
+  std::vector<CandidatePtr> selLeptons = selMuons;
+  selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
+  if(selLeptons.size()>0) *selectionStep=2;
   
   //build the dilepton
-  std::vector<CandidatePtr> dilepton = dilepton::filter(selMuons,selElectrons,selVertices,objConfig["Dileptons"]);
+  std::vector<CandidatePtr> dilepton = dilepton::filter(selLeptons,selVertices,objConfig["Dileptons"],iSetup);
   if(dilepton.size())
     {
       hyp->add(dilepton[0],"vertex");
@@ -88,12 +92,12 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
 	  hyp->add(*eIt,"electron");
 	}
     }
+  if(dilepton.size()==3) *selectionStep=3;
 
-  
   //add the jets
   Handle<View<Candidate> > hJet; 
   iEvent.getByLabel(objConfig["Jets"].getParameter<edm::InputTag>("source"), hJet);
-  std::vector<CandidatePtr> selJets = jet::filter(hJet, allLeptons, objConfig["Jets"]);
+  std::vector<CandidatePtr> selJets = jet::filter(hJet, selLeptons, objConfig["Jets"]);
   for(std::vector<CandidatePtr>::iterator jIt = selJets.begin(); jIt != selJets.end(); jIt++) hyp->add(*jIt,"jet");
 
   //add the met
