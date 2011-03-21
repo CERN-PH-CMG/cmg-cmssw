@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 # base values for the vertex selection ------------------------------------------
-BaseVertexSelection = cms.PSet( vtxsource = cms.InputTag("offlinePrimaryVertices"),
+BaseVertexSelection = cms.PSet( source = cms.InputTag("offlinePrimaryVertices"),
                                 maxZ = cms.double(24),
                                 maxRho = cms.double(2.0),
                                 minNDOF = cms.int32(5)
@@ -44,5 +44,5 @@ BaseDileptonSelection = cms.PSet( minDileptonMass = cms.double(50),
                                   )
 
 # base values for met selection -----------------------------------------------------
-BaseMetSelection = cms.PSet( sources = cms.VInputTag("patMET") )
+BaseMetSelection = cms.PSet( source = cms.InputTag("patMETs") )
 

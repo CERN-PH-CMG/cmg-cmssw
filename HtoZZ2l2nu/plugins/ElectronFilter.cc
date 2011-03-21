@@ -26,7 +26,12 @@ namespace electron{
 	  reco::CandidatePtr elePtr = hEle->ptrAt(iElec);
 	  const pat::Electron *ele = dynamic_cast<const pat::Electron *>( elePtr.get() );
 
-	  bool isEcalDriven= ele->ecalDrivenSeed();
+	  bool isEcalDriven(true);
+	  try{
+	    isEcalDriven = ele->ecalDrivenSeed();
+	  }catch(std::exception &e){
+	    //it may happen that GsfElectronCore is not stored (rely on the skim)
+	  }
 	  if(!isEcalDriven) continue;
 
 	  int eid=1;

@@ -5,11 +5,12 @@ using namespace std;
 namespace dilepton{
   
   //
-  std::vector<reco::CandidatePtr> filter(std::vector<reco::CandidatePtr> &selLeptons, 
-					 std::vector<reco::CandidatePtr> &selVertices, 
-					 const edm::ParameterSet &iConfig,
-					 const edm::EventSetup &iSetup)
+  std::pair<reco::VertexRef, std::vector<reco::CandidatePtr> > filter(std::vector<reco::CandidatePtr> &selLeptons, 
+								      std::vector<reco::VertexRef> &selVertices, 
+								      const edm::ParameterSet &iConfig,
+								      const edm::EventSetup &iSetup)
   {
+    reco::VertexRef selVtx;
     std::vector<reco::CandidatePtr> selDilepton;
     
     try{
@@ -21,7 +22,7 @@ namespace dilepton{
       for(size_t ilep=0; ilep<selLeptons.size(); ilep++)
 	{
 	  reco::CandidatePtr lep1Ptr = selLeptons[ilep];
-	  reco::CandidatePtr v1=
+	  reco::VertexRef v1=
 	    dynamic_cast<const pat::Electron *>( lep1Ptr.get() ) ?
 	    vertex::getClosestVertexTo<pat::Electron>( dynamic_cast<const pat::Electron *>(lep1Ptr.get()), selVertices, iSetup,true) :
 	    vertex::getClosestVertexTo<pat::Muon>( dynamic_cast<const pat::Muon *>(lep1Ptr.get()), selVertices, iSetup,true) ;
@@ -31,7 +32,7 @@ namespace dilepton{
 	  for(size_t jlep=ilep+1; jlep<selLeptons.size(); jlep++)
 	    {
 	      reco::CandidatePtr lep2Ptr = selLeptons[jlep];
-	      reco::CandidatePtr v2=
+	      reco::VertexRef v2=
 		dynamic_cast<const pat::Electron *>( lep2Ptr.get() ) ?
 		vertex::getClosestVertexTo<pat::Electron>( dynamic_cast<const pat::Electron *>(lep2Ptr.get()), selVertices, iSetup,true) :
 		vertex::getClosestVertexTo<pat::Muon>( dynamic_cast<const pat::Muon *>(lep2Ptr.get()), selVertices, iSetup,true) ;
@@ -50,20 +51,24 @@ namespace dilepton{
 	      
 	      //build the dilepton candidate
 	      std::vector<reco::CandidatePtr> dilCand;
-	      dilCand.push_back(v1);
 	      dilCand.push_back(lep1Ptr);
 	      dilCand.push_back(lep2Ptr);
 
 	      //take if leading in sum pT
-	      if(selDilepton.size()==0) selDilepton=dilCand;
-	      else
+	      if(selDilepton.size()==0) 
 		{
-		  double sumpt=selDilepton[1]->pt()+selDilepton[2]->pt();
-		  double candsumpt=dilCand[1]->pt()+dilCand[2]->pt();
-		  if(sumpt>candsumpt) continue;
+		  selVtx = v1;
 		  selDilepton=dilCand;
 		}
-
+	      else
+		{
+		  double sumpt=selDilepton[0]->pt()+selDilepton[1]->pt();
+		  double candsumpt=dilCand[0]->pt()+dilCand[1]->pt();
+		  if(sumpt>candsumpt) continue;
+		  selVtx=v1;
+		  selDilepton=dilCand;
+		}
+	      
 	    }
 	}
     }
@@ -71,6 +76,19 @@ namespace dilepton{
       cout << "[dilepton::filter] failed with : " << e.what() << endl;
     }
 
-    return selDilepton;
+    //result
+    return std::pair<reco::VertexRef, std::vector<reco::CandidatePtr> >(selVtx,selDilepton);
+  }
+
+
+  //
+  int classify(std::vector<reco::CandidatePtr> &selDilepton)
+  {
+    if(selDilepton.size()==0) return UNKNOWN;
+    if(dynamic_cast<const pat::Muon *>(selDilepton[0].get()) && dynamic_cast<const pat::Muon *>(selDilepton[1].get()) ) return EE;
+    if(dynamic_cast<const pat::Electron *>(selDilepton[0].get()) && dynamic_cast<const pat::Electron *>(selDilepton[1].get()) ) return EE;
+    if(dynamic_cast<const pat::Muon *>(selDilepton[0].get()) && dynamic_cast<const pat::Electron *>(selDilepton[1].get()) ) return EMU;
+    if(dynamic_cast<const pat::Electron *>(selDilepton[0].get()) && dynamic_cast<const pat::Muon *>(selDilepton[1].get()) ) return EMU;
+    return UNKNOWN;
   }
 }

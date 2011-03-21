@@ -18,7 +18,7 @@ namespace jet{
       double maxEta = iConfig.getParameter<double>("maxEta");
       double minDeltaRtoLepton = iConfig.getParameter<double>("minDeltaRtoLepton");
       ///edm::ParameterSet jetId = iConfig.getParameter<edm::ParameterSet>("jetId");
-      JetIDSelectionFunctor jetIdSelector( iConfig.getParameter<edm::ParameterSet>("jetId") );
+      PFJetIDSelectionFunctor jetIdSelector( iConfig.getParameter<edm::ParameterSet>("jetId") );
       pat::strbitset hasId = jetIdSelector.getBitTemplate();
 
       //iterate over the jets
