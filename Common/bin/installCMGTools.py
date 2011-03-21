@@ -108,13 +108,18 @@ class InstallCMGTools(object):
     def checkoutCMGTools(self):
         """Checkout CMGTools"""
         for key in self.dic_list.keys():
-            os.system('cvs checkout -r %s -d %s %s' % (self.dic_list[key][0], self.dic_list[key][1], key))
+            if not self.dic_list[key][0].lower() == 'head':
+                os.system('cvs checkout -r %s -d %s %s' % (self.dic_list[key][0], self.dic_list[key][1], key))
+            else:
+                os.system('cvs checkout -d %s %s' % (self.dic_list[key][1], key))
 
     def updateCMGTools(self):
         """Update CMGTools"""
         for key in self.dic_list.keys():
-            os.system('cvs update -r %s %s' % (self.dic_list[key][0], self.dic_list[key][1]))
-            #subprocess.call(['cvs', 'update', '-r', '%s %s' % (self.dic_list[key][0], self.dic_list[key][1])])
+            if not self.dic_list[key][0].lower() == 'head':
+                os.system('cvs update -r %s -d %s' % (self.dic_list[key][0], self.dic_list[key][1]))
+            else:
+                os.system('cvs update -A -d %s' % (self.dic_list[key][1]))
 
 if __name__ == '__main__':
 
