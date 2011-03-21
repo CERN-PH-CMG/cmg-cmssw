@@ -117,8 +117,8 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   // work done, save results
   hyps->push_back(hyp);
   iEvent.put(hyps);
-  iEvent.put(selectionPath);
-  iEvent.put(selectionStep);
+  //  iEvent.put(selectionPath);
+  //  iEvent.put(selectionStep);
 }
 
 //  
