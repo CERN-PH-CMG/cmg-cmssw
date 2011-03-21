@@ -42,6 +42,37 @@ process.endCounter = process.startCounter.clone()
 
 
 # ==================================================================================
+# run the deterministic annealing vertex
+# cf. https://twiki.cern.ch/twiki/bin/view/CMS/PrimaryVertex2011
+process.pixelVertices = cms.EDProducer("PrimaryVertexProducer",
+                                       verbose = cms.untracked.bool(False),
+                                       algorithm = cms.string('AdaptiveVertexFitter'),
+                                       TrackLabel = cms.InputTag("pixelTracks"),
+                                       useBeamConstraint = cms.bool(False),
+                                       beamSpotLabel = cms.InputTag("offlineBeamSpot"),
+                                       minNdof  = cms.double(2.0),   #  <----- this has been tighter than offlinePV since 2010
+                                       PVSelParameters = cms.PSet( maxDistanceToBeam = cms.double(1.0)  # <----- this was 2.0 in 2010 (also for offlinePV)
+                                                                   ),
+                                       TkFilterParameters = cms.PSet( algorithm=cms.string('filter'),
+                                                                      maxNormalizedChi2 = cms.double(100.0),  # <---- this was 100 also in 2010 (offlinePV is moving from 20 to 5 from 2010 to 2011)
+                                                                      minPixelLayersWithHits=cms.int32(3),
+                                                                      minSiliconLayersWithHits = cms.int32(3),
+                                                                      maxD0Significance = cms.double(100.0),   # <--- this was 100 also in 2010 (offlinePV is moving from 100 to 5 from 2010 to 2011)
+                                                                      minPt = cms.double(0.0),
+                                                                      trackQuality = cms.string("any")
+                                                                      ),
+                                       TkClusParameters = cms.PSet( algorithm   = cms.string("DA"),
+                                                                    TkDAClusParameters = cms.PSet( verbose = cms.untracked.bool(False),
+                                                                                                   coolingFactor = cms.double(0.6),  #  rather slow annealing for now
+                                                                                                   Tmin = cms.double(4.),            #  end of annealing
+                                                                                                   vertexSize = cms.double(0.01)     #  ~ resolution      <----- is it ok for pixel vertices ??
+                                                                                                   )
+                                                                    )
+                                       )
+process.runVertexing = cms.Sequence( process.pixelVertices )
+
+
+# ==================================================================================
 # include pre-filter sequences
 #
 process.noscraping = cms.EDFilter("FilterOutScraping",
@@ -362,6 +393,7 @@ if(not runOnMC ):
 process.p = cms.Path(
     process.startCounter*
     process.startupSequence*
+    process.runVertexing*
     process.preFilter*
     process.preFilterCounter*
     # process.trigSequence*
@@ -399,6 +431,7 @@ process.out.outputCommands = cms.untracked.vstring('drop *',
                                                    'keep *_pfMet_*_*',
                                                    ##### Tracking
                                                    'keep *_offlinePrimaryVertices_*_*',
+                                                   'keep *_pixelVertices_*_*',
                                                    'keep *_offlinePrimaryVerticesWithBS_*_*',
                                                    'keep *_offlineBeamSpot_*_*',
                                                    ###### Trigger
@@ -415,10 +448,12 @@ process.out.outputCommands = cms.untracked.vstring('drop *',
                                                    'keep double*_*_rho_'+process.name_(),
                                                    'keep double*_*_sigma_'+process.name_(),
                                                    'keep recoPFCandidates_particleFlow_*_*',
-                                                   'keep *_selectedPat*_*_*'
+                                                   'keep *_selectedPat*_*_*',
+                                                   'keep patMETs_*_*_*'
                                                    )
 #process.out.outputCommands.extend( patEventContentNoCleaning )
 #process.out.outputCommands.extend( patExtraAodEventContent )
+process.out.fileName = cms.untracked.string('/tmp/patTuple.root')
 process.outpath = cms.EndPath(process.out)
 
 #
@@ -430,7 +465,6 @@ print "[zzllvvPattuple] scheduling the following processes"
 print process.schedule
 print "[zzllvvPattuple] events will be selected for the following paths:"
 print process.out.SelectEvents.SelectEvents
-
 
 #
 # that's all

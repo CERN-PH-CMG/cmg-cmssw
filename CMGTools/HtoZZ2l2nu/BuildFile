@@ -8,5 +8,5 @@
 <use name="rootrflx">
 <use name="roofit">
 <export>
-  <lib  name="CMGToolsHtoZZ2l2nu">
+  <lib name="CMGToolsHtoZZ2l2nu">
 </export>

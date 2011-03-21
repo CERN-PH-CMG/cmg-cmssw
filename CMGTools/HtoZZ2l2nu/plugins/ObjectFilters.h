@@ -14,12 +14,12 @@
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
 #include "TrackingTools/IPTools/interface/IPTools.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
-#include "PhysicsTools/SelectorUtils/interface/JetIDSelectionFunctor.h"
+#include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 
 namespace vertex
 {
-  std::vector<reco::CandidatePtr> filter(edm::Handle<edm::View<reco::Candidate> > &hVtx, const edm::ParameterSet &iConfig);
+  std::vector<reco::VertexRef> filter(edm::Handle<reco::VertexCollection> &hVtx, const edm::ParameterSet &iConfig);
 
   template<class T>
   std::pair<bool,Measurement1D> getImpactParameter(const T &trk, reco::Vertex *vtx, const edm::EventSetup &iSetup, bool is3d=true)
@@ -32,15 +32,14 @@ namespace vertex
     }
   
   template<class T>
-  reco::CandidatePtr getClosestVertexTo(const T *trk, std::vector<reco::CandidatePtr> &selVertices, const edm::EventSetup &iSetup, bool is3d=true)
+  reco::VertexRef getClosestVertexTo(const T *trk, std::vector<reco::VertexRef> &selVertices, const edm::EventSetup &iSetup, bool is3d=true)
     {
 
-      reco::CandidatePtr bestvtx;
+      reco::VertexRef bestvtx;
       double bestDz(1.0e7);
-      for(std::vector<reco::CandidatePtr>::iterator vIt = selVertices.begin(); vIt != selVertices.end(); vIt++)
+      for(std::vector<reco::VertexRef>::iterator vIt = selVertices.begin(); vIt != selVertices.end(); vIt++)
 	{
-	  const reco::Vertex *vtx = dynamic_cast<const reco::Vertex *>( vIt->get() );
-	  double dz = abs(vtx->z() - trk->vz());
+	  double dz = abs(vIt->get()->z() - trk->vz());
 	  if( dz>bestDz ) continue;
 	  bestvtx=*vIt;
 	  bestDz=dz;
@@ -61,10 +60,13 @@ namespace electron
 
 namespace dilepton
 {
-  std::vector<reco::CandidatePtr> filter(std::vector<reco::CandidatePtr> &selLeptons, 
-					 std::vector<reco::CandidatePtr> &selVtx, 
-					 const edm::ParameterSet &iConfig,
-					 const edm::EventSetup &iSetup);
+  std::pair<reco::VertexRef, std::vector<reco::CandidatePtr> > filter(std::vector<reco::CandidatePtr> &selLeptons, 
+								      std::vector<reco::VertexRef> &selVtx, 
+								      const edm::ParameterSet &iConfig,
+								      const edm::EventSetup &iSetup);
+
+  enum DileptonClassification {UNKNOWN=0,MUMU=1,EE=2,EMU=3};
+  int classify(std::vector<reco::CandidatePtr> &selDilepton);
 }
 
 namespace jet
