@@ -22,7 +22,7 @@ class CMGTestLoader(unittest.TestLoader):
     
         loader = unittest.TestLoader()
         suites = []
-        suites.append(loader.loadTestsFromModule(TestBuild))
+        #suites.append(loader.loadTestsFromModule(TestBuild))
         suites.append(loader.loadTestsFromModule(TestElectron))
         suites.append(loader.loadTestsFromModule(TestMET))
         suites.append(loader.loadTestsFromModule(TestMuon))
