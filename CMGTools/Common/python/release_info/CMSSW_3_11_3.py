@@ -1,4 +1,4 @@
-{'UserCode/CMG/AnalysisDataFormats/CMGTools': ['HEAD', 'AnalysisDataFormats/CMGTools'],
- 'UserCode/CMG/CMGTools/Common':              ['HEAD', 'CMGTools/Common'],
- 'UserCode/CMG/CMGTools/RootTools':           ['HEAD', 'CMGTools/RootTools'],
- 'UserCode/CMG/CMGTools/ZmumuJetsTutorial':   ['HEAD', 'CMGTools/ZmumuJetsTutorial']}
+{'UserCode/CMG/AnalysisDataFormats/CMGTools': ['wreece_210311', 'AnalysisDataFormats/CMGTools'],
+ 'UserCode/CMG/CMGTools/Common':              ['wreece_210311', 'CMGTools/Common'],
+ 'UserCode/CMG/CMGTools/RootTools':           ['wreece_210311', 'CMGTools/RootTools'],
+ 'UserCode/CMG/CMGTools/ZmumuJetsTutorial':   ['wreece_210311', 'CMGTools/ZmumuJetsTutorial']}
