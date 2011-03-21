@@ -20,7 +20,33 @@
 namespace vertex
 {
   std::vector<reco::CandidatePtr> filter(edm::Handle<edm::View<reco::Candidate> > &hVtx, const edm::ParameterSet &iConfig);
-  std::pair<bool,Measurement1D> getImpactParameter(reco::TransientTrack &tt, reco::Vertex *vtx, bool is3d=false);
+
+  template<class T>
+  std::pair<bool,Measurement1D> getImpactParameter(const T &trk, reco::Vertex *vtx, const edm::EventSetup &iSetup, bool is3d=true)
+    {
+      edm::ESHandle<TransientTrackBuilder> trackBuilder;
+      iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", trackBuilder);
+      reco::TransientTrack tt = trackBuilder->build(trk);
+      if(is3d) return IPTools::absoluteImpactParameter3D(tt, *vtx);
+      else     return IPTools::absoluteTransverseImpactParameter(tt, *vtx);
+    }
+  
+  template<class T>
+  reco::CandidatePtr getClosestVertexTo(const T *trk, std::vector<reco::CandidatePtr> &selVertices, const edm::EventSetup &iSetup, bool is3d=true)
+    {
+
+      reco::CandidatePtr bestvtx;
+      double bestDz(1.0e7);
+      for(std::vector<reco::CandidatePtr>::iterator vIt = selVertices.begin(); vIt != selVertices.end(); vIt++)
+	{
+	  const reco::Vertex *vtx = dynamic_cast<const reco::Vertex *>( vIt->get() );
+	  double dz = abs(vtx->z() - trk->vz());
+	  if( dz>bestDz ) continue;
+	  bestvtx=*vIt;
+	  bestDz=dz;
+	}
+      return bestvtx;
+    }
 }
 
 namespace muon
@@ -35,10 +61,10 @@ namespace electron
 
 namespace dilepton
 {
-  std::vector<reco::CandidatePtr> filter(std::vector<reco::CandidatePtr> &selMuons, 
-					 std::vector<reco::CandidatePtr> &selElectrons, 
+  std::vector<reco::CandidatePtr> filter(std::vector<reco::CandidatePtr> &selLeptons, 
 					 std::vector<reco::CandidatePtr> &selVtx, 
-					 const edm::ParameterSet &iConfig);
+					 const edm::ParameterSet &iConfig,
+					 const edm::EventSetup &iSetup);
 }
 
 namespace jet

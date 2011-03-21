@@ -41,14 +41,4 @@ namespace vertex{
     return selVertices;
   }
 
-  //
-  std::pair<bool,Measurement1D> getImpactParameter(reco::TrackRef &trk, reco::Vertex *vtx, const edm::EventSetup &iSetup, bool is3d=false)
-  {
-    edm::ESHandle<TransientTrackBuilder> trackBuilder;
-    iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", trackBuilder);
-    reco::TransientTrack tt = trackBuilder->build(trk);
-    if(is3d) return IPTools::absoluteImpactParameter3D(tt, *vtx);
-    else     return IPTools::absoluteTransverseImpactParameter(tt, *vtx);
-  }
-
 }
