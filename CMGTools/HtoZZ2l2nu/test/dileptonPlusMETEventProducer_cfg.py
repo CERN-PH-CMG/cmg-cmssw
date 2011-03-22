@@ -7,10 +7,7 @@ process.source = cms.Source("PoolSource",
                             fileNames = GluGluToHToZZTo2L2NuM400
                             )
 print process.source.fileNames
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
-
-from CMGTools.Common.runInfoCounter_cfi import runInfoCounter
-process.cmgRunInfoCounter=runInfoCounter.clone()
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
 
 process.load('CMGTools.HtoZZ2l2nu.NormalizationCounter_cfi')
 
@@ -24,13 +21,15 @@ process.cleanEvent = cms.EDProducer("DileptonPlusMETEventProducer",
                                     MET = BaseMetSelection.clone()
                                     )
 
+process.analysis = cms.EDAnalyzer("DileptonPlusMETEventAnalyzer",
+                                  source = cms.InputTag("cleanEvent") 
+                                  )
+
 process.out = cms.OutputModule("PoolOutputModule",
-                               outputCommands = cms.untracked.vstring('drop *', 
-                                                                      'keep *_*_*_HtoZZto2l2nu'),
                                fileName = cms.untracked.string('eh.root')
                                )
-process.p = cms.Path(process.loadHistosFromRunInfo*process.cmgRunInfoCounter*process.cleanEvent)
-process.e = cms.EndPath(process.saveHistosInRunInfo*process.out)
+process.p = cms.Path(process.loadNormalizationCounters*process.cleanEvent*process.analysis)
+process.e = cms.EndPath(process.saveNormalizationCounters*process.out)
 
 
 # message logger
