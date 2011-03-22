@@ -459,7 +459,7 @@ process.out.outputCommands = cms.untracked.vstring('drop *',
                                                    )
 #process.out.outputCommands.extend( patEventContentNoCleaning )
 #process.out.outputCommands.extend( patExtraAodEventContent )
-process.out.fileName = cms.untracked.string('/tmp/patTuple.root')
+process.out.fileName = cms.untracked.string('patTuple.root')
 process.outpath = cms.EndPath(process.out)
 
 #
