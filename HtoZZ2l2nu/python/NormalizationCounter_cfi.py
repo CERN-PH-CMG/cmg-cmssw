@@ -12,7 +12,7 @@ normalizationCounter = cms.EDProducer("NormalizationCounter",
                                                              'endCounter')
                                       )
 
-loadHistosFromRunInfo = cms.Sequence(EDMtoMEConverter+normalizationCounter)
-saveHistosInRunInfo   = cms.Sequence(MEtoEDMConverter)
+loadNormalizationCounters = cms.Sequence(EDMtoMEConverter+normalizationCounter)
+saveNormalizationCounters = cms.Sequence(MEtoEDMConverter)
 
 

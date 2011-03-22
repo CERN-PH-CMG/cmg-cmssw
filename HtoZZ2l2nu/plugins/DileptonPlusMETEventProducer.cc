@@ -30,7 +30,8 @@ using namespace std;
 //
 DileptonPlusMETEventProducer::DileptonPlusMETEventProducer(const edm::ParameterSet &iConfig)
 {
-  produces<std::vector<pat::EventHypothesis> >();
+  produces<std::vector<pat::EventHypothesis> >("selectedEvent");
+  produces<reco::VertexCollection>("selectedVertices");
   produces<int>("selectionStep");
   produces<int>("selectionPath");
   std::string objs[]={"Vertices", "Electrons", "Muons", "Dileptons", "Jets", "MET" };
@@ -46,20 +47,16 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   using namespace pat::eventhypothesis;
   using reco::Candidate; 
   using reco::CandidatePtr;
-  
-  auto_ptr<std::vector<pat::EventHypothesis> > hyps(new std::vector<pat::EventHypothesis>() );
-  auto_ptr<int> selectionPath(new int);
-  auto_ptr<int> selectionStep(new int);
-  
+
   
   pat::EventHypothesis hyp;
-  *selectionStep=0;
-
+  int selStep=0;
+  
   //pre-select vertices
   Handle<reco::VertexCollection> hVtx;
   iEvent.getByLabel(objConfig["Vertices"].getParameter<edm::InputTag>("source"), hVtx);  
   std::vector<reco::VertexRef> selVertices = vertex::filter(hVtx,objConfig["Vertices"]);
-  if(selVertices.size()>0) *selectionStep=1;
+  if(selVertices.size()>0) selStep=1;
 
   //select muons
   Handle<View<Candidate> > hMu; 
@@ -74,14 +71,14 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   //build inclusive collection
   std::vector<CandidatePtr> selLeptons = selMuons;
   selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
-  if(selLeptons.size()>0) *selectionStep=2;
+  if(selLeptons.size()>0) selStep=2;
   
   //build the dilepton
   std::pair<reco::VertexRef, std::vector<CandidatePtr> > dileptonWithVertex = dilepton::filter(selLeptons,selVertices,objConfig["Dileptons"],iSetup);
-  *selectionPath = dilepton::classify(dileptonWithVertex.second);
-  if(*selectionPath>0)
+  int selPath = dilepton::classify(dileptonWithVertex.second);
+  if(selPath>0)
     {
-      *selectionStep=3;
+      selStep=3;
 
       std::vector<CandidatePtr> &dilepton = dileptonWithVertex.second;
       hyp.add(dilepton[0],"leg1");
@@ -115,10 +112,25 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   hyp.add(met, "met");
 
   // work done, save results
+  auto_ptr<std::vector<pat::EventHypothesis> > hyps(new std::vector<pat::EventHypothesis>() );
   hyps->push_back(hyp);
-  iEvent.put(hyps);
-  //  iEvent.put(selectionPath);
-  //  iEvent.put(selectionStep);
+  iEvent.put(hyps,"selectedEvent");
+
+  auto_ptr<int> selectionPath(new int);
+  *selectionPath=selPath;
+  iEvent.put(selectionPath,"selectionPath");
+
+  auto_ptr<int> selectionStep(new int);
+  *selectionStep=selStep;
+  iEvent.put(selectionStep,"selectionStep");  
+
+  auto_ptr<reco::VertexCollection> selVertex(new reco::VertexCollection() );
+  if(selPath>0)
+    {
+      //selVertex->reserve(1);
+      selVertex->push_back( *(dileptonWithVertex.first.get()) );
+    }
+  iEvent.put(selVertex,"selectedVertices");
 }
 
 //  
