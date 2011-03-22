@@ -15,6 +15,7 @@
   <use name=TrackingTools/IPTools>
   <use name=FWCore/ServiceRegistry>
   <use name=DQMServices/Core>
+  <use name=SimDataFormats/GeneratorProducts>	
   <use name="root">
   <use name="roottmva">
   <use name="rootrflx">
