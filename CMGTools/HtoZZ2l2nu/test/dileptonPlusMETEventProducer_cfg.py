@@ -1,8 +1,11 @@
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("HtoZZto2l2nu")
+
+from CMGTools.HtoZZ2l2nu.localPatTuples_cff import *
 process.source = cms.Source("PoolSource",
-                            fileNames = cms.untracked.vstring('file:/tmp/patTuple.root')
+                            fileNames = GluGluToHToZZTo2L2NuM400
+                            
                             )
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 

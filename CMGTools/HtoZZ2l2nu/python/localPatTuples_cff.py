@@ -13,21 +13,8 @@ def fillFromCastor(dir):
     os.system('rm /tmp/castordump')
     return localdataset
 
-Mu2010B_4thNov=fillFromCastor('/castor/cern.ch/cms/store/data/Run2010B/Mu/RECO/Nov4ReReco_v1/0008')
-GluGluToH200ToZZTo2L2Nu = fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/GluGluToH200ToZZTo2L2Nu')
-GluGluToH250ToZZTo2L2Nu = fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/GluGluToH250ToZZTo2L2Nu')
-GluGluToH300ToZZTo2L2Nu = fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/GluGluToH300ToZZTo2L2Nu')
-GluGluToH350ToZZTo2L2Nu = fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/GluGluToH350ToZZTo2L2Nu')
-GluGluToH400ToZZTo2L2Nu = fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/GluGluToH400ToZZTo2L2Nu')
-DYJetsToLL = fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/DYJetsToLL')
-WJetsToLNu = fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/WJetsToLNu')
-SingleTop_s = fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/SingleTop_s')
-SingleTop_t = fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/SingleTop_t')
-SingleTop_tW = fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/SingleTop_tW')
-TTJets = fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/TTJets')
-WWtoAnything = fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/WWtoAnything')
-WZtoAnything = fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/WZtoAnything')
-ZZtoAnything = fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/ZZtoAnything')
+GluGluToHToZZTo2L2NuM400 = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/GluGluToHToZZTo2L2Nu_M-400')
+
 
 """
 defines a local source from a given tag
