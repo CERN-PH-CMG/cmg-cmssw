@@ -17,6 +17,7 @@ process.setName_('CMG')
 process.out.fileName = cms.untracked.string('cmgTuple.root')
 
 process.load('CMGTools.Common.cutsummary_cff')
+process.load('CMGTools.Common.electron_cff')
 process.load('CMGTools.Common.muon_cff')
 process.load('CMGTools.Common.diMuon_cff')
 process.load('CMGTools.Common.jet_cff')
@@ -56,6 +57,7 @@ process.TFileService = cms.Service("TFileService",
 
 process.analysisSequence = cms.Sequence(
     process.patMuonTrigger +
+    process.electronSequence +
     process.muonSequence + 
     process.diMuonSequence +
     process.pfJetSequence +

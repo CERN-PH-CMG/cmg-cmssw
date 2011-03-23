@@ -6,6 +6,8 @@ electronFactory = cms.PSet(
        leptonFactory = leptonFactory.clone()
        )
 
+from CMGTools.Common.selections.vbtfelectron_cfi import *
+
 cmgElectron = cms.EDFilter("ElectronPOProducer",
     cfg = electronFactory.clone(),
     cuts = cms.PSet(
@@ -13,5 +15,8 @@ cmgElectron = cms.EDFilter("ElectronPOProducer",
        # ecalDriven = cms.string('sourcePtr().ecalDriven()'),
        # but this one is ok: 
        isEB = cms.string('sourcePtr().isEB()'),
-       )    
+       # requires that the id variables have been filled
+       #wp80 = vbtfelectron80.clone(),
+       #wp95 = vbtfelectron95.clone()
+       )
 )
