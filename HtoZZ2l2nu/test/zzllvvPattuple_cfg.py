@@ -91,8 +91,12 @@ process.primaryVertexFilter = cms.EDFilter("VertexSelector",
                                            cut = cms.string("!isFake && ndof > 4 && abs(z) <= 24 && position.Rho <= 2"),
                                            filter = cms.bool(True)
                                            )
-process.load('CommonTools/RecoAlgos/HBHENoiseFilter_cfi')
-process.preFilter = cms.Sequence( process.noscraping*process.primaryVertexFilter*process.HBHENoiseFilter)
+
+process.load('CommonTools/RecoAlgos/HBHENoiseFilterResultProducer_cfi')
+process.preFilter = cms.Sequence( process.noscraping*process.primaryVertexFilter*process.HBHENoiseFilterResultProducer)
+#process.load('CommonTools/RecoAlgos/HBHENoiseFilter_cfi')
+#process.preFilter = cms.Sequence( process.noscraping*process.primaryVertexFilter*process.HBHENoiseFilter)
+
 
 # ============================================================================
 # include gen level utils
@@ -419,6 +423,7 @@ from PhysicsTools.PatAlgos.patEventContent_cff import patEventContentNoCleaning,
 process.out.SelectEvents=cms.untracked.PSet( SelectEvents = cms.vstring('eePath', 'mumuPath', 'emuPath') )
 process.out.outputCommands = cms.untracked.vstring('drop *',
                                                    'keep *_MEtoEDMConverter_*_*',
+                                                   'keep *_*_HBHENoise*_*',
                                                    ##### MC
                                                    'keep *_prunedGen_*_*',
                                                    'keep *_genMetTrue_*_*',
