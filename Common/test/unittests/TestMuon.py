@@ -23,7 +23,7 @@ class TestMuon(TestTools.CFGTest):
         events = TestTools.getObject(output[1], 'Events')
         
         cmg = cmgTuple.cmgTuple(events)
-        self.assertTrue(cmg.aliases.has_key('cmgDiMuon'),'We are expecting a branch called cmgDiMuon')
+        self.assertTrue(cmg.aliases.has_key('cmgDiMuonSel'),'We are expecting a branch called cmgDiMuonSel')
         
     def testMuonIsolation(self):
         """Verify that the isolation variables are set"""
@@ -45,7 +45,7 @@ class TestMuon(TestTools.CFGTest):
         events = TestTools.getObject(output[1], 'Events')
         
         cmg = cmgTuple.cmgTuple(events)
-        self.assertTrue(cmg.Draw("cmgDiMuon.pt()","cmgDiMuon.getSelection(\"cuts_zmumu\")","goff") > 0,\
+        self.assertTrue(cmg.Draw("cmgDiMuonSel.pt()","cmgDiMuonSel.getSelection(\"cuts_zmumu\")","goff") > 0,\
                          'The Z id should be applied')
 
 if __name__ == '__main__':
