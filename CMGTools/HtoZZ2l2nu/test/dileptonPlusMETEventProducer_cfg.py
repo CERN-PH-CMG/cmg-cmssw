@@ -17,7 +17,7 @@ process.load('CMGTools.HtoZZ2l2nu.CleanEventAnalyzer_cfi')
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string('eh.root')
                                )
-process.p = cms.Path(process.loadNormalizationCounters*process.cleanEvent)#*process.analysis)
+process.p = cms.Path(process.loadNormalizationCounters*process.cleanEvent*process.analysis)
 process.e = cms.EndPath(process.saveNormalizationCounters*process.out)
 
 
