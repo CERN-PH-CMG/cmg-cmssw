@@ -18,7 +18,7 @@ process.options = cms.untracked.PSet(
 #
 from CMGTools.HtoZZ2l2nu.localPatTuples_cff import getLocalSourceFor
 #process.source.fileNames=getLocalSourceFor('/castor/cern.ch/cms/store/relval/CMSSW_3_9_5/RelValTTbar/GEN-SIM-RECO/START39_V6-v1/0008/')
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 # =================================================================================
 # include counters
@@ -396,7 +396,7 @@ if(not runOnMC ):
 # =================================================================
 # define the paths
 #
-process.p = cms.Path(
+process.startSeq = cms.Sequence(
     process.startCounter*
     process.startupSequence*
     process.runVertexing*
@@ -405,11 +405,11 @@ process.p = cms.Path(
     # process.trigSequence*
     process.fjSequence
     )
-process.eePath = cms.Path(process.elSeq + process.electronCandSequence + process.patDefaultSequence + process.eeCounter)
-process.mumuPath = cms.Path(process.muSeq + process.muonCandSequence + process.patDefaultSequence + process.mumuCounter)
-process.emuPath = cms.Path(process.emuCandSequence + process.patDefaultSequence + process.emuCounter)
+process.eePath = cms.Path(process.startSeq * process.elSeq + process.electronCandSequence + process.patDefaultSequence + process.eeCounter)
+process.mumuPath = cms.Path(process.startSeq * process.muSeq + process.muonCandSequence + process.patDefaultSequence + process.mumuCounter)
+process.emuPath = cms.Path(process.startSeq * process.emuCandSequence + process.patDefaultSequence + process.emuCounter)
 process.e = cms.EndPath( process.endCounter*process.finalSequence*process.saveHistosInRunInfo*process.out )
-process.schedule = cms.Schedule( process.p, process.eePath, process.mumuPath, process.emuPath,process.e )
+process.schedule = cms.Schedule( process.eePath, process.mumuPath, process.emuPath,process.e )
 
 # ======================================================================================
 # configure the output
