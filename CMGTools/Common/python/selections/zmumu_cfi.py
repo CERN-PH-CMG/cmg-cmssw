@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 zmumu = cms.PSet(
-    mass = cms.string('mass() >= 50 && mass() < 120'),             
+    mass = cms.string('mass() >= 60 && mass() < 120'),             
     leg1_quality = cms.string('leg1().getSelection(\"cuts_vbtfmuon\")'),
     isolation = cms.string('leg1().getSelection(\"cuts_isomuon\")'),
     leg2_quality = cms.string('leg2().getSelection(\"cuts_vbtfmuon_isGlobal\")'),

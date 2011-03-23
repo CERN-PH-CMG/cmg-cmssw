@@ -44,7 +44,6 @@ BaseMETFactory<pat::MET>::event_ptr BaseMETFactory<pat::MET>::create(const edm::
     const pat::MET& cand = *met;
     cmg::BaseMET m(cand);
     m.sumEt_ = cand.sumEt();
-    m.significance_ = cand.significance();
     result->push_back(m);
   }
   return result;
