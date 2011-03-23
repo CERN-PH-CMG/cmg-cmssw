@@ -14,6 +14,27 @@ def fillFromCastor(dir):
     return localdataset
 
 GluGluToHToZZTo2L2NuM400 = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/GluGluToHToZZTo2L2Nu_M-400/GluGluToHToZZTo2L2Nu_M-400')
+GluGluToHToWWTo2L2Nu_M-200 = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/GluGluToHToWWTo2L2Nu_M-200/GluGluToHToWWTo2L2Nu_M-200')
+GluGluToHToWWTo2L2Nu_M-400 = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/GluGluToHToWWTo2L2Nu_M-400/GluGluToHToWWTo2L2Nu_M-400')
+GluGluToHToZZTo2L2Nu_M-200 = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/GluGluToHToZZTo2L2Nu_M-200/GluGluToHToZZTo2L2Nu_M-200')
+GluGluToHToZZTo2L2Nu_M-400 = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/GluGluToHToZZTo2L2Nu_M-400/GluGluToHToZZTo2L2Nu_M-400')
+GluGluToHToZZTo4L_M-200 = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/GluGluToHToZZTo4L_M-200/GluGluToHToZZTo4L_M-200')
+GluGluToHToZZTo4L_M-400 = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/GluGluToHToZZTo4L_M-400/GluGluToHToZZTo4L_M-400')
+VBF_HToWWTo2L2Nu_M-200 = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/VBF_HToWWTo2L2Nu_M-200/VBF_HToWWTo2L2Nu_M-200')
+VBF_HToWWTo2L2Nu_M-400 = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/VBF_HToWWTo2L2Nu_M-400/VBF_HToWWTo2L2Nu_M-400')
+VBF_ToHToZZTo4L_M-200 = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/VBF_ToHToZZTo4L_M-200/VBF_ToHToZZTo4L_M-200')
+DYToEE_M-20 = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/DYToEE_M-20/DYToEE_M-20')
+DYToMuMu_M-20 = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/DYToMuMu_M-20/DYToMuMu_M-20')
+DYToTauTau_M-20 = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/DYToTauTau_M-20/DYToTauTau_M-20')
+TTJets_madgraph = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/TTJets_madgraph/TTJets_madgraph')
+TToBLNu_s-channel = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/TToBLNu_s-channel/TToBLNu_s-channel')
+TToBLNu_t-channel = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/TToBLNu_t-channel/TToBLNu_t-channel')
+TToBLNu_tW-channel = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/TToBLNu_tW-channel/TToBLNu_tW-channel')
+WJetsToLNu = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/WJetsToLNu/WJetsToLNu')
+WWtoAnything = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/WWtoAnything/WWtoAnything')
+WZtoAnything = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/WZtoAnything/WZtoAnything')
+ZZtoAnything = fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/ZZtoAnything/ZZtoAnything')
+
 
 
 """
