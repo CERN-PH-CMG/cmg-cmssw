@@ -1,7 +1,11 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 import FWCore.ParameterSet.Config as cms
+from CMGTools.ZmumuJetsTutorial.getGlobalTag import getGlobalTag
 
 import os.path
+
+runOnMC = True
+process.GlobalTag.globaltag = cms.string(getGlobalTag(runOnMC))
 
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(-1)

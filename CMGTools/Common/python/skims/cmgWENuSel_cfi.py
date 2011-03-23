@@ -7,7 +7,7 @@ import FWCore.ParameterSet.Config as cms
 cmgWENuSel = cms.EDFilter(
     "CmgWENuSelector",
     src = cms.InputTag( "cmgWENu" ),
-    cut = cms.string( "mt() > 20" )
+    cut = cms.string( "pt()>0" )
     )
 
 

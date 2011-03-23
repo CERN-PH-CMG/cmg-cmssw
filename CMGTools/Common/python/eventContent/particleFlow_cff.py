@@ -22,19 +22,19 @@ particleFlowMHT = cms.untracked.vstring(
 particleFlowMuons = cms.untracked.vstring(
     # does not look like PF?     
     'keep *_cmgMuonSel_*_*',
-    'keep *_cmgDiMuon_*_*'
+    'keep *_cmgDiMuonSel_*_*'
     )
 
 particleFlowElectrons = cms.untracked.vstring(
     # does not look like PF? 
     'keep *_cmgElectronSel_*_*',
-    'keep *_cmgDiElectron_*_*'
+    'keep *_cmgDiElectronSel_*_*'
     )
 
 particleFlowW = cms.untracked.vstring(
     # does not look like PF? 
-    'keep *_cmgWENu_*_*',
-    'keep *_cmgWMuNu_*_*',
+    'keep *_cmgWENuSel_*_*',
+    'keep *_cmgWMuNuSel_*_*',
     'keep *_cmgWTauNu_*_*'                                  
     )
 

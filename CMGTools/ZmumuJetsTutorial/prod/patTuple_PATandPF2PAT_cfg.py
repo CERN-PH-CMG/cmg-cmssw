@@ -1,13 +1,15 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 import os.path, tempfile
+from CMGTools.ZmumuJetsTutorial.getGlobalTag import getGlobalTag
 
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
 
 runOnMC = True
+process.GlobalTag.globaltag = cms.string(getGlobalTag(runOnMC))
+
 triggerProcessName = 'HLT'
 if runOnMC:
     triggerProcessName = 'REDIGI37X'
-    process.GlobalTag.globaltag = cms.string('GR_R_38X_V15::All')
     process.source.fileNames = cms.untracked.vstring('rfio:///castor/cern.ch/user/w/wreece/SDMUONFILTER/ZmumuSummer10/1E16ABCD-0986-DF11-B57C-90E6BA442F1E.root')
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
