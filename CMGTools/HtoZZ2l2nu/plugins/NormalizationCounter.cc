@@ -49,7 +49,8 @@ void NormalizationCounter::endJob()
 }
 
 //
-void NormalizationCounter::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+//void NormalizationCounter::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+void NormalizationCounter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
   
@@ -109,7 +110,7 @@ void NormalizationCounter::beginLuminosityBlock(const edm::LuminosityBlock & iLu
 //
 void NormalizationCounter::endLuminosityBlock(const edm::LuminosityBlock & iLumi, const edm::EventSetup & iSetup)
 {
-  cout << "[NormalizationCounter][beginLuminosityBlock] " << endl;
+  cout << "[NormalizationCounter][endLuminosityBlock] " << endl;
 }
 
 

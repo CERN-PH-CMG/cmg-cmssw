@@ -10,6 +10,7 @@
 #include "DataFormats/Common/interface/MergeableCounter.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/LuminosityBlock.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -17,19 +18,20 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 
-class NormalizationCounter : public edm::EDProducer {
+//class NormalizationCounter : public edm::EDProducer {
+class NormalizationCounter : public edm::EDAnalyzer {
  public:
   explicit NormalizationCounter(const edm::ParameterSet&);
+  virtual void analyze(const edm::Event&, const edm::EventSetup&);
+  ~NormalizationCounter();
+
+ private:
   void beginLuminosityBlock(const edm::LuminosityBlock & iLumi, const edm::EventSetup & iSetup);
   void endLuminosityBlock(const edm::LuminosityBlock & iLumi, const edm::EventSetup & iSetup);
   void respondToOpenInputFile(edm::FileBlock const& fb);
   void respondToCloseInputFile(edm::FileBlock const& fb); 
   void endJob();
-  ~NormalizationCounter();
-  
- private:
-  
-  virtual void produce(edm::Event&, const edm::EventSetup&);
+  //  virtual void produce(edm::Event&, const edm::EventSetup&);
 
   bool fileChanged_;
   unsigned int nFiles_;
