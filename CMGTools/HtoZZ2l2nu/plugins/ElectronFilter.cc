@@ -25,7 +25,7 @@ namespace electron{
         {
 	  reco::CandidatePtr elePtr = hEle->ptrAt(iElec);
 	  const pat::Electron *ele = dynamic_cast<const pat::Electron *>( elePtr.get() );
-
+	  const reco::GenParticle *gele=ele->genParticle();
 	  bool isEcalDriven(true);
 	  try{
 	    isEcalDriven = ele->ecalDrivenSeed();
@@ -49,9 +49,9 @@ namespace electron{
 	  int nTrackLostHits=eTrack->trackerExpectedHitsInner().numberOfLostHits();
 	  if( nTrackLostHits>maxTrackLostHits) continue;
 	  bool hasConversionTag(false);
-	  if(id.find("simple") != string::npos && eid>=0) hasConversionTag = !((eid>>2) & 0x1);	 
+	  if(id.find("simple") != string::npos) hasConversionTag = !((eid>>2) & 0x1);	 
 	  if(applyConversionVeto && hasConversionTag) continue;
-	      
+
 	  //electron id (just need the first bit)
 	  if( !(eid & 0x1) ) continue;
 	  

@@ -25,11 +25,6 @@ NormalizationCounter::NormalizationCounter(const edm::ParameterSet& iConfig) : f
 //
 NormalizationCounter::~NormalizationCounter()
 {
-}
-
-//
-void NormalizationCounter::endJob()
-{
   //compute the average for cross section and generator filter efficiency
   float normFactor(nFiles_);
   if(normFactor>0)
@@ -46,7 +41,11 @@ void NormalizationCounter::endJob()
     cout << ctrIt->first << " " << ctrIt->second->getFloatValue() << endl;
   cout << "<Cross section>: " << crossSection_->getFloatValue() << endl
        << "<Filter efficiency>: " << genEff_->getFloatValue() << endl;
+}
 
+//
+void NormalizationCounter::endJob()
+{
 }
 
 //
@@ -104,11 +103,13 @@ void NormalizationCounter::respondToCloseInputFile(edm::FileBlock const& fb)
 //
 void NormalizationCounter::beginLuminosityBlock(const edm::LuminosityBlock & iLumi, const edm::EventSetup & iSetup)
 {
+  cout << "[NormalizationCounter][beginLuminosityBlock] " << endl;
 }
 
 //
 void NormalizationCounter::endLuminosityBlock(const edm::LuminosityBlock & iLumi, const edm::EventSetup & iSetup)
 {
+  cout << "[NormalizationCounter][beginLuminosityBlock] " << endl;
 }
 
 

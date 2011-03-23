@@ -85,7 +85,7 @@ namespace dilepton{
   int classify(std::vector<reco::CandidatePtr> &selDilepton)
   {
     if(selDilepton.size()==0) return UNKNOWN;
-    if(dynamic_cast<const pat::Muon *>(selDilepton[0].get()) && dynamic_cast<const pat::Muon *>(selDilepton[1].get()) ) return EE;
+    if(dynamic_cast<const pat::Muon *>(selDilepton[0].get()) && dynamic_cast<const pat::Muon *>(selDilepton[1].get()) ) return MUMU;
     if(dynamic_cast<const pat::Electron *>(selDilepton[0].get()) && dynamic_cast<const pat::Electron *>(selDilepton[1].get()) ) return EE;
     if(dynamic_cast<const pat::Muon *>(selDilepton[0].get()) && dynamic_cast<const pat::Electron *>(selDilepton[1].get()) ) return EMU;
     if(dynamic_cast<const pat::Electron *>(selDilepton[0].get()) && dynamic_cast<const pat::Muon *>(selDilepton[1].get()) ) return EMU;

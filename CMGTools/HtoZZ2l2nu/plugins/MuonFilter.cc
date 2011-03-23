@@ -34,7 +34,7 @@ namespace muon{
 	  //kinematics
 	  double mPt = muon->pt();
 	  double mEta = muon->eta();
-	  if( mPt<minPt || fabs(mEta)<maxEta) continue; 
+	  if( mPt<minPt || fabs(mEta)>maxEta) continue; 
 
 	  //track selection
 	  double chi2 = muon->globalTrack()->normalizedChi2();	  
