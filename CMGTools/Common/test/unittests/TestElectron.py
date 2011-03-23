@@ -23,7 +23,7 @@ class TestMuon(TestTools.CFGTest):
         events = TestTools.getObject(output[1], 'Events')
         
         cmg = cmgTuple.cmgTuple(events)
-        self.assertTrue(cmg.aliases.has_key('cmgDiElectron'),'We are expecting a branch called cmgDiElectron')
+        self.assertTrue(cmg.aliases.has_key('cmgDiElectronSel'),'We are expecting a branch called cmgDiElectronSel')
         
     def testElectronIsolation(self):
         """Verify that the isolation variables are set"""

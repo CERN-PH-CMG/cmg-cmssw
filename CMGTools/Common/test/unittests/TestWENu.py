@@ -23,7 +23,7 @@ class TestWENu(TestTools.CFGTest):
         events = TestTools.getObject(output[1], 'Events')
         
         cmg = cmgTuple.cmgTuple(events)
-        self.assertTrue(cmg.aliases.has_key('cmgWENu'),'We are expecting a branch called cmgWENu')
+        self.assertTrue(cmg.aliases.has_key('cmgWENuSel'),'We are expecting a branch called cmgWENuSel')
         
  
  
