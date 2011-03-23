@@ -49,29 +49,12 @@ void NormalizationCounter::endJob()
 }
 
 //
-//void NormalizationCounter::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 void NormalizationCounter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
-  
-  if(!fileChanged_) return;
 
-  //update the counters
-  const edm::LuminosityBlock &iLumi = iEvent.getLuminosityBlock();
-  for( std::map<std::string,MonitorElement *>::iterator ctrIt = ctrs_.begin();
-       ctrIt != ctrs_.end();
-       ctrIt++)
-    {
-      try{
-	edm::Handle<edm::MergeableCounter> ctrHandle;
-	if(iLumi.getByLabel(ctrIt->first, ctrHandle))
-	  {
-	    ctrIt->second->Fill( ctrHandle->value );
-	  }
-      }catch(std::exception&e){
-      }
-    }
-  
+  if(!fileChanged_) return;
+ 
   //get generator level info   
   const edm::Run &run = iEvent.getRun();
   try{
@@ -104,13 +87,25 @@ void NormalizationCounter::respondToCloseInputFile(edm::FileBlock const& fb)
 //
 void NormalizationCounter::beginLuminosityBlock(const edm::LuminosityBlock & iLumi, const edm::EventSetup & iSetup)
 {
-  cout << "[NormalizationCounter][beginLuminosityBlock] " << endl;
 }
 
 //
 void NormalizationCounter::endLuminosityBlock(const edm::LuminosityBlock & iLumi, const edm::EventSetup & iSetup)
 {
-  cout << "[NormalizationCounter][endLuminosityBlock] " << endl;
+  //update the counters
+  for( std::map<std::string,MonitorElement *>::iterator ctrIt = ctrs_.begin();
+       ctrIt != ctrs_.end();
+       ctrIt++)
+    {
+      try{
+	edm::Handle<edm::MergeableCounter> ctrHandle;
+	if(iLumi.getByLabel(ctrIt->first, ctrHandle))
+	  {
+	    ctrIt->second->Fill( ctrIt->second->getFloatValue()+ctrHandle->value );
+	  }
+      }catch(std::exception&e){
+      }
+    }
 }
 
 

@@ -9,7 +9,6 @@
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "DataFormats/Common/interface/MergeableCounter.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/LuminosityBlock.h"
@@ -18,7 +17,6 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 
-//class NormalizationCounter : public edm::EDProducer {
 class NormalizationCounter : public edm::EDAnalyzer {
  public:
   explicit NormalizationCounter(const edm::ParameterSet&);
@@ -31,7 +29,6 @@ class NormalizationCounter : public edm::EDAnalyzer {
   void respondToOpenInputFile(edm::FileBlock const& fb);
   void respondToCloseInputFile(edm::FileBlock const& fb); 
   void endJob();
-  //  virtual void produce(edm::Event&, const edm::EventSetup&);
 
   bool fileChanged_;
   unsigned int nFiles_;
