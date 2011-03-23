@@ -10,20 +10,8 @@ print process.source.fileNames
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
 
 process.load('CMGTools.HtoZZ2l2nu.NormalizationCounter_cfi')
-
-from CMGTools.HtoZZ2l2nu.StandardSelections_cfi import *
-process.cleanEvent = cms.EDProducer("DileptonPlusMETEventProducer",
-                                    Vertices = BaseVertexSelection.clone(),
-                                    Muons = BaseMuonsSelection.clone(),
-                                    Electrons = BaseElectronsSelection.clone(),
-                                    Dileptons = BaseDileptonSelection.clone(),
-                                    Jets = BaseJetSelection.clone(),
-                                    MET = BaseMetSelection.clone()
-                                    )
-
-process.analysis = cms.EDAnalyzer("DileptonPlusMETEventAnalyzer",
-                                  source = cms.InputTag("cleanEvent") 
-                                  )
+process.load('CMGTools.HtoZZ2l2nu.CleanEventProducer_cfi')
+process.load('CMGTools.HtoZZ2l2nu.CleanEventAnalyzer_cfi')
 
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string('eh.root')
