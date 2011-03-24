@@ -15,48 +15,22 @@ def getControlPlots(url) :
     from DataFormats.FWLite import Events, Handle
     ROOT.gSystem.Load('${CMSSW_BASE}/lib/${SCRAM_ARCH}/libCMGToolsHtoZZ2l2nu.so')
     
-    #objects of interest
-    jetHandle  = Handle ('std::vector<cmg::BaseJet>')
-    jetLabel = ('cmgPFBaseJetSel')
+    #objects of interest 
+    evHandle  = Handle ('std::vector<pat::EventHypothesis>')
+    evLabel = ('cleanEvent','selectedEvent')
 
-    mumuHandle  = Handle ('std::vector<cmg::DiObject<cmg::Muon,cmg::Muon> >')
-    mumuLabel = ('cmgDiMuon')
+    vertexHandle  = Handle ('std::vector<reco::Vertex>')
+    vertexLabel = ('cleanEvent','selectedVertices')
 
-    eeHandle  = Handle ('std::vector<cmg::DiObject<cmg::Electron,cmg::Electron> >')
-    eeLabel = ('cmgDiElectron')
+    selInfo = Handle ('std::vector<int>')
+    selInfoLabel = ('cleanEvent','selectionInfo')
 
-    emuHandle  = Handle ('std::vector<cmg::DiObject<cmg::Electron,cmg::Muon> >')
-    emuLabel = ('cmgEmuDilepton')
-
-    metHandle  = Handle ('std::vector<cmg::BaseMET>')
-    metLabel = ('cmgMETPFCandidates')
-       
-    #book histograms (...need to add emu)
     results={}
-    streams=['ee','mumu']
+    streams=['ee','mumu','emu']
     jetmult=['eq0jets','eq1jets','geq2jets']
     for istream in streams :
 
         cat=istream
-
-        #cut flow
-        cutflowsteps=['reco','p_{T}>20','fid.trigger','ID','Isolation','M_{ll}>50','|#Delta#phi|>#pi/2','=0 jets','=1 jets','#geq 2 jets']
-        results[cat+'_cutflow']          = formatPlot( ROOT.TH1F(cat+"_cutflow", ";Cut flow; Events", len(cutflowsteps), 0.,len(cutflowsteps)), 1, 1, 1, 20, 0, True, True, 1,1,1)
-        for i in xrange(0,len(cutflowsteps)): results[cat+'_cutflow'].GetXaxis().SetBinLabel(i+1,cutflowsteps[i])
-
-        #lepton control
-        if(istream!='emu') :
-            part=''
-            if(istream=='ee'):
-                part='e'
-                results[part+'_sietaieta']   = formatPlot( ROOT.TH1F(part+"_sietaieta", ";#sigma_{i#eta-i#eta}; Electrons", 100, 0.,0.1), 1, 1, 1, 20, 0, True, True, 1,1,1)
-                results[part+'_eoverp']     = formatPlot( ROOT.TH1F(part+"_eoverp", ";E/p; Electrons", 100, 0.,5.), 1, 1, 1, 20, 0, True, True, 1,1,1)
-            if(istream=='mumu'):
-                part='mu'
-                results[part+'_chi2']     = formatPlot( ROOT.TH1F(part+"_chi2", ";#chi^{2}; Leptons", 100, 0.,20.), 1, 1, 1, 20, 0, True, True, 1,1,1)
-            results[part+'_pt']                = formatPlot( ROOT.TH1F(part+"_pt", ";p_{T} [GeV/c]; Muons", 100, 0.,200.), 1, 1, 1, 20, 0, True, True, 1,1,1)        
-            results[part+'_eta']               = formatPlot( ROOT.TH1F(part+"_eta", ";#eta; Leptons", 100, -2.5, 2.5), 1, 1, 1, 20, 0, True, True, 1,1,1)
-            results[part+'_reliso']            = formatPlot( ROOT.TH1F(part+"_reliso", ";Relative Isolation; Leptons", 100, 0.,2.), 1, 1, 1, 20, 0, True, True, 1,1,1)
 
         #dilepton control
         results[cat+"_dilepton_mass"]     = formatPlot( ROOT.TH1F(cat+"_dilepton_mass", ";Invariant Mass(l,l') [GeV/c^{2}]; Events", 100, 0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
@@ -97,16 +71,14 @@ def getControlPlots(url) :
         sc, flist = commands.getstatusoutput('nsls %s' % (url,) )
         flist = flist.split()
         for f in flist:
-            if(f.find('cmgTuple')<0): continue
             dirList.append(f)
     else :
-            dirList=os.listdir(url)
+        dirList=os.listdir(url)
 
     #loop over results in files
     for fname in dirList:
-        if(fname.find(".root")<0) : continue
-
-        absUrl=url + '/' + fname
+        if(fname.find("root")<0) : continue
+        absUrl='file:'+ url + '/' + fname
         if(url.find('castor')>0) : absUrl = 'rfio://' + url + '/' + fname
         file = ROOT.TFile.Open(absUrl)
         if(file==None) :
@@ -120,128 +92,30 @@ def getControlPlots(url) :
         for event in events:
             
             #get the candidates
-            event.getByLabel(eeLabel,eeHandle)
-            event.getByLabel(mumuLabel,mumuHandle)
-            event.getByLabel(emuLabel,emuHandle)
-            event.getByLabel(jetLabel,jetHandle)            
-            event.getByLabel(metLabel,metHandle)
+            event.getByLabel(evLabel,evHandle)
+            event.getByLabel(vertexLabel,vertexHandle)
+            event.getByLabel(selInfoLabel,selInfo)
+
+            selPath = selInfo.product()[0]
+            selStep = selInfo.product()[1]
+
+            print str(selPath) + ' ' + str(selStep)
             
-            dilCand=None
-            istream=''
-            selStep=0
-            
-            # prefer di-muons
-            if(mumuHandle.product().size()>0):
-                istream='mumu'
-                for dil in mumuHandle.product() :
-
-                    selSetp=0
-                    lepton1=dil.leg1()
-                    lepton2=dil.leg2()
-
-                    #kinematics
-                    results['mu_pt'].Fill(lepton1.pt())
-                    results['mu_pt'].Fill(lepton2.pt())
-                    if(lepton1.pt()<20 or lepton2.pt()<20 or abs(lepton1.eta())>2.4 or abs(lepton2.eta())>2.4) : continue
-                    selStep=selStep+1
-
-                    #trigger fiducial
-                    results['mu_eta'].Fill(lepton1.eta())
-                    results['mu_eta'].Fill(lepton2.eta())
-                    if(abs(lepton1.eta())>2.1 and abs(lepton2.eta())>2.1) : continue
-                    selStep=selStep+1
-
-                    #id
-                    results['mu_chi2'].Fill(lepton1.normalizedChi2())
-                    results['mu_chi2'].Fill(lepton2.normalizedChi2())
-                    if( not lepton1.isGlobal() or not lepton1.isTracker() ) : continue
-                    if( not lepton2.isGlobal() or not lepton2.isTracker() ) : continue
-                    if( lepton1.numberOfValidTrackerHits()<10 or lepton2.numberOfValidTrackerHits()<10 ): continue
-                    if( not lepton1.muonID() or not lepton2.muonID() ) : continue
-                    selStep=selStep+1
-
-                    #isolation
-                    results['mu_reliso'].Fill(lepton1.relIso())
-                    results['mu_reliso'].Fill(lepton2.relIso())
-                    if(lepton1.relIso()>0.25 or lepton2.relIso()>0.25) : continue
-                    selStep=selStep+1
-                    
-                    #mass cut
-                    if(dil.mass()<50) : continue
-                    selStep=selStep+1
-                    results['mumu_dilepton_mass'].Fill(dil.mass())
-                    results['mumu_dilepton_sumpt'].Fill(lepton1.pt()+lepton2.pt())
-                    results['mumu_dilepton_pt'].Fill(dil.pt())
-
-                    if(dilCand is None) : dilCand=dil
-                    else :
-                        curCandSumPt=dilCand.leg1().pt()+dilCand.leg2().pt()
-                        candSumPt=lepton1.pt()+lepton2.pt()
-                        if(curCandSumPt<candSumPt) : dilCand=dil
-
-            #revert to di-electron if none found
-            if(dilCand is None and eeHandle.product().size()>0) :
-                istream='ee'
-                for dil in eeHandle.product() :
-
-                    selStep=0
-                    lepton1=dil.leg1()
-                    lepton2=dil.leg2()
-
-                    #kinematics
-                    results['e_pt'].Fill(lepton1.pt())
-                    results['e_pt'].Fill(lepton2.pt())
-                    if(lepton1.pt()<20 or lepton2.pt()<20 or abs(lepton1.eta())>2.5 or abs(lepton2.eta())>2.5) : continue
-                    selStep=selStep+1
-
-                    #trigger fiducial
-                    results['e_eta'].Fill(lepton1.eta())
-                    results['e_eta'].Fill(lepton2.eta())
-                    #could cut on the supercluster
-                    selStep=selStep+1
-
-                    #id
-                    results['e_sietaieta'].Fill(lepton1.scSignaIetaIeta());
-                    results['e_sietaieta'].Fill(lepton2.scSignaIetaIeta());
-                    results['e_eoverp'].Fill(lepton1.eSuperClusterOverP());
-                    results['e_eoverp'].Fill(lepton2.eSuperClusterOverP());
-                    if( lepton1.numberOfLostHits()>1): continue
-                    if( lepton1.electronID()<5 or lepton2.electronID()<5 ) : continue
-                    selStep=selStep+1
-
-                    #isolation
-                    results['e_reliso'].Fill(lepton1.relIso())
-                    results['e_reliso'].Fill(lepton2.relIso())
-                    if(lepton1.relIso()>0.25 or lepton2.relIso()>0.25) : continue
-                    selStep=selStep+1
-                    
-                    #mass cut
-                    if(dil.mass()<50) : continue
-                    selStep=selStep+1
-
-                    results['ee_dilepton_mass'].Fill(dil.mass())
-                    results['ee_dilepton_sumpt'].Fill(lepton1.pt()+lepton2.pt())
-                    results['ee_dilepton_pt'].Fill(dil.pt())
-
-                    if(dilCand is None) : dilCand=dil
-                    else :
-                        curCandSumPt=dilCand.leg1().pt()+dilCand.leg2().pt()
-                        candSumPt=lepton1.pt()+lepton2.pt()
-                        if(curCandSumPt<candSumPt) : dilCand=dil
-
             #cutflow up to dilepton selection
-            if(len(istream)==0) : continue
-            if(dilCand is not None): selStep=5
-            for iselstep in xrange(0,selStep+1) : results[istream+'_cutflow'].Fill(iselstep)
-            if(dilCand is None): continue
+            if(selPath==0 or selStep<3) : continue
+            istream='mumu'
+            if(selPath==2) :  istream='ee'
+            if(selPath==3) :  istream='emu'
+
+            evhyp = evHandle.product()[0]
 
             #jet multiplicity bin
             njets=0
             nbjets=0
-            for j in jetHandle.product() :
-                if (j.pt()<30 or abs(j.eta())>2.4) : continue
-                njets+=1
-                btag=j.btag()
+            seljets= evhyp.all("jet")
+            njets = seljets.size()
+            for j in seljets :
+                btag=j.bDiscriminator('trackCountingHighEffBJetTags')
                 if(btag>1.74) : nbjets+=1 #loose point
                 results[istream+'_btags'].Fill(btag)
                 results[istream+'_jetpt'].Fill(j.pt())
@@ -249,7 +123,6 @@ def getControlPlots(url) :
             results[istream+'_bmult'].Fill(nbjets)
             jetbin=njets
             if(jetbin>2):jetbin=2
-            results[istream+'_cutflow'].Fill(selStep+jetbin+1)
 
             #update the selection stream
             substream=istream
@@ -258,6 +131,8 @@ def getControlPlots(url) :
             else :            substream = substream+'geq2jets'
 
             #basic dilepton kinematics
+            lepton1 = evhyp["leg1"]
+            lepton2 = evhyp["leg2"]
             lepP=[
                 ROOT.TLorentzVector(lepton1.px(),lepton1.py(),lepton1.pz(),lepton1.energy()) ,
                 ROOT.TLorentzVector(lepton2.px(),lepton2.py(),lepton2.pz(),lepton2.energy())
@@ -269,7 +144,7 @@ def getControlPlots(url) :
             recoDil=lepP[0]+lepP[1]
 
             #base met kinematics
-            themet=metHandle.product()[0]
+            themet=evhyp["met"]
             recomet=ROOT.TLorentzVector(-themet.px(),-themet.py(),0,themet.pt())
             results[istream+'_met'].Fill(recomet.Pt())
             
@@ -278,7 +153,6 @@ def getControlPlots(url) :
             results[substream+'_met'].Fill(recomet.Pt())
             results[substream+'_dilepton2met_dphi'].Fill(abs(dphiZ2met))
             if(abs(dphiZ2met)<math.pi/2): continue
-            results[istream+'_cutflow'].Fill(selStep+jetbin+2)
             
             #individual lepton vs MET kinematics
             dphil2met=[
@@ -307,9 +181,9 @@ def getControlPlots(url) :
             if(lepP[0].Pt()>lepP[1].Pt()): results[substream+'_mT_corr'].Fill(mTlmet[0],mTlmet[1])
             else : results[substream+'_mT_corr'].Fill(mTlmet[1],mTlmet[0])
             results[substream+'_mT_individualsum'].Fill(mTlmet[0]+mTlmet[1])
-            results[substream+"_dilepton_mass"].Fill(dilCand.mass())
+            results[substream+"_dilepton_mass"].Fill(recoDil.M())
             results[substream+"_dilepton_sumpt"].Fill(lepP[0].Pt()+lepP[1].Pt())
-            results[substream+"_dilepton_pt"].Fill(dilCand.pt())
+            results[substream+"_dilepton_pt"].Fill(recoDil.Pt())
             results[substream+"_mT"].Fill(transverseMass)
 
         file.Close()

@@ -98,7 +98,13 @@ def runOverSamples(samplesDB,func,debugFunc=None,integratedLumi=1.0) :
                     sfactor = getByLabel(d,'sfactor',1)
                     xsec = getByLabel(d,'xsec',-1)
                     br = getByLabel(d,'br',1)
-                    fnames = fillFromCastor(dir)
+                    fnames=[]
+                    if(dir.find("castor")>0) : fnames = fillFromCastor(dir)
+                    else :
+                        lfnames = os.listdir(dir)
+                        for f in lfnames :
+                            fnames.append( dir + '/' + f )
+                    
                     origevents=getTotalRunInfo(fnames,0,len(fnames))[0]
                     if(origevents==0) : continue
                     #origevents = getByLabel(d,'origevents',-1)
@@ -152,12 +158,10 @@ if(len(sys.argv)<2):
 script = sys.argv[1]
 scriptdir =  os.path.dirname(script)
 modname = os.path.splitext(os.path.basename(script))[0]
-print script +' ' + scriptdir + ' ' +modname
 import pkgutil
 i = pkgutil.ImpImporter(scriptdir)
-print i
 l = i.find_module(modname)
-print l
+
 mysource = l.load_module(modname)
 if (mysource is None):
     print 'Unable to find ' + modname + ' in ' +scriptdir
