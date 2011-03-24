@@ -34,6 +34,16 @@ class TestJET(TestTools.CFGTest):
         cmg = cmgTuple.cmgTuple(events)
         self.assertTrue(cmg.Draw("cmgPFJetSel.pt()","cmgPFJetSel.getSelection(\"cuts_looseJetId\")","goff") > 0,\
                          'The jet id should be applied')
+        
+    def testBTag(self):
+        """Verify that the Btag is applied"""
+        
+        output = self.__class__.cfgsRunOnceCache['CMGTools/Common/test/testJet_cfg.py']
+        events = TestTools.getObject(output[1], 'Events')
+        
+        cmg = cmgTuple.cmgTuple(events)
+        self.assertTrue(cmg.Draw("cmgPFJetSel.btag()","cmgPFJetSel.getSelection(\"cuts_btag_loose\")","goff") > 0,\
+                         'The btag should be applied')
  
 
 if __name__ == '__main__':
