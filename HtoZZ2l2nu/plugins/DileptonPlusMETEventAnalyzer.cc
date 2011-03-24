@@ -45,14 +45,9 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &iEvent, const edm::
   iEvent.getByLabel(selEvtTag, hyps);
 
   //retrieve the selection path
-  Handle<int> selectionPath;
-  edm::InputTag selPathTag(source_.label()+":selectionPath");
-  iEvent.getByLabel(selPathTag, selectionPath);
-
-  //retrieve the selection step
-  Handle<int> selectionStep;
-  edm::InputTag selStepTag(source_.label()+":selectionStep");
-  iEvent.getByLabel(selStepTag, selectionStep);
+  Handle<std::vector<int> > selectionInfo;
+  edm::InputTag selInfoTag(source_.label()+":selectionInfo");
+  iEvent.getByLabel(selInfoTag, selectionInfo);
 
   //retrieve the selected vertex
   Handle<reco::VertexCollection> selectedVertex;
@@ -63,10 +58,10 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &iEvent, const edm::
   const pat::EventHypothesis &h = (*hyps)[0];
 
   //dump selected event 
-  cout << "Retrieve an event hypothesis selected at step at step=" << *selectionStep  << " for path " << *selectionPath 
+  cout << "Retrieve an event hypothesis selected at step at step=" << (*selectionInfo)[1]  << " for path " << (*selectionInfo)[0] 
        << " with " << selectedVertex->size() << " vertices" << std::endl;
 
-  if(*selectionPath>0)
+  if((*selectionInfo)[0])
     {
       CandidatePtr lep1 = h["leg1"];
       CandidatePtr lep2 = h["leg2"];

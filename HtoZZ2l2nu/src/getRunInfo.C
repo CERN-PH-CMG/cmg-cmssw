@@ -23,8 +23,8 @@ std::vector<float> getRunInfo(TFile *f)
       const MEtoEDM<double>::MEtoEdmObjectVector objects = hist->getMEtoEdmObject();
       for(MEtoEDM<double>::MEtoEdmObjectVector::const_iterator it = objects.begin(); it != objects.end(); ++it )
 	{
-	  if(it->name == "ric_initialEvents")          evInfo[INITIAL_EVTS] += it->object;
-	  else if(it->name == "ric_finalEvents" )      evInfo[FINAL_EVTS] += it->object;
+	  if(it->name == "ric_startCounter")           evInfo[INITIAL_EVTS] += it->object;
+	  else if(it->name == "ric_endCounter" )       evInfo[FINAL_EVTS] += it->object;
 	  else if(it->name == "ric_crossSection" )     evInfo[XSECTION] += it->object;
 	  else if(it->name == "ric_filterEfficiency" ) evInfo[GENERATOR_EFF] += it->object;
 	}
@@ -40,3 +40,4 @@ std::vector<float> getRunInfo(TFile *f)
   //return summary
   return evInfo;
 }
+
