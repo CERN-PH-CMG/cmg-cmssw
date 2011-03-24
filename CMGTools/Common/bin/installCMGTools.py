@@ -108,10 +108,16 @@ class InstallCMGTools(object):
     def checkoutCMGTools(self):
         """Checkout CMGTools"""
         for key in self.dic_list.keys():
+            cmd = 'cvs checkout '
+            #add a tag if needed
             if not self.dic_list[key][0].lower() == 'head':
-                os.system('cvs checkout -r %s -d %s %s' % (self.dic_list[key][0], self.dic_list[key][1], key))
-            else:
-                os.system('cvs checkout -d %s %s' % (self.dic_list[key][1], key))
+                cmd += '-r %s ' % self.dic_list[key][0]
+            #specify a target directory if needed    
+            if self.dic_list[key][1] and key != self.dic_list[key][1]:
+                cmd += '-d %s ' % self.dic_list[key][1]
+            cmd = '%s %s' % (cmd,key)    
+            print cmd
+            os.system(cmd)
 
     def updateCMGTools(self):
         """Update CMGTools"""
