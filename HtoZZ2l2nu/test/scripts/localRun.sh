@@ -8,7 +8,7 @@ eval `scram r -sh`
 cd ${MYCMSSWDIR}/CMGTools/HtoZZ2l2nu/test
 
 localSrc=$1
-cmsRun zzllvvCleanEvent_cfg.py $localSrc
+cmsRun zzllvvCleanEvent_cfg.py $localSrc $2
 outdir="/castor/cern.ch/user/${MYLETTER}/${ME}/HtoZZ/${localSrc}"
 output="/tmp/evHyp.root"
 rfmkdir $outdir
