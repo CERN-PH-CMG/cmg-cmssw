@@ -145,7 +145,7 @@ def getControlPlots(url) :
 
             #base met kinematics
             themet=evhyp["met"]
-            recomet=ROOT.TLorentzVector(-themet.px(),-themet.py(),0,themet.pt())
+            recomet=ROOT.TLorentzVector(themet.px(),themet.py(),0,themet.pt())
             results[istream+'_met'].Fill(recomet.Pt())
             
             #require MET back-to-back to dilepton
