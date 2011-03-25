@@ -1,5 +1,5 @@
-#ifndef _objectfilters_h_
-#define _objectfilters_h_
+#ifndef objectfilters_h
+#define objectfilters_h
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -16,6 +16,12 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
+
+namespace gen
+{
+  std::map<std::string, std::vector<reco::CandidatePtr> > filter(edm::Handle<edm::View<reco::Candidate> > &hGen, const edm::ParameterSet &iConfig);
+  const reco::Candidate *getFinalStateFor(const reco::Candidate *p);
+}
 
 namespace vertex
 {

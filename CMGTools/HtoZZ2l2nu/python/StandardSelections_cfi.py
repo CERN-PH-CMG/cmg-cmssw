@@ -1,6 +1,12 @@
 import FWCore.ParameterSet.Config as cms
 
 # base values for the vertex selection ------------------------------------------
+BaseGeneratorSelection = cms.PSet( source = cms.InputTag("prunedGen"),
+                                   filterId = cms.int32(25)
+                                   )
+
+
+# base values for the vertex selection ------------------------------------------
 BaseVertexSelection = cms.PSet( source = cms.InputTag("offlinePrimaryVertices"),
                                 maxZ = cms.double(24),
                                 maxRho = cms.double(2.0),
