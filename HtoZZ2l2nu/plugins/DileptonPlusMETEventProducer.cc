@@ -33,7 +33,7 @@ DileptonPlusMETEventProducer::DileptonPlusMETEventProducer(const edm::ParameterS
   produces<std::vector<pat::EventHypothesis> >("selectedEvent");
   produces<reco::VertexCollection>("selectedVertices");
   produces<std::vector<int> >("selectionInfo");
-  std::string objs[]={"Vertices", "Electrons", "Muons", "Dileptons", "Jets", "MET" };
+  std::string objs[]={"Generator", "Vertices", "Electrons", "Muons", "Dileptons", "Jets", "MET" };
   for(size_t iobj=0; iobj<sizeof(objs)/sizeof(string); iobj++)
     objConfig[ objs[iobj] ] = iConfig.getParameter<edm::ParameterSet>( objs[iobj] );
 }
@@ -94,8 +94,6 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
 	  if(eIt->get()== dilepton[0].get() || eIt->get() == dilepton[1].get()) continue;
 	  hyp.add(*eIt,"electron");
 	}
-
-
     }
 
   //add the jets
@@ -109,6 +107,23 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   iEvent.getByLabel(objConfig["MET"].getParameter<edm::InputTag>("source"), hMET);
   CandidatePtr met = hMET->ptrAt(0);
   hyp.add(met, "met");
+
+  //if event is MC filter out the genparticle collection also
+  if(!iEvent.isRealData())
+    {
+      Handle<View<Candidate> > hGen;
+      iEvent.getByLabel(objConfig["Generator"].getParameter<edm::InputTag>("source"), hGen);
+      std::map<std::string,std::vector<CandidatePtr> > genEvent = gen::filter(hGen, objConfig["Generator"]);
+      for(std::map<std::string,std::vector<CandidatePtr> >::iterator it = genEvent.begin();
+	  it != genEvent.end();
+	  it++)
+	{
+	  for(std::vector<CandidatePtr>::iterator itt = it->second.begin();
+	      itt != it->second.end();
+	      itt++)
+	      hyp.add( *itt, it->first );
+	}
+    }
 
   // work done, save results
   auto_ptr<std::vector<pat::EventHypothesis> > hyps(new std::vector<pat::EventHypothesis>() );

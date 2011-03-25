@@ -87,6 +87,35 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &iEvent, const edm::
   for (pat::eventhypothesis::Looper<pat::Jet> jet = h.loopAs<pat::Jet>("jet"); jet; ++jet) {
     cout << "\t jet: " << jet->pt() << ";" << jet->eta() << ";" << jet->phi() << std::endl;
   }
+
+  //if event is MC debug gen level event
+  if(!iEvent.isRealData())
+    {
+      cout << "\t Generator level event " << flush;
+      int igenpart(0);
+      for (pat::eventhypothesis::Looper<reco::GenParticle> genpart = h.loopAs<reco::GenParticle>("genparticle"); genpart; ++genpart) 
+	{
+	  cout << "\t" << genpart->pdgId() << " -> " << flush;  
+
+	  int igenpartdau(0);
+	  char buf[20];
+	  sprintf(buf,"gendaughter_%d",igenpart);
+	  for(pat::eventhypothesis::Looper<reco::GenParticle> genpartdau = h.loopAs<reco::GenParticle>(buf); genpartdau; ++genpartdau)
+	    {
+	      cout << genpartdau->pdgId() << " (" << flush;
+
+	      char buf[20];
+	      sprintf(buf,"gendaughter_%d_%d",igenpart,igenpartdau);
+	      for(pat::eventhypothesis::Looper<reco::GenParticle> genpartgdau = h.loopAs<reco::GenParticle>(buf); genpartgdau; ++genpartgdau)
+		cout << genpartgdau->pdgId() << " " << flush;
+	      
+	      cout << ") " << flush;
+	      igenpartdau++;
+	    }
+	  igenpart++;
+	}
+      cout << endl;
+    }
   
 }
 
