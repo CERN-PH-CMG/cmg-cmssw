@@ -99,8 +99,6 @@ def getControlPlots(url) :
             selPath = selInfo.product()[0]
             selStep = selInfo.product()[1]
 
-            print str(selPath) + ' ' + str(selStep)
-            
             #cutflow up to dilepton selection
             if(selPath==0 or selStep<3) : continue
             istream='mumu'

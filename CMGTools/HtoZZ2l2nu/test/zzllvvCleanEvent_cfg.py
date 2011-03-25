@@ -19,7 +19,19 @@ process.load('CMGTools.HtoZZ2l2nu.CleanEventFilter_cfi')
 process.load('CMGTools.HtoZZ2l2nu.CleanEventAnalyzer_cfi')
 
 process.out = cms.OutputModule("PoolOutputModule",
-                               fileName = cms.untracked.string('/tmp/evHyp.root')
+                               fileName = cms.untracked.string('/tmp/evHyp.root'),
+                               outputCommands = cms.untracked.vstring('drop *',
+                                                                      'keep *_MEtoEDMConverter_*_*',
+                                                                      'keep *_prunedGen_*_*',
+                                                                      'keep *_genEventScale_*_*',
+                                                                      'keep GenRunInfoProduct_*_*_*',
+                                                                      'keep *_genMetTrue_*_*',
+                                                                      'keep *_selectedPat*_*_*',
+                                                                      'keep patMETs_*_*_*',
+                                                                      'keep double*_*_rho_*',
+                                                                      'keep *_tcMet_*_*',
+                                                                      'keep *_pfMet_*_*',
+                                                                      'keep *_cleanEvent_*_*')
                                )
 process.p = cms.Path(process.loadNormalizationCounters*process.cleanEvent*process.cleanEventFilter*process.analysis)
 process.e = cms.EndPath(process.saveNormalizationCounters*process.out)
