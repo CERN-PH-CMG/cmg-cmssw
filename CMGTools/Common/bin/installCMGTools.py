@@ -48,7 +48,7 @@ class InstallCMGTools(object):
     def parseOptions(self):
         """ Accept arguments"""
         parser = OptionParser()
-        parser.add_option("-d", "--dir", type="string", dest="installation_directory", default='~/scratch0/CMGTools',
+        parser.add_option("-d", "--dir", type="string", dest="installation_directory", default='./CMGTools',
             help="write a installation directory, e.g. '--dir ~/scratch0/CMGTools'")
         parser.add_option("-r", "--release",type="string", dest="cmssw_version", default="${CMSSW_VERSION}",
             help="write a CMSSW version, e.g. '--release=${CMSSW_VERSION}'")
