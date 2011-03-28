@@ -297,6 +297,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
         thtml+="<table class=\"sample\"><tr><th>" + tag[0] + " channel </th></tr>"
         for pname in tag[1] :
             thtml+="<tr><td><img src=\"" + pname + ".png\" width=\"500\"></img></td></tr>"
+            thtml+="<tr><td><a href=\"" + pname + ".png\">.png</img> <a href=\"" + pname + ".C\">.C</img></td></tr>"
         thtml+="</table>"
         thtml+=HTMLEND
 
