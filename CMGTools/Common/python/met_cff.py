@@ -2,35 +2,32 @@ import FWCore.ParameterSet.Config as cms
 
 from CMGTools.Common.factories.cmgBaseCandMET_cfi import cmgBaseCandMET
 from CMGTools.Common.factories.cmgBaseMET_cfi import cmgBaseMET
-from CMGTools.Common.skims.cmgPFMETSel_cfi import cmgPFMETSel
+from CMGTools.Common.skims.cmgCandSel_cfi import cmgCandSel
 
 #PFMET from pat::MET
 cmgPFMET = cmgBaseMET.clone()
 cmgPFMET.cfg.inputCollection = "patMETsPFlow"
 
-# MHT from PFJets
-cmgMHTPFJets = cmgBaseCandMET.clone()
-cmgMHTPFJets.cfg.inputCollection = "cmgPFBaseJet" 
+cmgPFMETSel = cmgCandSel.clone( src = 'cmgPFMET' )
+
+
 
 # MHT from PFJets, pt threshold 30
-cmgMHTPFJets30 = cmgMHTPFJets.clone()
+cmgMHTPFJets30 = cmgBaseCandMET.clone()
+cmgMHTPFJets30.cfg.inputCollection = "cmgPFBaseJet"
 cmgMHTPFJets30.cfg.ptThreshold = 30.0
+cmgMHTPFJets30Sel = cmgCandSel.clone( src = 'cmgMHTPFJets30' )
 
-# MHT from PFJets, pt threshold 50
-# cmgMHTPFJets50 = cmgMHTPFJets.clone()
-# cmgMHTPFJets50.cfg.ptThreshold = 50.0
 
-# MHT from CaloJets
-cmgMHTCaloJets = cmgBaseCandMET.clone()
-cmgMHTCaloJets.cfg.inputCollection = "cmgCaloBaseJet" 
+# Calo MET from pat::MET
+cmgCaloMET = cmgBaseMET.clone()
+cmgCaloMET.cfg.inputCollection = "patMETs"
 
 # MHT from CaloJets, pt threshold 30
-cmgMHTCaloJets30 = cmgMHTCaloJets.clone()
+cmgMHTCaloJets30 = cmgBaseCandMET.clone()
+cmgMHTCaloJets30.cfg.inputCollection = "cmgCaloBaseJet"
 cmgMHTCaloJets30.cfg.ptThreshold = 30.0
 
-# MHT from CaloJets, pt threshold 50
-# cmgMHTCaloJets50 = cmgMHTCaloJets.clone()
-# cmgMHTCaloJets50.cfg.ptThreshold = 50.0
 
 # MET from PFCandidates
 cmgMETPFCandidates = cmgBaseCandMET.clone()
@@ -46,13 +43,13 @@ pfMetSequence = cms.Sequence(
     cmgPFMET +                             
     cmgMETPFCandidates +                          
     cmgMHTPFJets30 +
-    # cmgMHTPFJets50 +
-    cmgPFMETSel
+    cmgPFMETSel +
+    cmgMHTPFJets30Sel
     )
 
 caloMetSequence = cms.Sequence(
+    cmgCaloMET + 
     cmgMHTCaloJets30 
-    # cmgMHTCaloJets50 
     )
 
 metSequence = cms.Sequence(
