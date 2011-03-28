@@ -103,12 +103,14 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
     }
   else
     {
+      TH1 *refFrame=0;
+
       //prepare the sum and build the stack
       bool canvasFilled(false);
       TH1 *p=(TH1 *) stack.First();
       if(p)
 	{
-	  TH1 *refFrame=(TH1 *) p->Clone(name+"_frame");
+	  refFrame=(TH1 *) p->Clone(name+"_frame");
 	  formatPlot(refFrame,1,1,1,0,0,true,true,1,1,1);
 	  refFrame->Reset("ICE");  
 	  refFrame->SetTitle(title+"_stackcontour");
@@ -135,7 +137,11 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
 	{
 	  TH1 *p = (TH1 *) key;
 	  if(canvasFilled) p->Draw("histsame");
-	  else { p->Draw("hist"); canvasFilled=true; }
+	  else {
+	    p->Draw("hist"); 
+	    refFrame=p;
+	    canvasFilled=true; 
+	  }
 	}
       
       //draw the data
@@ -144,11 +150,15 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
 	{
 	  TH1 *p = (TH1 *) key;
 	  if(canvasFilled) p->Draw("e1same");
-	  else { p->Draw("e1"); canvasFilled=true; }
+	  else {
+	    p->Draw("e1"); 
+	    refFrame=p;
+	    canvasFilled=true; 
+	  }
 	}
-      
+
       //draw the legend
-      if(canvasFilled) leg->Draw("same");
+      if(canvasFilled)  leg->Draw("same");
     }
 
   c->Modified();

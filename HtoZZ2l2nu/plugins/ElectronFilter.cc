@@ -25,7 +25,6 @@ namespace electron{
         {
 	  reco::CandidatePtr elePtr = hEle->ptrAt(iElec);
 	  const pat::Electron *ele = dynamic_cast<const pat::Electron *>( elePtr.get() );
-	  const reco::GenParticle *gele=ele->genParticle();
 	  bool isEcalDriven(true);
 	  try{
 	    isEcalDriven = ele->ecalDrivenSeed();

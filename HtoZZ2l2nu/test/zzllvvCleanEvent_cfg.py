@@ -4,8 +4,8 @@ process = cms.Process("HtoZZto2l2nu")
 
 from CMGTools.HtoZZ2l2nu.localPatTuples_cff import *
 process.source = cms.Source("PoolSource",
-                            fileNames = getLocalSourceFor('GluGluToHToZZTo2L2NuM400')
-#                            fileNames = cms.untracked.vstring('file:patTuple.root')
+#                            fileNames = getLocalSourceFor('GluGluToHToZZTo2L2NuM400')
+                            fileNames = cms.untracked.vstring('file:patTuple.root')
                             )
 import sys
 if(len(sys.argv)>2 ):
@@ -39,7 +39,8 @@ process.out = cms.OutputModule("PoolOutputModule",
                                                                       'keep double*_*_rho_*',
                                                                       #'keep *_tcMet_*_*',
                                                                       'keep *_pfMet_*_*',
-                                                                      'keep *_cleanEvent_*_*')
+                                                                      'keep *_cleanEvent_*_*'),
+                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') )
                                )
 process.p = cms.Path(process.loadNormalizationCounters*process.cleanEvent*process.cleanEventFilter*process.analysis)
 process.e = cms.EndPath(process.saveNormalizationCounters*process.out)
