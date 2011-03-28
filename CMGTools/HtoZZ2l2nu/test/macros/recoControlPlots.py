@@ -31,7 +31,7 @@ def getControlPlots(url) :
     for istream in streams :
 
         cat=istream
-
+        
         #dilepton control
         results[cat+"_dilepton_mass"]     = formatPlot( ROOT.TH1F(cat+"_dilepton_mass", ";Invariant Mass(l,l') [GeV/c^{2}]; Events", 100, 0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
         results[cat+"_dilepton_sumpt"]    = formatPlot( ROOT.TH1F(cat+"_dilepton_sumpt", ";#Sigma |#vec{p}_{T}| [GeV/c]; Events", 100, 0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
@@ -47,8 +47,9 @@ def getControlPlots(url) :
             results[cat+'_njets'].GetXaxis().SetBinLabel(ibin+1,ilabel)
             results[cat+'_bmult'].GetXaxis().SetBinLabel(ibin+1,ilabel)
         results[cat+'_btags']             = formatPlot( ROOT.TH1F(cat+"_btags",";b tags (TCHE); Jets",100,-0.5,2), 1, 1, 1, 20, 0, True, True, 1,1,1)
-        results[cat+"_met"]               = formatPlot( ROOT.TH1F(cat+"_met", ";#slash{E}_{T} [GeV/c]; Events", 100,  0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
-
+        results[cat+"_met"]               = formatPlot( ROOT.TH1F(cat+"_met", ";#slash{E}_{T} [GeV/c]; Events", 30,  0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        results[cat+"_metsig"]            = formatPlot( ROOT.TH1F(cat+"_metsig", ";#slash{E}_{T} significance; Events", 100,  0.,100.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+        
         #split the analysis according to the jet multiplicity
         for jstream in jetmult :
             subcat=istream+jstream
@@ -57,6 +58,7 @@ def getControlPlots(url) :
             results[subcat+"_dilepton_pt"]       = formatPlot( ROOT.TH1F(subcat+"_dilepton_pt", ";|#Sigma #vec{p}_{T}| [GeV/c]; Events", 100, 0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
             results["met2"+subcat+"_mindphi"]    = formatPlot( ROOT.TH1F("met2"+subcat+"_mindphi", ";min #Delta #phi(#slash{E}_{T},l) [rad]; Events", 100, 0,3.2), 1, 1, 1, 20, 0, True, True, 1,1,1)
             results[subcat+"_met"]               = formatPlot( ROOT.TH1F(subcat+"_met", ";#slash{E}_{T} [GeV/c]; Events", 100,  0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
+            results[subcat+"_metsig"]            = formatPlot( ROOT.TH1F(subcat+"_metsig", ";#slash{E}_{T} significance; Events", 100,  0.,100.), 1, 1, 1, 20, 0, True, True, 1,1,1)
             results[subcat+"_dilepton2met_dphi"] = formatPlot( ROOT.TH1F(subcat+"dilepton2met_dphi", ";#Delta #phi [rad]; Events", 100, 0,3.2), 1, 1, 1, 20, 0, True, True, 1,1,1)
             results[subcat+"_relmet"]            = formatPlot( ROOT.TH1F(subcat+"_relmet", ";#slash{E}_{T,rel} [GeV/c]; Events", 100,  0.,300.), 1, 1, 1, 20, 0, True, True, 1,1,1)
             results[subcat+"_mT"]                = formatPlot( ROOT.TH1F(subcat+"_mT",";Transverse mass(dilepton,MET) [GeV/c^{2}]; Events",100,0,1000), 1, 1, 1, 20, 0, True, True, 1,1,1)
@@ -121,7 +123,7 @@ def getControlPlots(url) :
             results[istream+'_bmult'].Fill(nbjets)
             jetbin=njets
             if(jetbin>2):jetbin=2
-
+            
             #update the selection stream
             substream=istream
             if(njets==0) :    substream = substream+'eq0jets'
@@ -141,14 +143,24 @@ def getControlPlots(url) :
                 ]
             recoDil=lepP[0]+lepP[1]
 
+            results[istream+"_dilepton_mass"].Fill(recoDil.M())
+            results[istream+"_dilepton_sumpt"].Fill(lepP[0].Pt()+lepP[1].Pt())
+            results[istream+"_dilepton_pt"].Fill(recoDil.Pt())
+
             #base met kinematics
             themet=evhyp["met"]
             recomet=ROOT.TLorentzVector(themet.px(),themet.py(),0,themet.pt())
             results[istream+'_met'].Fill(recomet.Pt())
+            #            origMet = themet.originalObject();
+            origMet=None
+            if(origMet!=None) :
+                results[istream+'_metsig'].Fill(orig.significance())
             
             #require MET back-to-back to dilepton
             dphiZ2met=ROOT.TVector2.Phi_mpi_pi(recoDil.Phi()-recomet.Phi())
             results[substream+'_met'].Fill(recomet.Pt())
+            if(origMet!=None) :
+                results[substream+'_metsig'].Fill(orig.significance())
             results[substream+'_dilepton2met_dphi'].Fill(abs(dphiZ2met))
             if(abs(dphiZ2met)<math.pi/2): continue
             
@@ -236,7 +248,11 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
     #output dir
     import getpass
     outdir='/tmp/'+getpass.getuser()+'/'
-      
+
+    plotsToDisplay={}
+    plotsToDisplay['ee events']=[]
+    plotsToDisplay['#mu#mu events']=[]
+    plotsToDisplay['e#mu events']=[]
     setStyle()
     c = getNewCanvas("recolevelc","recolevelc",False)
     c.SetWindowSize(600,600)
@@ -247,17 +263,54 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
         if(len(spimposeLists)>iplot): spimpose=spimposeLists[iplot]
         data=ROOT.TList()
         if(len(dataLists)>iplot): data=dataLists[iplot]
-        leg=showPlots(c,stack,spimpose,data)
-        formatForCmsPublic(c,leg,generalLabel,5)
         pname=''
-        if(stack.At(0) is not None) :      pname=stack.At(0).GetName()
-        elif(spimpose.At(0) is not None) : pname=spimpose.At(0).GetName()
-        elif(data.At(0) is not None) :     pname=data.At(0).GetName()
+        if(stack.At(0) != None) :      pname=stack.At(0).GetName()
+        elif(spimpose.At(0) != None) : pname=spimpose.At(0).GetName()
+        elif(data.At(0) != None) :     pname=data.At(0).GetName()
         if(len(pname)<=0): continue
+
+        chtag='ee events'
+        if(pname.find('mumu')==0): chtag='#mu#mu events'
+        if(pname.find('emu')==0):  chtag='e#mu events'
+        plotsToDisplay[chtag].append(pname)
+        
+        if(pname.find('eq0jets')>0):  chtag += '(= 0 jets)'
+        if(pname.find('eq1jets')>0):  chtag +=' (= 1 jets)'
+        if(pname.find('geq2jets')>0): chtag +=' (#geq 2 jets)'
+
+        plotLabel = generalLabel + '\\' + chtag
+        leg=showPlots(c,stack,spimpose,data)
+        formatForCmsPublic(c,leg,plotLabel,5)
+        
         c.SaveAs(outdir+'/'+pname+'.png')
         c.SaveAs(outdir+'/'+pname+'.C')
         #raw_input('Any key to continue...')
 
+    #create navigator files
+    HTMLSTART="<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"tableFormat.css\"></link></head><body>"
+    HTMLEND="</body></html>"
+    titlehtml=HTMLSTART
+    titlehtml+="<table class=\"sample\"><tr><th>Event selection categories</th></tr>" 
+    itag=0
+    for tag in plotsToDisplay.items() :
+        thtml=HTMLSTART
+        thtml+="<table class=\"sample\"><tr><th>" + tag[0] + " channel </th></tr>"
+        for pname in tag[1] :
+            thtml+="<tr><td><img src=\"" + pname + ".png\" width=\"500\"></img></td></tr>"
+        thtml+="</table>"
+        thtml+=HTMLEND
+
+        titlehtml += "<tr><td><a href=\"cat_" + str(itag) + ".html\">" + tag[0] + "</a></td></tr>" 
+        fileObj = open(outdir+"/cat_" + str(itag) + ".html","w")
+        fileObj.write(thtml)
+        fileObj.close()
+        itag=itag+1
         
+    titlehtml+="</table>"
+    titlehtml+=HTMLEND
+    fileObj = open(outdir+"/index.html","w")
+    fileObj.write(titlehtml)
+    fileObj.close()
+                    
     
     

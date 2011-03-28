@@ -2,7 +2,9 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 # ===============================================================================
 # configuration parameters
-runOnMC=True
+runOnMC=False
+useLocalLumiSelection=False
+applyTrigSequence='ee'
 
 # FIXME: check the GT for JECs
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
@@ -14,16 +16,21 @@ process.options = cms.untracked.PSet(
     )
 
 # =================================================================================
-# input
+# local input
 #
-from CMGTools.HtoZZ2l2nu.localPatTuples_cff import getLocalSourceFor
-#process.source.fileNames=getLocalSourceFor('/castor/cern.ch/cms/store/relval/CMSSW_3_9_5/RelValTTbar/GEN-SIM-RECO/START39_V6-v1/0008/')
+from CMGTools.HtoZZ2l2nu.localPatTuples_cff import fillFromCastor
+process.source.fileNames=fillFromCastor('/castor/cern.ch/cms/store/data/Run2011A/DoubleElectron/RECO/PromptReco-v1/000/161/311')
+if( not runOnMC and useLocalLumiSelection):
+    import PhysicsTools.PythonAnalysis.LumiList as LumiList
+    import FWCore.ParameterSet.Types as CfgTypes
+    myLumis = LumiList.LumiList(filename = 'Data/Cert_161311_161312_7TeV_Collisions2011_JSON.txt').getCMSSWString().split(',')
+    process.source.lumisToProcess = CfgTypes.untracked(CfgTypes.VLuminosityBlockRange())
+    process.source.lumisToProcess.extend(myLumis)
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 # =================================================================================
 # include counters
 #
-process.load("CMGTools.Common.countingSequences_cff")
 process.startCounter = cms.EDProducer("EventCountProducer")
 process.triggerCounter = process.startCounter.clone()
 process.preFilterCounter = process.startCounter.clone()
@@ -35,11 +42,20 @@ process.endCounter = process.startCounter.clone()
 # ==================================================================================
 # prepare the trigger filter
 #
-# from HLTrigger.HLTfilters.hltHighLevel_cfi import *
-# process.trigFilter = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT",
-#                                          HLTPaths = ["HLT_Mu12_v1"])
-# process.trigSequence = cms.Sequence(process.trigFilter*process.triggerCounter)
-
+from HLTrigger.HLTfilters.hltHighLevel_cfi import *
+process.eetrigFilter = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT",
+                                          HLTPaths = ['HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2'])
+process.mumutrigFilter = process.eetrigFilter.clone()
+process.mumutrigFilter.HLTPaths =['HLT_DoubleMu7_v1']
+process.emutrigFilter = process.eetrigFilter.clone()
+process.emutrigFilter.HLTPaths = ['HLT_Mu17_Ele8_CaloIdL_v2','HLT_Mu8_Ele17_CaloIdL_v2']
+process.incEETrigSequence=cms.Sequence(process.eetrigFilter)
+process.excMuMuTrigSequence=cms.Sequence(~process.eetrigFilter*process.mumutrigFilter)
+process.excEmuTrigSequence=cms.Sequence(~process.eetrigFilter*~process.mumutrigFilter*process.emutrigFilter)
+if( not runOnMC ):
+    if(applyTrigSequence=='ee') :  process.trigSequence = cms.Sequence(process.incEETrigSequence*process.triggerCounter)
+    if(applyTrigSequence=='mumu'): process.trigSequence = cms.Sequence(process.excMuMuTrigSequence*process.triggerCounter)
+    if(applyTrigSequence=='emu') : process.trigSequence = cms.Sequence(process.excEmuTrigSequence*process.triggerCounter)
 
 # ==================================================================================
 # run the deterministic annealing vertex
@@ -93,7 +109,12 @@ process.primaryVertexFilter = cms.EDFilter("VertexSelector",
                                            )
 
 process.load('CommonTools/RecoAlgos/HBHENoiseFilterResultProducer_cfi')
-process.preFilter = cms.Sequence( process.noscraping*process.primaryVertexFilter*process.HBHENoiseFilterResultProducer)
+
+if(runOnMC):
+    process.preFilter = cms.Sequence( process.noscraping*process.primaryVertexFilter*process.HBHENoiseFilterResultProducer)
+else :
+    process.preFilter = cms.Sequence( process.trigSequence*process.noscraping*process.primaryVertexFilter*process.HBHENoiseFilterResultProducer)
+
 #process.load('CommonTools/RecoAlgos/HBHENoiseFilter_cfi')
 #process.preFilter = cms.Sequence( process.noscraping*process.primaryVertexFilter*process.HBHENoiseFilter)
 
@@ -157,19 +178,14 @@ process.patTriggerEvent.processName = '*'
 # muons
 #
 process.muonTriggerMatchHLT = cms.EDProducer( 'PATTriggerMatcherDRDPtLessByR',
-    src     = cms.InputTag( 'patMuons' ),
-    matched = cms.InputTag( 'patTrigger' ),
-    andOr          = cms.bool( False ),
-    filterIdsEnum  = cms.vstring( '*' ),
-    filterIds      = cms.vint32( 0 ),
-    filterLabels   = cms.vstring( '*' ),
-    pathNames      = cms.vstring( '*' ),
-    collectionTags = cms.vstring( 'hltL3MuonCandidates' ),
-    maxDPtRel = cms.double( 0.5 ),
-    maxDeltaR = cms.double( 0.1 ),
-    resolveAmbiguities    = cms.bool( True ),
-    resolveByMatchQuality = cms.bool( False )
-)
+                                              src     = cms.InputTag( 'patMuons' ),
+                                              matched = cms.InputTag( 'patTrigger' ),
+                                              matchedCuts = cms.string( 'path( "HLT_*" )' ),
+                                              maxDPtRel = cms.double( 0.5 ),
+                                              maxDeltaR = cms.double( 0.5 ),
+                                              resolveAmbiguities    = cms.bool( True ),        # only one match per trigger object
+                                              resolveByMatchQuality = cms.bool( True )
+                                              )
 process.patMuonsWithTrigger = cms.EDProducer( 'PATTriggerMatchMuonEmbedder',
     src     = cms.InputTag(  'patMuons' ),
     matches = cms.VInputTag('muonTriggerMatchHLT')
@@ -214,19 +230,14 @@ process.muSeq = cms.Sequence(
 # electron selection
 #
 process.eleTriggerMatchHLT = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
-    src     = cms.InputTag( "patElectrons" ),
-    matched = cms.InputTag( "patTrigger" ),
-    andOr          = cms.bool( False ),
-    filterIdsEnum  = cms.vstring( '*' ),
-    filterIds      = cms.vint32( 0 ),
-    filterLabels   = cms.vstring( '*' ),
-    pathNames      = cms.vstring( '*' ),
-    collectionTags = cms.vstring( 'hltL1IsoRecoEcalCandidate', 'hltL1NonIsoRecoEcalCandidate' ),
-    maxDPtRel = cms.double( 0.5 ),
-    maxDeltaR = cms.double( 0.5 ),
-    resolveAmbiguities    = cms.bool( True ),
-    resolveByMatchQuality = cms.bool( True )
-)
+                                             src     = cms.InputTag( "patElectrons" ),
+                                             matched = cms.InputTag( "patTrigger" ),
+                                             matchedCuts = cms.string( 'path( "HLT_*" )' ),
+                                             maxDPtRel = cms.double( 0.5 ),
+                                             maxDeltaR = cms.double( 0.5 ),
+                                             resolveAmbiguities    = cms.bool( True ),        # only one match per trigger object
+                                             resolveByMatchQuality = cms.bool( True )
+                                             )
 process.eleIdTriggerMatchHLT = process.eleTriggerMatchHLT.clone(collectionTags = cms.vstring('hltPixelMatchElectronsL1Iso', 'hltPixelMatchElectronsL1NonIso') )
 process.patElectronsWithTrigger = cms.EDProducer( "PATTriggerMatchElectronEmbedder",
     src     = cms.InputTag(  "patElectrons" ),
@@ -361,6 +372,7 @@ process.patJetCorrFactors.levels = fjJECLevels
 process.patJetCorrFactors.rho = cms.InputTag('kt6PFJets','rho')
 
 from PhysicsTools.PatAlgos.tools.jetTools import *
+if(not runOnMC):  removeMCMatching(process,['All'])
 switchJetCollection(process,cms.InputTag('ak5PFJets'),
                     doJTA        = True,
                     doBTagging   = True,
@@ -390,7 +402,6 @@ from PhysicsTools.PatAlgos.tools.metTools import *
 addTcMET(process, 'TC')
 addPfMET(process, 'PF')
 if(not runOnMC ):
-    removeMCMatching(process,['All'])
     process.patJetsAK5Offset.addGenPartonMatch = False
     process.patJetsAK5Offset.addGenJetMatch = False
     process.patJetsAK5Offset.addPartonJetMatch = False
@@ -402,17 +413,15 @@ if(not runOnMC ):
 #
 process.startSeq = cms.Sequence(
     process.startCounter*
-    process.startupSequence*
     process.runVertexing*
     process.preFilter*
     process.preFilterCounter*
-    # process.trigSequence*
     process.fjSequence
     )
 process.eePath = cms.Path(process.startSeq * process.elSeq + process.electronCandSequence + process.patDefaultSequence + process.eeCounter)
 process.mumuPath = cms.Path(process.startSeq * process.muSeq + process.muonCandSequence + process.patDefaultSequence + process.mumuCounter)
 process.emuPath = cms.Path(process.startSeq * process.emuCandSequence + process.patDefaultSequence + process.emuCounter)
-process.e = cms.EndPath( process.endCounter*process.finalSequence*process.saveHistosInRunInfo*process.out )
+process.e = cms.EndPath( process.endCounter*process.out )
 process.schedule = cms.Schedule( process.eePath, process.mumuPath, process.emuPath,process.e )
 
 # ======================================================================================

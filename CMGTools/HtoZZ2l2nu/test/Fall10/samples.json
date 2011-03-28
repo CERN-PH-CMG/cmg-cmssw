@@ -1,3 +1,4 @@
+
 {
     "proc" : [
 	{
@@ -33,7 +34,7 @@
 	{
 	"tag" : "ZZ",
         "isdata" : false,
-	"color":"kWhite",
+	"color":"10",
         "lcolor":1,
 	"marker":1,
 	"data" : [
@@ -65,7 +66,7 @@
              {
  	       "dtag":"TToBLNuschannel",
 	       "dset":"/TToBLNu_TuneZ2_s-channel_7TeV-madgraph/Fall10-START38_V12-v1/GEN-SIM-RECO",	
-               "dir":"/castor/cern.ch/user/p/psilva/TToBLNuschannel",
+               "dir":"/castor/cern.ch/user/p/psilva/HtoZZ/TToBLNuschannel",
                "xsec":4.21
              }
            ]
@@ -188,10 +189,16 @@
   	   "marker":20,
            "data":[
                 {
-                  "dir":"/castor/cern.ch/user/p/psilva/Run2010A_7Jan"
+		  "dtag":"DoubleElectron",
+                  "dir":"/castor/cern.ch/user/p/psilva/HtoZZ/Collisions2011_DoubleElectron"
                 },
                 {
-                  "dir":"Run2010B_7Jan"
+		  "dtag":"DoubleMu",
+                  "dir":"/castor/cern.ch/user/p/psilva/HtoZZ/Collisions2011_DoubleMuon"
+                },
+                {
+		  "dtag":"MuEG",
+                  "dir":"/castor/cern.ch/user/p/psilva/HtoZZ/Collisions2011_MuEG"
                 }
              ]
 	}

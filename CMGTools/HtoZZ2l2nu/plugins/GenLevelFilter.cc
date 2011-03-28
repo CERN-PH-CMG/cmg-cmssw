@@ -43,7 +43,7 @@ namespace gen{
 		      {
 			if(daughter != particles[ipart].get() ) continue;
 			char buf[20];
-			sprintf(buf,"genmother_%d",ipart);
+			sprintf(buf,"genmother_%d",int(ipart));
 			if( mothers.find(buf)== mothers.end() ) mothers[buf]=std::vector<reco::CandidatePtr>();
 			mothers[buf].push_back(genPtr);
 			foundParticleInDaughters=true;
@@ -64,7 +64,7 @@ namespace gen{
 			if(mother != particles[ipart].get() ) continue;
 			if(genPtr->pdgId() == particles[ipart]->pdgId()) continue;
 			char buf[20];
-			sprintf(buf,"gendaughter_%d",ipart);
+			sprintf(buf,"gendaughter_%d",int(ipart));
 			if( daughters.find(buf)== daughters.end() ) daughters[buf]=std::vector<reco::CandidatePtr>();
 			daughters[buf].push_back(genPtr);
 			foundParticleInMothers=true;
@@ -104,7 +104,7 @@ namespace gen{
 				if(dR>0.1) continue;
 				
 				char buf[20];
-				sprintf(buf,"_%d",ipart);
+				sprintf(buf,"_%d",int(ipart));
 				std::string thetag=tag + buf;
 				if( finalstates.find(thetag)== finalstates.end() ) finalstates[thetag]=std::vector<reco::CandidatePtr>();
 				finalstates[thetag].push_back(genPtr);
