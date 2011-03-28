@@ -4,44 +4,6 @@ cmgMuonHistograms = cms.EDAnalyzer(
     "CmgMuonHistograms",
     inputCollection = cms.InputTag("cmgMuon"),
     histograms = cms.untracked.PSet(
-       pt = cms.untracked.VPSet(
-         cms.untracked.PSet( 
-             var = cms.untracked.string('pt()'),
-             nbins = cms.untracked.int32(100),
-             low = cms.untracked.double(0),
-             high = cms.untracked.double(200)
-             )
-         ),
-       eta = cms.untracked.VPSet(
-          cms.untracked.PSet( 
-             var = cms.untracked.string('eta()'),
-             nbins = cms.untracked.int32(50),
-             low = cms.untracked.double(-3.),
-             high = cms.untracked.double(3.)
-             )
-          ),
-       phi = cms.untracked.VPSet(
-          cms.untracked.PSet( 
-             var = cms.untracked.string('phi()'),
-             nbins = cms.untracked.int32(50),
-             low = cms.untracked.double(-3.15),
-             high = cms.untracked.double(3.15)
-             )
-          ),
-       pt_eta = cms.untracked.VPSet(
-          cms.untracked.PSet( 
-             var = cms.untracked.string('pt()'),
-             low = cms.untracked.double(0),
-             high = cms.untracked.double(200),
-             nbins = cms.untracked.int32(50)
-             ),
-          cms.untracked.PSet( 
-             var = cms.untracked.string('abs(eta())'),
-             low = cms.untracked.double(0),
-             high = cms.untracked.double(2.5),
-             nbins = cms.untracked.int32(10)
-             )
-          ),
        numberOfValidTrackerHits = cms.untracked.VPSet(
           cms.untracked.PSet( 
              var = cms.untracked.string('numberOfValidTrackerHits()'),
@@ -88,7 +50,7 @@ cmgMuonHistograms = cms.EDAnalyzer(
              var = cms.untracked.string('abs(dxy())'),
              low = cms.untracked.double(0),
              high = cms.untracked.double(1),
-             nbins = cms.untracked.int32(20)
+             nbins = cms.untracked.int32(100)
              )
           ),
        dz = cms.untracked.VPSet(
@@ -96,7 +58,7 @@ cmgMuonHistograms = cms.EDAnalyzer(
              var = cms.untracked.string('abs(dz())'),
              low = cms.untracked.double(0),
              high = cms.untracked.double(1),
-             nbins = cms.untracked.int32(20)
+             nbins = cms.untracked.int32(100)
              )
           ),
        absIso = cms.untracked.VPSet(
@@ -104,7 +66,7 @@ cmgMuonHistograms = cms.EDAnalyzer(
              var = cms.untracked.string('absIso()'),
              low = cms.untracked.double(0),
              high = cms.untracked.double(50),
-             nbins = cms.untracked.int32(25)
+             nbins = cms.untracked.int32(100)
              )
           ),
        relIso = cms.untracked.VPSet(
@@ -112,22 +74,8 @@ cmgMuonHistograms = cms.EDAnalyzer(
              var = cms.untracked.string('relIso()'),
              low = cms.untracked.double(0),
              high = cms.untracked.double(2),
-             nbins = cms.untracked.int32(20)
+             nbins = cms.untracked.int32(100)
              )
           ),
-       absIso_pt = cms.untracked.VPSet(
-          cms.untracked.PSet( 
-             var = cms.untracked.string('absIso()'),
-             low = cms.untracked.double(0),
-             high = cms.untracked.double(2),
-             nbins = cms.untracked.int32(5)
-             ),
-          cms.untracked.PSet( 
-             var = cms.untracked.string('pt()'),
-             low = cms.untracked.double(0),
-             high = cms.untracked.double(200),
-             nbins = cms.untracked.int32(100)
-             ),
-          ),           
        )
-)
+    )

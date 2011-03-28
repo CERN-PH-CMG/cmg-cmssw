@@ -11,7 +11,7 @@ from CMGTools.Common.histogram_cff import *
 
 from CMGTools.Common.cutsummary_cff import *
 
-analysis = cms.Sequence(
+analysisSequence = cms.Sequence(
     runInfoAccounting +
     muonSequence +
     electronSequence + 
