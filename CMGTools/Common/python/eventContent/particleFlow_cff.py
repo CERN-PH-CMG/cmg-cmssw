@@ -16,7 +16,7 @@ particleFlowMET = cms.untracked.vstring(
 
 # to be added to the output module if needed
 particleFlowMHT = cms.untracked.vstring(
-    'keep  *_cmgMHTPFJets*_*_*'
+    'keep  *_cmgMHTPFJets_*_*'
     )
 
 particleFlowMuons = cms.untracked.vstring(
