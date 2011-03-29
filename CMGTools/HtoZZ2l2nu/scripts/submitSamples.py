@@ -26,6 +26,8 @@ for proc in procList :
         for d in data :
             tag = d['dtag']
             files=getLocalSourceFor( tag )
+            print tag
+            print files
             if(files is None):continue
             nfiles=len(getLocalSourceFor( tag ) )
             njobs=nfiles/fperjob+1
