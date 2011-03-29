@@ -1,0 +1,205 @@
+{
+    "proc" : [
+	{
+	"tag" : "WW",
+        "isdata" : false,
+	"color":"kYellow-10",
+        "lcolor":1,
+	"marker":1,
+	"data" : [
+	     {	
+		"dtag":"WWtoAnything_Spring11",
+		"dset":"/WWtoAnything_TuneZ2_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+		"dir" :"/castor/cern.ch/user/p/psilva/Dileptons/WWtoAnything_Spring11",
+		"xsec":28.0
+	     }
+	]
+    	},
+	{
+	"tag" : "WZ",
+        "isdata" : false,
+	"color":"kYellow-8",
+        "lcolor":1,
+	"marker":1,
+	"data" : [
+	     {	
+		"dtag":"WZtoAnything_Spring11",
+		"dset":"/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+		"dir" :"/castor/cern.ch/user/p/psilva/Dileptons/WZtoAnything_Spring11",
+		"xsec":10.4
+	     }
+	]
+    	},
+	{
+	"tag" : "ZZ",
+        "isdata" : false,
+	"color":"10",
+        "lcolor":1,
+	"marker":1,
+	"data" : [
+	     {	
+		"dtag":"ZZtoAnything_Spring11",
+		"dset":"/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+		"dir" :"/castor/cern.ch/user/p/psilva/Dileptons/ZZtoAnything_Spring11",
+		"xsec":5.9
+	     }
+	]
+    	},
+	{
+	"tag":"Single top",
+        "isdata":false,
+        "color":"kMagenta",
+        "data":[
+             {
+ 	       "dtag":"TToBLNutWchannel_Spring11",
+	       "dset":"/TToBLNu_TuneZ2_tW-channel_7TeV-madgraph/Fall10-START38_V12-v2/GEN-SIM-RECO",
+               "dir":"/castor/cern.ch/user/p/psilva/Dileptons/TToBLNutWchannel_Spring11",
+               "xsec":10.6
+             },
+             {
+ 	       "dtag":"TToBLNutchannel_Spring11",
+	       "dset":"/TToBLNu_TuneZ2_t-channel_7TeV-madgraph/Fall10-START38_V12-v2/GEN-SIM-RECO",
+               "dir":"/castor/cern.ch/user/p/psilva/Dileptons/TToBLNutchanne_Spring11l",
+               "xsec":64.6
+             },
+             {
+ 	       "dtag":"TToBLNuschannel_Spring11",
+	       "dset":"/TToBLNu_TuneZ2_s-channel_7TeV-madgraph/Spring11-PU_S1_START311_V1G1-v1/AODSIM",	
+               "dir":"/castor/cern.ch/user/p/psilva/Dileptons/TToBLNuschannel_Spring11",
+               "xsec":4.21
+             }
+           ]
+	},
+	{
+	 "tag":"t#bar{t}",
+         "isdata":false,
+         "color":"kRed+1",
+         "data":[
+		{
+ 	        "dtag":"TTJetsmadgraph_Spring11",
+		"dset":"/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall10-START38_V12-v2/GEN-SIM-RECO",
+                "dir":"/castor/cern.ch/user/p/psilva/Dileptons/TTJetsmadgraph_Spring11",
+                "xsec":157.7
+                }
+	  ]
+	},
+	{
+	 "tag":"W+jets",
+         "isdata":false,
+         "color":"kGreen-3",
+         "data":[
+		{
+		 "dtag":"WJetsToLNu_Spring11",
+                 "dset":"/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+                 "dir":"/castor/cern.ch/user/p/psilva/Dileptons/WJetsToLNu_Spring11",
+                 "xsec":31314
+                }
+	 ]
+	},
+	{
+	 "tag":"Z/#gamma^{*}+jets#rightarrow ll",
+         "isdata":false,
+         "color":"kAzure-2",
+         "data":[
+	      {
+               "dtag":"DYToEEM20_Spring11",
+	       "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall10-START38_V12-v3/GEN-SIM-RECO",
+               "dir":"/castor/cern.ch/user/p/psilva/Dileptons/DYToEEM20_Spring11",
+               "xsec":1016
+              },
+	      {
+               "dtag":"DYToMuMuM20_Spring11",
+	       "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall10-START38_V12-v3/GEN-SIM-RECO",
+               "dir":"/castor/cern.ch/user/p/psilva/Dileptons/DYToMuMuM20_Spring11",
+               "xsec":1016
+              }
+	    ]
+	},
+	{
+	 "tag":"Z/#gamma^{*}+jets #rightarrow #tau#tau",
+         "isdata":false,
+         "color":"kAzure+8",
+         "data":[
+	      {
+               "dtag":"DYToTauTauM20_Spring11",
+	       "dset":"",
+               "dir":"/castor/cern.ch/user/p/psilva/Dileptons/DYToTauTauM20_Spring11",
+               "xsec":1016
+              }
+	    ]
+	},
+	{
+	 "tag":"QCD",
+         "isdata":false,
+         "color":"kYellow",
+         "data":[
+		{
+		  "dtag":"tdb",	
+		  "dset":"",
+                  "dir":"",
+                  "xsec":1,
+		  "br":1
+                }
+	   ]	
+	},
+	{
+          "tag":"gg #rightarrow H(400) #rightarrow 2l2#nu x10",
+          "isdata":false,
+          "spimpose":true,
+          "color":"kBlue+4",
+          "lwidth":2,
+          "fill":0,
+          "marker":1,
+          "data":[
+                 {
+                 "dtag":"GluGluToHToZZTo2L2NuM400_Spring11",
+                 "dset":"/GluGluToHToZZTo2L2Nu_M-400_7TeV-powheg-pythia6/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+                 "dir":"/castor/cern.ch/user/p/psilva/Dileptons/GluGluToHToZZTo2L2NuM400_Spring11",
+                 "xsec":2.035,
+                 "br":0.0118,
+                 "sfactor":10
+                 }
+           ]
+        },
+	{
+          "tag":"gg #rightarrow H(200) #rightarrow 2l2#nu x10",
+          "isdata":false,
+	  "spimpose":true,
+          "color":"kBlue",
+	  "lwidth":2,
+	  "fill":0,
+	  "marker":1,	
+          "data":[
+                 {
+		 "dtag":"GluGluToHToZZTo2L2NuM200_Spring11",
+		 "dset":"/GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+                 "dir":"/castor/cern.ch/user/p/psilva/Dileptons/GluGluToHToZZTo2L2NuM200_Spring11",
+		 "xsec":5.249,
+		 "br":0.011031,
+		 "sfactor":10
+                 }
+           ]
+	},
+	{
+           "tag":"data",
+           "isdata":true,
+           "color":1,
+	   "fill":0,
+  	   "marker":20,
+           "data":[
+                {
+		  "dtag":"Collisions2011_DoubleElectron",
+                  "dir":"/castor/cern.ch/user/p/psilva/Dileptons/Collisions2011_DoubleElectron"
+                },
+                {
+		  "dtag":"Collisions2011_DoubleMuon",
+                  "dir":"/castor/cern.ch/user/p/psilva/Dileptons/Collisions2011_DoubleMuon"
+                },
+                {
+		  "dtag":"Collisions2011_MuEG",
+                  "dir":"/castor/cern.ch/user/p/psilva/Dileptons/Collisions2011_MuEG"
+                }
+             ]
+	}
+    ]	
+}
