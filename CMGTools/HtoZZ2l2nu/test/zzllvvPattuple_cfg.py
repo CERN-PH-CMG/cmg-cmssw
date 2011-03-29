@@ -2,7 +2,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 # ===============================================================================
 # configuration parameters
-runOnMC=False
+runOnMC=True
 useLocalLumiSelection=False
 applyTrigSequence='ee'
 
@@ -92,6 +92,11 @@ process.offlinePrimaryVerticesDA = cms.EDProducer("PrimaryVertexProducer",
     )
 )
 process.runVertexing = cms.Sequence( process.offlinePrimaryVerticesDA )
+# Tracks filtered
+process.goodTracks = cms.EDFilter("TrackSelector",
+                                  src = cms.InputTag("generalTracks"),
+                                  cut = cms.string('pt > 1.0 && abs(eta)<2.4 && normalizedChi2<5 && abs(d0)<2 && abs(dz)<20')
+                                  )
 
 
 # ==================================================================================
@@ -111,9 +116,9 @@ process.primaryVertexFilter = cms.EDFilter("VertexSelector",
 process.load('CommonTools/RecoAlgos/HBHENoiseFilterResultProducer_cfi')
 
 if(runOnMC):
-    process.preFilter = cms.Sequence( process.noscraping*process.primaryVertexFilter*process.HBHENoiseFilterResultProducer)
+    process.preFilter = cms.Sequence( process.noscraping*process.primaryVertexFilter*process.HBHENoiseFilterResultProducer*process.goodTracks)
 else :
-    process.preFilter = cms.Sequence( process.trigSequence*process.noscraping*process.primaryVertexFilter*process.HBHENoiseFilterResultProducer)
+    process.preFilter = cms.Sequence( process.trigSequence*process.noscraping*process.primaryVertexFilter*process.HBHENoiseFilterResultProducer*process.goodTracks)
 
 #process.load('CommonTools/RecoAlgos/HBHENoiseFilter_cfi')
 #process.preFilter = cms.Sequence( process.noscraping*process.primaryVertexFilter*process.HBHENoiseFilter)
@@ -454,6 +459,7 @@ process.out.outputCommands = cms.untracked.vstring('drop *',
                                                    'keep *_offlinePrimaryVerticesDA_*_*',
                                                    'keep *_offlinePrimaryVerticesWithBS_*_*',
                                                    'keep *_offlineBeamSpot_*_*',
+                                                   'keep *_goodTracks_*_*',
                                                    ###### Trigger
                                                    #'keep *_hltTriggerSummaryAOD_*_*',
                                                    'keep *_TriggerResults_*_*',
