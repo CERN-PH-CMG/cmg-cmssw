@@ -8,16 +8,19 @@ process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring('file:patTuple.root')
                             )
 import sys
+fout='evHyp.root'
 if(len(sys.argv)>2 ):
     localFileNames = getLocalSourceFor( sys.argv[2] )
 
     ffile=0
     if(len(sys.argv)>3 ):
         ffile = int( sys.argv[3] )
+        fout ='evHyp_' + ffile + '.root'
 
     fstep=len(localFileNames)-ffile
     if(len(sys.argv)>4 ):
         fstep = int( sys.argv[4] )
+        fout ='evHyp_' + ffile + '_' + str(fstep) + '.root'
         if(ffile+fstep>len(localFileNames)) : fstep=len(localFileNames)-ffile
 
     process.source.fileNames = cms.untracked.vstring()
@@ -33,7 +36,7 @@ process.load('CMGTools.HtoZZ2l2nu.CleanEventFilter_cfi')
 process.load('CMGTools.HtoZZ2l2nu.CleanEventAnalyzer_cfi')
 
 process.out = cms.OutputModule("PoolOutputModule",
-                               fileName = cms.untracked.string('/tmp/evHyp.root'),
+                               fileName = cms.untracked.string('/tmp/'+fout),
                                outputCommands = cms.untracked.vstring('drop *',
                                                                       'keep *_MEtoEDMConverter_*_*',
                                                                       'keep *_prunedGen_*_*',

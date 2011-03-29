@@ -14,6 +14,14 @@ step=$3
 cmsRun zzllvvCleanEvent_cfg.py $localSrc $ffile $step
 outdir="/castor/cern.ch/user/${MYLETTER}/${ME}/HtoZZ/${localSrc}"
 output="/tmp/evHyp.root"
+if [ -z $ffile ]
+then
+    output="/tmp/evHyp_${ffile}.root"
+fi
+if [ -z $step ]
+then
+    output="/tmp/evHyp_${ffile}_${step}.root"
+fi
 
 if [ -e "$output" ]
 then
@@ -23,5 +31,5 @@ then
     rm $outmon
     rfdir $outdir
 else
-    echo "*** Nothing done: output not found ***"
+    echo "*** Nothing done: output $output was not found ***"
 fi
