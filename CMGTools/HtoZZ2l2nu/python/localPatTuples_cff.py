@@ -18,27 +18,33 @@ def fillFromCastor(dir):
 selects from a local source
 """
 def getLocalSourceFor( theLocalSrc='GluGluToH200ToZZTo2L2Nu') :
-    #Fall10
-    if( theLocalSrc=='GluGluToHToWWTo2L2NuM200' ) : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/GluGluToHToWWTo2L2Nu_M-200/GluGluToHToWWTo2L2Nu_M-200') 
-    if( theLocalSrc=='GluGluToHToWWTo2L2NuM400' ) : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/GluGluToHToWWTo2L2Nu_M-400/GluGluToHToWWTo2L2Nu_M-400')
-    if( theLocalSrc=='GluGluToHToZZTo2L2NuM200' ) : return  fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/GluGluToHToZZTo2L2Nu_M-200/GluGluToHToZZTo2L2Nu_M-200')
-    if( theLocalSrc=='GluGluToHToZZTo2L2NuM400' ) : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/GluGluToHToZZTo2L2Nu_M-400/GluGluToHToZZTo2L2Nu_M-400')
-    if( theLocalSrc=='GluGluToHToZZTo4LM200' )    : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/GluGluToHToZZTo4L_M-200/GluGluToHToZZTo4L_M-200')
-    if( theLocalSrc=='GluGluToHToZZTo4LM400' )    : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/GluGluToHToZZTo4L_M-400/GluGluToHToZZTo4L_M-400') 
-    if( theLocalSrc=='VBF_HToWWTo2L2NuM200' )     : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/VBF_HToWWTo2L2Nu_M-200/VBF_HToWWTo2L2Nu_M-200')
-    if( theLocalSrc=='VBF_HToWWTo2L2NuM400' )     : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/VBF_HToWWTo2L2Nu_M-400/VBF_HToWWTo2L2Nu_M-400')
-    if( theLocalSrc=='VBF_ToHToZZTo4LM200' )      : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/VBF_ToHToZZTo4L_M-200/VBF_ToHToZZTo4L_M-200')
-    if( theLocalSrc=='DYToEEM20' )                : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/DYToEE_M-20/DYToEE_M-20')
-    if( theLocalSrc=='DYToMuMuM20' )              : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/DYToMuMu_M-20/DYToMuMu_M-20')
-    if( theLocalSrc=='DYToTauTauM20' )            : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/DYToTauTau_M-20/DYToTauTau_M-20')
-    if( theLocalSrc=='TTJetsmadgraph' )           : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/TTJets_madgraph/TTJets_madgraph')
-    if( theLocalSrc=='TToBLNuschannel' )          : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/TToBLNu_s-channel/TToBLNu_s-channel')
-    if( theLocalSrc=='TToBLNutchannel' )          : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/TToBLNu_t-channel/TToBLNu_t-channel')
-    if( theLocalSrc=='TToBLNutWchannel' )         : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/TToBLNu_tW-channel/TToBLNu_tW-channel')
-    if( theLocalSrc=='WJetsToLNu' )               : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/WJetsToLNu/WJetsToLNu')
-    if( theLocalSrc=='WWtoAnything' )             : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/WWtoAnything/WWtoAnything')
-    if( theLocalSrc=='WZtoAnything' )             : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/WZtoAnything/WZtoAnything')
-    if( theLocalSrc=='ZZtoAnything' )             : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/ZZtoAnything/ZZtoAnything')
+
+    dtag=theLocalSrc.split(':')
+    theLocalSrc=dtag[0]
+    prod=''
+    if(len(dtag)>1):prod='_'+dtag[1]
+             
+    #Fall10/Spring11
+    if( theLocalSrc=='GluGluToHToWWTo2L2NuM200'+prod ) : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/GluGluToHToWWTo2L2Nu_M-200/GluGluToHToWWTo2L2Nu_M-200'+prod) 
+    if( theLocalSrc=='GluGluToHToWWTo2L2NuM400'+prod ) : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/GluGluToHToWWTo2L2Nu_M-400/GluGluToHToWWTo2L2Nu_M-400'+prod)
+    if( theLocalSrc=='GluGluToHToZZTo2L2NuM200'+prod ) : return  fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/GluGluToHToZZTo2L2Nu_M-200/GluGluToHToZZTo2L2Nu_M-200'+prod)
+    if( theLocalSrc=='GluGluToHToZZTo2L2NuM400'+prod ) : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/GluGluToHToZZTo2L2Nu_M-400/GluGluToHToZZTo2L2Nu_M-400'+prod)
+    if( theLocalSrc=='GluGluToHToZZTo4LM200'+prod )    : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/GluGluToHToZZTo4L_M-200/GluGluToHToZZTo4L_M-200'+prod)
+    if( theLocalSrc=='GluGluToHToZZTo4LM400'+prod )    : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/GluGluToHToZZTo4L_M-400/GluGluToHToZZTo4L_M-400'+prod) 
+    if( theLocalSrc=='VBF_HToWWTo2L2NuM200'+prod )     : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/VBF_HToWWTo2L2Nu_M-200/VBF_HToWWTo2L2Nu_M-200'+prod)
+    if( theLocalSrc=='VBF_HToWWTo2L2NuM400'+prod )     : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/VBF_HToWWTo2L2Nu_M-400/VBF_HToWWTo2L2Nu_M-400'+prod)
+    if( theLocalSrc=='VBF_ToHToZZTo4LM200'+prod )      : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/VBF_ToHToZZTo4L_M-200/VBF_ToHToZZTo4L_M-200'+prod)
+    if( theLocalSrc=='DYToEEM20'+prod )                : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/DYToEE_M-20/DYToEE_M-20'+prod)
+    if( theLocalSrc=='DYToMuMuM20'+prod )              : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/DYToMuMu_M-20/DYToMuMu_M-20'+prod)
+    if( theLocalSrc=='DYToTauTauM20'+prod )            : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/DYToTauTau_M-20/DYToTauTau_M-20'+prod)
+    if( theLocalSrc=='TTJetsmadgraph'+prod )           : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/TTJets_madgraph/TTJets_madgraph'+prod)
+    if( theLocalSrc=='TToBLNuschannel'+prod )          : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/TToBLNu_s-channel/TToBLNu_s-channel'+prod)
+    if( theLocalSrc=='TToBLNutchannel'+prod )          : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/TToBLNu_t-channel/TToBLNu_t-channel'+prod)
+    if( theLocalSrc=='TToBLNutWchannel'+prod )         : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/TToBLNu_tW-channel/TToBLNu_tW-channel'+prod)
+    if( theLocalSrc=='WJetsToLNu'+prod )               : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/WJetsToLNu/WJetsToLNu'+prod)
+    if( theLocalSrc=='WWtoAnything'+prod )             : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/WWtoAnything/WWtoAnything'+prod)
+    if( theLocalSrc=='WZtoAnything'+prod )             : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/WZtoAnything/WZtoAnything'+prod)
+    if( theLocalSrc=='ZZtoAnything'+prod )             : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/ZZtoAnything/ZZtoAnything'+prod)
 
     #Winter10
     if( theLocalSrc=='DYJetsToLL_PU2010' )        : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/cerminar/ZZllvv_sel3/DYJetsToLL_PU2010') 
@@ -54,9 +60,9 @@ def getLocalSourceFor( theLocalSrc='GluGluToH200ToZZTo2L2Nu') :
     if( theLocalSrc=='ZZtoAnything_FlatPU')       : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/cerminar/ZZllvv_sel3/ZZtoAnything_FlatPU')
 
     #data
-    if( theLocalSrc=='Collisions2011_DoubleMuon' ) : return fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/Collisions2011/DoubleMuon')
-    if( theLocalSrc=='Collisions2011_DoubleElectron' ) : return fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/Collisions2011/DoubleElectron')
-    if( theLocalSrc=='Collisions2011_MuEG' ) : return fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/Collisions2011/MuEG')
+    if( theLocalSrc=='Collisions2011_DoubleMuon' ) : return fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/Collisions2011/DoubleMuon_v2')
+    if( theLocalSrc=='Collisions2011_DoubleElectron' ) : return fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/Collisions2011/DoubleElectron_v2')
+    if( theLocalSrc=='Collisions2011_MuEG' ) : return fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/Collisions2011/MuEG_v2')
 
 
         

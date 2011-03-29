@@ -45,8 +45,8 @@ BaseJetSelection = cms.PSet( source = cms.InputTag("selectedPatJets"),
                              )
 
 # base values for the dilepton selection ------------------------------------------
-BaseDileptonSelection = cms.PSet( minDileptonMass = cms.double(71),
-                                  maxDileptonMass = cms.double(111)
+BaseDileptonSelection = cms.PSet( minDileptonMass = cms.double(0),
+                                  maxDileptonMass = cms.double(7000)
                                   )
 
 # base values for met selection -----------------------------------------------------

@@ -9,11 +9,19 @@ eval `scram r -sh`
 cd ${MYCMSSWDIR}/CMGTools/HtoZZ2l2nu/test
 
 localSrc=$1
-cmsRun zzllvvCleanEvent_cfg.py $localSrc $2
+ffile=$2
+step=$3
+cmsRun zzllvvCleanEvent_cfg.py $localSrc $ffile $step
 outdir="/castor/cern.ch/user/${MYLETTER}/${ME}/HtoZZ/${localSrc}"
 output="/tmp/evHyp.root"
-rfmkdir $outdir
-rfcp $output $outdir/
-rm $output
-rm $outmon
-rfdir $outdir
+
+if [ -e "$output" ]
+then
+    rfmkdir $outdir
+    rfcp $output $outdir/
+    rm $output
+    rm $outmon
+    rfdir $outdir
+else
+    echo "*** Nothing done: output not found ***"
+fi

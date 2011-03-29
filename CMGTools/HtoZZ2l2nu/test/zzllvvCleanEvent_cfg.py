@@ -9,15 +9,21 @@ process.source = cms.Source("PoolSource",
                             )
 import sys
 if(len(sys.argv)>2 ):
-    process.source.fileNames = getLocalSourceFor( sys.argv[2] )
+    localFileNames = getLocalSourceFor( sys.argv[2] )
+
+    ffile=0
     if(len(sys.argv)>3 ):
-        maxfiles = int( sys.argv[3] )
-        print maxfiles
-        print len(process.source.fileNames)
-        if(maxfiles<len(process.source.fileNames)) :
-            for i in xrange(maxfiles,len(process.source.fileNames) ) :
-                process.source.fileNames.pop()
-print process.source.fileNames    
+        ffile = int( sys.argv[3] )
+
+    fstep=len(localFileNames)-ffile
+    if(len(sys.argv)>4 ):
+        fstep = int( sys.argv[4] )
+        if(ffile+fstep>len(localFileNames)) : fstep=len(localFileNames)-ffile
+
+    process.source.fileNames = cms.untracked.vstring()
+    for i in xrange(ffile,ffile+fstep) :
+        process.source.fileNames.extend( [ localFileNames[i] ] )
+
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
@@ -37,6 +43,7 @@ process.out = cms.OutputModule("PoolOutputModule",
                                                                       'keep *_selectedPat*_*_*',
                                                                       'keep patMETs_*_*_*',
                                                                       'keep double*_*_rho_*',
+                                                                      'keep *_goodTracks_*_*',
                                                                       #'keep *_tcMet_*_*',
                                                                       'keep *_pfMet_*_*',
                                                                       'keep *_cleanEvent_*_*'),
