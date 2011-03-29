@@ -15,12 +15,12 @@ if(len(sys.argv)>2 ):
     ffile=0
     if(len(sys.argv)>3 ):
         ffile = int( sys.argv[3] )
-        fout ='evHyp_' + ffile + '.root'
+        fout ='evHyp_' + str(ffile) + '.root'
 
     fstep=len(localFileNames)-ffile
     if(len(sys.argv)>4 ):
         fstep = int( sys.argv[4] )
-        fout ='evHyp_' + ffile + '_' + str(fstep) + '.root'
+        fout ='evHyp_' + str(ffile) + '_' + str(fstep) + '.root'
         if(ffile+fstep>len(localFileNames)) : fstep=len(localFileNames)-ffile
 
     process.source.fileNames = cms.untracked.vstring()
@@ -47,6 +47,8 @@ process.out = cms.OutputModule("PoolOutputModule",
                                                                       'keep patMETs_*_*_*',
                                                                       'keep double*_*_rho_*',
                                                                       'keep *_goodTracks_*_*',
+                                                                      'keep *_offlinePrimaryVertices_*_*',
+                                                                      'keep *_offlinePrimaryVerticesDA_*_*',
                                                                       #'keep *_tcMet_*_*',
                                                                       'keep *_pfMet_*_*',
                                                                       'keep *_cleanEvent_*_*'),
