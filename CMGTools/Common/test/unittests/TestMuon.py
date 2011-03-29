@@ -47,6 +47,41 @@ class TestMuon(TestTools.CFGTest):
         cmg = cmgTuple.cmgTuple(events)
         self.assertTrue(cmg.Draw("cmgDiMuonSel.pt()","cmgDiMuonSel.getSelection(\"cuts_zmumu\")","goff") > 0,\
                          'The Z id should be applied')
+        
+    def testRazorMR(self):
+        """Verify that MR is set"""
+        
+        output = self.__class__.cfgsRunOnceCache['CMGTools/Common/test/testMuon_cfg.py']
+        events = TestTools.getObject(output[1], 'Events')
+        
+        cmg = cmgTuple.cmgTuple(events)
+        self.assertTrue(cmg.Draw("cmgDiMuonSel.mR()",
+                                 "cmgDiMuonSel.getSelection(\"cuts_razorbeta_betaR\") && cmgDiMuonSel.getSelection(\"cuts_razorbeta_useMR\") && (abs(cmgDiMuonSel.mR() + 9999) > 1e-3) ","goff") > 0,\
+                         'MR should be filled for relevant events')
+        
+    def testRazorBetaR(self):
+        """Verify that betaR is set"""
+        
+        output = self.__class__.cfgsRunOnceCache['CMGTools/Common/test/testMuon_cfg.py']
+        events = TestTools.getObject(output[1], 'Events')
+        
+        cmg = cmgTuple.cmgTuple(events)
+        self.assertTrue(cmg.Draw("cmgDiMuonSel.betaR()",
+                                 "cmgDiMuonSel.getSelection(\"cuts_razorbeta_betaR\") && (abs(cmgDiMuonSel.betaR() + 9999) > 1e-3) ","goff") > 0,\
+                         'betaR should be filled for relevant events')
+        
+    def testRazorMRT(self):
+        """Verify that MRT is set"""
+        
+        output = self.__class__.cfgsRunOnceCache['CMGTools/Common/test/testMuon_cfg.py']
+        events = TestTools.getObject(output[1], 'Events')
+        
+        cmg = cmgTuple.cmgTuple(events)
+        self.assertTrue(cmg.Draw("cmgDiMuonSel.mRT()",
+                                 "cmgDiMuonSel.getSelection(\"cuts_razorbeta_betaR\") && cmgDiMuonSel.getSelection(\"cuts_razorbeta_useMR\") && (abs(cmgDiMuonSel.mRT() + 9999) > 1e-3) ","goff") > 0,\
+                         'MRT should be filled for relevant events')
+
+
 
 if __name__ == '__main__':
     
