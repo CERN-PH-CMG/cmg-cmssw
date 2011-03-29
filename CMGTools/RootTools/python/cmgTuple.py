@@ -13,6 +13,8 @@ class cmgTuple(rt.TObject):
     
     def __init__(self, tree):
 
+        rt.TObject.__init__(self)
+
         self.tree = tree
         self.currentEntry = 0
 
