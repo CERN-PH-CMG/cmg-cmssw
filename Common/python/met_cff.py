@@ -38,12 +38,15 @@ cmgMETPFCandidates2 = cmgMETPFCandidates.clone()
 cmgMETPFCandidates2.cfg.ptThreshold = 2.0
 
 # FOR EVENT SELECTION:
+pfSimpleMetSequence = cms.Sequence(
+    cmgPFMET +                             
+    cmgPFMETSel
+    )
 
 pfMetSequence = cms.Sequence(
-    cmgPFMET +                             
+    pfSimpleMetSequence +                              
     cmgMETPFCandidates +                          
     cmgMHTPFJets30 +
-    cmgPFMETSel +
     cmgMHTPFJets30Sel
     )
 
