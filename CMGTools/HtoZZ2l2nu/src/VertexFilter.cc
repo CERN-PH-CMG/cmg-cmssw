@@ -41,4 +41,19 @@ namespace vertex{
     return selVertices;
   }
 
+  //
+  float getVertexMomentumFlux(const reco::Vertex *vtx, float minWeight)
+  {
+    float momFlux(0);
+    if(vtx==0) return momFlux;
+    for(reco::Vertex::trackRef_iterator iTrack= vtx->tracks_begin(); iTrack != vtx->tracks_end(); iTrack++)  
+      {
+	if(vtx->trackWeight(*iTrack)<minWeight) continue;
+	momFlux += (*iTrack)->pt();
+      }
+    return momFlux;
+  }
+  
+
+
 }
