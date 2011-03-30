@@ -11,7 +11,6 @@ process.maxEvents = cms.untracked.PSet(
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
-selectEvents = False
 doSkimHighMET = False
 cut_highMET = 'pt()>50'
 
@@ -35,24 +34,18 @@ outFileNameExt = ext
 
 
 process.load('CMGTools.Susy.fullyHadronic_cff')
-
-process.p = cms.Path(
-    process.fullyHadronicSequence
-    )
-
+process.fullyHadronicSchedule.append( process.outpath )
 
 # pprint.pprint(process.out.outputCommands)
-
 #process.dump = cms.EDAnalyzer("EventContentAnalyzer")
-# process.p += process.dump
 
-from CMGTools.Susy.fullyHadronicEventContent_cff import everythingAndMHT
+from CMGTools.Susy.fullyHadronicEventContent_cff import fullyHadronicEventContent
 process.out.fileName = cms.untracked.string('susy_tree_%s.root' %  outFileNameExt)
 process.out.outputCommands = cms.untracked.vstring('drop *')
-process.out.outputCommands += everythingAndMHT
+process.out.outputCommands += fullyHadronicEventContent
 
-if selectEvents:
-    process.out.SelectEvents.SelectEvents.append('p')
+# process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('RA1Path','RA2Path','razorPath') )
+process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('RA2Path') )
 
 process.TFileService = cms.Service(
     "TFileService",
