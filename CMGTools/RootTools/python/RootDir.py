@@ -54,7 +54,7 @@ class RootDir:
                 rootDir.walk()
                 self.subDirs_[subdir.GetName()] = rootDir
 
-    def Draw( self ):
+    def DrawAll( self ):
         """Draw all histograms in the RootDir canvas. Note that histograms in a given sub-directory can be drawn by doing: this.subDirs_['theSubDir'].Draw()"""
         
         nPlots = len(self.histograms_)
