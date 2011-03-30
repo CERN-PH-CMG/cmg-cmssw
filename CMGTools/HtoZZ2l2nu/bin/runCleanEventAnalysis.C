@@ -1,5 +1,4 @@
-#include "CMGTools/HtoZZ2l2nu/interface/cleanEventAnalysis.h"
-#include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
+#include "CMGTools/HtoZZ2l2nu/interface/CleanEventAnalysis.h"
 #include "PhysicsTools/UtilAlgos/interface/FWLiteAnalyzerWrapper.h"
 
 typedef fwlite::AnalyzerWrapper<CleanEventAnalysis> WrappedFWLiteCleanEventAnalyzer;
@@ -15,13 +14,10 @@ int main(int argc, char* argv[])
     std::cout << "Usage : " << argv[0] << " [parameters.py]" << std::endl;
     return 0;
   }
-  if( !edm::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") )
-    {
-      std::cout << " ERROR: ParametersSet 'plot' is missing in your configuration file" << std::endl; 
-      exit(0);
-    }
 
-  WrappedFWLiteCleanEventAnalyzer an(edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process"), std::string("evAnalyzer"));
+  // get the python configuration                                                                                                      
+  PythonProcessDesc builder(argv[1]);
+  WrappedFWLiteCleanEventAnalyzer an(*(builder.processDesc()->getProcessPSet()), std::string("evAnalyzer"), std::string("plots"));
   an.beginJob();
   an.analyze();
   an.endJob();
