@@ -45,7 +45,7 @@ namespace vertex
       double bestDz(1.0e7);
       for(std::vector<reco::VertexRef>::iterator vIt = selVertices.begin(); vIt != selVertices.end(); vIt++)
 	{
-	  double dz = abs(vIt->get()->z() - trk->vz());
+	  double dz = fabs(vIt->get()->z() - trk->vz());
 	  if( dz>bestDz ) continue;
 	  bestvtx=*vIt;
 	  bestDz=dz;
