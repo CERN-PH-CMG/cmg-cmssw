@@ -15,6 +15,9 @@
   <use   name="TrackingTools/Records"/>
   <use   name="TrackingTools/IPTools"/>
   <use   name="FWCore/ServiceRegistry"/>
+  <use   name="PhysicsTools/UtilAlgos"/>
+  <use name="CMGTools/HtoZZ2l2nu"/>
+  <use name="FWCore/Services"/>
   <use   name="DQMServices/Core"/>
   <use   name="SimDataFormats/GeneratorProducts"/>
   <use   name="root"/>

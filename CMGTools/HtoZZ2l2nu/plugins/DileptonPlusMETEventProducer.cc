@@ -13,7 +13,7 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
 
-#include "CMGTools/HtoZZ2l2nu/plugins/ObjectFilters.h"
+#include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
 
 class DileptonPlusMETEventProducer : public edm::EDProducer {
 public:
