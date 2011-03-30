@@ -17,6 +17,8 @@
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 
+#include "TVector3.h"
+
 namespace gen
 {
   std::map<std::string, std::vector<reco::CandidatePtr> > filter(edm::Handle<edm::View<reco::Candidate> > &hGen, const edm::ParameterSet &iConfig);
@@ -26,6 +28,7 @@ namespace gen
 namespace vertex
 {
   std::vector<reco::VertexRef> filter(edm::Handle<reco::VertexCollection> &hVtx, const edm::ParameterSet &iConfig);
+  float getVertexMomentumFlux(const reco::Vertex *vtx, float minWeight=0.5);
 
   template<class T>
   std::pair<bool,Measurement1D> getImpactParameter(const T &trk, reco::Vertex *vtx, const edm::EventSetup &iSetup, bool is3d=true)

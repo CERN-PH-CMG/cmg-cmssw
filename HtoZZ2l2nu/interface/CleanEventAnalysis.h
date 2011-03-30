@@ -50,6 +50,7 @@ class CleanEventAnalysis : public edm::BasicAnalyzer {
     
 
   std::map<TString, TObject *>  results_;
+  std::map<std::string, edm::ParameterSet> objConfig_;
 
 };
 

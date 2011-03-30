@@ -2,9 +2,9 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 # ===============================================================================
 # configuration parameters
-runOnMC=True
+runOnMC=False
 useLocalLumiSelection=False
-applyTrigSequence='ee'
+applyTrigSequence='emu'
 
 # FIXME: check the GT for JECs
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
@@ -459,7 +459,8 @@ process.out.outputCommands = cms.untracked.vstring('drop *',
                                                    'keep *_offlinePrimaryVerticesDA_*_*',
                                                    'keep *_offlinePrimaryVerticesWithBS_*_*',
                                                    'keep *_offlineBeamSpot_*_*',
-                                                   'keep *_goodTracks_*_*',
+                                                   #'keep *_goodTracks_*_*',
+                                                   'keep *_generalTracks_*_*',
                                                    ###### Trigger
                                                    #'keep *_hltTriggerSummaryAOD_*_*',
                                                    'keep *_TriggerResults_*_*',

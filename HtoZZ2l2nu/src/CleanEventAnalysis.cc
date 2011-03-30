@@ -1,5 +1,6 @@
 #include "CMGTools/HtoZZ2l2nu/interface/CleanEventAnalysis.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
+#include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
 
 using namespace std;
 
@@ -8,20 +9,31 @@ CleanEventAnalysis::CleanEventAnalysis(const edm::ParameterSet& cfg, TFileDirect
   edm::BasicAnalyzer::BasicAnalyzer(cfg, fs)
 {
   try{
-
+    
+    objConfig_["Vertices"] = cfg.getParameter<edm::ParameterSet>("Vertices");
+    
+    TFileDirectory baseDir=fs.mkdir(cfg.getParameter<std::string>("dtag"));    
     TString streams[]={"ee","mumu","emu"};
     TString jetmult[]={"eq0jets","eq1jets","geq2jets"};
     for(size_t istream=0; istream<sizeof(streams)/sizeof(TString); istream++)
     {
       TString cat=streams[istream];
-      TFileDirectory newDir=fs.mkdir(cat.Data());
+      TFileDirectory newDir=baseDir.mkdir(cat.Data());
       
       //dilepton control
       results_[cat+"_dilepton_mass"]=formatPlot( newDir.make<TH1F>(cat+"_dilepton_mass", ";Invariant Mass(l,l') [GeV/c^{2}]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_dilepton_mass"]=formatPlot( newDir.make<TH1F>(cat+"_dilepton_mass", ";Invariant Mass(l,l') [GeV/c^{2}]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_dilepton_sumpt"]= formatPlot( newDir.make<TH1F>(cat+"_dilepton_sumpt", ";#Sigma |#vec{p}_{T}| [GeV/c]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_dilepton_pt"] = formatPlot( newDir.make<TH1F>(cat+"_dilepton_pt", ";|#Sigma #vec{p}_{T}| [GeV/c]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
+
+      //vertex control
+      results_[cat+"_vertex_sumpt"] = formatPlot( newDir.make<TH1F>(cat+"_vertex_sumpt", ";#Sigma_{tracks} p_{T} [GeV/c]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_othervertex_sumpt"] = formatPlot( newDir.make<TH1F>(cat+"_othervertex_sumpt", ";#Sigma_{tracks} p_{T} [GeV/c]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_vertex_pt"] = formatPlot( newDir.make<TH1F>(cat+"_vertex_pt", ";|#Sigma_{tracks} #vec{p}_{T}| [GeV/c]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_othervertex_pt"] = formatPlot( newDir.make<TH1F>(cat+"_othervertex_pt", ";|#Sigma_{tracks} #vec{p}_{T}| [GeV/c]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_ngoodvertex"] = formatPlot( newDir.make<TH1F>(cat+"_ngoodvertex", ";Vertices; Events", 25, 0.,25.), 1,1,1,20,0,false,true,1,1,1);
       
+      //jets
       results_[cat+"_jetpt"]    = formatPlot( newDir.make<TH1F>(cat+"_jetpt",";p_{T} [GeV/c]; Jets",100,0,200), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_njets"]    = formatPlot( newDir.make<TH1F>(cat+"_njets",";Jet multiplicity; Events",4,0,4), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_bmult"]    = formatPlot( newDir.make<TH1F>(cat+"_bmult",";b tag multiplicity (TCHEL); Events",4,0,4), 1,1,1,20,0,false,true,1,1,1);
@@ -80,7 +92,16 @@ void CleanEventAnalysis::analyze(const edm::EventBase& event)
 	cout << "No vertex selected" << endl;
 	return;
       }
-    
+
+    //get other vertices
+    std::vector<reco::VertexRef> selVertices;
+    try{
+      edm::Handle<reco::VertexCollection> hVtx;
+      event.getByLabel(objConfig_["Vertices"].getParameter<edm::InputTag>("source"), hVtx);
+      selVertices = vertex::filter(hVtx,objConfig_["Vertices"]);
+    }catch(std::exception &e){
+    }
+        
     edm::Handle< std::vector<int> > selInfo;
     event.getByLabel(edm::InputTag("cleanEvent:selectionInfo"),selInfo);
     if(!selInfo.isValid()) 
@@ -118,6 +139,17 @@ void CleanEventAnalysis::analyze(const edm::EventBase& event)
     if(njets==0)      substream = substream+"eq0jets";
     else if(njets==1) substream = substream+"eq1jets";
     else              substream = substream+"geq2jets";
+
+    //vertex quantities
+    //const reco::Vertex *primVertex = &(*(vertexHandle.product()))[0];
+    getHist(istream+"_ngoodvertex")->Fill(selVertices.size());
+    //getHist(istream+"_vertex_sumpt")->Fill(vertex::getVertexMomentumFlux(primVertex));
+    //getHist(istream+"_vertex_pt")->Fill(primVertex->p4().pt());
+    //    for(std::vector<reco::VertexRef>::iterator vit=selVertices.begin(); vit != selVertices.end(); vit++)
+    //{
+    //	getHist(istream+"_othervertex_sumpt")->Fill(vertex::getVertexMomentumFlux(vit->get()));
+    //	getHist(istream+"_othervertex_pt")->Fill(vit->get()->p4().pt());
+    //      }
 
     //basic dilepton kinematics
     reco::CandidatePtr lepton1 = evhyp["leg1"];
