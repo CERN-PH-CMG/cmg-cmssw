@@ -1,11 +1,17 @@
 #ifndef cleaneventanalysis_h
 #define cleaneventanalysis_h
 
-#if !defined(__CINT__) || defined(__MAKECINT__)
-
 #include <vector>
 #include <map>
+#include <string>
 
+#include "TH1.h"
+#include "TH2.h"
+#include "TFile.h"
+#include "TString.h"
+#include "TLorentzVector.h"
+
+#include "PhysicsTools/UtilAlgos/interface/BasicAnalyzer.h"
 #include "DataFormats/FWLite/interface/Handle.h"
 #include "DataFormats/FWLite/interface/Event.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
@@ -20,26 +26,31 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "PhysicsTools/UtilAlgos/interface/BasicAnalyzer.h"
 
-#include "TFile.h"
-#include "TString.h"
-#include "TLorentzVector.h"
+class CleanEventAnalysis : public edm::BasicAnalyzer {
 
-#include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
-#include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
-
-#endif
-
-
-class CleanEventAnalysis  : public edm::BasicAnalyzer {
  public:
-  CleanEventAnalysis(edm::ParameterSet const& params, TFileDirectory& fs);
-  void beginJob() {};
-  void endJob();
+  /// default constructor
+  CleanEventAnalysis(const edm::ParameterSet& cfg, TFileDirectory& fs);
+  /// default destructor
+  virtual ~CleanEventAnalysis(){};
+  /// everything that needs to be done before the event loop
+  void beginJob(){};
+  /// everything that needs to be done after the event loop
+  void endJob(){};
+  /// everything that needs to be done during the event loop
   void analyze(const edm::EventBase& event);
-  virtual ~CleanEventAnalysis() {};
 
  private:
-  std::map<TString, TObject *> results_;
+  
+  inline TH1 *getHist(TString key)
+    {
+      if(results_.find(key)==results_.end()) return 0;
+      return (TH1 *)results_[key];
+    }
+    
+
+  std::map<TString, TObject *>  results_;
+
 };
 
 #endif
