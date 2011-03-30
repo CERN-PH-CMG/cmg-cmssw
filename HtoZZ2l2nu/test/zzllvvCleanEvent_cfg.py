@@ -27,6 +27,7 @@ if(len(sys.argv)>2 ):
     for i in xrange(ffile,ffile+fstep) :
         process.source.fileNames.extend( [ localFileNames[i] ] )
 
+print process.source.fileNames
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
