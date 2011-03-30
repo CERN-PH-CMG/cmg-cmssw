@@ -1,5 +1,6 @@
 from CMGTools.RootTools import RootTools as tools
 import ROOT as rt
+import pprint
 
 class cmgTuple(rt.TObject):
     
@@ -38,6 +39,8 @@ class cmgTuple(rt.TObject):
                 self.tree.SetAlias('%sVec' % name,'%s@obj' % b)
             self.branches.append(b)
 
+        pprint.pprint( self.aliases )
+
     def __len__(self):
         return self.tree.GetEntries()
             
@@ -67,7 +70,6 @@ class cmgTuple(rt.TObject):
         else:
             raise NameError("'%s' is not a branch in the TTree" % name)
         return result
-    
     def Draw(self, *args):
         return self.tree.Draw(*args)
     def Scan(self, *args):
@@ -82,6 +84,7 @@ if __name__ == '__main__':
     cmg = cmgTuple(events)
     print cmg.branches
     print cmg.aliases
+
 
     
 
