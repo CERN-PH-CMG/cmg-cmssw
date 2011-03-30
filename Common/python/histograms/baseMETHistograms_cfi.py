@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 baseMETHistograms = cms.EDAnalyzer(
     "GenericBaseMETHistograms",
+    #COLIN replace inputCollection by src everywhere
     inputCollection = cms.InputTag("cmgMETPFCandidates"),
     histograms = cms.untracked.PSet(
         met = cms.untracked.VPSet(

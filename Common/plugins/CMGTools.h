@@ -2,6 +2,7 @@
 #define __CMGTools_Common_CMGTools_h__
 
 #include "AnalysisDataFormats/CMGTools/interface/BaseJet.h"
+#include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
@@ -91,6 +92,11 @@ typedef SingleObjectSelector<
   std::vector<cmg::BaseJet>,
   StringCutObjectSelector<cmg::BaseJet>
   > CmgBaseJetSelector;
+
+typedef SingleObjectSelector<
+  std::vector<cmg::BaseMET>,
+  StringCutObjectSelector<cmg::BaseMET>
+  > CmgBaseMETSelector;
 
 typedef SingleObjectSelector<
   std::vector<cmg::Electron>,
