@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 traditionalJets = cms.untracked.vstring(
-    'keep cmgBaseJets_*Calo*Jet_*_*',
-    'keep cmgAbstractPhysicsObjects_*Calo*Jet_*_*'
+    'keep cmgBaseJets_*Calo*JetSel_*_*',
+    # 'keep cmgAbstractPhysicsObjects_*Calo*Jet_*_*'
     # here add all PF jet objects, even the base ones. 
     )
 
@@ -25,7 +25,7 @@ traditional = traditionalJets + traditionalMET + traditionalVBF
 
 
 traditionalBase = cms.untracked.vstring(
-    'keep *_cmgCaloBaseJet_*_*'
+    'keep *_cmgCaloBaseJetSel_*_*'
     # here add the other generic PF objects
     )
 

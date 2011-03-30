@@ -44,6 +44,7 @@ DEFINE_FWK_MODULE(LeadingCMGPFJetSelector);
 
 DEFINE_FWK_MODULE(CmgPFJetSelector);
 DEFINE_FWK_MODULE(CmgBaseJetSelector);
+DEFINE_FWK_MODULE(CmgBaseMETSelector);
 DEFINE_FWK_MODULE(CmgElectronSelector);
 DEFINE_FWK_MODULE(CmgMuonSelector);
 DEFINE_FWK_MODULE(CmgDiMuonSelector);

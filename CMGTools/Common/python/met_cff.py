@@ -18,7 +18,6 @@ cmgMHTPFJets30.cfg.inputCollection = "cmgPFBaseJet"
 cmgMHTPFJets30.cfg.ptThreshold = 30.0
 cmgMHTPFJets30Sel = cmgCandSel.clone( src = 'cmgMHTPFJets30' )
 
-
 # Calo MET from pat::MET
 cmgCaloMET = cmgBaseMET.clone()
 cmgCaloMET.cfg.inputCollection = "patMETs"
@@ -37,7 +36,7 @@ cmgMETPFCandidates.cfg.inputCollection = "particleFlow"
 cmgMETPFCandidates2 = cmgMETPFCandidates.clone()
 cmgMETPFCandidates2.cfg.ptThreshold = 2.0
 
-# FOR EVENT SELECTION:
+
 pfSimpleMetSequence = cms.Sequence(
     cmgPFMET +                             
     cmgPFMETSel
