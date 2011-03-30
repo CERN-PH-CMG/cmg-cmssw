@@ -48,7 +48,7 @@ class cmgTuple(rt.TObject):
         return self
     
     def __del__(self):
-        if self.tree is not None:
+        if self.tree is not None and self.tree:
             self.tree.Delete()
     
     def next(self):
