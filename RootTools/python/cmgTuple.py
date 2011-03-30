@@ -74,6 +74,8 @@ class cmgTuple(rt.TObject):
         return self.tree.Draw(*args)
     def Scan(self, *args):
         return self.tree.Scan(*args)
+    def Print(self, *args):
+        return self.tree.Print(*args)
 
 if __name__ == '__main__':
     
