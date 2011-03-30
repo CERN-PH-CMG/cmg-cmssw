@@ -1,4 +1,4 @@
-#include "CMGTools/HtoZZ2l2nu/plugins/ObjectFilters.h"
+#include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
 
 using namespace std;
 

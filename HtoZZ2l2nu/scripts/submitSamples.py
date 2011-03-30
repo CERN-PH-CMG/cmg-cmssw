@@ -4,7 +4,8 @@ import os,sys
 import json
 
 if(len(sys.argv)<2):
-    print 'submitSamples.py samples.json scriptToRunOnBatch.sh'
+    print 'submitSamples.py samples.json scriptToRunOnBatch.sh <sampleTag>'
+    exit(-1)
 
 from CMGTools.HtoZZ2l2nu.localPatTuples_cff import *
 
@@ -13,6 +14,8 @@ samplesDB = sys.argv[1]
 jsonFile = open(samplesDB,'r')
 procList=json.load(jsonFile,encoding='utf-8').items()
 scriptToRun=sys.argv[2]
+sampleTag=''
+if(len(sys.argv)>3) :sampleTag=sys.argv[3]
 
 #run over sample
 fperjob=5
@@ -25,6 +28,8 @@ for proc in procList :
         data = desc['data']
         for d in data :
             tag = d['dtag']
+            if(len(sampleTag)>0 and tag.find(sampleTag)<0 ): continue
+            
             files=getLocalSourceFor( tag )
             print tag
             print files

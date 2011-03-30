@@ -1,0 +1,8 @@
+<use name="root"/>
+<use name="boost_program_options"/>
+<use name="PhysicsTools/FWLite"/>
+<use name="PhysicsTools/UtilAlgos"/>
+<use name="CMGTools/HtoZZ2l2nu"/>
+<environment>
+  <bin   file="runCleanEventAnalysis.C"></bin>
+</environment>

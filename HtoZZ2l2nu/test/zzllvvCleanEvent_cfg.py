@@ -33,7 +33,6 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.load('CMGTools.HtoZZ2l2nu.NormalizationCounter_cfi')
 process.load('CMGTools.HtoZZ2l2nu.CleanEventProducer_cfi')
 process.load('CMGTools.HtoZZ2l2nu.CleanEventFilter_cfi')
-process.load('CMGTools.HtoZZ2l2nu.CleanEventAnalyzer_cfi')
 
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string('/tmp/'+fout),
@@ -54,7 +53,12 @@ process.out = cms.OutputModule("PoolOutputModule",
                                                                       'keep *_cleanEvent_*_*'),
                                SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') )
                                )
-process.p = cms.Path(process.loadNormalizationCounters*process.cleanEvent*process.cleanEventFilter*process.analysis)
+
+#process.load('CMGTools.HtoZZ2l2nu.CleanEventAnalyzer_cfi')
+#process.TFileService = cms.Service("TFileService", fileName = cms.string('Histograms.root') )
+#process.p = cms.Path(process.loadNormalizationCounters*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
+
+process.p = cms.Path(process.loadNormalizationCounters*process.cleanEvent*process.cleanEventFilter)
 process.e = cms.EndPath(process.saveNormalizationCounters*process.out)
 
 
