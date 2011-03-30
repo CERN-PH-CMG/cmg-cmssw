@@ -5,9 +5,26 @@ from CMGTools.Susy.RA1.RA1_cff import *
 from CMGTools.Susy.RA2.RA2_cff import *
 from CMGTools.Susy.Razor.razor_cff import * 
 
-fullyHadronicSequence = cms.Sequence(
+
+
+
+#RA1Path = cms.Path(
+#    fullyHadronicCommonSequence +
+#    RA1SkimSequence
+#    )
+
+RA2Path = cms.Path(
     fullyHadronicCommonSequence +
-    RA1Sequence +
-    RA2Sequence +
-    razorSequence 
+    RA2SkimSequence
+    )
+
+#razorPath = cms.Path(
+#    fullyHadronicCommonSequence +
+#    razorSkimSequence
+#    )
+
+fullyHadronicSchedule = cms.Schedule(
+#    RA1Path,
+    RA2Path
+#    razorPath
     )
