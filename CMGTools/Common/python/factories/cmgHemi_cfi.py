@@ -1,9 +1,12 @@
+######################################################################
+
 import FWCore.ParameterSet.Config as cms
 
 from CMGTools.Common.selections.kinematics_cfi import kinematics
 
 hemiFactory = cms.PSet(
-    inputCollection = cms.InputTag("dummy")
+    inputCollection = cms.InputTag("dummy"),
+    maxCand = cms.uint32(1)
     )
 
 cmgHemi = cms.EDFilter("HemispherePOProducer",
@@ -12,3 +15,5 @@ cmgHemi = cms.EDFilter("HemispherePOProducer",
     ),
                        cuts = cms.PSet(kinematics = kinematics.clone())
                        )
+
+######################################################################
