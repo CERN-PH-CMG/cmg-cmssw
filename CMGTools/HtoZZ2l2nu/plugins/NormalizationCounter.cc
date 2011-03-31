@@ -9,19 +9,14 @@ using namespace std;
 NormalizationCounter::NormalizationCounter(const edm::ParameterSet& iConfig) : fileChanged_(false)
 {
   //book the counters
-  DQMStore* store = &*edm::Service<DQMStore>();
   std::vector<std::string> ctrNames = iConfig.getParameter<std::vector<std::string> >("ctrNames");
   for(std::vector<std::string>::iterator it = ctrNames.begin(); it != ctrNames.end(); it++)
     {
-      ctrs_[*it] = store->bookFloat("ric_"+*it);
-      ctrs_[*it]->Fill(0);
+      ctrs_[*it]=0;
     }
-  ctrs_["nFiles"] = store->bookFloat("ric_nFiles");
-  ctrs_["nFiles"]->Fill(0);
-  crossSection_ = store->bookFloat("ric_crossSection");
-  crossSection_->Fill(0);
-  genEff_ = store->bookFloat("ric_generatorEff");
-  genEff_->Fill(0);
+  ctrs_["nFiles"] = 0;
+  ctrs_["crossSection"] = 0;
+  ctrs_["generatorEff"] = 0;
 }
 
 //
@@ -32,12 +27,18 @@ NormalizationCounter::~NormalizationCounter()
 //
 void NormalizationCounter::endJob()
 {
+  DQMStore* store = &*edm::Service<DQMStore>();
+
   //debug
   cout << "[NormalizationCounter][endJob]" << endl;
-  for( std::map<std::string,MonitorElement *>::iterator ctrIt = ctrs_.begin();
+  for( std::map<std::string,float>::iterator ctrIt = ctrs_.begin();
        ctrIt != ctrs_.end();
        ctrIt++)
-    cout << ctrIt->first << " " << ctrIt->second->getFloatValue() << endl;
+    {
+      cout << ctrIt->first << " " << ctrIt->second << endl;
+      MonitorElement *h=store->bookFloat("ric_"+ctrIt->first);
+      h->Fill(ctrIt->second);
+    }
 }
 
 //
@@ -54,13 +55,12 @@ void NormalizationCounter::analyze(const edm::Event& iEvent, const edm::EventSet
 	edm::Handle<GenRunInfoProduct> gen;
 	if(run.getByLabel(edm::InputTag("generator"),gen))
 	  {
-	    crossSection_->Fill(crossSection_->getFloatValue()+gen->crossSection());
-	    genEff_->Fill(genEff_->getFloatValue()+gen->filterEfficiency());
+	    ctrs_["crossSection"]+=gen->crossSection();
+	    ctrs_["generatorEff"]+=gen->filterEfficiency();
 	  }
       }catch(std::exception &e){
       }
-
-      ctrs_["nFiles"]->Fill(ctrs_["nFiles"]->getFloatValue()+1);
+      ctrs_["nFiles"]+=1;
     }catch(std::exception &e){
     cout << "[NormalizationCounter][analyze] failed with " << e.what() << endl;
   }
@@ -89,18 +89,16 @@ void NormalizationCounter::beginLuminosityBlock(const edm::LuminosityBlock & iLu
 void NormalizationCounter::endLuminosityBlock(const edm::LuminosityBlock & iLumi, const edm::EventSetup & iSetup)
 {
   //update the counters
-  for( std::map<std::string,MonitorElement *>::iterator ctrIt = ctrs_.begin();
+  for( std::map<std::string,float>::iterator ctrIt = ctrs_.begin();
        ctrIt != ctrs_.end();
        ctrIt++)
     {
       try{
 	edm::Handle<edm::MergeableCounter> ctrHandle;
-	if(!ctrHandle.isValid()) continue;
 	if(iLumi.getByLabel(ctrIt->first, ctrHandle))
 	  {
-	    float curValue=ctrIt->second->getFloatValue();
 	    float newValue=ctrHandle->value;
-	    ctrIt->second->Fill( curValue+newValue );
+	    ctrs_[ctrIt->first]+=newValue;
 	  }
       }catch(std::exception&e){
 	cout << "[NormalizationCounter][endLuminosityBlock] failed with " << e.what() << endl;

@@ -31,14 +31,14 @@ print process.source.fileNames
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
-process.load('CMGTools.HtoZZ2l2nu.NormalizationCounter_cfi')
+#process.load('CMGTools.HtoZZ2l2nu.NormalizationCounter_cfi')
 process.load('CMGTools.HtoZZ2l2nu.CleanEventProducer_cfi')
 process.load('CMGTools.HtoZZ2l2nu.CleanEventFilter_cfi')
 
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string('/tmp/'+fout),
                                outputCommands = cms.untracked.vstring('drop *',
-                                                                      'keep *_MEtoEDMConverter_*_*',
+                                                                      #'keep *_MEtoEDMConverter_*_*',
                                                                       'keep *_prunedGen_*_*',
                                                                       'keep *_genEventScale_*_*',
                                                                       'keep GenRunInfoProduct_*_*_*',
@@ -49,6 +49,7 @@ process.out = cms.OutputModule("PoolOutputModule",
                                                                       'keep *_generalTracks_*_*',
                                                                       'keep *_offlinePrimaryVertices_*_*',
                                                                       'keep *_offlinePrimaryVerticesDA_*_*',
+                                                                      'keep edmMergeableCounter_*_*_*',
                                                                       #'keep *_tcMet_*_*',
                                                                       'keep *_pfMet_*_*',
                                                                       'keep *_cleanEvent_*_*'),
@@ -59,8 +60,11 @@ process.out = cms.OutputModule("PoolOutputModule",
 #process.TFileService = cms.Service("TFileService", fileName = cms.string('Histograms.root') )
 #process.p = cms.Path(process.loadNormalizationCounters*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
 
-process.p = cms.Path(process.loadNormalizationCounters*process.cleanEvent*process.cleanEventFilter)
-process.e = cms.EndPath(process.saveNormalizationCounters*process.out)
+#process.p = cms.Path(process.loadNormalizationCounters*process.cleanEvent*process.cleanEventFilter)
+#process.e = cms.EndPath(process.saveNormalizationCounters*process.out)
+process.p = cms.Path(process.cleanEvent)
+process.e = cms.EndPath(process.out)
+
 
 
 # message logger

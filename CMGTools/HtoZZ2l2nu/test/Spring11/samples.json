@@ -188,14 +188,17 @@
   	   "marker":20,
            "data":[
                 {
+		  "trigsequence":"ee",
 		  "dtag":"Collisions2011_DoubleElectron",
                   "dir":"/castor/cern.ch/user/p/psilva/Dileptons/Collisions2011_DoubleElectron"
                 },
                 {
+		  "trigsequence":"mumu",
 		  "dtag":"Collisions2011_DoubleMuon",
                   "dir":"/castor/cern.ch/user/p/psilva/Dileptons/Collisions2011_DoubleMuon"
                 },
                 {
+		  "trigsequence":"emu",
 		  "dtag":"Collisions2011_MuEG",
                   "dir":"/castor/cern.ch/user/p/psilva/Dileptons/Collisions2011_MuEG"
                 }

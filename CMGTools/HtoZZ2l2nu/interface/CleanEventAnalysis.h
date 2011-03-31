@@ -14,6 +14,7 @@
 #include "PhysicsTools/UtilAlgos/interface/BasicAnalyzer.h"
 #include "DataFormats/FWLite/interface/Handle.h"
 #include "DataFormats/FWLite/interface/Event.h"
+#include "FWCore/Framework/interface/LuminosityBlock.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
@@ -25,6 +26,7 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "PhysicsTools/UtilAlgos/interface/BasicAnalyzer.h"
+#include "DataFormats/Common/interface/MergeableCounter.h"
 
 class CleanEventAnalysis : public edm::BasicAnalyzer {
 
@@ -39,6 +41,8 @@ class CleanEventAnalysis : public edm::BasicAnalyzer {
   void endJob(){};
   /// everything that needs to be done during the event loop
   void analyze(const edm::EventBase& event);
+  ///
+  void endLuminosityBlock(const edm::LuminosityBlock & iLumi, const edm::EventSetup & iSetup);
 
  private:
   

@@ -19,7 +19,9 @@ CleanEventAnalysis::CleanEventAnalysis(const edm::ParameterSet& cfg, TFileDirect
     {
       TString cat=streams[istream];
       TFileDirectory newDir=baseDir.mkdir(cat.Data());
-      
+
+      results_[cat+"_cutflow"]=formatPlot( newDir.make<TH1F>(cat+"_cutflow", ";Steps; Events", 10, 0.,10.), 1,1,1,20,0,false,true,1,1,1);
+
       //dilepton control
       results_[cat+"_dilepton_mass"]=formatPlot( newDir.make<TH1F>(cat+"_dilepton_mass", ";Invariant Mass(l,l') [GeV/c^{2}]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_dilepton_mass"]=formatPlot( newDir.make<TH1F>(cat+"_dilepton_mass", ";Invariant Mass(l,l') [GeV/c^{2}]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
@@ -118,6 +120,7 @@ void CleanEventAnalysis::analyze(const edm::EventBase& event)
     std::string istream="mumu";
     if(selPath==2) istream="ee";
     if(selPath==3) istream="emu";
+    getHist(istream+"_cutflow")->Fill(2);
 
     //count the jets in the event
     std::vector<reco::CandidatePtr> seljets= evhyp.all("jet");
@@ -140,6 +143,7 @@ void CleanEventAnalysis::analyze(const edm::EventBase& event)
     else if(njets==1) substream = substream+"eq1jets";
     else              substream = substream+"geq2jets";
 
+    
     //vertex quantities
     //const reco::Vertex *primVertex = &(*(vertexHandle.product()))[0];
     getHist(istream+"_ngoodvertex")->Fill(selVertices.size());
@@ -176,6 +180,8 @@ void CleanEventAnalysis::analyze(const edm::EventBase& event)
     //require MET back-to-back to dilepton
     float dphiZ2met=dileptonP.DeltaPhi(metP);
     if(fabs(dphiZ2met)<TMath::Pi()/2) return;
+    getHist(istream+"_cutflow")->Fill(3);
+    getHist(istream+"_cutflow")->Fill(4+jetbin);
     getHist(substream+"_met")->Fill(metP.Pt());
     getHist(substream+"_dilepton2met_dphi")->Fill(abs(dphiZ2met));
     getHist(substream+"_metsig")->Fill(metsig);
@@ -211,3 +217,20 @@ void CleanEventAnalysis::analyze(const edm::EventBase& event)
   }
 
 }
+
+//
+void CleanEventAnalysis::endLuminosityBlock(const edm::LuminosityBlock & iLumi, const edm::EventSetup & iSetup)
+{
+  cout << "[CleanEventAnalysis::endLuminosityBlock]" << endl;
+  TString streams[]={"ee","mumu","emu"};
+  edm::Handle<edm::MergeableCounter> ctrHandle;
+  iLumi.getByLabel("startCounter", ctrHandle);
+  for(size_t istream=0; istream<sizeof(streams)/sizeof(TString); istream++)
+    {
+      ((TH1F *)getHist(streams[istream]+"_cutflow"))->Fill(0.,ctrHandle->value);
+      edm::Handle<edm::MergeableCounter> streamCtrHandle;
+      iLumi.getByLabel("startCounter", streamCtrHandle);
+      ((TH1F *)getHist(streams[istream]+"_cutflow"))->Fill(1.,streamCtrHandle->value);
+    } 
+}
+
