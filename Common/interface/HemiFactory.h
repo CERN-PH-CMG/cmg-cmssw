@@ -17,7 +17,7 @@ namespace cmg {
   public:
     HemisphereFactory(const edm::ParameterSet& ps) :
       hemisphereLabel_(ps.getParameter<edm::InputTag>("inputCollection")),
-      maxNCand_(20)
+      maxNCand_(ps.getParameter<uint32_t>("maxCand"))
         {
         }
     typedef cmg::Factory<cmg::Hemisphere>::event_ptr event_ptr;
@@ -28,7 +28,7 @@ namespace cmg {
 
     edm::InputTag const hemisphereLabel_;
 
-    size_t const maxNCand_;
+    size_t maxNCand_;
   };
 
 } // namespace cmg
