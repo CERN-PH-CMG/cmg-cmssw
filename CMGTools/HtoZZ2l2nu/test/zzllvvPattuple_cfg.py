@@ -49,6 +49,11 @@ process.mumutrigFilter = process.eetrigFilter.clone()
 process.mumutrigFilter.HLTPaths =['HLT_DoubleMu7_v1']
 process.emutrigFilter = process.eetrigFilter.clone()
 process.emutrigFilter.HLTPaths = ['HLT_Mu17_Ele8_CaloIdL_v2','HLT_Mu8_Ele17_CaloIdL_v2']
+process.singlemutrigFilter = process.eetrigFilter.clone()
+process.singlemutrigFilter.HLTPaths = ['HLT_Mu9','HLT_Mu15_v1']
+process.singleetrigFilter = process.eetrigFilter.clone()
+process.singleetrigFilter.HLTPaths = ['HLT_Ele10_LW_L1R','HLT_Ele15_SW_L1R','HLT_Ele15_SW_CaloEleId_L1R','HLT_Ele17_SW_CaloEleId_L1R','HLT_Ele17_SW_TightEleId_L1R','HLT_Ele17_SW_TighterEleIdIsol_L1R_v2','HLT_Ele17_SW_TighterEleIdIsol_L1R_v3']
+
 process.incEETrigSequence=cms.Sequence(process.eetrigFilter)
 process.excMuMuTrigSequence=cms.Sequence(~process.eetrigFilter*process.mumutrigFilter)
 process.excEmuTrigSequence=cms.Sequence(~process.eetrigFilter*~process.mumutrigFilter*process.emutrigFilter)
