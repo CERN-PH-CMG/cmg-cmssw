@@ -1,10 +1,10 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
-# ===============================================================================
-# configuration parameters
-runOnMC=False
-useLocalLumiSelection=False
-applyTrigSequence='emu'
+# # ===============================================================================
+# # configuration parameters
+# runOnMC=False
+# useLocalLumiSelection=False
+# applyTrigSequence='emu'
 
 # FIXME: check the GT for JECs
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
@@ -480,13 +480,13 @@ process.out.outputCommands = cms.untracked.vstring('drop *',
                                                    )
 #process.out.outputCommands.extend( patEventContentNoCleaning )
 #process.out.outputCommands.extend( patExtraAodEventContent )
-process.out.fileName = cms.untracked.string('patTuple.root')
+process.out.fileName = cms.untracked.string('/tmp/cerminar/patTuple.root')
 process.outpath = cms.EndPath(process.out)
 
 #
 # message logger
 #
-process.MessageLogger.cerr.FwkReport.reportEvery = 500
+process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 
 print "[zzllvvPattuple] scheduling the following processes"
 print process.schedule
