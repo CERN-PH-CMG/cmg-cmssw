@@ -1,11 +1,5 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
-# # ===============================================================================
-# # configuration parameters
-# runOnMC=False
-# useLocalLumiSelection=False
-# applyTrigSequence='emu'
-
 # FIXME: check the GT for JECs
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 #process.GlobalTag.globaltag = 'GR_R_39X_V6::All'
@@ -45,6 +39,7 @@ process.endCounter = process.startCounter.clone()
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 process.eetrigFilter = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT",
                                           HLTPaths = ['HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2'])
+process.eetrigFilter.throw = cms.bool(False)
 process.mumutrigFilter = process.eetrigFilter.clone()
 process.mumutrigFilter.HLTPaths =['HLT_DoubleMu7_v1']
 process.emutrigFilter = process.eetrigFilter.clone()
@@ -53,6 +48,7 @@ process.singlemutrigFilter = process.eetrigFilter.clone()
 process.singlemutrigFilter.HLTPaths = ['HLT_Mu9','HLT_Mu15_v1']
 process.singleetrigFilter = process.eetrigFilter.clone()
 process.singleetrigFilter.HLTPaths = ['HLT_Ele10_LW_L1R','HLT_Ele15_SW_L1R','HLT_Ele15_SW_CaloEleId_L1R','HLT_Ele17_SW_CaloEleId_L1R','HLT_Ele17_SW_TightEleId_L1R','HLT_Ele17_SW_TighterEleIdIsol_L1R_v2','HLT_Ele17_SW_TighterEleIdIsol_L1R_v3']
+
 
 process.incEETrigSequence=cms.Sequence(process.eetrigFilter)
 process.excMuMuTrigSequence=cms.Sequence(~process.eetrigFilter*process.mumutrigFilter)
