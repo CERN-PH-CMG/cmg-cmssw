@@ -37,4 +37,4 @@ for proc in procList :
             nfiles=len(getLocalSourceFor( tag ) )
             njobs=nfiles/fperjob+1
             for ijob in range(njobs) :
-                os.system('submit2batch.sh ' + scriptToRun + ' ' + tag + ' ' + str(ijob*fperjob) + ' ' + str(ijob*fperjob+fperjob))
+                os.system('submit2batch.sh ' + scriptToRun + ' ' + tag + ' ' + str(ijob*fperjob) + ' ' + str(fperjob))
