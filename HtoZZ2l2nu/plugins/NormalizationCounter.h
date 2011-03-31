@@ -31,7 +31,6 @@ class NormalizationCounter : public edm::EDAnalyzer {
   void endJob();
 
   bool fileChanged_;
-  unsigned int nFiles_;
   std::map<std::string, MonitorElement *> ctrs_;
   MonitorElement *crossSection_, *genEff_;
 };
