@@ -53,10 +53,15 @@ process.singleetrigFilter.HLTPaths = ['HLT_Ele10_LW_L1R','HLT_Ele15_SW_L1R','HLT
 process.incEETrigSequence=cms.Sequence(process.eetrigFilter)
 process.excMuMuTrigSequence=cms.Sequence(~process.eetrigFilter*process.mumutrigFilter)
 process.excEmuTrigSequence=cms.Sequence(~process.eetrigFilter*~process.mumutrigFilter*process.emutrigFilter)
+process.incSingleETrigSequence=cms.Sequence(process.singleetrigFilter)
+process.excSingleMuTrigSequence=cms.Sequence(~process.singleetrigFilter*process.singlemutrigFilter)
+
 if( not runOnMC ):
     if(applyTrigSequence=='ee') :  process.trigSequence = cms.Sequence(process.incEETrigSequence*process.triggerCounter)
     if(applyTrigSequence=='mumu'): process.trigSequence = cms.Sequence(process.excMuMuTrigSequence*process.triggerCounter)
     if(applyTrigSequence=='emu') : process.trigSequence = cms.Sequence(process.excEmuTrigSequence*process.triggerCounter)
+    if(applyTrigSequence=='e') :   process.trigSequence = cms.Sequence(process.incSingleETrigSequence*process.triggerCounter)
+    if(applyTrigSequence=='mu') :  process.trigSequence = cms.Sequence(process.excSingleMuTrigSequence*process.triggerCounter)
 
 # ==================================================================================
 # run the deterministic annealing vertex
