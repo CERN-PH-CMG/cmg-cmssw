@@ -4,7 +4,7 @@ import os,sys
 import json
 
 if(len(sys.argv)<2):
-    print 'submitSamples.py samples.json scriptToRunOnBatch.sh <sampleTag>'
+    print 'submitSamples.py samples.json cfgFile.py/script.sh <sampleTag=all> <runOnBatch=True>'
     exit(-1)
 
 from CMGTools.HtoZZ2l2nu.localPatTuples_cff import *
@@ -13,12 +13,13 @@ from CMGTools.HtoZZ2l2nu.localPatTuples_cff import *
 samplesDB = sys.argv[1]
 jsonFile = open(samplesDB,'r')
 procList=json.load(jsonFile,encoding='utf-8').items()
-scriptToRun=sys.argv[2]
-sampleTag=''
+cfgFile=sys.argv[2]
+sampleTag='all'
 if(len(sys.argv)>3) :sampleTag=sys.argv[3]
+runOnBatch=False
+if(len(sys.argv)>4) : runOnBatch=int(sys.argv[5])
 
 #run over sample
-fperjob=5
 for proc in procList :
 
     #run over processes
@@ -28,13 +29,15 @@ for proc in procList :
         data = desc['data']
         for d in data :
             tag = d['dtag']
-            if(len(sampleTag)>0 and tag.find(sampleTag)<0 ): continue
-            
+            if(sampleTag!="all" and tag.find(sampleTag)<0 ): continue
             files=getLocalSourceFor( tag )
-            print tag
-            print files
-            if(files is None):continue
-            nfiles=len(getLocalSourceFor( tag ) )
-            njobs=nfiles/fperjob+1
-            for ijob in range(njobs) :
-                os.system('submit2batch.sh ' + scriptToRun + ' ' + tag + ' ' + str(ijob*fperjob) + ' ' + str(fperjob))
+
+            if(runOnBatch):
+                fperjob=5
+                if(files is None):continue
+                nfiles=len(getLocalSourceFor( tag ) )
+                njobs=nfiles/fperjob+1
+                for ijob in range(njobs) :
+                    os.system('submit2batch.sh ' + cfgFile + ' ' + tag + ' ' + str(ijob*fperjob) + ' ' + str(fperjob))
+            else :
+                os.system('cmsRun ' + cfgFile + ' ' + tag)
