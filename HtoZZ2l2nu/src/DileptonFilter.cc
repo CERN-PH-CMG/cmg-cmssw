@@ -24,8 +24,8 @@ namespace dilepton{
 	  reco::CandidatePtr lep1Ptr = selLeptons[ilep];
 	  reco::VertexRef v1=
 	    dynamic_cast<const pat::Electron *>( lep1Ptr.get() ) ?
-	    vertex::getClosestVertexTo<pat::Electron>( dynamic_cast<const pat::Electron *>(lep1Ptr.get()), selVertices, iSetup,true) :
-	    vertex::getClosestVertexTo<pat::Muon>( dynamic_cast<const pat::Muon *>(lep1Ptr.get()), selVertices, iSetup,true) ;
+	    vertex::getClosestVertexTo<reco::GsfTrack>( dynamic_cast<const pat::Electron *>(lep1Ptr.get())->gsfTrack().get(), selVertices, iSetup,true) :
+	    vertex::getClosestVertexTo<reco::Track>( dynamic_cast<const pat::Muon *>(lep1Ptr.get())->innerTrack().get() , selVertices, iSetup,true) ;
 	  if(v1.get()==0) continue;
 
 	  //iterate over the second lepton
@@ -34,8 +34,8 @@ namespace dilepton{
 	      reco::CandidatePtr lep2Ptr = selLeptons[jlep];
 	      reco::VertexRef v2=
 		dynamic_cast<const pat::Electron *>( lep2Ptr.get() ) ?
-		vertex::getClosestVertexTo<pat::Electron>( dynamic_cast<const pat::Electron *>(lep2Ptr.get()), selVertices, iSetup,true) :
-		vertex::getClosestVertexTo<pat::Muon>( dynamic_cast<const pat::Muon *>(lep2Ptr.get()), selVertices, iSetup,true) ;
+		vertex::getClosestVertexTo<reco::GsfTrack>( dynamic_cast<const pat::Electron *>(lep2Ptr.get())->gsfTrack().get(), selVertices, iSetup,true) :
+		vertex::getClosestVertexTo<reco::Track>( dynamic_cast<const pat::Muon *>(lep2Ptr.get())->innerTrack().get(), selVertices, iSetup,true) ;
 	      if(v2.get()==0) continue;	      
 
 	      //same vertex must be assigned

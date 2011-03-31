@@ -43,12 +43,12 @@ namespace vertex
   template<class T>
   reco::VertexRef getClosestVertexTo(const T *trk, std::vector<reco::VertexRef> &selVertices, const edm::EventSetup &iSetup, bool is3d=true)
     {
-
       reco::VertexRef bestvtx;
       double bestDz(1.0e7);
       for(std::vector<reco::VertexRef>::iterator vIt = selVertices.begin(); vIt != selVertices.end(); vIt++)
 	{
-	  double dz = fabs(vIt->get()->z() - trk->vz());
+	  double dz = fabs( trk->dz( vIt->get()->position() ) );
+	  //double dz = fabs( vIt->get()->z() - trk->vz() );
 	  if( dz>bestDz ) continue;
 	  bestvtx=*vIt;
 	  bestDz=dz;

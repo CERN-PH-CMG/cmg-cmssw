@@ -62,9 +62,9 @@ def getLocalSourceFor( theLocalSrc='GluGluToH200ToZZTo2L2Nu') :
     if( theLocalSrc=='ZZtoAnything_FlatPU')       : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/cerminar/ZZllvv_sel3/ZZtoAnything_FlatPU')
 
     #data
-    if( theLocalSrc=='Collisions2011_DoubleMuon' ) : return fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/Collisions2011/DoubleMuon_v2')
-    if( theLocalSrc=='Collisions2011_DoubleElectron' ) : return fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/Collisions2011/DoubleElectron_v2')
-    if( theLocalSrc=='Collisions2011_MuEG' ) : return fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/Collisions2011/MuEG_v2')
+    if( theLocalSrc=='Collisions2011_DoubleMuon' ) : return fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/DoubleMuon')
+    if( theLocalSrc=='Collisions2011_DoubleElectron' ) : return fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/DoubleElectron')
+    if( theLocalSrc=='Collisions2011_MuEG' ) : return fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/MuEG')
 
 
         
