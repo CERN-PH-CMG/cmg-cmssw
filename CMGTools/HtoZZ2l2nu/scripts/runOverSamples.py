@@ -58,7 +58,6 @@ def runOverSamples(samplesDB,func,debugFunc=None,integratedLumi=1.0) :
     generalLabel='CMS preliminary,#sqrt{s}=7 TeV, #int L=' +str(integratedLumi)+' pb^{-1}'
 
     from CMGTools.HtoZZ2l2nu.localPatTuples_cff import fillFromCastor
-    from getRunInfoForLocalSample import getTotalRunInfo
 
     #run over sample
     for proc in procList :
@@ -83,11 +82,10 @@ def runOverSamples(samplesDB,func,debugFunc=None,integratedLumi=1.0) :
             #run over items in process
             data = getByLabel(desc,'data')
             for d in data :
-                dir = getByLabel(d,'dir')
-                if( not  os.path.isdir(dir) and dir.find('castor')<0 and dir.find('.root')<0 ): continue
 
                 #get the plots
-                plots=func(dir)
+                plots=func(d,isdata)
+                dtag=getByLabel(d,'dtag')
                 if(plots==None):continue
                 if(len(plots)==0): continue
 
@@ -98,19 +96,9 @@ def runOverSamples(samplesDB,func,debugFunc=None,integratedLumi=1.0) :
                     sfactor = getByLabel(d,'sfactor',1)
                     xsec = getByLabel(d,'xsec',-1)
                     br = getByLabel(d,'br',1)
-                    fnames=[]
-                    if(dir.find("castor")>0) : fnames = fillFromCastor(dir)
-                    else :
-                        lfnames = os.listdir(dir)
-                        for f in lfnames :
-                            fnames.append( dir + '/' + f )
-                    
-                    origevents=getTotalRunInfo(fnames,0,len(fnames))[0]
-                    if(origevents==0) : continue
-                    #origevents = getByLabel(d,'origevents',-1)
                     normto = getByLabel(d,'normto',-1)
-                    if(xsec>0 and origevents>0) :
-                        weight = integratedLumi*sfactor*xsec*br/origevents
+                    if(xsec>0) :
+                        weight = integratedLumi*sfactor*xsec*br
                     elif(normto>0) :
                         weight = sfactor*normto
                         absNorm=True
@@ -118,7 +106,7 @@ def runOverSamples(samplesDB,func,debugFunc=None,integratedLumi=1.0) :
                 #book keep the result
                 iplot=0
                 for p in plots.items():
-
+                    
                     #create the base plot for this sample if non existing
                     if(len(procplots)<=iplot):
                         newname=p[1].GetName()+'_'+str(len(stackplots))
@@ -135,7 +123,7 @@ def runOverSamples(samplesDB,func,debugFunc=None,integratedLumi=1.0) :
                     else : p[1].Scale(weight)
 
                     #add to base plot
-                    print ' Normalizing plots from ' + dir + ' with abs=' + str(absNorm) + ' and weight=' + str(weight) 
+                    print ' Normalizing plots from ' + dtag + ' with abs=' + str(absNorm) + ' and weight=' + str(weight) 
                     procplots[iplot].Add(p[1])
                     iplot=iplot+1
 
