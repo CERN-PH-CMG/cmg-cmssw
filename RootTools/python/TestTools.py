@@ -32,7 +32,7 @@ def getEntries(rootFile, treeName = None):
     if tree is not None:
         entries = tree.GetEntries()
     return entries
-        
+
 def getCfg(path):
     cfg = os.path.expandvars(os.path.join('$CMSSW_BASE','src',path))
     if not os.path.exists(cfg):
@@ -44,31 +44,31 @@ def parseCfg(path):
     g = {}
     execfile(path,g,l)
     return (l,g)
-    
+
 def getOutputFiles(path):
-    
+
     l,g = parseCfg(path)
     tupleFile = l['process'].out.fileName.value()
     histFile = l['process'].TFileService.fileName.value()
-    
+
     pwd = os.getcwd()
-    
+
     return (os.path.join(pwd,tupleFile),os.path.join(pwd,histFile))
 
 class CFGTest(unittest.TestCase):
-    
+
     #this is a bit of a hack, but works OK
     _setUpOnce = False
     cfgsRunOnceCache = {}
-    
+
     def __init__(self,methodName):
         unittest.TestCase.__init__(self, methodName)
 
         self.cfgs = []
         self.cfgsCache = {}
-        
+
         self.cfgsRunOnce = []
-    
+
     def setupOnce(self):
         """Like setUp but only called once per TestCase"""
         if self.__class__._setUpOnce:
@@ -78,9 +78,9 @@ class CFGTest(unittest.TestCase):
             cfg = getCfg(c)
             tupleFile, histFile = getOutputFiles(cfg)
             stdout,stderr = cmsRun(cfg)
-            
+
             self.__class__.cfgsRunOnceCache[c] = (stdout,tupleFile,histFile,stderr)
-            
+
     def tearDownOnce(self):
         """Like tearDown, but only called at the end of all test cases"""
         #clean up the files
@@ -91,7 +91,7 @@ class CFGTest(unittest.TestCase):
             except:
                 pass
         self.__class__.cfgsRunOnceCache.clear()
-        
+
     def __del__(self):
         self.tearDownOnce()
 
@@ -100,25 +100,25 @@ class CFGTest(unittest.TestCase):
         for key, val in self.__class__.cfgsRunOnceCache.iteritems():
             self.assertTrue(os.path.exists(val[1]),"The file '%s' is missing" % val[1])
             self.assertTrue(os.path.exists(val[2]),"The file '%s' is missing" % val[2])
-            
+
     def testSetupFilesExist(self):
         """Tests that the files created by setUp exist"""
         for key, val in self.cfgsCache.iteritems():
             self.assertTrue(os.path.exists(val[1]),"The file '%s' is missing" % val[1])
             self.assertTrue(os.path.exists(val[2]),"The file '%s' is missing" % val[2])
-            
+
     def testSetupOnceExceptions(self):
-        """Looks in the stdout for the word 'Exception'"""
+        """Looks in the stdout and stderr for the word 'Exception'"""
         for key, val in self.__class__.cfgsRunOnceCache.iteritems():
             self.assertFalse('Exception' in val[0],'The stdout should not have any exceptions')
             self.assertFalse('Exception' in val[3],'The stderr should not have any exceptions')
-            
+
     def testSetupExceptions(self):
-        """Looks in the stdout for the word 'Exception'"""
+        """Looks in the stdout and stderr for the word 'Exception'"""
         for key, val in self.cfgsCache.iteritems():
             self.assertFalse('Exception' in val[0],'The stdout should not have any exceptions')
             self.assertFalse('Exception' in val[3],'The stderr should not have any exceptions')
-        
+
     def setUp(self):
         self.setupOnce()
         for c in self.cfgs:
@@ -127,7 +127,7 @@ class CFGTest(unittest.TestCase):
             stdout,stderr = cmsRun(cfg)
 
             self.cfgsCache[c] = (stdout,tupleFile,histFile,stderr)
-            
+
     def tearDown(self):
         for key, val in self.cfgsCache.iteritems():
             try:
@@ -136,5 +136,3 @@ class CFGTest(unittest.TestCase):
             except Exception, e:
                 print 'tearDown: Error cleaning up',e
         self.cfgsCache.clear()
-        
-        
