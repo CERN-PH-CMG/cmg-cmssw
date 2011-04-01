@@ -4,7 +4,7 @@ import os,sys
 import json
 
 if(len(sys.argv)<2):
-    print 'submitSamples.py samples.json cfgFile.py/script.sh <sampleTag=all> <runOnBatch=True>'
+    print 'submitSamples.py samples.json cfgFile.py/script.sh <sampleTag=all> <runOnBatch=0>'
     exit(-1)
 
 from CMGTools.HtoZZ2l2nu.localPatTuples_cff import *
@@ -17,7 +17,7 @@ cfgFile=sys.argv[2]
 sampleTag='all'
 if(len(sys.argv)>3) :sampleTag=sys.argv[3]
 runOnBatch=False
-if(len(sys.argv)>4) : runOnBatch=int(sys.argv[5])
+if(len(sys.argv)>4) : runOnBatch=int(sys.argv[4])
 
 #run over sample
 for proc in procList :

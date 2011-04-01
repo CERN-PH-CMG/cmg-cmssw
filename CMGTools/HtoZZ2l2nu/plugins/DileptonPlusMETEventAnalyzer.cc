@@ -92,6 +92,8 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
       
       //jets
       results_[cat+"_jetpt"]    = formatPlot( newDir.make<TH1F>(cat+"_jetpt",";p_{T} [GeV/c]; Jets",100,0,200), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_jeteta"]    = formatPlot( newDir.make<TH1F>(cat+"_jeteta",";#eta; Jets",100,-2.5,2.5), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_jetfassoc"]    = formatPlot( newDir.make<TH1F>(cat+"_jetfassoc",";f_{assoc}; Jets",100,0,1), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_njets"]    = formatPlot( newDir.make<TH1F>(cat+"_njets",";Jet multiplicity; Events",4,0,4), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_bmult"]    = formatPlot( newDir.make<TH1F>(cat+"_bmult",";b tag multiplicity (TCHEL); Events",4,0,4), 1,1,1,20,0,false,true,1,1,1);
       for(int ibin=1; ibin<=((TH1F *)results_[cat+"_njets"])->GetXaxis()->GetNbins(); ibin++)
@@ -209,6 +211,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
       const reco::MET *origMet = dynamic_cast<const reco::MET *>(themet->originalObject());
       metsig=origMet->significance();
     }catch(std::exception &e){
+      metsig=themet->significance();
     }
     getHist(istream+"_met")->Fill(metP.Pt());
     getHist(istream+"_metsig")->Fill(metsig);
@@ -225,6 +228,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
       if(btag>1.74) nbjets+=1; //loose point
       getHist(istream+"_btags")->Fill(btag);
       getHist(istream+"_jetpt")->Fill(jet->pt());
+      getHist(istream+"_jeteta")->Fill(jet->eta());
+      getHist(istream+"_jetfassoc")->Fill( jet::fAssoc(jet.get(),primVertex) );
     }
     getHist(istream+"_njets")->Fill(njets);
     getHist(istream+"_bmult")->Fill(nbjets);
@@ -309,7 +314,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 //
 void DileptonPlusMETEventAnalyzer::endLuminosityBlock(const edm::LuminosityBlock & iLumi, const edm::EventSetup & iSetup)
 {
-  cout << "[DileptonPlusMETEventAnalyzer::endLuminosityBlock]" << endl;
+  //  cout << "[DileptonPlusMETEventAnalyzer::endLuminosityBlock]" << endl;
   TString streams[]={"ee","mumu","emu"};
   edm::Handle<edm::MergeableCounter> ctrHandle;
   iLumi.getByLabel("startCounter", ctrHandle);
