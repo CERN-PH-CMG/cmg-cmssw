@@ -22,6 +22,7 @@ def getLocalSourceFor( theLocalSrc='GluGluToH200ToZZTo2L2Nu') :
     prod=''    
     if( theLocalSrc.find('_')>0 ):
         dtag = theLocalSrc.rsplit('_',1)
+        print dtag
         if(len(dtag)>1):
             prod='_'+dtag[1]
             if(prod.find('Spring11')<0) : prod=''
