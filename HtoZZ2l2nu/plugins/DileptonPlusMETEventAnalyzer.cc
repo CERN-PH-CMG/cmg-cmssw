@@ -95,6 +95,7 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
       results_[cat+"_jeteta"]    = formatPlot( newDir.make<TH1F>(cat+"_jeteta",";#eta; Jets",100,-2.5,2.5), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_jetfassoc"]    = formatPlot( newDir.make<TH1F>(cat+"_jetfassoc",";f_{assoc}; Jets",100,0,1), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_njets"]    = formatPlot( newDir.make<TH1F>(cat+"_njets",";Jet multiplicity; Events",4,0,4), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_nleptons"]    = formatPlot( newDir.make<TH1F>(cat+"_nleptons",";Lepton multiplicity; Events",4,0,4), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_bmult"]    = formatPlot( newDir.make<TH1F>(cat+"_bmult",";b tag multiplicity (TCHEL); Events",4,0,4), 1,1,1,20,0,false,true,1,1,1);
       for(int ibin=1; ibin<=((TH1F *)results_[cat+"_njets"])->GetXaxis()->GetNbins(); ibin++)
 	{
@@ -102,10 +103,13 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
 	  if(ibin==((TH1F *)results_[cat+"_njets"])->GetXaxis()->GetNbins()) ilabel="#geq"+ilabel;
 	  ((TH1F *)results_[cat+"_njets"])->GetXaxis()->SetBinLabel(ibin,ilabel);
 	  ((TH1F *)results_[cat+"_bmult"])->GetXaxis()->SetBinLabel(ibin,ilabel);
+	  ((TH1F *)results_[cat+"_nleptons"])->GetXaxis()->SetBinLabel(ibin,ilabel);
 	}
       results_[cat+"_btags"]             = formatPlot( newDir.make<TH1F>(cat+"_btags",";b tags (TCHE); Jets",100,-0.5,2), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_met"]               = formatPlot( newDir.make<TH1F>(cat+"_met", ";#slash{E}_{T} [GeV/c]; Events", 30,  0.,300.), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_metsig"]            = formatPlot( newDir.make<TH1F>(cat+"_metsig", ";#slash{E}_{T} significance; Events", 100,  0.,100.), 1,1,1,20,0,false,true,1,1,1);
+
+      results_[cat+"_othermT_individual"] = formatPlot( newDir.make<TH1F>(cat+"_othermT_individual",";Transverse mass(other leptons,MET) [GeV/c^{2}]; Events",100,0,500), 1,1,1,20,0,false,true,1,1,1);
       
       //split the analysis according to the jet multiplicity
       for(size_t jstream=0; jstream<sizeof(jetmult)/sizeof(TString); jstream++)
@@ -186,8 +190,9 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     getHist(istream+"_vertex_pt")->Fill(primVertex->p4().pt());
     for(std::vector<reco::VertexRef>::iterator vit=selVertices.begin(); vit != selVertices.end(); vit++)
     {
+      if(vit->get()==primVertex) continue;
       getHist(istream+"_othervertex_sumpt")->Fill(vertex::getVertexMomentumFlux(vit->get()));
-    	getHist(istream+"_othervertex_pt")->Fill(vit->get()->p4().pt());
+      getHist(istream+"_othervertex_pt")->Fill(vit->get()->p4().pt());
     }
 
     //basic dilepton kinematics
@@ -219,7 +224,28 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //require MET back-to-back to dilepton
     float dphiZ2met=dileptonP.DeltaPhi(metP);
     if(fabs(dphiZ2met)<TMath::Pi()/2) return;
-    
+
+    //check other leptons in the event
+    int lepMult(2);
+    for (pat::eventhypothesis::Looper<pat::Electron> ele = evhyp.loopAs<pat::Electron>("electron"); ele; ++ele) 
+      {
+	lepMult++;
+	TLorentzVector lepP(ele->px(),ele->py(),ele->pz(), ele->energy());
+	float dphi=fabs(metP.DeltaPhi(lepP));
+	float mTlm=TMath::Sqrt(2*metP.Pt()*lepP.Pt()*(1-TMath::Cos(dphi)));
+	getHist(istream+"_othermT_individual")->Fill(mTlm);
+      }
+    for (pat::eventhypothesis::Looper<pat::Muon> mu = evhyp.loopAs<pat::Muon>("muon"); mu; ++mu) 
+      {
+	lepMult++;
+	TLorentzVector lepP(mu->px(),mu->py(),mu->pz(), mu->energy());
+	float dphi=fabs(metP.DeltaPhi(lepP));
+	float mTlm=TMath::Sqrt(2*metP.Pt()*lepP.Pt()*(1-TMath::Cos(dphi)));
+	getHist(istream+"_othermT_individual")->Fill(mTlm);
+      }
+    getHist(istream+"_nleptons")->Fill(lepMult);
+
+
     //count the jets in the event
     std::vector<reco::CandidatePtr> seljets= evhyp.all("jet");
     int njets( seljets.size() ), nbjets(0);
