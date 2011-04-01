@@ -26,8 +26,10 @@ DEFINE_FWK_MODULE(GenericPOHistograms);
 DEFINE_FWK_MODULE(GenericPatMETHistograms);
 DEFINE_FWK_MODULE(CmgElectronHistograms);
 DEFINE_FWK_MODULE(CmgMuonHistograms);
+DEFINE_FWK_MODULE(CmgHemiHistograms);
 DEFINE_FWK_MODULE(CmgDiMuonHistograms);
 DEFINE_FWK_MODULE(CmgDiElectronHistograms);
+DEFINE_FWK_MODULE(CmgDiHemiHistograms);
 
 DEFINE_FWK_MODULE(CmgDiMuonDataSet);
 
