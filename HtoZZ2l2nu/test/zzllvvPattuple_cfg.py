@@ -1,8 +1,11 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 # FIXME: check the GT for JECs
-#process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-#process.GlobalTag.globaltag = 'GR_R_39X_V6::All'
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+if ( not runOnMC ):
+    process.GlobalTag.globaltag = 'GR_R_311_V2::All'
+else:
+    process.GlobalTag.globaltag = 'START311_V2::All'
 
 process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True),
@@ -14,6 +17,7 @@ process.options = cms.untracked.PSet(
 #
 from CMGTools.HtoZZ2l2nu.localPatTuples_cff import fillFromCastor
 process.source.fileNames=fillFromCastor('/castor/cern.ch/cms/store/data/Run2011A/DoubleElectron/RECO/PromptReco-v1/000/161/311')
+#process.source.fileNames = cms.untracked.vstring('/store/data/Run2010A/MinimumBias/RAW-RECO/v6/000/144/114/CCDC14CB-61BB-DF11-A07F-0025B3E063E8.root')
 if( not runOnMC and useLocalLumiSelection):
     import PhysicsTools.PythonAnalysis.LumiList as LumiList
     import FWCore.ParameterSet.Types as CfgTypes
