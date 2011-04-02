@@ -3,7 +3,7 @@ import os,sys
 output=sys.argv[1]
 if(len(sys.argv)>2):
   jsonfile = sys.argv[2]
-  os.system('estimatePileup.py --saveRuns -i '+ jsonfile + ' ' + output)
+  os.system('estimatePileup.py --maxPileupBin=20 --saveRuns -i '+ jsonfile + ' ' + output)
 
 import ROOT
 from ROOT import TFile,TGraphAsymmErrors
