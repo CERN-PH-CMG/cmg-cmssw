@@ -22,7 +22,7 @@
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "FWCore/Framework/interface/LuminosityBlock.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
-#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 #include "TH1.h"
 #include "TH2.h"
@@ -79,19 +79,19 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
 
       //lepton control
       results_[cat+"_nleptons"]    = formatPlot( newDir.make<TH1F>(cat+"_nleptons",";Lepton multiplicity; Events",4,2,6), 1,1,1,20,0,false,true,1,1,1);
-      for(int ibin=1; ibin<=((TH1F *)results_[cat+"_njets"])->GetXaxis()->GetNbins(); ibin++)
+      for(int ibin=1; ibin<=((TH1F *)results_[cat+"_nleptons"])->GetXaxis()->GetNbins(); ibin++)
         {
           TString ilabel(""); ilabel+=(ibin+1);
-          if(ibin==((TH1F *)results_[cat+"_njets"])->GetXaxis()->GetNbins()) ilabel="#geq"+ilabel;
+          if(ibin==((TH1F *)results_[cat+"_nleptons"])->GetXaxis()->GetNbins()) ilabel="#geq"+ilabel;
 	  ((TH1F *)results_[cat+"_nleptons"])->GetXaxis()->SetBinLabel(ibin,ilabel);
 	}
       
       //dilepton control
-      results_[cat+"_dilepton_mass"]=formatPlot( newDir.make<TH1F>(cat+"_dilepton_mass", ";Invariant Mass(l,l') [GeV/c^{2}]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_dilepton_mass"]=formatPlot( newDir.make<TH1F>(cat+"_dilepton_mass", ";Invariant Mass(l,l') [GeV/c^{2}]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_dilepton_sumpt"]= formatPlot( newDir.make<TH1F>(cat+"_dilepton_sumpt", ";#Sigma |#vec{p}_{T}| [GeV/c]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_dilepton_pt"] = formatPlot( newDir.make<TH1F>(cat+"_dilepton_pt", ";|#Sigma #vec{p}_{T}| [GeV/c]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
-
+      results_[cat+"_dilepton_mass"]  =formatPlot( newDir.make<TH1F>(cat+"_dilepton_mass", ";Invariant Mass(l,l') [GeV/c^{2}]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_dilepton_sumpt"] = formatPlot( newDir.make<TH1F>(cat+"_dilepton_sumpt", ";#Sigma |#vec{p}_{T}| [GeV/c]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_dilepton_pt"]    = formatPlot( newDir.make<TH1F>(cat+"_dilepton_pt", ";|#Sigma #vec{p}_{T}| [GeV/c]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_dilepton_dphi"]  = formatPlot( newDir.make<TH1F>(cat+"_dilepton_dphi", ";|#Delta #phi| [rad]; Events", 100, 0.,3.2), 1,1,1,20,0,false,true,1,1,1);
+	  
       //vertex control
       results_[cat+"_vertex_sumpt"] = formatPlot( newDir.make<TH1F>(cat+"_vertex_sumpt", ";#Sigma_{tracks} p_{T} [GeV/c]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_othervertex_sumpt"] = formatPlot( newDir.make<TH1F>(cat+"_othervertex_sumpt", ";#Sigma_{tracks} p_{T} [GeV/c]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
@@ -115,7 +115,7 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
 	  ((TH1F *)results_[cat+"_njets"])->GetXaxis()->SetBinLabel(ibin,ilabel);
 	  ((TH1F *)results_[cat+"_bmult"])->GetXaxis()->SetBinLabel(ibin,ilabel);
 	}
-      results_[cat+"_btags"]             = formatPlot( newDir.make<TH1F>(cat+"_btags",";b tags (TCHE); Jets",100,-0.5,2), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_btags"]             = formatPlot( newDir.make<TH1F>(cat+"_btags",";b tags (TCHE); Jets",100,-5,45), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_met"]               = formatPlot( newDir.make<TH1F>(cat+"_met", ";#slash{E}_{T} [GeV/c]; Events", 30,  0.,300.), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_metsig"]            = formatPlot( newDir.make<TH1F>(cat+"_metsig", ";#slash{E}_{T} significance; Events", 100,  0.,100.), 1,1,1,20,0,false,true,1,1,1);
 
@@ -127,6 +127,7 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
 	  TString subcat=cat+jetmult[jstream];
 	  results_[subcat+"_dilepton_mass"]     = formatPlot( newDir.make<TH1F>(subcat+"_dilepton_mass", ";Invariant Mass(l,l') [GeV/c^{2}]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
 	  results_[subcat+"_dilepton_sumpt"]    = formatPlot( newDir.make<TH1F>(subcat+"_dilepton_sumpt", ";#Sigma |#vec{p}_{T}| [GeV/c]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
+	  results_[subcat+"_dilepton_dphi"]    = formatPlot( newDir.make<TH1F>(subcat+"_dilepton_dphi", ";|#Delta #phi| [rad]; Events", 100, 0.,3.2), 1,1,1,20,0,false,true,1,1,1);
 	  results_[subcat+"_dilepton_pt"]       = formatPlot( newDir.make<TH1F>(subcat+"_dilepton_pt", ";|#Sigma #vec{p}_{T}| [GeV/c]; Events", 100, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
 	  results_["met2"+subcat+"_mindphi"]    = formatPlot( newDir.make<TH1F>("met2"+subcat+"_mindphi", ";min #Delta #phi(#slash{E}_{T},l) [rad]; Events", 100, 0,3.2), 1,1,1,20,0,false,true,1,1,1);
 	  results_[subcat+"_met"]               = formatPlot( newDir.make<TH1F>(subcat+"_met", ";#slash{E}_{T} [GeV/c]; Events", 100,  0.,300.), 1,1,1,20,0,false,true,1,1,1);
@@ -214,6 +215,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     getHist(istream+"_dilepton_sumpt")->Fill(lepton1P.Pt()+lepton2P.Pt());
     getHist(istream+"_dilepton_pt")->Fill(dileptonP.Pt());
     getHist(istream+"_dilepton_mass")->Fill(dileptonP.M());
+    getHist(istream+"_dilepton_dphi")->Fill( TMath::Abs( lepton1P.DeltaPhi(lepton2P) ) );
     if(fabs(dileptonP.M()-91)>15) return;
     getHist(istream+"_cutflow")->Fill(3);
 
@@ -307,48 +309,54 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     else getHist(substream+"_mT_corr")->Fill(mTlmet[1],mTlmet[0]);
     getHist(substream+"_mT_individualsum")->Fill(mTlmet[0]+mTlmet[1]);
     getHist(substream+"_dilepton_mass")->Fill(dileptonP.M());
+    getHist(substream+"_dilepton_dphi")->Fill( TMath::Abs( lepton1P.DeltaPhi(lepton2P) ) );
     getHist(substream+"_dilepton_sumpt")->Fill(lepton1P.Pt()+lepton2P.Pt());
     getHist(substream+"_dilepton_pt")->Fill(dileptonP.Pt());
     getHist(substream+"_mT")->Fill(transverseMass);
+
+
+    //if event is MC debug gen level event
+    if(!event.isRealData())
+      {
+	try{
+	  edm::Handle<PileupSummaryInfo> puInfoH;
+	  event.getByLabel("addPileupInfo", puInfoH);
+	  getHist(istream+"_ngenpileup")->Fill(puInfoH->getPU_NumInteractions());
+	}catch(std::exception &e){
+	}
+      
+	/*
+	  cout << "\t Generator level event " << flush;
+	  int igenpart(0);
+	  for (pat::eventhypothesis::Looper<reco::GenParticle> genpart = h.loopAs<reco::GenParticle>("genparticle"); genpart; ++genpart) 
+	  {
+	  cout << "\t" << genpart->pdgId() << " -> " << flush;  
+	  
+	  int igenpartdau(0);
+	  char buf[20];
+	  sprintf(buf,"gendaughter_%d",igenpart);
+	  for(pat::eventhypothesis::Looper<reco::GenParticle> genpartdau = h.loopAs<reco::GenParticle>(buf); genpartdau; ++genpartdau)
+	  {
+	  cout << genpartdau->pdgId() << " (" << flush;
+
+	  char buf[20];
+	  sprintf(buf,"gendaughter_%d_%d",igenpart,igenpartdau);
+	  for(pat::eventhypothesis::Looper<reco::GenParticle> genpartgdau = h.loopAs<reco::GenParticle>(buf); genpartgdau; ++genpartgdau)
+	  cout << genpartgdau->pdgId() << " " << flush;
+	  
+	  cout << ") " << flush;
+	  igenpartdau++;
+	  }
+	  igenpart++;
+	  }
+	  cout << endl;
+	*/
+      }
     
   }catch(std::exception &e){
     std::cout << "[CleanEventAnalysis][analyze] failed with " << e.what() << std::endl;
   }
 
-  //if event is MC debug gen level event
-  if(!iEvent.isRealData())
-    {
-      edm::Handle<PileupSummaryInfo> puInfoH;
-      bool bPuInfo=iEvent.getByLabel("addPileupInfo", puInfoH);
-      if(bPuInfo) getHist(stream+"_ngenpileup")->Fill(puInfoH->getPU_NumInteractions());
-      
-      /*
-      cout << "\t Generator level event " << flush;
-      int igenpart(0);
-      for (pat::eventhypothesis::Looper<reco::GenParticle> genpart = h.loopAs<reco::GenParticle>("genparticle"); genpart; ++genpart) 
-	{
-	  cout << "\t" << genpart->pdgId() << " -> " << flush;  
-
-	  int igenpartdau(0);
-	  char buf[20];
-	  sprintf(buf,"gendaughter_%d",igenpart);
-	  for(pat::eventhypothesis::Looper<reco::GenParticle> genpartdau = h.loopAs<reco::GenParticle>(buf); genpartdau; ++genpartdau)
-	    {
-	      cout << genpartdau->pdgId() << " (" << flush;
-
-	      char buf[20];
-	      sprintf(buf,"gendaughter_%d_%d",igenpart,igenpartdau);
-	      for(pat::eventhypothesis::Looper<reco::GenParticle> genpartgdau = h.loopAs<reco::GenParticle>(buf); genpartgdau; ++genpartgdau)
-		cout << genpartgdau->pdgId() << " " << flush;
-	      
-	      cout << ") " << flush;
-	      igenpartdau++;
-	    }
-	  igenpart++;
-	}
-      cout << endl;
-      */
-    }
 }
 
 //
