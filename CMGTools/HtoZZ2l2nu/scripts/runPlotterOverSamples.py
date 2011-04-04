@@ -369,7 +369,7 @@ samplesDB = sys.argv[1]
 integratedLumi=1.0
 if(len(sys.argv)>2): integratedLumi = float(sys.argv[2])
 inputDir='data'
-if(len(sys.argv)>3): inputDir = float(sys.argv[3])
+if(len(sys.argv)>3): inputDir = sys.argv[3]
 
 #run the script
 print ' Integrated lumi is:' + str(integratedLumi) + ' /pb'
