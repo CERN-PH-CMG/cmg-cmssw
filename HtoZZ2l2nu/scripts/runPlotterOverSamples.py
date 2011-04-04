@@ -48,7 +48,7 @@ def getByLabel(desc,key,defaultVal=None) :
 """
 loops over files in directory and fills control histograms
 """
-def getControlPlots(descriptor,isData) :
+def getControlPlots(descriptor,isData,inputDir='data') :
 
     results={}
     
@@ -56,7 +56,7 @@ def getControlPlots(descriptor,isData) :
     if(len(tag)==0) : return results
     
     #open the file
-    url='data/'+tag+'.root'
+    url=inputDir+tag+'.root'
     file = ROOT.TFile(url)
     if(file is None): return results
     if(file.IsZombie()) : return results
@@ -120,8 +120,11 @@ def savePlotAsTable(stackplots=None,spimposeplots=None,dataplots=None,outUrl='ta
             for ibin in xrange(1,p.GetXaxis().GetNbins()) :
                 val = p.GetBinContent(ibin)
                 valerr= p.GetBinError(ibin)
-                roundRes = PDGRoundSym(val,valerr)
-                tabtex += ' & ' + roundRes[0] + ' $\\pm$ ' + roundRes[1][0] 
+                try :
+                    roundRes = PDGRoundSym(val,valerr)
+                    tabtex += ' & ' + roundRes[0] + ' $\\pm$ ' + roundRes[1][0]
+                except :
+                    tabtex += ' & ' 
             tabtex += '\\\\'
         tabtex += '\\hline'
     
@@ -266,11 +269,8 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='/data') :
 
     generalLabel='CMS preliminary,#sqrt{s}=7 TeV, #int L=' +str(integratedLumi)+' pb^{-1}'
 
-    from CMGTools.HtoZZ2l2nu.localPatTuples_cff import fillFromCastor
-
     #run over sample
     for proc in procList :
-
 
         #run over processes
         for desc in proc[1] :
@@ -293,7 +293,7 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='/data') :
             for d in data :
 
                 #get the plots
-                plots=getControlPlots(d,isdata)
+                plots=getControlPlots(d,isdata,inputDir)
                 dtag=getByLabel(d,'dtag')
                 if(plots==None):continue
                 if(len(plots)==0): continue
