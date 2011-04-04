@@ -48,6 +48,15 @@ def getLocalSourceFor( theLocalSrc='GluGluToH200ToZZTo2L2Nu') :
     if( theLocalSrc.find('WWtoAnything')>=0 )             : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/WWtoAnything/WWtoAnything'+prod)
     if( theLocalSrc.find('WZtoAnything')>=0 )             : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/WZtoAnything/WZtoAnything'+prod)
     if( theLocalSrc.find('ZZtoAnything')>=0 )             : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/ZZtoAnything/ZZtoAnything'+prod)
+    if( theLocalSrc.find('QCD_Pt-30to50')>=0 )             : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/QCD_Pt-30to50/QCD_Pt-30to50'+prod)
+    if( theLocalSrc.find('QCD_Pt-50to80')>=0 )             : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/QCD_Pt-50to80/QCD_Pt-50to80'+prod)
+    if( theLocalSrc.find('QCD_Pt-80to120')>=0 )             : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/QCD_Pt-80to120/QCD_Pt-80to120'+prod)
+    if( theLocalSrc.find('QCD_Pt-120to170')>=0 )             : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/QCD_Pt-120to170/QCD_Pt-120to170'+prod)
+    if( theLocalSrc.find('QCD_Pt-170to300')>=0 )             : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/QCD_Pt-170to300/QCD_Pt-170to300'+prod)
+    if( theLocalSrc.find('QCD_Pt-300to470')>=0 )             : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/QCD_Pt-300to470/QCD_Pt-300to470'+prod)
+    if( theLocalSrc.find('QCD_Pt-470to600')>=0 )             : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/QCD_Pt-470to600/QCD_Pt-470to600'+prod)
+    if( theLocalSrc.find('QCD_Pt-600to800')>=0 )             : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/QCD_Pt-600to800/QCD_Pt-600to800'+prod)
+    if( theLocalSrc.find('QCD_Pt-800to1000')>=0 )             : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/QCD_Pt-800to1000/QCD_Pt-800to1000'+prod)
 
     #Winter10
     if( theLocalSrc=='DYJetsToLL_PU2010' )        : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/cerminar/ZZllvv_sel3/DYJetsToLL_PU2010') 
@@ -63,9 +72,9 @@ def getLocalSourceFor( theLocalSrc='GluGluToH200ToZZTo2L2Nu') :
     if( theLocalSrc=='ZZtoAnything_FlatPU')       : return fillFromCastor('/castor/cern.ch//cms/store/cmst3/user/cerminar/ZZllvv_sel3/ZZtoAnything_FlatPU')
 
     #data
-    if( theLocalSrc=='Collisions2011_DoubleMuon' ) : return fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/DoubleMuon')
-    if( theLocalSrc=='Collisions2011_DoubleElectron' ) : return fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/DoubleElectron')
-    if( theLocalSrc=='Collisions2011_MuEG' ) : return fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/MuEG')
+    if( theLocalSrc=='Collisions2011_DoubleMuon' ) : return fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/DoubleMuon-v2')
+    if( theLocalSrc=='Collisions2011_DoubleElectron' ) : return fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/DoubleElectron-v2')
+    if( theLocalSrc=='Collisions2011_MuEG' ) : return fillFromCastor('/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/MuEG-v2')
 
 
         

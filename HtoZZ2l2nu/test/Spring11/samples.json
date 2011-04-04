@@ -134,10 +134,66 @@
          "color":"kYellow",
          "data":[
 		{
-		  "dtag":"tdb",	
+		  "dtag":"QCD_Pt-30to50_Spring11",	
 		  "dset":"",
-                  "dir":"",
-                  "xsec":1,
+                  "dir":"/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/QCD_Pt-30to50/QCD_Pt-30to50_Spring11",
+                  "xsec":53120000,
+		  "br":1
+                },
+		{
+		  "dtag":"QCD_Pt-50to80_Spring11",	
+		  "dset":"",
+                  "dir":"/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/QCD_Pt-50to80/QCD_Pt-50to80_Spring11",
+                  "xsec":6359000,
+		  "br":1
+                },
+		{
+		  "dtag":"QCD_Pt-80to120_Spring11",	
+		  "dset":"",
+                  "dir":"/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/QCD_Pt-80to120/QCD_Pt-80to120_Spring11",
+                  "xsec":784300,
+		  "br":1
+                },
+		{
+		  "dtag":"QCD_Pt-120to170_Spring11",	
+		  "dset":"",
+                  "dir":"/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/QCD_Pt-120to170/QCD_Pt-120to170_Spring11",
+                  "xsec":115100,
+		  "br":1
+                },
+		{
+		  "dtag":"QCD_Pt-170to300_Spring11",	
+		  "dset":"",
+                  "dir":"/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/QCD_Pt-170to300/QCD_Pt-170to300_Spring11",
+                  "xsec":24260,
+		  "br":1
+                },
+		{
+		  "dtag":"QCD_Pt-300to470_Spring11",	
+		  "dset":"",
+                  "dir":"/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/QCD_Pt-300to470/QCD_Pt-300to470_Spring11",
+                  "xsec":1168,
+		  "br":1
+                },
+		{
+		  "dtag":"QCD_Pt-470to600_Spring11",	
+		  "dset":"",
+                  "dir":"/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/QCD_Pt-470to600/QCD_Pt-470to600_Spring11",
+                  "xsec":70.22,
+		  "br":1
+                },
+		{
+		  "dtag":"QCD_Pt-600to800_Spring11",	
+		  "dset":"",
+                  "dir":"/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/QCD_Pt-600to800/QCD_Pt-600to800_Spring11",
+                  "xsec":15.55,
+		  "br":1
+                },
+		{
+		  "dtag":"QCD_Pt-800to1000_Spring11",	
+		  "dset":"",
+                  "dir":"/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/QCD_Pt-800to1000/QCD_Pt-800to1000_Spring11",
+                  "xsec":1.844,
 		  "br":1
                 }
 	   ]	
