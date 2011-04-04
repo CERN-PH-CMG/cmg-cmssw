@@ -6,7 +6,7 @@ from CMGTools.Common.selections.kinematics_cfi import kinematics
 
 hemiFactory = cms.PSet(
     inputCollection = cms.InputTag("dummy"),
-    maxCand = cms.uint32(1)
+    maxCand = cms.uint32(30)
     )
 
 cmgHemi = cms.EDFilter("HemispherePOProducer",
