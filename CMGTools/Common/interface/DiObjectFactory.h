@@ -83,7 +83,7 @@ typename cmg::DiObjectFactory<T,U>::event_ptr cmg::DiObjectFactory<T,U>::create(
     iEvent.getByLabel(leg2Label_,leg2Cands);
     
     edm::Handle<met_collection> metCands;
-    iEvent.getByLabel(metLabel_,metCands);
+    const bool metAvailable = iEvent.getByLabel(metLabel_,metCands);
     
     
     typename cmg::DiObjectFactory<T,U>::event_ptr result(new collection);
@@ -97,9 +97,9 @@ typename cmg::DiObjectFactory<T,U>::event_ptr cmg::DiObjectFactory<T,U>::create(
             if( sameCollection && (*it == *jt) ) continue;
             cmg::DiObject<T, U> cmgTmp = cmg::make(*it,*jt);
             cmg::DiObjectFactory<T, U>::set(std::make_pair(cmgTmp.leg1(),cmgTmp.leg2()),&cmgTmp);
-            if(metCands->size()){
+            if(metAvailable && metCands->size()){
                 cmg::DiObjectFactory<T, U>::set(std::make_pair(cmgTmp.leg1(),cmgTmp.leg2()),metCands->at(0),&cmgTmp);
-            }
+            }   
             result->push_back(cmgTmp);
       }
     }
