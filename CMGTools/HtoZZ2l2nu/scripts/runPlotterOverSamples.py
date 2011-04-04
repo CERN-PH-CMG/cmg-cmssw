@@ -6,7 +6,7 @@ from rounding import PDGRoundSym
 
 import ROOT
 ROOT.gSystem.Load('${CMSSW_BASE}/lib/${SCRAM_ARCH}/libCMGToolsHtoZZ2l2nu.so')
-from ROOT import formatPlot
+from ROOT import formatPlot, setStyle, showPlots, formatForCmsPublic, getNewCanvas
 
 """
 Converts ROOT constant to int
@@ -106,12 +106,12 @@ def savePlotAsTable(stackplots=None,spimposeplots=None,dataplots=None,outUrl='ta
         colfmt += 'c'
         colnames += ' & ' + href.GetXaxis().GetBinLabel(ibin)
     
-    tabtex =  '\begin{table}[htp]'
-    tabtex += '\begin{center}'
-    tabtex += '\caption{}'
-    tabtex += '\label{tab:table}'
-    tabtex += '\begin{tabular}{'+colfmt+'} \hline'
-    tabtex += 'Process ' + colnames + '\\ \hline\hline'    
+    tabtex =  '\\begin{table}[htp]'
+    tabtex += '\\begin{center}'
+    tabtex += '\\caption{}'
+    tabtex += '\\label{tab:table}'
+    tabtex += '\\begin{tabular}{'+colfmt+'} \\hline'
+    tabtex += 'Process ' + colnames + '\\\\ \\hline\\hline'    
 
     alllists = [stackplots, spimposeplots,dataplots ]
     for ll in alllists :
@@ -121,13 +121,13 @@ def savePlotAsTable(stackplots=None,spimposeplots=None,dataplots=None,outUrl='ta
                 val = p.GetBinContent(ibin)
                 valerr= p.GetBinError(ibin)
                 roundRes = PDGRoundSym(val,valerr)
-                tabtex += ' & ' + roundRes[0] + ' $\pm$ ' roundRes[1][0] 
-            tabtex += '\\'
-        tabtex += '\hline'
+                tabtex += ' & ' + roundRes[0] + ' $\\pm$ ' + roundRes[1][0] 
+            tabtex += '\\\\'
+        tabtex += '\\hline'
     
-    tabtex += '\end{tabular}'
-    tabtex += '\end{center}'
-    tabtex += '\end{table}'
+    tabtex += '\\end{tabular}'
+    tabtex += '\\end{center}'
+    tabtex += '\\end{table}'
 
     fileObj = open(outUrl,"w")
     fileObj.write(tabtex)
@@ -207,9 +207,9 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
         if(pname.find('emu')==0):  chtag='e#mu events'
         plotsToDisplay[chtag].append(pname)
         
-        if(pname.find('eq0jets')>0):  chtag += '(= 0 jets)'
-        if(pname.find('eq1jets')>0):  chtag +=' (= 1 jets)'
-        if(pname.find('geq2jets')>0): chtag +=' (#geq 2 jets)'
+        if(pname.find('eq0jets')>0):  chtag += ' (= 0 jets)'
+        if(pname.find('eq1jets')>0):  chtag += ' (= 1 jets)'
+        if(pname.find('geq2jets')>0): chtag += ' (#geq 2 jets)'
 
         plotLabel = generalLabel + '\\' + chtag
         leg=showPlots(c,stack,spimpose,data)
@@ -293,7 +293,7 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='/data') :
             for d in data :
 
                 #get the plots
-                plots=getControlPlots(d,isdata,inputdir)
+                plots=getControlPlots(d,isdata)
                 dtag=getByLabel(d,'dtag')
                 if(plots==None):continue
                 if(len(plots)==0): continue
@@ -343,12 +343,12 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='/data') :
                 else : spimposeplots.append(procplots)
             else : dataplots.append(procplots)
 
-    showControlPlots(stackplots,spimposeplots,dataplots,generalLabel,inputdir)
+    showControlPlots(stackplots,spimposeplots,dataplots,generalLabel,inputDir)
 
 
 # steer script
 if(len(sys.argv)<2):
-    print 'runOverSamples.py analysisScript.py samples.json integratedLumi=1 inputDir=data'
+    print 'runOverSamples.py samples.json integratedLumi=1 inputDir=data'
     exit()
 
 #import the module
@@ -365,15 +365,14 @@ if(len(sys.argv)<2):
 
 
 #configure 
-samplesDB = sys.argv[2]
+samplesDB = sys.argv[1]
 integratedLumi=1.0
+if(len(sys.argv)>2): integratedLumi = float(sys.argv[2])
 inputDir='data'
-if(len(sys.argv)>3): integratedLumi = float(sys.argv[3])
-if(len(sys.argv)>4): inputDir = float(sys.argv[4])
+if(len(sys.argv)>3): inputDir = float(sys.argv[3])
 
 #run the script
 print ' Integrated lumi is:' + str(integratedLumi) + ' /pb'
-print ' Running the following module: ' + modname
 print ' Samples defined in: ' +  samplesDB
 print ' Plots in: ' + inputDir
 runOverSamples( samplesDB, integratedLumi,inputDir )
