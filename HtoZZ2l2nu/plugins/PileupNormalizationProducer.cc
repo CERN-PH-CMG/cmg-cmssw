@@ -4,9 +4,10 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
-#include "TH1F.h"
-#include "TH2F.h"
+#include "TH1D.h"
+#include "TH2D.h"
 
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
 
@@ -17,8 +18,9 @@ public:
 private:
   std::map<std::string, edm::ParameterSet > objConfig;
   bool useVertexDistribution_;
-  TH1F *vertexDataH_;
-  TH2F *putovertexMCH_;
+  int fixPileupTo_;
+  TH1D *vertexDataH_, *fixedPileupH_, *puMCH_;
+  TH2D *putovertexMCH_;
 };
 
 
@@ -27,14 +29,15 @@ using namespace std;
 
 //
 PileupNormalizationProducer::PileupNormalizationProducer(const edm::ParameterSet &iConfig)
-  : useVertexDistribution_( iConfig.getParameter<bool>("useVertexDistribution") )
+  : useVertexDistribution_( iConfig.getParameter<bool>("useVertexDistribution") ),
+    fixPileupTo_( iConfig.getParameter<int>("fixPileupTo") )
 {
   produces<float>("puWeight");
 
   objConfig["Vertices"]= iConfig.getParameter<edm::ParameterSet>("Vertices");
 
   //taken from dimuon events in runs:
-  vertexDataH_ = new TH1F("vertex_data","data;Vertices;Events",25,0.,25.);
+  vertexDataH_ = new TH1D("vertex_data","data;Vertices;Events",25,0.,25.);
   vertexDataH_->SetBinContent(2,0.3515714);
   vertexDataH_->SetBinContent(3,1.155729);
   vertexDataH_->SetBinContent(4,1.808812);
@@ -47,7 +50,17 @@ PileupNormalizationProducer::PileupNormalizationProducer(const edm::ParameterSet
   vertexDataH_->SetBinContent(11,0.1664797);
 
   //taken from DY->MuMu (M>20, Powheg sample)) todo
-  putovertexMCH_ = new TH2F("pu_vertex_mc","simulation;Pileup;Vertices;Events",25,0.,25.,25,0.,25.);
+  putovertexMCH_ = new TH2D("pu_vertex_mc","simulation;Pileup;Vertices;weight",25,0.,25.,25,0.,25.);
+  puMCH_ = putovertexMCH_->ProjectionY("pu_mc");
+
+  //fixed pileup (take from poisson distribution)
+  if(fixPileupTo_>0)
+    {
+      fixedPileupH_ = new TH1D("fixpu",";Pileup;weight",25,0.,25.);
+      for(int ibin=1; ibin<=fixedPileupH_->GetXaxis()->GetNbins(); ibin++)
+	fixedPileupH_->SetBinContent(ibin, TMath::Poisson(ibin-1,fixPileupTo_) );
+      fixedPileupH_->Divide(puMCH_);
+    }
 }
 
 //
@@ -58,17 +71,41 @@ void PileupNormalizationProducer::produce(edm::Event &iEvent, const edm::EventSe
 
   auto_ptr<float> puWeight(new float);
 
-  if(useVertexDistribution_)
+  if(iEvent.isRealData())
     {
-      Handle<reco::VertexCollection> hVtx;
-      iEvent.getByLabel(objConfig["Vertices"].getParameter<edm::InputTag>("source"), hVtx);
-      std::vector<reco::VertexRef> selVertices = vertex::filter(hVtx,objConfig["Vertices"]);
-      float weight = vertexDataH_->GetBinContent( selVertices.size()+1 );
-      *puWeight=weight;
+      *puWeight=1.0;
     }
   else
     {
-      *puWeight=1.0;
+
+      //get the number of generated pileup events
+      edm::Handle<std::vector<PileupSummaryInfo> > puInfoH;
+      iEvent.getByType(puInfoH);
+      int npuevents(0);
+      if(puInfoH.isValid())
+	{
+	  for(std::vector<PileupSummaryInfo>::const_iterator it = puInfoH->begin(); it != puInfoH->end(); it++)
+	    {
+	      if(it->getBunchCrossing() !=0) continue;
+	      npuevents=it->getPU_NumInteractions();
+	    }
+	}
+
+      
+      if(fixPileupTo_>0)
+	*puWeight = fixedPileupH_->GetBinContent(npuevents+1);
+      else if(useVertexDistribution_)
+	{
+	  Handle<reco::VertexCollection> hVtx;
+	  iEvent.getByLabel(objConfig["Vertices"].getParameter<edm::InputTag>("source"), hVtx);
+	  std::vector<reco::VertexRef> selVertices = vertex::filter(hVtx,objConfig["Vertices"]);
+	  float weight = vertexDataH_->GetBinContent( selVertices.size()+1 );
+	  *puWeight=weight;
+	}
+      else
+	{
+	  *puWeight=1.0;
+	}
     }
 
   iEvent.put(puWeight,"puWeight");

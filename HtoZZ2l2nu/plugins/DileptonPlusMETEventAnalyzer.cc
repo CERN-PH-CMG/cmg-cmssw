@@ -102,6 +102,7 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
       //genpileup
       results_[cat+"_ngenpileup"] = formatPlot( newDir.make<TH1F>(cat+"_ngenpileup", ";Pileup; Events", 25, 0.,25.), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_ngoodvertex_ngenpileup"]  = formatPlot( newDir.make<TH2F>(cat+"_ngoodvertex_ngenpileup",";Pileup;Vertices; Events",25,0.,25.,25,0,25.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_ngenpileupOOT"] = formatPlot( newDir.make<TH1F>(cat+"_ngenpileupOOT", ";Out-of-time Pileup; Events", 25, 0.,25.), 1,1,1,20,0,false,true,1,1,1);
       
       //jets
       results_[cat+"_jetpt"]    = formatPlot( newDir.make<TH1F>(cat+"_jetpt",";p_{T} [GeV/c]; Jets",50,0,200), 1,1,1,20,0,false,true,1,1,1);
@@ -214,7 +215,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     getHist(istream+"_vertex_pt")->Fill(primVertex->p4().pt(),weight);
     for(std::vector<reco::VertexRef>::iterator vit=selVertices.begin(); vit != selVertices.end(); vit++)
       {
-	if(vit->get()==primVertex) continue;
+	if(vit->get()->position()==primVertex->position()) continue;
 	getHist(istream+"_othervertex_sumpt")->Fill(vertex::getVertexMomentumFlux(vit->get()),weight);
 	getHist(istream+"_othervertex_pt")->Fill(vit->get()->p4().pt(),weight);
       }
@@ -301,10 +302,10 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     getHist(substream+"_metsig")->Fill(metsig,weight);
     for(std::vector<reco::VertexRef>::iterator vit=selVertices.begin(); vit != selVertices.end(); vit++)
       {
-	TString hname=substream+"_othervertex2met_dphi";
-	if(vit->get()==primVertex) hname=substream+"_vertex2met_dphi";
 	TLorentzVector vrtxP(vit->get()->p4().px(),vit->get()->p4().py(),vit->get()->p4().pz(),vit->get()->p4().energy());
 	float dphi=vrtxP.DeltaPhi(metP);
+	TString hname=substream+"_othervertex2met_dphi";
+	if(vit->get()->position()==primVertex->position()) hname=substream+"_vertex2met_dphi";
 	getHist(hname)->Fill(dphi,weight);
       }
     
@@ -338,14 +339,23 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //if event is MC debug gen level event
     if(!event.isRealData())
       {
-	try{
-	  edm::Handle<PileupSummaryInfo> puInfoH;
-	  event.getByLabel("addPileupInfo", puInfoH);
-	  getHist(istream+"_ngenpileup")->Fill(puInfoH->getPU_NumInteractions(),weight);
-	  ((TH2 *)getHist(istream+"_ngoodvertex_ngenpileup"))->Fill(puInfoH->getPU_NumInteractions(),selVertices.size(),weight);
-	}catch(std::exception &e){
-	  cout << e.what() << endl;
-	}
+	edm::Handle<std::vector<PileupSummaryInfo> > puInfoH;
+	event.getByType(puInfoH);
+	if(puInfoH.isValid())
+	  {
+	    int npuOOT(0);
+	    for(std::vector<PileupSummaryInfo>::const_iterator it = puInfoH->begin(); it != puInfoH->end(); it++)
+	      {
+		TString puCat("");
+		if(it->getBunchCrossing() ==0)
+		  {
+		    getHist(istream+"_ngenpileup")->Fill(it->getPU_NumInteractions(),weight);
+		    ((TH2 *)getHist(istream+"_ngoodvertex_ngenpileup"))->Fill(it->getPU_NumInteractions(),selVertices.size(),weight);
+		  }
+		else npuOOT += it->getPU_NumInteractions();
+	      }
+	    getHist(istream+"_ngenpileupOOT")->Fill(npuOOT,weight);
+	  }
       
 	/*
 	  cout << "\t Generator level event " << flush;
