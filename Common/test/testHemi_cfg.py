@@ -39,6 +39,13 @@ process.load("CMGTools.Common.jet_cff")
 process.load("CMGTools.Common.hemi_cff")
 process.load("CMGTools.Common.diHemi_cff")
 
+# This just uses two small collections to test that everything works
+# without taking too much time.
+cfg_tmp = cms.PSet(process.cmgHemi.cfg.clone(inputCollection=
+                                             cms.VInputTag("cmgPFJetLead",
+                                                           "cmgPFJetLead")))
+process.cmgHemi = process.cmgHemi.clone(cfg=cfg_tmp)
+
 process.analysisSequence = cms.Sequence(
     process.jetSequence +
     process.hemiSequence +

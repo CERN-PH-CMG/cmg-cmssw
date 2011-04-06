@@ -88,15 +88,25 @@ cmg::HemisphereFactory::event_ptr
 cmg::HemisphereFactory::create(const edm::Event& iEvent,
                                const edm::EventSetup& iSetup) const
 {
-  edm::Handle<edm::View<reco::Candidate> > candidates;
   typedef std::vector<cmg::Hemisphere> collection;
   cmg::HemisphereFactory::event_ptr result(new collection);
-  iEvent.getByLabel(hemisphereLabel_, candidates);
+
+  // Step one is to take all candidates from all input collections and
+  // store them into a single vector.
+  std::vector<edm::Ptr<reco::Candidate> > candidates;
+  for (VInputTag::const_iterator it = hemisphereLabel_.begin();
+       it != hemisphereLabel_.end(); ++it) {
+    edm::Handle<edm::View<reco::Candidate> > cands;
+    iEvent.getByLabel(*it, cands);
+    for (size_t i = 0, n = cands->size(); i < n; ++i) {
+      candidates.push_back(edm::Ptr<reco::Candidate>(cands, i));
+    }
+  }
 
   // Problem at hand: divide all N candidates into two groups, and
   // generate all possible combinations. First group contains n
   // candidates, second group contains m = N - n candidates.
-  size_type numCand = candidates->size();
+  size_type numCand = candidates.size();
 
   // If there are too few or too many candidates, skip the event.
   if ((numCand < 2) || (numCand > maxNCand_)) {
@@ -112,9 +122,9 @@ cmg::HemisphereFactory::create(const edm::Event& iEvent,
     }
 
     double sumET = 0.;
-    for (edm::View<reco::Candidate>::const_iterator it = candidates->begin();
-         it != candidates->end(); ++it) {
-      sumET += it->et();
+    for (std::vector<edm::Ptr<reco::Candidate> >::const_iterator it = candidates.begin();
+         it != candidates.end(); ++it) {
+      sumET += (*it)->et();
     }
     double minImbalance = std::numeric_limits<double>::max();
     std::vector<size_t> bestCombination;
@@ -135,7 +145,7 @@ cmg::HemisphereFactory::create(const edm::Event& iEvent,
         double sumET0 = 0.;
         for (std::vector<size_t>::const_iterator it = indVec.begin();
              it != indVec.begin() + i; ++it) {
-          sumET0 += (*candidates)[*it].et();
+          sumET0 += candidates[*it]->et();
         }
         double diffET = abs(sumET - 2. * sumET0);
         if (diffET < minImbalance) {
@@ -165,9 +175,9 @@ cmg::HemisphereFactory::create(const edm::Event& iEvent,
     for (size_t i = 0; i != numCand; ++i) {
       if (std::binary_search(bestCombination.begin(),
                              bestCombination.end(), i)) {
-        tmp0.push_back(edm::Ptr<reco::Candidate>(candidates, i));
+        tmp0.push_back(candidates.at(i));
       } else {
-        tmp1.push_back(edm::Ptr<reco::Candidate>(candidates, i));
+        tmp1.push_back(candidates.at(i));
       }
     }
 
