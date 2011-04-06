@@ -155,12 +155,12 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 
     //get the weight for the event
     float weight=1;
-    try{
-      edm::Handle<float> puWeightHandle;
-      event.getByLabel("puWeights","puWeight",puWeightHandle);
-      weight = *(puWeightHandle.product());
-    }catch(std::exception &e){
-    }
+    if(!event.isRealData())
+      {
+	edm::Handle<float> puWeightHandle;
+	event.getByLabel("puWeights","puWeight",puWeightHandle);
+	if(puWeightHandle.isValid()) weight = *(puWeightHandle.product());
+      }
 
     //get objects for this event
     edm::Handle<std::vector<pat::EventHypothesis> > evHandle;
@@ -303,7 +303,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
       {
 	TString hname=substream+"_othervertex2met_dphi";
 	if(vit->get()==primVertex) hname=substream+"_vertex2met_dphi";
-	TLorentzVector vrtxP(primVertex->p4().px(),primVertex->p4().py(),primVertex->p4().pz(),primVertex->p4().energy());
+	TLorentzVector vrtxP(vit->p4().px(),vit->p4().py(),vit->p4().pz(),vit->p4().energy());
 	float dphi=vrtxP.DeltaPhi(metP);
 	getHist(hname)->Fill(dphi,weight);
       }

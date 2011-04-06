@@ -225,7 +225,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
 
         pad=c.cd(2)
         pad.SetPad(0,0.0,1.0,0.25);
-        leg=showMCtoDataComparison(pad,stack,data)
+        leg=showMCtoDataComparison(pad,stack,data,False)
         
         c.SaveAs(outputDir+'/'+pname+'.png')
         c.SaveAs(outputDir+'/'+pname+'.C')
@@ -357,7 +357,7 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
 
 # steer script
 if(len(sys.argv)<2):
-    print 'runOverSamples.py samples.json integratedLumi=1 inputDir=data outputDir=data/plots'
+    print 'runPlotterOverSamples.py samples.json integratedLumi=1 inputDir=data outputDir=data/plots'
     exit()
 
 #import the module
