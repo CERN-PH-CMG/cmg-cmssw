@@ -18,13 +18,13 @@ RA2Path = cms.Path(
     RA2SkimSequence
     )
 
-#razorPath = cms.Path(
-#    fullyHadronicCommonSequence +
-#    razorSkimSequence
-#    )
+razorPath = cms.Path(
+    fullyHadronicCommonSequence +
+    razorSkimSequence
+    )
 
 fullyHadronicSchedule = cms.Schedule(
 #    RA1Path,
-    RA2Path
-#    razorPath
+    RA2Path,
+    razorPath
     )

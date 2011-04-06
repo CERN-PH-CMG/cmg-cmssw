@@ -7,3 +7,4 @@ from CMGTools.Susy.Razor.razorEventContent_cff import *
 
 fullyHadronicEventContent = everything
 fullyHadronicEventContent += RA2EventContent
+fullyHadronicEventContent += razorEventContent
