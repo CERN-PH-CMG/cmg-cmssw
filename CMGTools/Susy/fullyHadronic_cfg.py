@@ -45,7 +45,7 @@ process.out.outputCommands = cms.untracked.vstring('drop *')
 process.out.outputCommands += fullyHadronicEventContent
 
 # process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('RA1Path','RA2Path','razorPath') )
-process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('RA2Path') )
+process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('RA2Path','razorPath') )
 
 process.TFileService = cms.Service(
     "TFileService",
