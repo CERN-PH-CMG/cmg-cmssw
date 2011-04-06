@@ -28,7 +28,7 @@ do
       -step=*)
       STEP=`echo $i | sed 's/[-a-zA-Z0-9]*=//'`
       ;;
-     -castor=*)
+      -castor=*)
       OUTDIR=`echo $i | sed 's/[-a-zA-Z0-9]*=//'`
       ;;
       *)
@@ -67,15 +67,25 @@ cd ${MYCMSSWDIR}/CMGTools/HtoZZ2l2nu/test
 cmsRun ${CFG} ${INPUTDIR} ${LOCALOUT} ${FFILE} ${STEP}
 cd -
 
-#move to LOCALOUT directory
+#move to OUTDIR directory if required
 if [ -z "$OUTDIR" ]
 then
     echo "Result is available in ${LOCALOUT}"
     exit -1
 fi
+case "$OUTDIR" in 
+    *castor*)
+    #copy to castor
+    rfmkdir $OUTDIR/${SRC}
+    rfcp $LOCALOUT $OUTDIR/${SRC}
+    rm $LOCALOUT
+    echo "Result is available in castor @ ${OUTDIR}/${SRC}"
+    ;;
+    *)
+    #copy locally
+    mkdir $OUTDIR/${SRC}
+    mv $LOCALOUT $OUTDIR/${SRC}
+    echo "Result is available in @ ${OUTDIR}/${SRC}"
+    ;;
+esac
 
-#copy to castor
-rfmkdir $OUTDIR/${SRC}
-rfcp $LOCALOUT $OUTDIR/${SRC}
-rm $LOCALOUT
-echo "Result is available in castor @ ${OUTDIR}/${SRC}"
