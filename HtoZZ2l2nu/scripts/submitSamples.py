@@ -30,5 +30,5 @@ for proc in procList :
             tag = d['dtag']
             if(runOnBatch):
                 os.system('submit2batch.sh ' + scriptFile + ' ' + tag + ' ' + params)
-            else :
+            else :2
                 os.system('cmsRun ' + scriptFile + ' ' + tag + ' ' + params)

@@ -228,7 +228,7 @@ void fixExtremities(TH1 *h,bool addOverflow, bool addUnderflow)
 }
 
 //
-void formatForCmsPublic(TCanvas * c, TLegend *leg, TString title, int nsamp, float legx, float legy, float legw, float legh, TString legopt)
+void formatForCmsPublic(TPad * c, TLegend *leg, TString title, int nsamp, float legx, float legy, float legw, float legh, TString legopt)
 {
   // float legx1=0.56, legx2=0.91;
   float legx1=legx, legx2=legx+legw;
