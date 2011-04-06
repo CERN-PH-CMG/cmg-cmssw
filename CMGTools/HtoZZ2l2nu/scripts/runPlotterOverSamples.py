@@ -6,7 +6,7 @@ from rounding import PDGRoundSym
 
 import ROOT
 ROOT.gSystem.Load('${CMSSW_BASE}/lib/${SCRAM_ARCH}/libCMGToolsHtoZZ2l2nu.so')
-from ROOT import formatPlot, setStyle, showPlots, formatForCmsPublic, getNewCanvas
+from ROOT import formatPlot, setStyle, showPlots, formatForCmsPublic, getNewCanvas, showMCtoDataComparison
 
 """
 Converts ROOT constant to int
@@ -56,7 +56,7 @@ def getControlPlots(descriptor,isData,inputDir='data') :
     if(len(tag)==0) : return results
     
     #open the file
-    url=inputDir+tag+'.root'
+    url=inputDir+'/'+tag+'.root'
     file = ROOT.TFile(url)
     if(file is None): return results
     if(file.IsZombie()) : return results
@@ -140,7 +140,7 @@ def savePlotAsTable(stackplots=None,spimposeplots=None,dataplots=None,outUrl='ta
 """
 shows the control plots
 """
-def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLabel='CMS preliminary',inputdir='data') :
+def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLabel='CMS preliminary',outputDir='data/plots') :
 
     if(len(stackplots)==0 and len(spimposeplots)==0 and len(dataplots)==0) : return
 
@@ -182,8 +182,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
 
     #output dir
     import getpass
-    outdir=inputdir+'/plots/'
-    os.system('mkdir -p ' + outdir)
+    os.system('mkdir -p ' + outputDir)
 
     plotsToDisplay={}
     plotsToDisplay['ee events']=[]
@@ -191,7 +190,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
     plotsToDisplay['e#mu events']=[]
     setStyle()
     c = getNewCanvas("recolevelc","recolevelc",False)
-    c.SetWindowSize(600,600)
+    c.SetWindowSize(600,800)
     for iplot in xrange(0,nplots):
         stack=ROOT.TList()
         if(len(stackLists)>iplot): stack=stackLists[iplot]
@@ -215,14 +214,24 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
         if(pname.find('geq2jets')>0): chtag += ' (#geq 2 jets)'
 
         plotLabel = generalLabel + '\\' + chtag
-        leg=showPlots(c,stack,spimpose,data)
-        formatForCmsPublic(c,leg,plotLabel,5)
+
+
+        c.Clear()
+        c.Divide(1,2)
+        pad=c.cd(1)
+        pad.SetPad(0,0.3,1.0,1.0);
+        leg=showPlots(pad,stack,spimpose,data)
+        formatForCmsPublic(pad,leg,plotLabel,5)
+
+        pad=c.cd(2)
+        pad.SetPad(0,0.0,1.0,0.25);
+        leg=showMCtoDataComparison(pad,stack,data)
         
-        c.SaveAs(outdir+'/'+pname+'.png')
-        c.SaveAs(outdir+'/'+pname+'.C')
+        c.SaveAs(outputDir+'/'+pname+'.png')
+        c.SaveAs(outputDir+'/'+pname+'.C')
 
         if(pname.find('cutflow')<0):continue
-        savePlotAsTable(stack,spimpose,data,outdir+'/'+pname+'.tex')
+        savePlotAsTable(stack,spimpose,data,outputDir+'/'+pname+'.tex')
         
         #raw_input('Any key to continue...')
 
@@ -242,14 +251,14 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
         thtml+=HTMLEND
 
         titlehtml += "<tr><td><a href=\"cat_" + str(itag) + ".html\">" + tag[0] + "</a></td></tr>" 
-        fileObj = open(outdir+"/cat_" + str(itag) + ".html","w")
+        fileObj = open(outputDir+"/cat_" + str(itag) + ".html","w")
         fileObj.write(thtml)
         fileObj.close()
         itag=itag+1
         
     titlehtml+="</table>"
     titlehtml+=HTMLEND
-    fileObj = open(outdir+"/index.html","w")
+    fileObj = open(outputDir+"/index.html","w")
     fileObj.write(titlehtml)
     fileObj.close()
 
@@ -258,7 +267,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
 """
 Parses a json file and retrieves the necessary info
 """
-def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='/data') :
+def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='data/plots') :
 
     #open the file which describes the sample
     jsonFile = open(samplesDB,'r')
@@ -343,12 +352,12 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='/data') :
                 else : spimposeplots.append(procplots)
             else : dataplots.append(procplots)
 
-    showControlPlots(stackplots,spimposeplots,dataplots,generalLabel,inputDir)
+    showControlPlots(stackplots,spimposeplots,dataplots,generalLabel,outputDir)
 
 
 # steer script
 if(len(sys.argv)<2):
-    print 'runOverSamples.py samples.json integratedLumi=1 inputDir=data'
+    print 'runOverSamples.py samples.json integratedLumi=1 inputDir=data outputDir=data/plots'
     exit()
 
 #import the module
@@ -370,9 +379,13 @@ integratedLumi=1.0
 if(len(sys.argv)>2): integratedLumi = float(sys.argv[2])
 inputDir='data'
 if(len(sys.argv)>3): inputDir = sys.argv[3]
+outputDir='data/plots'
+if(len(sys.argv)>4): outputDir = sys.argv[4]
 
 #run the script
 print ' Integrated lumi is:' + str(integratedLumi) + ' /pb'
 print ' Samples defined in: ' +  samplesDB
 print ' Plots in: ' + inputDir
-runOverSamples( samplesDB, integratedLumi,inputDir )
+runOverSamples( samplesDB, integratedLumi,inputDir, outputDir )
+print ' Output stored in: ' + outputDir
+print ' Can browse the results using: ' + outputDir + '/index.html'

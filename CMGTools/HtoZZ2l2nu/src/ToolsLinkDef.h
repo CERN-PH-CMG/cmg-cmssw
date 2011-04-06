@@ -18,6 +18,7 @@
 #pragma link C++ function showPlots;
 #pragma link C++ function showStackPlot;
 #pragma link C++ function showSimplePlot;
+#pragma link C++ function showMCtoDataComparison;
 
 #endif
 

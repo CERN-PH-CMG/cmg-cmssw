@@ -182,3 +182,78 @@ TLegend *showSimplePlot(TPad *c, TList &data, bool buildLegend, TString legopt)
   TList dummySPImpose;
   return showPlots(c,dummyStack,dummySPImpose,data,buildLegend,legopt);
 }
+
+
+//
+void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doChi2)
+{
+  if(c==0) return;
+  if( stack.First()==0 || data.First()==0 ) return;
+
+  //prepare the pad
+  c->cd();
+  //c->SetGridx();
+  //c->SetGridy();
+  c->Clear();
+  TString name=c->GetName();
+  TString title=c->GetTitle();
+  
+  //build the stack sum
+  TH1 *sumH=0;
+  TObject *key = 0; 
+  TIterator *stackIt = stack.MakeIterator();
+  while ( (key = stackIt->Next()) ) 
+    {
+      TH1 *p = (TH1 *) key;
+      if( ((TClass*)key->IsA())->InheritsFrom("TH2") ) continue;
+      if( ((TClass*)key->IsA())->InheritsFrom("TGraph") ) continue;
+      if(sumH==0) { 
+	sumH = (TH1 *) p->Clone(TString(p->GetName())+"sum"); 
+	sumH->Reset("ICE");
+      }
+      sumH->Add(p);
+    }
+
+  //build the data sum
+  TH1 *dataSumH=0;
+  TIterator *dataIt = data.MakeIterator();
+  while ( (key = dataIt->Next()) ) 
+    {
+      TH1 *p = (TH1 *) key;
+      if( ((TClass*)key->IsA())->InheritsFrom("TH2") ) continue;
+      if( ((TClass*)key->IsA())->InheritsFrom("TGraph") ) continue;
+      if(dataSumH==0) {
+        dataSumH = (TH1 *) p->Clone(TString(p->GetName())+"sum");
+        dataSumH->Reset("ICE");
+      }
+      dataSumH->Add(p);
+    }
+  if(dataSumH==0 || sumH==0) return;
+
+  TH1 *mcToDataH = (TH1 *) sumH->Clone(TString(sumH->GetName())+"_todata");
+  formatPlot(mcToDataH,1,1,1,20,0,true,false,1,1,1);
+  if(doChi2)
+    {
+      mcToDataH->GetYaxis()->SetTitle("#chi^2");
+      mcToDataH->Reset("ICE");
+      for(Int_t ibin=1; ibin<=mcToDataH->GetXaxis()->GetNbins(); ibin++)
+	{
+	  Float_t diff = sumH->GetBinContent(ibin)-dataSumH->GetBinContent(ibin);
+	  Float_t err = pow(sumH->GetBinError(ibin),2)+pow(dataSumH->GetBinError(ibin),2);
+	  if(err==0) continue;
+	  Float_t chi2 = (diff<0 ? -1 : 1) * pow(diff,2)/err;
+	  mcToDataH->SetBinContent(ibin,chi2);
+	  mcToDataH->SetBinError(ibin,0,0);
+	}
+    }
+  else
+    {
+      mcToDataH->GetYaxis()->SetTitle("Ratio");
+      mcToDataH->Divide(dataSumH);
+    }
+
+  c->cd();
+  mcToDataH->Draw("e2p");
+  c->Modified();
+  c->Update();
+}
