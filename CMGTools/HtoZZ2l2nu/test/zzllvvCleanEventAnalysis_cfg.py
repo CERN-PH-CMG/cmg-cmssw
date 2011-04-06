@@ -14,7 +14,8 @@ process.load('CMGTools.HtoZZ2l2nu.PileupNormalizationProducer_cfi')
 process.load('CMGTools.HtoZZ2l2nu.CleanEventAnalyzer_cfi')
 process.evAnalyzer.dtag=cms.string(dtag)
 process.TFileService = cms.Service("TFileService", fileName = cms.string(outputFile) )
-process.p = cms.Path(process.puWeights+process.evAnalyzer)
+#process.p = cms.Path(process.puWeights+process.evAnalyzer)
+process.p = cms.Path(process.evAnalyzer)
 
 # message logger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
@@ -23,10 +24,3 @@ process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True),
     SkipEvent = cms.untracked.vstring('ProductNotFound')
     )
-
-#process.out = cms.OutputModule("PoolOutputModule",
-#                               fileName = cms.untracked.string('/tmp/psilva/tmp.root'),
-#                               outputCommands = cms.untracked.vstring('keep *'),
-#                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') )
-#                               )
-#process.e = cms.EndPath(process.out)
