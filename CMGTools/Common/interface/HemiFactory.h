@@ -12,11 +12,13 @@
 
 namespace cmg {
 
+  typedef std::vector<edm::InputTag> VInputTag;
+
   class HemisphereFactory : public Factory<cmg::Hemisphere> {
 
   public:
     HemisphereFactory(const edm::ParameterSet& ps) :
-      hemisphereLabel_(ps.getParameter<edm::InputTag>("inputCollection")),
+      hemisphereLabel_(ps.getParameter<VInputTag>("inputCollection")),
       maxNCand_(ps.getParameter<uint32_t>("maxCand"))
         {
         }
@@ -26,7 +28,7 @@ namespace cmg {
 
   private:
 
-    edm::InputTag const hemisphereLabel_;
+    VInputTag const hemisphereLabel_;
 
     size_t maxNCand_;
   };
