@@ -1,17 +1,16 @@
 from CMGTools.RootTools import RootTools as tools
 import ROOT as rt
-import pprint
 
 class cmgTuple(rt.TObject):
-    
+
     def branchAlias(self, branchName):
         names = branchName.split('_')
-        
+
         result = branchName
         if len(names) == 4:
             result = names[1]
         return result
-    
+
     def __init__(self, tree):
 
         rt.TObject.__init__(self)
@@ -27,30 +26,34 @@ class cmgTuple(rt.TObject):
 
         self.aliases = {}
         self.branches = []
-        
+
         for b in s:
             name = self.branchAlias(b)
             if name != b and name not in self.aliases:
                 #set a branch alias for the individual objects
                 self.aliases[name] = b
                 self.tree.SetAlias(name,'%sobj' % b)
-                
+
                 #and also the collections
                 self.tree.SetAlias('%sVec' % name,'%s@obj' % b)
             self.branches.append(b)
 
-        pprint.pprint( self.aliases )
+        print "Created cmgTuple for TTree called '%s' containing " \
+              "the following branches and aliases:" % \
+              self.tree.GetName()
+        for (i, j) in self.aliases.iteritems():
+            print "  %s -> %s" % (i, j)
 
     def __len__(self):
         return self.tree.GetEntries()
-            
+
     def __iter__(self):
         return self
-    
+
     def __del__(self):
         if self.tree is not None and self.tree:
             self.tree.Delete()
-    
+
     def next(self):
         if(self.currentEntry < len(self)):
             self.tree.GetEntry(self.currentEntry)
@@ -58,7 +61,7 @@ class cmgTuple(rt.TObject):
         else:
             raise StopIteration()
         return self
-    
+
     def get(self, name):
         result = None
         if name in self.aliases:
@@ -78,19 +81,11 @@ class cmgTuple(rt.TObject):
         return self.tree.Print(*args)
 
 if __name__ == '__main__':
-    
+
     import sys
     input = rt.TFile.Open(sys.argv[1])
     events = input.Get('Events')
-    
+
     cmg = cmgTuple(events)
     print cmg.branches
     print cmg.aliases
-
-
-    
-
-    
-    
-    
-                
