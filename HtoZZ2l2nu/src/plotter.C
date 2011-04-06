@@ -234,7 +234,7 @@ void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doChi2)
   formatPlot(mcToDataH,1,1,1,20,0,true,false,1,1,1);
   if(doChi2)
     {
-      mcToDataH->GetYaxis()->SetTitle("#chi^2");
+      mcToDataH->GetYaxis()->SetTitle("#chi^{2}=((MC-Data)/(#sigma_{MC}^{2}+#sigma_{Data}^2))^2");
       mcToDataH->Reset("ICE");
       for(Int_t ibin=1; ibin<=mcToDataH->GetXaxis()->GetNbins(); ibin++)
 	{

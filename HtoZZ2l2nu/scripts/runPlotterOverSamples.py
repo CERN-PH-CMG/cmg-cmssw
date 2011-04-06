@@ -106,12 +106,12 @@ def savePlotAsTable(stackplots=None,spimposeplots=None,dataplots=None,outUrl='ta
         colfmt += 'c'
         colnames += ' & ' + href.GetXaxis().GetBinLabel(ibin)
     
-    tabtex =  '\\begin{table}[htp]'
-    tabtex += '\\begin{center}'
-    tabtex += '\\caption{}'
-    tabtex += '\\label{tab:table}'
-    tabtex += '\\begin{tabular}{'+colfmt+'} \\hline'
-    tabtex += 'Process ' + colnames + '\\\\ \\hline\\hline'    
+    tabtex =  '\\begin{table}[htp]\n'
+    tabtex += '\\begin{center}\n'
+    tabtex += '\\caption{}\n'
+    tabtex += '\\label{tab:table}\n'
+    tabtex += '\\begin{tabular}{'+colfmt+'} \\hline\n'
+    tabtex += 'Process ' + colnames + '\\\\ \\hline\\hline\n'    
 
     alllists = [stackplots, spimposeplots,dataplots ]
     for ll in alllists :
@@ -125,12 +125,12 @@ def savePlotAsTable(stackplots=None,spimposeplots=None,dataplots=None,outUrl='ta
                     tabtex += ' & ' + roundRes[0] + ' $\\pm$ ' + roundRes[1][0]
                 except :
                     tabtex += ' & ' 
-            tabtex += '\\\\'
-        tabtex += '\\hline'
+            tabtex += '\\\\\n'
+        tabtex += '\\hline\n'
     
-    tabtex += '\\end{tabular}'
-    tabtex += '\\end{center}'
-    tabtex += '\\end{table}'
+    tabtex += '\\end{tabular}\n'
+    tabtex += '\\end{center}\n'
+    tabtex += '\\end{table}\n'
 
     fileObj = open(outUrl,"w")
     fileObj.write(tabtex)
