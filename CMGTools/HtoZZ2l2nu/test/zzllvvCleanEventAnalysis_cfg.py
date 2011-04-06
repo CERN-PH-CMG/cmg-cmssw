@@ -24,9 +24,9 @@ process.options = cms.untracked.PSet(
     SkipEvent = cms.untracked.vstring('ProductNotFound')
     )
 
-process.out = cms.OutputModule("PoolOutputModule",
-                               fileName = cms.untracked.string('/tmp/psilva/tmp.root'),
-                               outputCommands = cms.untracked.vstring('keep *'),
-                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') )
-                               )
-process.e = cms.EndPath(process.out)
+#process.out = cms.OutputModule("PoolOutputModule",
+#                               fileName = cms.untracked.string('/tmp/psilva/tmp.root'),
+#                               outputCommands = cms.untracked.vstring('keep *'),
+#                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') )
+#                               )
+#process.e = cms.EndPath(process.out)

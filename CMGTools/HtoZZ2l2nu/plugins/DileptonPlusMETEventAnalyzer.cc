@@ -303,7 +303,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
       {
 	TString hname=substream+"_othervertex2met_dphi";
 	if(vit->get()==primVertex) hname=substream+"_vertex2met_dphi";
-	TLorentzVector vrtxP(vit->p4().px(),vit->p4().py(),vit->p4().pz(),vit->p4().energy());
+	TLorentzVector vrtxP(vit->get()->p4().px(),vit->get()->p4().py(),vit->get()->p4().pz(),vit->get()->p4().energy());
 	float dphi=vrtxP.DeltaPhi(metP);
 	getHist(hname)->Fill(dphi,weight);
       }
@@ -344,6 +344,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	  getHist(istream+"_ngenpileup")->Fill(puInfoH->getPU_NumInteractions(),weight);
 	  ((TH2 *)getHist(istream+"_ngoodvertex_ngenpileup"))->Fill(puInfoH->getPU_NumInteractions(),selVertices.size(),weight);
 	}catch(std::exception &e){
+	  cout << e.what() << endl;
 	}
       
 	/*
