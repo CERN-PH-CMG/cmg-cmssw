@@ -1,13 +1,31 @@
 ## import skeleton process
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
-# the source is already defined in patTemplate_cfg.
-# overriding source and various other things
-#process.load("PhysicsTools.PFCandProducer.Sources.source_ZtoEles_DBS_312_cfi")
-#process.source = cms.Source("PoolSource", 
-#     fileNames = cms.untracked.vstring('file:myAOD.root')
-#)
 
+# process.load('CMGTools.Common.sources.CMSSW_4_1_3.RelValTTbar_Tauola.GEN_SIM_RECO.START311_V2_PU_E7TeV_AVE_2_BX156_v1.source_cff')
+from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
+
+process.source = cms.Source("PoolSource",
+    fileNames = cms.untracked.vstring(
+    pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_1_3'
+                          #, relVal        = 'RelValLM1_sfts'
+                          , relVal = 'RelValQCD_FlatPt_15_3000'
+                          # , globalTag     = 'START311_V2'
+                          , globalTag = 'MC_311_V2'
+                          , numberOfFiles = 5
+                          )
+    )
+)
+
+print process.source
+# import sys
+# sys.exit(1)
+
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+
+process.maxLuminosityBlocks = cms.untracked.PSet( 
+    input = cms.untracked.int32(20)
+    )
 
 # process.load("PhysicsTools.PFCandProducer.Sources.source_ZtoMus_DBS_cfi")
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
@@ -15,12 +33,7 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
 # process.load("PhysicsTools.PFCandProducer.Sources.source_ZtoMus_DBS_cfi")
 runOnMC = True
 
-if runOnMC == False:
-    # a jet data file at CERN: 
-    process.source.fileNames = cms.untracked.vstring('rfio:////castor/cern.ch/cms/store/data/Run2010B/Jet/RECO/PromptReco-v2/000/149/294/A46DE078-05E5-DF11-88F9-0030487C7E18.root')
 
-
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 process.out.fileName = cms.untracked.string('patTuple_PATandPF2PAT.root')
 
 # load the PAT config
@@ -57,24 +70,30 @@ if runOnMC == False:
     removeMCMatchingPF2PAT( process, '' ) 
 
 # Let it run
-process.load("CMGTools.Common.countingSequences_cff")
+# process.load('CMGTools.Susy.fullyHadronic_cff')
+
 process.p = cms.Path(
-    process.startupSequence*                     
-    getattr(process,"patPF2PATSequence"+postfix)
+#    process.startupSequence +                      
+    getattr(process,"patPF2PATSequence"+postfix) 
 #    second PF2PAT
 #    + getattr(process,"patPF2PATSequence"+postfix2)
 )
 if not postfix=="":
     process.p += process.patDefaultSequence
-process.p += process.finalSequence
+
+
+# process.load("CMGTools.Common.runInfoAccounting_cfi")
+# process.outpath += process.runInfoAccounting
+
+
 
 # Add PF2PAT output to the created file
 from PhysicsTools.PatAlgos.patEventContent_cff import patEventContentNoCleaning
 process.out.outputCommands = cms.untracked.vstring('drop *',
                                                    'keep recoPFCandidates_particleFlow_*_*',
                                                    #Counters
-                                                   'keep *_MEtoEDMConverter_*_*',
-                                                   'keep GenRunInfoProduct_*_*_*',
+                                                   # 'keep *_MEtoEDMConverter_*_*',
+                                                   # 'keep GenRunInfoProduct_*_*_*',
                                                    # Vertex info
                                                    'keep recoVertexs_*_*_*',
                                                    'keep recoBeamSpot_*_*_*',
@@ -84,6 +103,8 @@ process.out.outputCommands = cms.untracked.vstring('drop *',
                                                    'keep *_hltTriggerSummaryAOD_*_*',
                                                    *patEventContentNoCleaning ) 
 
+from CMGTools.Common.eventContent.runInfoAccounting_cff import runInfoAccounting
+process.out.outputCommands += runInfoAccounting
 
 # top projections in PF2PAT:
 
@@ -95,7 +116,13 @@ process.pfNoJetPFlow.enable = cms.bool(True)
 
 # verbose flags for the PF2PAT modules
 
-process.pfNoMuon.verbose = cms.bool(True)
+process.pfNoMuon.verbose = cms.bool(False)
+
+process.TFileService = cms.Service(
+    "TFileService",
+    fileName = cms.string("susy_histograms_CMG.root")
+    )
+
 
 ## ------------------------------------------------------
 #  In addition you usually want to change the following
@@ -119,4 +146,5 @@ process.pfNoMuon.verbose = cms.bool(True)
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
 # to relax the muon isolation, uncomment the following:
-#process.pfIsolatedMuonsPFlow.combinedIsolationCut = 99999
+process.pfIsolatedMuonsPFlow.combinedIsolationCut = 0.25
+process.pfIsolatedElectronsPFlow.combinedIsolationCut = 0.25
