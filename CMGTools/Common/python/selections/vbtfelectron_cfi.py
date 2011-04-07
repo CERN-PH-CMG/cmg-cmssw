@@ -2,8 +2,6 @@ import FWCore.ParameterSet.Config as cms
 
 def addVBTFSelection(var):
     vbtf = cms.PSet(
-        #isEcalDriven = cms.string('sourcePtr().ecalDrivenSeed()'),  #requires gsf core to be saved
-        #numberOfInnerTrackerHitsLost = cms.string('sourcePtr().gsfTrack().isNonnull() && sourcePtr().gsfTrack().trackerExpectedHitsInner().numberOfLostHits()<2'), # tested by conversionVeto
         eid = cms.string('test_bit(sourcePtr().electronID(\"%s\"),0)' % var),
         iso = cms.string('test_bit(sourcePtr().electronID(\"%s\"),1)' % var),
         conversionVeto = cms.string('test_bit(sourcePtr().electronID(\"%s\"),2)' % var)
