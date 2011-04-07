@@ -1,15 +1,13 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2011/04/06 08:24:14 $
- *  $Revision: 1.3 $
- *  \author G. Cerminara - CERN
+ *  $Date: 2011/04/06 08:36:23 $
+ *  $Revision: 1.1 $
+ *  \author G. Cerminara & D. Trocino
  */
 
 #include "CMGTools/HtoZZ2l2nu/interface/ReducedMETComputer.h"
 #include "TVector2.h"
-#include "TLorentzVector.h"
-
 
 using namespace std;
 
@@ -31,10 +29,10 @@ ReducedMETComputer::~ReducedMETComputer(){}
 
 
 
-void ReducedMETComputer::compute(const TLorentzVector& theLepton1, double sigmaPt1,
-				 const TLorentzVector& theLepton2, double sigmaPt2,
-				 const std::vector<TLorentzVector>& theJets,
-				 const TLorentzVector& theMET) {
+void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt1,
+				 const LorentzVector& theLepton2, double sigmaPt2,
+				 const std::vector<LorentzVector>& theJets,
+				 const LorentzVector& theMET) {
   
   TVector2 lepton1(theLepton1.Px(), theLepton1.Py());
   TVector2 lepton2(theLepton2.Px(), theLepton2.Py());;
@@ -54,7 +52,7 @@ void ReducedMETComputer::compute(const TLorentzVector& theLepton1, double sigmaP
   sumJetProj_perp = 0.;
 
 
-  for(vector<TLorentzVector>::const_iterator jetit = theJets.begin();
+  for(vector<LorentzVector>::const_iterator jetit = theJets.begin();
       jetit != theJets.end();
       ++jetit) {
     TVector2 jet((*jetit).Px(), (*jetit).Py());

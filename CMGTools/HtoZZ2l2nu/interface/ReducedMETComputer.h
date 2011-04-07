@@ -4,16 +4,21 @@
 /** \class ReducedMETComputer
  *  No description available.
  *
- *  $Date: 2011/04/06 08:24:14 $
- *  $Revision: 1.3 $
- *  \author G. Cerminara - CERN
+ *  $Date: 2011/04/06 08:36:23 $
+ *  $Revision: 1.1 $
+ *  \author G. Cerminara & D. Trocino
  */
 
 #include <utility>
 #include <vector>
 
 
-class TLorentzVector;
+//class LorentzVector;
+
+#include "Math/LorentzVector.h"
+
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
+
 
 class ReducedMETComputer {
 public:
@@ -27,10 +32,10 @@ public:
   /// Destructor
   virtual ~ReducedMETComputer();
 
-  void compute(const TLorentzVector& lepton1, double sigmaPt1,
-	       const TLorentzVector& lepton2, double sigmaPt2,
-	       const std::vector<TLorentzVector>& jets,
-	       const TLorentzVector& met);
+  void compute(const LorentzVector& lepton1, double sigmaPt1,
+	       const LorentzVector& lepton2, double sigmaPt2,
+	       const std::vector<LorentzVector>& jets,
+	       const LorentzVector& met);
 
   
   double reducedMET() const {
@@ -57,6 +62,13 @@ public:
     return std::make_pair(dileptonProj_long, dileptonProj_perp);
   }
   
+  std::pair<int, int> recoilType() const {
+    int ret_long = 0; // sumJetProj_long < -1.*metProj_long
+    int ret_perp = 0; // sumJetProj_perp < -1.*metProj_perp
+    if(sumJetProj_long > -1.*metProj_long) ret_long = 1;
+    if(sumJetProj_perp > -1.*metProj_perp) ret_perp = 1;
+    return std::make_pair(ret_long, ret_perp);
+  }
 
 protected:
 
