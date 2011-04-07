@@ -15,6 +15,7 @@
 #include "CMGTools/Common/interface/GenericRooDataSets.h"
 #include "CMGTools/Common/interface/JetHistograms.h"
 #include "CMGTools/Common/interface/CompoundFactories.h"
+#include "CMGTools/Common/interface/MultiObjectFactory.h"
 #include "CMGTools/Common/interface/HemiFactory.h"
 #include "CMGTools/Common/interface/GenericFactories.h"
 #include "CMGTools/Common/interface/ElectronFactory.h"
@@ -24,7 +25,7 @@
 #include "CMGTools/Common/interface/BaseMETFactory.h"
 #include "CMGTools/Common/plugins/PhysicsObjectProducer.h"
 
-//COLIN why not in plugins? 
+// COLIN why not in plugins?
 #include "CMGTools/Common/interface/CutSummaryAnalyzer.h"
 #include "CMGTools/Common/plugins/RunInfoAccountingAnalyzer.h"
 #include "CMGTools/Common/plugins/LeadingObjectsSelector.h"
@@ -35,8 +36,9 @@
 #include "CommonTools/UtilAlgos/interface/ObjectSelector.h"
 #include "CommonTools/UtilAlgos/interface/SingleElementCollectionSelector.h"
 
-//colin: should add cmg to the type names where applicable
+// Colin: should add cmg to the type names where applicable.
 
+typedef PhysicsObjectProducer<cmg::MultiObjectFactory> MultiObjectPOProducer;
 typedef PhysicsObjectProducer<cmg::HemisphereFactory> HemispherePOProducer;
 typedef PhysicsObjectProducer<cmg::DiHemisphereFactory> DiHemispherePOProducer;
 typedef PhysicsObjectProducer<cmg::DiElectronFactory> DiElectronPOProducer;
@@ -66,6 +68,7 @@ typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<pat::MET> > GenericPatMETH
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Electron> > CmgElectronHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Muon> > CmgMuonHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Hemisphere> > CmgHemiHistograms;
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::MultiObject> > CmgMultiObjectHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiMuon> > CmgDiMuonHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiElectron> > CmgDiElectronHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiHemisphere> > CmgDiHemiHistograms;

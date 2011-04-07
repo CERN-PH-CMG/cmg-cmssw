@@ -2,6 +2,7 @@
 #include "CMGTools/Common/plugins/TopProjector.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
+DEFINE_FWK_MODULE(MultiObjectPOProducer);
 DEFINE_FWK_MODULE(HemispherePOProducer);
 DEFINE_FWK_MODULE(DiHemispherePOProducer);
 DEFINE_FWK_MODULE(DiElectronPOProducer);
@@ -27,6 +28,7 @@ DEFINE_FWK_MODULE(GenericPatMETHistograms);
 DEFINE_FWK_MODULE(CmgElectronHistograms);
 DEFINE_FWK_MODULE(CmgMuonHistograms);
 DEFINE_FWK_MODULE(CmgHemiHistograms);
+DEFINE_FWK_MODULE(CmgMultiObjectHistograms);
 DEFINE_FWK_MODULE(CmgDiMuonHistograms);
 DEFINE_FWK_MODULE(CmgDiElectronHistograms);
 DEFINE_FWK_MODULE(CmgDiHemiHistograms);
