@@ -99,7 +99,7 @@ TStyle *setStyle(bool gridOn) {
 
   // For the axis titles:
   tdrStyle->SetTitleColor(1, "XYZ");
-  tdrStyle->SetTitleFont(42, "XYZ");
+  tdrStyle->SetTitleFont(62, "XYZ");
   tdrStyle->SetTitleSize(0.06, "XYZ");
   // tdrStyle->SetTitleXSize(Float_t size = 0.02); // Another way to set the size?
   // tdrStyle->SetTitleYSize(Float_t size = 0.02);
@@ -154,11 +154,11 @@ TCanvas *getNewCanvas(TString name, TString title,bool setBatch)
   TCanvas *c1 = new TCanvas(name,title,1);
   if(setBatch)  c1->SetBatch();
   c1->SetLeftMargin(0.15);
-  c1->SetRightMargin(0.04);
+  c1->SetRightMargin(0.05);
   c1->SetBottomMargin(0.1);
   c1->SetTopMargin(0.05);
-  c1->SetGridx();
-  c1->SetGridy();
+  c1->SetGridx(false);
+  c1->SetGridy(false);
   
   return c1;
 }
@@ -193,7 +193,10 @@ TObject *formatPlot(TObject *h,
     h1->SetFillColor(fillcolor);     h1->SetFillStyle(fill);
     if( setSumw2 ) h1->Sumw2();
     if( detachFromCurrentDir ) h1->SetDirectory(0);
+    ((TH1 *)h)->SetLabelFont(42, "XYZ");
+    ((TH1 *)h)->SetTitleFont(62, "XYZ");
   }
+
   
   return h;
 }
@@ -253,18 +256,8 @@ void formatForCmsPublic(TPad * c, TLegend *leg, TString title, int nsamp, float 
       pave->SetFillStyle(0);      
       pave->Draw("same");
     }
-
-  if(c)
-    {
-      c->SetLeftMargin(0.15);
-      c->SetRightMargin(0.05);
-      c->SetTopMargin(0.05);
-      c->SetGridx(false);
-      c->SetGridy(false);
-    }
-
-  if(leg==0)
-    leg = ((TPad *)c)->BuildLegend(legx1,legy1-nsamp*legh,legx2,legy1);
+  
+  if(leg==0) leg = ((TPad *)c)->BuildLegend(legx1,legy1-nsamp*legh,legx2,legy1);
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
   leg->SetFillStyle(0);
