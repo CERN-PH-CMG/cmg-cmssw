@@ -125,7 +125,7 @@ def savePlotAsTable(stackplots=None,spimposeplots=None,dataplots=None,outUrl='ta
                     tabtex += ' & '
                     if(roundres[2]!=0) : tabtex += '('
                     tabtex += roundRes[0] + ' $\\pm$ ' + roundRes[1][0]
-                    if(roundres[2]!=0) : tabtex += ') \cdot 10^{' + str(roundres[2]) + '}'
+                    if(roundres[2]!=0) : tabtex += ') $\\cdot 10^{' + str(roundres[2]) + '}$'
                 except :
                     tabtex += ' & ' 
             tabtex += '\\\\\n'
