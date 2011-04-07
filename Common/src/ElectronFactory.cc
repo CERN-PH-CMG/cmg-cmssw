@@ -29,6 +29,18 @@ void cmg::ElectronFactory::set(const pat::ElectronPtr& input, cmg::Electron* con
 
     output->mva_ = input->mva();
     
-    
+    //see http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/PhysicsTools/SelectorUtils/interface/SimpleCutBasedElectronIDSelectionFunctor.h?view=markup    
+    output->sigmaIetaIeta_ = input->sigmaIetaIeta();
+    output->deltaPhiSuperClusterTrackAtVtx_ = input->deltaPhiSuperClusterTrackAtVtx();
+    output->deltaEtaSuperClusterTrackAtVtx_ = input->deltaEtaSuperClusterTrackAtVtx();
+    output->hadronicOverEm_ = input->hadronicOverEm();
+    if(input->gsfTrack().isNonnull()){
+        output->numberOfHits_  = input->gsfTrack()->trackerExpectedHitsInner().numberOfHits();
+    }
+    output->convDist_ = input->convDist();
+    output->convDcot_ = input->convDcot();
+    if(input->core().isNonnull()){
+        output->isEcalDriven_ = cmg::toTriBool(input->ecalDriven());
+    }
     
 }
