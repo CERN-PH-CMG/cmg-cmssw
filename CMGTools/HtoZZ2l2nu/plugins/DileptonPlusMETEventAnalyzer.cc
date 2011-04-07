@@ -121,6 +121,8 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
       results_[cat+"_btags"]             = formatPlot( newDir.make<TH1F>(cat+"_btags",";b tags (TCHE); Jets",50,-5,45), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_met"]               = formatPlot( newDir.make<TH1F>(cat+"_met", ";#slash{E}_{T} [GeV/c]; Events", 30,  0.,300.), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_rmet"]              = formatPlot( newDir.make<TH1F>(cat+"_rmet", ";reduced #slash{E}_{T} [GeV/c]; Events", 30,  0.,300.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_relmet"]              = formatPlot( newDir.make<TH1F>(cat+"_relmet", ";relative #slash{E}_{T} [GeV/c]; Events", 30,  0.,300.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_mT_individualsum"]  = formatPlot( newDir.make<TH1F>(cat+"_mT_individualsum",";#Sigma Transverse mass(lepton,MET) [GeV/c^{2}]; Events",50,0,500), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_metsig"]            = formatPlot( newDir.make<TH1F>(cat+"_metsig", ";#slash{E}_{T} significance; Events", 50,  0.,100.), 1,1,1,20,0,false,true,1,1,1);
 
       results_[cat+"_othermT_individual"] = formatPlot( newDir.make<TH1F>(cat+"_othermT_individual",";Transverse mass(other leptons,MET) [GeV/c^{2}]; Events",50,0,500), 1,1,1,20,0,false,true,1,1,1);
@@ -273,8 +275,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     }catch(std::exception &e){
       metsig=themet->significance();
     }
-    getHist(istream+"_met")->Fill(metP.Pt(),weight);
-    getHist(istream+"_metsig")->Fill(metsig,weight);
 
     //require MET back-to-back to dilepton
     float dphiZ2met=dileptonP.DeltaPhi(metP);
@@ -306,7 +306,26 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 		  jetmomenta,
 		  themet->p4());
     float reducedMET=rmet_.reducedMET();
+
+
+    //individual lepton vs MET kinematics
+    float dphil2met[]={ fabs(metP.DeltaPhi(lepton1P)), fabs(metP.DeltaPhi(lepton2P)) };
+    float mTlmet[]={ TMath::Sqrt(2*metP.Pt()*lepton1P.Pt()*(1-TMath::Cos(dphil2met[0]))) ,   TMath::Sqrt(2*metP.Pt()*lepton2P.Pt()*(1-TMath::Cos(dphil2met[1]))) };
+    float dphimin=TMath::MinElement(sizeof(dphil2met)/sizeof(float),dphil2met);
+    float relMET=metP.Pt();
+    if(fabs(dphimin)<TMath::Pi()/2) relMET = relMET*TMath::Sin(dphimin);
+    
+    //dilepton vs MET kinematics
+    TLorentzVector transvSum=dileptonP + metP;
+    float transverseMass=TMath::Power(TMath::Sqrt(TMath::Power(dileptonP.Pt(),2)+pow(dileptonP.M(),2))+TMath::Sqrt(TMath::Power(metP.Pt(),2)+pow(dileptonP.M(),2)),2);
+    transverseMass-=TMath::Power(transvSum.Pt(),2);
+    transverseMass=TMath::Sqrt(transverseMass);
+    
+    getHist(istream+"_met")->Fill(metP.Pt(),weight);
+    getHist(istream+"_metsig")->Fill(metsig,weight);
     getHist(istream+"_rmet")->Fill(reducedMET,weight);
+    getHist(istream+"_relmet")->Fill(relMET,weight);
+    getHist(istream+"_mT_individualsum")->Fill(mTlmet[0]+mTlmet[1],weight);
 
     getHist(istream+"_cutflow")->Fill(4,weight);
     getHist(istream+"_cutflow")->Fill(5+jetbin,weight);
@@ -322,20 +341,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	if(vit->get()->position()==primVertex->position()) hname=substream+"_vertex2met_dphi";
 	getHist(hname)->Fill(dphi,weight);
       }
-    
-    //individual lepton vs MET kinematics
-    float dphil2met[]={ fabs(metP.DeltaPhi(lepton1P)), fabs(metP.DeltaPhi(lepton2P)) };
-    float mTlmet[]={ TMath::Sqrt(2*metP.Pt()*lepton1P.Pt()*(1-TMath::Cos(dphil2met[0]))) ,   TMath::Sqrt(2*metP.Pt()*lepton2P.Pt()*(1-TMath::Cos(dphil2met[1]))) };
-    float dphimin=TMath::MinElement(sizeof(dphil2met)/sizeof(float),dphil2met);
-    float relMET=metP.Pt();
-    if(fabs(dphimin)<TMath::Pi()/2) relMET = relMET*TMath::Sin(dphimin);
-    
-    //dilepton vs MET kinematics
-    TLorentzVector transvSum=dileptonP + metP;
-    float transverseMass=TMath::Power(TMath::Sqrt(TMath::Power(dileptonP.Pt(),2)+pow(dileptonP.M(),2))+TMath::Sqrt(TMath::Power(metP.Pt(),2)+pow(dileptonP.M(),2)),2);
-    transverseMass-=TMath::Power(transvSum.Pt(),2);
-    transverseMass=TMath::Sqrt(transverseMass);
-    
+  
+   
     //control histograms
     getHist("met2"+substream+"_mindphi")->Fill(dphimin,weight);
     getHist(substream+"_relmet")->Fill(relMET,weight);
