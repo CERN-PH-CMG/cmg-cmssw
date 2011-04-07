@@ -14,7 +14,9 @@ namespace cmg {
   {
   public:
     RunInfoAccounting(TFileDirectory& myDir, const std::string& name);
-    void processRunInfo(const edm::Run& aRun);
+    void processRunInfo(const edm::Run& aRun, 
+			unsigned int nTotal, 
+			unsigned int nPassed);
   
     double getPreSelectionWeight(){
       return preselectionWeight_;

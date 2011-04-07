@@ -7,7 +7,7 @@ from CMGTools.Common.histograms.cmgElectronHistograms_cfi import *
 
 electronSequence = cms.Sequence(
     cmgElectron + 
-    cmgElectronSel +
-    cmgElectronCount +
-    cmgElectronHistograms
+    cmgElectronSel 
+    # cmgElectronCount +
+    # cmgElectronHistograms
 )

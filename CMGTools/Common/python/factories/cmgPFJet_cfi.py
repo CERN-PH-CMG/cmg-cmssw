@@ -13,7 +13,9 @@ cmgPFJet = cms.EDFilter(
     cfg = pfJetFactory.clone(),
     cuts = cms.PSet(
        btag = trackCountingHighEffBJetTags.clone(), 
-       looseJetId = looseJetId.clone()
+       looseJetId = looseJetId.clone(),
+       mediumJetId = mediumJetId.clone(),
+       tightJetId = tightJetId.clone(),
        ),
     verbose = cms.untracked.bool( False )
 )

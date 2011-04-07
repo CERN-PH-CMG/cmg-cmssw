@@ -25,6 +25,7 @@ namespace cmg{
     virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
 
     virtual void beginRun(edm::Run const&, edm::EventSetup const&);
+    virtual void endRun(edm::Run const&, edm::EventSetup const&);
 
   private:
     std::string  name_;
@@ -38,6 +39,10 @@ namespace cmg{
     bool  fileChanged_;
 
     const edm::Run*  currentRun_;
+
+    unsigned int nTotal_;
+
+    unsigned int nPassed_;
   };
 
 }

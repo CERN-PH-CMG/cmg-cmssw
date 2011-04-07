@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 cmgMuonHistograms = cms.EDAnalyzer(
     "CmgMuonHistograms",
-    inputCollection = cms.InputTag("cmgMuon"),
+    inputCollection = cms.InputTag("cmgMuonSel"),
     histograms = cms.untracked.PSet(
        numberOfValidTrackerHits = cms.untracked.VPSet(
           cms.untracked.PSet( 

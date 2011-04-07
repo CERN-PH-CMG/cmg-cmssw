@@ -17,41 +17,53 @@ cmg::RunInfoAccounting::RunInfoAccounting(TFileDirectory& myDir,
   tree_->Branch("initialEvents",&initialEvents_,"initialEvents/D");
   tree_->Branch("finalEvents",&finalEvents_,"finalEvents/D");
   tree_->Branch("preselectionWeight",&preselectionWeight_,"preselectionWeight/D");
+  tree_->Branch("eventWeight",&eventWeight_,"eventWeight/D");
   tree_->Branch("genCrossSection",&genCrossSection_,"genCrossSection/D");
   tree_->Branch("genFilterEfficiency",&genFilterEfficiency_,"genFilterEfficiency/D");
 	
 }
-void cmg::RunInfoAccounting::processRunInfo(const edm::Run& aRun){
+
+void cmg::RunInfoAccounting::processRunInfo(const edm::Run& aRun,
+					    unsigned int nTotal, 
+					    unsigned int nPassed ){
 	
-  //start by finding the pre-selection efficiency 	
-  typedef MEtoEDM<double> MEtoEDMD;
-  eventWeight_ = -1;
-  preselectionWeight_ = -1;			        			        			        			        			        			        			        			        			        
+  //   //start by finding the pre-selection efficiency 	
+  //   typedef MEtoEDM<double> MEtoEDMD;
   
-  edm::Handle<MEtoEDMD> hist;
-  if(!aRun.getByLabel(edm::InputTag("MEtoEDMConverter","MEtoEDMConverterRun"),hist)){
-    std::cout<<"RunInfoAccounting: No MEtoEDM<double> object found. No problem if you're reading data :)" << std::endl;
-    return;
-  }
-  else{
-    std::cout<<"RunInfoAccounting: book keeping weighting information"<<std::endl;
-  }
+ 
+//   edm::Handle<MEtoEDMD> hist;
+//   if(!aRun.getByLabel(edm::InputTag("MEtoEDMConverter","MEtoEDMConverterRun"),hist)){
+//     std::cout<<"RunInfoAccounting: No MEtoEDM<double> object found. No problem if you're reading data :)" << std::endl;
+//     return;
+//   }
+//   else{
+//     std::cout<<"RunInfoAccounting: book keeping weighting information"<<std::endl;
+//   }
   
-  initialEvents_ = -1.0;
-  finalEvents_ = DBL_MAX;
+//   initialEvents_ = -1.0;
+//   finalEvents_ = DBL_MAX;
   
-  const MEtoEDMD::MEtoEdmObjectVector objects = hist->getMEtoEdmObject();
-  for(MEtoEDMD::MEtoEdmObjectVector::const_iterator it = objects.begin(); it != objects.end(); ++it ){
-    if(it->name == "initialEvents"){
-      initialEvents_ = it->object;
-    }
-    if(it->object < finalEvents_){
-      finalEvents_ = it->object;
-    }
-  }
+//   const MEtoEDMD::MEtoEdmObjectVector objects = hist->getMEtoEdmObject();
+//   for(MEtoEDMD::MEtoEdmObjectVector::const_iterator it = objects.begin(); it != objects.end(); ++it ){
+//     if(it->name == "initialEvents"){
+//       initialEvents_ = it->object;
+//     }
+//     if(it->object < finalEvents_){
+//       finalEvents_ = it->object;
+//     }
+//   }
+//   preselectionWeight_ = finalEvents_/initialEvents_;
+
+
+  
+//   initialEvents_ = nTotal;   
+  initialEvents_ = nTotal;   
+  finalEvents_ = nPassed; 
   preselectionWeight_ = finalEvents_/initialEvents_;
+
+  std::cout<<"RunInfoAccounting: storing cross-section information"<<std::endl;
   
-  //now try to find the MC weights
+  eventWeight_ = -1;
   genCrossSection_ = -1;
   genFilterEfficiency_ = -1;
   edm::Handle<GenRunInfoProduct> gen;
