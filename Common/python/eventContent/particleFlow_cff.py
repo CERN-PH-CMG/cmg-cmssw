@@ -42,7 +42,12 @@ particleFlowVBF = cms.untracked.vstring(
     'keep *_vbfEventJetJetPF_*_*'                                 
     )
 
-particleFlow = particleFlowJets + particleFlowMET + particleFlowMuons + particleFlowElectrons + particleFlowW + particleFlowVBF
+particleFlowHemispheres = cms.untracked.vstring(
+    'keep *_cmgHemi_*_*',
+    'keep *_cmgDiHemi_*_*',
+    )
+
+particleFlow = particleFlowJets + particleFlowMET + particleFlowMuons + particleFlowElectrons + particleFlowW + particleFlowVBF + particleFlowHemispheres
 
 
 particleFlowBase = cms.untracked.vstring(

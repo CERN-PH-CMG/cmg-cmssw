@@ -9,15 +9,22 @@ from CMGTools.Common.met_cff import *
 from CMGTools.Common.skim_cff import *
 from CMGTools.Common.histogram_cff import *
 
-from CMGTools.Common.cutsummary_cff import *
+from CMGTools.Common.cutSummary_cff import *
 
-analysisSequence = cms.Sequence(
-    runInfoAccounting +
+cmgObjectSequence = cms.Sequence(
     muonSequence +
     electronSequence + 
     jetSequence +
-    metSequence +
+    metSequence     
+    )
+
+analysisSequence = cms.Sequence(
+    # build the CMG objects and select them
+    cmgObjectSequence +
+    # skimming (counting the selected CMG objects)
     skimSequence +
-    cutsummary + 
+    # summary of cuts for all objects, after skimming
+    cutSummarySequence +
+    # histograms for all objects, after skimming
     histogramSequence 
     )

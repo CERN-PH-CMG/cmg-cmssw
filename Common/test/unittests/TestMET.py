@@ -16,14 +16,14 @@ class TestMET(TestTools.CFGTest):
         output = self.__class__.cfgsRunOnceCache['CMGTools/Common/test/testMET_cfg.py']
         self.assert_(TestTools.getEntries(output[1]) > 0,'The CMGTuple must contain some entries')
         
-    def testPFMETBranchExists(self):
-        """Tests that the cmgMETPFCandidates branch exists"""
+#    def testPFMETBranchExists(self):
+#        """Tests that the cmgMETPFCandidates branch exists"""
         
-        output = self.__class__.cfgsRunOnceCache['CMGTools/Common/test/testMET_cfg.py']
-        events = TestTools.getObject(output[1], 'Events')
+#        output = self.__class__.cfgsRunOnceCache['CMGTools/Common/test/testMET_cfg.py']
+#        events = TestTools.getObject(output[1], 'Events')
         
-        cmg = cmgTuple.cmgTuple(events)
-        self.assertTrue(cmg.aliases.has_key('cmgMETPFCandidates'),'We are expecting a branch called cmgMETPFCandidates')
+#        cmg = cmgTuple.cmgTuple(events)
+#        self.assertTrue(cmg.aliases.has_key('cmgMETPFCandidates'),'We are expecting a branch called cmgMETPFCandidates')
         
     def testPATMETBranchExists(self):
         """Tests that the patMETsPFlow branch exists"""

@@ -10,7 +10,7 @@ process.maxEvents = cms.untracked.PSet(
         )
 
 process.source.fileNames = cms.untracked.vstring(
-    'file:/afs/cern.ch/user/c/cbern/public/patTuple_PATandPF2PAT.root'
+    'file:/afs/cern.ch/user/c/cbern/scratch0/CMG/RelVal/4_1_3/ttbar_PATandPF2PAT.root'
     )
 
 extension = 'electrons'
