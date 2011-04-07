@@ -56,7 +56,7 @@ def getControlPlots(descriptor,isData,inputDir='data') :
     if(len(tag)==0) : return results
     
     #open the file
-    url=inputDir+'/'+tag+'.root'
+    url=inputDir+'/'+tag+'/'+tag+'.root'
     file = ROOT.TFile(url)
     if(file is None): return results
     if(file.IsZombie()) : return results
@@ -122,7 +122,10 @@ def savePlotAsTable(stackplots=None,spimposeplots=None,dataplots=None,outUrl='ta
                 valerr= p.GetBinError(ibin)
                 try :
                     roundRes = PDGRoundSym(val,valerr)
-                    tabtex += ' & ' + roundRes[0] + ' $\\pm$ ' + roundRes[1][0]
+                    tabtex += ' & '
+                    if(roundres[2]!=0) : tabtex += '('
+                    tabtex += roundRes[0] + ' $\\pm$ ' + roundRes[1][0]
+                    if(roundres[2]!=0) : tabtex += ') \cdot 10^{' + str(roundres[2]) + '}'
                 except :
                     tabtex += ' & ' 
             tabtex += '\\\\\n'
@@ -140,7 +143,7 @@ def savePlotAsTable(stackplots=None,spimposeplots=None,dataplots=None,outUrl='ta
 """
 shows the control plots
 """
-def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLabel='CMS preliminary',outputDir='data/plots') :
+def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLabel='CMS preliminary',outputDir='data/plots', samplehtml='') :
 
     if(len(stackplots)==0 and len(spimposeplots)==0 and len(dataplots)==0) : return
 
@@ -222,11 +225,15 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
         pad.SetPad(0,0.3,1.0,1.0);
         leg=showPlots(pad,stack,spimpose,data)
         formatForCmsPublic(pad,leg,plotLabel,5)
-
+        pad.SetLogy()
+        
         pad=c.cd(2)
         pad.SetPad(0,0.0,1.0,0.25);
-        leg=showMCtoDataComparison(pad,stack,data,False)
-        
+        pad.SetTopMargin(0);
+        pad.SetBottomMargin(0.3);
+        yscale = (1.0-0.3)/(0.25-0.0);
+        leg=showMCtoDataComparison(pad,stack,data,False,yscale)
+                                                 
         c.SaveAs(outputDir+'/'+pname+'.png')
         c.SaveAs(outputDir+'/'+pname+'.C')
 
@@ -239,14 +246,18 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
     HTMLSTART="<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"tableFormat.css\"></link></head><body>"
     HTMLEND="</body></html>"
     titlehtml=HTMLSTART
-    titlehtml+="<table class=\"sample\"><tr><th>Event selection categories</th></tr>" 
+    titlehtml+="<table class=\"sample\"><tr><th colspan=\"3\">Event selection categories</th></tr>" 
     itag=0
     for tag in plotsToDisplay.items() :
         thtml=HTMLSTART
-        thtml+="<table class=\"sample\"><tr><th>" + tag[0] + " channel </th></tr>"
+        thtml+="<table class=\"sample\"><tr><th colspan=\"2\">" + tag[0] + " channel </th></tr>"
         for pname in tag[1] :
-            thtml+="<tr><td><img src=\"" + pname + ".png\" width=\"500\"></img></td></tr>"
-            thtml+="<tr><td><a href=\"" + pname + ".png\">.png</img> <a href=\"" + pname + ".C\">.C</img></td></tr>"
+            thtml+="<tr>"
+            thtml+="<td><img src=\"" + pname + ".png\" width=\"500\"></img></td>"
+            thtml+="<td><small>Available in: <a href=\"" + pname + ".png\">.png</a> &nbsp;&nbsp; <a href=\"" + pname + ".C\">.C</a>"
+            if(pname.find('cutflow')>=0):
+                thtml+=" &nbsp;&nbsp; <a href=\"" + pname + ".tex\">.tex</a>"
+            thtml += "</small></td></tr>"
         thtml+="</table>"
         thtml+=HTMLEND
 
@@ -255,7 +266,8 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
         fileObj.write(thtml)
         fileObj.close()
         itag=itag+1
-        
+
+    titlehtml+=samplehtml        
     titlehtml+="</table>"
     titlehtml+=HTMLEND
     fileObj = open(outputDir+"/index.html","w")
@@ -278,6 +290,8 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
 
     generalLabel='CMS preliminary,#sqrt{s}=7 TeV, #int L=' +str(integratedLumi)+' pb^{-1}'
 
+    samplehtml="<tr><th colspan=\"3\"><large>Samples used in analysis</large></th></tr>"
+    
     #run over sample
     for proc in procList :
 
@@ -296,6 +310,11 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
             fcolor = rootConst(getByLabel(desc,'fcolor',color))
             mcolor = rootConst(getByLabel(desc,'fcolor',color))
             tag = getByLabel(desc,'tag','')
+
+            samplehtml+="<tr><th colspan=\"3\">"+tag+" ("
+            if(isdata) : samplehtml += "data"
+            else : samplehtml +="mc"
+            samplehtml+=") </th></tr>"
             
             #run over items in process
             data = getByLabel(desc,'data')
@@ -306,6 +325,10 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
                 dtag=getByLabel(d,'dtag')
                 if(plots==None):continue
                 if(len(plots)==0): continue
+
+                samplehtml+="<tr><td>"+dtag+"</td>"
+                samplehtml+="<td>"+str(getByLabel(d,"xsec",1)) + "x" + str(getByLabel(d,"br",1)) + str(getByLabel(d,"sfactor",1)) + "</td>"
+                samplehtml+="<td><small>" + getByLabel(d,'dset','n/a') + "</small></td></tr>" 
 
                 #compute the normalization
                 weight=1
@@ -352,7 +375,7 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
                 else : spimposeplots.append(procplots)
             else : dataplots.append(procplots)
 
-    showControlPlots(stackplots,spimposeplots,dataplots,generalLabel,outputDir)
+    showControlPlots(stackplots,spimposeplots,dataplots,generalLabel,outputDir,samplehtml)
 
 
 # steer script

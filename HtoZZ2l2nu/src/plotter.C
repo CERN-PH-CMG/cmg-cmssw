@@ -63,7 +63,7 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
       kIt++)
     leg->AddEntry( kIt->first, kIt->second, legopt );      
 
-  
+  TH1 *refFrame=0;  
   if(th2dfound || graphfound)
     {
       int nplots=allKeys.size();
@@ -71,7 +71,6 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
       int ny = ( nplots%2 ? nx : nx+1);
       c->Divide(nx,ny);
       int ipad(0);
-
       reverseStackIt = stack.MakeIterator(kIterBackward);
       while ( (key = reverseStackIt->Next()) ) 
 	{
@@ -103,8 +102,6 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
     }
   else
     {
-      TH1 *refFrame=0;
-
       //prepare the sum and build the stack
       bool canvasFilled(false);
       TH1 *p=(TH1 *) stack.First();
@@ -149,9 +146,10 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
       while ( (key = dataIt->Next()) ) 
 	{
 	  TH1 *p = (TH1 *) key;
-	  if(canvasFilled) p->Draw("e1same");
+	  p->SetMarkerSize(1.3);
+	  if(canvasFilled) p->Draw("e2psame");
 	  else {
-	    p->Draw("e1"); 
+	    p->Draw("e2p"); 
 	    refFrame=p;
 	    canvasFilled=true; 
 	  }
@@ -160,7 +158,8 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
       //draw the legend
       if(canvasFilled)  leg->Draw("same");
     }
-
+  
+  if(refFrame) c->SetSelected(refFrame);
   c->Modified();
   c->Update();
 
@@ -185,7 +184,7 @@ TLegend *showSimplePlot(TPad *c, TList &data, bool buildLegend, TString legopt)
 
 
 //
-void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doChi2)
+void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doChi2,float yscale)
 {
   if(c==0) return;
   if( stack.First()==0 || data.First()==0 ) return;
@@ -254,6 +253,13 @@ void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doChi2)
 
   c->cd();
   mcToDataH->Draw("e2p");
+  mcToDataH->GetXaxis()->SetTitleOffset(0.85);
+  mcToDataH->GetXaxis()->SetLabelSize(0.04 * yscale);
+  mcToDataH->GetXaxis()->SetTitleSize(0.05 * yscale);
+  mcToDataH->GetXaxis()->SetTickLength( 0.03 * yscale );
+  mcToDataH->GetYaxis()->SetTitleOffset(0.5);
+  mcToDataH->GetYaxis()->SetLabelSize(0.04 * yscale);
+  mcToDataH->GetYaxis()->SetTitleSize(0.04 * yscale);
   c->Modified();
   c->Update();
 }

@@ -4,7 +4,6 @@ table.sample {
     border-style: none;
     border-color: gray;
     border-collapse: separate;
-    background-color: rgb(250, 240, 230);
     }
 table.sample th {
     border-width: 1px;
@@ -13,6 +12,7 @@ table.sample th {
     border-color: white;
     background-color: white;
     -moz-border-radius: ;
+    background-color: rgb(250, 240, 230);
     }
 table.sample td {
     border-width: 1px;
