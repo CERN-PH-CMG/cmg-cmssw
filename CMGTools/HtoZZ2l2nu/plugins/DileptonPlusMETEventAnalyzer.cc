@@ -30,9 +30,9 @@
 #include "TString.h"
 #include "TLorentzVector.h"
 
-
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
+#include "CMGTools/HtoZZ2l2nu/interface/ReducedMETComputer.h"
 
 //
 class DileptonPlusMETEventAnalyzer : public edm::EDAnalyzer 
@@ -50,6 +50,7 @@ private:
   }
   std::map<TString, TObject *>  results_;
   std::map<std::string, edm::ParameterSet> objConfig_;
+  ReducedMETComputer rmet_;
 };
 
 
@@ -119,6 +120,7 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
 	}
       results_[cat+"_btags"]             = formatPlot( newDir.make<TH1F>(cat+"_btags",";b tags (TCHE); Jets",50,-5,45), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_met"]               = formatPlot( newDir.make<TH1F>(cat+"_met", ";#slash{E}_{T} [GeV/c]; Events", 30,  0.,300.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_rmet"]              = formatPlot( newDir.make<TH1F>(cat+"_rmet", ";reduced #slash{E}_{T} [GeV/c]; Events", 30,  0.,300.), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_metsig"]            = formatPlot( newDir.make<TH1F>(cat+"_metsig", ";#slash{E}_{T} significance; Events", 50,  0.,100.), 1,1,1,20,0,false,true,1,1,1);
 
       results_[cat+"_othermT_individual"] = formatPlot( newDir.make<TH1F>(cat+"_othermT_individual",";Transverse mass(other leptons,MET) [GeV/c^{2}]; Events",50,0,500), 1,1,1,20,0,false,true,1,1,1);
@@ -134,6 +136,7 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
 	  results_["met2"+subcat+"_mindphi"]    = formatPlot( newDir.make<TH1F>("met2"+subcat+"_mindphi", ";min #Delta #phi(#slash{E}_{T},l) [rad]; Events", 50, 0,3.2), 1,1,1,20,0,false,true,1,1,1);
 	  results_[subcat+"_met"]               = formatPlot( newDir.make<TH1F>(subcat+"_met", ";#slash{E}_{T} [GeV/c]; Events", 50,  0.,300.), 1,1,1,20,0,false,true,1,1,1);
 	  results_[subcat+"_metsig"]            = formatPlot( newDir.make<TH1F>(subcat+"_metsig", ";#slash{E}_{T} significance; Events", 50,  0.,100.), 1,1,1,20,0,false,true,1,1,1);
+	  results_[subcat+"_rmet"]              = formatPlot( newDir.make<TH1F>(subcat+"_rmet", ";reduced #slash{E}_{T} [GeV/c]; Events", 30,  0.,300.), 1,1,1,20,0,false,true,1,1,1);
 	  results_[subcat+"_dilepton2met_dphi"] = formatPlot( newDir.make<TH1F>(subcat+"dilepton2met_dphi", ";#Delta #phi [rad]; Events", 50, 0,3.2), 1,1,1,20,0,false,true,1,1,1);
 	  results_[subcat+"_vertex2met_dphi"] = formatPlot( newDir.make<TH1F>(subcat+"vertex2met_dphi", ";#Delta #phi [rad]; Events", 50, 0,3.2), 1,1,1,20,0,false,true,1,1,1);
 	  results_[subcat+"_othervertex2met_dphi"] = formatPlot( newDir.make<TH1F>(subcat+"othervertex2met_dphi", ";#Delta #phi [rad]; Events", 50, 0,3.2), 1,1,1,20,0,false,true,1,1,1);
@@ -222,8 +225,10 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 
     //basic dilepton kinematics
     reco::CandidatePtr lepton1 = evhyp["leg1"];
+    double lepton1pterr=dilepton::getPtErrorFor(lepton1);
     TLorentzVector lepton1P(lepton1->px(),lepton1->py(),lepton1->pz(), lepton1->energy());
     reco::CandidatePtr lepton2 = evhyp["leg2"];
+    double lepton2pterr=dilepton::getPtErrorFor(lepton2);
     TLorentzVector lepton2P(lepton2->px(),lepton2->py(),lepton2->pz(), lepton2->energy());
     TLorentzVector dileptonP=lepton1P+lepton2P;
     getHist(istream+"_dilepton_sumpt")->Fill(lepton1P.Pt()+lepton2P.Pt(),weight);
@@ -232,7 +237,31 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     getHist(istream+"_dilepton_dphi")->Fill( TMath::Abs( lepton1P.DeltaPhi(lepton2P) ) ,weight );
     if(fabs(dileptonP.M()-91)>15) return;
     getHist(istream+"_cutflow")->Fill(3,weight);
-
+    
+    //count the jets in the event
+    std::vector<reco::CandidatePtr> seljets= evhyp.all("jet");
+    int njets( seljets.size() ), nbjets(0);
+    std::vector<LorentzVector> jetmomenta;
+    for (pat::eventhypothesis::Looper<pat::Jet> jet = evhyp.loopAs<pat::Jet>("jet"); jet; ++jet) {
+      jetmomenta.push_back(jet->p4());
+      float btag=jet->bDiscriminator("trackCountingHighEffBJetTags");
+      if(btag>1.74) nbjets+=1; //loose point
+      getHist(istream+"_btags")->Fill(btag,weight);
+      getHist(istream+"_jetpt")->Fill(jet->pt(),weight);
+      getHist(istream+"_jeteta")->Fill(jet->eta(),weight);
+      getHist(istream+"_jetfassoc")->Fill( jet::fAssoc(jet.get(),primVertex) ,weight);
+    }
+    getHist(istream+"_njets")->Fill(njets,weight);
+    getHist(istream+"_bmult")->Fill(nbjets,weight);
+    
+    int jetbin=njets;
+    if(jetbin>2)jetbin=2;
+    
+    //update the selection stream
+    TString substream=istream; 
+    if(njets==0)      substream = substream+"eq0jets";
+    else if(njets==1) substream = substream+"eq1jets";
+    else              substream = substream+"geq2jets";
     
     //base met kinematics
     const pat::MET *themet=evhyp.getAs<pat::MET>("met");
@@ -249,7 +278,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 
     //require MET back-to-back to dilepton
     float dphiZ2met=dileptonP.DeltaPhi(metP);
-    if(fabs(dphiZ2met)<TMath::Pi()/2) return;
+    //if(fabs(dphiZ2met)<TMath::Pi()/2) return;
 
     //check other leptons in the event
     int lepMult(2);
@@ -271,33 +300,18 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
       }
     getHist(istream+"_nleptons")->Fill(lepMult,weight);
 
-
-    //count the jets in the event
-    std::vector<reco::CandidatePtr> seljets= evhyp.all("jet");
-    int njets( seljets.size() ), nbjets(0);
-    for (pat::eventhypothesis::Looper<pat::Jet> jet = evhyp.loopAs<pat::Jet>("jet"); jet; ++jet) {
-      float btag=jet->bDiscriminator("trackCountingHighEffBJetTags");
-      if(btag>1.74) nbjets+=1; //loose point
-      getHist(istream+"_btags")->Fill(btag,weight);
-      getHist(istream+"_jetpt")->Fill(jet->pt(),weight);
-      getHist(istream+"_jeteta")->Fill(jet->eta(),weight);
-      getHist(istream+"_jetfassoc")->Fill( jet::fAssoc(jet.get(),primVertex) ,weight);
-    }
-    getHist(istream+"_njets")->Fill(njets,weight);
-    getHist(istream+"_bmult")->Fill(nbjets,weight);
-    
-    int jetbin=njets;
-    if(jetbin>2)jetbin=2;
-    
-    //update the selection stream
-    TString substream=istream; 
-    if(njets==0)      substream = substream+"eq0jets";
-    else if(njets==1) substream = substream+"eq1jets";
-    else              substream = substream+"geq2jets";
+    //reduced met
+    rmet_.compute(lepton1->p4(),lepton1pterr,
+		  lepton2->p4(),lepton2pterr,
+		  jetmomenta,
+		  themet->p4());
+    float reducedMET=rmet_.reducedMET();
+    getHist(istream+"_rmet")->Fill(reducedMET,weight);
 
     getHist(istream+"_cutflow")->Fill(4,weight);
     getHist(istream+"_cutflow")->Fill(5+jetbin,weight);
     getHist(substream+"_met")->Fill(metP.Pt(),weight);
+    getHist(substream+"_rmet")->Fill(reducedMET,weight);
     getHist(substream+"_dilepton2met_dphi")->Fill(fabs(dphiZ2met),weight);
     getHist(substream+"_metsig")->Fill(metsig,weight);
     for(std::vector<reco::VertexRef>::iterator vit=selVertices.begin(); vit != selVertices.end(); vit++)

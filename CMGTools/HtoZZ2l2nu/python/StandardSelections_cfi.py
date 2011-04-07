@@ -39,7 +39,7 @@ BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectrons")
 #my base values for jet selection -------------------------------------------------
 BaseJetSelection = cms.PSet( source = cms.InputTag("selectedPatJets"),
                              jetId = cms.PSet( version = cms.string("FIRSTDATA"), quality = cms.string("LOOSE") ),
-                             minPt = cms.double(30),
+                             minPt = cms.double(15),
                              maxEta = cms.double(2.5),
                              minDeltaRtoLepton = cms.double(0.4)
                              )
