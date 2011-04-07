@@ -27,7 +27,12 @@ namespace cmg{
 	long unset(const long&);
 	char const* const unset(const char*);
 
-#define UnSet(T) cmg::unset( T() )	
+#define UnSet(T) cmg::unset( T() )
+    
+    template<class T>
+    bool isUnset(const T& v){
+        return fabs(v - UnSet(T)) < 1e-6;
+    }
 	
 }
 
