@@ -3,6 +3,23 @@
 using namespace std;
 
 namespace dilepton{
+
+  double getPtErrorFor(reco::CandidatePtr &lepton)
+  {
+    double ptError(0);
+
+    if( dynamic_cast<const pat::Muon *>( lepton.get() ) )
+      {
+	const pat::Muon *mu=dynamic_cast<const pat::Muon *>(lepton.get());
+	ptError = mu->innerTrack()->ptError();
+      }
+    else if( dynamic_cast<const pat::Electron *>( lepton.get() ) )
+      {
+	const pat::Electron *ele=dynamic_cast<const pat::Electron *>( lepton.get() ) ;
+	ptError = (lepton->pt()/lepton->p()) * ele->electronMomentumError();
+      }
+    return ptError;
+  }
   
   //
   std::pair<reco::VertexRef, std::vector<reco::CandidatePtr> > filter(std::vector<reco::CandidatePtr> &selLeptons, 
