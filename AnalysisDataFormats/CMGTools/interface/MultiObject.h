@@ -2,6 +2,7 @@
 #define MULTIOBJECT_H_
 
 #include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
+#include "AnalysisDataFormats/CMGTools/interface/UnSet.h"
 
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
@@ -21,7 +22,8 @@ namespace cmg {
   public:
 
     MultiObject(std::vector<SrcPtr> sourcePtrs) :
-      sourcePtrs_(sourcePtrs)
+      sourcePtrs_(sourcePtrs),
+      deltaPhiStar_(cmg::unsetD)
       {
         Charge qSum = 0;
         LorentzVector p4Sum(0., 0., 0., 0.);
@@ -51,8 +53,16 @@ namespace cmg {
       return sourcePtrs_.size();
     }
 
+    Double_t const deltaPhiStar() const{
+      return deltaPhiStar_;
+    }
+
   private:
     std::vector<SrcPtr> sourcePtrs_;
+
+    // The delta-phi^star variable as defined in formula 5 (p. 10) of
+    // CMS AN-2010/242.
+    Double_t deltaPhiStar_;
 
     friend class cmg::MultiObjectFactory;
 
