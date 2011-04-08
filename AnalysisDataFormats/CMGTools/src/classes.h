@@ -17,6 +17,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/VBFEventT1T2.h"
 #include "AnalysisDataFormats/CMGTools/interface/VBFEventT1T2Fwd.h"
 #include "AnalysisDataFormats/CMGTools/interface/Hemisphere.h"
+#include "AnalysisDataFormats/CMGTools/interface/Photon.h"
 
 #include <vector>
 
@@ -32,6 +33,11 @@ namespace {
     std::vector<cmg::DiHemisphere> dhv;
     edm::Wrapper<cmg::DiHemisphere> wdh;
     edm::Wrapper<std::vector<cmg::DiHemisphere> > wdhv;
+
+    cmg::DiPhoton dp_;
+    std::vector<cmg::DiPhoton> dpv;
+    edm::Wrapper<cmg::DiPhoton> wdp;
+    edm::Wrapper<std::vector<cmg::DiPhoton> > wdpv;
 
     cmg::DiElectron de_;
     std::vector<cmg::DiElectron> dev;
@@ -139,6 +145,11 @@ namespace {
     std::vector<cmg::Hemisphere> vhp_;
     edm::Wrapper<cmg::Hemisphere> whp_;
     edm::Wrapper<std::vector<cmg::Hemisphere> > wvhp_;
+
+    cmg::Photon pp_;
+    std::vector<cmg::Photon> vpp_;
+    edm::Wrapper<cmg::Photon> wpp_;
+    edm::Wrapper<std::vector<cmg::Photon> > wvpp_;
 
     /// create dictionaries for Jet Jet objects
     cmg::VBFEventJetJet dummyVBFEventJetJet;

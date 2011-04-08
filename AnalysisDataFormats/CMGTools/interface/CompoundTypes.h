@@ -8,12 +8,14 @@
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/Hemisphere.h"
+#include "AnalysisDataFormats/CMGTools/interface/Photon.h"
 
 #include "AnalysisDataFormats/CMGTools/interface/GenericTypes.h"
 
 namespace cmg {
 
   typedef cmg::DiObject<cmg::Hemisphere, cmg::Hemisphere> DiHemisphere;
+  typedef cmg::DiObject<cmg::Photon, cmg::Photon> DiPhoton;
   typedef cmg::DiObject<cmg::Electron,cmg::Electron> DiElectron;
   typedef cmg::DiObject<cmg::BaseJet,cmg::BaseJet> DiJet;
   typedef cmg::DiObject<cmg::Muon,cmg::Muon> DiMuon;
