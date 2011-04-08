@@ -11,6 +11,7 @@ cmgHemi = cms.EDFilter("HemispherePOProducer",
                        cfg = hemiFactory.clone(
     inputCollection = cms.VInputTag("cmgPFJetSel")
     ),
+    cuts = cms.PSet()
                        )
 
 ######################################################################
