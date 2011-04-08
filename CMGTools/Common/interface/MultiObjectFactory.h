@@ -5,7 +5,6 @@
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "AnalysisDataFormats/CMGTools/interface/UnSet.h"
 #include "AnalysisDataFormats/CMGTools/interface/MultiObject.h"
-/* #include "CMGTools/Common/interface/SettingTool.h" */
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
 #include "DataFormats/Math/interface/Vector.h"
@@ -24,7 +23,6 @@
 namespace cmg {
 
 class MultiObjectFactory : public cmg::Factory<cmg::MultiObject> {
-/*     public cmg::SettingTool<std::pair<T,U>, cmg::MultiObject> { */
 public:
 
   MultiObjectFactory(edm::ParameterSet const& ps):
