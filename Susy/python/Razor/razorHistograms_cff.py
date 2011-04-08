@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 razorDiHemiHistograms = cms.EDAnalyzer(
     "CmgDiHemiHistograms",
-    inputCollection = cms.InputTag("RazorDiHemiAllPFJets"),
+    inputCollection = cms.InputTag("RazorDiHemiHadBox"),
     histograms = cms.untracked.PSet(
         pt = cms.untracked.VPSet(
             cms.untracked.PSet( 
