@@ -24,6 +24,8 @@ class BaseMETFactory : public Factory<cmg::BaseMET>{
       {
     }
     virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
+    ///utility method for met calculation
+    static void calcET(const reco::Candidate& cand, double* ex, double* ey, double* et);
     
   private:
     const edm::InputTag inputLabel_;
@@ -51,6 +53,25 @@ BaseMETFactory<pat::MET>::event_ptr BaseMETFactory<pat::MET>::create(const edm::
   
 }
 
+template <class T>
+void cmg::BaseMETFactory<T>::calcET(const reco::Candidate& cand, double* ex, double* ey, double* et){
+    
+    double phi = cand.phi();
+    double cosphi = cos(phi);
+    double sinphi = sin(phi);
+
+    double theta = cand.theta();
+    double sintheta = sin(theta);
+    
+    double E = cand.energy();
+
+    *et = E*sintheta;
+    *ex = (*et)*cosphi;
+    *ey = (*et)*sinphi;
+    
+}
+
+
 ///Recalculate the MET using any collection of candidates
 template <class T>
 typename cmg::BaseMETFactory<T>::event_ptr cmg::BaseMETFactory<T>::create(const edm::Event& iEvent, const edm::EventSetup&) const{
@@ -72,19 +93,11 @@ typename cmg::BaseMETFactory<T>::event_ptr cmg::BaseMETFactory<T>::create(const 
     const reco::Candidate& cand = *mi;
 
     if(cand.pt()<ptThreshold_ ) continue;
-    
-    double phi = cand.phi();
-    double cosphi = cos(phi);
-    double sinphi = sin(phi);
 
-    double theta = cand.theta();
-    double sintheta = sin(theta);
-    
-    double E = cand.energy();
-
-    double et = E*sintheta;
-    double ex = et*cosphi;
-    double ey = et*sinphi;
+    double et = 0;
+    double ex = 0;
+    double ey = 0;
+    cmg::BaseMETFactory<T>::calcET(cand, &ex, &ey, &et);
     
     sumEx += ex;
     sumEy += ey;

@@ -23,6 +23,7 @@
 #include "CMGTools/Common/interface/BaseJetFactory.h"
 #include "CMGTools/Common/interface/PFJetFactory.h"
 #include "CMGTools/Common/interface/BaseMETFactory.h"
+#include "CMGTools/Common/interface/BaseMETModificationFactory.h"
 #include "CMGTools/Common/plugins/PhysicsObjectProducer.h"
 
 // COLIN why not in plugins?
@@ -53,6 +54,7 @@ typedef PhysicsObjectProducer<cmg::QuadMuonFactory> QuadMuonPOProducer;
 typedef PhysicsObjectProducer<cmg::BaseJetFactory> BaseJetPOProducer;
 typedef PhysicsObjectProducer<cmg::PFJetFactory> PFJetPOProducer;
 typedef PhysicsObjectProducer<cmg::BaseMETFactory<> > BaseMETPOProducer;
+typedef PhysicsObjectProducer<cmg::BaseMETModificationFactory> BaseMETModifier;
 typedef PhysicsObjectProducer<cmg::BaseMETFactory<pat::MET> > PATMETPOProducer;
 typedef PhysicsObjectProducer<cmg::PFCandFactory> PFCandidatePOProducer;
 typedef PhysicsObjectProducer<cmg::GenParticleFactory> GenParticlePOProducer;
