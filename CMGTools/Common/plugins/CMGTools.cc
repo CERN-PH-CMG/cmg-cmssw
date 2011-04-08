@@ -49,6 +49,9 @@ DEFINE_FWK_MODULE(CutSummaryAnalyzer);
 DEFINE_FWK_MODULE(LeadingCMGPOSelector);
 DEFINE_FWK_MODULE(LeadingCMGBaseJetSelector);
 DEFINE_FWK_MODULE(LeadingCMGPFJetSelector);
+DEFINE_FWK_MODULE(LeadingCMGElectronSelector);
+DEFINE_FWK_MODULE(LeadingCMGMuonSelector);
+
 
 DEFINE_FWK_MODULE(CmgPFJetSelector);
 DEFINE_FWK_MODULE(CmgBaseJetSelector);
