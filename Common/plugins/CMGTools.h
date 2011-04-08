@@ -93,6 +93,8 @@ typedef cmg::PhysicsObjectPrinter PhysicsObjectPrinter;
 typedef cmg::LeadingObjectsSelector<cmg::AbstractPhysicsObject> LeadingCMGPOSelector;
 typedef cmg::LeadingObjectsSelector<cmg::BaseJet> LeadingCMGBaseJetSelector;
 typedef cmg::LeadingObjectsSelector<cmg::PFJet> LeadingCMGPFJetSelector;
+typedef cmg::LeadingObjectsSelector<cmg::Electron> LeadingCMGElectronSelector;
+typedef cmg::LeadingObjectsSelector<cmg::Muon> LeadingCMGMuonSelector;
 
 // single object selectors
 
