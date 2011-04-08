@@ -168,7 +168,7 @@ RA1cmgDiHemi = cmgDiHemi.clone()
 RA1cmgDiHemi.cfg.leg1Collection = "RA1cmgHemi"
 RA1cmgDiHemi.cfg.leg2Collection = "RA1cmgHemi"
 
-RA1HemiSequence = cms.Sequence(
+RA1Hemi = cms.Sequence(
     RA1cmgHemi +
     RA1cmgDiHemi
     )
@@ -178,7 +178,7 @@ RA1HemiSequence = cms.Sequence(
 RA1cmgMultiJet = cmgMultiJet.clone()
 RA1cmgMultiJet.cfg.inputCollection = "RA1cmgPFJetSel30"
 
-RA1MultiJetSequence = cms.Sequence(
+RA1MultiJet = cms.Sequence(
     RA1cmgMultiJet
     )
 
@@ -210,8 +210,8 @@ RA1ObjectSequence = cms.Sequence(
     RA1Jet +
     RA1HT +
     RA1MHT +
-    RA1HemiSequence +
-    RA1MultiJetSequence
+    RA1Hemi +
+    RA1MultiJet
     )
 
 RA1Sequence  = cms.Sequence(
