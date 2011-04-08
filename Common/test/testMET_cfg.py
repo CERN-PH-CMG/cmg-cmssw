@@ -42,9 +42,24 @@ process.load('CMGTools.Common.analysis_cff')
 process.load("CMGTools.Common.jet_cff")
 process.load("CMGTools.Common.met_cff")
 
+# make test with the pf candidates
+process.load('CMGTools.Common.Tools.cmgBaseMETModifier_cfi')
+# MET from PFCandidates
+process.testCmgBaseMETModifierSrc = process.cmgMETPFCandidates.clone()
+process.testCmgBaseMETModifierSrc.cfg.inputCollection = "particleFlow"
+# now subtract the pf candidate
+process.testCmgBaseMETModifier = process.cmgBaseMETModifier.clone()
+process.testCmgBaseMETModifier.cfg.inputCollection = "particleFlow"
+process.testCmgBaseMETModifier.cfg.metCollection = 'testCmgBaseMETModifierSrc'
+process.testCmgBaseMETModifier.cfg.operator = '-' #subtract from the MET
+process.testCmgBaseMETSequence  = cms.Sequence(process.testCmgBaseMETModifierSrc*process.testCmgBaseMETModifier)
+process.out.outputCommands.append('keep *_testCmgBaseMETModifier*_*_*')
+
+
 process.analysisSequence = cms.Sequence(
     process.jetSequence+                                    
-    process.metSequence
+    process.metSequence+
+    process.testCmgBaseMETSequence
     )
 
 process.p = cms.Path(

@@ -50,10 +50,37 @@ class TestMET(TestTools.CFGTest):
         events = TestTools.getObject(output[1], 'Events')
         
         cmg = cmgTuple.cmgTuple(events)
-        self.assertEqual(cmg.Draw("abs(patMETsPFlow.et() - cmgMETPFCandidates.et())","abs(patMETsPFlow.et() - cmgMETPFCandidates.et()) > 1e-3","goff"),0,\
-                         'The cmg::MET and the pat::MET should be the same')
-        self.assertEqual(cmg.Draw("abs(patMETsPFlow.et() - cmgPFMET.et())","abs(patMETsPFlow.et() - cmgPFMET.et()) > 1e-6","goff"),0,\
-                         'The cmg::MET and the pat::MET should be the same')
+        self.assertEqual(cmg.Draw("abs(patMETsPFlow.et() - testCmgBaseMETModifierSrc.et())",\
+                                  "abs(patMETsPFlow.et() - testCmgBaseMETModifierSrc.et()) > 1e-3","goff"),0,\
+                                  'The cmg::MET and the pat::MET should be the same')
+        self.assertEqual(cmg.Draw("abs(patMETsPFlow.et() - cmgPFMET.et())",
+                                  "abs(patMETsPFlow.et() - cmgPFMET.et()) > 1e-3","goff"),0,\
+                                  'The cmg::MET and the pat::MET should be the same')
+        
+    def testMETModifier(self):
+        """Test the met modification algorithm"""
+        
+        output = self.__class__.cfgsRunOnceCache['CMGTools/Common/test/testMET_cfg.py']
+        events = TestTools.getObject(output[1], 'Events')
+        
+        cmg = cmgTuple.cmgTuple(events)
+        
+        self.assertEqual(cmg.Draw("testCmgBaseMETModifierSrc.et()",\
+                                  "testCmgBaseMETModifierSrcVec.size() && abs(testCmgBaseMETModifierSrc.et()) < 1e-4","goff"),0,\
+                                  'The cmg::MET src should be non-zero')
+        self.assertEqual(cmg.Draw("testCmgBaseMETModifierSrc.sumEt()",\
+                                  "testCmgBaseMETModifierSrcVec.size() && abs(testCmgBaseMETModifierSrc.sumEt()) < 1e-4","goff"),0,\
+                                  'The cmg::MET src sumEt should be non-zero')
+        
+        self.assertEqual(cmg.Draw("testCmgBaseMETModifier.et()",\
+                                  "abs(testCmgBaseMETModifier.et()) > 1e-5","goff"),0,\
+                                  'The cmg::MET should be corrected back to zero')
+        self.assertEqual(cmg.Draw("testCmgBaseMETModifier.sumEt()",\
+                                  "abs(testCmgBaseMETModifier.sumEt()) > 1e-5","goff"),0,\
+                                  'The cmg::MET sumET should be corrected back to zero')
+        self.assertEqual(cmg.Draw("testCmgBaseMETModifier.charge()",\
+                                  "abs(testCmgBaseMETModifier.charge()) > 1e-5","goff"),0,\
+                                  'The cmg::MET charge should be corrected back to zero')        
  
 
 if __name__ == '__main__':
