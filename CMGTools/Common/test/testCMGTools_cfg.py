@@ -1,6 +1,12 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 import FWCore.ParameterSet.Config as cms
 
+sep_line = "-" * 50
+print
+print sep_line
+print "CMGTools main test"
+print sep_line
+
 process.setName_('ANA')
 
 process.maxEvents = cms.untracked.PSet(

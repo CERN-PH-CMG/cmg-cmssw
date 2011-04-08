@@ -1,7 +1,13 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 import FWCore.ParameterSet.Config as cms
 
-# unit test for the muon analysis sequence 
+# Unit test for the WENu analysis sequence.
+
+sep_line = "-" * 50
+print
+print sep_line
+print "WENu sequence test"
+print sep_line
 
 process.setName_('ANA')
 

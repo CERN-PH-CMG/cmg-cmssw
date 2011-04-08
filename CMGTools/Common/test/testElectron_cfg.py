@@ -1,7 +1,13 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 import FWCore.ParameterSet.Config as cms
 
-# unit test for the electron analysis sequence 
+# Unit test for the electron analysis sequence.
+
+sep_line = "-" * 50
+print
+print sep_line
+print "Electron sequence test"
+print sep_line
 
 process.setName_('ANA')
 

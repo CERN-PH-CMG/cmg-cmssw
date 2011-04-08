@@ -7,6 +7,12 @@ import FWCore.ParameterSet.Config as cms
 
 # Unit test for the jet hemisphere analysis sequence.
 
+sep_line = "-" * 50
+print
+print sep_line
+print "Hemisphere and di-hemisphere building test"
+print sep_line
+
 process.setName_('ANA')
 
 process.maxEvents = cms.untracked.PSet(
