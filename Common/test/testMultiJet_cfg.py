@@ -7,6 +7,12 @@ import FWCore.ParameterSet.Config as cms
 
 # Unit test for the multi-jet factory.
 
+sep_line = "-" * 50
+print
+print sep_line
+print "Multi-jet building test"
+print sep_line
+
 process.setName_('ANA')
 
 process.maxEvents = cms.untracked.PSet(
