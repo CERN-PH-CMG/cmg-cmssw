@@ -1,7 +1,7 @@
 //
 // Original Author:  Artur Kalinowski
 //         Created:  Tue Oct 24 15:08:51 CEST 2006
-// $Id: AnalysisHistograms.cc,v 1.1 2010/11/04 13:07:29 cbern Exp $
+// $Id: AnalysisHistograms.cc,v 1.1 2010/11/11 14:09:09 wreece Exp $
 //
 //
 // system include files
@@ -188,48 +188,63 @@ void  AnalysisHistograms::fill3DHistogram(std::string name, float val1, float va
  if(my3Dhistograms_.find(name)!=my3Dhistograms_.end()) my3Dhistograms_[name]->Fill(val1,val2,val3,weight);
   else cout<<"ERROR: Histogram: "<<name<<" not found!"<<endl;
 }
+
 //////////////////////////////////////////////////////////////////////////////
 
-
-TProfile* AnalysisHistograms::getProfile(const std::string& name) {
-
+TProfile*
+AnalysisHistograms::getProfile(const std::string& name)
+{
  using namespace std;
 
- if(myProfiles_.find(name)!=myProfiles_.end()) return (TProfile*)(myProfiles_[name]->Clone());
- else cout<<"ERROR: Profile : "<<name<<" not found!"<<endl;
+ if(myProfiles_.find(name)!=myProfiles_.end())
+   return myProfiles_[name];
+ else
+   cout << "ERROR: Profile : " << name << " not found!" << endl;
  return 0;
-
 }
 
-TH1F* AnalysisHistograms::get1DHistogram(std::string name){
-
- using namespace std;
-
- if(my1Dhistograms_.find(name)!=my1Dhistograms_.end()) return (TH1F*)(my1Dhistograms_[name]->Clone());
- else cout<<"ERROR: Histogram: "<<name<<" not found!"<<endl;
- return 0;
-
-}
 //////////////////////////////////////////////////////////////////////////////
-TH2F* AnalysisHistograms::get2DHistogram(std::string name){
 
+TH1F*
+AnalysisHistograms::get1DHistogram(std::string name)
+{
  using namespace std;
 
- if(my2Dhistograms_.find(name)!=my2Dhistograms_.end()) return (TH2F*)(my2Dhistograms_[name]->Clone());
- else cout<<"ERROR: Histogram: "<<name<<" not found!"<<endl;
+ if(my1Dhistograms_.find(name)!=my1Dhistograms_.end())
+   return my1Dhistograms_[name];
+ else
+   cout << "ERROR: Histogram: " << name << " not found!" << endl;
  return 0;
-
 }
+
 //////////////////////////////////////////////////////////////////////////////
-TH3F* AnalysisHistograms::get3DHistogram(std::string name){
 
+TH2F*
+AnalysisHistograms::get2DHistogram(std::string name)
+{
  using namespace std;
 
- if(my3Dhistograms_.find(name)!=my3Dhistograms_.end()) return (TH3F*)(my3Dhistograms_[name]->Clone());
- else cout<<"ERROR: Histogram: "<<name<<" not found!"<<endl;
+ if(my2Dhistograms_.find(name)!=my2Dhistograms_.end())
+   return my2Dhistograms_[name];
+ else
+   cout << "ERROR: Histogram: " << name << " not found!" << endl;
  return 0;
-
 }
+
+//////////////////////////////////////////////////////////////////////////////
+
+TH3F*
+AnalysisHistograms::get3DHistogram(std::string name)
+{
+ using namespace std;
+
+ if(my3Dhistograms_.find(name)!=my3Dhistograms_.end())
+   return my3Dhistograms_[name];
+ else
+   cout << "ERROR: Histogram: " << name << " not found!" << endl;
+ return 0;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 void AnalysisHistograms::resetHistos(std::pair<const std::string, TH1*> aPair){
