@@ -23,6 +23,7 @@ namespace cmg{
     double sumEt_;
     
     template <class T> friend class BaseMETFactory;
+    friend class BaseMETModificationFactory;
 	
   };
 
