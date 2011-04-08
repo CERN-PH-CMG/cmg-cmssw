@@ -6,6 +6,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 #include "AnalysisDataFormats/CMGTools/interface/Hemisphere.h"
+#include "AnalysisDataFormats/CMGTools/interface/Photon.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/PhysicsObject.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
@@ -17,6 +18,7 @@
 #include "CMGTools/Common/interface/CompoundFactories.h"
 #include "CMGTools/Common/interface/MultiObjectFactory.h"
 #include "CMGTools/Common/interface/HemiFactory.h"
+#include "CMGTools/Common/interface/PhotonFactory.h"
 #include "CMGTools/Common/interface/GenericFactories.h"
 #include "CMGTools/Common/interface/ElectronFactory.h"
 #include "CMGTools/Common/interface/MuonFactory.h"
@@ -40,6 +42,8 @@
 // Colin: should add cmg to the type names where applicable.
 
 typedef PhysicsObjectProducer<cmg::MultiObjectFactory> MultiObjectPOProducer;
+typedef PhysicsObjectProducer<cmg::PhotonFactory> PhotonPOProducer;
+typedef PhysicsObjectProducer<cmg::DiPhotonFactory> DiPhotonPOProducer;
 typedef PhysicsObjectProducer<cmg::HemisphereFactory> HemispherePOProducer;
 typedef PhysicsObjectProducer<cmg::DiHemisphereFactory> DiHemispherePOProducer;
 typedef PhysicsObjectProducer<cmg::DiElectronFactory> DiElectronPOProducer;
@@ -70,6 +74,7 @@ typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<pat::MET> > GenericPatMETH
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Electron> > CmgElectronHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Muon> > CmgMuonHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Hemisphere> > CmgHemiHistograms;
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Photon> > CmgPhotonHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::MultiObject> > CmgMultiObjectHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiMuon> > CmgDiMuonHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiElectron> > CmgDiElectronHistograms;
