@@ -50,9 +50,11 @@ class BatchManager:
         self.remoteOutputDir_ = self.options_.remoteCopy 
         nsls = 'nsls %s > /dev/null' % self.remoteOutputDir_
         dirExist = os.system( nsls )
-        if dirExist != 0: 
-            print 'check that the castor output directory specified with the -r option exists.'
-            sys.exit(1)
+        if dirExist != 0:
+            print 'creating ', self.remoteOutputDir_
+            os.system('nsmkdir ' + self.remoteOutputDir_ )
+            # print 'check that the castor output directory specified with the -r option exists.'
+            # sys.exit(1)
 #        self.remoteOutputFile_ = os.path.basename( self.options_.remoteCopy )
         self.remoteOutputFile_ = ""
     
