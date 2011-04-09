@@ -150,21 +150,35 @@ class MyBatchManager( BatchManager ):
 
        # are we at CERN or somewhere else? testing the afs path
        cwd = os.getcwd()
-       patternCern = re.compile( '^/afs/cern.ch' )
-
+       
+       patternLxplus = re.compile( '^lxplus' )
+       onLxplus = patternLxplus.match( os.environ['HOSTNAME'] ) 
        patternBatch = re.compile( '\w*bsub')
        wantBatch = patternBatch.match( options.batch )
-       if wantBatch:
-          print "we want to run on the batch with bsub"
-          if patternCern.match( cwd ):
-             print '@ CERN'
+
+       local = False
+       if onLxplus:
+          print 'Running on LXPLUS'
+          if wantBatch:
+             print 'Wanna use batch system'
              scriptFile.write( batchScriptCERN( self.remoteOutputDir_,
                                                 value) )
-       else: 
-          print '@ local'
+          else:
+             print 'Wanna use local ressources'
+             local = True
+       else:
+          if wantBatch:
+             print "your -b option contains the string bsub, and you're not on lxplus... aborting"
+             sys.exit(1)
+          else:
+             print 'Not on lxplus, running locally'
+             local = True
+
+       if local:
           scriptFile.write( batchScriptLocal( self.remoteOutputDir_,
                                               value) )          
-       
+  
+          
        scriptFile.close()
        os.system('chmod +x %s' % scriptFileName)
 
