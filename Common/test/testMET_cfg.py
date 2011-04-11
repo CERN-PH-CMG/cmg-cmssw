@@ -12,12 +12,24 @@ print sep_line
 process.setName_('ANA')
 
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(2000)
+        input = cms.untracked.int32(-1)
         )
 
-process.source.fileNames = cms.untracked.vstring(
-    'file:/afs/cern.ch/user/c/cbern/scratch0/CMG/RelVal/4_1_3/ttbar_PATandPF2PAT.root'
+process.source = cms.Source(
+    "PoolSource",
+    
+    noEventSort = cms.untracked.bool(True),
+    duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
+    fileNames = cms.untracked.vstring()
     )
+process.source.fileNames.extend([
+    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/LM1/patTuple_PATandPF2PAT_RelValLM1_sfts_0.root',
+    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/LM1/patTuple_PATandPF2PAT_RelValLM1_sfts_1.root',
+    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/LM1/patTuple_PATandPF2PAT_RelValLM1_sfts_2.root',
+    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/LM1/patTuple_PATandPF2PAT_RelValLM1_sfts_3.root',
+    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/LM1/patTuple_PATandPF2PAT_RelValLM1_sfts_4.root',
+    ])
+
 
 extension = 'met'
 
@@ -26,6 +38,7 @@ process.out.fileName = cms.untracked.string('tree_test_%s.root' % extension)
 from CMGTools.Common.eventContent.everything_cff import everything 
 process.out.outputCommands = cms.untracked.vstring( 'drop *')
 process.out.outputCommands.append('keep  patMETs_patMETsPFlow_*_*')
+process.out.outputCommands.append('keep  patMETs_patMETs_*_*')
 process.out.outputCommands.extend( everything ) 
     
 
