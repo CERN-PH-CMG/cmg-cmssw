@@ -15,3 +15,6 @@ rootDir = RootDir( file, sBlueSquares )
 pfJetH = rootDir.subDirs_['pfJetHistograms']
 
 print pfJetH.subDirs_
+
+
+pfJetH.subDirs_['ChargedHadrons'].DrawAll()
