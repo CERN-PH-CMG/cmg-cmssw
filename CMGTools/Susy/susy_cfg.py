@@ -47,19 +47,19 @@ print process.source.fileNames
 
 outFileNameExt = ext
 
-process.load('CMGTools.Susy.fullyHadronic_cff')
-process.fullyHadronicSchedule.append( process.outpath )
+process.load('CMGTools.Susy.susy_cff')
+process.susySchedule.append( process.outpath )
 
 # pprint.pprint(process.out.outputCommands)
 #process.dump = cms.EDAnalyzer("EventContentAnalyzer")
 
-from CMGTools.Susy.fullyHadronicEventContent_cff import fullyHadronicEventContent
+from CMGTools.Susy.susyEventContent_cff import susyEventContent
 process.out.fileName = cms.untracked.string('susy_tree_%s.root' %  outFileNameExt)
 process.out.outputCommands = cms.untracked.vstring('drop *')
-process.out.outputCommands += fullyHadronicEventContent
+process.out.outputCommands += susyEventContent
 
 # process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('RA1Path','RA2Path','razorPath') )
-process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('RA2Path','razorPath', 'RA1Path') )
+process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('RA2Path','razorPath', 'RA1Path', 'LPPath') )
 
 process.TFileService = cms.Service(
     "TFileService",

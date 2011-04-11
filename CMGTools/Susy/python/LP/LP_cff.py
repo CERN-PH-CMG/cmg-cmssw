@@ -29,7 +29,7 @@ LpjetSkim = cms.Sequence( LPcmgPFBaseJetCount )
 #W
 from CMGTools.Common.factories.cmgWMuNu_cfi import cmgWMuNu
 LPcmgWMuNu = cmgWMuNu.clone()
-LPcmgWMuNu.cfg.leg1Collection = 'cmgMuonSel'
+LPcmgWMuNu.cfg.leg1Collection = 'LPcmgMuonSel'
 wmunuCuts = cms.PSet(
     mt = cms.string( LPwMtCut ),
     pt = cms.string( LPwPtCut )
@@ -63,7 +63,7 @@ from CMGTools.Common.histogram_cff import *
 from CMGTools.Common.histograms.cmgMuonHistograms_cfi import cmgMuonHistograms
 LPmhtPFJets30Histograms = mhtPFJets30Histograms.clone( inputCollection = 'LPcmgMHTPFJets30Sel' )
 
-LPmuonHistograms = cmgMuonHistograms.clone(inputCollection = 'cmgMuonSel')
+LPmuonHistograms = cmgMuonHistograms.clone( inputCollection = 'LPcmgMuonSel')
 
 LPhistogrammingSequence = cms.Sequence(LPmhtPFJets30Histograms*LPmuonHistograms)
 
