@@ -9,7 +9,7 @@ import sys
 
 # Pick the SuSy benchmark point.
 working_point = "LM1"
-process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
+process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(False))
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
@@ -46,7 +46,7 @@ process.load("PhysicsTools.PatAlgos.patSequences_cff")
 
 from PhysicsTools.PatAlgos.tools.pfTools import *
 postfix = "PFlow"
-usePF2PAT(process, runPF2PAT=True, jetAlgo='AK5', runOnMC=True, postfix=postfix)
+usePF2PAT(process, runPF2PAT=True, jetAlgo='AK5', jetInputTag = 'pfJets', runOnMC=True, postfix=postfix)
 from CMGTools.Susy.PF2PATonGEN_cff import *
 PF2PATonGEN(process)
 
@@ -60,11 +60,12 @@ process.load("CMGTools.Common.countingSequences_cff")
 
 process.p = cms.Path(
     process.ProductionFilterSequence +
-    process.startupSequence +
+    # process.startupSequence +
     process.GENSequence +
-    process.PF2PATonGENSequence +
-    process.finalSequence
+    process.PF2PATonGENSequence 
+    # process.finalSequence 
     )
+
 
 #-------------------------
 # Output settings.
@@ -72,22 +73,32 @@ process.p = cms.Path(
 
 process.load("CMGTools.Susy.outputGEN_cfi")
 
-from CMGTools.Common.eventContent.runInfoAccounting_cff import runInfoAccounting
+# from CMGTools.Common.eventContent.runInfoAccounting_cff import runInfoAccounting
 from PhysicsTools.PatAlgos.patEventContent_cff import patEventContentNoCleaning
 #process.load("PhysicsTools.PFCandProducer.PF2PAT_EventContent_cff")
 #process.out.outputCommands =  cms.untracked.vstring('drop *')
 process.out.fileName = 'GENandPF2PAT.root'
 process.out.outputCommands = cms.untracked.vstring(*patEventContentNoCleaning)
 process.out.outputCommands.append( 'keep *_genMetTrue*_*_*' )
+process.out.outputCommands.append( 'keep *_genMetTrue*_*_*' )
 process.out.outputCommands.append( 'keep recoPFCandidates_particleFlow_*_*' )
-process.out.outputCommands.append( 'keep cmgHemispheres_*_*_*' )
-process.out.outputCommands += runInfoAccounting
+
+# for run info accounting
+process.out.outputCommands.append( 'keep GenRunInfoProduct_*_*_*' )
+process.out.outputCommands.append( 'keep GenFilterInfo_*_*_*' )
+
+
+# process.out.outputCommands.append( 'keep cmgHemispheres_*_*_*' )
+# process.out.outputCommands += runInfoAccounting
 
 #-------------------------
 
+process.load('GeneratorInterface.Core.genFilterSummary_cff')
+process.genFilterEfficiencyProducer.filterPath = 'p'
 process.outpath = cms.EndPath(
     process.out +
-    process.saveHistosInRunInfo
+    process.genFilterSummary
+    # process.saveHistosInRunInfo
     # + process.outputGEN
     )
 

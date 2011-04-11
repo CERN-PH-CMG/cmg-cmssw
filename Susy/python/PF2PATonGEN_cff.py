@@ -8,6 +8,9 @@ def PF2PATonGEN(process, genProcessName=None):
     # if genProcessName == None:
     #    genProcessName = process.name_()
 
+    #COLIN no need to modify patDefaultSequencePFlow, if this sequence
+    # is not included... 
+
     # disabling pile-up masking
     process.pfPileUpPFlow.Enable = False
 
@@ -34,6 +37,10 @@ def PF2PATonGEN(process, genProcessName=None):
     process.electronMatchPFlow.src = 'pfIsolatedElectronsPFlow'
     process.muonMatchPFlow.src = 'pfIsolatedMuonsPFlow'
 
+    # removing MET corrections
+    process.makePatMETsPFlow.remove( process.metJESCorAK5CaloJetPFlow )
+    process.makePatMETsPFlow.remove( process.metJESCorAK5CaloJetMuonsPFlow )
+
     # removing taus from PAT, as they have been removed from PF2PAT
     process.patDefaultSequencePFlow.remove( process.makePatTausPFlow )
     process.patDefaultSequencePFlow.remove( process.selectedPatTausPFlow )
@@ -45,7 +52,7 @@ def PF2PATonGEN(process, genProcessName=None):
     process.patDefaultSequencePFlow.remove( process.countPatPhotonsPFlow )
 
     # jet correction is not done 
-    process.patDefaultSequencePFlow.remove( process.patJetCorrFactorsPFlow )
+    process.makePatJetsPFlow.remove( process.patJetCorrectionsPFlow )
 
     # swithToPFJets( process, cms.InputTag('pfJetsPFlow'), 'AK5', 'PFlow', None ) 
     # the jets are matched to the collection of GenParticles
@@ -63,9 +70,9 @@ def PF2PATonGEN(process, genProcessName=None):
     process.patJetsPFlow.addJetID = False
     process.patJetsPFlow.addTagInfos = False
     
-    process.patDefaultSequencePFlow.remove( process.jetTracksAssociatorAtVertexPFlow )
-    process.patDefaultSequencePFlow.remove( process.btaggingAODPFlow )
-    process.patDefaultSequencePFlow.remove( process.patJetChargePFlow )
+    process.makePatJetsPFlow.remove( process.jetTracksAssociatorAtVertexPFlow )
+    process.makePatJetsPFlow.remove( process.btaggingAODPFlow )
+    process.makePatJetsPFlow.remove( process.patJetChargePFlow )
 
     process.PF2PATonGENSequence = cms.Sequence(
         process.PF2PATPFlow +

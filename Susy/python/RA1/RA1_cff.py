@@ -19,7 +19,8 @@ from CMGTools.Common.skims.leadingCMGPFJetSelector_cfi import leadingCMGPFJetSel
 ######################################################################
 
 RA1cmgElectron = cmgElectronSel.clone(
-    cut = "(pt() > 10.) && (abs(eta()) < 2.5)"
+    cut = "(pt() > 10.) && (abs(eta()) < 2.5)", 
+    src = 'cmgElectronSel'
     )
 
 RA1Electron = cms.Sequence(
@@ -30,7 +31,8 @@ RA1Electron = cms.Sequence(
 
 RA1cmgMuon = cmgMuonSel.clone(
     cut = "(pt() > 10.) && (abs(eta()) < 2.5) && " \
-    "getSelection('cuts_isomuon') && getSelection('cuts_vbtfmuon')"
+    "getSelection('cuts_isomuon') && getSelection('cuts_vbtfmuon')",
+    src = 'cmgMuonSel'
     )
 
 RA1Muon = cms.Sequence(
@@ -106,7 +108,7 @@ RA1cmgMHTPFJets50.cfg.ptThreshold = 50.
 
 RA1cmgMHTPFJets50Sel = cmgBaseMETSel.clone(
     src = "RA1cmgMHTPFJets50",
-    cut = "sumEt() > 350."
+    cut = "sumEt() > 250."
     )
 
 RA1HT = cms.Sequence(
@@ -163,8 +165,8 @@ RA1CountingSequence = cms.Sequence(
     RA1cmgPFJetCount +
     RA1cmgPFJetLeadCount +
     ~RA1cmgPFJetFailCount +
-    RA1cmgElectronCount +
-    RA1cmgMuonCount +
+    ~RA1cmgElectronCount +
+    ~RA1cmgMuonCount +
     ~RA1cmgPhotonCount
     )
 

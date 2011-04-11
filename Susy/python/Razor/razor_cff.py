@@ -6,16 +6,26 @@ from CMGTools.Common.skims.cmgCandMerge_cfi import *
 
 # muon cuts
 from CMGTools.Common.skims.cmgMuonSel_cfi import *
+
+#RazorCmgMuon = cmgMuonSel.clone(cut = 'pt() > 20 && abs(eta()) < 2.1 && getSelection("cuts_vbtfmuon") && getSelection("cuts_isomuon")', src = 'cmgMuonSel')
+
+#COLIN why don't we take the source from cmgMuonSel? 
 from CMGTools.Common.skims.leadingCMGMuonSelector_cfi import leadingCMGMuonSelector
 RazorCmgMuon = cmgMuonSel.clone(cut = 'pt() > 20 && abs(eta()) < 2.1 && getSelection("cuts_vbtfmuon") && getSelection("cuts_isomuon")')
 RazorLeadingCmgMuon = leadingCMGMuonSelector.clone(inputCollection = "RazorCmgMuon", index = cms.untracked.int32(1))
+
 RazorCmgMuonFailed = invertSelector(RazorCmgMuon)
 
 # electron cuts - TODO: add VBTF selection 
 from CMGTools.Common.skims.cmgElectronSel_cfi import *
+
+#RazorCmgElectron = cmgElectronSel.clone(cut = 'pt() > 20 && abs(eta()) < 2.5 && (abs(eta()) < 1.4442 || abs(eta()) > 1.566)', src = 'cmgElectronSel')
+
+#COLIN why don't we take the source from cmgElectronSel? 
 from CMGTools.Common.skims.leadingCMGElectronSelector_cfi import leadingCMGElectronSelector
 RazorCmgElectron = cmgElectronSel.clone(cut = 'pt() > 20 && abs(eta()) < 2.5 && (abs(eta()) < 1.4442 || abs(eta()) > 1.566)')
 RazorLeadingCmgElectron = leadingCMGElectronSelector.clone(inputCollection = "RazorCmgElectron", index = cms.untracked.int32(1))
+
 RazorCmgElectronFailed = invertSelector(RazorCmgElectron)
 
 RazorLepton = cms.Sequence(
@@ -177,7 +187,7 @@ RazorSelectedDiHemi = cmgCandMerge.clone(
 RazorSelectedCount = cmgCandCount.clone( src = 'RazorSelectedDiHemi', minNumber = 1 )
 
 RazorJet = cms.Sequence(
-    RazorLepton*
+    # RazorLepton*
     RazorMET*
     RazorCmgPFJetSel*
     RazorCmgPFJetsWithLeadingLeptons*
