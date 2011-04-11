@@ -154,12 +154,18 @@ RA1cmgMuonCount = cmgCandCount.clone(
     minNumber = 1
     )
 
+RA1cmgPhotonCount = cmgCandCount.clone(
+    src = "RA1cmgPhoton",
+    minNumber = 1
+    )
+
 RA1CountingSequence = cms.Sequence(
     RA1cmgPFJetCount +
     RA1cmgPFJetLeadCount +
     ~RA1cmgPFJetFailCount +
     RA1cmgElectronCount +
-    RA1cmgMuonCount
+    RA1cmgMuonCount +
+    ~RA1cmgPhotonCount
     )
 
 ##########
