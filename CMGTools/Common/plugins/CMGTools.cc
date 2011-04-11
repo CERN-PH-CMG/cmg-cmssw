@@ -53,6 +53,7 @@ DEFINE_FWK_MODULE(LeadingCMGElectronSelector);
 DEFINE_FWK_MODULE(LeadingCMGMuonSelector);
 
 
+DEFINE_FWK_MODULE(CmgPhotonSelector);
 DEFINE_FWK_MODULE(CmgPFJetSelector);
 DEFINE_FWK_MODULE(CmgBaseJetSelector);
 DEFINE_FWK_MODULE(CmgBaseMETSelector);

@@ -80,7 +80,7 @@ typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiMuon> > CmgDiMuonHi
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiElectron> > CmgDiElectronHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiHemisphere> > CmgDiHemiHistograms;
 
-//for datasets
+// For datasets.
 typedef cmg::HistogramAnalyzer<cmg::GenericRooDataSets<cmg::DiMuon> > CmgDiMuonDataSet;
 
 typedef cmg::RunInfoAccountingAnalyzer RunInfoAccountingAnalyzer;
@@ -88,7 +88,7 @@ typedef cmg::CutSummaryAnalyzer CutSummaryAnalyzer;
 typedef cmg::PhysicsObjectPrinter PhysicsObjectPrinter;
 
 
-// leading objects selectors 
+// Leading-objects selectors.
 
 typedef cmg::LeadingObjectsSelector<cmg::AbstractPhysicsObject> LeadingCMGPOSelector;
 typedef cmg::LeadingObjectsSelector<cmg::BaseJet> LeadingCMGBaseJetSelector;
@@ -96,7 +96,12 @@ typedef cmg::LeadingObjectsSelector<cmg::PFJet> LeadingCMGPFJetSelector;
 typedef cmg::LeadingObjectsSelector<cmg::Electron> LeadingCMGElectronSelector;
 typedef cmg::LeadingObjectsSelector<cmg::Muon> LeadingCMGMuonSelector;
 
-// single object selectors
+// Single object selectors.
+
+typedef SingleObjectSelector<
+  std::vector<cmg::Photon>,
+  StringCutObjectSelector<cmg::Photon>
+  > CmgPhotonSelector;
 
 typedef SingleObjectSelector<
   std::vector<cmg::PFJet>,
