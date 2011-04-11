@@ -108,11 +108,14 @@ cmg::HemisphereFactory::create(const edm::Event& iEvent,
   // candidates, second group contains m = N - n candidates.
   size_type numCand = candidates.size();
 
-  // If there are too few or too many candidates, skip the event.
+  // If there are too many or too few candidates, skip the event.
   if ((numCand < 2) || (numCand > maxNCand_)) {
-    edm::LogWarning("HemiFactory")
-      << "Skipping event with " << numCand << " candidate objects "
-      << "(min = 2, max = " << maxNCand_ << ")";
+    // Only warn for the 'too many' case.
+    if (numCand > maxNCand_) {
+      edm::LogWarning("HemiFactory")
+        << "Skipping event with " << numCand << " candidate objects "
+        << "(max = " << maxNCand_ << ")";
+    }
   } else {
     size_type numSteps = (numCand / 2);
 
