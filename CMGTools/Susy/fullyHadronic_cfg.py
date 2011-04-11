@@ -2,13 +2,13 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 ##########
 
-process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(-1)
-        )
 
-process.maxLuminosityBlocks = cms.untracked.PSet(
-    input = cms.untracked.int32(20)
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+
+process.maxLuminosityBlocks = cms.untracked.PSet( 
+    input = cms.untracked.int32(-1)
     )
+
 
 ##########
 
@@ -22,10 +22,18 @@ process.setName_('ANA')
 
 process.source = cms.Source(
     "PoolSource",
-    fileNames = cms.untracked.vstring("file:/afs/cern.ch/user/c/cbern/" \
-                                      "scratch0/CMG/RelVal/4_1_3/" \
-                                      "ttbar_PATandPF2PAT.root")
+    
+    noEventSort = cms.untracked.bool(True),
+    duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
+    fileNames = cms.untracked.vstring()
     )
+process.source.fileNames.extend([
+    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/LM1/patTuple_PATandPF2PAT_RelValLM1_sfts_0.root',
+    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/LM1/patTuple_PATandPF2PAT_RelValLM1_sfts_1.root',
+    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/LM1/patTuple_PATandPF2PAT_RelValLM1_sfts_2.root',
+    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/LM1/patTuple_PATandPF2PAT_RelValLM1_sfts_3.root',
+    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/LM1/patTuple_PATandPF2PAT_RelValLM1_sfts_4.root',
+    ])
 
 ext = 'CMG'
 
@@ -48,7 +56,7 @@ process.out.outputCommands = cms.untracked.vstring('drop *')
 process.out.outputCommands += fullyHadronicEventContent
 
 # process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('RA1Path','RA2Path','razorPath') )
-process.out.SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring("RA1Path", 'RA2Path'))
+process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('RA2Path','razorPath', 'RA1Path') )
 
 process.TFileService = cms.Service(
     "TFileService",

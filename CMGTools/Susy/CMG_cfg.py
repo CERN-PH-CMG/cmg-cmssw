@@ -4,12 +4,12 @@ import pprint
 
 #warning
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(1000)
+        input = cms.untracked.int32(-1)
         )
 
 # Message logger setup.
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
-process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
+process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 selectEvents = False
 doSkimHighMET = False
@@ -17,7 +17,11 @@ cut_highMET = 'pt()>50'
 
 process.source = cms.Source(
     "PoolSource",
-    fileNames = cms.untracked.vstring( 'file:GENandPF2PAT.root' ) 
+    fileNames = cms.untracked.vstring(
+      'file:GENandPF2PAT.root',
+      # 'file:GENandPF2PAT_2.root'
+      ),
+    duplicateCheckMode = cms.untracked.string('noDuplicateCheck')
     )
 
 ext = 'GENCMG'
@@ -34,10 +38,10 @@ print process.source.fileNames
 outFileNameExt = ext
 
 # reinitializing stuff defined in patTemplate_cfg
-process.out.outputCommands = cms.untracked.vstring('drop *')
-process.out.outputCommands.append('keep *_cmgHemi*_*_*')
-process.out.outputCommands.append('keep *_cmgDiHemi*_*_*')
-process.out.SelectEvents.SelectEvents = cms.vstring()
+#process.out.outputCommands = cms.untracked.vstring('drop *')
+#process.out.outputCommands.append('keep *_cmgHemi*_*_*')
+#process.out.outputCommands.append('keep *_cmgDiHemi*_*_*')
+# process.out.SelectEvents.SelectEvents = cms.vstring()
 
 process.load("CMGTools.Common.countingSequences_cff")
 
@@ -45,43 +49,53 @@ process.load("CMGTools.Common.countingSequences_cff")
 from CMGTools.Common.eventContent.particleFlow_cff import particleFlow
 process.out.outputCommands += particleFlow   
  
-process.load('CMGTools.SusyJetMET.RA2CMG_cff')
-process.RA2CMGSequence.remove( process.caloJetSequence)
-process.RA2CMGSequence.remove( process.caloMetSequence)
-process.RA2CMGSequence.remove( process.electronSequence)
-process.RA2CMGSequence.remove( process.muonSequence)
-process.RA2CMGSequence.remove( process.cutsummarymuon)
+#process.load('CMGTools.SusyJetMET.RA2CMG_cff')
 
-from CMGTools.Common.factories.cmgHemi_cfi import cmgHemi
-from CMGTools.Common.factories.cmgDiHemi_cfi import cmgDiHemi
+#from CMGTools.Common.factories.cmgHemi_cfi import cmgHemi
+#from CMGTools.Common.factories.cmgDiHemi_cfi import cmgDiHemi
 
-process.cmgHemi = cmgHemi.clone()
-process.cmgDiHemi = cmgDiHemi.clone()
+#process.cmgHemi = cmgHemi.clone()
+#process.cmgDiHemi = cmgDiHemi.clone()
 
-process.hemiSequence = cms.Sequence(process.cmgHemi * process.cmgDiHemi)
-process.RA2CMGSequence.replace(process.skimSequence,
-                               process.skimSequence + process.hemiSequence)
-
-process.p = cms.Path(
-    process.RA2CMGSequence
-    )
+#process.hemiSequence = cms.Sequence(process.cmgHemi * process.cmgDiHemi)
+#process.RA2CMGSequence.replace(process.skimSequence,
+#                               process.skimSequence + process.hemiSequence)
 
 
-# pprint.pprint(process.out.outputCommands)
+process.load('CMGTools.Susy.fullyHadronic_cff')
+process.fullyHadronicCommonSequence.remove( process.caloJetSequence)
+process.fullyHadronicCommonSequence.remove( process.caloMetSequence)
+process.fullyHadronicCommonSequence.remove( process.electronSequence)
+process.fullyHadronicCommonSequence.remove( process.muonSequence)
+process.fullyHadronicCommonSequence.remove( process.cutsummarymuon)
 
-#process.dump = cms.EDAnalyzer("EventContentAnalyzer")
-# process.p += process.dump
+process.fullyHadronicSchedule.append( process.outpath )
 
-if selectEvents:
-    process.out.SelectEvents.SelectEvents.append('p')
+
+
+
+process.out.SelectEvents.SelectEvents = cms.vstring('RA1Path','RA2Path')
 process.out.fileName = cms.untracked.string('susy_tree_%s.root' %  outFileNameExt)
+
+## RA2 output
+
+process.RA2out = process.out.clone()
+process.RA2out.fileName = 'susy_tree_%s_%s.root' % ('RA2', outFileNameExt)
+process.RA2out.SelectEvents.SelectEvents = cms.vstring('RA2Path')
+process.outpath += process.RA2out
+
+print 'Common output ----'
+print process.out.dumpPython()
+print 
+print 'RA2 output    ----'
+print process.RA2out.dumpPython()
+
 
 process.TFileService = cms.Service(
     "TFileService",
     fileName = cms.string("susy_histograms_%s.root" %  outFileNameExt )
     )
 
-print process.out.dumpPython()
 
 print 'output file: ', process.out.fileName
 # print process.schedule

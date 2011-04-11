@@ -3,6 +3,11 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.Common.skims.cmgCandSel_cfi import *
 from CMGTools.Common.skims.cmgCandCount_cfi import *
 
+MHTCut = 150
+HTCut = 300
+jetPtCut = 50
+jetEtaCut = 2.5
+
 ###################   SKIMMING ####################################
 
 #COLIN check the eta cut for the jets for the computation of HT and MHT
