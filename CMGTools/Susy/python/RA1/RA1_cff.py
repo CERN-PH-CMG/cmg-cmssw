@@ -8,6 +8,7 @@ from CMGTools.Common.histograms.baseMETHistograms_cfi import baseMETHistograms
 from CMGTools.Common.skims.cmgCandSel_cfi import *
 from CMGTools.Common.skims.cmgCandCount_cfi import *
 from CMGTools.Common.skims.cmgElectronSel_cfi import *
+from CMGTools.Common.skims.cmgPhotonSel_cfi import *
 from CMGTools.Common.skims.cmgMuonSel_cfi import *
 from CMGTools.Common.skims.cmgPFJetSel_cfi import *
 from CMGTools.Common.skims.cmgBaseMETSel_cfi import *
@@ -38,7 +39,10 @@ RA1Muon = cms.Sequence(
 
 ##########
 
+RA1cmgPhoton = cmgPhotonSel.clone()
+
 RA1Photon = cms.Sequence(
+    RA1cmgPhoton
     )
 
 ##########
