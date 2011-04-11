@@ -14,12 +14,15 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
 
 # Message logger setup.
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
-process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
+process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 doSkimHighMET = False
 cut_highMET = 'pt()>50'
 process.setName_('ANA')
 
+#COLIN: tell Will to remove the rather printouts (or rather to add an enable flag allowing to get these printouts). What are these printouts? 
+
+#COLIN put relval source files in a standard place. 
 process.source = cms.Source(
     "PoolSource",
     

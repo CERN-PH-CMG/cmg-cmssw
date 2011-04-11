@@ -166,8 +166,8 @@ RA1CountingSequence = cms.Sequence(
     RA1cmgPFJetLeadCount +
     ~RA1cmgPFJetFailCount +
     ~RA1cmgElectronCount +
-    ~RA1cmgMuonCount +
-    ~RA1cmgPhotonCount
+    ~RA1cmgMuonCount
+    # +    ~RA1cmgPhotonCount
     )
 
 ##########
@@ -218,7 +218,7 @@ RA1HistogramSequence = cms.Sequence(
 RA1ObjectSequence = cms.Sequence(
     RA1Electron +
     RA1Muon +
-#     RA1Photon +
+#    RA1Photon +
     RA1Jet +
     RA1HT +
     RA1MHT +
