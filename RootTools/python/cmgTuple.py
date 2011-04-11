@@ -38,11 +38,11 @@ class cmgTuple(rt.TObject):
                 self.tree.SetAlias('%sVec' % name,'%s@obj' % b)
             self.branches.append(b)
 
-        print "Created cmgTuple for TTree called '%s' containing " \
-              "the following branches and aliases:" % \
-              self.tree.GetName()
-        for (i, j) in self.aliases.iteritems():
-            print "  %s -> %s" % (i, j)
+#        print "Created cmgTuple for TTree called '%s' containing " \
+#              "the following branches and aliases:" % \
+#              self.tree.GetName()
+#        for (i, j) in self.aliases.iteritems():
+#            print "  %s -> %s" % (i, j)
 
     def __len__(self):
         return self.tree.GetEntries()
@@ -61,6 +61,11 @@ class cmgTuple(rt.TObject):
         else:
             raise StopIteration()
         return self
+
+    def printAliases( self ):
+        for (i, j) in self.aliases.iteritems():
+            print "  %s -> %s" % (i, j)
+        
 
     def get(self, name):
         result = None
