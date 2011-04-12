@@ -2,10 +2,7 @@
 #define CMGTOOLS_COMMON_TRIGGERRESULTHISTOGRAMS_H_
 
 #include "CMGTools/Common/interface/HistogramCreator.h"
-#include "FWCore/Framework/interface/Selector.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
-#include "FWCore/Framework/interface/TriggerNamesService.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
 
 #include <map>
 #include <memory>

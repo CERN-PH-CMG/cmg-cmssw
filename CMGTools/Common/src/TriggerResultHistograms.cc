@@ -22,16 +22,14 @@ void cmg::TriggerResultHistograms::fill(const edm::Event& iEvent, const edm::Eve
     edm::TriggerNames::Strings const& s = triggerNames.triggerNames();
     defineHistograms(s);//call the histogram creation as we need the names
     
-    //also filter out the names here
-    std::vector<std::string> filteredPaths;
-    for(edm::TriggerNames::Strings::const_iterator it = s.begin(); it != s.end(); ++it){
-        //i.e. *it is not in names_
-        if(names_.size() && std::find(names_.begin(),names_.end(),*it) == names_.end() ){
-            continue;
-        }
-        filteredPaths.push_back(*it);
+    //i.e. you can change the pointer but not the object
+    std::vector<std::string>const * filteredPaths = 0;
+    if(names_.size()){
+        filteredPaths = &names_;
+    }else{
+        filteredPaths = &s; 
     }
-    
+
     TH2* corr = get2DHistogram("triggerCorrelation");
     TH1* passed = get1DHistogram("passedTriggers");
     TH1* failed = get1DHistogram("failedTriggers");
@@ -40,11 +38,13 @@ void cmg::TriggerResultHistograms::fill(const edm::Event& iEvent, const edm::Eve
     Int_t binX = 1;
     Int_t binY = 1;
     
-    for(std::vector<std::string>::const_iterator it = filteredPaths.begin(); it != filteredPaths.end(); ++it){
+    for(std::vector<std::string>::const_iterator it = filteredPaths->begin(); it != filteredPaths->end(); ++it){
         const unsigned int i = triggerNames.triggerIndex(*it);
+        if(i >= triggerNames.size()) continue;
         binY = 1;
-        for(std::vector<std::string>::const_iterator jt = filteredPaths.begin(); jt != filteredPaths.end(); ++jt){
+        for(std::vector<std::string>::const_iterator jt = filteredPaths->begin(); jt != filteredPaths->end(); ++jt){
             const unsigned int j = triggerNames.triggerIndex(*jt);
+            if(j >= triggerNames.size()) continue;
             //require that both triggers were run
             if( (trigger->wasrun(i) && trigger->accept(i)) && (trigger->wasrun(j) && trigger->accept(j)) ){
                 const Double_t binContent = corr->GetBinContent(binX,binY);
@@ -71,17 +71,15 @@ void cmg::TriggerResultHistograms::defineHistograms(const std::vector<std::strin
     
     if(cmg::HistogramCreator<type>::histosInitialized_)
       return;
-
-    //remove path names if they are not in "names"
-    std::vector<std::string> filteredPaths;
-    for(std::vector<std::string>::const_iterator it = trigPaths.begin(); it != trigPaths.end(); ++it){
-        //i.e. *it is not in names_
-        if(names_.size() && std::find(names_.begin(),names_.end(),*it) == names_.end() ){
-            continue;
-        }
-        filteredPaths.push_back(*it);
+    
+    //i.e. you can change the pointer but not the object
+    std::vector<std::string>const * filteredPaths = 0;
+    if(names_.size()){
+        filteredPaths = &names_;
+    }else{
+        filteredPaths = &trigPaths; 
     }
-    const unsigned int nPaths = filteredPaths.size();
+    const unsigned int nPaths = filteredPaths->size();
 
     //passed and failed triggers
     add1DHistogram(
@@ -112,7 +110,7 @@ void cmg::TriggerResultHistograms::defineHistograms(const std::vector<std::strin
     TAxis* xRun = get1DHistogram("runTriggers")->GetXaxis();
         
     for(unsigned int i = 0; i < nPaths; i++){
-        const std::string name = filteredPaths.at(i);
+        const std::string name = filteredPaths->at(i);
         
         x->SetBinLabel(static_cast<Int_t>(i+1),name.c_str()); 
         y->SetBinLabel(static_cast<Int_t>(i+1),name.c_str());
