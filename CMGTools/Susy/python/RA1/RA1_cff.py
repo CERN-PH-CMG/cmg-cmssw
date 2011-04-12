@@ -18,109 +18,110 @@ from CMGTools.Common.skims.leadingCMGPFJetSelector_cfi import leadingCMGPFJetSel
 ## Cuts and selections and their sequences.
 ######################################################################
 
-RA1cmgElectron = cmgElectronSel.clone(
+RA1Electron = cmgElectronSel.clone(
     cut = "(pt() > 10.) && (abs(eta()) < 2.5)", 
     src = 'cmgElectronSel'
     )
 
-RA1Electron = cms.Sequence(
-    RA1cmgElectron
+RA1ElectronSequence = cms.Sequence(
+    RA1Electron
     )
 
 ##########
 
-RA1cmgMuon = cmgMuonSel.clone(
+RA1Muon = cmgMuonSel.clone(
     cut = "(pt() > 10.) && (abs(eta()) < 2.5) && " \
     "getSelection('cuts_isomuon') && getSelection('cuts_vbtfmuon')",
     src = 'cmgMuonSel'
     )
 
-RA1Muon = cms.Sequence(
-    RA1cmgMuon
+RA1MuonSequence = cms.Sequence(
+    RA1Muon
     )
 
 ##########
 
-RA1cmgPhoton = cmgPhotonSel.clone()
+RA1Photon = cmgPhotonSel.clone()
 
-RA1Photon = cms.Sequence(
-    RA1cmgPhoton
+RA1PhotonSequence = cms.Sequence(
+    RA1Photon
     )
 
 ##########
 
 # NOTE: The loose jet id cuts have already been applied.
 
-RA1cmgPFJetSel30 = cmgPFJetSel.clone(
+RA1PFJet30 = cmgPFJetSel.clone(
     src = "cmgPFJetSel",
     cut = "pt() > 30"
     )
 
-RA1cmgPFJetSel50 = cmgPFJetSel.clone(
+RA1PFJet50 = cmgPFJetSel.clone(
     src = "cmgPFJetSel",
     cut = "pt() > 50"
     )
 
-RA1cmgPFJetSel = cmgPFJetSel.clone(
-    src = "RA1cmgPFJetSel50",
+RA1PFJetSel = cmgPFJetSel.clone(
+    src = "RA1PFJet50",
     cut = "(abs(eta) < 3.) && getSelection('cuts_looseJetId')"
     )
 
-RA1cmgPFJetFail = invertSelector(RA1cmgPFJetSel)
+RA1PFJetFail = invertSelector(RA1PFJetSel)
 
 # Select the jets from the above that are over 100 GeV.
-RA1cmgPFJetSelPt100 = cmgPFJetSel.clone(
-    src = "RA1cmgPFJetSel",
+RA1PFJetSel100 = cmgPFJetSel.clone(
+    src = "RA1PFJetSel",
     cut = "pt() > 100"
     )
 
 # Pick out the leading selected jet.
-RA1cmgPFJetSelLead = leadingCMGPFJetSelector.clone(
-    inputCollection = "RA1cmgPFJetSel",
+RA1PFJetSelLead = leadingCMGPFJetSelector.clone(
+    inputCollection = "RA1PFJetSel",
     index = 1
     )
 
 # Select the leading jet if within |eta| < 2.5.
-RA1cmgPFJetSelLeadEta25 = cmgPFJetSel.clone(
-    src = "RA1cmgPFJetSelLead",
+RA1PFJetSelLeadEta25 = cmgPFJetSel.clone(
+    src = "RA1PFJetSelLead",
     cut = "abs(eta) < 2.5"
     )
 
-RA1Jet = cms.Sequence(
-    RA1cmgPFJetSel30 +
-    RA1cmgPFJetSel50 +
-    RA1cmgPFJetSel +
-    RA1cmgPFJetFail +
-    RA1cmgPFJetSelPt100 +
-    RA1cmgPFJetSelLead +
-    RA1cmgPFJetSelLeadEta25
+RA1JetSequence = cms.Sequence(
+    RA1PFJet30 +
+    RA1PFJet50 +
+    RA1PFJetSel +
+    RA1PFJetFail +
+    RA1PFJetSel100 +
+    RA1PFJetSelLead +
+    RA1PFJetSelLeadEta25
     )
 
 ##########
 
-RA1cmgMHTPFJets30 = cmgBaseCandMET.clone()
-RA1cmgMHTPFJets30.cfg.inputCollection = "RA1cmgPFJetSel30"
-RA1cmgMHTPFJets30.cfg.ptThreshold = 30.
+#COLIN this product is already available from the common analysis sequence
+# RA1MHTPFJet30 = cmgBaseCandMET.clone()
+# RA1MHTPFJet30.cfg.inputCollection = "RA1PFJet30"
+# RA1MHTPFJet30.cfg.ptThreshold = 30.
 
-RA1cmgMHTPFJets50 = cmgBaseCandMET.clone()
-RA1cmgMHTPFJets50.cfg.inputCollection = "RA1cmgPFJetSel50"
-RA1cmgMHTPFJets50.cfg.ptThreshold = 50.
+RA1MHTPFJet50 = cmgBaseCandMET.clone()
+RA1MHTPFJet50.cfg.inputCollection = "RA1PFJet50"
+RA1MHTPFJet50.cfg.ptThreshold = 50.
 
-RA1cmgMHTPFJets50Sel = cmgBaseMETSel.clone(
-    src = "RA1cmgMHTPFJets50",
+RA1MHTPFJet50Sel = cmgBaseMETSel.clone(
+    src = "RA1MHTPFJet50",
     cut = "sumEt() > 250."
     )
 
-RA1HT = cms.Sequence(
-    RA1cmgMHTPFJets50 +
-    RA1cmgMHTPFJets50Sel
+RA1HTSequence = cms.Sequence(
+    RA1MHTPFJet50 +
+    RA1MHTPFJet50Sel
     )
 
 ##########
 
-RA1MHT = cms.Sequence(
-    RA1cmgMHTPFJets30
-    )
+# RA1MHTSequence = cms.Sequence(
+#     RA1MHTPFJet30
+#    )
 
 ##########
 
@@ -129,86 +130,86 @@ RA1MHT = cms.Sequence(
 # Need at least one jet to build hemispheres.
 
 # Need at least two jets with pT over 100 GeV.
-RA1cmgPFJetCount = cmgCandCount.clone(
-    src = "RA1cmgPFJetSelPt100",
+RA1PFJetCount = cmgCandCount.clone(
+    src = "RA1PFJetSel100",
     minNumber = 2
     )
 
 # Need to have the leading jet withing eta range.
-RA1cmgPFJetLeadCount = cmgCandCount.clone(
-    src = "RA1cmgPFJetSelLeadEta25",
+RA1PFJetLeadCount = cmgCandCount.clone(
+    src = "RA1PFJetSelLeadEta25",
     minNumber = 1
     )
 
 # This one is used as a veto.
-RA1cmgPFJetFailCount = cmgCandCount.clone(
-    src = "RA1cmgPFJetFail",
+RA1PFJetFailCount = cmgCandCount.clone(
+    src = "RA1PFJetFail",
     minNumber = 1
     )
 
-RA1cmgElectronCount = cmgCandCount.clone(
-    src = "RA1cmgElectron",
+RA1ElectronCount = cmgCandCount.clone(
+    src = "RA1Electron",
     minNumber = 1
     )
 
-RA1cmgMuonCount = cmgCandCount.clone(
-    src = "RA1cmgMuon",
+RA1MuonCount = cmgCandCount.clone(
+    src = "RA1Muon",
     minNumber = 1
     )
 
-RA1cmgPhotonCount = cmgCandCount.clone(
-    src = "RA1cmgPhoton",
+RA1PhotonCount = cmgCandCount.clone(
+    src = "RA1Photon",
     minNumber = 1
     )
 
 RA1CountingSequence = cms.Sequence(
-    RA1cmgPFJetCount +
-    RA1cmgPFJetLeadCount +
-    ~RA1cmgPFJetFailCount +
-    ~RA1cmgElectronCount +
-    ~RA1cmgMuonCount
-    # +    ~RA1cmgPhotonCount
+    RA1PFJetCount +
+    RA1PFJetLeadCount +
+    ~RA1PFJetFailCount +
+    ~RA1ElectronCount +
+    ~RA1MuonCount
+    # +    ~RA1PhotonCount
     )
 
 ##########
 
-RA1cmgHemi = cmgHemi.clone()
-RA1cmgHemi.cfg.inputCollection = cms.VInputTag("RA1cmgPFJetSel")
-RA1cmgHemi.cfg.maxCand = 100
+RA1Hemi = cmgHemi.clone()
+RA1Hemi.cfg.inputCollection = cms.VInputTag("RA1PFJetSel")
+RA1Hemi.cfg.maxCand = 100
 
-RA1cmgDiHemi = cmgDiHemi.clone()
-RA1cmgDiHemi.cfg.leg1Collection = "RA1cmgHemi"
-RA1cmgDiHemi.cfg.leg2Collection = "RA1cmgHemi"
+RA1DiHemi = cmgDiHemi.clone()
+RA1DiHemi.cfg.leg1Collection = "RA1Hemi"
+RA1DiHemi.cfg.leg2Collection = "RA1Hemi"
 
-RA1Hemi = cms.Sequence(
-    RA1cmgHemi +
-    RA1cmgDiHemi
+RA1HemiSequence = cms.Sequence(
+    RA1Hemi +
+    RA1DiHemi
     )
 
 ##########
 
-RA1cmgMultiJet = cmgMultiJet.clone()
-RA1cmgMultiJet.cfg.inputCollection = "RA1cmgPFJetSel30"
+RA1MultiJet = cmgMultiJet.clone()
+RA1MultiJet.cfg.inputCollection = "RA1PFJet30"
 
-RA1MultiJet = cms.Sequence(
-    RA1cmgMultiJet
+RA1MultiJetSequence = cms.Sequence(
+    RA1MultiJet
     )
 
 ######################################################################
 ## Histograms and corresponding sequences.
 ######################################################################
 
-RA1mhtPTJets30Histograms = baseMETHistograms.clone(
-    inputCollection = "RA1cmgMHTPFJets30"
-    )
+#RA1MHTPFJet30Histograms = baseMETHistograms.clone(
+#    inputCollection = "RA1MHTPFJet30"
+#    )
 
-RA1mhtPTJets50Histograms = baseMETHistograms.clone(
-    inputCollection = "RA1cmgMHTPFJets50"
+RA1MHTPFJet50Histograms = baseMETHistograms.clone(
+    inputCollection = "RA1MHTPFJet50"
     )
 
 RA1HistogramSequence = cms.Sequence(
-    RA1mhtPTJets30Histograms +
-    RA1mhtPTJets50Histograms
+#   RA1MHTPFJet30Histograms +
+    RA1MHTPFJet50Histograms
     )
 
 ######################################################################
@@ -216,14 +217,14 @@ RA1HistogramSequence = cms.Sequence(
 ######################################################################
 
 RA1ObjectSequence = cms.Sequence(
-    RA1Electron +
-    RA1Muon +
-#    RA1Photon +
-    RA1Jet +
-    RA1HT +
-    RA1MHT +
-    RA1Hemi +
-    RA1MultiJet
+    RA1ElectronSequence +
+    RA1MuonSequence +
+#    RA1PhotonSequence +
+    RA1JetSequence +
+    RA1HTSequence +
+#    RA1MHTSequence +
+    RA1HemiSequence +
+    RA1MultiJetSequence
     )
 
 RA1Sequence  = cms.Sequence(

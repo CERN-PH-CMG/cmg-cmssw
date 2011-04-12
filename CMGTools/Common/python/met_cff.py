@@ -13,19 +13,19 @@ cmgPFMETSel = cmgCandSel.clone( src = 'cmgPFMET' )
 
 
 # MHT from PFJets, pt threshold 30
-cmgMHTPFJets30 = cmgBaseCandMET.clone()
-cmgMHTPFJets30.cfg.inputCollection = "cmgPFBaseJet"
-cmgMHTPFJets30.cfg.ptThreshold = 30.0
-cmgMHTPFJets30Sel = cmgCandSel.clone( src = 'cmgMHTPFJets30' )
+cmgMHTPFJet30 = cmgBaseCandMET.clone()
+cmgMHTPFJet30.cfg.inputCollection = "cmgPFBaseJet"
+cmgMHTPFJet30.cfg.ptThreshold = 30.0
+cmgMHTPFJet30Sel = cmgCandSel.clone( src = 'cmgMHTPFJet30' )
 
 # Calo MET from pat::MET
 cmgCaloMET = cmgBaseMET.clone()
 cmgCaloMET.cfg.inputCollection = "patMETs"
 
 # MHT from CaloJets, pt threshold 30
-cmgMHTCaloJets30 = cmgBaseCandMET.clone()
-cmgMHTCaloJets30.cfg.inputCollection = "cmgCaloBaseJet"
-cmgMHTCaloJets30.cfg.ptThreshold = 30.0
+cmgMHTCaloJet30 = cmgBaseCandMET.clone()
+cmgMHTCaloJet30.cfg.inputCollection = "cmgCaloBaseJet"
+cmgMHTCaloJet30.cfg.ptThreshold = 30.0
 
 
 # MET from PFCandidates
@@ -45,13 +45,13 @@ pfSimpleMetSequence = cms.Sequence(
 pfMetSequence = cms.Sequence(
     pfSimpleMetSequence +                              
     cmgMETPFCandidates +                          
-    cmgMHTPFJets30 +
-    cmgMHTPFJets30Sel
+    cmgMHTPFJet30 +
+    cmgMHTPFJet30Sel
     )
 
 caloMetSequence = cms.Sequence(
     cmgCaloMET + 
-    cmgMHTCaloJets30 
+    cmgMHTCaloJet30 
     )
 
 metSequence = cms.Sequence(

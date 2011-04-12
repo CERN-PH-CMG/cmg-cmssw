@@ -9,7 +9,7 @@ def addTopProjector(moduleType, topCollection, bottomCollection):
                    enable = cms.bool(True)
                    )
 
-RazorParticleFlowNoMu = addTopProjector("TPCmgMuonOnPFCandidate","RazorCmgMuon","particleFlow")
-RazorParticleFlowNoEle = addTopProjector("TPCmgElectronOnPFCandidate","RazorCmgElectron","particleFlow")    
+RazorParticleFlowNoMu = addTopProjector("TPCmgMuonOnPFCandidate","RazorMuon","particleFlow")
+RazorParticleFlowNoEle = addTopProjector("TPCmgElectronOnPFCandidate","RazorElectron","particleFlow")    
 
 RazorParticleFlow = cms.Sequence(RazorParticleFlowNoMu+RazorParticleFlowNoEle)
