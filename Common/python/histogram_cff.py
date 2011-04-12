@@ -15,13 +15,13 @@ pfJetHistogramSequence = cms.Sequence(
 from CMGTools.Common.histograms.baseMETHistograms_cfi import baseMETHistograms
 
 
-mhtPFJets30Histograms = baseMETHistograms.clone()
-mhtPFJets30Histograms.inputCollection = 'cmgMHTPFJets30'
+MHTPFJet30Histograms = baseMETHistograms.clone()
+MHTPFJet30Histograms.inputCollection = 'cmgMHTPFJet30'
 
 from CMGTools.Common.histograms.patMETHistograms_cfi import patMETHistograms
 
 pfMETHistogramSequence = cms.Sequence(
-    mhtPFJets30Histograms +
+    MHTPFJet30Histograms +
     patMETHistograms 
     )
 

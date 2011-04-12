@@ -13,7 +13,7 @@ traditionalMET = cms.untracked.vstring(
 
 # to be added to the output module if needed
 traditionalMHT = cms.untracked.vstring(
-    'keep  *_cmgMHTCaloJets*_*_*'
+    'keep  *_cmgMHTCaloJet*_*_*'
     )
 
 

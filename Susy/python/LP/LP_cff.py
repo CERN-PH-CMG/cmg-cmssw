@@ -45,13 +45,13 @@ LPwSkim = cms.Sequence( LPcmgWMuNuMtSel * LPcmgWMuNuPtSel * LPcmgWMuNuPtCount * 
 
 #ht 
 from CMGTools.Common.skims.cmgBaseMETSel_cfi import cmgBaseMETSel
-from CMGTools.Common.met_cff import cmgMHTPFJets30
-LPcmgMHTPFJets30      = cmgMHTPFJets30.clone() 
-LPcmgMHTPFJets30.cfg.inputCollection = 'LPcmgPFBaseJetSel'
-LPcmgMHTPFJets30Sel   = cmgBaseMETSel.clone( src = 'LPcmgMHTPFJets30', cut = 'sumEt()>100' )
-LPcmgMHTPFJets30Count = cmgCandCount.clone( src = 'LPcmgMHTPFJets30Sel', minNumber = 1 )
-LPht = cms.Sequence( LPcmgMHTPFJets30 * LPcmgMHTPFJets30Sel )
-LPhtSkim = cms.Sequence( LPcmgMHTPFJets30Count )
+from CMGTools.Common.met_cff import cmgMHTPFJet30
+LPcmgMHTPFJet30      = cmgMHTPFJet30.clone() 
+LPcmgMHTPFJet30.cfg.inputCollection = 'LPcmgPFBaseJetSel'
+LPcmgMHTPFJet30Sel   = cmgBaseMETSel.clone( src = 'LPcmgMHTPFJet30', cut = 'sumEt()>100' )
+LPcmgMHTPFJet30Count = cmgCandCount.clone( src = 'LPcmgMHTPFJet30Sel', minNumber = 1 )
+LPht = cms.Sequence( LPcmgMHTPFJet30 * LPcmgMHTPFJet30Sel )
+LPhtSkim = cms.Sequence( LPcmgMHTPFJet30Count )
 
 LPobjectSequence = cms.Sequence( LPmuon * LPjet * LPht * LPw)
 #LPskimSequence   = cms.Sequence( LPmuonSkim * LPjetSkim * LPwSkim * LPhtSkim )
@@ -61,11 +61,11 @@ LPskimSequence   = cms.Sequence( LPmuonSkim * LPwSkim )
 ####HISTOGRAMMING
 from CMGTools.Common.histogram_cff import *
 from CMGTools.Common.histograms.cmgMuonHistograms_cfi import cmgMuonHistograms
-LPmhtPFJets30Histograms = mhtPFJets30Histograms.clone( inputCollection = 'LPcmgMHTPFJets30Sel' )
+LPMHTPFJet30Histograms = MHTPFJet30Histograms.clone( inputCollection = 'LPcmgMHTPFJet30Sel' )
 
 LPmuonHistograms = cmgMuonHistograms.clone( inputCollection = 'LPcmgMuonSel')
 
-LPhistogrammingSequence = cms.Sequence(LPmhtPFJets30Histograms*LPmuonHistograms)
+LPhistogrammingSequence = cms.Sequence(LPMHTPFJet30Histograms*LPmuonHistograms)
 
 #####General sequences
 LPSequence = cms.Sequence( LPobjectSequence * LPhistogrammingSequence )
