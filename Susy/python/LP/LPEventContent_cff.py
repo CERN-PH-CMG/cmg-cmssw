@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 LPEventContent = cms.untracked.vstring(
-  'keep *_LPcmgWMuNu_*_*',
-  'keep *_LPcmgPFBaseJetSel_*_*',
-  'keep *_LPcmgMHTPFJets30_*_*'
+  'keep *_LPWMuNu_*_*',
+  'keep *_LPPFBaseJetSel_*_*',
+  # 'keep *_LPMHTPFJets30_*_*'
 )
