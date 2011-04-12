@@ -24,6 +24,7 @@ DEFINE_FWK_MODULE(BaseMETPOProducer);
 DEFINE_FWK_MODULE(BaseMETModifier);
 DEFINE_FWK_MODULE(PATMETPOProducer);
 DEFINE_FWK_MODULE(PFJetHistogramsAnalyzer);
+DEFINE_FWK_MODULE(TriggerResultHistogramsAnalyzer);
 
 DEFINE_FWK_MODULE(GenericBaseMETHistograms);
 DEFINE_FWK_MODULE(GenericPOHistograms);
