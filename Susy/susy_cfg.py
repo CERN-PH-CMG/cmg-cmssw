@@ -58,8 +58,11 @@ process.out.fileName = cms.untracked.string('susy_tree_%s.root' %  outFileNameEx
 process.out.outputCommands = cms.untracked.vstring('drop *')
 process.out.outputCommands += susyEventContent
 
-# process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('RA1Path','RA2Path','razorPath') )
 process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('RA2Path','razorPath', 'RA1Path', 'LPPath') )
+#plot the correlations between the selection paths
+process.load('CMGTools.Common.histograms.triggerCorrelationHistograms_cfi')
+process.triggerCorrelationHistograms.names = cms.untracked.vstring('RA2Path','razorPath', 'RA1Path', 'LPPath')
+process.susySchedule.append( process.triggerCorrelationHistogramsEndPath )
 
 process.TFileService = cms.Service(
     "TFileService",
