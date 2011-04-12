@@ -195,9 +195,7 @@ razorSelectedDiHemi = cmgCandMerge.clone(
     src = cms.VInputTag(
     "razorDiHemiHadBoxSel",
     "razorDiHemiMuBoxSel",
-    "razorDiHemiMuStarBoxSel",
     "razorDiHemiEleBoxSel",
-    "razorDiHemiEleStarBoxSel",                                                            
     )
     )
 razorSelectedCount = cmgCandCount.clone( src = 'razorSelectedDiHemi', minNumber = 1 )
