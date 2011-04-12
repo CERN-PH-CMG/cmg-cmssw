@@ -7,78 +7,78 @@ from CMGTools.Common.skims.cmgCandMerge_cfi import *
 # muon cuts
 from CMGTools.Common.skims.cmgMuonSel_cfi import *
 
-#RazorMuon = cmgMuonSel.clone(cut = 'pt() > 20 && abs(eta()) < 2.1 && getSelection("cuts_vbtfmuon") && getSelection("cuts_isomuon")', src = 'cmgMuonSel')
+#razorMuon = cmgMuonSel.clone(cut = 'pt() > 20 && abs(eta()) < 2.1 && getSelection("cuts_vbtfmuon") && getSelection("cuts_isomuon")', src = 'cmgMuonSel')
 
 #COLIN why don't we take the source from cmgMuonSel? 
 from CMGTools.Common.skims.leadingCMGMuonSelector_cfi import leadingCMGMuonSelector
-RazorMuonSel = cmgMuonSel.clone(
+razorMuonSel = cmgMuonSel.clone(
     cut = 'pt() > 20 && abs(eta()) < 2.1 && getSelection("cuts_vbtfmuon") && getSelection("cuts_isomuon")',
     src = 'cmgMuonSel'
     )
-RazorLeadingMuon = leadingCMGMuonSelector.clone(inputCollection = "RazorMuonSel", index = cms.untracked.int32(1))
+razorLeadingMuon = leadingCMGMuonSelector.clone(inputCollection = "razorMuonSel", index = cms.untracked.int32(1))
 
-RazorMuonFail = invertSelector(RazorMuonSel)
+razorMuonFail = invertSelector(razorMuonSel)
 
 # electron cuts - TODO: add VBTF selection 
 from CMGTools.Common.skims.cmgElectronSel_cfi import *
 
-#RazorElectron = cmgElectronSel.clone(cut = 'pt() > 20 && abs(eta()) < 2.5 && (abs(eta()) < 1.4442 || abs(eta()) > 1.566)', src = 'cmgElectronSel')
+#razorElectron = cmgElectronSel.clone(cut = 'pt() > 20 && abs(eta()) < 2.5 && (abs(eta()) < 1.4442 || abs(eta()) > 1.566)', src = 'cmgElectronSel')
 
 #COLIN why don't we take the source from cmgElectronSel? 
 from CMGTools.Common.skims.leadingCMGElectronSelector_cfi import leadingCMGElectronSelector
-RazorElectronSel = cmgElectronSel.clone(
+razorElectronSel = cmgElectronSel.clone(
     cut = 'pt() > 20 && abs(eta()) < 2.5 && (abs(eta()) < 1.4442 || abs(eta()) > 1.566)',
     src = 'cmgElectronSel'
     )
-RazorLeadingElectron = leadingCMGElectronSelector.clone(inputCollection = "RazorElectronSel", index = cms.untracked.int32(1))
+razorLeadingElectron = leadingCMGElectronSelector.clone(inputCollection = "razorElectronSel", index = cms.untracked.int32(1))
 
-RazorElectronFail = invertSelector(RazorElectronSel)
+razorElectronFail = invertSelector(razorElectronSel)
 
-RazorElectronSequence = cms.Sequence(
-    RazorElectronSel +
-    RazorLeadingElectron +
-    RazorElectronFail 
+razorElectronSequence = cms.Sequence(
+    razorElectronSel +
+    razorLeadingElectron +
+    razorElectronFail 
     )
 
-RazorMuonSequence = cms.Sequence(
-    RazorMuonSel *
-    RazorLeadingMuon +
-    RazorMuonFail
+razorMuonSequence = cms.Sequence(
+    razorMuonSel *
+    razorLeadingMuon +
+    razorMuonFail
     )
 
 # id the jets
-RazorPFJetSel = cmgCandSel.clone( src = 'cmgPFJetSel', cut = 'pt()>30 && abs(eta)<3.0 && getSelection("cuts_looseJetId")' )
+razorPFJetSel = cmgCandSel.clone( src = 'cmgPFJetSel', cut = 'pt()>30 && abs(eta)<3.0 && getSelection("cuts_looseJetId")' )
 #combine leading leptons with jets
-RazorPFJetsWithLeadingLeptons = cmgCandMerge.clone(
+razorPFJetsWithLeadingLeptons = cmgCandMerge.clone(
     src = cms.VInputTag(
-    "RazorLeadingElectron",
-    "RazorLeadingMuon",
-    "RazorPFJetSel",                    
+    "razorLeadingElectron",
+    "razorLeadingMuon",
+    "razorPFJetSel",                    
     )
     )
 #skim on leading objects - i.e. at least one jet and a lepton, or two jets
-RazorLeadingObjectCount = cmgCandCount.clone( src = 'RazorPFJetsWithLeadingLeptons', minNumber = 2 )
+razorLeadingObjectCount = cmgCandCount.clone( src = 'razorPFJetsWithLeadingLeptons', minNumber = 2 )
 
 #met
 from CMGTools.Common.Tools.cmgBaseMETModifier_cfi import cmgBaseMETModifier
-RazorMuStarMet = cmgBaseMETModifier.clone(
+razorMuStarMet = cmgBaseMETModifier.clone(
     cfg = cmgBaseMETModifier.cfg.clone(
-    inputCollection = cms.InputTag("RazorMuonSel"),
+    inputCollection = cms.InputTag("razorMuonSel"),
     metCollection = cms.InputTag("cmgPFMET"),
     operator = cms.string('+') #Add the muons to the MET                                               
     )
     )
 
-RazorEleStarMet = cmgBaseMETModifier.clone(
-    cfg = RazorMuStarMet.cfg.clone(
-    inputCollection = cms.InputTag("RazorElectronSel"),
+razorEleStarMet = cmgBaseMETModifier.clone(
+    cfg = razorMuStarMet.cfg.clone(
+    inputCollection = cms.InputTag("razorElectronSel"),
     )
     )
 
-RazorMETSequence = cms.Sequence(
-    RazorMuStarMet+
-    RazorEleStarMet
-    )
+# razorMETSequence = cms.Sequence(
+#    razorMuStarMet+
+#    razorEleStarMet
+#    )
 
 #make the hemispheres
 from CMGTools.Common.factories.cmgHemi_cfi import cmgHemi
@@ -86,20 +86,20 @@ from CMGTools.Common.factories.cmgDiHemi_cfi import cmgDiHemi
 
 
 ###first the hadronic box 
-RazorHemiHadBox = cmgHemi.clone(
+razorHemiHadBox = cmgHemi.clone(
     cfg = cmgHemi.cfg.clone(
     inputCollection = cms.VInputTag(
-      "RazorMuonFail",
-      "RazorElectronFail",
-      "RazorPFJetSel"),
+      "razorMuonFail",
+      "razorElectronFail",
+      "razorPFJetSel"),
     maxCand = cms.uint32(20)
     )
     )
 
-RazorDiHemiHadBox = cmgDiHemi.clone(
+razorDiHemiHadBox = cmgDiHemi.clone(
     cfg = cmgDiHemi.cfg.clone(
-    leg1Collection = cms.InputTag('RazorHemiHadBox'),
-    leg2Collection = cms.InputTag('RazorHemiHadBox')                    
+    leg1Collection = cms.InputTag('razorHemiHadBox'),
+    leg2Collection = cms.InputTag('razorHemiHadBox')                    
     ),
     cuts = cmgDiHemi.cuts.clone(
     razor = cms.PSet(
@@ -110,121 +110,133 @@ RazorDiHemiHadBox = cmgDiHemi.clone(
     )      
     )
 
-RazorDiHemiHadBoxSel = cmgCandSel.clone( src = 'RazorDiHemiHadBox', cut = 'getSelection("cuts_razorbeta_betaR") && getSelection("cuts_razor") && getSelection("cuts_razorbeta_useMR")' )
+razorDiHemiHadBoxSel = cmgCandSel.clone( src = 'razorDiHemiHadBox', cut = 'getSelection("cuts_razorbeta_betaR") && getSelection("cuts_razor") && getSelection("cuts_razorbeta_useMR")' )
 
 from CMGTools.Common.physicsObjectPrinter_cfi import physicsObjectPrinter
-RazorDiHemiHadBoxInfo = physicsObjectPrinter.clone(
-    inputCollection = cms.untracked.InputTag("RazorDiHemiHadBox"),
+razorDiHemiHadBoxInfo = physicsObjectPrinter.clone(
+    inputCollection = cms.untracked.InputTag("razorDiHemiHadBox"),
     printSelections = cms.untracked.bool(True)
     )
 
 from CMGTools.Susy.Razor.razorHistograms_cff import razorDiHemiHistograms
-RazorDiHemiHistogramsHadBox = razorDiHemiHistograms.clone(inputCollection = 'RazorDiHemiHadBox')
+razorDiHemiHistogramsHadBox = razorDiHemiHistograms.clone(inputCollection = 'razorDiHemiHadBox')
 
-RazorHadronicBoxSequence = cms.Sequence(
-    RazorHemiHadBox*
-    RazorDiHemiHadBox*
-    RazorDiHemiHadBoxSel*
-    RazorDiHemiHadBoxInfo*
-    RazorDiHemiHistogramsHadBox                                
+razorHadronicBoxSequence = cms.Sequence(
+    razorHemiHadBox*
+    razorDiHemiHadBox*
+    razorDiHemiHadBoxSel*
+    razorDiHemiHadBoxInfo*
+    razorDiHemiHistogramsHadBox                                
     )
 ### now the mu box
-RazorHemiMuBox = RazorHemiHadBox.clone()
-RazorHemiMuBox.cfg.inputCollection.append('RazorMuonSel')
-RazorDiHemiMuBox = RazorDiHemiHadBox.clone(
-    cfg = RazorDiHemiHadBox.cfg.clone(
-    leg1Collection = cms.InputTag('RazorHemiMuBox'),
-    leg2Collection = cms.InputTag('RazorHemiMuBox')                    
+razorHemiMuBox = razorHemiHadBox.clone()
+razorHemiMuBox.cfg.inputCollection.append('razorMuonSel')
+razorDiHemiMuBox = razorDiHemiHadBox.clone(
+    cfg = razorDiHemiHadBox.cfg.clone(
+    leg1Collection = cms.InputTag('razorHemiMuBox'),
+    leg2Collection = cms.InputTag('razorHemiMuBox')                    
     ),    
     )
-RazorDiHemiMuBoxSel = RazorDiHemiHadBoxSel.clone( src = 'RazorDiHemiMuBox' )
-RazorDiHemiHistogramsMuBox = razorDiHemiHistograms.clone(inputCollection = 'RazorDiHemiMuBox')
-RazorMuBoxSequence = cms.Sequence(
-    RazorHemiMuBox*
-    RazorDiHemiMuBox*
-    RazorDiHemiMuBoxSel*
-    RazorDiHemiHistogramsMuBox                                
+razorDiHemiMuBoxSel = razorDiHemiHadBoxSel.clone( src = 'razorDiHemiMuBox' )
+razorDiHemiHistogramsMuBox = razorDiHemiHistograms.clone(inputCollection = 'razorDiHemiMuBox')
+razorMuBoxSequence = cms.Sequence(
+    razorHemiMuBox*
+    razorDiHemiMuBox*
+    razorDiHemiMuBoxSel*
+    razorDiHemiHistogramsMuBox                                
     )
 ### now the Mu* box
-RazorDiHemiMuStarBox = RazorDiHemiMuBox.clone(
-    cfg = RazorDiHemiMuBox.cfg.clone(
-    metCollection = cms.InputTag('RazorMuStarMet')                            
+razorDiHemiMuStarBox = razorDiHemiMuBox.clone(
+    cfg = razorDiHemiMuBox.cfg.clone(
+    metCollection = cms.InputTag('razorMuStarMet')                            
     ),       
     )
-RazorDiHemiMuStarBoxSel = RazorDiHemiMuBoxSel.clone( src = 'RazorDiHemiMuStarBox' )
-RazorDiHemiHistogramsMuStarBox = RazorDiHemiHistogramsMuBox.clone(inputCollection = 'RazorDiHemiMuStarBox')
-RazorMuStarBoxSequence = cms.Sequence(
-    RazorDiHemiMuStarBox*
-    RazorDiHemiMuStarBoxSel*
-    RazorDiHemiHistogramsMuStarBox                                
+razorDiHemiMuStarBoxSel = razorDiHemiMuBoxSel.clone( src = 'razorDiHemiMuStarBox' )
+razorDiHemiHistogramsMuStarBox = razorDiHemiHistogramsMuBox.clone(inputCollection = 'razorDiHemiMuStarBox')
+razorMuStarBoxSequence = cms.Sequence(
+    razorMuStarMet + 
+    razorDiHemiMuStarBox*
+    razorDiHemiMuStarBoxSel*
+    razorDiHemiHistogramsMuStarBox                                
     )
 ### now the ele box
-RazorHemiEleBox = RazorHemiHadBox.clone()
-RazorHemiEleBox.cfg.inputCollection.append('RazorElectronSel')
-RazorDiHemiEleBox = RazorDiHemiHadBox.clone(
-    cfg = RazorDiHemiHadBox.cfg.clone(
-    leg1Collection = cms.InputTag('RazorHemiEleBox'),
-    leg2Collection = cms.InputTag('RazorHemiEleBox')                    
+razorHemiEleBox = razorHemiHadBox.clone()
+razorHemiEleBox.cfg.inputCollection.append('razorElectronSel')
+razorDiHemiEleBox = razorDiHemiHadBox.clone(
+    cfg = razorDiHemiHadBox.cfg.clone(
+    leg1Collection = cms.InputTag('razorHemiEleBox'),
+    leg2Collection = cms.InputTag('razorHemiEleBox')                    
     ),    
     )
-RazorDiHemiEleBoxSel = RazorDiHemiHadBoxSel.clone( src = 'RazorDiHemiEleBox' )
-RazorDiHemiHistogramsEleBox = razorDiHemiHistograms.clone(inputCollection = 'RazorDiHemiEleBox')
-RazorEleBoxSequence = cms.Sequence(
-    RazorHemiEleBox*
-    RazorDiHemiEleBox*
-    RazorDiHemiEleBoxSel*
-    RazorDiHemiHistogramsEleBox                                
+razorDiHemiEleBoxSel = razorDiHemiHadBoxSel.clone( src = 'razorDiHemiEleBox' )
+razorDiHemiHistogramsEleBox = razorDiHemiHistograms.clone(inputCollection = 'razorDiHemiEleBox')
+razorEleBoxSequence = cms.Sequence(
+    razorHemiEleBox*
+    razorDiHemiEleBox*
+    razorDiHemiEleBoxSel*
+    razorDiHemiHistogramsEleBox                                
     )
 ### now the Ele* box
-RazorDiHemiEleStarBox = RazorDiHemiEleBox.clone(
-    cfg = RazorDiHemiEleBox.cfg.clone(
-    metCollection = cms.InputTag('RazorEleStarMet')                            
+razorDiHemiEleStarBox = razorDiHemiEleBox.clone(
+    cfg = razorDiHemiEleBox.cfg.clone(
+    metCollection = cms.InputTag('razorEleStarMet')                            
     ),       
     )
-RazorDiHemiEleStarBoxSel = RazorDiHemiEleBoxSel.clone( src = 'RazorDiHemiEleStarBox' )
-RazorDiHemiHistogramsEleStarBox = RazorDiHemiHistogramsEleBox.clone(inputCollection = 'RazorDiHemiEleStarBox')
-RazorEleStarBoxSequence = cms.Sequence(
-    RazorDiHemiEleStarBox*
-    RazorDiHemiEleStarBoxSel*
-    RazorDiHemiHistogramsEleStarBox                                
+razorDiHemiEleStarBoxSel = razorDiHemiEleBoxSel.clone( src = 'razorDiHemiEleStarBox' )
+razorDiHemiHistogramsEleStarBox = razorDiHemiHistogramsEleBox.clone(inputCollection = 'razorDiHemiEleStarBox')
+razorEleStarBoxSequence = cms.Sequence(
+    razorEleStarMet+
+    razorDiHemiEleStarBox*
+    razorDiHemiEleStarBoxSel*
+    razorDiHemiHistogramsEleStarBox                                
     )
 #### finally merge selected hemispheres and count
-RazorSelectedDiHemi = cmgCandMerge.clone(
+razorSelectedDiHemi = cmgCandMerge.clone(
     src = cms.VInputTag(
-    "RazorDiHemiHadBoxSel",
-    "RazorDiHemiMuBoxSel",
-    "RazorDiHemiMuStarBoxSel",
-    "RazorDiHemiEleBoxSel",
-    "RazorDiHemiEleStarBoxSel",                                                            
+    "razorDiHemiHadBoxSel",
+    "razorDiHemiMuBoxSel",
+    "razorDiHemiMuStarBoxSel",
+    "razorDiHemiEleBoxSel",
+    "razorDiHemiEleStarBoxSel",                                                            
     )
     )
-RazorSelectedCount = cmgCandCount.clone( src = 'RazorSelectedDiHemi', minNumber = 1 )
+razorSelectedCount = cmgCandCount.clone( src = 'razorSelectedDiHemi', minNumber = 1 )
 
-RazorJetSequence = cms.Sequence(
-    # RazorLepton*
-    # RazorMETSequence*
-    RazorPFJetSel*
-    RazorPFJetsWithLeadingLeptons
+razorJetSequence = cms.Sequence(
+    # razorLepton*
+    # razorMETSequence*
+    razorPFJetSel*
+    razorPFJetsWithLeadingLeptons
 )
 
-RazorBoxesSequence = cms.Sequence(
-    RazorHadronicBoxSequence +
-    RazorMuBoxSequence * 
-    RazorMuStarBoxSequence+
-    RazorEleBoxSequence * 
-    RazorEleStarBoxSequence    
+razorBoxesSequence = cms.Sequence(
+    razorHadronicBoxSequence +
+    razorMuBoxSequence * 
+    razorMuStarBoxSequence+
+    razorEleBoxSequence * 
+    razorEleStarBoxSequence    
     )
 
-razorSequence  = cms.Sequence(
-    RazorElectronSequence + 
-    RazorMuonSequence +
-    RazorMETSequence + 
-    RazorJetSequence +
-    RazorBoxesSequence
-    ) 
+razorObjectSequence = cms.Sequence(
+    razorElectronSequence + 
+    razorMuonSequence +
+    # razorMETSequence + 
+    razorJetSequence +
+    razorBoxesSequence    
+    )
+
+#razorHistogrammingSequence  = cms.Sequence(
+#    )
+
+razorSequence = cms.Sequence(
+    razorObjectSequence
+#    +
+#    razorHistogrammingSequence
+    )
 
 razorSkimSequence = cms.Sequence(
-    RazorLeadingObjectCount+
-    RazorSelectedDiHemi*
-    RazorSelectedCount
+    razorObjectSequence + 
+    razorLeadingObjectCount+
+    razorSelectedDiHemi*
+    razorSelectedCount
     )
