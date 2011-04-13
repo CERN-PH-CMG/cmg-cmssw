@@ -5,6 +5,7 @@ from optparse import OptionParser
 
 import sys, string, os, re, pprint, shutil
 
+import castortools
 
 class BatchManager:
     """
@@ -52,10 +53,16 @@ class BatchManager:
         dirExist = os.system( nsls )
         if dirExist != 0:
             print 'creating ', self.remoteOutputDir_
-            os.system('nsmkdir ' + self.remoteOutputDir_ )
+            os.system('nsmkdir -p ' + self.remoteOutputDir_ )
             # print 'check that the castor output directory specified with the -r option exists.'
             # sys.exit(1)
-#        self.remoteOutputFile_ = os.path.basename( self.options_.remoteCopy )
+            #        self.remoteOutputFile_ = os.path.basename( self.options_.remoteCopy )
+        else:
+            # directory exists.
+            if not castortools.protectedRemove( self.remoteOutputDir_, '.*root'):
+                # the user does not want to delete the root files
+                sys.exit(1)
+                
         self.remoteOutputFile_ = ""
     
         

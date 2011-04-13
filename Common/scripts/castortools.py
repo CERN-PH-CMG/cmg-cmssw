@@ -263,6 +263,23 @@ def remove( files ):
         print rfrm
         os.system( rfrm )
 
+def protectedRemove( *args ):
+    files = matchingFiles( *args )
+    if len(files) == 0:
+        return True 
+
+    pprint.pprint( files )
+    yesno = ''
+    while yesno!='y' and yesno!='n':
+        yesno = raw_input('Are you sure you want to remove these files [y/n]? ')
+    if yesno == 'y':
+        remove( files )
+        print 'files removed'
+        return True
+    else:
+        print 'cancelled'
+        return False
+
 # copy a set of files to a castor directory
 def cp( absDestDir, files ):
     cp = 'cp'
