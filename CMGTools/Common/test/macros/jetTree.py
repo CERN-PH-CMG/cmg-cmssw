@@ -21,8 +21,10 @@ from CMGTools.RootTools.RootTools import *
 
 gROOT.Macro( os.path.expanduser( '~/rootlogon.C' ) )
 
-file = TFile( sys.argv[1] )
-events = file.Get('Events')
+# file = TFile( sys.argv[1] )
+
+print sys.argv[1]
+events = Chain('Events', sys.argv[1])
 
 #COLIN CMG tuple does not work in that case.
 # alias setting is too naive

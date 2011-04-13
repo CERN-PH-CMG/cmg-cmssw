@@ -16,20 +16,7 @@ process.maxEvents = cms.untracked.PSet(
         )
 
 
-process.source = cms.Source(
-    "PoolSource",
-    
-    noEventSort = cms.untracked.bool(True),
-    duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
-    fileNames = cms.untracked.vstring()
-    )
-process.source.fileNames.extend([
-    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/RelValQCD_FlatPt_15_3000/patTuple_PATandPF2PAT_RelValQCD_FlatPt_15_3000_0.root',
-    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/RelValQCD_FlatPt_15_3000/patTuple_PATandPF2PAT_RelValQCD_FlatPt_15_3000_1.root',
-    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/RelValQCD_FlatPt_15_3000/patTuple_PATandPF2PAT_RelValQCD_FlatPt_15_3000_2.root',
-    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/RelValQCD_FlatPt_15_3000/patTuple_PATandPF2PAT_RelValQCD_FlatPt_15_3000_3.root',
-    ])
-
+process.load('CMGTools.Common.sources.relval.CMSSW_4_1_2.RelValQCD_FlatPt_15_3000.GEN_SIM_RECO.MC_311_V2_v1.source_cff')
 
 extension = 'jet'
 
@@ -40,7 +27,7 @@ process.out.outputCommands = cms.untracked.vstring( 'drop *')
 process.out.outputCommands.extend( everything ) 
 process.out.outputCommands.append( 'keep patJets_*_*_*' )    
 # process.out.outputCommands.append( 'keep recoPFJets_*_*_*' )    
-process.out.outputCommands.append( 'keep recoGenJets_*_*_*' )    
+# process.out.outputCommands.append( 'keep recoGenJets_*_*_*' )    
 
 #output file for histograms etc
 process.TFileService = cms.Service("TFileService",

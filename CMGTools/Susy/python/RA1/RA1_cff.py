@@ -174,7 +174,8 @@ RA1CountingSequence = cms.Sequence(
 ##########
 
 RA1Hemi = cmgHemi.clone()
-RA1Hemi.cfg.inputCollection = cms.VInputTag("RA1PFJetSel")
+RA1Hemi.cfg.inputCollection = cms.VInputTag( cms.InputTag("RA1PFJetSel") )
+                                             
 RA1Hemi.cfg.maxCand = 100
 
 RA1DiHemi = cmgDiHemi.clone()
@@ -189,7 +190,7 @@ RA1HemiSequence = cms.Sequence(
 ##########
 
 RA1MultiJet = cmgMultiJet.clone()
-RA1MultiJet.cfg.inputCollection = "RA1PFJet30"
+RA1MultiJet.cfg.inputCollection = cms.InputTag("RA1PFJet30")
 
 RA1MultiJetSequence = cms.Sequence(
     RA1MultiJet

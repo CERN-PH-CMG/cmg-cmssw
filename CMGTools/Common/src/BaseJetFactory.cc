@@ -27,5 +27,5 @@ cmg::BaseJetFactory::event_ptr cmg::BaseJetFactory::create(const edm::Event& iEv
 void cmg::BaseJetFactory::set(const pat::JetPtr& input, cmg::BaseJet* const output) const{
     
     output->btag_ = input->bDiscriminator(btagType_);
-    
+    output->rawFactor_ = input->jecFactor(0);
 }

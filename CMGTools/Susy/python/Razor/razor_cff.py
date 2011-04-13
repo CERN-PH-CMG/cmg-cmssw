@@ -51,9 +51,9 @@ razorPFJetSel = cmgCandSel.clone( src = 'cmgPFJetSel', cut = 'pt()>30 && abs(eta
 #combine leading leptons with jets
 razorPFJetsWithLeadingLeptons = cmgCandMerge.clone(
     src = cms.VInputTag(
-    "razorLeadingElectron",
-    "razorLeadingMuon",
-    "razorPFJetSel",                    
+      cms.InputTag("razorLeadingElectron"),
+      cms.InputTag("razorLeadingMuon"),
+      cms.InputTag("razorPFJetSel"),                    
     )
     )
 #skim on leading objects - i.e. at least one jet and a lepton, or two jets
@@ -89,9 +89,10 @@ from CMGTools.Common.factories.cmgDiHemi_cfi import cmgDiHemi
 razorHemiHadBox = cmgHemi.clone(
     cfg = cmgHemi.cfg.clone(
     inputCollection = cms.VInputTag(
-      "razorMuonFail",
-      "razorElectronFail",
-      "razorPFJetSel"),
+      cms.InputTag("razorMuonFail"),
+      cms.InputTag("razorElectronFail"),
+      cms.InputTag("razorPFJetSel")
+      ),
     maxCand = cms.uint32(20)
     )
     )
@@ -130,7 +131,7 @@ razorHadronicBoxSequence = cms.Sequence(
     )
 ### now the mu box
 razorHemiMuBox = razorHemiHadBox.clone()
-razorHemiMuBox.cfg.inputCollection.append('razorMuonSel')
+razorHemiMuBox.cfg.inputCollection.append( cms.InputTag('razorMuonSel') )
 razorDiHemiMuBox = razorDiHemiHadBox.clone(
     cfg = razorDiHemiHadBox.cfg.clone(
     leg1Collection = cms.InputTag('razorHemiMuBox'),
@@ -161,7 +162,7 @@ razorMuStarBoxSequence = cms.Sequence(
     )
 ### now the ele box
 razorHemiEleBox = razorHemiHadBox.clone()
-razorHemiEleBox.cfg.inputCollection.append('razorElectronSel')
+razorHemiEleBox.cfg.inputCollection.append( cms.InputTag('razorElectronSel') )
 razorDiHemiEleBox = razorDiHemiHadBox.clone(
     cfg = razorDiHemiHadBox.cfg.clone(
     leg1Collection = cms.InputTag('razorHemiEleBox'),
@@ -193,9 +194,9 @@ razorEleStarBoxSequence = cms.Sequence(
 #### finally merge selected hemispheres and count
 razorSelectedDiHemi = cmgCandMerge.clone(
     src = cms.VInputTag(
-    "razorDiHemiHadBoxSel",
-    "razorDiHemiMuBoxSel",
-    "razorDiHemiEleBoxSel",
+      cms.InputTag("razorDiHemiHadBoxSel"),
+      cms.InputTag("razorDiHemiMuBoxSel"),
+      cms.InputTag("razorDiHemiEleBoxSel"),
     )
     )
 razorSelectedCount = cmgCandCount.clone( src = 'razorSelectedDiHemi', minNumber = 1 )
