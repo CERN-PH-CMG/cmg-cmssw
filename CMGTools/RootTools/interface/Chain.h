@@ -1,18 +1,15 @@
 #ifndef __PFAnalyses_RootTools_Chain__
 #define __PFAnalyses_RootTools_Chain__
 
-/* Colin Bernet, september 2002
+/*
 
 This class just adds a 'pattern' constructor to TChain.
 
-TChain::TChain(const char* name, const char* pattern) will use `ls
-pattern` to find all files matching pattern. If they are root files,
-and if the contain a tree named name, this tree will be chained to
-this.
-
-20100927 JH
-Modified this class to work with CASTOR files. At the same time
-modified things to use the pattern functionality from TChain.
+Chain::Chain(const char* name, const char* pattern) find all files
+matching pattern. For CASTOR areas (i.e., any pattern starting with
+'rfio') the builtin TChain wildcarding is used: wildcards only allowed
+in the file name, not in the path name. For normal disk areas full
+globbing is supported.
 
 */
 
@@ -34,6 +31,8 @@ public:
 
 private:
   std::string legendEntry_;
+
+  std::vector<std::string> Expand(std::string const& pattern);
 };
 
 #endif
