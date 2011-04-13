@@ -22,22 +22,34 @@ namespace cmg {
     
     BaseJet(){}
     BaseJet(const value& m):
-        PhysicsObjectWithPtr<value>::PhysicsObjectWithPtr(m),
-        btag_(UnSet(double)){
-    }
+      PhysicsObjectWithPtr<value>::PhysicsObjectWithPtr(m),
+      btag_(UnSet(double)), 
+      rawFactor_(1){}
+
     virtual ~BaseJet(){}
     
     cmg::TriBool jetId() const{ return jetId_; }
     
+    /// \return btag discriminator
     double btag() const{ return btag_; }
     
+    /// \return a correction factor that can be applied to the jet energy or pT to bring
+    /// it back to the uncorrected value
+    double rawFactor() const {return rawFactor_;}
+
     friend class BaseJetFactory;
     
   private:
  
+    /// is the jet ID'ed?
     cmg::TriBool jetId_;
+
+    /// b tagging discriminator
     double btag_;
-    
+
+    /// correction factor that can be applied to the jet energy or pT to bring
+    /// it back to the uncorrected value
+    float rawFactor_;
   };
 }
 
