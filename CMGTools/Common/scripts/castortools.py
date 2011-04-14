@@ -4,6 +4,7 @@
 
 from optparse import OptionParser
 import sys,os, re, pprint
+import subprocess
 
 
 def isCastorDir( dir ):
@@ -12,7 +13,16 @@ def isCastorDir( dir ):
         return True
     else:
         return False
-    
+
+
+def isCastorFile( file ):
+    try:
+        os.system( 'nsls ' + file )
+        ret = subprocess.call( ['nsls',file] )
+        return True
+    except Exception as err:
+        print file, ':', err
+        return False
 
 # returns all files in a directory matching regexp.
 # the directory can be a castor dir.

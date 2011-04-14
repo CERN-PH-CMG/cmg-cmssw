@@ -268,12 +268,15 @@ else:
 
    listOfValues = range( 0, nJobs)
 
+
 batchManager.PrepareJobs( listOfValues )
-
-
 
 batchManager.SubmitJobs()
 
+from logger import logger
 
+log = logger( batchManager.outputDir_ )
+log.logCMSSW()
+log.addFile( cfgFileName )
 
 
