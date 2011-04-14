@@ -5,12 +5,13 @@ from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
 
 import sys,os,imp
 
-scriptDir = os.getenv('CMSSW_BASE') + '/src/CMGTools/Common/scripts'
-print scriptDir
-sys.path.append( scriptDir ) 
+#scriptDir = os.getenv('CMSSW_BASE') + '/src/CMGTools/Common/scripts'
+#print scriptDir
+#sys.path.append( scriptDir ) 
+
 import castortools
 
-sys.path.append( '.' )
+#sys.path.append( '.' )
 
 from relvalDefinition import *
 
@@ -21,7 +22,7 @@ from relvalDefinition import *
 castorBaseDir = '/castor/cern.ch/cms/store/cmst3/user/cbern/CMG'
 
     
-def processRelVal( relval, cfgFileName ):
+def processRelVal( relval, cfgFileName, negate, process):
     
     relvalID = str(relval)
 
@@ -32,14 +33,6 @@ def processRelVal( relval, cfgFileName ):
         , numberOfFiles = 999
         )
 
-    # loading cfg in the current directory.
-    # sys.path.append('.')
-    # from patTuple_PATandPF2PAT_RecoJets_cfg import process
-
-    handle = open( cfgFileName, 'r')
-    cfo = imp.load_source("pycfg", cfgFileName, handle)
-    process = cfo.process
-    handle.close()
 
     # changing the source to the chosen relval files
     process.source.fileNames = files
@@ -48,10 +41,10 @@ def processRelVal( relval, cfgFileName ):
     
     # building cfg
 
-    outFile = open("tmpConfig.py","w")
-    outFile.write("import FWCore.ParameterSet.Config as cms\n")
-    outFile.write(process.dumpPython())
-    outFile.close()
+    # outFile = open("tmpConfig.py","w")
+    # outFile.write("import FWCore.ParameterSet.Config as cms\n")
+    # outFile.write(process.dumpPython())
+    # outFile.close()
 
     # building cmsBatch command
     
@@ -67,6 +60,8 @@ def processRelVal( relval, cfgFileName ):
     # os.system( 'mkdir -p ' + outDir )
     
     cmsBatch = "cmsBatch.py 1 tmpConfig.py -r %s -o %s -b 'nohup ./batchScript.sh &' " % (castorOutDir,outDir)
+    if negate:
+        cmsBatch += ' -n'
     print cmsBatch
     os.system( cmsBatch )
 
@@ -80,6 +75,10 @@ if __name__ == '__main__':
     parser = OptionParser()
     
     parser.usage = "relval.py <cfg.py> <relvalList.py>\nRuns a cfg on the batch, for a given set of RelVal datasets"
+    parser.add_option("-n", "--negate", action="store_true",
+                      dest="negate", default=False,
+                      help="create jobs, but do nothing")
+    
 
     (options,args) = parser.parse_args()
 
@@ -96,12 +95,20 @@ if __name__ == '__main__':
     handle.close()
 
     # from myRelvalList import relvals
+    # loading cfg in the current directory.
+    # sys.path.append('.')
+    # from patTuple_PATandPF2PAT_RecoJets_cfg import process
+
+    handle = open( cfgFileName, 'r')
+    cfo = imp.load_source("pycfg", cfgFileName, handle)
+    process = cfo.process
+    handle.close()
 
     locals = []
     remotes = []
     myRelvals = []
     for relval in relvals.list:
-        (local,remote) = processRelVal(relval, cfgFileName )
+        (local,remote) = processRelVal(relval, cfgFileName, options.negate, process)
         locals.append( local )
         remotes.append( remote ) 
         myRelvals.append( relval )
