@@ -21,8 +21,6 @@ class logger:
         
         dirLocalOrTgzDirOnCastor = dirLocalOrTgzDirOnCastor.rstrip('/')
 
-        
-
         if self.isDirLocal( dirLocalOrTgzDirOnCastor ):
             self.dirLocal = dirLocalOrTgzDirOnCastor
         elif self.isTgzDirOnCastor( dirLocalOrTgzDirOnCastor ):

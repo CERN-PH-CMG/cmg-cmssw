@@ -27,51 +27,48 @@ class BatchManager:
         self.parser_ = OptionParser()
         self.parser_.add_option("-o", "--output-dir", dest="outputDir",
                           help="local output directory for your jobs",
-                          default="Output")
+                          default=None)
         self.parser_.add_option("-r", "--remote-copy", dest="remoteCopy",
                           help="remote output directory for your jobs, and file to be copied. Example: /castor/cern.ch/user/c/cbern/truc.root: for job 1, the file truc.root will be copied to /castor/cern.ch/user/c/cbern/truc_1.root",
-                          default="")
+                          default=None)
         # this opt can be removed
         self.parser_.add_option("-n", "--negate", action="store_true",
                                 dest="negate", default=False,
                                 help="create jobs, but do nothing")
-        #        self.parser_.add_option("-q", "--queue",  
-        #                          dest="queue",
-        #                          help="batch queue where to send the jobs. default is cms8nht3 (you need to be in the CERN group to have access)",
-        #                          default="cms8nht3")
-        #self.parser_.add_option(
-        #    "-b", "--batch-script",  
-        #    dest="batchScript",
-        #    help="give a script to run the jobs on the batch. This option is... optional!",
-        #    default="")
+
         
-    def ParseOptions(self):
+    def ParseOptions(self):       
         (self.options_,args) = self.parser_.parse_args()
-#        self.remoteOutputDir_ = os.path.dirname( self.options_.remoteCopy )
-        self.remoteOutputDir_ = self.options_.remoteCopy 
-        nsls = 'nsls %s > /dev/null' % self.remoteOutputDir_
-        dirExist = os.system( nsls )
-        if dirExist != 0:
-            print 'creating ', self.remoteOutputDir_
-            os.system('nsmkdir -p ' + self.remoteOutputDir_ )
-            # print 'check that the castor output directory specified with the -r option exists.'
-            # sys.exit(1)
-            #        self.remoteOutputFile_ = os.path.basename( self.options_.remoteCopy )
+        if self.options_.remoteCopy == None:
+            self.remoteOutputDir_ = ""
         else:
-            # directory exists.
-            if not castortools.protectedRemove( self.remoteOutputDir_, '.*root'):
-                # the user does not want to delete the root files
-                sys.exit(1)
+            self.remoteOutputDir_ = self.options_.remoteCopy.rstrip('/') 
+            nsls = 'nsls %s > /dev/null' % self.remoteOutputDir_
+            dirExist = os.system( nsls )
+            if dirExist != 0:
+                print 'creating ', self.remoteOutputDir_
+                os.system('nsmkdir -p ' + self.remoteOutputDir_ )
+                # print 'check that the castor output directory specified with the -r option exists.'
+                # sys.exit(1)
+                #        self.remoteOutputFile_ = os.path.basename( self.options_.remoteCopy )
+            else:
+                # directory exists.
+                if self.options_.negate == False:
+                    if not castortools.protectedRemove( self.remoteOutputDir_, '.*root'):
+                        # the user does not want to delete the root files
+                        sys.exit(1)
                 
         self.remoteOutputFile_ = ""
-    
+
+        self.ManageOutputDir()
+
         
     def PrepareJobs(self, listOfValues ):
         print 'PREPARING JOBS ======== '
         
         # self.ParseOptions()
  
-        self.ManageOutputDir()
+#        self.ManageOutputDir()
         #self.CheckBatchScript( self.options_.batchScript )
 
         self.listOfJobs_ = []
@@ -98,16 +95,22 @@ class BatchManager:
 
         outputDir = self.options_.outputDir
 
-        if outputDir=='':
+        if outputDir==None:
             today = datetime.today()
-            outputDir = 'OutDir_%s' % today.strftime("%d%b%y_%H%M%S")
+            outputDir = 'OutCmsBatch_%s' % today.strftime("%d%h%y_%H%M%S")
             print 'output directory not specified, using %s' % outputDir            
             
         self.outputDir_ = os.path.abspath(outputDir)
 
         if( os.path.isdir(self.outputDir_) == True ):
-            return
-        
+            input = ''
+            while input != 'y' and input != 'n':
+                input = raw_input( 'The directory ' + self.outputDir_ + ' exists. Are you sure you want to continue? its contents will be overwritten [y/n]' )
+            if input == 'n':
+                sys.exit(1)
+            else:
+                os.system( 'rm -rf ' + self.outputDir_)
+                
         self.mkdir( self.outputDir_ )
  
 

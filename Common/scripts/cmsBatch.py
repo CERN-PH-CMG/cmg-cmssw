@@ -236,6 +236,8 @@ nJobs = grouping
 cfgFileName = args[1]
 # queue = options.queue
 
+print 'Loading cfg'
+
 # load cfg script
 handle = open(cfgFileName, 'r')
 cfo = imp.load_source("pycfg", cfgFileName, handle)
@@ -275,8 +277,19 @@ batchManager.SubmitJobs()
 
 from logger import logger
 
-log = logger( batchManager.outputDir_ )
+oldPwd = os.getcwd()
+os.chdir(batchManager.outputDir_)
+logDir = 'Logger'
+os.system( 'mkdir ' + logDir )
+log = logger( logDir )
 log.logCMSSW()
-log.addFile( cfgFileName )
+#COLIN not so elegant... but tar is behaving in a strange way.
+log.addFile( oldPwd + '/' + cfgFileName )
 
+if not batchManager.options_.negate:
+   # we don't want to crush an existing log file on castor
+   #COLIN could protect the logger against that.
+   log.stageOut( batchManager.remoteOutputDir_ )
+
+os.chdir( oldPwd )
 

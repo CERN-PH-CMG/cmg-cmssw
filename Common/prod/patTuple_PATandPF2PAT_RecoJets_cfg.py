@@ -105,7 +105,7 @@ process.out.outputCommands = cms.untracked.vstring('drop *',
                                                    'keep L1GlobalTriggerObjectMapRecord_*_*_*',
                                                    'keep *_TriggerResults_*_*',
                                                    'keep *_hltTriggerSummaryAOD_*_*',
-                                                   'keep recoPFJets_pfJetsPFlow_*_*',
+                                                   # 'keep recoPFJets_pfJetsPFlow_*_*',
                                                    # 'keep recoCaloJets_*_*_*',
                                                    *patEventContentNoCleaning ) 
 
