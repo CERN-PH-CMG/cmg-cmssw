@@ -54,7 +54,7 @@ from PhysicsTools.PatAlgos.tools.pfTools import *
 # collections have standard names + postfix (e.g. patElectronPFlow)  
 postfix = "PFlow"
 jetAlgo="AK5"
-usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, jetInputTag='pfJets', runOnMC=runOnMC, postfix=postfix) 
+usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=runOnMC, postfix=postfix) 
 # to run second PF2PAT+PAT with differnt postfix uncomment the following lines
 # and add it to path
 #postfix2 = "PFlow2"
