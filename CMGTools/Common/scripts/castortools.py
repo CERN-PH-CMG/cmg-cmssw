@@ -14,15 +14,22 @@ def isCastorDir( dir ):
     else:
         return False
 
-
+#COLIN is it still in use? remove... 
 def isCastorFile( file ):
-    try:
-        os.system( 'nsls ' + file )
-        ret = subprocess.call( ['nsls',file] )
-        return True
-    except Exception as err:
-        print file, ':', err
-        return False
+    os.system( 'nsls ' + file )
+    ret = subprocess.call( ['nsls',file] )
+    return not ret
+
+
+def fileExists( file ):
+    castor = isCastorDir(file)
+    ls = 'ls'
+    if castor:
+        ls = 'nsls'
+    # ret = subprocess.call( [ls, file] )    
+    lschild = subprocess.Popen( [ls, file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    lschild.poll()
+    return not lschild.returncode
 
 # returns all files in a directory matching regexp.
 # the directory can be a castor dir.

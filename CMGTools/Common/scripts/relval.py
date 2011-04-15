@@ -41,10 +41,10 @@ def processRelVal( relval, cfgFileName, negate, process):
     
     # building cfg
 
-    # outFile = open("tmpConfig.py","w")
-    # outFile.write("import FWCore.ParameterSet.Config as cms\n")
-    # outFile.write(process.dumpPython())
-    # outFile.close()
+    outFile = open("tmpConfig.py","w")
+    outFile.write("import FWCore.ParameterSet.Config as cms\n")
+    outFile.write(process.dumpPython())
+    outFile.close()
 
     # building cmsBatch command
     
@@ -88,6 +88,13 @@ if __name__ == '__main__':
 
     cfgFileName = args[0]
     relvalListFileName = args[1]
+
+    if not os.path.isfile( cfgFileName ):
+        print 'cfg file does not exist: ', cfgFileName
+        sys.exit(1)
+    if not os.path.isfile( relvalListFileName ):
+        print 'relval list file does not exist: ', relvalListFileName
+        sys.exit(1)
     
     handle = open(relvalListFileName, 'r')
     cfo = imp.load_source("pycfg", relvalListFileName, handle)

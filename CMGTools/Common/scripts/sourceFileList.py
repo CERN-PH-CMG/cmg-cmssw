@@ -30,6 +30,7 @@ parser.usage = "%prog <dir> <regexp> : format a set of root files matching a reg
 
 (options,args) = parser.parse_args()
 
+
 if len(args) != 2:
     parser.print_help()
     sys.exit(1)
@@ -37,11 +38,19 @@ if len(args) != 2:
 dir = args[0]
 regexp = args[1]
 
+
+exists = castortools.fileExists( dir )
+if not exists:
+    print 'sourceFileList: directory does not exist. Exiting'
+    sys.exit(1)
+
+
 castor = castortools.isCastorDir( dir )
 
 protocol = 'file:'
 if castor:
     protocol = 'root://castorcms/'
+
 
 files = castortools.matchingFiles( dir, regexp,
                                    protocol=protocol, castor=castor)

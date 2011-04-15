@@ -10,6 +10,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/PhysicsObject.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 
 #include "CMGTools/Common/plugins/HistogramAnalyzer.h"
 #include "CMGTools/Common/interface/GenericHistograms.h"
@@ -91,6 +92,8 @@ typedef cmg::PhysicsObjectPrinter PhysicsObjectPrinter;
 
 
 // Leading-objects selectors.
+
+typedef cmg::LeadingObjectsSelector<pat::Jet> LeadingPatJetSelector;
 
 typedef cmg::LeadingObjectsSelector<cmg::AbstractPhysicsObject> LeadingCMGPOSelector;
 typedef cmg::LeadingObjectsSelector<cmg::BaseJet> LeadingCMGBaseJetSelector;

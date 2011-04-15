@@ -16,7 +16,8 @@ process.maxEvents = cms.untracked.PSet(
         )
 
 
-process.load('CMGTools.Common.sources.relval.CMSSW_4_1_2.RelValQCD_FlatPt_15_3000.GEN_SIM_RECO.MC_311_V2_v1.source_cff')
+process.load("CMGTools.Common.sources.relval.RelValQCD_FlatPt_15_3000.CMSSW_3_11_2.MC_311_V2.source_cff")
+# process.load("CMGTools.Common.sources.relval.RelValQCD_FlatPt_15_3000.CMSSW_4_1_2.MC_311_V2.source_cff")
 
 extension = 'jet'
 
@@ -27,7 +28,7 @@ process.out.outputCommands = cms.untracked.vstring( 'drop *')
 process.out.outputCommands.extend( everything ) 
 process.out.outputCommands.append( 'keep patJets_*_*_*' )    
 # process.out.outputCommands.append( 'keep recoPFJets_*_*_*' )    
-# process.out.outputCommands.append( 'keep recoGenJets_*_*_*' )    
+process.out.outputCommands.append( 'keep recoGenJets_*_*_*' )    
 
 #output file for histograms etc
 process.TFileService = cms.Service("TFileService",
@@ -39,9 +40,11 @@ process.load('CMGTools.Common.analysis_cff')
 
 # note: we're reading ttbar events
 process.load("CMGTools.Common.jet_cff")
+process.load('CMGTools.Common.skims.patJetLead_cfi')
 
 process.p = cms.Path(
-    process.jetSequence
+    process.jetSequence +
+    process.patJetLead
 )
 
 process.schedule = cms.Schedule(

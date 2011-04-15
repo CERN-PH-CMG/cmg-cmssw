@@ -23,8 +23,10 @@ gROOT.Macro( os.path.expanduser( '~/rootlogon.C' ) )
 
 # file = TFile( sys.argv[1] )
 
-print sys.argv[1]
-events = Chain('Events', sys.argv[1])
+
+rootfile  = sys.argv[1]
+
+events = Chain('Events', rootfile)
 
 #COLIN CMG tuple does not work in that case.
 # alias setting is too naive
@@ -37,11 +39,33 @@ events = Chain('Events', sys.argv[1])
 
 # PFcanvas.cd(1)
 
-# cmg.Draw('selectedPatJetsPFlow.pt()')
-# cmg.Draw('selectedPatJetsPFlow.genJet().pt()')
+raw = False 
+genJetPtCut = 20
+dRCut = True
 
-patJets = 'patJets_selectedPatJetsPFlow__PAT'
+basename = os.path.basename( rootfile )
+
+def buildPrefix():
+    pref = os.path.splitext( basename)[0]
+    pref += '_' + str(genJetPtCut)
+    if raw:
+        pref += '_raw'
+    if dRCut:
+        pref += '_dR'
+    return pref
+
+patJets = 'patJets_patJetLead__ANA'
 events.SetAlias('jet', patJets)
+
+deltaPhi = '%s.obj.phi()-%s.obj.genJet().phi()' % (patJets, patJets)
+events.SetAlias('dPhi',deltaPhi )
+deltaEta = '%s.obj.eta()-%s.obj.genJet().eta()' % (patJets, patJets)
+events.SetAlias('dEta',deltaEta )
+deltaR = 'sqrt( dPhi*dPhi + dEta*dEta)'
+events.SetAlias('dR',deltaR )
+
+genJet = '%s.obj.genJet()' % patJets
+events.SetAlias('genJet',genJet )
 
 
 # PF = jetHistos('PF')
@@ -51,33 +75,61 @@ from response import response
 
 def plotPtResponse( response ): 
     
+    prefix = buildPrefix()
+
+    print 'plotPtResponse : ', prefix, '...'
+
     canvas = response.canvas
     canvas.cd(1)
-    response.h2d = TH2F('responsePt','Leading jet;p_{T}(gen) (GeV);p_{T}(rec)/p_{T}(gen)',50, 0, 1000, 50, 0,2)
-    events.Draw('jet.obj[0].pt()/jet.obj[0].genJet().pt():jet.obj[0].genJet().pt()>>'+ response.h2d.GetName(),'jet.obj[0].genJet().pt()>0 && abs(jet.obj[0].genJet().eta())<1.5',"col")
+    response.h2d = TH2F('responsePt_' + response.name,';p_{T}(gen) (GeV);p_{T}(rec)/p_{T}(gen)',50, 0, 1000, 50, 0,2)
+    # events.Draw('jet.obj[0].pt()/jet.obj[0].genJet().pt():jet.obj[0].genJet().pt()>>'+ response.h2d.GetName(),'jet.obj[0].genJet().pt()>0 && abs(jet.obj[0].genJet().eta())<1.5',"col")
+
+    var = 'jet.obj.pt()/jet.obj.genJet().pt():jet.obj.genJet().pt()>>' + response.h2d.GetName()
+    if raw:
+        var = 'jet.obj.pt()*jet.obj.jecFactor(0)/jet.obj.genJet().pt():jet.obj.genJet().pt()>>' + response.h2d.GetName()
+    cut = 'jet.obj.genJet().pt()>%s && abs(jet.obj.genJet().eta())<1.5' % genJetPtCut
+    if dRCut:
+        cut +=  '&& dR<0.2'
+     
+    events.Draw(var,cut,"col")
     
     response.FitSlicesY()
     response.Draw()
-
-    canvas.SaveAs(response.name + '.png')
+    
+    canvas.SaveAs(prefix + '_' + response.name + '.png')
 
 
 def plotEtaResponse( response ): 
+
+    prefix = buildPrefix()
+
+    print 'plotEtaResponse : ', prefix, '...'
     
     canvas = response.canvas
     canvas.cd(1)
-    response.h2d = TH2F('responseEta','Leading jet;#eta(gen);p_{T}(rec)/p_{T}(gen)',50, -5, 5, 50, 0,2)
-    events.Draw('jet.obj[0].pt()/jet.obj[0].genJet().pt():jet.obj[0].genJet().eta()>>'+ response.h2d.GetName(),'jet.obj[0].genJet().pt()>0 && jet.obj[0].pt()>30',"col")
+    response.h2d = TH2F('responseEta_'+response.name,';#eta(gen);p_{T}(rec)/p_{T}(gen)',50, -5, 5, 50, 0,2)
+
+    var = 'jet.obj.pt()/jet.obj.genJet().pt():jet.obj.genJet().eta()>>'+ response.h2d.GetName()
+    cut = 'jet.obj.genJet().pt()>%s && dR<0.2' % genJetPtCut
+    
+    # events.Draw('jet.obj[0].pt()/jet.obj[0].genJet().pt():jet.obj[0].genJet().eta()>>'+ response.h2d.GetName(),'jet.obj[0].genJet().pt()>0 && jet.obj[0].pt()>30',"col")
+    events.Draw(var, cut ,"col")
     
     response.FitSlicesY()
     response.Draw()
-
-    canvas.SaveAs(response.name + '.png')
+    
+    canvas.SaveAs( prefix + '_' + response.name + '.png')
     
 
 if __name__ == '__main__':
 
-    pt = response('pt')
-    plotPtResponse( pt )
-    eta = response('eta')
-    plotEtaResponse( eta )
+    dRCut = True
+    drpt = response('drpt')
+    plotPtResponse( drpt )
+
+    dRCut = False
+    nodrpt = response('nodrpt')
+    plotPtResponse( nodrpt )
+    
+    # eta = response('eta')
+    # plotEtaResponse( eta )

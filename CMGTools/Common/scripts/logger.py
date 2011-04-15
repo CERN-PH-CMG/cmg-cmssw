@@ -152,7 +152,7 @@ if __name__ == '__main__':
 
     parser = OptionParser()
     
-    parser.usage = "logger.py ..."
+    parser.usage = "logger.py <dir or castortgz>"
 
     (options,args) = parser.parse_args()
 
@@ -164,8 +164,11 @@ if __name__ == '__main__':
 
     try:
         log = logger(dirOrFile)
-        log.logCMSSW()
-        # log.stageIn()
+        # log.logCMSSW()
+
+        if log.dirLocal == None:
+            log.stageIn()
+            
         # log.addFile('patTuple_PATandPF2PAT_RecoJets_cfg.py')
         # log.stageOut('/castor/cern.ch/cms/store/cmst3/user/cbern/Test')
         # log.stageOut()

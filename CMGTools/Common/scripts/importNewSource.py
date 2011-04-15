@@ -33,10 +33,7 @@ if len(args)!=1:
     parser.print_help()
     sys.exit(1)
 
-sampleName = args[0]
-
-
-
+sampleName = args[0].rstrip('/')
 
 print 'starting prod for sample:', sampleName
 
@@ -45,9 +42,13 @@ print 'starting prod for sample:', sampleName
 cdir = options.castorBaseDir 
 cdir += sampleName
 
+if not castortools.fileExists(cdir):
+    print 'importNewSource: castor directory does not exist. Exit!'
+    sys.exit(1)
+
 # making local source directory ---------
 
-tmp = './python/Sources' + sampleName
+tmp = './python/sources' + sampleName
 ldir = re.sub( '-', '_', tmp)
 mkdir = 'mkdir -p ' + ldir
 print mkdir

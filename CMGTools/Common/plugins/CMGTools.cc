@@ -47,6 +47,9 @@ DEFINE_FWK_MODULE(WENuPOProducer);
 DEFINE_FWK_MODULE(WMuNuPOProducer);
 DEFINE_FWK_MODULE(WTauNuPOProducer);
 DEFINE_FWK_MODULE(CutSummaryAnalyzer);
+
+DEFINE_FWK_MODULE(LeadingPatJetSelector);
+
 DEFINE_FWK_MODULE(LeadingCMGPOSelector);
 DEFINE_FWK_MODULE(LeadingCMGBaseJetSelector);
 DEFINE_FWK_MODULE(LeadingCMGPFJetSelector);
