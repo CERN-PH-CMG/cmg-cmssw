@@ -287,9 +287,10 @@ log.logCMSSW()
 log.addFile( oldPwd + '/' + cfgFileName )
 
 if not batchManager.options_.negate:
-   # we don't want to crush an existing log file on castor
-   #COLIN could protect the logger against that.
-   log.stageOut( batchManager.remoteOutputDir_ )
-
+   if batchManager.remoteOutputDir_ != "":
+      # we don't want to crush an existing log file on castor
+      #COLIN could protect the logger against that.
+      log.stageOut( batchManager.remoteOutputDir_ )
+      
 os.chdir( oldPwd )
 
