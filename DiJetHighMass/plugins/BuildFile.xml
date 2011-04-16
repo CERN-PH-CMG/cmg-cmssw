@@ -1,0 +1,7 @@
+<export></export>
+<library name="CMGToolsDiJetHighMassPlugins" file="*.cc">
+  <use name="CMGTools/Common"/>
+  <use name="CMGTools/DiJetHighMass"/>
+  <use name="DQMServices/Core"/>
+  <flags   EDM_PLUGIN="1"/>
+</library>
