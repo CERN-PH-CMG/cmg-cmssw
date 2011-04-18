@@ -7,6 +7,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 #include "AnalysisDataFormats/CMGTools/interface/GenericTypes.h"
+#include "AnalysisDataFormats/CMGTools/interface/MultiObject.h"
 #include "AnalysisDataFormats/CMGTools/interface/BaseJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJetComponent.h"
@@ -48,7 +49,7 @@ namespace {
     std::vector<cmg::DiMuon> dv;
     edm::Wrapper<cmg::DiMuon> ed;
     edm::Wrapper<std::vector<cmg::DiMuon> > edv;
-    
+
     cmg::DiJet dj_;
     std::vector<cmg::DiJet> djv;
     edm::Wrapper<cmg::DiJet> edj;
@@ -58,7 +59,7 @@ namespace {
     std::vector<cmg::DiPFJet> dpfjv;
     edm::Wrapper<cmg::DiPFJet> epfdj;
     edm::Wrapper<std::vector<cmg::DiPFJet> > epfdjv;
-    
+
     cmg::DiTau dt_;
     std::vector<cmg::DiTau> dtv;
     edm::Wrapper<cmg::DiTau> edt;
@@ -91,12 +92,12 @@ namespace {
 
     cmg::PFJetComponent  jetComp_;
     std::vector< cmg::PFJetComponent > vJetComps_;
-    
+
     cmg::QuadMuon qm_;
     std::vector<cmg::QuadMuon> qmv;
     edm::Wrapper<cmg::QuadMuon> eqm;
     edm::Wrapper<std::vector<cmg::QuadMuon> > eqmv;
-    
+
     cmg::BaseMET met_;
     std::vector<cmg::BaseMET> metv_;
     edm::Wrapper<cmg::BaseMET> wmet_;
@@ -105,32 +106,32 @@ namespace {
     static const cmg::TriBool u_ = cmg::tbUnset;
     static const cmg::TriBool f_ = cmg::tbFalse;
     static const cmg::TriBool t_ = cmg::tbTrue;
-    
+
     cmg::PFCand pfcand_;
     std::vector<cmg::PFCand> pfcandv_;
     edm::Wrapper<cmg::PFCand> wpfcand_;
     edm::Wrapper<std::vector<cmg::PFCand> > wpfcandv_;
-    
+
     cmg::GenParticle genpart_;
     std::vector<cmg::GenParticle> genpartv_;
     edm::Wrapper<cmg::GenParticle> wgenpart_;
     edm::Wrapper<std::vector<cmg::GenParticle> > wgenpartv_;
-    
+
     cmg::GenJet genjet_;
     std::vector<cmg::GenJet> genjetv_;
     edm::Wrapper<cmg::GenJet> wgenjet_;
     edm::Wrapper<std::vector<cmg::GenJet> > wgenjetv_;
-    
+
     cmg::WENu wen;
     std::vector<cmg::WENu> wenv_;
     edm::Wrapper<cmg::WENu> wwen_;
     edm::Wrapper<std::vector<cmg::WENu> > wwenv_;
-    
+
     cmg::WMuNu wmun;
     std::vector<cmg::WMuNu> wmunv_;
     edm::Wrapper<cmg::WMuNu> wwmun_;
     edm::Wrapper<std::vector<cmg::WMuNu> > wwmunv_;
-    
+
     cmg::WTauNu wtn;
     std::vector<cmg::WTauNu> wtnv_;
     edm::Wrapper<cmg::WTauNu> wwtn_;

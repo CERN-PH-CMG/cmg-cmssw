@@ -45,6 +45,16 @@ namespace cmg {
       return sourcePtrs_;
     }
 
+    // NOTE: The input collection is assumed to be sorted in order of
+    // decreasing pT.
+    SrcPtr const leadPtr() const {
+      if (sourcePtrs_.size() > 0) {
+        return sourcePtrs_.at(0);
+      } else {
+        return SrcPtr();
+      }
+    }
+
     SrcPtr const* sourcePtr(size_t const ind) const {
       return &sourcePtrs_.at(ind);
     }
