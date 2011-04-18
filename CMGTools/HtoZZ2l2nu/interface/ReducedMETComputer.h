@@ -4,8 +4,8 @@
 /** \class ReducedMETComputer
  *  No description available.
  *
- *  $Date: 2011/04/06 08:36:23 $
- *  $Revision: 1.1 $
+ *  $Date: 2011/04/07 12:11:55 $
+ *  $Revision: 1.2 $
  *  \author G. Cerminara & D. Trocino
  */
 
@@ -61,10 +61,16 @@ public:
   std::pair<double, double> dileptonProjComponents() const {
     return std::make_pair(dileptonProj_long, dileptonProj_perp);
   }
+
+  std::pair<double, double> dileptonPtCorrComponents() const {
+    return std::make_pair(deltaLeptonProjCorr_long, deltaLeptonProjCorr_perp);
+  }
+  
+  
   
   std::pair<int, int> recoilType() const {
-    int ret_long = 0; // sumJetProj_long < -1.*metProj_long
-    int ret_perp = 0; // sumJetProj_perp < -1.*metProj_perp
+    int ret_long = 0; // sumJetProj_long <= -1.*metProj_long
+    int ret_perp = 0; // sumJetProj_perp <= -1.*metProj_perp
     if(sumJetProj_long > -1.*metProj_long) ret_long = 1;
     if(sumJetProj_perp > -1.*metProj_perp) ret_perp = 1;
     return std::make_pair(ret_long, ret_perp);
@@ -90,6 +96,8 @@ private:
   double recoilProj_perp;
   double reducedMET_long;
   double reducedMET_perp;
+  double deltaLeptonProjCorr_long;
+  double deltaLeptonProjCorr_perp;
   double redMET;
   
 
