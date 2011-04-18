@@ -22,7 +22,7 @@ from relvalDefinition import *
 castorBaseDir = '/castor/cern.ch/cms/store/cmst3/user/cbern/CMG'
 
     
-def processRelVal( relval, cfgFileName, negate, process):
+def processRelVal( relval, cfgFileName, process, negate, tier=None):
     
     relvalID = str(relval)
 
@@ -52,7 +52,9 @@ def processRelVal( relval, cfgFileName, negate, process):
     
     outDir = 'relval/'+relvalID
     castorOutDir = castorBaseDir + '/' + outDir
-    
+    if tier!=None:
+        castorOutDir += '/' + tier
+        outDir += '/' + tier
     print 'local  output: ', outDir
     print 'castor output:', castorOutDir
     
@@ -78,6 +80,10 @@ if __name__ == '__main__':
     parser.add_option("-n", "--negate", action="store_true",
                       dest="negate", default=False,
                       help="create jobs, but do nothing")
+    parser.add_option("-t", "--tier", 
+                      dest="tier",
+                      help="Tier: extension you can give to specify you are doing a new production",
+                      default=None)
     
 
     (options,args) = parser.parse_args()
@@ -115,7 +121,7 @@ if __name__ == '__main__':
     remotes = []
     myRelvals = []
     for relval in relvals.list:
-        (local,remote) = processRelVal(relval, cfgFileName, options.negate, process)
+        (local,remote) = processRelVal(relval, cfgFileName, process, options.negate, options.tier)
         locals.append( local )
         remotes.append( remote ) 
         myRelvals.append( relval )
