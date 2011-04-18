@@ -1,6 +1,7 @@
 #ifndef HEMISPHERE_H_
 #define HEMISPHERE_H_
 
+#include "DataFormats/Candidate/interface/Candidate.h"
 #include "AnalysisDataFormats/CMGTools/interface/MultiObject.h"
 
 namespace cmg {
