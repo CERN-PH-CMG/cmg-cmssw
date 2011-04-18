@@ -156,4 +156,4 @@ process.pfIsolatedMuonsPFlow.combinedIsolationCut = 0.25
 process.pfIsolatedElectronsPFlow.combinedIsolationCut = 0.25
 
 # process.patJetCorrFactorsPFlow.levels = []
-# process.pfNoPileUpPFlow.enable = False
+process.pfNoPileUpPFlow.enable = False
