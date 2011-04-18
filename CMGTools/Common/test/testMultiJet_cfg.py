@@ -40,8 +40,6 @@ process.TFileService = cms.Service("TFileService",
 # Default analysis sequence.
 process.load('CMGTools.Common.analysis_cff')
 
-# Note: we're reading ttbar events.
-
 process.load("CMGTools.Common.jet_cff")
 process.load("CMGTools.Common.multiJet_cff")
 
