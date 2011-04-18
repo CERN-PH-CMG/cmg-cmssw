@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2011/04/06 08:36:23 $
- *  $Revision: 1.1 $
+ *  $Date: 2011/04/07 12:11:55 $
+ *  $Revision: 1.2 $
  *  \author G. Cerminara & D. Trocino
  */
 
@@ -34,6 +34,25 @@ void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt
 				 const std::vector<LorentzVector>& theJets,
 				 const LorentzVector& theMET) {
   
+  // reset
+  dileptonProj_long = 0.;
+  dileptonProj_perp = 0.;
+  sumJetProj_long = 0.;
+  sumJetProj_perp = 0.;
+  metProj_long = 0.;
+  metProj_perp = 0.;
+  recoilProj_long = 0.;
+  recoilProj_perp = 0.;
+  reducedMET_long = 0.;
+  reducedMET_perp = 0.;
+  deltaLeptonProjCorr_long = 0.;
+  deltaLeptonProjCorr_perp = 0.;
+  redMET = 0.;
+  
+
+
+
+
   TVector2 lepton1(theLepton1.Px(), theLepton1.Py());
   TVector2 lepton2(theLepton2.Px(), theLepton2.Py());;
   
@@ -88,9 +107,9 @@ void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt
   
   // compute the delta of the projections (must be a negative number -> conservative)
   double dileptonProjCorr_long = dileptonCorr*bisector;
-  double deltaLeptonProjCorr_long = dileptonProjCorr_long - dileptonProj_long;
+  deltaLeptonProjCorr_long = dileptonProjCorr_long - dileptonProj_long;
   // we fluctuate independently the 2 leptons and sum the contribution to get the biggest possible negative fluctuation on the perp component
-  double deltaLeptonProjCorr_perp = (relErrPt2*lepton2 - relErrPt1*lepton1)*bisector_perp;
+  deltaLeptonProjCorr_perp = (relErrPt2*lepton2 - relErrPt1*lepton1)*bisector_perp;
   
   // -- compute the 2 components of the reduced MET variable
   reducedMET_long = max(dileptonProj_long + kRecoil_long*recoilProj_long + kSigmaPt_long*deltaLeptonProjCorr_long, 0.);
