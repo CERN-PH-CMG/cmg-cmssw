@@ -5,26 +5,30 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 # process.load('CMGTools.Common.sources.CMSSW_4_1_3.RelValTTbar_Tauola.GEN_SIM_RECO.START311_V2_PU_E7TeV_AVE_2_BX156_v1.source_cff')
 from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
 
-process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-    pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_1_3'
-                          #, relVal        = 'RelValLM1_sfts'
-                          , relVal = 'RelValQCD_FlatPt_15_3000'
-                          # , globalTag     = 'START311_V2'
-                          , globalTag = 'MC_311_V2'
-                          , numberOfFiles = 5
-                          )
-    )
-)
+# (relVal,tag) = ('RelValQCD_FlatPt_15_3000','MC_311_V2')
+# (relVal, tag) = ('RelValLM1_sfts','MC_311_V2')
+# (relVal, tag) = ('RelValZEE','START311_V2')
 
-print process.source
+# process.source = cms.Source("PoolSource",
+#    fileNames = cms.untracked.vstring(
+#    pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_1_2'
+#                          #, relVal        = 'RelValLM1_sfts'
+#                          , relVal = relVal
+#                          # , globalTag     = 'START311_V2'
+#                          , globalTag = tag
+#                          , numberOfFiles = 999
+#                          )
+#    )
+#)
+
+# print process.source
 # import sys
 # sys.exit(1)
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet( 
-    input = cms.untracked.int32(20)
+    input = cms.untracked.int32(-1)
     )
 
 # process.load("PhysicsTools.PFCandProducer.Sources.source_ZtoMus_DBS_cfi")
@@ -34,7 +38,7 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
 runOnMC = True
 
 
-process.out.fileName = cms.untracked.string('patTuple_PATandPF2PAT.root')
+process.out.fileName = cms.untracked.string('patTuple_PATandPF2PAT.root' )
 
 # load the PAT config
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
@@ -50,7 +54,7 @@ from PhysicsTools.PatAlgos.tools.pfTools import *
 # collections have standard names + postfix (e.g. patElectronPFlow)  
 postfix = "PFlow"
 jetAlgo="AK5"
-usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, jetInputTag='pfJets', runOnMC=runOnMC, postfix=postfix) 
+usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=runOnMC, postfix=postfix) 
 # to run second PF2PAT+PAT with differnt postfix uncomment the following lines
 # and add it to path
 #postfix2 = "PFlow2"
@@ -101,6 +105,8 @@ process.out.outputCommands = cms.untracked.vstring('drop *',
                                                    'keep L1GlobalTriggerObjectMapRecord_*_*_*',
                                                    'keep *_TriggerResults_*_*',
                                                    'keep *_hltTriggerSummaryAOD_*_*',
+                                                   # 'keep recoPFJets_pfJetsPFlow_*_*',
+                                                   # 'keep recoCaloJets_*_*_*',
                                                    *patEventContentNoCleaning ) 
 
 from CMGTools.Common.eventContent.runInfoAccounting_cff import runInfoAccounting
@@ -120,7 +126,7 @@ process.pfNoMuon.verbose = cms.bool(False)
 
 process.TFileService = cms.Service(
     "TFileService",
-    fileName = cms.string("susy_histograms_CMG.root")
+    fileName = cms.string("histograms.root")
     )
 
 
@@ -148,3 +154,6 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 10
 # to relax the muon isolation, uncomment the following:
 process.pfIsolatedMuonsPFlow.combinedIsolationCut = 0.25
 process.pfIsolatedElectronsPFlow.combinedIsolationCut = 0.25
+
+# process.patJetCorrFactorsPFlow.levels = []
+# process.pfNoPileUpPFlow.enable = False
