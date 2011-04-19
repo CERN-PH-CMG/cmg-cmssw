@@ -19,7 +19,6 @@ from relvalDefinition import *
 
 # main parameters
 
-castorBaseDir = '/castor/cern.ch/cms/store/cmst3/user/cbern/CMG'
 
     
 def processRelVal( relval, cfgFileName, process, negate, tier=None):
@@ -85,7 +84,13 @@ if __name__ == '__main__':
                       help="Tier: extension you can give to specify you are doing a new production",
                       default=None)
     
-
+    import colin
+    
+    parser.add_option("-c", "--castorBaseDir", 
+                      dest="castorBaseDir",
+                      help="Base castor directory. Subdirectories will be created automatically for each prod",
+                      default=colin.defaultCastorBaseDir)
+    
     (options,args) = parser.parse_args()
 
     if len(args)!=2:
@@ -94,7 +99,8 @@ if __name__ == '__main__':
 
     cfgFileName = args[0]
     relvalListFileName = args[1]
-
+    castorBaseDir = options.castorBaseDir
+    
     if not os.path.isfile( cfgFileName ):
         print 'cfg file does not exist: ', cfgFileName
         sys.exit(1)
