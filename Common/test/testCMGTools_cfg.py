@@ -17,10 +17,12 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(20)
     )
 
-process.source.fileNames = cms.untracked.vstring(
+# process.source.fileNames = cms.untracked.vstring(
 #    'file:/afs/cern.ch/user/c/cbern/scratch0/CMG/RelVal/ttbar_PATandPF2PAT.root',
-    'file:/afs/cern.ch/user/c/cbern/scratch0/CMG/RelVal/4_1_3/ttbar_PATandPF2PAT.root',
-    )
+#    'file:/afs/cern.ch/user/c/cbern/scratch0/CMG/RelVal/4_1_3/ttbar_PATandPF2PAT.root',
+#    )
+
+process.load("CMGTools.Common.sources.relval.RelValQCD_FlatPt_15_3000.CMSSW_3_11_2.MC_311_V2.source_cff")
 
 
 # output module for EDM event (ntuple)
