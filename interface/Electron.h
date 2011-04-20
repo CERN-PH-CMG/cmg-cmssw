@@ -78,6 +78,10 @@ public:
     cmg::TriBool ecalDriven() const{
         return isEcalDriven_;
     }
+    // from LeafCandidate
+    virtual bool isElectron() const {
+      return true;
+    }
     
 private:
     

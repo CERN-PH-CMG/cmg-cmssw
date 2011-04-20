@@ -26,21 +26,25 @@ class DiObject : public AbstractPhysicsObject{
         AbstractPhysicsObject(reco::LeafCandidate(leg1.charge()+leg2.charge(),leg1.p4()+leg2.p4())),
         leg1_(leg1),
         leg2_(leg2),
+        mT_(UnSet(Double_t)),
         alphaT_(UnSet(Double_t)),
         betaR_(UnSet(Double_t)),
         mR_(UnSet(Double_t)),
         mRP_(UnSet(Double_t)),
-        mRT_(UnSet(Double_t)){
+        mRT_(UnSet(Double_t)),
+        lp_(UnSet(Double_t)){
     }
     DiObject(const DiObject<T,U>& other):
         AbstractPhysicsObject(other),
         leg1_(other.leg1()),
         leg2_(other.leg2()),
+        mT_(other.mT_),
         alphaT_(other.alphaT_),
         betaR_(other.betaR_),
         mR_(other.mR_),
         mRP_(other.mRP_),
-        mRT_(other.mRT_){
+        mRT_(other.mRT_),
+        lp_(other.lp_){
     }
     
     virtual ~DiObject(){}
@@ -50,6 +54,10 @@ class DiObject : public AbstractPhysicsObject{
     }
     U leg2() const{
         return leg2_;
+    }
+
+    virtual double mT() const {
+      return mT_;
     }
 
     ///The RA1 variable alpha_T
@@ -76,6 +84,10 @@ class DiObject : public AbstractPhysicsObject{
     Double_t R() const{
         return mRT()/mR();
     }
+    ///The lepton projection (LP) variable
+    Double_t lp() const{
+        return lp_;
+    }  
 
     virtual void accept(AbstractPhysicsObjectVisitor* v) const{
       v->visit(this);  
@@ -125,11 +137,13 @@ class DiObject : public AbstractPhysicsObject{
     T leg1_;
     U leg2_;
 
+    Double_t mT_;
     Double_t alphaT_;
     Double_t betaR_; //the Razor boost
     Double_t mR_; //The Razor MR
     Double_t mRP_; //The Razor MR' 
     Double_t mRT_; //The Razor M_T^R 
+    Double_t lp_; //The lepton projection (LP) 
 
     friend class cmg::DiObjectFactory<T,U>;
 

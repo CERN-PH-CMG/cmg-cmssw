@@ -65,6 +65,10 @@ class Muon;
      Int_t numberOfMatches() const{
        return nMatches_;
      }
+     // from LeafCandidate 
+     virtual bool isMuon() const {
+       return true;
+     }
 	
      friend class cmg::MuonFactory;
 	
