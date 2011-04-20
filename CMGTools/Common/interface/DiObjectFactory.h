@@ -39,11 +39,13 @@ class DiObjectFactory : public cmg::Factory< cmg::DiObject<T,U> >, public cmg::S
 
     private:
 
+        double mT(T const& l1, U const& l2) const;
         double alphaT(T const& l1, U const& l2) const;
         double betaR(T const& l1, U const& l2) const;
         double mR(T const& l1, U const& l2) const;
         double mRP(T const& l1, U const& l2, const reco::Candidate& met) const;
         double mRT(T const& l1, U const& l2, const reco::Candidate& met) const;
+        double lp(T const& l1, cmg::DiObject<T,U>* const obj) const;
 
         const edm::InputTag leg1Label_;
         const edm::InputTag leg2Label_;
@@ -117,7 +119,10 @@ typename cmg::DiObjectFactory<T,U>::event_ptr cmg::DiObjectFactory<T,U>::create(
 
 template<typename T, typename U>
 void cmg::DiObjectFactory<T, U>::set(const std::pair<T,U>& pair, cmg::DiObject<T,U>* const obj) const{
+    obj->mT_ = mT(pair.first, pair.second);  
     obj->alphaT_ = alphaT(pair.first, pair.second);
+    if (pair.first.isElectron() || pair.first.isMuon())
+      obj->lp_ = lp(pair.first, obj);
     //calculate the Razor variables without MET
     obj->betaR_ = betaR(pair.first, pair.second);
     obj->mR_ = mR(pair.first, pair.second);
@@ -125,9 +130,21 @@ void cmg::DiObjectFactory<T, U>::set(const std::pair<T,U>& pair, cmg::DiObject<T
 
 template<typename T, typename U>
 void cmg::DiObjectFactory<T, U>::set(const std::pair<T,U>& pair, const reco::Candidate& met, cmg::DiObject<T,U>* const obj) const{
+    obj->mT_ = mT(pair.first, pair.second);
+    if (pair.first.isElectron() || pair.first.isMuon())
+      obj->lp_ = lp(pair.first, obj);
     //calculate the Razor variables with MET
     obj->mRP_ = mRP(pair.first, pair.second, met);
     obj->mRT_ = mRT(pair.first, pair.second, met);
+}
+
+template<typename T, typename U>
+  double cmg::DiObjectFactory<T, U>::mT(T const& l1, U const& l2) const
+{
+  // transverse mass
+  return std::sqrt( std::pow(l1.pt()+l2.pt(), 2) - 
+                    std::pow(l1.px()+l2.px(), 2) - 
+                    std::pow(l1.py()+l2.py(), 2) );
 }
 
 template<typename T, typename U>
@@ -224,4 +241,14 @@ double cmg::DiObjectFactory<T, U>::mRT(T const& ja, U const& jb, const reco::Can
     return temp;
 }
 
+template<typename T, typename U>
+  double cmg::DiObjectFactory<T, U>::lp(T const& l1, cmg::DiObject<T,U>* const obj) const
+{
+  const reco::Candidate::LorentzVector & l1p4 = l1.p4();
+  const reco::Candidate::LorentzVector & dip4 = obj->p4();
+
+  return (l1p4.px() * dip4.px() + l1p4.py() * dip4.py()) / 
+          (std::pow(dip4.pt(), 2)) ; 
+
+}
 #endif /*DIOBJECTFACTORY_H_*/
