@@ -3,31 +3,6 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 
 # process.load('CMGTools.Common.sources.CMSSW_4_1_3.RelValTTbar_Tauola.GEN_SIM_RECO.START311_V2_PU_E7TeV_AVE_2_BX156_v1.source_cff')
-from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
-
-# (relVal,tag) = ('RelValQCD_FlatPt_15_3000','MC_311_V2')
-# (relVal, tag) = ('RelValLM1_sfts','MC_311_V2')
-# (relVal, tag) = ('RelValZEE','START311_V2')
-
-# process.source.fileNames = cms.untracked.vstring('file:prunedAOD.root')
-process.source.fileNames = cms.untracked.vstring('file:AODNoSim.root')
-# process.source.fileNames = cms.untracked.vstring('file:AOD.root')
-
-# process.source = cms.Source("PoolSource",
-#    fileNames = cms.untracked.vstring(
-#    pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_1_2'
-#                          #, relVal        = 'RelValLM1_sfts'
-#                          , relVal = relVal
-#                          # , globalTag     = 'START311_V2'
-#                          , globalTag = tag
-#                          , numberOfFiles = 999
-#                          )
-#    )
-#)
-
-# print process.source
-# import sys
-# sys.exit(1)
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
@@ -35,12 +10,36 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
     )
 
-# process.load("PhysicsTools.PFCandProducer.Sources.source_ZtoMus_DBS_cfi")
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
-
-# process.load("PhysicsTools.PFCandProducer.Sources.source_ZtoMus_DBS_cfi")
 runOnMC = False
+runStdPAT = False
+pickRelVal = False
 
+process.load("CMGTools.Common.sources.AODCopyForColin_DoubleMuon.source_cff")
+
+if pickRelVal: 
+    from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
+
+    # process.source.fileNames = cms.untracked.vstring('file:prunedAOD.root')
+    process.source.fileNames = cms.untracked.vstring('file:AODNoSim.root')
+    # process.source.fileNames = cms.untracked.vstring('file:AOD.root')
+    print 'need to define a relval'
+    sys.exit(1)
+    process.source = cms.Source(
+        "PoolSource",
+        fileNames = cms.untracked.vstring(
+        pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_1_2'
+                              #, relVal        = 'RelValLM1_sfts'
+                              , relVal = relVal
+                              # , globalTag     = 'START311_V2'
+                              , globalTag = tag
+                              , numberOfFiles = 999
+                              )
+        )
+        )
+
+
+print process.source.fileNames
 
 process.out.fileName = cms.untracked.string('patTuple_PATandPF2PAT.root' )
 
@@ -89,7 +88,8 @@ process.p = cms.Path(
 
 # removing standard PAT sequence
 # if not postfix=="":
-process.p += process.patDefaultSequence
+if runStdPAT == True: 
+    process.p += process.patDefaultSequence
 
 
 # process.load("CMGTools.Common.runInfoAccounting_cfi")
@@ -101,10 +101,6 @@ process.p += process.patDefaultSequence
 from PhysicsTools.PatAlgos.patEventContent_cff import patEventContentNoCleaning
 process.out.outputCommands = cms.untracked.vstring('drop *',
                                                    'keep recoPFCandidates_particleFlow_*_*',
-                                                   #Counters
-                                                   # 'keep *_MEtoEDMConverter_*_*',
-                                                   # 'keep GenRunInfoProduct_*_*_*',
-                                                   # 'keep GenFilterInfo_*_*_*'
                                                    # Vertex info
                                                    'keep recoVertexs_*_*_*',
                                                    'keep recoBeamSpot_*_*_*',
@@ -112,8 +108,6 @@ process.out.outputCommands = cms.untracked.vstring('drop *',
                                                    'keep L1GlobalTriggerObjectMapRecord_*_*_*',
                                                    'keep *_TriggerResults_*_*',
                                                    'keep *_hltTriggerSummaryAOD_*_*',
-                                                   # 'keep recoPFJets_pfJetsPFlow_*_*',
-                                                   # 'keep recoCaloJets_*_*_*',
                                                    *patEventContentNoCleaning ) 
 
 from CMGTools.Common.eventContent.runInfoAccounting_cff import runInfoAccounting
@@ -129,34 +123,10 @@ process.pfNoElectronPFlow.enable = cms.bool(True)
 process.pfNoTauPFlow.enable = cms.bool(True)
 process.pfNoJetPFlow.enable = cms.bool(True)
 
-# verbose flags for the PF2PAT modules
-
-process.pfNoMuon.verbose = cms.bool(False)
-
-process.TFileService = cms.Service(
-    "TFileService",
-    fileName = cms.string("histograms.root")
-    )
-
-
-## ------------------------------------------------------
-#  In addition you usually want to change the following
-#  parameters:
-## ------------------------------------------------------
-#
-#   process.GlobalTag.globaltag =  ...    ##  (according to https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideFrontierConditions)
-#                                         ##
-#   process.source.fileNames = [          ##
-#    '/store/relval/CMSSW_3_5_0_pre1/RelValTTbar/GEN-SIM-RECO/STARTUP3X_V14-v1/0006/14920B0A-0DE8-DE11-B138-002618943926.root'
-#   ]                                     ##  (e.g. 'file:AOD.root')
-#                                         ##
-#   process.maxEvents.input = ...         ##  (e.g. -1 to run on all events)
-#                                         ##
-#   process.out.outputCommands = [ ... ]  ##  (e.g. taken from PhysicsTools/PatAlgos/python/patEventContent_cff.py)
-#                                         ##
-#   process.out.fileName = ...            ##  (e.g. 'myTuple.root')
-#                                         ##
-#   process.options.wantSummary = True    ##  (to suppress the long output at the end of the job)    
+# process.TFileService = cms.Service(
+#    "TFileService",
+#    fileName = cms.string("histograms.root")
+#    )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
@@ -164,5 +134,3 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 10
 process.pfIsolatedMuonsPFlow.combinedIsolationCut = 0.25
 process.pfIsolatedElectronsPFlow.combinedIsolationCut = 0.25
 
-# process.patJetCorrFactorsPFlow.levels = []
-# process.pfNoPileUpPFlow.enable = False
