@@ -9,6 +9,10 @@ from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
 # (relVal, tag) = ('RelValLM1_sfts','MC_311_V2')
 # (relVal, tag) = ('RelValZEE','START311_V2')
 
+# process.source.fileNames = cms.untracked.vstring('file:prunedAOD.root')
+process.source.fileNames = cms.untracked.vstring('file:AODNoSim.root')
+# process.source.fileNames = cms.untracked.vstring('file:AOD.root')
+
 # process.source = cms.Source("PoolSource",
 #    fileNames = cms.untracked.vstring(
 #    pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_1_2'
@@ -35,7 +39,7 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
 
 # process.load("PhysicsTools.PFCandProducer.Sources.source_ZtoMus_DBS_cfi")
-runOnMC = True
+runOnMC = False
 
 
 process.out.fileName = cms.untracked.string('patTuple_PATandPF2PAT.root' )
@@ -82,8 +86,10 @@ process.p = cms.Path(
 #    second PF2PAT
 #    + getattr(process,"patPF2PATSequence"+postfix2)
 )
-if not postfix=="":
-    process.p += process.patDefaultSequence
+
+# removing standard PAT sequence
+# if not postfix=="":
+process.p += process.patDefaultSequence
 
 
 # process.load("CMGTools.Common.runInfoAccounting_cfi")
@@ -98,6 +104,7 @@ process.out.outputCommands = cms.untracked.vstring('drop *',
                                                    #Counters
                                                    # 'keep *_MEtoEDMConverter_*_*',
                                                    # 'keep GenRunInfoProduct_*_*_*',
+                                                   # 'keep GenFilterInfo_*_*_*'
                                                    # Vertex info
                                                    'keep recoVertexs_*_*_*',
                                                    'keep recoBeamSpot_*_*_*',
@@ -111,6 +118,8 @@ process.out.outputCommands = cms.untracked.vstring('drop *',
 
 from CMGTools.Common.eventContent.runInfoAccounting_cff import runInfoAccounting
 process.out.outputCommands += runInfoAccounting
+
+# print process.out.outputCommands
 
 # top projections in PF2PAT:
 
