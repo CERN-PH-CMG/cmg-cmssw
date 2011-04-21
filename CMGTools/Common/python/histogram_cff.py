@@ -45,10 +45,14 @@ muonHistogramSequence = cms.Sequence(
 
 # add other histograms here
 
+from CMGTools.Common.histograms.cmgDiMuonHistograms_cfi import *
+from CMGTools.Common.histograms.cmgDiElectronHistograms_cfi import *
 
 histogramSequence = cms.Sequence(
     pfJetHistogramSequence +
     pfMETHistogramSequence +
     electronHistogramSequence +
-    muonHistogramSequence
+    muonHistogramSequence +
+    cmgDiMuonHistograms +
+    cmgDiElectronHistograms 
     )
