@@ -8,11 +8,12 @@ process.source = cms.Source("PoolSource",
     )
 )
 
+process.load("CMGTools.Common.sources.DoubleElectron.Run2011A_PromptReco_v1.AOD.source_cff")
 
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
 #WARNING!
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 
 process.load("Configuration.EventContent.EventContent_cff")
