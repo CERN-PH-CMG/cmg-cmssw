@@ -13,7 +13,7 @@ from addToDatasets import *
 
 
 parser = OptionParser()
-parser.usage = "fwBatch.py <sampleName>"
+parser.usage = "fwBatch.py <cfg> <sampleName>"
 parser.add_option("-n", "--negate", action="store_true",
                   dest="negate",
                   help="do not proceed",
@@ -40,16 +40,17 @@ parser.add_option("-N", "--numberOfInputFiles",
 parser.add_option("-q", "--queue", 
                   dest="queue",
                   help="batch queue",
-                  default="1nh")
+                  default="8nh")
 
 
 (options,args) = parser.parse_args()
 
-if len(args)!=1:
+if len(args)!=2:
     parser.print_help()
     sys.exit(1)
 
-sampleName = args[0]
+cfg = args[0]
+sampleName = args[1]
 
 destBaseDir = options.castorBaseDir
 if options.castorBaseDir.find('/castor/cern.ch/user/c/cbern') == -1:
@@ -93,7 +94,7 @@ mkdir = 'mkdir -p ' + localOutputDir
 print mkdir
 os.system(mkdir)
 
-cmsBatch = 'cmsBatch.py %s RA2_ana_cfg.py -r %s -b "bsub -q %s <  batchScript.sh" -o %s' % (options.nInput, outFile, options.queue, localOutputDir)
+cmsBatch = 'cmsBatch.py %s %s -r %s -b "bsub -q %s <  batchScript.sh" -o %s' % (options.nInput, cfg, outFile, options.queue, localOutputDir)
 
 addToDatasets( sampleName )
 
