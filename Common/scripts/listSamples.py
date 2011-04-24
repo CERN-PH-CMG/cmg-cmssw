@@ -76,7 +76,7 @@ if len(args)!=1:
 castorDir = ""
 localDir = ""
 
-dataSets = os.environ['HOME'] + "/DataSets.txt"
+dataSets = os.environ['HOME'] + "/public/DataSets.txt"
 
 
 ifile=open(dataSets,'r')
