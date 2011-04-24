@@ -15,7 +15,7 @@ runOnMC = False
 runStdPAT = False
 pickRelVal = False
 
-process.load("CMGTools.Common.sources.AODCopyForColin_DoubleMuon.source_cff")
+process.load("CMGTools.Common.sources.DoubleElectron.Run2011A_PromptReco_v1.AOD.PrunedAOD.source_cff")
 
 if pickRelVal: 
     from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
