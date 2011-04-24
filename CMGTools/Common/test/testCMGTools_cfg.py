@@ -23,8 +23,10 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
 #    )
 
 # process.load("CMGTools.Common.sources.relval.RelValQCD_FlatPt_15_3000.CMSSW_3_11_2.MC_311_V2.source_cff")
-process.load("CMGTools.Common.sources.relval.RelValTTbar.CMSSW_3_11_2.MC_311_V2.source_cff")
-
+# process.load("CMGTools.Common.sources.relval.RelValTTbar.CMSSW_3_11_2.MC_311_V2.source_cff")
+process.source.fileNames = cms.untracked.vstring(
+    'file:input.root'
+    )
 
 # output module for EDM event (ntuple)
 process.out.fileName = cms.untracked.string('tree_testCMGTools.root')
@@ -53,13 +55,21 @@ process.load('CMGTools.Common.analysis_cff')
 
 # note: we're reading ttbar events
 
+runStdPAT = False
+runOnMC = False
+
+if not runStdPAT:
+    process.analysisSequence.remove( process.caloJetSequence )
+    process.analysisSequence.remove( process.caloMetSequence )
+
+if runOnMC:
+    process.load("CMGTools.Common.runInfoAccounting_cfi")
+    process.outpath += process.runInfoAccounting
 
 process.p = cms.Path(
     process.analysisSequence
 )
 
-process.load("CMGTools.Common.runInfoAccounting_cfi")
-process.outpath += process.runInfoAccounting
 
 
 process.schedule = cms.Schedule(
