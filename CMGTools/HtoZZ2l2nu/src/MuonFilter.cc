@@ -5,7 +5,7 @@ using namespace std;
 namespace muon{
   
   //
-  std::vector<reco::CandidatePtr> filter(edm::Handle<edm::View<reco::Candidate> > &hMu, const edm::ParameterSet &iConfig)
+  std::vector<reco::CandidatePtr> filter(edm::Handle<edm::View<reco::Candidate> > &hMu, const edm::ParameterSet &iConfig, double rho)
   {
     std::vector<reco::CandidatePtr> selMuons;
     
@@ -19,7 +19,9 @@ namespace muon{
       double maxTrackChi2 = iConfig.getParameter<double>("maxTrackChi2");
       int minValidTrackerHits = iConfig.getParameter<int>("minValidTrackerHits");
       int minValidMuonHits = iConfig.getParameter<int>("minValidMuonHits");
-      
+      double maxDxy = iConfig.getParameter<double>("maxDxy");
+      double maxDz = iConfig.getParameter<double>("maxDz");
+
       //iterate over the muons
       for(size_t iMuon=0; iMuon< hMu.product()->size(); ++iMuon)      
 	{
@@ -43,6 +45,12 @@ namespace muon{
 	  int nValidMuonHits = muon->globalTrack()->hitPattern().numberOfValidMuonHits();
 	  //	  int nMatches = muon->numberOfMatches();
 	  if(chi2>maxTrackChi2 || nValidTrackerHits < minValidTrackerHits || nValidMuonHits<minValidMuonHits) continue;
+
+	  //beamspot compatibility
+	  const reco::TrackRef & innerTrack = muon->innerTrack();
+	  double dxy = innerTrack->dxy();
+	  double dz = innerTrack->dz();
+	  //if(fabs(dxy)>fabs(maxDxy) || fabs(dz)>fabs(maxDz) ) continue;
 	  	  
 	  //id 
 	  if(!id.empty())
@@ -56,7 +64,9 @@ namespace muon{
 	  double ecalIso = muon->ecalIso();
 	  double hcalIso = muon->hcalIso();
 	  double trkIso = muon->trackIso();
-	  double relIso = (ecalIso+hcalIso+trkIso)/norm;
+	  double totalIso = (ecalIso+hcalIso+trkIso);
+	  if(rho>0) totalIso -= rho*TMath::Pi()*pow(0.3,2);
+	  double relIso = totalIso/norm;
 	  if(relIso>maxRelIso) continue;
 
 	  //muon is selected

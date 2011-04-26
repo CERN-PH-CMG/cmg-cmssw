@@ -57,20 +57,25 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   std::vector<reco::VertexRef> selVertices = vertex::filter(hVtx,objConfig["Vertices"]);
   if(selVertices.size()>0) selStep=1;
 
+  //average energy density
+  edm::Handle< double > rho;
+  iEvent.getByLabel(edm::InputTag("kt6PFJets:rho"),rho);
+
   //select muons
   Handle<View<Candidate> > hMu; 
   iEvent.getByLabel(objConfig["Muons"].getParameter<edm::InputTag>("source"), hMu);
-  std::vector<CandidatePtr> selMuons = muon::filter(hMu, objConfig["Muons"]);
+  std::vector<CandidatePtr> selMuons = muon::filter(hMu, objConfig["Muons"],*rho);
 
   //select electrons
   Handle<View<Candidate> > hEle; 
   iEvent.getByLabel(objConfig["Electrons"].getParameter<edm::InputTag>("source"), hEle);
-  std::vector<CandidatePtr> selElectrons = electron::filter(hEle, hMu, objConfig["Electrons"]);
+  std::vector<CandidatePtr> selElectrons = electron::filter(hEle, hMu, objConfig["Electrons"],*rho);
 
   //build inclusive collection
   std::vector<CandidatePtr> selLeptons = selMuons;
   selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
   if(selLeptons.size()>0) selStep=2;
+
   
   //build the dilepton
   std::pair<reco::VertexRef, std::vector<CandidatePtr> > dileptonWithVertex = dilepton::filter(selLeptons,selVertices,objConfig["Dileptons"],iSetup);

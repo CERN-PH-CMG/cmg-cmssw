@@ -63,9 +63,9 @@ then
 fi
 
 #call cmsRun
-cd ${MYCMSSWDIR}/CMGTools/HtoZZ2l2nu/test
+#cd ${MYCMSSWDIR}/CMGTools/HtoZZ2l2nu/test
 cmsRun ${CFG} ${INPUTDIR} ${LOCALOUT} ${FFILE} ${STEP}
-cd -
+#cd -
 
 #move to OUTDIR directory if required
 if [ -z "$OUTDIR" ]
@@ -76,16 +76,16 @@ fi
 case "$OUTDIR" in 
     *castor*)
     #copy to castor
-    rfmkdir $OUTDIR/${SRC}
-    rfcp $LOCALOUT $OUTDIR/${SRC}
+    rfmkdir $OUTDIR
+    rfcp $LOCALOUT $OUTDIR
     rm $LOCALOUT
-    echo "Result is available in castor @ ${OUTDIR}/${SRC}"
+    echo "Result is available in castor @ ${OUTDIR}"
     ;;
     *)
     #copy locally
-    mkdir $OUTDIR/${SRC}
-    mv $LOCALOUT $OUTDIR/${SRC}
-    echo "Result is available in @ ${OUTDIR}/${SRC}"
+    mkdir $OUTDIR
+    mv $LOCALOUT $OUTDIR
+    echo "Result is available in @ ${OUTDIR}"
     ;;
 esac
 

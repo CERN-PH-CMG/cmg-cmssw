@@ -16,7 +16,7 @@ namespace dilepton{
     else if( dynamic_cast<const pat::Electron *>( lepton.get() ) )
       {
 	const pat::Electron *ele=dynamic_cast<const pat::Electron *>( lepton.get() ) ;
-	ptError = (lepton->pt()/lepton->p()) * ele->electronMomentumError();
+	ptError = (lepton->pt()/lepton->p()) * ele->trackMomentumError();//electronMomentumError();
       }
     return ptError;
   }
