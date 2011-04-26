@@ -213,53 +213,111 @@ void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doChi2,floa
       sumH->Add(p);
     }
 
-  //build the data sum
-  TH1 *dataSumH=0;
+  //compare different data
+  bool canvasFilled(false);
+  Int_t idata(1);
   TIterator *dataIt = data.MakeIterator();
   while ( (key = dataIt->Next()) ) 
     {
       TH1 *p = (TH1 *) key;
       if( ((TClass*)key->IsA())->InheritsFrom("TH2") ) continue;
       if( ((TClass*)key->IsA())->InheritsFrom("TGraph") ) continue;
-      if(dataSumH==0) {
-        dataSumH = (TH1 *) p->Clone(TString(p->GetName())+"sum");
-        dataSumH->Reset("ICE");
-      }
-      dataSumH->Add(p);
-    }
-  if(dataSumH==0 || sumH==0) return;
 
-  TH1 *mcToDataH = (TH1 *) sumH->Clone(TString(sumH->GetName())+"_todata");
-  formatPlot(mcToDataH,1,1,1,20,0,true,false,1,1,1);
-  if(doChi2)
-    {
-      mcToDataH->GetYaxis()->SetTitle("#chi^{2}=((MC-Data)/(#sigma_{MC}^{2}+#sigma_{Data}^2))^2");
-      mcToDataH->Reset("ICE");
-      for(Int_t ibin=1; ibin<=mcToDataH->GetXaxis()->GetNbins(); ibin++)
+      TH1 *dataToMCH = (TH1 *) p->Clone(TString(p->GetName())+"_tomc");
+      dataToMCH->Reset("ICE");
+      if(doChi2)
 	{
-	  Float_t diff = sumH->GetBinContent(ibin)-dataSumH->GetBinContent(ibin);
-	  Float_t err = pow(sumH->GetBinError(ibin),2)+pow(dataSumH->GetBinError(ibin),2);
-	  if(err==0) continue;
-	  Float_t chi2 = (diff<0 ? -1 : 1) * pow(diff,2)/err;
-	  mcToDataH->SetBinContent(ibin,chi2);
-	  mcToDataH->SetBinError(ibin,0,0);
+	  dataToMCH->GetYaxis()->SetTitle("#chi^{2}=((MC-Data)/(#sigma_{MC}^{2}+#sigma_{Data}^2))^2");
+	  for(Int_t ibin=1; ibin<=dataToMCH->GetXaxis()->GetNbins(); ibin++)
+	    {
+	      Float_t diff = sumH->GetBinContent(ibin)-p->GetBinContent(ibin);
+	      Float_t err = pow(sumH->GetBinError(ibin),2)+pow(dataToMCH->GetBinError(ibin),2);
+	      if(err==0) continue;
+	      Float_t chi2 = (diff<0 ? -1 : 1) * pow(diff,2)/err;
+	      dataToMCH->SetBinContent(ibin,chi2);
+	      dataToMCH->SetBinError(ibin,0,0);
+	    }
 	}
-    }
-  else
-    {
-      mcToDataH->GetYaxis()->SetTitle("Ratio");
-      mcToDataH->Divide(dataSumH);
+      else
+	{
+	  dataToMCH->Add(p);
+	  dataToMCH->GetYaxis()->SetTitle("Data / MC");
+	  dataToMCH->Divide(sumH);
+	}
+
+      c->cd();
+      TString opt("e2p");
+      if(canvasFilled) opt +="same";
+      dataToMCH->Draw(opt);
+      dataToMCH->GetXaxis()->SetTitleOffset(0.85);
+      dataToMCH->GetXaxis()->SetLabelSize(0.04 * yscale);
+      dataToMCH->GetXaxis()->SetTitleSize(0.05 * yscale);
+      dataToMCH->GetXaxis()->SetTickLength( 0.03 * yscale );
+      dataToMCH->GetYaxis()->SetTitleOffset(0.5);
+      dataToMCH->GetYaxis()->SetLabelSize(0.04 * yscale);
+      dataToMCH->GetYaxis()->SetTitleSize(0.04 * yscale);
+      canvasFilled=true;
     }
 
-  c->cd();
-  mcToDataH->Draw("e2p");
-  mcToDataH->GetXaxis()->SetTitleOffset(0.85);
-  mcToDataH->GetXaxis()->SetLabelSize(0.04 * yscale);
-  mcToDataH->GetXaxis()->SetTitleSize(0.05 * yscale);
-  mcToDataH->GetXaxis()->SetTickLength( 0.03 * yscale );
-  mcToDataH->GetYaxis()->SetTitleOffset(0.5);
-  mcToDataH->GetYaxis()->SetLabelSize(0.04 * yscale);
-  mcToDataH->GetYaxis()->SetTitleSize(0.04 * yscale);
   c->Modified();
   c->Update();
+}
+
+//
+TString getPlotAsTable(TList *stack, TList *spimpose, TList *data)
+{
+  TString tabtex("");
+
+  bool createHeader(true);
+  TString colfmt="l";
+  TString colnames="";
+  TList *alllists[] = {stack, spimpose,data};
+  for(size_t i=0; i<3; i++)
+    {
+      TList *ll = alllists[i];
+      if(ll==0) continue;
+      {
+	TObject *key=0;
+	TIterator *pIt = ll->MakeIterator();
+	while ( (key = pIt->Next()) ) 
+	  {
+	    TH1 *p = (TH1 *) key;
+	    Int_t nbins=p->GetXaxis()->GetNbins();
+	    if(createHeader)
+	      {
+		for(Int_t iibin=1; iibin<=nbins; iibin++)
+		  {
+		    colfmt += "c";
+		    colnames += " & ";
+		    colnames += p->GetXaxis()->GetBinLabel(iibin);
+		  }
+		tabtex +=  "\\begin{table}[htp]\n";
+		tabtex += "\\begin{center}\n";
+		tabtex += "\\caption{}\n";
+		tabtex += "\\label{tab:table}\n";
+		tabtex += "\\begin{tabular}{"+colfmt+"} \\hline\n";
+		tabtex += "Process " + colnames + "\\\\ \\hline\\hline\n";
+		createHeader=false;
+	      }
+
+
+	    tabtex += p->GetTitle() ;
+	    for(Int_t iibin=1; iibin<=nbins; iibin++)
+	      {
+		float val = p->GetBinContent(iibin);
+                float valerr = p->GetBinError(iibin);
+		tabtex += " & ";
+		tabtex += val;
+		tabtex += " $\\pm$ ";
+		tabtex += valerr;
+	      }
+            tabtex += "\\\\\n";
+	  }
+        tabtex += "\\hline\n";
+      }
+    }
+  tabtex += "\\end{tabular}\n";
+  tabtex += "\\end{center}\n";
+  tabtex += "\\end{table}\n";
+  return tabtex;
 }

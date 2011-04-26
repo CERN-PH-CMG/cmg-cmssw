@@ -25,5 +25,6 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
 TLegend *showStackPlot(TPad *c, TList &stack, bool buildLegend=true, TString legopt="lpf");
 TLegend *showSimplePlot(TPad *c, TList &data, bool buildLegend=true, TString legopt="lpf");
 void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doChi2=true, float yscale=1);
+TString getPlotAsTable(TList *stack, TList *spimpose, TList *data);
 
 #endif

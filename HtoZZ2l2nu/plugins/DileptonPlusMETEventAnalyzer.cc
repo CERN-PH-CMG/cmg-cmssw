@@ -15,6 +15,7 @@
 #include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/Common/interface/MergeableCounter.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
@@ -68,7 +69,7 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
     TFileDirectory baseDir=fs->mkdir(iConfig.getParameter<std::string>("dtag"));    
     TString streams[]={"ee","mumu","emu"};
     TString jetmult[]={"eq0jets","eq1jets","geq2jets"};
-    TString selsteps[]={"Reco","2 leptons","2 good leptons","|M-M_{Z}|<15","|#Delta#phi(MET,l+l')|<#pi/2","=0 jets","=1 jet","#geq 2 jets"};
+    TString selsteps[]={"Reco","2 leptons","2 good leptons","|M-M_{Z}|<15","|#Delta#phi(l+l)|<x","=0 jets","=1 jet","#geq 2 jets"};
     const size_t nselsteps=sizeof(selsteps)/sizeof(TString);
     for(size_t istream=0; istream<sizeof(streams)/sizeof(TString); istream++)
     {
@@ -76,7 +77,12 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
       TFileDirectory newDir=baseDir.mkdir(cat.Data());
             
       results_[cat+"_cutflow"]=formatPlot( newDir.make<TH1F>(cat+"_cutflow", ";Steps; Events", nselsteps, 0.,nselsteps), 1,1,1,20,0,false,true,1,1,1);
-      for(size_t istep=0; istep<nselsteps; istep++) ((TH1F *)results_[cat+"_cutflow"])->GetXaxis()->SetBinLabel(istep+1,selsteps[istep]);
+      results_[cat+"_cutflowlowmass"]=formatPlot( newDir.make<TH1F>(cat+"_cutflowlowmass", ";Steps; Events", nselsteps, 0.,nselsteps), 1,1,1,20,0,false,true,1,1,1);
+      for(size_t istep=0; istep<nselsteps; istep++)
+	{
+	  ((TH1F *)results_[cat+"_cutflow"])->GetXaxis()->SetBinLabel(istep+1,selsteps[istep]);
+	  ((TH1F *)results_[cat+"_cutflowlowmass"])->GetXaxis()->SetBinLabel(istep+1,selsteps[istep]);
+	}
 
       //lepton control
       results_[cat+"_nleptons"]    = formatPlot( newDir.make<TH1F>(cat+"_nleptons",";Lepton multiplicity; Events",4,2,6), 1,1,1,20,0,false,true,1,1,1);
@@ -120,8 +126,11 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
 	}
       results_[cat+"_btags"]             = formatPlot( newDir.make<TH1F>(cat+"_btags",";b tags (TCHE); Jets",50,-5,45), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_met"]               = formatPlot( newDir.make<TH1F>(cat+"_met", ";#slash{E}_{T} [GeV/c]; Events", 30,  0.,300.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_cormet"]               = formatPlot( newDir.make<TH1F>(cat+"_cormet", ";jet corrected #slash{E}_{T} [GeV/c]; Events", 30,  0.,300.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_tmet"]              = formatPlot( newDir.make<TH1F>(cat+"_tmet", ";track #slash{E}_{T} [GeV/c]; Events", 30,  0.,300.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_minmet"]            = formatPlot( newDir.make<TH1F>(cat+"_minmet", ";min(track #slash{E}_{T}, #slash{E}_{T}) [GeV/c]; Events", 30,  0.,300.), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_rmet"]              = formatPlot( newDir.make<TH1F>(cat+"_rmet", ";reduced #slash{E}_{T} [GeV/c]; Events", 30,  0.,300.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_relmet"]              = formatPlot( newDir.make<TH1F>(cat+"_relmet", ";relative #slash{E}_{T} [GeV/c]; Events", 30,  0.,300.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_relmet"]            = formatPlot( newDir.make<TH1F>(cat+"_relmet", ";relative #slash{E}_{T} [GeV/c]; Events", 30,  0.,300.), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_mT_individualsum"]  = formatPlot( newDir.make<TH1F>(cat+"_mT_individualsum",";#Sigma Transverse mass(lepton,MET) [GeV/c^{2}]; Events",50,0,500), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_metsig"]            = formatPlot( newDir.make<TH1F>(cat+"_metsig", ";#slash{E}_{T} significance; Events", 50,  0.,100.), 1,1,1,20,0,false,true,1,1,1);
 
@@ -150,6 +159,7 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
 	}
     }
   }catch(std::exception &e){
+    cout << e.what() << endl;
   }  
 }
 
@@ -202,17 +212,24 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	cout << "No valid selection info" << endl;
 	return;
       }
-    
     int selPath = (*(selInfo.product()))[0];
     int selStep = (*(selInfo.product()))[1];
+
+    edm::Handle< double > rho;
+    event.getByLabel(edm::InputTag("kt6PFJets:rho"),rho);
+
+    edm::Handle< std::vector<reco::PFCandidate> > pfCands;
+    event.getByLabel(edm::InputTag("particleFlow"),pfCands);
 
     //require that a dilepton has benn selected
     if(selPath==0 or selStep<3) return;
     std::string istream="mumu";
     if(selPath==2) istream="ee";
     if(selPath==3) istream="emu";
+
     getHist(istream+"_cutflow")->Fill(2,weight);
-    
+    getHist(istream+"_cutflowlowmass")->Fill(2,weight);
+
     //vertex quantities
     const reco::Vertex *primVertex = &(*(vertexHandle.product()))[0];
     getHist(istream+"_ngoodvertex")->Fill(selVertices.size(),weight);
@@ -233,26 +250,38 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     double lepton2pterr=dilepton::getPtErrorFor(lepton2);
     TLorentzVector lepton2P(lepton2->px(),lepton2->py(),lepton2->pz(), lepton2->energy());
     TLorentzVector dileptonP=lepton1P+lepton2P;
+    double dphill=lepton1P.DeltaPhi(lepton2P);
     getHist(istream+"_dilepton_sumpt")->Fill(lepton1P.Pt()+lepton2P.Pt(),weight);
     getHist(istream+"_dilepton_pt")->Fill(dileptonP.Pt(),weight);
     getHist(istream+"_dilepton_mass")->Fill(dileptonP.M(),weight);
-    getHist(istream+"_dilepton_dphi")->Fill( TMath::Abs( lepton1P.DeltaPhi(lepton2P) ) ,weight );
+    getHist(istream+"_dilepton_dphi")->Fill( fabs(dphill) ,weight );
+
     if(fabs(dileptonP.M()-91)>15) return;
     getHist(istream+"_cutflow")->Fill(3,weight);
+    getHist(istream+"_cutflowlowmass")->Fill(3,weight);
     
+    if(fabs(dphill)>2.64) return;
+    bool highmasscand(fabs(dphill)<2.25);
+    getHist(istream+"_cutflowlowmass")->Fill(4,weight);
+    if(highmasscand) getHist(istream+"_cutflow")->Fill(4,weight);
+
     //count the jets in the event
     std::vector<reco::CandidatePtr> seljets= evhyp.all("jet");
-    int njets( seljets.size() ), nbjets(0);
+    int njets(0), nbjets(0);
     std::vector<LorentzVector> jetmomenta;
+    TLorentzVector rejectedJetMomenta(0,0,0,0);
     for (pat::eventhypothesis::Looper<pat::Jet> jet = evhyp.loopAs<pat::Jet>("jet"); jet; ++jet) {
-      jetmomenta.push_back(jet->p4());
+      float fassoc(jet::fAssoc(jet.get(),primVertex));
+      if(fassoc>0.1) 
+	jetmomenta.push_back(jet->p4());
       float btag=jet->bDiscriminator("trackCountingHighEffBJetTags");
       if(btag>1.74) nbjets+=1; //loose point
       getHist(istream+"_btags")->Fill(btag,weight);
       getHist(istream+"_jetpt")->Fill(jet->pt(),weight);
       getHist(istream+"_jeteta")->Fill(jet->eta(),weight);
-      getHist(istream+"_jetfassoc")->Fill( jet::fAssoc(jet.get(),primVertex) ,weight);
+      getHist(istream+"_jetfassoc")->Fill( fassoc ,weight);
     }
+    njets=jetmomenta.size();
     getHist(istream+"_njets")->Fill(njets,weight);
     getHist(istream+"_bmult")->Fill(nbjets,weight);
     
@@ -264,6 +293,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     if(njets==0)      substream = substream+"eq0jets";
     else if(njets==1) substream = substream+"eq1jets";
     else              substream = substream+"geq2jets";
+    getHist(istream+"_cutflowlowmass")->Fill(5+jetbin,weight);
+    if(highmasscand) getHist(istream+"_cutflow")->Fill(5+jetbin,weight);
     
     //base met kinematics
     const pat::MET *themet=evhyp.getAs<pat::MET>("met");
@@ -274,11 +305,11 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
       metsig=origMet->significance();
     }catch(std::exception &e){
       metsig=themet->significance();
+      cout << e.what() << endl;
     }
 
     //require MET back-to-back to dilepton
     float dphiZ2met=dileptonP.DeltaPhi(metP);
-    //if(fabs(dphiZ2met)<TMath::Pi()/2) return;
 
     //check other leptons in the event
     int lepMult(2);
@@ -304,9 +335,32 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     rmet_.compute(lepton1->p4(),lepton1pterr,
 		  lepton2->p4(),lepton2pterr,
 		  jetmomenta,
-		  themet->p4());
+		  themet->p4()
+		  );
     float reducedMET=rmet_.reducedMET();
 
+    //charged candidates based met
+    TLorentzVector tmet(0,0,0,0);
+    if(pfCands.isValid())
+      {
+	TLorentzVector neutralSum_8(0,0,0,0), chSum(0,0,0,0);
+	for(std::vector<reco::PFCandidate>::const_iterator it = pfCands->begin(); it != pfCands->end(); it++)
+	  {
+	    TLorentzVector candP(it->px(),it->py(),it->pz(),it->energy());
+	    if(it->charge()==0 && candP.Pt()>8)                            neutralSum_8 -= candP;
+	    else if(it->charge() && it->vertex()==primVertex->position() ) chSum -= candP;
+	  }
+	tmet = chSum + neutralSum_8;
+      }
+
+    //rejected jet corrected met
+    LorentzVector thecormet = themet->p4()+LorentzVector(rejectedJetMomenta.Px(),
+							 rejectedJetMomenta.Py(),
+							 rejectedJetMomenta.Pz(),
+							 rejectedJetMomenta.E());
+    getHist(istream+"_cormet")->Fill( thecormet.pt() );
+    getHist(istream+"_tmet")->Fill(tmet.Pt());
+    getHist(istream+"_minmet")->Fill(min(tmet.Pt(),thecormet.pt()));
 
     //individual lepton vs MET kinematics
     float dphil2met[]={ fabs(metP.DeltaPhi(lepton1P)), fabs(metP.DeltaPhi(lepton2P)) };
@@ -326,9 +380,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     getHist(istream+"_rmet")->Fill(reducedMET,weight);
     getHist(istream+"_relmet")->Fill(relMET,weight);
     getHist(istream+"_mT_individualsum")->Fill(mTlmet[0]+mTlmet[1],weight);
-
-    getHist(istream+"_cutflow")->Fill(4,weight);
-    getHist(istream+"_cutflow")->Fill(5+jetbin,weight);
     getHist(substream+"_met")->Fill(metP.Pt(),weight);
     getHist(substream+"_rmet")->Fill(reducedMET,weight);
     getHist(substream+"_dilepton2met_dphi")->Fill(fabs(dphiZ2met),weight);
@@ -341,7 +392,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	if(vit->get()->position()==primVertex->position()) hname=substream+"_vertex2met_dphi";
 	getHist(hname)->Fill(dphi,weight);
       }
-  
    
     //control histograms
     getHist("met2"+substream+"_mindphi")->Fill(dphimin,weight);
@@ -422,10 +472,12 @@ void DileptonPlusMETEventAnalyzer::endLuminosityBlock(const edm::LuminosityBlock
   for(size_t istream=0; istream<sizeof(streams)/sizeof(TString); istream++)
     {
       ((TH1F *)getHist(streams[istream]+"_cutflow"))->Fill(0.,ctrHandle->value);
+      ((TH1F *)getHist(streams[istream]+"_cutflowlowmass"))->Fill(0.,ctrHandle->value);
       edm::Handle<edm::MergeableCounter> streamCtrHandle;
       std::string inpt= std::string(streams[istream])+"Counter";
       iLumi.getByLabel(inpt, streamCtrHandle);
       ((TH1F *)getHist(streams[istream]+"_cutflow"))->Fill(1.,streamCtrHandle->value);
+      ((TH1F *)getHist(streams[istream]+"_cutflowlowmass"))->Fill(1.,streamCtrHandle->value);
     } 
 }
 

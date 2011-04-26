@@ -5,7 +5,7 @@ using namespace std;
 namespace electron{
   
   //
-  std::vector<reco::CandidatePtr> filter(edm::Handle<edm::View<reco::Candidate> > &hEle, edm::Handle<edm::View<reco::Candidate> > &hMu, const edm::ParameterSet &iConfig)
+  std::vector<reco::CandidatePtr> filter(edm::Handle<edm::View<reco::Candidate> > &hEle, edm::Handle<edm::View<reco::Candidate> > &hMu, const edm::ParameterSet &iConfig, double rho)
   {
     std::vector<reco::CandidatePtr> selElectrons;
 
@@ -15,6 +15,7 @@ namespace electron{
       double minSuperClusterEt = iConfig.getParameter<double>("minSuperClusterEt");
       double maxEta = iConfig.getParameter<double>("maxEta");
       bool applyConversionVeto = iConfig.getParameter<bool>("applyConversionVeto");
+      bool vetoTransitionElectrons = iConfig.getParameter<bool>("vetoTransitionElectrons");
       int maxTrackLostHits = iConfig.getParameter<int>("maxTrackLostHits");
       string id = iConfig.getParameter<string>("id");
       double maxRelIso = iConfig.getParameter<double>("maxRelIso");
@@ -42,6 +43,7 @@ namespace electron{
 	  double eSuperClusterEt  = sc->energy()/cosh(sc->eta());
 	  double eEta = ele->eta();
 	  if(ePt<minPt || fabs(eEta)>maxEta || eSuperClusterEt<minSuperClusterEt) continue; 
+	  if(vetoTransitionElectrons && fabs(eEta)>1.4442 && fabs(eEta)<1.566) continue;
 	  
 	  //conversion veto (from track and info on electron id - 2nd bit)
 	  const reco::GsfTrackRef & eTrack = ele->gsfTrack();
@@ -66,6 +68,8 @@ namespace electron{
 	  } else {
 	    totalIso += ecalIso;
 	  }
+	  if(rho>0) totalIso -= rho*TMath::Pi()*pow(0.3,2);
+
 	  double relIso = totalIso / norm;
 	  if(relIso>maxRelIso) continue;
 

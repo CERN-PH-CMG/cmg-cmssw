@@ -6,7 +6,7 @@ from rounding import PDGRoundSym
 
 import ROOT
 ROOT.gSystem.Load('${CMSSW_BASE}/lib/${SCRAM_ARCH}/libCMGToolsHtoZZ2l2nu.so')
-from ROOT import formatPlot, setStyle, showPlots, formatForCmsPublic, getNewCanvas, showMCtoDataComparison
+from ROOT import formatPlot, setStyle, showPlots, formatForCmsPublic, getNewCanvas, showMCtoDataComparison, getPlotAsTable
 
 """
 Converts ROOT constant to int
@@ -54,6 +54,7 @@ def getControlPlots(descriptor,isData,inputDir='data') :
     
     tag=getByLabel(descriptor,'dtag')
     if(len(tag)==0) : return results
+    noNorm=getByLabel(descriptor,'nonorm',False)
     
     #open the file
     url=inputDir+'/'+tag+'/'+tag+'.root'
@@ -80,7 +81,7 @@ def getControlPlots(descriptor,isData,inputDir='data') :
             cnorm=h.GetBinContent(1)
             
         #rescale if not data
-        if( not isData and cnorm!=0) :
+        if( not isData and cnorm!=0 and not noNorm) :
             for p in cresults.items():
                 p[1].Scale(1./float(cnorm))
         results.update(cresults)
@@ -93,50 +94,9 @@ def getControlPlots(descriptor,isData,inputDir='data') :
 dumps the plots to a table 
 """
 def savePlotAsTable(stackplots=None,spimposeplots=None,dataplots=None,outUrl='table.tex') :
-
-    href=None
-    if(stackplots is not None) : href=stackplots.At(0)
-    if(href is None  and spimposeplots is not None) : href=spimposeplots.At(0)
-    if(href is None  and dataplots is not None) : href=dataplots.At(0)
-    if(href is None) : return
-
-    colfmt='l'
-    colnames=''
-    for ibin in xrange(1,href.GetXaxis().GetNbins()) :
-        colfmt += 'c'
-        colnames += ' & ' + href.GetXaxis().GetBinLabel(ibin)
-    
-    tabtex =  '\\begin{table}[htp]\n'
-    tabtex += '\\begin{center}\n'
-    tabtex += '\\caption{}\n'
-    tabtex += '\\label{tab:table}\n'
-    tabtex += '\\begin{tabular}{'+colfmt+'} \\hline\n'
-    tabtex += 'Process ' + colnames + '\\\\ \\hline\\hline\n'    
-
-    alllists = [stackplots, spimposeplots,dataplots ]
-    for ll in alllists :
-        for p in ll :
-            tabtex += p.GetTitle() 
-            for ibin in xrange(1,p.GetXaxis().GetNbins()) :
-                val = p.GetBinContent(ibin)
-                valerr= p.GetBinError(ibin)
-                try :
-                    roundRes = PDGRoundSym(val,valerr)
-                    tabtex += ' & '
-                    if(roundres[2]!=0) : tabtex += '('
-                    tabtex += roundRes[0] + ' $\\pm$ ' + roundRes[1][0]
-                    if(roundres[2]!=0) : tabtex += ') $\\cdot 10^{' + str(roundres[2]) + '}$'
-                except :
-                    tabtex += ' & ' 
-            tabtex += '\\\\\n'
-        tabtex += '\\hline\n'
-    
-    tabtex += '\\end{tabular}\n'
-    tabtex += '\\end{center}\n'
-    tabtex += '\\end{table}\n'
-
+    tabtex=getPlotAsTable(stackplots,spimposeplots,dataplots)
     fileObj = open(outUrl,"w")
-    fileObj.write(tabtex)
+    fileObj.write(tabtex.Data())
     fileObj.close()
 
 
@@ -314,7 +274,7 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
             samplehtml+="<tr><th colspan=\"3\">"+tag+" ("
             if(isdata) : samplehtml += "data"
             else : samplehtml +="mc"
-            samplehtml+=") </th></tr>"
+            samplehtml+=") </th></tr>\n"
             
             #run over items in process
             data = getByLabel(desc,'data')
@@ -328,21 +288,20 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
 
                 samplehtml+="<tr><td>"+dtag+"</td>"
                 samplehtml+="<td>"+str(getByLabel(d,"xsec",1)) + "x" + str(getByLabel(d,"br",1)) + str(getByLabel(d,"sfactor",1)) + "</td>"
-                samplehtml+="<td><small>" + getByLabel(d,'dset','n/a') + "</small></td></tr>" 
+                samplehtml+="<td><small>" + getByLabel(d,'dset','n/a') + "</small></td></tr>\n" 
 
                 #compute the normalization
                 weight=1
                 absNorm=False
-                if( not isdata ) :
-                    sfactor = getByLabel(d,'sfactor',1)
-                    xsec = getByLabel(d,'xsec',-1)
-                    br = getByLabel(d,'br',1)
-                    normto = getByLabel(d,'normto',-1)
-                    if(xsec>0) :
-                        weight = integratedLumi*sfactor*xsec*br
-                    elif(normto>0) :
-                        weight = sfactor*normto
-                        absNorm=True
+                sfactor = getByLabel(d,'sfactor',1)
+                xsec = getByLabel(d,'xsec',-1)
+                br = getByLabel(d,'br',1)
+                normto = getByLabel(d,'normto',-1)
+                if(xsec>0 and not isdata) :
+                    weight = integratedLumi*sfactor*xsec*br
+                elif(normto>0) :
+                    weight = sfactor*normto
+                    absNorm=True
 
                 #book keep the result
                 iplot=0
@@ -359,8 +318,8 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
 
                     #apply new normalization
                     if(absNorm) :
-                        total=newplot.Integral()
-                        if(total>0): p[1].Scale(weight/newplot.Integral())
+                        total=p[1].Integral()
+                        if(total>0): p[1].Scale(weight/total)
                     else : p[1].Scale(weight)
 
                     #add to base plot

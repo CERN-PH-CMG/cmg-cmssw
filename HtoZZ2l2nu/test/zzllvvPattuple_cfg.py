@@ -16,7 +16,8 @@ process.options = cms.untracked.PSet(
 # local input
 #
 from CMGTools.HtoZZ2l2nu.localPatTuples_cff import fillFromCastor
-process.source.fileNames=fillFromCastor('/castor/cern.ch/cms/store/data/Run2011A/DoubleElectron/RECO/PromptReco-v1/000/161/311')
+#process.source.fileNames=fillFromCastor('/castor/cern.ch/cms/store/data/Run2011A/DoubleElectron/RECO/PromptReco-v1/000/161/311')
+process.source.fileNames=cms.untracked.vstring('file:/tmp/psilva/Events_18_1_gZH.root')
 #process.source.fileNames = cms.untracked.vstring('/store/data/Run2010A/MinimumBias/RAW-RECO/v6/000/144/114/CCDC14CB-61BB-DF11-A07F-0025B3E063E8.root')
 if( not runOnMC and useLocalLumiSelection):
     import PhysicsTools.PythonAnalysis.LumiList as LumiList
@@ -139,7 +140,8 @@ process.primaryVertexFilter = cms.EDFilter("VertexSelector",
 process.load('CommonTools/RecoAlgos/HBHENoiseFilterResultProducer_cfi')
 
 if(runOnMC):
-    process.preFilter = cms.Sequence( process.noscraping*process.primaryVertexFilter*process.HBHENoiseFilterResultProducer*process.goodTracks)
+    #process.preFilter = cms.Sequence( process.noscraping*process.primaryVertexFilter*process.HBHENoiseFilterResultProducer*process.goodTracks)
+    process.preFilter = cms.Sequence( process.noscraping*process.primaryVertexFilter*process.goodTracks)
 else :
     process.preFilter = cms.Sequence( process.trigSequence*process.noscraping*process.primaryVertexFilter*process.HBHENoiseFilterResultProducer*process.goodTracks)
 
