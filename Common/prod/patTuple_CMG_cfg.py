@@ -15,8 +15,8 @@ runOnMC = False
 runStdPAT = False
 pickRelVal = False
 
-process.load("CMGTools.Common.sources.DoubleElectron.Run2011A_PromptReco_v1.AOD.PrunedAOD.source_cff")
-
+# process.load("CMGTools.Common.sources.DoubleElectron.Run2011A_PromptReco_v1.AOD.PrunedAOD.source_cff")
+process.load("CMGTools.Common.sources.HT.Run2011A_PromptReco_v1.AOD.source_cff")
 
 if pickRelVal: 
     from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
@@ -89,8 +89,9 @@ process.p = cms.Path(
 
 # removing standard PAT sequence
 # if not postfix=="":
-if runStdPAT == True: 
+if runStdPAT : 
     process.p += process.patDefaultSequence
+
 
 
 # process.load("CMGTools.Common.runInfoAccounting_cfi")
@@ -135,3 +136,32 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 10
 process.pfIsolatedMuonsPFlow.combinedIsolationCut = 0.25
 process.pfIsolatedElectronsPFlow.combinedIsolationCut = 0.25
 
+
+# CMG tuple
+process.load('CMGTools.Common.analysis_cff')
+process.p += process.analysisSequence
+
+if not runStdPAT:
+    process.analysisSequence.remove( process.caloJetSequence )
+    process.analysisSequence.remove( process.caloMetSequence )
+
+from CMGTools.Common.eventContent.everything_cff import everything 
+
+process.outcmg = cms.OutputModule(
+    "PoolOutputModule",
+    fileName = cms.untracked.string('tree_CMG.root'),
+    # save only events passing the full path
+    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
+    # save PAT Layer 1 output; you need a '*' to
+    # unpack the list of commands 'patEventContent'
+    outputCommands = everything 
+    )
+
+process.outpath += process.outcmg
+
+if runOnMC:
+    process.load("CMGTools.Common.runInfoAccounting_cfi")
+    process.outpath += process.runInfoAccounting
+
+process.TFileService = cms.Service("TFileService",
+                                   fileName = cms.string("histograms_CMG.root"))
