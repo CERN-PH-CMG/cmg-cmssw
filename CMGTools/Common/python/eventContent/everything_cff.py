@@ -5,9 +5,9 @@ from CMGTools.Common.eventContent.traditional_cff import *
 from CMGTools.Common.eventContent.runInfoAccounting_cff import runInfoAccounting
 
 patObjects = cms.untracked.vstring(
-    'keep patMuons_*_*_*',
-    'keep patElectrons_*_*_*',
-    'keep cmgPhotons_*_*_*'
+    'keep patMuons_selectedPat*_*_*',
+    'keep patElectrons_selectedPat*_*_*',
+    'keep cmgPhotons_selectedPat*_*_*'
     )
 
 everything = particleFlow + traditional + patObjects + runInfoAccounting
