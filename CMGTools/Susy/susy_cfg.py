@@ -22,21 +22,7 @@ process.setName_('ANA')
 
 #COLIN: tell Will to remove the rather printouts (or rather to add an enable flag allowing to get these printouts). What are these printouts? 
 
-#COLIN put relval source files in a standard place. 
-process.source = cms.Source(
-    "PoolSource",
-    
-    noEventSort = cms.untracked.bool(True),
-    duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
-    fileNames = cms.untracked.vstring()
-    )
-process.source.fileNames.extend([
-    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/LM1/patTuple_PATandPF2PAT_RelValLM1_sfts_0.root',
-    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/LM1/patTuple_PATandPF2PAT_RelValLM1_sfts_1.root',
-    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/LM1/patTuple_PATandPF2PAT_RelValLM1_sfts_2.root',
-    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/LM1/patTuple_PATandPF2PAT_RelValLM1_sfts_3.root',
-    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/LM1/patTuple_PATandPF2PAT_RelValLM1_sfts_4.root',
-    ])
+process.load("CMGTools.Common.sources.HT.Run2011A_PromptReco_v1.AOD.PAT_CMG.source_tree_cff")
 
 ext = 'CMG'
 
@@ -48,6 +34,9 @@ print process.source.fileNames
 outFileNameExt = ext
 
 process.load('CMGTools.Susy.susy_cff')
+
+# process.susySchedule.remove( process.runInfoAccountingPath )
+
 process.susySchedule.append( process.outpath )
 
 # pprint.pprint(process.out.outputCommands)
