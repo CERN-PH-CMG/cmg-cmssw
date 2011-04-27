@@ -35,7 +35,11 @@ def fileExists( file ):
 # the directory can be a castor dir.
 # optionnally, the protocol (rfio: or file:) is prepended to the absolute
 # file name
+#COLIN: now that we are using LFNs, one should remove the castor argument (I guess)
 def matchingFiles( dir, regexp, protocol=None, castor=True):
+
+    if isLFN( dir ):
+        dir = lfnToCastor( dir )
 
     ls = 'rfdir'
  
@@ -62,23 +66,6 @@ def matchingFiles( dir, regexp, protocol=None, castor=True):
 
     return matchingFiles
 
-# does not work
-def rootEventNumber( file ):
-    tmp = open("nEvents.C", "w")
-    tmp.write('''
-void nEvents(const char* f) {
-  loadFWLite();
-  TFile* fp = TFile::Open(f);
-  cout<<Events->GetEntries()<<endl;
-  gApplication->Terminate();
-}
-''')
-    command = 'root -b \'nEvents.C(\"%s\")\' ' % file
-    print command
-    output = os.popen('root -b \'nEvents.C(\"%s\")\' ' % file)
-    print 'done'
-    output.close()
-    print 'closed'
 
 # returns the number of events in a file 
 def numberOfEvents( file, castor=True):
@@ -297,26 +284,35 @@ def protectedRemove( *args ):
         print 'cancelled'
         return False
 
-# copy a set of files to a castor directory
-def cp( absDestDir, files ):
-    cp = 'cp'
+def isLFN( file ):
+    storePattern = re.compile('^/store.*')
+    if storePattern.match( file ):
+        return True
+    else:
+        return False
+
+def lfnToCastor( file ):
+    if isLFN( file ):
+        return '/castor/cern.ch/cms' + file
+
+def castorToLFN( file ):
+    return file.replace('/castor/cern.ch/cms','')
+
+
+def cmsStage( absDestDir, files, force):
+
     destIsCastorDir = isCastorDir(absDestDir)
     if destIsCastorDir: 
-        cp = 'rfcp'
         createCastorDir( absDestDir )
-        
-    for file in files:
 
-        if destIsCastorDir == False:
-            if isCastorDir( os.path.abspath(file) ):
-                cp = 'rfcp'
-            else:
-                cp = 'cp'
-        
-        cpfile = '%s %s %s' % (cp, file,absDestDir)
-        print cpfile
-        os.system(cpfile)
-        
+    for file in files:
+        storefile = file.replace('/castor/cern.ch/cms','')
+        forceOpt = ''
+        if force:
+            forceOpt = '-f'
+        cmsStage = 'cmsStage %s %s %s ' % (forceOpt, storefile, absDestDir) 
+        print cmsStage
+        os.system( cmsStage )
         
 
 def xrdcp( absDestDir, files ):

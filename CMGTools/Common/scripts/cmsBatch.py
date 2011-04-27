@@ -106,7 +106,7 @@ echo 'sending the job directory back'
       script += """
 for file in *.root; do
 newFileName=`echo $file | sed -r -e 's/\./_%s\./'`
-rfcp $file %s/$newFileName 
+cmsStage $file %s/$newFileName 
 done
 """ % (index, remoteDir)
           
@@ -130,7 +130,7 @@ echo 'sending the job directory back'
       script += """
 for file in *.root; do
 newFileName=`echo $file | sed -r -e 's/\./_%s\./'`
-rfcp $file %s/$newFileName 
+cmsStage $file %s/$newFileName 
 done
 """ % (index, remoteDir)
 
@@ -157,11 +157,14 @@ class MyBatchManager( BatchManager ):
        wantBatch = patternBatch.match( options.batch )
 
        local = False
+
+       storeDir = self.remoteOutputDir_.replace('/castor/cern.ch/cms','')
+       
        if onLxplus:
           print 'Running on LXPLUS'
           if wantBatch:
              print 'Wanna use batch system'
-             scriptFile.write( batchScriptCERN( self.remoteOutputDir_,
+             scriptFile.write( batchScriptCERN( storeDir,
                                                 value) )
           else:
              print 'Wanna use local ressources'
@@ -175,7 +178,7 @@ class MyBatchManager( BatchManager ):
              local = True
 
        if local:
-          scriptFile.write( batchScriptLocal( self.remoteOutputDir_,
+          scriptFile.write( batchScriptLocal( storeDir,
                                               value) )          
   
           
@@ -214,7 +217,7 @@ file = open('cmsBatch.txt', 'w')
 file.write(string.join(sys.argv) + "\n")
 file.close()
 
-batchManager.parser_.usage = "%prog [options] <number of input files per job> <your_cfg.py>. Submits a number of jobs taking your_cfg.py as a template. your_cfg.py can either read events from input files, or produce them with a generator. In the later case, the seeds are of course updated for each job.\n\nExample:\tcmsBatch.py 10 fastSimWithParticleFlow_cfg.py -o Out2 -r /castor/cern.ch/user/c/cbern/CMSSW312/SinglePions -b 'bsub -q 1nh < batchScript.sh' "
+batchManager.parser_.usage = "%prog [options] <number of input files per job> <your_cfg.py>. \nSubmits a number of jobs taking your_cfg.py as a template. your_cfg.py can either read events from input files, or produce them with a generator. In the later case, the seeds are of course updated for each job.\n\nExample:\tcmsBatch.py 10 RA2_cfg.py -b 'nohup ./batchScript.sh&' -r /store/cmst3/user/cbern/CMG/HT/Run2011A-PromptReco-v1/AOD/PAT_CMG/RA2"
 batchManager.parser_.add_option("-p", "--program", dest="prog",
                                 help="program to run on your cfg file",
                                 default="cmsRun")

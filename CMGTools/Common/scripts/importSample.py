@@ -56,6 +56,6 @@ os.system( mkdir )
 
 # copy
 
-rfcp = 'rfcpMany.py -x %s %s "%s"' % ( cdir, ldir, pattern ) 
-print rfcp
-os.system( rfcp )
+cmsStage = 'cmsStageAll.py -f %s %s "%s"' % ( cdir, ldir, pattern ) 
+print cmsStage
+os.system( cmsStage )
