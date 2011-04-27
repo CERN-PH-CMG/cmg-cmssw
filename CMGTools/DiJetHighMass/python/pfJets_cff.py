@@ -5,7 +5,7 @@ from CMGTools.Common.factories.cmgPFJet_cfi import cmgPFJet
 from CMGTools.Common.factories.cmgDiJet_cfi import cmgDiJet
 from CMGTools.Common.histograms.pfJetLorentzVector_cfi import pfJetLorentzVector
 from CMGTools.Common.histograms.pfJetHistograms_cfi import pfJetHistograms
-from CMGTools.Common.Tools.indexPFJetSelector_cfi import indexPFJetSelector
+from CMGTools.Common.skims.leadingCMGPFJetSelector_cfi import leadingCMGPFJetSelector
 
 patJet = 'selectedPatJets'
 pfJet = 'cmgPFJet'
@@ -16,14 +16,15 @@ cmgPFJet = cmgPFJet.clone()
 cmgPFJet.cfg.inputCollection = patJet
 
 # Select PF PF Leading Jet
-cmgPFLeadJet = indexPFJetSelector.clone()
+cmgPFLeadJet = leadingCMGPFJetSelector.clone()
 cmgPFLeadJet.inputCollection = pfJet
 cmgPFLeadJet.index = cms.untracked.int32(2)
 
 # Produce PF PF Dijets
 diPFJetFactory = cms.PSet(            
     leg1Collection = cms.InputTag(pfLeadJet),
-    leg2Collection = cms.InputTag(pfLeadJet)
+    leg2Collection = cms.InputTag(pfLeadJet),
+    metCollection = cms.InputTag("cmgPFMET")
     )
 
 cmgPFDiJet = cmgDiJet.clone()

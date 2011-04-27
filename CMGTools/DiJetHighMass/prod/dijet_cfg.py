@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 
 # changing process name, as PAT is already taken 
 processName = 'ANA'
-runOnData = True
+runOnData = False
 postfix="PFlow"
 ext = 'Data'
 
@@ -63,16 +63,14 @@ process.pat = cms.Sequence(
 # Analysis Sequence definition
 process.load('CMGTools.DiJetHighMass.baseJets_cff')
 process.load('CMGTools.DiJetHighMass.pfJets_cff')
-process.load('CMGTools.DiJetHighMass.dijet_met_cff')
 process.load("CMGTools.Common.runInfoAccounting_cfi")
-
 
 from CMGTools.DiJetHighMass.myJetSequence_cff import myJetSequence
 myJetSequence(process)
 
+
 process.analysisSequence = cms.Sequence(
     process.jetSequence +
-    process.metSequence +
     process.runInfoAccounting
     )
 
@@ -80,6 +78,7 @@ process.analysisSequence = cms.Sequence(
 # Skimming
 process.load('CMGTools.DiJetHighMass.skims.selHighMass_cff')
 
+process.dump = cms.EDAnalyzer("EventContentAnalyzer")
 
 # Total process
 process.p = cms.Path(
