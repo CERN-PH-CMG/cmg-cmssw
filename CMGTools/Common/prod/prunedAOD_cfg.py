@@ -8,12 +8,14 @@ process.source = cms.Source("PoolSource",
     )
 )
 
-process.load("CMGTools.Common.sources.DoubleElectron.Run2011A_PromptReco_v1.AOD.source_cff")
+# process.load("CMGTools.Common.sources.DoubleElectron.Run2011A_PromptReco_v1.AOD.source_cff")
+process.load("CMGTools.Common.sources.HT.Run2011A_PromptReco_v1.AOD.source_cff")
 
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
 #WARNING!
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+
 
 
 process.load("Configuration.EventContent.EventContent_cff")
@@ -29,13 +31,10 @@ process.out = cms.OutputModule(
 process.load("PhysicsTools.PFCandProducer.PF2PAT_EventContent_cff")
 process.out.outputCommands.extend( process.prunedAODForPF2PATEventContent.outputCommands )
 
-
-
-
 process.endpath = cms.EndPath(
     process.out
     )
 
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 10
