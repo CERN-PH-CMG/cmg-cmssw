@@ -5,4 +5,5 @@ from CMGTools.Common.eventContent.everything_cff import *
 RA2EventContent = cms.untracked.vstring()
 
 RA2EventContent += MHT
-RA2EventContent += cms.untracked.vstring('keep *_RA2MHTPFJet50_*_*')
+RA2EventContent += cms.untracked.vstring('keep *_RA2MHTPFJet50Central_*_*')
+RA2EventContent += cms.untracked.vstring('keep *_RA2MHTPFJet30_*_*')

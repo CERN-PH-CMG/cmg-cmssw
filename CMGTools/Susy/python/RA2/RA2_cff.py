@@ -19,7 +19,6 @@ RA2PFJet50Central = cmgCandSel.clone( src = 'cmgPFJetSel',
 RA2PFJetCount = cmgCandCount.clone( src = 'RA2PFJet50Central',
                                        minNumber = 3 )
 
-
 # HT skim 
 
 from CMGTools.Common.met_cff import cmgMHTPFJet30
@@ -31,7 +30,7 @@ RA2MHTPFJet50Central.cfg.inputCollection = 'RA2PFJet50Central'
 from CMGTools.Common.skims.cmgBaseMETSel_cfi import cmgBaseMETSel
 
 RA2MHTPFJet50CentralSel = cmgBaseMETSel.clone( src = 'RA2MHTPFJet50Central',
-                                            cut = 'sumEt()>300') 
+                                               cut = 'sumEt()>300') 
 
 RA2MHTPFJet50CentralCount = cmgCandCount.clone( src = 'RA2MHTPFJet50CentralSel',
                                              minNumber = 1 )
@@ -44,15 +43,24 @@ RA2HTSequence = cms.Sequence(
 
 # MHT skim
 
-RA2MHTPFJet30Sel = cmgBaseMETSel.clone( src = 'cmgMHTPFJet30',
-                                            cut = 'et()>150' )
-RA2MHTPFJet30Count = cmgCandCount.clone( src = 'RA2MHTPFJet30Sel',
-                                             minNumber = 1 )
+RA2MHTPFJet30 = cmgMHTPFJet30.clone()
 
+#COLIN: missing basejets in common pat-tuples!
+RA2MHTPFJet30.cfg.inputCollection = 'cmgPFBaseJetSel'
+
+RA2MHTPFJet30Sel = cmgBaseMETSel.clone( src = 'RA2MHTPFJet30',
+                                        cut = 'et()>150' )
+RA2MHTPFJet30Count = cmgCandCount.clone( src = 'RA2MHTPFJet30Sel',
+                                         minNumber = 1 )
+
+# COLIN: need to apply lepton veto
+# COLIN: need to apply delta phi cuts
+# COLIN: need to apply event cleaners
 
 RA2ObjectSequence = cms.Sequence(
     RA2PFJet50Central +
     RA2HTSequence +
+    RA2MHTPFJet30 + 
     RA2MHTPFJet30Sel
     )
 
