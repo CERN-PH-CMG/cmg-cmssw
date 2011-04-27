@@ -26,7 +26,7 @@ class logger:
         elif self.isTgzDirOnCastor( dirLocalOrTgzDirOnCastor ):
             self.tgzDirOnCastor = dirLocalOrTgzDirOnCastor
         else:
-            raise ValueError( dirLocalOrTgzDirOnCastor + ' is neither a tgz directory on castor nor a local directory')
+            raise ValueError( dirLocalOrTgzDirOnCastor + ' is neither a tgz directory on castor (provide a LFN!) nor a local directory')
             
 
     def isDirLocal(self, file ):
@@ -36,7 +36,11 @@ class logger:
             return False
 
     def isTgzDirOnCastor(self, file ):
-        if castortools.isCastorFile( file ):
+
+        if not castortools.isCastorDir( file ):
+            file = castortools.castorToLFN(file)
+            
+        if castortools.isLFN( file ):
             tgzPattern = re.compile('.*\.tgz$')
             m = tgzPattern.match( file )
             if m:
@@ -121,7 +125,10 @@ class logger:
 
     def stageIn(self):
         if self.tgzDirOnCastor != None:
-            castortools.xrdcp( '.', [self.tgzDirOnCastor] )
+            # castortools.xrdcp( '.', [self.tgzDirOnCastor] )
+            cmsStage = 'cmsStage -f ' + self.tgzDirOnCastor + ' .'
+            print cmsStage
+            os.system( cmsStage ) 
             tgzDir = os.path.basename( self.tgzDirOnCastor )
             print tgzDir 
             os.system('tar -zxvf ' + tgzDir)
@@ -132,13 +139,20 @@ class logger:
             print 'cannot stage in, the log had not been staged out'
 
     def stageOut(self, castorDir):
+
+        castorDir = castortools.castorToLFN( castorDir )
+        if not castortools.isLFN( castorDir ):
+            print 'cannot stage out, you need to provide an LFN as a destination directory, beginning with /store .'
+            return False
+        
         if self.dirLocal != None:
             tgzDir = self.dirLocal + '.tgz'
             tgzCmd = 'tar -zcvf ' + tgzDir + ' ' + self.dirLocal
             print tgzCmd
             os.system( tgzCmd)
-            rfcpCmd = 'rfcp %s %s' % (tgzDir, castorDir )
-            os.system( rfcpCmd )
+            cmsStage = 'cmsStage -f %s %s' % (tgzDir, castorDir )
+            print cmsStage
+            os.system( cmsStage )
             os.system('rm ' + tgzDir )
             self.tgzDirOnCastor =  castorDir + '/' + tgzDir
         else:
@@ -170,8 +184,7 @@ if __name__ == '__main__':
             log.stageIn()
             
         # log.addFile('patTuple_PATandPF2PAT_RecoJets_cfg.py')
-        # log.stageOut('/castor/cern.ch/cms/store/cmst3/user/cbern/Test')
-        # log.stageOut()
+        log.stageOut('/store/cmst3/user/cbern/Test')
         # log.dump()
     except ValueError as err:
         print err, '. Exit!'

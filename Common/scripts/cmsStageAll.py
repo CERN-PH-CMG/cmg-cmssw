@@ -6,15 +6,16 @@ import sys,os, re, pprint
 import castortools
 
 parser = OptionParser()
-parser.usage = "%prog <dir1> <dir2> <regexp pattern>: copy all files matching regexp in a castor directory.\n\nExample (just try, the -n option negates the command!):\nrfcpMany.py  /castor/cern.ch/user/c/cbern/CMSSW312/SinglePions /tmp '.*\.root' -n "
+parser.usage = "%prog <dir1> <dir2> <regexp pattern>: copy all files matching regexp in a castor directory.\n\nExample (just try, the -n option negates the command!):\ncmsStageAll.py /store/cmst3/user/cbern/CMG/HT/Run2011A-PromptReco-v1/AOD/PAT_CMG /tmp '.*\.root' -n\n\nIMPORTANT NOTE: castor directories must be provided as logical file names (LFN), starting by /store."
 parser.add_option("-n", "--negate", action="store_true",
                   dest="negate",
                   help="do not proceed",
                   default=False)
-parser.add_option("-x", "--xrdcp", action="store_true",
-                  dest="xrdcp",
-                  help="use xrdcp",
+parser.add_option("-f", "--force", action="store_true",
+                  dest="force",
+                  help="force overwrite",
                   default=False)
+
 
 (options,args) = parser.parse_args()
 
@@ -37,10 +38,8 @@ if options.negate:
 else:
     print 'Copying ',  
     pprint.pprint(files)
-    if options.xrdcp: 
-        castortools.xrdcp( dir2, files )
-    else:
-        castortools.cp( dir2, files )
 
+    castortools.cmsStage( dir2, files, options.force) 
+    
 print 'from:', dir1
 print 'to  :', dir2

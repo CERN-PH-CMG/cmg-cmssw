@@ -23,6 +23,7 @@ def allSampleInfo( sampleName, listLevel ):
         print '------------------------------------------------------------------------------------------------------------'
         print 'castor:'
         print castorDir
+        print castortools.castorToLFN(castorDir)
     if listLevel>1: 
         os.system('rfdir ' + castorDir )
     if listLevel>0:
@@ -86,7 +87,6 @@ pattern = re.compile( args[0] )
 for line in ifile.readlines():
     line = line.rstrip()
 
-    
     if pattern.search( line ):
         # preparing castor dir -----------------
 
@@ -94,6 +94,7 @@ for line in ifile.readlines():
         
         castorDir = options.castorBaseDir
         castorDir += sampleName
+        castorDir = castortools.lfnToCastor( castorDir ) 
     
         # making local source directory ---------
         

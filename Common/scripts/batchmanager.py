@@ -29,7 +29,7 @@ class BatchManager:
                           help="local output directory for your jobs",
                           default=None)
         self.parser_.add_option("-r", "--remote-copy", dest="remoteCopy",
-                          help="remote output directory for your jobs, and file to be copied. Example: /castor/cern.ch/user/c/cbern/truc.root: for job 1, the file truc.root will be copied to /castor/cern.ch/user/c/cbern/truc_1.root",
+                          help="remote output directory for your jobs, and file to be copied. Example: /store/cmst3/user/cbern/CMG/HT/Run2011A-PromptReco-v1/AOD/PAT_CMG/RA2. This directory must be provided as a logical file name (LFN)",
                           default=None)
         # this opt can be removed
         self.parser_.add_option("-n", "--negate", action="store_true",
@@ -42,7 +42,16 @@ class BatchManager:
         if self.options_.remoteCopy == None:
             self.remoteOutputDir_ = ""
         else:
-            self.remoteOutputDir_ = self.options_.remoteCopy.rstrip('/') 
+            # removing possible trailing slash
+            self.remoteOutputDir_ = self.options_.remoteCopy.rstrip('/')
+
+            if not castortools.isLFN( self.remoteOutputDir_ ):
+                print 'When providing an output directory, you must give its LFN, starting by /store. You gave:'
+                print self.remoteOutputDir_
+                sys.exit(1)
+            
+            self.remoteOutputDir_ = castortools.lfnToCastor( self.remoteOutputDir_ )
+            
             nsls = 'nsls %s > /dev/null' % self.remoteOutputDir_
             dirExist = os.system( nsls )
             if dirExist != 0:

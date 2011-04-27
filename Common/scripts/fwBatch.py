@@ -9,9 +9,6 @@ import castortools
 
 from addToDatasets import *
 
-    
-
-
 parser = OptionParser()
 parser.usage = "fwBatch.py <cfg> <sampleName>"
 parser.add_option("-n", "--negate", action="store_true",
@@ -64,35 +61,21 @@ print 'starting prod for sample:', sampleName
 cdir = options.castorBaseDir 
 
 
-# sampleAndTier = sampleName
-#if options.tier != "":
-#    sampleAndTier += "/" + options.tier
 
-#print "sampleAndTier ",sampleAndTier
-#outFile = cdir
-#if options.tier!="":
-#    outFile += sampleAndTier
-#else:
-#    outFile += sampleName
-    
 if options.tier != "":
     sampleName += "/" + options.tier
 
 print "sampleName ",sampleName
 outFile = destBaseDir
 outFile += sampleName
-    
-# creating castor dir
-rfmkdir  = 'rfmkdir -p ' + outFile
-print rfmkdir 
-os.system( rfmkdir )
-# outFile += '/PFAnalysis_%s.root' % ext
 
 # prepare local output dir:
 localOutputDir = './' + sampleName 
 mkdir = 'mkdir -p ' + localOutputDir
 print mkdir
 os.system(mkdir)
+
+# the output castor directory will be prepared by cmsBatch
 
 cmsBatch = 'cmsBatch.py %s %s -r %s -b "bsub -q %s <  batchScript.sh" -o %s' % (options.nInput, cfg, outFile, options.queue, localOutputDir)
 
