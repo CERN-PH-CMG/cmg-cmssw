@@ -29,14 +29,4 @@ LPPath = cms.Path(
     LPSkimSequence 
     )
 
-# runInfoAccountingPath = cms.Path(
-#    runInfoAccounting
-#    )
 
-susySchedule = cms.Schedule(
-    RA1Path,
-    RA2Path,
-    razorPath,
-    LPPath
-    # , runInfoAccountingPath
-    )

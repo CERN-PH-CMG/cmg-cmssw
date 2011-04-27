@@ -14,10 +14,8 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
 
 # Message logger setup.
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
-process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
+process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
-doSkimHighMET = False
-cut_highMET = 'pt()>50'
 process.setName_('ANA')
 
 #COLIN: tell Will to remove the rather printouts (or rather to add an enable flag allowing to get these printouts). What are these printouts? 
@@ -37,13 +35,8 @@ process.load('CMGTools.Susy.susy_cff')
 
 # process.susySchedule.remove( process.runInfoAccountingPath )
 
-process.schedule = cms.Schedule(
-    process.RA1Path,
-    process.RA2Path,
-    process.razorPath,
-    process.LPPath,
-    process.outpath
-    )
+process.schedule = cms.Schedule( process.RA2Path ) 
+process.schedule.append( process.outpath )
 
 # pprint.pprint(process.out.outputCommands)
 #process.dump = cms.EDAnalyzer("EventContentAnalyzer")
@@ -53,11 +46,8 @@ process.out.fileName = cms.untracked.string('susy_tree_%s.root' %  outFileNameEx
 process.out.outputCommands = cms.untracked.vstring('drop *')
 process.out.outputCommands += susyEventContent
 
-process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('RA2Path','razorPath', 'RA1Path', 'LPPath') )
-#plot the correlations between the selection paths
-process.load('CMGTools.Common.histograms.triggerCorrelationHistograms_cfi')
-process.triggerCorrelationHistograms.names = cms.untracked.vstring('RA2Path','razorPath', 'RA1Path', 'LPPath')
-process.schedule.append( process.triggerCorrelationHistogramsEndPath )
+# Running only RA2
+process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('RA2Path') )
 
 process.TFileService = cms.Service(
     "TFileService",
@@ -68,3 +58,6 @@ print process.out.dumpPython()
 
 print 'output file: ', process.out.fileName
 # print process.schedule
+
+process.RA2MHTPFJet50CentralSel.cut = 'sumEt()>0'
+process.RA2MHTPFJet30Sel.cut = 'et()>0'

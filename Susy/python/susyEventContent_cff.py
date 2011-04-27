@@ -10,3 +10,5 @@ susyEventContent = everything
 susyEventContent += RA2EventContent
 susyEventContent += razorEventContent
 susyEventContent += LPEventContent
+
+# susyEventContent += 'keep *_cmgMHTPFJet30_*_*'
