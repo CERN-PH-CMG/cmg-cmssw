@@ -11,8 +11,11 @@ cmgPFJetSel.cut = jetPtCut
 cmgPFBaseJetSel.cut = jetPtCut
 cmgCaloBaseJetSel.cut = jetPtCut
 
+cmgMHTPFJet30.cfg.inputCollection = "cmgPFBaseJetSel"
+
 susyCommonSequence  = cms.Sequence(
-    analysisSequence +
+    # analysisSequence +
+    cmgMHTPFJet30 +
     RA1Sequence +
     RA2Sequence +
     razorSequence +
