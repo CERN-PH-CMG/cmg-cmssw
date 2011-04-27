@@ -16,8 +16,8 @@ from CMGTools.Common.skims.cmgCandCount_cfi import *
 
 #muons
 from CMGTools.Common.skims.cmgMuonSel_cfi import *
-LPMuon   = cmgMuonSel.clone( src = 'cmgMuon', cut = LPMuonCut ) 
-LPLooseMuon   = cmgMuonSel.clone( src = 'cmgMuon', cut = LPLooseMuonCut ) 
+LPMuon   = cmgMuonSel.clone( src = 'cmgMuonSel', cut = LPMuonCut ) 
+LPLooseMuon   = cmgMuonSel.clone( src = 'cmgMuonSel', cut = LPLooseMuonCut ) 
 LPMuonCount1 = cmgCandCount.clone( src = 'LPMuon', minNumber = 1)
 LPMuonCount2 = cmgCandCount.clone( src = 'LPLooseMuon', minNumber = 2)
 LPMuonSequence = cms.Sequence( LPMuon + LPLooseMuon )
