@@ -21,13 +21,16 @@
 #include "CMGTools/Common/interface/CompoundFactories.h"
 #include "CMGTools/Common/interface/MultiObjectFactory.h"
 #include "CMGTools/Common/interface/HemiFactory.h"
+#include "CMGTools/Common/interface/FatJetFactory.h"
 #include "CMGTools/Common/interface/PhotonFactory.h"
 #include "CMGTools/Common/interface/GenericFactories.h"
 #include "CMGTools/Common/interface/ElectronFactory.h"
 #include "CMGTools/Common/interface/MuonFactory.h"
-#include "CMGTools/Common/interface/TauFactory.h"
-#include "CMGTools/Common/interface/BaseJetFactory.h"
 #include "CMGTools/Common/interface/PFJetFactory.h"
+
+#include "CMGTools/Common/interface/TauFactory.h"
+
+#include "CMGTools/Common/interface/BaseJetFactory.h"
 #include "CMGTools/Common/interface/BaseMETFactory.h"
 #include "CMGTools/Common/interface/BaseMETModificationFactory.h"
 #include "CMGTools/Common/plugins/PhysicsObjectProducer.h"
@@ -49,6 +52,9 @@ typedef PhysicsObjectProducer<cmg::MultiObjectFactory> MultiObjectPOProducer;
 typedef PhysicsObjectProducer<cmg::PhotonFactory> PhotonPOProducer;
 typedef PhysicsObjectProducer<cmg::DiPhotonFactory> DiPhotonPOProducer;
 typedef PhysicsObjectProducer<cmg::HemisphereFactory> HemispherePOProducer;
+typedef PhysicsObjectProducer<cmg::FatJetFactory> FatJetPOProducer;
+typedef PhysicsObjectProducer<cmg::DiFatJetFactory> DiFatJetPOProducer;
+
 typedef PhysicsObjectProducer<cmg::DiHemisphereFactory> DiHemispherePOProducer;
 typedef PhysicsObjectProducer<cmg::DiElectronFactory> DiElectronPOProducer;
 typedef PhysicsObjectProducer<cmg::DiMuonFactory> DiMuonPOProducer;
