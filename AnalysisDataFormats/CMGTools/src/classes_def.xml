@@ -10,6 +10,11 @@
   <class name="edm::Wrapper<cmg::DiHemisphere>"/>
   <class name="edm::Wrapper<std::vector<cmg::DiHemisphere> >"/>
   
+  <class name="cmg::DiFatJet"/>
+  <class name="std::vector<cmg::DiFatJet>"/>
+  <class name="edm::Wrapper<cmg::DiFatJet>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiFatJet> >"/>
+
   <class name="cmg::DiPhoton"/>
   <class name="std::vector<cmg::DiPhoton>"/>
   <class name="edm::Wrapper<cmg::DiPhoton>"/>
@@ -138,6 +143,11 @@
   <class name="std::vector<cmg::Hemisphere>"/>
   <class name="edm::Wrapper<cmg::Hemisphere>"/>
   <class name="edm::Wrapper<std::vector<cmg::Hemisphere> >"/>
+
+  <class name="cmg::FatJet"/>
+  <class name="std::vector<cmg::FatJet>"/>
+  <class name="edm::Wrapper<cmg::FatJet>"/>
+  <class name="edm::Wrapper<std::vector<cmg::FatJet> >"/>
 
   <class name="cmg::Photon"/>
   <class name="cmg::PhysicsObjectWithPtr<pat::PhotonPtr>" />
