@@ -9,6 +9,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/Tau.h"
 #include "AnalysisDataFormats/CMGTools/interface/GenericTypes.h"
 #include "AnalysisDataFormats/CMGTools/interface/MultiObject.h"
+#include "AnalysisDataFormats/CMGTools/interface/FatJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/BaseJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJetComponent.h"
@@ -35,6 +36,11 @@ namespace {
     std::vector<cmg::DiHemisphere> dhv;
     edm::Wrapper<cmg::DiHemisphere> wdh;
     edm::Wrapper<std::vector<cmg::DiHemisphere> > wdhv;
+
+    cmg::DiFatJet dmp_;
+    std::vector<cmg::DiFatJet> vdmp_;
+    edm::Wrapper<cmg::DiFatJet> wdmp_;
+    edm::Wrapper<std::vector<cmg::DiFatJet> > wdvmp_;
 
     cmg::DiPhoton dp_;
     std::vector<cmg::DiPhoton> dpv;
@@ -142,6 +148,11 @@ namespace {
     std::vector<cmg::MultiObject> vmp_;
     edm::Wrapper<cmg::MultiObject> wmp_;
     edm::Wrapper<std::vector<cmg::MultiObject> > wvmp_;
+
+    cmg::FatJet fj_;
+    std::vector<cmg::FatJet> vfj_;
+    edm::Wrapper<cmg::FatJet> wfj_;
+    edm::Wrapper<std::vector<cmg::FatJet> > wvfj_;
 
     cmg::Hemisphere hp_;
     std::vector<cmg::Hemisphere> vhp_;
