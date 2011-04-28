@@ -4,10 +4,13 @@ import FWCore.ParameterSet.Config as cms
 
 diJetHighMass = cms.untracked.vstring(
     'drop *',
+#    'keep *_*_*_*',
     'keep  cmgBaseJets_*_*_*',
     'keep  cmgPFJets_*_*_*',
     'keep  cmgBaseJetcmgBaseJetcmgDiObjects_*_*_*',
     'keep  cmgPFJetcmgPFJetcmgDiObjects_*_*_*',
+    'keep  cmgFatJetcmgFatJetcmgDiObjects_*_*_*',
+    'keep  cmgFatJets_*_*_*',
     'keep  cmgBaseMETs_*_*_*',
     'keep  *_TriggerResults_*_*',
     'keep *_hltTriggerSummaryAOD_*_*'
