@@ -1,6 +1,7 @@
 #ifndef COMPOUNDTYPES_H_
 #define COMPOUNDTYPES_H_
 
+#include "AnalysisDataFormats/CMGTools/interface/FatJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/BaseJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
 #include "AnalysisDataFormats/CMGTools/interface/DiObject.h"
@@ -16,6 +17,7 @@
 namespace cmg {
 
   typedef cmg::DiObject<cmg::Hemisphere, cmg::Hemisphere> DiHemisphere;
+  typedef cmg::DiObject<cmg::FatJet, cmg::FatJet> DiFatJet;
   typedef cmg::DiObject<cmg::Photon, cmg::Photon> DiPhoton;
   typedef cmg::DiObject<cmg::Electron,cmg::Electron> DiElectron;
   typedef cmg::DiObject<cmg::BaseJet,cmg::BaseJet> DiJet;
