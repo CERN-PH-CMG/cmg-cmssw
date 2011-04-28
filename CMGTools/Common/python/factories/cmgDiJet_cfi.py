@@ -6,7 +6,7 @@ diJetFactory = diObjectFactory.clone(
        leg2Collection = cms.InputTag("cmgPFJet"),
        )
 
-from CMGTools.Common.selections.kinematics_cfi import dijetKinematics
+from CMGTools.Common.selections.dijet_cfi import dijetKinematics
 from CMGTools.Common.selections.razorbeta_cfi import razorbeta
 cmgDiJet = cms.EDFilter(
     "DiJetPOProducer",
