@@ -8,6 +8,7 @@ from CMGTools.Common.tau_cff import *
 from CMGTools.Common.jet_cff import *
 from CMGTools.Common.met_cff import *
 from CMGTools.Common.diMuon_cff import *
+from CMGTools.Common.diTau_cff import *
 from CMGTools.Common.diElectron_cff import *
 from CMGTools.Common.skim_cff import *
 from CMGTools.Common.cutSummary_cff import *
@@ -21,6 +22,7 @@ cmgObjectSequence = cms.Sequence(
     jetSequence +
     metSequence +
     diMuonSequence +
+    diTauSequence +
     diElectronSequence
     )
 

@@ -56,7 +56,9 @@ tauHistogramSequence = cms.Sequence(
 # di-electrons and di-muons
 
 from CMGTools.Common.histograms.cmgDiMuonHistograms_cfi import *
+from CMGTools.Common.histograms.cmgDiTauHistograms_cfi import *
 from CMGTools.Common.histograms.cmgDiElectronHistograms_cfi import *
+
 
 histogramSequence = cms.Sequence(
     pfJetHistogramSequence +
@@ -65,6 +67,7 @@ histogramSequence = cms.Sequence(
     muonHistogramSequence +
     tauHistogramSequence +
     cmgDiMuonHistograms +
+    cmgDiTauHistograms +
     cmgDiElectronHistograms 
     )
 

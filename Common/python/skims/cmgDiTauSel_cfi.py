@@ -7,7 +7,7 @@ import FWCore.ParameterSet.Config as cms
 cmgDiTauSel = cms.EDFilter(
     "CmgDiTauSelector",
     src = cms.InputTag( "cmgDiTau" ),
-    cut = cms.string( "pt()>0 &&  ( 0< mass()  && mass() < 500) " )
+    cut = cms.string( " pt()>0 " )
     )
 
 
