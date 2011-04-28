@@ -43,7 +43,17 @@ muonHistogramSequence = cms.Sequence(
     muonLorentzVector
     )
 
-# add other histograms here
+# taus
+
+from CMGTools.Common.histograms.cmgTauHistograms_cfi import *
+from CMGTools.Common.histograms.tauLorentzVector_cfi import *
+
+tauHistogramSequence = cms.Sequence(
+    cmgTauHistograms +
+    tauLorentzVector
+    )
+
+# di-electrons and di-muons
 
 from CMGTools.Common.histograms.cmgDiMuonHistograms_cfi import *
 from CMGTools.Common.histograms.cmgDiElectronHistograms_cfi import *
@@ -53,6 +63,8 @@ histogramSequence = cms.Sequence(
     pfMETHistogramSequence +
     electronHistogramSequence +
     muonHistogramSequence +
+    tauHistogramSequence +
     cmgDiMuonHistograms +
     cmgDiElectronHistograms 
     )
+
