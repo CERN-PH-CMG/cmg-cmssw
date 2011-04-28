@@ -6,6 +6,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/DiObject.h"
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
+#include "AnalysisDataFormats/CMGTools/interface/Tau.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/Hemisphere.h"
 #include "AnalysisDataFormats/CMGTools/interface/Photon.h"

@@ -55,6 +55,8 @@
   <class name="edm::Wrapper<std::vector<cmg::Muon> >"/>
   
   <class name="cmg::Tau"/>
+  <class name="cmg::Lepton<pat::TauPtr>" />
+  <class name="cmg::PhysicsObjectWithPtr<pat::TauPtr>" />
   <class name="std::vector<cmg::Tau>"/>
   <class name="edm::Wrapper<cmg::Tau>"/>
   <class name="edm::Wrapper<std::vector<cmg::Tau> >"/>
