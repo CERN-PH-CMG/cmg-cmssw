@@ -6,6 +6,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/CompositePtrCandidateT1T2MEt.h"
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
+#include "AnalysisDataFormats/CMGTools/interface/Tau.h"
 #include "AnalysisDataFormats/CMGTools/interface/GenericTypes.h"
 #include "AnalysisDataFormats/CMGTools/interface/MultiObject.h"
 #include "AnalysisDataFormats/CMGTools/interface/BaseJet.h"

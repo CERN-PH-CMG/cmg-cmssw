@@ -21,8 +21,6 @@ namespace cmg{
     typedef edm::Ptr< reco::GenJet > GenJetPtr;
     typedef PhysicsObjectWithPtr< GenJetPtr > GenJet;
     
-    typedef PhysicsObjectWithPtr< pat::TauPtr > Tau;
-    
 }
 
 #endif /*GENERICTYPES_H_*/
