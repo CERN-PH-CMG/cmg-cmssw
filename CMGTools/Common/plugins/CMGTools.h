@@ -5,6 +5,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
+#include "AnalysisDataFormats/CMGTools/interface/Tau.h"
 #include "AnalysisDataFormats/CMGTools/interface/Hemisphere.h"
 #include "AnalysisDataFormats/CMGTools/interface/Photon.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
@@ -24,6 +25,7 @@
 #include "CMGTools/Common/interface/GenericFactories.h"
 #include "CMGTools/Common/interface/ElectronFactory.h"
 #include "CMGTools/Common/interface/MuonFactory.h"
+#include "CMGTools/Common/interface/TauFactory.h"
 #include "CMGTools/Common/interface/BaseJetFactory.h"
 #include "CMGTools/Common/interface/PFJetFactory.h"
 #include "CMGTools/Common/interface/BaseMETFactory.h"
@@ -76,15 +78,18 @@ typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::AbstractPhysicsObject
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<pat::MET> > GenericPatMETHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Electron> > CmgElectronHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Muon> > CmgMuonHistograms;
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Tau> > CmgTauHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Hemisphere> > CmgHemiHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Photon> > CmgPhotonHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::MultiObject> > CmgMultiObjectHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiMuon> > CmgDiMuonHistograms;
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiTau> > CmgDiTauHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiElectron> > CmgDiElectronHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiHemisphere> > CmgDiHemiHistograms;
 
 // For datasets.
 typedef cmg::HistogramAnalyzer<cmg::GenericRooDataSets<cmg::DiMuon> > CmgDiMuonDataSet;
+typedef cmg::HistogramAnalyzer<cmg::GenericRooDataSets<cmg::DiTau> > CmgDiTauDataSet;
 
 typedef cmg::RunInfoAccountingAnalyzer RunInfoAccountingAnalyzer;
 typedef cmg::CutSummaryAnalyzer CutSummaryAnalyzer;
@@ -137,6 +142,16 @@ typedef SingleObjectSelector<
   std::vector<cmg::DiMuon>,
   StringCutObjectSelector<cmg::DiMuon>
   > CmgDiMuonSelector;
+
+typedef SingleObjectSelector<
+  std::vector<cmg::Tau>,
+  StringCutObjectSelector<cmg::Tau>
+  > CmgTauSelector;
+
+typedef SingleObjectSelector<
+  std::vector<cmg::DiTau>,
+  StringCutObjectSelector<cmg::DiTau>
+  > CmgDiTauSelector;
 
 typedef SingleObjectSelector<
   std::vector<cmg::DiElectron>,

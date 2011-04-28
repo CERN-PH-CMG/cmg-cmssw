@@ -31,14 +31,17 @@ DEFINE_FWK_MODULE(GenericPOHistograms);
 DEFINE_FWK_MODULE(GenericPatMETHistograms);
 DEFINE_FWK_MODULE(CmgElectronHistograms);
 DEFINE_FWK_MODULE(CmgMuonHistograms);
+DEFINE_FWK_MODULE(CmgTauHistograms);
 DEFINE_FWK_MODULE(CmgHemiHistograms);
 DEFINE_FWK_MODULE(CmgPhotonHistograms);
 DEFINE_FWK_MODULE(CmgMultiObjectHistograms);
 DEFINE_FWK_MODULE(CmgDiMuonHistograms);
+DEFINE_FWK_MODULE(CmgDiTauHistograms);
 DEFINE_FWK_MODULE(CmgDiElectronHistograms);
 DEFINE_FWK_MODULE(CmgDiHemiHistograms);
 
 DEFINE_FWK_MODULE(CmgDiMuonDataSet);
+DEFINE_FWK_MODULE(CmgDiTauDataSet);
 
 DEFINE_FWK_MODULE(RunInfoAccountingAnalyzer);
 DEFINE_FWK_MODULE(PhysicsObjectPrinter);
@@ -63,7 +66,9 @@ DEFINE_FWK_MODULE(CmgBaseJetSelector);
 DEFINE_FWK_MODULE(CmgBaseMETSelector);
 DEFINE_FWK_MODULE(CmgElectronSelector);
 DEFINE_FWK_MODULE(CmgMuonSelector);
+DEFINE_FWK_MODULE(CmgTauSelector);
 DEFINE_FWK_MODULE(CmgDiMuonSelector);
+DEFINE_FWK_MODULE(CmgDiTauSelector);
 DEFINE_FWK_MODULE(CmgDiElectronSelector);
 DEFINE_FWK_MODULE(CmgWENuSelector);
 DEFINE_FWK_MODULE(CmgWMuNuSelector);
