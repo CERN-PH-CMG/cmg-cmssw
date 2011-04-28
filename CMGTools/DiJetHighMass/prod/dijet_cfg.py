@@ -30,7 +30,7 @@ if runOnData:
     if runAtFNAL:
         process.source.fileNames = cms.untracked.vstring('file:/uscms/home/mgouzevi/work/TEST_SAMPLES/Data_skim.root')
 else:
-    process.source.fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/user/m/meschi/CMSSW_3_8_6_p2/Reco/Reco_RSGraviton_500_0.root')   
+    process.source.fileNames = cms.untracked.vstring('/store/relval/CMSSW_4_1_4/RelValTTbar/GEN-SIM-RECO/START311_V2-v1/0013/2A878D65-7D60-E011-9308-00261894393D.root')   
     if runAtFNAL:
         process.source.fileNames = cms.untracked.vstring('file:/uscms/home/mgouzevi/work/TEST_SAMPLES/Reco_RSGraviton_500_skim.root')
 
