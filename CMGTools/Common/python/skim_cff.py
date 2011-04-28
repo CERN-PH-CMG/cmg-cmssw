@@ -5,6 +5,7 @@ from CMGTools.Common.skims.cmgPFMETCount_cfi import *
 from CMGTools.Common.skims.cmgMuonCount_cfi import *
 from CMGTools.Common.skims.cmgTauCount_cfi import *
 from CMGTools.Common.skims.cmgDiMuonCount_cfi import *
+from CMGTools.Common.skims.cmgDiTauCount_cfi import *
 from CMGTools.Common.skims.cmgElectronCount_cfi import *
 from CMGTools.Common.skims.cmgDiElectronCount_cfi import *
 
@@ -15,6 +16,7 @@ skimSequence = cms.Sequence(
     cmgElectronCount +
     cmgTauCount +
     cmgDiMuonCount +
+    cmgDiTauCount +
     cmgDiElectronCount
     )
 
