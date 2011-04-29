@@ -16,7 +16,9 @@ runStdPAT = False
 pickRelVal = False
 
 # process.load("CMGTools.Common.sources.DoubleElectron.Run2011A_PromptReco_v1.AOD.PrunedAOD.source_cff")
-process.load("CMGTools.Common.sources.HT.Run2011A_PromptReco_v1.AOD.source_cff")
+# process.load("CMGTools.Common.sources.HT.Run2011A_PromptReco_v1.AOD.source_cff")
+# process.source.fileNames = cms.untracked.vstring('file:AODNoSim.root')
+process.load("CMGTools.Common.sources.SingleElectron.Run2011A_PromptReco_v1.AOD.source_cff")
 
 if pickRelVal: 
     from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
