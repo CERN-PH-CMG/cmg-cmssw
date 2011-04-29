@@ -30,6 +30,14 @@ process.out = cms.OutputModule(
 
 process.load("PhysicsTools.PFCandProducer.PF2PAT_EventContent_cff")
 process.out.outputCommands.extend( process.prunedAODForPF2PATEventContent.outputCommands )
+process.out.outputCommands.append('keep *_HBHENoiseFilterResultProducer_*_*')
+
+
+process.load("CMGTools.Common.eventCleaning.eventCleaning_cff")
+
+process.p = cms.Path(
+    process.eventCleaningSequence
+    )
 
 process.endpath = cms.EndPath(
     process.out
