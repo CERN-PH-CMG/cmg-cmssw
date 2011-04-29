@@ -57,7 +57,7 @@ def getControlPlots(descriptor,isData,inputDir='data') :
     noNorm=getByLabel(descriptor,'nonorm',False)
     
     #open the file
-    url=inputDir+'/'+tag+'/'+tag+'.root'
+    url=inputDir+'/'+tag+'.root'
     file = ROOT.TFile(url)
     if(file is None): return results
     if(file.IsZombie()) : return results
