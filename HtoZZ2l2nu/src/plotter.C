@@ -215,7 +215,7 @@ void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doChi2,floa
 
   //compare different data
   bool canvasFilled(false);
-  Int_t idata(1);
+  //Int_t idata(1);
   TIterator *dataIt = data.MakeIterator();
   while ( (key = dataIt->Next()) ) 
     {
@@ -267,12 +267,13 @@ void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doChi2,floa
 TString getPlotAsTable(TList *stack, TList *spimpose, TList *data)
 {
   TString tabtex("");
-
+  TH1*stacksum=0;
   bool createHeader(true);
   TString colfmt="l";
   TString colnames="";
-  TList *alllists[] = {stack, spimpose,data};
-  for(size_t i=0; i<3; i++)
+  TList totalStack;
+  TList *alllists[] = {stack, &totalStack, spimpose,data};
+  for(size_t i=0; i<4; i++)
     {
       TList *ll = alllists[i];
       if(ll==0) continue;
@@ -282,6 +283,18 @@ TString getPlotAsTable(TList *stack, TList *spimpose, TList *data)
 	while ( (key = pIt->Next()) ) 
 	  {
 	    TH1 *p = (TH1 *) key;
+            if( i==0){ 
+             if(stacksum==0 )
+              {
+                 stacksum=(TH1 *)p->Clone("stacksum");
+                 //cout << p << endl;
+                 totalStack.Add(stacksum);
+                 stacksum->SetTitle("Total");
+              }
+             else stacksum->Add(p);
+             //cout << " add" << endl;
+           }
+
 	    Int_t nbins=p->GetXaxis()->GetNbins();
 	    if(createHeader)
 	      {
@@ -291,9 +304,17 @@ TString getPlotAsTable(TList *stack, TList *spimpose, TList *data)
 		    colnames += " & ";
 		    colnames += p->GetXaxis()->GetBinLabel(iibin);
 		  }
+
+		tabtex +=  "\\documentclass[]{report}\n";
+		tabtex +=  "\\usepackage{graphics}\n";
+		tabtex +=  "\\usepackage{pdflscape}\n";
+		tabtex +=  "\\begin{document}\n";
+		tabtex += "\\begin{landscape}\n";
 		tabtex +=  "\\begin{table}[htp]\n";
-		tabtex += "\\begin{center}\n";
 		tabtex += "\\caption{}\n";
+		//tabtex += "\\begin{center}\n";
+		tabtex += "\\vspace{-20 cm}\n";
+		tabtex += "\\scalebox{0.78}{\n";
 		tabtex += "\\label{tab:table}\n";
 		tabtex += "\\begin{tabular}{"+colfmt+"} \\hline\n";
 		tabtex += "Process " + colnames + "\\\\ \\hline\\hline\n";
@@ -304,12 +325,13 @@ TString getPlotAsTable(TList *stack, TList *spimpose, TList *data)
 	    tabtex += p->GetTitle() ;
 	    for(Int_t iibin=1; iibin<=nbins; iibin++)
 	      {
+             	char buffer[100];
 		float val = p->GetBinContent(iibin);
-                float valerr = p->GetBinError(iibin);
+		float valerr = p->GetBinError(iibin);
+		sprintf(buffer, "%.2f $\\pm$ %.2f",val, valerr);
 		tabtex += " & ";
-		tabtex += val;
-		tabtex += " $\\pm$ ";
-		tabtex += valerr;
+                tabtex += buffer;
+		
 	      }
             tabtex += "\\\\\n";
 	  }
@@ -317,7 +339,10 @@ TString getPlotAsTable(TList *stack, TList *spimpose, TList *data)
       }
     }
   tabtex += "\\end{tabular}\n";
-  tabtex += "\\end{center}\n";
+  tabtex += "}\n";
+  //tabtex += "\\end{center}\n";
   tabtex += "\\end{table}\n";
+  tabtex += "\\end{landscape}\n";
+  tabtex += "\\end{document}";
   return tabtex;
 }
