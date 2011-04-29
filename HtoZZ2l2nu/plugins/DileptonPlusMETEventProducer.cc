@@ -49,12 +49,13 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
 
   
   pat::EventHypothesis hyp;
-  int selStep=0;
+  int selStep(0),selPath(0);
   
   //pre-select vertices
   Handle<reco::VertexCollection> hVtx;
   iEvent.getByLabel(objConfig["Vertices"].getParameter<edm::InputTag>("source"), hVtx);  
   std::vector<reco::VertexRef> selVertices = vertex::filter(hVtx,objConfig["Vertices"]);
+  const reco::Vertex *theSelVertex=0;
   if(selVertices.size()>0) selStep=1;
 
   //average energy density
@@ -76,31 +77,34 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
   if(selLeptons.size()>0) selStep=2;
 
-  
   //build the dilepton
-  std::pair<reco::VertexRef, std::vector<CandidatePtr> > dileptonWithVertex = dilepton::filter(selLeptons,selVertices,objConfig["Dileptons"],iSetup);
-  int selPath = dilepton::classify(dileptonWithVertex.second);
-  if(selPath>0)
+  if(selVertices.size())
     {
-      selStep=3;
-
-      std::vector<CandidatePtr> &dilepton = dileptonWithVertex.second;
-      hyp.add(dilepton[0],"leg1");
-      hyp.add(dilepton[1],"leg2");
-      
-      //add the remaining leptons now
-      for(std::vector<CandidatePtr>::iterator mIt = selMuons.begin(); mIt != selMuons.end(); mIt++)
+      std::pair<reco::VertexRef, std::vector<CandidatePtr> > dileptonWithVertex = dilepton::filter(selLeptons,selVertices,objConfig["Dileptons"],iSetup);
+      selPath = dilepton::classify(dileptonWithVertex.second);
+      if(selPath>0)
 	{
-	  if(mIt->get()== dilepton[0].get() || mIt->get() == dilepton[1].get()) continue;
-	  hyp.add(*mIt,"muon");
-	}
-      for(std::vector<CandidatePtr>::iterator eIt = selElectrons.begin(); eIt != selElectrons.end(); eIt++)
-	{
-	  if(eIt->get()== dilepton[0].get() || eIt->get() == dilepton[1].get()) continue;
-	  hyp.add(*eIt,"electron");
+	  selStep=3;
+	  
+	  std::vector<CandidatePtr> &dilepton = dileptonWithVertex.second;
+	  hyp.add(dilepton[0],"leg1");
+	  hyp.add(dilepton[1],"leg2");
+	  
+	  //add the remaining leptons now
+	  for(std::vector<CandidatePtr>::iterator mIt = selMuons.begin(); mIt != selMuons.end(); mIt++)
+	    {
+	      if(mIt->get()== dilepton[0].get() || mIt->get() == dilepton[1].get()) continue;
+	      hyp.add(*mIt,"muon");
+	    }
+	  for(std::vector<CandidatePtr>::iterator eIt = selElectrons.begin(); eIt != selElectrons.end(); eIt++)
+	    {
+	      if(eIt->get()== dilepton[0].get() || eIt->get() == dilepton[1].get()) continue;
+	      hyp.add(*eIt,"electron");
+	    }
+	  theSelVertex = dileptonWithVertex.first.get();
 	}
     }
-
+  
   //add the jets
   Handle<View<Candidate> > hJet; 
   iEvent.getByLabel(objConfig["Jets"].getParameter<edm::InputTag>("source"), hJet);
@@ -129,7 +133,7 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
 	      hyp.add( *itt, it->first );
 	}
     }
-
+      
   // work done, save results
   auto_ptr<std::vector<pat::EventHypothesis> > hyps(new std::vector<pat::EventHypothesis>() );
   hyps->push_back(hyp);
@@ -141,10 +145,7 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   iEvent.put(selectionInfo,"selectionInfo");
 
   auto_ptr<reco::VertexCollection> selVertex(new reco::VertexCollection() );
-  if(selPath>0)
-    {
-      selVertex->push_back( *(dileptonWithVertex.first.get()) );
-    }
+  if(theSelVertex)  selVertex->push_back( *theSelVertex );   
   iEvent.put(selVertex,"selectedVertices");
 }
 

@@ -21,6 +21,7 @@ namespace dilepton{
     return ptError;
   }
   
+
   //
   std::pair<reco::VertexRef, std::vector<reco::CandidatePtr> > filter(std::vector<reco::CandidatePtr> &selLeptons, 
 								      std::vector<reco::VertexRef> &selVertices, 
@@ -35,28 +36,67 @@ namespace dilepton{
       //config parameters
       double minDileptonMass = iConfig.getParameter<double>("minDileptonMass");
       double maxDileptonMass = iConfig.getParameter<double>("maxDileptonMass");
-      
+      bool constrainByVertex = iConfig.getParameter<bool>("constrainByVertex");
+      double maxDxy = iConfig.getParameter<double>("maxDxy");
+      double maxDz = iConfig.getParameter<double>("maxDz");
+
       for(size_t ilep=0; ilep<selLeptons.size(); ilep++)
 	{
+	  reco::VertexRef curSelVtx;
 	  reco::CandidatePtr lep1Ptr = selLeptons[ilep];
-	  reco::VertexRef v1=
-	    dynamic_cast<const pat::Electron *>( lep1Ptr.get() ) ?
-	    vertex::getClosestVertexTo<reco::GsfTrack>( dynamic_cast<const pat::Electron *>(lep1Ptr.get())->gsfTrack().get(), selVertices, iSetup,true) :
-	    vertex::getClosestVertexTo<reco::Track>( dynamic_cast<const pat::Muon *>(lep1Ptr.get())->innerTrack().get() , selVertices, iSetup,true) ;
-	  if(v1.get()==0) continue;
+	  
+	  //check vertex association
+	  const reco::Vertex *pv1=0;
+	  if(constrainByVertex)
+	    {
+	      reco::VertexRef v1=
+		dynamic_cast<const pat::Electron *>( lep1Ptr.get() ) ?
+		vertex::getClosestVertexTo<reco::GsfTrack>( dynamic_cast<const pat::Electron *>(lep1Ptr.get())->gsfTrack().get(), selVertices, iSetup,true) :
+		vertex::getClosestVertexTo<reco::Track>( dynamic_cast<const pat::Muon *>(lep1Ptr.get())->innerTrack().get() , selVertices, iSetup,true) ;
+	      if(v1.get()==0) continue;
+	      pv1=v1.get();
+	      curSelVtx=v1;
+	    }
+	  else if(selVertices.size()){
+	    reco::VertexRef v1=selVertices[0];
+	    double dxy(  dynamic_cast<const pat::Electron *>( lep1Ptr.get() ) ? 
+			 dynamic_cast<const pat::Electron *>(lep1Ptr.get())->gsfTrack()->dxy( v1.get()->position() ) : 
+			 dynamic_cast<const pat::Muon *>(lep1Ptr.get())->innerTrack()->dxy( v1.get()->position() ) );
+	    double dz(  dynamic_cast<const pat::Electron *>( lep1Ptr.get() ) ? 
+			dynamic_cast<const pat::Electron *>(lep1Ptr.get())->gsfTrack()->dz( v1.get()->position() ) : 
+			dynamic_cast<const pat::Muon *>(lep1Ptr.get())->innerTrack()->dz( v1.get()->position() ) );
+	    if(fabs(dxy)>fabs(maxDxy) || fabs(dz)>fabs(maxDz) ) continue;
+	    pv1=v1.get();
+	    curSelVtx=v1;
+	  }
 
 	  //iterate over the second lepton
 	  for(size_t jlep=ilep+1; jlep<selLeptons.size(); jlep++)
 	    {
 	      reco::CandidatePtr lep2Ptr = selLeptons[jlep];
-	      reco::VertexRef v2=
-		dynamic_cast<const pat::Electron *>( lep2Ptr.get() ) ?
-		vertex::getClosestVertexTo<reco::GsfTrack>( dynamic_cast<const pat::Electron *>(lep2Ptr.get())->gsfTrack().get(), selVertices, iSetup,true) :
-		vertex::getClosestVertexTo<reco::Track>( dynamic_cast<const pat::Muon *>(lep2Ptr.get())->innerTrack().get(), selVertices, iSetup,true) ;
-	      if(v2.get()==0) continue;	      
 
-	      //same vertex must be assigned
-	      if(v1.get()!=v2.get()) continue;
+	      //check vertex association
+	      const reco::Vertex *pv2=pv1;
+	      if(constrainByVertex)
+		{
+		  reco::VertexRef v2=
+		    dynamic_cast<const pat::Electron *>( lep2Ptr.get() ) ?
+		    vertex::getClosestVertexTo<reco::GsfTrack>( dynamic_cast<const pat::Electron *>(lep2Ptr.get())->gsfTrack().get(), selVertices, iSetup,true) :
+		    vertex::getClosestVertexTo<reco::Track>( dynamic_cast<const pat::Muon *>(lep2Ptr.get())->innerTrack().get(), selVertices, iSetup,true) ;
+		  if(v2.get()==0) continue;	      
+		  pv2=v2.get();
+		  if(pv1==0 || pv2==0 || pv1!=pv2) continue;
+		}
+	      else if(pv2)
+		{
+		  double dxy(  dynamic_cast<const pat::Electron *>( lep2Ptr.get() ) ? 
+			       dynamic_cast<const pat::Electron *>(lep2Ptr.get())->gsfTrack()->dxy( pv2->position() ) : 
+			       dynamic_cast<const pat::Muon *>(lep2Ptr.get())->innerTrack()->dxy( pv2->position() ) );
+		  double dz(  dynamic_cast<const pat::Electron *>( lep2Ptr.get() ) ? 
+			      dynamic_cast<const pat::Electron *>(lep2Ptr.get())->gsfTrack()->dz( pv2->position() ) : 
+			      dynamic_cast<const pat::Muon *>(lep2Ptr.get())->innerTrack()->dz( pv2->position() ) );
+		  if(fabs(dxy)>fabs(maxDxy) || fabs(dz)>fabs(maxDz) ) continue;
+		}
 
 	      //compute the mass
 	      double en = lep1Ptr->energy() + lep2Ptr->energy();
@@ -74,7 +114,7 @@ namespace dilepton{
 	      //take if leading in sum pT
 	      if(selDilepton.size()==0) 
 		{
-		  selVtx = v1;
+		  selVtx = curSelVtx;
 		  selDilepton=dilCand;
 		}
 	      else
@@ -82,7 +122,7 @@ namespace dilepton{
 		  double sumpt=selDilepton[0]->pt()+selDilepton[1]->pt();
 		  double candsumpt=dilCand[0]->pt()+dilCand[1]->pt();
 		  if(sumpt>candsumpt) continue;
-		  selVtx=v1;
+		  selVtx=curSelVtx;
 		  selDilepton=dilCand;
 		}
 	      

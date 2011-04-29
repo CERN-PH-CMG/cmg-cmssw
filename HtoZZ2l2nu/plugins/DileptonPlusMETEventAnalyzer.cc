@@ -59,6 +59,7 @@ using namespace std;
 
 //
 DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterSet &iConfig)
+  : rmet_(1.0,1.0,0.0,0.0,1.0)
 {
   try{
     
@@ -221,6 +222,10 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     edm::Handle< std::vector<reco::PFCandidate> > pfCands;
     event.getByLabel(edm::InputTag("particleFlow"),pfCands);
 
+    edm::Handle<std::vector<reco::PFMET> > hPfMET; 
+    event.getByLabel(edm::InputTag("pfMet"), hPfMET);
+
+
     //require that a dilepton has benn selected
     if(selPath==0 or selStep<3) return;
     std::string istream="mumu";
@@ -300,13 +305,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     const pat::MET *themet=evhyp.getAs<pat::MET>("met");
     TLorentzVector metP(themet->px(),themet->py(),0,themet->pt());
     float metsig(-1);
-    try{
-      const reco::MET *origMet = dynamic_cast<const reco::MET *>(themet->originalObject());
-      metsig=origMet->significance();
-    }catch(std::exception &e){
-      metsig=themet->significance();
-      cout << e.what() << endl;
-    }
+    if(hPfMET.isValid())
+      metsig = ((*hPfMET)[0]).significance();
 
     //require MET back-to-back to dilepton
     float dphiZ2met=dileptonP.DeltaPhi(metP);

@@ -45,17 +45,21 @@ from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 process.eetrigFilter = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT")
 process.eetrigFilter.throw = cms.bool(False)
 process.eetrigFilter.HLTPaths = ['HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1',
+                                 'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2',
                                  'HLT_Ele17_CaloIdL_CaloIsoVL_Ele15_HFL_v1',
-                                 'HLT_Ele32_CaloIdL_CaloIsoVL_SC17_v1']
+                                 'HLT_Ele17_CaloIdL_CaloIsoVL_Ele15_HFL_v2',
+                                 'HLT_Ele32_CaloIdL_CaloIsoVL_SC17_v1',
+                                 'HLT_Ele32_CaloIdL_CaloIsoVL_SC17_v2']
 process.mumutrigFilter = process.eetrigFilter.clone()
 process.mumutrigFilter.HLTPaths =['HLT_DoubleMu6_v1',
                                   'HLT_DoubleMu7_v1']
 process.emutrigFilter = process.eetrigFilter.clone()
 process.emutrigFilter.HLTPaths = ['HLT_Mu17_Ele8_CaloIdL_v1',
+                                  'HLT_Mu17_Ele8_CaloIdL_v2',
                                   'HLT_Mu8_Ele17_CaloIdL_v1',
+                                  'HLT_Mu8_Ele17_CaloIdL_v2',
                                   'HLT_Mu10_Ele10_CaloIdL_v2',
-                                  'HLT_Mu15_Photon20_CaloIdL_v2',
-                                  'HLT_Mu8_Photon20_CaloIdVT_IsoT_v2']
+                                  'HLT_Mu10_Ele10_CaloIdL_v3']
 process.singlemutrigFilter = process.eetrigFilter.clone()
 process.singlemutrigFilter.HLTPaths = ['HLT_Mu9',
                                        'HLT_Mu15_v1']
