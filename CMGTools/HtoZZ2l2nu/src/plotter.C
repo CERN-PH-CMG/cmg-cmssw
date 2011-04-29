@@ -215,7 +215,6 @@ void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doChi2,floa
 
   //compare different data
   bool canvasFilled(false);
-  //Int_t idata(1);
   TIterator *dataIt = data.MakeIterator();
   while ( (key = dataIt->Next()) ) 
     {
@@ -325,13 +324,10 @@ TString getPlotAsTable(TList *stack, TList *spimpose, TList *data)
 	    tabtex += p->GetTitle() ;
 	    for(Int_t iibin=1; iibin<=nbins; iibin++)
 	      {
-             	char buffer[100];
-		float val = p->GetBinContent(iibin);
-		float valerr = p->GetBinError(iibin);
-		sprintf(buffer, "%.2f $\\pm$ %.2f",val, valerr);
-		tabtex += " & ";
-                tabtex += buffer;
-		
+		char buf[100];
+		if(i<2) sprintf(buf,"& %.3f $\\pm$ %.3f",p->GetBinContent(iibin),p->GetBinError(iibin));
+		else        sprintf(buf,"& %f",p->GetBinContent(iibin));
+		tabtex += buf;
 	      }
             tabtex += "\\\\\n";
 	  }

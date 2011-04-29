@@ -15,7 +15,8 @@ process.load('CMGTools.HtoZZ2l2nu.PileupNormalizationProducer_cfi')
 process.load('CMGTools.HtoZZ2l2nu.CleanEventAnalyzer_cfi')
 process.evAnalyzer.dtag=cms.string(dtag)
 process.TFileService = cms.Service("TFileService", fileName = cms.string(outputFile) )
-process.p = cms.Path(process.cleanEvent*process.cleanEventFilter*process.puWeights*process.evAnalyzer)
+#process.p = cms.Path(process.cleanEvent*process.cleanEventFilter*process.puWeights*process.evAnalyzer)
+process.p = cms.Path(process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
 
 
 # message logger

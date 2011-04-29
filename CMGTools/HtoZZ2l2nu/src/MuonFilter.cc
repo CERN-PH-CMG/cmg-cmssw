@@ -19,8 +19,6 @@ namespace muon{
       double maxTrackChi2 = iConfig.getParameter<double>("maxTrackChi2");
       int minValidTrackerHits = iConfig.getParameter<int>("minValidTrackerHits");
       int minValidMuonHits = iConfig.getParameter<int>("minValidMuonHits");
-      double maxDxy = iConfig.getParameter<double>("maxDxy");
-      double maxDz = iConfig.getParameter<double>("maxDz");
 
       //iterate over the muons
       for(size_t iMuon=0; iMuon< hMu.product()->size(); ++iMuon)      
@@ -46,12 +44,6 @@ namespace muon{
 	  //	  int nMatches = muon->numberOfMatches();
 	  if(chi2>maxTrackChi2 || nValidTrackerHits < minValidTrackerHits || nValidMuonHits<minValidMuonHits) continue;
 
-	  //beamspot compatibility
-	  const reco::TrackRef & innerTrack = muon->innerTrack();
-	  double dxy = innerTrack->dxy();
-	  double dz = innerTrack->dz();
-	  //if(fabs(dxy)>fabs(maxDxy) || fabs(dz)>fabs(maxDz) ) continue;
-	  	  
 	  //id 
 	  if(!id.empty())
 	    {

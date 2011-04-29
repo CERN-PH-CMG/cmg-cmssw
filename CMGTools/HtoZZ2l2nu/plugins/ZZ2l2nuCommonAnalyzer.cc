@@ -142,8 +142,6 @@ void ZZ2l2nuCommonAnalyzer::analyze(const edm::Event &event, const edm::EventSet
     if(selPath==2) istream="ee";
     if(selPath==3) istream="emu";
 
-    getHist(istream+"_cutflow")->Fill(2,weight);
-
     //basic dilepton kinematics
     reco::CandidatePtr lepton1 = evhyp["leg1"];
     TLorentzVector lepton1P(lepton1->px(),lepton1->py(),lepton1->pz(), lepton1->energy());
@@ -152,13 +150,13 @@ void ZZ2l2nuCommonAnalyzer::analyze(const edm::Event &event, const edm::EventSet
     TLorentzVector dileptonP=lepton1P+lepton2P;
 
     if(fabs(dileptonP.M()-91)>15) return;
-    getHist(istream+"_cutflow")->Fill(3,weight);
+    getHist(istream+"_cutflow")->Fill(2,weight);
 
     if(lepton1P.Pt()<20) return;
-    getHist(istream+"_cutflow")->Fill(4,weight);
+    getHist(istream+"_cutflow")->Fill(3,weight);
 
     if(lepton2P.Pt()<20) return;
-    getHist(istream+"_cutflow")->Fill(5,weight);
+    getHist(istream+"_cutflow")->Fill(4,weight);
     
     //count the b-tag multiplicity
     std::vector<reco::CandidatePtr> seljets= evhyp.all("jet");
@@ -168,11 +166,11 @@ void ZZ2l2nuCommonAnalyzer::analyze(const edm::Event &event, const edm::EventSet
       if(btag>2.0) nbjets+=1; //loose point
     }
     if(nbjets) return;
-    getHist(istream+"_cutflow")->Fill(6,weight);
+    getHist(istream+"_cutflow")->Fill(5,weight);
 
     //pT(Z)
     if(dileptonP.Pt()<50) return;
-    getHist(istream+"_cutflow")->Fill(7,weight);
+    getHist(istream+"_cutflow")->Fill(6,weight);
 
     //reduced MET
     const pat::MET *themet=evhyp.getAs<pat::MET>("met");
@@ -181,7 +179,7 @@ void ZZ2l2nuCommonAnalyzer::analyze(const edm::Event &event, const edm::EventSet
     float dphimin=TMath::MinElement(sizeof(dphil2met)/sizeof(float),dphil2met);
     float relMET=metP.Pt();
     if(themet->pt()<80) return;
-   getHist(istream+"_cutflow")->Fill(8,weight);
+   getHist(istream+"_cutflow")->Fill(7,weight);
 
   }catch(std::exception &e){
     std::cout << "[CleanEventAnalysis][analyze] failed with " << e.what() << std::endl;

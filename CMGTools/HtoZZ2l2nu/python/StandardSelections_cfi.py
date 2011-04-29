@@ -20,8 +20,6 @@ BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuons"),
                                maxTrackChi2 = cms.double(10),
                                minValidTrackerHits = cms.int32(10),
                                minValidMuonHits=cms.int32(1),
-                               maxDxy = cms.double(0.02),
-                               maxDz = cms.double(0.1),
                                id = cms.string("TMLastStationLoose"),
                                maxRelIso = cms.double(0.25)
                                )
@@ -49,7 +47,10 @@ BaseJetSelection = cms.PSet( source = cms.InputTag("selectedPatJets"),
 
 # base values for the dilepton selection ------------------------------------------
 BaseDileptonSelection = cms.PSet( minDileptonMass = cms.double(0),
-                                  maxDileptonMass = cms.double(7000)
+                                  maxDileptonMass = cms.double(7000),
+                                  constrainByVertex = cms.bool(True),
+                                  maxDxy = cms.double(0.02),
+                                  maxDz = cms.double(0.1)
                                   )
 
 # base values for met selection -----------------------------------------------------
