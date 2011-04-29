@@ -1,5 +1,5 @@
-{'UserCode/CMG/AnalysisDataFormats/CMGTools': ['Maxime_20110428', 'AnalysisDataFormats/CMGTools'],
- 'UserCode/CMG/CMGTools/Common':              ['Maxime_20110429', 'CMGTools/Common'],
+{'UserCode/CMG/AnalysisDataFormats/CMGTools': ['Colin_Apr18', 'AnalysisDataFormats/CMGTools'],
+ 'UserCode/CMG/CMGTools/Common':              ['Colin_Apr18', 'CMGTools/Common'],
  'UserCode/CMG/CMGTools/RootTools':           ['Colin_Apr18', 'CMGTools/RootTools'],
  ### now the PAT stuff itself - see https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePATReleaseNotes41X#V08_06_01_09
  'DataFormats/PatCandidates':                     ['V06-04-01-04', 'DataFormats/PatCandidates'],
