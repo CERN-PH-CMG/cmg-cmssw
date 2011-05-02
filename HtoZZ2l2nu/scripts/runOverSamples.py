@@ -15,7 +15,6 @@ procList=json.load(jsonFile,encoding='utf-8').items()
 dirtag=sys.argv[3]
 fperjob=int(sys.argv[4])
 scriptFile=os.path.expandvars('${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapSubmitLocalRun.sh')
-print scriptFile
 
 params=''
 if(len(sys.argv)>4) :
