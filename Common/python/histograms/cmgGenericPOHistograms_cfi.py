@@ -57,6 +57,21 @@ cmgGenericPOHistograms = cms.EDAnalyzer(
                high = cms.untracked.double(5),
                title = cms.untracked.string("#eta")
                )
+            ),
+# added bi-dim hist (T.Camporesi) May 2 -2011
+        pt_eta = cms.untracked.VPSet(
+            cms.untracked.PSet( 
+               var = cms.untracked.string('pt()'),
+               low = cms.untracked.double(0),
+               high = cms.untracked.double(200),
+               nbins = cms.untracked.int32(50)
+               ),
+            cms.untracked.PSet( 
+               var = cms.untracked.string('abs(eta())'),
+               low = cms.untracked.double(0),
+               high = cms.untracked.double(2.5),
+               nbins = cms.untracked.int32(10)
+               )
             )
     )
     )
