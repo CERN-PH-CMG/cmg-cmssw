@@ -142,6 +142,7 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
 	  results_[subcat+"_met2vertex_dphi"] = formatPlot( newDir.make<TH1F>(subcat+"_met2vertex_dphi", ";#Delta #phi(#slash{E}_{T},vertex) [rad]; Events", 50, 0,3.2), 1,1,1,20,0,false,true,1,1,1);
 	  results_[subcat+"_met2dilepton_dphi"] = formatPlot( newDir.make<TH1F>(subcat+"_met2dilepton_dphi", ";#Delta #phi(#slash{E}_{T},vertex) [rad]; Events", 50, 0,3.2), 1,1,1,20,0,false,true,1,1,1);
 	  
+	  if(jstream==0) results_[subcat+"_mT_otherlep"]= formatPlot( newDir.make<TH1F>(subcat+"_mT_otherlep",";Transverse mass(other leptons,MET) [GeV/c^{2}]; Events",50,0,500), 1,1,1,20,0,false,true,1,1,1);
 	  results_[subcat+"_mT_individualsum"]  = formatPlot( newDir.make<TH1F>(subcat+"_mT_individualsum",";#Sigma Transverse mass(lepton,MET) [GeV/c^{2}]; Events",50,0,500), 1,1,1,20,0,false,true,1,1,1);
 	  results_[subcat+"_mT_individualcorr"]           = formatPlot( newDir.make<TH2F>(subcat+"_mT_individualcorr",";Transverse mass(leading lepton,MET) [GeV/c^{2}];Transverse mass(trailer lepton,MET) [GeV/c^{2}]; Events",50,0,500,50,0,500), 1,1,1,20,0,false,true,1,1,1);
 	  
@@ -228,7 +229,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //
     // VERTEX KINEMATICS
     //
-    
+
     //vertex quantities
     const reco::Vertex *primVertex = &(*(vertexHandle.product()))[0];
     getHist(istream+"_ngoodvertex")->Fill(selVertices.size(),weight);
@@ -263,7 +264,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //
     // LEPTON KINEMATICS
     //
-    
+
     //basic dilepton kinematics
     reco::CandidatePtr lepton1 = evhyp["leg1"];
     LorentzVector lepton1P(lepton1->p4());
@@ -286,7 +287,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     if(fabs(dileptonP.mass()-91)>15) return;
     getHist(istream+"_cutflow")->Fill(3,weight);
 
-    //veto-3rd leptons in the W mass window zone
+    //veto-other leptons
     int lepMult(2);
     for (pat::eventhypothesis::Looper<pat::Electron> ele = evhyp.loopAs<pat::Electron>("electron"); ele; ++ele) 
       {
@@ -294,7 +295,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	LorentzVector lepP(ele->px(),ele->py(),ele->pz(), ele->energy());
 	float dphi=deltaPhi(metP.phi(),lepP.phi());
 	float mTlm=TMath::Sqrt(2*metP.pt()*lepP.pt()*(1-TMath::Cos(dphi)));
-	getHist(istream+"_othermT_individual")->Fill(mTlm,weight);
+	getHist(istream+"_mT_otherlep")->Fill(mTlm,weight);
       }
     for (pat::eventhypothesis::Looper<pat::Muon> mu = evhyp.loopAs<pat::Muon>("muon"); mu; ++mu) 
       {
@@ -302,7 +303,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	LorentzVector lepP(mu->px(),mu->py(),mu->pz(), mu->energy());
 	float dphi=deltaPhi(metP.phi(),lepP.phi());
 	float mTlm=TMath::Sqrt(2*metP.pt()*lepP.pt()*(1-TMath::Cos(dphi)));
-	getHist(istream+"_othermT_individual")->Fill(mTlm,weight);
+	getHist(istream+"_mT_otherlep")->Fill(mTlm,weight);
       }
     getHist(istream+"_nleptons")->Fill(lepMult,weight);
     if(lepMult>2) return;
@@ -312,7 +313,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //
     // JET KINEMATICS
     //
-        
     //count the jets in the event
     std::vector<reco::CandidatePtr> seljets= evhyp.all("jet");
     int njets(0), nbjets(0);
@@ -444,7 +444,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     float transverseMass=TMath::Power(TMath::Sqrt(TMath::Power(dileptonP.pt(),2)+pow(dileptonP.mass(),2))+TMath::Sqrt(TMath::Power(metP.pt(),2)+pow(dileptonP.mass(),2)),2);
     transverseMass-=TMath::Power(transvSum.pt(),2);
     transverseMass=TMath::Sqrt(transverseMass);
-    
+
     //final control histograms (inclusive and per jet bin)
     TString catsToFill[2]={istream,substream};
     for(size_t icat=0; icat<2; icat++)
