@@ -178,10 +178,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
       }
     const pat::EventHypothesis &evhyp = (*(evHandle.product()))[0];
     
-    //the met
-    const pat::MET *themet=evhyp.getAs<pat::MET>("met"); 
-    LorentzVector metP(themet->px(),themet->py(),0,themet->pt());
-
     edm::Handle<std::vector<reco::Vertex> > vertexHandle;
     event.getByLabel(edm::InputTag("cleanEvent:selectedVertices"),vertexHandle);
     if(!vertexHandle.isValid()) 
@@ -225,10 +221,14 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     if(selPath==3) istream="emu";
     getHist(istream+"_cutflow")->Fill(2,weight);
 
+    //the met
+    const pat::MET *themet=evhyp.getAs<pat::MET>("met"); 
+    LorentzVector metP(themet->px(),themet->py(),0,themet->pt());
+
     //
     // VERTEX KINEMATICS
     //
-
+    
     //vertex quantities
     const reco::Vertex *primVertex = &(*(vertexHandle.product()))[0];
     getHist(istream+"_ngoodvertex")->Fill(selVertices.size(),weight);
@@ -494,6 +494,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.genmet_pt=genMET.pt();    ev.genmet_phi=genMET.phi();
     ev.l1id = l1id;              ev.l1px=lepton1P.px();       ev.l1py=lepton1P.py();  ev.l1pz=lepton1P.pz();  ev.l1e=lepton1P.energy();
     ev.l2id = l2id;              ev.l2px=lepton2P.px();       ev.l2py=lepton2P.py();  ev.l2pz=lepton2P.pz();  ev.l2e=lepton2P.energy();
+    summaryHandler_.fillTree();
+
   }catch(std::exception &e){
     std::cout << "[CleanEventAnalysis][analyze] failed with " << e.what() << std::endl;
   }
