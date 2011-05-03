@@ -103,13 +103,13 @@
          "data":[
 	      {
                "dtag":"DYToEE_M-20_Spring11",
-	       "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall10-START38_V12-v3/GEN-SIM-RECO",
+	       "dset":"/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
 	       "patdir":"/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/DYToEE_M-20/DYToEE_M-20_Spring11",
                "xsec":1670
               },
 	      {
                "dtag":"DYToMuMu_M-20_Spring11",
-	       "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall10-START38_V12-v3/GEN-SIM-RECO",
+	       "dset":"/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
 	       "patdir":"/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/DYToMuMu_M-20/DYToMuMu_M-20_Spring11",
                "xsec":1670
               }
@@ -122,7 +122,7 @@
          "data":[
 	      {
                "dtag":"DYToTauTau_M-20_Spring11",
-	       "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall10-START38_V12-v3/GEN-SIM-RECO",
+	       "dset":"/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
 	       "patdir":"/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/DYToTauTau_M-20/DYToTauTau_M-20_Spring11",
                "xsec":1670
               }
