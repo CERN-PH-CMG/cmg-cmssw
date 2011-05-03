@@ -20,6 +20,16 @@ namespace dilepton{
       }
     return ptError;
   }
+
+  //
+  int getLeptonId(reco::CandidatePtr &lepton)
+  {
+    int id=lepton->charge();
+
+    if( dynamic_cast<const pat::Muon *>( lepton.get() ) ) id *= 13;
+    else if( dynamic_cast<const pat::Electron *>( lepton.get() ) ) id *= 11;
+    return id;
+  }
   
 
   //
@@ -142,10 +152,11 @@ namespace dilepton{
   int classify(std::vector<reco::CandidatePtr> &selDilepton)
   {
     if(selDilepton.size()==0) return UNKNOWN;
-    if(dynamic_cast<const pat::Muon *>(selDilepton[0].get()) && dynamic_cast<const pat::Muon *>(selDilepton[1].get()) ) return MUMU;
-    if(dynamic_cast<const pat::Electron *>(selDilepton[0].get()) && dynamic_cast<const pat::Electron *>(selDilepton[1].get()) ) return EE;
-    if(dynamic_cast<const pat::Muon *>(selDilepton[0].get()) && dynamic_cast<const pat::Electron *>(selDilepton[1].get()) ) return EMU;
-    if(dynamic_cast<const pat::Electron *>(selDilepton[0].get()) && dynamic_cast<const pat::Muon *>(selDilepton[1].get()) ) return EMU;
+    int id1=fabs(getLeptonId(selDilepton[0]));
+    int id2=fabs(getLeptonId(selDilepton[1]));
+    if( id1==13 && id2==13) return MUMU;
+    if( id1==11 && id2==11) return EE;
+    if( ( id1==13 && id2==11) || ( id1==11 && id2==13)  ) return EMU;
     return UNKNOWN;
   }
 }

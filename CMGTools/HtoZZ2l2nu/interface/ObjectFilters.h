@@ -76,6 +76,7 @@ namespace dilepton
 
   enum DileptonClassification {UNKNOWN=0,MUMU=1,EE=2,EMU=3};
   int classify(std::vector<reco::CandidatePtr> &selDilepton);
+  int getLeptonId(reco::CandidatePtr &lepton);
   double getPtErrorFor(reco::CandidatePtr &lepton);
 }
 

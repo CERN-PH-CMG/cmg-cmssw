@@ -6,26 +6,24 @@ Wrapper to test different cuts
 def getCuts(version) :
     #Chiara's skim
     #missing:
-    #  - Muons: isTrackerMuon && abs(innerTrack.dxy())<0.2 - the following placeholder is used
     simpleMuonId=("numberOfMatchedStations>1 && globalTrack.normalizedChi2<10 && globalTrack.hitPattern.numberOfValidMuonHits>0")
-    #  -Electrons: eidLoose - the following placeholder is used
-    simpleEleId =("abs(deltaEtaSuperClusterTrackAtVtx) < 0.010 && (( isEB && sigmaIetaIeta < 0.011) || (!isEB && sigmaIetaIeta < 0.031))") 
+    simpleEleId =("electronID(\"eidLoose\")")
 
     if(version=='A1') :
-        MUON_CUT=("pt > 15 && abs(eta)<2.4 && isGlobalMuon &&" + simpleMuonId );
-        ELECTRON_CUT=("pt > 15 && abs(eta)<2.5 && ecalDrivenSeed &&" + simpleEleId)
+        MUON_CUT=("isGlobalMuon &&" + simpleMuonId );
+        ELECTRON_CUT=("ecalDrivenSeed &&" + simpleEleId)
         DIMUON_CUT=("")
         DIELECTRON_CUT=("")
         EMU_CUT=("")
     if(version=='A2') :
-        MUON_CUT=("pt > 15 && abs(eta)<2.4 && isGlobalMuon &&" + simpleMuonId);
-        ELECTRON_CUT=("pt > 15 && abs(eta)<2.5 && ecalDrivenSeed &&" + simpleEleId)
+        MUON_CUT=("isGlobalMuon &&" + simpleMuonId);
+        ELECTRON_CUT=("ecalDrivenSeed &&" + simpleEleId)
         DIMUON_CUT=("mass>20")
         DIELECTRON_CUT=("mass>20")
         EMU_CUT=("mass>20")
     if(version=='A3') :
-        MUON_CUT=("pt > 15 && abs(eta)<2.4 && isGlobalMuon &&" + simpleMuonId);
-        ELECTRON_CUT=("pt > 15 && abs(eta)<2.5 && ecalDrivenSeed &&" + simpleEleId)
+        MUON_CUT=("isGlobalMuon &&" + simpleMuonId);
+        ELECTRON_CUT=("ecalDrivenSeed &&" + simpleEleId)
         DIMUON_CUT=("mass>40")
         DIELECTRON_CUT=("mass>40")
         EMU_CUT=("mass>40")
@@ -45,7 +43,7 @@ def getCuts(version) :
         EMU_CUT=("mass > 20 && daughter(0).pt>20 && daughter(1).pt()>15")
     if(version=='B3') :
         MUON_CUT=("pt > 15 && abs(eta)<2.4 && isGlobalMuon")
-        ELECTRON_CUT=("pt > 15 && abs(eta)<2.5 && ecalDrivenSeed &&" + simpleEleId)
+        ELECTRON_CUT=("pt > 15 && abs(eta)<2.5 && ecalDrivenSeed && " + simpleEleId)
         DIMUON_CUT=("mass > 20 && daughter(0).pt>20 && daughter(1).pt()>15")
         DIELECTRON_CUT=("mass > 20 && daughter(0).pt>20 && daughter(1).pt()>15")
         EMU_CUT=("mass > 20 && daughter(0).pt>20 && daughter(1).pt()>15")
@@ -67,7 +65,15 @@ emuCounter = startCounter.clone()
 
 # LEPTONS
 goodMuons = cms.EDFilter("MuonRefSelector",  src = cms.InputTag("muons"),  cut = cms.string(MUON_CUT) )
-goodElectrons = cms.EDFilter("GsfElectronRefSelector",  src = cms.InputTag("gsfElectrons"), cut = cms.string(ELECTRON_CUT) )
+#goodElectrons = cms.EDFilter("GsfElectronRefSelector",  src = cms.InputTag("gsfElectrons"), cut = cms.string(ELECTRON_CUT) )
+from PhysicsTools.PatAlgos.producersLayer1.electronProducer_cff import *
+from RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_DataTuning_cfi import eidLoose
+patElectrons.electronIDSources.eidLoose = cms.InputTag("eidLoose")
+goodElectrons = cms.EDFilter("PATElectronRefSelector",
+                             src = cms.InputTag("patElectrons"),
+                             cut = cms.string(ELECTRON_CUT)
+                             )
+
 
 # DILEPTONS
 diMuons = cms.EDProducer("CandViewShallowCloneCombiner",
@@ -102,7 +108,8 @@ crossLeptonsFilter = cms.EDFilter("CandViewCountFilter",
                                   )
 
 
+
 # SEQUENCES
 diMuonSequence = cms.Sequence( startCounter * goodMuons * diMuons * diMuonsFilter * mumuCounter )
-diElectronSequence = cms.Sequence( startCounter * goodElectrons * diElectrons * diElectronsFilter * eeCounter )
-eMuSequence = cms.Sequence( startCounter * goodMuons * goodElectrons * crossLeptons * crossLeptonsFilter  * emuCounter )
+diElectronSequence = cms.Sequence( eidLoose * makePatElectrons * startCounter * goodElectrons * diElectrons * diElectronsFilter * eeCounter )
+eMuSequence = cms.Sequence( eidLoose * makePatElectrons * startCounter * goodMuons * goodElectrons * crossLeptons * crossLeptonsFilter  * emuCounter )
