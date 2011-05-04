@@ -59,6 +59,7 @@ def getControlPlots(descriptor,isData,inputDir='data') :
     #open the file
     url=inputDir+'/'+tag+'.root'
     file = ROOT.TFile(url)
+
     if(file is None): return results
     if(file.IsZombie()) : return results
     dir = file.GetDirectory('evAnalyzer/'+tag)

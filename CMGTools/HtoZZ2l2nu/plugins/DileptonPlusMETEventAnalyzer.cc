@@ -425,8 +425,15 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	for(std::vector<reco::PFCandidate>::const_iterator it = pfCands->begin(); it != pfCands->end(); it++)
 	  {
 	    LorentzVector candP(it->p4());
-	    if(it->charge()==0 && candP.pt()>5)                            neutralSum -= candP;
-	    else if(it->charge() && it->vertex()==primVertex->position() ) chSum -= candP;
+	    if(it->charge()==0 && candP.pt()>5 && fabs(candP.eta())<3)     neutralSum -= candP;
+	    else if(it->charge())
+	      {
+		math::XYZPointD vec( it->vertex().x()-primVertex->position().x(),
+				     it->vertex().y()-primVertex->position().y(),
+				     it->vertex().z()-primVertex->position().z() );
+		if( vec.R()>0.1) continue;
+		chSum -= candP;
+	      }
 	  }
 	tmet = chSum + neutralSum;
       }
