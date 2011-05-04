@@ -15,12 +15,11 @@ class PileupNormalizationProducer : public edm::EDProducer {
 public:
   PileupNormalizationProducer(const edm::ParameterSet &iConfig) ;
   virtual void produce( edm::Event &iEvent, const edm::EventSetup &iSetup) ;
+
 private:
   std::map<std::string, edm::ParameterSet > objConfig;
   bool useVertexDistribution_;
-  int fixPileupTo_;
-  TH1D *vertexDataH_, *fixedPileupH_, *puMCH_;
-  TH2D *putovertexMCH_;
+  TH1D *vertexDataH_, *puUnfoldedH_;
 };
 
 
@@ -29,38 +28,41 @@ using namespace std;
 
 //
 PileupNormalizationProducer::PileupNormalizationProducer(const edm::ParameterSet &iConfig)
-  : useVertexDistribution_( iConfig.getParameter<bool>("useVertexDistribution") ),
-    fixPileupTo_( iConfig.getParameter<int>("fixPileupTo") )
+  : useVertexDistribution_( iConfig.getParameter<bool>("useVertexDistribution") )
 {
   produces<float>("puWeight");
 
   objConfig["Vertices"]= iConfig.getParameter<edm::ParameterSet>("Vertices");
 
-  //taken from dimuon events in runs:
+  //from vertex distribution ratio
   vertexDataH_ = new TH1D("vertex_data","data;Vertices;Events",25,0.,25.);
-  vertexDataH_->SetBinContent(2,0.3515714);
-  vertexDataH_->SetBinContent(3,1.155729);
-  vertexDataH_->SetBinContent(4,1.808812);
-  vertexDataH_->SetBinContent(5,1.744851);
-  vertexDataH_->SetBinContent(6,1.218971);
-  vertexDataH_->SetBinContent(7,0.8434031);
-  vertexDataH_->SetBinContent(8,0.507172);
-  vertexDataH_->SetBinContent(9,0.2828953);
-  vertexDataH_->SetBinContent(10,0.117738);
-  vertexDataH_->SetBinContent(11,0.1664797);
+  vertexDataH_->SetBinContent(2,0.0338308);
+  vertexDataH_->SetBinContent(3,0.121082);
+  vertexDataH_->SetBinContent(4,0.203664);
+  vertexDataH_->SetBinContent(5,0.202303);
+  vertexDataH_->SetBinContent(6,0.158852);
+  vertexDataH_->SetBinContent(7,0.10762);
+  vertexDataH_->SetBinContent(8,0.072571);
+  vertexDataH_->SetBinContent(9,0.0408767);
+  vertexDataH_->SetBinContent(10,0.0278872);
+  vertexDataH_->SetBinContent(11,0.0269992);
+  vertexDataH_->SetBinContent(12,0.00431492);
 
-  //taken from DY->MuMu (M>20, Powheg sample)) todo
-  putovertexMCH_ = new TH2D("pu_vertex_mc","simulation;Pileup;Vertices;weight",25,0.,25.,25,0.,25.);
-  puMCH_ = putovertexMCH_->ProjectionY("pu_mc");
-
-  //fixed pileup (take from poisson distribution)
-  if(fixPileupTo_>0)
-    {
-      fixedPileupH_ = new TH1D("fixpu",";Pileup;weight",25,0.,25.);
-      for(int ibin=1; ibin<=fixedPileupH_->GetXaxis()->GetNbins(); ibin++)
-	fixedPileupH_->SetBinContent(ibin, TMath::Poisson(ibin-1,fixPileupTo_) );
-      fixedPileupH_->Divide(puMCH_);
-    }
+  //from unfolded disribution
+  puUnfoldedH_ = new TH1D("unfold_data","Unfolded data;Pileup;Events",25,0.,25.);
+  puUnfoldedH_->SetBinContent(1,0);
+  puUnfoldedH_->SetBinContent(2,0.000744032);
+  puUnfoldedH_->SetBinContent(3,0.136401);
+  puUnfoldedH_->SetBinContent(4,0.525813);
+  puUnfoldedH_->SetBinContent(5,0.284197);
+  puUnfoldedH_->SetBinContent(6,0.0489245);
+  puUnfoldedH_->SetBinContent(7,0.00376914);
+  puUnfoldedH_->SetBinContent(8,0.000147238);
+  puUnfoldedH_->SetBinContent(9,5.16722e-06);
+  puUnfoldedH_->SetBinContent(10,9.23698e-08);
+  puUnfoldedH_->SetBinContent(11,5.72378e-10);
+  puUnfoldedH_->SetBinContent(12,3.52041e-12);
+  puUnfoldedH_->SetBinContent(13,2.9421e-18);
 }
 
 //
@@ -91,9 +93,12 @@ void PileupNormalizationProducer::produce(edm::Event &iEvent, const edm::EventSe
 	    }
 	}
 
-      
-      if(fixPileupTo_>0)
-	*puWeight = fixedPileupH_->GetBinContent(npuevents+1);
+      //determine normalization
+      if(!useVertexDistribution_)
+	{
+	  float weight = puUnfoldedH_->GetBinContent( npuevents+1 );
+	  *puWeight=weight;
+	}
       else if(useVertexDistribution_)
 	{
 	  Handle<reco::VertexCollection> hVtx;
