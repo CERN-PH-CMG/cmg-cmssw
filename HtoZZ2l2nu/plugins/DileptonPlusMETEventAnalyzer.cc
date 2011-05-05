@@ -89,9 +89,11 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
       TFileDirectory newDir=baseDir.mkdir(cat.Data());
             
       results_[cat+"_cutflow"]=formatPlot( newDir.make<TH1F>(cat+"_cutflow", ";Steps; Events", nselsteps, 0.,nselsteps), 1,1,1,20,0,false,true,1,1,1);
+      if(istream==0) results_["cutflow"]=formatPlot( baseDir.make<TH1F>("cutflow", ";Steps; Events", nselsteps, 0.,nselsteps), 1,1,1,20,0,false,true,1,1,1);
       for(size_t istep=0; istep<nselsteps; istep++)
 	{
 	  ((TH1F *)results_[cat+"_cutflow"])->GetXaxis()->SetBinLabel(istep+1,selsteps[istep]);
+	  if(istream==0)  ((TH1F *)results_["cutflow"])->GetXaxis()->SetBinLabel(istep+1,selsteps[istep]);
 	}
   
       //vertex control
@@ -246,6 +248,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     std::string istream="mumu";
     if(selPath==2) istream="ee";
     if(selPath==3) istream="emu";
+    getHist("cutflow")->Fill(2,weight);
     getHist(istream+"_cutflow")->Fill(2,weight);
 
     //the met
@@ -290,6 +293,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 
     //select Z window
     if(fabs(dileptonP.mass()-91)>15) return;
+    getHist("cutflow")->Fill(3,weight);
     getHist(istream+"_cutflow")->Fill(3,weight);
 
     //veto-other leptons
@@ -312,6 +316,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
       }
     getHist(istream+"_nleptons")->Fill(lepMult,weight);
     if(lepMult>2) return;
+    getHist("cutflow")->Fill(4,weight);
     getHist(istream+"_cutflow")->Fill(4,weight);
 
 
@@ -355,6 +360,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     if(jetbin==0)      substream = substream+"eq0jets";
     else if(jetbin==1) substream = substream+"eq1jets";
     else               substream = substream+"geq2jets";
+    getHist("cutflow")->Fill(5,weight);
     getHist(istream+"_cutflow")->Fill(5+jetbin,weight);
     
     
@@ -524,10 +530,12 @@ void DileptonPlusMETEventAnalyzer::endLuminosityBlock(const edm::LuminosityBlock
   for(size_t istream=0; istream<sizeof(streams)/sizeof(TString); istream++)
     {
       ((TH1F *)getHist(streams[istream]+"_cutflow"))->Fill(0.,ctrHandle->value);
+      if(istream==0) ((TH1F *)getHist("cutflow"))->Fill(0.,ctrHandle->value);
       edm::Handle<edm::MergeableCounter> streamCtrHandle;
       std::string inpt= std::string(streams[istream])+"Counter";
       iLumi.getByLabel(inpt, streamCtrHandle);
       ((TH1F *)getHist(streams[istream]+"_cutflow"))->Fill(1.,streamCtrHandle->value);
+      ((TH1F *)getHist("cutflow"))->Fill(1.,ctrHandle->value);
     } 
 }
 
