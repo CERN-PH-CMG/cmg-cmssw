@@ -1,9 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 
-jetIDJet = cms.EDFilter(
-    "PFJetSelector",
-    src = cms.InputTag("cmgPFJet"),
-    cut = cms.string( "getSelection(\"cuts_looseJetId\") && getSelection(\"cuts_jetKinematics\")" )
+from CMGTools.Common.skims.cmgPFJetSel_cfi import cmgPFJetSel
+
+jetIDJet = cmgPFJetSel.clone(
+    cut = cms.string( "getSelection(\"cuts_looseJetId\") && pt() > 30" )
     )
 
 

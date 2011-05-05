@@ -16,7 +16,7 @@ process.source.fileNames = cms.untracked.vstring(
 process.setName_('CMG')
 process.out.fileName = cms.untracked.string('cmgTuple.root')
 
-process.load('CMGTools.Common.cutsummary_cff')
+process.load('CMGTools.Common.cutSummary_cff')
 process.load('CMGTools.Common.electron_cff')
 process.load('CMGTools.Common.muon_cff')
 process.load('CMGTools.Common.diMuon_cff')
@@ -24,7 +24,6 @@ process.load('CMGTools.Common.jet_cff')
 process.load('CMGTools.Common.runInfoAccounting_cfi')
 
 #config the pat trigger matching
-process.load('CMGTools.ZmumuJetsTutorial.patTriggerMatching_cff')
 process.cmgMuon.cfg.inputCollection = cms.InputTag("triggeredPatMuons")
 
 from CMGTools.Common.eventContent.particleFlow_cff import particleFlow as particleFlowEventContent  
@@ -39,7 +38,7 @@ process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("histograms.root"))
 
 ### Produce a summary of cuts on the DiMuon
-##process.zmumusummary = process.cutsummarymuon.clone(inputCollection = cms.InputTag("cmgDiMuon"))
+##process.zmumusummary = process.cutSummaryMuon.clone(inputCollection = cms.InputTag("cmgDiMuon"))
 
 ### Run the trigger matching selections
 ##from CMGTools.ZmumuJetsTutorial.selections.muontrigger_cfi import muontrigger
@@ -56,13 +55,12 @@ process.TFileService = cms.Service("TFileService",
 ###
 
 process.analysisSequence = cms.Sequence(
-    process.patMuonTrigger +
     process.electronSequence +
     process.muonSequence + 
     process.diMuonSequence +
     process.pfJetSequence +
     process.runInfoAccounting +
-    process.cutsummary## + 
+    process.cutSummaryMuon## + 
 ##    process.zmumusummary +
 ##    process.jetCountingSequence +
 ##    process.selectedZSequence

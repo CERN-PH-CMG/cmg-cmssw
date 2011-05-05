@@ -7,9 +7,7 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
 runOnMC = True
 process.GlobalTag.globaltag = cms.string(getGlobalTag(runOnMC))
 
-triggerProcessName = 'HLT'
 if runOnMC:
-    triggerProcessName = 'REDIGI37X'
     process.source.fileNames = cms.untracked.vstring('rfio:///castor/cern.ch/user/w/wreece/SDMUONFILTER/ZmumuSummer10/1E16ABCD-0986-DF11-B57C-90E6BA442F1E.root')
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
@@ -17,6 +15,7 @@ process.out.fileName = cms.untracked.string(os.path.expandvars('/tmp/${USER}/pat
 
 # load the PAT config
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
+process.load('CMGTools.ZmumuJetsTutorial.patTriggerMatching_cff')
 
 #run PF2PAT
 from PhysicsTools.PatAlgos.tools.pfTools import usePF2PAT
@@ -41,6 +40,7 @@ process.p = cms.Path(
     process.startupSequence* #Store the number of events we start with
     getattr(process,"patPF2PATSequence"+postfix)* #Run PF2PAT
     process.dimuonSkim* #Skim for events with two muons
+    process.patMuonTrigger+    
     process.finalSequence #Store the number of events we end with
 )
 process.e = cms.EndPath(
@@ -70,6 +70,8 @@ process.out.outputCommands = cms.untracked.vstring('drop *',
                                                    'keep L1GlobalTriggerObjectMapRecord_*_*_*',
                                                    'keep *_TriggerResults_*_*',
                                                    'keep *_hltTriggerSummaryAOD_*_*',
+                                                   # Trigged muons
+                                                   'keep *_triggeredPatMuons_*_*', # we keep the pat::Muon
                                                    *patEventContentNoCleaning ) 
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 500
