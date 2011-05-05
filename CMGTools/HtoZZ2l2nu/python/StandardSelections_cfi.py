@@ -32,7 +32,7 @@ BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectrons")
                                    vetoTransitionElectrons = cms.bool(False),
                                    applyConversionVeto = cms.bool(True),
                                    maxTrackLostHits = cms.int32(1),
-                                   id = cms.string("simpleEleId90relIso"),
+                                   id = cms.string("simpleEleId80relIso"),
                                    maxRelIso = cms.double(0.25),
                                    minDeltaRtoMuons = cms.double(0.1)
                                    )

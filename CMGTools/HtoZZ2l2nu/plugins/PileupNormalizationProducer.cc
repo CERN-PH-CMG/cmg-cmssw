@@ -50,20 +50,31 @@ PileupNormalizationProducer::PileupNormalizationProducer(const edm::ParameterSet
 
   //from unfolded disribution
   puUnfoldedH_ = new TH1D("unfold_data","Unfolded data;Pileup;Events",25,0.,25.);
-  puUnfoldedH_->SetBinContent(2,0.016671);
-  puUnfoldedH_->SetBinContent(3,1.96465);
-  puUnfoldedH_->SetBinContent(4,7.13422);
-  puUnfoldedH_->SetBinContent(5,4.07163);
-  puUnfoldedH_->SetBinContent(6,0.765888);
-  puUnfoldedH_->SetBinContent(7,0.036166);
-  puUnfoldedH_->SetBinContent(8,0.0029674);
-  puUnfoldedH_->SetBinContent(9,5.11849e-05);
-  puUnfoldedH_->SetBinContent(10,1.34713e-06);
-  puUnfoldedH_->SetBinContent(11,1.6198e-08);
-  puUnfoldedH_->SetBinContent(12,1.8539e-09);
-  puUnfoldedH_->SetBinContent(13,5.30107e-14);
-  puUnfoldedH_->SetBinContent(14,5.4237e-16);
-  puUnfoldedH_->SetBinContent(15,1.15158e-32);
+  puUnfoldedH_->SetBinContent(1,0.136598);
+  puUnfoldedH_->SetBinContent(2,0.548235);
+  puUnfoldedH_->SetBinContent(3,1.26893);
+  puUnfoldedH_->SetBinContent(4,1.9627);
+  puUnfoldedH_->SetBinContent(5,2.10484);
+  puUnfoldedH_->SetBinContent(6,1.99065);
+  puUnfoldedH_->SetBinContent(7,1.73487);
+  puUnfoldedH_->SetBinContent(8,1.28593);
+  puUnfoldedH_->SetBinContent(9,1.00456);
+  puUnfoldedH_->SetBinContent(10,0.685606);
+  puUnfoldedH_->SetBinContent(11,0.508796);
+  puUnfoldedH_->SetBinContent(12,0.346366);
+  puUnfoldedH_->SetBinContent(13,0.236133);
+  puUnfoldedH_->SetBinContent(14,0.183413);
+  puUnfoldedH_->SetBinContent(15,0.0938161);
+  puUnfoldedH_->SetBinContent(16,0.102228);
+  puUnfoldedH_->SetBinContent(17,0.0537016);
+  puUnfoldedH_->SetBinContent(18,0.0273493);
+  puUnfoldedH_->SetBinContent(19,0.0240031);
+  puUnfoldedH_->SetBinContent(20,0.017485);
+  puUnfoldedH_->SetBinContent(21,0.0256616);
+  puUnfoldedH_->SetBinContent(22,0.00848088);
+  puUnfoldedH_->SetBinContent(23,0.0200775);
+  puUnfoldedH_->SetBinContent(24,0.035064);
+  puUnfoldedH_->SetBinContent(25,0.00959897);
 }
 
 //
