@@ -275,6 +275,11 @@
 		  "patdir":"/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/DoubleMuon/DoubleMuon-v6"
                 },
                 {
+		  "dtag":"DoubleMuon-v7",
+		  "dset":"/DoubleMu/Run2011A-PromptReco-v6/AOD",
+		  "patdir":"/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/DoubleMuon/DoubleMuon-v7"
+                },
+                {
 		  "dtag":"DoubleElectron-v3",
 		  "dset":"/DoubleElectron/Run2011A-PromptReco-v1/AOD",
 		  "patdir":"/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/DoubleElectron/DoubleElectron-v3"
@@ -290,6 +295,11 @@
 		  "patdir":"/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/DoubleElectron/DoubleElectron-v6"
                 },
                 {
+		  "dtag":"DoubleElectron-v7",
+		  "dset":"/DoubleElectron/Run2011A-PromptReco-v2/AOD",
+		  "patdir":"/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/DoubleElectron/DoubleElectron-v7"
+                },
+                {
 		  "dtag":"MuEG-v3",
 		  "dset":"/MuEG/Run2011A-PromptReco-v1/AOD",
 	    	  "patdir":"/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/MuEG/MuEG-v3"
@@ -303,6 +313,11 @@
 		  "dtag":"MuEG-v6",
 		  "dset":"/MuEG/Run2011A-PromptReco-v2/AOD",
 	    	  "patdir":"/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/MuEG/MuEG-v6"
+                },
+                {
+		  "dtag":"MuEG-v7",
+		  "dset":"/MuEG/Run2011A-PromptReco-v2/AOD",
+	    	  "patdir":"/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/MuEG/MuEG-v7"
                 }
              ]
 	}
