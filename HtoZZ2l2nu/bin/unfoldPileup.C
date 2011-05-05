@@ -13,6 +13,7 @@
 
 #include "RooUnfoldResponse.h"
 #include "RooUnfoldBayes.h"
+#include "RooUnfoldInvert.h"
 
 #endif
 
@@ -30,11 +31,22 @@ using namespace std;
 */
 
 
-void unfoldPileup(TString url)
+void unfoldPileup(TString url, TString dataurl)
 {
   //open file
   TFile *fin=TFile::Open(url);
-  TH2F *hgen_vs_reco = (TH2F *) fin->Get("nreco_ngen");
+  TH2F *hgen_vs_reco = (TH2F *) fin->Get("nreco_ngen")->Clone("ngen_nreco");
+  TH2F *hreco_vs_gen = (TH2F *) fin->Get("nreco_ngen");
+  hgen_vs_reco->Reset("ICE");
+  for( Int_t xbin=1; xbin<=hgen_vs_reco->GetXaxis()->GetNbins(); xbin++)
+    for( Int_t ybin=1; ybin<=hgen_vs_reco->GetXaxis()->GetNbins(); ybin++)
+      {
+	double val=hreco_vs_gen->GetBinContent(xbin,ybin);
+	double err=hreco_vs_gen->GetBinError(xbin,ybin);
+	hgen_vs_reco->SetBinContent(ybin,xbin,val);
+	hgen_vs_reco->SetBinError(ybin,xbin,err);
+      }
+  hgen_vs_reco->Scale(1./hgen_vs_reco->Integral());
   hgen_vs_reco->SetDirectory(0);
   hgen_vs_reco->SetTitle("Generated vs. reco");
   hgen_vs_reco->SetMarkerColor(1);
@@ -42,14 +54,19 @@ void unfoldPileup(TString url)
   hgen->SetDirectory(0);
   hgen->SetTitle("Generated");
   hgen->SetMarkerColor(1);
+  hgen->Scale(1./hgen->Integral());
+  fin->Close();
+
+  fin = TFile::Open(dataurl); 
   TH1F *hdata = (TH1F *) fin->Get("hdata");
   hdata->SetDirectory(0);
   hdata->SetTitle("Data");
+  hdata->Scale(1./hdata->Integral());
   fin->Close();
 
   //unfold
   RooUnfoldResponse response (hgen_vs_reco->ProjectionX(), hgen, hgen_vs_reco);
-  RooUnfoldBayes unfold (&response, hdata, 4);
+  RooUnfoldBayes unfold (&response, hdata,4 );
   TH1D *hunfold = (TH1D*) unfold.Hreco(RooUnfold::kCovariance)->Clone("hunfold");
   hunfold->SetTitle("Unfolded data");
   hunfold->SetMarkerColor(1);
