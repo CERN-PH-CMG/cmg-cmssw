@@ -68,9 +68,17 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
 
     summaryHandler_.initTree(  fs->make<TTree>("data","Event Summary") );
 
-    objConfig_["Vertices"] = iConfig.getParameter<edm::ParameterSet>("Vertices");
-    
+   
     TFileDirectory baseDir=fs->mkdir(iConfig.getParameter<std::string>("dtag"));    
+
+    //generated pileup (use directly loose selection)
+    objConfig_["Vertices"] = iConfig.getParameter<edm::ParameterSet>("Vertices");
+    results_["ngenpileup"] = formatPlot( baseDir.make<TH1F>("ngenpileup", ";Pileup; Events", 25, 0.,25.), 1,1,1,20,0,false,true,1,1,1);
+    results_["ngoodvertex_ngenpileup"]  = formatPlot( baseDir.make<TH2F>("ngoodvertex_ngenpileup",";Pileup;Vertices; Events",25,0.,25.,25,0,25.), 1,1,1,20,0,false,true,1,1,1);
+    results_["ngenpileupOOT"] = formatPlot( baseDir.make<TH1F>("ngenpileupOOT", ";Out-of-time Pileup; Events", 25, 0.,25.), 1,1,1,20,0,false,true,1,1,1);
+    results_["ngoodvertex"] = formatPlot( baseDir.make<TH1F>("ngoodvertex", ";Vertices; Events", 25, 0.,25.), 1,1,1,20,0,false,true,1,1,1);
+
+    //selection streams
     TString streams[]={"ee","mumu","emu"};
     TString jetmult[]={"eq0jets","eq1jets","geq2jets"};
     TString selsteps[]={"Reco","2 leptons","2 good leptons","|M-M_{Z}|<15","3^{rd} lepton veto","=0 jets","=1 jet","#geq 2 jets"};
@@ -92,11 +100,6 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
       results_[cat+"_vertex_pt"] = formatPlot( newDir.make<TH1F>(cat+"_vertex_pt", ";|#Sigma_{tracks} #vec{p}_{T}| [GeV/c]; Events", 50, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_othervertex_pt"] = formatPlot( newDir.make<TH1F>(cat+"_othervertex_pt", ";|#Sigma_{tracks} #vec{p}_{T}| [GeV/c]; Events", 50, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_ngoodvertex"] = formatPlot( newDir.make<TH1F>(cat+"_ngoodvertex", ";Vertices; Events", 25, 0.,25.), 1,1,1,20,0,false,true,1,1,1);
-
-      //genpileup
-      results_[cat+"_ngenpileup"] = formatPlot( newDir.make<TH1F>(cat+"_ngenpileup", ";Pileup; Events", 25, 0.,25.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_ngoodvertex_ngenpileup"]  = formatPlot( newDir.make<TH2F>(cat+"_ngoodvertex_ngenpileup",";Pileup;Vertices; Events",25,0.,25.,25,0,25.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_ngenpileupOOT"] = formatPlot( newDir.make<TH1F>(cat+"_ngenpileupOOT", ";Out-of-time Pileup; Events", 25, 0.,25.), 1,1,1,20,0,false,true,1,1,1);
 
       //lepton control
       results_[cat+"_nleptons"]    = formatPlot( newDir.make<TH1F>(cat+"_nleptons",";Lepton multiplicity; Events",4,2,6), 1,1,1,20,0,false,true,1,1,1);
@@ -214,6 +217,29 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     
     edm::Handle<std::vector<reco::PFMET> > hPfMET; 
     event.getByLabel(edm::InputTag("pfMet"), hPfMET);
+
+    //
+    // VERTEX KINEMATICS
+    //
+    //MC truth on pileup (if available)
+    getHist("ngoodvertex")->Fill(selVertices.size(),weight);
+    if(!event.isRealData())
+      {
+	edm::Handle<std::vector<PileupSummaryInfo> > puInfoH;
+	event.getByType(puInfoH);
+	if(puInfoH.isValid())
+	  {
+	    int npuOOT(0),npuIT(0);
+	    for(std::vector<PileupSummaryInfo>::const_iterator it = puInfoH->begin(); it != puInfoH->end(); it++)
+	      {
+		if(it->getBunchCrossing()==0) npuIT += it->getPU_NumInteractions();
+		else npuOOT += it->getPU_NumInteractions();
+	      }
+	    getHist("ngenpileup")->Fill(npuIT,weight);
+	    getHist("ngenpileupOOT")->Fill(npuOOT,weight);
+	    ((TH2 *)getHist("ngoodvertex_ngenpileup"))->Fill(npuIT,selVertices.size(),weight);
+	  }
+      }
     
     //require that a dilepton has been selected
     if(selPath==0 or selStep<3) return;
@@ -227,10 +253,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     LorentzVector metP(themet->px(),themet->py(),0,themet->pt());
 
     //
-    // VERTEX KINEMATICS
+    // VERTEX KINEMATICS (get primary vertex selected)
     //
-
-    //vertex quantities
     const reco::Vertex *primVertex = &(*(vertexHandle.product()))[0];
     getHist(istream+"_ngoodvertex")->Fill(selVertices.size(),weight);
     getHist(istream+"_vertex_sumpt")->Fill(vertex::getVertexMomentumFlux(primVertex),weight);
@@ -240,25 +264,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	if(vit->get()->position()==primVertex->position()) continue;
 	getHist(istream+"_othervertex_sumpt")->Fill(vertex::getVertexMomentumFlux(vit->get()),weight);
 	getHist(istream+"_othervertex_pt")->Fill(vit->get()->p4().pt(),weight);
-      }
-    
-    //MC truth on pileup (if available)
-    if(!event.isRealData())
-      {
-	edm::Handle<std::vector<PileupSummaryInfo> > puInfoH;
-	event.getByType(puInfoH);
-	if(puInfoH.isValid())
-	  {
-	    int npuOOT(0),npuIT(0);
-	    for(std::vector<PileupSummaryInfo>::const_iterator it = puInfoH->begin(); it != puInfoH->end(); it++)
-	      {
-		if(it->getBunchCrossing()==0) npuIT += it->getPU_NumInteractions();
-		else npuOOT += it->getPU_NumInteractions();
-	      }
-	    getHist(istream+"_ngenpileup")->Fill(npuIT,weight);
-	    getHist(istream+"_ngenpileupOOT")->Fill(npuOOT,weight);
-	    ((TH2 *)getHist(istream+"_ngoodvertex_ngenpileup"))->Fill(npuIT,selVertices.size(),weight);
-	  }
       }
 
     //

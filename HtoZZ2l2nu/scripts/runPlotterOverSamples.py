@@ -63,30 +63,52 @@ def getControlPlots(descriptor,isData,inputDir='data') :
     if(file is None): return results
     if(file.IsZombie()) : return results
     dir = file.GetDirectory('evAnalyzer/'+tag)
-
-    #get plots from file
-    categs = dir.GetListOfKeys();
-    for c in categs:
-        cname=c.GetName()
-        path='evAnalyzer/'+tag+'/'+cname
-        subdir = file.GetDirectory(path)
-        plots = subdir.GetListOfKeys()
+    if( dir == 0 ) :
         cresults={}
-        cnorm=1
+        plots = file.GetListOfKeys();
         for p in plots:
-            hname=path+'/'+p.GetName()
-            h = file.Get(hname)
+            pname=p.GetName()
+            h = file.Get(pname)
             h.SetDirectory(0)
             cresults[h.GetName()]=h
-            if(hname.find('cutflow')<0):continue
-            cnorm=h.GetBinContent(1)
-            
-        #rescale if not data
-        if( not isData and cnorm!=0 and not noNorm) :
-            for p in cresults.items():
-                p[1].Scale(1./float(cnorm))
         results.update(cresults)
-                
+    else :
+        #get plots from file
+        categs = dir.GetListOfKeys();
+        cnorm=1
+        centralresults={}
+        for c in categs:
+            cname=c.GetName()
+            path='evAnalyzer/'+tag+'/'+cname
+            subdir = file.GetDirectory(path)
+            try :
+                subdir.ClassName()
+                cresults={}
+                plots = subdir.GetListOfKeys()
+                for p in plots:
+                    hname=path+'/'+p.GetName()
+                    h = file.Get(hname)
+                    h.SetDirectory(0)
+                    cresults[h.GetName()]=h
+                    if(hname.find('cutflow')<0):continue
+                    cnorm=h.GetBinContent(1)
+                    
+                #rescale if not data
+                if( not isData and cnorm!=0 and not noNorm) :
+                    for p in cresults.items():
+                        p[1].Scale(1./float(cnorm))
+                results.update(cresults)
+            except :
+                h = file.Get(path)
+                h.SetDirectory(0)
+                centralresults[h.GetName()]=h
+
+        #rescale central results (assume latest normalization    
+        if( not isData and cnorm!=0 and not noNorm) :
+            for p in centralresults.items():
+                p[1].Scale(1./float(cnorm))
+        results.update(centralresults)
+        
     file.Close()
 
     return results
@@ -152,6 +174,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
     plotsToDisplay['ee events']=[]
     plotsToDisplay['#mu#mu events']=[]
     plotsToDisplay['e#mu events']=[]
+    plotsToDisplay['All events']=[]
     setStyle()
     c = getNewCanvas("recolevelc","recolevelc",False)
     c.SetWindowSize(600,800)
@@ -168,9 +191,10 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
         elif(data.At(0) != None) :     pname=data.At(0).GetName()
         if(len(pname)<=0): continue
 
-        chtag='ee events'
+        chtag='All events'
         if(pname.find('mumu')==0): chtag='#mu#mu events'
         if(pname.find('emu')==0):  chtag='e#mu events'
+        if(pname.find('ee')==0):  chtag='ee events'
         plotsToDisplay[chtag].append(pname)
         
         if(pname.find('eq0jets')>0):  chtag += ' (= 0 jets)'
@@ -178,7 +202,6 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
         if(pname.find('geq2jets')>0): chtag += ' (#geq 2 jets)'
 
         plotLabel = generalLabel + '\\' + chtag
-
 
         c.Clear()
         c.Divide(1,2)
