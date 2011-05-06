@@ -7,6 +7,7 @@
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
+#include "DataFormats/PatCandidates/interface/TriggerObject.h"
 #include "DataFormats/PatCandidates/interface/Photon.h"
 
 namespace pat {
@@ -17,6 +18,7 @@ namespace pat {
   typedef edm::Ptr< pat::Electron > ElectronPtr;
   typedef edm::Ptr< pat::MET > METPtr;
   typedef edm::Ptr< pat::Tau > TauPtr;
+  typedef edm::Ptr< pat::TriggerObject > TriggerObjectPtr;
   typedef edm::Ptr< pat::Photon > PhotonPtr;
 
 }

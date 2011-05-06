@@ -5,6 +5,11 @@
   <class name="std::vector<cmg::AbstractPhysicsObject>" />
   <class name="edm::Wrapper<std::vector<cmg::AbstractPhysicsObject> >" />
   
+  <class name="cmg::NamedObject" />
+  <class name="edm::Wrapper<cmg::NamedObject>" />
+  <class name="std::vector<cmg::NamedObject>" />
+  <class name="edm::Wrapper<std::vector<cmg::NamedObject> >" />
+  
   <class name="cmg::DiHemisphere"/>
   <class name="std::vector<cmg::DiHemisphere>"/>
   <class name="edm::Wrapper<cmg::DiHemisphere>"/>
@@ -154,6 +159,14 @@
   <class name="std::vector<cmg::Photon>"/>
   <class name="edm::Wrapper<cmg::Photon>"/>
   <class name="edm::Wrapper<std::vector<cmg::Photon> >"/>
+
+  <class name="cmg::TriggerObject"/>
+  <class name="cmg::PhysicsObjectWithPtr<edm::Ptr<pat::TriggerObject> >" />
+  <class name="std::vector<cmg::TriggerObject>"/>
+  <class name="edm::Wrapper<cmg::TriggerObject>"/>
+  <class name="edm::Ptr<pat::TriggerObject>"/>
+  <class name="edm::Ptr<cmg::TriggerObject>"/>
+  <class name="edm::Wrapper<std::vector<cmg::TriggerObject> >"/>
 
  <!-- create dictionaries for Jet Jet objects -->
   <class name="cmg::VBFEventT1T2<pat::Jet, pat::Jet>"/>
