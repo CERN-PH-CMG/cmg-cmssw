@@ -17,6 +17,7 @@ class TriggerObjectFactory : public Factory<cmg::TriggerObject>{
             triggerResultsLabel_(ps.getParameter<edm::InputTag>("triggerResults")),
             triggerObjectsLabel_(ps.getParameter<edm::InputTag>("triggerObjects")),
             processName_(ps.getUntrackedParameter<std::string>("processName","")),
+            useTriggerObjects_(ps.getUntrackedParameter<bool>("useTriggerObjects",false)),
             tagTriggerEvent_( "hltTriggerSummaryAOD" ){
         }
         virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
@@ -28,6 +29,7 @@ class TriggerObjectFactory : public Factory<cmg::TriggerObject>{
         const edm::InputTag triggerResultsLabel_;
         const edm::InputTag triggerObjectsLabel_;
         std::string processName_;
+        const bool useTriggerObjects_;
         const std::string tagTriggerEvent_;
         
 };
