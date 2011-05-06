@@ -25,8 +25,7 @@ cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm
     const edm::InputTag triggerResultsLabel = edm::InputTag( triggerResultsLabel_.label(), triggerResultsLabel_.instance(), processName_);
     
     iEvent.getByLabel(triggerResultsLabel,triggerResults);
-    //if there are no objects, just store which triggers passed
-    const bool objectsPresent = iEvent.getByLabel(triggerObjectsLabel_,triggerObjects);
+    iEvent.getByLabel(triggerObjectsLabel_,triggerObjects);
     
     const edm::TriggerNames& triggerNames = iEvent.triggerNames(*triggerResults);
     edm::TriggerNames::Strings const& names = triggerNames.triggerNames();
@@ -39,7 +38,7 @@ cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm
         triggerMap[*it] = triggerResults->wasrun(i) && triggerResults->accept(i);
     }
 
-    if(objectsPresent){
+    if(useTriggerObjects_){
         for(std::map<std::string,bool>::const_iterator it = triggerMap.begin(); it != triggerMap.end(); ++it){
             //store the trigger objects
             if(it->second){//trigger passed

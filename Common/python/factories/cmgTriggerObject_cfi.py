@@ -7,7 +7,8 @@ patTrigger = patTrigger.clone()
 triggerObjectFactory = cms.PSet(
        triggerResults = cms.InputTag("TriggerResults"),
        triggerObjects = cms.InputTag("patTrigger"),
-       processName = cms.untracked.string("*")
+       processName = cms.untracked.string("*"),
+       useTriggerObjects = cms.untracked.bool(False)
        )
 
 cmgTriggerObjects = cms.EDFilter("TriggerObjectPOProducer",
