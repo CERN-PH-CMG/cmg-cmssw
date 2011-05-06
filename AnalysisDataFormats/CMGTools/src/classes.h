@@ -16,11 +16,13 @@
 #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
 #include "AnalysisDataFormats/CMGTools/interface/TriBool.h"
 #include "AnalysisDataFormats/CMGTools/interface/UnSet.h"
+#include "AnalysisDataFormats/CMGTools/interface/TriggerObject.h"
 #include "AnalysisDataFormats/CMGTools/interface/PatTypes.h"
 #include "AnalysisDataFormats/CMGTools/interface/VBFEventT1T2.h"
 #include "AnalysisDataFormats/CMGTools/interface/VBFEventT1T2Fwd.h"
 #include "AnalysisDataFormats/CMGTools/interface/Hemisphere.h"
 #include "AnalysisDataFormats/CMGTools/interface/Photon.h"
+#include "AnalysisDataFormats/CMGTools/interface/NamedObject.h"
 
 #include <vector>
 
@@ -31,6 +33,11 @@ namespace {
     std::vector<cmg::AbstractPhysicsObject> av;
     edm::Wrapper<cmg::AbstractPhysicsObject> ae;
     edm::Wrapper<std::vector<cmg::AbstractPhysicsObject> > aev;
+    
+    cmg::NamedObject no_;
+    std::vector<cmg::NamedObject> nov;
+    edm::Wrapper<cmg::NamedObject> noe;
+    edm::Wrapper<std::vector<cmg::NamedObject> > nowv;
 
     cmg::DiHemisphere dh_;
     std::vector<cmg::DiHemisphere> dhv;
@@ -163,6 +170,14 @@ namespace {
     std::vector<cmg::Photon> vpp_;
     edm::Wrapper<cmg::Photon> wpp_;
     edm::Wrapper<std::vector<cmg::Photon> > wvpp_;
+
+    cmg::TriggerObject topp_;
+    std::vector<cmg::TriggerObject> vtopp_;
+    edm::Wrapper<cmg::TriggerObject> wtopp_;
+    edm::Ptr<pat::TriggerObject> ptopp_;
+    edm::Ptr<cmg::TriggerObject> pptopp_;
+    edm::Wrapper<std::vector<cmg::TriggerObject> > wvtopp_;
+    
 
     /// create dictionaries for Jet Jet objects
     cmg::VBFEventJetJet dummyVBFEventJetJet;
