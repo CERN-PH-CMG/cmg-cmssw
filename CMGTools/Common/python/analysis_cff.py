@@ -13,6 +13,7 @@ from CMGTools.Common.diElectron_cff import *
 from CMGTools.Common.skim_cff import *
 from CMGTools.Common.cutSummary_cff import *
 from CMGTools.Common.histogram_cff import *
+from CMGTools.Common.triggerInfo_cff import *
 
 
 cmgObjectSequence = cms.Sequence(
@@ -23,7 +24,8 @@ cmgObjectSequence = cms.Sequence(
     metSequence +
     diMuonSequence +
     diTauSequence +
-    diElectronSequence
+    diElectronSequence +
+    triggerSequence
     )
 
 analysisSequence = cms.Sequence(

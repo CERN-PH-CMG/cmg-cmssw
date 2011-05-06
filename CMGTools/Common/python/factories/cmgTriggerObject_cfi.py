@@ -5,14 +5,15 @@ from PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cfi import patTrigger
 patTrigger = patTrigger.clone()
 
 triggerObjectFactory = cms.PSet(
-       triggerResults = cms.InputTag("TriggerResults","","HLT"),
-       triggerObjects = cms.InputTag("patTrigger")
+       triggerResults = cms.InputTag("TriggerResults"),
+       triggerObjects = cms.InputTag("patTrigger"),
+       processName = cms.untracked.string("*")
        )
 
-cmgTriggerObjectProducer = cms.EDFilter("TriggerObjectPOProducer",
+cmgTriggerObjects = cms.EDFilter("TriggerObjectPOProducer",
     cfg = triggerObjectFactory.clone(),
     cuts = cms.PSet(
        )
 )
 
-cmgTriggerObject = cms.Sequence(patTrigger+cmgTriggerObjectProducer)
+cmgTriggerObjectSequence = cms.Sequence(patTrigger+cmgTriggerObjects)
