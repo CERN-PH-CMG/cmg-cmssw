@@ -1,5 +1,4 @@
 import FWCore.ParameterSet.Config as cms
-from CMGTools.Common.factories.cmgMuon_cfi import cmgMuon
 from CMGTools.Common.factories.cmgDiObject_cfi import diObjectFactory
 
 dimuonFactory = diObjectFactory.clone(
