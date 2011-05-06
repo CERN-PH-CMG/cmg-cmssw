@@ -1,6 +1,5 @@
 import FWCore.ParameterSet.Config as cms
 
-triggerProcessName = 'REDIGI37X'
 ##### Config some trigger matching with the pat::Muons
 from PhysicsTools.PatAlgos.triggerLayer1.triggerMatcher_cfi import cleanMuonTriggerMatchHLTMu20
 from PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cfi import patTrigger
@@ -24,3 +23,4 @@ triggeredPatMuons = cleanPatMuonsTriggerMatch.clone(src = patMuonTriggerMatch.sr
                                                                  matches = cms.VInputTag('patMuonTriggerMatch'))
 patMuonTrigger = cms.Sequence(patMuonTriggerResults*patMuonTriggerMatch*triggeredPatMuons)
 #####
+
