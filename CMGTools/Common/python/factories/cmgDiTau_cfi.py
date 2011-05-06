@@ -1,5 +1,4 @@
 import FWCore.ParameterSet.Config as cms
-from CMGTools.Common.factories.cmgTau_cfi import cmgTau
 from CMGTools.Common.factories.cmgDiObject_cfi import diObjectFactory
 
 ditauFactory = diObjectFactory.clone(leg1Collection = cms.InputTag("cmgTau"),
