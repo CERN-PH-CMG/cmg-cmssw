@@ -37,6 +37,12 @@ particleFlowElectrons = cms.untracked.vstring(
     'keep *_cmgDiElectronSel_*_*'
     )
 
+particleFlowPhotons = cms.untracked.vstring(
+    # does not look like PF? 
+    'keep *_cmgPhotonSel_*_*',
+    'keep *_cmgDiPhotonSel_*_*'
+    )
+
 particleFlowW = cms.untracked.vstring(
     # does not look like PF? 
     'keep *_cmgWENuSel_*_*',
@@ -53,7 +59,7 @@ particleFlowHemispheres = cms.untracked.vstring(
     'keep *_cmgDiHemi_*_*',
     )
 
-particleFlow = particleFlowJets + particleFlowMET + particleFlowMuons + particleFlowTaus + particleFlowElectrons + particleFlowW + particleFlowVBF + particleFlowHemispheres
+particleFlow = particleFlowJets + particleFlowMET + particleFlowMuons + particleFlowTaus + particleFlowElectrons + particleFlowPhotons + particleFlowW + particleFlowVBF + particleFlowHemispheres
 
 
 particleFlowBase = cms.untracked.vstring(

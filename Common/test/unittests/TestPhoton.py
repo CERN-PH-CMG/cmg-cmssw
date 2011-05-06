@@ -29,8 +29,8 @@ class TestPhoton(TestTools.CFGTest):
         events = TestTools.getObject(output[1], "Events")
 
         cmg = cmgTuple.cmgTuple(events)
-        self.assertTrue(cmg.aliases.has_key("cmgPhoton"),
-                        "We are expecting a branch called cmgPhoton")
+        self.assertTrue(cmg.aliases.has_key("cmgPhotonSel"),
+                        "We are expecting a branch called cmgPhotonSel")
 
 #     def testDiPhotonBranchExists(self):
 #         """Tests that the di-photon branch exists."""
