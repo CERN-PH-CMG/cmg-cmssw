@@ -34,6 +34,7 @@
 #include "CMGTools/Common/interface/BaseMETFactory.h"
 #include "CMGTools/Common/interface/BaseMETModificationFactory.h"
 #include "CMGTools/Common/plugins/PhysicsObjectProducer.h"
+#include "CMGTools/Common/interface/TriggerObjectFactory.h"
 
 // COLIN why not in plugins?
 #include "CMGTools/Common/interface/CutSummaryAnalyzer.h"
@@ -76,6 +77,7 @@ typedef PhysicsObjectProducer<cmg::GenJetFactory> GenJetPOProducer;
 typedef PhysicsObjectProducer<cmg::WENuFactory> WENuPOProducer;
 typedef PhysicsObjectProducer<cmg::WMuNuFactory> WMuNuPOProducer;
 typedef PhysicsObjectProducer<cmg::WTauNuFactory> WTauNuPOProducer;
+typedef PhysicsObjectProducer<cmg::TriggerObjectFactory> TriggerObjectPOProducer;
 
 typedef cmg::HistogramAnalyzer<cmg::JetHistograms> PFJetHistogramsAnalyzer;
 typedef cmg::HistogramAnalyzer<cmg::TriggerResultHistograms> TriggerResultHistogramsAnalyzer;

@@ -27,8 +27,7 @@ class PhysicsObjectProducer : public edm::EDFilter{
     cutTree_("All Cuts") {
     
     std::cout<<"Initializing PhysicsObjectProducer for "<<ps<<std::endl;
-    
-    produces<typename FactoryClass::collection>("");
+    factory_.produces(this);//call hook for "produces"
 
     edm::ParameterSet cutsPSet = ps_.getParameter< edm::ParameterSet >("cuts");
     unpack( cutsPSet, "cuts", cutTree_); 
@@ -38,6 +37,20 @@ class PhysicsObjectProducer : public edm::EDFilter{
 
   }
   virtual bool filter(edm::Event&, const edm::EventSetup&);
+  
+  //hooks that factories can use
+  virtual bool beginRun(edm::Run& iRun, edm::EventSetup const& iSetup){
+    return factory_.beginRun(iRun,iSetup);
+  }
+  virtual bool endRun(edm::Run& iRun, edm::EventSetup const& iSetup){
+    return factory_.endRun(iRun,iSetup);
+  }
+  virtual bool beginLuminosityBlock(edm::LuminosityBlock& iLumi, edm::EventSetup const& iSetup){
+    return factory_.beginLuminosityBlock(iLumi,iSetup);
+  }
+  virtual bool endLuminosityBlock(edm::LuminosityBlock& iLumi, edm::EventSetup const& iSetup){
+    return factory_.endLuminosityBlock(iLumi,iSetup);
+  }
 
  private:
   
