@@ -16,12 +16,12 @@ print sep_line
 process.setName_('ANA')
 
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(2000)
+        input = cms.untracked.int32(-1)
         )
-
-process.source.fileNames = cms.untracked.vstring(
-    'file:/afs/cern.ch/user/c/cbern/scratch0/CMG/RelVal/4_1_3/ttbar_PATandPF2PAT.root'
-    )
+process.maxLuminosityBlocks = cms.untracked.PSet( 
+        input = cms.untracked.int32(1)
+        )
+process.load("CMGTools.Common.sources.relval.RelValQCD_FlatPt_15_3000.CMSSW_3_11_2.MC_311_V2.NoPileUpRemoval.source_cff")
 
 extension = 'photon'
 
