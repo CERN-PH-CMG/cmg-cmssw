@@ -15,10 +15,9 @@ process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(-1)
         )
 process.maxLuminosityBlocks = cms.untracked.PSet( 
-        input = cms.untracked.int32(1)
+        input = cms.untracked.int32(10)
         )
-process.load("CMGTools.Common.sources.relval.RelValWM.CMSSW_4_1_2.START311_V2.source_cff")
-#process.load("CMGTools.Common.sources.relval.RelValZTT.CMSSW_4_1_4.START311_V2.source_cff")
+process.load("CMGTools.Common.sources.relval.RelValTTbar.CMSSW_3_11_2.MC_311_V2.source_cff")
 
 extension = 'muons'
 
@@ -36,15 +35,17 @@ process.TFileService = cms.Service("TFileService",
 
 # default analysis sequence    
 process.load('CMGTools.Common.analysis_cff')
-
-# note: we're reading ttbar events
+process.load('CMGTools.Common.cutSummary_cff')
 
 process.load("CMGTools.Common.muon_cff")
 process.load("CMGTools.Common.diMuon_cff")
 
+process.zmumusummary = process.cutSummaryMuon.clone(inputCollection = cms.InputTag("cmgDiMuon"))
+
 process.analysisSequence = cms.Sequence(
     process.muonSequence +
-    process.diMuonSequence
+    process.diMuonSequence +
+    process.zmumusummary
     )
 
 process.p = cms.Path(
