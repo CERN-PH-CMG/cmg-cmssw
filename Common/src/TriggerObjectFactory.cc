@@ -8,6 +8,10 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/Registry.h"
 
+#include <algorithm>
+#include <map>
+#include <set>
+
 cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm::Event& iEvent, const edm::EventSetup& iSetup) const{
     
     //just return empty if no trigger info found
@@ -19,28 +23,61 @@ cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm
     
     //use the auto-process name
     const edm::InputTag triggerResultsLabel = edm::InputTag( triggerResultsLabel_.label(), triggerResultsLabel_.instance(), processName_);
-    const edm::InputTag triggerObjectsLabel = edm::InputTag( triggerObjectsLabel.label(), triggerObjectsLabel.instance(), processName_);
     
     iEvent.getByLabel(triggerResultsLabel,triggerResults);
-    iEvent.getByLabel(triggerObjectsLabel,triggerObjects);
+    //if there are no objects, just store which triggers passed
+    const bool objectsPresent = iEvent.getByLabel(triggerObjectsLabel_,triggerObjects);
     
     const edm::TriggerNames& triggerNames = iEvent.triggerNames(*triggerResults);
     edm::TriggerNames::Strings const& names = triggerNames.triggerNames();
-
+    
+    //store which triggers passed and failed
+    std::map<std::string,bool> triggerMap;
     for(edm::TriggerNames::Strings::const_iterator it = names.begin(); it != names.end(); ++it){
         const unsigned int i = triggerNames.triggerIndex(*it);
         if(i >= triggerNames.size()) continue;
-        if(triggerResults->wasrun(i) && triggerResults->accept(i)){
-            std::cout << "Trigger passed: " << *it << std::endl;
-            for(unsigned int index = 0; index < triggerObjects->size(); index++){
-                pat::TriggerObjectStandAlone sa = triggerObjects->at(index);
-                if(sa.path(*it)){
-                    std::cout << "match found: " << sa.pt() << std::endl;
-                    pat::TriggerObjectPtr o(triggerObjects, index);
-                    result->push_back(cmg::TriggerObject(o,*it));
+        triggerMap[*it] = triggerResults->wasrun(i) && triggerResults->accept(i);
+    }
+
+    if(objectsPresent){
+        for(std::map<std::string,bool>::const_iterator it = triggerMap.begin(); it != triggerMap.end(); ++it){
+            //store the trigger objects
+            if(it->second){//trigger passed
+                for(unsigned int index = 0; index < triggerObjects->size(); index++){
+                    pat::TriggerObjectStandAlone sa = triggerObjects->at(index);
+                    if(sa.path(it->first)){
+                        pat::TriggerObjectPtr o(triggerObjects, index);
+                        cmg::TriggerObject to(o,it->first);
+                        //store *all* of the trigger results in each object
+                        for(std::map<std::string,bool>::const_iterator jt = triggerMap.begin(); jt != triggerMap.end(); ++jt){
+                            to.addSelection(jt->first,jt->second);
+                        }
+                        result->push_back(to);
+                    }
                 }
             }
         }
+        
+        std::sort(result->begin(),result->end());
+        std::reverse(result->begin(),result->end());
+        
+        //filter out the same trigger object from different trigger paths
+        std::set<cmg::TriggerObject> triggers;
+        for(collection::iterator it = result->begin(); it != result->end(); ++it){
+            std::pair<std::set<cmg::TriggerObject>::iterator,bool> set_it = triggers.insert(*it);
+            if(!set_it.second){
+                it = result->erase(it);
+                --it;   
+            }
+        } 
+        
+    }else{
+        //just store a single trigger object and set which triggers passed
+        cmg::TriggerObject to;
+        for(std::map<std::string,bool>::const_iterator jt = triggerMap.begin(); jt != triggerMap.end(); ++jt){
+            to.addSelection(jt->first,jt->second);
+        }
+        result->push_back(to);
     }
     return result;
 }
