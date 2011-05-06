@@ -14,22 +14,10 @@ process.setName_('ANA')
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(-1)
         )
-
-process.source = cms.Source(
-    "PoolSource",
-    
-    noEventSort = cms.untracked.bool(True),
-    duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
-    fileNames = cms.untracked.vstring()
-    )
-process.source.fileNames.extend([
-    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/LM1/patTuple_PATandPF2PAT_RelValLM1_sfts_0.root',
-    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/LM1/patTuple_PATandPF2PAT_RelValLM1_sfts_1.root',
-    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/LM1/patTuple_PATandPF2PAT_RelValLM1_sfts_2.root',
-    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/LM1/patTuple_PATandPF2PAT_RelValLM1_sfts_3.root',
-    '/store/cmst3/user/cbern/CMG/RelVal/4_1_2/LM1/patTuple_PATandPF2PAT_RelValLM1_sfts_4.root',
-    ])
-
+process.maxLuminosityBlocks = cms.untracked.PSet( 
+        input = cms.untracked.int32(1)
+        )
+process.load("CMGTools.Common.sources.relval.RelValWM.CMSSW_4_1_2.START311_V2.source_cff")
 
 extension = 'met'
 

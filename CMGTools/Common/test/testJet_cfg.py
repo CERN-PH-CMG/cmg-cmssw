@@ -14,11 +14,10 @@ process.setName_('ANA')
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(-1)
         )
-
-
-# process.load("CMGTools.Common.sources.relval.RelValQCD_FlatPt_15_3000.CMSSW_3_11_2.MC_311_V2.source_cff")
+process.maxLuminosityBlocks = cms.untracked.PSet( 
+        input = cms.untracked.int32(1)
+        )
 process.load("CMGTools.Common.sources.relval.RelValQCD_FlatPt_15_3000.CMSSW_3_11_2.MC_311_V2.NoPileUpRemoval.source_cff")
-# process.load("CMGTools.Common.sources.relval.RelValQCD_FlatPt_15_3000.CMSSW_4_1_2.MC_311_V2.source_cff")
 
 extension = 'jet'
 
