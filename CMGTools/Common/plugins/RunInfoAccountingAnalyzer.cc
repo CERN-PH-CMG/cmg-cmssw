@@ -47,19 +47,19 @@ void cmg::RunInfoAccountingAnalyzer::respondToOpenInputFile(edm::FileBlock const
 }
 
 void cmg::RunInfoAccountingAnalyzer::respondToCloseInputFile(edm::FileBlock const& fb) {
-
-  cout<<"closing input file"<<endl;
 }
 
 void cmg::RunInfoAccountingAnalyzer::beginLuminosityBlock(edm::LuminosityBlock const& lumi, 
 							  edm::EventSetup const&) {
-  
 }
 
 void cmg::RunInfoAccountingAnalyzer::endLuminosityBlock(edm::LuminosityBlock const& iLumi, edm::EventSetup const&) {
-  cout<<"end lumi"<<endl;
   edm::Handle<GenFilterInfo> genFilter;
-  iLumi.getByType(genFilter);
+  const bool hasGenFilterInfo = iLumi.getByType(genFilter);
+
+  if(!hasGenFilterInfo){
+    return; 
+  }
 
   std::cout << "Lumi section " << iLumi.id() << std::endl;
   std::cout << "N total = " << genFilter->numEventsTried() << " N passed = " << genFilter->numEventsPassed() << std::endl;
@@ -78,7 +78,6 @@ void cmg::RunInfoAccountingAnalyzer::beginRun(edm::Run const& run, edm::EventSet
 }
 
 void cmg::RunInfoAccountingAnalyzer::endRun(edm::Run const& run, edm::EventSetup const&) {
-  cout<<"end run"<<endl;
 //   fileChanged_ = true;
 
   //COLIN need to find out how to get the run number from here
