@@ -1,8 +1,5 @@
 import FWCore.ParameterSet.Config as cms
 
-# The four-vector sum of all jets does not tell us too much new, but
-# it's nice to just make these histograms by default anyway.
-
 cmgMultiJetHistograms = cms.EDAnalyzer(
     "CmgMultiObjectHistograms",
     inputCollection = cms.InputTag("cmgMultiJet"),
