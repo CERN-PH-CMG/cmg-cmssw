@@ -6,4 +6,5 @@
  'FWCore/GuiBrowsers':                     ['V00-00-54', 'FWCore/GuiBrowsers'],
  'PhysicsTools/PatAlgos':                     ['V08-06-01-18', 'PhysicsTools/PatAlgos'],  
  'PhysicsTools/PatUtils':                     ['V03-09-18', 'PhysicsTools/PatUtils'],  
- }
+  'UserCode/RecoParticleFlow/PostProcessing':           ['Colin_May9', 'RecoParticleFlow/PostProcessing']
+}
