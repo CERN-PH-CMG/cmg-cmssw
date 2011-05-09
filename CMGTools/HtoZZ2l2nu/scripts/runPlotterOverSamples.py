@@ -48,7 +48,7 @@ def getByLabel(desc,key,defaultVal=None) :
 """
 loops over files in directory and fills control histograms
 """
-def getControlPlots(descriptor,isData,inputDir='data') :
+def getControlPlots(descriptor,isData,inputDir='data',getFromDir='') :
 
     results={}
     
@@ -62,7 +62,9 @@ def getControlPlots(descriptor,isData,inputDir='data') :
 
     if(file is None): return results
     if(file.IsZombie()) : return results
-    dir = file.GetDirectory('evAnalyzer/'+tag)
+    baseDirName='evAnalyzer/'+tag
+    if(len(getFromDir)>0): baseDirName=getFromDir
+    dir = file.GetDirectory(baseDirName)
     if( dir == 0 ) :
         cresults={}
         plots = file.GetListOfKeys();
@@ -79,7 +81,7 @@ def getControlPlots(descriptor,isData,inputDir='data') :
         centralresults={}
         for c in categs:
             cname=c.GetName()
-            path='evAnalyzer/'+tag+'/'+cname
+            path=baseDirName+'/'+cname
             subdir = file.GetDirectory(path)
             try :
                 subdir.ClassName()
@@ -100,6 +102,7 @@ def getControlPlots(descriptor,isData,inputDir='data') :
                 results.update(cresults)
             except :
                 h = file.Get(path)
+                print h.GetName()
                 h.SetDirectory(0)
                 centralresults[h.GetName()]=h
 
@@ -263,7 +266,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
 """
 Parses a json file and retrieves the necessary info
 """
-def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='data/plots') :
+def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='data/plots', getFromDir='') :
 
     #open the file which describes the sample
     jsonFile = open(samplesDB,'r')
@@ -305,7 +308,7 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
             for d in data :
 
                 #get the plots
-                plots=getControlPlots(d,isdata,inputDir)
+                plots=getControlPlots(d,isdata,inputDir,getFromDir)
                 dtag=getByLabel(d,'dtag')
                 if(plots==None):continue
                 if(len(plots)==0): continue
@@ -387,11 +390,13 @@ inputDir='data'
 if(len(sys.argv)>3): inputDir = sys.argv[3]
 outputDir='data/plots'
 if(len(sys.argv)>4): outputDir = sys.argv[4]
+getFromDir=''
+if(len(sys.argv)>5): getFromDir = sys.argv[5]
 
 #run the script
 print ' Integrated lumi is:' + str(integratedLumi) + ' /pb'
 print ' Samples defined in: ' +  samplesDB
 print ' Plots in: ' + inputDir
-runOverSamples( samplesDB, integratedLumi,inputDir, outputDir )
+runOverSamples( samplesDB, integratedLumi,inputDir, outputDir, getFromDir )
 print ' Output stored in: ' + outputDir
 print ' Can browse the results using: ' + outputDir + '/index.html'
