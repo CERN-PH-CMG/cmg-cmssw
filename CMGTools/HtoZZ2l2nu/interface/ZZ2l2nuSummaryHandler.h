@@ -14,6 +14,7 @@
 
 #endif
 
+#define MAXPARTICLES 25
 struct ZZ2l2nuSummary_t
 {
   Int_t run,lumi,event;
@@ -27,9 +28,11 @@ struct ZZ2l2nuSummary_t
   Float_t projmet_pt;
   Float_t tkmet_pt,tkmet_phi;
   Float_t genmet_pt,genmet_phi;
-  Float_t l1px,l1py,l1pz,l1e; //leptons
-  Float_t l2px,l2py,l2pz,l2e;
-  Int_t l1id,l2id;
+  Int_t nparticles;
+  Float_t rho;
+  Float_t px[MAXPARTICLES],py[MAXPARTICLES],pz[MAXPARTICLES],en[MAXPARTICLES]; //leptons
+  Int_t id[MAXPARTICLES],genid[MAXPARTICLES];
+  Float_t info1[MAXPARTICLES],info2[MAXPARTICLES],info3[MAXPARTICLES],info4[MAXPARTICLES],info5[MAXPARTICLES];
 };
 
 class ZZ2l2nuSummaryHandler{

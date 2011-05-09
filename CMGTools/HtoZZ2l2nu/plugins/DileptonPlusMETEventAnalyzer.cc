@@ -80,8 +80,7 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
 
     //selection streams
     TString streams[]={"ee","mumu","emu"};
-    TString jetmult[]={"eq0jets","eq1jets","geq2jets"};
-    TString selsteps[]={"Reco","2 leptons","2 good leptons","|M-M_{Z}|<15","3^{rd} lepton veto","=0 jets","=1 jet","#geq 2 jets"};
+    TString selsteps[]={"Reco","2 leptons","2 good leptons","|M-M_{Z}|<15","3^{rd} lepton veto"};
     const size_t nselsteps=sizeof(selsteps)/sizeof(TString);
     for(size_t istream=0; istream<sizeof(streams)/sizeof(TString); istream++)
     {
@@ -128,31 +127,27 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
       results_[cat+"_btags"]             = formatPlot( newDir.make<TH1F>(cat+"_btags",";b tags (TCHE); Jets",50,-5,45), 1,1,1,20,0,false,true,1,1,1);
 
       //final control plots (inclusive and per jet multiplicity)
-      for(size_t jstream=0; jstream<=sizeof(jetmult)/sizeof(TString); jstream++)
-	{
-	  TString subcat=cat;
-	  if(jstream) subcat+= jetmult[jstream-1];
-	  results_[subcat+"_dilepton_mass"]     = formatPlot( newDir.make<TH1F>(subcat+"_dilepton_mass", ";Invariant Mass(l,l') [GeV/c^{2}]; Events", 50, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
-	  results_[subcat+"_dilepton_sumpt"]    = formatPlot( newDir.make<TH1F>(subcat+"_dilepton_sumpt", ";#Sigma |#vec{p}_{T}| [GeV/c]; Events", 50, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
-	  results_[subcat+"_dilepton_dphi"]    = formatPlot( newDir.make<TH1F>(subcat+"_dilepton_dphi", ";|#Delta #phi| [rad]; Events", 50, 0.,3.2), 1,1,1,20,0,false,true,1,1,1);
-	  results_[subcat+"_dilepton_pt"]       = formatPlot( newDir.make<TH1F>(subcat+"_dilepton_pt", ";|#Sigma #vec{p}_{T}| [GeV/c]; Events", 50, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
-	  
-	  results_[subcat+"_met"]               = formatPlot( newDir.make<TH1F>(subcat+"_met", ";#slash{E}_{T} [GeV/c]; Events", 100,  0.,500.), 1,1,1,20,0,false,true,1,1,1);
-	  results_[subcat+"_metresol"]          = formatPlot( newDir.make<TH1F>(subcat+"_metresol", ";#slash{E}_{T}-|#sum_{#nu}#vec{p}_{T}| [GeV/c]; Events", 50,  -100.,100.), 1,1,1,20,0,false,true,1,1,1);
-	  results_[subcat+"_metsig"]            = formatPlot( newDir.make<TH1F>(subcat+"_metsig", ";#slash{E}_{T} significance; Events", 50,  0.,100.), 1,1,1,20,0,false,true,1,1,1);
-	  results_[subcat+"_cormet"]            = formatPlot( newDir.make<TH1F>(subcat+"_cormet", ";jet corrected #slash{E}_{T} [GeV/c]; Events", 100,  0.,500.), 1,1,1,20,0,false,true,1,1,1);
-	  results_[subcat+"_tmet"]              = formatPlot( newDir.make<TH1F>(subcat+"_tmet", ";track #slash{E}_{T} [GeV/c]; Events", 100,0.,500.), 1,1,1,20,0,false,true,1,1,1);
-	  results_[subcat+"_rmet"]              = formatPlot( newDir.make<TH1F>(subcat+"_rmet", ";reduced #slash{E}_{T} [GeV/c]; Events", 100,0.,500.), 1,1,1,20,0,false,true,1,1,1);
-	  results_[subcat+"_relmet"]            = formatPlot( newDir.make<TH1F>(subcat+"_relmet", ";relative #slash{E}_{T} [GeV/c]; Events", 100,0.,500.), 1,1,1,20,0,false,true,1,1,1);
-	  results_[subcat+"_met2vertex_dphi"] = formatPlot( newDir.make<TH1F>(subcat+"_met2vertex_dphi", ";#Delta #phi(#slash{E}_{T},vertex) [rad]; Events", 50, 0,3.2), 1,1,1,20,0,false,true,1,1,1);
-	  results_[subcat+"_met2dilepton_dphi"] = formatPlot( newDir.make<TH1F>(subcat+"_met2dilepton_dphi", ";#Delta #phi(#slash{E}_{T},vertex) [rad]; Events", 50, 0,3.2), 1,1,1,20,0,false,true,1,1,1);
-	  
-	  if(jstream==0) results_[subcat+"_mT_otherlep"]= formatPlot( newDir.make<TH1F>(subcat+"_mT_otherlep",";Transverse mass(other leptons,MET) [GeV/c^{2}]; Events",50,0,500), 1,1,1,20,0,false,true,1,1,1);
-	  results_[subcat+"_mT_individualsum"]  = formatPlot( newDir.make<TH1F>(subcat+"_mT_individualsum",";#Sigma Transverse mass(lepton,MET) [GeV/c^{2}]; Events",50,0,500), 1,1,1,20,0,false,true,1,1,1);
-	  results_[subcat+"_mT_individualcorr"]           = formatPlot( newDir.make<TH2F>(subcat+"_mT_individualcorr",";Transverse mass(leading lepton,MET) [GeV/c^{2}];Transverse mass(trailer lepton,MET) [GeV/c^{2}]; Events",50,0,500,50,0,500), 1,1,1,20,0,false,true,1,1,1);
-	  
-	  results_[subcat+"_mT"]                = formatPlot( newDir.make<TH1F>(subcat+"_mT",";Transverse mass(dilepton,MET) [GeV/c^{2}]; Events",50,0,1000), 1,1,1,20,0,false,true,1,1,1);
-	}
+      results_[cat+"_dilepton_mass"]     = formatPlot( newDir.make<TH1F>(cat+"_dilepton_mass", ";Invariant Mass(l,l') [GeV/c^{2}]; Events", 50, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_dilepton_sumpt"]    = formatPlot( newDir.make<TH1F>(cat+"_dilepton_sumpt", ";#Sigma |#vec{p}_{T}| [GeV/c]; Events", 50, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_dilepton_dphi"]    = formatPlot( newDir.make<TH1F>(cat+"_dilepton_dphi", ";|#Delta #phi| [rad]; Events", 50, 0.,3.2), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_dilepton_pt"]       = formatPlot( newDir.make<TH1F>(cat+"_dilepton_pt", ";|#Sigma #vec{p}_{T}| [GeV/c]; Events", 50, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
+      
+      results_[cat+"_met"]               = formatPlot( newDir.make<TH1F>(cat+"_met", ";#slash{E}_{T} [GeV/c]; Events", 100,  0.,500.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_metresol"]          = formatPlot( newDir.make<TH1F>(cat+"_metresol", ";#slash{E}_{T}-|#sum_{#nu}#vec{p}_{T}| [GeV/c]; Events", 50,  -100.,100.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_recoilresol"]          = formatPlot( newDir.make<TH1F>(cat+"_recoilresol", ";p_{T}(Higgs)-|#sum_{#jets}#vec{p}_{T}| [GeV/c]; Events", 50,  -100.,100.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_metsig"]            = formatPlot( newDir.make<TH1F>(cat+"_metsig", ";#slash{E}_{T} significance; Events", 50,  0.,100.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_cormet"]            = formatPlot( newDir.make<TH1F>(cat+"_cormet", ";jet corrected #slash{E}_{T} [GeV/c]; Events", 100,  0.,500.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_tmet"]              = formatPlot( newDir.make<TH1F>(cat+"_tmet", ";track #slash{E}_{T} [GeV/c]; Events", 100,0.,500.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_rmet"]              = formatPlot( newDir.make<TH1F>(cat+"_rmet", ";reduced #slash{E}_{T} [GeV/c]; Events", 100,0.,500.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_relmet"]            = formatPlot( newDir.make<TH1F>(cat+"_relmet", ";relative #slash{E}_{T} [GeV/c]; Events", 100,0.,500.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_met2vertex_dphi"] = formatPlot( newDir.make<TH1F>(cat+"_met2vertex_dphi", ";#Delta #phi(#slash{E}_{T},vertex) [rad]; Events", 50, 0,3.2), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_met2dilepton_dphi"] = formatPlot( newDir.make<TH1F>(cat+"_met2dilepton_dphi", ";#Delta #phi(#slash{E}_{T},vertex) [rad]; Events", 50, 0,3.2), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_eventres"]               = formatPlot( newDir.make<TH1F>(cat+"_eventres", ";|#slash{#vec{E}}_{T}+#sum_{jets,leptons}#vec{p}_{T}| [GeV/c]; Events", 100,  0.,500.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_mT_otherlep"]= formatPlot( newDir.make<TH1F>(cat+"_mT_otherlep",";Transverse mass(other leptons,MET) [GeV/c^{2}]; Events",50,0,500), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_mT_individualsum"]  = formatPlot( newDir.make<TH1F>(cat+"_mT_individualsum",";#Sigma Transverse mass(lepton,MET) [GeV/c^{2}]; Events",50,0,500), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_mT_individualcorr"]           = formatPlot( newDir.make<TH2F>(cat+"_mT_individualcorr",";Transverse mass(leading lepton,MET) [GeV/c^{2}];Transverse mass(trailer lepton,MET) [GeV/c^{2}]; Events",50,0,500,50,0,500), 1,1,1,20,0,false,true,1,1,1);
+      
+      results_[cat+"_mT"]                = formatPlot( newDir.make<TH1F>(cat+"_mT",";Transverse mass(dilepton,MET) [GeV/c^{2}]; Events",50,0,1000), 1,1,1,20,0,false,true,1,1,1);
     }
   }catch(std::exception &e){
     cout << e.what() << endl;
@@ -164,6 +159,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 
 
   try{
+
+    ZZ2l2nuSummary_t &ev = summaryHandler_.getEvent();
 
     //get the weight for the event
     float weight=1;
@@ -328,12 +325,25 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     int njets(0), nbjets(0);
     std::vector<LorentzVector> jetmomenta;
     LorentzVector rejectedJetMomenta(0,0,0,0);
+    LorentzVector hadronicRecoil(0,0,0,0);
     for (pat::eventhypothesis::Looper<pat::Jet> jet = evhyp.loopAs<pat::Jet>("jet"); jet; ++jet) 
       {
 
 	//associate to the same primary vertex
 	float fassoc(jet::fAssoc(jet.get(),primVertex));
-	if(fassoc>0.1) jetmomenta.push_back(jet->p4());
+	getHist(istream+"_jetfassoc")->Fill( fassoc ,weight);
+	if(fassoc>0.1) 
+	  {
+	    njets++;
+	    jetmomenta.push_back(jet->p4());
+	    hadronicRecoil += jet->p4();
+	    ev.px[njets+1] = jet->px();  ev.py[njets+1]=jet->py();  ev.pz[njets+1]=jet->pz(); ev.en[njets+1]=jet->energy();
+	    ev.id[njets+1]=1;
+	    const reco::Candidate *genParton = jet->genParton();
+	    ev.genid[njets+1] = genParton ? genParton->pdgId() : -9999;
+	    ev.info1[njets+1]=jet->bDiscriminator("trackCountingHighEffBJetTags");
+	    ev.info2[njets+1]=jet->bDiscriminator("trackCountingHighPurBJetTags");
+	  }
 	else 
 	  {
 	    rejectedJetMomenta += jet->p4();
@@ -347,21 +357,15 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	getHist(istream+"_btags")->Fill(btag,weight);
 	getHist(istream+"_jetpt")->Fill(jet->pt(),weight);
 	getHist(istream+"_jeteta")->Fill(jet->eta(),weight);
-	getHist(istream+"_jetfassoc")->Fill( fassoc ,weight);
-    }
-    njets=jetmomenta.size();
+      }
+    LorentzVector eventResidual=dileptonP+hadronicRecoil+metP;
+    getHist(istream+"_eventres")->Fill(eventResidual.pt(),weight);
     getHist(istream+"_njets")->Fill(njets,weight);
     getHist(istream+"_bmult")->Fill(nbjets,weight);
-    
+
     //update the selection stream
-    int jetbin=njets;
-    if(jetbin>2) jetbin=2;
-    TString substream=istream; 
-    if(jetbin==0)      substream = substream+"eq0jets";
-    else if(jetbin==1) substream = substream+"eq1jets";
-    else               substream = substream+"geq2jets";
     getHist("cutflow")->Fill(5,weight);
-    getHist(istream+"_cutflow")->Fill(5+jetbin,weight);
+    getHist(istream+"_cutflow")->Fill(5,weight);
     
     
     //
@@ -369,6 +373,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //
 
     //MC truth on MET
+    LorentzVector genHiggs(0,0,0,0);
     LorentzVector genMET(0,0,0,0);
     if(!event.isRealData())
       {     
@@ -376,7 +381,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	for (pat::eventhypothesis::Looper<reco::GenParticle> genpart = evhyp.loopAs<reco::GenParticle>("genparticle"); genpart; ++genpart) 
 	  {
 	    //higgs level (H)
-	    //cout << "\t" << genpart->pdgId() << " -> " << flush;  
+	    if(fabs(genpart->pdgId())==25) genHiggs=genpart->p4();
 	    
 	    int igenpartdau(0);
 	    char buf[20];
@@ -404,6 +409,9 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	  }
 	//cout << endl;
       }
+    LorentzVector hadronicRecoilResol=genHiggs+hadronicRecoil;
+
+
     
     //standard MET significance
     float metsig( hPfMET.isValid()? ((*hPfMET)[0]).significance() : -1);
@@ -464,34 +472,27 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     transverseMass=TMath::Sqrt(transverseMass);
 
     //final control histograms (inclusive and per jet bin)
-    TString catsToFill[2]={istream,substream};
-    for(size_t icat=0; icat<2; icat++)
-      {
-	getHist(catsToFill[icat]+"_dilepton_mass")->Fill(dileptonP.mass(),weight);
-	getHist(catsToFill[icat]+"_dilepton_dphi")->Fill( fabs( deltaPhi(lepton1P.phi(),lepton2P.phi()) ) ,weight);
-	getHist(catsToFill[icat]+"_dilepton_sumpt")->Fill(lepton1P.pt()+lepton2P.pt(),weight);
-	getHist(catsToFill[icat]+"_dilepton_pt")->Fill(dileptonP.pt(),weight);
-	
-	getHist(catsToFill[icat]+"_met")->Fill(metP.pt(),weight);
-	getHist(catsToFill[icat]+"_metresol")->Fill(metP.pt()-genMET.pt(),weight);
-	getHist(catsToFill[icat]+"_metsig")->Fill(metsig,weight);
-	getHist(catsToFill[icat]+"_cormet")->Fill( thecormet.pt() );
-	getHist(catsToFill[icat]+"_rmet")->Fill(reducedMET,weight);
-	getHist(catsToFill[icat]+"_relmet")->Fill(relMET,weight);
-	getHist(catsToFill[icat]+"_tmet")->Fill(tmet.pt());
-	getHist(catsToFill[icat]+"_met2vertex_dphi")->Fill(fabs(dphimet2vertex),weight);
-	getHist(catsToFill[icat]+"_met2dilepton_dphi")->Fill(fabs(dphimet2zll),weight);
-
-	getHist(catsToFill[icat]+"_mT_individualsum")->Fill(mTlmet[0]+mTlmet[1],weight);
-	if(lepton1P.pt()>lepton2P.pt()) ((TH2 *)getHist(catsToFill[icat]+"_mT_individualcorr"))->Fill(mTlmet[0],mTlmet[1],weight);
-	else ((TH2 *)getHist(catsToFill[icat]+"_mT_individualcorr"))->Fill(mTlmet[1],mTlmet[0],weight);
-	
-	getHist(catsToFill[icat]+"_mT")->Fill(transverseMass,weight);
-      }
+    getHist(istream+"_dilepton_mass")->Fill(dileptonP.mass(),weight);
+    getHist(istream+"_dilepton_dphi")->Fill( fabs( deltaPhi(lepton1P.phi(),lepton2P.phi()) ) ,weight);
+    getHist(istream+"_dilepton_sumpt")->Fill(lepton1P.pt()+lepton2P.pt(),weight);
+    getHist(istream+"_dilepton_pt")->Fill(dileptonP.pt(),weight);
+    getHist(istream+"_met")->Fill(metP.pt(),weight);
+    getHist(istream+"_metresol")->Fill(metP.pt()-genMET.pt(),weight);
+    getHist(istream+"_recoilresol")->Fill(genHiggs.pt()-hadronicRecoil.pt(),weight);
+    getHist(istream+"_metsig")->Fill(metsig,weight);
+    getHist(istream+"_cormet")->Fill( thecormet.pt() );
+    getHist(istream+"_rmet")->Fill(reducedMET,weight);
+    getHist(istream+"_relmet")->Fill(relMET,weight);
+    getHist(istream+"_tmet")->Fill(tmet.pt());
+    getHist(istream+"_met2vertex_dphi")->Fill(fabs(dphimet2vertex),weight);
+    getHist(istream+"_met2dilepton_dphi")->Fill(fabs(dphimet2zll),weight);
+    getHist(istream+"_mT_individualsum")->Fill(mTlmet[0]+mTlmet[1],weight);
+    if(lepton1P.pt()>lepton2P.pt()) ((TH2 *)getHist(istream+"_mT_individualcorr"))->Fill(mTlmet[0],mTlmet[1],weight);
+    else ((TH2 *)getHist(istream+"_mT_individualcorr"))->Fill(mTlmet[1],mTlmet[0],weight);
+    getHist(istream+"_mT")->Fill(transverseMass,weight);
 
 
     //save summary
-    ZZ2l2nuSummary_t &ev = summaryHandler_.getEvent();
     ev.run=event.id().run();
     ev.lumi=event.luminosityBlock();
     ev.event=event.id().event();
@@ -510,8 +511,12 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.projmet_pt=relMET;
     ev.tkmet_pt=tmet.pt();       ev.tkmet_phi=tmet.phi();
     ev.genmet_pt=genMET.pt();    ev.genmet_phi=genMET.phi();
-    ev.l1id = l1id;              ev.l1px=lepton1P.px();       ev.l1py=lepton1P.py();  ev.l1pz=lepton1P.pz();  ev.l1e=lepton1P.energy();
-    ev.l2id = l2id;              ev.l2px=lepton2P.px();       ev.l2py=lepton2P.py();  ev.l2pz=lepton2P.pz();  ev.l2e=lepton2P.energy();
+    ev.rho=*rho;
+    ev.nparticles=2+njets;
+    ev.px[0] = lepton1P.px();  ev.py[0]=lepton1P.py();  ev.pz[0]=lepton1P.pz(); ev.en[0]=lepton1P.energy(); ev.id[0]=l1id;
+    ev.px[1] = lepton2P.px();  ev.py[1]=lepton2P.py();  ev.pz[1]=lepton2P.pz(); ev.en[1]=lepton2P.energy(); ev.id[1]=l2id;
+
+
     summaryHandler_.fillTree();
 
   }catch(std::exception &e){

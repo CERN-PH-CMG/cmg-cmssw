@@ -15,6 +15,8 @@
 #include "RooUnfoldBayes.h"
 #include "RooUnfoldInvert.h"
 
+#include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
+
 #endif
 
 using namespace std;
@@ -22,8 +24,10 @@ using namespace std;
 /**
    @short compile me like this
    gSystem->AddIncludePath("-I/afs/cern.ch/user/p/psilva/scratch0/RooUnfold-1.0.3/src/")
-   gSystem->SetDynamicPath(gSystem->GetDynamicPath() + TString(":/afs/cern.ch/user/p/psilva/scratch0/RooUnfold-1.0.3"))
+   gSystem->AddIncludePath("-I${CMSSW_BASE}/src")
+   gSystem->SetDynamicPath(gSystem->GetDynamicPath() + TString(":/afs/cern.ch/user/p/psilva/scratch0/RooUnfold-1.0.3:${CMSSW_BASE}/lib/${SCRAM_ARCH}"))
    gSystem->Load("libRooUnfold");
+   gSystem->Load("libCMGToolsHtoZZ2l2nu");
    .L unfoldPileup.C+
 
    @short run me like this
@@ -46,7 +50,6 @@ void unfoldPileup(TString url, TString dataurl)
 	hgen_vs_reco->SetBinContent(ybin,xbin,val);
 	hgen_vs_reco->SetBinError(ybin,xbin,err);
       }
-  hgen_vs_reco->Scale(1./hgen_vs_reco->Integral());
   hgen_vs_reco->SetDirectory(0);
   hgen_vs_reco->SetTitle("Generated vs. reco");
   hgen_vs_reco->SetMarkerColor(1);
@@ -54,14 +57,12 @@ void unfoldPileup(TString url, TString dataurl)
   hgen->SetDirectory(0);
   hgen->SetTitle("Generated");
   hgen->SetMarkerColor(1);
-  hgen->Scale(1./hgen->Integral());
   fin->Close();
 
   fin = TFile::Open(dataurl); 
   TH1F *hdata = (TH1F *) fin->Get("hdata");
   hdata->SetDirectory(0);
   hdata->SetTitle("Data");
-  hdata->Scale(1./hdata->Integral());
   fin->Close();
 
   //unfold
@@ -72,13 +73,14 @@ void unfoldPileup(TString url, TString dataurl)
   hunfold->SetMarkerColor(1);
 
   //draw
+  setStyle();
   gStyle->SetPalette(1);  
-  TCanvas *c= new TCanvas("c1","c1");
-  c->SetWindowSize(600,600);
+  TCanvas *c= getNewCanvas("c1","c1",false);
+  c->SetWindowSize(1000,1000);
   c->Divide(2,2);
-  c->cd(1);  hgen_vs_reco->Draw("colz");
-  c->cd(2);  hgen->Draw();
-  c->cd(3);  hdata->Draw();
-  c->cd(4);  hunfold->Draw();
+  c->cd(1);  hgen_vs_reco->DrawNormalized("colz");
+  c->cd(2);  hgen->DrawNormalized();
+  c->cd(3);  hdata->DrawNormalized();
+  c->cd(4);  hunfold->DrawNormalized();
   c->SaveAs("UnfoldedPileupInData.C");
 }
