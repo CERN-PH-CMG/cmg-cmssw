@@ -34,7 +34,7 @@ PileupNormalizationProducer::PileupNormalizationProducer(const edm::ParameterSet
 
   objConfig["Vertices"]= iConfig.getParameter<edm::ParameterSet>("Vertices");
 
-  //from vertex distribution ratio
+  //from observed vertex distribution ratio
   vertexDataH_ = new TH1D("vertex_data","data;Vertices;Events",25,0.,25.);
   vertexDataH_->SetBinContent(2,0.0338308);
   vertexDataH_->SetBinContent(3,0.121082);
@@ -48,8 +48,9 @@ PileupNormalizationProducer::PileupNormalizationProducer(const edm::ParameterSet
   vertexDataH_->SetBinContent(11,0.0269992);
   vertexDataH_->SetBinContent(12,0.00431492);
 
-  //from unfolded disribution
   puUnfoldedH_ = new TH1D("unfold_data","Unfolded data;Pileup;Events",25,0.,25.);
+  /*
+  //from unfolded vertex disribution
   puUnfoldedH_->SetBinContent(1,0.136598);
   puUnfoldedH_->SetBinContent(2,0.548235);
   puUnfoldedH_->SetBinContent(3,1.26893);
@@ -75,6 +76,29 @@ PileupNormalizationProducer::PileupNormalizationProducer(const edm::ParameterSet
   puUnfoldedH_->SetBinContent(23,0.0200775);
   puUnfoldedH_->SetBinContent(24,0.035064);
   puUnfoldedH_->SetBinContent(25,0.00959897);
+  */
+
+  //from estimatePileup.py
+  puUnfoldedH_->SetBinContent(1,0.325744);
+  puUnfoldedH_->SetBinContent(2,0.67326);
+  puUnfoldedH_->SetBinContent(3,1.56131);
+  puUnfoldedH_->SetBinContent(4,2.31576);
+  puUnfoldedH_->SetBinContent(5,2.5592);
+  puUnfoldedH_->SetBinContent(6,2.31682);
+  puUnfoldedH_->SetBinContent(7,1.79594);
+  puUnfoldedH_->SetBinContent(8,1.10214);
+  puUnfoldedH_->SetBinContent(9,0.65303);
+  puUnfoldedH_->SetBinContent(10,0.32345);
+  puUnfoldedH_->SetBinContent(11,0.15507);
+  puUnfoldedH_->SetBinContent(12,0.0733624);
+  puUnfoldedH_->SetBinContent(13,0.0336016);
+  puUnfoldedH_->SetBinContent(14,0.0214205);
+  puUnfoldedH_->SetBinContent(15,0.0099394);
+  puUnfoldedH_->SetBinContent(16,0.00425343);
+  puUnfoldedH_->SetBinContent(17,0.00215255);
+  puUnfoldedH_->SetBinContent(18,0.00105142);
+  puUnfoldedH_->SetBinContent(19,0.00030305);
+  puUnfoldedH_->SetBinContent(20,0.000459227);
 }
 
 //

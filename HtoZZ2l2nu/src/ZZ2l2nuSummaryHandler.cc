@@ -42,18 +42,21 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t)
   t_->Branch("genmet_pt",     &evSummary_.genmet_pt,   "genmet_pt/F");
   t_->Branch("genmet_phi",    &evSummary_.genmet_phi,  "genmet_phi/F");
 
-  //leptons
-  t_->Branch("l1px", &evSummary_.l1px, "l1px/F");
-  t_->Branch("l1py", &evSummary_.l1py, "l1py/F");
-  t_->Branch("l1pz", &evSummary_.l1pz, "l1pz/F");
-  t_->Branch("l1e", &evSummary_.l1e, "l1e/F");
-  t_->Branch("l1id", &evSummary_.l1id, "l1id/I");
+  t_->Branch("rho", &evSummary_.rho, "rho/F");
 
-  t_->Branch("l2px", &evSummary_.l2px, "l2px/F");
-  t_->Branch("l2py", &evSummary_.l2py, "l2py/F");
-  t_->Branch("l2pz", &evSummary_.l2pz, "l2pz/F");
-  t_->Branch("l2e", &evSummary_.l2e, "l2e/F");
-  t_->Branch("l2id", &evSummary_.l2id, "l2id/I");
+  //selected particles
+  t_->Branch("nparticles", &evSummary_.nparticles, "nparticles/I");
+  t_->Branch("px", evSummary_.px, "px[nparticles]/F");
+  t_->Branch("py", evSummary_.py, "py[nparticles]/F");
+  t_->Branch("pz", evSummary_.pz, "pz[nparticles]/F");
+  t_->Branch("en", evSummary_.en, "en[nparticles]/F");
+  t_->Branch("id", evSummary_.id, "id[nparticles]/I");
+  t_->Branch("genid", evSummary_.genid, "genid[nparticles]/I");
+  t_->Branch("info1", evSummary_.info1, "info1[nparticles]/F");
+  t_->Branch("info2", evSummary_.info2, "info2[nparticles]/F");
+  t_->Branch("info3", evSummary_.info3, "info3[nparticles]/F");
+  t_->Branch("info4", evSummary_.info4, "info4[nparticles]/F");
+  t_->Branch("info5", evSummary_.info5, "info5[nparticles]/F");
 
   return true;
 }
@@ -95,20 +98,21 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("tkmet_phi")->SetAddress( &evSummary_.tkmet_phi );
   t_->GetBranch("genmet_pt")->SetAddress( &evSummary_.genmet_pt );
   t_->GetBranch("genmet_phi")->SetAddress( &evSummary_.genmet_phi );
+  t_->GetBranch("rho")->SetAddress( &evSummary_.rho );
 
-  //leptons
-  t_->GetBranch("l1px")->SetAddress( &evSummary_.l1px );
-  t_->GetBranch("l1py")->SetAddress( &evSummary_.l1py );
-  t_->GetBranch("l1pz")->SetAddress( &evSummary_.l1pz );
-  t_->GetBranch("l1e")->SetAddress( &evSummary_.l1e );
-  t_->GetBranch("l1id")->SetAddress( &evSummary_.l1id );
-  t_->GetBranch("l2px")->SetAddress( &evSummary_.l2px );
-  t_->GetBranch("l2py")->SetAddress( &evSummary_.l2py );
-  t_->GetBranch("l2pz")->SetAddress( &evSummary_.l2pz );
-  t_->GetBranch("l2e")->SetAddress( &evSummary_.l2e );
-  t_->GetBranch("l2id")->SetAddress( &evSummary_.l2id );
-
-
+  //selected particles
+  t_->GetBranch("nparticles")->SetAddress( &evSummary_.nparticles );
+  t_->GetBranch("px")->SetAddress( evSummary_.px );
+  t_->GetBranch("py")->SetAddress( evSummary_.py );
+  t_->GetBranch("pz")->SetAddress( evSummary_.pz );
+  t_->GetBranch("en")->SetAddress( evSummary_.en );
+  t_->GetBranch("id")->SetAddress( evSummary_.id );
+  t_->GetBranch("genid")->SetAddress( evSummary_.genid );
+  t_->GetBranch("info1")->SetAddress( evSummary_.info1 );
+  t_->GetBranch("info2")->SetAddress( evSummary_.info2 );
+  t_->GetBranch("info3")->SetAddress( evSummary_.info3 );
+  t_->GetBranch("info4")->SetAddress( evSummary_.info4 );
+  t_->GetBranch("info5")->SetAddress( evSummary_.info5 );
 
   return true;
 }
