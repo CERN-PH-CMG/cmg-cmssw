@@ -6,14 +6,13 @@ from PhysicsTools.PatAlgos.tools.coreTools import *
 
 def myPatSequence( process, runOnData=True  ): 
 
-#    jetCorrString = cms.vstring(['L2Relative', 'L3Absolute', 'L2L3Residual'])
-    jetCorrString = cms.vstring(['L2Relative', 'L3Absolute'])
+
+    jetCorrString = cms.vstring(['L1Offset', 'L2Relative', 'L3Absolute',])
 
     if runOnData:
         switchOnTrigger( process )
         removeMCMatching(process, ['All'])
-        #jetCorrString = cms.vstring(['L2Relative', 'L3Absolute', 'L2L3Residual'])
-        #RunOnData(process, ['All'])
+        jetCorrString = cms.vstring(['L1Offset', 'L2Relative', 'L3Absolute', 'L2L3Residual'])
         
 
     addJetCollection(process,cms.InputTag('ak7CaloJets'),
@@ -25,19 +24,6 @@ def myPatSequence( process, runOnData=True  ):
                      doL1Cleaning = False,                 
                      doL1Counters = False,
                      genJetCollection=cms.InputTag("ak7GenJets"),
-                     doJetID      = False
-                     )
-
-
-    addJetCollection(process,cms.InputTag('ak5CaloJets'),
-                     'AK5', 'Calo',
-                     doJTA        = True,
-                     doBTagging   = False,
-                     jetCorrLabel = ('AK5Calo', jetCorrString),
-                     doType1MET   = False,
-                     doL1Cleaning = False,                 
-                     doL1Counters = False,
-                     genJetCollection=cms.InputTag("ak5GenJets"),
                      doJetID      = False
                      )
 
@@ -73,6 +59,5 @@ def myPatSequence( process, runOnData=True  ):
 
     process.selectedPatJetsAK7Calo.cut = "pt()>30"
     process.selectedPatJetsAK7PF.cut = "pt()>10"
-    process.selectedPatJetsAK5Calo.cut = "pt()>30"
     process.selectedPatJetsAK5PF.cut = "pt()>10"
 

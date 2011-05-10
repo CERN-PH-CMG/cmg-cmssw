@@ -5,16 +5,32 @@ from CMGTools.Common.factories.cmgBaseJet_cfi import cmgBaseJet
 from CMGTools.Common.factories.cmgDiJet_cfi import cmgDiJet
 from CMGTools.Common.factories.cmgFatJet_cfi import cmgFatJet
 from CMGTools.Common.factories.cmgDiFatJet_cfi import cmgDiFatJet
+from CMGTools.Common.histograms.cmgDiJetHistograms_cfi import *
 from CMGTools.Common.histograms.baseJetLorentzVector_cfi import baseJetLorentzVector
 from CMGTools.Common.skims.leadingCMGBaseJetSelector_cfi import leadingCMGBaseJetSelector
+from CMGTools.DiJetHighMass.skims.cmgDiJetSelector_cfi import *
+from CMGTools.DiJetHighMass.histograms.cmgDiJetHistograms_cfi import *
+
+from CMGTools.Common.selections.kinematics_cfi import kinematics
+
 
 patJet = 'selectedPatJets'
 baseJet = 'cmgBaseJet'
-baseLeadJet = 'cmgBaseleadjet'
-baseFatJet = 'cmgBaseFatJet'
+baseLeadJet = 'cmgBaseLeadJet'
+baseDiJet = 'cmgBaseDiJet'
+baseTightDiJet = 'cmgTightBaseDiJet'
+
+
 
 # Produce Base Jet
+allCuts = cms.PSet(
+       jetKinematics = kinematics.clone()
+       )
+
 cmgBaseJet.cfg.inputCollection = patJet
+cmgBaseJet.cuts = allCuts
+cmgBaseJet.cuts.jetKinematics.eta = cms.string('abs(eta()) < 2.5')
+cmgBaseJet.cuts.jetKinematics.pt = cms.string('pt > 30')
 
 # Select Base Leading Jet
 cmgBaseLeadJet = leadingCMGBaseJetSelector.clone()
@@ -31,26 +47,40 @@ diBaseJetFactory = cms.PSet(
 cmgBaseDiJet = cmgDiJet.clone()
 cmgBaseDiJet.cfg = diBaseJetFactory
 
-cmgBaseFatJet = cmgFatJet.clone()
-cmgBaseFatJet.cfg.inputCollection = cms.InputTag(baseJet)
+
+# ---------- Plots producing and skimming
+
+# General Jet histograms
+
+cmgBaseLorentzVector = baseJetLorentzVector.clone()
+cmgBaseLorentzVector.inputCollection = baseJet
+
+cmgBaseLeadLorentzVector = baseJetLorentzVector.clone()
+cmgBaseLeadLorentzVector.inputCollection = baseLeadJet
 
 
-cmgBaseDiFatJet = cmgDiFatJet.clone()
-cmgBaseDiFatJet.cfg.leg1Collection = cms.InputTag(baseFatJet)
-cmgBaseDiFatJet.cfg.leg2Collection = cms.InputTag(baseFatJet)
+# Skimmed dijet histograms for updates
 
-jetBaseLorentzVector = baseJetLorentzVector.clone()
-jetBaseLorentzVector.inputCollection = baseJet
+cmgBaseTightDiJet = cmgDiBaseJetSel.clone()
+cmgBaseTightDiJet.src = baseDiJet
 
-jetBaseLeadLorentzVector = baseJetLorentzVector.clone()
-jetBaseLeadLorentzVector.inputCollection = baseLeadJet
+cmgBaseDiJetLorentzVector = cmgDiJetLorentzVector.clone()
+cmgBaseDiJetLorentzVector.inputCollection = baseTightDiJet
+
+cmgBaseDiJetHistograms = cmgDiJetHistograms.clone()
+cmgBaseDiJetHistograms.inputCollection = baseTightDiJet
+
 
 baseJetSequence = cms.Sequence(
     cmgBaseJet +
     cmgBaseLeadJet +
-    jetBaseLorentzVector +
-    jetBaseLeadLorentzVector +
     cmgBaseDiJet +
-    cmgBaseFatJet +
-    cmgBaseDiFatJet
+
+    cmgBaseLorentzVector +
+    cmgBaseLeadLorentzVector +
+
+    cmgBaseTightDiJet+
+    cmgBaseDiJetLorentzVector+
+    cmgBaseDiJetHistograms
+    
     )
