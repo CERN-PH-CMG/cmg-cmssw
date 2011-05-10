@@ -7,24 +7,44 @@ def myPFJetSequence( process, postfix ):
 
     patJet = 'selectedPatJets' + postfix
     pfJet = 'cmgPFJet' + postfix
+    pfDiJet = 'cmgPFDiJet' + postfix
     pfLeadJet = 'cmgPFLeadJet' + postfix
     pfFatJet = 'cmgPFFatJet' + postfix
+    pfFatDiJet = 'cmgPFFatDiJet' + postfix
+    pfTightDiJet = 'cmgPFTightDiJet' + postfix
+    pfFatTightDiJet = 'cmgPFFatTightDiJet' + postfix
    
     cloneProcessingSnippet(process, process.pfJetSequence, postfix)
 
-    getattr(process, "cmgPFJet" + postfix).cfg.inputCollection     = patJet
-    getattr(process, "cmgPFLeadJet" + postfix).inputCollection = pfJet
+    getattr(process, "cmgPFJet" + postfix).cfg.inputCollection = cms.InputTag(patJet)
+    getattr(process, "cmgPFLeadJet" + postfix).inputCollection = cms.untracked.InputTag(pfJet)
     getattr(process, "cmgPFDiJet" + postfix).cfg.leg1Collection = cms.InputTag(pfLeadJet)
     getattr(process, "cmgPFDiJet" + postfix).cfg.leg2Collection = cms.InputTag(pfLeadJet)
 
     getattr(process, "cmgPFFatJet" + postfix).cfg.inputCollection = cms.InputTag(pfJet)
-    getattr(process, "cmgPFDiFatJet" + postfix).cfg.leg1Collection = cms.InputTag(pfFatJet)
-    getattr(process, "cmgPFDiFatJet" + postfix).cfg.leg2Collection = cms.InputTag(pfFatJet)
+
+    getattr(process, "cmgPFFatDiJet" + postfix).cfg.leg1Collection = cms.InputTag(pfFatJet)
+    getattr(process, "cmgPFFatDiJet" + postfix).cfg.leg2Collection = cms.InputTag(pfFatJet)
+
+
+    # Histogramming
+
+    getattr(process, "cmgPFLorentzVector" + postfix).inputCollection = cms.InputTag(pfJet)
+    getattr(process, "cmgPFLeadLorentzVector" + postfix).inputCollection = cms.InputTag(pfLeadJet)
+    getattr(process, "cmgPFHistograms" + postfix).inputCollection = cms.InputTag(pfJet)
+    getattr(process, "cmgPFLeadHistograms" + postfix).inputCollection = cms.InputTag(pfLeadJet)
+
+    getattr(process, "cmgPFTightDiJet" + postfix).src = cms.InputTag(pfDiJet)
+    getattr(process, "cmgPFDiJetLorentzVector" + postfix).inputCollection = cms.InputTag(pfTightDiJet)
+    getattr(process, "cmgPFDiJetHistograms" + postfix).inputCollection = cms.InputTag(pfTightDiJet)
+
     
-    getattr(process, "jetPFLorentzVector" + postfix).inputCollection = pfJet
-    getattr(process, "jetPFLeadLorentzVector" + postfix).inputCollection = pfLeadJet
-    getattr(process, "jetPFHistograms" + postfix).inputCollection = pfJet
-    getattr(process, "jetPFLeadHistograms" + postfix).inputCollection = pfLeadJet
+    getattr(process, "cmgPFFatTightDiJet" + postfix).src = cms.InputTag(pfFatDiJet)
+    getattr(process, "cmgPFFatDiJetLorentzVector" + postfix).inputCollection = cms.InputTag(pfFatTightDiJet)
+    getattr(process, "cmgPFFatDiJetHistograms" + postfix).inputCollection = cms.InputTag(pfFatTightDiJet)
+    getattr(process, "cmgPFDiJetHistograms_FatJets" + postfix).inputCollection = cms.InputTag(pfFatTightDiJet)
+    
+
 
 def myBaseJetSequence( process, postfix ): 
 
@@ -32,25 +52,26 @@ def myBaseJetSequence( process, postfix ):
     baseJet = 'cmgBaseJet' + postfix
     baseLeadJet = 'cmgBaseLeadJet' + postfix
     baseFatJet = 'cmgBaseFatJet' + postfix
+    baseDiJet = 'cmgBaseDiJet' + postfix
+    baseTightDiJet = 'cmgBaseTightDiJet' + postfix
+
 
     cloneProcessingSnippet(process, process.baseJetSequence, postfix)
 
-    getattr(process, "cmgBaseJet" + postfix).cfg.inputCollection = patJet
-    getattr(process, "cmgBaseLeadJet" + postfix).inputCollection = baseJet
+    getattr(process, "cmgBaseJet" + postfix).cfg.inputCollection = cms.InputTag(patJet)
+    getattr(process, "cmgBaseLeadJet" + postfix).inputCollection = cms.untracked.InputTag(baseJet)
     getattr(process, "cmgBaseDiJet" + postfix).cfg.leg1Collection = cms.InputTag(baseLeadJet)
     getattr(process, "cmgBaseDiJet" + postfix).cfg.leg2Collection = cms.InputTag(baseLeadJet)
 
-    getattr(process, "cmgBaseFatJet" + postfix).cfg.inputCollection = cms.InputTag(baseJet)
-    getattr(process, "cmgBaseDiFatJet" + postfix).cfg.leg1Collection = cms.InputTag(baseFatJet)
-    getattr(process, "cmgBaseDiFatJet" + postfix).cfg.leg2Collection = cms.InputTag(baseFatJet)
+    # Histogramming
     
-    getattr(process, "jetBaseLorentzVector" + postfix).inputCollection = baseJet
-    getattr(process, "jetBaseLeadLorentzVector" + postfix).inputCollection = baseLeadJet
+    getattr(process, "cmgBaseLorentzVector" + postfix).inputCollection = cms.InputTag(baseJet)
+    getattr(process, "cmgBaseLeadLorentzVector" + postfix).inputCollection = cms.InputTag(baseLeadJet)
     
-    getattr(process, "cmgBaseJet" + postfix).cuts.jetKinematics.eta = cms.string('abs(eta()) < 2.5')
-    idx = postfix.find('Calo', 0)
-    if idx > -1:
-        getattr(process, "cmgBaseJet" + postfix).cuts.jetKinematics.pt = cms.string('pt > 30')    
+    getattr(process, "cmgBaseTightDiJet" + postfix).src = cms.InputTag(baseDiJet)        
+    getattr(process, "cmgBaseDiJetLorentzVector" + postfix).inputCollection = cms.InputTag(baseTightDiJet)
+    getattr(process, "cmgBaseDiJetHistograms" + postfix).inputCollection = cms.InputTag(baseTightDiJet)
+
 
 def myJetSequence( process ): 
 

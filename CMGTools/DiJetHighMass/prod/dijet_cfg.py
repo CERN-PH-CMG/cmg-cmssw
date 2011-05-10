@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 
 # changing process name, as PAT is already taken 
 processName = 'ANA'
-runOnData = False
+runOnData = True
 postfix="PFlow"
 ext = 'Data'
 
@@ -26,7 +26,7 @@ if (not runOnData):
 
 
 if runOnData:
-    process.source.fileNames = cms.untracked.vstring('/store/cmst3/user/cbern/RA2SusyJetMET/Data/HotSkim/hotskim_pf.root')
+    process.source.fileNames = cms.untracked.vstring('/store/data/Run2011A/HT/AOD/PromptReco-v1/000/161/312/FCDA9BD1-0358-E011-BB89-003048F024C2.root')
     if runAtFNAL:
         process.source.fileNames = cms.untracked.vstring('file:/uscms/home/mgouzevi/work/TEST_SAMPLES/Data_skim.root')
 else:
@@ -86,7 +86,6 @@ process.p = cms.Path(
     process.analysisSequence +
     process.select
     )
-
 
 process.out.SelectEvents.SelectEvents.append('p')
 

@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 
 # changing process name, as PAT is already taken 
 processName = 'CMGANA'
-runOnData = False
+runOnData = True
 postfix="PFlow"
 ext = 'Data'
 
@@ -85,13 +85,14 @@ process.dump = cms.EDAnalyzer("EventContentAnalyzer")
 # Total process
 process.p = cms.Path(
     process.pat +
-    process.analysisSequence #+
-#    process.select
+    process.analysisSequence +
+    process.select
     )
 
+process.p.remove(process.patTriggerSequence)
+process.p.remove(process.patTriggerEventSequence)
 
 process.out.SelectEvents.SelectEvents.append('p')
-
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) ) 
