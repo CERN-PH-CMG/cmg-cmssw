@@ -10,6 +10,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/Photon.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/PhysicsObject.h"
+#include "AnalysisDataFormats/CMGTools/interface/TriggerObject.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 
@@ -182,6 +183,11 @@ typedef SingleObjectSelector<
   std::vector<cmg::DiTau>,
   StringCutObjectSelector<cmg::DiTau>
   > CmgDiTauSelector;
+
+typedef SingleObjectSelector<
+  std::vector<cmg::TriggerObject>,
+  StringCutObjectSelector<cmg::TriggerObject>
+  > CmgTriggerObjectSelector;
 
 typedef SingleObjectSelector<
   std::vector<cmg::DiElectron>,

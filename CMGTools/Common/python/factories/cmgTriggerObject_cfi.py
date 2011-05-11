@@ -11,10 +11,10 @@ triggerObjectFactory = cms.PSet(
        useTriggerObjects = cms.untracked.bool(False)
        )
 
-cmgTriggerObjects = cms.EDFilter("TriggerObjectPOProducer",
+cmgTriggerObject = cms.EDFilter("TriggerObjectPOProducer",
     cfg = triggerObjectFactory.clone(),
     cuts = cms.PSet(
        )
 )
 
-cmgTriggerObjectSequence = cms.Sequence(patTrigger+cmgTriggerObjects)
+cmgTriggerObjectSequence = cms.Sequence(patTrigger+cmgTriggerObject)
