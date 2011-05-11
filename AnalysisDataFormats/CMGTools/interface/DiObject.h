@@ -12,13 +12,13 @@ namespace cmg {
 template <typename T, typename U> class DiObject;
 template <typename T, typename U> class DiObjectFactory;
 
-template< typename T, typename U > 
+template< typename T, typename U >
 class DiObject : public AbstractPhysicsObject{
   public:
-    
+
     typedef T type1;
     typedef U type2;
-    
+
     DiObject():
       AbstractPhysicsObject(), alphaT_(UnSet(Double_t)) {
     }
@@ -46,9 +46,9 @@ class DiObject : public AbstractPhysicsObject{
         mRT_(other.mRT_),
         lp_(other.lp_){
     }
-    
+
     virtual ~DiObject(){}
-    
+
     T leg1() const{
         return leg1_;
     }
@@ -70,15 +70,15 @@ class DiObject : public AbstractPhysicsObject{
     }
     ///The Razor variable M_R
     Double_t mR() const{
-        return mR_;   
+        return mR_;
     }
     ///The Razor variable M_R'
     Double_t mRPrime() const{
-        return mRP_;   
+        return mRP_;
     }
     ///The Razor variable M_T^R
     Double_t mRT() const{
-        return mRT_;   
+        return mRT_;
     }
     ///The Razor variable R
     Double_t R() const{
@@ -87,14 +87,14 @@ class DiObject : public AbstractPhysicsObject{
     ///The lepton projection (LP) variable
     Double_t lp() const{
         return lp_;
-    }  
+    }
 
     virtual void accept(AbstractPhysicsObjectVisitor* v) const{
-      v->visit(this);  
+      v->visit(this);
       v->visit(&leg1_);
       v->visit(&leg2_);
     }
-    
+
    ///Overides the methods reco::Candidate so that it can be used with the TopProjector
    virtual reco::Candidate::size_type numberOfSourceCandidatePtrs() const{
     return leg1().numberOfSourceCandidatePtrs() + leg2().numberOfSourceCandidatePtrs();
@@ -106,12 +106,12 @@ class DiObject : public AbstractPhysicsObject{
     if(i < leg1Size){
      return leg1().sourceCandidatePtr(i);
     }else if(i < (leg1Size + leg2Size) ){
-     return leg2().sourceCandidatePtr(i-leg1Size);   
+     return leg2().sourceCandidatePtr(i-leg1Size);
     }else{
-     return reco::Candidate::sourceCandidatePtr(i);  
+     return reco::Candidate::sourceCandidatePtr(i);
     }
    }
-   
+
    ///Overrides the methods for read only access to daughters as in CompositeCandidate
    virtual reco::Candidate::size_type numberOfDaughters() const{
         return 2;
@@ -141,16 +141,14 @@ class DiObject : public AbstractPhysicsObject{
     Double_t alphaT_;
     Double_t betaR_; //the Razor boost
     Double_t mR_; //The Razor MR
-    Double_t mRP_; //The Razor MR' 
-    Double_t mRT_; //The Razor M_T^R 
-    Double_t lp_; //The lepton projection (LP) 
+    Double_t mRP_; //The Razor MR'
+    Double_t mRT_; //The Razor M_T^R
+    Double_t lp_; //The lepton projection (LP)
 
     friend class cmg::DiObjectFactory<T,U>;
 
 };
 
-}
-
-
+} // namespace cmg
 
 #endif /*DIOBJECT_H_*/
