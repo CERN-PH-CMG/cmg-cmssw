@@ -1,8 +1,13 @@
 <use name="root"/>
+<use name="roofit"/>
+<use name="rootgraphics"/>
 <use name="boost_program_options"/>
+<use name="CondFormats/JetMETObjects"/>
+<use name="FWCore/ParameterSet"/>
+<use name="FWCore/PythonParameterSet"/>
+<use name="FWCore/FWLite"/>
 <use name="PhysicsTools/FWLite"/>
-<use name="PhysicsTools/UtilAlgos"/>
-<use name="CMGTools/HtoZZ2l2nu"/>
 <environment>
-  <bin   file="runCleanEventAnalysis.C"></bin>
+  <bin name="runOnEventSummary" file="../src/ZZ2l2nuSummaryHandler.cc ../src/ReducedMETFitter.cc runOnEventSummary.cc"></bin>
 </environment>
+<Flags CXXFLAGS="-g"/>
