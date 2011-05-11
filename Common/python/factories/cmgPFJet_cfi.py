@@ -12,6 +12,7 @@ cmgPFJet = cms.EDFilter(
     "PFJetPOProducer",
     cfg = pfJetFactory.clone(),
     cuts = cms.PSet(
+       jetKinematics = kinematics.clone(),
        btag = trackCountingHighEffBJetTags.clone(), 
        looseJetId = looseJetId.clone(),
        mediumJetId = mediumJetId.clone(),

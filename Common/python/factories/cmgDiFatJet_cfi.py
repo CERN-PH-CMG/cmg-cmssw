@@ -9,12 +9,11 @@ diFatJetFactory = diObjectFactory.clone(
 
 from CMGTools.Common.selections.dijet_cfi import dijetKinematics
 
-
 cmgDiFatJet = cms.EDFilter(
     "DiFatJetPOProducer",
     cfg = diFatJetFactory.clone(),
     cuts = cms.PSet(
-    leadDijetKinematics = dijetKinematics.clone()
+    fatDijetKinematics = dijetKinematics.clone(),
     ),
     verbose = cms.untracked.bool( False )
 )

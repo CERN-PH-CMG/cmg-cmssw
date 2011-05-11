@@ -7,7 +7,9 @@ dijetKinematics = cms.PSet(
     ),
     looseMass = cms.string('mass > 200'),
     mediumMass = cms.string('mass > 400'),
+    tightMass = cms.string('mass > 800'),
     Jet140Uthreshold = cms.string('mass > 510'),
+    Jet250Uthreshold = cms.string('mass > 606'),
     
     looseDeltaEta = cms.string('abs(leg1.eta()-leg2.eta()) < 1.7'),
     mediumDeltaEta = cms.string('abs(leg1.eta()-leg2.eta()) < 1.5'),

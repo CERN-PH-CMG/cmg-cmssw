@@ -68,10 +68,11 @@ cmg::FatJetFactory::event_ptr cmg::FatJetFactory::create(const edm::Event& iEven
   // }
 
   cmg::BaseJet lead1, lead2, cand;
-  int i = -1;
   std::vector< edm::Ptr<reco::Candidate> > fat1, fat2;
   
-  for (size_t i = 0, n = cands->size(); i < n; ++i) {
+  size_t n = cands->size();
+
+  for (size_t i = 0; i < n; ++i) {
 
     cand = *(cands->refAt(i));
 
@@ -101,7 +102,7 @@ cmg::FatJetFactory::event_ptr cmg::FatJetFactory::create(const edm::Event& iEven
   }
   
 
-  if (i > 0){
+  if (n > 0){
     cmg::FatJet fatJet1(fat1);
     cmg::FatJet fatJet2(fat2);
     
