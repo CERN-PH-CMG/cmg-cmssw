@@ -337,12 +337,12 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	    njets++;
 	    jetmomenta.push_back(jet->p4());
 	    hadronicRecoil += jet->p4();
-	    ev.px[njets+1] = jet->px();  ev.py[njets+1]=jet->py();  ev.pz[njets+1]=jet->pz(); ev.en[njets+1]=jet->energy();
-	    ev.id[njets+1]=1;
+	    ev.px[njets+2] = jet->px();  ev.py[njets+2]=jet->py();  ev.pz[njets+2]=jet->pz(); ev.en[njets+2]=jet->energy();
+	    ev.id[njets+2]=1;
 	    const reco::Candidate *genParton = jet->genParton();
-	    ev.genid[njets+1] = genParton ? genParton->pdgId() : -9999;
-	    ev.info1[njets+1]=jet->bDiscriminator("trackCountingHighEffBJetTags");
-	    ev.info2[njets+1]=jet->bDiscriminator("trackCountingHighPurBJetTags");
+	    ev.genid[njets+2] = genParton ? genParton->pdgId() : -9999;
+	    ev.info1[njets+2]=jet->bDiscriminator("trackCountingHighEffBJetTags");
+	    ev.info2[njets+2]=jet->bDiscriminator("trackCountingHighPurBJetTags");
 	  }
 	else 
 	  {
@@ -513,8 +513,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.genmet_pt=genMET.pt();    ev.genmet_phi=genMET.phi();
     ev.rho=*rho;
     ev.nparticles=2+njets;
-    ev.px[0] = lepton1P.px();  ev.py[0]=lepton1P.py();  ev.pz[0]=lepton1P.pz(); ev.en[0]=lepton1P.energy(); ev.id[0]=l1id;
-    ev.px[1] = lepton2P.px();  ev.py[1]=lepton2P.py();  ev.pz[1]=lepton2P.pz(); ev.en[1]=lepton2P.energy(); ev.id[1]=l2id;
+    ev.px[0] = lepton1P.px();  ev.py[0]=lepton1P.py();  ev.pz[0]=lepton1P.pz(); ev.en[0]=lepton1P.energy(); ev.id[0]=l1id; ev.info1[0] = lepton1pterr;
+    ev.px[1] = lepton2P.px();  ev.py[1]=lepton2P.py();  ev.pz[1]=lepton2P.pz(); ev.en[1]=lepton2P.energy(); ev.id[1]=l2id; ev.info1[1] = lepton2pterr;
 
 
     summaryHandler_.fillTree();
