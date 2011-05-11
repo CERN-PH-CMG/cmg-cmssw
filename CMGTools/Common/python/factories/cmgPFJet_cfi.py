@@ -5,14 +5,12 @@ pfJetFactory = cms.PSet(
        baseJetFactory = baseJetFactory.clone()
        )
 from CMGTools.Common.selections.btaggedjet_cfi import trackCountingHighEffBJetTags
-from CMGTools.Common.selections.kinematics_cfi import kinematics
 from CMGTools.Common.selections.jetid_cfi import *
 
 cmgPFJet = cms.EDFilter(
     "PFJetPOProducer",
     cfg = pfJetFactory.clone(),
     cuts = cms.PSet(
-       jetKinematics = kinematics.clone(),
        btag = trackCountingHighEffBJetTags.clone(), 
        looseJetId = looseJetId.clone(),
        mediumJetId = mediumJetId.clone(),
