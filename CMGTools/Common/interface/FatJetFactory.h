@@ -14,6 +14,10 @@
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
 
+#include "CMGTools/Common/interface/SettingTool.h"
+#include "CMGTools/Common/interface/MultiObjectSettingTool.h"
+
+
 #include <TRandom3.h>
 #include <algorithm>
 #include <set>
@@ -21,7 +25,8 @@
 
 namespace cmg{
 
-  class FatJetFactory : public cmg::Factory< cmg::FatJet >{
+  class FatJetFactory : public cmg::Factory< cmg::FatJet >,
+    public SettingTool<std::vector<edm::Ptr<reco::Candidate> >, cmg::FatJet>{
   public:
 
    
@@ -35,11 +40,15 @@ namespace cmg{
       typedef cmg::Factory< cmg::FatJet >::event_ptr event_ptr;
       virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
         
+      void set(std::vector<edm::Ptr<reco::Candidate> > const& input,
+	       cmg::FatJet& object) const;
+
       virtual ~FatJetFactory(){};
 
 
   private:
       const edm::InputTag collectionLabel_;
+      MultiObjectSettingTool const multiObjectFactory_;
       const double Rmax_;
 
       //   typename cmg::FatJetFactory<T>::event_ptr result;
@@ -106,6 +115,9 @@ cmg::FatJetFactory::event_ptr cmg::FatJetFactory::create(const edm::Event& iEven
     cmg::FatJet fatJet1(fat1);
     cmg::FatJet fatJet2(fat2);
     
+    set(fat1, fatJet1);
+    set(fat2, fatJet2);
+
     if (fatJet2.pt() > fatJet1.pt()) {result->push_back(fatJet1); result->push_back(fatJet2);}
     else {result->push_back(fatJet2); result->push_back(fatJet1);}
   }
@@ -114,6 +126,10 @@ cmg::FatJetFactory::event_ptr cmg::FatJetFactory::create(const edm::Event& iEven
   
 }
 
-
+void cmg::FatJetFactory::set(std::vector<edm::Ptr<reco::Candidate> > const& input,
+				 cmg::FatJet& object) const
+{
+  multiObjectFactory_.set(input, &object);
+}
 
 #endif /*FATJETFACTORY_H_*/
