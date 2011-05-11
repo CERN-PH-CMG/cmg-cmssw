@@ -9,6 +9,7 @@
 <use name="DataFormats/VertexReco"/>
 <use name="DataFormats/PatCandidates"/>
 <use name="SimDataFormats/GeneratorProducts"/>
+<use name="CondFormats/JetMETObjects"/>
 <use name="root"/>
 <use name="roottmva"/>
 <use name="rootrflx"/>
