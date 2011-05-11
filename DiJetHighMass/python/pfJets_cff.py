@@ -7,10 +7,10 @@ from CMGTools.Common.factories.cmgFatJet_cfi import cmgFatJet
 from CMGTools.Common.factories.cmgDiFatJet_cfi import cmgDiFatJet
 from CMGTools.Common.histograms.pfJetLorentzVector_cfi import pfJetLorentzVector
 from CMGTools.Common.histograms.pfJetHistograms_cfi import pfJetHistograms
-from CMGTools.Common.histograms.cmgDiJetHistograms_cfi import *
 from CMGTools.Common.skims.leadingCMGPFJetSelector_cfi import leadingCMGPFJetSelector
 from CMGTools.DiJetHighMass.skims.cmgDiJetSelector_cfi import *
 from CMGTools.DiJetHighMass.histograms.cmgDiJetHistograms_cfi import *
+from CMGTools.DiJetHighMass.histograms.diJetLorentzVector_cfi import *
 
 from CMGTools.Common.selections.kinematics_cfi import kinematics
 from CMGTools.Common.selections.jetid_cfi import looseJetId
