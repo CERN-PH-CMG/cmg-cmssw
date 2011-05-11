@@ -2,6 +2,8 @@
 #define MULTIOBJECTFACTORY_H_
 
 #include "CMGTools/Common/interface/Factory.h"
+#include "CMGTools/Common/interface/SettingTool.h"
+#include "CMGTools/Common/interface/MultiObjectSettingTool.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "AnalysisDataFormats/CMGTools/interface/UnSet.h"
 #include "AnalysisDataFormats/CMGTools/interface/MultiObject.h"
@@ -22,29 +24,27 @@
 
 namespace cmg {
 
-class MultiObjectFactory : public cmg::Factory<cmg::MultiObject> {
-public:
+  class MultiObjectFactory : public cmg::Factory<cmg::MultiObject>,
+    public SettingTool<std::vector<edm::Ptr<reco::Candidate> >, cmg::MultiObject> {
+  public:
 
-  MultiObjectFactory(edm::ParameterSet const& ps):
-    inputLabel_(ps.getParameter<edm::InputTag>("inputCollection"))
-    {
-    }
+    MultiObjectFactory(edm::ParameterSet const& ps):
+      inputLabel_(ps.getParameter<edm::InputTag>("inputCollection"))
+      {
+      }
 
-    typedef cmg::Factory<cmg::MultiObject>::event_ptr event_ptr;
-    virtual event_ptr create(edm::Event const& iEvent,
-                             edm::EventSetup const& iSetup) const;
+      typedef cmg::Factory<cmg::MultiObject>::event_ptr event_ptr;
+      virtual event_ptr create(edm::Event const& iEvent,
+                               edm::EventSetup const& iSetup) const;
 
-    double deltaPhiStar(std::vector<edm::Ptr<reco::Candidate> > const&
-                        input) const;
+      void set(std::vector<edm::Ptr<reco::Candidate> > const& input,
+               cmg::MultiObject& object) const;
 
-    void set(std::vector<edm::Ptr<reco::Candidate> >
-             const& input, cmg::MultiObject& object) const;
+  private:
+      edm::InputTag const inputLabel_;
+      MultiObjectSettingTool const multiObjectFactory_;
 
-private:
-
-  const edm::InputTag inputLabel_;
-
-}; // class MultiObjectFactory
+  }; // class MultiObjectFactory
 
 } // namespace cmg
 
@@ -81,43 +81,10 @@ cmg::MultiObjectFactory::create(edm::Event const& iEvent,
 
 //--------------------------------------------------------------------
 
-// This is the delta-phi^star variable as defined in formula 5 (p. 10)
-// of CMS AN-2010/242.
-// NOTE: This is a delta-phi in [0, pi].
-double cmg::MultiObjectFactory::deltaPhiStar(std::vector<
-                                             edm::Ptr<reco::Candidate> >
-                                             const& input) const
-{
-  double deltaPhiStar = cmg::unsetD;
-
-  typedef math::XYZVector Vector;
-  Vector negSumMom;
-  for (std::vector<edm::Ptr<reco::Candidate> >::const_iterator it = input.begin(),
-         end = input.end(); it != end; ++it) {
-    negSumMom -= (*it)->momentum();
-  }
-
-  double deltaPhiMin = std::numeric_limits<double>::max();
-  for (std::vector<edm::Ptr<reco::Candidate> >::const_iterator it = input.begin(),
-         end = input.end(); it != end; ++it) {
-    Vector tmp = negSumMom + (*it)->momentum();
-    double deltaPhi = reco::deltaPhi(tmp.phi(), (*it)->phi());
-    deltaPhi = abs(deltaPhi);
-    if (deltaPhi < deltaPhiMin) {
-      deltaPhiMin = deltaPhi;
-    }
-  }
-
-  deltaPhiStar = deltaPhiMin;
-  return deltaPhiStar;
-}
-
-//--------------------------------------------------------------------
-
 void cmg::MultiObjectFactory::set(std::vector<edm::Ptr<reco::Candidate> >
                                   const& input, cmg::MultiObject& object) const
 {
-  object.deltaPhiStar_ = deltaPhiStar(input);
+  multiObjectFactory_.set(input, &object);
 }
 
 //--------------------------------------------------------------------

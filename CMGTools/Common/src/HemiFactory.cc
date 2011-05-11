@@ -189,6 +189,10 @@ cmg::HemisphereFactory::create(const edm::Event& iEvent,
     cmg::Hemisphere hemi0(tmp0);
     cmg::Hemisphere hemi1(tmp1);
 
+    // Set all internal hemisphere variables.
+    set(tmp0, hemi0);
+    set(tmp1, hemi1);
+
     // Don't forget to return pT ordered results.
     if (hemi0.pt() < hemi1.pt()) {
       result->push_back(hemi0);
@@ -201,6 +205,15 @@ cmg::HemisphereFactory::create(const edm::Event& iEvent,
   } // if (numCand)
 
   return result;
+}
+
+//--------------------------------------------------------------------
+
+void
+cmg::HemisphereFactory::set(std::vector<edm::Ptr<reco::Candidate> > const& input,
+                            cmg::Hemisphere& object) const
+{
+  multiObjectFactory_.set(input, &object);
 }
 
 //--------------------------------------------------------------------
