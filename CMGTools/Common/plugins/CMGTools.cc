@@ -43,6 +43,12 @@ DEFINE_FWK_MODULE(CmgDiTauHistograms);
 DEFINE_FWK_MODULE(CmgDiElectronHistograms);
 DEFINE_FWK_MODULE(CmgDiHemiHistograms);
 
+DEFINE_FWK_MODULE(CmgFatJetHistograms);
+DEFINE_FWK_MODULE(CmgDiFatJetHistograms);
+DEFINE_FWK_MODULE(CmgDiJetHistograms);
+DEFINE_FWK_MODULE(CmgDiPFJetHistograms);
+
+
 DEFINE_FWK_MODULE(CmgDiMuonDataSet);
 DEFINE_FWK_MODULE(CmgDiTauDataSet);
 
@@ -62,7 +68,9 @@ DEFINE_FWK_MODULE(LeadingCMGPFJetSelector);
 DEFINE_FWK_MODULE(LeadingCMGElectronSelector);
 DEFINE_FWK_MODULE(LeadingCMGMuonSelector);
 
-
+DEFINE_FWK_MODULE(CmgDiFatJetSelector);
+DEFINE_FWK_MODULE(CmgDiPFJetSelector);
+DEFINE_FWK_MODULE(CmgDiBaseJetSelector);
 DEFINE_FWK_MODULE(CmgPhotonSelector);
 DEFINE_FWK_MODULE(CmgPFJetSelector);
 DEFINE_FWK_MODULE(CmgBaseJetSelector);

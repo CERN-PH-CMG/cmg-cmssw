@@ -95,6 +95,11 @@ typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiTau> > CmgDiTauHist
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiElectron> > CmgDiElectronHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiHemisphere> > CmgDiHemiHistograms;
 
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::FatJet> > CmgFatJetHistograms;
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiFatJet> > CmgDiFatJetHistograms;
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiJet> > CmgDiJetHistograms;
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiPFJet> > CmgDiPFJetHistograms;
+
 // For datasets.
 typedef cmg::HistogramAnalyzer<cmg::GenericRooDataSets<cmg::DiMuon> > CmgDiMuonDataSet;
 typedef cmg::HistogramAnalyzer<cmg::GenericRooDataSets<cmg::DiTau> > CmgDiTauDataSet;
@@ -115,6 +120,23 @@ typedef cmg::LeadingObjectsSelector<cmg::Electron> LeadingCMGElectronSelector;
 typedef cmg::LeadingObjectsSelector<cmg::Muon> LeadingCMGMuonSelector;
 
 // Single object selectors.
+
+
+typedef SingleObjectSelector<
+  std::vector<cmg::DiFatJet>,
+  StringCutObjectSelector<cmg::DiFatJet>
+  > CmgDiFatJetSelector;
+
+typedef SingleObjectSelector<
+  std::vector<cmg::DiPFJet>,
+  StringCutObjectSelector<cmg::DiPFJet>
+  > CmgDiPFJetSelector;
+
+typedef SingleObjectSelector<
+  std::vector<cmg::DiJet>,
+  StringCutObjectSelector<cmg::DiJet>
+  > CmgDiBaseJetSelector;
+
 
 typedef SingleObjectSelector<
   std::vector<cmg::Photon>,
