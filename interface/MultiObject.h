@@ -14,6 +14,7 @@ namespace cmg {
 
   class MultiObject;
   class MultiObjectFactory;
+  class MultiObjectSettingTool;
 
   class MultiObject : public AbstractPhysicsObject {
 
@@ -75,6 +76,7 @@ namespace cmg {
     Double_t deltaPhiStar_;
 
     friend class cmg::MultiObjectFactory;
+    friend class cmg::MultiObjectSettingTool;
 
   };
 
