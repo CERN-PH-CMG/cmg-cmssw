@@ -39,6 +39,9 @@ cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm
     }
 
     if(useTriggerObjects_){
+        
+        typedef std::multimap<cmg::TriggerObject,std::string> pathMap;
+        pathMap triggerObjectPaths;
         for(std::map<std::string,bool>::const_iterator it = triggerMap.begin(); it != triggerMap.end(); ++it){
             //store the trigger objects
             if(it->second){//trigger passed
@@ -47,28 +50,46 @@ cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm
                     if(sa.path(it->first)){
                         pat::TriggerObjectPtr o(triggerObjects, index);
                         cmg::TriggerObject to(o,it->first);
-                        //store *all* of the trigger results in each object
-                        for(std::map<std::string,bool>::const_iterator jt = triggerMap.begin(); jt != triggerMap.end(); ++jt){
-                            to.addSelection(jt->first,jt->second);
-                        }
                         result->push_back(to);
+                        triggerObjectPaths.insert(std::make_pair(to,it->first)); 
                     }
                 }
             }
-        }
-        
+        }        
         std::sort(result->begin(),result->end());
         std::reverse(result->begin(),result->end());
-        
+
         //filter out the same trigger object from different trigger paths
         std::set<cmg::TriggerObject> triggers;
         for(collection::iterator it = result->begin(); it != result->end(); ++it){
             std::pair<std::set<cmg::TriggerObject>::iterator,bool> set_it = triggers.insert(*it);
+            
+            //this is not unique so we erase it
             if(!set_it.second){
                 it = result->erase(it);
                 --it;   
+            }else{
+                
+                //now reset the trigger match
+                for(std::map<std::string,bool>::const_iterator jt = triggerMap.begin(); jt != triggerMap.end(); ++jt){
+                    triggerMap[jt->first] = false;
+                } 
+                
+                //this is unique so we set the selection
+                std::pair<pathMap::iterator,pathMap::iterator> ret;
+                ret = triggerObjectPaths.equal_range(*it);
+                
+                //all of the trigger objects that are equal
+                for(pathMap::iterator kt= ret.first; kt!= ret.second; ++kt){
+                    triggerMap[(*kt).second] = true;
+                }
+                
+                //store *all* of the trigger results in each object, but most will be false as not relevant to this object
+                for(std::map<std::string,bool>::const_iterator jt = triggerMap.begin(); jt != triggerMap.end(); ++jt){
+                    it->addSelection(jt->first,jt->second);
+                }
             }
-        } 
+        }
         
     }else{
         //just store a single trigger object and set which triggers passed

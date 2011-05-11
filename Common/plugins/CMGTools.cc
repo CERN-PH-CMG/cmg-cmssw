@@ -83,3 +83,4 @@ DEFINE_FWK_MODULE(CmgDiTauSelector);
 DEFINE_FWK_MODULE(CmgDiElectronSelector);
 DEFINE_FWK_MODULE(CmgWENuSelector);
 DEFINE_FWK_MODULE(CmgWMuNuSelector);
+DEFINE_FWK_MODULE(CmgTriggerObjectSelector);
