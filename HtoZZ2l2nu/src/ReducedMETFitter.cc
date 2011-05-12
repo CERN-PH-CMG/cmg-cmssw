@@ -1,5 +1,10 @@
 #include "CMGTools/HtoZZ2l2nu/interface/ReducedMETFitter.h"
 
+#include "TVector2.h"
+#include <sstream>
+
+using namespace std;
+
 //
 ReducedMETFitter::ReducedMETFitter(const edm::ParameterSet &iConfig, size_t maxJets)
 {
@@ -22,6 +27,17 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
 			       const LorentzVectorCollection &jets,
 			       const LorentzVector &met)
 {
+
+  TVector2 lepton1(lep1.Px(), lep2.Py());
+  TVector2 lepton2(lep1.Px(), lep2.Py());;
+  
+  TVector2 bisector = (lepton1.Unit()+lepton2.Unit()).Unit();
+  TVector2 bisector_perp(bisector.Py(), -bisector.Px());
+  if(lepton1 * bisector_perp < 0) {
+    bisector_perp *= -1;
+  }
+
+
 
   //constraints for resolutions
   RooArgList resolConstraintsList;
@@ -46,9 +62,43 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
   RooFormulaVar px_lep2("px_lep2","@0*cos(@1)",RooArgSet(pt_lep2,phi_lep2));
   RooFormulaVar py_lep2("py_lep2","@0*sin(@1)",RooArgSet(pt_lep2,phi_lep2));
 
+  
+
+  RooFormulaVar px_dilept("px_dilept","@0+@1",RooArgSet(px_lep1,px_lep2));
+  RooFormulaVar py_dilept("py_dilept","@0+@1",RooArgSet(py_lep1,py_lep2));
+
+  RooFormulaVar pxErr_dilept("pxErr_dilept","sqrt((@0*cos(@3))^2+(@1*cos(@4))^2)",RooArgSet(sigmapt_lep1,sigmapt_lep2,phi_lep1,phi_lep2));
+  RooFormulaVar pyErr_dilept("pyErr_dilept","sqrt((@0*sin(@3))^2+(@1*sin(@4))^2)",RooArgSet(sigmapt_lep1,sigmapt_lep2,phi_lep1,phi_lep2));
+
+  RooRealVar px_bisect("px_bisect","px_bisect",bisector.X());
+  RooRealVar py_bisect("py_bisect","py_bisect",bisector.Y());
+  RooRealVar px_bisect_perp("px_bisect_perp","px_bisect_perp",bisector_perp.X());
+  RooRealVar py_bisect_perp("py_bisect_perp","py_bisect_perp",bisector_perp.Y());
+
+
+
+
+  stringstream sumJet_formula;
+  stringstream sumJetErr_formula;
+  sumJetErr_formula << "sqrt(";
+  
+  RooArgList px_sum_args;
+  RooArgList py_sum_args;
+
+  RooArgList pxErr_sum_args;
+  RooArgList pyErr_sum_args;
+
+  RooRealVar redMet_long("redMet_long","redMet_long",0., -200, 200);
+  RooRealVar redMet_perp("redMet_perp","redMet_perp",0., -200, 200);
+
+
   //jets
   for(size_t ijet=0; ijet<jets.size(); ijet++)
     {
+
+      TVector2 jet(jets[ijet].Px(), jets[ijet].Py());
+      //       if(jet*bisector < 0 || jet*bisector_perp < 0) {
+
       TString name("jet"); name+=(ijet+1);
 
       TF1 *ptresolModel=stdJetPtResol_[ijet]->resolutionEtaPt(jets[ijet].eta(),jets[ijet].pt());
@@ -67,7 +117,63 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
       
       RooFormulaVar *px_jet=new RooFormulaVar("px_"+name,"@0*cos(@1)",RooArgSet(*pt_jet,*phi_jet));
       RooFormulaVar *py_jet= new RooFormulaVar("py_"+name,"@0*sin(@1)",RooArgSet(*pt_jet,*phi_jet));
+      px_sum_args.add(*px_jet);
+      py_sum_args.add(*py_jet);
+
+      RooFormulaVar *px_err_jet=new RooFormulaVar("px_err_"+name,"@0*cos(@1)",RooArgSet(*ptresol,*phi_jet));
+      RooFormulaVar *py_err_jet= new RooFormulaVar("py_err_"+name,"@0*sin(@1)",RooArgSet(*ptresol,*phi_jet));
+      pxErr_sum_args.add(*px_err_jet);
+      pyErr_sum_args.add(*py_err_jet);
+
+      if(ijet == 0) {
+	sumJet_formula << "@";
+	sumJetErr_formula << "(@"
+      } else {
+	sumJet_formula << "+@";
+	sumJetErr_formula << "+(@"
+
+      }
+      sumJet_formula << ijet;
+      sumJetErr_formula << ijet << "^2)";
+      
+
+// 	if(jet*bisector < 0) {
+// 	  sumJetProj_long += jet*bisector;
+// 	}
+// 	if(jet*bisector_perp < 0) {
+// 	  sumJetProj_perp += jet*bisector_perp;
+// 	}
+
+
+
+//       }
     }
+
+  sumJetErr_formula << ")";
+  RooFormulaVar sumJetX("sumJetX",sumJet_formula.str().c_str(),*px_sum_args);
+  RooFormulaVar sumJetY("sumJetY",sumJet_formula.str().c_str(),*py_sum_args);
+
+  RooFormulaVar sumJetXErr("sumJetXErr",sumJetErr_formula.str().c_str(),*pxErr_sum_args);
+  RooFormulaVar sumJetYErr("sumJetYErr",sumJetErr_formula.str().c_str(),*pyErr_sum_args);
+
+
+  RooFormulaVar redMet_long_avg("redMet_long_avg","@0-((@1+@3)*@5+(@2+@4)*@6) ", RooArgSet(redMet_long, sumJetX, sumJetY, px_dilept, py_dilept, px_bisect, py_bisect));
+  RooFormulaVar redMet_perp_avg("redMet_perp_avg","@0-((@1+@3)*@5+(@2+@4)*@6) ", RooArgSet(redMet_perp, sumJetX, sumJetY, px_dilept, py_dilept, px_bisect_perp, py_bisect_perp));
+  
+  RooFormulaVar redMet_long_err("redMet_long_err","sqrt((@0^2+@2^2)*@4^2+(@1^2+@3^2)*@5^2)", RooArgSet(sumJetXErr, sumJetYErr, pxErr_dilept, pyErr_dilept, px_bisect, py_bisect));
+  RooFormulaVar redMet_perp_err("redMet_perp_err","sqrt((@0^2+@2^2)*@4^2+(@1^2+@3^2)*@5^2)", RooArgSet(sumJetXErr, sumJetYErr, pxErr_dilept, pyErr_dilept, px_bisect_perp, py_bisect_perp));
+
+  RooGaussian redMet_long_gaussian("redMet_long_gaussian","redMet_long_gaussian",redMet_long,redMet_long_avg,redMet_long_err);
+  RooGaussian redMet_perp_gaussian("redMet_perp_gaussian","redMet_perp_gaussian",redMet_perp,redMet_perp_avg,redMet_perp_err);
+  
+  RooProdPdf prodPdf("prodPdf","redMetmodel",RooArgSet(redMet_long_gaussian, redMet_perp_gaussian, resolConstraintsList));
+  RooNLLVar nll = prodPdf->createNLL(RooDataSet(), Constrain(resolConstraintsList));
+
+  RooMinuit min(nll) ;
+  min.migrad() ;
+  min.hesse() ;
+  RooFitResult* r1 = min.save() ;
+  r1->Print("v");
 
   //  if(fitType==0) modelconstr=new RooProdPdf("modelconstr"+tag,"model x product of constrains",RooArgSet(*mhfc,*model.alpha2_constrain,*model.alpha0_constrain,*model.eq_constrain));
   //      if(fitType_==0) nll = modelconstr->createNLL(*ds,Constrain(RooArgSet(*model.alpha2,*model.alpha0,*model.eq_constrain)));
