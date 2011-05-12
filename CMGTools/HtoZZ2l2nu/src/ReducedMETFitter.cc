@@ -73,8 +73,8 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
   RooFormulaVar px_dilept("px_dilept","@0+@1",RooArgSet(px_lep1,px_lep2));
   RooFormulaVar py_dilept("py_dilept","@0+@1",RooArgSet(py_lep1,py_lep2));
 
-  RooFormulaVar pxErr_dilept("pxErr_dilept","sqrt((@0*cos(@3))^2+(@1*cos(@4))^2)",RooArgSet(sigmapt_lep1,sigmapt_lep2,phi_lep1,phi_lep2));
-  RooFormulaVar pyErr_dilept("pyErr_dilept","sqrt((@0*sin(@3))^2+(@1*sin(@4))^2)",RooArgSet(sigmapt_lep1,sigmapt_lep2,phi_lep1,phi_lep2));
+  RooFormulaVar pxErr_dilept("pxErr_dilept","sqrt((@0*cos(@2))^2+(@1*cos(@3))^2)",RooArgSet(sigmapt_lep1,sigmapt_lep2,phi_lep1,phi_lep2));
+  RooFormulaVar pyErr_dilept("pyErr_dilept","sqrt((@0*sin(@2))^2+(@1*sin(@3))^2)",RooArgSet(sigmapt_lep1,sigmapt_lep2,phi_lep1,phi_lep2));
 
   RooRealVar px_bisect("px_bisect","px_bisect",bisector.X());
   RooRealVar py_bisect("py_bisect","py_bisect",bisector.Y());
@@ -103,18 +103,20 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
       TString name("jet"); name+=(ijet+1);
 
       TF1 *ptresolModel=stdJetPtResol_[ijet]->resolutionEtaPt(jets[ijet].eta(),jets[ijet].pt());
-      RooRealVar *ptresol=new RooRealVar("ptresol_"+name,"ptresol_"+name,0,10);
+      RooRealVar *ptresol=new RooRealVar("ptresol_"+name,"ptresol_"+name,0,5);
       RooAbsPdf *bindPtResolModel = RooFit::bindPdf(ptresolModel,*ptresol);
       resolConstraintsList.add(*bindPtResolModel);
       RooRealVar *avgpt_jet=new RooRealVar("avgpt_"+name,"avgpt_"+name,jets[ijet].pt());
       RooFormulaVar *pt_jet = new RooFormulaVar("pt_"+name,"@0*@1",RooArgSet(*ptresol,*avgpt_jet));
 
       TF1 *phiresolModel=stdJetPhiResol_[ijet]->resolutionEtaPt(jets[ijet].eta(),jets[ijet].pt());
-      RooRealVar *phiresol = new RooRealVar("phiresol_"+name,"phiresol_"+name,0,10);
+      RooRealVar *phiresol = new RooRealVar("phiresol_"+name,"phiresol_"+name,0,5);
       RooAbsPdf *bindPhiResolModel = RooFit::bindPdf(phiresolModel,*phiresol);
       resolConstraintsList.add(*bindPhiResolModel);
-      RooRealVar *avgphi_jet=new RooRealVar("avgpt_"+name,"avgpt_"+name,jets[ijet].phi());
+      RooRealVar *avgphi_jet=new RooRealVar("avgphi_"+name,"avgphi_"+name,jets[ijet].phi());
       RooFormulaVar *phi_jet= new RooFormulaVar("phi_"+name,"@0+@1",RooArgSet(*phiresol,*avgphi_jet));
+
+      cout << ptresolModel->GetRandom() << " " << phiresolModel->GetRandom() << endl;
       
       RooFormulaVar *px_jet=new RooFormulaVar("px_"+name,"@0*cos(@1)",RooArgSet(*pt_jet,*phi_jet));
       RooFormulaVar *py_jet= new RooFormulaVar("py_"+name,"@0*sin(@1)",RooArgSet(*pt_jet,*phi_jet));
@@ -158,8 +160,8 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
   RooRealVar redMet_long("redMet_long","redMet_long",0., -200, 200);
   RooRealVar redMet_perp("redMet_perp","redMet_perp",0., -200, 200);
 
-  RooFormulaVar redMet_long_avg("redMet_long_avg","@0-((@1+@3)*@5+(@2+@4)*@6) ", RooArgSet(redMet_long, sumJetX, sumJetY, px_dilept, py_dilept, px_bisect, py_bisect));
-  RooFormulaVar redMet_perp_avg("redMet_perp_avg","@0-((@1+@3)*@5+(@2+@4)*@6) ", RooArgSet(redMet_perp, sumJetX, sumJetY, px_dilept, py_dilept, px_bisect_perp, py_bisect_perp));
+  RooFormulaVar redMet_long_avg("redMet_long_avg","(@0+@2)*@4+(@1+@3)*@5", RooArgSet(sumJetX, sumJetY, px_dilept, py_dilept, px_bisect, py_bisect));
+  RooFormulaVar redMet_perp_avg("redMet_perp_avg","(@0+@2)*@4+(@1+@3)*@5", RooArgSet(sumJetX, sumJetY, px_dilept, py_dilept, px_bisect_perp, py_bisect_perp));
   
   RooFormulaVar redMet_long_err("redMet_long_err","sqrt((@0^2+@2^2)*@4^2+(@1^2+@3^2)*@5^2)", RooArgSet(sumJetXErr, sumJetYErr, pxErr_dilept, pyErr_dilept, px_bisect, py_bisect));
   RooFormulaVar redMet_perp_err("redMet_perp_err","sqrt((@0^2+@2^2)*@4^2+(@1^2+@3^2)*@5^2)", RooArgSet(sumJetXErr, sumJetYErr, pxErr_dilept, pyErr_dilept, px_bisect_perp, py_bisect_perp));
@@ -177,13 +179,13 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
   RooNLLVar *nll = (RooNLLVar *)prodPdf.createNLL(ds, RooFit::Constrain(resolConstraintsList));
 
   //fit it
-
+  /*
   RooMinuit min(*nll) ;
   min.migrad() ;
   min.hesse() ;
   RooFitResult* r1 = min.save() ;
   r1->Print("v");
-
+  */
   //  if(fitType==0) modelconstr=new RooProdPdf("modelconstr"+tag,"model x product of constrains",RooArgSet(*mhfc,*model.alpha2_constrain,*model.alpha0_constrain,*model.eq_constrain));
   //      if(fitType_==0) nll = modelconstr->createNLL(*ds,Constrain(RooArgSet(*model.alpha2,*model.alpha0,*model.eq_constrain)));
 }
