@@ -63,9 +63,13 @@ class cmgTuple(rt.TObject):
         return self
 
     def printAliases( self ):
-        for (i, j) in self.aliases.iteritems():
-            print "  %s -> %s" % (i, j)
-        
+        keys = self.aliases.keys()
+        lengths = [len(i) for i in keys]
+        max_len = max(lengths)
+        keys.sort()
+        for key in keys:
+            alias = self.aliases[key]
+            print "  %-*s -> %s" % (max_len, key, alias)
 
     def get(self, name):
         result = None
