@@ -40,8 +40,9 @@ class ReducedMETFitter
 	       const LorentzVector &met);
  private:
 
-  std::vector<JetResolution *>  stdJetPtResol_, stdJetPhiResol_;
-  
+  JetResolution *stdJetPtResol_, *stdJetPhiResol_;
+  RooRealVar *balance_long, *balance_perp;
+  RooDataSet *dataset;
 };
 
 
