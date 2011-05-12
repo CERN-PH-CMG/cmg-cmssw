@@ -160,7 +160,7 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
   RooRealVar redMet_long("redMet_long","redMet_long",0., -200, 200);
   RooRealVar redMet_perp("redMet_perp","redMet_perp",0., -200, 200);
 
-  RooFormulaVar redMet_long_avg("redMet_long_avg","(@0+@2)*@4+(@1+@3)*@5-", RooArgSet(sumJetX, sumJetY, px_dilept, py_dilept, px_bisect, py_bisect));
+  RooFormulaVar redMet_long_avg("redMet_long_avg","(@0+@2)*@4+(@1+@3)*@5", RooArgSet(sumJetX, sumJetY, px_dilept, py_dilept, px_bisect, py_bisect));
   RooFormulaVar redMet_perp_avg("redMet_perp_avg","(@0+@2)*@4+(@1+@3)*@5", RooArgSet(sumJetX, sumJetY, px_dilept, py_dilept, px_bisect_perp, py_bisect_perp));
   
   RooFormulaVar redMet_long_err("redMet_long_err","sqrt((@0^2+@2^2)*@4^2+(@1^2+@3^2)*@5^2)", RooArgSet(sumJetXErr, sumJetYErr, pxErr_dilept, pyErr_dilept, px_bisect, py_bisect));
