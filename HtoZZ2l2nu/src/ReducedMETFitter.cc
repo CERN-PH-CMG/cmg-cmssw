@@ -3,6 +3,12 @@
 #include "TVector2.h"
 #include <sstream>
 
+#include "RooNLLVar.h"
+#include "RooProdPdf.h"
+#include "RooMinuit.h"
+#include "RooDataSet.h"
+#include "RooMinuit.h"
+
 using namespace std;
 
 //
@@ -77,7 +83,7 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
 
 
 
-
+  //jets
   stringstream sumJet_formula;
   stringstream sumJetErr_formula;
   sumJetErr_formula << "sqrt(";
@@ -88,11 +94,6 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
   RooArgList pxErr_sum_args;
   RooArgList pyErr_sum_args;
 
-  RooRealVar redMet_long("redMet_long","redMet_long",0., -200, 200);
-  RooRealVar redMet_perp("redMet_perp","redMet_perp",0., -200, 200);
-
-
-  //jets
   for(size_t ijet=0; ijet<jets.size(); ijet++)
     {
 
@@ -127,35 +128,35 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
 
       if(ijet == 0) {
 	sumJet_formula << "@";
-	sumJetErr_formula << "(@"
+	sumJetErr_formula << "(@";
       } else {
 	sumJet_formula << "+@";
-	sumJetErr_formula << "+(@"
-
+	sumJetErr_formula << "+(@";
       }
       sumJet_formula << ijet;
       sumJetErr_formula << ijet << "^2)";
       
-
-// 	if(jet*bisector < 0) {
-// 	  sumJetProj_long += jet*bisector;
-// 	}
-// 	if(jet*bisector_perp < 0) {
-// 	  sumJetProj_perp += jet*bisector_perp;
-// 	}
-
-
-
-//       }
+      // 	if(jet*bisector < 0) {
+      // 	  sumJetProj_long += jet*bisector;
+      // 	}
+      // 	if(jet*bisector_perp < 0) {
+      // 	  sumJetProj_perp += jet*bisector_perp;
+      // 	}
+      
+      //       }
     }
-
+  
   sumJetErr_formula << ")";
-  RooFormulaVar sumJetX("sumJetX",sumJet_formula.str().c_str(),*px_sum_args);
-  RooFormulaVar sumJetY("sumJetY",sumJet_formula.str().c_str(),*py_sum_args);
+  RooFormulaVar sumJetX("sumJetX",sumJet_formula.str().c_str(),px_sum_args);
+  RooFormulaVar sumJetY("sumJetY",sumJet_formula.str().c_str(),py_sum_args);
 
-  RooFormulaVar sumJetXErr("sumJetXErr",sumJetErr_formula.str().c_str(),*pxErr_sum_args);
-  RooFormulaVar sumJetYErr("sumJetYErr",sumJetErr_formula.str().c_str(),*pyErr_sum_args);
+  RooFormulaVar sumJetXErr("sumJetXErr",sumJetErr_formula.str().c_str(),pxErr_sum_args);
+  RooFormulaVar sumJetYErr("sumJetYErr",sumJetErr_formula.str().c_str(),pyErr_sum_args);
 
+
+  //red met
+  RooRealVar redMet_long("redMet_long","redMet_long",0., -200, 200);
+  RooRealVar redMet_perp("redMet_perp","redMet_perp",0., -200, 200);
 
   RooFormulaVar redMet_long_avg("redMet_long_avg","@0-((@1+@3)*@5+(@2+@4)*@6) ", RooArgSet(redMet_long, sumJetX, sumJetY, px_dilept, py_dilept, px_bisect, py_bisect));
   RooFormulaVar redMet_perp_avg("redMet_perp_avg","@0-((@1+@3)*@5+(@2+@4)*@6) ", RooArgSet(redMet_perp, sumJetX, sumJetY, px_dilept, py_dilept, px_bisect_perp, py_bisect_perp));
@@ -165,11 +166,19 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
 
   RooGaussian redMet_long_gaussian("redMet_long_gaussian","redMet_long_gaussian",redMet_long,redMet_long_avg,redMet_long_err);
   RooGaussian redMet_perp_gaussian("redMet_perp_gaussian","redMet_perp_gaussian",redMet_perp,redMet_perp_avg,redMet_perp_err);
-  
-  RooProdPdf prodPdf("prodPdf","redMetmodel",RooArgSet(redMet_long_gaussian, redMet_perp_gaussian, resolConstraintsList));
-  RooNLLVar nll = prodPdf->createNLL(RooDataSet(), Constrain(resolConstraintsList));
 
-  RooMinuit min(nll) ;
+  
+  //the model and the likelihood
+
+  RooArgSet allPdfs(redMet_long_gaussian, redMet_perp_gaussian);
+  allPdfs.add(resolConstraintsList);
+  RooProdPdf prodPdf("prodPdf","redMetmodel",allPdfs);
+  RooDataSet ds("data","data",RooArgSet(px_bisect,py_bisect));
+  RooNLLVar *nll = (RooNLLVar *)prodPdf.createNLL(ds, RooFit::Constrain(resolConstraintsList));
+
+  //fit it
+
+  RooMinuit min(*nll) ;
   min.migrad() ;
   min.hesse() ;
   RooFitResult* r1 = min.save() ;
