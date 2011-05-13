@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
 	      jets.push_back( PhysicsObject(p4,ev.info1[ipart]) );
 	      break;
 	    default:
-	      leptons.push_back( PhysicsObject(p4,ev.info2[ipart]) );
+	      leptons.push_back( PhysicsObject(p4,ev.info1[ipart]) );
 	      break;
 	    }
 	}
