@@ -15,7 +15,7 @@ BaseVertexSelection = cms.PSet( source = cms.InputTag("offlinePrimaryVertices"),
 
 # base values for muon selection ----------------------------------------------
 BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuons"),
-                               minPt = cms.double(20),
+                               minPt = cms.double(5),
                                maxEta = cms.double(2.4),
                                maxTrackChi2 = cms.double(10),
                                minValidTrackerHits = cms.int32(10),
@@ -26,8 +26,8 @@ BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuons"),
 
 # base values for electron selection ----------------------------------------------
 BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectrons"),
-                                   minPt = cms.double(20),
-                                   minSuperClusterEt = cms.double(17),
+                                   minPt = cms.double(5),
+                                   minSuperClusterEt = cms.double(5),
                                    maxEta = cms.double(2.5),
                                    vetoTransitionElectrons = cms.bool(False),
                                    applyConversionVeto = cms.bool(True),
@@ -48,6 +48,7 @@ BaseJetSelection = cms.PSet( source = cms.InputTag("selectedPatJets"),
 # base values for the dilepton selection ------------------------------------------
 BaseDileptonSelection = cms.PSet( minDileptonMass = cms.double(0),
                                   maxDileptonMass = cms.double(7000),
+                                  minPt = cms.double(20),
                                   constrainByVertex = cms.bool(True),
                                   maxDxy = cms.double(0.02),
                                   maxDz = cms.double(0.1)

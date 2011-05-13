@@ -14,6 +14,7 @@
 #include "RooMinuit.h"
 #include "RooPlot.h"
 #include "RooMoment.h"
+#include "RooWorkspace.h"
 
 using namespace std;
 
@@ -227,6 +228,7 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
    RooFitResult* r1 = min.save() ;
    r1->Print("v");
 
+
    //debug
    TCanvas *c=new TCanvas("c1","c1");
    c->cd();
@@ -260,23 +262,13 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
    frame->GetYaxis()->SetTitleOffset(1);
    
    c->SaveAs("c1.C");
+   c->Delete();
 
-
-
-//   //red met
-//   RooRealVar redMet_long("redMet_long","redMet_long",0., -200, 200);
-//   RooRealVar redMet_perp("redMet_perp","redMet_perp",0., -200, 200);
-
-//   RooFormulaVar redMet_long_avg("redMet_long_avg","(@0+@2)*@4+(@1+@3)*@5", RooArgSet(sumJetX, sumJetY, px_dilept, py_dilept, px_bisect, py_bisect));
-//   RooFormulaVar redMet_perp_avg("redMet_perp_avg","(@0+@2)*@4+(@1+@3)*@5", RooArgSet(sumJetX, sumJetY, px_dilept, py_dilept, px_bisect_perp, py_bisect_perp));
-  
-//   RooFormulaVar redMet_long_err("redMet_long_err","sqrt((@0^2+@2^2)*@4^2+(@1^2+@3^2)*@5^2)", RooArgSet(sumJetXErr, sumJetYErr, pxErr_dilept, pyErr_dilept, px_bisect, py_bisect));
-//   RooFormulaVar redMet_perp_err("redMet_perp_err","sqrt((@0^2+@2^2)*@4^2+(@1^2+@3^2)*@5^2)", RooArgSet(sumJetXErr, sumJetYErr, pxErr_dilept, pyErr_dilept, px_bisect_perp, py_bisect_perp));
-
-//   RooGaussian redMet_long_gaussian("redMet_long_gaussian","redMet_long_gaussian",redMet_long,redMet_long_avg,redMet_long_err);
-//   RooGaussian redMet_perp_gaussian("redMet_perp_gaussian","redMet_perp_gaussian",redMet_perp,redMet_perp_avg,redMet_perp_err);
-//   */
-
+   RooWorkspace *w = new RooWorkspace("rmetfitter","Reduced MET fitter workspace");
+   w->import(prodPdf); w->import(*dataset);
+   w->Print();
+   //   w->writeToFile("c1.root");
+   delete w;
 
 }
 

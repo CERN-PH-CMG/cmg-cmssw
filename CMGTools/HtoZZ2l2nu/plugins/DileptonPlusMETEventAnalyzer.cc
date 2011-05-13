@@ -275,11 +275,13 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     LorentzVector lepton1P(lepton1->p4());
     int l1id=dilepton::getLeptonId(lepton1);
     double lepton1pterr=dilepton::getPtErrorFor(lepton1);
+    std::vector<double> lepton1iso=dilepton::getLeptonIso(lepton1);
 
     reco::CandidatePtr lepton2 = evhyp["leg2"];
     LorentzVector lepton2P(lepton2->p4());
     int l2id=dilepton::getLeptonId(lepton2);
     double lepton2pterr=dilepton::getPtErrorFor(lepton2);
+    std::vector<double> lepton2iso=dilepton::getLeptonIso(lepton2);
 
     LorentzVector dileptonP=lepton1P+lepton2P;
     double dphill=deltaPhi(lepton1P.phi(),lepton2P.phi());
@@ -513,10 +515,11 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.genmet_pt=genMET.pt();    ev.genmet_phi=genMET.phi();
     ev.rho=*rho;
     ev.nparticles=2+njets;
-    ev.px[0] = lepton1P.px();  ev.py[0]=lepton1P.py();  ev.pz[0]=lepton1P.pz(); ev.en[0]=lepton1P.energy(); ev.id[0]=l1id; ev.info1[0] = lepton1pterr;
-    ev.px[1] = lepton2P.px();  ev.py[1]=lepton2P.py();  ev.pz[1]=lepton2P.pz(); ev.en[1]=lepton2P.energy(); ev.id[1]=l2id; ev.info1[1] = lepton2pterr;
-
-
+    ev.px[0] = lepton1P.px();    ev.py[0]=lepton1P.py();    ev.pz[0]=lepton1P.pz();    ev.en[0]=lepton1P.energy(); ev.id[0]=l1id; ev.info1[0] = lepton1pterr;
+    ev.info2[0] = lepton1iso[0]; ev.info3[0]=lepton1iso[1]; ev.info4[0]=lepton1iso[2];
+    ev.px[1] = lepton2P.px();    ev.py[1]=lepton2P.py();    ev.pz[1]=lepton2P.pz();    ev.en[1]=lepton2P.energy(); ev.id[1]=l2id; ev.info1[1] = lepton2pterr;
+    ev.info2[1] = lepton2iso[0]; ev.info3[1]=lepton2iso[1]; ev.info4[1]=lepton2iso[2];
+    
     summaryHandler_.fillTree();
 
   }catch(std::exception &e){
