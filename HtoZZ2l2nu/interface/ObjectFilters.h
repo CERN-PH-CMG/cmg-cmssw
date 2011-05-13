@@ -78,6 +78,7 @@ namespace dilepton
   int classify(std::vector<reco::CandidatePtr> &selDilepton);
   int getLeptonId(reco::CandidatePtr &lepton);
   double getPtErrorFor(reco::CandidatePtr &lepton);
+  std::vector<double> getLeptonIso(reco::CandidatePtr &lepton);
 }
 
 namespace jet

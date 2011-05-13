@@ -20,7 +20,7 @@ namespace dilepton{
       }
     return ptError;
   }
-
+ 
   //
   int getLeptonId(reco::CandidatePtr &lepton)
   {
@@ -30,7 +30,28 @@ namespace dilepton{
     else if( dynamic_cast<const pat::Electron *>( lepton.get() ) ) id *= 11;
     return id;
   }
-  
+
+  //
+  std::vector<double> getLeptonIso(reco::CandidatePtr &lepton)
+  {
+    std::vector<double> leptonIso(3,0);
+    if( dynamic_cast<const pat::Muon *>( lepton.get() ) ) 
+      {
+	const pat::Muon *mu=dynamic_cast<const pat::Muon *>( lepton.get() );
+	leptonIso[0]=mu->ecalIso();
+	leptonIso[1]=mu->hcalIso();
+	leptonIso[2]=mu->trackIso();
+      }
+    else if( dynamic_cast<const pat::Electron *>( lepton.get() ) ) 
+      {
+	const pat::Electron *ele=dynamic_cast<const pat::Electron *>( lepton.get() );
+	leptonIso[0]=ele->ecalIso();
+	leptonIso[1]=ele->hcalIso();
+	leptonIso[2]=ele->trackIso();
+      }
+    return leptonIso;
+  }
+ 
 
   //
   std::pair<reco::VertexRef, std::vector<reco::CandidatePtr> > filter(std::vector<reco::CandidatePtr> &selLeptons, 
@@ -44,6 +65,7 @@ namespace dilepton{
     try{
     
       //config parameters
+      double minPt = iConfig.getParameter<double>("minPt");
       double minDileptonMass = iConfig.getParameter<double>("minDileptonMass");
       double maxDileptonMass = iConfig.getParameter<double>("maxDileptonMass");
       bool constrainByVertex = iConfig.getParameter<bool>("constrainByVertex");
@@ -54,6 +76,7 @@ namespace dilepton{
 	{
 	  reco::VertexRef curSelVtx;
 	  reco::CandidatePtr lep1Ptr = selLeptons[ilep];
+	  if(lep1Ptr->pt()<minPt) continue;
 	  
 	  //check vertex association
 	  const reco::Vertex *pv1=0;
@@ -84,6 +107,7 @@ namespace dilepton{
 	  for(size_t jlep=ilep+1; jlep<selLeptons.size(); jlep++)
 	    {
 	      reco::CandidatePtr lep2Ptr = selLeptons[jlep];
+	      if(lep2Ptr->pt()<minPt) continue;
 
 	      //check vertex association
 	      const reco::Vertex *pv2=pv1;
