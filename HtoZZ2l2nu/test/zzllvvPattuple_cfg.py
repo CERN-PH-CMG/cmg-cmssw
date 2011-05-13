@@ -446,17 +446,20 @@ process.selectedPatJets.cut = cms.string("pt >= 15 && abs(eta) < 2.5")
 from PhysicsTools.PatAlgos.tools.metTools import *
 addTcMET(process, 'TC')
 addPfMET(process, 'PF')
-from JetMETCorrections.Type1MET.MetType1Corrections_cff import metJESCorAK5PFJet
-process.metJESCorPFAK5 = metJESCorAK5PFJet.clone()
-process.metJESCorPFAK5.inputUncorJetsLabel = "ak5PFJets"
-process.metJESCorPFAK5.metType = "PFMET"
-process.metJESCorPFAK5.inputUncorMetLabel = "pfMet"
-process.metJESCorPFAK5.useTypeII = False
-process.metJESCorPFAK5.jetPTthreshold = cms.double(10.0)
-process.metJESCorPFAK5.corrector = cms.string('ak5PFL1FastL2L3')
-if(not runOnMC) : process.metJESCorPFAK5.corrector = cms.string('ak5PFL1FastL2L3Residual')
-process.patMETsPFFastJet.metSource=cms.InputTag('metJESCorPFAK5')
-addPfMET(process, 'PFFastJetCorrected')
+
+#include this for 42x
+#from JetMETCorrections.Type1MET.MetType1Corrections_cff import metJESCorAK5PFJet
+#process.metJESCorPFAK5 = metJESCorAK5PFJet.clone()
+#process.metJESCorPFAK5.inputUncorJetsLabel = "ak5PFJets"
+#process.metJESCorPFAK5.metType = "PFMET"
+#process.metJESCorPFAK5.inputUncorMetLabel = "pfMet"
+#process.metJESCorPFAK5.useTypeII = False
+#process.metJESCorPFAK5.jetPTthreshold = cms.double(10.0)
+#process.metJESCorPFAK5.corrector = cms.string('ak5PFL1FastL2L3')
+#if(not runOnMC) : process.metJESCorPFAK5.corrector = cms.string('ak5PFL1FastL2L3Residual')
+#addPfMET(process, 'PFFastJetCorrected')
+#process.patMETsPFFastJet.metSource=cms.InputTag('metJESCorPFAK5')
+
 if(not runOnMC ):
     process.patJetsAK5Offset.addGenPartonMatch = False
     process.patJetsAK5Offset.addGenJetMatch = False
