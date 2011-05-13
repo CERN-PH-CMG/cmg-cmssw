@@ -7,6 +7,7 @@
 
 #include "PhysicsTools/SelectorUtils/interface/strbitset.h"
 
+#include <algorithm>
 #include <memory>
 #include <ostream>
 #include <vector>
@@ -56,11 +57,7 @@ namespace cmg{
     virtual bool operator!=(const AbstractPhysicsObject& other) const {
       return !operator==(other);
     }
-    
-    void addSelection(const std::string& name, const bool value){
-      selections.push_back(name);
-      selections.set(name,value);	
-    }
+
     std::ostream& printSelections(std::ostream&, const std::string indent = "") const;
     bool getSelection(const std::string& s) const{
       //TODO: Understand how to make this a TriBool - i.e. unset? 
@@ -72,6 +69,22 @@ namespace cmg{
     typedef std::vector<std::string> Strings;
     Strings getSelectionNames() const{
       return selections.strings();           
+    }
+    
+    //needed for checking whether selections exist
+    bool hasSelection(const std::string& s) const{
+        const Strings names = getSelectionNames();
+        return std::find(names.begin(),names.end(),s) != names.end();       
+    }
+    bool hasSelection(const char* s) const{
+        return hasSelection(std::string(s));   
+    }
+    
+    void addSelection(const std::string& name, const bool value){
+      if(!hasSelection(name)){
+        selections.push_back(name);
+      }
+      selections.set(name,value);   
     }
 	
     typedef std::vector<AbstractPhysicsObject const *> Daughters;

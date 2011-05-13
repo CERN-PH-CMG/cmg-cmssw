@@ -97,7 +97,10 @@ typename cmg::DiObjectFactory<T,U>::event_ptr cmg::DiObjectFactory<T,U>::create(
         for(typename collection2::const_iterator jt = leg2Cands->begin(); jt != leg2Cands->end(); ++jt){
             //we skip if its the same object
             if( sameCollection && (*it == *jt) ) continue;
-            cmg::DiObject<T, U> cmgTmp = cmg::make(*it,*jt);
+            
+            //enable sorting only if we are using the same collection - see Savannah #20217
+            cmg::DiObject<T, U> cmgTmp = sameCollection ? cmg::make(*it,*jt) : cmg::DiObject<T,U>(*it,*jt); 
+            
             cmg::DiObjectFactory<T, U>::set(std::make_pair(cmgTmp.leg1(),cmgTmp.leg2()),&cmgTmp);
             if(metAvailable && metCands->size()){
                 cmg::DiObjectFactory<T, U>::set(std::make_pair(cmgTmp.leg1(),cmgTmp.leg2()),metCands->at(0),&cmgTmp);

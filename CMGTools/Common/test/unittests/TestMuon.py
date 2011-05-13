@@ -48,6 +48,36 @@ class TestMuon(TestTools.CFGTest):
         self.assertTrue(cmg.Draw("cmgDiMuonSel.pt()","cmgDiMuonSel.getSelection(\"cuts_zmumu\")","goff") > 0,\
                          'The Z id should be applied')
         
+    def testHasZID(self):
+        """Verify that the Z id is applied"""
+        
+        output = self.__class__.cfgsRunOnceCache['CMGTools/Common/test/testMuon_cfg.py']
+        events = TestTools.getObject(output[1], 'Events')
+        
+        cmg = cmgTuple.cmgTuple(events)
+        self.assertEqual(cmg.Draw("cmgDiMuonSel.pt()","!cmgDiMuonSel.hasSelection(\"cuts_zmumu\")","goff"),0,\
+                         'The Z id should be applied')
+        
+    def testHasSelection(self):
+        """Verify that hasSelection returns false if there is nothing there"""
+        
+        output = self.__class__.cfgsRunOnceCache['CMGTools/Common/test/testMuon_cfg.py']
+        events = TestTools.getObject(output[1], 'Events')
+        
+        cmg = cmgTuple.cmgTuple(events)
+        self.assertEqual(cmg.Draw("cmgDiMuonSel.pt()","cmgDiMuonSel.hasSelection(\"foo_bar_dummy\")","goff"),0,\
+                         'foo_bar_dummy must not be found')
+        
+    def testLegOrdering(self):
+        """Verify that the leg ordering is applied"""
+        
+        output = self.__class__.cfgsRunOnceCache['CMGTools/Common/test/testMuon_cfg.py']
+        events = TestTools.getObject(output[1], 'Events')
+        
+        cmg = cmgTuple.cmgTuple(events)
+        self.assertEqual(cmg.Draw("cmgDiMuonSel.mass()","cmgDiMuonSel.leg1().pt() < cmgDiMuonSel.leg2().pt()","goff"),0,\
+                         'The legs should be pt ordered')
+        
     def testRazorMR(self):
         """Verify that MR is set"""
         
