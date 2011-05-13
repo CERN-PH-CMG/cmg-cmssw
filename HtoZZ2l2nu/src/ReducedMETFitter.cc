@@ -13,6 +13,7 @@
 #include "RooDataSet.h"
 #include "RooMinuit.h"
 #include "RooPlot.h"
+#include "RooMoment.h"
 
 using namespace std;
 
@@ -47,10 +48,15 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
 			       const LorentzVectorCollection &jets,
 			       const LorentzVector &met)
 {
+
+
+  // AN 2010 121
+
   RooArgList resolConstraintsList;
 
-   sigmaPt1=0.01*lep1.pt(); //fixme
-   sigmaPt2=0.01*lep2.pt();
+
+//    sigmaPt1=0.01*lep1.pt(); //fixme
+//    sigmaPt2=0.01*lep2.pt();
 
    //
    // 1. define the bisector
@@ -73,6 +79,9 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
    RooRealVar sigmapt_lep1("sigmapt_lep1","sigmapt_lep1",sigmaPt1);
    RooRealVar pt_lep1("pt_lep1","pt_lep1",lep1.pt(),max(float(lep1.pt()-3*sigmaPt1),float(0)),lep1.pt()+3*sigmaPt1);
    RooGaussian ptconst_lep1("ptconst_lep1","ptconst_lep1",pt_lep1,avgpt_lep1,sigmapt_lep1);
+//    cout << sigmapt_lep1 << endl;
+//    cout << ptconst_lep1.sigma(pt_lep1)->getVal() << endl;
+
    resolConstraintsList.add(ptconst_lep1);
    RooRealVar phi_lep1("phi_lep1","phi_lep1",lep1.phi());
    RooFormulaVar px_lep1("px_lep1","@0*cos(@1)",RooArgSet(pt_lep1,phi_lep1));
@@ -117,6 +126,10 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
        RooRealVar *avgpt_jet=new RooRealVar("avgpt_"+name,"avgpt_"+name,jets[ijet].pt());
        RooFormulaVar *pt_jet = new RooFormulaVar("pt_"+name,"@0*@1",RooArgSet(*ptresol,*avgpt_jet));
 
+       RooRealVar *ptErr_jet = new RooRealVar("ptErr_"+name, "ptErr_"+name, bindPtResolModel->sigma(*ptresol)->getVal()*jets[ijet].pt());
+       cout << "pt resol: " << ptErr_jet->getVal() << endl;
+
+
        TF1 *phiresolModel=(TF1 *)stdJetPhiResol_->resolutionEtaPt(jets[ijet].eta(),jets[ijet].pt())->Clone("tf1phiresol_"+name);
        RooRealVar *phiresol = new RooRealVar("phiresol_"+name,"phiresol_"+name,-3,3);
        RooAbsPdf *bindPhiResolModel = RooFit::bindPdf(phiresolModel,*phiresol);
@@ -131,8 +144,8 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
        px_sum_args.add(*px_jet);
        py_sum_args.add(*py_jet);
        
-       RooFormulaVar *px_err_jet=new RooFormulaVar("px_err_"+name,"sqrt(((@0-@1)*cos(@2))^2)",RooArgSet(*pt_jet,*avgpt_jet,*phi_jet));
-       RooFormulaVar *py_err_jet= new RooFormulaVar("py_err_"+name,"sqrt(((@0-@1)*@1*sin(@2))^2)",RooArgSet(*pt_jet,*avgpt_jet,*phi_jet));
+       RooFormulaVar *px_err_jet=new RooFormulaVar("px_err_"+name,"@0*cos(@1)",RooArgSet(*ptErr_jet, *phi_jet));
+       RooFormulaVar *py_err_jet= new RooFormulaVar("py_err_"+name,"@0*sin(@1)",RooArgSet(*ptErr_jet,*phi_jet));
        pxErr_sum_args.add(*px_err_jet);
        pyErr_sum_args.add(*py_err_jet);
        
@@ -222,12 +235,12 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
    c->SetGridy();
    c->Divide(2,2);
    c->cd(1);
-   //RooPlot *frame = min.contour(redMet_long,redMet_perp,1,2,3) ;
-   //   frame->SetTitle("Contour for 1s,2s,3s for red-MET L and red-MET T") ;
-   //   frame->Draw();
+   RooPlot *frame = min.contour(redMet_long,redMet_perp,1,2,3) ;
+   frame->SetTitle("Contour for 1s,2s,3s for red-MET L and red-MET T") ;
+   frame->Draw();
    
    c->cd(2);
-   RooPlot *frame = redMet_perp.frame(RooFit::Title("Transverse"),RooFit::Range(redMet_perp.getVal()-redMet_perp.getError(),redMet_perp.getVal()+redMet_perp.getError()));
+   frame = redMet_perp.frame(RooFit::Title("Transverse"),RooFit::Range(redMet_perp.getVal()-redMet_perp.getError(),redMet_perp.getVal()+redMet_perp.getError()));
    nll->plotOn(frame,RooFit::ShiftToZero());
    //RooAbsReal* pll_redMet_perp = nll->createProfile(redMet_perp);
    //   pll_redMet_perp->plotOn(frame,RooFit::LineColor(kRed));
