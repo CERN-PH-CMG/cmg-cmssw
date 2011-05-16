@@ -1,5 +1,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
 
+#include "TString.h"
+
 std::ostream& operator<<(std::ostream& o, const cmg::AbstractPhysicsObject& a){
   return a.printOn(o);
 }
@@ -53,4 +55,21 @@ cmg::AbstractPhysicsObject::Daughters cmg::AbstractPhysicsObject::getDaughters(c
     accept(&dv);
     return dv.daughters();
     
+}
+
+bool cmg::AbstractPhysicsObject::getSelectionRegExp(const TRegexp& re) const{
+    
+    bool result = false;
+    
+    const cmg::AbstractPhysicsObject::Strings names = getSelectionNames();
+    for(cmg::AbstractPhysicsObject::Strings::const_iterator s = names.begin(); s != names.end(); ++s){
+        if(getSelection(*s)){
+            const TString t(s->c_str());
+            if(t.Index(re) >= 0){
+                result = true;
+                break;
+            }
+        }
+    }
+    return result;
 }
