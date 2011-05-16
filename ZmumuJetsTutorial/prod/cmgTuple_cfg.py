@@ -1,6 +1,6 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 import FWCore.ParameterSet.Config as cms
-from CMGTools.ZmumuJetsTutorial.getGlobalTag import getGlobalTag
+from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
 
 import os.path
 

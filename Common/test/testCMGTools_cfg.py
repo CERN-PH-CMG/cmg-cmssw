@@ -1,5 +1,6 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 import FWCore.ParameterSet.Config as cms
+from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
 
 sep_line = "-" * 50
 print
@@ -70,8 +71,7 @@ if runOnMC:
 process.p = cms.Path(
     process.analysisSequence
 )
-
-
+process.GlobalTag.globaltag = cms.string(getGlobalTag(runOnMC))
 
 process.schedule = cms.Schedule(
     process.p,
