@@ -4,45 +4,44 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 # process.load('CMGTools.Common.sources.CMSSW_4_1_3.RelValTTbar_Tauola.GEN_SIM_RECO.START311_V2_PU_E7TeV_AVE_2_BX156_v1.source_cff')
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet( 
     input = cms.untracked.int32(-1)
     )
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
-runOnMC = False
+runOnMC = True
 runStdPAT = False
-pickRelVal = False
+pickRelVal = True
 
 # process.load("CMGTools.Common.sources.DoubleElectron.Run2011A_PromptReco_v1.AOD.PrunedAOD.source_cff")
 # process.load("CMGTools.Common.sources.HT.Run2011A_PromptReco_v1.AOD.source_cff")
 # process.source.fileNames = cms.untracked.vstring('file:AODNoSim.root')
-process.load("CMGTools.Common.sources.SingleElectron.Run2011A_PromptReco_v1.AOD.source_cff")
+# process.load("CMGTools.Common.sources.SingleElectron.Run2011A_PromptReco_v1.AOD.source_cff")
 
 if pickRelVal: 
     from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
 
     # process.source.fileNames = cms.untracked.vstring('file:prunedAOD.root')
-    process.source.fileNames = cms.untracked.vstring('file:AODNoSim.root')
+    # process.source.fileNames = cms.untracked.vstring('file:AODNoSim.root')
     # process.source.fileNames = cms.untracked.vstring('file:AOD.root')
-    print 'need to define a relval'
-    sys.exit(1)
+    #    print 'need to define a relval'
+    #    sys.exit(1)
     process.source = cms.Source(
         "PoolSource",
         fileNames = cms.untracked.vstring(
-        pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_1_2'
-                              #, relVal        = 'RelValLM1_sfts'
-                              , relVal = relVal
-                              # , globalTag     = 'START311_V2'
-                              , globalTag = tag
-                              , numberOfFiles = 999
+        pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_2_3'
+                              , relVal        = 'RelValTTbar'
+                              , globalTag     = 'MC_42_V12'
+                              , numberOfFiles = 0
                               )
         )
         )
 
 
 print process.source.fileNames
+
 
 process.out.fileName = cms.untracked.string('patTuple_PATandPF2PAT.root' )
 
@@ -60,7 +59,10 @@ from PhysicsTools.PatAlgos.tools.pfTools import *
 # collections have standard names + postfix (e.g. patElectronPFlow)  
 postfix = "PFlow"
 jetAlgo="AK5"
-usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=runOnMC, postfix=postfix) 
+
+usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=runOnMC, postfix=postfix,
+          jetCorrections=('AK5PFchs', ['L1FastJet','L2Relative','L3Absolute'])) 
+
 # to run second PF2PAT+PAT with differnt postfix uncomment the following lines
 # and add it to path
 #postfix2 = "PFlow2"
@@ -75,6 +77,7 @@ usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=runOnMC, postfix=post
 
 
 if runOnMC == False:
+    pass
     # removing MC matching for standard PAT sequence
     # for the PF2PAT+PAT sequence, it is done in the usePF2PAT function
     removeMCMatchingPF2PAT( process, '' ) 
