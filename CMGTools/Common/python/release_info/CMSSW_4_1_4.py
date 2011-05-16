@@ -1,10 +1,6 @@
-{'UserCode/CMG/AnalysisDataFormats/CMGTools': ['Colin_Apr18', 'AnalysisDataFormats/CMGTools'],
- 'UserCode/CMG/CMGTools/Common':              ['Colin_Apr18', 'CMGTools/Common'],
- 'UserCode/CMG/CMGTools/RootTools':           ['Colin_Apr18', 'CMGTools/RootTools'],
- ### now the PAT stuff itself - see https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePATReleaseNotes41X#V08_06_01_09
- 'DataFormats/PatCandidates':                     ['V06-04-01-04', 'DataFormats/PatCandidates'],
- 'FWCore/GuiBrowsers':                     ['V00-00-54', 'FWCore/GuiBrowsers'],
- 'PhysicsTools/PatAlgos':                     ['V08-06-01-18', 'PhysicsTools/PatAlgos'],  
- 'PhysicsTools/PatUtils':                     ['V03-09-18', 'PhysicsTools/PatUtils'],  
-  'UserCode/RecoParticleFlow/PostProcessing':           ['Colin_May9', 'RecoParticleFlow/PostProcessing']
+{'UserCode/CMG/AnalysisDataFormats/CMGTools': ['wreece_160511', 'AnalysisDataFormats/CMGTools'],
+ 'UserCode/CMG/CMGTools/Common':              ['wreece_160511', 'CMGTools/Common'],
+ 'UserCode/CMG/CMGTools/RootTools':           ['wreece_160511', 'CMGTools/RootTools'],
+ 'UserCode/CMG/CMGTools/ZmumuJetsTutorial':           ['wreece_160511', 'CMGTools/ZmumuJetsTutorial'],
+ 'UserCode/RecoParticleFlow/PostProcessing':           ['Colin_May9', 'RecoParticleFlow/PostProcessing']
 }
