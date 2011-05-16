@@ -2,7 +2,7 @@
 #define CMGTOOLS_COMMON_TOPPROJECTOR_H_
 
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
-#include "PhysicsTools/PFCandProducer/plugins/TopProjector.h"
+#include "CommonTools/ParticleFlow/plugins/TopProjector.h"
 
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 #include "AnalysisDataFormats/CMGTools/interface/Tau.h"
