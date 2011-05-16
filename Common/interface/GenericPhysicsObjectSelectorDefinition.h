@@ -2,11 +2,11 @@
 #define __CMGTools_Common_GenericPhysicsObjectSelectorDefinition__
 
 /**
-   \class    pf2pat::GenericPhysicsObjectSelectorDefinition GenericPhysicsObjectSelectorDefinition.h "PhysicsTools/PFCandProducer/interface/GenericPhysicsObjectSelectorDefinition.h"
+   \class    pf2pat::GenericPhysicsObjectSelectorDefinition 
    \brief    Selects PhysicsObjects basing on cuts provided with string cut parser
 
    \author   Giovanni Petrucciani
-   \version  $Id: GenericPhysicsObjectSelectorDefinition.h,v 1.1 2010/11/11 14:09:03 wreece Exp $
+   \version  $Id: GenericPhysicsObjectSelectorDefinition.h,v 1.2 2010/11/16 09:51:34 wreece Exp $
 */
 
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
