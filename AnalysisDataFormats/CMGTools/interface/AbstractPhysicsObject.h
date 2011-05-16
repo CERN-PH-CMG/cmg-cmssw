@@ -12,6 +12,8 @@
 #include <ostream>
 #include <vector>
 
+#include "TRegexp.h"
+
 namespace cmg{
 
   /// The baseclass for all of the PhysicsObject data classes.
@@ -69,6 +71,14 @@ namespace cmg{
     typedef std::vector<std::string> Strings;
     Strings getSelectionNames() const{
       return selections.strings();           
+    }
+    //Version of getSelection that takes a RegExp
+    bool getSelectionRegExp(const TRegexp&) const;
+    bool getSelectionRegExp(const std::string& s) const{
+        return getSelectionRegExp(TRegexp(s.c_str()));
+    }
+    bool getSelectionRegExp(const char* s) const{
+        return getSelectionRegExp(TRegexp(s));
     }
     
     //needed for checking whether selections exist
