@@ -2,7 +2,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 import FWCore.ParameterSet.Config as cms
 
 # changing process name, as PAT is already taken 
-processName = 'CMGANA'
+processName = 'SKIM'
 runOnData = True
 postfix="PFlow"
 ext = 'Data'
@@ -82,8 +82,42 @@ process.load('CMGTools.DiJetHighMass.skims.selHighMass_cff')
 
 process.dump = cms.EDAnalyzer("EventContentAnalyzer")
 
+process.load('RecoJets.Configuration.RecoPFJets_cff')
+process.load('RecoJets.Configuration.RecoJets_cff')
+
+
+############# turn-on the fastjet area calculation needed for the L1Fastjet ##############
+############# applied only to PFJets because if CaloJets are re-recoed the JetID map will be lost #####
+process.kt6PFJets.doRhoFastjet = True
+process.kt6PFJets.Rho_EtaMax = cms.double(5.0)
+process.ak5PFJets.doAreaFastjet = True
+process.ak5PFJets.Rho_EtaMax = cms.double(5.0)
+process.ak7PFJets.doAreaFastjet = True
+process.ak7PFJets.Rho_EtaMax = cms.double(5.0)
+############# slimming the PFJet collection by raising the pt cut #################
+process.ak5PFJets.jetPtMin = cms.double(10.0)
+process.ak7PFJets.jetPtMin = cms.double(10.0)
+
+
+process.QCDAnalysis = cms.Sequence(
+############# first run the kt6PFJets reconstruction to calculate the fastjet density rho #####
+process.kt6PFJets * 
+############# then reconstruct the PFJets with jet area calculation ############
+process.ak5PFJets *
+process.ak7PFJets)
+
+
+
+
+
+
+
+
+
+
 # Total process
 process.p = cms.Path(
+    process.QCDAnalysis +
     process.pat +
     process.analysisSequence +
     process.select
