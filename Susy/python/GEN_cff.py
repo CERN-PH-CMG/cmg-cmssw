@@ -6,7 +6,7 @@ from PhysicsTools.HepMCCandAlgos.genParticles_cfi import genParticles
 from RecoMET.Configuration.GenMETParticles_cff import *
 from RecoMET.Configuration.RecoGenMET_cff import genMetTrue
 
-from PhysicsTools.PFCandProducer.genForPF2PAT_cff import *
+from CommonTools.ParticleFlow.genForPF2PAT_cff import *
 
 from CMGTools.Susy.particleFlow_cfi import *
 
