@@ -38,7 +38,7 @@ class PhysicsObjectWithPtr : public AbstractPhysicsObject {
   ///Overides the methods reco::Candidate so that it can be used with the TopProjector
   virtual reco::Candidate::size_type numberOfSourceCandidatePtrs() const{
     reco::Candidate::size_type result = 0;
-    if (sourcePtr_.isNonnull()){
+    if (sourcePtr_.isNonnull() && sourcePtr_.isAvailable()){
          result = 1;
     }
     return result;
