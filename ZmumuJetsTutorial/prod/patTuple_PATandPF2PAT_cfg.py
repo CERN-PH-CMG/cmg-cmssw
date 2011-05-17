@@ -1,6 +1,6 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
-import os.path, tempfile
-from CMGTools.ZmumuJetsTutorial.getGlobalTag import getGlobalTag
+import os, tempfile
+from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
 
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
 
@@ -8,7 +8,16 @@ runOnMC = True
 process.GlobalTag.globaltag = cms.string(getGlobalTag(runOnMC))
 
 if runOnMC:
-    process.source.fileNames = cms.untracked.vstring('rfio:///castor/cern.ch/user/w/wreece/SDMUONFILTER/ZmumuSummer10/1E16ABCD-0986-DF11-B57C-90E6BA442F1E.root')
+    cmsRelease = os.environ.get('CMSSW_VERSION')
+    process.source = cms.Source(
+        "PoolSource",
+        fileNames = cms.untracked.vstring(
+                                          pickRelValInputFiles( cmsswVersion  = cmsRelease,
+                                                                relVal        = 'RelValZMM',
+                                                                numberOfFiles = 10
+                                                               )
+                                          )
+        )
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.out.fileName = cms.untracked.string(os.path.expandvars('/tmp/${USER}/patTuple_PATandPF2PAT.root'))
