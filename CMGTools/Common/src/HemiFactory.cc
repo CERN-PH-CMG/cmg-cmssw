@@ -194,7 +194,7 @@ cmg::HemisphereFactory::create(const edm::Event& iEvent,
     set(tmp1, hemi1);
 
     // Don't forget to return pT ordered results.
-    if (hemi0.pt() < hemi1.pt()) {
+    if (hemi0.pt() > hemi1.pt()) {
       result->push_back(hemi0);
       result->push_back(hemi1);
     } else {
