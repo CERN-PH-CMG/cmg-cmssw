@@ -18,7 +18,7 @@ process.setName_('ANA')
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(-1)
         )
-process.maxLuminosityBlocks = cms.untracked.PSet( 
+process.maxLuminosityBlocks = cms.untracked.PSet(
         input = cms.untracked.int32(1)
         )
 process.load("CMGTools.Common.sources.relval.RelValQCD_FlatPt_15_3000.CMSSW_3_11_2.MC_311_V2.NoPileUpRemoval.source_cff")
@@ -35,11 +35,8 @@ process.out.outputCommands.extend(everything)
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("histograms_test_%s.root" % extension))
 
-
 # Default analysis sequence.
 process.load('CMGTools.Common.analysis_cff')
-
-# Note: we're reading ttbar events.
 
 process.load("CMGTools.Common.jet_cff")
 process.load("CMGTools.Common.hemi_cff")
