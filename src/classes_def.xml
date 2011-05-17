@@ -95,13 +95,6 @@
   <class name="edm::Wrapper<cmg::BaseMET>"/>
   <class name="edm::Wrapper<std::vector<cmg::BaseMET> >"/>
  
-  <class name="pat::JetPtr"/>
-  <class name="pat::MuonPtr"/>
-  <class name="pat::ElectronPtr"/>
-  <class name="pat::METPtr"/>
-  <class name="pat::TauPtr"/>
-  <class name="pat::PhotonPtr"/>
-
   <enum name="cmg::TriBool"/>
   
   <function name="cmg::unset" />
@@ -161,11 +154,9 @@
   <class name="edm::Wrapper<std::vector<cmg::Photon> >"/>
 
   <class name="cmg::TriggerObject"/>
-  <class name="cmg::PhysicsObjectWithPtr<edm::Ptr<pat::TriggerObject> >" />
+  <class name="cmg::PhysicsObjectWithPtr<pat::TriggerObjectPtr>" />
   <class name="std::vector<cmg::TriggerObject>"/>
   <class name="edm::Wrapper<cmg::TriggerObject>"/>
-  <class name="edm::Ptr<pat::TriggerObject>"/>
-  <class name="edm::Ptr<cmg::TriggerObject>"/>
   <class name="edm::Wrapper<std::vector<cmg::TriggerObject> >"/>
 
  <!-- create dictionaries for Jet Jet objects -->
@@ -205,11 +196,6 @@
   <class name="edm::Wrapper<cmg::VBFEventT1T2<reco::GenJet, reco::GenJet> >"/>
   <class name="edm::Wrapper<std::vector<cmg::VBFEventT1T2<reco::GenJet, reco::GenJet> > >"/>
 
-  <class name="edm::PtrVector<reco::GenJet>"/>
-  <class name="edm::PtrVector<pat::Jet>"/>
-  <class name="edm::PtrVector<pat::PFParticle>"/>
-  <class name="edm::PtrVector<reco::PFCandidate>"/>
-  
   <!-- create dictionaries for the composite candidates from PFAnalysis -->
   <class name="PATMuPair"/>
   <class name="std::vector<PATMuPair>"/>
