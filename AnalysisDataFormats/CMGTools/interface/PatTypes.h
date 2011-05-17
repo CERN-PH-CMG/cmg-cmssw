@@ -12,14 +12,14 @@
 
 namespace pat {
 
-  typedef edm::Ptr< pat::GenericParticle > PATPtr;
-  typedef edm::Ptr< pat::Jet > JetPtr;
-  typedef edm::Ptr< pat::Muon > MuonPtr;
-  typedef edm::Ptr< pat::Electron > ElectronPtr;
-  typedef edm::Ptr< pat::MET > METPtr;
-  typedef edm::Ptr< pat::Tau > TauPtr;
-  typedef edm::Ptr< pat::TriggerObject > TriggerObjectPtr;
-  typedef edm::Ptr< pat::Photon > PhotonPtr;
+  typedef pat::GenericParticleRef PATPtr;
+  typedef pat::JetRef JetPtr;
+  typedef pat::MuonRef MuonPtr;
+  typedef pat::ElectronRef ElectronPtr;
+  typedef pat::METRef METPtr;
+  typedef pat::TauRef TauPtr;
+  typedef pat::TriggerObjectStandAloneRef TriggerObjectPtr;
+  typedef pat::PhotonRef PhotonPtr;
 
 }
 
