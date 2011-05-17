@@ -26,6 +26,10 @@ parser.add_option("-p", "--pattern",
                   dest="pattern",
                   help="pattern for root files in castor dir",
                   default=".*root")
+parser.add_option("-o", "--output", 
+                  dest="output",
+                  help="output file name",
+                  default="source_cff.py")
 
 (options,args) = parser.parse_args()
 
@@ -56,7 +60,12 @@ os.system( mkdir )
 
 # creating source file ------------------
 
-sourceFile = ldir + '/source_cff.py'
+sourceFile = ldir + '/' + options.output
+
+if os.path.isfile( sourceFile ):
+    print sourceFile, 'already exists. use the -o option to define another file name'
+    sys.exit(1)
+
 sourceFileList = 'sourceFileList.py %s "%s" > %s' % (cdir, options.pattern, sourceFile)
 print sourceFileList
 os.system(sourceFileList)
