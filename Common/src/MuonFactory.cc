@@ -31,7 +31,7 @@ void cmg::MuonFactory::set(const pat::MuonPtr& input, cmg::Muon* const output, c
     output->nMatches_ = input->numberOfMatches();
 
     reco::TrackRef combinedMuon = getTrack(input);
-    if(!combinedMuon.isNull()){
+    if(combinedMuon.isNonnull() && combinedMuon.isAvailable()){
         output->pixelHits_ = combinedMuon->hitPattern().numberOfValidPixelHits();
         output->trackerHits_ = combinedMuon->hitPattern().numberOfValidTrackerHits();
         output->globalNormChi2_ = combinedMuon->normalizedChi2();

@@ -34,12 +34,12 @@ void cmg::ElectronFactory::set(const pat::ElectronPtr& input, cmg::Electron* con
     output->deltaPhiSuperClusterTrackAtVtx_ = input->deltaPhiSuperClusterTrackAtVtx();
     output->deltaEtaSuperClusterTrackAtVtx_ = input->deltaEtaSuperClusterTrackAtVtx();
     output->hadronicOverEm_ = input->hadronicOverEm();
-    if(input->gsfTrack().isNonnull()){
+    if(input->gsfTrack().isNonnull() && input->gsfTrack().isAvailable()){
         output->numberOfHits_  = input->gsfTrack()->trackerExpectedHitsInner().numberOfHits();
     }
     output->convDist_ = input->convDist();
     output->convDcot_ = input->convDcot();
-    if(input->core().isNonnull()){
+    if(input->core().isNonnull() && input->core().isAvailable()){
         output->isEcalDriven_ = cmg::toTriBool(input->ecalDriven());
     }
     
