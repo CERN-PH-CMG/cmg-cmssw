@@ -44,7 +44,7 @@ if options.tier != "":
 
 # preparing castor dir -----------------
 
-cdir = options.castorBaseDir 
+cdir = castortools.lfnToCastor( options.castorBaseDir )
 cdir += sampleNameDir
 rfmkdir = 'rfmkdir -p ' + cdir
 print rfmkdir
@@ -75,7 +75,7 @@ newJson = ""
 
 patternDataSet = re.compile("\s*datasetpath")
 patternRemoteDir = re.compile('\s*user_remote_dir')
-patternPSet = re.compile('pset=(.*py)\s*')
+patternPSet = re.compile('pset\s*=\s*(.*py)\s*')
 patternLumiMask = re.compile('lumi_mask\s*=\s*(\S+)\s*')
 
 for line in oldCrab.readlines():
@@ -103,10 +103,11 @@ for line in oldCrab.readlines():
 newCrab.write('[CMSSW]\n')
 newCrab.write('datasetpath = '+sampleName+'\n')
 
-patStripOffCastor = re.compile('/castor/cern.ch/(user/.*)')
-match = patStripOffCastor.match( cdir )
+#patStripOffCastor = re.compile('/castor/cern.ch/(user/.*)')
+#match = patStripOffCastor.match( cdir )
+outDir = cdir.replace('/castor/cern.ch','')
 newCrab.write('[USER]\n')
-newCrab.write('user_remote_dir = %s\n' % match.group(1))
+newCrab.write('user_remote_dir = %s\n' % outDir  )
 
 addToDatasets( sampleNameDir ) 
 
