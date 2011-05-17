@@ -144,7 +144,7 @@ void cmg::LeptonSettingTool<LeptonType>::set(const LeptonType& lepton, cmg::Lept
 template <class LeptonType> template <class TrackType>
 void cmg::LeptonSettingTool<LeptonType>::set(const TrackType& track, cmg::Lepton<LeptonType>* const obj, 
     const edm::Event& iEvent, const edm::EventSetup& iSetup) const{
-        if(!track.isNull()){
+        if(track.isNonnull() && track.isAvailable()){
             reco::TrackBase::Point vertex = getVertex(iEvent,iSetup);
             obj->dxy_ = track->dxy(vertex);
             obj->dz_ = track->dz(vertex);
