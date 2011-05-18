@@ -21,8 +21,29 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
   //set the generic quantities first
   leptonFactory_.set(input,output,iEvent,iSetup);
 
-  //now the tau like ones
-  output->decayMode_ = input->decayMode();
+  //  
+  output->leadHadrHCalEnergy =  input->leadPFChargedHadrCand()->hcalEnergy();
+  output->leadHadrECalEnergy = input->leadPFChargedHadrCand()->ecalEnergy();
+  output->leadCandHCalEnergy = input->leadPFCand()->hcalEnergy();
+  output->leadChargedHadrMvaEPi = input->leadPFChargedHadrCand()->mva_e_pi();
+  output->leadCandMvaEPi = input->leadPFCand()->mva_e_pi();
+  output->leadChargedHadrTrkPt = input->leadPFChargedHadrCand()->pt();//  output->leadChargedHadrTrkPt = input->leadPFChargedHadrCand()->trackRef()->pt();
+  output->numberChargedHadr =  input->signalPFChargedHadrCands().size();
+  output->numberGamma = input->signalPFGammaCands().size() ;
+
+  output->tauIDHPSagainstElectronLoose= input->tauID("againstElectronLoose");
+  output->tauIDHPSagainstElectronMedium= input->tauID("againstElectronMedium");
+  output->tauIDHPSagainstElectronTight= input->tauID("againstElectronTight");
+  output->tauIDHPSagainstMuonLoose= input->tauID("againstMuonLoose");
+  output->tauIDHPSagainstMuonTight= input->tauID("againstMuonTight");
+  output->tauIDHPSbyLooseIsolation= input->tauID("byLooseIsolation");
+  output->tauIDHPSbyMediumIsolation= input->tauID("byMediumIsolation");
+  output->tauIDHPSbyTightIsolation= input->tauID("byTightIsolation");
+  output->tauIDHPSbyVLooseIsolation= input->tauID("byVLooseIsolation");
+  output->tauIDHPSdecayModeFinding= input->tauID("decayModeFinding");
+
+  //other variables
+  output->decayMode = input->decayMode();
 
 }
 

@@ -9,7 +9,6 @@ tauFactory = cms.PSet(
 cmgTau = cms.EDFilter("TauPOProducer",
                       cfg = tauFactory.clone(),
                       cuts = cms.PSet(pt_default = cms.string('pt() > 0.0 '),
-                                      relIso_default = cms.string('relIso() < 2.0 '),
                                       )    
                       
                       )
