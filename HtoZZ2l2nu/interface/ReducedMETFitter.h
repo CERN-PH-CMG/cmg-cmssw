@@ -32,17 +32,100 @@ class ReducedMETFitter
 {
  public:
 
-  ReducedMETFitter(const edm::ParameterSet &iConfig, size_t maxJets=10);
+  ReducedMETFitter(const edm::ParameterSet &iConfig);
   ~ReducedMETFitter() { }
   void compute(const LorentzVector &lep1, float sigmaPt1,
 	       const LorentzVector &lep2, float sigmaPt2,
 	       const LorentzVectorCollection &jets,
 	       const LorentzVector &met);
+
+
+  
+  std::pair<double, double> reducedMET() {
+    return std::make_pair(redMET_, redMETErr_);
+  }
+
+  std::pair<double, double> reducedMET_long() {
+    return std::make_pair(redMET_long_, redMETErr_long_);
+  }
+
+  std::pair<double, double> reducedMET_perp() {
+    return std::make_pair(redMET_perp_, redMETErr_perp_);
+  }
+
+
+  class JetVariables {
+   public:
+    JetVariables(double pt, double px, double py, double phi, double eta,
+		 const JetResolution* jetPtResolParam, const JetResolution* jetPhiResolParam,
+		 int index);
+    ~JetVariables();
+
+    RooFormulaVar& jetPx() {
+      return *px_jet;
+    }
+    
+    RooFormulaVar& jetPy() {
+      return *py_jet;
+    }
+    
+    RooFormulaVar& jetPxErr() {
+      return *px_err_jet;
+    }
+    
+    RooFormulaVar& jetPyErr() {
+      return *py_err_jet;
+    }
+
+    RooAbsPdf& ptResoModelPdf() {
+      return *bindPtResolModel;
+    }
+
+    RooAbsPdf& phiResoModelPdf() {
+      return *bindPhiResolModel;
+    }
+
+    
+
+   private:
+    
+    TF1 *ptresolModel;
+    RooRealVar *ptresol;
+    RooAbsPdf *bindPtResolModel;
+    RooRealVar *avgpt_jet;
+    RooFormulaVar *pt_jet;
+    RooRealVar *ptErr_jet;
+
+    TF1 *phiresolModel;    
+    RooRealVar *phiresol;
+    RooAbsPdf *bindPhiResolModel;
+    RooRealVar *avgphi_jet;
+    RooFormulaVar *phi_jet;
+
+    // the X/y projected variables
+    RooFormulaVar *px_jet;
+    RooFormulaVar *py_jet;
+    RooFormulaVar *px_err_jet;
+    RooFormulaVar *py_err_jet;
+  };
+
+
  private:
 
   JetResolution *stdJetPtResol_, *stdJetPhiResol_;
   RooRealVar *balance_long, *balance_perp;
   RooDataSet *dataset;
+
+  double redMET_long_;
+  double redMETErr_long_;
+
+  double redMET_perp_;
+  double redMETErr_perp_;
+
+  double redMET_;
+  double redMETErr_;
+  
+
 };
 
 
