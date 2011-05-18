@@ -3,15 +3,19 @@ import os,sys
 output=sys.argv[1]
 if(len(sys.argv)>2):
   jsonfile = sys.argv[2]
-  os.system('estimatePileup.py --maxPileupBin=20 --saveRuns -i '+ jsonfile + ' ' + output)
+  print "Running lumiCalc"
+  os.system('lumiCalc.py -c frontier://LumiCalc/CMS_LUMI_PROD -i ' + jsonfile + ' --nowarning overview > ' + output + '_lumi.txt')
+  print "Running estimatePileup"
+  os.system('estimatePileup.py --maxPileupBin=20 --saveRuns -i '+ jsonfile + ' ' + output + ".root")
 
 import ROOT
 from ROOT import TFile,TGraphAsymmErrors
 ROOT.gSystem.Load('${CMSSW_BASE}/lib/${SCRAM_ARCH}/libCMGToolsHtoZZ2l2nu.so')
 from ROOT import setStyle, getNewCanvas, formatPlot, formatForCmsPublic, showPlots
 
+print "Drawing graphs"
 evol=TGraphAsymmErrors()
-file = TFile(output)
+file = TFile(output+".root")
 runPileup=None
 ipoint=0
 for key in file.GetListOfKeys() :
@@ -37,6 +41,9 @@ c.cd(1)
 evol.Draw('ap')
 c.cd(2)
 runPileup.DrawNormalized('hist')
-print str(runPileup.GetMean()) + ' +/- ' + str(runPileup.GetMeanError())
-raw_input('Any key to end...')
+c.SaveAs(output + "_summary.C")
+c.SaveAs(output + "_summary.root")
+print "Average pileup: " + str(runPileup.GetMean()) + ' +/- ' + str(runPileup.GetMeanError())
+
+
 

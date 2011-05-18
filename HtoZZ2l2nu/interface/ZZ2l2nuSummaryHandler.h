@@ -19,10 +19,10 @@ struct ZZ2l2nuSummary_t
 {
   Int_t run,lumi,event;
   Int_t cat;
+  Int_t nvtx, ngenpu;
   Int_t njets,nbtags;
   Float_t weight;
-  Float_t pfmet_pt,pfmet_phi,pfmet_sig;   //met
-  Float_t cormet_pt,cormet_phi;
+  Float_t cormet_pt,cormet_phi; //et
   Float_t redmet_pt,redmet_phi;
   Float_t redmet_dilL,redmet_dilT,redmet_deltaL,redmet_deltaT,redmet_rjetL,redmet_rjetT,redmet_metL,redmet_metT,redmet_rL,redmet_rT;
   Float_t projmet_pt;

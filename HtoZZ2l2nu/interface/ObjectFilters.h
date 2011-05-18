@@ -18,6 +18,13 @@
 #include "DataFormats/PatCandidates/interface/MET.h"
 
 #include "TVector3.h"
+#include "TH1D.h"
+
+#include "Math/LorentzVector.h"
+
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
+typedef std::vector<LorentzVector> LorentzVectorCollection;
+
 
 namespace gen
 {
@@ -48,7 +55,6 @@ namespace vertex
       for(std::vector<reco::VertexRef>::iterator vIt = selVertices.begin(); vIt != selVertices.end(); vIt++)
 	{
 	  double dz = fabs( trk->dz( vIt->get()->position() ) );
-	  //double dz = fabs( vIt->get()->z() - trk->vz() );
 	  if( dz>bestDz ) continue;
 	  bestvtx=*vIt;
 	  bestDz=dz;
@@ -59,32 +65,42 @@ namespace vertex
 
 namespace muon
 {
-  std::vector<reco::CandidatePtr> filter(edm::Handle<edm::View<reco::Candidate> > &hMu, const edm::ParameterSet &iConfig,double rho=-1);
+  std::vector<reco::CandidatePtr> filter(edm::Handle<edm::View<reco::Candidate> > &hMu, const edm::ParameterSet &iConfig);
 }
 
 namespace electron
 {
-  std::vector<reco::CandidatePtr> filter(edm::Handle<edm::View<reco::Candidate> > &hEle, edm::Handle<edm::View<reco::Candidate> > &hMu, const edm::ParameterSet &iConfig, double rho=-1);
+  std::vector<reco::CandidatePtr> filter(edm::Handle<edm::View<reco::Candidate> > &hEle, edm::Handle<edm::View<reco::Candidate> > &hMu, const edm::ParameterSet &iConfig);
 }
 
 namespace dilepton
 {
+  enum DileptonClassification {UNKNOWN=0,MUMU=1,EE=2,EMU=3};
   std::pair<reco::VertexRef, std::vector<reco::CandidatePtr> > filter(std::vector<reco::CandidatePtr> &selLeptons, 
 								      std::vector<reco::VertexRef> &selVtx, 
 								      const edm::ParameterSet &iConfig,
-								      const edm::EventSetup &iSetup);
-
-  enum DileptonClassification {UNKNOWN=0,MUMU=1,EE=2,EMU=3};
+								      const edm::EventSetup &iSetup,
+								      double rho,
+								      std::vector<reco::CandidatePtr> &isolLeptons,
+								      std::map<TString, TH1D *> *controlHistos_=0);
   int classify(std::vector<reco::CandidatePtr> &selDilepton);
   int getLeptonId(reco::CandidatePtr &lepton);
   double getPtErrorFor(reco::CandidatePtr &lepton);
+  enum IsolType { ECAL_ISO=0, HCAL_ISO, TRACKER_ISO};
   std::vector<double> getLeptonIso(reco::CandidatePtr &lepton);
+  const reco::GenParticle *getLeptonGenMatch(reco::CandidatePtr &lepton);
 }
 
 namespace jet
 {
   std::vector<reco::CandidatePtr> filter(edm::Handle<edm::View<reco::Candidate> > &hJet, std::vector<reco::CandidatePtr> &selLeptons, const edm::ParameterSet &iConfig);
   double fAssoc(const pat::Jet *jet, const reco::Vertex *vtx);
+}
+
+namespace met
+{
+  enum MetTypes { RAWMET=0, TYPEIMET, CORRECTED_TYPEIMET };
+  LorentzVectorCollection filter(const reco::PFMET &pfMET,  std::vector<const pat::Jet *> &assocJets,  std::vector<const pat::Jet *> &puJets);
 }
 
 

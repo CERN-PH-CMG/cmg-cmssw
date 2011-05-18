@@ -16,12 +16,11 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t)
   t_->Branch("lumi",       &evSummary_.lumi,   "lumi/I");
   t_->Branch("event",      &evSummary_.event,  "event/I");
   t_->Branch("cat",        &evSummary_.cat,   "cat/I");
+  t_->Branch("nvtx",       &evSummary_.nvtx,   "nvtx/I");
+  t_->Branch("ngenpu",     &evSummary_.ngenpu,   "ngenpu/I");
   t_->Branch("njets",      &evSummary_.njets,   "njets/I");
   t_->Branch("nbtags",     &evSummary_.nbtags,   "nbtags/I");
   t_->Branch("weight",     &evSummary_.weight,   "weight/F");
-
-  t_->Branch("pfmet_pt",     &evSummary_.pfmet_pt,    "pfmet_pt/F");
-  t_->Branch("pfmet_phi",    &evSummary_.pfmet_phi,   "pfmet_phi/F");
   t_->Branch("cormet_pt",     &evSummary_.cormet_pt,   "cormet_pt/F");
   t_->Branch("cormet_phi",    &evSummary_.cormet_phi,  "cormet_phi/F");
   t_->Branch("redmet_pt",     &evSummary_.redmet_pt,   "redmet_pt/F");
@@ -71,14 +70,13 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("lumi")->SetAddress(&evSummary_.lumi);
   t_->GetBranch("event")->SetAddress(&evSummary_.event);
   t_->GetBranch("cat")->SetAddress(&evSummary_.cat);
+  t_->GetBranch("nvtx")->SetAddress(&evSummary_.nvtx);
+  t_->GetBranch("ngenpu")->SetAddress(&evSummary_.ngenpu);
   t_->GetBranch("njets")->SetAddress(&evSummary_.njets);
   t_->GetBranch("nbtags")->SetAddress(&evSummary_.nbtags);
   t_->GetBranch("weight")->SetAddress(&evSummary_.weight);
 
   //met
-  t_->GetBranch("pfmet_pt")->SetAddress( &evSummary_.pfmet_pt );
-  t_->GetBranch("pfmet_phi")->SetAddress( &evSummary_.pfmet_phi );
-  //  t_->GetBranch("pfmet_sig")->SetAddress( &evSummary_.pfmet_sig );
   t_->GetBranch("cormet_pt")->SetAddress( &evSummary_.cormet_pt );
   t_->GetBranch("cormet_phi")->SetAddress( &evSummary_.cormet_phi );
   t_->GetBranch("redmet_pt")->SetAddress( &evSummary_.redmet_pt );

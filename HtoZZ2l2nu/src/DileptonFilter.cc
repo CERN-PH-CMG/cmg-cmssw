@@ -32,22 +32,40 @@ namespace dilepton{
   }
 
   //
+  const reco::GenParticle *getLeptonGenMatch(reco::CandidatePtr &lepton)
+  {
+    if( dynamic_cast<const pat::Muon *>( lepton.get() ) ) 
+      {
+	const pat::Muon *mu=dynamic_cast<const pat::Muon *>( lepton.get() );
+	return mu->genLepton();
+      }
+    else if( dynamic_cast<const pat::Electron *>( lepton.get() ) )
+      {
+	const pat::Electron *ele=dynamic_cast<const pat::Electron *>( lepton.get() );
+	return ele->genLepton();
+      }
+    return 0;
+  }
+
+  //
   std::vector<double> getLeptonIso(reco::CandidatePtr &lepton)
   {
     std::vector<double> leptonIso(3,0);
     if( dynamic_cast<const pat::Muon *>( lepton.get() ) ) 
       {
 	const pat::Muon *mu=dynamic_cast<const pat::Muon *>( lepton.get() );
-	leptonIso[0]=mu->ecalIso();
-	leptonIso[1]=mu->hcalIso();
-	leptonIso[2]=mu->trackIso();
+	leptonIso[ECAL_ISO]=mu->ecalIso();
+	leptonIso[HCAL_ISO]=mu->hcalIso();
+	leptonIso[TRACKER_ISO]=mu->trackIso();
       }
     else if( dynamic_cast<const pat::Electron *>( lepton.get() ) ) 
       {
+	//ecal barrel pedestal is subtracted
 	const pat::Electron *ele=dynamic_cast<const pat::Electron *>( lepton.get() );
-	leptonIso[0]=ele->ecalIso();
-	leptonIso[1]=ele->hcalIso();
-	leptonIso[2]=ele->trackIso();
+	leptonIso[ECAL_ISO]=ele->ecalIso();
+	if(ele->isEB()) leptonIso[ECAL_ISO] = max(leptonIso[ECAL_ISO]-1.0,0.);
+	leptonIso[HCAL_ISO]=ele->hcalIso();
+	leptonIso[TRACKER_ISO]=ele->trackIso();
       }
     return leptonIso;
   }
@@ -57,7 +75,10 @@ namespace dilepton{
   std::pair<reco::VertexRef, std::vector<reco::CandidatePtr> > filter(std::vector<reco::CandidatePtr> &selLeptons, 
 								      std::vector<reco::VertexRef> &selVertices, 
 								      const edm::ParameterSet &iConfig,
-								      const edm::EventSetup &iSetup)
+								      const edm::EventSetup &iSetup,
+								      double rho,
+								      std::vector<reco::CandidatePtr> &isolLeptons,
+								      std::map<TString, TH1D *> *controlHistos_)
   {
     reco::VertexRef selVtx;
     std::vector<reco::CandidatePtr> selDilepton;
@@ -66,6 +87,9 @@ namespace dilepton{
     
       //config parameters
       double minPt = iConfig.getParameter<double>("minPt");
+      double maxCorrectedRelIso = iConfig.getParameter<double>("maxCorrectedRelIso");
+      double electronEffectiveArea = iConfig.getParameter<double>("electronEffectiveArea");
+      double muonEffectiveArea = iConfig.getParameter<double>("muonEffectiveArea");
       double minDileptonMass = iConfig.getParameter<double>("minDileptonMass");
       double maxDileptonMass = iConfig.getParameter<double>("maxDileptonMass");
       bool constrainByVertex = iConfig.getParameter<bool>("constrainByVertex");
@@ -76,6 +100,21 @@ namespace dilepton{
 	{
 	  reco::VertexRef curSelVtx;
 	  reco::CandidatePtr lep1Ptr = selLeptons[ilep];
+	  double Aeff1= dynamic_cast<const pat::Electron *>( lep1Ptr.get() ) ? electronEffectiveArea : muonEffectiveArea;
+	  std::vector<double> iso1=getLeptonIso(lep1Ptr);
+	  TString part1( dynamic_cast<const pat::Electron *>( lep1Ptr.get() ) ? "electron" : "muon");
+	  double relIso1=(iso1[TRACKER_ISO]+max(iso1[ECAL_ISO]+iso1[HCAL_ISO]-Aeff1*rho,0.0))/max(lep1Ptr->pt(),minPt);
+	  if(controlHistos_)
+	    {
+	      (*controlHistos_)[part1+"_rho"]->Fill(rho);
+	      (*controlHistos_)[part1+"_ecaliso"]->Fill(iso1[ECAL_ISO]);
+	      (*controlHistos_)[part1+"_hcaliso"]->Fill(iso1[HCAL_ISO]);
+	      (*controlHistos_)[part1+"_trackiso"]->Fill(iso1[TRACKER_ISO]);
+	      (*controlHistos_)[part1+"_caloiso"]->Fill(max(iso1[ECAL_ISO]+iso1[HCAL_ISO]-Aeff1*rho,0.));
+	      (*controlHistos_)[part1+"_reliso"]->Fill(relIso1);
+	    }
+	  if(relIso1>maxCorrectedRelIso) continue;	  
+	  isolLeptons.push_back(lep1Ptr);
 	  if(lep1Ptr->pt()<minPt) continue;
 	  
 	  //check vertex association
@@ -108,6 +147,11 @@ namespace dilepton{
 	    {
 	      reco::CandidatePtr lep2Ptr = selLeptons[jlep];
 	      if(lep2Ptr->pt()<minPt) continue;
+
+	      double Aeff2= dynamic_cast<const pat::Electron *>( lep2Ptr.get() ) ? electronEffectiveArea : muonEffectiveArea;
+	      std::vector<double> iso2=getLeptonIso(lep2Ptr);
+	      double relIso2=(iso2[TRACKER_ISO]+max(iso2[ECAL_ISO]+iso2[HCAL_ISO]-Aeff2*rho,0.0))/max(lep2Ptr->pt(),minPt);
+	      if(relIso2>maxCorrectedRelIso) continue;
 
 	      //check vertex association
 	      const reco::Vertex *pv2=pv1;
