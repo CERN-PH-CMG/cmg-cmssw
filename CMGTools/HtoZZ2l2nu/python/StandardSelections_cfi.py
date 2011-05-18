@@ -21,7 +21,7 @@ BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuons"),
                                minValidTrackerHits = cms.int32(10),
                                minValidMuonHits=cms.int32(1),
                                id = cms.string("TMLastStationLoose"),
-                               maxRelIso = cms.double(0.25)
+                               maxRelIso = cms.double(1.0)
                                )
 
 # base values for electron selection ----------------------------------------------
@@ -33,7 +33,7 @@ BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectrons")
                                    applyConversionVeto = cms.bool(True),
                                    maxTrackLostHits = cms.int32(1),
                                    id = cms.string("simpleEleId80relIso"),
-                                   maxRelIso = cms.double(0.25),
+                                   maxRelIso = cms.double(1.0),
                                    minDeltaRtoMuons = cms.double(0.1)
                                    )
 
@@ -49,6 +49,9 @@ BaseJetSelection = cms.PSet( source = cms.InputTag("selectedPatJets"),
 BaseDileptonSelection = cms.PSet( minDileptonMass = cms.double(0),
                                   maxDileptonMass = cms.double(7000),
                                   minPt = cms.double(20),
+                                  maxCorrectedRelIso = cms.double(0.15),
+                                  electronEffectiveArea=cms.double(0.24),
+                                  muonEffectiveArea=cms.double(0.112),
                                   constrainByVertex = cms.bool(True),
                                   maxDxy = cms.double(0.02),
                                   maxDz = cms.double(0.1)

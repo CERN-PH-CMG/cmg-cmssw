@@ -184,7 +184,7 @@ TLegend *showSimplePlot(TPad *c, TList &data, bool buildLegend, TString legopt)
 
 
 //
-void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doChi2,float yscale)
+void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doDiff,float yscale)
 {
   if(c==0) return;
   if( stack.First()==0 || data.First()==0 ) return;
@@ -223,24 +223,14 @@ void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doChi2,floa
       if( ((TClass*)key->IsA())->InheritsFrom("TGraph") ) continue;
 
       TH1 *dataToMCH = (TH1 *) p->Clone(TString(p->GetName())+"_tomc");
-      dataToMCH->Reset("ICE");
-      if(doChi2)
+      if(doDiff)
 	{
-	  dataToMCH->GetYaxis()->SetTitle("#chi^{2}=((MC-Data)/(#sigma_{MC}^{2}+#sigma_{Data}^2))^2");
-	  for(Int_t ibin=1; ibin<=dataToMCH->GetXaxis()->GetNbins(); ibin++)
-	    {
-	      Float_t diff = sumH->GetBinContent(ibin)-p->GetBinContent(ibin);
-	      Float_t err = pow(sumH->GetBinError(ibin),2)+pow(dataToMCH->GetBinError(ibin),2);
-	      if(err==0) continue;
-	      Float_t chi2 = (diff<0 ? -1 : 1) * pow(diff,2)/err;
-	      dataToMCH->SetBinContent(ibin,chi2);
-	      dataToMCH->SetBinError(ibin,0,0);
-	    }
+	  dataToMCH->GetYaxis()->SetTitle("Observed-Reference");
+	  dataToMCH->Add(sumH,-1);
 	}
       else
 	{
-	  dataToMCH->Add(p);
-	  dataToMCH->GetYaxis()->SetTitle("Data / MC");
+	  dataToMCH->GetYaxis()->SetTitle("Observed/Reference");
 	  dataToMCH->Divide(sumH);
 	}
 

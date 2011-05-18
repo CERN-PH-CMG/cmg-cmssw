@@ -79,26 +79,26 @@ PileupNormalizationProducer::PileupNormalizationProducer(const edm::ParameterSet
   */
 
   //from estimatePileup.py
-  puUnfoldedH_->SetBinContent(1,0.325744);
-  puUnfoldedH_->SetBinContent(2,0.67326);
-  puUnfoldedH_->SetBinContent(3,1.56131);
-  puUnfoldedH_->SetBinContent(4,2.31576);
-  puUnfoldedH_->SetBinContent(5,2.5592);
-  puUnfoldedH_->SetBinContent(6,2.31682);
-  puUnfoldedH_->SetBinContent(7,1.79594);
-  puUnfoldedH_->SetBinContent(8,1.10214);
-  puUnfoldedH_->SetBinContent(9,0.65303);
-  puUnfoldedH_->SetBinContent(10,0.32345);
-  puUnfoldedH_->SetBinContent(11,0.15507);
-  puUnfoldedH_->SetBinContent(12,0.0733624);
-  puUnfoldedH_->SetBinContent(13,0.0336016);
-  puUnfoldedH_->SetBinContent(14,0.0214205);
-  puUnfoldedH_->SetBinContent(15,0.0099394);
-  puUnfoldedH_->SetBinContent(16,0.00425343);
-  puUnfoldedH_->SetBinContent(17,0.00215255);
-  puUnfoldedH_->SetBinContent(18,0.00105142);
-  puUnfoldedH_->SetBinContent(19,0.00030305);
-  puUnfoldedH_->SetBinContent(20,0.000459227);
+  puUnfoldedH_->SetBinContent(1,0.327021);
+  puUnfoldedH_->SetBinContent(2,0.713425);
+  puUnfoldedH_->SetBinContent(3,1.58586);
+  puUnfoldedH_->SetBinContent(4,2.37524);
+  puUnfoldedH_->SetBinContent(5,2.67794);
+  puUnfoldedH_->SetBinContent(6,2.42404);
+  puUnfoldedH_->SetBinContent(7,1.83504);
+  puUnfoldedH_->SetBinContent(8,1.19491);
+  puUnfoldedH_->SetBinContent(9,0.683202);
+  puUnfoldedH_->SetBinContent(10,0.348418);
+  puUnfoldedH_->SetBinContent(11,0.160456);
+  puUnfoldedH_->SetBinContent(12,0.0716393);
+  puUnfoldedH_->SetBinContent(13,0.0334914);
+  puUnfoldedH_->SetBinContent(14,0.0158219);
+  puUnfoldedH_->SetBinContent(15,0.00713356);
+  puUnfoldedH_->SetBinContent(16,0.00342917);
+  puUnfoldedH_->SetBinContent(17,0.00160283);
+  puUnfoldedH_->SetBinContent(18,0.00073031);
+  puUnfoldedH_->SetBinContent(19,0.000316668);
+  puUnfoldedH_->SetBinContent(20,0.000211067);
 }
 
 //

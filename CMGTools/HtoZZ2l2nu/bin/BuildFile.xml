@@ -8,6 +8,6 @@
 <use name="FWCore/FWLite"/>
 <use name="PhysicsTools/FWLite"/>
 <environment>
-  <bin name="runOnEventSummary" file="../src/ZZ2l2nuSummaryHandler.cc ../src/ReducedMETFitter.cc runOnEventSummary.cc"></bin>
+  <bin name="runOnEventSummary" file="../src/setStyle.C ../src/plotter.C ../src/ZZ2l2nuSummaryHandler.cc ../src/ReducedMETFitter.cc runOnEventSummary.cc"></bin>
 </environment>
 <Flags CXXFLAGS="-g"/>

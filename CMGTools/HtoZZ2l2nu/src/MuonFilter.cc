@@ -5,7 +5,7 @@ using namespace std;
 namespace muon{
   
   //
-  std::vector<reco::CandidatePtr> filter(edm::Handle<edm::View<reco::Candidate> > &hMu, const edm::ParameterSet &iConfig, double rho)
+  std::vector<reco::CandidatePtr> filter(edm::Handle<edm::View<reco::Candidate> > &hMu, const edm::ParameterSet &iConfig)
   {
     std::vector<reco::CandidatePtr> selMuons;
     
@@ -57,7 +57,6 @@ namespace muon{
 	  double hcalIso = muon->hcalIso();
 	  double trkIso = muon->trackIso();
 	  double totalIso = (ecalIso+hcalIso+trkIso);
-	  if(rho>0) totalIso -= rho*TMath::Pi()*pow(0.3,2);
 	  double relIso = totalIso/norm;
 	  if(relIso>maxRelIso) continue;
 

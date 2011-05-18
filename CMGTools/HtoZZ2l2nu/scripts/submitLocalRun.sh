@@ -31,8 +31,11 @@ do
       -castor=*)
       OUTDIR=`echo $i | sed 's/[-a-zA-Z0-9]*=//'`
       ;;
+      -jsonr=*)
+      JSON=`echo $i | sed 's/[-a-zA-Z0-9]*=//'`
+      ;;
       *)
-      echo "submitLocalRun.sh -cfg=cfg.py -src=input_dir [-f=first_file] [-step=n_files] [-castor=castor_output]"
+      echo "submitLocalRun.sh -cfg=cfg.py -src=input_dir [-f=first_file] [-step=n_files] [-castor=castor_output] [-json=json_file]"
       exit -1
       ;;
   esac
@@ -58,13 +61,12 @@ then
 fi
 if [ -n "$STEP" ]
 then
-
     LOCALOUT="/tmp/${SRC}_${FFILE}_${STEP}.root"
 fi
 
 #call cmsRun
 #cd ${MYCMSSWDIR}/CMGTools/HtoZZ2l2nu/test
-cmsRun ${CFG} ${INPUTDIR} ${LOCALOUT} ${FFILE} ${STEP}
+cmsRun ${CFG} ${INPUTDIR} ${LOCALOUT} ${FFILE} ${STEP} 
 #cd -
 
 #move to OUTDIR directory if required

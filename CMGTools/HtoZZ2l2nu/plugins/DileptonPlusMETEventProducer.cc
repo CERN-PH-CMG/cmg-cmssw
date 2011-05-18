@@ -12,8 +12,15 @@
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
 
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
+#include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
+
+#include "TH1D.h"
+#include "TString.h"
+ 
 
 class DileptonPlusMETEventProducer : public edm::EDProducer {
 public:
@@ -21,6 +28,7 @@ public:
   virtual void produce( edm::Event &iEvent, const edm::EventSetup &iSetup) ;
 private:
   std::map<std::string, edm::ParameterSet > objConfig;
+  std::map<TString,TH1D *> controlHistos_;
 };
 
 
@@ -36,6 +44,20 @@ DileptonPlusMETEventProducer::DileptonPlusMETEventProducer(const edm::ParameterS
   std::string objs[]={"Generator", "Vertices", "Electrons", "Muons", "Dileptons", "Jets", "MET" };
   for(size_t iobj=0; iobj<sizeof(objs)/sizeof(string); iobj++)
     objConfig[ objs[iobj] ] = iConfig.getParameter<edm::ParameterSet>( objs[iobj] );
+
+  edm::Service<TFileService> fs;
+  TString cats[]={"electron","muon"};
+  size_t ncats=sizeof(cats)/sizeof(TString);
+  for(size_t icat=0; icat<ncats; icat++)
+    {
+      TFileDirectory newDir=fs->mkdir(cats[icat].Data());
+      controlHistos_[cats[icat]+"_rho"] = (TH1D *) formatPlot( newDir.make<TH1F>(cats[icat]+"_rho", "; #rho; Events", 100, 0.,10.), 1,1,1,20,0,false,true,1,1,1 );
+      controlHistos_[cats[icat]+"_ecaliso"] = (TH1D *) formatPlot( newDir.make<TH1F>(cats[icat]+"_ecaliso", ";ECAL isolation; Events", 100, 0.,10.), 1,1,1,20,0,false,true,1,1,1 );
+      controlHistos_[cats[icat]+"_hcaliso"] = (TH1D *) formatPlot( newDir.make<TH1F>(cats[icat]+"_hcaliso", ";HCAL isolation; Events", 100, 0.,10.), 1,1,1,20,0,false,true,1,1,1 );
+      controlHistos_[cats[icat]+"_caloiso"] = (TH1D *) formatPlot( newDir.make<TH1F>(cats[icat]+"_caloiso", ";Calorimeter isolation; Events", 100, 0.,10.), 1,1,1,20,0,false,true,1,1,1 );
+      controlHistos_[cats[icat]+"_trackiso"] = (TH1D *) formatPlot( newDir.make<TH1F>(cats[icat]+"_trackiso", ";Tracker Isolation; Events", 100, 0.,10.), 1,1,1,20,0,false,true,1,1,1 );
+      controlHistos_[cats[icat]+"_reliso"] = (TH1D *) formatPlot( newDir.make<TH1F>(cats[icat]+"_reliso", "; Isolation; Events", 100, 0.,10.), 1,1,1,20,0,false,true,1,1,1 );
+    }
 }
 
 //
@@ -62,25 +84,32 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   edm::Handle< double > rho;
   iEvent.getByLabel(edm::InputTag("kt6PFJets:rho"),rho);
 
-  //select muons
+  //select muons (id+very loose isolation)
   Handle<View<Candidate> > hMu; 
   iEvent.getByLabel(objConfig["Muons"].getParameter<edm::InputTag>("source"), hMu);
-  std::vector<CandidatePtr> selMuons = muon::filter(hMu, objConfig["Muons"],*rho);
+  std::vector<CandidatePtr> selMuons = muon::filter(hMu, objConfig["Muons"]);
 
-  //select electrons
+  //select electrons (id+conversion veto+very loose isolation)
   Handle<View<Candidate> > hEle; 
   iEvent.getByLabel(objConfig["Electrons"].getParameter<edm::InputTag>("source"), hEle);
-  std::vector<CandidatePtr> selElectrons = electron::filter(hEle, hMu, objConfig["Electrons"],*rho);
-
+  std::vector<CandidatePtr> selElectrons = electron::filter(hEle, hMu, objConfig["Electrons"]);
+  
   //build inclusive collection
   std::vector<CandidatePtr> selLeptons = selMuons;
   selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
   if(selLeptons.size()>0) selStep=2;
 
-  //build the dilepton
+  //build the dilepton (all tightly isolated leptons will be returned)
+  std::vector<CandidatePtr> isolLeptons;
   if(selVertices.size())
     {
-      std::pair<reco::VertexRef, std::vector<CandidatePtr> > dileptonWithVertex = dilepton::filter(selLeptons,selVertices,objConfig["Dileptons"],iSetup);
+      std::pair<reco::VertexRef, std::vector<CandidatePtr> > dileptonWithVertex = dilepton::filter(selLeptons,
+												   selVertices,
+												   objConfig["Dileptons"],
+												   iSetup,
+												   *rho,
+												   isolLeptons,
+												   &controlHistos_);
       selPath = dilepton::classify(dileptonWithVertex.second);
       if(selPath>0)
 	{
@@ -90,16 +119,11 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
 	  hyp.add(dilepton[0],"leg1");
 	  hyp.add(dilepton[1],"leg2");
 	  
-	  //add the remaining leptons now
-	  for(std::vector<CandidatePtr>::iterator mIt = selMuons.begin(); mIt != selMuons.end(); mIt++)
+	  //add the remaining isolated leptons now
+	  for(std::vector<CandidatePtr>::iterator lIt = isolLeptons.begin(); lIt != isolLeptons.end(); lIt++)
 	    {
-	      if(mIt->get()== dilepton[0].get() || mIt->get() == dilepton[1].get()) continue;
-	      hyp.add(*mIt,"muon");
-	    }
-	  for(std::vector<CandidatePtr>::iterator eIt = selElectrons.begin(); eIt != selElectrons.end(); eIt++)
-	    {
-	      if(eIt->get()== dilepton[0].get() || eIt->get() == dilepton[1].get()) continue;
-	      hyp.add(*eIt,"electron");
+	      if(lIt->get()== dilepton[0].get() || lIt->get() == dilepton[1].get()) continue;
+	      hyp.add( *lIt , fabs(dilepton::getLeptonId(*lIt))==13 ? "muon" : "electron" );
 	    }
 	  theSelVertex = dileptonWithVertex.first.get();
 	}
@@ -108,7 +132,7 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   //add the jets
   Handle<View<Candidate> > hJet; 
   iEvent.getByLabel(objConfig["Jets"].getParameter<edm::InputTag>("source"), hJet);
-  std::vector<CandidatePtr> selJets = jet::filter(hJet, selLeptons, objConfig["Jets"]);
+  std::vector<CandidatePtr> selJets = jet::filter(hJet, isolLeptons, objConfig["Jets"]);
   for(std::vector<CandidatePtr>::iterator jIt = selJets.begin(); jIt != selJets.end(); jIt++) hyp.add(*jIt,"jet");
 
   //add the met

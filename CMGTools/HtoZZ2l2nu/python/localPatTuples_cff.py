@@ -32,9 +32,11 @@ def configureFromCommandLine(processSource) :
     outputFile=dtag+'.root'
     if(len(sys.argv)>3 ): outputFile=sys.argv[3]
     ffile=0
-    if(len(sys.argv)>4 ): ffile=int(sys.argv[4])
     step=-1
-    if(len(sys.argv)>5 ): step=int(sys.argv[5])
+    if(len(sys.argv)>4 ):
+        if(sys.argv[4].isdigit()) : ffile=int(sys.argv[4])
+    if(len(sys.argv)>5 ):
+        if(sys.argv[5].isdigit()) : step=int(sys.argv[5])
 
     return dtag, fillFromCastor(castorDir,ffile,step), outputFile
 
