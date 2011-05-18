@@ -19,7 +19,7 @@
 using namespace std;
 
 //
-ReducedMETFitter::ReducedMETFitter(const edm::ParameterSet &iConfig, size_t maxJets)
+ReducedMETFitter::ReducedMETFitter(const edm::ParameterSet &iConfig)
 {
   TString phiFileName = iConfig.getParameter<std::string>("phiResolFileName"); 
   gSystem->ExpandPathName(phiFileName);
@@ -32,15 +32,71 @@ ReducedMETFitter::ReducedMETFitter(const edm::ParameterSet &iConfig, size_t maxJ
 
   //dataset is the balance of the system in the long/perp direction
   //it is the same for any event as te balance is centered at 0
-  float balance_long_val(0), balance_perp_val(0);
+  double balance_long_val(0), balance_perp_val(0);
   TTree* tree = new TTree("tree","tree") ;
-  tree->Branch("balance_long",&balance_long_val,"balance_long/F") ;
-  tree->Branch("balance_perp",&balance_perp_val,"balance_perp/F") ;
+  tree->Branch("balance_long",&balance_long_val,"balance_long/D") ;
+  tree->Branch("balance_perp",&balance_perp_val,"balance_perp/D") ;
   tree->Fill();
   balance_long = new RooRealVar("balance_long","balance_long",0);
   balance_perp = new RooRealVar("balance_perp","balance_perp",0);
   dataset = new RooDataSet("data","data",RooArgSet(*balance_perp,*balance_long),RooFit::Import(*tree));
   tree->Delete();
+}
+
+
+ReducedMETFitter::JetVariables::JetVariables(double pt, double px, double py, double phi, double eta,
+					     const JetResolution* jetPtResolParam, const JetResolution* jetPhiResolParam,
+					     int index) {
+  TString name("jet"); name+=(index);
+  
+  // get the resolution models
+  ptresolModel = (TF1 *) jetPtResolParam->resolutionEtaPt(eta,pt)->Clone("tf1ptresol_"+name);
+  ptresol = new RooRealVar("ptresol_"+name,"ptresol_"+name,0.9,0.,2.0);
+  bindPtResolModel = RooFit::bindPdf(ptresolModel,*ptresol);
+  // add to the list of constraints
+//   resolConstraintsList.add(*bindPtResolModel);//FIXME
+  avgpt_jet = new RooRealVar("avgpt_"+name,"avgpt_"+name,pt);
+  // the Pt of the jet
+  pt_jet = new RooFormulaVar("pt_"+name,"@0*@1",RooArgSet(*ptresol,*avgpt_jet));
+  ptErr_jet = new RooRealVar("ptErr_"+name, "ptErr_"+name, bindPtResolModel->sigma(*ptresol)->getVal()*pt);
+  //     cout << "pt resol: " << ptErr_jet->getVal() << endl;
+
+  phiresolModel = (TF1 *)jetPhiResolParam->resolutionEtaPt(eta,pt)->Clone("tf1phiresol_"+name);
+  phiresol = new RooRealVar("phiresol_"+name,"phiresol_"+name,-3,3);
+  bindPhiResolModel = RooFit::bindPdf(phiresolModel,*phiresol);
+  // add to the list of constraints
+//   resolConstraintsList.add(*bindPhiResolModel);//FIXME
+  avgphi_jet = new RooRealVar("avgphi_"+name,"avgphi_"+name,phi);
+  phi_jet = new RooFormulaVar("phi_"+name,"@0+@1",RooArgSet(*phiresol,*avgphi_jet));
+  //        cout << name << " ) " << ptresolModel->GetRandom() << " " << phiresolModel->GetRandom() << endl;
+      
+  px_jet=new RooFormulaVar("px_"+name,"@0*cos(@1)",RooArgSet(*pt_jet,*phi_jet));
+  py_jet= new RooFormulaVar("py_"+name,"@0*sin(@1)",RooArgSet(*pt_jet,*phi_jet));
+       
+  px_err_jet=new RooFormulaVar("px_err_"+name,"@0*cos(@1)",RooArgSet(*ptErr_jet, *phi_jet));
+  py_err_jet= new RooFormulaVar("py_err_"+name,"@0*sin(@1)",RooArgSet(*ptErr_jet,*phi_jet));
+
+
+}
+
+ReducedMETFitter::JetVariables::~JetVariables() {
+  delete ptresolModel;
+  delete ptresol;
+  delete bindPtResolModel;
+  delete avgpt_jet;
+  delete pt_jet;
+  delete ptErr_jet;
+
+  delete phiresolModel;    
+  delete phiresol;
+  delete bindPhiResolModel;
+  delete avgphi_jet;
+  delete phi_jet;
+
+  delete px_jet;
+  delete py_jet;
+  delete px_err_jet;
+  delete py_err_jet;
 }
 
 //
@@ -50,8 +106,14 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
 			       const LorentzVector &met)
 {
 
+  bool plot = false;
 
-  // AN 2010 121
+
+  // AN describing the JET uncertainties: AN 2010/121
+
+
+  // should silence the output?? Check...
+  if(!plot) RooMsgService::instance().setStreamStatus(1,kFALSE);
 
   RooArgList resolConstraintsList;
 
@@ -114,41 +176,25 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
    RooArgList py_sum_args;
    RooArgList pxErr_sum_args;
    RooArgList pyErr_sum_args;
+   vector<JetVariables*> jetVariables;
+
    for(size_t ijet=0; ijet<jets.size(); ijet++)
      {
-       TString name("jet"); name+=(ijet+1);
-       TVector2 jet(jets[ijet].Px(), jets[ijet].Py());
-       //       if(jet*bisector < 0 || jet*bisector_perp < 0) {
+
+
+       JetVariables* jetVars = new JetVariables(jets[ijet].pt(), jets[ijet].Px(), jets[ijet].Py(), jets[ijet].phi(), jets[ijet].eta(),
+						stdJetPtResol_, stdJetPhiResol_,
+						ijet);
+       jetVariables.push_back(jetVars);
+       resolConstraintsList.add(jetVars->ptResoModelPdf());
+       resolConstraintsList.add(jetVars->phiResoModelPdf());
+
+       px_sum_args.add(jetVars->jetPx());
+       py_sum_args.add(jetVars->jetPy());
        
-       TF1 *ptresolModel=(TF1 *)stdJetPtResol_->resolutionEtaPt(jets[ijet].eta(),jets[ijet].pt())->Clone("tf1ptresol_"+name);
-       RooRealVar *ptresol=new RooRealVar("ptresol_"+name,"ptresol_"+name,0.9,0.,2.0);
-       RooAbsPdf *bindPtResolModel = RooFit::bindPdf(ptresolModel,*ptresol);
-       resolConstraintsList.add(*bindPtResolModel);
-       RooRealVar *avgpt_jet=new RooRealVar("avgpt_"+name,"avgpt_"+name,jets[ijet].pt());
-       RooFormulaVar *pt_jet = new RooFormulaVar("pt_"+name,"@0*@1",RooArgSet(*ptresol,*avgpt_jet));
+       pxErr_sum_args.add(jetVars->jetPxErr());
+       pyErr_sum_args.add(jetVars->jetPyErr());
 
-       RooRealVar *ptErr_jet = new RooRealVar("ptErr_"+name, "ptErr_"+name, bindPtResolModel->sigma(*ptresol)->getVal()*jets[ijet].pt());
-       cout << "pt resol: " << ptErr_jet->getVal() << endl;
-
-
-       TF1 *phiresolModel=(TF1 *)stdJetPhiResol_->resolutionEtaPt(jets[ijet].eta(),jets[ijet].pt())->Clone("tf1phiresol_"+name);
-       RooRealVar *phiresol = new RooRealVar("phiresol_"+name,"phiresol_"+name,-3,3);
-       RooAbsPdf *bindPhiResolModel = RooFit::bindPdf(phiresolModel,*phiresol);
-       resolConstraintsList.add(*bindPhiResolModel);
-       RooRealVar *avgphi_jet=new RooRealVar("avgphi_"+name,"avgphi_"+name,jets[ijet].phi());
-       RooFormulaVar *phi_jet= new RooFormulaVar("phi_"+name,"@0+@1",RooArgSet(*phiresol,*avgphi_jet));
-
-       cout << name << " ) " << ptresolModel->GetRandom() << " " << phiresolModel->GetRandom() << endl;
-      
-       RooFormulaVar *px_jet=new RooFormulaVar("px_"+name,"@0*cos(@1)",RooArgSet(*pt_jet,*phi_jet));
-       RooFormulaVar *py_jet= new RooFormulaVar("py_"+name,"@0*sin(@1)",RooArgSet(*pt_jet,*phi_jet));
-       px_sum_args.add(*px_jet);
-       py_sum_args.add(*py_jet);
-       
-       RooFormulaVar *px_err_jet=new RooFormulaVar("px_err_"+name,"@0*cos(@1)",RooArgSet(*ptErr_jet, *phi_jet));
-       RooFormulaVar *py_err_jet= new RooFormulaVar("py_err_"+name,"@0*sin(@1)",RooArgSet(*ptErr_jet,*phi_jet));
-       pxErr_sum_args.add(*px_err_jet);
-       pyErr_sum_args.add(*py_err_jet);
        
        if(ijet == 0) {
 	 sumJet_formula << "@";
@@ -221,54 +267,86 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
    RooProdPdf prodPdf("prodPdf","redMetmodel",allPdfs);
 
    //define the likelihood and fit it
-   RooNLLVar *nll = (RooNLLVar *) prodPdf.createNLL(*dataset,RooFit::Constrain(resolConstraintsList));
+   
+//    RooFitResult *fitRes = prodPdf.fitTo(*dataset, RooFit::Constrain(resolConstraintsList), RooFit::Verbose(false));
+
+   RooNLLVar *nll = (RooNLLVar *) prodPdf.createNLL(*dataset,RooFit::Constrain(resolConstraintsList), RooFit::Verbose(kFALSE));
    RooMinuit min(*nll) ;
+   min.setVerbose(kFALSE);
+   min.setPrintLevel(-1);
    min.migrad() ;
    min.hesse() ;
    RooFitResult* r1 = min.save() ;
-   r1->Print("v");
+   if(plot) r1->Print("v");
+
+//    cout << "RedMET_perp: " << redMet_perp.getVal() << "+/-" << redMet_perp.getError() << endl;
+//    cout << "RedMET_long: " << redMet_long.getVal() << "+/-" << redMet_long.getError() << endl;
+
+   // assign the values to variables before throwing everithing in the toilet
+   redMET_long_ = redMet_long.getVal();
+   redMETErr_long_ = redMet_long.getError();
+
+   redMET_perp_ = redMet_perp.getVal();
+   redMETErr_perp_ = redMet_perp.getError();
+
+   redMET_ = sqrt(redMET_long_*redMET_long_ + redMET_perp_*redMET_perp_);
+   redMETErr_ = sqrt(redMET_long_*redMET_long_*redMETErr_long_*redMETErr_long_ +
+		    redMET_perp_*redMET_perp_*redMETErr_perp_*redMETErr_perp_)/redMET_;
 
 
-   //debug
-   TCanvas *c=new TCanvas("c1","c1");
-   c->cd();
-   c->SetWindowSize(600,600);
-   c->SetGridx();
-   c->SetGridy();
-   c->Divide(2,2);
-   c->cd(1);
-   RooPlot *frame = min.contour(redMet_long,redMet_perp,1,2,3) ;
-   frame->SetTitle("Contour for 1s,2s,3s for red-MET L and red-MET T") ;
-   frame->Draw();
+   if(plot) {
+     //debug
+     TCanvas *c=new TCanvas("c1","c1");
+     c->cd();
+     c->SetWindowSize(600,600);
+     c->SetGridx();
+     c->SetGridy();
+     c->Divide(2,2);
+     c->cd(1);
+     RooPlot *frame = min.contour(redMet_long,redMet_perp,1,2,3) ;
+     frame->SetTitle("Contour for 1s,2s,3s for red-MET L and red-MET T") ;
+     frame->Draw();
    
-   c->cd(2);
-   frame = redMet_perp.frame(RooFit::Title("Transverse"),RooFit::Range(redMet_perp.getVal()-redMet_perp.getError(),redMet_perp.getVal()+redMet_perp.getError()));
-   nll->plotOn(frame,RooFit::ShiftToZero());
-   //RooAbsReal* pll_redMet_perp = nll->createProfile(redMet_perp);
-   //   pll_redMet_perp->plotOn(frame,RooFit::LineColor(kRed));
-   frame->Draw();
-   frame->GetXaxis()->SetTitleOffset(0.8);
-   frame->GetYaxis()->SetTitle("-log(L/L_{max})");
-   frame->GetYaxis()->SetTitleOffset(1);
+     c->cd(2);
+     frame = redMet_perp.frame(RooFit::Title("Transverse"),RooFit::Range(redMet_perp.getVal()-redMet_perp.getError(),redMet_perp.getVal()+redMet_perp.getError()));
+     nll->plotOn(frame,RooFit::ShiftToZero());
+     //RooAbsReal* pll_redMet_perp = nll->createProfile(redMet_perp);
+     //   pll_redMet_perp->plotOn(frame,RooFit::LineColor(kRed));
+     frame->Draw();
+     frame->GetXaxis()->SetTitleOffset(0.8);
+     frame->GetYaxis()->SetTitle("-log(L/L_{max})");
+     frame->GetYaxis()->SetTitleOffset(1);
    
-   c->cd(3);
-   frame = redMet_long.frame(RooFit::Title("Longitudinal"),RooFit::Range(redMet_long.getVal()-redMet_long.getError(),redMet_long.getVal()+redMet_long.getError()));
-   nll->plotOn(frame,RooFit::ShiftToZero());
-   //RooAbsReal* pll_redMet_long = nll->createProfile(redMet_long);
-   //   pll_redMet_long->plotOn(frame,RooFit::LineColor(kRed));
-   frame->Draw();
-   frame->GetXaxis()->SetTitleOffset(0.8);
-   frame->GetYaxis()->SetTitle("-log(L/L_{max})");
-   frame->GetYaxis()->SetTitleOffset(1);
+     c->cd(3);
+     frame = redMet_long.frame(RooFit::Title("Longitudinal"),RooFit::Range(redMet_long.getVal()-redMet_long.getError(),redMet_long.getVal()+redMet_long.getError()));
+     nll->plotOn(frame,RooFit::ShiftToZero());
+     //RooAbsReal* pll_redMet_long = nll->createProfile(redMet_long);
+     //   pll_redMet_long->plotOn(frame,RooFit::LineColor(kRed));
+     frame->Draw();
+     frame->GetXaxis()->SetTitleOffset(0.8);
+     frame->GetYaxis()->SetTitle("-log(L/L_{max})");
+     frame->GetYaxis()->SetTitleOffset(1);
    
-   c->SaveAs("c1.C");
-   c->Delete();
+     c->SaveAs("c1.C");
+     c->Delete();
+     
+     
+     //    RooWorkspace *w = new RooWorkspace("rmetfitter","Reduced MET fitter workspace");
+     //    w->import(prodPdf); w->import(*dataset);
+     //    w->Print();
+     //   w->writeToFile("c1.root");
+     //   delete w;
 
-   RooWorkspace *w = new RooWorkspace("rmetfitter","Reduced MET fitter workspace");
-   w->import(prodPdf); w->import(*dataset);
-   w->Print();
-   //   w->writeToFile("c1.root");
-   delete w;
 
+   }
+
+
+   // clean up the memory used by the jet vars
+   for(vector<JetVariables*>::iterator jetVar = jetVariables.begin();
+       jetVar != jetVariables.end();
+       ++jetVar) {
+     delete *jetVar;
+   }
+						
 }
 
