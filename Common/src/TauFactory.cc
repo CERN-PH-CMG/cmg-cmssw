@@ -22,25 +22,38 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
   leptonFactory_.set(input,output,iEvent,iSetup);
 
   //  
-  output->leadHadrHCalEnergy =  input->leadPFChargedHadrCand()->hcalEnergy();
-  output->leadHadrECalEnergy = input->leadPFChargedHadrCand()->ecalEnergy();
-  output->leadCandHCalEnergy = input->leadPFCand()->hcalEnergy();
-  output->leadChargedHadrMvaEPi = input->leadPFChargedHadrCand()->mva_e_pi();
-  output->leadCandMvaEPi = input->leadPFCand()->mva_e_pi();
-  output->leadChargedHadrTrkPt = input->leadPFChargedHadrCand()->pt();//  output->leadChargedHadrTrkPt = input->leadPFChargedHadrCand()->trackRef()->pt();
-  output->numberChargedHadr =  input->signalPFChargedHadrCands().size();
-  output->numberGamma = input->signalPFGammaCands().size() ;
 
-  output->tauIDHPSagainstElectronLoose= input->tauID("againstElectronLoose");
-  output->tauIDHPSagainstElectronMedium= input->tauID("againstElectronMedium");
-  output->tauIDHPSagainstElectronTight= input->tauID("againstElectronTight");
-  output->tauIDHPSagainstMuonLoose= input->tauID("againstMuonLoose");
-  output->tauIDHPSagainstMuonTight= input->tauID("againstMuonTight");
-  output->tauIDHPSbyLooseIsolation= input->tauID("byLooseIsolation");
-  output->tauIDHPSbyMediumIsolation= input->tauID("byMediumIsolation");
-  output->tauIDHPSbyTightIsolation= input->tauID("byTightIsolation");
-  output->tauIDHPSbyVLooseIsolation= input->tauID("byVLooseIsolation");
-  output->tauIDHPSdecayModeFinding= input->tauID("decayModeFinding");
+  reco::PFCandidateRef leadPFCand=input->leadPFCand();
+  if(leadPFCand.isNonnull()){
+    output->leadCandHCalEnergy = leadPFCand->hcalEnergy();
+    output->leadCandMvaEPi     = leadPFCand->mva_e_pi(); 
+  }
+  reco::PFCandidateRef leadChargedHadrCand=input->leadPFChargedHadrCand();//lead track
+  if(leadChargedHadrCand.isNonnull()){
+    output->leadHadrHCalEnergy    = leadChargedHadrCand->hcalEnergy();
+    output->leadHadrECalEnergy    = leadChargedHadrCand->ecalEnergy();
+    output->leadChargedHadrMvaEPi = leadChargedHadrCand->mva_e_pi();
+    output->leadChargedHadrTrkPt  = leadChargedHadrCand->pt();
+  }
+  reco::PFCandidateRef leadNeutralCand=input->leadPFNeutralCand();
+  if(leadNeutralCand.isNonnull()){
+    output->leadNeutralCandPt = leadNeutralCand->pt();
+  }
+  reco::PFCandidateRefVector signalChargedHadrCands=input->signalPFChargedHadrCands();
+  if(signalChargedHadrCands.isNonnull()){
+    output->numberChargedHadr =  signalChargedHadrCands.size();
+  }
+  reco::PFCandidateRefVector signalGammaCands=input->signalPFGammaCands();
+  if(signalGammaCands.isNonnull()){
+    output->numberGamma = signalGammaCands.size() ;
+  }
+
+  
+  //copy the the tauIDs 
+  std::vector<pat::Tau::IdPair> tauids = input->tauIDs();
+  for (std::vector<pat::Tau::IdPair>::const_iterator it = tauids.begin() ; it != tauids.end() ; ++it) {
+    output->setTauID(it->first,it->second);
+  }
 
   //other variables
   output->decayMode = input->decayMode();
