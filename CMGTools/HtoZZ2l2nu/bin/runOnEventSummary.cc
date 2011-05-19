@@ -34,14 +34,15 @@ int main(int argc, char* argv[])
   AutoLibraryLoader::enable();
 
   //check arguments
-  if ( argc < 3 ) {
-    std::cout << "Usage : " << argv[0] << " parameters.py outputDir" << std::endl;
+  if ( argc < 2 ) {
+    std::cout << "Usage : " << argv[0] << " parameters_cfg.py" << std::endl;
     return 0;
   }
   
   //configure
   const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
   TString url=runProcess.getParameter<std::string>("input");
+  TString outdir=runProcess.getParameter<std::string>("outdir");
   int evStart=runProcess.getParameter<int>("evStart");
   int evEnd=runProcess.getParameter<int>("evEnd");
   TString dirname = runProcess.getParameter<std::string>("dirName");
@@ -153,16 +154,17 @@ int main(int argc, char* argv[])
 
   
   //save to file
-  TString outUrl( argv[2] );
+  TString outUrl( outdir );
   gSystem->Exec("mkdir -p " + outUrl);
   outUrl += "/";
   outUrl += gSystem->BaseName(url);
+  cout << outUrl << endl;
   TFile *ofile=TFile::Open(outUrl, "recreate");
-  TDirectory *baseOutDir=ofile->mkdir("zz2l2nu");
+  TDirectory *baseOutDir=ofile->mkdir("localAnalysis");
   for( size_t icat=0; icat<ncats; icat++)
     {
       baseOutDir->cd();
-      if(icat) baseOutDir->mkdir( cats[icat] )->cd();
+      baseOutDir->mkdir( cats[icat] )->cd();
       for(std::map<TString,TH1D *>::iterator hIt = controlHistos.begin(); hIt != controlHistos.end(); hIt++)
         {
           if(!hIt->first.BeginsWith(cats[icat])) continue;
