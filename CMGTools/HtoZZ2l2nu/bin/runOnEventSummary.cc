@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
   if(evStart > evEnd ) 
     {
       file->Close();
-      return -1;
+       return -1;
     }
   
   //run the analysis
@@ -119,25 +119,35 @@ int main(int argc, char* argv[])
 		  controlHistos[cat+"_hcalisovsnpu"+histos[ihisto]]->Fill(ev.ngenpu,ev.info3[ipart]);
 		  controlHistos[cat+"_caloisovsnpu"+histos[ihisto]]->Fill(ev.ngenpu,ev.info2[ipart]+ev.info3[ipart]); 
 		  controlHistos[cat+"_trackisovsnpu"+histos[ihisto]]->Fill(ev.ngenpu,ev.info4[ipart]);
-		  leptons.push_back( PhysicsObject(p4,ev.info1[ipart]) );
 		}
+	      leptons.push_back( PhysicsObject(p4,ev.info1[ipart]) );
 	      break;
 	    }
 	}
       
-      //fit reduced met
-      //      rmet.compute(leptons[0].first,leptons[0].second,
-      //leptons[1].first,leptons[1].second,
-      //		   jetsp4,
-      //		   mets[0].first);
+      if(mets[0].first.pt() > 100.) {
+	//fit reduced met
+	std::auto_ptr<RooFitResult> fitResults = rmet.compute(leptons[0].first,leptons[0].second,
+							      leptons[1].first,leptons[1].second,
+							      jetsp4,
+							      mets[0].first);
+	cout << "-------------------" << endl;
+	cout << "RedMET: " << rmet.reducedMET().first << " +/- " << rmet.reducedMET().second << endl;
+	cout << "RedMET_long: " << rmet.reducedMET_long().first << " +/- " << rmet.reducedMET_long().second << endl;
+	cout << "RedMET_perp: " << rmet.reducedMET_perp().first << " +/- " << rmet.reducedMET_perp().second << endl;
+	cout << "jetRecoil_perp: " << rmet.jetRecoil_perp().first << " +/- " << rmet.jetRecoil_perp().second << endl;
+	cout << "jetRecoil_long: " << rmet.jetRecoil_long().first << " +/- " << rmet.jetRecoil_long().second << endl;
+
+	cout << "NLL: " << fitResults->minNll() << " status: " << fitResults->status() << endl;
       
-      //dump event info
-      cout << "[" << ev.run << ":" << ev.lumi << ":" << ev.event << "]" << endl
-	   << "Lepton #1: (" << leptons[0].first.pt() << ";" << leptons[0].first.eta() << ";" << leptons[0].first.phi() << ")" << endl  
-	   << "Lepton #2: (" << leptons[1].first.pt() << ";" << leptons[1].first.eta() << ";" << leptons[1].first.phi() << ")" << endl;
-      for(size_t ijet=0; ijet<jets.size(); ijet++)
-	cout << "Jet    #" << (ijet+1) << ": (" << jets[ijet].first.pt() << ";" << jets[ijet].first.eta() << ";" << jets[ijet].first.phi() << ")" << endl; 
-      cout << "MET      : (" << mets[0].first.pt() << ";" << mets[0].first.phi() << ")" << endl;
+	//dump event info
+	cout << "[" << ev.run << ":" << ev.lumi << ":" << ev.event << "]" << endl
+	     << "Lepton #1: (" << leptons[0].first.pt() << ";" << leptons[0].first.eta() << ";" << leptons[0].first.phi() << ")" << endl  
+	     << "Lepton #2: (" << leptons[1].first.pt() << ";" << leptons[1].first.eta() << ";" << leptons[1].first.phi() << ")" << endl;
+	for(size_t ijet=0; ijet<jets.size(); ijet++)
+	  cout << "Jet    #" << (ijet+1) << ": (" << jets[ijet].first.pt() << ";" << jets[ijet].first.eta() << ";" << jets[ijet].first.phi() << ")" << endl; 
+	cout << "MET      : (" << mets[0].first.pt() << ";" << mets[0].first.phi() << ")" << endl;
+      }
     }
   file->Close();
 
