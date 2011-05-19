@@ -1,8 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 
 runProcess = cms.PSet(
-    input = cms.string("/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_1_3_patch2/src/CMGTools/HtoZZ2l2nu/data/unweighted/DYToMuMu_M-20_Spring11.root"),
+#    input = cms.string("/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_1_3_patch2/src/CMGTools/HtoZZ2l2nu/data/unweighted/DYToMuMu_M-20_Spring11.root"),
 #    input = cms.string("/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_1_3_patch2/src/CMGTools/HtoZZ2l2nu/data/unweighted/DYToEE_M-20_Spring11.root"),
+    input = cms.string("/data/psilva/Higgs/DoubleMuon-v7.root"),
     outdir = cms.string("./"),
     isMC = cms.bool(True),
     evStart = cms.int32(0),

@@ -457,11 +457,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     transverseMass-=TMath::Power(transvSum.pt(),2);
     transverseMass=TMath::Sqrt(transverseMass);
 
-    //final control histograms (inclusive and per jet bin)
-    getHist(istream+"_dilepton_mass")->Fill(dileptonP.mass(),weight);
-    getHist(istream+"_dilepton_dphi")->Fill( fabs( deltaPhi(lepton1P.phi(),lepton2P.phi()) ) ,weight);
-    getHist(istream+"_dilepton_sumpt")->Fill(lepton1P.pt()+lepton2P.pt(),weight);
-    getHist(istream+"_dilepton_pt")->Fill(dileptonP.pt(),weight);
+    //final control histograms
     getHist(istream+"_met")->Fill(rawMetP.pt(),weight);
     getHist(istream+"_jesmet")->Fill(jesMetP.pt(),weight);
     getHist(istream+"_jesmetnopu")->Fill(jesMetNopuP.pt(),weight);
