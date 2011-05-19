@@ -14,6 +14,12 @@
 
 #include <vector>
 
+#include <TString.h>
+
+#define NCMGTAUIDS 20
+
+using namespace std;
+
 namespace cmg
 {
 
@@ -35,24 +41,38 @@ namespace cmg
       leadChargedHadrMvaEPi(UnSet(double)),
       leadCandMvaEPi(UnSet(double)),
       leadChargedHadrTrkPt(UnSet(double)),
+      leadNeutralCandPt(UnSet(double)),
       numberChargedHadr(UnSet(int)),
       numberGamma(UnSet(int)),
-      tauIDHPSagainstElectronLoose(0),
-      tauIDHPSagainstElectronMedium(0),
-      tauIDHPSagainstElectronTight(0),
-      tauIDHPSagainstMuonLoose(0),
-      tauIDHPSagainstMuonTight(0),
-      tauIDHPSbyLooseIsolation(0),
-      tauIDHPSbyMediumIsolation(0),
-      tauIDHPSbyTightIsolation(0),
-      tauIDHPSbyVLooseIsolation(0),
-      tauIDHPSdecayModeFinding(0),
       decayMode(UnSet(int)){
+      
+      for(Int_t i=0;i<NCMGTAUIDS;i++){	
+	tauIDname[i]="";
+	tauIDvalue[i]=0;
+      }
+      
     }
 
     virtual ~Tau(){
     }
     
+
+
+
+    Bool_t  getTauID(TString idname){
+      for(Int_t i=0;i<NCMGTAUIDS;i++)
+	if(tauIDname[i]==idname)
+	  return tauIDvalue[i];
+
+      ///if id was not found print the available id's
+      cout<<"cmg::Tau::getTauID  this taudID="<<idname<<" is not found "<<endl;
+      cout<<"The following tauIDs are available:";
+      for(Int_t i=0;i<NCMGTAUIDS;i++)
+	if(tauIDname[i]!="")cout<<" "<<tauIDname[i]<<",";
+      cout<<endl;
+
+      return 0;
+    }
 
 
     Float_t getLeadHadrHCalEnergy(){return leadHadrHCalEnergy;}
@@ -61,19 +81,10 @@ namespace cmg
     Float_t getLeadChargedHadrMvaEPi(){return leadChargedHadrMvaEPi;}
     Float_t getLeadCandMvaEPi(){return leadCandMvaEPi;}
     Float_t getLeadChargedHadrTrkPt(){return leadChargedHadrTrkPt;}
+    Float_t getLeadNeutralCandPt(){return leadNeutralCandPt;}
     Int_t getNumberChargedHadr(){return numberChargedHadr;}
     Int_t getNumberGamma(){return numberGamma;}
 
-    Bool_t getTauIDHPSagainstElectronLoose(){return tauIDHPSagainstElectronLoose;}
-    Bool_t getTauIDHPSagainstElectronMedium(){return tauIDHPSagainstElectronMedium;}
-    Bool_t getTauIDHPSagainstElectronTight(){return tauIDHPSagainstElectronTight;}
-    Bool_t getTauIDHPSagainstMuonLoose(){return tauIDHPSagainstMuonLoose;}
-    Bool_t getTauIDHPSagainstMuonTight(){return tauIDHPSagainstMuonTight;}
-    Bool_t getTauIDHPSbyLooseIsolation(){return tauIDHPSbyLooseIsolation;}
-    Bool_t getTauIDHPSbyMediumIsolation(){return tauIDHPSbyMediumIsolation;}
-    Bool_t getTauIDHPSbyTightIsolation(){return tauIDHPSbyTightIsolation;}
-    Bool_t getTauIDHPSbyVLooseIsolation(){return tauIDHPSbyVLooseIsolation;}
-    Bool_t getTauIDHPSdecayModeFinding(){return tauIDHPSdecayModeFinding;}
 
     Int_t getDecayMode(){return decayMode;}
     
@@ -88,19 +99,37 @@ namespace cmg
     Float_t leadChargedHadrMvaEPi;
     Float_t leadCandMvaEPi;
     Float_t leadChargedHadrTrkPt;
+    Float_t leadNeutralCandPt;
     Int_t numberChargedHadr;
     Int_t numberGamma;
 
-    Bool_t tauIDHPSagainstElectronLoose;
-    Bool_t tauIDHPSagainstElectronMedium;
-    Bool_t tauIDHPSagainstElectronTight;
-    Bool_t tauIDHPSagainstMuonLoose;
-    Bool_t tauIDHPSagainstMuonTight;
-    Bool_t tauIDHPSbyLooseIsolation;
-    Bool_t tauIDHPSbyMediumIsolation;
-    Bool_t tauIDHPSbyTightIsolation;
-    Bool_t tauIDHPSbyVLooseIsolation;
-    Bool_t tauIDHPSdecayModeFinding;
+    TString tauIDname[NCMGTAUIDS];
+    Bool_t tauIDvalue[NCMGTAUIDS];
+
+    void setTauID(TString idname,Bool_t idvalue){
+      //check the idname is not already set
+      for(Int_t i=0;i<NCMGTAUIDS;i++){	
+	if(tauIDname[i]==idname){
+	  cout<<"cmg::Tau::setTauID  this taudID="<<idname<<" is being duplicated."<<endl;
+	  exit(0);
+	}
+      }
+ 
+      //add it to the next available slot
+      for(Int_t i=0;i<NCMGTAUIDS;i++){	
+	if(tauIDname[i]==""){
+	  tauIDname[i]=idname;
+	  tauIDvalue[i]=idvalue;
+	  break;
+	}
+	if(i==NCMGTAUIDS-1){
+	  cout<<"cmg::Tau::setTauID  Trying to add too many tauIDs"<<endl;
+	  exit(0);
+	}
+      }
+      
+    }
+
 
 
     Int_t decayMode;
