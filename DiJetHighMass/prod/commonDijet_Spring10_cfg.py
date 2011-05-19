@@ -3,9 +3,9 @@ import FWCore.ParameterSet.Config as cms
 
 # changing process name, as PAT is already taken 
 processName = 'SKIM'
-runOnData = True
+runOnData = False
 postfix="PFlow"
-ext = 'Data'
+ext = 'MC'
 
 import os
 path = os.getcwd()
@@ -30,7 +30,7 @@ if runOnData:
     if runAtFNAL:
         process.source.fileNames = cms.untracked.vstring('file:/uscms/home/mgouzevi/work/TEST_SAMPLES/Data_skim.root')
 else:
-    process.source.fileNames = cms.untracked.vstring('/store/relval/CMSSW_4_1_4/RelValTTbar/GEN-SIM-RECO/START311_V2-v1/0013/2A878D65-7D60-E011-9308-00261894393D.root')   
+    process.source.fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/user/m/mgouzevi/cmst3/D6929334-4247-DF11-8ECD-00215E93EC84.root')   
     if runAtFNAL:
         process.source.fileNames = cms.untracked.vstring('file:/uscms/home/mgouzevi/work/TEST_SAMPLES/Reco_RSGraviton_500_skim.root')
 
@@ -39,7 +39,7 @@ else:
 print 'processing: '
 print process.source.fileNames
 
-process.out.fileName = cms.untracked.string('/tmp/mgouzevi/AOD_diJetAnalysis_%s.root' % ext )
+process.out.fileName = cms.untracked.string('AOD_diJetAnalysis_%s.root' % ext )
 
 #output file for histograms etc
 process.TFileService = cms.Service("TFileService",
@@ -54,10 +54,21 @@ process.out.outputCommands = commonDiJetHighMass
 # Pat Sequence definition
 from CMGTools.DiJetHighMass.myPatSequence_cff import myPatSequence
 myPatSequence(process, runOnData)
-
-process.pat = cms.Sequence(
-    process.patDefaultSequence
+process.load("Configuration.StandardSequences.Generator_cff")
+process.gen = cms.Sequence(
+    process.genJetMET
     )
+
+if not runOnData:
+	process.pat = cms.Sequence(
+    	process.gen +	
+    	process.patDefaultSequence
+    	)
+else :	
+	process.pat = cms.Sequence(
+        	process.patDefaultSequence
+        )
+	
 
 
 # Analysis Sequence definition
@@ -123,10 +134,22 @@ process.p = cms.Path(
     process.select
     )
 
-process.p.remove(process.patTriggerSequence)
-process.p.remove(process.patTriggerEventSequence)
-
 process.out.SelectEvents.SelectEvents.append('p')
+
+if runOnData:
+	process.p.remove(process.patTriggerSequence)
+	process.p.remove(process.patTriggerEventSequence)
+
+if not runOnData:
+	process.p.remove(process.btaggingAK5PF)
+	process.p.remove(process.btaggingAK7PF)
+	process.patJets.addTagInfos     = cms.bool(False)
+	process.patJets.addBTagInfo     = cms.bool(False)
+	getattr(process, "patJetsAK5PF").addTagInfos     = cms.bool(False)
+	getattr(process, "patJetsAK7PF").addTagInfos     = cms.bool(False)
+	getattr(process, "patJetsAK5PF").addBTagInfo     = cms.bool(False)
+	getattr(process, "patJetsAK7PF").addBTagInfo     = cms.bool(False)
+	
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) ) 
