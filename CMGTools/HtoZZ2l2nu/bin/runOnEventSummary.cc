@@ -43,6 +43,7 @@ int main(int argc, char* argv[])
   const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
   TString url=runProcess.getParameter<std::string>("input");
   TString outdir=runProcess.getParameter<std::string>("outdir");
+  bool isMC = runProcess.getParameter<bool>("isMC");
   int evStart=runProcess.getParameter<int>("evStart");
   int evEnd=runProcess.getParameter<int>("evEnd");
   TString dirname = runProcess.getParameter<std::string>("dirName");
@@ -150,9 +151,20 @@ int main(int argc, char* argv[])
 	cout << "MET      : (" << mets[0].first.pt() << ";" << mets[0].first.phi() << ")" << endl;
       }
     }
+
+  //MC normalization (to 1/pb)
+  float cnorm=1.0;
+  if(isMC)
+    {
+      TString tag=gSystem->BaseName(url);
+      tag.ReplaceAll(".root","");
+      TH1F *cutflowH = (TH1F *) file->Get("evAnalyzer/"+tag+"/cutflow");
+      if(cutflowH) cnorm=cutflowH->GetBinContent(1);
+    }
+
+  //all done with the events file
   file->Close();
 
-  
   //save to file
   TString outUrl( outdir );
   gSystem->Exec("mkdir -p " + outUrl);
@@ -168,6 +180,7 @@ int main(int argc, char* argv[])
       for(std::map<TString,TH1D *>::iterator hIt = controlHistos.begin(); hIt != controlHistos.end(); hIt++)
         {
           if(!hIt->first.BeginsWith(cats[icat])) continue;
+	  if(isMC && cnorm>0) hIt->second->Scale(1./cnorm);
           hIt->second->Write();
         }
     }
