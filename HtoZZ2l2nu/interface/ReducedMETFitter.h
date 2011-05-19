@@ -34,10 +34,10 @@ class ReducedMETFitter
 
   ReducedMETFitter(const edm::ParameterSet &iConfig);
   ~ReducedMETFitter() { }
-  void compute(const LorentzVector &lep1, float sigmaPt1,
-	       const LorentzVector &lep2, float sigmaPt2,
-	       const LorentzVectorCollection &jets,
-	       const LorentzVector &met);
+  std::auto_ptr<RooFitResult> compute(const LorentzVector &lep1, float sigmaPt1,
+				      const LorentzVector &lep2, float sigmaPt2,
+				      const LorentzVectorCollection &jets,
+				      const LorentzVector &met);
 
 
   
@@ -52,6 +52,15 @@ class ReducedMETFitter
   std::pair<double, double> reducedMET_perp() {
     return std::make_pair(redMET_perp_, redMETErr_perp_);
   }
+
+  std::pair<double, double> jetRecoil_perp() {
+    return std::make_pair(jetRecoil_perp_, jetRecoilErr_perp_);
+  }
+
+  std::pair<double, double> jetRecoil_long() {
+    return std::make_pair(jetRecoil_long_, jetRecoilErr_long_);
+  }
+  
 
 
   class JetVariables {
@@ -125,6 +134,13 @@ class ReducedMETFitter
   double redMET_;
   double redMETErr_;
   
+  double jetRecoil_perp_;
+  double jetRecoil_long_;
+
+  double jetRecoilErr_perp_;
+  double jetRecoilErr_long_;
+
+
 
 };
 
