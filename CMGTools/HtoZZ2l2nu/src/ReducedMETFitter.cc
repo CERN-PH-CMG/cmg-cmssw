@@ -1,5 +1,5 @@
 #include "CMGTools/HtoZZ2l2nu/interface/ReducedMETFitter.h"
-
+#include <memory>
 #include <sstream>
 
 #include "TCanvas.h"
@@ -100,10 +100,10 @@ ReducedMETFitter::JetVariables::~JetVariables() {
 }
 
 //
-void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
-			       const LorentzVector &lep2, float sigmaPt2,
-			       const LorentzVectorCollection &jets,
-			       const LorentzVector &met)
+std::auto_ptr<RooFitResult> ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
+						      const LorentzVector &lep2, float sigmaPt2,
+						      const LorentzVectorCollection &jets,
+						      const LorentzVector &met)
 {
 
   bool plot = false;
@@ -274,11 +274,12 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
    RooMinuit min(*nll) ;
    min.setVerbose(kFALSE);
    min.setPrintLevel(-1);
-   min.migrad() ;
-   min.hesse() ;
-   RooFitResult* r1 = min.save() ;
-   if(plot) r1->Print("v");
-
+   int migradStatus = min.migrad() ;
+   int hessStatus = min.hesse() ;
+   RooFitResult* fitResults_ = min.save() ;
+   if(plot) fitResults_->Print("v");
+   auto_ptr<RooFitResult> ret(fitResults_);
+// .reset(fitResults_);
 //    cout << "RedMET_perp: " << redMet_perp.getVal() << "+/-" << redMet_perp.getError() << endl;
 //    cout << "RedMET_long: " << redMet_long.getVal() << "+/-" << redMet_long.getError() << endl;
 
@@ -292,6 +293,12 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
    redMET_ = sqrt(redMET_long_*redMET_long_ + redMET_perp_*redMET_perp_);
    redMETErr_ = sqrt(redMET_long_*redMET_long_*redMETErr_long_*redMETErr_long_ +
 		    redMET_perp_*redMET_perp_*redMETErr_perp_*redMETErr_perp_)/redMET_;
+
+   jetRecoil_perp_ = sumJetX.getVal()*px_bisect_perp.getVal() + sumJetY.getVal()*py_bisect_perp.getVal();
+   jetRecoil_long_ = sumJetX.getVal()*px_bisect.getVal() + sumJetY.getVal()*py_bisect.getVal();
+   
+
+
 
 
    if(plot) {
@@ -347,6 +354,8 @@ void ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
        ++jetVar) {
      delete *jetVar;
    }
-						
+   delete nll;
+   return ret;
+
 }
 
