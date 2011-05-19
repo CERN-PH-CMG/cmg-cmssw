@@ -323,6 +323,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	getHist(istream+"_jetfassoc")->Fill( fassoc ,weight);
 	if(fassoc>0.1) 
 	  {
+	    njets++;
 	    jetmomenta.push_back(jet->p4());
 	    assocJets.push_back( jet.get() );
 	    ev.px[njets+2] = jet->px();  ev.py[njets+2]=jet->py();  ev.pz[njets+2]=jet->pz(); ev.en[njets+2]=jet->energy();
@@ -333,7 +334,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	    ev.info2[njets+2]=jet->bDiscriminator("trackCountingHighPurBJetTags");
 	    ev.info3[njets+2]=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
 	    ev.info4[njets+2]=jet->bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
-	    njets++;
 	  }
 	else 
 	  {
@@ -495,14 +495,14 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.tkmet_pt=tmet.pt();       ev.tkmet_phi=tmet.phi();
     ev.genmet_pt=genMET.pt();    ev.genmet_phi=genMET.phi();
     ev.rho=*rho;
-    ev.nparticles=2+njets;
-    ev.px[0] = lepton1P.px();    ev.py[0]=lepton1P.py();    ev.pz[0]=lepton1P.pz();    ev.en[0]=lepton1P.energy(); ev.id[0]=l1id; ev.info1[0] = lepton1pterr;
-    ev.info2[0] = lepton1iso[0]; ev.info3[0]=lepton1iso[1]; ev.info4[0]=lepton1iso[2]; ev.genid[0] = genid1;
-    ev.px[1] = lepton2P.px();    ev.py[1]=lepton2P.py();    ev.pz[1]=lepton2P.pz();    ev.en[1]=lepton2P.energy(); ev.id[1]=l2id; ev.info1[1] = lepton2pterr;
-    ev.info2[1] = lepton2iso[0]; ev.info3[1]=lepton2iso[1]; ev.info4[1]=lepton2iso[2]; ev.genid[1] = genid2;
-    ev.px[2] = jesMetNopuP.px(); ev.py[2]=jesMetNopuP.py(); ev.pz[1]=0;                ev.en[1]=jesMetNopuP.pt(); ev.id[1]=0; 
-    ev.info1[1] = jesMetP.pt();  
-    ev.info1[1] = rawMetP.pt();
+    ev.nparticles=3+njets;
+    ev.px[0] = lepton1P.px();    ev.py[0]=lepton1P.py();      ev.pz[0]=lepton1P.pz();     ev.en[0]=lepton1P.energy();  ev.id[0]=l1id; 
+    ev.info1[0] = lepton1pterr;  ev.info2[0] = lepton1iso[0]; ev.info3[0]=lepton1iso[1];  ev.info4[0]=lepton1iso[2];   ev.genid[0] = genid1;
+    ev.px[1] = lepton2P.px();    ev.py[1]=lepton2P.py();      ev.pz[1]=lepton2P.pz();     ev.en[1]=lepton2P.energy();  ev.id[1]=l2id; 
+    ev.info1[1] = lepton2pterr;  ev.info2[1] = lepton2iso[0]; ev.info3[1]=lepton2iso[1];  ev.info4[1]=lepton2iso[2];   ev.genid[1] = genid2;
+
+    ev.px[2] = jesMetNopuP.px(); ev.py[2]=jesMetNopuP.py();   ev.pz[2]=0;                ev.en[2]=jesMetNopuP.pt(); ev.id[2]=0; 
+    ev.info1[2] = jesMetP.pt();  ev.info2[2] = rawMetP.pt();  ev.info3[3]=genMET.pt();
     
     summaryHandler_.fillTree();
 
