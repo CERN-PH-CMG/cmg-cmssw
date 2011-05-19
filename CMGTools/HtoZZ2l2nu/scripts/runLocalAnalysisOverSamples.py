@@ -37,7 +37,8 @@ for proc in procList :
             sedcmd = 'sed \"s%@input%' + eventsFile +'%;s%@outdir%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;\"'
             os.system('cat ' + cfg_file + ' | ' + sedcmd + ' > localcfg.py')
             os.system(theExecutable + ' localcfg.py')
+            os.system('rm localcfg.py')
 
 #run plotter over results
-#os.system('mkdir -p ' + outdir + '/plots')
-#os.system('runPlotterOverSamples.py ' + samplesDB + ' ' + str(lumi) + ' ' + outdir + ' ' + outdir + '/ctrl ctrlAnalyzer')
+os.system('mkdir -p ' + outdir + '/plots')
+os.system('runPlotterOverSamples.py ' + samplesDB + ' ' + str(lumi) + ' ' + outdir + ' ' + outdir + '/plots localAnalysis')
