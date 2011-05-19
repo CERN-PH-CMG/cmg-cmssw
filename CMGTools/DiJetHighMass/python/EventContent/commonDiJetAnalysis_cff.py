@@ -5,6 +5,8 @@ import FWCore.ParameterSet.Config as cms
 commonDiJetHighMass = cms.untracked.vstring(
     'drop *',
 #    'keep *_*_*_*',
+    'keep *_ak5GenJets_*_*',	
+    'keep *_ak7GenJets_*_*',	
     #------- CaloJet collections ------
     'keep *_ak5CaloJets_*_*',
     'keep *_ak5JetID_*_*',
