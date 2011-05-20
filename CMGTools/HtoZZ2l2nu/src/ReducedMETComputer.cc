@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2011/04/07 12:11:55 $
- *  $Revision: 1.2 $
+ *  $Date: 2011/04/18 17:41:26 $
+ *  $Revision: 1.3 $
  *  \author G. Cerminara & D. Trocino
  */
 
@@ -70,15 +70,17 @@ void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt
   sumJetProj_long = 0.;
   sumJetProj_perp = 0.;
 
+  bool doAllJets = true; // FIXME: configurable
+  bool doUseMET = false; //FIXME: configurable
 
   for(vector<LorentzVector>::const_iterator jetit = theJets.begin();
       jetit != theJets.end();
       ++jetit) {
     TVector2 jet((*jetit).Px(), (*jetit).Py());
-    if(jet*bisector < 0) {
+    if(jet*bisector < 0 || doAllJets) {
       sumJetProj_long += jet*bisector;
     }
-    if(jet*bisector_perp < 0) {
+    if(jet*bisector_perp < 0 || doAllJets) {
       sumJetProj_perp += jet*bisector_perp;
     }
   }
@@ -90,9 +92,13 @@ void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt
   metProj_long = caloOnlyMET*bisector;
   metProj_perp = caloOnlyMET*bisector_perp;
 
-  recoilProj_long = min(sumJetProj_long, -1.*metProj_long);
-  recoilProj_perp = min(sumJetProj_perp, -1.*metProj_perp);
-   
+  if(doUseMET) {
+    recoilProj_long = min(sumJetProj_long, -1.*metProj_long);
+    recoilProj_perp = min(sumJetProj_perp, -1.*metProj_perp);
+  } else {
+    recoilProj_long = sumJetProj_long;
+    recoilProj_perp = sumJetProj_perp;
+  }
   
   // -- corrections for lepton Pt uncertainties
 
