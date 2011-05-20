@@ -218,6 +218,7 @@ std::auto_ptr<RooFitResult> ReducedMETFitter::compute(const LorentzVector &lep1,
    RooFormulaVar *balance_long_err=0, *balance_long_avg=0;
    RooFormulaVar *balance_perp_err=0, *balance_perp_avg=0;
    float centralLongVal=0;
+   float centralPerpVal=0;
    if(jets.size())
      {
        sumJetX = new RooFormulaVar("sumJetX",sumJet_formula.str().c_str(),px_sum_args);
@@ -228,30 +229,26 @@ std::auto_ptr<RooFitResult> ReducedMETFitter::compute(const LorentzVector &lep1,
        centralLongVal=-(px_dilept.getVal()+sumJetX->getVal())*px_bisect.getVal()-(py_dilept.getVal()+sumJetY->getVal())*py_bisect.getVal();
        balance_long_err = new RooFormulaVar("balance_long_err","sqrt((@0*@2)^2+(@1*@2)^2+(@3*@5)^2+(@4*@5)^2)", RooArgSet(pxErr_dilept, *sumJetXErr, px_bisect,
 															  pyErr_dilept, *sumJetYErr, py_bisect));
-       balance_long_avg= new RooFormulaVar("balance_long_avg","(@0+@1)*@2+(@3+@4)*@5+@6", RooArgSet(px_dilept, *sumJetX, px_bisect , 
-												    py_dilept, *sumJetY, py_bisect,
-												    redMet_long));
 
        centralPerpVal=-(px_dilept.getVal()+sumJetX->getVal())*px_bisect_perp.getVal()-(py_dilept.getVal()+sumJetY->getVal())*py_bisect_perp.getVal();
        balance_perp_err=new RooFormulaVar("balance_perp_err","sqrt((@0*@2)^2+(@1*@2)^2+(@1*@3)^2+(@4*@5)^2)", RooArgSet(pxErr_dilept, *sumJetXErr, px_bisect_perp,
 															pyErr_dilept, *sumJetYErr, py_bisect_perp));
-       balance_perp_avg=new RooFormulaVar("balance_perp_avg","(@0+@1)*@2+(@3+@4)*@5+@6", RooArgSet(px_dilept, *sumJetX, px_bisect_perp,
-												   py_dilept, *sumJetY, py_bisect_perp,
-												   redMet_perp));
      }
    else
      {
        centralLongVal=-px_dilept.getVal()*px_bisect.getVal()-py_dilept.getVal()*py_bisect.getVal();
        balance_long_err = new RooFormulaVar("balance_long_err","sqrt((@0*@2)^2+(@1*@3)^2)", RooArgSet(pxErr_dilept, pyErr_dilept, 
 												      px_bisect, py_bisect)); 
-       balance_long_avg = new RooFormulaVar("balance_long_avg","@0*@2+@1*@3+@4", RooArgSet(px_dilept, py_dilept, 
-											   px_bisect, py_bisect,
-											   redMet_long));       
+
+
+
 
        centralPerpVal=-px_dilept.getVal()*px_bisect_perp.getVal()-py_dilept.getVal()*py_bisect_perp.getVal();
        balance_perp_err = new RooFormulaVar("balance_perp_err","sqrt((@0*@2)^2+(@1*@3)^2)", RooArgSet(pxErr_dilept, pyErr_dilept, 
 												      px_bisect_perp, py_bisect_perp));
-       balance_perp_avg=new RooFormulaVar("balance_perp_avg","@0*@2+@1*@3+@4", RooArgSet(px_dilept, py_dilept, px_bisect_perp, py_bisect_perp,redMet_perp));
+       
+
+
      }
 
    //
@@ -261,12 +258,31 @@ std::auto_ptr<RooFitResult> ReducedMETFitter::compute(const LorentzVector &lep1,
    //longitudinal
    float sigmaLongIni=balance_long_err->getVal();
    RooRealVar redMet_long("redMet_long","redMet_long",centralLongVal,centralLongVal-10*sigmaLongIni,centralLongVal+10*sigmaLongIni);
-   RooGaussian balance_long_model("balance_long_model","balance_long_model",*balance_long,balance_long_avg,balance_long_err);
    
    //transverse
-   float sigmaPerpIni=balance_long_err.getVal();
+   float sigmaPerpIni=balance_long_err->getVal();
    RooRealVar redMet_perp("redMet_perp","redMet_perp",centralPerpVal,centralPerpVal-10*sigmaPerpIni,centralPerpVal+10*sigmaPerpIni);
-   RooGaussian balance_perp_model("balance_perp_model","balance_perp_model",*balance_perp,balance_perp_avg,balance_perp_err);   
+
+   if(jets.size()) {
+     balance_perp_avg=new RooFormulaVar("balance_perp_avg","(@0+@1)*@2+(@3+@4)*@5+@6", RooArgSet(px_dilept, *sumJetX, px_bisect_perp,
+												 py_dilept, *sumJetY, py_bisect_perp,
+												 redMet_perp));
+     balance_long_avg= new RooFormulaVar("balance_long_avg","(@0+@1)*@2+(@3+@4)*@5+@6", RooArgSet(px_dilept, *sumJetX, px_bisect , 
+												  py_dilept, *sumJetY, py_bisect,
+												  redMet_long));
+
+
+   } else {
+     balance_perp_avg=new RooFormulaVar("balance_perp_avg","@0*@2+@1*@3+@4", RooArgSet(px_dilept, py_dilept, px_bisect_perp, py_bisect_perp,redMet_perp));
+     balance_long_avg = new RooFormulaVar("balance_long_avg","@0*@2+@1*@3+@4", RooArgSet(px_dilept, py_dilept, 
+											 px_bisect, py_bisect,
+											 redMet_long));       
+
+   }
+
+   RooGaussian balance_long_model("balance_long_model","balance_long_model",*balance_long,*balance_long_avg,*balance_long_err);
+
+   RooGaussian balance_perp_model("balance_perp_model","balance_perp_model",*balance_perp,*balance_perp_avg,*balance_perp_err);   
 
    
    //
@@ -284,8 +300,8 @@ std::auto_ptr<RooFitResult> ReducedMETFitter::compute(const LorentzVector &lep1,
    RooMinuit min(*nll) ;
    min.setVerbose(kFALSE);
    min.setPrintLevel(-1);
-   int migradStatus = min.migrad() ;
-   int hessStatus = min.hesse() ;
+   min.migrad() ;
+   min.hesse() ;
    RooFitResult* fitResults_ = min.save() ;
    if(plot) fitResults_->Print("v");
    auto_ptr<RooFitResult> ret(fitResults_);
@@ -297,15 +313,25 @@ std::auto_ptr<RooFitResult> ReducedMETFitter::compute(const LorentzVector &lep1,
    redMET_perp_ = redMet_perp.getVal();
    redMETErr_perp_ = redMet_perp.getError();
 
+   double redMetCompCorr = fitResults_->correlation(redMet_long, redMet_perp);
+
+
    redMET_ = sqrt(redMET_long_*redMET_long_ + redMET_perp_*redMET_perp_);
    redMETErr_ = sqrt(redMET_long_*redMET_long_*redMETErr_long_*redMETErr_long_ +
-		    redMET_perp_*redMET_perp_*redMETErr_perp_*redMETErr_perp_)/redMET_;
-
-   jetRecoil_perp_ = sumJetX.getVal()*px_bisect_perp.getVal() + sumJetY.getVal()*py_bisect_perp.getVal();
-   jetRecoil_long_ = sumJetX.getVal()*px_bisect.getVal() + sumJetY.getVal()*py_bisect.getVal();
-   
-
-
+		     redMET_perp_*redMET_perp_*redMETErr_perp_*redMETErr_perp_ 
+		     + 2*redMET_long_*redMET_perp_*redMetCompCorr*redMETErr_perp_*redMETErr_long_)/redMET_
+;
+   jetRecoil_perp_ = 0.;
+   jetRecoil_long_ = 0.;
+   jetRecoilErr_perp_ = 0.;
+   if(jets.size()) {
+     jetRecoil_perp_ = sumJetX->getVal()*px_bisect_perp.getVal() + sumJetY->getVal()*py_bisect_perp.getVal();
+     jetRecoil_long_ = sumJetX->getVal()*px_bisect.getVal() + sumJetY->getVal()*py_bisect.getVal();
+     jetRecoilErr_perp_ =  sqrt(sumJetXErr->getVal()*px_bisect_perp.getVal()*sumJetXErr->getVal()*px_bisect_perp.getVal()+
+				sumJetYErr->getVal()*py_bisect_perp.getVal()*sumJetYErr->getVal()*py_bisect_perp.getVal());
+     jetRecoilErr_long_ = sqrt(sumJetXErr->getVal()*px_bisect.getVal()*sumJetXErr->getVal()*px_bisect.getVal()+
+				sumJetYErr->getVal()*py_bisect.getVal()*sumJetYErr->getVal()*py_bisect.getVal());;
+   }
 
 
    if(plot) {
