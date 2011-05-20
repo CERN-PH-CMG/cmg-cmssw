@@ -3,6 +3,7 @@
 
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ReducedMETFitter.h"
+#include "CMGTools/HtoZZ2l2nu/interface/ReducedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
 #include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
@@ -30,7 +31,7 @@ using namespace std;
 //
 int main(int argc, char* argv[])
 {
-  // load framework libraries
+ // load framework libraries
   gSystem->Load( "libFWCoreFWLite" );
   AutoLibraryLoader::enable();
 
@@ -53,6 +54,8 @@ int main(int argc, char* argv[])
   TString cats[]={"all","ee","mumu","emu"};
   std::map<TString , TH1D *> controlHistos;
   size_t ncats=sizeof(cats)/sizeof(TString);
+
+
   for(size_t icat=0; icat<ncats; icat++)
     {
 //       controlHistos[cats[icat]+"_rhovsnpu"] = (TH1D *) formatPlot( new TH2F (cats[icat]+"_rhovsnpu", ";Pileup; #rho; Events", 25, 0.,25,100, 0.,10.), 1,1,1,20,0,true,true,1,1,1 );
@@ -81,15 +84,21 @@ int main(int argc, char* argv[])
       controlHistos[cats[icat]+"_jetrecoilcomps"] = (TH1D *) formatPlot( new TH2F (cats[icat]+"_jetrecoilcomps", ";"+fitresultsLabel[3]+";"+fitresultsLabel[4]+"; Events", 100, -250.,250,100,-250.,250.), 1,1,1,20,0,true,true,1,1,1 );
     }
   
+
+
   //start the reduced met fitter
   ReducedMETFitter rmet(runProcess);
-  
+  ReducedMETComputer rmetComp(1., 1. );
+
+
   //open the file and get events tree
   TFile *file = TFile::Open(url);
   if(file==0) return -1;
   if(file->IsZombie()) return -1;
   ZZ2l2nuSummaryHandler evSummaryHandler;
+
   if( !evSummaryHandler.attachToTree( (TTree *)file->Get(dirname) ) ) 
+
     {
       file->Close();
       return -1;
@@ -102,7 +111,6 @@ int main(int argc, char* argv[])
       file->Close();
        return -1;
     }
-  
   //run the analysis
   for( int iev=evStart; iev<evEnd; iev++)
     {
@@ -153,7 +161,6 @@ int main(int argc, char* argv[])
 	  if(ev.cat==dilepton::MUMU) evcats.push_back("mumu");
 	  if(ev.cat==dilepton::EE) evcats.push_back("ee");
 	}
-	
       if(mets[0].first.pt() > 100.) 
 	{
 	  
@@ -162,6 +169,12 @@ int main(int argc, char* argv[])
 								leptons[1].first,leptons[1].second,
 								jetsp4,
 								mets[0].first);
+
+	  rmetComp.compute(leptons[0].first,leptons[0].second,
+			   leptons[1].first,leptons[1].second,
+			   jetsp4,
+			   mets[0].first);
+
 	  cout << "-------------------" << endl;
 	  cout << "[" << ev.run << ":" << ev.lumi << ":" << ev.event << "]" << endl
 	       << "Lepton #1: (" << leptons[0].first.pt() << ";" << leptons[0].first.eta() << ";" << leptons[0].first.phi() << ")" << endl  
@@ -171,12 +184,19 @@ int main(int argc, char* argv[])
 	  cout << "MET      : (" << mets[0].first.pt() << ";" << mets[0].first.phi() << ")" << endl;
 	  cout << "RedMET: " << rmet.reducedMET().first << " +/- " << rmet.reducedMET().second << endl
 	       << "Classic redMET: " << ev.redmet_pt << endl
+	       << "redMET_long (no fit): " << rmetComp.reducedMETComponents().first << endl
+	       << "redMET_perp (no fit): " << rmetComp.reducedMETComponents().second << endl
+	       << "redMET (no fit): " << rmetComp.reducedMET() << endl
+	       << "sumJet_perp (no fit): " << rmetComp.sumJetProjComponents().first << endl
+	       << "sumJet_long (no fit): " << rmetComp.sumJetProjComponents().second << endl
 	       << "RedMET_long: " << rmet.reducedMET_long().first << " +/- " << rmet.reducedMET_long().second << endl
 	       << "RedMET_perp: " << rmet.reducedMET_perp().first << " +/- " << rmet.reducedMET_perp().second << endl
 	       << "jetRecoil_perp: " << rmet.jetRecoil_perp().first << " +/- " << rmet.jetRecoil_perp().second << endl
 	       << "jetRecoil_long: " << rmet.jetRecoil_long().first << " +/- " << rmet.jetRecoil_long().second << endl
 	       << "NLL: " << fitResults->minNll() << " status: " << fitResults->status() << endl;
 	  
+
+
 	  //fill control histograms
 	  for(std::vector<TString>::iterator cIt = evcats.begin(); cIt != evcats.end(); cIt++)
 	    {
