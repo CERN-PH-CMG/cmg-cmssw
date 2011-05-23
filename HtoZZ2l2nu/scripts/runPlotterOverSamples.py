@@ -2,7 +2,7 @@
 
 import os,sys
 import json
-from rounding import PDGRoundSym
+from rounding import toLatexRounded
 
 import ROOT
 ROOT.gSystem.Load('${CMSSW_BASE}/lib/${SCRAM_ARCH}/libCMGToolsHtoZZ2l2nu.so')
@@ -120,9 +120,53 @@ def getControlPlots(descriptor,isData,inputDir='data',getFromDir='') :
 dumps the plots to a table 
 """
 def savePlotAsTable(stackplots=None,spimposeplots=None,dataplots=None,outUrl='table.tex') :
-    tabtex=getPlotAsTable(stackplots,spimposeplots,dataplots)
+    #tabtex=getPlotAsTable(stackplots,spimposeplots,dataplots)
+    
+    href=None
+    if(stackplots is not None) : href=stackplots.At(0)
+    if(href is None  and spimposeplots is not None) : href=spimposeplots.At(0)
+    if(href is None  and dataplots is not None) : href=dataplots.At(0)
+    if(href is None) : return
+
+    colfmt='l'
+    colnames=''
+    for ibin in xrange(1,href.GetXaxis().GetNbins()) :
+        colfmt += 'c'
+        colnames += ' & ' + href.GetXaxis().GetBinLabel(ibin)
+    
+    tabtex =  '\\begin{table}[htp]\n'
+    tabtex += '\\begin{center}\n'
+    tabtex += '\\caption{}\n'
+    tabtex += '\\label{tab:table}\n'
+    tabtex += '\\begin{tabular}{'+colfmt+'} \\hline\n'
+    tabtex += 'Process ' + colnames + '\\\\ \\hline\\hline\n'    
+
+    alllists = [stackplots, spimposeplots,dataplots ]
+    for ll in alllists :
+        for p in ll :
+            tabtex += p.GetTitle() 
+            for ibin in xrange(1,p.GetXaxis().GetNbins()) :
+                val = p.GetBinContent(ibin)
+                valerr= p.GetBinError(ibin)
+                try :
+                    tabtex += ' & '
+                    #roundRes = PDGRoundSym(val,valerr)
+                    #if(roundres[2]!=0) : tabtex += '('
+                    #tabtex += roundRes[0] + ' $\\pm$ ' + roundRes[1][0]
+                    #if(roundres[2]!=0) : tabtex += ') $\\cdot 10^{' + str(roundres[2]) + '}$'
+                    tabtex += toLatexRounded(val,valerr)
+                except :
+                    tabtex += ' & ' 
+            tabtex += '\\\\\n'
+        tabtex += '\\hline\n'
+    
+    tabtex += '\\end{tabular}\n'
+    tabtex += '\\end{center}\n'
+    tabtex += '\\end{table}\n'
+    
     fileObj = open(outUrl,"w")
-    fileObj.write(tabtex.Data())
+    #fileObj.write(tabtex.Data())
+    fileObj.write(tabtex)
     fileObj.close()
 
 

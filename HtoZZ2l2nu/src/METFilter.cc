@@ -18,17 +18,16 @@ namespace met{
       }
 
     //add the pu jets
-    LorentzVector corPUJetsSum(0,0,0,0);
+    LorentzVector corPUJetsSum(0,0,0,0),rawPUJetsSum(0,0,0,0);
     for(std::vector<const pat::Jet *>::iterator jit=puJets.begin();jit != puJets.end(); jit++)
       {
-	corJetsSum += (*jit)->p4();
 	corPUJetsSum += (*jit)->p4();
-	rawJetsSum += (*jit)->correctedP4("Uncorrected");
+	rawPUJetsSum += (*jit)->correctedP4("Uncorrected");
       }
     
     //compute the mets (and fix final value)
-    themets[1]=rawJetsSum-corJetsSum+themets[0];
-    themets[2]=corPUJetsSum+themets[1];
+    themets[1]=-(corJetsSum-rawJetsSum)-(corPUJetsSum-rawPUJetsSum)+themets[0];
+    themets[2]=-(corJetsSum-rawJetsSum)+rawPUJetsSum+themets[0];
     for(size_t imet=0; imet<3; imet++) themets[imet] = LorentzVector(themets[imet].px(),themets[imet].py(),0,themets[imet].pt());
 
     return themets;

@@ -7,7 +7,8 @@ BaseGeneratorSelection = cms.PSet( source = cms.InputTag("prunedGen"),
 
 
 # base values for the vertex selection ------------------------------------------
-BaseVertexSelection = cms.PSet( source = cms.InputTag("offlinePrimaryVertices"),
+BaseVertexSelection = cms.PSet( source = cms.InputTag("offlinePrimaryVerticesDA"),
+#                                source = cms.InputTag("offlinePrimaryVertices"),
                                 maxZ = cms.double(24),
                                 maxRho = cms.double(2.0),
                                 minNDOF = cms.int32(5)
@@ -52,9 +53,7 @@ BaseDileptonSelection = cms.PSet( minDileptonMass = cms.double(0),
                                   maxCorrectedRelIso = cms.double(0.15),
                                   electronEffectiveArea=cms.double(0.24),
                                   muonEffectiveArea=cms.double(0.112),
-                                  constrainByVertex = cms.bool(True),
-                                  maxDxy = cms.double(0.02),
-                                  maxDz = cms.double(0.1)
+                                  maxDz = cms.double(1.0)
                                   )
 
 # base values for met selection -----------------------------------------------------

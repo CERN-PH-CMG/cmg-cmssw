@@ -17,7 +17,8 @@ process.options = cms.untracked.PSet(
 #
 from CMGTools.HtoZZ2l2nu.localPatTuples_cff import fillFromCastor
 #process.source.fileNames=fillFromCastor('/castor/cern.ch/cms/store/data/Run2011A/DoubleElectron/RECO/PromptReco-v1/000/161/311')
-process.source.fileNames=cms.untracked.vstring('file:/tmp/psilva/Events_18_1_gZH.root')
+#process.source.fileNames=cms.untracked.vstring('file:/tmp/psilva/Events_18_1_gZH.root')
+process.source.fileNames=cms.untracked.vstring('file:~/scratch0/CMSSW_4_1_3/src/datastore')
 #process.source.fileNames = cms.untracked.vstring('/store/data/Run2010A/MinimumBias/RAW-RECO/v6/000/144/114/CCDC14CB-61BB-DF11-A07F-0025B3E063E8.root')
 if( not runOnMC and useLocalLumiSelection):
     import PhysicsTools.PythonAnalysis.LumiList as LumiList
