@@ -115,8 +115,8 @@ namespace jet{
 	jIt != selJets.end();
 	jIt++)
       {
-	assocJets.push_back(*jIt);
-	continue;
+	//	assocJets.push_back(*jIt);continue;
+
 	if( jIt->second.isNonnull() )
 	  {
 	    double mindz=1e+6;
