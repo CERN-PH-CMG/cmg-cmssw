@@ -7,7 +7,7 @@ process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring()
                             )
 dtag, process.source.fileNames, outputFile = configureFromCommandLine(process)
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(5000) )
+#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(5000) )
 
 #check if json file is given
 if(dtag.find('DoubleElectron')>=0 or dtag.find('DoubleMuon')>=0 or dtag.find('MuEG')>=0):
@@ -26,8 +26,8 @@ process.load('CMGTools.HtoZZ2l2nu.CleanEventAnalyzer_cfi')
 process.cleanEvent.dtag=cms.string(dtag)
 process.evAnalyzer.dtag=cms.string(dtag)
 process.TFileService = cms.Service("TFileService", fileName = cms.string(outputFile) )
-#process.p = cms.Path(process.puWeights*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
-process.p = cms.Path(process.cleanEvent*process.evAnalyzer)
+process.p = cms.Path(process.puWeights*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
+#process.p = cms.Path(process.cleanEvent*process.evAnalyzer)
 
 # message logger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
