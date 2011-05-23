@@ -5,8 +5,8 @@ import os,sys
 lists the files available in castor
 """
 def fillFromCastor(dir,ffile=0,step=-1):
-    os.system('rfdir ' + dir + ' | awk \'{print $9}\' > /tmp/castordump')
-    inFile = open('/tmp/castordump', 'r')
+    os.system('rfdir ' + dir + ' | awk \'{print $9}\' > /tmp/castorDump')
+    inFile = open('/tmp/castorDump', 'r')
     localdataset=cms.untracked.vstring()
     ifile=0
     for line in inFile.readlines():
@@ -17,7 +17,7 @@ def fillFromCastor(dir,ffile=0,step=-1):
             if( (step<0) or  (step>0 and ifile<ffile+step) ):
                 localdataset.extend( [ sline ] )
         ifile=ifile+1
-    os.system('rm /tmp/castordump')
+    os.system('rm /tmp/castorDump')
     return localdataset
 
 

@@ -103,11 +103,9 @@ ReducedMETFitter::JetVariables::~JetVariables() {
 std::auto_ptr<RooFitResult> ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
 						      const LorentzVector &lep2, float sigmaPt2,
 						      const LorentzVectorCollection &jets,
-						      const LorentzVector &met)
+						      const LorentzVector &met,
+						      bool plot)
 {
-
-  bool plot = false;
-
 
   // AN describing the JET uncertainties: AN 2010/121
 

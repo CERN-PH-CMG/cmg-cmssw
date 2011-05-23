@@ -5,9 +5,12 @@ using namespace std;
 namespace electron{
   
   //
-  std::vector<reco::CandidatePtr> filter(edm::Handle<edm::View<reco::Candidate> > &hEle, edm::Handle<edm::View<reco::Candidate> > &hMu, const edm::ParameterSet &iConfig)
+  CandidateWithVertexCollection filter(edm::Handle<edm::View<reco::Candidate> > &hEle, 
+				       edm::Handle<edm::View<reco::Candidate> > &hMu, 
+				       std::vector<reco::VertexRef> &goodVertices,
+				       const edm::ParameterSet &iConfig)
   {
-    std::vector<reco::CandidatePtr> selElectrons;
+    CandidateWithVertexCollection selElectrons;
 
     try{
       //config parameters                                                                                                                                                 
@@ -57,19 +60,7 @@ namespace electron{
 	  if( !(eid & 0x1) ) continue;
 	  
 	  //isolation
-	  double norm = std::max(ePt,(double)20.);
-	  double trackIso = ele->trackIso();
-	  double ecalIso = ele->ecalIso();
-	  double hcalIso = ele->hcalIso();
-	  double totalIso = trackIso+hcalIso;
-	  if (ele->isEB()) {
-	    if( ecalIso > 1.0 ) totalIso += ecalIso - 1;
-	    else totalIso += ecalIso;
-	  } else {
-	    totalIso += ecalIso;
-	  }
-
-	  double relIso = totalIso / norm;
+	  double relIso = lepton::getLeptonIso( elePtr, ePt)[lepton::REL_ISO];
 	  if(relIso>maxRelIso) continue;
 
 	  //cross clean with overlapping muons
@@ -90,8 +81,9 @@ namespace electron{
 	    }
 	  if(isOverLappingWithMuon) continue;
 
-	  //the electron is selected
-	  selElectrons.push_back(elePtr);
+	  //the electron is selected (add vertex)
+	  reco::VertexRef assocVtx=vertex::getClosestVertexTo<reco::Track>(ele->gsfTrack().get(),goodVertices);
+	  selElectrons.push_back( CandidateWithVertex(elePtr,assocVtx) );
 	}
     }catch(std::exception &e){
       cout << "[electron::filter] failed with " << e.what() << endl;

@@ -5,9 +5,11 @@ using namespace std;
 namespace muon{
   
   //
-  std::vector<reco::CandidatePtr> filter(edm::Handle<edm::View<reco::Candidate> > &hMu, const edm::ParameterSet &iConfig)
+  CandidateWithVertexCollection filter(edm::Handle<edm::View<reco::Candidate> > &hMu, 
+				       std::vector<reco::VertexRef> &goodVertices,
+				       const edm::ParameterSet &iConfig)
   {
-    std::vector<reco::CandidatePtr> selMuons;
+    CandidateWithVertexCollection selMuons;
     
     try{
     
@@ -52,16 +54,12 @@ namespace muon{
 	    }
 	  
 	  //isolation
-	  double norm = std::max((double)20.0,(double)mPt);
-	  double ecalIso = muon->ecalIso();
-	  double hcalIso = muon->hcalIso();
-	  double trkIso = muon->trackIso();
-	  double totalIso = (ecalIso+hcalIso+trkIso);
-	  double relIso = totalIso/norm;
+	  double relIso = lepton::getLeptonIso( muonPtr, mPt )[lepton::REL_ISO];
 	  if(relIso>maxRelIso) continue;
-
-	  //muon is selected
-	  selMuons.push_back(muonPtr);
+	  
+	  //muon is selected (add vertex)
+	  reco::VertexRef assocVtx=vertex::getClosestVertexTo<reco::Track>(muon->innerTrack().get(),goodVertices);
+	  selMuons.push_back(CandidateWithVertex(muonPtr,assocVtx));
 	}
       
     }catch(std::exception &e){

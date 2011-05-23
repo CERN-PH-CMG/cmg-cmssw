@@ -37,7 +37,8 @@ class ReducedMETFitter
   std::auto_ptr<RooFitResult> compute(const LorentzVector &lep1, float sigmaPt1,
 				      const LorentzVector &lep2, float sigmaPt2,
 				      const LorentzVectorCollection &jets,
-				      const LorentzVector &met);
+				      const LorentzVector &met,
+				      bool plot=false);
 
 
   
