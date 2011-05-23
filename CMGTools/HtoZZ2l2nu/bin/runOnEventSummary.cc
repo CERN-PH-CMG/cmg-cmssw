@@ -76,11 +76,11 @@ int main(int argc, char* argv[])
 	{
 	  controlHistos[cats[icat] + "_" + fitresults[ires] ] = (TH1D *) formatPlot( new TH1D (cats[icat] + "_" + fitresults[ires], ";" + fitresultsLabel[ires] + "; Events", 100, -250.,250), 
 										     1,1,1,20,0,true,true,1,1,1 );
-	  controlHistos[cats[icat] + "_" + fitresults[ires] + "sig" ] = (TH1D *) formatPlot( new TH1D (cats[icat] + "_" + fitresults[ires] + "sig", ";" + fitresultsLabel[ires] + " significance; Events", 100, 0,50), 
+	  controlHistos[cats[icat] + "_" + fitresults[ires] + "sig" ] = (TH1D *) formatPlot( new TH1D (cats[icat] + "_" + fitresults[ires] + "sig", ";" + fitresultsLabel[ires] + " significance; Events", 100, -50,50), 
 											     1,1,1,20,0,true,true,1,1,1 );
 	}
       controlHistos[cats[icat]+"_ll" ] = (TH1D *) formatPlot( new TH1D (cats[icat]+"_ll", ";Likelihood; Events", 100, 0.,50), 1,1,1,20,0,true,true,1,1,1 );
-      controlHistos[cats[icat]+"_redmetcomps"] = (TH1D *) formatPlot( new TH2F (cats[icat]+"_redmetcomps", ";"+fitresultsLabel[1]+";"+fitresultsLabel[2]+"; Events", 100, 0.,250,100, 0.,250.), 1,1,1,20,0,true,true,1,1,1 );
+      controlHistos[cats[icat]+"_redmetcomps"] = (TH1D *) formatPlot( new TH2F (cats[icat]+"_redmetcomps", ";"+fitresultsLabel[1]+";"+fitresultsLabel[2]+"; Events", 100, -250.,250,100, -250.,250.), 1,1,1,20,0,true,true,1,1,1 );
       controlHistos[cats[icat]+"_jetrecoilcomps"] = (TH1D *) formatPlot( new TH2F (cats[icat]+"_jetrecoilcomps", ";"+fitresultsLabel[3]+";"+fitresultsLabel[4]+"; Events", 100, -250.,250,100,-250.,250.), 1,1,1,20,0,true,true,1,1,1 );
     }
   
@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
 	  switch( ev.id[ipart] )
 	    {
 	    case 0:
-	      mets.push_back( PhysicsObject(p4,ev.info1[ipart]) );
+	      mets.push_back( PhysicsObject(p4,ev.info2[ipart]) );
 	      break;
 	    case 1:
 	      jetsp4.push_back(p4);
@@ -161,9 +161,20 @@ int main(int argc, char* argv[])
 	  if(ev.cat==dilepton::MUMU) evcats.push_back("mumu");
 	  if(ev.cat==dilepton::EE) evcats.push_back("ee");
 	}
-      if(mets[0].first.pt() > 100.) 
+
+      //transverse mass
+      LorentzVector dileptonP=leptons[0].first+leptons[1].first;
+      LorentzVector jesMetNopuP=mets[0].first;//(mets[0].second*cos(mets[0].first.phi()),mets[0].second*sin(mets[0].first.phi()),0,mets[0].second);
+      LorentzVector transvSum=dileptonP + jesMetNopuP;
+      float transverseMass=TMath::Power(TMath::Sqrt(TMath::Power(dileptonP.pt(),2)+pow(dileptonP.mass(),2))+TMath::Sqrt(TMath::Power(jesMetNopuP.pt(),2)+pow(dileptonP.mass(),2)),2);
+      transverseMass-=TMath::Power(transvSum.pt(),2);
+      transverseMass=TMath::Sqrt(transverseMass);
+      
+
+      //      if(mets[0].first.pt() > 50.) 
+      if(transverseMass>300)
 	{
-	  
+	  LorentzVectorCollection nojetsp4;	  
 	  //fit reduced met
 	  std::auto_ptr<RooFitResult> fitResults = rmet.compute(leptons[0].first,leptons[0].second,
 								leptons[1].first,leptons[1].second,
@@ -176,6 +187,7 @@ int main(int argc, char* argv[])
 			   mets[0].first);
 
 	  cout << "-------------------" << endl;
+	  cout << transverseMass << " " << mets[0].first.pt() << " " << mets[0].second << endl;
 	  cout << "[" << ev.run << ":" << ev.lumi << ":" << ev.event << "]" << endl
 	       << "Lepton #1: (" << leptons[0].first.pt() << ";" << leptons[0].first.eta() << ";" << leptons[0].first.phi() << ")" << endl  
 	       << "Lepton #2: (" << leptons[1].first.pt() << ";" << leptons[1].first.eta() << ";" << leptons[1].first.phi() << ")" << endl;
@@ -198,14 +210,15 @@ int main(int argc, char* argv[])
 
 
 	  //fill control histograms
+	  weight=1;
 	  for(std::vector<TString>::iterator cIt = evcats.begin(); cIt != evcats.end(); cIt++)
 	    {
 	      controlHistos[*cIt+"_redmet"]->Fill(rmet.reducedMET().first,weight);
-	      controlHistos[*cIt+"_redmetsig"]->Fill(fabs(rmet.reducedMET().first/rmet.reducedMET().second),weight);
+	      controlHistos[*cIt+"_redmetsig"]->Fill(rmet.reducedMET().first/rmet.reducedMET().second,weight);
 	      controlHistos[*cIt+"_redmetL"]->Fill(rmet.reducedMET_long().first,weight);
-	      controlHistos[*cIt+"_redmetLsig"]->Fill(fabs(rmet.reducedMET_long().first/rmet.reducedMET_long().second),weight);
+	      controlHistos[*cIt+"_redmetLsig"]->Fill(rmet.reducedMET_long().first/rmet.reducedMET_long().second,weight);
 	      controlHistos[*cIt+"_redmetT"]->Fill(rmet.reducedMET_perp().first,weight);
-	      controlHistos[*cIt+"_redmetTsig"]->Fill(fabs(rmet.reducedMET_perp().first/rmet.reducedMET_perp().second),weight);
+	      controlHistos[*cIt+"_redmetTsig"]->Fill(rmet.reducedMET_perp().first/rmet.reducedMET_perp().second,weight);
 	      controlHistos[*cIt+"_ll" ]->Fill(fitResults->minNll(),weight);
 	      ((TH2D *)controlHistos[*cIt+"_redmetcomps"])->Fill(rmet.reducedMET_long().first,rmet.reducedMET_perp().first,weight);
 	      ((TH2D *)controlHistos[*cIt+"_jetrecoilcomps"])->Fill(rmet.jetRecoil_long().first,rmet.jetRecoil_perp().first,weight);
