@@ -5,7 +5,7 @@ MUON_CUT=("pt > 7 && abs(eta)<2.5 && (isGlobalMuon || isTrackerMuon)")
 ELECTRON_CUT=("pt > 10 && abs(eta)<2.5")
 DIMUON_CUT=("mass > 40 && daughter(0).pt>20 && daughter(1).pt()>7")
 DIELECTRON_CUT=("mass > 40 && daughter(0).pt>20 && daughter(1).pt()>10")
-EMU_CUT=("mass > 40 && daughter(0).pt>7 && daughter(1).pt()>10")
+EMU_CUT=("mass > 40 && ((daughter(0).pt>7 && daughter(1).pt()>20) || (daughter(0).pt>20 && daughter(1).pt()>10))")
 
 # single lepton selectors
 goodHzzMuons = cms.EDFilter("MuonRefSelector",
