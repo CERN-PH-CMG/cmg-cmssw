@@ -1,12 +1,17 @@
 ## import skeleton process
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
+process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
 # process.source.fileNames = cms.untracked.vstring(['/store/relval/CMSSW_4_2_3/RelValZTT/GEN-SIM-RECO/START42_V12-v2/0062/4CEA9C47-287B-E011-BAB7-00261894396B.root'])
 process.source.fileNames = cms.untracked.vstring(['file:PFAOD.root'])
 
 runOnMC = True
-hpsTaus = True
+
+#COLIN: will need to include the event filters in tagging mode
+
+#COLIN : reactivate HPS before commit!
+hpsTaus = False
 
 # process.load("CommonTools.ParticleFlow.Sources.source_ZtoMus_DBS_cfi")
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
@@ -106,40 +111,80 @@ removePhotonMatching( process, postfixAK7 )
 process.load('CMGTools.Common.gen_cff')
 
 
+process.load("PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff")
+process.patTrigger.processName = cms.string('*')
+
+
 ### PATH DEFINITION #############################################
 
+# trigger
+
+process.p = cms.Path( process.patTriggerDefaultSequence )
+
+# gen ---- 
 
 if runOnMC:
-    process.p = cms.Path( process.genSequence )
+    process.p += process.genSequence 
+
+# PF2PAT+PAT ---
 
 process.p += getattr(process,"patPF2PATSequence"+postfixAK5)
 process.p += getattr(process,"patPF2PATSequence"+postfixAK5LC) 
 process.p += getattr(process,"patPF2PATSequence"+postfixAK7) 
+ 
+# CMG ---
 
+process.load('CMGTools.Common.analysis_cff')
+# running on PFAOD -> calo objects are not available.
+# we'll need to reactivate caloMET, though
+process.analysisSequence.remove( process.caloJetSequence )
+process.analysisSequence.remove( process.caloMetSequence )
+# process.p += process.analysisSequence
+
+### OUTPUT DEFINITION #############################################
+
+# PF2PAT+PAT ---
 
 # Add PF2PAT output to the created file
-from PhysicsTools.PatAlgos.patEventContent_cff import patEventContentNoCleaning
+from PhysicsTools.PatAlgos.patEventContent_cff import patEventContentNoCleaning, patTriggerEventContent, patTriggerStandAloneEventContent
 process.out.outputCommands = cms.untracked.vstring('drop *',
                                                    *patEventContentNoCleaning
                                                    )
+# add trigger information to the pat-tuple
+process.out.outputCommands += patTriggerEventContent
+process.out.outputCommands += patTriggerStandAloneEventContent
+
 # add gen event content to the pat-tuple (e.g. status 3 GenParticles)
 from CMGTools.Common.eventContent.gen_cff import gen 
 process.out.outputCommands.extend( gen )
 
+# tuning the PAT event content to our needs
+from CMGTools.Common.eventContent.patEventContentCMG_cff import patEventContentCMG
+process.out.outputCommands.extend( patEventContentCMG )
 
-# stuff kept by PAT, but that we don't need:
-process.out.outputCommands.extend(
-    [ 'drop *_selectedPatMuonsAK7_*_*',
-      'drop *_selectedPatElectronsAK7_*_*',
-      'drop *_selectedPatTausAK7_*_*',
-      'drop CaloTowers_*_*_*',
-      'drop patMETs_*_*_*',
-      'keep patMETs_patMETsAK5_*_*',
-      'drop patPFParticles_*_*_*'
-    ] )
+# CMG ---
 
+from CMGTools.Common.eventContent.everything_cff import everything 
 
+process.outcmg = cms.OutputModule(
+    "PoolOutputModule",
+    fileName = cms.untracked.string('tree_CMG.root'),
+    # save only events passing the full path
+    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
+    # save PAT Layer 1 output; you need a '*' to
+    # unpack the list of commands 'patEventContent'
+    outputCommands = everything 
+    )
 
-process.MessageLogger.cerr.FwkReport.reportEvery = 10
+process.outpath += process.outcmg
+
+if runOnMC:
+    process.load("CMGTools.Common.runInfoAccounting_cfi")
+    process.outpath += process.runInfoAccounting
+
+process.TFileService = cms.Service("TFileService",
+                                   fileName = cms.string("histograms_CMG.root"))
 
 # process.Timing = cms.Service("Timing")
+
+# print process.dumpPython()
