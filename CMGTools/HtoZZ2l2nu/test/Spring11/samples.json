@@ -202,8 +202,8 @@
           "tag":"gg #rightarrow H(400) #rightarrow 2l2#nu x10",
           "isdata":false,
           "spimpose":true,
-          "color":"kBlue+4",
-          "lwidth":2,
+          "color":"kCyan+3",
+          "lwidth":4,
           "fill":0,
           "marker":1,
           "data":[
@@ -229,8 +229,8 @@
           "tag":"gg #rightarrow H(200) #rightarrow 2l2#nu x10",
           "isdata":false,
 	  "spimpose":true,
-          "color":"kBlue",
-	  "lwidth":2,
+          "color":"1",
+	  "lwidth":4,
 	  "fill":0,
 	  "marker":1,	
           "data":[
