@@ -1,5 +1,7 @@
 ## import skeleton process
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
+from CMGTools.Common.Tools.visitorUtils import replacePostfix
+
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
@@ -140,6 +142,10 @@ process.load('CMGTools.Common.analysis_cff')
 process.analysisSequence.remove( process.caloJetSequence )
 process.analysisSequence.remove( process.caloMetSequence )
 # process.p += process.analysisSequence
+
+#now clone to get the other object sequences
+cloneProcessingSnippet(process, process.analysisSequence, postfixLC)
+setattr(process,"analysisSequence"+postfixLC, replacePostfix(getattr(process,"analysisSequence"+postfixLC),'PFlow',postfixLC) )
 
 ### OUTPUT DEFINITION #############################################
 
