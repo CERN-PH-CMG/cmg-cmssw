@@ -130,7 +130,7 @@ def savePlotAsTable(stackplots=None,spimposeplots=None,dataplots=None,outUrl='ta
 
     colfmt='l'
     colnames=''
-    for ibin in xrange(1,href.GetXaxis().GetNbins()) :
+    for ibin in xrange(1,href.GetXaxis().GetNbins()+1) :
         colfmt += 'c'
         colnames += ' & ' + href.GetXaxis().GetBinLabel(ibin)
     
@@ -145,7 +145,7 @@ def savePlotAsTable(stackplots=None,spimposeplots=None,dataplots=None,outUrl='ta
     for ll in alllists :
         for p in ll :
             tabtex += p.GetTitle() 
-            for ibin in xrange(1,p.GetXaxis().GetNbins()) :
+            for ibin in xrange(1,p.GetXaxis().GetNbins()+1) :
                 val = p.GetBinContent(ibin)
                 valerr= p.GetBinError(ibin)
                 try :
@@ -154,7 +154,10 @@ def savePlotAsTable(stackplots=None,spimposeplots=None,dataplots=None,outUrl='ta
                     #if(roundres[2]!=0) : tabtex += '('
                     #tabtex += roundRes[0] + ' $\\pm$ ' + roundRes[1][0]
                     #if(roundres[2]!=0) : tabtex += ') $\\cdot 10^{' + str(roundres[2]) + '}$'
-                    tabtex += toLatexRounded(val,valerr)
+                    fmtValue = toLatexRounded(val,valerr)
+                    fmtValue = fmtValue.replace("[","(")
+                    fmtValue = fmtValue.replace("]",")")
+                    tabtex += fmtValue
                 except :
                     tabtex += ' & ' 
             tabtex += '\\\\\n'
