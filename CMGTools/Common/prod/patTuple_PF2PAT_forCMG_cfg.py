@@ -14,11 +14,12 @@ runAK7 = True
 
 #COLIN : reactivate HPS when bugs corrected
 hpsTaus = False
+
 #COLIN : when activating PFCandidate (and other stuff) embedding,
 # patTaus cannot be stored together with cmgTaus...
 doEmbedPFCandidatesInTaus = True
 
-runCMG = False
+runCMG = True
 
 if runCMG:
     doEmbedPFCandidatesInTaus = False
