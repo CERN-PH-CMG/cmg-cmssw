@@ -11,17 +11,15 @@
 #include "AnalysisDataFormats/CMGTools/interface/Lepton.h"
 #include "AnalysisDataFormats/CMGTools/interface/PatTypes.h"
 
-
 #include <vector>
-
-#include <TString.h>
-
-#define NCMGTAUIDS 20
+#include <string>
 
 using namespace std;
 
 namespace cmg
 {
+
+#define NCMGTAUIDS 20
 
   //forward def needed
   class Tau;
@@ -46,10 +44,8 @@ namespace cmg
       numberGamma(UnSet(int)),
       decayMode(UnSet(int)){
       
-      for(Int_t i=0;i<NCMGTAUIDS;i++){	
+      for(Int_t i=0;i<NCMGTAUIDS;i++)	
 	tauIDname[i]="";
-	tauIDvalue[i]=0;
-      }
       
     }
 
@@ -59,34 +55,25 @@ namespace cmg
 
 
 
-    Bool_t  getTauID(TString idname){
-      for(Int_t i=0;i<NCMGTAUIDS;i++)
-	if(tauIDname[i]==idname)
-	  return tauIDvalue[i];
+    Float_t getLeadHadrHCalEnergy() const {return leadHadrHCalEnergy;}
+    Float_t getLeadHadrECalEnergy() const {return leadHadrECalEnergy;}
+    Float_t getLeadCandHCalEnergy() const {return leadCandHCalEnergy;}
+    Float_t getLeadChargedHadrMvaEPi() const {return leadChargedHadrMvaEPi;}
+    Float_t getLeadCandMvaEPi() const {return leadCandMvaEPi;}
+    Float_t getLeadChargedHadrTrkPt() const {return leadChargedHadrTrkPt;}
+    Float_t getLeadNeutralCandPt() const {return leadNeutralCandPt;}
+    Int_t getNumberChargedHadr() const {return numberChargedHadr;}
+    Int_t getNumberGamma() const {return numberGamma;}
 
-      ///if id was not found print the available id's
-      cout<<"cmg::Tau::getTauID  this taudID="<<idname<<" is not found "<<endl;
-      cout<<"The following tauIDs are available:";
+
+    Bool_t  getTauID(string idname) const { 
       for(Int_t i=0;i<NCMGTAUIDS;i++)
-	if(tauIDname[i]!="")cout<<" "<<tauIDname[i]<<",";
-      cout<<endl;
+	if(tauIDname[i]==idname) return 1;
 
       return 0;
     }
 
-
-    Float_t getLeadHadrHCalEnergy(){return leadHadrHCalEnergy;}
-    Float_t getLeadHadrECalEnergy(){return leadHadrECalEnergy;}
-    Float_t getLeadCandHCalEnergy(){return leadCandHCalEnergy;}
-    Float_t getLeadChargedHadrMvaEPi(){return leadChargedHadrMvaEPi;}
-    Float_t getLeadCandMvaEPi(){return leadCandMvaEPi;}
-    Float_t getLeadChargedHadrTrkPt(){return leadChargedHadrTrkPt;}
-    Float_t getLeadNeutralCandPt(){return leadNeutralCandPt;}
-    Int_t getNumberChargedHadr(){return numberChargedHadr;}
-    Int_t getNumberGamma(){return numberGamma;}
-
-
-    Int_t getDecayMode(){return decayMode;}
+    Int_t getDecayMode() const {return decayMode;}
     
 
     friend class cmg::TauFactory;
@@ -103,34 +90,7 @@ namespace cmg
     Int_t numberChargedHadr;
     Int_t numberGamma;
 
-    TString tauIDname[NCMGTAUIDS];
-    Bool_t tauIDvalue[NCMGTAUIDS];
-
-    void setTauID(TString idname,Bool_t idvalue){
-      //check the idname is not already set
-      for(Int_t i=0;i<NCMGTAUIDS;i++){	
-	if(tauIDname[i]==idname){
-	  cout<<"cmg::Tau::setTauID  this taudID="<<idname<<" is being duplicated."<<endl;
-	  exit(0);
-	}
-      }
- 
-      //add it to the next available slot
-      for(Int_t i=0;i<NCMGTAUIDS;i++){	
-	if(tauIDname[i]==""){
-	  tauIDname[i]=idname;
-	  tauIDvalue[i]=idvalue;
-	  break;
-	}
-	if(i==NCMGTAUIDS-1){
-	  cout<<"cmg::Tau::setTauID  Trying to add too many tauIDs"<<endl;
-	  exit(0);
-	}
-      }
-      
-    }
-
-
+    string tauIDname[NCMGTAUIDS];
 
     Int_t decayMode;
 
