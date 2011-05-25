@@ -19,9 +19,9 @@ def removeObject( process, object, postfix ):
     
 
 
-def tuneCMGSequences(process):
-    removeObject( process, 'tau', 'AK7')
-    removeObject( process, 'muon', 'AK7')
-    removeObject( process, 'electron', 'AK7')
-    removeObject( process, 'met', 'AK7')
-    removeObject( process, 'met', 'AK5LC')
+def tuneCMGSequences(process, postpostfix=''):
+    removeObject( process, 'tau', 'AK7'+postpostfix)
+    removeObject( process, 'muon', 'AK7'+postpostfix)
+    removeObject( process, 'electron', 'AK7'+postpostfix)
+    removeObject( process, 'met', 'AK7'+postpostfix)
+    removeObject( process, 'met', 'AK5LC'+postpostfix)

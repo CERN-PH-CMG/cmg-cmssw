@@ -1,5 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
+import re
+
 # This module provides some visitors for handling postfixes in PF2PAT
 # @author wreece
 
@@ -57,14 +59,24 @@ It it ends with 'old_postfix', it replaces it with 'new_postfix.
         
         self.old_postfix = old_postfix
         self.new_postfix = new_postfix
-
+        self.pattern = re.compile( '(.*)(%s)$' % old_postfix)
+        
     def processInputTag(self, v):
         label = v.getModuleLabel()
         if label:
-            index = label.rfind(self.old_postfix)
-            if index > -1:
-                new = '%s%s' % (label[0:index],self.new_postfix)
+            match = self.pattern.match( label )
+            # print label, self.pattern, '(%s)$' % self.old_postfix
+            if match:
+                # print 'match', label, match.group(1), match.group(2)
+                new = match.group(1)+self.new_postfix
+                # print new
                 v.setModuleLabel(new)
+                # the logic below was bugged, could replace
+                # AK5LCCMG by AK5LC, when asking to replace AK5 by AK5LC
+                # index = label.rfind(self.old_postfix)
+                # if index > -1:
+                #    new = '%s%s' % (label[0:index],self.new_postfix)
+                #    v.setModuleLabel(new)
         return v
 
 def replacePostfix(sequencable, old_postfix, new_postfix):
