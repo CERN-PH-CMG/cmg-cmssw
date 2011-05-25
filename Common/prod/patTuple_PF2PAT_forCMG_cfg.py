@@ -1,13 +1,9 @@
 ## import skeleton process
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
+### MASTER FLAGS  ######################################################################
 
-process.MessageLogger.cerr.FwkReport.reportEvery = 10
-
-# process.source.fileNames = cms.untracked.vstring(['/store/relval/CMSSW_4_2_3/RelValZTT/GEN-SIM-RECO/START42_V12-v2/0062/4CEA9C47-287B-E011-BAB7-00261894396B.root'])
-process.source.fileNames = cms.untracked.vstring(['file:PFAOD.root'])
-
-runOnMC = True
+runOnMC = False
 
 # AK5 sequence with no cleaning is the default
 # the other sequences can be turned off with the following flags.
@@ -23,18 +19,34 @@ hpsTaus = False
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
-process.out.fileName = cms.untracked.string('patTuple_PF2PAT.root')
+process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
+### SOURCE DEFINITION  ################################################################
+
+
+# process.source.fileNames = cms.untracked.vstring(['/store/relval/CMSSW_4_2_3/RelValZTT/GEN-SIM-RECO/START42_V12-v2/0062/4CEA9C47-287B-E011-BAB7-00261894396B.root'])
+# process.source.fileNames = cms.untracked.vstring(['file:PFAOD.root'])
+
+# process.load("CMGTools.Common.sources.QCD_Pt_170to300_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
+process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.source_cff")
+
+
+print 'PF2PAT+PAT+CMG for files:'
+print process.source.fileNames
+
+
+
+
+### DEFINITION OF THE PF2PAT+PAT SEQUENCES #############################################
 
 # load the PAT config
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
+process.out.fileName = cms.untracked.string('patTuple_PF2PAT.root')
 
 # Configure PAT to use PF2PAT instead of AOD sources
 # this function will modify the PAT sequences. It is currently 
 # not possible to run PF2PAT+PAT and standart PAT at the same time
 from PhysicsTools.PatAlgos.tools.pfTools import *
-
-### DEFINITION OF THE PF2PAT+PAT SEQUENCES #############################################
 
 # ---------------- Sequence AK5 ----------------------
 
