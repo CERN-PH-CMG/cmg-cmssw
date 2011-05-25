@@ -1,6 +1,5 @@
 ## import skeleton process
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
-from CMGTools.Common.Tools.visitorUtils import replacePostfix
 
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
@@ -10,16 +9,22 @@ process.source.fileNames = cms.untracked.vstring(['file:PFAOD.root'])
 
 runOnMC = True
 
+# AK5 sequence with no cleaning is the default
+# the other sequences can be turned off with the following flags.
+runAK5LC = True
+runAK7 = True
+
 #COLIN: will need to include the event filters in tagging mode
 
-#COLIN : reactivate HPS before commit!
+#COLIN : reactivate HPS when bugs corrected
 hpsTaus = False
 
 # process.load("CommonTools.ParticleFlow.Sources.source_ZtoMus_DBS_cfi")
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 process.out.fileName = cms.untracked.string('patTuple_PF2PAT.root')
+
 
 # load the PAT config
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
@@ -95,6 +100,7 @@ usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgoAK7, runOnMC=runOnMC, postfix=p
           jetCorrections=('AK7PF', ['L1FastJet','L2Relative','L3Absolute']))
 
 enablePileUpCorrection( process, postfix=postfixAK7)
+embedPFCandidatesInTaus( process, postfix=postfixAK7, enable=True )
 
 # no need for taus in AK7 sequence. could remove the whole tau sequence to gain time?
 # if hpsTaus:
@@ -119,9 +125,16 @@ process.patTrigger.processName = cms.string('*')
 
 ### PATH DEFINITION #############################################
 
-# trigger
+
+# trigger information (no selection)
 
 process.p = cms.Path( process.patTriggerDefaultSequence )
+
+# event cleaning (in tagging mode, no event rejected)
+
+process.load('CMGTools.Common.eventCleaning.eventCleaning_cff')
+
+process.p += process.eventCleaningSequence
 
 # gen ---- 
 
@@ -131,8 +144,12 @@ if runOnMC:
 # PF2PAT+PAT ---
 
 process.p += getattr(process,"patPF2PATSequence"+postfixAK5)
-process.p += getattr(process,"patPF2PATSequence"+postfixAK5LC) 
-process.p += getattr(process,"patPF2PATSequence"+postfixAK7) 
+
+if runAK5LC:
+    process.p += getattr(process,"patPF2PATSequence"+postfixAK5LC) 
+
+if runAK7:
+    process.p += getattr(process,"patPF2PATSequence"+postfixAK7) 
  
 # CMG ---
 
@@ -145,6 +162,8 @@ process.analysisSequence.remove( process.caloMetSequence )
 
 #now clone to get the other object sequences
 cloneProcessingSnippet(process, process.analysisSequence, postfixLC)
+from CMGTools.Common.Tools.visitorUtils import replacePostfix
+
 setattr(process,"analysisSequence"+postfixLC, replacePostfix(getattr(process,"analysisSequence"+postfixLC),'PFlow',postfixLC) )
 
 ### OUTPUT DEFINITION #############################################
@@ -194,3 +213,5 @@ process.TFileService = cms.Service("TFileService",
 # process.Timing = cms.Service("Timing")
 
 # print process.dumpPython()
+
+

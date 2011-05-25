@@ -6,7 +6,7 @@ from CMGTools.Common.skims.cmgCandSel_cfi import cmgCandSel
 
 #PFMET from pat::MET
 cmgPFMET = cmgBaseMET.clone()
-cmgPFMET.cfg.inputCollection = "patMETsPFlow"
+cmgPFMET.cfg.inputCollection = "patMETsAK5"
 
 cmgPFMETSel = cmgCandSel.clone( src = 'cmgPFMET' )
 
@@ -29,12 +29,12 @@ cmgMHTCaloJet30.cfg.ptThreshold = 30.0
 
 
 # MET from PFCandidates
-cmgMETPFCandidates = cmgBaseCandMET.clone()
-cmgMETPFCandidates.cfg.inputCollection = "particleFlow" 
+# cmgMETPFCandidates = cmgBaseCandMET.clone()
+# cmgMETPFCandidates.cfg.inputCollection = cms.InputTag("particleFlow")
 
 # MET from PFCandidates, pt threshold 2 (to remove pile-up)
-cmgMETPFCandidates2 = cmgMETPFCandidates.clone()
-cmgMETPFCandidates2.cfg.ptThreshold = 2.0
+# cmgMETPFCandidates2 = cmgMETPFCandidates.clone()
+# cmgMETPFCandidates2.cfg.ptThreshold = 2.0
 
 
 pfSimpleMetSequence = cms.Sequence(
@@ -44,7 +44,7 @@ pfSimpleMetSequence = cms.Sequence(
 
 pfMetSequence = cms.Sequence(
     pfSimpleMetSequence +                              
-    cmgMETPFCandidates +                          
+    # cmgMETPFCandidates +                          
     cmgMHTPFJet30 +
     cmgMHTPFJet30Sel
     )
@@ -55,7 +55,7 @@ caloMetSequence = cms.Sequence(
     )
 
 metSequence = cms.Sequence(
-    pfMetSequence +
-    caloMetSequence
+    pfMetSequence
+    # + caloMetSequence
     ) 
 

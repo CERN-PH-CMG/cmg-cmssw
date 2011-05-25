@@ -31,8 +31,8 @@ class LeadingObjectsSelector : public edm::EDProducer {
   typedef edm::View<T> view;
   
   explicit LeadingObjectsSelector(const edm::ParameterSet& ps):
-    src_(ps.getUntrackedParameter<edm::InputTag>("inputCollection")),
-    index_(ps.getUntrackedParameter<int>("index",-1)),
+    src_(ps.getParameter<edm::InputTag>("inputCollection")),
+    index_(ps.getParameter<int>("index")),
     verbose_(ps.getUntrackedParameter<bool>("verbose",false)){
     produces<collection>("");
   }

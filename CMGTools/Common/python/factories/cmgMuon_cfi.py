@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 from CMGTools.Common.factories.cmgLepton_cfi import leptonFactory
 muonFactory = cms.PSet(
-       inputCollection = cms.InputTag("selectedPatMuonsPFlow"),
+       inputCollection = cms.InputTag("selectedPatMuonsAK5"),
        trackType = cms.int32(0),#use the global track,
        muonIDType = cms.string("TMLastStationLoose"),#the flag for muonID
        leptonFactory = leptonFactory.clone()

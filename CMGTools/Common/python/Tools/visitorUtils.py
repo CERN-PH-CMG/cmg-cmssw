@@ -28,7 +28,15 @@ class InputTagVisitor(object):
         return params
             
     def enter(self,v):
-        if (isinstance(v,cms.EDFilter) or isinstance(v,cms.EDProducer)):
+
+        # print 'enter ', v
+        
+        if ( isinstance(v,cms.EDFilter) or
+             isinstance(v,cms.EDProducer) or
+             isinstance(v,cms.EDAnalyzer)):
+
+            # print 'is of the good type'
+            
             p = self._params(v.label(),v.parameters_())
             #set the parameters back on the object
             for name, value in p.iteritems():

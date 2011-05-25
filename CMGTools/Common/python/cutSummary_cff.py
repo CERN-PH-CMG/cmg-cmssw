@@ -1,14 +1,15 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.Common.selections.cutSummaryMuon_cfi import *
-from CMGTools.Common.selections.cutSummaryTau_cfi import *
-from CMGTools.Common.selections.cutSummaryElectron_cfi import *
-from CMGTools.Common.selections.cutSummaryPFJet_cfi import *
+from CMGTools.Common.selections.jetCutSummary_cff import *
+from CMGTools.Common.selections.muonCutSummary_cff import *
+from CMGTools.Common.selections.electronCutSummary_cff import *
+from CMGTools.Common.selections.tauCutSummary_cff import *
+
 
 cutSummarySequence = cms.Sequence(
-    cutSummaryMuon +
-    cutSummaryTau +
-    cutSummaryElectron +
-    cutSummaryPFJet
+    jetCutSummarySequence + 
+    muonCutSummarySequence + 
+    electronCutSummarySequence + 
+    tauCutSummarySequence  
     )
 

@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 veryHighPtJets = cms.EDFilter(
     "CandViewSelector",
-    src = cms.InputTag("selectedPatJetsPFlow"),
+    src = cms.InputTag("selectedPatJetsAK5"),
     cut = cms.string( "pt()>1000" )
     )
 
