@@ -35,9 +35,9 @@ cmgCaloBaseJetLead = leadingCMGBaseJetSelector.clone()
 cmgCaloBaseJetLead.inputCollection = 'cmgCaloBaseJet'
 
 
-cmgPFJetSel.cut = 'pt()>20'
-cmgPFBaseJetSel.cut = 'pt()>20'
-cmgCaloBaseJetSel.cut = 'pt()>20'
+cmgPFJetSel.cut = 'pt()>15'
+cmgPFBaseJetSel.cut = 'pt()>15'
+cmgCaloBaseJetSel.cut = 'pt()>15'
 
 pfJetSequence = cms.Sequence(
     cmgPFJet +
