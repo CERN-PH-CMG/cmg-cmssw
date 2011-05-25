@@ -40,24 +40,34 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
     output->leadNeutralCandPt = leadNeutralCand->pt();
   }
   reco::PFCandidateRefVector signalChargedHadrCands=input->signalPFChargedHadrCands();
-  if(signalChargedHadrCands.isNonnull()){
+  //  if(signalChargedHadrCands.isNonnull()){
+  if(signalChargedHadrCands.isAvailable()){
     output->numberChargedHadr =  signalChargedHadrCands.size();
   }
   reco::PFCandidateRefVector signalGammaCands=input->signalPFGammaCands();
-  if(signalGammaCands.isNonnull()){
+  //if(signalGammaCands.isNonnull()){
+  if(signalGammaCands.isAvailable()){
     output->numberGamma = signalGammaCands.size() ;
   }
 
   
   //copy the the tauIDs 
   std::vector<pat::Tau::IdPair> tauids = input->tauIDs();
-  for (std::vector<pat::Tau::IdPair>::const_iterator it = tauids.begin() ; it != tauids.end() ; ++it) {
-    output->setTauID(it->first,it->second);
+  Int_t i=0;
+  for (std::vector<pat::Tau::IdPair>::const_iterator it = tauids.begin() ; it != tauids.end() ; ++it, i++) {
+    if( i == NCMGTAUIDS){
+      cout<<"cmg::TauFactory  Trying to add too many tauIDs, only "<< NCMGTAUIDS <<" slots available"<<endl;
+      exit(0);
+    }
+    //save only the names of the ids which are passed
+    if(it->second==1.0) 
+      output->tauIDname[i]=it->first;
   }
 
   //other variables
   output->decayMode = input->decayMode();
 
 }
+
 
 
