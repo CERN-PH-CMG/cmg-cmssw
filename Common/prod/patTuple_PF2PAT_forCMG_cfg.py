@@ -14,12 +14,31 @@ runAK7 = True
 
 #COLIN : reactivate HPS when bugs corrected
 hpsTaus = False
+#COLIN : when activating PFCandidate (and other stuff) embedding,
+# patTaus cannot be stored together with cmgTaus...
+doEmbedPFCandidatesInTaus = True
+
+runCMG = False
+
+if runCMG:
+    doEmbedPFCandidatesInTaus = False
 
 # process.load("CommonTools.ParticleFlow.Sources.source_ZtoMus_DBS_cfi")
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
-
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
+
+sep_line = "-" * 50
+print sep_line
+print 'running the following PF2PAT+PAT sequences:'
+print '\tAK5'
+if runAK5LC: print '\tAK5LC'
+if runAK7: print '\tAK7'
+print 'embedding in taus: ', doEmbedPFCandidatesInTaus
+print 'HPS taus         : ', hpsTaus
+print 'produce CMG tuple: ', runCMG
+print sep_line
+
 
 ### SOURCE DEFINITION  ################################################################
 
@@ -34,10 +53,10 @@ process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.source_cff"
 print 'PF2PAT+PAT+CMG for files:'
 print process.source.fileNames
 
-
-
-
 ### DEFINITION OF THE PF2PAT+PAT SEQUENCES #############################################
+
+from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
+process.GlobalTag.globaltag = cms.string(getGlobalTag(runOnMC))
 
 # load the PAT config
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
@@ -63,7 +82,8 @@ from CommonTools.ParticleFlow.Tools.enablePileUpCorrection import enablePileUpCo
 enablePileUpCorrection( process, postfix=postfixAK5)
 
 from CMGTools.Common.PAT.embedPFCandidatesInTaus import embedPFCandidatesInTaus
-embedPFCandidatesInTaus( process, postfix=postfixAK5, enable=True )
+if doEmbedPFCandidatesInTaus:
+    embedPFCandidatesInTaus( process, postfix=postfixAK5, enable=True )
 
 if hpsTaus:
     adaptPFTaus(process,"hpsPFTau",postfix=postfixAK5)
@@ -98,7 +118,7 @@ getattr(process,"pfIsolatedElectrons"+postfixAK5LC).combinedIsolationCut = 0.2
 #COLIN : need to add the VBTF e and mu id
 
 
-# ---------------- Sequence AK7, lepton x-cleaning ---------------
+# ---------------- Sequence AK7, no lepton x-cleaning ---------------
 
 # PF2PAT+PAT sequence 3
 # no lepton cleaning, AK7PFJets
@@ -112,7 +132,6 @@ usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgoAK7, runOnMC=runOnMC, postfix=p
           jetCorrections=('AK7PF', ['L1FastJet','L2Relative','L3Absolute']))
 
 enablePileUpCorrection( process, postfix=postfixAK7)
-embedPFCandidatesInTaus( process, postfix=postfixAK7, enable=True )
 
 # no need for taus in AK7 sequence. could remove the whole tau sequence to gain time?
 # if hpsTaus:
@@ -165,18 +184,31 @@ if runAK7:
  
 # CMG ---
 
-process.load('CMGTools.Common.analysis_cff')
-# running on PFAOD -> calo objects are not available.
-# we'll need to reactivate caloMET, though
-process.analysisSequence.remove( process.caloJetSequence )
-process.analysisSequence.remove( process.caloMetSequence )
-# process.p += process.analysisSequence
+if runCMG:
+    
+    process.load('CMGTools.Common.analysis_cff')
+    # running on PFAOD -> calo objects are not available.
+    # we'll need to reactivate caloMET, though
+    # process.p += process.analysisSequence
 
-#now clone to get the other object sequences
-cloneProcessingSnippet(process, process.analysisSequence, postfixLC)
-from CMGTools.Common.Tools.visitorUtils import replacePostfix
+    from CMGTools.Common.Tools.visitorUtils import replacePostfix
+    
+    cloneProcessingSnippet(process, getattr(process, 'analysisSequence'), 'AK5LCCMG')
+    replacePostfix(getattr(process,"analysisSequenceAK5LCCMG"),'AK5','AK5LC') 
+    
+    cloneProcessingSnippet(process, getattr(process, 'analysisSequence'), 'AK7CMG')
+    replacePostfix(getattr(process,"analysisSequenceAK7CMG"),'AK5','AK7') 
+    
+    from CMGTools.Common.Tools.tuneCMGSequences import * 
+    tuneCMGSequences(process, postpostfix='CMG')
 
-setattr(process,"analysisSequence"+postfixLC, replacePostfix(getattr(process,"analysisSequence"+postfixLC),'PFlow',postfixLC) )
+    process.p += process.analysisSequence
+
+    if runAK5LC:
+        process.p += process.analysisSequenceAK5LCCMG
+        
+    if runAK7:
+        process.p += process.analysisSequenceAK7CMG
 
 ### OUTPUT DEFINITION #############################################
 
@@ -206,14 +238,13 @@ from CMGTools.Common.eventContent.everything_cff import everything
 process.outcmg = cms.OutputModule(
     "PoolOutputModule",
     fileName = cms.untracked.string('tree_CMG.root'),
-    # save only events passing the full path
     SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
-    # save PAT Layer 1 output; you need a '*' to
-    # unpack the list of commands 'patEventContent'
-    outputCommands = everything 
+    outputCommands = everything,
+    dropMetaData = cms.untracked.string('PRIOR')
     )
 
-process.outpath += process.outcmg
+if runCMG:
+    process.outpath += process.outcmg
 
 if runOnMC:
     process.load("CMGTools.Common.runInfoAccounting_cfi")
