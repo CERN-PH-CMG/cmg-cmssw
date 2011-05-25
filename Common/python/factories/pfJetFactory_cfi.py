@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 pfJetFactory = cms.PSet(
-       inputCollection = cms.InputTag("selectedPatJetsPFlow")
+       inputCollection = cms.InputTag("selectedPatJetsAK5")
        )
 from CMGTools.Common.selections.kinematics_cfi import kinematics
 cmgPFJet = cms.EDFilter(

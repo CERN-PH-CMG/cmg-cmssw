@@ -2,8 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 leadingCMGBaseJetSelector = cms.EDProducer(
     "LeadingCMGBaseJetSelector",
-    inputCollection = cms.untracked.InputTag("cmgPFBaseJetSel"),
+    inputCollection = cms.InputTag("cmgPFBaseJetSel"),
     #copy all entries
-    index = cms.untracked.int32(3)
+    index = cms.int32(3)
     )
 

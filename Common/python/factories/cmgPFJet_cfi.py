@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 from CMGTools.Common.factories.cmgBaseJet_cfi import baseJetFactory
 pfJetFactory = cms.PSet(
-       inputCollection = cms.InputTag("selectedPatJetsPFlow"),
+       inputCollection = cms.InputTag("selectedPatJetsAK5"),
        baseJetFactory = baseJetFactory.clone()
        )
 from CMGTools.Common.selections.btaggedjet_cfi import trackCountingHighEffBJetTags

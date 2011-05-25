@@ -2,51 +2,52 @@ import FWCore.ParameterSet.Config as cms
 
 
 particleFlowJets = cms.untracked.vstring(
-    'keep *_cmgPFJetSel_*_*',
-    'keep *_cmgPFBaseJetSel_*_*',
+    'keep *_cmgPFJetSel*_*_*',
+    'keep *_cmgPFBaseJetSel*_*_*',
     'keep cmgAbstractPhysicsObjects_*PF*Jet*_*_*'
     # here add all PF jet objects, even the base ones. 
     )
 
 particleFlowMET = cms.untracked.vstring(
-    'keep  *_cmgPFMET_*_*',                                    
+    'keep  *_cmgPFMET*_*_*',
+    'drop *_cmgPFMETSel*_*_*'
     # 'keep  *_cmgMETPFCandidates*_*_*',
     # here add the other PF-based MET objects, even the base ones. 
     )
 
 # to be added to the output module if needed
 particleFlowMHT = cms.untracked.vstring(
-    'keep  *_cmgMHTPFJet30_*_*'
+    'keep  *_cmgMHTPFJet30*_*_*'
     )
 
 particleFlowMuons = cms.untracked.vstring(
     # does not look like PF?     
-    'keep *_cmgMuonSel_*_*',
-    'keep *_cmgDiMuonSel_*_*'
+    'keep *_cmgMuonSel*_*_*',
+    'keep *_cmgDiMuonSel*_*_*'
     )
 
 particleFlowTaus = cms.untracked.vstring(
     # does not look like PF?     
-    'keep *_cmgTauSel_*_*',
-    'keep *_cmgDiTauSel_*_*'
+    'keep *_cmgTauSel*_*_*',
+    'keep *_cmgDiTauSel*_*_*'
     )
 
 particleFlowElectrons = cms.untracked.vstring(
     # does not look like PF? 
-    'keep *_cmgElectronSel_*_*',
-    'keep *_cmgDiElectronSel_*_*'
+    'keep *_cmgElectronSel*_*_*',
+    'keep *_cmgDiElectronSel*_*_*'
     )
 
 particleFlowPhotons = cms.untracked.vstring(
     # does not look like PF? 
-    'keep *_cmgPhotonSel_*_*',
-    'keep *_cmgDiPhotonSel_*_*'
+    'keep *_cmgPhotonSel*_*_*',
+    'keep *_cmgDiPhotonSel*_*_*'
     )
 
 particleFlowW = cms.untracked.vstring(
     # does not look like PF? 
-    'keep *_cmgWENuSel_*_*',
-    'keep *_cmgWMuNuSel_*_*',
+    'keep *_cmgWENuSel*_*_*',
+    'keep *_cmgWMuNuSel*_*_*',
     'keep *_cmgWTauNu_*_*'                                  
     )
 
@@ -63,6 +64,6 @@ particleFlow = particleFlowJets + particleFlowMET + particleFlowMuons + particle
 
 
 particleFlowBase = cms.untracked.vstring(
-    'keep *_cmgPFBaseJetSel_*_*',
+    'keep *_cmgPFBaseJetSel*_*_*',
     # here add the other generic PF objects
     )

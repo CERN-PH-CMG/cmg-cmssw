@@ -20,8 +20,8 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
     )
 
 process.source.fileNames = cms.untracked.vstring(
-    #COLIN release a new PAT-tuple before commit!
-    'file:patTuple_PF2PAT.root'
+    # 'file:patTuple_PF2PAT.root'
+    'file:/afs/cern.ch/user/c/cbern/scratch0/patTuple_PF2PAT.root'
     )
 
 # process.load("CMGTools.Common.sources.relval.RelValQCD_FlatPt_15_3000.CMSSW_3_11_2.MC_311_V2.source_cff")
@@ -32,7 +32,7 @@ process.source.fileNames = cms.untracked.vstring(
 # process.load("CMGTools.Common.sources.relval.RelValTTbar.CMSSW_3_11_2.MC_311_V2.source_cff")
 
 # output module for EDM event (ntuple)
-process.out.fileName = cms.untracked.string('tree_testCMGTools.root')
+process.out.fileName = cms.untracked.string('tree_testMultipleSequences.root')
 from CMGTools.Common.eventContent.everything_cff import everything 
 process.out.outputCommands = cms.untracked.vstring( 'drop *')
 process.out.outputCommands.extend( everything ) 
@@ -40,7 +40,7 @@ process.out.outputCommands.extend( everything )
 
 #output file for histograms etc
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("histograms_testCMGTools.root"))
+                                   fileName = cms.string("histograms_testMultipleSequences.root"))
 
 
 # default analysis sequence    
@@ -61,23 +61,32 @@ process.load('CMGTools.Common.analysis_cff')
 runStdPAT = False
 runOnMC = False
 
-if not runStdPAT:
-    process.analysisSequence.remove( process.caloJetSequence )
-    process.analysisSequence.remove( process.caloMetSequence )
+# if not runStdPAT:
+#    process.analysisSequence.remove( process.caloJetSequence )
+#    process.analysisSequence.remove( process.caloMetSequence )
 
 if runOnMC:
     process.load("CMGTools.Common.runInfoAccounting_cfi")
     process.outpath += process.runInfoAccounting
 
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
+from CMGTools.Common.Tools.visitorUtils import replacePostfix
 
-cloneProcessingSnippet(process, getattr(process, 'analysisSequence'), '1')
-cloneProcessingSnippet(process, getattr(process, 'analysisSequence'), '2')
 
+cloneProcessingSnippet(process, getattr(process, 'analysisSequence'), 'AK5LC')
+replacePostfix(getattr(process,"analysisSequenceAK5LC"),'AK5','AK5LC') 
+
+cloneProcessingSnippet(process, getattr(process, 'analysisSequence'), 'AK7')
+replacePostfix(getattr(process,"analysisSequenceAK7"),'AK5','AK7') 
+
+from CMGTools.Common.Tools.tuneCMGSequences import * 
+tuneCMGSequences(process)
 
 process.p = cms.Path(
-    process.analysisSequence1 +
-    process.analysisSequence2 
+    # process.analysisSequence + 
+    process.analysisSequence
+    + process.analysisSequenceAK5LC
+    + process.analysisSequenceAK7
 )
 
 process.GlobalTag.globaltag = cms.string(getGlobalTag(runOnMC))
@@ -87,8 +96,8 @@ process.schedule = cms.Schedule(
     process.outpath
     )
 
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
-process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) ) 
+process.MessageLogger.cerr.FwkReport.reportEvery = 10
+process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) ) 
 
 
 

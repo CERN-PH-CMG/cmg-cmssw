@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 baseMETFactory = cms.PSet(
-       inputCollection = cms.InputTag("patMETsPFlow"),
+       inputCollection = cms.InputTag("patMETsAK5"),
        ptThreshold = cms.double( -1.0 ) #not used
        )
 from CMGTools.Common.selections.kinematics_cfi import kinematics

@@ -20,7 +20,8 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
     )
 
 process.source.fileNames = cms.untracked.vstring(
-    'file:/afs/cern.ch/user/c/cbern/public/patTuple_PATandPF2PAT.root'
+    #'file:patTuple_PF2PAT.root'
+    'file:/afs/cern.ch/user/c/cbern/scratch0/patTuple_PF2PAT.root'
     )
 
 # process.load("CMGTools.Common.sources.relval.RelValQCD_FlatPt_15_3000.CMSSW_3_11_2.MC_311_V2.source_cff")
@@ -60,13 +61,13 @@ process.load('CMGTools.Common.analysis_cff')
 runStdPAT = False
 runOnMC = False
 
-if not runStdPAT:
-    process.analysisSequence.remove( process.caloJetSequence )
-    process.analysisSequence.remove( process.caloMetSequence )
+#COLIN check all cfgs and remove
+# if not runStdPAT:
+#    process.jetSequence.remove( process.caloJetSequence )
 
-if runOnMC:
-    process.load("CMGTools.Common.runInfoAccounting_cfi")
-    process.outpath += process.runInfoAccounting
+#if runOnMC:
+#    process.load("CMGTools.Common.runInfoAccounting_cfi")
+#    process.outpath += process.runInfoAccounting
 
 process.p = cms.Path(
     process.analysisSequence

@@ -2,29 +2,25 @@ import FWCore.ParameterSet.Config as cms
 
 
 from CMGTools.Common.runInfoAccounting_cfi import *
+
+from CMGTools.Common.jet_cff import *
+from CMGTools.Common.met_cff import *
 from CMGTools.Common.muon_cff import *
 from CMGTools.Common.electron_cff import *
 from CMGTools.Common.tau_cff import *
-from CMGTools.Common.jet_cff import *
-from CMGTools.Common.met_cff import *
-from CMGTools.Common.diMuon_cff import *
-from CMGTools.Common.diTau_cff import *
-from CMGTools.Common.diElectron_cff import *
+
 from CMGTools.Common.skim_cff import *
 from CMGTools.Common.cutSummary_cff import *
 from CMGTools.Common.histogram_cff import *
-from CMGTools.Common.triggerInfo_cff import *
+from CMGTools.Common.trigger_cff import *
 
 
 cmgObjectSequence = cms.Sequence(
+    jetSequence +
+    metSequence +
     muonSequence +
     electronSequence +
     tauSequence + 
-    jetSequence +
-    metSequence +
-    diMuonSequence +
-    diTauSequence +
-    diElectronSequence +
     triggerSequence
     )
 

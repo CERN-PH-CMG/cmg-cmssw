@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 patMETHistograms = cms.EDAnalyzer(
     "GenericPatMETHistograms",
-    inputCollection = cms.InputTag("patMETsPFlow"),
+    inputCollection = cms.InputTag("patMETsAK5"),
     histograms = cms.untracked.PSet(
         met = cms.untracked.VPSet(
             cms.untracked.PSet( 

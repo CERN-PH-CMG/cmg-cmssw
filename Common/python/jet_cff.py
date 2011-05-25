@@ -18,7 +18,7 @@ cmgPFJetLead.inputCollection = 'cmgPFJet'
 
 # PF base jets (light PF jets, do not store constituents) -------
 cmgPFBaseJet = cmgBaseJet.clone()
-cmgPFBaseJet.cfg.inputCollection = 'selectedPatJetsPFlow'
+cmgPFBaseJet.cfg.inputCollection = 'selectedPatJetsAK5'
 
 cmgPFBaseJetSel = cmgBaseJetSel.clone( src = 'cmgPFBaseJet' )
 
@@ -59,6 +59,6 @@ caloJetSequence = cms.Sequence(
 
 
 jetSequence = cms.Sequence(
-    pfJetSequence +
-    caloJetSequence 
+    pfJetSequence
+    # + caloJetSequence 
     ) 

@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 from CMGTools.Common.factories.cmgLepton_cfi import leptonFactory
 tauFactory = cms.PSet(
-       inputCollection = cms.InputTag("selectedPatTausPFlow"),
+       inputCollection = cms.InputTag("selectedPatTausAK5"),
        leptonFactory = leptonFactory.clone()
        )
 
