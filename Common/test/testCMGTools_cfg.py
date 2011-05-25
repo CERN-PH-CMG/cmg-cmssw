@@ -11,16 +11,15 @@ print sep_line
 process.setName_('ANA')
 
 process.maxEvents = cms.untracked.PSet(
-#        input = cms.untracked.int32(-1)
-        input = cms.untracked.int32(1000)
-        )
+    input = cms.untracked.int32(1000)
+    )
 
 process.maxLuminosityBlocks = cms.untracked.PSet( 
     input = cms.untracked.int32(-1)
     )
 
 process.source.fileNames = cms.untracked.vstring(
-    #'file:patTuple_PF2PAT.root'
+    # 'file:patTuple_HT.root'
     'file:/afs/cern.ch/user/c/cbern/scratch0/patTuple_PF2PAT.root'
     )
 
@@ -36,12 +35,25 @@ process.out.fileName = cms.untracked.string('tree_testCMGTools.root')
 from CMGTools.Common.eventContent.everything_cff import everything 
 process.out.outputCommands = cms.untracked.vstring( 'drop *')
 process.out.outputCommands.extend( everything ) 
-    
+process.out.dropMetaData = cms.untracked.string('PRIOR')
+# not much change
+# ttbar 13.4 QCD170to300 8.6 metaData 4.0 HT metaData 3.7
+# process.out.outputCommands.append( 'drop pat*_*_*_*' )
+# ttbar 11.2 QCD170to300 7.4
+# process.out.outputCommands.append( 'drop cmgTriggerObjects*_*_*_*' )
+# ttbar 9.2  QCD170to300 6.0
+# process.out.outputCommands.append( 'drop cmgBaseJets_*_*_*' )
+# ttbar 8.7  QCD170to300 5.8
+# process.out.outputCommands.append( 'drop cmgPFJets_*_*_*' )
+# ttbar 5.4  QCD170to300 4.9
+# process.out.outputCommands.append( 'drop recoGenParticles_*_*_*' )
+# ttbar 5.1  QCD170to300 4.8, metaData 1.4
+# process.out.outputCommands.append( 'drop *' )
+
 
 #output file for histograms etc
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("histograms_testCMGTools.root"))
-
 
 # default analysis sequence    
 process.load('CMGTools.Common.analysis_cff')
@@ -58,16 +70,11 @@ process.load('CMGTools.Common.analysis_cff')
 
 # note: we're reading ttbar events
 
-runStdPAT = False
 runOnMC = False
 
-#COLIN check all cfgs and remove
-# if not runStdPAT:
-#    process.jetSequence.remove( process.caloJetSequence )
-
-#if runOnMC:
-#    process.load("CMGTools.Common.runInfoAccounting_cfi")
-#    process.outpath += process.runInfoAccounting
+if runOnMC:
+    process.load("CMGTools.Common.runInfoAccounting_cfi")
+    process.outpath += process.runInfoAccounting
 
 process.p = cms.Path(
     process.analysisSequence
