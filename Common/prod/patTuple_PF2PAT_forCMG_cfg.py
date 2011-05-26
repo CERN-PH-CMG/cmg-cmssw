@@ -154,7 +154,6 @@ process.load('CMGTools.Common.gen_cff')
 process.load("PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff")
 process.patTrigger.processName = cms.string('*')
 
-
 ### PATH DEFINITION #############################################
 
 
@@ -231,6 +230,10 @@ process.out.outputCommands.extend( gen )
 # tuning the PAT event content to our needs
 from CMGTools.Common.eventContent.patEventContentCMG_cff import patEventContentCMG
 process.out.outputCommands.extend( patEventContentCMG )
+
+# event cleaning results
+from CMGTools.Common.eventContent.eventCleaning_cff import eventCleaning
+process.out.outputCommands.extend( eventCleaning )
 
 # CMG ---
 

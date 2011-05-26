@@ -18,7 +18,8 @@ eventCleaningSequence = cms.Sequence(
     # note: the following will produce a boolean in the EDM but
     # does not filter events
     #COLIN : good idea! should do the same for PF filters
-    HBHENoiseFilterResultProducer
+    HBHENoiseFilterResultProducer +
+    selectGoodPFEventsTaggingSequence
     )
 
 # importing paths and output modules to select bad events in RECOSIM format
