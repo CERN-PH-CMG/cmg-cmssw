@@ -3,7 +3,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 ### MASTER FLAGS  ######################################################################
 
-runOnMC = False
+runOnMC = True
 
 # AK5 sequence with no cleaning is the default
 # the other sequences can be turned off with the following flags.
@@ -26,7 +26,8 @@ if runCMG:
 
 # process.load("CommonTools.ParticleFlow.Sources.source_ZtoMus_DBS_cfi")
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
 sep_line = "-" * 50
@@ -48,7 +49,18 @@ print sep_line
 # process.source.fileNames = cms.untracked.vstring(['file:PFAOD.root'])
 
 # process.load("CMGTools.Common.sources.QCD_Pt_170to300_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
-process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.source_cff")
+# process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.source_cff")
+# process.load("CMGTools.Common.sources.TT_TuneZ2_7TeV_pythia6_tauola.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
+# process.load("CMGTools.Common.sources.QCD_Pt_30to50_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
+# process.load("CMGTools.Common.sources.QCD_Pt_50to80_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
+# process.load("CMGTools.Common.sources.QCD_Pt_80to120_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
+# process.load("CMGTools.Common.sources.QCD_Pt_120to170_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
+# process.load("CMGTools.Common.sources.QCD_Pt_170to300_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
+# process.load("CMGTools.Common.sources.QCD_Pt_470to600_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
+# process.load("CMGTools.Common.sources.QCD_Pt_600to800_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
+# process.load("CMGTools.Common.sources.QCD_Pt_800to1000_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
+# process.load("CMGTools.Common.sources.QCD_Pt_1000to1400_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
+process.load("CMGTools.Common.sources.QCD_Pt_1400to1800_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
 
 
 print 'PF2PAT+PAT+CMG for files:'
@@ -97,6 +109,8 @@ getattr(process,"pfNoMuon"+postfixAK5).enable = False
 getattr(process,"pfNoElectron"+postfixAK5).enable = False 
 getattr(process,"pfNoTau"+postfixAK5).enable = False 
 getattr(process,"pfNoJet"+postfixAK5).enable = True
+getattr(process,"pfIsolatedMuons"+postfixAK5).combinedIsolationCut = 999999
+getattr(process,"pfIsolatedElectrons"+postfixAK5).combinedIsolationCut = 999999
 
 
 # ---------------- Sequence AK5, lepton x-cleaning ---------------
