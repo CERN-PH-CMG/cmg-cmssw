@@ -17,11 +17,10 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 doSkimHighMET = False
 cut_highMET = 'pt()>50'
-process.setName_('ANA')
+process.setName_('SUSY')
 
-#COLIN: tell Will to remove the rather printouts (or rather to add an enable flag allowing to get these printouts). What are these printouts? 
-
-process.load("CMGTools.Common.sources.HT.Run2011A_PromptReco_v1.AOD.PAT_CMG.source_tree_cff")
+# process.load("CMGTools.Common.sources.HT.Run2011A_PromptReco_v1.AOD.PAT_CMG.source_tree_cff")
+process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.PAT_CMG.source_cff")
 
 ext = 'CMG'
 

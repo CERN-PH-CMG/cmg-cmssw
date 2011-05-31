@@ -15,7 +15,7 @@ razorMuonSel = cmgMuonSel.clone(
     cut = 'pt() > 20 && abs(eta()) < 2.1 && getSelection("cuts_vbtfmuon") && getSelection("cuts_isomuon")',
     src = 'cmgMuonSel'
     )
-razorLeadingMuon = leadingCMGMuonSelector.clone(inputCollection = "razorMuonSel", index = cms.untracked.int32(1))
+razorLeadingMuon = leadingCMGMuonSelector.clone(inputCollection = "razorMuonSel", index = cms.int32(1))
 
 razorMuonFail = invertSelector(razorMuonSel)
 
@@ -30,7 +30,7 @@ razorElectronSel = cmgElectronSel.clone(
     cut = 'pt() > 20 && abs(eta()) < 2.5 && (abs(eta()) < 1.4442 || abs(eta()) > 1.566)',
     src = 'cmgElectronSel'
     )
-razorLeadingElectron = leadingCMGElectronSelector.clone(inputCollection = "razorElectronSel", index = cms.untracked.int32(1))
+razorLeadingElectron = leadingCMGElectronSelector.clone(inputCollection = "razorElectronSel", index = cms.int32(1))
 
 razorElectronFail = invertSelector(razorElectronSel)
 
