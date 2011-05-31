@@ -30,7 +30,7 @@ RA2MHTPFJet50Central.cfg.inputCollection = 'RA2PFJet50Central'
 from CMGTools.Common.skims.cmgBaseMETSel_cfi import cmgBaseMETSel
 
 RA2MHTPFJet50CentralSel = cmgBaseMETSel.clone( src = 'RA2MHTPFJet50Central',
-                                               cut = 'sumEt()>300') 
+                                               cut = 'sumEt()>250') 
 
 RA2MHTPFJet50CentralCount = cmgCandCount.clone( src = 'RA2MHTPFJet50CentralSel',
                                              minNumber = 1 )
@@ -49,7 +49,7 @@ RA2MHTPFJet30 = cmgMHTPFJet30.clone()
 RA2MHTPFJet30.cfg.inputCollection = 'cmgPFBaseJetSel'
 
 RA2MHTPFJet30Sel = cmgBaseMETSel.clone( src = 'RA2MHTPFJet30',
-                                        cut = 'et()>150' )
+                                        cut = 'et()>50' )
 RA2MHTPFJet30Count = cmgCandCount.clone( src = 'RA2MHTPFJet30Sel',
                                          minNumber = 1 )
 
