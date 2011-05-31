@@ -1,6 +1,5 @@
 # https://twiki.cern.ch/twiki/bin/view/CMS/CMGToolsReleasesExperimental#Colin_May_27
 {
-    'AnalysisDataFormats/CMGTools':              ['Colin_May25_PF2PATPATCMG', 'AnalysisDataFormats/CMGTools'],
     'CommonTools/ParticleFlow':                  ['Colin_May19', 'CommonTools/ParticleFlow'],
     'DataFormats/PatCandidates' :                ['V06-04-11', 'DataFormats/PatCandidates'],
     'PhysicsTools/PatAlgos':                     ['V08-06-28',   'PhysicsTools/PatAlgos'],
@@ -9,7 +8,7 @@
     'RecoJets/JetAlgorithms' :                   ['V04-01-00', 'RecoJets/JetAlgorithms'],
     'RecoJets/JetProducers' :                    ['V05-05-03', 'RecoJets/JetProducers'],
     'UserCode/RecoParticleFlow/PFProducer' :     ['V14-02-09-02', 'RecoParticleFlow/PFProducer'],
-    'UserCode/CMG/AnalysisDataFormats/CMGTools': ['Colin_May19', 'AnalysisDataFormats/CMGTools'],
+    'UserCode/CMG/AnalysisDataFormats/CMGTools': ['Colin_May25_PF2PATPATCMG', 'AnalysisDataFormats/CMGTools'],
     'UserCode/CMG/CMGTools/Common':              ['Colin_May27_LepIsoRelaxed_NewSources', 'CMGTools/Common'],
     'UserCode/CMG/CMGTools/RootTools':           ['Colin_May25_MultSeqs', 'CMGTools/RootTools'],
     'UserCode/CMG/CMGTools/Susy':                ['Colin_May26', 'CMGTools/Susy'],
