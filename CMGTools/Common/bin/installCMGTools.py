@@ -4,33 +4,40 @@ import sys
 import os
 from optparse import OptionParser
 import subprocess
+import urllib
 
 class InstallCMGTools(object):
     """
     A class to make the installation of CMGTools easier
     @author Luke Heo - seong.gu.heo@cern.ch
         """
-    
-    def setReleaseInfo(self, version):
-        
-        import urllib
+
+    def setReleaseInfo(self, version, recipe=None):
+
         try:
-            url = 'http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/CMG/CMGTools/Common/python/release_info/%s.py?view=co' % version
-            release_info = urllib.urlopen(url)
+            repo_url = "http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi"
+            file_name_base = version
+            if recipe:
+                file_name_base = "%s_%s" % (file_name_base, recipe)
+            full_url = '%s/UserCode/CMG/CMGTools/Common/python/release_info/%s.py?view=co' % \
+                       (repo_url, file_name_base)
+            release_info = urllib.urlopen(full_url)
             content = release_info.read()
             if content.find('404 Not Found') != -1:
-                raise Exception("The file '%s' does not exist or could not be accessed" % url)
+                raise Exception("The file '%s' does not exist or could not be accessed" % full_url)
             if content is not None and content:
                 self.dic_list = eval(content)
         except Exception, e:
-            message = "Release info can not be found for version '%s' - the error was '%s'" % (version,str(e))
+            message = "Release info can not be found for version '%s' " \
+                      "(recipe: %s) - the error was '%s'" % \
+                      (version, recipe, str(e))
             raise Exception(message)
-    
+
     def __init__(self):
         self.options, self.args = self.parseOptions()
 
-        self.setReleaseInfo(self.options.cmssw_version)
-        
+        self.setReleaseInfo(self.options.cmssw_version, self.options.recipe)
+
         pwd = os.getcwd()
         try:
             self.init()
@@ -44,7 +51,7 @@ class InstallCMGTools(object):
                 subprocess.call(['scram', 'b', '-j', '4'])
             finally:
                 os.chdir(pwd)
-        
+
     def parseOptions(self):
         """ Accept arguments"""
         parser = OptionParser()
@@ -52,6 +59,9 @@ class InstallCMGTools(object):
             help="write a installation directory, e.g. '--dir ~/scratch0/CMGTools'")
         parser.add_option("-r", "--release",type="string", dest="cmssw_version", default="${CMSSW_VERSION}",
             help="write a CMSSW version, e.g. '--release=${CMSSW_VERSION}'")
+        parser.add_option("", "--recipe", type="string",
+                          dest="recipe", default=None,
+                          help="Recipe to follow (useful for 'experimental' releases)")
         parser.add_option("-c", "--cvs", type="string", dest="cvs_command", default="checkout",
             help="write a cvs command. e.g. '--cvs checkout' or '--cvs update'")
         parser.add_option("-b", "--build", action="store_true", dest="build", default=False,
@@ -68,7 +78,7 @@ class InstallCMGTools(object):
         """Checkout and/or update CMGTools"""
 
         if self.options.cvs_command == 'checkout' or self.options.cvs_command == 'co':
-            
+
             self.installCMSSW()
 
             pwd = os.getcwd()
@@ -93,10 +103,10 @@ class InstallCMGTools(object):
                     self.updateCMGTools()
             finally:
                 os.chdir(pwd)
-            
+
     def installCMSSW(self):
         """Install CMSSW"""
-        
+
         if not os.path.exists(self.options.installation_directory):
             os.mkdir(self.options.installation_directory)
 
@@ -112,10 +122,10 @@ class InstallCMGTools(object):
             #add a tag if needed
             if not self.dic_list[key][0].lower() == 'head':
                 cmd += '-r %s ' % self.dic_list[key][0]
-            #specify a target directory if needed    
+            #specify a target directory if needed
             if self.dic_list[key][1] and key != self.dic_list[key][1]:
                 cmd += '-d %s ' % self.dic_list[key][1]
-            cmd = '%s %s' % (cmd,key)    
+            cmd = '%s %s' % (cmd,key)
             print cmd
             os.system(cmd)
 
@@ -127,6 +137,13 @@ class InstallCMGTools(object):
             else:
                 os.system('cvs update -A -d %s' % (self.dic_list[key][1]))
 
+######################################################################
+
 if __name__ == '__main__':
 
-    m = InstallCMGTools()
+    try:
+        m = InstallCMGTools()
+    except Exception, e:
+        print "ERROR %s" % str(e)
+
+######################################################################
