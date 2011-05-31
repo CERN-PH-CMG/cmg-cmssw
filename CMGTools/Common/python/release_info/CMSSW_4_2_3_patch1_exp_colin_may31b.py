@@ -11,6 +11,6 @@
     'RecoJets/Configuration' :                   ['V02-04-16', 'RecoJets/Configuration'],
     'RecoJets/JetAlgorithms' :                   ['V04-01-00', 'RecoJets/JetAlgorithms'],
     'RecoJets/JetProducers' :                    ['V05-05-03', 'RecoJets/JetProducers'],
-    'UserCode/RecoParticleFlow/PostProcessing':  ['Colin_May27_FixMaximeBug', 'RecoParticleFlow/PostProcessing'],
+    'UserCode/RecoParticleFlow/PostProcessing':  ['Colin_May31_productsKept', 'RecoParticleFlow/PostProcessing'],
     'UserCode/CMG/CMGTools/ZmumuJetsTutorial':   ['HEAD', 'CMGTools/ZmumuJetsTutorial'],
 }
