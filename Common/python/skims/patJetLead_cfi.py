@@ -2,8 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 patJetLead = cms.EDProducer(
     "LeadingPatJetSelector",
-    inputCollection = cms.untracked.InputTag("selectedPatJetsAK5"),
+    inputCollection = cms.InputTag("selectedPatJets"),
     #copy all entries
-    index = cms.untracked.int32(2)
+    index = cms.int32(2)
     )
 
