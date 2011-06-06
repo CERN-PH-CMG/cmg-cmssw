@@ -4,6 +4,46 @@
 using namespace std;
 
 //
+std::pair<TH1D *,TH1D *> getProjections(TH2D *histo)
+{
+  TH1D *px=histo->ProjectionX(histo->GetName()+TString("_px"));
+  formatPlot(px,
+	     histo->GetLineColor(),histo->GetLineStyle(),histo->GetLineWidth(),
+	     histo->GetMarkerStyle(),histo->GetFillStyle(),
+	     false,false,
+	     histo->GetLineColor(),histo->GetFillColor(),histo->GetMarkerColor());
+  TH1D *py=histo->ProjectionY(histo->GetName()+TString("_py"));
+  formatPlot(py,
+	     histo->GetLineColor(),histo->GetLineStyle(),histo->GetLineWidth(),
+	     histo->GetMarkerStyle(),histo->GetFillStyle(),
+	     false,false,
+	     histo->GetLineColor(),histo->GetFillColor(),histo->GetMarkerColor());
+  return std::pair<TH1D *,TH1D *>(px,py);
+}
+
+
+//
+TLegend *showPlotsAndMCtoDataComparison(TPad *p, TList &stack, TList &spimpose, TList &data)
+{
+  p->Divide(1,2);
+  TPad *subp=(TPad *)p->cd(1);
+  subp->SetPad(0,0.3,1.0,1.0);
+  TLegend *leg=showPlots(subp,stack,spimpose,data);
+  formatForCmsPublic(subp,leg,"",5);
+  subp->SetLogy();
+  
+  subp=(TPad *)p->cd(2);
+  subp->SetPad(0,0.0,1.0,0.25);
+  subp->SetTopMargin(0);
+  subp->SetBottomMargin(0.3);
+  float yscale = (1.0-0.3)/(0.25-0.0);
+  showMCtoDataComparison(subp,stack,data,false,yscale);
+  
+  return leg;
+}
+
+
+//
 TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool buildLegend, TString legopt)
 {
   if(c==0) return 0;
@@ -67,38 +107,102 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
   if(th2dfound || graphfound)
     {
       int nplots=allKeys.size();
-      int nx = nplots/2;
-      int ny = ( nplots%2 ? nx : nx+1);
+      int nx = sqrt(nplots*1.0)+1;
+      int ny =  sqrt(nplots*1.0);
+
+      TList stackx,stacky;
+      TList spimposex,spimposey;
+      TList datax,datay;
+
       c->Divide(nx,ny);
       int ipad(0);
       reverseStackIt = stack.MakeIterator(kIterBackward);
       while ( (key = reverseStackIt->Next()) ) 
 	{
 	  ipad++;
-	  c->cd(ipad);
-	  key->Draw( th2dfound ? "box" : "ap");
-	}
+	  TPad *p = (TPad *)c->cd(ipad);
+	  if(key==0 || p==0) continue;
+	  if(th2dfound && ((TH2D *)key)->Integral()==0) continue;
+	  //key->Draw( th2dfound ? "box" : "ap");
+	  key->Draw( th2dfound ? "colz" : "ap");
+	  TLegend *leg=p->BuildLegend();
+	  if(leg)
+	    {
+	      leg->SetBorderSize(1);
+	      leg->SetFillColor(0);
+	      leg->SetTextFont(42);
+	      formatForCmsPublic(p,leg,"",1);
+	    }
 	  
+	  if(!th2dfound) continue;
+	  std::pair<TH1D *,TH1D *> pxpy = getProjections((TH2D *)key);
+	  if(pxpy.first) stackx.AddFirst(pxpy.first);
+	  if(pxpy.second) stacky.AddFirst(pxpy.second); 
+	}
+      
       spimposeIt = spimpose.MakeIterator();
       while ( (key = spimposeIt->Next()) ) 
 	{
 	  ipad++;
-	  c->cd(ipad);
-	  key->Draw( th2dfound ? "box" : "ap");
+	  TPad *p=(TPad *)c->cd(ipad);
+	  if(key==0 || p==0) continue;
+	  if(th2dfound && ((TH2D *)key)->Integral()==0) continue;
+	  //key->Draw( th2dfound ? "box" : "ap");
+	  key->Draw( th2dfound ? "colz" : "ap");
+	  TLegend *leg=p->BuildLegend();
+	  if(leg)
+	    {
+	      leg->SetBorderSize(1);
+	      leg->SetFillColor(0);
+	      leg->SetTextFont(42);
+	      formatForCmsPublic(p,leg,"",1);
+	    }
+	  
+	  if(!th2dfound) continue;
+	  std::pair<TH1D *,TH1D *> pxpy = getProjections((TH2D *)key);
+	  if(pxpy.first)	  spimposex.Add(pxpy.first);
+	  if(pxpy.second)         spimposey.Add(pxpy.second); 
 	}
-
+      
       //draw the data
+      bool hasData(false);
       dataIt = data.MakeIterator();
       while ( (key = dataIt->Next()) ) 
 	{
+	  hasData=true;
 	  ipad++;
-	  c->cd(ipad);
-	  key->Draw( th2dfound ? "box" : "ap");
+	  TPad *p=(TPad *)c->cd(ipad);
+	  if(p==0) continue;
+	  if(key==0 || p==0) continue;
+	  if(th2dfound && ((TH2D *)key)->Integral()==0) continue;
+	  //	  key->Draw( th2dfound ? "box" : "ap");
+	  key->Draw( th2dfound ? "colz" : "ap");
+	  TLegend *leg=p->BuildLegend();
+	  if(leg)
+	    {
+	      leg->SetBorderSize(1);
+	      leg->SetFillColor(0);
+	      leg->SetTextFont(42);
+	      formatForCmsPublic(p,leg,"",1);
+	    }
+
+	  if(!th2dfound) continue;
+	  std::pair<TH1D *,TH1D *> pxpy = getProjections((TH2D *)key);
+	  if(pxpy.first)  datax.Add(pxpy.first);
+	  if(pxpy.second) datay.Add(pxpy.second); 
 	}
-      
-      //draw the legend
-      c->cd(1);
-      leg->Draw("same");
+
+      //project it
+      /*      ipad++;
+      TPad *p=(TPad *)c->cd(ipad);
+      if(hasData) showPlotsAndMCtoDataComparison(p,stackx,spimposex,datax);
+      else        showPlots(p,stackx,spimposex,datax);
+
+      ipad++;
+      p=(TPad *)c->cd(ipad);
+      if(hasData) showPlotsAndMCtoDataComparison(p,stacky,spimposey,datay);
+      else        showPlots(p,stacky,spimposey,datay);
+      */
     }
   else
     {
@@ -122,7 +226,8 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
 	  //draw the frame and the stack
 	  if(refFrame->Integral()>0)
 	    {
-	      refFrame->Draw("hist");  
+	      refFrame->Draw("hist");
+	      refFrame->GetYaxis()->SetRangeUser(1e-3,1e5);
 	      hstack->Draw("histsame"); 
 	      canvasFilled=true;
 	    }
@@ -147,9 +252,9 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
 	{
 	  TH1 *p = (TH1 *) key;
 	  p->SetMarkerSize(1.3);
-	  if(canvasFilled) p->Draw("e2psame");
+	  if(canvasFilled) p->Draw("e2same");
 	  else {
-	    p->Draw("e2p"); 
+	    p->Draw("e2"); 
 	    refFrame=p;
 	    canvasFilled=true; 
 	  }
@@ -235,9 +340,10 @@ void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doDiff,floa
 	}
 
       c->cd();
-      TString opt("e2p");
+      TString opt("e2");
       if(canvasFilled) opt +="same";
       dataToMCH->Draw(opt);
+      dataToMCH->GetYaxis()->SetRangeUser(0,5.3);
       dataToMCH->GetXaxis()->SetTitleOffset(0.85);
       dataToMCH->GetXaxis()->SetLabelSize(0.04 * yscale);
       dataToMCH->GetXaxis()->SetTitleSize(0.05 * yscale);
@@ -276,12 +382,10 @@ TString getPlotAsTable(TList *stack, TList *spimpose, TList *data)
              if(stacksum==0 )
               {
                  stacksum=(TH1 *)p->Clone("stacksum");
-                 //cout << p << endl;
                  totalStack.Add(stacksum);
                  stacksum->SetTitle("Total");
               }
              else stacksum->Add(p);
-             //cout << " add" << endl;
            }
 
 	    Int_t nbins=p->GetXaxis()->GetNbins();

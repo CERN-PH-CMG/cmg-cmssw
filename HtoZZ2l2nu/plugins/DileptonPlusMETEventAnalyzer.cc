@@ -120,6 +120,9 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
 	  results_[cat+"_"+dilTypes[idilType]+"dilepton_pt"]       = formatPlot( newDir.make<TH1F>(cat+"_"+dilTypes[idilType]+"dilepton_pt", ";|#Sigma #vec{p}_{T}| [GeV/c]; Events", 50, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
 	}
       
+      results_[cat+"_dilepton_atres"]     = formatPlot( newDir.make<TH1F>(cat+"_dilepton_atres", ";a_{#perp} difference [GeV]; Events", 100, -50.,50.), 1,1,1,20,0,false,true,1,1,1);
+      results_[cat+"_dilepton_alres"]     = formatPlot( newDir.make<TH1F>(cat+"_dilepton_alres", ";a_{#parallel} difference [GeV]; Events", 100, -50.,50.), 1,1,1,20,0,false,true,1,1,1);
+
       //jets
       TString jetTypes[2] ={"jet","pujet"};
       for(size_t ijetType=0; ijetType<2; ijetType++)
@@ -220,6 +223,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     edm::Handle<std::vector<reco::PFMET> > hPfMET; 
     event.getByLabel(edm::InputTag("pfMet"), hPfMET);
     const reco::PFMET &pfmet = (*hPfMET)[0];
+    reco::CandidatePtr evmet = evhyp["met"];
+    LorentzVector met(evmet->px(),evmet->py(),0,evmet->pt());
 
     //
     // VERTEX KINEMATICS
@@ -305,7 +310,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //select Z window
     LorentzVector dileptonP=lepton1P+lepton2P;
     getHist(istream+"_"+dilCat+"_mass")->Fill(dileptonP.mass(),weight);
-    if(fabs(dileptonP.mass()-91)>15) return;
+    if(dileptonP.mass()<40) return;
+    if(fabs(l1id)==fabs(l2id) && fabs(dileptonP.mass()-91)>15) return;
     getHist("cutflow")->Fill(3,weight);
     getHist(istream+"_cutflow")->Fill(3,weight);
 
@@ -345,13 +351,13 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	getHist(istream+"_jeteta")->Fill(jet->eta(),weight);
 
 	//save for event summary
-	ev.px[njets+2] = jet->px();  ev.py[njets+2]=jet->py();  ev.pz[njets+2]=jet->pz(); ev.en[njets+2]=jet->energy();  ev.id[njets+2]=1;
+	ev.px[njets+3] = jet->px();  ev.py[njets+3]=jet->py();  ev.pz[njets+3]=jet->pz(); ev.en[njets+3]=jet->energy();  ev.id[njets+3]=1;
 	const reco::Candidate *genParton = jet->genParton();
-	ev.genid[njets+2] = genParton ? genParton->pdgId() : -9999;
-	ev.info1[njets+2]=btag;
-	ev.info2[njets+2]=jet->bDiscriminator("trackCountingHighPurBJetTags");
-	ev.info3[njets+2]=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
-	ev.info4[njets+2]=jet->bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
+	ev.genid[njets+3] = genParton ? genParton->pdgId() : -9999;
+	ev.info1[njets+3]=btag;
+	ev.info2[njets+3]=jet->bDiscriminator("trackCountingHighPurBJetTags");
+	ev.info3[njets+3]=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
+	ev.info4[njets+3]=jet->bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
 
       }
     getHist(istream+"_jetmult")->Fill(njets,weight);
@@ -383,14 +389,14 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //
     //the met
     float metsig( pfmet.significance() );
-    LorentzVectorCollection corMets = met::filter(pfmet,assocJets,puJets);
-    LorentzVector rawMetP(corMets[met::RAWMET]);
-    LorentzVector jesMetP(corMets[met::TYPEIMET]);
+    LorentzVectorCollection corMets = met::filter(met,assocJets,puJets,false);
+    LorentzVector rawMetP(pfmet.p4());
+    LorentzVector jesMetP(met);
     LorentzVector jesMetNopuP(corMets[met::CORRECTED_TYPEIMET]);
 
     //MC truth on MET
     LorentzVector genHiggs(0,0,0,0);
-    LorentzVector genMET(0,0,0,0);
+    LorentzVector genMET(0,0,0,0),genZll(0,0,0,0);
     if(!event.isRealData())
       {     
 	int igenpart(0);
@@ -406,9 +412,12 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	      {
 		//higgs daughters level (ZZ/WW)
 		//cout << genpartdau->pdgId() << " (" << flush;
-		
+		bool isZ(fabs(genpartdau->pdgId())==23);
+		LorentzVector zcand=genpartdau->p4();
+
 		char buf[20];
 		sprintf(buf,"gendaughter_%d_%d",igenpart,igenpartdau);
+		int nleptons(0);
 		for(pat::eventhypothesis::Looper<reco::GenParticle> genpartgdau = evhyp.loopAs<reco::GenParticle>(buf); genpartgdau; ++genpartgdau)
 		  {
 		    //final state products (leptons, jets, neutrinos)
@@ -416,8 +425,11 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 
 		    int pdgid=fabs(genpartgdau->pdgId());
 		    if(pdgid==12||pdgid==14||pdgid==16) genMET += genpartgdau->p4();
+		    if(pdgid==11||pdgid==13||pdgid==15) nleptons++;
 		  }
 		
+		if(isZ and nleptons==2) genZll=zcand;
+
 		//cout << ") " << flush;
 		igenpartdau++;
 	      }
@@ -427,6 +439,12 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
       }
 
     //reduced met
+    rmet_.defineThrust(lepton1->p4(),lepton2->p4());
+    TVector2 dilProj=rmet_.project(dileptonP);
+    TVector2 genDilProj=rmet_.project(genZll);
+    getHist(istream+"_dilepton_alres")->Fill(dilProj.Px()-genDilProj.Px(),weight);
+    getHist(istream+"_dilepton_atres")->Fill(dilProj.Py()-genDilProj.Py(),weight);
+
     rmet_.compute(lepton1->p4(),lepton1pterr, lepton2->p4(),lepton2pterr, jetmomenta, jesMetNopuP );
     float reducedMET=rmet_.reducedMET();
     LorentzVector rmetP(rmet_.reducedMETComponents().first,rmet_.reducedMETComponents().second,0,reducedMET);
@@ -463,7 +481,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	  }
 	tmet = chSum + neutralSum;
       }
-
     
     //correlation with dilepton
     float dphimet2zll = deltaPhi(jesMetNopuP.phi(),dileptonP.phi());
@@ -508,15 +525,22 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.tkmet_pt=tmet.pt();       ev.tkmet_phi=tmet.phi();
     ev.genmet_pt=genMET.pt();    ev.genmet_phi=genMET.phi();
     ev.rho=*rho;
-    ev.nparticles=3+njets;
+    ev.nparticles=4+njets;
     ev.px[0] = lepton1P.px();    ev.py[0]=lepton1P.py();      ev.pz[0]=lepton1P.pz();     ev.en[0]=lepton1P.energy();  ev.id[0]=l1id; 
     ev.info1[0] = lepton1pterr;  ev.info2[0] = lepton1iso[0]; ev.info3[0]=lepton1iso[1];  ev.info4[0]=lepton1iso[2];   ev.genid[0] = genid1;
     ev.px[1] = lepton2P.px();    ev.py[1]=lepton2P.py();      ev.pz[1]=lepton2P.pz();     ev.en[1]=lepton2P.energy();  ev.id[1]=l2id; 
     ev.info1[1] = lepton2pterr;  ev.info2[1] = lepton2iso[0]; ev.info3[1]=lepton2iso[1];  ev.info4[1]=lepton2iso[2];   ev.genid[1] = genid2;
 
-    ev.px[2] = jesMetNopuP.px(); ev.py[2]=jesMetNopuP.py();   ev.pz[2]=0;                ev.en[2]=jesMetNopuP.pt(); ev.id[2]=0; 
-    ev.info1[2] = jesMetP.pt();  ev.info2[2] = rawMetP.pt();  ev.info3[3]=genMET.pt();
+    ev.px[2] = jesMetP.px(); ev.py[2]=jesMetP.py();   ev.pz[2]=0;  ev.en[2]=jesMetP.pt(); ev.id[2]=0; 
+    ev.info1[2] = jesMetNopuP.px();  ev.info2[2] = jesMetNopuP.py();  ev.info3[3]=genMET.pt();
     
+
+    ev.px[3]=primVertex->p4().px();
+    ev.py[3]=primVertex->p4().py();
+    ev.pz[3]=primVertex->p4().pz();
+    ev.en[3]=primVertex->p4().energy();
+    ev.id[3]=500;
+
     summaryHandler_.fillTree();
 
   }catch(std::exception &e){

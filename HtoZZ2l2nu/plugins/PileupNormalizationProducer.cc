@@ -79,26 +79,27 @@ PileupNormalizationProducer::PileupNormalizationProducer(const edm::ParameterSet
   */
 
   //from estimatePileup.py
-  puUnfoldedH_->SetBinContent(1,0.324549);
-  puUnfoldedH_->SetBinContent(2,0.708031);
-  puUnfoldedH_->SetBinContent(3,1.57387);
-  puUnfoldedH_->SetBinContent(4,2.35728);
-  puUnfoldedH_->SetBinContent(5,2.65769);
-  puUnfoldedH_->SetBinContent(6,2.40571);
-  puUnfoldedH_->SetBinContent(7,1.82116);
-  puUnfoldedH_->SetBinContent(8,1.18588);
-  puUnfoldedH_->SetBinContent(9,0.678036);
-  puUnfoldedH_->SetBinContent(10,0.345783);
-  puUnfoldedH_->SetBinContent(11,0.159243);
-  puUnfoldedH_->SetBinContent(12,0.0741073);
-  puUnfoldedH_->SetBinContent(13,0.0342523);
-  puUnfoldedH_->SetBinContent(14,0.0160209);
-  puUnfoldedH_->SetBinContent(15,0.00733715);
-  puUnfoldedH_->SetBinContent(16,0.00344899);
-  puUnfoldedH_->SetBinContent(17,0.00161111);
-  puUnfoldedH_->SetBinContent(18,0.00075484);
-  puUnfoldedH_->SetBinContent(19,0.000356092);
-  puUnfoldedH_->SetBinContent(20,0.000228425);
+  puUnfoldedH_->SetBinContent(1,0.29513);
+  puUnfoldedH_->SetBinContent(2,0.66352);
+  puUnfoldedH_->SetBinContent(3,1.57694);
+  puUnfoldedH_->SetBinContent(4,2.12325);
+  puUnfoldedH_->SetBinContent(5,2.58587);
+  puUnfoldedH_->SetBinContent(6,2.33852);
+  puUnfoldedH_->SetBinContent(7,1.84959);
+  puUnfoldedH_->SetBinContent(8,1.16579);
+  puUnfoldedH_->SetBinContent(9,0.630877);
+  puUnfoldedH_->SetBinContent(10,0.327577);
+  puUnfoldedH_->SetBinContent(11,0.158036);
+  puUnfoldedH_->SetBinContent(12,0.0816001);
+  puUnfoldedH_->SetBinContent(13,0.0373275);
+  puUnfoldedH_->SetBinContent(14,0.0180187);
+  puUnfoldedH_->SetBinContent(15,0.00976187);
+  puUnfoldedH_->SetBinContent(16,0.00472464);
+  puUnfoldedH_->SetBinContent(17,0.001945);
+  puUnfoldedH_->SetBinContent(18,0.000752556);
+  puUnfoldedH_->SetBinContent(19,0.000425988);
+  puUnfoldedH_->SetBinContent(20,0.000692033);
+
 }
 
 //
@@ -132,7 +133,7 @@ void PileupNormalizationProducer::produce(edm::Event &iEvent, const edm::EventSe
       //determine normalization
       if(!useVertexDistribution_)
 	{
-	  float weight = puUnfoldedH_->GetBinContent( npuevents+1 );
+	  float weight = puUnfoldedH_->GetBinContent( puUnfoldedH_->GetXaxis()->FindBin(npuevents) );
 	  *puWeight=weight;
 	}
       else if(useVertexDistribution_)

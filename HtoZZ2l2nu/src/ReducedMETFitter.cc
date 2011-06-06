@@ -122,8 +122,8 @@ std::auto_ptr<RooFitResult> ReducedMETFitter::compute(const LorentzVector &lep1,
    //
    // 1. define the bisector
    //
-   TVector2 lepton1(lep1.Px(), lep2.Py());
-   TVector2 lepton2(lep1.Px(), lep2.Py());;
+   TVector2 lepton1(lep1.Px(), lep1.Py());
+   TVector2 lepton2(lep2.Px(), lep2.Py());;
    TVector2 bisector = (lepton1.Unit()+lepton2.Unit()).Unit();
    TVector2 bisector_perp(bisector.Py(), -bisector.Px());
    if(lepton1 * bisector_perp < 0)  bisector_perp *= -1;

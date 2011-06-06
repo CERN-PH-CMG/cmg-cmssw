@@ -146,7 +146,7 @@ namespace met
      @short returns standard MET, corrected for all the selected jets and corrected for all the PU jets
   */
   enum MetTypes { RAWMET=0, TYPEIMET, CORRECTED_TYPEIMET };
-  LorentzVectorCollection filter(const reco::PFMET &pfMET, std::vector<const pat::Jet *> &assocJets, std::vector<const pat::Jet *> &puJets);
+  LorentzVectorCollection filter(LorentzVector &pfMET, std::vector<const pat::Jet *> &assocJets, std::vector<const pat::Jet *> &puJets, bool isRaw=false);
 
 }
 
