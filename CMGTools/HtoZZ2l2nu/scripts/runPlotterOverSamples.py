@@ -6,7 +6,7 @@ from rounding import toLatexRounded
 
 import ROOT
 ROOT.gSystem.Load('${CMSSW_BASE}/lib/${SCRAM_ARCH}/libCMGToolsHtoZZ2l2nu.so')
-from ROOT import formatPlot, setStyle, showPlots, formatForCmsPublic, getNewCanvas, showMCtoDataComparison, getPlotAsTable
+from ROOT import formatPlot, setStyle, showPlots, formatForCmsPublic, getNewCanvas, showMCtoDataComparison, getPlotAsTable, showPlotsAndMCtoDataComparison
 
 """
 Converts ROOT constant to int
@@ -78,6 +78,8 @@ def getControlPlots(descriptor,isData,inputDir='data',getFromDir='') :
         #get plots from file
         categs = dir.GetListOfKeys();
         cnorm=1
+#        hcutflow=file.Get('evAnalyzer/'+tag+'/cutflow')
+#        if(hcutflow is not None): cnorm=hcutflow.GetBinContent(1)
         centralresults={}
         for c in categs:
             cname=c.GetName()
@@ -141,6 +143,14 @@ def savePlotAsTable(stackplots=None,spimposeplots=None,dataplots=None,outUrl='ta
     tabtex += '\\begin{tabular}{'+colfmt+'} \\hline\n'
     tabtex += 'Process ' + colnames + '\\\\ \\hline\\hline\n'    
 
+    #create the sum
+    if(stackplots.At(0) is not None) :
+        stackSum = stackplots.At(0).Clone("totalstack")
+        stackSum.SetTitle('Total expected')
+        stackSum.Reset('ICE')
+        for p in stackplots: stackSum.Add(p)
+        stackplots.Add(stackSum)
+
     alllists = [stackplots, spimposeplots,dataplots ]
     for ll in alllists :
         for p in ll :
@@ -176,7 +186,7 @@ def savePlotAsTable(stackplots=None,spimposeplots=None,dataplots=None,outUrl='ta
 """
 shows the control plots
 """
-def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLabel='CMS preliminary',outputDir='data/plots', samplehtml='') :
+def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitles=None,generalLabel='CMS preliminary',outputDir='data/plots', samplehtml='') :
 
     if(len(stackplots)==0 and len(spimposeplots)==0 and len(dataplots)==0) : return
 
@@ -227,8 +237,10 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
     plotsToDisplay['All events']=[]
     setStyle()
     c = getNewCanvas("recolevelc","recolevelc",False)
-    c.SetWindowSize(600,800)
+    c.SetWindowSize(800,800)
+    c.SetCanvasSize(800,800)
     for iplot in xrange(0,nplots):
+
         stack=ROOT.TList()
         if(len(stackLists)>iplot): stack=stackLists[iplot]
         spimpose=ROOT.TList()
@@ -240,41 +252,46 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
         elif(spimpose.At(0) != None) : pname=spimpose.At(0).GetName()
         elif(data.At(0) != None) :     pname=data.At(0).GetName()
         if(len(pname)<=0): continue
-
+        print pname
         chtag='All events'
         if(pname.find('mumu')==0): chtag='#mu#mu events'
         if(pname.find('emu')==0):  chtag='e#mu events'
-        if(pname.find('ee')==0):  chtag='ee events'
+        if(pname.find('ee')==0):   chtag='ee events'
         plotsToDisplay[chtag].append(pname)
         
-        if(pname.find('eq0jets')>0):  chtag += ' (= 0 jets)'
-        if(pname.find('eq1jets')>0):  chtag += ' (= 1 jets)'
-        if(pname.find('geq2jets')>0): chtag += ' (#geq 2 jets)'
-
         plotLabel = generalLabel + '\\' + chtag
-
-        c.Clear()
-        c.Divide(1,2)
-        pad=c.cd(1)
-        pad.SetPad(0,0.3,1.0,1.0);
-        leg=showPlots(pad,stack,spimpose,data)
-        formatForCmsPublic(pad,leg,plotLabel,5)
-        pad.SetLogy()
+        if(pname.find('eq0jets')>0): plotLabel += ' (=0 jets)'
+        if(pname.find('eq1jets')>0): plotLabel += ' (=1 jet)'
+        if(pname.find('geq2jets')>0): plotLabel += '(#geq 2 jets)'
         
-        pad=c.cd(2)
-        pad.SetPad(0,0.0,1.0,0.25);
-        pad.SetTopMargin(0);
-        pad.SetBottomMargin(0.3);
-        yscale = (1.0-0.3)/(0.25-0.0);
-        leg=showMCtoDataComparison(pad,stack,data,False,yscale)
+        c.Clear()
+        leg=showPlotsAndMCtoDataComparison(c,stack,spimpose,data)
+        leg.SetHeader(plottitles[iplot])
+        formatForCmsPublic(c.cd(1),leg,plotLabel,5)
+        
+#        c.Clear()
+#        c.Divide(1,2)
+#        pad=c.cd(1)
+#        pad.SetPad(0,0.3,1.0,1.0);
+#        leg=showPlots(pad,stack,spimpose,data)
+#        formatForCmsPublic(pad,leg,plotLabel,5)
+#        pad.SetLogy()
+        
+#        pad=c.cd(2)
+#        pad.SetPad(0,0.0,1.0,0.25);
+#        pad.SetTopMargin(0);
+#        pad.SetBottomMargin(0.3);
+#        yscale = (1.0-0.3)/(0.25-0.0);
+#        leg=showMCtoDataComparison(pad,stack,data,False,yscale)
                                                  
         c.SaveAs(outputDir+'/'+pname+'.png')
         c.SaveAs(outputDir+'/'+pname+'.C')
 
-        if(pname.find('cutflow')<0):continue
-        savePlotAsTable(stack,spimpose,data,outputDir+'/'+pname+'.tex')
-        
+        if(pname.find('cutflow')>=0) :
+            savePlotAsTable(stack,spimpose,data,outputDir+'/'+pname+'.tex')
+
         #raw_input('Any key to continue...')
+        #c.Delete()
 
     #create navigator files
     HTMLSTART="<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"tableFormat.css\"></link></head><body>"
@@ -283,15 +300,34 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,generalLa
     titlehtml+="<table class=\"sample\"><tr><th colspan=\"3\">Event selection categories</th></tr>" 
     itag=0
     for tag in plotsToDisplay.items() :
+        tagch='all'
+        if( tag[0]=='ee events') : tagch='ee'
+        if( tag[0]=='#mu#mu events') : tagch='mumu'
+        if( tag[0]=='e#mu events') : tagch='emu'
+
         thtml=HTMLSTART
-        thtml+="<table class=\"sample\"><tr><th colspan=\"2\">" + tag[0] + " channel </th></tr>"
+        thtml+="<table class=\"sample\" border=\"1\" cellspacing=\"3\"><tr><th colspan=\"2\">" + tag[0] + " channel </th></tr>"
+        
         for pname in tag[1] :
+            
+            if(pname.find('eq0jets')>0 or pname.find('eq1jets')>0 or pname.find('geq2jets')>0): continue
+            vars=['','eq0jets','eq1jets','geq2jets']
+            
             thtml+="<tr>"
-            thtml+="<td><img src=\"" + pname + ".png\" width=\"500\"></img></td>"
-            thtml+="<td><small>Available in: <a href=\"" + pname + ".png\">.png</a> &nbsp;&nbsp; <a href=\"" + pname + ".C\">.C</a>"
-            if(pname.find('cutflow')>=0):
-                thtml+=" &nbsp;&nbsp; <a href=\"" + pname + ".tex\">.tex</a>"
-            thtml += "</small></td></tr>"
+            for v in vars :
+                theplotName = pname.replace(tagch,tagch+v)
+                thtml+="<td><img src=\"" + theplotName + ".png\"></img></td>"
+            thtml+="</tr>"
+            
+            thtml+="<tr>"
+            for v in vars :
+                theplotName = pname.replace(tagch,tagch+v)
+                thtml+="<td><small>Available in: <a href=\"" + theplotName + ".png\">.png</a> &nbsp;&nbsp; <a href=\"" + theplotName + ".C\">.C</a>"
+                if(pname.find('cutflow')>=0):
+                    thtml+=" &nbsp;&nbsp; <a href=\"" + theplotName + ".tex\">.tex</a>"
+                thtml += "</small></td>"
+            thtml+="</tr>"
+            
         thtml+="</table>"
         thtml+=HTMLEND
 
@@ -321,7 +357,7 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
     stackplots=[]
     spimposeplots=[]
     dataplots=[]
-
+    plottitles=[]
     generalLabel='CMS preliminary,#sqrt{s}=7 TeV, #int L=' +str(integratedLumi)+' pb^{-1}'
 
     samplehtml="<tr><th colspan=\"3\"><large>Samples used in analysis</large></th></tr>"
@@ -333,6 +369,7 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
         for desc in proc[1] :
 
             procplots=[]
+            procplotstitles=[]
             isdata = getByLabel(desc,'isdata',False)
             spimpose = getByLabel(desc,'spimpose',False)
             color = rootConst(getByLabel(desc,'color',1))
@@ -380,9 +417,10 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
                 #book keep the result
                 iplot=0
                 for p in plots.items():
-                    
+                   
                     #create the base plot for this sample if non existing
                     if(len(procplots)<=iplot):
+                        procplotstitles.append( p[1].GetTitle() )
                         newname=p[1].GetName()+'_'+str(len(stackplots))
                         newplot=p[1].Clone( newname )
                         newplot.Reset('ICE')
@@ -403,12 +441,13 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
 
             #store the final result
             if(len(procplots)==0): continue
+            plottitles=procplotstitles
             if(not isdata) :
                 if(not spimpose) : stackplots.append(procplots)
                 else : spimposeplots.append(procplots)
             else : dataplots.append(procplots)
 
-    showControlPlots(stackplots,spimposeplots,dataplots,generalLabel,outputDir,samplehtml)
+    showControlPlots(stackplots,spimposeplots,dataplots,plottitles,generalLabel,outputDir,samplehtml)
 
 
 # steer script

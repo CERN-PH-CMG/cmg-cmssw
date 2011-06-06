@@ -199,7 +199,7 @@
 	   ]	
 	},
 	{
-          "tag":"gg #rightarrow H(400) #rightarrow 2l2#nu x10",
+          "tag":"gg #rightarrow H(400) #rightarrow ZZ #rightarrow 2l2#nu x10",
           "isdata":false,
           "spimpose":true,
           "color":"kCyan+3",
@@ -214,7 +214,20 @@
                  "xsec":2.035,
                  "br":0.0118,
                  "sfactor":10
-                 },
+                 }
+	   ]
+	},
+	{
+          "tag":"gg #rightarrow H(400) #rightarrow WW #rightarrow 2l2#nu x10",
+          "isdata":false,
+          "spimpose":true,
+          "color":"kCyan+3",
+          "lwidth":4,
+	  "line":2,
+          "fill":0,
+          "marker":1,
+          "data":[
+
                  {
                  "dtag":"GluGluToHToWWTo2L2Nu_M-400_Spring11",
                  "dset":"/GluGluToHToWWTo2L2Nu_M-400_7TeV-powheg-pythia6/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
@@ -226,7 +239,7 @@
            ]
         },
 	{
-          "tag":"gg #rightarrow H(200) #rightarrow 2l2#nu x10",
+          "tag":"gg #rightarrow H(200) #rightarrow ZZ #rightarrow 2l2#nu x10",
           "isdata":false,
 	  "spimpose":true,
           "color":"1",
@@ -241,7 +254,19 @@
 		 "xsec":5.249,
 		 "br":0.011031,
 		 "sfactor":10
-                 },
+                 }
+	   ]
+	},
+	{
+	  "tag":"gg #rightarrow H(200) #rightarrow WW #rightarrow 2l2#nu x10",
+          "isdata":false,
+          "spimpose":true,
+          "color":"1",
+          "lwidth":4,
+          "line":2,
+          "fill":0,
+          "marker":1,
+          "data":[
                  {
                  "dtag":"GluGluToHToWWTo2L2Nu_M-200_Spring11",
                  "dset":"/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Spring11-PU_S1_START311_V1G1-v1/AODSIM",

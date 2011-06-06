@@ -1,6 +1,7 @@
 #include "CMGTools/HtoZZ2l2nu/interface/getRunInfo.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
 #include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
+#include "CMGTools/HtoZZ2l2nu/interface/SelectionMonitor.h"
 
 #ifdef __CINT__
 
@@ -20,6 +21,9 @@
 #pragma link C++ function showSimplePlot;
 #pragma link C++ function showMCtoDataComparison;
 #pragma link C++ function getPlotAsTable;
+#pragma link C++ function getProjections;
+#pragma link C++ function showPlotsAndMCtoDataComparison;
+#pragma link C++ class SelectionMonitor;
 #endif
 
 // Local Variables:
