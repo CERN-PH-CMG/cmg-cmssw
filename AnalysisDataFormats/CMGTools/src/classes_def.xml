@@ -206,7 +206,22 @@
   <class name="std::vector<PATMuonNuPair>"/>
   <class name="edm::Wrapper<PATMuonNuPair>"/>
   <class name="edm::Wrapper<std::vector<PATMuonNuPair> >"/>
-  
+
+
+  <class name="cmg::TauE"/>
+  <class name="std::vector<cmg::TauE>"/>
+  <class name="edm::Wrapper<cmg::TauE>"/>
+  <class name="edm::Wrapper<std::vector<cmg::TauE> >"/>
+
+  <class name="cmg::TauMu"/>
+  <class name="std::vector<cmg::TauMu>"/>
+  <class name="edm::Wrapper<cmg::TauMu>"/>
+  <class name="edm::Wrapper<std::vector<cmg::TauMu> >"/>
+
+  <class name="cmg::MuE"/>
+  <class name="std::vector<cmg::MuE>"/>
+  <class name="edm::Wrapper<cmg::MuE>"/>
+  <class name="edm::Wrapper<std::vector<cmg::MuE> >"/>
   
 
 
