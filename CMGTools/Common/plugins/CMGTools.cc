@@ -14,6 +14,9 @@ DEFINE_FWK_MODULE(DiJetPOProducer);
 DEFINE_FWK_MODULE(DiFatJetPOProducer);
 DEFINE_FWK_MODULE(DiPFJetPOProducer);
 DEFINE_FWK_MODULE(DiTauPOProducer);
+DEFINE_FWK_MODULE(TauEPOProducer);
+DEFINE_FWK_MODULE(TauMuPOProducer);
+DEFINE_FWK_MODULE(MuEPOProducer);
 DEFINE_FWK_MODULE(ElectronPOProducer);
 DEFINE_FWK_MODULE(MuonPOProducer);
 DEFINE_FWK_MODULE(TauPOProducer);
@@ -48,6 +51,9 @@ DEFINE_FWK_MODULE(CmgDiFatJetHistograms);
 DEFINE_FWK_MODULE(CmgDiJetHistograms);
 DEFINE_FWK_MODULE(CmgDiPFJetHistograms);
 
+DEFINE_FWK_MODULE(CmgTauEHistograms);
+DEFINE_FWK_MODULE(CmgTauMuHistograms);
+DEFINE_FWK_MODULE(CmgMuEHistograms);
 
 DEFINE_FWK_MODULE(CmgDiMuonDataSet);
 DEFINE_FWK_MODULE(CmgDiTauDataSet);
@@ -84,3 +90,7 @@ DEFINE_FWK_MODULE(CmgDiElectronSelector);
 DEFINE_FWK_MODULE(CmgWENuSelector);
 DEFINE_FWK_MODULE(CmgWMuNuSelector);
 DEFINE_FWK_MODULE(CmgTriggerObjectSelector);
+
+DEFINE_FWK_MODULE(CmgTauESelector);
+DEFINE_FWK_MODULE(CmgTauMuSelector);
+DEFINE_FWK_MODULE(CmgMuESelector);
