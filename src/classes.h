@@ -232,6 +232,24 @@ namespace {
     edm::Wrapper<PATMuonNuPair> dummyPATMuNuPairWrapper_;
     edm::Wrapper<std::vector<PATMuonNuPair> > dummyPATMuNuPairVectorWrapper_;
     
+
+    //for Tau-Tau
+    cmg::TauE taue;
+    std::vector<cmg::TauE> taue_;
+    edm::Wrapper<cmg::TauE> wtaue_;
+    edm::Wrapper<std::vector<cmg::TauE> > wtauev_;
+
+    cmg::TauMu taumu;
+    std::vector<cmg::TauMu> taumu_;
+    edm::Wrapper<cmg::TauMu> wtaumu_;
+    edm::Wrapper<std::vector<cmg::TauMu> > wtaumuv_;
+
+    cmg::MuE mue;
+    std::vector<cmg::MuE> mue_;
+    edm::Wrapper<cmg::MuE> wmue_;
+    edm::Wrapper<std::vector<cmg::MuE> > wmuev_;
+
+
   };
   
 
