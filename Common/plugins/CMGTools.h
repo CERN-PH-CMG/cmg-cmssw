@@ -80,6 +80,11 @@ typedef PhysicsObjectProducer<cmg::WMuNuFactory> WMuNuPOProducer;
 typedef PhysicsObjectProducer<cmg::WTauNuFactory> WTauNuPOProducer;
 typedef PhysicsObjectProducer<cmg::TriggerObjectFactory> TriggerObjectPOProducer;
 
+typedef PhysicsObjectProducer<cmg::TauEFactory> TauEPOProducer;
+typedef PhysicsObjectProducer<cmg::TauMuFactory> TauMuPOProducer;
+typedef PhysicsObjectProducer<cmg::MuEFactory> MuEPOProducer;
+
+
 typedef cmg::HistogramAnalyzer<cmg::JetHistograms> PFJetHistogramsAnalyzer;
 typedef cmg::HistogramAnalyzer<cmg::TriggerResultHistograms> TriggerResultHistogramsAnalyzer;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::BaseMET> > GenericBaseMETHistograms;
@@ -100,6 +105,10 @@ typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::FatJet> > CmgFatJetHi
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiFatJet> > CmgDiFatJetHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiJet> > CmgDiJetHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiPFJet> > CmgDiPFJetHistograms;
+
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::TauE> > CmgTauEHistograms;
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::TauMu> > CmgTauMuHistograms;
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::MuE> > CmgMuEHistograms;
 
 // For datasets.
 typedef cmg::HistogramAnalyzer<cmg::GenericRooDataSets<cmg::DiMuon> > CmgDiMuonDataSet;
@@ -203,5 +212,20 @@ typedef SingleObjectSelector<
   std::vector<cmg::WMuNu>,
   StringCutObjectSelector<cmg::WMuNu>
   > CmgWMuNuSelector;
+
+typedef SingleObjectSelector<
+  std::vector<cmg::TauE>,
+  StringCutObjectSelector<cmg::TauE>
+  > CmgTauESelector;
+
+typedef SingleObjectSelector<
+  std::vector<cmg::TauMu>,
+  StringCutObjectSelector<cmg::TauMu>
+  > CmgTauMuSelector;
+
+typedef SingleObjectSelector<
+  std::vector<cmg::MuE>,
+  StringCutObjectSelector<cmg::MuE>
+  > CmgMuESelector;
 
 #endif
