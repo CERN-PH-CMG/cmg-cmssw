@@ -16,7 +16,8 @@ class JetCorrectionUncertainty;
 
 namespace cmg {
 
-  class BaseJetFactory : public Factory<cmg::BaseJet>, public SettingTool<pat::JetPtr, cmg::BaseJet> {
+  class BaseJetFactory : public Factory<cmg::BaseJet>,
+    public SettingTool<pat::JetPtr, cmg::BaseJet> {
   public:
     BaseJetFactory(const edm::ParameterSet& ps);
     virtual ~BaseJetFactory();
@@ -26,7 +27,7 @@ namespace cmg {
   private:
     const edm::InputTag jetLabel_;
     const std::string btagType_;
-    const bool applyJecUncertainty_;
+    const bool fillJecUncertainty_;
     std::string jecPath_;
     int jecUncDirection_;
 
