@@ -14,30 +14,30 @@ cmg::TriggerResultHistograms::TriggerResultHistograms(const edm::ParameterSet& p
 }
 
 void cmg::TriggerResultHistograms::fill(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-    
+
     edm::Handle<type> trigger;
-    iEvent.getByLabel(label_,trigger);
+    iEvent.getByLabel(labelX_,trigger);
     const edm::TriggerNames& triggerNames = iEvent.triggerNames(*trigger);
-    
+
     edm::TriggerNames::Strings const& s = triggerNames.triggerNames();
     defineHistograms(s);//call the histogram creation as we need the names
-    
+
     //i.e. you can change the pointer but not the object
     std::vector<std::string>const * filteredPaths = 0;
     if(names_.size()){
         filteredPaths = &names_;
     }else{
-        filteredPaths = &s; 
+        filteredPaths = &s;
     }
 
     TH2* corr = get2DHistogram("triggerCorrelation");
     TH1* passed = get1DHistogram("passedTriggers");
     TH1* failed = get1DHistogram("failedTriggers");
     TH1* run = get1DHistogram("runTriggers");
-    
+
     Int_t binX = 1;
     Int_t binY = 1;
-    
+
     for(std::vector<std::string>::const_iterator it = filteredPaths->begin(); it != filteredPaths->end(); ++it){
         const unsigned int i = triggerNames.triggerIndex(*it);
         if(i >= triggerNames.size()) continue;
@@ -68,16 +68,16 @@ void cmg::TriggerResultHistograms::fill(const edm::Event& iEvent, const edm::Eve
 }
 
 void cmg::TriggerResultHistograms::defineHistograms(const std::vector<std::string>& trigPaths){
-    
+
     if(cmg::HistogramCreator<type>::histosInitialized_)
       return;
-    
+
     //i.e. you can change the pointer but not the object
     std::vector<std::string>const * filteredPaths = 0;
     if(names_.size()){
         filteredPaths = &names_;
     }else{
-        filteredPaths = &trigPaths; 
+        filteredPaths = &trigPaths;
     }
     const unsigned int nPaths = filteredPaths->size();
 
@@ -94,32 +94,32 @@ void cmg::TriggerResultHistograms::defineHistograms(const std::vector<std::strin
         "runTriggers","runTriggers",
         nPaths,0,nPaths,
         cmg::HistogramCreator<type>::fs_.operator->());
-    
+
     //correlation plot
     add2DHistogram(
         "triggerCorrelation","triggerCorrelation",
         nPaths,0,nPaths,
         nPaths,0,nPaths,
         cmg::HistogramCreator<type>::fs_.operator->());
-    
+
     TAxis* x = get2DHistogram("triggerCorrelation")->GetXaxis();
     TAxis* y = get2DHistogram("triggerCorrelation")->GetYaxis();
-    
+
     TAxis* xPassed = get1DHistogram("passedTriggers")->GetXaxis();
     TAxis* xFailed = get1DHistogram("failedTriggers")->GetXaxis();
     TAxis* xRun = get1DHistogram("runTriggers")->GetXaxis();
-        
+
     for(unsigned int i = 0; i < nPaths; i++){
         const std::string name = filteredPaths->at(i);
-        
-        x->SetBinLabel(static_cast<Int_t>(i+1),name.c_str()); 
+
+        x->SetBinLabel(static_cast<Int_t>(i+1),name.c_str());
         y->SetBinLabel(static_cast<Int_t>(i+1),name.c_str());
-        
+
         xPassed->SetBinLabel(static_cast<Int_t>(i+1),name.c_str());
         xFailed->SetBinLabel(static_cast<Int_t>(i+1),name.c_str());
         xRun->SetBinLabel(static_cast<Int_t>(i+1),name.c_str());
     }
-    
+
     cmg::HistogramCreator<type>::histosInitialized_ = true;
-    
+
 }
