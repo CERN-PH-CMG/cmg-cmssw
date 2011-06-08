@@ -201,7 +201,7 @@ template<class T>
 void cmg::GenericRooDataSets<T>::fill(const edm::Event& iEvent, const edm::EventSetup&){
 
     edm::Handle<typename cmg::HistogramCreator<T>::view> cands;
-    iEvent.getByLabel(cmg::HistogramCreator<T>::label_,cands);
+    iEvent.getByLabel(cmg::HistogramCreator<T>::labelX_,cands);
     
     const unsigned int run = iEvent.id().run();
     const unsigned int lumi = iEvent.id().luminosityBlock();
