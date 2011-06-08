@@ -18,10 +18,10 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
     )
 
-process.source.fileNames = cms.untracked.vstring(
-    # 'file:patTuple_HT.root'
-    'file:/afs/cern.ch/user/c/cbern/scratch0/patTuple_PF2PAT.root'
-    )
+# process.source.fileNames = cms.untracked.vstring(
+#    # 'file:patTuple_HT.root'
+#    'file:/afs/cern.ch/user/c/cbern/scratch0/patTuple_PF2PAT.root'
+#    )
 
 # process.load("CMGTools.Common.sources.relval.RelValQCD_FlatPt_15_3000.CMSSW_3_11_2.MC_311_V2.source_cff")
 # process.load("CMGTools.Common.sources.relval.RelValTTbar.CMSSW_3_11_2.MC_311_V2.source_cff")
@@ -29,6 +29,14 @@ process.source.fileNames = cms.untracked.vstring(
 #    'file:input.root'
 #    )
 # process.load("CMGTools.Common.sources.relval.RelValTTbar.CMSSW_3_11_2.MC_311_V2.source_cff")
+process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.PAT_CMG_MAX.source_PAT_cff")
+
+# reading the first 10 files:
+nFiles = 10
+print 'WARNING: RESTRICTING INPUT TO THE FIRST', nFiles, 'FILES'
+process.source.fileNames = process.source.fileNames[:nFiles-1] 
+
+print process.source.fileNames
 
 # output module for EDM event (ntuple)
 process.out.fileName = cms.untracked.string('tree_testCMGTools.root')
@@ -60,6 +68,10 @@ process.load('CMGTools.Common.analysis_cff')
 
 # now, we're going to tune the default analysis sequence to our needs
 # by modifying the parameters of the modules present in this sequence. 
+
+# removing the taus, as PFCandidate embedding does not work, hence an exception in the cmg Tau factory
+from CMGTools.Common.Tools.tuneCMGSequences import removeObject
+removeObject( process, 'tau', '') 
 
 # Select events with 2 jet ...  
 # process.cmgPFJetCount.minNumber = 2
