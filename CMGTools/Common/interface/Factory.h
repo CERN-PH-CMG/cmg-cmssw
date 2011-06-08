@@ -13,7 +13,7 @@
 namespace cmg{
 
 template <class CMGPhysicsObject>
-class Factory{
+class Factory {
  public:
   /// type of objects produced by the factory
   typedef CMGPhysicsObject object_type; 
