@@ -43,7 +43,7 @@ namespace cmg {
                 initHistograms(ps.getUntrackedParameter<edm::ParameterSet>("histograms",edm::ParameterSet()));
         }
 
-        virtual void fill(const T& cand);
+        virtual void fill(const T& cand, const T& cand1, const T& cand2);
         virtual void fill(const edm::Event& iEvent, const edm::EventSetup& iSetup){
             cmg::HistogramCreator<T>::fill(iEvent,iSetup);
         }
@@ -140,36 +140,33 @@ void cmg::GenericHistograms<T>::defineHistograms()
 }
 
 template<class T>
-void cmg::GenericHistograms<T>::fill(const T& cand){
+void cmg::GenericHistograms<T>::fill(const T& cand0, const T& cand1, const T& cand2){
 
-    for(typename Histograms::const_iterator it = histos_->begin(); it != histos_->end(); it++){
-        const unsigned int size = it->second.size();
-        switch(size){
-            case 1:
-                    {
-                        HistogramAxis axis = it->second.at(0);
-                        fill1DHistogram(it->first,axis.fn_(cand));
-                        break;
-                    }
-           case 2:
-                    {
-                        HistogramAxis axisX = it->second.at(0);
-                        HistogramAxis axisY = it->second.at(1);
-                        fill2DHistogram(it->first,axisX.fn_(cand),axisY.fn_(cand));
-                        break;
-                    }
-           case 3:
-                    {
-                        HistogramAxis axisX = it->second.at(0);
-                        HistogramAxis axisY = it->second.at(1);
-                        HistogramAxis axisZ = it->second.at(2);
-                        fill3DHistogram(it->first,axisX.fn_(cand),axisY.fn_(cand),axisZ.fn_(cand));
-                        break;
-                    }
-           default:
-                        std::cerr << "Unsupported number of variables for histogram " << it->first << std::endl;
-           }
+  for(typename Histograms::const_iterator it = histos_->begin(); it != histos_->end(); it++) {
+    const unsigned int size = it->second.size();
+    switch(size) {
+    case 1: {
+      HistogramAxis axis = it->second.at(0);
+      fill1DHistogram(it->first, axis.fn_(cand0));
+      break;
     }
+    case 2: {
+      HistogramAxis axisX = it->second.at(0);
+      HistogramAxis axisY = it->second.at(1);
+      fill2DHistogram(it->first, axisX.fn_(cand0), axisY.fn_(cand1));
+      break;
+    }
+    case 3: {
+      HistogramAxis axisX = it->second.at(0);
+      HistogramAxis axisY = it->second.at(1);
+      HistogramAxis axisZ = it->second.at(2);
+      fill3DHistogram(it->first, axisX.fn_(cand0), axisY.fn_(cand1), axisZ.fn_(cand2));
+      break;
+    }
+    default:
+      std::cerr << "Unsupported number of variables for histogram " << it->first << std::endl;
+    }
+  }
 }
 
 #endif /*GENERICHISTOGRAMS_H_*/

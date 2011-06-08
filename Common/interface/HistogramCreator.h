@@ -15,51 +15,85 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 namespace cmg{
 
-   template <class T>
-   class HistogramCreator : public AnalysisHistograms{
-    public:
-        HistogramCreator(const edm::ParameterSet& ps):
-            AnalysisHistograms::AnalysisHistograms(),
-            label_(ps.getParameter<edm::InputTag>("inputCollection")){
-        }
-		
-        virtual ~HistogramCreator(){
-        }
-
-        void init(){
-	       AnalysisHistograms::init( fs_.operator->() );
+  template <class T>
+    class HistogramCreator : public AnalysisHistograms{
+  public:
+    HistogramCreator(const edm::ParameterSet& ps):
+      AnalysisHistograms::AnalysisHistograms(),
+      labelX_(ps.getParameter<edm::InputTag>("inputCollection"))
+        {
+          labelY_ = ps.getUntrackedParameter<edm::InputTag>("inputCollectionY",
+                                                            edm::InputTag("", "", ""));
+          labelZ_ = ps.getUntrackedParameter<edm::InputTag>("inputCollectionZ",
+                                                            edm::InputTag("", "", ""));
         }
 
-        // fill the histograms after getting a collection from the event
-        virtual void fill(const edm::Event& iEvent, const edm::EventSetup&){
-	       edm::Handle<view> cands;
-	       iEvent.getByLabel(label_,cands);
-	       for(typename view::const_iterator it = cands->begin(); it != cands->end(); ++it){
-	           fill(*it);	
-	       }
+      virtual ~HistogramCreator(){
+      }
+
+      void init(){
+        AnalysisHistograms::init( fs_.operator->() );
+      }
+
+      // Fill the histograms after getting a collection from the event.
+      virtual void fill(const edm::Event& iEvent, const edm::EventSetup&) {
+        edm::Handle<view> candsX;
+        iEvent.getByLabel(labelX_, candsX);
+        if (labelY_.encode() == "") {
+          // Only X-collection given.
+          for(typename view::const_iterator it = candsX->begin(); it != candsX->end(); ++it) {
+            fill(*it, *it, *it);
+          }
+        } else if (labelZ_.encode() == "") {
+          // X- and Y-collections given, no Z-collection.
+          edm::Handle<view> candsY;
+          iEvent.getByLabel(labelY_, candsY);
+          size_t sizeX = candsX->size();
+          size_t sizeY = candsY->size();
+          size_t sizeMin = std::min(sizeX, sizeY);
+          T dummy;
+          for (size_t i = 0; i != sizeMin; ++i) {
+            fill(candsX->at(i), candsY->at(i), dummy);
+          }
+        } else {
+          // All three input collections given.
+          edm::Handle<view> candsY;
+          iEvent.getByLabel(labelY_, candsY);
+          edm::Handle<view> candsZ;
+          iEvent.getByLabel(labelZ_, candsZ);
+          size_t sizeX = candsX->size();
+          size_t sizeY = candsY->size();
+          size_t sizeZ = candsZ->size();
+          size_t sizeMin = std::min(std::min(sizeX, sizeY), sizeZ);
+          for (size_t i = 0; i != sizeMin; ++i) {
+            fill(candsX->at(i), candsY->at(i), candsZ->at(i));
+          }
         }
-		
-        // fill on a per PhysicsObject basis
-        virtual void fill(const T& cand){
-        }
-		
-        typedef T type;
-        typedef edm::View<T> view;
-		
-    protected:
-	
-        // can define any histograms here
-        virtual void defineHistograms() = 0;
-	
-        const edm::Service<TFileService> fs_;
-        const edm::InputTag label_;
-        const std::string name_;
-  };	
-	
+      }
+
+      // Fill on a per-PhysicsObject basis.
+      virtual void fill(const T& cand0, const T& cand1, const T& cand2)
+      {}
+
+      typedef T type;
+      typedef edm::View<T> view;
+
+  protected:
+
+      // Can define any histograms here.
+      virtual void defineHistograms() = 0;
+
+      const edm::Service<TFileService> fs_;
+      const edm::InputTag labelX_;
+      edm::InputTag labelY_;
+      edm::InputTag labelZ_;
+      const std::string name_;
+  };
+
 }
-
 
 #endif /*HISTOGRAMCREATOR_H_*/
