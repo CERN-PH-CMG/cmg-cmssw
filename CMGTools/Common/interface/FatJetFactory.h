@@ -17,43 +17,36 @@
 #include "CMGTools/Common/interface/SettingTool.h"
 #include "CMGTools/Common/interface/MultiObjectSettingTool.h"
 
-
 #include <TRandom3.h>
 #include <algorithm>
 #include <set>
 #include <utility>
 
-namespace cmg{
+namespace cmg {
 
-  class FatJetFactory : public cmg::Factory< cmg::FatJet >,
-    public SettingTool<std::vector<edm::Ptr<reco::Candidate> >, cmg::FatJet>{
+  class FatJetFactory : public cmg::Factory<cmg::FatJet>,
+    public SettingTool<std::vector<edm::Ptr<reco::Candidate> >, cmg::FatJet> {
   public:
-
-   
 
     FatJetFactory(const edm::ParameterSet& ps):
       collectionLabel_(ps.getParameter<edm::InputTag>("inputCollection")),
-      Rmax_(ps.getParameter<double>("Rmax")){
-    }
+      Rmax_(ps.getParameter<double>("Rmax"))
+        {}
 
-      //need to override from Factory to insert "typename"
+      // Need to override from Factory to insert "typename".
       typedef cmg::Factory< cmg::FatJet >::event_ptr event_ptr;
       virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
-        
+
       void set(std::vector<edm::Ptr<reco::Candidate> > const& input,
-	       cmg::FatJet& object) const;
+               cmg::FatJet& object) const;
 
-      virtual ~FatJetFactory(){};
-
+      virtual ~FatJetFactory() {};
 
   private:
       const edm::InputTag collectionLabel_;
       MultiObjectSettingTool const multiObjectFactory_;
       const double Rmax_;
-
-      //   typename cmg::FatJetFactory<T>::event_ptr result;
   };
 }
-
 
 #endif /*FATJETFACTORY_H_*/
