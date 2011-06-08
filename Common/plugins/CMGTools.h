@@ -101,6 +101,8 @@ typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiTau> > CmgDiTauHist
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiElectron> > CmgDiElectronHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiHemisphere> > CmgDiHemiHistograms;
 
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::BaseJet> > CmgBaseJetHistograms;
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::PFJet> > CmgPFJetHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::FatJet> > CmgFatJetHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiFatJet> > CmgDiFatJetHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiJet> > CmgDiJetHistograms;
