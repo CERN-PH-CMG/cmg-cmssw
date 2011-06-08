@@ -14,10 +14,10 @@
 #include <iostream>
 #include <memory>
 
-namespace cmg{
+namespace cmg {
 
 template <class PATPtr>
-class PhysicsObjectFactory : public cmg::Factory< cmg::PhysicsObjectWithPtr<PATPtr> >{
+class PhysicsObjectFactory : public cmg::Factory<cmg::PhysicsObjectWithPtr<PATPtr> > {
     public:
         PhysicsObjectFactory(const edm::ParameterSet& ps):
             inputLabel_(ps.getParameter<edm::InputTag>("inputCollection")){
@@ -50,6 +50,5 @@ typename cmg::PhysicsObjectFactory<PATPtr>::event_ptr cmg::PhysicsObjectFactory<
   }
   return result;
 }
-
 
 #endif /*PHYSICSOBJECTFACTORY_H_*/
