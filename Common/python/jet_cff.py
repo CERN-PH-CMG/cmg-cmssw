@@ -9,10 +9,9 @@ from CMGTools.Common.skims.cmgBaseJetSel_cfi import cmgBaseJetSel
 from CMGTools.Common.skims.leadingCMGBaseJetSelector_cfi import leadingCMGBaseJetSelector
 from CMGTools.Common.skims.leadingCMGPFJetSelector_cfi import leadingCMGPFJetSelector
 
-
 # PF jets -------------------------------------------------------
 
-# leading jets 
+# leading jets
 cmgPFJetLead = leadingCMGPFJetSelector.clone()
 cmgPFJetLead.inputCollection = 'cmgPFJet'
 
@@ -27,13 +26,12 @@ cmgPFBaseJetLead.inputCollection = 'cmgPFBaseJet'
 
 # Light calo jets -----------------------------------------------
 cmgCaloBaseJet = cmgBaseJet.clone()
-cmgCaloBaseJet.cfg.inputCollection = 'selectedPatJets'
+cmgCaloBaseJet.cfg.inputCollection = 'selectedPatJetsAK5'
 
 cmgCaloBaseJetSel = cmgBaseJetSel.clone( src = 'cmgCaloBaseJet' )
 
 cmgCaloBaseJetLead = leadingCMGBaseJetSelector.clone()
 cmgCaloBaseJetLead.inputCollection = 'cmgCaloBaseJet'
-
 
 cmgPFJetSel.cut = 'pt()>15'
 cmgPFBaseJetSel.cut = 'pt()>15'
@@ -41,24 +39,23 @@ cmgCaloBaseJetSel.cut = 'pt()>15'
 
 pfJetSequence = cms.Sequence(
     cmgPFJet +
-    cmgPFJetSel + 
+    cmgPFJetSel +
     cmgPFJetLead +
     cmgPFBaseJet +
     cmgPFBaseJetSel +
     # pfJetLorentzVector +
-    # pfJetHistograms +  
-    cmgPFBaseJetLead 
+    # pfJetHistograms +
+    cmgPFBaseJetLead
     )
 
 caloJetSequence = cms.Sequence(
     cmgCaloBaseJet +
-    cmgCaloBaseJetSel + 
-    cmgCaloBaseJetLead  
+    cmgCaloBaseJetSel +
+    cmgCaloBaseJetLead
 #    caloJetLorentzVector
     )
 
-
 jetSequence = cms.Sequence(
     pfJetSequence
-    # + caloJetSequence 
-    ) 
+    # + caloJetSequence
+    )

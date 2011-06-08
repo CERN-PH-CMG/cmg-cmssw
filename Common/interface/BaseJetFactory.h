@@ -12,23 +12,27 @@
 #include <memory>
 #include <string>
 
-namespace cmg{
+class JetCorrectionUncertainty;
 
-  class BaseJetFactory : public Factory<cmg::BaseJet>, public SettingTool<pat::JetPtr,cmg::BaseJet>{
+namespace cmg {
+
+  class BaseJetFactory : public Factory<cmg::BaseJet>, public SettingTool<pat::JetPtr, cmg::BaseJet> {
   public:
-    BaseJetFactory(const edm::ParameterSet& ps):
-      jetLabel_(ps.getParameter<edm::InputTag>("inputCollection")),
-      btagType_(ps.getParameter<std::string>("btagType")){
-    }
+    BaseJetFactory(const edm::ParameterSet& ps);
+    virtual ~BaseJetFactory();
     virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
     virtual void set(const pat::JetPtr& input, cmg::BaseJet* const output) const;
-		
+
   private:
     const edm::InputTag jetLabel_;
     const std::string btagType_;
+    const bool applyJecUncertainty_;
+    std::string jecPath_;
+    int jecUncDirection_;
+
+    JetCorrectionUncertainty* JES_;
   };
 
 }
-
 
 #endif /*JETFACTORY_H_*/
