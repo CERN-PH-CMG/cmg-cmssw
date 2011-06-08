@@ -9,33 +9,39 @@
 #include <memory>
 #include <vector>
 
-namespace cmg{
+namespace cmg {
 
 template <class PATPtr> class PhysicsObjectWithPtr;
 template <class PATPtr> class PhysicsObjectFactory;
+template <class T> class Factory;
 
-/// A class for a PhysicsObjects, which have a pointer to a pat Candidate, made from a factory
+/// A class for a PhysicsObjects, which have a pointer to a PAT
+/// Candidate, made from a factory.
 template <class PATPtr>
 class PhysicsObjectWithPtr : public AbstractPhysicsObject {
-	
-  public:
-  
+
+public:
+
   typedef PATPtr value;
-  
+
   PhysicsObjectWithPtr(const PATPtr& sourcePtr):
-    AbstractPhysicsObject::AbstractPhysicsObject( *sourcePtr ), sourcePtr_(sourcePtr)
+    AbstractPhysicsObject::AbstractPhysicsObject(*sourcePtr),
+    sourcePtr_(sourcePtr),
+    uncOnFourVectorScale_(0.)
     {
     }
   PhysicsObjectWithPtr():
-    AbstractPhysicsObject::AbstractPhysicsObject()
+    AbstractPhysicsObject::AbstractPhysicsObject(),
+    uncOnFourVectorScale_(0.)
     {
     }
 
   PATPtr const* sourcePtr() const{
-    return &sourcePtr_; 
+    return &sourcePtr_;
   }
-  
-  ///Overides the methods reco::Candidate so that it can be used with the TopProjector
+
+  /// Overides the methods reco::Candidate so that it can be used with
+  /// the TopProjector.
   virtual reco::Candidate::size_type numberOfSourceCandidatePtrs() const{
     reco::Candidate::size_type result = 0;
     if (sourcePtr_.isNonnull() && sourcePtr_.isAvailable()){
@@ -43,16 +49,19 @@ class PhysicsObjectWithPtr : public AbstractPhysicsObject {
     }
     return result;
   }
-  ///Overides the methods reco::Candidate so that it can be used with the TopProjector
-  virtual reco::CandidatePtr sourceCandidatePtr( reco::Candidate::size_type i ) const{
-    return reco::CandidatePtr( sourcePtr_.id(), sourcePtr_.get(), sourcePtr_.key() );
+
+  /// Overides the methods reco::Candidate so that it can be used with
+  /// the TopProjector.
+  virtual reco::CandidatePtr sourceCandidatePtr(reco::Candidate::size_type i) const{
+    return reco::CandidatePtr(sourcePtr_.id(), sourcePtr_.get(), sourcePtr_.key());
   }
-  
-  private:
+
+private:
   PATPtr sourcePtr_;
-  
+
   friend class cmg::PhysicsObjectFactory<PATPtr>;
-  
+  friend class cmg::Factory<cmg::PhysicsObjectWithPtr<PATPtr> >;
+
 };
 
 }
