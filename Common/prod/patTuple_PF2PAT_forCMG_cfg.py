@@ -3,7 +3,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 ### MASTER FLAGS  ######################################################################
 
-runOnMC = True
+runOnMC = False
 
 # AK5 sequence with no cleaning is the default
 # the other sequences can be turned off with the following flags.
@@ -14,6 +14,10 @@ runAK7 = True
 
 #COLIN : reactivate HPS when bugs corrected
 hpsTaus = False
+
+#COLIN: the following leads to rare segmentation faults
+doJetPileUpCorrection = True
+doJetPileUpCorrectionRho = False
 
 #COLIN : when activating PFCandidate (and other stuff) embedding,
 # patTaus cannot be stored together with cmgTaus...
@@ -60,7 +64,8 @@ print sep_line
 # process.load("CMGTools.Common.sources.QCD_Pt_600to800_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
 # process.load("CMGTools.Common.sources.QCD_Pt_800to1000_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
 # process.load("CMGTools.Common.sources.QCD_Pt_1000to1400_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
-process.load("CMGTools.Common.sources.QCD_Pt_1400to1800_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
+# process.load("CMGTools.Common.sources.QCD_Pt_1400to1800_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
+process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.source_maxime_cff")
 
 
 print 'PF2PAT+PAT+CMG for files:'
@@ -91,8 +96,9 @@ usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgoAK5, runOnMC=runOnMC, postfix=p
           jetCorrections=('AK5PFchs', ['L1FastJet','L2Relative','L3Absolute']))
 
 
-from CommonTools.ParticleFlow.Tools.enablePileUpCorrection import enablePileUpCorrection
-enablePileUpCorrection( process, postfix=postfixAK5)
+if doJetPileUpCorrection:
+    from CommonTools.ParticleFlow.Tools.enablePileUpCorrection import enablePileUpCorrection
+    enablePileUpCorrection( process, postfix=postfixAK5, doRho=doJetPileUpCorrectionRho)
 
 from CMGTools.Common.PAT.embedPFCandidatesInTaus import embedPFCandidatesInTaus
 if doEmbedPFCandidatesInTaus:
@@ -146,7 +152,8 @@ jetAlgoAK7="AK7"
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgoAK7, runOnMC=runOnMC, postfix=postfixAK7,
           jetCorrections=('AK7PF', ['L1FastJet','L2Relative','L3Absolute']))
 
-enablePileUpCorrection( process, postfix=postfixAK7)
+if doJetPileUpCorrection:
+    enablePileUpCorrection( process, postfix=postfixAK7, doRho=doJetPileUpCorrectionRho)
 
 # no need for taus in AK7 sequence. could remove the whole tau sequence to gain time?
 # if hpsTaus:
