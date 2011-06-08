@@ -46,6 +46,8 @@ DEFINE_FWK_MODULE(CmgDiTauHistograms);
 DEFINE_FWK_MODULE(CmgDiElectronHistograms);
 DEFINE_FWK_MODULE(CmgDiHemiHistograms);
 
+DEFINE_FWK_MODULE(CmgBaseJetHistograms);
+DEFINE_FWK_MODULE(CmgPFJetHistograms);
 DEFINE_FWK_MODULE(CmgFatJetHistograms);
 DEFINE_FWK_MODULE(CmgDiFatJetHistograms);
 DEFINE_FWK_MODULE(CmgDiJetHistograms);
