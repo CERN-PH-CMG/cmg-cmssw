@@ -24,7 +24,8 @@ namespace cmg {
     BaseJet(const value& m):
       PhysicsObjectWithPtr<value>::PhysicsObjectWithPtr(m),
       btag_(UnSet(double)),
-      rawFactor_(1.)
+      rawFactor_(1.),
+      uncOnFourVectorScale_(0.)
         {}
 
     virtual ~BaseJet(){}
@@ -37,6 +38,8 @@ namespace cmg {
     /// \return a correction factor that can be applied to the jet energy or pT to bring
     /// it back to the uncorrected value
     Float_t rawFactor() const {return rawFactor_;}
+
+    Float_t uncOnFourVectorScale() const {return uncOnFourVectorScale_;}
 
     friend class BaseJetFactory;
 
@@ -51,6 +54,12 @@ namespace cmg {
     /// Correction factor that can be applied to the jet energy or pT
     /// to bring it back to the uncorrected value.
     Float_t rawFactor_;
+
+    /// The uncertainty on the four-vector scale. This can be used to
+    /// scale up/down the four-vector according to the scale
+    /// uncertainty by multiplying by (1. +/- uncOnFourVectorScale_).
+    Float_t uncOnFourVectorScale_;
+
   };
 }
 
