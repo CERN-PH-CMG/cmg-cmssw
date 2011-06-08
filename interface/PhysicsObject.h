@@ -26,13 +26,11 @@ public:
 
   PhysicsObjectWithPtr(const PATPtr& sourcePtr):
     AbstractPhysicsObject::AbstractPhysicsObject(*sourcePtr),
-    sourcePtr_(sourcePtr),
-    uncOnFourVectorScale_(0.)
+    sourcePtr_(sourcePtr)
     {
     }
   PhysicsObjectWithPtr():
-    AbstractPhysicsObject::AbstractPhysicsObject(),
-    uncOnFourVectorScale_(0.)
+    AbstractPhysicsObject::AbstractPhysicsObject()
     {
     }
 
