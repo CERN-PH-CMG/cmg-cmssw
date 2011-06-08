@@ -43,6 +43,7 @@ if runAK7: print '\tAK7'
 print 'embedding in taus: ', doEmbedPFCandidatesInTaus
 print 'HPS taus         : ', hpsTaus
 print 'produce CMG tuple: ', runCMG
+print 'computing rho: ', doJetPileUpCorrectionRho
 print sep_line
 
 
