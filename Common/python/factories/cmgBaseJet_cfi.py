@@ -6,9 +6,8 @@ from CMGTools.Common.selections.kinematics_cfi import kinematics
 baseJetFactory = cms.PSet(
        inputCollection = cms.InputTag("selectedPatJetsAK5"),
        btagType = cms.string('trackCountingHighEffBJetTags'),
-       applyJecUncertainty = cms.bool(False),
-       jecPath = cms.string("CondFormats/JetMETObjects/data/Spring10_Uncertainty_AK5Calo.txt"),
-       jecUncDirection = cms.int32(1)
+       fillJecUncertainty = cms.bool(True),
+       jecPath = cms.string("CondFormats/JetMETObjects/data/Spring10_Uncertainty_AK5Calo.txt")
        )
 
 cmgBaseJet = cms.EDFilter(

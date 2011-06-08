@@ -19,7 +19,7 @@ cmgPFJetLead.inputCollection = 'cmgPFJet'
 cmgPFBaseJet = cmgBaseJet.clone()
 cmgPFBaseJet.cfg.inputCollection = 'selectedPatJetsAK5'
 
-cmgPFBaseJetSel = cmgBaseJetSel.clone( src = 'cmgPFBaseJet' )
+cmgPFBaseJetSel = cmgBaseJetSel.clone(src = 'cmgPFBaseJet')
 
 cmgPFBaseJetLead = leadingCMGBaseJetSelector.clone()
 cmgPFBaseJetLead.inputCollection = 'cmgPFBaseJet'
@@ -28,7 +28,7 @@ cmgPFBaseJetLead.inputCollection = 'cmgPFBaseJet'
 cmgCaloBaseJet = cmgBaseJet.clone()
 cmgCaloBaseJet.cfg.inputCollection = 'selectedPatJetsAK5'
 
-cmgCaloBaseJetSel = cmgBaseJetSel.clone( src = 'cmgCaloBaseJet' )
+cmgCaloBaseJetSel = cmgBaseJetSel.clone(src = 'cmgCaloBaseJet')
 
 cmgCaloBaseJetLead = leadingCMGBaseJetSelector.clone()
 cmgCaloBaseJetLead.inputCollection = 'cmgCaloBaseJet'
