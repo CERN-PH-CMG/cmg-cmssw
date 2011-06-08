@@ -3,12 +3,17 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 ### MASTER FLAGS  ######################################################################
 
+# turn this on if you want to pick a relval in input (see below)
+pickRelVal = False
+
+# turn on when running on MC
 runOnMC = False
 
 # AK5 sequence with no cleaning is the default
 # the other sequences can be turned off with the following flags.
-runAK5LC = True
-runAK7 = True
+#JOSE: no need to run these guys for what you are up to
+runAK5LC = False
+runAK7 = False
 
 #COLIN: will need to include the event filters in tagging mode
 
@@ -17,7 +22,7 @@ hpsTaus = False
 
 #COLIN: the following leads to rare segmentation faults
 doJetPileUpCorrection = True
-doJetPileUpCorrectionRho = False
+doJetPileUpCorrectionRho = True
 
 #COLIN : when activating PFCandidate (and other stuff) embedding,
 # patTaus cannot be stored together with cmgTaus...
@@ -68,6 +73,20 @@ print sep_line
 # process.load("CMGTools.Common.sources.QCD_Pt_1400to1800_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
 process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.source_maxime_cff")
 
+#JOSE: restricting to the first file
+# process.source.fileNames = [process.source.fileNames[0]]
+
+if pickRelVal:
+    process.source = cms.Source(
+        "PoolSource",
+        fileNames = cms.untracked.vstring(
+        pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_2_3'
+                              , relVal        = 'RelValQCD_FlatPt_15_3000'
+                              , globalTag     = 'MC_42_V12'
+                              , numberOfFiles = 1
+                              )
+        )
+        )
 
 print 'PF2PAT+PAT+CMG for files:'
 print process.source.fileNames
