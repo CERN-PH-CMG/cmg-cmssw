@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Colin
+# colin
 # additional layer, on top of cmsBatch.py
 
 import os, sys,  imp, re, pprint, string
@@ -10,18 +10,15 @@ import castortools
 from addToDatasets import *
 
 parser = OptionParser()
-parser.usage = "fwBatch.py <cfg> <sampleName>"
-parser.add_option("-n", "--negate", action="store_true",
-                  dest="negate",
-                  help="do not proceed",
-                  default=False)
+parser.usage = "fwBatch.py <cfg> <sampleName>\n\nExample:\n"
 
-import colin
+# parser.add_option("-n", "--negate", action="store_true",
+#                  dest="negate",
+#                  help="do not proceed",
+#                  default=False)
 
-parser.add_option("-c", "--castorBaseDir", 
-                  dest="castorBaseDir",
-                  help="Base castor directory. Subdirectories will be created automatically for each prod",
-                  default=colin.defaultCastorBaseDir)
+
+
 parser.add_option("-t", "--tier", 
                   dest="tier",
                   help="Tier: extension you can give to specify you are doing a new production",
@@ -49,18 +46,18 @@ if len(args)!=2:
 cfg = args[0]
 sampleName = args[1]
 
-destBaseDir = options.castorBaseDir
-if options.castorBaseDir.find('/castor/cern.ch/user/c/cbern') == -1:
-    destBaseDir = colin.defaultCastorBaseDir
+import castorBaseDir
+destBaseDir = castorBaseDir.myCastorBaseDir()
+
+#if options.castorBaseDir.find('/castor/cern.ch/user/c/cbern') == -1:
+#    destBaseDir = castorBaseDir.defaultCastorBaseDir
 
 
 print 'starting prod for sample:', sampleName
 
 # preparing castor dir -----------------
 
-cdir = options.castorBaseDir 
-
-
+# cdir = options.castorBaseDir 
 
 if options.tier != "":
     sampleName += "/" + options.tier
@@ -77,7 +74,7 @@ os.system(mkdir)
 
 # the output castor directory will be prepared by cmsBatch
 
-cmsBatch = 'cmsBatch.py %s %s -r %s -b "bsub -q %s <  batchScript.sh" -o %s' % (options.nInput, cfg, outFile, options.queue, localOutputDir)
+cmsBatch = 'cmsBatch.py %s %s -r %s -b "%s" -o %s' % (options.nInput, cfg, outFile, options.queue, localOutputDir)
 
 addToDatasets( sampleName )
 

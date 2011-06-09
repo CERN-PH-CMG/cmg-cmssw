@@ -11,7 +11,6 @@ import castortools
 
 
 def allSampleInfo( sampleName, listLevel ):
-    
 
     if listLevel == 3:
         os.system("rfdir %s | awk '{print \"%s/\"$9}'" % (castorDir,castorDir) )
@@ -48,12 +47,12 @@ parser.add_option("-n", "--negate", action="store_true",
                   help="do not proceed",
                   default=False)
 
-import colin
+import castorBaseDir
 
-parser.add_option("-c", "--castorBaseDir", 
-                  dest="castorBaseDir",
-                  help="Base castor directory.",
-                  default=colin.defaultCastorBaseDir)
+parser.add_option("-u", "--user", 
+                  dest="user",
+                  help="user who is the owner of the castor base directory",
+                  default=os.environ['USER'] )
 parser.add_option("-d", "--localBaseDir", 
                   dest="localBaseDir",
                   help="Local directory.",
@@ -62,10 +61,6 @@ parser.add_option("-l", "--listLevel",
                   dest="listLevel", 
                   help="list level",
                   default=False)
-## parser.add_option("-p", "--pattern", 
-##                   dest="pattern",
-##                   help="pattern for root files in castor dir",
-##                   default=".*root")
 
 (options,args) = parser.parse_args()
 
@@ -77,25 +72,33 @@ if len(args)!=1:
 castorDir = ""
 localDir = ""
 
-dataSets = os.environ['HOME'] + "/public/DataSets.txt"
+dataSets = '/afs/cern.ch/user/'
+dataSets += options.user[0]
+dataSets += '/'
+dataSets += options.user + "/public/DataSets.txt"
 
 
 ifile=open(dataSets,'r')
 
 pattern = re.compile( args[0] )
 
+castorBaseDir = castortools.lfnToCastor(castorBaseDir.castorBaseDir( options.user ))
+
 for line in ifile.readlines():
     line = line.rstrip()
+
+    if line[0]!='/': continue 
 
     if pattern.search( line ):
         # preparing castor dir -----------------
 
         sampleName = line
-        
-        castorDir = options.castorBaseDir
-        castorDir += sampleName
-        castorDir = castortools.lfnToCastor( castorDir ) 
-    
+
+        try:
+            castorDir = castorBaseDir + sampleName
+        except:
+            sys.exit(1)
+
         # making local source directory ---------
         
         localDir = options.localBaseDir

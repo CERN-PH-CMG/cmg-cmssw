@@ -16,20 +16,23 @@ def isCastorDir( dir ):
 
 #COLIN is it still in use? remove... 
 def isCastorFile( file ):
+    file = lfnToCastor(file)
     os.system( 'nsls ' + file )
     ret = subprocess.call( ['nsls',file] )
     return not ret
 
 
 def fileExists( file ):
+    file =  lfnToCastor(file)
     castor = isCastorDir(file)
     ls = 'ls'
     if castor:
         ls = 'nsls'
-    # ret = subprocess.call( [ls, file] )    
-    lschild = subprocess.Popen( [ls, file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    lschild.poll()
-    return not lschild.returncode
+    # ret = subprocess.call( [ls, file] )
+    child = subprocess.Popen( [ls, file], stdout=subprocess.PIPE)
+    child.communicate()
+    # print ls, file, child.returncode
+    return not child.returncode
 
 # returns all files in a directory matching regexp.
 # the directory can be a castor dir.
@@ -292,8 +295,12 @@ def isLFN( file ):
         return False
 
 def lfnToCastor( file ):
-    if isLFN( file ):
+    if isCastorDir(file):
+        return file
+    elif isLFN( file ):
         return '/castor/cern.ch/cms' + file
+    else:
+        raise NameError(file)
 
 def castorToLFN( file ):
     return file.replace('/castor/cern.ch/cms','')
