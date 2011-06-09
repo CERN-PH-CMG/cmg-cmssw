@@ -3,6 +3,8 @@
 
 from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
 
+from addToDatasets import *
+
 import sys,os,imp
 
 #scriptDir = os.getenv('CMSSW_BASE') + '/src/CMGTools/Common/scripts'
@@ -18,12 +20,10 @@ from relvalDefinition import *
 
 
 # main parameters
-
-
     
 def processRelVal( relval, cfgFileName, process, negate, tier=None):
     
-    relvalID = str(relval)
+    relvalID = relval.id()
 
     files = pickRelValInputFiles(
         cmsswVersion  =  relval.cmssw
@@ -49,8 +49,8 @@ def processRelVal( relval, cfgFileName, process, negate, tier=None):
     
     print relvalID
     
-    outDir = 'relval/'+relvalID
-    castorOutDir = castorBaseDir + '/' + outDir
+    outDir = '.' + relval.dataset
+    castorOutDir = castorBaseDir + '/' + relval.dataset
     if tier!=None:
         castorOutDir += '/' + tier
         outDir += '/' + tier
@@ -65,6 +65,7 @@ def processRelVal( relval, cfgFileName, process, negate, tier=None):
         cmsBatch += ' -n'
     print cmsBatch
     os.system( cmsBatch )
+    addToDatasets( relval.dataset ) 
 
     return (outDir, castorOutDir)
 
@@ -84,12 +85,12 @@ if __name__ == '__main__':
                       help="Tier: extension you can give to specify you are doing a new production",
                       default=None)
     
-    import colin
+    import castorBaseDir
     
-    parser.add_option("-c", "--castorBaseDir", 
-                      dest="castorBaseDir",
-                      help="Base castor directory. Subdirectories will be created automatically for each prod",
-                      default=colin.defaultCastorBaseDir)
+#    parser.add_option("-c", "--castorBaseDir", 
+#                      dest="castorBaseDir",
+#                      help="Base castor directory. Subdirectories will be created automatically for each prod",
+#                      default=castorBaseDir.defaultCastorBaseDir)
     
     (options,args) = parser.parse_args()
 
@@ -99,7 +100,7 @@ if __name__ == '__main__':
 
     cfgFileName = args[0]
     relvalListFileName = args[1]
-    castorBaseDir = options.castorBaseDir
+    castorBaseDir = castorBaseDir.myCastorBaseDir()
     
     if not os.path.isfile( cfgFileName ):
         print 'cfg file does not exist: ', cfgFileName

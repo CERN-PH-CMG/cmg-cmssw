@@ -16,12 +16,16 @@ parser.add_option("-n", "--negate", action="store_true",
                   help="do not proceed",
                   default=False)
 
-import colin
 
-parser.add_option("-c", "--castorBaseDir", 
-                  dest="castorBaseDir",
-                  help="Base castor directory. Subdirectories will be created automatically for each prod",
-                  default=colin.defaultCastorBaseDir)
+#parser.add_option("-c", "--castorBaseDir", 
+#                  dest="castorBaseDir",
+#                  help="Base castor directory. Subdirectories will be created automatically for each prod",
+#                  default=castorBaseDir.defaultCastorBaseDir)
+
+parser.add_option("-u", "--user", 
+                  dest="user",
+                  help="user who is the owner of the castor base directory",
+                  default=os.environ['USER'] )
 parser.add_option("-p", "--pattern", 
                   dest="pattern",
                   help="pattern for root files in castor dir",
@@ -39,11 +43,11 @@ if len(args)!=1:
 
 sampleName = args[0].rstrip('/')
 
-print 'starting prod for sample:', sampleName
-
 # preparing castor dir -----------------
 
-cdir = options.castorBaseDir 
+import castorBaseDir
+
+cdir = castortools.lfnToCastor( castorBaseDir.castorBaseDir( options.user ) )
 cdir += sampleName
 
 if not castortools.fileExists(cdir):

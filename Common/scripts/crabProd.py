@@ -9,22 +9,16 @@ import castortools
 from addToDatasets import *
 
 parser = OptionParser()
-parser.usage = ""
-parser.add_option("-n", "--negate", action="store_true",
-                  dest="negate",
-                  help="do not proceed",
-                  default=False)
+parser.usage = "%prog <dataset name>\nPrepare a local directory where to run crab, for a given dataset. You need to have a valid crab.cfg in the current directory. This script will deal with the preparation of your destination directory on castor, and will add the dataset to your local database (~/DataSets.txt)."
 
-import colin
-
-parser.add_option("-c", "--castorBaseDir", 
-                  dest="castorBaseDir",
-                  help="Base castor directory. Subdirectories will be created automatically for each prod",
-                  default=colin.defaultCastorBaseDir)
 parser.add_option("-t", "--tier", 
                   dest="tier",
-                  help="Tier: extension you can give to specify you are doing a new production",
+                  help="Tier: extension you can give to specify you are doing a new production. The resulting dataset will be called dataset/tier.",
                   default="")
+parser.add_option("-f", "--force", action="store_true",
+                  dest="force", 
+                  help="Force creation of the destination castor directory. To be used with care, first run without this option",
+                  default=False)
 
 
 (options,args) = parser.parse_args()
@@ -35,7 +29,6 @@ if len(args)!=1:
 
 sampleName = args[0]
 
-print 'starting prod for sample:', sampleName
 
 sampleNameDir = sampleName
 if options.tier != "":
@@ -44,8 +37,16 @@ if options.tier != "":
 
 # preparing castor dir -----------------
 
-cdir = castortools.lfnToCastor( options.castorBaseDir )
+import castorBaseDir
+cdir = castortools.lfnToCastor( castorBaseDir.myCastorBaseDir() )
 cdir += sampleNameDir
+
+if castortools.isCastorFile( cdir ) and not options.force:
+    print 'The destination castor directory already exists:'
+    print cdir
+    print 'Please check. If everything is fine, run again with the -f option.'
+    sys.exit(1)
+
 rfmkdir = 'rfmkdir -p ' + cdir
 print rfmkdir
 os.system( rfmkdir )
@@ -69,7 +70,10 @@ newCrabPath = '%s/crab.cfg' % ldir
 print newCrabPath
 
 newCrab = open(newCrabPath,'w')
-oldCrab = open('crab.cfg','r')
+try:
+    oldCrab = open('crab.cfg','r')
+except:
+    sys.exit(1)
 newPSet = ""
 newJson = ""
 
@@ -103,8 +107,6 @@ for line in oldCrab.readlines():
 newCrab.write('[CMSSW]\n')
 newCrab.write('datasetpath = '+sampleName+'\n')
 
-#patStripOffCastor = re.compile('/castor/cern.ch/(user/.*)')
-#match = patStripOffCastor.match( cdir )
 outDir = cdir.replace('/castor/cern.ch','')
 newCrab.write('[USER]\n')
 newCrab.write('user_remote_dir = %s\n' % outDir  )
