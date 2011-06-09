@@ -13,8 +13,10 @@ from relvalDefinition import *
 relvals = relvalList()
 
 
-cmssw = 'CMSSW_4_2_3'
-
-#/RelValQQH1352T_Tauola_cfi/CMSSW_4_1_4-START311_V2-v1/GEN-SIM-RECO
-relvals.add(cmssw, 'RelValQQH1352T_Tauola_cfi', 'START42_V12')
-relvals.add(cmssw, 'RelValQCD_FlatPt_15_3000', 'MC_42_V12')
+relvals.add('/RelValZMM/CMSSW_4_2_3-START42_V12-v2/GEN-SIM-RECO')
+# relvals.add('/RelValZEE/CMSSW_4_2_3-START42_V12-v2/GEN-SIM-RECO')
+# relvals.add('/RelValTTbar/CMSSW_4_2_3-START42_V12-v2/GEN-SIM-RECO')
+# relvals.add('/RelValQCD_FlatPt_15_3000/CMSSW_4_2_3-MC_42_V12-v2/GEN-SIM-RECO')
+# relvals.add('/RelValZTT/CMSSW_4_2_3-START42_V12-v2/GEN-SIM-RECO')
+# relvals.add('/RelValLM1_sfts/CMSSW_4_2_3-MC_42_V12-v2/GEN-SIM-RECO')
+# relvals.add('/RelValH130GGgluonfusion/CMSSW_4_2_3-START42_V12-v2/GEN-SIM-RECO')
