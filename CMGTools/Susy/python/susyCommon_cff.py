@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 from CMGTools.Common.analysis_cff import *
+from CMGTools.Susy.commonLeptonSequence_cfi import *
 from CMGTools.Susy.RA1.RA1_cff import *
 from CMGTools.Susy.RA2.RA2_cff import *
 from CMGTools.Susy.Razor.razor_cff import *
@@ -16,6 +17,7 @@ cmgCaloBaseJetSel.cut = jetPtCut
 susyCommonSequence  = cms.Sequence(
     # analysisSequence +
 #    cmgMHTPFJet30 +
+    commonLeptonSequence +
     RA1Sequence +
     RA2Sequence +
     razorSequence +
