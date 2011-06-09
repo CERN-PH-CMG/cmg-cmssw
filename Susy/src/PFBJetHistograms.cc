@@ -86,7 +86,7 @@ void cmg::PFBJetHistograms::defineHistograms(){
 void cmg::PFBJetHistograms::fill(const edm::Event& iEvent, const edm::EventSetup&){
 
     edm::Handle<view> cands;
-    iEvent.getByLabel(label_,cands);
+    iEvent.getByLabel(labelX_,cands);
 
     //the number of jets
     get1DHistogram("NjetsEx")->Fill(cands->size());
