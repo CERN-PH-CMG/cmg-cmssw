@@ -101,9 +101,9 @@ RA2Sequence = cms.Sequence(
     ) 
 
 RA2SkimSequence = cms.Sequence(
-    RA2ObjectSequence##  + 
-##     RA2PFJetCount +
-##     RA2MHTPFJet50CentralCount +
-##     RA2MHTPFJet30Count ## +
-##     RA2LeptonVetoSequence
+    RA2ObjectSequence + 
+    RA2PFJetCount +
+    RA2MHTPFJet50CentralCount +
+    RA2MHTPFJet30Count ## +
+   ## RA2LeptonVetoSequence
     )
