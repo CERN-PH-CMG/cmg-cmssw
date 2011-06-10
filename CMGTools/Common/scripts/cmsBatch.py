@@ -217,13 +217,45 @@ file = open('cmsBatch.txt', 'w')
 file.write(string.join(sys.argv) + "\n")
 file.close()
 
-batchManager.parser_.usage = "%prog [options] <number of input files per job> <your_cfg.py>. \nSubmits a number of jobs taking your_cfg.py as a template. your_cfg.py can either read events from input files, or produce them with a generator. In the later case, the seeds are of course updated for each job.\n\nExample:\tcmsBatch.py 10 RA2_cfg.py -b 'nohup ./batchScript.sh&' -r /store/cmst3/user/cbern/CMG/HT/Run2011A-PromptReco-v1/AOD/PAT_CMG/RA2"
+batchManager.parser_.usage = """
+%prog [options] <number of input files per job> <your_cfg.py>.
+
+Submits a number of jobs taking your_cfg.py as a template. your_cfg.py can either read events from input files, or produce them with a generator. In the later case, the seeds are of course updated for each job.
+
+A local output directory is created locally. This directory contains a job directory for each job, and a Logger/ directory containing information on the software you are using. 
+By default:
+- the name of the output directory is created automatically.
+- the output root files end up in the job directories.
+
+Each job directory contains:
+- the full python configuration for this job. You can run it interactively by doing:
+cmsRun run_cfg.py
+- the batch script to run the job. You can submit it again by calling the batch command yourself, see the -b option.
+- while running interactively: nohup.out, where the job stderr and stdout are redirected. To check the status of a job running interactively, do:
+tail nohup.out
+- after running:
+  o the full nohup.out (your log) and your root files, in case you ran interactively
+  o the LSF directory, in case you ran on LSF
+
+Also see fwBatch.py, which is a layer on top of cmsBatch.py adapted to the organization of our samples on the CMST3. 
+
+Examples:
+
+First do:
+cd $CMSSW_BASE/src/CMGTools/Common/test
+
+to run on your local machine:
+cmsBatch.py 1 testCMGTools_cfg.py -b 'nohup ./batchScript.sh&' 
+
+to run on LSF (you must be logged on lxplus, not on your interactive machine, so that you have access to LSF)
+cmsBatch.py 1 testCMGTools_cfg.py -b 'bsub -q 8nm < ./batchScript.sh' 
+"""
 batchManager.parser_.add_option("-p", "--program", dest="prog",
                                 help="program to run on your cfg file",
                                 default="cmsRun")
 batchManager.parser_.add_option("-b", "--batch", dest="batch",
-                                help="batch command. default is: bsub -q 1nh < batchScript.sh",
-                                default="bsub -q 1nh < batchScript.sh")
+                                help="batch command. default is: 'bsub -q 8nh < batchScript.sh'. You can also use 'nohup < ./batchScript.sh &' to run locally.",
+                                default="bsub -q 8nh < batchScript.sh")
 
 (options,args) = batchManager.parser_.parse_args()
 batchManager.ParseOptions()

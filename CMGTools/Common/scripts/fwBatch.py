@@ -10,31 +10,43 @@ import castortools
 from addToDatasets import *
 
 parser = OptionParser()
-parser.usage = "fwBatch.py <cfg> <sampleName>\n\nExample:\n"
+parser.usage = """
+fwBatch.py <cfg> <sampleName>:
+Additional layer on top of cmsBatch.py (see the help of this script for more information). This script simply prepares a cmsBatch.py command for you to run. 
 
-# parser.add_option("-n", "--negate", action="store_true",
-#                  dest="negate",
-#                  help="do not proceed",
-#                  default=False)
+Example:
+
+First do:
+cd $CMSSW_BASE/src/CMGTools/Common/test
+
+fwBatch.py -N 1 testCMGTools_cfg.py /HT/Run2011A-May10ReReco-v1/AOD/PAT_CMG_MAX -q 'nohup ./batchScript.sh &' -t Test
+
+output:
+starting prod for sample: /HT/Run2011A-May10ReReco-v1/AOD/PAT_CMG_MAX
+sampleName  /HT/Run2011A-May10ReReco-v1/AOD/PAT_CMG_MAX/Test
+mkdir -p .//HT/Run2011A-May10ReReco-v1/AOD/PAT_CMG_MAX/Test
+/HT/Run2011A-May10ReReco-v1/AOD/PAT_CMG_MAX/Test
+cmsBatch.py 1 testCMGTools_cfg.py -r /store/cmst3/user/cbern/CMG/HT/Run2011A-May10ReReco-v1/AOD/PAT_CMG_MAX/Test -b 'nohup ./batchScript.sh &' -o .//HT/Run2011A-May10ReReco-v1/AOD/PAT_CMG_MAX/Test
+
+Then, just run this cmsBatch.py command.
+
+IMPORTANT: make sure that the source you are reading in testCMGTools_cfg.py corresponds to the sample you specify!!!
+"""
 
 
 
 parser.add_option("-t", "--tier", 
                   dest="tier",
-                  help="Tier: extension you can give to specify you are doing a new production",
+                  help="Tier: extension you can give to specify you are doing a new production. If you give a Tier, your new files will appear in sampleName/tierName, which will constitute a new dataset.",
                   default="")
-parser.add_option("-o", "--other", action="store_true",
-                  dest="other", 
-                  help="reading other people's files",
-                  default=False)
 parser.add_option("-N", "--numberOfInputFiles", 
                   dest="nInput",
-                  help="number of input files per job",
+                  help="Number of input files per job",
                   default="5")
 parser.add_option("-q", "--queue", 
                   dest="queue",
-                  help="batch queue",
-                  default="8nh")
+                  help="Batch queue. Same as in cmsBatch.py",
+                  default="bsub -q 8nh < batchScript.sh")
 
 
 (options,args) = parser.parse_args()

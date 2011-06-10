@@ -6,7 +6,7 @@ import os,sys,re
 from optparse import OptionParser
 
 parser = OptionParser()
-parser.usage = "%prog <file> : prints all events in an EDM file"
+parser.usage = "%prog <file>\nPrint all events in an EDM file. Run it on a smalle file!!"
 
 (options, args) = parser.parse_args()
 

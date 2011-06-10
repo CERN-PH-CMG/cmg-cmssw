@@ -31,7 +31,7 @@ def testRoot( files ):
 
 
 parser = OptionParser()
-parser.usage = "%prog <output file> <input files> : merge EDM files"
+parser.usage = "%prog <output file> <input files>\nMerge EDM files"
 parser.add_option("-n", "--negate", action="store_true",
                   dest="negate", default=False,
                   help="create cfg file, but do not cmsRun")
