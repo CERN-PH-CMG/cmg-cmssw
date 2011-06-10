@@ -25,38 +25,47 @@ def allSampleInfo( sampleName, listLevel ):
         print castortools.castorToLFN(castorDir)
     if listLevel>1: 
         os.system('rfdir ' + castorDir )
-    if listLevel>0:
+    if listLevel>0 and localDir!=None:
         print 'local:'
         print localDir
-    if os.path.isdir( localDir ):
-        if listLevel>1:
-            os.system('ls -l ' + localDir )
-            print localDir + '*.root'
-    else:
-        if listLevel>0:
-            print 'TO BE IMPORTED'
+        if os.path.isdir( localDir ):
+            if listLevel>1:
+                os.system('ls -l ' + localDir )
+                # print localDir + '*.root'
+        else:
+            if listLevel>0:
+                print 'TO BE IMPORTED'
     if listLevel>0:
         print
         print
 
 
 parser = OptionParser()
-parser.usage = "%prog <sampleName>\nImport a sample locally."
-parser.add_option("-n", "--negate", action="store_true",
-                  dest="negate",
-                  help="do not proceed",
-                  default=False)
+parser.usage = """
+%prog <sampleName>
+List datasets.
+
+It is advisable to import some of your datasets locally.
+In this case, choose a local base directory where you will import your datasets, somewhere where you have space. You can import your datasets locally using importSample.py from this directory.
+Set the following environment variable so that listSamples.py knows where to find your local samples:
+
+export CMGLOCALBASEDIR=<your local base dir>
+
+Examples:
+listSamples.py /HT/Run2011A-May10ReReco-v1/AOD/BADPF -u cbern
+listSamples.py /HT/Run2011A-May10ReReco-v1/AOD/BADPF -u cbern -l 2
+"""
 
 import castorBaseDir
 
 parser.add_option("-u", "--user", 
                   dest="user",
-                  help="user who is the owner of the castor base directory",
+                  help="User who is the owner of the castor base directory. Note that this user must have his/her ~/public/DataSets.txt up to date",
                   default=os.environ['USER'] )
-parser.add_option("-d", "--localBaseDir", 
-                  dest="localBaseDir",
-                  help="Local directory.",
-                  default="/afs/cern.ch/user/c/cbern/localscratch/Data/Analysis/SusyJetMET")
+#parser.add_option("-d", "--localBaseDir", 
+#                  dest="localBaseDir",
+#                  help="Local base directory. In case you have a local base directory where you import your samples, you can",
+#                  default="/afs/cern.ch/user/c/cbern/localscratch/Data/Analysis/SusyJetMET")
 parser.add_option("-l", "--listLevel", 
                   dest="listLevel", 
                   help="list level",
@@ -100,9 +109,14 @@ for line in ifile.readlines():
             sys.exit(1)
 
         # making local source directory ---------
+
+        localDir = None
+        try:
+            localDir = os.environ['CMGLOCALBASEDIR']
+            localDir += sampleName
+        except:
+            pass
         
-        localDir = options.localBaseDir
-        localDir += sampleName
 
         allSampleInfo( sampleName, int(options.listLevel) )
 

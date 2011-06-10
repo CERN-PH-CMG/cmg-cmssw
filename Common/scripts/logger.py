@@ -166,7 +166,13 @@ if __name__ == '__main__':
 
     parser = OptionParser()
     
-    parser.usage = "logger.py <dir or castortgz>"
+    parser.usage = """logger.py <dir or castortgz>
+Get information on the software that was used to process a dataset.
+
+Example:
+logger.py /store/cmst3/user/lucieg/CMG/DoubleMu/Run2011A-May10ReReco-v1/AOD/PAT_CMG/Logger.tgz
+more Logger/*
+    """
 
     (options,args) = parser.parse_args()
 

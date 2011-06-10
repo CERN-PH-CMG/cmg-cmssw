@@ -10,7 +10,18 @@ from optparse import OptionParser
 import castortools
 
 parser = OptionParser()
-parser.usage = "importNewSource.py <sampleName>\nCreate the source file corresponding to a given sample on castor. Run it from the package where you want to put the source cff."
+parser.usage = """
+importNewSource.py <sampleName>
+Create the source file corresponding to a given sample on castor. Run it from the package where you want to put the source cff, for example CMGTools/Common.
+
+For example, the source file for /HT/Run2011A-May10ReReco-v1/AOD
+would be placed in
+python/sources/HT/Run2011A_May10ReReco_v1/AOD/source_cff.py
+and can easily be loaded in any cfg.
+
+Note that the script makes sure to change all '-' into '_' when creating the destanation directory from the dataset name, so that the source module can then be loaded in a python cfg. 
+"""
+
 parser.add_option("-n", "--negate", action="store_true",
                   dest="negate",
                   help="do not proceed",
@@ -24,15 +35,15 @@ parser.add_option("-n", "--negate", action="store_true",
 
 parser.add_option("-u", "--user", 
                   dest="user",
-                  help="user who is the owner of the castor base directory",
+                  help="User who is the owner of the castor base directory, where the sample is located.",
                   default=os.environ['USER'] )
 parser.add_option("-p", "--pattern", 
                   dest="pattern",
-                  help="pattern for root files in castor dir",
+                  help="Regexp pattern for root files in castor dir.",
                   default=".*root")
 parser.add_option("-o", "--output", 
                   dest="output",
-                  help="output file name",
+                  help="Output file name.",
                   default="source_cff.py")
 
 (options,args) = parser.parse_args()

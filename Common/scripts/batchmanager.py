@@ -26,15 +26,15 @@ class BatchManager:
         # how to add more doc to the help?
         self.parser_ = OptionParser()
         self.parser_.add_option("-o", "--output-dir", dest="outputDir",
-                          help="local output directory for your jobs",
+                          help="Name of the local output directory for your jobs. This directory will be created automatically.",
                           default=None)
         self.parser_.add_option("-r", "--remote-copy", dest="remoteCopy",
-                          help="remote output directory for your jobs, and file to be copied. Example: /store/cmst3/user/cbern/CMG/HT/Run2011A-PromptReco-v1/AOD/PAT_CMG/RA2. This directory must be provided as a logical file name (LFN)",
+                          help="remote output directory for your jobs. Example: /store/cmst3/user/cbern/CMG/HT/Run2011A-PromptReco-v1/AOD/PAT_CMG/RA2. This directory *must* be provided as a logical file name (LFN). When this option is used, all root files produced by a job are copied to the remote directory, and the job index is appended to the root file name. The Logger directory is tarred and compressed into Logger.tgz, and sent to the remote output directory as well. Afterwards, use logger.py to access the information contained in Logger.tgz.",
                           default=None)
         # this opt can be removed
         self.parser_.add_option("-n", "--negate", action="store_true",
                                 dest="negate", default=False,
-                                help="create jobs, but do nothing")
+                                help="create jobs, but does not submit the jobs.")
 
         
     def ParseOptions(self):       

@@ -9,7 +9,33 @@ import castortools
 from addToDatasets import *
 
 parser = OptionParser()
-parser.usage = "%prog <dataset name>\nPrepare a local directory where to run crab, for a given dataset. You need to have a valid crab.cfg in the current directory. This script will deal with the preparation of your destination directory on castor, and will add the dataset to your local database (~/DataSets.txt)."
+parser.usage = """
+%prog <dataset name>\nFor a given dataset, prepare a local directory where to run crab, and a destination directory on CASTOR, which complies to the CMG sample organization. Adds the dataset to your local database (~/public/DataSets.txt).
+
+You need to have a valid crab.cfg in the current directory. You can have e.g. crab_data.cfg and crab_MC.cfg. In such a case, just do a symbolic link to use one of them with %prog
+
+Example:
+
+ln -s crab_data.cfg crab.cfg
+crabProd.py
+cd ./HT/Run2011A-May10ReReco-v1/AOD
+crab -create
+crab -match
+crab -submit
+
+Then, do: 
+listSamples.py ^/HT/Run2011A-May10ReReco-v1/AOD$ -l 1
+to see where the files are going to appear for this sample (see listSamples.py for more information).
+
+/HT/Run2011A-May10ReReco-v1/AOD, and the files located in the corresponding directory on castor, are called a dataset. More datasets can be created out of this one by running on this dataset using the local batch system (see cmsBatch.py and fwBatch.py). For example, from
+/HT/Run2011A-May10ReReco-v1/AOD
+one could create:
+/HT/Run2011A-May10ReReco-v1/AOD/PAT_CMG
+/HT/Run2011A-May10ReReco-v1/AOD/PAT_CMG/RA2
+/HT/Run2011A-May10ReReco-v1/AOD/BADEVENTS
+
+It is strongly recommended to use this tool instead of multicrab when running GRID jobs for the CMG group. Otherwise, you will need to manually make sure that the output is stored in the correct output directory on castor, and that your ~/public/DataSets.txt is up-to-date
+"""
 
 parser.add_option("-t", "--tier", 
                   dest="tier",
