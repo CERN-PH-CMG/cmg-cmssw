@@ -439,7 +439,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
       }
 
     //reduced met
-    rmet_.defineThrust(lepton1->p4(),lepton2->p4());
+    rmet_.defineThrust(lepton1->p4(),lepton1pterr,lepton2->p4(),lepton2pterr);
     TVector2 dilProj=rmet_.project(dileptonP);
     TVector2 genDilProj=rmet_.project(genZll);
     getHist(istream+"_dilepton_alres")->Fill(dilProj.Px()-genDilProj.Px(),weight);

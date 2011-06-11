@@ -7,6 +7,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "TSystem.h"
+#include "TVector2.h"
 
 #include "RooGaussian.h"
 #include "RooRealVar.h"
@@ -37,7 +38,8 @@ class ReducedMETFitter
   std::auto_ptr<RooFitResult> compute(const LorentzVector &lep1, float sigmaPt1,
 				      const LorentzVector &lep2, float sigmaPt2,
 				      const LorentzVectorCollection &jets,
-				      const LorentzVector &met,
+				      const TVector2 &al, 
+				      const TVector2 &at, 
 				      bool plot=false);
 
 

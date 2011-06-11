@@ -3,7 +3,6 @@
 #include <sstream>
 
 #include "TCanvas.h"
-#include "TVector2.h"
 #include "TTree.h"
 #include "TAxis.h"
 
@@ -103,7 +102,8 @@ ReducedMETFitter::JetVariables::~JetVariables() {
 std::auto_ptr<RooFitResult> ReducedMETFitter::compute(const LorentzVector &lep1, float sigmaPt1,
 						      const LorentzVector &lep2, float sigmaPt2,
 						      const LorentzVectorCollection &jets,
-						      const LorentzVector &met,
+						      const TVector2 &al, 
+						      const TVector2 &at,
 						      bool plot)
 {
 
@@ -115,18 +115,13 @@ std::auto_ptr<RooFitResult> ReducedMETFitter::compute(const LorentzVector &lep1,
 
   RooArgList resolConstraintsList;
 
-
-//    sigmaPt1=0.01*lep1.pt(); //fixme
-//    sigmaPt2=0.01*lep2.pt();
-
    //
    // 1. define the bisector
    //
    TVector2 lepton1(lep1.Px(), lep1.Py());
    TVector2 lepton2(lep2.Px(), lep2.Py());;
-   TVector2 bisector = (lepton1.Unit()+lepton2.Unit()).Unit();
-   TVector2 bisector_perp(bisector.Py(), -bisector.Px());
-   if(lepton1 * bisector_perp < 0)  bisector_perp *= -1;
+   TVector2 bisector = (al);
+   TVector2 bisector_perp(at);
    RooRealVar px_bisect("px_bisect","px_bisect",bisector.X());
    RooRealVar py_bisect("py_bisect","py_bisect",bisector.Y());
    RooRealVar px_bisect_perp("px_bisect_perp","px_bisect_perp",bisector_perp.X());
@@ -140,9 +135,6 @@ std::auto_ptr<RooFitResult> ReducedMETFitter::compute(const LorentzVector &lep1,
    RooRealVar sigmapt_lep1("sigmapt_lep1","sigmapt_lep1",sigmaPt1);
    RooRealVar pt_lep1("pt_lep1","pt_lep1",lep1.pt(),max(float(lep1.pt()-3*sigmaPt1),float(0)),lep1.pt()+3*sigmaPt1);
    RooGaussian ptconst_lep1("ptconst_lep1","ptconst_lep1",pt_lep1,avgpt_lep1,sigmapt_lep1);
-//    cout << sigmapt_lep1 << endl;
-//    cout << ptconst_lep1.sigma(pt_lep1)->getVal() << endl;
-
    resolConstraintsList.add(ptconst_lep1);
    RooRealVar phi_lep1("phi_lep1","phi_lep1",lep1.phi());
    RooFormulaVar px_lep1("px_lep1","@0*cos(@1)",RooArgSet(pt_lep1,phi_lep1));
@@ -200,15 +192,6 @@ std::auto_ptr<RooFitResult> ReducedMETFitter::compute(const LorentzVector &lep1,
        }
        sumJet_formula << ijet;
        sumJetErr_formula << ijet << "^2)";
-       
-       // 	if(jet*bisector < 0) {
-       // 	  sumJetProj_long += jet*bisector;
-       // 	}
-       // 	if(jet*bisector_perp < 0) {
-       // 	  sumJetProj_perp += jet*bisector_perp;
-       // 	}
-       
-       //       }
      }
    sumJetErr_formula << ")";
    
@@ -317,8 +300,7 @@ std::auto_ptr<RooFitResult> ReducedMETFitter::compute(const LorentzVector &lep1,
    redMET_ = sqrt(redMET_long_*redMET_long_ + redMET_perp_*redMET_perp_);
    redMETErr_ = sqrt(redMET_long_*redMET_long_*redMETErr_long_*redMETErr_long_ +
 		     redMET_perp_*redMET_perp_*redMETErr_perp_*redMETErr_perp_ 
-		     + 2*redMET_long_*redMET_perp_*redMetCompCorr*redMETErr_perp_*redMETErr_long_)/redMET_
-;
+		     + 2*redMET_long_*redMET_perp_*redMetCompCorr*redMETErr_perp_*redMETErr_long_)/redMET_;
    jetRecoil_perp_ = 0.;
    jetRecoil_long_ = 0.;
    jetRecoilErr_perp_ = 0.;

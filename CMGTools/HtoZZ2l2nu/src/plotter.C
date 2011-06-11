@@ -44,10 +44,10 @@ TLegend *showPlotsAndMCtoDataComparison(TPad *p, TList &stack, TList &spimpose, 
 
 
 //
-TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool buildLegend, TString legopt)
+TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origdata, bool buildLegend, TString legopt)
 {
   if(c==0) return 0;
-  if( stack.First()==0 && spimpose.First()==0 && data.First()==0 ) return 0;
+  if( origstack.First()==0 && origspimpose.First()==0 && origdata.First()==0 ) return 0;
 
   //prepare the pad
   c->cd();
@@ -62,36 +62,44 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
   //start with the legend with the data
   std::vector<std::pair<TObject *,TString> > allKeys;
   TObject *key = 0; 
-  TIterator *dataIt = data.MakeIterator();
+  TList data;
+  TIterator *dataIt = origdata.MakeIterator();
   while ( (key = dataIt->Next()) ) 
     {
       TH1 *p = (TH1 *) key;
       th2dfound |= ((TClass*)key->IsA())->InheritsFrom("TH2");
       graphfound |= ((TClass*)key->IsA())->InheritsFrom("TGraph");
       allKeys.push_back(std::pair<TObject *,TString>(p,p->GetTitle()));
+      TString newname("data"); newname += allKeys.size();
+      data.AddFirst ( p->Clone(newname) );
     }
   
   //add the plots to superimpose
-  TIterator *spimposeIt = spimpose.MakeIterator();
+  TList spimpose;
+  TIterator *spimposeIt = origspimpose.MakeIterator();
   while ( (key = spimposeIt->Next()) ) 
     {
       TH1 *p = (TH1 *) key;
       th2dfound |= ((TClass*)key->IsA())->InheritsFrom("TH2");
       graphfound |= ((TClass*)key->IsA())->InheritsFrom("TGraph");
       allKeys.push_back(std::pair<TObject *,TString>(p,p->GetTitle()));
+      TString newname("gr"); newname += allKeys.size();
+      spimpose.AddFirst ( p->Clone(newname) );
     }
 
   //loop over the stack in reversed sense
-  THStack *hstack = new THStack(name+"_stack",title);  
-  TIterator *reverseStackIt = stack.MakeIterator(kIterBackward);
+  THStack *hstack = new THStack("stack",title);  
+  TList stack;
+  TIterator *reverseStackIt = origstack.MakeIterator(kIterBackward);
   while ( (key = reverseStackIt->Next()) ) 
     {
       TH1 *p = (TH1 *) key;
       th2dfound |= ((TClass*)key->IsA())->InheritsFrom("TH2");
       graphfound |= ((TClass*)key->IsA())->InheritsFrom("TGraph");
       allKeys.push_back(std::pair<TObject *,TString>(p,p->GetTitle()));
+      TString newname("h"); newname += allKeys.size();
+      stack.AddFirst ( p->Clone(newname) );
     }
-
   
   //build the legend
   TLegend *leg = new TLegend(0.7,0.96-0.05*allKeys.size(),0.93,0.96,NULL,"brNDC");
@@ -135,9 +143,9 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
 	    }
 	  
 	  if(!th2dfound) continue;
-	  std::pair<TH1D *,TH1D *> pxpy = getProjections((TH2D *)key);
-	  if(pxpy.first) stackx.AddFirst(pxpy.first);
-	  if(pxpy.second) stacky.AddFirst(pxpy.second); 
+	  //  std::pair<TH1D *,TH1D *> pxpy = getProjections((TH2D *)key);
+	  //if(pxpy.first) stackx.AddFirst(pxpy.first);
+	  //if(pxpy.second) stacky.AddFirst(pxpy.second); 
 	}
       
       spimposeIt = spimpose.MakeIterator();
@@ -159,9 +167,9 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
 	    }
 	  
 	  if(!th2dfound) continue;
-	  std::pair<TH1D *,TH1D *> pxpy = getProjections((TH2D *)key);
-	  if(pxpy.first)	  spimposex.Add(pxpy.first);
-	  if(pxpy.second)         spimposey.Add(pxpy.second); 
+	  //std::pair<TH1D *,TH1D *> pxpy = getProjections((TH2D *)key);
+	  //if(pxpy.first)	  spimposex.Add(pxpy.first);
+	  //if(pxpy.second)         spimposey.Add(pxpy.second); 
 	}
       
       //draw the data
@@ -187,9 +195,9 @@ TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool bui
 	    }
 
 	  if(!th2dfound) continue;
-	  std::pair<TH1D *,TH1D *> pxpy = getProjections((TH2D *)key);
-	  if(pxpy.first)  datax.Add(pxpy.first);
-	  if(pxpy.second) datay.Add(pxpy.second); 
+	  //std::pair<TH1D *,TH1D *> pxpy = getProjections((TH2D *)key);
+	  //if(pxpy.first)  datax.Add(pxpy.first);
+	  //if(pxpy.second) datay.Add(pxpy.second); 
 	}
 
       //project it
