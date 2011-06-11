@@ -4,6 +4,7 @@
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ReducedMETFitter.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ReducedMETComputer.h"
+#include "CMGTools/HtoZZ2l2nu/interface/ProjectedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
 #include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
@@ -47,6 +48,7 @@ int main(int argc, char* argv[])
   TString url=runProcess.getParameter<std::string>("input");
   TString outdir=runProcess.getParameter<std::string>("outdir");
   bool isMC = runProcess.getParameter<bool>("isMC");
+  bool useFitter = runProcess.getParameter<bool>("useFitter");
   int evStart=runProcess.getParameter<int>("evStart");
   int evEnd=runProcess.getParameter<int>("evEnd");
   TString dirname = runProcess.getParameter<std::string>("dirName");
@@ -54,105 +56,92 @@ int main(int argc, char* argv[])
   //control Histos
   SelectionMonitor controlHistos;
 
-  //Z/redmet kinematics
+  controlHistos.addHistogram( new TH1F ("redmet", ";red-E_{T}^{miss};Events", 100,0,500) );
+  controlHistos.addHistogram( new TH1F ("redmetcat0", ";red-E_{T}^{miss};Events", 100,0,500) );
 
-  Float_t redmetBins[]={0,2,4,6,8,10,12,14,16,18,20,25,30,40,50,60,80,100,200};
-  Int_t nredmetBins=sizeof(redmetBins)/sizeof(Float_t)-1;
-  controlHistos.addHistogram( new TH1F ("redmet", ";red-E_{T}^{miss};Events", nredmetBins,redmetBins) );
-  controlHistos.addHistogram( new TH1F ("met", ";type-I E_{T}^{miss};Events", nredmetBins,redmetBins) );
-  controlHistos.addHistogram(  new TH1D ("zpt", ";p_{T}(Z);Events", 100,0,400) );
-  controlHistos.addHistogram(  new TH1D ("zeta", ";#eta (Z);Events", 100,-5,5) );
-  controlHistos.addHistogram( (TH1D *)( new TH2D ("zptvszeta", ";p_{T}(Z);#eta(Z)", 100,0,400,100,-5,5) ) );
-  controlHistos.addHistogram( new TH1F ("redmetL", ";red-E_{T}^{miss,#parallel};Events", 100, -250.,250.) );
-  controlHistos.addHistogram( new TH1F ("redmetT", ";red-E_{T}^{miss,#perp};Events", 100, -250.,250.) );
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("redmetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};;Events", 100, -250.,250,100, -250.,250.) ) );
+  controlHistos.addHistogram( new TH1F ("met", ";type-I E_{T}^{miss};Events", 100,0,500) );  
+  controlHistos.addHistogram( new TH1F ("metcat0", ";type-I E_{T}^{miss};Events", 100,0,500) );
+  controlHistos.addHistogram( new TH1F ("metcat1", ";type-I E_{T}^{miss};Events", 100,0,500) );
+  
+  controlHistos.addHistogram( new TH1F ("htcat1", ";H_{T};Events", 100,0,500) );
+  controlHistos.addHistogram( new TH1F ("stcat1", ";S_{T};Events", 100,0,500) );
+  controlHistos.addHistogram( new TH1F ("vtxpcat1", ";p_{T}^{vertex};Events", 100,0,500) );
+
+  controlHistos.addHistogram( new TH1F ("projmet", ";projected E_{T}^{miss};Events", 100,0,500) );
+  controlHistos.addHistogram( new TH1F ("projmetcat0", ";projected E_{T}^{miss};Events", 100,0,500) );
+  controlHistos.addHistogram( new TH1F ("projmetcat1", ";projected E_{T}^{miss};Events", 100,0,500) );
  
- /*
+  controlHistos.addHistogram(  new TH1D ("zpt", ";p_{T}^{ll};Events", 100,0,400) );
+  controlHistos.addHistogram(  new TH1D ("zeta", ";#eta^{ll};Events", 100,-5,5) );
+  controlHistos.addHistogram( (TH1D *)( new TH2D ("zptvszeta", ";p_{T}^{ll};#eta^{ll}", 100,0,400,100,-5,5) ) );
+  controlHistos.addHistogram( (TH1D *)( new TH2D ("zptvsmet", ";p_{T}^{ll};E_{T}^{miss}", 100,0,400,100,0,400) ) );
+  controlHistos.addHistogram( (TH1D *)( new TH2D ("zetavsmet", ";#eta^{ll};E_{T}^{miss}", 100,0,400,100,0,400) ) );
+  controlHistos.addHistogram( new TH1F ("redmetL", ";red-E_{T}^{miss,#parallel};Events", 100, -1.,249.) );
+  controlHistos.addHistogram( new TH1F ("redmetT", ";red-E_{T}^{miss,#perp};Events", 100, -1.,249.) );
+  controlHistos.addHistogram( (TH1D *)(new TH2D ("redmetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
+  controlHistos.addHistogram( (TH1D *)(new TH2D ("redmetvszpt", ";red-E_{T}^{miss};p_{T}(Z);Events", 100, -50.,250,100, -50.,250) ) );
+  controlHistos.addHistogram( (TH1D *)(new TH2D ("redmetvszeta", ";red-E_{T}^{miss};#eta(Z);Events", 100, -50.,250,100,-0.5,5.) ) );
+  controlHistos.addHistogram( (TH1D *)(new TH2D ("jetrecoilvsunclusteredL", ";a^{clustered}_{#parallel}; a^{unclustered}_{#parallel};Events", 100, -250,250,100, -250.,250) ) );
+  controlHistos.addHistogram( (TH1D *)(new TH2D ("jetrecoilvsunclusteredT", ";a^{clustered}_{#perp}; a^{unclustered}_{#perp};Events", 100, -250,250,100, -250.,250) ) );
+  controlHistos.addHistogram( new TH1D ("dphill", ";#Delta#phi(l_{1},l_{2});Events",100,-3.2,3.2) );
+  controlHistos.addHistogram( new TH1D ("dphillcat1", ";#Delta#phi(l_{1},l_{2});Events",100,-3.2,3.2) );
+  controlHistos.addHistogram( new TH1D ("dphivtxmetcat1", ";#Delta#phi(vertex,MET);Events",100,-3.2,3.2) );
+  controlHistos.addHistogram( new TH1D ("drll", ";#DeltaR(l_{1},l_{2});Events",100,0,6.) );
+ controlHistos.addHistogram( new TH1D ("dphizz", ";#Delta#phi(ll,E_{T}^{miss});Events",100,-3.2,3.2) );
+  controlHistos.addHistogram( new TH1F ("mjj", ";M_{jj};Events", 100, 0.,500.) );
+  controlHistos.addHistogram( new TH1F ("mlj", ";M_{lj};Events", 100, 0.,500.) );
+  controlHistos.addHistogram( new TH1F ("sumjetpdilL", ";a^{clustered}_{#parallel}+p^{ll}_{T,#parallel};Events",100,-250,250) );
+  controlHistos.addHistogram( new TH1F ("sumjetpdilT", ";a^{clustered}_{#perp}+p^{ll}_{T,#perp};Events",100,-250,250) );
+  controlHistos.addHistogram( new TH1F ("sumjetpdil", ";a^{clustered}+p^{ll};Events",100,0,250) );
+
+  controlHistos.addHistogram( (TH1D *)(new TH2D ("sumjetpdilcomps", ";a^{clustered}_{#parallel}+p^{ll}_{T,#parallel};a^{clustered}_{#perp}+p^{ll}_{T,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
+
+  if(useFitter)
+    {
+      controlHistos.addHistogram( new TH1F ("rmetfit", ";a^{clustered}+p_{T}^{ll};Events",100,-250,250) );
+      controlHistos.addHistogram( new TH1F ("rmetfitsig", ";Significance of a^{clustered}+p_{T}^{ll};Events",100,0,50) );
+      controlHistos.addHistogram( new TH1F ("rmetfitL", ";a^{clustered}_{L}+p_{T,L}^{ll};Events",100,-250,250) );
+      controlHistos.addHistogram( new TH1F ("rmetfitLsig", ";Significance of a^{clustered}_{L}+p_{T,L}^{ll};Events",100,-26,24) );
+      controlHistos.addHistogram( new TH1F ("rmetfitT", ";a^{clustered}_{T}+p_{T,T}^{ll};Events",100,-250,250) );
+      controlHistos.addHistogram( new TH1F ("rmetfitTsig", ";Significance of a^{clustered}_{T}+p_{T,T}^{ll};Events",100,-26,24) );
+    }
+
   controlHistos.addHistogram( new TH1F ("mt", ";M_{T};Events", 100, 100.,500.) );
-  controlHistos.addHistogram( new TH1F ("mjj", ";M_{JJ};Events", 100, 0.,200.) );
-  controlHistos.addHistogram( new TH1F ("met", ";MET;Events", 100, 0.,250.) );
-  // controlHistos.addHistogram( new TH1F ("clustmet", ";clustered MET;Events", 100, 0.,250.) );
-
-  // controlHistos.addHistogram( (TH1D *)(new TH2D ("sumjetvsmetL", ";#Sigma Jet_{L};MET_{L};Events", 100, -250.,250,100, -249.,1.) ) );
-  //controlHistos.addHistogram( (TH1D *)(new TH2D ("sumjetvsmetT", ";#Sigma Jet_{T};MET_{T};Events", 100, -250.,250,100, -249.,1.) ) );
-  //controlHistos.addHistogram( (TH1D *)( new TH2D ("zptvsdphizrmet", ";p_{T} (Z); #Delta#phi(p_{T}(Z),red-MET)", 100,-1,399,100,0,3.2) ) );
-  //  TH1F *h = new TH1F ("redmetLType", ";red-MET_{L} type;Events", 2,0,2);
-  //  h->GetXaxis()->SetBinLabel(1,"jet-like");
-  //  h->GetXaxis()->SetBinLabel(2,"met-like");
-  //  controlHistos.addHistogram( h );
-  //  h = new TH1F ("redmetTType", ";red-MET_{T} type;Events", 2,0,2);
-  //  h->GetXaxis()->SetBinLabel(1,"jet-like");
-  //  h->GetXaxis()->SetBinLabel(2,"met-like");
-  //  controlHistos.addHistogram( h );
-  controlHistos.addHistogram( new TH1F ("redmetLpzpt", "; red-MET_{L}+p_{T}(Z);Events", 100,0,500) );
-  controlHistos.addHistogram( new TH1F ("redmetLmzpt", "; red-MET_{L}-p_{T}(Z);Events", 100,-249,251) );
-  //  controlHistos.addHistogram( new TH1F ("dphizredmet", ";#Delta#phi[p_{T}(Z),red-MET];Events", 100,0,3.2) );
-  //  controlHistos.addHistogram( new TH1D ("dphizrmet", ";#Delta#phi(p_{T}(Z),red-MET);Events", 100,0,3.2) );	
-  // controlHistos.addHistogram( (TH1D *)( new TH2D ("redmetpzptvsdphizz", ";red-MET_{L}+p_{T}(Z); #Delta#phi[p_{T}(Z),MET]", 100,0,500,100,0,3.2) ) );
-  //  controlHistos.addHistogram( (TH1D *)( new TH2D ("redmetLmzptvsdphizrmet", ";red-MET_{L}-p_{T}(Z); #Delta#phi[p_{T}(Z),red-MET]", 100,-249,251,100,0,3.2) ) );
-  //  controlHistos.addHistogram( (TH1D *)( new TH2D ("redmetLmzptvsredmetpzpt", ";red-MET_{L}-p_{T}(Z); red-MET+p_{T}(Z)", 100,-249,251,100,0,500) ) );
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("redmetLpzptvsmt", ";red-MET_{L}+p_{T}(Z);M_{T};Events",100,0,500,100, 100.,500.) ) );
-
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("dphil2met", ";#Delta#phi(l_{1},MET);#Delta#phi(l_{2},MET);Events",100,0,4,100,0,4) ) );
-  controlHistos.addHistogram( new TH1D ("dphill", ";#Delta#phi(l_{1},l_{2});Events",100,0,3.2) );
   controlHistos.addHistogram( new TH1D ("ptasymm", ";[p_{T}(1)-p_{T}(2)]/[p_{T}(1)+p_{T}(2)];Events",100,0,1.05) );
   controlHistos.addHistogram( new TH1D ("ptlead", ";leading lepton p_{T};Events",100,0,250) );
   controlHistos.addHistogram( new TH1D ("ptsublead", ";next-leading lepton p_{T};Events",100,0,250) );
   controlHistos.addHistogram( new TH1D ("sumptlep", ";#Sigma p_{T} (leptons);Events",100,0,500) );
   controlHistos.addHistogram( (TH1D *)(new TH2D ("mtl2met", ";M_{T}(l_{1},MET);M_{T}(l_{2},MET);Events",100,0,250,100,0,250) ) );
-  controlHistos.addHistogram( new TH1D ("summtl2met", ";#Sigma M_{T}(l_{1},MET)+M_{T}(l_{2},MET);Events",100,0,500) );
+  controlHistos.addHistogram( new TH1D ("summtl2met", ";#Sigma M_{T}(l_{1},MET)+M_{T}(l_{2},MET);Events",100,0,1000) );
+  controlHistos.addHistogram( new TH1D ("minmtl2met", ";min{M_{T}(l_{1},MET),M_{T}(l_{2},MET)};Events",100,0,250) );
+  controlHistos.addHistogram( new TH1D ("evcat", ";Event category;Events",2,0,2) );
 
-  TString steps[]={"|M_{ll}-M_{Z}|<15 GeV/c^{2}","p_{T}+red-MET_{L} #wedge |#eta|<2.5","red-MET_{L}+red-MET_{T}>0","p_{T}-red-MET_{L}<50","=0 jets","=1 jet","#geq 2 jets"};
-  TH1D *cutflow=new TH1D ("cutflow", ";Event selection;Events",5,0,5);
-  controlHistos.addHistogram( cutflow  );
-  */
-  //binned plots
-  /*  const float zptbins[]={20.,50.,100.,7000.};
-  for(size_t izptbin=0; izptbin<sizeof(zptbins)/sizeof(float); izptbin++)
+  TString steps[]={"|M_{ll}-M_{Z}|<15 GeV/c^{2}","red-MET","b-veto","=0 jets","=1 jet","#geq 2 jets"};
+  int nsteps=sizeof(steps)/sizeof(TString);
+  TH1D *cutflow=new TH1D ("cutflow", ";Event selection;Events",nsteps,0,nsteps);
+  for(int istep=0; istep<nsteps; istep++)
     {
-      char binbuf[10];
-      sprintf(binbuf,"%.0f",zptbins[izptbin]);
-      TString zptbin(binbuf);
-      char buf[100];
-      sprintf(buf,"(%3.1f<p_{T}<%3.1f)",(izptbin==0 ?  0. : zptbins[izptbin-1]),zptbins[izptbin]);
-      controlHistos.addHistogram(  new TH1D ("redmetLmzpt_p"+zptbin, ";red-MET_{L}-p_{T}(Z) "+TString(buf)+";Events", 100,-200,200) );
-      controlHistos.addHistogram(  new TH1D ("redmetpzpt_p"+zptbin, ";red-MET_{L}+p_{T}(Z) "+TString(buf)+";Events", 100,0,500) );
-      controlHistos.addHistogram( new TH1D ("dphizrmet_p"+zptbin, ";#Delta#phi(p_{T}(Z),red-MET)"+TString(buf)+";Events", 100,0,3.2) );	
+      cutflow->GetXaxis()->SetBinLabel(istep+1,steps[istep]);
     }
-
-  const float zetabins[]={1.5,2.4,5.0};
-  for(size_t izetabin=0; izetabin<sizeof(zetabins)/sizeof(float); izetabin++)
-    {
-      char binbuf[10];
-      sprintf(binbuf,"%.1f",zetabins[izetabin]);
-      TString zetabin(binbuf);
-      char buf[100];
-      sprintf(buf,"(%3.1f<#eta<%3.1f)",(izetabin==0 ?  0. : zetabins[izetabin-1] ),zetabins[izetabin]);
-      controlHistos.addHistogram( new TH1D ("redmetLmzpt_h"+zetabin, ";red-MET_{L}-p_{T}(Z)"+TString(buf)+";Events", 100,-200,200) );
-      controlHistos.addHistogram( new TH1D ("redmetpzpt_h"+zetabin, ";red-MET_{L}+p_{T}(Z)"+TString(buf)+";Events", 100,0,500) );
-      controlHistos.addHistogram( new TH1D ("dphizrmet_h"+zetabin, ";#Delta#phi(p_{T}(Z),red-MET)"+TString(buf)+";Events", 100,0,3.2) );	
-    }
-  */
+  controlHistos.addHistogram( cutflow );
+  
   //replicate monitor for categories
   TString cats[]={"ee","emu","mumu"};
   TString subcats[]={"","eq0jets","eq1jets","geq2jets"};
-  TString cuts[]={"cut1","cut2","cut12"};
   for(size_t icat=0;icat<sizeof(cats)/sizeof(TString); icat++)
     {
       for(size_t isubcat=0;isubcat<sizeof(subcats)/sizeof(TString); isubcat++)
 	{
 	  controlHistos.initMonitorForStep(cats[icat]+subcats[isubcat]);
-	  for(size_t icut=0;icut<sizeof(cuts)/sizeof(TString); icut++)
-	    {
-	      controlHistos.initMonitorForStep(cats[icat]+subcats[isubcat]+cuts[icut]);
-	    }
 	}
     }
-
+  
    
   //Start the reduced met fitter/computer
   ReducedMETComputer rmetComp(1., 1., 1., 1., 1.);
-   
+  ReducedMETFitter rmetFitter(runProcess);
+  ProjectedMETComputer pmetComp;
+
   //open the file and get events tree
   TFile *file = TFile::Open(url);
   if(file==0) return -1;
@@ -187,7 +176,8 @@ int main(int argc, char* argv[])
       LorentzVectorCollection jetsp4;
       LorentzVector jet1(0,0,0,0),jet2(0,0,0,0);
       LorentzVector jetsum(0,0,0,0);
-      int nbtags(0);
+      double ht(0);
+      int nbjets(0);
       for(Int_t ipart=0; ipart<ev.nparticles; ipart++)
 	{
 	  LorentzVector p4(ev.px[ipart],ev.py[ipart],ev.pz[ipart],ev.en[ipart]);
@@ -199,8 +189,9 @@ int main(int argc, char* argv[])
 	    case 1:
 	      jetsp4.push_back(p4);
 	      jetsum += p4;
+	      ht += p4.pt();
 	      jets.push_back( PhysicsObject(p4,ev.info1[ipart]) );
-	      if(p4.pt()>30) nbtags += (ev.info1[ipart]>2);
+	      if(p4.pt()>25) nbjets += (ev.info1[ipart]>1.7);
 	      if(p4.pt()>jet1.pt()) { jet2=jet1; jet1=p4; }
 	      else if(p4.pt()>jet2.pt()) { jet2=p4; }
 	      break;
@@ -212,9 +203,11 @@ int main(int argc, char* argv[])
 	      break;
 	    }
 	}
-      
-      //no b-tagged events
-      //if(nbtags>0) continue;
+
+      double vtxp=vtx[0].first.pt();
+      double dphivtxmet=deltaPhi(vtx[0].first.phi(),mets[0].first.phi());
+
+      //dijet invariant mass
       double mjj(0);
       if(jet1.pt()>0 && jet2.pt()>0) {
 	LorentzVector jj=jet1+jet2;
@@ -244,185 +237,178 @@ int main(int argc, char* argv[])
       float transverseMass=TMath::Power(TMath::Sqrt(TMath::Power(dileptonP.pt(),2)+pow(dileptonP.mass(),2))+TMath::Sqrt(TMath::Power(jesMetNopuP.pt(),2)+pow(dileptonP.mass(),2)),2);
       transverseMass-=TMath::Power(transvSum.pt(),2);
       transverseMass=TMath::Sqrt(transverseMass);
-      float ptasymm=(leptons[0].first.pt()-leptons[1].first.pt())/(leptons[0].first.pt()+leptons[1].first.pt());
+      LorentzVector thrust=leptons[0].first-leptons[1].first;
+      float ptasymm=thrust.pt()/dileptonP.pt();
 
       //transverse masses                                               
       float dphil2met[]={ fabs(deltaPhi(jesMetNopuP.phi(),leptons[0].first.phi())), fabs(deltaPhi(jesMetNopuP.phi(),leptons[1].first.phi())) };
       float mtl2met[]={ TMath::Sqrt(2*jesMetNopuP.pt()*leptons[0].first.pt()*(1-TMath::Cos(dphil2met[0]))) ,   TMath::Sqrt(2*jesMetNopuP.pt()*leptons[1].first.pt()*(1-TMath::Cos(dphil2met[1]))) };
       float dphill=deltaPhi(leptons[0].first.phi(), leptons[1].first.phi() );
-      
+      float drll = deltaR(leptons[0].first.eta(),leptons[0].first.phi(),leptons[1].first.eta(),leptons[1].first.phi());
+   
       //z kinematics
-      double zpt = dileptonP.Pt();
-      /*
-	TString zptbin("");
-      for(size_t ibin=0; ibin<sizeof(zptbins)/sizeof(float); ibin++)
-	{
-	  char binbuf[10];
-	  sprintf(binbuf,"%.0f",zptbins[ibin]);
-	  if(ibin==0 || (ibin && zpt>zptbins[ibin-1] && zpt<zptbins[ibin])) zptbin = binbuf; 
-	}
-      */
-      double zeta = dileptonP.Eta();
-      /*
-	TString zetabin("");
-	for(size_t ibin=0; ibin<sizeof(zetabins)/sizeof(float); ibin++)
-	{
-	  char binbuf[10];
-	  sprintf(binbuf,"%.1f",zetabins[ibin]);
-	  if(ibin==0 || (ibin && fabs(zeta)>zetabins[ibin-1] && fabs(zeta)<zetabins[ibin])) zetabin = binbuf; 
-	}
-      */
+      double zpt = dileptonP.pt();
+      double zeta = dileptonP.eta();
 
       //met
       TVector2 redjesMetNopuP(jesMetNopuP.px(),jesMetNopuP.py());
       double dphizz = reddil.DeltaPhi(redjesMetNopuP);
+
+      //st,mht
+      double st=jesMetNopuP.pt()+leptons[0].first.pt()+leptons[1].first.pt();
+
+      //projected met
+      double projmet = pmetComp.compute(leptons[0].first,leptons[1].first,mets[0].first);
       
       //redmet
       rmetComp.compute(leptons[0].first,leptons[0].second,
 		       leptons[1].first,leptons[1].second,
 		       jetsp4,
 		       mets[0].first);
-      double rmet=rmetComp.reducedMET();
-      double rmetL = rmetComp.reducedMETUnboundComponents().first;
-      double rmetT = rmetComp.reducedMETUnboundComponents().second;
-      //double dphizrmet=TMath::ACos(-rmetL/rmet);
-      
-      double sumjetL = rmetComp.sumJetProjComponents().first;
-      double sumjetT = rmetComp.sumJetProjComponents().second;
-      double calometL = rmetComp.metProjComponents().first;
-      double calometT = rmetComp.metProjComponents().second;
-      int recoilL = rmetComp.recoilType().first;
-      int recoilT = rmetComp.recoilType().second;
-      
 
+      double rmet=rmetComp.reducedMET();
+      double rmetT = rmetComp.reducedMETComponents().first;
+      double rmetL = rmetComp.reducedMETComponents().second;
+      
+      double sumjetT = rmetComp.sumJetProjComponents().first;
+      double sumjetL = rmetComp.sumJetProjComponents().second;
+
+      double dilT = rmetComp.dileptonProjComponents().first;
+      double dilL = rmetComp.dileptonProjComponents().second;
+      
+      double metT = rmetComp.metProjComponents().first;
+      double metL = rmetComp.metProjComponents().second;
+      
+      double unclT = rmetComp.unclProjComponents().first;
+      double unclL = rmetComp.unclProjComponents().second;
+
+      int redevCat = rmetComp.getEventCategory();
+      double sumjetpdilL=sumjetL+dilL;
+      double sumjetpdilT=sumjetT+dilT;
+      double sumjetpdil=sqrt(pow(sumjetpdilL,2)+pow(sumjetpdilT,2));
+
+      double rmetcut(ev.cat==dilepton::MUMU ? 35: 30 );
+      double sumjetpdilLcut(ev.cat==dilepton::MUMU ? -60 : -55);
+      bool passrmet(( (redevCat!=ReducedMETComputer::DILMETPJETSLIKE && rmet>rmetcut)
+		      || (redevCat==ReducedMETComputer::DILMETPJETSLIKE && sumjetpdilL<sumjetpdilL) ) );
+      bool passbveto(passrmet && fabs(zeta)<2.5);// && nbjets<1);
+      
       //fill control histograms
       TString cats[]={"all",evcat};
       TString subCats[]={"",subcat};
       for(size_t ic=0; ic<sizeof(cats)/sizeof(TString); ic++)
 	{
-	  controlHistos.fillHisto("cutflow",cats[ic],1,weight);
+	  //cutflow histogram
+	  controlHistos.fillHisto("cutflow",cats[ic],0,weight);
+	  if(passrmet)  
+	    controlHistos.fillHisto("cutflow",cats[ic],1,weight);
+	  if(passbveto)
+	    {
+	      controlHistos.fillHisto("cutflow",cats[ic],2,weight); 
+	      int jetbin(0);
+	      if(jetsp4.size()==1) jetbin++;
+	      if(jetsp4.size()>1)  jetbin++;
+	      controlHistos.fillHisto("cutflow",cats[ic],3+jetbin,weight);
+	    }
+
+	  //subcategory analysis
 	  for(size_t isc=0; isc<sizeof(subCats)/sizeof(TString); isc++)
 	    {
 	      TString ctf=cats[ic]+subCats[isc];
 	      
-	      controlHistos.fillHisto("zpt",ctf, zpt,weight,true);
-	      controlHistos.fillHisto("zeta",ctf, zeta,weight,true);
-	      controlHistos.fill2DHisto("zptvszeta", ctf,zpt,zeta,weight,true);
+	      controlHistos.fillHisto("evcat",ctf, redevCat ,weight);
+	      controlHistos.fillHisto("zpt",ctf, zpt,weight);
+	      controlHistos.fillHisto("zeta",ctf, zeta,weight);
+	      controlHistos.fill2DHisto("zptvszeta", ctf,zpt,zeta,weight);
+	      controlHistos.fill2DHisto("zptvsmet", ctf, zpt, jesMetNopuP.pt(),weight);
+	      controlHistos.fill2DHisto("zetavsmet", ctf, zeta, jesMetNopuP.pt(),weight);
+	      controlHistos.fillHisto("mjj",ctf,mjj,weight);	    
+	      controlHistos.fillHisto("met", ctf,jesMetNopuP.pt(),weight);
+	      controlHistos.fillHisto("redmet", ctf,rmet,weight);	      
+	      if(passrmet)
+		{
+		  controlHistos.fill2DHisto("mtl2met",ctf,mtl2met[0],mtl2met[1],weight);
+		  controlHistos.fillHisto("summtl2met",ctf,mtl2met[0]+mtl2met[1],weight);
+		  controlHistos.fillHisto("minmtl2met",ctf,min(mtl2met[0],mtl2met[1]),weight);
+		  controlHistos.fillHisto("ptlead",ctf,leptons[0].first.pt(),weight);
+		  controlHistos.fillHisto("ptsublead",ctf,leptons[1].first.pt(),weight);
+		  controlHistos.fillHisto("sumptlep",ctf,leptons[0].first.pt()+leptons[1].first.pt(),weight);	    
+		  controlHistos.fillHisto("mt",ctf,transverseMass,weight);
+		  controlHistos.fillHisto("dphill",ctf,dphill,weight);
+		  controlHistos.fillHisto("dphizz",ctf,dphizz,weight);
+		  controlHistos.fillHisto("ptasymm",ctf,ptasymm,weight);	    
+		  controlHistos.fillHisto("drll",ctf,drll,weight);
+		  for(size_t ijet=0; ijet<jetsp4.size(); ijet++)
+		    {
+		      for(size_t ilep=0; ilep<2; ilep++)
+			{
+			  LorentzVector lj=leptons[ilep].first+jetsp4[ijet];
+			  double mlj=lj.mass();
+			  controlHistos.fillHisto("mlj",ctf,mlj,weight);
+			}
+		    }
+		}
+	      
 
-	      controlHistos.fillHisto("redmet", ctf,rmet,weight,true);
-	      controlHistos.fillHisto("met", ctf,jesMetNopuP.pt(),weight,true);
-	      controlHistos.fillHisto("redmetL", ctf,rmetL,weight,true);
-	      controlHistos.fillHisto("redmetT", ctf,rmetL,weight,true);
-	      controlHistos.fill2DHisto("redmetcomps", ctf,rmetL,rmetT,weight,true);
+	      //event categories
+	      if(redevCat!=ReducedMETComputer::DILMETPJETSLIKE)
+		{
+		  controlHistos.fillHisto("projmetcat0", ctf,projmet,weight);
+		  controlHistos.fillHisto("metcat0", ctf,jesMetNopuP.pt(),weight);
+		  controlHistos.fillHisto("redmetcat0", ctf,rmet,weight);	      
+		  controlHistos.fill2DHisto("redmetcomps", ctf,rmetL,rmetT,weight);
+		  controlHistos.fillHisto("redmetL", ctf,rmetL,weight);
+		  controlHistos.fillHisto("redmetT", ctf,rmetT,weight);	
+		  controlHistos.fill2DHisto("redmetvszeta",ctf,rmet,fabs(zeta),weight);
+		  controlHistos.fill2DHisto("redmetvszpt",ctf,rmet,zpt,weight);
+		}
+	      else
+		{
+		  controlHistos.fill2DHisto("jetrecoilvsunclusteredL",ctf,sumjetL,unclL,weight);
+		  controlHistos.fill2DHisto("jetrecoilvsunclusteredT",ctf,sumjetT,unclT,weight);
+		  controlHistos.fillHisto("sumjetpdilL",ctf,sumjetpdilL,weight);
+		  controlHistos.fillHisto("sumjetpdilT",ctf,sumjetpdilT,weight);
+		  controlHistos.fillHisto("sumjetpdil",ctf,sumjetpdil,weight);
+		  controlHistos.fillHisto("sumjetpdilcomps",ctf,sumjetpdilL,sumjetpdilT,weight);
+		  controlHistos.fillHisto("metcat1", ctf,jesMetNopuP.pt(),weight);
+		  controlHistos.fillHisto("projmetcat1", ctf,projmet,weight);
+		  controlHistos.fillHisto("htcat1", ctf,ht,weight);
+		  controlHistos.fillHisto("stcat1", ctf,st,weight);
+		  controlHistos.fillHisto("vtxpcat1", ctf,vtxp,weight);
+		  controlHistos.fillHisto("dphivtxmetcat1",ctf,dphivtxmet,weight);
+		  controlHistos.fillHisto("dphillcat1",ctf,dphill,weight);
+
+		  if(useFitter)
+		    {
+		      rmetFitter.compute(leptons[0].first,leptons[0].second,
+					 leptons[1].first,leptons[1].second,
+					 jetsp4,
+					 rmetComp.a_t,rmetComp.a_l);
+		  
+		      double rmetfit=rmetFitter.reducedMET().first;
+		      double rmetfiterr=rmetFitter.reducedMET().second;
+		      double rmetfitsig=rmetfiterr/rmetfit;
+		      
+		      double rmetfitL=-rmetFitter.reducedMET_long().first;
+		      double rmetfitLerr=rmetFitter.reducedMET_long().second;
+		      double rmetfitLsig=rmetfitLerr/rmetfitL;
+		      
+		      double rmetfitT=-rmetFitter.reducedMET_perp().first;
+		      double rmetfitTerr=rmetFitter.reducedMET_perp().second;
+		      double rmetfitTsig=rmetfitTerr/rmetfitT;
+		      
+		      controlHistos.fillHisto("rmetfit",ctf,rmetfit,weight);
+		      controlHistos.fillHisto("rmetfitsig",ctf,rmetfitsig,weight);
+		      controlHistos.fillHisto("rmetfitL",ctf,rmetfitL,weight);
+		      controlHistos.fillHisto("rmetfitLsig",ctf,rmetfitLsig,weight);
+		      controlHistos.fillHisto("rmetfitT",ctf,rmetfitT,weight);
+		      controlHistos.fillHisto("rmetfitTsig",ctf,rmetfitTsig,weight);
+		    }
+		}
 	    }
-	}
-      /*
-      std::vector<TString> cuts;
-      cuts.push_back("");
-      bool passSum(rmetL+zpt>50);
-      bool passZeta(fabs(zeta)<2.5);
-      bool passCut1(passSum && passZeta);
-      if(passSum) cuts.push_back("cut1");
-      if(passZeta) cuts.push_back("cut2");
-      if(passCut1) cuts.push_back("cut12");
-      for(size_t ic=0; ic<sizeof(cats)/sizeof(TString); ic++)
-	{
-	  if(passCut1) controlHistos.fillHisto("cutflow",cats[ic],2,weight);
-	  for(size_t isc=0; isc<sizeof(subCats)/sizeof(TString); isc++)
-	    for(std::vector<TString>::iterator cIt=cuts.begin(); cIt!= cuts.end(); cIt++)
-	      {
-		TString ctf=cats[ic]+subCats[isc]+*cIt;
-		controlHistos.fill2DHisto("zptvszeta",ctf,zpt,zeta,weight);
-		controlHistos.fillHisto("zpt",ctf,zpt,weight);
-		controlHistos.fillHisto("zeta",ctf,zeta,weight); 	    
-		controlHistos.fillHisto("redmetLpzpt",ctf,rmetL+zpt,weight);
-		controlHistos.fillHisto("redmetL0",ctf,rmetL,weight);
-	      }
-	}
 
-      bool passRmetL(passCut1 && rmetL>0);
-      bool passRmetT(passCut1 && rmetT>0);
-      bool passCut2(passRmetL && passRmetT);
-      cuts.clear();
-      if(passCut1) cuts.push_back("");
-      if(passRmetT) cuts.push_back("cut1");
-      if(passRmetL) cuts.push_back("cut2");
-      if(passCut2) cuts.push_back("cut12");     
-      for(size_t ic=0; ic<sizeof(cats)/sizeof(TString); ic++)
-	{
-	  if(passCut2) controlHistos.fillHisto("cutflow",cats[ic],3,weight);
-	  for(size_t isc=0; isc<sizeof(subCats)/sizeof(TString); isc++)
-	    for(std::vector<TString>::iterator cIt=cuts.begin(); cIt!= cuts.end(); cIt++)
-	      {
-		TString ctf=cats[ic]+subCats[isc]+*cIt;
-		controlHistos.fillHisto("redmetL",ctf,rmetL,weight);
-		controlHistos.fillHisto("redmetT",ctf,rmetT,weight);
-		//		controlHistos.fillHisto("redmet",ctf,rmet,weight);
-		controlHistos.fill2DHisto("redmetcomps",ctf,rmetL,rmetT,weight);	      	    
-	      }
-	}
-      
-      //bool passDphi(passCut2 && dphizrmet>2.0);
-      //bool passDiff(passCut2 && );
-      bool passCut3(passCut2 && rmetL-zpt>-50);
-      cuts.clear();
-      if(passCut2) cuts.push_back("");
-      //      if(passDphi) cuts.push_back("cut1");
-      //      if(passDiff) cuts.push_back("cut2");
-      if(passCut3) cuts.push_back("cut12");
-      
-     for(size_t ic=0; ic<sizeof(cats)/sizeof(TString); ic++)
-       {
-	 if(passCut3) 
-	   {
-	     int jetbin(0);
-	     if(jetsp4.size()==1) jetbin++;
-	     if(jetsp4.size()>1)  jetbin++;
-	     controlHistos.fillHisto("cutflow",cats[ic],4+jetbin,weight);
-	   }
-	 
-	 for(size_t isc=0; isc<sizeof(subCats)/sizeof(TString); isc++)
-	   for(std::vector<TString>::iterator cIt=cuts.begin(); cIt!= cuts.end(); cIt++)
-	     {
-	       TString ctf=cats[ic]+subCats[isc]+*cIt;
-	       controlHistos.fillHisto("mt",ctf,transverseMass,weight);
-	       if(jetsp4.size()>1) controlHistos.fillHisto("mjj",ctf,mjj,weight);
-	       //controlHistos.fillHisto("dphizrmet",ctf,dphizrmet,weight);
-	       controlHistos.fillHisto("redmetLmzpt",ctf,rmetL-zpt,weight);
-	       //	     controlHistos.fill2DHisto("redmetLmzptvsdphizrmet",ctf,rmetL-zpt,dphizrmet,weight);
-	       controlHistos.fill2DHisto("redmetLpzptvsmt",ctf,rmetL+zpt,transverseMass,weight);
-	       controlHistos.fillHisto("met",ctf,jesMetNopuP.pt(),weight);
-	       controlHistos.fillHisto("dphill",ctf,fabs(dphill),weight);
-	       controlHistos.fill2DHisto("dphil2met",ctf,fabs(dphil2met[0]),fabs(dphil2met[1]),weight);
-	       controlHistos.fill2DHisto("mtl2met",ctf,mtl2met[0],mtl2met[1],weight);
-	       controlHistos.fillHisto("summtl2met",ctf,mtl2met[0]+mtl2met[1],weight);
-	       controlHistos.fillHisto("ptasymm",ctf,ptasymm,weight);
-	       controlHistos.fillHisto("ptlead",ctf,leptons[0].first.pt(),weight);
-	       controlHistos.fillHisto("ptsublead",ctf,leptons[1].first.pt(),weight);
-	       controlHistos.fillHisto("sumptlep",ctf,leptons[0].first.pt()+leptons[1].first.pt(),weight);
-	     }
-       }
-     
-      */     
 
-     //	      controlHistos.fill2DHisto("sumjetvsmetL",ctf,sumjetL,calometL,weight);	      
-     //      controlHistos.fill2DHisto("sumjetvsmetT",ctf,sumjetT,calometT,weight);	      
-     //      controlHistos.fillHisto("redmetLType",ctf,recoilL,weight);
-     //      controlHistos.fillHisto("redmetTType",ctf,recoilT,weight);
-     
-     //   controlHistos.fill2DHisto("zptvsdphizrmet",ctf,zpt,dphizrmet,weight);
-     // 	      controlHistos.fill2DHisto("zptvsredmet",ctf,zpt,rmet,weight);
-	    
-     // 	      controlHistos.fillHisto("dphizredmet",ctf,dphizrmet,weight);
-     // 	      controlHistos.fill2DHisto("redmetpzptvsdphizz",ctf,rmetL+zpt,dphizrmet,weight);
-     
-     // 	    controlHistos.fill2DHisto("redmetLmzptvsredmetpzpt",ctf,rmetL-zpt,rmetL+zpt,weight);	    
-     // 	      controlHistos.fillHisto("redmetLmzpt_h"+zetabin,ctf,rmetL-zpt,weight);
-     // 	      controlHistos.fillHisto("redmetpzpt_h"+zetabin,ctf,rmetL+zpt,weight);
-     // 	      controlHistos.fillHisto("dphizrmet_h"+zetabin,ctf,dphizrmet,weight);
-     // 	      controlHistos.fillHisto("redmetLmzpt_p"+zptbin,ctf,rmetL-zpt,weight);
-     // 	      controlHistos.fillHisto("redmetpzpt_p"+zptbin,ctf,rmetL+zpt,weight);
-	    // 	      controlHistos.fillHisto("dphizrmet_p"+zptbin,ctf,dphizrmet,weight);
+	}
     }
   
   
