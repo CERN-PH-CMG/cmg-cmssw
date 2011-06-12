@@ -11,6 +11,7 @@ def fillFromCastor(dir,ffile=0,step=-1):
     ifile=0
     for line in inFile.readlines():
         if(len(line)==0) : continue
+        if(line.find('root')<0) : continue
         if(line.find('histograms')>0 or line.find('monitor')>0): continue
         sline=str('rfio://' + dir + '/' + line.split()[0])
         if(ifile>=ffile):

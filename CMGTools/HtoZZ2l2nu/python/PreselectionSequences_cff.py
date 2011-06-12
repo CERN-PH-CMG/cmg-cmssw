@@ -1,11 +1,14 @@
 import FWCore.ParameterSet.Config as cms
+import PhysicsTools.PythonAnalysis.LumiList as LumiList
+import FWCore.ParameterSet.Types as CfgTypes
 
-###
-### standard pre-selection sequences
-###
-def addPreselectionSequences(p) :
+##
+## standard pre-selection sequences
+##
+def addPreselectionSequences(process) :
 
     # require scraping filter
+    # https://twiki.cern.ch/twiki/bin/view/CMS/TKPOG2010Collisions
     process.scrapingVeto = cms.EDFilter("FilterOutScraping",
                                         applyfilter = cms.untracked.bool(True),
                                         debugOn = cms.untracked.bool(False),
@@ -13,7 +16,8 @@ def addPreselectionSequences(p) :
                                         thresh = cms.untracked.double(0.2)
                                         )
 
-    # filter primary vertex 
+    # filter primary vertex
+    # https://twiki.cern.ch/twiki/bin/view/CMS/TWikiTopRefEventSel#PAT_Configuration
     process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
                                                vertexCollection = cms.InputTag('offlinePrimaryVertices'),
                                                minimumNDOF = cms.uint32(7) ,
@@ -22,12 +26,18 @@ def addPreselectionSequences(p) :
                                                )
             
     # HB/HE noise filter
+    # https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFilters
     process.load('CommonTools/RecoAlgos/HBHENoiseFilter_cfi')
+    process.HBHENoiseFilter.minIsolatedNoiseSumE = cms.double(999999.)
+    process.HBHENoiseFilter.minNumIsolatedNoiseChannels = cms.int32(999999)
+    process.HBHENoiseFilter.minIsolatedNoiseSumEt = cms.double(999999.)
 
     # beam halo filter
+    # https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFilters
     process.load('RecoMET.METAnalyzers.CSCHaloFilter_cfi')
 
     # ECAL dead cells filter
+    # https://twiki.cern.ch/twiki/bin/view/CMS/SusyEcalMaskedCellSummary#Options_and_Recipes
     process.load('JetMETAnalysis.simpleDRfilter.simpleDRfilter_cfi')
     process.simpleDRfilter.debug = cms.untracked.bool(True)
     process.simpleDRfilter.jetInputTag = cms.InputTag("ak5PFJetsL2L3")
@@ -44,7 +54,7 @@ def addPreselectionSequences(p) :
     process.noEcalDeadChannelsCounter = process.preSelectionCounter.clone()
     
     # define a preselection path
-    process.preselection = cms.Path(
+    process.preselection = cms.Sequence(
         process.preSelectionCounter*
         process.scrapingVeto*
         process.noScrapCounter*
@@ -60,3 +70,12 @@ def addPreselectionSequences(p) :
     
     print " *** Event preselection defined"
 
+
+"""
+"""
+def addLumifilter(process,fname='') :
+    myLumis = LumiList.LumiList(filename = fname).getCMSSWString().split(',')
+    process.source.lumisToProcess = CfgTypes.untracked(CfgTypes.VLuminosityBlockRange())
+    process.source.lumisToProcess.extend(myLumis)
+                            
+    

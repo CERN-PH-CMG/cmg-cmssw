@@ -68,10 +68,10 @@ def addTriggerSequence(p, trigFilter='ee') :
     process.preTriggerCounter = cms.EDProducer("EventCountProducer")
     process.triggerCounter = process.preTriggerCounter.clone()
     
-    if(trigFilter=='ee')   : process.trigPath = cms.Path(process.preTriggerCounter*process.eeTrigSequence*process.triggerCounter)
-    if(trigFilter=='mumu') : process.trigPath = cms.Path(process.preTriggerCounter*process.mumuTrigSequence*process.triggerCounter)
-    if(trigFilter=='emu')  : process.trigPath = cms.Path(process.preTriggerCounter*process.emuTrigSequence*process.triggerCounter)
-    if(trigFilter=='e')    : process.trigPath = cms.Path(process.preTriggerCounter*process.singleEleTrigSequence*process.triggerCounter)
-    if(trigFilter=='mu')   : process.trigPath = cms.Path(process.preTriggerCounter*process.singleMuTrigSequence*process.triggerCounter)
+    if(trigFilter=='ee')   : process.trigSequence = cms.Sequence(process.preTriggerCounter*process.eeTrigSequence*process.triggerCounter)
+    if(trigFilter=='mumu') : process.trigSequence = cms.Sequence(process.preTriggerCounter*process.mumuTrigSequence*process.triggerCounter)
+    if(trigFilter=='emu')  : process.trigSequence = cms.Sequence(process.preTriggerCounter*process.emuTrigSequence*process.triggerCounter)
+    if(trigFilter=='e')    : process.trigSequence = cms.Sequence(process.preTriggerCounter*process.singleEleTrigSequence*process.triggerCounter)
+    if(trigFilter=='mu')   : process.trigSequence = cms.Sequence(process.preTriggerCounter*process.singleMuTrigSequence*process.triggerCounter)
 
     print " *** Trigger paths are defined"
