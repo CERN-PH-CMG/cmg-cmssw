@@ -78,14 +78,14 @@ fi
 case "$OUTDIR" in 
     *castor*)
     #copy to castor
-    rfmkdir $OUTDIR
+    rfmkdir -p $OUTDIR
     rfcp $LOCALOUT $OUTDIR
     rm $LOCALOUT
     echo "Result is available in castor @ ${OUTDIR}"
     ;;
     *)
     #copy locally
-    mkdir $OUTDIR
+    mkdir -p $OUTDIR
     mv $LOCALOUT $OUTDIR
     echo "Result is available in @ ${OUTDIR}"
     ;;
