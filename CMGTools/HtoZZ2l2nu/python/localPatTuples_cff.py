@@ -26,11 +26,10 @@ def fillFromCastor(dir,ffile=0,step=-1):
 wrapper to read the configuration from comand line
 args: castor_directory output_file first_file step
 """
-def configureFromCommandLine(processSource) :
-    castorDir='/castor/cern.ch/cms/store/cmst3/user/psilva/Dileptons/GluGluToHToWWTo2L2Nu_M-200/GluGluToHToWWTo2L2Nu_M-200'
+def configureFromCommandLine() :
+    castorDir='/castor/cern.ch/cms/store/cmst3/user/cbern/CMG/TT_TuneZ2_7TeV-pythia6-tauola/Summer11-PU_S3_START42_V11-v2/AODSIM'
     if(len(sys.argv)>2 ): castorDir=sys.argv[2]
-    dtag=os.path.basename(castorDir)
-    outputFile=dtag+'.root'
+    outputFile='output.root'
     if(len(sys.argv)>3 ): outputFile=sys.argv[3]
     ffile=0
     step=-1
@@ -39,7 +38,7 @@ def configureFromCommandLine(processSource) :
     if(len(sys.argv)>5 ):
         if(sys.argv[5].isdigit()) : step=int(sys.argv[5])
 
-    return dtag, fillFromCastor(castorDir,ffile,step), outputFile
+    return castorDir, outputFile, fillFromCastor(castorDir,ffile,step)
 
 
 
