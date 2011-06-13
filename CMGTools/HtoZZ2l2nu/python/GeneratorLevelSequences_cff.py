@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 ###
 ### standard generator level sequence
 ###
-def addGeneratorLevelSequence(p) :
+def addGeneratorLevelSequence(process) :
     
     process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
     process.prunedGen = cms.EDProducer( "GenParticlePruner",
