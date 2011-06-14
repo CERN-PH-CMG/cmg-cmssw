@@ -7,6 +7,7 @@ namespace muon{
   //
   CandidateWithVertexCollection filter(edm::Handle<edm::View<reco::Candidate> > &hMu, 
 				       std::vector<reco::VertexRef> &goodVertices,
+				       const reco::BeamSpot &theBeamSpot,
 				       const edm::ParameterSet &iConfig)
   {
     CandidateWithVertexCollection selMuons;
@@ -21,6 +22,7 @@ namespace muon{
       double maxTrackChi2 = iConfig.getParameter<double>("maxTrackChi2");
       int minValidTrackerHits = iConfig.getParameter<int>("minValidTrackerHits");
       int minValidMuonHits = iConfig.getParameter<int>("minValidMuonHits");
+      double maxDistToBeamSpot = iConfig.getParameter<double>("maxDistToBeamSpot");
 
       //iterate over the muons
       for(size_t iMuon=0; iMuon< hMu.product()->size(); ++iMuon)      
@@ -40,10 +42,12 @@ namespace muon{
 
 	  //track selection
 	  double chi2 = muon->globalTrack()->normalizedChi2();	  
+	  double d0=muon->innerTrack()->dxy(theBeamSpot);
 	  //	  int nValidPixelHits = muon->globalTrack()->hitPattern().numberOfValidPixelHits();
 	  int nValidTrackerHits = muon->globalTrack()->hitPattern().numberOfValidTrackerHits();
 	  int nValidMuonHits = muon->globalTrack()->hitPattern().numberOfValidMuonHits();
 	  //	  int nMatches = muon->numberOfMatches();
+	  if(fabs(d0)>maxDistToBeamSpot) continue;
 	  if(chi2>maxTrackChi2 || nValidTrackerHits < minValidTrackerHits || nValidMuonHits<minValidMuonHits) continue;
 
 	  //id 

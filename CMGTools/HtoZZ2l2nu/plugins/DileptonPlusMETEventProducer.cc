@@ -97,6 +97,10 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   std::vector<reco::VertexRef> primaryVertexHyps;
   if(selVertices.size()>0) selStep=1;
 
+  //beam spot                                                                                                                                                                                                  
+  edm::Handle<reco::BeamSpot> beamSpot;
+  iEvent.getByLabel( objConfig["Vertices"].getParameter<edm::InputTag>("beamSpot"), beamSpot);
+  
   //average energy density
   edm::Handle< double > rho;
   iEvent.getByLabel(edm::InputTag("kt6PFJets:rho"),rho);
@@ -104,12 +108,12 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   //select muons (id+very loose isolation)
   Handle<View<Candidate> > hMu; 
   iEvent.getByLabel(objConfig["Muons"].getParameter<edm::InputTag>("source"), hMu);
-  CandidateWithVertexCollection selMuons = muon::filter(hMu, selVertices, objConfig["Muons"]);
+  CandidateWithVertexCollection selMuons = muon::filter(hMu, selVertices, *beamSpot, objConfig["Muons"]);
 
   //select electrons (id+conversion veto+very loose isolation)
   Handle<View<Candidate> > hEle; 
   iEvent.getByLabel(objConfig["Electrons"].getParameter<edm::InputTag>("source"), hEle);
-  CandidateWithVertexCollection selElectrons = electron::filter(hEle, hMu, selVertices, objConfig["Electrons"]);
+  CandidateWithVertexCollection selElectrons = electron::filter(hEle, hMu, selVertices, *beamSpot, objConfig["Electrons"]);
   
   //build inclusive collection
   CandidateWithVertexCollection selLeptons = selMuons;

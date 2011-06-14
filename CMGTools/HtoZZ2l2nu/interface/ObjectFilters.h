@@ -16,6 +16,7 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 
 #include "TVector3.h"
 #include "TH1D.h"
@@ -82,6 +83,7 @@ namespace muon
    */
   CandidateWithVertexCollection filter(edm::Handle<edm::View<reco::Candidate> > &hMu, 
 				       std::vector<reco::VertexRef> &goodVertices, 
+				       const reco::BeamSpot &theBeamSpot,
 				       const edm::ParameterSet &iConfig);
 }
 
@@ -93,6 +95,7 @@ namespace electron
   CandidateWithVertexCollection filter(edm::Handle<edm::View<reco::Candidate> > &hEle, 
 				       edm::Handle<edm::View<reco::Candidate> > &hMu, 
 				       std::vector<reco::VertexRef> &goodVertices, 
+				       const reco::BeamSpot &theBeamSpot,
 				       const edm::ParameterSet &iConfig);
 }
 

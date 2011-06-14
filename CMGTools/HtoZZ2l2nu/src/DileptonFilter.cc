@@ -18,9 +18,8 @@ namespace dilepton{
     
       //config parameters
       double minPt = iConfig.getParameter<double>("minPt");
-      double maxCorrectedRelIso = iConfig.getParameter<double>("maxCorrectedRelIso");
-      double electronEffectiveArea = iConfig.getParameter<double>("electronEffectiveArea");
-      double muonEffectiveArea = iConfig.getParameter<double>("muonEffectiveArea");
+      double maxEleRelIso = iConfig.getParameter<double>("maxEleRelIso");
+      double maxMuRelIso = iConfig.getParameter<double>("maxMuRelIso");
       double minDileptonMass = iConfig.getParameter<double>("minDileptonMass");
       double maxDileptonMass = iConfig.getParameter<double>("maxDileptonMass");
       double maxDz = iConfig.getParameter<double>("maxDz");
@@ -33,10 +32,10 @@ namespace dilepton{
 	  reco::VertexRef lep1Vtx = selLeptons[ilep].second;
 	  if(lep1Vtx.isNull()) continue;
 	  
-	  int id = lepton::getLeptonId(lep1Ptr);
-	  double Aeff1= fabs(id)==ELECTRON ? electronEffectiveArea : muonEffectiveArea;
-	  std::vector<double> iso1=lepton::getLeptonIso(lep1Ptr,minPt,rho*Aeff1);
-	  if(iso1[REL_ISO]>maxCorrectedRelIso) continue;	  
+	  int id1 = lepton::getLeptonId(lep1Ptr);
+	  double maxRelIso1( fabs(id1)==ELECTRON ? maxEleRelIso : maxMuRelIso);
+	  std::vector<double> iso1=lepton::getLeptonIso(lep1Ptr,minPt);
+	  if(iso1[REL_ISO]>maxRelIso1) continue;	  
 	  isolLeptons.push_back(selLeptons[ilep]);
 	  if(lep1Ptr->pt()<minPt) continue;
 	  
@@ -46,28 +45,26 @@ namespace dilepton{
 	      reco::CandidatePtr lep2Ptr = selLeptons[jlep].first;
 	      reco::VertexRef lep2Vtx = selLeptons[jlep].second;
 	      if(lep2Vtx.isNull()) continue;
-		  
 	      if(lep2Ptr->pt()<minPt) continue;
 
-	      int id = lepton::getLeptonId(lep2Ptr);
-	      double Aeff2 = fabs(id)==ELECTRON ? electronEffectiveArea : muonEffectiveArea;
-	      std::vector<double> iso2=getLeptonIso(lep2Ptr,minPt,rho*Aeff2);
-	      if(iso2[REL_ISO]>maxCorrectedRelIso) continue;
+	      int id2 = lepton::getLeptonId(lep2Ptr);
+	      double maxRelIso2( fabs(id2)==ELECTRON ? maxEleRelIso : maxMuRelIso);
+	      std::vector<double> iso2=getLeptonIso(lep2Ptr,minPt);
+	      if(iso2[REL_ISO]>maxRelIso2) continue;
 	      
 	      double dz( lep1Vtx->position().z()-lep2Vtx->position().z());
 	      if(fabs(dz)>fabs(maxDz) ) continue;
-     
+	      
 	      //compute the mass
 	      LorentzVector dilepton=lep1Ptr->p4()+lep2Ptr->p4();
 	      double mass = dilepton.mass();
 	      if(mass<minDileptonMass || mass >maxDileptonMass) continue;
 	      
 	      //build the dilepton candidate
-	      
 	      std::vector<reco::CandidatePtr> dilCand;
 	      dilCand.push_back(lep1Ptr);
 	      dilCand.push_back(lep2Ptr);
-
+	      
 	      //take if leading in sum pT
 	      if(!candidateFound)
 		{

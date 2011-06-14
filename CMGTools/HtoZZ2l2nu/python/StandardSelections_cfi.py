@@ -8,6 +8,7 @@ BaseGeneratorSelection = cms.PSet( source = cms.InputTag("prunedGen"),
 
 # base values for the vertex selection ------------------------------------------
 BaseVertexSelection = cms.PSet( source = cms.InputTag("offlinePrimaryVertices"),
+                                beamSpot = cms.InputTag(""),
                                 maxZ = cms.double(24),
                                 maxRho = cms.double(2.0),
                                 minNDOF = cms.int32(7)
@@ -18,8 +19,9 @@ BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlow"),
                                minPt = cms.double(5),
                                maxEta = cms.double(2.1),
                                maxTrackChi2 = cms.double(10),
-                               minValidTrackerHits = cms.int32(10),
+                               minValidTrackerHits = cms.int32(11),
                                minValidMuonHits=cms.int32(1),
+                               maxDistToBeamSpot=cms.double(0.02),
                                id = cms.string("TMLastStationLoose"),
                                maxRelIso = cms.double(1.0)
                                )
@@ -29,10 +31,11 @@ BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectronsPF
                                    minPt = cms.double(5),
                                    minSuperClusterEt = cms.double(5),
                                    maxEta = cms.double(2.5),
-                                   vetoTransitionElectrons = cms.bool(False),
+                                   vetoTransitionElectrons = cms.bool(True),
                                    applyConversionVeto = cms.bool(True),
+                                   maxDistToBeamSpot=cms.double(0.04),
                                    maxTrackLostHits = cms.int32(1),
-                                   id = cms.string(""),
+                                   id = cms.string("eidLooseMC"),
                                    maxRelIso = cms.double(1.0),
                                    minDeltaRtoMuons = cms.double(0.1)
                                    )
@@ -50,9 +53,8 @@ BaseJetSelection = cms.PSet( source = cms.InputTag("selectedPatJetsPFlow"),
 BaseDileptonSelection = cms.PSet( minDileptonMass = cms.double(0),
                                   maxDileptonMass = cms.double(7000),
                                   minPt = cms.double(20),
-                                  maxCorrectedRelIso = cms.double(0.15),
-                                  electronEffectiveArea=cms.double(0.),
-                                  muonEffectiveArea=cms.double(0.),
+                                  maxEleRelIso = cms.double(0.17),
+                                  maxMuRelIso = cms.double(0.17),
                                   maxDz = cms.double(1.0)
                                   )
 
