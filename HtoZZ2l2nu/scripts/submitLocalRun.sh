@@ -13,6 +13,7 @@ then
 fi
 
 #parse the command line
+TAG="Events"
 for i in $*
 do
   case $i in
@@ -21,6 +22,9 @@ do
       ;;
       -src=*)
       INPUTDIR=`echo $i | sed 's/[-a-zA-Z0-9]*=//'`
+      ;;
+      -tag=*)
+      TAG=`echo $i | sed 's/[-a-zA-Z0-9]*=//'`
       ;;
       -f=*)
       FFILE=`echo $i | sed 's/[-a-zA-Z0-9]*=//'`
@@ -52,22 +56,17 @@ then
     echo "Please provide sample name with -src=input_dir"
     exit -1
 fi
-
-SRC=${INPUTDIR##/*/}
-LOCALOUT="/tmp/${SRC}.root"
+LOCALOUT="/tmp/${TAG}.root"
 if [ -n "$FFILE" ]
 then
-    LOCALOUT="/tmp/${SRC}_${FFILE}.root"
+    LOCALOUT="/tmp/${TAG}_${FFILE}.root"
 fi
 if [ -n "$STEP" ]
 then
-    LOCALOUT="/tmp/${SRC}_${FFILE}_${STEP}.root"
+    LOCALOUT="/tmp/${TAG}_${FFILE}_${STEP}.root"
 fi
 
-#call cmsRun
-#cd ${MYCMSSWDIR}/CMGTools/HtoZZ2l2nu/test
 cmsRun ${CFG} ${INPUTDIR} ${LOCALOUT} ${FFILE} ${STEP} 
-#cd -
 
 #move to OUTDIR directory if required
 if [ -z "$OUTDIR" ]
