@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 ##
 ## adds trigger sequence
 ##
-def addTriggerSequence(p, trigFilter='ee') :
+def addTriggerSequence(process, trigFilter='ee') :
     
     from HLTrigger.HLTfilters.hltHighLevel_cfi import hltHighLevel
 
