@@ -4,7 +4,6 @@ import os,sys
 import json
 import getopt
 
-
 #print usage
 def usage() :
     print ' '
