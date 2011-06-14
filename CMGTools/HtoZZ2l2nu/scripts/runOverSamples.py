@@ -80,7 +80,7 @@ for proc in procList :
             
             #submit the jobs
             for ijob in range(njobs) :
-                localParams = newParams + ' -src=' + dir 
+                localParams = newParams + ' -src=' + dir + ' -tag=' + d['dtag']
                 if(fperjob>0) : localParams += ' -f=' + str(ijob*fperjob) + ' -step=' + str(fperjob)
                 if(subtoBatch) :
                     os.system('submit2batch.sh ' + scriptFile + ' ' + localParams)                   

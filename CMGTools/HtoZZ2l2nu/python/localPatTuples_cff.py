@@ -51,6 +51,9 @@ def configureFromCommandLine() :
     if(len(sys.argv)>5 ):
         if(sys.argv[5].isdigit()) : step=int(sys.argv[5])
 
+    print "***************"
+    print sys.argv
+    print outputFile
     return castorDir, outputFile, fillFromCastor(castorDir,ffile,step)
 
                              
