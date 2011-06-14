@@ -56,6 +56,7 @@ namespace jet{
 	      vit++)
 	    {
 	      double beta=fAssoc(jet,vit->get());
+	      if(beta<0) continue;
 	      if(beta<betaMax) continue;
 	      betaMax=beta;
 	      bestVtx=*vit;
@@ -77,30 +78,36 @@ namespace jet{
   {
     double fassoc(-1);
     if(jet==0 || vtx==0) return fassoc;
-    
-    //iterate over the tracks associated to a jet
-    double sumpttracks(0),assocsumpttracks(0);
-    const reco::TrackRefVector &jtracks = jet->associatedTracks();
-    for(reco::TrackRefVector::const_iterator jtIt = jtracks.begin();
-	jtIt != jtracks.end();
-	jtIt++)
-      {
-	if( jtIt->isNull() ) continue;
-	const reco::Track *jtrack = jtIt->get();
-	sumpttracks += jtrack->pt();
+    try{
 
-	//find track match
-	for(reco::Vertex::trackRef_iterator vtIt= vtx->tracks_begin(); vtIt != vtx->tracks_end(); vtIt++)
-	  {
-	    if( vtIt->isNull() ) continue;
-	    const reco::Track *vtrack = vtIt->get();
-	    if(vtrack!=jtrack) continue;
-	    assocsumpttracks += jtrack->pt();
-	    break;
-	  }
-      }
+      //iterate over the tracks associated to a jet
+      double sumpttracks(0),assocsumpttracks(0);
+      const reco::TrackRefVector &jtracks = jet->associatedTracks();
+      for(reco::TrackRefVector::const_iterator jtIt = jtracks.begin();
+	  jtIt != jtracks.end();
+	  jtIt++)
+	{
+	  if( jtIt->isNull() ) continue;
+	  const reco::Track *jtrack = jtIt->get();
+	  sumpttracks += jtrack->pt();
+	  
+	  //find track match
+	  for(reco::Vertex::trackRef_iterator vtIt= vtx->tracks_begin(); vtIt != vtx->tracks_end(); vtIt++)
+	    {
+	      if( vtIt->isNull() ) continue;
+	      const reco::Track *vtrack = vtIt->get();
+	      if(vtrack!=jtrack) continue;
+	      assocsumpttracks += jtrack->pt();
+	      break;
+	    }
+	}
+
+      if(sumpttracks>0) fassoc = assocsumpttracks/sumpttracks;
+
+    }catch(std::exception &e){
+      //unable to associate (no tracks embed?)
+    }
     
-    if(sumpttracks>0) fassoc = assocsumpttracks/sumpttracks;
     return fassoc;
   }
 
@@ -122,14 +129,14 @@ namespace jet{
 	    double mindz=1e+6;
 	    if( dilepton.first.second.isNonnull() )
 	      {
-		if(jIt->second.get()==dilepton.first.second.get()) 
+		if( (jIt->second.get()==dilepton.first.second.get()) ) 
 		  { assocJets.push_back(*jIt); continue; }
 		double idz=fabs(jIt->second->position().z()-dilepton.first.second->position().z());
 		if(idz<mindz) mindz=idz;
 	      }
 	    if( dilepton.second.second.isNonnull() )
 	      {
-		if(jIt->second.get()==dilepton.second.second.get()) 
+		if( (jIt->second.get()==dilepton.second.second.get()) ) 
 		  { assocJets.push_back(*jIt); continue; }
 		double idz=fabs(jIt->second->position().z()-dilepton.second.second->position().z());
 		if(idz<mindz) mindz=idz;
