@@ -2,24 +2,51 @@
 
 import os,sys
 import json
+import getopt
 
-if(len(sys.argv)<4):
-    print 'runOverSamples.py subToBatch samples.json dirtag filesperjob [parameters]'
+
+#print usage
+def usage() :
+    print ' '
+    print 'runOverSamples.py [options]'
+    print '  -s : submit or not to batch'
+    print '  -j : json file containing the samples'
+    print '  -d : sample input dir as described in the json'
+    print '  -n : files to process per job'
+    print '  -p : parameters to pass to the job'
+    print ' '
     exit(-1)
 
-#open the file which describes the sample
-subToBatch=int(sys.argv[1])
-samplesDB = sys.argv[2]
+#parse the options 
+try:
+     # retrive command line options
+     shortopts  = "s:j:d:b:p:h?"
+     opts, args = getopt.getopt( sys.argv[1:], shortopts )
+except getopt.GetoptError:
+     # print help information and exit:
+     print "ERROR: unknown options in argument %s" % sys.argv[1:]
+     usage()
+     sys.exit(1)
+
+subtoBatch=False
+samplesDB=''
+dirtag=''
+fperjob=-1
+params=''
+for o,a in opts:
+    if o in("-?", "-h"):
+        usage()
+        sys.exit(0)
+    elif o in('-s'): subtoBatch=True
+    elif o in('-j'): samplesDB = a
+    elif o in('-d'): dirtag = a
+    elif o in('-b'): fperjob=int(a)
+    elif o in('-p'): params = a
+
 jsonFile = open(samplesDB,'r')
 procList=json.load(jsonFile,encoding='utf-8').items()
-dirtag=sys.argv[3]
-fperjob=int(sys.argv[4])
 scriptFile=os.path.expandvars('${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapSubmitLocalRun.sh')
-
-params=''
-if(len(sys.argv)>4) :
-    for i in xrange(5,len(sys.argv)) :
-        params += sys.argv[i] + ' '
+jobParamsList = params.split(' ')
 
 from CMGTools.HtoZZ2l2nu.localPatTuples_cff import fillFromCastor
 
@@ -38,9 +65,22 @@ for proc in procList :
             njobs=1
             if(fperjob>0) : njobs=nfiles/fperjob+1
 
-            print "*****"
+            #substitute some job parameters by json file parameters
+            newParams=''
+            for ipar in jobParamsList :
+                opt=ipar.split('=')[0]
+                arg=ipar.split('=')[1]
+                if(opt.find('-castor')<0):
+                    newParams += ipar + ' '
+                else :
+                    if(arg.find('/')>=0):
+                        newParams += ipar + ' '
+                    else :
+                        newParams += '-castor=' + d[arg] + ' '
+
+            #submit the jobs
             for ijob in range(njobs) :
-                newparams = params + ' -src=' + dir 
+                newparams = newParams + ' -src=' + dir 
                 if(fperjob>0) : newparams += ' -f=' + str(ijob*fperjob) + ' -step=' + str(fperjob)
                 if(subToBatch==0) :
                     os.system(scriptFile + ' '  + newparams)
