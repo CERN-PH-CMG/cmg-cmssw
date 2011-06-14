@@ -12,8 +12,8 @@ runOnMC = False
 # AK5 sequence with no cleaning is the default
 # the other sequences can be turned off with the following flags.
 #JOSE: no need to run these guys for what you are up to
-runAK5LC = False
-runAK7 = False
+runAK5LC = True
+runAK7 = True
 
 #COLIN: will need to include the event filters in tagging mode
 
@@ -22,7 +22,6 @@ hpsTaus = False
 
 #COLIN: the following leads to rare segmentation faults
 doJetPileUpCorrection = True
-doJetPileUpCorrectionRho = True
 
 #COLIN : when activating PFCandidate (and other stuff) embedding,
 # patTaus cannot be stored together with cmgTaus...
@@ -48,7 +47,6 @@ if runAK7: print '\tAK7'
 print 'embedding in taus: ', doEmbedPFCandidatesInTaus
 print 'HPS taus         : ', hpsTaus
 print 'produce CMG tuple: ', runCMG
-print 'computing rho: ', doJetPileUpCorrectionRho
 print sep_line
 
 
@@ -73,8 +71,8 @@ print sep_line
 # process.load("CMGTools.Common.sources.QCD_Pt_1400to1800_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
 process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.source_maxime_cff")
 
-#JOSE: restricting to the first file
-# process.source.fileNames = [process.source.fileNames[0]]
+print "WARNING!!!!!!!!!!!!!!!! remove the following line (see .cfg) before running on the batch!"
+process.source.fileNames = [process.source.fileNames[0]]
 
 if pickRelVal:
     process.source = cms.Source(
@@ -118,7 +116,7 @@ usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgoAK5, runOnMC=runOnMC, postfix=p
 
 if doJetPileUpCorrection:
     from CommonTools.ParticleFlow.Tools.enablePileUpCorrection import enablePileUpCorrection
-    enablePileUpCorrection( process, postfix=postfixAK5, doRho=doJetPileUpCorrectionRho)
+    enablePileUpCorrection( process, postfix=postfixAK5)
 
 from CMGTools.Common.PAT.embedPFCandidatesInTaus import embedPFCandidatesInTaus
 if doEmbedPFCandidatesInTaus:
@@ -173,7 +171,7 @@ usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgoAK7, runOnMC=runOnMC, postfix=p
           jetCorrections=('AK7PF', ['L1FastJet','L2Relative','L3Absolute']))
 
 if doJetPileUpCorrection:
-    enablePileUpCorrection( process, postfix=postfixAK7, doRho=doJetPileUpCorrectionRho)
+    enablePileUpCorrection( process, postfix=postfixAK7)
 
 # no need for taus in AK7 sequence. could remove the whole tau sequence to gain time?
 # if hpsTaus:
