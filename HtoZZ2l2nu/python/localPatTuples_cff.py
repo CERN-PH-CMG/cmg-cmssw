@@ -8,7 +8,8 @@ def fillFromCastor(dir,ffile=0,step=-1):
 
     #a root file is already there
     if(dir.find(".root")>=0):
-        localdatset=cms.untracked.vstring(dir)
+        localdataset=cms.untracked.vstring()
+        localdataset.extend( [ str(dir) ] )
         return localdataset
 
     #it is a directory (check if it is castor or not)
