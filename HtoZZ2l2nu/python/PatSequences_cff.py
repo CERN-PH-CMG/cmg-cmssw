@@ -29,7 +29,10 @@ def addPatSequence(process, runOnMC) :
 
     #disable mc matching for photons
     removeMCMatching(process,names=['Photons'],postfix=postfix)
-
+    process.patElectronsPFlow.embedTrack=True
+    process.patMuonsPFlow.embedTrack=True
+#    process.patMETsPFlow.userFloats
+           
     #configure top projections
     getattr(process,"pfNoPileUp"+postfix).enable = True
     getattr(process,"pfNoMuon"+postfix).enable = True
