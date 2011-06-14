@@ -39,16 +39,6 @@ def addTriggerSequence(process, trigFilter='ee') :
                                          ~process.mumutrigFilter*
                                          process.emutrigFilter)
 
-    # single muon
-    process.singlemutrigFilter = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT")
-    process.eetrigFilter.throw = cms.bool(False)
-    process.singlemutrigFilter.HLTPaths = ['HLT_Mu9',
-                                           'HLT_Mu15_v1']
-    process.singleEleTrigSequence=cms.Sequence(~process.eetrigFilter*
-                                               ~process.mumutrigFilter*
-                                               ~process.emutrigFilter*
-                                               process.singleetrigFilter)
-
     # single electron
     process.singleetrigFilter = process.eetrigFilter.clone()
     process.singleetrigFilter.HLTPaths = ['HLT_Ele10_LW_L1R',
@@ -58,6 +48,16 @@ def addTriggerSequence(process, trigFilter='ee') :
                                           'HLT_Ele17_SW_TightEleId_L1R',
                                           'HLT_Ele17_SW_TighterEleIdIsol_L1R_v2',
                                           'HLT_Ele17_SW_TighterEleIdIsol_L1R_v3']
+    process.singleEleTrigSequence=cms.Sequence(~process.eetrigFilter*
+                                               ~process.mumutrigFilter*
+                                               ~process.emutrigFilter*
+                                               process.singleetrigFilter)
+
+    # single muon
+    process.singlemutrigFilter = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT")
+    process.eetrigFilter.throw = cms.bool(False)
+    process.singlemutrigFilter.HLTPaths = ['HLT_Mu9',
+                                           'HLT_Mu15_v1']
     process.singleMuTrigSequence=cms.Sequence(~process.eetrigFilter*
                                               ~process.mumutrigFilter*
                                               ~process.emutrigFilter*
