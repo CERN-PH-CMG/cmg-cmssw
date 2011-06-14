@@ -20,7 +20,7 @@ def usage() :
 #parse the options 
 try:
      # retrive command line options
-     shortopts  = "s:j:d:b:p:h?"
+     shortopts  = "s:j:d:n:p:h?"
      opts, args = getopt.getopt( sys.argv[1:], shortopts )
 except getopt.GetoptError:
      # print help information and exit:
@@ -40,7 +40,7 @@ for o,a in opts:
     elif o in('-s'): subtoBatch=True
     elif o in('-j'): samplesDB = a
     elif o in('-d'): dirtag = a
-    elif o in('-b'): fperjob=int(a)
+    elif o in('-n'): fperjob=int(a)
     elif o in('-p'): params = a
 
 jsonFile = open(samplesDB,'r')
@@ -77,12 +77,13 @@ for proc in procList :
                         newParams += ipar + ' '
                     else :
                         newParams += '-castor=' + d[arg] + ' '
-
+            
             #submit the jobs
             for ijob in range(njobs) :
-                newparams = newParams + ' -src=' + dir 
-                if(fperjob>0) : newparams += ' -f=' + str(ijob*fperjob) + ' -step=' + str(fperjob)
-                if(subToBatch==0) :
-                    os.system(scriptFile + ' '  + newparams)
+                localParams = newParams + ' -src=' + dir 
+                if(fperjob>0) : localParams += ' -f=' + str(ijob*fperjob) + ' -step=' + str(fperjob)
+                if(subtoBatch) :
+                    os.system('submit2batch.sh ' + scriptFile + ' ' + localParams)                   
                 else :
-                    os.system('submit2batch.sh ' + scriptFile + ' ' + newparams)
+                    os.system(scriptFile + ' '  + localParams)
+
