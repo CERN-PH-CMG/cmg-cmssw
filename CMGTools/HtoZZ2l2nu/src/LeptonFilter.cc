@@ -55,18 +55,24 @@ namespace lepton{
     if( lid==lepton::MUON )
       {
 	const pat::Muon *mu=dynamic_cast<const pat::Muon *>( lepton.get() );
-	leptonIso[ECAL_ISO]=mu->ecalIso();
-	leptonIso[HCAL_ISO]=mu->hcalIso();
-	leptonIso[TRACKER_ISO]=mu->trackIso();
+	// 	leptonIso[ECAL_ISO]=mu->ecalIso();
+	// 	leptonIso[HCAL_ISO]=mu->hcalIso();
+	// 	leptonIso[TRACKER_ISO]=mu->trackIso();
+	leptonIso[HCAL_ISO]=mu->neutralHadronIso();
+	leptonIso[TRACKER_ISO]=mu->chargedHadronIso();
+	leptonIso[ECAL_ISO]=mu->photonIso ();
       }
     else if( lid==lepton::ELECTRON )
       {
 	//ecal barrel pedestal is subtracted
 	const pat::Electron *ele=dynamic_cast<const pat::Electron *>( lepton.get() );
-	leptonIso[ECAL_ISO]=ele->ecalIso();
-	if(ele->isEB()) leptonIso[ECAL_ISO] = max(leptonIso[ECAL_ISO]-1.0,0.);
-	leptonIso[HCAL_ISO]=ele->hcalIso();
-	leptonIso[TRACKER_ISO]=ele->trackIso();
+	// 	leptonIso[ECAL_ISO]=ele->ecalIso();
+	// 	if(ele->isEB()) leptonIso[ECAL_ISO] = max(leptonIso[ECAL_ISO]-1.0,0.);
+	// 	leptonIso[HCAL_ISO]=ele->hcalIso();
+	// 	leptonIso[TRACKER_ISO]=ele->trackIso();
+	leptonIso[HCAL_ISO]=mu->neutralHadronIso();
+	leptonIso[TRACKER_ISO]=mu->chargedHadronIso();
+	leptonIso[ECAL_ISO]=mu->photonIso ();
       }
     leptonIso[REL_ISO]=(max(leptonIso[ECAL_ISO]+leptonIso[HCAL_ISO]-puOffsetCorrection,0.)+leptonIso[TRACKER_ISO])/max(float(lepton->pt()),float(minRelNorm));
     
