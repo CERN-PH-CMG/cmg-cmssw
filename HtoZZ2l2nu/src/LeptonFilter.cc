@@ -70,9 +70,9 @@ namespace lepton{
 	// 	if(ele->isEB()) leptonIso[ECAL_ISO] = max(leptonIso[ECAL_ISO]-1.0,0.);
 	// 	leptonIso[HCAL_ISO]=ele->hcalIso();
 	// 	leptonIso[TRACKER_ISO]=ele->trackIso();
-	leptonIso[HCAL_ISO]=mu->neutralHadronIso();
-	leptonIso[TRACKER_ISO]=mu->chargedHadronIso();
-	leptonIso[ECAL_ISO]=mu->photonIso ();
+	leptonIso[HCAL_ISO]=ele->neutralHadronIso();
+	leptonIso[TRACKER_ISO]=ele->chargedHadronIso();
+	leptonIso[ECAL_ISO]=ele->photonIso ();
       }
     leptonIso[REL_ISO]=(max(leptonIso[ECAL_ISO]+leptonIso[HCAL_ISO]-puOffsetCorrection,0.)+leptonIso[TRACKER_ISO])/max(float(lepton->pt()),float(minRelNorm));
     

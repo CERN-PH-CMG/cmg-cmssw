@@ -8,6 +8,7 @@ namespace electron{
   CandidateWithVertexCollection filter(edm::Handle<edm::View<reco::Candidate> > &hEle, 
 				       edm::Handle<edm::View<reco::Candidate> > &hMu, 
 				       std::vector<reco::VertexRef> &goodVertices,
+				       const reco::BeamSpot &theBeamSpot,
 				       const edm::ParameterSet &iConfig)
   {
     CandidateWithVertexCollection selElectrons;
@@ -23,6 +24,7 @@ namespace electron{
       string id = iConfig.getParameter<string>("id");
       double maxRelIso = iConfig.getParameter<double>("maxRelIso");
       double minDeltaRtoMuons = iConfig.getParameter<double>("minDeltaRtoMuons");
+      double maxDistToBeamSpot = iConfig.getParameter<double>("maxDistToBeamSpot");
 
       //iterate over the electrons
       for(size_t iElec=0; iElec< hEle.product()->size(); ++iElec)
@@ -37,7 +39,7 @@ namespace electron{
 	  }
 	  if(!isEcalDriven) continue;
 
-	  int eid=1;
+	  int eid=5;  //assume eid+conversion rejection
 	  if( !id.empty() ) eid = (int) ele->electronID(id);
 	  
 	  //kinematics
@@ -45,20 +47,23 @@ namespace electron{
 	  reco::SuperClusterRef sc = ele->superCluster();
 	  double eSuperClusterEt  = sc->energy()/cosh(sc->eta());
 	  double eEta = ele->eta();
+	  double scEta= ele->superCluster()->eta();
 	  if(ePt<minPt || fabs(eEta)>maxEta || eSuperClusterEt<minSuperClusterEt) continue; 
-	  if(vetoTransitionElectrons && fabs(eEta)>1.4442 && fabs(eEta)<1.566) continue;
+	  if(vetoTransitionElectrons && fabs(scEta)>1.4442 && fabs(scEta)<1.566) continue;
 	  
 	  //conversion veto (from track and info on electron id - 2nd bit)
 	  const reco::GsfTrackRef & eTrack = ele->gsfTrack();
+	  double d0=eTrack->dxy(theBeamSpot);
 	  int nTrackLostHits=eTrack->trackerExpectedHitsInner().numberOfLostHits();
-	  if( nTrackLostHits>maxTrackLostHits) continue;
-	  bool hasConversionTag(false);
-	  if(id.find("simple") != string::npos) hasConversionTag = !((eid>>2) & 0x1);	 
-	  if(applyConversionVeto && hasConversionTag) continue;
+	  bool hasId =(eid & 0x1);
+	  bool hasConversionTag = !((eid>>2) & 0x1);	 
 
-	  //electron id (just need the first bit)
-	  if( !(eid & 0x1) ) continue;
-	  
+	  //electron id + conversion veto
+	  if(fabs(d0)>maxDistToBeamSpot) continue;
+	  if( !hasId ) continue;
+	  if(applyConversionVeto && hasConversionTag) continue;
+	  if( nTrackLostHits>maxTrackLostHits) continue;
+
 	  //isolation
 	  double relIso = lepton::getLeptonIso( elePtr, ePt)[lepton::REL_ISO];
 	  if(relIso>maxRelIso) continue;
