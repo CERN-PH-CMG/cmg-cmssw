@@ -128,10 +128,7 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
 	{
 	  using namespace lepton;
 	  int id = getLeptonId(selLeptons[ilep].first);
-	  double Aeff= fabs(id)== ELECTRON ? 
-	    objConfig["Dileptons"].getParameter<double>("electronEffectiveArea") :
-	    objConfig["Dileptons"].getParameter<double>("muonEffectiveArea");
-	  std::vector<double> isol=getLeptonIso(selLeptons[ilep].first,objConfig["Dileptons"].getParameter<double>("minPt"),(*rho)*Aeff);
+	  std::vector<double> isol=getLeptonIso(selLeptons[ilep].first,objConfig["Dileptons"].getParameter<double>("minPt"));
 	  TString ptype(fabs(id)==ELECTRON ? "electron" : "muon");
 	  controlHistos_[ptype+"_rho"]->Fill(*rho,weight);
 	  controlHistos_[ptype+"_ecaliso"]->Fill(isol[ECAL_ISO],weight);
