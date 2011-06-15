@@ -2,29 +2,59 @@
 import os,sys
 import json
 import ROOT
-                
-if(len(sys.argv)<5):
-    print 'runLocalAnalysisOverSamples.py executable samples.json inputdir outdir cfg_file [lumi=1] [submitToBatch=0]'
+import getopt
+
+#print usage
+def usage() :
+    print ' '
+    print 'runLocalAnalysisOverSamples.py [options]'
+    print '  -s : submit or not to batch'
+    print '  -e : executable name'
+    print '  -j : json file containing the samples'
+    print '  -d : input dir with the event summaries'
+    print '  -o : output directory'
+    print '  -c : templated configuration file to steer the job'
+    print '  -l : luminosity (pb)'
+    print '  -p : extra parameters configure'
+    print ' '
     exit(-1)
 
-theExecutable=sys.argv[1]
 
+#parse the options 
+try:
+     # retrive command line options
+     shortopts  = "s:e:j:d:o:c:l:p:h?"
+     opts, args = getopt.getopt( sys.argv[1:], shortopts )
+except getopt.GetoptError:
+     # print help information and exit:
+     print "ERROR: unknown options in argument %s" % sys.argv[1:]
+     usage()
+     sys.exit(1)
+
+subtoBatch=False
+samplesDB=''
+theExecutable=''
+inputdir=''
+outdir=''
+lumi=1
+cfg_file=''
+params=''
+for o,a in opts:
+    if o in("-?", "-h"):
+        usage()
+        sys.exit(0)
+    elif o in('-s'): subtoBatch=True
+    elif o in('-j'): samplesDB = a
+    elif o in('-e'): theExecutable = a
+    elif o in('-d'): inputdir = a
+    elif o in('-o'): outdir = a
+    elif o in('-l'): lumi=float(a)
+    elif o in('-c'): cfg_file = a
+    elif o in('-p'): params = a
+                                        
 #open the file which describes the sample
-samplesDB = sys.argv[2]
 jsonFile = open(samplesDB,'r')
 procList=json.load(jsonFile,encoding='utf-8').items()
-
-#configure
-inputdir=sys.argv[3]
-outdir=sys.argv[4]
-cfg_file=sys.argv[5]
-lumi=1
-submitToBatch=False
-if(len(sys.argv)>6) :
-    lumi=int(sys.argv[6])
-    if(len(sys.argv)>7) :
-        submitToBatch=bool(int(sys.argv[7]))
-    
 
 #run over sample
 for proc in procList :
@@ -38,16 +68,20 @@ for proc in procList :
         for d in data :
             dtag = d['dtag']
             eventsFile=inputdir + '/' + dtag + '.root'
-            sedcmd = 'sed \"s%@input%' + eventsFile +'%;s%@outdir%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;\"'
+            sedcmd = 'sed \"s%@input%' + eventsFile +'%;s%@outdir%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;'
+            extracfgs=params.split(' ')
+            for icfg in extracfgs :
+                varopt=icfg.split('=')
+                sedcmd += 's%' + varopt[0] + '%' + varopt[1] + '%;'
+            sedcmd += '\"' 
             cfgfile=outdir +'/'+ dtag + '_cfg.py'
             os.system('cat ' + cfg_file + ' | ' + sedcmd + ' > ' + cfgfile)
-            if(not submitToBatch) :
+            if(not subtoBatch) :
                 os.system(theExecutable + ' ' + cfgfile)
-                #                os.system('rm localcfg.py')
             else :
                 os.system('submit2batch.sh ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
     
 #run plotter over results
-if(not submitToBatch) :
+if(not subtoBatch) :
     os.system('mkdir -p ' + outdir + '/plots')
     os.system('runPlotterOverSamples.py ' + samplesDB + ' ' + str(lumi) + ' ' + outdir + ' ' + outdir + '/plots localAnalysis')
