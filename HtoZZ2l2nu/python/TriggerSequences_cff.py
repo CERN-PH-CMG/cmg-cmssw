@@ -12,7 +12,9 @@ def addTriggerSequence(process, trigFilter='ee') :
     process.eetrigFilter.throw = cms.bool(False)
     process.eetrigFilter.HLTPaths = ['HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1',
                                      'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2',
-                                     'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v3'
+                                     'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v3',
+                                     'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v4',
+                                     'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v5'
                                      ]
     process.eeTrigSequence=cms.Sequence(process.eetrigFilter)
 
@@ -20,7 +22,8 @@ def addTriggerSequence(process, trigFilter='ee') :
     process.mumutrigFilter = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT")
     process.eetrigFilter.throw = cms.bool(False)
     process.mumutrigFilter.HLTPaths =['HLT_DoubleMu7_v1',
-                                      'HLT_DoubleMu7_v2'
+                                      'HLT_DoubleMu7_v2',
+                                      'HLT_Mu13_Mu8_v2',
                                       ]
     process.mumuTrigSequence=cms.Sequence(~process.eetrigFilter*
                                           process.mumutrigFilter)
@@ -31,9 +34,15 @@ def addTriggerSequence(process, trigFilter='ee') :
     process.emutrigFilter.HLTPaths = ['HLT_Mu17_Ele8_CaloIdL_v1',
                                       'HLT_Mu17_Ele8_CaloIdL_v2',
                                       'HLT_Mu17_Ele8_CaloIdL_v3',
+                                      'HLT_Mu17_Ele8_CaloIdL_v4',
+                                      'HLT_Mu17_Ele8_CaloIdL_v5',
+                                      'HLT_Mu17_Ele8_CaloIdL_v6',
                                       'HLT_Mu8_Ele17_CaloIdL_v1',
                                       'HLT_Mu8_Ele17_CaloIdL_v2',
-                                      'HLT_Mu8_Ele17_CaloIdL_v3'
+                                      'HLT_Mu8_Ele17_CaloIdL_v3',
+                                      'HLT_Mu8_Ele17_CaloIdL_v4',
+                                      'HLT_Mu8_Ele17_CaloIdL_v5',
+                                      'HLT_Mu8_Ele17_CaloIdL_v6'
                                       ]
     process.emuTrigSequence=cms.Sequence(~process.eetrigFilter*
                                          ~process.mumutrigFilter*
