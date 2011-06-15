@@ -48,6 +48,18 @@ def addTriggerSequence(process, trigFilter='ee') :
                                          ~process.mumutrigFilter*
                                          process.emutrigFilter)
 
+    # single muon
+    process.singlemutrigFilter = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT")
+    process.singlemutrigFilter.throw = cms.bool(False)
+    process.singlemutrigFilter.HLTPaths = ['HLT_IsoMu17_v1', 'HLT_IsoMu17_v2', 'HLT_IsoMu17_v3',
+                                           'HLT_IsoMu17_v4', 'HLT_IsoMu17_v5', 'HLT_IsoMu17_v6',
+                                           'HLT_IsoMu17_v7', 'HLT_IsoMu17_v8', 'HLT_IsoMu17_v9'
+                                           ]
+    process.singleMuTrigSequence=cms.Sequence(~process.eetrigFilter*
+                                              ~process.mumutrigFilter*
+                                              ~process.emutrigFilter*
+                                              process.singlemutrigFilter)
+
     # single electron
     process.singleetrigFilter = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT")
     process.singleetrigFilter.throw = cms.bool(False)
@@ -61,18 +73,8 @@ def addTriggerSequence(process, trigFilter='ee') :
     process.singleEleTrigSequence=cms.Sequence(~process.eetrigFilter*
                                                ~process.mumutrigFilter*
                                                ~process.emutrigFilter*
+                                               ~process.singlemutrigFilter
                                                process.singleetrigFilter)
-
-    # single muon
-    process.singlemutrigFilter = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT")
-    process.singlemutrigFilter.throw = cms.bool(False)
-    process.singlemutrigFilter.HLTPaths = ['HLT_Mu9',
-                                           'HLT_Mu15_v1']
-    process.singleMuTrigSequence=cms.Sequence(~process.eetrigFilter*
-                                              ~process.mumutrigFilter*
-                                              ~process.emutrigFilter*
-                                              ~process.singleetrigFilter*
-                                              process.singlemutrigFilter)
 
     # filter counters
     process.preTriggerCounter = cms.EDProducer("EventCountProducer")
