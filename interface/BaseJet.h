@@ -24,6 +24,7 @@ namespace cmg {
     BaseJet(){}
     BaseJet(const value& m):
       PhysicsObjectWithPtr<value>::PhysicsObjectWithPtr(m),
+      partonFlavour_(UnSet(Int_t)),
       rawFactor_(1),
       uncOnFourVectorScale_(0.){
         std::fill(btag_.begin(),btag_.end(),UnSet(double));
@@ -33,6 +34,8 @@ namespace cmg {
     /// \return btag discriminator
     double btag(unsigned int index = 0) const{ return index < btag_.size() ? btag_.at(index) : UnSet(double); }
     double btag(const char* s) const;
+    /// \return the matched MC parton flavour
+    Int_t partonFlavour() const{ return partonFlavour_;}
     
     /// \return a correction factor that can be applied to the jet energy or pT to bring
     /// it back to the uncorrected value
@@ -49,6 +52,9 @@ namespace cmg {
     typedef boost::array<std::string,TagArray::static_size> TagNameArray;
     TagArray btag_;
     TagNameArray btagNames_;
+    
+    //parton flavour
+    Int_t partonFlavour_;
 
     /// Correction factor that can be applied to the jet energy or pT
     /// to bring it back to the uncorrected value.
