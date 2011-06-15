@@ -43,9 +43,9 @@ parser.add_option("-N", "--numberOfInputFiles",
                   dest="nInput",
                   help="Number of input files per job",
                   default="5")
-parser.add_option("-q", "--queue", 
-                  dest="queue",
-                  help="Batch queue. Same as in cmsBatch.py",
+parser.add_option("-b", "--batch", 
+                  dest="batch",
+                  help="Batch command. Same as in cmsBatch.py",
                   default="bsub -q 8nh < batchScript.sh")
 
 
