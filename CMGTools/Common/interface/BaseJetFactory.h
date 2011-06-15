@@ -3,6 +3,7 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "AnalysisDataFormats/CMGTools/interface/BaseJet.h"
 #include "CMGTools/Common/interface/Factory.h"
@@ -21,12 +22,14 @@ namespace cmg {
   public:
     BaseJetFactory(const edm::ParameterSet& ps);
     virtual ~BaseJetFactory();
+
     virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
     virtual void set(const pat::JetPtr& input, cmg::BaseJet* const output) const;
 
   private:
     const edm::InputTag jetLabel_;
-    const std::string btagType_;
+    const std::vector<std::string> btagType_;
+
     const bool fillJecUncertainty_;
     std::string jecPath_;
     int jecUncDirection_;
