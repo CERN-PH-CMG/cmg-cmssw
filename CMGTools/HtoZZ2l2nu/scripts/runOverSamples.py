@@ -58,8 +58,9 @@ for proc in procList :
         #run over items in process
         data = desc['data']
         for d in data :
-            dir = d[dirtag]
-            filenames = fillFromCastor(dir)
+            alldirs = d[dirtag]
+            filenames=[]
+            for dir in alldirs: filenames.extend( fillFromCastor(dir) )
             nfiles=len(filenames)
             njobs=1
             if(fperjob>0) : njobs=nfiles/fperjob+1
@@ -75,8 +76,8 @@ for proc in procList :
                     if(arg.find('/')>=0):
                         newParams += ipar + ' '
                     else :
-                        newParams += '-castor=' + d[arg] + ' '
-            
+                        newParams += '-castor=' + d[arg][0] + ' '
+
             #submit the jobs
             for ijob in range(njobs) :
                 localParams = newParams + ' -src=' + dir + ' -tag=' + d['dtag']
