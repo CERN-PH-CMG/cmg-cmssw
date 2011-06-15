@@ -10,7 +10,8 @@
 #include "AnalysisDataFormats/CMGTools/interface/PhysicsObject.h"
 #include "AnalysisDataFormats/CMGTools/interface/PatTypes.h"
 
-#include <vector>
+#include <string>
+#include <boost/array.hpp>
 
 namespace cmg {
 
@@ -23,18 +24,16 @@ namespace cmg {
     BaseJet(){}
     BaseJet(const value& m):
       PhysicsObjectWithPtr<value>::PhysicsObjectWithPtr(m),
-      btag_(UnSet(double)),
-      rawFactor_(1.),
-      uncOnFourVectorScale_(0.)
-        {}
+      rawFactor_(1),
+      uncOnFourVectorScale_(0.){
+        std::fill(btag_.begin(),btag_.end(),UnSet(double));
+      }
 
     virtual ~BaseJet(){}
-
-    cmg::TriBool jetId() const{return jetId_;}
-
     /// \return btag discriminator
-    Float_t btag() const{ return btag_; }
-
+    double btag(unsigned int index = 0) const{ return index < btag_.size() ? btag_.at(index) : UnSet(double); }
+    double btag(const char* s) const;
+    
     /// \return a correction factor that can be applied to the jet energy or pT to bring
     /// it back to the uncorrected value
     Float_t rawFactor() const {return rawFactor_;}
@@ -44,12 +43,12 @@ namespace cmg {
     friend class BaseJetFactory;
 
   private:
-
-    /// Is the jet ID'ed?
-    cmg::TriBool jetId_;
-
-    /// b-Tagging discriminator.
-    Float_t btag_;
+ 
+    /// b tagging discriminators
+    typedef boost::array<double,6> TagArray;
+    typedef boost::array<std::string,TagArray::static_size> TagNameArray;
+    TagArray btag_;
+    TagNameArray btagNames_;
 
     /// Correction factor that can be applied to the jet energy or pT
     /// to bring it back to the uncorrected value.
