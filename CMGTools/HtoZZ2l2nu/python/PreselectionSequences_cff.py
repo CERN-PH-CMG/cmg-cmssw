@@ -40,6 +40,7 @@ def addPreselectionSequences(process) :
     # https://twiki.cern.ch/twiki/bin/view/CMS/SusyEcalMaskedCellSummary#Options_and_Recipes
     process.load('JetMETAnalysis.simpleDRfilter.simpleDRfilter_cfi')
     process.simpleDRfilter.debug = cms.untracked.bool(True)
+    #fix me jet energy corrections and met 
     process.simpleDRfilter.jetInputTag = cms.InputTag("ak5PFJetsL2L3")
     process.simpleDRfilter.metInputTag = cms.InputTag("metJESCorAK5PFJet")
     process.simpleDRfilter.doFilter = cms.untracked.bool(True) # to enable filter or not
@@ -64,8 +65,8 @@ def addPreselectionSequences(process) :
         process.noHBHEnoiseCounter*
         process.CSCTightHaloFilter*
         process.nobeamHaloCounter*
-        process.simpleDRfilter*
-        process.noEcalDeadChannelsCounter
+#        process.simpleDRfilter*
+#        process.noEcalDeadChannelsCounter
         )
     
     print " *** Event preselection defined"
