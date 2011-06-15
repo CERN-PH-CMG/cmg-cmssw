@@ -16,8 +16,10 @@ public:
   };
   ~TestPatTaus(){};
 
-  void test();
-
+  void testTaus(TString inputtag="selectedPatTausAK5");
+  void testMuons(TString inputtag="selectedPatMuonsAK5");
+  void testElectrons(TString inputtag="selectedPatElectronsAK5");
+  
 private:
   
   TString filename_;

@@ -17,6 +17,8 @@
 <use   name="PhysicsTools/PatExamples"/>
 <use   name="PhysicsTools/SelectorUtils"/>
 
+<use name="AnalysisDataFormats/CMGTools"/>
+
 
 <export>
   <lib   name="1"/>
