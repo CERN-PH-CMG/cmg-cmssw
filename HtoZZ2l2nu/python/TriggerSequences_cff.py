@@ -73,7 +73,7 @@ def addTriggerSequence(process, trigFilter='ee') :
     process.singleEleTrigSequence=cms.Sequence(~process.eetrigFilter*
                                                ~process.mumutrigFilter*
                                                ~process.emutrigFilter*
-                                               ~process.singlemutrigFilter
+                                               ~process.singlemutrigFilter*
                                                process.singleetrigFilter)
 
     # filter counters
