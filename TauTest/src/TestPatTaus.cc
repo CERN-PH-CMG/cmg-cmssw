@@ -8,6 +8,9 @@
 using namespace std;
 
 #include "DataFormats/PatCandidates/interface/Tau.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
+//#include "DataFormats/PatCandidates/interface/BaseMET.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/FWLite/interface/Event.h"
 //#include "DataFormats/Common/interface/Ref.h"
@@ -16,30 +19,40 @@ using namespace std;
 #include <TFile.h>
 #include <TH1F.h>
 #include <TCanvas.h>
+#include <TH2F.h>
+#include <TDatime.h>
 
 
-void TestPatTaus::test(){
-  cout<<filename_<<endl;
+void TestPatTaus::testTaus(TString inputtag){
+  cout<<filename_<<" "<<inputtag<<endl;
        
-  edm::InputTag taus_("selectedPatTausAK5");
+  edm::InputTag tag_((const char*)inputtag);
 
   TFile File(filename_,"read");
   fwlite::Event ev(&File);
 
-  TH1F HnTau("HnTau","number of taus",11,-.5,10.5);
+  TH1F Hn("Hn","number of taus",11,-.5,10.5); Hn.GetXaxis()->SetTitle(" # of taus ");
+  TH1F Hpt("Hpt","pt",100,0,80); Hpt.GetXaxis()->SetTitle(" p_{t} (GeV) ");
+  TH1F Heta("Heta","eta",80,-4,4); Heta.GetXaxis()->SetTitle(" #eta  ");
+  TH1F Hphi("Hphi","phi",60,-3.2,3.2); Hphi.GetXaxis()->SetTitle(" #phi  ");
+  TH1F Hcharge("Hcharge","charge",5,-2.5,2.5); Hcharge.GetXaxis()->SetTitle(" charge  ");
+  TH1F HIsolation("HIsolation"," isolation",100,0,30); HIsolation.GetXaxis()->SetTitle(" particleIso ");
 
-  TH1F Hpt("Hpt","pt",100,0,80);
-  TH1F Heta("Heta","eta",80,-4,4);
-  TH1F Hphi("Hphi","phi",60,-3.2,3.2);
-  TH1F HTauIDPass("HTtauIDPass","tauID passed",11,0,11);
-  TH1F HTauIDFail("HTtauIDFail","tauID fail",11,0,11);
 
+  TH1F HNChargedHadrCands("HNChargedHadrCands","Number of charged hadrons",5,-0.5,4.5); HNChargedHadrCands.GetXaxis()->SetTitle(" # of charged hadrons / tau ");
+  TH1F HLeadChargedHadrPt("HLeadChargedHadrPt","LeadPFChargedHadrCand pt",100,0,50); HLeadChargedHadrPt.GetXaxis()->SetTitle(" p_{t} (GeV) ");
+  TH1F HLeadChargedHadrEcal("HLeadChargedHadrEcal","LeadPFChargedHadrCand ECal energy",100,1,51); HLeadChargedHadrEcal.GetXaxis()->SetTitle(" energy (GeV) ");
+  TH1F HLeadChargedHadrHcal("HLeadChargedHadrHcal","LeadPFChargedHadrCand HCal energy",100,1,51); HLeadChargedHadrHcal.GetXaxis()->SetTitle(" energy (GeV) ");
+  TH2F HVertex("HVertex","LeadPFChargedHadrCand vertex",100,0.2,0.3,100,0.34,0.44); HVertex.GetXaxis()->SetTitle(" x (cm) "); HVertex.GetYaxis()->SetTitle(" y (cm) ");
+  TH1F HLeadChargedHadrMVAEPi("HLeadChargedHadrMVAEPi","LeadPFChargedHadrCand mva_e_pi",120,-0.1,1.1); HLeadChargedHadrMVAEPi.GetXaxis()->SetTitle(" mva_e_pi ");
+  TH1F HLeadChargedHadrCharge("HLeadChargedHadrCharge","LeadPFChargedHadrCand charge",5,-2.5,2.5); HLeadChargedHadrCharge.GetXaxis()->SetTitle(" charge ");
 
-  TH1F HLeadPFCandPt("HLeadPFCandPt","LeadPFCand pt",100,0,50);
-  TH1F HLeadChargedHadrPt("HLeadChargedHadr","LeadPFChargedHadrCand pt",100,0,50);
-  TH1F HLeadNeutralCandPt("HLeadNeutralCandPt"," HLeadNeutralCand pt",100,0,50);
-  TH1F HNChargedHadrCands("HNChargedHadrCands","Number of charged hadrons",5,0,5);
-  TH1F HNGammaCands("HNGammaCands","Number of gammas",5,0,5);
+  TH1F HNGammaCands("HNGammaCands","Number of gammas",5,-0.5,4.5); HNGammaCands.GetXaxis()->SetTitle(" # of gammas / tau ");
+  TH1F HLeadNeutralCandPt("HLeadNeutralCandPt"," HLeadNeutralCand pt",100,0,50); HLeadNeutralCandPt.GetXaxis()->SetTitle(" p_{t} (GeV) ");
+  TH1F HLeadNeutralCandEcal("HLeadNeutralCandEcal"," HLeadNeutralCand ECal energy",100,1,51); HLeadNeutralCandEcal.GetXaxis()->SetTitle(" energy (GeV) ");
+
+  TH1F HTauIDPass("HTtauIDPass","tauID passed",11,0,11); HTauIDPass.GetXaxis()->SetTitle(" tauID  ");
+  TH1F HTauIDFail("HTtauIDFail","tauID fail",11,0,11); HTauIDFail.GetXaxis()->SetTitle(" tauID ");
 
 
   //loop over events.
@@ -49,114 +62,151 @@ void TestPatTaus::test(){
     //cout<<"event "<<ievt<<":   ";
    
     //// Handle to the particle collection
-    edm::Handle<std::vector<pat::Tau> > tauvec;
-    event.getByLabel(taus_, tauvec);
+    edm::Handle<std::vector<pat::Tau> > particlevec;
+    event.getByLabel(tag_, particlevec);
 
     //// loop over particle collection
-    Int_t itau=0;
-    for(std::vector<pat::Tau>::const_iterator tau=tauvec->begin(); tau!=tauvec->end(); ++tau, itau++){
-      //cout<<tau->pt()<<" "<<tau->tauID("decayModeFinding")<<endl;
-      Hpt.Fill(tau->pt());
-      Heta.Fill(tau->eta());
-      Hphi.Fill(tau->phi());
-
-      //cout<<" "<<itau<<" ";
-
-
-
-      reco::PFCandidateRef leadPFCand=tau->leadPFCand();
-      if(leadPFCand.isNonnull()){
-	HLeadPFCandPt.Fill(leadPFCand->pt());
-      }
-      reco::PFCandidateRef leadChargedHadrCand=tau->leadPFChargedHadrCand();//lead track
-      if(leadChargedHadrCand.isNonnull()){
-	HLeadChargedHadrPt.Fill(leadChargedHadrCand->pt());
-      }
-      reco::PFCandidateRef leadNeutralCand=tau->leadPFNeutralCand();
-      if(leadNeutralCand.isNonnull()){
-	HLeadNeutralCandPt.Fill(leadNeutralCand->pt());
-      }
+    Int_t iparticle=0;
+    for(std::vector<pat::Tau>::const_iterator particle=particlevec->begin(); particle!=particlevec->end(); ++particle, iparticle++){
+      //cout<<particle->pt()<<" "<<particle->tauID("decayModeFinding")<<endl;
+      Hpt.Fill(particle->pt());
+      Heta.Fill(particle->eta());
+      Hphi.Fill(particle->phi());
+      Hcharge.Fill(particle->charge());
+      HIsolation.Fill(particle->particleIso());
       
-      reco::PFCandidateRefVector signalChargedHadrCands=tau->signalPFChargedHadrCands();
+      //cout<<" "<<iparticle<<" ";
+
+      /////Particle tracks
+      reco::PFCandidateRefVector signalChargedHadrCands=particle->signalPFChargedHadrCands();
       HNChargedHadrCands.Fill(signalChargedHadrCands.size());
 
-      reco::PFCandidateRefVector signalGammaCands=tau->signalPFGammaCands();
+      reco::PFCandidateRef leadChargedHadrCand=particle->leadPFChargedHadrCand();//lead track
+      if(leadChargedHadrCand.isNonnull()){
+	HLeadChargedHadrPt.Fill(leadChargedHadrCand->pt());
+	HLeadChargedHadrEcal.Fill(leadChargedHadrCand->ecalEnergy());
+	HLeadChargedHadrHcal.Fill(leadChargedHadrCand->hcalEnergy());
+	HLeadChargedHadrMVAEPi.Fill(leadChargedHadrCand->mva_e_pi());
+	HLeadChargedHadrCharge.Fill(leadChargedHadrCand->charge());
+
+	reco::TrackRef chHadrtrk=leadChargedHadrCand->trackRef();
+	if(chHadrtrk.isAvailable()){
+	  reco::TrackBase::Point vtx=chHadrtrk->referencePoint();
+	  HVertex.Fill(vtx.x(),vtx.y());
+ 	}
+
+      }
+
+      ///Tau neutrals
+      reco::PFCandidateRefVector signalGammaCands=particle->signalPFGammaCands();
       HNGammaCands.Fill(signalGammaCands.size());
+
+      reco::PFCandidateRef leadNeutralCand=particle->leadPFNeutralCand();
+      if(leadNeutralCand.isNonnull()){
+	HLeadNeutralCandPt.Fill(leadNeutralCand->pt());
+	HLeadNeutralCandEcal.Fill(leadNeutralCand->ecalEnergy());
+      }
+      
 
       
 
-      if(tau->tauID("againstElectronLoose")==1.0)  HTauIDPass.AddBinContent(1); else HTauIDFail.AddBinContent(1);
-      if(tau->tauID("againstElectronMedium")==1.0) HTauIDPass.AddBinContent(2); else HTauIDFail.AddBinContent(2);
-      if(tau->tauID("againstElectronTight")==1.0)  HTauIDPass.AddBinContent(3); else HTauIDFail.AddBinContent(3);
-      if(tau->tauID("againstMuonLoose")==1.0)      HTauIDPass.AddBinContent(4); else HTauIDFail.AddBinContent(4);
-      if(tau->tauID("againstMuonTight")==1.0)      HTauIDPass.AddBinContent(5); else HTauIDFail.AddBinContent(5);
-      if(tau->tauID("byLooseIsolation")==1.0)      HTauIDPass.AddBinContent(6); else HTauIDFail.AddBinContent(6);
-      if(tau->tauID("byMediumIsolation")==1.0)     HTauIDPass.AddBinContent(7); else HTauIDFail.AddBinContent(7);
-      if(tau->tauID("byTightIsolation")==1.0)      HTauIDPass.AddBinContent(8); else HTauIDFail.AddBinContent(8);
-      if(tau->tauID("byVLooseIsolation")==1.0)     HTauIDPass.AddBinContent(9); else HTauIDFail.AddBinContent(9);
-      if(tau->tauID("decayModeFinding")==1.0)      HTauIDPass.AddBinContent(10); else HTauIDFail.AddBinContent(10);
+      if(particle->tauID("againstElectronLoose")==1.0)  HTauIDPass.AddBinContent(1); else HTauIDFail.AddBinContent(1);
+      if(particle->tauID("againstElectronMedium")==1.0) HTauIDPass.AddBinContent(2); else HTauIDFail.AddBinContent(2);
+      if(particle->tauID("againstElectronTight")==1.0)  HTauIDPass.AddBinContent(3); else HTauIDFail.AddBinContent(3);
+      if(particle->tauID("againstMuonLoose")==1.0)      HTauIDPass.AddBinContent(4); else HTauIDFail.AddBinContent(4);
+      if(particle->tauID("againstMuonTight")==1.0)      HTauIDPass.AddBinContent(5); else HTauIDFail.AddBinContent(5);
+      if(particle->tauID("byLooseIsolation")==1.0)      HTauIDPass.AddBinContent(6); else HTauIDFail.AddBinContent(6);
+      if(particle->tauID("byMediumIsolation")==1.0)     HTauIDPass.AddBinContent(7); else HTauIDFail.AddBinContent(7);
+      if(particle->tauID("byTightIsolation")==1.0)      HTauIDPass.AddBinContent(8); else HTauIDFail.AddBinContent(8);
+      if(particle->tauID("byVLooseIsolation")==1.0)     HTauIDPass.AddBinContent(9); else HTauIDFail.AddBinContent(9);
+      if(particle->tauID("decayModeFinding")==1.0)      HTauIDPass.AddBinContent(10); else HTauIDFail.AddBinContent(10);
+
 
 
     }
 
-    HnTau.Fill(itau);
+    Hn.Fill(iparticle);
 
 
     //cout<<endl;
   }
 
 
-  TCanvas Canv;
-  TString psfile="TauID.ps";
+  TDatime date;
+  TString datelabel=TString("")+(long)date.GetDate()+"_"+(long)date.GetTime();
+
+  TCanvas Canv("Canv",filename_+"_"+tag_.label()+"_"+datelabel);
+  TString psfile=TString(tag_.label())+".ps";
   Canv.Print(psfile+"[");
   
+  //general
   Canv.Clear();
-  HnTau.Draw("hist");
+  Hn.Draw("hist");
   Canv.Print(psfile);
-
   Canv.Clear();
   Hpt.Draw("hist");
   Canv.Print(psfile);
-
   Canv.Clear();
   Heta.Draw("hist");
   Canv.Print(psfile);
-
   Canv.Clear();
   Hphi.Draw("hist");
   Canv.Print(psfile);
-
-
-
   Canv.Clear();
-  HLeadPFCandPt.Draw("hist");
+  Hcharge.Draw("hist");
   Canv.Print(psfile);
-  
   Canv.Clear();
-  HLeadChargedHadrPt.Draw("hist");
+  HIsolation.Draw("hist");
   Canv.Print(psfile);
 
-  Canv.Clear();
-  HLeadNeutralCandPt.Draw("hist");
-  Canv.Print(psfile);
 
+  //tracks
   Canv.Clear();
   HNChargedHadrCands.Draw("hist");
   Canv.Print(psfile);
+  Canv.Clear();
+  HLeadChargedHadrPt.Draw("hist");
+  Canv.Print(psfile);
+  Canv.Clear();
+  HLeadChargedHadrEcal.Draw("hist");
+  Canv.Print(psfile);
+  Canv.Clear();
+  HLeadChargedHadrHcal.Draw("hist");
+  Canv.Print(psfile);
+  Canv.Clear();
+  HLeadChargedHadrMVAEPi.Draw("hist");
+  Canv.Print(psfile);
+  Canv.Clear();
+  HLeadChargedHadrCharge.Draw("hist");
+  Canv.Print(psfile);
+  Canv.Clear();
+  HVertex.SetStats(1);
+  HVertex.Draw("colz");
+  Canv.Print(psfile);
 
+
+  //neutrals
   Canv.Clear();
   HNGammaCands.Draw("hist");
   Canv.Print(psfile);
+  Canv.Clear();
+  HLeadNeutralCandPt.Draw("hist");
+  Canv.Print(psfile);
+  Canv.Clear();
+  HLeadNeutralCandEcal.Draw("hist");
+  Canv.Print(psfile);
 
+
+  //tauID
   Canv.Clear();
   HTauIDPass.SetStats(0);
   HTauIDPass.Draw("hist");
   Canv.Print(psfile);
-
   Canv.Clear();
   HTauIDFail.SetStats(0);
   HTauIDFail.Draw("hist");
   Canv.Print(psfile);
+
 
   Canv.Print(psfile+"]");
 
@@ -165,139 +215,193 @@ void TestPatTaus::test(){
 
 
 
-// 	cout<<" ";
-// 	reco::PFCandidate::const_iterator leadPFCand=leadPFVec->begin();
-// 	//for(reco::PFCandidate::const_iterator leadPFCand=leadPFVec->begin(); leadPFCand != leadPFVec->end() ;++leadPFCand){
-// 	//	for(std::vector< reco::PFCandidate >::const_iterator leadPFCand=leadPFVec->begin(); leadPFCand != leadPFVec->end() ;++leadPFCand){
-// 	//	for(reco::PFCandidateIterator leadPFCand=leadPFVec->begin(); leadPFCand != leadPFVec->end() ;++leadPFCand){
-// 	for(Int_t i=0;i<10;i++){
-// 	  if((reco::candidate *)leadPFCand){
+void TestPatTaus::testMuons(TString inputtag){
+  cout<<filename_<<" "<<inputtag<<endl;
+       
+  edm::InputTag tag_((const char*)inputtag);
 
-// 	    cout<<" i="<<i<<":"<<leadPFCand->pt()<<" ";
-// 	    HLeadPFCandPt.Fill(leadPFCand->pt());
-// 	  }
-// 	  leadPFCand++;
-// 	}
-// 	cout<<endl;
-// 	//return;
+  TFile File(filename_,"read");
+  fwlite::Event ev(&File);
 
-
-
-//#include "FWCore/FWLite/interface/AutoLibraryLoader.h"
-//#include "FWCore/Framework/interface/Event.h"
-//#include "FWCore/Framework/interface/EDAnalyzer.h"
-//#include "FWCore/ParameterSet/interface/ParameterSet.h"
-//#include "FWCore/ServiceRegistry/interface/Service.h"
-//#include "FWCore/Framework/interface/MakerMacros.h"
-//#include "CommonTools/UtilAlgos/interface/TFileService.h"
-
-   // load framework libraries
-  //  gSystem->Load("libFWCoreFWLite.so");
-  //  gSystem->Load("libDataFormatsFWLite");
-  //  gSystem->Load("libDataFormatsPatCandidates");
-  //  AutoLibraryLoader::enable();
-
-  //edm::Wrapper<vector<pat::Tau> > * tauvec =0 ;
-  //vector<pat::Tau>* tauvec;
-  //pat::Tau tau;
-  //for(Int_t t=0;t<10;t++)tauvec.push_back(tau);
-  //cout<<"tauvec.size="<<tauvec.size()<<endl;
-  //pat::Tau tauvec[10];
-  //pat::TauVec tauvec; 
-  //Int_t tauvec;
-  //Float_t pt[15];
+  TH1F Hn("Hn","number of muons",11,-.5,10.5); Hn.GetXaxis()->SetTitle(" # of muons / event");
+  TH1F Hpt("Hpt","pt",100,0,80); Hpt.GetXaxis()->SetTitle(" p_{t} (GeV) ");
+  TH1F Heta("Heta","eta",80,-4,4); Heta.GetXaxis()->SetTitle(" #eta  ");
+  TH1F Hphi("Hphi","phi",60,-3.2,3.2); Hphi.GetXaxis()->SetTitle(" #phi  ");
+  TH1F Hcharge("Hcharge","charge",5,-2.5,2.5); Hcharge.GetXaxis()->SetTitle(" charge  ");
+  TH1F HIsolation("HIsolation"," isolation",100,0,30); HIsolation.GetXaxis()->SetTitle(" trackIso ");
+  TH2F HVertex("HVertex","vertex",100,0.2,0.3,100,0.34,0.44); HVertex.GetXaxis()->SetTitle(" x (cm) "); HVertex.GetYaxis()->SetTitle(" y (cm) ");
 
 
 
-//   TTree* Events=(TTree*)File.Get("Events");
-//   if(!Events){
-//     cout<<"No Events found"<<endl;
-//     return;
-//   }
+  //loop over events.
+  Int_t ievt=0;
+  for(ev.toBegin(); !ev.atEnd() ; ++ev, ++ievt){
+    edm::EventBase const & event = ev;
+    //cout<<"event "<<ievt<<":   ";
+   
+    //// Handle to the particle collection
+    edm::Handle<std::vector<pat::Muon> > particlevec;
+    event.getByLabel(tag_, particlevec);
+
+    //// loop over particle collection
+    Int_t iparticle=0;
+    for(std::vector<pat::Muon>::const_iterator particle=particlevec->begin(); particle!=particlevec->end(); ++particle, iparticle++){
+      //cout<<particle->pt()<<" "<<particle->tauID("decayModeFinding")<<endl;
+      Hpt.Fill(particle->pt());
+      Heta.Fill(particle->eta());
+      Hphi.Fill(particle->phi());
+      Hcharge.Fill(particle->charge());
+      HIsolation.Fill(particle->trackIso());
+     
+      
+      reco::TrackRef trk=particle->globalTrack();
+      if(trk.isAvailable()){
+	reco::TrackBase::Point vtx=trk->referencePoint();
+	HVertex.Fill(vtx.x(),vtx.y());
+      }
+
+ 
+    }
+
+    Hn.Fill(iparticle);
+
+
+    //cout<<endl;
+  }
+
+
+  TDatime date;
+  TString datelabel=TString("")+(long)date.GetDate()+"_"+(long)date.GetTime();
+
+  TCanvas Canv("Canv",filename_+"_"+tag_.label()+"_"+datelabel);
+  TString psfile=TString(tag_.label())+".ps";
+  Canv.Print(psfile+"[");
   
+  //general
+  Canv.Clear();
+  Hn.Draw("hist");
+  Canv.Print(psfile);
+  Canv.Clear();
+  Hpt.Draw("hist");
+  Canv.Print(psfile);
+  Canv.Clear();
+  Heta.Draw("hist");
+  Canv.Print(psfile);
+  Canv.Clear();
+  Hphi.Draw("hist");
+  Canv.Print(psfile);
+  Canv.Clear();
+  Hcharge.Draw("hist");
+  Canv.Print(psfile);
+  Canv.Clear();
+  HIsolation.Draw("hist");
+  Canv.Print(psfile);
 
-  //Events->SetBranchAddress("patTaus_selectedPatTausAK5__PAT.obj",tauvec);
-  //Events->SetBranchAddress("patTaus_selectedPatTausAK5__PAT.obj.pt_",pt);
-  ///Events->SetBranchStatus("*",1);
-  //Events->SetBranchStatus("patTaus_selectedPatTausAK5__PAT.obj",1);
-
-
-
-    //  Int_t nevents= Events->GetEntriesFast();
-    //for(Int_t e=1; e<10; e++){
-    //Int_t nb=Events->GetEntry(e);
-
-    //if(e%100==1) cout<<"Event "<<e<<" tauvec.size= "<<tauvec.size()<<endl;
-    
-    //cout<<tauvec[0].pt()<<endl;
-    //cout<<e<<" "<<nb<<" "<<tauvec<<" "<<pt[0]<<endl;
-    
-    ////loop over the taus
-    //for(int t=1;t<(int)tauvec.size();t++){
-    //tau = tauvec[t];
-    
-    //cout<<"tau.tauID decayModeFinding = "<< tau.tauID("decayModeFinding")<<endl;
-    //}
-
-    //tauvec.clear();
-
-  // virtual void set(const pat::TauPtr& input, cmg::Tau* const output, 
-//   //  
-//   output->leadHadrHCalEnergy    = input->leadPFChargedHadrCand()->hcalEnergy();
-//   output->leadHadrECalEnergy    = input->leadPFChargedHadrCand()->ecalEnergy();
-//   output->leadChargedHadrTrkPt  = input->leadPFChargedHadrCand()->pt();//  output->leadChargedHadrTrkPt = input->leadPFChargedHadrCand()->trackRef()->pt();
-//   output->leadChargedHadrMvaEPi = input->leadPFChargedHadrCand()->mva_e_pi();
-//   output->leadCandHCalEnergy    = input->leadPFCand()->hcalEnergy();
-//   output->leadCandMvaEPi        = input->leadPFCand()->mva_e_pi();
-//   output->numberChargedHadr     = input->signalPFChargedHadrCands().size();
-//   output->numberGamma           = input->signalPFGammaCands().size() ;
+  Canv.Clear();
+  HVertex.SetStats(1);
+  HVertex.Draw("colz");
+  Canv.Print(psfile);
 
 
-//Default tauID for patTaus in PatAlgos (use shrinkingCone)
-//  output->tauIDleadingTrackFinding  = input->tauID("leadingTrackFinding");
-//  output->tauIDleadingTrackPtCut  = input->tauID("leadingTrackPtCut");
-//  output->tauIDleadingPionPtCut  = input->tauID("leadingPionPtCut");
-//  output->tauIDtrackIsolation  = input->tauID("trackIsolation");
-//  output->tauIDtrackIsolationUsingLeadingPion  = input->tauID("trackIsolationUsingLeadingPion");
-//  output->tauIDecalIsolation  = input->tauID("ecalIsolation");
-//  output->tauIDecalIsolationUsingLeadingPion  = input->tauID("ecalIsolationUsingLeadingPion");
-//  output->tauIDbyIsolation  = input->tauID("byIsolation");
-//  output->tauIDbyIsolationUsingLeadingPion  = input->tauID("byIsolationUsingLeadingPion");
-//  output->tauIDagainstElectron  = input->tauID("againstElectron");
-//  output->tauIDagainstMuon  = input->tauID("againstMuon");
-//
-
-//  /////these can be used after switching the tauProducer to HPS
-//  output->tauIDdecayModeFinding = input->tauID("decayModeFinding");
-//  output->tauIDbyVLooseIsolation  = input->tauID("byVLooseIsolation");
-//  output->tauIDbyLooseIsolation  = input->tauID("byLooseIsolation");
-//  output->tauIDbyMediumIsolation  = input->tauID("byMediumIsolation");
-//  output->tauIDbyTightIsolation  = input->tauID("byTightIsolation");
-//  output->tauIDagainstElectronLoose  = input->tauID("againstElectronLoose");
-//  output->tauIDagainstElectronMedium  = input->tauID("againstElectronMedium");
-//  output->tauIDagainstElectronTight  = input->tauID("againstElectronTight");
-//  output->tauIDagainstMuonLoose  = input->tauID("againstMuonLoose");
-//  output->tauIDagainstMuonTight  = input->tauID("againstMuonTight");
+ 
+  Canv.Print(psfile+"]");
 
 
-//hpsTauIDSources = [
-//    ("leadingTrackFinding", "DiscriminationByDecayModeFinding"),
-//    ("byLooseIsolation", "DiscriminationByLooseIsolation"),
-//    ("byMediumIsolation", "DiscriminationByMediumIsolation"),
-//    ("byTightIsolation", "DiscriminationByTightIsolation"),
-//    ("againstElectron", "DiscriminationAgainstElectron"),
-//    ("againstMuon", "DiscriminationAgainstMuon")]
-
-//   output->tauIDdecayModeFinding = input->tauID("decayModeFinding");
-//   output->tauIDbyLooseIsolation  = input->tauID("byLooseIsolation");
-//   output->tauIDbyMediumIsolation  = input->tauID("byMediumIsolation");
-//   output->tauIDbyTightIsolation  = input->tauID("byTightIsolation");
-//   output->tauIDagainstElectron  = input->tauID("againstElectron");
-//   output->tauIDagainstMuon  = input->tauID("againstMuon");
+}
 
 
+void TestPatTaus::testElectrons(TString inputtag){
+  cout<<filename_<<" "<<inputtag<<endl;
+       
+  edm::InputTag tag_((const char*)inputtag);
+
+  TFile File(filename_,"read");
+  fwlite::Event ev(&File);
+
+  TH1F Hn("Hn","number of muons",11,-.5,10.5); Hn.GetXaxis()->SetTitle(" # of electrons / event");
+  TH1F Hpt("Hpt","pt",100,0,80); Hpt.GetXaxis()->SetTitle(" p_{t} (GeV) ");
+  TH1F Heta("Heta","eta",80,-4,4); Heta.GetXaxis()->SetTitle(" #eta  ");
+  TH1F Hphi("Hphi","phi",60,-3.2,3.2); Hphi.GetXaxis()->SetTitle(" #phi  ");
+  TH1F Hcharge("Hcharge","charge",5,-2.5,2.5); Hcharge.GetXaxis()->SetTitle(" charge  ");
+  TH1F HIsolation("HIsolation","isolation",100,0,30); HIsolation.GetXaxis()->SetTitle(" trackIso ");
+  TH2F HVertex("HVertex","vertex",100,0.2,0.3,100,0.34,0.44); HVertex.GetXaxis()->SetTitle(" x (cm) "); HVertex.GetYaxis()->SetTitle(" y (cm) ");
+
+
+
+  //loop over events.
+  Int_t ievt=0;
+  for(ev.toBegin(); !ev.atEnd() ; ++ev, ++ievt){
+    edm::EventBase const & event = ev;
+    //cout<<"event "<<ievt<<":   ";
+   
+    //// Handle to the particle collection
+    edm::Handle<std::vector<pat::Electron> > particlevec;
+    event.getByLabel(tag_, particlevec);
+
+    //// loop over particle collection
+    Int_t iparticle=0;
+    for(std::vector<pat::Electron>::const_iterator particle=particlevec->begin(); particle!=particlevec->end(); ++particle, iparticle++){
+      //cout<<particle->pt()<<" "<<particle->tauID("decayModeFinding")<<endl;
+      Hpt.Fill(particle->pt());
+      Heta.Fill(particle->eta());
+      Hphi.Fill(particle->phi());
+      Hcharge.Fill(particle->charge());
+      HIsolation.Fill(particle->trackIso());
+     
+      reco::GsfTrackRef trk=particle->gsfTrack();
+      if(trk.isAvailable()){
+	reco::TrackBase::Point vtx=trk->referencePoint();
+	HVertex.Fill(vtx.x(),vtx.y());
+      }
+      
+      
+ 
+    }
+
+    Hn.Fill(iparticle);
+
+
+    //cout<<endl;
+  }
+
+
+  TDatime date;
+  TString datelabel=TString("")+(long)date.GetDate()+"_"+(long)date.GetTime();
+
+  TCanvas Canv("Canv",filename_+"_"+tag_.label()+"_"+datelabel);
+  TString psfile=TString(tag_.label())+".ps";
+  Canv.Print(psfile+"[");
   
-//   //other variables
-//  output->decayMode = input->decayMode();
+  //general
+  Canv.Clear();
+  Hn.Draw("hist");
+  Canv.Print(psfile);
+  Canv.Clear();
+  Hpt.Draw("hist");
+  Canv.Print(psfile);
+  Canv.Clear();
+  Heta.Draw("hist");
+  Canv.Print(psfile);
+  Canv.Clear();
+  Hphi.Draw("hist");
+  Canv.Print(psfile);
+  Canv.Clear();
+  Hcharge.Draw("hist");
+  Canv.Print(psfile);
+  Canv.Clear();
+  HIsolation.Draw("hist");
+  Canv.Print(psfile);
+
+  Canv.Clear();
+  HVertex.SetStats(1);
+  HVertex.Draw("colz");
+  Canv.Print(psfile);
+
+
+ 
+  Canv.Print(psfile+"]");
+
+
+}
 
 
