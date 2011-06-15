@@ -64,9 +64,9 @@ def addPreselectionSequences(process) :
         process.HBHENoiseFilter*
         process.noHBHEnoiseCounter*
         process.CSCTightHaloFilter*
-        process.nobeamHaloCounter*
-#        process.simpleDRfilter*
-#        process.noEcalDeadChannelsCounter
+        process.nobeamHaloCounter
+#       *process.simpleDRfilter
+#       *process.noEcalDeadChannelsCounter
         )
     
     print " *** Event preselection defined"
