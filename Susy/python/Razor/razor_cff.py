@@ -32,8 +32,10 @@ razorMuonSequence = cms.Sequence(
     )
 
 # id the jets
-razorPFJetSel = cmgCandSel.clone( src = 'cmgPFJetSel', cut = 'pt()>29 && abs(eta)<3.1' ) #go a bit loose
-razorPFJetSelID = cmgCandSel.clone( src = 'cmgPFJetSel', cut = 'pt()>29 && abs(eta)<3.1 && getSelection("cuts_looseJetId")' )
+from CMGTools.Common.skims.cmgPFJetSel_cfi import *
+razorPFJetSel = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = 'pt()>29 && abs(eta)<3.1' ) #go a bit loose
+razorPFJetSelID = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = '%s && getSelection("cuts_looseJetId")' % razorPFJetSel.cut.value() )
+
 #combine leading leptons with jets
 razorPFJetsWithLeadingLeptons = cmgCandMerge.clone(
     src = cms.VInputTag(
@@ -139,8 +141,8 @@ razorSelectedDiHemi = cmgCandMerge.clone(
 razorSelectedCount = cmgCandCount.clone( src = 'razorSelectedDiHemi', minNumber = 1 )
 
 razorJetSequence = cms.Sequence(
+    razorPFJetSel+
     razorPFJetSelID+
-    razorPFJetSel*
     razorPFJetsWithLeadingLeptons
 )
 
@@ -158,10 +160,19 @@ razorObjectSequence = cms.Sequence(
     razorBoxesSequence    
     )
 
+from CMGTools.Susy.histograms.pfBJetHistograms_cff import pfJetHistograms
+#BJet histograms
+razorBJetHistogramsAll = pfJetHistograms.clone()
+razorBJetHistogramsSel = pfJetHistograms.clone(inputCollection = cms.InputTag("razorPFJetSel"))
+
 razorHistogrammingSequence  = cms.Sequence(
+    #Razor histograms                                       
     razorDiHemiHistogramsHadBox+
     razorDiHemiHistogramsMuStarBox+
-    razorDiHemiHistogramsEleStarBox                                         
+    razorDiHemiHistogramsEleStarBox+
+    #btag histograms
+    razorBJetHistogramsAll+
+    razorBJetHistogramsSel
 )
 
 razorSequence = cms.Sequence(
