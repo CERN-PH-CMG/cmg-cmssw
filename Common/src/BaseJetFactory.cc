@@ -7,11 +7,15 @@
 
 cmg::BaseJetFactory::BaseJetFactory(const edm::ParameterSet& ps):
   jetLabel_(ps.getParameter<edm::InputTag>("inputCollection")),
-  btagType_(ps.getParameter<std::string>("btagType")),
+  btagType_(ps.getParameter<std::vector<std::string> >("btagType")),
   fillJecUncertainty_(ps.getParameter<bool>("fillJecUncertainty")),
   jecPath_(""),
   JES_(0)
 {
+  if(btagType_.size() > cmg::BaseJet::TagNameArray::static_size){
+    edm::LogWarning("cmg::BaseJetFactory") << "Too many B-tags. The maximum number is fixed."  << std::endl;
+  }  
+    
   if (fillJecUncertainty_) {
     jecPath_ = ps.getParameter<std::string>("jecPath");
     edm::LogInfo("BaseJetFactory") << "Loading JEC uncertainties from '"
@@ -57,9 +61,13 @@ cmg::BaseJetFactory::event_ptr cmg::BaseJetFactory::create(const edm::Event& iEv
 void cmg::BaseJetFactory::set(const pat::JetPtr& input,
                               cmg::BaseJet* const output) const
 {
-    output->btag_ = input->bDiscriminator(btagType_);
+    for(unsigned int i = 0; i < btagType_.size(); i++){
+        const std::string tag(btagType_.at(i));
+        output->btag_[i] = input->bDiscriminator(tag);
+        output->btagNames_[i] = tag;
+    }
+    
     output->rawFactor_ = input->jecFactor(0);
-
     if (fillJecUncertainty_) {
       JES_->setJetEta(input->eta());
       // NOTE: This should be the L2L3-corrected pT.
