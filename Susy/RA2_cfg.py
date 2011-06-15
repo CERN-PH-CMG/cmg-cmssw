@@ -21,7 +21,12 @@ process.setName_('SUSY')
 #COLIN: tell Will to remove the rather printouts (or rather to add an enable flag allowing to get these printouts). What are these printouts? 
 
 # process.load("CMGTools.Common.sources.HT.Run2011A_PromptReco_v1.AOD.PAT_CMG.source_tree_cff")
-process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.PAT_CMG.source_cff")
+# process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.PAT_CMG.source_cff")
+process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.PAT_CMG_NewJEC.source_cff")
+
+nFiles = 10
+#print 'WARNING: RESTRICTING INPUT TO THE FIRST', nFiles, 'FILES'
+#process.source.fileNames = process.source.fileNames[:nFiles-1] 
 
 ext = 'CMG'
 
