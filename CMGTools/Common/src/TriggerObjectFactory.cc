@@ -14,6 +14,9 @@
 
 cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm::Event& iEvent, const edm::EventSetup& iSetup) const{
     
+    const std::string isRealDataString("isRealData");
+    const bool isRealData = iEvent.isRealData();
+    
     //just return empty if no trigger info found
     cmg::TriggerObjectFactory::event_ptr result(new cmg::TriggerObjectFactory::collection);
     if ( processName_ == "*" || processName_ == "@" ) return result;
@@ -88,6 +91,7 @@ cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm
                 for(std::map<std::string,bool>::const_iterator jt = triggerMap.begin(); jt != triggerMap.end(); ++jt){
                     it->addSelection(jt->first,jt->second);
                 }
+                it->addSelection(isRealDataString,isRealData);
             }
         }
         
@@ -97,6 +101,7 @@ cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm
         for(std::map<std::string,bool>::const_iterator jt = triggerMap.begin(); jt != triggerMap.end(); ++jt){
             to.addSelection(jt->first,jt->second);
         }
+        to.addSelection(isRealDataString,isRealData);
         result->push_back(to);
     }
     return result;
