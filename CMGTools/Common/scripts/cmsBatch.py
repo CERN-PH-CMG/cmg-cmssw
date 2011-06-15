@@ -255,7 +255,7 @@ batchManager.parser_.add_option("-p", "--program", dest="prog",
                                 default="cmsRun")
 batchManager.parser_.add_option("-b", "--batch", dest="batch",
                                 help="batch command. default is: 'bsub -q 8nh < batchScript.sh'. You can also use 'nohup < ./batchScript.sh &' to run locally.",
-                                default="bsub -q 8nh < batchScript.sh")
+                                default="bsub -q 8nh < .batchScript.sh")
 
 (options,args) = batchManager.parser_.parse_args()
 batchManager.ParseOptions()

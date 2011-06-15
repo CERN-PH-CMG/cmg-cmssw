@@ -48,24 +48,30 @@ def processRelVal( relval, cfgFileName, process, negate, tier=None):
     # building cmsBatch command
     
     print relvalID
-    
+
+    dataset = relval.dataset
+    if tier!=None:
+        dataset += '/' + tier
+        
     outDir = '.' + relval.dataset
     castorOutDir = castorBaseDir + '/' + relval.dataset
-    if tier!=None:
-        castorOutDir += '/' + tier
-        outDir += '/' + tier
+
+    #if tier!=None:
+    #    castorOutDir += '/' + tier
+    #    outDir += '/' + tier
+
     print 'local  output: ', outDir
     print 'castor output:', castorOutDir
     
     # output directory creation will be handled by cmsBatch
     # os.system( 'mkdir -p ' + outDir )
     
-    cmsBatch = "cmsBatch.py 1 tmpConfig.py -r %s -o %s -b 'nohup ./batchScript.sh &' " % (castorOutDir,outDir)
+    cmsBatch = "cmsBatch.py 1 tmpConfig.py -r %s -o %s -b '%s' " % (castorOutDir,outDir,options.batch)
     if negate:
         cmsBatch += ' -n'
     print cmsBatch
     os.system( cmsBatch )
-    addToDatasets( relval.dataset ) 
+    addToDatasets( dataset ) 
 
     return (outDir, castorOutDir)
 
@@ -84,6 +90,10 @@ if __name__ == '__main__':
                       dest="tier",
                       help="Tier: extension you can give to specify you are doing a new production",
                       default=None)
+    parser.add_option("-b", "--batch", 
+                      dest="batch",
+                      help="Batch command. Same as in cmsBatch.py",
+                      default="bsub -q 1nh < batchScript.sh")
     
     import castorBaseDir
     
