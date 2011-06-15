@@ -86,7 +86,7 @@ os.system(mkdir)
 
 # the output castor directory will be prepared by cmsBatch
 
-cmsBatch = 'cmsBatch.py %s %s -r %s -b "%s" -o %s' % (options.nInput, cfg, outFile, options.queue, localOutputDir)
+cmsBatch = 'cmsBatch.py %s %s -r %s -b "%s" -o %s' % (options.nInput, cfg, outFile, options.batch, localOutputDir)
 
 addToDatasets( sampleName )
 
