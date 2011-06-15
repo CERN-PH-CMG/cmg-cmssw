@@ -66,6 +66,7 @@ void cmg::BaseJetFactory::set(const pat::JetPtr& input,
         output->btag_[i] = input->bDiscriminator(tag);
         output->btagNames_[i] = tag;
     }
+    output->partonFlavour_ = input->partonFlavour();
     
     output->rawFactor_ = input->jecFactor(0);
     if (fillJecUncertainty_) {
