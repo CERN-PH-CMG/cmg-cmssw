@@ -22,6 +22,10 @@ events.SetAlias('met','cmgBaseMETs_cmgPFMET__PAT')
 events.SetAlias('ele','cmgElectrons_cmgElectronSel__PAT')
 events.SetAlias('mu','cmgMuons_cmgMuonSel__PAT')
 
+events.SetAlias('hbheNoiseFilter','bool_HBHENoiseFilterResultProducer_HBHENoiseFilterResult_PAT.obj')
+events.SetAlias('inconsMuons', 'bool_inconsistentMuonsTagging_Result_PAT.obj')
+events.SetAlias('greedyMuons', 'bool_greedyMuonsTagging_Result_PAT.obj')
+
 
 ####################   Jets  #######################
 
@@ -86,5 +90,5 @@ events.Draw('mu.obj.pt()')
 muCan.cd(3)
 events.Draw('mu.obj.relIso()')
 muCan.cd(4)
-events.Draw('mu.obj.getSelection("vbtfmuon")')
+events.Draw('mu.obj.getSelection("cuts_vbtfmuon")')
 
