@@ -33,7 +33,7 @@ RA2MHTPFJet50CentralSel = cmgBaseMETSel.clone( src = 'RA2MHTPFJet50Central',
                                                cut = 'sumEt()>250')
 
 RA2MHTPFJet50CentralCount = cmgCandCount.clone( src = 'RA2MHTPFJet50CentralSel',
-                                             minNumber = 1 )
+                                                minNumber = 1 )
 
 RA2HTSequence = cms.Sequence(
     RA2MHTPFJet50Central + 
