@@ -69,10 +69,10 @@ print sep_line
 # process.load("CMGTools.Common.sources.QCD_Pt_800to1000_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
 # process.load("CMGTools.Common.sources.QCD_Pt_1000to1400_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
 # process.load("CMGTools.Common.sources.QCD_Pt_1400to1800_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
-process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.source_maxime_cff")
+process.load("CMGTools.Common.sources.HT.Run2011A_HighMET_PromptSkim_v4.RAW_RECO.source_cff")
 
 print "WARNING!!!!!!!!!!!!!!!! remove the following line (see .cfg) before running on the batch!"
-process.source.fileNames = [process.source.fileNames[0]]
+# process.source.fileNames = [process.source.fileNames[0]]
 
 if pickRelVal:
     process.source = cms.Source(
