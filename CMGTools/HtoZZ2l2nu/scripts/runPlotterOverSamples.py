@@ -3,7 +3,9 @@
 import os,sys
 import json
 from rounding import toLatexRounded
-
+import getopt
+import glob
+    
 import ROOT
 ROOT.gSystem.Load('${CMSSW_BASE}/lib/${SCRAM_ARCH}/libCMGToolsHtoZZ2l2nu.so')
 from ROOT import formatPlot, setStyle, showPlots, formatForCmsPublic, getNewCanvas, showMCtoDataComparison, getPlotAsTable, showPlotsAndMCtoDataComparison
@@ -57,7 +59,11 @@ def getControlPlots(descriptor,isData,inputDir='data',getFromDir='') :
     noNorm=getByLabel(descriptor,'nonorm',False)
     
     #open the file
-    url=inputDir+'/'+tag+'.root'
+    urls=glob.glob(inputDir+'/'+tag+'*.root')
+    if(len(urls)==0) : return results
+
+    #fix me, in order to have more files
+    url=urls[0]
     file = ROOT.TFile(url)
 
     if(file is None): return results
@@ -288,7 +294,10 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
         c.SaveAs(outputDir+'/'+pname+'.C')
 
         if(pname.find('cutflow')>=0) :
-            savePlotAsTable(stack,spimpose,data,outputDir+'/'+pname+'.tex')
+            try :
+                savePlotAsTable(stack,spimpose,data,outputDir+'/'+pname+'.tex')
+            except :
+                continue
 
         #raw_input('Any key to continue...')
         #c.Delete()
@@ -450,34 +459,45 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
     showControlPlots(stackplots,spimposeplots,dataplots,plottitles,generalLabel,outputDir,samplehtml)
 
 
-# steer script
-if(len(sys.argv)<2):
-    print 'runPlotterOverSamples.py samples.json integratedLumi=1 inputDir=data outputDir=data/plots'
-    exit()
+#print usage
+def usage() :
+    print ' '
+    print 'runPlotterOverSamples.py [options]'
+    print '  -j : json file containing the samples'
+    print '  -l : integrated lumi (used to rescale MC)'
+    print '  -i : input directory'
+    print '  -o : output directory'
+    print '  -d : root directory'
+    print ' '
+                                        
 
-#import the module
-#script = sys.argv[1]
-#scriptdir =  os.path.dirname(script)
-#modname = os.path.splitext(os.path.basename(script))[0]
-#import pkgutil
-#i = pkgutil.ImpImporter(scriptdir)
-#l = i.find_module(modname)
-#mysource = l.load_module(modname)
-#if (mysource is None):
-#    print 'Unable to find ' + modname + ' in ' +scriptdir
-#    exit();
+#parse the options 
+try:
+     # retrive command line options
+     shortopts  = "l:j:i:o:d:h?"
+     opts, args = getopt.getopt( sys.argv[1:], shortopts )
+except getopt.GetoptError:
+     # print help information and exit:
+     print "ERROR: unknown options in argument %s" % sys.argv[1:]
+     usage()
+     sys.exit(1)
 
 
-#configure 
-samplesDB = sys.argv[1]
 integratedLumi=1.0
-if(len(sys.argv)>2): integratedLumi = float(sys.argv[2])
 inputDir='data'
-if(len(sys.argv)>3): inputDir = sys.argv[3]
 outputDir='data/plots'
-if(len(sys.argv)>4): outputDir = sys.argv[4]
 getFromDir=''
-if(len(sys.argv)>5): getFromDir = sys.argv[5]
+samplesDB=''
+for o,a in opts:
+    if o in("-?", "-h"):
+        usage()
+        sys.exit(1)
+    elif o in('-j'): samplesDB = a 
+    elif o in('-i'): inputDir = a
+    elif o in('-d'): getFromDir = a
+    elif o in('-l'): integratedLumi=float(a)
+    elif o in('-o'): outputDir=a
+
 
 #run the script
 print ' Integrated lumi is:' + str(integratedLumi) + ' /pb'
