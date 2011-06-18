@@ -56,7 +56,7 @@ gROOT.Macro( os.path.expanduser( '~/rootlogon.C' ) )
 
 
 def setAliases():
-    patJets = 'patJets_selectedPatJetsPFlow__PAT'
+    patJets = 'patJets_selectedPatJetsAK5__PAT'
     if not allJets:
         patJets = 'patJets_patJetLead__ANA'
     
@@ -204,7 +204,7 @@ setAliases()
 
 if __name__ == '__main__':
 
-    pass
+    # pass
     
-    # plotCor()
+    plotCor()
 
