@@ -58,32 +58,36 @@ for proc in procList :
         #run over items in process
         data = desc['data']
         for d in data :
-            alldirs = d[dirtag]
-            filenames=[]
-            for dir in alldirs: filenames.extend( fillFromCastor(dir) )
-            nfiles=len(filenames)
-            njobs=1
-            if(fperjob>0) : njobs=nfiles/fperjob+1
 
-            #substitute some job parameters by json file parameters
-            newParams=''
-            for ipar in jobParamsList :
-                opt=ipar.split('=')[0]
-                arg=ipar.split('=')[1]
-                if(opt.find('-castor')<0):
-                    newParams += ipar + ' '
-                else :
-                    if(arg.find('/')>=0):
+            alldirs = d[dirtag]
+
+            idir=0
+            for dir in alldirs:
+                idir=idir+1
+                filenames=fillFromCastor(dir)
+                nfiles=len(filenames)
+
+                njobs=1
+                if(fperjob>0) : njobs=nfiles/fperjob+1
+                
+                #substitute some job parameters by json file parameters
+                newParams=''
+                for ipar in jobParamsList :
+                    opt=ipar.split('=')[0]
+                    arg=ipar.split('=')[1]
+                    if(opt.find('-castor')<0):
                         newParams += ipar + ' '
                     else :
-                        newParams += '-castor=' + d[arg][0] + ' '
-
-            #submit the jobs
-            for ijob in range(njobs) :
-                localParams = newParams + ' -src=' + dir + ' -tag=' + d['dtag']
-                if(fperjob>0) : localParams += ' -f=' + str(ijob*fperjob) + ' -step=' + str(fperjob)
-                if(subtoBatch) :
-                    os.system('submit2batch.sh ' + scriptFile + ' ' + localParams)                   
-                else :
-                    os.system(scriptFile + ' '  + localParams)
+                        if(arg.find('/')>=0):
+                            newParams += ipar + ' '
+                        else :
+                            newParams += '-castor=' + d[arg][0] + ' '
+                #submit the jobs
+                for ijob in range(njobs) :
+                    localParams = newParams + ' -src=' + dir + ' -tag=' + d['dtag']+str(idir)
+                    if(fperjob>0) : localParams += ' -f=' + str(ijob*fperjob) + ' -step=' + str(fperjob)
+                    if(subtoBatch) :
+                        os.system('submit2batch.sh ' + scriptFile + ' ' + localParams)                   
+                    else :
+                        os.system(scriptFile + ' '  + localParams)
 
