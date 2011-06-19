@@ -25,7 +25,7 @@ def addPatSequence(process, runOnMC) :
               postfix=postfix,
               jetCorrections=(jecSetPF, jecLevels)
               )
-    enablePileUpCorrection( process, postfix=postfix, doRho=True)
+    enablePileUpCorrection( process, postfix=postfix )
 
     #disable mc matching for photons
     removeMCMatching(process,names=['Photons'],postfix=postfix)
