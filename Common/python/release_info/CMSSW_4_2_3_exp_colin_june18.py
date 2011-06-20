@@ -6,7 +6,7 @@
     'UserCode/CMG/CMGTools/Susy':                ['Colin_June18', 'CMGTools/Susy'],
     'UserCode/CMG/CMGTools/ZmumuJetsTutorial':   ['Colin_Scripts', 'CMGTools/ZmumuJetsTutorial'],
     'CommonTools/ParticleFlow':                  ['Colin_June16_NewPFAOD', 'CommonTools/ParticleFlow'],
-    'DataFormats/AnomalousEcalDataFormats' :     ['V110523_BE', 'DataFormats/AnomalousEcalDataFormats'],
+    'UserCode/csander/DataFormats/AnomalousEcalDataFormats' :     ['V110523_BE', 'DataFormats/AnomalousEcalDataFormats'],
     'DataFormats/PatCandidates' :                ['V06-04-11', 'DataFormats/PatCandidates'],
     'JetMETAnalysis/ecalDeadCellTools':          ['V19MAY2011_v3','JetMETAnalysis/ecalDeadCellTools'],
     'PhysicsTools/PatAlgos':                     ['V08-06-28',   'PhysicsTools/PatAlgos'],
