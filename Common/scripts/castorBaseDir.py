@@ -29,6 +29,7 @@ if __name__ == '__main__':
 
     if len(args)!=1:
         parser.print_help()
+        sys.exit(1)
 
     user = args[0]
     
