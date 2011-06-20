@@ -8,25 +8,6 @@ gROOT.Macro( os.path.expanduser( '~/rootlogon.C' ) )
 #file = TFile( sys.argv[1] )
 #events = file.Get('Events')
 
-events = Chain('Events', sys.argv[1])
-
-# from CMGTools.RootTools.cmgTuple import *
-
-# cmg = cmgTuple( events )
-
-events.SetAlias('pfjets','cmgPFJets_cmgPFJetSel__PAT')
-events.SetAlias('jets','cmgBaseJets_cmgPFBaseJetSel__PAT')
-events.SetAlias('mht','cmgBaseMETs_RA2MHTPFJet30__SUSY')
-events.SetAlias('ht','cmgBaseMETs_RA2MHTPFJet50Central__SUSY')
-events.SetAlias('met','cmgBaseMETs_cmgPFMET__PAT')
-events.SetAlias('ele','cmgElectrons_cmgElectronSel__PAT')
-events.SetAlias('mu','cmgMuons_cmgMuonSel__PAT')
-
-events.SetAlias('hbheNoiseFilter','bool_HBHENoiseFilterResultProducer_HBHENoiseFilterResult_PAT.obj')
-events.SetAlias('inconsMuons', 'bool_inconsistentMuonsTagging_Result_PAT.obj')
-events.SetAlias('greedyMuons', 'bool_greedyMuonsTagging_Result_PAT.obj')
-
-
 ####################   Jets  #######################
 
 
@@ -43,7 +24,7 @@ jetCan.cd(1)
 events.Draw('pfjets.obj.pt()-jets.obj.pt()')
 jetCan.cd(2)
 events.SetLineColor(1)
-events.Draw('jets.obj[2].pt()>>h(1000,0,2000)','','')
+events.Draw('jets.obj[2].pt()','','')
 events.SetLineColor(4)
 events.Draw('jets.obj[1].pt()','','same')
 events.SetLineColor(3)
@@ -65,14 +46,29 @@ metCan.Divide(2,2)
 
 metCan.cd(1)
 events.Draw('mht.obj.et()')
+hist = events.GetHistogram()
+hist.SetTitle(';MHT (GeV)')
+events.Draw('mht.obj.et()',fullCleaning,'same')
+hist = events.GetHistogram()
+hist.Sumw2()
+hist.SetMarkerStyle(8)
+hist.SetMarkerColor(4)
+hist.Draw('same')
 gPad.SetLogy()
 metCan.cd(2)
-events.Draw('ht.obj.sumEt()')
+events.Draw('mht.obj.et()',fullCleaning)
+hist = events.GetHistogram()
+hist.SetTitle('Cleaning;MHT (GeV)')
+gPad.SetLogy()
 metCan.cd(3)
-events.Draw('met.obj.et()')
+events.Draw('ht.obj.sumEt()')
+hist = events.GetHistogram()
+hist.SetTitle(';HT (GeV)')
 gPad.SetLogy()
 metCan.cd(4)
 events.Draw('met.obj.et():mht.obj.et()','','col')
+hist = events.GetHistogram()
+hist.SetTitle(';MET (GeV);MHT (GeV)')
 
 ####################  Electrons  #######################
 
