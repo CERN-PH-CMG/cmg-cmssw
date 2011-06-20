@@ -22,7 +22,10 @@ process.setName_('SUSY')
 
 # process.load("CMGTools.Common.sources.HT.Run2011A_PromptReco_v1.AOD.PAT_CMG.source_tree_cff")
 # process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.PAT_CMG.source_cff")
-process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.PAT_CMG_NewJEC.source_cff")
+# process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.PAT_CMG_NewJEC.source_cff")
+process.load("CMGTools.Common.sources.HT.Run2011A_HighMET_PromptSkim_v4.RAW_RECO.PAT_CMG_NewJEC.source_cff")
+# process.load("CMGTools.Common.sources.HT.Run2011A_HighMET_May10ReReco_v1.RAW_RECO.PAT_CMG_NewJEC.source_cff")
+# process.load("CMGTools.Common.sources.HT.Run2011A_HighMET_May10ReReco_v1.RAW_RECO.PAT_CMG_NewJEC_JSON.source_cff")
 
 nFiles = 10
 #print 'WARNING: RESTRICTING INPUT TO THE FIRST', nFiles, 'FILES'
