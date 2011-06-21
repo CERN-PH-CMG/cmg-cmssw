@@ -23,7 +23,8 @@ def isCastorFile( file ):
 
 
 def fileExists( file ):
-    file =  lfnToCastor(file)
+    if isLFN(file):
+        file =  lfnToCastor(file)
     castor = isCastorDir(file)
     ls = 'ls'
     if castor:
