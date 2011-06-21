@@ -80,12 +80,16 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("info5")->SetAddress( evSummary_.info5 );
 
   //mc truth
-  t_->GetBranch("nmcparticles")->SetAddress( &evSummary_.nmcparticles );
-  t_->GetBranch("mcpx")->SetAddress( evSummary_.mcpx );
-  t_->GetBranch("mcpy")->SetAddress( evSummary_.mcpy );
-  t_->GetBranch("mcpz")->SetAddress( evSummary_.mcpz );
-  t_->GetBranch("mcen")->SetAddress( evSummary_.mcen );
-  t_->GetBranch("mcid")->SetAddress( evSummary_.mcid );
+  if(t->GetBranch("nmcparticles"))
+    {
+      t_->GetBranch("nmcparticles")->SetAddress( &evSummary_.nmcparticles );
+      t_->GetBranch("mcpx")->SetAddress( evSummary_.mcpx );
+      t_->GetBranch("mcpy")->SetAddress( evSummary_.mcpy );
+      t_->GetBranch("mcpz")->SetAddress( evSummary_.mcpz );
+      t_->GetBranch("mcen")->SetAddress( evSummary_.mcen );
+      t_->GetBranch("mcid")->SetAddress( evSummary_.mcid );
+    }
+  else   evSummary_.nmcparticles=0;
 
   return true;
 }

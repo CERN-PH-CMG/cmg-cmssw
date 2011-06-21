@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2011/06/06 12:50:20 $
- *  $Revision: 1.5 $
+ *  $Date: 2011/06/11 20:31:56 $
+ *  $Revision: 1.6 $
  *  \author G. Cerminara & D. Trocino
  */
 
@@ -36,27 +36,27 @@ std::pair<TVector2, TVector2> ReducedMETComputer::defineThrust(const LorentzVect
   //define the leading and sub-leading lepton
   const LorentzVector &lepton1( l1.pt() > l2.pt() ? l1 : l2);
   const LorentzVector &lepton2( l1.pt() > l2.pt() ? l2 : l1);
-  const LorentzVector &refLepton( sigmaPt1/l1.pt() < sigmaPt2/l2.pt() ? l1 : l2); 
   double dphill=fabs(deltaPhi(lepton1.phi(),lepton2.phi()));
   TVector2 lead(lepton1.px(),lepton1.py());
   TVector2 trailer(lepton2.px(),lepton2.py());
-  //TVector2 reference(refLepton.px(),refLepton.py());
   TVector2 reference(lead);
 
   //define the thrust and dilepton
   TVector2 dil = lead+trailer;
   TVector2 thr = lead-trailer;
-  
+
   //define the longitudinal and perpendicular axis
   TVector2 longi,perp;
   if(dphill>=TMath::Pi()/2)
     {
+      event_categ=OPENANGLE;
       longi = thr.Unit();
       perp = longi.Rotate(TMath::Pi()/2);
       if(perp*reference<0) perp *= -1;
     }
   else
     {
+      event_categ=COLLIMATED;
       perp=dil.Unit();
       longi = perp.Rotate(TMath::Pi()/2);
       if(longi*reference<0) longi *= -1;
@@ -113,14 +113,6 @@ void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt
   unclProj_long = uncl*a_l;
   unclProj_perp = uncl*a_t;
 
-  //
-  event_categ = DILPLUSJETSLIKE;
-  if(/*fabs(deltaPhi(theLepton1.phi(),theLepton2.phi()))>2*TMath::Pi()/3 &&*/
-     fabs(dil.DeltaPhi(pfMET))<TMath::Pi()/2  && theJets.size())
-    {
-      event_categ= DILMETPJETSLIKE;
-    }
-
   //take the minimum recoil possible depending on the event category type
   recoilProj_long = min(sumJetProj_long, -1.*(unclProj_long));
   recoilProj_long=min(recoilProj_long,0.);
@@ -143,52 +135,73 @@ void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt
   deltaDileptonProj_perp = loweredDileptonProj_perp - dileptonProj_perp;
   deltaDileptonProj_long = ( -relErrPt1*TVector2(theLepton1.px(),theLepton1.py()) + relErrPt2*TVector2(theLepton2.px(),theLepton2.py()) )*a_l;
   
-  //compute the reduced met components
-  reducedMET_long = max((dileptonProj_long + kRecoil_long*recoilProj_long + kSigmaPt_long*deltaDileptonProj_long),0.);
-  reducedMET_perp = max((dileptonProj_perp + kRecoil_perp*recoilProj_perp + kSigmaPt_perp*deltaDileptonProj_perp),0.);
 
-//   if(event_categ==DILMETPJETSLIKE)
-//     {  
-//       reducedMET_long=dileptonProj_long+sumJetProj_long;
-//       reducedMET_perp=dileptonProj_perp+sumJetProj_perp;
-//     }
-  redMET = sqrt(pow(reducedMET_long,2)+pow(reducedMET_perp,2));
+  //
+  // D0 ORIGINAL VERSION
+  //
+  //recoil is minimized independently
+  recoilProj_long = min(sumJetProj_long, -1.*(unclProj_long));
+  recoilProj_long=min(recoilProj_long,0.);
+  prefRec_long= (sumJetProj_long<-1.*(unclProj_long) ? CLUSTERED : UNCLUSTERED);
+
+  recoilProj_perp = min(sumJetProj_perp, -1.*(unclProj_perp));
+  recoilProj_perp=min(recoilProj_perp,0.);   
+  prefRec_perp= (sumJetProj_perp<-1.*(unclProj_perp) ? CLUSTERED : UNCLUSTERED);
+  
+  //compute the reduced met components
+  reducedMET_long = max( (dileptonProj_long + kRecoil_long*recoilProj_long + kSigmaPt_long*deltaDileptonProj_long), 0.);
+  reducedMET_perp = max( (dileptonProj_perp + kRecoil_perp*recoilProj_perp + kSigmaPt_perp*deltaDileptonProj_perp), 0.);
+  redMET = sqrt( pow(reducedMET_long,2) + pow(reducedMET_perp,2) );
   redMETxy=reducedMET_long*a_l+reducedMET_perp*a_t;
 
+  //
+  // CMS MINIMIZED VERSION
+  //
+  double unclRedMet_long = dileptonProj_long - kRecoil_long*unclProj_long + kSigmaPt_long*deltaDileptonProj_long;
+  double unclRedMet_perp = dileptonProj_perp - kRecoil_perp*unclProj_perp + kSigmaPt_perp*deltaDileptonProj_perp;
+  double unclRedMet      = sqrt(pow(unclRedMet_long,2)+pow(unclRedMet_perp,2));
+  
+  double cluRedMet_long  = dileptonProj_long + kRecoil_long*sumJetProj_long + kSigmaPt_long*deltaDileptonProj_long;
+  double cluRedMet_perp  = dileptonProj_perp + kRecoil_perp*sumJetProj_perp + kSigmaPt_perp*deltaDileptonProj_perp;
+  double cluRedMet       = sqrt(pow(cluRedMet_long,2)+pow(cluRedMet_perp,2));   
+
+  prefRecminRmet         = (unclRedMet < cluRedMet ? UNCLUSTERED : CLUSTERED );
+  reducedMETminRmet_long = (unclRedMet < cluRedMet ? unclRedMet_long : cluRedMet_long); 
+  reducedMETminRmet_perp = (unclRedMet < cluRedMet ? unclRedMet_perp : cluRedMet_perp); 
+  redMETminRmet = sqrt(pow(reducedMETminRmet_long,2)+pow(reducedMETminRmet_perp,2));
+  redMETminRmetxy=reducedMETminRmet_long*a_l+reducedMETminRmet_perp*a_t;
+  
   //debug the event
   if(debug)
     {
-      cout  << "//reco event" << endl
-	    << "TVector2 l1(" << theLepton1.px() << "," << theLepton1.py() << ");" << endl
-	    << "TVector2 l2(" << theLepton2.px() << "," << theLepton2.py() << ");" << endl
-	    << "TVector2 dil(" << theLepton1.px()+theLepton2.px() << "," << theLepton1.py()+theLepton2.py() << ");" << endl
-	    << "std::vector<TVector2> jets;" << endl;
-      for(vector<LorentzVector>::const_iterator jetit = theJets.begin();
-	  jetit != theJets.end();
-	  ++jetit)
-	cout << "jets.push_back(TVector2(" << (*jetit).Px() << "," << (*jetit).Py() << ") );" << endl;
-      cout << "TVector2 met(" << theMET.Px() << "," << theMET.Py() << ");" << endl
-	   << "TVector2 unclSum(" << -uncl.Px() << "," << -uncl.Py() << ");" << endl;
-      
-      cout << "//reduced event" << endl
-	   << "TVector2 a_l(" << a_l.Px() << "," << a_l.Py() << ");" << endl
-	   << "TVector2 a_t(" << a_t.Px() << "," << a_t.Py() << ");" << endl
-	   << "TVector2 sumjet_long("<< sumJetProj_long*a_l.Px() << "," << sumJetProj_long*a_l.Py() << ");" << endl
-	   << "TVector2 sumjet_perp("<< sumJetProj_perp*a_t.Px() << "," << sumJetProj_perp*a_t.Py() << ");" << endl
-	   << "TVector2 unclProj_long("<< -unclProj_long*a_l.Px() << "," << -unclProj_long*a_l.Py() << ");" << endl
-	   << "TVector2 unclProj_perp("<< -unclProj_perp*a_t.Px() << "," << -unclProj_perp*a_t.Py() << ");" << endl;
+//       cout  << "//reco event" << endl
+// 	    << "TVector2 l1(" << theLepton1.px() << "," << theLepton1.py() << ");" << endl
+// 	    << "TVector2 l2(" << theLepton2.px() << "," << theLepton2.py() << ");" << endl
+// 	    << "TVector2 dil(" << theLepton1.px()+theLepton2.px() << "," << theLepton1.py()+theLepton2.py() << ");" << endl
+// 	    << "std::vector<TVector2> jets;" << endl;
+//       for(vector<LorentzVector>::const_iterator jetit = theJets.begin();
+// 	  jetit != theJets.end();
+// 	  ++jetit)
+// 	cout << "jets.push_back(TVector2(" << (*jetit).Px() << "," << (*jetit).Py() << ") );" << endl;
+//       cout << "TVector2 met(" << theMET.Px() << "," << theMET.Py() << ");" << endl
+// 	   << "TVector2 unclSum(" << -uncl.Px() << "," << -uncl.Py() << ");" << endl;
+//       cout << "//reduced event" << endl
+// 	   << "TVector2 a_l(" << a_l.Px() << "," << a_l.Py() << ");" << endl
+// 	   << "TVector2 a_t(" << a_t.Px() << "," << a_t.Py() << ");" << endl
+// 	   << "TVector2 sumjet_long("<< sumJetProj_long*a_l.Px() << "," << sumJetProj_long*a_l.Py() << ");" << endl
+// 	   << "TVector2 sumjet_perp("<< sumJetProj_perp*a_t.Px() << "," << sumJetProj_perp*a_t.Py() << ");" << endl
+// 	   << "TVector2 unclProj_long("<< -unclProj_long*a_l.Px() << "," << -unclProj_long*a_l.Py() << ");" << endl
+// 	   << "TVector2 unclProj_perp("<< -unclProj_perp*a_t.Px() << "," << -unclProj_perp*a_t.Py() << ");" << endl;
            
-      cout << "//balanced event" << endl
-	   << "TVector2 dileptonProj_long("<< dileptonProj_long*a_l.Px() << "," << dileptonProj_long*a_l.Py() << ");" << endl
-	   << "TVector2 dileptonProj_perp("<< dileptonProj_perp*a_t.Px() << "," << dileptonProj_perp*a_t.Py() << ");" << endl
-	   << "TVector2 recoil_long("<< recoilProj_long*a_l.Px() << "," << recoilProj_long*a_l.Py() << ");" << endl
-	   << "TVector2 recoil_perp("<< recoilProj_perp*a_t.Px() << "," << recoilProj_perp*a_t.Py() << ");" << endl
-	   << "TVector2 deltaDileptonProj_long("<< deltaDileptonProj_long*a_l.Px() << "," << deltaDileptonProj_long*a_l.Py() << ");" << endl
-	   << "TVector2 deltaDileptonProj_perp("<< deltaDileptonProj_perp*a_t.Px() << "," << deltaDileptonProj_perp*a_t.Py() << ");" << endl;
-      
-      cout << "//red met" << endl
-	   << "TVector2 redmet(" << redMETxy.Px() << "," << redMETxy.Py() << ");" << endl << endl;
-    
+//       cout << "//balanced event" << endl
+// 	   << "TVector2 dileptonProj_long("<< dileptonProj_long*a_l.Px() << "," << dileptonProj_long*a_l.Py() << ");" << endl
+// 	   << "TVector2 dileptonProj_perp("<< dileptonProj_perp*a_t.Px() << "," << dileptonProj_perp*a_t.Py() << ");" << endl
+// 	   << "TVector2 recoil_long("<< recoilProj_long*a_l.Px() << "," << recoilProj_long*a_l.Py() << ");" << endl
+// 	   << "TVector2 recoil_perp("<< recoilProj_perp*a_t.Px() << "," << recoilProj_perp*a_t.Py() << ");" << endl
+// 	   << "TVector2 deltaDileptonProj_long("<< deltaDileptonProj_long*a_l.Px() << "," << deltaDileptonProj_long*a_l.Py() << ");" << endl
+// 	   << "TVector2 deltaDileptonProj_perp("<< deltaDileptonProj_perp*a_t.Px() << "," << deltaDileptonProj_perp*a_t.Py() << ");" << endl;
+//       cout << "//red met" << endl
+// 	   << "TVector2 redmet(" << redMETxy.Px() << "," << redMETxy.Py() << ");" << endl << endl;
     }
 }
   

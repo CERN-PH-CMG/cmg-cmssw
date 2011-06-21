@@ -2,7 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 # base values for the vertex selection ------------------------------------------
 BaseGeneratorSelection = cms.PSet( source = cms.InputTag("prunedGen"),
-                                   filterId = cms.int32(25)
+                                   filterId = cms.int32(25),
+                                   genJets=cms.InputTag("ak5GenJets")
                                    )
 
 

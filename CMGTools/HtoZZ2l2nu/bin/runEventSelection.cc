@@ -205,8 +205,8 @@ int main(int argc, char* argv[])
       double sumjetT = rmetComp.sumJetProjComponents().second;
       double calometL = rmetComp.metProjComponents().first;
       double calometT = rmetComp.metProjComponents().second;
-      int recoilL = rmetComp.recoilType().first;
-      int recoilT = rmetComp.recoilType().second;
+      //int recoilL = rmetComp.recoilType().first;
+      //int recoilT = rmetComp.recoilType().second;
       
       float rx=rmetComp.reducedMETcartesian().Px();
       float ry=rmetComp.reducedMETcartesian().Py();
