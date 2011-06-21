@@ -78,8 +78,9 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram(  new TH1D ("deltazvvphi", ";#Delta #phi^{#nu#nu};Events", 100,-3.2,3.2) );
   
   controlHistos.addHistogram( (TH1D *)(new TH2D ("minmetcomps", ";min-E_{T}^{miss,#parallel};min-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("minmetvszpt", ";min-E_{T}^{miss};p_{T}(Z);Events", 100, -50.,250,100, -50.,250) ) );
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("minmetvszeta", ";min-E_{T}^{miss};#eta(Z);Events", 100, -50.,250,100,-0.5,5.) ) );
+  controlHistos.addHistogram( (TH1D *)(new TH2D ("minmetvsminmetoverzpt", ";type I E_{T}^{miss};type I E_{T}^{miss}/p_{T}(Z);Events", 100, -50.,250,100, -50.,250) ) );
+  controlHistos.addHistogram( (TH1D *)(new TH2D ("metvsmetoverzpt", ";E_{T}^{miss};E_{T}^{miss}/p_{T}(Z);Events", 100, -50.,250,100, -50.,250) ) );
+  controlHistos.addHistogram( (TH1D *)(new TH2D ("projmetvsprojmetoverzpt", ";projected E_{T}^{miss};projected E_{T}^{miss}/p_{T}(Z);Events", 100, -50.,250,100, -50.,250) ) );
   
   //replicate monitor for categories
   TString cats[]={"ee","emu","mumu"};
@@ -218,9 +219,9 @@ int main(int argc, char* argv[])
 		  controlHistos.fillHisto("minmetzpt", ctf,minmetzpt,weight);	 
 		  controlHistos.fillHisto("projminmet", ctf,projminmet,weight);	           
 		  controlHistos.fillHisto("minmetcomps", ctf,minmetL,minmetT,weight);	
-		  controlHistos.fillHisto("minmetvszpt", ctf,minmet,zll.pt(),weight);
-		  controlHistos.fillHisto("minmetvszeta", ctf,minmet,zll.eta(),weight);
-
+		  controlHistos.fillHisto("minmetvsminmetoverzpt", ctf,minmet,minmet/zll.pt(),weight);
+		  controlHistos.fillHisto("metvsmetoverzpt", ctf,zvv.pt(),zvv.pt()/zll.pt(),weight);
+		  controlHistos.fillHisto("projmetvsprojmetoverzpt", ctf,projMet,projMet/zll.pt(),weight);
 		}
 	    }
 	}

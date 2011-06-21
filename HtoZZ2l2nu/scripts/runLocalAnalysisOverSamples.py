@@ -69,10 +69,11 @@ for proc in procList :
             dtag = d['dtag']
             eventsFile=inputdir + '/' + dtag + '.root'
             sedcmd = 'sed \"s%@input%' + eventsFile +'%;s%@outdir%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;'
-            extracfgs=params.split(' ')
-            for icfg in extracfgs :
-                varopt=icfg.split('=')
-                sedcmd += 's%' + varopt[0] + '%' + varopt[1] + '%;'
+            if(len(params)>0) :
+                extracfgs=params.split(' ')
+                for icfg in extracfgs :
+                    varopt=icfg.split('=')
+                    sedcmd += 's%' + varopt[0] + '%' + varopt[1] + '%;'
             sedcmd += '\"' 
             cfgfile=outdir +'/'+ dtag + '_cfg.py'
             os.system('cat ' + cfg_file + ' | ' + sedcmd + ' > ' + cfgfile)
@@ -84,4 +85,4 @@ for proc in procList :
 #run plotter over results
 if(not subtoBatch) :
     os.system('mkdir -p ' + outdir + '/plots')
-    os.system('runPlotterOverSamples.py ' + samplesDB + ' ' + str(lumi) + ' ' + outdir + ' ' + outdir + '/plots localAnalysis')
+    os.system('runPlotterOverSamples.py -j ' + samplesDB + ' -l ' + str(lumi) + ' -i ' + outdir + ' -o ' + outdir + '/plots -d localAnalysis')
