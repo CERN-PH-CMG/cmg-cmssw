@@ -33,6 +33,11 @@ fullCleaning = 'hbheNoiseFilter && greedyMuons && inconsMuons && pfjets.obj.comp
 
 leptonVeto = 'mu.@obj.size()==0 && ele.@obj.size()==0'
 
+highMHT = 'mht.obj.pt()>600 && ht.obj.sumEt()>350'
+
+allCuts = fullCleaning + ' && ' + leptonVeto + ' && ' + highMHT
+
+
 def setEventList( cut=None ):
     print 'now browsing the full tree... might take a while, but drawing will then be faster!'
     events.Draw('>>pyplus', cut)
@@ -42,9 +47,10 @@ def setEventList( cut=None ):
     events.SetEventList(pyplus)
     
 def scan( cut=None ):
-    events.Scan('EventAuxiliary.id().run():EventAuxiliary.id().luminosityBlock():EventAuxiliary.id().event():mht.obj.pt():met.obj.pt():ht.obj.sumEt()', cut)
+    out = events.Scan('EventAuxiliary.id().run():EventAuxiliary.id().luminosityBlock():EventAuxiliary.id().event():mht.obj.pt():met.obj.pt():ht.obj.sumEt()', cut, 'colsize=14')
 
-def lumiReport( cuts=None, hist=None, opt=None):
+
+def lumiReport( cuts=None, hist=None, opt=''):
     
     if hist==None:
         events.Draw('lumi:run','',opt)
