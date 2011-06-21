@@ -3,7 +3,8 @@ from PhysicsTools.PatAlgos.tools.pfTools import *
 from PhysicsTools.PatAlgos.tools.trigTools import *
 from RecoJets.Configuration.RecoPFJets_cff import kt6PFJets
 from CommonTools.ParticleFlow.Tools.enablePileUpCorrection import enablePileUpCorrection
-    
+from PhysicsTools.PatAlgos.tools.trackTools import *
+
 ##
 ## adds pat sequence
 ##
@@ -35,11 +36,11 @@ def addPatSequence(process, runOnMC) :
            
     #configure top projections
     getattr(process,"pfNoPileUp"+postfix).enable = True
-    getattr(process,"pfNoMuon"+postfix).enable = True
-    getattr(process,"pfNoElectron"+postfix).enable = True
-    getattr(process,"pfNoTau"+postfix).enable = False
-    getattr(process,"pfNoJet"+postfix).enable = True
+    getattr(process,"pfNoMuon"+postfix).enable = False #True
     getattr(process,"pfNoMuon"+postfix).verbose = False
+    getattr(process,"pfNoElectron"+postfix).enable = False #True
+    getattr(process,"pfNoTau"+postfix).enable = False
+    getattr(process,"pfNoJet"+postfix).enable = False
 
     #fix isolation to use a cone of 0.3 for both electrons and muons
     applyPostfix(process,"isoValMuonWithNeutral",postfix).deposits[0].deltaR = cms.double(0.3)
@@ -98,13 +99,26 @@ def addPatSequence(process, runOnMC) :
                              sequence        = 'patPF2PATSequence' + postfix,
                              postfix         = postfix )
     removeCleaningFromTriggerMatching( process, sequence = 'patPF2PATSequence' + postfix )
-    
-    
+
     #create the path
-    process.patSequence = cms.Sequence(
+    process.patDefaultSequence = cms.Sequence(
         process.eidCiCSequence*
         getattr(process,"patPF2PATSequence"+postfix)
         )
+    
+    # make pat-tracks (does not work with PF2PAT...)
+    # it is better to use isolated PF candidates from the pfNoPileup collection
+    #    makeTrackCandidates(process,
+    #                        label        = 'TrackCands',
+    #                        tracks       = cms.InputTag('generalTracks'),
+    #                        particleType = 'pi+',
+    #                        preselection = 'pt > 10',
+    #                        selection    = 'pt > 10',
+    #                        isolation    = {'tracker':0.3, 'ecalTowers':0.3, 'hcalTowers':0.3},
+    #                        isoDeposits  = [],
+    #                        mcAs         = None
+    #                        )      
+  
     print " *** PAT path has been defined"
     
 
