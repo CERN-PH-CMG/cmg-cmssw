@@ -53,7 +53,7 @@ namespace electron{
 	  
 	  //conversion veto (from track and info on electron id - 2nd bit)
 	  const reco::GsfTrackRef & eTrack = ele->gsfTrack();
-	  double d0=eTrack->dxy(theBeamSpot);
+	  double d0=eTrack->dxy(theBeamSpot.position());
 	  int nTrackLostHits=eTrack->trackerExpectedHitsInner().numberOfLostHits();
 	  bool hasId =(eid & 0x1);
 	  bool hasConversionTag = !((eid>>2) & 0x1);	 

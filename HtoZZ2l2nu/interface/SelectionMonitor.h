@@ -98,7 +98,6 @@ public:
   {
     //clone all all histograms to the new monitor
     Monitor_t newMonitor;
-    int monitorCtr = allMonitors_.size();
     for(Monitor_t::iterator hit = allMonitors_["all"].begin();
 	hit != allMonitors_["all"].end();
 	hit++)

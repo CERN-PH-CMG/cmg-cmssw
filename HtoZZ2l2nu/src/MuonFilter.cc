@@ -42,7 +42,7 @@ namespace muon{
 
 	  //track selection
 	  double chi2 = muon->globalTrack()->normalizedChi2();	  
-	  double d0=muon->innerTrack()->dxy(theBeamSpot);
+	  double d0=muon->innerTrack()->dxy(theBeamSpot.position());
 	  //	  int nValidPixelHits = muon->globalTrack()->hitPattern().numberOfValidPixelHits();
 	  int nValidTrackerHits = muon->globalTrack()->hitPattern().numberOfValidTrackerHits();
 	  int nValidMuonHits = muon->globalTrack()->hitPattern().numberOfValidMuonHits();

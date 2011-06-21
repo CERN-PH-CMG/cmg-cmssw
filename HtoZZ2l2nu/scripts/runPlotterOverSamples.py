@@ -166,10 +166,6 @@ def savePlotAsTable(stackplots=None,spimposeplots=None,dataplots=None,outUrl='ta
                 valerr= p.GetBinError(ibin)
                 try :
                     tabtex += ' & '
-                    #roundRes = PDGRoundSym(val,valerr)
-                    #if(roundres[2]!=0) : tabtex += '('
-                    #tabtex += roundRes[0] + ' $\\pm$ ' + roundRes[1][0]
-                    #if(roundres[2]!=0) : tabtex += ') $\\cdot 10^{' + str(roundres[2]) + '}$'
                     fmtValue = toLatexRounded(val,valerr)
                     fmtValue = fmtValue.replace("[","(")
                     fmtValue = fmtValue.replace("]",")")
@@ -298,7 +294,6 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
                 savePlotAsTable(stack,spimpose,data,outputDir+'/'+pname+'.tex')
             except :
                 continue
-
         #raw_input('Any key to continue...')
         #c.Delete()
 

@@ -68,6 +68,9 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
     summaryHandler_.initTree(  fs->make<TTree>("data","Event Summary") );
     TFileDirectory baseDir=fs->mkdir(iConfig.getParameter<std::string>("dtag"));    
 
+    //generator level
+    objConfig_["Generator"] = iConfig.getParameter<edm::ParameterSet>("Generator");
+
     //generated pileup (use directly loose selection)
     objConfig_["Vertices"] = iConfig.getParameter<edm::ParameterSet>("Vertices");
     results_["ngenpileup"] = formatPlot( baseDir.make<TH1F>("ngenpileup", ";Pileup; Events", 25, 0.,25.), 1,1,1,20,0,false,true,1,1,1);
@@ -216,6 +219,9 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 
     edm::Handle< double > rho;
     event.getByLabel(edm::InputTag("kt6PFJets:rho"),rho);
+
+    edm::Handle<edm::View<reco::Candidate> > genJetsH;
+    event.getByLabel(objConfig_["Generator"].getParameter<edm::InputTag>("genJets"), genJetsH );
 
     edm::Handle< std::vector<reco::PFCandidate> > pfCands;
     event.getByLabel(edm::InputTag("particleFlow"),pfCands);
@@ -455,7 +461,35 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	  }
 	//cout << endl;
       }
+    
+    //add the generator level jets (with pT>15 within the tracker acceptance )
+    int ngenjets(0);
+    for(size_t ijet=0; ijet<genJetsH.product()->size(); ijet++)
+      {
+	reco::CandidatePtr gjIt = genJetsH->ptrAt(ijet);
+	if(gjIt->pt()<15 || fabs(gjIt->eta())>2.5) continue;
 
+	//remove overlaps with leptons
+	bool overlap(false);
+	for(int imcpart=0; imcpart<ev.nmcparticles; imcpart++)
+	  {
+	    int id=fabs(ev.mcid[imcpart]);
+	    if(id!=11 && id!=13 && id!=15) continue;
+	    LorentzVector p4(ev.mcpx[imcpart],ev.mcpy[imcpart],ev.mcpz[imcpart],ev.mcen[imcpart]);
+	    double dr = deltaR(p4,gjIt->p4());
+	    if(dr<0.4) overlap=true;
+	  }
+	if(overlap) continue;
+	
+	ngenjets++;
+	ev.mcpx[ev.nmcparticles]=gjIt->px();  
+	ev.mcpy[ev.nmcparticles]=gjIt->py();  
+	ev.mcpz[ev.nmcparticles]=gjIt->pz(); 
+	ev.mcen[ev.nmcparticles]=gjIt->energy();  
+	ev.mcid[ev.nmcparticles]=1;
+	ev.nmcparticles++;
+      }
+ 
     //reduced met
     rmet_.defineThrust(lepton1->p4(),lepton1pterr,lepton2->p4(),lepton2pterr);
     TVector2 dilProj=rmet_.project(dileptonP);
