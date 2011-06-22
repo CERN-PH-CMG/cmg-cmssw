@@ -41,16 +41,19 @@ args: castor_directory output_file first_file step
 """
 def configureFromCommandLine() :
     castorDir='/castor/cern.ch/cms/store/cmst3/user/cbern/CMG/TT_TuneZ2_7TeV-pythia6-tauola/Summer11-PU_S3_START42_V11-v2/AODSIM'
-    if(len(sys.argv)>2 ):
-        if(sys.argv[2].find('/')>=0 or sys.argv[2].find('.root')>0) : castorDir=sys.argv[2]
     outputFile='output.root'
-    if(len(sys.argv)>3 ): outputFile=sys.argv[3]
     ffile=0
     step=-1
-    if(len(sys.argv)>4 ):
-        if(sys.argv[4].isdigit()) : ffile=int(sys.argv[4])
-    if(len(sys.argv)>5 ):
-        if(sys.argv[5].isdigit()) : step=int(sys.argv[5])
+    
+    if(len(sys.argv)>2 ):
+        if(sys.argv[2].find('/')>=0 or sys.argv[2].find('.root')>0) :
+            castorDir=sys.argv[2]
+            if(len(sys.argv)>3 ):
+                if(sys.argv[3].find('.root')>0):  outputFile=sys.argv[3]
+                if(len(sys.argv)>4 ):
+                    if(sys.argv[4].isdigit()) : ffile=int(sys.argv[4])
+                    if(len(sys.argv)>5 ):
+                        if(sys.argv[5].isdigit()) : step=int(sys.argv[5])
 
     print "***************"
     print sys.argv
