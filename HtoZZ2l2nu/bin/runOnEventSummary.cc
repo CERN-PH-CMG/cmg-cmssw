@@ -63,8 +63,9 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram(  new TH1D ("zpt", ";p_{T}^{ll};Events", 100,0,400) );
   controlHistos.addHistogram(  new TH1D ("zeta", ";#eta^{ll};Events", 100,-5,5) );
 
-  controlHistos.addHistogram( new TH1F ("projmetzpt", ";projected E_{T,#parallel}^{miss};Events", 100,-250,250) );
-  controlHistos.addHistogram( new TH1F ("minmetzpt", ";min-E_{T,#parallel}^{miss};Events", 100,-250,250) );
+  controlHistos.addHistogram( new TH1F ("metoverzpt", ";type I E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
+  controlHistos.addHistogram( new TH1F ("projmetoverzpt", ";projected E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
+  controlHistos.addHistogram( new TH1F ("minmetoverzpt", ";min-E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
 
   controlHistos.addHistogram( new TH1D ("dphill", ";#Delta#phi(l^{(1)},l^{(2)});Events",100,-3.2,3.2) );
   controlHistos.addHistogram( new TH1D ("mindphilmet", ";min #Delta#phi(l^{(i)},E_{T}^{miss});Events",100,-3.2,3.2) );
@@ -76,16 +77,19 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram(  new TH1D ("deltazphi", ";#Delta #phi^{ll};Events", 100,-3.2,3.2) );
   controlHistos.addHistogram(  new TH1D ("deltazvvpt", ";#Delta p_{T}^{#nu#nu};Events", 100,-100,100) );
   controlHistos.addHistogram(  new TH1D ("deltazvvphi", ";#Delta #phi^{#nu#nu};Events", 100,-3.2,3.2) );
+
+  controlHistos.addHistogram(  new TH1D ("mtmetsum", ";#sum M_{T}(l,E_{T}^{miss});Events", 100,0,500) );
+  controlHistos.addHistogram(  new TH1D ("mtminmetsum", ";#sum M_{T}(l,min-E_{T}^{miss});Events", 100,0,500) );
   
   controlHistos.addHistogram( (TH1D *)(new TH2D ("minmetcomps", ";min-E_{T}^{miss,#parallel};min-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("minmetvsminmetoverzpt", ";type I E_{T}^{miss};type I E_{T}^{miss}/p_{T}(Z);Events", 100, -50.,250,100, -50.,250) ) );
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("metvsmetoverzpt", ";E_{T}^{miss};E_{T}^{miss}/p_{T}(Z);Events", 100, -50.,250,100, -50.,250) ) );
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("projmetvsprojmetoverzpt", ";projected E_{T}^{miss};projected E_{T}^{miss}/p_{T}(Z);Events", 100, -50.,250,100, -50.,250) ) );
+  controlHistos.addHistogram( (TH1D *)(new TH2D ("minmetvsminmetoverzpt", ";type I E_{T}^{miss};type I E_{T}^{miss}/p_{T}(Z);Events", 100, -50.,250,100, -1.,9) ) );
+  controlHistos.addHistogram( (TH1D *)(new TH2D ("metvsmetoverzpt", ";E_{T}^{miss};E_{T}^{miss}/p_{T}(Z);Events", 100, -50.,250,100, -1.,9) ) );
+  controlHistos.addHistogram( (TH1D *)(new TH2D ("projmetvsprojmetoverzpt", ";projected E_{T}^{miss};projected E_{T}^{miss}/p_{T}(Z);Events", 100, -50.,250,100, -1.,9) ) );
   
   //replicate monitor for categories
   TString cats[]={"ee","emu","mumu"};
   TString subcats[]={"","eq0jets","eq1jets","geq2jets"};
-  TString topcats[]={"cat1","cat2","cat3","cat4"};
+  TString topcats[]={"","cat1","cat2","cat3","cat4"};
   for(size_t icat=0;icat<sizeof(cats)/sizeof(TString); icat++)
     {
       for(size_t isubcat=0;isubcat<sizeof(subcats)/sizeof(TString); isubcat++)
@@ -178,6 +182,12 @@ int main(int argc, char* argv[])
       double mindphilmet = pmetComp.minimumDeltaPhi();
       double projminmet = pmetComp.compute(phys.leptons[0], phys.leptons[1], minMetP4 );
 
+      float dphil2met[]={ fabs(deltaPhi(zvv.phi(),phys.leptons[0].phi())), fabs(deltaPhi(zvv.phi(),phys.leptons[1].phi())) };
+      float mTlmet[]={ TMath::Sqrt(2*zvv.pt()*phys.leptons[0].pt()*(1-TMath::Cos(dphil2met[0]))) ,   TMath::Sqrt(2*zvv.pt()*phys.leptons[1].pt()*(1-TMath::Cos(dphil2met[1]))) };
+
+      float dphil2minmet[]={ fabs(deltaPhi(minmetxy.Phi(),phys.leptons[0].phi())), fabs(deltaPhi(minmetxy.Phi(),phys.leptons[1].phi())) };
+      float mTlminmet[]={ TMath::Sqrt(2*minmet*phys.leptons[0].pt()*(1-TMath::Cos(dphil2minmet[0]))) ,   TMath::Sqrt(2*minmet*phys.leptons[1].pt()*(1-TMath::Cos(dphil2minmet[1]))) };
+
       //fill control histograms
       TString cats[]={"all",evcat};
       TString subCats[]={"",subcat};
@@ -212,16 +222,22 @@ int main(int argc, char* argv[])
 		  controlHistos.fill2DHisto("zptvsmet", ctf, zll.pt(), zvv.pt(),weight);
 		  controlHistos.fill2DHisto("zetavsmet", ctf, zll.eta(), zvv.pt(),weight);
 
+		  controlHistos.fillHisto("metoverzpt", ctf,zvv.pt()/zll.pt(),weight);	      
+
 		  controlHistos.fillHisto("projmet", ctf,projMet,weight);	      
-		  controlHistos.fillHisto("projmetzpt", ctf,projmetzpt,weight);	      
+		  controlHistos.fillHisto("projmetoverzpt", ctf,projMet/zll.pt(),weight);	      
 		  controlHistos.fillHisto("redmet", ctf,redmet,weight);	      
 		  controlHistos.fillHisto("minmet", ctf,minmet,weight);	      
-		  controlHistos.fillHisto("minmetzpt", ctf,minmetzpt,weight);	 
+		  controlHistos.fillHisto("minmetoverzpt", ctf,minmet/zll.pt(),weight);	 
 		  controlHistos.fillHisto("projminmet", ctf,projminmet,weight);	           
 		  controlHistos.fillHisto("minmetcomps", ctf,minmetL,minmetT,weight);	
 		  controlHistos.fillHisto("minmetvsminmetoverzpt", ctf,minmet,minmet/zll.pt(),weight);
 		  controlHistos.fillHisto("metvsmetoverzpt", ctf,zvv.pt(),zvv.pt()/zll.pt(),weight);
 		  controlHistos.fillHisto("projmetvsprojmetoverzpt", ctf,projMet,projMet/zll.pt(),weight);
+
+		  controlHistos.fillHisto("mtmetsum", ctf,mTlmet[0]+mTlmet[1],weight);	      
+		  controlHistos.fillHisto("mtminmetsum", ctf,mTlminmet[0]+mTlminmet[1],weight);	      
+
 		}
 	    }
 	}
