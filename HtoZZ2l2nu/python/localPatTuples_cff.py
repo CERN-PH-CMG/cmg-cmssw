@@ -42,8 +42,7 @@ args: castor_directory output_file first_file step
 def configureFromCommandLine() :
     castorDir='/castor/cern.ch/cms/store/cmst3/user/cbern/CMG/TT_TuneZ2_7TeV-pythia6-tauola/Summer11-PU_S3_START42_V11-v2/AODSIM'
     if(len(sys.argv)>2 ):
-        castorDir=sys.argv[2]
-        print sys.argv
+        if(sys.argv[2].find('/')>=0 or sys.argv[2].find('.root')>0) : castorDir=sys.argv[2]
     outputFile='output.root'
     if(len(sys.argv)>3 ): outputFile=sys.argv[3]
     ffile=0
