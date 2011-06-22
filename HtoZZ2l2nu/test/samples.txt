@@ -1,13 +1,12 @@
-/DoubleMu/Run2011A-HZZ-PromptSkim-v4/AOD
-/DoubleElectron/Run2011A-HZZ-PromptSkim-v4/AOD
-/MuEG/Run2011A-HZZ-PromptSkim-v4/AOD
+/DoubleElectron/Run2011A-May10ReReco-v1/AOD
+/DoubleMu/Run2011A-May10ReReco-v1/AOD
+/MuEG/Run2011A-May10ReReco-v1/AOD
+/SingleMu/Run2011A-May10ReReco-v1/AOD
 
-/DoubleElectron/psilva-DoubleElectron-HZZskim-ee0f29665214cf614c076de08617ac6c/USER
-/DoubleMu/psilva-DoubleMu-HZZskim-v2-953b6126e859e026f5ad8d5ca47a0109/USER
-/MuEG/psilva-MuEG-HZZskim-ee0f29665214cf614c076de08617ac6c/USER
-dbs_url = https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet
-split_by_run = 1 
-
+/DoubleElectron/Run2011A-PromptReco-v4/AOD
+/DoubleMu/Run2011A-PromptReco-v4/AOD
+/MuEG/Run2011A-PromptReco-v4/AOD
+/SingleMu/Run2011A-PromptReco-v4/AOD
 
 /WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM
 
