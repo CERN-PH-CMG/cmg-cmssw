@@ -1,6 +1,11 @@
 import os, sys
-from ROOT import gROOT, TFile, TCanvas, gPad, TBrowser, TH2F
 
+filename = os.environ.get('PYTHONSTARTUP')
+if filename and os.path.isfile(filename):
+    exec(open(filename).read())
+
+
+from ROOT import gROOT, TFile, TCanvas, gPad, TBrowser, TH2F
 from CMGTools.RootTools.RootTools import *
 
 gROOT.Macro( os.path.expanduser( '~/rootlogon.C' ) )
@@ -32,10 +37,12 @@ def init(pattern):
 fullCleaning = 'hbheNoiseFilter && greedyMuons && inconsMuons && pfjets.obj.component(5).fraction()<0.99 && pfjets.obj.component(4).fraction()<0.99'
 
 leptonVeto = 'mu.@obj.size()==0 && ele.@obj.size()==0'
+leptonVeto2 = '(mu.@obj.size()==0 || mu.obj.relIso()<0.1) && (ele.@obj.size()==0 || ele.obj.relIso()<0.1)'
 
-highMHT = 'mht.obj.pt()>600 && ht.obj.sumEt()>350'
+highMHT = 'mht.obj[0].pt()>600 && ht.obj[0].sumEt()>350'
 
 allCuts = fullCleaning + ' && ' + leptonVeto + ' && ' + highMHT
+allCutsNoVeto = fullCleaning + ' && ' + highMHT
 
 
 def setEventList( cut=None ):
