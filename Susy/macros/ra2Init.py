@@ -33,12 +33,21 @@ def init(pattern):
 
     return events
 
+
 filters = 'hbheNoiseFilter && greedyMuons && inconsMuons'
+NOTfilters = '!(%s)' % filters
+
 jetId = 'pfjets.obj.component(5).fraction()<0.99 && pfjets.obj.component(4).fraction()<0.99'
 NOTjetId = '!(%s)' % jetId
+
+jetIdTight = 'pfjets.obj.component(5).fraction()<0.95 && pfjets.obj.component(4).fraction()<0.95'
+NOTjetIdTight = '!(%s)' % jetIdTight
+
 fullCleaning = filters + ' && ' + jetId
 
 leptonVeto = 'mu.@obj.size()==0 && ele.@obj.size()==0'
+NOTleptonVeto = leptonVeto + ' && ' + jetId
+
 leptonVeto2 = '(mu.@obj.size()==0 || mu.obj.relIso()<0.1) && (ele.@obj.size()==0 || ele.obj.relIso()<0.1)'
 
 highMHT = 'mht.obj[0].pt()>600 && ht.obj[0].sumEt()>350'
