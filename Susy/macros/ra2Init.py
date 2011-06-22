@@ -28,13 +28,15 @@ def init(pattern):
     events.SetAlias('inconsMuons', 'bool_inconsistentMuonsTagging_Result_PAT.obj')
     events.SetAlias('greedyMuons', 'bool_greedyMuonsTagging_Result_PAT.obj')
     
-    
     events.SetAlias('run','EventAuxiliary.id().run()')
     events.SetAlias('lumi','EventAuxiliary.id().luminosityBlock()')
 
     return events
 
-fullCleaning = 'hbheNoiseFilter && greedyMuons && inconsMuons && pfjets.obj.component(5).fraction()<0.99 && pfjets.obj.component(4).fraction()<0.99'
+filters = 'hbheNoiseFilter && greedyMuons && inconsMuons'
+jetId = 'pfjets.obj.component(5).fraction()<0.99 && pfjets.obj.component(4).fraction()<0.99'
+NOTjetId = '!(%s)' % jetId
+fullCleaning = filters + ' && ' + jetId
 
 leptonVeto = 'mu.@obj.size()==0 && ele.@obj.size()==0'
 leptonVeto2 = '(mu.@obj.size()==0 || mu.obj.relIso()<0.1) && (ele.@obj.size()==0 || ele.obj.relIso()<0.1)'
