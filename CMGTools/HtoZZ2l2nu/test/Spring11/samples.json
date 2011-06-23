@@ -211,8 +211,9 @@
                  "dtag":"GluGluToHToZZTo2L2Nu_M-400_Spring11",
                  "dset":"/GluGluToHToZZTo2L2Nu_M-400_7TeV-powheg-pythia6/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
 		 "patdir":"/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/GluGluToHToZZTo2L2Nu_M-400/GluGluToHToZZTo2L2Nu_M-400_Spring11",
-                 "xsec":2.035,
-                 "br":0.0118,
+                 "xsec":2.03,
+                 "brform":"0.269*0.14036",
+                 "br":0.03775684,
                  "sfactor":10
                  }
 	   ]
@@ -232,9 +233,10 @@
                  "dtag":"GluGluToHToWWTo2L2Nu_M-400_Spring11",
                  "dset":"/GluGluToHToWWTo2L2Nu_M-400_7TeV-powheg-pythia6/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
 		 "patdir":"/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/GluGluToHToWWTo2L2Nu_M-400/GluGluToHToWWTo2L2Nu_M-400_Spring11",
-                 "xsec":2.035,
-                 "br":0.077787,
-                 "sfactor":10
+                 "xsec":2.03,
+                 "brform":"0.582*0.1136",
+                 "br":0.06611,
+		 "sfactor":10
                  }
            ]
         },
@@ -251,8 +253,9 @@
 		 "dtag":"GluGluToHToZZTo2L2Nu_M-200_Spring11",
 		 "dset":"/GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
 		 "patdir":"/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/GluGluToHToZZTo2L2Nu_M-200/GluGluToHToZZTo2L2Nu_M-200_Spring11",
-		 "xsec":5.249,
-		 "br":0.011031,
+		 "xsec":5.27,
+		 "brform":"0.256*0.14036",
+		 "br":0.0359,
 		 "sfactor":10
                  }
 	   ]
@@ -271,8 +274,9 @@
                  "dtag":"GluGluToHToWWTo2L2Nu_M-200_Spring11",
                  "dset":"/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
 		 "patdir":"/castor/cern.ch//cms/store/cmst3/user/psilva/Dileptons/GluGluToHToWWTo2L2Nu_M-200/GluGluToHToWWTo2L2Nu_M-200_Spring11",
-                 "xsec":2.035,
-                 "br":0.06109,
+                 "xsec":5.27,
+                 "brform":"0.741*0.1136",
+                 "br":0.0842,
                  "sfactor":10
                  }
            ]

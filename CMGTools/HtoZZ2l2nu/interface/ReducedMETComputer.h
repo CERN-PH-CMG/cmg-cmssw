@@ -4,8 +4,8 @@
 /** \class ReducedMETComputer
  *  No description available.
  *
- *  $Date: 2011/06/06 12:50:19 $
- *  $Revision: 1.4 $
+ *  $Date: 2011/06/21 15:44:16 $
+ *  $Revision: 1.6 $
  *  \author G. Cerminara & D. Trocino & P. Silva
  */
 
@@ -24,7 +24,7 @@ typedef std::vector<LorentzVector> LorentzVectorCollection;
 class ReducedMETComputer {
 public:
   
-  enum RedMetType { D0, MINIMIZED };
+  enum RedMetType { D0, MINIMIZED, INDEPENDENTLYMINIMIZED };
   enum EventCategory { COLLIMATED, OPENANGLE };
   enum PreferedRecoil { CLUSTERED, UNCLUSTERED };
  
@@ -63,7 +63,7 @@ public:
   inline int getEventCategory() { return event_categ; }
   
   //get the 2D vector
-  TVector2 redMETminRmetxy,redMETxy;
+  TVector2 redMETminRmetxy,redMETxy,redMETIndminRmetxy;
   inline TVector2 reducedMETcartesian(int redMetType=D0)
   {
     TVector2 xy;
@@ -71,6 +71,9 @@ public:
       {
       case MINIMIZED:
 	xy=redMETminRmetxy;
+	break;
+      case INDEPENDENTLYMINIMIZED:
+	xy=redMETIndminRmetxy;
 	break;
       case D0: default :
 	xy=redMETxy;
@@ -80,7 +83,7 @@ public:
   } 
   
   //get the absolute value
-  double redMETminRmet,redMET;
+  double redMETIndminRmet,redMETminRmet,redMET;
   inline double reducedMET(int redMetType=D0) 
   {  
     double rho;
@@ -89,19 +92,20 @@ public:
       case MINIMIZED:
 	rho=redMETminRmet;
 	break;
+      case INDEPENDENTLYMINIMIZED:
+	rho=redMETIndminRmet;
+	break;
       case D0: default :
 	rho=redMET;
 	break;
       }
     return rho;
   }
-  TVector2 reducedMETcartesian() const { return redMETxy;  }
-  
-  double reducedMET() const {  return redMET; }
 
   //get the components
   double reducedMET_long,reducedMET_perp;
   double reducedMETminRmet_long,reducedMETminRmet_perp; 
+  double reducedMETIndminRmet_long,reducedMETIndminRmet_perp; 
   inline std::pair<double, double> reducedMETComponents(int redMetType=D0)
     {
       std::pair<double, double> rmetComps;
@@ -109,6 +113,9 @@ public:
 	{
 	case MINIMIZED:
 	  rmetComps=std::make_pair(reducedMETminRmet_long, reducedMETminRmet_perp);
+	  break;
+	case INDEPENDENTLYMINIMIZED:
+	  rmetComps=std::make_pair(reducedMETIndminRmet_long,reducedMETIndminRmet_perp);
 	  break;
 	case D0: default:
 	  rmetComps=std::make_pair(reducedMET_long, reducedMET_perp);
@@ -120,6 +127,7 @@ public:
   //get the prefered recoil
   int prefRecminRmet;
   int prefRec_long, prefRec_perp;
+  int prefRecIndMin_long, prefRecIndMin_perp;
   inline std::pair<int,int> getPreferedRecoil(int redMetType=D0)
   {
     std::pair<int,int> prefRec;
@@ -127,6 +135,9 @@ public:
       {
       case MINIMIZED:
 	prefRec=std::make_pair(prefRecminRmet,prefRecminRmet);
+	break;
+      case INDEPENDENTLYMINIMIZED:
+	prefRec=std::make_pair(prefRecIndMin_long,prefRecIndMin_perp);
 	break;
       case D0: default:
 	prefRec=std::make_pair(prefRec_long,prefRec_perp);

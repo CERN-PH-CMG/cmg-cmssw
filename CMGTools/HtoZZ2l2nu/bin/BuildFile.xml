@@ -10,7 +10,7 @@
 <use name="RecoBTag/Records"/>
 <use name="CondFormats/PhysicsToolsObjects"/>
 <environment>
- <bin name="runOnEventSummary" file="../src/setStyle.C ../src/plotter.C ../src/ZZ2l2nuSummaryHandler.cc ../src/ReducedMETFitter.cc ../src/ReducedMETComputer.cc runOnEventSummary.cc"></bin>
+ <bin name="runOnEventSummary" file="../src/setStyle.C ../src/plotter.C ../src/ZZ2l2nuSummaryHandler.cc ../src/JetEnergyUncertaintyComputer.cc ../src/ReducedMETFitter.cc ../src/ReducedMETComputer.cc runOnEventSummary.cc"></bin>
  <bin name="runMCtruthStudy" file="../src/setStyle.C ../src/plotter.C ../src/ZZ2l2nuSummaryHandler.cc ../src/ReducedMETFitter.cc ../src/ReducedMETComputer.cc runMCtruthStudy.cc"></bin>
 </environment>
 <Flags CXXFLAGS="-g"/>
