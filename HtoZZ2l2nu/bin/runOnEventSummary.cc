@@ -10,6 +10,7 @@
 #include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
 #include "CMGTools/HtoZZ2l2nu/interface/SelectionMonitor.h"
+#include "CMGTools/HtoZZ2l2nu/interface/JetEnergyUncertaintyComputer.h"
 
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
@@ -52,12 +53,22 @@ int main(int argc, char* argv[])
   int evEnd=runProcess.getParameter<int>("evEnd");
   TString dirname = runProcess.getParameter<std::string>("dirName");
 
+  TString etaFileName = runProcess.getParameter<std::string>("etaResolFileName"); gSystem->ExpandPathName(etaFileName);
+  JetResolution stdEtaResol(etaFileName.Data(),false);
+  TString phiFileName = runProcess.getParameter<std::string>("phiResolFileName"); gSystem->ExpandPathName(phiFileName);
+  JetResolution stdPhiResol(phiFileName.Data(),false);
+  TString ptFileName  = runProcess.getParameter<std::string>("ptResolFileName");  gSystem->ExpandPathName(ptFileName);
+  JetResolution stdPtResol(ptFileName.Data(),true);
+  TString uncFile =  runProcess.getParameter<std::string>("jesUncFileName"); gSystem->ExpandPathName(uncFile);
+  JetCorrectionUncertainty jecUnc(uncFile.Data());
+  jet::UncertaintyComputer jcomp(&stdPtResol,&stdEtaResol,&stdPhiResol,&jecUnc);
+
   //control Histos
   SelectionMonitor controlHistos;
 
   controlHistos.addHistogram( new TH1F ("met", ";type-I E_{T}^{miss};Events", 100,0,500) );  
-  controlHistos.addHistogram( new TH1F ("redmet", ";red-E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram( new TH1F ("minmet", ";min-E_{T}^{miss};Events", 100,0,500) );
+  controlHistos.addHistogram( new TH1F ("redmet", ";red-E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram( new TH1F ("projmet", ";projected E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram( new TH1F ("projminmet", ";projected min-E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram(  new TH1D ("zpt", ";p_{T}^{ll};Events", 100,0,400) );
@@ -66,7 +77,8 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1F ("metoverzpt", ";type I E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
   controlHistos.addHistogram( new TH1F ("projmetoverzpt", ";projected E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
   controlHistos.addHistogram( new TH1F ("minmetoverzpt", ";min-E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
-
+  controlHistos.addHistogram( new TH1F ("redmetoverzpt", ";red-E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
+  
   controlHistos.addHistogram( new TH1D ("dphill", ";#Delta#phi(l^{(1)},l^{(2)});Events",100,-3.2,3.2) );
   controlHistos.addHistogram( new TH1D ("mindphilmet", ";min #Delta#phi(l^{(i)},E_{T}^{miss});Events",100,-3.2,3.2) );
   controlHistos.addHistogram( new TH1D ("dphizz", ";#Delta#phi(ll,E_{T}^{miss});Events",100,-3.2,3.2) );
@@ -82,14 +94,25 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram(  new TH1D ("mtminmetsum", ";#sum M_{T}(l,min-E_{T}^{miss});Events", 100,0,500) );
   
   controlHistos.addHistogram( (TH1D *)(new TH2D ("minmetcomps", ";min-E_{T}^{miss,#parallel};min-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("minmetvsminmetoverzpt", ";type I E_{T}^{miss};type I E_{T}^{miss}/p_{T}(Z);Events", 100, -50.,250,100, -1.,9) ) );
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("metvsmetoverzpt", ";E_{T}^{miss};E_{T}^{miss}/p_{T}(Z);Events", 100, -50.,250,100, -1.,9) ) );
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("projmetvsprojmetoverzpt", ";projected E_{T}^{miss};projected E_{T}^{miss}/p_{T}(Z);Events", 100, -50.,250,100, -1.,9) ) );
-  
+  controlHistos.addHistogram( (TH1D *)(new TH2D ("redmetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
+  controlHistos.addHistogram( (TH1D *)(new TH2D ("minmetvszpt", ";min-E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
+  controlHistos.addHistogram( (TH1D *)(new TH2D ("redmetvszpt", ";red-E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
+  controlHistos.addHistogram( (TH1D *)(new TH2D ("metvszpt", ";type I E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
+  controlHistos.addHistogram( (TH1D *)(new TH2D ("projmetvszpt", ";projected E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
+
+  TString systVars[]={"jer","jesup","jesdown","nopu","flatpu"};
+  for(size_t ivar=0; ivar<sizeof(systVars)/sizeof(TString); ivar++)
+    {
+      controlHistos.addHistogram( new TH1F ("met"+systVars[ivar], ";type-I E_{T}^{miss};Events", 100,0,500) );  
+      controlHistos.addHistogram( new TH1F ("minmet"+systVars[ivar], ";min-E_{T}^{miss};Events", 100,0,500) );
+      controlHistos.addHistogram( new TH1F ("redmet"+systVars[ivar], ";red-E_{T}^{miss};Events", 100,0,500) );
+      controlHistos.addHistogram( new TH1F ("projmet"+systVars[ivar], ";projected E_{T}^{miss};Events", 100,0,500) );  
+    }
+
   //replicate monitor for categories
   TString cats[]={"ee","emu","mumu"};
   TString subcats[]={"","eq0jets","eq1jets","geq2jets"};
-  TString topcats[]={"","cat1","cat2","cat3","cat4"};
+  TString topcats[]={"","cat1","cat2"};
   for(size_t icat=0;icat<sizeof(cats)/sizeof(TString); icat++)
     {
       for(size_t isubcat=0;isubcat<sizeof(subcats)/sizeof(TString); isubcat++)
@@ -161,14 +184,26 @@ int main(int argc, char* argv[])
       TVector2 zal(zll.px(),zll.py());
       zal=zal.Unit();
 
-      //redmet
+      //jet/met kinematics and systematic variations
       LorentzVectorCollection jetsp4;
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++) jetsp4.push_back( phys.jets[ijet] );
+      jcomp.compute(jetsp4,phys.met[0]);
+      LorentzVector metJER=jcomp.getVariedMet(jet::UncertaintyComputer::JER);
+      LorentzVectorCollection jetsJER = jcomp.getVariedJets(jet::UncertaintyComputer::JER);
+      LorentzVector metJESdown=jcomp.getVariedMet(jet::UncertaintyComputer::JES_DOWN);
+      LorentzVectorCollection jetsJESdown=jcomp.getVariedJets(jet::UncertaintyComputer::JES_DOWN);
+      LorentzVector metJESup=jcomp.getVariedMet(jet::UncertaintyComputer::JES_UP);
+      LorentzVectorCollection jetsJESup=jcomp.getVariedJets(jet::UncertaintyComputer::JES_UP);
+
+      //redmet
       rmetComp.compute(phys.leptons[0],phys.leptons[0].info[0],phys.leptons[1], phys.leptons[1].info[0], jetsp4, zvv );
-      double redmet = rmetComp.reducedMET(ReducedMETComputer::D0);
-      double minmet = rmetComp.reducedMET(ReducedMETComputer::MINIMIZED);
+      //      double redmet = rmetComp.reducedMET(ReducedMETComputer::D0);
       double minmetL = rmetComp.reducedMETComponents(ReducedMETComputer::MINIMIZED).second;
       double minmetT = rmetComp.reducedMETComponents(ReducedMETComputer::MINIMIZED).first;
+      double minmet = rmetComp.reducedMET(ReducedMETComputer::MINIMIZED);
+      double redmetL = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+      double redmetT = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+      double redmet = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
       int rMetCateg = rmetComp.getEventCategory();
       TVector2 minmetxy = rmetComp.reducedMETcartesian(ReducedMETComputer::MINIMIZED);
       LorentzVector minMetP4(minmetxy.Px(),minmetxy.Py(),0,minmet);
@@ -188,15 +223,38 @@ int main(int argc, char* argv[])
       float dphil2minmet[]={ fabs(deltaPhi(minmetxy.Phi(),phys.leptons[0].phi())), fabs(deltaPhi(minmetxy.Phi(),phys.leptons[1].phi())) };
       float mTlminmet[]={ TMath::Sqrt(2*minmet*phys.leptons[0].pt()*(1-TMath::Cos(dphil2minmet[0]))) ,   TMath::Sqrt(2*minmet*phys.leptons[1].pt()*(1-TMath::Cos(dphil2minmet[1]))) };
 
+      TVector2 zllxy(zll.px(),zll.py());
+      TVector2 zvvxy(zvv.px(),zvv.py());
+      double metoverzpt     =zvv.pt()/zll.pt();
+      double projmetoverzpt =projMet/zll.pt();
+      double minmetoverzpt  =minmet/zll.pt();
+      double redmetoverzpt  = redmet/zll.pt();
+
+      //systematic variations
+      rmetComp.compute(phys.leptons[0],phys.leptons[0].info[0],phys.leptons[1], phys.leptons[1].info[0], jetsJER, metJER );
+      double minmetJER = rmetComp.reducedMET(ReducedMETComputer::MINIMIZED);
+      double redmetJER = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+      double projMetJER = pmetComp.compute(phys.leptons[0], phys.leptons[1], metJER );
+
+      rmetComp.compute(phys.leptons[0],phys.leptons[0].info[0],phys.leptons[1], phys.leptons[1].info[0], jetsJESup, metJESup );
+      double minmetJESup = rmetComp.reducedMET(ReducedMETComputer::MINIMIZED);
+      double redmetJESup = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+      double projMetJESup = pmetComp.compute(phys.leptons[0], phys.leptons[1], metJESup );
+
+      rmetComp.compute(phys.leptons[0],phys.leptons[0].info[0],phys.leptons[1], phys.leptons[1].info[0], jetsJESdown, metJESdown );
+      double minmetJESdown = rmetComp.reducedMET(ReducedMETComputer::MINIMIZED);
+      double redmetJESdown = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+      double projMetJESdown = pmetComp.compute(phys.leptons[0], phys.leptons[1], metJESdown );
+
       //fill control histograms
       TString cats[]={"all",evcat};
       TString subCats[]={"",subcat};
       std::vector<TString> topCats;
       topCats.push_back("");
-      if(rMetCateg==ReducedMETComputer::COLLIMATED) topCats.push_back("cat1");
-      if(rMetCateg==ReducedMETComputer::OPENANGLE) topCats.push_back("cat2");
-      if(projMetCateg==ProjectedMETComputer::OPENANGLE) topCats.push_back("cat3");
-      if(projMetCateg==ProjectedMETComputer::COLLIMATED) topCats.push_back("cat4");
+      //if(rMetCateg==ReducedMETComputer::COLLIMATED) topCats.push_back("cat1");
+      //if(rMetCateg==ReducedMETComputer::OPENANGLE) topCats.push_back("cat2");
+      if(projMetCateg==ProjectedMETComputer::OPENANGLE) topCats.push_back("cat1");
+      if(projMetCateg==ProjectedMETComputer::COLLIMATED) topCats.push_back("cat2");
       for(size_t ic=0; ic<sizeof(cats)/sizeof(TString); ic++)
 	{
 	  for(size_t isc=0; isc<sizeof(subCats)/sizeof(TString); isc++)
@@ -215,6 +273,12 @@ int main(int argc, char* argv[])
 		  controlHistos.fillHisto("deltazphi",ctf, deltaPhi(zll.phi(),genzll.phi()),weight);
 
 		  controlHistos.fillHisto("met", ctf,zvv.pt(),weight);
+		  controlHistos.fillHisto("metjer", ctf,metJER.pt(),weight);
+		  controlHistos.fillHisto("metjesup", ctf,metJESup.pt(),weight);
+		  controlHistos.fillHisto("metjesdown", ctf,metJESdown.pt(),weight);
+		  controlHistos.fillHisto("metflatpu", ctf,zvv.pt());
+		  if(ev.ngenpu<1) controlHistos.fillHisto("metnopu", ctf,zvv.pt());
+		  
 		  controlHistos.fillHisto("deltazvvpt",ctf, zvv.pt()-genzvv.pt(),weight);
 		  controlHistos.fillHisto("deltazvvphi",ctf, deltaPhi(zvv.phi(),genzvv.phi()),weight);
 		  
@@ -222,18 +286,41 @@ int main(int argc, char* argv[])
 		  controlHistos.fill2DHisto("zptvsmet", ctf, zll.pt(), zvv.pt(),weight);
 		  controlHistos.fill2DHisto("zetavsmet", ctf, zll.eta(), zvv.pt(),weight);
 
-		  controlHistos.fillHisto("metoverzpt", ctf,zvv.pt()/zll.pt(),weight);	      
+		  controlHistos.fillHisto("metoverzpt", ctf,metoverzpt,weight);	      
 
 		  controlHistos.fillHisto("projmet", ctf,projMet,weight);	      
-		  controlHistos.fillHisto("projmetoverzpt", ctf,projMet/zll.pt(),weight);	      
-		  controlHistos.fillHisto("redmet", ctf,redmet,weight);	      
+		  controlHistos.fillHisto("projmetjer", ctf,projMetJER,weight);	      
+		  controlHistos.fillHisto("projmetjesup", ctf,projMetJESup,weight);	      
+		  controlHistos.fillHisto("projmetjesdown", ctf,projMetJESdown,weight);	     
+		  controlHistos.fillHisto("projmetflatpu", ctf,projMet);	     
+		  if(ev.ngenpu<1) controlHistos.fillHisto("projmetnopu", ctf,projMet); 
+
+		  controlHistos.fillHisto("projmetoverzpt", ctf,projmetoverzpt,weight);	      
 		  controlHistos.fillHisto("minmet", ctf,minmet,weight);	      
-		  controlHistos.fillHisto("minmetoverzpt", ctf,minmet/zll.pt(),weight);	 
+		  controlHistos.fillHisto("minmetjer", ctf,minmetJER,weight);	      
+		  controlHistos.fillHisto("minmetjesup", ctf,minmetJESup,weight);	      
+		  controlHistos.fillHisto("minmetjesdown", ctf,minmetJESdown,weight);	      
+		  controlHistos.fillHisto("minmetflatpu", ctf,minmet);
+		  controlHistos.fillHisto("redmet", ctf,redmet,weight);	      
+		  controlHistos.fillHisto("redmetjer", ctf,redmetJER,weight);	      
+		  controlHistos.fillHisto("redmetjesup", ctf,redmetJESup,weight);	      
+		  controlHistos.fillHisto("redmetjesdown", ctf,redmetJESdown,weight);	      
+		  controlHistos.fillHisto("redmetflatpu", ctf,redmet);
+		  if(ev.ngenpu<1)
+		    {
+		      controlHistos.fillHisto("minmetnopu", ctf,minmet);
+		      controlHistos.fillHisto("redmetnopu", ctf,redmet);
+		    }
+
+		  controlHistos.fillHisto("minmetoverzpt", ctf,minmetoverzpt,weight);	 
+		  controlHistos.fillHisto("redminmetoverzpt", ctf,redmetoverzpt,weight);	 
 		  controlHistos.fillHisto("projminmet", ctf,projminmet,weight);	           
 		  controlHistos.fillHisto("minmetcomps", ctf,minmetL,minmetT,weight);	
-		  controlHistos.fillHisto("minmetvsminmetoverzpt", ctf,minmet,minmet/zll.pt(),weight);
-		  controlHistos.fillHisto("metvsmetoverzpt", ctf,zvv.pt(),zvv.pt()/zll.pt(),weight);
-		  controlHistos.fillHisto("projmetvsprojmetoverzpt", ctf,projMet,projMet/zll.pt(),weight);
+		  controlHistos.fillHisto("redminmetcomps", ctf,redmetL,redmetT,weight);	
+		  controlHistos.fillHisto("minmetvszpt", ctf,minmet,zll.pt(),weight);
+		  controlHistos.fillHisto("redminmetvszpt", ctf,redmet,zll.pt(),weight);
+		  controlHistos.fillHisto("metvszpt", ctf,zvv.pt(),zll.pt(),weight);
+		  controlHistos.fillHisto("projmetvszpt", ctf,projMet,zll.pt(),weight);
 
 		  controlHistos.fillHisto("mtmetsum", ctf,mTlmet[0]+mTlmet[1],weight);	      
 		  controlHistos.fillHisto("mtminmetsum", ctf,mTlminmet[0]+mTlminmet[1],weight);	      

@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2011/06/11 20:31:56 $
- *  $Revision: 1.6 $
+ *  $Date: 2011/06/21 15:44:17 $
+ *  $Revision: 1.7 $
  *  \author G. Cerminara & D. Trocino
  */
 
@@ -170,6 +170,19 @@ void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt
   reducedMETminRmet_perp = (unclRedMet < cluRedMet ? unclRedMet_perp : cluRedMet_perp); 
   redMETminRmet = sqrt(pow(reducedMETminRmet_long,2)+pow(reducedMETminRmet_perp,2));
   redMETminRmetxy=reducedMETminRmet_long*a_l+reducedMETminRmet_perp*a_t;
+
+  //
+  // CMS INDEPEDENT MINIMIZATION VERSION
+  //
+  prefRecIndMin_long        = (fabs(unclRedMet_long) < fabs(cluRedMet_long) ? UNCLUSTERED : CLUSTERED );
+  reducedMETIndminRmet_long = (fabs(unclRedMet_long) < fabs(cluRedMet_long) ? unclRedMet_long : cluRedMet_long); 
+  prefRecIndMin_perp        = (fabs(unclRedMet_perp) < fabs(cluRedMet_perp) ? UNCLUSTERED : CLUSTERED );
+  reducedMETIndminRmet_perp = (fabs(unclRedMet_perp) < fabs(cluRedMet_perp) ? unclRedMet_perp : cluRedMet_perp); 
+  redMETIndminRmet = sqrt(pow(reducedMETIndminRmet_long,2)+pow(reducedMETIndminRmet_perp,2));
+  redMETIndminRmetxy=reducedMETIndminRmet_long*a_l+reducedMETIndminRmet_perp*a_t;
+
+
+
   
   //debug the event
   if(debug)
