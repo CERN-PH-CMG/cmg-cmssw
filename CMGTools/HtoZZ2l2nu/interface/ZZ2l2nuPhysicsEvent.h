@@ -12,9 +12,9 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 class PhysicsObject : public LorentzVector
 {
 public :
-  PhysicsObject(LorentzVector vec, Int_t id) :
-    LorentzVector(vec), id_(id) { }
-    Int_t id_;
+  PhysicsObject(LorentzVector vec, Int_t id,Int_t mcid=0):
+    LorentzVector(vec), id_(id), mcid_(mcid) { }
+    Int_t id_,mcid_;
     std::vector<Float_t> info;
  private:
 };
@@ -37,7 +37,7 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
   //get the physics object
   for(Int_t ipart=0; ipart<ev.nparticles; ipart++)
     {
-      PhysicsObject obj( LorentzVector(ev.px[ipart],ev.py[ipart],ev.pz[ipart],ev.en[ipart]) , ev.id[ipart] );
+      PhysicsObject obj( LorentzVector(ev.px[ipart],ev.py[ipart],ev.pz[ipart],ev.en[ipart]) , ev.id[ipart], ev.genid[ipart] );
       obj.info.push_back(ev.info1[ipart]);
       obj.info.push_back(ev.info2[ipart]);
       obj.info.push_back(ev.info3[ipart]);
@@ -71,17 +71,17 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
 	  genmet += p4;
 	  break;
 	case 1:
-	  phys.genjets.push_back( PhysicsObject(p4,ev.mcid[ipart]) );
+	  phys.genjets.push_back( PhysicsObject(p4,ev.mcid[ipart],ev.mcid[ipart]) );
 	  break;
 	case 11: case -11: case 13: case -13: case 15: case -15:
-	  phys.genleptons.push_back( PhysicsObject(p4,ev.mcid[ipart]) );
+	  phys.genleptons.push_back( PhysicsObject(p4,ev.mcid[ipart],ev.mcid[ipart]) );
 	  break;
 	case 25:
-	  phys.genhiggs.push_back( PhysicsObject(p4,ev.mcid[ipart]) );
+	  phys.genhiggs.push_back( PhysicsObject(p4,ev.mcid[ipart],ev.mcid[ipart]) );
 	  break;
 	}
     }
-  phys.genmet.push_back( PhysicsObject(genmet,0) );
+  phys.genmet.push_back( PhysicsObject(genmet,0,0) );
 
   return phys;
 }
