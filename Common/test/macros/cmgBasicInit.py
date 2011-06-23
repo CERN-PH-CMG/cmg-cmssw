@@ -13,14 +13,15 @@ gROOT.Macro( os.path.expanduser( '~/rootlogon.C' ) )
 #file = TFile( sys.argv[1] )
 #events = file.Get('Events')
 
-def init(pattern):
+def init(pattern, process='ANA'):
+    
     events = Chain('Events', pattern)
 
-    events.SetAlias('pfjets','cmgPFJets_cmgPFJetSel__PAT')
-    events.SetAlias('jets','cmgBaseJets_cmgPFBaseJetSel__PAT')
-    events.SetAlias('met','cmgBaseMETs_cmgPFMET__PAT')
-    events.SetAlias('ele','cmgElectrons_cmgElectronSel__PAT')
-    events.SetAlias('mu','cmgMuons_cmgMuonSel__PAT')
+    events.SetAlias('pfjets','cmgPFJets_cmgPFJetSel__'+process)
+    events.SetAlias('jets','cmgBaseJets_cmgPFBaseJetSel__'+process)
+    events.SetAlias('met','cmgBaseMETs_cmgPFMET__'+process)
+    events.SetAlias('ele','cmgElectrons_cmgElectronSel__'+process)
+    events.SetAlias('mu','cmgMuons_cmgMuonSel__'+process)
     
     events.SetAlias('hbheNoiseFilter','bool_HBHENoiseFilterResultProducer_HBHENoiseFilterResult_PAT.obj')
     events.SetAlias('inconsMuons', 'bool_inconsistentMuonsTagging_Result_PAT.obj')
@@ -39,6 +40,7 @@ NOTjetId = '!(%s)' % jetId
 
 jetIdTight = 'pfjets.obj.component(5).fraction()<0.95 && pfjets.obj.component(4).fraction()<0.95'
 NOTjetIdTight = '!(%s)' % jetIdTight
+
 
 
 
