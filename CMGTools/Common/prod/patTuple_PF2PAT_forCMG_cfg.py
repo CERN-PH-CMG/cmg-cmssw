@@ -56,20 +56,8 @@ print sep_line
 # process.source.fileNames = cms.untracked.vstring(['/store/relval/CMSSW_4_2_3/RelValZTT/GEN-SIM-RECO/START42_V12-v2/0062/4CEA9C47-287B-E011-BAB7-00261894396B.root'])
 # process.source.fileNames = cms.untracked.vstring(['file:PFAOD.root'])
 
-# process.load("CMGTools.Common.sources.QCD_Pt_170to300_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
-# process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.source_cff")
-# process.load("CMGTools.Common.sources.TT_TuneZ2_7TeV_pythia6_tauola.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
-# process.load("CMGTools.Common.sources.QCD_Pt_30to50_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
-# process.load("CMGTools.Common.sources.QCD_Pt_50to80_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
-# process.load("CMGTools.Common.sources.QCD_Pt_80to120_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
-# process.load("CMGTools.Common.sources.QCD_Pt_120to170_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
-# process.load("CMGTools.Common.sources.QCD_Pt_170to300_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
-# process.load("CMGTools.Common.sources.QCD_Pt_470to600_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
-# process.load("CMGTools.Common.sources.QCD_Pt_600to800_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
-# process.load("CMGTools.Common.sources.QCD_Pt_800to1000_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
-# process.load("CMGTools.Common.sources.QCD_Pt_1000to1400_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
-# process.load("CMGTools.Common.sources.QCD_Pt_1400to1800_TuneZ2_7TeV_pythia6.Summer11_PU_S3_START42_V11_v2.AODSIM.source_cff")
-process.load("CMGTools.Common.sources.HT.Run2011A_HighMET_PromptSkim_v4.RAW_RECO.source_cff")
+process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.source_maxime_cff")
+
 
 print "WARNING!!!!!!!!!!!!!!!! remove the following line (see .cfg) before running on the batch!"
 # process.source.fileNames = [process.source.fileNames[0]]
