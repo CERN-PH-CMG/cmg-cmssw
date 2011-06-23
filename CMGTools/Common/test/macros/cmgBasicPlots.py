@@ -45,7 +45,7 @@ h2.Draw('same')
 if plotFilters:
     legend.AddEntry(h3,'rejected by cleaning filters')
     h3.Draw('same')
-    
+
 legend.Draw()
 
 
