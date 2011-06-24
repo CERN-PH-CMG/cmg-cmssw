@@ -17,6 +17,7 @@
 
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
+#include "CMGTools/HtoZZ2l2nu/interface/TSelectionMonitor.h"
 
 #include "TH1D.h"
 #include "TString.h"
@@ -28,7 +29,7 @@ public:
   virtual void produce( edm::Event &iEvent, const edm::EventSetup &iSetup) ;
 private:
   std::map<std::string, edm::ParameterSet > objConfig;
-  std::map<TString,TH1D *> controlHistos_;
+  TSelectionMonitor controlHistos_;
 };
 
 
@@ -37,6 +38,7 @@ using namespace std;
 
 //
 DileptonPlusMETEventProducer::DileptonPlusMETEventProducer(const edm::ParameterSet &iConfig)
+  : controlHistos_( iConfig.getParameter<std::string>("dtag") )
 {
   produces<std::vector<pat::EventHypothesis> >("selectedEvent");
   produces<reco::VertexCollection>("selectedVertices");
@@ -45,27 +47,19 @@ DileptonPlusMETEventProducer::DileptonPlusMETEventProducer(const edm::ParameterS
   for(size_t iobj=0; iobj<sizeof(objs)/sizeof(string); iobj++)
     objConfig[ objs[iobj] ] = iConfig.getParameter<edm::ParameterSet>( objs[iobj] );
 
-  edm::Service<TFileService> fs;
-  TString cats[]={"electron","muon"};
-  size_t ncats=sizeof(cats)/sizeof(TString);
-  for(size_t icat=0; icat<ncats; icat++)
-    {
-      TFileDirectory newDir=fs->mkdir(cats[icat].Data());
-      controlHistos_[cats[icat]+"_rho"] = (TH1D *) formatPlot( newDir.make<TH1F>(cats[icat]+"_rho", "; #rho; Events", 100, 0.,10.), 1,1,1,20,0,false,true,1,1,1 );
-      controlHistos_[cats[icat]+"_ecaliso"] = (TH1D *) formatPlot( newDir.make<TH1F>(cats[icat]+"_ecaliso", ";ECAL isolation; Events", 100, 0.,10.), 1,1,1,20,0,false,true,1,1,1 );
-      controlHistos_[cats[icat]+"_hcaliso"] = (TH1D *) formatPlot( newDir.make<TH1F>(cats[icat]+"_hcaliso", ";HCAL isolation; Events", 100, 0.,10.), 1,1,1,20,0,false,true,1,1,1 );
-      controlHistos_[cats[icat]+"_caloiso"] = (TH1D *) formatPlot( newDir.make<TH1F>(cats[icat]+"_caloiso", ";Calorimeter isolation; Events", 100, 0.,10.), 1,1,1,20,0,false,true,1,1,1 );
-      controlHistos_[cats[icat]+"_trackiso"] = (TH1D *) formatPlot( newDir.make<TH1F>(cats[icat]+"_trackiso", ";Tracker Isolation; Events", 100, 0.,10.), 1,1,1,20,0,false,true,1,1,1 );
-      controlHistos_[cats[icat]+"_reliso"] = (TH1D *) formatPlot( newDir.make<TH1F>(cats[icat]+"_reliso", "; Isolation; Events", 100, 0.,10.), 1,1,1,20,0,false,true,1,1,1 );
-    }
-  
-  TString dilcats[]={"ee","mumu","emu"};
-  size_t ndilcats=sizeof(dilcats)/sizeof(TString);
-  for(size_t icat=0; icat<ndilcats; icat++)
-    {
-      TFileDirectory newDir=fs->mkdir(dilcats[icat].Data());
-      controlHistos_[dilcats[icat]+"_dz"] = (TH1D *) formatPlot( newDir.make<TH1F>(dilcats[icat]+"_dz", "; #Delta Z; Events", 100, -5.,5.), 1,1,1,20,0,false,true,1,1,1 );
-    }
+  controlHistos_.addHistogram( "rho", "; #rho; Events", 100, 0.,10. );
+  controlHistos_.addHistogram( "pt", ";p_{T}; Leptons", 100, 0.,200. );
+  controlHistos_.addHistogram( "d0", ";d0;Leptons", 100, -0.1,0.1  );
+  controlHistos_.addHistogram( "eta", ";#eta; Leptons", 100, -3.,3. );
+  controlHistos_.addHistogram( "ecaliso", ";ECAL isolation; Events", 100, 0.,10. );
+  controlHistos_.addHistogram( "hcaliso", ";HCAL isolation; Events", 100, 0.,10. );
+  controlHistos_.addHistogram( "trackiso", ";Tracker Isolation; Events", 100, 0.,10. );
+  controlHistos_.addHistogram( "absiso", ";Absolute isolation; Events", 100, 0.,20. );
+  controlHistos_.addHistogram( "reliso", "; Isolation; Events", 100, 0.,10.);
+  controlHistos_.initMonitorForStep( "matchedelectron");
+  controlHistos_.initMonitorForStep( "electron");
+  controlHistos_.initMonitorForStep( "matchedmuon");
+  controlHistos_.initMonitorForStep( "muon");
 }
 
 //
@@ -103,19 +97,74 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   
   //average energy density
   edm::Handle< double > rho;
-  iEvent.getByLabel(edm::InputTag("kt6PFJets:rho"),rho);
+  iEvent.getByLabel( objConfig["Jets"].getParameter<edm::InputTag>("rho"),rho);
+  controlHistos_.fillHisto("rho","all",*rho,weight);
 
   //select muons (id+very loose isolation)
   Handle<View<Candidate> > hMu; 
   iEvent.getByLabel(objConfig["Muons"].getParameter<edm::InputTag>("source"), hMu);
   CandidateWithVertexCollection selMuons = muon::filter(hMu, selVertices, *beamSpot, objConfig["Muons"]);
+  for(size_t iMuon=0; iMuon< hMu.product()->size(); ++iMuon)
+    {
+      using namespace lepton;
+      reco::CandidatePtr muonPtr = hMu->ptrAt(iMuon);
+      std::vector<double> isol=getLeptonIso(muonPtr,objConfig["Dileptons"].getParameter<double>("minPt"));
+
+      const pat::Muon *muon = dynamic_cast<const pat::Muon *>( muonPtr.get() );
+      if( !muon->isTrackerMuon() || !muon->isGlobalMuon() ) continue;
+      
+      std::vector<TString> catsToFill;
+      catsToFill.push_back("all"); 
+      catsToFill.push_back("muon");
+      const reco::GenParticle *genMu=muon->genLepton();
+      if(genMu && fabs(genMu->pdgId()==13)) catsToFill.push_back("matchedmuon");
+      for(std::vector<TString>::iterator cIt = catsToFill.begin(); cIt != catsToFill.end(); cIt++)
+	{
+	  controlHistos_.fillHisto("pt",*cIt,muon->pt(),weight);
+	  controlHistos_.fillHisto("eta",*cIt,muon->eta(),weight);
+	  controlHistos_.fillHisto("d0",*cIt,muon->innerTrack()->dxy(beamSpot->position()),weight);
+	  controlHistos_.fillHisto("ecaliso",*cIt,isol[ECAL_ISO],weight);
+	  controlHistos_.fillHisto("hcaliso",*cIt,isol[HCAL_ISO],weight);
+	  controlHistos_.fillHisto("trackiso",*cIt,isol[TRACKER_ISO],weight);
+	  controlHistos_.fillHisto("absiso",*cIt,isol[ECAL_ISO]+isol[HCAL_ISO]+isol[TRACKER_ISO],weight);
+	  controlHistos_.fillHisto("reliso",*cIt,isol[REL_ISO],weight);
+	}
+    }
 
   //select electrons (id+conversion veto+very loose isolation)
   Handle<View<Candidate> > hEle; 
   iEvent.getByLabel(objConfig["Electrons"].getParameter<edm::InputTag>("source"), hEle);
   CandidateWithVertexCollection selElectrons = electron::filter(hEle, hMu, selVertices, *beamSpot, objConfig["Electrons"]);
+  for(size_t iEle=0; iEle< hEle.product()->size(); ++iEle)
+    {
+      reco::CandidatePtr elePtr = hEle->ptrAt(iEle);
+      using namespace lepton;
+      std::vector<double> isol=getLeptonIso(elePtr,objConfig["Dileptons"].getParameter<double>("minPt"));
+
+      const pat::Electron *ele = dynamic_cast<const pat::Electron *>( elePtr.get() );
+      const reco::GsfTrackRef & eTrack = ele->gsfTrack();
+      if(eTrack.isNull()) continue;
+
+      std::vector<TString> catsToFill;
+      catsToFill.push_back("all");
+      catsToFill.push_back("electron");
+      const reco::GenParticle *genEle=ele->genLepton();
+      if(genEle && fabs(genEle->pdgId()==11)) catsToFill.push_back("matchedelectron");
+      for(std::vector<TString>::iterator cIt = catsToFill.begin(); cIt != catsToFill.end(); cIt++)
+        {
+          controlHistos_.fillHisto("pt",*cIt,ele->pt(),weight);
+          controlHistos_.fillHisto("eta",*cIt,ele->eta(),weight);
+          controlHistos_.fillHisto("d0",*cIt,eTrack->dxy(beamSpot->position()),weight);
+          controlHistos_.fillHisto("ecaliso",*cIt,isol[ECAL_ISO],weight);
+          controlHistos_.fillHisto("hcaliso",*cIt,isol[HCAL_ISO],weight);
+          controlHistos_.fillHisto("trackiso",*cIt,isol[TRACKER_ISO],weight);
+          controlHistos_.fillHisto("absiso",*cIt,isol[ECAL_ISO]+isol[HCAL_ISO]+isol[TRACKER_ISO],weight);
+          controlHistos_.fillHisto("reliso",*cIt,isol[REL_ISO],weight);
+        }
+    }
   
-  //build inclusive collection
+  
+  //build inclusive lepton collection
   CandidateWithVertexCollection selLeptons = selMuons;
   selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
   if(selLeptons.size()>0) selStep=2;
@@ -123,21 +172,6 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   //build the dilepton (all tightly isolated leptons will be returned)
   if(selStep==2)
     {
-      //control histos for leptons
-      for(size_t ilep=0; ilep<selLeptons.size(); ilep++)
-	{
-	  using namespace lepton;
-	  int id = getLeptonId(selLeptons[ilep].first);
-	  std::vector<double> isol=getLeptonIso(selLeptons[ilep].first,objConfig["Dileptons"].getParameter<double>("minPt"));
-	  TString ptype(fabs(id)==ELECTRON ? "electron" : "muon");
-	  controlHistos_[ptype+"_rho"]->Fill(*rho,weight);
-	  controlHistos_[ptype+"_ecaliso"]->Fill(isol[ECAL_ISO],weight);
-	  controlHistos_[ptype+"_hcaliso"]->Fill(isol[HCAL_ISO],weight);
-	  controlHistos_[ptype+"_trackiso"]->Fill(isol[TRACKER_ISO],weight);
-	  controlHistos_[ptype+"_caloiso"]->Fill(isol[ECAL_ISO]+isol[HCAL_ISO]+isol[TRACKER_ISO],weight);
-	  controlHistos_[ptype+"_reliso"]->Fill(isol[REL_ISO],weight);
-	}
-      
       //search for dileptons
       CandidateWithVertexCollection isolLeptons;
       std::pair<CandidateWithVertex,CandidateWithVertex> dileptonWithVertex = dilepton::filter(selLeptons,
@@ -160,14 +194,6 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
 	  hyp.add(dileptonWithVertex.second.first,"leg2");
 	  primaryVertexHyps.push_back(dileptonWithVertex.second.second);
 
-	  //control histos
-	  double dz =-1000;
-	  if(dileptonWithVertex.first.second.isNonnull() && dileptonWithVertex.second.second.isNonnull())
-	    dz=dileptonWithVertex.first.second->position().z()-dileptonWithVertex.second.second->position().z();
-	  for(size_t icat=0; icat<dilCats.size(); icat++)
-	    {
-	      controlHistos_[dilCats[icat]+"_dz"]->Fill(dz,weight);
-	    }
 	  
 	  //add the remaining isolated leptons now
 	  for(CandidateWithVertexCollection::iterator lIt = isolLeptons.begin(); lIt != isolLeptons.end(); lIt++)

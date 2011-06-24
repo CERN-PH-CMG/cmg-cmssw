@@ -1,5 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 import os,sys
+import getopt
 
 """
 lists the files available in castor
@@ -44,7 +45,7 @@ def configureFromCommandLine() :
     outputFile='output.root'
     ffile=0
     step=-1
-    
+
     if(len(sys.argv)>2 ):
         if(sys.argv[2].find('/')>=0 or sys.argv[2].find('.root')>0) :
             castorDir=sys.argv[2]
