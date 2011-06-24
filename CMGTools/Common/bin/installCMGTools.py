@@ -6,6 +6,20 @@ from optparse import OptionParser
 import subprocess
 import urllib
 
+def getCPUCount():
+    
+    result = 1
+    try:
+        import multiprocessing
+        result = multiprocessing.cpu_count()
+    except (ImportError, NotImplementedError):
+        import platform
+        if platform.node().lower().startswith('lxplus'):
+            result = 4
+        pass
+    
+    return result
+
 class InstallCMGTools(object):
     """
     A class to make the installation of CMGTools easier
@@ -48,7 +62,7 @@ class InstallCMGTools(object):
             try:
                 src = os.path.join(self.options.installation_directory,self.options.cmssw_version,'src')
                 os.chdir(src)
-                subprocess.call(['scram', 'b', '-j', '4'])
+                subprocess.call(['scram', 'b', '-j', str(getCPUCount())])
             finally:
                 os.chdir(pwd)
 
