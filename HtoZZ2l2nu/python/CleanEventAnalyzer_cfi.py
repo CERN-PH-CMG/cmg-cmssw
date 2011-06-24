@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 from CMGTools.HtoZZ2l2nu.StandardSelections_cfi import *
 evAnalyzer = cms.EDAnalyzer("DileptonPlusMETEventAnalyzer",
+                            dtag=cms.string('h2zz'),
                             Generator = BaseGeneratorSelection.clone(),
                             Vertices = BaseVertexSelection.clone(),
                             Muons = BaseMuonsSelection.clone(),

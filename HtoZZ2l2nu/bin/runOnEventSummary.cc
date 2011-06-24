@@ -70,6 +70,10 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1F ("met", ";type-I E_{T}^{miss};Events", 100,0,500) );  
   controlHistos.addHistogram( new TH1F ("minmet", ";min-E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram( new TH1F ("redmet", ";red-E_{T}^{miss};Events", 100,0,500) );
+  controlHistos.addHistogram( new TH1F ("redmetL", ";red-E_{T}^{miss,#parallel};Events", 100,-250,250) );
+  controlHistos.addHistogram( new TH1F ("redmetT", ";red-E_{T}^{miss,#perp};Events", 100,-250,250) );
+  controlHistos.addHistogram( new TH1F ("absredmetL", ";|red-E_{T}^{miss,#parallel}|;Events", 100,0,500) );
+  controlHistos.addHistogram( new TH1F ("absredmetT", ";|red-E_{T}^{miss,#perp}|;Events", 100,0,500) );
   controlHistos.addHistogram( new TH1F ("projmet", ";projected E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram( new TH1F ("projminmet", ";projected min-E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram(  new TH1D ("zpt", ";p_{T}^{ll};Events", 100,0,400) );
@@ -80,6 +84,7 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1F ("minmetoverzpt", ";min-E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
   controlHistos.addHistogram( new TH1F ("redmetoverzpt", ";red-E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
   
+  controlHistos.addHistogram( new TH1D ("mindphimetjet", ";min #Delta#phi(E_{T}^{miss},jet);Events",100,-3.2,3.2) );
   controlHistos.addHistogram( new TH1D ("dphill", ";#Delta#phi(l^{(1)},l^{(2)});Events",100,-3.2,3.2) );
   controlHistos.addHistogram( new TH1D ("mindphilmet", ";min #Delta#phi(l^{(i)},E_{T}^{miss});Events",100,-3.2,3.2) );
   controlHistos.addHistogram( new TH1D ("dphizz", ";#Delta#phi(ll,E_{T}^{miss});Events",100,-3.2,3.2) );
@@ -192,15 +197,22 @@ int main(int argc, char* argv[])
 
       //jet/met kinematics and systematic variations
       LorentzVectorCollection jetsp4;
-      for(size_t ijet=0; ijet<phys.jets.size(); ijet++) jetsp4.push_back( phys.jets[ijet] );
+      double mindphijmet(1000.);
+      for(size_t ijet=0; ijet<phys.jets.size(); ijet++) 
+	{
+	  double dphi=deltaPhi(phys.jets[ijet].phi(),zvv.phi());
+	  if(fabs(dphi)<fabs(mindphijmet)) mindphijmet=dphi;
+	  jetsp4.push_back( phys.jets[ijet] );
+	}
+
       /*
 	jcomp.compute(jetsp4,phys.met[0]);
-      LorentzVector metJER=jcomp.getVariedMet(jet::UncertaintyComputer::JER);
-      LorentzVectorCollection jetsJER = jcomp.getVariedJets(jet::UncertaintyComputer::JER);
-      LorentzVector metJESdown=jcomp.getVariedMet(jet::UncertaintyComputer::JES_DOWN);
-      LorentzVectorCollection jetsJESdown=jcomp.getVariedJets(jet::UncertaintyComputer::JES_DOWN);
-      LorentzVector metJESup=jcomp.getVariedMet(jet::UncertaintyComputer::JES_UP);
-      LorentzVectorCollection jetsJESup=jcomp.getVariedJets(jet::UncertaintyComputer::JES_UP);
+	LorentzVector metJER=jcomp.getVariedMet(jet::UncertaintyComputer::JER);
+	LorentzVectorCollection jetsJER = jcomp.getVariedJets(jet::UncertaintyComputer::JER);
+	LorentzVector metJESdown=jcomp.getVariedMet(jet::UncertaintyComputer::JES_DOWN);
+	LorentzVectorCollection jetsJESdown=jcomp.getVariedJets(jet::UncertaintyComputer::JES_DOWN);
+	LorentzVector metJESup=jcomp.getVariedMet(jet::UncertaintyComputer::JES_UP);
+	LorentzVectorCollection jetsJESup=jcomp.getVariedJets(jet::UncertaintyComputer::JES_UP);
       */
 
       //redmet
@@ -324,7 +336,7 @@ int main(int argc, char* argv[])
 // 		  controlHistos.fillHisto("projmetjesdown", ctf,projMetJESdown,weight);	     
 // 		  controlHistos.fillHisto("projmetflatpu", ctf,projMet);	     
 // 		  if(ev.ngenpu<1) controlHistos.fillHisto("projmetnopu", ctf,projMet); 
-
+		  
 		  controlHistos.fillHisto("projmetoverzpt", ctf,projmetoverzpt,weight);	      
 		  controlHistos.fillHisto("minmet", ctf,minmet,weight);	      
 // 		  controlHistos.fillHisto("minmetjer", ctf,minmetJER,weight);	      
@@ -332,6 +344,11 @@ int main(int argc, char* argv[])
 // 		  controlHistos.fillHisto("minmetjesdown", ctf,minmetJESdown,weight);	      
 // 		  controlHistos.fillHisto("minmetflatpu", ctf,minmet);
  		  controlHistos.fillHisto("redmet", ctf,redmet,weight);	      
+ 		  controlHistos.fillHisto("redmetL", ctf,redmetL,weight);	      
+ 		  controlHistos.fillHisto("redmetT", ctf,redmetT,weight);	      
+ 		  controlHistos.fillHisto("absredmetL", ctf,fabs(redmetL),weight);	      
+ 		  controlHistos.fillHisto("absredmetT", ctf,fabs(redmetT),weight);	      
+		  if(jetsp4.size() && passMedium) controlHistos.fillHisto("mindphimetjet", ctf,mindphijmet,weight);	      
 // 		  controlHistos.fillHisto("redmetjer", ctf,redmetJER,weight);	      
 // 		  controlHistos.fillHisto("redmetjesup", ctf,redmetJESup,weight);	      
 // 		  controlHistos.fillHisto("redmetjesdown", ctf,redmetJESdown,weight);	      
