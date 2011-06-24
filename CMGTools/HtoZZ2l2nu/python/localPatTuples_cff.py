@@ -30,7 +30,7 @@ def fillFromCastor(dir,ffile=0,step=-1):
         if(ifile>=ffile):
             if( (step<0) or  (step>0 and ifile<ffile+step) ):
                 localdataset.extend( [ sline ] )
-        ifile=ifile+1
+            ifile=ifile+1
     os.system('rm /tmp/castorDump')
     return localdataset
 
@@ -55,9 +55,6 @@ def configureFromCommandLine() :
                     if(len(sys.argv)>5 ):
                         if(sys.argv[5].isdigit()) : step=int(sys.argv[5])
 
-    print "***************"
-    print sys.argv
-    print outputFile
     return castorDir, outputFile, fillFromCastor(castorDir,ffile,step)
 
                              
