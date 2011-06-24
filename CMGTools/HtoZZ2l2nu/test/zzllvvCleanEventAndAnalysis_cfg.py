@@ -6,9 +6,9 @@ from CMGTools.HtoZZ2l2nu.localPatTuples_cff import configureFromCommandLine
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring()
                             )
-dtag, outputFile, process.source.fileNames = configureFromCommandLine()
+castorDir, outputFile, process.source.fileNames = configureFromCommandLine()
 from CMGTools.HtoZZ2l2nu.GeneratorLevelSequences_cff import addHiggsPtReweighting
-needsPtReweight=addHiggsPtReweighting(process,dtag)
+needsPtReweight=addHiggsPtReweighting(process,castorDir)
 
 process.load('CMGTools.HtoZZ2l2nu.CleanEventProducer_cfi')
 process.load('CMGTools.HtoZZ2l2nu.CleanEventFilter_cfi')
