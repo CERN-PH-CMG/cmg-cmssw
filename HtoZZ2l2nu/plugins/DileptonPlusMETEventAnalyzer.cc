@@ -23,6 +23,7 @@
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "FWCore/Framework/interface/LuminosityBlock.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 #include "TH1.h"
@@ -33,6 +34,7 @@
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ReducedMETComputer.h"
+#include "CMGTools/HtoZZ2l2nu/interface/ProjectedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 
 //
@@ -44,6 +46,9 @@ public:
   void endLuminosityBlock(const edm::LuminosityBlock & iLumi, const edm::EventSetup & iSetup);
   
 private:
+
+  float addMCtruth(const pat::EventHypothesis &evhyp, const edm::Event &event, const edm::EventSetup &iSetup );
+
   inline TH1 *getHist(TString key)
   {
     if(results_.find(key)==results_.end()) return 0;
@@ -52,6 +57,7 @@ private:
   std::map<TString, TObject *>  results_;
   std::map<std::string, edm::ParameterSet> objConfig_;
   ReducedMETComputer rmet_;
+  ProjectedMETComputer pmet_;
   ZZ2l2nuSummaryHandler summaryHandler_;
 };
 
@@ -74,13 +80,14 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
     //generated pileup (use directly loose selection)
     objConfig_["Vertices"] = iConfig.getParameter<edm::ParameterSet>("Vertices");
     results_["ngenpileup"] = formatPlot( baseDir.make<TH1F>("ngenpileup", ";Pileup; Events", 25, 0.,25.), 1,1,1,20,0,false,true,1,1,1);
-    results_["ngoodvertex_ngenpileup"]  = formatPlot( baseDir.make<TH2F>("ngoodvertex_ngenpileup",";Pileup;Vertices; Events",25,0.,25.,25,0,25.), 1,1,1,20,0,false,true,1,1,1);
     results_["ngenpileupOOT"] = formatPlot( baseDir.make<TH1F>("ngenpileupOOT", ";Out-of-time Pileup; Events", 25, 0.,25.), 1,1,1,20,0,false,true,1,1,1);
+
+    //vertices
     results_["ngoodvertex"] = formatPlot( baseDir.make<TH1F>("ngoodvertex", ";Vertices; Events", 25, 0.,25.), 1,1,1,20,0,false,true,1,1,1);
 
     //selection streams
     TString streams[]={"ee","mumu","emu"};
-    TString selsteps[]={"Reco","2 leptons","2 good leptons","|M-M_{Z}|<15","3^{rd} lepton veto"};
+    TString selsteps[]={"Reco","2 leptons","2 good leptons","|M-M_{Z}|<15"};
     const size_t nselsteps=sizeof(selsteps)/sizeof(TString);
     for(size_t istream=0; istream<sizeof(streams)/sizeof(TString); istream++)
     {
@@ -100,7 +107,6 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
       results_[cat+"_vertex_sumpt"] = formatPlot( newDir.make<TH1F>(cat+"_vertex_sumpt", ";#Sigma_{tracks} p_{T} [GeV/c]; Events", 50, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_othervertex_sumpt"] = formatPlot( newDir.make<TH1F>(cat+"_othervertex_sumpt", ";#Sigma_{tracks} p_{T} [GeV/c]; Events", 50, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_vertex_pt"] = formatPlot( newDir.make<TH1F>(cat+"_vertex_pt", ";|#Sigma_{tracks} #vec{p}_{T}| [GeV/c]; Events", 50, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_vertex_rank"] = formatPlot( newDir.make<TH1F>(cat+"_vertex_rank", ";Vertex rank; Events", 10, 0.,10.), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_othervertex_pt"] = formatPlot( newDir.make<TH1F>(cat+"_othervertex_pt", ";|#Sigma_{tracks} #vec{p}_{T}| [GeV/c]; Events", 50, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_ngoodvertex"] = formatPlot( newDir.make<TH1F>(cat+"_ngoodvertex", ";Vertices; Events", 25, 0.,25.), 1,1,1,20,0,false,true,1,1,1);
 
@@ -147,13 +153,6 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
 
       //MET
       results_[cat+"_met"]               = formatPlot( newDir.make<TH1F>(cat+"_met", ";#slash{E}_{T} [GeV/c]; Events", 100,  0.,500.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_jesmet"]            = formatPlot( newDir.make<TH1F>(cat+"_jesmet", ";#slash{E}_{T} (JES corrected) [GeV/c]; Events", 100,  0.,500.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_jesmetnopu"]        = formatPlot( newDir.make<TH1F>(cat+"_jesmetnopu", ";#slash{E}_{T} (JES corrected, no PU) [GeV/c]; Events", 100,  0.,500.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_metresol"]          = formatPlot( newDir.make<TH1F>(cat+"_metresol", ";#slash{E}_{T}-|#sum_{#nu}#vec{p}_{T}| [GeV/c]; Events", 50,  -100.,100.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_metsig"]            = formatPlot( newDir.make<TH1F>(cat+"_metsig", ";#slash{E}_{T} significance; Events", 50,  0.,100.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_tmet"]              = formatPlot( newDir.make<TH1F>(cat+"_tmet", ";track #slash{E}_{T} [GeV/c]; Events", 100,0.,500.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_rmet"]              = formatPlot( newDir.make<TH1F>(cat+"_rmet", ";reduced #slash{E}_{T} [GeV/c]; Events", 100,0.,500.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_relmet"]            = formatPlot( newDir.make<TH1F>(cat+"_relmet", ";relative #slash{E}_{T} [GeV/c]; Events", 100,0.,500.), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_met2dilepton_dphi"] = formatPlot( newDir.make<TH1F>(cat+"_met2dilepton_dphi", ";#Delta #phi(#slash{E}_{T},vertex) [rad]; Events", 50, 0,3.2), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_mT_individualsum"]  = formatPlot( newDir.make<TH1F>(cat+"_mT_individualsum",";#Sigma Transverse mass(lepton,MET) [GeV/c^{2}]; Events",50,0,500), 1,1,1,20,0,false,true,1,1,1);
       results_[cat+"_mT"]                = formatPlot( newDir.make<TH1F>(cat+"_mT",";Transverse mass(dilepton,MET) [GeV/c^{2}]; Events",50,0,1000), 1,1,1,20,0,false,true,1,1,1);
@@ -164,22 +163,184 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
 }
 
 //
-void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::EventSetup &iSetup) {
+float DileptonPlusMETEventAnalyzer::addMCtruth( const pat::EventHypothesis &evhyp, const edm::Event &event, const edm::EventSetup &iSetup)
+{
+  ZZ2l2nuSummary_t &ev = summaryHandler_.getEvent();
 
+  float weight(1.0);
+  if(!event.isRealData())  return weight;
+
+  //pileup
+  edm::Handle<float> puWeightHandle;
+  event.getByLabel(objConfig_["Generator"].getParameter<edm::InputTag>("puReweight"), puWeightHandle );
+  if(puWeightHandle.isValid()) weight = *(puWeightHandle.product());
+  ev.weight = weight;
+
+  
+  edm::Handle<std::vector<PileupSummaryInfo> > puInfoH;
+  event.getByType(puInfoH);
+  int npuOOT(0),npuIT(0);
+  if(puInfoH.isValid())
+    {
+      for(std::vector<PileupSummaryInfo>::const_iterator it = puInfoH->begin(); it != puInfoH->end(); it++)
+	{
+	  if(it->getBunchCrossing()==0) npuIT += it->getPU_NumInteractions();
+	  else npuOOT += it->getPU_NumInteractions();
+	}
+      getHist("ngenpileup")->Fill(npuIT,weight);
+      getHist("ngenpileupOOT")->Fill(npuOOT,weight);
+    }
+  ev.ngenITpu=npuIT;
+  ev.ngenOOTpu=npuOOT;
+
+  //retrieve pdf info
+  edm::Handle<GenEventInfoProduct> genEventInfoProd;
+  event.getByType( genEventInfoProd );
+  if(genEventInfoProd.isValid())
+    {
+      ev.genWeight = genEventInfoProd->weight();
+      ev.qscale = genEventInfoProd->qScale();
+      if(genEventInfoProd->pdf())
+	{
+	  ev.x1  = genEventInfoProd->pdf()->x.first;
+	  ev.x2  = genEventInfoProd->pdf()->x.second;
+	  ev.id1 = genEventInfoProd->pdf()->id.first;
+	  ev.id2 = genEventInfoProd->pdf()->id.second;
+	}
+      if(genEventInfoProd->binningValues().size()>0) ev.pthat = genEventInfoProd->binningValues()[0];
+
+      getHist("q2")->Fill(ev.qscale,weight);
+      getHist("pthat")->Fill(ev.pthat,weight);
+      ((TH2 *)getHist("x1vsx2"))->Fill(ev.x1,ev.x2,weight);
+    }
+
+  //Higgs pT reweighting (for Powheg gg->H)
+  try{
+    ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]=0;
+    ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]=0;
+    ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]=0;
+    ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]=0;
+    ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]=0;
+
+    int iweight(0);
+    std::vector<edm::InputTag> ptWeightSources=objConfig_["Generator"].getParameter<std::vector<edm::InputTag> >("higgsPtWeights");
+    for(std::vector<edm::InputTag>::iterator tIt=ptWeightSources.begin();
+	tIt!=ptWeightSources.end();
+	tIt++,iweight++)
+      {
+	edm::Handle<double> hkfactorHandle;
+	event.getByLabel(*tIt,hkfactorHandle);
+	ev.hptWeights[iweight]=*hkfactorHandle;
+      }
+  }catch(std::exception &e){
+  }
+
+  //generator level event
+  ev.nmcparticles=0;
+  LorentzVector genHiggs(0,0,0,0);
+  LorentzVector genMET(0,0,0,0),genZll(0,0,0,0);
+  int igenpart(0);
+  for (pat::eventhypothesis::Looper<reco::GenParticle> genpart = evhyp.loopAs<reco::GenParticle>("genparticle"); genpart; ++genpart) 
+    {
+      //higgs level (H)
+      if(fabs(genpart->pdgId())==25) genHiggs=genpart->p4();
+      ev.mcpx[ev.nmcparticles] = genpart->px();  
+      ev.mcpy[ev.nmcparticles] = genpart->py();  
+      ev.mcpz[ev.nmcparticles] = genpart->pz(); 
+      ev.mcen[ev.nmcparticles]=genpart->energy();  
+      ev.mcid[ev.nmcparticles]=genpart->pdgId();
+      ev.nmcparticles++;
+	    
+      int igenpartdau(0);
+      char buf[20];
+      sprintf(buf,"gendaughter_%d",igenpart);
+      for(pat::eventhypothesis::Looper<reco::GenParticle> genpartdau = evhyp.loopAs<reco::GenParticle>(buf); genpartdau; ++genpartdau)
+	{
+	  //higgs daughters level (ZZ/WW)
+	  bool isZ(fabs(genpartdau->pdgId())==23);
+	  LorentzVector zcand=genpartdau->p4();
+	  ev.mcpx[ev.nmcparticles]=genpartdau->px();  
+	  ev.mcpy[ev.nmcparticles]=genpartdau->py();  
+	  ev.mcpz[ev.nmcparticles]=genpartdau->pz(); 
+	  ev.mcen[ev.nmcparticles]=genpartdau->energy();  
+	  ev.mcid[ev.nmcparticles]=genpartdau->pdgId();
+	  ev.nmcparticles++;
+
+	  char buf[20];
+	  sprintf(buf,"gendaughter_%d_%d",igenpart,igenpartdau);
+	  int nleptons(0);
+	  for(pat::eventhypothesis::Looper<reco::GenParticle> genpartgdau = evhyp.loopAs<reco::GenParticle>(buf); genpartgdau; ++genpartgdau)
+	    {
+	      //final state products (leptons, jets, neutrinos)
+	      int pdgid=fabs(genpartgdau->pdgId());
+	      if(pdgid==12||pdgid==14||pdgid==16) genMET += genpartgdau->p4();
+	      if(pdgid==11||pdgid==13||pdgid==15) nleptons++;
+	      ev.mcpx[ev.nmcparticles]=genpartgdau->px();  
+	      ev.mcpy[ev.nmcparticles]=genpartgdau->py();  
+	      ev.mcpz[ev.nmcparticles]=genpartgdau->pz(); 
+	      ev.mcen[ev.nmcparticles]=genpartgdau->energy();  
+	      ev.mcid[ev.nmcparticles]=genpartgdau->pdgId();
+	      ev.nmcparticles++;
+	    }
+	  
+	  if(isZ and nleptons==2) genZll=zcand;
+	  
+	  igenpartdau++;
+	}
+      igenpart++;
+    }
+  
+  //gen MET (longitudinal momentum is included - do not use directly the energy afterwards)
+  ev.mcpx[ev.nmcparticles]=genMET.px();
+  ev.mcpy[ev.nmcparticles]=genMET.py();
+  ev.mcpz[ev.nmcparticles]=genMET.pz();
+  ev.mcen[ev.nmcparticles]=genMET.energy();
+  ev.mcid[ev.nmcparticles]=0;
+  ev.nmcparticles++;
+
+
+  //add the generator level jets
+  int ngenjets(0);
+  edm::Handle<edm::View<reco::Candidate> > genJetsH;
+  event.getByLabel(objConfig_["Generator"].getParameter<edm::InputTag>("genJets"), genJetsH );
+  for(size_t ijet=0; ijet<genJetsH.product()->size(); ijet++)
+    {
+      reco::CandidatePtr gjIt = genJetsH->ptrAt(ijet);
+      if(gjIt->pt()<15 /*|| fabs(gjIt->eta())>2.5*/) continue;
+      
+      //remove overlaps with leptons
+      bool overlap(false);
+      for(int imcpart=0; imcpart<ev.nmcparticles; imcpart++)
+	{
+	  int id=fabs(ev.mcid[imcpart]);
+	  if(id!=11 && id!=13 && id!=15) continue;
+	  LorentzVector p4(ev.mcpx[imcpart],ev.mcpy[imcpart],ev.mcpz[imcpart],ev.mcen[imcpart]);
+	  double dr = deltaR(p4,gjIt->p4());
+	  if(dr<0.4) overlap=true;
+	}
+      if(overlap) continue;
+      
+      ngenjets++;
+      ev.mcpx[ev.nmcparticles]=gjIt->px();  
+      ev.mcpy[ev.nmcparticles]=gjIt->py();  
+      ev.mcpz[ev.nmcparticles]=gjIt->pz(); 
+      ev.mcen[ev.nmcparticles]=gjIt->energy();  
+      ev.mcid[ev.nmcparticles]=1;
+      ev.nmcparticles++;
+    }
+
+ 
+  //returns the event weight
+  return weight;
+}
+
+
+//
+void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::EventSetup &iSetup) 
+{
 
   try{
-
-    ZZ2l2nuSummary_t &ev = summaryHandler_.getEvent();
-
-    //get the weight for the event
-    float weight=1;
-    if(!event.isRealData())
-      {
-	edm::Handle<float> puWeightHandle;
-	event.getByLabel("puWeights","puWeight",puWeightHandle);
-	if(puWeightHandle.isValid()) weight = *(puWeightHandle.product());
-      }
-
+    
     //get objects for this event
     edm::Handle<std::vector<pat::EventHypothesis> > evHandle;
     event.getByLabel(edm::InputTag("cleanEvent:selectedEvent"),evHandle);
@@ -189,7 +350,14 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	return;
       }
     const pat::EventHypothesis &evhyp = (*(evHandle.product()))[0];
-    
+
+    //event summary to be filled
+    ZZ2l2nuSummary_t &ev = summaryHandler_.getEvent();
+
+    //get the weight for the event
+    float weight = addMCtruth(evhyp, event, iSetup );    
+
+    //vertex info
     edm::Handle<std::vector<reco::Vertex> > vertexHandle;
     event.getByLabel(edm::InputTag("cleanEvent:selectedVertices"),vertexHandle);
     if(!vertexHandle.isValid()) 
@@ -220,40 +388,11 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     edm::Handle< double > rho;
     event.getByLabel(edm::InputTag("kt6PFJets:rho"),rho);
 
-    edm::Handle<edm::View<reco::Candidate> > genJetsH;
-    event.getByLabel(objConfig_["Generator"].getParameter<edm::InputTag>("genJets"), genJetsH );
-
-    edm::Handle< std::vector<reco::PFCandidate> > pfCands;
-    event.getByLabel(edm::InputTag("particleFlow"),pfCands);
-    
-    edm::Handle<std::vector<reco::PFMET> > hPfMET; 
-    event.getByLabel(edm::InputTag("pfMet"), hPfMET);
-    const reco::PFMET &pfmet = (*hPfMET)[0];
-    reco::CandidatePtr evmet = evhyp["met"];
-    LorentzVector met(evmet->px(),evmet->py(),0,evmet->pt());
-
     //
     // VERTEX KINEMATICS
     //
     //MC truth on pileup (if available)
-    int npuOOT(0),npuIT(0);
     getHist("ngoodvertex")->Fill(selVertices.size(),weight);
-    if(!event.isRealData())
-      {
-	edm::Handle<std::vector<PileupSummaryInfo> > puInfoH;
-	event.getByType(puInfoH);
-	if(puInfoH.isValid())
-	  {
-	    for(std::vector<PileupSummaryInfo>::const_iterator it = puInfoH->begin(); it != puInfoH->end(); it++)
-	      {
-		if(it->getBunchCrossing()==0) npuIT += it->getPU_NumInteractions();
-		else npuOOT += it->getPU_NumInteractions();
-	      }
-	    getHist("ngenpileup")->Fill(npuIT,weight);
-	    getHist("ngenpileupOOT")->Fill(npuOOT,weight);
-	    ((TH2 *)getHist("ngoodvertex_ngenpileup"))->Fill(npuIT,selVertices.size(),weight);
-	  }
-      }
     
     //require that a dilepton has been selected
     if(selPath==0 or selStep<3) return;
@@ -270,25 +409,14 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     getHist(istream+"_ngoodvertex")->Fill(selVertices.size(),weight);
     getHist(istream+"_vertex_sumpt")->Fill(vertex::getVertexMomentumFlux(primVertex),weight);
     getHist(istream+"_vertex_pt")->Fill(primVertex->p4().pt(),weight);
-    int irank(0),ivtx(0);
-    float mindz(1000);
-    for(std::vector<reco::VertexRef>::iterator vit=selVertices.begin(); vit != selVertices.end(); vit++,ivtx++)
+    for(std::vector<reco::VertexRef>::iterator vit=selVertices.begin(); vit != selVertices.end(); vit++)
       {
-	if(vit->get()->position()==primVertex->position())
-	  {
-	    irank=ivtx;
-	    continue;
-	  }
-	float dz = vit->get()->position().z()-primVertex->position().z();
-	if(fabs(dz)<fabs(mindz)) mindz=dz;
-
+	if(vit->get()->position()==primVertex->position()) continue;
 	getHist(istream+"_othervertex_sumpt")->Fill(vertex::getVertexMomentumFlux(vit->get()),weight);
 	getHist(istream+"_othervertex_pt")->Fill(vit->get()->p4().pt(),weight);
       }
-    getHist(istream+"_vertex_mindz")->Fill(mindz,weight);
-    getHist(istream+"_vertex_rank")->Fill(irank,weight);
-
-
+    
+    
     //
     // LEPTON KINEMATICS
     //
@@ -357,6 +485,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	getHist(istream+"_jeteta")->Fill(jet->eta(),weight);
 
 	//save for event summary
+
 	ev.px[njets+3] = jet->px();  ev.py[njets+3]=jet->py();  ev.pz[njets+3]=jet->pz(); ev.en[njets+3]=jet->energy();  ev.id[njets+3]=1;
 	const reco::Candidate *genParton = jet->genParton();
 	ev.genid[njets+3] = genParton ? genParton->pdgId() : -9999;
@@ -389,115 +518,15 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     getHist(istream+"_pujetmult")->Fill(npujets,weight);
     getHist(istream+"_pujetbmult")->Fill(npubjets,weight);
 
-        
     //
     // MET kinematics
     //
     //the met
-    float metsig( pfmet.significance() );
-    LorentzVectorCollection corMets = met::filter(met,assocJets,puJets,false);
-    LorentzVector rawMetP(pfmet.p4());
-    LorentzVector jesMetP(met);
-    LorentzVector jesMetNopuP(corMets[met::CORRECTED_TYPEIMET]);
+    const pat::MET *evmet = dynamic_cast<const pat::MET *>(evhyp["met"].get());
+    LorentzVector met(evmet->px(),evmet->py(),0,evmet->pt());
 
-    //MC truth on MET
-    ev.nmcparticles=0;
-    LorentzVector genHiggs(0,0,0,0);
-    LorentzVector genMET(0,0,0,0),genZll(0,0,0,0);
-    if(!event.isRealData())
-      {     
-	int igenpart(0);
-	for (pat::eventhypothesis::Looper<reco::GenParticle> genpart = evhyp.loopAs<reco::GenParticle>("genparticle"); genpart; ++genpart) 
-	  {
-	    //higgs level (H)
-	    if(fabs(genpart->pdgId())==25) genHiggs=genpart->p4();
-	    ev.mcpx[ev.nmcparticles] = genpart->px();  
-	    ev.mcpy[ev.nmcparticles] = genpart->py();  
-	    ev.mcpz[ev.nmcparticles] = genpart->pz(); 
-	    ev.mcen[ev.nmcparticles]=genpart->energy();  
-	    ev.mcid[ev.nmcparticles]=genpart->pdgId();
-	    ev.nmcparticles++;
-	    
-	    int igenpartdau(0);
-	    char buf[20];
-	    sprintf(buf,"gendaughter_%d",igenpart);
-	    for(pat::eventhypothesis::Looper<reco::GenParticle> genpartdau = evhyp.loopAs<reco::GenParticle>(buf); genpartdau; ++genpartdau)
-	      {
-		//higgs daughters level (ZZ/WW)
-		//cout << genpartdau->pdgId() << " (" << flush;
-		bool isZ(fabs(genpartdau->pdgId())==23);
-		LorentzVector zcand=genpartdau->p4();
-		ev.mcpx[ev.nmcparticles]=genpartdau->px();  
-		ev.mcpy[ev.nmcparticles]=genpartdau->py();  
-		ev.mcpz[ev.nmcparticles]=genpartdau->pz(); 
-		ev.mcen[ev.nmcparticles]=genpartdau->energy();  
-		ev.mcid[ev.nmcparticles]=genpartdau->pdgId();
-		ev.nmcparticles++;
-
-		char buf[20];
-		sprintf(buf,"gendaughter_%d_%d",igenpart,igenpartdau);
-		int nleptons(0);
-		for(pat::eventhypothesis::Looper<reco::GenParticle> genpartgdau = evhyp.loopAs<reco::GenParticle>(buf); genpartgdau; ++genpartgdau)
-		  {
-		    //final state products (leptons, jets, neutrinos)
-		    //cout << genpartgdau->pdgId() << " " << flush;
-		    int pdgid=fabs(genpartgdau->pdgId());
-		    if(pdgid==12||pdgid==14||pdgid==16) genMET += genpartgdau->p4();
-		    if(pdgid==11||pdgid==13||pdgid==15) nleptons++;
-		    ev.mcpx[ev.nmcparticles]=genpartgdau->px();  
-		    ev.mcpy[ev.nmcparticles]=genpartgdau->py();  
-		    ev.mcpz[ev.nmcparticles]=genpartgdau->pz(); 
-		    ev.mcen[ev.nmcparticles]=genpartgdau->energy();  
-		    ev.mcid[ev.nmcparticles]=genpartgdau->pdgId();
-		    ev.nmcparticles++;
-		  }
-		
-		if(isZ and nleptons==2) genZll=zcand;
-
-		//cout << ") " << flush;
-		igenpartdau++;
-	      }
-	    igenpart++;
-	  }
-	//cout << endl;
-      }
-    
-    //add the generator level jets (with pT>15 within the tracker acceptance )
-    int ngenjets(0);
-    for(size_t ijet=0; ijet<genJetsH.product()->size(); ijet++)
-      {
-	reco::CandidatePtr gjIt = genJetsH->ptrAt(ijet);
-	if(gjIt->pt()<15 || fabs(gjIt->eta())>2.5) continue;
-
-	//remove overlaps with leptons
-	bool overlap(false);
-	for(int imcpart=0; imcpart<ev.nmcparticles; imcpart++)
-	  {
-	    int id=fabs(ev.mcid[imcpart]);
-	    if(id!=11 && id!=13 && id!=15) continue;
-	    LorentzVector p4(ev.mcpx[imcpart],ev.mcpy[imcpart],ev.mcpz[imcpart],ev.mcen[imcpart]);
-	    double dr = deltaR(p4,gjIt->p4());
-	    if(dr<0.4) overlap=true;
-	  }
-	if(overlap) continue;
-	
-	ngenjets++;
-	ev.mcpx[ev.nmcparticles]=gjIt->px();  
-	ev.mcpy[ev.nmcparticles]=gjIt->py();  
-	ev.mcpz[ev.nmcparticles]=gjIt->pz(); 
-	ev.mcen[ev.nmcparticles]=gjIt->energy();  
-	ev.mcid[ev.nmcparticles]=1;
-	ev.nmcparticles++;
-      }
- 
     //reduced met
-    rmet_.defineThrust(lepton1->p4(),lepton1pterr,lepton2->p4(),lepton2pterr);
-    TVector2 dilProj=rmet_.project(dileptonP);
-    TVector2 genDilProj=rmet_.project(genZll);
-    getHist(istream+"_dilepton_alres")->Fill(dilProj.Px()-genDilProj.Px(),weight);
-    getHist(istream+"_dilepton_atres")->Fill(dilProj.Py()-genDilProj.Py(),weight);
-
-    rmet_.compute(lepton1->p4(),lepton1pterr, lepton2->p4(),lepton2pterr, jetmomenta, jesMetNopuP );
+    rmet_.compute(lepton1->p4(),lepton1pterr, lepton2->p4(),lepton2pterr, jetmomenta, met);
     float reducedMET=rmet_.reducedMET();
     LorentzVector rmetP(rmet_.reducedMETComponents().first,rmet_.reducedMETComponents().second,0,reducedMET);
     std::pair<double, double> rmet_dil = rmet_.dileptonProjComponents();
@@ -507,55 +536,25 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     std::pair<double, double> rmet_r = rmet_.recoilProjComponents();
 
     //projected MET
-    float dphil2met[]={ fabs(deltaPhi(jesMetNopuP.phi(),lepton1P.phi())), fabs(deltaPhi(jesMetNopuP.phi(),lepton2P.phi())) };
+    float dphil2met[]={ fabs(deltaPhi(met.phi(),lepton1P.phi())), fabs(deltaPhi(met.phi(),lepton2P.phi())) };
     float dphimin=TMath::MinElement(sizeof(dphil2met)/sizeof(float),dphil2met);
-    float relMET=jesMetNopuP.pt();
+    float relMET=met.pt();
     if(fabs(dphimin)<TMath::Pi()/2) relMET = relMET*TMath::Sin(dphimin);
 
-    //charged candidates based met 
-    //(use only charged candidates associated to the primary vertex and neutral candidates with pT>5 GeV)
-    LorentzVector tmet(0,0,0,0);
-    if(pfCands.isValid())
-      {
-	LorentzVector neutralSum(0,0,0,0), chSum(0,0,0,0);
-	for(std::vector<reco::PFCandidate>::const_iterator it = pfCands->begin(); it != pfCands->end(); it++)
-	  {
-	    LorentzVector candP(it->p4());
-	    if(it->charge()==0 && candP.pt()>5 && fabs(candP.eta())<3)     neutralSum -= candP;
-	    else if(it->charge())
-	      {
-		math::XYZPointD vec( it->vertex().x()-primVertex->position().x(),
-				     it->vertex().y()-primVertex->position().y(),
-				     it->vertex().z()-primVertex->position().z() );
-		if( vec.R()>0.1) continue;
-		chSum -= candP;
-	      }
-	  }
-	tmet = chSum + neutralSum;
-      }
-    
     //correlation with dilepton
-    float dphimet2zll = deltaPhi(jesMetNopuP.phi(),dileptonP.phi());
+    float dphimet2zll = deltaPhi(met.phi(),dileptonP.phi());
     
     //transverse masses
-    float mTlmet[]={ TMath::Sqrt(2*jesMetNopuP.pt()*lepton1P.pt()*(1-TMath::Cos(dphil2met[0]))) ,   TMath::Sqrt(2*jesMetNopuP.pt()*lepton2P.pt()*(1-TMath::Cos(dphil2met[1]))) };
-    LorentzVector transvSum=dileptonP + jesMetNopuP;
-    float transverseMass=TMath::Power(TMath::Sqrt(TMath::Power(dileptonP.pt(),2)+pow(dileptonP.mass(),2))+TMath::Sqrt(TMath::Power(jesMetNopuP.pt(),2)+pow(dileptonP.mass(),2)),2);
+    float mTlmet[]={ TMath::Sqrt(2*met.pt()*lepton1P.pt()*(1-TMath::Cos(dphil2met[0]))) ,   TMath::Sqrt(2*met.pt()*lepton2P.pt()*(1-TMath::Cos(dphil2met[1]))) };
+    LorentzVector transvSum=dileptonP + met;
+    float transverseMass=TMath::Power(TMath::Sqrt(TMath::Power(dileptonP.pt(),2)+pow(dileptonP.mass(),2))+TMath::Sqrt(TMath::Power(met.pt(),2)+pow(dileptonP.mass(),2)),2);
     transverseMass-=TMath::Power(transvSum.pt(),2);
     transverseMass=TMath::Sqrt(transverseMass);
 
     //final control histograms
-    getHist(istream+"_met")->Fill(rawMetP.pt(),weight);
-    getHist(istream+"_jesmet")->Fill(jesMetP.pt(),weight);
-    getHist(istream+"_jesmetnopu")->Fill(jesMetNopuP.pt(),weight);
-    getHist(istream+"_metresol")->Fill(jesMetNopuP.pt()-genMET.pt(),weight);
-    getHist(istream+"_metsig")->Fill(metsig,weight);
+    getHist(istream+"_met")->Fill(met.pt(),weight);
     getHist(istream+"_rmet")->Fill(reducedMET,weight);
-    getHist(istream+"_relmet")->Fill(relMET,weight);
-    getHist(istream+"_tmet")->Fill(tmet.pt());
     getHist(istream+"_met2dilepton_dphi")->Fill(fabs(dphimet2zll),weight);
-    getHist(istream+"_mT_individualsum")->Fill(mTlmet[0]+mTlmet[1],weight);
-    getHist(istream+"_mT")->Fill(transverseMass,weight);
 
     //save summary
     ev.run=event.id().run();
@@ -563,27 +562,14 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.event=event.id().event();
     ev.cat=selPath;
     ev.nvtx=selVertices.size();
-    ev.ngenpu=npuIT;
-    ev.njets=njets;
-    ev.weight=weight;
     ev.rho=*rho;
-
     ev.nparticles=4+njets;
-
     ev.px[0] = lepton1P.px();    ev.py[0]=lepton1P.py();      ev.pz[0]=lepton1P.pz();     ev.en[0]=lepton1P.energy();  ev.id[0]=l1id; 
     ev.info1[0] = lepton1pterr;  ev.info2[0] = lepton1iso[0]; ev.info3[0]=lepton1iso[1];  ev.info4[0]=lepton1iso[2];   ev.genid[0] = genid1;
-
     ev.px[1] = lepton2P.px();    ev.py[1]=lepton2P.py();      ev.pz[1]=lepton2P.pz();     ev.en[1]=lepton2P.energy();  ev.id[1]=l2id; 
     ev.info1[1] = lepton2pterr;  ev.info2[1] = lepton2iso[0]; ev.info3[1]=lepton2iso[1];  ev.info4[1]=lepton2iso[2];   ev.genid[1] = genid2;
-
-    ev.px[2] = jesMetP.px(); ev.py[2]=jesMetP.py();   ev.pz[2]=0;  ev.en[2]=jesMetP.pt(); ev.id[2]=0; 
-    ev.info1[2] = jesMetNopuP.px();  ev.info2[2] = jesMetNopuP.py();  ev.info3[3]=genMET.pt();
-
-    ev.px[3]=primVertex->p4().px();
-    ev.py[3]=primVertex->p4().py();
-    ev.pz[3]=primVertex->p4().pz();
-    ev.en[3]=primVertex->p4().energy();
-    ev.id[3]=500;
+    ev.px[2] = met.px();         ev.py[2]=met.py();           ev.pz[2]=0;                 ev.en[2]=met.pt();           ev.id[2]=0; 
+    ev.px[3]=primVertex->p4().px();  ev.py[3]=primVertex->p4().py();  ev.pz[3]=primVertex->p4().pz();  ev.en[3]=primVertex->p4().energy(); ev.id[3]=500;
 
     summaryHandler_.fillTree();
 

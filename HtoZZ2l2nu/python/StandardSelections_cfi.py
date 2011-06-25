@@ -3,7 +3,11 @@ import FWCore.ParameterSet.Config as cms
 # base values for the vertex selection ------------------------------------------
 BaseGeneratorSelection = cms.PSet( source = cms.InputTag("prunedGen"),
                                    filterId = cms.int32(25),
-                                   genJets=cms.InputTag("ak5GenJets")
+                                   genJets=cms.InputTag("ak5GenJets"),
+                                   puReweight=cms.InputTag("puWeights:puWeight"),
+                                   higgsPtWeights=cms.VInputTag("hKfactorStd",
+                                                                "hKfactorRup","hKfactorRdown"
+                                                                "hKfactorFup","hKfactorFdown")
                                    )
 
 
