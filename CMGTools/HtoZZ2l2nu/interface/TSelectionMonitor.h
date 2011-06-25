@@ -62,7 +62,7 @@ public:
   /**
      @short return the directory for a given tag
    */
-  TFileDirectory *getDirectoryForStep(TString tag="base", bool forceCreation=true);
+  TFileDirectory *getDirectoryForStep(TString tag="all", bool forceCreation=true);
 
   /**
      DTOR

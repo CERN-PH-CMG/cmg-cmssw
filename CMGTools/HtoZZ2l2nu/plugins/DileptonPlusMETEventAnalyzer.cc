@@ -36,6 +36,7 @@
 #include "CMGTools/HtoZZ2l2nu/interface/ReducedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ProjectedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
+#include "CMGTools/HtoZZ2l2nu/interface/TSelectionMonitor.h"
 
 //
 class DileptonPlusMETEventAnalyzer : public edm::EDAnalyzer 
@@ -49,24 +50,20 @@ private:
 
   float addMCtruth(const pat::EventHypothesis &evhyp, const edm::Event &event, const edm::EventSetup &iSetup );
 
-  inline TH1 *getHist(TString key)
-  {
-    if(results_.find(key)==results_.end()) return 0;
-    return (TH1 *)results_[key];
-  }
   std::map<TString, TObject *>  results_;
   std::map<std::string, edm::ParameterSet> objConfig_;
   ReducedMETComputer rmet_;
   ProjectedMETComputer pmet_;
   ZZ2l2nuSummaryHandler summaryHandler_;
+  TSelectionMonitor controlHistos_;
 };
-
 
 using namespace std;
 
 //
 DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterSet &iConfig)
-  : rmet_(1.0,1.0,0.0,0.0,1.0)
+  : rmet_(1.0,1.0,0.0,0.0,1.0),
+    controlHistos_( iConfig.getParameter<std::string>("dtag") )
 {
   try{
     
@@ -79,85 +76,81 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
 
     //generated pileup (use directly loose selection)
     objConfig_["Vertices"] = iConfig.getParameter<edm::ParameterSet>("Vertices");
-    results_["ngenpileup"] = formatPlot( baseDir.make<TH1F>("ngenpileup", ";Pileup; Events", 25, 0.,25.), 1,1,1,20,0,false,true,1,1,1);
-    results_["ngenpileupOOT"] = formatPlot( baseDir.make<TH1F>("ngenpileupOOT", ";Out-of-time Pileup; Events", 25, 0.,25.), 1,1,1,20,0,false,true,1,1,1);
+    controlHistos_.addHistogram("ngenpileup", ";Pileup; Events", 25, 0.,25.);
+    controlHistos_.addHistogram("ngenpileupOOT", ";Out-of-time Pileup; Events", 25, 0.,25.);
 
     //vertices
-    results_["ngoodvertex"] = formatPlot( baseDir.make<TH1F>("ngoodvertex", ";Vertices; Events", 25, 0.,25.), 1,1,1,20,0,false,true,1,1,1);
+    controlHistos_.addHistogram("ngoodvertex", ";Vertices; Events", 25, 0.,25.);
 
     //selection streams
-    TString streams[]={"ee","mumu","emu"};
     TString selsteps[]={"Reco","2 leptons","2 good leptons","|M-M_{Z}|<15"};
     const size_t nselsteps=sizeof(selsteps)/sizeof(TString);
-    for(size_t istream=0; istream<sizeof(streams)/sizeof(TString); istream++)
-    {
-      TString cat=streams[istream];
-      TFileDirectory newDir=baseDir.mkdir(cat.Data());
-            
-      results_[cat+"_cutflow"]=formatPlot( newDir.make<TH1F>(cat+"_cutflow", ";Steps; Events", nselsteps, 0.,nselsteps), 1,1,1,20,0,false,true,1,1,1);
-      if(istream==0) results_["cutflow"]=formatPlot( baseDir.make<TH1F>("cutflow", ";Steps; Events", nselsteps, 0.,nselsteps), 1,1,1,20,0,false,true,1,1,1);
-      for(size_t istep=0; istep<nselsteps; istep++)
-	{
-	  ((TH1F *)results_[cat+"_cutflow"])->GetXaxis()->SetBinLabel(istep+1,selsteps[istep]);
-	  if(istream==0)  ((TH1F *)results_["cutflow"])->GetXaxis()->SetBinLabel(istep+1,selsteps[istep]);
-	}
-  
-      //vertex control
-      results_[cat+"_vertex_mindz"] = formatPlot( newDir.make<TH1F>(cat+"_vertex_mindz", ";min #Delta z [cm]; Events", 100, -25.,25.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_vertex_sumpt"] = formatPlot( newDir.make<TH1F>(cat+"_vertex_sumpt", ";#Sigma_{tracks} p_{T} [GeV/c]; Events", 50, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_othervertex_sumpt"] = formatPlot( newDir.make<TH1F>(cat+"_othervertex_sumpt", ";#Sigma_{tracks} p_{T} [GeV/c]; Events", 50, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_vertex_pt"] = formatPlot( newDir.make<TH1F>(cat+"_vertex_pt", ";|#Sigma_{tracks} #vec{p}_{T}| [GeV/c]; Events", 50, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_othervertex_pt"] = formatPlot( newDir.make<TH1F>(cat+"_othervertex_pt", ";|#Sigma_{tracks} #vec{p}_{T}| [GeV/c]; Events", 50, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_ngoodvertex"] = formatPlot( newDir.make<TH1F>(cat+"_ngoodvertex", ";Vertices; Events", 25, 0.,25.), 1,1,1,20,0,false,true,1,1,1);
+    controlHistos_.addHistogram("cutflow", ";Steps; Events", nselsteps, 0.,nselsteps);
+    TH1 *h=controlHistos_.getHisto("cutflow");
+    for(size_t istep=0; istep<nselsteps; istep++) h->GetXaxis()->SetBinLabel(istep+1,selsteps[istep]);
 
-      //lepton control
-      results_[cat+"_nleptons"]    = formatPlot( newDir.make<TH1F>(cat+"_nleptons",";Lepton multiplicity; Events",4,2,6), 1,1,1,20,0,false,true,1,1,1);
-      for(int ibin=1; ibin<=((TH1F *)results_[cat+"_nleptons"])->GetXaxis()->GetNbins(); ibin++)
-        {
-          TString ilabel(""); ilabel+=(ibin+1);
-          if(ibin==((TH1F *)results_[cat+"_nleptons"])->GetXaxis()->GetNbins()) ilabel="#geq"+ilabel;
-	  ((TH1F *)results_[cat+"_nleptons"])->GetXaxis()->SetBinLabel(ibin,ilabel);
-	}
+    controlHistos_.addHistogram("vertex_mindz", ";min #Delta z [cm]; Events", 100, -25.,25.);
+    controlHistos_.addHistogram("vertex_sumpt", ";#Sigma_{tracks} p_{T} [GeV/c]; Events", 50, 0.,300.);
+    controlHistos_.addHistogram("othervertex_sumpt", ";#Sigma_{tracks} p_{T} [GeV/c]; Events", 50, 0.,300.);
+    controlHistos_.addHistogram("vertex_pt", ";|#Sigma_{tracks} #vec{p}_{T}| [GeV/c]; Events", 50, 0.,300.);
+    controlHistos_.addHistogram("othervertex_pt", ";|#Sigma_{tracks} #vec{p}_{T}| [GeV/c]; Events", 50, 0.,300.);
+    controlHistos_.addHistogram("ngoodvertex", ";Vertices; Events", 25, 0.,25.);
 
-      //dilepton control plots
-      TString dilTypes[2]={"ss","os"};
-      for(size_t idilType=0; idilType<2; idilType++)
-	{
-	  results_[cat+"_"+dilTypes[idilType]+"dilepton_mass"]     = formatPlot( newDir.make<TH1F>(cat+"_"+dilTypes[idilType]+"dilepton_mass", ";Invariant Mass(l,l') [GeV/c^{2}]; Events", 50, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
-	  results_[cat+"_"+dilTypes[idilType]+"dilepton_sumpt"]    = formatPlot( newDir.make<TH1F>(cat+"_"+dilTypes[idilType]+"dilepton_sumpt", ";#Sigma |#vec{p}_{T}| [GeV/c]; Events", 50, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
-	  results_[cat+"_"+dilTypes[idilType]+"dilepton_dphi"]    = formatPlot( newDir.make<TH1F>(cat+"_"+dilTypes[idilType]+"dilepton_dphi", ";|#Delta #phi| [rad]; Events", 50, 0.,3.2), 1,1,1,20,0,false,true,1,1,1);
-	  results_[cat+"_"+dilTypes[idilType]+"dilepton_pt"]       = formatPlot( newDir.make<TH1F>(cat+"_"+dilTypes[idilType]+"dilepton_pt", ";|#Sigma #vec{p}_{T}| [GeV/c]; Events", 50, 0.,300.), 1,1,1,20,0,false,true,1,1,1);
-	}
-      
-      results_[cat+"_dilepton_atres"]     = formatPlot( newDir.make<TH1F>(cat+"_dilepton_atres", ";a_{#perp} difference [GeV]; Events", 100, -50.,50.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_dilepton_alres"]     = formatPlot( newDir.make<TH1F>(cat+"_dilepton_alres", ";a_{#parallel} difference [GeV]; Events", 100, -50.,50.), 1,1,1,20,0,false,true,1,1,1);
+    //lepton control
+    controlHistos_.addHistogram("nleptons",";Lepton multiplicity; Events",4,2,6);
+    h=controlHistos_.getHisto("nleptons");
+    for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++)
+      {
+	TString ilabel(""); ilabel+=(ibin+1);
+	if(ibin==h->GetXaxis()->GetNbins()) ilabel="#geq"+ilabel;
+	h->GetXaxis()->SetBinLabel(ibin,ilabel);
+      }
 
-      //jets
-      TString jetTypes[2] ={"jet","pujet"};
-      for(size_t ijetType=0; ijetType<2; ijetType++)
-	{
-	  results_[cat+"_"+jetTypes[ijetType]+"fassoc"] = formatPlot( newDir.make<TH1F>(cat+"_"+jetTypes[ijetType]+"fassoc",";#beta_{vtx}(Jet); Jets",50,0,1.0), 1,1,1,20,0,false,true,1,1,1);
-	  results_[cat+"_"+jetTypes[ijetType]+"pt"]     = formatPlot( newDir.make<TH1F>(cat+"_"+jetTypes[ijetType]+"pt",";p_{T} [GeV/c]; Jets",50,0,200), 1,1,1,20,0,false,true,1,1,1);
-	  results_[cat+"_"+jetTypes[ijetType]+"eta"]    = formatPlot( newDir.make<TH1F>(cat+"_"+jetTypes[ijetType]+"eta",";#eta; Jets",50,-2.5,2.5), 1,1,1,20,0,false,true,1,1,1);
-	  results_[cat+"_"+jetTypes[ijetType]+"btags"]  = formatPlot( newDir.make<TH1F>(cat+"_"+jetTypes[ijetType]+"btags",";b tags (TCHE); Jets",50,-5,45), 1,1,1,20,0,false,true,1,1,1);
-	  results_[cat+"_"+jetTypes[ijetType]+"mult"]   = formatPlot( newDir.make<TH1F>(cat+"_"+jetTypes[ijetType]+"mult",";Jet multiplicity; Events",4,0,4), 1,1,1,20,0,false,true,1,1,1);
-	  results_[cat+"_"+jetTypes[ijetType]+"bmult"]  = formatPlot( newDir.make<TH1F>(cat+"_"+jetTypes[ijetType]+"bmult",";b tag multiplicity (TCHEL); Events",4,0,4), 1,1,1,20,0,false,true,1,1,1);
-	  for(int ibin=1; ibin<=((TH1F *)results_[cat+"_"+jetTypes[ijetType]+"mult"])->GetXaxis()->GetNbins(); ibin++)
+    //dilepton control plots
+    TString dilTypes[2]={"ss","os"};
+    for(size_t idilType=0; idilType<2; idilType++)
+      {
+	controlHistos_.addHistogram(dilTypes[idilType]+"dilepton_mass", ";Invariant Mass(l,l') [GeV/c^{2}]; Events", 50, 0.,300.);
+	controlHistos_.addHistogram(dilTypes[idilType]+"dilepton_sumpt", ";#Sigma |#vec{p}_{T}| [GeV/c]; Events", 50, 0.,300.);
+	controlHistos_.addHistogram(dilTypes[idilType]+"dilepton_dphi", ";|#Delta #phi| [rad]; Events", 50, 0.,3.2);
+	controlHistos_.addHistogram(dilTypes[idilType]+"dilepton_pt", ";|#Sigma #vec{p}_{T}| [GeV/c]; Events", 50, 0.,300.);
+      }
+    
+    controlHistos_.addHistogram("dilepton_atres", ";a_{#perp} difference [GeV]; Events", 100, -50.,50.);
+    controlHistos_.addHistogram("dilepton_alres", ";a_{#parallel} difference [GeV]; Events", 100, -50.,50.);
+
+    //jets
+    TString jetTypes[2] ={"jet","pujet"};
+    for(size_t ijetType=0; ijetType<2; ijetType++)
+      {
+	controlHistos_.addHistogram(jetTypes[ijetType]+"fassoc",";#beta_{vtx}(Jet); Jets",50,0,1.0);
+	controlHistos_.addHistogram(jetTypes[ijetType]+"pt",";p_{T} [GeV/c]; Jets",50,0,200);
+	controlHistos_.addHistogram(jetTypes[ijetType]+"eta",";#eta; Jets",50,-2.5,2.5);
+	controlHistos_.addHistogram(jetTypes[ijetType]+"btags",";b tags (TCHE); Jets",50,-5,45);
+	controlHistos_.addHistogram(jetTypes[ijetType]+"mult",";Jet multiplicity; Events",4,0,4);
+	controlHistos_.addHistogram(jetTypes[ijetType]+"bmult",";b tag multiplicity (TCHEL); Events",4,0,4);
+	h=controlHistos_.getHisto(jetTypes[ijetType]+"bmult");
+	for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++)
 	    {
 	      TString ilabel(""); ilabel+=(ibin-1);
-	      if(ibin==((TH1F *)results_[cat+"_"+jetTypes[ijetType]+"mult"])->GetXaxis()->GetNbins()) ilabel="#geq"+ilabel;
-	      ((TH1F *)results_[cat+"_"+jetTypes[ijetType]+"mult"])->GetXaxis()->SetBinLabel(ibin,ilabel);
-	      ((TH1F *)results_[cat+"_"+jetTypes[ijetType]+"bmult"])->GetXaxis()->SetBinLabel(ibin,ilabel);
+	      if(ibin==h->GetXaxis()->GetNbins()) ilabel="#geq"+ilabel;
+	      h->GetXaxis()->SetBinLabel(ibin,ilabel);
+	      controlHistos_.getHisto(jetTypes[ijetType]+"mult")->GetXaxis()->SetBinLabel(ibin,ilabel);
 	    }
-	}
+      }
+    
+    //MET
+    controlHistos_.addHistogram("met", ";#slash{E}_{T} [GeV/c]; Events", 100,  0.,500.);
+    controlHistos_.addHistogram("met2dilepton_dphi", ";#Delta #phi(#slash{E}_{T},vertex) [rad]; Events", 50, 0,3.2);
+    controlHistos_.addHistogram("mT_individualsum",";#Sigma Transverse mass(lepton,MET) [GeV/c^{2}]; Events",50,0,500);
+    controlHistos_.addHistogram("mT",";Transverse mass(dilepton,MET) [GeV/c^{2}]; Events",50,0,1000);
 
-      //MET
-      results_[cat+"_met"]               = formatPlot( newDir.make<TH1F>(cat+"_met", ";#slash{E}_{T} [GeV/c]; Events", 100,  0.,500.), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_met2dilepton_dphi"] = formatPlot( newDir.make<TH1F>(cat+"_met2dilepton_dphi", ";#Delta #phi(#slash{E}_{T},vertex) [rad]; Events", 50, 0,3.2), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_mT_individualsum"]  = formatPlot( newDir.make<TH1F>(cat+"_mT_individualsum",";#Sigma Transverse mass(lepton,MET) [GeV/c^{2}]; Events",50,0,500), 1,1,1,20,0,false,true,1,1,1);
-      results_[cat+"_mT"]                = formatPlot( newDir.make<TH1F>(cat+"_mT",";Transverse mass(dilepton,MET) [GeV/c^{2}]; Events",50,0,1000), 1,1,1,20,0,false,true,1,1,1);
-    }
-  }catch(std::exception &e){
+
+    controlHistos_.initMonitorForStep("ee");
+    controlHistos_.initMonitorForStep("mumu");
+    controlHistos_.initMonitorForStep("emu");
+  }
+  catch(std::exception &e){
     cout << e.what() << endl;
   }  
 }
@@ -187,8 +180,8 @@ float DileptonPlusMETEventAnalyzer::addMCtruth( const pat::EventHypothesis &evhy
 	  if(it->getBunchCrossing()==0) npuIT += it->getPU_NumInteractions();
 	  else npuOOT += it->getPU_NumInteractions();
 	}
-      getHist("ngenpileup")->Fill(npuIT,weight);
-      getHist("ngenpileupOOT")->Fill(npuOOT,weight);
+      controlHistos_.fillHisto("ngenpileup","all",npuIT,weight);
+      controlHistos_.fillHisto("ngenpileupOOT","all",npuOOT,weight);
     }
   ev.ngenITpu=npuIT;
   ev.ngenOOTpu=npuOOT;
@@ -209,9 +202,9 @@ float DileptonPlusMETEventAnalyzer::addMCtruth( const pat::EventHypothesis &evhy
 	}
       if(genEventInfoProd->binningValues().size()>0) ev.pthat = genEventInfoProd->binningValues()[0];
 
-      getHist("q2")->Fill(ev.qscale,weight);
-      getHist("pthat")->Fill(ev.pthat,weight);
-      ((TH2 *)getHist("x1vsx2"))->Fill(ev.x1,ev.x2,weight);
+      controlHistos_.fillHisto("q2","all",ev.qscale,weight);
+      controlHistos_.fillHisto("pthat","all",ev.pthat,weight);
+      controlHistos_.fill2DHisto("x1vsx2","all",ev.x1,ev.x2,weight);
     }
 
   //Higgs pT reweighting (for Powheg gg->H)
@@ -392,31 +385,30 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     // VERTEX KINEMATICS
     //
     //MC truth on pileup (if available)
-    getHist("ngoodvertex")->Fill(selVertices.size(),weight);
+    controlHistos_.fillHisto("ngoodvertex","all",selVertices.size(),weight);
     
     //require that a dilepton has been selected
     if(selPath==0 or selStep<3) return;
     std::string istream="mumu";
     if(selPath==2) istream="ee";
     if(selPath==3) istream="emu";
-    getHist("cutflow")->Fill(2,weight);
-    getHist(istream+"_cutflow")->Fill(2,weight);
+    controlHistos_.fillHisto("cutflow","all",2,weight);
+    controlHistos_.fillHisto("cutflow",istream,2,weight);
 
     //
     // VERTEX KINEMATICS (get primary vertex selected)
     //
     const reco::Vertex *primVertex = &(*(vertexHandle.product()))[0];
-    getHist(istream+"_ngoodvertex")->Fill(selVertices.size(),weight);
-    getHist(istream+"_vertex_sumpt")->Fill(vertex::getVertexMomentumFlux(primVertex),weight);
-    getHist(istream+"_vertex_pt")->Fill(primVertex->p4().pt(),weight);
+    controlHistos_.fillHisto("ngoodvertex",istream,selVertices.size(),weight);
+    controlHistos_.fillHisto("vertex_sumpt",istream,vertex::getVertexMomentumFlux(primVertex),weight);
+    controlHistos_.fillHisto("vertex_pt",istream,primVertex->p4().pt(),weight);
     for(std::vector<reco::VertexRef>::iterator vit=selVertices.begin(); vit != selVertices.end(); vit++)
       {
 	if(vit->get()->position()==primVertex->position()) continue;
-	getHist(istream+"_othervertex_sumpt")->Fill(vertex::getVertexMomentumFlux(vit->get()),weight);
-	getHist(istream+"_othervertex_pt")->Fill(vit->get()->p4().pt(),weight);
+	controlHistos_.fillHisto("othervertex_sumpt",istream,vertex::getVertexMomentumFlux(vit->get()),weight);
+	controlHistos_.fillHisto("othervertex_pt",istream,vit->get()->p4().pt(),weight);
       }
-    
-    
+        
     //
     // LEPTON KINEMATICS
     //
@@ -443,27 +435,24 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 
     //select Z window
     LorentzVector dileptonP=lepton1P+lepton2P;
-    getHist(istream+"_"+dilCat+"_mass")->Fill(dileptonP.mass(),weight);
+    controlHistos_.fillHisto(dilCat+"_mass",istream,dileptonP.mass(),weight);
     if(dileptonP.mass()<40) return;
     if(fabs(l1id)==fabs(l2id) && fabs(dileptonP.mass()-91)>15) return;
-    getHist("cutflow")->Fill(3,weight);
-    getHist(istream+"_cutflow")->Fill(3,weight);
+    controlHistos_.fillHisto("cutflow","all",3,weight);
+    controlHistos_.fillHisto("cutflow",istream,3,weight);
 
     double dphill=deltaPhi(lepton1P.phi(),lepton2P.phi());
-    getHist(istream+"_"+dilCat+"_sumpt")->Fill(lepton1P.pt()+lepton2P.pt(),weight);
-    getHist(istream+"_"+dilCat+"_pt")->Fill(dileptonP.pt(),weight);
-    getHist(istream+"_"+dilCat+"_dphi")->Fill( fabs(dphill) ,weight );
+    controlHistos_.fillHisto(dilCat+"_sumpt",istream,lepton1P.pt()+lepton2P.pt(),weight);
+    controlHistos_.fillHisto(dilCat+"_pt",istream,dileptonP.pt(),weight);
+    controlHistos_.fillHisto(dilCat+"_dphi",istream, fabs(dphill) ,weight );
 
     //veto-other isolated leptons
     int lepMult(2);
     for (pat::eventhypothesis::Looper<pat::Electron> ele = evhyp.loopAs<pat::Electron>("electron"); ele; ++ele) lepMult++;
     for (pat::eventhypothesis::Looper<pat::Muon> mu = evhyp.loopAs<pat::Muon>("muon"); mu; ++mu) lepMult++;
-    getHist(istream+"_nleptons")->Fill(lepMult,weight);
+    controlHistos_.fillHisto("nleptons",istream,lepMult,weight);
 
-    if(lepMult>2) return;
-    getHist("cutflow")->Fill(4,weight);
-    getHist(istream+"_cutflow")->Fill(4,weight);
-
+    
     //
     // JET KINEMATICS
     //
@@ -479,13 +468,12 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	float btag=jet->bDiscriminator("trackCountingHighEffBJetTags");
 	nbjets += (btag>1.7);
 
-	getHist(istream+"_jetfassoc")->Fill(jet::fAssoc(jet.get(),primVertex),weight);
-	getHist(istream+"_jetbtags")->Fill(btag,weight);
-	getHist(istream+"_jetpt")->Fill(jet->pt(),weight);
-	getHist(istream+"_jeteta")->Fill(jet->eta(),weight);
+	controlHistos_.fillHisto("jetfassoc",istream,jet::fAssoc(jet.get(),primVertex),weight);
+	controlHistos_.fillHisto("jetbtags",istream,btag,weight);
+	controlHistos_.fillHisto("jetpt",istream,jet->pt(),weight);
+	controlHistos_.fillHisto("jeteta",istream,jet->eta(),weight);
 
 	//save for event summary
-
 	ev.px[njets+3] = jet->px();  ev.py[njets+3]=jet->py();  ev.pz[njets+3]=jet->pz(); ev.en[njets+3]=jet->energy();  ev.id[njets+3]=1;
 	const reco::Candidate *genParton = jet->genParton();
 	ev.genid[njets+3] = genParton ? genParton->pdgId() : -9999;
@@ -495,8 +483,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.info4[njets+3]=jet->bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
 
       }
-    getHist(istream+"_jetmult")->Fill(njets,weight);
-    getHist(istream+"_jetbmult")->Fill(nbjets,weight);	
+    controlHistos_.fillHisto("jetmult",istream,njets,weight);
+    controlHistos_.fillHisto("jetbmult",istream,nbjets,weight);	
     
     //count the pu jets
     std::vector<reco::CandidatePtr> pujets= evhyp.all("pujet");
@@ -510,13 +498,13 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	puJets.push_back( jet.get() );
 	float btag=jet->bDiscriminator("trackCountingHighEffBJetTags");
 	npubjets += (btag>1.7);
-	getHist(istream+"_pujetfassoc")->Fill(jet::fAssoc(jet.get(),primVertex),weight);
-	getHist(istream+"_pujetbtags")->Fill(btag,weight);
-        getHist(istream+"_pujetpt")->Fill(jet->pt(),weight);
-	getHist(istream+"_pujeteta")->Fill(jet->eta(),weight);
+	controlHistos_.fillHisto("pujetfassoc",istream,jet::fAssoc(jet.get(),primVertex),weight);
+	controlHistos_.fillHisto("pujetbtags",istream,btag,weight);
+        controlHistos_.fillHisto("pujetpt",istream,jet->pt(),weight);
+	controlHistos_.fillHisto("pujeteta",istream,jet->eta(),weight);
       }
-    getHist(istream+"_pujetmult")->Fill(npujets,weight);
-    getHist(istream+"_pujetbmult")->Fill(npubjets,weight);
+    controlHistos_.fillHisto("pujetmult",istream,npujets,weight);
+    controlHistos_.fillHisto("pujetbmult",istream,npubjets,weight);
 
     //
     // MET kinematics
@@ -552,9 +540,9 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     transverseMass=TMath::Sqrt(transverseMass);
 
     //final control histograms
-    getHist(istream+"_met")->Fill(met.pt(),weight);
-    getHist(istream+"_rmet")->Fill(reducedMET,weight);
-    getHist(istream+"_met2dilepton_dphi")->Fill(fabs(dphimet2zll),weight);
+    controlHistos_.fillHisto("met",istream,met.pt(),weight);
+    controlHistos_.fillHisto("rmet",istream,reducedMET,weight);
+    controlHistos_.fillHisto("met2dilepton_dphi",istream,fabs(dphimet2zll),weight);
 
     //save summary
     ev.run=event.id().run();
@@ -588,13 +576,13 @@ void DileptonPlusMETEventAnalyzer::endLuminosityBlock(const edm::LuminosityBlock
   iLumi.getByLabel("startCounter", ctrHandle);
   for(size_t istream=0; istream<sizeof(streams)/sizeof(TString); istream++)
     {
-      ((TH1F *)getHist(streams[istream]+"_cutflow"))->Fill(0.,ctrHandle->value);
-      if(istream==0) ((TH1F *)getHist("cutflow"))->Fill(0.,ctrHandle->value);
+      controlHistos_.fillHisto("cutflow",streams[istream],0.,ctrHandle->value);
+      if(istream==0) controlHistos_.fillHisto("cutflow","all",0.,ctrHandle->value);
       edm::Handle<edm::MergeableCounter> streamCtrHandle;
       std::string inpt= std::string(streams[istream])+"Counter";
       iLumi.getByLabel(inpt, streamCtrHandle);
-      ((TH1F *)getHist(streams[istream]+"_cutflow"))->Fill(1.,streamCtrHandle->value);
-      ((TH1F *)getHist("cutflow"))->Fill(1.,ctrHandle->value);
+      controlHistos_.fillHisto("cutflow",streams[istream],1.,streamCtrHandle->value);
+      controlHistos_.fillHisto("cutflow","all",1.,streamCtrHandle->value);
     } 
 }
 
