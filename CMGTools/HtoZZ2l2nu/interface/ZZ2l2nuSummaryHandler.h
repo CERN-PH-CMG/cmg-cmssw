@@ -17,13 +17,15 @@
 #define MAXPARTICLES 25
 struct ZZ2l2nuSummary_t
 {
+  enum HiggsPtWeights{ hKfactor, hKfactor_renUp, hKfactor_renDown, hKfactor_factUp, hKfactor_factDown };
   Int_t run,lumi,event;
   Int_t cat;
-  Int_t nvtx, ngenpu;
-  Int_t njets;
-  Float_t weight;
+  Int_t nvtx, ngenITpu,ngenOOTpu;
+  Float_t weight,hptWeights[5];
   Float_t rho;
   Int_t nparticles,nmcparticles;
+  Float_t pthat,genWeight, qscale, x1,x2;
+  Int_t id1,id2;
   Float_t px[MAXPARTICLES],py[MAXPARTICLES],pz[MAXPARTICLES],en[MAXPARTICLES]; 
   Float_t mcpx[MAXPARTICLES],mcpy[MAXPARTICLES],mcpz[MAXPARTICLES],mcen[MAXPARTICLES]; 
   Int_t id[MAXPARTICLES],genid[MAXPARTICLES],mcid[MAXPARTICLES];

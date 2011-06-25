@@ -31,21 +31,20 @@ void TSelectionMonitor::initMonitorForStep(TString tag)
 {
   TFileDirectory *theDir = getDirectoryForStep(tag,true);
 
-  //check all base histograms
+  //check all the base histograms
   StepMonitor_t &allMonitors = getAllMonitors();
-  int monitorCtr = allMonitors.size();
-  for(Monitor_t::iterator hit = allMonitors["base"].begin();
-      hit != allMonitors["base"].end();
+  for(Monitor_t::iterator hit = allMonitors["all"].begin();
+      hit != allMonitors["all"].end();
       hit++)
     {
       //check if it already exists
-      TString baseName = hit->second->GetName();
+      TString allName = hit->second->GetName();
       if(allMonitors.find(tag) != allMonitors.end() &&
-	 allMonitors[tag].find(baseName) != allMonitors[tag].end()) continue;
+	 allMonitors[tag].find(allName) != allMonitors[tag].end()) continue;
       
       //create the new histogram      
       TH1 *h=0;
-      TString name = baseName + "_"; name +=  monitorCtr;
+      TString name = tag + "_" + allName;
       TString className( hit->second->ClassName() );
 
       if( className == "TH1I")       h = theDir->make<TH1I>( *(TH1I *)hit->second );
@@ -57,8 +56,9 @@ void TSelectionMonitor::initMonitorForStep(TString tag)
       
       if(h==0) continue;
       h->SetName(name);
+      h->SetTitle(tag);
       h->Reset("ICE");
-      allMonitors[tag][baseName] = h;
+      allMonitors[tag][allName] = h;
     }
 }
 

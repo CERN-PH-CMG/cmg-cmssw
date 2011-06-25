@@ -98,7 +98,6 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   //average energy density
   edm::Handle< double > rho;
   iEvent.getByLabel( objConfig["Jets"].getParameter<edm::InputTag>("rho"),rho);
-  controlHistos_.fillHisto("rho","all",*rho,weight);
 
   //select muons (id+very loose isolation)
   Handle<View<Candidate> > hMu; 
@@ -117,9 +116,10 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
       catsToFill.push_back("all"); 
       catsToFill.push_back("muon");
       const reco::GenParticle *genMu=muon->genLepton();
-      if(genMu && fabs(genMu->pdgId()==13)) catsToFill.push_back("matchedmuon");
+      if(genMu && fabs(genMu->pdgId())==13) catsToFill.push_back("matchedmuon");
       for(std::vector<TString>::iterator cIt = catsToFill.begin(); cIt != catsToFill.end(); cIt++)
 	{
+	  controlHistos_.fillHisto("rho",*cIt,*rho,weight);
 	  controlHistos_.fillHisto("pt",*cIt,muon->pt(),weight);
 	  controlHistos_.fillHisto("eta",*cIt,muon->eta(),weight);
 	  controlHistos_.fillHisto("d0",*cIt,muon->innerTrack()->dxy(beamSpot->position()),weight);
@@ -149,9 +149,10 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
       catsToFill.push_back("all");
       catsToFill.push_back("electron");
       const reco::GenParticle *genEle=ele->genLepton();
-      if(genEle && fabs(genEle->pdgId()==11)) catsToFill.push_back("matchedelectron");
+      if(genEle && fabs(genEle->pdgId())==11) catsToFill.push_back("matchedelectron");
       for(std::vector<TString>::iterator cIt = catsToFill.begin(); cIt != catsToFill.end(); cIt++)
         {
+	  controlHistos_.fillHisto("rho",*cIt,*rho,weight);
           controlHistos_.fillHisto("pt",*cIt,ele->pt(),weight);
           controlHistos_.fillHisto("eta",*cIt,ele->eta(),weight);
           controlHistos_.fillHisto("d0",*cIt,eTrack->dxy(beamSpot->position()),weight);
@@ -162,8 +163,7 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
           controlHistos_.fillHisto("reliso",*cIt,isol[REL_ISO],weight);
         }
     }
-  
-  
+    
   //build inclusive lepton collection
   CandidateWithVertexCollection selLeptons = selMuons;
   selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());

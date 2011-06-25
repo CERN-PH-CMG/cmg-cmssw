@@ -17,7 +17,8 @@ process.load('CMGTools.HtoZZ2l2nu.CleanEventAnalyzer_cfi')
 process.TFileService = cms.Service("TFileService", fileName = cms.string(outputFile) )
 
 if(needsPtReweight) :
-    process.p = cms.Path(process.hkfactorSequence*process.puWeights*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
+    #process.p = cms.Path(process.hkfactorSequence*process.puWeights*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
+    process.p = cms.Path(process.hkfactorSequence*process.cleanEvent*process.cleanEventFilter)
 else :
     process.p = cms.Path(process.puWeights*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
 #process.p = cms.Path(process.cleanEvent*process.evAnalyzer)
