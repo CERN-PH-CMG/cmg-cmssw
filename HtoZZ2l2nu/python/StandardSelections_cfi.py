@@ -1,12 +1,25 @@
 import FWCore.ParameterSet.Config as cms
 
+# base values for trigger event
+BaseTriggerSelection = cms.PSet( triggerPaths = cms.vstring(),
+                                 triggerObjects = cms.VInputTag("eleTriggerMatchPFlow","muTriggerMatchPFlow")
+                                 )
+from CMGTools.HtoZZ2l2nu.TriggerSequences_cff import getTriggerPaths
+doubleEle, doubleMu, muEG, singleEle, singleMu = getTriggerPaths()
+BaseTriggerSelection.triggerPaths.extend(doubleEle)
+BaseTriggerSelection.triggerPaths.extend(doubleMu)
+BaseTriggerSelection.triggerPaths.extend(muEG)
+BaseTriggerSelection.triggerPaths.extend(singleEle)
+BaseTriggerSelection.triggerPaths.extend(singleMu)
+
+
 # base values for the vertex selection ------------------------------------------
 BaseGeneratorSelection = cms.PSet( source = cms.InputTag("prunedGen"),
                                    filterId = cms.int32(25),
                                    genJets=cms.InputTag("ak5GenJets"),
                                    puReweight=cms.InputTag("puWeights:puWeight"),
                                    higgsPtWeights=cms.VInputTag("hKfactorStd",
-                                                                "hKfactorRup","hKfactorRdown"
+                                                                "hKfactorRup","hKfactorRdown",
                                                                 "hKfactorFup","hKfactorFdown")
                                    )
 

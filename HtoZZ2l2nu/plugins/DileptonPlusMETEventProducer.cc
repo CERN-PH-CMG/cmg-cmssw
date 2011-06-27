@@ -43,7 +43,7 @@ DileptonPlusMETEventProducer::DileptonPlusMETEventProducer(const edm::ParameterS
   produces<std::vector<pat::EventHypothesis> >("selectedEvent");
   produces<reco::VertexCollection>("selectedVertices");
   produces<std::vector<int> >("selectionInfo");
-  std::string objs[]={"Generator", "Vertices", "Electrons", "Muons", "Dileptons", "Jets", "MET" };
+  std::string objs[]={"Generator", "Trigger", "Vertices", "Electrons", "Muons", "Dileptons", "Jets", "MET" };
   for(size_t iobj=0; iobj<sizeof(objs)/sizeof(string); iobj++)
     objConfig[ objs[iobj] ] = iConfig.getParameter<edm::ParameterSet>( objs[iobj] );
 
