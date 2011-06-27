@@ -17,7 +17,7 @@ process.maxEvents = cms.untracked.PSet(
 process.maxLuminosityBlocks = cms.untracked.PSet( 
         input = cms.untracked.int32(1)
         )
-process.load("CMGTools.Common.sources.relval.RelValWE.CMSSW_4_1_2.START311_V2.source_cff")
+process.source.fileNames = ["/store/cmst3/user/cmgtools/CMG/RelValZEE/CMSSW_4_2_3-START42_V12-v2/GEN-SIM-RECO/patTuple_PF2PAT_0.root"]
 
 extension = 'electrons'
 

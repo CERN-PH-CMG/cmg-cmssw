@@ -10,7 +10,7 @@ photonFactory = cms.PSet(
 
 cmgPhoton = cms.EDFilter("PhotonPOProducer",
                          cfg = photonFactory.clone(
-    inputCollection = cms.InputTag("selectedPatPhotons")
+    inputCollection = cms.InputTag("selectedPatPhotonsAK5")
     ),
                          cuts = cms.PSet(kinematics = kinematics.clone())
                          )
