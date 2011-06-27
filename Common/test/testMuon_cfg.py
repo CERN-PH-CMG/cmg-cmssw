@@ -37,12 +37,14 @@ process.TFileService = cms.Service("TFileService",
 process.load('CMGTools.Common.analysis_cff')
 process.load('CMGTools.Common.cutSummary_cff')
 
+process.load("CMGTools.Common.met_cff")
 process.load("CMGTools.Common.muon_cff")
 process.load("CMGTools.Common.diMuon_cff")
 
 process.zmumusummary = process.cutSummaryMuon.clone(inputCollection = cms.InputTag("cmgDiMuon"))
 
 process.analysisSequence = cms.Sequence(
+    process.pfSimpleMetSequence + 
     process.muonSequence +
     process.diMuonSequence +
     process.zmumusummary

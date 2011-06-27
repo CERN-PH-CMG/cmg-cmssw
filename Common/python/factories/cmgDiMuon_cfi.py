@@ -4,7 +4,6 @@ from CMGTools.Common.factories.cmgDiObject_cfi import diObjectFactory
 dimuonFactory = diObjectFactory.clone(
        leg1Collection = cms.InputTag("cmgMuonSel"),
        leg2Collection = cms.InputTag("cmgMuonSel"),
-       metCollection = cms.InputTag("")
 )
 from CMGTools.Common.selections.razorbeta_cfi import razorbeta
 from CMGTools.Common.selections.zmumu_cfi import zmumu

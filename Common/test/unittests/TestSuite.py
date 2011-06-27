@@ -15,7 +15,7 @@ class CMGTestLoader(unittest.TestLoader):
         # Just list whatever tests you want to run here.
         tests = [
 #             "TestBuild",
-            "TestPhoton",
+#            "TestPhoton",
             "TestElectron",
             "TestMET",
             "TestMuon",

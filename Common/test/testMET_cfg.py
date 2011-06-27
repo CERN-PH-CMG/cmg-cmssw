@@ -17,7 +17,7 @@ process.maxEvents = cms.untracked.PSet(
 process.maxLuminosityBlocks = cms.untracked.PSet( 
         input = cms.untracked.int32(1)
         )
-process.load("CMGTools.Common.sources.relval.RelValWM.CMSSW_4_1_2.START311_V2.source_cff")
+process.source.fileNames = ['/store/cmst3/user/cmgtools/CMG/RelValQCD_Pt_80_120/CMSSW_4_2_3-START42_V12-v2/GEN-SIM-RECO/patTuple_PF2PAT_0.root']
 
 extension = 'met'
 
@@ -25,8 +25,7 @@ extension = 'met'
 process.out.fileName = cms.untracked.string('tree_test_%s.root' % extension)
 from CMGTools.Common.eventContent.everything_cff import everything 
 process.out.outputCommands = cms.untracked.vstring( 'drop *')
-process.out.outputCommands.append('keep  patMETs_patMETsPFlow_*_*')
-process.out.outputCommands.append('keep  patMETs_patMETs_*_*')
+process.out.outputCommands.append('keep  patMETs_patMETs*_*_*')
 process.out.outputCommands.extend( everything ) 
     
 
@@ -43,24 +42,9 @@ process.load('CMGTools.Common.analysis_cff')
 process.load("CMGTools.Common.jet_cff")
 process.load("CMGTools.Common.met_cff")
 
-# make test with the pf candidates
-process.load('CMGTools.Common.Tools.cmgBaseMETModifier_cfi')
-# MET from PFCandidates
-process.testCmgBaseMETModifierSrc = process.cmgMETPFCandidates.clone()
-process.testCmgBaseMETModifierSrc.cfg.inputCollection = "particleFlow"
-# now subtract the pf candidate
-process.testCmgBaseMETModifier = process.cmgBaseMETModifier.clone()
-process.testCmgBaseMETModifier.cfg.inputCollection = "particleFlow"
-process.testCmgBaseMETModifier.cfg.metCollection = 'testCmgBaseMETModifierSrc'
-process.testCmgBaseMETModifier.cfg.operator = '-' #subtract from the MET
-process.testCmgBaseMETSequence  = cms.Sequence(process.testCmgBaseMETModifierSrc*process.testCmgBaseMETModifier)
-process.out.outputCommands.append('keep *_testCmgBaseMETModifier*_*_*')
-
-
 process.analysisSequence = cms.Sequence(
     process.jetSequence+                                    
-    process.metSequence+
-    process.testCmgBaseMETSequence
+    process.metSequence
     )
 
 process.p = cms.Path(

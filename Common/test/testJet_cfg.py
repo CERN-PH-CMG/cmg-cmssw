@@ -17,16 +17,7 @@ process.maxEvents = cms.untracked.PSet(
 process.maxLuminosityBlocks = cms.untracked.PSet(
         input = cms.untracked.int32(1)
         )
-#process.load("CMGTools.Common.sources.relval.RelValQCD_FlatPt_15_3000.CMSSW_3_11_2.MC_311_V2.NoPileUpRemoval.source_cff")
-process.source = cms.Source(
-    "PoolSource",
-    noEventSort = cms.untracked.bool(True),
-    duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
-    fileNames = cms.untracked.vstring()
-)
-process.source.fileNames.extend([
-    '/store/cmst3/user/jhegeman/CMG/relval_CMSSW_4_2_3_patch1/RelValQCD_Pt_80_120/patTuple_PF2PAT_0.root',
-])
+process.source.fileNames = ['/store/cmst3/user/cmgtools/CMG/RelValQCD_Pt_80_120/CMSSW_4_2_3-START42_V12-v2/GEN-SIM-RECO/patTuple_PF2PAT_0.root']
 
 extension = 'jet'
 
@@ -48,6 +39,7 @@ process.load('CMGTools.Common.analysis_cff')
 process.load("CMGTools.Common.jet_cff")
 process.load("CMGTools.Common.factories.cmgPFJetScaler_cfi")
 process.load('CMGTools.Common.skims.patJetLead_cfi')
+process.patJetLead.inputCollection = cms.InputTag("selectedPatJetsAK5")
 
 ##########
 
