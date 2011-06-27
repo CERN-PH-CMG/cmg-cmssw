@@ -7,7 +7,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 pickRelVal = False
 
 # turn on when running on MC
-runOnMC = False
+runOnMC = True
 
 # AK5 sequence with no cleaning is the default
 # the other sequences can be turned off with the following flags.
@@ -36,7 +36,7 @@ if runCMG:
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
-process.MessageLogger.cerr.FwkReport.reportEvery = 10
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 sep_line = "-" * 50
 print sep_line
@@ -53,10 +53,10 @@ print sep_line
 ### SOURCE DEFINITION  ################################################################
 
 
-# process.source.fileNames = cms.untracked.vstring(['/store/relval/CMSSW_4_2_3/RelValZTT/GEN-SIM-RECO/START42_V12-v2/0062/4CEA9C47-287B-E011-BAB7-00261894396B.root'])
+process.source.fileNames = cms.untracked.vstring(['/store/relval/CMSSW_4_2_3/RelValZTT/GEN-SIM-RECO/START42_V12-v2/0062/4CEA9C47-287B-E011-BAB7-00261894396B.root'])
 # process.source.fileNames = cms.untracked.vstring(['file:PFAOD.root'])
 
-process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.source_maxime_cff")
+#process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.source_maxime_cff")
 
 
 print "WARNING!!!!!!!!!!!!!!!! remove the following line (see .cfg) before running on the batch!"
@@ -93,6 +93,8 @@ from PhysicsTools.PatAlgos.tools.pfTools import *
 
 # ---------------- Sequence AK5 ----------------------
 
+process.eIdSequence = cms.Sequence()
+
 # PF2PAT+PAT sequence 1:
 # no lepton cleaning, AK5PFJets
 
@@ -124,6 +126,9 @@ getattr(process,"pfNoJet"+postfixAK5).enable = True
 getattr(process,"pfIsolatedMuons"+postfixAK5).combinedIsolationCut = 999999
 getattr(process,"pfIsolatedElectrons"+postfixAK5).combinedIsolationCut = 999999
 
+# adding vbtf and cic electron IDs
+from CMGTools.Common.PAT.addPATElectronID_cff import addPATElectronID
+addPATElectronID( process, postfixAK5 , runOnMC )
 
 # ---------------- Sequence AK5, lepton x-cleaning ---------------
 
@@ -172,6 +177,7 @@ getattr(process,"pfNoJet"+postfixAK7).enable = True
 
 removePhotonMatching( process, postfixAK7 )
 
+addPATElectronID( process, postfixAK7 , runOnMC )
 
 # ---------------- Common stuff ---------------
 
