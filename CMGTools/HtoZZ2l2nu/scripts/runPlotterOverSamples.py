@@ -78,6 +78,7 @@ def getControlPlots(descriptor,isData,inputDir='data',getFromDir='') :
             pname=p.GetName()
             h = file.Get(pname)
             h.SetDirectory(0)
+            h.Sumw2()
             cresults[h.GetName()]=h
         results.update(cresults)
     else :
@@ -99,6 +100,7 @@ def getControlPlots(descriptor,isData,inputDir='data',getFromDir='') :
                     hname=path+'/'+p.GetName()
                     h = file.Get(hname)
                     h.SetDirectory(0)
+                    h.Sumw2()
                     cresults[h.GetName()]=h
                     if(hname.find('cutflow')<0):continue
                     cnorm=h.GetBinContent(1)
@@ -112,6 +114,7 @@ def getControlPlots(descriptor,isData,inputDir='data',getFromDir='') :
                 h = file.Get(path)
                 print h.GetName()
                 h.SetDirectory(0)
+                h.Sumw2()
                 centralresults[h.GetName()]=h
 
         #rescale central results (assume latest normalization    
