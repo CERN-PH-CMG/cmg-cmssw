@@ -13,13 +13,14 @@ def usage() :
     print '  -d : sample input dir as described in the json'
     print '  -n : files to process per job'
     print '  -p : parameters to pass to the job'
+    print ' - t : process only this tag'
     print ' '
     exit(-1)
 
 #parse the options 
 try:
      # retrive command line options
-     shortopts  = "s:j:d:n:p:h?"
+     shortopts  = "s:j:d:n:p:t:h?"
      opts, args = getopt.getopt( sys.argv[1:], shortopts )
 except getopt.GetoptError:
      # print help information and exit:
@@ -32,6 +33,7 @@ samplesDB=''
 dirtag=''
 fperjob=-1
 params=''
+onlytag='all'
 for o,a in opts:
     if o in("-?", "-h"):
         usage()
@@ -39,6 +41,7 @@ for o,a in opts:
     elif o in('-s'): subtoBatch=True
     elif o in('-j'): samplesDB = a
     elif o in('-d'): dirtag = a
+    elif o in('-t'): onlytag = a
     elif o in('-n'): fperjob=int(a)
     elif o in('-p'): params = a
 
@@ -54,7 +57,12 @@ for proc in procList :
 
     #run over processes
     for desc in proc[1] :
-        
+
+        #tag veto
+        if(onlytag!='all') :
+            itag=desc['tag']
+            if(itag.find(onlytag)<0) : continue
+                
         #run over items in process
         data = desc['data']
         for d in data :
