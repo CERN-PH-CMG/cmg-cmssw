@@ -71,6 +71,10 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
     summaryHandler_.initTree(  fs->make<TTree>("data","Event Summary") );
     TFileDirectory baseDir=fs->mkdir(iConfig.getParameter<std::string>("dtag"));    
 
+    //
+    objConfig_["Jets"] = iConfig.getParameter<edm::ParameterSet>("Jets");
+    objConfig_["Trigger"] = iConfig.getParameter<edm::ParameterSet>("Trigger");
+
     //generator level
     objConfig_["Generator"] = iConfig.getParameter<edm::ParameterSet>("Generator");
 
@@ -159,17 +163,17 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
 float DileptonPlusMETEventAnalyzer::addMCtruth( const pat::EventHypothesis &evhyp, const edm::Event &event, const edm::EventSetup &iSetup)
 {
   ZZ2l2nuSummary_t &ev = summaryHandler_.getEvent();
+  ev.nmcparticles=0;
 
   float weight(1.0);
-  if(!event.isRealData())  return weight;
+  if(event.isRealData())  return weight;
 
   //pileup
   edm::Handle<float> puWeightHandle;
   event.getByLabel(objConfig_["Generator"].getParameter<edm::InputTag>("puReweight"), puWeightHandle );
   if(puWeightHandle.isValid()) weight = *(puWeightHandle.product());
   ev.weight = weight;
-
-  
+ 
   edm::Handle<std::vector<PileupSummaryInfo> > puInfoH;
   event.getByType(puInfoH);
   int npuOOT(0),npuIT(0);
@@ -178,7 +182,7 @@ float DileptonPlusMETEventAnalyzer::addMCtruth( const pat::EventHypothesis &evhy
       for(std::vector<PileupSummaryInfo>::const_iterator it = puInfoH->begin(); it != puInfoH->end(); it++)
 	{
 	  if(it->getBunchCrossing()==0) npuIT += it->getPU_NumInteractions();
-	  else npuOOT += it->getPU_NumInteractions();
+	  else                          npuOOT += it->getPU_NumInteractions();
 	}
       controlHistos_.fillHisto("ngenpileup","all",npuIT,weight);
       controlHistos_.fillHisto("ngenpileupOOT","all",npuOOT,weight);
@@ -226,6 +230,7 @@ float DileptonPlusMETEventAnalyzer::addMCtruth( const pat::EventHypothesis &evhy
 	ev.hptWeights[iweight]=*hkfactorHandle;
       }
   }catch(std::exception &e){
+
   }
 
   //generator level event
@@ -368,6 +373,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     }catch(std::exception &e){
     }
         
+    //selected path and step
     edm::Handle< std::vector<int> > selInfo;
     event.getByLabel(edm::InputTag("cleanEvent:selectionInfo"),selInfo);
     if(!selInfo.isValid()) 
@@ -378,8 +384,9 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     int selPath = (*(selInfo.product()))[0];
     int selStep = (*(selInfo.product()))[1];
 
+    //average energy density
     edm::Handle< double > rho;
-    event.getByLabel(edm::InputTag("kt6PFJets:rho"),rho);
+    event.getByLabel( objConfig_["Jets"].getParameter<edm::InputTag>("rho"), rho );
 
     //
     // VERTEX KINEMATICS
@@ -579,7 +586,7 @@ void DileptonPlusMETEventAnalyzer::endLuminosityBlock(const edm::LuminosityBlock
       controlHistos_.fillHisto("cutflow",streams[istream],0.,ctrHandle->value);
       if(istream==0) controlHistos_.fillHisto("cutflow","all",0.,ctrHandle->value);
       edm::Handle<edm::MergeableCounter> streamCtrHandle;
-      std::string inpt= std::string(streams[istream])+"Counter";
+      std::string inpt= std::string(streams[istream])+"SelectionCounter";
       iLumi.getByLabel(inpt, streamCtrHandle);
       controlHistos_.fillHisto("cutflow",streams[istream],1.,streamCtrHandle->value);
       controlHistos_.fillHisto("cutflow","all",1.,streamCtrHandle->value);

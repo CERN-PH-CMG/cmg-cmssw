@@ -17,6 +17,7 @@
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
+#include "DataFormats/PatCandidates/interface/TriggerEvent.h"
 
 #include "TVector3.h"
 #include "TH1D.h"
@@ -27,6 +28,16 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 typedef std::vector<LorentzVector> LorentzVectorCollection;
 typedef std::pair<reco::CandidatePtr, reco::VertexRef> CandidateWithVertex;
 typedef std::vector<CandidateWithVertex> CandidateWithVertexCollection;
+typedef std::pair<reco::CandidateBaseRef,std::string> TriggerCandidate;
+typedef std::vector<TriggerCandidate> TriggerCandidateCollection;
+
+namespace trigger
+{
+  /**
+     @short returns true if candidate matches to a trigger candidate
+   */
+  bool isTriggerCandidate(const pat::Muon *muon, const edm::ParameterSet &iConfig);
+}
 
 namespace gen
 {

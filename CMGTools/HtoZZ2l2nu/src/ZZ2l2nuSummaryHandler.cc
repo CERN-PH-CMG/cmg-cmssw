@@ -24,7 +24,7 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t)
 
   //generator level info
   t_->Branch("ngenITpu",   &evSummary_.ngenITpu,  "ngenITpu/I");
-  t_->Branch("ngenOOTpu",  &evSummary_.ngenITpu,  "ngenOOTpu/I");
+  t_->Branch("ngenOOTpu",  &evSummary_.ngenOOTpu,  "ngenOOTpu/I");
   t_->Branch("weight",     &evSummary_.weight,    "weight/F");
   t_->Branch("hptWeights", evSummary_.hptWeights, "hptWeights[5]/F");
   t_->Branch("pthat",      &evSummary_.pthat,      "pthat/F");
