@@ -39,7 +39,6 @@ process.load('CMGTools.Common.analysis_cff')
 process.load("CMGTools.Common.jet_cff")
 process.load("CMGTools.Common.factories.cmgPFJetScaler_cfi")
 process.load('CMGTools.Common.skims.patJetLead_cfi')
-process.patJetLead.inputCollection = cms.InputTag("selectedPatJetsAK5")
 
 ##########
 
