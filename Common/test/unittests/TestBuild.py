@@ -71,6 +71,32 @@ class TestBuild(TestTools.CFGTest):
                 fail = True
             if fail: break
         return fail
+
+    def downloadAndBuildRecipe(self):
+
+        version = os.environ['CMSSW_VERSION']
+        release_info = self.getReleaseInfo(version)
+        
+        stdout = None
+        stderr = None
+        
+        pwd = os.getcwd()
+        try:
+            tmpdir = tempfile.mkdtemp()
+            os.chdir(tmpdir)
+
+            subprocess.call(['wget','-O','installCMGTools.py',"http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/CMG/CMGTools/Common/bin/installCMGTools.py?view=co"])
+            stdout, stderr = subprocess.Popen(['python','installCMGTools.py','-r', version, '-b'], stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
+            
+            os.chdir(pwd)
+            shutil.rmtree(tmpdir, ignore_errors = True)
+            
+        finally:
+            os.chdir(pwd)
+            
+        return (stdout,stderr)
+
+        
     
     def testBuildFormatsStandAlone(self):
         """Check out and build the version of the format package from cvs with the recipe tags. Format package must build standalone."""
@@ -86,7 +112,7 @@ class TestBuild(TestTools.CFGTest):
         
         print "Testing build for recipe version '%s'" % os.environ['CMSSW_VERSION']
         
-        stdout, stderr = self.checkOutAndBuild()
+        stdout, stderr = self.downloadAndBuildRecipe()
         self.failIf(stdout is None, 'The stdout must be complete')
         self.failIf(stderr is None, 'The stderr must be complete')
         
