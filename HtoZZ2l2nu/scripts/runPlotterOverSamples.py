@@ -413,7 +413,9 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
                 br = getByLabel(d,'br',1)
                 normto = getByLabel(d,'normto',-1)
                 if(xsec>0 and not isdata) :
-                    weight = integratedLumi*sfactor*xsec*br
+                    brprod=1.0
+                    for ibr in br :  brprod = brprod*ibr
+                    weight = integratedLumi*sfactor*xsec*brprod
                 elif(normto>0) :
                     weight = sfactor*normto
                     absNorm=True

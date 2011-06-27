@@ -68,6 +68,7 @@ def addHiggsPtReweighting(process,castorDir=''):
 
     #get the k-factors
     stdFile='HiggsAnalysis/HiggsToWW2Leptons/data/kfactors_Std/kfactors_mh'+str(int(mh))+'_ren'+str(int(mh))+'_fac'+str(int(mh))+'.dat'
+#    stdFile='HptScales/scalefactor.mh'+str(int(mh))+'.dat'
     process.hKfactorStd   = KFactorProducer.clone( genParticlesTag = cms.InputTag('prunedGen'),
                                                    Debug = cms.untracked.bool(False),
                                                    ProcessID = cms.untracked.int32(10011),

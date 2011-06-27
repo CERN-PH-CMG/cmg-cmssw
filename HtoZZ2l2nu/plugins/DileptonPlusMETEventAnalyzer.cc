@@ -213,11 +213,11 @@ float DileptonPlusMETEventAnalyzer::addMCtruth( const pat::EventHypothesis &evhy
 
   //Higgs pT reweighting (for Powheg gg->H)
   try{
-    ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]=0;
-    ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]=0;
-    ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]=0;
-    ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]=0;
-    ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]=0;
+    ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]=1;
+    ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]=1;
+    ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]=1;
+    ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]=1;
+    ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]=1;
 
     int iweight(0);
     std::vector<edm::InputTag> ptWeightSources=objConfig_["Generator"].getParameter<std::vector<edm::InputTag> >("higgsPtWeights");

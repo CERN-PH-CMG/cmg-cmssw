@@ -12,7 +12,7 @@
 		"dset":"/ZZTo2L2Nu_TuneZ2_7TeV_pythia6_tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
 		"patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_06_22_HtoZZ2l2n/VV/ZZTo2L2Nu_TuneZ2_7TeV_pythia6_tauola"],
 		"xsec":5.9,
-		"br":0.043896
+		"br":[0.043896]
 	     }
 	]
     	},
@@ -65,34 +65,34 @@
 		  "dset":"/QCD_Pt-80to120_MuPt5Enriched_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
 		  "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_06_22_HtoZZ2l2n/QCD/QCD_Pt-80to120_MuPt5Enriched_TuneZ2_7TeV-pythia6"],
                   "xsec":785100,
-		  "br":0.03700
+		  "br":[0.03700]
                 },
 		{
 		  "dtag":"QCDMuPt5_120to150",
 		  "dset":"/QCD_Pt-120to150_MuPt5Enriched_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
 		  "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_06_22_HtoZZ2l2n/QCD/QCD_Pt-120to150_MuPt5Enriched_TuneZ2_7TeV-pythia6"],
                   "xsec":92950,
-		  "br":0.04777
+		  "br":[0.04777]
                 },
 		{
 		  "dtag":"QCDMuPt5_150toInf",
 		  "dset":"/QCD_Pt-150_MuPt5Enriched_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
 		  "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_06_22_HtoZZ2l2n/QCD/QCD_Pt-150_MuPt5Enriched_TuneZ2_7TeV-pythia6"],
                   "xsec":47580,
-		  "br":0.05964
+		  "br":[0.05964]
                 },
 		{
 		  "dtag":"QCDEMrich_30to80",
 		  "dset":"/QCD_Pt-30to80_EMEnriched_TuneZ2_7TeV-pythia/Summer11-PU_S4_START42_V11-v1/AODSIM",
 		  "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_06_22_HtoZZ2l2n/QCD/QCD_Pt-30to80_EMEnriched_TuneZ2_7TeV-pythia"],
-                  "xsec":59480000,
+                  "xsec":[59480000],
 		  "br":0.065
                 },
 		{
 		  "dtag":"QCDEMrich_80to170",
 		  "dset":"/QCD_Pt-80to170_EMEnriched_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
 		  "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_06_22_HtoZZ2l2n/QCD/QCD_Pt-80to170_EMEnriched_TuneZ2_7TeV-pythia6"],
-                  "xsec":900000,
+                  "xsec":[900000],
 		  "br":0.155
                 }
 	   ]	
