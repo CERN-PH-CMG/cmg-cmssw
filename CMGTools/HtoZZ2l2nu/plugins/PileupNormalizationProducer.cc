@@ -34,7 +34,7 @@ PileupNormalizationProducer::PileupNormalizationProducer(const edm::ParameterSet
   cout << "pileup re-weighting:  {";
   for(size_t iwgt=0; iwgt<weights.size(); iwgt++)
     {
-      cout << weights[iwgt] << ";";
+      cout << weights[iwgt] << ",";
       puUnfoldedH_->SetBinContent(iwgt+1,weights[iwgt]);
     }
   cout << "};" << endl;
