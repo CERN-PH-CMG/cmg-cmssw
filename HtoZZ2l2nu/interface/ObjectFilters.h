@@ -19,6 +19,7 @@
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/PatCandidates/interface/TriggerEvent.h"
+#include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 
 #include "TVector3.h"
 #include "TH1D.h"
@@ -90,7 +91,10 @@ namespace vertex
 
 namespace photon
 {
-  CandidateCollection filter(edm::Handle<edm::View<reco::Candidate> > &hPhoton, double rho, const edm::ParameterSet &iConfig);
+  CandidateCollection filter(edm::Handle<edm::View<reco::Candidate> > &hPhoton, 
+			     EcalClusterLazyTools &lazyTool,
+			     edm::Handle<EcalRecHitCollection> ebrechits,
+			     const edm::ParameterSet &iConfig);
 }
 
 
