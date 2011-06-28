@@ -14,6 +14,8 @@ namespace photon{
     try{
       //config parameters                                                                                                                                                 
       double minEt = iConfig.getParameter<double>("minEt");
+
+      //maxEta=2.5
       double maxEta = iConfig.getParameter<double>("maxEta");
       //maxHoE=0.05
       double maxHoE=iConfig.getParameter<double>("maxHoE");
@@ -29,7 +31,9 @@ namespace photon{
 	  //kinematics
 	  float et = photon->et();
 	  float eta = photon->eta();
-	  
+	  bool fallsInCrackRegion( fabs(eta)>1.4442 && fabs(eta)<1.566 );
+	  bool isGood( fabs(eta)<maxEta && !fallsInCrackRegion);
+
 	  //pixel/converion veto
 	  bool hasPixelSeed = photon->hasPixelSeed();
 	  bool hasConversionTracks = photon->hasConversionTracks();
@@ -51,7 +55,7 @@ namespace photon{
 	  isIso &= ( ecalIso < 4.2 + 0.003*et );
 	  isIso &= ( hcalIso < 2.2 + 0.001*et );
 	  
-	  if(!isPrompt || !hasId || !isIso) continue;
+	  if(!isGood || !isPrompt || !hasId || !isIso) continue;
 	  selPhotons.push_back( photonPtr );
 	}
     }catch(std::exception &e){
