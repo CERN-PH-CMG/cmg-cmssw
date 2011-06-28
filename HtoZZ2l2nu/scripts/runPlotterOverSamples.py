@@ -413,7 +413,7 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
                 absNorm=False
                 sfactor = getByLabel(d,'sfactor',1)
                 xsec = getByLabel(d,'xsec',-1)
-                br = getByLabel(d,'br',1)
+                br = getByLabel(d,'br',[])
                 normto = getByLabel(d,'normto',-1)
                 if(xsec>0 and not isdata) :
                     brprod=1.0
