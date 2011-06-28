@@ -72,9 +72,7 @@ class LeptonSettingTool : public SettingTool<LeptonType,cmg::Lepton<LeptonType> 
         }
         
         //utilities for handling the vertex
-        const reco::VertexCollection::const_iterator getLeading(const reco::VertexCollection& recoVertex) const;
         reco::TrackBase::Point getVertex(const edm::Event&, const edm::EventSetup&) const;
-        
     
         /// parameters for charged hadron isolation value
         SpecificIsolation chargedIsoPar_;
@@ -151,31 +149,6 @@ void cmg::LeptonSettingTool<LeptonType>::set(const TrackType& track, cmg::Lepton
         }
 }
 
-
-/// Selected a vertex based on the highest sum pt
-template <class LeptonType>
-const reco::VertexCollection::const_iterator cmg::LeptonSettingTool<LeptonType>::getLeading(const reco::VertexCollection& recoVertex) const{
-    
-    // Vertex
-    reco::VertexCollection::const_iterator vi = recoVertex.begin();
-    //select the one with the higest sumPt on the tracks
-    if(recoVertex.size() > 1){
-        double maxSumPt = -1000;
-        for(reco::VertexCollection::const_iterator i = recoVertex.begin(); i != recoVertex.end(); ++i){
-            const std::vector<reco::Track>& refitted = i->refittedTracks();
-            double sumPt = 0.0;
-            for(std::vector<reco::Track>::const_iterator j = refitted.begin(); j != refitted.end(); ++j){
-                sumPt += j->pt();
-            }
-            if(sumPt > maxSumPt){
-                maxSumPt = sumPt;
-                vi = i;
-            }
-        }
-    }
-    return vi;
-}
-
 template <class LeptonType>
 reco::TrackBase::Point cmg::LeptonSettingTool<LeptonType>::getVertex(const edm::Event& iEvent, const edm::EventSetup&) const{
     
@@ -193,8 +166,7 @@ reco::TrackBase::Point cmg::LeptonSettingTool<LeptonType>::getVertex(const edm::
     {
         edm::Handle<reco::VertexCollection> vertexCands;
         iEvent.getByLabel(vertexTag_,vertexCands);
-        reco::VertexCollection::const_iterator vi = this->getLeading(*vertexCands);
-        result = vi->position();
+        result = vertexCands->at(0).position();//just take the leading from the PAT ordering
         break;
     }
    default:
