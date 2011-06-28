@@ -8,28 +8,17 @@ namespace photon{
   CandidateCollection filter(edm::Handle<edm::View<reco::Candidate> > &hPhoton,
 			     EcalClusterLazyTools &lazyTool,
 			     edm::Handle<EcalRecHitCollection> ebrechits,
-			     double rho,
 			     const edm::ParameterSet &iConfig)
   {
     CandidateCollection selPhotons;
 
     try{
-      
-      //20
+
       double minEt = iConfig.getParameter<double>("minEt");
-
-      //maxEta=2.5
       double maxEta = iConfig.getParameter<double>("maxEta");
-      //0.013
       double minSihihEB=iConfig.getParameter<double>("minSihihEB");
-
-      //0.03
       double minSihihEE=iConfig.getParameter<double>("minSihihEE");
-
-      //maxHoE=0.05
       double maxHoE=iConfig.getParameter<double>("maxHoE");
-      
-      //0
       double minSipipEb=iConfig.getParameter<double>("minSipipEB");
 
       //iterate over the photons
@@ -47,11 +36,9 @@ namespace photon{
 	  bool fallsInCrackRegion( fabs(eta)>1.4442 && fabs(eta)<1.566 );
 	  bool isGood( et>minEt && fabs(eta)<maxEta && !fallsInCrackRegion);
 
-	  //pixel/converion veto
+	  //pixel seed veto
 	  bool hasPixelSeed = photon->hasPixelSeed();
-	  bool hasConversionTracks = photon->hasConversionTracks();
-	  bool nconv= photon->conversions().size();
-	  bool isPrompt( !hasPixelSeed && !hasConversionTracks && nconv==0);
+	  bool isPrompt( !hasPixelSeed ); 
 
 	  //id
 	  //float r9 = photon->r9();
