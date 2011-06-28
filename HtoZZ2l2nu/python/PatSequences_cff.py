@@ -32,7 +32,6 @@ def addPatSequence(process, runOnMC) :
     removeMCMatching(process,names=['Photons'],postfix=postfix)
     process.patElectronsPFlow.embedTrack=True
     process.patMuonsPFlow.embedTrack=True
-#    process.patMETsPFlow.userFloats
            
     #configure top projections
     getattr(process,"pfNoPileUp"+postfix).enable = True
@@ -102,15 +101,15 @@ def addPatSequence(process, runOnMC) :
                              postfix         = postfix )
     removeCleaningFromTriggerMatching( process, sequence = 'patPF2PATSequence' + postfix )
 
-    # temporarily use std photons (switch to PF in 43x)
-#    process.load('PhysicsTools.PatAlgos.producersLayer1.photonProducer_cff')
-    #process.patPhotons.removeMCMatching(process,names=['Photons'])
+    # temporarily use std photons (switch to PF in 43x cf. with Daniele how to do it)
+    process.load('PhysicsTools.PatAlgos.producersLayer1.photonProducer_cff')
+    process.patPhotons.addGenMatch=cms.bool(False)
     
     #create the path
     process.patDefaultSequence = cms.Sequence(
         process.eidCiCSequence*
-        getattr(process,"patPF2PATSequence"+postfix)
-        #*process.makePatPhotons
+        getattr(process,"patPF2PATSequence"+postfix)*
+        process.patPhotons
         )
     
     # make pat-tracks (does not work with PF2PAT...)
