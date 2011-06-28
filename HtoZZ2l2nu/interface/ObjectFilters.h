@@ -10,6 +10,7 @@
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/Photon.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
 #include "TrackingTools/IPTools/interface/IPTools.h"
@@ -27,6 +28,7 @@
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 typedef std::vector<LorentzVector> LorentzVectorCollection;
 typedef std::pair<reco::CandidatePtr, reco::VertexRef> CandidateWithVertex;
+typedef std::vector<reco::CandidatePtr> CandidateCollection;
 typedef std::vector<CandidateWithVertex> CandidateWithVertexCollection;
 typedef std::pair<reco::CandidateBaseRef,std::string> TriggerCandidate;
 typedef std::vector<TriggerCandidate> TriggerCandidateCollection;
@@ -85,6 +87,11 @@ namespace vertex
     }
 }
 
+
+namespace photon
+{
+  CandidateCollection filter(edm::Handle<edm::View<reco::Candidate> > &hPhoton, double rho, const edm::ParameterSet &iConfig);
+}
 
 
 namespace muon
