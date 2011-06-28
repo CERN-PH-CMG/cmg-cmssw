@@ -12,6 +12,7 @@
 <use name="DataFormats/PatCandidates"/>
 <use name="SimDataFormats/GeneratorProducts"/>
 <use name="CondFormats/JetMETObjects"/>
+<use name="RecoEcal/EgammaCoreTools"/>
 <use name="root"/>
 <use name="roottmva"/>
 <use name="rootrflx"/>
