@@ -46,9 +46,9 @@ BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlow"),
 
 # base values for photon selection ----------------------------------------------
 BasePhotonsSelection = cms.PSet( source = cms.InputTag("selectedPatPhotons"),
-                                 ebrechitSource = cms.InputTag(""),
-                                 eerechitSource = cms.InputTag(""),
-                                 minEt = cms.double(20),
+                                 ebrechits = cms.InputTag("reducedEcalRecHitsEB"),
+                                 eerechits = cms.InputTag("reducedEcalRecHitsEE"),
+                                 minEt = cms.double(0),
                                  maxEta = cms.double(2.5),
                                  minSihihEB = cms.double(0.013),
                                  minSihihEE = cms.double(0.03),

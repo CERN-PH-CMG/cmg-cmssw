@@ -50,7 +50,6 @@ private:
 
   float addMCtruth(const pat::EventHypothesis &evhyp, const edm::Event &event, const edm::EventSetup &iSetup );
 
-  std::map<TString, TObject *>  results_;
   std::map<std::string, edm::ParameterSet> objConfig_;
   ReducedMETComputer rmet_;
   ProjectedMETComputer pmet_;

@@ -30,6 +30,9 @@ def configureOutput(process,selPaths=['eePath', 'mumuPath', 'emuPath'],outFile='
                 'keep *_flavorHistoryFilter_*_*',
                 'keep recoGenJets_ak5GenJets_*_*',
                 'keep *_generalTracks_*_*',
+                'keep patPhotons_*_*_*',
+                'keep *_reducedEcalRecHitsEB_*_*',
+                'keep *_reducedEcalRecHitsEE_*_*',
                 'keep double*_*_rho_'+process.name_(),
                 'keep double*_*_sigma_'+process.name_(),
                 'keep recoPFCandidates_particleFlow_*_*']
