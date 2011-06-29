@@ -3,10 +3,8 @@
 
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
-
-#include "CMGTools/HtoZZ2l2nu/interface/ReducedMETFitter.h"
+#include "CMGTools/HtoZZ2l2nu/interface/TransverseMassComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ReducedMETComputer.h"
-#include "CMGTools/HtoZZ2l2nu/interface/ProjectedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
 #include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
@@ -66,36 +64,36 @@ int main(int argc, char* argv[])
   TString tiers[]={"gen","reco"};
   for(size_t itier=0; itier<2; itier++)
     {
-      if(itier)
-	controlHistos.addHistogram( new TH1D (tiers[itier]+"prefrecoil", ";"+tiers[itier]+" h_{T};Events", 100,0,200) );
-
       controlHistos.addHistogram( new TH1D (tiers[itier]+"zpt", ";"+tiers[itier]+" p_{T}^{ll};Events", 100,0,400) );
       controlHistos.addHistogram( new TH1D (tiers[itier]+"zvvpt", ";"+tiers[itier]+" p_{T}^{#nu#nu};Events", 100,0,400) );
       controlHistos.addHistogram( new TH1D (tiers[itier]+"njets", ";"+tiers[itier]+" Jets;Jets",4,0,4) );
-      controlHistos.addHistogram( new TH1D (tiers[itier]+"mt", ";"+tiers[itier]+" M_{T};Events", 100, 100.,500.) );
-      controlHistos.addHistogram(  new TH1D (tiers[itier]+"deltacmzz", ";p_{T}^{ll}-p_{T}^{vv}(CM)", 100,-100,100) );
-      controlHistos.addHistogram( new TH1D (tiers[itier]+"summtl2met", ";"+tiers[itier]+" M_{T}(l^{i},MET)+M_{T}(l^{i},MET);Events",100,0,1000) );
-      controlHistos.addHistogram( new TH1F (tiers[itier]+"redmetLminrecoil", ";"+tiers[itier]+" red-E_{T}^{miss,#parallel} (min. recoil);Events", 100, -200.,200.) );
-      controlHistos.addHistogram( new TH1F (tiers[itier]+"redmetTminrecoil", ";"+tiers[itier]+" red-E_{T}^{miss,#perp} (min. recoil);Events", 100, -200.,200.) );
-      controlHistos.addHistogram( new TH1F (tiers[itier]+"redmetL", ";"+tiers[itier]+" red-E_{T}^{miss,#parallel};Events", 100, -200.,200.) );
-      controlHistos.addHistogram( new TH1F (tiers[itier]+"redmetT", ";"+tiers[itier]+" red-E_{T}^{miss,#perp};Events", 100, -200.,200.) );
-      controlHistos.addHistogram( (TH1D *)(new TH2D (tiers[itier]+"redmetcomps", ";"+tiers[itier]+" red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
-      controlHistos.addHistogram( (TH1D *)(new TH2D (tiers[itier]+"redmetcompsminrecoil", ";"+tiers[itier]+" red-E_{T}^{miss,#parallel} (min recoil);red-E_{T}^{miss,#perp} (min recoil);Events", 100, -251.,249,100, -251.,249.) ) );
+
+      if(itier)
+	{
+	  controlHistos.addHistogram( new TH1D (tiers[itier]+"mt", ";"+tiers[itier]+" M_{T};Events", 100, 100.,500.) );
+	  controlHistos.addHistogram( new TH1D (tiers[itier]+"prefrecoil", ";"+tiers[itier]+" h_{T};Events", 100,0,200) );
+	  controlHistos.addHistogram( new TH1D (tiers[itier]+"mtcm", ";"+tiers[itier]+" M_{T}(pCM);Events", 100, 100.,500.) );
+	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"deltacmzz", ";p_{T}^{ll}-p_{T}^{vv}(pCM)", 100,0,250) );
+	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"cmzpt", ";p_{T}^{ll}(pCM)", 100,250,0) );
+	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"cmzvvpt", ";p_{T}^{#nu#nu}(pCM)", 100,0,250) );
+	  controlHistos.addHistogram( new TH1D (tiers[itier]+"mtcm400", ";"+tiers[itier]+" M_{T}(pCM);Events", 100, 100.,500.) );
+	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"deltacmzz400", ";p_{T}^{ll}-p_{T}^{vv}(pCM)", 100,0,250) );
+	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"cmzpt400", ";p_{T}^{ll}(pCM)", 100,0,250) );
+	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"cmzvvpt400", ";p_{T}^{#nu#nu}(pCM)", 100,0,250) );
+	  
+	  controlHistos.addHistogram( new TH1F (tiers[itier]+"redmet", ";"+tiers[itier]+" red-E_{T}^{miss};Events", 100, 0.,500.) );
+	  controlHistos.addHistogram( new TH1F (tiers[itier]+"redmetL", ";"+tiers[itier]+" red-E_{T}^{miss,#parallel};Events", 100, -200.,200.) );
+	  controlHistos.addHistogram( new TH1F (tiers[itier]+"redmetT", ";"+tiers[itier]+" red-E_{T}^{miss,#perp};Events", 100, -200.,200.) );
+	  controlHistos.addHistogram( (TH1D *)(new TH2D (tiers[itier]+"redmetcomps", ";"+tiers[itier]+" red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
+	}
+      else
+	{
+	  controlHistos.addHistogram( new TH1D (tiers[itier]+"m", ";"+tiers[itier]+" M;Events", 100, 100.,500.) );
+	}
     }
-  controlHistos.addHistogram(  new TH1D ("deltaunclustrecoil", ";h_{T} - p_{T}^{gen}(H)", 100,-100,100) );
-  controlHistos.addHistogram(  new TH1D ("deltaphiunclustrecoil", ";#phi(h_{T}) - #phi^{gen}(H)", 100,0,3.2) );
-  controlHistos.addHistogram(  new TH1D ("deltacmzpt", ";#Delta p_{T}^{ll}(CM)", 100,-100,100) );
-  controlHistos.addHistogram(  new TH1D ("deltacmzvvpt", ";#Delta p_{T}^{#nu#nu}(CM)", 100,-100,100) );
+  controlHistos.addHistogram(  new TH1D ("deltaprefrecoil", ";h_{T} - p_{T}^{gen}(H)", 100,-100,100) );
+  controlHistos.addHistogram(  new TH1D ("deltaphiprefrecoil", ";#phi(h_{T}) - #phi^{gen}(H)", 100,0,3.2) );
 
-  controlHistos.addHistogram(  new TH1D ("deltamt", ";#Delta M_{T};Events", 100,-100,100) );
-  controlHistos.addHistogram(  new TH1D ("deltasummtl2met", ";#Delta #Sigma M_{T}(l^{i},MET); Events", 100,-100,100) );
-  controlHistos.addHistogram(  new TH1D ("deltazpt", ";#Delta p_{T}^{ll};Events", 100,-100,100) );
-  controlHistos.addHistogram(  new TH1D ("deltazvvpt", ";#Delta p_{T}^{#nu#nu};Events", 100,-100,100) );
-
-  controlHistos.addHistogram(  new TH1D ("deltazptL", ";#Delta p_{T}^{ll,#parallel};Events", 100,-100,100) );
-  controlHistos.addHistogram(  new TH1D ("deltazvvptL", ";#Delta p_{T}^{#nu#nu,#parallel};Events", 100,-100,100) );
-
-  controlHistos.addHistogram( new TH1F ("deltanjets", ";#Delta Jets;Events", 6,-1.5,4.5) );
 
   //replicate monitor for categories
   TString cats[]={"ee","emu","mumu"};
@@ -108,6 +106,9 @@ int main(int argc, char* argv[])
   
   //Start the reduced met computer
   ReducedMETComputer rmetComp(1., 1., 1., 1., 1.);
+
+  //aux
+  TransverseMassComputer mtComp;
 
   //open the file and get events tree
   TFile *file = TFile::Open(url);
@@ -140,6 +141,14 @@ int main(int argc, char* argv[])
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
       if(phys.genhiggs.size()==0) continue;
 
+      //event categories
+      TString evcat("");
+      if(ev.cat==dilepton::EMU)  evcat="emu";
+      if(ev.cat==dilepton::MUMU) evcat="mumu";
+      if(ev.cat==dilepton::EE)   evcat="ee";
+      TString cats[]={"all",evcat};
+
+
       //weights for this event
       float puweight=ev.weight;
       float weight=puweight*ev.hptWeights[0];
@@ -152,7 +161,8 @@ int main(int argc, char* argv[])
       LorentzVector genzll=phys.genleptons[0]+phys.genleptons[1];
       LorentzVector zvv=phys.met[0];
       LorentzVector genzvv=phys.genmet[0];
-
+      float transverseMass = mtComp.compute(zll,zvv,true);
+ 
       //higgs recoil
       LorentzVector clusteredRecoil(0,0,0,0);
       LorentzVector unclusteredRecoil=zvv+zll;
@@ -168,40 +178,15 @@ int main(int argc, char* argv[])
       clusteredRecoil *=-1;
       for(size_t ijet=0; ijet<phys.genjets.size(); ijet++) genjets.push_back(phys.genjets[ijet]);
 
-      //transverse mass
-      LorentzVector transvSum=zll+zvv;
-      float transverseMass=TMath::Power(TMath::Sqrt(TMath::Power(zll.pt(),2)+pow(zll.mass(),2))+TMath::Sqrt(TMath::Power(zvv.pt(),2)+pow(zll.mass(),2)),2);
-      transverseMass-=TMath::Power(transvSum.pt(),2);
-      transverseMass=TMath::Sqrt(transverseMass);
-     
-      //event categories
-      TString evcat("");
-      if(ev.cat==dilepton::EMU)  evcat="emu";
-      if(ev.cat==dilepton::MUMU) evcat="mumu";
-      if(ev.cat==dilepton::EE)   evcat="ee";
-      TString cats[]={"all",evcat};
-
+      //subcategory
       TString subcat("eq0jets");
       if(jetsp4.size()==1) subcat="eq1jets";
       if(jetsp4.size()>1)  subcat="geq2jets";
       TString subCats[]={"",subcat};
-
-     
-      LorentzVector gentransvSum=genzll+genzvv;
-      float gentransverseMass=TMath::Power(TMath::Sqrt(TMath::Power(genzll.pt(),2)+pow(genzll.mass(),2))+TMath::Sqrt(TMath::Power(genzvv.pt(),2)+pow(genzll.mass(),2)),2);
-      gentransverseMass-=TMath::Power(gentransvSum.pt(),2);
-      gentransverseMass=TMath::Sqrt(gentransverseMass);
-
-      float dphil2met[]={ fabs(deltaPhi(zvv.phi(),phys.leptons[0].phi())), fabs(deltaPhi(zvv.phi(),phys.leptons[1].phi())) };
-      float mtl2met[]={ TMath::Sqrt(2*zvv.pt()*phys.leptons[0].pt()*(1-TMath::Cos(dphil2met[0]))) ,   TMath::Sqrt(2*zvv.pt()*phys.leptons[1].pt()*(1-TMath::Cos(dphil2met[1]))) };
-
-      float gendphil2met[]={ fabs(deltaPhi(genzvv.phi(),phys.genleptons[0].phi())), fabs(deltaPhi(genzvv.phi(),phys.genleptons[1].phi())) };
-      float genmtl2met[]={ TMath::Sqrt(2*genzvv.pt()*phys.genleptons[0].pt()*(1-TMath::Cos(gendphil2met[0]))) ,   TMath::Sqrt(2*zvv.pt()*phys.genleptons[1].pt()*(1-TMath::Cos(gendphil2met[1]))) };
-      
+           
       //redmet
       rmetComp.compute(phys.leptons[0], phys.leptons[0].info[0], phys.leptons[1], phys.leptons[1].info[0], jetsp4, zvv );
-      double rmetTminrecoil = rmetComp.reducedMETComponents().first;
-      double rmetLminrecoil = rmetComp.reducedMETComponents().second;
+      double rmet = rmetComp.reducedMET();
       double rmetT = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       double rmetL = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;      
       int prefrecoil = rmetComp.getPreferedRecoil(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
@@ -211,42 +196,24 @@ int main(int argc, char* argv[])
 
       LorentzVector unclRecoil200(recoilEstimate.px(),recoilEstimate.py(), 0,sqrt(pow(200,2)+pow(recoilEstimate.pt(),2)));
       ROOT::Math::Boost cmboost200(unclRecoil200.BoostToCM());
-      LorentzVector cm200Zll(cmboost(zll));
-      LorentzVector cm200Zvv(cmboost(zvv));
+      LorentzVector cm200Zll(cmboost200(zll));
+      LorentzVector cm200Zvv(cmboost200(zvv));
+      float transverseMass200 = mtComp.compute(cm200Zll,cm200Zvv,true);
 
       LorentzVector unclRecoil400(recoilEstimate.px(),recoilEstimate.py(), 0,sqrt(pow(400,2)+pow(recoilEstimate.pt(),2)));
       ROOT::Math::Boost cmboost400(unclRecoil400.BoostToCM());
-      LorentzVector cm400Zll(cmboost(zll));
-      LorentzVector cm400Zvv(cmboost(zvv));
+      LorentzVector cm400Zll(cmboost400(zll));
+      LorentzVector cm400Zvv(cmboost400(zvv));
+      float transverseMass400 = mtComp.compute(cm400Zll,cm400Zvv,true);
 
+
+      // cross-check (generator level)
+      //       LorentzVector genRecoil2D(higgs);
+      //       ROOT::Math::Boost cmgenboost(genRecoil2D.BoostToCM());
+      //       LorentzVector cmGenZll(cmgenboost(genzll));
+      //       LorentzVector cmGenZvv(cmgenboost(genzvv));
       
-      LorentzVector genRecoil2D(higgs.px(),higgs.py(),0.,sqrt(pow(higgs.mass(),2)+pow(higgs.pt(),2)));
-      //LorentzVector genRecoil2D(higgs);
-      ROOT::Math::Boost cmgenboost(genRecoil2D.BoostToCM());
-      LorentzVector cmGenZll(cmgenboost(genzll));
-      LorentzVector cmGenZvv(cmgenboost(genzvv));
       
-
-      rmetComp.compute(phys.genleptons[0], 0., phys.genleptons[1], 0., genjets, genzvv);
-      double genrmetTminrecoil = rmetComp.reducedMETComponents().first;
-      double genrmetLminrecoil = rmetComp.reducedMETComponents().second;
-      double genrmetT = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
-      double genrmetL = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;      
-
-      //bisector
-      TVector2 bisector = rmetComp.defineThrust(phys.leptons[0],0,phys.leptons[1],0).second;
-      double dphill=fabs(deltaPhi(phys.leptons[0].phi(),phys.leptons[1].phi()));
-      TVector2 redZll(phys.leptons[0].px()+phys.leptons[1].px(),phys.leptons[0].py()+phys.leptons[1].py());
-      TVector2 redZvv(zvv.px(),zvv.py());
-      double zllptL=redZll*bisector;
-      double zvvptL=redZvv*bisector;
-      
-      TVector2 genbisector = rmetComp.defineThrust(phys.genleptons[0],0,phys.genleptons[1],0).second;
-      TVector2 genredZll(phys.genleptons[0].px()+phys.genleptons[1].px(),phys.genleptons[0].py()+phys.genleptons[1].py());
-      TVector2 genredZvv(genzvv.px(),genzvv.py());
-      double genzllptL=genredZll*bisector;
-      double genzvvptL=genredZvv*bisector;
-
       //subcategory analysis
       for(size_t ic=0; ic<sizeof(cats)/sizeof(TString); ic++)
 	for(size_t isc=0; isc<sizeof(subCats)/sizeof(TString); isc++)
@@ -261,51 +228,37 @@ int main(int argc, char* argv[])
 		controlHistos.fillHisto("hpt"+hptvars[ivar],ctf, higgs.pt(),newweight,true);  
 	      }
 	    
-	    //higgs recoil
-	    controlHistos.fillHisto("recounclustrecoil",ctf, unclusteredRecoil.pt(),weight);  
-	    controlHistos.fillHisto("deltaunclustrecoil",ctf, unclusteredRecoil.pt()-higgs.pt(),weight);  
-	    controlHistos.fillHisto("deltaphiunclustrecoil",ctf, fabs(deltaPhi(unclusteredRecoil.phi(),higgs.phi())),weight);  
-	  
-	    controlHistos.fillHisto("recozvvpt",ctf, zvv.pt(),weight);  
-	    controlHistos.fillHisto("genzvvpt",ctf, genzvv.pt(),weight);  
-	    controlHistos.fillHisto("deltazvvptL",ctf, zvvptL-genzvvptL,weight);  
-	    controlHistos.fillHisto("deltazvvpt",ctf, zvv.pt()-genzvv.pt(),weight);  
-
-	    controlHistos.fillHisto("recodeltacmzz",ctf, cmZll.pt()-cmZvv.pt(),weight);  
-	    controlHistos.fillHisto("gendeltacmzz",ctf, cmGenZll.pt()-cmGenZvv.pt(),weight);  
-	    controlHistos.fillHisto("deltacmzpt",ctf, cmZll.pt()-cmGenZll.pt(),weight);  
-	    controlHistos.fillHisto("deltacmzvvpt",ctf, cmZvv.pt()-cmGenZvv.pt(),weight);  
-
 	    controlHistos.fillHisto("recozpt",ctf, zll.pt(),weight);  
 	    controlHistos.fillHisto("genzpt",ctf, genzll.pt(),weight);  
-	    controlHistos.fillHisto("deltazptL",ctf, zllptL-genzllptL,weight);  
-	    controlHistos.fillHisto("deltazpt",ctf, zll.pt()-genzll.pt(),weight);  
-
+	    controlHistos.fillHisto("recozvvpt",ctf, zvv.pt(),weight);  
+	    controlHistos.fillHisto("genzvvpt",ctf, genzvv.pt(),weight);  
+	    controlHistos.fillHisto("reconjets",ctf, jetsp4.size(),weight);      	    
 	    controlHistos.fillHisto("gennjets",ctf, genjets.size(),weight);    
-	    controlHistos.fillHisto("reconjets",ctf, jetsp4.size(),weight);      
-	    controlHistos.fillHisto("deltanjets",ctf, jetsp4.size()-genjets.size(),weight);
-
 	    controlHistos.fillHisto("recomt",ctf, transverseMass,weight);      
-	    controlHistos.fillHisto("genmt",ctf, gentransverseMass,weight);      
-	    controlHistos.fillHisto("deltamt",ctf, transverseMass-gentransverseMass,weight);      
-	    
-	    controlHistos.fillHisto("recosummtl2met",ctf,mtl2met[0]+mtl2met[1],weight);
-	    controlHistos.fillHisto("gensummtl2met",ctf,genmtl2met[0]+genmtl2met[1],weight);
-	    controlHistos.fillHisto("deltasummtl2met",ctf,(mtl2met[0]+mtl2met[1])-(genmtl2met[0]+genmtl2met[1]),weight);	    
-	    
+	    controlHistos.fillHisto("genm",ctf, higgs.mass(),weight);      
+
+	    //reduced MET
 	    controlHistos.fill2DHisto("recoredmetcomps", ctf,rmetL,rmetT,weight);
 	    controlHistos.fillHisto("recoredmetL", ctf,rmetL,weight);
-	    controlHistos.fillHisto("recoredmetT", ctf,rmetT,weight);	
-	    controlHistos.fill2DHisto("genredmetcomps", ctf,genrmetL,genrmetT,weight);
-	    controlHistos.fillHisto("genredmetL", ctf,genrmetL,weight);
-	    controlHistos.fillHisto("genredmetT", ctf,genrmetT,weight);	
+	    controlHistos.fillHisto("recoredmetT", ctf,rmetT,weight);
+	    controlHistos.fillHisto("recoredmet", ctf,rmet,weight);	
+
+
+	    //higgs recoil
+	    controlHistos.fillHisto("recoprefrecoil",ctf, recoilEstimate.pt(),weight);  
+	    controlHistos.fillHisto("deltaunclustrecoil",ctf, recoilEstimate.pt()-higgs.pt(),weight);  
+	    controlHistos.fillHisto("deltaphiunclustrecoil",ctf, fabs(deltaPhi(recoilEstimate.phi(),higgs.phi())),weight);  
+
+	    //pseudo-CM distributions
+	    controlHistos.fillHisto("recomtcm",ctf, transverseMass200,weight);  
+	    controlHistos.fillHisto("recodeltacmzz",ctf, cm200Zll.pt()-cm200Zvv.pt(),weight);  
+	    controlHistos.fillHisto("recocmzpt",ctf, cm200Zll.pt(),weight);  
+	    controlHistos.fillHisto("recomzvvpt",ctf, cm200Zvv.pt(),weight);  
 	    
-	    controlHistos.fill2DHisto("recoredmetcompsminrecoil", ctf,rmetLminrecoil,rmetTminrecoil,weight);
-	    controlHistos.fillHisto("recoredmetLminrecoil", ctf,rmetLminrecoil,weight);
-	    controlHistos.fillHisto("recoredmetTminrecoil", ctf,rmetTminrecoil,weight);	
-	    controlHistos.fill2DHisto("genredmetcompsminrecoil", ctf,genrmetLminrecoil,genrmetTminrecoil,weight);
-	    controlHistos.fillHisto("genredmetLminrecoil", ctf,genrmetLminrecoil,weight);
-	    controlHistos.fillHisto("genredmetTminrecoil", ctf,genrmetTminrecoil,weight);	
+	    controlHistos.fillHisto("recomtcm400",ctf, transverseMass400,weight);  
+	    controlHistos.fillHisto("recodeltacmzz400",ctf, cm400Zll.pt()-cm400Zvv.pt(),weight);  
+	    controlHistos.fillHisto("recocmzpt400",ctf, cm400Zll.pt(),weight);  
+	    controlHistos.fillHisto("recomzvvpt400",ctf, cm400Zvv.pt(),weight);  
 	  }
     }
   

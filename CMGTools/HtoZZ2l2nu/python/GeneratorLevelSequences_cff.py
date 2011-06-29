@@ -1,5 +1,5 @@
 import FWCore.ParameterSet.Config as cms
-#from HiggsAnalysis.HiggsToWW2Leptons.HWWKFactorProducer_cfi import KFactorProducer
+from HiggsAnalysis.HiggsToWW2Leptons.HWWKFactorProducer_cfi import KFactorProducer
 from math import floor
 import re
 
