@@ -4,6 +4,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
 
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "DataFormats/Common/interface/Ptr.h"
 
 #include <memory>
@@ -51,11 +52,22 @@ public:
   /// Overides the methods reco::Candidate so that it can be used with
   /// the TopProjector.
   virtual reco::CandidatePtr sourceCandidatePtr(reco::Candidate::size_type i) const{
-    return reco::CandidatePtr(sourcePtr_.id(), sourcePtr_.get(), sourcePtr_.key());
+
+    if( sourceCandidatePtr_.isNull() ) {
+      return reco::CandidatePtr(sourcePtr_.id(), sourcePtr_.get(), sourcePtr_.key());
+    }
+    else 
+      return sourceCandidatePtr_;
   }
 
+  virtual void setSourceCandidatePtr( const reco::CandidatePtr& ptr ) {
+    sourceCandidatePtr_ = ptr;
+  };
+
+
 private:
-  PATPtr sourcePtr_;
+  PATPtr       sourcePtr_;
+  reco::CandidatePtr sourceCandidatePtr_; 
 
   friend class cmg::PhysicsObjectFactory<PATPtr>;
   friend class cmg::Factory<cmg::PhysicsObjectWithPtr<PATPtr> >;
