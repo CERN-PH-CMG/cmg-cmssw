@@ -13,34 +13,14 @@ gROOT.Macro( os.path.expanduser( '~/rootlogon.C' ) )
 #file = TFile( sys.argv[1] )
 #events = file.Get('Events')
 
-def init(pattern):
-    events = Chain('Events', pattern)
-
-    events.SetAlias('pfjets','cmgPFJets_cmgPFJetSel__PAT')
-    events.SetAlias('jets','cmgBaseJets_cmgPFBaseJetSel__PAT')
-    events.SetAlias('mht','cmgBaseMETs_RA2MHTPFJet30__SUSY')
-    events.SetAlias('ht','cmgBaseMETs_RA2MHTPFJet50Central__SUSY')
-    events.SetAlias('met','cmgBaseMETs_cmgPFMET__PAT')
-    events.SetAlias('ele','cmgElectrons_cmgElectronSel__PAT')
-    events.SetAlias('mu','cmgMuons_cmgMuonSel__PAT')
-    
-    events.SetAlias('hbheNoiseFilter','bool_HBHENoiseFilterResultProducer_HBHENoiseFilterResult_PAT.obj')
-    events.SetAlias('inconsMuons', 'bool_inconsistentMuonsTagging_Result_PAT.obj')
-    events.SetAlias('greedyMuons', 'bool_greedyMuonsTagging_Result_PAT.obj')
-    
-    events.SetAlias('run','EventAuxiliary.id().run()')
-    events.SetAlias('lumi','EventAuxiliary.id().luminosityBlock()')
-
-    return events
-
-
 filters = 'hbheNoiseFilter && greedyMuons && inconsMuons'
 NOTfilters = '!(%s)' % filters
 
-jetId = 'pfjets.obj.component(5).fraction()<0.99 && pfjets.obj.component(4).fraction()<0.99'
+
+jetId = 'pfJetsVeryLoose99Failed.@obj.size()==0'
 NOTjetId = '!(%s)' % jetId
 
-jetIdTight = 'pfjets.obj.component(5).fraction()<0.95 && pfjets.obj.component(4).fraction()<0.95'
+jetIdTight = 'pfJetsVeryLoose95Failed.@obj.size()==0'
 NOTjetIdTight = '!(%s)' % jetIdTight
 
 fullCleaning = filters + ' && ' + jetId
@@ -48,6 +28,7 @@ fullCleaning = filters + ' && ' + jetId
 leptonVeto = 'mu.@obj.size()==0 && ele.@obj.size()==0'
 NOTleptonVeto = leptonVeto + ' && ' + jetId
 
+# the following cut probably does not work correctly in root...
 leptonVeto2 = '(mu.@obj.size()==0 || mu.obj.relIso()<0.1) && (ele.@obj.size()==0 || ele.obj.relIso()<0.1)'
 
 highMHT = 'mht.obj[0].pt()>600 && ht.obj[0].sumEt()>350'
@@ -55,17 +36,19 @@ highMHT = 'mht.obj[0].pt()>600 && ht.obj[0].sumEt()>350'
 allCuts = fullCleaning + ' && ' + leptonVeto + ' && ' + highMHT
 allCutsNoVeto = fullCleaning + ' && ' + highMHT
 
+evSel = 'run==166782 && lumi==525 && event == 565817524'
 
-def setEventList( cut=None ):
+
+def setEventList( tree, cut=None ):
     print 'now browsing the full tree... might take a while, but drawing will then be faster!'
-    events.Draw('>>pyplus', cut)
+    tree.Draw('>>pyplus', cut)
     from ROOT import gDirectory
     pyplus = gDirectory.Get('pyplus')
     pyplus.SetReapplyCut(True)
-    events.SetEventList(pyplus)
+    tree.SetEventList(pyplus)
     
-def scan( cut=None ):
-    out = events.Scan('EventAuxiliary.id().run():EventAuxiliary.id().luminosityBlock():EventAuxiliary.id().event():mht.obj.pt():met.obj.pt():ht.obj.sumEt()', cut, 'colsize=14')
+def scan( tree, cut=None ):
+    out = tree.Scan('EventAuxiliary.id().run():EventAuxiliary.id().luminosityBlock():EventAuxiliary.id().event():mht.obj.pt():met.obj.pt():ht.obj.sumEt()', cut, 'colsize=14')
 
 
 def lumiReport( cuts=None, hist=None, opt=''):
@@ -78,5 +61,16 @@ def lumiReport( cuts=None, hist=None, opt=''):
 
 
 # can create other trees with other set of files
-tree1 = init(sys.argv[1])
-events = tree1
+sys.path.insert(0,'.')
+from AliasSetter import * 
+from aliases import *
+
+pattern = sys.argv[1]
+
+events = Chain('Events', pattern)
+eventsAliases = AliasSetter(events, cmgBasic, 'ANA')
+eventsAliases.setAliases(ra2, 'SUSY')
+
+lumi = Chain('LuminosityBlocks', pattern)
+lumiAliases = AliasSetter(lumi, lumiBlocks, 'ANA')
+
