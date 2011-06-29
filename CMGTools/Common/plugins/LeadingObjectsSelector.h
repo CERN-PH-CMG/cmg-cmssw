@@ -8,6 +8,8 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
+#include "DataFormats/Candidate/interface/CandidateFwd.h"
+
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -70,7 +72,9 @@ void cmg::LeadingObjectsSelector<T>::produce(edm::Event& iEvent, const edm::Even
             std::cout << "The selected index was " << index << std::endl;
         }
         for(unsigned int i = 0; i < index; i++){
-            result->push_back(cands->at(i));
+	  reco::CandidatePtr ptrToMother( cands, i );
+	  result->push_back(cands->at(i));
+	  result->back().setSourceCandidatePtr( ptrToMother );
         }
         if(verbose_){
             std::cout << "Copied " << result->size() << " events" << std::endl;

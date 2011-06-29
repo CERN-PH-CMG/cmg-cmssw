@@ -7,7 +7,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 pickRelVal = False
 
 # turn on when running on MC
-runOnMC = True
+runOnMC = False
 
 # AK5 sequence with no cleaning is the default
 # the other sequences can be turned off with the following flags.
@@ -33,10 +33,10 @@ if runCMG:
     doEmbedPFCandidatesInTaus = False
 
 # process.load("CommonTools.ParticleFlow.Sources.source_ZtoMus_DBS_cfi")
-process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
+process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
 sep_line = "-" * 50
 print sep_line
@@ -53,21 +53,23 @@ print sep_line
 ### SOURCE DEFINITION  ################################################################
 
 
-process.source.fileNames = cms.untracked.vstring(['/store/relval/CMSSW_4_2_3/RelValZTT/GEN-SIM-RECO/START42_V12-v2/0062/4CEA9C47-287B-E011-BAB7-00261894396B.root'])
+# process.source.fileNames = cms.untracked.vstring(['/store/relval/CMSSW_4_2_3/RelValZTT/GEN-SIM-RECO/START42_V12-v2/0062/4CEA9C47-287B-E011-BAB7-00261894396B.root'])
+
 # process.source.fileNames = cms.untracked.vstring(['file:PFAOD.root'])
 
-#process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.source_maxime_cff")
+# process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.source_maxime_cff")
+process.load("CMGTools.Common.sources.SingleMu.Run2011A_May10ReReco_v1.AOD.source_cff")
 
 
 print "WARNING!!!!!!!!!!!!!!!! remove the following line (see .cfg) before running on the batch!"
-# process.source.fileNames = [process.source.fileNames[0]]
+process.source.fileNames = process.source.fileNames[:10]
 
 if pickRelVal:
     process.source = cms.Source(
         "PoolSource",
         fileNames = cms.untracked.vstring(
         pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_2_3'
-                              , relVal        = 'RelValQCD_FlatPt_15_3000'
+                              , relVal        = 'RelValTTbar'
                               , globalTag     = 'MC_42_V12'
                               , numberOfFiles = 1
                               )
@@ -136,6 +138,8 @@ addPATElectronID( process, postfixAK5 , runOnMC )
 # lepton cleaning, AK5PFJets. This sequence is a clone of the AK5 sequence defined previously.
 # just modifying the x-cleaning parameters, and the isolation cut for x-cleaning
 
+print 'cloning AK5 sequence to prepare AK5LC sequence...'
+
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
 postfixLC = 'LC'
 # just cloning the first sequence, and enabling lepton cleaning 
@@ -149,6 +153,7 @@ getattr(process,"pfIsolatedElectrons"+postfixAK5LC).combinedIsolationCut = 0.2
 
 #COLIN : need to add the VBTF e and mu id
 
+print 'cloning AK5 sequence to prepare AK5LC sequence...Done'
 
 # ---------------- Sequence AK7, no lepton x-cleaning ---------------
 

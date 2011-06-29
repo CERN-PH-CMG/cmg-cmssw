@@ -9,6 +9,7 @@ from CMGTools.Common.skims.cmgBaseJetSel_cfi import cmgBaseJetSel
 from CMGTools.Common.skims.leadingCMGBaseJetSelector_cfi import leadingCMGBaseJetSelector
 from CMGTools.Common.skims.leadingCMGPFJetSelector_cfi import leadingCMGPFJetSelector
 
+
 # PF jets -------------------------------------------------------
 
 # leading jets
@@ -37,9 +38,12 @@ cmgPFJetSel.cut = 'pt()>15'
 cmgPFBaseJetSel.cut = 'pt()>15'
 cmgCaloBaseJetSel.cut = 'pt()>15'
 
+from CMGTools.Common.jetId_cff import *
+
 pfJetSequence = cms.Sequence(
     cmgPFJet +
     cmgPFJetSel +
+    jetIdSequence + 
     cmgPFJetLead +
     cmgPFBaseJet +
     cmgPFBaseJetSel +

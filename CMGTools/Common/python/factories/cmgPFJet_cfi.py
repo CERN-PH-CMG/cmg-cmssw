@@ -5,13 +5,15 @@ pfJetFactory = cms.PSet(
        baseJetFactory = baseJetFactory.clone()
        )
 from CMGTools.Common.selections.btaggedjet_cfi import trackCountingHighEffBJetTags
-from CMGTools.Common.selections.jetid_cfi import *
+from CMGTools.Common.selections.jetId_cfi import *
 
 cmgPFJet = cms.EDFilter(
     "PFJetPOProducer",
     cfg = pfJetFactory.clone(),
     cuts = cms.PSet(
        btag = trackCountingHighEffBJetTags.clone(),
+       veryLooseJetId99 = veryLooseJetId99.clone(),
+       veryLooseJetId95 = veryLooseJetId95.clone(),       
        looseJetId = looseJetId.clone(),
        mediumJetId = mediumJetId.clone(),
        tightJetId = tightJetId.clone(),
@@ -20,5 +22,5 @@ cmgPFJet = cms.EDFilter(
 )
 
 # to test another jet ID, do something like this in your cfg:
-# process.load('CMGTools.Common.selections.jetid_cfi')
+# process.load('CMGTools.Common.selections.jetId_cfi')
 # process.cmgPFJet.cuts.tightJetId = tightJetId.clone()

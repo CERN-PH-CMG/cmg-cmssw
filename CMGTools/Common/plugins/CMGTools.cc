@@ -2,6 +2,10 @@
 #include "CMGTools/Common/plugins/TopProjector.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
+// top projectors
+
+DEFINE_FWK_MODULE(TPCMGPFJetOnPFJet); 
+
 DEFINE_FWK_MODULE(MultiObjectPOProducer);
 DEFINE_FWK_MODULE(PhotonPOProducer);
 DEFINE_FWK_MODULE(DiPhotonPOProducer);

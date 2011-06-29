@@ -4,28 +4,35 @@
 from ROOT import gDirectory, TLegend,gPad, TCanvas
 nEvents = 999999999999
 
-plotFilters = True
+plotFilters = False
+met = 'mht'
 
 # MET plot, effect of jetID and cleaning filters
 
-# addCut = ' && ht.obj.sumEt()>350'
+addCut = ' && ht.obj.sumEt()>350'
 # addCut = ' && met.obj.et()<500'
-addCut = ''
+# addCut = ''
 
-events.Draw('met.obj.et()', '1' + addCut, '', nEvents)
+events.Draw(met + '.obj.et()', '1' + addCut, '', nEvents)
 
 h1 = events.GetHistogram()
-h1.SetTitle(';MET (GeV)')
+
+if met == 'met':
+    h1.SetTitle(';MET (GeV)')
+elif met == 'mht':
+    h1.SetTitle(';MHT (GeV)')
+else:
+    pass
 
 h2 = h1.Clone('h2')
 h2.Reset()
 h3 = h1.Clone('h3')
 h3.Reset()
     
-events.Project('h2', 'met.obj.et()',NOTjetIdTight + addCut, '', nEvents)
+events.Project('h2', met + '.obj.et()',NOTjetIdTight + addCut, '', nEvents)
 
 if plotFilters:
-    events.Project('h3', 'met.obj.et()',NOTfilters + addCut, '', nEvents)
+    events.Project('h3', met + '.obj.et()',NOTfilters + addCut, '', nEvents)
 
 h1.SetLineWidth(2)
 h2.SetFillStyle(3002)

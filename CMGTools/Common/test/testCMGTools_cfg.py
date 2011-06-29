@@ -19,11 +19,11 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
     )
 
 
-# process.source.fileNames = cms.untracked.vstring(
-#    'file:../prod/patTuple_PF2PAT.root'
-#    )
+process.source.fileNames = cms.untracked.vstring(
+    'file:../prod/patTuple_PF2PAT.root'
+    )
 
-process.load("CMGTools.Common.sources.SingleMu.Run2011A_May10ReReco_v1.AOD.PAT_CMG_V2.source_PAT_cff")
+# process.load("CMGTools.Common.sources.SingleMu.Run2011A_May10ReReco_v1.AOD.PAT_CMG_V2.source_PAT_cff")
 
 # reading the first 10 files:
 nFiles = 10
@@ -35,7 +35,8 @@ print process.source.fileNames
 # output module for EDM event (ntuple)
 process.out.fileName = cms.untracked.string('tree_testCMGTools.root')
 from CMGTools.Common.eventContent.everything_cff import everything 
-process.out.outputCommands = cms.untracked.vstring( 'drop *')
+process.out.outputCommands = cms.untracked.vstring( 'drop *',
+                                                    'keep *_*IdTight*_*_*')
 process.out.outputCommands.extend( everything ) 
 process.out.dropMetaData = cms.untracked.string('PRIOR')
 
