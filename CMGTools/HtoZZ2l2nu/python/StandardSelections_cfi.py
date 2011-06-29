@@ -1,7 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 # base values for trigger event
-BaseTriggerSelection = cms.PSet( triggerPaths = cms.vstring(),
+BaseTriggerSelection = cms.PSet( source = cms.InputTag("TriggerResults::HLT"),
+                                 triggerPaths = cms.vstring(),
                                  triggerObjects = cms.VInputTag("eleTriggerMatchPFlow","muTriggerMatchPFlow")
                                  )
 from CMGTools.HtoZZ2l2nu.TriggerSequences_cff import getTriggerPaths
@@ -45,15 +46,15 @@ BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlow"),
                                )
 
 # base values for photon selection ----------------------------------------------
-BasePhotonsSelection = cms.PSet( source = cms.InputTag("selectedPatPhotons"),
+BasePhotonsSelection = cms.PSet( source = cms.InputTag("patPhotons"),
                                  ebrechits = cms.InputTag("reducedEcalRecHitsEB"),
                                  eerechits = cms.InputTag("reducedEcalRecHitsEE"),
-                                 minEt = cms.double(0),
+                                 minEt = cms.double(0), 
                                  maxEta = cms.double(2.5),
-                                 minSihihEB = cms.double(0.013),
-                                 minSihihEE = cms.double(0.03),
+                                 maxSihihEB = cms.double(0.013),
+                                 maxSihihEE = cms.double(0.03),
                                  maxHoE = cms.double(0.05),
-                                 minSipipEb = cms.double(0.0)
+                                 minSipipEB = cms.double(0.0)
                                  )
 
 # base values for electron selection ----------------------------------------------

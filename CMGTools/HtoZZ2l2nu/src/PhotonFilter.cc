@@ -8,16 +8,17 @@ namespace photon{
   CandidateCollection filter(edm::Handle<edm::View<reco::Candidate> > &hPhoton,
 			     EcalClusterLazyTools &lazyTool,
 			     edm::Handle<EcalRecHitCollection> ebrechits,
-			     const edm::ParameterSet &iConfig)
+			     const edm::ParameterSet &iConfig,
+			     double minEt)
   {
     CandidateCollection selPhotons;
 
     try{
 
-      double minEt = iConfig.getParameter<double>("minEt");
+      minEt = max(minEt,iConfig.getParameter<double>("minEt"));
       double maxEta = iConfig.getParameter<double>("maxEta");
-      double minSihihEB=iConfig.getParameter<double>("minSihihEB");
-      double minSihihEE=iConfig.getParameter<double>("minSihihEE");
+      double maxSihihEB=iConfig.getParameter<double>("maxSihihEB");
+      double maxSihihEE=iConfig.getParameter<double>("maxSihihEE");
       double maxHoE=iConfig.getParameter<double>("maxHoE");
       double minSipipEb=iConfig.getParameter<double>("minSipipEB");
 
@@ -27,7 +28,7 @@ namespace photon{
 	  reco::CandidatePtr photonPtr = hPhoton->ptrAt(iPhoton);
 	  const pat::Photon *photon = dynamic_cast<const pat::Photon *>( photonPtr.get() );
 	  reco::SuperClusterRef scphoton = photon->superCluster();
-	  if(!scphoton.isNull()) continue;
+	  if(scphoton.isNull()) continue;
 	  const reco::CaloClusterPtr  seed_clu = scphoton->seed();
   
 	  //kinematics
@@ -48,15 +49,17 @@ namespace photon{
 	  float hoe = photon->hadronicOverEm();
 	  bool hasId(hoe<maxHoE);
 	  DetId id=scphoton->seed()->hitsAndFractions()[0].first;
+	  bool hasOutofTime(false);
 	  if(photon->isEB())
 	    {
 	      EcalRecHitCollection::const_iterator seedcry_rh = ebrechits->find( id );
-	      if( seedcry_rh != ebrechits->end() ) hasId &= (  !seedcry_rh->checkFlag(EcalRecHit::kOutOfTime) );
+	      if( seedcry_rh != ebrechits->end() ) hasOutofTime = seedcry_rh->checkFlag(EcalRecHit::kOutOfTime);
+	      hasId &= (!hasOutofTime);
 	      hasId &= (sipip>minSipipEb);
-	      hasId &= (sihih>minSihihEB);
+	      hasId &= (sihih<maxSihihEB);
 	    }
 	  else
-	    hasId &= (sihih>minSihihEE);
+	    hasId &= (sihih<maxSihihEE);
 	    
 
 	  //isolation (apply rho correction? relIso )
@@ -66,7 +69,7 @@ namespace photon{
 	  bool isIso( trkIso < 2.0 + 0.001*et );
 	  isIso &= ( ecalIso < 4.2 + 0.003*et );
 	  isIso &= ( hcalIso < 2.2 + 0.001*et );
-	  
+
 	  if(!isGood || !isPrompt || !hasId || !isIso) continue;
 	  selPhotons.push_back( photonPtr );
 	}
