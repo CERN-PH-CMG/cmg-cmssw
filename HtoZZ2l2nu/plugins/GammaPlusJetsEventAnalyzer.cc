@@ -128,6 +128,52 @@ void GammaPlusJetsEventAnalyzer::analyze(const edm::Event &event, const edm::Eve
       if(puWeightHandle.isValid()) weight = *(puWeightHandle.product());
     }catch(std::exception &e){
     }
+    ev.weight=weight;
+
+    //pileup information
+    int npuOOT(0),npuIT(0);
+    edm::Handle<std::vector<PileupSummaryInfo> > puInfoH;
+    try{
+      event.getByType(puInfoH);
+      if(puInfoH.isValid())
+	{
+	  for(std::vector<PileupSummaryInfo>::const_iterator it = puInfoH->begin(); it != puInfoH->end(); it++)
+	    {
+	      if(it->getBunchCrossing()==0) npuIT += it->getPU_NumInteractions();
+	      else                          npuOOT += it->getPU_NumInteractions();
+	    }
+	}
+    }catch(std::exception &e){
+    }
+    ev.ngenITpu=npuIT;
+    ev.ngenOOTpu=npuOOT;
+
+
+  //retrieve pdf info
+  edm::Handle<GenEventInfoProduct> genEventInfoProd;
+  try{
+    event.getByType( genEventInfoProd );
+    if(genEventInfoProd.isValid())
+      {
+	ev.genWeight = genEventInfoProd->weight();
+	ev.qscale = genEventInfoProd->qScale();
+	if(genEventInfoProd->pdf())
+	  {
+	    ev.x1  = genEventInfoProd->pdf()->x.first;
+	    ev.x2  = genEventInfoProd->pdf()->x.second;
+	    ev.id1 = genEventInfoProd->pdf()->id.first;
+	    ev.id2 = genEventInfoProd->pdf()->id.second;
+	  }
+	if(genEventInfoProd->binningValues().size()>0) ev.pthat = genEventInfoProd->binningValues()[0];
+	ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]=1;
+	ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]=1;
+	ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]=1;
+	ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]=1;
+	ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]=1;
+      }
+  }catch(std::exception &e){
+  }
+
 
     //get trigger results
     Int_t maxthr(0);

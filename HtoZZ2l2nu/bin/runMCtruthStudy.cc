@@ -70,16 +70,20 @@ int main(int argc, char* argv[])
 
       if(itier)
 	{
-	  controlHistos.addHistogram( new TH1D (tiers[itier]+"mt", ";"+tiers[itier]+" M_{T};Events", 100, 100.,500.) );
+	  controlHistos.addHistogram( new TH1D (tiers[itier]+"mt", ";"+tiers[itier]+" M_{T};Events", 100, 100.,900.) );
 	  controlHistos.addHistogram( new TH1D (tiers[itier]+"prefrecoil", ";"+tiers[itier]+" h_{T};Events", 100,0,200) );
-	  controlHistos.addHistogram( new TH1D (tiers[itier]+"mtcm", ";"+tiers[itier]+" M_{T}(pCM);Events", 100, 100.,500.) );
-	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"deltacmzz", ";p_{T}^{ll}-p_{T}^{vv}(pCM)", 100,0,250) );
-	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"cmzpt", ";p_{T}^{ll}(pCM)", 100,250,0) );
-	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"cmzvvpt", ";p_{T}^{#nu#nu}(pCM)", 100,0,250) );
-	  controlHistos.addHistogram( new TH1D (tiers[itier]+"mtcm400", ";"+tiers[itier]+" M_{T}(pCM);Events", 100, 100.,500.) );
-	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"deltacmzz400", ";p_{T}^{ll}-p_{T}^{vv}(pCM)", 100,0,250) );
-	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"cmzpt400", ";p_{T}^{ll}(pCM)", 100,0,250) );
-	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"cmzvvpt400", ";p_{T}^{#nu#nu}(pCM)", 100,0,250) );
+	  controlHistos.addHistogram( new TH1D (tiers[itier]+"mtcm", ";"+tiers[itier]+" M_{T}(pCM);Events", 100, 100.,900.) );
+	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"deltacmzz", ";p_{T}^{ll}-p_{T}^{vv}(pCM)", 100,-250,250) );
+	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"cmzpt", ";p_{T}^{ll}(pCM)", 100,0,500) );
+	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"cmzvvpt", ";p_{T}^{#nu#nu}(pCM)", 100,0,500) );
+	  controlHistos.addHistogram( new TH1D (tiers[itier]+"mtcm400", ";"+tiers[itier]+" M_{T}(pCM 400);Events", 100, 100.,900.) );
+	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"deltacmzz400", ";p_{T}^{ll}-p_{T}^{vv}(pCM 400)", 100,-250,250) );
+	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"cmzpt400", ";p_{T}^{ll}(pCM 400)", 100,0,500) );
+	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"cmzvvpt400", ";p_{T}^{#nu#nu}(pCM 400)", 100,0,500) );
+
+	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"dilcmzvvpt", ";red E_{T}^{miss}(dilepton CM)", 100,0,250) );
+	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"dilcmdphistar", ";#Delta#phi(red E_{T}^{miss},p_{T,lab}^{Z})", 100,-3.2,3.2) );
+	  controlHistos.addHistogram(  new TH1D (tiers[itier]+"dilcmdphistarrecoil", ";#Delta#phi(red E_{T}^{miss},h_{T,lab})", 100,-3.2,3.2) );
 	  
 	  controlHistos.addHistogram( new TH1F (tiers[itier]+"redmet", ";"+tiers[itier]+" red-E_{T}^{miss};Events", 100, 0.,500.) );
 	  controlHistos.addHistogram( new TH1F (tiers[itier]+"redmetL", ";"+tiers[itier]+" red-E_{T}^{miss,#parallel};Events", 100, -200.,200.) );
@@ -139,7 +143,7 @@ int main(int argc, char* argv[])
       evSummaryHandler.getEntry(iev);
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
-      if(phys.genhiggs.size()==0) continue;
+      //      if(phys.genhiggs.size()==0) continue;
 
       //event categories
       TString evcat("");
@@ -186,11 +190,14 @@ int main(int argc, char* argv[])
            
       //redmet
       rmetComp.compute(phys.leptons[0], phys.leptons[0].info[0], phys.leptons[1], phys.leptons[1].info[0], jetsp4, zvv );
-      double rmet = rmetComp.reducedMET();
+      double rmet = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
       double rmetT = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       double rmetL = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;      
       int prefrecoil = rmetComp.getPreferedRecoil(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-
+      LorentzVector redMetp4(rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Px(),
+			     rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Py(),
+			     0,
+			     rmet);
       //
       LorentzVector recoilEstimate(prefrecoil==ReducedMETComputer::CLUSTERED ? clusteredRecoil : unclusteredRecoil );
 
@@ -206,6 +213,11 @@ int main(int argc, char* argv[])
       LorentzVector cm400Zvv(cmboost400(zvv));
       float transverseMass400 = mtComp.compute(cm400Zll,cm400Zvv,true);
 
+      
+      ROOT::Math::Boost dilcmboost(zll.BoostToCM());
+      LorentzVector dilcmRedMet(dilcmboost(redMetp4));
+      float dphistar=deltaPhi(dilcmRedMet.phi(),zll.phi());
+      float dphistarrec=deltaPhi(dilcmRedMet.phi(),recoilEstimate.phi());
 
       // cross-check (generator level)
       //       LorentzVector genRecoil2D(higgs);
@@ -243,22 +255,25 @@ int main(int argc, char* argv[])
 	    controlHistos.fillHisto("recoredmetT", ctf,rmetT,weight);
 	    controlHistos.fillHisto("recoredmet", ctf,rmet,weight);	
 
+	    controlHistos.fillHisto("recodilcmzvvpt",ctf,dilcmRedMet.pt(),weight);
+	    controlHistos.fillHisto("recodilcmdphistar",ctf,dphistar,weight);
+	    controlHistos.fillHisto("recodilcmdphistarrecoil",ctf,dphistarrec,weight);
 
 	    //higgs recoil
 	    controlHistos.fillHisto("recoprefrecoil",ctf, recoilEstimate.pt(),weight);  
-	    controlHistos.fillHisto("deltaunclustrecoil",ctf, recoilEstimate.pt()-higgs.pt(),weight);  
-	    controlHistos.fillHisto("deltaphiunclustrecoil",ctf, fabs(deltaPhi(recoilEstimate.phi(),higgs.phi())),weight);  
+	    controlHistos.fillHisto("deltaprefrecoil",ctf, recoilEstimate.pt()-higgs.pt(),weight);  
+	    controlHistos.fillHisto("deltaphiprefrecoil",ctf, fabs(deltaPhi(recoilEstimate.phi(),higgs.phi())),weight);  
 
 	    //pseudo-CM distributions
 	    controlHistos.fillHisto("recomtcm",ctf, transverseMass200,weight);  
 	    controlHistos.fillHisto("recodeltacmzz",ctf, cm200Zll.pt()-cm200Zvv.pt(),weight);  
 	    controlHistos.fillHisto("recocmzpt",ctf, cm200Zll.pt(),weight);  
-	    controlHistos.fillHisto("recomzvvpt",ctf, cm200Zvv.pt(),weight);  
+	    controlHistos.fillHisto("recocmzvvpt",ctf, cm200Zvv.pt(),weight);  
 	    
 	    controlHistos.fillHisto("recomtcm400",ctf, transverseMass400,weight);  
 	    controlHistos.fillHisto("recodeltacmzz400",ctf, cm400Zll.pt()-cm400Zvv.pt(),weight);  
 	    controlHistos.fillHisto("recocmzpt400",ctf, cm400Zll.pt(),weight);  
-	    controlHistos.fillHisto("recomzvvpt400",ctf, cm400Zvv.pt(),weight);  
+	    controlHistos.fillHisto("recocmzvvpt400",ctf, cm400Zvv.pt(),weight);  
 	  }
     }
   
