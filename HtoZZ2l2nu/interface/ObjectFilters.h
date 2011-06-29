@@ -94,7 +94,8 @@ namespace photon
   CandidateCollection filter(edm::Handle<edm::View<reco::Candidate> > &hPhoton, 
 			     EcalClusterLazyTools &lazyTool,
 			     edm::Handle<EcalRecHitCollection> ebrechits,
-			     const edm::ParameterSet &iConfig);
+			     const edm::ParameterSet &iConfig,
+			     double minEt=0.);
 }
 
 
