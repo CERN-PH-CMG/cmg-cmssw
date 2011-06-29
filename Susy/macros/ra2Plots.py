@@ -65,10 +65,17 @@ events.Draw('ht.obj.sumEt()')
 hist = events.GetHistogram()
 hist.SetTitle(';HT (GeV)')
 gPad.SetLogy()
+
 metCan.cd(4)
+
+# MET vs MHT
+
+canvas = TCanvas('metVsMHTCan','MET vs MHT', 1000,950)
 events.Draw('met.obj.et():mht.obj.et()','','col')
 hist = events.GetHistogram()
-hist.SetTitle(';MET (GeV);MHT (GeV)')
+hist.SetTitle(';MHT (GeV);MET (GeV)')
+gPad.SetLeftMargin(0.2)
+hist.GetYaxis().SetTitleOffset(1.7)
 
 ####################  Electrons  #######################
 
