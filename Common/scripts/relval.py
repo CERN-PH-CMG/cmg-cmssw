@@ -53,8 +53,8 @@ def processRelVal( relval, cfgFileName, process, negate, tier=None):
     if tier!=None:
         dataset += '/' + tier
         
-    outDir = '.' + relval.dataset
-    castorOutDir = castorBaseDir + '/' + relval.dataset
+    outDir = '.' + dataset
+    castorOutDir = castorBaseDir + '/' + dataset
 
     #if tier!=None:
     #    castorOutDir += '/' + tier
