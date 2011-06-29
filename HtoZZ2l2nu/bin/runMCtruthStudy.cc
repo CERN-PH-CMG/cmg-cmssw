@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
   for(size_t itier=0; itier<2; itier++)
     {
       if(itier)
-	controlHistos.addHistogram( new TH1D (tiers[itier]+"unclustrecoil", ";"+tiers[itier]+" h_{T};Events", 100,0,200) );
+	controlHistos.addHistogram( new TH1D (tiers[itier]+"prefrecoil", ";"+tiers[itier]+" h_{T};Events", 100,0,200) );
 
       controlHistos.addHistogram( new TH1D (tiers[itier]+"zpt", ";"+tiers[itier]+" p_{T}^{ll};Events", 100,0,400) );
       controlHistos.addHistogram( new TH1D (tiers[itier]+"zvvpt", ";"+tiers[itier]+" p_{T}^{#nu#nu};Events", 100,0,400) );
@@ -173,37 +173,7 @@ int main(int argc, char* argv[])
       float transverseMass=TMath::Power(TMath::Sqrt(TMath::Power(zll.pt(),2)+pow(zll.mass(),2))+TMath::Sqrt(TMath::Power(zvv.pt(),2)+pow(zll.mass(),2)),2);
       transverseMass-=TMath::Power(transvSum.pt(),2);
       transverseMass=TMath::Sqrt(transverseMass);
-      
-      //approximate transformation to rest frame
-      LorentzVector unclRecoil2D(unclusteredRecoil.px(),unclusteredRecoil.py(), 0,sqrt(pow(transverseMass,2)+pow(unclusteredRecoil.pt(),2)));
-      ROOT::Math::Boost cmboost(unclRecoil2D.BoostToCM());
-      LorentzVector cmZll(cmboost(zll));
-      LorentzVector cmZvv(cmboost(zvv));
-
-      float minmass(-1),massstep(10), mindiff(10000);
-      for(float imass=10; imass<=500; imass+=massstep)
-	{
-	  LorentzVector tmpRecoil2D(unclusteredRecoil.px(),unclusteredRecoil.py(), 0,sqrt(pow(imass,2)+pow(unclusteredRecoil.pt(),2)));
-	  ROOT::Math::Boost tmpcmboost(tmpRecoil2D.BoostToCM());
-	  LorentzVector tmpcmZll(tmpcmboost(zll));
-	  LorentzVector tmpcmZvv(tmpcmboost(zvv));
-	  float ptdiff=tmpcmZll.pt()-tmpcmZvv.pt();
-	  if(fabs(ptdiff)<fabs(mindiff)) 
-	    {
-	      mindiff=ptdiff;
-	      minmass=imass;
-	    }
-	  else break;
-	}
-      cout << minmass << " " << mindiff << endl;
-
-      LorentzVector genRecoil2D(higgs.px(),higgs.py(),0.,sqrt(pow(higgs.mass(),2)+pow(higgs.pt(),2)));
-      //LorentzVector genRecoil2D(higgs);
-      ROOT::Math::Boost cmgenboost(genRecoil2D.BoostToCM());
-      LorentzVector cmGenZll(cmgenboost(genzll));
-      LorentzVector cmGenZvv(cmgenboost(genzvv));
-      
-
+     
       //event categories
       TString evcat("");
       if(ev.cat==dilepton::EMU)  evcat="emu";
@@ -234,7 +204,29 @@ int main(int argc, char* argv[])
       double rmetLminrecoil = rmetComp.reducedMETComponents().second;
       double rmetT = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       double rmetL = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;      
+      int prefrecoil = rmetComp.getPreferedRecoil(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+
+      //
+      LorentzVector recoilEstimate(prefrecoil==ReducedMETComputer::CLUSTERED ? clusteredRecoil : unclusteredRecoil );
+
+      LorentzVector unclRecoil200(recoilEstimate.px(),recoilEstimate.py(), 0,sqrt(pow(200,2)+pow(recoilEstimate.pt(),2)));
+      ROOT::Math::Boost cmboost200(unclRecoil200.BoostToCM());
+      LorentzVector cm200Zll(cmboost(zll));
+      LorentzVector cm200Zvv(cmboost(zvv));
+
+      LorentzVector unclRecoil400(recoilEstimate.px(),recoilEstimate.py(), 0,sqrt(pow(400,2)+pow(recoilEstimate.pt(),2)));
+      ROOT::Math::Boost cmboost400(unclRecoil400.BoostToCM());
+      LorentzVector cm400Zll(cmboost(zll));
+      LorentzVector cm400Zvv(cmboost(zvv));
+
       
+      LorentzVector genRecoil2D(higgs.px(),higgs.py(),0.,sqrt(pow(higgs.mass(),2)+pow(higgs.pt(),2)));
+      //LorentzVector genRecoil2D(higgs);
+      ROOT::Math::Boost cmgenboost(genRecoil2D.BoostToCM());
+      LorentzVector cmGenZll(cmgenboost(genzll));
+      LorentzVector cmGenZvv(cmgenboost(genzvv));
+      
+
       rmetComp.compute(phys.genleptons[0], 0., phys.genleptons[1], 0., genjets, genzvv);
       double genrmetTminrecoil = rmetComp.reducedMETComponents().first;
       double genrmetLminrecoil = rmetComp.reducedMETComponents().second;
