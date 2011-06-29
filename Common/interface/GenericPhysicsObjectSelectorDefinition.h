@@ -6,10 +6,10 @@
    \brief    Selects PhysicsObjects basing on cuts provided with string cut parser
 
    \author   Giovanni Petrucciani
-   \version  $Id: GenericPhysicsObjectSelectorDefinition.h,v 1.2 2010/11/16 09:51:34 wreece Exp $
+   \version  $Id: GenericPhysicsObjectSelectorDefinition.h,v 1.3 2011/05/16 11:32:14 cbern Exp $
 */
 
-#include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
+#include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "CommonTools/Utils/interface/StringCutObjectSelector.h"
 #include "boost/iterator/transform_iterator.hpp"
 #include <functional>
@@ -21,7 +21,6 @@ namespace cmg {
   template< class T >
   struct GenericPhysicsObjectSelectorDefinition {
 
-/*     typedef cmg::PFJetCollection collection; */
     typedef std::vector< T > collection;
     typedef edm::Handle< collection > HandleToCollection;
     typedef collection  container;
@@ -54,6 +53,8 @@ namespace cmg {
 	
 	if( selector_(*pfc) ) {
 	  selected_.push_back( T(*pfc) );
+	  reco::CandidatePtr ptrToMother( hc, key );
+	  selected_.back().setSourceCandidatePtr( ptrToMother );
 	}
       }
     }

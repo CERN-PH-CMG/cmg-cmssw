@@ -30,13 +30,15 @@
 #include "CMGTools/Common/interface/PFJetFactory.h"
 
 #include "CMGTools/Common/interface/TauFactory.h"
-
 #include "CMGTools/Common/interface/JetScaler.h"
 #include "CMGTools/Common/interface/BaseJetFactory.h"
 #include "CMGTools/Common/interface/BaseMETFactory.h"
 #include "CMGTools/Common/interface/BaseMETModificationFactory.h"
 #include "CMGTools/Common/plugins/PhysicsObjectProducer.h"
 #include "CMGTools/Common/interface/TriggerObjectFactory.h"
+
+
+#include "CMGTools/Common/interface/GenericPhysicsObjectSelectorDefinition.h"
 
 // COLIN why not in plugins?
 #include "CMGTools/Common/interface/CutSummaryAnalyzer.h"
@@ -48,6 +50,7 @@
 #include "CommonTools/UtilAlgos/interface/SingleObjectSelector.h"
 #include "CommonTools/UtilAlgos/interface/ObjectSelector.h"
 #include "CommonTools/UtilAlgos/interface/SingleElementCollectionSelector.h"
+
 
 // Colin: should add cmg to the type names where applicable.
 
@@ -87,6 +90,7 @@ typedef PhysicsObjectProducer<cmg::TauEFactory> TauEPOProducer;
 typedef PhysicsObjectProducer<cmg::TauMuFactory> TauMuPOProducer;
 typedef PhysicsObjectProducer<cmg::MuEFactory> MuEPOProducer;
 
+// histogrammers 
 
 typedef cmg::HistogramAnalyzer<cmg::JetHistograms> PFJetHistogramsAnalyzer;
 typedef cmg::HistogramAnalyzer<cmg::TriggerResultHistograms> TriggerResultHistogramsAnalyzer;
@@ -124,6 +128,8 @@ typedef cmg::CutSummaryAnalyzer CutSummaryAnalyzer;
 typedef cmg::PhysicsObjectPrinter PhysicsObjectPrinter;
 
 
+
+
 // Leading-objects selectors.
 
 typedef cmg::LeadingObjectsSelector<pat::Jet> LeadingPatJetSelector;
@@ -137,100 +143,140 @@ typedef cmg::LeadingObjectsSelector<cmg::Muon> LeadingCMGMuonSelector;
 // Single object selectors.
 
 
-typedef SingleObjectSelector<
-  std::vector<cmg::DiFatJet>,
-  StringCutObjectSelector<cmg::DiFatJet>
-  > CmgDiFatJetSelector;
+/* typedef SingleObjectSelector< */
+/*   std::vector<cmg::DiFatJet>, */
+/*   StringCutObjectSelector<cmg::DiFatJet> */
+/*   > CmgDiFatJetSelector; */
 
-typedef SingleObjectSelector<
-  std::vector<cmg::DiPFJet>,
-  StringCutObjectSelector<cmg::DiPFJet>
-  > CmgDiPFJetSelector;
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiFatJet> > CmgDiFatJetSelector;
 
-typedef SingleObjectSelector<
-  std::vector<cmg::DiJet>,
-  StringCutObjectSelector<cmg::DiJet>
-  > CmgDiBaseJetSelector;
+/* typedef SingleObjectSelector< */
+/*   std::vector<cmg::DiPFJet>, */
+/*   StringCutObjectSelector<cmg::DiPFJet> */
+/*   > CmgDiPFJetSelector; */
+
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiPFJet> > CmgDiPFJetSelector;
+
+/* typedef SingleObjectSelector< */
+/*   std::vector<cmg::DiJet>, */
+/*   StringCutObjectSelector<cmg::DiJet> */
+/*   > CmgDiBaseJetSelector; */
+
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiJet> > CmgDiBaseJetSelector;
+
+/* typedef SingleObjectSelector< */
+/*   std::vector<cmg::Photon>, */
+/*   StringCutObjectSelector<cmg::Photon> */
+/*   > CmgPhotonSelector; */
+
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::Photon> > CmgPhotonSelector;
 
 
-typedef SingleObjectSelector<
-  std::vector<cmg::Photon>,
-  StringCutObjectSelector<cmg::Photon>
-  > CmgPhotonSelector;
+/* typedef SingleObjectSelector< */
+/*   std::vector<cmg::PFJet>, */
+/*   StringCutObjectSelector<cmg::PFJet> */
+/*   > CmgPFJetSelector; */
 
-typedef SingleObjectSelector<
-  std::vector<cmg::PFJet>,
-  StringCutObjectSelector<cmg::PFJet>
-  > CmgPFJetSelector;
+//COLIN need to use this selector instead of the standard one, so that sourceCandidatePtrs are properly set
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::PFJet> > CmgPFJetSelector;
 
-typedef SingleObjectSelector<
-  std::vector<cmg::BaseJet>,
-  StringCutObjectSelector<cmg::BaseJet>
-  > CmgBaseJetSelector;
 
-typedef SingleObjectSelector<
-  std::vector<cmg::BaseMET>,
-  StringCutObjectSelector<cmg::BaseMET>
-  > CmgBaseMETSelector;
+/* typedef SingleObjectSelector< */
+/*   std::vector<cmg::BaseJet>, */
+/*   StringCutObjectSelector<cmg::BaseJet> */
+/*   > CmgBaseJetSelector; */
 
-typedef SingleObjectSelector<
-  std::vector<cmg::Electron>,
-  StringCutObjectSelector<cmg::Electron>
-  > CmgElectronSelector;
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::BaseJet> > CmgBaseJetSelector;
 
-typedef SingleObjectSelector<
-  std::vector<cmg::Muon>,
-  StringCutObjectSelector<cmg::Muon>
-  > CmgMuonSelector;
+/* typedef SingleObjectSelector< */
+/*   std::vector<cmg::BaseMET>, */
+/*   StringCutObjectSelector<cmg::BaseMET> */
+/*   > CmgBaseMETSelector; */
 
-typedef SingleObjectSelector<
-  std::vector<cmg::DiMuon>,
-  StringCutObjectSelector<cmg::DiMuon>
-  > CmgDiMuonSelector;
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::BaseMET> > CmgBaseMETSelector;
 
-typedef SingleObjectSelector<
-  std::vector<cmg::Tau>,
-  StringCutObjectSelector<cmg::Tau>
-  > CmgTauSelector;
+/* typedef SingleObjectSelector< */
+/*   std::vector<cmg::Electron>, */
+/*   StringCutObjectSelector<cmg::Electron> */
+/*   > CmgElectronSelector; */
 
-typedef SingleObjectSelector<
-  std::vector<cmg::DiTau>,
-  StringCutObjectSelector<cmg::DiTau>
-  > CmgDiTauSelector;
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::Electron> > CmgElectronSelector;
 
-typedef SingleObjectSelector<
-  std::vector<cmg::TriggerObject>,
-  StringCutObjectSelector<cmg::TriggerObject>
-  > CmgTriggerObjectSelector;
+/* typedef SingleObjectSelector< */
+/*   std::vector<cmg::Muon>, */
+/*   StringCutObjectSelector<cmg::Muon> */
+/*   > CmgMuonSelector; */
 
-typedef SingleObjectSelector<
-  std::vector<cmg::DiElectron>,
-  StringCutObjectSelector<cmg::DiElectron>
-  > CmgDiElectronSelector;
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::Muon> > CmgMuonSelector;
 
-typedef SingleObjectSelector<
-  std::vector<cmg::WENu>,
-  StringCutObjectSelector<cmg::WENu>
-  > CmgWENuSelector;
+/* typedef SingleObjectSelector< */
+/*   std::vector<cmg::DiMuon>, */
+/*   StringCutObjectSelector<cmg::DiMuon> */
+/*   > CmgDiMuonSelector; */
 
-typedef SingleObjectSelector<
-  std::vector<cmg::WMuNu>,
-  StringCutObjectSelector<cmg::WMuNu>
-  > CmgWMuNuSelector;
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiMuon> > CmgDiMuonSelector;
 
-typedef SingleObjectSelector<
-  std::vector<cmg::TauE>,
-  StringCutObjectSelector<cmg::TauE>
-  > CmgTauESelector;
+/* typedef SingleObjectSelector< */
+/*   std::vector<cmg::Tau>, */
+/*   StringCutObjectSelector<cmg::Tau> */
+/*   > CmgTauSelector; */
 
-typedef SingleObjectSelector<
-  std::vector<cmg::TauMu>,
-  StringCutObjectSelector<cmg::TauMu>
-  > CmgTauMuSelector;
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::Tau> > CmgTauSelector;
 
-typedef SingleObjectSelector<
-  std::vector<cmg::MuE>,
-  StringCutObjectSelector<cmg::MuE>
-  > CmgMuESelector;
+/* typedef SingleObjectSelector< */
+/*   std::vector<cmg::DiTau>, */
+/*   StringCutObjectSelector<cmg::DiTau> */
+/*   > CmgDiTauSelector; */
+
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiTau> > CmgDiTauSelector;
+
+/* typedef SingleObjectSelector< */
+/*   std::vector<cmg::TriggerObject>, */
+/*   StringCutObjectSelector<cmg::TriggerObject> */
+/*   > CmgTriggerObjectSelector; */
+
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::TriggerObject> > CmgTriggerObjectSelector;
+
+/* typedef SingleObjectSelector< */
+/*   std::vector<cmg::DiElectron>, */
+/*   StringCutObjectSelector<cmg::DiElectron> */
+/*   > CmgDiElectronSelector; */
+
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiElectron> > CmgDiElectronSelector;
+
+/* typedef SingleObjectSelector< */
+/*   std::vector<cmg::WENu>, */
+/*   StringCutObjectSelector<cmg::WENu> */
+/*   > CmgWENuSelector; */
+
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::WENu> > CmgWENuSelector;
+
+/* typedef SingleObjectSelector< */
+/*   std::vector<cmg::WMuNu>, */
+/*   StringCutObjectSelector<cmg::WMuNu> */
+/*   > CmgWMuNuSelector; */
+
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::WMuNu> > CmgWMuNuSelector;
+
+/* typedef SingleObjectSelector< */
+/*   std::vector<cmg::TauE>, */
+/*   StringCutObjectSelector<cmg::TauE> */
+/*   > CmgTauESelector; */
+
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::TauE> > CmgTauESelector;
+
+/* typedef SingleObjectSelector< */
+/*   std::vector<cmg::TauMu>, */
+/*   StringCutObjectSelector<cmg::TauMu> */
+/*   > CmgTauMuSelector; */
+
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::TauMu> > CmgTauMuSelector;
+
+/* typedef SingleObjectSelector< */
+/*   std::vector<cmg::MuE>, */
+/*   StringCutObjectSelector<cmg::MuE> */
+/*   > CmgMuESelector; */
+
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::MuE> > CmgMuESelector;
 
 #endif

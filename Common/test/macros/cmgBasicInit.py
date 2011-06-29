@@ -13,11 +13,16 @@ gROOT.Macro( os.path.expanduser( '~/rootlogon.C' ) )
 #file = TFile( sys.argv[1] )
 #events = file.Get('Events')
 
+process = 'ANA'
+
 def init(pattern, process='ANA'):
     
     events = Chain('Events', pattern)
 
-    events.SetAlias('pfjets','cmgPFJets_cmgPFJetSel__'+process)
+    events.SetAlias('pfJets','cmgPFJets_cmgPFJetSel__'+process)
+    events.SetAlias('pfJetsLooseFailed','cmgPFJets_cmgPFJetLooseJetIdFailed__'+process)    
+    events.SetAlias('pfJetsVeryLoose99Failed','cmgPFJets_cmgPFJetVeryLooseJetId99Failed__'+process)    
+    events.SetAlias('pfJetsVeryLoose95Failed','cmgPFJets_cmgPFJetVeryLooseJetId95Failed__'+process)    
     events.SetAlias('jets','cmgBaseJets_cmgPFBaseJetSel__'+process)
     events.SetAlias('met','cmgBaseMETs_cmgPFMET__'+process)
     events.SetAlias('ele','cmgElectrons_cmgElectronSel__'+process)
@@ -35,10 +40,10 @@ def init(pattern, process='ANA'):
 filters = 'hbheNoiseFilter && greedyMuons && inconsMuons'
 NOTfilters = '!(%s)' % filters
 
-jetId = 'pfjets.obj.component(5).fraction()<0.99 && pfjets.obj.component(4).fraction()<0.99'
+jetId = 'pfJets.obj.component(5).fraction()<0.99 && pfJets.obj.component(4).fraction()<0.99'
 NOTjetId = '!(%s)' % jetId
 
-jetIdTight = 'pfjets.obj.component(5).fraction()<0.95 && pfjets.obj.component(4).fraction()<0.95'
+jetIdTight = 'pfJets.obj.component(5).fraction()<0.95 && pfJets.obj.component(4).fraction()<0.95'
 NOTjetIdTight = '!(%s)' % jetIdTight
 
 

@@ -2,6 +2,16 @@ import FWCore.ParameterSet.Config as cms
 
 # see for details https://twiki.cern.ch/twiki/bin/view/CMS/JetID
 
+veryLooseJetId99 = cms.PSet(
+    h0Fraction = cms.string('component(5).fraction() < 0.99'),                      
+    gammaFraction = cms.string('component(4).fraction() < 0.99')  
+    )
+
+veryLooseJetId95 = cms.PSet(
+    h0Fraction = cms.string('component(5).fraction() < 0.95'),                      
+    gammaFraction = cms.string('component(4).fraction() < 0.95')  
+    )
+
 #Selection thanks to Maxime
 looseJetId = cms.PSet(
     h0Fraction = cms.string('component(5).fraction() < 0.99'),                      
