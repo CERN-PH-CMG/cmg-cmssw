@@ -4,5 +4,8 @@ from RecoParticleFlow.PostProcessing.pfPostProcessingEventContent_cff import pfP
 
 
 eventCleaning = pfPostProcessingEventContent
-eventCleaning += cms.untracked.vstring('keep *_HBHENoiseFilterResultProducer_*_*')
+eventCleaning += cms.untracked.vstring(
+    'keep *_HBHENoiseFilterResultProducer_*_*',
+    'keep *_BeamHaloSummary_*_*'
+    )
 
