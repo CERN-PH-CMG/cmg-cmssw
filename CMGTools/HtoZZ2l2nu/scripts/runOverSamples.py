@@ -57,15 +57,15 @@ for proc in procList :
 
     #run over processes
     for desc in proc[1] :
-
-        #tag veto
-        if(onlytag!='all') :
-            itag=desc['tag']
-            if(itag.find(onlytag)<0) : continue
                 
         #run over items in process
         data = desc['data']
         for d in data :
+
+            #tag veto
+            if(onlytag!='all') :
+                itag=desc['dtag']
+                if(itag.find(onlytag)<0) : continue
 
             alldirs = d[dirtag]
 
