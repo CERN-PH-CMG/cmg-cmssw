@@ -64,7 +64,7 @@ for proc in procList :
 
             #tag veto
             if(onlytag!='all') :
-                itag=desc['dtag']
+                itag=d['dtag']
                 if(itag.find(onlytag)<0) : continue
 
             alldirs = d[dirtag]
