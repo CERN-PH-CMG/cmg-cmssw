@@ -4,18 +4,21 @@ from RecoParticleFlow.PostProcessing.selectGoodPFEvents_cff import *
 
 # HCAL noise filter
 
-from CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi import *
+# from CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi import *
 
 # see https://hypernews.cern.ch/HyperNews/CMS/get/JetMET/1196.html
-HBHENoiseFilterResultProducer.minIsolatedNoiseSumE = 999999.
-HBHENoiseFilterResultProducer.minNumIsolatedNoiseChannels = 999999
-HBHENoiseFilterResultProducer.minIsolatedNoiseSumEt = 999999.
+# HBHENoiseFilterResultProducer.minIsolatedNoiseSumE = 999999.
+# HBHENoiseFilterResultProducer.minNumIsolatedNoiseChannels = 999999
+# HBHENoiseFilterResultProducer.minIsolatedNoiseSumEt = 999999.
+
+from CMGTools.Common.eventCleaning.HBHEFilters_cff import * 
 
 # ECAL missing channels
 
 # TP filter
 
 from JetMETAnalysis.ecalDeadCellTools.RA2TPfilter_cff import *
+ecalDeadCellTPfilter.taggingMode = True
 
 ecalDeadCellTaggingSequence = cms.Sequence(
     ecalDeadCellTPfilter
@@ -24,12 +27,29 @@ ecalDeadCellTaggingSequence = cms.Sequence(
 # currently running:
 #  - PF inconsistent muon filter
 #  - PF greedy muon filter
+eventCleaningTaggingSequence = cms.Sequence(
+    ecalDeadCellTaggingSequence + 
+    HBHEFiltersTaggingSequence + 
+    selectGoodPFEventsTaggingSequence
+    )
+
+from CMGTools.Common.eventCleaning.scrapingFilter_cfi import *
+from CMGTools.Common.eventCleaning.goodPVFilter_cfi import *
+
+eventCleaningFilteringSequence = cms.Sequence(
+    scrapingFilter +
+    goodPVFilter
+    )
+
 eventCleaningSequence = cms.Sequence(
+    eventCleaningFilteringSequence + 
+    eventCleaningTaggingSequence
     # selectGoodPFEventsSequence +
     # note: the following will produce a boolean in the EDM but
     # does not filter events
-    HBHENoiseFilterResultProducer +
-    selectGoodPFEventsTaggingSequence
+    # HBHENoiseFilterResultProducer +
+    # HBHEFiltersTaggingSequence + 
+    # selectGoodPFEventsTaggingSequence
     #COLIN: uncomment the following when the filter is running in tagging mode
     # + ecalDeadCellTaggingSequence
     )
