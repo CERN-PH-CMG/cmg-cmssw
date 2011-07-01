@@ -73,6 +73,23 @@ class TestTrigger(TestTools.CFGTest):
         self.assertTrue(cmg.Draw("cmgTriggerObjectSel.pt()",
                                  'cmgTriggerObjectSel.getSelection("%s")' % self.triggerName,"goff") > 0,\
                          'There must be at least one event where the trigger fired')  
+
+    def testcmgTriggerObjectSelTriggerFirseRegExpBoth(self):
+        """Verify that cmgTriggerObjectSel has the selected trigger fires"""
+        
+        output = self.__class__.cfgsRunOnceCache['CMGTools/Common/test/testTriggerObjects_cfg.py']
+        events = TestTools.getObject(output[1], 'Events')
+        
+        cmg = cmgTuple.cmgTuple(events)
+        
+        self.assertEqual(cmg.Draw("cmgTriggerObjectSel.pt()",
+                                 'cmgTriggerObjectSel.getSelection("%s") && !cmgTriggerObjectSel.getSelectionRegExp("%s")' % (self.triggerName,self.triggerNameRe),"goff"),0,\
+                         'There must be at least one event where the trigger fired') 
+        self.assertEqual(cmg.Draw("cmgTriggerObjectSel.pt()",
+                                 'cmgTriggerObjectSel.getSelection("%s")' % self.triggerName,"goff"),
+                         cmg.Draw("cmgTriggerObjectSel.pt()",
+                                 'cmgTriggerObjectSel.getSelectionRegExp("%s")' % self.triggerNameRe,"goff"),        
+                         'The selections must match') 
         
     def testcmgTriggerObjectSelTriggerFirseRegExp(self):
         """Verify that cmgTriggerObjectSel has the selected trigger fires"""
