@@ -11,9 +11,13 @@ cmgObjects = {
     }
 
 filters = {
-    'hbheNoise':'bool_HBHENoiseFilterResultProducer_HBHENoiseFilterResult_PAT.obj',
+    'hbheNoise2011Iso':'bool_HBHENoiseFilterResultProducer2011IsoDefault_HBHENoiseFilterResult_',
+    'hbheNoise2011NonIso':'bool_HBHENoiseFilterResultProducer2011NonIsoRecommended_HBHENoiseFilterResult_',
+    'hbheNoise2010':'bool_HBHENoiseFilterResultProducer2010_HBHENoiseFilterResult_',
     'inconsMuons':'bool_inconsistentMuonsTagging_Result_PAT.obj',
     'greedyMuons':'bool_greedyMuonsTagging_Result_PAT.obj',
+    'beamHaloCSCLoose':'recoBeamHaloSummary_BeamHaloSummary__RECO.obj[0].CSCLooseHaloId()',
+    'beamHaloCSCTight':'recoBeamHaloSummary_BeamHaloSummary__RECO.obj[0].CSCTightHaloId()',
     }
 
 eventId = {
