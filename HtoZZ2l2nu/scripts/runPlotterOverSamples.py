@@ -500,6 +500,7 @@ def usage() :
     print '  -i : input directory'
     print '  -o : output directory'
     print '  -d : root directory'
+    print '  -f : output format (csv, e.g. C,png,root,pdf)'
     print ' '
                                         
 

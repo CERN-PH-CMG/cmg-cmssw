@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2011/06/23 12:35:44 $
- *  $Revision: 1.8 $
+ *  $Date: 2011/07/01 08:36:57 $
+ *  $Revision: 1.9 $
  *  \author G. Cerminara & D. Trocino
  */
 
@@ -93,7 +93,7 @@ void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt
       a_l=thrust.first;  
       a_t=thrust.second;
     }
-  else
+  else 
     {
       dil = TVector2(theLepton1.px(),theLepton1.py());
       a_t = dil.Unit();

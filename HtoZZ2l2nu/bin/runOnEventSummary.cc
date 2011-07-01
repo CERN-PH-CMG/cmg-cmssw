@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
     std::cout << "Usage : " << argv[0] << " parameters_cfg.py" << std::endl;
     return 0;
   }
-  
+
   //configure
   const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
   TString url=runProcess.getParameter<std::string>("input");

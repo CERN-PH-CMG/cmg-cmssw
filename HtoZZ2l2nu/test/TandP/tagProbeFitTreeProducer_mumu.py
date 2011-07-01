@@ -11,12 +11,18 @@ process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring()
                             )
 castorDir, outputFile, process.source.fileNames = configureFromCommandLine()
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(500) )    
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(5000) )    
+
+#selection
+muontype = "isGlobalMuon && isTrackerMuon"
+kinacc = muontype + " && pt > 20 && abs(eta) < 2.4"
+goodtrk = kinacc + " && globalTrack.normalizedChi2<10 && globalTrack.hitPattern.numberOfValidTrackerHits>11 && globalTrack.hitPattern.numberOfValidMuonHits>1"  
+iso = goodtrk + " && (neutralHadronIso+chargedHadronIso+photonIso)/pt < 0.2"
 
 ## Tags. 
 process.tagMuons = cms.EDFilter("PATMuonRefSelector",
                                 src = cms.InputTag("selectedPatMuonsPFlow"),
-                                cut = cms.string("isGlobalMuon && isTrackerMuon && pt > 20 && abs(eta) < 2.4"), 
+                                cut = cms.string(kinacc)
                                 )
 ## Probes.
 process.probeMuons = cms.EDFilter("PATMuonRefSelector",
@@ -27,7 +33,7 @@ process.probeMuons = cms.EDFilter("PATMuonRefSelector",
 ## Combine Tags and Probes into Z candidates, applying a mass cut
 process.tpPairs = cms.EDProducer("CandViewShallowCloneCombiner",
                                  decay = cms.string("tagMuons@+ probeMuons@-"), # charge coniugate states are implied
-                                 cut   = cms.string("40 < mass < 200"),
+                                 cut   = cms.string("60 < mass < 120"),
                                  )
 
 ## Make the tree
@@ -40,8 +46,10 @@ process.muonEffs = cms.EDAnalyzer("TagProbeFitTreeProducer",
                                                         pt  = cms.string("pt"),
                                                         nsegm = cms.string("numberOfMatches") 
                                                         ),
-                                  flags = cms.PSet( passingGlb = cms.string("isGlobalMuon"),
-                                                    passingIso = cms.string("(neutralHadronIso+chargedHadronIso+photonIso)/pt < 0.15"),
+                                  flags = cms.PSet( passingMuon = cms.string(muontype),
+                                                    passingKin = cms.string(kinacc),
+                                                    passingTrk = cms.string(goodtrk),
+                                                    passingIso = cms.string(iso)
                                                     ),
                                   # mc-truth info
                                   isMC = cms.bool(False),
