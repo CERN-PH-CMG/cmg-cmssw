@@ -23,7 +23,8 @@ class CMGTestLoader(unittest.TestLoader):
             "TestWENu",
             "TestWMuNu",
             "TestHemi",
-            "TestMultiJet"
+            "TestMultiJet",
+            "TestTrigger"
             ]
 
         sep_line = "-" * 50
