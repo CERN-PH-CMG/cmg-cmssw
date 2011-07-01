@@ -20,7 +20,7 @@ class AliasSetter:
            process = self.process
 
        # adding the process name, if it's necessary to do so:
-       pattern = re.compile('.*__$')        
+       pattern = re.compile('.*_$')        
        for alias,aliased in sorted(aliases.iteritems()):
            # print alias, aliased
            
