@@ -97,6 +97,17 @@ class TestTrigger(TestTools.CFGTest):
         self.assertTrue(cmg.Draw("cmgTriggerObjectFull.pt()",
                                  'cmgTriggerObjectSel.getSelection("%s") && cmgTriggerObjectFullVec.size() > 0' % self.triggerName,"goff") > 0,\
                          'cmgTriggerObjectFull should have some entries') 
+        
+    def testcmgTriggerObjectFullPt(self):
+        """Verify that cmgTriggerObjectFull has some entries"""
+        
+        output = self.__class__.cfgsRunOnceCache['CMGTools/Common/test/testTriggerObjects_cfg.py']
+        events = TestTools.getObject(output[1], 'Events')
+        
+        cmg = cmgTuple.cmgTuple(events)
+        self.assertTrue(cmg.Draw("cmgTriggerObjectFull.pt()",
+                                 'cmgTriggerObjectFull.getSelectionRegExp("%s") && cmgTriggerObjectFull.pt() > 0' % self.triggerNameRe,"goff") > 0,\
+                         'cmgTriggerObjectFull has some pt')         
 
 
 if __name__ == '__main__':
