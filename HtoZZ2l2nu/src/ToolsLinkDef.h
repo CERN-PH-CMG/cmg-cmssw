@@ -1,4 +1,3 @@
-#include "CMGTools/HtoZZ2l2nu/interface/getRunInfo.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
 #include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
 #include "CMGTools/HtoZZ2l2nu/interface/SelectionMonitor.h"
@@ -10,7 +9,6 @@
 #pragma link off all global; 
 #pragma link off all typedef;
 
-#pragma link C++ function getRunInfo;
 #pragma link C++ function setStyle;
 #pragma link C++ function getNewCanvas;
 #pragma link C++ function formatPlot;

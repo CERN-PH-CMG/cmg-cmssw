@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2011/06/21 15:44:17 $
- *  $Revision: 1.7 $
+ *  $Date: 2011/06/23 12:35:44 $
+ *  $Revision: 1.8 $
  *  \author G. Cerminara & D. Trocino
  */
 
@@ -79,16 +79,28 @@ void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt
 				 const LorentzVector& theLepton2, double sigmaPt2,
 				 const LorentzVectorCollection& theJets,
 				 const LorentzVector& theMET,
+				 bool isZcandidate,
 				 bool debug) 
 {
 
+  //the dilepton candidate
+  TVector2 dil(theLepton1.px()+theLepton2.px(),theLepton1.py()+theLepton2.py());
+
   //define the thrust
-  std::pair<TVector2, TVector2> thrust=defineThrust(theLepton1,sigmaPt1,theLepton2,sigmaPt2);
-  a_l=thrust.first;  
-  a_t=thrust.second;
+  if(!isZcandidate)
+    {
+      std::pair<TVector2, TVector2> thrust=defineThrust(theLepton1,sigmaPt1,theLepton2,sigmaPt2);
+      a_l=thrust.first;  
+      a_t=thrust.second;
+    }
+  else
+    {
+      dil = TVector2(theLepton1.px(),theLepton1.py());
+      a_t = dil.Unit();
+      a_l = a_t.Rotate(TMath::Pi()/2);
+    }
 
   //project the dilepton
-  TVector2 dil(theLepton1.px()+theLepton2.px(),theLepton1.py()+theLepton2.py());
   dileptonProj_long = dil*a_l;
   dileptonProj_perp = dil*a_t;
 
@@ -126,15 +138,22 @@ void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt
 //     }      
   
   //propagate the lepton uncertainty (if larger than unity assume 100% rel. uncertainty)
-  double relErrPt1 = min(sigmaPt1/theLepton1.pt(), 1.);
-  double relErrPt2 = min(sigmaPt2/theLepton2.pt(), 1.);
-  LorentzVector loweredLepton1 = theLepton1*(1.0-relErrPt1);
-  LorentzVector loweredLepton2 = theLepton2*(1.0-relErrPt2);
-  std::pair<TVector2, TVector2> loweredThrust=defineThrust(loweredLepton1,sigmaPt1,loweredLepton2,sigmaPt2);
-  float loweredDileptonProj_perp = dil*loweredThrust.second;
-  deltaDileptonProj_perp = loweredDileptonProj_perp - dileptonProj_perp;
-  deltaDileptonProj_long = ( -relErrPt1*TVector2(theLepton1.px(),theLepton1.py()) + relErrPt2*TVector2(theLepton2.px(),theLepton2.py()) )*a_l;
-  
+  if(!isZcandidate)
+    {
+      double relErrPt1 = min(sigmaPt1/theLepton1.pt(), 1.);
+      double relErrPt2 = min(sigmaPt2/theLepton2.pt(), 1.);
+      LorentzVector loweredLepton1 = theLepton1*(1.0-relErrPt1);
+      LorentzVector loweredLepton2 = theLepton2*(1.0-relErrPt2);
+      std::pair<TVector2, TVector2> loweredThrust=defineThrust(loweredLepton1,sigmaPt1,loweredLepton2,sigmaPt2);
+      float loweredDileptonProj_perp = dil*loweredThrust.second;
+      deltaDileptonProj_perp = loweredDileptonProj_perp - dileptonProj_perp;
+      deltaDileptonProj_long = ( -relErrPt1*TVector2(theLepton1.px(),theLepton1.py()) + relErrPt2*TVector2(theLepton2.px(),theLepton2.py()) )*a_l;
+    }
+  else
+    {
+      deltaDileptonProj_perp=0;
+      deltaDileptonProj_long=0;
+    }
 
   //
   // D0 ORIGINAL VERSION

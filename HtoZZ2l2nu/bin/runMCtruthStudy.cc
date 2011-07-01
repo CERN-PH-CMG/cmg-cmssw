@@ -282,11 +282,8 @@ int main(int argc, char* argv[])
   float cnorm=1.0;
   if(isMC)
     {
-      TString tag=gSystem->BaseName(url);
-      tag.ReplaceAll(".root","");
-      TH1F *cutflowH = (TH1F *) file->Get("evAnalyzer/"+tag+"/cutflow");
+      TH1F *cutflowH = (TH1F *) file->Get("evAnalyzer/h2zz/mumu/mumu_cutflow");
       if(cutflowH) cnorm=cutflowH->GetBinContent(1);
-
       if(rescaleFactor>0) cnorm /= rescaleFactor;
     }
 

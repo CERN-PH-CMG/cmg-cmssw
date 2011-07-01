@@ -4,8 +4,8 @@
 /** \class ReducedMETComputer
  *  No description available.
  *
- *  $Date: 2011/06/21 15:44:16 $
- *  $Revision: 1.6 $
+ *  $Date: 2011/06/23 12:35:44 $
+ *  $Revision: 1.7 $
  *  \author G. Cerminara & D. Trocino & P. Silva
  */
 
@@ -56,6 +56,7 @@ public:
 	       const LorentzVector& lepton2, double sigmaPt2,
 	       const LorentzVectorCollection & jets,
 	       const LorentzVector& met,
+	       bool isZcandidate=false,
 	       bool debug=false);
 
   /// get the event category
