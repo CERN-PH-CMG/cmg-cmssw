@@ -38,7 +38,7 @@ class MyHistograms:
 
 nEvents = 1000000
 
-met = 'mht'
+met = 'met'
 
 title = ';MET (GeV)'
 if met == 'mht':
@@ -46,7 +46,6 @@ if met == 'mht':
 
 
 plotJetId = True
-plotFilters = False
 
 notId99 = 'jetsVLId99Failed.@obj.size()>0'
 notId95 = 'jetsVLId95Failed.@obj.size()>0'
@@ -56,15 +55,11 @@ hbheNoise2010 = 'hbheNoise2010.obj==0'
 hbheNoise2011Iso = 'hbheNoise2011Iso.obj==0'
 hbheNoise2011NonIso = 'hbheNoise2011NonIso.obj==0'
 
-sel = hbheNoise2011NonIso
-
-filters = '!(hbheNoise && inconsMuons && greedyMuons)'
-
-# MET plot, effect of jetID and cleaning filters
+sel = notId95
 
 # addCut = ' && met.obj[0].et()<500'
-addCut = ' && ht.obj.sumEt()>350 && mht.obj.et()<1000'
-
+# addCut = ' && ht.obj.sumEt()>350 && mht.obj.et()<1000'
+addCut = ''
 
 histos = MyHistograms('histos', title = title, bins = 100, max = 500)
 
