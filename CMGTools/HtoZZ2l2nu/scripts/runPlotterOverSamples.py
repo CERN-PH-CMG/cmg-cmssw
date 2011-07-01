@@ -68,7 +68,7 @@ def getControlPlots(descriptor,isData,inputDir='data',getFromDir='') :
 
     if(file is None): return results
     if(file.IsZombie()) : return results
-    baseDirName='evAnalyzer/'+tag
+    baseDirName='evAnalyzer/'
     if(len(getFromDir)>0): baseDirName=getFromDir
     dir = file.GetDirectory(baseDirName)
     if( dir == 0 ) :
@@ -85,8 +85,6 @@ def getControlPlots(descriptor,isData,inputDir='data',getFromDir='') :
         #get plots from file
         categs = dir.GetListOfKeys();
         cnorm=1
-#        hcutflow=file.Get('evAnalyzer/'+tag+'/cutflow')
-#        if(hcutflow is not None): cnorm=hcutflow.GetBinContent(1)
         centralresults={}
         for c in categs:
             cname=c.GetName()
@@ -112,7 +110,6 @@ def getControlPlots(descriptor,isData,inputDir='data',getFromDir='') :
                 results.update(cresults)
             except :
                 h = file.Get(path)
-                print h.GetName()
                 h.SetDirectory(0)
                 h.Sumw2()
                 centralresults[h.GetName()]=h
@@ -236,10 +233,6 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
     os.system('mkdir -p ' + outputDir)
 
     plotsToDisplay={}
-    plotsToDisplay['ee events']=[]
-    plotsToDisplay['#mu#mu events']=[]
-    plotsToDisplay['e#mu events']=[]
-    plotsToDisplay['All events']=[]
     setStyle()
     c = getNewCanvas("recolevelc","recolevelc",False)
     c.SetWindowSize(800,800)
@@ -257,17 +250,29 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
         elif(spimpose.At(0) != None) : pname=spimpose.At(0).GetName()
         elif(data.At(0) != None) :     pname=data.At(0).GetName()
         if(len(pname)<=0): continue
-        print pname
-        chtag='All events'
-        if(pname.find('mumu')==0): chtag='#mu#mu events'
-        if(pname.find('emu')==0):  chtag='e#mu events'
-        if(pname.find('ee')==0):   chtag='ee events'
-        plotsToDisplay[chtag].append(pname)
-        
-        plotLabel = generalLabel + '\\' + chtag
-        if(pname.find('eq0jets')>0): plotLabel += ' (=0 jets)'
-        if(pname.find('eq1jets')>0): plotLabel += ' (=1 jet)'
-        if(pname.find('geq2jets')>0): plotLabel += '(#geq 2 jets)'
+        tagname = pname.split('_')[0]
+        print tagname
+        if(tagname.find('all')==0) :   chtag='All events'
+        elif(tagname.find('mumu')==0): chtag='#mu#mu events'
+        elif(tagname.find('emu')==0):  chtag='e#mu events'
+        elif(tagname.find('ee')==0):   chtag='ee events'
+        else :                         chtag=tagname
+
+        #add the plot
+        try :
+            plotsToDisplay[chtag].append(pname)
+        except :
+            plotsToDisplay[chtag]=[]
+            plotsToDisplay[chtag].append(pname)
+            
+        plotLabel = generalLabel + '\\' #+ chtag
+        if(pname.find('eq0jets')>0): plotLabel += '=0 jets' 
+        elif(pname.find('eq1jets')>0): plotLabel += '=1 jet'
+        elif(pname.find('geq2jets')>0): plotLabel += '#geq 2 jets'
+        elif(pname.find('eq0btags')>0): plotLabel += '=0 b-tags'
+        elif(pname.find('eq1btags')>0): plotLabel += '=1 b-tags'
+        elif(pname.find('geq2btags')>0): plotLabel += '#geq 2 b-tags'
+        else : plotLabel += 'All events'
         
         c.Clear()
         leg=showPlotsAndMCtoDataComparison(c,stack,spimpose,data)
@@ -305,30 +310,56 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
     HTMLEND="</body></html>"
     titlehtml=HTMLSTART
     titlehtml+="<table class=\"sample\"><tr><th colspan=\"3\">Event selection categories</th></tr>" 
+
+    #check if subcategories are present
+    varitems=[]
+    for tag in plotsToDisplay.items() :
+        for pname in tag[1] :
+            if(pname.find('eq0jets')>=0) : subcat='eq0jets'
+            elif(pname.find('eq1jets')>=0) : subcat='eq1jets'
+            elif(pname.find('geq2jets')>=0) : subcat='geq2jets'
+            elif(pname.find('eq0btags')>=0) : subcat='eq0btags'
+            elif(pname.find('eq1btags')>=0) : subcat='eq1btags'
+            elif(pname.find('geq2btags')>=0) : subcat='geq2btags'
+            else : continue
+            if(subcat in varitems) :continue
+            print subcat
+            varitems.append(subcat)
+
+    varitems=sorted(set(varitems))
+    vars={}
+    vars['']=True
+    for v in varitems :  vars[v]=True
+    print vars
+
+    #create the table
     itag=0
     for tag in plotsToDisplay.items() :
-        tagch='all'
-        if( tag[0]=='ee events') : tagch='ee'
-        if( tag[0]=='#mu#mu events') : tagch='mumu'
-        if( tag[0]=='e#mu events') : tagch='emu'
+        print tag[1]
+        if( tag[0]=='All events')  : tagch='all'
+        elif( tag[0]=='ee events') : tagch='ee'
+        elif( tag[0]=='#mu#mu events') : tagch='mumu'
+        elif( tag[0]=='e#mu events') : tagch='emu'
+        else : tagch=tag[0]
 
+        if(tag[0].find('eq0jets')>=0 or tag[0].find('eq1jets')>=0 or tag[0].find('geq2jets')>=0
+           or tag[0].find('eq0btags')>=0 or tag[0].find('eq1btags')>=0 or tag[0].find('geq2btags')>=0) : continue
+  
         thtml=HTMLSTART
-        thtml+="<table class=\"sample\" border=\"1\" cellspacing=\"3\"><tr><th colspan=\"2\">" + tag[0] + " channel </th></tr>"
+        print vars
+        thtml+="<table class=\"sample\" border=\"1\" cellspacing=\"3\"><tr><th colspan=\""+str(len(vars))+"\">" + tag[0] + " channel </th></tr>"
         
         for pname in tag[1] :
-            
-            if(pname.find('eq0jets')>0 or pname.find('eq1jets')>0 or pname.find('geq2jets')>0): continue
-            vars=['','eq0jets','eq1jets','geq2jets']
-            
+        
             thtml+="<tr>"
-            for v in vars :
-                theplotName = pname.replace(tagch,tagch+v)
+            for v in vars.items() :
+                theplotName = pname.replace(tagch,tagch+v[0])
                 thtml+="<td><img src=\"" + theplotName + ".png\"></img></td>"
             thtml+="</tr>"
             
             thtml+="<tr>"
-            for v in vars :
-                theplotName = pname.replace(tagch,tagch+v)
+            for v in vars.items() :
+                theplotName = pname.replace(tagch,tagch+v[0])
                 thtml+="<td><small>Available in: <a href=\"" + theplotName + ".png\">.png</a> &nbsp;&nbsp; <a href=\"" + theplotName + ".C\">.C</a>"
                 if(pname.find('cutflow')>=0):
                     thtml+=" &nbsp;&nbsp; <a href=\"" + theplotName + ".tex\">.tex</a>"
@@ -396,6 +427,7 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
             
             #run over items in process
             data = getByLabel(desc,'data')
+            normto = getByLabel(desc,'normto',-1)
             for d in data :
 
                 #get the plots
@@ -414,14 +446,10 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
                 sfactor = getByLabel(d,'sfactor',1)
                 xsec = getByLabel(d,'xsec',-1)
                 br = getByLabel(d,'br',[])
-                normto = getByLabel(d,'normto',-1)
                 if(xsec>0 and not isdata) :
                     brprod=1.0
                     for ibr in br :  brprod = brprod*ibr
                     weight = integratedLumi*sfactor*xsec*brprod
-                elif(normto>0) :
-                    weight = sfactor*normto
-                    absNorm=True
 
                 #book keep the result
                 iplot=0
@@ -438,16 +466,20 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
                         procplots.append( newplot )
 
                     #apply new normalization
-                    if(absNorm) :
-                        total=p[1].Integral()
-                        if(total>0): p[1].Scale(weight/total)
-                    else : p[1].Scale(weight)
+                    p[1].Scale(weight)
 
                     #add to base plot
                     print ' Normalizing plots from ' + dtag + ' with abs=' + str(absNorm) + ' and weight=' + str(weight) 
                     procplots[iplot].Add(p[1])
                     iplot=iplot+1
 
+            #overall normalization
+            if(normto>0) :
+                print ' Normalizing final yields to: ' + str(normto)
+                for p in procplots:
+                    total=p.Integral()
+                    if(total>0): p.Scale(normto/total)
+                    
             #store the final result
             if(len(procplots)==0): continue
             plottitles=procplotstitles
@@ -506,3 +538,5 @@ print ' Plots in: ' + inputDir
 runOverSamples( samplesDB, integratedLumi,inputDir, outputDir, getFromDir )
 print ' Output stored in: ' + outputDir
 print ' Can browse the results using: ' + outputDir + '/index.html'
+
+#  LocalWords:  subcat

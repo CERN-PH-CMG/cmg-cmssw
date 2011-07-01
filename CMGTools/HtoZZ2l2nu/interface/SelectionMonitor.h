@@ -119,7 +119,7 @@ public:
    */
   TH1 * addHistogram(TH1 *h, TString tag, bool format=true) 
     { 
-      if(format) formatPlot(h,1,1,1,20,0,true,true,1,1,1 );
+      if(format) formatPlot(h,1,1,1,20,0,false,true,1,1,1 );
       allMonitors_["all"][tag] = h; 
       return allMonitors_["all"][tag];
     }

@@ -25,8 +25,8 @@ typedef std::vector<PhysicsObject> PhysicsObjectCollection;
 //
 struct PhysicsEvent_t
 {
-  PhysicsObjectCollection jets, leptons, met, vtx;
-  PhysicsObjectCollection genjets, genleptons, genmet, genhiggs;
+  PhysicsObjectCollection jets, leptons, met, vtx, gammas;
+  PhysicsObjectCollection genjets, genleptons, genmet, genhiggs, gengammas;
 };
 
 //
@@ -34,7 +34,8 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
 {
   
   PhysicsEvent_t phys;
-  //get the physics object
+
+  //get the physics objects
   for(Int_t ipart=0; ipart<ev.nparticles; ipart++)
     {
       PhysicsObject obj( LorentzVector(ev.px[ipart],ev.py[ipart],ev.pz[ipart],ev.en[ipart]) , ev.id[ipart], ev.genid[ipart] );
@@ -50,6 +51,9 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
 	  break;
 	case 1:
 	  phys.jets.push_back( obj );
+	  break;
+	case 22:
+	  phys.gammas.push_back( obj );
 	  break;
 	case 11: case -11: case 13: case -13:
 	  phys.leptons.push_back( obj );
@@ -72,6 +76,9 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
 	  break;
 	case 1:
 	  phys.genjets.push_back( PhysicsObject(p4,ev.mcid[ipart],ev.mcid[ipart]) );
+	  break;
+	case 22:
+	  phys.gengammas.push_back( PhysicsObject(p4,ev.mcid[ipart],ev.mcid[ipart]) );
 	  break;
 	case 11: case -11: case 13: case -13: case 15: case -15:
 	  phys.genleptons.push_back( PhysicsObject(p4,ev.mcid[ipart],ev.mcid[ipart]) );
