@@ -33,6 +33,7 @@
 
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
+#include "CMGTools/HtoZZ2l2nu/interface/TransverseMassComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ReducedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ProjectedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
@@ -53,6 +54,7 @@ private:
   std::map<std::string, edm::ParameterSet> objConfig_;
   ReducedMETComputer rmet_;
   ProjectedMETComputer pmet_;
+  TransverseMassComputer mtcomp_;
   ZZ2l2nuSummaryHandler summaryHandler_;
   TSelectionMonitor controlHistos_;
 };
@@ -539,16 +541,16 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     float dphimet2zll = deltaPhi(met.phi(),dileptonP.phi());
     
     //transverse masses
-    float mTlmet[]={ TMath::Sqrt(2*met.pt()*lepton1P.pt()*(1-TMath::Cos(dphil2met[0]))) ,   TMath::Sqrt(2*met.pt()*lepton2P.pt()*(1-TMath::Cos(dphil2met[1]))) };
+    float mTlmet[]={ mtcomp_.compute(lepton1P,met), mtcomp_.compute(lepton2P,met) };
     LorentzVector transvSum=dileptonP + met;
-    float transverseMass=TMath::Power(TMath::Sqrt(TMath::Power(dileptonP.pt(),2)+pow(dileptonP.mass(),2))+TMath::Sqrt(TMath::Power(met.pt(),2)+pow(dileptonP.mass(),2)),2);
-    transverseMass-=TMath::Power(transvSum.pt(),2);
-    transverseMass=TMath::Sqrt(transverseMass);
+    float transverseMass=mtcomp_.compute(dileptonP,met,true);
 
     //final control histograms
     controlHistos_.fillHisto("met",istream,met.pt(),weight);
     controlHistos_.fillHisto("rmet",istream,reducedMET,weight);
     controlHistos_.fillHisto("met2dilepton_dphi",istream,fabs(dphimet2zll),weight);
+    controlHistos_.fillHisto("mT",istream,transverseMass,weight);
+    controlHistos_.fillHisto("mT_individualsum",istream,mTlmet[0]+mTlmet[1],weight);
 
     //save summary
     ev.run=event.id().run();
