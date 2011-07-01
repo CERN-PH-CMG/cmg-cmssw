@@ -78,9 +78,9 @@
 	"tag":"dilepton data (|M_{ll}-91|<15 GeV/c^{2})",
 	"isdata":false,
 	"spimpose":true,
-	"color":"kAzure+3",
-	"lwidth":2,
-	"line":10,
+	"color":"kRed",
+	"lwidth":3,
+	"line":2,
 	"fill":0,
 	"normto":1,
 	"data":[
