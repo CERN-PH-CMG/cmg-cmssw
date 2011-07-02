@@ -457,7 +457,11 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //veto-other isolated leptons
     int lepMult(2);
     for (pat::eventhypothesis::Looper<pat::Electron> ele = evhyp.loopAs<pat::Electron>("electron"); ele; ++ele) lepMult++;
-    for (pat::eventhypothesis::Looper<pat::Muon> mu = evhyp.loopAs<pat::Muon>("muon"); mu; ++mu) lepMult++;
+    for (pat::eventhypothesis::Looper<pat::Muon> mu = evhyp.loopAs<pat::Muon>("muon"); mu; ++mu) 
+      {
+	lepMult++;
+	trigger::isTriggerCandidate(mu.get(),objConfig_["Trigger"]);
+      }
     controlHistos_.fillHisto("nleptons",istream,lepMult,weight);
 
     

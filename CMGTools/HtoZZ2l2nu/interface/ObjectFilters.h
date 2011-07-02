@@ -140,7 +140,7 @@ namespace dilepton
   /**
      @short selects the dileptons
    */
-  enum DileptonClassification {UNKNOWN=0,MUMU=1,EE=2,EMU=3};
+  enum DileptonClassification {UNKNOWN=0,MUMU=1,EE=2,EMU=3,ETAU=4,MUTAU=5};
   std::pair<CandidateWithVertex,CandidateWithVertex> filter(CandidateWithVertexCollection &selLeptons, 
 							    CandidateWithVertexCollection &isolLeptons,
 							    double rho,
