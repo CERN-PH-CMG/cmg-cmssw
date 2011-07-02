@@ -93,9 +93,9 @@ def addPatSequence(process, runOnMC, addPhotons=False) :
     process.triggerProducerPF = process.patTrigger.clone()
     setattr( process, 'patTrigger' + postfix, process.triggerProducerPF )
     process.muTriggerMatchPF = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR"
-                                               , src     = cms.InputTag( "patMuons" )
+                                               , src     = cms.InputTag( "selectedPatMuons" )
                                                , matched = cms.InputTag( "patTrigger"+postfix )
-                                               , matchedCuts = cms.string( 'path( "HLT_*" )' )
+                                               , matchedCuts = cms.string( 'path( "*" )' )
                                                , maxDPtRel = cms.double( 0.5 )
                                                , maxDeltaR = cms.double( 0.5 )
                                                , resolveAmbiguities    = cms.bool( True )
@@ -103,20 +103,20 @@ def addPatSequence(process, runOnMC, addPhotons=False) :
                                                )
     setattr( process, 'muTriggerMatch' + postfix, process.muTriggerMatchPF )
     process.eleTriggerMatchPF = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR"
-                                        , src     = cms.InputTag( "patElectrons" )
-                                        , matched = cms.InputTag( "patTrigger"+postfix )
-                                        , matchedCuts = cms.string( 'path( "HLT_*" )' )
-                                        , maxDPtRel = cms.double( 0.5 )
-                                        , maxDeltaR = cms.double( 0.5 )
-                                        , resolveAmbiguities    = cms.bool( True )
-                                        , resolveByMatchQuality = cms.bool( True )
-                                        )
+                                                , src     = cms.InputTag( "selectedPatElectrons" )
+                                                , matched = cms.InputTag( "patTrigger"+postfix )
+                                                , matchedCuts = cms.string( 'path( "*" )' )
+                                                , maxDPtRel = cms.double( 0.5 )
+                                                , maxDeltaR = cms.double( 0.5 )
+                                                , resolveAmbiguities    = cms.bool( True )
+                                                , resolveByMatchQuality = cms.bool( True )
+                                                )
     setattr( process, 'eleTriggerMatch' + postfix, process.eleTriggerMatchPF )
-    switchOnTriggerMatching( process,
-                             triggerProducer = 'patTrigger' + postfix,
-                             triggerMatchers = [ 'muTriggerMatch'+postfix, 'eleTriggerMatch' + postfix ],
-                             sequence        = 'patPF2PATSequence' + postfix,
-                             postfix         = postfix )
+    switchOnTriggerMatchEmbedding( process,
+                                   triggerProducer = 'patTrigger' + postfix,
+                                   triggerMatchers = [ 'muTriggerMatch'+postfix, 'eleTriggerMatch' + postfix ],
+                                   sequence        = 'patPF2PATSequence' + postfix,
+                                   postfix         = postfix )
     removeCleaningFromTriggerMatching( process, sequence = 'patPF2PATSequence' + postfix )
 
     if(addPhotons) :

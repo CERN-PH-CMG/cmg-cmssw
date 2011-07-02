@@ -34,7 +34,7 @@ BaseVertexSelection = cms.PSet( source = cms.InputTag("offlinePrimaryVertices"),
                                 )
 
 # base values for muon selection ----------------------------------------------
-BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlow"),
+BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlowTriggerMatch"),#selectedPatMuonsPFlow"),
                                minPt = cms.double(5),
                                maxEta = cms.double(2.4),
                                maxTrackChi2 = cms.double(10),
