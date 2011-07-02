@@ -8,15 +8,33 @@ from PhysicsTools.PatAlgos.tools.trackTools import *
 ##
 ## adds pat sequence
 ##
-def addPatSequence(process, runOnMC) :
+def addPatSequence(process, runOnMC, addPhotons=False) :
     
     postfix = "PFlow"
 
     #jet energy corrections
+    # cf. https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetEnCor2011V2
+    # cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
+    # please create a link to the JEC db wherever you run the job
+    # do not forget to add it to the crab file under [USER] with additional_input_files  = JECxxxx.db
     jetAlgo='AK5'
     jecSetPF = jetAlgo+'PFchs'
     jecLevels=['L1FastJet','L2Relative','L3Absolute']
-    #if(not runOnMC) : jecLevels.append( 'L2L3Residual' )
+    if(not runOnMC) : jecLevels.append( 'L2L3Residual' )
+    process.load("CondCore.DBCommon.CondDBCommon_cfi")
+    process.jec = cms.ESSource("PoolDBESSource",
+                               DBParameters = cms.PSet( messageLevel = cms.untracked.int32(0) ),
+                               timetype = cms.string('runnumber'),
+                               toGet = cms.VPSet( cms.PSet(record = cms.string('JetCorrectionsRecord'),
+                                                           tag    = cms.string('JetCorrectorParametersCollection_Jec11V2_AK5PF'),
+                                                           label  = cms.untracked.string('AK5PF')
+                                                           )
+                                                  ),
+                               connect = cms.string('sqlite:Jec11V2.db')
+                               )
+    # Add an es_prefer statement to get your new JEC constants from the sqlite file, rather than from the global tag
+    process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
+
 
     #start PF2PAT
     usePF2PAT(process,
@@ -101,17 +119,23 @@ def addPatSequence(process, runOnMC) :
                              postfix         = postfix )
     removeCleaningFromTriggerMatching( process, sequence = 'patPF2PATSequence' + postfix )
 
-    # temporarily use std photons (switch to PF in 43x cf. with Daniele how to do it)
-    process.load('PhysicsTools.PatAlgos.producersLayer1.photonProducer_cff')
-    process.patPhotons.addGenMatch=cms.bool(False)
-    
-    #create the path
-    process.patDefaultSequence = cms.Sequence(
-        process.eidCiCSequence*
-        getattr(process,"patPF2PATSequence"+postfix)*
-        process.patPhotons
-        )
-    
+    if(addPhotons) :
+        # temporarily use std photons (switch to PF in 43x cf. with Daniele how to do it)
+        process.load('PhysicsTools.PatAlgos.producersLayer1.photonProducer_cff')
+        process.patPhotons.addGenMatch=cms.bool(False)
+
+        #create the path
+        process.patDefaultSequence = cms.Sequence(
+            process.eidCiCSequence*
+            getattr(process,"patPF2PATSequence"+postfix)*
+            process.patPhotons
+            )
+    else :
+        process.patDefaultSequence = cms.Sequence(
+            process.eidCiCSequence*
+            getattr(process,"patPF2PATSequence"+postfix)
+            )
+        
     # make pat-tracks (does not work with PF2PAT...)
     # it is better to use isolated PF candidates from the pfNoPileup collection
     #    makeTrackCandidates(process,

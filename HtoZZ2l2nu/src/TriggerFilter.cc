@@ -11,6 +11,7 @@ namespace trigger
 
     //trigger paths and objects
     std::vector<std::string> triggerPaths = iConfig.getParameter<std::vector<std::string> >("triggerPaths");
+
     const pat::TriggerObjectStandAloneCollection &coll = muon->triggerObjectMatches();
     cout << muon->pt() << " | ";
     for(pat::TriggerObjectStandAloneCollection::const_iterator objIt = coll.begin();

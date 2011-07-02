@@ -14,7 +14,8 @@ castorDir, outputFile, process.source.fileNames = configureFromCommandLine()
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(5000) )    
 
 #selection
-muontype = "isGlobalMuon && isTrackerMuon"
+triggers = "!triggerObjectMatchesByFilter('hltSingleMu3L3Filtered3').empty()"
+muontype = triggers + " && isGlobalMuon && isTrackerMuon"
 kinacc = muontype + " && pt > 20 && abs(eta) < 2.4"
 goodtrk = kinacc + " && globalTrack.normalizedChi2<10 && globalTrack.hitPattern.numberOfValidTrackerHits>11 && globalTrack.hitPattern.numberOfValidMuonHits>1"  
 iso = goodtrk + " && (neutralHadronIso+chargedHadronIso+photonIso)/pt < 0.2"
