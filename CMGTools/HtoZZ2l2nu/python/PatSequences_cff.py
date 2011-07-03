@@ -6,6 +6,39 @@ from CommonTools.ParticleFlow.Tools.enablePileUpCorrection import enablePileUpCo
 from PhysicsTools.PatAlgos.tools.trackTools import *
 
 ##
+## add trigger matching for the leptons
+##
+def addTriggerMatchingForLeptons(process, postfix='') :
+    # define the trigger matchers
+    process.muTriggerMatchPF = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                               src     = cms.InputTag( "selectedPatMuons"+postfix ),
+                                               matched = cms.InputTag( "patTrigger" ),
+                                               matchedCuts = cms.string( 'type( "TriggerL1Mu" ) || type( "TriggerMuon" )' ),
+                                               maxDPtRel   = cms.double( 0.5 ), # no effect here
+                                               maxDeltaR   = cms.double( 0.5 ),
+                                               maxDeltaEta = cms.double( 0.2 ), # no effect here
+                                               # definition of matcher output
+                                               resolveAmbiguities    = cms.bool( False ),
+                                               resolveByMatchQuality = cms.bool( False )
+                                               )
+    process.eleTriggerMatchPF = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                src     = cms.InputTag( "selectedPatElectrons"+postfix ),
+                                                matched = cms.InputTag( "patTrigger" ),
+                                                matchedCuts = cms.string( 'type( "TriggerL1NoIsoEG" ) || type( "TriggerL1IsoEG" ) || type( "TriggerElectron" )' ),
+                                                maxDPtRel   = cms.double( 0.5 ), # no effect here
+                                                maxDeltaR   = cms.double( 0.5 ),
+                                                maxDeltaEta = cms.double( 0.2 ), # no effect here
+                                                # definition of matcher output
+                                                resolveAmbiguities    = cms.bool( False ),
+                                                resolveByMatchQuality = cms.bool( False )
+                                                )
+
+    from PhysicsTools.PatAlgos.tools.coreTools import removeCleaning
+    removeCleaning( process )
+    switchOnTriggerMatching( process, triggerMatchers = [ 'muTriggerMatchPF','eleTriggerMatchPF' ], sequence = 'patPF2PATSequence' + postfix )
+    removeCleaningFromTriggerMatching( process, sequence = 'patPF2PATSequence' + postfix )
+
+##
 ## adds pat sequence
 ##
 def addPatSequence(process, runOnMC, addPhotons=False) :
@@ -88,36 +121,8 @@ def addPatSequence(process, runOnMC, addPhotons=False) :
         eidHyperTight1MC = cms.InputTag("eidHyperTight1MC")
         )
 
-
-    # define the trigger matchers
-    process.muTriggerMatchPF = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                               src     = cms.InputTag( "selectedPatMuons"+postfix ),
-                                               matched = cms.InputTag( "patTrigger" ),
-                                               matchedCuts = cms.string( 'type( "TriggerL1Mu" ) || type( "TriggerMuon" )' ),
-                                               maxDPtRel   = cms.double( 0.5 ), # no effect here
-                                               maxDeltaR   = cms.double( 0.5 ),
-                                               maxDeltaEta = cms.double( 0.2 ), # no effect here
-                                               # definition of matcher output
-                                               resolveAmbiguities    = cms.bool( False ),
-                                               resolveByMatchQuality = cms.bool( False )
-                                               )
-    process.eleTriggerMatchPF = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                src     = cms.InputTag( "selectedPatElectrons"+postfix ),
-                                                matched = cms.InputTag( "patTrigger" ),
-                                                matchedCuts = cms.string( 'type( "TriggerL1NoIsoEG" ) || type( "TriggerL1IsoEG" ) || type( "TriggerElectron" )' ),
-                                                maxDPtRel   = cms.double( 0.5 ), # no effect here
-                                                maxDeltaR   = cms.double( 0.5 ),
-                                                maxDeltaEta = cms.double( 0.2 ), # no effect here
-                                                # definition of matcher output
-                                                resolveAmbiguities    = cms.bool( False ),
-                                                resolveByMatchQuality = cms.bool( False )
-                                                )
-
-    from PhysicsTools.PatAlgos.tools.coreTools import removeCleaning
-    removeCleaning( process )
-    switchOnTriggerMatching( process, triggerMatchers = [ 'muTriggerMatchPF','eleTriggerMatchPF' ], sequence = 'patPF2PATSequence' + postfix )
-    removeCleaningFromTriggerMatching( process, sequence = 'patPF2PATSequence' + postfix )
-
+    #add trigger match
+    addTriggerMatchingForLeptons(process,postfix=postfix)
 
     #puffo met
     process.load("WWAnalysis.Tools.chargedMetProducer_cfi")
