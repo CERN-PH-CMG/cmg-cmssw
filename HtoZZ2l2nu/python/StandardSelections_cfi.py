@@ -34,7 +34,7 @@ BaseVertexSelection = cms.PSet( source = cms.InputTag("offlinePrimaryVertices"),
                                 )
 
 # base values for muon selection ----------------------------------------------
-BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlowTriggerMatch"),#selectedPatMuonsPFlow"),
+BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlow"),#TriggerMatch"),#selectedPatMuonsPFlow"),
                                minPt = cms.double(5),
                                maxEta = cms.double(2.4),
                                maxTrackChi2 = cms.double(10),
@@ -90,5 +90,7 @@ BaseDileptonSelection = cms.PSet( minDileptonMass = cms.double(0),
                                   )
 
 # base values for met selection -----------------------------------------------------
-BaseMetSelection = cms.PSet( source = cms.InputTag("patMETsPFlow") )
+BaseMetSelection = cms.PSet( source = cms.InputTag("patMETsPFlow"),
+                             chsource = cms.InputTag("chargedMetProducer")
+                             )
 
