@@ -87,54 +87,37 @@ def addPatSequence(process, runOnMC, addPhotons=False) :
         eidSuperTightMC = cms.InputTag("eidSuperTightMC"),
         eidHyperTight1MC = cms.InputTag("eidHyperTight1MC")
         )
-    
-    # match the trigger information for selected pat leptons
-    process.load("PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff")
-    process.triggerProducerPF = process.patTrigger.clone()
-    setattr( process, 'patTrigger' + postfix, process.triggerProducerPF )
-    switchOnTrigger( process,
-                     sequence        = 'patPF2PATSequence' + postfix,
-                     hltProcess = '*' )
-    from PhysicsTools.PatAlgos.triggerLayer1.triggerMatcher_cfi import cleanMuonTriggerMatchHLTMu20
-    process.muTriggerMatchPF = cleanMuonTriggerMatchHLTMu20.clone( src = cms.InputTag('selectedPatMuons'),
-                                                                   matched = cms.InputTag( "patMuonTriggerResults" ),
-                                                                   matchedCuts = cms.string( 'path( "HLT_Mu9" ) ||'+\
-                                                                                             'path( "HLT_Mu11" ) ||'+\
-                                                                                             'path( "HLT_Mu13_v*" ) ||'+\
-                                                                                             'path( "HLT_Mu15_v*" ) ||'+\
-                                                                                             'path( "HLT_Mu17_v*" ) ||'+\
-                                                                                             'path( "HLT_Mu19_v*" ) ||'+\
-                                                                                             'path( "HLT_Mu20_v*" ) ||'+\
-                                                                                             'path( "HLT_Mu21_v*" )'
-                                                                                             )
-                                                                   )
-    
- #   process.muTriggerMatchPF = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR"
- #                                              , src     = cms.InputTag( "selectedPatMuons" )
- #                                              , matched = cms.InputTag( "patTrigger"+postfix )
- #                                              , matchedCuts = cms.string( 'type( "TriggerMuon" ) && (path( "HLT_DoubleMu*" ) || path("HLT_Mu*"))' )
- #                                              , maxDPtRel = cms.double( 0.5 )
-#                                               , maxDeltaR = cms.double( 0.5 )
-#                                               , resolveAmbiguities    = cms.bool( True )
-#                                               , resolveByMatchQuality = cms.bool( True )
-#                                               )
-    setattr( process, 'muTriggerMatch' + postfix, process.muTriggerMatchPF )
-    process.eleTriggerMatchPF = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR"
-                                                , src     = cms.InputTag( "selectedPatElectrons" )
-                                                , matched = cms.InputTag( "patTrigger"+postfix )
-                                                , matchedCuts = cms.string( 'path( "HLT_DoubleEle*" ) || path( "HLT_Ele*")' )
-                                                , maxDPtRel = cms.double( 0.5 )
-                                                , maxDeltaR = cms.double( 0.5 )
-                                                , resolveAmbiguities    = cms.bool( True )
-                                                , resolveByMatchQuality = cms.bool( True )
+
+
+    # define the trigger matchers
+    process.muTriggerMatchPF = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                               src     = cms.InputTag( "selectedPatMuons"+postfix ),
+                                               matched = cms.InputTag( "patTrigger" ),
+                                               matchedCuts = cms.string( 'type( "TriggerL1Mu" ) || type( "TriggerMuon" )' ),
+                                               maxDPtRel   = cms.double( 0.5 ), # no effect here
+                                               maxDeltaR   = cms.double( 0.5 ),
+                                               maxDeltaEta = cms.double( 0.2 ), # no effect here
+                                               # definition of matcher output
+                                               resolveAmbiguities    = cms.bool( False ),
+                                               resolveByMatchQuality = cms.bool( False )
+                                               )
+    process.eleTriggerMatchPF = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                src     = cms.InputTag( "selectedPatElectrons"+postfix ),
+                                                matched = cms.InputTag( "patTrigger" ),
+                                                matchedCuts = cms.string( 'type( "TriggerL1NoIsoEG" ) || type( "TriggerL1IsoEG" ) || type( "TriggerElectron" )' ),
+                                                maxDPtRel   = cms.double( 0.5 ), # no effect here
+                                                maxDeltaR   = cms.double( 0.5 ),
+                                                maxDeltaEta = cms.double( 0.2 ), # no effect here
+                                                # definition of matcher output
+                                                resolveAmbiguities    = cms.bool( False ),
+                                                resolveByMatchQuality = cms.bool( False )
                                                 )
-    setattr( process, 'eleTriggerMatch' + postfix, process.eleTriggerMatchPF )
-    switchOnTriggerMatching( process,
-                          triggerProducer = 'patTrigger' + postfix,
-                          triggerMatchers = [ 'muTriggerMatch'+postfix, 'eleTriggerMatch' + postfix ],
-                          sequence        = 'patPF2PATSequence' + postfix,
-                          postfix         = postfix )
+
+    from PhysicsTools.PatAlgos.tools.coreTools import removeCleaning
+    removeCleaning( process )
+    switchOnTriggerMatching( process, triggerMatchers = [ 'muTriggerMatchPF','eleTriggerMatchPF' ], sequence = 'patPF2PATSequence' + postfix )
     removeCleaningFromTriggerMatching( process, sequence = 'patPF2PATSequence' + postfix )
+
 
     #puffo met
     process.load("WWAnalysis.Tools.chargedMetProducer_cfi")

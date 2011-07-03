@@ -39,7 +39,7 @@ namespace trigger
   /**
      @short returns true if candidate matches to a trigger candidate
    */
-  bool isTriggerCandidate(const pat::Muon *muon, const edm::ParameterSet &iConfig);
+  bool isTriggerCandidate(edm::Event &iEvent, const edm::ParameterSet &iConfig);
 }
 
 namespace gen

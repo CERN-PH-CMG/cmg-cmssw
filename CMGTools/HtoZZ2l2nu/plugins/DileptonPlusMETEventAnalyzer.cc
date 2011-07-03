@@ -431,7 +431,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     std::vector<double> lepton1iso=lepton::getLeptonIso(lepton1);
     const reco::GenParticle *genLepton=lepton::getLeptonGenMatch(lepton1);
     int genid1 = (genLepton==0? 0 : genLepton->pdgId());
-    if(fabs(l1id)==13) trigger::isTriggerCandidate(dynamic_cast<const pat::Muon *>(lepton1.get()),objConfig_["Trigger"]);
 
     reco::CandidatePtr lepton2 = evhyp["leg2"];
     LorentzVector lepton2P(lepton2->p4());
@@ -440,7 +439,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     std::vector<double> lepton2iso=lepton::getLeptonIso(lepton2);
     genLepton=lepton::getLeptonGenMatch(lepton2);
     int genid2 = (genLepton==0? 0 : genLepton->pdgId());
-    if(fabs(l2id)==13) trigger::isTriggerCandidate(dynamic_cast<const pat::Muon *>(lepton2.get()),objConfig_["Trigger"]);
 
     bool isOS(lepton1->charge()*lepton2->charge()<0);
     TString dilCat( isOS ? "osdilepton" : "ssdilepton" );

@@ -1,5 +1,5 @@
 import FWCore.ParameterSet.Config as cms
-from PhysicsTools.PatAlgos.patEventContent_cff import patEventContentNoCleaning, patTriggerStandAloneEventContent
+from PhysicsTools.PatAlgos.patEventContent_cff import patEventContentNoCleaning, patTriggerEventContent
 
 ##
 ## dilepton filters
@@ -38,7 +38,7 @@ def configureOutput(process,selPaths=['eePath', 'mumuPath', 'emuPath'],outFile='
                 'keep double*_*_sigma_'+process.name_(),
                 'keep recoPFCandidates_particleFlow_*_*']
     outputCmds.extend( patEventContentNoCleaning )
-    outputCmds.extend( patTriggerStandAloneEventContent )
+    outputCmds.extend( patTriggerEventContent )
     process.out.outputCommands = outputCmds
 
 
