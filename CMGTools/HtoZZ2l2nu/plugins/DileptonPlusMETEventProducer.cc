@@ -256,7 +256,9 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
 
   auto_ptr<reco::VertexCollection> primVertices(new reco::VertexCollection() );
   for(std::vector<reco::VertexRef>::iterator vit=primaryVertexHyps.begin(); vit != primaryVertexHyps.end(); vit++)
-    primVertices->push_back( *(vit->get()) );
+    {
+      primVertices->push_back( *(vit->get()) );
+    }
   iEvent.put(primVertices,"selectedVertices");
 }
 

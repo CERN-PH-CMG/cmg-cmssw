@@ -33,7 +33,6 @@
 
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
-#include "CMGTools/HtoZZ2l2nu/interface/TransverseMassComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ReducedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ProjectedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
@@ -54,7 +53,6 @@ private:
   std::map<std::string, edm::ParameterSet> objConfig_;
   ReducedMETComputer rmet_;
   ProjectedMETComputer pmet_;
-  TransverseMassComputer mtcomp_;
   ZZ2l2nuSummaryHandler summaryHandler_;
   TSelectionMonitor controlHistos_;
 };
@@ -73,6 +71,7 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
     TFileDirectory baseDir=fs->mkdir(iConfig.getParameter<std::string>("dtag"));    
 
     //
+    objConfig_["MET"] = iConfig.getParameter<edm::ParameterSet>("MET");
     objConfig_["Jets"] = iConfig.getParameter<edm::ParameterSet>("Jets");
     objConfig_["Trigger"] = iConfig.getParameter<edm::ParameterSet>("Trigger");
 
@@ -145,10 +144,12 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
       }
     
     //MET
-    controlHistos_.addHistogram("met", ";#slash{E}_{T} [GeV/c]; Events", 100,  0.,500.);
-    controlHistos_.addHistogram("met2dilepton_dphi", ";#Delta #phi(#slash{E}_{T},vertex) [rad]; Events", 50, 0,3.2);
-    controlHistos_.addHistogram("mT_individualsum",";#Sigma Transverse mass(lepton,MET) [GeV/c^{2}]; Events",50,0,500);
-    controlHistos_.addHistogram("mT",";Transverse mass(dilepton,MET) [GeV/c^{2}]; Events",50,0,1000);
+    controlHistos_.addHistogram("met", ";{E}_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
+    controlHistos_.addHistogram("chmet", ";charged-{E}_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
+    controlHistos_.addHistogram("redmet", ";red-{E}_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
+    controlHistos_.addHistogram("projmet", ";proj-{E}_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
+    controlHistos_.addHistogram("projchmet", ";proj-charged-{E}_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
+    controlHistos_.addHistogram("puffomet", ";min-proj-{E}_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
 
 
     controlHistos_.initMonitorForStep("ee");
@@ -406,9 +407,10 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //
     // VERTEX KINEMATICS (get primary vertex selected)
     //
-    const reco::Vertex *primVertex = &(*(vertexHandle.product()))[0];
+    reco::VertexRef primVertex(vertexHandle,0);
+    //const reco::Vertex *primVertex = &(*(vertexHandle.product()))[0];
     controlHistos_.fillHisto("ngoodvertex",istream,selVertices.size(),weight);
-    controlHistos_.fillHisto("vertex_sumpt",istream,vertex::getVertexMomentumFlux(primVertex),weight);
+    controlHistos_.fillHisto("vertex_sumpt",istream,vertex::getVertexMomentumFlux(primVertex.get()),weight);
     controlHistos_.fillHisto("vertex_pt",istream,primVertex->p4().pt(),weight);
     for(std::vector<reco::VertexRef>::iterator vit=selVertices.begin(); vit != selVertices.end(); vit++)
       {
@@ -478,7 +480,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	float btag=jet->bDiscriminator("trackCountingHighEffBJetTags");
 	nbjets += (btag>1.7);
 
-	controlHistos_.fillHisto("jetfassoc",istream,jet::fAssoc(jet.get(),primVertex),weight);
+	controlHistos_.fillHisto("jetfassoc",istream,jet::fAssoc(jet.get(),primVertex.get()),weight);
 	controlHistos_.fillHisto("jetbtags",istream,btag,weight);
 	controlHistos_.fillHisto("jetpt",istream,jet->pt(),weight);
 	controlHistos_.fillHisto("jeteta",istream,jet->eta(),weight);
@@ -508,7 +510,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	puJets.push_back( jet.get() );
 	float btag=jet->bDiscriminator("trackCountingHighEffBJetTags");
 	npubjets += (btag>1.7);
-	controlHistos_.fillHisto("pujetfassoc",istream,jet::fAssoc(jet.get(),primVertex),weight);
+	controlHistos_.fillHisto("pujetfassoc",istream,jet::fAssoc(jet.get(),primVertex.get()),weight);
 	controlHistos_.fillHisto("pujetbtags",istream,btag,weight);
         controlHistos_.fillHisto("pujetpt",istream,jet->pt(),weight);
 	controlHistos_.fillHisto("pujeteta",istream,jet->eta(),weight);
@@ -523,38 +525,45 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     const pat::MET *evmet = dynamic_cast<const pat::MET *>(evhyp["met"].get());
     LorentzVector met(evmet->px(),evmet->py(),0,evmet->pt());
 
+    //charged met
+    LorentzVector chmet(0,0,0,0);
+    edm::Handle< edm::ValueMap<reco::PFMET> > chargedMets;
+    event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("chsource"), chargedMets); 
+    edm::Handle<reco::VertexCollection> hVtx;
+    event.getByLabel(objConfig_["Vertices"].getParameter<edm::InputTag>("source"), hVtx);  
+    try{
+      for(size_t ivtx=0; ivtx<hVtx->size(); ivtx++)
+	{
+	  reco::VertexRef vtxRef(hVtx,ivtx);
+	  if(vtxRef->position().z()!=primVertex->position().z()) continue;
+	  const reco::PFMET &chpfmet=(*chargedMets)[vtxRef];
+	  chmet=LorentzVector(chpfmet.px(),chpfmet.py(),0,chpfmet.pt());
+	  break;
+	}
+    }catch(std::exception &e){
+      cout << e.what() << endl;
+    }
+
     //reduced met
     rmet_.compute(lepton1->p4(),lepton1pterr, lepton2->p4(),lepton2pterr, jetmomenta, met);
-    float reducedMET=rmet_.reducedMET();
-    LorentzVector rmetP(rmet_.reducedMETComponents().first,rmet_.reducedMETComponents().second,0,reducedMET);
-    std::pair<double, double> rmet_dil = rmet_.dileptonProjComponents();
-    std::pair<double, double> rmet_delta = rmet_.dileptonPtCorrComponents();
-    std::pair<double, double> rmet_rjet = rmet_.sumJetProjComponents();
-    std::pair<double, double> rmet_met = rmet_.metProjComponents();
-    std::pair<double, double> rmet_r = rmet_.recoilProjComponents();
+    float reducedMET=rmet_.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
 
     //projected MET
-    float dphil2met[]={ fabs(deltaPhi(met.phi(),lepton1P.phi())), fabs(deltaPhi(met.phi(),lepton2P.phi())) };
-    float dphimin=TMath::MinElement(sizeof(dphil2met)/sizeof(float),dphil2met);
-    float relMET=met.pt();
-    if(fabs(dphimin)<TMath::Pi()/2) relMET = relMET*TMath::Sin(dphimin);
+    float projMet = pmet_.compute(lepton1->p4(),lepton2->p4(),met);
+    float projChMet = pmet_.compute(lepton1->p4(),lepton2->p4(),met);
+    float puffoMet = min(fabs(projMet),fabs(projChMet));
 
-    //correlation with dilepton
-    float dphimet2zll = deltaPhi(met.phi(),dileptonP.phi());
-    
-    //transverse masses
-    float mTlmet[]={ mtcomp_.compute(lepton1P,met), mtcomp_.compute(lepton2P,met) };
-    LorentzVector transvSum=dileptonP + met;
-    float transverseMass=mtcomp_.compute(dileptonP,met,true);
-
-    //final control histograms
+    //met control histograms
     controlHistos_.fillHisto("met",istream,met.pt(),weight);
-    controlHistos_.fillHisto("rmet",istream,reducedMET,weight);
-    controlHistos_.fillHisto("met2dilepton_dphi",istream,fabs(dphimet2zll),weight);
-    controlHistos_.fillHisto("mT",istream,transverseMass,weight);
-    controlHistos_.fillHisto("mT_individualsum",istream,mTlmet[0]+mTlmet[1],weight);
-
-    //save summary
+    controlHistos_.fillHisto("chmet",istream,chmet.pt(),weight);
+    controlHistos_.fillHisto("redmet",istream,reducedMET,weight);
+    controlHistos_.fillHisto("projmet",istream,projMet,weight);
+    controlHistos_.fillHisto("projchmet",istream,projChMet,weight);
+    controlHistos_.fillHisto("puffomet",istream,puffoMet,weight);
+    
+    //
+    // EVENT SUMARY
+    //
     ev.run=event.id().run();
     ev.lumi=event.luminosityBlock();
     ev.event=event.id().event();
@@ -567,6 +576,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.px[1] = lepton2P.px();    ev.py[1]=lepton2P.py();      ev.pz[1]=lepton2P.pz();     ev.en[1]=lepton2P.energy();  ev.id[1]=l2id; 
     ev.info1[1] = lepton2pterr;  ev.info2[1] = lepton2iso[0]; ev.info3[1]=lepton2iso[1];  ev.info4[1]=lepton2iso[2];   ev.genid[1] = genid2;
     ev.px[2] = met.px();         ev.py[2]=met.py();           ev.pz[2]=0;                 ev.en[2]=met.pt();           ev.id[2]=0; 
+    ev.info1[2] = chmet.px();    ev.info2[2]=chmet.py();      ev.info3[2]=chmet.pz();     
     ev.px[3]=primVertex->p4().px();  ev.py[3]=primVertex->p4().py();  ev.pz[3]=primVertex->p4().pz();  ev.en[3]=primVertex->p4().energy(); ev.id[3]=500;
 
     summaryHandler_.fillTree();

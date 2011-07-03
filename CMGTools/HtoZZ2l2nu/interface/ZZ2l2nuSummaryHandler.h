@@ -18,6 +18,9 @@
 struct ZZ2l2nuSummary_t
 {
   enum HiggsPtWeights{ hKfactor, hKfactor_renUp, hKfactor_renDown, hKfactor_factUp, hKfactor_factDown };
+  enum LeptonInfo { PtError, NeutralHadronIso, ChargedHadronIso, PhotonIso };
+  enum JetInfo { TCHE, TCHP, SSVHE, SSVHP };
+  enum MetInfo { ChMetPx, ChMetPy, ChMetPz };
   Int_t run,lumi,event;
   Int_t cat;
   Int_t nvtx, ngenITpu,ngenOOTpu;

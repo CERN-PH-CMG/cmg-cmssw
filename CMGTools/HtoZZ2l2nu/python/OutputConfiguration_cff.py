@@ -29,6 +29,7 @@ def configureOutput(process,selPaths=['eePath', 'mumuPath', 'emuPath'],outFile='
                 'keep GenEventInfoProduct_*_*_*',
                 'keep *_flavorHistoryFilter_*_*',
                 'keep recoGenJets_ak5GenJets_*_*',
+                'keep *_chargedMetProducer_*_*',
                 'keep *_generalTracks_*_*',
                 'keep patPhotons_*_*_*',
                 'keep *_reducedEcalRecHitsEB_*_*',
