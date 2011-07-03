@@ -83,6 +83,8 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
       if(puWeightHandle.isValid()) weight = *(puWeightHandle.product());
     }
 
+  trigger::isTriggerCandidate(iEvent,objConfig["Trigger"]);
+    
   
   //pre-select vertices
   Handle<reco::VertexCollection> hVtx;
