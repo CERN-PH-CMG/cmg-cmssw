@@ -18,6 +18,7 @@ filters = {
     'greedyMuons':'bool_greedyMuonsTagging_Result_PAT.obj',
     'beamHaloCSCLoose':'recoBeamHaloSummary_BeamHaloSummary__RECO.obj[0].CSCLooseHaloId()',
     'beamHaloCSCTight':'recoBeamHaloSummary_BeamHaloSummary__RECO.obj[0].CSCTightHaloId()',
+    'ecalDeadTP':'bool_ecalDeadCellTPfilter__PAT.obj'
     }
 
 eventId = {
