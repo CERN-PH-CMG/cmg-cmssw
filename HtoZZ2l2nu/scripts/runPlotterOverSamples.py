@@ -256,6 +256,8 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
         elif(tagname.find('mumu')==0): chtag='#mu#mu events'
         elif(tagname.find('emu')==0):  chtag='e#mu events'
         elif(tagname.find('ee')==0):   chtag='ee events'
+        elif(tagname.find('etau')==0):   chtag='e#tau events'
+        elif(tagname.find('mutau')==0):   chtag='#mu#tau events'
         else :                         chtag=tagname
 
         #add the plot
@@ -276,7 +278,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
         
         c.Clear()
         leg=showPlotsAndMCtoDataComparison(c,stack,spimpose,data)
-        leg.SetHeader(plottitles[iplot])
+        #        leg.SetHeader(plottitles[iplot])
         formatForCmsPublic(c.cd(1),leg,plotLabel,5)
         
 #        c.Clear()

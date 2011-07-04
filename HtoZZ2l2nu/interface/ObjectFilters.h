@@ -36,10 +36,9 @@ typedef std::vector<TriggerCandidate> TriggerCandidateCollection;
 
 namespace trigger
 {
-  /**
-     @short returns true if candidate matches to a trigger candidate
-   */
-  bool isTriggerCandidate(edm::Event &iEvent, const edm::ParameterSet &iConfig);
+  void getLeadDileptonTriggerCandidates(edm::Event &iEvent, const edm::ParameterSet &iConfig, 
+					std::vector<const reco::Candidate *> &muons, 
+					std::vector<const reco::Candidate *> &electrons);
 }
 
 namespace gen
