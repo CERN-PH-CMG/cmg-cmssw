@@ -105,6 +105,8 @@ process.eIdSequence = cms.Sequence()
 
 postfixAK5 = "AK5"
 jetAlgoAK5="AK5"
+
+#COLIN : we will need to add the L2L3Residual when they become available! also check the other calls to the usePF2PAT function. 
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgoAK5, runOnMC=runOnMC, postfix=postfixAK5,
           jetCorrections=('AK5PFchs', ['L1FastJet','L2Relative','L3Absolute']))
 
