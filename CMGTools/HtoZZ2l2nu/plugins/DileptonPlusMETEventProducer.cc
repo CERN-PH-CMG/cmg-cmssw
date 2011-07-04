@@ -1,92 +1,93 @@
-#include "FWCore/Framework/interface/MakerMacros.h"
+ #include "FWCore/Framework/interface/MakerMacros.h"
 
-#include "FWCore/Framework/interface/EDProducer.h"
-#include "FWCore/Framework/interface/Event.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/Utilities/interface/InputTag.h"
+ #include "FWCore/Framework/interface/EDProducer.h"
+ #include "FWCore/Framework/interface/Event.h"
+ #include "FWCore/ParameterSet/interface/ParameterSet.h"
+ #include "FWCore/Utilities/interface/InputTag.h"
 
-#include "DataFormats/PatCandidates/interface/EventHypothesis.h"
-#include "DataFormats/PatCandidates/interface/EventHypothesisLooper.h"
-#include "DataFormats/Common/interface/ValueMap.h"
-#include "DataFormats/Math/interface/deltaR.h"
-#include "DataFormats/MuonReco/interface/Muon.h"
-#include "DataFormats/TrackReco/interface/Track.h"
-#include "DataFormats/JetReco/interface/CaloJet.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
+ #include "DataFormats/PatCandidates/interface/EventHypothesis.h"
+ #include "DataFormats/PatCandidates/interface/EventHypothesisLooper.h"
+ #include "DataFormats/Common/interface/ValueMap.h"
+ #include "DataFormats/Math/interface/deltaR.h"
+ #include "DataFormats/MuonReco/interface/Muon.h"
+ #include "DataFormats/TrackReco/interface/Track.h"
+ #include "DataFormats/JetReco/interface/CaloJet.h"
+ #include "CommonTools/UtilAlgos/interface/TFileService.h"
+ #include "FWCore/ServiceRegistry/interface/Service.h"
 
-#include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
-#include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
-#include "CMGTools/HtoZZ2l2nu/interface/TSelectionMonitor.h"
+ #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
+ #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
+ #include "CMGTools/HtoZZ2l2nu/interface/TSelectionMonitor.h"
 
-#include "TH1D.h"
-#include "TString.h"
- 
-
-class DileptonPlusMETEventProducer : public edm::EDProducer {
-public:
-  DileptonPlusMETEventProducer(const edm::ParameterSet &iConfig) ;
-  virtual void produce( edm::Event &iEvent, const edm::EventSetup &iSetup) ;
-private:
-  std::map<std::string, edm::ParameterSet > objConfig;
-  TSelectionMonitor controlHistos_;
-};
+ #include "TH1D.h"
+ #include "TString.h"
 
 
-using namespace std;
+ class DileptonPlusMETEventProducer : public edm::EDProducer {
+ public:
+   DileptonPlusMETEventProducer(const edm::ParameterSet &iConfig) ;
+   virtual void produce( edm::Event &iEvent, const edm::EventSetup &iSetup) ;
+ private:
+   std::map<std::string, edm::ParameterSet > objConfig;
+   TSelectionMonitor controlHistos_;
+ };
 
 
-//
-DileptonPlusMETEventProducer::DileptonPlusMETEventProducer(const edm::ParameterSet &iConfig)
-  : controlHistos_( iConfig.getParameter<std::string>("dtag") )
-{
-  produces<std::vector<pat::EventHypothesis> >("selectedEvent");
-  produces<reco::VertexCollection>("selectedVertices");
-  produces<std::vector<int> >("selectionInfo");
-  std::string objs[]={"Generator", "Trigger", "Vertices", "Electrons", "Muons", "Dileptons", "Jets", "MET" };
-  for(size_t iobj=0; iobj<sizeof(objs)/sizeof(string); iobj++)
-    objConfig[ objs[iobj] ] = iConfig.getParameter<edm::ParameterSet>( objs[iobj] );
+ using namespace std;
 
-  controlHistos_.addHistogram( "rho", "; #rho; Events", 100, 0.,10. );
-  controlHistos_.addHistogram( "pt", ";p_{T}; Leptons", 100, 0.,200. );
-  controlHistos_.addHistogram( "d0", ";d0;Leptons", 100, -0.1,0.1  );
-  controlHistos_.addHistogram( "eta", ";#eta; Leptons", 100, -3.,3. );
-  controlHistos_.addHistogram( "ecaliso", ";ECAL isolation; Events", 100, 0.,10. );
-  controlHistos_.addHistogram( "hcaliso", ";HCAL isolation; Events", 100, 0.,10. );
-  controlHistos_.addHistogram( "trackiso", ";Tracker Isolation; Events", 100, 0.,10. );
-  controlHistos_.addHistogram( "absiso", ";Absolute isolation; Events", 100, 0.,20. );
-  controlHistos_.addHistogram( "reliso", "; Isolation; Events", 100, 0.,10.);
-  controlHistos_.initMonitorForStep( "matchedelectron");
-  controlHistos_.initMonitorForStep( "electron");
-  controlHistos_.initMonitorForStep( "matchedmuon");
-  controlHistos_.initMonitorForStep( "muon");
-}
 
-//
-void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventSetup &iSetup) 
-{
-  using namespace std;
-  using namespace edm;
-  using namespace pat::eventhypothesis;
-  using reco::Candidate; 
-  using reco::CandidatePtr;
-  
-  pat::EventHypothesis hyp;
-  int selStep(0),selPath(0);
-  
-  //get the weight for the MC event
-  float weight=1;
-  if(!iEvent.isRealData())
-    {
-      edm::Handle<float> puWeightHandle;
-      iEvent.getByLabel("puWeights","puWeight",puWeightHandle);
-      if(puWeightHandle.isValid()) weight = *(puWeightHandle.product());
-    }
+ //
+ DileptonPlusMETEventProducer::DileptonPlusMETEventProducer(const edm::ParameterSet &iConfig)
+   : controlHistos_( iConfig.getParameter<std::string>("dtag") )
+ {
+   produces<std::vector<pat::EventHypothesis> >("selectedEvent");
+   produces<reco::VertexCollection>("selectedVertices");
+   produces<std::vector<int> >("selectionInfo");
+   std::string objs[]={"Generator", "Trigger", "Vertices", "Electrons", "Muons", "Dileptons", "Jets", "MET" };
+   for(size_t iobj=0; iobj<sizeof(objs)/sizeof(string); iobj++)
+     objConfig[ objs[iobj] ] = iConfig.getParameter<edm::ParameterSet>( objs[iobj] );
 
-  trigger::isTriggerCandidate(iEvent,objConfig["Trigger"]);
-    
-  
-  //pre-select vertices
+   controlHistos_.addHistogram( "rho", "; #rho; Events", 100, 0.,10. );
+   controlHistos_.addHistogram( "pt", ";p_{T}; Leptons", 100, 0.,200. );
+   controlHistos_.addHistogram( "d0", ";d0;Leptons", 100, -0.1,0.1  );
+   controlHistos_.addHistogram( "eta", ";#eta; Leptons", 100, -3.,3. );
+   controlHistos_.addHistogram( "ecaliso", ";ECAL isolation; Events", 100, 0.,10. );
+   controlHistos_.addHistogram( "hcaliso", ";HCAL isolation; Events", 100, 0.,10. );
+   controlHistos_.addHistogram( "trackiso", ";Tracker Isolation; Events", 100, 0.,10. );
+   controlHistos_.addHistogram( "absiso", ";Absolute isolation; Events", 100, 0.,20. );
+   controlHistos_.addHistogram( "reliso", "; Isolation; Events", 100, 0.,10.);
+   controlHistos_.initMonitorForStep( "matchedelectron");
+   controlHistos_.initMonitorForStep( "electron");
+   controlHistos_.initMonitorForStep( "matchedmuon");
+   controlHistos_.initMonitorForStep( "muon");
+ }
+
+ //
+ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventSetup &iSetup) 
+ {
+   using namespace std;
+   using namespace edm;
+   using namespace pat::eventhypothesis;
+   using reco::Candidate; 
+   using reco::CandidatePtr;
+
+   pat::EventHypothesis hyp;
+   int selStep(0),selPath(0);
+
+   //get the weight for the MC event
+   float weight=1;
+   if(!iEvent.isRealData())
+     {
+       edm::Handle<float> puWeightHandle;
+       iEvent.getByLabel("puWeights","puWeight",puWeightHandle);
+       if(puWeightHandle.isValid()) weight = *(puWeightHandle.product());
+     }
+   
+   std::vector<const reco::Candidate *> trigMatchMu,trigMatchEle;
+   trigger::getLeadDileptonTriggerCandidates(iEvent,objConfig["Trigger"],trigMatchMu,trigMatchEle);
+   cout << "HERE" << endl;
+
+   //pre-select vertices
   Handle<reco::VertexCollection> hVtx;
   iEvent.getByLabel(objConfig["Vertices"].getParameter<edm::InputTag>("source"), hVtx);  
   std::vector<reco::VertexRef> selVertices = vertex::filter(hVtx,objConfig["Vertices"]);

@@ -3,15 +3,33 @@ import FWCore.ParameterSet.Config as cms
 ##
 ## pileup normalization scenarios
 ##
-def getNormalizationForScenario(scenario="Spring11"):
-    if(scenario=="Spring11") :
-        return cms.vdouble(0.29513,0.66352,1.57694,2.12325,2.58587,2.33852,1.84959,1.16579,0.630877,
-                                     0.327577,0.158036,0.0816001,0.0373275,0.0180187,0.00976187,0.00472464,0.001945,0.000752556,
-                                     0.000425988,0.000692033)
-    else :
-        return cms.vdouble(1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
-    
+def getPUScenario(scenario="TTbar_madgraph"):
+    if(scenario=="TTbar_madgraph") :
+        return cms.vdouble( 108, 36, 49,
+                            61, 55, 74,
+                            45, 49, 57,
+                            43, 47, 50,
+                            34, 46, 36,
+                            24, 12, 7,
+                            6,  2,  3,
+                            0,  1,  0,
+                            0 )
 
+def getDataScenario(scenario="PromptReco"):
+    if(scenario=="PromptReco") :
+       return cms.vdouble(0.019091,    0.0293974,    0.0667931,
+                          0.108859,    0.139533,     0.149342,
+                          0.138629,    0.114582,     0.0859364,
+                          0.059324,    0.0381123,    0.0229881,
+                          0.0131129,   0.00711764,   0.00369635,
+                          0.00184543,  0.000889604,  0.000415683,
+                          0.000188921, 0.000146288,  0.0,
+                          0.0,         0.0,          0.0,
+                          0.0 )
+
+   
 puWeights = cms.EDProducer("PileupNormalizationProducer",
-                           normalizationDistribution = getNormalizationForScenario("Spring11")
+                           integerWeightsOnly = cms.bool(False),
+                           mcDistribution = getPUScenario("TTbar_madgraph"),
+                           dataDistribution = getDataScenario("PromptReco")
                            )

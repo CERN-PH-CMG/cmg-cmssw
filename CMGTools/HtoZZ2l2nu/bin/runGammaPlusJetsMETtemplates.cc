@@ -76,13 +76,13 @@ int main(int argc, char* argv[])
   Int_t photoncats[]={0,20,30,50,60,70,75,125};
 
   //template reweighting
-  double w20[]={0.3858,5.42316,6.97017,17.5271};
-  double w30[]={0.160762,3.29482,6.62396,12.3574};
-  double w50[]={0.0822076,1.90228,4.71945,8.07962};
-  double w60[]={0.148545,1.15286,1.63573,1.62557};
-  double w70[]={0.0705784,1.33115,2.87943,7.37565};
-  double w75[]={0.054427,1.23829,2.64414,4.97387};
-  double w125[]={0.0126266,0.80794,1.79493,4.05077};
+  double w20[]={0.7748116,0.9336538,1.068044,1.545238};
+//   double w30[]={0.160762,3.29482,6.62396,12.3574};
+//   double w50[]={0.0822076,1.90228,4.71945,8.07962};
+//   double w60[]={0.148545,1.15286,1.63573,1.62557};
+//   double w70[]={0.0705784,1.33115,2.87943,7.37565};
+//   double w75[]={0.054427,1.23829,2.64414,4.97387};
+//   double w125[]={0.0126266,0.80794,1.79493,4.05077};
 
   const size_t nPhotonCats=sizeof(photoncats)/sizeof(Int_t);
   for(size_t icat=0; icat<nPhotonCats; icat++)
@@ -157,7 +157,6 @@ int main(int argc, char* argv[])
       else
 	{
 	  gamma=phys.leptons[0]+phys.leptons[1];
-	  
 	  //find the trigger - threshold category (assume 100% efficiency...) 
 	  if(gamma.pt()>=photoncats[nPhotonCats-1]) triggerThr=photoncats[nPhotonCats-1];
 	  else
@@ -171,23 +170,39 @@ int main(int argc, char* argv[])
 	}
       evcat += triggerThr;
 
+      if(fabs(gamma.eta())>2.5) continue;
+
       int jetbin(0);
       TString subcat("eq0jets");
       if(phys.jets.size()==1) { jetbin=1; subcat="eq1jets"; }
       if(phys.jets.size()>1)  { jetbin=2; subcat="geq2jets"; }
-      
+  
+      int njets30(0);
+      for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
+	njets30 += (phys.jets[ijet].pt()>30);
+    
       //reweight to reproduce jet multiplicity
       if(isGammaEvent)
-	{
-	  if(phys.jets.size()>2) { jetbin=3; } 
-	  if(triggerThr==20) weight *= w20[jetbin];
-	  if(triggerThr==30) weight *= w30[jetbin];
-	  if(triggerThr==50) weight *= w50[jetbin];
-	  if(triggerThr==60) weight *= w60[jetbin];
-	  if(triggerThr==70) weight *= w70[jetbin];
-	  if(triggerThr==75) weight *= w75[jetbin];
-	  if(triggerThr==125) weight *= w125[jetbin];
+ 	{
+	  if(fabs(gamma.eta())>1.442) continue;
+// 	  if(phys.jets.size()==1 && triggerThr==20)
+// 	    {
+// 	      Int_t ibin= controlHistos.getHisto("qt","all")->GetXaxis()->FindBin( gamma.pt() );
+// 	      ibin -= 9;
+// 	      cout << ibin << " " << gamma.pt() << endl;
+// 	      if(ibin>=0) weight *= w20[ibin];
+//   }
 	}
+
+// 	  if(phys.jets.size()>2) { jetbin=3; } 
+// 	  if(triggerThr==20) weight *= w20[jetbin];
+// 	  if(triggerThr==30) weight *= w30[jetbin];
+// 	  if(triggerThr==50) weight *= w50[jetbin];
+// 	  if(triggerThr==60) weight *= w60[jetbin];
+// 	  if(triggerThr==70) weight *= w70[jetbin];
+// 	  if(triggerThr==75) weight *= w75[jetbin];
+// 	  if(triggerThr==125) weight *= w125[jetbin];
+// 	}
       
 
       //jet/met kinematics and systematic variations
@@ -249,7 +264,7 @@ int main(int argc, char* argv[])
 	      TString ctf=cats[ic]+subCats[isc];
 		
 	      if(jetsp4.size()) controlHistos.fillHisto("dphijetmet",ctf, mindphijetmet,weight);
-	      controlHistos.fillHisto("njets",ctf, jetsp4.size(),weight);
+	      controlHistos.fillHisto("njets",ctf, njets30,weight);
 	      controlHistos.fillHisto("qt",ctf, gamma.pt(),weight);
 	      controlHistos.fillHisto("met", ctf, met.pt(),weight);
 	      controlHistos.fillHisto("redmet", ctf, redmet,weight);

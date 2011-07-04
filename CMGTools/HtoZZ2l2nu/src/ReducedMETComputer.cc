@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2011/07/01 08:36:57 $
- *  $Revision: 1.9 $
+ *  $Date: 2011/07/01 14:07:55 $
+ *  $Revision: 1.10 $
  *  \author G. Cerminara & D. Trocino
  */
 
@@ -89,9 +89,14 @@ void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt
   //define the thrust
   if(!isZcandidate)
     {
-      std::pair<TVector2, TVector2> thrust=defineThrust(theLepton1,sigmaPt1,theLepton2,sigmaPt2);
-      a_l=thrust.first;  
-      a_t=thrust.second;
+//       std::pair<TVector2, TVector2> thrust=defineThrust(theLepton1,sigmaPt1,theLepton2,sigmaPt2);
+//       a_l=thrust.first;  
+//       a_t=thrust.second;
+
+
+//      std::pair<TVector2, TVector2> thrust=defineThrust(theLepton1,sigmaPt1,theLepton2,sigmaPt2);
+      a_t=dil.Unit();
+      a_l = a_t.Rotate(TMath::Pi()/2);
     }
   else 
     {

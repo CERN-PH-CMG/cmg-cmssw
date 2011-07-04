@@ -102,7 +102,8 @@ GammaPlusJetsEventAnalyzer::GammaPlusJetsEventAnalyzer(const edm::ParameterSet &
       }
     
     //MET
-    controlHistos_.addHistogram("met", ";#slash{E}_{T} [GeV/c]; Events", 100,  0.,500.);
+    controlHistos_.addHistogram("met", ";E^{miss}_{T} [GeV/c]; Events", 100,  0.,500.);
+    controlHistos_.addHistogram("puffomet", ";charged-E^{miss}_{T} [GeV/c]; Events", 100,  0.,500.);
     controlHistos_.initMonitorForStep("isophoton");
   }
   catch(std::exception &e){
@@ -278,8 +279,6 @@ void GammaPlusJetsEventAnalyzer::analyze(const edm::Event &event, const edm::Eve
     CandidateWithVertexCollection selJets;
     for(size_t ijet=0; ijet<preSelJets.size(); ijet++)
       {
-	//we require association to the highest sum pT^2 vertex as for the photon
-	if( gammaCandidate[0].second.get() !=  preSelJets[ijet].second.get() ) continue;
 	selJets.push_back(preSelJets[ijet]);
 
 	//monitor
@@ -294,8 +293,20 @@ void GammaPlusJetsEventAnalyzer::analyze(const edm::Event &event, const edm::Eve
     edm::Handle<edm::View<reco::Candidate> > hMET;
     event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("source"), hMET);
     reco::CandidatePtr met = hMET->ptrAt(0);
+    edm::Handle< edm::ValueMap<reco::PFMET> > chargedMets;
+    event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("chsource"), chargedMets);
+    LorentzVector chmet(0,0,0,0);
+    for(size_t ivtx=0; ivtx<hVtx->size(); ivtx++)
+      {
+	reco::VertexRef vtxRef(hVtx,ivtx);
+	if(vtxRef->position().z()!=primVertex->position().z()) continue;
+	const reco::PFMET &chpfmet=(*chargedMets)[vtxRef];
+	chmet=LorentzVector(chpfmet.px(),chpfmet.py(),0,chpfmet.pt());
+	break;
+      }
     controlHistos_.fillHisto("met","isophoton",met->pt(),weight);
-   
+    controlHistos_.fillHisto("puffomet","isophoton",chmet.pt(),weight);
+
     //save summary
     ev.run=event.id().run();
     ev.lumi=event.luminosityBlock();
@@ -307,15 +318,14 @@ void GammaPlusJetsEventAnalyzer::analyze(const edm::Event &event, const edm::Eve
 
     const pat::Photon *photon = dynamic_cast<const pat::Photon *>( gammaCandidate[0].first.get() );
     ev.px[0] = photon->px();   ev.py[0]=photon->py();     ev.pz[0]=photon->pz();      ev.en[0]=photon->energy();              ev.id[0]=22; 
-    ev.info1[0] = photon->superCluster()->eta();          ev.info2[0] = photon->r9(); ev.info3[0]=photon->hadronicOverEm();  ev.info4[0]=photon->sigmaIetaIeta(); 
-
-    ev.px[1] = met->px();    ev.py[1]=met->py();          ev.pz[1]=0;                 ev.en[1]=met->pt();                     ev.id[1]=0;
-
-    ev.px[3]=primVertex->p4().px();  ev.py[3]=primVertex->p4().py();  ev.pz[3]=primVertex->p4().pz();  ev.en[3]=primVertex->p4().energy(); ev.id[3]=500;
+    ev.info1[0] = photon->superCluster()->eta();          ev.info2[0] = photon->r9(); ev.info3[0]=photon->hadronicOverEm();   ev.info4[0]=photon->sigmaIetaIeta(); 
+    ev.px[1] = met->px();      ev.py[1]=met->py();        ev.pz[1]=0;                 ev.en[1]=met->pt();                     ev.id[1]=0;
+    ev.info1[1]=chmet.px();    ev.info2[1]=chmet.py();    ev.info3[1] = chmet.pz();
+    ev.px[2]=primVertex->p4().px();  ev.py[2]=primVertex->p4().py();  ev.pz[2]=primVertex->p4().pz();  ev.en[2]=primVertex->p4().energy(); ev.id[2]=500;
 
     for(size_t ijet=0; ijet<selJets.size(); ijet++)
       {
-	int ipart(4+ijet);
+	int ipart(3+ijet);
 	const pat::Jet *jet = dynamic_cast<const pat::Jet *>( selJets[ijet].first.get() );
 	ev.px[ipart] = jet->px();  ev.py[ipart]=jet->py();  ev.pz[ipart]=jet->pz(); ev.en[ipart]=jet->energy();  ev.id[ipart]=1;
         const reco::Candidate *genParton = jet->genParton();

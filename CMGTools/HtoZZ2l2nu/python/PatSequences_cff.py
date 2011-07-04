@@ -13,7 +13,7 @@ def addTriggerMatchingForLeptons(process, postfix='') :
     process.muTriggerMatchPF = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                src     = cms.InputTag( "selectedPatMuons"+postfix ),
                                                matched = cms.InputTag( "patTrigger" ),
-                                               matchedCuts = cms.string( 'type( "TriggerL1Mu" ) || type( "TriggerMuon" )' ),
+                                               matchedCuts = cms.string( 'type( "TriggerMuon" ) && ( path("HLT_Mu8_*") || path("HLT_Mu12_*") || path("HLT_Mu13_*") || path("HLT_DoubleMu7_*") )' ), 
                                                maxDPtRel   = cms.double( 0.5 ), # no effect here
                                                maxDeltaR   = cms.double( 0.5 ),
                                                maxDeltaEta = cms.double( 0.2 ), # no effect here
@@ -21,10 +21,12 @@ def addTriggerMatchingForLeptons(process, postfix='') :
                                                resolveAmbiguities    = cms.bool( False ),
                                                resolveByMatchQuality = cms.bool( False )
                                                )
+    
     process.eleTriggerMatchPF = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                 src     = cms.InputTag( "selectedPatElectrons"+postfix ),
                                                 matched = cms.InputTag( "patTrigger" ),
-                                                matchedCuts = cms.string( 'type( "TriggerL1NoIsoEG" ) || type( "TriggerL1IsoEG" ) || type( "TriggerElectron" )' ),
+                                                #matchedCuts = cms.string( 'type( "TriggerL1NoIsoEG" ) || type( "TriggerL1IsoEG" ) || type( "TriggerElectron" )' ),
+                                                matchedCuts = cms.string( 'type( "TriggerElectron" )' ),
                                                 maxDPtRel   = cms.double( 0.5 ), # no effect here
                                                 maxDeltaR   = cms.double( 0.5 ),
                                                 maxDeltaEta = cms.double( 0.2 ), # no effect here
@@ -35,7 +37,9 @@ def addTriggerMatchingForLeptons(process, postfix='') :
 
     from PhysicsTools.PatAlgos.tools.coreTools import removeCleaning
     removeCleaning( process )
-    switchOnTriggerMatching( process, triggerMatchers = [ 'muTriggerMatchPF','eleTriggerMatchPF' ], sequence = 'patPF2PATSequence' + postfix )
+    setattr( process, 'muTriggerMatch' + postfix, process.muTriggerMatchPF )
+    setattr( process, 'eleTriggerMatch' + postfix, process.eleTriggerMatchPF )
+    switchOnTriggerMatching( process, triggerMatchers = [ 'muTriggerMatchPFlow','eleTriggerMatchPFlow' ], sequence = 'patPF2PATSequence' + postfix )
     removeCleaningFromTriggerMatching( process, sequence = 'patPF2PATSequence' + postfix )
 
 ##
@@ -52,6 +56,7 @@ def addPatSequence(process, runOnMC, addPhotons=False) :
     # do not forget to add it to the crab file under [USER] with additional_input_files  = JECxxxx.db
     jetAlgo='AK5'
     jecSetPF = jetAlgo+'PFchs'
+    #jecSetPF = jetAlgo+'PF'
     jecLevels=['L1FastJet','L2Relative','L3Absolute']
     if(not runOnMC) : jecLevels.append( 'L2L3Residual' )
     process.load("CondCore.DBCommon.CondDBCommon_cfi")
