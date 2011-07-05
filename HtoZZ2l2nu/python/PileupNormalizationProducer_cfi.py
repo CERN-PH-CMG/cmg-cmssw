@@ -3,17 +3,11 @@ import FWCore.ParameterSet.Config as cms
 ##
 ## pileup normalization scenarios
 ##
-def getPUScenario(scenario="TTbar_madgraph"):
-    if(scenario=="TTbar_madgraph") :
-        return cms.vdouble( 108, 36, 49,
-                            61, 55, 74,
-                            45, 49, 57,
-                            43, 47, 50,
-                            34, 46, 36,
-                            24, 12, 7,
-                            6,  2,  3,
-                            0,  1,  0,
-                            0 )
+
+# all the samples are generated with similar PU distribution (S4) so all the weights bellow are coming from the DY sample.
+def getPUScenario(scenario="Summer11_S4"):
+    if(scenario=="Summer11_S4") :
+        return cms.vdouble(0.120949,  0.066766,  0.071315,  0.070682,  0.070845,  0.069496,  0.067300,  0.064682,  0.061566,  0.057429,  0.052165,  0.046143,  0.039450,  0.033369,  0.026624,  0.021317,  0.016741,  0.012638,  0.009338,  0.006751,  0.004795,  0.003353,  0.002258,  0.001518,  0.000995,  0.000637,  0.000384,  0.000241,  0.000157,  0.000099)
 
 def getDataScenario(scenario="PromptReco"):
     if(scenario=="PromptReco") :
@@ -29,6 +23,7 @@ def getDataScenario(scenario="PromptReco"):
 
    
 puWeights = cms.EDProducer("PileupNormalizationProducer",
-                           mcDistribution = getPUScenario("TTbar_madgraph"),
+                           integerWeightsOnly = cms.bool(False),
+                           mcDistribution = getPUScenario("Summer11_S4"),
                            dataDistribution = getDataScenario("PromptReco")
                            )
