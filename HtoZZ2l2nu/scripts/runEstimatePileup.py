@@ -1,12 +1,38 @@
 import os,sys
+import getopt
 
-output=sys.argv[1]
-if(len(sys.argv)>2):
-  jsonfile = sys.argv[2]
-  print "Running lumiCalc"
-  os.system('lumiCalc.py -c frontier://LumiCalc/CMS_LUMI_PROD -i ' + jsonfile + ' --nowarning overview > ' + output + '_lumi.txt')
-  print "Running estimatePileup"
-  os.system('estimatePileup.py --maxPileupBin=20 --saveRuns -i '+ jsonfile + ' ' + output + ".root")
+def usage() :
+      print ' '
+      print 'runEstimatePileup.py [options]'
+      print '   -j json file with lumi info'
+      print '   -o output file'
+
+#parse the options
+try:
+  # retrive command line options
+  shortopts  = "j:o:h?"
+  opts, args = getopt.getopt( sys.argv[1:], shortopts )
+except getopt.GetoptError:
+  # print help information and exit:
+  print "ERROR: unknown options in argument %s" % sys.argv[1:]
+  usage()
+  sys.exit(1)
+
+#get the options
+for o,a in opts:
+  if o in("-?", "-h"):
+    usage()
+    sys.exit(1)
+  elif o in('-j'):
+    jsonfile = a
+    print "Running lumiCalc"
+    os.system('lumiCalc.py -c frontier://LumiCalc/CMS_LUMI_PROD -i ' + jsonfile + ' --nowarning overview > ' + output + '_lumi.txt')
+    print "Running estimatePileup"
+    os.system('estimatePileup.py --maxPileupBin=25 --saveRuns -i '+ jsonfile + ' ' + output + ".root")    
+  elif o in('-o'): output=a
+  
+
+#run lumicalc
 
 import ROOT
 from ROOT import TFile,TGraphAsymmErrors
