@@ -16,6 +16,7 @@ process = 'ANA'
 
 from CMGTools.RootTools.TreeFunctions import *
 from CMGTools.RootTools.AliasSetter import * 
+from CMGTools.RootTools.CutCorrelations import * 
 from CMGTools.Common.macros.aliases import * 
 
 if len(sys.argv) != 2:
