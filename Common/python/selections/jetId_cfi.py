@@ -12,6 +12,15 @@ veryLooseJetId95 = cms.PSet(
     gammaFraction = cms.string('component(4).fraction() < 0.95')  
     )
 
+veryLooseJetId95h0 = cms.PSet(
+    h0Fraction = cms.string('component(5).fraction() < 0.95')  
+    )
+
+veryLooseJetId95gamma = cms.PSet(
+    gammaFraction = cms.string('component(4).fraction() < 0.95')  
+    )
+
+
 #Selection thanks to Maxime
 looseJetId = cms.PSet(
     h0Fraction = cms.string('component(5).fraction() < 0.99'),                      
