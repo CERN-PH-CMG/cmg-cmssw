@@ -84,8 +84,8 @@ BaseJetSelection = cms.PSet( source = cms.InputTag("selectedPatJetsPFlow"),
 BaseDileptonSelection = cms.PSet( minDileptonMass = cms.double(0),
                                   maxDileptonMass = cms.double(7000),
                                   minPt = cms.double(20),
-                                  maxEleRelIso = cms.double(0.17),
-                                  maxMuRelIso = cms.double(0.2),
+                                  maxEleRelIso = cms.double(0.15),
+                                  maxMuRelIso = cms.double(0.15),
                                   maxDz = cms.double(1.0)
                                   )
 

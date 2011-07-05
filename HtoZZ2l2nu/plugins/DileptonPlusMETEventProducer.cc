@@ -85,7 +85,6 @@
    
    std::vector<const reco::Candidate *> trigMatchMu,trigMatchEle;
    trigger::getLeadDileptonTriggerCandidates(iEvent,objConfig["Trigger"],trigMatchMu,trigMatchEle);
-   cout << "HERE" << endl;
 
    //pre-select vertices
   Handle<reco::VertexCollection> hVtx;
