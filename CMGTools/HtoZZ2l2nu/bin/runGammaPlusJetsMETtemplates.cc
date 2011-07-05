@@ -184,7 +184,6 @@ int main(int argc, char* argv[])
       //reweight to reproduce jet multiplicity
       if(isGammaEvent)
  	{
-	  if(fabs(gamma.eta())>1.442) continue;
 // 	  if(phys.jets.size()==1 && triggerThr==20)
 // 	    {
 // 	      Int_t ibin= controlHistos.getHisto("qt","all")->GetXaxis()->FindBin( gamma.pt() );
