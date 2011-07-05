@@ -45,15 +45,7 @@ if not exists:
     sys.exit(1)
 
 
-castor = castortools.isCastorDir( dir )
-
-protocol = 'file:'
-if castor:
-    protocol = 'root://castorcms/'
-
-
-files = castortools.matchingFiles( dir, regexp,
-                                   protocol=protocol, castor=castor)
+files = castortools.matchingFiles( dir, regexp, addProtocol = True)
 
 print '''
 import FWCore.ParameterSet.Config as cms
@@ -68,9 +60,7 @@ print ")"
 
 print 'source.fileNames.extend(['
 for file in files:
-
-    file = file.replace( protocol+'/castor/cern.ch/cms/store', '/store')
-    
+#     file = file.replace( protocol+'/castor/cern.ch/cms/store', '/store')  
     fileLine = "\t\t'%s'," % file
     print fileLine
 print "])"

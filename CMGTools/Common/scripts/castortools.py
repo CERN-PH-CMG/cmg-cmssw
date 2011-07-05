@@ -14,9 +14,11 @@ def isCastorDir( dir ):
     else:
         return False
 
-#COLIN is it still in use? remove... 
+#COLIN is it still in use?
+# yes, in crabProd.py. could think about removing it
 def isCastorFile( file ):
-    file = lfnToCastor(file)
+    if isLFN(file):
+        file = lfnToCastor(file)
     os.system( 'nsls ' + file )
     ret = subprocess.call( ['nsls',file] )
     return not ret
@@ -40,20 +42,31 @@ def fileExists( file ):
 # optionnally, the protocol (rfio: or file:) is prepended to the absolute
 # file name
 #COLIN: now that we are using LFNs, one should remove the castor argument (I guess)
-def matchingFiles( dir, regexp, protocol=None, castor=True):
+def matchingFiles( dir, regexp, addProtocol=False, LFN=True):
 
+    ls = 'nsls'
+
+    localFiles = False
     if isLFN( dir ):
         dir = lfnToCastor( dir )
-
-    ls = 'rfdir'
- 
+    elif not isCastorDir( dir ):
+        # neither LFN nor castor file -> local file
+        ls = 'ls'
+        localFiles = True
+        dir = os.getcwd() + '/' + dir
+        
     try:
         pattern = re.compile( regexp )
     except:
         print 'please enter a valid regular expression '
         sys.exit(1)
 
-    allFiles = os.popen("%s %s | awk '{print $9}'" % (ls, dir))
+    # allFiles = None
+    # if localFiles:
+    #    cmd = "%s %s/%s" % (ls, os.getcwd(), dir)
+
+    cmd = "%s %s" % (ls, dir) 
+    allFiles = os.popen(cmd)
 
     matchingFiles = []
     for file in allFiles.readlines():
@@ -61,10 +74,12 @@ def matchingFiles( dir, regexp, protocol=None, castor=True):
         
         m = pattern.match( file )
         if m:
-            fullCastorFile = '%s/%s' % (dir, file)
-            if protocol:
-                fullCastorFile = '%s%s/%s' % (protocol, dir, file)
-            matchingFiles.append( fullCastorFile )
+            fullFileName = '%s/%s' % (dir, file)
+            if addProtocol and localFiles:
+                fullFileName = 'file:%s/%s' % ( dir, file)
+            if not localFiles and LFN:
+                fullFileName = fullFileName.replace( '/castor/cern.ch/cms/store', '/store')
+            matchingFiles.append( fullFileName )
 
     allFiles.close()
 
@@ -246,6 +261,7 @@ def sync( regexp1, files1, regexp2, files2):
 def createSubDir( castorDir, subDir ):
     absName = '%s/%s' % (castorDir, subDir)
     return createCastorDir( absName )
+
 
 # create castor directory, if it does not already exist
 def createCastorDir( absName ):

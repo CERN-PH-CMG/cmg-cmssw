@@ -62,40 +62,38 @@ class logger:
         if self.dirLocal != None:
             os.system( 'cp %s %s' % (file, self.dirLocal) )
 
+    def logCMSSW(self): 
+        self.logPackages()
+        showtagsLog = 'logger_showtags.txt'
+        diffLog = 'logger_diff.txt'
+        # os.system('showtags > ' + showtagsLog)
+        self.showtags(showtagsLog)
+        self.cvsdiff(diffLog)
+        self.addFile(showtagsLog)
+        self.addFile(diffLog) 
 
-    def logCMSSW(self):
+    def logPackages(self):
+        oldPwd = os.getcwd()
+        os.chdir( os.getenv('CMSSW_BASE') + '/src/' )
         output = subprocess.Popen( 'showtags', stdout=subprocess.PIPE).communicate()[0]
-
         d = datetime.datetime.today()
         tag = 'logger_' + os.getenv('USER') + '_' + d.strftime("%d%h%y-%Hh%Mm%Ss")
-
         tagPattern = re.compile('^\s*(\S+)\s+(\S+)\s*$')
         for line in output.split('\n'):
             m = tagPattern.match(line)
-            # print 'line ', line
             if m!=None:
                 package = m.group(2)
                 curtag = m.group(1)
                 self.logPackage( package, curtag, tag)
-
-        showtagsLog = 'logger_showtags.txt'
-        diffLog = 'logger_diff.txt'
-        os.system('showtags > ' + showtagsLog)
-        self.cvsdiff(diffLog)
-        self.addFile(showtagsLog)
-        self.addFile(diffLog)
+        os.chdir( oldPwd )
         
-
     def logPackage(self, package, curtag, tag ):
         print 'logging package', package
         if curtag == 'NoTag':
             print 'package has not been tagged'
             self.cvstag( tag, package )
             self.cvsupdate( tag, package )
-                
-                # print os.getcwd()
-                # self.cvstag(tag, package)
-
+     
     def cvstag(self, tag, package):
         oldPwd = os.getcwd()
         os.chdir( os.getenv('CMSSW_BASE') + '/src/' )
@@ -121,7 +119,14 @@ class logger:
         print diffCmd
         os.system( diffCmd )
         os.chdir( oldPwd )
-                
+
+    def showtags(self, log):
+        oldPwd = os.getcwd()
+        os.chdir( os.getenv('CMSSW_BASE') + '/src/' )
+        cmd = 'showtags > %s/%s 2> /dev/null' % (oldPwd, log)
+        print cmd
+        os.system( cmd )
+        os.chdir( oldPwd )        
 
     def stageIn(self):
         if self.tgzDirOnCastor != None:

@@ -32,9 +32,7 @@ dir2 = args[1]
 regexp = args[2]
 
 
-files = castortools.matchingFiles( dir1, regexp,
-                                   protocol=False,
-                                   castor = castortools.isCastorDir(dir1) )
+files = castortools.matchingFiles( dir1, regexp )
 
 if options.negate:
     print 'NOT copying ',  

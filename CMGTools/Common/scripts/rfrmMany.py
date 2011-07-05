@@ -5,7 +5,14 @@ import sys,os, re, pprint
 import castortools
 
 parser = OptionParser()
-parser.usage = "%prog <castor dir> <regexp pattern>: place all files matching regexp in a castor directory in a Trash.\n\nExample (just try, the -n option negates the command!):\nrfrmMany.py  /castor/cern.ch/user/c/cbern/CMSSW312/SinglePions '.*\.root' -n"
+parser.usage = """
+%prog <castor dir> <regexp pattern>: place all files matching regexp in a castor directory in a Trash.
+
+Example (just try, the -n option negates the command!):
+rfrmMany.py /store/cmst3/user/cbern/CMG/HT/Run2011A-PromptReco-v1/AOD/PAT_CMG '.*\.root' -n
+IMPORTANT NOTE: castor directories must be provided as logical file names (LFN), starting by /store.
+"""
+
 parser.add_option("-n", "--negate", action="store_true",
                   dest="negate",
                   help="do not proceed",
