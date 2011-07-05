@@ -62,12 +62,16 @@ for proc in procList :
         data = desc['data']
         for d in data :
 
+            alldirs=[]
+            try :
+                alldirs = d[dirtag]
+            except:
+                continue
+            
             #tag veto
             if(onlytag!='all') :
                 itag=d['dtag']
                 if(itag.find(onlytag)<0) : continue
-
-            alldirs = d[dirtag]
 
             idir=0
             for dir in alldirs:
@@ -90,10 +94,13 @@ for proc in procList :
                             newParams += ipar + ' '
                         else :
                             newParams += '-castor=' + d[arg][0] + ' '
+
                 #submit the jobs
                 for ijob in range(njobs) :
-                    localParams = newParams + ' -src=' + dir + ' -tag=' + d['dtag']+str(idir)
+                    localParams = newParams + ' -src=' + dir + ' -tag=' + d['dtag'] + '_' + str(idir)
                     if(fperjob>0) : localParams += ' -f=' + str(ijob*fperjob) + ' -step=' + str(fperjob)
+                    print "**** Starting new job with the following parameters ****"
+                    print localParams
                     if(subtoBatch) :
                         os.system('submit2batch.sh ' + scriptFile + ' ' + localParams)                   
                     else :
