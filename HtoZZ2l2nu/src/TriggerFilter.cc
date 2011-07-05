@@ -9,6 +9,9 @@ namespace trigger
   //
   void getLeadDileptonTriggerCandidates(edm::Event &iEvent, const edm::ParameterSet &iConfig, std::vector<const reco::Candidate *> &muons, std::vector<const reco::Candidate *> &electrons)
   {
+    //needs further work
+    return;
+
     // PAT trigger helper for trigger matching information
     const pat::helper::TriggerMatchHelper matchHelper;
     
