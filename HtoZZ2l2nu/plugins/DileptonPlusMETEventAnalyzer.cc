@@ -525,11 +525,12 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 
     //charged met
     LorentzVector chmet(0,0,0,0);
-    edm::Handle< edm::ValueMap<reco::PFMET> > chargedMets;
-    event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("chsource"), chargedMets); 
-    edm::Handle<reco::VertexCollection> hVtx;
-    event.getByLabel(objConfig_["Vertices"].getParameter<edm::InputTag>("source"), hVtx);  
     try{
+      edm::Handle< edm::ValueMap<reco::PFMET> > chargedMets;
+      event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("chsource"), chargedMets); 
+      edm::Handle<reco::VertexCollection> hVtx;
+      event.getByLabel(objConfig_["Vertices"].getParameter<edm::InputTag>("source"), hVtx);  
+      
       for(size_t ivtx=0; ivtx<hVtx->size(); ivtx++)
 	{
 	  reco::VertexRef vtxRef(hVtx,ivtx);
