@@ -8,6 +8,7 @@ electronFactory = cms.PSet(
 
 from CMGTools.Common.selections.vbtfelectron_cfi import *
 from CMGTools.Common.selections.cicelectron_cfi import *
+from CMGTools.Common.selections.isolation_cfi import *
 
 cmgElectron = cms.EDFilter("ElectronPOProducer",
     cfg = electronFactory.clone(),
@@ -41,6 +42,6 @@ cmgElectron = cms.EDFilter("ElectronPOProducer",
        mediumIP      = cicMediumIP.clone(),
        tightIP       = cicTightIP.clone(),
        superTightIP  = cicSuperTightIP.clone(),
-
+       isoelectron = isolation.clone(),
        )
 )
