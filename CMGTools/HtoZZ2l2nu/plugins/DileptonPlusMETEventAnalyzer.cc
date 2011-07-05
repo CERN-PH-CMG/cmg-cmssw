@@ -540,7 +540,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	  break;
 	}
     }catch(std::exception &e){
-      cout << e.what() << endl;
+      //cout << e.what() << endl;
     }
 
     //reduced met

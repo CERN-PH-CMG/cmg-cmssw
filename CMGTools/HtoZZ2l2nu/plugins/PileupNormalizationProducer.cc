@@ -77,7 +77,7 @@ void PileupNormalizationProducer::produce(edm::Event &iEvent, const edm::EventSe
   
   //put in the event
   iEvent.put(puWeight,"puWeight");
-  iEvent.put(puWeight,"renPuWeight");
+  iEvent.put(renPuWeight,"renPuWeight");
 }
 
 //  

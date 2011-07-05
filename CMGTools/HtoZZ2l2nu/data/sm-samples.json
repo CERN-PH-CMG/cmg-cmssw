@@ -53,7 +53,7 @@
                "dtag":"DYJetsToLL",
 	       "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
 	       "aoddir":["/castor/cern.ch/cms/store/cmst3/user/palencia/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2"],	
-	       "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/ZZ/DYToLL/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
+	       "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ/DYToLL/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
                "xsec":3048
               }
           ]
