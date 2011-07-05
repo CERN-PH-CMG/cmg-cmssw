@@ -29,7 +29,6 @@ def getDataScenario(scenario="PromptReco"):
 
    
 puWeights = cms.EDProducer("PileupNormalizationProducer",
-                           integerWeightsOnly = cms.bool(False),
                            mcDistribution = getPUScenario("TTbar_madgraph"),
                            dataDistribution = getDataScenario("PromptReco")
                            )
