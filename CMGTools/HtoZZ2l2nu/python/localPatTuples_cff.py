@@ -6,7 +6,7 @@ import getopt
 lists the files available in castor
 """
 def fillFromCastor(dir,ffile=0,step=-1):
-
+ 
     #a root file is already there
     if(dir.find(".root")>=0):
         localdataset=cms.untracked.vstring()
@@ -31,7 +31,8 @@ def fillFromCastor(dir,ffile=0,step=-1):
         if(ifile>=ffile):
             if( (step<0) or  (step>0 and ifile<ffile+step) ):
                 localdataset.extend( [ sline ] )
-            ifile=ifile+1
+        ifile=ifile+1
+
     os.system('rm /tmp/castorDump')
     return localdataset
 
