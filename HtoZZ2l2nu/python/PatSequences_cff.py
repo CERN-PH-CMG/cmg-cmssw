@@ -58,20 +58,21 @@ def addPatSequence(process, runOnMC, addPhotons=False) :
     jecSetPF = jetAlgo+'PFchs'
     #jecSetPF = jetAlgo+'PF'
     jecLevels=['L1FastJet','L2Relative','L3Absolute']
-    if(not runOnMC) : jecLevels.append( 'L2L3Residual' )
-    process.load("CondCore.DBCommon.CondDBCommon_cfi")
-    process.jec = cms.ESSource("PoolDBESSource",
-                               DBParameters = cms.PSet( messageLevel = cms.untracked.int32(0) ),
-                               timetype = cms.string('runnumber'),
-                               toGet = cms.VPSet( cms.PSet(record = cms.string('JetCorrectionsRecord'),
-                                                           tag    = cms.string('JetCorrectorParametersCollection_Jec11V2_AK5PF'),
-                                                           label  = cms.untracked.string('AK5PF')
-                                                           )
-                                                  ),
-                               connect = cms.string('sqlite:Jec11V2.db')
-                               )
+    #if(not runOnMC) : jecLevels.append( 'L2L3Residual' )
+    
+#    process.load("CondCore.DBCommon.CondDBCommon_cfi")
+#    process.jec = cms.ESSource("PoolDBESSource",
+#                               DBParameters = cms.PSet( messageLevel = cms.untracked.int32(0) ),
+#                               timetype = cms.string('runnumber'),
+#                               toGet = cms.VPSet( cms.PSet(record = cms.string('JetCorrectionsRecord'),
+#                                                           tag    = cms.string('JetCorrectorParametersCollection_Jec11V2_AK5PF'),
+#                                                           label  = cms.untracked.string('AK5PF')
+#                                                           )
+#                                                  ),
+#                               connect = cms.string('sqlite:Jec11V2.db')
+#                               )
     # Add an es_prefer statement to get your new JEC constants from the sqlite file, rather than from the global tag
-    process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
+#    process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
 
 
     #start PF2PAT
