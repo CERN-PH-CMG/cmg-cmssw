@@ -299,7 +299,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
         c.SaveAs(outputDir+'/'+pname+'.png')
         c.SaveAs(outputDir+'/'+pname+'.C')
 
-        if(pname.find('cutflow')>=0 or pname.find('eventflow')>=0) :
+        if(pname.find('cutflow')>=0 or pname.find('eventflow')>=0 or pname.find('evtflow')>=0) :
             try :
                 savePlotAsTable(stack,spimpose,data,outputDir+'/'+pname+'.tex')
             except :
