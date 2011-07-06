@@ -5,6 +5,9 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 import FWCore.ParameterSet.Config as cms
 
+from CMGTools.Common.testing_sources.sourceFiles import testing_sources
+sourceFileList = testing_sources()
+
 # Unit test for the multi-jet factory.
 
 sep_line = "-" * 50
@@ -21,7 +24,7 @@ process.maxEvents = cms.untracked.PSet(
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(1)
     )
-process.source.fileNames = ['/store/cmst3/user/cmgtools/CMG/RelValQCD_Pt_80_120/CMSSW_4_2_3-START42_V12-v2/GEN-SIM-RECO/patTuple_PF2PAT_0.root']
+process.source.fileNames = sourceFileList['QCD']
 
 extension = 'multijet'
 
