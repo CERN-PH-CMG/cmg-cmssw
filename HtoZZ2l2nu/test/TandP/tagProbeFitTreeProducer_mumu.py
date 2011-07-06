@@ -14,11 +14,10 @@ castorDir, outputFile, process.source.fileNames = configureFromCommandLine()
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(5000) )    
 
 #selection
-triggers = "!triggerObjectMatchesByFilter('hltSingleMu3L3Filtered3').empty()"
-muontype = triggers + " && isGlobalMuon && isTrackerMuon"
+muontype = "isGlobalMuon && isTrackerMuon"
 kinacc = muontype + " && pt > 20 && abs(eta) < 2.4"
 goodtrk = kinacc + " && globalTrack.normalizedChi2<10 && globalTrack.hitPattern.numberOfValidTrackerHits>11 && globalTrack.hitPattern.numberOfValidMuonHits>1"  
-iso = goodtrk + " && (neutralHadronIso+chargedHadronIso+photonIso)/pt < 0.2"
+iso = goodtrk + " && (neutralHadronIso+chargedHadronIso+photonIso)/pt < 0.15"
 
 ## Tags. 
 process.tagMuons = cms.EDFilter("PATMuonRefSelector",
@@ -28,7 +27,7 @@ process.tagMuons = cms.EDFilter("PATMuonRefSelector",
 ## Probes.
 process.probeMuons = cms.EDFilter("PATMuonRefSelector",
                                   src = cms.InputTag("selectedPatMuonsPFlow"),
-                                  cut = cms.string("isTrackerMuon && pt > 15"), 
+                                  cut = cms.string("isTrackerMuon && pt > 20"), 
                                   )
 
 ## Combine Tags and Probes into Z candidates, applying a mass cut
