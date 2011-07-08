@@ -24,7 +24,7 @@ print sep_line
 process.setName_("CMG")
 
 # Pick up the SingleMu data files.
-process.load("CMGTools.Common.sources.SingleMu.Run2011A_May10ReReco_v1.AOD.PAT_CMG_V2.source_PAT_cff")
+process.load("CMGTools.ZmumuJetsTutorial.sources.SingleMu.Run2011A_May10ReReco_v1.AOD.PAT_CMG_V2.source_PAT_cff")
 
 # One can limit the number of files to avoid some of the CASTOR
 # overhead (i.e., faster start-up).
