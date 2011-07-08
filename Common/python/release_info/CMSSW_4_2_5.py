@@ -4,7 +4,7 @@
     'UserCode/CMG/CMGTools/Common':              ['Colin_LepSel_Scripts_Jul5', 'CMGTools/Common'],
     'UserCode/CMG/CMGTools/RootTools':           ['Colin_CutCorrelations_Jul5', 'CMGTools/RootTools'],
     'UserCode/CMG/CMGTools/Susy':                ['Colin_LepSel_July5', 'CMGTools/Susy'],
-    'UserCode/CMG/CMGTools/ZmumuJetsTutorial':   ['jeroen_20110706', 'CMGTools/ZmumuJetsTutorial'],
+    'UserCode/CMG/CMGTools/ZmumuJetsTutorial':   ['jeroen_20110708', 'CMGTools/ZmumuJetsTutorial'],
     'CommonTools/ParticleFlow':                  ['Colin_June23', 'CommonTools/ParticleFlow'],
     'UserCode/csander/DataFormats/AnomalousEcalDataFormats' :     ['V110523_BE', 'DataFormats/AnomalousEcalDataFormats'],
     'DataFormats/PatCandidates' :                ['V06-04-18', 'DataFormats/PatCandidates'],
