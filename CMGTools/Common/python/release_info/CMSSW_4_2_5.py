@@ -1,7 +1,7 @@
 # See https://savannah.cern.ch/task/index.php?20954
 {
     'UserCode/CMG/AnalysisDataFormats/CMGTools': ['Colin_JetIdTopProj_June29', 'AnalysisDataFormats/CMGTools'],
-    'UserCode/CMG/CMGTools/Common':              ['Colin_LepSel_Scripts_Jul5', 'CMGTools/Common'],
+    'UserCode/CMG/CMGTools/Common':              ['wreece_120711', 'CMGTools/Common'],
     'UserCode/CMG/CMGTools/RootTools':           ['Colin_CutCorrelations_Jul5', 'CMGTools/RootTools'],
     'UserCode/CMG/CMGTools/Susy':                ['Colin_LepSel_July5', 'CMGTools/Susy'],
     'UserCode/CMG/CMGTools/ZmumuJetsTutorial':   ['jeroen_20110708', 'CMGTools/ZmumuJetsTutorial'],
