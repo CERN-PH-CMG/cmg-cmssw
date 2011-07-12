@@ -32,6 +32,12 @@ runCMG = True
 if runCMG:
     doEmbedPFCandidatesInTaus = False
 
+#add the L2L3Residual corrections only for data
+if runOnMC:#MC
+    jetCorrections=['L1FastJet','L2Relative','L3Absolute']
+else:#Data
+    jetCorrections=['L1FastJet','L2Relative','L3Absolute','L2L3Residual']
+
 # process.load("CommonTools.ParticleFlow.Sources.source_ZtoMus_DBS_cfi")
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
 
@@ -53,7 +59,7 @@ print sep_line
 ### SOURCE DEFINITION  ################################################################
 
 
-# process.source.fileNames = cms.untracked.vstring(['/store/relval/CMSSW_4_2_3/RelValZTT/GEN-SIM-RECO/START42_V12-v2/0062/4CEA9C47-287B-E011-BAB7-00261894396B.root'])
+# process.source.fileNames = cms.untracked.vstring(['/store/relval/CMSSW_4_2_5/RelValTTbar/GEN-SIM-RECO/START42_V12-v1/0113/1C538A2F-799E-E011-8A7E-0026189438BD.root'])
 
 # process.source.fileNames = cms.untracked.vstring(['file:PFAOD.root'])
 
@@ -68,7 +74,7 @@ if pickRelVal:
     process.source = cms.Source(
         "PoolSource",
         fileNames = cms.untracked.vstring(
-        pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_2_3'
+        pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_2_5'
                               , relVal        = 'RelValTTbar'
                               , globalTag     = 'MC_42_V12'
                               , numberOfFiles = 1
@@ -108,7 +114,7 @@ jetAlgoAK5="AK5"
 
 #COLIN : we will need to add the L2L3Residual when they become available! also check the other calls to the usePF2PAT function. 
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgoAK5, runOnMC=runOnMC, postfix=postfixAK5,
-          jetCorrections=('AK5PFchs', ['L1FastJet','L2Relative','L3Absolute']))
+          jetCorrections=('AK5PFchs', jetCorrections))
 
 
 if doJetPileUpCorrection:
@@ -171,7 +177,7 @@ jetAlgoAK7="AK7"
 #COLIN : argh! AK7PFchs does not seem to exist yet...
 # Maxime should maybe contact the JEC group if he wants them 
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgoAK7, runOnMC=runOnMC, postfix=postfixAK7,
-          jetCorrections=('AK7PF', ['L1FastJet','L2Relative','L3Absolute']))
+          jetCorrections=('AK7PF', jetCorrections))
 
 if doJetPileUpCorrection:
     enablePileUpCorrection( process, postfix=postfixAK7)
