@@ -1,6 +1,7 @@
 #include "DataFormats/Common/interface/Wrapper.h"
 #include "CMGTools/TauTest/interface/TestPatTaus.h"
 #include "CMGTools/TauTest/interface/TestCMGTaus.h"
+#include "CMGTools/TauTest/interface/TauEfficiencyPlot.h"
 
 namespace {
   struct CMGTools_TauTest {
@@ -9,6 +10,8 @@ namespace {
     TestPatTaus testpattaus;
 
     TestCMGTaus testcmgtaus;
+
+    TauEfficiencyPlot taueffplot;
     
   };
   

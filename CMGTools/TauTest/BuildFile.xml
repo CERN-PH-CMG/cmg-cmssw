@@ -10,12 +10,15 @@
 <use   name="DataFormats/FWLite"/>
 <use   name="FWCore/PythonParameterSet"/>
 <use   name="DataFormats/PatCandidates"/>
+<use   name="DataFormats/VertexReco"/>
 <use   name="CommonTools/Utils"/>
 <use   name="PhysicsTools/FWLite"/>
 <use   name="PhysicsTools/Utilities"/>
 <use   name="PhysicsTools/PatUtils"/>
 <use   name="PhysicsTools/PatExamples"/>
 <use   name="PhysicsTools/SelectorUtils"/>
+<use   name="PhysicsTools/JetMCUtils"/>
+<use   name="DataFormats/HepMCCandidate"/>
 
 <use name="AnalysisDataFormats/CMGTools"/>
 

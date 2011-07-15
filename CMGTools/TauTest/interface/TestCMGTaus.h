@@ -9,21 +9,27 @@ class TestCMGTaus {
 public:
   
   TestCMGTaus():
-    filename_(""){
+    dirname_(""),
+    firstfile_(1),
+    lastfile_(1){
   };
-  TestCMGTaus(TString filename):
-    filename_(filename){
+  TestCMGTaus(TString filename, Int_t firstfile, Int_t lastfile):
+    dirname_(filename),
+    firstfile_(firstfile),
+    lastfile_(lastfile){
   };
   ~TestCMGTaus(){};
 
   void testTau(TString inputtag="cmgTauSel");
   void testElectron(TString inputtag="cmgElectronSel");
   void testMuon(TString inputtag="cmgMuonSel");
-  void testMET(TString inputtag="cmgPFMET");
+//   void testMET(TString inputtag="cmgPFMET");
 
 private:
   
-  TString filename_;
+  TString dirname_;
+  Int_t firstfile_;
+  Int_t lastfile_;
   
 };
 
