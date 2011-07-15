@@ -1,7 +1,7 @@
 
 
-from CMGTools.DiTauAnalysis.skims.cmgElectronSelClean_cfi import *
-from CMGTools.DiTauAnalysis.skims.cmgElectronSelCleanHistos_cfi import *
+from CMGTools.H2TauTau.skims.cmgElectronSelClean_cfi import *
+from CMGTools.H2TauTau.skims.cmgElectronSelCleanHistos_cfi import *
 
 electronSelCleanSequence = cms.Sequence(
     cmgElectronSelPt

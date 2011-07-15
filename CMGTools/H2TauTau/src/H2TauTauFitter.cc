@@ -1,4 +1,4 @@
-#include "CMGTools/H2TauTau/interface/TauTauFitter.h"
+#include "CMGTools/H2TauTau/interface/H2TauTauFitter.h"
 
 
 H2TauTauFitter::H2TauTauFitter(TString outPutPath):

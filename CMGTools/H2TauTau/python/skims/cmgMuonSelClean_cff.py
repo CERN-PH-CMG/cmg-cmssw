@@ -1,7 +1,7 @@
 
 
-from CMGTools.DiTauAnalysis.skims.cmgMuonSelClean_cfi import *
-from CMGTools.DiTauAnalysis.skims.cmgMuonSelCleanHistos_cfi import *
+from CMGTools.H2TauTau.skims.cmgMuonSelClean_cfi import *
+from CMGTools.H2TauTau.skims.cmgMuonSelCleanHistos_cfi import *
 
 muonSelCleanSequence = cms.Sequence(
     cmgMuonSelPt
