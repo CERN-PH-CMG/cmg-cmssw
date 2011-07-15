@@ -7,5 +7,5 @@ from CMGTools.Common.diTau_cff import *
 tauSequence = cms.Sequence(
     cmgTau 
     + cmgTauSel
-    + diTauSequence
+#    + diTauSequence
 )

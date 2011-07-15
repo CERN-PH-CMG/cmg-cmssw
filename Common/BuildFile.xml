@@ -8,6 +8,9 @@
 <use name="AnalysisDataFormats/CMGTools"/>
 <use name="CondFormats/JetMETObjects"/>
 
+<use name="PhysicsTools/JetMCUtils"/>
+<use name="DataFormats/HepMCCandidate"/>
+
 <use name="rootrflx"/>
 <use name="roofitcore"/>
 

@@ -1,4 +1,6 @@
 #include "CMGTools/Common/interface/TauFactory.h"
+#include "PhysicsTools/JetMCUtils/interface/JetMCTag.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 cmg::TauFactory::event_ptr cmg::TauFactory::create(const edm::Event& iEvent, const edm::EventSetup& iSetup) const{
 	
@@ -21,12 +23,8 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
   //set the generic quantities first
   leptonFactory_.set(input,output,iEvent,iSetup);
 
-  //track related   
-  reco::PFCandidateRefVector signalChargedHadrCands=input->signalPFChargedHadrCands();
-  if(signalChargedHadrCands.isAvailable()){  // isNonnull() returns false always ?
-    output->numberChargedHadr_ =  signalChargedHadrCands.size();
-  }
-  reco::PFCandidateRef leadChargedHadrCand=input->leadPFChargedHadrCand();//lead track
+  //track related
+  reco::PFCandidateRef leadChargedHadrCand=input->leadPFChargedHadrCand();
   if(leadChargedHadrCand.isNonnull()){
     output->leadChargedHadrPt_  = leadChargedHadrCand->pt();
     output->leadChargedHadrCharge_  = leadChargedHadrCand->charge();
@@ -37,15 +35,14 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
     reco::TrackRef chHadrtrk=leadChargedHadrCand->trackRef();
     if(chHadrtrk.isAvailable()){
       output->leadChargedHadrVertex_ = chHadrtrk->referencePoint();
-    }
 
+      //this method sets dxy and dz
+      leptonFactory_.set(chHadrtrk,output,iEvent,iSetup);
+
+    }
   }
 
   //neutral related
-  reco::PFCandidateRefVector signalGammaCands=input->signalPFGammaCands();
-  if(signalGammaCands.isAvailable()){ // isNonnull() returns false always ?
-    output->numberGamma_ = signalGammaCands.size() ;
-  }
   reco::PFCandidateRef leadNeutralCand=input->leadPFNeutralCand();
   if(leadNeutralCand.isNonnull()){
     output->leadNeutralCandPt_ = leadNeutralCand->pt();
@@ -54,10 +51,10 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
 
 
   //general variables 
-  output->isolation_ = input->particleIso();
+  output->particleIso_ = input->particleIso();
+  output->trackIso_ = input->isolationPFChargedHadrCandsPtSum();
+  output->gammaIso_ = input->isolationPFGammaCandsEtSum();
   output->decayMode_ = input->decayMode();
-
-
   
   //copy the the tauIDs 
   std::vector<pat::Tau::IdPair> tauids = input->tauIDs();
@@ -70,6 +67,48 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
       output->tauID_[i++]=it->first;
   }
 
+
+  //rho parameter (PU energy density)
+  edm::Handle<double> rhoParameterHandle;
+  iEvent.getByLabel(edm::InputTag(rhoPFJetsCollection_.label(),"rho", ""),rhoParameterHandle);
+  if( !rhoParameterHandle.isValid() ) edm::LogError("DataNotAvailable")<< "No rho label available \n";
+  output->addUserData("rho",(*rhoParameterHandle));
+
+
+  //generator info  
+  if(input->genJet()){
+    //visible part of the generated jet 
+    output->genJetp4_ = input->genJet()->p4();
+    output->genJetCharge_ = input->genJet()->charge();
+    output->genJetDecayMode_ = JetMCTagUtils::genTauDecayMode((const reco::CompositePtrCandidate)*(input->genJet()));
+
+    //find the 4-momentum of the generated tau
+    std::vector<const reco::GenParticle *> jetparticles = input->genJet()->getGenConstituents();
+    for(unsigned i=0;i<jetparticles.size();i++){
+      const reco::GenParticle* part=jetparticles.at(i);
+
+      ///check three generations up 
+      if(part->mother()){
+	if(abs(part->mother()->pdgId())==15){
+	  output->genTaup4_ = part->mother()->p4(); break;
+	}
+	
+	if(part->mother()->mother()){
+	  if(abs(part->mother()->mother()->pdgId())==15 ){
+	    output->genTaup4_ = part->mother()->mother()->p4(); break;
+	  }
+	  
+	  if(part->mother()->mother()->mother()){
+	    if(abs(part->mother()->mother()->mother()->pdgId())==15 ){
+	      output->genTaup4_ = part->mother()->mother()->mother()->p4(); break;
+	    }
+	  }
+	  
+	}
+      }
+
+    }
+  }    
  
 
 }
