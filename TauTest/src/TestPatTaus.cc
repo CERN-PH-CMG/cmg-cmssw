@@ -15,6 +15,13 @@ using namespace std;
 #include "DataFormats/FWLite/interface/Event.h"
 //#include "DataFormats/Common/interface/Ref.h"
 
+#include "DataFormats/TauReco/interface/PFTau.h"
+#include "DataFormats/TauReco/interface/PFTauFwd.h"
+#include "DataFormats/JetReco/interface/GenJet.h"
+#include "PhysicsTools/JetMCUtils/interface/JetMCTag.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+
+
 #include <TTree.h>
 #include <TFile.h>
 #include <TH1F.h>
@@ -61,27 +68,27 @@ void TestPatTaus::testTaus(TString inputtag){
     edm::EventBase const & event = ev;
     //cout<<"event "<<ievt<<":   ";
    
-    //// Handle to the particle collection
-    edm::Handle<std::vector<pat::Tau> > particlevec;
-    event.getByLabel(tag_, particlevec);
+    //// Handle to the cand collection
+    edm::Handle<std::vector<pat::Tau> > candvec;
+    event.getByLabel(tag_, candvec);
 
-    //// loop over particle collection
-    Int_t iparticle=0;
-    for(std::vector<pat::Tau>::const_iterator particle=particlevec->begin(); particle!=particlevec->end(); ++particle, iparticle++){
-      //cout<<particle->pt()<<" "<<particle->tauID("decayModeFinding")<<endl;
-      Hpt.Fill(particle->pt());
-      Heta.Fill(particle->eta());
-      Hphi.Fill(particle->phi());
-      Hcharge.Fill(particle->charge());
-      HIsolation.Fill(particle->particleIso());
+    //// loop over cand collection
+    Int_t icand=0;
+    for(std::vector<pat::Tau>::const_iterator cand=candvec->begin(); cand!=candvec->end(); ++cand, icand++){
+      //cout<<cand->pt()<<" "<<cand->tauID("decayModeFinding")<<endl;
+      Hpt.Fill(cand->pt());
+      Heta.Fill(cand->eta());
+      Hphi.Fill(cand->phi());
+      Hcharge.Fill(cand->charge());
+      HIsolation.Fill(cand->particleIso());
       
-      //cout<<" "<<iparticle<<" ";
+      //cout<<" "<<icand<<" ";
 
-      /////Particle tracks
-      reco::PFCandidateRefVector signalChargedHadrCands=particle->signalPFChargedHadrCands();
+      /////Cand tracks
+      reco::PFCandidateRefVector signalChargedHadrCands=cand->signalPFChargedHadrCands();
       HNChargedHadrCands.Fill(signalChargedHadrCands.size());
 
-      reco::PFCandidateRef leadChargedHadrCand=particle->leadPFChargedHadrCand();//lead track
+      reco::PFCandidateRef leadChargedHadrCand=cand->leadPFChargedHadrCand();//lead track
       if(leadChargedHadrCand.isNonnull()){
 	HLeadChargedHadrPt.Fill(leadChargedHadrCand->pt());
 	HLeadChargedHadrEcal.Fill(leadChargedHadrCand->ecalEnergy());
@@ -98,10 +105,10 @@ void TestPatTaus::testTaus(TString inputtag){
       }
 
       ///Tau neutrals
-      reco::PFCandidateRefVector signalGammaCands=particle->signalPFGammaCands();
+      reco::PFCandidateRefVector signalGammaCands=cand->signalPFGammaCands();
       HNGammaCands.Fill(signalGammaCands.size());
 
-      reco::PFCandidateRef leadNeutralCand=particle->leadPFNeutralCand();
+      reco::PFCandidateRef leadNeutralCand=cand->leadPFNeutralCand();
       if(leadNeutralCand.isNonnull()){
 	HLeadNeutralCandPt.Fill(leadNeutralCand->pt());
 	HLeadNeutralCandEcal.Fill(leadNeutralCand->ecalEnergy());
@@ -109,23 +116,70 @@ void TestPatTaus::testTaus(TString inputtag){
       
 
       
+      ////////Tau id
+      if(cand->tauID("againstElectronLoose")==1.0)  HTauIDPass.AddBinContent(1); else HTauIDFail.AddBinContent(1);
+      if(cand->tauID("againstElectronMedium")==1.0) HTauIDPass.AddBinContent(2); else HTauIDFail.AddBinContent(2);
+      if(cand->tauID("againstElectronTight")==1.0)  HTauIDPass.AddBinContent(3); else HTauIDFail.AddBinContent(3);
+      if(cand->tauID("againstMuonLoose")==1.0)      HTauIDPass.AddBinContent(4); else HTauIDFail.AddBinContent(4);
+      if(cand->tauID("againstMuonTight")==1.0)      HTauIDPass.AddBinContent(5); else HTauIDFail.AddBinContent(5);
+      if(cand->tauID("byLooseIsolation")==1.0)      HTauIDPass.AddBinContent(6); else HTauIDFail.AddBinContent(6);
+      if(cand->tauID("byMediumIsolation")==1.0)     HTauIDPass.AddBinContent(7); else HTauIDFail.AddBinContent(7);
+      if(cand->tauID("byTightIsolation")==1.0)      HTauIDPass.AddBinContent(8); else HTauIDFail.AddBinContent(8);
+      if(cand->tauID("byVLooseIsolation")==1.0)     HTauIDPass.AddBinContent(9); else HTauIDFail.AddBinContent(9);
+      if(cand->tauID("decayModeFinding")==1.0)      HTauIDPass.AddBinContent(10); else HTauIDFail.AddBinContent(10);
 
-      if(particle->tauID("againstElectronLoose")==1.0)  HTauIDPass.AddBinContent(1); else HTauIDFail.AddBinContent(1);
-      if(particle->tauID("againstElectronMedium")==1.0) HTauIDPass.AddBinContent(2); else HTauIDFail.AddBinContent(2);
-      if(particle->tauID("againstElectronTight")==1.0)  HTauIDPass.AddBinContent(3); else HTauIDFail.AddBinContent(3);
-      if(particle->tauID("againstMuonLoose")==1.0)      HTauIDPass.AddBinContent(4); else HTauIDFail.AddBinContent(4);
-      if(particle->tauID("againstMuonTight")==1.0)      HTauIDPass.AddBinContent(5); else HTauIDFail.AddBinContent(5);
-      if(particle->tauID("byLooseIsolation")==1.0)      HTauIDPass.AddBinContent(6); else HTauIDFail.AddBinContent(6);
-      if(particle->tauID("byMediumIsolation")==1.0)     HTauIDPass.AddBinContent(7); else HTauIDFail.AddBinContent(7);
-      if(particle->tauID("byTightIsolation")==1.0)      HTauIDPass.AddBinContent(8); else HTauIDFail.AddBinContent(8);
-      if(particle->tauID("byVLooseIsolation")==1.0)     HTauIDPass.AddBinContent(9); else HTauIDFail.AddBinContent(9);
-      if(particle->tauID("decayModeFinding")==1.0)      HTauIDPass.AddBinContent(10); else HTauIDFail.AddBinContent(10);
 
+      cout<<" evt "<<ievt<<" cand "<<icand<<" "<< cand->pdgId()<<endl;
+      //      if(cand->pfJetRef().isNonnull()){
+      //////get the generated tau jet
+      //    }
+
+      const reco::GenJet * genJet=cand->genJet();
+      if(genJet){
+	std::string genJetDecayMode = JetMCTagUtils::genTauDecayMode((const reco::CompositePtrCandidate)*genJet);
+	cout<<" genJet:"
+	    <<" "<<genJet->p4().pt()
+	    <<" "<<genJet->p4().eta()
+	    <<" "<<genJet->charge()
+	    <<" "<<genJetDecayMode
+	    <<endl;
+	
+	
+	//check if the mother of the jet is a tau
+	std::vector<const reco::GenParticle *> jetparticles = genJet->getGenConstituents();
+	for(unsigned i=0;i<jetparticles.size();i++){
+	  const reco::GenParticle* part=jetparticles.at(i);
+	  
+	  cout<<" jet particle "<<part->pdgId();
+	  if(part->mother()){
+	    cout<<" m1:"<<part->mother()->pdgId();
+	    if(part->mother()->mother()){
+	      cout<<" m2:"<<part->mother()->mother()->pdgId();
+	      if(part->mother()->mother()->mother())
+		cout<<" m3:"<<part->mother()->mother()->mother()->pdgId();
+	    }
+	  }
+	  cout<<endl;
+	}
+
+
+      }
+
+
+//       ///this method of truth-matching does not work
+//       const reco::GenParticle* genTau = cand->genParticle();
+//       if(genTau){
+// 	cout<<" genTau:"
+// 	    <<" "<<genTau->p4().pt()
+// 	    <<" "<<genTau->p4().eta()
+// 	    <<" "<<genTau->charge()
+// 	    <<endl;
+//       }
 
 
     }
 
-    Hn.Fill(iparticle);
+    Hn.Fill(icand);
 
 
     //cout<<endl;

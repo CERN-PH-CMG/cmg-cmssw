@@ -2,5 +2,6 @@
 
   <class name="TestPatTaus"/>
   <class name="TestCMGTaus"/>
+  <class name="TauEfficiencyPlot"/>
 
 </lcgdict>
