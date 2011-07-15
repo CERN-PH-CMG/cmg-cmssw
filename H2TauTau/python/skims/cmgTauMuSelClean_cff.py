@@ -1,7 +1,6 @@
 
-
-from CMGTools.DiTauAnalysis.skims.cmgTauMuSelClean_cfi import *
-from CMGTools.DiTauAnalysis.skims.cmgTauMuSelCleanHistos_cfi import *
+from CMGTools.H2TauTau.skims.cmgTauMuSelClean_cfi import *
+from CMGTools.H2TauTau.skims.cmgTauMuSelCleanHistos_cfi import *
 
 cmgTauMuSelCleanSequence = cms.Sequence(
     cmgTauMuSelCharge
