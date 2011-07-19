@@ -278,6 +278,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
         
         c.Clear()
         leg=showPlotsAndMCtoDataComparison(c,stack,spimpose,data)
+        #leg=showPlots(c,stack,spimpose,data)
         #        leg.SetHeader(plottitles[iplot])
         formatForCmsPublic(c.cd(1),leg,plotLabel,5)
         

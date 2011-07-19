@@ -79,46 +79,46 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram(  new TH1D ("zpt", ";p_{T}^{ll};Events", 100,0,400) );
   controlHistos.addHistogram(  new TH1D ("zeta", ";#eta^{ll};Events", 100,-5,5) );
 
-  controlHistos.addHistogram( new TH1F ("metoverzpt", ";type I E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
-  controlHistos.addHistogram( new TH1F ("projmetoverzpt", ";projected E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
-  controlHistos.addHistogram( new TH1F ("minmetoverzpt", ";min-E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
-  controlHistos.addHistogram( new TH1F ("redmetoverzpt", ";red-E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
+//   controlHistos.addHistogram( new TH1F ("metoverzpt", ";type I E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
+//   controlHistos.addHistogram( new TH1F ("projmetoverzpt", ";projected E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
+//   controlHistos.addHistogram( new TH1F ("minmetoverzpt", ";min-E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
+//   controlHistos.addHistogram( new TH1F ("redmetoverzpt", ";red-E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
   
-  controlHistos.addHistogram( new TH1D ("mindphimetjet", ";min #Delta#phi(E_{T}^{miss},jet);Events",100,-3.2,3.2) );
-  controlHistos.addHistogram( new TH1D ("dphill", ";#Delta#phi(l^{(1)},l^{(2)});Events",100,-3.2,3.2) );
-  controlHistos.addHistogram( new TH1D ("mindphilmet", ";min #Delta#phi(l^{(i)},E_{T}^{miss});Events",100,-3.2,3.2) );
-  controlHistos.addHistogram( new TH1D ("dphizz", ";#Delta#phi(ll,E_{T}^{miss});Events",100,-3.2,3.2) );
+//   controlHistos.addHistogram( new TH1D ("mindphimetjet", ";min #Delta#phi(E_{T}^{miss},jet);Events",100,-3.2,3.2) );
+//   controlHistos.addHistogram( new TH1D ("dphill", ";#Delta#phi(l^{(1)},l^{(2)});Events",100,-3.2,3.2) );
+//   controlHistos.addHistogram( new TH1D ("mindphilmet", ";min #Delta#phi(l^{(i)},E_{T}^{miss});Events",100,-3.2,3.2) );
+//   controlHistos.addHistogram( new TH1D ("dphizz", ";#Delta#phi(ll,E_{T}^{miss});Events",100,-3.2,3.2) );
   
-  controlHistos.addHistogram(  new TH1D ("ptb", ";p_{T}^{b-jets};Events", 50,0,200) );
+//   controlHistos.addHistogram(  new TH1D ("ptb", ";p_{T}^{b-jets};Events", 50,0,200) );
 
-  controlHistos.addHistogram(  new TH1D ("zpt", ";p_{T}^{ll};Events", 100,0,400) );
-  controlHistos.addHistogram(  new TH1D ("zmass", ";M^{ll};Events", 100,71,111) );
-  controlHistos.addHistogram(  new TH1D ("deltazpt", ";#Delta p_{T}^{ll};Events", 100,-100,100) );
-  controlHistos.addHistogram(  new TH1D ("deltazphi", ";#Delta #phi^{ll};Events", 100,-3.2,3.2) );
-  controlHistos.addHistogram(  new TH1D ("deltazvvpt", ";#Delta p_{T}^{#nu#nu};Events", 100,-100,100) );
-  controlHistos.addHistogram(  new TH1D ("deltazvvphi", ";#Delta #phi^{#nu#nu};Events", 100,-3.2,3.2) );
+//   controlHistos.addHistogram(  new TH1D ("zpt", ";p_{T}^{ll};Events", 100,0,400) );
+//   controlHistos.addHistogram(  new TH1D ("zmass", ";M^{ll};Events", 100,71,111) );
+//   controlHistos.addHistogram(  new TH1D ("deltazpt", ";#Delta p_{T}^{ll};Events", 100,-100,100) );
+//   controlHistos.addHistogram(  new TH1D ("deltazphi", ";#Delta #phi^{ll};Events", 100,-3.2,3.2) );
+//   controlHistos.addHistogram(  new TH1D ("deltazvvpt", ";#Delta p_{T}^{#nu#nu};Events", 100,-100,100) );
+//   controlHistos.addHistogram(  new TH1D ("deltazvvphi", ";#Delta #phi^{#nu#nu};Events", 100,-3.2,3.2) );
 
-  controlHistos.addHistogram(  new TH1D ("mtmetsum", ";#sum M_{T}(l,E_{T}^{miss});Events", 100,0,1000) );
-  controlHistos.addHistogram(  new TH1D ("mtminmetsum", ";#sum M_{T}(l,min-E_{T}^{miss});Events", 100,0,500) );
+//   controlHistos.addHistogram(  new TH1D ("mtmetsum", ";#sum M_{T}(l,E_{T}^{miss});Events", 100,0,1000) );
+//   controlHistos.addHistogram(  new TH1D ("mtminmetsum", ";#sum M_{T}(l,min-E_{T}^{miss});Events", 100,0,500) );
   
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("deltadilLvszpt", ";p_{T}^{ll}; #Delta dilepton_{L};Events", 100, 0.,250,100, 0.,5) ) );
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("deltadilTvszpt", ";p_{T}^{ll}; #Delta dilepton_{T};Events", 100, 0.,250,100, 0.,5) ) );
+//   controlHistos.addHistogram( (TH1D *)(new TH2D ("deltadilLvszpt", ";p_{T}^{ll}; #Delta dilepton_{L};Events", 100, 0.,250,100, 0.,5) ) );
+//   controlHistos.addHistogram( (TH1D *)(new TH2D ("deltadilTvszpt", ";p_{T}^{ll}; #Delta dilepton_{T};Events", 100, 0.,250,100, 0.,5) ) );
 
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("minmetcomps", ";min-E_{T}^{miss,#parallel};min-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("redmetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("minmetvszpt", ";min-E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("redmetvszpt", ";red-E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("metvszpt", ";type I E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("projmetvszpt", ";projected E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
+//   controlHistos.addHistogram( (TH1D *)(new TH2D ("minmetcomps", ";min-E_{T}^{miss,#parallel};min-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
+//   controlHistos.addHistogram( (TH1D *)(new TH2D ("redmetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
+//   controlHistos.addHistogram( (TH1D *)(new TH2D ("minmetvszpt", ";min-E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
+//   controlHistos.addHistogram( (TH1D *)(new TH2D ("redmetvszpt", ";red-E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
+//   controlHistos.addHistogram( (TH1D *)(new TH2D ("metvszpt", ";type I E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
+//   controlHistos.addHistogram( (TH1D *)(new TH2D ("projmetvszpt", ";projected E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
 
-  TString systVars[]={"jer","jesup","jesdown","nopu","flatpu"};
-  for(size_t ivar=0; ivar<sizeof(systVars)/sizeof(TString); ivar++)
-    {
-      controlHistos.addHistogram( new TH1F ("met"+systVars[ivar], ";type-I E_{T}^{miss};Events", 100,0,500) );  
-      controlHistos.addHistogram( new TH1F ("minmet"+systVars[ivar], ";min-E_{T}^{miss};Events", 100,0,500) );
-      controlHistos.addHistogram( new TH1F ("redmet"+systVars[ivar], ";red-E_{T}^{miss};Events", 100,0,500) );
-      controlHistos.addHistogram( new TH1F ("projmet"+systVars[ivar], ";projected E_{T}^{miss};Events", 100,0,500) );  
-    }
+//   TString systVars[]={"jer","jesup","jesdown","nopu","flatpu"};
+//   for(size_t ivar=0; ivar<sizeof(systVars)/sizeof(TString); ivar++)
+//     {
+//       controlHistos.addHistogram( new TH1F ("met"+systVars[ivar], ";type-I E_{T}^{miss};Events", 100,0,500) );  
+//       controlHistos.addHistogram( new TH1F ("minmet"+systVars[ivar], ";min-E_{T}^{miss};Events", 100,0,500) );
+//       controlHistos.addHistogram( new TH1F ("redmet"+systVars[ivar], ";red-E_{T}^{miss};Events", 100,0,500) );
+//       controlHistos.addHistogram( new TH1F ("projmet"+systVars[ivar], ";projected E_{T}^{miss};Events", 100,0,500) );  
+//     }
 
   //replicate monitor for categories
   TString cats[]={"ee","emu","mumu"};

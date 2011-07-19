@@ -235,7 +235,7 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
 	  if(refFrame->Integral()>0)
 	    {
 	      refFrame->Draw("hist");
-	      refFrame->GetYaxis()->SetRangeUser(1e-3,1e5);
+	      refFrame->GetYaxis()->SetRangeUser(1e-2,1e6);
 	      hstack->Draw("histsame"); 
 	      canvasFilled=true;
 	    }
@@ -249,7 +249,6 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
 	  if(canvasFilled) p->Draw("histsame");
 	  else {
 	    p->Draw("hist"); 
-	    p->GetYaxis()->SetRangeUser(1e-3,1e5);
 	    refFrame=p;
 	    canvasFilled=true; 
 	  }
@@ -264,7 +263,6 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
 	  if(canvasFilled) p->Draw("e2same");
 	  else {
 	    p->Draw("e2"); 
-	    p->GetYaxis()->SetRangeUser(1e-3,1e5);
 	    refFrame=p;
 	    canvasFilled=true; 
 	  }
