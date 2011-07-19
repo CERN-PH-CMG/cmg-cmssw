@@ -13,6 +13,8 @@
 #include "AnalysisDataFormats/CMGTools/interface/TriggerObject.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/Candidate/interface/LeafCandidate.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 #include "CMGTools/Common/plugins/HistogramAnalyzer.h"
 #include "CMGTools/Common/interface/GenericHistograms.h"
@@ -118,6 +120,9 @@ typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiPFJet> > CmgDiPFJet
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::TauE> > CmgTauEHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::TauMu> > CmgTauMuHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::MuE> > CmgMuEHistograms;
+
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<reco::LeafCandidate> > LeafCandidateHistograms;
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<reco::GenParticle> > GenParticleHistograms;
 
 // For datasets.
 typedef cmg::HistogramAnalyzer<cmg::GenericRooDataSets<cmg::DiMuon> > CmgDiMuonDataSet;
@@ -278,5 +283,8 @@ typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::TauMu> >
 /*   > CmgMuESelector; */
 
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::MuE> > CmgMuESelector;
+
+
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<reco::GenParticle> > GenParticleSelector;
 
 #endif

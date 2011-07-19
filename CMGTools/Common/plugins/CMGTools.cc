@@ -63,6 +63,9 @@ DEFINE_FWK_MODULE(CmgTauEHistograms);
 DEFINE_FWK_MODULE(CmgTauMuHistograms);
 DEFINE_FWK_MODULE(CmgMuEHistograms);
 
+DEFINE_FWK_MODULE(LeafCandidateHistograms);
+DEFINE_FWK_MODULE(GenParticleHistograms);
+
 DEFINE_FWK_MODULE(CmgDiMuonDataSet);
 DEFINE_FWK_MODULE(CmgDiTauDataSet);
 
@@ -102,3 +105,5 @@ DEFINE_FWK_MODULE(CmgTriggerObjectSelector);
 DEFINE_FWK_MODULE(CmgTauESelector);
 DEFINE_FWK_MODULE(CmgTauMuSelector);
 DEFINE_FWK_MODULE(CmgMuESelector);
+
+DEFINE_FWK_MODULE(GenParticleSelector);
