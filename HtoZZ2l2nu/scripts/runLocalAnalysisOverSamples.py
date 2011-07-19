@@ -64,11 +64,17 @@ for proc in procList :
 
         #run over items in process
         isdata=desc['isdata']
+        mctruthmode=0
+        try :
+            mctruthmode=desc['mctruthmode']
+        except :
+            mctruthmode=0
+
         data = desc['data']
         for d in data :
             dtag = d['dtag']
             eventsFile=inputdir + '/' + dtag + '.root'
-            sedcmd = 'sed \"s%@input%' + eventsFile +'%;s%@outdir%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;'
+            sedcmd = 'sed \"s%@input%' + eventsFile +'%;s%@outdir%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;'
             if(len(params)>0) :
                 extracfgs=params.split(' ')
                 for icfg in extracfgs :
