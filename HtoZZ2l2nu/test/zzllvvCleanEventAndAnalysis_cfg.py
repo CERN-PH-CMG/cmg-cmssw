@@ -21,11 +21,11 @@ process.load("WWAnalysis.Tools.chargedMetProducer_cfi")
 process.chargedMetProducer.collectionTag = cms.InputTag("pfNoPileUpPFlow")
 
 if(needsPtReweight) :
-    #process.p = cms.Path(process.hkfactorSequence*process.puWeights*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
-    process.p = cms.Path(process.hkfactorSequence*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
+    process.p = cms.Path(process.hkfactorSequence*process.puWeights*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
+    #process.p = cms.Path(process.hkfactorSequence*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
 else :
-    #process.p = cms.Path(process.puWeights*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
-    process.p = cms.Path(process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
+    process.p = cms.Path(process.puWeights*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
+    #process.p = cms.Path(process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
 
 # message logger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")

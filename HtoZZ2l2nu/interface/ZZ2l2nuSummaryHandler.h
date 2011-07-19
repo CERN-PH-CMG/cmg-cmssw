@@ -24,7 +24,7 @@ struct ZZ2l2nuSummary_t
   Int_t run,lumi,event;
   Int_t cat;
   Int_t nvtx, ngenITpu,ngenOOTpu;
-  Float_t weight,hptWeights[5];
+  Float_t weight,normWeight,hptWeights[5];
   Float_t rho;
   Int_t nparticles,nmcparticles;
   Float_t pthat,genWeight, qscale, x1,x2;

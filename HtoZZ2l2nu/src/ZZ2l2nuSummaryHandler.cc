@@ -26,6 +26,7 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t)
   t_->Branch("ngenITpu",   &evSummary_.ngenITpu,  "ngenITpu/I");
   t_->Branch("ngenOOTpu",  &evSummary_.ngenOOTpu,  "ngenOOTpu/I");
   t_->Branch("weight",     &evSummary_.weight,    "weight/F");
+  t_->Branch("normWeight",     &evSummary_.normWeight,    "normWeight/F");
   t_->Branch("hptWeights", evSummary_.hptWeights, "hptWeights[5]/F");
   t_->Branch("pthat",      &evSummary_.pthat,      "pthat/F");
   t_->Branch("genWeight",  &evSummary_.genWeight,  "genWeight/F");
@@ -79,6 +80,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
 
   //generator level info
   t_->GetBranch("weight")->SetAddress(&evSummary_.weight);
+  t_->GetBranch("normWeight")->SetAddress(&evSummary_.normWeight);
   t_->GetBranch("hptWeights")->SetAddress(evSummary_.hptWeights);
   t_->GetBranch("ngenITpu")->SetAddress(&evSummary_.ngenITpu);
   t_->GetBranch("ngenOOTpu")->SetAddress(&evSummary_.ngenOOTpu);

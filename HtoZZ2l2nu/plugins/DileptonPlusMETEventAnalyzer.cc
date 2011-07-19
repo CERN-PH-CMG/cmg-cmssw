@@ -175,7 +175,10 @@ float DileptonPlusMETEventAnalyzer::addMCtruth( const pat::EventHypothesis &evhy
   event.getByLabel(objConfig_["Generator"].getParameter<edm::InputTag>("puReweight"), puWeightHandle );
   if(puWeightHandle.isValid()) weight = *(puWeightHandle.product());
   ev.weight = weight;
- 
+  edm::Handle<float> normPuWeightHandle;
+  event.getByLabel(objConfig_["Generator"].getParameter<edm::InputTag>("normPuReweight"), normPuWeightHandle );
+  if(normPuWeightHandle.isValid()) ev.normWeight = *(normPuWeightHandle.product());
+  
   edm::Handle<std::vector<PileupSummaryInfo> > puInfoH;
   event.getByType(puInfoH);
   int npuOOT(0),npuIT(0);
