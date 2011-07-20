@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
       evSummaryHandler.getEntry(iev);
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
-      bool isGammaEvent(phys.gammas.size()>0);
+      bool isGammaEvent(phys.gamma.pt()>0);
       if(!isGammaEvent && phys.leptons.size()<2) continue;
 
       float weight=1.0; //ev.weight;
@@ -137,7 +137,7 @@ int main(int argc, char* argv[])
       int triggerThr(0);
       if(isGammaEvent)
 	{
-	  gamma=phys.gammas[0];
+	  gamma=phys.gamma;
 	  
 	  triggerThr=(ev.cat-22)/1000;
 	  trigList.insert(triggerThr);

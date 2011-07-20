@@ -170,7 +170,7 @@ int main(int argc, char* argv[])
       //higgs recoil
       LorentzVector clusteredRecoil(0,0,0,0);
       LorentzVector unclusteredRecoil=zvv+zll;
-      LorentzVector vertexRecoil = phys.vtx[0];
+      LorentzVector vertexRecoil = phys.vtx;
       vertexRecoil *=-1;
 
       //jet activity
@@ -189,7 +189,7 @@ int main(int argc, char* argv[])
       TString subCats[]={"",subcat};
            
       //redmet
-      rmetComp.compute(phys.leptons[0], phys.leptons[0].info[0], phys.leptons[1], phys.leptons[1].info[0], jetsp4, zvv );
+      rmetComp.compute(phys.leptons[0], phys.leptons[0].ptErr, phys.leptons[1], phys.leptons[1].ptErr, jetsp4, zvv );
       double rmet = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
       double rmetT = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       double rmetL = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;      
