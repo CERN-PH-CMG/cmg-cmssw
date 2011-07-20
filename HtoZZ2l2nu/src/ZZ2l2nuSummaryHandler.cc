@@ -6,43 +6,6 @@ ZZ2l2nuSummaryHandler::ZZ2l2nuSummaryHandler()
 
 }
 
-/*
-  Int_t run,lumi,event;
-  Int_t cat;
-  Int_t nvtx, ngenITpu,ngenOOTpu;
-  Float_t weight,normWeight,hptWeights[5];
-  Float_t rho;
-  Float_t pthat,genWeight, qscale, x1,x2;
-  Int_t id1,id2;
-  Int_t pass;
-
-  Float_t l1_px  ,l1_py  ,l1_pz  ,l1_en, l1_ptErr, l1_iso1, l1_iso2, l1_iso3; Int_t l1_id, l1_genid;
-  Float_t l2_px  ,l2_py  ,l2_pz  ,l2_en, l2_ptErr, l2_iso1, l2_iso2, l2_iso3; Int_t l2_id, l2_genid;
-
-  Int_t ln;
-  Float_t ln_px[MAXPARTICLES],ln_py[MAXPARTICLES],ln_pz[MAXPARTICLES],ln_en[MAXPARTICLES], l1_ptErr[MAXPARTICLES], l1_iso1[MAXPARTICLES], l1_iso2[MAXPARTICLES], l1_iso3[MAXPARTICLES]; Int_t ln_id[MAXPARTICLES], ln_genid[MAXPARTICLES];
-
-  Int_t jn;
-  Float_t jn_px[MAXPARTICLES],jn_py[MAXPARTICLES],jn_pz[MAXPARTICLES],jn_en[MAXPARTICLES], jn_btag1[MAXPARTICLES], jn_btag2[MAXPARTICLES], jn_btag3[MAXPARTICLES], jn_btag4[MAXPARTICLES]; Int_t jn_genid[MAXPARTICLES];
-
-  Float_t vtx_px  ,vtx_py  ,vtx_pz  ,vtx_en;
-  Float_t met1_px  ,met1_py  ,met1_pt;
-  Float_t met2_px  ,met2_py  ,met2_pt;
-  Float_t met3_px  ,met3_py  ,met3_pt;
-  Float_t met4_px  ,met4_py  ,met4_pt;
-  Float_t met5_px  ,met5_py  ,met5_pt;
-  Float_t met6_px  ,met6_py  ,met6_pt;
-
-  Float_t hpx, hpy, hpz, hen;
-
-  Float_t g_px  , g_py  , g_pz  , g_en, g_iso1, g_iso2, g_iso3, g_sihih, g_sipip, g_r9, g_hoe, g_eop;
-
-  Int_t nmcparticles;
-  Float_t mc_px[MAXPARTICLES],mc_py[MAXPARTICLES],mc_pz[MAXPARTICLES],mc_en[MAXPARTICLES]; Int_t mc_id[MAXPARTICLES];
-
-*/
-
- 
 //
 bool ZZ2l2nuSummaryHandler::initTree(TTree *t)
 {
@@ -75,7 +38,6 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t)
 
   //selection info
   t_->Branch("pass",       &evSummary_.pass,       "pass/I");
-
 
   //selected di-leptons
   t_->Branch("l1_px",      &evSummary_.l1_px,      "l1_px/F");
@@ -133,36 +95,26 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t)
   t_->Branch("vtx_en",    &evSummary_.vtx_en,      "vtx_en/F");
 
   //MET
-  t_->Branch("met1_px",   &evSummary_.met1_px,     "met1_px/F");
-  t_->Branch("met1_py",   &evSummary_.met1_py,     "met1_py/F");
-  t_->Branch("met1_pt",   &evSummary_.met1_pt,     "met1_pt/F");
+  t_->Branch("met1_phi",     &evSummary_.met1_phi,     "met1_phi/F");
+  t_->Branch("met1_pt",      &evSummary_.met1_pt,     "met1_pt/F");
 
-  t_->Branch("met2_px",   &evSummary_.met2_px,     "met2_px/F");
-  t_->Branch("met2_py",   &evSummary_.met2_py,     "met2_py/F");
-  t_->Branch("met2_pt",   &evSummary_.met2_pt,     "met2_pt/F");
+  t_->Branch("met2_phi",      &evSummary_.met2_phi,     "met2_phi/F");
+  t_->Branch("met2_pt",      &evSummary_.met2_pt,     "met2_pt/F");
 
-  t_->Branch("met3_px",   &evSummary_.met3_px,     "met3_px/F");
-  t_->Branch("met3_py",   &evSummary_.met3_py,     "met3_py/F");
-  t_->Branch("met3_pt",   &evSummary_.met3_pt,     "met3_pt/F");
+  t_->Branch("met3_phi",      &evSummary_.met3_phi,     "met3_phi/F");
+  t_->Branch("met3_pt",      &evSummary_.met3_pt,     "met3_pt/F");
 
-  t_->Branch("met4_px",   &evSummary_.met4_px,     "met4_px/F");
-  t_->Branch("met4_py",   &evSummary_.met4_py,     "met4_py/F");
-  t_->Branch("met4_pt",   &evSummary_.met4_pt,     "met4_pt/F");
+  t_->Branch("met4_phi",      &evSummary_.met4_phi,     "met4_phi/F");
+  t_->Branch("met4_pt",      &evSummary_.met4_pt,     "met4_pt/F");
 
-  t_->Branch("met5_px",   &evSummary_.met5_px,     "met5_px/F");
-  t_->Branch("met5_py",   &evSummary_.met5_py,     "met5_py/F");
-  t_->Branch("met5_pt",   &evSummary_.met5_pt,     "met5_pt/F");
+  t_->Branch("met5_phi",      &evSummary_.met5_phi,     "met5_phi/F");
+  t_->Branch("met5_pt",      &evSummary_.met5_pt,     "met5_pt/F");
 
-  t_->Branch("met6_px",   &evSummary_.met6_px,     "met6_px/F");
-  t_->Branch("met6_py",   &evSummary_.met6_py,     "met6_py/F");
-  t_->Branch("met6_pt",   &evSummary_.met6_pt,     "met6_pt/F");
+  t_->Branch("met6_phi",      &evSummary_.met6_phi,     "met6_phi/F");
+  t_->Branch("met6_pt",      &evSummary_.met6_pt,     "met6_pt/F");
 
-
-  //Higgs Info
-  t_->Branch("h_px",      &evSummary_.h_px,        "h_px/F");
-  t_->Branch("h_py",      &evSummary_.h_py,        "h_py/F");
-  t_->Branch("h_pz",      &evSummary_.h_pz,        "h_pz/F");
-  t_->Branch("h_en",      &evSummary_.h_en,        "h_en/F");
+  t_->Branch("met7_phi",      &evSummary_.met7_phi,     "met7_phi/F");
+  t_->Branch("met7_pt",      &evSummary_.met7_pt,     "met7_pt/F");
 
   //Gamma Info
   t_->Branch("g_px",      &evSummary_.g_px,        "g_px/F");
@@ -177,6 +129,11 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t)
   t_->Branch("g_r9",      &evSummary_.g_r9,        "g_r9/F");
   t_->Branch("g_eop",     &evSummary_.g_eop,       "g_eop/F");
 
+  //Higgs Info
+  t_->Branch("h_px",      &evSummary_.h_px,        "h_px/F");
+  t_->Branch("h_py",      &evSummary_.h_py,        "h_py/F");
+  t_->Branch("h_pz",      &evSummary_.h_pz,        "h_pz/F");
+  t_->Branch("h_en",      &evSummary_.h_en,        "h_en/F");
 
   //mc truth
   t_->Branch("nmcparticles", &evSummary_.nmcparticles, "nmcparticles/I");
@@ -220,11 +177,8 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("id1")->SetAddress(&evSummary_.id1);
   t_->GetBranch("id2")->SetAddress(&evSummary_.id2);
   
-
   //selection info
   t_->GetBranch("pass")->SetAddress(&evSummary_.pass);
-
-
 
   //selected di-leptons
   t_->GetBranch("l1_px")     ->SetAddress( &evSummary_.l1_px);
@@ -248,7 +202,6 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("l2_iso1")   ->SetAddress( &evSummary_.l2_iso1);
   t_->GetBranch("l2_iso2")   ->SetAddress( &evSummary_.l2_iso2);
   t_->GetBranch("l2_iso3")   ->SetAddress( &evSummary_.l2_iso3);
-
 
   //selected additional-leptons
   t_->GetBranch("ln")        ->SetAddress( &evSummary_.ln);
@@ -283,36 +236,26 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("vtx_en")   ->SetAddress( &evSummary_.vtx_en);
 
   //MET
-  t_->GetBranch("met1_px")  ->SetAddress( &evSummary_.met1_px);
-  t_->GetBranch("met1_py")  ->SetAddress( &evSummary_.met1_py);
+  t_->GetBranch("met1_phi")  ->SetAddress( &evSummary_.met1_phi);
   t_->GetBranch("met1_pt")  ->SetAddress( &evSummary_.met1_pt);
 
-  t_->GetBranch("met2_px")  ->SetAddress( &evSummary_.met2_px);
-  t_->GetBranch("met2_py")  ->SetAddress( &evSummary_.met2_py);
+  t_->GetBranch("met2_phi")  ->SetAddress( &evSummary_.met2_phi);
   t_->GetBranch("met2_pt")  ->SetAddress( &evSummary_.met2_pt);
 
-  t_->GetBranch("met3_px")  ->SetAddress( &evSummary_.met3_px);
-  t_->GetBranch("met3_py")  ->SetAddress( &evSummary_.met3_py);
+  t_->GetBranch("met3_phi")  ->SetAddress( &evSummary_.met3_phi);
   t_->GetBranch("met3_pt")  ->SetAddress( &evSummary_.met3_pt);
 
-  t_->GetBranch("met4_px")  ->SetAddress( &evSummary_.met4_px);
-  t_->GetBranch("met4_py")  ->SetAddress( &evSummary_.met4_py);
+  t_->GetBranch("met4_phi")  ->SetAddress( &evSummary_.met4_phi);
   t_->GetBranch("met4_pt")  ->SetAddress( &evSummary_.met4_pt);
 
-  t_->GetBranch("met5_px")  ->SetAddress( &evSummary_.met5_px);
-  t_->GetBranch("met5_py")  ->SetAddress( &evSummary_.met5_py);
+  t_->GetBranch("met5_phi")  ->SetAddress( &evSummary_.met5_phi);
   t_->GetBranch("met5_pt")  ->SetAddress( &evSummary_.met5_pt);
 
-  t_->GetBranch("met6_px")  ->SetAddress( &evSummary_.met6_px);
-  t_->GetBranch("met6_py")  ->SetAddress( &evSummary_.met6_py);
+  t_->GetBranch("met6_phi")  ->SetAddress( &evSummary_.met6_phi);
   t_->GetBranch("met6_pt")  ->SetAddress( &evSummary_.met6_pt);
 
-
-  //Higgs Info
-  t_->GetBranch("h_px")     ->SetAddress( &evSummary_.h_px);
-  t_->GetBranch("h_py")     ->SetAddress( &evSummary_.h_py);
-  t_->GetBranch("h_pz")     ->SetAddress( &evSummary_.h_pz);
-  t_->GetBranch("h_en")     ->SetAddress( &evSummary_.h_en);
+  t_->GetBranch("met7_phi")  ->SetAddress( &evSummary_.met7_phi);
+  t_->GetBranch("met7_pt")  ->SetAddress( &evSummary_.met7_pt);
 
   //Gamma Info
   t_->GetBranch("g_px")     ->SetAddress( &evSummary_.g_px);
@@ -327,6 +270,11 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("g_r9")     ->SetAddress( &evSummary_.g_r9);
   t_->GetBranch("g_eop")    ->SetAddress( &evSummary_.g_eop);
 
+  //Higgs Info
+  t_->GetBranch("h_px")     ->SetAddress( &evSummary_.h_px);
+  t_->GetBranch("h_py")     ->SetAddress( &evSummary_.h_py);
+  t_->GetBranch("h_pz")     ->SetAddress( &evSummary_.h_pz);
+  t_->GetBranch("h_en")     ->SetAddress( &evSummary_.h_en);
 
   //mc truth
   t_->GetBranch("nmcparticles")->SetAddress( &evSummary_.nmcparticles);
