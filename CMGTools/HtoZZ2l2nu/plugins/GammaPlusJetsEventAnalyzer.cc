@@ -50,7 +50,7 @@ using namespace std;
 GammaPlusJetsEventAnalyzer::GammaPlusJetsEventAnalyzer(const edm::ParameterSet &iConfig)
   : controlHistos_( iConfig.getParameter<std::string>("dtag") )
 {
-  try{
+  /*  try{
     
     edm::Service<TFileService> fs;
     summaryHandler_.initTree(  fs->make<TTree>("data","Event Summary") );
@@ -109,13 +109,14 @@ GammaPlusJetsEventAnalyzer::GammaPlusJetsEventAnalyzer(const edm::ParameterSet &
   catch(std::exception &e){
     cout << e.what() << endl;
   }  
+  */
 }
 
 
 //
 void GammaPlusJetsEventAnalyzer::analyze(const edm::Event &event, const edm::EventSetup &iSetup) 
 {
-
+  /*
   try{
     
     //event summary to be filled
@@ -342,16 +343,18 @@ void GammaPlusJetsEventAnalyzer::analyze(const edm::Event &event, const edm::Eve
   }catch(std::exception &e){
     std::cout << "[CleanEventAnalysis][analyze] failed with " << e.what() << std::endl;
   }
-
+  */
 }
 
 //
 void GammaPlusJetsEventAnalyzer::endLuminosityBlock(const edm::LuminosityBlock & iLumi, const edm::EventSetup & iSetup)
 {
+  /*
   //  cout << "[GammaPlusJetsEventAnalyzer::endLuminosityBlock]" << endl;
   edm::Handle<edm::MergeableCounter> ctrHandle;
   iLumi.getByLabel("startCounter", ctrHandle);
   controlHistos_.fillHisto("cutflow","photon",0.,ctrHandle->value);
+  */
 }
 
 
