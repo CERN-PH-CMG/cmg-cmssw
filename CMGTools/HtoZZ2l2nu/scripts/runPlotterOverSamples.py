@@ -326,7 +326,6 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
             elif(pname.find('geq2btags')>=0) : subcat='geq2btags'
             else : continue
             if(subcat in varitems) :continue
-            print subcat
             varitems.append(subcat)
 
     varitems=sorted(set(varitems))
@@ -338,21 +337,22 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
     #create the table
     itag=0
     for tag in plotsToDisplay.items() :
-        print tag[1]
+       
         if( tag[0]=='All events')  : tagch='all'
         elif( tag[0]=='ee events') : tagch='ee'
         elif( tag[0]=='#mu#mu events') : tagch='mumu'
         elif( tag[0]=='e#mu events') : tagch='emu'
+        elif( tag[0]=='e#tau events') : tagch='etau'
+        elif( tag[0]=='#mu#tau events') : tagch='mutau'
         else : tagch=tag[0]
 
-        if(tag[0].find('eq0jets')>=0 or tag[0].find('eq1jets')>=0 or tag[0].find('geq2jets')>=0
-           or tag[0].find('eq0btags')>=0 or tag[0].find('eq1btags')>=0 or tag[0].find('geq2btags')>=0) : continue
-  
         thtml=HTMLSTART
-        print vars
         thtml+="<table class=\"sample\" border=\"1\" cellspacing=\"3\"><tr><th colspan=\""+str(len(vars))+"\">" + tag[0] + " channel </th></tr>"
         
         for pname in tag[1] :
+
+            if(pname.find('eq0jets')>=0 or pname.find('eq1jets')>=0 or pname.find('geq2jets')>=0
+               or pname.find('eq0btags')>=0 or pname.find('eq1btags')>=0 or pname.find('geq2btags')>=0) : continue
         
             thtml+="<tr>"
             for v in vars.items() :

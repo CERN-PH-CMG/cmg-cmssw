@@ -145,11 +145,11 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
     
     //MET
     controlHistos_.addHistogram("met", ";{E}_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
-    controlHistos_.addHistogram("chmet", ";charged-{E}_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
-    controlHistos_.addHistogram("redmet", ";red-{E}_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
-    controlHistos_.addHistogram("projmet", ";proj-{E}_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
-    controlHistos_.addHistogram("projchmet", ";proj-charged-{E}_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
-    controlHistos_.addHistogram("puffomet", ";min-proj-{E}_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
+    controlHistos_.addHistogram("chmet", ";charged-E_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
+    controlHistos_.addHistogram("redmet", ";red-E_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
+    controlHistos_.addHistogram("projmet", ";proj-E_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
+    controlHistos_.addHistogram("projchmet", ";proj-charged-E_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
+    controlHistos_.addHistogram("puffomet", ";min-proj-E_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
 
 
     controlHistos_.initMonitorForStep("ee");
