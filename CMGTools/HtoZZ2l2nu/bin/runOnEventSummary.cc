@@ -198,7 +198,7 @@ int main(int argc, char* argv[])
       LorentzVector zll=phys.leptons[0]+phys.leptons[1];
  
       LorentzVector zvv=phys.met[0];
-      LorentzVector chmet(phys.met[0].info[0], phys.met[0].info[1], 0, sqrt(pow(phys.met[0].info[0],2)+pow(phys.met[0].info[1],2)) );
+      LorentzVector chmet = phys.met[1];;
       LorentzVector genzll(0,0,0,0), genzvv(0,0,0,0), higgs(0,0,0,0);
       if(phys.genleptons.size()) 
 	{
@@ -218,7 +218,7 @@ int main(int argc, char* argv[])
 	  double dphi=deltaPhi(phys.jets[ijet].phi(),zvv.phi());
 	  if(fabs(dphi)<fabs(mindphijmet)) mindphijmet=dphi;
 	  jetsp4.push_back( phys.jets[ijet] );
-	  if(phys.jets[ijet].info[3]>1.74) nbtags++;
+	  if(phys.jets[ijet].btag3>1.74) nbtags++;
 	}
 
       /*
@@ -232,7 +232,7 @@ int main(int argc, char* argv[])
       */
 
       //redmet
-      rmetComp.compute(phys.leptons[0],phys.leptons[0].info[0],phys.leptons[1], phys.leptons[1].info[0], jetsp4, zvv );
+      rmetComp.compute(phys.leptons[0],phys.leptons[0].ptErr,phys.leptons[1], phys.leptons[1].ptErr, jetsp4, zvv );
       double redmetL = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
       double redmetT = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       double redmet = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
@@ -246,7 +246,7 @@ int main(int argc, char* argv[])
       float minmet = min(fabs(projMet),fabs(projChMet));
 
       //super-redmet
-      rmetComp.compute(phys.leptons[0],phys.leptons[0].info[0],phys.leptons[1], phys.leptons[1].info[0], jetsp4, chmet );
+      rmetComp.compute(phys.leptons[0],phys.leptons[0].ptErr,phys.leptons[1], phys.leptons[1].ptErr, jetsp4, chmet );
       double redchmet = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
       float superredmet=min(redmet,redchmet);
 
@@ -262,17 +262,17 @@ int main(int argc, char* argv[])
 
       //systematic variations
       /*
-      rmetComp.compute(phys.leptons[0],phys.leptons[0].info[0],phys.leptons[1], phys.leptons[1].info[0], jetsJER, metJER );
+      rmetComp.compute(phys.leptons[0],phys.leptons[0].ptErr,phys.leptons[1], phys.leptons[1].ptErr, jetsJER, metJER );
       double minmetJER = rmetComp.reducedMET(ReducedMETComputer::MINIMIZED);
       double redmetJER = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
       double projMetJER = pmetComp.compute(phys.leptons[0], phys.leptons[1], metJER );
 
-      rmetComp.compute(phys.leptons[0],phys.leptons[0].info[0],phys.leptons[1], phys.leptons[1].info[0], jetsJESup, metJESup );
+      rmetComp.compute(phys.leptons[0],phys.leptons[0].ptErr,phys.leptons[1], phys.leptons[1].ptErr, jetsJESup, metJESup );
       double minmetJESup = rmetComp.reducedMET(ReducedMETComputer::MINIMIZED);
       double redmetJESup = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
       double projMetJESup = pmetComp.compute(phys.leptons[0], phys.leptons[1], metJESup );
 
-      rmetComp.compute(phys.leptons[0],phys.leptons[0].info[0],phys.leptons[1], phys.leptons[1].info[0], jetsJESdown, metJESdown );
+      rmetComp.compute(phys.leptons[0],phys.leptons[0].ptErr,phys.leptons[1], phys.leptons[1].ptErr, jetsJESdown, metJESdown );
       double minmetJESdown = rmetComp.reducedMET(ReducedMETComputer::MINIMIZED);
       double redmetJESdown = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
       double projMetJESdown = pmetComp.compute(phys.leptons[0], phys.leptons[1], metJESdown );

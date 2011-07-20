@@ -26,13 +26,33 @@ struct ZZ2l2nuSummary_t
   Int_t nvtx, ngenITpu,ngenOOTpu;
   Float_t weight,normWeight,hptWeights[5];
   Float_t rho;
-  Int_t nparticles,nmcparticles;
   Float_t pthat,genWeight, qscale, x1,x2;
   Int_t id1,id2;
-  Float_t px[MAXPARTICLES],py[MAXPARTICLES],pz[MAXPARTICLES],en[MAXPARTICLES]; 
-  Float_t mcpx[MAXPARTICLES],mcpy[MAXPARTICLES],mcpz[MAXPARTICLES],mcen[MAXPARTICLES]; 
-  Int_t id[MAXPARTICLES],genid[MAXPARTICLES],mcid[MAXPARTICLES];
-  Float_t info1[MAXPARTICLES],info2[MAXPARTICLES],info3[MAXPARTICLES],info4[MAXPARTICLES],info5[MAXPARTICLES];
+  Int_t pass;
+
+  Float_t l1_px  ,l1_py  ,l1_pz  ,l1_en, l1_ptErr, l1_iso1, l1_iso2, l1_iso3; Int_t l1_id, l1_genid;
+  Float_t l2_px  ,l2_py  ,l2_pz  ,l2_en, l2_ptErr, l2_iso1, l2_iso2, l2_iso3; Int_t l2_id, l2_genid;
+
+  Int_t ln;
+  Float_t ln_px[MAXPARTICLES],ln_py[MAXPARTICLES],ln_pz[MAXPARTICLES],ln_en[MAXPARTICLES], ln_ptErr[MAXPARTICLES], ln_iso1[MAXPARTICLES], ln_iso2[MAXPARTICLES], ln_iso3[MAXPARTICLES]; Int_t ln_id[MAXPARTICLES], ln_genid[MAXPARTICLES];
+
+  Int_t jn;
+  Float_t jn_px[MAXPARTICLES],jn_py[MAXPARTICLES],jn_pz[MAXPARTICLES],jn_en[MAXPARTICLES], jn_btag1[MAXPARTICLES], jn_btag2[MAXPARTICLES], jn_btag3[MAXPARTICLES], jn_btag4[MAXPARTICLES];  Bool_t jn_vtxAssoc[MAXPARTICLES]; Int_t jn_genid[MAXPARTICLES];
+
+  Float_t vtx_px  ,vtx_py  ,vtx_pz  ,vtx_en;
+  Float_t met1_px  ,met1_py  ,met1_pt;
+  Float_t met2_px  ,met2_py  ,met2_pt;
+  Float_t met3_px  ,met3_py  ,met3_pt;
+  Float_t met4_px  ,met4_py  ,met4_pt;
+  Float_t met5_px  ,met5_py  ,met5_pt;
+  Float_t met6_px  ,met6_py  ,met6_pt;
+
+  Float_t h_px, h_py, h_pz, h_en;
+
+  Float_t g_px  , g_py  , g_pz  , g_en, g_iso1, g_iso2, g_iso3, g_sihih, g_sipip, g_r9, g_hoe, g_eop;
+
+  Int_t nmcparticles;
+  Float_t mc_px[MAXPARTICLES],mc_py[MAXPARTICLES],mc_pz[MAXPARTICLES],mc_en[MAXPARTICLES]; Int_t mc_id[MAXPARTICLES];
 };
 
 class ZZ2l2nuSummaryHandler{

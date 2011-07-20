@@ -246,12 +246,13 @@ float DileptonPlusMETEventAnalyzer::addMCtruth( const pat::EventHypothesis &evhy
   for (pat::eventhypothesis::Looper<reco::GenParticle> genpart = evhyp.loopAs<reco::GenParticle>("genparticle"); genpart; ++genpart) 
     {
       //higgs level (H)
+      if(fabs(genpart->pdgId())==25){ev.h_px= genpart->px(); ev.h_py= genpart->py(); ev.h_pz= genpart->pz(); ev.h_en= genpart->energy();}
       if(fabs(genpart->pdgId())==25) genHiggs=genpart->p4();
-      ev.mcpx[ev.nmcparticles] = genpart->px();  
-      ev.mcpy[ev.nmcparticles] = genpart->py();  
-      ev.mcpz[ev.nmcparticles] = genpart->pz(); 
-      ev.mcen[ev.nmcparticles]=genpart->energy();  
-      ev.mcid[ev.nmcparticles]=genpart->pdgId();
+      ev.mc_px[ev.nmcparticles] = genpart->px();  
+      ev.mc_py[ev.nmcparticles] = genpart->py();  
+      ev.mc_pz[ev.nmcparticles] = genpart->pz(); 
+      ev.mc_en[ev.nmcparticles]=genpart->energy();  
+      ev.mc_id[ev.nmcparticles]=genpart->pdgId();
       ev.nmcparticles++;
 	    
       int igenpartdau(0);
@@ -262,11 +263,11 @@ float DileptonPlusMETEventAnalyzer::addMCtruth( const pat::EventHypothesis &evhy
 	  //higgs daughters level (ZZ/WW)
 	  bool isZ(fabs(genpartdau->pdgId())==23);
 	  LorentzVector zcand=genpartdau->p4();
-	  ev.mcpx[ev.nmcparticles]=genpartdau->px();  
-	  ev.mcpy[ev.nmcparticles]=genpartdau->py();  
-	  ev.mcpz[ev.nmcparticles]=genpartdau->pz(); 
-	  ev.mcen[ev.nmcparticles]=genpartdau->energy();  
-	  ev.mcid[ev.nmcparticles]=genpartdau->pdgId();
+	  ev.mc_px[ev.nmcparticles]=genpartdau->px();  
+	  ev.mc_py[ev.nmcparticles]=genpartdau->py();  
+	  ev.mc_pz[ev.nmcparticles]=genpartdau->pz(); 
+	  ev.mc_en[ev.nmcparticles]=genpartdau->energy();  
+	  ev.mc_id[ev.nmcparticles]=genpartdau->pdgId();
 	  ev.nmcparticles++;
 
 	  char buf[20];
@@ -278,11 +279,11 @@ float DileptonPlusMETEventAnalyzer::addMCtruth( const pat::EventHypothesis &evhy
 	      int pdgid=fabs(genpartgdau->pdgId());
 	      if(pdgid==12||pdgid==14||pdgid==16) genMET += genpartgdau->p4();
 	      if(pdgid==11||pdgid==13||pdgid==15) nleptons++;
-	      ev.mcpx[ev.nmcparticles]=genpartgdau->px();  
-	      ev.mcpy[ev.nmcparticles]=genpartgdau->py();  
-	      ev.mcpz[ev.nmcparticles]=genpartgdau->pz(); 
-	      ev.mcen[ev.nmcparticles]=genpartgdau->energy();  
-	      ev.mcid[ev.nmcparticles]=genpartgdau->pdgId();
+	      ev.mc_px[ev.nmcparticles]=genpartgdau->px();  
+	      ev.mc_py[ev.nmcparticles]=genpartgdau->py();  
+	      ev.mc_pz[ev.nmcparticles]=genpartgdau->pz(); 
+	      ev.mc_en[ev.nmcparticles]=genpartgdau->energy();  
+	      ev.mc_id[ev.nmcparticles]=genpartgdau->pdgId();
 	      ev.nmcparticles++;
 	    }
 	  
@@ -294,11 +295,11 @@ float DileptonPlusMETEventAnalyzer::addMCtruth( const pat::EventHypothesis &evhy
     }
   
   //gen MET (longitudinal momentum is included - do not use directly the energy afterwards)
-  ev.mcpx[ev.nmcparticles]=genMET.px();
-  ev.mcpy[ev.nmcparticles]=genMET.py();
-  ev.mcpz[ev.nmcparticles]=genMET.pz();
-  ev.mcen[ev.nmcparticles]=genMET.energy();
-  ev.mcid[ev.nmcparticles]=0;
+  ev.mc_px[ev.nmcparticles]=genMET.px();
+  ev.mc_py[ev.nmcparticles]=genMET.py();
+  ev.mc_pz[ev.nmcparticles]=genMET.pz();
+  ev.mc_en[ev.nmcparticles]=genMET.energy();
+  ev.mc_id[ev.nmcparticles]=0;
   ev.nmcparticles++;
 
 
@@ -315,20 +316,20 @@ float DileptonPlusMETEventAnalyzer::addMCtruth( const pat::EventHypothesis &evhy
       bool overlap(false);
       for(int imcpart=0; imcpart<ev.nmcparticles; imcpart++)
 	{
-	  int id=fabs(ev.mcid[imcpart]);
+	  int id=fabs(ev.mc_id[imcpart]);
 	  if(id!=11 && id!=13 && id!=15) continue;
-	  LorentzVector p4(ev.mcpx[imcpart],ev.mcpy[imcpart],ev.mcpz[imcpart],ev.mcen[imcpart]);
+	  LorentzVector p4(ev.mc_px[imcpart],ev.mc_py[imcpart],ev.mc_pz[imcpart],ev.mc_en[imcpart]);
 	  double dr = deltaR(p4,gjIt->p4());
 	  if(dr<0.4) overlap=true;
 	}
       if(overlap) continue;
       
       ngenjets++;
-      ev.mcpx[ev.nmcparticles]=gjIt->px();  
-      ev.mcpy[ev.nmcparticles]=gjIt->py();  
-      ev.mcpz[ev.nmcparticles]=gjIt->pz(); 
-      ev.mcen[ev.nmcparticles]=gjIt->energy();  
-      ev.mcid[ev.nmcparticles]=1;
+      ev.mc_px[ev.nmcparticles]=gjIt->px();  
+      ev.mc_py[ev.nmcparticles]=gjIt->py();  
+      ev.mc_pz[ev.nmcparticles]=gjIt->pz(); 
+      ev.mc_en[ev.nmcparticles]=gjIt->energy();  
+      ev.mc_id[ev.nmcparticles]=1;
       ev.nmcparticles++;
     }
 
@@ -473,6 +474,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     int njets(0),nbjets(0);
     std::vector<LorentzVector> jetmomenta;
     std::vector<const pat::Jet *> assocJets;
+    ev.jn=0;
     for (pat::eventhypothesis::Looper<pat::Jet> jet = evhyp.loopAs<pat::Jet>("jet"); jet; ++jet) 
       {
 	njets++;
@@ -487,14 +489,14 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	controlHistos_.fillHisto("jeteta",istream,jet->eta(),weight);
 
 	//save for event summary
-	ev.px[njets+3] = jet->px();  ev.py[njets+3]=jet->py();  ev.pz[njets+3]=jet->pz(); ev.en[njets+3]=jet->energy();  ev.id[njets+3]=1;
+	ev.jn_px[ev.jn] = jet->px();  ev.jn_py[ev.jn]=jet->py();  ev.jn_pz[ev.jn]=jet->pz(); ev.jn_en[ev.jn]=jet->energy();
 	const reco::Candidate *genParton = jet->genParton();
-	ev.genid[njets+3] = genParton ? genParton->pdgId() : -9999;
-	ev.info1[njets+3]=btag;
-	ev.info2[njets+3]=jet->bDiscriminator("trackCountingHighPurBJetTags");
-	ev.info3[njets+3]=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
-	ev.info4[njets+3]=jet->bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
-
+	ev.jn_genid[ev.jn] = genParton ? genParton->pdgId() : -9999;
+	ev.jn_btag1[ev.jn]=btag;
+	ev.jn_btag2[ev.jn]=jet->bDiscriminator("trackCountingHighPurBJetTags");
+	ev.jn_btag3[ev.jn]=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
+	ev.jn_btag4[ev.jn]=jet->bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
+        ev.jn++;
       }
     controlHistos_.fillHisto("jetmult",istream,njets,weight);
     controlHistos_.fillHisto("jetbmult",istream,nbjets,weight);	
@@ -572,14 +574,13 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.cat=selPath;
     ev.nvtx=selVertices.size();
     ev.rho=*rho;
-    ev.nparticles=4+njets;
-    ev.px[0] = lepton1P.px();    ev.py[0]=lepton1P.py();      ev.pz[0]=lepton1P.pz();     ev.en[0]=lepton1P.energy();  ev.id[0]=l1id; 
-    ev.info1[0] = lepton1pterr;  ev.info2[0] = lepton1iso[0]; ev.info3[0]=lepton1iso[1];  ev.info4[0]=lepton1iso[2];   ev.genid[0] = genid1;
-    ev.px[1] = lepton2P.px();    ev.py[1]=lepton2P.py();      ev.pz[1]=lepton2P.pz();     ev.en[1]=lepton2P.energy();  ev.id[1]=l2id; 
-    ev.info1[1] = lepton2pterr;  ev.info2[1] = lepton2iso[0]; ev.info3[1]=lepton2iso[1];  ev.info4[1]=lepton2iso[2];   ev.genid[1] = genid2;
-    ev.px[2] = met.px();         ev.py[2]=met.py();           ev.pz[2]=0;                 ev.en[2]=met.pt();           ev.id[2]=0; 
-    ev.info1[2] = chmet.px();    ev.info2[2]=chmet.py();      ev.info3[2]=chmet.pz();     
-    ev.px[3]=primVertex->p4().px();  ev.py[3]=primVertex->p4().py();  ev.pz[3]=primVertex->p4().pz();  ev.en[3]=primVertex->p4().energy(); ev.id[3]=500;
+    ev.l1_px=lepton1P.px(); ev.l1_py=lepton1P.py(); ev.l1_pz=lepton1P.pz(); ev.l1_en=lepton1P.energy();  ev.l1_id=l1id; ev.l1_genid = genid1;  ev.l1_ptErr=lepton1pterr;  ev.l1_iso1=lepton1iso[0]; ev.l1_iso2=lepton1iso[1]; ev.l1_iso3=lepton1iso[2];
+    ev.l2_px=lepton2P.px(); ev.l2_py=lepton2P.py(); ev.l2_pz=lepton2P.pz(); ev.l2_en=lepton2P.energy();  ev.l2_id=l2id; ev.l2_genid = genid2;  ev.l2_ptErr=lepton2pterr;  ev.l2_iso1=lepton2iso[0]; ev.l2_iso2=lepton2iso[1]; ev.l2_iso3=lepton2iso[2];
+
+    ev.met1_px =   met.px(); ev.met1_py =   met.py(); ev.met1_pt=  met.pt();
+    ev.met2_px = chmet.px(); ev.met2_py = chmet.py(); ev.met2_pt=chmet.pt();
+
+    ev.vtx_px = primVertex->p4().px(); ev.vtx_py = primVertex->p4().py(); ev.vtx_pz = primVertex->p4().pz();  ev.vtx_en = primVertex->p4().energy();
 
     summaryHandler_.fillTree();
 
