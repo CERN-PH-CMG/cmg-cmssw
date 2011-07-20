@@ -20,6 +20,9 @@
   <use name="FWCore/Services"/>
   <use name="DQMServices/Core"/>
   <use name="SimDataFormats/GeneratorProducts"/>
+  <use name="DataFormats/ParticleFlowCandidate"/>
+  <use name="DataFormats/METReco"/>
+  <use name="RecoMET/METAlgorithms"/>
   <use name="root"/>
   <use name="roottmva"/>
   <use name="rootrflx"/>

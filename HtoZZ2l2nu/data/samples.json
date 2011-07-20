@@ -3,7 +3,7 @@
 	{
 	"tag":"ZZ",
         "isdata":false,
-	"color":"596",
+	"color":"590",
         "lcolor":1,
 	"marker":1,
 	"data":[
@@ -19,7 +19,7 @@
 	{
         "tag":"WW",
         "isdata":false,
-        "color":"586",
+        "color":"592",
         "lcolor":1,
         "marker":1,
         "data":[
@@ -34,7 +34,7 @@
 	{
 	"tag":"WZ",
         "isdata":false,
-        "color":"590",
+        "color":"596",
         "lcolor":1,
         "marker":1,
         "data":[
