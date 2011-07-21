@@ -147,7 +147,8 @@
         "tag":"qqH(200)->ZZ->2l2nu",
         "isdata":false,
         "spimpose":true,
-        "color":"kGray+1",
+        "color":"kGray+3",
+        "lwidth":2,
         "fill":0,
         "marker":1,
         "data":[
@@ -164,7 +165,8 @@
         "tag":"qqH(400)->ZZ->2l2nu",
         "isdata":false,
         "spimpose":true,
-        "color":"kGray+3",
+        "color":"kGray+1",
+        "lwidth":2,
         "fill":0,
         "marker":1,
         "data":[
