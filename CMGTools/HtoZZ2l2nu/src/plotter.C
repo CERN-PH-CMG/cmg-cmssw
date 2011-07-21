@@ -235,7 +235,7 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
 	  if(refFrame->Integral()>0)
 	    {
 	      refFrame->Draw("hist");
-	      refFrame->GetYaxis()->SetRangeUser(1e-2,1e6);
+	      refFrame->GetYaxis()->SetRangeUser(1e-3,1e6);
 	      hstack->Draw("histsame"); 
 	      canvasFilled=true;
 	    }
