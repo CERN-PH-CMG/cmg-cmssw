@@ -8,7 +8,7 @@ import getopt
 def usage() :
     print ' '
     print 'runLocalAnalysisOverSamples.py [options]'
-    print '  -s : submit or not to batch'
+    print '  -s : submit to queue'
     print '  -e : executable name'
     print '  -j : json file containing the samples'
     print '  -d : input dir with the event summaries'
@@ -43,7 +43,10 @@ for o,a in opts:
     if o in("-?", "-h"):
         usage()
         sys.exit(0)
-    elif o in('-s'): subtoBatch=True
+    elif o in('-s'):
+        subtoBatch=True
+        queue=a
+        if(queue=="True") : queue="2nd"
     elif o in('-j'): samplesDB = a
     elif o in('-e'): theExecutable = a
     elif o in('-d'): inputdir = a
@@ -86,7 +89,7 @@ for proc in procList :
             if(not subtoBatch) :
                 os.system(theExecutable + ' ' + cfgfile)
             else :
-                os.system('submit2batch.sh ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
+                os.system('submit2batch.sh -q' + queue +' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
     
 #run plotter over results
 if(not subtoBatch) :

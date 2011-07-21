@@ -168,6 +168,7 @@ float DileptonPlusMETEventAnalyzer::addMCtruth( const pat::EventHypothesis &evhy
   ev.nmcparticles=0;
 
   float weight(1.0);
+  ev.weight = 1.0;
   if(event.isRealData())  return weight;
 
   //pileup
@@ -470,6 +471,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.ln_iso3[ev.ln]=ele->photonIso();
 	ev.ln++;
       }
+
     for (pat::eventhypothesis::Looper<pat::Muon> mu = evhyp.loopAs<pat::Muon>("muon"); mu; ++mu) 
       {
 	ev.ln_px[ev.ln]=mu->px();
@@ -485,7 +487,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.ln++;
       }
     controlHistos_.fillHisto("nleptons",istream,2+ev.ln,weight);
-
     
     //
     // JET KINEMATICS
@@ -526,7 +527,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
       }
     controlHistos_.fillHisto("jetmult",istream,njets,weight);
     controlHistos_.fillHisto("jetbmult",istream,nbjets,weight);	
-    
+
     //count the pu jets
     std::vector<reco::CandidatePtr> pujets= evhyp.all("pujet");
     int npujets(0),npubjets(0);
@@ -581,6 +582,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	    event.getByLabel(*it,newMetH);
 	    hzzMetsH.push_back(newMetH);
 	  }catch(std::exception &e){
+	    //    cout << e.what() << endl;
 	  }
 	}
 
@@ -600,15 +602,19 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	  for(std::vector< edm::Handle< edm::ValueMap<reco::PFMET> > >::iterator mIt = hzzMetsH.begin();
 	      mIt != hzzMetsH.end(); mIt++)
 	    {
-	      const reco::PFMET &newmet=(*chargedMets)[vtxRef];
-	      hzzmets.push_back( LorentzVector(newmet.px(),newmet.py(),0,newmet.pt()) );
+	      if(mIt->isValid())
+		{
+		  const reco::PFMET &newmet=(*(*mIt))[vtxRef];
+		  hzzmets.push_back( LorentzVector(newmet.px(),newmet.py(),0,newmet.pt()) );
+		}
 	    }
-	  
 	  break;
 	}
     }catch(std::exception &e){
       //cout << e.what() << endl;
     }
+
+
     ev.met2_phi = chmet.phi(); ev.met2_pt=chmet.pt();
     if(hzzmets.size()>0) { ev.met3_phi = hzzmets[0].phi(); ev.met3_pt=hzzmets[0].pt(); }
     if(hzzmets.size()>1) { ev.met4_phi = hzzmets[1].phi(); ev.met4_pt=hzzmets[1].pt(); }

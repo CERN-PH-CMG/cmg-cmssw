@@ -125,6 +125,11 @@ def addPatSequence(process, runOnMC, addPhotons=False) :
         eidHyperTight1MC = cms.InputTag("eidHyperTight1MC")
         )
 
+    #add secondary vertex mass to jets
+    applyPostfix( process, 'patJets', postfix ).tagInfoSources = cms.VInputTag( cms.InputTag("secondaryVertexTagInfosAOD"+postfix) )
+    applyPostfix( process, 'patJets', postfix ).userData.userFunctions = cms.vstring( "hasTagInfo('secondaryVertex')" )#? hasTagInfo('secondaryVertex') && tagInfoSecondaryVertex('secondaryVertex').nVertices() > 0 ? tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : -999")
+    applyPostfix( process, 'patJets', postfix ).userData.userFunctionLabels = cms.vstring('secvtxMass')
+
     #add trigger match
     addTriggerMatchingForLeptons(process,postfix=postfix)
 
