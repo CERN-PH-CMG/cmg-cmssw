@@ -69,7 +69,13 @@ int main(int argc, char* argv[])
 
   //control Histos
   SelectionMonitor controlHistos;
-  controlHistos.addHistogram( new TH1F ("eventflow", ";Step;Events", 4,0,4) );  
+  TH1F *h=new TH1F ("eventflow", ";Step;Events", 5,0,5);
+  h->GetXaxis()->SetBinLabel(2,"|M-M_{Z}|<15");
+  h->GetXaxis()->SetBinLabel(3,"3^{rd}-lepton veto");
+  h->GetXaxis()->SetBinLabel(4,"no SSVHEM tags");
+  h->GetXaxis()->SetBinLabel(5,"red-E_{T}^{miss}>39");
+  controlHistos.addHistogram( h );
+  
   controlHistos.addHistogram( new TH1F ("nbtags", ";b-tag multiplicity (SSVHEM);Events", 4,0,4) );  
 
   controlHistos.addHistogram( new TH1F ("met", ";type-I E_{T}^{miss};Events", 100,0,500) );  
@@ -311,9 +317,8 @@ int main(int argc, char* argv[])
 		  controlHistos.fillHisto("deltazpt",ctf, zll.pt()-genzll.pt(),weight);
 		  controlHistos.fillHisto("deltazphi",ctf, deltaPhi(zll.phi(),genzll.phi()),weight);
 
-	  
-		  //fiducial eta cut
-		  if(fabs(zll.eta())>2.5) continue;
+		  //3-rd lepton veto
+		  if(ev.ln) continue;
 		  controlHistos.fillHisto("eventflow",ctf,2,weight);
 		  controlHistos.fillHisto("nbtags",ctf, nbtags,weight);
 		  
@@ -367,6 +372,10 @@ int main(int argc, char* argv[])
 		  // 		    }
 		  
 		  
+		  //red-met cut
+		  if(redmet<39)  continue;
+		  controlHistos.fillHisto("eventflow",ctf,4,weight);
+
 		  controlHistos.fillHisto("metvszpt", ctf,zvv.pt(),zll.pt(),weight);
 		  controlHistos.fillHisto("projmetvszpt", ctf,projMet,zll.pt(),weight);
 		  controlHistos.fillHisto("minmetvszpt", ctf,minmet,zll.pt(),weight); 
