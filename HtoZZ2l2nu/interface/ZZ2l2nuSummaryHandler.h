@@ -26,7 +26,7 @@ struct ZZ2l2nuSummary_t
 
   //gen level 
   Int_t nvtx, ngenITpu,ngenOOTpu;
-  Float_t weight,normWeight,hptWeights[5];
+  Float_t weight, normWeight, hptWeights[5];
   Float_t rho;
   Float_t pthat,genWeight, qscale, x1,x2;
   Int_t id1,id2;

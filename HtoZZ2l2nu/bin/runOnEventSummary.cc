@@ -96,6 +96,8 @@ int main(int argc, char* argv[])
   
 //   controlHistos.addHistogram( new TH1D ("mindphimetjet", ";min #Delta#phi(E_{T}^{miss},jet);Events",100,-3.2,3.2) );
   controlHistos.addHistogram( new TH1D ("dphill", ";#Delta#phi(l^{(1)},l^{(2)});Events",100,-3.2,3.2) );
+  controlHistos.addHistogram( new TH1D ("mindrlz", ";min #DeltaR(l,Z);Events",100,0,6) );
+  controlHistos.addHistogram( new TH1D ("maxdrlz", ";max #DeltaR(l,Z);Events",100,0,6) );
   controlHistos.addHistogram( new TH1D ("drll", ";#DeltaR(l^{(1)},l^{(2)});Events",100,0,6) );
   controlHistos.addHistogram( new TH1D ("dphizz", ";#Delta#phi(ll,E_{T}^{miss});Events",100,-3.2,3.2) );
   controlHistos.addHistogram(  new TH1D ("mtsum", ";#sum M_{T}(l,E_{T}^{miss});Events", 100,0,1000) );
@@ -181,6 +183,7 @@ int main(int argc, char* argv[])
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
       float weight=ev.weight;
+      if(!isMC) weight=1;
 
       //event categories
       TString evcat("");
@@ -196,7 +199,9 @@ int main(int argc, char* argv[])
       double dphill=deltaPhi(phys.leptons[0].phi(),phys.leptons[1].phi());
       double drll=deltaR(phys.leptons[0],phys.leptons[1]);
       LorentzVector zll=phys.leptons[0]+phys.leptons[1];
- 
+      double mindrlz = min( deltaR(phys.leptons[0],zll), deltaPhi(phys.leptons[1],zll) );
+      double maxdrlz = max( deltaR(phys.leptons[0],zll), deltaPhi(phys.leptons[1],zll) );
+
       LorentzVector zvv=phys.met[0];
       LorentzVector chmet = phys.met[1];;
       LorentzVector genzll(0,0,0,0), genzvv(0,0,0,0), higgs(0,0,0,0);
@@ -206,8 +211,6 @@ int main(int argc, char* argv[])
 	  genzvv=phys.genmet[0];
 	  higgs = phys.genhiggs[0];	
 	}
-      TVector2 zal(zll.px(),zll.py());
-      zal=zal.Unit();
 
       //jet/met kinematics and systematic variations
       LorentzVectorCollection jetsp4;
@@ -232,7 +235,8 @@ int main(int argc, char* argv[])
       */
 
       //redmet
-      rmetComp.compute(phys.leptons[0],phys.leptons[0].ptErr,phys.leptons[1], phys.leptons[1].ptErr, jetsp4, zvv );
+      //rmetComp.compute(phys.leptons[0],phys.leptons[0].ptErr,phys.leptons[1], phys.leptons[1].ptErr, jetsp4, zvv );
+      rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsp4, zvv );
       double redmetL = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
       double redmetT = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       double redmet = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
@@ -373,8 +377,10 @@ int main(int argc, char* argv[])
 		  controlHistos.fillHisto("minmetoverzpt", ctf,minmetoverzpt,weight);		
 		  controlHistos.fillHisto("redmetoverzpt", ctf,redmetoverzpt,weight);	
 
-		  controlHistos.fillHisto("mtsum",mtsum, dphill,weight);
+		  controlHistos.fillHisto("mtsum",ctf,mtsum,weight);
 		  controlHistos.fillHisto("dphill",ctf, dphill,weight);
+		  controlHistos.fillHisto("mindrlz",ctf, mindrlz,weight);
+		  controlHistos.fillHisto("maxdrlz",ctf, maxdrlz,weight);
 		  controlHistos.fillHisto("drll",ctf, drll,weight);
 		  controlHistos.fillHisto("dphizz",ctf, deltaPhi(zll.phi(),zvv.phi()), weight);
 

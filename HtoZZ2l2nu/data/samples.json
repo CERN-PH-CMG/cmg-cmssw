@@ -47,6 +47,27 @@
 	   ]
     	},
 	{
+	"tag":"Single top",
+        "isdata":false,
+        "color":"kSpring+4",
+        "lcolor":1,
+        "marker":1,
+        "data":[
+	     {
+		"dtag":"SingleT_tW",
+	        "dset":"T_TuneZ2_tW-channel-DR_7TeV-powheg-tauola",
+                "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ/SingleTop/T_TuneZ2_tW-channel-DR_7TeV-powheg-tauola"],
+                "xsec":7.87
+             },
+	     {
+		"dtag":"SingleTbar_tW",
+	        "dset":"Tbar_TuneZ2_tW-channel-DR_7TeV-powheg-tauola",
+                "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ/SingleTop/Tbar_TuneZ2_tW-channel-DR_7TeV-powheg-tauola"],
+                "xsec":7.87
+             }
+	   ]
+    	},
+	{
 	 "tag":"t#bar{t}",
          "isdata":false,
          "color":"8",
@@ -117,7 +138,7 @@
 	"marker":1,
 	"data":[
 	     {	
-		"dtag":"VBF_ToHToZZTo2L2NU_M-200",
+		"dtag":"VBFtoH200toZZto2L2Nu",
 		"dset":"/VBF_ToHToZZTo2L2NU_M-200_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
 		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/ZZ/HZZ/VBF_ToHToZZTo2L2NU_M-200_7TeV-powheg-pythia6"],
 		"xsec":0.6371,
@@ -178,7 +199,30 @@
                 "br":[0.256,0.0403896]
              }
           ]
-        }
-
+        },
+	{
+           "tag":"data",
+           "isdata":true,
+           "color":1,
+           "fill":0,
+           "marker":20,
+           "data":[
+                {
+                  "dtag":"MuEGMay10ReReco",
+                  "dset":"MuEG-May10ReReco",
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/cerminar/zzllvv_42X_v0/MuEGMay10ReReco"]
+		},
+                {
+                  "dtag":"DoubleMuMay10ReReco",
+                  "dset":"DoubleMu-May10ReReco",
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/cerminar/zzllvv_42X_v0/DoubleMuMay10ReReco"]
+		},
+                {
+                  "dtag":"DoubleElectronMay10ReReco",
+                  "dset":"DoubleElectron-May10ReReco",
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/cerminar/zzllvv_42X_v0/DoubleElectronMay10ReReco"]
+		}
+             ]
+	}
     ]	
 }
