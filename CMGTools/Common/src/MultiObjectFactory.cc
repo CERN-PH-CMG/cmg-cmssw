@@ -38,7 +38,7 @@ cmg::MultiObjectFactory::create(edm::Event const& iEvent,
 void cmg::MultiObjectFactory::set(std::vector<edm::Ptr<reco::Candidate> >
                                   const& input, cmg::MultiObject& object) const
 {
-  multiObjectFactory_.set(input, &object);
+  multiObjectSettingTool_.set(input, &object);
 }
 
 //--------------------------------------------------------------------
