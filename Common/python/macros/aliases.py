@@ -1,5 +1,26 @@
 #!/usr/bin/env python
 
+patObjectsAK5 = {
+    'patJetsAK5':'patJets_selectedPatJetsAK5__PAT',
+    'patElectronsAK5':'patElectrons_selectedPatElectronsAK5__',
+    'patMuonsAK5':'patMuons_selectedPatMuonsAK5__',
+    'patTausAK5':'patTaus_selectedPatTausAK5__'
+    }
+
+patObjectsAK5LC = {
+    'patJetsAK5LC':'patJets_selectedPatJetsAK5LC__PAT',
+    'patElectronsAK5LC':'patElectrons_selectedPatElectronsAK5LC__',
+    'patMuonsAK5LC':'patMuons_selectedPatMuonsAK5LC__',
+    'patTausAK5LC':'patTaus_selectedPatTausAK5LC__'
+    }
+
+patGenAK5 = {
+    'genJets':'recoGenJets_selectedPatJetsAK5_genJets_'
+    }
+
+pat = dict( patObjectsAK5.items() + patObjectsAK5LC.items() + patGenAK5.items() )
+
+
 cmgObjects = {
     'jets':'cmgPFJets_cmgPFJetSel__',
     'jetsVLId99Failed':'cmgPFJets_cmgPFJetVeryLooseJetId99Failed__',    
@@ -27,7 +48,11 @@ eventId = {
     'event':'EventAuxiliary.id().event()'    
     }
 
-eventsAliases = dict(cmgObjects.items() + filters.items() + eventId.items() )
+gen = {
+    'gen':'recoGenParticles_genParticlesStatus3__'
+    }
+
+eventsAliases = dict(cmgObjects.items() + filters.items() + eventId.items() + gen.items() )
 
 luminosityBlocksAliases = {
     'lumi':'LuminosityBlockAuxiliary.id().luminosityBlock()',
