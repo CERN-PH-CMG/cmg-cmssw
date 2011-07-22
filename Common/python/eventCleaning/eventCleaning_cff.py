@@ -28,11 +28,17 @@ ecalDeadCellTaggingSequence = cms.Sequence(
 
 from CMGTools.Common.eventCleaning.recovRecHitFilter_cfi import *
 
+# Filter against ECAL+CSC noise
+
+from CMGTools.Common.eventCleaning.eeNoiseFilter_cfi import *
+
+
 eventCleaningTaggingSequence = cms.Sequence(
     ecalDeadCellTaggingSequence + 
     HBHEFiltersTaggingSequence + 
     selectGoodPFEventsTaggingSequence +
-    recovRecHitFilter 
+    recovRecHitFilter +
+    eeNoiseFilter
     )
 
 from CMGTools.Common.eventCleaning.scrapingFilter_cfi import *
