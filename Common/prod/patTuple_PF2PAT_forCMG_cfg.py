@@ -66,10 +66,6 @@ print sep_line
 # process.load("CMGTools.Common.sources.SingleMu.Run2011A_May10ReReco_v1.AOD.source_cff")
 # process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.V2.source_cff")
 
-
-print "WARNING!!!!!!!!!!!!!!!! remove the following line (see .cfg) before running on the batch!"
-process.source.fileNames = process.source.fileNames[:10]
-
 if pickRelVal:
     process.source = cms.Source(
         "PoolSource",
@@ -82,8 +78,9 @@ if pickRelVal:
         )
         )
 
-#COLIN
-# process.source.fileNames = ['file:PFAOD.root']
+
+print "WARNING!!!!!!!!!!!!!!!! remove the following line (see .cfg) before running on the batch!"
+process.source.fileNames = process.source.fileNames[:10]
 
 print 'PF2PAT+PAT+CMG for files:'
 print process.source.fileNames
@@ -103,6 +100,7 @@ process.out.fileName = cms.untracked.string('patTuple_PF2PAT.root')
 from PhysicsTools.PatAlgos.tools.pfTools import *
 
 # ---------------- Sequence AK5 ----------------------
+
 
 process.eIdSequence = cms.Sequence()
 
@@ -143,7 +141,8 @@ getattr(process,"pfIsolatedElectrons"+postfixAK5).combinedIsolationCut = 999999
 from CMGTools.Common.PAT.addPATElectronID_cff import addPATElectronID
 addPATElectronID( process, postfixAK5 , runOnMC )
 
-# ---------------- Sequence AK5, lepton x-cleaning ---------------
+
+# ---------------- Sequence AK5LC, lepton x-cleaning ---------------
 
 # PF2PAT+PAT sequence 2:
 # lepton cleaning, AK5PFJets. This sequence is a clone of the AK5 sequence defined previously.
@@ -295,6 +294,7 @@ process.outcmg = cms.OutputModule(
     outputCommands = everything,
     dropMetaData = cms.untracked.string('PRIOR')
     )
+
 
 if runCMG:
     process.outpath += process.outcmg
