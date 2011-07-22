@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 from CMGTools.Common.skims.cmgCandSel_cfi import *
+from CMGTools.Common.skims.cmgPFJetSel_cfi import *
 from CMGTools.Common.skims.cmgCandCount_cfi import *
 
 #not used ?
@@ -14,8 +15,8 @@ jetEtaCut = 2.5
 #COLIN check the eta cut for the jets for the computation of HT and MHT
 
 # jet skim for HT (>=3 central jets, pt > 50)
-RA2PFJet50Central = cmgCandSel.clone( src = 'cmgPFJetSel',
-                                      cut = 'pt()>50. && abs(eta)<2.5' )
+RA2PFJet50Central = cmgPFJetSel.clone( src = 'cmgPFJetSel',
+                                       cut = 'pt()>50. && abs(eta)<2.5' )
 RA2PFJetCount     = cmgCandCount.clone( src = 'RA2PFJet50Central',
                                         minNumber = 3 )
 
@@ -74,14 +75,31 @@ RA2MHTPFJet30Count = cmgCandCount.clone( src = 'RA2MHTPFJet30Sel',
 
 # COLIN: need to apply delta phi cuts
 
+from CMGTools.Common.miscProducers.deltaPhiJetMET_cfi import *
+from CMGTools.Common.skims.indexCMGPFJetSelector_cfi import *
 
-# COLIN: need to apply event cleaners
+RA2Jet0 = indexCMGPFJetSelector.clone( inputCollection = 'RA2PFJet50Central', min = 0, max = 0)
+RA2Jet12 = indexCMGPFJetSelector.clone( inputCollection = 'RA2PFJet50Central', min = 1, max = 2)
+
+# RA2Jet0.verbose = True
+# RA2Jet12.verbose = True
+
+RA2dPhi0 = deltaPhiJetMET.clone(objects = 'RA2Jet0')
+RA2dPhi12 = deltaPhiJetMET.clone(objects = 'RA2Jet12')
+
+dPhiSequence = cms.Sequence(
+    RA2Jet0 +
+    RA2Jet12 + 
+    RA2dPhi0 +
+    RA2dPhi12
+    )
 
 RA2ObjectSequence = cms.Sequence(
     RA2PFJet50Central +
     RA2HTSequence +
     RA2MHTPFJet30 + 
-    RA2MHTPFJet30Sel 
+    RA2MHTPFJet30Sel +
+    dPhiSequence
     )
 
 ###################  HISTOGRAMMING ####################################
