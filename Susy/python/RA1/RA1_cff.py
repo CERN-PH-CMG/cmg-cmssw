@@ -13,7 +13,7 @@ from CMGTools.Common.skims.cmgMuonSel_cfi import *
 from CMGTools.Common.skims.cmgPFJetSel_cfi import *
 from CMGTools.Common.skims.cmgBaseMETSel_cfi import *
 from CMGTools.Common.skims.leadingCMGPFJetSelector_cfi import leadingCMGPFJetSelector
-from CMGTools.Susy.commonLeptonSequence_cfi import *
+# from CMGTools.Susy.susyCommonLepton_cff import *
 
 ######################################################################
 ## Cuts and selections and their sequences.

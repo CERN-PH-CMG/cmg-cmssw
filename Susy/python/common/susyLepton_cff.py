@@ -14,8 +14,7 @@ susyMuon = cmgMuonSel.clone(
     src = 'cmgMuonSel'
     )
 
-commonLeptonSequence = cms.Sequence(
+susyLeptonSequence = cms.Sequence(
     susyElectron  +
     susyMuon
     )
-

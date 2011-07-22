@@ -55,7 +55,7 @@ RA2MHTPFJet30Count = cmgCandCount.clone( src = 'RA2MHTPFJet30Sel',
 
 
 # COLIN: need to apply lepton veto 
-from CMGTools.Susy.commonLeptonSequence_cfi import *
+# from CMGTools.Susy.commonLeptonSequence_cfi import *
 
 ## RA2ElectronCount = cmgCandCount.clone(
 ##     src = "susyElectron",
