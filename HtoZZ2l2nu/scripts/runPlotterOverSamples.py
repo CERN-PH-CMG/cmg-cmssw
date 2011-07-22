@@ -220,7 +220,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
                 newlist=ROOT.TList()
                 dataLists.append(newlist)
             if( p[i].IsA().InheritsFrom("TH1") ):
-                print p[i].GetEntries()
+                #print p[i].GetEntries()
                 if(p[i].GetEntries()==0) : continue
             dataLists[i].Add(p[i])
 
@@ -251,7 +251,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
         elif(data.At(0) != None) :     pname=data.At(0).GetName()
         if(len(pname)<=0): continue
         tagname = pname.split('_')[0]
-        print tagname
+        #print tagname
         if(tagname.find('all')==0) :   chtag='All events'
         elif(tagname.find('mumu')==0): chtag='#mu#mu events'
         elif(tagname.find('emu')==0):  chtag='e#mu events'
@@ -332,7 +332,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
     vars={}
     vars['']=True
     for v in varitems :  vars[v]=True
-    print vars
+    #print vars
 
     #create the table
     itag=0
@@ -472,13 +472,13 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
                     p[1].Scale(weight)
 
                     #add to base plot
-                    print ' Normalizing plots from ' + dtag + ' with abs=' + str(absNorm) + ' and weight=' + str(weight) 
+                    #print ' Normalizing plots from ' + dtag + ' with abs=' + str(absNorm) + ' and weight=' + str(weight) 
                     procplots[iplot].Add(p[1])
                     iplot=iplot+1
 
             #overall normalization
             if(normto>0) :
-                print ' Normalizing final yields to: ' + str(normto)
+                #print ' Normalizing final yields to: ' + str(normto)
                 for p in procplots:
                     total=p.Integral()
                     if(total>0): p.Scale(normto/total)

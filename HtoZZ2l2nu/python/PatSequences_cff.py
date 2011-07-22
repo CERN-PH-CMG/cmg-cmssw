@@ -4,7 +4,8 @@ from PhysicsTools.PatAlgos.tools.trigTools import *
 from RecoJets.Configuration.RecoPFJets_cff import kt6PFJets
 from CommonTools.ParticleFlow.Tools.enablePileUpCorrection import enablePileUpCorrection
 from PhysicsTools.PatAlgos.tools.trackTools import *
-
+from PhysicsTools.PatAlgos.tools.metTools import *
+    
 ##
 ## add trigger matching for the leptons
 ##
@@ -46,7 +47,8 @@ def addTriggerMatchingForLeptons(process, postfix='') :
 ## adds pat sequence
 ##
 def addPatSequence(process, runOnMC, addPhotons=False) :
-    
+
+    #PF2PAT
     postfix = "PFlow"
 
     #jet energy corrections
@@ -73,7 +75,7 @@ def addPatSequence(process, runOnMC, addPhotons=False) :
     #                               )
     #     process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
 
-    #start PF2PAT
+    #start PF2PA
     usePF2PAT(process,
               runPF2PAT=True,
               runOnMC=runOnMC,
@@ -90,9 +92,9 @@ def addPatSequence(process, runOnMC, addPhotons=False) :
            
     #configure top projections
     getattr(process,"pfNoPileUp"+postfix).enable = True
-    getattr(process,"pfNoMuon"+postfix).enable = False #True
+    getattr(process,"pfNoMuon"+postfix).enable = True
     getattr(process,"pfNoMuon"+postfix).verbose = False
-    getattr(process,"pfNoElectron"+postfix).enable = False #True
+    getattr(process,"pfNoElectron"+postfix).enable = True
     getattr(process,"pfNoTau"+postfix).enable = False
     getattr(process,"pfNoJet"+postfix).enable = False
 
@@ -106,30 +108,36 @@ def addPatSequence(process, runOnMC, addPhotons=False) :
     applyPostfix(process,"isoValElectronWithPhotons",postfix).deposits[0].deltaR = cms.double(0.3)
     applyPostfix(process,"pfIsolatedElectrons",postfix).combinedIsolationCut = cms.double(9999.)
     
-    #CiC electron ID
-    process.load( "RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_cfi" )
-    process.eidCiCSequence = cms.Sequence(
-        process.eidVeryLooseMC
-        + process.eidLooseMC
-        + process.eidMediumMC
-        + process.eidTightMC
-        + process.eidSuperTightMC
-        + process.eidHyperTight1MC
+    #electron ID
+    process.load("ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff")
+    process.load("RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_DataTuning_cfi")
+    process.electronIDSequence = cms.Sequence(
+        process.simpleEleIdSequence +
+        process.eidVeryLoose +
+        process.eidLoose +
+        process.eidMedium +
+        process.eidTight +
+        process.eidSuperTight
         )
     applyPostfix( process, 'patElectrons', postfix ).electronIDSources = cms.PSet(
-        eidVeryLooseMC = cms.InputTag("eidVeryLooseMC"),
-        eidLooseMC = cms.InputTag("eidLooseMC"),
-        eidMediumMC = cms.InputTag("eidMediumMC"),
-        eidTightMC = cms.InputTag("eidTightMC"),
-        eidSuperTightMC = cms.InputTag("eidSuperTightMC"),
-        eidHyperTight1MC = cms.InputTag("eidHyperTight1MC")
+        eidVBTF95 = cms.InputTag("simpleEleId95relIso"),
+        eidVBTF90 = cms.InputTag("simpleEleId90relIso"),
+        eidVBTF85 = cms.InputTag("simpleEleId85relIso"),
+        eidVBTF80 = cms.InputTag("simpleEleId80relIso"),
+        eidVBTF70 = cms.InputTag("simpleEleId70relIso"),
+        eidVBTF60 = cms.InputTag("simpleEleId60relIso"),
+        eidVeryLoose = cms.InputTag("eidVeryLoose"),
+        eidLoose = cms.InputTag("eidLoose"),
+        eidMedium = cms.InputTag("eidMedium"),
+        eidTight = cms.InputTag("eidTight"),
+        eidSuperTight = cms.InputTag("eidSuperTight")
         )
 
     #add secondary vertex mass to jets
     applyPostfix( process, 'patJets', postfix ).tagInfoSources = cms.VInputTag( cms.InputTag("secondaryVertexTagInfosAOD"+postfix) )
-    applyPostfix( process, 'patJets', postfix ).userData.userFunctions = cms.vstring( "hasTagInfo('secondaryVertex')" )#? hasTagInfo('secondaryVertex') && tagInfoSecondaryVertex('secondaryVertex').nVertices() > 0 ? tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : -999")
+    applyPostfix( process, 'patJets', postfix ).userData.userFunctions = cms.vstring( "? hasTagInfo('secondaryVertex') && tagInfoSecondaryVertex('secondaryVertex').nVertices() > 0 ? tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : -999")
     applyPostfix( process, 'patJets', postfix ).userData.userFunctionLabels = cms.vstring('secvtxMass')
-
+    
     #add trigger match
     addTriggerMatchingForLeptons(process,postfix=postfix)
 
@@ -138,9 +146,15 @@ def addPatSequence(process, runOnMC, addPhotons=False) :
     process.chargedMetProducer.collectionTag = cms.InputTag("particleFlow")
     process.chargedMetProducer.collectionTag = cms.InputTag("pfNoPileUpPFlow")
 
-    #marcello met
+    #hzz met
     process.load("CMGTools.HtoZZ2l2nu.HZZPFMetProducer_cfi")
-                                    
+
+    #pf met with full particle flow candidates
+    process.patMETsWithPileupPFlow = process.patMETsPFlow.clone( metSource = cms.InputTag("pfMet"),
+                                                                 addTrigMatch = cms.bool(False),
+                                                                 addMuonCorrections = cms.bool(False),
+                                                                 addGenMET = cms.bool(False) )
+           
     if(addPhotons) :
         # temporarily use std photons (switch to PF in 43x cf. with Daniele how to do it)
         process.load('PhysicsTools.PatAlgos.producersLayer1.photonProducer_cff')
@@ -148,32 +162,23 @@ def addPatSequence(process, runOnMC, addPhotons=False) :
 
         #create the path
         process.patDefaultSequence = cms.Sequence(
-            process.eidCiCSequence*
+            process.electronIDSequence*
             getattr(process,"patPF2PATSequence"+postfix)*
+            process.hzzPFMetProducer*
             process.chargedMetProducer*
+            process.patMETsWithPileupPFlow*
             process.patPhotons
             )
     else :
         process.patDefaultSequence = cms.Sequence(
-            process.eidCiCSequence*
+            process.electronIDSequence*
             getattr(process,"patPF2PATSequence"+postfix)*
             process.hzzPFMetProducer*
-            process.chargedMetProducer
+            process.chargedMetProducer*
+            process.patMETsWithPileupPFlow
             )
         
-    # make pat-tracks (does not work with PF2PAT...)
-    # it is better to use isolated PF candidates from the pfNoPileup collection
-    #    makeTrackCandidates(process,
-    #                        label        = 'TrackCands',
-    #                        tracks       = cms.InputTag('generalTracks'),
-    #                        particleType = 'pi+',
-    #                        preselection = 'pt > 10',
-    #                        selection    = 'pt > 10',
-    #                        isolation    = {'tracker':0.3, 'ecalTowers':0.3, 'hcalTowers':0.3},
-    #                        isoDeposits  = [],
-    #                        mcAs         = None
-    #                        )      
-  
+
     print " *** PAT path has been defined"
     
 

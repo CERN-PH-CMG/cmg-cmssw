@@ -64,9 +64,10 @@ int main(int argc, char* argv[])
   JetCorrectionUncertainty jecUnc(uncFile.Data());
   jet::UncertaintyComputer jcomp(&stdPtResol,&stdEtaResol,&stdPhiResol,&jecUnc);
 
+  ofstream *outf=0;
+  if(!isMC) outf=new ofstream("highmetevents.txt",ios::app);
+
   TransverseMassComputer mtComp;
-
-
   //control Histos
   SelectionMonitor controlHistos;
   TH1F *h=new TH1F ("eventflow", ";Step;Events", 5,0,5);
@@ -83,7 +84,11 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1F ("superredmet", ";min red-( E_{T}^{miss},track-E_{T}^{miss} );Events", 100,0,500) );
   controlHistos.addHistogram( new TH1F ("redmetL", ";red-E_{T}^{miss,#parallel};Events", 100,-250,250) );
   controlHistos.addHistogram( new TH1F ("redmetT", ";red-E_{T}^{miss,#perp};Events", 100,-250,250) );
-    controlHistos.addHistogram( (TH1D *)(new TH2D ("redmetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
+  controlHistos.addHistogram( (TH1D *)(new TH2D ("redmetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
+
+  controlHistos.addHistogram( new TH1F ("finalredmetL", ";red-E_{T}^{miss,#parallel};Events", 100,-250,250) );
+  controlHistos.addHistogram( new TH1F ("finalredmetT", ";red-E_{T}^{miss,#perp};Events", 100,-250,250) );
+  controlHistos.addHistogram( (TH1D *)(new TH2D ("finalredmetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
 
   controlHistos.addHistogram( new TH1F ("projmet", ";projected E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram( new TH1F ("minmet", ";min projected E_{T}^{miss};Events", 100,0,500) );
@@ -92,10 +97,10 @@ int main(int argc, char* argv[])
 
   controlHistos.addHistogram( new TH1F ("metoverzpt", ";type I E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
   controlHistos.addHistogram( new TH1F ("projmetoverzpt", ";projected E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
-  controlHistos.addHistogram( new TH1F ("minmetoverzpt", ";min-E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
+  //  controlHistos.addHistogram( new TH1F ("minmetoverzpt", ";min-E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
   controlHistos.addHistogram( new TH1F ("redmetoverzpt", ";red-E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
 
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("minmetvszpt", ";min-E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
+  //  controlHistos.addHistogram( (TH1D *)(new TH2D ("minmetvszpt", ";min-E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
   controlHistos.addHistogram( (TH1D *)(new TH2D ("redmetvszpt", ";red-E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
   controlHistos.addHistogram( (TH1D *)(new TH2D ("metvszpt", ";type I E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
   controlHistos.addHistogram( (TH1D *)(new TH2D ("projmetvszpt", ";projected E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
@@ -205,11 +210,11 @@ int main(int argc, char* argv[])
       double dphill=deltaPhi(phys.leptons[0].phi(),phys.leptons[1].phi());
       double drll=deltaR(phys.leptons[0],phys.leptons[1]);
       LorentzVector zll=phys.leptons[0]+phys.leptons[1];
-      double mindrlz = min( deltaR(phys.leptons[0],zll), deltaPhi(phys.leptons[1],zll) );
-      double maxdrlz = max( deltaR(phys.leptons[0],zll), deltaPhi(phys.leptons[1],zll) );
+      double mindrlz = min( deltaR(phys.leptons[0],zll), deltaR(phys.leptons[1],zll) );
+      double maxdrlz = max( deltaR(phys.leptons[0],zll), deltaR(phys.leptons[1],zll) );
 
       LorentzVector zvv=phys.met[0];
-      LorentzVector chmet = phys.met[1];;
+      LorentzVector chmet = phys.met[1];
       LorentzVector genzll(0,0,0,0), genzvv(0,0,0,0), higgs(0,0,0,0);
       if(phys.genleptons.size()) 
 	{
@@ -268,7 +273,7 @@ int main(int argc, char* argv[])
 
       //mt variables
       float mtsum=mtComp.compute(phys.leptons[0],zvv,false)+mtComp.compute(phys.leptons[1],zvv,false);
-      //float mt=mtComp.compute(zll,zvv,true);
+      float mt=mtComp.compute(zll,zvv,true);
 
       //systematic variations
       /*
@@ -393,12 +398,52 @@ int main(int argc, char* argv[])
 		  controlHistos.fillHisto("drll",ctf, drll,weight);
 		  controlHistos.fillHisto("dphizz",ctf, deltaPhi(zll.phi(),zvv.phi()), weight);
 
+ 		  controlHistos.fillHisto("finalredmetL", ctf,redmetL,weight);	      
+ 		  controlHistos.fillHisto("finalredmetT", ctf,redmetT,weight);	      
+		  controlHistos.fillHisto("finalredmetcomps", ctf,redmetL,redmetT,weight);	
 
-// 		  if(passTight) 
-// 		    {
-// 		      controlHistos.fillHisto("mtmetsum", ctf,mTlmet[0]+mTlmet[1],weight);	      
-// 		      controlHistos.fillHisto("mtminmetsum", ctf,mTlminmet[0]+mTlminmet[1],weight);	      
-// 		    }
+
+		  //debug
+		  if(ic==0 && isc==0 && itc==0 && !isMC && redmet>150)	
+		    {
+		      *outf << "<b>Selected event</b>"<< "<br/>" << std::endl;
+		      *outf << "%$Run=" <<  ev.run << "$% %$Lumi=" << ev.lumi << "$% %$Event=" << ev.event <<"$%" << "<br/>" << std::endl;
+  
+		      *outf << "<i>Leptons</i>" << "<br/>" << std::endl;
+		      for(size_t ilep=0; ilep<2; ilep++)
+			*outf << "%$l_{" << ilep+1 << "}=" << phys.leptons[ilep].id << "$% "
+			      << "%$p_T=" << phys.leptons[ilep].pt() << "$% "
+			      << "%$\\eta=" << phys.leptons[ilep].eta() << "$% "
+			      << "%$\\phi=" << phys.leptons[ilep].phi() << "$% "
+			      << "%$I_{neut}=" << phys.leptons[ilep].iso1 << "$% "
+			      << "%$I_{ch}=" << phys.leptons[ilep].iso2  << "$% "
+			      << "%$I_{pho}=" << phys.leptons[ilep].iso3 << "$% " << "<br/>" << std::endl; 
+ 
+		      *outf << "<i>Dilepton</i>" << "<br/>" << std::endl;
+		      *outf  << "%$p_{T}^{ll}=" << zll.pt() << "$% "
+			     << "%$\\eta^{ll}=" << zll.eta() << "$% "
+			     << "%$\\phi^{ll}=" << zll.phi() << "$% "
+			     << "%$m^{ll}=" << zll.mass() << "$% "   
+			     << "%$\\Delta R(l,l)=" << drll << "$% "
+			     << "%$\\Delta\\phi(l,l)=" << dphill << "$% " << "<br/>" << std::endl;
+  
+		      *outf << "<i>Missing transverse energy</i>" << "<br/>" << std::endl;
+		      *outf << "%$E_{T}^{miss}=" << zvv.pt() << "$% "
+			    << "%$\\phi=" << zvv.phi() << "$% " << "<br/>" << std::endl;
+		      *outf << "%$red-E_{T}^{miss}=" << redmet << "$% "
+			    << "%$l="<< redmetL << "$% "
+			    << "%$t=" << redmetT << "$% " << "<br/>" << std::endl;
+  
+		      *outf << "<i>Transverse mass</i>" << "<br/>" << std::endl;
+		      *outf << "%$\\sum M_T(l,E_{T}^{miss})=" << mtsum << "$% "
+			    << "%$M_T(Z,E_{T}^{miss})=" << mt << "$% " << "<br/>" << std::endl; 
+  
+		      *outf << "<i>Jet activity</i>" << "<br/>" << std::endl;
+		      *outf << "%$N {jets}(p_T>15)= " << ev.jn << "$% "
+			    << "%$\\rho=" << ev.rho << "$% "  << "<br/>" << std::endl;
+
+		      *outf << "------" << endl;
+		    }
 		}
 	    }
 	}

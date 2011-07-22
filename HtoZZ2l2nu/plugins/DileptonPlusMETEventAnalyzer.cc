@@ -614,17 +614,26 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
       //cout << e.what() << endl;
     }
 
-
+    //charged met
     ev.met2_phi = chmet.phi(); ev.met2_pt=chmet.pt();
-    if(hzzmets.size()>0) { ev.met3_phi = hzzmets[0].phi(); ev.met3_pt=hzzmets[0].pt(); }
-    if(hzzmets.size()>1) { ev.met4_phi = hzzmets[1].phi(); ev.met4_pt=hzzmets[1].pt(); }
-    if(hzzmets.size()>2) { ev.met5_phi = hzzmets[2].phi(); ev.met5_pt=hzzmets[2].pt(); }
-    if(hzzmets.size()>3) { ev.met6_phi = hzzmets[3].phi(); ev.met6_pt=hzzmets[3].pt(); }
-    if(hzzmets.size()>4) { ev.met7_phi = hzzmets[4].phi(); ev.met7_pt=hzzmets[4].pt(); }
 
     //reduced met
-    rmet_.compute(lepton1->p4(),lepton1pterr, lepton2->p4(),lepton2pterr, jetmomenta, met);
+    //rmet_.compute(lepton1->p4(),lepton1pterr, lepton2->p4(),lepton2pterr, jetmomenta, met);
+    rmet_.compute(lepton1->p4(),0, lepton2->p4(),0, jetmomenta, met);
     float reducedMET=rmet_.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+    ev.met3_pt=reducedMET;  ev.met3_phi=0;
+
+    //reduced charged MET
+    rmet_.compute(lepton1->p4(),0, lepton2->p4(),0, jetmomenta, chmet);
+    float reducedChMET=rmet_.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+    ev.met4_pt=reducedChMET;  ev.met4_phi=0;
+    
+    if(hzzmets.size()>0) { ev.met5_phi = hzzmets[0].phi(); ev.met5_pt=hzzmets[0].pt(); } //pfmet
+    // if(hzzmets.size()>1) { ev.met4_phi = hzzmets[1].phi(); ev.met4_pt=hzzmets[1].pt(); }
+    //if(hzzmets.size()>2) { ev.met5_phi = hzzmets[2].phi(); ev.met5_pt=hzzmets[2].pt(); }
+    if(hzzmets.size()>3) { ev.met6_phi = hzzmets[3].phi(); ev.met6_pt=hzzmets[3].pt(); }  //jet neutral veto
+    if(hzzmets.size()>4) { ev.met7_phi = hzzmets[4].phi(); ev.met7_pt=hzzmets[4].pt(); }  //clustered neutrals
+
 
     //projected MET
     float projMet = pmet_.compute(lepton1->p4(),lepton2->p4(),met);
