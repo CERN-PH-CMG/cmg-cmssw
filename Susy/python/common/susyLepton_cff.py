@@ -5,7 +5,7 @@ from CMGTools.Common.skims.cmgMuonSel_cfi import *
 from CMGTools.Common.skims.cmgCandCount_cfi import *
 
 susyElectron = cmgElectronSel.clone(
-    cut = "(pt()> 10.) && (abs(eta()) < 2.5) && (abs(eta()) < 1.4442 || abs(eta()) > 1.566) && relIso()<0.15 && getSelection('cuts_mediumID') && getSelection('cuts_mediumCR')",
+    cut = "(pt()> 10.) && (abs(eta()) < 2.5) && (abs(eta()) < 1.4442 || abs(eta()) > 1.566) && (abs(dxy()) < 0.02) && (abs(dz()) <= 1) && (numberOfHits() < 2) && (relIso() < 0.2)",
     src = 'cmgElectronSel'
     )
 
