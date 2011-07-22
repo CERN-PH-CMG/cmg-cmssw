@@ -27,12 +27,15 @@ process.setName_('SUSY')
 # process.load("CMGTools.Common.sources.HT.Run2011A_HighMET_May10ReReco_v1.RAW_RECO.PAT_CMG_NewJEC.source_cff")
 # process.load("CMGTools.Common.sources.HT.Run2011A_HighMET_May10ReReco_v1.RAW_RECO.PAT_CMG_NewJEC_JSON.source_cff")
 # process.load("CMGTools.Common.sources.HT.Run2011A_HighMET_PromptSkim_v4.RAW_RECO.PAT_CMG_V2_160404_167284.source_PAT_cff")
-process.load("CMGTools.Common.sources.HT.Run2011A_HighMET_PromptSkim_v4.RAW_RECO.PAT_CMG_V2_160404_167284.CMG_JetID.source_cff")
-
+# process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.V2.PAT_CMG_TestJune30.source_cff")
+# process.load("CMGTools.Common.sources.HT.Run2011A_HighMET_PromptSkim_v4.RAW_RECO.PAT_CMG_V2_0_0_160404_167913.source_cff")
+process.load("CMGTools.Common.sources.RelValLM1_sfts.CMSSW_4_2_3_MC_42_V12_v2.GEN_SIM_RECO.PAT_CMG_V2_0_0.source_cff")
 
 nFiles = 10
 #print 'WARNING: RESTRICTING INPUT TO THE FIRST', nFiles, 'FILES'
 #process.source.fileNames = process.source.fileNames[:nFiles-1] 
+
+# process.source.fileNames = ['file:2011/Loukas/PAT_CMG/tree_CMG.root']
 
 ext = 'CMG'
 
