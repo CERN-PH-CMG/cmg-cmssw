@@ -73,17 +73,29 @@ class logger:
         self.addFile(diffLog) 
 
     def logPackages(self):
+        # Records the working directory of the samples
         oldPwd = os.getcwd()
+        # Changes the directory to the CMSSW base directory
         os.chdir( os.getenv('CMSSW_BASE') + '/src/' )
+        # Opens file for recording 'showtags' and reads contents into $output
         output = subprocess.Popen( 'showtags', stdout=subprocess.PIPE).communicate()[0]
+        # Gets current datetime
         d = datetime.datetime.today()
+        # Creates tag name??? here i'm lost
         tag = 'logger_' + os.getenv('USER') + '_' + d.strftime("%d%h%y-%Hh%Mm%Ss")
+        # Creates regexp to test incoming lines from 'showtags'
         tagPattern = re.compile('^\s*(\S+)\s+(\S+)\s*$')
+        # For every line in showtags...
         for line in output.split('\n'):
+            # Check if it is a tag
             m = tagPattern.match(line)
+            # if line is a tag...
             if m!=None:
+                # get package name
                 package = m.group(2)
+                # get tag name
                 curtag = m.group(1)
+                # updates package on CVS
                 self.logPackage( package, curtag, tag)
         os.chdir( oldPwd )
         
