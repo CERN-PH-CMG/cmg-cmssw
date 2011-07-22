@@ -73,7 +73,7 @@ class ZZ2l2nuSummaryHandler{
   //c/dtor
   ZZ2l2nuSummaryHandler();
   ~ZZ2l2nuSummaryHandler();
-  
+
   //current event
   ZZ2l2nuSummary_t evSummary_;
   ZZ2l2nuSummary_t &getEvent() { return evSummary_; }
