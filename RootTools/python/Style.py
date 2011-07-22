@@ -26,5 +26,6 @@ class Style:
 # more standard styles can be added on demand.
 
 sBlack = Style()
+sBlue = Style(lineColor=4, markerColor=4)
 sRedPoints = Style(markerColor = 2)
-sBlueSquares = Style(markerStyle = 21, markerColor=4)
+sBlueSquares = Style(lineColor=4, markerStyle = 21, markerColor=4)
