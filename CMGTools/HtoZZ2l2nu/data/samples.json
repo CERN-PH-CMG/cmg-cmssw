@@ -203,6 +203,16 @@
                   "dtag":"DoubleElectronMay10ReReco",
                   "dset":"DoubleElectron-May10ReReco",
                   "patdir":["/castor/cern.ch/cms/store/cmst3/user/cerminar/zzllvv_42X_v0/DoubleElectronMay10ReReco"]
+		},
+                {
+                  "dtag":"DoubleMuPromptReco",
+                  "dset":"DoubleMu-PromptReco",
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ/DoubleMuon/DoubleMuPromptReco"]
+		},
+                {
+                  "dtag":"DoubleElectronPromptReco",
+                  "dset":"DoubleElectron-PromptReco",
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ/DoubleElectron/DoubleElectronPromptReco"]
 		}
              ]
 	}
