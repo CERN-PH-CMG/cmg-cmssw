@@ -5,6 +5,9 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 if ( not runOnMC ): process.GlobalTag.globaltag = 'GR_R_42_V19::All' #'GR_R_42_V13::All'
 else:               process.GlobalTag.globaltag = 'START42_V13::All' #'START42_V12::All'
 
+# jet energy corrections
+process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
+
 # global options
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True),
                                       SkipEvent = cms.untracked.vstring('ProductNotFound')
