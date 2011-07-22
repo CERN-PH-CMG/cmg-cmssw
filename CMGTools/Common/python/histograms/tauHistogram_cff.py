@@ -8,6 +8,6 @@ from CMGTools.Common.histograms.cmgDiTauHistograms_cfi import *
 
 tauHistogramSequence = cms.Sequence(
     cmgTauHistograms +
-    tauLorentzVector +
-    cmgDiTauHistograms
+    tauLorentzVector # +
+    # cmgDiTauHistograms
     )
