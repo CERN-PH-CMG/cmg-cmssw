@@ -55,7 +55,12 @@ gen = {
     'gen':'recoGenParticles_genParticlesStatus3__'
     }
 
-eventsAliases = dict(cmgObjects.items() + filters.items() + eventId.items() + gen.items() )
+misc = {
+    'dPhiMin':'float_deltaPhiJetMET__' 
+    }
+
+
+eventsAliases = dict(cmgObjects.items() + filters.items() + eventId.items() + gen.items() + misc.items() )
 
 luminosityBlocksAliases = {
     'lumi':'LuminosityBlockAuxiliary.id().luminosityBlock()',

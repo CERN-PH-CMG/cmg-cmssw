@@ -14,6 +14,7 @@ from CMGTools.Common.cutSummary_cff import *
 from CMGTools.Common.histogram_cff import *
 from CMGTools.Common.trigger_cff import *
 
+from CMGTools.Common.miscProducers.misc_cff import *
 
 cmgObjectSequence = cms.Sequence(
     jetSequence +
@@ -21,8 +22,11 @@ cmgObjectSequence = cms.Sequence(
     muonSequence +
     electronSequence +
     tauSequence + 
-    triggerSequence
+    triggerSequence +
+    miscSequence 
     )
+
+
 
 analysisSequence = cms.Sequence(
     # build the CMG objects and select them
