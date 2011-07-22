@@ -24,13 +24,15 @@ ecalDeadCellTaggingSequence = cms.Sequence(
     ecalDeadCellTPfilter
     )
 
-# currently running:
-#  - PF inconsistent muon filter
-#  - PF greedy muon filter
+# Filter against bad recovery of EE rechits
+
+from CMGTools.Common.eventCleaning.recovRecHitFilter_cfi import *
+
 eventCleaningTaggingSequence = cms.Sequence(
     ecalDeadCellTaggingSequence + 
     HBHEFiltersTaggingSequence + 
-    selectGoodPFEventsTaggingSequence
+    selectGoodPFEventsTaggingSequence +
+    recovRecHitFilter 
     )
 
 from CMGTools.Common.eventCleaning.scrapingFilter_cfi import *

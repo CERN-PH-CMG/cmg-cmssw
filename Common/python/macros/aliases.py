@@ -35,11 +35,12 @@ filters = {
     'hbheNoise2011Iso':'bool_HBHENoiseFilterResultProducer2011IsoDefault_HBHENoiseFilterResult_',
     'hbheNoise2011NonIso':'bool_HBHENoiseFilterResultProducer2011NonIsoRecommended_HBHENoiseFilterResult_',
     'hbheNoise2010':'bool_HBHENoiseFilterResultProducer2010_HBHENoiseFilterResult_',
-    'inconsMuons':'bool_inconsistentMuonsTagging_Result_PAT.obj',
-    'greedyMuons':'bool_greedyMuonsTagging_Result_PAT.obj',
+    'inconsMuons':'bool_inconsistentMuonsTagging_Result_',
+    'greedyMuons':'bool_greedyMuonsTagging_Result_',
     'beamHaloCSCLoose':'recoBeamHaloSummary_BeamHaloSummary__RECO.obj[0].CSCLooseHaloId()',
     'beamHaloCSCTight':'recoBeamHaloSummary_BeamHaloSummary__RECO.obj[0].CSCTightHaloId()',
-    'ecalDeadTP':'bool_ecalDeadCellTPfilter__PAT.obj'
+    'ecalDeadTP':'bool_ecalDeadCellTPfilter__',
+    'badEERecov':'bool_recovRecHitFilter_Result_'
     }
 
 eventId = {

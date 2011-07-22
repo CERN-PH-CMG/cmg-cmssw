@@ -6,6 +6,7 @@ eventCleaning = pfPostProcessingEventContent
 eventCleaning += cms.untracked.vstring(
     'keep *_ecalDeadCellTPfilter_*_*',
     'keep *_HBHENoiseFilterResultProducer*_*_*',
-    'keep *_BeamHaloSummary_*_*'
+    'keep *_BeamHaloSummary_*_*',
+    'keep *_recovRecHitFilter_*_*'
     )
 
