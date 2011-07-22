@@ -46,6 +46,7 @@
 #include "CMGTools/Common/interface/CutSummaryAnalyzer.h"
 #include "CMGTools/Common/plugins/RunInfoAccountingAnalyzer.h"
 #include "CMGTools/Common/plugins/LeadingObjectsSelector.h"
+#include "CMGTools/Common/plugins/IndexObjectsSelector.h"
 #include "CMGTools/Common/plugins/PhysicsObjectPrinter.h"
 
 #include "CommonTools/UtilAlgos/interface/StringCutObjectSelector.h"
@@ -138,12 +139,21 @@ typedef cmg::PhysicsObjectPrinter PhysicsObjectPrinter;
 // Leading-objects selectors.
 
 typedef cmg::LeadingObjectsSelector<pat::Jet> LeadingPatJetSelector;
-
 typedef cmg::LeadingObjectsSelector<cmg::AbstractPhysicsObject> LeadingCMGPOSelector;
 typedef cmg::LeadingObjectsSelector<cmg::BaseJet> LeadingCMGBaseJetSelector;
 typedef cmg::LeadingObjectsSelector<cmg::PFJet> LeadingCMGPFJetSelector;
 typedef cmg::LeadingObjectsSelector<cmg::Electron> LeadingCMGElectronSelector;
 typedef cmg::LeadingObjectsSelector<cmg::Muon> LeadingCMGMuonSelector;
+
+// Index objects selector
+
+typedef cmg::IndexObjectsSelector<pat::Jet> IndexPatJetSelector;
+typedef cmg::IndexObjectsSelector<cmg::AbstractPhysicsObject> IndexCMGPOSelector;
+typedef cmg::IndexObjectsSelector<cmg::BaseJet> IndexCMGBaseJetSelector;
+typedef cmg::IndexObjectsSelector<cmg::PFJet> IndexCMGPFJetSelector;
+typedef cmg::IndexObjectsSelector<cmg::Electron> IndexCMGElectronSelector;
+typedef cmg::IndexObjectsSelector<cmg::Muon> IndexCMGMuonSelector;
+
 
 // Single object selectors.
 
