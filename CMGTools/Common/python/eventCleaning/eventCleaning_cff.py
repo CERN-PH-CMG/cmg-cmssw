@@ -32,13 +32,18 @@ from CMGTools.Common.eventCleaning.recovRecHitFilter_cfi import *
 
 from CMGTools.Common.eventCleaning.eeNoiseFilter_cfi import *
 
+# Tracking failure filter
+
+from CMGTools.Common.eventCleaning.trackingFailureFilter_cfi import *
+
 
 eventCleaningTaggingSequence = cms.Sequence(
     ecalDeadCellTaggingSequence + 
     HBHEFiltersTaggingSequence + 
     selectGoodPFEventsTaggingSequence +
     recovRecHitFilter +
-    eeNoiseFilter
+    eeNoiseFilter +
+    trackingFailureFilter
     )
 
 from CMGTools.Common.eventCleaning.scrapingFilter_cfi import *

@@ -41,7 +41,8 @@ filters = {
     'beamHaloCSCTight':'recoBeamHaloSummary_BeamHaloSummary__RECO.obj[0].CSCTightHaloId()',
     'ecalDeadTP':'bool_ecalDeadCellTPfilter__',
     'badEERecov':'bool_recovRecHitFilter_Result_',
-    'eeNoise':'bool_eeNoiseFilter_Result_'
+    'eeNoise':'bool_eeNoiseFilter_Result_',
+    'trackingFailure':'bool_trackingFailureFilter_Result_',
     }
 
 eventId = {

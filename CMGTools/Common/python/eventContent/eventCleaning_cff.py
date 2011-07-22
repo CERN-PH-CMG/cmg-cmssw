@@ -8,6 +8,7 @@ eventCleaning += cms.untracked.vstring(
     'keep *_HBHENoiseFilterResultProducer*_*_*',
     'keep *_BeamHaloSummary_*_*',
     'keep *_recovRecHitFilter_*_*',
-    'keep *_eeNoiseFilter_*_*'
+    'keep *_eeNoiseFilter_*_*',
+    'keep *_trackingFailureFilter_*_*'
     )
 
