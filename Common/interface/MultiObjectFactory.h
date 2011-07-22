@@ -34,7 +34,7 @@ namespace cmg {
 
   private:
       edm::InputTag const inputLabel_;
-      MultiObjectSettingTool const multiObjectFactory_;
+      MultiObjectSettingTool const multiObjectSettingTool_;
 
   }; // class MultiObjectFactory
 
