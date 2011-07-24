@@ -213,6 +213,11 @@
                   "dtag":"DoubleElectronPromptReco",
                   "dset":"DoubleElectron-PromptReco",
                   "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ/DoubleElectron/DoubleElectronPromptReco"]
+		},
+                {
+                  "dtag":"MuEGPromptReco",
+                  "dset":"MuEG-PromptReco",
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ/MuEG/MuEGPromptReco"]
 		}
              ]
 	}

@@ -315,7 +315,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
     titlehtml+="<table class=\"sample\"><tr><th colspan=\"3\">Event selection categories</th></tr>" 
 
     #check if subcategories are present
-    varitems=[]
+    varitems=[]    
     for tag in plotsToDisplay.items() :
         for pname in tag[1] :
             if(pname.find('eq0jets')>=0) : subcat='eq0jets'
