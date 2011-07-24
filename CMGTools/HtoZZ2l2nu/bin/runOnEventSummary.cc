@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( (TH1D *)(new TH2D ("finalredmetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
 
   controlHistos.addHistogram( new TH1F ("projmet", ";projected E_{T}^{miss};Events", 100,0,500) );
-  controlHistos.addHistogram( new TH1F ("minmet", ";min projected E_{T}^{miss};Events", 100,0,500) );
+  // controlHistos.addHistogram( new TH1F ("minmet", ";min projected E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram(  new TH1D ("zpt", ";p_{T}^{ll};Events", 100,0,400) );
   controlHistos.addHistogram(  new TH1D ("zeta", ";#eta^{ll};Events", 100,-5,5) );
 

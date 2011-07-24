@@ -50,7 +50,7 @@ using namespace std;
 GammaPlusJetsEventAnalyzer::GammaPlusJetsEventAnalyzer(const edm::ParameterSet &iConfig)
   : controlHistos_( iConfig.getParameter<std::string>("dtag") )
 {
-  /*  try{
+  try{
     
     edm::Service<TFileService> fs;
     summaryHandler_.initTree(  fs->make<TTree>("data","Event Summary") );
@@ -109,14 +109,14 @@ GammaPlusJetsEventAnalyzer::GammaPlusJetsEventAnalyzer(const edm::ParameterSet &
   catch(std::exception &e){
     cout << e.what() << endl;
   }  
-  */
+  
 }
 
 
 //
 void GammaPlusJetsEventAnalyzer::analyze(const edm::Event &event, const edm::EventSetup &iSetup) 
 {
-  /*
+  
   try{
     
     //event summary to be filled
@@ -315,46 +315,53 @@ void GammaPlusJetsEventAnalyzer::analyze(const edm::Event &event, const edm::Eve
     ev.cat=22+1000*maxthr;
     ev.nvtx=selVertices.size();
     ev.rho=*rho;
-    ev.nparticles=3+selJets.size();
 
     const pat::Photon *photon = dynamic_cast<const pat::Photon *>( gammaCandidate[0].first.get() );
-    ev.px[0] = photon->px();   ev.py[0]=photon->py();     ev.pz[0]=photon->pz();      ev.en[0]=photon->energy();              ev.id[0]=22; 
-    ev.info1[0] = photon->superCluster()->eta();          ev.info2[0] = photon->r9(); ev.info3[0]=photon->hadronicOverEm();   ev.info4[0]=photon->sigmaIetaIeta(); 
-    ev.px[1] = met->px();      ev.py[1]=met->py();        ev.pz[1]=0;                 ev.en[1]=met->pt();                     ev.id[1]=0;
-    ev.info1[1]=chmet.px();    ev.info2[1]=chmet.py();    ev.info3[1] = chmet.pz();
-    ev.px[2]=primVertex->p4().px();  ev.py[2]=primVertex->p4().py();  ev.pz[2]=primVertex->p4().pz();  ev.en[2]=primVertex->p4().energy(); ev.id[2]=500;
+    ev.g_px = photon->px();   ev.g_py=photon->py();     ev.g_pz=photon->pz();      ev.g_en=photon->energy();             
+    ev.g_r9 = photon->r9();   ev.g_hoe=photon->hadronicOverEm();   ev.g_sihih=photon->sigmaIetaIeta(); 
+    ev.g_iso1 = photon->trkSumPtSolidConeDR04();
+    ev.g_iso2 = photon->ecalRecHitSumEtConeDR04();
+    ev.g_iso3 = photon->hcalTowerSumEtConeDR04();
 
+    ev.met1_pt=met->pt(); ev.met1_phi=met->phi();
+    ev.met2_pt=chmet.pt(); ev.met2_phi=chmet.phi();
+
+    ev.vtx_px=primVertex->p4().px();  ev.vtx_py=primVertex->p4().py();  ev.vtx_pz=primVertex->p4().pz();  ev.vtx_en=primVertex->p4().energy(); 
+
+    ev.jn=0;
     for(size_t ijet=0; ijet<selJets.size(); ijet++)
       {
-	int ipart(3+ijet);
+	int ipart(ev.jn);
 	const pat::Jet *jet = dynamic_cast<const pat::Jet *>( selJets[ijet].first.get() );
-	ev.px[ipart] = jet->px();  ev.py[ipart]=jet->py();  ev.pz[ipart]=jet->pz(); ev.en[ipart]=jet->energy();  ev.id[ipart]=1;
+	ev.jn_px[ipart] = jet->px();  ev.jn_py[ipart]=jet->py();  ev.jn_pz[ipart]=jet->pz(); ev.jn_en[ipart]=jet->energy(); 
         const reco::Candidate *genParton = jet->genParton();
-        ev.genid[ipart] = genParton ? genParton->pdgId() : -9999;
-        ev.info1[ipart]=jet->bDiscriminator("trackCountingHighEffBJetTags");
-	ev.info2[ipart]=jet->bDiscriminator("trackCountingHighPurBJetTags");
-        ev.info3[ipart]=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
-        ev.info4[ipart]=jet->bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
-	ev.info5[ipart]=jet::fAssoc(jet,primVertex.get());
+        ev.jn_genid[ipart] = genParton ? genParton->pdgId() : -9999;
+        ev.jn_btag1[ipart]=jet->bDiscriminator("trackCountingHighEffBJetTags");
+	ev.jn_btag2[ipart]=jet->bDiscriminator("trackCountingHighPurBJetTags");
+        ev.jn_btag3[ipart]=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
+        ev.jn_btag4[ipart]=jet->bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
+	ev.jn_vtxAssoc[ipart]=true;
+	ev.jn++;
       }
+
+    ev.ln=0;
+    ev.nmcparticles=0;
 
     summaryHandler_.fillTree();
 
   }catch(std::exception &e){
     std::cout << "[CleanEventAnalysis][analyze] failed with " << e.what() << std::endl;
   }
-  */
+  
 }
 
 //
 void GammaPlusJetsEventAnalyzer::endLuminosityBlock(const edm::LuminosityBlock & iLumi, const edm::EventSetup & iSetup)
 {
-  /*
   //  cout << "[GammaPlusJetsEventAnalyzer::endLuminosityBlock]" << endl;
   edm::Handle<edm::MergeableCounter> ctrHandle;
   iLumi.getByLabel("startCounter", ctrHandle);
   controlHistos_.fillHisto("cutflow","photon",0.,ctrHandle->value);
-  */
 }
 
 
