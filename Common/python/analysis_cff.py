@@ -22,8 +22,7 @@ cmgObjectSequence = cms.Sequence(
     muonSequence +
     electronSequence +
     tauSequence + 
-    triggerSequence +
-    miscSequence 
+    triggerSequence
     )
 
 
