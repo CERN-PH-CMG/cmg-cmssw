@@ -18,7 +18,7 @@ runAK7 = True
 #COLIN: will need to include the event filters in tagging mode
 
 #COLIN : reactivate HPS when bugs corrected
-hpsTaus = False
+hpsTaus = True
 
 #COLIN: the following leads to rare segmentation faults
 doJetPileUpCorrection = True
@@ -119,13 +119,15 @@ if doJetPileUpCorrection:
     from CommonTools.ParticleFlow.Tools.enablePileUpCorrection import enablePileUpCorrection
     enablePileUpCorrection( process, postfix=postfixAK5)
 
-from CMGTools.Common.PAT.embedPFCandidatesInTaus import embedPFCandidatesInTaus
+#configure the taus
+from CMGTools.Common.PAT.tauTools import *
 if doEmbedPFCandidatesInTaus:
     embedPFCandidatesInTaus( process, postfix=postfixAK5, enable=True )
-
 if hpsTaus:
     adaptPFTaus(process,"hpsPFTau",postfix=postfixAK5)
-
+    #  note that the following disables the tau cleaning in patJets
+    adaptSelectedPFJetForHPSTau(process,jetSelection="pt()>15.0",postfix=postfixAK5)
+    
 # curing a weird bug in PAT..
 from CMGTools.Common.PAT.removePhotonMatching import removePhotonMatching
 removePhotonMatching( process, postfixAK5 )
