@@ -136,7 +136,19 @@ def addPatSequence(process, runOnMC, addPhotons=False) :
     #hzz met
     process.load("CMGTools.HtoZZ2l2nu.HZZPFMetProducer_cfi")
 
+    #alternative met collections
+    process.pfMETPFlowNoPileup = process.pfMETPFlow.clone(src=cms.InputTag("pfNoPileUpPFlow"))
+    process.patMETsPFlowNoPileup = process.patMETsPFlow.clone(metSource=cms.InputTag("pfMETPFlowNoPileup"))
 
+    process.pfMETPFlowPileup = process.pfMETPFlow.clone(jets=cms.InputTag("ak5PFJets"))
+    process.patMETsPFlowPileup = process.patMETsPFlow.clone(metSource=cms.InputTag("pfMETPFlowPileup"))
+
+    process.hzzmetSequence = cms.Sequence(process.hzzPFMetProducer*
+                                          process.chargedMetProducer*
+                                          process.trackMetProducer*
+                                          process.pfMETPFlowNoPileup*process.patMETsPFlowNoPileup*
+                                          process.pfMETPFlowPileup*process.patMETsPFlowPileup)
+    
     if(addPhotons) :
         # temporarily use std photons (switch to PF in 43x cf. with Daniele how to do it)
         process.load('PhysicsTools.PatAlgos.producersLayer1.photonProducer_cff')
@@ -146,18 +158,14 @@ def addPatSequence(process, runOnMC, addPhotons=False) :
         process.patDefaultSequence = cms.Sequence(
             process.electronIDSequence*
             getattr(process,"patPF2PATSequence"+postfix)*
-            process.hzzPFMetProducer*
-            process.chargedMetProducer*
-            process.trackMetProducer*
+            process.hzzmetSequence*
             process.patPhotons
             )
     else :
         process.patDefaultSequence = cms.Sequence(
             process.electronIDSequence*
             getattr(process,"patPF2PATSequence"+postfix)*
-            process.hzzPFMetProducer*
-            process.chargedMetProducer*
-            process.trackMetProducer
+            process.hzzmetSequence
             )
         
 
