@@ -14,7 +14,7 @@ from CMGTools.Common.cutSummary_cff import *
 from CMGTools.Common.histogram_cff import *
 from CMGTools.Common.trigger_cff import *
 
-from CMGTools.Common.miscProducers.misc_cff import *
+# from CMGTools.Common.miscProducers.misc_cff import *
 
 cmgObjectSequence = cms.Sequence(
     jetSequence +
