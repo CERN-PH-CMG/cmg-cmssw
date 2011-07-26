@@ -23,14 +23,11 @@ hpsTaus = True
 #COLIN: the following leads to rare segmentation faults
 doJetPileUpCorrection = True
 
-#COLIN : when activating PFCandidate (and other stuff) embedding,
-# patTaus cannot be stored together with cmgTaus...
+#patTaus can now be saved even when running the CMG sequence.
 doEmbedPFCandidatesInTaus = True
 
 runCMG = True
 
-if runCMG:
-    doEmbedPFCandidatesInTaus = False
 
 #add the L2L3Residual corrections only for data
 if runOnMC:#MC
