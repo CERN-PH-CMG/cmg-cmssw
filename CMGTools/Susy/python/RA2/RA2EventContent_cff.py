@@ -10,8 +10,7 @@ RA2EventContent.extend(
     'keep *_RA2MHTPFJet50Central_*_*',
     'keep *_RA2MHTPFJet30_*_*',
     'keep *_RA2PFJet50Central_*_*',
-    'keep *_RA2Jet0_*_*',
-    'keep *_RA2Jet12_*_*',
+    'keep *_RA2Jet*_*_*',
     'keep *_RA2dPhi*_*_*',
     )
     )
