@@ -3,7 +3,7 @@
 # batch mode for cmsRun, March 2009
 
 
-import os, sys,  imp, re, pprint, string
+import os, sys,  imp, re, pprint, string, time
 from optparse import OptionParser
 
 # particle flow specific
@@ -208,7 +208,9 @@ class MyBatchManager( BatchManager ):
        
     def SubmitJob( self, jobDir ):
        os.system( self.options_.batch )
-
+       print 'waiting 5 seconds to give castor some time...'
+       time.sleep(5)
+       print 'done'
 
 batchManager = MyBatchManager()
 
