@@ -79,6 +79,15 @@ int main(int argc, char* argv[])
   
   controlHistos.addHistogram( new TH1F ("nbtags", ";b-tag multiplicity (SSVHEM);Events", 4,0,4) );  
 
+  controlHistos.addHistogram( new TProfile ("metprof", ";Pileup events;E_{T}^{miss}", 15,0,15) ); 
+  controlHistos.addHistogram( new TProfile ("redmetprof", ";Pileup events;red-E_{T}^{miss}", 15,0,15) );  
+   controlHistos.addHistogram( new TProfile ("projmetprof", ";Pileup events;projected E_{T}^{miss}", 15,0,15) );  
+  controlHistos.addHistogram( new TProfile ("minmetprof", ";Pileup events;min-E_{T}^{miss}", 15,0,15) );  
+  controlHistos.addHistogram( new TH2F ("metvspu", ";Pileup events;E_{T}^{miss}", 15,0,15,100,0,500) );  
+  controlHistos.addHistogram( new TH2F ("redmetvspu", ";Pileup events;red-E_{T}^{miss}", 15,0,15,100,0,500) );  
+  controlHistos.addHistogram( new TH2F ("minmetvspu", ";Pileup events;min-E_{T}^{miss}", 15,0,15,100,0,500) );  
+  controlHistos.addHistogram( new TH2F ("projmetvspu", ";Pileup events;projected E_{T}^{miss}", 15,0,15,100,0,500) );  
+
   controlHistos.addHistogram( new TH1F ("met", ";type-I E_{T}^{miss};Events", 100,0,500) );  
   controlHistos.addHistogram( new TH1F ("redmet", ";red-E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram( new TH1F ("superredmet", ";min red-( E_{T}^{miss},track-E_{T}^{miss} );Events", 100,0,500) );
@@ -91,7 +100,7 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( (TH1D *)(new TH2D ("finalredmetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
 
   controlHistos.addHistogram( new TH1F ("projmet", ";projected E_{T}^{miss};Events", 100,0,500) );
-  // controlHistos.addHistogram( new TH1F ("minmet", ";min projected E_{T}^{miss};Events", 100,0,500) );
+  controlHistos.addHistogram( new TH1F ("minmet", ";min projected E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram(  new TH1D ("zpt", ";p_{T}^{ll};Events", 100,0,400) );
   controlHistos.addHistogram(  new TH1D ("zeta", ";#eta^{ll};Events", 100,-5,5) );
 
@@ -348,7 +357,7 @@ int main(int argc, char* argv[])
 // 		  controlHistos.fillHisto("projmetjesup", ctf,projMetJESup,weight);	      
 // 		  controlHistos.fillHisto("projmetjesdown", ctf,projMetJESdown,weight);	     
 // 		  controlHistos.fillHisto("projmetflatpu", ctf,projMet);	     
-// 		  if(ev.ngenpu<1) controlHistos.fillHisto("projmetnopu", ctf,projMet); 
+// 		  if(ev.ngenITpu<1) controlHistos.fillHisto("projmetnopu", ctf,projMet); 
 		  
 // 		  controlHistos.fillHisto("minmetjer", ctf,minmetJER,weight);	      
 // 		  controlHistos.fillHisto("minmetjesup", ctf,minmetJESup,weight);	      
@@ -356,9 +365,17 @@ int main(int argc, char* argv[])
 // 		  controlHistos.fillHisto("minmetflatpu", ctf,minmet);
 
 		  controlHistos.fillHisto("met", ctf,zvv.pt(),weight);
-		  controlHistos.fillHisto("projmet", ctf,projMet,weight);	      
+		  controlHistos.fillProfile("metprof", ctf,ev.ngenITpu,zvv.pt());
+		  controlHistos.fill2DHisto("metvspu", ctf,ev.ngenITpu,zvv.pt());
+		  controlHistos.fillHisto("projmet", ctf,projMet,weight);	 
+		  controlHistos.fillProfile("projmetprof", ctf,ev.ngenITpu,projMet);
+		  controlHistos.fill2DHisto("projmetvspu", ctf,ev.ngenITpu,projMet);     
 		  controlHistos.fillHisto("minmet", ctf,minmet,weight);	      
+		  controlHistos.fillProfile("minmetprof", ctf,ev.ngenITpu,minmet);	      
+		  controlHistos.fill2DHisto("minmetvspu", ctf,ev.ngenITpu,minmet);	      
  		  controlHistos.fillHisto("redmet", ctf,redmet,weight);	      
+		  controlHistos.fillProfile("redmetprof", ctf,ev.ngenITpu,redmet);
+		  controlHistos.fill2DHisto("redmetvspu", ctf,ev.ngenITpu,redmet);
  		  controlHistos.fillHisto("superredmet", ctf,superredmet,weight);	      
 
  		  controlHistos.fillHisto("redmetL", ctf,redmetL,weight);	      
@@ -370,7 +387,7 @@ int main(int argc, char* argv[])
 		  // 		  controlHistos.fillHisto("redmetjesup", ctf,redmetJESup,weight);	      
 		  // 		  controlHistos.fillHisto("redmetjesdown", ctf,redmetJESdown,weight);	      
 		  // 		  controlHistos.fillHisto("redmetflatpu", ctf,redmet);
-		  // 		  if(ev.ngenpu<1)
+		  // 		  if(ev.ngenITpu<1)
 		  // 		    {
 		  // 		      controlHistos.fillHisto("minmetnopu", ctf,minmet);
 		  // 		      controlHistos.fillHisto("redmetnopu", ctf,redmet);

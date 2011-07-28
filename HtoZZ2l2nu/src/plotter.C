@@ -57,7 +57,7 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
   TString name=c->GetName();
   TString title=c->GetTitle();
   
-  bool th2dfound(false), graphfound(false);
+  bool th2dfound(false), graphfound(false), proffound(false);
 
   //start with the legend with the data
   std::vector<std::pair<TObject *,TString> > allKeys;
@@ -68,6 +68,7 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
     {
       TH1 *p = (TH1 *) key;
       th2dfound |= ((TClass*)key->IsA())->InheritsFrom("TH2");
+      proffound |= ((TClass*)key->IsA())->InheritsFrom("TProfile");
       graphfound |= ((TClass*)key->IsA())->InheritsFrom("TGraph");
       allKeys.push_back(std::pair<TObject *,TString>(p,p->GetTitle()));
       TString newname("data"); newname += allKeys.size();
@@ -81,6 +82,7 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
     {
       TH1 *p = (TH1 *) key;
       th2dfound |= ((TClass*)key->IsA())->InheritsFrom("TH2");
+      proffound |= ((TClass*)key->IsA())->InheritsFrom("TProfile");
       graphfound |= ((TClass*)key->IsA())->InheritsFrom("TGraph");
       allKeys.push_back(std::pair<TObject *,TString>(p,p->GetTitle()));
       TString newname("gr"); newname += allKeys.size();
@@ -95,6 +97,7 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
     {
       TH1 *p = (TH1 *) key;
       th2dfound |= ((TClass*)key->IsA())->InheritsFrom("TH2");
+      proffound |= ((TClass*)key->IsA())->InheritsFrom("TProfile");
       graphfound |= ((TClass*)key->IsA())->InheritsFrom("TGraph");
       allKeys.push_back(std::pair<TObject *,TString>(p,p->GetTitle()));
       TString newname("h"); newname += allKeys.size();
@@ -112,7 +115,7 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
     leg->AddEntry( kIt->first, kIt->second, legopt );      
 
   TH1 *refFrame=0;  
-  if(th2dfound || graphfound)
+  if(th2dfound || graphfound || proffound)
     {
       int nplots=allKeys.size();
       int nx = sqrt(nplots*1.0)+1;
@@ -132,7 +135,7 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
 	  if(key==0 || p==0) continue;
 	  if(th2dfound && ((TH2D *)key)->Integral()==0) continue;
 	  //key->Draw( th2dfound ? "box" : "ap");
-	  key->Draw( th2dfound ? "colz" : "ap");
+	  key->Draw( th2dfound ? "colz" : (proffound ? "e1" : "ap") );
 	  TLegend *leg=p->BuildLegend();
 	  if(leg)
 	    {
@@ -155,8 +158,7 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
 	  TPad *p=(TPad *)c->cd(ipad);
 	  if(key==0 || p==0) continue;
 	  if(th2dfound && ((TH2D *)key)->Integral()==0) continue;
-	  //key->Draw( th2dfound ? "box" : "ap");
-	  key->Draw( th2dfound ? "colz" : "ap");
+	  key->Draw( th2dfound ? "colz" : (proffound ? "e1" : "ap") );
 	  TLegend *leg=p->BuildLegend();
 	  if(leg)
 	    {
@@ -183,8 +185,7 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
 	  if(p==0) continue;
 	  if(key==0 || p==0) continue;
 	  if(th2dfound && ((TH2D *)key)->Integral()==0) continue;
-	  //	  key->Draw( th2dfound ? "box" : "ap");
-	  key->Draw( th2dfound ? "colz" : "ap");
+	  key->Draw( th2dfound ? "colz" : (proffound ? "e1" : "ap") );
 	  TLegend *leg=p->BuildLegend();
 	  if(leg)
 	    {
