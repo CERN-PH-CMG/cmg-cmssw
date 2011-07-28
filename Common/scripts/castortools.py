@@ -283,6 +283,8 @@ def move( absDestDir, files ):
 # remove a set of files
 def remove( files ):
     for file in files:
+        if isLFN( file ):
+            file = lfnToCastor( file )
         rfrm = 'rfrm %s' % file
         print rfrm
         os.system( rfrm )
