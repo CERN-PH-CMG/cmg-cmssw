@@ -79,19 +79,23 @@ from CMGTools.Common.miscProducers.deltaPhiJetMET_cfi import *
 from CMGTools.Common.skims.indexCMGPFJetSelector_cfi import *
 
 RA2Jet0 = indexCMGPFJetSelector.clone( inputCollection = 'RA2PFJet50Central', min = 0, max = 0)
-RA2Jet12 = indexCMGPFJetSelector.clone( inputCollection = 'RA2PFJet50Central', min = 1, max = 2)
+RA2Jet1 = indexCMGPFJetSelector.clone( inputCollection = 'RA2PFJet50Central', min = 1, max = 1)
+RA2Jet2 = indexCMGPFJetSelector.clone( inputCollection = 'RA2PFJet50Central', min = 2, max = 2)
 
 # RA2Jet0.verbose = True
 # RA2Jet12.verbose = True
 
 RA2dPhi0 = deltaPhiJetMET.clone(objects = 'RA2Jet0')
-RA2dPhi12 = deltaPhiJetMET.clone(objects = 'RA2Jet12')
+RA2dPhi1 = deltaPhiJetMET.clone(objects = 'RA2Jet1')
+RA2dPhi2 = deltaPhiJetMET.clone(objects = 'RA2Jet2')
 
 dPhiSequence = cms.Sequence(
     RA2Jet0 +
-    RA2Jet12 + 
+    RA2Jet1 +
+    RA2Jet2 +
     RA2dPhi0 +
-    RA2dPhi12
+    RA2dPhi1 +
+    RA2dPhi2
     )
 
 RA2ObjectSequence = cms.Sequence(
