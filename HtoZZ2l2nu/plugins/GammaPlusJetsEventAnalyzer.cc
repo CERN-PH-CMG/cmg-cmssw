@@ -193,6 +193,9 @@ void GammaPlusJetsEventAnalyzer::analyze(const edm::Event &event, const edm::Eve
 	if( found == std::string::npos ) continue;
 	size_t foundDouble = trigName.find("Double");
 	if( foundDouble != std::string::npos ) continue;
+	if(trigName.find("Mu") != std::string::npos) continue;
+	if(trigName.find("SC") != std::string::npos) continue;
+	if(trigName.find("Ele") != std::string::npos) continue;
 	found = trigName.find("Photon",found+1,6);
 	if( found != std::string::npos ) continue;
 

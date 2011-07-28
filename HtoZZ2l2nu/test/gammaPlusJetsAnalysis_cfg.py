@@ -24,7 +24,7 @@ if(not runOnMC ):
 
 # pat sequences
 from CMGTools.HtoZZ2l2nu.PatSequences_cff import addPatSequence
-addPatSequence(process,False)
+addPatSequence(process,runOnMC,True)
 
 # event counters
 process.startCounter = cms.EDProducer("EventCountProducer")
