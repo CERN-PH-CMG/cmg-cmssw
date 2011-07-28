@@ -146,6 +146,7 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
     //MET
     controlHistos_.addHistogram("met", ";{E}_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
     controlHistos_.addHistogram("chmet", ";charged-E_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
+    controlHistos_.addHistogram("trkmet", ";track-E_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
     controlHistos_.addHistogram("redmet", ";red-E_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
     controlHistos_.addHistogram("projmet", ";proj-E_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
     controlHistos_.addHistogram("projchmet", ";proj-charged-E_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
@@ -567,11 +568,14 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.met1_phi = met.phi();   ev.met1_pt=  met.pt();
 
     //other met possibilities mapped to vertices
-    LorentzVector chmet(0,0,0,0);
+    LorentzVector chmet(0,0,0,0),trkmet(0,0,0,0);
     std::vector<LorentzVector> hzzmets;
     try{
       edm::Handle< edm::ValueMap<reco::PFMET> > chargedMets;
       event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("chsource"), chargedMets); 
+
+      edm::Handle< edm::ValueMap<reco::PFMET> > trkMets;
+      event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("trksource"), trkMets); 
 
       std::vector< edm::Handle< edm::ValueMap<reco::PFMET> > > hzzMetsH;
       std::vector<edm::InputTag> hzzMetSources = objConfig_["MET"].getParameter< std::vector<edm::InputTag> >("hzzmetSources");
@@ -598,6 +602,9 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 
 	  const reco::PFMET &chpfmet=(*chargedMets)[vtxRef];
 	  chmet=LorentzVector(chpfmet.px(),chpfmet.py(),0,chpfmet.pt());
+
+	  const reco::PFMET &trkpfmet=(*trkMets)[vtxRef];
+	  trkmet=LorentzVector(trkpfmet.px(),trkpfmet.py(),0,trkpfmet.pt());
 	  
 	  for(std::vector< edm::Handle< edm::ValueMap<reco::PFMET> > >::iterator mIt = hzzMetsH.begin();
 	      mIt != hzzMetsH.end(); mIt++)
@@ -643,6 +650,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //met control histograms
     controlHistos_.fillHisto("met",istream,met.pt(),weight);
     controlHistos_.fillHisto("chmet",istream,chmet.pt(),weight);
+    controlHistos_.fillHisto("trkmet",istream,trkmet.pt(),weight);
     controlHistos_.fillHisto("redmet",istream,reducedMET,weight);
     controlHistos_.fillHisto("projmet",istream,projMet,weight);
     controlHistos_.fillHisto("projchmet",istream,projChMet,weight);

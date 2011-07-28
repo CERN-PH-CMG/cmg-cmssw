@@ -12,6 +12,7 @@
 
 // user include files
 #include "TH1D.h"
+#include "TProfile.h"
 #include "TH2D.h"
 #include "TString.h"
 
@@ -87,6 +88,17 @@ public:
 	double width = h->GetBinWidth(ibin);
 	weight /= width;
       }
+    h->Fill(valx,valy,weight);
+    return true;
+  }
+
+  /**
+     @short takes care of filling an histogram
+   */
+  inline bool fillProfile(TString name, TString tag, double valx, double valy, double weight=1)
+  {
+    TProfile *h = (TProfile *)getHisto(name,tag);
+    if(h==0) return false;
     h->Fill(valx,valy,weight);
     return true;
   }

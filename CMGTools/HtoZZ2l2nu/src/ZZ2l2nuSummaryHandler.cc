@@ -1,5 +1,7 @@
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 
+using namespace std;
+
 //
 ZZ2l2nuSummaryHandler::ZZ2l2nuSummaryHandler()
 {
@@ -176,10 +178,10 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("x2")->SetAddress(&evSummary_.x2);
   t_->GetBranch("id1")->SetAddress(&evSummary_.id1);
   t_->GetBranch("id2")->SetAddress(&evSummary_.id2);
-  
-  //selection info
-  t_->GetBranch("pass")->SetAddress(&evSummary_.pass);
 
+  //selection info
+  if(t_->GetBranch("pass")) t_->GetBranch("pass")->SetAddress(&evSummary_.pass);
+  
   //selected di-leptons
   t_->GetBranch("l1_px")     ->SetAddress( &evSummary_.l1_px);
   t_->GetBranch("l1_py")     ->SetAddress( &evSummary_.l1_py);
@@ -191,7 +193,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("l1_iso1")   ->SetAddress( &evSummary_.l1_iso1);
   t_->GetBranch("l1_iso2")   ->SetAddress( &evSummary_.l1_iso2);
   t_->GetBranch("l1_iso3")   ->SetAddress( &evSummary_.l1_iso3);
-
+  
   t_->GetBranch("l2_px")     ->SetAddress( &evSummary_.l2_px);
   t_->GetBranch("l2_py")     ->SetAddress( &evSummary_.l2_py);
   t_->GetBranch("l2_pz")     ->SetAddress( &evSummary_.l2_pz);
@@ -202,7 +204,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("l2_iso1")   ->SetAddress( &evSummary_.l2_iso1);
   t_->GetBranch("l2_iso2")   ->SetAddress( &evSummary_.l2_iso2);
   t_->GetBranch("l2_iso3")   ->SetAddress( &evSummary_.l2_iso3);
-
+  
   //selected additional-leptons
   t_->GetBranch("ln")        ->SetAddress( &evSummary_.ln);
   t_->GetBranch("ln_px")     ->SetAddress(evSummary_.ln_px);
@@ -215,7 +217,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("ln_iso1")   ->SetAddress(evSummary_.ln_iso1);
   t_->GetBranch("ln_iso2")   ->SetAddress(evSummary_.ln_iso2);
   t_->GetBranch("ln_iso3")   ->SetAddress(evSummary_.ln_iso3);
-
+  
   //selected jets
   t_->GetBranch("jn")        ->SetAddress( &evSummary_.jn);
   t_->GetBranch("jn_px")     ->SetAddress(evSummary_.jn_px);
@@ -228,13 +230,13 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("jn_btag3")  ->SetAddress(evSummary_.jn_btag3);
   t_->GetBranch("jn_btag4")  ->SetAddress(evSummary_.jn_btag4);
   t_->GetBranch("jn_vtxAssoc")->SetAddress(evSummary_.jn_vtxAssoc);
-
+  
   //primary vertex
   t_->GetBranch("vtx_px")   ->SetAddress( &evSummary_.vtx_px);
   t_->GetBranch("vtx_py")   ->SetAddress( &evSummary_.vtx_py);
   t_->GetBranch("vtx_pz")   ->SetAddress( &evSummary_.vtx_pz);
   t_->GetBranch("vtx_en")   ->SetAddress( &evSummary_.vtx_en);
-
+  
   //MET
   t_->GetBranch("met1_phi")  ->SetAddress( &evSummary_.met1_phi);
   t_->GetBranch("met1_pt")  ->SetAddress( &evSummary_.met1_pt);
@@ -256,7 +258,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
 
   t_->GetBranch("met7_phi")  ->SetAddress( &evSummary_.met7_phi);
   t_->GetBranch("met7_pt")  ->SetAddress( &evSummary_.met7_pt);
-
+  
   //Gamma Info
   t_->GetBranch("g_px")     ->SetAddress( &evSummary_.g_px);
   t_->GetBranch("g_py")     ->SetAddress( &evSummary_.g_py);
@@ -269,13 +271,13 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("g_sipip")  ->SetAddress( &evSummary_.g_sipip);
   t_->GetBranch("g_r9")     ->SetAddress( &evSummary_.g_r9);
   t_->GetBranch("g_eop")    ->SetAddress( &evSummary_.g_eop);
-
+  
   //Higgs Info
   t_->GetBranch("h_px")     ->SetAddress( &evSummary_.h_px);
   t_->GetBranch("h_py")     ->SetAddress( &evSummary_.h_py);
   t_->GetBranch("h_pz")     ->SetAddress( &evSummary_.h_pz);
   t_->GetBranch("h_en")     ->SetAddress( &evSummary_.h_en);
-
+  
   //mc truth
   t_->GetBranch("nmcparticles")->SetAddress( &evSummary_.nmcparticles);
   t_->GetBranch("mc_px")->SetAddress(evSummary_.mc_px);
@@ -283,7 +285,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("mc_pz")->SetAddress(evSummary_.mc_pz);
   t_->GetBranch("mc_en")->SetAddress(evSummary_.mc_en);
   t_->GetBranch("mc_id")->SetAddress(evSummary_.mc_id);
-
+  
   return true;
 }
 

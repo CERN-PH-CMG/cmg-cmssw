@@ -102,7 +102,7 @@ int main(int argc, char* argv[])
   if(file==0) return -1;
   if(file->IsZombie()) return -1;
   ZZ2l2nuSummaryHandler evSummaryHandler;
-  
+  cout << url << endl;
   if( !evSummaryHandler.attachToTree( (TTree *)file->Get(dirname) ) ) 
     {
       file->Close();
@@ -126,8 +126,9 @@ int main(int argc, char* argv[])
       evSummaryHandler.getEntry(iev);
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
-      bool isGammaEvent(phys.gamma.pt()>0);
-      if(!isGammaEvent && phys.leptons.size()<2) continue;
+      
+      bool isGammaEvent(ev.cat>3 && phys.gamma.pt()>0);
+      //      if(!isGammaEvent && phys.leptons.size()<2) continue;
 
       float weight=1.0; //ev.weight;
 
@@ -141,7 +142,7 @@ int main(int argc, char* argv[])
 	  
 	  triggerThr=(ev.cat-22)/1000;
 	  trigList.insert(triggerThr);
-
+	  
 	  bool rejectEvent(false);
 	  for(size_t icat=0; icat<nPhotonCats-1; icat++)
 	    {
@@ -150,7 +151,6 @@ int main(int argc, char* argv[])
 	    }
 	  if(rejectEvent) 
 	    {
-	      //cout << "Rejecting: " << gamma.pt() << " (thr=" << triggerThr << ")" << endl;
 	      continue;
 	    }
 	}

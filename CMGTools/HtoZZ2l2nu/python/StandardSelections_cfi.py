@@ -92,7 +92,8 @@ BaseDileptonSelection = cms.PSet( minDileptonMass = cms.double(0),
 
 # base values for met selection -----------------------------------------------------
 BaseMetSelection = cms.PSet( source = cms.InputTag("patMETsPFlow"),
-                             chsource = cms.InputTag("trackMetProducer"),
+                             chsource = cms.InputTag("chargedMetProducer"),
+                             trksource = cms.InputTag("trackMetProducer"),
                              hzzmetSources = cms.VInputTag("hzzPFMetProducer:hzzPfMet",
                                                            "hzzPFMetProducer:hzzTkMet",
                                                            "hzzPFMetProducer:hzzPfMetNoPileup",
