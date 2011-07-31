@@ -35,8 +35,8 @@ process.load('CMGTools.HtoZZ2l2nu.PileupNormalizationProducer_cfi')
 process.TFileService = cms.Service("TFileService", fileName = cms.string(outFile) )
 
 # all done, schedule the execution
-process.p = cms.Path( process.startCounter * process.patDefaultSequence * process.evAnalyzer )
-
+process.p = cms.Path( process.startCounter * process.puWeights * process.patDefaultSequence * process.evAnalyzer )
+    
 # no event output
 del process.outpath
 

@@ -6,12 +6,18 @@ BaseTriggerSelection = cms.PSet( source = cms.InputTag("TriggerResults::HLT"),
                                  triggerObjects = cms.VInputTag("eleTriggerMatchPFlow","muTriggerMatchPFlow")
                                  )
 from CMGTools.HtoZZ2l2nu.TriggerSequences_cff import getTriggerPaths
-doubleEle, doubleMu, muEG, singleEle, singleMu = getTriggerPaths()
+doubleEle, doubleMu, muEG, singleEle, singleMu, mcTrigs = getTriggerPaths()
 BaseTriggerSelection.triggerPaths.extend(doubleEle)
 BaseTriggerSelection.triggerPaths.extend(doubleMu)
 BaseTriggerSelection.triggerPaths.extend(muEG)
-BaseTriggerSelection.triggerPaths.extend(singleEle)
+#BaseTriggerSelection.triggerPaths.extend(singleEle)
 BaseTriggerSelection.triggerPaths.extend(singleMu)
+BaseTriggerSelection.triggerPaths.extend(mcTrigs)
+
+
+
+
+
 
 
 # base values for the vertex selection ------------------------------------------
@@ -67,7 +73,7 @@ BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectronsPF
                                    applyConversionVeto = cms.bool(True),
                                    maxDistToBeamSpot=cms.double(0.04),
                                    maxTrackLostHits = cms.int32(1),
-                                   id = cms.string("eidTightMC"),
+                                   id = cms.string("eidTight"),
                                    maxRelIso = cms.double(1.0),
                                    minDeltaRtoMuons = cms.double(0.1)
                                    )
@@ -92,12 +98,12 @@ BaseDileptonSelection = cms.PSet( minDileptonMass = cms.double(0),
 
 # base values for met selection -----------------------------------------------------
 BaseMetSelection = cms.PSet( source = cms.InputTag("patMETsPFlow"),
-                             chsource = cms.InputTag("chargedMetProducer"),
-                             trksource = cms.InputTag("trackMetProducer"),
-                             hzzmetSources = cms.VInputTag("hzzPFMetProducer:hzzPfMet",
-                                                           "hzzPFMetProducer:hzzTkMet",
-                                                           "hzzPFMetProducer:hzzPfMetNoPileup",
-                                                           "hzzPFMetProducer:hzzPfMetNoPileupJetNeutralVeto",
-                                                           "hzzPFMetProducer:hzzPfMetNoPileupClusteredNeutrals")
+                             trksource = cms.InputTag("hzzPFMetProducer:hzzTkMet"),
+                             pfnopusource = cms.InputTag("hzzPFMetProducer:hzzPfMetNoPileup")
+#                             hzzmetSources = cms.VInputTag("hzzPFMetProducer:hzzPfMet",
+#                                                           "hzzPFMetProducer:hzzTkMet",
+#                                                           "hzzPFMetProducer:hzzPfMetNoPileup",
+#                                                           "hzzPFMetProducer:hzzPfMetNoPileupJetNeutralVeto",
+#                                                           "hzzPFMetProducer:hzzPfMetNoPileupClusteredNeutrals")
                              )
 

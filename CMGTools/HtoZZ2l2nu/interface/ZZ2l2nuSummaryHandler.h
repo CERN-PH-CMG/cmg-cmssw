@@ -23,6 +23,7 @@ struct ZZ2l2nuSummary_t
 
   Int_t run,lumi,event;
   Int_t cat;
+  Bool_t hasTrigger;
 
   //gen level 
   Int_t nvtx, ngenITpu,ngenOOTpu;
