@@ -23,14 +23,14 @@ std::pair<TH1D *,TH1D *> getProjections(TH2D *histo)
 
 
 //
-TLegend *showPlotsAndMCtoDataComparison(TPad *p, TList &stack, TList &spimpose, TList &data)
+TLegend *showPlotsAndMCtoDataComparison(TPad *p, TList &stack, TList &spimpose, TList &data, bool setLogy)
 {
   p->Divide(1,2);
   TPad *subp=(TPad *)p->cd(1);
   subp->SetPad(0,0.3,1.0,1.0);
   TLegend *leg=showPlots(subp,stack,spimpose,data);
   formatForCmsPublic(subp,leg,"",5);
-  subp->SetLogy();
+  if(setLogy) subp->SetLogy();
   
   subp=(TPad *)p->cd(2);
   subp->SetPad(0,0.0,1.0,0.25);

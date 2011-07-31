@@ -27,6 +27,6 @@ TLegend *showSimplePlot(TPad *c, TList &data, bool buildLegend=true, TString leg
 void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doDiff=false, float yscale=1);
 TString getPlotAsTable(TList *stack, TList *spimpose, TList *data);
 std::pair<TH1D *,TH1D *> getProjections(TH2D *);
-TLegend *showPlotsAndMCtoDataComparison(TPad *p, TList &stack, TList &spimpose, TList &data);
+TLegend *showPlotsAndMCtoDataComparison(TPad *p, TList &stack, TList &spimpose, TList &data, bool setLogy=true);
 
 #endif

@@ -4,6 +4,15 @@ import FWCore.ParameterSet.Config as cms
 ### trigger paths of interest
 ###
 def getTriggerPaths() :
+    mcTrigs = ['HLT_IsoMu17_v5',
+               'HLT_DoubleMu3_v3',
+               'HLT_DoubleMu6_v1',
+               'HLT_DoubleMu7_v1',
+               'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2',
+               'HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v2',
+               'HLT_Mu8_Ele17_CaloIdL_v2',
+               'HLT_Mu10_Ele10_CaloIdL_v3',
+               'HLT_Mu17_Ele8_CaloIdL_v2']
     doubleEle = ['HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1',
                  'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2',
                  'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v3',
@@ -40,7 +49,7 @@ def getTriggerPaths() :
                  'HLT_Ele17_SW_TighterEleIdIsol_L1R_v2',
                  'HLT_Ele17_SW_TighterEleIdIsol_L1R_v3']
     
-    return doubleEle, doubleMu, muEG, singleEle, singleMu
+    return doubleEle, doubleMu, muEG, singleEle, singleMu, mcTrigs
 
 ##
 ## adds trigger sequence

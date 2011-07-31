@@ -38,6 +38,9 @@
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/TSelectionMonitor.h"
 
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "FWCore/Common/interface/TriggerNames.h"
+
 //
 class DileptonPlusMETEventAnalyzer : public edm::EDAnalyzer 
 {
@@ -345,6 +348,25 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 {
 
   try{
+
+    //get triggers
+    bool hasTrigger(false);
+    edm::Handle<edm::TriggerResults> allTriggerBits_;
+    edm::InputTag trigSource("TriggerResults::HLT");
+    event.getByLabel( trigSource, allTriggerBits_);
+    const edm::TriggerNames &triggerNames = event.triggerNames( *allTriggerBits_);
+    std::vector<std::string> triggerPaths = objConfig_["Trigger"].getParameter<std::vector<std::string> >("triggerPaths"); 
+    for (size_t itrig = 0; itrig != allTriggerBits_->size(); ++itrig)
+      {
+	std::string trigName = triggerNames.triggerName(itrig);
+	if( !allTriggerBits_->wasrun(itrig) ) continue;
+	if( allTriggerBits_->error(itrig) ) continue;
+	if( !allTriggerBits_->accept(itrig) ) continue;
+	if( find(triggerPaths.begin(), triggerPaths.end(), trigName) == triggerPaths.end() ) continue;
+	hasTrigger=true;
+	break;
+      }
+	
     
     //get objects for this event
     edm::Handle<std::vector<pat::EventHypothesis> > evHandle;
@@ -446,8 +468,10 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //select Z window
     LorentzVector dileptonP=lepton1P+lepton2P;
     controlHistos_.fillHisto(dilCat+"_mass",istream,dileptonP.mass(),weight);
-    if(dileptonP.mass()<40) return;
-    if(fabs(l1id)==fabs(l2id) && fabs(dileptonP.mass()-91)>15) return;
+    bool isZcandidate(fabs(dileptonP.mass()-91)>15);
+    //if(dileptonP.mass()<40) return;
+    //if(fabs(l1id)==fabs(l2id) && fabs(dileptonP.mass()-91)>15) return;
+    if(!isZcandidate) return;
     controlHistos_.fillHisto("cutflow","all",3,weight);
     controlHistos_.fillHisto("cutflow",istream,3,weight);
 
@@ -508,8 +532,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	njets++;
 	jetmomenta.push_back(jet->p4());
 	assocJets.push_back( jet.get() );
-	float btag=jet->bDiscriminator("trackCountingHighEffBJetTags");
-	nbjets += (btag>1.7);
+	float btag=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
+	nbjets += (btag>1.74);
 	controlHistos_.fillHisto("jetfassoc",istream,jet::fAssoc(jet.get(),primVertex.get()),weight);
 	controlHistos_.fillHisto("jetbtags",istream,btag,weight);
 	controlHistos_.fillHisto("jetpt",istream,jet->pt(),weight);
@@ -519,7 +543,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.jn_px[ev.jn] = jet->px();  ev.jn_py[ev.jn]=jet->py();  ev.jn_pz[ev.jn]=jet->pz(); ev.jn_en[ev.jn]=jet->energy();
 	const reco::Candidate *genParton = jet->genParton();
 	ev.jn_genid[ev.jn] = genParton ? genParton->pdgId() : -9999;
-	ev.jn_btag1[ev.jn]=btag;
+	ev.jn_btag1[ev.jn]=jet->bDiscriminator("trackCountingHighEffBJetTags");
 	ev.jn_btag2[ev.jn]=jet->bDiscriminator("trackCountingHighPurBJetTags");
 	ev.jn_btag3[ev.jn]=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
 	ev.jn_btag4[ev.jn]=jet->bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
@@ -539,8 +563,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	npujets++;
 	pujetmomenta.push_back(jet->p4());
 	puJets.push_back( jet.get() );
-	float btag=jet->bDiscriminator("trackCountingHighEffBJetTags");
-	npubjets += (btag>1.7);
+	float btag=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
+	npubjets += (btag>1.74);
 	controlHistos_.fillHisto("pujetfassoc",istream,jet::fAssoc(jet.get(),primVertex.get()),weight);
 	controlHistos_.fillHisto("pujetbtags",istream,btag,weight);
         controlHistos_.fillHisto("pujetpt",istream,jet->pt(),weight);
@@ -549,7 +573,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.jn_px[ev.jn] = jet->px();  ev.jn_py[ev.jn]=jet->py();  ev.jn_pz[ev.jn]=jet->pz(); ev.jn_en[ev.jn]=jet->energy();
 	const reco::Candidate *genParton = jet->genParton();
 	ev.jn_genid[ev.jn] = genParton ? genParton->pdgId() : -9999;
-	ev.jn_btag1[ev.jn]=btag;
+	ev.jn_btag1[ev.jn]=jet->bDiscriminator("trackCountingHighEffBJetTags");
 	ev.jn_btag2[ev.jn]=jet->bDiscriminator("trackCountingHighPurBJetTags");
 	ev.jn_btag3[ev.jn]=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
 	ev.jn_btag4[ev.jn]=jet->bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
@@ -565,30 +589,15 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //the met
     const pat::MET *evmet = dynamic_cast<const pat::MET *>(evhyp["met"].get());
     LorentzVector met(evmet->px(),evmet->py(),0,evmet->pt());
-    ev.met1_phi = met.phi();   ev.met1_pt=  met.pt();
 
     //other met possibilities mapped to vertices
-    LorentzVector chmet(0,0,0,0),trkmet(0,0,0,0);
-    std::vector<LorentzVector> hzzmets;
+    LorentzVector trkmet(0,0,0,0),pfnopumet(0,0,0,0);
     try{
-      edm::Handle< edm::ValueMap<reco::PFMET> > chargedMets;
-      event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("chsource"), chargedMets); 
+      edm::Handle< edm::ValueMap<reco::PFMET> > trkMetsH;
+      event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("trksource"), trkMetsH); 
 
-      edm::Handle< edm::ValueMap<reco::PFMET> > trkMets;
-      event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("trksource"), trkMets); 
-
-      std::vector< edm::Handle< edm::ValueMap<reco::PFMET> > > hzzMetsH;
-      std::vector<edm::InputTag> hzzMetSources = objConfig_["MET"].getParameter< std::vector<edm::InputTag> >("hzzmetSources");
-      for(std::vector<edm::InputTag>::iterator it = hzzMetSources.begin(); it != hzzMetSources.end(); it++)
-	{
-	  try{
-	    edm::Handle< edm::ValueMap<reco::PFMET> > newMetH;
-	    event.getByLabel(*it,newMetH);
-	    hzzMetsH.push_back(newMetH);
-	  }catch(std::exception &e){
-	    //    cout << e.what() << endl;
-	  }
-	}
+      edm::Handle< edm::ValueMap<reco::PFMET> > pfnopumetsH;
+      event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("pfnopusource"), pfnopumetsH); 
 
       //get the original vertex collecion
       edm::Handle<reco::VertexCollection> hVtx;
@@ -600,62 +609,53 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	  reco::VertexRef vtxRef(hVtx,ivtx);
 	  if(vtxRef->position().z()!=primVertex->position().z()) continue;
 
-	  const reco::PFMET &chpfmet=(*chargedMets)[vtxRef];
-	  chmet=LorentzVector(chpfmet.px(),chpfmet.py(),0,chpfmet.pt());
+	  const reco::PFMET &trkpfmetObj=(*trkMetsH)[vtxRef];
+	  trkmet=LorentzVector(trkpfmetObj.px(),trkpfmetObj.py(),0,trkpfmetObj.pt());
 
-	  const reco::PFMET &trkpfmet=(*trkMets)[vtxRef];
-	  trkmet=LorentzVector(trkpfmet.px(),trkpfmet.py(),0,trkpfmet.pt());
+	  const reco::PFMET &pfnopumetObj=(*pfnopumetsH)[vtxRef];
+	  pfnopumet=LorentzVector(pfnopumetObj.px(),pfnopumetObj.py(),0,pfnopumetObj.pt());
 	  
-	  for(std::vector< edm::Handle< edm::ValueMap<reco::PFMET> > >::iterator mIt = hzzMetsH.begin();
-	      mIt != hzzMetsH.end(); mIt++)
-	    {
-	      if(mIt->isValid())
-		{
-		  const reco::PFMET &newmet=(*(*mIt))[vtxRef];
-		  hzzmets.push_back( LorentzVector(newmet.px(),newmet.py(),0,newmet.pt()) );
-		}
-	    }
 	  break;
 	}
     }catch(std::exception &e){
       //cout << e.what() << endl;
     }
 
-    //charged met
-    ev.met2_phi = chmet.phi(); ev.met2_pt=chmet.pt();
-
     //reduced met
     //rmet_.compute(lepton1->p4(),lepton1pterr, lepton2->p4(),lepton2pterr, jetmomenta, met);
     rmet_.compute(lepton1->p4(),0, lepton2->p4(),0, jetmomenta, met);
     float reducedMET=rmet_.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-    ev.met3_pt=reducedMET;  ev.met3_phi=0;
-
-    //reduced charged MET
-    rmet_.compute(lepton1->p4(),0, lepton2->p4(),0, jetmomenta, chmet);
-    float reducedChMET=rmet_.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-    ev.met4_pt=reducedChMET;  ev.met4_phi=0;
     
-    if(hzzmets.size()>0) { ev.met5_phi = hzzmets[0].phi(); ev.met5_pt=hzzmets[0].pt(); } //pfmet
-    // if(hzzmets.size()>1) { ev.met4_phi = hzzmets[1].phi(); ev.met4_pt=hzzmets[1].pt(); }
-    //if(hzzmets.size()>2) { ev.met5_phi = hzzmets[2].phi(); ev.met5_pt=hzzmets[2].pt(); }
-    if(hzzmets.size()>3) { ev.met6_phi = hzzmets[3].phi(); ev.met6_pt=hzzmets[3].pt(); }  //jet neutral veto
-    if(hzzmets.size()>4) { ev.met7_phi = hzzmets[4].phi(); ev.met7_pt=hzzmets[4].pt(); }  //clustered neutrals
-
-
     //projected MET
     float projMet = pmet_.compute(lepton1->p4(),lepton2->p4(),met);
-    float projChMet = pmet_.compute(lepton1->p4(),lepton2->p4(),met);
-    float puffoMet = min(fabs(projMet),fabs(projChMet));
+    float projTrkmet = pmet_.compute(lepton1->p4(),lepton2->p4(),trkmet);
+    float puffoMet = min(fabs(projMet),fabs(projTrkmet));
 
     //met control histograms
     controlHistos_.fillHisto("met",istream,met.pt(),weight);
-    controlHistos_.fillHisto("chmet",istream,chmet.pt(),weight);
+    controlHistos_.fillHisto("trkmet",istream,trkmet.pt(),weight);
     controlHistos_.fillHisto("trkmet",istream,trkmet.pt(),weight);
     controlHistos_.fillHisto("redmet",istream,reducedMET,weight);
     controlHistos_.fillHisto("projmet",istream,projMet,weight);
-    controlHistos_.fillHisto("projchmet",istream,projChMet,weight);
+    controlHistos_.fillHisto("projtrkmet",istream,projTrkmet,weight);
     controlHistos_.fillHisto("puffomet",istream,puffoMet,weight);
+
+    //save for posterior analysis
+    ev.met1_phi = met.phi();       ev.met1_pt=  met.pt();
+    ev.met2_phi = trkmet.phi();    ev.met2_pt=trkmet.pt();
+    ev.met3_phi = 0;               ev.met3_pt=reducedMET;      
+    ev.met4_phi = pfnopumet.phi(); ev.met4_pt=pfnopumet.pt(); 
     
+    //fill the events selection flags
+    ev.pass=0;    
+    if(isZcandidate)                                                      ev.pass++;
+    if(isZcandidate && ev.ln==0)                                          ev.pass++;
+    if(isZcandidate && ev.ln==0 && (nbjets+npubjets)==0)                  ev.pass++;
+    if(isZcandidate && ev.ln==0 && (nbjets+npubjets)==0 && reducedMET>39) ev.pass++;
+  
+    //trigger bit
+    ev.hasTrigger=hasTrigger;
+
     // finish event summary
     summaryHandler_.fillTree();
 

@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
   Int_t photoncats[]={0,20,30,50,60,70,75,125};
 
   //template reweighting
-  double w20[]={0.7748116,0.9336538,1.068044,1.545238};
+  //  double w20[]={0.7748116,0.9336538,1.068044,1.545238};
 //   double w30[]={0.160762,3.29482,6.62396,12.3574};
 //   double w50[]={0.0822076,1.90228,4.71945,8.07962};
 //   double w60[]={0.148545,1.15286,1.63573,1.62557};
@@ -128,8 +128,6 @@ int main(int argc, char* argv[])
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
       
       bool isGammaEvent(ev.cat>3 && phys.gamma.pt()>0);
-      //      if(!isGammaEvent && phys.leptons.size()<2) continue;
-
       float weight=1.0; //ev.weight;
 
       //event categories
@@ -141,6 +139,7 @@ int main(int argc, char* argv[])
 	  gamma=phys.gamma;
 	  
 	  triggerThr=(ev.cat-22)/1000;
+	  if(triggerThr==70) triggerThr=60;
 	  trigList.insert(triggerThr);
 	  
 	  bool rejectEvent(false);
@@ -149,10 +148,7 @@ int main(int argc, char* argv[])
 	      if(photoncats[icat]!=triggerThr) continue;
 	      if(gamma.pt()<photoncats[icat] || gamma.pt()>=photoncats[icat+1]) rejectEvent=true;
 	    }
-	  if(rejectEvent) 
-	    {
-	      continue;
-	    }
+	  if(rejectEvent) continue;
 	}
       else
 	{

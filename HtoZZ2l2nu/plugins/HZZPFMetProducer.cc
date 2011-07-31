@@ -234,7 +234,7 @@ void HZZPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 	{
 	  if(i==j) continue;
 	  p4sNoPileupJetNeutralVeto[j] -= clusteredNeutralsp4s[i];
-	  sumEtsNoPileupJetNeutralVeto[j] -= sumClusteredNeutralsEts[j];
+	  sumEtsNoPileupJetNeutralVeto[j] -= sumClusteredNeutralsEts[i];
 	}
 
       //use charged hadrons and clustered neutrals only 
