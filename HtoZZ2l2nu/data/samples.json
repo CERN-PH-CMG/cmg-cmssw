@@ -26,7 +26,7 @@
 		"dtag":"WW",
 	        "dset":"WW_TuneZ2_7TeV_pythia6_tauola",
                 "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/VV/WW_TuneZ2_7TeV_pythia6_tauola"],
-                "xsec":4.51
+                "xsec":43
              }
 	]
 	},
@@ -40,7 +40,8 @@
 	     {
 		"dtag":"WZ",
 	        "dset":"WZ_TuneZ2_7TeV_pythia6_tauola",
-                "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/VV/WZ_TuneZ2_7TeV_pythia6_tauola"]
+                "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/VV/WZ_TuneZ2_7TeV_pythia6_tauola"],
+		"xsec":18
              }
 	   ]
     	},
@@ -120,7 +121,7 @@
 	     {	
 		"dtag":"VBFtoH200toZZto2L2Nu",
 		"dset":"/VBF_ToHToZZTo2L2NU_M-200_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
-		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/ZZ/HZZ/VBF_ToHToZZTo2L2NU_M-200_7TeV-powheg-pythia6"],
+		"patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/HZZ/VBF_ToHToZZTo2L2NU_M-200_7TeV-powheg-pythia6"],
 		"xsec":0.6371,
                 "br":[0.256,0.0403896]
 	     }
@@ -138,7 +139,7 @@
 	     {	
 		"dtag":"GGtoH200toWWto2L2Nu",
 		"dset":"/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
-		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/ZZ/HZZ/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6"],
+		"patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/HZZ/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6"],
 		"xsec":5.27,
 		"br":[0.741,0.046656]
 	     }
@@ -156,7 +157,7 @@
              {
                 "dtag":"GGtoH200toZZto2L2Nu",
 		"dset":"/GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
-                "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_06_22_HtoZZ2l2n/HZZ/GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6"],
+                "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/HZZ/GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6"],
                 "xsec":5.27,
                 "br":[0.256,0.0403896]
              }
