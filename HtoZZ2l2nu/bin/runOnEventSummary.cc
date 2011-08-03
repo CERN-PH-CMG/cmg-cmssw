@@ -64,12 +64,11 @@ int main(int argc, char* argv[])
   JetCorrectionUncertainty jecUnc(uncFile.Data());
   jet::UncertaintyComputer jcomp(&stdPtResol,&stdEtaResol,&stdPhiResol,&jecUnc);
 
-  ofstream *outf=0;
-  if(!isMC) outf=new ofstream("highmetevents.txt",ios::app);
-
-  TransverseMassComputer mtComp;
-  //control Histos
+  //
+  //control histograms
+  //
   SelectionMonitor controlHistos;
+  
   TH1F *h=new TH1F ("eventflow", ";Step;Events", 6,0,6);
   h->GetXaxis()->SetBinLabel(2,"|M-M_{Z}|<15");
   h->GetXaxis()->SetBinLabel(3,"3^{rd}-lepton veto");
@@ -77,13 +76,13 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(5,"red-E_{T}^{miss}>39");
   h->GetXaxis()->SetBinLabel(6,"red-E_{T}^{miss}>57");
   controlHistos.addHistogram( h );
-  
+
   controlHistos.addHistogram( new TH1F ("nbtags", ";b-tag multiplicity (SSVHEM);Events", 4,0,4) );  
 
   controlHistos.addHistogram( new TProfile ("metprof", ";Pileup events;E_{T}^{miss}", 15,0,15) ); 
   controlHistos.addHistogram( new TProfile ("redmetprof", ";Pileup events;red-E_{T}^{miss}", 15,0,15) );  
   controlHistos.addHistogram( new TProfile ("superredmetprof", ";Pileup events;min red-( E_{T}^{miss},track-E_{T}^{miss} )", 15,0,15) );  
-   controlHistos.addHistogram( new TProfile ("projmetprof", ";Pileup events;projected E_{T}^{miss}", 15,0,15) );  
+  controlHistos.addHistogram( new TProfile ("projmetprof", ";Pileup events;projected E_{T}^{miss}", 15,0,15) );  
   controlHistos.addHistogram( new TProfile ("minmetprof", ";Pileup events;min-E_{T}^{miss}", 15,0,15) );  
   controlHistos.addHistogram( new TH2F ("metvspu", ";Pileup events;E_{T}^{miss}", 15,0,15,100,0,500) );  
   controlHistos.addHistogram( new TH2F ("redmetvspu", ";Pileup events;red-E_{T}^{miss}", 15,0,15,100,0,500) );  
@@ -109,43 +108,18 @@ int main(int argc, char* argv[])
 
   controlHistos.addHistogram( new TH1F ("metoverzpt", ";type I E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
   controlHistos.addHistogram( new TH1F ("projmetoverzpt", ";projected E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
-  //  controlHistos.addHistogram( new TH1F ("minmetoverzpt", ";min-E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
   controlHistos.addHistogram( new TH1F ("redmetoverzpt", ";red-E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9) );
 
-  //  controlHistos.addHistogram( (TH1D *)(new TH2D ("minmetvszpt", ";min-E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
   controlHistos.addHistogram( (TH1D *)(new TH2D ("redmetvszpt", ";red-E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
   controlHistos.addHistogram( (TH1D *)(new TH2D ("metvszpt", ";type I E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
   controlHistos.addHistogram( (TH1D *)(new TH2D ("projmetvszpt", ";projected E_{T}^{miss};p_{T}(Z);Events", 100, -10.,250,100, -10,250) ) );
   
-//   controlHistos.addHistogram( new TH1D ("mindphimetjet", ";min #Delta#phi(E_{T}^{miss},jet);Events",100,-3.2,3.2) );
   controlHistos.addHistogram( new TH1D ("dphill", ";#Delta#phi(l^{(1)},l^{(2)});Events",100,-3.2,3.2) );
   controlHistos.addHistogram( new TH1D ("mindrlz", ";min #DeltaR(l,Z);Events",100,0,6) );
   controlHistos.addHistogram( new TH1D ("maxdrlz", ";max #DeltaR(l,Z);Events",100,0,6) );
   controlHistos.addHistogram( new TH1D ("drll", ";#DeltaR(l^{(1)},l^{(2)});Events",100,0,6) );
   controlHistos.addHistogram( new TH1D ("dphizz", ";#Delta#phi(ll,E_{T}^{miss});Events",100,-3.2,3.2) );
   controlHistos.addHistogram(  new TH1D ("mtsum", ";#sum M_{T}(l,E_{T}^{miss});Events", 100,0,1000) );
-
-//  controlHistos.addHistogram( new TH1D ("mindphilmet", ";min #Delta#phi(l^{(i)},E_{T}^{miss});Events",100,-3.2,3.2) );
-
-  
-//   controlHistos.addHistogram(  new TH1D ("ptb", ";p_{T}^{b-jets};Events", 50,0,200) );
-
-//   controlHistos.addHistogram(  new TH1D ("zpt", ";p_{T}^{ll};Events", 100,0,400) );
-//   controlHistos.addHistogram(  new TH1D ("zmass", ";M^{ll};Events", 100,71,111) );
-//   controlHistos.addHistogram(  new TH1D ("deltazpt", ";#Delta p_{T}^{ll};Events", 100,-100,100) );
-//   controlHistos.addHistogram(  new TH1D ("deltazphi", ";#Delta #phi^{ll};Events", 100,-3.2,3.2) );
-//   controlHistos.addHistogram(  new TH1D ("deltazvvpt", ";#Delta p_{T}^{#nu#nu};Events", 100,-100,100) );
-//   controlHistos.addHistogram(  new TH1D ("deltazvvphi", ";#Delta #phi^{#nu#nu};Events", 100,-3.2,3.2) );
-
-
-//   controlHistos.addHistogram(  new TH1D ("mtminmetsum", ";#sum M_{T}(l,min-E_{T}^{miss});Events", 100,0,500) );
-  
-//   controlHistos.addHistogram( (TH1D *)(new TH2D ("deltadilLvszpt", ";p_{T}^{ll}; #Delta dilepton_{L};Events", 100, 0.,250,100, 0.,5) ) );
-//   controlHistos.addHistogram( (TH1D *)(new TH2D ("deltadilTvszpt", ";p_{T}^{ll}; #Delta dilepton_{T};Events", 100, 0.,250,100, 0.,5) ) );
-
-
-
-
 
 //   TString systVars[]={"jer","jesup","jesdown","nopu","flatpu"};
 //   for(size_t ivar=0; ivar<sizeof(systVars)/sizeof(TString); ivar++)
@@ -176,19 +150,41 @@ int main(int argc, char* argv[])
   ProjectedMETComputer pmetComp;
   ReducedMETComputer rmetComp(1., 1., 1., 1., 1.);
   //ReducedMETFitter rmetFitter(runProcess);
+  TransverseMassComputer mtComp;
 
   //open the file and get events tree
   TFile *file = TFile::Open(url);
   if(file==0) return -1;
   if(file->IsZombie()) return -1;
-  ZZ2l2nuSummaryHandler evSummaryHandler;
   
+  ZZ2l2nuSummaryHandler evSummaryHandler;
   if( !evSummaryHandler.attachToTree( (TTree *)file->Get(dirname) ) ) 
     {
       file->Close();
       return -1;
     }
 
+  //
+  // init summary tree (for unweighted events) 
+  //
+  bool saveSummaryTree = runProcess.getParameter<bool>("saveSummaryTree");
+  TFile *spyFile=0;
+  TDirectory *spyDir=0;
+  ofstream *outf=0;
+  ZZ2l2nuSummaryHandler *spyHandler=0;
+  if(saveSummaryTree)
+    {
+      spyHandler = new ZZ2l2nuSummaryHandler;
+      spyFile = TFile::Open("EventSummaries.root","UPDATE");
+      TString evtag=gSystem->BaseName(url);
+      evtag.ReplaceAll(".root","");
+      spyFile->rmdir(evtag);
+      spyDir = spyFile->mkdir(evtag);
+      TTree *outT = evSummaryHandler.getTree()->CloneTree(0);
+      spyHandler->initTree(outT,false);
+      if(!isMC) outf=new ofstream("highmetevents.txt",ios::app);  
+    }
+  
   //check run range
   float rescaleFactor( evEnd>0 ?  float(evSummaryHandler.getEntries())/float(evEnd-evStart) : -1 );
   if(evEnd<0 || evEnd>evSummaryHandler.getEntries() ) evEnd=evSummaryHandler.getEntries();
@@ -197,6 +193,16 @@ int main(int argc, char* argv[])
       file->Close();
        return -1;
     }
+  
+  //MC normalization (to 1/pb)
+  float cnorm=1.0;
+  if(isMC)
+    {
+      TH1F *cutflowH = (TH1F *) file->Get("evAnalyzer/h2zz/mumu/mumu_cutflow");
+      if(cutflowH) cnorm=cutflowH->GetBinContent(1);
+      if(rescaleFactor>0) cnorm /= rescaleFactor;
+    }
+
   //run the analysis
   for( int iev=evStart; iev<evEnd; iev++)
     {
@@ -354,8 +360,6 @@ int main(int argc, char* argv[])
 		  
 		  controlHistos.fillHisto("deltazvvpt",ctf, zvv.pt()-genzvv.pt(),weight);
 		  controlHistos.fillHisto("deltazvvphi",ctf, deltaPhi(zvv.phi(),genzvv.phi()),weight);
-		  
-
 
 // 		  controlHistos.fillHisto("projmetjer", ctf,projMetJER,weight);	      
 // 		  controlHistos.fillHisto("projmetjesup", ctf,projMetJESup,weight);	      
@@ -426,7 +430,9 @@ int main(int argc, char* argv[])
  		  controlHistos.fillHisto("finalredmetT", ctf,redmetT,weight);	      
 		  controlHistos.fillHisto("finalredmetcomps", ctf,redmetL,redmetT,weight);	
 
-
+		  //save tree
+		  if(saveSummaryTree && ev.normWeight==1) spyHandler->fillTree();
+		    
 		  //debug
 		  if(ic==0 && isc==0 && itc==0 && !isMC && redmet>150)	
 		    {
@@ -472,17 +478,6 @@ int main(int argc, char* argv[])
 	    }
 	}
     }
-  
-  
-  
-  //MC normalization (to 1/pb)
-  float cnorm=1.0;
-  if(isMC)
-    {
-      TH1F *cutflowH = (TH1F *) file->Get("evAnalyzer/h2zz/mumu/mumu_cutflow");
-      if(cutflowH) cnorm=cutflowH->GetBinContent(1);
-      if(rescaleFactor>0) cnorm /= rescaleFactor;
-    }
 
   //all done with the events file
   file->Close();
@@ -520,4 +515,13 @@ int main(int argc, char* argv[])
     }
 
   ofile->Close();
+
+  if(saveSummaryTree)
+    {
+      spyDir->cd();
+      spyHandler->getTree()->Write();
+      spyFile->Write();
+      spyFile->Close();
+      if(!isMC) outf->close();
+    }
 }  

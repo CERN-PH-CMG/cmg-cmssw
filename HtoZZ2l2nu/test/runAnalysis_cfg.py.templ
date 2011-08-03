@@ -4,6 +4,7 @@ runProcess = cms.PSet(
     input = cms.string("@input"),
     outdir = cms.string("@outdir"),
     isMC = cms.bool(@isMC),
+    saveSummaryTree = cms.bool(True),
     weightsFile = cms.string("@weightsFile"),	 
     useFitter=cms.bool(False),	
     evStart = cms.int32(0),
