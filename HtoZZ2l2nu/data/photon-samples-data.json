@@ -1,0 +1,46 @@
+{
+    "proc":[
+	{
+	"tag":"#gamma+jets (data)",
+	"isdata":false,
+	"spimpose":true,
+	"color":"kOrange",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"normto":1,
+	"data":[
+	     {	
+		"dtag":"PhotonMay10ReReco"
+	     },
+	     {	
+		"dtag":"PhotonPromptReco"
+	     }
+	  ]
+	},
+	{
+	"tag":"dilepton data (|M_{ll}-91|<15 GeV/c^{2})",
+	"isdata":false,
+	"spimpose":true,
+	"color":"kRed",
+	"lwidth":3,
+	"line":2,
+	"fill":0,
+	"normto":1,
+	"data":[
+	     {	
+		"dtag":"DoubleMuMay10ReReco"
+	     },
+	     {	
+		"dtag":"DoubleMuPromptReco"
+	     },
+	     {	
+		"dtag":"DoubleElectronMay10ReReco"
+	     },
+	     {	
+		"dtag":"DoubleElectronPromptReco"
+	     }
+	  ]
+	}
+    ]	
+}
