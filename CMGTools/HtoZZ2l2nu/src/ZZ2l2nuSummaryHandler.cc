@@ -9,11 +9,12 @@ ZZ2l2nuSummaryHandler::ZZ2l2nuSummaryHandler()
 }
 
 //
-bool ZZ2l2nuSummaryHandler::initTree(TTree *t)
+bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
 {
   if(t==0) return false;
   t_ = t;
-
+  if(!needsToRecreate) return true;
+  
   //event info
   t_->Branch("run",        &evSummary_.run,        "run/I");
   t_->Branch("lumi",       &evSummary_.lumi,       "lumi/I");

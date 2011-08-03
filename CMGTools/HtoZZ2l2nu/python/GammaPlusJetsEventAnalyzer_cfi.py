@@ -10,5 +10,11 @@ evAnalyzer = cms.EDAnalyzer("GammaPlusJetsEventAnalyzer",
                             MET = BaseMetSelection.clone()
                             )
 
-
+evAnalyzer.Trigger.gammaTriggers = cms.vstring('HLT_Photon20_CaloIdVL_IsoL_v',
+                                               'HLT_Photon30_CaloIdVL_IsoL_v',
+                                               'HLT_Photon50_CaloIdVL_IsoL_v',
+                                               'HLT_Photon75_CaloIdVL_IsoL_v',
+                                               'HLT_Photon90_CaloIdVL_IsoL_v',
+                                               'HLT_Photon125_v'
+                                               )
 

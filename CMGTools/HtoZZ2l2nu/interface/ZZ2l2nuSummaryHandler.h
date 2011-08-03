@@ -80,13 +80,16 @@ class ZZ2l2nuSummaryHandler{
   ZZ2l2nuSummary_t &getEvent() { return evSummary_; }
   
   //write mode
-  bool initTree(TTree *t);
+  bool initTree(TTree *t,bool needsToRecreate=true);
   void fillTree();
 
   //read mode
   bool attachToTree(TTree *t);
   void getEntry(int ientry) { if(t_) t_->GetEntry(ientry); }
   int getEntries() { return (t_ ? t_->GetEntriesFast() : 0); }
+
+  //getter
+  TTree *getTree() { return t_; }
 
  private:
 

@@ -38,7 +38,7 @@ public:
   void endLuminosityBlock(const edm::LuminosityBlock & iLumi, const edm::EventSetup & iSetup);
   
 private:
-
+  std::vector<std::string> gammaTriggers_;
   std::map<std::string, edm::ParameterSet> objConfig_;
   ZZ2l2nuSummaryHandler summaryHandler_;
   TSelectionMonitor controlHistos_;
@@ -60,9 +60,9 @@ GammaPlusJetsEventAnalyzer::GammaPlusJetsEventAnalyzer(const edm::ParameterSet &
     std::string objects[]={"Vertices","Photons","Jets","MET","Trigger"};
     for(size_t iobj=0; iobj<sizeof(objects)/sizeof(std::string); iobj++)
       objConfig_[ objects[iobj]] = iConfig.getParameter<edm::ParameterSet>(objects[iobj]);
-    
-    //book histograms
+    gammaTriggers_ =objConfig_["Trigger"].getParameter< std::vector<std::string> >("gammaTriggers");
 
+    //book histograms
     controlHistos_.addHistogram("cutflow",";Selection step; Events",5,0,5);
     TH1 *h=controlHistos_.getHisto("cutflow");
     h->GetXaxis()->SetBinLabel(1,"Reco");
@@ -187,22 +187,25 @@ void GammaPlusJetsEventAnalyzer::analyze(const edm::Event &event, const edm::Eve
     const edm::TriggerNames &triggerNames = event.triggerNames( *triggerBitsH );
     for(int itrig=0; itrig<ntrigs; itrig++)
       {
-	//require only one photon triggering
-	std::string trigName = triggerNames.triggerName(itrig);
-	size_t found = trigName.find("Photon");
-	if( found == std::string::npos ) continue;
-	size_t foundDouble = trigName.find("Double");
-	if( foundDouble != std::string::npos ) continue;
-	if(trigName.find("Mu") != std::string::npos) continue;
-	if(trigName.find("SC") != std::string::npos) continue;
-	if(trigName.find("Ele") != std::string::npos) continue;
-	found = trigName.find("Photon",found+1,6);
-	if( found != std::string::npos ) continue;
-
 	//check if the trigger fired
 	if( !triggerBitsH->wasrun(itrig) ) continue;
         if( triggerBitsH->error(itrig) ) continue;
         if( !triggerBitsH->accept(itrig) ) continue;
+
+	//now check if trigger is to be kept
+	std::string trigName = triggerNames.triggerName(itrig);
+	cout << trigName << endl;
+	if( trigName.find("Photon") == std::string::npos ) continue;
+
+	bool keepTrigger(false);
+	for(std::vector<std::string>::iterator tIt = gammaTriggers_.begin(); tIt != gammaTriggers_.end(); tIt++)
+	  {
+	    if(trigName.find(*tIt) == std::string::npos) continue;
+	    keepTrigger=true;
+	    break;
+	  }
+	if(!keepTrigger) continue;
+
 	
 	TString fireTrigger(trigName);
 	TObjArray *tkns=fireTrigger.Tokenize("_");

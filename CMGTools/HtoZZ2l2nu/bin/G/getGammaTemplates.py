@@ -52,7 +52,7 @@ for v in variables :
 
         iGammaMetInc = f.Get('proc_1/'+c+'_'+v+'_1')
         iGammaMetInc.SetDirectory(0)
-        gammaTemplate.Add(iGammaMetInc,catNorms[icat]) 
+        gammaTemplate.Add(iGammaMetInc,catNorms[icat]/iGammaMetInc.Integral()) 
         
         iscat=0
         for sc in subcats:

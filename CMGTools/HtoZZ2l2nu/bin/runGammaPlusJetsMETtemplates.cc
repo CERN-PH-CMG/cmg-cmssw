@@ -75,7 +75,7 @@ int main(int argc, char* argv[])
   //trigger categories
   Int_t photoncats[]={0,20,30,50,60,70,75,125};
   const size_t nPhotonCats=sizeof(photoncats)/sizeof(Int_t);
-  for(size_t icat=0; icat<nPhotonCats; icat++)
+  for(size_t icat=1; icat<nPhotonCats; icat++)
     {
       TString subcat("photon"); subcat+=photoncats[icat];
       controlHistos.initMonitorForStep(subcat);
@@ -156,11 +156,10 @@ int main(int argc, char* argv[])
 	}
 
       //minimum threshold
-      if(phys.gamma.pt()<20) continue;
+      if(gamma.pt()<20) continue;
+      if(fabs(gamma.eta())>2.5) continue;
 
       evcat += triggerThr;
-
-      if(fabs(gamma.eta())>2.5) continue;
 
       int jetbin(0);
       TString subcat("eq0jets");
