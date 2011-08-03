@@ -81,7 +81,7 @@ TStyle *setStyle(bool gridOn) {
   tdrStyle->SetPadTopMargin(0.05);
   tdrStyle->SetPadBottomMargin(0.13);
   tdrStyle->SetPadLeftMargin(0.16);
-  tdrStyle->SetPadRightMargin(0.02);
+  tdrStyle->SetPadRightMargin(0.1);
 
   // For the Global title:
   tdrStyle->SetOptTitle(0);
@@ -99,8 +99,8 @@ TStyle *setStyle(bool gridOn) {
 
   // For the axis titles:
   tdrStyle->SetTitleColor(1, "XYZ");
-  tdrStyle->SetTitleFont(62, "XYZ");
-  tdrStyle->SetTitleSize(0.06, "XYZ");
+  tdrStyle->SetTitleFont(42, "XYZ");
+  tdrStyle->SetTitleSize(0.05, "XYZ");
   // tdrStyle->SetTitleXSize(Float_t size = 0.02); // Another way to set the size?
   // tdrStyle->SetTitleYSize(Float_t size = 0.02);
   tdrStyle->SetTitleXOffset(0.8);
@@ -233,36 +233,33 @@ void fixExtremities(TH1 *h,bool addOverflow, bool addUnderflow)
 //
 void formatForCmsPublic(TPad * c, TLegend *leg, TString title, int nsamp, float legx, float legy, float legw, float legh, TString legopt)
 {
-  // float legx1=0.56, legx2=0.91;
-  float legx1=legx, legx2=legx+legw;
-  // float lowy = 0.91;
-  float legy1 = legy, legy2 = legy;
   if(title.Length()!=0)
     {
+      TPaveText *pave = new TPaveText(0.5,0.96,1.0,0.99,"NDC");
+      pave->SetBorderSize(0);
+      pave->SetFillStyle(0);
+      pave->SetTextAlign(32);
+      pave->SetTextFont(42);
+
       TObjArray * tokens = title.Tokenize("\\\\");
       int nt = tokens->GetEntries();
-      // legy1 -= 0.05*(float)nt;
-      legy1 -= legh*(float)nt;
-      TPaveText *pave = new TPaveText(legx1,legy1,legx2,legy2,"NDC");
-      pave->SetLineColor(kWhite);
-      for(int it=0; it<nt; ++it) {
-	TObjString * t = (TObjString *)tokens->At(it);
-	TText *l1 = pave->AddText(t->GetString());
-	l1->SetTextAlign(11);
-      }
-      pave->SetBorderSize(1);  
-      pave->SetLineWidth(1); 
-      pave->SetFillColor(kWhite);
-      pave->SetFillStyle(0);      
+      for(int it=0; it<nt; ++it) 
+	{
+	  TObjString * t = (TObjString *)tokens->At(it);
+	  TText *l1 = pave->AddText(t->GetString());
+	}
+
       pave->Draw("same");
     }
-  
-  if(leg==0) leg = ((TPad *)c)->BuildLegend(legx1,legy1-nsamp*legh,legx2,legy1);
+
+  float legx1=legx, legx2=legx+legw;
+  float legy1 = legy-legh*(float)(nsamp), legy2 = legy;  
+  if(leg==0) leg = ((TPad *)c)->BuildLegend(legx,legy1,legx2,legy2);
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
   leg->SetFillStyle(0);
   leg->SetLineWidth(1);
-  //  leg->SetTextFont(41);
+  leg->SetTextFont(42);
   leg->SetEntryOption(legopt);
   leg->SetX1NDC(legx1);
   leg->SetY1NDC(legy1-nsamp*legh);

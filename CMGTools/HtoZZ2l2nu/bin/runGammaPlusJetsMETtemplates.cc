@@ -44,25 +44,25 @@ int main(int argc, char* argv[])
   TString url=runProcess.getParameter<std::string>("input");
   TString outdir=runProcess.getParameter<std::string>("outdir");
   bool isMC = runProcess.getParameter<bool>("isMC");
-  //bool useFitter = runProcess.getParameter<bool>("useFitter");
 
   int evStart=runProcess.getParameter<int>("evStart");
   int evEnd=runProcess.getParameter<int>("evEnd");
   TString dirname = runProcess.getParameter<std::string>("dirName");
 
-  TString etaFileName = runProcess.getParameter<std::string>("etaResolFileName"); gSystem->ExpandPathName(etaFileName);
-  JetResolution stdEtaResol(etaFileName.Data(),false);
-  TString phiFileName = runProcess.getParameter<std::string>("phiResolFileName"); gSystem->ExpandPathName(phiFileName);
-  JetResolution stdPhiResol(phiFileName.Data(),false);
-  TString ptFileName  = runProcess.getParameter<std::string>("ptResolFileName");  gSystem->ExpandPathName(ptFileName);
-  JetResolution stdPtResol(ptFileName.Data(),true);
-  TString uncFile =  runProcess.getParameter<std::string>("jesUncFileName"); gSystem->ExpandPathName(uncFile);
-  JetCorrectionUncertainty jecUnc(uncFile.Data());
-  jet::UncertaintyComputer jcomp(&stdPtResol,&stdEtaResol,&stdPhiResol,&jecUnc);
+  TString gammaPtWeightsFile =  runProcess.getParameter<std::string>("weightsFile"); gSystem->ExpandPathName(gammaPtWeightsFile);
+  TH1D *wgtsH=0;
+  TFile *fwgt=TFile::Open(gammaPtWeightsFile);
+  if(fwgt)
+    {
+      wgtsH = (TH1D *)fwgt->Get("gammaptweight");
+      wgtsH->SetDirectory(0);
+      fwgt->Close();
+      cout << "Gamma Pt will be reweighted using distribution found @ " << gammaPtWeightsFile << endl;
+    }
 
   //control Histos
   SelectionMonitor controlHistos;
-  controlHistos.addHistogram( new TH1D ("qt", ";p_{T}^{#gamma} [GeV/c];Events", 100,0,250) );
+  controlHistos.addHistogram( new TH1D ("qt", ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", 200,0,500) );
   controlHistos.addHistogram( new TH1F ("metoverqt", ";type I E_{T}^{miss}/p_{T}^{#gamma};Events", 100,0,2.5) );
   controlHistos.addHistogram( new TH1F ("met", ";type-I E_{T}^{miss} [GeV];Events", 100,0,200) );  
   controlHistos.addHistogram( new TH1F ("redmet", ";red-E_{T}^{miss} [GeV];Events", 100,0,200) );  
@@ -74,16 +74,6 @@ int main(int argc, char* argv[])
   
   //trigger categories
   Int_t photoncats[]={0,20,30,50,60,70,75,125};
-
-  //template reweighting
-  //  double w20[]={0.7748116,0.9336538,1.068044,1.545238};
-//   double w30[]={0.160762,3.29482,6.62396,12.3574};
-//   double w50[]={0.0822076,1.90228,4.71945,8.07962};
-//   double w60[]={0.148545,1.15286,1.63573,1.62557};
-//   double w70[]={0.0705784,1.33115,2.87943,7.37565};
-//   double w75[]={0.054427,1.23829,2.64414,4.97387};
-//   double w125[]={0.0126266,0.80794,1.79493,4.05077};
-
   const size_t nPhotonCats=sizeof(photoncats)/sizeof(Int_t);
   for(size_t icat=0; icat<nPhotonCats; icat++)
     {
@@ -139,7 +129,6 @@ int main(int argc, char* argv[])
 	  gamma=phys.gamma;
 	  
 	  triggerThr=(ev.cat-22)/1000;
-	  if(triggerThr==70) triggerThr=60;
 	  trigList.insert(triggerThr);
 	  
 	  bool rejectEvent(false);
@@ -153,6 +142,7 @@ int main(int argc, char* argv[])
       else
 	{
 	  gamma=phys.leptons[0]+phys.leptons[1];
+	  
 	  //find the trigger - threshold category (assume 100% efficiency...) 
 	  if(gamma.pt()>=photoncats[nPhotonCats-1]) triggerThr=photoncats[nPhotonCats-1];
 	  else
@@ -164,6 +154,10 @@ int main(int argc, char* argv[])
 	      triggerThr=photoncats[icat];
 	    }
 	}
+
+      //minimum threshold
+      if(phys.gamma.pt()<20) continue;
+
       evcat += triggerThr;
 
       if(fabs(gamma.eta())>2.5) continue;
@@ -177,29 +171,19 @@ int main(int argc, char* argv[])
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
 	njets30 += (phys.jets[ijet].pt()>30);
     
-      //reweight to reproduce jet multiplicity
-      if(isGammaEvent)
+      //reweight to reproduce pt weight
+      double ptweight(1.0);
+      if(isGammaEvent && wgtsH)
  	{
-// 	  if(phys.jets.size()==1 && triggerThr==20)
-// 	    {
-// 	      Int_t ibin= controlHistos.getHisto("qt","all")->GetXaxis()->FindBin( gamma.pt() );
-// 	      ibin -= 9;
-// 	      cout << ibin << " " << gamma.pt() << endl;
-// 	      if(ibin>=0) weight *= w20[ibin];
-//   }
+	  //take the last bin weight if pT>max available
+	  for(int ibin=1; ibin<=wgtsH->GetXaxis()->GetNbins(); ibin++)
+	    {
+	      if(gamma.pt()<wgtsH->GetXaxis()->GetBinLowEdge(ibin) ) break;
+	      ptweight = wgtsH->GetBinContent(ibin);
+	    }
 	}
-
-// 	  if(phys.jets.size()>2) { jetbin=3; } 
-// 	  if(triggerThr==20) weight *= w20[jetbin];
-// 	  if(triggerThr==30) weight *= w30[jetbin];
-// 	  if(triggerThr==50) weight *= w50[jetbin];
-// 	  if(triggerThr==60) weight *= w60[jetbin];
-// 	  if(triggerThr==70) weight *= w70[jetbin];
-// 	  if(triggerThr==75) weight *= w75[jetbin];
-// 	  if(triggerThr==125) weight *= w125[jetbin];
-// 	}
+      weight *= ptweight;
       
-
       //jet/met kinematics and systematic variations
       LorentzVector met=phys.met[0];
       LorentzVectorCollection jetsp4;
@@ -210,48 +194,16 @@ int main(int argc, char* argv[])
 	  if(fabs(dphi)<fabs(mindphijetmet)) mindphijetmet=dphi;
 	  jetsp4.push_back( phys.jets[ijet] );
 	}
-      /*
-	jcomp.compute(jetsp4,phys.met[0]);
-	LorentzVector metJER=jcomp.getVariedMet(jet::UncertaintyComputer::JER);
-	LorentzVectorCollection jetsJER = jcomp.getVariedJets(jet::UncertaintyComputer::JER);
-	LorentzVector metJESdown=jcomp.getVariedMet(jet::UncertaintyComputer::JES_DOWN);
-	LorentzVectorCollection jetsJESdown=jcomp.getVariedJets(jet::UncertaintyComputer::JES_DOWN);
-	LorentzVector metJESup=jcomp.getVariedMet(jet::UncertaintyComputer::JES_UP);
-	LorentzVectorCollection jetsJESup=jcomp.getVariedJets(jet::UncertaintyComputer::JES_UP);
-      */
 
       //redmet
       rmetComp.compute(gamma,0,nullP4,0, jetsp4, met, true );
       double redmet = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
       double redmetL = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
       double redmetT = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
-      //       int rMetCateg = rmetComp.getEventCategory();
-
-      //systematic variations
-      /*
-	rmetComp.compute(phys.leptons[0],phys.leptons[0].info[0],phys.leptons[1], phys.leptons[1].info[0], jetsJER, metJER );
-	double minmetJER = rmetComp.reducedMET(ReducedMETComputer::MINIMIZED);
-	double redmetJER = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-	double projMetJER = pmetComp.compute(phys.leptons[0], phys.leptons[1], metJER );
-	
-	rmetComp.compute(phys.leptons[0],phys.leptons[0].info[0],phys.leptons[1], phys.leptons[1].info[0], jetsJESup, metJESup );
-	double minmetJESup = rmetComp.reducedMET(ReducedMETComputer::MINIMIZED);
-	double redmetJESup = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-	double projMetJESup = pmetComp.compute(phys.leptons[0], phys.leptons[1], metJESup );
-	
-	rmetComp.compute(phys.leptons[0],phys.leptons[0].info[0],phys.leptons[1], phys.leptons[1].info[0], jetsJESdown, metJESdown );
-	double minmetJESdown = rmetComp.reducedMET(ReducedMETComputer::MINIMIZED);
-	double redmetJESdown = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-	double projMetJESdown = pmetComp.compute(phys.leptons[0], phys.leptons[1], metJESdown );
-      */
 
       //fill control histograms
       TString cats[]={"all",evcat};
       TString subCats[]={"",subcat};
-      //if(rMetCateg==ReducedMETComputer::COLLIMATED) topCats.push_back("cat1");
-      //if(rMetCateg==ReducedMETComputer::OPENANGLE) topCats.push_back("cat2");
-      //if(projMetCateg==ProjectedMETComputer::OPENANGLE) topCats.push_back("cat1");
-      //if(projMetCateg==ProjectedMETComputer::COLLIMATED) topCats.push_back("cat2");
       for(size_t ic=0; ic<sizeof(cats)/sizeof(TString); ic++)
 	{
 	  for(size_t isc=0; isc<sizeof(subCats)/sizeof(TString); isc++)
