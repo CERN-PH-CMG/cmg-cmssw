@@ -41,7 +41,7 @@ BaseVertexSelection = cms.PSet( source = cms.InputTag("offlinePrimaryVertices"),
                                 )
 
 # base values for muon selection ----------------------------------------------
-BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlow"),#TriggerMatch"),#selectedPatMuonsPFlow"),
+BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlow"),
                                minPt = cms.double(5),
                                maxEta = cms.double(2.4),
                                maxTrackChi2 = cms.double(10),
@@ -73,7 +73,7 @@ BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectronsPF
                                    applyConversionVeto = cms.bool(True),
                                    maxDistToBeamSpot=cms.double(0.04),
                                    maxTrackLostHits = cms.int32(1),
-                                   id = cms.string("eidTight"),
+                                   id = cms.string("eidTightMC"),
                                    maxRelIso = cms.double(1.0),
                                    minDeltaRtoMuons = cms.double(0.1)
                                    )

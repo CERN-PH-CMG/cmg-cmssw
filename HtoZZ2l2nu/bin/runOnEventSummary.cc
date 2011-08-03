@@ -33,7 +33,7 @@ using namespace std;
 //
 int main(int argc, char* argv[])
 {
- // load framework libraries
+  // load framework libraries
   gSystem->Load( "libFWCoreFWLite" );
   AutoLibraryLoader::enable();
 
@@ -70,21 +70,24 @@ int main(int argc, char* argv[])
   TransverseMassComputer mtComp;
   //control Histos
   SelectionMonitor controlHistos;
-  TH1F *h=new TH1F ("eventflow", ";Step;Events", 5,0,5);
+  TH1F *h=new TH1F ("eventflow", ";Step;Events", 6,0,6);
   h->GetXaxis()->SetBinLabel(2,"|M-M_{Z}|<15");
   h->GetXaxis()->SetBinLabel(3,"3^{rd}-lepton veto");
   h->GetXaxis()->SetBinLabel(4,"no SSVHEM tags");
   h->GetXaxis()->SetBinLabel(5,"red-E_{T}^{miss}>39");
+  h->GetXaxis()->SetBinLabel(6,"red-E_{T}^{miss}>57");
   controlHistos.addHistogram( h );
   
   controlHistos.addHistogram( new TH1F ("nbtags", ";b-tag multiplicity (SSVHEM);Events", 4,0,4) );  
 
   controlHistos.addHistogram( new TProfile ("metprof", ";Pileup events;E_{T}^{miss}", 15,0,15) ); 
   controlHistos.addHistogram( new TProfile ("redmetprof", ";Pileup events;red-E_{T}^{miss}", 15,0,15) );  
+  controlHistos.addHistogram( new TProfile ("superredmetprof", ";Pileup events;min red-( E_{T}^{miss},track-E_{T}^{miss} )", 15,0,15) );  
    controlHistos.addHistogram( new TProfile ("projmetprof", ";Pileup events;projected E_{T}^{miss}", 15,0,15) );  
   controlHistos.addHistogram( new TProfile ("minmetprof", ";Pileup events;min-E_{T}^{miss}", 15,0,15) );  
   controlHistos.addHistogram( new TH2F ("metvspu", ";Pileup events;E_{T}^{miss}", 15,0,15,100,0,500) );  
   controlHistos.addHistogram( new TH2F ("redmetvspu", ";Pileup events;red-E_{T}^{miss}", 15,0,15,100,0,500) );  
+  controlHistos.addHistogram( new TH2F ("superredmetvspu", ";Pileup events;min red-( E_{T}^{miss},track-E_{T}^{miss} )", 15,0,15,100,0,500) );  
   controlHistos.addHistogram( new TH2F ("minmetvspu", ";Pileup events;min-E_{T}^{miss}", 15,0,15,100,0,500) );  
   controlHistos.addHistogram( new TH2F ("projmetvspu", ";Pileup events;projected E_{T}^{miss}", 15,0,15,100,0,500) );  
 
@@ -260,6 +263,7 @@ int main(int argc, char* argv[])
       double redmetL = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
       double redmetT = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       double redmet = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+
       int rMetCateg = rmetComp.getEventCategory();
       double deltaDileptonL = rmetComp.dileptonPtCorrComponents().second;
       double deltaDileptonT = rmetComp.dileptonPtCorrComponents().first;
@@ -377,6 +381,8 @@ int main(int argc, char* argv[])
 		  controlHistos.fillProfile("redmetprof", ctf,ev.ngenITpu,redmet);
 		  controlHistos.fill2DHisto("redmetvspu", ctf,ev.ngenITpu,redmet);
  		  controlHistos.fillHisto("superredmet", ctf,superredmet,weight);	      
+ 		  controlHistos.fillHisto("superredmetprof", ctf,ev.ngenITpu,superredmet,weight);	      
+ 		  controlHistos.fillHisto("superredmetvspu", ctf,ev.ngenITpu,superredmet,weight);	      
 
  		  controlHistos.fillHisto("redmetL", ctf,redmetL,weight);	      
  		  controlHistos.fillHisto("redmetT", ctf,redmetT,weight);	      
@@ -397,6 +403,7 @@ int main(int argc, char* argv[])
 		  //red-met cut
 		  if(redmet<39)  continue;
 		  controlHistos.fillHisto("eventflow",ctf,4,weight);
+		  if(redmet>57)  controlHistos.fillHisto("eventflow",ctf,5,weight);
 
 		  controlHistos.fillHisto("metvszpt", ctf,zvv.pt(),zll.pt(),weight);
 		  controlHistos.fillHisto("projmetvszpt", ctf,projMet,zll.pt(),weight);

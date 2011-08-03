@@ -8,7 +8,7 @@ import glob
     
 import ROOT
 ROOT.gSystem.Load('${CMSSW_BASE}/lib/${SCRAM_ARCH}/libCMGToolsHtoZZ2l2nu.so')
-from ROOT import formatPlot, setStyle, showPlots, formatForCmsPublic, getNewCanvas, showMCtoDataComparison, getPlotAsTable, showPlotsAndMCtoDataComparison
+from ROOT import TFile, formatPlot, setStyle, showPlots, formatForCmsPublic, getNewCanvas, showMCtoDataComparison, getPlotAsTable, showPlotsAndMCtoDataComparison
 
 """
 Converts ROOT constant to int
@@ -267,14 +267,14 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
             plotsToDisplay[chtag]=[]
             plotsToDisplay[chtag].append(pname)
             
-        plotLabel = generalLabel + '\\' #+ chtag
-        if(pname.find('eq0jets')>0): plotLabel += '=0 jets' 
-        elif(pname.find('eq1jets')>0): plotLabel += '=1 jet'
-        elif(pname.find('geq2jets')>0): plotLabel += '#geq 2 jets'
-        elif(pname.find('eq0btags')>0): plotLabel += '=0 b-tags'
-        elif(pname.find('eq1btags')>0): plotLabel += '=1 b-tags'
-        elif(pname.find('geq2btags')>0): plotLabel += '#geq 2 b-tags'
-        else : plotLabel += 'All events'
+        plotLabel = generalLabel # + '\\' + chtag
+#        if(pname.find('eq0jets')>0): plotLabel += '=0 jets' 
+#        elif(pname.find('eq1jets')>0): plotLabel += '=1 jet'
+#        elif(pname.find('geq2jets')>0): plotLabel += '#geq 2 jets'
+#        elif(pname.find('eq0btags')>0): plotLabel += '=0 b-tags'
+#        elif(pname.find('eq1btags')>0): plotLabel += '=1 b-tags'
+#        elif(pname.find('geq2btags')>0): plotLabel += '#geq 2 b-tags'
+#        else : plotLabel += 'All events'
         
         c.Clear()
         leg=showPlotsAndMCtoDataComparison(c,stack,spimpose,data)
@@ -407,8 +407,10 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
     for proc in procList :
 
         #run over processes
+        iprocess=0
         for desc in proc[1] :
-
+            iprocess=iprocess+1
+            
             procplots=[]
             procplotstitles=[]
             isdata = getByLabel(desc,'isdata',False)
@@ -439,20 +441,20 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
                 if(plots==None):continue
                 if(len(plots)==0): continue
 
-                samplehtml+="<tr><td>"+dtag+"</td>"
-                samplehtml+="<td>"+str(getByLabel(d,"xsec",1)) + "x" + str(getByLabel(d,"br",1)) + str(getByLabel(d,"sfactor",1)) + "</td>"
-                samplehtml+="<td><small>" + getByLabel(d,'dset','n/a') + "</small></td></tr>\n" 
-
                 #compute the normalization
                 weight=1
                 absNorm=False
                 sfactor = getByLabel(d,'sfactor',1)
                 xsec = getByLabel(d,'xsec',-1)
                 br = getByLabel(d,'br',[])
+                brprod=1.0
                 if(xsec>0 and not isdata) :
-                    brprod=1.0
                     for ibr in br :  brprod = brprod*ibr
                     weight = integratedLumi*sfactor*xsec*brprod
+
+                samplehtml+="<tr><td>"+dtag+"</td>"
+                samplehtml+="<td>"+str(xsec) + "x" +str(brprod) + "x" + str(sfactor) + "</td>"
+                samplehtml+="<td><small>" + getByLabel(d,'dset','n/a') + "</small></td></tr>\n" 
 
                 #book keep the result
                 iplot=0
@@ -461,7 +463,7 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
                     #create the base plot for this sample if non existing
                     if(len(procplots)<=iplot):
                         procplotstitles.append( p[1].GetTitle() )
-                        newname=p[1].GetName()+'_'+str(len(stackplots))
+                        newname=p[1].GetName()+'_'+str(iprocess)
                         newplot=p[1].Clone( newname )
                         newplot.Reset('ICE')
                         newplot.SetTitle(tag)
@@ -491,6 +493,14 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
                 else : spimposeplots.append(procplots)
             else : dataplots.append(procplots)
 
+            #save copy in plotter.root
+            pOut = TFile.Open("plotter.root","UPDATE")
+            pOut.cd()
+            pDir = pOut.mkdir( 'proc_'+str(iprocess) )
+            pDir.cd()
+            for i in xrange(0,len(procplots)): procplots[i].Write()
+            pOut.Close()
+            
     showControlPlots(stackplots,spimposeplots,dataplots,plottitles,generalLabel,outputDir,samplehtml)
 
 
@@ -534,6 +544,7 @@ for o,a in opts:
     elif o in('-l'): integratedLumi=float(a)
     elif o in('-o'): outputDir=a
 
+os.system('rm -rf plotter.root')
 
 #run the script
 print ' Integrated lumi is:' + str(integratedLumi) + ' /pb'

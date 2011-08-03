@@ -33,10 +33,10 @@ TLegend *showPlotsAndMCtoDataComparison(TPad *p, TList &stack, TList &spimpose, 
   if(setLogy) subp->SetLogy();
   
   subp=(TPad *)p->cd(2);
-  subp->SetPad(0,0.0,1.0,0.25);
+  subp->SetPad(0,0.0,1.0,0.28);
   subp->SetTopMargin(0);
-  subp->SetBottomMargin(0.3);
-  float yscale = (1.0-0.3)/(0.25-0.0);
+  subp->SetBottomMargin(0.5);
+  float yscale = (1.0-0.3)/(0.28-0);
   showMCtoDataComparison(subp,stack,data,false,yscale);
   
   return leg;
