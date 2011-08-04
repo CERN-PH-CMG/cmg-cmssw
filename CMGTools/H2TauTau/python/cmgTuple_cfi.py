@@ -1,11 +1,10 @@
 import FWCore.ParameterSet.Config as cms
-
-vertexCollection = "offlinePrimaryVertices"
+from CMGTools.H2TauTau.tools import vertexCollection
 
 def configureCmgTuple( process, runOnMC ):
 
     #########
-    process.setName_('PATCMG')    
+    process.setName_('CMG')    
         
     #######################PF2PAT#########################################
     process.load("PhysicsTools.PatAlgos.patSequences_cff")
@@ -80,7 +79,7 @@ def configureCmgTuple( process, runOnMC ):
     process.tauFactory.leptonFactory.vertexCollection = cms.InputTag(vertexCollection)
     process.tauFactory.leptonFactory.vertexType = cms.int32(0) # default is beamspot=1, primVertex=0
     process.tauFactory.leptonFactory.photonsIsoPar.vetoes = cms.VPSet() # remove photon isolation (out of date)
-    process.tauFactory.rhoPFJetsCollection = cms.InputTag("kt6PFJets"+postfixAK5)
+    #process.tauFactory.rhoPFJetsCollection = cms.InputTag("kt6PFJets"+postfixAK5)
     process.cmgTau.cfg = process.tauFactory.clone()
 
     ##patMuons_selectedPatMuonsAK5__PAT
@@ -103,6 +102,11 @@ def configureCmgTuple( process, runOnMC ):
     process.cmgElectron.cfg = process.electronFactory.clone()
     process.cmgElectron.cuts = cms.PSet( pt_default = cms.string(" pt() > 0.0 ")) #remove the vbtf cuts and isolation cuts
     process.electronSequence = cms.Sequence(process.cmgElectron + process.cmgElectronSel) # remove the diElectronSequence otherwise complains about missing cuts
+
+    ###pfJets
+    process.load('CMGTools.Common.jet_cff')
+    #process.pfJetFactory.inputCollection = cms.InputTag("selectedPatJetsAK5")
+    #process.cmgPFJet.cfg = process.pfJetFactory.clone()
 
 
     ##patMETs_patMETsAK5__PAT --> dont know how to configure
@@ -143,10 +147,12 @@ def configureCmgTuple( process, runOnMC ):
                                             +process.tauSequence
                                             +process.muonSequence
                                             +process.electronSequence                                        
+                                            +process.pfJetSequence
                                             +process.pfSimpleMetSequence                                        
 
-                                            +process.cmgLeptonSelMerged
-                                            +process.cmgLeptonSelMergedFilter
+##keep all events to plot generated distributions
+#                                            +process.cmgLeptonSelMerged
+#                                            +process.cmgLeptonSelMergedFilter
                                             )
 
 
@@ -178,21 +184,22 @@ def configureCmgTuple( process, runOnMC ):
     process.out.outputCommands.append( 'keep cmgMuons_cmgMuonSel_*_*')
     process.out.outputCommands.append( 'keep cmgElectrons_cmgElectronSel_*_*')
     process.out.outputCommands.append( 'keep cmgBaseMETs_cmgPFMET_*_*')
+    process.out.outputCommands.append( 'keep cmgPFJets_cmgPFJetSel_*_*')
 
 
 
     ######################################
     ####Gen particles
     ######################################
-#    if runOnMC:
-#        ##recoGenParticles_genParticlesStatus3__PAT
-#        process.load('CMGTools.Common.gen_cff')
-#       # process.genParticleFactory.inputCollection = cms.InputTag("genParticlesStatus3")
-#       # process.cmgGenParticle.cfg = process.genParticleFactory.clone()
-#        process.p += process.genSequence
-#        
-#    if runOnMC:
-#        from CMGTools.Common.eventContent.gen_cff import gen 
-#        process.out.outputCommands.extend( gen )
+    if runOnMC:
+        ##recoGenParticles_genParticlesStatus3__PAT
+        process.load('CMGTools.Common.gen_cff')
+        # process.genParticleFactory.inputCollection = cms.InputTag("genParticlesStatus3")
+        # process.cmgGenParticle.cfg = process.genParticleFactory.clone()
+        process.p += process.genSequence
+        
+    if runOnMC:
+        from CMGTools.Common.eventContent.gen_cff import gen 
+        process.out.outputCommands.extend( gen )
         
 

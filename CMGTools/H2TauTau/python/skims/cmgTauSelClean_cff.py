@@ -22,6 +22,16 @@ tauSelCleanSequence = cms.Sequence(
     +cmgTauSelVertexHistograms
     +cmgTauSelSumPtIsolationHistograms    
     +cmgTauSelCleanHistograms
+
+    +cmgTauSelHistogramsGen
+    +cmgTauSelPtHistogramsGen
+    +cmgTauSelEtaHistogramsGen
+    +cmgTauSelDecayModeFindingHistogramsGen
+    +cmgTauSelAgainstMuonTightHistogramsGen
+    +cmgTauSelAgainstElectronLooseHistogramsGen
+    +cmgTauSelVertexHistogramsGen
+    +cmgTauSelSumPtIsolationHistogramsGen    
+    +cmgTauSelCleanHistogramsGen
     )
 
 #tauSelCleanHistogramsSequence = cms.Sequence(

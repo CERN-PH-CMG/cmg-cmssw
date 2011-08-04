@@ -23,7 +23,7 @@ using namespace std;
 #include <TH1F.h>
 #include <TH2F.h>
 #include <TCanvas.h>
-
+#include <string.h>
 
 PlotDiTaus::PlotDiTaus(TString inputdir):
   inputdir_(inputdir){
@@ -31,27 +31,24 @@ PlotDiTaus::PlotDiTaus(TString inputdir):
   //check if a file exists with the root files to be analyzed
   // Attempt to get the file attributes
   struct stat stFileInfo;
-  if(stat((const char*)(inputdir_+"/ntuplefiles.txt"),&stFileInfo) != 0) {// --> does not exist
-    //will create it, this file can be modfied by hand if one wants to remove a collection for example
-    system(TString("ls ")+inputdir_+" | grep .root | grep cmgTuple_ > "+inputdir_+"/ntuplefiles.txt");
-  }
-  if(stat((const char*)(inputdir_+"/ntuplefiles.txt"),&stFileInfo) != 0) {
-    cout<<"unable to create ntuplefiles.txt in "<<inputdir_<<endl;
+  if(stat((const char*)(inputdir_+"/summary.txt"),&stFileInfo) != 0) {
+    cout<<"did not find summary.txt in "<<inputdir_<<endl;
   }
   //now read in the file names
   ifstream ntuplefiles;
-  ntuplefiles.open((const char*)(inputdir_+"/ntuplefiles.txt"));
+  ntuplefiles.open((const char*)(inputdir_+"/summary.txt"));
   if(ntuplefiles.is_open()){
-    cout<<" opened "<<inputdir_+"/ntuplefiles.txt"<<endl;  
-    while(!ntuplefiles.eof()){
-      TString file;
-      ntuplefiles>>file;
-      if(file != TString("")){
-	cout<<"adding:"<<inputdir_+"/"+file<<endl;
-	filenames_.push_back((std::string)(inputdir_+"/"+file));
+    cout<<" opened "<<inputdir_+"/summary.txt"<<endl;  
+    int good=0; string coll; int evt=0;
+    ntuplefiles>>good>>coll>>evt;
+    while(coll!="total"){
+      if(good){
+	cout<<"adding:"<<coll<<endl;
+	filenames_.push_back(coll);
       }
-    }     
-  } else{cout<<"could not open "<<inputdir_+"/ntuplefiles.txt"<<endl;}
+      ntuplefiles>>good>>coll>>evt;
+    }
+  } else{cout<<"could not open "<<inputdir_+"/summary.txt"<<endl;}
   
 }
 
@@ -72,7 +69,7 @@ void PlotDiTaus::plotDiTau(TString inputtag){
   //loop over events.
   Int_t ievt=0;
   for(ev.toBegin(); !ev.atEnd() ; ++ev, ++ievt){
-    if(ievt%1000==0)cout<<ievt<<" done"<<endl;
+    if(ievt%100==0)cout<<ievt<<" done"<<endl;
     edm::EventBase const & event = ev;
 
     //// loop over particle collection   
