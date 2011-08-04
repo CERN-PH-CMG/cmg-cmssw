@@ -57,6 +57,8 @@ void TauEfficiencyPlot::plotEfficiencyVsPt(){
   plotframe.GetXaxis()->SetTitle("p_{T}   GeV");
 
   
+
+  ///plot the reconstructed distributions
   Canv.Clear();
   plotframe.GetYaxis()->SetRangeUser(0,HEffnew[0]->GetMaximum()*1.1);
   plotframe.Draw();
@@ -67,6 +69,8 @@ void TauEfficiencyPlot::plotEfficiencyVsPt(){
   }
   Canv.Print(outfile);
 
+
+  ///plot the truth-matched distributions
   Canv.Clear();
   plotframe.GetYaxis()->SetRangeUser(0,HEffnewTrue[0]->GetMaximum()*1.1);
   plotframe.Draw();
@@ -78,15 +82,16 @@ void TauEfficiencyPlot::plotEfficiencyVsPt(){
   Canv.Print(outfile);
 
 
+  ////Determine the efficiencies using the truth-matched distributions
   TH1F* HEffratio[NCMGTAUEFFPLOTS];  
   TH1F HAvgEff("HAvgEff","",ncuts,0.5,ncuts+0.5);
   for(Int_t i=1;i<NCMGTAUEFFPLOTS;i++){
     if(histId_[i]!="-"){
-      HAvgEff.SetBinContent(i,HEffnew[i]->Integral()/HEffnew[0]->Integral());
-      HAvgEff.SetBinError(i,HAvgEff.GetBinContent(i)*sqrt(1.0/HEffnew[i]->Integral()+1.0/HEffnew[0]->Integral()));
+      HAvgEff.SetBinContent(i,HEffnewTrue[i]->Integral()/HEffnewTrue[0]->Integral());
+      HAvgEff.SetBinError(i,HAvgEff.GetBinContent(i)*sqrt(1.0/HEffnewTrue[i]->Integral()+1.0/HEffnewTrue[0]->Integral()));
 
-      HEffratio[i]=new TH1F(*HEffnew[i]);
-      HEffratio[i]->Divide(HEffnew[0]);
+      HEffratio[i]=new TH1F(*HEffnewTrue[i]);
+      HEffratio[i]->Divide(HEffnewTrue[0]);
     }
   }
   
@@ -94,10 +99,13 @@ void TauEfficiencyPlot::plotEfficiencyVsPt(){
 
 
   Canv.Clear();
-  plotframe.SetTitle("Efficiency");
-  plotframe.GetYaxis()->SetRangeUser(0,1.1);
-  plotframe.Draw();
-  for(Int_t i=2;i<NCMGTAUEFFPLOTS;i++){
+  TH1F effplotframe("effplotframe","",80,0,80);
+  effplotframe.SetStats(0);
+  effplotframe.GetXaxis()->SetTitle("p_{T}   GeV");
+  effplotframe.GetYaxis()->SetTitle("Efficiency");
+  effplotframe.GetYaxis()->SetRangeUser(0,1.1);
+  effplotframe.Draw();
+  for(Int_t i=1;i<NCMGTAUEFFPLOTS;i++){
     if(histId_[i]!="-"){
       HEffratio[i]->Draw("hist l same");
     }
