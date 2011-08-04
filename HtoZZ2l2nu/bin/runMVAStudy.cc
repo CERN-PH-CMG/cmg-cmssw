@@ -88,6 +88,9 @@ int main(int argc, char *argv[])
   const unsigned int nVariables = varsList.size();
   std::vector<Double_t> vars( nVariables );
   cout << "==> Start TMVAClassification with " << methodList.size() << " methods and " << nVariables << " variables" << endl;
+
+  //reduced met computer
+  ReducedMETComputer rmetComp(1., 1., 1., 1., 1.);
  
   // counters
   int nsigtrain(0), nsigtest(0), nbkgtrain(0), nbkgtest(0);
@@ -108,13 +111,22 @@ int main(int argc, char *argv[])
 	  if(jetbin != nJetsBin) continue;
 
 	  //the kinematics
-	  LorentzVector zll=phys.leptons[0]+phys.leptons[1];
-	  double dphill=deltaPhi(phys.leptons[0].phi(),phys.leptons[1].phi());
-	  double drll=deltaR(phys.leptons[0],phys.leptons[1]);
-	  double mindrlz = min( deltaR(phys.leptons[0],zll), deltaR(phys.leptons[1],zll) );
-	  double maxdrlz = max( deltaR(phys.leptons[0],zll), deltaR(phys.leptons[1],zll) );
-	  LorentzVector zvv=phys.met[0];
-    
+	  LorentzVector zll = phys.leptons[0]+phys.leptons[1];
+	  double dphill     = deltaPhi(phys.leptons[0].phi(),phys.leptons[1].phi());
+	  double drll       = deltaR(phys.leptons[0],phys.leptons[1]);
+	  double mindrlz    = min( deltaR(phys.leptons[0],zll), deltaR(phys.leptons[1],zll) );
+	  double maxdrlz    = max( deltaR(phys.leptons[0],zll), deltaR(phys.leptons[1],zll) );
+	  LorentzVector zvv = phys.met[0];
+
+	  LorentzVectorCollection jetsp4;
+	  for(size_t ijet=0; ijet<phys.jets.size(); ijet++) jetsp4.push_back( phys.jets[ijet] );
+	  
+	  //reduced met
+	  rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsp4, zvv );
+	  double redmetL = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+	  double redmetT = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+	  double redmet  = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+	  
 	  //update the variables
 	  int varCounter(0);
 	  for(std::vector<std::string>::iterator it = varsList.begin(); it != varsList.end(); it++) 
@@ -126,9 +138,12 @@ int main(int argc, char *argv[])
 	      if(*it=="mindrlz")  vars[varCounter++] = mindrlz;
 	      if(*it=="maxdrlz")  vars[varCounter++] = maxdrlz;
 	      if(*it=="mll")      vars[varCounter++] = zll.mass();
+	      if(*it=="redmet")   vars[varCounter++] = redmet;
+	      if(*it=="redmetL")  vars[varCounter++] = redmetL;
+	      if(*it=="redmetT")  vars[varCounter++] = redmetT;
 	    }
 
-	  double weight=procWeight[iproc];
+	  double weight=procWeight[iproc]*ev.weight;
 	  if(procType[iproc]==1)
 	    {
 	      if ( i%2 == 0 ){ factory->AddSignalTrainingEvent( vars, weight ); nsigtrain++; }

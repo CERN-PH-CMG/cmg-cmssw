@@ -19,6 +19,16 @@ def usage() :
     print ' '
     exit(-1)
 
+"""
+Gets the value of a given item
+(if not available a default value is returned)
+"""
+def getByLabel(desc,key,defaultVal=None) :
+    try :
+        return desc[key]
+    except KeyError:
+        return defaultVal
+
 
 #parse the options 
 try:
@@ -66,18 +76,19 @@ for proc in procList :
     for desc in proc[1] :
 
         #run over items in process
-        isdata=desc['isdata']
-        mctruthmode=0
-        try :
-            mctruthmode=desc['mctruthmode']
-        except :
-            mctruthmode=0
+        isdata=getByLabel(desc,'isdata',False)
+        mctruthmode=getByLabel(desc,'mctruthmode',0)
 
         data = desc['data']
         for d in data :
-            dtag = d['dtag']
+            dtag = getByLabel(d,'dtag','')
+            xsec = getByLabel(d,'xsec',-1)
+            br = getByLabel(d,'br',[])
+            if(xsec>0 and not isdata) :
+                for ibr in br :  xsec = xsec*ibr
+            
             eventsFile=inputdir + '/' + dtag + '.root'
-            sedcmd = 'sed \"s%@input%' + eventsFile +'%;s%@outdir%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;'
+            sedcmd = 'sed \"s%@input%' + eventsFile +'%;s%@outdir%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
             if(len(params)>0) :
                 extracfgs=params.split(' ')
                 for icfg in extracfgs :

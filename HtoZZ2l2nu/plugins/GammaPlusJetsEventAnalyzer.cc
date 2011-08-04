@@ -269,6 +269,7 @@ void GammaPlusJetsEventAnalyzer::analyze(const edm::Event &event, const edm::Eve
 	controlHistos_.fillHisto(reg+"trkiso","isophoton",photon->trkSumPtSolidConeDR04(),weight);
 	controlHistos_.fillHisto(reg+"ecaliso","isophoton",photon->ecalRecHitSumEtConeDR04(),weight);
 	controlHistos_.fillHisto(reg+"hcaliso","isophoton",photon->hcalTowerSumEtConeDR04(),weight);
+	cout << isolPhotons[ipho]->pt() << " ";
 	if(gammaCandidate.size()==0) gammaCandidate.push_back( CandidateWithVertex(isolPhotons[ipho], primVertex) );
 	else
 	  {
@@ -276,6 +277,7 @@ void GammaPlusJetsEventAnalyzer::analyze(const edm::Event &event, const edm::Eve
 	    gammaCandidate[0].first = isolPhotons[ipho];
 	  }
       }
+    cout << "->" << gammaCandidate.size() << endl;
     if(gammaCandidate.size()==0) return;
     controlHistos_.fillHisto("cutflow","photon",3.,weight);
 
@@ -300,19 +302,19 @@ void GammaPlusJetsEventAnalyzer::analyze(const edm::Event &event, const edm::Eve
     edm::Handle<edm::View<reco::Candidate> > hMET;
     event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("source"), hMET);
     reco::CandidatePtr met = hMET->ptrAt(0);
-    edm::Handle< edm::ValueMap<reco::PFMET> > chargedMets;
-    event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("chsource"), chargedMets);
-    LorentzVector chmet(0,0,0,0);
+    edm::Handle< edm::ValueMap<reco::PFMET> > trkMets;
+    event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("trksource"), trkMets);
+    LorentzVector trkmet(0,0,0,0);
     for(size_t ivtx=0; ivtx<hVtx->size(); ivtx++)
       {
 	reco::VertexRef vtxRef(hVtx,ivtx);
 	if(vtxRef->position().z()!=primVertex->position().z()) continue;
-	const reco::PFMET &chpfmet=(*chargedMets)[vtxRef];
-	chmet=LorentzVector(chpfmet.px(),chpfmet.py(),0,chpfmet.pt());
+	const reco::PFMET &chpfmet=(*trkMets)[vtxRef];
+	trkmet=LorentzVector(chpfmet.px(),chpfmet.py(),0,chpfmet.pt());
 	break;
       }
     controlHistos_.fillHisto("met","isophoton",met->pt(),weight);
-    controlHistos_.fillHisto("puffomet","isophoton",chmet.pt(),weight);
+    controlHistos_.fillHisto("puffomet","isophoton",trkmet.pt(),weight);
 
     //save summary
     ev.run=event.id().run();
@@ -330,7 +332,7 @@ void GammaPlusJetsEventAnalyzer::analyze(const edm::Event &event, const edm::Eve
     ev.g_iso3 = photon->hcalTowerSumEtConeDR04();
 
     ev.met1_pt=met->pt(); ev.met1_phi=met->phi();
-    ev.met2_pt=chmet.pt(); ev.met2_phi=chmet.phi();
+    ev.met2_pt=trkmet.pt(); ev.met2_phi=trkmet.phi();
 
     ev.vtx_px=primVertex->p4().px();  ev.vtx_py=primVertex->p4().py();  ev.vtx_pz=primVertex->p4().pz();  ev.vtx_en=primVertex->p4().energy(); 
 

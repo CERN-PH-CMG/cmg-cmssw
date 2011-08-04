@@ -27,7 +27,8 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TProfile.h"
-
+#include "TEventList.h"
+ 
 using namespace std;
 
 //
@@ -48,6 +49,7 @@ int main(int argc, char* argv[])
   TString url=runProcess.getParameter<std::string>("input");
   TString outdir=runProcess.getParameter<std::string>("outdir");
   bool isMC = runProcess.getParameter<bool>("isMC");
+  double xsec = runProcess.getParameter<double>("xsec");
   //bool useFitter = runProcess.getParameter<bool>("useFitter");
 
   int evStart=runProcess.getParameter<int>("evStart");
@@ -153,47 +155,32 @@ int main(int argc, char* argv[])
   TransverseMassComputer mtComp;
 
   //open the file and get events tree
+  ZZ2l2nuSummaryHandler evSummaryHandler;
   TFile *file = TFile::Open(url);
   if(file==0) return -1;
   if(file->IsZombie()) return -1;
-  
-  ZZ2l2nuSummaryHandler evSummaryHandler;
   if( !evSummaryHandler.attachToTree( (TTree *)file->Get(dirname) ) ) 
     {
       file->Close();
       return -1;
     }
 
-  //
-  // init summary tree (for unweighted events) 
-  //
-  bool saveSummaryTree = runProcess.getParameter<bool>("saveSummaryTree");
-  TFile *spyFile=0;
-  TDirectory *spyDir=0;
-  ofstream *outf=0;
-  ZZ2l2nuSummaryHandler *spyHandler=0;
-  if(saveSummaryTree)
-    {
-      spyHandler = new ZZ2l2nuSummaryHandler;
-      spyFile = TFile::Open("EventSummaries.root","UPDATE");
-      TString evtag=gSystem->BaseName(url);
-      evtag.ReplaceAll(".root","");
-      spyFile->rmdir(evtag);
-      spyDir = spyFile->mkdir(evtag);
-      TTree *outT = evSummaryHandler.getTree()->CloneTree(0);
-      spyHandler->initTree(outT,false);
-      if(!isMC) outf=new ofstream("highmetevents.txt",ios::app);  
-    }
-  
-  //check run range
-  float rescaleFactor( evEnd>0 ?  float(evSummaryHandler.getEntries())/float(evEnd-evStart) : -1 );
-  if(evEnd<0 || evEnd>evSummaryHandler.getEntries() ) evEnd=evSummaryHandler.getEntries();
+  //check run range to compute scale factor (if not all entries are used)
+  const Int_t totalEntries= evSummaryHandler.getEntries();
+  float rescaleFactor( evEnd>0 ?  float(totalEntries)/float(evEnd-evStart) : -1 );
+  if(evEnd<0 || evEnd>evSummaryHandler.getEntries() ) evEnd=totalEntries;
   if(evStart > evEnd ) 
     {
       file->Close();
-       return -1;
+      return -1;
     }
-  
+
+  //check PU normalized entries 
+  evSummaryHandler.getTree()->Draw(">>elist","normWeight==1");
+  TEventList *elist = (TEventList*)gDirectory->Get("elist");
+  const Int_t normEntries = elist->GetN(); 
+  if(normEntries==0) cout << "[Warning] Normalized PU entries is 0, check if the PU normalization producer was properly run" << endl;
+
   //MC normalization (to 1/pb)
   float cnorm=1.0;
   if(isMC)
@@ -202,7 +189,31 @@ int main(int argc, char* argv[])
       if(cutflowH) cnorm=cutflowH->GetBinContent(1);
       if(rescaleFactor>0) cnorm /= rescaleFactor;
     }
-
+  cout << "xSec x Br=" << xsec << " total entries=" << totalEntries << " normalized PU entries=" << normEntries << " obtained from " << cnorm << " generated events" << endl; 
+    
+  // init summary tree (for unweighted events) 
+  bool saveSummaryTree = runProcess.getParameter<bool>("saveSummaryTree");
+  TFile *spyFile=0;
+  TDirectory *spyDir=0;
+  ofstream *outf=0;
+  ZZ2l2nuSummaryHandler *spyHandler=0;
+  float summaryWeight(1);
+  if(saveSummaryTree && normEntries>0)
+    {
+      summaryWeight = xsec * float(totalEntries) / (cnorm * float(normEntries) );
+      spyHandler = new ZZ2l2nuSummaryHandler;
+      spyFile = TFile::Open("EventSummaries.root","UPDATE");
+      TString evtag=gSystem->BaseName(url);
+      evtag.ReplaceAll(".root","");
+      spyFile->rmdir(evtag);
+      spyDir = spyFile->mkdir(evtag);
+      TTree *outT = evSummaryHandler.getTree()->CloneTree(0);
+      outT->SetDirectory(spyDir);
+      spyHandler->initTree(outT,false);
+  
+      if(!isMC) outf=new ofstream("highmetevents.txt",ios::app);  
+    }
+  
   //run the analysis
   for( int iev=evStart; iev<evEnd; iev++)
     {
@@ -403,11 +414,21 @@ int main(int argc, char* argv[])
 		  // 		      controlHistos.fillHisto("redmetnopu", ctf,redmet);
 		  // 		    }
 		  
+		  bool passMediumRedMet(redmet>39);
+		  bool passTightRedMet(redmet>57);
 		  
+		  //save summary tree now
+		  if(saveSummaryTree && ev.normWeight==1)
+		    {
+		      ev.pass=passMediumRedMet+passTightRedMet;
+		      ev.weight=summaryWeight;		      
+		      spyHandler->fillTree();
+		    }
+	  
 		  //red-met cut
-		  if(redmet<39)  continue;
+		  if(passMediumRedMet)  continue;
 		  controlHistos.fillHisto("eventflow",ctf,4,weight);
-		  if(redmet>57)  controlHistos.fillHisto("eventflow",ctf,5,weight);
+		  if(passTightRedMet)  controlHistos.fillHisto("eventflow",ctf,5,weight);
 
 		  controlHistos.fillHisto("metvszpt", ctf,zvv.pt(),zll.pt(),weight);
 		  controlHistos.fillHisto("projmetvszpt", ctf,projMet,zll.pt(),weight);
@@ -429,10 +450,7 @@ int main(int argc, char* argv[])
  		  controlHistos.fillHisto("finalredmetL", ctf,redmetL,weight);	      
  		  controlHistos.fillHisto("finalredmetT", ctf,redmetT,weight);	      
 		  controlHistos.fillHisto("finalredmetcomps", ctf,redmetL,redmetT,weight);	
-
-		  //save tree
-		  if(saveSummaryTree && ev.normWeight==1) spyHandler->fillTree();
-		    
+    
 		  //debug
 		  if(ic==0 && isc==0 && itc==0 && !isMC && redmet>150)	
 		    {
@@ -473,8 +491,8 @@ int main(int argc, char* argv[])
 			    << "%$\\rho=" << ev.rho << "$% "  << "<br/>" << std::endl;
 
 		      *outf << "------" << endl;
-		    }
-		}
+		    }}
+	      
 	    }
 	}
     }
@@ -487,7 +505,7 @@ int main(int argc, char* argv[])
   gSystem->Exec("mkdir -p " + outUrl);
   outUrl += "/";
   outUrl += gSystem->BaseName(url);
-  cout << outUrl << " " << cnorm << endl;
+  
   TFile *ofile=TFile::Open(outUrl, "recreate");
   TDirectory *baseOutDir=ofile->mkdir("localAnalysis");
   SelectionMonitor::StepMonitor_t &mons=controlHistos.getAllMonitors();
@@ -513,7 +531,6 @@ int main(int argc, char* argv[])
 
         }
     }
-
   ofile->Close();
 
   if(saveSummaryTree)
