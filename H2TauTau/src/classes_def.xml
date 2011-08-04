@@ -1,6 +1,9 @@
 <lcgdict>
 
-  <class name="PlotDiTaus"/>
+ <class name="PlotDiTaus"/>
+ <class name="BaseAnalysis"/>
+ <class name="DiTauAnalysis"/>
+ <class name="Sample"/>
 
 
 </lcgdict>

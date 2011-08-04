@@ -47,17 +47,40 @@ cmgDiTauSelHistograms = cms.EDAnalyzer(
 )
 
 
-cmgDiTauSelChargeHistograms = cms.EDAnalyzer("CmgDiTauHistograms",
-                                       inputCollection = cms.InputTag("cmgDiTauSelCharge"),
-                                       histograms = cmgDiTauSelHistograms.histograms)
+cmgDiTauSelMassHistograms =cmgDiTauSelHistograms.clone()
+cmgDiTauSelMassHistograms.inputCollection = cms.InputTag("cmgDiTauSelMass")
+                                       
 
-cmgDiTauSelMassHistograms = cms.EDAnalyzer("CmgDiTauHistograms",
-                                       inputCollection = cms.InputTag("cmgDiTauSelMass"),
-                                       histograms = cmgDiTauSelHistograms.histograms)
+cmgDiTauSelChargeHistograms =cmgDiTauSelHistograms.clone()
+cmgDiTauSelChargeHistograms.inputCollection = cms.InputTag("cmgDiTauSelCharge")
+                                       
 
+cmgDiTauSelPtHistograms =cmgDiTauSelHistograms.clone()
+cmgDiTauSelPtHistograms.inputCollection = cms.InputTag("cmgDiTauSelPt")
+                                       
 
-cmgDiTauSelCleanHistograms = cms.EDAnalyzer("CmgDiTauHistograms",
-                                          inputCollection = cms.InputTag("cmgDiTauSelCharge"),
-                                          histograms = cmgDiTauSelHistograms.histograms)
+cmgDiTauSelEtaHistograms =cmgDiTauSelHistograms.clone()
+cmgDiTauSelEtaHistograms.inputCollection = cms.InputTag("cmgDiTauSelEta")
+                                       
+
+cmgDiTauSelAgainstMuonHistograms =cmgDiTauSelHistograms.clone()
+cmgDiTauSelAgainstMuonHistograms.inputCollection = cms.InputTag("cmgDiTauSelAgainstMuon")
+                                       
+
+cmgDiTauSelAgainstElectronHistograms =cmgDiTauSelHistograms.clone()
+cmgDiTauSelAgainstElectronHistograms.inputCollection = cms.InputTag("cmgDiTauSelAgainstElectron")
+                                       
+
+cmgDiTauSelSumPtIsolationHistograms =cmgDiTauSelHistograms.clone()
+cmgDiTauSelSumPtIsolationHistograms.inputCollection = cms.InputTag("cmgDiTauSelSumPtIsolation")
+                                       
+
+#cmgDiTauSelHistograms =cmgDiTauSelHistograms.clone()
+#cmgDiTauSelHistograms.inputCollection = cms.InputTag("cmgDiTauSel")
+#                                       
+
+cmgDiTauSelCleanHistograms =cmgDiTauSelHistograms.clone()
+cmgDiTauSelCleanHistograms.inputCollection = cms.InputTag("cmgDiTauSelClean")
+                                          
 
 

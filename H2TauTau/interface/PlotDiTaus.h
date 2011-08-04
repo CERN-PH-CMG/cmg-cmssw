@@ -11,9 +11,9 @@ public:
   
   PlotDiTaus():
     inputdir_(""){
-  };
+  }
   PlotDiTaus(TString inputdir);
-  ~PlotDiTaus(){};
+  ~PlotDiTaus(){}
 
   void plotDiTau(TString inputtag="cmgDiTauSelClean");
   void plotTauE(TString inputtag="cmgTauESelClean");
