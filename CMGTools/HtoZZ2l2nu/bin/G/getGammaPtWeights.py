@@ -1,17 +1,43 @@
 #!/usr/bin/env python
 
 import ROOT
+import os,sys
+import getopt
 
+def usage() :
+    print ' '
+    print 'getGammaPtWeights.py [options]'
+    print '  -i : input file'
+    print ' '
+    
+#parse the options
+try:
+    # retrive command line options
+    shortopts  = "i:h?"
+    opts, args = getopt.getopt( sys.argv[1:], shortopts )
+except getopt.GetoptError:
+    # print help information and exit:
+    print "ERROR: unknown options in argument %s" % sys.argv[1:]
+    usage()
+    sys.exit(1)
+
+inputFile='plotter.root'
+for o,a in opts:
+    if o in("-?", "-h"):
+        usage()
+        sys.exit(1)
+    elif o in('-i'): inputDir = ''
+                        
 ROOT.gSystem.Load('${CMSSW_BASE}/lib/${SCRAM_ARCH}/libCMGToolsHtoZZ2l2nu.so')
 from ROOT import showPlotsAndMCtoDataComparison, formatForCmsPublic, getNewCanvas, setStyle
-
+                                                                     
 #plots to retrieve
-cats=['photon20','photon30','photon50','photon60','photon70','photon75','photon125']
+cats=['photon20','photon30','photon50','photon75','photon90','photon125']
 gammaPt = None
 zPt = None
 
 #open file and get plots
-f = ROOT.TFile.Open("plotter_raw.root")
+f = ROOT.TFile.Open(inputFile)
 for c in cats:
     iGammaPt = f.Get('proc_1/'+c+'_qt_1')
     iZPt = f.Get('proc_2/'+c+'_qt_2')

@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( (TH1D *)(new TH2D ("redmetLvsredmetT", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
   
   //trigger categories
-  Int_t photoncats[]={0,20,30,50,60,70,75,125};
+  Int_t photoncats[]={0,20,30,50,75,90,125};
   const size_t nPhotonCats=sizeof(photoncats)/sizeof(Int_t);
   for(size_t icat=1; icat<nPhotonCats; icat++)
     {
