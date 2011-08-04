@@ -22,6 +22,11 @@ if(not runOnMC ):
     #addLumifilter(process, lumilist )
 
 
+#preselection sequences
+from CMGTools.HtoZZ2l2nu.PreselectionSequences_cff import addPreselectionSequences,addLumifilter
+if(not runOnMC ):
+    addPreselectionSequences(process)
+        
 # pat sequences
 from CMGTools.HtoZZ2l2nu.PatSequences_cff import addPatSequence
 addPatSequence(process,runOnMC,True)
@@ -35,7 +40,10 @@ process.load('CMGTools.HtoZZ2l2nu.PileupNormalizationProducer_cfi')
 process.TFileService = cms.Service("TFileService", fileName = cms.string(outFile) )
 
 # all done, schedule the execution
-process.p = cms.Path( process.startCounter * process.puWeights * process.patDefaultSequence * process.evAnalyzer )
+if(runOnMC):
+    process.p = cms.Path( process.startCounter * process.puWeights * process.patDefaultSequence * process.evAnalyzer )
+else:
+    process.p = cms.Path( process.startCounter * process.preselection * process.puWeights * process.patDefaultSequence * process.evAnalyzer )
     
 # no event output
 del process.outpath

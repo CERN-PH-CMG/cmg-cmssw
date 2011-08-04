@@ -194,7 +194,6 @@ void GammaPlusJetsEventAnalyzer::analyze(const edm::Event &event, const edm::Eve
 
 	//now check if trigger is to be kept
 	std::string trigName = triggerNames.triggerName(itrig);
-	cout << trigName << endl;
 	if( trigName.find("Photon") == std::string::npos ) continue;
 
 	bool keepTrigger(false);
@@ -206,13 +205,14 @@ void GammaPlusJetsEventAnalyzer::analyze(const edm::Event &event, const edm::Eve
 	  }
 	if(!keepTrigger) continue;
 
-	
+	//get the trigger threshold
 	TString fireTrigger(trigName);
 	TObjArray *tkns=fireTrigger.Tokenize("_");
 	if(tkns->GetEntriesFast()<2) continue;
 	TString phoName=((TObjString *)tkns->At(1))->GetString();
 	phoName.ReplaceAll("Photon","");
 	Int_t thr=phoName.Atoi();
+
 	if(thr<maxthr) continue;
 	maxthr=thr;
 	selTrigger=trigName;
