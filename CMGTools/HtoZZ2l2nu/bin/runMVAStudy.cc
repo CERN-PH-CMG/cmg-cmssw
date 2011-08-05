@@ -16,6 +16,7 @@
 
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
+#include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ReducedMETFitter.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ReducedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/TransverseMassComputer.h"
@@ -31,6 +32,12 @@ using namespace std;
 //
 int main(int argc, char *argv[])
 {
+  //init computers
+  ProjectedMETComputer pmetComp;
+  ReducedMETComputer rmetComp(1., 1., 1., 1., 1.);
+  //ReducedMETFitter rmetFitter(runProcess);                                                                                                                                                                                                   
+  TransverseMassComputer mtComp;
+  EventCategory eventClassifComp;
 
   //load fwlite
   gSystem->Load( "libFWCoreFWLite" );
@@ -99,12 +106,9 @@ int main(int argc, char *argv[])
   factory->AddSpectator( "eventCategory" );
 
   const unsigned int nVariables = varsList.size()+1;
-  std::vector<Double_t> vars( nVariables );
+  std::vector<Double_t> tmvaVars( nVariables );
   cout << "==> Start TMVAClassification with " << methodList.size() << " methods x " << evCategories.size() << " categories and " << nVariables-1 << " variables" << endl;
 
-  //reduced met computer
-  ReducedMETComputer rmetComp(1., 1., 1., 1., 1.);
- 
   // counters
   int nsigtrain(0), nsigtest(0), nbkgtrain(0), nbkgtest(0);
   ZZ2l2nuSummaryHandler evSummaryHandler;
@@ -117,58 +121,87 @@ int main(int argc, char *argv[])
 	  evSummaryHandler.getEntry(i);
 	  ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
 	  PhysicsEvent_t phys=getPhysicsEventFrom(ev);
-
+	  LorentzVectorCollection jetsP4;
+	  for(size_t ijet=0; ijet<phys.jets.size(); ijet++) jetsP4.push_back( phys.jets[ijet] );
+	  
 	  //consider only ee/mumu
 	  if(ev.cat!=1 && ev.cat!=2) continue;
 
-	  int eventCategory(ev.jn);
-	  if(eventCategory>=2) eventCategory=2;
-	  //add condition for vbf category
-
-	  //the kinematics
-	  LorentzVector zll = phys.leptons[0]+phys.leptons[1];
-	  double dphill     = deltaPhi(phys.leptons[0].phi(),phys.leptons[1].phi());
-	  double drll       = deltaR(phys.leptons[0],phys.leptons[1]);
-	  double mindrlz    = min( deltaR(phys.leptons[0],zll), deltaR(phys.leptons[1],zll) );
-	  double maxdrlz    = max( deltaR(phys.leptons[0],zll), deltaR(phys.leptons[1],zll) );
-	  LorentzVector zvv = phys.met[0];
-
-	  LorentzVectorCollection jetsp4;
-	  for(size_t ijet=0; ijet<phys.jets.size(); ijet++) jetsp4.push_back( phys.jets[ijet] );
+	  //classify the event
+	  int eventCategory= eventClassifComp.Get(phys);
 	  
-	  //reduced met
-	  rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsp4, zvv );
-	  double redmetL = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-	  double redmetT = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
-	  double redmet  = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+	  //z+met kinematics
+	  LorentzVector zll=phys.leptons[0]+phys.leptons[1];
+	  LorentzVector zvv=phys.met[0];
+	  Float_t dphill     = deltaPhi(phys.leptons[0].phi(),phys.leptons[1].phi());
+	  Float_t detall     = phys.leptons[0].eta()-phys.leptons[1].eta();
+	  Float_t drll       = deltaR(phys.leptons[0],phys.leptons[1]);
+	  Float_t mindrlz    = min( deltaR(phys.leptons[0],zll), deltaR(phys.leptons[1],zll) );
+	  Float_t maxdrlz    = max( deltaR(phys.leptons[0],zll), deltaR(phys.leptons[1],zll) );
+	  Float_t ptl1       = phys.leptons[0].pt();
+	  Float_t ptl2       = phys.leptons[1].pt();
+	  Float_t mtl1       = mtComp.compute(phys.leptons[0],zvv,false);
+	  Float_t mtl2       = mtComp.compute(phys.leptons[1],zvv,false);
+	  Float_t zmass      = zll.mass();
+	  Float_t zpt        = zll.pt();
+	  Float_t zeta       = zll.eta();
+	  Float_t met        = zvv.pt();
+	  Float_t dphizz     = deltaPhi(zll.phi(),zvv.phi());
+	  Float_t mt         = mtComp.compute(zll,zvv,true);
+	  Float_t metoverzpt = met/zpt;
+	  
+	  //redmet
+	  rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsP4, zvv );
+	  // int rMetCateg = rmetComp.getEventCategory();
+	  Float_t redMet         = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+	  Float_t redMetL        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+	  Float_t redMetT        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+	  Float_t redMetoverzpt  = redMet/zpt;
+	  
+	  //projected met
+	  Float_t projMet        = pmetComp.compute(phys.leptons[0], phys.leptons[1], zvv );
+	  Float_t projMetoverzpt = projMet/zpt;
 	  
 	  //update the variables
 	  int varCounter(0);
 	  for(std::vector<std::string>::iterator it = varsList.begin(); it != varsList.end(); it++) 
 	    {
-	      if(*it=="lep1pt")   vars[varCounter++] = phys.leptons[0].pt();
-	      if(*it=="lep2pt")   vars[varCounter++] = phys.leptons[1].pt();    
-	      if(*it=="dphill")   vars[varCounter++] = dphill;
-	      if(*it=="drll")     vars[varCounter++] = drll;
-	      if(*it=="mindrlz")  vars[varCounter++] = mindrlz;
-	      if(*it=="maxdrlz")  vars[varCounter++] = maxdrlz;
-	      if(*it=="mll")      vars[varCounter++] = zll.mass();
-	      if(*it=="redmet")   vars[varCounter++] = redmet;
-	      if(*it=="redmetL")  vars[varCounter++] = redmetL;
-	      if(*it=="redmetT")  vars[varCounter++] = redmetT;
+	      if(*it=="dphill")         tmvaVars[varCounter++]=dphill;
+	      if(*it=="detall")         tmvaVars[varCounter++]=detall;
+	      if(*it=="drll")           tmvaVars[varCounter++]=drll;
+	      if(*it=="mindrlz")        tmvaVars[varCounter++]=mindrlz;
+	      if(*it=="maxdrlz")        tmvaVars[varCounter++]=maxdrlz;
+	      if(*it=="ptl1")           tmvaVars[varCounter++]=ptl1;
+	      if(*it=="ptl2")           tmvaVars[varCounter++]=ptl2;
+	      if(*it=="mtl1")           tmvaVars[varCounter++]=mtl1;
+	      if(*it=="mtl2")           tmvaVars[varCounter++]=mtl2;
+	      
+	      if(*it=="zmass")          tmvaVars[varCounter++]=zmass;
+	      if(*it=="zpt")            tmvaVars[varCounter++]=zpt;
+	      if(*it=="zeta")           tmvaVars[varCounter++]=zeta;
+	      if(*it=="met")            tmvaVars[varCounter++]=met;
+	      if(*it=="dphizz")         tmvaVars[varCounter++]=dphizz;
+	      if(*it=="metoverzpt")     tmvaVars[varCounter++]=metoverzpt;
+	  
+	      if(*it=="redMet")         tmvaVars[varCounter++]=redMet;
+	      if(*it=="redMetL")        tmvaVars[varCounter++]=redMetL;
+	      if(*it=="redMetT")        tmvaVars[varCounter++]=redMetT;
+	      if(*it=="redMetoverzpt")  tmvaVars[varCounter++]=redMetoverzpt;
+	      if(*it=="projMet")        tmvaVars[varCounter++]=projMet;
+	      if(*it=="projMetoverzpt") tmvaVars[varCounter++]=projMetoverzpt;
 	    }
-	  vars[varCounter++] = eventCategory;
+	  tmvaVars[varCounter++] = eventCategory;
 
 	  double weight=procWeight[iproc]*ev.weight;
 	  if(procType[iproc]==1)
 	    {
-	      if ( i%2 == 0 ){ factory->AddSignalTrainingEvent( vars, weight ); nsigtrain++; }
-	      else           { factory->AddSignalTestEvent    ( vars, weight ); nsigtest++; }
+	      if ( i%2 == 0 ){ factory->AddSignalTrainingEvent( tmvaVars, weight ); nsigtrain++; }
+	      else           { factory->AddSignalTestEvent    ( tmvaVars, weight ); nsigtest++; }
 	    }
 	  else if(procType[iproc]==2) 
 	    {
-	      if ( i%2 == 0 ){ factory->AddBackgroundTrainingEvent( vars, weight ); nbkgtrain++; }
-	      else           { factory->AddBackgroundTestEvent    ( vars, weight ); nbkgtest++;  }
+	      if ( i%2 == 0 ){ factory->AddBackgroundTrainingEvent( tmvaVars, weight ); nbkgtrain++; }
+	      else           { factory->AddBackgroundTestEvent    ( tmvaVars, weight ); nbkgtest++;  }
 	    }
 	}
     }
