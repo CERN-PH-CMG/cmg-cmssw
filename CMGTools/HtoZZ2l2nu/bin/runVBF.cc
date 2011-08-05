@@ -72,6 +72,20 @@ int main(int argc, char* argv[])
 
       if(itier)
 	{
+          controlHistos.addHistogram( new TH1D (tiers[itier]+"SelSTD", ";"+tiers[itier]+" Selection;Events", 11, 0.,11.) );
+          controlHistos.addHistogram( new TH1D (tiers[itier]+"SelSTDMet", ";"+tiers[itier]+" red-met;Events", 100, 0.,500.) );
+          controlHistos.addHistogram( new TH1D (tiers[itier]+"SelSTDMT", ";"+tiers[itier]+" MT;Events", 100, 0.,1000.) );
+          controlHistos.addHistogram( new TH1D (tiers[itier]+"SelNEW", ";"+tiers[itier]+" Selection;Events", 11, 0.,11.) );
+          controlHistos.addHistogram( new TH1D (tiers[itier]+"SelNEWMet", ";"+tiers[itier]+" red-met;Events", 100, 0.,500.) );
+          controlHistos.addHistogram( new TH1D (tiers[itier]+"SelNEWMT", ";"+tiers[itier]+" MT;Events", 100, 0.,1000.) );
+          controlHistos.addHistogram( new TH1D (tiers[itier]+"SelNEW2", ";"+tiers[itier]+" Selection;Events", 11, 0.,11.) ); 
+          controlHistos.addHistogram( new TH1D (tiers[itier]+"SelNEW2Met", ";"+tiers[itier]+" red-met;Events", 100, 0.,500.) );
+          controlHistos.addHistogram( new TH1D (tiers[itier]+"SelNEW2MT", ";"+tiers[itier]+" MT;Events", 100, 0.,1000.) );
+          controlHistos.addHistogram( new TH1D (tiers[itier]+"SelNEW3", ";"+tiers[itier]+" Selection;Events", 11, 0.,11.) ); 
+          controlHistos.addHistogram( new TH1D (tiers[itier]+"SelNEW3Met", ";"+tiers[itier]+" red-met;Events", 100, 0.,500.) );
+          controlHistos.addHistogram( new TH1D (tiers[itier]+"SelNEW3MT", ";"+tiers[itier]+" MT;Events", 100, 0.,1000.) );
+
+
 	  controlHistos.addHistogram( new TH1D (tiers[itier]+"mt", ";"+tiers[itier]+" M_{T};Events", 100, 100.,900.) );
 	  controlHistos.addHistogram( new TH1D (tiers[itier]+"prefrecoil", ";"+tiers[itier]+" h_{T};Events", 100,0,200) );
 	  controlHistos.addHistogram( new TH1D (tiers[itier]+"cmmt", ";"+tiers[itier]+" M_{T}(pCM);Events", 100, 100.,900.) );
@@ -160,6 +174,7 @@ int main(int argc, char* argv[])
           controlHistos.addHistogram( new TH1D (tiers[itier]+"VBFmetNM1C", ";E_{T}^{miss};Events", 100,0,500) );
 
 
+          controlHistos.addHistogram( new TH2D (tiers[itier]+"VBFj1j2Phi", ";#phi Jet1;#phi Jet2", 100,-3.5,3.5, 100,-3.5,3.5) );
           controlHistos.addHistogram( new TH1F (tiers[itier]+"VBFl1l2dPhi", ";"+tiers[itier]+"Lepton1-Lepton2 #Delta#phi", 100, -3.5,3.5) );
           controlHistos.addHistogram( new TH1F (tiers[itier]+"VBFl1j1dPhi", ";"+tiers[itier]+"Lepton1-Jet1 #Delta#phi", 100, -3.5,3.5) );
           controlHistos.addHistogram( new TH1F (tiers[itier]+"VBFl2j2dPhi", ";"+tiers[itier]+"Lepton2-Jet2 #Delta#phi", 100, -3.5,3.5) );
@@ -274,7 +289,8 @@ int main(int argc, char* argv[])
 
            
       //redmet
-      rmetComp.compute(phys.leptons[0], phys.leptons[0].ptErr, phys.leptons[1], phys.leptons[1].ptErr, jetsp4, zvv );
+//      rmetComp.compute(phys.leptons[0], phys.leptons[0].ptErr, phys.leptons[1], phys.leptons[1].ptErr, jetsp4, zvv );
+      rmetComp.compute(phys.leptons[0], 0, phys.leptons[1], 0, jetsp4, zvv );
       double rmet = rmetComp.reducedMET(ReducedMETComputer::MINIMIZED);
       double rmetT = rmetComp.reducedMETComponents(ReducedMETComputer::MINIMIZED).first;
       double rmetL = rmetComp.reducedMETComponents(ReducedMETComputer::MINIMIZED).second;      
@@ -285,7 +301,8 @@ int main(int argc, char* argv[])
 			     rmet);
 
 
-      rmetCompVBF.compute(phys.leptons[0], phys.leptons[0].ptErr, phys.leptons[1], phys.leptons[1].ptErr, alljetsp4, zvv );
+//      rmetCompVBF.compute(phys.leptons[0], phys.leptons[0].ptErr, phys.leptons[1], phys.leptons[1].ptErr, alljetsp4, zvv );
+      rmetCompVBF.compute(phys.leptons[0], 0, phys.leptons[1], 0, alljetsp4, zvv );
       double rmetVBF = rmetCompVBF.reducedMET(ReducedMETComputer::MINIMIZED);
       double rmetTVBF = rmetCompVBF.reducedMETComponents(ReducedMETComputer::MINIMIZED).first;
       double rmetLVBF = rmetCompVBF.reducedMETComponents(ReducedMETComputer::MINIMIZED).second;
@@ -458,7 +475,10 @@ int main(int argc, char* argv[])
                controlHistos.fillHisto("recoVBFcmzvvpt",ctf, cm200Zvv.pt(),weight);
             }
 
-            if(PassdEtaCut && PassiMCut && PassBJetVeto && PassJetVeto && PassLeptonIn && PassRedMET){
+//            if(PassdEtaCut && PassiMCut && PassBJetVeto && PassJetVeto && PassLeptonIn && PassRedMET){
+            if(Pass2Jet30){
+               controlHistos.fill2DHisto("recoVBFj1j2Phi",ctf,    alljetsp4[0].phi(),alljetsp4[1].phi(),weight);
+
                controlHistos.fillHisto("recoVBFl1l2dPhi" ,ctf, deltaPhi(phys.leptons[0].phi(),phys.leptons[1].phi()) ,weight);
                controlHistos.fillHisto("recoVBFl1j1dPhi" ,ctf, deltaPhi(phys.leptons[0].phi(),alljetsp4[0].phi()) ,weight);
                controlHistos.fillHisto("recoVBFl2j2dPhi" ,ctf, deltaPhi(phys.leptons[1].phi(),alljetsp4[1].phi()) ,weight);
@@ -473,6 +493,195 @@ int main(int argc, char* argv[])
                controlHistos.fillHisto("recoVBFl2j1Mass" ,ctf, (phys.leptons[1]+alljetsp4[0]).M() ,weight);
                controlHistos.fillHisto("recoVBFj1j2Mass" ,ctf, (alljetsp4[0]+alljetsp4[1]).M() ,weight);
             }
+
+
+            /////////////////////// MAKE YIELDS OF EVENTS
+//          controlHistos.addHistogram( new TH1D (tiers[itier]+"SelSTD", ";"+tiers[itier]+" Selection;Events", 10, 0.,10.) );
+  //        controlHistos.addHistogram( new TH1D (tiers[itier]+"SelNEW", ";"+tiers[itier]+" Selection;Events", 10, 0.,10.) );
+
+
+            controlHistos.fillHisto("recoSelSTD" ,ctf, 0 ,weight);
+            if(phys.leptons[0].pt()>20 && phys.leptons[1].pt()>20){
+               controlHistos.fillHisto("recoSelSTD" ,ctf, 1 ,weight);
+               if(fabs(zll.mass()-91.1876)<15){
+                  controlHistos.fillHisto("recoSelSTD" ,ctf, 2 ,weight);
+                  int NAdditionalLeptons = 0; for(unsigned int i=2;i<phys.leptons.size();i++){if(phys.leptons[i].pt()>10)NAdditionalLeptons++;}
+                  if(NAdditionalLeptons==0){
+                     controlHistos.fillHisto("recoSelSTD" ,ctf, 3 ,weight);
+                     if(zll.pt()>25){
+                        controlHistos.fillHisto("recoSelSTD" ,ctf, 4 ,weight);
+                        int NBJets=0; for(size_t ijet=0; ijet<alljetsp4.size();ijet++){ if(alljetsp4[ijet].pt()>30 && phys.jets[ijet].btag1>2.0)NBJets++; }
+                        if(NBJets==0){
+                           controlHistos.fillHisto("recoSelSTD" ,ctf, 5 ,weight);
+                           float dPhiCut=-1; float METCut=69;  float MTMinCut=216; float MTMaxCut=99999;
+//                           if(higgs.mass()>350){dPhiCut=-1;METCut=141; MTMinCut=336;}
+//                           if(higgs.mass()<350){dPhiCut=0.62;METCut=69; MTMinCut=216;  MTMaxCut=272;}
+                           dPhiCut=-1;METCut=141; MTMinCut=336;
+
+                           float MindPhi=9999; for(size_t ijet=0; ijet<alljetsp4.size();ijet++){ if(alljetsp4[ijet].pt()>30 && fabs(deltaPhi(alljetsp4[ijet].phi(), phys.met[0].phi()))<MindPhi)MindPhi=fabs(deltaPhi(alljetsp4[ijet].phi(), phys.met[0].phi())); }
+                           if(MindPhi>dPhiCut){
+                              controlHistos.fillHisto("recoSelSTD" ,ctf, 6 ,weight);
+                              controlHistos.fillHisto("recoSelSTDMT" ,ctf, transverseMass ,weight);
+
+                              if(transverseMass>MTMinCut && transverseMass<MTMaxCut){
+                                 controlHistos.fillHisto("recoSelSTD" ,ctf, 7 ,weight);
+                                 controlHistos.fillHisto("recoSelSTDMet" ,ctf, phys.met[0].pt() ,weight);
+
+                                 if(phys.met[0].pt()>METCut){
+                                    controlHistos.fillHisto("recoSelSTD" ,ctf, 8 ,weight);
+                                    controlHistos.fillHisto("recoSelSTD" ,ctf, 9 ,weight);
+                                 }
+                              }
+                           }                                                   
+                        }
+                     }
+                  }
+               }
+            }
+
+
+
+            controlHistos.fillHisto("recoSelNEW" ,ctf, 0 ,weight);
+            if(phys.leptons[0].pt()>20 && phys.leptons[1].pt()>20){
+               controlHistos.fillHisto("recoSelNEW" ,ctf, 1 ,weight);
+               if(fabs(zll.mass()-91.1876)<15){
+                  controlHistos.fillHisto("recoSelNEW" ,ctf, 2 ,weight);
+                  int NAdditionalLeptons = 0; for(unsigned int i=2;i<phys.leptons.size();i++){if(phys.leptons[i].pt()>10)NAdditionalLeptons++;}
+                  if(NAdditionalLeptons==0){
+                     controlHistos.fillHisto("recoSelNEW" ,ctf, 3 ,weight);
+                     if(zll.pt()>25){
+                        controlHistos.fillHisto("recoSelNEW" ,ctf, 4 ,weight);
+                        int NBJets=0; for(size_t ijet=0; ijet<alljetsp4.size();ijet++){ if(alljetsp4[ijet].pt()>30 && phys.jets[ijet].btag1>2.0)NBJets++; }
+                        if(NBJets==0){
+                           controlHistos.fillHisto("recoSelNEW" ,ctf, 5 ,weight);
+                           float dPhiCut=-1; float METCut=69;  float MTMinCut=216; float MTMaxCut=99999;
+//                           if(higgs.mass()>350){dPhiCut=-1;METCut=141; MTMinCut=336;}
+//                           if(higgs.mass()<350){dPhiCut=0.62;METCut=69; MTMinCut=216;  MTMaxCut=272;}
+                           dPhiCut=-1;METCut=141; MTMinCut=336;
+
+//                           float MindPhi=9999; for(size_t ijet=0; ijet<alljetsp4.size();ijet++){ if(alljetsp4[ijet].pt()>30 && fabs(deltaPhi(alljetsp4[ijet].phi(), phys.met[0].phi()))<MindPhi)MindPhi=fabs(deltaPhi(alljetsp4[ijet].phi(), phys.met[0].phi())); }
+//                           if(MindPhi>dPhiCut){
+                              controlHistos.fillHisto("recoSelNEW" ,ctf, 6 ,weight);
+                              controlHistos.fillHisto("recoSelNEWMT" ,ctf, transverseMass ,weight);
+
+                              if(transverseMass>MTMinCut && transverseMass<MTMaxCut){
+                                 controlHistos.fillHisto("recoSelNEW" ,ctf, 7 ,weight);
+                                 controlHistos.fillHisto("recoSelNEWMet" ,ctf, rmet ,weight);
+
+                                 if(rmet>METCut){
+                                    controlHistos.fillHisto("recoSelNEW" ,ctf, 8 ,weight);
+                                    controlHistos.fillHisto("recoSelNEW" ,ctf, 9 ,weight);
+                                 }
+                              }
+//                           }
+                        }
+                     }
+                  }
+               }
+            }
+
+
+
+
+
+
+            controlHistos.fillHisto("recoSelNEW2" ,ctf, 0 ,weight);
+            if(phys.leptons[0].pt()>20 && phys.leptons[1].pt()>20){
+               controlHistos.fillHisto("recoSelNEW2" ,ctf, 1 ,weight);
+               if(fabs(zll.mass()-91.1876)<15){
+                  controlHistos.fillHisto("recoSelNEW2" ,ctf, 2 ,weight);
+                  int NAdditionalLeptons = 0; for(unsigned int i=2;i<phys.leptons.size();i++){if(phys.leptons[i].pt()>10)NAdditionalLeptons++;}
+                  if(NAdditionalLeptons==0){
+                     controlHistos.fillHisto("recoSelNEW2" ,ctf, 3 ,weight);
+                     if(zll.pt()>25){
+                        controlHistos.fillHisto("recoSelNEW2" ,ctf, 4 ,weight);
+                        int NBJets=0; for(size_t ijet=0; ijet<alljetsp4.size();ijet++){ if(alljetsp4[ijet].pt()>30 && phys.jets[ijet].btag1>2.0)NBJets++; }
+                        if(NBJets==0){
+                           controlHistos.fillHisto("recoSelNEW2" ,ctf, 5 ,weight);
+                           float dPhiCut=-1; float METCut=69;  float MTMinCut=216; float MTMaxCut=99999;
+//                           if(higgs.mass()>350){dPhiCut=-1;METCut=141; MTMinCut=336;}
+//                           if(higgs.mass()<350){dPhiCut=0.62;METCut=69; MTMinCut=216;  MTMaxCut=272;}
+                           dPhiCut=-1;METCut=141; MTMinCut=336;
+
+                             if(jetsp4.size()==0){METCut=165;}
+                             if(jetsp4.size()==1){METCut=145;}
+                             if(jetsp4.size()>=2){METCut=130;}
+
+
+//                           float MindPhi=9999; for(size_t ijet=0; ijet<alljetsp4.size();ijet++){ if(alljetsp4[ijet].pt()>30 && fabs(deltaPhi(alljetsp4[ijet].phi(), phys.met[0].phi()))<MindPhi)MindPhi=fabs(deltaPhi(alljetsp4[ijet].phi(), phys.met[0].phi())); }
+//                           if(MindPhi>dPhiCut){
+                              controlHistos.fillHisto("recoSelNEW2" ,ctf, 6 ,weight);
+                              controlHistos.fillHisto("recoSelNEW2MT" ,ctf, transverseMass ,weight);
+
+                              if(transverseMass>MTMinCut && transverseMass<MTMaxCut){
+                                 controlHistos.fillHisto("recoSelNEW2" ,ctf, 7 ,weight);
+                                 controlHistos.fillHisto("recoSelNEW2Met" ,ctf, rmet ,weight);
+
+                                 if(rmet>METCut){
+                                    controlHistos.fillHisto("recoSelNEW2" ,ctf, 8 ,weight);
+                                    controlHistos.fillHisto("recoSelNEW2" ,ctf, 9 ,weight);
+                                 }
+                              }
+//                           }
+                        }
+                     }
+                  }
+               }
+            }
+
+
+
+
+            controlHistos.fillHisto("recoSelNEW3" ,ctf, 0 ,weight);
+            if(phys.leptons[0].pt()>20 && phys.leptons[1].pt()>20){
+               controlHistos.fillHisto("recoSelNEW3" ,ctf, 1 ,weight);
+               if(fabs(zll.mass()-91.1876)<15){
+                  controlHistos.fillHisto("recoSelNEW3" ,ctf, 2 ,weight);
+                  int NAdditionalLeptons = 0; for(unsigned int i=2;i<phys.leptons.size();i++){if(phys.leptons[i].pt()>10)NAdditionalLeptons++;}
+                  if(NAdditionalLeptons==0){
+                     controlHistos.fillHisto("recoSelNEW3" ,ctf, 3 ,weight);
+                     if(zll.pt()>25){
+                        controlHistos.fillHisto("recoSelNEW3" ,ctf, 4 ,weight);
+                        int NBJets=0; for(size_t ijet=0; ijet<alljetsp4.size();ijet++){ if(alljetsp4[ijet].pt()>30 && phys.jets[ijet].btag1>2.0)NBJets++; }
+                        if(NBJets==0){
+                           controlHistos.fillHisto("recoSelNEW3" ,ctf, 5 ,weight); 
+                           float dPhiCut=-1; float METCut=69;  float MTMinCut=216; float MTMaxCut=99999;
+//                           if(higgs.mass()>350){dPhiCut=-1;METCut=141; MTMinCut=336;}
+//                           if(higgs.mass()<350){dPhiCut=0.62;METCut=69; MTMinCut=216;  MTMaxCut=272;}
+                           dPhiCut=-1;METCut=141; MTMinCut=336;
+
+                             if(jetsp4.size()==0){METCut=165;}
+                             if(jetsp4.size()==1){METCut=145;}
+                             if(jetsp4.size()>=2){METCut=130;}
+                             if(isVBF){METCut=50;}
+
+
+//                           float MindPhi=9999; for(size_t ijet=0; ijet<alljetsp4.size();ijet++){ if(alljetsp4[ijet].pt()>30 && fabs(deltaPhi(alljetsp4[ijet].phi(), phys.met[0].phi()))<MindPhi)MindPhi=fabs(deltaPhi(alljetsp4[ijet].phi(), phys.met[0].phi())); }
+//                           if(MindPhi>dPhiCut){
+                              controlHistos.fillHisto("recoSelNEW3" ,ctf, 6 ,weight);
+                              controlHistos.fillHisto("recoSelNEW3MT" ,ctf, transverseMass ,weight);
+
+                              if(transverseMass>MTMinCut && transverseMass<MTMaxCut){
+                                 controlHistos.fillHisto("recoSelNEW3" ,ctf, 7 ,weight);
+                                 controlHistos.fillHisto("recoSelNEW3Met" ,ctf, rmet ,weight);
+
+                                 if(rmet>METCut){
+                                    controlHistos.fillHisto("recoSelNEW3" ,ctf, 8 ,weight);
+                                    controlHistos.fillHisto("recoSelNEW3" ,ctf, 9 ,weight);
+                                 }
+                              }
+//                           }
+                        }
+                     }
+                  }
+               }
+            }
+
+
+            ///////////////////////
+
+
+
 
 
 	    //higgs pT
@@ -491,7 +700,7 @@ int main(int argc, char* argv[])
 	    controlHistos.fillHisto("reconjets",ctf, jetsp4.size(),weight);      	    
 	    controlHistos.fillHisto("gennjets",ctf, genjets.size(),weight);    
 	    controlHistos.fillHisto("recomt",ctf, transverseMass,weight);      
-//	    controlHistos.fillHisto("genm",ctf, higgs.mass(),weight);      
+	    controlHistos.fillHisto("genm",ctf, higgs.mass(),weight);      
 
             controlHistos.fill2DHisto("recozllptvszvvpt",ctf, zll.pt(), genzll.pt(),weight);
 
