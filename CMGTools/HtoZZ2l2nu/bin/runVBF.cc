@@ -9,6 +9,7 @@
 #include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
 #include "CMGTools/HtoZZ2l2nu/interface/SelectionMonitor.h"
+#include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
 
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
@@ -390,6 +391,11 @@ int main(int argc, char* argv[])
       if(jetsp4.size()>1)  subcat="geq2jets";
       }
       TString subCats[]={"",subcat};
+
+      EventCategory Categorizer;
+      TString label = Categorizer.GetLabel(phys);
+      printf("%s vs %s\n", ((string)subcat).c_str(), ((string)label).c_str());
+
       
       //subcategory analysis
       for(size_t ic=0; ic<sizeof(cats)/sizeof(TString); ic++)
