@@ -51,10 +51,11 @@ int main(int argc, char *argv[])
   //
   //configure      
   //
-  const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
+  const edm::ParameterSet &cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
+  edm::ParameterSet runProcess = cfg.getParameter<edm::ParameterSet>("tmvaInput");
   std::vector<int> evCategories = runProcess.getParameter<std::vector<int> >("evCategories");
   TString url    = runProcess.getParameter<std::string>("input");
-  TString output = runProcess.getParameter<std::string>("output");
+  TString studyTag = runProcess.getParameter<std::string>("studyTag");
   std::vector<std::string> methodList = runProcess.getParameter<std::vector<std::string> >("methodList");
   std::vector<std::string> varsList = runProcess.getParameter<std::vector<std::string> >("varsList");
   //variables for method definition (for now all methods share the same variables: todo split per category)
@@ -96,12 +97,10 @@ int main(int argc, char *argv[])
   TMVA::Tools::Instance();
 
   //output for TMVA objects
-  TFile* outputFile = TFile::Open( output, "RECREATE" );
+  TFile* outputFile = TFile::Open( studyTag + ".root", "RECREATE" );
 
   //create the factory object. 
-  TString outTag(gSystem->BaseName(output));
-  outTag.ReplaceAll(".root","");
-  TMVA::Factory *factory = new TMVA::Factory( outTag.Data(), outputFile,"!V:!Silent:Color:DrawProgressBar:Transformations=I;D;P;G,D:AnalysisType=Classification" );
+  TMVA::Factory *factory = new TMVA::Factory( studyTag.Data(), outputFile,"!V:!Silent:Color:DrawProgressBar:Transformations=I;D;P;G,D:AnalysisType=Classification" );
   for(std::vector<std::string>::iterator it = varsList.begin(); it != varsList.end(); it++)  factory->AddVariable( *it, *it, "", 'F');
   factory->AddSpectator( "eventCategory" );
 

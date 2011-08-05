@@ -1,11 +1,13 @@
 import FWCore.ParameterSet.Config as cms
 
+from CMGTools.HtoZZ2l2nu.MVAStudyConfig_cfi import *
+
 runProcess = cms.PSet(
     input = cms.string("@input"),
     outdir = cms.string("@outdir"),
     isMC = cms.bool(@isMC),
     xsec = cms.double(@xsec),	
-    saveSummaryTree = cms.bool(True),
+    saveSummaryTree = cms.bool(False),
     weightsFile = cms.string("@weightsFile"),	 
     useFitter=cms.bool(False),	
     evStart = cms.int32(0),
@@ -14,5 +16,7 @@ runProcess = cms.PSet(
     ptResolFileName = cms.string("${CMSSW_RELEASE_BASE}/src/CondFormats/JetMETObjects/data/Spring10_PtResolution_AK5PF.txt"),
     phiResolFileName = cms.string("${CMSSW_RELEASE_BASE}/src/CondFormats/JetMETObjects/data/Spring10_PhiResolution_AK5PF.txt"),
     etaResolFileName = cms.string("${CMSSW_RELEASE_BASE}/src/CondFormats/JetMETObjects/data/Spring10_EtaResolution_AK5PF.txt"),
-    jesUncFileName = cms.string("${CMSSW_RELEASE_BASE}/src/CondFormats/JetMETObjects/data/Spring10_Uncertainty_AK5PF.txt")
+    jesUncFileName = cms.string("${CMSSW_RELEASE_BASE}/src/CondFormats/JetMETObjects/data/Spring10_Uncertainty_AK5PF.txt"),
+    useMVA = cms.bool(@useMVA),	
+    tmvaInput = redMETstudy 	
     )

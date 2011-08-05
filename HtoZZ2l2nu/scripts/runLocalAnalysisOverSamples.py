@@ -89,10 +89,12 @@ for proc in procList :
             
             eventsFile=inputdir + '/' + dtag + '.root'
             sedcmd = 'sed \"s%@input%' + eventsFile +'%;s%@outdir%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
+            if(params.find('@useMVA')<0) : params = '@useMVA=False ' + params
             if(len(params)>0) :
-                extracfgs=params.split(' ')
+                extracfgs = params.split(' ')
                 for icfg in extracfgs :
                     varopt=icfg.split('=')
+                    if(len(varopt)<2) : continue
                     sedcmd += 's%' + varopt[0] + '%' + varopt[1] + '%;'
             sedcmd += '\"' 
             cfgfile=outdir +'/'+ dtag + '_cfg.py'
