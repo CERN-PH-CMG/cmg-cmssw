@@ -22,7 +22,7 @@ struct ZZ2l2nuSummary_t
   enum JetInfo { TCHE, TCHP, SSVHE, SSVHP };
 
   Int_t run,lumi,event;
-  Int_t cat;
+  Int_t cat, mccat;
   Bool_t hasTrigger;
 
   //gen level 

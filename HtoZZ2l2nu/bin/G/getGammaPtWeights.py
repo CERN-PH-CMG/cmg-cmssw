@@ -26,21 +26,22 @@ for o,a in opts:
     if o in("-?", "-h"):
         usage()
         sys.exit(1)
-    elif o in('-i'): inputDir = ''
+    elif o in('-i'): inputFile = a
                         
 ROOT.gSystem.Load('${CMSSW_BASE}/lib/${SCRAM_ARCH}/libCMGToolsHtoZZ2l2nu.so')
 from ROOT import showPlotsAndMCtoDataComparison, formatForCmsPublic, getNewCanvas, setStyle
                                                                      
 #plots to retrieve
-cats=['photon20','photon30','photon50','photon75','photon90','photon125']
+#cats=['photon20','photon30','photon50','photon75','photon90','photon125']
+cats=['photon20','photon30','photon50','photon75','photon125']
 gammaPt = None
 zPt = None
 
 #open file and get plots
 f = ROOT.TFile.Open(inputFile)
 for c in cats:
-    iGammaPt = f.Get('proc_1/'+c+'_qt_1')
-    iZPt = f.Get('proc_2/'+c+'_qt_2')
+    iGammaPt = f.Get('proc_1/'+c+'_qtvsnjets_1')
+    iZPt = f.Get('proc_2/'+c+'_qtvsnjets_2')
     if(gammaPt is None) :
         gammaPt = iGammaPt.Clone('gamma_pt')
         zPt = iZPt.Clone('z_pt')

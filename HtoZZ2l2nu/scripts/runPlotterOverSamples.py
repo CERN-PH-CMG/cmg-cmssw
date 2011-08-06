@@ -318,11 +318,12 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
     varitems=[]    
     for tag in plotsToDisplay.items() :
         for pname in tag[1] :
-            if(pname.find('eq0jets')>=0) : subcat='eq0jets'
-            elif(pname.find('eq1jets')>=0) : subcat='eq1jets'
-            elif(pname.find('geq2jets')>=0) : subcat='geq2jets'
-            elif(pname.find('eq0btags')>=0) : subcat='eq0btags'
-            elif(pname.find('eq1btags')>=0) : subcat='eq1btags'
+            if(pname.find('eq0jets')>=0) :     subcat='eq0jets'
+            elif(pname.find('eq1jets')>=0) :   subcat='eq1jets'
+            elif(pname.find('geq2jets')>=0) :  subcat='geq2jets'
+            elif(pname.find('vbf')>=0) :       subcat='vbf'
+            elif(pname.find('eq0btags')>=0) :  subcat='eq0btags'
+            elif(pname.find('eq1btags')>=0) :  subcat='eq1btags'
             elif(pname.find('geq2btags')>=0) : subcat='geq2btags'
             else : continue
             if(subcat in varitems) :continue
@@ -352,6 +353,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
         for pname in tag[1] :
 
             if(pname.find('eq0jets')>=0 or pname.find('eq1jets')>=0 or pname.find('geq2jets')>=0
+               or pname.find('vbf')>=0
                or pname.find('eq0btags')>=0 or pname.find('eq1btags')>=0 or pname.find('geq2btags')>=0) : continue
         
             thtml+="<tr>"
