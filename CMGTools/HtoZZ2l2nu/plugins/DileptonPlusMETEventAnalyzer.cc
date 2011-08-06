@@ -249,11 +249,11 @@ float DileptonPlusMETEventAnalyzer::addMCtruth( const pat::EventHypothesis &evhy
   LorentzVector genHiggs(0,0,0,0);
   LorentzVector genMET(0,0,0,0),genZll(0,0,0,0);
   int igenpart(0);
+  bool higgsFound(false);
   for (pat::eventhypothesis::Looper<reco::GenParticle> genpart = evhyp.loopAs<reco::GenParticle>("genparticle"); genpart; ++genpart) 
     {
       //higgs level (H)
-      if(fabs(genpart->pdgId())==25){ev.h_px= genpart->px(); ev.h_py= genpart->py(); ev.h_pz= genpart->pz(); ev.h_en= genpart->energy();}
-      if(fabs(genpart->pdgId())==25) genHiggs=genpart->p4();
+      if(fabs(genpart->pdgId())==25) higgsFound=true;
       ev.h_px=genpart->px();
       ev.h_py=genpart->py();
       ev.h_pz=genpart->pz();
@@ -297,6 +297,15 @@ float DileptonPlusMETEventAnalyzer::addMCtruth( const pat::EventHypothesis &evhy
 	}
       igenpart++;
     }
+
+  //mc truth channel
+  if(higgsFound) ev.mccat=gen::HIGGS;
+  else
+    {
+      edm::Handle<edm::View<reco::Candidate> > hGen;
+      event.getByLabel(objConfig_["Generator"].getParameter<edm::InputTag>("source"), hGen);
+      ev.mccat = gen::assignDileptonChannel(hGen);
+    }
   
   //gen MET (longitudinal momentum is included - do not use directly the energy afterwards)
   ev.mc_px[ev.nmcparticles]=genMET.px();
@@ -305,7 +314,6 @@ float DileptonPlusMETEventAnalyzer::addMCtruth( const pat::EventHypothesis &evhy
   ev.mc_en[ev.nmcparticles]=genMET.energy();
   ev.mc_id[ev.nmcparticles]=0;
   ev.nmcparticles++;
-
 
   //add the generator level jets
   int ngenjets(0);
@@ -468,7 +476,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //select Z window
     LorentzVector dileptonP=lepton1P+lepton2P;
     controlHistos_.fillHisto(dilCat+"_mass",istream,dileptonP.mass(),weight);
-    bool isZcandidate(fabs(dileptonP.mass()-91)>15);
+    bool isZcandidate(fabs(dileptonP.mass()-91)<15);
     //if(dileptonP.mass()<40) return;
     //if(fabs(l1id)==fabs(l2id) && fabs(dileptonP.mass()-91)>15) return;
     if(!isZcandidate) return;

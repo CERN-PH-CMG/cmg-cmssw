@@ -20,6 +20,7 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("lumi",       &evSummary_.lumi,       "lumi/I");
   t_->Branch("event",      &evSummary_.event,      "event/I");
   t_->Branch("cat",        &evSummary_.cat,        "cat/I");
+  t_->Branch("mccat",        &evSummary_.mccat,        "mccat/I");
   t_->Branch("hasTrigger",        &evSummary_.hasTrigger,        "hasTrigger/O");
 
   //vertices and average energy density
@@ -162,7 +163,8 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("lumi")->SetAddress(&evSummary_.lumi);
   t_->GetBranch("event")->SetAddress(&evSummary_.event);
   t_->GetBranch("cat")->SetAddress(&evSummary_.cat);
-  
+  if(t_->GetBranch("mccat")) t_->GetBranch("mccat")->SetAddress(&evSummary_.mccat);
+
   //trigger bit
   if(t_->GetBranch("hasTrigger")) t_->GetBranch("hasTrigger")->SetAddress(&evSummary_.hasTrigger);
 

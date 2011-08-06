@@ -159,5 +159,39 @@ namespace gen{
     return prevState;
   }
 
+
+  //
+  int assignDileptonChannel(edm::Handle<edm::View<reco::Candidate> > &genParticles)
+  {
+    int dyChannel=DIL_OTHER;
+    
+    //iterate over the collection and store Z/gamma->ll decays
+    for(size_t i = 0; i < genParticles->size(); ++ i)
+      {
+	const reco::GenParticle & p = dynamic_cast<const reco::GenParticle &>( (*genParticles)[i] );
+	if( p.status()!=3) continue;
+
+	int id_p   = p.pdgId();   
+
+	//select Z/gamma
+	if(abs(id_p) == 23 || abs(id_p)!=22)
+	  {
+	    int nElecs(0), nMuons(0), nTaus(0);
+	    for(size_t b = 0; b < p.numberOfDaughters(); ++ b)
+	      {
+		int id_d = abs (p.daughter(b)->pdgId());
+		if(id_d == 11) nElecs++; 
+		if(id_d == 13) nMuons++; 
+		if(id_d == 15) nTaus++;  
+	      }
+	    if(nElecs>1)      dyChannel=DY_EE;
+	    else if(nMuons>1) dyChannel=DY_MUMU;
+	    else if(nTaus>1)  dyChannel=DY_TAUTAU;
+	  }
+      }
+
+    return dyChannel;
+  }
+
 }
 	

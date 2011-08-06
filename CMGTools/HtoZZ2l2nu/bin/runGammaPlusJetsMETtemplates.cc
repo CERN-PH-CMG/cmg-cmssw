@@ -11,6 +11,7 @@
 #include "CMGTools/HtoZZ2l2nu/interface/JetEnergyUncertaintyComputer.h"
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
+#include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
 
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
@@ -34,10 +35,13 @@ int main(int argc, char* argv[])
   AutoLibraryLoader::enable();
 
   //check arguments
-  if ( argc < 2 ) {
-    std::cout << "Usage : " << argv[0] << " parameters_cfg.py" << std::endl;
-    return 0;
-  }
+  if ( argc < 2 ) 
+    {
+      std::cout << "Usage : " << argv[0] << " parameters_cfg.py" << std::endl;
+      return 0;
+    }
+
+  EventCategory eventClassifComp;
   
   //configure
   const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
@@ -50,19 +54,22 @@ int main(int argc, char* argv[])
   TString dirname = runProcess.getParameter<std::string>("dirName");
 
   TString gammaPtWeightsFile =  runProcess.getParameter<std::string>("weightsFile"); gSystem->ExpandPathName(gammaPtWeightsFile);
-  TH1D *wgtsH=0;
+  TH1 *wgtsH=0;
+  bool weightPtAndJetMult(false);
   TFile *fwgt=TFile::Open(gammaPtWeightsFile);
   if(fwgt)
     {
-      wgtsH = (TH1D *)fwgt->Get("gammaptweight");
+      wgtsH = (TH1 *)fwgt->Get("gammaptweight");
       wgtsH->SetDirectory(0);
+      weightPtAndJetMult = ((TClass*)wgtsH->IsA())->InheritsFrom("TH2");
       fwgt->Close();
       cout << "Gamma Pt will be reweighted using distribution found @ " << gammaPtWeightsFile << endl;
     }
 
   //control Histos
   SelectionMonitor controlHistos;
-  controlHistos.addHistogram( new TH1D ("qt", ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", 200,0,500) );
+  controlHistos.addHistogram( new TH1D ("qt", ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", 400,0,1000) );
+  controlHistos.addHistogram( new TH2D ("qtvsnjets", ";p_{T}^{#gamma} [GeV/c];Jets;Events / (2.5 GeV/c)", 400,0,1000,6,0,6) );
   controlHistos.addHistogram( new TH1F ("metoverqt", ";type I E_{T}^{miss}/p_{T}^{#gamma};Events", 100,0,2.5) );
   controlHistos.addHistogram( new TH1F ("met", ";type-I E_{T}^{miss} [GeV];Events", 100,0,200) );  
   controlHistos.addHistogram( new TH1F ("redmet", ";red-E_{T}^{miss} [GeV];Events", 100,0,200) );  
@@ -73,7 +80,8 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( (TH1D *)(new TH2D ("redmetLvsredmetT", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
   
   //trigger categories
-  Int_t photoncats[]={0,20,30,50,75,90,125};
+  //Int_t photoncats[]={0,20,30,50,75,90,125};  //the 90 GeV is not in MC?
+  Int_t photoncats[]={0,20,30,50,75,125};
   const size_t nPhotonCats=sizeof(photoncats)/sizeof(Int_t);
   for(size_t icat=1; icat<nPhotonCats; icat++)
     {
@@ -82,6 +90,7 @@ int main(int argc, char* argv[])
       controlHistos.initMonitorForStep(subcat+"eq0jets");
       controlHistos.initMonitorForStep(subcat+"eq1jets");
       controlHistos.initMonitorForStep(subcat+"geq2jets");
+      controlHistos.initMonitorForStep(subcat+"vbf");
     }
 
   //start the met computers
@@ -116,7 +125,10 @@ int main(int argc, char* argv[])
       evSummaryHandler.getEntry(iev);
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
-      
+
+      int eventCategory = eventClassifComp.Get(phys);
+      TString subcat    = eventClassifComp.GetLabel(eventCategory);
+
       bool isGammaEvent(ev.cat>3 && phys.gamma.pt()>0);
       float weight=1.0; //ev.weight;
 
@@ -142,6 +154,9 @@ int main(int argc, char* argv[])
       else
 	{
 	  gamma=phys.leptons[0]+phys.leptons[1];
+
+	  std::cout << phys.genleptons[0].id << " " << phys.genleptons[1].id << std::endl; 
+
 	  
 	  //find the trigger - threshold category (assume 100% efficiency...) 
 	  if(gamma.pt()>=photoncats[nPhotonCats-1]) triggerThr=photoncats[nPhotonCats-1];
@@ -161,15 +176,11 @@ int main(int argc, char* argv[])
 
       evcat += triggerThr;
 
-      int jetbin(0);
-      TString subcat("eq0jets");
-      if(phys.jets.size()==1) { jetbin=1; subcat="eq1jets"; }
-      if(phys.jets.size()>1)  { jetbin=2; subcat="geq2jets"; }
-  
-      int njets30(0);
+      int njets30(0),njets(phys.jets.size());
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
 	njets30 += (phys.jets[ijet].pt()>30);
-    
+      
+
       //reweight to reproduce pt weight
       double ptweight(1.0);
       if(isGammaEvent && wgtsH)
@@ -178,7 +189,16 @@ int main(int argc, char* argv[])
 	  for(int ibin=1; ibin<=wgtsH->GetXaxis()->GetNbins(); ibin++)
 	    {
 	      if(gamma.pt()<wgtsH->GetXaxis()->GetBinLowEdge(ibin) ) break;
-	      ptweight = wgtsH->GetBinContent(ibin);
+	      if(weightPtAndJetMult)
+		{
+		  int jbin=njets30+1;
+		  if(jbin>wgtsH->GetYaxis()->GetNbins()) jbin=wgtsH->GetYaxis()->GetNbins();
+		  ptweight = wgtsH->GetBinContent(ibin,jbin);
+		}
+	      else
+		{
+		  ptweight = wgtsH->GetBinContent(ibin);
+		}
 	    }
 	}
       weight *= ptweight;
@@ -210,14 +230,15 @@ int main(int argc, char* argv[])
 	      TString ctf=cats[ic]+subCats[isc];
 		
 	      if(jetsp4.size()) controlHistos.fillHisto("dphijetmet",ctf, mindphijetmet,weight);
-	      controlHistos.fillHisto("njets",ctf, njets30,weight);
+	      controlHistos.fillHisto("njets",ctf, njets,weight);
+	      controlHistos.fill2DHisto("qtvsnjets",ctf, gamma.pt(), njets,weight);
 	      controlHistos.fillHisto("qt",ctf, gamma.pt(),weight);
 	      controlHistos.fillHisto("met", ctf, met.pt(),weight);
 	      controlHistos.fillHisto("redmet", ctf, redmet,weight);
 	      controlHistos.fillHisto("metoverqt", ctf,met.pt()/gamma.pt(),weight);	      
  	      controlHistos.fillHisto("redmetL", ctf,redmetL,weight);	      
 	      controlHistos.fillHisto("redmetT", ctf,redmetT,weight);	      
-	      controlHistos.fillHisto("redmetLvsredmetT", ctf,redmetL,redmetT,weight);	      
+	      controlHistos.fill2DHisto("redmetLvsredmetT", ctf,redmetL,redmetT,weight);	      
 	    }
 	}
     }

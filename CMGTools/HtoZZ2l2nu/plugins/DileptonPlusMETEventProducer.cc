@@ -184,9 +184,9 @@
       selPath = dilepton::classify(dileptonWithVertex);
       if(selPath!= dilepton::UNKNOWN)
 	{
-	  std::vector<TString> dilCats;
-	  if(selPath==dilepton::EE) dilCats.push_back("ee"); 
-	  if(selPath==dilepton::EMU) dilCats.push_back("emu"); 
+	  std::vector<TString>        dilCats;
+	  if(selPath==dilepton::EE)   dilCats.push_back("ee"); 
+	  if(selPath==dilepton::EMU)  dilCats.push_back("emu"); 
 	  if(selPath==dilepton::MUMU) dilCats.push_back("mumu"); 
 
 	  //add to the event

@@ -27,7 +27,7 @@ TLegend *showPlotsAndMCtoDataComparison(TPad *p, TList &stack, TList &spimpose, 
 {
   p->Divide(1,2);
   TPad *subp=(TPad *)p->cd(1);
-  subp->SetPad(0,0.3,1.0,1.0);
+  subp->SetPad(0,0.2,1.0,1.0);
   TLegend *leg=showPlots(subp,stack,spimpose,data);
   formatForCmsPublic(subp,leg,"",5);
   if(setLogy) subp->SetLogy();
@@ -318,8 +318,8 @@ void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doDiff,floa
   TIterator *stackIt = stack.MakeIterator();
   while ( (key = stackIt->Next()) ) 
     {
+      //      if( ((TClass*)key->IsA())->InheritsFrom("TH2") ) continue;
       TH1 *p = (TH1 *) key;
-      if( ((TClass*)key->IsA())->InheritsFrom("TH2") ) continue;
       if( ((TClass*)key->IsA())->InheritsFrom("TGraph") ) continue;
       if(sumH==0) { 
 	sumH = (TH1 *) p->Clone(TString(p->GetName())+"sum"); 
@@ -334,7 +334,7 @@ void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doDiff,floa
   while ( (key = dataIt->Next()) ) 
     {
       TH1 *p = (TH1 *) key;
-      if( ((TClass*)key->IsA())->InheritsFrom("TH2") ) continue;
+      //      if( ((TClass*)key->IsA())->InheritsFrom("TH2") ) continue;
       if( ((TClass*)key->IsA())->InheritsFrom("TGraph") ) continue;
 
       TH1 *dataToMCH = (TH1 *) p->Clone(TString(p->GetName())+"_tomc");
@@ -351,6 +351,7 @@ void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doDiff,floa
 
       c->cd();
       TString opt("e2");
+      if( ((TClass*)dataToMCH->IsA())->InheritsFrom("TH2") ) opt="colz";
       if(canvasFilled) opt +="same";
       dataToMCH->Draw(opt);
       dataToMCH->GetYaxis()->SetRangeUser(0,5.3);

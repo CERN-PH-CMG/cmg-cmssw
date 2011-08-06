@@ -1,34 +1,57 @@
 #!/usr/bin/env python
 
 import ROOT
+import os,sys
+import getopt
+
+def usage() :
+    print ' '
+    print 'getGammaTemplates.py [options]'
+    print '  -i : input file'
+    print ' '
+    
+#parse the options
+try:
+    # retrive command line options
+    shortopts  = "i:h?"
+    opts, args = getopt.getopt( sys.argv[1:], shortopts )
+except getopt.GetoptError:
+    # print help information and exit:
+    print "ERROR: unknown options in argument %s" % sys.argv[1:]
+    usage()
+    sys.exit(1)
+
+inputFile='plotter.root'
+for o,a in opts:
+    if o in("-?", "-h"):
+        usage()
+        sys.exit(1)
+    elif o in('-i'): inputFile = a
 
 ROOT.gSystem.Load('${CMSSW_BASE}/lib/${SCRAM_ARCH}/libCMGToolsHtoZZ2l2nu.so')
 from ROOT import showPlotsAndMCtoDataComparison, formatForCmsPublic, getNewCanvas, setStyle
 
 #plots to retrieve
-cats=['photon20','photon30','photon50','photon60','photon70','photon75','photon125']
+cats=['photon20','photon30','photon50','photon75','photon125']
 catLabels=['p_{T}^{#gamma}>20 GeV/c',
            'p_{T}^{#gamma}>30 GeV/c',
            'p_{T}^{#gamma}>50 GeV/c',
-           'p_{T}^{#gamma}>60 GeV/c',
-           'p_{T}^{#gamma}>70 GeV/c',
            'p_{T}^{#gamma}>75 GeV/c',
            'p_{T}^{#gamma}>125 GeV/c']
-subcats=['eq0jets','eq1jets','geq2jets']
+subcats=['eq0jets','eq1jets','geq2jets','vbf',]
 subcatLabels=['=0 jets',
               '=1 jets',
-              '#geq 2 jets']
+              '#geq 2 jets',
+              'VBF']
 variables=['met','redmet']
 
 #open file and get plots
-f = ROOT.TFile.Open("plotter_weighted.root")
+f = ROOT.TFile.Open(inputFile)
 
 zpt=f.Get('proc_2/qt_2')
 catNorms=[ zpt.Integral( zpt.FindBin(20), zpt.FindBin(30)-1),
            zpt.Integral( zpt.FindBin(30), zpt.FindBin(50)-1),
-           zpt.Integral( zpt.FindBin(50), zpt.FindBin(60)-1),
-           zpt.Integral( zpt.FindBin(60), zpt.FindBin(70)-1),
-           zpt.Integral( zpt.FindBin(70), zpt.FindBin(75)-1),
+           zpt.Integral( zpt.FindBin(50), zpt.FindBin(75)-1),
            zpt.Integral( zpt.FindBin(75), zpt.FindBin(125)-1),
            zpt.Integral( zpt.FindBin(125), zpt.GetXaxis().GetNbins() ) ]
 
@@ -37,9 +60,9 @@ paves=[] #this is a hack: make paves persistent (otherwise they run out of scope
 for v in variables :
     cnv = getNewCanvas(v+"c",v+"c",False)
     cnv.Clear()
-    cnv.SetWindowSize(600,900)
-    cnv.SetCanvasSize(600,1200)
-    cnv.Divide(3,len(cats),0,0)
+    cnv.SetWindowSize(900,1200)
+    cnv.SetCanvasSize(900,1200)
+    cnv.Divide(4,len(cats),0,0)
 
     gammaTemplate=f.Get('proc_1/'+v+'_1')
     gammaTemplate.SetDirectory(0)
@@ -56,7 +79,7 @@ for v in variables :
         
         iscat=0
         for sc in subcats:
-            p=cnv.cd(1+iscat+3*icat)
+            p=cnv.cd(1+iscat+4*icat)
             if(iscat==0): p.SetLeftMargin(0.12)
             if(icat==len(cats)-1):p.SetBottomMargin(0.15)
 
@@ -75,10 +98,10 @@ for v in variables :
             pave.AddText(catLabels[icat]).SetTextFont(62)
             pave.AddText(subcatLabels[iscat]).SetTextFont(62)
             pave.AddText('')
-            pave.AddLine()
-            pave.AddText('[p-values]')
-            pave.AddText('Kolmogorov %3.3f' % iZMet.KolmogorovTest(iGammaMet) )
-            pave.AddText('#chi^{2} %3.3f' % iZMet.Chi2Test(iGammaMet,'WW') )
+            #pave.AddLine()
+            #pave.AddText('[p-values]')
+            #pave.AddText('Kolmogorov %3.3f' % iZMet.KolmogorovTest(iGammaMet) )
+            pave.AddText('#chi^{2}/ndof %3.3f' % iZMet.Chi2Test(iGammaMet,'WWCHI2/NDF') )
             pave.Draw()
             paves.append(pave)
             

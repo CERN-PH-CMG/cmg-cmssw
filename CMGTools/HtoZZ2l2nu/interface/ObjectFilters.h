@@ -48,6 +48,9 @@ namespace gen
    */
   std::map<std::string, std::vector<reco::CandidatePtr> > filter(edm::Handle<edm::View<reco::Candidate> > &hGen, const edm::ParameterSet &iConfig);
   const reco::Candidate *getFinalStateFor(const reco::Candidate *p);
+
+  enum DYchannels {HIGGS, DIL_OTHER, DY_MUMU, DY_EE, DY_TAUTAU };
+  int assignDileptonChannel(edm::Handle<edm::View<reco::Candidate> > &genParticles);
 }
 
 namespace vertex
