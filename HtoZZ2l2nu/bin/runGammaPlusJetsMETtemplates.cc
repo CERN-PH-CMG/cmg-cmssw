@@ -48,7 +48,10 @@ int main(int argc, char* argv[])
   TString url=runProcess.getParameter<std::string>("input");
   TString outdir=runProcess.getParameter<std::string>("outdir");
   bool isMC = runProcess.getParameter<bool>("isMC");
-
+  int mctruthmode = runProcess.getParameter<int>("mctruthmode"); //1-ee/mumu;  3-tautau; inclusive otherwise
+  if(mctruthmode!=0)
+    std::cout << "Filtering sample for : " << (mctruthmode==1? "ee/mumu" : "tautau") << " events" << endl; 
+  
   int evStart=runProcess.getParameter<int>("evStart");
   int evEnd=runProcess.getParameter<int>("evEnd");
   TString dirname = runProcess.getParameter<std::string>("dirName");
@@ -68,8 +71,15 @@ int main(int argc, char* argv[])
 
   //control Histos
   SelectionMonitor controlHistos;
-  controlHistos.addHistogram( new TH1D ("qt", ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", 400,0,1000) );
-  controlHistos.addHistogram( new TH2D ("qtvsnjets", ";p_{T}^{#gamma} [GeV/c];Jets;Events / (2.5 GeV/c)", 400,0,1000,6,0,6) );
+  double qtAxis[]={20,22.5,25,27.5,
+		   30,32.5,35,37.5,40,42.5,45,47.5,
+		   50,52.5,55,57.5,60,62.5,65,67.5,70,72.5,
+		   75,80,85,90,95,100,105,110,115,120,
+		   125,150,175,200,250,300,350,400,500,600,700,800,900,1000,2000};
+  int nqtBins=sizeof(qtAxis)/sizeof(double)-1;
+
+  controlHistos.addHistogram( new TH1D ("qt", ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", nqtBins, qtAxis) );
+  controlHistos.addHistogram( new TH2D ("qtvsnjets", ";p_{T}^{#gamma} [GeV/c];Jets;Events / (2.5 GeV/c)", nqtBins, qtAxis,6,0,6) );
   controlHistos.addHistogram( new TH1F ("metoverqt", ";type I E_{T}^{miss}/p_{T}^{#gamma};Events", 100,0,2.5) );
   controlHistos.addHistogram( new TH1F ("met", ";type-I E_{T}^{miss} [GeV];Events", 100,0,200) );  
   controlHistos.addHistogram( new TH1F ("redmet", ";red-E_{T}^{miss} [GeV];Events", 100,0,200) );  
@@ -154,9 +164,8 @@ int main(int argc, char* argv[])
       else
 	{
 	  gamma=phys.leptons[0]+phys.leptons[1];
-
-	  std::cout << phys.genleptons[0].id << " " << phys.genleptons[1].id << std::endl; 
-
+	  if(mctruthmode==1 && ev.mccat!=gen::DY_EE && ev.mccat!=gen::DY_MUMU)  continue;
+	  if(mctruthmode==2 && ev.mccat!=gen::DY_TAUTAU) continue;
 	  
 	  //find the trigger - threshold category (assume 100% efficiency...) 
 	  if(gamma.pt()>=photoncats[nPhotonCats-1]) triggerThr=photoncats[nPhotonCats-1];
@@ -231,8 +240,8 @@ int main(int argc, char* argv[])
 		
 	      if(jetsp4.size()) controlHistos.fillHisto("dphijetmet",ctf, mindphijetmet,weight);
 	      controlHistos.fillHisto("njets",ctf, njets,weight);
-	      controlHistos.fill2DHisto("qtvsnjets",ctf, gamma.pt(), njets,weight);
-	      controlHistos.fillHisto("qt",ctf, gamma.pt(),weight);
+	      controlHistos.fill2DHisto("qtvsnjets",ctf, gamma.pt(), njets,weight,true);
+	      controlHistos.fillHisto("qt",ctf, gamma.pt(),weight,true);
 	      controlHistos.fillHisto("met", ctf, met.pt(),weight);
 	      controlHistos.fillHisto("redmet", ctf, redmet,weight);
 	      controlHistos.fillHisto("metoverqt", ctf,met.pt()/gamma.pt(),weight);	      
