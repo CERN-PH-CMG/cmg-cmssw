@@ -122,7 +122,8 @@ namespace tmva
       }
     else
       {
-	fiCat = factory->BookMethod( TMVA::Types::kCategory,"Category","");
+        TString CategoryName = "Category_" + method;
+        fiCat = factory->BookMethod( TMVA::Types::kCategory,CategoryName,"");
 	std::cout << "\t Adding " << categDef.size() << " methods for sub-categories" << std::endl;
 	TMVA::MethodCategory *mcat = dynamic_cast<TMVA::MethodCategory*>(fiCat);
 	if(mcat==0)

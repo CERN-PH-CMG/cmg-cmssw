@@ -136,13 +136,13 @@ int main(int argc, char* argv[])
       for(size_t ivar=0; ivar<varsList.size(); ivar++)   tmvaReader->AddVariable( varsList[ivar], &tmvaVars[ivar] );
       tmvaReader->AddSpectator("eventCategory", &tmvaVars[varsList.size()]);
 
-      //open the file with the method description
-      TString weightFile = weightsDir + "/" + studyTag + ( evCategories.size()>1 ? "_Category" : "") + TString(".weights.xml");
-      gSystem->ExpandPathName(weightFile);
-
       //book the methods
       for(size_t imet=0; imet<methodList.size(); imet++)
 	{
+          //open the file with the method description
+          TString weightFile = weightsDir + "/" + studyTag + ( evCategories.size()>1 ? "_Category_" + methodList[imet] : "") + TString(".weights.xml");
+          gSystem->ExpandPathName(weightFile);
+
 	  tmvaReader->BookMVA(methodList[imet], weightFile);
 	  controlHistos.addHistogram( tmva::getHistogramForDiscriminator( methodList[imet] ) );
 	  if(methodList[imet]=="PDEFoam") 
@@ -349,6 +349,9 @@ int main(int argc, char* argv[])
       //Float_t minMet        = min(fabs(projMet),fabs(projTrkMet));
       // Float_t minMetoverzpt   = minMet/zpt;
 
+      if(redMet<39)continue;
+
+
       //set the variables to be used in the MVA evaluation (independently of its use)
       for(size_t ivar=0; ivar<varsList.size(); ivar++) 
 	{
@@ -386,7 +389,7 @@ int main(int argc, char* argv[])
 	  for(size_t imet=0; imet<methodList.size(); imet++)
 	    {
 	      discriResults[imet]=tmvaReader->EvaluateMVA( methodList[imet] );
-	      
+	     
 	      //per-event error
 	      if (methodList[imet]=="PDEFoam")
 		{
