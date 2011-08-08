@@ -416,6 +416,7 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
             procplots=[]
             procplotstitles=[]
             isdata = getByLabel(desc,'isdata',False)
+            forceDataNorm = getByLabel(desc,'forceDataNorm',False)
             spimpose = getByLabel(desc,'spimpose',False)
             color = rootConst(getByLabel(desc,'color',1))
             line = getByLabel(desc,'line', 1)
@@ -450,10 +451,9 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
                 xsec = getByLabel(d,'xsec',-1)
                 br = getByLabel(d,'br',[])
                 brprod=1.0
-                if(xsec>0 and not isdata) :
+                if(xsec>0 or forceDataNorm) :
                     for ibr in br :  brprod = brprod*ibr
                     weight = integratedLumi*sfactor*xsec*brprod
-
                 samplehtml+="<tr><td>"+dtag+"</td>"
                 samplehtml+="<td>"+str(xsec) + "x" +str(brprod) + "x" + str(sfactor) + "</td>"
                 samplehtml+="<td><small>" + getByLabel(d,'dset','n/a') + "</small></td></tr>\n" 

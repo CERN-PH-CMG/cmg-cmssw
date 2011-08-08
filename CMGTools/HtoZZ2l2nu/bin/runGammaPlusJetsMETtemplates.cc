@@ -62,7 +62,8 @@ int main(int argc, char* argv[])
   TFile *fwgt=TFile::Open(gammaPtWeightsFile);
   if(fwgt)
     {
-      wgtsH = (TH1 *)fwgt->Get("gammaptweight");
+      //2d
+      wgtsH = (TH1 *)fwgt->Get("gammaptweight_1");
       wgtsH->SetDirectory(0);
       weightPtAndJetMult = ((TClass*)wgtsH->IsA())->InheritsFrom("TH2");
       fwgt->Close();
@@ -200,7 +201,7 @@ int main(int argc, char* argv[])
 	      if(gamma.pt()<wgtsH->GetXaxis()->GetBinLowEdge(ibin) ) break;
 	      if(weightPtAndJetMult)
 		{
-		  int jbin=njets30+1;
+		  int jbin=njets+1;
 		  if(jbin>wgtsH->GetYaxis()->GetNbins()) jbin=wgtsH->GetYaxis()->GetNbins();
 		  ptweight = wgtsH->GetBinContent(ibin,jbin);
 		}

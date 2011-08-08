@@ -1,9 +1,25 @@
 {
     "proc":[
 	{
+	 "tag":"Z/#gamma^{*}+jets#rightarrow #tau#tau",
+         "isdata":false,
+         "color":"835",
+	 "lcolor":1,
+	 "lwidth":1,
+         "mctruthmode":2,
+         "data":[
+	      {
+               "dtag":"DYJetsToTauTau",
+	       "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
+	       "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/ZZ/DYToLL/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
+               "xsec":1016
+              }
+          ]
+	},
+	{
 	 "tag":"Z/#gamma^{*}+jets#rightarrow ll",
-         "isdata":true,
-         "color":"1",
+         "isdata":false,
+         "color":"831",
 	 "lcolor":1,
          "mctruthmode":1,
          "data":[
@@ -16,28 +32,12 @@
           ]
 	},
 	{
-	 "tag":"Z/#gamma^{*}+jets#rightarrow #tau#tau",
-         "isdata":false,
-	 "spimpose":true,
-         "color":"831",
-	 "lcolor":831,
-	 "lwidth":1,
-	 "fill":0,
-         "mctruthmode":2,
-         "data":[
-	      {
-               "dtag":"DYJetsToTauTau",
-	       "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
-	       "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/ZZ/DYToLL/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
-               "xsec":1016
-              }
-          ]
-	},
-	{
 	"tag":"#gamma+jets (simulation)",
         "isdata":false,
-	"color":"kSpring+4",
+	"spimpose":true,
+	"color":"1",
 	"lcolor":1,
+	"fill":0,
 	"data":[
 	     {	
 		"dtag":"G_Pt-15to30_TuneZ2_7TeV_pythia6",
