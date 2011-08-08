@@ -27,7 +27,7 @@ TLegend *showPlotsAndMCtoDataComparison(TPad *p, TList &stack, TList &spimpose, 
 {
   p->Divide(1,2);
   TPad *subp=(TPad *)p->cd(1);
-  subp->SetPad(0,0.2,1.0,1.0);
+  subp->SetPad(0,0.3,1.0,1.0);
   TLegend *leg=showPlots(subp,stack,spimpose,data);
   formatForCmsPublic(subp,leg,"",5);
   if(setLogy) subp->SetLogy();
@@ -35,7 +35,7 @@ TLegend *showPlotsAndMCtoDataComparison(TPad *p, TList &stack, TList &spimpose, 
   subp=(TPad *)p->cd(2);
   subp->SetPad(0,0.0,1.0,0.28);
   subp->SetTopMargin(0);
-  subp->SetBottomMargin(0.5);
+  subp->SetBottomMargin(0.3);
   float yscale = (1.0-0.3)/(0.28-0);
   showMCtoDataComparison(subp,stack,data,false,yscale);
   
