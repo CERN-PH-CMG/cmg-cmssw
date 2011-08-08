@@ -48,48 +48,53 @@ variables=['met','redmet']
 #open file and get plots
 f = ROOT.TFile.Open(inputFile)
 
-zpt=f.Get('proc_2/qt_2')
-catNorms=[ zpt.Integral( zpt.FindBin(20), zpt.FindBin(30)-1),
-           zpt.Integral( zpt.FindBin(30), zpt.FindBin(50)-1),
-           zpt.Integral( zpt.FindBin(50), zpt.FindBin(75)-1),
-           zpt.Integral( zpt.FindBin(75), zpt.FindBin(125)-1),
-           zpt.Integral( zpt.FindBin(125), zpt.GetXaxis().GetNbins() ) ]
-
 setStyle()
 paves=[] #this is a hack: make paves persistent (otherwise they run out of scope)
 for v in variables :
     cnv = getNewCanvas(v+"c",v+"c",False)
     cnv.Clear()
     cnv.SetWindowSize(900,1200)
-    cnv.SetCanvasSize(900,1200)
+#    cnv.SetCanvasSize(900,1200)
     cnv.Divide(4,len(cats),0,0)
 
-    gammaTemplate=f.Get('proc_1/'+v+'_1')
-    gammaTemplate.SetDirectory(0)
-    gammaTemplate.Reset('ICE')
-    zVariable=f.Get('proc_2/'+v+'_2') 
-    zVariable.SetDirectory(0)
-    
+    gammaVariable=[]
+    zVariable=[]
+    zTauTauVariable=[]
     icat=0
     for c in cats:
-
-        iGammaMetInc = f.Get('proc_1/'+c+'_'+v+'_1')
-        iGammaMetInc.SetDirectory(0)
-        gammaTemplate.Add(iGammaMetInc,catNorms[icat]/iGammaMetInc.Integral()) 
         
         iscat=0
         for sc in subcats:
             p=cnv.cd(1+iscat+4*icat)
-            if(iscat==0): p.SetLeftMargin(0.12)
-            if(icat==len(cats)-1):p.SetBottomMargin(0.15)
+            if(iscat==0):              p.SetLeftMargin(0.12)
+            if(iscat==len(subcats)-1): p.SetRightMargin(0.05)
+            if(icat==len(cats)-1):     p.SetBottomMargin(0.15)
 
-            iGammaMet = f.Get('proc_1/'+c+sc+'_'+v+'_1')
-            iGammaMet.SetDirectory(0)
-            iZMet = f.Get('proc_2/'+c+sc+'_'+v+'_2')
-            iZMet.SetDirectory(0)
-            iGammaMet.Draw("hist")
-            iZMet.Draw("e2same")
-                  
+            iGammaVariable = f.Get('proc_3/'+c+sc+'_'+v+'_3')
+            iGammaVariable.SetDirectory(0)
+            iZVariable = f.Get('proc_2/'+c+sc+'_'+v+'_2')
+            iZVariable.SetDirectory(0)
+            iZTauTauVariable = f.Get('proc_1/'+c+sc+'_'+v+'_1')
+            iZTauTauVariable.SetDirectory(0)
+
+            iGammaVariable.Scale(iZVariable.Integral()/iGammaVariable.Integral())
+            iZVariable.Draw("hist")
+            iGammaVariable.Draw("e2same")
+
+            if(len(gammaVariable)<=iscat) :
+                gammaVariable.append( iGammaVariable.Clone(sc+'_gamma_'+v) )
+                gammaVariable[iscat].Reset("ICE")
+                gammaVariable[iscat].SetDirectory(0)
+                zVariable.append( iZVariable.Clone(sc+'_z_'+v) )
+                zVariable[iscat].Reset("ICE")
+                zVariable[iscat].SetDirectory(0)
+                zTauTauVariable.append( iZTauTauVariable.Clone(sc+'_ztautau_'+v) )
+                zTauTauVariable[iscat].Reset("ICE")
+                zTauTauVariable[iscat].SetDirectory(0)
+            gammaVariable[iscat].Add(iGammaVariable)
+            zVariable[iscat].Add(iZVariable)
+            zTauTauVariable[iscat].Add(iZTauTauVariable)
+            
             pave = ROOT.TPaveText(0.5,0.65,1.0,0.95,'NDC')
             pave.SetBorderSize(0)
             pave.SetFillStyle(0)
@@ -100,8 +105,8 @@ for v in variables :
             pave.AddText('')
             #pave.AddLine()
             #pave.AddText('[p-values]')
-            #pave.AddText('Kolmogorov %3.3f' % iZMet.KolmogorovTest(iGammaMet) )
-            pave.AddText('#chi^{2}/ndof %3.3f' % iZMet.Chi2Test(iGammaMet,'WWCHI2/NDF') )
+            #pave.AddText('Kolmogorov %3.3f' % iZVariable.KolmogorovTest(iGammaVariable) )
+            pave.AddText('#chi^{2}/ndof %3.3f' % iZVariable.Chi2Test(iGammaVariable,'WWCHI2/NDF') )
             pave.Draw()
             paves.append(pave)
             
@@ -123,15 +128,41 @@ for v in variables :
     #inclusive template canvas
     cnv2 = getNewCanvas(v+"templc",v+"templc",False)
     cnv2.Clear()
-    cnv2.SetWindowSize(600,600)
-    cnv2.SetCanvasSize(600,600)
-    stack=ROOT.TList()
-    stack.Add(gammaTemplate)
-    data=ROOT.TList()
-    data.Add(zVariable)
-    spimpose=ROOT.TList()
-    leg=showPlotsAndMCtoDataComparison(cnv2,stack,spimpose,data)
-    formatForCmsPublic(cnv2.cd(1),leg,'CMS preliminary',2)
+#    cnv2.SetCanvasSize(1200,300)
+    cnv2.SetWindowSize(1200,300)
+    cnv2.Divide(4,1,0,0)
+    for i in xrange(1,5): 
+        stack=ROOT.TList()
+        stack.Add(zVariable[i-1])    
+        data=ROOT.TList()
+        data.Add(gammaVariable[i-1])
+        spimpose=ROOT.TList()
+        #zTauTauVariable[i-1].Rebin(2)
+        zTauTauVariable[i-1].SetFillStyle(3004)
+        #zTauTauVariable[i-1].SetLineWidth(2)
+        spimpose.Add(zTauTauVariable[i-1])
+        pad=cnv2.cd(i)
+        leg=showPlotsAndMCtoDataComparison(pad,stack,spimpose,data)
+        if(i==1) :
+            formatForCmsPublic(pad.cd(1),leg,'CMS preliminary',2)
+        else : leg.Delete()
+
+        pad.cd(1)
+        pave = ROOT.TPaveText(0.65,0.75,0.95,0.95,'NDC')
+        pave.SetBorderSize(0)
+        pave.SetFillStyle(0)
+        pave.SetTextAlign(32)
+        pave.SetTextFont(42)
+        pave.AddText(subcatLabels[i-1]).SetTextFont(62)
+        pave.AddText('')
+        pave.AddLine()
+        #pave.AddText('[p-values]')
+        #pave.AddText('Kolmogorov %3.3f' % iZVariable.KolmogorovTest(iGammaVariable) )
+        pave.AddText('#chi^{2}/ndof %3.3f' % zVariable[i-1].Chi2Test(gammaVariable[i-1],'WWCHI2/NDF') )
+        pave.Draw()
+        paves.append(pave)
+
+
     cnv2.cd()
     cnv2.Modified()
     cnv2.Update()

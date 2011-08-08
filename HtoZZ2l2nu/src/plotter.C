@@ -35,7 +35,7 @@ TLegend *showPlotsAndMCtoDataComparison(TPad *p, TList &stack, TList &spimpose, 
   subp=(TPad *)p->cd(2);
   subp->SetPad(0,0.0,1.0,0.28);
   subp->SetTopMargin(0);
-  subp->SetBottomMargin(0.3);
+  subp->SetBottomMargin(0.5);
   float yscale = (1.0-0.3)/(0.28-0);
   showMCtoDataComparison(subp,stack,data,false,yscale);
   
@@ -340,12 +340,12 @@ void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doDiff,floa
       TH1 *dataToMCH = (TH1 *) p->Clone(TString(p->GetName())+"_tomc");
       if(doDiff)
 	{
-	  dataToMCH->GetYaxis()->SetTitle("Observed-Reference");
+	  dataToMCH->GetYaxis()->SetTitle("Obs-Ref");
 	  dataToMCH->Add(sumH,-1);
 	}
       else
 	{
-	  dataToMCH->GetYaxis()->SetTitle("Observed/Reference");
+	  dataToMCH->GetYaxis()->SetTitle("Obs/Ref");
 	  dataToMCH->Divide(sumH);
 	}
 

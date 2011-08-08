@@ -171,7 +171,9 @@ int main(int argc, char* argv[])
 
   controlHistos.addHistogram( new TH1F ("eventCategory", ";Event Category;Events", 4,0,4) );
   
-  controlHistos.addHistogram( new TH1F ("nbtags", ";b-tag multiplicity (SSVHEM);Events", 4,0,4) );  
+  controlHistos.addHistogram( new TH1F ("nbtags_ssvhe", ";b-tag multiplicity (SSVHE); Events", 4,0,4) );  
+  controlHistos.addHistogram( new TH1F ("nbtags_tche", ";b-tag multiplicity (TCHE); Events", 4,0,4) );  
+  controlHistos.addHistogram( new TH1F ("nbtags", ";b-tag multiplicity (SSVHE or TCHE); Events", 4,0,4) );  
 
   controlHistos.addHistogram( new TProfile ("metprof", ";Pileup events;E_{T}^{miss}", 15,0,15) ); 
   controlHistos.addHistogram( new TH2F ("metvspu", ";Pileup events;E_{T}^{miss}", 15,0,15,100,0,500) );  
@@ -286,11 +288,18 @@ int main(int argc, char* argv[])
       LorentzVector recoMetP4=phys.met[0];
       LorentzVector trkMetP4=phys.met[1];
       LorentzVectorCollection recoJetsP4;
-      int nbtags(0);
+      int nbtags(0),nbtags_tche(0), nbtags_ssvhe(0);
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++) 
 	{
 	  recoJetsP4.push_back( phys.jets[ijet] );
-	  if(phys.jets[ijet].btag3>1.74) nbtags++;
+	  if(phys.jets[ijet].pt()>30 && fabs(phys.jets[ijet].eta())<2.5)
+	    {
+	      bool passTCHEL(phys.jets[ijet].btag1>1.7);
+	      bool passSSVHEM(phys.jets[ijet].btag3>1.74);
+	      nbtags       += (passTCHEL || passSSVHEM);
+	      nbtags_tche  += passTCHEL;
+	      nbtags_ssvhe += passSSVHEM;
+	    }
 	}
       
       //uncomment the following lines when ready for evaluation of systematics
@@ -430,6 +439,8 @@ int main(int argc, char* argv[])
 
 	      controlHistos.fillHisto("eventflow",ctf,4,weight);
 	      controlHistos.fillHisto("nbtags",ctf, nbtags,weight);
+	      controlHistos.fillHisto("nbtags_tche",ctf, nbtags_tche,weight);
+	      controlHistos.fillHisto("nbtags_ssvhe",ctf, nbtags_ssvhe,weight);
 	      if(!passBveto) continue;
 
 	      controlHistos.fillHisto("eventflow",ctf,5,weight);

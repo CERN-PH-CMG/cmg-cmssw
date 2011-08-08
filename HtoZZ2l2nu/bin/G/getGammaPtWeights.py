@@ -36,7 +36,7 @@ from ROOT import showPlotsAndMCtoDataComparison, formatForCmsPublic, getNewCanva
 cats=['photon20','photon30','photon50','photon75','photon125']
 gammaPt = []
 zPt = []
-zTauTauPt = []
+#zTauTauPt = []
 #open file and get plots
 f = ROOT.TFile.Open(inputFile)
 for c in cats:
@@ -44,24 +44,22 @@ for c in cats:
     totalGamma=iGammaPt[0].Integral()
     iZPt       = [ f.Get('proc_1/'+c+'_qt_1') , f.Get('proc_1/'+c+'_qtvsnjets_1') ]
     totalZ2ll=iZPt[0].Integral()
-    iZTauTauPt = [ f.Get('proc_2/'+c+'_qt_2') , f.Get('proc_2/'+c+'_qtvsnjets_2') ]
+#    iZTauTauPt = [ f.Get('proc_2/'+c+'_qt_2') , f.Get('proc_2/'+c+'_qtvsnjets_2') ]
     for i in xrange(0,2): 
         if(len(gammaPt)<=i):
             gammaPt.append( iGammaPt[i].Clone('gamma_pt_'+str(i)) )
             gammaPt[i].Reset("ICE")
-            gammaPt[i].SetFillStyle(0)
             gammaPt[i].SetDirectory(0)
             zPt.append( iZPt[i].Clone('z_pt'+str(i)) )
             zPt[i].Reset("ICE")
-            zPt[i].SetFillStyle(0);
             zPt[i].SetDirectory(0)
-            zTauTauPt.append( iZTauTauPt[i].Clone('ztautau_pt'+str(i)) )
-            zTauTauPt[i].Reset("ICE")
-            zTauTauPt[i].SetFillStyle(0)
-            zTauTauPt[i].SetDirectory(0)
+#            zTauTauPt.append( iZTauTauPt[i].Clone('ztautau_pt'+str(i)) )
+#            zTauTauPt[i].Reset("ICE")
+#            zTauTauPt[i].SetFillStyle(0)
+#            zTauTauPt[i].SetDirectory(0)
         gammaPt[i].Add(iGammaPt[i],1./totalGamma)
         zPt[i].Add(iZPt[i],1./totalZ2ll)
-        zTauTauPt[i].Add(iZTauTauPt[i],1./totalZ2ll)
+#        zTauTauPt[i].Add(iZTauTauPt[i],1./totalZ2ll)
 f.Close()
 
 #compute the weights
@@ -72,7 +70,24 @@ for i in xrange(0,2):
     ptWeights[i].SetDirectory(0)
     ptWeights[i].GetYaxis().SetTitle("p_{T}^{Z#rightarrow ll}/p_{T}^{#gamma}")
 
+    for ibin in xrange(2,ptWeights[i].GetXaxis().GetNbins()+1) :
+        if(i==0) :
+            binc=ptWeights[i].GetBinContent(ibin)
+            if(binc<=0):
+                newbinc=ptWeights[i].GetBinContent(ibin-1)
+                newbinerr=ptWeights[i].GetBinError(ibin-1)
+                ptWeights[i].SetBinContent(ibin,newbinc)
+                ptWeights[i].SetBinError(ibin,newbinerr)
+        else :
+            for jbin in xrange(1,ptWeights[i].GetYaxis().GetNbins()+1) :
+                binc=ptWeights[i].GetBinContent(ibin,jbin)
+                if(binc<=0):
+                    newbinc=ptWeights[i].GetBinContent(ibin-1,jbin)
+                    newbinerr=ptWeights[i].GetBinError(ibin-1,jbin)
+                    ptWeights[i].SetBinContent(ibin,jbin,newbinc)
+                    ptWeights[i].SetBinError(ibin,jbin,newbinerr)
 
+#display results
 setStyle()
 
 #show the inclusive output
@@ -80,15 +95,23 @@ c = getNewCanvas("gammac","gammac",False)
 c.SetWindowSize(600,600)
 c.SetCanvasSize(600,600)
 stack=ROOT.TList()
-stack.Add(zPt[0])
-stack.Add(zTauTauPt[0])
+stack.Add(gammaPt[0])
 data=ROOT.TList()
-data.Add(gammaPt[0])
+data.Add(zPt[0])
 spimpose=ROOT.TList()
 leg=showPlotsAndMCtoDataComparison(c,stack,spimpose,data)
 formatForCmsPublic(c.cd(1),leg,'CMS preliminary',2)
-c.cd(2)
-ptWeights[0].Draw("e1")
+#c.cd(2)
+#ptWeights[0].Draw("e1")
+#yscale=0.7/0.28
+#ptWeights[0].GetYaxis().SetRangeUser(0,5.3);
+#ptWeights[0].GetXaxis().SetTitleOffset(0.85);
+#ptWeights[0].GetXaxis().SetLabelSize(0.04 * yscale);
+#ptWeights[0].GetXaxis().SetTitleSize(0.05 * yscale);
+#ptWeights[0].GetXaxis().SetTickLength( 0.03 * yscale );
+#ptWeights[0].GetYaxis().SetTitleOffset(0.5);
+#ptWeights[0].GetYaxis().SetLabelSize(0.04 * yscale);
+#ptWeights[0].GetYaxis().SetTitleSize(0.04 * yscale);
 c.cd()
 c.Modified()
 c.Update()
@@ -108,6 +131,7 @@ fout = ROOT.TFile.Open('gammaptweight.root','RECREATE')
 fout.cd()
 ptWeights[0].Write()
 ptWeights[1].Write()
+c.Write()
 cdiff.Write()
 fout.Close()
 
