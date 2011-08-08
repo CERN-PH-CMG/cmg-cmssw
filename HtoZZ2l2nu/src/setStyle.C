@@ -235,7 +235,7 @@ void formatForCmsPublic(TPad * c, TLegend *leg, TString title, int nsamp, float 
 {
   if(title.Length()!=0)
     {
-      TPaveText *pave = new TPaveText(0.5,0.96,0.96,0.99,"NDC");
+      TPaveText *pave = new TPaveText(0.5,0.96,0.94,0.99,"NDC");
       pave->SetBorderSize(0);
       pave->SetFillStyle(0);
       pave->SetTextAlign(32);
