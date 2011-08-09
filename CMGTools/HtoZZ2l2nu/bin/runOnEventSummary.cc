@@ -301,6 +301,7 @@ int main(int argc, char* argv[])
 	      nbtags_ssvhe += passSSVHEM;
 	    }
 	}
+
       
       //uncomment the following lines when ready for evaluation of systematics
       // jcomp.compute(recoJetsP4,phys.met[0]);
@@ -340,6 +341,7 @@ int main(int argc, char* argv[])
       Float_t dphizz     = deltaPhi(zll.phi(),zvv.phi());
       Float_t mt         = mtComp.compute(zll,zvv,true);
       Float_t metoverzpt = met/zpt;
+      Float_t dphizleadl = ptl1>ptl2 ? deltaPhi(phys.leptons[0].phi(),zll.phi()) : deltaPhi(phys.leptons[1].phi(),zll.phi()) ;
 
       //redmet
       rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsp4, zvv );
@@ -380,6 +382,7 @@ int main(int argc, char* argv[])
 	  if(variable=="zeta")           tmvaVars[ivar]=zeta;
 	  if(variable=="met")            tmvaVars[ivar]=met;
 	  if(variable=="dphizz")         tmvaVars[ivar]=dphizz;
+          if(variable=="mt")             tmvaVars[ivar]=mt;
 	  if(variable=="metoverzpt")     tmvaVars[ivar]=metoverzpt;
 	  
 	  if(variable=="redMet")         tmvaVars[ivar]=redMet;
@@ -388,6 +391,7 @@ int main(int argc, char* argv[])
 	  if(variable=="redMetoverzpt")  tmvaVars[ivar]=redMetoverzpt;
 	  if(variable=="projMet")        tmvaVars[ivar]=projMet;
 	  if(variable=="projMetoverzpt") tmvaVars[ivar]=projMetoverzpt;
+          if(variable=="dphizleadl")     tmvaVars[ivar]=dphizleadl;
 	}
       tmvaVars[varsList.size()] = eventCategory;
 

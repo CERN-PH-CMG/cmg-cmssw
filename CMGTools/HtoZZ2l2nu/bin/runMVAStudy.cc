@@ -148,7 +148,8 @@ int main(int argc, char *argv[])
 	  Float_t dphizz     = deltaPhi(zll.phi(),zvv.phi());
 	  Float_t mt         = mtComp.compute(zll,zvv,true);
 	  Float_t metoverzpt = met/zpt;
-	  
+          Float_t dphizleadl = ptl1>ptl2 ? deltaPhi(phys.leptons[0].phi(),zll.phi()) : deltaPhi(phys.leptons[1].phi(),zll.phi()) ;
+  
 	  //redmet
 	  rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsP4, zvv );
 	  // int rMetCateg = rmetComp.getEventCategory();
@@ -180,7 +181,9 @@ int main(int argc, char *argv[])
 	      if(*it=="zeta")           tmvaVars[varCounter++]=zeta;
 	      if(*it=="met")            tmvaVars[varCounter++]=met;
 	      if(*it=="dphizz")         tmvaVars[varCounter++]=dphizz;
+              if(*it=="mt")             tmvaVars[varCounter++]=mt;
 	      if(*it=="metoverzpt")     tmvaVars[varCounter++]=metoverzpt;
+              if(*it=="dphizleadl")     tmvaVars[varCounter++]=dphizleadl;
 	  
 	      if(*it=="redMet")         tmvaVars[varCounter++]=redMet;
 	      if(*it=="redMetL")        tmvaVars[varCounter++]=redMetL;
