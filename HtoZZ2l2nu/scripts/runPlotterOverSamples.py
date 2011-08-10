@@ -465,7 +465,8 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
                     #create the base plot for this sample if non existing
                     if(len(procplots)<=iplot):
                         procplotstitles.append( p[1].GetTitle() )
-                        newname=p[1].GetName()+'_'+str(iprocess)
+#                        newname=p[1].GetName()+'_'+str(iprocess)
+                        newname=p[1].GetName()
                         newplot=p[1].Clone( newname )
                         newplot.Reset('ICE')
                         newplot.SetTitle(tag)
