@@ -45,7 +45,7 @@ struct ZZ2l2nuSummary_t
   Int_t jn;
   Float_t jn_px[MAXPARTICLES],jn_py[MAXPARTICLES],jn_pz[MAXPARTICLES],jn_en[MAXPARTICLES], jn_btag1[MAXPARTICLES], jn_btag2[MAXPARTICLES], jn_btag3[MAXPARTICLES], jn_btag4[MAXPARTICLES];  
   Bool_t jn_vtxAssoc[MAXPARTICLES]; 
-  Int_t jn_genid[MAXPARTICLES];
+  Int_t jn_genid[MAXPARTICLES], jn_genflav[MAXPARTICLES];
 
   //primary vertex
   Float_t vtx_px  ,vtx_py  ,vtx_pz  ,vtx_en;
