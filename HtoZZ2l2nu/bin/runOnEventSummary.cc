@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
       for(size_t imet=0; imet<methodList.size(); imet++)
 	{
           //open the file with the method description
-          TString weightFile = weightsDir + "/" + studyTag + ( evCategories.size()>1 ? "_Category_" + methodList[imet] : "") + TString(".weights.xml");
+          TString weightFile = weightsDir + "/" + studyTag + ( evCategories.size()>1 ? "_Category" : "_" + methodList[imet]) + TString(".weights.xml");
           gSystem->ExpandPathName(weightFile);
 
 	  tmvaReader->BookMVA(methodList[imet], weightFile);
@@ -162,26 +162,27 @@ int main(int argc, char* argv[])
 
   //book the other control histograms
   TH1F *h=new TH1F ("eventflow", ";Step;Events", 7,0,7);
-  h->GetXaxis()->SetBinLabel(2,"|M-M_{Z}|<15");
-  h->GetXaxis()->SetBinLabel(3,"3^{rd}-lepton veto");
-  h->GetXaxis()->SetBinLabel(4,"b-veto");
-  h->GetXaxis()->SetBinLabel(5,"red-E_{T}^{miss}>39");
-  h->GetXaxis()->SetBinLabel(6,"red-E_{T}^{miss}>57");
+  h->GetXaxis()->SetBinLabel(2,"Preselected");
+  h->GetXaxis()->SetBinLabel(3,"|M-M_{Z}|<15");
+  h->GetXaxis()->SetBinLabel(4,"3^{rd}-lepton veto");
+  h->GetXaxis()->SetBinLabel(5,"b-veto");
+  h->GetXaxis()->SetBinLabel(6,"red-E_{T}^{miss}>39");
+  h->GetXaxis()->SetBinLabel(7,"red-E_{T}^{miss}>57");
   controlHistos.addHistogram( h );
 
   controlHistos.addHistogram( new TH1F ("eventCategory", ";Event Category;Events", 4,0,4) );
 
   controlHistos.addHistogram( new TH1F ("nbtagslt30_jbp", ";b-tag multiplicity (JBP); Events", 4,0,4) );  
-  controlHistos.addHistogram( new TH1F ("nbtagslt30_smt", ";b-tag multiplicity (SMT IP3d); Events", 4,0,4) );  
   controlHistos.addHistogram( new TH1F ("nbtagslt30_ssvhe", ";b-tag multiplicity (SSVHE); Events", 4,0,4) );  
   controlHistos.addHistogram( new TH1F ("nbtagslt30_tche", ";b-tag multiplicity (TCHE); Events", 4,0,4) );  
-  controlHistos.addHistogram( new TH1F ("nbtagslt30", ";b-tag multiplicity (JBP or SSVHE); Events", 4,0,4) );  
+  controlHistos.addHistogram( new TH1F ("nbtagslt30", ";b-tag multiplicity (TCHE or SSVHE); Events", 4,0,4) );  
+  controlHistos.addHistogram( new TH1F ("nbtagslt30v2", ";b-tag multiplicity (JBP or SSVHE); Events", 4,0,4) );  
 
   controlHistos.addHistogram( new TH1F ("nbtags_jbp", ";b-tag multiplicity (JBP); Events", 4,0,4) );  
-  controlHistos.addHistogram( new TH1F ("nbtags_smt", ";b-tag multiplicity (SMT IP3d); Events", 4,0,4) );  
   controlHistos.addHistogram( new TH1F ("nbtags_ssvhe", ";b-tag multiplicity (SSVHE); Events", 4,0,4) );  
   controlHistos.addHistogram( new TH1F ("nbtags_tche", ";b-tag multiplicity (TCHE); Events", 4,0,4) );  
-  controlHistos.addHistogram( new TH1F ("nbtags", ";b-tag multiplicity (JBP or SSVHE); Events", 4,0,4) );  
+  controlHistos.addHistogram( new TH1F ("nbtags", ";b-tag multiplicity (TCHE or SSVHE); Events", 4,0,4) );  
+  controlHistos.addHistogram( new TH1F ("nbtagsv2", ";b-tag multiplicity (JBP or SSVHE); Events", 4,0,4) );  
 
   controlHistos.addHistogram( new TProfile ("metprof", ";Pileup events;E_{T}^{miss}", 15,0,15) ); 
   controlHistos.addHistogram( new TH2F ("metvspu", ";Pileup events;E_{T}^{miss}", 15,0,15,100,0,500) );  
@@ -298,32 +299,31 @@ int main(int argc, char* argv[])
       LorentzVector recoMetP4=phys.met[0];
       LorentzVector trkMetP4=phys.met[1];
       LorentzVectorCollection recoJetsP4;
-      int nbtags(0), nbtags_jbp(0), nbtags_smt(0), nbtags_tche(0), nbtags_ssvhe(0);
-      int nbtagslt30(0), nbtagslt30_jbp(0), nbtagslt30_smt(0), nbtagslt30_tche(0), nbtagslt30_ssvhe(0);
+      int nbtags(0), nbtags_jbp(0), nbtagsv2(0), nbtags_tche(0), nbtags_ssvhe(0);
+      int nbtagslt30(0), nbtagslt30_jbp(0), nbtagslt30v2(0), nbtagslt30_tche(0), nbtagslt30_ssvhe(0);
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++) 
 	{
 	  recoJetsP4.push_back( phys.jets[ijet] );
 	  if(fabs(phys.jets[ijet].eta())<2.5)
 	    {
 	      bool passTCHEL(phys.jets[ijet].btag1>1.7);
-	      bool passJBP(phys.jets[ijet].btag2>1.7);
+	      bool passJBP(phys.jets[ijet].btag2>1.33);
 	      bool passSSVHEM(phys.jets[ijet].btag3>1.74);
-	      bool passSMT(phys.jets[ijet].btag4>1.7);
 	      if(phys.jets[ijet].pt()>30)
 		{
-		  nbtags       += (passJBP || passSSVHEM);
+		  nbtags       += (passTCHEL || passSSVHEM);
+		  nbtagsv2       += (passJBP || passSSVHEM);
 		  nbtags_tche  += passTCHEL;
-		  nbtags_jbp  += passJBP;
+		  nbtags_jbp   += passJBP;
 		  nbtags_ssvhe += passSSVHEM;
-		  nbtags_smt += passSMT;
 		}
 	      else if(phys.jets[ijet].pt()>20)
 		{
-		  nbtagslt30       += (passJBP || passSSVHEM);
+		  nbtagslt30       += (passTCHEL || passSSVHEM);
+		  nbtagslt30v2       += (passJBP || passSSVHEM);
 		  nbtagslt30_tche  += passTCHEL;
 		  nbtagslt30_jbp  += passJBP;
 		  nbtagslt30_ssvhe += passSSVHEM;
-		  nbtagslt30_smt += passSMT;
 		}
 	    }
 	}
@@ -462,25 +462,27 @@ int main(int argc, char* argv[])
 	      TString ctf=catsToFill[ic]+subCatsToFill[isc]+subsubCatToFill;
 
 	      controlHistos.fillHisto("eventflow",ctf,1,weight);
+
 	      if(!passZmass) continue;
-
 	      controlHistos.fillHisto("eventflow",ctf,2,weight);
-	      if(!pass3dLeptonVeto) continue;
 
+	      if(!pass3dLeptonVeto) continue;
 	      controlHistos.fillHisto("eventflow",ctf,3,weight);
+
 	      controlHistos.fillHisto("nbtags",ctf, nbtags,weight);
 	      controlHistos.fillHisto("nbtags_tche",ctf, nbtags_tche,weight);
 	      controlHistos.fillHisto("nbtags_ssvhe",ctf, nbtags_ssvhe,weight);
 	      controlHistos.fillHisto("nbtags_jbp",ctf, nbtags_jbp,weight);
-	      controlHistos.fillHisto("nbtags_smt",ctf, nbtags_smt,weight);
+	      controlHistos.fillHisto("nbtagsv2",ctf, nbtagsv2,weight);
 	      controlHistos.fillHisto("nbtagslt30",ctf, nbtagslt30,weight);
 	      controlHistos.fillHisto("nbtagslt30_tche",ctf, nbtagslt30_tche,weight);
 	      controlHistos.fillHisto("nbtagslt30_ssvhe",ctf, nbtagslt30_ssvhe,weight);
 	      controlHistos.fillHisto("nbtagslt30_jbp",ctf, nbtagslt30_jbp,weight);
-	      controlHistos.fillHisto("nbtagslt30_smt",ctf, nbtagslt30_smt,weight);
-	      if(!passBveto) continue;
+	      controlHistos.fillHisto("nbtagslt30v2",ctf, nbtagslt30v2,weight);
 
+	      if(!passBveto) continue;
 	      controlHistos.fillHisto("eventflow",ctf,4,weight);
+
 	      controlHistos.fill2DHisto("zptvszeta", ctf,zll.pt(),zll.eta(),weight);
 	      for(size_t ivar=0; ivar<varsList.size(); ivar++)  controlHistos.fillHisto(varsList[ivar],ctf,tmvaVars[ivar],weight);
 	      controlHistos.fillHisto("eventCategory",ctf,eventCategory,weight);
