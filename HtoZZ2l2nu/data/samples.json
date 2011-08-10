@@ -164,6 +164,60 @@
              }
           ]
         },
+        {
+        "tag":"gg#rightarrow H(300)#rightarrow ZZ",
+        "isdata":false,
+        "spimpose":true,
+        "color":"kGray+3",
+        "lwidth":2,
+        "fill":0,
+        "marker":1,
+        "data":[
+             {
+                "dtag":"GGtoH300toZZto2L2Nu",
+		"dset":"/GluGluToHToZZTo2L2Nu_M-300_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
+                "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_06_22_HtoZZ2l2n/HZZ/GluGluToHToZZTo2L2Nu_M-300_7TeV-powheg-pythia6"],
+                "xsec":2.422,
+                "br":[0.307,0.0403896]
+             }
+          ]
+        },
+        {
+        "tag":"gg#rightarrow H(500)#rightarrow ZZ",
+        "isdata":false,
+        "spimpose":true,
+        "color":"kGray+3",
+        "lwidth":2,
+        "fill":0,
+        "marker":1,
+        "data":[
+             {
+                "dtag":"GGtoH500toZZto2L2Nu",
+		"dset":"/GluGluToHToZZTo2L2Nu_M-500_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
+                "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_06_22_HtoZZ2l2n/HZZ/GluGluToHToZZTo2L2Nu_M-500_7TeV-powheg-pythia6"],
+                "xsec":0.8491,
+                "br":[0.261,0.0403896]
+             }
+          ]
+        },
+        {
+        "tag":"qqH(400)->ZZ->2l2nu",
+        "isdata":false,
+        "spimpose":true,
+        "color":"kGray+1",
+        "lwidth":2,
+        "fill":0,
+        "marker":1,
+        "data":[
+             {
+                "dtag":"VBFtoH400toZZto2L2Nu",
+                "dset":" /VBF_ToHToZZTo2L2NU_M-400_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
+                "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_06_22_HtoZZ2l2n/qqHZZ/VBF_ToHToZZTo2L2NU_M-600_7TeV-powheg-pythia6"],
+                "xsec":0.1620,
+                "br":[0.256,0.0403896]
+             }
+          ]
+        },
 	{
            "tag":"data",
            "isdata":true,
