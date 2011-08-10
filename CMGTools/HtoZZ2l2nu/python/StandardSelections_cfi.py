@@ -73,7 +73,7 @@ BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectronsPF
                                    applyConversionVeto = cms.bool(True),
                                    maxDistToBeamSpot=cms.double(0.04),
                                    maxTrackLostHits = cms.int32(1),
-                                   id = cms.string("eidTight"),#eidTightMC"),
+                                   id = cms.string("eidTightMC"),#eidTight"),
                                    maxRelIso = cms.double(1.0),
                                    minDeltaRtoMuons = cms.double(0.1)
                                    )
