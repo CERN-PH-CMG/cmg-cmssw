@@ -37,7 +37,7 @@ void TestCMGTaus::testTau(TString inputtag){
     
   std::vector<string> files;
   for(Int_t i=firstfile_;i<=lastfile_;i++){
-    files.push_back((string)(dirname_+"/cmgTuple_"+(long)i+".root"));
+    files.push_back((string)(dirname_+(long)i+".root"));
   }
   fwlite::ChainEvent ev(files);
   
@@ -63,7 +63,7 @@ void TestCMGTaus::testTau(TString inputtag){
   TH1F HLeadNeutralCandPt("HLeadNeutralCandPt"," HLeadNeutralCand pt",100,1,101); HLeadNeutralCandPt.GetXaxis()->SetTitle(" p_{T} (GeV) ");
   TH1F HLeadNeutralCandEcalEnergy("HLeadNeutralCandEcalEnergy","LeadNeutralCand Ecal Energy",100,1,101); HLeadNeutralCandEcalEnergy.GetXaxis()->SetTitle(" energy (GeV) ");
 
-  TH1F HIsolation("HIsolation"," isolation",100,0,5); HIsolation.GetXaxis()->SetTitle(" relIso "); 
+  TH1F HIsolation("HIsolation"," isolation",100,0,5); HIsolation.GetXaxis()->SetTitle(" isolation "); 
   TH1F HDecaymode("HDecaymode"," decaymode",5,-0.5,4.5); HDecaymode.GetXaxis()->SetTitle("");
   //  std::string pfTauMode[15]={"oneProng0Pi0","oneProng1Pi0","oneProng2Pi0","oneProng3Pi0","oneProng4Pi0",
   //			     "twoProng0Pi0","twoProng1Pi0","twoProng2Pi0","twoProng3Pi0","twoProng4Pi0",
@@ -111,7 +111,7 @@ void TestCMGTaus::testTau(TString inputtag){
     event.getByLabel(edm::InputTag("offlinePrimaryVertices"),vertices);
     reco::Vertex primVtx=vertices->front();
 
-//     //this is how to look at the vertices
+//     //this is how to look at the tracks in the vertices
 //     Int_t ivtx=1;
 //     for(std::vector<reco::Vertex>::const_iterator vtx=vertices->begin(); vtx!=vertices->end(); ++vtx,ivtx++){
 //       float pt2=0.0;
@@ -145,7 +145,7 @@ void TestCMGTaus::testTau(TString inputtag){
       HLeadNeutralCandPt.Fill(cand->leadNeutralCandPt());    
       HLeadNeutralCandEcalEnergy.Fill(cand->leadNeutralCandECalEnergy());    
     
-      HIsolation.Fill(cand->relIso());
+        
       if(cand->decayMode()==0)HDecaymode.Fill(0);
       else if(cand->decayMode()==1)HDecaymode.Fill(1);
       else if(cand->decayMode()==2)HDecaymode.Fill(2);
@@ -321,8 +321,15 @@ void TestCMGTaus::testElectron(TString inputtag){
 
   edm::InputTag tag_((const char*)inputtag);
 
-  TFile File(dirname_,"read");
-  fwlite::Event ev(&File);
+
+  std::vector<string> files;
+  for(Int_t i=firstfile_;i<=lastfile_;i++){
+    files.push_back((string)(dirname_+(long)i+".root"));
+  }
+  fwlite::ChainEvent ev(files);
+
+  //  TFile File(dirname_,"read");
+  //  fwlite::Event ev(&File);
 
   TH1F Hn("Hn","number electrons / event",11,-.5,10.5); Hn.GetXaxis()->SetTitle(" # of electrons ");
   TH1F Hpt("Hpt","pt",100,0,80); Hpt.GetXaxis()->SetTitle(" p_{T} (GeV) ");
@@ -407,8 +414,15 @@ void TestCMGTaus::testMuon(TString inputtag){
 
   edm::InputTag tag_((const char*)inputtag);
 
-  TFile File(dirname_,"read");
-  fwlite::Event ev(&File);
+
+  std::vector<string> files;
+  for(Int_t i=firstfile_;i<=lastfile_;i++){
+    files.push_back((string)(dirname_+(long)i+".root"));
+  }
+  fwlite::ChainEvent ev(files);
+
+  //  TFile File(dirname_,"read");
+  //  fwlite::Event ev(&File);
 
   TH1F Hn("Hn","number of muons / event",11,-.5,10.5); Hn.GetXaxis()->SetTitle(" # of muons ");
   TH1F Hpt("Hpt","pt",100,0,80); Hpt.GetXaxis()->SetTitle(" p_{T} (GeV) ");
