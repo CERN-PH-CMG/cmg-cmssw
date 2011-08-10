@@ -498,7 +498,8 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
             #save copy in plotter.root
             pOut = TFile.Open("plotter.root","UPDATE")
             pOut.cd()
-            pDir = pOut.mkdir( 'proc_'+str(iprocess) )
+            #pDir = pOut.mkdir( 'proc_'+str(iprocess) )
+            pDir = pOut.mkdir( tag.replace('/','-') )
             pDir.cd()
             for i in xrange(0,len(procplots)): procplots[i].Write()
             pOut.Close()
