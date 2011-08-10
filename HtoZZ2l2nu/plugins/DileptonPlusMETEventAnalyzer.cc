@@ -551,10 +551,11 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.jn_px[ev.jn] = jet->px();  ev.jn_py[ev.jn]=jet->py();  ev.jn_pz[ev.jn]=jet->pz(); ev.jn_en[ev.jn]=jet->energy();
 	const reco::Candidate *genParton = jet->genParton();
 	ev.jn_genid[ev.jn] = genParton ? genParton->pdgId() : -9999;
+	ev.jn_genflav[ev.jn] = jet->partonFlavour();
 	ev.jn_btag1[ev.jn]=jet->bDiscriminator("trackCountingHighEffBJetTags");
-	ev.jn_btag2[ev.jn]=jet->bDiscriminator("trackCountingHighPurBJetTags");
+	ev.jn_btag2[ev.jn]=jet->bDiscriminator("jetBProbabilityBJetTags");
 	ev.jn_btag3[ev.jn]=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
-	ev.jn_btag4[ev.jn]=jet->bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
+	ev.jn_btag4[ev.jn]=jet->bDiscriminator("softMuonByIP3dBJetTags");
 	ev.jn_vtxAssoc[ev.jn]=true;
         ev.jn++;
       }

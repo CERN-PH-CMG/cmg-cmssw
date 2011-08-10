@@ -83,15 +83,17 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH2D ("qtvsnjets", ";p_{T}^{#gamma} [GeV/c];Jets;Events / (2.5 GeV/c)", nqtBins, qtAxis,6,0,6) );
   controlHistos.addHistogram( new TH1F ("metoverqt", ";type I E_{T}^{miss}/p_{T}^{#gamma};Events", 100,0,2.5) );
   controlHistos.addHistogram( new TH1F ("met", ";type-I E_{T}^{miss} [GeV];Events", 100,0,200) );  
+  controlHistos.addHistogram( new TH1F ("npu", ";Pileup;Events", 30,0,30) );
   controlHistos.addHistogram( new TH1F ("redmet", ";red-E_{T}^{miss} [GeV];Events", 100,0,200) );  
   controlHistos.addHistogram( new TH1F ("njets", ";Jets;Events", 4,0,4) );  
+  controlHistos.addHistogram( new TH1F ("ptjets", ";p_{T} [GeV/c];Jets", 100,0,250) );  
   controlHistos.addHistogram( new TH1F ("dphijetmet", ";min #Delta#phi(jet,MET);Events", 100,-3.2,3.2) );  
   controlHistos.addHistogram( new TH1F ("redmetL", ";red-E_{T}^{miss,#parallel};Events", 100,-250,250) );
   controlHistos.addHistogram( new TH1F ("redmetT", ";red-E_{T}^{miss,#perp};Events", 100,-250,250) );
   controlHistos.addHistogram( (TH1D *)(new TH2D ("redmetLvsredmetT", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
   
   //trigger categories
-  //Int_t photoncats[]={0,20,30,50,75,90,125};  //the 90 GeV is not in MC?
+  //  Int_t photoncats[]={0,20,30,50,75,90,125};
   Int_t photoncats[]={0,20,30,50,75,125};
   const size_t nPhotonCats=sizeof(photoncats)/sizeof(Int_t);
   for(size_t icat=1; icat<nPhotonCats; icat++)
@@ -139,10 +141,10 @@ int main(int argc, char* argv[])
 
       int eventCategory = eventClassifComp.Get(phys);
       TString subcat    = eventClassifComp.GetLabel(eventCategory);
-
+      
       bool isGammaEvent(ev.cat>3 && phys.gamma.pt()>0);
-      float weight=1.0; //ev.weight;
-
+      float weight=ev.weight;
+      
       //event categories
       LorentzVector gamma(0,0,0,0);
       TString evcat("photon");
@@ -165,6 +167,8 @@ int main(int argc, char* argv[])
       else
 	{
 	  gamma=phys.leptons[0]+phys.leptons[1];
+	  if(fabs(gamma.mass()-91)>15) continue;
+	  if(ev.cat != dilepton::MUMU && ev.cat!=dilepton::EE) continue;
 	  if(mctruthmode==1 && ev.mccat!=gen::DY_EE && ev.mccat!=gen::DY_MUMU)  continue;
 	  if(mctruthmode==2 && ev.mccat!=gen::DY_TAUTAU) continue;
 	  
@@ -186,10 +190,12 @@ int main(int argc, char* argv[])
 
       evcat += triggerThr;
 
-      int njets30(0),njets(phys.jets.size());
+      int njets30(0),njets(0);
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
-	njets30 += (phys.jets[ijet].pt()>30);
-      
+	{
+	  njets   += (phys.jets[ijet].pt()>15 && fabs(phys.jets[ijet].eta())<2.5);
+	  njets30 += (phys.jets[ijet].pt()>30);
+	}
 
       //reweight to reproduce pt weight
       double ptweight(1.0);
@@ -238,7 +244,9 @@ int main(int argc, char* argv[])
 	  for(size_t isc=0; isc<sizeof(subCats)/sizeof(TString); isc++)
 	    {
 	      TString ctf=cats[ic]+subCats[isc];
-		
+	      
+	      controlHistos.fillHisto("npu",ctf, ev.ngenITpu,weight);
+
 	      if(jetsp4.size()) controlHistos.fillHisto("dphijetmet",ctf, mindphijetmet,weight);
 	      controlHistos.fillHisto("njets",ctf, njets,weight);
 	      controlHistos.fill2DHisto("qtvsnjets",ctf, gamma.pt(), njets,weight,true);
@@ -249,6 +257,12 @@ int main(int argc, char* argv[])
  	      controlHistos.fillHisto("redmetL", ctf,redmetL,weight);	      
 	      controlHistos.fillHisto("redmetT", ctf,redmetT,weight);	      
 	      controlHistos.fill2DHisto("redmetLvsredmetT", ctf,redmetL,redmetT,weight);	      
+
+	      for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
+		{
+		  if (phys.jets[ijet].pt()>15 && fabs(phys.jets[ijet].eta())<2.5)
+		    controlHistos.fillHisto("ptjets",ctf, phys.jets[ijet].pt(),weight);
+		}
 	    }
 	}
     }

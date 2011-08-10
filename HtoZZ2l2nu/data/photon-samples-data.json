@@ -1,14 +1,39 @@
 {
     "proc":[
 	{
-	"tag":"#gamma+jets (data)",
-	"isdata":false,
-	"spimpose":true,
-	"color":"kOrange",
+	 "tag":"|M_{ll}-91|<15 GeV/c^{2}",
+         "isdata":false,
+         "color":"831",
+	 "lcolor":1,
+         "normto":1,
+         "data":[
+                {
+                  "dtag":"MuEGMay10ReReco"
+		},
+                {
+                  "dtag":"DoubleMuMay10ReReco"
+		},
+                {
+                  "dtag":"DoubleElectronMay10ReReco"
+		},
+                {
+                  "dtag":"DoubleMuPromptReco"
+		},
+                {
+                  "dtag":"DoubleElectronPromptReco"
+		},
+                {
+                  "dtag":"MuEGPromptReco"
+		}
+          ]
+	},
+	{
+	"tag":"#gamma+jets",
+        "isdata":true,
+	"color":"1",
 	"lcolor":1,
-	"lwidth":2,
 	"fill":0,
-	"normto":1,
+	"normto":1,	
 	"data":[
 	     {	
 		"dtag":"PhotonMay10ReReco"
@@ -17,30 +42,6 @@
 		"dtag":"PhotonPromptReco"
 	     }
 	  ]
-	},
-	{
-	"tag":"dilepton data (|M_{ll}-91|<15 GeV/c^{2})",
-	"isdata":false,
-	"spimpose":true,
-	"color":"kRed",
-	"lwidth":3,
-	"line":2,
-	"fill":0,
-	"normto":1,
-	"data":[
-	     {	
-		"dtag":"DoubleMuMay10ReReco"
-	     },
-	     {	
-		"dtag":"DoubleMuPromptReco"
-	     },
-	     {	
-		"dtag":"DoubleElectronMay10ReReco"
-	     },
-	     {	
-		"dtag":"DoubleElectronPromptReco"
-	     }
-	  ]
-	}
+    	}
     ]	
 }

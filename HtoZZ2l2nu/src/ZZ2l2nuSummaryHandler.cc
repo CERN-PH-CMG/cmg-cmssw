@@ -87,6 +87,7 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("jn_pz",      evSummary_.jn_pz,       "jn_pz[jn]/F");
   t_->Branch("jn_en",      evSummary_.jn_en,       "jn_en[jn]/F");
   t_->Branch("jn_genid",   evSummary_.jn_genid,    "jn_genid[jn]/I");
+  t_->Branch("jn_genflav",   evSummary_.jn_genflav,    "jn_genflav[jn]/I");
   t_->Branch("jn_btag1",   evSummary_.jn_btag1,    "jn_btag1[jn]/F");
   t_->Branch("jn_btag2",   evSummary_.jn_btag2,    "jn_btag2[jn]/F");
   t_->Branch("jn_btag3",   evSummary_.jn_btag3,    "jn_btag3[jn]/F");
@@ -232,6 +233,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("jn_pz")     ->SetAddress(evSummary_.jn_pz);
   t_->GetBranch("jn_en")     ->SetAddress(evSummary_.jn_en);
   t_->GetBranch("jn_genid")  ->SetAddress(evSummary_.jn_genid);
+  if(t_->GetBranch("jn_genflav")) t_->GetBranch("jn_genflav")->SetAddress(evSummary_.jn_genflav);
   t_->GetBranch("jn_btag1")  ->SetAddress(evSummary_.jn_btag1);
   t_->GetBranch("jn_btag2")  ->SetAddress(evSummary_.jn_btag2);
   t_->GetBranch("jn_btag3")  ->SetAddress(evSummary_.jn_btag3);
