@@ -44,8 +44,10 @@ TH1D *getHistogramForVariable(TString variable)
   if(variable=="maxdrlz")        h = new TH1D( variable, ";max #DeltaR(l,Z);Events",100,0,6);
   if(variable=="ptl1")           h = new TH1D( variable, ";p_{T}(l^{(1)});Events", 100,0,1000);
   if(variable=="ptl2")           h = new TH1D( variable, ";p_{T}(l^{(2)});Events", 100,0,1000);
+  if(variable=="ptsum")          h = new TH1D( variable, ";#Sigma p_{T}(l^{(i)});Events", 100,0,1000);
   if(variable=="mtl1")           h = new TH1D( variable, ";M_{T}(l^{(1)},E_{T}^{miss});Events", 100,0,1000);
   if(variable=="mtl2")           h = new TH1D( variable, ";M_{T}(l^{(2)},E_{T}^{miss});Events", 100,0,1000);
+  if(variable=="mtsum")          h = new TH1D( variable, ";#Sigma M_{T}(l^{(i)},E_{T}^{miss});Events", 100,0,1000);
 
   if(variable=="zmass")          h = new TH1D( variable, ";M^{ll};Events", 100,91-15,91+15);
   if(variable=="zpt")            h = new TH1D( variable, ";p_{T}^{ll};Events", 100,0,400);
@@ -94,6 +96,9 @@ int main(int argc, char* argv[])
   bool isMC = runProcess.getParameter<bool>("isMC");
   double xsec = runProcess.getParameter<double>("xsec");
 
+  TString outUrl( outdir );
+  gSystem->Exec("mkdir -p " + outUrl);
+
   //tree info
   int evStart=runProcess.getParameter<int>("evStart");
   int evEnd=runProcess.getParameter<int>("evEnd");
@@ -140,7 +145,7 @@ int main(int argc, char* argv[])
       for(size_t imet=0; imet<methodList.size(); imet++)
 	{
           //open the file with the method description
-          TString weightFile = weightsDir + "/" + studyTag + ( evCategories.size()>1 ? "_Category_" + methodList[imet] : "") + TString(".weights.xml");
+          TString weightFile = weightsDir + "/" + studyTag + ( evCategories.size()>1 ? "_Category" : "_" + methodList[imet]) + TString(".weights.xml");
           gSystem->ExpandPathName(weightFile);
 
 	  tmvaReader->BookMVA(methodList[imet], weightFile);
@@ -270,7 +275,7 @@ int main(int argc, char* argv[])
     {
       summaryWeight = xsec * float(totalEntries) / (cnorm * float(normEntries) );
       spyHandler = new ZZ2l2nuSummaryHandler;
-      spyFile = TFile::Open("EventSummaries.root","UPDATE");
+      spyFile = TFile::Open(outUrl + "/EventSummaries.root","UPDATE");
       TString evtag=gSystem->BaseName(url);
       evtag.ReplaceAll(".root","");
       spyFile->rmdir(evtag);
@@ -387,8 +392,10 @@ int main(int argc, char* argv[])
       Float_t maxdrlz    = max( deltaR(phys.leptons[0],zll), deltaR(phys.leptons[1],zll) );
       Float_t ptl1       = phys.leptons[0].pt();
       Float_t ptl2       = phys.leptons[1].pt();
+      Float_t ptsum      = ptl1+ptl2;
       Float_t mtl1       = mtComp.compute(phys.leptons[0],zvv,false);
       Float_t mtl2       = mtComp.compute(phys.leptons[1],zvv,false);
+      Float_t mtsum      = mtl1+mtl2;
       Float_t zmass      = zll.mass();
       Float_t zpt        = zll.pt();
       Float_t zeta       = zll.eta();
@@ -405,10 +412,8 @@ int main(int argc, char* argv[])
       Float_t redMetL        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
       Float_t redMetT        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t redMetoverzpt  = redMet/zpt;
-      TVector2 reducedMETcartesian = rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      LorentzVector redMetP4(reducedMETcartesian.X(),reducedMETcartesian.Y(),0,redMet);
-      mtl1       = mtComp.compute(phys.leptons[0],redMetP4,false);
-      mtl2       = mtComp.compute(phys.leptons[1],redMetP4,false);
+      // TVector2 reducedMETcartesian = rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+      // LorentzVector redMetP4(reducedMETcartesian.X(),reducedMETcartesian.Y(),0,redMet);
 
       //projected met
       Float_t projMet        = pmetComp.compute(phys.leptons[0], phys.leptons[1], zvv );
@@ -430,8 +435,10 @@ int main(int argc, char* argv[])
 	  if(variable=="maxdrlz")        tmvaVars[ivar]=maxdrlz;
 	  if(variable=="ptl1")           tmvaVars[ivar]=ptl1;
 	  if(variable=="ptl2")           tmvaVars[ivar]=ptl2;
+	  if(variable=="ptsum")          tmvaVars[ivar]=ptsum;
 	  if(variable=="mtl1")           tmvaVars[ivar]=mtl1;
 	  if(variable=="mtl2")           tmvaVars[ivar]=mtl2;
+	  if(variable=="mtsum")          tmvaVars[ivar]=mtsum;
 	  
 	  if(variable=="zmass")          tmvaVars[ivar]=zmass;
 	  if(variable=="zpt")            tmvaVars[ivar]=zpt;
@@ -618,9 +625,7 @@ int main(int argc, char* argv[])
   //all done with the events file
   file->Close();
 
-  //save to file
-  TString outUrl( outdir );
-  gSystem->Exec("mkdir -p " + outUrl);
+  //save control plots to file
   outUrl += "/";
   outUrl += gSystem->BaseName(url);
   

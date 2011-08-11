@@ -123,7 +123,7 @@
 
 	  //store neighborhood of the working point
 	  double maxeffb(evcat.Contains("vbf") ? wp*100 : wp*10);
-	  double mineffb(evcat.Contains("vbf") ? wp*0.001 : wp*0.1);
+	  double mineffb(evcat.Contains("vbf") ? wp*0.01 : wp*0.1);
 	  if(effb<maxeffb && effb>mineffb)
 	    {
 	      cutNeighboorhoodZoomGr->SetPoint(imp, effb, dy->GetXaxis()->GetBinCenter(xbin) );
