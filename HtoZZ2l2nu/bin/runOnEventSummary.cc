@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
       for(size_t imet=0; imet<methodList.size(); imet++)
 	{
           //open the file with the method description
-          TString weightFile = weightsDir + "/" + studyTag + ( evCategories.size()>1 ? "_Category" : "_" + methodList[imet]) + TString(".weights.xml");
+          TString weightFile = weightsDir + "/" + studyTag + ( evCategories.size()>1 ? "_Category_" + methodList[imet] : "") + TString(".weights.xml");
           gSystem->ExpandPathName(weightFile);
 
 	  tmvaReader->BookMVA(methodList[imet], weightFile);
@@ -387,7 +387,7 @@ int main(int argc, char* argv[])
       // Float_t minMetoverzpt   = minMet/zpt;
 
       if(redMet<39)continue;
-
+      if(useMVA && redMet<57)continue;
 
       //set the variables to be used in the MVA evaluation (independently of its use)
       for(size_t ivar=0; ivar<varsList.size(); ivar++) 
