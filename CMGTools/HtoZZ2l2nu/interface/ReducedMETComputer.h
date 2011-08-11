@@ -4,8 +4,8 @@
 /** \class ReducedMETComputer
  *  No description available.
  *
- *  $Date: 2011/06/23 12:35:44 $
- *  $Revision: 1.7 $
+ *  $Date: 2011/07/01 08:36:56 $
+ *  $Revision: 1.8 $
  *  \author G. Cerminara & D. Trocino & P. Silva
  */
 
@@ -18,6 +18,8 @@
 #include "Math/LorentzVector.h"
 #include "TVector2.h"
 
+#include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
+
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 typedef std::vector<LorentzVector> LorentzVectorCollection;
 
@@ -25,7 +27,7 @@ class ReducedMETComputer {
 public:
   
   enum RedMetType { D0, MINIMIZED, INDEPENDENTLYMINIMIZED };
-  enum EventCategory { COLLIMATED, OPENANGLE };
+  enum DileptonTopology { COLLIMATED, OPENANGLE };
   enum PreferedRecoil { CLUSTERED, UNCLUSTERED };
  
   /// Constructor
@@ -183,6 +185,32 @@ public:
     {
       return std::make_pair(deltaDileptonProj_long,deltaDileptonProj_perp);
     }
+
+  enum WorkingPoints { MEDIUMWP, TIGHTWP };
+  double getCut(int eventCategory, int workingpoint=MEDIUMWP)
+  {
+    double cut(0);
+    switch(eventCategory)
+      {
+      case EventCategory::EQ0JETS :
+	if(workingpoint==MEDIUMWP) cut=30.04;
+	if(workingpoint==TIGHTWP)  cut=39.4;
+	break;
+      case EventCategory::EQ1JETS :
+	if(workingpoint==MEDIUMWP) cut=44.0;
+	if(workingpoint==TIGHTWP)  cut=54.5;
+	break;
+      case EventCategory::GEQ2JETS :
+	if(workingpoint==MEDIUMWP) cut=50.35;
+	if(workingpoint==TIGHTWP)  cut=81.2;
+	break;
+      case EventCategory::VBF :
+	if(workingpoint==MEDIUMWP) cut=57.36;
+	if(workingpoint==TIGHTWP)  cut=60.2;
+	break;
+      }
+    return cut;
+  }
   
  private:
   
