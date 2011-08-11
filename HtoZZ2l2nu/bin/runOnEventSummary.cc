@@ -47,7 +47,7 @@ TH1D *getHistogramForVariable(TString variable)
   if(variable=="mtl1")           h = new TH1D( variable, ";M_{T}(l^{(1)},E_{T}^{miss});Events", 100,0,1000);
   if(variable=="mtl2")           h = new TH1D( variable, ";M_{T}(l^{(2)},E_{T}^{miss});Events", 100,0,1000);
 
-  if(variable=="zmass")          h = new TH1D( variable, ";M^{ll};Events", 100,50,200);
+  if(variable=="zmass")          h = new TH1D( variable, ";M^{ll};Events", 100,91-15,91+15);
   if(variable=="zpt")            h = new TH1D( variable, ";p_{T}^{ll};Events", 100,0,400);
   if(variable=="zeta")           h = new TH1D( variable, ";#eta^{ll};Events", 100,-5,5);
   if(variable=="met")            h = new TH1D( variable, ";E_{T}^{miss};Events", 100,0,500);
@@ -170,25 +170,44 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(7,"red-E_{T}^{miss}>57");
   controlHistos.addHistogram( h );
 
+  controlHistos.addHistogram( new TH1F("nvtx",";Vertices;Events",25,0,25) );
+
+  controlHistos.addHistogram( new TH1F("recodphill",";#Delta#phi(l^{(1)},l^{(2)});Events",100,-3.2,3.2) );
+  controlHistos.addHistogram( new TH1F("recozmass", ";M^{ll};Events", 100,91-15,91+15) );
+
+  h=new TH1F("njets",";Jet multiplicity (p_{T}>15 GeV/c #wedge |#eta|<2.5);Events",4,0,4);
+  h->GetXaxis()->SetBinLabel(1,"0");
+  h->GetXaxis()->SetBinLabel(2,"1");
+  h->GetXaxis()->SetBinLabel(3,"2");
+  h->GetXaxis()->SetBinLabel(4,"#geq 3");
+  controlHistos.addHistogram(h);
+
   controlHistos.addHistogram( new TH1F ("eventCategory", ";Event Category;Events", 4,0,4) );
 
-  controlHistos.addHistogram( new TH1F ("nbtagslt30_jbp", ";b-tag multiplicity (JBP); Events", 4,0,4) );  
-  controlHistos.addHistogram( new TH1F ("nbtagslt30_ssvhe", ";b-tag multiplicity (SSVHE); Events", 4,0,4) );  
-  controlHistos.addHistogram( new TH1F ("nbtagslt30_tche", ";b-tag multiplicity (TCHE); Events", 4,0,4) );  
-  controlHistos.addHistogram( new TH1F ("nbtagslt30", ";b-tag multiplicity (TCHE or SSVHE); Events", 4,0,4) );  
-  controlHistos.addHistogram( new TH1F ("nbtagslt30v2", ";b-tag multiplicity (JBP or SSVHE); Events", 4,0,4) );  
+  //b-veto cuts
+  h = new TH1F ("nbtags", ";b-tag multiplicity; Events", 3,0,3);  
+  h->GetXaxis()->SetBinLabel(1,"0 b-tags");
+  h->GetXaxis()->SetBinLabel(2,"1 b-tags");
+  h->GetXaxis()->SetBinLabel(3,"#geq 2 b-tags");
+  controlHistos.addHistogram( h );
+  h=new TH1F ("npassbveto", ";Pass b-tag veto; Events", 6,0,6);
+  h->GetXaxis()->SetBinLabel(1,"SSVHEM");
+  h->GetXaxis()->SetBinLabel(2,"TCHEL");
+  h->GetXaxis()->SetBinLabel(3,"TCHE>2");
+  h->GetXaxis()->SetBinLabel(4,"JBP");
+  h->GetXaxis()->SetBinLabel(5,"SSVHEM || TCHEL");
+  h->GetXaxis()->SetBinLabel(6,"SSVHEM || JBPL");
+  controlHistos.addHistogram( h );
+  controlHistos.addHistogram( (TH1F *)h->Clone("npassbveto_20to30" ) );
 
-  controlHistos.addHistogram( new TH1F ("nbtags_jbp", ";b-tag multiplicity (JBP); Events", 4,0,4) );  
-  controlHistos.addHistogram( new TH1F ("nbtags_ssvhe", ";b-tag multiplicity (SSVHE); Events", 4,0,4) );  
-  controlHistos.addHistogram( new TH1F ("nbtags_tche", ";b-tag multiplicity (TCHE); Events", 4,0,4) );  
-  controlHistos.addHistogram( new TH1F ("nbtags", ";b-tag multiplicity (TCHE or SSVHE); Events", 4,0,4) );  
-  controlHistos.addHistogram( new TH1F ("nbtagsv2", ";b-tag multiplicity (JBP or SSVHE); Events", 4,0,4) );  
-
+  //met control
+  controlHistos.addHistogram( new TH1D( "met", ";E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram( new TProfile ("metprof", ";Pileup events;E_{T}^{miss}", 15,0,15) ); 
   controlHistos.addHistogram( new TH2F ("metvspu", ";Pileup events;E_{T}^{miss}", 15,0,15,100,0,500) );  
   controlHistos.addHistogram( new TProfile ("redMetprof", ";Pileup events;red-E_{T}^{miss}", 15,0,15) );  
   controlHistos.addHistogram( new TH2F ("redMetvspu", ";Pileup events;red-E_{T}^{miss}", 15,0,15,100,0,500) );  
   controlHistos.addHistogram( (TH1D *)(new TH2D ("redMetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
+  controlHistos.addHistogram( new TH1D( "projMet", ";proj-E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram( new TProfile ("projMetprof", ";Pileup events;projected E_{T}^{miss}", 15,0,15) );  
   controlHistos.addHistogram( new TH2F ("projMetvspu", ";Pileup events;projected E_{T}^{miss}", 15,0,15,100,0,500) );  
 
@@ -276,7 +295,9 @@ int main(int argc, char* argv[])
       float weight=ev.weight;
       if(!isMC) weight=1;
 
-      //classify the event                                                                                                                                                                                                                  
+      
+
+      //classify the event
       int eventCategory = eventClassifComp.Get(phys);
       TString subcat    = eventClassifComp.GetLabel(eventCategory);
 
@@ -299,36 +320,7 @@ int main(int argc, char* argv[])
       LorentzVector recoMetP4=phys.met[0];
       LorentzVector trkMetP4=phys.met[1];
       LorentzVectorCollection recoJetsP4;
-      int nbtags(0), nbtags_jbp(0), nbtagsv2(0), nbtags_tche(0), nbtags_ssvhe(0);
-      int nbtagslt30(0), nbtagslt30_jbp(0), nbtagslt30v2(0), nbtagslt30_tche(0), nbtagslt30_ssvhe(0);
-      for(size_t ijet=0; ijet<phys.jets.size(); ijet++) 
-	{
-	  recoJetsP4.push_back( phys.jets[ijet] );
-	  if(fabs(phys.jets[ijet].eta())<2.5)
-	    {
-	      bool passTCHEL(phys.jets[ijet].btag1>1.7);
-	      bool passJBP(phys.jets[ijet].btag2>1.33);
-	      bool passSSVHEM(phys.jets[ijet].btag3>1.74);
-	      if(phys.jets[ijet].pt()>30)
-		{
-		  nbtags       += (passTCHEL || passSSVHEM);
-		  nbtagsv2       += (passJBP || passSSVHEM);
-		  nbtags_tche  += passTCHEL;
-		  nbtags_jbp   += passJBP;
-		  nbtags_ssvhe += passSSVHEM;
-		}
-	      else if(phys.jets[ijet].pt()>20)
-		{
-		  nbtagslt30       += (passTCHEL || passSSVHEM);
-		  nbtagslt30v2       += (passJBP || passSSVHEM);
-		  nbtagslt30_tche  += passTCHEL;
-		  nbtagslt30_jbp  += passJBP;
-		  nbtagslt30_ssvhe += passSSVHEM;
-		}
-	    }
-	}
 
-      
       //uncomment the following lines when ready for evaluation of systematics
       // jcomp.compute(recoJetsP4,phys.met[0]);
       // LorentzVector metVars[] = { recoMetP4, 
@@ -345,12 +337,49 @@ int main(int argc, char* argv[])
       // 	  LorentzVector metP4=metVars[ivar];
       //          LorentzVectorCollection jetsp4=jetVars[ivar];
 
+      //count b-tags
+      int njets(0);
+      int nbtags(0),        nbtags_ssvhem(0),        nbtags_tchel(0),        nbtags_tche2(0),        nbtags_jbpl(0),        nbtags_ssvhemORtchel(0);
+      int nbtags_20to30(0), nbtags_ssvhem_20to30(0), nbtags_tchel_20to30(0), nbtags_tche2_20to30(0), nbtags_jbpl_20to30(0), nbtags_ssvhemORtchel_20to30(0);
+      for(size_t ijet=0; ijet<phys.jets.size(); ijet++) 
+	{
+	  recoJetsP4.push_back( phys.jets[ijet] );
+	  if(fabs(phys.jets[ijet].eta())<2.5)
+	    {
+	      njets++;
+
+	      bool passTCHEL(phys.jets[ijet].btag1>1.7);
+	      bool passTCHE2(phys.jets[ijet].btag1>2.0);
+	      bool passJBPL(phys.jets[ijet].btag2>1.33);
+	      bool passSSVHEM(phys.jets[ijet].btag3>1.74);
+	      if(phys.jets[ijet].pt()>30)
+		{
+		  nbtags          += (passJBPL || passSSVHEM);
+		  nbtags_ssvhem   += passSSVHEM;
+		  nbtags_tchel    += passTCHEL;
+		  nbtags_tche2    += passTCHE2;
+		  nbtags_jbpl     += passJBPL;
+		  nbtags_ssvhemORtchel += (passTCHEL || passSSVHEM);
+		}
+	      else if(phys.jets[ijet].pt()>20)
+		{
+		  nbtags_20to30          += (passJBPL || passSSVHEM);
+		  nbtags_ssvhem_20to30   += passSSVHEM;
+		  nbtags_tchel_20to30    += passTCHEL;
+		  nbtags_tche2_20to30    += passTCHE2;
+		  nbtags_jbpl_20to30     += passJBPL;
+		  nbtags_ssvhemORtchel_20to30 += (passTCHEL || passSSVHEM);
+		}
+	    }
+	}
+
+      //the jet/met collections to use
       LorentzVector metP4=recoMetP4; 
       LorentzVectorCollection jetsp4=recoJetsP4;
 
       //z+met kinematics
-      LorentzVector zll=phys.leptons[0]+phys.leptons[1];
-      LorentzVector zvv=metP4;
+      LorentzVector zll  = phys.leptons[0]+phys.leptons[1];
+      LorentzVector zvv  = metP4;
       Float_t dphill     = deltaPhi(phys.leptons[0].phi(),phys.leptons[1].phi());
       Float_t detall     = phys.leptons[0].eta()-phys.leptons[1].eta();
       Float_t drll       = deltaR(phys.leptons[0],phys.leptons[1]);
@@ -369,13 +398,17 @@ int main(int argc, char* argv[])
       Float_t metoverzpt = met/zpt;
       Float_t dphizleadl = ptl1>ptl2 ? deltaPhi(phys.leptons[0].phi(),zll.phi()) : deltaPhi(phys.leptons[1].phi(),zll.phi()) ;
 
+
       //redmet
       rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsp4, zvv );
-      // int rMetCateg = rmetComp.getEventCategory();
       Float_t redMet         = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
       Float_t redMetL        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
       Float_t redMetT        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t redMetoverzpt  = redMet/zpt;
+      TVector2 reducedMETcartesian = rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+      LorentzVector redMetP4(reducedMETcartesian.X(),reducedMETcartesian.Y(),0,redMet);
+      mtl1       = mtComp.compute(phys.leptons[0],redMetP4,false);
+      mtl2       = mtComp.compute(phys.leptons[1],redMetP4,false);
 
       //projected met
       Float_t projMet        = pmetComp.compute(phys.leptons[0], phys.leptons[1], zvv );
@@ -385,9 +418,6 @@ int main(int argc, char* argv[])
       //Float_t projTrkMet     = pmetComp.compute(phys.leptons[0],phys.leptons[1], trkMetP4);
       //Float_t minMet        = min(fabs(projMet),fabs(projTrkMet));
       // Float_t minMetoverzpt   = minMet/zpt;
-
-      if(redMet<39)continue;
-      if(useMVA && redMet<57)continue;
 
       //set the variables to be used in the MVA evaluation (independently of its use)
       for(size_t ivar=0; ivar<varsList.size(); ivar++) 
@@ -448,8 +478,8 @@ int main(int argc, char* argv[])
       bool passZmass(fabs(zmass-91)<15);
       bool pass3dLeptonVeto(ev.ln==0);
       bool passBveto(nbtags==0);
-      bool passMediumRedMet(redMet>39);
-      bool passTightRedMet(redMet>57);
+      bool passMediumRedMet(redMet>rmetComp.getCut(eventCategory,ReducedMETComputer::MEDIUMWP));
+      bool passTightRedMet(redMet>rmetComp.getCut(eventCategory,ReducedMETComputer::TIGHTWP));
 
       //fill control histograms
       TString catsToFill[]={"all",evcat};
@@ -461,40 +491,51 @@ int main(int argc, char* argv[])
 	    {
 	      TString ctf=catsToFill[ic]+subCatsToFill[isc]+subsubCatToFill;
 
+
+	      controlHistos.fillHisto("nvtx",ctf,ev.nvtx,weight);
 	      controlHistos.fillHisto("eventflow",ctf,1,weight);
 
 	      if(!passZmass) continue;
 	      controlHistos.fillHisto("eventflow",ctf,2,weight);
+	      controlHistos.fillHisto("recodphill",ctf,dphill,weight);
+	      controlHistos.fillHisto("recozmass",ctf,zll.mass(),weight);
 
 	      if(!pass3dLeptonVeto) continue;
 	      controlHistos.fillHisto("eventflow",ctf,3,weight);
 
+	      controlHistos.fillHisto("njets",ctf,njets,weight);
 	      controlHistos.fillHisto("nbtags",ctf, nbtags,weight);
-	      controlHistos.fillHisto("nbtags_tche",ctf, nbtags_tche,weight);
-	      controlHistos.fillHisto("nbtags_ssvhe",ctf, nbtags_ssvhe,weight);
-	      controlHistos.fillHisto("nbtags_jbp",ctf, nbtags_jbp,weight);
-	      controlHistos.fillHisto("nbtagsv2",ctf, nbtagsv2,weight);
-	      controlHistos.fillHisto("nbtagslt30",ctf, nbtagslt30,weight);
-	      controlHistos.fillHisto("nbtagslt30_tche",ctf, nbtagslt30_tche,weight);
-	      controlHistos.fillHisto("nbtagslt30_ssvhe",ctf, nbtagslt30_ssvhe,weight);
-	      controlHistos.fillHisto("nbtagslt30_jbp",ctf, nbtagslt30_jbp,weight);
-	      controlHistos.fillHisto("nbtagslt30v2",ctf, nbtagslt30v2,weight);
+	      controlHistos.fillHisto("npassbveto",ctf,0, (nbtags_ssvhem==0)*weight);
+	      controlHistos.fillHisto("npassbveto",ctf,1, (nbtags_tchel==0)*weight);
+	      controlHistos.fillHisto("npassbveto",ctf,2, (nbtags_tche2==0)*weight);
+	      controlHistos.fillHisto("npassbveto",ctf,3, (nbtags_jbpl==0)*weight);
+	      controlHistos.fillHisto("npassbveto",ctf,4, (nbtags_ssvhemORtchel==0)*weight);
+	      controlHistos.fillHisto("npassbveto",ctf,5, (nbtags==0)*weight);
 
 	      if(!passBveto) continue;
 	      controlHistos.fillHisto("eventflow",ctf,4,weight);
+	      controlHistos.fillHisto("npassbveto_20to30",ctf,0, (nbtags_ssvhem_20to30==0)*weight);
+	      controlHistos.fillHisto("npassbveto_20to30",ctf,1, (nbtags_tchel_20to30==0)*weight);
+	      controlHistos.fillHisto("npassbveto_20to30",ctf,2, (nbtags_tche2_20to30==0)*weight);
+	      controlHistos.fillHisto("npassbveto_20to30",ctf,3, (nbtags_jbpl_20to30==0)*weight);
+	      controlHistos.fillHisto("npassbveto_20to30",ctf,4, (nbtags_ssvhemORtchel_20to30==0)*weight);
+	      controlHistos.fillHisto("npassbveto_20to30",ctf,5, (nbtags_20to30==0)*weight);
 
+	      
 	      controlHistos.fill2DHisto("zptvszeta", ctf,zll.pt(),zll.eta(),weight);
 	      for(size_t ivar=0; ivar<varsList.size(); ivar++)  controlHistos.fillHisto(varsList[ivar],ctf,tmvaVars[ivar],weight);
 	      controlHistos.fillHisto("eventCategory",ctf,eventCategory,weight);
+	      controlHistos.fillHisto("met", ctf,zvv.pt(),weight);
 	      controlHistos.fillProfile("metprof", ctf,ev.ngenITpu,met);
 	      controlHistos.fill2DHisto("metvspu", ctf,ev.ngenITpu,met,weight);
+	      controlHistos.fillHisto("projMet", ctf,projMet,weight);
 	      controlHistos.fillProfile("projMetprof", ctf,ev.ngenITpu,projMet);
 	      controlHistos.fill2DHisto("projMetvspu", ctf,ev.ngenITpu,projMet,weight);     
 	      controlHistos.fillProfile("redMetprof", ctf,ev.ngenITpu,redMet);
 	      controlHistos.fill2DHisto("redMetvspu", ctf,ev.ngenITpu,redMet,weight);
 	      controlHistos.fillHisto("redMetcomps", ctf,redMetL,redMetT,weight);	
 	      
-	      //save summary tree now if required -> move this to after the red-MET cut
+	      //save summary tree now if required -> move this to after the red-MET cut ?
 	      if(saveSummaryTree && ev.normWeight==1)
 		{
 		  ev.pass=passMediumRedMet+passTightRedMet;
@@ -502,6 +543,10 @@ int main(int argc, char* argv[])
 		  spyHandler->fillTree();
 		}
 	      
+	      //red-met cut
+	      if(!passMediumRedMet)  continue;
+	      controlHistos.fillHisto("eventflow",ctf,5,weight);
+
 	      //control for discriminators evaluated
 	      for(size_t imet=0; imet<methodList.size(); imet++)
 		{
@@ -520,11 +565,7 @@ int main(int argc, char* argv[])
 		      controlHistos.fillHisto("Fisher_Rarity",ctf, fisherRarity, weight);
 		    }
 		}
-	      
-
-	      //red-met cut
-	      if(!passMediumRedMet)  continue;
-	      controlHistos.fillHisto("eventflow",ctf,5,weight);
+	      	      
 	      if(!passTightRedMet)  continue;
 	      controlHistos.fillHisto("eventflow",ctf,6,weight);
 	      	      

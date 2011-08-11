@@ -37,7 +37,7 @@ BaseVertexSelection = cms.PSet( source = cms.InputTag("offlinePrimaryVertices"),
                                 beamSpot = cms.InputTag("offlineBeamSpot"),
                                 maxZ = cms.double(24),
                                 maxRho = cms.double(2.0),
-                                minNDOF = cms.int32(7)
+                                minNDOF = cms.int32(4)
                                 )
 
 # base values for muon selection ----------------------------------------------
