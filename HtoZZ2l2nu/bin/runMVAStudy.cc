@@ -126,6 +126,9 @@ int main(int argc, char *argv[])
 	  //consider only ee/mumu
 	  if(ev.cat!=1 && ev.cat!=2) continue;
 
+	  //require loose wp at least
+	  if(ev.pass>0) continue;
+
 	  //classify the event
 	  int eventCategory= eventClassifComp.Get(phys);
 	  
@@ -139,8 +142,10 @@ int main(int argc, char *argv[])
 	  Float_t maxdrlz    = max( deltaR(phys.leptons[0],zll), deltaR(phys.leptons[1],zll) );
 	  Float_t ptl1       = phys.leptons[0].pt();
 	  Float_t ptl2       = phys.leptons[1].pt();
+	  Float_t ptsum      = ptl1+ptl2;
 	  Float_t mtl1       = mtComp.compute(phys.leptons[0],zvv,false);
 	  Float_t mtl2       = mtComp.compute(phys.leptons[1],zvv,false);
+	  Float_t mtsum      = mtl1+mtl2;
 	  Float_t zmass      = zll.mass();
 	  Float_t zpt        = zll.pt();
 	  Float_t zeta       = zll.eta();
@@ -157,7 +162,8 @@ int main(int argc, char *argv[])
 	  Float_t redMetL        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
 	  Float_t redMetT        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
 	  Float_t redMetoverzpt  = redMet/zpt;
-	  
+	  Float_t redMetLplusZpt = redMetL+zpt;
+
 	  //projected met
 	  Float_t projMet        = pmetComp.compute(phys.leptons[0], phys.leptons[1], zvv );
 	  Float_t projMetoverzpt = projMet/zpt;
@@ -173,8 +179,11 @@ int main(int argc, char *argv[])
 	      if(*it=="maxdrlz")        tmvaVars[varCounter++]=maxdrlz;
 	      if(*it=="ptl1")           tmvaVars[varCounter++]=ptl1;
 	      if(*it=="ptl2")           tmvaVars[varCounter++]=ptl2;
+	      if(*it=="ptsum")          tmvaVars[varCounter++]=ptsum;
 	      if(*it=="mtl1")           tmvaVars[varCounter++]=mtl1;
 	      if(*it=="mtl2")           tmvaVars[varCounter++]=mtl2;
+	      if(*it=="mtsum")          tmvaVars[varCounter++]=mtsum;
+	      if(*it=="mt")             tmvaVars[varCounter++]=mt;
 	      
 	      if(*it=="zmass")          tmvaVars[varCounter++]=zmass;
 	      if(*it=="zpt")            tmvaVars[varCounter++]=zpt;
@@ -189,6 +198,7 @@ int main(int argc, char *argv[])
 	      if(*it=="redMetL")        tmvaVars[varCounter++]=redMetL;
 	      if(*it=="redMetT")        tmvaVars[varCounter++]=redMetT;
 	      if(*it=="redMetoverzpt")  tmvaVars[varCounter++]=redMetoverzpt;
+	      if(*it=="redMetLplusZpt")  tmvaVars[varCounter++]=redMetLplusZpt;
 	      if(*it=="projMet")        tmvaVars[varCounter++]=projMet;
 	      if(*it=="projMetoverzpt") tmvaVars[varCounter++]=projMetoverzpt;
 	    }

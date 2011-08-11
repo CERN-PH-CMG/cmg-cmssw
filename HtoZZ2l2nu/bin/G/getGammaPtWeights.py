@@ -36,15 +36,15 @@ from ROOT import showPlotsAndMCtoDataComparison, formatForCmsPublic, getNewCanva
 cats=['photon20','photon30','photon50','photon75','photon125']
 gammaPt = []
 zPt = []
-#zTauTauPt = []
+zTauTauPt = []
 #open file and get plots
 f = ROOT.TFile.Open(inputFile)
 for c in cats:
     iGammaPt   = [ f.Get('proc_3/'+c+'_qt_3') , f.Get('proc_3/'+c+'_qtvsnjets_3') ]
     totalGamma=iGammaPt[0].Integral()
-    iZPt       = [ f.Get('proc_1/'+c+'_qt_1') , f.Get('proc_1/'+c+'_qtvsnjets_1') ]
+    iZPt       = [ f.Get('proc_2/'+c+'_qt_2') , f.Get('proc_2/'+c+'_qtvsnjets_2') ]
     totalZ2ll=iZPt[0].Integral()
-#    iZTauTauPt = [ f.Get('proc_2/'+c+'_qt_2') , f.Get('proc_2/'+c+'_qtvsnjets_2') ]
+    iZTauTauPt = [ f.Get('proc_1/'+c+'_qt_1') , f.Get('proc_1/'+c+'_qtvsnjets_1') ]
     for i in xrange(0,2): 
         if(len(gammaPt)<=i):
             gammaPt.append( iGammaPt[i].Clone('gamma_pt_'+str(i)) )
@@ -53,13 +53,13 @@ for c in cats:
             zPt.append( iZPt[i].Clone('z_pt'+str(i)) )
             zPt[i].Reset("ICE")
             zPt[i].SetDirectory(0)
-#            zTauTauPt.append( iZTauTauPt[i].Clone('ztautau_pt'+str(i)) )
-#            zTauTauPt[i].Reset("ICE")
-#            zTauTauPt[i].SetFillStyle(0)
-#            zTauTauPt[i].SetDirectory(0)
+            zTauTauPt.append( iZTauTauPt[i].Clone('ztautau_pt'+str(i)) )
+            zTauTauPt[i].Reset("ICE")
+            zTauTauPt[i].SetFillStyle(0)
+            zTauTauPt[i].SetDirectory(0)
         gammaPt[i].Add(iGammaPt[i],1./totalGamma)
         zPt[i].Add(iZPt[i],1./totalZ2ll)
-#        zTauTauPt[i].Add(iZTauTauPt[i],1./totalZ2ll)
+        zTauTauPt[i].Add(iZTauTauPt[i],1./totalZ2ll)
 f.Close()
 
 #compute the weights

@@ -132,6 +132,7 @@ int main(int argc, char* argv[])
   //run the analysis
   std::set<int> trigList;
   LorentzVector nullP4(0,0,0,0);
+  double puWeights[]={0.157604, 0.439638, 0.935174, 1.53779, 1.96657, 2.14567, 2.05675, 1.76878, 1.39373, 1.03143, 0.729504, 0.497438, 0.331889, 0.212978, 0.138625, 0.0864396, 0.0530587, 0.0328417, 0.0202008, 0.0216363, 0, 0, 0, 0, 0, };  
   for( int iev=evStart; iev<evEnd; iev++)
     {
       if(iev%1000==0) printf("\r [ %d/100 ] ",int(100*float(iev-evStart)/float(evEnd)));
@@ -143,7 +144,7 @@ int main(int argc, char* argv[])
       TString subcat    = eventClassifComp.GetLabel(eventCategory);
       
       bool isGammaEvent(ev.cat>3 && phys.gamma.pt()>0);
-      float weight=ev.weight;
+      float weight=puWeights[ev.ngenITpu]; //ev.weight;
       
       //event categories
       LorentzVector gamma(0,0,0,0);
