@@ -259,6 +259,7 @@ int main(int argc, char* argv[])
       //weights for this event
       float puweight=ev.weight;
       float weight=puweight*ev.hptWeights[0];
+      if(!isMC) weight=1;
      
       //the higgs      
       LorentzVector higgs; if(phys.genhiggs.size()>=1) higgs= phys.genhiggs[0];
@@ -394,8 +395,6 @@ int main(int argc, char* argv[])
 
       EventCategory Categorizer;
       TString label = Categorizer.GetLabel(phys);
-      printf("%s vs %s\n", ((string)subcat).c_str(), ((string)label).c_str());
-
       
       //subcategory analysis
       for(size_t ic=0; ic<sizeof(cats)/sizeof(TString); ic++)
