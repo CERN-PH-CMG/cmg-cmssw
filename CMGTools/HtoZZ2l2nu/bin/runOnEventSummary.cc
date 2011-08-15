@@ -14,6 +14,7 @@
 #include "CMGTools/HtoZZ2l2nu/interface/JetEnergyUncertaintyComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/TMVAUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
+#include "CMGTools/HtoZZ2l2nu/interface/DuplicatesChecker.h"
 
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
@@ -262,6 +263,10 @@ int main(int argc, char* argv[])
       if(rescaleFactor>0) cnorm /= rescaleFactor;
     }
   cout << "xSec x Br=" << xsec << " total entries=" << totalEntries << " normalized PU entries=" << normEntries << " obtained from " << cnorm << " generated events" << endl; 
+
+  //Event Duplicates checker init
+  DuplicatesChecker duplicatesChecker;
+
     
   // init summary tree (unweighted events for MVA training) 
   bool saveSummaryTree = runProcess.getParameter<bool>("saveSummaryTree");
@@ -288,6 +293,7 @@ int main(int argc, char* argv[])
     }
   
   //run the analysis
+  unsigned int NumberOfDuplicated = 0;
   for( int iev=evStart; iev<evEnd; iev++)
     {
       if(iev%1000==0) printf("\r [ %d/100 ] ",int(100*float(iev-evStart)/float(evEnd)));
@@ -295,6 +301,11 @@ int main(int argc, char* argv[])
       evSummaryHandler.getEntry(iev);
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
       if(!ev.hasTrigger) continue;
+      if(duplicatesChecker.isDuplicate(ev.run,ev.lumi, ev.event)){
+           //printf("event %i-%i-%i is duplicated\n", ev.run, ev.lumi, ev.event);
+           NumberOfDuplicated++;
+           continue;
+      }
 
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
       float weight=ev.weight;
@@ -664,4 +675,6 @@ int main(int argc, char* argv[])
       spyFile->Close();
       if(!isMC) outf->close();
     }
+
+   printf("TotalNumber of duplicated is %i/%i = %f%%\n",NumberOfDuplicated,evEnd,(100.0*NumberOfDuplicated)/evEnd);
 }  
