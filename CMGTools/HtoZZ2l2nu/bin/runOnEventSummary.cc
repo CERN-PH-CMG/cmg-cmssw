@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
       for(size_t imet=0; imet<methodList.size(); imet++)
 	{
           //open the file with the method description
-          TString weightFile = weightsDir + "/" + studyTag + ( evCategories.size()>1 ? "_Category" : "_" + methodList[imet]) + TString(".weights.xml");
+          TString weightFile = weightsDir + "/" + studyTag + ( evCategories.size()>1 ? "_Category_" + methodList[imet] : "") + TString(".weights.xml");
           gSystem->ExpandPathName(weightFile);
 
 	  tmvaReader->BookMVA(methodList[imet], weightFile);
@@ -554,7 +554,7 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("redMetcomps", ctf,redMetL,redMetT,weight);	
 	      
 	      //save summary tree now if required -> move this to after the red-MET cut ?
-	      if(saveSummaryTree && ev.normWeight==1)
+	      if(saveSummaryTree && ev.normWeight==1 && passMediumRedMet)
 		{
 		  ev.pass=passMediumRedMet+passTightRedMet;
 		  ev.weight=summaryWeight;		      
