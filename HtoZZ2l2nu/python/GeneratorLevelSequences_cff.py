@@ -65,7 +65,10 @@ def addHiggsPtReweighting(process,castorDir=''):
         print 'Warning could not retrieve the Higgs mass from: ' + castorDir
         return False
     mh=int(substring[0])
-
+    if(mh>=600) :
+        print 'Warning no weights for such high mass: ' + str(mh)
+        return False
+    
     #get the k-factors
     stdFile='HiggsAnalysis/HiggsToWW2Leptons/data/kfactors_Std/kfactors_mh'+str(int(mh))+'_ren'+str(int(mh))+'_fac'+str(int(mh))+'.dat'
     #    stdFile='HptScales/scalefactor.mh'+str(int(mh))+'.dat'
