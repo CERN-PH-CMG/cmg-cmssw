@@ -59,7 +59,7 @@ def getControlPlots(descriptor,isData,inputDir='data',getFromDir='') :
     noNorm=getByLabel(descriptor,'nonorm',False)
     
     #open the file
-    urls=glob.glob(inputDir+'/'+tag+'*.root')
+    urls=glob.glob(inputDir+'/'+tag+'.root')
     if(len(urls)==0) : return results
 
     #fix me, in order to have more files

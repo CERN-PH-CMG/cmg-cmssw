@@ -3,6 +3,37 @@
 import os,sys
 import json
 import getopt
+import commands
+
+#check castor directory for duplicates
+def checkCastorDirectory(outdir):
+    rfdir_cmd = "rfdir " + outdir
+    nOutFile = 0
+    outCastorDir_out = commands.getstatusoutput(rfdir_cmd)
+    jobNumbers = []
+    duplicatedJobs = []
+    origFiles=[]
+    duplicatedFiles=[]
+    if outCastorDir_out[0] == 0:
+        castorLines = outCastorDir_out[1].split("\n")
+        if len(castorLines) != 0:
+            for castorFileLine in castorLines:
+                if "root" in castorFileLine:
+                    fileName = castorFileLine.split()[8]
+                    jobNumber = int(fileName.split("_")[1])
+                    if jobNumber in jobNumbers:
+                        if not jobNumber in duplicatedJobs:  duplicatedJobs.append(jobNumber)
+                        duplicatedFiles.append(fileName)
+                    else :
+                        jobNumbers.append(jobNumber)
+                        origFiles.append(fileName)
+                        nOutFile += 1
+                        
+    print '   - Found ' + str(len(duplicatedJobs)) + ' job id duplicates @ ' + outdir
+    print '   - Removing ' + str(len(duplicatedFiles)) + ' files'
+    for f in duplicatedFiles :
+        commands.getstatusoutput('rfrm ' +outdir + '/' + f)
+
 
 #print usage
 def usage() :
@@ -76,6 +107,7 @@ for proc in procList :
             idir=0
             for dir in alldirs:
                 idir=idir+1
+                checkCastorDirectory(dir)
                 filenames=fillFromCastor(dir)
                 nfiles=len(filenames)
 

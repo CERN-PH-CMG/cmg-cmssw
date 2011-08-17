@@ -479,7 +479,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     bool isZcandidate(fabs(dileptonP.mass()-91)<15);
     //if(dileptonP.mass()<40) return;
     //if(fabs(l1id)==fabs(l2id) && fabs(dileptonP.mass()-91)>15) return;
-    if(!isZcandidate) return;
+    //if(!isZcandidate) return;
     controlHistos_.fillHisto("cutflow","all",3,weight);
     controlHistos_.fillHisto("cutflow",istream,3,weight);
 
@@ -657,9 +657,9 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     
     //fill the events selection flags
     ev.pass=0;    
-    if(isZcandidate)                                                      ev.pass++;
-    if(isZcandidate && ev.ln==0)                                          ev.pass++;
-    if(isZcandidate && ev.ln==0 && (nbjets+npubjets)==0)                  ev.pass++;
+    if(ev.ln==0)                                          ev.pass++;
+    if(ev.ln==0 && (nbjets+npubjets)==0)                  ev.pass++;
+    if(ev.ln==0 && (nbjets+npubjets)==0 && reducedMET>39) ev.pass++;
     if(isZcandidate && ev.ln==0 && (nbjets+npubjets)==0 && reducedMET>39) ev.pass++;
   
     //trigger bit
