@@ -153,37 +153,37 @@ namespace tmva
   //
   TH1D *getHistogramForDiscriminator(TString method)
   {
-    if (method=="Likelihood")    return new TH1D( method,  method + ";" + method + ";Events", 100, 0, 1 );               
-    if (method=="LikelihoodD")   return new TH1D( method,  method + ";" + method + ";Events", 100, 0, 1 );
-    if (method=="LikelihoodPCA") return new TH1D( method,  method + ";" + method + ";Events", 100, 0, 1 );
-    if (method=="LikelihoodKDE") return new TH1D( method,  method + ";" + method + ";Events", 100, 0, 1 );
-    if (method=="LikelihoodMIX") return new TH1D( method,  method + ";" + method + ";Events", 100,  0, 1 );
-    if (method=="PDERS")         return new TH1D( method,  method + ";" + method + ";Events", 100,  0, 1 );
-    if (method=="PDERSD")        return new TH1D( method,  method + ";" + method + ";Events", 100,  0, 1 );
-    if (method=="PDERSPCA")      return new TH1D( method,  method + ";" + method + ";Events", 100,  0, 1 );
-    if (method=="KNN")           return new TH1D( method,  method + ";" + method + ";Events", 100,  0, 1 );
-    if (method=="HMatrix")       return new TH1D( method,  method + ";" + method + ";Events", 100, -0.95, 1.55 );
-    if (method=="Fisher")        return new TH1D( method,  method + ";" + method + ";Events", 100, -4, 4 );
-    if (method=="FisherG")       return new TH1D( method,  method + ";" + method + ";Events", 100, -1, 1 );
-    if (method=="BoostedFisher") return new TH1D( method,  method + ";" + method + ";Events", 100, -2, 2 );
-    if (method=="LD")            return new TH1D( method,  method + ";" + method + ";Events", 100, -2, 2 );
-    if (method=="MLP")           return new TH1D( method,  method + ";" + method + ";Events", 100, -1.25, 1.5 );
-    if (method=="MLPBFGS")       return new TH1D( method,  method + ";" + method + ";Events", 100, -1.25, 1.5 );
-    if (method=="MLPBNN")        return new TH1D( method,  method + ";" + method + ";Events", 100, -1.25, 1.5 );
-    if (method=="CFMlpANN")      return new TH1D( method,  method + ";" + method + ";Events", 100,  0, 1 );
-    if (method=="TMlpANN")       return new TH1D( method,  method + ";" + method + ";Events", 100, -1.3, 1.3 );
-    if (method=="BDT")           return new TH1D( method,  method + ";" + method + ";Events", 100, -1. , 1. );
-    if (method=="BDTD")          return new TH1D( method,  method + ";" + method + ";Events", 100, -0.8, 0.8 );
-    if (method=="BDTG")          return new TH1D( method,  method + ";" + method + ";Events", 100, -1.0, 1.0 );
-    if (method=="RuleFit")       return new TH1D( method,  method + ";" + method + ";Events", 100, -2.0, 2.0 );
-    if (method=="PDEFoam")       return new TH1D( method,  method + ";" + method + ";Events", 100,  0,   1 );
-    if (method=="SVM_Gauss")     return new TH1D( method,  method + ";" + method + ";Events", 100,  0.0, 1.0 );
-    if (method=="SVM_Poly")      return new TH1D( method,  method + ";" + method + ";Events", 100,  0.0, 1.0 );
-    if (method=="SVM_Lin")       return new TH1D( method,  method + ";" + method + ";Events", 100,  0.0, 1.0 );
-    if (method=="FDA_MT")        return new TH1D( method,  method + ";" + method + ";Events", 100, -2.0, 3.0 );
-    if (method=="FDA_GA")        return new TH1D( method,  method + ";" + method + ";Events", 100, -2.0, 3.0 );
-    if (method=="Category")      return new TH1D( method,  method + ";" + method + ";Events", 100, -2., 2. );
-    if (method=="Plugin")        return new TH1D( method,  method + ";" + method + ";Events", 100, -0.8, 0.8 );
+    if (method=="Likelihood")    return new TH1D( method,  method + ";" + method + ";Events", 50, 0, 1 );               
+    if (method=="LikelihoodD")   return new TH1D( method,  method + ";" + method + ";Events", 50, 0, 1 );
+    if (method=="LikelihoodPCA") return new TH1D( method,  method + ";" + method + ";Events", 50, 0, 1 );
+    if (method=="LikelihoodKDE") return new TH1D( method,  method + ";" + method + ";Events", 50, 0, 1 );
+    if (method=="LikelihoodMIX") return new TH1D( method,  method + ";" + method + ";Events", 50,  0, 1 );
+    if (method=="PDERS")         return new TH1D( method,  method + ";" + method + ";Events", 50,  0, 1 );
+    if (method=="PDERSD")        return new TH1D( method,  method + ";" + method + ";Events", 50,  0, 1 );
+    if (method=="PDERSPCA")      return new TH1D( method,  method + ";" + method + ";Events", 50,  0, 1 );
+    if (method=="KNN")           return new TH1D( method,  method + ";" + method + ";Events", 50,  0, 1 );
+    if (method=="HMatrix")       return new TH1D( method,  method + ";" + method + ";Events", 50, -0.95, 1.55 );
+    if (method=="Fisher")        return new TH1D( method,  method + ";" + method + ";Events", 50, -4, 4 );
+    if (method=="FisherG")       return new TH1D( method,  method + ";" + method + ";Events", 50, -1, 1 );
+    if (method=="BoostedFisher") return new TH1D( method,  method + ";" + method + ";Events", 50, -2, 2 );
+    if (method=="LD")            return new TH1D( method,  method + ";" + method + ";Events", 50, -2, 2 );
+    if (method=="MLP")           return new TH1D( method,  method + ";" + method + ";Events", 50, -1.25, 1.5 );
+    if (method=="MLPBFGS")       return new TH1D( method,  method + ";" + method + ";Events", 50, -1.25, 1.5 );
+    if (method=="MLPBNN")        return new TH1D( method,  method + ";" + method + ";Events", 50, -1.25, 1.5 );
+    if (method=="CFMlpANN")      return new TH1D( method,  method + ";" + method + ";Events", 50,  0, 1 );
+    if (method=="TMlpANN")       return new TH1D( method,  method + ";" + method + ";Events", 50, -1.3, 1.3 );
+    if (method=="BDT")           return new TH1D( method,  method + ";" + method + ";Events", 50, -1. , 1. );
+    if (method=="BDTD")          return new TH1D( method,  method + ";" + method + ";Events", 50, -0.8, 0.8 );
+    if (method=="BDTG")          return new TH1D( method,  method + ";" + method + ";Events", 50, -1.0, 1.0 );
+    if (method=="RuleFit")       return new TH1D( method,  method + ";" + method + ";Events", 50, -2.0, 2.0 );
+    if (method=="PDEFoam")       return new TH1D( method,  method + ";" + method + ";Events", 50,  0,   1 );
+    if (method=="SVM_Gauss")     return new TH1D( method,  method + ";" + method + ";Events", 50,  0.0, 1.0 );
+    if (method=="SVM_Poly")      return new TH1D( method,  method + ";" + method + ";Events", 50,  0.0, 1.0 );
+    if (method=="SVM_Lin")       return new TH1D( method,  method + ";" + method + ";Events", 50,  0.0, 1.0 );
+    if (method=="FDA_MT")        return new TH1D( method,  method + ";" + method + ";Events", 50, -2.0, 3.0 );
+    if (method=="FDA_GA")        return new TH1D( method,  method + ";" + method + ";Events", 50, -2.0, 3.0 );
+    if (method=="Category")      return new TH1D( method,  method + ";" + method + ";Events", 50, -2., 2. );
+    if (method=="Plugin")        return new TH1D( method,  method + ";" + method + ";Events", 50, -0.8, 0.8 );
     return 0;
   }
 
