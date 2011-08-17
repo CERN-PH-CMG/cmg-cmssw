@@ -113,7 +113,7 @@
         "tag":"m_{H^{0}}=200 GeV/c^{2}",
         "isdata":false,
         "spimpose":true,
-        "color":"kPink-9",
+        "color":"kPink-7",
         "lwidth":2,
         "fill":0,
         "marker":1,
@@ -142,10 +142,28 @@
 	]
 	},
         {
-        "tag":"m_{H^{0}}=400 GeV/c^{2}",
+        "tag":"m_{H^{0}}=200 GeV/c^{2} (WW only)",
         "isdata":false,
         "spimpose":true,
         "color":"kPink-7",
+        "lwidth":2,
+        "fill":3001,
+        "marker":1,
+        "data":[
+	     {	
+		"dtag":"GGtoH200toWWto2L2Nu",
+		"dset":"/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
+		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/ZZ/HZZ/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6"],
+		"xsec":5.27,
+		"br":[0.741,0.046656]
+	     }
+	]
+	},
+        {
+        "tag":"m_{H^{0}}=400 GeV/c^{2}",
+        "isdata":false,
+        "spimpose":true,
+        "color":"kPink-5",
         "lwidth":2,
         "fill":0,
         "marker":1,

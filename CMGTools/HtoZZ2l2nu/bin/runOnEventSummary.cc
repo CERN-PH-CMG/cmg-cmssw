@@ -131,8 +131,11 @@ int main(int argc, char* argv[])
   std::vector<Float_t> tmvaVars(varsList.size()+1,0);
 
   //control histograms for variables of interest are booked by default
-  for(size_t ivar=0; ivar<varsList.size(); ivar++) controlHistos.addHistogram( getHistogramForVariable( varsList[ivar] ) );
-
+  for(size_t ivar=0; ivar<varsList.size(); ivar++) 
+    {
+      TH1 *h=getHistogramForVariable( varsList[ivar] );
+      controlHistos.addHistogram( h );
+    }
   if(useMVA)
     {
       std::cout << "==> Start TMVA Classification with " << methodList.size() << " methods and " << varsList.size() << " variables" << std::endl;
@@ -146,11 +149,13 @@ int main(int argc, char* argv[])
       for(size_t imet=0; imet<methodList.size(); imet++)
 	{
           //open the file with the method description
-          TString weightFile = weightsDir + "/" + studyTag + ( evCategories.size()>1 ? "_Category_" + methodList[imet] : "") + TString(".weights.xml");
+	  TString weightFile = weightsDir + "/" + studyTag + ( evCategories.size()>1 ? "_Category_" + methodList[imet] : "") + TString(".weights.xml");
           gSystem->ExpandPathName(weightFile);
 
 	  tmvaReader->BookMVA(methodList[imet], weightFile);
-	  controlHistos.addHistogram( tmva::getHistogramForDiscriminator( methodList[imet] ) );
+	  TH1 *h=tmva::getHistogramForDiscriminator( methodList[imet] );
+	  controlHistos.addHistogram( h );
+	  controlHistos.addHistogram( (TH1 *) h->Clone( h->GetName()+TString("tight") ) );
 	  if(methodList[imet]=="PDEFoam") 
 	    {
 	      controlHistos.addHistogram( new TH1D( "PDEFoam_Err",    "PDEFoam error",        100,  0, 1 ) );
@@ -210,6 +215,7 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1D( "met", ";E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram( new TProfile ("metprof", ";Pileup events;E_{T}^{miss}", 15,0,15) ); 
   controlHistos.addHistogram( new TH2F ("metvspu", ";Pileup events;E_{T}^{miss}", 15,0,15,100,0,500) );  
+  controlHistos.addHistogram( new TH1D( "redMet", ";red-E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram( new TProfile ("redMetprof", ";Pileup events;red-E_{T}^{miss}", 15,0,15) );  
   controlHistos.addHistogram( new TH2F ("redMetvspu", ";Pileup events;red-E_{T}^{miss}", 15,0,15,100,0,500) );  
   controlHistos.addHistogram( (TH1D *)(new TH2D ("redMetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
@@ -541,8 +547,6 @@ int main(int argc, char* argv[])
 
 	      
 	      controlHistos.fill2DHisto("zptvszeta", ctf,zll.pt(),zll.eta(),weight);
-	      for(size_t ivar=0; ivar<varsList.size(); ivar++)  controlHistos.fillHisto(varsList[ivar],ctf,tmvaVars[ivar],weight);
-	      controlHistos.fillHisto("eventCategory",ctf,eventCategory,weight);
 	      controlHistos.fillHisto("met", ctf,zvv.pt(),weight);
 	      controlHistos.fillProfile("metprof", ctf,ev.ngenITpu,met);
 	      controlHistos.fill2DHisto("metvspu", ctf,ev.ngenITpu,met,weight);
@@ -554,22 +558,25 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("redMetcomps", ctf,redMetL,redMetT,weight);	
 	      
 	      //save summary tree now if required -> move this to after the red-MET cut ?
-	      if(saveSummaryTree && ev.normWeight==1 && passMediumRedMet)
+	      if(saveSummaryTree /*&& ev.normWeight==1*/ && passMediumRedMet)
 		{
 		  ev.pass=passMediumRedMet+passTightRedMet;
-		  ev.weight=summaryWeight;		      
+		  ev.weight=summaryWeight*weight;		      
 		  spyHandler->fillTree();
 		}
 	      
 	      //red-met cut
 	      if(!passMediumRedMet)  continue;
 	      controlHistos.fillHisto("eventflow",ctf,5,weight);
+	      for(size_t ivar=0; ivar<varsList.size(); ivar++)  controlHistos.fillHisto(varsList[ivar],ctf,tmvaVars[ivar],weight);
+	      controlHistos.fillHisto("eventCategory",ctf,eventCategory,weight);
 
 	      //control for discriminators evaluated
 	      for(size_t imet=0; imet<methodList.size(); imet++)
 		{
 		  controlHistos.fillHisto(methodList[imet],ctf,discriResults[imet],weight);
-		  
+		  if(passTightRedMet) controlHistos.fillHisto(methodList[imet]+"tight",ctf,discriResults[imet],weight);
+
 		  //per-event error
 		  if (methodList[imet]=="PDEFoam")
 		    {

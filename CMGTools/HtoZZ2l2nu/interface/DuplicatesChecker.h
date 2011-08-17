@@ -19,7 +19,7 @@ namespace __gnu_cxx
 
 class DuplicatesChecker{
    private :
-      typedef __gnu_cxx::hash_map<string, bool > RunEventHashMap;
+  typedef __gnu_cxx::hash_map<std::string, bool > RunEventHashMap;
       RunEventHashMap map;
    public :
         DuplicatesChecker(){}
