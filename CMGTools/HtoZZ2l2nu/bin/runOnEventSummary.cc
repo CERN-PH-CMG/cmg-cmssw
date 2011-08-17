@@ -57,7 +57,6 @@ TH1D *getHistogramForVariable(TString variable)
   if(variable=="dphizz")         h = new TH1D( variable, ";#Delta#phi(Z_{ll},E_{T}^{miss});Events",100,-3.2,3.2);
   if(variable=="metoverzpt")     h = new TH1D( variable, ";type I E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9);
 
-  if(variable=="redMet")         h = new TH1D( variable, ";red-E_{T}^{miss};Events", 100,0,500);
   if(variable=="redMetL")        h = new TH1D( variable, ";red-E_{T}^{miss,#parallel};Events", 100,-250,250);
   if(variable=="redMetT")        h = new TH1D( variable, ";red-E_{T}^{miss,#perp};Events", 100,-250,250);
   if(variable=="redMetoverzpt")  h = new TH1D( variable,  ";red-E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9);
@@ -222,6 +221,9 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1D( "projMet", ";proj-E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram( new TProfile ("projMetprof", ";Pileup events;projected E_{T}^{miss}", 15,0,15) );  
   controlHistos.addHistogram( new TH2F ("projMetvspu", ";Pileup events;projected E_{T}^{miss}", 15,0,15,100,0,500) );  
+  controlHistos.addHistogram( new TH1D( "minMet", ";min-E_{T}^{miss};Events", 100,0,500) );
+  controlHistos.addHistogram( new TProfile ("minMetprof", ";Pileup events;min-E_{T}^{miss}", 15,0,15) );  
+  controlHistos.addHistogram( new TH2F ("minMetvspu", ";Pileup events;min-E_{T}^{miss}", 15,0,15,100,0,500) );  
 
   //replicate monitor for interesting categories
   TString cats[]={"ee","emu","mumu"};
@@ -318,7 +320,6 @@ int main(int argc, char* argv[])
       if(!isMC) weight=1;
 
       
-
       //classify the event
       int eventCategory = eventClassifComp.Get(phys);
       TString subcat    = eventClassifComp.GetLabel(eventCategory);
@@ -437,9 +438,9 @@ int main(int argc, char* argv[])
       Float_t projMetoverzpt = projMet/zpt;
 
       //minimized met
-      //Float_t projTrkMet     = pmetComp.compute(phys.leptons[0],phys.leptons[1], trkMetP4);
-      //Float_t minMet        = min(fabs(projMet),fabs(projTrkMet));
-      // Float_t minMetoverzpt   = minMet/zpt;
+      Float_t projTrkMet     = pmetComp.compute(phys.leptons[0],phys.leptons[1], trkMetP4);
+      Float_t minMet        = min(fabs(projMet),fabs(projTrkMet));
+      Float_t minMetoverzpt   = minMet/zpt;
 
       //set the variables to be used in the MVA evaluation (independently of its use)
       for(size_t ivar=0; ivar<varsList.size(); ivar++) 
@@ -553,12 +554,16 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("projMet", ctf,projMet,weight);
 	      controlHistos.fillProfile("projMetprof", ctf,ev.ngenITpu,projMet);
 	      controlHistos.fill2DHisto("projMetvspu", ctf,ev.ngenITpu,projMet,weight);     
+	      controlHistos.fillHisto("minMet", ctf,minMet,weight);
+	      controlHistos.fillProfile("minMetprof", ctf,ev.ngenITpu,minMet);
+	      controlHistos.fill2DHisto("minMetvspu", ctf,ev.ngenITpu,minMet,weight);     
+	      controlHistos.fillHisto("redMet", ctf,redMet,weight);
 	      controlHistos.fillProfile("redMetprof", ctf,ev.ngenITpu,redMet);
 	      controlHistos.fill2DHisto("redMetvspu", ctf,ev.ngenITpu,redMet,weight);
 	      controlHistos.fillHisto("redMetcomps", ctf,redMetL,redMetT,weight);	
 	      
 	      //save summary tree now if required -> move this to after the red-MET cut ?
-	      if(saveSummaryTree /*&& ev.normWeight==1*/ && passMediumRedMet)
+	      if(saveSummaryTree && passMediumRedMet)
 		{
 		  ev.pass=passMediumRedMet+passTightRedMet;
 		  ev.weight=summaryWeight*weight;		      
