@@ -52,7 +52,6 @@ fi
 if [[ -z $QUEUE ]]; then 
 #	QUEUE="1nd"
     QUEUE="2nd"
-#    QUEUE="8nh"
 fi
 
 #
