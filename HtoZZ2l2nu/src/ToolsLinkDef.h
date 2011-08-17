@@ -22,6 +22,7 @@
 #pragma link C++ function getProjections;
 #pragma link C++ function showPlotsAndMCtoDataComparison;
 #pragma link C++ class SelectionMonitor;
+
 #endif
 
 // Local Variables:
