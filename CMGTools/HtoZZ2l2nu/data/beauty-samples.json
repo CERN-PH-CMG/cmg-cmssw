@@ -316,7 +316,7 @@
                 {
                   "dtag":"DoubleMu05AugReReco",
                   "dset":"/DoubleMu/Run2011A-05Aug2011-v1/AOD",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/DoubleMu/DoubleMu-05Aug2011"]
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/DoubleMuon/DoubleMu-05Aug2011"]
 		},
                 {
                   "dtag":"DoubleElectron05AugReReco",
