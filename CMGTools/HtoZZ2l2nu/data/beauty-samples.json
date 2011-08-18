@@ -279,9 +279,9 @@
                 "br":[0.272,0.0403896]
              },
              {
-                "dtag":"GGtoH500toWWto2L2Nu",
-		"dset":"/GluGluToHToWWTo2L2Nu_M-500_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
-                "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/HZZ/GluGluToHToWWTo2L2Nu_M-500_7TeV-powheg-pythia6"],
+                "dtag":"GGtoH600toWWto2L2Nu",
+		"dset":"/GluGluToHToWWTo2L2Nu_M-600_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
+                "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/HZZ/GluGluToHToWWTo2L2Nu_M-600_7TeV-powheg-pythia6"],
                 "xsec":0.3267,
                 "br":[0.558,0.046656]
              },
@@ -309,45 +309,35 @@
            "marker":20,
            "data":[
                 {
-                  "dtag":"MuEGMay10ReReco",
-                  "dset":"MuEG-May10ReReco",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/cerminar/zzllvv_42X_v0/MuEGMay10ReReco"]
+                  "dtag":"MuEG05AugReReco",
+                  "dset":"/MuEG/Run2011A-05Aug2011-v1/AOD",
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/MuEG/MuEG-05Aug2011"]
 		},
                 {
-                  "dtag":"DoubleMuMay10ReReco",
-                  "dset":"DoubleMu-May10ReReco",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/cerminar/zzllvv_42X_v0/DoubleMuMay10ReReco"]
+                  "dtag":"DoubleMu05AugReReco",
+                  "dset":"/DoubleMu/Run2011A-05Aug2011-v1/AOD",
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/DoubleMu/DoubleMu-05Aug2011"]
 		},
                 {
-                  "dtag":"DoubleElectronMay10ReReco",
-                  "dset":"DoubleElectron-May10ReReco",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/cerminar/zzllvv_42X_v0/DoubleElectronMay10ReReco"]
+                  "dtag":"DoubleElectron05AugReReco",
+                  "dset":"/DoubleElectron/Run2011A-05Aug2011-v1/AOD",
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/DoubleElectron/DoubleElectron-05Aug2011"]
 		},
                 {
-                  "dtag":"DoubleMuPromptReco",
-                  "dset":"DoubleMu-PromptReco",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ/DoubleMuon/DoubleMuPromptReco"]
+                  "dtag":"DoubleMuPromptRecov6",
+                  "dset":"/DoubleMu/Run2011A-PromptReco-v6/AOD",
+                  "patdir":["/castor/cern.ch/cern.ch//cms/store/cmst3/user/psilva/Data/DoubleMuon/DoubleMu-PromptReco-v6"]
 		},
                 {
-                  "dtag":"DoubleElectronPromptReco",
-                  "dset":"DoubleElectron-PromptReco",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ/DoubleElectron/DoubleElectronPromptReco"]
+                  "dtag":"DoubleElectronPromptRecov6",
+                  "dset":"/DoubleElectron/Run2011A-PromptReco-v6/AOD",
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/DoubleElectron/DoubleElectron-PromptReco-v6"]
 		},
                 {
-                  "dtag":"MuEGPromptReco",
-                  "dset":"MuEG-PromptReco",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ/MuEG/MuEGPromptReco"]
-		},
-		{
-	          "dtag":"SingleMuMay10ReReco",
-                  "dset":"SingleMu-May10ReReco",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/cerminar/zzllvv_42X_v0/SingleMuMay10ReReco"]
-                },
-	        {
-	          "dtag":"SingleMuPromptReco",
-                  "dset":"SingleMu-PromptReco",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ/SingleMu/SingleMuPromptReco"]
-                }
+                  "dtag":"MuEGPromptRecov6",
+                  "dset":"/MuEG/Run2011A-PromptReco-v6/AOD",
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/MuEG/MuEG-PromptReco-v6"]
+		}
              ]
 	}
     ]	
