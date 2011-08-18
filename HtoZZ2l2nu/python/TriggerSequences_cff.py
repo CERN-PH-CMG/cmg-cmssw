@@ -62,7 +62,7 @@ def addTriggerSequence(process, trigFilter='ee') :
     
     from HLTrigger.HLTfilters.hltHighLevel_cfi import hltHighLevel
 
-    doubleEle, doubleMu, muEG, singleEle, singleMu = getTriggerPaths()
+    doubleEle, doubleMu, muEG, singleEle, singleMu, mcTrigs = getTriggerPaths()
 
     # double electron
     process.eetrigFilter = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT")
