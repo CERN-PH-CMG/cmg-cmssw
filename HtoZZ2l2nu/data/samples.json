@@ -104,7 +104,7 @@
                "dtag":"DYJetsToLL",
 	       "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
 	       "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/DYToLL/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
-               "xsec":2800
+               "xsec":3048
               }
           ]
 	},
@@ -380,29 +380,24 @@
                   "patdir":["/castor/cern.ch/cms/store/cmst3/user/cerminar/zzllvv_42X_v0/DoubleElectronMay10ReReco"]
 		},
                 {
-                  "dtag":"DoubleMuPromptReco",
-                  "dset":"DoubleMu-PromptReco",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ/DoubleMuon/DoubleMuPromptReco"]
+                  "dtag":"DoubleMuPromptRecov6",
+                  "dset":"DoubleMu-PromptReco-v6",
+                  "patdir":["/castor/cern.ch//cms/store/cmst3/user/psilva/Data/DoubleMuon/DoubleMu-PromptReco-v6"]
 		},
                 {
-                  "dtag":"DoubleElectronPromptReco",
-                  "dset":"DoubleElectron-PromptReco",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ/DoubleElectron/DoubleElectronPromptReco"]
+                  "dtag":"DoubleElectronPromptRecov6",
+                  "dset":"DoubleElectron-PromptReco-v6",
+                  "patdir":["/castor/cern.ch//cms/store/cmst3/user/psilva/Data/DoubleElectron/DoubleElectron-PromptReco-v6"]
 		},
                 {
-                  "dtag":"MuEGPromptReco",
-                  "dset":"MuEG-PromptReco",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ/MuEG/MuEGPromptReco"]
+                  "dtag":"MuEGPromptRecov6",
+                  "dset":"MuEG-PromptReco-v6",
+                  "patdir":["/castor/cern.ch//cms/store/cmst3/user/psilva/Data/MuEG/MuEG-PromptReco-v6"]
 		},
-		{
-	          "dtag":"SingleMuMay10ReReco",
-                  "dset":"SingleMu-May10ReReco",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/cerminar/zzllvv_42X_v0/SingleMuMay10ReReco"]
-                },
 	        {
-	          "dtag":"SingleMuPromptReco",
-                  "dset":"SingleMu-PromptReco",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ/SingleMu/SingleMuPromptReco"]
+	          "dtag":"SingleMuPromptRecov6",
+                  "dset":"SingleMu-PromptReco-v6",
+                  "patdir":["/castor/cern.ch//cms/store/cmst3/user/psilva/Data/SingleMu/SingleMu-PromptReco-v6"]
                 }
              ]
 	}
