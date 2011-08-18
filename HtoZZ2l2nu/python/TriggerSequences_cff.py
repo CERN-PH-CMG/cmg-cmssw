@@ -13,41 +13,45 @@ def getTriggerPaths() :
                'HLT_Mu8_Ele17_CaloIdL_v2',
                'HLT_Mu10_Ele10_CaloIdL_v3',
                'HLT_Mu17_Ele8_CaloIdL_v2']
-    doubleEle = ['HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1',
+
+    # Trigger evolution cf. http://fwyzard.web.cern.ch/fwyzard/hlt/summary
+   
+    doubleEle = ['HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1',                                   #start run 160404
                  'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2',
                  'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v3',
                  'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v4',
-                 'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v5'
+                 'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v5',
+                 'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v6',
+                 'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v7',
+                 'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v8',
+                 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v5',  #start run 167039
+                 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v6',
+                 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7'
                  ]
-    doubleMu = ['HLT_DoubleMu7_v1',
-                'HLT_DoubleMu7_v2',
-                'HLT_Mu13_Mu8_v2',
+    doubleMu = ['HLT_DoubleMu7_v1', 'HLT_DoubleMu7_v2',                     #start run 160404
+                'HLT_Mu13_Mu8_v1', 'HLT_Mu13_Mu8_v2', 'HLT_Mu13_Mu8_v3',    #start run 165088 
+                'HLT_Mu13_Mu8_v4', 'HLT_Mu13_Mu8_v5', 'HLT_Mu13_Mu8_v6'
                 ]
-    muEG = ['HLT_Mu17_Ele8_CaloIdL_v1',
-            'HLT_Mu17_Ele8_CaloIdL_v2',
-            'HLT_Mu17_Ele8_CaloIdL_v3',
-            'HLT_Mu17_Ele8_CaloIdL_v4',
-            'HLT_Mu17_Ele8_CaloIdL_v5',
-            'HLT_Mu17_Ele8_CaloIdL_v6',
-            'HLT_Mu8_Ele17_CaloIdL_v1',
-            'HLT_Mu8_Ele17_CaloIdL_v2',
-            'HLT_Mu8_Ele17_CaloIdL_v3',
-            'HLT_Mu8_Ele17_CaloIdL_v4',
-            'HLT_Mu8_Ele17_CaloIdL_v5',
-            'HLT_Mu8_Ele17_CaloIdL_v6'
+    muEG = ['HLT_Mu17_Ele8_CaloIdL_v1', 'HLT_Mu17_Ele8_CaloIdL_v2', 'HLT_Mu17_Ele8_CaloIdL_v3',   #start run 160404
+            'HLT_Mu17_Ele8_CaloIdL_v4', 'HLT_Mu17_Ele8_CaloIdL_v5', 'HLT_Mu17_Ele8_CaloIdL_v6',
+            'HLT_Mu17_Ele8_CaloIdL_v7', 'HLT_Mu17_Ele8_CaloIdL_v8'
+            'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v1', 'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v2', 'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v3', #start run 167039
+            'HLT_Mu8_Ele17_CaloIdL_v1', 'HLT_Mu8_Ele17_CaloIdL_v2', 'HLT_Mu8_Ele17_CaloIdL_v3',     #start run 160404
+            'HLT_Mu8_Ele17_CaloIdL_v4', 'HLT_Mu8_Ele17_CaloIdL_v5', 'HLT_Mu8_Ele17_CaloIdL_v6',
+            'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v1', 'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v2', 'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v3' #start run 167039
             ]
-    singleMu = ['HLT_IsoMu17_v1', 'HLT_IsoMu17_v2', 'HLT_IsoMu17_v3',
+    singleMu = ['HLT_IsoMu17_v1', 'HLT_IsoMu17_v2', 'HLT_IsoMu17_v3',  #start run 160404
                 'HLT_IsoMu17_v4', 'HLT_IsoMu17_v5', 'HLT_IsoMu17_v6',
-                'HLT_IsoMu17_v7', 'HLT_IsoMu17_v8', 'HLT_IsoMu17_v9'
+                'HLT_IsoMu17_v7', 'HLT_IsoMu17_v8', 'HLT_IsoMu17_v9',
+                'HLT_IsoMu17_v10', 'HLT_IsoMu17_v11', 'HLT_IsoMu17_v12',
+                'HLT_IsoMu17_v13',
+                'HLT_IsoMu24_v1', 'HLT_IsoMu24_v2', 'HLT_IsoMu24_v3',  #start run 160404
+                'HLT_IsoMu24_v2', 'HLT_IsoMu24_v3', 'HLT_IsoMu24_v4',
+                'HLT_IsoMu24_v5', 'HLT_IsoMu24_v6', 'HLT_IsoMu24_v7', 
+                'HLT_IsoMu24_v8'
                 ]
-    #needs update these are 2010 still..
-    singleEle = ['HLT_Ele10_LW_L1R',
-                 'HLT_Ele15_SW_L1R',
-                 'HLT_Ele15_SW_CaloEleId_L1R',
-                 'HLT_Ele17_SW_CaloEleId_L1R',
-                 'HLT_Ele17_SW_TightEleId_L1R',
-                 'HLT_Ele17_SW_TighterEleIdIsol_L1R_v2',
-                 'HLT_Ele17_SW_TighterEleIdIsol_L1R_v3']
+    #forget it...
+    singleEle = []
     
     return doubleEle, doubleMu, muEG, singleEle, singleMu, mcTrigs
 

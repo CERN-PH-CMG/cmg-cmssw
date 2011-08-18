@@ -1,14 +1,14 @@
 
 {
-  int ntouse(3);
-  double wp(0.0001);
+  int ntouse(5);
+  double wp(0.001);
 
-  TString evcat("mumuvbf");
-  TString mpoint("H(400)");
-  TString names[]={"met","projMet","redMet"};
-  TString titles[]={"E_{T}^{miss}","proj-E_{T}^{miss}","red-E_{T}^{miss}"};
-  int colors[]={1,kGreen-3,kRed+3};
-  int styles[]={1,2,2};
+  TString evcat("mumuzveto");
+  TString mpoint("H(200)");
+  TString names[]={"met","projMet","redMet","minMet","minRedMet"};
+  TString titles[]={"E_{T}^{miss}","proj-E_{T}^{miss}","red-E_{T}^{miss}","min(E_{T}^{miss},trk-E_{T}^{miss})", "min-red-E_{T}^{miss}"};
+  int colors[]={1,kGreen-3,kRed+3,kGreen+3,kRed-3};
+  int styles[]={1,2,2,3,9};
 
   gSystem->Load("libCMGToolsHtoZZ2l2nu.so");
   setStyle();
@@ -31,7 +31,7 @@
   fitC->Divide(3,ntouse);
   TF1 *ffunc=new TF1("fitfunc",evcat.Contains("vbf") ? "pol3" : "[0]*log(x)+[1]",0,10);
 
-  TFile *f=TFile::Open("../plotter.root");
+  TFile *f=TFile::Open("plotter.root");
     
   for(size_t i=0; i<ntouse; i++)
     {
@@ -52,10 +52,10 @@
 	  obj=next();
 	  if(obj==0) break;
 	  TString dirname=obj->GetName();
-	  TString hname=dirname +"/"+evcat+"_" + name +"_";  hname += idir;
+	  TString hname=dirname +"/"+evcat+"_" + name;// +"_";  hname += idir;
 	  TH1 *h = f->Get(hname);
 	  TString tit=h->GetTitle();
-	  if(tit.Contains("Z/#gamma^{*}"))
+	  if(tit.Contains("#gamma^{*}"))
 	    {
 	      if(dy==0) 
 		{ 
