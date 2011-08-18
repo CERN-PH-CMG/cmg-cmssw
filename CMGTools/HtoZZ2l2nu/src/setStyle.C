@@ -246,14 +246,14 @@ void formatForCmsPublic(TPad * c, TLegend *leg, TString title, int nsamp, float 
       for(int it=0; it<nt; ++it) 
 	{
 	  TObjString * t = (TObjString *)tokens->At(it);
-	  TText *l1 = pave->AddText(t->GetString());
+	  pave->AddText(t->GetString());
 	}
 
       pave->Draw("same");
     }
 
   float legx1=legx, legx2=legx+legw;
-  float legy1 = legy-legh*(float)(nsamp), legy2 = legy;  
+  float legy1 = legy, legy2 = legy-legh*(float)(nsamp);  
   if(leg==0) leg = ((TPad *)c)->BuildLegend(legx,legy1,legx2,legy2);
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
@@ -262,9 +262,9 @@ void formatForCmsPublic(TPad * c, TLegend *leg, TString title, int nsamp, float 
   leg->SetTextFont(42);
   leg->SetEntryOption(legopt);
   leg->SetX1NDC(legx1);
-  leg->SetY1NDC(legy1-nsamp*legh);
+  leg->SetY1NDC(legy1);//-nsamp*legh);
   leg->SetX2NDC(legx2);
-  leg->SetY2NDC(legy1);
+  leg->SetY2NDC(legy2);
 }
 
 

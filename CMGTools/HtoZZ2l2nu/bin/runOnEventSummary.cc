@@ -183,7 +183,7 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1F("nvtx",";Vertices;Events",25,0,25) );
 
   controlHistos.addHistogram( new TH1F("recodphill",";#Delta#phi(l^{(1)},l^{(2)});Events",100,-3.2,3.2) );
-  controlHistos.addHistogram( new TH1F("recozmass", ";M^{ll};Events", 100,91-15,91+15) );
+  controlHistos.addHistogram( new TH1F("recozmass", ";M^{ll};Events", 100,0,500) );
 
   h=new TH1F("njets",";Jet multiplicity (p_{T}>15 GeV/c #wedge |#eta|<2.5);Events",4,0,4);
   h->GetXaxis()->SetBinLabel(1,"0");
@@ -224,11 +224,14 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1D( "minMet", ";min-E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram( new TProfile ("minMetprof", ";Pileup events;min-E_{T}^{miss}", 15,0,15) );  
   controlHistos.addHistogram( new TH2F ("minMetvspu", ";Pileup events;min-E_{T}^{miss}", 15,0,15,100,0,500) );  
+  controlHistos.addHistogram( new TH1D( "minRedMet", ";min-red-E_{T}^{miss};Events", 100,0,500) );
+  controlHistos.addHistogram( new TProfile ("minRedMetprof", ";Pileup events;min-red-E_{T}^{miss}", 15,0,15) );  
+  controlHistos.addHistogram( new TH2F ("minRedMetvspu", ";Pileup events;min-red-E_{T}^{miss}", 15,0,15,100,0,500) );  
 
   //replicate monitor for interesting categories
   TString cats[]={"ee","emu","mumu"};
   TString subCats[]={"","eq0jets","eq1jets","geq2jets","vbf"};
-  TString subsubCats[]={""};                                  //,"jer","jesup","jesdown","nopu","flatpu","btag"};
+  TString subsubCats[]={"","zveto"};                                  //,"jer","jesup","jesdown","nopu","flatpu","btag"};
   for(size_t icat=0;icat<sizeof(cats)/sizeof(TString); icat++)
     for(size_t isubcat=0;isubcat<sizeof(subCats)/sizeof(TString); isubcat++)
       for(size_t itopcat=0;itopcat<sizeof(subsubCats)/sizeof(TString); itopcat++)
@@ -308,7 +311,7 @@ int main(int argc, char* argv[])
       
       evSummaryHandler.getEntry(iev);
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
-      if(!ev.hasTrigger) continue;
+      //      if(!ev.hasTrigger) continue;
       if(duplicatesChecker.isDuplicate(ev.run,ev.lumi, ev.event)){
            //printf("event %i-%i-%i is duplicated\n", ev.run, ev.lumi, ev.event);
            NumberOfDuplicated++;
@@ -442,6 +445,10 @@ int main(int argc, char* argv[])
       Float_t minMet        = min(fabs(projMet),fabs(projTrkMet));
       Float_t minMetoverzpt   = minMet/zpt;
 
+      rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsp4, trkMetP4 );
+      Float_t redTrkMet   = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+      Float_t minRedMet = min(redMet,redTrkMet);
+
       //set the variables to be used in the MVA evaluation (independently of its use)
       for(size_t ivar=0; ivar<varsList.size(); ivar++) 
 	{
@@ -509,21 +516,19 @@ int main(int argc, char* argv[])
       //fill control histograms
       TString catsToFill[]={"all",evcat};
       TString subCatsToFill[]={"",subcat};
-      TString subsubCatToFill="";  //subsubCats[ivar]
       for(size_t ic=0; ic<sizeof(catsToFill)/sizeof(TString); ic++)
 	{
 	  for(size_t isc=0; isc<sizeof(subCatsToFill)/sizeof(TString); isc++)
 	    {
-	      TString ctf=catsToFill[ic]+subCatsToFill[isc]+subsubCatToFill;
-
+	      TString ctf=catsToFill[ic]+subCatsToFill[isc];
 
 	      controlHistos.fillHisto("nvtx",ctf,ev.nvtx,weight);
 	      controlHistos.fillHisto("eventflow",ctf,1,weight);
+	      controlHistos.fillHisto("recozmass",ctf,zll.mass(),weight);
 
-	      if(!passZmass) continue;
+	      ctf += (passZmass ? "" : "zveto");
 	      controlHistos.fillHisto("eventflow",ctf,2,weight);
 	      controlHistos.fillHisto("recodphill",ctf,dphill,weight);
-	      controlHistos.fillHisto("recozmass",ctf,zll.mass(),weight);
 
 	      if(!pass3dLeptonVeto) continue;
 	      controlHistos.fillHisto("eventflow",ctf,3,weight);
@@ -561,6 +566,9 @@ int main(int argc, char* argv[])
 	      controlHistos.fillProfile("redMetprof", ctf,ev.ngenITpu,redMet);
 	      controlHistos.fill2DHisto("redMetvspu", ctf,ev.ngenITpu,redMet,weight);
 	      controlHistos.fillHisto("redMetcomps", ctf,redMetL,redMetT,weight);	
+	      controlHistos.fillHisto("minRedMet", ctf,minRedMet,weight);
+	      controlHistos.fillProfile("minRedMetprof", ctf,ev.ngenITpu,minRedMet);
+	      controlHistos.fill2DHisto("minRedMetvspu", ctf,ev.ngenITpu,minRedMet,weight);     
 	      
 	      //save summary tree now if required -> move this to after the red-MET cut ?
 	      if(saveSummaryTree && passMediumRedMet)
