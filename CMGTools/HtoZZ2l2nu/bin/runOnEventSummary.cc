@@ -273,8 +273,9 @@ int main(int argc, char* argv[])
       if(cutflowH) cnorm=cutflowH->GetBinContent(1);
       if(rescaleFactor>0) cnorm /= rescaleFactor;
     }
-  cout << "xSec x Br=" << xsec << " total entries=" << totalEntries << " normalized PU entries=" << normEntries << " obtained from " << cnorm << " generated events" << endl; 
-
+  cout << "xSec x Br=" << xsec << " total entries=" << totalEntries << " normalized PU entries=" << normEntries << " obtained from " << cnorm << " generated events" 
+       << " => L=" << cnorm/xsec << " /pb" << endl; 
+  
   //Event Duplicates checker init
   DuplicatesChecker duplicatesChecker;
 
