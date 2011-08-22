@@ -1,32 +1,35 @@
- #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
 
- #include "FWCore/Framework/interface/EDProducer.h"
- #include "FWCore/Framework/interface/Event.h"
- #include "FWCore/ParameterSet/interface/ParameterSet.h"
- #include "FWCore/Utilities/interface/InputTag.h"
+#include "FWCore/Framework/interface/LuminosityBlock.h"
+#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
- #include "DataFormats/PatCandidates/interface/EventHypothesis.h"
- #include "DataFormats/PatCandidates/interface/EventHypothesisLooper.h"
- #include "DataFormats/Common/interface/ValueMap.h"
- #include "DataFormats/Math/interface/deltaR.h"
- #include "DataFormats/MuonReco/interface/Muon.h"
- #include "DataFormats/TrackReco/interface/Track.h"
- #include "DataFormats/JetReco/interface/CaloJet.h"
- #include "CommonTools/UtilAlgos/interface/TFileService.h"
- #include "FWCore/ServiceRegistry/interface/Service.h"
+#include "DataFormats/PatCandidates/interface/EventHypothesis.h"
+#include "DataFormats/PatCandidates/interface/EventHypothesisLooper.h"
+#include "DataFormats/Common/interface/ValueMap.h"
+#include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/MuonReco/interface/Muon.h"
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/JetReco/interface/CaloJet.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "DataFormats/Common/interface/MergeableCounter.h"
 
- #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
- #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
- #include "CMGTools/HtoZZ2l2nu/interface/TSelectionMonitor.h"
+#include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
+#include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
+#include "CMGTools/HtoZZ2l2nu/interface/TSelectionMonitor.h"
 
- #include "TH1D.h"
- #include "TString.h"
+#include "TH1D.h"
+#include "TString.h"
 
 
  class DileptonPlusMETEventProducer : public edm::EDProducer {
  public:
    DileptonPlusMETEventProducer(const edm::ParameterSet &iConfig) ;
    virtual void produce( edm::Event &iEvent, const edm::EventSetup &iSetup) ;
+   void endLuminosityBlock(const edm::LuminosityBlock & iLumi, const edm::EventSetup & iSetup);
  private:
    std::map<std::string, edm::ParameterSet > objConfig;
    TSelectionMonitor controlHistos_;
@@ -43,7 +46,7 @@
    produces<std::vector<pat::EventHypothesis> >("selectedEvent");
    produces<reco::VertexCollection>("selectedVertices");
    produces<std::vector<int> >("selectionInfo");
-   std::string objs[]={"Generator", "Trigger", "Vertices", "Electrons", "Muons", "Dileptons", "Jets", "MET" };
+   std::string objs[]={"Generator", "Trigger", "Vertices", "Electrons", "LooseElectrons", "Muons", "LooseMuons", "Dileptons", "Jets", "MET" };
    for(size_t iobj=0; iobj<sizeof(objs)/sizeof(string); iobj++)
      objConfig[ objs[iobj] ] = iConfig.getParameter<edm::ParameterSet>( objs[iobj] );
 
@@ -60,6 +63,12 @@
    controlHistos_.initMonitorForStep( "electron");
    controlHistos_.initMonitorForStep( "matchedmuon");
    controlHistos_.initMonitorForStep( "muon");
+
+   TString selsteps[]={"Reco","no scrap","#geq 1 vertex","HB/HE noise","No beam halo"};
+   const size_t nselsteps=sizeof(selsteps)/sizeof(TString);
+   controlHistos_.addHistogram("cutflow", ";Steps; Events", nselsteps, 0.,nselsteps);
+   TH1 *h=controlHistos_.getHisto("cutflow");
+   for(size_t istep=0; istep<nselsteps; istep++) h->GetXaxis()->SetBinLabel(istep+1,selsteps[istep]);
  }
 
  //
@@ -87,11 +96,12 @@
    trigger::getLeadDileptonTriggerCandidates(iEvent,objConfig["Trigger"],trigMatchMu,trigMatchEle);
 
    //pre-select vertices
-  Handle<reco::VertexCollection> hVtx;
-  iEvent.getByLabel(objConfig["Vertices"].getParameter<edm::InputTag>("source"), hVtx);  
-  std::vector<reco::VertexRef> selVertices = vertex::filter(hVtx,objConfig["Vertices"]);
-  std::vector<reco::VertexRef> primaryVertexHyps;
-  if(selVertices.size()>0) selStep=1;
+   Handle<reco::VertexCollection> hVtx;
+   iEvent.getByLabel(objConfig["Vertices"].getParameter<edm::InputTag>("source"), hVtx);  
+   std::vector<reco::VertexRef> selVertices = vertex::filter(hVtx,objConfig["Vertices"]);
+   std::vector<reco::VertexRef> primaryVertexHyps;
+   if(selVertices.size()>0) selStep=1;
+   
 
   //beam spot                                                                                                                                                                                                  
   edm::Handle<reco::BeamSpot> beamSpot;
@@ -100,16 +110,18 @@
   //average energy density
   edm::Handle< double > rho;
   iEvent.getByLabel( objConfig["Jets"].getParameter<edm::InputTag>("rho"),rho);
-
+ 
   //select muons (id+very loose isolation)
   Handle<View<Candidate> > hMu; 
   iEvent.getByLabel(objConfig["Muons"].getParameter<edm::InputTag>("source"), hMu);
+  CandidateWithVertexCollection selLooseMuons = muon::filter(hMu, selVertices, *beamSpot, objConfig["LooseMuons"]);
   CandidateWithVertexCollection selMuons = muon::filter(hMu, selVertices, *beamSpot, objConfig["Muons"]);
+  
   for(size_t iMuon=0; iMuon< hMu.product()->size(); ++iMuon)
     {
       using namespace lepton;
       reco::CandidatePtr muonPtr = hMu->ptrAt(iMuon);
-      std::vector<double> isol=getLeptonIso(muonPtr,objConfig["Dileptons"].getParameter<double>("minPt"));
+      std::vector<double> isol=getLeptonIso(muonPtr,objConfig["LooseMuons"].getParameter<double>("minPt"));
 
       const pat::Muon *muon = dynamic_cast<const pat::Muon *>( muonPtr.get() );
       if( !muon->isTrackerMuon() || !muon->isGlobalMuon() ) continue;
@@ -136,12 +148,13 @@
   //select electrons (id+conversion veto+very loose isolation)
   Handle<View<Candidate> > hEle; 
   iEvent.getByLabel(objConfig["Electrons"].getParameter<edm::InputTag>("source"), hEle);
+  CandidateWithVertexCollection selLooseElectrons = electron::filter(hEle, hMu, selVertices, *beamSpot, objConfig["LooseElectrons"]);
   CandidateWithVertexCollection selElectrons = electron::filter(hEle, hMu, selVertices, *beamSpot, objConfig["Electrons"]);
   for(size_t iEle=0; iEle< hEle.product()->size(); ++iEle)
     {
       reco::CandidatePtr elePtr = hEle->ptrAt(iEle);
       using namespace lepton;
-      std::vector<double> isol=getLeptonIso(elePtr,objConfig["Dileptons"].getParameter<double>("minPt"));
+      std::vector<double> isol=getLeptonIso(elePtr,objConfig["LooseElectrons"].getParameter<double>("minPt"));
 
       const pat::Electron *ele = dynamic_cast<const pat::Electron *>( elePtr.get() );
       const reco::GsfTrackRef & eTrack = ele->gsfTrack();
@@ -167,6 +180,8 @@
     }
     
   //build inclusive lepton collection
+  CandidateWithVertexCollection selLooseLeptons = selLooseMuons;
+  selLooseLeptons.insert(selLooseLeptons.end(),selLooseElectrons.begin(),selLooseElectrons.end());
   CandidateWithVertexCollection selLeptons = selMuons;
   selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
   if(selLeptons.size()>0) selStep=2;
@@ -176,11 +191,7 @@
     {
       //search for dileptons
       CandidateWithVertexCollection isolLeptons;
-      std::pair<CandidateWithVertex,CandidateWithVertex> dileptonWithVertex = dilepton::filter(selLeptons,
-											       isolLeptons,
-											       *rho,
-											       objConfig["Dileptons"],
-											       iSetup);
+      std::pair<CandidateWithVertex,CandidateWithVertex> dileptonWithVertex = dilepton::filter(selLeptons, objConfig["Dileptons"], iSetup);
       selPath = dilepton::classify(dileptonWithVertex);
       if(selPath!= dilepton::UNKNOWN)
 	{
@@ -195,20 +206,22 @@
 	  primaryVertexHyps.push_back(dileptonWithVertex.first.second);
 	  hyp.add(dileptonWithVertex.second.first,"leg2");
 	  primaryVertexHyps.push_back(dileptonWithVertex.second.second);
-
 	  
-	  //add the remaining isolated leptons now
-	  for(CandidateWithVertexCollection::iterator lIt = isolLeptons.begin(); lIt != isolLeptons.end(); lIt++)
+	  //add the remaining loose leptons now
+	  for(CandidateWithVertexCollection::iterator lIt = selLooseLeptons.begin(); lIt != selLooseLeptons.end(); lIt++)
 	    {
-	      if(lIt->first.get()== dileptonWithVertex.first.first.get()) continue;
-	      if(lIt->first.get()== dileptonWithVertex.second.first.get()) continue;
-
+	      //veto if selected for the dilepton
+	      if(lIt->first.get() == dileptonWithVertex.first.first.get()) continue;
+	      if(lIt->first.get() == dileptonWithVertex.second.first.get()) continue;
+	      hyp.add( lIt->first , fabs(lepton::getLeptonId(lIt->first))==lepton::MUON ? "muon" : "electron" );
+	      
+	      //deprecated
 	      //check if lepton is associated to the same vertex as the dilepton
-	      if(lIt->second.get()== dileptonWithVertex.first.second.get() 
-		 || lIt->second.get() == dileptonWithVertex.second.second.get())
-		hyp.add( lIt->first , fabs(lepton::getLeptonId(lIt->first))==lepton::MUON ? "muon" : "electron" );
-	      else
-		hyp.add( lIt->first , fabs(lepton::getLeptonId(lIt->first))==lepton::MUON ? "pumuon" : "puelectron" );
+	      //if(lIt->second.get()== dileptonWithVertex.first.second.get() 
+	      //|| lIt->second.get() == dileptonWithVertex.second.second.get())
+	      //hyp.add( lIt->first , fabs(lepton::getLeptonId(lIt->first))==lepton::MUON ? "muon" : "electron" );
+	      //else
+	      //hyp.add( lIt->first , fabs(lepton::getLeptonId(lIt->first))==lepton::MUON ? "pumuon" : "puelectron" );
 	      
 	    }
   
@@ -216,10 +229,13 @@
 	  Handle<View<Candidate> > hJet; 
 	  iEvent.getByLabel(objConfig["Jets"].getParameter<edm::InputTag>("source"), hJet);
 	  CandidateWithVertexCollection selJets = jet::filter(hJet, isolLeptons, selVertices, objConfig["Jets"]);
-	  CandidateWithVertexCollection assocJets, puJets;
-	  jet::classifyJetsForDileptonEvent(selJets,dileptonWithVertex,assocJets,puJets,objConfig["Dileptons"].getParameter<double>("maxDz"));
-	  for(CandidateWithVertexCollection::iterator jIt = assocJets.begin(); jIt != assocJets.end(); jIt++) hyp.add(jIt->first,"jet");
-	  for(CandidateWithVertexCollection::iterator jIt = puJets.begin(); jIt != puJets.end(); jIt++) hyp.add(jIt->first,"pujet");
+	  for(CandidateWithVertexCollection::iterator jIt = selJets.begin(); jIt != selJets.end(); jIt++) hyp.add(jIt->first,"jet");
+
+	  //deprecated
+	  //CandidateWithVertexCollection assocJets, puJets;
+	  // jet::classifyJetsForDileptonEvent(selJets,dileptonWithVertex,assocJets,puJets,objConfig["Dileptons"].getParameter<double>("maxDz"));
+	  // for(CandidateWithVertexCollection::iterator jIt = assocJets.begin(); jIt != assocJets.end(); jIt++) hyp.add(jIt->first,"jet");
+	  //for(CandidateWithVertexCollection::iterator jIt = puJets.begin(); jIt != puJets.end(); jIt++) hyp.add(jIt->first,"pujet");
 	  
 	  //add the met
 	  Handle<View<Candidate> > hMET; 
@@ -263,6 +279,26 @@
     }
   iEvent.put(primVertices,"selectedVertices");
 }
+
+
+//
+void DileptonPlusMETEventProducer::endLuminosityBlock(const edm::LuminosityBlock & iLumi, const edm::EventSetup & iSetup)
+{
+  TString filterCtrs[]={"preSelectionCounter","noScrapCounter","goodVertexCounter","noHBHEnoiseCounter","nobeamHaloCounter"};
+  const size_t nselFilters=sizeof(filterCtrs)/sizeof(TString);
+  for(size_t istep=0; istep<nselFilters; istep++)
+    {
+      std::string fname(filterCtrs[istep].Data());
+      try{
+	edm::Handle<edm::MergeableCounter> ctrHandle;
+	iLumi.getByLabel(fname, ctrHandle);
+	if(!ctrHandle.isValid()) continue;
+	controlHistos_.fillHisto("cutflow","all",istep,0.,ctrHandle->value);
+      }catch(std::exception){
+      }
+    }
+}
+
 
 //  
 DEFINE_FWK_MODULE(DileptonPlusMETEventProducer);

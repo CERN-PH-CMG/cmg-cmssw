@@ -144,8 +144,6 @@ namespace dilepton
    */
   enum DileptonClassification {UNKNOWN=0,MUMU=1,EE=2,EMU=3,ETAU=4,MUTAU=5};
   std::pair<CandidateWithVertex,CandidateWithVertex> filter(CandidateWithVertexCollection &selLeptons, 
-							    CandidateWithVertexCollection &isolLeptons,
-							    double rho,
 							    const edm::ParameterSet &iConfig,
 							    const edm::EventSetup &iSetup);
   int classify(std::pair<CandidateWithVertex,CandidateWithVertex> &selDilepton);

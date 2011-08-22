@@ -20,7 +20,11 @@ def checkCastorDirectory(outdir):
             for castorFileLine in castorLines:
                 if "root" in castorFileLine:
                     fileName = castorFileLine.split()[8]
-                    jobNumber = int(fileName.split("_")[1])
+                    jobNumber=-1
+                    try:
+                        jobNumber = int(fileName.split("_")[1])
+                    except:
+                        continue
                     if jobNumber in jobNumbers:
                         if not jobNumber in duplicatedJobs:  duplicatedJobs.append(jobNumber)
                         duplicatedFiles.append(fileName)

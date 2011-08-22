@@ -36,6 +36,8 @@
 #include "CMGTools/HtoZZ2l2nu/interface/ReducedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ProjectedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
+#include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
+#include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
 #include "CMGTools/HtoZZ2l2nu/interface/TSelectionMonitor.h"
 
 #include "DataFormats/Common/interface/TriggerResults.h"
@@ -58,6 +60,7 @@ private:
   ProjectedMETComputer pmet_;
   ZZ2l2nuSummaryHandler summaryHandler_;
   TSelectionMonitor controlHistos_;
+  EventCategory eventClassifComp_;
 };
 
 using namespace std;
@@ -90,10 +93,16 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
     controlHistos_.addHistogram("ngoodvertex", ";Vertices; Events", 25, 0.,25.);
 
     //selection streams
-    TString selsteps[]={"Reco","2 leptons","2 good leptons","|M-M_{Z}|<15"};
+    TString selFilters[]={"Reco","no scrap","#geq 1 vertex","HB/HE noise","No beam halo"};
+    const size_t nselFilters=sizeof(selFilters)/sizeof(TString);
+    controlHistos_.addHistogram("preselcutflow", ";Steps; Events", nselFilters, 0.,nselFilters);
+    TH1 *h=controlHistos_.getHisto("preselcutflow");
+    for(size_t istep=0; istep<nselFilters; istep++) h->GetXaxis()->SetBinLabel(istep+1,selFilters[istep]);
+
+    TString selsteps[]={"Reco","#geq 2 very loose leptons","#geq 2 tight leptons","no extra loose leptons","b-veto","|M-M_{Z}|<15","red-E_{T}^{miss}>medium"};
     const size_t nselsteps=sizeof(selsteps)/sizeof(TString);
     controlHistos_.addHistogram("cutflow", ";Steps; Events", nselsteps, 0.,nselsteps);
-    TH1 *h=controlHistos_.getHisto("cutflow");
+    h=controlHistos_.getHisto("cutflow");
     for(size_t istep=0; istep<nselsteps; istep++) h->GetXaxis()->SetBinLabel(istep+1,selsteps[istep]);
 
     controlHistos_.addHistogram("vertex_mindz", ";min #Delta z [cm]; Events", 100, -25.,25.);
@@ -127,24 +136,21 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
     controlHistos_.addHistogram("dilepton_alres", ";a_{#parallel} difference [GeV]; Events", 100, -50.,50.);
 
     //jets
-    TString jetTypes[2] ={"jet","pujet"};
-    for(size_t ijetType=0; ijetType<2; ijetType++)
+    controlHistos_.addHistogram("jetfassoc",";#beta_{vtx}(Jet); Jets",50,0,1.0);
+    controlHistos_.addHistogram("jetpt",";p_{T} [GeV/c]; Jets",50,0,200);
+    controlHistos_.addHistogram("jeteta",";#eta; Jets",50,-2.5,2.5);
+    controlHistos_.addHistogram("jetbtags",";b tags (TCHE); Jets",50,-5,45);
+    controlHistos_.addHistogram("jetmult",";Jet multiplicity; Events",4,0,4);
+    controlHistos_.addHistogram("jetbmult",";b tag multiplicity (TCHEL); Events",4,0,4);
+    h=controlHistos_.getHisto("jetbmult");
+    for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++)
       {
-	controlHistos_.addHistogram(jetTypes[ijetType]+"fassoc",";#beta_{vtx}(Jet); Jets",50,0,1.0);
-	controlHistos_.addHistogram(jetTypes[ijetType]+"pt",";p_{T} [GeV/c]; Jets",50,0,200);
-	controlHistos_.addHistogram(jetTypes[ijetType]+"eta",";#eta; Jets",50,-2.5,2.5);
-	controlHistos_.addHistogram(jetTypes[ijetType]+"btags",";b tags (TCHE); Jets",50,-5,45);
-	controlHistos_.addHistogram(jetTypes[ijetType]+"mult",";Jet multiplicity; Events",4,0,4);
-	controlHistos_.addHistogram(jetTypes[ijetType]+"bmult",";b tag multiplicity (TCHEL); Events",4,0,4);
-	h=controlHistos_.getHisto(jetTypes[ijetType]+"bmult");
-	for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++)
-	    {
-	      TString ilabel(""); ilabel+=(ibin-1);
-	      if(ibin==h->GetXaxis()->GetNbins()) ilabel="#geq"+ilabel;
-	      h->GetXaxis()->SetBinLabel(ibin,ilabel);
-	      controlHistos_.getHisto(jetTypes[ijetType]+"mult")->GetXaxis()->SetBinLabel(ibin,ilabel);
-	    }
+	TString ilabel(""); ilabel+=(ibin-1);
+	if(ibin==h->GetXaxis()->GetNbins()) ilabel="#geq"+ilabel;
+	h->GetXaxis()->SetBinLabel(ibin,ilabel);
+	controlHistos_.getHisto("jetmult")->GetXaxis()->SetBinLabel(ibin,ilabel);
       }
+ 
     
     //MET
     controlHistos_.addHistogram("met", ";{E}_{T}^{miss} [GeV/c]; Events", 100,  0.,500.);
@@ -480,8 +486,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //if(dileptonP.mass()<40) return;
     //if(fabs(l1id)==fabs(l2id) && fabs(dileptonP.mass()-91)>15) return;
     //if(!isZcandidate) return;
-    controlHistos_.fillHisto("cutflow","all",3,weight);
-    controlHistos_.fillHisto("cutflow",istream,3,weight);
 
     double dphill=deltaPhi(lepton1P.phi(),lepton2P.phi());
     controlHistos_.fillHisto(dilCat+"_sumpt",istream,lepton1P.pt()+lepton2P.pt(),weight);
@@ -504,7 +508,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.ln_iso3[ev.ln]=ele->photonIso();
 	ev.ln++;
       }
-
     for (pat::eventhypothesis::Looper<pat::Muon> mu = evhyp.loopAs<pat::Muon>("muon"); mu; ++mu) 
       {
 	ev.ln_px[ev.ln]=mu->px();
@@ -520,7 +523,13 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.ln++;
       }
     controlHistos_.fillHisto("nleptons",istream,2+ev.ln,weight);
-    
+    bool pass3rdLepton=(ev.ln==0);
+    if(pass3rdLepton)
+      {
+	controlHistos_.fillHisto("cutflow","all",3,weight);
+	controlHistos_.fillHisto("cutflow",istream,3,weight);
+      }
+
     //
     // JET KINEMATICS
     //
@@ -533,17 +542,17 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //count the jets in the event
     int njets(0),nbjets(0);
     std::vector<LorentzVector> jetmomenta;
-    std::vector<const pat::Jet *> assocJets;
     ev.jn=0;
     for (pat::eventhypothesis::Looper<pat::Jet> jet = evhyp.loopAs<pat::Jet>("jet"); jet; ++jet) 
       {
 	njets++;
 	jetmomenta.push_back(jet->p4());
-	assocJets.push_back( jet.get() );
-	float btag=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
-	nbjets += (btag>1.74);
+	float jbp=jet->bDiscriminator("jetBProbabilityBJetTags");
+	float ssvhe=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
+	nbjets += (jbp>1.33 || ssvhe>1.74);
+
 	controlHistos_.fillHisto("jetfassoc",istream,jet::fAssoc(jet.get(),primVertex.get()),weight);
-	controlHistos_.fillHisto("jetbtags",istream,btag,weight);
+	controlHistos_.fillHisto("jetbtags",istream,jet->bDiscriminator("jetBProbabilityBJetTags"),weight);
 	controlHistos_.fillHisto("jetpt",istream,jet->pt(),weight);
 	controlHistos_.fillHisto("jeteta",istream,jet->eta(),weight);
 
@@ -555,42 +564,54 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.jn_btag1[ev.jn]=jet->bDiscriminator("trackCountingHighEffBJetTags");
 	ev.jn_btag2[ev.jn]=jet->bDiscriminator("jetBProbabilityBJetTags");
 	ev.jn_btag3[ev.jn]=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
-	ev.jn_btag4[ev.jn]=jet->bDiscriminator("softMuonByIP3dBJetTags");
+	ev.jn_btag4[ev.jn]=jet->bDiscriminator("trackCountingHighPurBJetTags");
 	ev.jn_vtxAssoc[ev.jn]=true;
         ev.jn++;
       }
     controlHistos_.fillHisto("jetmult",istream,njets,weight);
     controlHistos_.fillHisto("jetbmult",istream,nbjets,weight);	
-
-    //count the pu jets
-    std::vector<reco::CandidatePtr> pujets= evhyp.all("pujet");
-    int npujets(0),npubjets(0);
-    std::vector<LorentzVector> pujetmomenta;
-    std::vector<const pat::Jet *> puJets;
-    for (pat::eventhypothesis::Looper<pat::Jet> jet = evhyp.loopAs<pat::Jet>("pujet"); jet; ++jet) 
+    bool passBveto(nbjets==0);
+    if(pass3rdLepton && passBveto)
       {
-	npujets++;
-	pujetmomenta.push_back(jet->p4());
-	puJets.push_back( jet.get() );
-	float btag=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
-	npubjets += (btag>1.74);
-	controlHistos_.fillHisto("pujetfassoc",istream,jet::fAssoc(jet.get(),primVertex.get()),weight);
-	controlHistos_.fillHisto("pujetbtags",istream,btag,weight);
-        controlHistos_.fillHisto("pujetpt",istream,jet->pt(),weight);
-	controlHistos_.fillHisto("pujeteta",istream,jet->eta(),weight);
-
-	ev.jn_px[ev.jn] = jet->px();  ev.jn_py[ev.jn]=jet->py();  ev.jn_pz[ev.jn]=jet->pz(); ev.jn_en[ev.jn]=jet->energy();
-	const reco::Candidate *genParton = jet->genParton();
-	ev.jn_genid[ev.jn] = genParton ? genParton->pdgId() : -9999;
-	ev.jn_btag1[ev.jn]=jet->bDiscriminator("trackCountingHighEffBJetTags");
-	ev.jn_btag2[ev.jn]=jet->bDiscriminator("trackCountingHighPurBJetTags");
-	ev.jn_btag3[ev.jn]=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
-	ev.jn_btag4[ev.jn]=jet->bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
-	ev.jn_vtxAssoc[ev.jn]=false;
-	ev.jn++;
+	controlHistos_.fillHisto("cutflow","all",4,weight);
+	controlHistos_.fillHisto("cutflow",istream,4,weight);
+	if(isZcandidate)
+	  {
+	    controlHistos_.fillHisto("cutflow","all",5,weight);
+	    controlHistos_.fillHisto("cutflow",istream,5,weight);
+	  }
       }
-    controlHistos_.fillHisto("pujetmult",istream,npujets,weight);
-    controlHistos_.fillHisto("pujetbmult",istream,npubjets,weight);
+    
+    //deprecated
+    //count the pu jets
+    //  std::vector<reco::CandidatePtr> pujets= evhyp.all("pujet");
+    //     int npujets(0),npubjets(0);
+    //     std::vector<LorentzVector> pujetmomenta;
+    //     std::vector<const pat::Jet *> puJets;
+    //     for (pat::eventhypothesis::Looper<pat::Jet> jet = evhyp.loopAs<pat::Jet>("pujet"); jet; ++jet) 
+    //       {
+    // 	npujets++;
+    // 	pujetmomenta.push_back(jet->p4());
+    // 	puJets.push_back( jet.get() );
+    // 	float btag=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
+    // 	npubjets += (btag>1.74);
+    // 	controlHistos_.fillHisto("pujetfassoc",istream,jet::fAssoc(jet.get(),primVertex.get()),weight);
+    // 	controlHistos_.fillHisto("pujetbtags",istream,btag,weight);
+    //         controlHistos_.fillHisto("pujetpt",istream,jet->pt(),weight);
+    // 	controlHistos_.fillHisto("pujeteta",istream,jet->eta(),weight);
+    
+    // 	ev.jn_px[ev.jn] = jet->px();  ev.jn_py[ev.jn]=jet->py();  ev.jn_pz[ev.jn]=jet->pz(); ev.jn_en[ev.jn]=jet->energy();
+    // 	const reco::Candidate *genParton = jet->genParton();
+    // 	ev.jn_genid[ev.jn] = genParton ? genParton->pdgId() : -9999;
+    // 	ev.jn_btag1[ev.jn]=jet->bDiscriminator("trackCountingHighEffBJetTags");
+    // 	ev.jn_btag2[ev.jn]=jet->bDiscriminator("trackCountingHighPurBJetTags");
+    // 	ev.jn_btag3[ev.jn]=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
+    // 	ev.jn_btag4[ev.jn]=jet->bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
+    // 	ev.jn_vtxAssoc[ev.jn]=false;
+    // 	ev.jn++;
+    //       }
+    //     controlHistos_.fillHisto("pujetmult",istream,npujets,weight);
+    // controlHistos_.fillHisto("pujetbmult",istream,npubjets,weight);
 
     //
     // MET kinematics
@@ -655,13 +676,33 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.met3_phi = 0;               ev.met3_pt=reducedMET;      
     ev.met4_phi = pfnopumet.phi(); ev.met4_pt=pfnopumet.pt(); 
     
-    //fill the events selection flags
-    ev.pass=0;    
-    if(ev.ln==0)                                          ev.pass++;
-    if(ev.ln==0 && (nbjets+npubjets)==0)                  ev.pass++;
-    if(ev.ln==0 && (nbjets+npubjets)==0 && reducedMET>39) ev.pass++;
-    if(isZcandidate && ev.ln==0 && (nbjets+npubjets)==0 && reducedMET>39) ev.pass++;
+    //classify the event
+    PhysicsEvent_t physEvent=getPhysicsEventFrom(ev);
+    int eventCategory = eventClassifComp_.Get(physEvent);
+    bool passMediumRedMet(reducedMET>rmet_.getCut(eventCategory,ReducedMETComputer::MEDIUMWP));
+    if(pass3rdLepton && passBveto && isZcandidate && passMediumRedMet)
+      {
+	controlHistos_.fillHisto("cutflow","all",6,weight);
+	controlHistos_.fillHisto("cutflow",istream,6,weight);
+      }
   
+
+    //fill the events selection flags
+    ev.pass=eventCategory;    
+    if(pass3rdLepton) 
+    {
+      ev.pass += 1000;
+      if(passBveto)   
+	{
+	  ev.pass += 2000;
+	  if(passMediumRedMet)
+	    {
+	      ev.pass += 3000;
+	      if(isZcandidate) ev.pass += 4000;
+	    }
+	}
+    }
+    
     //trigger bit
     ev.hasTrigger=hasTrigger;
 
@@ -683,14 +724,37 @@ void DileptonPlusMETEventAnalyzer::endLuminosityBlock(const edm::LuminosityBlock
   iLumi.getByLabel("startCounter", ctrHandle);
   for(size_t istream=0; istream<sizeof(streams)/sizeof(TString); istream++)
     {
-      controlHistos_.fillHisto("cutflow",streams[istream],0.,ctrHandle->value);
-      if(istream==0) controlHistos_.fillHisto("cutflow","all",0.,ctrHandle->value);
+      if(ctrHandle.isValid())
+	{
+	  controlHistos_.fillHisto("cutflow",streams[istream],0.,ctrHandle->value);
+	  if(istream==0) controlHistos_.fillHisto("cutflow","all",0.,ctrHandle->value);
+	}
       edm::Handle<edm::MergeableCounter> streamCtrHandle;
       std::string inpt= std::string(streams[istream])+"SelectionCounter";
       iLumi.getByLabel(inpt, streamCtrHandle);
-      controlHistos_.fillHisto("cutflow",streams[istream],1.,streamCtrHandle->value);
-      controlHistos_.fillHisto("cutflow","all",1.,streamCtrHandle->value);
-    } 
+      if(streamCtrHandle.isValid())
+	{
+	  controlHistos_.fillHisto("cutflow",streams[istream],1.,streamCtrHandle->value);
+	  controlHistos_.fillHisto("cutflow","all",1.,streamCtrHandle->value);
+	}
+    }
+
+  //  cout << "[DileptonPlusMETEventAnalyzer::endLuminosityBlock]" << endl;
+  TString filterCtrs[]={"preSelectionCounter","noScrapCounter","goodVertexCounter","noHBHEnoiseCounter","nobeamHaloCounter"};
+  const size_t nselFilters=sizeof(filterCtrs)/sizeof(TString);
+  for(size_t istep=0; istep<nselFilters; istep++)
+    {
+      std::string fname(filterCtrs[istep].Data());
+      try{
+	edm::Handle<edm::MergeableCounter> ctrHandle;
+	iLumi.getByLabel(fname, ctrHandle);
+	if(!ctrHandle.isValid()) continue;
+	controlHistos_.fillHisto("preselcutflow","all",istep,0.,ctrHandle->value);
+      }catch(std::exception){
+      }
+    }
+
+ 
 }
 
 
