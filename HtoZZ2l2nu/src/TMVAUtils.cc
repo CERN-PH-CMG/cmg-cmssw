@@ -116,7 +116,7 @@ namespace tmva
     //check if there is more than 1 category
     TMVA::MethodBase *fiCat=0;
     std::cout << "==> Booking: type=" << kMethod << " " <<  method << " " << options << std::endl;
-    if(categDef.size()==1)
+    if(categDef.size()==0)
       {
 	fiCat=factory->BookMethod( kMethod, method, options);
       }

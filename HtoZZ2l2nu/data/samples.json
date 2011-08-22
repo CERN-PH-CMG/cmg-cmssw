@@ -65,12 +65,6 @@
                 "xsec":7.87
              },
 	     {
-		"dtag":"SingleTbar_tW",
-	        "dset":"Tbar_TuneZ2_tW-channel-DR_7TeV-powheg-tauola",
-                "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/SingleTop/Tbar_TuneZ2_tW-channel-DR_7TeV-powheg-tauola"],
-                "xsec":7.87
-             },
-	     {
 		"dtag":"SingleT_t",
 	        "dset":"T_TuneZ2_t-channel_7TeV-powheg-tauola",
                 "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/SingleTop/T_TuneZ2_t-channel_7TeV-powheg-tauola"],
