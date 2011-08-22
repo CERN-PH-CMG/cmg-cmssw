@@ -324,6 +324,21 @@
                   "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/DoubleElectron/DoubleElectron-05Aug2011"]
 		},
                 {
+                  "dtag":"DoubleMuPromptRecov4",
+                  "dset":"/DoubleMu/Run2011A-PromptReco-v4/AOD",
+                  "patdir":["/castor/cern.ch//cms/store/cmst3/user/psilva/Data2/DoubleMuon/DoubleMu-PromptReco-v4"]
+                },
+                {
+                  "dtag":"DoubleElectronPromptRecov4",
+                  "dset":"/DoubleElectron/Run2011A-PromptReco-v4/AOD",
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data2/DoubleElectron/DoubleElectron-PromptReco-v4"]
+                },
+                {
+                  "dtag":"MuEGPromptRecov4",
+                  "dset":"/MuEG/Run2011A-PromptReco-v4/AOD",
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data2/MuEG/MuEG-PromptReco-v4"]
+                },
+                {
                   "dtag":"DoubleMuPromptRecov6",
                   "dset":"/DoubleMu/Run2011A-PromptReco-v6/AOD",
                   "patdir":["/castor/cern.ch/cern.ch//cms/store/cmst3/user/psilva/Data/DoubleMuon/DoubleMu-PromptReco-v6"]
