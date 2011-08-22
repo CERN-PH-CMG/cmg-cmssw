@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.1 $
+\RCS$Revision: 1.2 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.1 2011/07/28 14:28:24 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.2 2011/08/17 08:48:19 querten Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -90,20 +90,31 @@ pdfkeywords={CMS, physics, Higgs boson, missing transverse energy}}
 %
 % EVENT SELECTION
 %
-\section{Dilepton event selection}
-\label{sec:dileptonevselection}
+\section{Trigger and event selection}
+\label{sec:triggerevselection}
 
-As detailed in the introduction, 
-all processes which are expected to produce one or more leptons are considered
-to be relevant as concurrent processes with the Higgs dileptonic sample. 
-This includes mainly vector boson production (W/Z) and Drell-Yan (DY) processes.
+%%
+%% SAMPLES
+%%
+\subsection{Samples}
+\label{subsec:samples}
+
+As detailed in the introduction, all processes which are expected to produce at least one prompt lepton
+have to be considered as relevant concurrent processes with the Higgs dileptonic sample. 
+Due to the expected hadronic activity resulting from radiation and from the proton remnants,
+a second lepton may be mimicked by a mismeasured jet.
+This is the case for W+jets production and QCD.
+Even if the lepton fake rate is expected to be low, these two processes have large cross sections
+when compared with the expected production cross section for the Higgs boson.
+Z boson production is however the most important concurrent process
+as it produces two prompt leptons in the mass window of interest for this study.
 Top quark and di-boson (WW,WZ,ZZ) production are also relevant but with much smaller cross section.
-QCD must also be considered for study as jets are expected to fake leptons in the reconstruction process.
+In particular top quark and WW boson production contribute to the non-resonant component of the dilepton spectrum.
+
 Table~\ref{tab:mcsamples} summarizes the simulation samples which are used for all standard model processes
-which may mimick the signal under study  .
-The global tag GR\_R\_42\_V19 (START42\_V13) has been used to process data (MC) with
+and which may mimick the signal under study  .
+The global tag START42\_V13 has been used to process MC with
 version 4\_2\_4 of the CMS official software (CMSSW).
-Residual jet energy corrections are applied to data.
 
 \begin{table}[htp]
 \caption{List of the SM Monte Carlo samples used in the comparison with 7~TeV data.
@@ -114,20 +125,29 @@ the expected cross sections and the corresponding total integrated luminosity ar
 \hspace{-1.5cm*}
 \begin{tabular}{llll} \hline\hline
 \multicolumn{4}{c}{\bf Background processes} \\
-Process                      & Dataset                 & $\sigma\cdot BR\cdot k$ (pb) & $L$~(pb$^{-1}$) \\\hline
-W+jets                       & /WJetsToLNu\_TuneZ2\_7TeV-madgraph-tauola/S11-S4-v1                    & 31314     & \\
-$Z/\gamma^{*}\rightarrow ll$ & /DYJetsToLL\_TuneZ2\_M-50\_7TeV-madgraph-tauola/S11-S4-v1              & 3048      & \\
-\ttbar                       & /TTJets\_TuneZ2\_7TeV-madgraph-tauola/S11-S4-v1                        & 165       & \\
-\multirow{2}{*}{Single top}  & /T\_TuneZ2\_tW-channel-DR\_7TeV-powheg-tauola/S11-S4-v1 ($t$)          & 7.87      & \\
-                             & /Tbar\_TuneZ2\_tW-channel-DR\_7TeV-powheg-tauola/S11-S4-v1 ($\bar{t}$) & 7.87      & \\
-\multirow{3}{*}{Dibosons}    & /ZZTo2L2Nu\_TuneZ2\_7TeV\_pythia6\_tauola/S11-v1                       & 0.259     & \\
-                             & /WWTo2L2Nu\_TuneZ2\_7TeV\_pythia6\_tauola/S11-v1                       & 4.51      & \\
-                             & /WZTo3LNu\_TuneZ2\_7TeV\_pythia6\_tauola/S11-v1                        & 0.596     & \\\hline\hline
+Process                      & Dataset                                                                & $\sigma\cdot BR\cdot k$ (pb) & $\int \mathcal{L}$~(fb$^{-1}$)\\\hline
+W+jets                       & /WJetsToLNu\_TuneZ2\_7TeV-madgraph-tauola/S11-S4-v1                    & 31314                        & 2.1\\
+$Z/\gamma^{*}\rightarrow ll$ & /DYJetsToLL\_TuneZ2\_M-50\_7TeV-madgraph-tauola/S11-S4-v1              & 3048                         & \\
+\ttbar                       & /TTJets\_TuneZ2\_7TeV-madgraph-tauola/S11-S4-v1                        & 165                          & 19.3 \\
+\multirow{6}{*}{Single top}  & /T\_TuneZ2\_tW-channel-DR\_7TeV-powheg-tauola/S11-S4-v1 ($t$)          & 7.87                         & 78 \\
+                             & /Tbar\_TuneZ2\_tW-channel-DR\_7TeV-powheg-tauola/S11-S4-v1 ($\bar{t}$) & 7.87                         & 103 \\
+                             & /T\_TuneZ2\_t-channel\_7TeV-powheg-tauola/S11-S4-v1 ($t$)              & 41.92                        & 79 \\
+                             & /Tbar\_TuneZ2\_t-channel\_7TeV-powheg-tauola/S11-S4-v1 ($\bar{t}$)     & 22.6                         & 64 \\
+                             & /T\_TuneZ2\_s-channel\_7TeV-powheg-tauola/S11-S4-v1 ($t$)              & 3.19                         & 81 \\
+                             & /Tbar\_TuneZ2\_s-channel\_7TeV-powheg-tauola/S11-S4-v1 ($\bar{t}$)     & 1.44                         & 26 \\
+\multirow{3}{*}{Dibosons}    & /ZZ\_TuneZ2\_7TeV\_pythia6\_tauola/S11-v1                              & 5.9                          & 693 \\
+                             & /WW\_TuneZ2\_7TeV\_pythia6\_tauola/S11-v1                              & 43                           & 98 \\
+                             & /WZ\_TuneZ2\_7TeV\_pythia6\_tauola/S11-v1                              & 18.2                         & 234 \\\hline\hline
 \end{tabular}
 \end{center}
 \end{table}
 
-The next sections summarize the strategy adopted for the trigger, reconstruction and event selection.
+Table~\ref{tab:datasamples} summarizes the data samples which are used for this study.
+The global tag GR\_R\_42\_V20 has been used to process data with
+version 4\_2\_4 of the CMS official software (CMSSW).
+Residual jet energy corrections are applied to data.
+
+The next section summarize the strategy adopted for the trigger, pre-selection, reconstruction and event selection.
 
 %%
 %% TRIGGER RECONSTRUCTION EVENT SELECTION
