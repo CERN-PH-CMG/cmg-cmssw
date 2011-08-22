@@ -6,9 +6,7 @@ namespace dilepton{
 
   //
   std::pair<CandidateWithVertex,CandidateWithVertex> filter(CandidateWithVertexCollection &selLeptons,
-                                                            CandidateWithVertexCollection &isolLeptons,
-                                                            double rho,
-                                                            const edm::ParameterSet &iConfig,
+							    const edm::ParameterSet &iConfig,
                                                             const edm::EventSetup &iSetup)
   {
     bool candidateFound(false);
@@ -17,9 +15,6 @@ namespace dilepton{
     try{
     
       //config parameters
-      double minPt = iConfig.getParameter<double>("minPt");
-      double maxEleRelIso = iConfig.getParameter<double>("maxEleRelIso");
-      double maxMuRelIso = iConfig.getParameter<double>("maxMuRelIso");
       double minDileptonMass = iConfig.getParameter<double>("minDileptonMass");
       double maxDileptonMass = iConfig.getParameter<double>("maxDileptonMass");
       double maxDz = iConfig.getParameter<double>("maxDz");
@@ -31,13 +26,7 @@ namespace dilepton{
 	  reco::CandidatePtr lep1Ptr = selLeptons[ilep].first;
 	  reco::VertexRef lep1Vtx = selLeptons[ilep].second;
 	  if(lep1Vtx.isNull()) continue;
-	  
-	  int id1 = lepton::getLeptonId(lep1Ptr);
-	  double maxRelIso1( fabs(id1)==ELECTRON ? maxEleRelIso : maxMuRelIso);
-	  std::vector<double> iso1=lepton::getLeptonIso(lep1Ptr,minPt);
-	  if(iso1[REL_ISO]>maxRelIso1) continue;	  
-	  isolLeptons.push_back(selLeptons[ilep]);
-	  if(lep1Ptr->pt()<minPt) continue;
+	  //	  int id1 = lepton::getLeptonId(lep1Ptr);
 	  
 	  //iterate over the second lepton
 	  for(size_t jlep=ilep+1; jlep<selLeptons.size(); jlep++)
@@ -45,12 +34,7 @@ namespace dilepton{
 	      reco::CandidatePtr lep2Ptr = selLeptons[jlep].first;
 	      reco::VertexRef lep2Vtx = selLeptons[jlep].second;
 	      if(lep2Vtx.isNull()) continue;
-	      if(lep2Ptr->pt()<minPt) continue;
-
-	      int id2 = lepton::getLeptonId(lep2Ptr);
-	      double maxRelIso2( fabs(id2)==ELECTRON ? maxEleRelIso : maxMuRelIso);
-	      std::vector<double> iso2=getLeptonIso(lep2Ptr,minPt);
-	      if(iso2[REL_ISO]>maxRelIso2) continue;
+	      //int id2 = lepton::getLeptonId(lep2Ptr);
 	      
 	      double dz( lep1Vtx->position().z()-lep2Vtx->position().z());
 	      if(fabs(dz)>fabs(maxDz) ) continue;
@@ -85,7 +69,7 @@ namespace dilepton{
     catch(std::exception &e){
       cout << "[dilepton::filter] failed with : " << e.what() << endl;
     }
-
+    
     //result
     return selDilepton;
   }
