@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.2 $
+\RCS$Revision: 1.3 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.2 2011/08/17 08:48:19 querten Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.3 2011/08/22 22:27:17 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -122,12 +122,12 @@ For the different processes (signal and background) considered
 the expected cross sections and the corresponding total integrated luminosity are quoted.}
 \label{tab:mcsamples}
 \begin{center}
-\hspace{-1.5cm*}
+\hspace*{-1.5cm}
 \begin{tabular}{llll} \hline\hline
 \multicolumn{4}{c}{\bf Background processes} \\
 Process                      & Dataset                                                                & $\sigma\cdot BR\cdot k$ (pb) & $\int \mathcal{L}$~(fb$^{-1}$)\\\hline
 W+jets                       & /WJetsToLNu\_TuneZ2\_7TeV-madgraph-tauola/S11-S4-v1                    & 31314                        & 2.1\\
-$Z/\gamma^{*}\rightarrow ll$ & /DYJetsToLL\_TuneZ2\_M-50\_7TeV-madgraph-tauola/S11-S4-v1              & 3048                         & \\
+$Z/\gamma^{*}\rightarrow ll$ & /DYJetsToLL\_TuneZ2\_M-50\_7TeV-madgraph-tauola/S11-S4-v1              & 3048                         & 10.8\\
 \ttbar                       & /TTJets\_TuneZ2\_7TeV-madgraph-tauola/S11-S4-v1                        & 165                          & 19.3 \\
 \multirow{6}{*}{Single top}  & /T\_TuneZ2\_tW-channel-DR\_7TeV-powheg-tauola/S11-S4-v1 ($t$)          & 7.87                         & 78 \\
                              & /Tbar\_TuneZ2\_tW-channel-DR\_7TeV-powheg-tauola/S11-S4-v1 ($\bar{t}$) & 7.87                         & 103 \\
@@ -147,6 +147,25 @@ The global tag GR\_R\_42\_V20 has been used to process data with
 version 4\_2\_4 of the CMS official software (CMSSW).
 Residual jet energy corrections are applied to data.
 
+\begin{table}[htp]
+\caption{List of the primary datasets analyzed.
+PD is used as a shortname for the primary datasets used, i.e. DoubleElectron, DoubleMu, MuEG and SingleMu.
+The integrated luminosity and the run range corresponding to different data are shown in the rightmost columns. All samples are AOD.}
+\label{tab:datasamples}
+\begin{center}
+\begin{tabular}{lll} \hline\hline
+\multicolumn{3}{c}{\bf Data samples} \\
+Dataset                         & $\int \mathcal{L}$ (pb$^{-1}$)  & Run range \\\hline
+/PD/Run2011A-May10ReReco-v1/AOD &                                 & {\small 160431-163869} \\
+/PD/Run2011A-PromptReco-v4/AOD  & 930.7                           & {\small 165088-167913} \\
+/PD/Run2011A-05Aug2011-v1/AOD   & 410.6                           & {\small 170722-172619} \\
+/PD/Run2011A-PromptReco-v6/AOD  & 450.6                           & {\small 172620-173244} \\\hline
+{\bf Total}                     &                                 &  \\
+\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
 The next section summarize the strategy adopted for the trigger, pre-selection, reconstruction and event selection.
 
 %%
@@ -163,8 +182,38 @@ The main aspects of the event selection are summarized as follows:
 \item[Trigger] unprescaled double lepton triggers available are used.
 Unprescaled single muon triggers are also considered in order to recover possible inefficiencies especially in events with two muons.
 Whenever possible, trigger thresholds are chosen below the nominal cut used for the offline reconstruction of electrons and muons.
-The following triggers are used: HLT\_Ele17\_CaloIdL\_CaloIsoVL\_Ele8\_CaloIdL\_CaloIsoVL\_v*, HLT\_DoubleMu7\_v*, HLT\_Mu13\_Mu8\_v*,
-HLT\_Mu17\_Ele8\_CaloIdL\_v*, HLT\_Mu8\_Ele17\_CaloIdL\_v*, HLT\_IsoMu17\_v*.
+Table~\ref{tab:datatrigger} summarizes the triggers used in data and in the MC sample.
+
+\begin{table}[htp]
+\caption{Triggers used in data and simulated in the MC.
+In data the version of the trigger depends on the dataset period. The HLT prefix has been omitted for simplicity all in the trigger names.
+cI*Iso* is used as a shortname for CaloId*\_CaloIso* and tkI*Iso* as a short name for TrkId*\_TrkIso* where *=VL,L,T,VT.}
+\label{tab:datatrigger}
+\begin{center}
+\hspace*{-1cm}
+\begin{tabular}{lllll} \hline\hline
+Trigger                                            & \multicolumn{4}{c}{Primary dataset/dilepton channel} \\\hline
+\multicolumn{5}{c}{\bf Data} \\\hline
+                                                                   & DoubleElectron & DoubleMu & MuEG & SingleMu  \\
+{\small Ele17\_cILIsoVL\_Ele8\_cILIsoVL}                           & yes            & veto     & veto & veto      \\
+{\small Ele17\_cITIsoVL\_tkIVLIsoVL\_Ele8\_\_cITIsoVL\_tkIVLIsoVL} & yes & veto     & veto & veto      \\
+{\small DoubleMu7, Mu13\_Mu8}                                      & -              & yes      & veto & veto      \\
+{\small Mu17\_Ele8\_cIL, Mu8\_Ele17\_cIL}                          & -              & -        & yes & veto       \\
+{\small Mu17\_Ele8\_cITIsoVL}                                      & -              & -        & yes & veto       \\
+{\small Mu8\_Ele17\_cITIsoVL}                                      & -              & -        & yes & veto       \\
+{\small IsoMu17,IsoMu24}                                           & -              & -        & -   & yes      \\\hline
+\multicolumn{5}{c}{\bf MC} \\\hline
+                                                                   & $ee$ & $\mu\mu$ & $e\mu$ &  \\
+{\small Ele17\_cILIsoVL\_Ele8\_cILIsoVL\_v2}                       & yes  & -        & -      & \\
+{\small DoubleMu7}                                                 & -    & yes      & -      & \\
+{\small IsoMu17\_v5}                                               & -    & yes      & yes    & \\
+{\small Mu8\_Ele17\_cIL\_v2}                                       & -    & -        & yes    & \\
+{\small Mu10\_Ele10\_cIL\_v3}                                      & -    & -        & yes    & \\
+{\small Mu17\_Ele8\_cIL\_v2}                                       & -    & -        & yes    & \\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
 
 %%% PRIMARY VERTICES
 \item[Primary vertices] must be found within maximum range of 24~cm along the beam line (z) and within a 2~cm cylinder around the beam line ($\rho$)..
