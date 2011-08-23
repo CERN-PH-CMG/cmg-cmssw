@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.3 $
+\RCS$Revision: 1.4 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.3 2011/08/22 22:27:17 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.4 2011/08/23 16:40:07 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -112,14 +112,16 @@ Top quark and di-boson (WW,WZ,ZZ) production are also relevant but with much sma
 In particular top quark and WW boson production contribute to the non-resonant component of the dilepton spectrum.
 
 Table~\ref{tab:mcsamples} summarizes the simulation samples which are used for all standard model processes
-and which may mimick the signal under study  .
+and which may mimick the signal under study.Table~\ref{tab:mcsignalsamples} summarizes the simulation samples used
+to model the Higgs signal. Both gluon-gluon and vector boson fusion processes are considered as well as ZZ and WW decays of the Higgs boson.
 The global tag START42\_V13 has been used to process MC with
 version 4\_2\_4 of the CMS official software (CMSSW).
 
 \begin{table}[htp]
 \caption{List of the SM Monte Carlo samples used in the comparison with 7~TeV data.
 For the different processes (signal and background) considered 
-the expected cross sections and the corresponding total integrated luminosity are quoted.}
+the expected cross sections and the corresponding total integrated luminosity are quoted.
+S11-S4 is used as a shortname for Summer11-PU\_S4\_START42\_V11.}
 \label{tab:mcsamples}
 \begin{center}
 \hspace*{-1.5cm}
@@ -142,6 +144,44 @@ $Z/\gamma^{*}\rightarrow ll$ & /DYJetsToLL\_TuneZ2\_M-50\_7TeV-madgraph-tauola/S
 \end{center}
 \end{table}
 
+\begin{table}[htp]
+\caption{List of the SM Monte Carlo samples used to model the Higgs signal.
+The expected cross sections and branching ratios according to~\cite{LHCHiggsCrossSectionWorkingGroup:2011ti} are quoted in the table.
+S11-S4 is used as a shortname for Summer11-PU\_S4\_START42\_V11;
+ggHZZ, ggHWW, qqHZZ, qqHWW are used as shortnames for
+GluGluToHToZZTo2L2Nu, GluGluToHToWWTo2L2Nu, VBF\_ToHToZZTo2L2NU, VBF\_HToWWTo2L2Nu correspondingly;
+7TeV is used as shortname for 7TeV-powheg-pythia6.}
+\label{tab:mcsignalsamples}
+\begin{center}
+\hspace*{-1cm}
+\begin{tabular}{lllll} \hline\hline
+\multicolumn{4}{c}{\bf Background processes} \\
+Higgs mass (GeV/c$^2$)       & Dataset                        & $\sigma$ (pb)            & $BR(H\rightarrow VV)$ & $BR(VV\rightarrow 2l2\nu)$\\\hline
+\multirow{4}{*}{200}         & /ggHZZ\_M-200\_7TeV/S11-S4-v1  & \multirow{2}{*}{5.27}    & 0.256                 & 0.0404 \\
+                             & /ggHWW\_M-200\_7TeV/S11-S4-v1  &                          & 0.741                 & 0.0467 \\
+                             & /qqHZZ\_M-200\_7TeV/S11-S4-v1  & \multirow{2}{*}{0.6371}  & 0.256                 & 0.0404 \\
+                             & /qqHWW\_M-200\_7TeV/S11-S4-v1  &                          & 0.741                 & 0.0467 \\\hline
+\multirow{4}{*}{300}         & /ggHZZ\_M-300\_7TeV/S11-S4-v1  & \multirow{2}{*}{2.422}   & 0.307                 & 0.0404 \\
+                             & /ggHWW\_M-300\_7TeV/S11-S4-v1  &                          & 0.692                 & 0.0467 \\
+                             & /qqHZZ\_M-300\_7TeV/S11-S4-v1  & \multirow{2}{*}{0.298}   & 0.307                 & 0.0404 \\
+                             & /qqHWW\_M-300\_7TeV/S11-S4-v1  &                          & 0.692                 & 0.0467 \\\hline
+\multirow{4}{*}{400}         & /ggHZZ\_M-400\_7TeV/S11-S4-v1  & \multirow{2}{*}{2.03}    & 0.269                 & 0.0404 \\
+                             & /ggHWW\_M-400\_7TeV/S11-S4-v1  &                          & 0.582                 & 0.0467 \\
+                             & /qqHZZ\_M-400\_7TeV/S11-S4-v1  & \multirow{2}{*}{0.161}   & 0.269                 & 0.0404 \\
+                             & /qqHWW\_M-400\_7TeV/S11-S4-v1  &                          & 0.582                 & 0.0467 \\\hline
+\multirow{4}{*}{500}         & /ggHZZ\_M-500\_7TeV/S11-S4-v1  & \multirow{2}{*}{0.865}   & 0.261                 & 0.0404 \\
+                             & /ggHWW\_M-500\_7TeV/S11-S4-v1  &                          & 0.0946                & 0.0467 \\
+                             & /qqHZZ\_M-500\_7TeV/S11-S4-v1  & \multirow{2}{*}{0.6371}  & 0.261                 & 0.0404 \\
+                             & /qqHWW\_M-500\_7TeV/S11-S4-v1  &                          & 0.0946                & 0.0467 \\\hline
+\multirow{4}{*}{600}         & /ggHZZ\_M-600\_7TeV/S11-S4-v1  & \multirow{2}{*}{0.3267}  & 0.272                 & 0.0404 \\
+                             & /ggHWW\_M-600\_7TeV/S11-S4-v1  &                          & 0.558                 & 0.0467 \\
+                             & /qqHZZ\_M-600\_7TeV/S11-S4-v1  & \multirow{2}{*}{0.05771} & 0.272                 & 0.0404 \\
+                             & /qqHWW\_M-600\_7TeV/S11-S4-v1  &                          & 0.558                 & 0.0467 \\\hline\hline                          
+\end{tabular}
+\end{center}
+\end{table}
+
+
 Table~\ref{tab:datasamples} summarizes the data samples which are used for this study.
 The global tag GR\_R\_42\_V20 has been used to process data with
 version 4\_2\_4 of the CMS official software (CMSSW).
@@ -150,17 +190,17 @@ Residual jet energy corrections are applied to data.
 \begin{table}[htp]
 \caption{List of the primary datasets analyzed.
 PD is used as a shortname for the primary datasets used, i.e. DoubleElectron, DoubleMu, MuEG and SingleMu.
-The integrated luminosity and the run range corresponding to different data are shown in the rightmost columns. All samples are AOD.}
+The integrated luminosity and the run range corresponding to different data are shown in the rightmost columns.}
 \label{tab:datasamples}
 \begin{center}
 \begin{tabular}{lll} \hline\hline
 \multicolumn{3}{c}{\bf Data samples} \\
 Dataset                         & $\int \mathcal{L}$ (pb$^{-1}$)  & Run range \\\hline
-/PD/Run2011A-May10ReReco-v1/AOD &                                 & {\small 160431-163869} \\
+/PD/Run2011A-May10ReReco-v1/AOD & 215.2                           & {\small 160431-163869} \\
 /PD/Run2011A-PromptReco-v4/AOD  & 930.7                           & {\small 165088-167913} \\
 /PD/Run2011A-05Aug2011-v1/AOD   & 410.6                           & {\small 170722-172619} \\
 /PD/Run2011A-PromptReco-v6/AOD  & 450.6                           & {\small 172620-173244} \\\hline
-{\bf Total}                     &                                 &  \\
+{\bf Total}                     & 2007.1                          &  \\
 \hline\hline
 \end{tabular}
 \end{center}
@@ -180,9 +220,11 @@ The main aspects of the event selection are summarized as follows:
 
 %%% TRIGGER
 \item[Trigger] unprescaled double lepton triggers available are used.
-Unprescaled single muon triggers are also considered in order to recover possible inefficiencies especially in events with two muons.
+Unprescaled single muon triggers are also considered in order to recover possible inefficiencies from the trigger system acceptance
+for larger values of the pseudo-rapidity ($|\eta|>$2.1).
 Whenever possible, trigger thresholds are chosen below the nominal cut used for the offline reconstruction of electrons and muons.
 Table~\ref{tab:datatrigger} summarizes the triggers used in data and in the MC sample.
+In the data triggers are vetoed sequentially in order to remove overlaps between the primary datasets~\cite{CMS-TWIKI-PDWG}.
 
 \begin{table}[htp]
 \caption{Triggers used in data and simulated in the MC.
@@ -214,93 +256,105 @@ Trigger                                            & \multicolumn{4}{c}{Primary 
 \end{center}
 \end{table}
 
+%%% PRE-SELECTION
+\item[Pre-selection filters] are applied to minimize the contamination from beam-gas interactions, beam-halo, calorimeter noise, etc.
+
 
 %%% PRIMARY VERTICES
 \item[Primary vertices] must be found within maximum range of 24~cm along the beam line (z) and within a 2~cm cylinder around the beam line ($\rho$)..
 The minimum number of degrees of freedom (n.d.o.f.) of the vertex fit is required to be 4.
-In case of multiple primary vertices the primary vertex is chosen to be the one which is highest sum of the transverse momentum of the tracks
-and it is required that the selected dileptons' tracks are closer to the chosen vertex by minimizing $\Delta z=z_{PV}-z_{track}^{lepton}$.
-It is further required that that $|\Delta z|<$1~cm.
+In case of multiple primary vertices the primary vertex is chosen has the one with highest flux of charged particles in the transverse plane,
+i.e. the vertex with highest $\displaystyle{\sum_{tracks}} p_T^2$ flux.
 
 %%% LEPTONS
-
 \item[Leptons] leptons (electrons or muons) are required to be reconstructed with at least $p_T>$5~GeV/c and $|\eta|<$2.5 (2.4) for electrons (muons). 
+
+Electrons reconstructed in the ECAL barrel to endcap transition are not considered for this study in order to reduce the contamination from fakes and to 
+minimize the impact of mismeasurement of the lepton energies which translates to a mismeasurement of the missing transverse energy of the event.
+The impact parameter of the electron track is required to be consistent with prompt production from the beam spot within $|d_0|<$0.04~cm.
+Non-prompt electrons, from photon conversions in the tracker material, are vetoed by geometric requirements
+applied on partner tracks (dist$<$0.02~cm and $\Delta\cot\theta<$0.02) and by requiring a maximum of 1 lost tracker hit. 
+For each electron it is also required that no tracker or global muon with at least 10 tracker hits is found within a $\Delta R<$0.1 of the reconstructed electron.
 Electron identification relies on a simple cut based identification algorithm 
-which depends on the supercluster shape and its alignment with the track is used for the electrons.
-The \texttt{tight} working point of the cut in categories based electron identification is used.
-Muon identification is based on the $\chi^2$ fit of the global track and on the number of hits in the tracker and muon stations.
+which depends on the supercluster shape, its alignment with the track which is associated to electron and H/E.
+The electron-id cuts are tuned specifically for each ECAL region (barrel and endcap) in order to yield 
+an expected efficiency for the reconstruction of electrons from $W\rightarrowe\nu$ decays.
+Details on the VBTF specific requirements can be found in~\cite{CMS-TWIKI-VBTF11}.
+For this study we require at pre-selection that the VBTF-95 working point is verified. 
+For electron candidates to be considered as a leg of the dilepton candidate the verification of the VBTF-85 working point is further required
+as well as having $p_T>$20~GeV/c. 
+The choice on these electron-ids is trigger oriented, as the trigger identification requirements consist in looser versions of the VBTF requirements.
+
+Muon identification is mainly based on the $\chi^2$ fit of the global track and on the number of hits in the tracker and muon stations.
+Loose muons are required to verify simply the TrackerMuonArbitrated criteria, i.e. to be tracker muons, 
+and to be consistent with prompt production from the beam spot within $|d_0|<$0.02~cm.
+In order to be considered as a leg of the dilepton candidate the muons are furthermore required to have
+$\chi^2/ndof<$10, at least 11 tracker hits and 1 hit in the muon chambers, verify the TMLastStationAngTight arbitration
+and have $p_T>$20~GeV.
+
 The leptons from signal are expected to be well isolated in the event.
 The isolation can be quantified relatively to the transverse momentum of the lepton by
-the a particle based isolation $I_{rel}$:
+sum of the momenta of the particles reconstructed in a cone of $\Delta R<0.3$ built around the lepton candidate.
+The following measurement of the relative isolation is used, $I_{rel}$:
 
 \begin{equation}
 I_{rel}=\frac{I_{photons}+I_{neutral~hadrons}+I_{charged~hadrons}}{p_T}
 \label{eq:reliso}
 \end{equation}
 
-where the sum of photons, neutral hadrons and charged hadrons found in an isolation cone of $\Delta R=$0.3
-built around the lepton's momentum are used to compute the correpondent isolations.
-As the isolation of the leptons is expected to be affected by pileup events a loose requirement of $I_{rel}<1.0$ is made at this stage of selection.
+where each $I$ represents the sum of the transverse momenta of the photons, neutral hadrons and charged hadrons
+reconstructed inside the isolation cone.
+Loose electrons and muons are required to have $I_{rel}<$0.5. 
+Electrons or muons are considered as legs of the dilepton candidate if they have $I_{rel}<0.1$.
 
-%%% DILEPTON
-\item[Dilepton] for each event with at least 2 leptons selected in the previous conditions all dilepton pair candidates are examined.
-The minimum tranvserse momentum of each lepton is required to be $p_T>$20~GeV/c.
-The isolation for the leptons is not corrected for pileup/underlying event contributions but it is further tightened.
-The deviation introduced in the isolation by the average energy density deposition in the detector ($\rho$) is estimated using the fast jet algorithm.
-The details on the algorithm can be found in ~\cite{}.
+The presence of pileup is expected to contribute to the degradation of the isolation, especially 
+through the neutral particles which cannot be associated to the vertex.
+The deviation introduced in the isolation by the average energy density deposition in the detector from pileup
+can be estimated using the $\rho$-parameter computed using the fast jet algorithm~\cite{}.
 As the average values for $\rho$, $I_{photons}$ and $I_{neutral~hadrons}$ are expected to increase differently as a function of the number of pileup events
-a linear parameterization can be derived for each case. The results of these parameterizations are shown for in Fig~\ref{fig:isolprofile}
-for a simulated sample of $Z\rightarrow ll$ events and summarized in Table~\ref{tab:isolprofileparam}.
+a linear parameterization can be derived for each case and used to correct the isolation in average.
+The results of these parameterizations are shown for in Fig~\ref{fig:isolprofile} for a simulated sample of $Z\rightarrow \mu\mu$.
+In this study we choose however not to perform any correction of this type,
+as events with large fluctuations of the $\rho$ parameter can lead to overcorrections of the lepton isolation leading to an increase
+of the contamination from non-isolated lepton candidates.
 
 \FIXME{Needs update}
 \begin{figure}[htp]
 \begin{center}
-%\includegraphics[width=0.49\textwidth]{img/electronIsolationProfile}
-%\includegraphics[width=0.49\textwidth]{img/muonIsolationProfile}
+%\includegraphics[width=0.49\textwidth]{img/muonIsolationAverage}
+%\includegraphics[width=0.49\textwidth]{img/muonIsolationRMS}
 \caption{
-Isolation and $\rho$ profiles in simulated $Z\rightarrow ll$ events where the leptons have been pre-selected with $I_{rel}<$0.3.
-Electrons (muons) are shown on the {\em left} ({\em right}).}
+Isolation and $\rho$ profiles in simulated $Z\rightarrow \mu\mu$ events.
+The average (RMS) of the distributions is shown as function of the number of generated pileup events on the {\em left} ({\em right}).}
 \label{fig:isolprofile}
 \end{center}
 \end{figure}
 
-\FIXME{Needs update}
-\begin{table}[htp]
-\caption{Parameterization of pileup dependent quantities, relevant for the isolation of the leptons.
-The errors are statistical and result from the fits performed}
-\label{tab:isolprofileparam}
-\begin{center}
-\begin{tabular}{lccc} \hline
-Parameter          & Intercept         & Slope             & $\chi^2/dof$ \\ \hline\hline
-$\rho$             & 0.586 $\pm$ 0.003 & 0.483 $\pm$ 0.006 & 122/19       \\ \hline
-$I_{photons}^{e}$     & 0.604 $\pm$ 0.004 & 0.114 $\pm$ 0.006 & 28/19        \\ 
-$I_{neutral hadrons}^{\mu}$   & 0.216 $\pm$ 0.002 & 0.0539 $\pm$ 0.0003 & 13/19      \\ \hline
-                   &                   &                     &            \\\hline
-$A_{eff}^{e}$      & \multicolumn{3}{c}{0.24 $\pm$ 0.01}                  \\ 
-$A_{eff}^{\mu}$    & \multicolumn{3}{c}{0.112 $\pm$ 0.002}                \\ \hline
-\end{tabular}
-\end{center}
-\end{table}
-
-If the event has other isolated leptons, even if failing the minimal $p_T$ requirement, it is rejected.
-The dilepton candidate is required to have an invariant mass compatible with a $Z$ boson decay, 
-i.e. $|M-M_Z|<$15~GeV/c$^2$ and at least one of the leptons is required to be reconstructed within the 
-fiducial region/kinematics of the trigger.
+%%% DILEPTON
+\item[Dilepton] for each event with at least 2 leptons selected in the previous conditions all dilepton pair candidates are examined.
+The dilepton candidate is required to have an invariant mass compatible with a $Z$ boson decay, i.e. $|M-M_Z|<$15~GeV/c$^2$
+and in case of ambiguity the pair with highest $\sum p_T$ is chosen.
+No requirement is made on the charge of the leptons.
+In order to reduce the contamination from multilepton events, produced from WZ and ZZ decays,
+events are vetoed if containing another loosely selected electron or muon as described above.
 
 %%% JETS
-\item[Jets] jets are selected with $p_T>$15~GeV/c and $|\eta|<5.0$.
-Jets are reconstructed with the anti-$k_T$ algorithm with a cone of $R=0.5$. A loose jet id is used based on 
-the electromagnetic fraction among other variables.
-The simple secondary vertex high efficiency (SSVHE) tagger is used to identify possible $b$-jets.
-The medium working point (i.e. SSHVE$>$1.74) is used to tag the jets.  
-A veto on events which contain at least one jet tagged by this algorithm is used in order to reduce
-the contamination from \ttbar. 
+\item[Jets] are reconstructed with the anti-$k_T$ algorithm with a cone of $R=0.5$ are selected with $p_T>$15~GeV/c and $|\eta|<5.0$.
+The loose jet id used to select the jets is based on the electromagnetic fraction of the jets among other variables.
+In order to reduce the contamination from processes which produce heavy flavor jets such as \ttbar, single top, vector boson + heavy quarks production,
+b-tagging algorithms are used.
+The jet-B probability (JBP) and the simple secondary vertex high efficiency (SSVHE) taggers are used for this purpose. 
+Details of these algorithms and their performance can be found in~\cite{CMS-PAS-BTV-11-001}.
+Events with a jet with $p_T>$30~GeV/c, tagged with the loose working point of the JBP algorithm or with the medium working point of the SSVHE algorithm, are rejected. 
+This choice is made after optimizing the efficiency of the rejection of the top contribution.
 
 %%% MET
-\item[Missing transverse energy] particle flow based \MET is used. The \MET is built from the vectorial sum
-of the transverse momentum all particle flow reconstructed candidates.
+\item[Missing transverse energy] particle flow based \MET is used. The \MET is built from the vectorial sum of the transverse momentum all particle flow reconstructed candidates.
+The verification of the reconstruction of the missing transverse energy will be the subject of a detailed discussion in Sec.~\ref{sec:met}.
 
 \end{description}
+
+In the next section the event yields after pre-selection of the sample and control plots are presented for the main variables of interest.
 
 
 %%
