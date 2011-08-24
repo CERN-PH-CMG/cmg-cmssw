@@ -50,15 +50,24 @@
    for(size_t iobj=0; iobj<sizeof(objs)/sizeof(string); iobj++)
      objConfig[ objs[iobj] ] = iConfig.getParameter<edm::ParameterSet>( objs[iobj] );
 
-   controlHistos_.addHistogram( "rho", "; #rho; Events", 100, 0.,10. );
    controlHistos_.addHistogram( "pt", ";p_{T}; Leptons", 100, 0.,200. );
    controlHistos_.addHistogram( "d0", ";d0;Leptons", 100, -0.1,0.1  );
    controlHistos_.addHistogram( "eta", ";#eta; Leptons", 100, -3.,3. );
-   controlHistos_.addHistogram( "ecaliso", ";ECAL isolation; Events", 100, 0.,10. );
-   controlHistos_.addHistogram( "hcaliso", ";HCAL isolation; Events", 100, 0.,10. );
-   controlHistos_.addHistogram( "trackiso", ";Tracker Isolation; Events", 100, 0.,10. );
+
+   controlHistos_.addHistogram( "rho", "; #rho; Events", 100, 0.,10. );
+   controlHistos_.addHistogram( "ecaliso", ";Photon isolation; Events", 100, 0.,10. );
+   controlHistos_.addHistogram( "hcaliso", ";Neutral hadron isolation; Events", 100, 0.,10. );
+   controlHistos_.addHistogram( "trackiso", ";Charged hadron Isolation; Events", 100, 0.,10. );
    controlHistos_.addHistogram( "absiso", ";Absolute isolation; Events", 100, 0.,20. );
    controlHistos_.addHistogram( "reliso", "; Isolation; Events", 100, 0.,10.);
+
+   controlHistos_.addHistogram( "rhovsnpu", ";Pileup events;#rho; Events",25,0,25, 100, 0.,10. );
+   controlHistos_.addHistogram( "ecalisovsnpu", ";Pileup events;Photon isolation; Events",25,0,25, 100, 0.,10. );
+   controlHistos_.addHistogram( "hcalisovsnpu", ";Pileup events;Neutral hadron isolation; Events",25,0,25, 100, 0.,10. );
+   controlHistos_.addHistogram( "trackisovsnpu", ";Pileup events;Charged hadron Isolation; Events",25,0,25, 100, 0.,10. );
+   controlHistos_.addHistogram( "absisovsnpu", ";Pileup events;Absolute isolation; Events",25,0,25, 100, 0.,20. );
+   controlHistos_.addHistogram( "relisovsnpu", ";Pileup events; Isolation; Events",25,0,25, 100, 0.,10.);
+
    controlHistos_.initMonitorForStep( "matchedelectron");
    controlHistos_.initMonitorForStep( "electron");
    controlHistos_.initMonitorForStep( "matchedmuon");
@@ -85,11 +94,16 @@
 
    //get the weight for the MC event
    float weight=1;
+   float nITpu(0);
    if(!iEvent.isRealData())
      {
        edm::Handle<float> puWeightHandle;
        iEvent.getByLabel("puWeights","puWeight",puWeightHandle);
        if(puWeightHandle.isValid()) weight = *(puWeightHandle.product());
+
+       edm::Handle<int> nITpuHandle;
+       iEvent.getByLabel("puWeights","nITpu",nITpuHandle);
+       if(nITpuHandle.isValid()) nITpu = *(nITpuHandle.product());
      }
    
    std::vector<const reco::Candidate *> trigMatchMu,trigMatchEle;
@@ -133,15 +147,23 @@
       if(genMu && fabs(genMu->pdgId())==13) catsToFill.push_back("matchedmuon");
       for(std::vector<TString>::iterator cIt = catsToFill.begin(); cIt != catsToFill.end(); cIt++)
 	{
-	  controlHistos_.fillHisto("rho",*cIt,*rho,weight);
 	  controlHistos_.fillHisto("pt",*cIt,muon->pt(),weight);
 	  controlHistos_.fillHisto("eta",*cIt,muon->eta(),weight);
 	  controlHistos_.fillHisto("d0",*cIt,muon->innerTrack()->dxy(beamSpot->position()),weight);
+
+	  controlHistos_.fillHisto("rho",*cIt,*rho,weight);
 	  controlHistos_.fillHisto("ecaliso",*cIt,isol[ECAL_ISO],weight);
 	  controlHistos_.fillHisto("hcaliso",*cIt,isol[HCAL_ISO],weight);
 	  controlHistos_.fillHisto("trackiso",*cIt,isol[TRACKER_ISO],weight);
 	  controlHistos_.fillHisto("absiso",*cIt,isol[ECAL_ISO]+isol[HCAL_ISO]+isol[TRACKER_ISO],weight);
 	  controlHistos_.fillHisto("reliso",*cIt,isol[REL_ISO],weight);
+
+	  controlHistos_.fillHisto("rhovsnpu",*cIt,nITpu,*rho,weight);
+	  controlHistos_.fillHisto("ecalisovsnpu",*cIt,nITpu,isol[ECAL_ISO],weight);
+	  controlHistos_.fillHisto("hcalisovsnpu",*cIt,nITpu,isol[HCAL_ISO],weight);
+	  controlHistos_.fillHisto("trackisovsnpu",*cIt,nITpu,isol[TRACKER_ISO],weight);
+	  controlHistos_.fillHisto("absisovsnpu",*cIt,nITpu,isol[ECAL_ISO]+isol[HCAL_ISO]+isol[TRACKER_ISO],weight);
+	  controlHistos_.fillHisto("relisovsnpu",*cIt,nITpu,isol[REL_ISO],weight);
 	}
     }
 
@@ -167,15 +189,23 @@
       if(genEle && fabs(genEle->pdgId())==11) catsToFill.push_back("matchedelectron");
       for(std::vector<TString>::iterator cIt = catsToFill.begin(); cIt != catsToFill.end(); cIt++)
         {
-	  controlHistos_.fillHisto("rho",*cIt,*rho,weight);
           controlHistos_.fillHisto("pt",*cIt,ele->pt(),weight);
           controlHistos_.fillHisto("eta",*cIt,ele->eta(),weight);
           controlHistos_.fillHisto("d0",*cIt,eTrack->dxy(beamSpot->position()),weight);
+
+	  controlHistos_.fillHisto("rho",*cIt,*rho,weight);
           controlHistos_.fillHisto("ecaliso",*cIt,isol[ECAL_ISO],weight);
           controlHistos_.fillHisto("hcaliso",*cIt,isol[HCAL_ISO],weight);
           controlHistos_.fillHisto("trackiso",*cIt,isol[TRACKER_ISO],weight);
           controlHistos_.fillHisto("absiso",*cIt,isol[ECAL_ISO]+isol[HCAL_ISO]+isol[TRACKER_ISO],weight);
           controlHistos_.fillHisto("reliso",*cIt,isol[REL_ISO],weight);
+
+	  controlHistos_.fillHisto("rhovsnpu",*cIt,nITpu,*rho,weight);
+	  controlHistos_.fillHisto("ecalisovsnpu",*cIt,nITpu,isol[ECAL_ISO],weight);
+	  controlHistos_.fillHisto("hcalisovsnpu",*cIt,nITpu,isol[HCAL_ISO],weight);
+	  controlHistos_.fillHisto("trackisovsnpu",*cIt,nITpu,isol[TRACKER_ISO],weight);
+	  controlHistos_.fillHisto("absisovsnpu",*cIt,nITpu,isol[ECAL_ISO]+isol[HCAL_ISO]+isol[TRACKER_ISO],weight);
+	  controlHistos_.fillHisto("relisovsnpu",*cIt,nITpu,isol[REL_ISO],weight);
         }
     }
     
