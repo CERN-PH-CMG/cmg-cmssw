@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.6 $
+\RCS$Revision: 1.7 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.6 2011/08/24 09:33:41 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.7 2011/08/24 13:45:07 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -258,6 +258,24 @@ Trigger                                            & \multicolumn{4}{c}{Primary 
 
 %%% PRE-SELECTION
 \item[Pre-selection filters] are applied to minimize the contamination from beam-gas interactions, beam-halo and calorimeter noise.
+Table~\ref{tab:preselflow} summarizes the number of events in data which are found passing each filter.
+
+\begin{table}[htp]
+\caption{Events selected after each pre-selection step for the different datasets considered.
+The last column summarizes the \% of the original primary dataset considered after applying all the event filters.}
+\label{tab:preselflow}
+\begin{center}
+\begin{tabular}{lllllll} \hline\hline
+\multirow{2}{*}{Sample} & \multicolumn{5}{c}{Events accepted} \\
+                        & in PD          &  no scrap  & $\geq$ 1 vertex & no HBHE noise & no beam halo & \% pre-filtered\\\hline
+DoubleMu                &                &            &                 &               &              & \\
+SingleMu                &                &            &                 &               &              & \\
+DoubleElectron          &                &            &                 &               &              & \\
+MuEG                    &                &            &                 &               &              &\\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
 
 %%% PRIMARY VERTICES
 \item[Primary vertices] must be found within maximum range of 24~cm along the beam line (z) and within a 2~cm cylinder around the beam line ($\rho$)..
