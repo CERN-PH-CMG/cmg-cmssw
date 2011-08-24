@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.5 $
+\RCS$Revision: 1.6 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.5 2011/08/23 22:55:05 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.6 2011/08/24 09:33:41 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -257,14 +257,33 @@ Trigger                                            & \multicolumn{4}{c}{Primary 
 \end{table}
 
 %%% PRE-SELECTION
-\item[Pre-selection filters] are applied to minimize the contamination from beam-gas interactions, beam-halo, calorimeter noise, etc.
-
+\item[Pre-selection filters] are applied to minimize the contamination from beam-gas interactions, beam-halo and calorimeter noise.
 
 %%% PRIMARY VERTICES
 \item[Primary vertices] must be found within maximum range of 24~cm along the beam line (z) and within a 2~cm cylinder around the beam line ($\rho$)..
 The minimum number of degrees of freedom (n.d.o.f.) of the vertex fit is required to be 4.
 In case of multiple primary vertices the primary vertex is chosen has the one with highest flux of charged particles in the transverse plane,
 i.e. the vertex with highest $\displaystyle{\sum_{tracks}} p_T^2$ flux.
+Fig.~\ref{fig:vertexcontrol} shows two control distributions for the selected vertices in data and in the simulation:
+the vertex multiplicity and the transverse momentum resulting from the sum of all the charged particle flow candidates which are associated to the primary vertex of the event.
+Overall a fair agreement is found between data and MC but it is visible that the procedure used to re-weight the pileup in the simulation
+does not reproduce fully the real pileup scenario which evolved throughout different stages during the 2011 run data taking.
+The sum of the charged particle flow candidates associated to the primary vertex is a quantity which is expected to be robust against pileup variations
+and which shows sensitivity to processes in which undetectable particles are produced such as : $W$, top quark and di-boson production.
+In both distributions the MC does not include the low mass Drell-Yan contribution which contributes to an overall scale-factor of $\approx$ 10\%. 
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.4\textwidth]{img/mumu_ngoodvertex}
+\includegraphics[width=0.4\textwidth]{img/mumu_trkmet}
+\caption{Distribution of the vertex multiplicity ({\em left}) and the transverse momentum resulting from the sum of all charged particle-flow candidates associated to the primary vertex of the event ({\em right}).
+The bottom plots show the ratio between the total MC prediction and the observed data.}
+\label{fig:vertexcontrol}
+\end{center}
+\end{figure}
+
+
+
 
 %%% LEPTONS
 \item[Leptons] leptons (electrons or muons) are required to be reconstructed with at least $p_T>$5~GeV/c and $|\eta|<$2.5 (2.4) for electrons (muons). 
