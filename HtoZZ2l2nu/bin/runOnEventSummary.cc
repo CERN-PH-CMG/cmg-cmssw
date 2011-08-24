@@ -231,7 +231,7 @@ int main(int argc, char* argv[])
   //replicate monitor for interesting categories
   TString cats[]={"ee","emu","mumu"};
   TString subCats[]={"","eq0jets","eq1jets","geq2jets","vbf"};
-  TString subsubCats[]={"","zveto"};                                  //,"jer","jesup","jesdown","nopu","flatpu","btag"};
+  TString subsubCats[]={"","zsideband"};                                  //,"jer","jesup","jesdown","nopu","flatpu","btag"};
   for(size_t icat=0;icat<sizeof(cats)/sizeof(TString); icat++)
     for(size_t isubcat=0;isubcat<sizeof(subCats)/sizeof(TString); isubcat++)
       for(size_t itopcat=0;itopcat<sizeof(subsubCats)/sizeof(TString); itopcat++)
@@ -509,11 +509,12 @@ int main(int argc, char* argv[])
       
       //event selection
       bool passZmass(fabs(zmass-91)<15);
+      bool passSideBand( !passZmass && fabs(zmass-91)<30 );
       bool pass3dLeptonVeto(ev.ln==0);
       bool passBveto(nbtags==0);
       bool passMediumRedMet(redMet>rmetComp.getCut(eventCategory,ReducedMETComputer::MEDIUMWP));
       bool passTightRedMet(redMet>rmetComp.getCut(eventCategory,ReducedMETComputer::TIGHTWP));
-
+      
       //fill control histograms
       TString catsToFill[]={"all",evcat};
       TString subCatsToFill[]={"",subcat};
@@ -526,8 +527,10 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("nvtx",ctf,ev.nvtx,weight);
 	      controlHistos.fillHisto("eventflow",ctf,1,weight);
 	      controlHistos.fillHisto("recozmass",ctf,zll.mass(),weight);
+	      
+	      if(!passZmass && !passSideBand) continue;
 
-	      ctf += (passZmass ? "" : "zveto");
+	      ctf += (passZmass ? "" : "zsideband");
 	      controlHistos.fillHisto("eventflow",ctf,2,weight);
 	      controlHistos.fillHisto("recodphill",ctf,dphill,weight);
 
@@ -542,6 +545,9 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("npassbveto",ctf,3, (nbtags_jbpl==0)*weight);
 	      controlHistos.fillHisto("npassbveto",ctf,4, (nbtags_ssvhemORtchel==0)*weight);
 	      controlHistos.fillHisto("npassbveto",ctf,5, (nbtags==0)*weight);
+
+	      controlHistos.fillHisto("zmassctrl",ctf,passBveto+2*passMediumRedMet,weight);
+
 
 	      if(!passBveto) continue;
 	      controlHistos.fillHisto("eventflow",ctf,4,weight);

@@ -50,7 +50,9 @@ namespace lepton{
   //returns the standard lepton isolation
   std::vector<double> getLeptonIso(reco::CandidatePtr &lepton,float minRelNorm, float puOffsetCorrection)
   {
-    std::vector<double> leptonIso(4,0);
+    std::vector<double> leptonIso(4,99999.);
+    if(lepton.get()==0) return leptonIso;
+
     int lid=fabs(getLeptonId(lepton));
     if( lid==lepton::MUON )
       {

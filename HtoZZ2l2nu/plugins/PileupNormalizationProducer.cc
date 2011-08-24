@@ -29,7 +29,9 @@ PileupNormalizationProducer::PileupNormalizationProducer(const edm::ParameterSet
 {
   produces<float>("puWeight");
   produces<float>("renPuWeight");
-  
+  produces<int>("nITpu");  
+  produces<int>("nOOTpu");  
+
   //generate weight distribution
   std::vector<double> mc   = iConfig.getParameter<std::vector<double> >("mcDistribution");
   std::vector<double> data = iConfig.getParameter<std::vector<double> >("dataDistribution");
@@ -49,6 +51,8 @@ void PileupNormalizationProducer::produce(edm::Event &iEvent, const edm::EventSe
 
   auto_ptr<float> puWeight(new float);
   auto_ptr<float> renPuWeight(new float);
+  auto_ptr<int> nITpu(new int);
+  auto_ptr<int> nOOTpu(new int);
 
   if(iEvent.isRealData())  
     {
@@ -60,24 +64,28 @@ void PileupNormalizationProducer::produce(edm::Event &iEvent, const edm::EventSe
       //get the number of generated pileup events
       edm::Handle<std::vector<PileupSummaryInfo> > puInfoH;
       iEvent.getByType(puInfoH);
-      int npuevents(0);
+      int npuevents(0),nootpuevents(0);
       if(puInfoH.isValid())
 	{
 	  for(std::vector<PileupSummaryInfo>::const_iterator it = puInfoH->begin(); it != puInfoH->end(); it++)
 	    {
-	      if(it->getBunchCrossing() !=0) continue;
-	      npuevents=it->getPU_NumInteractions();
+	      if(it->getBunchCrossing() !=0) nootpuevents += it->getPU_NumInteractions(); 
+	      else                           npuevents    = it->getPU_NumInteractions();
 	    }
 	}
 
       std::vector<double> theWeights = pileup::getWeightsFor(npuevents,puUnfoldedH_,maxWeight_);
       *puWeight    = theWeights[pileup::MCTODATA];
       *renPuWeight = theWeights[pileup::MCTODATAINTEGER];
+      *nITpu       = npuevents;
+      *nOOTpu      = nootpuevents;
     }
   
   //put in the event
   iEvent.put(puWeight,"puWeight");
   iEvent.put(renPuWeight,"renPuWeight");
+  iEvent.put(nITpu,"nITpu");
+  iEvent.put(nOOTpu,"nOOTpu");
 }
 
 //  
