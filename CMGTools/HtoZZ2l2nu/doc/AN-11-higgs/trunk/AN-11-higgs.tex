@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.8 $
+\RCS$Revision: 1.9 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.8 2011/08/24 13:55:35 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.9 2011/08/24 16:14:56 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -344,6 +344,7 @@ Loose electrons and muons are required to have $I_{rel}<$0.5.
 Electrons or muons are considered as legs of the dilepton candidate if they have $I_{rel}<0.1$.
 In App.~\cite{sec:app:leptonisolation} the lepton isolation is discussed in further detail.
 
+
 %%% DILEPTON
 \item[Dilepton] for each event with at least 2 leptons selected in the previous conditions all dilepton pair candidates are examined.
 The dilepton candidate is required to have an invariant mass compatible with a $Z$ boson decay, i.e. $|M-M_Z|<$15~GeV/c$^2$
@@ -381,20 +382,84 @@ Notice also that at this point no data-driven correction for the lepton efficien
 \end{figure}
 
 
-
 %%% JETS
 \item[Jets] are reconstructed with the anti-$k_T$ algorithm with a cone of $R=0.5$ are selected with $p_T>$15~GeV/c and $|\eta|<5.0$.
-The loose jet id used to select the jets is based on the electromagnetic fraction of the jets among other variables.
-In order to reduce the contamination from processes which produce heavy flavor jets such as \ttbar, single top, vector boson + heavy quarks production,
-b-tagging algorithms are used.
+The loose jet id used to select the jets is based on the electromagnetic fraction of the jets among other variables. 
+The jet multiplicity distribution obtained after the dilepton selection is shown in Fig.~\ref{fig:jetmult} for jets found inside the tracker acceptance region only.
+A good agreement is found between data and MC prediction.
+Jets with $|\eta|>2.5$ are used for the VBF specific selection which will be discussed in more detail in Sec.~\ref{sec:higgssearch}.
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.4\textwidth]{img/mumu_njets}
+\includegraphics[width=0.4\textwidth]{img/ee_njets}
+\caption{Jet multiplicity distribution in di-muon ({\em left}) and di-electron ({\em right}).}
+\label{fig:jetmult}
+\end{center}
+\end{figure}
+
+In order to reduce the contamination from processes which produce heavy flavor jets such as \ttbar, single top, vector boson + heavy quarks production, b-tagging algorithms are used.
 The jet-B probability (JBP) and the simple secondary vertex high efficiency (SSVHE) taggers are used for this purpose. 
-Details of these algorithms and their performance can be found in~\cite{CMS-PAS-BTV-11-001}.
+Details of these algorithms and their performance can be found in~\cite{CMS-PAS-BTV-11-002}. The JBP algorithm is chosen
+as it is expected to provide the highest efficiency in \ttbar events for a mistag rate of 10\% (loose working point).
+The SSVHE tagger is used to complement the JBP tagger as it is designed for higher purity of $b$-jet identification and can therefore
+increase the $b$-tagging efficiency without leading to a significant increase of the mistag rate. 
 Events with a jet with $p_T>$30~GeV/c, tagged with the loose working point of the JBP algorithm or with the medium working point of the SSVHE algorithm, are rejected. 
-This choice is made after optimizing the efficiency of the rejection of the top contribution.
+This choice is made after optimizing the efficiency of the rejection of the top contribution as summarized in Tab.~\ref{tab:btagoptim}.
+Fig.~\ref{fig:btagging} shows the b-tag multiplicity distributions observed in di-muon and di-electron events using the combination of taggers just described.
+A good agreement, within 10-15\% is found between data and MC taking into account that at this point no data-driven correction scale factors for the $b$-tag and mistag rates have been applied.
+The level of discrepancy observed is in fact compatible with the $\approx$ 10\% scale factor measured for the mistag rate~\cite{CMS-PAS-BTV-11-002}.
+The usage of the data-derived scale factors for the $b$-tagging algorithms will be discussed in more detail in Sec.~\ref{subsec:systunc}.
+
+\begin{table}[htp]
+\caption{b-tag optimization using different algorithms and different combinations.
+Top refers to the residual number of events expected from \ttbar and single top production.
+Higgs refers to the number of events surviving the $b$-tagging veto for a mass of 200~GeV/c$^{2}$.
+The yields include the di-muon and the di-electron channels for an integrated luminosity of 2007~pb$^{-1}$.
+The last line shows the signal/background ratio used to optimize the choice of the $b$-tagging algorithm.
+The taggers compared are Track Counting High Efficiency (TCHE), Jet B-probability (JBP) and Simple Secondary Vertex High Efficiency (SSVHE).
+Two suffixes used for the different taggers denote the Loose and Medium working points.}
+\label{tab:btagoptim}
+\begin{center}
+\begin{tabular}{lccccc} \hline\hline
+\multirow{2}{*}{Process} & \multicolumn{5}{c}{Events accepted} \\
+              & TCHEL          & JBPL      & SSVHEM   & TCHEL or SSVHEM & JBPL or SSVHEM \\\hline
+Top           & 124.03         & 107.95    & 230.22   & 108.60          & 102.1          \\
+Higgs (200)   & 50.97          & 51.97     & 55.31    & 50.74           & 51.77          \\\hline
+S/B           & 0.41           & 0.48      & 0.24     & 0.47            & 0.51           \\
+\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.46\textwidth]{img/mumu_nbtags}
+\includegraphics[width=0.46\textwidth]{img/ee_nbtags}
+\caption{b-tag  multiplicity distribution in di-muon ({\em left}) and di-electron ({\em right}).}
+\label{fig:btagging}
+\end{center}
+\end{figure}
+
 
 %%% MET
 \item[Missing transverse energy] particle flow based \MET is used. The \MET is built from the vectorial sum of the transverse momentum all particle flow reconstructed candidates.
-The verification of the reconstruction of the missing transverse energy will be the subject of a detailed discussion in Sec.~\ref{sec:met}.
+The verification of the reconstruction of the missing transverse energy will be the subject of a detailed discussion in Sec.~\ref{sec:met}
+and a specific \MET based selection will be proposed to reduce more efficienctly the contamination from $Z$ events with minimal contamination from pileup.
+Fig.~\ref{fig:metcontrol} shows the distribution for the \MET after the $b$-jet veto has been applied. 
+A wider resolution is observed in data with respect to the MC prediction reinforcing the need to develop a detailed verification of its reconstruction
+and a data-driven method to model the expected performance to remove $Z$ events.
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.46\textwidth]{img/mumu_met}
+\includegraphics[width=0.46\textwidth]{img/ee_met}
+\caption{\MET reconstructed in di-muon ({\em left}) and di-electron ({\em right}).}
+\label{fig:metcontrol}
+\end{center}
+\end{figure}
+
 
 \end{description}
 
@@ -404,40 +469,51 @@ In the next section the event yields after pre-selection of the sample and contr
 %%
 %% EVENT YIELDS
 %%
-\subsection{Event yields}
+\subsection{Event yields after pre-seletion}
 \label{subsec:eventyields}
 
 The event yields after applying the pre-selection discussed in the previous section
-are shown in Tables~\ref{tab:presamplecutflow}.
+are shown in Table~\ref{tab:presamplecutflow}.
+An overall difference of $\approx$ 10\% is observed. An excess (deficit) of events is observed in the di-muon channel
 
 \begin{table}[htp]
 \caption{Event yields for a total integrated luminosity of 1091~pb$^{-1}$. The uncertainties quoted are statistical only.}
 \label{tab:presamplecutflow}
 \begin{center}
 \begin{tabular}{lccc} \hline\hline
-Process                            & $|M-M_Z|<$15 & 3$^{rd}$-lepton veto & no b-tags\\ \hline
+Process                            & $|M-M_Z|<$15~GeV/c$^2$ & 3$^{rd}$-lepton veto & no b-tags\\ \hline
 & & & \\\hline
 \multicolumn{4}{c}{\bf $\mu\mu$ channel} \\\hline
-ZZ                                 & $ 39.17 \pm0.28 $  & $ 39.17 \pm0.28 $  & $ 38.65 \pm0.28 $ \\
-WW                                 & $ 67.4 \pm1.6 $  & $ 67.3 \pm1.6 $  & $ 66.6 \pm1.6 $  \\
-WZ                                 & $ 73.3 \pm0.7 $  & $ 52.9 \pm0.6 $  & $ 51.5 \pm0.6 $  \\
-Single top                         & $ 27.4 \pm0.7 $  & $ 27.1 \pm0.7 $  & $ 11.1 \pm0.4 $  \\
-$t\bar{t}$                         & $ 303 \pm5 $  & $ 302 \pm5 $  & $ 66.5 \pm2.3 $  \\
-W+jets                             & $ 0.32 \pm0.32 $  & $ 0.32 \pm0.32 $  & $ 0.32 \pm0.32 $ \\
-$Z/\gamma^{*}+jets\rightarrow ll$  & $ ( 393.2 \pm0.5 ) \times10^{3} $  & $ ( 392.9 \pm0.5 ) \times10^{3} $  \\
-Total expected                     & $ ( 393.7 \pm0.5 ) \times10^{3} $  & $ ( 393.3 \pm0.5 ) \times10^{3} $  & $( 388.3 \pm0.5 ) \times10^{3}$ \\ \hline
-data                               & $ 328.5 \times10^{3} $  & $ 328.1 \times10^{3} $  & $  324.1 \times10^{3}$ \\ \hline
+H(200)$\rightarrow$ VV             & $ 29.3 \pm0.8 $    & $ 29.2 \pm0.8 $     & $ 26.7 \pm0.7 $  \\
+H(300)$\rightarrow$ VV             & $ 13.72 \pm0.13 $  & $ 13.71 \pm0.13 $   & $ 12.44 \pm0.12 $\\
+H(400)$\rightarrow$ VV             & $ 8.55 \pm0.08 $   & $ 8.54 \pm0.08 $    & $ 7.62 \pm0.07 $  \\
+H(500)$\rightarrow$ VV             & $ 3.14 \pm0.11 $   & $ 3.14 \pm0.11 $    & $ 2.78 \pm0.10 $ \\
+H(600)$\rightarrow$ VV             & $ 1.383 \pm0.018 $ & $ 1.380 \pm0.018 $  & $ 1.220 \pm0.017 $\\ \hline
+ZZ                                 & $ 244.0 \pm1.0 $  & $ 234.5 \pm1.0 $     & $ 181.0 \pm0.9 $ \\
+WW                                 & $ 87.8 \pm1.6 $   & $ 87.7 \pm1.6 $      & $ 84.9 \pm1.6 $  \\
+WZ                                 & $ 330.5 \pm2.0 $  & $ 279.3 \pm1.8 $     & $ 26.2 \pm0.6 $  \\
+Single top                         & $ 35.1 \pm1.1 $   & $ 34.4 \pm1.0 $      & $ 10.1 \pm0.6 $  \\
+\ttbar                             & $ 396 \pm8 $      & $ 389 \pm8 $         & $ 41.8 \pm2.5 $  \\
+W+jets                             & $ 0.30 \pm0.30 $  & $ 0.30 \pm0.30 $     & $ 0.30 \pm0.30 $ \\
+$Z/\gamma^{*}+jets\rightarrow ll$  & $ ( 533.0 \pm0.4 ) \times10^{3} $  & $ ( 532.5 \pm0.4 ) \times10^{3} $  & $ ( 520.0 \pm0.4 ) \times10^{3} $ \\\hline
+Total expected from SM             & $ ( 534.2 \pm0.4 ) \times10^{3} $  & $ ( 533.5 \pm0.4 ) \times10^{3} $  & $ ( 520.6 \pm0.4 ) \times10^{3} $ \\\hline
+data                               & $ ( 605.3 \pm0.8 ) \times10^{3} $  & $ ( 604.4 \pm0.8 ) \times10^{3} $  & $ ( 588.3 \pm0.8 ) \times10^{3} $ \\\hline
 & & & \\\hline
 \multicolumn{4}{c}{\bf $ee$ channel} \\\hline
-ZZ                                 & $ 31.35 \pm0.25 $  & $ 31.32 \pm0.25 $  & $ 30.95 \pm0.25 $  \\
-WW                                 & $ 55.4 \pm1.4 $  & $ 55.3 \pm1.4 $  & $ 54.6 \pm1.4 $  \\
-WZ                                 & $ 80.6 \pm0.7 $  & $ 44.4 \pm0.5 $  & $ 43.4 \pm0.5 $  \\
-Single top                         & $ 24.1 \pm0.6 $  & $ 23.8 \pm0.6 $  & $ 9.9 \pm0.4 $  \\
-$t\bar{t}$                         & $ 259 \pm5 $  & $ 257 \pm5 $  & $ 57.8 \pm2.2 $ \\
-W+jets                             &  $ 57 \pm8 $  & $ 57 \pm8 $  & $ 55 \pm8 $  \\
-$Z/\gamma^{*}+jets\rightarrow ll$  & $ ( 313.1 \pm0.4 ) \times10^{3} $  & $ ( 312.8 \pm0.4 ) \times10^{3} $  & $ ( 308.8 \pm0.4 ) \times10^{3} $ \\
-Total expected                     & $ ( 313.6 \pm0.4 ) \times10^{3} $  & $ ( 313.2 \pm0.4 ) \times10^{3} $  & $ ( 309.0 \pm0.4 ) \times10^{3} $ \\\hline
-data                               & $ 265.6 \times10^{3} $  & $ 265.2 \times10^{3} $  & $  261.9 \times10^{3} $  \\\hline\hline
+H(200)$\rightarrow$ VV             & $ 27.7 \pm0.8 $    & $ 27.7 \pm0.8 $     & $ 25.1 \pm0.7 $  \\
+H(300)$\rightarrow$ VV             & $ 13.25 \pm0.13 $  & $ 13.23 \pm0.13 $   & $ 12.00 \pm0.12 $ \\
+H(400)$\rightarrow$ VV             & $ 8.58 \pm0.08 $   & $ 8.56 \pm0.08 $    & $ 7.61 \pm0.07 $ \\
+H(500)$\rightarrow$ VV             & $ 3.44 \pm0.11 $   & $ 3.43 \pm0.11 $    & $ 3.04 \pm0.10 $ \\
+H(600)$\rightarrow$ VV             & $ 1.454 \pm0.015 $ & $ 1.452 \pm0.015 $  & $ 1.272 \pm0.015 $ \\ \hline
+ZZ                                 & $ 228.3 \pm1.0 $   & $ 211.9 \pm0.9 $    & $ 163.1 \pm0.8 $  \\
+WW                                 & $ 76.8 \pm1.5 $    & $ 76.7 \pm1.5 $     & $ 74.5 \pm1.5 $ \\
+WZ                                 & $ 358.5 \pm2.1 $   & $ 303.6 \pm1.9 $    & $ 255.3 \pm1.8 $  \\
+Single top                         & $ 35.0 \pm1.1 $    & $ 34.3 \pm1.0 $     & $ 10.5 \pm0.6 $   \\
+\ttbar                             & $ 370 \pm7 $       & $ 363 \pm7 $        & $ 39.7 \pm2.4 $ \\
+W+jets                             & $ 36 \pm7 $        & $ 36 \pm7 $         & $ 34 \pm7 $ \\
+$Z/\gamma^{*}+jets\rightarrow ll$  & $ ( 465.03 \pm0.35 ) \times10^{3} $  & $ ( 464.51 \pm0.35 ) \times10^{3} $  & $ ( 453.10 \pm0.34 ) \times10^{3} $  \\\hline
+Total expected                     & $ ( 466.13 \pm0.35 ) \times10^{3} $  & $ ( 465.54 \pm0.35 ) \times10^{3} $  & $ ( 453.67 \pm0.34 ) \times10^{3} $  \\\hline
+data                               & $ ( 413.8 \pm0.6 ) \times10^{3} $    & $ ( 413.2 \pm0.6 ) \times10^{3} $    & $ ( 401.9 \pm0.6 ) \times10^{3} $    \\\hline\hline
 \end{tabular}
 \end{center}
 \end{table}
