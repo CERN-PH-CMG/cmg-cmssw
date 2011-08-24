@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.4 $
+\RCS$Revision: 1.5 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.4 2011/08/23 16:40:07 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.5 2011/08/23 22:55:05 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -302,33 +302,10 @@ I_{rel}=\frac{I_{photons}+I_{neutral~hadrons}+I_{charged~hadrons}}{p_T}
 \label{eq:reliso}
 \end{equation}
 
-where each $I$ represents the sum of the transverse momenta of the photons, neutral hadrons and charged hadrons
-reconstructed inside the isolation cone.
+where each $I$ represents the sum of the transverse momenta of the photons, neutral hadrons and charged hadrons reconstructed inside the isolation cone.
 Loose electrons and muons are required to have $I_{rel}<$0.5. 
 Electrons or muons are considered as legs of the dilepton candidate if they have $I_{rel}<0.1$.
-
-The presence of pileup is expected to contribute to the degradation of the isolation, especially 
-through the neutral particles which cannot be associated to the vertex.
-The deviation introduced in the isolation by the average energy density deposition in the detector from pileup
-can be estimated using the $\rho$-parameter computed using the fast jet algorithm~\cite{}.
-As the average values for $\rho$, $I_{photons}$ and $I_{neutral~hadrons}$ are expected to increase differently as a function of the number of pileup events
-a linear parameterization can be derived for each case and used to correct the isolation in average.
-The results of these parameterizations are shown for in Fig~\ref{fig:isolprofile} for a simulated sample of $Z\rightarrow \mu\mu$.
-In this study we choose however not to perform any correction of this type,
-as events with large fluctuations of the $\rho$ parameter can lead to overcorrections of the lepton isolation leading to an increase
-of the contamination from non-isolated lepton candidates.
-
-\FIXME{Needs update}
-\begin{figure}[htp]
-\begin{center}
-%\includegraphics[width=0.49\textwidth]{img/muonIsolationAverage}
-%\includegraphics[width=0.49\textwidth]{img/muonIsolationRMS}
-\caption{
-Isolation and $\rho$ profiles in simulated $Z\rightarrow \mu\mu$ events.
-The average (RMS) of the distributions is shown as function of the number of generated pileup events on the {\em left} ({\em right}).}
-\label{fig:isolprofile}
-\end{center}
-\end{figure}
+In App.~\cite{subsec:app:leptonisolation} the lepton isolation is discussed in further detail.
 
 %%% DILEPTON
 \item[Dilepton] for each event with at least 2 leptons selected in the previous conditions all dilepton pair candidates are examined.
@@ -611,11 +588,73 @@ HCAL isolation                        & \multicolumn{2}{c}{$<$2.2 + 0.001$E_T$} 
 \section{Conclusions}
 \label{sec:conclusions}
 
-
-
-
 %% **DO NOT REMOVE BIBLIOGRAPHY**
 \bibliography{auto_generated}   % will be created by the tdr script.
+
+\clearpage
+%
+% APPENDIX
+%
+appendix
+\section{Appendix: Lepton isolation}
+\label{sec:app:lepisol}
+
+In this section we focus on two specific aspects affecting the determination of lepton isolation efficiency:
+the contamination from pileup and the differences between leptons in the $Z\rightarrow ll$ sample and in the Higgs sample.
+
+The presence of pileup is expected to contribute to the degradation of the isolation, especially 
+through the neutral particles which cannot be associated to the vertex.
+The deviation introduced in the isolation by the average energy density deposition in the detector from pileup
+can be estimated using the $\rho$-parameter computed using the fast jet algorithm~\cite{Cacciari:2007fd}.
+As the average values for $\rho$, $I_{photons}$ and $I_{neutral~hadrons}$ are expected to increase differently as a function of the number of pileup events
+a linear parameterization can be derived for each case and used to correct the isolation in average.
+The results of these parameterizations are shown for in Fig~\ref{fig:isolprofile} for a simulated sample of $Z\rightarrow \mu\mu$.
+The width of the distributions of the previous variables is also affected by the pileup and in the case of the $\rho$ a non-linear behavior is observed.
+In this study we choose therefore not to perform any correction for the isolation based on the pileup contamination as estimated from 
+the $\rho$ parameter due to the fact that events with large fluctuations of $\rho$ can lead to overcorrections of the lepton isolation leading to an increase
+of the contamination from non-isolated lepton candidates.
+The slope of the isolation profile is used to assign a systematic uncertainty on the isolation efficiency of 0.8\%
+for both electrons and muons.
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{img/muonIsolationProfile}
+\caption{
+Isolation and $\rho$ profiles in simulated $H\rightarrow VV\rightarrow 2\mu 2\nu_{\mu}$ events.
+The average (RMS) of the distributions is shown as function of the number of generated pileup events on the {\em left} ({\em right}).}
+\label{fig:isolprofile}
+\end{center}
+\end{figure}
+
+The efficiency of the isolation requirement is determined from data using the tag-and-probe method.
+This method relies on the kinematics of $Z\rightarrow ll$ events which may differ slightly from the kinematics
+of the signal, i.e. $H\rightarrow VV\rightarrow 2l2\nu$. The difference is not expected to be observed in the absolute isolation of the leptons
+as the jet activity is not substantially different and as the pileup conditions are similar.
+However, as the $p_T$ distribution of the leptons is different, being the leptons from $Z$ events usually softer, 
+a difference arises in the relative isolation, as the ratio of the absolute isolation to the $p_T$ of each lepton is considered.
+This effect is illustrated in Fig.~\ref{fig:zvshlepkinematics} where the $p_T$, absolute isolation and relative isolation
+of the leptons matched to the decays of the Z bosons are compared. 
+From this study we conclude that the efficiency of the relative isolation in $\mu\mu$ ($ee$) events is 0.8\% (0.5\%) smaller in Higgs events with respect to $Z$ events. 
+Therefore we assign this number as a systematic uncertainty on the efficiency computed from data using the tag-and-probe method. 
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.3\textwidth]{img/matchedmuon_pt}
+\includegraphics[width=0.3\textwidth]{img/matchedmuon_absiso}
+\includegraphics[width=0.3\textwidth]{img/matchedmuon_reliso}\\
+\includegraphics[width=0.3\textwidth]{img/matchedelectron_pt}
+\includegraphics[width=0.3\textwidth]{img/matchedelectron_absiso}
+\includegraphics[width=0.3\textwidth]{img/matchedelectron_reliso}
+\caption{Transverse momentum ({\em left}), absolute isolation ({\em center}) and relative isolation ({\em right}) of the
+reconstructed muons ({\em top}) and electrons ({\em bottom}) matched to the generator level
+leptons fro the $Z$ boson decay in simulation.
+The standard $Z$ production is compared to the production in the Higgs decay chain considering an hypothetical mass of 200~GeV/c$^2$.}
+\label{fig:zvshlepkinematics}
+\end{center}
+\end{figure}
+
+
+
 
   
 \end{document}
