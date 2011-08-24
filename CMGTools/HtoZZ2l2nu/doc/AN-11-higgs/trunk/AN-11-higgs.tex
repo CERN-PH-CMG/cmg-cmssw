@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.7 $
+\RCS$Revision: 1.8 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.7 2011/08/24 13:45:07 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.8 2011/08/24 13:55:35 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -323,11 +323,11 @@ as well as having $p_T>$20~GeV/c.
 The choice on these electron-ids is trigger oriented, as the trigger identification requirements consist in looser versions of the VBTF requirements.
 
 Muon identification is mainly based on the $\chi^2$ fit of the global track and on the number of hits in the tracker and muon stations.
-Loose muons are required to verify simply the TrackerMuonArbitrated criteria, i.e. to be tracker muons, 
+Loose muons are required to verify the TrackerMuonArbitrated criteria, i.e. to be tracker muons, 
 and to be consistent with prompt production from the beam spot within $|d_0|<$0.02~cm.
-In order to be considered as a leg of the dilepton candidate the muons are furthermore required to have
-$\chi^2/ndof<$10, at least 11 tracker hits and 1 hit in the muon chambers, verify the TMLastStationAngTight arbitration
-and have $p_T>$20~GeV.
+Basic tracker quality requirements are also imposed, namely that : $\chi^2/ndof<$10 and at least 11 tracker hits are used for the inner track fit.
+In order to be considered as a leg of the dilepton candidate the muons are furthermore required 
+to have 1 hit in the muon chambers and to verify the TMLastStationAngTight arbitration and have $p_T>$20~GeV.
 
 The leptons from signal are expected to be well isolated in the event.
 The isolation can be quantified relatively to the transverse momentum of the lepton by
@@ -342,15 +342,45 @@ I_{rel}=\frac{I_{photons}+I_{neutral~hadrons}+I_{charged~hadrons}}{p_T}
 where each $I$ represents the sum of the transverse momenta of the photons, neutral hadrons and charged hadrons reconstructed inside the isolation cone.
 Loose electrons and muons are required to have $I_{rel}<$0.5. 
 Electrons or muons are considered as legs of the dilepton candidate if they have $I_{rel}<0.1$.
-In App.~\cite{subsec:app:leptonisolation} the lepton isolation is discussed in further detail.
+In App.~\cite{sec:app:leptonisolation} the lepton isolation is discussed in further detail.
 
 %%% DILEPTON
 \item[Dilepton] for each event with at least 2 leptons selected in the previous conditions all dilepton pair candidates are examined.
 The dilepton candidate is required to have an invariant mass compatible with a $Z$ boson decay, i.e. $|M-M_Z|<$15~GeV/c$^2$
 and in case of ambiguity the pair with highest $\sum p_T$ is chosen.
 No requirement is made on the charge of the leptons.
+The reconstructed dilepton mass in the $Z$ boson acceptance window and the angle made by the two leptons in the transverse plane ($\Delta\phi$)
+is shown in Fig~\ref{fig:dileptoncontrol}.
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.4\textwidth]{img/mumu_recozmass}
+\includegraphics[width=0.4\textwidth]{img/ee_recozmass} \\
+\includegraphics[width=0.4\textwidth]{img/mumu_recodphill}
+\includegraphics[width=0.4\textwidth]{img/ee_recodphill}
+\caption{Lepton multiplicity distribution for di-muon ({\em left}) and di-electron ({\em right}) events with a mass compatible with the Z boson mass.}
+\label{fig:dileptoncontrol}
+\end{center}
+\end{figure}
+
 In order to reduce the contamination from multilepton events, produced from WZ and ZZ decays,
 events are vetoed if containing another loosely selected electron or muon as described above.
+The loose selection applied on the third lepton is expected to have a high efficiency for signal events($>$99.8\% for both channels).
+The remainder of WZ and ZZ events are mostly due to fully hadronic decays of one of the vector bosons or to the decay of a Z boson to neutrinos.
+A slight excess of events with more than 2 muons is observed in data as shown in Fig~\ref{fig:thirdleptonveto}
+most probably related to a higher lepton fake rate than the one modelled by the MC.
+Notice also that at this point no data-driven correction for the lepton efficiencies has been applied to correct further the MC.
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.4\textwidth]{img/mumu_nleptons}
+\includegraphics[width=0.4\textwidth]{img/ee_nleptons}
+\caption{Lepton multiplicity distribution for di-muon ({\em left}) and di-electron ({\em right}) events with a mass compatible with the Z boson mass.}
+\label{fig:thirdleptonveto}
+\end{center}
+\end{figure}
+
+
 
 %%% JETS
 \item[Jets] are reconstructed with the anti-$k_T$ algorithm with a cone of $R=0.5$ are selected with $p_T>$15~GeV/c and $|\eta|<5.0$.
@@ -632,9 +662,9 @@ HCAL isolation                        & \multicolumn{2}{c}{$<$2.2 + 0.001$E_T$} 
 %
 % APPENDIX
 %
-appendix
+\appendix
 \section{Appendix: Lepton isolation}
-\label{sec:app:lepisol}
+\label{sec:app:leptonisolation}
 
 In this section we focus on two specific aspects affecting the determination of lepton isolation efficiency:
 the contamination from pileup and the differences between leptons in the $Z\rightarrow ll$ sample and in the Higgs sample.
