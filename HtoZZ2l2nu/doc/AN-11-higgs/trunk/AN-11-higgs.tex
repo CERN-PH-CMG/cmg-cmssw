@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.10 $
+\RCS$Revision: 1.11 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.10 2011/08/24 21:38:14 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.11 2011/08/24 21:41:48 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -15,25 +15,16 @@
 \providecommand{\Tauola}{{\textsc{Tauola}}\xspace}
 \providecommand{\Madgraph}{{\textsc{MadGraph}}\xspace}
 \providecommand{\Alpgen}{{\textsc{Alpgen}}\xspace}
+\providecommand{\Powheg}{{\textsc{Powheg}}\xspace}
 \providecommand{\Sherpa}{{\textsc{Sherpa}}\xspace}
 \providecommand{\MCatNLO}{{\textsc{MCatNLO}}\xspace}
 \providecommand{\CMSSW}{{\textsc{CMSSW}}\xspace}
-\providecommand{\FastSim}{{\textsc{FastSim}}\xspace}
-\providecommand{\FullSim}{{\textsc{FullSim}}\xspace}
-\providecommand{\caloMET}{{\textsc{caloMET}}\xspace}
-\providecommand{\tcMET}{{\textsc{tcMET}}\xspace}
 \providecommand{\pfMET}{{\textsc{pfMET}}\xspace}
-\providecommand{\caloJET}{{\textsc{caloJET}}\xspace}
-\providecommand{\jpt}{{\textsc{JPT}}\xspace}
 \providecommand{\pflow}{{\textsc{pFlow}}\xspace}
 \providecommand{\pfJET}{{\textsc{pfJET}}\xspace}
 \providecommand{\Roofit}{{\textsc{Roofit}}\xspace}
-\providecommand{\TC}{{\textsc{TC}}\xspace}
-\providecommand{\TCHE}{{\textsc{TCHE}}\xspace}
-\providecommand{\TCHP}{{\textsc{TCHP}}\xspace}
-\providecommand{\JP}{{\textsc{JP}}\xspace}
 \providecommand{\MET}{{$E_{T}^{miss}$}\xspace}
-\providecommand{\RMET}{{${\rm red}\vec{E}_{T}^{miss}$}\xspace}
+\providecommand{\RMET}{{${\rm red-}\vec{E}_{T}^{miss}$}\xspace}
 \providecommand{\MC}{{\textsc{MC}}\xspace}
 
 \linenumbers
@@ -114,7 +105,7 @@ In particular top quark and WW boson production contribute to the non-resonant c
 Table~\ref{tab:mcsamples} summarizes the simulation samples which are used for all standard model processes
 and which may mimick the signal under study.Table~\ref{tab:mcsignalsamples} summarizes the simulation samples used
 to model the Higgs signal. Both gluon-gluon and vector boson fusion processes are considered as well as ZZ and WW decays of the Higgs boson.
-The global tag START42\_V13 has been used to process MC with
+The global tag START42\_V13 has been used to process \MC with
 version 4\_2\_4 of the CMS official software (CMSSW).
 
 \begin{table}[htp]
@@ -223,11 +214,11 @@ The main aspects of the event selection are summarized as follows:
 Unprescaled single muon triggers are also considered in order to recover possible inefficiencies from the trigger system acceptance
 for larger values of the pseudo-rapidity ($|\eta|>$2.1).
 Whenever possible, trigger thresholds are chosen below the nominal cut used for the offline reconstruction of electrons and muons.
-Table~\ref{tab:datatrigger} summarizes the triggers used in data and in the MC sample.
+Table~\ref{tab:datatrigger} summarizes the triggers used in data and in the \MC sample.
 In the data triggers are vetoed sequentially in order to remove overlaps between the primary datasets~\cite{CMS-TWIKI-PDWG}.
 
 \begin{table}[htp]
-\caption{Triggers used in data and simulated in the MC.
+\caption{Triggers used in data and simulated in the \MC.
 In data the version of the trigger depends on the dataset period. The HLT prefix has been omitted for simplicity all in the trigger names.
 cI*Iso* is used as a shortname for CaloId*\_CaloIso* and tkI*Iso* as a short name for TrkId*\_TrkIso* where *=VL,L,T,VT.}
 \label{tab:datatrigger}
@@ -244,7 +235,7 @@ Trigger                                            & \multicolumn{4}{c}{Primary 
 {\small Mu17\_Ele8\_cITIsoVL}                                      & -              & -        & yes & veto       \\
 {\small Mu8\_Ele17\_cITIsoVL}                                      & -              & -        & yes & veto       \\
 {\small IsoMu17,IsoMu24}                                           & -              & -        & -   & yes      \\\hline
-\multicolumn{5}{c}{\bf MC} \\\hline
+\multicolumn{5}{c}{\bf \MC} \\\hline
                                                                    & $ee$ & $\mu\mu$ & $e\mu$ &  \\
 {\small Ele17\_cILIsoVL\_Ele8\_cILIsoVL\_v2}                       & yes  & -        & -      & \\
 {\small DoubleMu7}                                                 & -    & yes      & -      & \\
@@ -284,18 +275,18 @@ In case of multiple primary vertices the primary vertex is chosen has the one wi
 i.e. the vertex with highest $\displaystyle{\sum_{tracks}} p_T^2$ flux.
 Fig.~\ref{fig:vertexcontrol} shows two control distributions for the selected vertices in data and in the simulation:
 the vertex multiplicity and the transverse momentum resulting from the sum of all the charged particle flow candidates which are associated to the primary vertex of the event.
-Overall a fair agreement is found between data and MC but it is visible that the procedure used to re-weight the pileup in the simulation
+Overall a fair agreement is found between data and \MC but it is visible that the procedure used to re-weight the pileup in the simulation
 does not reproduce fully the real pileup scenario which evolved throughout different stages during the 2011 run data taking.
 The sum of the charged particle flow candidates associated to the primary vertex is a quantity which is expected to be robust against pileup variations
 and which shows sensitivity to processes in which undetectable particles are produced such as : $W$, top quark and di-boson production.
-In both distributions the MC does not include the low mass Drell-Yan contribution which contributes to an overall scale-factor of $\approx$ 10\%. 
+In both distributions the \MC does not include the low mass Drell-Yan contribution which contributes to an overall scale-factor of $\approx$ 10\%. 
 
 \begin{figure}[htp]
 \begin{center}
 \includegraphics[width=0.4\textwidth]{img/mumu_ngoodvertex}
 \includegraphics[width=0.4\textwidth]{img/mumu_trkmet}
 \caption{Distribution of the vertex multiplicity ({\em left}) and the transverse momentum resulting from the sum of all charged particle-flow candidates associated to the primary vertex of the event ({\em right}).
-The bottom plots show the ratio between the total MC prediction and the observed data.}
+The bottom plots show the ratio between the total \MC prediction and the observed data.}
 \label{fig:vertexcontrol}
 \end{center}
 \end{figure}
@@ -369,8 +360,8 @@ events are vetoed if containing another loosely selected electron or muon as des
 The loose selection applied on the third lepton is expected to have a high efficiency for signal events($>$99.8\% for both channels).
 The remainder of WZ and ZZ events are mostly due to fully hadronic decays of one of the vector bosons or to the decay of a Z boson to neutrinos.
 A slight excess of events with more than 2 muons is observed in data as shown in Fig~\ref{fig:thirdleptonveto}
-most probably related to a higher lepton fake rate than the one modelled by the MC.
-Notice also that at this point no data-driven correction for the lepton efficiencies has been applied to correct further the MC.
+most probably related to a higher lepton fake rate than the one modelled by the \MC.
+Notice also that at this point no data-driven correction for the lepton efficiencies has been applied to correct further the \MC.
 
 \begin{figure}[htp]
 \begin{center}
@@ -386,7 +377,7 @@ Notice also that at this point no data-driven correction for the lepton efficien
 \item[Jets] are reconstructed with the anti-$k_T$ algorithm with a cone of $R=0.5$ are selected with $p_T>$15~GeV/c and $|\eta|<5.0$.
 The loose jet id used to select the jets is based on the electromagnetic fraction of the jets among other variables. 
 The jet multiplicity distribution obtained after the dilepton selection is shown in Fig.~\ref{fig:jetmult} for jets found inside the tracker acceptance region only.
-A good agreement is found between data and MC prediction.
+A good agreement is found between data and \MC prediction.
 Jets with $|\eta|>2.5$ are used for the VBF specific selection which will be discussed in more detail in Sec.~\ref{sec:higgssearch}.
 
 \begin{figure}[htp]
@@ -407,7 +398,7 @@ increase the $b$-tagging efficiency without leading to a significant increase of
 Events with a jet with $p_T>$30~GeV/c, tagged with the loose working point of the JBP algorithm or with the medium working point of the SSVHE algorithm, are rejected. 
 This choice is made after optimizing the efficiency of the rejection of the top contribution as summarized in Tab.~\ref{tab:btagoptim}.
 Fig.~\ref{fig:btagging} shows the b-tag multiplicity distributions observed in di-muon and di-electron events using the combination of taggers just described.
-A good agreement, within 10-15\% is found between data and MC taking into account that at this point no data-driven correction scale factors for the $b$-tag and mistag rates have been applied.
+A good agreement, within 10-15\% is found between data and \MC taking into account that at this point no data-driven correction scale factors for the $b$-tag and mistag rates have been applied.
 The level of discrepancy observed is in fact compatible with the $\approx$ 10\% scale factor measured for the mistag rate~\cite{CMS-PAS-BTV-11-002}.
 The usage of the data-derived scale factors for the $b$-tagging algorithms will be discussed in more detail in Sec.~\ref{subsec:systunc}.
 
@@ -448,7 +439,7 @@ S/B           & 0.41           & 0.48      & 0.24     & 0.47            & 0.51  
 The verification of the reconstruction of the missing transverse energy will be the subject of a detailed discussion in Sec.~\ref{sec:met}
 and a specific \MET based selection will be proposed to reduce more efficienctly the contamination from $Z$ events with minimal contamination from pileup.
 Fig.~\ref{fig:metcontrol} shows the distribution for the \MET after the $b$-jet veto has been applied. 
-A wider resolution is observed in data with respect to the MC prediction reinforcing the need to develop a detailed verification of its reconstruction
+A wider resolution is observed in data with respect to the \MC prediction reinforcing the need to develop a detailed verification of its reconstruction
 and a data-driven method to model the expected performance to remove $Z$ events.
 
 \begin{figure}[htp]
@@ -524,6 +515,121 @@ data                               & $ ( 413.8 \pm0.6 ) \times10^{3} $    & $ ( 
 \section{Verification of the reconstructed missing transverse energy}
 \label{sec:met}
 
+The following section we discuss different strategies adopted in the choice of the variable used to reduce the contamination
+from the instrumental background, i.e., from processes in which the \MET is mismeasured.
+The main sources of mis-measurement of this quantity are the underestimate of the hadronic recoil
+of $Z$ bosons, due to jet energy scale and resolution as well as detector acceptance,
+and the contamination from pileup.
+In the first part we describe a variable developed with the purpose of reducing the error in the estimate of the hadronic recoil of the $Z$ bosons.
+The performance of this variable is compared with standard \MET among others.
+In the second part we describe the strategies developed to verify the contamination from pileup events with high hadronic activity.
+
+%%%
+%%% REDUCED MET
+%%%
+\subsection{Description of the reduced \MET method}
+\label{subsec:redmet}
+
+We adopt the definition of reduced missing transverse energy (\RMET) for our analysis.
+The definiton is an upgrade of the original concept developed by the D0 collaboration~\cite{Abazov:2008yf}.
+In this method the recoil of the dilepton is decomposed using either the dilepton:
+
+\begin{itemize}
+\item direction, in case the two leptons are collimated, i.e. $\Delta\phi^{ll}<\pi/2$;
+\item bisector, in case the two leptons are reconstructed with an open angle, i.e.   $\Delta\phi^{ll}>\pi/2$;
+\end{itemize}
+
+In the case of two leptons reconstructed with an open angle 
+the bisector of the dilepton is defined transversely to the axis which maximizes the dilepton transverse momentum,  i.e. the thrust axis($\vec{t}$):
+
+\begin{equation}
+\vec{t} =\frac{1}{|\vec{l}_1-\vec{l}_2|}(\vec{l}_1 - \vec{l}_{2})
+\label{eq:thrust} 
+\end{equation}
+
+where $l_1$ ($l_2$) is the 3-momentum of the leading (trailer) lepton. 
+We adopt the convention to define the bisector ($\vec{b}$) as pointing in the same direction as the leading lepton, i.e.:
+
+\begin{equation}
+\vec{b}\cdot\vec{t}=0 ~~~\wedge~~~ \vec{b}\cdot\vec{l}_1>0
+\label{eq:bisector} 
+\end{equation}
+
+The thrust and bisector are used to define the projections of the dilepton recoil which can be estimated from two sources:
+
+\begin{itemize}
+\item clustered recoil ($\vec{R}^{\text{clust}}$), from the jets reconstructed in the event;
+\item unclustered recoil ($\vec{R}^{\text{uncl}}$), from the sum of all particle flow candidates with the exception of the two leptons;
+\end{itemize}
+
+Originally the \RMET variable is computed with the following prescriptions:
+
+\begin{enumerate}
+\item the jets which contribute to each component of $\vec{R}^{\text{clust}}$ have to be found in the opposite direction with respect to the correspondent dilepton projection  
+\item likewise the projections of the unclustered recoil are considered to be 0 if pointing in the same direction as the correspondent dilepton projection
+\item the estimate of the recoil along each direction is made conservatively by taking the minimum of the two estimate, i.e. $R_i = \min \{ R_i^{\text{clust}},R_i^{\text{uncl}} \}$ 
+\end{enumerate}
+
+In this study we argue that 1. and 2. should not be used as they lead to an incomplete description of the recoil of the dilepton system for both instrumental background
+(i.e. $Z$ events) and signal events.
+In the first case the prescription to use jets which point in the opposite direction of the dilepton is compromised by the ocurrence of jet production
+in the underlying event or even by multiple interaction. If only a subset of the jets is accounted for this leads inevitably to a wrong estimate of the true recoil.
+In the second case we argue that highly boosted Higgs will be measured with the two Z's in the same hemisphere and therefore both the dilepton and the \MET will be pointing in the same direction
+and found to be recoiling against a jet system. For these topologies the recoil will be estimated as being 0, leading to a consequent inefficiency of identifying the signal at high values of \RMET.
+Instead we define \RMET from the minimum imbalance found using either the clustered or the unclustered recoil of the system.
+Each component of \RMET is computed and minimized individually as
+
+\begin{equation}
+{\rm red-}\cancel{E}_{T_i}^{k} =\vec{p}_{T}^{ll}\cdot \vec{i} + \alpha R^{\text{k}}_{i}
+\label{eq:rmet}
+\end{equation}
+
+where k=clustered/unclustered and $\alpha$ is a scale factor which we consider always to be 1.
+The absolute \RMET measurement is taken from the quadratic sum of the two components.
+The procedure just described assumes a conservative scenario for jet energy and unclustered \MET reconstruction and resolution.
+It is also expected to be effective against pileup events as jets are seeded using particle flow candidates associated to the primary vertex selected for each event. 
+Our definition of \RMET is compared with the original one from D0 in Fig.~\ref{fig:redmet} for di-muon events.
+It can be seen that the D0 definition yields a distribution with a very good resolution but which artificially 
+accumulates events with \RMET=0 even for the signal. This result is strictly related to the topology of the boosted Higgs events
+and can be mostly identified from events with 1 or 2 jets.
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.32\textwidth]{img/mumueq0jets_redMet_d0}
+\includegraphics[width=0.32\textwidth]{img/mumueq1jets_redMet_d0}
+\includegraphics[width=0.32\textwidth]{img/mumugeq2jets_redMet_d0}\\
+\includegraphics[width=0.32\textwidth]{img/mumueq0jets_redMet}
+\includegraphics[width=0.32\textwidth]{img/mumueq1jets_redMet}
+\includegraphics[width=0.32\textwidth]{img/mumugeq2jets_redMet}
+\caption{\RMET distribution in di-muon events with 0 ({\em left}), 1 ({\em center}) or 2 ({\em right}) jets.
+The original definition from the D0 collaboration is shown on top to be compared with the definition adopted in this manuscript shown on bottom.}
+\label{fig:redmet}
+\end{center}
+\end{figure}
+
+
+
+Table~\ref{tab:metwp} summarizes the performance of different \MET approaches
+regarding the rejection of the Drell-Yan background and the selection of a standard model Higgs with a mass of 200 GeV/$c^{2}$.
+
+\begin{table}[htp]
+\caption{Working points for different Drell-Yan rejection powers for standard \MET, projected-\MET and \RMET.}
+\label{tab:metwp}
+\begin{center}
+\begin{tabular}{llll} \hline\hline
+\MET                  & PF      & projected  & reduced  \\\hline
+                      &        &         & \\
+\multicolumn{4}{c}{Medium working point ($10^{-3}$ rejection factor)} \\\hline
+Cut value             & 48.4    & 44.1       & 38.9  \\
+H(200)                & 49.6\%  & 40.7\%     & 53.2\%  \\\hline
+                      &         &             & \\
+\multicolumn{4}{c}{Tight working point ($10^{-4}$ rejection factor)} \\\hline
+Cut value             & 66.5    & 63.9       & 56.7 \\
+H(200)                & 27.5\%  & 20.9\%     & 30.0\% \\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
 %%%
 %%% Pileup
 %%%
@@ -546,88 +652,47 @@ data                               & $ ( 413.8 \pm0.6 ) \times10^{3} $    & $ ( 
 \end{center}
 \end{table}
 
+%
+%
+%
+\section{Search for the standard model Higgs in the 2l2$\nu$ final state}
+\label{sec:higgssearch}
+
+
+%%
+%% Higgs event selection
+%%
+\subsection{Higgs event selection}
+\label{subsec:higgsselection}
+
+
+%%
+%% Discriminator analysis
+%%
+\subsection{Discriminator based analysis of the selected events}
+\label{subsec:discanalysis}
+
+%%
+%% Background determination
+%%
+\subsection{Background determination}
+\label{subsec:backgrounddet}
+
 
 %%%
-%%% REDUCED MET
 %%%
-\subsection{Description of the reduced \MET method}
-\label{subsec:redmet}
-
-We adopt the definition of reduced missing transverse energy (\RMET) for our analysis.
-The definiton is an upgrade of the original concept developed by the D0 collaboration~\cite{Abazov:2008yf}.
-The reconstructed \MET is decomposed using either the dilepton direction (in case the two leptons are collimated,
-i.e. $\Delta\phi^{ll}<\pi/2$) or the dilepton bisector (in case the two leptons are reconstructed with an open angle,
-i.e.   $\Delta\phi^{ll}>\pi/2$).
-The bisector of the dilepton is defined transversely to the axis which maximizes the dilepton transverse momentum, 
-i.e. the thrust axis($\vec{t}$):
-
-\begin{equation}
-\vec{t} =\frac{1}{|\vec{l}_1-\vec{l}_2|}(\vec{l}_1 - \vec{l}_{2})
-\label{eq:thrust} 
-\end{equation}
-
-where $l_{i}$ is the momentum of the $i$-th lepton. The bisector ($\vec{b}$) is defined in such a way that:
-
-\begin{equation}
-\vec{b}\cdot\vec{t}=0 ~~~\wedge~~~ \vec{b}\cdot\vec{l}_1>0
-\label{eq:bisector} 
-\end{equation}
-
-The thrust and bisector are used to define the projections of the recoil from the jets
-(clustered recoil) and the \MET (unclustered recoil) as:
-
-\begin{equation}
-R^{\text{clustered}}_{i}=(\sum_{jets} \vec{p}_T) \cdot \hat{i} ~~~~~~~ R^{\text{unclustered}}_{i}=pfMET \cdot \hat{i}
-\label{eq:dilrecoilcomponents}
-\end{equation}
-
-where $i=t,b$ as defined in Eqs.~\ref{eq:thrust} and ~\ref{eq:bisector}.  
-\RMET is defined from the minimum imbalance found using either the clustered or the unclustered recoil of the system.
-Each component of \RMET is computed and minimized individually:
-
-\begin{equation}
-{\rm red}\cancel{E}_{T_i}^{k} =\vec{p}_{T}^{ll}\cdot \vec{i} + \alpha R^{\text{k}}_{i}
-\label{eq:rmet}
-\end{equation}
-
-where k=clustered/unclustered. The absolute \RMET measurement is taken from the quadratic sum of the two components.
-The procedure just described assumes a conservative scenario for jet energy and unclustered \MET reconstruction and resolution.
-It is also expected to be effective against pileup events as jets are seeded using particle flow candidates associated to the
-primary vertex selected for each event. Table~\ref{tab:metwp} summarizes the performance of different \MET approaches
-regarding the rejection of the Drell-Yan background and the selection of a standard model Higgs with a mass of 200 GeV/$c^{2}$.
-
-\begin{table}[htp]
-\caption{Working points for different Drell-Yan rejection powers for standard \MET, projected-\MET and \RMET.}
-\label{tab:metwp}
-\begin{center}
-\begin{tabular}{llll} \hline\hline
-\MET                  & PF      & projected  & reduced  \\\hline
-                      &        &         & \\
-\multicolumn{4}{c}{Medium working point ($10^{-3}$ rejection factor)} \\\hline
-Cut value             & 48.4    & 44.1       & 38.9  \\
-H(200)                & 49.6\%  & 40.7\%     & 53.2\%  \\\hline
-                      &         &             & \\
-\multicolumn{4}{c}{Tight working point ($10^{-4}$ rejection factor)} \\\hline
-Cut value             & 66.5    & 63.9       & 56.7 \\
-H(200)                & 27.5\%  & 20.9\%     & 30.0\% \\\hline\hline
-\end{tabular}
-\end{center}
-\end{table}
-
-%%
-%%
-%%
-\subsection{Data-driven estimation of the instrumental background}
-\label{subsec:instrumentalbackground}
+%%%
+\subsubsection{Data-driven estimation of the instrumental background}
+\label{subsubsec:instrumentalbackground}
 
 Photon candidates are selected from dedicated photon triggered samples.
 The samples are summarized in Table~\ref{tab:instrbckgdatasamples}.
 
 \begin{table}[htp]
 \begin{center}
-\caption{MC and data samples analyzed for the estimation of the instrumental background.
+\caption{\MC and data samples analyzed for the estimation of the instrumental background.
 For data the total integrated luminosity and the run range analyzed are shown.
-For MC the the cross section and the corresponding integrated luminosity of the analyzed sample are shown.
+For \MC the the cross section and the corresponding integrated luminosity of the analyzed sample are shown.
 Z2 is used as a shortname for TuneZ2\_7TeV\_pythia6 and S* for Summer11-PU\_S*\_START42\_V11.
 }          
 \label{tab:instrbckgdatasamples}
@@ -638,7 +703,7 @@ Dataset                               & $L$~(pb$^{-1}$)               & Run rang
 /Photon/Run2011A-PromptReco-v4/AOD    &                               & {\small $>$163869}                 \\
 {\bf Total}                           & {\bf }                        &                                    \\\hline
                                       &                               &                                    \\\hline
-\multicolumn{3}{c}{\bf MC} \\
+\multicolumn{3}{c}{\bf \MC} \\
 Dataset                               & $\sigma$~(pb)                 & $L$~(pb$^{-1}$)                   \\\hline
 /G\_Pt-15to30\_Z2/S3-v2/AODSIM        & 1.72$\times$10$^5$            &                                   \\
 /G\_Pt-30to50\_Z2/S3-v2/AODSIM        & 1.67$\times$10$^4$            &                                   \\
@@ -679,31 +744,7 @@ HCAL isolation                        & \multicolumn{2}{c}{$<$2.2 + 0.001$E_T$} 
 \end{center}
 \end{table}
 
-%
-%
-%
-\section{Search for the standard model Higgs in the 2l2$\nu$ final state}
-\label{sec:higgssearch}
 
-
-%%
-%% Higgs event selection
-%%
-\subsection{Higgs event selection}
-\label{subsec:higgsselection}
-
-
-%%
-%% Discriminator analysis
-%%
-\subsection{Discriminator based analysis of the selected events}
-\label{subsec:discanalysis}
-
-%%
-%% Background determination
-%%
-\subsection{Background determination}
-\label{subsec:backgrounddet}
 
 %%
 %%
