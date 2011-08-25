@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.11 $
+\RCS$Revision: 1.12 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.11 2011/08/24 21:41:48 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.12 2011/08/25 08:34:31 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -24,6 +24,8 @@
 \providecommand{\pfJET}{{\textsc{pfJET}}\xspace}
 \providecommand{\Roofit}{{\textsc{Roofit}}\xspace}
 \providecommand{\MET}{{$E_{T}^{miss}$}\xspace}
+\providecommand{\tkMET}{{${\rm tk-}E_{T}^{miss}$}\xspace}
+\providecommand{\projMET}{{${\rm proj-}E_{T}^{miss}$}\xspace}
 \providecommand{\RMET}{{${\rm red-}\vec{E}_{T}^{miss}$}\xspace}
 \providecommand{\MC}{{\textsc{MC}}\xspace}
 
@@ -54,6 +56,15 @@
 % 2. **DO NOT use %** to comment out sections of the abstract: the extractor will still grab those lines (and they won't be comments any longer!).
 % 3. **DO NOT use tex macros** in the abstract: External TeX parsers used on the abstract don't understand them.
 \abstract{
+We summarize our contribution to the search for the Higgs boson in the high mass range ($m_H>$200~GeV/c$^2$)
+using the CMS detector and the proton-proton collision data acquired in the 2011 run at a center-of-mass energy of 7~TeV.
+The decay channel $H\rightarrow VV\rightarrow 2l2\nu$ where V is a vector boson (W or Z) is considered in the dilepton mass range of 76 to 106 GeV/c$^2$.
+A dedicated event selection is outlined with the main purposes of
+reducing the instrumental background resulting from the mismeasurement of missing transverse energy and exploring the kinematics of the Higgs events. 
+In our search no excess is observed in data with respect to the Standard Model predictions
+as well as in the presence of a sequential fourth family of high mass fermions
+or in the fermio-phobic Higgs decay scenario.
+Limits are set for the production of the Higgs boson in each one of the referred contexts.
 }
 
 % Do not comment out the following hypersetup lines (metadata). They will disappear in NODRAFT mode and are needed by CDS.
@@ -78,11 +89,24 @@ pdfkeywords={CMS, physics, Higgs boson, missing transverse energy}}
 \section{Introduction}
 \label{sec:introduction}
 
+We summarize our contribution to the search for the Higgs boson in the high mass range ($m_H>$200~GeV/c$^2$)
+using the CMS detector and the proton-proton collision data acquired in the 2011 run at a center-of-mass energy of 7~TeV.
+The decay channel $H\rightarrow VV\rightarrow 2l2\nu$ where V is a vector boson (W or Z) is considered in the dilepton mass range of 76 to 106 GeV/c$^2$.
+A dedicated event selection is outlined with the main purposes of
+reducing the instrumental background resulting from the mismeasurement of missing transverse energy and exploring the kinematics of the Higgs events. 
+In our search no excess is observed in data with respect to the Standard Model predictions
+as well as in the presence of a sequential fourth family of high mass fermions
+or in the fermio-phobic Higgs decay scenario.
+Limits are set for the production of the Higgs boson in each one of the referred contexts.
+
 %
 % EVENT SELECTION
 %
 \section{Trigger and event selection}
 \label{sec:triggerevselection}
+
+This section summarizes the trigger and tecniques explored for the dilepton event selection in data.
+The data and MC samples used are also described.
 
 %%
 %% SAMPLES
@@ -250,6 +274,8 @@ Trigger                                            & \multicolumn{4}{c}{Primary 
 %%% PRE-SELECTION
 \item[Pre-selection filters] are applied to minimize the contamination from beam-gas interactions, beam-halo and calorimeter noise.
 Table~\ref{tab:preselflow} summarizes the number of events in data which are found passing each filter.
+It can be seen that the beam halo filter mostly affects the muon sample, as expected, as it is based on the signals
+left in the CSC's by halo muons.
 
 \begin{table}[htp]
 \caption{Events selected after each pre-selection step for the different datasets considered.
@@ -257,16 +283,15 @@ The last column summarizes the \% of the original primary dataset considered aft
 \label{tab:preselflow}
 \begin{center}
 \begin{tabular}{lllllll} \hline\hline
-\multirow{2}{*}{Sample} & \multicolumn{5}{c}{Events accepted} \\
+\multirow{2}{*}{Sample} & \multicolumn{5}{c}{Events accepted (10$^7$)} \\
                         & in PD          &  no scrap  & $\geq$ 1 vertex & no HBHE noise & no beam halo & \% pre-filtered\\\hline
-DoubleMu                &                &            &                 &               &              & \\
-SingleMu                &                &            &                 &               &              & \\
-DoubleElectron          &                &            &                 &               &              & \\
-MuEG                    &                &            &                 &               &              &\\\hline\hline
+DoubleMu                & 3.365          & 3.365      & 3.298           & 3.296         & 3.260        & 96.9\% \\
+SingleMu                & 7.380          & 7.380      & 7.374           & 7.372         & 7.314        & 99.1\% \\
+DoubleElectron          & 4.091          & 4.091      & 4.090           & 4.089         & 4.076        & 99.6\% \\
+MuEG                    & 2.829          & 2.829      & 2.829           & 2.828         & 2.823        & 99.8\% \\\hline\hline
 \end{tabular}
 \end{center}
 \end{table}
-
 
 %%% PRIMARY VERTICES
 \item[Primary vertices] must be found within maximum range of 24~cm along the beam line (z) and within a 2~cm cylinder around the beam line ($\rho$)..
@@ -592,6 +617,7 @@ Our definition of \RMET is compared with the original one from D0 in Fig.~\ref{f
 It can be seen that the D0 definition yields a distribution with a very good resolution but which artificially 
 accumulates events with \RMET=0 even for the signal. This result is strictly related to the topology of the boosted Higgs events
 and can be mostly identified from events with 1 or 2 jets.
+It can also be observed a better agreement between data and \MC for the definition of \RMET adopted by us.
 
 \begin{figure}[htp]
 \begin{center}
@@ -607,28 +633,99 @@ The original definition from the D0 collaboration is shown on top to be compared
 \end{center}
 \end{figure}
 
-
-
-Table~\ref{tab:metwp} summarizes the performance of different \MET approaches
-regarding the rejection of the Drell-Yan background and the selection of a standard model Higgs with a mass of 200 GeV/$c^{2}$.
+The \RMET variable is adopted in the event selection for the Higgs boson and
+two working points (medium and tight) are defined in order to reject the instrumental background ($Z$ events) at a 10$^3$ and 10$^4$ rate level.
+The medium (tight) working point is used as a base selection for medium (high) mass search corresponding to 200-300 ($>$300) GeV/c$^2$.
+The working points are defined independently for each jet multiplicity bin in order to maximize the rejection power of the instrumental background
+\footnote{The working points are obtained from a parameterization of the efficiency curves where the efficiency
+is defined from the fraction of events of a given process observed above a given threshold.
+The parametrization used is a 2$^{nd}$ order polynomial function of the logarithm of the \RMET cut.}.
+Table~\ref{tab:redmetwp} summarizes the values adopted for the medium and tight \RMET working points.
 
 \begin{table}[htp]
-\caption{Working points for different Drell-Yan rejection powers for standard \MET, projected-\MET and \RMET.}
-\label{tab:metwp}
+\caption{Working points for different Drell-Yan rejection powers for \RMET.
+The expected efficiency for the selection of different Higgs masses is shown for reference.}
+\label{tab:redmetwp}
 \begin{center}
-\begin{tabular}{llll} \hline\hline
-\MET                  & PF      & projected  & reduced  \\\hline
-                      &        &         & \\
-\multicolumn{4}{c}{Medium working point ($10^{-3}$ rejection factor)} \\\hline
-Cut value             & 48.4    & 44.1       & 38.9  \\
-H(200)                & 49.6\%  & 40.7\%     & 53.2\%  \\\hline
-                      &         &             & \\
-\multicolumn{4}{c}{Tight working point ($10^{-4}$ rejection factor)} \\\hline
-Cut value             & 66.5    & 63.9       & 56.7 \\
-H(200)                & 27.5\%  & 20.9\%     & 30.0\% \\\hline\hline
+\begin{tabular}{lccc} \hline\hline
+Jet multiplicity      & =0 jets & =1 jets & $\geq$ 2 jets  \\\hline
+                      &         &         & \\\hline
+\multicolumn{4}{c}{{\bf Medium working point} ($10^{-3}$ rejection factor)} \\\hline
+Cut value             & 30.5    & 38.8    &  50.8\\
+$\varepsilon$(200)    & 59.7\%  & 52.5\%  &  41.6\% \\
+$\varepsilon$(300)    & 91.2\%  & 88.5\%  &  81.1\% \\
+$\varepsilon$(400)    & 94.8\%  & 93.2\%  &  90.2\% \\\hline
+                      &         &         & \\\hline
+\multicolumn{4}{c}{{\bf Tight working point} ($10^{-4}$ rejection factor)} \\\hline
+Cut value             & 39.0    & 52.4    &  78.7\\
+$\varepsilon$(200)    & 38.9\%  & 32.3\%  &  17.8\%\\
+$\varepsilon$(300)    & 87.6\%  & 79.5\%  &  53.1\%\\
+$\varepsilon$(400)    & 91.2\%  & 89.1\%  &  81.3\% \\\hline\hline
 \end{tabular}
 \end{center}
 \end{table}
+
+The performance of the \RMET can be further quantified relatively to the standard \MET measurement 
+as well as other \MET related variables. The \MET measurement can be made more robust against pileup contamination
+by considering the minimum of two transverse momenta sums: of all particle flow candidates (\MET) or of all 
+charged particle flow candidates which can be associated to the primary vertex of the event (\tkMET).
+This variable was introduced in Section~\ref{subsec:trigrec} to characterize the properties of the primary vertex.
+As it is built using a vertex constraint it is expected to have a small contamination from pileup.
+It's resolution is however degraded and has a non trivial dependence on the topology of the event,
+therefore the minimum is taken with respect to the full \MET measurement.
+A third variable which is worth comparing to is the projected missing transverse energy (\projMET)
+which aims at minimizing the poor reconstruction of leptons.
+Even if this is not considered to be the main problem affecting the \MET measurement under the $Z$ boson peak
+we compare its performance with the other measurements.
+This variable is computed as the transverse component of \MET 
+relatively to the closest lepton (if closer than $\pi/2$ in the azimuthal angle)
+or the full \MET otherwise
+\footnote{\projMET can be explicitly written from the following formulas.
+Let $\delta\phi^{\rm min}=\min\{\delta\phi(E_{T}^{miss},l^1),\delta\phi(E_{T}^{miss},l^2)\}$
+be the azimuthal angle between the \MET vector and the transverse momentum of the closest lepton.
+Then \projMET=\MET$\cdot\sin\delta\phi^{\rm min}$ if $\delta\phi^{\rm min}<\pi/2$ or \MET, otherwise.}.
+Following the prescription adopted by~\cite{CMS-PAS-HIG-11-003}
+the dependency on pile-up is reduced by taking the minimum \projMET computed from \MET and \tkMET.
+This minimization exploits further the correlation between both estimates in signal and 
+uncorrelation otherwise, as in Drell-Yan events.
+Fig.~\ref{fig:metperformances} summarize the performance of each variable 
+for the rejection of the instrumental background considering two hypothetical higgs boson masses.
+The performance is compared for events selected under the $Z$ boson peak and in the side-band region, i.e.
+dilepton events with a mass compreehended in the 61-76 and 106-121 GeV/c$^2$ range.
+It is visible that the \RMET approach is performing better overall in the $Z$ boson peak region which is the region of interest for our study.
+The performance of the \RMET variable is significantly better in the low mass regime under the $Z$ mass peak.
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.4\textwidth]{img/eff200}
+\includegraphics[width=0.4\textwidth]{img/eff400}\\
+\includegraphics[width=0.4\textwidth]{img/eff200_zsideband}
+\includegraphics[width=0.4\textwidth]{img/eff400_zsideband}
+\caption{Efficiency curves for signal versus instrumental background acceptance for different \MET variables.
+Signal is considered as a 200~GeV/c$^2$ ({\em left}) or a 400~GeV/c$^2$ ({\em right}) Higgs boson.
+The {\em top} plots show the results obtained in the Z-boson mass region while the {\em bottom} plots show the results obtained in the side-band region.}
+\label{fig:metperformances}
+\end{center}
+\end{figure}
+
+The performances can be further compared in terms of robustness against the variation of the pileup scenario.
+This test is summarized in Fig~\ref{fig:metperformancevspileup}. 
+We conclude that all approaches have a dependency on the pileup scenario which is minimized when taking
+the \tkMET or \RMET approaches. The dependency for these pseudo-\MET variables is observed to be approximately linear
+in both the average and RMS of the spectrum.
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{img/metvariablesVsPileup}\\
+\includegraphics[width=0.9\textwidth]{img/metvariablesVsPileup_zsideband}
+\caption{Average ({\em left}) and RMS ({\em right}) of the distribution of different \MET related variables in $Z/#gamma^{*}\rightarrow ll$ events, as function of the pileup.
+The {\em top} plots show the results obtained in the Z-boson mass region while the {\em bottom} plots show the results obtained in the side-band region.}
+\label{fig:metperformancevspileup}
+\end{center}
+\end{figure}
+
+In the next sub-section we discuss further strategies which are still subject of on-going studies which attempt 
+to minimize further the dependence of these variables against pileup.
 
 %%%
 %%% Pileup
@@ -662,7 +759,7 @@ H(200)                & 27.5\%  & 20.9\%     & 30.0\% \\\hline\hline
 %%
 %% Higgs event selection
 %%
-\subsection{Higgs event selection}
+\subsection{Higgs event selection using a cut-based analysis approach}
 \label{subsec:higgsselection}
 
 
@@ -673,6 +770,13 @@ H(200)                & 27.5\%  & 20.9\%     & 30.0\% \\\hline\hline
 \label{subsec:discanalysis}
 
 %%
+%%
+%%
+\subsection{Efficiency of the selection}
+\label{subsec:selefficiency}
+
+
+%%
 %% Background determination
 %%
 \subsection{Background determination}
@@ -680,7 +784,7 @@ H(200)                & 27.5\%  & 20.9\%     & 30.0\% \\\hline\hline
 
 
 %%%
-%%%
+%%% Instrumental background
 %%%
 \subsubsection{Data-driven estimation of the instrumental background}
 \label{subsubsec:instrumentalbackground}
@@ -744,13 +848,11 @@ HCAL isolation                        & \multicolumn{2}{c}{$<$2.2 + 0.001$E_T$} 
 \end{center}
 \end{table}
 
-
-
-%%
-%%
-%%
-\subsection{Efficiency of the selection}
-\label{subsec:selefficiency}
+%%%
+%%% Top 
+%%%
+\subsubsection{Data-driven estimation of residual top background}
+\label{subsubsec:topbackground}
 
 %%
 %%
