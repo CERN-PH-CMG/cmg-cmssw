@@ -4,8 +4,8 @@
 /** \class ReducedMETComputer
  *  No description available.
  *
- *  $Date: 2011/07/01 08:36:56 $
- *  $Revision: 1.8 $
+ *  $Date: 2011/08/11 13:16:01 $
+ *  $Revision: 1.9 $
  *  \author G. Cerminara & D. Trocino & P. Silva
  */
 
@@ -193,20 +193,20 @@ public:
     switch(eventCategory)
       {
       case EventCategory::EQ0JETS :
-	if(workingpoint==MEDIUMWP) cut=30.04;
-	if(workingpoint==TIGHTWP)  cut=39.4;
+	if(workingpoint==MEDIUMWP) cut=30.5;
+	if(workingpoint==TIGHTWP)  cut=39.0;
 	break;
       case EventCategory::EQ1JETS :
-	if(workingpoint==MEDIUMWP) cut=44.0;
-	if(workingpoint==TIGHTWP)  cut=54.5;
+	if(workingpoint==MEDIUMWP) cut=38.8;
+	if(workingpoint==TIGHTWP)  cut=52.4;
 	break;
       case EventCategory::GEQ2JETS :
-	if(workingpoint==MEDIUMWP) cut=50.35;
-	if(workingpoint==TIGHTWP)  cut=81.2;
+	if(workingpoint==MEDIUMWP) cut=50.8;
+	if(workingpoint==TIGHTWP)  cut=78.7;
 	break;
       case EventCategory::VBF :
-	if(workingpoint==MEDIUMWP) cut=57.36;
-	if(workingpoint==TIGHTWP)  cut=60.2;
+	if(workingpoint==MEDIUMWP) cut=50.0;  //the tuned point 56.3
+	if(workingpoint==TIGHTWP)  cut=50.0;
 	break;
       }
     return cut;

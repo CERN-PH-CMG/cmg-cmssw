@@ -1,14 +1,14 @@
 
 {
-  int ntouse(5);
+  int ntouse(4);
   double wp(0.001);
 
-  TString evcat("mumuzveto");
+  TString evcat("mumuzsideband");
   TString mpoint("H(200)");
-  TString names[]={"met","projMet","redMet","minMet","minRedMet"};
-  TString titles[]={"E_{T}^{miss}","proj-E_{T}^{miss}","red-E_{T}^{miss}","min(E_{T}^{miss},trk-E_{T}^{miss})", "min-red-E_{T}^{miss}"};
-  int colors[]={1,kGreen-3,kRed+3,kGreen+3,kRed-3};
-  int styles[]={1,2,2,3,9};
+  TString names[]={"met","minMet","minProjMet", "redMet"};
+  TString titles[]={"E_{T}^{miss}","min(E_{T}^{miss},trk-E_{T}^{miss})","min-proj-E_{T}^{miss}","red-E_{T}^{miss}"};
+  int colors[]={1,kGreen-3,kGreen+3,kRed-3};
+  int styles[]={1,2,9,1};
 
   gSystem->Load("libCMGToolsHtoZZ2l2nu.so");
   setStyle();
@@ -29,7 +29,8 @@
   TCanvas *fitC = getNewCanvas("fitC","fitC",false);
   fitC->SetWindowSize(600,ntouse*200);
   fitC->Divide(3,ntouse);
-  TF1 *ffunc=new TF1("fitfunc",evcat.Contains("vbf") ? "pol3" : "[0]*log(x)+[1]",0,10);
+  TF1 *ffunc=new TF1("fitfunc", "[0]*pow(log(x),2)+[2]*log(x)+[1]",0,10);
+
 
   TFile *f=TFile::Open("plotter.root");
     
@@ -122,8 +123,8 @@
 	  effGr->SetPointError(xbin-1,effsigError,effsigError,effbError,effbError);
 
 	  //store neighborhood of the working point
-	  double maxeffb(evcat.Contains("vbf") ? wp*100 : wp*10);
-	  double mineffb(evcat.Contains("vbf") ? wp*0.01 : wp*0.1);
+	  double maxeffb(evcat.Contains("vbf") ? wp*100 : wp*5);
+	  double mineffb(evcat.Contains("vbf") ? wp*0.01 : wp*0.5);
 	  if(effb<maxeffb && effb>mineffb)
 	    {
 	      cutNeighboorhoodZoomGr->SetPoint(imp, effb, dy->GetXaxis()->GetBinCenter(xbin) );
