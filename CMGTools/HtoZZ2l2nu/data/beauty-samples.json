@@ -333,9 +333,34 @@
            "marker":20,
            "data":[
                 {
+                  "dtag":"DoubleMuMay10ReReco",
+                  "dset":"/DoubleMu/Run2011A-May10ReReco-v1/AOD",
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/cerminar/zzllvv_42X_v1/DoubleMu-May10ReReco"]
+		},
+                {
+                  "dtag":"SingleMuMay10ReReco",
+                  "dset":"/SingleMu/Run2011A-May10ReReco-v1/AOD",
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/cerminar/zzllvv_42X_v1/SingleMu-May10ReReco"]
+		},
+                {
+                  "dtag":"DoubleElectronMay10ReReco",
+                  "dset":"/DoubleElectron/Run2011A-May10ReReco-v1/AOD",
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/cerminar/zzllvv_42X_v1/DoubleElectron-May10ReReco"]
+		},
+                {
+                  "dtag":"MuEGMay10ReReco",
+                  "dset":"/MuEG/Run2011A-May10ReReco-v1/AOD",
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/cerminar/zzllvv_42X_v1/MuEG-May10ReReco"]
+		},
+                {
                   "dtag":"DoubleMuPromptRecov4",
                   "dset":"/DoubleMu/Run2011A-PromptReco-v4/AOD",
                   "patdir":["/castor/cern.ch//cms/store/cmst3/user/psilva/Data2/DoubleMuon/DoubleMu-PromptReco-v4"]
+		},
+                {
+                  "dtag":"SingleMuPromptRecov4",
+                  "dset":"/SingleMu/Run2011A-PromptReco-v4/AOD",
+                  "patdir":["/castor/cern.ch//cms/store/cmst3/user/psilva/Data2/SingleMu/SingleMu-PromptReco-v4"]
 		},
                 {
                   "dtag":"DoubleElectronPromptRecov4",
@@ -347,7 +372,7 @@
                   "dset":"/MuEG/Run2011A-PromptReco-v4/AOD",
                   "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data2/MuEG/MuEG-PromptReco-v4"]
 		},
-	        {
+                {
                   "dtag":"MuEG05AugReReco",
                   "dset":"/MuEG/Run2011A-05Aug2011-v1/AOD",
                   "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/MuEG/MuEG-05Aug2011"]
@@ -375,7 +400,7 @@
                 {
                   "dtag":"DoubleElectronPromptRecov6_172620_173244",
                   "dset":"/DoubleElectron/Run2011A-PromptReco-v6/AOD",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/DoubleElectron/DoubleElectron-PromptReco-v6-172620-173244"]
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/DoubleElectron/DoubleElectron-PromptReco-172620-173244"]
 		},
                 {
                   "dtag":"MuEGPromptRecov6_172620_173244",

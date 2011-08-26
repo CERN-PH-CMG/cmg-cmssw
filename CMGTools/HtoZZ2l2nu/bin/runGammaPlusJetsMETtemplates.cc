@@ -79,19 +79,23 @@ int main(int argc, char* argv[])
 		   125,150,175,200,250,300,350,400,500,600,700,800,900,1000,2000};
   int nqtBins=sizeof(qtAxis)/sizeof(double)-1;
 
-  controlHistos.addHistogram( new TH1D ("qt", ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", nqtBins, qtAxis) );
-  controlHistos.addHistogram( new TH2D ("qtvsnjets", ";p_{T}^{#gamma} [GeV/c];Jets;Events / (2.5 GeV/c)", nqtBins, qtAxis,6,0,6) );
-  controlHistos.addHistogram( new TH1F ("metoverqt", ";type I E_{T}^{miss}/p_{T}^{#gamma};Events", 100,0,2.5) );
-  controlHistos.addHistogram( new TH1F ("met", ";type-I E_{T}^{miss} [GeV];Events", 100,0,200) );  
+  controlHistos.addHistogram( new TH1D ("eta", ";#eta;Events", 100,-2.6,2.6) );
   controlHistos.addHistogram( new TH1F ("npu", ";Pileup;Events", 30,0,30) );
-  controlHistos.addHistogram( new TH1F ("redmet", ";red-E_{T}^{miss} [GeV];Events", 100,0,200) );  
-  controlHistos.addHistogram( new TH1F ("njets", ";Jets;Events", 4,0,4) );  
-  controlHistos.addHistogram( new TH1F ("ptjets", ";p_{T} [GeV/c];Jets", 100,0,250) );  
-  controlHistos.addHistogram( new TH1F ("dphijetmet", ";min #Delta#phi(jet,MET);Events", 100,-3.2,3.2) );  
-  controlHistos.addHistogram( new TH1F ("redmetL", ";red-E_{T}^{miss,#parallel};Events", 100,-250,250) );
-  controlHistos.addHistogram( new TH1F ("redmetT", ";red-E_{T}^{miss,#perp};Events", 100,-250,250) );
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("redmetLvsredmetT", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
-  
+  TString reg[]={"eb","ee"};
+  for(size_t ireg=0; ireg<2; ireg++)
+    {
+      controlHistos.addHistogram( new TH1D (reg[ireg]+"qt", ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", nqtBins, qtAxis) );
+      controlHistos.addHistogram( new TH2D (reg[ireg]+"qtvsnjets", ";p_{T}^{#gamma} [GeV/c];Jets;Events / (2.5 GeV/c)", nqtBins, qtAxis,6,0,6) );
+      controlHistos.addHistogram( new TH1F (reg[ireg]+"metoverqt", ";type I E_{T}^{miss}/p_{T}^{#gamma};Events", 100,0,2.5) );
+      controlHistos.addHistogram( new TH1F (reg[ireg]+"met", ";type-I E_{T}^{miss} [GeV];Events", 100,0,200) );  
+      controlHistos.addHistogram( new TH1F (reg[ireg]+"redmet", ";red-E_{T}^{miss} [GeV];Events", 100,0,200) );  
+      controlHistos.addHistogram( new TH1F (reg[ireg]+"njets", ";Jets;Events", 4,0,4) );  
+      controlHistos.addHistogram( new TH1F (reg[ireg]+"ptjets", ";p_{T} [GeV/c];Jets", 100,0,250) );  
+      controlHistos.addHistogram( new TH1F (reg[ireg]+"dphijetmet", ";min #Delta#phi(jet,MET);Events", 100,-3.2,3.2) );  
+      controlHistos.addHistogram( new TH1F (reg[ireg]+"redmetL", ";red-E_{T}^{miss,#parallel};Events", 100,-250,250) );
+      controlHistos.addHistogram( new TH1F (reg[ireg]+"redmetT", ";red-E_{T}^{miss,#perp};Events", 100,-250,250) );
+      controlHistos.addHistogram( (TH1D *)(new TH2D ("reg[ireg]+redmetLvsredmetT", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
+    }
   //trigger categories
   //  Int_t photoncats[]={0,20,30,50,75,90,125};
   Int_t photoncats[]={0,20,30,50,75,125};
@@ -187,7 +191,8 @@ int main(int argc, char* argv[])
 
       //minimum threshold
       if(gamma.pt()<20) continue;
-      if(fabs(gamma.eta())>2.5) continue;
+      TString region("eb");
+      if(fabs(gamma.eta())>1.47) region="ee";
 
       evcat += triggerThr;
 
@@ -247,22 +252,24 @@ int main(int argc, char* argv[])
 	      TString ctf=cats[ic]+subCats[isc];
 	      
 	      controlHistos.fillHisto("npu",ctf, ev.ngenITpu,weight);
+	      controlHistos.fillHisto("eta",ctf, gamma.eta(),weight,true);
 
-	      if(jetsp4.size()) controlHistos.fillHisto("dphijetmet",ctf, mindphijetmet,weight);
-	      controlHistos.fillHisto("njets",ctf, njets,weight);
-	      controlHistos.fill2DHisto("qtvsnjets",ctf, gamma.pt(), njets,weight,true);
-	      controlHistos.fillHisto("qt",ctf, gamma.pt(),weight,true);
-	      controlHistos.fillHisto("met", ctf, met.pt(),weight);
-	      controlHistos.fillHisto("redmet", ctf, redmet,weight);
-	      controlHistos.fillHisto("metoverqt", ctf,met.pt()/gamma.pt(),weight);	      
- 	      controlHistos.fillHisto("redmetL", ctf,redmetL,weight);	      
-	      controlHistos.fillHisto("redmetT", ctf,redmetT,weight);	      
-	      controlHistos.fill2DHisto("redmetLvsredmetT", ctf,redmetL,redmetT,weight);	      
+	      if(jetsp4.size()) controlHistos.fillHisto(region+"dphijetmet",ctf, mindphijetmet,weight);
+	      controlHistos.fillHisto(region+"njets",ctf, njets,weight);
+	      controlHistos.fill2DHisto(region+"qtvsnjets",ctf, gamma.pt(), njets,weight,true);
+	      controlHistos.fillHisto(region+"qt",ctf, gamma.pt(),weight,true);
+	     
+	      controlHistos.fillHisto(region+"met", ctf, met.pt(),weight);
+	      controlHistos.fillHisto(region+"redmet", ctf, redmet,weight);
+	      controlHistos.fillHisto(region+"metoverqt", ctf,met.pt()/gamma.pt(),weight);	      
+ 	      controlHistos.fillHisto(region+"redmetL", ctf,redmetL,weight);	      
+	      controlHistos.fillHisto(region+"redmetT", ctf,redmetT,weight);	      
+	      controlHistos.fill2DHisto(region+"redmetLvsredmetT", ctf,redmetL,redmetT,weight);	      
 
 	      for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
 		{
 		  if (phys.jets[ijet].pt()>15 && fabs(phys.jets[ijet].eta())<2.5)
-		    controlHistos.fillHisto("ptjets",ctf, phys.jets[ijet].pt(),weight);
+		    controlHistos.fillHisto(region+"ptjets",ctf, phys.jets[ijet].pt(),weight);
 		}
 	    }
 	}

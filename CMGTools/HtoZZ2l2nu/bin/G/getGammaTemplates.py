@@ -59,7 +59,7 @@ for v in variables :
 
     gammaVariable=[]
     zVariable=[]
-    zTauTauVariable=[]
+    #zTauTauVariable=[]
     icat=0
     for c in cats:
         
@@ -70,12 +70,12 @@ for v in variables :
             if(iscat==len(subcats)-1): p.SetRightMargin(0.05)
             if(icat==len(cats)-1):     p.SetBottomMargin(0.15)
 
-            iGammaVariable = f.Get('proc_3/'+c+sc+'_'+v+'_3')
+            iGammaVariable = f.Get('#gamma+jets (simulation)/'+c+sc+'_'+v)
             iGammaVariable.SetDirectory(0)
-            iZVariable = f.Get('proc_2/'+c+sc+'_'+v+'_2')
+            iZVariable = f.Get('Z-#gamma^{*}+jets#rightarrow ll/'+c+sc+'_'+v)
             iZVariable.SetDirectory(0)
-            iZTauTauVariable = f.Get('proc_1/'+c+sc+'_'+v+'_1')
-            iZTauTauVariable.SetDirectory(0)
+            #iZTauTauVariable = f.Get('proc_1/'+c+sc+'_'+v+'_1')
+            #iZTauTauVariable.SetDirectory(0)
 
             iGammaVariable.Scale(iZVariable.Integral()/iGammaVariable.Integral())
             iZVariable.Draw("hist")
@@ -88,12 +88,12 @@ for v in variables :
                 zVariable.append( iZVariable.Clone(sc+'_z_'+v) )
                 zVariable[iscat].Reset("ICE")
                 zVariable[iscat].SetDirectory(0)
-                zTauTauVariable.append( iZTauTauVariable.Clone(sc+'_ztautau_'+v) )
-                zTauTauVariable[iscat].Reset("ICE")
-                zTauTauVariable[iscat].SetDirectory(0)
+                #zTauTauVariable.append( iZTauTauVariable.Clone(sc+'_ztautau_'+v) )
+                #zTauTauVariable[iscat].Reset("ICE")
+                #zTauTauVariable[iscat].SetDirectory(0)
             gammaVariable[iscat].Add(iGammaVariable)
             zVariable[iscat].Add(iZVariable)
-            zTauTauVariable[iscat].Add(iZTauTauVariable)
+            #zTauTauVariable[iscat].Add(iZTauTauVariable)
             
             pave = ROOT.TPaveText(0.5,0.65,1.0,0.95,'NDC')
             pave.SetBorderSize(0)
@@ -138,9 +138,9 @@ for v in variables :
         data.Add(gammaVariable[i-1])
         spimpose=ROOT.TList()
         #zTauTauVariable[i-1].Rebin(2)
-        zTauTauVariable[i-1].SetFillStyle(3004)
+        #zTauTauVariable[i-1].SetFillStyle(3004)
         #zTauTauVariable[i-1].SetLineWidth(2)
-        spimpose.Add(zTauTauVariable[i-1])
+        #spimpose.Add(zTauTauVariable[i-1])
         pad=cnv2.cd(i)
         leg=showPlotsAndMCtoDataComparison(pad,stack,spimpose,data)
         if(i==1) :

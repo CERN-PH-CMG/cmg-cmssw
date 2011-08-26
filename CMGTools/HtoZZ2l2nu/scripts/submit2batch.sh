@@ -50,8 +50,8 @@ fi
 # CONFIGURE
 #
 if [[ -z $QUEUE ]]; then 
-    QUEUE="1nd"
-    #QUEUE="2nd"
+#    QUEUE="1nd"
+    QUEUE="2nd"
 fi
 
 #

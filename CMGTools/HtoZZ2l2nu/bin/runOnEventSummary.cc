@@ -182,8 +182,13 @@ int main(int argc, char* argv[])
 
   controlHistos.addHistogram( new TH1F("nvtx",";Vertices;Events",25,0,25) );
 
+  controlHistos.addHistogram( new TH1F("recozmass", ";M^{ll};Events", 100,91-31,91+31) );
   controlHistos.addHistogram( new TH1F("recodphill",";#Delta#phi(l^{(1)},l^{(2)});Events",100,-3.2,3.2) );
-  controlHistos.addHistogram( new TH1F("recozmass", ";M^{ll};Events", 100,0,500) );
+  h=new TH1F("nleptons",";Leptons;Events",3,0,3);
+  controlHistos.addHistogram( h );
+  h->GetXaxis()->SetBinLabel(1,"=2 leptons");
+  h->GetXaxis()->SetBinLabel(2,"=3 leptons");
+  h->GetXaxis()->SetBinLabel(3,"#geq 4 leptons");
 
   h=new TH1F("njets",";Jet multiplicity (p_{T}>15 GeV/c #wedge |#eta|<2.5);Events",4,0,4);
   h->GetXaxis()->SetBinLabel(1,"0");
@@ -214,9 +219,14 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1D( "met", ";E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram( new TProfile ("metprof", ";Pileup events;E_{T}^{miss}", 15,0,15) ); 
   controlHistos.addHistogram( new TH2F ("metvspu", ";Pileup events;E_{T}^{miss}", 15,0,15,100,0,500) );  
-  controlHistos.addHistogram( new TH1D( "redMet", ";red-E_{T}^{miss};Events", 100,0,500) );
+  TString redmetCats[] = {"","_d0"};
+  for(size_t i=0; i<2; i++)
+    {
+      controlHistos.addHistogram( new TH1D( "redMet"+redmetCats[i], ";red-E_{T}^{miss};Events", 100,0,500) );
+      controlHistos.addHistogram( new TH2F ("redMetvspu"+redmetCats[i], ";Pileup events;red-E_{T}^{miss}", 15,0,15,100,0,500) );  
+    }
   controlHistos.addHistogram( new TProfile ("redMetprof", ";Pileup events;red-E_{T}^{miss}", 15,0,15) );  
-  controlHistos.addHistogram( new TH2F ("redMetvspu", ";Pileup events;red-E_{T}^{miss}", 15,0,15,100,0,500) );  
+
   controlHistos.addHistogram( (TH1D *)(new TH2D ("redMetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
   controlHistos.addHistogram( new TH1D( "projMet", ";proj-E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram( new TProfile ("projMetprof", ";Pileup events;projected E_{T}^{miss}", 15,0,15) );  
@@ -224,9 +234,24 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1D( "minMet", ";min-E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram( new TProfile ("minMetprof", ";Pileup events;min-E_{T}^{miss}", 15,0,15) );  
   controlHistos.addHistogram( new TH2F ("minMetvspu", ";Pileup events;min-E_{T}^{miss}", 15,0,15,100,0,500) );  
-  controlHistos.addHistogram( new TH1D( "minRedMet", ";min-red-E_{T}^{miss};Events", 100,0,500) );
-  controlHistos.addHistogram( new TProfile ("minRedMetprof", ";Pileup events;min-red-E_{T}^{miss}", 15,0,15) );  
-  controlHistos.addHistogram( new TH2F ("minRedMetvspu", ";Pileup events;min-red-E_{T}^{miss}", 15,0,15,100,0,500) );  
+  controlHistos.addHistogram( new TH1D( "minProjMet", ";min-proj-E_{T}^{miss};Events", 100,0,500) );
+  controlHistos.addHistogram( new TProfile ("minProjMetprof", ";Pileup events;min-proj-E_{T}^{miss}", 15,0,15) );  
+  controlHistos.addHistogram( new TH2F ("minProjMetvspu", ";Pileup events;min-proj-E_{T}^{miss}", 15,0,15,100,0,500) );  
+
+  //cut optimization plots
+  controlHistos.addHistogram( new TH1F ("cutOptMedium_dphill", ";#delta #phi^{l,l};#red-E_{T}^{miss,#parallel};",25,0.,3.2) );
+  controlHistos.addHistogram( new TH2F ("cutOptMedium_summt_vs_redMetL", ";#Sigma M_{T};#red-E_{T}^{miss,#parallel};",100,0,2000,50, -251.,249) );
+  controlHistos.addHistogram( new TH1F ("cutOptTight_dphill", ";#delta #phi^{l,l};#red-E_{T}^{miss,#parallel};",25, 0. , 3.2 ) );
+  controlHistos.addHistogram( new TH2F ("cutOptTight_summt_vs_redMetL", ";#Sigma M_{T};#red-E_{T}^{miss,#parallel};",100,0,2000,50, -251.,249) );
+  
+  //cut and count
+  h = new TH1F ("finaleventflow",";Category;Event count;",5,0,5);
+  h->GetXaxis()->SetBinLabel(1,"m=200");
+  h->GetXaxis()->SetBinLabel(2,"m=300");
+  h->GetXaxis()->SetBinLabel(3,"m=400");
+  h->GetXaxis()->SetBinLabel(4,"m=500");
+  h->GetXaxis()->SetBinLabel(5,"m=600");
+  controlHistos.addHistogram( h );
 
   //VBF
   h = new TH1F ("VBFNEventsInc", ";Selection cut;Events", 15,0,15);
@@ -261,6 +286,7 @@ int main(int argc, char* argv[])
     for(size_t isubcat=0;isubcat<sizeof(subCats)/sizeof(TString); isubcat++)
       for(size_t itopcat=0;itopcat<sizeof(subsubCats)/sizeof(TString); itopcat++)
 	controlHistos.initMonitorForStep(cats[icat]+subCats[isubcat]+subsubCats[itopcat]);
+
 
 
   //open the file and get events tree
@@ -325,9 +351,9 @@ int main(int argc, char* argv[])
       TTree *outT = evSummaryHandler.getTree()->CloneTree(0);
       outT->SetDirectory(spyDir);
       spyHandler->initTree(outT,false);
-  
-      if(!isMC) outf=new ofstream("highmetevents.txt",ios::app);  
-    }
+    }  
+  if(!isMC) outf=new ofstream("highmetevents.txt",ios::app);  
+    
   
   //run the analysis
   unsigned int NumberOfDuplicated = 0;
@@ -347,8 +373,8 @@ int main(int argc, char* argv[])
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
       float weight=ev.weight;
       if(!isMC) weight=1;
-
-      
+      else if(ev.hptWeights[0]>1e-3) weight *= ev.hptWeights[0];
+       
       //classify the event
       int eventCategory = eventClassifComp.Get(phys);
       TString subcat    = eventClassifComp.GetLabel(eventCategory);
@@ -399,7 +425,6 @@ int main(int argc, char* argv[])
 	  if(fabs(phys.jets[ijet].eta())<2.5)
 	    {
 	      njets++;
-
 	      bool passTCHEL(phys.jets[ijet].btag1>1.7);
 	      bool passTCHE2(phys.jets[ijet].btag1>2.0);
 	      bool passJBPL(phys.jets[ijet].btag2>1.33);
@@ -455,12 +480,11 @@ int main(int argc, char* argv[])
 
       //redmet
       rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsp4, zvv );
+      Float_t redMet_d0  = rmetComp.reducedMET(ReducedMETComputer::D0);
       Float_t redMet         = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
       Float_t redMetL        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
       Float_t redMetT        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t redMetoverzpt  = redMet/zpt;
-      // TVector2 reducedMETcartesian = rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      // LorentzVector redMetP4(reducedMETcartesian.X(),reducedMETcartesian.Y(),0,redMet);
 
       //projected met
       Float_t projMet        = pmetComp.compute(phys.leptons[0], phys.leptons[1], zvv );
@@ -468,13 +492,10 @@ int main(int argc, char* argv[])
 
       //minimized met
       Float_t projTrkMet     = pmetComp.compute(phys.leptons[0],phys.leptons[1], trkMetP4);
-      Float_t minMet        = min(fabs(projMet),fabs(projTrkMet));
-      //Float_t minMetoverzpt   = minMet/zpt;
-
-      rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsp4, trkMetP4 );
-      Float_t redTrkMet   = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t minRedMet = min(redMet,redTrkMet);
-
+      Float_t minMet         = min(trkMetP4.pt(),zvv.pt());
+      Float_t minMetoverzpt  = minMet/zpt;
+      Float_t minProjMet        = min(fabs(projMet),fabs(projTrkMet));
+      Float_t minProjMetoverzpt   = minMet/zpt;
 
       //vbf variables 
       bool isVBF        = false;
@@ -611,12 +632,13 @@ int main(int argc, char* argv[])
 
 	      controlHistos.fillHisto("nvtx",ctf,ev.nvtx,weight);
 	      controlHistos.fillHisto("eventflow",ctf,1,weight);
-	      controlHistos.fillHisto("recozmass",ctf,zll.mass(),weight);
-	      if(!passZmass && !passSideBand) continue;
 
+	      if(!passZmass && !passSideBand) continue;
 	      ctf += (passZmass ? "" : "zsideband");
 	      controlHistos.fillHisto("eventflow",ctf,2,weight);
+	      controlHistos.fillHisto("recozmass",ctf,zll.mass(),weight);
 	      controlHistos.fillHisto("recodphill",ctf,dphill,weight);
+	      controlHistos.fillHisto("nleptons",ctf,ev.ln,weight);
 
 	      if(!pass3dLeptonVeto) continue;
 	      controlHistos.fillHisto("eventflow",ctf,3,weight);
@@ -629,8 +651,7 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("npassbveto",ctf,3, (nbtags_jbpl==0)*weight);
 	      controlHistos.fillHisto("npassbveto",ctf,4, (nbtags_ssvhemORtchel==0)*weight);
 	      controlHistos.fillHisto("npassbveto",ctf,5, (nbtags==0)*weight);
-
-              controlHistos.fillHisto("zmassctrl",ctf,passBveto+2*passMediumRedMet,weight);
+	      controlHistos.fillHisto("zmassctrl",ctf,passBveto+2*passMediumRedMet,weight);
 
 	      if(!passBveto) continue;
 	      controlHistos.fillHisto("eventflow",ctf,4,weight);
@@ -652,14 +673,15 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("minMet", ctf,minMet,weight);
 	      controlHistos.fillProfile("minMetprof", ctf,ev.ngenITpu,minMet);
 	      controlHistos.fill2DHisto("minMetvspu", ctf,ev.ngenITpu,minMet,weight);     
+	      controlHistos.fillHisto("minProjMet", ctf,minProjMet,weight);
+	      controlHistos.fillProfile("minProjMetprof", ctf,ev.ngenITpu,minProjMet);
+	      controlHistos.fill2DHisto("minProjMetvspu", ctf,ev.ngenITpu,minProjMet,weight);     
 	      controlHistos.fillHisto("redMet", ctf,redMet,weight);
+	      controlHistos.fillHisto("redMet_d0", ctf,redMet_d0,weight);
 	      controlHistos.fillProfile("redMetprof", ctf,ev.ngenITpu,redMet);
 	      controlHistos.fill2DHisto("redMetvspu", ctf,ev.ngenITpu,redMet,weight);
 	      controlHistos.fillHisto("redMetcomps", ctf,redMetL,redMetT,weight);	
-	      controlHistos.fillHisto("minRedMet", ctf,minRedMet,weight);
-	      controlHistos.fillProfile("minRedMetprof", ctf,ev.ngenITpu,minRedMet);
-	      controlHistos.fill2DHisto("minRedMetvspu", ctf,ev.ngenITpu,minRedMet,weight);     
-	      
+	      	      
 	      //save summary tree now if required -> move this to after the red-MET cut ?
 	      if(saveSummaryTree && passMediumRedMet)
 		{
@@ -693,14 +715,34 @@ int main(int argc, char* argv[])
 		      controlHistos.fillHisto("Fisher_Rarity",ctf, fisherRarity, weight);
 		    }
 		}
-	      	      
+	      controlHistos.fillHisto("cutOptMedium_dphill",ctf,fabs(dphill));
+	      controlHistos.fill2DHisto("cutOptMedium_summt_vs_redMetL",ctf,mtsum,redMetL,weight);
+
+	      //final selection
+	      bool pass200(fabs(dphill)<2.75 && redMetL>0 && mtsum>120);
+	      if(pass200) controlHistos.fillHisto("finaleventflow",ctf,1,weight);
+
 	      if(!passTightRedMet)  continue;
 	      controlHistos.fillHisto("eventflow",ctf,6,weight);
-	      	      
- 	      //debug 
+	      controlHistos.fillHisto("cutOptTight_dphill",ctf,fabs(dphill));
+	      controlHistos.fill2DHisto("cutOptTight_summt_vs_redMetL",ctf,mtsum,redMetL,weight);
+	      
+	      bool pass300(fabs(dphill)<2.5 && redMetL>0 && mtsum>200);
+	      if(pass300) controlHistos.fillHisto("finaleventflow",ctf,2,weight);
+	      
+	      bool pass400(fabs(dphill)<2.5 && redMetL>0 && mtsum>300);
+	      if(pass400) controlHistos.fillHisto("finaleventflow",ctf,3,weight);
+      
+	      bool pass500(fabs(dphill)<2.5 && redMetL>10 && mtsum>300);
+	      if(pass500) controlHistos.fillHisto("finaleventflow",ctf,4,weight);
+	      
+	      bool pass600(fabs(dphill)<2.5 && redMetL>10 && mtsum>500);
+	      if(pass600) controlHistos.fillHisto("finaleventflow",ctf,5,weight);
+
+	      //debug
 	      if(ic==0 && isc==0 && !isMC && passTightRedMet && outf)	
 		{
-		  *outf << "<b>Selected event</b><br/>" << std::endl;
+		  *outf << "<b>Selected event</b> @ " << url << "<br/>" << std::endl;
 		  *outf << "%$Run=" <<  ev.run << "$% %$Lumi=" << ev.lumi << "$% %$Event=" << ev.event <<"$%" << "<br/>" << std::endl;
 		  
 		  *outf << "<i>Leptons</i>" << "<br/>" << std::endl;

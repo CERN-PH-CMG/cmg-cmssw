@@ -100,7 +100,8 @@ def getControlPlots(descriptor,isData,inputDir='data',getFromDir='') :
                     h.SetDirectory(0)
                     h.Sumw2()
                     cresults[h.GetName()]=h
-                    if(hname.find('cutflow')<0):continue
+                    if(hname.find('cutflow')<0): continue
+                    if(hname.find('presel')>=0): continue
                     cnorm=h.GetBinContent(1)
                     
                 #rescale if not data
@@ -266,6 +267,12 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
         except :
             plotsToDisplay[chtag]=[]
             plotsToDisplay[chtag].append(pname)
+
+
+        isamp=0
+        for iplot in stack : isamp = isamp+1
+        for iplot in spimpose : isamp = isamp+1
+        for iplot in data: isamp = isamp+1
             
         plotLabel = generalLabel # + '\\' + chtag
 #        if(pname.find('eq0jets')>0): plotLabel += '=0 jets' 
@@ -275,12 +282,11 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
 #        elif(pname.find('eq1btags')>0): plotLabel += '=1 b-tags'
 #        elif(pname.find('geq2btags')>0): plotLabel += '#geq 2 b-tags'
 #        else : plotLabel += 'All events'
-        
         c.Clear()
         leg=showPlotsAndMCtoDataComparison(c,stack,spimpose,data)
         #leg=showPlots(c,stack,spimpose,data)
         #        leg.SetHeader(plottitles[iplot])
-        formatForCmsPublic(c.cd(1),leg,plotLabel,5)
+        formatForCmsPublic(c.cd(1),leg,plotLabel,isamp)
         
 #        c.Clear()
 #        c.Divide(1,2)

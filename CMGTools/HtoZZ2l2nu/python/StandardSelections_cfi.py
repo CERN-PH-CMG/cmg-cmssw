@@ -51,7 +51,8 @@ BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlow"),
 BaseLooseMuonsSelection = BaseMuonsSelection.clone( minPt = cms.double(5),
                                                     maxTrackChi2 = cms.double(9999.),
                                                     id = cms.string("TrackerMuonArbitrated"),                               
-                                                    maxRelIso = cms.double(0.5)
+                                                    maxRelIso = cms.double(0.5),
+                                                    minValidMuonHits=cms.int32(0)
                                                     )
 
 # base values for photon selection ----------------------------------------------

@@ -749,7 +749,7 @@ void DileptonPlusMETEventAnalyzer::endLuminosityBlock(const edm::LuminosityBlock
 	edm::Handle<edm::MergeableCounter> ctrHandle;
 	iLumi.getByLabel(fname, ctrHandle);
 	if(!ctrHandle.isValid()) continue;
-	controlHistos_.fillHisto("preselcutflow","all",istep,0.,ctrHandle->value);
+	controlHistos_.fillHisto("preselcutflow","all",istep,ctrHandle->value);
       }catch(std::exception){
       }
     }
