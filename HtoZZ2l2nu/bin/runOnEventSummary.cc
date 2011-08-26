@@ -228,6 +228,31 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TProfile ("minRedMetprof", ";Pileup events;min-red-E_{T}^{miss}", 15,0,15) );  
   controlHistos.addHistogram( new TH2F ("minRedMetvspu", ";Pileup events;min-red-E_{T}^{miss}", 15,0,15,100,0,500) );  
 
+  //VBF
+  h = new TH1F ("VBFNEventsInc", ";Selection cut;Events", 15,0,15);
+  h->GetXaxis()->SetBinLabel(1,"All");
+  h->GetXaxis()->SetBinLabel(2,"2Jets (30GeV)");
+  h->GetXaxis()->SetBinLabel(3,"dEta");
+  h->GetXaxis()->SetBinLabel(4,"inv. Mass");
+  h->GetXaxis()->SetBinLabel(5,"Central lepton");
+  h->GetXaxis()->SetBinLabel(6,"Jet Veto");
+  h->GetXaxis()->SetBinLabel(7,"BJet Veto");
+  controlHistos.addHistogram( h );
+  controlHistos.addHistogram( new TH1F ("VBFdEtaInc", ";#Delta#eta", 100, 0,10) );
+  controlHistos.addHistogram( new TH1F ("VBFiMassInc",";Inv. Mass", 100, 0.,2000) );
+  controlHistos.addHistogram( new TH1F ("VBFcenLeptonVetoInc",";Central Lepton Veto", 10, 0.,10) );
+  controlHistos.addHistogram( new TH1F ("VBFcen30JetVetoInc",";Central 30 Jet Veto", 10, 0.,10) );
+  controlHistos.addHistogram( new TH1F ("VBFNBJets30Inc", ";N BJets (pT>30);Events", 10,0,10) );
+  controlHistos.addHistogram( new TH1F ("VBFdEtaNM1C", ";#Delta#eta", 100, 0,10) );
+  controlHistos.addHistogram( new TH1F ("VBFiMassNM1C",";Inv. Mass", 100, 0.,2000) );
+  controlHistos.addHistogram( new TH1F ("VBFcenLeptonVetoNM1C",";Central Lepton Veto", 10, 0.,10) );
+  controlHistos.addHistogram( new TH1F ("VBFcen30JetVetoNM1C",";Central 30 Jet Veto", 10, 0.,10) );
+  controlHistos.addHistogram( new TH1F ("VBFNBJets30NM1C", ";N BJets (pT>30);Events", 10,0,10) );
+  controlHistos.addHistogram( new TH2F ("VBFdEtaiMassNM1C", ";#Delta#eta;Inv. Mass", 100, 0,10,100, 0.,2000) );
+  controlHistos.addHistogram( getHistogramForVariable("mtsum") );
+  controlHistos.addHistogram( getHistogramForVariable("mtl1") );
+  controlHistos.addHistogram( getHistogramForVariable("mtl2") );
+
   //replicate monitor for interesting categories
   TString cats[]={"ee","emu","mumu"};
   TString subCats[]={"","eq0jets","eq1jets","geq2jets","vbf"};
@@ -444,11 +469,46 @@ int main(int argc, char* argv[])
       //minimized met
       Float_t projTrkMet     = pmetComp.compute(phys.leptons[0],phys.leptons[1], trkMetP4);
       Float_t minMet        = min(fabs(projMet),fabs(projTrkMet));
-      Float_t minMetoverzpt   = minMet/zpt;
+      //Float_t minMetoverzpt   = minMet/zpt;
 
       rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsp4, trkMetP4 );
       Float_t redTrkMet   = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
       Float_t minRedMet = min(redMet,redTrkMet);
+
+
+      //vbf variables 
+      bool isVBF        = false;
+      bool Pass2Jet30   = false;
+      bool PassdEtaCut  = false;
+      bool PassiMCut    = false;
+      bool PassBJetVeto = false;
+      bool PassJetVeto  = false;
+      bool PassLeptonIn = false;
+
+      double  VBFdEta = -1;
+      int     VBFCentral30Jets = 0;
+      int     VBFCentralLeptons = 0;
+      int     VBFNBJets=0;
+      LorentzVector VBFSyst;
+
+      if(phys.jets.size()>=2 && phys.jets [0].pt()>30.0 && phys.jets [1].pt()>30.0){
+         VBFSyst =  phys.jets[0] + phys.jets[1];
+         VBFdEta = fabs(   phys.jets[0].eta() -    phys.jets[1].eta()); if(phys.jets[0].eta()* phys.jets[1].eta()>0)VBFdEta*=-1;
+         int VBFCentral30Jets = 0;
+         double MinEta, MaxEta;
+         if(phys.jets[0].eta()<phys.jets[1].eta()){MinEta=phys.jets[0].eta(); MaxEta=phys.jets[1].eta();}else{MinEta=phys.jets[1].eta(); MaxEta=phys.jets[0].eta();}
+         if(phys.leptons[0].eta()>MinEta && phys.leptons[0].eta()<MaxEta)VBFCentralLeptons++;  if(phys.leptons[1].eta()>MinEta && phys.leptons[1].eta()<MaxEta)VBFCentralLeptons++;
+         for(size_t ijet=2; ijet<phys.jets.size(); ijet++) {if(phys.jets[ijet].pt()<30)continue; if(phys.jets[ijet].eta()>MinEta && phys.jets[ijet].eta()<MaxEta)VBFCentral30Jets++;  if(phys.jets[ijet].btag2>1.33 || phys.jets[ijet].btag3>1.74)VBFNBJets++; }
+
+         Pass2Jet30   = true;
+         PassdEtaCut  = (fabs(VBFdEta)>4.0);
+         PassiMCut    = (VBFSyst.M()>500);
+         PassLeptonIn = (VBFCentralLeptons==2);
+         PassJetVeto  = (VBFCentral30Jets==0);
+         PassBJetVeto = (VBFNBJets==0);
+         isVBF        = (Pass2Jet30 && PassdEtaCut && PassiMCut && PassBJetVeto && PassJetVeto && PassLeptonIn);
+      }
+
 
       //set the variables to be used in the MVA evaluation (independently of its use)
       for(size_t ivar=0; ivar<varsList.size(); ivar++) 
@@ -514,7 +574,7 @@ int main(int argc, char* argv[])
       bool passBveto(nbtags==0);
       bool passMediumRedMet(redMet>rmetComp.getCut(eventCategory,ReducedMETComputer::MEDIUMWP));
       bool passTightRedMet(redMet>rmetComp.getCut(eventCategory,ReducedMETComputer::TIGHTWP));
-      
+
       //fill control histograms
       TString catsToFill[]={"all",evcat};
       TString subCatsToFill[]={"",subcat};
@@ -524,10 +584,34 @@ int main(int argc, char* argv[])
 	    {
 	      TString ctf=catsToFill[ic]+subCatsToFill[isc];
 
+            //MakeVBF control plots before any selection is applied
+            if(true                                                                    )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    0                ,weight);
+            if(Pass2Jet30                                                              )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    1                ,weight);
+            if(PassdEtaCut                                                             )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    2                ,weight);
+            if(PassdEtaCut && PassiMCut                                                )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    3                ,weight);
+            if(PassdEtaCut && PassiMCut && PassLeptonIn                                )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    4                ,weight);
+            if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                 )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    5                ,weight);
+            if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    6                ,weight);
+            if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto && pass3dLeptonVeto)controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    7                ,weight);
+
+
+            if(Pass2Jet30                                                              )controlHistos.fillHisto("VBFdEtaInc"          ,ctf,    fabs(VBFdEta)    ,weight);
+            if(PassdEtaCut                                                             )controlHistos.fillHisto("VBFiMassInc"         ,ctf,    VBFSyst.M()      ,weight);
+            if(PassdEtaCut && PassiMCut                                                )controlHistos.fillHisto("VBFcenLeptonVetoInc" ,ctf,    VBFCentralLeptons,weight);
+            if(PassdEtaCut && PassiMCut && PassLeptonIn                                )controlHistos.fillHisto("VBFcen30JetVetoInc"  ,ctf,    VBFCentral30Jets ,weight);
+            if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                 )controlHistos.fillHisto("VBFNBJets30Inc"      ,ctf,    VBFNBJets        ,weight);
+
+
+            if(               PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFdEtaNM1C"         ,ctf,    fabs(VBFdEta)    ,weight);
+            if(PassdEtaCut              && PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFiMassNM1C"        ,ctf,    VBFSyst.M()      ,weight);
+            if(PassdEtaCut && PassiMCut                 && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFcenLeptonVetoNM1C",ctf,    VBFCentralLeptons,weight);
+            if(PassdEtaCut && PassiMCut && PassLeptonIn                && PassBJetVeto )controlHistos.fillHisto("VBFcen30JetVetoNM1C" ,ctf,    VBFCentral30Jets ,weight);
+            if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                 )controlHistos.fillHisto("VBFNBJets30NM1C"     ,ctf,    VBFNBJets        ,weight);
+            if(                            PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fill2DHisto("VBFdEtaiMassNM1C"  ,ctf,    fabs(VBFdEta), VBFSyst.M(), weight);
+
 	      controlHistos.fillHisto("nvtx",ctf,ev.nvtx,weight);
 	      controlHistos.fillHisto("eventflow",ctf,1,weight);
 	      controlHistos.fillHisto("recozmass",ctf,zll.mass(),weight);
-	      
 	      if(!passZmass && !passSideBand) continue;
 
 	      ctf += (passZmass ? "" : "zsideband");
@@ -546,8 +630,7 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("npassbveto",ctf,4, (nbtags_ssvhemORtchel==0)*weight);
 	      controlHistos.fillHisto("npassbveto",ctf,5, (nbtags==0)*weight);
 
-	      controlHistos.fillHisto("zmassctrl",ctf,passBveto+2*passMediumRedMet,weight);
-
+              controlHistos.fillHisto("zmassctrl",ctf,passBveto+2*passMediumRedMet,weight);
 
 	      if(!passBveto) continue;
 	      controlHistos.fillHisto("eventflow",ctf,4,weight);
@@ -614,8 +697,7 @@ int main(int argc, char* argv[])
 	      if(!passTightRedMet)  continue;
 	      controlHistos.fillHisto("eventflow",ctf,6,weight);
 	      	      
-	      
-	      //debug
+ 	      //debug 
 	      if(ic==0 && isc==0 && !isMC && passTightRedMet && outf)	
 		{
 		  *outf << "<b>Selected event</b><br/>" << std::endl;
