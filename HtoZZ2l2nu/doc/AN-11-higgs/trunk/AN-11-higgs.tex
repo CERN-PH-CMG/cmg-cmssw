@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.12 $
+\RCS$Revision: 1.13 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.12 2011/08/25 08:34:31 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.13 2011/08/25 11:11:48 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -25,6 +25,9 @@
 \providecommand{\Roofit}{{\textsc{Roofit}}\xspace}
 \providecommand{\MET}{{$E_{T}^{miss}$}\xspace}
 \providecommand{\tkMET}{{${\rm tk-}E_{T}^{miss}$}\xspace}
+\providecommand{\neutMET}{{${\rm neut-}E_{T}^{miss}$}\xspace}
+\providecommand{\clusMET}{{${\rm clust-}E_{T}^{miss}$}\xspace}
+\providecommand{\resMET}{{${\rm res-}E_{T}^{miss}$}\xspace}
 \providecommand{\projMET}{{${\rm proj-}E_{T}^{miss}$}\xspace}
 \providecommand{\RMET}{{${\rm red-}\vec{E}_{T}^{miss}$}\xspace}
 \providecommand{\MC}{{\textsc{MC}}\xspace}
@@ -733,18 +736,38 @@ to minimize further the dependence of these variables against pileup.
 \subsection{Strategies adopted to minimize the effect of pileup}
 \label{subsec:pueffects}
 
-\begin{table}[htp]
-\caption{}
-\label{tab:mettypes}
+In the previous section it was noticed that by taking the minimum for each event of the \MET measurement and the \tkMET measurement
+we can obtain an estimate of the \MET which is more robust against the contamination from pileup.
+The drawback of this approach is the lost of resolution in the measurement as \tkMET uses only the charged component of the event
+which can be measured up to a pseudo-rapidity of $|\eta|<$2.5 due to the limited acceptance of the tracker.
+However for the signal we're interested in we expect that the neutrinos are indeed emitted in the central region of the detector
+and therefore we expect a correlation between \MET measured using the information from the full detector and \MET measured using the central region.
+For instrumental background this is not the case any longer, as depicted in Fig.~\ref{fig:metandtkmet}.
+Therefore we explore in this section a strategy to control further the measurement of \MET using the central part of the CMS detector only.
+
+\begin{figure}[htp]
 \begin{center}
-\hspace*{-2cm}
-\begin{tabular}{llllllll} \hline\hline
-\multicolumn{2}{c}{\MET components}                  & PF     & PF no pileup  & track PF              & charged PF & clust. neut. & jet vetoed neut.  \\\hline
-\multirow{2}{*}{charged}            & all                      & yes    & -             & -                     & -          & -            & -                    \\
-                                    & from PV ($\Delta Z<$cm)  & -      & yes           & yes                   & yes        & yes          & yes                  \\\hline
-\multirow{2}{*}{neutrals}           & all                      & yes    & yes           & $p_T>4 \wedge \eta<3$ & no         & no           & yes                  \\
-                                    & associated to PV jets    & -      & -             & -                     & -          & yes          & -                    \\
-                                    & associated to other jets & -      & -             & -                     & -          & -            & no                   \\\hline\hline
+\includegraphics[width=0.45\textwidth]{img/metvstkmet_h200}
+\includegraphics[width=0.45\textwidth]{img/metvstkmet_dy}
+\caption{Correlation between \MET and \tkMET for a simulated Higgs (m=200~GeV/c$^2$) sample ({\em left}) and a $Z\rightarrow ll$ sample ({\em right}) in the di-muon sample}.
+\label{fig:metandtkmet}
+\end{center}
+\end{figure}
+
+
+\begin{table}[htp]
+\caption{Definitions used for the different \MET approaches compared in this study.
+The particles (not) used in the computation of each \MET type are signaled with ($\Box$) $\blacksquare$.}
+\label{tab:pumettypes}
+\begin{center}
+\begin{tabular}{lllllll} \hline\hline
+\multicolumn{2}{c}{\multirow{2}{*}{Particles}}           & \multicolumn{5}{c}{\MET type}                             \\ 
+&                                                        & \MET           & \tkMET         & \neutMET       & \clusMET       & \resMET   \\\hline
+\multirow{2}{*}{charged}  & all                          & $\blacksquare$ & $\Box$  & $\Box$  & $\Box$  & $\Box$          \\
+                          & assoc. vertex                & $\Box$  & $\blacksquare$ & $\Box$  & $\blacksquare$ & $\blacksquare$       \\\hline
+\multirow{2}{*}{neutrals} & all                          & $\blacksquare$ & $\Box$  & $\blacksquare$ & $\Box$  & $\Box$          \\
+                          & assoc. to vertex-seeded jets & $\Box$  & $\Box$  & $\Box$  & $\blacksquare$ & $\blacksquare$       \\
+                          & assoc. to other jets         & $\Box$  & $\Box$  & $\Box$  & $\Box$  & $\Box$        \\\hline\hline
 \end{tabular}
 \end{center}
 \end{table}
@@ -755,12 +778,48 @@ to minimize further the dependence of these variables against pileup.
 \section{Search for the standard model Higgs in the 2l2$\nu$ final state}
 \label{sec:higgssearch}
 
+The next Sections describe three complementary approaches to search for the standard model Higgs in the 2l2$\nu$ final state.
+The analysis rely on the expected behavior for Higgs events as described in the simulation. 
+Two of the analysis are cut-based and a third one is a discriminator based analysis implemented using the TMVA package~\cite{Hocker:2007ht}.
+For each analysis the events are categorized according to the jet multiplicity observed.
+Events with $\geq$2~jets are furthermore analyzed to search for the vector-boson-fusion (VBF) specific signature.
+This is will be described in more detail in the next sub-section. If the event does not meet the VBF specific selection
+it is accounted for in the $\geq$2~jets bin.
+
+%%
+%% VBF selection
+%%
+\subsection{Vector Boson Fusion search}
+\label{subsec:vbfsearch}
+
+
 
 %%
 %% Higgs event selection
 %%
 \subsection{Higgs event selection using a cut-based analysis approach}
 \label{subsec:higgsselection}
+
+The selection variables chosen for the search of the Higgs boson production in the gg$\rightarrow$H mode are summarized in Tab.~\ref{tab:gluglucuts}.
+The cuts were chosen my maximing a simple figure of merit $f=S/\sqrt(S+B)$ after requiring that the instrumental $Z$ background
+is reduced by a 10$^{-3}$ (medium \RMET working point).
+The details on the $f$ variable can be found in Sec.~\ref{sec:app:cutbasedoptimization}.
+
+\begin{table}[htp]
+\caption{Selection variables for the search for the Higgs boson in the gg$\rightarrow$H mode.}
+\label{tab:gluglucuts}
+\begin{center}
+\begin{tabular}{cccc} \hline\hline
+\multirow{2}{*}{Higgs mass (GeV/c$^2$)} & \multicolumn{3}{c}{Variable} \\
+                            & $\delta\phi^{ll}$ & \RMET (longitudinal) & $\sum M_T$ \\ \hline
+200                         & 1.0$<|x|<$2.75  & $|x|>$50             & $>$150 \\
+300                         & $|x|<$2.5         & x$>$75               & $>$200 \\
+400                         & $|x|<$2.0         & x$>$75               & $>$300 \\
+500                         & $|x|<$2.0         & x$>$100              & $>$400 \\
+600                         & $|x|<$1.5         & x$>$150              & $>$400 \\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
 
 
 %%
@@ -941,6 +1000,42 @@ The standard $Z$ production is compared to the production in the Higgs decay cha
 
 
 
+\section{Appendix: Cut based optimization}
+\label{sec:app:cutbasedoptimization}
+
+In this section we summarize the procedure adopted to optimized the selection of the cut based analysis for the search for Higgs boson.
+A simple approach has been taken by considering three variables which show discriminating power for the Higgs signal.
+These variables are:
+
+\begin{description}
+\item[$\delta\phi^{ll}$] - the azimuthal angle between the two leptons that constitute the dilepton candidate. The angle is expected to be significantly smaller for final state leptons from Higgs with large mass;
+\item[\RMET (longitudinal)] - the longitudinal component of \RMET. This specific projection is expected to show the sensitivity to events in which the two Z bosons from the Higgs decay are recoiling against each other.
+For low mass Higgs, the production of extra jets, might however lead to a boost of the overall system in which both Z's can be produced along the same hemisphere. 
+In these boosted topologies the longitudinal component of \RMET is expected to point along the dilepton direction;
+\item[$\sum M_{T}(l^i,E_{T}^{miss})$] - the sum of the transverse mass of each lepton with the \MET vector. This variable is chosen as no full mass reconstruction is possible in the final state under study.
+The full transverse mass of the system could be used but by requiring both the dilepton and the \MET source to be the same, i.e., a $Z$ boson, introduces an artificial kinematic limit on all backgrounds.;
+\end{description}
+
+The  variables used to define a loose selection region where the presence of signal is more significative, i.e. where $f=S/\sqrt{S+B}$ is maximized.
+As tighter selections also lead to a depletion of signal, the cuts are selected in the rising edge of the $f$ variable.
+Fig.~\ref{fig:varcutopt} summarizes the distributions obtained for the $f$ variable after requiring that the instrumental
+background is reduced by 10$^{-3}$ (medium working point for \RMET selection, as defined in Sec.~\ref{subsec:redmet}.
+Although differences are found between different jet multiplicity bins, they are not considered to tune further the cuts,
+as the $f$-curves show similar rising edges. Therefore, inclusive selection cuts are chosen.
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.64\textwidth]{img/FoM_200}\\
+\includegraphics[width=0.64\textwidth]{img/FoM_300}\\
+\includegraphics[width=0.64\textwidth]{img/FoM_400}\\
+\includegraphics[width=0.64\textwidth]{img/FoM_500}\\
+\includegraphics[width=0.64\textwidth]{img/FoM_600}
+\caption{Figure of merit for different Higgs masses for different variables and for events with different jet multiplicities. 
+The cut chosen for each variable is overlaid in the figures.
+All backgrounds, as predicted by simulation, are considered.}
+\label{fig:varcutopt}
+\end{center}
+\end{figure}
 
   
 \end{document}
