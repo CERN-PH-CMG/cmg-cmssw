@@ -12,6 +12,7 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 
 #include "TMath.h"
+#include "TVector3.h"
 
 #include <algorithm>
 #include <set>
@@ -41,9 +42,7 @@ class DiObjectFactory : public cmg::Factory< cmg::DiObject<T,U> >, public cmg::S
 
         double mT(T const& l1, U const& l2) const;
         double alphaT(T const& l1, U const& l2) const;
-        double betaR(T const& l1, U const& l2) const;
         double mR(T const& l1, U const& l2) const;
-        double mRP(T const& l1, U const& l2, const reco::Candidate& met) const;
         double mRT(T const& l1, U const& l2, const reco::Candidate& met) const;
         double lp(T const& l1, cmg::DiObject<T,U>* const obj) const;
 
@@ -127,7 +126,6 @@ void cmg::DiObjectFactory<T, U>::set(const std::pair<T,U>& pair, cmg::DiObject<T
     if (pair.first.isElectron() || pair.first.isMuon())
       obj->lp_ = lp(pair.first, obj);
     //calculate the Razor variables without MET
-    obj->betaR_ = betaR(pair.first, pair.second);
     obj->mR_ = mR(pair.first, pair.second);
 }
 
@@ -137,7 +135,6 @@ void cmg::DiObjectFactory<T, U>::set(const std::pair<T,U>& pair, const reco::Can
     if (pair.first.isElectron() || pair.first.isMuon())
       obj->lp_ = lp(pair.first, obj);
     //calculate the Razor variables with MET
-    obj->mRP_ = mRP(pair.first, pair.second, met);
     obj->mRT_ = mRT(pair.first, pair.second, met);
 }
 
@@ -163,74 +160,35 @@ template<typename T, typename U>
 }
 
 template<typename T, typename U>
-double cmg::DiObjectFactory<T, U>::betaR(T const& l1, U const& l2) const{
-    // compute Razor boost
-    //Eqn (4) from CMS-PAS-SUS-10-009
-    const double num = l1.p()-l2.p();
-    const double den = l1.pz()-l2.pz();
-      
-    double beta = 1.;
-    if(fabs(num) <= fabs(den)){
-        // R good, R' bad
-        beta = num/den;
-    }else{
-        // R bad, R' good
-        beta = den/num;
-    }
-    return beta;   
-}
-
-template<typename T, typename U>
 double cmg::DiObjectFactory<T, U>::mR(T const& ja, U const& jb) const{
-  //Eqn (6) from CMS-PAS-SUS-10-009
-  double temp = (ja.p()*jb.pz()-jb.p()*ja.pz())*
-                (ja.p()*jb.pz()-jb.p()*ja.pz());
-  temp /= (ja.pz()-jb.pz())*(ja.pz()-jb.pz())-(ja.p()-jb.p())*(ja.p()-jb.p());
-
-  temp = 2.*sqrt(temp);
-  // protect against nan
-  if(TMath::IsNaN(temp)) temp = UnSet(Double_t);
-  return temp;
-}
-
-template<typename T, typename U>
-double cmg::DiObjectFactory<T, U>::mRP(T const& ja, U const& jb, const reco::Candidate& met) const{
-
-    double jaP = ja.pt()*ja.pt() +ja.pz()*jb.pz()-ja.p()*jb.p();
-    double jbP = jb.pt()*jb.pt() +ja.pz()*jb.pz()-ja.p()*jb.p();
-    jbP *= -1.;
-    double den = sqrt((ja.p()-jb.p())*(ja.p()-jb.p())-(ja.pz()-jb.pz())*(ja.pz()-jb.pz()));
-
-    jaP /= den;
-    jbP /= den;
-
-    const reco::Candidate::LorentzVector metV = met.p4();
-    const reco::Candidate::LorentzVector jaV = ja.p4();
-    const reco::Candidate::LorentzVector jbV = jb.p4();
-    const double metMag = metV.Vect().R();
-
-    double temp = jaP*metV.Vect().Dot(jbV.Vect())/metMag + jbP*metV.Vect().Dot(jaV.Vect())/metMag;
-    temp = temp*temp;
-    den = (metV.Vect().Dot(jaV.Vect()+jbV.Vect())/metMag)*(metV.Vect().Dot(jaV.Vect()+jbV.Vect())/metMag)-(jaP-jbP)*(jaP-jbP);
-
-    if(den <= 0.0) return -1.;
-
-    temp /= den;
-    temp = 2.*sqrt(temp);
-
-    double bR = (jaP-jbP)/(metV.Vect().Dot(jaV.Vect()+jbV.Vect())/metMag);
-    double gR = 1./sqrt(1.-bR*bR);
-
-    temp *= gR;
+    //validated for 2011 variables
+    const double A = ja.p();
+    const double B = jb.p();
+    const double az = ja.pz();
+    const double bz = jb.pz();
   
-    // protect against nan            
-    if(TMath::IsNaN(temp)) temp = UnSet(Double_t);                                                                                                                                                   
+    TVector3 jaT, jbT;
+    jaT.SetXYZ(ja.px(),ja.py(),0.0);
+    jbT.SetXYZ(jb.px(),jb.py(),0.0);
+    const double ATBT = (jaT+jbT).Mag2();
+
+    double temp = sqrt((A+B)*(A+B)-(az+bz)*(az+bz)-
+                         (jbT.Dot(jbT)-jaT.Dot(jaT))*(jbT.Dot(jbT)-jaT.Dot(jaT))/(jaT+jbT).Mag2());
+
+    const double mybeta = (jbT.Dot(jbT)-jaT.Dot(jaT))/
+        TMath::Sqrt(ATBT*((A+B)*(A+B)-(az+bz)*(az+bz)));
+    double mygamma = 1./sqrt(1.-mybeta*mybeta);
+
+    //gamma times MRstar                                                                                                                                                                              
+    temp *= mygamma;
+    // protect against nan
+    if(TMath::IsNaN(temp)) temp = UnSet(Double_t);
     return temp;
 }
 
 template<typename T, typename U>
 double cmg::DiObjectFactory<T, U>::mRT(T const& ja, U const& jb, const reco::Candidate& met) const{
-    
+    ///validated for 2011 variables
     const reco::Candidate::LorentzVector metV = met.p4();
     const reco::Candidate::LorentzVector jaV = ja.p4();
     const reco::Candidate::LorentzVector jbV = jb.p4();    
