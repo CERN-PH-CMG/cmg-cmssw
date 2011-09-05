@@ -6,10 +6,8 @@ diHemiFactory = diObjectFactory.clone(
     leg2Collection = cms.InputTag("cmgHemi")
     )
 
-from CMGTools.Common.selections.razorbeta_cfi import razorbeta
 cmgDiHemi = cms.EDFilter("DiHemispherePOProducer",
     cfg = diHemiFactory.clone(),
     cuts = cms.PSet(
-        razorbeta = razorbeta.clone()
     )
 )

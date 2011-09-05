@@ -7,13 +7,11 @@ diJetFactory = diObjectFactory.clone(
        )
 
 from CMGTools.Common.selections.dijet_cfi import dijetKinematics
-from CMGTools.Common.selections.razorbeta_cfi import razorbeta
 cmgDiJet = cms.EDFilter(
     "DiJetPOProducer",
     cfg = diJetFactory.clone(),
     cuts = cms.PSet(
        dijetKinematics = dijetKinematics.clone(),
-       razorbeta = razorbeta.clone()
        ),
     verbose = cms.untracked.bool( False )
 )
