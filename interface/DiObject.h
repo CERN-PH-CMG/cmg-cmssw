@@ -28,9 +28,7 @@ class DiObject : public AbstractPhysicsObject{
         leg2_(leg2),
         mT_(UnSet(Double_t)),
         alphaT_(UnSet(Double_t)),
-        betaR_(UnSet(Double_t)),
         mR_(UnSet(Double_t)),
-        mRP_(UnSet(Double_t)),
         mRT_(UnSet(Double_t)),
         lp_(UnSet(Double_t)){
     }
@@ -40,9 +38,7 @@ class DiObject : public AbstractPhysicsObject{
         leg2_(other.leg2()),
         mT_(other.mT_),
         alphaT_(other.alphaT_),
-        betaR_(other.betaR_),
         mR_(other.mR_),
-        mRP_(other.mRP_),
         mRT_(other.mRT_),
         lp_(other.lp_){
     }
@@ -64,25 +60,23 @@ class DiObject : public AbstractPhysicsObject{
     Double_t const alphaT() const{
       return alphaT_;
     }
-    ///The Razor boost
-    Double_t betaR() const{
-        return betaR_;
-    }
+
     ///The Razor variable M_R
     Double_t mR() const{
         return mR_;
     }
-    ///The Razor variable M_R'
-    Double_t mRPrime() const{
-        return mRP_;
-    }
+
     ///The Razor variable M_T^R
     Double_t mRT() const{
         return mRT_;
     }
     ///The Razor variable R
     Double_t R() const{
-        return mRT()/mR();
+        return (mR() > 0) ? mRT()/mR() : UnSet(Double_t);
+    }
+    ///The Razor variable Rsq
+    Double_t Rsq() const{
+        return (mR() > 0) ? (mRT()/mR())*(mRT()/mR()) : UnSet(Double_t);
     }
     ///The lepton projection (LP) variable
     Double_t lp() const{
@@ -139,9 +133,7 @@ class DiObject : public AbstractPhysicsObject{
 
     Double_t mT_;
     Double_t alphaT_;
-    Double_t betaR_; //the Razor boost
     Double_t mR_; //The Razor MR
-    Double_t mRP_; //The Razor MR'
     Double_t mRT_; //The Razor M_T^R
     Double_t lp_; //The lepton projection (LP)
 
