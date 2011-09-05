@@ -9,15 +9,6 @@ from CMGTools.Common.skims.cmgTriggerObjectSel_cfi import *
 #preselect data events only if they have passed an HT or Razor trigger
 #
 # Current loose trigger requires pt > 40; eta < 3; R > 0.14; MR > 150
-razorTriggerSel = cmgTriggerObjectSel.clone(
-                                            src = 'cmgTriggerObjectSel',
-                                            cut = '( hasSelection("isRealData") && getSelection("isRealData")' \
-                                            '     && (getSelectionRegExp("HLT_HT*") || getSelectionRegExp("HLT_R0*") ) ) || ' \
-                                            '    ( hasSelection("isRealData") && !getSelection("isRealData") ) || '\
-                                            '    !hasSelection("isRealData")'
-                                            )
-razorTriggerCount = cmgCandCount.clone( src = 'razorTriggerSel', minNumber = 1 )#pass-through this for MC
-
 #take the leading selected electrons + muons
 from CMGTools.Common.skims.leadingCMGMuonSelector_cfi import leadingCMGMuonSelector
 razorLeadingMuon = leadingCMGMuonSelector.clone(inputCollection = "susyMuon", index = cms.int32(1))
@@ -33,7 +24,7 @@ razorMuonSequence = cms.Sequence(
 
 # id the jets
 from CMGTools.Common.skims.cmgPFJetSel_cfi import *
-razorPFJetSel = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = 'pt()>29 && abs(eta)<3.1' ) #go a bit loose
+razorPFJetSel = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = 'pt()>60 && abs(eta)<3.0' )
 razorPFJetSelID = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = '%s && getSelection("cuts_looseJetId")' % razorPFJetSel.cut.value() )
 
 #combine leading leptons with jets
@@ -46,21 +37,6 @@ razorPFJetsWithLeadingLeptons = cmgCandMerge.clone(
     )
 #skim on leading objects - i.e. at least one ID'd jet and a lepton, or two jets
 razorLeadingObjectCount = cmgCandCount.clone( src = 'razorPFJetsWithLeadingLeptons', minNumber = 2 )
-
-#met modifications for the *star* boxes
-from CMGTools.Common.Tools.cmgBaseMETModifier_cfi import cmgBaseMETModifier
-razorMuStarMet = cmgBaseMETModifier.clone(
-    cfg = cmgBaseMETModifier.cfg.clone(
-    inputCollection = cms.InputTag("susyMuon"),
-    metCollection = cms.InputTag("cmgPFMET"),
-    operator = cms.string('+') #Add the muons to the MET                                               
-    )
-)
-razorEleStarMet = cmgBaseMETModifier.clone(
-    cfg = razorMuStarMet.cfg.clone(
-    inputCollection = cms.InputTag("susyMuon"),
-    )
-)
 
 #make the hemispheres
 from CMGTools.Common.factories.cmgHemi_cfi import cmgHemi
@@ -82,14 +58,15 @@ razorDiHemiHadBox = cmgDiHemi.clone(
     leg2Collection = cms.InputTag('razorHemiHadBox')                    
     ),
     cuts = cmgDiHemi.cuts.clone(
+    #these are a little looser than the analysis cuts to give some sidebands                            
     razor = cms.PSet(
-                     deltaPhi = cms.string('deltaPhi(leg1().phi(),leg2().phi()) <= 2.7'),
+                     deltaPhi = cms.string('deltaPhi(leg1().phi(),leg2().phi()) < 2.8'),
                      mr = cms.string('mR() >= 145'),
                      r = cms.string('R() >= 0.13')
     )
     )      
 )
-razorDiHemiHadBoxSel = cmgCandSel.clone( src = 'razorDiHemiHadBox', cut = 'getSelection("cuts_razorbeta_betaR") && getSelection("cuts_razor") && getSelection("cuts_razorbeta_useMR")' )
+razorDiHemiHadBoxSel = cmgCandSel.clone( src = 'razorDiHemiHadBox', cut = 'getSelection("cuts_razor")' )
 
 from CMGTools.Common.physicsObjectPrinter_cfi import physicsObjectPrinter
 razorDiHemiHadBoxInfo = physicsObjectPrinter.clone(
@@ -107,35 +84,51 @@ razorHadronicBoxSequence = cms.Sequence(
     razorDiHemiHadBoxInfo                                
     )
 ### now the Mu* box
+#clean jets of muons using deltaR
+from CMGTools.Common.miscProducers.deltaRJetMuons_cfi import deltaRJetMuons
+razorPFJetsMuonVeto = deltaRJetMuons.clone(
+    inputCollection = cms.InputTag('razorPFJetSel'),#only require kinematics, not ID
+    vetoCollection = cms.InputTag('susyMuon')
+)
+#recalculate the MET
+from CMGTools.Common.Tools.cmgBaseMETModifier_cfi import cmgBaseMETModifier
+razorMuStarMet = cmgBaseMETModifier.clone(
+    cfg = cmgBaseMETModifier.cfg.clone(
+    inputCollection = cms.InputTag("susyMuon"),
+    metCollection = cms.InputTag("cmgPFMET"),
+    operator = cms.string('+') #Add the muons to the MET                                               
+    )
+)
+#make the hemispheres using only jets that are not muons
+razorHemiMuStarBox = cmgHemi.clone(
+    cfg = cmgHemi.cfg.clone(
+    inputCollection = cms.VInputTag(
+      cms.InputTag("razorPFJetsMuonVeto")
+      ),
+    )
+)
 razorDiHemiMuStarBox = razorDiHemiHadBox.clone(
     cfg = razorDiHemiHadBox.cfg.clone(
-    metCollection = cms.InputTag('razorMuStarMet')                            
+       leg1Collection = cms.InputTag('razorHemiMuStarBox'),
+       leg2Collection = cms.InputTag('razorHemiMuStarBox'),                                      
+       metCollection = cms.InputTag('razorMuStarMet')                 
     ),       
     )
 razorDiHemiMuStarBoxSel = razorDiHemiHadBoxSel.clone( src = 'razorDiHemiMuStarBox' )
 razorDiHemiHistogramsMuStarBox = razorDiHemiHistogramsHadBox.clone(inputCollection = 'razorDiHemiMuStarBox')
 razorMuStarBoxSequence = cms.Sequence(
-    razorMuStarMet + 
+    razorPFJetsMuonVeto* 
+    razorMuStarMet* 
+    razorHemiMuStarBox*
     razorDiHemiMuStarBox*
     razorDiHemiMuStarBoxSel                                
     )
-### now the Ele* box
-razorDiHemiEleStarBox = razorDiHemiHadBox.clone(
-    cfg = razorDiHemiHadBox.cfg.clone(
-    metCollection = cms.InputTag('razorEleStarMet')                            
-    ),       
-    )
-razorDiHemiEleStarBoxSel = razorDiHemiHadBoxSel.clone( src = 'razorDiHemiEleStarBox' )
-razorDiHemiHistogramsEleStarBox = razorDiHemiHistogramsHadBox.clone(inputCollection = 'razorDiHemiEleStarBox')
-razorEleStarBoxSequence = cms.Sequence(
-    razorEleStarMet+
-    razorDiHemiEleStarBox*
-    razorDiHemiEleStarBoxSel                               
-    )
+#we don't need an Ele* box as the electrons are seen by the trigger
 #### finally merge selected hemispheres and count
 razorSelectedDiHemi = cmgCandMerge.clone(
     src = cms.VInputTag(
       cms.InputTag("razorDiHemiHadBoxSel"),
+      cms.InputTag("razorDiHemiMuStarBoxSel")
     )
 )
 razorSelectedCount = cmgCandCount.clone( src = 'razorSelectedDiHemi', minNumber = 1 )
@@ -148,12 +141,10 @@ razorJetSequence = cms.Sequence(
 
 razorBoxesSequence = cms.Sequence(
     razorHadronicBoxSequence +
-    razorMuStarBoxSequence+
-    razorEleStarBoxSequence    
+    razorMuStarBoxSequence
     )
 
 razorObjectSequence = cms.Sequence(
-    razorTriggerSel+
     razorElectronSequence + 
     razorMuonSequence +
     razorJetSequence +
@@ -169,7 +160,6 @@ razorHistogrammingSequence  = cms.Sequence(
     #Razor histograms                                       
     razorDiHemiHistogramsHadBox+
     razorDiHemiHistogramsMuStarBox+
-    razorDiHemiHistogramsEleStarBox+
     #btag histograms
     razorBJetHistogramsAll+
     razorBJetHistogramsSel
@@ -182,7 +172,6 @@ razorSequence = cms.Sequence(
 
 razorSkimSequence = cms.Sequence(
     razorObjectSequence + 
-    razorTriggerCount + 
     razorLeadingObjectCount+
     razorSelectedDiHemi*
     razorSelectedCount

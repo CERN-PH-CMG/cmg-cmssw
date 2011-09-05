@@ -44,20 +44,12 @@ razorDiHemiHistograms = cms.EDAnalyzer(
                high = cms.untracked.double(1)
                )
             ),
-        betaR = cms.untracked.VPSet(
-            cms.untracked.PSet( 
-               var = cms.untracked.string('betaR()'),
-               nbins = cms.untracked.int32(10),
-               low = cms.untracked.double(-1),
-               high = cms.untracked.double(1)
-               )
-            ),
         mR = cms.untracked.VPSet(
             cms.untracked.PSet( 
                var = cms.untracked.string('mR()'),
-               nbins = cms.untracked.int32(100),
+               nbins = cms.untracked.int32(200),
                low = cms.untracked.double(0),
-               high = cms.untracked.double(1000)
+               high = cms.untracked.double(2000)
                )
             ),
         mRT = cms.untracked.VPSet(
@@ -68,12 +60,40 @@ razorDiHemiHistograms = cms.EDAnalyzer(
                high = cms.untracked.double(1000)
                )
             ),
-        r = cms.untracked.VPSet(
+        rsq = cms.untracked.VPSet(
             cms.untracked.PSet( 
-               var = cms.untracked.string('R()'),
-               nbins = cms.untracked.int32(10),
+               var = cms.untracked.string('R()*R()'),
+               nbins = cms.untracked.int32(15),
                low = cms.untracked.double(0),
-               high = cms.untracked.double(1)
+               high = cms.untracked.double(1.5)
+               )
+            ),
+        mr_mass = cms.untracked.VPSet(
+            cms.untracked.PSet( 
+               var = cms.untracked.string('mR()'),
+               nbins = cms.untracked.int32(200),
+               low = cms.untracked.double(0),
+               high = cms.untracked.double(2000)
+               ),
+            cms.untracked.PSet( 
+               var = cms.untracked.string('mass()'),
+               nbins = cms.untracked.int32(200),
+               low = cms.untracked.double(0),
+               high = cms.untracked.double(2000)
+               )
+            ),
+        mr_rsq = cms.untracked.VPSet(
+            cms.untracked.PSet( 
+               var = cms.untracked.string('mR()'),
+               nbins = cms.untracked.int32(200),
+               low = cms.untracked.double(0),
+               high = cms.untracked.double(2000)
+               ),                                     
+            cms.untracked.PSet( 
+               var = cms.untracked.string('R()*R()'),
+               nbins = cms.untracked.int32(15),
+               low = cms.untracked.double(0),
+               high = cms.untracked.double(1.5)
                )
             ),
         alphaT_r = cms.untracked.VPSet(
