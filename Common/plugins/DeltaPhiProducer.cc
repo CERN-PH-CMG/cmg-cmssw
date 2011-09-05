@@ -16,7 +16,7 @@ class DeltaPhiProducer : public edm::EDProducer {
 public:
   
   explicit DeltaPhiProducer(const edm::ParameterSet & iConfig);
-  ~DeltaPhiProducer() {}
+  virtual ~DeltaPhiProducer() {}
   
 private:
   
