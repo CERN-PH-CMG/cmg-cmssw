@@ -7,7 +7,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 pickRelVal = False
 
 # turn on when running on MC
-runOnMC = True
+runOnMC = False
 
 # AK5 sequence with no cleaning is the default
 # the other sequences can be turned off with the following flags.
@@ -38,7 +38,7 @@ else:#Data
 # process.load("CommonTools.ParticleFlow.Sources.source_ZtoMus_DBS_cfi")
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2000) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
 sep_line = "-" * 50
@@ -56,12 +56,13 @@ print sep_line
 ### SOURCE DEFINITION  ################################################################
 
 
-# process.source.fileNames = cms.untracked.vstring(['/store/relval/CMSSW_4_2_5/RelValTTbar/GEN-SIM-RECO/START42_V12-v1/0113/1C538A2F-799E-E011-8A7E-0026189438BD.root'])
+#process.source.fileNames = cms.untracked.vstring(['/store/relval/CMSSW_4_2_5/RelValTTbar/GEN-SIM-RECO/START42_V12-v1/0113/1C538A2F-799E-E011-8A7E-0026189438BD.root'])
+process.source.fileNames = cms.untracked.vstring(['/store/cmst3/user/lucieg/CMG/HT/Run2011A-May10ReReco-v1/AOD/V2/PFAOD_729_1_H7X.root'])
 
-# process.source.fileNames = cms.untracked.vstring(['file:PFAOD.root'])
+#process.source.fileNames = cms.untracked.vstring(['file:PFAOD.root'])
 
 # process.load("CMGTools.Common.sources.SingleMu.Run2011A_May10ReReco_v1.AOD.source_cff")
-# process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.V2.source_cff")
+#process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.V2.source_cff")
 
 if pickRelVal:
     process.source = cms.Source(
@@ -208,12 +209,6 @@ process.patTrigger.processName = cms.string('*')
 
 process.p = cms.Path( process.patTriggerDefaultSequence )
 
-# event cleaning (in tagging mode, no event rejected)
-
-process.load('CMGTools.Common.eventCleaning.eventCleaning_cff')
-
-process.p += process.eventCleaningSequence
-
 # gen ---- 
 
 if runOnMC:
@@ -228,6 +223,13 @@ if runAK5LC:
 
 if runAK7:
     process.p += getattr(process,"patPF2PATSequence"+postfixAK7) 
+
+# event cleaning (in tagging mode, no event rejected)
+
+process.load('CMGTools.Common.eventCleaning.eventCleaning_cff')
+
+process.p += process.eventCleaningSequence
+
  
 # CMG ---
 
