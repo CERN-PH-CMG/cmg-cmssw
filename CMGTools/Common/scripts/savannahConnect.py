@@ -161,7 +161,9 @@ class savannahConnect:
                 
             
             # Return the url that users would use to access the savannah page
-            return "https://savannah.cern.ch" +self.getItemURL(self.br.response()).split("=")[-1]
+            URL = "https://savannah.cern.ch" +self.getItemURL(self.br.response()).split("=")[-1]
+            print URL
+            return URL
           
         else:
             print "User not logged in to Savannah"
