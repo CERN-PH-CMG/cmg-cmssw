@@ -137,10 +137,9 @@ class savannahConnect:
             
             # Input item data
             self.br.form['planned_starting_date_dayfd']=[dayMonthYear[0].lstrip("0")]
-            print "b"
+
             self.br.form.set_value_by_label([dayMonthYear[1]],'planned_starting_date_monthfd')
-            #self.br.form['planned_starting_date_monthfd']=[dayMonthYear[1]]
-            print "c"
+
             self.br.form['planned_starting_date_yearfd']=dayMonthYear[2]
             self.br.form['summary'] = dataset['PathList'][0]
             self.br.form['priority']= ['5']
