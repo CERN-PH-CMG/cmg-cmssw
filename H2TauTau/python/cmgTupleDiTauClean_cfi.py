@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 from CMGTools.H2TauTau.tools import vertexCollection
 
-def configureCmgTupleDiTauClean( process ):
+def configureCmgTupleDiTauClean( process, runOnMC ):
     
     process.setName_('CMGDiTauClean')
 
@@ -24,14 +24,22 @@ def configureCmgTupleDiTauClean( process ):
 
     ########
     process.out.outputCommands = cms.untracked.vstring( 'drop *')
-    process.out.outputCommands.append( 'keep *_addPileupInfo_*_*')
-    process.out.outputCommands.append( "keep *_"+vertexCollection+"_*_*" )    
-    process.out.outputCommands.append( 'keep *_cmgDiTauSelClean_*_*' ) 
+    process.out.outputCommands.append( 'keep *_addPileupInfo_*_HLT')
+    process.out.outputCommands.append( "keep *_"+vertexCollection+"_*_RECO" )
+    process.out.outputCommands.append( 'keep *_TriggerResults_*_PAT')
+    process.out.outputCommands.append( 'keep *_cmgTriggerObjectSel_*_PAT')
+    process.out.outputCommands.append( 'keep *_cmgDiTauSelClean_*_*' )
+    process.out.outputCommands.append( 'keep *_cmgTauSel_*_*' ) 
+    process.out.outputCommands.append( 'keep *_cmgMuonSel_*_*' )
+    process.out.outputCommands.append( 'keep *_cmgElectronSel_*_*' )
+    process.out.outputCommands.append( 'keep *_cmgPFJetSel_*_*' )
     process.out.outputCommands.append( 'keep *_cmgPFMET_*_*')
 
 
 
-
+    if runOnMC: 
+        process.out.outputCommands.append( 'keep *_genParticlesStatus3_*_PAT')
+        
 
 
 

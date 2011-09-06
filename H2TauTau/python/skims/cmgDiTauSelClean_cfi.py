@@ -1,21 +1,21 @@
 import FWCore.ParameterSet.Config as cms
 
 
+cmgDiTauSelTrue = cms.EDFilter("CmgDiTauSelector",src = cms.InputTag( "cmgDiTauSel" ),
+                           cut = cms.string( " leg1().genJetp4().Pt() > 0.0  && leg2().genJetp4().Pt() > 0.0 " ))
+
 ##Basic Selections on the DiTau
 cmgDiTauSelMass = cms.EDFilter("CmgDiTauSelector",src = cms.InputTag( "cmgDiTauSel" ),
-                               cut = cms.string( " mass() > 1 " ))
+                               cut = cms.string( " mass() > 1.0 " ))
 
 cmgDiTauSelCharge = cms.EDFilter("CmgDiTauSelector",src = cms.InputTag( "cmgDiTauSelMass" ),
                                  cut = cms.string( " charge() == 0.0 " ))
 
 
 ##Selections on the tau legs
-
-cmgDiTauSelTrue = cms.EDFilter("CmgDiTauSelector",src = cms.InputTag( "cmgDiTauSel" ),
-                           cut = cms.string( " leg1().genJetp4().Pt() > 0.0  && leg2().genJetp4().Pt() > 0.0 " ))
-
-cmgDiTauSelPt = cms.EDFilter("CmgDiTauSelector",src = cms.InputTag( "cmgDiTauSel" ),
+cmgDiTauSelPt = cms.EDFilter("CmgDiTauSelector",src = cms.InputTag( "cmgDiTauSelCharge" ),
                            cut = cms.string( " leg1().pt() > 20.0 && leg2().pt() > 20.0" ))
+
 cmgDiTauSelEta = cms.EDFilter("CmgDiTauSelector",src = cms.InputTag( "cmgDiTauSelPt" ),
                             cut = cms.string( " abs(leg1().eta()) < 2.3 && abs(leg2().eta()) < 2.3" ))
 
@@ -43,7 +43,7 @@ cmgDiTauSelSumPtIsolation = cms.EDFilter("CmgDiTauSelector",src = cms.InputTag( 
 ##last selector makes no cuts, just to create a final list with always the same name.
 ######
 cmgDiTauSelClean = cms.EDFilter("CmgDiTauSelector",src = cms.InputTag( "cmgDiTauSelSumPtIsolation" ),
-                              cut = cms.string( "" ))
+                                cut = cms.string( "" ))
 
 
 
