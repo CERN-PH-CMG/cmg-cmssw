@@ -10,17 +10,20 @@ public:
   DiTauAnalysis();
   DiTauAnalysis(const char * name);
   virtual ~DiTauAnalysis();
-  
-  virtual bool init();
-  virtual bool analyze(TString samplename="RelValZTT");
-  virtual bool end();
 
   void setInputTag(string tag){inputTag_=tag;}
+  
+  virtual bool init();
+  virtual bool createHistos(TString samplename="RelValZTT");
+
+  bool createTotalMass();
+
 
 protected:
+  virtual bool addHistos(Sample* s);
   virtual bool getHistos(Sample* s);
   virtual bool scaleWeightHistos(Sample* s);
-  virtual bool fill( edm::EventBase const & event );
+  virtual bool fillHistos(const fwlite::Event * event );
 
 
 private:
@@ -31,7 +34,22 @@ private:
   TH1F* nDiTauHisto_;
   TH1F* diTauMassHisto_;
   TH1F* diTauEtaHisto_;
-  
+  TH1F* diTauPtHisto_;
+  TH1F* metHisto_;
+  TH1F* pZetaVisHisto_;
+  TH1F* pZetaMETHisto_;
+  TH1F* pZetaHisto_;
+
+  TH1F* diTauMassPUPWeightHisto_;
+  TH1F* diTauEtaPUPWeightHisto_;
+  TH1F* diTauPtPUPWeightHisto_;
+  TH1F* metPUPWeightHisto_;
+  TH1F* pZetaVisPUPWeightHisto_;
+  TH1F* pZetaMETPUPWeightHisto_;
+  TH1F* pZetaPUPWeightHisto_;
+
+  std::vector<std::string> triggerPaths_;
+
   ClassDef(DiTauAnalysis, 1);
 };
 

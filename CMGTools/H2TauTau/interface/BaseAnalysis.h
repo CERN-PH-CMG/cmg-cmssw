@@ -22,6 +22,7 @@ using namespace std;
 #include <TCanvas.h>
 #include <TString.h>
 
+
 #include "DataFormats/FWLite/interface/Event.h"
 #include "DataFormats/FWLite/interface/ChainEvent.h"
 #include "FWCore/Utilities/interface/InputTag.h"
@@ -41,24 +42,29 @@ public:
   void addSample(Sample* sample){samples_.push_back(sample);}
   
   virtual bool init();
-  virtual bool analyze(TString samplename="RelValZTT");
-  virtual bool end();
+
+  virtual bool createHistos(TString samplename="RelValZTT");
+ 
 
   void setTruncateEvents(int maxEvents){truncateEvents_=maxEvents;}
   void setPrintFreq(int freq){ printFreq_=freq;}
 
 protected:
+  virtual bool addHistos(Sample* s);
   virtual bool getHistos(Sample* s);
-  virtual bool fill( edm::EventBase const & event );
+  virtual bool applySelections(const fwlite::Event * event);
+  virtual bool fillHistos(const fwlite::Event * event );
   virtual bool scaleWeightHistos(Sample* s);
 
   std::vector<Sample*> samples_;
+  Sample* sample_;
 
   int truncateEvents_;
   int printFreq_;
   float mcPUPWeight_;
 
   ///Histograms for output
+  TH1F* runNumberHisto_;
   TH1D* nPUPVertexHisto_;
   TH1F* nVertexHisto_;
   TH2F* vertexXYHisto_;
@@ -66,6 +72,9 @@ protected:
 
   //histograms reweighted for pile-up
   TH1F* nVertexPUPWeightHisto_;
+
+  //
+  TH1F* triggerHisto_;
   
 private:
 
