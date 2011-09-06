@@ -1,4 +1,4 @@
-import sys,os, re, subprocess, datetime, DatabaseAPI, castortools, castorBaseDir, glob, savannahConnect
+import sys,os, re, subprocess, datetime, castortools, castorBaseDir, glob, savannahConnect
 
 from DBSAPI.dbsApiException import *
 
