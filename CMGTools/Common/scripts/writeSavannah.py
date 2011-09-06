@@ -1,6 +1,8 @@
+#!/usr/bin/env python
+
 from datetime import datetime
 from savannahConnect import savannahConnect
-import sys,os, re, subprocess, datetime, DatabaseAPI, castortools, castorBaseDir, glob, DBLogger
+import sys,os, re, subprocess, datetime, castortools, castorBaseDir, glob, DBLogger
 from optparse import OptionParser
 from DBSAPI.dbsProcessedDataset import DbsProcessedDataset
 from DBSAPI.dbsPrimaryDataset import DbsPrimaryDataset
@@ -8,6 +10,11 @@ from DBSAPI.dbsPrimaryDataset import DbsPrimaryDataset
 if __name__ == '__main__':
     
     parser = OptionParser()
+
+    parser.usage = """
+%prog [options] <sampleName>
+"""
+
     # If user is not specified default is current user
     # This option will be used to find dataset on castor, and assign dataset on savannah
     parser.add_option("-u", "--user", 

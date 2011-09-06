@@ -2,8 +2,8 @@
 # Author: pmeckiff
 # Group: CMG
 
-import re, mechanize, types, cookielib, datetime
-
+import re, types, cookielib, datetime
+import CMGTools.Common.mechanize as mechanize
 
 
 class savannahConnect:
