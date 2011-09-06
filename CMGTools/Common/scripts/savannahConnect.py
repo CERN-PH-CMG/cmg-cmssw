@@ -2,7 +2,7 @@
 # Author: pmeckiff
 # Group: CMG
 
-import re, types, cookielib, datetime
+import re, types, cookielib, datetime, castortools
 import CMGTools.Common.mechanize as mechanize
 
 
@@ -16,13 +16,15 @@ class savannahConnect:
         self.login(username, password)
 
     # From DbsProcessedDataset object prints to a string which can be posted on Savannah
-    def datasetString(self, details, files, tags):
+    def datasetString(self, details, files, tags, castorDir):
         detailArray = []
         # Print name and primary set at top
         detailArray.append( "*%s* " % details['PathList'][0])
         detailArray.append("\t*Status*: " + details['Status'])
         castor = "/store/cmst3/user/" + details['CreatedBy'] + "/" + details['PhysicsGroup'] + details['PathList'][0] 
-        detailArray.append("\t*Castor Directory*:\n\t" + castor)
+        detailArray.append("\t*LFN Castor Directory*:\n\t" + castortools.castorToLFN(castorDir))
+        detailArray.append("\t*Castor Directory*:\n\t" + castorDir)
+        
         if details['ParentList']: detailArray.append("\t*Parent Dataset*: \n\t" + details['ParentList'][0])
         # Print all other data
         for element in details:
@@ -122,7 +124,7 @@ class savannahConnect:
             self.br.back()
             return name
 
-    def submitItem(self, dataset, files, tags, username):
+    def submitItem(self, dataset, files, tags,castorDir, username):
         # If logged in
         if self.valid == True:
             dataset['ParentList'][0] = self.getParentURL(dataset['ParentList'][0])
@@ -143,7 +145,7 @@ class savannahConnect:
             self.br.form['planned_starting_date_yearfd']=dayMonthYear[2]
             self.br.form['summary'] = dataset['PathList'][0]
             self.br.form['priority']= ['5']
-            self.br.form['details']= self.datasetString(dataset, files, tags)
+            self.br.form['details']= self.datasetString(dataset, files, tags, castorDir)
             self.br.form.set_value_by_label(["Done"],'resolution_id')
 
             # If user does not exist in group, savannah entry cannot be assigned, so do not submit

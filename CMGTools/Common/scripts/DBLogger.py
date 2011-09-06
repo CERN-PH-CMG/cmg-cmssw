@@ -240,9 +240,9 @@ class DBLogger:
                 count+=1
                     
             if groupFlag==True:
-                validity.append(group[0].rstrip("0.root") + "*.root: CONTIGUOUS")
+                validity.append(group[0].rstrip("0.root") +"[0-"+ str(len(group)-1)+"].root: CONTIGUOUS")
             else:
-                validity.append(group[0].rstrip("0.root") + "*.root: NON-CONTIGUOUS")
+                validity.append(group[0].rstrip("0.root") +"[0-"+ str(len(group)-1)+"].root: NON-CONTIGUOUS")
                 setFlag = False
         # If there are non-contiguous file sets, return false and print error message.
         # Otherwise return true
