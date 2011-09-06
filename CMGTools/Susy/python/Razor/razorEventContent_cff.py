@@ -11,5 +11,6 @@ razorEventContent += cms.untracked.vstring(
                                            'keep cmgHemispheres_razorHemi*Box_*_*',
                                            'keep cmgHemispherecmgHemispherecmgDiObjects_razorDiHemi*Box_*_*',
                                            'keep cmgPFJets_razorPFJetsMuonVeto_*_*',
+                                           'keep cmgPFJets_razorPFBJetSel_*_*',
                                            'keep cmgTriggerObjects_razorTriggerSel_*_*'
                                            )
