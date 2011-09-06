@@ -5,7 +5,7 @@ from DBSAPI.dbsApiException import *
 
 class DBLogger:
     def __init__(self, dirLocalOrTgzDirOnCastor, castorTgz, dbsAPI):
-        self.dbAPI = DatabaseAPI.DatabaseAPI('/afs/cern.ch/user/p/pmeckiff/public/bookkeeping.db')
+        #self.dbAPI = DatabaseAPI.DatabaseAPI('/afs/cern.ch/user/p/pmeckiff/public/bookkeeping.db')
         self.dirLocal = None
         self.tgzDirOnCastor = None
         self.setName = dirLocalOrTgzDirOnCastor
@@ -127,7 +127,7 @@ class DBLogger:
             
             print os.getcwd()
             
-            setID = self.dbAPI.getSetID(self.setName)
+            #setID = self.dbAPI.getSetID(self.setName)
 
             if not self.tagArray:
                tags =self.getTags()
@@ -140,9 +140,9 @@ class DBLogger:
                tag = line.split("\t")[0]
                print 'logging package', package
                
-               self.dbAPI.addTagToDB(package, tag)
+               #self.dbAPI.addTagToDB(package, tag)
                #log set with package in database
-               self.dbAPI.linkPackageToSet(self.dbAPI.getTagID(package, tag), setID)
+               #self.dbAPI.linkPackageToSet(self.dbAPI.getTagID(package, tag), setID)
 
             os.chdir( oldPwd )
 
@@ -159,26 +159,26 @@ class DBLogger:
         procs = 0
         dbsID = None
 
-        if procs == 0:
-            try:
+        #if procs == 0:
+            #try:
                 #self.dbsAPI.insertProcessedDataset (dataset)
 
                 #print "Result: %s" % proc
-                dbsID = int( self.dbsAPI.executeQuery(query="find procds.id where dataset="+name, type='exe').split("results>")[1].split("procds.id>")[1].rstrip("</"))
+                #dbsID = int( self.dbsAPI.executeQuery(query="find procds.id where dataset="+name, type='exe').split("results>")[1].split("procds.id>")[1].rstrip("</"))
 
-            except DbsApiException, ex:
-                print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
-                if ex.getErrorCode() not in (None, ""):
-                    print "DBS Exception Error Code: ", ex.getErrorCode()
+            #except DbsApiException, ex:
+                #print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
+                #if ex.getErrorCode() not in (None, ""):
+                    #print "DBS Exception Error Code: ", ex.getErrorCode()
 
         ##### NEW CODE
 
-        if procs == 0 and dbsID != None:
-            self.dbAPI.addSetDetails(self.setName, dbsID)
+        #if procs == 0 and dbsID != None:
+            #self.dbAPI.addSetDetails(self.setName, dbsID)
 
     #### not in use yet
-    def addSavannah(self, dataset, savannah):
-        self.dbAPI.addSavannahURL(dataset, savannah)
+    #def addSavannah(self, dataset, savannah):
+        #self.dbAPI.addSavannahURL(dataset, savannah)
 
     # Checks contiguity of root files
     def checkContiguity(self, targetDir):
@@ -255,5 +255,5 @@ class DBLogger:
             validity.append("VALID")
         return validity
             
-    def __del__(self):
-        self.dbAPI.close()
+    #def __del__(self):
+        #self.dbAPI.close()
