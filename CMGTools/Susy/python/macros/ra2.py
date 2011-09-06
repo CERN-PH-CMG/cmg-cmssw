@@ -7,7 +7,8 @@ objects = {
     'ra2jet0':'cmgPFJets_RA2Jet0__',
     'ra2jet12':'cmgPFJets_RA2Jet12__',
     'ra2dphi0':'float_RA2dPhi0__',
-    'ra2dphi12':'float_RA2dPhi12__'
+    'ra2dphi1':'float_RA2dPhi1__',
+    'ra2dphi2':'float_RA2dPhi2__'
     }
 
 from CMGTools.Susy.macros.jetId import *
