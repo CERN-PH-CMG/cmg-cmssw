@@ -14,14 +14,14 @@ if __name__ == '__main__':
 
     parser.usage = """
 %prog [options] <sampleName>
-
+-----
 sampleName should be given in the form /[PrimaryDS]/[ProcDS]/*[Parent]/[Tiers] 
-
+-----
 Use this script to publish dataset details to savannah.
-
+-----
 All selected datasets, must either have a logger directory with showtags.txt file on the local machine,
 or a Logger.tgz directory on Castor
-
+-----
 If no -u option is provided, it is assumed that the current user is the files owner on Castor.
 If no -s option is provided, it is assumed that the current user is the user on Savannah 
 """
