@@ -29,7 +29,7 @@ if __name__ == '__main__':
                       action = "store",
                       dest="savuser",
                       help="If Savannah user is different to user on Castor, enter Savannah username here",
-                      default=None )
+                      default=os.environ['USER'] )
     
     
     
@@ -42,9 +42,6 @@ if __name__ == '__main__':
 
     savpass = getpass.getpass("Enter Savannah Password: ")
 
-    # Check if Savannah user and Castor user are different
-    if options.savuser == None:
-        options.savuser = options.user
 
     # Allow no more than one argument
     if len(args)!=1:
@@ -75,7 +72,9 @@ if __name__ == '__main__':
     # Create Primary dataset object (will reference complete object on DBS)
     primary = DbsPrimaryDataset (Name = details[0])
     path= dirOrFile.lstrip("/").split("/")
-    if len(path)>2:
+    parent = None
+    if len(path)>3:
+        
         path[-1]=None
         parent = ""
         for i in path:
@@ -91,12 +90,12 @@ if __name__ == '__main__':
                                   AlgoList = [],
                                   RunList = [],
                                   PathList = [dirOrFile,],
-                                  ParentList = [parent,],
+                                  ParentList = [],
                                   CreatedBy = options.user,
                                   DateCreated = datetime.datetime.now().strftime("%s"),
                                   )
 
-
+    if parent != None: dataset['ParentList'] = [parent,]
 
     try:
         # Create DBLogger object to interact with Castor, DBS, and CMGDB
