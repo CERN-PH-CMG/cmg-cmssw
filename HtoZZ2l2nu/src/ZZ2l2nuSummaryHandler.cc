@@ -49,6 +49,7 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("l1_py",      &evSummary_.l1_py,      "l1_py/F");
   t_->Branch("l1_pz",      &evSummary_.l1_pz,      "l1_pz/F");
   t_->Branch("l1_en",      &evSummary_.l1_en,      "l1_en/F");
+  t_->Branch("l1_pid",     &evSummary_.l1_pid,      "l1_pid/I");  
   t_->Branch("l1_id",      &evSummary_.l1_id,      "l1_id/I");
   t_->Branch("l1_genid",   &evSummary_.l1_genid,   "l1_genid/I");
   t_->Branch("l1_ptErr",   &evSummary_.l1_ptErr,   "l1_ptErr/F");
@@ -60,6 +61,7 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("l2_py",      &evSummary_.l2_py,      "l2_py/F");
   t_->Branch("l2_pz",      &evSummary_.l2_pz,      "l2_pz/F");
   t_->Branch("l2_en",      &evSummary_.l2_en,      "l2_en/F");
+  t_->Branch("l2_pid",     &evSummary_.l2_pid,      "l2_pid/I");
   t_->Branch("l2_id",      &evSummary_.l2_id,      "l2_id/I");
   t_->Branch("l2_genid",   &evSummary_.l2_genid,   "l2_genid/I");
   t_->Branch("l2_ptErr",   &evSummary_.l2_ptErr,   "l2_ptErr/F");
@@ -73,6 +75,7 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("ln_py",      evSummary_.ln_py,       "ln_py[ln]/F");
   t_->Branch("ln_pz",      evSummary_.ln_pz,       "ln_pz[ln]/F");
   t_->Branch("ln_en",      evSummary_.ln_en,       "ln_en[ln]/F");
+  t_->Branch("ln_pid",     evSummary_.ln_pid,      "ln_pid[ln]/I");
   t_->Branch("ln_id",      evSummary_.ln_id,       "ln_id[ln]/I");
   t_->Branch("ln_genid",   evSummary_.ln_genid,    "ln_genid[ln]/I");
   t_->Branch("ln_ptErr",   evSummary_.ln_ptErr,    "ln_ptErr[ln]/F");
@@ -121,6 +124,13 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
 
   t_->Branch("met7_phi",      &evSummary_.met7_phi,     "met7_phi/F");
   t_->Branch("met7_pt",      &evSummary_.met7_pt,     "met7_pt/F");
+
+  t_->Branch("sumEt",               &evSummary_.sumEt,            "sumEt/F");
+  t_->Branch("sumEtcentral",        &evSummary_.sumEtcentral,     "sumEtcentral/F");
+  t_->Branch("chsumEt",             &evSummary_.chsumEt,          "chsumEt/F");
+  t_->Branch("chsumEtcentral",      &evSummary_.chsumEtcentral,   "chsumEtcentral/F");
+  t_->Branch("neutsumEt",           &evSummary_.neutsumEt,        "neutsumEt/F");
+  t_->Branch("neutsumEtcentral",    &evSummary_.neutsumEtcentral, "neutsumEtcentral/F");
 
   //Gamma Info
   t_->Branch("g_px",      &evSummary_.g_px,        "g_px/F");
@@ -196,6 +206,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("l1_pz")     ->SetAddress( &evSummary_.l1_pz);
   t_->GetBranch("l1_en")     ->SetAddress( &evSummary_.l1_en);
   t_->GetBranch("l1_id")     ->SetAddress( &evSummary_.l1_id);
+  if(t_->GetBranch("l1_pid")) t_->GetBranch("l1_pid")     ->SetAddress( &evSummary_.l1_pid);
   t_->GetBranch("l1_genid")  ->SetAddress( &evSummary_.l1_genid);
   t_->GetBranch("l1_ptErr")  ->SetAddress( &evSummary_.l1_ptErr);
   t_->GetBranch("l1_iso1")   ->SetAddress( &evSummary_.l1_iso1);
@@ -206,6 +217,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("l2_py")     ->SetAddress( &evSummary_.l2_py);
   t_->GetBranch("l2_pz")     ->SetAddress( &evSummary_.l2_pz);
   t_->GetBranch("l2_en")     ->SetAddress( &evSummary_.l2_en);
+  if(t_->GetBranch("l2_pid")) t_->GetBranch("l2_pid")     ->SetAddress( &evSummary_.l2_pid);
   t_->GetBranch("l2_id")     ->SetAddress( &evSummary_.l2_id);
   t_->GetBranch("l2_genid")  ->SetAddress( &evSummary_.l2_genid);
   t_->GetBranch("l2_ptErr")  ->SetAddress( &evSummary_.l2_ptErr);
@@ -219,6 +231,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("ln_py")     ->SetAddress(evSummary_.ln_py);
   t_->GetBranch("ln_pz")     ->SetAddress(evSummary_.ln_pz);
   t_->GetBranch("ln_en")     ->SetAddress(evSummary_.ln_en);
+  if(t_->GetBranch("ln_pid")) t_->GetBranch("ln_pid")     ->SetAddress(evSummary_.ln_pid);
   t_->GetBranch("ln_id")     ->SetAddress(evSummary_.ln_id);
   t_->GetBranch("ln_genid")  ->SetAddress(evSummary_.ln_genid);
   t_->GetBranch("ln_ptErr")  ->SetAddress(evSummary_.ln_ptErr);
@@ -267,6 +280,13 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
 
   t_->GetBranch("met7_phi")  ->SetAddress( &evSummary_.met7_phi);
   t_->GetBranch("met7_pt")  ->SetAddress( &evSummary_.met7_pt);
+
+  if(t_->GetBranch("sumEt"))               t_->GetBranch("sumEt")->SetAddress(&evSummary_.sumEt);
+  if(t_->GetBranch("sumEtcentral"))        t_->GetBranch("sumEtcentral")->SetAddress(&evSummary_.sumEtcentral);
+  if(t_->GetBranch("chsumEt"))             t_->GetBranch("chsumEt")->SetAddress(&evSummary_.chsumEt);
+  if(t_->GetBranch("chsumEtcentral"))      t_->GetBranch("chsumEtcentral")->SetAddress(&evSummary_.chsumEtcentral);
+  if(t_->GetBranch("neutsumEt"))           t_->GetBranch("neutsumEt")->SetAddress(&evSummary_.neutsumEt);
+  if(t_->GetBranch("neutsumEtcentral"))    t_->GetBranch("neutsumEtcentral")->SetAddress(&evSummary_.neutsumEtcentral);
   
   //Gamma Info
   t_->GetBranch("g_px")     ->SetAddress( &evSummary_.g_px);

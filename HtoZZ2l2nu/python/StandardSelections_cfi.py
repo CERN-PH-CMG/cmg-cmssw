@@ -109,11 +109,12 @@ BaseDileptonSelection = cms.PSet( minDileptonMass = cms.double(0),
 # base values for met selection -----------------------------------------------------
 BaseMetSelection = cms.PSet( source = cms.InputTag("patMETsPFlow"),
                              trksource = cms.InputTag("hzzPFMetProducer:hzzTkMet"),
-                             pfnopusource = cms.InputTag("hzzPFMetProducer:hzzPfMetNoPileup")
-#                             hzzmetSources = cms.VInputTag("hzzPFMetProducer:hzzPfMet",
-#                                                           "hzzPFMetProducer:hzzTkMet",
-#                                                           "hzzPFMetProducer:hzzPfMetNoPileup",
-#                                                           "hzzPFMetProducer:hzzPfMetNoPileupJetNeutralVeto",
-#                                                           "hzzPFMetProducer:hzzPfMetNoPileupClusteredNeutrals")
+                             hzzmetSources = cms.VInputTag("ClusteredPFMetProducer:clusteredPfMet",
+                                                           "ClusteredPFMetProducer:globalPfMet",
+                                                           "ClusteredPFMetProducer:centralPfMet",
+                                                           "ClusteredPFMetProducer:cleanPfMet",
+                                                           "ClusteredPFMetProducer:clusteredPfMet",
+                                                           "ClusteredPFMetProducer:trkPfMet"),
+                             sumEtSources = cms.InputTag("ClusteredPFMetProducer::globalPfMetSums")
                              )
 

@@ -55,6 +55,9 @@ private:
 
   float addMCtruth(const pat::EventHypothesis &evhyp, const edm::Event &event, const edm::EventSetup &iSetup );
 
+  int getMuonPidSummary(const pat::Muon &mu);
+  int getElectronPidSummary(const pat::Electron &ele);
+
   std::map<std::string, edm::ParameterSet> objConfig_;
   ReducedMETComputer rmet_;
   ProjectedMETComputer pmet_;
@@ -466,6 +469,9 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     const reco::GenParticle *genLepton=lepton::getLeptonGenMatch(lepton1);
     int genid1 = (genLepton==0? 0 : genLepton->pdgId());
     ev.l1_px=lepton1P.px(); ev.l1_py=lepton1P.py(); ev.l1_pz=lepton1P.pz(); ev.l1_en=lepton1P.energy();  ev.l1_id=l1id; ev.l1_genid = genid1;  ev.l1_ptErr=lepton1pterr;  ev.l1_iso1=lepton1iso[0]; ev.l1_iso2=lepton1iso[1]; ev.l1_iso3=lepton1iso[2];
+    ev.l1_pid= (fabs(l1id)==lepton::MUON ? 
+		getMuonPidSummary( dynamic_cast<const pat::Muon &>(*(lepton1.get())) ) :
+		getElectronPidSummary( dynamic_cast<const pat::Electron &>(*(lepton1.get())) ) );
 
     reco::CandidatePtr lepton2 = evhyp["leg2"];
     LorentzVector lepton2P(lepton2->p4());
@@ -475,6 +481,9 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     genLepton=lepton::getLeptonGenMatch(lepton2);
     int genid2 = (genLepton==0? 0 : genLepton->pdgId());
     ev.l2_px=lepton2P.px(); ev.l2_py=lepton2P.py(); ev.l2_pz=lepton2P.pz(); ev.l2_en=lepton2P.energy();  ev.l2_id=l2id; ev.l2_genid = genid2;  ev.l2_ptErr=lepton2pterr;  ev.l2_iso1=lepton2iso[0]; ev.l2_iso2=lepton2iso[1]; ev.l2_iso3=lepton2iso[2];
+    ev.l2_pid= (fabs(l2id)==lepton::MUON ? 
+		getMuonPidSummary( dynamic_cast<const pat::Muon &>(*(lepton2.get())) ) :
+		getElectronPidSummary( dynamic_cast<const pat::Electron &>(*(lepton2.get())) ) );
 
     bool isOS(lepton1->charge()*lepton2->charge()<0);
     TString dilCat( isOS ? "osdilepton" : "ssdilepton" );
@@ -500,6 +509,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.ln_py[ev.ln]=ele->py();
 	ev.ln_pz[ev.ln]=ele->pz();
 	ev.ln_en[ev.ln]=ele->energy();
+	ev.ln_pid[ev.ln]=getElectronPidSummary(*(ele.get()));
 	ev.ln_id[ev.ln]=lepton::ELECTRON*ele->charge();
 	ev.ln_genid[ev.ln] = (ele->genLepton()==0 ? 0 : ele->genLepton()->pdgId());
 	ev.ln_ptErr[ev.ln]=(ele->pt()/ele->p()) * ele->trackMomentumError();
@@ -514,7 +524,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
         ev.ln_py[ev.ln]=mu->py();
         ev.ln_pz[ev.ln]=mu->pz();
         ev.ln_en[ev.ln]=mu->energy();
-        ev.ln_id[ev.ln]=lepton::MUON*mu->charge();
+        ev.ln_pid[ev.ln]=getMuonPidSummary(*(mu.get()));
+	ev.ln_id[ev.ln]=lepton::MUON*mu->charge();
         ev.ln_genid[ev.ln] = (mu->genLepton()==0 ? 0 : mu->genLepton()->pdgId());
         ev.ln_ptErr[ev.ln]=mu->innerTrack()->ptError();
         ev.ln_iso1[ev.ln]=mu->neutralHadronIso();
@@ -621,13 +632,27 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     LorentzVector met(evmet->px(),evmet->py(),0,evmet->pt());
 
     //other met possibilities mapped to vertices
-    LorentzVector trkmet(0,0,0,0),pfnopumet(0,0,0,0);
+    LorentzVector trkmet(0,0,0,0);
+    std::vector<double> sumEts; 
+    std::vector<LorentzVector>  clusteredMets;
     try{
+      
+      edm::Handle< std::vector<double> > sumEtsH;
+      event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("sumEtSources"),sumEtsH);
+      if(sumEtsH.isValid()) sumEts = *sumEtsH;
+
+      std::vector<edm::InputTag> clusteredMetSources = objConfig_["MET"].getParameter<std::vector<edm::InputTag> >("hzzmetSources");
+      for(std::vector<edm::InputTag>::iterator it = clusteredMetSources.begin();
+	  it != clusteredMetSources.end();
+	  it++)
+	{
+	  edm::Handle< reco::PFMET > clustMetH;
+	  event.getByLabel(*it,clustMetH); 
+	  clusteredMets.push_back( LorentzVector(clustMetH->px(),clustMetH->py(),0,clustMetH->pt()) );
+	}
+      
       edm::Handle< edm::ValueMap<reco::PFMET> > trkMetsH;
       event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("trksource"), trkMetsH); 
-
-      edm::Handle< edm::ValueMap<reco::PFMET> > pfnopumetsH;
-      event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("pfnopusource"), pfnopumetsH); 
 
       //get the original vertex collecion
       edm::Handle<reco::VertexCollection> hVtx;
@@ -641,10 +666,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 
 	  const reco::PFMET &trkpfmetObj=(*trkMetsH)[vtxRef];
 	  trkmet=LorentzVector(trkpfmetObj.px(),trkpfmetObj.py(),0,trkpfmetObj.pt());
-
-	  const reco::PFMET &pfnopumetObj=(*pfnopumetsH)[vtxRef];
-	  pfnopumet=LorentzVector(pfnopumetObj.px(),pfnopumetObj.py(),0,pfnopumetObj.pt());
-	  
 	  break;
 	}
     }catch(std::exception &e){
@@ -674,8 +695,20 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.met1_phi = met.phi();       ev.met1_pt=  met.pt();
     ev.met2_phi = trkmet.phi();    ev.met2_pt=trkmet.pt();
     ev.met3_phi = 0;               ev.met3_pt=reducedMET;      
-    ev.met4_phi = pfnopumet.phi(); ev.met4_pt=pfnopumet.pt(); 
-    
+    if(clusteredMets.size()>0)
+      {
+	ev.met4_phi = clusteredMets[0].phi(); ev.met4_pt=clusteredMets[0].pt();
+	ev.met5_phi = clusteredMets[1].phi(); ev.met5_pt=clusteredMets[1].pt();
+	ev.met6_phi = clusteredMets[2].phi(); ev.met6_pt=clusteredMets[2].pt();
+	ev.met7_phi = clusteredMets[3].phi(); ev.met7_pt=clusteredMets[3].pt();
+      }
+    if(sumEts.size()>0)
+      {
+	ev.sumEt = sumEts[0];      ev.sumEtcentral = sumEts[1];
+	ev.chsumEt = sumEts[2];    ev.chsumEtcentral = sumEts[3];
+	ev.neutsumEt = sumEts[4];  ev.neutsumEtcentral = sumEts[5];
+      }
+
     //classify the event
     PhysicsEvent_t physEvent=getPhysicsEventFrom(ev);
     int eventCategory = eventClassifComp_.Get(physEvent);
@@ -757,6 +790,41 @@ void DileptonPlusMETEventAnalyzer::endLuminosityBlock(const edm::LuminosityBlock
  
 }
 
+
+//
+int DileptonPlusMETEventAnalyzer::getElectronPidSummary(const pat::Electron &ele)
+{
+  int summary(0);
+  bool isEcalDriven(true);
+  try{
+    isEcalDriven = ele.ecalDrivenSeed();
+  }catch(std::exception &e){
+  }
+
+  summary= ( (int(ele.electronID("eidVBTF70")) & 0x1) )
+    | ( (int(ele.electronID("eidVBTF80")) & 0x1) << 1)
+    | ( (int(ele.electronID("eidVBTF85")) & 0x1) << 2)
+    | ( (int(ele.electronID("eidVBTF90")) & 0x1) << 3)
+    | ( (int(ele.electronID("eidVBTF95")) & 0x1) << 4)
+    | ( (int(ele.electronID("eidVeryLoose")) & 0x1) << 5)
+    | ( (int(ele.electronID("eidLoose")) & 0x1) << 6)
+    | ( (int(ele.electronID("eidMedium")) & 0x1) << 7)
+    | ( (int(ele.electronID("eidTight")) & 0x1) << 8)
+    | ( (int(ele.electronID("eidSuperTight")) & 0x1) << 9)
+    | ( isEcalDriven << 10);
+  return summary;
+}
+
+//
+int DileptonPlusMETEventAnalyzer::getMuonPidSummary(const pat::Muon &mu)
+{
+  int summary(0);
+  summary=( (int(mu.muonID("GlobalMuonPromptTight")) & 0x1) )
+    | ( (int(mu.muonID("TMLastStationLoose")) & 0x1) << 1)
+    | ( (int(mu.muonID("TMLastStationTight")) & 0x1) << 2)
+    | ( (int(mu.muonID("TMLastStationAngTight")) & 0x1) << 3);
+  return summary;
+}
 
 DEFINE_FWK_MODULE(DileptonPlusMETEventAnalyzer);
 
