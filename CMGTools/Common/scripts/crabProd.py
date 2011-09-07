@@ -59,7 +59,15 @@ sampleName = args[0]
 sampleNameDir = sampleName
 if options.tier != "":
     sampleNameDir += "/" + options.tier
-    
+
+
+# testing that the crab file exists
+
+try:
+    oldCrab = open('crab.cfg','r')
+except:
+    print 'cannot find crab.cfg file in current directory'
+    sys.exit(1)
 
 # preparing castor dir -----------------
 
@@ -96,10 +104,6 @@ newCrabPath = '%s/crab.cfg' % ldir
 print newCrabPath
 
 newCrab = open(newCrabPath,'w')
-try:
-    oldCrab = open('crab.cfg','r')
-except:
-    sys.exit(1)
 newPSet = ""
 newJson = ""
 
@@ -107,6 +111,8 @@ patternDataSet = re.compile("\s*datasetpath")
 patternRemoteDir = re.compile('\s*user_remote_dir')
 patternPSet = re.compile('pset\s*=\s*(.*py)\s*')
 patternLumiMask = re.compile('lumi_mask\s*=\s*(\S+)\s*')
+
+pset = None
 
 for line in oldCrab.readlines():
     if patternDataSet.match( line ):
@@ -139,6 +145,18 @@ newCrab.write('user_remote_dir = %s\n' % outDir  )
 
 addToDatasets( sampleNameDir ) 
 
+from logger import logger
+
+oldPwd = os.getcwd()
+os.chdir(ldir)
+logDir = 'Logger'
+os.system( 'mkdir ' + logDir )
+log = logger( logDir )
+log.logCMSSW()
+#COLIN not so elegant... but tar is behaving in a strange way.
+log.addFile( oldPwd + '/' + pset )
+log.addFile( oldPwd + '/' + 'crab.cfg' )
+log.stageOut( cdir )
 
 print ''
 print 'SUMMARY'
