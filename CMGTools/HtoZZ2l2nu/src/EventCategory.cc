@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2011/08/05 13:47:07 $
- *  $Revision: 1.2 $
+ *  $Date: 2011/08/16 09:22:13 $
+ *  $Revision: 1.3 $
  *  \author L. Quertenmont
  */
 
@@ -34,7 +34,8 @@ int EventCategory::Get(const PhysicsEvent_t& phys){
        for(size_t ijet=2; ijet<phys.jets.size(); ijet++) {if(phys.jets[ijet].pt()<30)continue; if(phys.jets[ijet].eta()>MinEta && phys.jets[ijet].eta()<MaxEta)NCentralJet++;  if(phys.jets[ijet].btag2>1.33 || phys.jets[ijet].btag3>1.74)NBJets++; }
        if(phys.leptons[0].eta()>MinEta && phys.leptons[0].eta()<MaxEta)NCentralLepton++;
        if(phys.leptons[1].eta()>MinEta && phys.leptons[1].eta()<MaxEta)NCentralLepton++;
-       isVBF = (dEta>4.0) && (VBFSyst.M()>600) && (NCentralJet==0) && (NBJets==0) && (NCentralLepton==2);
+       isVBF = (dEta>3.5) && (VBFSyst.M()>450) && (NCentralJet==0) && (NBJets==0) && (NCentralLepton==2);
+//       isVBF = (dEta>4.0) && (VBFSyst.M()>600) && (NCentralJet==0) && (NBJets==0) && (NCentralLepton==2);
     }
 
     if(isVBF        )return VBF;
