@@ -14,13 +14,23 @@ if __name__ == '__main__':
 
     parser.usage = """
 %prog [options] <sampleName>
+
+sampleName should be given in the form /[PrimaryDS]/[ProcDS]/*[Parent]/[Tiers] 
+
+Use this script to publish dataset details to savannah.
+
+All selected datasets, must either have a logger directory with showtags.txt file on the local machine,
+or a Logger.tgz directory on Castor
+
+If no -u option is provided, it is assumed that the current user is the files owner on Castor.
+If no -s option is provided, it is assumed that the current user is the user on Savannah 
 """
 
     # If user is not specified default is current user
     # This option will be used to find dataset on castor, and assign dataset on savannah
     parser.add_option("-u", "--user", 
                       dest="user",
-                      help="User who is the owner of the castor base directory. Note that this user must have his/her ~/public/DataSets.txt up to date",
+                      help="User who is the files owner on Castor." ,
                       default=os.environ['USER'] )
 
     # If specified is used to log in to savannah (only required if user that created the dataset,
@@ -28,7 +38,7 @@ if __name__ == '__main__':
     parser.add_option("-s", "--savuser",
                       action = "store",
                       dest="savuser",
-                      help="If Savannah user is different to user on Castor, enter Savannah username here",
+                      help="If Savannah user is different to current user, enter Savannah username here",
                       default=os.environ['USER'] )
     
     
