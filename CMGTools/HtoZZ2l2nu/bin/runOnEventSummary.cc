@@ -237,12 +237,15 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1D( "minProjMet", ";min-proj-E_{T}^{miss};Events", 100,0,500) );
   controlHistos.addHistogram( new TProfile ("minProjMetprof", ";Pileup events;min-proj-E_{T}^{miss}", 15,0,15) );  
   controlHistos.addHistogram( new TH2F ("minProjMetvspu", ";Pileup events;min-proj-E_{T}^{miss}", 15,0,15,100,0,500) );  
+  controlHistos.addHistogram( new TH2F ("metvstkmet", ";E_{T}^{miss};tk-E_{T}^{miss}", 100,0,500,100,0,500) );  
+  controlHistos.addHistogram( getHistogramForVariable("redMetL") );
+  controlHistos.addHistogram( getHistogramForVariable("redMetT") );
 
   //cut optimization plots
   controlHistos.addHistogram( new TH1F ("cutOptMedium_dphill", ";#delta #phi^{l,l};#red-E_{T}^{miss,#parallel};",25,0.,3.2) );
-  controlHistos.addHistogram( new TH2F ("cutOptMedium_summt_vs_redMetL", ";#Sigma M_{T};#red-E_{T}^{miss,#parallel};",100,0,2000,50, -251.,249) );
+  controlHistos.addHistogram( new TH2F ("cutOptMedium_summt_vs_redMetL", ";#Sigma M_{T};#red-E_{T}^{miss,#parallel};",50,0,2000,25, -251.,249) );
   controlHistos.addHistogram( new TH1F ("cutOptTight_dphill", ";#delta #phi^{l,l};#red-E_{T}^{miss,#parallel};",25, 0. , 3.2 ) );
-  controlHistos.addHistogram( new TH2F ("cutOptTight_summt_vs_redMetL", ";#Sigma M_{T};#red-E_{T}^{miss,#parallel};",100,0,2000,50, -251.,249) );
+  controlHistos.addHistogram( new TH2F ("cutOptTight_summt_vs_redMetL", ";#Sigma M_{T};#red-E_{T}^{miss,#parallel};",50,0,2000,25, -251.,249) );
   
   //cut and count
   h = new TH1F ("finaleventflow",";Category;Event count;",5,0,5);
@@ -278,6 +281,7 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( getHistogramForVariable("mtsum") );
   controlHistos.addHistogram( getHistogramForVariable("mtl1") );
   controlHistos.addHistogram( getHistogramForVariable("mtl2") );
+
 
   //replicate monitor for interesting categories
   TString cats[]={"ee","emu","mumu"};
@@ -667,6 +671,7 @@ int main(int argc, char* argv[])
 	      
 	      controlHistos.fill2DHisto("zptvszeta", ctf,zll.pt(),zll.eta(),weight);
 	      controlHistos.fillHisto("met", ctf,zvv.pt(),weight);
+	      controlHistos.fill2DHisto("metvstkmet", ctf,zvv.pt(),trkMetP4.pt(),weight);
 	      controlHistos.fillProfile("metprof", ctf,ev.ngenITpu,met);
 	      controlHistos.fill2DHisto("metvspu", ctf,ev.ngenITpu,met,weight);
 	      controlHistos.fillHisto("projMet", ctf,projMet,weight);
@@ -679,6 +684,8 @@ int main(int argc, char* argv[])
 	      controlHistos.fillProfile("minProjMetprof", ctf,ev.ngenITpu,minProjMet);
 	      controlHistos.fill2DHisto("minProjMetvspu", ctf,ev.ngenITpu,minProjMet,weight);     
 	      controlHistos.fillHisto("redMet", ctf,redMet,weight);
+	      controlHistos.fillHisto("redMetL", ctf,redMetL,weight);
+	      controlHistos.fillHisto("redMetT", ctf,redMetT,weight);
 	      controlHistos.fillHisto("redMet_d0", ctf,redMet_d0,weight);
 	      controlHistos.fillProfile("redMetprof", ctf,ev.ngenITpu,redMet);
 	      controlHistos.fill2DHisto("redMetvspu", ctf,ev.ngenITpu,redMet,weight);
@@ -721,25 +728,25 @@ int main(int argc, char* argv[])
 	      controlHistos.fill2DHisto("cutOptMedium_summt_vs_redMetL",ctf,mtsum,redMetL,weight);
 
 	      //final selection
-	      bool pass200(fabs(dphill)<2.75 && redMetL>0 && mtsum>120);
-	      if(pass200) controlHistos.fillHisto("finaleventflow",ctf,1,weight);
-
+	      bool pass200(fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
+	      if(pass200) controlHistos.fillHisto("finaleventflow",ctf,0,weight);
+	      
 	      if(!passTightRedMet)  continue;
 	      controlHistos.fillHisto("eventflow",ctf,6,weight);
 	      controlHistos.fillHisto("cutOptTight_dphill",ctf,fabs(dphill));
 	      controlHistos.fill2DHisto("cutOptTight_summt_vs_redMetL",ctf,mtsum,redMetL,weight);
 	      
-	      bool pass300(fabs(dphill)<2.5 && redMetL>0 && mtsum>200);
-	      if(pass300) controlHistos.fillHisto("finaleventflow",ctf,2,weight);
+	      bool pass300(fabs(dphill)<2.5 && redMetL>75 && mtsum>200);
+	      if(pass300) controlHistos.fillHisto("finaleventflow",ctf,1,weight);
 	      
-	      bool pass400(fabs(dphill)<2.5 && redMetL>0 && mtsum>300);
-	      if(pass400) controlHistos.fillHisto("finaleventflow",ctf,3,weight);
-      
-	      bool pass500(fabs(dphill)<2.5 && redMetL>10 && mtsum>300);
-	      if(pass500) controlHistos.fillHisto("finaleventflow",ctf,4,weight);
+	      bool pass400(fabs(dphill)<2.0 && redMetL>75 && mtsum>300);
+	      if(pass400) controlHistos.fillHisto("finaleventflow",ctf,2,weight);
 	      
-	      bool pass600(fabs(dphill)<2.5 && redMetL>10 && mtsum>500);
-	      if(pass600) controlHistos.fillHisto("finaleventflow",ctf,5,weight);
+	      bool pass500(fabs(dphill)<2.0 && redMetL>100 && mtsum>400);
+	      if(pass500) controlHistos.fillHisto("finaleventflow",ctf,3,weight);
+	      
+	      bool pass600(fabs(dphill)<1.5 && redMetL>150 && mtsum>450);
+	      if(pass600) controlHistos.fillHisto("finaleventflow",ctf,4,weight);
 
 	      //debug
 	      if(ic==0 && isc==0 && !isMC && passTightRedMet && outf)	

@@ -274,125 +274,72 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
         for iplot in spimpose : isamp = isamp+1
         for iplot in data: isamp = isamp+1
             
-        plotLabel = generalLabel # + '\\' + chtag
-#        if(pname.find('eq0jets')>0): plotLabel += '=0 jets' 
-#        elif(pname.find('eq1jets')>0): plotLabel += '=1 jet'
-#        elif(pname.find('geq2jets')>0): plotLabel += '#geq 2 jets'
-#        elif(pname.find('eq0btags')>0): plotLabel += '=0 b-tags'
-#        elif(pname.find('eq1btags')>0): plotLabel += '=1 b-tags'
-#        elif(pname.find('geq2btags')>0): plotLabel += '#geq 2 b-tags'
-#        else : plotLabel += 'All events'
+        plotLabel = generalLabel
         c.Clear()
         leg=showPlotsAndMCtoDataComparison(c,stack,spimpose,data)
-        #leg=showPlots(c,stack,spimpose,data)
-        #        leg.SetHeader(plottitles[iplot])
         formatForCmsPublic(c.cd(1),leg,plotLabel,isamp)
-        
-#        c.Clear()
-#        c.Divide(1,2)
-#        pad=c.cd(1)
-#        pad.SetPad(0,0.3,1.0,1.0);
-#        leg=showPlots(pad,stack,spimpose,data)
-#        formatForCmsPublic(pad,leg,plotLabel,5)
-#        pad.SetLogy()
-        
-#        pad=c.cd(2)
-#        pad.SetPad(0,0.0,1.0,0.25);
-#        pad.SetTopMargin(0);
-#        pad.SetBottomMargin(0.3);
-#        yscale = (1.0-0.3)/(0.25-0.0);
-#        leg=showMCtoDataComparison(pad,stack,data,False,yscale)
-                                                 
         c.SaveAs(outputDir+'/'+pname+'.png')
         c.SaveAs(outputDir+'/'+pname+'.C')
-
+        
         if(pname.find('cutflow')>=0 or pname.find('eventflow')>=0 or pname.find('evtflow')>=0) :
             try :
                 savePlotAsTable(stack,spimpose,data,outputDir+'/'+pname+'.tex')
             except :
                 continue
-        #raw_input('Any key to continue...')
-        #c.Delete()
-
-    #create navigator files
-    HTMLSTART="<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"tableFormat.css\"></link></head><body>"
-    HTMLEND="</body></html>"
-    titlehtml=HTMLSTART
-    titlehtml+="<table class=\"sample\"><tr><th colspan=\"3\">Event selection categories</th></tr>" 
-
-    #check if subcategories are present
-    varitems=[]    
+        
+    #build a summary for the plot browser
+    categories=[]
+    subcategories=[]
+    finalplots=[]
     for tag in plotsToDisplay.items() :
-        for pname in tag[1] :
-            if(pname.find('eq0jets')>=0) :     subcat='eq0jets'
-            elif(pname.find('eq1jets')>=0) :   subcat='eq1jets'
-            elif(pname.find('geq2jets')>=0) :  subcat='geq2jets'
-            elif(pname.find('vbf')>=0) :       subcat='vbf'
-            elif(pname.find('eq0btags')>=0) :  subcat='eq0btags'
-            elif(pname.find('eq1btags')>=0) :  subcat='eq1btags'
-            elif(pname.find('geq2btags')>=0) : subcat='geq2btags'
-            else : continue
-            if(subcat in varitems) :continue
-            varitems.append(subcat)
 
-    varitems=sorted(set(varitems))
-    vars={}
-    vars['']=True
-    for v in varitems :  vars[v]=True
-    #print vars
-
-    #create the table
-    itag=0
-    for tag in plotsToDisplay.items() :
-       
+        tagch=''
         if( tag[0]=='All events')  : tagch='all'
         elif( tag[0]=='ee events') : tagch='ee'
         elif( tag[0]=='#mu#mu events') : tagch='mumu'
         elif( tag[0]=='e#mu events') : tagch='emu'
         elif( tag[0]=='e#tau events') : tagch='etau'
         elif( tag[0]=='#mu#tau events') : tagch='mutau'
-        else : tagch=tag[0]
-
-        thtml=HTMLSTART
-        thtml+="<table class=\"sample\" border=\"1\" cellspacing=\"3\"><tr><th colspan=\""+str(len(vars))+"\">" + tag[0] + " channel </th></tr>"
+        #else : tagch=tag[0]
+        categories.append(tagch)
         
         for pname in tag[1] :
-
-            if(pname.find('eq0jets')>=0 or pname.find('eq1jets')>=0 or pname.find('geq2jets')>=0
-               or pname.find('vbf')>=0
-               or pname.find('eq0btags')>=0 or pname.find('eq1btags')>=0 or pname.find('geq2btags')>=0) : continue
-        
-            thtml+="<tr>"
-            for v in vars.items() :
-                theplotName = pname.replace(tagch,tagch+v[0])
-                thtml+="<td><img src=\"" + theplotName + ".png\"></img></td>"
-            thtml+="</tr>"
+            ptokens=pname.split('_')
+            if(len(ptokens)>1):
+                prefix=ptokens[0]
+                subcat=''
+                if(prefix.find('eq0jets')>=0) :     subcat='eq0jets'
+                elif(prefix.find('eq1jets')>=0) :   subcat='eq1jets'
+                elif(prefix.find('geq1jets')>=0) :  subcat='geq1jets'
+                elif(prefix.find('eq2jets')>=0) :   subcat='eq2jets'
+                elif(prefix.find('geq2jets')>=0) :  subcat='geq2jets'
+                elif(prefix.find('geq3jets')>=0) :  subcat='geq3jets'
+                elif(prefix.find('eq0btags')>=0) :  subcat='eq0btags'
+                elif(prefix.find('eq1btags')>=0) :  subcat='eq1btags'
+                elif(prefix.find('geq1btags')>=0) : subcat='geq1btags'
+                elif(prefix.find('geq2btags')>=0) : subcat='geq2btags'
+                elif(prefix.find('vbf')>=0) :       subcat='vbf'
+                else :
+                    subcat=prefix
+                    subcat=subcat.replace(tagch,'')
+                subcategories.append(subcat)
+                finalplots.append( ptokens[1] ) 
             
-            thtml+="<tr>"
-            for v in vars.items() :
-                theplotName = pname.replace(tagch,tagch+v[0])
-                thtml+="<td><small>Available in: <a href=\"" + theplotName + ".png\">.png</a> &nbsp;&nbsp; <a href=\"" + theplotName + ".C\">.C</a>"
-                if(pname.find('cutflow')>=0):
-                    thtml+=" &nbsp;&nbsp; <a href=\"" + theplotName + ".tex\">.tex</a>"
-                thtml += "</small></td>"
-            thtml+="</tr>"
-            
-        thtml+="</table>"
-        thtml+=HTMLEND
+    #remove duplicates
+    categories=list(set(categories))
+    subcategories=list(set(subcategories))
+    finalplots=list(set(finalplots))
 
-        titlehtml += "<tr><td><a href=\"cat_" + str(itag) + ".html\">" + tag[0] + "</a></td></tr>" 
-        fileObj = open(outputDir+"/cat_" + str(itag) + ".html","w")
-        fileObj.write(thtml)
-        fileObj.close()
-        itag=itag+1
-
-    titlehtml+=samplehtml        
-    titlehtml+="</table>"
-    titlehtml+=HTMLEND
-    fileObj = open(outputDir+"/index.html","w")
-    fileObj.write(titlehtml)
+    #write in json format
+    fileObj = open(outputDir+'/plotter.json','w')
+    fileObj.write(json.dumps( { 'categories':categories,
+                                'subcategories':subcategories,
+                                'plots':finalplots,
+                                'ploturl':outputDir},
+                              sort_keys=True,
+                              indent=4 ) )
     fileObj.close()
-
+    
 
 
 """

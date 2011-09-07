@@ -10,6 +10,7 @@ castorDir, outputFile, process.source.fileNames = configureFromCommandLine()
 from CMGTools.HtoZZ2l2nu.GeneratorLevelSequences_cff import addHiggsPtReweighting
 needsPtReweight=addHiggsPtReweighting(process,castorDir)
 
+process.load('CMGTools.HtoZZ2l2nu.ClusteredPFMetProducer_cfi')
 process.load('CMGTools.HtoZZ2l2nu.CleanEventProducer_cfi')
 process.load('CMGTools.HtoZZ2l2nu.CleanEventFilter_cfi')
 process.load('CMGTools.HtoZZ2l2nu.PileupNormalizationProducer_cfi')
@@ -17,11 +18,9 @@ process.load('CMGTools.HtoZZ2l2nu.CleanEventAnalyzer_cfi')
 process.TFileService = cms.Service("TFileService", fileName = cms.string(outputFile) )
 
 if(needsPtReweight) :
-    process.p = cms.Path(process.hkfactorSequence*process.puWeights*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
-    #process.p = cms.Path(process.hkfactorSequence*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
+    process.p = cms.Path(process.ClusteredPFMetProducer*process.hkfactorSequence*process.puWeights*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
 else :
-    process.p = cms.Path(process.puWeights*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
-    #process.p = cms.Path(process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
+    process.p = cms.Path(process.ClusteredPFMetProducer*process.puWeights*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
 
 # message logger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")

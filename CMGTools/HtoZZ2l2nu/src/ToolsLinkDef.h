@@ -1,6 +1,8 @@
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
 #include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
+#include "CMGTools/HtoZZ2l2nu/interface/ClusteredPFMETSummary.h"
 #include "CMGTools/HtoZZ2l2nu/interface/SelectionMonitor.h"
+#include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 
 #ifdef __CINT__
 
@@ -22,6 +24,13 @@
 #pragma link C++ function getProjections;
 #pragma link C++ function showPlotsAndMCtoDataComparison;
 #pragma link C++ class SelectionMonitor;
+
+#pragma link C++ class MetSummaryHandler;
+#pragma link C++ struct METSummary_t;
+
+#pragma link C++ class ZZ2l2nuSummaryHandler;
+#pragma link C++ struct ZZ2l2nuSummary_t;
+
 
 #endif
 
