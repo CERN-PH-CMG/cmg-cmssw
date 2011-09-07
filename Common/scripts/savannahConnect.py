@@ -26,6 +26,7 @@ class savannahConnect:
         detailArray.append("\t*Castor Directory*:\n\t" + castorDir)
         
         if details['ParentList']: detailArray.append("\t*Parent Dataset*: \n\t" + details['ParentList'][0])
+        else: detailArray.append("\t*Parent Dataset*: \n\t No Parent")
         # Print all other data
         for element in details:
             if element != "DateCreated" and element != "PhysicsGroup"  and element != 'CreatedBy':
@@ -127,7 +128,7 @@ class savannahConnect:
     def submitItem(self, dataset, files, tags,castorDir, username):
         # If logged in
         if self.valid == True:
-            dataset['ParentList'][0] = self.getParentURL(dataset['ParentList'][0])
+            if dataset['ParentList']:dataset['ParentList'][0] = self.getParentURL(dataset['ParentList'][0])
 
             response1=self.br.follow_link(text_regex='Submit a new item', url_regex="task")
 
