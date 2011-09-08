@@ -286,7 +286,7 @@ int main(int argc, char* argv[])
   //replicate monitor for interesting categories
   TString cats[]={"ee","emu","mumu"};
   TString subCats[]={"","eq0jets","eq1jets","geq2jets","vbf"};
-  TString subsubCats[]={"","zsideband"};                                  //,"jer","jesup","jesdown","nopu","flatpu","btag"};
+  TString subsubCats[]={"","zsideband", "3rdleptons"};                                  //,"jer","jesup","jesdown","nopu","flatpu","btag"};
   for(size_t icat=0;icat<sizeof(cats)/sizeof(TString); icat++)
     for(size_t isubcat=0;isubcat<sizeof(subCats)/sizeof(TString); isubcat++)
       for(size_t itopcat=0;itopcat<sizeof(subsubCats)/sizeof(TString); itopcat++)
@@ -646,7 +646,8 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("recodphill",ctf,dphill,weight);
 	      controlHistos.fillHisto("nleptons",ctf,ev.ln,weight);
 
-	      if(!pass3dLeptonVeto) continue;
+//	      if(!pass3dLeptonVeto) continue;
+              ctf += (pass3dLeptonVeto ? "" : "3rdleptons");
 	      controlHistos.fillHisto("eventflow",ctf,3,weight);
 
 	      controlHistos.fillHisto("njets",ctf,njets,weight);
