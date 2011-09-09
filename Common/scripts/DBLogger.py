@@ -181,11 +181,37 @@ class DBLogger:
         #self.dbAPI.addSavannahURL(dataset, savannah)
 
     # Checks contiguity of root files
+    def checkRootType(self, name):
+        suffix = []
+        suffix = name.rstrip(".root").split("_")
+        grid = False
+        # 1st test, if passed, sample provisionally from grid
+        try:
+            tester = int(suffix[-2])
+            tester = int(suffix[-3])
+            grid = True
+        except:
+            grid = False
+        # if failed sample is definitely grid, however some samples from grid will pass. (Hence first test)
+        try:
+            tester = int(suffix[-1])
+        except:
+            return True
+        
+        return grid
+    
+    # Turns a grid name into a name that is easy to compare. (helper method)
+    def stdNameFromGrid(self,name):
+        
+        return name.rstrip(name.split("_")[-3]+ "_"+name.split("_")[-2]+"_"+name.split("_")[-1])
+        
+        
     def checkContiguity(self, targetDir):
         #GET ALL ROOT NAMES
         fileNames = castortools.matchingFiles(targetDir, ".*root")
         
         fileGroups =[]
+        groupName = []
         # Loop while there are still filenames that do not belong to a file group
         while len(fileNames)>0:
 
@@ -198,10 +224,22 @@ class DBLogger:
             # Strip every filename (temporarily) of its file type, number and leading underscore, so that files from each
             # group (root set) have the same name
             for listItem in fileNames:
-                if listItem.rstrip("_[1234567890]*\.root")==filename.rstrip("_[1234567890]*\.root"):
-                    # If the file name matches that of the first element in the fileNames array, they are of the same
-                    # file group, so add to the fileGroup array
-                    fileGroup.append(listItem)
+                # If names are of the same type (prevents a lot of unneccesary processing)
+                if self.checkRootType(listItem) == self.checkRootType(filename):
+
+                    # If item is from grid
+                    if self.checkRootType(listItem):
+                        #If items are the same
+                        if self.stdNameFromGrid(listItem)==self.stdNameFromGrid(filename) and listItem.split("_")[-2]==filename.split("_")[-2]:
+                            #print listItem
+                            fileGroup.append(listItem)
+
+                    # If item is not from grid
+                    elif listItem.rstrip("_[1234567890]*\.root")==filename.rstrip("_[1234567890]*\.root"):
+                        # If the file name matches that of the first element in the fileNames array, they are of the same
+                        # file group, so add to the fileGroup array
+                        fileGroup.append(listItem)
+                    
 
             # Remove the filenames that have been grouped, from the original filenames array,
             # so they do not get processed twice
@@ -210,6 +248,7 @@ class DBLogger:
 
             # Add the new fileGroup to the array of fileGroups
             fileGroups.append(fileGroup)
+            
 
         # Define a flag variable to check for incontiguous root sets
         groupFlag = True
@@ -217,20 +256,27 @@ class DBLogger:
         validity = []
         # Count through the groups
         for group in fileGroups:
-
+            # Set name of group to be returned
+            groupName = ""
+            
             # Set an array for numbers
             numbers = []
 
             # Exract the filenumber from each file in the group and add it to the numbers array
-            for element in group:
-                num = element.rstrip(".root").rpartition("_")[2]
-                numbers.append(int(num))
+            if self.checkRootType(group[0]):
+                for element in group:
+                    num = element.split("_")[-3]
+                    numbers.append(int(num))
+            else:
                 
-            
+                for element in group:
+                    num = element.rstrip(".root").split("_")[-1]
+                    numbers.append(int(num))
+                
             count = 0
             # Sort Numbers so that they are in ascending order
             numbers.sort()
-                    
+            if numbers[0] == 1: count +=1
             # Check that all numbers are there and index every element
             for i in numbers:
                 # If an element is erroneous call up a flag and move on to the next set
@@ -238,11 +284,26 @@ class DBLogger:
                     groupFlag = False
 
                 count+=1
-                    
-            if groupFlag==True:
-                validity.append(group[0].rstrip("0.root") +"[0-"+ str(len(group)-1)+"].root: CONTIGUOUS")
+
+            # Create names for file groups
+            if self.checkRootType(group[0]):
+                # Create name for grid type in format: name_[a-n]_identifier_XXX.root
+                arr = group[0].split("_")
+                arr[-1] = "XXX.root"
+                arr[-3] = "["+str(numbers[0])+"-" + str(numbers[-1])+"]"
+                groupName = "_".join(arr)
+                print groupName
             else:
-                validity.append(group[0].rstrip("0.root") +"[0-"+ str(len(group)-1)+"].root: NON-CONTIGUOUS")
+                # Create name for normal type in format name_[a-n].root
+                groupName = group[0].rstrip(str(numbers[0])+".root") +"["+str(numbers[0])+"-"+ str(numbers[-1])+"].root"
+                print groupName
+
+
+            # Append group name with contiguity to return array
+            if groupFlag==True:
+                validity.append(groupName+": CONTIGUOUS")
+            else:
+                validity.append(groupName+": NON-CONTIGUOUS")
                 setFlag = False
         # If there are non-contiguous file sets, return false and print error message.
         # Otherwise return true
