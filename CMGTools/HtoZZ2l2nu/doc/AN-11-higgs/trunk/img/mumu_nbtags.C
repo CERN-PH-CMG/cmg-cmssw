@@ -1,6 +1,6 @@
 {
 //=========Macro generated from canvas: recolevelc/recolevelc
-//=========  (Wed Aug 24 22:49:52 2011) by ROOT version5.24/00
+//=========  (Sun Sep 11 15:41:47 2011) by ROOT version5.24/00
    TCanvas *recolevelc = new TCanvas("recolevelc", "recolevelc",67,47,804,804);
    gStyle->SetOptFit(1);
    gStyle->SetOptStat(0);
@@ -39,68 +39,68 @@
    recolevelc_1->SetFrameFillStyle(0);
    recolevelc_1->SetFrameBorderMode(0);
    
-   TH1 *recolevelc_1_frame__347 = new TH1F("recolevelc_1_frame__347","recolevelc_1_stackcontour",3,0,3);
-   recolevelc_1_frame__347->SetBinContent(1,520570);
-   recolevelc_1_frame__347->SetBinContent(2,11921.15);
-   recolevelc_1_frame__347->SetBinContent(3,800.8624);
-   recolevelc_1_frame__347->SetBinError(1,367.9122);
-   recolevelc_1_frame__347->SetBinError(2,55.34341);
-   recolevelc_1_frame__347->SetBinError(3,13.6041);
-   recolevelc_1_frame__347->SetMinimum(0.1);
-   recolevelc_1_frame__347->SetMaximum(1000000);
-   recolevelc_1_frame__347->SetEntries(6330828);
-   recolevelc_1_frame__347->SetDirectory(0);
-   recolevelc_1_frame__347->SetFillColor(1);
-   recolevelc_1_frame__347->SetFillStyle(0);
-   recolevelc_1_frame__347->SetMarkerStyle(0);
-   recolevelc_1_frame__347->GetXaxis()->SetTitle("b-tag multiplicity");
-   recolevelc_1_frame__347->GetXaxis()->SetBinLabel(1,"0 b-tags");
-   recolevelc_1_frame__347->GetXaxis()->SetBinLabel(2,"1 b-tags");
-   recolevelc_1_frame__347->GetXaxis()->SetBinLabel(3,"#geq 2 b-tags");
-   recolevelc_1_frame__347->GetXaxis()->SetLabelFont(42);
-   recolevelc_1_frame__347->GetYaxis()->SetTitle(" Events");
-   recolevelc_1_frame__347->GetYaxis()->SetLabelFont(42);
-   recolevelc_1_frame__347->GetZaxis()->SetLabelFont(42);
-   recolevelc_1_frame__347->Draw("hist");
+   TH1 *recolevelc_1_frame__1495 = new TH1F("recolevelc_1_frame__1495","recolevelc_1_stackcontour",3,0,3);
+   recolevelc_1_frame__1495->SetBinContent(1,519889.8);
+   recolevelc_1_frame__1495->SetBinContent(2,11956.5);
+   recolevelc_1_frame__1495->SetBinContent(3,803.7985);
+   recolevelc_1_frame__1495->SetBinError(1,388.0207);
+   recolevelc_1_frame__1495->SetBinError(2,58.4018);
+   recolevelc_1_frame__1495->SetBinError(3,14.27894);
+   recolevelc_1_frame__1495->SetMinimum(0.1);
+   recolevelc_1_frame__1495->SetMaximum(1000000);
+   recolevelc_1_frame__1495->SetEntries(5737184);
+   recolevelc_1_frame__1495->SetDirectory(0);
+   recolevelc_1_frame__1495->SetFillColor(1);
+   recolevelc_1_frame__1495->SetFillStyle(0);
+   recolevelc_1_frame__1495->SetMarkerStyle(0);
+   recolevelc_1_frame__1495->GetXaxis()->SetTitle("b-tag multiplicity");
+   recolevelc_1_frame__1495->GetXaxis()->SetBinLabel(1,"0 b-tags");
+   recolevelc_1_frame__1495->GetXaxis()->SetBinLabel(2,"1 b-tags");
+   recolevelc_1_frame__1495->GetXaxis()->SetBinLabel(3,"#geq 2 b-tags");
+   recolevelc_1_frame__1495->GetXaxis()->SetLabelFont(42);
+   recolevelc_1_frame__1495->GetYaxis()->SetTitle(" Events");
+   recolevelc_1_frame__1495->GetYaxis()->SetLabelFont(42);
+   recolevelc_1_frame__1495->GetZaxis()->SetLabelFont(42);
+   recolevelc_1_frame__1495->Draw("hist");
    
    THStack *stack = new THStack();
    stack->SetName("stack");
    stack->SetTitle("recolevelc_1");
    
-   TH1 *stack174__3481 = new TH1F("stack174__3481","recolevelc_1",3,0,3);
-   stack174__3481->SetMinimum(296.6964);
-   stack174__3481->SetMaximum(818198.5);
-   stack174__3481->SetDirectory(0);
-   stack174__3481->SetStats(0);
-   stack174__3481->SetLineStyle(0);
-   stack174__3481->SetMarkerStyle(20);
-   stack174__3481->GetXaxis()->SetBinLabel(1,"0 b-tags");
-   stack174__3481->GetXaxis()->SetBinLabel(2,"1 b-tags");
-   stack174__3481->GetXaxis()->SetBinLabel(3,"#geq 2 b-tags");
-   stack174__3481->GetXaxis()->SetLabelFont(42);
-   stack174__3481->GetXaxis()->SetLabelOffset(0.007);
-   stack174__3481->GetXaxis()->SetTitleSize(0.05);
-   stack174__3481->GetXaxis()->SetTitleOffset(0.8);
-   stack174__3481->GetXaxis()->SetTitleFont(42);
-   stack174__3481->GetYaxis()->SetLabelFont(42);
-   stack174__3481->GetYaxis()->SetLabelOffset(0.007);
-   stack174__3481->GetYaxis()->SetTitleSize(0.05);
-   stack174__3481->GetYaxis()->SetTitleFont(42);
-   stack174__3481->GetZaxis()->SetLabelFont(42);
-   stack174__3481->GetZaxis()->SetLabelOffset(0.007);
-   stack174__3481->GetZaxis()->SetTitleSize(0.05);
-   stack174__3481->GetZaxis()->SetTitleFont(42);
-   stack->SetHistogram(stack174__3481);
+   TH1 *stack748__14962 = new TH1F("stack748__14962","recolevelc_1",3,0,3);
+   stack748__14962->SetMinimum(297.9163);
+   stack748__14962->SetMaximum(816905.2);
+   stack748__14962->SetDirectory(0);
+   stack748__14962->SetStats(0);
+   stack748__14962->SetLineStyle(0);
+   stack748__14962->SetMarkerStyle(20);
+   stack748__14962->GetXaxis()->SetBinLabel(1,"0 b-tags");
+   stack748__14962->GetXaxis()->SetBinLabel(2,"1 b-tags");
+   stack748__14962->GetXaxis()->SetBinLabel(3,"#geq 2 b-tags");
+   stack748__14962->GetXaxis()->SetLabelFont(42);
+   stack748__14962->GetXaxis()->SetLabelOffset(0.007);
+   stack748__14962->GetXaxis()->SetTitleSize(0.05);
+   stack748__14962->GetXaxis()->SetTitleOffset(0.8);
+   stack748__14962->GetXaxis()->SetTitleFont(42);
+   stack748__14962->GetYaxis()->SetLabelFont(42);
+   stack748__14962->GetYaxis()->SetLabelOffset(0.007);
+   stack748__14962->GetYaxis()->SetTitleSize(0.05);
+   stack748__14962->GetYaxis()->SetTitleFont(42);
+   stack748__14962->GetZaxis()->SetLabelFont(42);
+   stack748__14962->GetZaxis()->SetLabelOffset(0.007);
+   stack748__14962->GetZaxis()->SetTitleSize(0.05);
+   stack748__14962->GetZaxis()->SetTitleFont(42);
+   stack->SetHistogram(stack748__14962);
    
    
    TH1 *h13 = new TH1F("h13","ZZ",3,0,3);
-   h13->SetBinContent(1,180.9677);
-   h13->SetBinContent(2,44.1226);
+   h13->SetBinContent(1,180.9064);
+   h13->SetBinContent(2,44.10273);
    h13->SetBinContent(3,9.380447);
-   h13->SetBinError(1,0.8567623);
-   h13->SetBinError(2,0.4235531);
+   h13->SetBinError(1,0.8566091);
+   h13->SetBinError(2,0.4234653);
    h13->SetBinError(3,0.1950966);
-   h13->SetEntries(168350);
+   h13->SetEntries(168298);
 
    Int_t ci;   // for color index setting
    ci = TColor::GetColor("#ccccff");
@@ -143,13 +143,13 @@
    stack->Add(h12,"");
    
    TH1 *h11 = new TH1F("h11","WZ",3,0,3);
-   h11->SetBinContent(1,279.256);
-   h11->SetBinContent(2,47.94425);
+   h11->SetBinContent(1,278.8168);
+   h11->SetBinContent(2,47.92788);
    h11->SetBinContent(3,3.291695);
-   h11->SetBinError(1,1.835482);
-   h11->SetBinError(2,0.7568527);
+   h11->SetBinError(1,1.834074);
+   h11->SetBinError(2,0.7567661);
    h11->SetBinError(3,0.1999201);
-   h11->SetEntries(80014);
+   h11->SetEntries(79904);
 
    ci = TColor::GetColor("#3333ff");
    h11->SetFillColor(ci);
@@ -193,11 +193,11 @@
    TH1 *h9 = new TH1F("h9","t#bar{t}",3,0,3);
    h9->SetBinContent(1,41.82048);
    h9->SetBinContent(2,169.8588);
-   h9->SetBinContent(3,177.4098);
+   h9->SetBinContent(3,177.336);
    h9->SetBinError(1,2.459959);
    h9->SetBinError(2,4.995494);
-   h9->SetBinError(3,5.151609);
-   h9->SetEntries(7612);
+   h9->SetBinError(3,5.151081);
+   h9->SetEntries(7610);
    h9->SetFillColor(8);
    h9->SetMarkerColor(8);
    h9->SetMarkerStyle(20);
@@ -212,8 +212,8 @@
    stack->Add(h9,"");
    
    TH1 *h8 = new TH1F("h8","W+jets",3,0,3);
-   h8->SetBinContent(1,0.3003715);
-   h8->SetBinError(1,0.3003715);
+   h8->SetBinContent(1,0.3099518);
+   h8->SetBinError(1,0.3099518);
    h8->SetEntries(10);
 
    ci = TColor::GetColor("#cc3300");
@@ -233,13 +233,13 @@
    stack->Add(h8,"");
    
    TH1 *h7 = new TH1F("h7","Z/#gamma^{*}+jets#rightarrow ll",3,0,3);
-   h7->SetBinContent(1,519972.7);
-   h7->SetBinContent(2,11636.24);
-   h7->SetBinContent(3,606.6433);
-   h7->SetBinError(1,367.8945);
-   h7->SetBinError(2,55.10408);
-   h7->SetBinError(3,12.58281);
-   h7->SetEntries(5895196);
+   h7->SetBinContent(1,519293);
+   h7->SetBinContent(2,11671.63);
+   h7->SetBinContent(3,609.6531);
+   h7->SetBinError(1,388.004);
+   h7->SetBinError(2,58.17506);
+   h7->SetBinError(3,13.30974);
+   h7->SetEntries(5301768);
 
    ci = TColor::GetColor("#99ffcc");
    h7->SetFillColor(ci);
@@ -258,38 +258,38 @@
    stack->Add(h7,"");
    stack->Draw("histsame");
    
-   TH1 *recolevelc_1_frame__347 = new TH1F("recolevelc_1_frame__347","recolevelc_1_stackcontour",3,0,3);
-   recolevelc_1_frame__347->SetBinContent(1,520570);
-   recolevelc_1_frame__347->SetBinContent(2,11921.15);
-   recolevelc_1_frame__347->SetBinContent(3,800.8624);
-   recolevelc_1_frame__347->SetBinError(1,367.9122);
-   recolevelc_1_frame__347->SetBinError(2,55.34341);
-   recolevelc_1_frame__347->SetBinError(3,13.6041);
-   recolevelc_1_frame__347->SetMinimum(0.001);
-   recolevelc_1_frame__347->SetMaximum(1000000);
-   recolevelc_1_frame__347->SetEntries(6330828);
-   recolevelc_1_frame__347->SetDirectory(0);
-   recolevelc_1_frame__347->SetFillColor(1);
-   recolevelc_1_frame__347->SetFillStyle(0);
-   recolevelc_1_frame__347->SetMarkerStyle(0);
-   recolevelc_1_frame__347->GetXaxis()->SetTitle("b-tag multiplicity");
-   recolevelc_1_frame__347->GetXaxis()->SetBinLabel(1,"0 b-tags");
-   recolevelc_1_frame__347->GetXaxis()->SetBinLabel(2,"1 b-tags");
-   recolevelc_1_frame__347->GetXaxis()->SetBinLabel(3,"#geq 2 b-tags");
-   recolevelc_1_frame__347->GetXaxis()->SetLabelFont(42);
-   recolevelc_1_frame__347->GetYaxis()->SetTitle(" Events");
-   recolevelc_1_frame__347->GetYaxis()->SetLabelFont(42);
-   recolevelc_1_frame__347->GetZaxis()->SetLabelFont(42);
-   recolevelc_1_frame__347->Draw("sameaxis");
+   TH1 *recolevelc_1_frame__1495 = new TH1F("recolevelc_1_frame__1495","recolevelc_1_stackcontour",3,0,3);
+   recolevelc_1_frame__1495->SetBinContent(1,519889.8);
+   recolevelc_1_frame__1495->SetBinContent(2,11956.5);
+   recolevelc_1_frame__1495->SetBinContent(3,803.7985);
+   recolevelc_1_frame__1495->SetBinError(1,388.0207);
+   recolevelc_1_frame__1495->SetBinError(2,58.4018);
+   recolevelc_1_frame__1495->SetBinError(3,14.27894);
+   recolevelc_1_frame__1495->SetMinimum(0.001);
+   recolevelc_1_frame__1495->SetMaximum(1000000);
+   recolevelc_1_frame__1495->SetEntries(5737184);
+   recolevelc_1_frame__1495->SetDirectory(0);
+   recolevelc_1_frame__1495->SetFillColor(1);
+   recolevelc_1_frame__1495->SetFillStyle(0);
+   recolevelc_1_frame__1495->SetMarkerStyle(0);
+   recolevelc_1_frame__1495->GetXaxis()->SetTitle("b-tag multiplicity");
+   recolevelc_1_frame__1495->GetXaxis()->SetBinLabel(1,"0 b-tags");
+   recolevelc_1_frame__1495->GetXaxis()->SetBinLabel(2,"1 b-tags");
+   recolevelc_1_frame__1495->GetXaxis()->SetBinLabel(3,"#geq 2 b-tags");
+   recolevelc_1_frame__1495->GetXaxis()->SetLabelFont(42);
+   recolevelc_1_frame__1495->GetYaxis()->SetTitle(" Events");
+   recolevelc_1_frame__1495->GetYaxis()->SetLabelFont(42);
+   recolevelc_1_frame__1495->GetZaxis()->SetLabelFont(42);
+   recolevelc_1_frame__1495->Draw("sameaxis");
    
    TH1 *gr6 = new TH1F("gr6","H(600)#rightarrow VV",3,0,3);
-   gr6->SetBinContent(1,1.219946);
+   gr6->SetBinContent(1,1.219944);
    gr6->SetBinContent(2,0.148642);
    gr6->SetBinContent(3,0.01153209);
    gr6->SetBinError(1,0.01749797);
    gr6->SetBinError(2,0.004917427);
    gr6->SetBinError(3,0.001063381);
-   gr6->SetEntries(39332);
+   gr6->SetEntries(39331);
 
    ci = TColor::GetColor("#ff6600");
    gr6->SetFillColor(ci);
@@ -312,13 +312,13 @@
    gr6->Draw("histsame");
    
    TH1 *gr5 = new TH1F("gr5","H(500)#rightarrow VV",3,0,3);
-   gr5->SetBinContent(1,2.7766);
-   gr5->SetBinContent(2,0.3483199);
-   gr5->SetBinContent(3,0.0103686);
-   gr5->SetBinError(1,0.103774);
-   gr5->SetBinError(2,0.04348578);
-   gr5->SetBinError(3,0.004551211);
-   gr5->SetEntries(10041);
+   gr5->SetBinContent(1,2.857256);
+   gr5->SetBinContent(2,0.3459218);
+   gr5->SetBinContent(3,0.009624758);
+   gr5->SetBinError(1,0.1059466);
+   gr5->SetBinError(2,0.04337556);
+   gr5->SetBinError(3,0.004380582);
+   gr5->SetEntries(10039);
 
    ci = TColor::GetColor("#ff9900");
    gr5->SetFillColor(ci);
@@ -341,13 +341,13 @@
    gr5->Draw("histsame");
    
    TH1 *gr4 = new TH1F("gr4","H(400)#rightarrow VV",3,0,3);
-   gr4->SetBinContent(1,7.623974);
-   gr4->SetBinContent(2,0.8529629);
-   gr4->SetBinContent(3,0.06285591);
-   gr4->SetBinError(1,0.07482096);
-   gr4->SetBinError(2,0.02534627);
-   gr4->SetBinError(3,0.006973002);
-   gr4->SetEntries(39238);
+   gr4->SetBinContent(1,8.037516);
+   gr4->SetBinContent(2,0.8317356);
+   gr4->SetBinContent(3,0.05741577);
+   gr4->SetBinError(1,0.07881222);
+   gr4->SetBinError(2,0.0249988);
+   gr4->SetBinError(3,0.006509729);
+   gr4->SetEntries(39236);
 
    ci = TColor::GetColor("#cc6633");
    gr4->SetFillColor(ci);
@@ -370,13 +370,13 @@
    gr4->Draw("histsame");
    
    TH1 *gr3 = new TH1F("gr3","H(300)#rightarrow VV",3,0,3);
-   gr3->SetBinContent(1,12.4404);
-   gr3->SetBinContent(2,1.195702);
-   gr3->SetBinContent(3,0.06911365);
-   gr3->SetBinError(1,0.1243189);
-   gr3->SetBinError(2,0.03764126);
-   gr3->SetBinError(3,0.008859276);
-   gr3->SetEntries(39747);
+   gr3->SetBinContent(1,13.21499);
+   gr3->SetBinContent(2,1.17532);
+   gr3->SetBinContent(3,0.06438895);
+   gr3->SetBinError(1,0.13024);
+   gr3->SetBinError(2,0.03736214);
+   gr3->SetBinError(3,0.008471706);
+   gr3->SetEntries(39742);
 
    ci = TColor::GetColor("#663300");
    gr3->SetFillColor(ci);
@@ -399,13 +399,13 @@
    gr3->Draw("histsame");
    
    TH1 *gr2 = new TH1F("gr2","H(200)#rightarrow VV",3,0,3);
-   gr2->SetBinContent(1,26.70447);
-   gr2->SetBinContent(2,2.422449);
-   gr2->SetBinContent(3,0.101494);
-   gr2->SetBinError(1,0.7249109);
-   gr2->SetBinError(2,0.2253096);
-   gr2->SetBinError(3,0.01308957);
-   gr2->SetEntries(37659);
+   gr2->SetBinContent(1,28.64264);
+   gr2->SetBinContent(2,2.411625);
+   gr2->SetBinContent(3,0.09618828);
+   gr2->SetBinError(1,0.7300002);
+   gr2->SetBinError(2,0.2253147);
+   gr2->SetBinError(3,0.01261676);
+   gr2->SetEntries(37657);
 
    ci = TColor::GetColor("#ffcc00");
    gr2->SetFillColor(ci);
@@ -428,17 +428,17 @@
    gr2->Draw("histsame");
    
    TH1 *data1 = new TH1F("data1","data",3,0,3);
-   data1->SetBinContent(1,588251);
-   data1->SetBinContent(2,15058);
-   data1->SetBinContent(3,1111);
-   data1->SetBinError(1,766.9752);
-   data1->SetBinError(2,122.711);
-   data1->SetBinError(3,33.33167);
-   data1->SetEntries(660010);
+   data1->SetBinContent(1,538173);
+   data1->SetBinContent(2,13787);
+   data1->SetBinContent(3,1003);
+   data1->SetBinError(1,733.6028);
+   data1->SetBinError(2,117.4181);
+   data1->SetBinError(3,31.67018);
+   data1->SetEntries(608553);
    data1->SetFillColor(1);
    data1->SetFillStyle(0);
    data1->SetMarkerStyle(20);
-   data1->SetMarkerSize(1.5);
+   data1->SetMarkerSize(1.3);
    data1->GetXaxis()->SetTitle("b-tag multiplicity");
    data1->GetXaxis()->SetBinLabel(1,"0 b-tags");
    data1->GetXaxis()->SetBinLabel(2,"1 b-tags");
@@ -449,7 +449,7 @@
    data1->GetZaxis()->SetLabelFont(42);
    data1->Draw("ESAME");
    
-   TLegend *leg = new TLegend(0.65,0.6078792,0.85,0.9502946,NULL,"brNDC");
+   TLegend *leg = new TLegend(0.65625,0.5986745,0.88625,0.9466127,NULL,"brNDC");
    leg->SetBorderSize(0);
    leg->SetLineColor(1);
    leg->SetLineStyle(1);
@@ -638,7 +638,7 @@
    recolevelc_2 = new TPad("recolevelc_2", "recolevelc_2",0,0,1,0.28);
    recolevelc_2->Draw();
    recolevelc_2->cd();
-   recolevelc_2->Range(-0.6486486,-0.4066465,3.405405,1.648807);
+   recolevelc_2->Range(-0.6486486,-2.2,3.405405,2.2);
    recolevelc_2->SetFillColor(0);
    recolevelc_2->SetBorderMode(0);
    recolevelc_2->SetBorderSize(2);
@@ -655,15 +655,15 @@
    recolevelc_2->SetFrameBorderMode(0);
    
    TH1 *mumu_nbtags_tomc = new TH1F("mumu_nbtags_tomc","data",3,0,3);
-   mumu_nbtags_tomc->SetBinContent(1,1.130013);
-   mumu_nbtags_tomc->SetBinContent(2,1.263134);
-   mumu_nbtags_tomc->SetBinContent(3,1.387254);
-   mumu_nbtags_tomc->SetBinError(1,0.00167587);
-   mumu_nbtags_tomc->SetBinError(2,0.0118467);
-   mumu_nbtags_tomc->SetBinError(3,0.04782793);
-   mumu_nbtags_tomc->SetMinimum(0.6210801);
-   mumu_nbtags_tomc->SetMaximum(1.648807);
-   mumu_nbtags_tomc->SetEntries(5879.642);
+   mumu_nbtags_tomc->SetBinContent(1,1.035167);
+   mumu_nbtags_tomc->SetBinContent(2,1.153097);
+   mumu_nbtags_tomc->SetBinContent(3,1.247825);
+   mumu_nbtags_tomc->SetBinError(1,0.001608738);
+   mumu_nbtags_tomc->SetBinError(2,0.01132096);
+   mumu_nbtags_tomc->SetBinError(3,0.04520814);
+   mumu_nbtags_tomc->SetMinimum(0);
+   mumu_nbtags_tomc->SetMaximum(2.2);
+   mumu_nbtags_tomc->SetEntries(5429.55);
    mumu_nbtags_tomc->SetFillColor(1);
    mumu_nbtags_tomc->SetFillStyle(0);
    mumu_nbtags_tomc->SetMarkerStyle(20);
@@ -678,7 +678,7 @@
    mumu_nbtags_tomc->GetXaxis()->SetTickLength(0.075);
    mumu_nbtags_tomc->GetXaxis()->SetTitleOffset(0.85);
    mumu_nbtags_tomc->GetYaxis()->SetTitle("Obs/Ref");
-   mumu_nbtags_tomc->GetYaxis()->SetNdivisions(506);
+   mumu_nbtags_tomc->GetYaxis()->SetNdivisions(509);
    mumu_nbtags_tomc->GetYaxis()->SetLabelFont(42);
    mumu_nbtags_tomc->GetYaxis()->SetLabelSize(0.1);
    mumu_nbtags_tomc->GetYaxis()->SetTitleSize(0.1);

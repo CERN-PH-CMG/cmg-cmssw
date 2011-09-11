@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.14 $
+\RCS$Revision: 1.15 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.14 2011/08/29 15:52:58 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.15 2011/09/11 12:34:00 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -105,6 +105,7 @@ Limits are set for the production of the Higgs boson in each one of the referred
 %
 % EVENT SELECTION
 %
+\clearpage
 \section{Trigger and event selection}
 \label{sec:triggerevselection}
 
@@ -290,7 +291,7 @@ The last column summarizes the \% of the original primary dataset considered aft
                         & in PD          &  no scrap  & $\geq$ 1 vertex & no HBHE noise & no beam halo & \% pre-filtered\\\hline
 DoubleMu                & 3.365          & 3.365      & 3.298           & 3.296         & 3.260        & 96.9\% \\
 SingleMu                & 7.380          & 7.380      & 7.374           & 7.372         & 7.314        & 99.1\% \\
-DoubleElectron          & 4.091          & 4.091      & 4.090           & 4.089         & 4.076        & 99.6\% \\
+DoubleElectron          & 4.272          & 4.272      & 4.272           & 4.271         & 4.263        & 99.7\% \\
 MuEG                    & 2.829          & 2.829      & 2.829           & 2.828         & 2.823        & 99.8\% \\\hline\hline
 \end{tabular}
 \end{center}
@@ -325,6 +326,7 @@ The bottom plots show the ratio between the total \MC prediction and the observe
 %%% LEPTONS
 \item[Leptons] leptons (electrons or muons) are required to be reconstructed with at least $p_T>$5~GeV/c and $|\eta|<$2.5 (2.4) for electrons (muons). 
 
+Electrons can be seeded from either the electromagnetical calorimeter (ECAL driven) or the tracker (tracker driven).
 Electrons reconstructed in the ECAL barrel to endcap transition are not considered for this study in order to reduce the contamination from fakes and to 
 minimize the impact of mismeasurement of the lepton energies which translates to a mismeasurement of the missing transverse energy of the event.
 The impact parameter of the electron track is required to be consistent with prompt production from the beam spot within $|d_0|<$0.04~cm.
@@ -369,8 +371,8 @@ In App.~\cite{sec:app:leptonisolation} the lepton isolation is discussed in furt
 The dilepton candidate is required to have an invariant mass compatible with a $Z$ boson decay, i.e. $|M-M_Z|<$15~GeV/c$^2$
 and in case of ambiguity the pair with highest $\sum p_T$ is chosen.
 No requirement is made on the charge of the leptons.
-The reconstructed dilepton mass in the $Z$ boson acceptance window and the angle made by the two leptons in the transverse plane ($\Delta\phi$)
-is shown in Fig~\ref{fig:dileptoncontrol}.
+The reconstructed dilepton mass in an enlarged $Z$ boson acceptance window 
+and the angle made by the two leptons in the transverse plane ($\Delta\phi$) is shown in Fig~\ref{fig:dileptoncontrol}.
 
 \begin{figure}[htp]
 \begin{center}
@@ -378,7 +380,8 @@ is shown in Fig~\ref{fig:dileptoncontrol}.
 \includegraphics[width=0.4\textwidth]{img/ee_recozmass} \\
 \includegraphics[width=0.4\textwidth]{img/mumu_recodphill}
 \includegraphics[width=0.4\textwidth]{img/ee_recodphill}
-\caption{Lepton multiplicity distribution for di-muon ({\em left}) and di-electron ({\em right}) events with a mass compatible with the Z boson mass.}
+\caption{{\em Top}: dilepton invariant mass distribution for di-muon ({\em left}) and di-electron ({\em right}) events in a $\pm$30 GeV/c$^2$ acceptance window.
+ with a mass compatible with the Z boson mass. {\em Bottom}: azimuthal angle between the two leading leptons.}
 \label{fig:dileptoncontrol}
 \end{center}
 \end{figure}
@@ -406,7 +409,6 @@ Notice also that at this point no data-driven correction for the lepton efficien
 The loose jet id used to select the jets is based on the electromagnetic fraction of the jets among other variables. 
 The jet multiplicity distribution obtained after the dilepton selection is shown in Fig.~\ref{fig:jetmult} for jets found inside the tracker acceptance region only.
 A good agreement is found between data and \MC prediction.
-Jets with $|\eta|>2.5$ are used for the VBF specific selection which will be discussed in more detail in Sec.~\ref{sec:higgssearch}.
 
 \begin{figure}[htp]
 \begin{center}
@@ -414,6 +416,36 @@ Jets with $|\eta|>2.5$ are used for the VBF specific selection which will be dis
 \includegraphics[width=0.4\textwidth]{img/ee_njets}
 \caption{Jet multiplicity distribution in di-muon ({\em left}) and di-electron ({\em right}).}
 \label{fig:jetmult}
+\end{center}
+\end{figure}
+
+Jets with $|\eta|>$2.5 are used for analysis but not for for jet counting. In the forward region due to the limited acceptance of the tracker
+no jet-vertex association is possible, and therefore, the contamination from pileup becomes non negligible.
+The effect can be estimated from simulation by considering the average jet multiplicity in $Z\rightarrow ll$ events
+as a function of the generated pileup with and without the tracker acceptance requirement imposed.
+The evolution of the average jest multiplicity as function of the pileup is shown in Fig~\ref{fig:jetmultvspu}, {\em left}.
+The ratio of the multiplicity of two consectuive jet bins (e.g. $R_k=N_k/N_{k+1}$ with $k$=1,2,...),  
+can also be used to evaluate the expected stability of jet counting
+against the variation of the pileup scenario in data. In an ideal pileup-less scenario it is expected 
+that $R_k$ is constant reflecting a ``staircase''-like jet multiplicity in $Z\rightarrow ll$ events.
+The distributions for different $R_k$ are shown in Fig~\ref{fig:jetmultvspu}, {\em right}.
+For processes where jets are generated from colored decays or where jets accompany the fusion of heavy objects
+like W/Z vector bosons (i.e. VBF processes), $R_k$ is no longer constant and reflects a ``Poisson''-like jet multiplicity~\cite{Englert:2011pq}.
+As the VBF signature constitutes, per se, a distinct production process of the Higgs boson, it is important
+to identify correctly the transition in the jet multiplicity reducing the contamination from pileup.
+These arguments support our choice to count jets inside the tracker acceptance region only
+(even if jets are used to higher $\eta$ regions). 
+The VBF specific selection will be discussed in more detail in Sec.~\ref{sec:higgssearch}.
+
+\begin{figure}[htp]
+\begin{center}
+%\includegraphics[width=0.4\textwidth]{img/njetsavgvspu}
+%\includegraphics[width=0.4\textwidth]{img/rjetsvspu}
+\caption{Evolution of the average jet multiplicity ({\em left}) and the ratio of consecutive jet multiplicity bins ({\em right})
+as function of the generated pileup in $Z\rightarrow ll$ events. 
+Two cases are superimposed on each plot for comparison: 
+jets in the central region ($|\eta|<$2.5) and all reconstructed jets ($|\eta|<$5.0).}
+\label{fig:jetmultvspu}
 \end{center}
 \end{figure}
 
@@ -540,6 +572,7 @@ data                               & $ ( 413.8 \pm0.6 ) \times10^{3} $    & $ ( 
 %%
 %%
 %%
+\clearpage
 \section{Verification of the reconstructed missing transverse energy}
 \label{sec:met}
 
@@ -775,6 +808,7 @@ The particles (not) used in the computation of each \MET type are signaled with 
 %
 %
 %
+\clearpage
 \section{Search for the standard model Higgs in the 2l2$\nu$ final state}
 \label{sec:higgssearch}
 
@@ -932,6 +966,7 @@ HCAL isolation                        & \multicolumn{2}{c}{$<$2.2 + 0.001$E_T$} 
 %
 %
 %
+\clearpage
 \section{Exclusion limits}
 \label{sec:excllimits}
 
@@ -939,6 +974,7 @@ HCAL isolation                        & \multicolumn{2}{c}{$<$2.2 + 0.001$E_T$} 
 %
 % CONCLUSIONS
 %
+\clearpage
 \section{Conclusions}
 \label{sec:conclusions}
 
