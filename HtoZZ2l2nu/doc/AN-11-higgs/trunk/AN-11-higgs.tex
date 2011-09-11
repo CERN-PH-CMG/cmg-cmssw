@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.13 $
+\RCS$Revision: 1.14 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.13 2011/08/25 11:11:48 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.14 2011/08/29 15:52:58 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -848,6 +848,13 @@ The details on the $f$ variable can be found in Sec.~\ref{sec:app:cutbasedoptimi
 \subsubsection{Data-driven estimation of the instrumental background}
 \label{subsubsec:instrumentalbackground}
 
+We use isolated photon candidates to model the instrumental background.
+We study the jet multiplicity and scaling properties of these events
+in order to better reproduce the ones expected in $Z$ boson production.
+The study is separated in two regimes where two different jet multiplicity scaling properties are expected
+and which correspond to the gluon-gluon and VBF productions of the Higgs boson.
+The approach followed is summarized below and has been recently proposed by~\cite{Englert:2011pq}.
+
 Photon candidates are selected from dedicated photon triggered samples.
 The samples are summarized in Table~\ref{tab:instrbckgdatasamples}.
 
@@ -906,6 +913,8 @@ HCAL isolation                        & \multicolumn{2}{c}{$<$2.2 + 0.001$E_T$} 
 \end{tabular}
 \end{center}
 \end{table}
+
+
 
 %%%
 %%% Top 
