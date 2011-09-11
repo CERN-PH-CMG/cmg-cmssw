@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.15 $
+\RCS$Revision: 1.16 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.15 2011/09/11 12:34:00 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.16 2011/09/11 13:53:29 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -419,32 +419,38 @@ A good agreement is found between data and \MC prediction.
 \end{center}
 \end{figure}
 
-Jets with $|\eta|>$2.5 are used for analysis but not for for jet counting. In the forward region due to the limited acceptance of the tracker
-no jet-vertex association is possible, and therefore, the contamination from pileup becomes non negligible.
+Jets with $|\eta|>$2.4 are used for analysis but not for for jet counting. In the forward region due to the limited acceptance of the tracker
+no jet-vertex association is possible, and therefore, the contamination from pileup may become non negligible.
 The effect can be estimated from simulation by considering the average jet multiplicity in $Z\rightarrow ll$ events
 as a function of the generated pileup with and without the tracker acceptance requirement imposed.
 The evolution of the average jest multiplicity as function of the pileup is shown in Fig~\ref{fig:jetmultvspu}, {\em left}.
-The ratio of the multiplicity of two consectuive jet bins (e.g. $R_k=N_k/N_{k+1}$ with $k$=1,2,...),  
+We conclude that by restricting the acceptance of the jets used for counting to within the tracker acceptance region
+minimizes the dependence on pileup, even if a small increase in the average multiplicity is expected.
+The ratio of the multiplicity of two consecutive jet bins (e.g. $R_k=N_k/N_{k+1}$ with $k$=1,2,...),  
 can also be used to evaluate the expected stability of jet counting
 against the variation of the pileup scenario in data. In an ideal pileup-less scenario it is expected 
 that $R_k$ is constant reflecting a ``staircase''-like jet multiplicity in $Z\rightarrow ll$ events.
+This structure results from the fact that the jets are mainly generated from initial state radiation (ISR).
 The distributions for different $R_k$ are shown in Fig~\ref{fig:jetmultvspu}, {\em right}.
-For processes where jets are generated from colored decays or where jets accompany the fusion of heavy objects
+It is observed that restricting  the acceptance of the jets for counting to the tracker acceptance region
+stabilizes the value of $R_k$ independently of the pileup scenario, yielding a jet multiplicity
+closer to the ideal ``staircase'' distribution where $R_k=$cte.
+For processes where jets are generated from decays with flux of color or where jets accompany the fusion of heavy objects
 like W/Z vector bosons (i.e. VBF processes), $R_k$ is no longer constant and reflects a ``Poisson''-like jet multiplicity~\cite{Englert:2011pq}.
 As the VBF signature constitutes, per se, a distinct production process of the Higgs boson, it is important
-to identify correctly the transition in the jet multiplicity reducing the contamination from pileup.
+to identify correctly this transition in the jet multiplicity by reducing the contamination from pileup.
+VBF jets will also tend to be forward motivating the usage of jets reconstructed at high pseudo-rapidty.
 These arguments support our choice to count jets inside the tracker acceptance region only
-(even if jets are used to higher $\eta$ regions). 
+and used jets at higher $\eta$ regions for the purpose of identifying VBF like processes. 
 The VBF specific selection will be discussed in more detail in Sec.~\ref{sec:higgssearch}.
 
 \begin{figure}[htp]
 \begin{center}
-%\includegraphics[width=0.4\textwidth]{img/njetsavgvspu}
-%\includegraphics[width=0.4\textwidth]{img/rjetsvspu}
+\includegraphics[width=0.9\textwidth]{img/dy_jetmultvspu}
 \caption{Evolution of the average jet multiplicity ({\em left}) and the ratio of consecutive jet multiplicity bins ({\em right})
 as function of the generated pileup in $Z\rightarrow ll$ events. 
 Two cases are superimposed on each plot for comparison: 
-jets in the central region ($|\eta|<$2.5) and all reconstructed jets ($|\eta|<$5.0).}
+jets in the central region ($|\eta|<$2.4) and all reconstructed jets ($|\eta|<$5.0).}
 \label{fig:jetmultvspu}
 \end{center}
 \end{figure}
@@ -523,48 +529,47 @@ In the next section the event yields after pre-selection of the sample and contr
 \subsection{Event yields after pre-seletion}
 \label{subsec:eventyields}
 
-The event yields after applying the pre-selection discussed in the previous section
-are shown in Table~\ref{tab:presamplecutflow}.
-An overall difference of $\approx$ 10\% is observed. An excess (deficit) of events is observed in the di-muon (di-electron) channel.
+The event yields after applying the pre-selection discussed in the previous section are shown in Table~\ref{tab:presamplecutflow}.
+An overall difference of $<$4\% is observed in both channels.
 
 \begin{table}[htp]
-\caption{Event yields for a total integrated luminosity of 1091~pb$^{-1}$. The uncertainties quoted are statistical only.}
+\caption{Event yields for a total integrated luminosity of 2007~pb$^{-1}$. The uncertainties quoted are statistical only.}
 \label{tab:presamplecutflow}
 \begin{center}
 \begin{tabular}{lccc} \hline\hline
-Process                            & $|M-M_Z|<$15~GeV/c$^2$ & 3$^{rd}$-lepton veto & no b-tags\\ \hline
+Process                             & $|M-M_Z|<$15~GeV/c$^2$ & 3$^{rd}$-lepton veto & no b-tags\\ \hline
 & & & \\\hline
 \multicolumn{4}{c}{\bf $\mu\mu$ channel} \\\hline
-H(200)$\rightarrow$ VV             & $ 29.3 \pm0.8 $    & $ 29.2 \pm0.8 $     & $ 26.7 \pm0.7 $  \\
-H(300)$\rightarrow$ VV             & $ 13.72 \pm0.13 $  & $ 13.71 \pm0.13 $   & $ 12.44 \pm0.12 $\\
-H(400)$\rightarrow$ VV             & $ 8.55 \pm0.08 $   & $ 8.54 \pm0.08 $    & $ 7.62 \pm0.07 $  \\
-H(500)$\rightarrow$ VV             & $ 3.14 \pm0.11 $   & $ 3.14 \pm0.11 $    & $ 2.78 \pm0.10 $ \\
-H(600)$\rightarrow$ VV             & $ 1.383 \pm0.018 $ & $ 1.380 \pm0.018 $  & $ 1.220 \pm0.017 $\\ \hline
-ZZ                                 & $ 244.0 \pm1.0 $  & $ 234.5 \pm1.0 $     & $ 181.0 \pm0.9 $ \\
-WW                                 & $ 87.8 \pm1.6 $   & $ 87.7 \pm1.6 $      & $ 84.9 \pm1.6 $  \\
-WZ                                 & $ 330.5 \pm2.0 $  & $ 279.3 \pm1.8 $     & $ 26.2 \pm0.6 $  \\
-Single top                         & $ 35.1 \pm1.1 $   & $ 34.4 \pm1.0 $      & $ 10.1 \pm0.6 $  \\
-\ttbar                             & $ 396 \pm8 $      & $ 389 \pm8 $         & $ 41.8 \pm2.5 $  \\
-W+jets                             & $ 0.30 \pm0.30 $  & $ 0.30 \pm0.30 $     & $ 0.30 \pm0.30 $ \\
-$Z/\gamma^{*}+jets\rightarrow ll$  & $ ( 533.0 \pm0.4 ) \times10^{3} $  & $ ( 532.5 \pm0.4 ) \times10^{3} $  & $ ( 520.0 \pm0.4 ) \times10^{3} $ \\\hline
-Total expected from SM             & $ ( 534.2 \pm0.4 ) \times10^{3} $  & $ ( 533.5 \pm0.4 ) \times10^{3} $  & $ ( 520.6 \pm0.4 ) \times10^{3} $ \\\hline
-data                               & $ ( 605.3 \pm0.8 ) \times10^{3} $  & $ ( 604.4 \pm0.8 ) \times10^{3} $  & $ ( 588.3 \pm0.8 ) \times10^{3} $ \\\hline
+H(200)$\rightarrow$ VV              & $ 31.2 \pm0.8 $  & $ 31.2 \pm0.8 $  & $ 28.6 \pm0.7 $  \\
+H(300)$\rightarrow$ VV              & $ 14.47 \pm0.14 $  & $ 14.45 \pm0.14 $  & $ 13.21 \pm0.13 $  \\
+H(400)$\rightarrow$ VV              & $ 8.94 \pm0.08 $  & $ 8.93 \pm0.08 $  & $ 8.04 \pm0.08 $  \\
+H(500)$\rightarrow$ VV              & $ 3.21 \pm0.11 $  & $ 3.21 \pm0.11 $  & $ 2.86 \pm0.11 $  \\
+H(600)$\rightarrow$ VV              & $ 1.383 \pm0.018 $  & $ 1.380 \pm0.018 $  & $ 1.220 \pm0.017 $  \\\hline
+ZZ                                  & $ 244.0 \pm1.0 $  & $ 234.4 \pm1.0 $  & $ 180.9 \pm0.9 $  \\
+WW                                  & $ 87.8 \pm1.6 $  & $ 87.7 \pm1.6 $  & $ 84.9 \pm1.6 $  \\
+WZ                                  & $ 366.3 \pm2.1 $  & $ 330.0 \pm2.0 $  & $ 278.8 \pm1.8 $  \\
+Single top                          & $ 35.1 \pm1.1 $  & $ 34.4 \pm1.0 $  & $ 10.1 \pm0.6 $  \\
+$t\bar{t}$                          & $ 396 \pm8 $  & $ 389 \pm8 $  & $ 41.8 \pm2.5 $  \\
+W+jets                              & $ 0.31 \pm0.31 $  & $ 0.31 \pm0.31 $  & $ 0.31 \pm0.31 $  \\
+Z/$\gamma^{*}$+jets$\rightarrow$ ll & $ ( 532.4 \pm0.4 ) \times10^{3} $  & $ ( 531.8 \pm0.4 ) \times10^{3} $  & $ ( 519.3 \pm0.4 ) \times10^{3} $\\\hline
+Total simulated                     & $ ( 533.5 \pm0.4 ) \times10^{3} $  & $ ( 532.9 \pm0.4 ) \times10^{3} $  & $ ( 519.9 \pm0.4 ) \times10^{3} $\\\hline
+Data                                & $  553.8 \times10^{3} $            & $  553.0 \times10^{3} $  & $ 538.2 \times10^{3} $ \\\hline
 & & & \\\hline
 \multicolumn{4}{c}{\bf $ee$ channel} \\\hline
-H(200)$\rightarrow$ VV             & $ 27.7 \pm0.8 $    & $ 27.7 \pm0.8 $     & $ 25.1 \pm0.7 $  \\
-H(300)$\rightarrow$ VV             & $ 13.25 \pm0.13 $  & $ 13.23 \pm0.13 $   & $ 12.00 \pm0.12 $ \\
-H(400)$\rightarrow$ VV             & $ 8.58 \pm0.08 $   & $ 8.56 \pm0.08 $    & $ 7.61 \pm0.07 $ \\
-H(500)$\rightarrow$ VV             & $ 3.44 \pm0.11 $   & $ 3.43 \pm0.11 $    & $ 3.04 \pm0.10 $ \\
-H(600)$\rightarrow$ VV             & $ 1.454 \pm0.015 $ & $ 1.452 \pm0.015 $  & $ 1.272 \pm0.015 $ \\ \hline
-ZZ                                 & $ 228.3 \pm1.0 $   & $ 211.9 \pm0.9 $    & $ 163.1 \pm0.8 $  \\
-WW                                 & $ 76.8 \pm1.5 $    & $ 76.7 \pm1.5 $     & $ 74.5 \pm1.5 $ \\
-WZ                                 & $ 358.5 \pm2.1 $   & $ 303.6 \pm1.9 $    & $ 255.3 \pm1.8 $  \\
-Single top                         & $ 35.0 \pm1.1 $    & $ 34.3 \pm1.0 $     & $ 10.5 \pm0.6 $   \\
-\ttbar                             & $ 370 \pm7 $       & $ 363 \pm7 $        & $ 39.7 \pm2.4 $ \\
-W+jets                             & $ 36 \pm7 $        & $ 36 \pm7 $         & $ 34 \pm7 $ \\
-$Z/\gamma^{*}+jets\rightarrow ll$  & $ ( 465.03 \pm0.35 ) \times10^{3} $  & $ ( 464.51 \pm0.35 ) \times10^{3} $  & $ ( 453.10 \pm0.34 ) \times10^{3} $  \\\hline
-Total expected                     & $ ( 466.13 \pm0.35 ) \times10^{3} $  & $ ( 465.54 \pm0.35 ) \times10^{3} $  & $ ( 453.67 \pm0.34 ) \times10^{3} $  \\\hline
-data                               & $ ( 413.8 \pm0.6 ) \times10^{3} $    & $ ( 413.2 \pm0.6 ) \times10^{3} $    & $ ( 401.9 \pm0.6 ) \times10^{3} $    \\\hline\hline
+H(200)$\rightarrow$ VV & $ 29.6 \pm0.8 $  & $ 29.6 \pm0.8 $  & $ 27.0 \pm0.7 $  \\
+H(300)$\rightarrow$ VV & $ 14.04 \pm0.13 $  & $ 14.01 \pm0.13 $  & $ 12.81 \pm0.13 $  \\
+H(400)$\rightarrow$ VV & $ 9.04 \pm0.08 $  & $ 9.02 \pm0.08 $  & $ 8.09 \pm0.08 $  \\
+H(500)$\rightarrow$ VV & $ 3.55 \pm0.11 $  & $ 3.53 \pm0.11 $  & $ 3.15 \pm0.11 $  \\
+H(600)$\rightarrow$ VV & $ 1.464 \pm0.016 $  & $ 1.462 \pm0.016 $  & $ 1.281 \pm0.015 $  \\\hline
+ZZ & $ 229.8 \pm1.0 $  & $ 213.1 \pm0.9 $  & $ 164.1 \pm0.8 $  \\
+WW & $ 77.4 \pm1.5 $  & $ 77.3 \pm1.5 $  & $ 75.0 \pm1.5 $  \\
+WZ & $ 360.4 \pm2.1 $  & $ 304.9 \pm1.9 $  & $ 256.4 \pm1.8 $  \\
+Single top & $ 35.3 \pm1.1 $  & $ 34.6 \pm1.0 $  & $ 10.6 \pm0.6 $  \\
+t#bar{t}   & $ 372 \pm7 $  & $ 365 \pm7 $  & $ 39.7 \pm2.4 $  \\
+W+jets     & $ 39 \pm7 $  & $ 39 \pm7 $  & $ 37 \pm7 $  \\
+Z/$\gamma^{*}$+jets$\rightarrow$ ll & $ ( 468.0 \pm0.4 ) \times10^{3} $  & $ ( 467.5 \pm0.4 ) \times10^{3} $  & $ ( 456.0 \pm0.4 ) \times10^{3} $ \\\hline
+Total simulated & $ ( 469.2 \pm0.4 ) \times10^{3} $  & $ ( 468.5 \pm0.4 ) \times10^{3} $  & $ ( 456.6 \pm0.4 ) \times10^{3} $ \\\hline
+data & $  473.8 \times10^{3} $  & $ 473.0 \times10^{3} $  & $  460.1 \times10^{3} $  \\\hline\hline
 \end{tabular}
 \end{center}
 \end{table}
