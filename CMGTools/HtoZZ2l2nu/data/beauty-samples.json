@@ -345,7 +345,7 @@
                 {
                   "dtag":"DoubleElectronMay10ReReco",
                   "dset":"/DoubleElectron/Run2011A-May10ReReco-v1/AOD",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/cerminar/zzllvv_42X_v1/DoubleElectron-May10ReReco"]
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/cerminar/zzllvv_42X_v1_fix/DoubleElectron-May10ReReco"]
 		},
                 {
                   "dtag":"MuEGMay10ReReco",

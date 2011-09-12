@@ -58,9 +58,10 @@ struct ZZ2l2nuSummary_t
   Float_t met5_phi ,met5_pt;
   Float_t met6_phi ,met6_pt;
   Float_t met7_phi ,met7_pt;
-  Float_t sumEt,     sumEtcentral;
-  Float_t chsumEt,   chsumEtcentral;
-  Float_t neutsumEt, neutsumEtcentral;
+  Float_t met8_phi ,met8_pt;
+  Float_t sumEt,     sumEtcentral,     primVertexSumEt,     otherVertexSumEt;
+  Float_t chsumEt,   chsumEtcentral,   primVertexChSumEt,   otherVertexChSumEt;
+  Float_t neutsumEt, neutsumEtcentral, primVertexNeutSumEt, otherVertexNeutSumEt;
 
   //gamma candidate
   Float_t g_px  , g_py  , g_pz  , g_en, g_iso1, g_iso2, g_iso3, g_sihih, g_sipip, g_r9, g_hoe, g_eop;

@@ -340,7 +340,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
                               indent=4 ) )
     fileObj.close()
     
-
+    
 
 """
 Parses a json file and retrieves the necessary info
@@ -509,6 +509,7 @@ print ' Samples defined in: ' +  samplesDB
 print ' Plots in: ' + inputDir
 runOverSamples( samplesDB, integratedLumi,inputDir, outputDir, getFromDir )
 print ' Output stored in: ' + outputDir
+os.system('cp ${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/html/index.html ' + outputDir)
 print ' Can browse the results using: ' + outputDir + '/index.html'
 
 #  LocalWords:  subcat

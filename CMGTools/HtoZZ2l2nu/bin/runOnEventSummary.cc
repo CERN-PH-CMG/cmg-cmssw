@@ -609,13 +609,6 @@ int main(int argc, char* argv[])
 	  PassJetVeto  = (VBFCentral30Jets==0);
 	  PassBJetVeto = (VBFNBJets==0);
 	  isVBF        = (Pass2Jet30 && PassdEtaCut && PassiMCut && PassBJetVeto && PassJetVeto && PassLeptonIn);
-	  
-	  //update for new selection
-	  if(isVBF)
-	    {
-	      eventCategory=EventCategory::VBF;
-	      subcat="vbf";
-	    }
 	}
       
 

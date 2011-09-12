@@ -7,10 +7,15 @@
   TString fitfunc2("pol2");
   TString titToMatch("#gamma");
   TString fname("plotter.root");
-  int ntouse(4);
-  TString evcat("mumuzsideband");
-  TString names[]={"metvspu","minMetvspu","minProjMetvspu", "redMetvspu"};
-  TString titles[]={"E_{T}^{miss}","min(E_{T}^{miss},trk-E_{T}^{miss})","min-proj-E_{T}^{miss}","red-E_{T}^{miss}"};
+//   int ntouse(4);
+//   TString evcat("mumuzsideband");
+//   TString names[]={"metvspu","minMetvspu","minProjMetvspu", "redMetvspu"};
+//   TString titles[]={"E_{T}^{miss}","min(E_{T}^{miss},trk-E_{T}^{miss})","min-proj-E_{T}^{miss}","red-E_{T}^{miss}"};
+
+  int ntouse(2);
+  TString evcat("mumu");
+  TString names[]={"njetsvspu","njetsincvspu"};
+  TString titles[]={"Central jets","All jets"};
 
 //   TString fitfunc("pol1");
 //   TString fitfunc2("pol2");
