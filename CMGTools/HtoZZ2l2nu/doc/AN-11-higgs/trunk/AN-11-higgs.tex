@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.17 $
+\RCS$Revision: 1.18 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.17 2011/09/11 21:24:27 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.18 2011/09/12 10:36:25 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -496,6 +496,43 @@ S/B           & 0.41           & 0.48      & 0.24     & 0.47            & 0.51  
 \includegraphics[width=0.46\textwidth]{img/ee_nbtags}
 \caption{b-tag  multiplicity distribution in di-muon ({\em left}) and di-electron ({\em right}).}
 \label{fig:btagging}
+\end{center}
+\end{figure}
+
+
+%%% VBF
+\item[Vector Boson Fusion]:  The identification of the events produced via Vector Boson Fusion (VBF) is based on the presence in the event of two leading jets in the forward regions of with an invariant mass of at least $450~GeV/c$ and a $\Delta\eta$-gap$>3.5$.
+In addition, these two jets must not be identified as b-jets.
+In order to reduce the potential impact of the pile-up on, only jets with $p_T>30~GeV/c$ are considered.
+Presence of additional jets ($p_T>15~GeV/c$) in the tracker acceptance is also forbidden.
+Finally, the two legs of the dilepton must be conained between the two leading jets.
+Fig.~\ref{fig:vbfdEta} shows the distribution of the $\eta$-gap between the two VBF jets while Fig.~\ref{fig:vbfiMass} shows the distribution of the invariant mass between the two VBF jets.  The Fig.~\ref{fig:vbfeventflow} shows the impact of each cuts on the signal and on the different backgrounds.
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.46\textwidth]{img/mumu_VBFdEta}
+\includegraphics[width=0.46\textwidth]{img/ee_VBFdEta}
+\caption{Distribution of $\Delta\eta$ between the two VBF jets in di-muon ({\em left}) and di-electron ({\em right}).}
+\label{fig:vbfdEta}
+\end{center}
+\end{figure}
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.46\textwidth]{img/mumu_VBFiMass}
+\includegraphics[width=0.46\textwidth]{img/ee_VBFiMass}
+\caption{Distribution of the te invariant mass between the two VBF jets in di-muon ({\em left}) and di-electron ({\em right}).}
+\label{fig:vbfiMass}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.46\textwidth]{img/mumu_VBFeventflowInc}
+\includegraphics[width=0.46\textwidth]{img/ee_VBFeventflowInc}
+\caption{Event flow for the VBF selection  in di-muon ({\em left}) and di-electron ({\em right}).}
+\label{fig:vbfeventflow}
 \end{center}
 \end{figure}
 
