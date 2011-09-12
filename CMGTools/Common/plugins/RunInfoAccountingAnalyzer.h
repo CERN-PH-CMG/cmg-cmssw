@@ -7,6 +7,7 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Framework/interface/Event.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenFilterInfo.h"
 // #include "FWCore/Framework/interface/Frameworkfwd.h"
 
 #include <string>
@@ -28,6 +29,8 @@ namespace cmg{
     virtual void endRun(edm::Run const&, edm::EventSetup const&);
 
   private:
+    void printFilterInfo(const edm::LuminosityBlock& iLumi, const GenFilterInfo& filter); 
+
     std::string  name_;
 
     cmg::RunInfoAccounting runInfoAccounting_;
@@ -40,9 +43,24 @@ namespace cmg{
 
     const edm::Run*  currentRun_;
 
+    /// number of events before preselection
     unsigned int nTotal_;
-
+    
+    /// number of events after preselection
     unsigned int nPassed_;
+
+    /// number of events generated (for the lumi sections seen)
+    unsigned int nGenTotal_;
+
+    /// number of events passing generator filter (for the lumi sections seen)
+    unsigned int nGenPassed_;
+
+    /// keeping track of the filtering efficiency after generator
+    edm::InputTag  genFilterInfoSrc_;
+    
+    /// keeping track of another filtering efficiency, e.g. at PF2PAT+PAT+CMG level
+    edm::InputTag  filterInfoSrc_;
+    
   };
 
 }

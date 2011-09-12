@@ -1,7 +1,6 @@
 #include "CMGTools/Common/plugins/RunInfoAccountingAnalyzer.h"
 #include "FWCore/Framework/interface/LuminosityBlock.h"
 #include "FWCore/Framework/interface/FileBlock.h"
-#include "SimDataFormats/GeneratorProducts/interface/GenFilterInfo.h"
 
 #include<TROOT.h>
 
@@ -12,7 +11,9 @@ using namespace std;
 cmg::RunInfoAccountingAnalyzer::RunInfoAccountingAnalyzer(const edm::ParameterSet& ps) : 
   name_( ps.getUntrackedParameter<std::string>("name","RunInfoAccounting")),
   runInfoAccounting_( *fs_, name_ ), runNumber_(-1), 
-  fileChanged_(false), currentRun_(0), nTotal_(0), nPassed_(0)
+  fileChanged_(false), currentRun_(0), nTotal_(0), nPassed_(0), nGenTotal_(0), nGenPassed_(0),
+  genFilterInfoSrc_(ps.getParameter<edm::InputTag>("genFilterInfoSrc") ),
+  filterInfoSrc_(ps.getParameter<edm::InputTag>("filterInfoSrc") )
 {}
 
 void cmg::RunInfoAccountingAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
@@ -54,25 +55,40 @@ void cmg::RunInfoAccountingAnalyzer::beginLuminosityBlock(edm::LuminosityBlock c
 }
 
 void cmg::RunInfoAccountingAnalyzer::endLuminosityBlock(edm::LuminosityBlock const& iLumi, edm::EventSetup const&) {
-  edm::Handle<GenFilterInfo> genFilter;
-  const bool hasGenFilterInfo = iLumi.getByType(genFilter);
-
-  if(!hasGenFilterInfo){
-    return; 
-  }
-
-  std::cout << "Lumi section " << iLumi.id() << std::endl;
-  std::cout << "N total = " << genFilter->numEventsTried() << " N passed = " << genFilter->numEventsPassed() << std::endl;
-  std::cout << "Generator filter efficiency = " << genFilter->filterEfficiency() << " +- " << genFilter->filterEfficiencyError() << std::endl;
-
+ 
   // At each lumi block, incrementing these counters with the number of events
   // tried and passed at this lumi.
   // also see the endRun function. 
 
-  nTotal_ += genFilter->numEventsTried();
-  nPassed_ += genFilter->numEventsPassed(); 
+  edm::Handle<GenFilterInfo> filter;
+  iLumi.getByLabel(filterInfoSrc_, filter);
+
+  std::cout<<"Preselection Filter Efficiency: "<<std::endl;
+  printFilterInfo(iLumi, *filter);
+
+  nTotal_ += filter->numEventsTried();
+  nPassed_ += filter->numEventsPassed(); 
+
+  // getting the number of events being generated, and passing the filter after generation. 
+  // this numbers will be used to derive the generator filtering efficiency
+
+  edm::Handle<GenFilterInfo> genFilter;
+  iLumi.getByLabel(genFilterInfoSrc_, genFilter);
+
+  nGenTotal_ += genFilter->numEventsTried();
+  nGenPassed_ += genFilter->numEventsPassed(); 
+  
+  std::cout<<"Gen Filter Efficiency: "<<std::endl;
+  printFilterInfo(iLumi, *genFilter);
+
 }
 
+void cmg::RunInfoAccountingAnalyzer::printFilterInfo(const edm::LuminosityBlock& iLumi, const GenFilterInfo& filter) {
+  
+  std::cout <<"Lumi section " << iLumi.id() << std::endl;
+  std::cout <<"N total = " << filter.numEventsTried() << " N passed = " << filter.numEventsPassed() << std::endl;
+  std::cout <<"Filter efficiency = " << filter.filterEfficiency() << " +- " << filter.filterEfficiencyError() << std::endl;  
+}
 
 void cmg::RunInfoAccountingAnalyzer::beginRun(edm::Run const& run, edm::EventSetup const&) {
 }
@@ -83,7 +99,7 @@ void cmg::RunInfoAccountingAnalyzer::endRun(edm::Run const& run, edm::EventSetup
   //COLIN need to find out how to get the run number from here
   runNumber_ = 1;
   currentRun_ = &run;
-  cout<<"RunInfoAccountingAnalyzer: new file, run="<<runNumber_<<endl;
-  runInfoAccounting_.processRunInfo( run, nTotal_, nPassed_);
+  cout<<"RunInfoAccountingAnalyzer: end of run, run="<<runNumber_<<endl;
+  runInfoAccounting_.processRunInfo( run, nTotal_, nPassed_, nGenTotal_, nGenPassed_);
 //   fileChanged_ = false;
 }
