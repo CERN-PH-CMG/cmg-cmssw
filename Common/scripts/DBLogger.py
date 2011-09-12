@@ -201,10 +201,9 @@ class DBLogger:
         return grid
     
     # Turns a grid name into a name that is easy to compare. (helper method)
-    def stdNameFromGrid(self,name):
+    def _stdNameFromGrid(self,name):
         
-        return name.rstrip(name.split("_")[-3]+ "_"+name.split("_")[-2]+"_"+name.split("_")[-1])
-        
+        return name.split("_"+name.split("_")[-3]+ "_"+name.split("_")[-2]+"_"+name.split("_")[-1])[0]
         
     def checkContiguity(self, targetDir):
         #GET ALL ROOT NAMES
@@ -230,9 +229,10 @@ class DBLogger:
                     # If item is from grid
                     if self.checkRootType(listItem):
                         #If items are the same
-                        if self.stdNameFromGrid(listItem)==self.stdNameFromGrid(filename) and listItem.split("_")[-2]==filename.split("_")[-2]:
+                        if self._stdNameFromGrid(listItem)==self._stdNameFromGrid(filename) and listItem.split("_")[-2]==filename.split("_")[-2]:
                             #print listItem
                             fileGroup.append(listItem)
+                            
 
                     # If item is not from grid
                     elif listItem.rstrip("_[1234567890]*\.root")==filename.rstrip("_[1234567890]*\.root"):
@@ -282,6 +282,7 @@ class DBLogger:
                 # If an element is erroneous call up a flag and move on to the next set
                 if i != count:
                     groupFlag = False
+                    
 
                 count+=1
 
