@@ -1,14 +1,18 @@
 
 {
-  int ntouse(4);
+  int ntouse(7);
   double wp(0.001);
 
-  TString evcat("mumuzsideband");
-  TString mpoint("H(200)");
-  TString names[]={"met","minMet","minProjMet", "redMet"};
-  TString titles[]={"E_{T}^{miss}","min(E_{T}^{miss},trk-E_{T}^{miss})","min-proj-E_{T}^{miss}","red-E_{T}^{miss}"};
-  int colors[]={1,kGreen-3,kGreen+3,kRed-3};
-  int styles[]={1,2,9,1};
+  TString evcat("mumu");
+  TString mpoint("H(400)");
+  //TString names[]={"met","minMet","minProjMet", "redMet"};
+  // TString titles[]={"E_{T}^{miss}","min(E_{T}^{miss},trk-E_{T}^{miss})","min-proj-E_{T}^{miss}","red-E_{T}^{miss}"};
+  
+  TString names[]={"met","cleanMet","centralMet","unclusteredMet", "clusteredMet", "redMet","cmsRedMet"};
+  TString titles[]={"E_{T}^{miss}","clean E_{T}^{miss}","central E_{T}^{miss}","unclustered E_{T}^{miss}","clustered E_{T}^{miss}","red-E_{T}^{miss}","cms-red-E_{T}^{miss}"};
+
+  int colors[]={1,kGreen-3,kGreen+3,kBlue,kBlue,kRed+3,kRed};
+  int styles[]={1,2,9,9,1,1,1};
 
   gSystem->Load("libCMGToolsHtoZZ2l2nu.so");
   setStyle();
