@@ -125,12 +125,22 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("met7_phi",      &evSummary_.met7_phi,     "met7_phi/F");
   t_->Branch("met7_pt",      &evSummary_.met7_pt,     "met7_pt/F");
 
+  t_->Branch("met8_phi",      &evSummary_.met8_phi,     "met8_phi/F");
+  t_->Branch("met8_pt",      &evSummary_.met8_pt,     "met8_pt/F");
+
   t_->Branch("sumEt",               &evSummary_.sumEt,            "sumEt/F");
   t_->Branch("sumEtcentral",        &evSummary_.sumEtcentral,     "sumEtcentral/F");
   t_->Branch("chsumEt",             &evSummary_.chsumEt,          "chsumEt/F");
   t_->Branch("chsumEtcentral",      &evSummary_.chsumEtcentral,   "chsumEtcentral/F");
   t_->Branch("neutsumEt",           &evSummary_.neutsumEt,        "neutsumEt/F");
   t_->Branch("neutsumEtcentral",    &evSummary_.neutsumEtcentral, "neutsumEtcentral/F");
+
+  t_->Branch("primVertexSumEt",         &evSummary_.primVertexSumEt,      "primVertexSumEt/F");
+  t_->Branch("otherVertexSumEt",        &evSummary_.otherVertexSumEt,     "otherVertexSumEt/F");
+  t_->Branch("primVertexChSumEt",       &evSummary_.primVertexChSumEt,    "primVertexChSumEt/F");
+  t_->Branch("otherVertexChSumEt",      &evSummary_.otherVertexChSumEt,   "otherVertexChSumEt/F");
+  t_->Branch("primVertexNeutSumEt",     &evSummary_.primVertexNeutSumEt,  "primVertexNeutSumEt/F");
+  t_->Branch("otherVertexNeutSumEt",    &evSummary_.otherVertexNeutSumEt, "otherVertexNeutSumEt/F");
 
   //Gamma Info
   t_->Branch("g_px",      &evSummary_.g_px,        "g_px/F");
@@ -281,12 +291,22 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("met7_phi")  ->SetAddress( &evSummary_.met7_phi);
   t_->GetBranch("met7_pt")  ->SetAddress( &evSummary_.met7_pt);
 
-  if(t_->GetBranch("sumEt"))               t_->GetBranch("sumEt")->SetAddress(&evSummary_.sumEt);
-  if(t_->GetBranch("sumEtcentral"))        t_->GetBranch("sumEtcentral")->SetAddress(&evSummary_.sumEtcentral);
-  if(t_->GetBranch("chsumEt"))             t_->GetBranch("chsumEt")->SetAddress(&evSummary_.chsumEt);
-  if(t_->GetBranch("chsumEtcentral"))      t_->GetBranch("chsumEtcentral")->SetAddress(&evSummary_.chsumEtcentral);
-  if(t_->GetBranch("neutsumEt"))           t_->GetBranch("neutsumEt")->SetAddress(&evSummary_.neutsumEt);
-  if(t_->GetBranch("neutsumEtcentral"))    t_->GetBranch("neutsumEtcentral")->SetAddress(&evSummary_.neutsumEtcentral);
+  if(t_->GetBranch("met8_phi")) t_->GetBranch("met8_phi")->SetAddress( &evSummary_.met8_phi );
+  if(t_->GetBranch("met8_pt"))  t_->GetBranch("met8_pt")->SetAddress( &evSummary_.met8_pt );
+
+  if(t_->GetBranch("sumEt"))                t_->GetBranch("sumEt")->SetAddress(&evSummary_.sumEt);
+  if(t_->GetBranch("sumEtcentral"))         t_->GetBranch("sumEtcentral")->SetAddress(&evSummary_.sumEtcentral);
+  if(t_->GetBranch("chsumEt"))              t_->GetBranch("chsumEt")->SetAddress(&evSummary_.chsumEt);
+  if(t_->GetBranch("chsumEtcentral"))       t_->GetBranch("chsumEtcentral")->SetAddress(&evSummary_.chsumEtcentral);
+  if(t_->GetBranch("neutsumEt"))            t_->GetBranch("neutsumEt")->SetAddress(&evSummary_.neutsumEt);
+  if(t_->GetBranch("neutsumEtcentral"))     t_->GetBranch("neutsumEtcentral")->SetAddress(&evSummary_.neutsumEtcentral);
+  if(t_->GetBranch("primVertexSumEt"))      t_->GetBranch("primVertexSumEt")->SetAddress(&evSummary_.primVertexSumEt);
+  if(t_->GetBranch("otherVertexSumEt"))     t_->GetBranch("otherVertexSumEt")->SetAddress(&evSummary_.otherVertexSumEt);
+  if(t_->GetBranch("primVertexChSumEt"))    t_->GetBranch("primVertexChSumEt")->SetAddress(&evSummary_.primVertexChSumEt);
+  if(t_->GetBranch("otherVertexChSumEt"))   t_->GetBranch("otherVertexChSumEt")->SetAddress(&evSummary_.otherVertexChSumEt);
+  if(t_->GetBranch("primVertexNeutSumEt"))  t_->GetBranch("primVertexNeutSumEt")->SetAddress(&evSummary_.primVertexNeutSumEt);
+  if(t_->GetBranch("otherVertexNeutSumEt")) t_->GetBranch("otherVertexNeutSumEt")->SetAddress(&evSummary_.otherVertexNeutSumEt);
+
   
   //Gamma Info
   t_->GetBranch("g_px")     ->SetAddress( &evSummary_.g_px);

@@ -96,6 +96,7 @@ ClusteredPFMetProducer::ClusteredPFMetProducer(const edm::ParameterSet& iConfig)
   controlHistos_("control")
 {
   produces<reco::PFMET>("clusteredPfMet");
+  produces<reco::PFMET>("clusteredOtherVtxPfMet");
   produces<reco::PFMET>("trkPfMet");
   produces<reco::PFMET>("globalPfMet");
   produces<reco::PFMET>("centralPfMet");
@@ -765,6 +766,7 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   
   // and finally put it in the event
   std::auto_ptr<reco::PFMET> clusteredPfMetPtr(new reco::PFMET);
+  std::auto_ptr<reco::PFMET> clusteredOtherVtxPfMetPtr(new reco::PFMET);
   std::auto_ptr<reco::PFMET> globalPfMetPtr(new reco::PFMET);
   std::auto_ptr<reco::PFMET> centralPfMetPtr(new reco::PFMET);
   std::auto_ptr<reco::PFMET> cleanPfMetPtr(new reco::PFMET);
@@ -798,6 +800,21 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   pfOutput.phi = atan2(-vtxPFMet[0].py(),-vtxPFMet[0].px());
   *clusteredPfMetPtr = pf.addInfo(pfRecoCandsH,pfOutput);
 
+  pfOutput.mex=0;
+  pfOutput.mey=0;
+  pfOutput.mez=0;
+  pfOutput.sumet=0;
+  for(size_t ivtx=1; ivtx<nVtx; ivtx++)
+    {
+      pfOutput.mex -= vtxPFMet[ivtx].px();
+      pfOutput.mey -= vtxPFMet[ivtx].py();
+      pfOutput.mez -= vtxPFMet[ivtx].pz();
+      pfOutput.sumet += vtxSumEt[ivtx];
+    }
+  pfOutput.met = sqrt(pow(pfOutput.mex,2)+pow(pfOutput.mey,2));
+  pfOutput.phi = atan2(pfOutput.mey,pfOutput.mex);
+  *clusteredOtherVtxPfMetPtr = pf.addInfo(pfRecoCandsH,pfOutput);
+  
   pfOutput.mex = -vtxChSum[0].px();
   pfOutput.mey = -vtxChSum[0].py();
   pfOutput.mez = -vtxChSum[0].pz();
@@ -815,15 +832,25 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   *cleanPfMetPtr = pf.addInfo(pfRecoCandsH,pfOutput);
 
   std::auto_ptr<std::vector<double> > globalPfMetSumsPtr(new std::vector<double> );
-  globalPfMetSumsPtr->resize(6,0);
+  globalPfMetSumsPtr->resize(12,0);
   (*globalPfMetSumsPtr)[0] = globalSumEt;
   (*globalPfMetSumsPtr)[1] = globalChSumEt;
   (*globalPfMetSumsPtr)[2] = globalNeutralSumEt;
   (*globalPfMetSumsPtr)[3] = global2v4SumEt;
   (*globalPfMetSumsPtr)[4] = globalChSumEt;
   (*globalPfMetSumsPtr)[5] = globalNeutral2v4SumEt;
+  (*globalPfMetSumsPtr)[6] = vtxSumEt[0];
+  (*globalPfMetSumsPtr)[7] = vtxChSumEt[0];
+  (*globalPfMetSumsPtr)[8] = vtxNeutralSumEt[0];
+  for(size_t ivtx=1; ivtx<nVtx; ivtx++)
+    {
+      (*globalPfMetSumsPtr)[9] += vtxSumEt[ivtx]; 
+      (*globalPfMetSumsPtr)[10] += vtxChSumEt[ivtx]; 
+      (*globalPfMetSumsPtr)[11] += vtxNeutralSumEt[ivtx]; 
+    }
 
   iEvent.put(clusteredPfMetPtr,"clusteredPfMet");
+  iEvent.put(clusteredOtherVtxPfMetPtr,"clusteredOtherVtxPfMet");
   iEvent.put(globalPfMetPtr,"globalPfMet");
   iEvent.put(centralPfMetPtr,"centralPfMet");
   iEvent.put(trkPfMetPtr,"trkPfMet");

@@ -701,12 +701,15 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.met5_phi = clusteredMets[1].phi(); ev.met5_pt=clusteredMets[1].pt();
 	ev.met6_phi = clusteredMets[2].phi(); ev.met6_pt=clusteredMets[2].pt();
 	ev.met7_phi = clusteredMets[3].phi(); ev.met7_pt=clusteredMets[3].pt();
+	ev.met8_phi = clusteredMets[4].phi(); ev.met8_pt=clusteredMets[4].pt();
       }
     if(sumEts.size()>0)
       {
-	ev.sumEt = sumEts[0];      ev.sumEtcentral = sumEts[1];
-	ev.chsumEt = sumEts[2];    ev.chsumEtcentral = sumEts[3];
-	ev.neutsumEt = sumEts[4];  ev.neutsumEtcentral = sumEts[5];
+	ev.sumEt = sumEts[0];              ev.sumEtcentral = sumEts[1];
+	ev.chsumEt = sumEts[2];            ev.chsumEtcentral = sumEts[3];
+	ev.neutsumEt = sumEts[4];          ev.neutsumEtcentral = sumEts[5];
+	ev.primVertexSumEt = sumEts[6];    ev.primVertexChSumEt = sumEts[7];    ev.primVertexNeutSumEt = sumEts[8];
+	ev.otherVertexSumEt = sumEts[9];   ev.otherVertexChSumEt = sumEts[10];  ev.otherVertexNeutSumEt = sumEts[11];
       }
 
     //classify the event
