@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+## Author: Peter Meckiffe
+## @ CERN, Meyrin
+## September 12th 2011
 
 from datetime import datetime
 from savannahConnect import savannahConnect
