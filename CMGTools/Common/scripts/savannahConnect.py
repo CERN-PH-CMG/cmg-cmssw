@@ -147,9 +147,11 @@ class savannahConnect:
             self.br.form['summary'] = dataset['PathList'][0]
             self.br.form['priority']= ['5']
             if dataset['Status']=="INVALID":
-                self.br.form.set_value_by_label(["Invalid"],'status')
+                self.br.form.set_value_by_label(["Invalid"],'resolution_id')
+            else:
+                self.br.form.set_value_by_label(["Done"],'resolution_id')
             self.br.form['details']= self.datasetString(dataset, files, tags, castorDir)
-            self.br.form.set_value_by_label(["Done"],'resolution_id')
+            
 
             # If user does not exist in group, savannah entry cannot be assigned, so do not submit
             try:
