@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.18 $
+\RCS$Revision: 1.19 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.18 2011/09/12 10:36:25 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.19 2011/09/12 14:17:20 querten Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -1248,7 +1248,37 @@ All backgrounds, as predicted by simulation, are considered.}
 \end{center}
 \end{figure}
 
+\section{Appendix: Lepton Efficiency}
+\label{sec:app:leptoefficiency}
   
+\subsection{Muon Identification Efficiency}
+We compute the lepton identification efficiency using the
+tag-and-probe method. The events for this measurement are selected
+usong single muon triggers. Tagged muons are asked to pass the VBTF
+requirements and to have a combined relative isolation smaller than
+0.1.
+The probe is a simple track with $p_{T} > 5~\GeV$.
+The efficiencies are computed in bins of $\pt$ and $\eta$ bins of the
+probe track using an unbinned likelihood fit of the mass spectrum
+(between 70 and 130~$\GeV$ for
+both passing and failing probes. The PDF used for the signal is a
+double voigtian while the background is modeled used an exponential.
+
+The identification and identificaiton + isolation efficiencies are
+shown in Figure~\ref{fig:TrkIsoEff}.
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.45\textwidth]{img/cEffPtVsEta_passingTrk}\\
+\includegraphics[width=0.45\textwidth]{img/cEffPtVsEta_passingIso}\\
+
+\caption{Efficiency for muon identification (top) and muon
+  identification and isolation in bins of $\pt$ and $\eta$ for the
+  probe track..}
+\label{fig:TrkIsoEff}
+\end{center}
+\end{figure}
+
 \end{document}
 
 
