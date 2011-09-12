@@ -39,6 +39,7 @@ TH1D *getHistogramForVariable(TString variable)
 {
   TH1D *h=0;
   if(variable=="dphill")         h = new TH1D( variable, ";#Delta#phi(l^{(1)},l^{(2)});Events",100,-3.2,3.2);
+  if(variable=="dphizleadl")     h = new TH1D( variable, ";#Delta#phi(l^{(1)},Z);Events",100,-3.2,3.2);
   if(variable=="detall")         h = new TH1D( variable, ";#Delta#eta(l^{(1)},l^{(2)});Events",100,-5,5);
   if(variable=="drll")           h = new TH1D( variable, ";#DeltaR(l^{(1)},l^{(2)});Events",100,0,6);
   if(variable=="mindrlz")        h = new TH1D( variable, ";min #DeltaR(l,Z);Events",100,0,6);
@@ -50,7 +51,7 @@ TH1D *getHistogramForVariable(TString variable)
   if(variable=="mtl2")           h = new TH1D( variable, ";M_{T}(l^{(2)},E_{T}^{miss});Events", 100,0,1000);
   if(variable=="mtsum")          h = new TH1D( variable, ";#Sigma M_{T}(l^{(i)},E_{T}^{miss});Events", 100,0,1000);
 
-  if(variable=="zmass")          h = new TH1D( variable, ";M^{ll};Events", 100,91-15,91+15);
+  if(variable=="zmass")          h = new TH1D( variable, ";M^{ll};Events", 100,91-31,91+31);
   if(variable=="zpt")            h = new TH1D( variable, ";p_{T}^{ll};Events", 100,0,400);
   if(variable=="zeta")           h = new TH1D( variable, ";#eta^{ll};Events", 100,-5,5);
   if(variable=="met")            h = new TH1D( variable, ";E_{T}^{miss};Events", 100,0,500);
@@ -130,11 +131,11 @@ int main(int argc, char* argv[])
   std::vector<Float_t> tmvaVars(varsList.size()+1,0);
 
   //control histograms for variables of interest are booked by default
-  for(size_t ivar=0; ivar<varsList.size(); ivar++) 
-    {
-      TH1 *h=getHistogramForVariable( varsList[ivar] );
-      controlHistos.addHistogram( h );
-    }
+  //   for(size_t ivar=0; ivar<varsList.size(); ivar++) 
+  //     {
+  //       TH1 *h=getHistogramForVariable( varsList[ivar] );
+  //       controlHistos.addHistogram( h );
+  //     }
   if(useMVA)
     {
       std::cout << "==> Start TMVA Classification with " << methodList.size() << " methods and " << varsList.size() << " variables" << std::endl;
@@ -168,43 +169,97 @@ int main(int argc, char* argv[])
 	}
     }
   
-  //bool useFitter = runProcess.getParameter<bool>("useFitter");
-
-  //book the other control histograms
+  
+  //book the control histograms
   TH1F *h=new TH1F ("eventflow", ";Step;Events", 7,0,7);
   h->GetXaxis()->SetBinLabel(2,"Preselected");
   h->GetXaxis()->SetBinLabel(3,"|M-M_{Z}|<15");
   h->GetXaxis()->SetBinLabel(4,"3^{rd}-lepton veto");
   h->GetXaxis()->SetBinLabel(5,"b-veto");
-  h->GetXaxis()->SetBinLabel(6,"red-E_{T}^{miss}>39");
-  h->GetXaxis()->SetBinLabel(7,"red-E_{T}^{miss}>57");
+  h->GetXaxis()->SetBinLabel(6,"red-E_{T}^{miss}>medium");
+  h->GetXaxis()->SetBinLabel(7,"red-E_{T}^{miss}>tight");
   controlHistos.addHistogram( h );
 
+  h=new TH1F ("eventCategory", ";Event Category;Events", 4,0,4);
+  h->GetXaxis()->SetBinLabel(1,"=0 jets");
+  h->GetXaxis()->SetBinLabel(2,"=1 jets");
+  h->GetXaxis()->SetBinLabel(3,"#geq 2 jets");
+  h->GetXaxis()->SetBinLabel(4,"VBF");
+  controlHistos.addHistogram( h );
+
+  //vertex
   controlHistos.addHistogram( new TH1F("nvtx",";Vertices;Events",25,0,25) );
 
-  controlHistos.addHistogram( new TH1F("recozmass", ";M^{ll};Events", 100,91-31,91+31) );
-  controlHistos.addHistogram( new TH1F("recodphill",";#Delta#phi(l^{(1)},l^{(2)});Events",100,-3.2,3.2) );
-  h=new TH1F("nleptons",";Leptons;Events",3,0,3);
+  //dilepton control 
+  controlHistos.addHistogram( getHistogramForVariable("zeta") );
+  controlHistos.addHistogram( getHistogramForVariable("zpt") );
+  controlHistos.addHistogram( new TH1F("zrank",";Z hardness;Events",5,0,5) );
+  h=(TH1F *)getHistogramForVariable("zmass");
   controlHistos.addHistogram( h );
+  h=new TH1F ("zmassregionCtr", ";Selection region;Events", 18,0,18);
+  h->GetXaxis()->SetBinLabel(1, "Z");
+  h->GetXaxis()->SetBinLabel(2, "Z,b");
+  h->GetXaxis()->SetBinLabel(3, "Z,b,=2l");
+  h->GetXaxis()->SetBinLabel(4, "Z,b,=2l,medium");
+  h->GetXaxis()->SetBinLabel(5, "Z,b,=2l,tight");
+  h->GetXaxis()->SetBinLabel(6, "~Z");
+  h->GetXaxis()->SetBinLabel(7, "~Z,b");
+  h->GetXaxis()->SetBinLabel(8, "~Z,b,=2l");
+  h->GetXaxis()->SetBinLabel(9, "~Z,b,=2l,medium");
+  h->GetXaxis()->SetBinLabel(10,"~Z,b,=2l,tight");
+  h->GetXaxis()->SetBinLabel(11,"Z,~b");
+  h->GetXaxis()->SetBinLabel(12,"Z,~b,=2l");
+  h->GetXaxis()->SetBinLabel(13,"Z,~b,=2l,medium");
+  h->GetXaxis()->SetBinLabel(14,"Z,~b,=2l,tight");
+  h->GetXaxis()->SetBinLabel(15,"~Z,~b");
+  h->GetXaxis()->SetBinLabel(16,"~Z,~b,=2l");
+  h->GetXaxis()->SetBinLabel(17,"~Z,~b,=2l,medium");
+  h->GetXaxis()->SetBinLabel(18,"~Z,~b,=2l,tight");
+  controlHistos.addHistogram( h );
+
+  controlHistos.addHistogram( getHistogramForVariable("dphill") );
+  controlHistos.addHistogram( getHistogramForVariable("drll") );
+  controlHistos.addHistogram( getHistogramForVariable("dphizleadl") );
+  controlHistos.addHistogram( getHistogramForVariable("mindrlz") );
+  controlHistos.addHistogram( getHistogramForVariable("maxdrlz") );
+  controlHistos.addHistogram( getHistogramForVariable("ptsum") );
+  controlHistos.addHistogram( getHistogramForVariable("mtsum") );
+  controlHistos.addHistogram( getHistogramForVariable("mtl1") );
+  controlHistos.addHistogram( getHistogramForVariable("mtl2") );
+
+  //object multiplicity
+  h=new TH1F("nleptons",";Leptons;Events",3,0,3);
   h->GetXaxis()->SetBinLabel(1,"=2 leptons");
   h->GetXaxis()->SetBinLabel(2,"=3 leptons");
   h->GetXaxis()->SetBinLabel(3,"#geq 4 leptons");
-
-  h=new TH1F("njets",";Jet multiplicity (p_{T}>15 GeV/c #wedge |#eta|<2.5);Events",4,0,4);
-  h->GetXaxis()->SetBinLabel(1,"0");
-  h->GetXaxis()->SetBinLabel(2,"1");
-  h->GetXaxis()->SetBinLabel(3,"2");
-  h->GetXaxis()->SetBinLabel(4,"#geq 3");
+  controlHistos.addHistogram( h );
+  
+  h=new TH1F("njets",";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5);
+  h->GetXaxis()->SetBinLabel(1,"=0");
+  h->GetXaxis()->SetBinLabel(2,"=1");
+  h->GetXaxis()->SetBinLabel(3,"=2");
+  h->GetXaxis()->SetBinLabel(4,"=3");
+  h->GetXaxis()->SetBinLabel(5,"#geq 4");
   controlHistos.addHistogram(h);
+  controlHistos.addHistogram((TH1F *)h->Clone("njets3leptons"));
 
-  controlHistos.addHistogram( new TH1F ("eventCategory", ";Event Category;Events", 4,0,4) );
-
-  //b-veto cuts
+  controlHistos.addHistogram( new TH2F ("njetsvspu", ";Pileup events;Jets;Events", 25,0,25,5,0,5) );  
+  TH2F *h2 = (TH2F *) controlHistos.getHisto("njetsvspu");
+  h2->GetYaxis()->SetBinLabel(1,"=0");
+  h2->GetYaxis()->SetBinLabel(2,"=1");
+  h2->GetYaxis()->SetBinLabel(3,"=2");
+  h2->GetYaxis()->SetBinLabel(4,"=3");
+  h2->GetYaxis()->SetBinLabel(5,"#geq 4");
+  controlHistos.addHistogram( (TH2F *)h2->Clone("njetsincvspu") );
+ 
   h = new TH1F ("nbtags", ";b-tag multiplicity; Events", 3,0,3);  
   h->GetXaxis()->SetBinLabel(1,"0 b-tags");
   h->GetXaxis()->SetBinLabel(2,"1 b-tags");
   h->GetXaxis()->SetBinLabel(3,"#geq 2 b-tags");
   controlHistos.addHistogram( h );
+  controlHistos.addHistogram( (TH1F *)h->Clone("nbtags3leptons"));
+
+  //used to optimize the b-veto
   h=new TH1F ("npassbveto", ";Pass b-tag veto; Events", 6,0,6);
   h->GetXaxis()->SetBinLabel(1,"SSVHEM");
   h->GetXaxis()->SetBinLabel(2,"TCHEL");
@@ -213,39 +268,37 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(5,"SSVHEM || TCHEL");
   h->GetXaxis()->SetBinLabel(6,"SSVHEM || JBPL");
   controlHistos.addHistogram( h );
-  controlHistos.addHistogram( (TH1F *)h->Clone("npassbveto_20to30" ) );
 
   //met control
-  controlHistos.addHistogram( new TH1D( "met", ";E_{T}^{miss};Events", 100,0,500) );
-  controlHistos.addHistogram( new TProfile ("metprof", ";Pileup events;E_{T}^{miss}", 15,0,15) ); 
-  controlHistos.addHistogram( new TH2F ("metvspu", ";Pileup events;E_{T}^{miss}", 15,0,15,100,0,500) );  
-  TString redmetCats[] = {"","_d0"};
-  for(size_t i=0; i<2; i++)
+  TString metTypes[]  = {"met",          "projMet",           "minMet",           "minProjMet",            "redMet",          "redMetD0",              "centralMet",           "cleanMet",          "unclusteredMet", "clusteredMet", "cmsRedMet"};
+  TString metTitles[] = {"E_{T}^{miss}", "proj-E_{T}^{miss}", "min-E_{T}^{miss}", "min-proj-E_{T}^{miss}", "red-E_{T}^{miss}", "red-E_{T}^{miss}(D0)", "central-E_{T}^{miss}", "clean-E_{T}^{miss}", "unclustered-E_{T}^{miss}", "clustered-E_{T}^{miss}", "cms-red-E^{T}_{miss}" };
+  for(size_t i=0; i<sizeof(metTypes)/sizeof(TString);i++)
     {
-      controlHistos.addHistogram( new TH1D( "redMet"+redmetCats[i], ";red-E_{T}^{miss};Events", 100,0,500) );
-      controlHistos.addHistogram( new TH2F ("redMetvspu"+redmetCats[i], ";Pileup events;red-E_{T}^{miss}", 15,0,15,100,0,500) );  
+      controlHistos.addHistogram( new TH1D( metTypes[i], ";"+metTitles[i]+";Events", 100,0,500) );
+      controlHistos.addHistogram( new TH2F (metTypes[i]+"vspu", ";Pileup events;"+metTitles[i]+";Events", 25,0,25,100,0,500) );  
     }
-  controlHistos.addHistogram( new TProfile ("redMetprof", ";Pileup events;red-E_{T}^{miss}", 15,0,15) );  
-
-  controlHistos.addHistogram( (TH1D *)(new TH2D ("redMetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
-  controlHistos.addHistogram( new TH1D( "projMet", ";proj-E_{T}^{miss};Events", 100,0,500) );
-  controlHistos.addHistogram( new TProfile ("projMetprof", ";Pileup events;projected E_{T}^{miss}", 15,0,15) );  
-  controlHistos.addHistogram( new TH2F ("projMetvspu", ";Pileup events;projected E_{T}^{miss}", 15,0,15,100,0,500) );  
-  controlHistos.addHistogram( new TH1D( "minMet", ";min-E_{T}^{miss};Events", 100,0,500) );
-  controlHistos.addHistogram( new TProfile ("minMetprof", ";Pileup events;min-E_{T}^{miss}", 15,0,15) );  
-  controlHistos.addHistogram( new TH2F ("minMetvspu", ";Pileup events;min-E_{T}^{miss}", 15,0,15,100,0,500) );  
-  controlHistos.addHistogram( new TH1D( "minProjMet", ";min-proj-E_{T}^{miss};Events", 100,0,500) );
-  controlHistos.addHistogram( new TProfile ("minProjMetprof", ";Pileup events;min-proj-E_{T}^{miss}", 15,0,15) );  
-  controlHistos.addHistogram( new TH2F ("minProjMetvspu", ";Pileup events;min-proj-E_{T}^{miss}", 15,0,15,100,0,500) );  
+  controlHistos.addHistogram( new TH2D ("redMetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) );
+  controlHistos.addHistogram( new TH2D ("cmsRedMetcomps", ";cms-red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) );
+  h=(TH1F *)getHistogramForVariable("redMetL");
+  controlHistos.addHistogram( h );
+  controlHistos.addHistogram( (TH1F *)h->Clone("cmsRedMetL") );
+  h=(TH1F *)getHistogramForVariable("redMetT");
+  controlHistos.addHistogram( h );
+  controlHistos.addHistogram( (TH1F *)h->Clone("cmsRedMetT") );
   controlHistos.addHistogram( new TH2F ("metvstkmet", ";E_{T}^{miss};tk-E_{T}^{miss}", 100,0,500,100,0,500) );  
-  controlHistos.addHistogram( getHistogramForVariable("redMetL") );
-  controlHistos.addHistogram( getHistogramForVariable("redMetT") );
+  controlHistos.addHistogram( new TH2F ("metvsclusteredMet", ";E_{T}^{miss};clustered-E_{T}^{miss}", 100,0,500,100,0,500) );  
+  controlHistos.addHistogram( new TH2F ("metvscentralMet", ";E_{T}^{miss};central-E_{T}^{miss}", 100,0,500,100,0,500) );  
+  
+  controlHistos.addHistogram( new TH1D( "sumEt",                ";#Sigma E_{T} [GeV];Events", 100,0,500) );
+  controlHistos.addHistogram( new TH1D( "chSumEtFrac",          ";#Sigma E_{T}^{charged}/#Sigma E_{T};Events", 100,0,1.) );
+  controlHistos.addHistogram( new TH1D( "neutSumEtFrac",        ";#Sigma E_{T}^{neutral}/#Sigma E_{T};Events", 100,0,1.) );
+  controlHistos.addHistogram( new TH1D( "centralSumEtFrac",     ";#Sigma E_{T}(|#eta|<2.4)/#Sigma E_{T};Events", 100,0,1.) );
+  controlHistos.addHistogram( new TH1D( "centralChSumEtFrac",   ";#Sigma E_{T}^{charged}(|#eta|<2.4)/#Sigma E_{T}(|#eta|<2.4);Events", 100,0,1.) );
+  controlHistos.addHistogram( new TH1D( "centralNeutSumEtFrac", ";#Sigma E_{T}^{neutral}(|#eta|<2.4)/#Sigma E_{T}(|#eta|<2.4);Events", 100,0,1.) );
 
   //cut optimization plots
-  controlHistos.addHistogram( new TH1F ("cutOptMedium_dphill", ";#delta #phi^{l,l};#red-E_{T}^{miss,#parallel};",25,0.,3.2) );
-  controlHistos.addHistogram( new TH2F ("cutOptMedium_summt_vs_redMetL", ";#Sigma M_{T};#red-E_{T}^{miss,#parallel};",50,0,2000,25, -251.,249) );
-  controlHistos.addHistogram( new TH1F ("cutOptTight_dphill", ";#delta #phi^{l,l};#red-E_{T}^{miss,#parallel};",25, 0. , 3.2 ) );
-  controlHistos.addHistogram( new TH2F ("cutOptTight_summt_vs_redMetL", ";#Sigma M_{T};#red-E_{T}^{miss,#parallel};",50,0,2000,25, -251.,249) );
+  controlHistos.addHistogram( new TH1F ("cutOptMediumdphill", ";#delta #phi^{l,l};#red-E_{T}^{miss,#parallel};",25,0.,3.2) );
+  controlHistos.addHistogram( new TH2F ("cutOptMediumsummtvsredMetL", ";#Sigma M_{T};#red-E_{T}^{miss,#parallel};",50,0,2000,25, -251.,249) );
   
   //cut and count
   h = new TH1F ("finaleventflow",";Category;Event count;",5,0,5);
@@ -278,22 +331,18 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1F ("VBFNBJets30NM1C", ";N BJets (pT>30);Events", 10,0,10) );
   controlHistos.addHistogram( new TH2F ("VBFdEtaiMassNM1C", ";#Delta#eta;Inv. Mass", 100, 0,10,100, 0.,2000) );
   controlHistos.addHistogram( new TH2F ("VBFdEtaiMassNM1C2", ";#Delta#eta;Inv. Mass", 100, 0,10,100, 0.,2000) );
-  controlHistos.addHistogram( getHistogramForVariable("mtsum") );
-  controlHistos.addHistogram( getHistogramForVariable("mtl1") );
-  controlHistos.addHistogram( getHistogramForVariable("mtl2") );
-
+  controlHistos.addHistogram( new TH1F ("VBFdEta3rdlepton", ";#Delta#eta", 100, 0,10) );
+  controlHistos.addHistogram( new TH1F ("VBFiMass3rdlepton",";Inv. Mass", 100, 0.,2000) );
+  controlHistos.addHistogram( new TH1F ("VBFcen30JetVeto3rdlepton",";Central 30 Jet Veto", 10, 0.,10) );
+  controlHistos.addHistogram( new TH1F ("VBFNBJets303rdlepton", ";N BJets (pT>30);Events", 10,0,10) );
 
   //replicate monitor for interesting categories
   TString cats[]={"ee","emu","mumu"};
   TString subCats[]={"","eq0jets","eq1jets","geq2jets","vbf"};
-  TString subsubCats[]={"","zsideband", "3rdleptons"};                                  //,"jer","jesup","jesdown","nopu","flatpu","btag"};
   for(size_t icat=0;icat<sizeof(cats)/sizeof(TString); icat++)
     for(size_t isubcat=0;isubcat<sizeof(subCats)/sizeof(TString); isubcat++)
-      for(size_t itopcat=0;itopcat<sizeof(subsubCats)/sizeof(TString); itopcat++)
-	controlHistos.initMonitorForStep(cats[icat]+subCats[isubcat]+subsubCats[itopcat]);
-
-
-
+      controlHistos.initMonitorForStep(cats[icat]+subCats[isubcat]);
+  
   //open the file and get events tree
   ZZ2l2nuSummaryHandler evSummaryHandler;
   TFile *file = TFile::Open(url);
@@ -379,10 +428,18 @@ int main(int argc, char* argv[])
       float weight=ev.weight;
       if(!isMC) weight=1;
       else if(ev.hptWeights[0]>1e-3) weight *= ev.hptWeights[0];
-       
-      //classify the event
+  
+      //
+      //event categories
+      //
+      TString evcat("");
+      if(ev.cat==dilepton::EMU)  evcat="emu";
+      if(ev.cat==dilepton::MUMU) evcat="mumu";
+      if(ev.cat==dilepton::EE)   evcat="ee";
+     
       int eventCategory = eventClassifComp.Get(phys);
       TString subcat    = eventClassifComp.GetLabel(eventCategory);
+      
 
       //MC truth
       // LorentzVector genzll(0,0,0,0), genzvv(0,0,0,0), higgs(0,0,0,0);
@@ -393,15 +450,12 @@ int main(int argc, char* argv[])
       //  higgs = phys.genhiggs[0];	
       //  }
 
-      //event categories
-      TString evcat("");
-      if(ev.cat==dilepton::EMU)  evcat="emu";
-      if(ev.cat==dilepton::MUMU) evcat="mumu";
-      if(ev.cat==dilepton::EE)   evcat="ee";
-
       //start analysis by the jet kinematics so that one can loop over JER/JES/b-tag systematic variations
       LorentzVector recoMetP4=phys.met[0];
       LorentzVector trkMetP4=phys.met[1];
+      LorentzVector clusteredMetP4=phys.met[3];
+      LorentzVector centralMetP4=phys.met[5];
+      LorentzVector cleanMetP4=phys.met[6];
       LorentzVectorCollection recoJetsP4;
 
       //uncomment the following lines when ready for evaluation of systematics
@@ -421,12 +475,12 @@ int main(int argc, char* argv[])
       //          LorentzVectorCollection jetsp4=jetVars[ivar];
 
       //count b-tags
-      int njets(0);
+      int njets(0),njetsinc(0);
       int nbtags(0),        nbtags_ssvhem(0),        nbtags_tchel(0),        nbtags_tche2(0),        nbtags_jbpl(0),        nbtags_ssvhemORtchel(0);
-      int nbtags_20to30(0), nbtags_ssvhem_20to30(0), nbtags_tchel_20to30(0), nbtags_tche2_20to30(0), nbtags_jbpl_20to30(0), nbtags_ssvhemORtchel_20to30(0);
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++) 
 	{
 	  recoJetsP4.push_back( phys.jets[ijet] );
+	  njetsinc++;
 	  if(fabs(phys.jets[ijet].eta())<2.5)
 	    {
 	      njets++;
@@ -443,15 +497,6 @@ int main(int argc, char* argv[])
 		  nbtags_jbpl     += passJBPL;
 		  nbtags_ssvhemORtchel += (passTCHEL || passSSVHEM);
 		}
-	      else if(phys.jets[ijet].pt()>20)
-		{
-		  nbtags_20to30          += (passJBPL || passSSVHEM);
-		  nbtags_ssvhem_20to30   += passSSVHEM;
-		  nbtags_tchel_20to30    += passTCHEL;
-		  nbtags_tche2_20to30    += passTCHE2;
-		  nbtags_jbpl_20to30     += passJBPL;
-		  nbtags_ssvhemORtchel_20to30 += (passTCHEL || passSSVHEM);
-		}
 	    }
 	}
 
@@ -462,6 +507,9 @@ int main(int argc, char* argv[])
       //z+met kinematics
       LorentzVector zll  = phys.leptons[0]+phys.leptons[1];
       LorentzVector zvv  = metP4;
+      int zrank(0);
+      for(size_t ijet=0; ijet<phys.jets.size(); ijet++) 
+	if(phys.jets[ijet].pt()>zll.pt()) zrank++;
       Float_t dphill     = deltaPhi(phys.leptons[0].phi(),phys.leptons[1].phi());
       Float_t detall     = phys.leptons[0].eta()-phys.leptons[1].eta();
       Float_t drll       = deltaR(phys.leptons[0],phys.leptons[1]);
@@ -482,7 +530,6 @@ int main(int argc, char* argv[])
       Float_t metoverzpt = met/zpt;
       Float_t dphizleadl = ptl1>ptl2 ? deltaPhi(phys.leptons[0].phi(),zll.phi()) : deltaPhi(phys.leptons[1].phi(),zll.phi()) ;
 
-
       //redmet
       rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsp4, zvv );
       Float_t redMet_d0  = rmetComp.reducedMET(ReducedMETComputer::D0);
@@ -498,9 +545,33 @@ int main(int argc, char* argv[])
       //minimized met
       Float_t projTrkMet     = pmetComp.compute(phys.leptons[0],phys.leptons[1], trkMetP4);
       Float_t minMet         = min(trkMetP4.pt(),zvv.pt());
-      Float_t minMetoverzpt  = minMet/zpt;
+      //      Float_t minMetoverzpt  = minMet/zpt;
       Float_t minProjMet        = min(fabs(projMet),fabs(projTrkMet));
-      Float_t minProjMetoverzpt   = minMet/zpt;
+      // Float_t minProjMetoverzpt   = minMet/zpt;
+      
+      Float_t cleanMet   = min(zvv.pt(),cleanMetP4.pt());
+      Float_t centralMet = min(zvv.pt(),centralMetP4.pt());
+      Float_t unclusteredMet = min(cleanMet,centralMet);
+      Float_t clusteredMet = clusteredMetP4.pt();
+      
+      //cms red met
+      TVector2 clusteredMetProj=rmetComp.project(clusteredMetP4);
+      TVector2 cleanMetProj=rmetComp.project(cleanMetP4);
+      TVector2 centralMetProj=rmetComp.project(centralMetP4);
+      TVector2 metProj=rmetComp.project(zvv);
+      double cmsRedMetL=min(fabs(clusteredMetProj.Py()),
+			    min(
+				min(fabs(metProj.Py()),fabs(cleanMetProj.Py())   ),
+				min(fabs(metProj.Py()),fabs(centralMetProj.Py()) )
+				)
+			    );
+      double cmsRedMetT=min(fabs(clusteredMetProj.Px()),
+			    min(
+				min(fabs(metProj.Px()),fabs(cleanMetProj.Px())   ),
+				min(fabs(metProj.Px()),fabs(centralMetProj.Px()) )
+				)
+			    );
+      double cmsRedMet=sqrt(pow(cmsRedMetL,2)+pow(cmsRedMetT,2));
 
       //vbf variables 
       bool isVBF        = false;
@@ -517,24 +588,36 @@ int main(int argc, char* argv[])
       int     VBFNBJets=0;
       LorentzVector VBFSyst;
 
-      if(phys.jets.size()>=2 && phys.jets [0].pt()>30.0 && phys.jets [1].pt()>30.0){
-         VBFSyst =  phys.jets[0] + phys.jets[1];
-         VBFdEta = fabs(   phys.jets[0].eta() -    phys.jets[1].eta()); if(phys.jets[0].eta()* phys.jets[1].eta()>0)VBFdEta*=-1;
-         int VBFCentral30Jets = 0;
-         double MinEta, MaxEta;
-         if(phys.jets[0].eta()<phys.jets[1].eta()){MinEta=phys.jets[0].eta(); MaxEta=phys.jets[1].eta();}else{MinEta=phys.jets[1].eta(); MaxEta=phys.jets[0].eta();}
-         if(phys.leptons[0].eta()>MinEta && phys.leptons[0].eta()<MaxEta)VBFCentralLeptons++;  if(phys.leptons[1].eta()>MinEta && phys.leptons[1].eta()<MaxEta)VBFCentralLeptons++;
-         for(size_t ijet=2; ijet<phys.jets.size(); ijet++) {if(phys.jets[ijet].pt()<30)continue; if(phys.jets[ijet].eta()>MinEta && phys.jets[ijet].eta()<MaxEta)VBFCentral30Jets++;  if(phys.jets[ijet].btag2>1.33 || phys.jets[ijet].btag3>1.74)VBFNBJets++; }
-
-         Pass2Jet30   = true;
-         PassdEtaCut  = (fabs(VBFdEta)>4.0);
-         PassiMCut    = (VBFSyst.M()>500);
-         PassLeptonIn = (VBFCentralLeptons==2);
-         PassJetVeto  = (VBFCentral30Jets==0);
-         PassBJetVeto = (VBFNBJets==0);
-         isVBF        = (Pass2Jet30 && PassdEtaCut && PassiMCut && PassBJetVeto && PassJetVeto && PassLeptonIn);
-      }
-
+      if(phys.jets.size()>=2 && phys.jets [0].pt()>30.0 && phys.jets [1].pt()>30.0)
+	{
+	  VBFSyst =  phys.jets[0] + phys.jets[1];
+	  VBFdEta = fabs(   phys.jets[0].eta() -    phys.jets[1].eta()); if(phys.jets[0].eta()* phys.jets[1].eta()>0)VBFdEta*=-1;
+	  int VBFCentral30Jets = 0;
+	  double MinEta, MaxEta;
+	  if(phys.jets[0].eta()<phys.jets[1].eta()){MinEta=phys.jets[0].eta(); MaxEta=phys.jets[1].eta();}else{MinEta=phys.jets[1].eta(); MaxEta=phys.jets[0].eta();}
+	  if(phys.leptons[0].eta()>MinEta && phys.leptons[0].eta()<MaxEta)VBFCentralLeptons++;  if(phys.leptons[1].eta()>MinEta && phys.leptons[1].eta()<MaxEta)VBFCentralLeptons++;
+	  for(size_t ijet=2; ijet<phys.jets.size(); ijet++) {
+	    if(phys.jets[ijet].pt()<30)continue; 
+	    if(phys.jets[ijet].eta()>MinEta && phys.jets[ijet].eta()<MaxEta)VBFCentral30Jets++; 
+	    if(phys.jets[ijet].btag2>1.33 || phys.jets[ijet].btag3>1.74)VBFNBJets++; 
+	  }
+	  
+	  Pass2Jet30   = true;
+	  PassdEtaCut  = (fabs(VBFdEta)>4.0);
+	  PassiMCut    = (VBFSyst.M()>500);
+	  PassLeptonIn = (VBFCentralLeptons==2);
+	  PassJetVeto  = (VBFCentral30Jets==0);
+	  PassBJetVeto = (VBFNBJets==0);
+	  isVBF        = (Pass2Jet30 && PassdEtaCut && PassiMCut && PassBJetVeto && PassJetVeto && PassLeptonIn);
+	  
+	  //update for new selection
+	  if(isVBF)
+	    {
+	      eventCategory=EventCategory::VBF;
+	      subcat="vbf";
+	    }
+	}
+      
 
       //set the variables to be used in the MVA evaluation (independently of its use)
       for(size_t ivar=0; ivar<varsList.size(); ivar++) 
@@ -570,7 +653,9 @@ int main(int argc, char* argv[])
 	}
       tmvaVars[varsList.size()] = eventCategory;
 
-      //MVA analysis
+      //
+      //MVA evaluation
+      //
       if(useMVA)
 	{
 	  //evaluate the methods
@@ -592,15 +677,38 @@ int main(int argc, char* argv[])
 		}
 	    }
 	}
-      
-      //event selection
+
+      //
+      // event pre-selection
+      //
       bool passZmass(fabs(zmass-91)<15);
       bool passSideBand( !passZmass && fabs(zmass-91)<30 );
       bool pass3dLeptonVeto(ev.ln==0);
       bool passBveto(nbtags==0);
       bool passMediumRedMet(redMet>rmetComp.getCut(eventCategory,ReducedMETComputer::MEDIUMWP));
       bool passTightRedMet(redMet>rmetComp.getCut(eventCategory,ReducedMETComputer::TIGHTWP));
+      bool passBaseCuts(passZmass && pass3dLeptonVeto && passBveto && passMediumRedMet);
+      std::vector<int> zmassRegionBins;
+      if(passZmass)                                                                 zmassRegionBins.push_back(0);
+      if(passZmass    && !passBveto)                                                zmassRegionBins.push_back(1);
+      if(passZmass    && !passBveto && pass3dLeptonVeto)                            zmassRegionBins.push_back(2);
+      if(passZmass    && !passBveto && pass3dLeptonVeto && passMediumRedMet)        zmassRegionBins.push_back(3);
+      if(passZmass    && !passBveto && pass3dLeptonVeto && passTightRedMet)         zmassRegionBins.push_back(4);
+      if(passSideBand)                                                              zmassRegionBins.push_back(5);
+      if(passSideBand && !passBveto)                                                zmassRegionBins.push_back(6);
+      if(passSideBand && !passBveto && pass3dLeptonVeto)                            zmassRegionBins.push_back(7);
+      if(passSideBand && !passBveto && pass3dLeptonVeto && passMediumRedMet)        zmassRegionBins.push_back(8);
+      if(passSideBand && !passBveto && pass3dLeptonVeto && passTightRedMet)         zmassRegionBins.push_back(9);
+      if(passZmass    && passBveto)                                                 zmassRegionBins.push_back(10);
+      if(passZmass    && passBveto && pass3dLeptonVeto)                             zmassRegionBins.push_back(11);
+      if(passZmass    && passBveto && pass3dLeptonVeto && passMediumRedMet)         zmassRegionBins.push_back(12);
+      if(passZmass    && passBveto && pass3dLeptonVeto && passTightRedMet)          zmassRegionBins.push_back(13);
+      if(passSideBand && passBveto)                                                 zmassRegionBins.push_back(14);
+      if(passSideBand && passBveto && pass3dLeptonVeto)                             zmassRegionBins.push_back(15);
+      if(passSideBand && passBveto && pass3dLeptonVeto && passMediumRedMet)         zmassRegionBins.push_back(16);
+      if(passSideBand && passBveto && pass3dLeptonVeto && passTightRedMet)          zmassRegionBins.push_back(17);
 
+      
       //fill control histograms
       TString catsToFill[]={"all",evcat};
       TString subCatsToFill[]={"",subcat};
@@ -609,48 +717,85 @@ int main(int argc, char* argv[])
 	  for(size_t isc=0; isc<sizeof(subCatsToFill)/sizeof(TString); isc++)
 	    {
 	      TString ctf=catsToFill[ic]+subCatsToFill[isc];
-
-            //MakeVBF control plots before any selection is applied
-            if(true                                                                    )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    0                ,weight);
-            if(Pass2Jet30                                                              )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    1                ,weight);
-            if(PassdEtaCut                                                             )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    2                ,weight);
-            if(PassdEtaCut && PassiMCut                                                )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    3                ,weight);
-            if(PassdEtaCut && PassiMCut && PassLeptonIn                                )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    4                ,weight);
-            if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                 )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    5                ,weight);
-            if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    6                ,weight);
-            if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto && pass3dLeptonVeto)controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    7                ,weight);
-
-
-            if(Pass2Jet30                                                              )controlHistos.fillHisto("VBFdEtaInc"          ,ctf,    fabs(VBFdEta)    ,weight);
-            if(PassdEtaCut                                                             )controlHistos.fillHisto("VBFiMassInc"         ,ctf,    VBFSyst.M()      ,weight);
-            if(PassdEtaCut && PassiMCut                                                )controlHistos.fillHisto("VBFcenLeptonVetoInc" ,ctf,    VBFCentralLeptons,weight);
-            if(PassdEtaCut && PassiMCut && PassLeptonIn                                )controlHistos.fillHisto("VBFcen30JetVetoInc"  ,ctf,    VBFCentral30Jets ,weight);
-            if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                 )controlHistos.fillHisto("VBFNBJets30Inc"      ,ctf,    VBFNBJets        ,weight);
-
-
-            if(               PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFdEtaNM1C"         ,ctf,    fabs(VBFdEta)    ,weight);
-            if(PassdEtaCut              && PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFiMassNM1C"        ,ctf,    VBFSyst.M()      ,weight);
-            if(PassdEtaCut && PassiMCut                 && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFcenLeptonVetoNM1C",ctf,    VBFCentralLeptons,weight);
-            if(PassdEtaCut && PassiMCut && PassLeptonIn                && PassBJetVeto )controlHistos.fillHisto("VBFcen30JetVetoNM1C" ,ctf,    VBFCentral30Jets ,weight);
-            if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                 )controlHistos.fillHisto("VBFNBJets30NM1C"     ,ctf,    VBFNBJets        ,weight);
-            if(                            PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fill2DHisto("VBFdEtaiMassNM1C"  ,ctf,    fabs(VBFdEta), VBFSyst.M(), weight);
-            if(redMet>50 &&                PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fill2DHisto("VBFdEtaiMassNM1C2" ,ctf,    fabs(VBFdEta), VBFSyst.M(), weight);
-
-	      controlHistos.fillHisto("nvtx",ctf,ev.nvtx,weight);
+	      
+	      //event pre-selection
+	      if(!passZmass && !passSideBand)                                      continue;
+	      
+	      //VBF control
+	      if(true                                                                                       )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    0                ,weight);
+	      if(Pass2Jet30                                                                                 )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    1                ,weight);
+	      if(PassdEtaCut                                                                                )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    2                ,weight);
+	      if(PassdEtaCut && PassiMCut                                                                   )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    3                ,weight);
+	      if(PassdEtaCut && PassiMCut && PassLeptonIn                                                   )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    4                ,weight);
+	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                                    )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    5                ,weight);
+	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto                    )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    6                ,weight);
+	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto && pass3dLeptonVeto)controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    7                ,weight);
+	      
+	      if(Pass2Jet30                                                              )controlHistos.fillHisto("VBFdEtaInc"          ,ctf,    fabs(VBFdEta)    ,weight);
+	      if(PassdEtaCut                                                             )controlHistos.fillHisto("VBFiMassInc"         ,ctf,    VBFSyst.M()      ,weight);
+	      if(PassdEtaCut && PassiMCut                                                )controlHistos.fillHisto("VBFcenLeptonVetoInc" ,ctf,    VBFCentralLeptons,weight);
+	      if(PassdEtaCut && PassiMCut && PassLeptonIn                                )controlHistos.fillHisto("VBFcen30JetVetoInc"  ,ctf,    VBFCentral30Jets ,weight);
+	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                 )controlHistos.fillHisto("VBFNBJets30Inc"      ,ctf,    VBFNBJets        ,weight);
+	      
+	      if(               PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFdEtaNM1C"         ,ctf,    fabs(VBFdEta)    ,weight);
+	      if(PassdEtaCut              && PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFiMassNM1C"        ,ctf,    VBFSyst.M()      ,weight);
+	      if(PassdEtaCut && PassiMCut                 && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFcenLeptonVetoNM1C",ctf,    VBFCentralLeptons,weight);
+	      if(Pass2Jet30                                              && PassBJetVeto && !pass3dLeptonVeto)                                       
+		{
+		  controlHistos.fillHisto("VBFcen30JetVeto3rdlepton"  ,ctf,    VBFCentral30Jets ,weight);
+		  controlHistos.fillHisto("VBFNBJets303rdlepton"      ,ctf,    VBFNBJets        ,weight);
+		  controlHistos.fillHisto("VBFdEta3rdlepton"          ,ctf,    fabs(VBFdEta)    ,weight);
+		  controlHistos.fillHisto("VBFiMass3rdlepton"         ,ctf,    VBFSyst.M()      ,weight);
+		}
+	      
+	      if(PassdEtaCut && PassiMCut && PassLeptonIn                && PassBJetVeto )controlHistos.fillHisto("VBFcen30JetVetoNM1C" ,ctf,    VBFCentral30Jets ,weight);
+	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                 )controlHistos.fillHisto("VBFNBJets30NM1C"     ,ctf,    VBFNBJets        ,weight);
+	      if(                            PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fill2DHisto("VBFdEtaiMassNM1C"  ,ctf,    fabs(VBFdEta), VBFSyst.M(), weight);
+	      if(redMet>50 &&                PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fill2DHisto("VBFdEtaiMassNM1C2" ,ctf,    fabs(VBFdEta), VBFSyst.M(), weight);
+	      
+	      //inclusive control
 	      controlHistos.fillHisto("eventflow",ctf,1,weight);
-
-	      if(!passZmass && !passSideBand) continue;
-	      ctf += (passZmass ? "" : "zsideband");
+	      controlHistos.fillHisto("nvtx",ctf,ev.nvtx,weight);
+	      
+	      //dilepton control plots
+	      controlHistos.fillHisto("zmass",ctf,zmass,weight);
+	      for(std::vector<int>::iterator regIt = zmassRegionBins.begin(); regIt<zmassRegionBins.end(); regIt++) controlHistos.fillHisto("zmassregionCtr",ctf,*regIt,weight);
+	      controlHistos.fillHisto("zeta",ctf,zll.eta(),weight);
+	      controlHistos.fillHisto("zpt",ctf,zll.pt(),weight);
+	      controlHistos.fillHisto("zrank",ctf,zrank,weight);
+	      controlHistos.fill2DHisto("zptvszeta", ctf,zll.pt(),zll.eta(),weight);
+	      controlHistos.fillHisto("dphill",ctf,dphill,weight);
+	      controlHistos.fillHisto("drll",ctf,drll,weight);
+	      controlHistos.fillHisto("mindrlz",ctf,mindrlz,weight);
+	      controlHistos.fillHisto("maxdrlz",ctf,maxdrlz,weight);
+	      controlHistos.fillHisto("dphizleadl",ctf,dphizleadl,weight);
+	      controlHistos.fillHisto("ptsum",ctf,ptsum,weight);
+	      controlHistos.fillHisto("mtl1",ctf,mtl1,weight);
+	      controlHistos.fillHisto("mtl2",ctf,mtl2,weight);
+	      controlHistos.fillHisto("mtsum",ctf,mtsum,weight);
+	      
+	      //Z window
+	      if(!passZmass)  continue;
 	      controlHistos.fillHisto("eventflow",ctf,2,weight);
-	      controlHistos.fillHisto("recozmass",ctf,zll.mass(),weight);
-	      controlHistos.fillHisto("recodphill",ctf,dphill,weight);
+	      
+	      //extra leptons
 	      controlHistos.fillHisto("nleptons",ctf,ev.ln,weight);
-
-//	      if(!pass3dLeptonVeto) continue;
-              ctf += (pass3dLeptonVeto ? "" : "3rdleptons");
+	      if(!pass3dLeptonVeto)
+		{
+		  controlHistos.fillHisto("njets3leptons",ctf,njets,weight);
+		  controlHistos.fillHisto("nbtags3leptons",ctf,nbtags,weight);
+		  if(passBveto)
+		    {
+		      
+		    }
+		  continue;
+		}
 	      controlHistos.fillHisto("eventflow",ctf,3,weight);
-
+	      
+	      //jet control
 	      controlHistos.fillHisto("njets",ctf,njets,weight);
+	      controlHistos.fill2DHisto("njetsvspu",ctf,ev.ngenITpu,njets,weight);
+	      controlHistos.fill2DHisto("njetsincvspu",ctf,ev.ngenITpu,njetsinc,weight);
 	      controlHistos.fillHisto("nbtags",ctf, nbtags,weight);
 	      controlHistos.fillHisto("npassbveto",ctf,0, (nbtags_ssvhem==0)*weight);
 	      controlHistos.fillHisto("npassbveto",ctf,1, (nbtags_tchel==0)*weight);
@@ -659,59 +804,72 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("npassbveto",ctf,4, (nbtags_ssvhemORtchel==0)*weight);
 	      controlHistos.fillHisto("npassbveto",ctf,5, (nbtags==0)*weight);
 	      controlHistos.fillHisto("zmassctrl",ctf,passBveto+2*passMediumRedMet,weight);
-
 	      if(!passBveto) continue;
 	      controlHistos.fillHisto("eventflow",ctf,4,weight);
-	      controlHistos.fillHisto("npassbveto_20to30",ctf,0, (nbtags_ssvhem_20to30==0)*weight);
-	      controlHistos.fillHisto("npassbveto_20to30",ctf,1, (nbtags_tchel_20to30==0)*weight);
-	      controlHistos.fillHisto("npassbveto_20to30",ctf,2, (nbtags_tche2_20to30==0)*weight);
-	      controlHistos.fillHisto("npassbveto_20to30",ctf,3, (nbtags_jbpl_20to30==0)*weight);
-	      controlHistos.fillHisto("npassbveto_20to30",ctf,4, (nbtags_ssvhemORtchel_20to30==0)*weight);
-	      controlHistos.fillHisto("npassbveto_20to30",ctf,5, (nbtags_20to30==0)*weight);
-
 	      
-	      controlHistos.fill2DHisto("zptvszeta", ctf,zll.pt(),zll.eta(),weight);
-	      controlHistos.fillHisto("met", ctf,zvv.pt(),weight);
+	      //met control
+	      Float_t metTypeValues[]={zvv.pt(), projMet, minMet, minProjMet, redMet, redMet_d0, centralMet, cleanMet, unclusteredMet, clusteredMet,cmsRedMet};
+	      for(size_t imt=0; imt<sizeof(metTypes)/sizeof(TString);imt++)
+		{
+		  controlHistos.fillHisto(metTypes[imt], ctf,metTypeValues[imt],weight);
+		  controlHistos.fill2DHisto(metTypes[imt]+"vspu", ctf,ev.ngenITpu,metTypeValues[imt],weight);
+		}
 	      controlHistos.fill2DHisto("metvstkmet", ctf,zvv.pt(),trkMetP4.pt(),weight);
-	      controlHistos.fillProfile("metprof", ctf,ev.ngenITpu,met);
-	      controlHistos.fill2DHisto("metvspu", ctf,ev.ngenITpu,met,weight);
-	      controlHistos.fillHisto("projMet", ctf,projMet,weight);
-	      controlHistos.fillProfile("projMetprof", ctf,ev.ngenITpu,projMet);
-	      controlHistos.fill2DHisto("projMetvspu", ctf,ev.ngenITpu,projMet,weight);     
-	      controlHistos.fillHisto("minMet", ctf,minMet,weight);
-	      controlHistos.fillProfile("minMetprof", ctf,ev.ngenITpu,minMet);
-	      controlHistos.fill2DHisto("minMetvspu", ctf,ev.ngenITpu,minMet,weight);     
-	      controlHistos.fillHisto("minProjMet", ctf,minProjMet,weight);
-	      controlHistos.fillProfile("minProjMetprof", ctf,ev.ngenITpu,minProjMet);
-	      controlHistos.fill2DHisto("minProjMetvspu", ctf,ev.ngenITpu,minProjMet,weight);     
-	      controlHistos.fillHisto("redMet", ctf,redMet,weight);
+	      controlHistos.fill2DHisto("metvsclusteredMet", ctf,zvv.pt(),clusteredMet,weight);
+	      controlHistos.fill2DHisto("metvscentralMet", ctf,zvv.pt(),centralMet,weight);
 	      controlHistos.fillHisto("redMetL", ctf,redMetL,weight);
 	      controlHistos.fillHisto("redMetT", ctf,redMetT,weight);
-	      controlHistos.fillHisto("redMet_d0", ctf,redMet_d0,weight);
-	      controlHistos.fillProfile("redMetprof", ctf,ev.ngenITpu,redMet);
-	      controlHistos.fill2DHisto("redMetvspu", ctf,ev.ngenITpu,redMet,weight);
 	      controlHistos.fillHisto("redMetcomps", ctf,redMetL,redMetT,weight);	
-	      	      
-	      //save summary tree now if required -> move this to after the red-MET cut ?
-	      if(saveSummaryTree && passMediumRedMet)
+	      controlHistos.fillHisto("cmsRedMetL", ctf,cmsRedMetL,weight);
+	      controlHistos.fillHisto("cmsRedMetT", ctf,cmsRedMetT,weight);
+	      controlHistos.fillHisto("cmsRedMetcomps", ctf,cmsRedMetL,cmsRedMetT,weight);	
+	      
+	      controlHistos.fillHisto("sumEt",                ctf,ev.sumEt,weight);
+	      if(ev.sumEt>0)
 		{
-		  ev.pass=passMediumRedMet+passTightRedMet;
-		  ev.weight=summaryWeight*weight;		      
-		  spyHandler->fillTree();
+		  controlHistos.fillHisto("chSumEtFrac",          ctf,ev.chsumEt/ev.sumEt,weight);
+		  controlHistos.fillHisto("neutSumEtFrac",        ctf,ev.neutsumEt/ev.sumEt,weight);
+		  controlHistos.fillHisto("centralSumEtFrac",     ctf,ev.sumEtcentral/ev.sumEt,weight);
+		  controlHistos.fillHisto("centralChSumEtFrac",   ctf,ev.chsumEtcentral/ev.sumEtcentral,weight);
+		  controlHistos.fillHisto("centralNeutSumEtFrac", ctf,ev.neutsumEtcentral/ev.sumEtcentral,weight);
 		}
 	      
-	      //red-met cut
-	      if(!passMediumRedMet)  continue;
+	      if(!passMediumRedMet) continue;
 	      controlHistos.fillHisto("eventflow",ctf,5,weight);
-	      for(size_t ivar=0; ivar<varsList.size(); ivar++)  controlHistos.fillHisto(varsList[ivar],ctf,tmvaVars[ivar],weight);
+	      if(passTightRedMet)    controlHistos.fillHisto("eventflow",ctf,6,weight);
+	      
+	      //sample is selected
 	      controlHistos.fillHisto("eventCategory",ctf,eventCategory,weight);
-
+		  
+	      //
+	      // CUT & COUNT ANALYSIS
+	      //
+	      controlHistos.fillHisto("cutOptMediumdphill",ctf,fabs(dphill));
+	      controlHistos.fill2DHisto("cutOptMediumsummtvsredMetL",ctf,mtsum,redMetL,weight);
+		  
+	      //final selection (cut and count analysis)
+	      bool pass200( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
+	      bool pass300( passTightRedMet  && fabs(dphill)<2.5                      && redMetL>75       && mtsum>200);
+	      bool pass400( passTightRedMet  && fabs(dphill)<2.0                      && redMetL>75       && mtsum>300);
+	      bool pass500( passTightRedMet  && fabs(dphill)<2.0                      && redMetL>100      && mtsum>400);
+	      bool pass600( passTightRedMet  && fabs(dphill)<1.5                      && redMetL>150 && mtsum>450);
+	      if(pass200) controlHistos.fillHisto("finaleventflow",ctf,0,weight);
+	      if(pass300) controlHistos.fillHisto("finaleventflow",ctf,1,weight);
+	      if(pass400) controlHistos.fillHisto("finaleventflow",ctf,2,weight);
+	      if(pass500) controlHistos.fillHisto("finaleventflow",ctf,3,weight);
+	      if(pass600) controlHistos.fillHisto("finaleventflow",ctf,4,weight);
+		  
+		  
+	      //
+	      // MVA ANALYSIS
+	      //
 	      //control for discriminators evaluated
+	      //for(size_t ivar=0; ivar<varsList.size(); ivar++)  controlHistos.fillHisto(varsList[ivar],ctf,tmvaVars[ivar],weight);
 	      for(size_t imet=0; imet<methodList.size(); imet++)
 		{
 		  controlHistos.fillHisto(methodList[imet],ctf,discriResults[imet],weight);
 		  if(passTightRedMet) controlHistos.fillHisto(methodList[imet]+"tight",ctf,discriResults[imet],weight);
-
+		  
 		  //per-event error
 		  if (methodList[imet]=="PDEFoam")
 		    {
@@ -725,75 +883,65 @@ int main(int argc, char* argv[])
 		      controlHistos.fillHisto("Fisher_Rarity",ctf, fisherRarity, weight);
 		    }
 		}
-	      controlHistos.fillHisto("cutOptMedium_dphill",ctf,fabs(dphill));
-	      controlHistos.fill2DHisto("cutOptMedium_summt_vs_redMetL",ctf,mtsum,redMetL,weight);
-
-	      //final selection
-	      bool pass200(fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
-	      if(pass200) controlHistos.fillHisto("finaleventflow",ctf,0,weight);
+	    }
+	}
+    
+  
+      //
+      // summary tree for the selected events
+      //
+      if(saveSummaryTree && (passBaseCuts || isVBF))
+	{
+	  //update the pass and wiehgt fields
+	  ev.pass=passMediumRedMet+passTightRedMet;
+	  ev.weight=summaryWeight*weight;		      
+	  spyHandler->fillTree();
+	  
+	  //write in twiki format the intersting event
+	  if(outf && passTightRedMet)	
+	    {
+	      *outf << "<b>"<< subcat << " event</b> @ " << url << "<br/>" << std::endl;
+	      *outf << "%$Run=" <<  ev.run << "$% %$Lumi=" << ev.lumi << "$% %$Event=" << ev.event <<"$%" << "<br/>" << std::endl;
 	      
-	      if(!passTightRedMet)  continue;
-	      controlHistos.fillHisto("eventflow",ctf,6,weight);
-	      controlHistos.fillHisto("cutOptTight_dphill",ctf,fabs(dphill));
-	      controlHistos.fill2DHisto("cutOptTight_summt_vs_redMetL",ctf,mtsum,redMetL,weight);
+	      *outf << "<i>Leptons</i>" << "<br/>" << std::endl;
+	      for(size_t ilep=0; ilep<2; ilep++)
+		*outf << "%$l_{" << ilep+1 << "}=" << phys.leptons[ilep].id << "$% "
+		      << "%$p_T=" << phys.leptons[ilep].pt() << "$% "
+		      << "%$\\eta=" << phys.leptons[ilep].eta() << "$% "
+		      << "%$\\phi=" << phys.leptons[ilep].phi() << "$% "
+		      << "%$I_{neut}=" << phys.leptons[ilep].iso1 << "$% "
+		      << "%$I_{ch}=" << phys.leptons[ilep].iso2  << "$% "
+		      << "%$I_{pho}=" << phys.leptons[ilep].iso3 << "$% " << "<br/>" << std::endl; 
 	      
-	      bool pass300(fabs(dphill)<2.5 && redMetL>75 && mtsum>200);
-	      if(pass300) controlHistos.fillHisto("finaleventflow",ctf,1,weight);
+	      *outf << "<i>Dilepton</i>" << "<br/>" << std::endl;
+	      *outf  << "%$p_{T}^{ll}=" << zll.pt() << "$% "
+		     << "%$\\eta^{ll}=" << zll.eta() << "$% "
+		     << "%$\\phi^{ll}=" << zll.phi() << "$% "
+		     << "%$m^{ll}=" << zll.mass() << "$% "   
+		     << "%$\\Delta R(l,l)=" << drll << "$% "
+		     << "%$\\Delta\\phi(l,l)=" << dphill << "$% " << "<br/>" << std::endl;
 	      
-	      bool pass400(fabs(dphill)<2.0 && redMetL>75 && mtsum>300);
-	      if(pass400) controlHistos.fillHisto("finaleventflow",ctf,2,weight);
+	      *outf << "<i>Missing transverse energy</i>" << "<br/>" << std::endl;
+	      *outf << "%$E_{T}^{miss}=" << zvv.pt() << "$% "
+		    << "%$\\phi=" << zvv.phi() << "$% " << "<br/>" << std::endl;
+	      *outf << "%$red-E_{T}^{miss}=" << redMet << "$% "
+		    << "%$l="<< redMetL << "$% "
+		    << "%$t=" << redMetT << "$% " << "<br/>" << std::endl;
 	      
-	      bool pass500(fabs(dphill)<2.0 && redMetL>100 && mtsum>400);
-	      if(pass500) controlHistos.fillHisto("finaleventflow",ctf,3,weight);
+	      *outf << "<i>Transverse mass</i>" << "<br/>" << std::endl;
+	      *outf << "%$\\sum M_T(l,E_{T}^{miss})=" << mtl1+mtl2 << "$% "
+		    << "%$M_T(Z,E_{T}^{miss})=" << mt << "$% " << "<br/>" << std::endl; 
 	      
-	      bool pass600(fabs(dphill)<1.5 && redMetL>150 && mtsum>450);
-	      if(pass600) controlHistos.fillHisto("finaleventflow",ctf,4,weight);
-
-	      //debug
-	      if(ic==0 && isc==0 && !isMC && passTightRedMet && outf)	
-		{
-		  *outf << "<b>Selected event</b> @ " << url << "<br/>" << std::endl;
-		  *outf << "%$Run=" <<  ev.run << "$% %$Lumi=" << ev.lumi << "$% %$Event=" << ev.event <<"$%" << "<br/>" << std::endl;
-		  
-		  *outf << "<i>Leptons</i>" << "<br/>" << std::endl;
-		  for(size_t ilep=0; ilep<2; ilep++)
-		    *outf << "%$l_{" << ilep+1 << "}=" << phys.leptons[ilep].id << "$% "
-			  << "%$p_T=" << phys.leptons[ilep].pt() << "$% "
-			  << "%$\\eta=" << phys.leptons[ilep].eta() << "$% "
-			  << "%$\\phi=" << phys.leptons[ilep].phi() << "$% "
-			  << "%$I_{neut}=" << phys.leptons[ilep].iso1 << "$% "
-			  << "%$I_{ch}=" << phys.leptons[ilep].iso2  << "$% "
-			  << "%$I_{pho}=" << phys.leptons[ilep].iso3 << "$% " << "<br/>" << std::endl; 
-		  
-		  *outf << "<i>Dilepton</i>" << "<br/>" << std::endl;
-		  *outf  << "%$p_{T}^{ll}=" << zll.pt() << "$% "
-			 << "%$\\eta^{ll}=" << zll.eta() << "$% "
-			 << "%$\\phi^{ll}=" << zll.phi() << "$% "
-			 << "%$m^{ll}=" << zll.mass() << "$% "   
-			 << "%$\\Delta R(l,l)=" << drll << "$% "
-			 << "%$\\Delta\\phi(l,l)=" << dphill << "$% " << "<br/>" << std::endl;
-		  
-		  *outf << "<i>Missing transverse energy</i>" << "<br/>" << std::endl;
-		  *outf << "%$E_{T}^{miss}=" << zvv.pt() << "$% "
-			<< "%$\\phi=" << zvv.phi() << "$% " << "<br/>" << std::endl;
-		  *outf << "%$red-E_{T}^{miss}=" << redMet << "$% "
-			<< "%$l="<< redMetL << "$% "
-			<< "%$t=" << redMetT << "$% " << "<br/>" << std::endl;
-		  
-		  *outf << "<i>Transverse mass</i>" << "<br/>" << std::endl;
-		  *outf << "%$\\sum M_T(l,E_{T}^{miss})=" << mtl1+mtl2 << "$% "
-			<< "%$M_T(Z,E_{T}^{miss})=" << mt << "$% " << "<br/>" << std::endl; 
-		  
-		  *outf << "<i>Jet activity</i>" << "<br/>" << std::endl;
-		  *outf << "%$N {jets}(p_T>15)= " << ev.jn << "$% "
-			<< "%$\\rho=" << ev.rho << "$% "  << "<br/>" << std::endl;
-		  
-		  *outf << "------" << endl;
-		}
+	      *outf << "<i>Jet activity</i>" << "<br/>" << std::endl;
+	      *outf << "%$N {jets}(p_T>15)= " << ev.jn << "$% "
+		    << "%$\\rho=" << ev.rho << "$% "  << "<br/>" << std::endl;
+	      
+	      *outf << "------" << endl;
 	    }
 	}
     }
-
+    
+  
   //all done with the events file
   file->Close();
 
@@ -817,14 +965,14 @@ int main(int argc, char* argv[])
       if(it->first.BeginsWith("mumu")) icat="mumu";
       outDirs[icat]->cd();
       for(SelectionMonitor::Monitor_t::iterator hit=it->second.begin(); hit!= it->second.end(); hit++)
-        {
+	{
 	  if(isMC && cnorm>0) hit->second->Scale(1./cnorm);
 	  if( !((TClass*)hit->second->IsA())->InheritsFrom("TH2")
 	      && !((TClass*)hit->second->IsA())->InheritsFrom("TGraph") )
 	    fixExtremities(hit->second,true,true);
 	  hit->second->Write();
 
-        }
+	}
     }
   ofile->Close();
 
@@ -837,5 +985,5 @@ int main(int argc, char* argv[])
       if(!isMC) outf->close();
     }
 
-   printf("TotalNumber of duplicated is %i/%i = %f%%\n",NumberOfDuplicated,evEnd,(100.0*NumberOfDuplicated)/evEnd);
+  printf("TotalNumber of duplicated is %i/%i = %f%%\n",NumberOfDuplicated,evEnd,(100.0*NumberOfDuplicated)/evEnd);
 }  
