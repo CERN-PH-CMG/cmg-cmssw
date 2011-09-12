@@ -146,6 +146,8 @@ class savannahConnect:
             self.br.form['planned_starting_date_yearfd']=dayMonthYear[2]
             self.br.form['summary'] = dataset['PathList'][0]
             self.br.form['priority']= ['5']
+            if dataset['Status']=="INVALID":
+                self.br.form.set_value_by_label(["Invalid"],'status')
             self.br.form['details']= self.datasetString(dataset, files, tags, castorDir)
             self.br.form.set_value_by_label(["Done"],'resolution_id')
 
