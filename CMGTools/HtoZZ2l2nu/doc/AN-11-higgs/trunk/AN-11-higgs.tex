@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.19 $
+\RCS$Revision: 1.20 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.19 2011/09/12 14:17:20 querten Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.20 2011/09/12 15:00:13 cerminar Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -1278,6 +1278,40 @@ shown in Figure~\ref{fig:TrkIsoEff}.
 \label{fig:TrkIsoEff}
 \end{center}
 \end{figure}
+
+\subsection{Muon Trigger Efficiency}
+
+The same technique was also used to measure the trigger efficiency.
+The trigger selection is described in Sect.~\ref{subsec:trigrec}. The main trigger
+used for the selection decribed in this pass is the double asymmetrig
+trigger \texttt{HLT\_Mu13\_Mu8}. The efficiency of the single leg of
+this trigger has been measured on the SingleMu Primary-Dataset
+requiring the tag muon to be a VBTF muon matched to a SingleMuon
+trigger object firing  \texttt{HLT\_IsoMu24} with $\pt$ higher than the one we want to probe.
+
+The relative trigger efficiency w.r.t the offline ID+isolation
+requirements is shown in Fig.~\ref{fig:EffDoubleMu13Mu8}.
+
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.45\textwidth]{img/cEffPtVsEta_DoubleMu13Mu8_Mu8}\\
+
+\caption{Trigger efficiency for the single leg of the
+  \texttt{HLT\_Mu13\_Mu8} double-muon trigger in bins of $\pt$ and $\eta$ for the
+  probe track. The efficiency is relative to a muon passing the
+  offline ID+isolation requirements.}
+\label{fig:EffDoubleMu13Mu8}
+\end{center}
+\end{figure}
+
+
+
+%  IsoMu17 163262 to 167043
+%  DoubleMu7  1 to 164237
+%  DoubleMu13Mu8 165088 to inf
+%  IsoMu24 160431 to inf
+
 
 \end{document}
 
