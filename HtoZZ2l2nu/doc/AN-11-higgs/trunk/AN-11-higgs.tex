@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.16 $
+\RCS$Revision: 1.17 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.16 2011/09/11 13:53:29 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.17 2011/09/11 21:24:27 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -818,20 +818,15 @@ The particles (not) used in the computation of each \MET type are signaled with 
 \label{sec:higgssearch}
 
 The next Sections describe three complementary approaches to search for the standard model Higgs in the 2l2$\nu$ final state.
-The analysis rely on the expected behavior for Higgs events as described in the simulation. 
-Two of the analysis are cut-based and a third one is a discriminator based analysis implemented using the TMVA package~\cite{Hocker:2007ht}.
+The analysis relies fully on the expected behavior for the Higgs events as described in the simulation.
+The transverse momentum of the Higgs boson is however corrected for the NNLO+NNLL 
+prediction which are not taken into account by the \POWHEG sample used in this study.
+The Higgs-$p_T$ reweighting is applied only to gluon-gluon fusion and it is described in more detail in~\cite{CMS-TWIKI-GEN-higgspt}
+
+Two of the analysis proposed are cut-based and a third one is a discriminator based analysis implemented using the TMVA package~\cite{Hocker:2007ht}.
 For each analysis the events are categorized according to the jet multiplicity observed.
 Events with $\geq$2~jets are furthermore analyzed to search for the vector-boson-fusion (VBF) specific signature.
-This is will be described in more detail in the next sub-section. If the event does not meet the VBF specific selection
-it is accounted for in the $\geq$2~jets bin.
-
-%%
-%% VBF selection
-%%
-\subsection{Vector Boson Fusion search}
-\label{subsec:vbfsearch}
-
-
+If the event does not meet the VBF specific selection it is accounted for in the $\geq$2~jets bin.
 
 %%
 %% Higgs event selection
@@ -840,9 +835,11 @@ it is accounted for in the $\geq$2~jets bin.
 \label{subsec:higgsselection}
 
 The selection variables chosen for the search of the Higgs boson production in the gg$\rightarrow$H mode are summarized in Tab.~\ref{tab:gluglucuts}.
-The cuts were chosen my maximing a simple figure of merit $f=S/\sqrt(S+B)$ after requiring that the instrumental $Z$ background
-is reduced by a 10$^{-3}$ (medium \RMET working point).
+The cuts were chosen by maximing the following figure of merit $f=S/\sqrt(S+B)$ after requiring that the instrumental $Z$ background is reduced by a 10$^{-3}$ (medium \RMET working point).
+Tor the different mass points signal includes, as in the previous sections, the gluon-gluon and vector boson fusion processes, as well as Higgs decays in both the ZZ and WW channels.
+Background includes all the remaining processes after the \RMET cut as listed in Table~\ref{tab:mcsamples}.
 The details on the $f$ variable can be found in Sec.~\ref{sec:app:cutbasedoptimization}.
+Table~\ref{tab:gluglucuts} summarizes the selection applied as a function of the Higgs mass being searched.
 
 \begin{table}[htp]
 \caption{Selection variables for the search for the Higgs boson in the gg$\rightarrow$H mode.}
@@ -860,12 +857,139 @@ The details on the $f$ variable can be found in Sec.~\ref{sec:app:cutbasedoptimi
 \end{center}
 \end{table}
 
+Tables~\ref{tab:gluglucutandcountyields_0jets},
+~\ref{tab:gluglucutandcountyields_1jets}
+and ~\ref{tab:gluglucutandcountyields_2jets}
+summarize the results obtained after applying the selection just described.
+An overall good agreement is found between data and direct comparison with MC
+for all categories except the 1-jet bin in the $ee$channel where a slight excess is observed. 
+The data-driven estimate of the instrumental and top backgrounds will be discussed in the next sections. 
+
+%%%
+\begin{table}[htp]
+\caption{Event yields after mass-dependent selection for the di-electron and di-muon channel in events with 0 jets.}
+\label{tab:gluglucutandcountyields_0jets}
+\begin{center}
+\begin{tabular}{cccccc} \hline\hline
+{\bf Higgs mass (GeV/c$^2$)}        & {\bf 200}         & {\bf 300}         & {\bf 400}         & {\bf 500}         & {\bf 600}     \\\hline\hline             
+                                    &                   &                   &                   &                   &               \\\hline   
+\multicolumn{6}{c}{\bf$ee$ channel}\\\hline
+S/B expected                        & $0.08 \pm 0.02$   & $0.33 \pm 0.01$   & $0.48 \pm 0.02$   & $0.42 \pm 0.04$   & $0.25 \pm 0.03$  \\\hline   
+H$\rightarrow$ VV                   & $ 1.02 \pm0.22 $  & $ 1.83 \pm0.04 $  & $ 1.534 \pm0.034$ & $ 0.56 \pm0.04 $  & $ 0.188 \pm0.004 $ \\\hline
+ZZ                                  & $ 4.56 \pm0.14 $  & $ 3.53 \pm0.12 $  & $ 2.30 \pm0.10 $  & $ 1.07 \pm0.07 $  & $ 0.74 \pm0.06 $ \\
+WW                                  & $ 3.87 \pm0.34 $  & $ 0.37 \pm0.10 $  & $ 0.09 \pm0.05 $  &  &  \\
+WZ                                  & $ 2.73 \pm0.18 $  & $ 1.57 \pm0.14 $  & $ 0.80 \pm0.10 $  & $ 0.25 \pm0.05 $  & $ 0.14 \pm0.04 $ \\
+Single top                          & $ 0.08 \pm0.04 $  & $ 0.06 \pm0.04 $  &  &   \\
+$t\bar{t}$                          & $ 0.23 \pm0.20 $  &  &  &  &  \\
+W+jets                              & $ 0.9 \pm0.9 $    &  &  &  &  \\
+Z/$\gamma^{*}$+jets$\rightarrow$ ll & $ 0.54 \pm0.32 $  &  &  &  &  \\\hline
+Total expected                      & $ 12.9 \pm1.1 $   & $ 5.53 \pm0.21 $  & $ 3.19 \pm0.15 $  & $ 1.32 \pm0.09 $  & $ 0.87 \pm0.07 $ \\\hline
+data                                & $ 16$             & $ 8$              & $ 4$              & $ 2$              &  $ 2$ \\\hline
+                                    &                   &                   &                   &                   &               \\\hline   
+\multicolumn{6}{c}{\bf$\mu\mu$ channel}\\\hline
+S/B expected                        & $0.08 \pm 0.02$   & $0.32\pm0.01$     & $0.48\pm 0.03$      & $0.31\pm 0.03$     &  $0.23\pm 0.02$     \\\hline
+H$\rightarrow$ VV                   & $ 1.04 \pm0.21 $  & $ 1.80 \pm0.04 $  & $ 1.460 \pm0.033 $  &$ 0.379 \pm0.032 $  &$ 0.178 \pm0.004 $ \\\hline
+ZZ                                  & $ 4.64 \pm0.14 $  & $ 3.62 \pm0.12 $  & $ 2.23 \pm0.10 $    & $ 1.00 \pm0.06 $   & $ 0.62 \pm0.05 $ \\
+WW                                  & $ 4.7 \pm0.4 $    & $ 0.54 \pm0.12 $  & $ 0.10 \pm0.06 $    &                    & \\
+WZ                                  & $ 2.72 \pm0.18 $  & $ 1.33 \pm0.13 $  & $ 0.67 \pm0.09 $    & $ 0.24 \pm0.05 $   & $ 0.15 \pm0.04 $ \\
+Single top                          & $ 0.29 \pm0.09 $  & $ 0.07 \pm0.05 $  & $ 0.04 \pm0.04 $    &                    & \\
+$t\bar{t}$                          & $ 0.06 \pm0.06 $  &                   &                     &                    & \\
+W+jets                              &                   &                   &                     &                    & \\
+Z/$\gamma^{*}$+jets$\rightarrow$ ll & $ 0.7 \pm0.4 $    &                   &                     &                    &  \\\hline
+Total expected                      & $ 13.1 \pm0.6 $   & $ 5.56 \pm0.22 $  & $ 3.04 \pm0.15 $    & $ 1.24 \pm0.08 $   & $ 0.77 \pm0.06 $ \\\hline
+data                                & $ 13 $            & $ 6$              & $ 2$                & $ 2 $              & $ 2 $ \\\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+%%%
+\begin{table}[htp]
+\caption{Event yields after mass-dependent selection for the di-electron and di-muon channel in events with 1 jet.}
+\label{tab:gluglucutandcountyields_1jets}
+\begin{center}
+\hspace*{-1cm}
+\begin{tabular}{cccccc} \hline\hline
+{\bf Higgs mass (GeV/c$^2$)}        & {\bf 200}         & {\bf 300}         & {\bf 400}         & {\bf 500}         & {\bf 600}     \\\hline\hline             
+                                    &                   &                   &                   &                   &               \\\hline   
+\multicolumn{6}{c}{\bf$ee$ channel}\\\hline
+S/B expected                        & $0.06 \pm 0.01$   & $0.30 \pm 0.03$   & $0.51 \pm 0.07$   & $0.65 \pm 0.06$   & $0.38 \pm 0.04$  \\\hline   
+H$\rightarrow$ VV                   & $ 0.79 \pm0.16 $  & $ 1.90 \pm0.04 $    & $ 1.87 \pm0.04 $  & $ 0.75 \pm0.04 $  & $ 0.282 \pm0.005 $ \\\hline
+ZZ                                  & $ 2.91 \pm0.11 $  & $ 2.43 \pm0.10 $  & $ 1.60 \pm0.08 $  & $ 0.77 \pm0.06 $  & $ 0.49 \pm0.05 $ \\
+WW                                  & $ 2.15 \pm0.24 $  & $ 0.29 \pm0.09 $  & $ 0.04 \pm0.04 $  & $ ( 1.6 \pm1.6 ) \times10^{-3} $  & $ ( 1.6 \pm1.6 ) \times10^{-3} $ \\
+WZ                                  & $ 2.67 \pm0.18 $  & $ 1.84 \pm0.15 $  & $ 1.10 \pm0.12 $  & $ 0.39 \pm0.07 $  & $ 0.25 \pm0.05 $ \\
+Single top                          & $ 0.64 \pm0.14 $  & $ 0.19 \pm0.08 $  & $ 0.039 \pm0.034 $  &  &  \\
+$t\bar{t}$                          & $ 1.2 \pm0.4 $    & $ 0.34 \pm0.24 $  &                     &  & \\
+W+jets                              & $ 0.19 \pm0.19 $  &                   &                     &  &  \\
+Z/$\gamma^{*}$+jets$\rightarrow$ ll & $ 2.9 \pm0.9 $    & $ 1.2 \pm0.6 $    & $ 0.9 \pm0.5 $      &  & \\\hline
+Total expected                      & $ 12.6 \pm1.1 $   & $ 6.3 \pm0.6 $    & $ 3.7 \pm0.5 $      & $ 1.16 \pm0.09 $  & $ 0.74 \pm0.07 $ \\\hline
+data                                & $ 21$             & $ 11$             & $ 6$                & $ 2$    & \\\hline
+                                    &                   &                   &                     &                   &               \\\hline   
+\multicolumn{6}{c}{\bf$\mu\mu$ channel}\\\hline
+S/B expected                        & $0.08 \pm 0.02$   & $0.31\pm0.03$     & $0.57\pm 0.07$      & $0.62\pm 0.06$     &  $0.37\pm 0.03$     \\\hline   
+H$\rightarrow$ VV                   & $ 1.13 \pm0.20 $  & $ 1.89 \pm0.04 $  & $ 1.759 \pm0.035 $  & $ 0.66 \pm0.04 $   & $ 0.255 \pm0.005 $ \\\hline
+ZZ                                  & $ 3.07 \pm0.11 $  & $ 2.43 \pm0.10 $  & $ 1.63 \pm0.08 $    & $ 0.74 \pm0.05 $   & $ 0.54 \pm0.05 $ \\
+WW                                  & $ 2.47 \pm0.27 $  & $ 0.31 \pm0.10 $  &                     &                    & \\ 
+WZ                                  & $ 2.92 \pm0.19 $  & $ 1.47 \pm0.13 $  & $ 0.91 \pm0.11 $    & $ 0.32 \pm0.06 $   & $ 0.15 \pm0.04 $ \\
+Single top                          & $ 0.76 \pm0.16 $  & $ 0.21 \pm0.08 $  & $ 0.04 \pm0.04 $    &                    & \\
+$t\bar{t}$                          & $ 1.0 \pm0.4 $    & $ 0.78 \pm0.34 $  &                     &                    & \\
+W+jets                              &                   &                   &                     &                    & \\
+Z/$\gamma^{*}$+jets$\rightarrow$ ll & $ 3.5 \pm1.0 $    & $ 0.9 \pm0.5 $    & $ 0.6 \pm0.4 $      &                    & \\\hline
+Total expected                      & $ 13.8 \pm1.2 $   & $ 6.1 \pm0.6 $    & $ 3.1 \pm0.4 $      & $ 1.06 \pm0.08 $   & $ 0.69 \pm0.06 $ \\\hline
+data                                & $ 12$             & $ 4 $             & $ 2$                & $ 1$               & $ 1$ \\\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+%%%%
+\begin{table}[htp]
+\caption{Event yields after mass-dependent selection for the di-electron and di-muon channel in events with at least 2 jets.}
+\label{tab:gluglucutandcountyields_2jets}
+\begin{center}
+\begin{tabular}{cccccc} \hline\hline
+{\bf Higgs mass (GeV/c$^2$)}        & {\bf 200}         & {\bf 300}         & {\bf 400}         & {\bf 500}         & {\bf 600}     \\\hline\hline             
+                                    &                   &                   &                   &                   &               \\\hline   
+\multicolumn{6}{c}{\bf$ee$ channel}\\\hline
+S/B expected                        & $0.06 \pm 0.01$   & $0.22 \pm 0.03$   & $0.45 \pm 0.08$     & $0.70 \pm 0.12$     & $0.66 \pm 0.09$  \\\hline   
+H$\rightarrow$ VV                   & $ 0.98 \pm0.20 $  & $ 1.46 \pm0.04 $  & $ 1.812 \pm0.035 $  & $ 0.81 \pm0.05 $    & $ 0.349 \pm0.006 $\\\hline
+ZZ                                  & $ 1.44 \pm0.08 $  & $ 1.16 \pm0.07 $  & $ 0.84 \pm0.06 $    & $ 0.43 \pm0.04 $    & $ 0.265 \pm0.033 $ \\
+WW                                  & $ 1.36 \pm0.20 $  & $ 0.33 \pm0.10 $  & $ 0.026 \pm0.020 $  & $ 0.007 \pm0.007 $  & $ 0.007 \pm0.007 $ \\
+WZ                                  & $ 1.79 \pm0.15 $  & $ 1.18 \pm0.12 $  & $ 0.89 \pm0.10 $    & $ 0.47 \pm0.08 $    & $ 0.26 \pm0.06 $ \\
+Single top                          & $ 1.13 \pm0.20 $  & $ 0.26 \pm0.09 $  & $ 0.034 \pm0.034 $  &  & \\
+$t\bar{t}$                          & $ 5.5 \pm0.9 $    & $ 2.0 \pm0.5 $    & $ 0.55 \pm0.26 $    &  & \\
+W+jets                              &  &  &  &  &  \\
+Z/$\gamma^{*}$+jets$\rightarrow$ ll & $ 6.0 \pm1.2 $    & $ 1.7 \pm0.6 $    & $ 1.6 \pm0.6 $     & $ 0.24 \pm0.17 $  & \\\hline
+Total expected                      & $ 17.2 \pm1.6 $   & $ 6.6 \pm0.9 $    & $ 4.0 \pm0.7 $     & $ 1.15 \pm0.19 $  & $ 0.53 \pm0.07 $ \\\hline
+data                                & $ 22$             & $ 10.0$           & $ 4.0$             & $ 1.0$            & \\\hline
+                                    &                   &                   &                    &                   &               \\\hline   
+\multicolumn{6}{c}{\bf$\mu\mu$ channel}\\\hline
+S/B expected                        & $0.03 \pm 0.01$   & $0.18\pm0.03$     & $0.32\pm 0.06$      & $0.27\pm 0.08$     &  $0.25\pm 0.10$     \\\hline   
+H$\rightarrow$ VV                   & $ 0.58 \pm0.12 $  & $ 1.49 \pm0.04 $  & $ 1.766 \pm0.034 $  & $0.78 \pm0.05 $    & $ 0.297 \pm0.005 $ \\\hline
+ZZ                                  & $ 1.40 \pm0.07 $  & $ 1.17 \pm0.07 $  & $ 0.78 \pm0.05 $    & $ 0.39 \pm0.04 $   & $ 0.234 \pm0.030 $ \\
+WW                                  & $ 1.36 \pm0.20 $  & $ 0.17 \pm0.07 $  &                     &                    & \\
+WZ                                  & $ 1.85 \pm0.15 $  & $ 1.17 \pm0.12 $  & $ 0.76 \pm0.10 $    & $ 0.36 \pm0.07 $   & $ 0.16 \pm0.04 $ \\
+Single top                          & $ 0.96 \pm0.16 $  & $ 0.19 \pm0.08 $  &                     &                    &\\
+$t\bar{t}$                          & $ 5.0 \pm0.8 $    & $ 1.3 \pm0.4 $    & $ 0.05 \pm0.05 $    &                    & \\
+W+jets                              &  &  &  &  &  \\
+Z/$\gamma^{*}$+jets$\rightarrow$ ll & $ 8.6 \pm1.5 $    & $ 4.4 \pm1.1 $    & $ 4.0 \pm1.1 $      & $ 2.2 \pm0.8 $  & $ 0.8 \pm0.5 $ \\\hline
+Total expected                      & $ 19.1 \pm1.8 $   & $ 8.4 \pm1.2 $    & $ 5.5 \pm1.1 $      & $ 2.9 \pm0.8 $  & $ 1.2 \pm0.5 $ \\ \hline
+data                                & $ 22$             & $ 7 $             & $ 6 $               & $ 1$            & \\\hline
+\end{tabular}
+\end{center}
+\end{table}
 
 %%
 %% Discriminator analysis
 %%
 \subsection{Discriminator based analysis of the selected events}
 \label{subsec:discanalysis}
+
+
+%%
+%% VBF selection
+%%
+\subsection{Vector Boson Fusion search}
+\label{subsec:vbfsearch}
+
 
 %%
 %%
