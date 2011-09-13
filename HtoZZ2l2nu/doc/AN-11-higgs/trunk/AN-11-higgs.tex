@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.28 $
+\RCS$Revision: 1.29 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.28 2011/09/13 16:09:33 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.29 2011/09/13 21:43:48 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -756,7 +756,7 @@ Instead we define \RMET from the minimum imbalance found using either the cluste
 Each component of \RMET is computed and minimized individually as
 
 \begin{equation}
-{\rm red-}\cancel{E}_{T_i}^{k} =\vec{p}_{T}^{ll}\cdot \vec{i} + \alpha R^{\text{k}}_{i}
+{\rm red-}E_{T_i}^{miss,k} =\vec{p}_{T}^{ll}\cdot \vec{i} + \alpha R^{\text{k}}_{i}
 \label{eq:rmet}
 \end{equation}
 
@@ -965,7 +965,7 @@ The particles (not) used in the computation of each \MET type are signaled with 
 The next Sections describe three complementary approaches to search for the standard model Higgs in the 2l2$\nu$ final state.
 The analysis relies fully on the expected behavior for the Higgs events as described in the simulation.
 The transverse momentum of the Higgs boson is however corrected for the NNLO+NNLL 
-prediction which are not taken into account by the \POWHEG sample used in this study.
+prediction which are not taken into account by the \Powheg sample used in this study.
 The Higgs-$p_T$ reweighting is applied only to gluon-gluon fusion and it is described in more detail in~\cite{CMS-TWIKI-GEN-higgspt}
 
 Two of the analysis proposed are cut-based and a third one is a discriminator based analysis.
@@ -1150,7 +1150,7 @@ M_T(\ell,E_T^{miss})=2p_T^{\ell}E_T^{miss}(1-\cos\delta\phi)
 \end{equation}
 
 where $\delta\phi$ is the azimuthal angle between the lepton and the \MET directions.
-\end{itemize}
+\end{description}
 
 Figure~\ref{fig:angles} shows schematically the observables used to implement the discriminant.
 
@@ -1312,6 +1312,25 @@ Data                                & 1                  &  \\\hline\hline
 %%
 \subsection{Efficiency of the selection}
 \label{subsec:selefficiency}
+
+\FIXME: the following text is a placeholder to be updated with the final values to be used
+
+Trigger, lepton identification and isolation efficiencies are determined from data using the tag and probe technique
+~\cite{CMS-AN-2009-111} and ~\cite{CMS-TWIKI-GEN-tandp}.
+In this subsection we summarize the results and corresponding uncertainties to be used for the final analysis.
+Further details on the intermediate steps used to obtain these results can be found in App.~\ref{sec:app:leptonefficiency}.
+Trigger efficiency is measured in data for each one of the triggers used in the analysis (cf. Sec~\ref{subsec:trigrec}).
+Trigger efficiency is measured with respect to the offline identification and isolation. The resulting value is used to re-scale the event yields.
+Lepton identification and isolation are measured for both data and MC selected events and the ratio of the two measurements is use to re-scale the final event yields.
+The uncertainty on the efficiencies is estimated by:
+
+\begin{itemize}
+\item varying the fit shape used to model the Z-peak and the background side band;
+\item varying the pileup scenario used for the fits to MC selected events; 
+Two extreme cases are considered: without pileup and using the flat pileup distribution before applying the re-weighting discussed in Sec.~\ref{subsec:trigrec}.
+\item comparing in MC the expected degradation of isolation as a function of the pileup and the differences between $Z\rightarrow\ell$ decays in $Z$ events and in signal.
+Details can be found in App.~\ref{sec:app:leptonisolation};
+\end{itemize}
 
 
 %%
@@ -1528,7 +1547,7 @@ All backgrounds, as predicted by simulation, are considered.}
 \end{figure}
 
 \section{Appendix: Lepton Efficiency}
-\label{sec:app:leptoefficiency}
+\label{sec:app:leptonefficiency}
   
 \subsection{Muon Identification Efficiency}
 We compute the lepton identification efficiency using the
