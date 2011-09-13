@@ -125,56 +125,103 @@ class savannahConnect:
             self.br.back()
             return name
 
+    def getSelfURL(self, name, user):
+        # If logged in
+        if self.valid==True and name != None:
+            self.br.select_form(nr=0)
+            self.br.form['words']=name
+            self.br.form['type_of_search']=['task',]
+            self.br.submit()
+            
+            links=self.br.links(text_regex=name+"$")
+            
+            for i in links:
+                url = i.absolute_url
+                self.br.follow_link(i)
+                
+                self.br.select_form(name='item_form')
+                self.br.find_control('assigned_to')
+                control = self.br.find_control('assigned_to')
+               
+                
+                if control.get_value_by_label() == [user]:
+                    self.br.follow_link(url_regex="#postcomment")
+                    return True
+                self.br.back()
+            self.br.back()
+            return False
+
+
     def submitItem(self, dataset, files, tags,castorDir, username):
         # If logged in
         if self.valid == True:
+            
+            
             if dataset['ParentList']:dataset['ParentList'][0] = self.getParentURL(dataset['ParentList'][0])
-
+            
             response1=self.br.follow_link(text_regex='Submit a new item', url_regex="task")
+            previousEntry= self.getSelfURL(dataset['PathList'][0], username)
 
-
-            # Select form for item data submission
-            self.br.select_form(name='trackers_form')
-            dayMonthYear = datetime.date.fromtimestamp(int(dataset['DateCreated'])).strftime('%d-%B-%Y').split("-")
+            option = "y"
+            if previousEntry:
+                option = raw_input("Task for this dataset already exists on Savannah.\nAdd new information as comment?(y/n)")
             
-            
-            # Input item data
-            self.br.form['planned_starting_date_dayfd']=[dayMonthYear[0].lstrip("0")]
+            while True:
+                
+                
+                if option == 'y':
+                    # Input item data
+                    if previousEntry:
+                        self.br.select_form(name='item_form')
+                        self.br.form['comment']= self.datasetString(dataset, files, tags, castorDir)
 
-            self.br.form.set_value_by_label([dayMonthYear[1]],'planned_starting_date_monthfd')
+                    else:
+                        self.br.select_form(name='trackers_form')
+                        self.br.form['details']= self.datasetString(dataset, files, tags, castorDir)
+                        dayMonthYear = datetime.date.fromtimestamp(int(dataset['DateCreated'])).strftime('%d-%B-%Y').split("-")
+                        self.br.form['planned_starting_date_dayfd']=[dayMonthYear[0].lstrip("0")]
+                        self.br.form.set_value_by_label([dayMonthYear[1]],'planned_starting_date_monthfd')
+                        self.br.form['planned_starting_date_yearfd']=dayMonthYear[2]
+                        self.br.form['summary'] = dataset['PathList'][0]
 
-            self.br.form['planned_starting_date_yearfd']=dayMonthYear[2]
-            self.br.form['summary'] = dataset['PathList'][0]
-            self.br.form['priority']= ['5']
-            if dataset['Status']=="INVALID":
-                self.br.form.set_value_by_label(["Invalid"],'resolution_id')
-            else:
-                self.br.form.set_value_by_label(["Done"],'resolution_id')
-            self.br.form['details']= self.datasetString(dataset, files, tags, castorDir)
-            
 
-            # If user does not exist in group, savannah entry cannot be assigned, so do not submit
-            try:
-                self.br.form.set_value_by_label([username], "assigned_to")
-                
-                self.br.submit()
-                
-                print "Dataset has been posted to Savannah"
-            except:   
-                # If user wasnt found print error message
-                
-                print "User \"%s\" is not a CMG group member on Savannah" % username
-                print "-No entry made on Savannah-"
-                
-            
-            # Return the url that users would use to access the savannah page
-            URL = "https://savannah.cern.ch" +self.getItemURL(self.br.response()).split("=")[-1]
-            print URL
-            return URL
-          
+                    self.br.form['priority']= ['5']
+                    if dataset['Status']=="INVALID":
+                        self.br.form.set_value_by_label(["Invalid"],'resolution_id')
+                    else:
+                        self.br.form.set_value_by_label(["Done"],'resolution_id')
+
+                    # If user does not exist in group, savannah entry cannot be assigned, so do not submit
+                    try:
+                        self.br.form.set_value_by_label([username], "assigned_to")
+                        if previousEntry:
+                            self.br.submit(id="submitreturn")
+                        else:
+                            self.br.submit()
+                        if previousEntry: print "Dataset has been updated on Savannah"
+                        else: print "Dataset has been posted to Savannah"
+                    except:   
+                        # If user wasnt found print error message
+
+                        print "User \"%s\" is not a CMG group member on Savannah" % username
+                        print "-No entry made on Savannah-"
+
+
+                    # Return the url that users would use to access the savannah page
+                    if previousEntry:
+                        URL = self.br.response().read().split("title>")[1].split("#")[1].split(",")[0]
+                    else:
+                        URL = self.getItemURL(self.br.response()).split("=")[-1].lstrip("/task/?")
+                    print URL
+                    return URL
+                elif option == 'n':
+                    # If item is already on Savannah and user doesn't want to add a comment
+                    print "Dataset was not added to savannah"
+                    return None
+                else: option = raw_input("Please enter y or n:")
         else:
             print "User not logged in to Savannah"
             return None
 
-        
+
 
