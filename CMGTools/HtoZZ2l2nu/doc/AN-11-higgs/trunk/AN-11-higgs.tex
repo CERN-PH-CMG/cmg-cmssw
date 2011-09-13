@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.20 $
+\RCS$Revision: 1.21 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.20 2011/09/12 15:00:13 cerminar Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.21 2011/09/12 16:13:21 cerminar Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -1020,6 +1020,108 @@ data                                & $ 22$             & $ 7 $             & $ 
 \subsection{Discriminator based analysis of the selected events}
 \label{subsec:discanalysis}
 
+Table~\ref{} \texttt{FIXME: point to the cut flow table} shows the
+expecred number of events surviving the \RMET cut. The di-boson
+processes and the \ttbar are the dominant remaining backgrounds at
+this stage of the selection.  
+
+To further enhance the signal to backround ratio we setup a
+multivariate analysis exploiting mainly angular variables for the
+rejection of the irreducible di-boson processes.
+In the current implementation the variables used for the selection
+are:
+\begin{itemize}
+\item $\Delta \phi (lead-\ell, \ell\ell)$: angle between the leading
+  lepton and the di-lepton system;
+\item $\Delta R (\ell, \ell)$: angular distance between the two leptons;
+\item  $\sum M_T$: sum of the individual transverse masses of each lepton and E miss.
+\end{itemize}
+Figure~\ref{fig:angles} shows the observables used to implement the discriminant.
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.3\textwidth]{img/angles}
+\caption{Angular variables used in the implementation of the
+  likelihood discriminant. The plots refer to an integrated luminosity
+of 1.1~1/fb.}
+\label{fig:angles}
+\end{center}
+\end{figure}
+
+The distribution of the input variables for all the backgrounds and
+for the different mass hipothesis for the signal in the di-muon final
+state are shown before the \RMET cut in Figure~\ref{} and after the
+loose selection cut in Figure~\ref{fig:input_redMET}.
+Overall the level of agreement between data and Monte-Carlo can be
+considered satisfactory for all the variables.
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.3\textwidth]{img/cStack_deltaPhiLeadZ_mumu_lveto_nob}
+\includegraphics[width=0.3\textwidth]{img/cStack_deltaRLept_mumu_lveto_nob}
+\includegraphics[width=0.3\textwidth]{img/cStack_mtSumLMet_mumu_lveto_nob}
+\caption{Distribution of the input variables used to build the
+  likelihood discriminant for data and MC in the di-muon chanels. The
+  plots show the events before the \RMET selection. The plots refer to an integrated luminosity
+of 1.1~1/fb.\texttt{FIXME: out-of-date, just a placeholder}}
+\label{fig:input}
+\end{center}
+\end{figure}
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.3\textwidth]{img/cStack_deltaPhiLeadZ_mumu_lveto_nob_redmetL}
+\includegraphics[width=0.3\textwidth]{img/cStack_deltaRLept_mumu_lveto_nob_redmetL}
+\includegraphics[width=0.3\textwidth]{img/cStack_mtSumLMet_mumu_lveto_nob_redmetL}
+\caption{Distribution of the input variables used to build the
+  likelihood discriminant for data and MC in the di-muon chanels. The
+  plots show the events after the \RMET selection (loose working
+  point). The plots refer to an integrated luminosity
+of 1.1~1/fb. \texttt{FIXME: out-of-date, just a placeholder}}
+\label{fig:input_redMET}
+\end{center}
+\end{figure}
+
+
+\texttt{FIXME: add the di-electron plots}
+
+The likelihood discriminant:
+\begin{equation}
+L.R. = \frac{L_{s}}{L_{s}+L_{b}};
+\label{eq:likelihood}
+\end{equation}
+where:
+\begin{equation}
+L = \prod_{variables} pdf.
+\label{eq:likelihood}
+\end{equation}
+has been trained against the di-boson irreducible backgorunds and the
+signal (including both the gg-fusion and VBF contributions to the ZZ
+and WW final states). For this task the MC samples are split in two to
+have two statistically independent samples for the training and the
+evaluation of the performance of the discriminant.
+The training is performed in different bins of jet multiplicity to
+further exploit the signal signature enhancing the signal significance
+in the cleanest bins.
+
+The output of the discriminant in the different bins of number of jets
+is shown in Fig.~\ref{fig:likelihoodout_dimu} for data and MC
+including all backgrounds and the signal for an Higgs mass of
+300~\GeV.
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.3\textwidth]{img/cStack_TMVALikelihood_j0}
+\includegraphics[width=0.3\textwidth]{img/cStack_TMVALikelihood_j1}
+\includegraphics[width=0.3\textwidth]{img/cStack_TMVALikelihood_j2}
+\caption{Output of the likelihood discriminant for data and MC in the
+  di-muon final state. The different plots refer to different bins of
+  jet multiplicity: 0 jet (left), 1 jet (center) and more than 1 jet
+  (right). The plots refer to an integrated luminosity
+of 1.1~1/fb.\texttt{FIXME: out-of-date, just a placeholder}}
+\label{fig:likelihoodout_dimu}
+\end{center}
+\end{figure}
+
 
 %%
 %% VBF selection
@@ -1311,6 +1413,12 @@ requirements is shown in Fig.~\ref{fig:EffDoubleMu13Mu8}.
 %  DoubleMu7  1 to 164237
 %  DoubleMu13Mu8 165088 to inf
 %  IsoMu24 160431 to inf
+
+% FIXME: still experiencing problems with the trigger matching in the
+% May10 sample. For this reason the eff. for DoubleMu7 is still to be
+% computed.
+
+
 
 
 \end{document}
