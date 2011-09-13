@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.21 $
+\RCS$Revision: 1.22 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.21 2011/09/12 16:13:21 cerminar Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.22 2011/09/13 10:15:01 cerminar Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -336,7 +336,7 @@ For each electron it is also required that no tracker or global muon with at lea
 Electron identification relies on a simple cut based identification algorithm 
 which depends on the supercluster shape, its alignment with the track which is associated to electron and H/E.
 The electron-id cuts are tuned specifically for each ECAL region (barrel and endcap) in order to yield 
-an expected efficiency for the reconstruction of electrons from $W\rightarrowe\nu$ decays.
+an expected efficiency for the reconstruction of electrons from $W \rightarrow e\nu$ decays.
 Details on the VBTF specific requirements can be found in~\cite{CMS-TWIKI-VBTF11}.
 For this study we require at pre-selection that the VBTF-95 working point is verified. 
 For electron candidates to be considered as a leg of the dilepton candidate the verification of the VBTF-85 working point is further required
@@ -499,20 +499,20 @@ S/B           & 0.41           & 0.48      & 0.24     & 0.47            & 0.51  
 \end{center}
 \end{figure}
 
-
 %%% VBF
 \item[Vector Boson Fusion]:  The identification of the events produced via Vector Boson Fusion (VBF) is based on the presence in the event of two leading jets in the forward regions of with an invariant mass of at least $450~GeV/c$ and a $\Delta\eta$-gap$>3.5$.
 In addition, these two jets must not be identified as b-jets.
 In order to reduce the potential impact of the pile-up on, only jets with $p_T>30~GeV/c$ are considered.
 Presence of additional jets ($p_T>15~GeV/c$) in the tracker acceptance is also forbidden.
 Finally, the two legs of the dilepton must be conained between the two leading jets.
-Fig.~\ref{fig:vbfdEta} shows the distribution of the $\eta$-gap between the two VBF jets while Fig.~\ref{fig:vbfiMass} shows the distribution of the invariant mass between the two VBF jets.  The Fig.~\ref{fig:vbfeventflow} shows the impact of each cuts on the signal and on the different backgrounds.
+Fig.~\ref{fig:vbfdEta} shows the distribution of the $\eta$-gap between the two VBF jets while Fig.~\ref{fig:vbfiMass} shows the distribution of the invariant mass between the two VBF jets. 
+The fraction of simulated background dilepton events (with $|M-M_Z|<$15~GeV/c) being tagged as VBF events is about $4.0\times10^{-4}$, while the selection efficiency is about 25-30\% for Higgs produced via vector boson fusion in the mass range [200-600]~GeV/c$^{2}$ as shown on Fig.~\ref{fig:vbfeventflow}.
 
 \begin{figure}[htp]
 \begin{center}
 \includegraphics[width=0.46\textwidth]{img/mumu_VBFdEta}
 \includegraphics[width=0.46\textwidth]{img/ee_VBFdEta}
-\caption{Distribution of $\Delta\eta$ between the two VBF jets in di-muon ({\em left}) and di-electron ({\em right}).}
+\caption{Distribution of $\Delta\eta$ between the two VBF jets in di-muon ({\em left}) and di-electron ({\em right}).  Note that signal is populated only with VBF produced Higgs.}
 \label{fig:vbfdEta}
 \end{center}
 \end{figure}
@@ -521,7 +521,7 @@ Fig.~\ref{fig:vbfdEta} shows the distribution of the $\eta$-gap between the two 
 \begin{center}
 \includegraphics[width=0.46\textwidth]{img/mumu_VBFiMass}
 \includegraphics[width=0.46\textwidth]{img/ee_VBFiMass}
-\caption{Distribution of the te invariant mass between the two VBF jets in di-muon ({\em left}) and di-electron ({\em right}).}
+\caption{Distribution of the te invariant mass between the two VBF jets in di-muon ({\em left}) and di-electron ({\em right}).  Note that signal is populated only with VBF produced Higgs.}
 \label{fig:vbfiMass}
 \end{center}
 \end{figure}
@@ -531,10 +531,61 @@ Fig.~\ref{fig:vbfdEta} shows the distribution of the $\eta$-gap between the two 
 \begin{center}
 \includegraphics[width=0.46\textwidth]{img/mumu_VBFeventflowInc}
 \includegraphics[width=0.46\textwidth]{img/ee_VBFeventflowInc}
-\caption{Event flow for the VBF selection  in di-muon ({\em left}) and di-electron ({\em right}).}
+\caption{Event flow for the VBF selection  in di-muon ({\em left}) and di-electron ({\em right}).  Note that signal is populated only with VBF produced Higgs.}
 \label{fig:vbfeventflow}
 \end{center}
 \end{figure}
+
+
+
+\begin{table}[htp]
+\begin{center}
+\caption{Incremental event yields for the VBF events selection.}
+\label{tab:presamplecutflow}
+\begin{tabular}{lccccc} \hline
+  & $|M-M_Z|<$15~GeV/c$^2$    & \multirow{2}{*}{$\Delta\eta$} & \multirow{2}{*}{inv. Mass} & \multirow{2}{*}{Lep.+Jet Veto} \\
+  & + 2 jets ($p_T>30~GeV/c$) &                               &                            &                                \\ \hline
+
+Process  &  &  & &  & \\ \hline
+                         & \multicolumn{4}{c}{\bf $\mu\mu$ channel} \\\hline
+qqH(200)$\rightarrow$ VV & $ 3.57 \pm 0.04 $  & $ 1.867 \pm 0.032 $  & $ 1.597 \pm 0.030 $  & $ 1.466 \pm 0.028 $   \\
+qqH(300)$\rightarrow$ VV & $ 1.93 \pm 0.06 $  & $ 1.09 \pm 0.05 $  & $ 0.95 \pm 0.04 $   & $ 0.90 \pm 0.04 $   \\
+qqH(400)$\rightarrow$ VV & $ 0.848 \pm 0.010 $  & $ 0.518 \pm 0.008 $  & $ 0.467 \pm 0.007 $   & $ 0.434 \pm 0.007 $   \\
+qqH(500)$\rightarrow$ VV & $ 0.480 \pm 0.016 $  & $ 0.296 \pm 0.012 $  & $ 0.268 \pm 0.012 $   & $ 0.254 \pm 0.011 $   \\
+qqH(600)$\rightarrow$ VV & $ 0.285 \pm 0.010 $  & $ 0.181 \pm 0.008 $  & $ 0.169 \pm 0.008 $   & $ 0.158 \pm 0.008 $   \\
+\hline
+ZZ & $ 102.1 \pm 0.6 $  & $ 1.25 \pm 0.07 $  & $ 0.65 \pm 0.05 $   & $ 0.39 \pm 0.04 $   \\
+WW & $ 16.2 \pm 0.7 $  & $ 0.89 \pm 0.16 $  & $ 0.50 \pm 0.12 $   & $ 0.30 \pm 0.09 $   \\
+WZ & $ 142.0 \pm 1.3 $  & $ 2.87 \pm 0.18 $  & $ 1.57 \pm 0.13 $  & $ 0.96 \pm 0.10 $   \\
+Single top & $ 69.9 \pm 1.5 $  & $ 2.60 \pm 0.30 $  & $ 1.47 \pm 0.23 $   & $ 0.82 \pm 0.17 $   \\
+$t\bar{t}$ & $ 1302 \pm 14 $  & $ 20.8 \pm 1.7 $  & $ 13.6 \pm 1.4 $   & $ 2.9 \pm 0.6 $   \\
+W+jets & $ 1.9 \pm 1.9 $   &  & &    \\
+Z/$\gamma^{*}$+jets$\rightarrow$ ll & $ ( 22.08 \pm 0.08 ) \times10^{3} $  & $ 902 \pm 16 $  & $ 444 \pm 11 $   & $ 240 \pm 8 $   \\
+Total expected & $ ( 23.71 \pm 0.08 ) \times10^{3} $  & $ 931 \pm 16 $  & $ 462 \pm 11 $   & $ 245 \pm 8 $  \\
+\hline
+data & $ ( 21.63 \pm 0.15 ) \times10^{3} $  & $ 940 \pm 31 $  & $ 466 \pm 22 $   & $ 285 \pm 17 $   \\
+\hline
+ & \multicolumn{4}{c}{\bf $ee$ channel} \\\hline
+qqH(200)$\rightarrow$ VV & $ 3.36 \pm 0.04 $  & $ 1.735 \pm 0.031 $  & $ 1.512 \pm 0.029 $   & $ 1.402 \pm 0.028 $   \\
+qqH(300)$\rightarrow$ VV & $ 1.95 \pm 0.06 $  & $ 1.13 \pm 0.05 $  & $ 1.00 \pm 0.04 $   & $ 0.93 \pm 0.04 $   \\
+qqH(400)$\rightarrow$ VV & $ 0.885 \pm 0.010 $  & $ 0.537 \pm 0.008 $  & $ 0.482 \pm 0.007 $   & $ 0.448 \pm 0.007 $   \\
+qqH(500)$\rightarrow$ VV & $ 0.491 \pm 0.016 $  & $ 0.309 \pm 0.013 $  & $ 0.280 \pm 0.012 $   & $ 0.263 \pm 0.012 $   \\
+qqH(600)$\rightarrow$ VV & $ 0.290 \pm 0.010 $  & $ 0.186 \pm 0.008 $  & $ 0.172 \pm 0.008 $   & $ 0.160 \pm 0.008 $   \\
+\hline
+ZZ & $ 94.5 \pm 0.6 $  & $ 1.21 \pm 0.07 $  & $ 0.64 \pm 0.05 $  & $ 0.35 \pm 0.04 $   \\
+WW & $ 17.1 \pm 0.7 $  & $ 0.90 \pm 0.16 $  & $ 0.53 \pm 0.12 $  & $ 0.29 \pm 0.09 $   \\
+WZ & $ 133.8 \pm 1.3 $  & $ 3.37 \pm 0.20 $  & $ 1.79 \pm 0.14 $  & $ 1.17 \pm 0.12 $   \\
+Single top & $ 66.7 \pm 1.5 $  & $ 1.95 \pm 0.24 $  & $ 1.08 \pm 0.18 $  & $ 0.47 \pm 0.11 $   \\
+$t\bar{t}$ & $ 1254 \pm 14 $  & $ 22.7 \pm 1.8 $  & $ 15.7 \pm 1.5 $  & $ 3.7 \pm 0.7 $   \\
+W+jets & $ 27 \pm 7 $  & $ 1.5 \pm 1.3 $  & $ 1.5 \pm 1.3 $   &    \\
+Z/$\gamma^{*}$+jets$\rightarrow$ ll & $ ( 19.80 \pm 0.08 ) \times10^{3} $  & $ 766 \pm 15 $  & $ 391 \pm 11 $   & $ 231 \pm 8 $   \\
+Total expected & $ ( 21.39 \pm 0.08 ) \times10^{3} $  & $ 798 \pm 15 $  & $ 413 \pm 11 $   & $ 237 \pm 8 $   \\
+\hline
+data & $ ( 19.86 \pm 0.14 ) \times10^{3} $  & $ 782 \pm 28 $  & $ 389 \pm 20 $   & $ 235 \pm 15 $ \\
+\hline \hline
+\end{tabular}
+\end{center}
+\end{table}
 
 
 %%% MET
@@ -602,7 +653,7 @@ ZZ & $ 229.8 \pm1.0 $  & $ 213.1 \pm0.9 $  & $ 164.1 \pm0.8 $  \\
 WW & $ 77.4 \pm1.5 $  & $ 77.3 \pm1.5 $  & $ 75.0 \pm1.5 $  \\
 WZ & $ 360.4 \pm2.1 $  & $ 304.9 \pm1.9 $  & $ 256.4 \pm1.8 $  \\
 Single top & $ 35.3 \pm1.1 $  & $ 34.6 \pm1.0 $  & $ 10.6 \pm0.6 $  \\
-t#bar{t}   & $ 372 \pm7 $  & $ 365 \pm7 $  & $ 39.7 \pm2.4 $  \\
+$t\bar{t}$   & $ 372 \pm7 $  & $ 365 \pm7 $  & $ 39.7 \pm2.4 $  \\
 W+jets     & $ 39 \pm7 $  & $ 39 \pm7 $  & $ 37 \pm7 $  \\
 Z/$\gamma^{*}$+jets$\rightarrow$ ll & $ ( 468.0 \pm0.4 ) \times10^{3} $  & $ ( 467.5 \pm0.4 ) \times10^{3} $  & $ ( 456.0 \pm0.4 ) \times10^{3} $ \\\hline
 Total simulated & $ ( 469.2 \pm0.4 ) \times10^{3} $  & $ ( 468.5 \pm0.4 ) \times10^{3} $  & $ ( 456.6 \pm0.4 ) \times10^{3} $ \\\hline
@@ -796,7 +847,7 @@ in both the average and RMS of the spectrum.
 \begin{center}
 \includegraphics[width=0.9\textwidth]{img/metvariablesVsPileup}\\
 \includegraphics[width=0.9\textwidth]{img/metvariablesVsPileup_zsideband}
-\caption{Average ({\em left}) and RMS ({\em right}) of the distribution of different \MET related variables in $Z/#gamma^{*}\rightarrow ll$ events, as function of the pileup.
+\caption{Average ({\em left}) and RMS ({\em right}) of the distribution of different \MET related variables in $Z/\gamma^{*}\rightarrow ll$ events, as function of the pileup.
 The {\em top} plots show the results obtained in the Z-boson mass region while the {\em bottom} plots show the results obtained in the side-band region.}
 \label{fig:metperformancevspileup}
 \end{center}
