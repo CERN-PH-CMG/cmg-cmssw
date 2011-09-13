@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.24 $
+\RCS$Revision: 1.25 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.24 2011/09/13 14:20:53 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.25 2011/09/13 14:51:54 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -1229,6 +1229,54 @@ of 1.1~1/fb.\texttt{FIXME: out-of-date, just a placeholder}}
 %%
 \subsection{Vector Boson Fusion search}
 \label{subsec:vbfsearch}
+
+The search of the Higgs boson produced via vector boson fusion mainly relies on the VBF tagging selection described in Sec.~\ref{subsec:trigrec}.
+After this tagging, the background is already reduced by a significant factor ($\sim 4\times10^{-4}$).
+The backgrounds can be further reduced by applying the third lepton-veto and by requiring missing transverse energy (\RMET>57.4 GeV/c).
+The \RMET threshold has been choosen to have a selection efficiency of $10^{-3}$ on Drell-Yan events.
+It is shown that these simple cuts are sufficient to have an expected background yields below 1, as shown on Table~\ref{tab:vbfcutandcountyields}.
+As it can be seen from the same table, the dominant background for the VBF selection are the $gg \rightarrow VV \rightarrow >1l \geq 1nu$ events
+
+\begin{table}[htp]
+\caption{Event yields after VBF selection for the di-electron and di-muon channel in events.}
+\label{tab:vbfcutandcountSN}
+\begin{center}
+\begin{tabular}{cccccc} \hline\hline
+{\bf Higgs mass (GeV/c$^2$)}        & {\bf 200}         & {\bf 300}         & {\bf 400}         & {\bf 500}         & {\bf 600}     \\\hline\hline
+                                    &                   &                   &                   &                   &               \\\hline
+\multicolumn{6}{c}{\bf$ee$ channel}\\\hline
+S/B expected                        & $0.41 \pm 0.29$   & $0.51 \pm 0.37$   & $0.31 \pm 0.22$     & $0.17 \pm 0.12$     & $0.09 \pm 0.06$  \\\hline
+\multicolumn{6}{c}{\bf$\mu\mu$ channel}\\\hline
+S/B expected                        & $1.84 \pm 1.37$   & $1.79\pm1.30$     & $0.99\pm 0.72$      & $0.50\pm 0.37$     &  $0.27\pm 0.20$     \\\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+\begin{table}[htp]
+\caption{Event yields after VBF selection for the di-electron and di-muon channel in events.}
+\label{tab:vbfcutandcountyields}
+\begin{center}
+\begin{tabular}{lcc} \hline\hline
+{\bf Process}          & {\bf$ee$ channel} & {\bf$\mu\mu$ channel} \\\hline
+H(200)$\rightarrow$ VV & 3.29E-01+-1.39E-02 & 4.41E-01+-7.15E-02 \\
+H(300)$\rightarrow$ VV & 4.08E-01+-2.09E-02 & 4.29E-01+-2.16E-02 \\
+H(400)$\rightarrow$ VV & 2.46E-01+-9.47E-03 & 2.38E-01+-8.74E-03 \\
+H(500)$\rightarrow$ VV & 1.33E-01+-1.08E-02 & 1.21E-01+-1.22E-02 \\
+H(600)$\rightarrow$ VV & 7.01E-02+-2.26E-03 & 6.51E-02+-2.22E-03 \\
+ZZ         & 2.48E-02+-9.99E-03 & 1.97E-02+-9.54E-03 \\
+WW         & 1.51E-02+-1.51E-02 & 0.00E+00+-0.00E+00 \\
+WZ         & 3.63E-02+-1.96E-02 & 6.18E-02+-2.57E-02 \\
+Single top & 2.49E-02+-2.35E-02 & 4.95E-02+-4.39E-02 \\
+$t\bar{t}$ & 3.10E-01+-2.22E-01 & 5.80E-02+-5.80E-02 \\
+W+jets     & 0.00E+00+-0.00E+00 & 0.00E+00+-0.00E+00 \\
+Z/$\gamma^{*}$+jets$\rightarrow$ ll &  3.88E-01+-2.82E-01 & 5.13E-02+-3.75E-02 \\ \hline
+Total expected    & 7.99E-01+-5.72E-01 & 2.40E-01+-1.75E-01 \\\hline
+Data              & 1.00E+00+-1.00E+00 & 0.00E+00+-0.00E+00 \\\hline
+\end{tabular}
+\end{center}
+\end{table}
+
 
 
 %%
