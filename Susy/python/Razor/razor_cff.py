@@ -4,10 +4,6 @@ from CMGTools.Common.skims.cmgCandSel_cfi import *
 from CMGTools.Common.skims.cmgCandCount_cfi import *
 from CMGTools.Common.skims.cmgCandMerge_cfi import *
 
-#start with the trigger
-from CMGTools.Common.skims.cmgTriggerObjectSel_cfi import *
-#preselect data events only if they have passed an HT or Razor trigger
-#
 # Current loose trigger requires pt > 40; eta < 3; R > 0.14; MR > 150
 #take the leading selected electrons + muons
 from CMGTools.Common.skims.leadingCMGMuonSelector_cfi import leadingCMGMuonSelector
@@ -29,9 +25,12 @@ razorMuonSequence = cms.Sequence(
 # id the jets
 from CMGTools.Common.skims.cmgPFJetSel_cfi import *
 razorPFJetSel = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = 'pt()>60 && abs(eta)<3.0' )
-razorPFJetSelID = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = '%s && getSelection("cuts_looseJetId")' % razorPFJetSel.cut.value() )
 # filter out B-tagged jets for latter use 
 razorPFBJetSel = cmgPFJetSel.clone( src = 'razorPFJetSel', cut = 'getSelection("cuts_btag_loose")' )
+
+#ID at lower pt threshold - used to veto event - the number of jets that fail loose jet ID
+razorPFJetSelID = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = '(pt()>30 && abs(eta)<3.0) && (!getSelection("cuts_looseJetId"))' )
+razorPFJetIDCount = cmgCandCount.clone( src = 'razorPFJetSelID', minNumber = 1 ) #filter inverted below
 
 #combine leading leptons with jets
 razorPFJetsWithLeadingLeptons = cmgCandMerge.clone(
@@ -42,7 +41,6 @@ razorPFJetsWithLeadingLeptons = cmgCandMerge.clone(
     )
     )
 #skim on leading objects - i.e. at least one ID'd jet and a lepton, or two jets
-razorPFJetIDCount = cmgCandCount.clone( src = 'razorPFJetSelID', minNumber = 1 )
 razorLeadingObjectCount = cmgCandCount.clone( src = 'razorPFJetsWithLeadingLeptons', minNumber = 2 )
 
 #make the hemispheres
@@ -68,8 +66,8 @@ razorDiHemiHadBox = cmgDiHemi.clone(
     #these are a little looser than the analysis cuts to give some sidebands                            
     razor = cms.PSet(
                      deltaPhi = cms.string('deltaPhi(leg1().phi(),leg2().phi()) < 2.8'),
-                     mr = cms.string('mR() >= 145'),
-                     r = cms.string('R() >= 0.13')
+                     mr = cms.string('mR() >= 140'),
+                     r = cms.string('R() >= 0.1')
     )
     )      
 )
@@ -87,8 +85,8 @@ razorDiHemiHistogramsHadBox = razorDiHemiHistograms.clone(inputCollection = 'raz
 razorHadronicBoxSequence = cms.Sequence(
     razorHemiHadBox*
     razorDiHemiHadBox*
-    razorDiHemiHadBoxSel*
-    razorDiHemiHadBoxInfo                                
+    razorDiHemiHadBoxSel#*
+#    razorDiHemiHadBoxInfo                                
     )
 ### now the Mu* box
 #clean jets of muons using deltaR
@@ -178,7 +176,7 @@ razorSequence = cms.Sequence(
 
 razorSkimSequence = cms.Sequence(
     razorObjectSequence + 
-    razorPFJetIDCount + 
+    ~razorPFJetIDCount + #note the inversion - veto events with jets that fail the ID
     razorLeadingObjectCount+
     razorSelectedDiHemi*
     razorSelectedCount
