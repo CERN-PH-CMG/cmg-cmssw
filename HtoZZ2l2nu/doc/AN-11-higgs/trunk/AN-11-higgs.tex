@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.22 $
+\RCS$Revision: 1.23 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.22 2011/09/13 10:15:01 cerminar Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.23 2011/09/13 13:28:48 querten Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -672,11 +672,15 @@ data & $  473.8 \times10^{3} $  & $ 473.0 \times10^{3} $  & $  460.1 \times10^{3
 The following section we discuss different strategies adopted in the choice of the variable used to reduce the contamination
 from the instrumental background, i.e., from processes in which the \MET is mismeasured.
 The main sources of mis-measurement of this quantity are the underestimate of the hadronic recoil
-of $Z$ bosons, due to jet energy scale and resolution as well as detector acceptance,
-and the contamination from pileup.
-In the first part we describe a variable developed with the purpose of reducing the error in the estimate of the hadronic recoil of the $Z$ bosons.
-The performance of this variable is compared with standard \MET among others.
-In the second part we describe the strategies developed to verify the contamination from pileup events with high hadronic activity.
+of $Z$ bosons, due to jet energy scale and resolution as well as detector acceptance, and the contamination from pileup.
+In Sec.~\ref{subsec:redmet} we describe a variable developed with the purpose of reducing the underestimation of the hadronic recoil of the $Z$ bosons.
+The performance of this variable is compared with standard \MET among other \MET related variables.
+In Sec.~\ref{subsec:fjpucontrol} we describe a strategy aimed to control pileup
+in the high luminosity regime based on the clustering of energy oriented from the reconstructed vertices.
+As this strategy is limited by the acceptance of the tracker (roughly up to $|\eta|<$2.4)
+which corresponds also the acceptance region for the signal we argue further
+that by comparing the components of the total \MET in the central and forward region of the detector
+it is possible to discriminate further the instrumental background from processes which produce real \MET.
 
 %%%
 %%% REDUCED MET
@@ -750,15 +754,49 @@ It can also be observed a better agreement between data and \MC for the definiti
 
 \begin{figure}[htp]
 \begin{center}
-\includegraphics[width=0.32\textwidth]{img/mumueq0jets_redMet_d0}
-\includegraphics[width=0.32\textwidth]{img/mumueq1jets_redMet_d0}
-\includegraphics[width=0.32\textwidth]{img/mumugeq2jets_redMet_d0}\\
-\includegraphics[width=0.32\textwidth]{img/mumueq0jets_redMet}
-\includegraphics[width=0.32\textwidth]{img/mumueq1jets_redMet}
-\includegraphics[width=0.32\textwidth]{img/mumugeq2jets_redMet}
-\caption{\RMET distribution in di-muon events with 0 ({\em left}), 1 ({\em center}) or 2 ({\em right}) jets.
-The original definition from the D0 collaboration is shown on top to be compared with the definition adopted in this manuscript shown on bottom.}
+\includegraphics[width=0.45\textwidth]{img/mumu_redMetD0}
+\includegraphics[width=0.45\textwidth]{img/mumu_redMet}
+\caption{\RMET distribution in di-muon events.
+The original definition from the D0 collaboration is shown on {\em left} to be compared with the definition adopted in this manuscript shown on the {\em right}.}
 \label{fig:redmet}
+\end{center}
+\end{figure}
+
+Fig.~\ref{fig:redmetcomps} shows the distribution of the \RMET longitudinal and transverse components.
+As expected the transverse component carries little or no information about the topology of the event
+and it is mainly dominated by \MET and jet energy resolution. The longitudinal component however signals the presence of
+real \MET in the recoil of the dilepton which becomes more significant for the high mass regime.
+As expected the instrumental background contribution, i.e., Drell-Yan, displays identical behavior in both components.
+Overall a fair agreement between data and MC is observed for both components and the residual discrepancy may be related
+to the jet energy resolution.
+The effect can be identified in Fig.~\ref{fig:redmetpercat} which shows the distribution of \RMET for different event categories:
+according to the di-lepton flavor and jet multiplicity. The bulk of the residual discrepancy is identified
+in events with significant jet activity.
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.45\textwidth]{img/mumu_redMetL}
+\includegraphics[width=0.45\textwidth]{img/mumu_redMetT}
+\caption{\RMET components in di-muon events: longitudinal ({\em left}) and transverse ({\em right}).}
+\label{fig:redmetcomps}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.24\textwidth]{img/mumueq0jets_redMet}
+\includegraphics[width=0.24\textwidth]{img/mumueq1jets_redMet}
+\includegraphics[width=0.24\textwidth]{img/mumugeq2jets_redMet}
+\includegraphics[width=0.24\textwidth]{img/mumuvbf_redMet}\\
+\includegraphics[width=0.24\textwidth]{img/eeeq0jets_redMet}
+\includegraphics[width=0.24\textwidth]{img/eeeq1jets_redMet}
+\includegraphics[width=0.24\textwidth]{img/eegeq2jets_redMet}
+\includegraphics[width=0.24\textwidth]{img/eevbf_redMet}
+\caption{\RMET distribution in differen event categories.
+From {\em left} to {\em right}:=0 jets,=1 jets, $\geq$2 jets, VBF.
+The di-muon (di-electron) channel is shown on {\em top} ({\em bottom}).}
+\label{fig:redmetpercat}
 \end{center}
 \end{figure}
 
@@ -770,6 +808,7 @@ The working points are defined independently for each jet multiplicity bin in or
 is defined from the fraction of events of a given process observed above a given threshold.
 The parametrization used is a 2$^{nd}$ order polynomial function of the logarithm of the \RMET cut.}.
 Table~\ref{tab:redmetwp} summarizes the values adopted for the medium and tight \RMET working points.
+For the VBF category a single working point is chosen: \RMET$>$50~GeV.
 
 \begin{table}[htp]
 \caption{Working points for different Drell-Yan rejection powers for \RMET.
@@ -859,8 +898,8 @@ to minimize further the dependence of these variables against pileup.
 %%%
 %%% Pileup
 %%%
-\subsection{Strategies adopted to minimize the effect of pileup}
-\label{subsec:pueffects}
+\subsection{Description of the FastJet clustering method}
+\label{subsec:fjpucontrol}
 
 In the previous section it was noticed that by taking the minimum for each event of the \MET measurement and the \tkMET measurement
 we can obtain an estimate of the \MET which is more robust against the contamination from pileup.
