@@ -171,10 +171,12 @@ class savannahConnect:
                 
                 if option == 'y':
                     # Input item data
+                    # If dataset already exists
                     if previousEntry:
                         self.br.select_form(name='item_form')
                         self.br.form['comment']= self.datasetString(dataset, files, tags, castorDir)
 
+                    # If dataset is new
                     else:
                         self.br.select_form(name='trackers_form')
                         self.br.form['details']= self.datasetString(dataset, files, tags, castorDir)
@@ -212,7 +214,7 @@ class savannahConnect:
                         URL = self.br.response().read().split("title>")[1].split("#")[1].split(",")[0]
                     else:
                         URL = self.getItemURL(self.br.response()).split("=")[-1].lstrip("/task/?")
-                    print URL
+                    print "https://savannah.cern.ch/task/?" + URL
                     return URL
                 elif option == 'n':
                     # If item is already on Savannah and user doesn't want to add a comment
