@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.32 $
+\RCS$Revision: 1.33 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.32 2011/09/14 09:53:12 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.33 2011/09/14 10:04:25 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -25,9 +25,9 @@
 \providecommand{\Roofit}{{\textsc{Roofit}}\xspace}
 \providecommand{\MET}{{$E_{T}^{miss}$}\xspace}
 \providecommand{\tkMET}{{${\rm tk-}E_{T}^{miss}$}\xspace}
-\providecommand{\neutMET}{{${\rm neut-}E_{T}^{miss}$}\xspace}
-\providecommand{\clusMET}{{${\rm clust-}E_{T}^{miss}$}\xspace}
 \providecommand{\resMET}{{${\rm res-}E_{T}^{miss}$}\xspace}
+\providecommand{\clusMET}{{${\rm clust-}E_{T}^{miss}$}\xspace}
+\providecommand{\cleanMET}{{${\rm clean-}E_{T}^{miss}$}\xspace}
 \providecommand{\projMET}{{${\rm proj-}E_{T}^{miss}$}\xspace}
 \providecommand{\RMET}{{${\rm red-}\vec{E}_{T}^{miss}$}\xspace}
 \providecommand{\MC}{{\textsc{MC}}\xspace}
@@ -102,6 +102,19 @@ In our search no excess is observed in data with respect to the Standard Model p
 as well as in the presence of a sequential fourth family of high mass fermions
 or in the fermio-phobic Higgs decay scenario.
 Limits are set for the production of the Higgs boson in each one of the referred contexts.
+
+Our manuscript is organized as follows: we start by describing the general strategy adopted
+to pre-select events under the $Z$-mass peak in Sec.~\ref{sec:triggerevselection};
+dedicated studies for the reconstruction and resilience of the \MET measurement against mismeasurement of the hadronic recoil
+and the contamination from pileup are detailed in Sec.~\ref{sec:met};
+using the pre-selected events and what we find to be the most robust \MET measurement 
+we develop a dedicated event selection for the search for the Higgs boson in the $2\ell2\nu$ sample in Sec~\ref{sec:higgssearch}.
+After presenting the results obtained from 2011 data 
+we discuss the selection efficiencies, data-driven background determination methods and the systematic uncertainties associated to our search.
+In the final section (Sec.~\ref{sec:excllimits}) we perform the statistical analysis of the results obtained and set limits on the production
+of the Higgs boson from the observed properties of the $2\ell2\nu$ sample. The procedure can be furthermore adopted to set limits on the
+resonant production of di-boson final states decaying in the $2\ell2\nu$ sample where the dilepton invariant mass is restricted to the $Z$ boson resonant peak.
+
 
 %
 % EVENT SELECTION
@@ -919,14 +932,16 @@ to minimize further the dependence of these variables against pileup.
 \subsection{Description of the FastJet-based clustering method}
 \label{subsec:fjpucontrol}
 
-In the previous section it was noticed that by taking the minimum for each event of the \MET measurement and the \tkMET measurement
+In the previous section it was noticed that by taking the minimum of the \MET measurement and the \tkMET measurement for each event
 we can obtain an estimate of the \MET which is more robust against the contamination from pileup.
-The drawback of this approach is the lost of resolution in the measurement as \tkMET uses only the charged component of the event
-which can be measured up to a pseudo-rapidity of $|\eta|<$2.5 due to the limited acceptance of the tracker.
+The drawback of this approach is the loss of resolution in the measurement as \tkMET uses only the charged component of the event
+which can be measured up to a pseudo-rapidity of $|\eta|<$2.4 due to the limited acceptance of the tracker.
 However for the signal we're interested in we expect that the neutrinos are indeed emitted in the central region of the detector
 and therefore we expect a correlation between \MET measured using the information from the full detector and \MET measured using the central region.
 For instrumental background this is not the case any longer, as depicted in Fig.~\ref{fig:metandtkmet}.
-Therefore we explore in this section a strategy to control further the measurement of \MET using the central part of the CMS detector only.
+In this section we explore further this correlation and develop a strategy to control further the measurement of \MET using the
+more detailed information on the (im)balance of the event in the transverse plane, namely 
+using regional and \MET composition information.
 
 \begin{figure}[htp]
 \begin{center}
@@ -937,20 +952,55 @@ Therefore we explore in this section a strategy to control further the measureme
 \end{center}
 \end{figure}
 
+As we have noticed in Sec.~\ref{subsec:trigrec} \pfMET is reconstructed from the sum of the transverse momentum of all reconstructed particle flow candidates 
+using the full CMS detector acceptance. This procedure ensures that we are using the most complete energy flux information experimentally available.
+It also relies on the fact that, if present, pileup events are expected to contribute with smaller amount of energy flux which is expected to be balanced
+as these events are mostly minimum bias so that in the end \pfMET is the most unbiased estimator of the \MET produced by the primary interaction.
+Besides detector acceptance, resolution, material effects, dead regions, out of time pileup also contributes in a non negligible way to the degradation of the \MET measurement.
+Therefore we adopt a tracker-driven strategy to cluster both charged and neutral candidates starting from the reconstructed vertices. 
+This strategy is of course limited by construction by the tracker acceptance and reconstruction efficiencies (i.e. $|\eta|<$2.4) but has the potential
+of refining the information on whether a given particle flow candidate should or should not be associated to the primary interaction even if it is neutral.
+Moreover, taking into account that the sources of real \MET should be produced within the central part of the detector, this approach should be able to 
+discriminate central sources of \MET from mis-reconstruction/calibration of the most forward calorimeters or from the extreme contamination from pileup.
+
+The approach followed is summarized as follows:
+
+\begin{enumerate}
+\item{\bf Vertex association} - we associate all charged particle flow candidates to a single reconstructed vertex in the event. The association is 
+done based on the weight which each track has in the vertex reconstruction fit. The vertex for which the track has highest weight is chosen.
+In case the track was not used in any vertex fit (or in the case where the track has the same weight for two different vertices), the vertex is chosen
+by minimizing the distance along the beam pipe, i.e. $\Delta z$.
+
+\item{\bf FastJet clustering} - for each vertex the collection of associated charged particles is used to build jets using the FastJet algorithm~\cite{Cacciari:2006sm}.
+The anti-$k_T$ algorithm is used. Different cone parameters ($R=$0.5, 0.7, 1.0) and different jet $p_T$ thresholds ($p_T>$2, 5 GeV/c) are used for study.
+
+\item{\bf Neutral clustering} - the charged jets are used to project cone areas with an aperture $\Delta R$ corresponding to the cone parameter used in the jet clustering.
+Neutral particle flow candidates found inside these areas are considered to be associated to the same vertex as the one from which the jet was seeded.
+To prevent double counting the association of neutrals starts from the primary vertex and proceeds by decreasing order of $\sum p_T^2$ of the vertices.
+Once the neutral candidate is associated it is removed from the list of particles to be associated.
+
+\item{\bf \MET computation} - using the particles associated to each vertex an estimate of the \MET per reconstructed is obtained. The vertex-\MET estimates are restricted to $|\eta|<2.4$.
+\end{enumerate}
+
+Table~\ref{tab:pumettypes} summarizes the usage of the different clustered components in order further the \MET computation.
+Three extra \MET types are defined: residual (\resMET) built from all the candidates associated to secondary vertices,
+clustered (\clusMET) built from all the candidates associated to the primary vertex and clean (\cleanMET) computed
+from removing from the standard \MET the candidates associated to other vertices.
 
 \begin{table}[htp]
 \caption{Definitions used for the different \MET approaches compared in this study.
-The particles (not) used in the computation of each \MET type are signaled with ($\Box$) $\blacksquare$.}
+The particles (not) used in the computation of each \MET type are signaled with $\blacksquare$ ($\Box$). }
 \label{tab:pumettypes}
 \begin{center}
 \begin{tabular}{lllllll} \hline\hline
-\multicolumn{2}{c}{\multirow{2}{*}{Particles}}           & \multicolumn{5}{c}{\MET type}                             \\ 
-&                                                        & \MET           & \tkMET         & \neutMET       & \clusMET       & \resMET   \\\hline
-\multirow{2}{*}{charged}  & all                          & $\blacksquare$ & $\Box$  & $\Box$  & $\Box$  & $\Box$          \\
-                          & assoc. vertex                & $\Box$  & $\blacksquare$ & $\Box$  & $\blacksquare$ & $\blacksquare$       \\\hline
-\multirow{2}{*}{neutrals} & all                          & $\blacksquare$ & $\Box$  & $\blacksquare$ & $\Box$  & $\Box$          \\
-                          & assoc. to vertex-seeded jets & $\Box$  & $\Box$  & $\Box$  & $\blacksquare$ & $\blacksquare$       \\
-                          & assoc. to other jets         & $\Box$  & $\Box$  & $\Box$  & $\Box$  & $\Box$        \\\hline\hline
+\multicolumn{2}{c}{\multirow{2}{*}{Particles}}           & \multicolumn{5}{c}{\MET type}     \\
+&                                                        & \MET           & \tkMET         & \resMET        & \clusMET         & \cleanMET      \\\hline
+\multirow{3}{*}{charged}  & all ($|\eta|<$2.4)           & $\blacksquare$ &                &                &                  & $\blacksquare$ \\
+                          & assoc. prim. vertex          &                & $\blacksquare$ &                & $\blacksquare$   &               \\
+                          & assoc. other vertices        &                &                & $\blacksquare$ &                  & $\Box$        \\\hline
+\multirow{3}{*}{neutrals} & all ($|\eta|<$5)             & $\blacksquare$ &                &                &                  & $\blacksquare$ \\
+                          & assoc. prim. vertex          &                &                &                & $\blacksquare$   &                \\
+                          & assoc. other vertices        &                &                & $\blacksquare$ &                  & $\Box$         \\\hline\hline
 \end{tabular}
 \end{center}
 \end{table}
