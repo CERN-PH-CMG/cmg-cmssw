@@ -43,7 +43,13 @@ If no -s option is provided, it is assumed that the current user is the user on 
                       dest="savuser",
                       help="If Savannah user is different to current user, enter Savannah username here",
                       default=os.environ['USER'] )
-    
+    # If the purpose is to test the software use this parameter, it will not be recognised by the
+    # non-testing algorithm
+    parser.add_option("-t", "--testing",
+                      action = "store_true",
+                      dest="test",
+                      help="Flag task as a test",
+                      default=False )
     
     
 
@@ -135,7 +141,7 @@ If no -s option is provided, it is assumed that the current user is the user on 
         sav = savannahConnect(options.savuser, savpass)
 
         #Submit dataset to savannah and assign to files owner on Castor
-        savannahURL =sav.submitItem(dataset,files,tags,targetDir ,options.user)
+        savannahURL =sav.submitItem(dataset,files,tags,targetDir ,options.user, options.test)
 
     except ValueError as err:
         print err, '. Exit!'

@@ -109,43 +109,81 @@ class savannahConnect:
                 URL = URL.split("\"")[1]
                 
         return URL
-    def getParentURL(self, name):
+    def getParentURL(self, name, user):
         # If logged in
         if self.valid==True and name != None:
-            self.br.select_form(nr=0)
+            self.br.follow_link(url_regex='/task/\?func\=search')
+            self.br.select_form(nr=1)
             self.br.form['words']=name
-            self.br.form['type_of_search']=['task',]
             self.br.submit()
-            links=self.br.links(text_regex=name+"$")
-            for i in links:
-                link = i.absolute_url
-                self.br.back()
-                htmlLink = "[" +link+" "+name+"]"
-                return htmlLink
-            self.br.back()
-            return name
-
-    def getSelfURL(self, name, user):
-        # If logged in
-        if self.valid==True and name != None:
-            self.br.select_form(nr=0)
-            self.br.form['words']=name
-            self.br.form['type_of_search']=['task',]
-            self.br.submit()
-
+            # Declare link variable
+            link = name
             # Try to access form (if you can, there was only 1 result)
             try:
                 # This line will throw the exception if it needs to be thrown
                 self.br.select_form(name='item_form')
-                # Check task is "Open"
-                if self.br.form['status_id']==['1']:
-                    # Check the task is not assigned to someone else
-                    control = self.br.find_control('assigned_to')
-                    if control.get_value_by_label() == [user]:
-                        # Follow link to enable comment posting
-                        self.br.follow_link(url_regex="#postcomment")
-                        return True
+                # Check if task is 100% match
+                if re.search(name,self.br.form['summary']):
+                    # Check task is "Open"
+                    if self.br.form['status_id']==['1']:
+                        # Check the task is not assigned to someone else
+                        control = self.br.find_control('assigned_to')
+                        if control.get_value_by_label() == [user]:
+                            link = "["+self.br.response().geturl() +" "+ name+ "]"
+                self.br.back()
+                print self.br.response().geturl()
+            # If exception is thrown, a list of results was returned and we must navigate to the correct one
+            except:
+                # Retrieve a list of links
+                links=self.br.links(text_regex=name+"$")
+                for i in links:
+                    #For every link follow it and examine::
+                    url = i.absolute_url
+                    self.br.follow_link(i)
+                    self.br.select_form(name='item_form')
+                    # .. That status is "Open"
                     
+                    if self.br.form['status_id']==['1']:
+                        
+                        # .. And that the task is assigned to the correct user
+                        self.br.find_control('assigned_to')
+                        control = self.br.find_control('assigned_to')
+               
+                        if control.get_value_by_label() == [user]:
+                            link = "["+self.br.response().geturl()+" " + name+ "]"
+                            # Go back to list of tasks, as break will cause algorithm to skip over inline back() instruction
+                            self.br.back()
+                            break
+                    # Go back to list of tasks
+                    self.br.back()
+                # Go back to main page
+                self.br.back()
+                self.br.back()            
+            return link
+
+    def _getSelfURL(self, name, user):
+        # If logged in
+        if self.valid==True and name != None:
+            self.br.follow_link(url_regex='/task/\?func\=search')
+            self.br.select_form(nr=1)
+            self.br.form['words']=name
+            self.br.submit()
+            
+            # Try to access form (if you can, there was only 1 result)
+            try:
+                # This line will throw the exception if it needs to be thrown
+                self.br.select_form(name='item_form')
+                # Check if task is 100% match
+                if re.search(name,self.br.form['summary']):
+                    # Check task is "Open"
+                    if self.br.form['status_id']==['1']:
+                        # Check the task is not assigned to someone else
+                        control = self.br.find_control('assigned_to')
+                        if control.get_value_by_label() == [user]:
+                            # Follow link to enable comment posting
+                            self.br.follow_link(url_regex="#postcomment")
+                            return True
+                
             # If exception is thrown, a list of results was returned and we must navigate to the correct one
             except:
                 # Retrieve a list of links
@@ -167,23 +205,28 @@ class savannahConnect:
                             # If all is true, follow comment posting link
                             self.br.follow_link(url_regex="#postcomment")
                             return True
-                # If link was not correct go back
-                self.br.back()
+                    # If link was not correct go back
+                    self.br.back()
             # If no link was found at all go back to original page
+            self.br.back()
             self.br.back()
             return False
 
 
-    def submitItem(self, dataset, files, tags,castorDir, username):
+    def submitItem(self, dataset, files, tags,castorDir, username, test):
         # If logged in
         if self.valid == True:
             
+            # Find if item has parent or not
+            if dataset['ParentList']:
+                dataset['ParentList'][0] = self.getParentURL(dataset['ParentList'][0], username)
+            # navigate to submit new task page
+            self.br.follow_link(text_regex='Submit a new item', url_regex="task")
+            #if item already exists, navigate to its page and 
+            previousEntry= self._getSelfURL(dataset['PathList'][0], username)
             
-            if dataset['ParentList']:dataset['ParentList'][0] = self.getParentURL(dataset['ParentList'][0])
             
-            response1=self.br.follow_link(text_regex='Submit a new item', url_regex="task")
-            previousEntry= self.getSelfURL(dataset['PathList'][0], username)
-
+            
             option = "y"
             if previousEntry:
                 option = raw_input("Task for this dataset already exists on Savannah.\nAdd new information as comment?(y/n)")
