@@ -8,6 +8,7 @@ class DBLogger:
         #self.dbAPI = DatabaseAPI.DatabaseAPI('/afs/cern.ch/user/p/pmeckiff/public/bookkeeping.db')
         self.dirLocal = None
         self.tgzDirOnCastor = None
+        self.dirOnCastor = None
         self.setName = dirLocalOrTgzDirOnCastor
         self.dbsAPI = dbsAPI
 
@@ -26,6 +27,10 @@ class DBLogger:
             print "File is directory on Castor"
             self.tgzDirOnCastor = castorTgz # if found set class attribute
             for i in castortools.matchingFiles(castorTgz.rstrip("/Logger.tgz"), ".*tgz"): print i
+        # If logger is not present but directory exists
+        elif self.isDirOnCastor(castorTgz.rstrip("/Logger.tgz")):
+            print "Directory is valid on Castor, but no logger file is present."
+            self.dirOnCastor = castorTgz.rstrip("/Logger.tgz")
         # If neither then raise an exception
         else:
             raise ValueError( dirLocalOrTgzDirOnCastor + ' is neither a tgz directory on castor (provide a LFN!) nor a local directory')
@@ -40,6 +45,11 @@ class DBLogger:
     # Method for checking if file exists on Castor
     def isTgzDirOnCastor(self, file ):
         if castortools.fileExists( file ):
+            return True
+        else:
+            return False
+    def isDirOnCastor(self, file ):
+        if castortools.fileExists( file):
             return True
         else:
             return False
@@ -71,6 +81,10 @@ class DBLogger:
             os.system("mkdir tempLogs/Logger")
             copyLoader = "cp " + self.dirLocal.rstrip("/") + "/Logger/*" + " tempLogs/Logger/"
             os.system(copyLoader)
+
+        elif self.dirOnCastor != None:
+            os.system("mkdir tempLogs/Logger")
+            os.system("touch tempLogs/Logger/logger_showtags.txt")
 
         # Otherwise an error has occured so throw exception
         else:

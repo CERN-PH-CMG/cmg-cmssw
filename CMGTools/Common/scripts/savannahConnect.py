@@ -132,7 +132,6 @@ class savannahConnect:
                             link = "["+self.br.response().geturl() +" "+ name+ "]"
                 self.br.back()
                 self.br.back()
-                print self.br.response().geturl() + "AAAAA"
             # If exception is thrown, a list of results was returned and we must navigate to the correct one
             except:
                 # Retrieve a list of links
