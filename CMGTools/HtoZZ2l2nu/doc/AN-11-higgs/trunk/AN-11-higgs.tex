@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.29 $
+\RCS$Revision: 1.30 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.29 2011/09/13 21:43:48 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.30 2011/09/13 22:15:57 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -1140,8 +1140,11 @@ rejection of the irreducible di-boson processes. The analysis is implemented usi
 In the current implementation the variables used for the selection are:
 
 \begin{description}
+
 \item[$\Delta \phi (lead-\ell, \ell\ell)$]: azimuthal angle between the leading lepton and the di-lepton system;
+
 \item[$\Delta R (\ell, \ell)$]: phase-space distance between the two leptons;
+
 \item[$\sum M_T$]: sum of the individual transverse masses of each lepton and \MET. For each lepton the individual transverse mass is computed as:
 
 \begin{equation}
@@ -1150,9 +1153,12 @@ M_T(\ell,E_T^{miss})=2p_T^{\ell}E_T^{miss}(1-\cos\delta\phi)
 \end{equation}
 
 where $\delta\phi$ is the azimuthal angle between the lepton and the \MET directions.
+
+\item[\RMET (longitudinal)]: projection of the \RMET variable in the longitudinal direction (cf. Sec.~\ref{subsec:redmet})
+
 \end{description}
 
-Figure~\ref{fig:angles} shows schematically the observables used to implement the discriminant.
+Figure~\ref{fig:angles} shows schematically the angular observables used to implement the discriminant.
 
 \begin{figure}[htp]
 \begin{center}
@@ -1162,7 +1168,7 @@ Figure~\ref{fig:angles} shows schematically the observables used to implement th
 \end{center}
 \end{figure}
 
-The distribution of the input variables for all the backgrounds and
+The distribution of the angular variables for all the backgrounds and
 for the different mass hipothesis for the signal 
 are shown after the medium \RMET cut in Figure~\ref{fig:input_redMET}.
 Overall the level of agreement between data and Monte-Carlo can be
@@ -1184,6 +1190,11 @@ considered satisfactory for all the variables.
 \end{center}
 \end{figure}
 
+It has been verified in the training that adding 
+$\Delta \phi (lead-\ell, \ell\ell)$ (the longitudinal component of \RMET)
+does not provide extra discrmination for the low (high) mass
+selection, i.e. $m_{H^0}<(\geq$300~GeV/c$^2$.  
+These variables are therefor not used for the low and high mass selections, correspondingly.
 
 The distributions for the variables of interest are used as probability density functions (\PDF's)
 to build a likelihood-based discriminant. 
@@ -1227,7 +1238,13 @@ and the signal used for training.
 \begin{center}
 \includegraphics[width=0.3\textwidth]{img/mumueq0jets_Likelihoodtight_300}
 \includegraphics[width=0.3\textwidth]{img/mumueq1jets_Likelihoodtight_300}
-\includegraphics[width=0.3\textwidth]{img/mumugeq2jets_Likelihoodtight_300}
+\includegraphics[width=0.3\textwidth]{img/mumugeq2jets_Likelihoodtight_300}\\
+\includegraphics[width=0.3\textwidth]{img/mumueq0jets_Likelihoodtight_400}
+\includegraphics[width=0.3\textwidth]{img/mumueq1jets_Likelihoodtight_400}
+\includegraphics[width=0.3\textwidth]{img/mumugeq2jets_Likelihoodtight_400}\\
+\includegraphics[width=0.3\textwidth]{img/mumueq0jets_Likelihoodtight_500}
+\includegraphics[width=0.3\textwidth]{img/mumueq1jets_Likelihoodtight_500}
+\includegraphics[width=0.3\textwidth]{img/mumugeq2jets_Likelihoodtight_500}
 \caption{Output of the likelihood discriminant for data and MC in the
   di-muon final state. The different columns refer to different jet multiplicity bins:
   =0 jets ({\em left}), =1 jets ({\em center}) and $\geq$~2 jets ({\em right}).
@@ -1242,7 +1259,13 @@ and the signal used for training.
 \begin{center}
 \includegraphics[width=0.3\textwidth]{img/eeeq0jets_Likelihoodtight_300}
 \includegraphics[width=0.3\textwidth]{img/eeeq1jets_Likelihoodtight_300}
-\includegraphics[width=0.3\textwidth]{img/eegeq2jets_Likelihoodtight_300}
+\includegraphics[width=0.3\textwidth]{img/eegeq2jets_Likelihoodtight_300}\\
+\includegraphics[width=0.3\textwidth]{img/eeeq0jets_Likelihoodtight_400}
+\includegraphics[width=0.3\textwidth]{img/eeeq1jets_Likelihoodtight_400}
+\includegraphics[width=0.3\textwidth]{img/eegeq2jets_Likelihoodtight_400}\\
+\includegraphics[width=0.3\textwidth]{img/eeeq0jets_Likelihoodtight_500}
+\includegraphics[width=0.3\textwidth]{img/eeeq1jets_Likelihoodtight_500}
+\includegraphics[width=0.3\textwidth]{img/eegeq2jets_Likelihoodtight_500}
 \caption{Output of the likelihood discriminant for data and MC in the
   di-electron final state. The legend is similar to Fig~\ref{fig:likelihoodout_dimu}.
 }
