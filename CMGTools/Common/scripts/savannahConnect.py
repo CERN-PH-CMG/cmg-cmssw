@@ -109,7 +109,7 @@ class savannahConnect:
                 URL = URL.split("\"")[1]
                 
         return URL
-    def getParentURL(self, name, user):
+    def getParentURL(self, name, user, category):
         # If logged in
         if self.valid==True and name != None:
             self.br.follow_link(url_regex='/task/\?func\=search')
@@ -125,13 +125,14 @@ class savannahConnect:
                 # Check if task is 100% match
                 if re.search(name,self.br.form['summary']):
                     # Check task is "Open"
-                    if self.br.form['status_id']==['1']:
+                    if self.br.form['status_id']==['1'] and self.br.form['category_id']==[category]:
                         # Check the task is not assigned to someone else
                         control = self.br.find_control('assigned_to')
                         if control.get_value_by_label() == [user]:
                             link = "["+self.br.response().geturl() +" "+ name+ "]"
                 self.br.back()
-                print self.br.response().geturl()
+                self.br.back()
+                print self.br.response().geturl() + "AAAAA"
             # If exception is thrown, a list of results was returned and we must navigate to the correct one
             except:
                 # Retrieve a list of links
@@ -143,7 +144,7 @@ class savannahConnect:
                     self.br.select_form(name='item_form')
                     # .. That status is "Open"
                     
-                    if self.br.form['status_id']==['1']:
+                    if self.br.form['status_id']==['1'] and self.br.form['category_id']==[category]:
                         
                         # .. And that the task is assigned to the correct user
                         self.br.find_control('assigned_to')
@@ -161,7 +162,7 @@ class savannahConnect:
                 self.br.back()            
             return link
 
-    def _getSelfURL(self, name, user):
+    def _getSelfURL(self, name, user, category):
         # If logged in
         if self.valid==True and name != None:
             self.br.follow_link(url_regex='/task/\?func\=search')
@@ -176,7 +177,7 @@ class savannahConnect:
                 # Check if task is 100% match
                 if re.search(name,self.br.form['summary']):
                     # Check task is "Open"
-                    if self.br.form['status_id']==['1']:
+                    if self.br.form['status_id']==['1'] and self.br.form['category_id']==[category]:
                         # Check the task is not assigned to someone else
                         control = self.br.find_control('assigned_to')
                         if control.get_value_by_label() == [user]:
@@ -195,7 +196,7 @@ class savannahConnect:
                     self.br.follow_link(i)
                     self.br.select_form(name='item_form')
                     # .. That status is "Open"
-                    if self.br.form['status_id']==['1']:
+                    if self.br.form['status_id']==['1'] and self.br.form['category_id']==[category]:
 
                         # .. And that the task is assigned to the correct user
                         self.br.find_control('assigned_to')
@@ -216,14 +217,15 @@ class savannahConnect:
     def submitItem(self, dataset, files, tags,castorDir, username, test):
         # If logged in
         if self.valid == True:
-            
+            category = '100'
+            if test: category = '101'
             # Find if item has parent or not
             if dataset['ParentList']:
-                dataset['ParentList'][0] = self.getParentURL(dataset['ParentList'][0], username)
+                dataset['ParentList'][0] = self.getParentURL(dataset['ParentList'][0], username, category)
             # navigate to submit new task page
             self.br.follow_link(text_regex='Submit a new item', url_regex="task")
             #if item already exists, navigate to its page and 
-            previousEntry= self._getSelfURL(dataset['PathList'][0], username)
+            previousEntry= self._getSelfURL(dataset['PathList'][0], username, category)
             
             
             
@@ -251,7 +253,7 @@ class savannahConnect:
                         self.br.form['planned_starting_date_yearfd']=dayMonthYear[2]
                         self.br.form['summary'] = dataset['PathList'][0]
 
-
+                    if test:self.br.form['category_id']= ['101']
                     self.br.form['priority']= ['5']
                     if dataset['Status']=="INVALID":
                         self.br.form.set_value_by_label(["Invalid"],'resolution_id')
