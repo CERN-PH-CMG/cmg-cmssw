@@ -132,22 +132,44 @@ class savannahConnect:
             self.br.form['words']=name
             self.br.form['type_of_search']=['task',]
             self.br.submit()
-            
-            links=self.br.links(text_regex=name+"$")
-            
-            for i in links:
-                url = i.absolute_url
-                self.br.follow_link(i)
-                
+
+            # Try to access form (if you can, there was only 1 result)
+            try:
+                # This line will throw the exception if it needs to be thrown
                 self.br.select_form(name='item_form')
-                self.br.find_control('assigned_to')
-                control = self.br.find_control('assigned_to')
-               
+                # Check task is "Open"
+                if self.br.form['status_id']==['1']:
+                    # Check the task is not assigned to someone else
+                    control = self.br.find_control('assigned_to')
+                    if control.get_value_by_label() == [user]:
+                        # Follow link to enable comment posting
+                        self.br.follow_link(url_regex="#postcomment")
+                        return True
+                    
+            # If exception is thrown, a list of results was returned and we must navigate to the correct one
+            except:
+                # Retrieve a list of links
+                links=self.br.links(text_regex=name+"$")
                 
-                if control.get_value_by_label() == [user]:
-                    self.br.follow_link(url_regex="#postcomment")
-                    return True
+                for i in links:
+                    #For every link follow it and examine::
+                    url = i.absolute_url
+                    self.br.follow_link(i)
+                    self.br.select_form(name='item_form')
+                    # .. That status is "Open"
+                    if self.br.form['status_id']==['1']:
+
+                        # .. And that the task is assigned to the correct user
+                        self.br.find_control('assigned_to')
+                        control = self.br.find_control('assigned_to')
+               
+                        if control.get_value_by_label() == [user]:
+                            # If all is true, follow comment posting link
+                            self.br.follow_link(url_regex="#postcomment")
+                            return True
+                # If link was not correct go back
                 self.br.back()
+            # If no link was found at all go back to original page
             self.br.back()
             return False
 
