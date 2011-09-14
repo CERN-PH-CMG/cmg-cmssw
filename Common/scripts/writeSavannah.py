@@ -45,7 +45,7 @@ If no -s option is provided, it is assumed that the current user is the user on 
                       default=os.environ['USER'] )
     # If the purpose is to test the software use this parameter, it will not be recognised by the
     # non-testing algorithm
-    parser.add_option("-t", "--testing",
+    parser.add_option("-T", "--test",
                       action = "store_true",
                       dest="test",
                       help="Flag task as a test",
