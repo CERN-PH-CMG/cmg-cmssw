@@ -27,6 +27,7 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
   phys.met[4] = LorentzVector( ev.met5_pt*cos(ev.met5_phi), ev.met5_pt*sin(ev.met5_phi), 0, ev.met5_pt);
   phys.met[5] = LorentzVector( ev.met6_pt*cos(ev.met6_phi), ev.met6_pt*sin(ev.met6_phi), 0, ev.met6_pt);
   phys.met[6] = LorentzVector( ev.met7_pt*cos(ev.met7_phi), ev.met7_pt*sin(ev.met7_phi), 0, ev.met7_pt);
+  phys.met[7] = LorentzVector( ev.met8_pt*cos(ev.met8_phi), ev.met8_pt*sin(ev.met8_phi), 0, ev.met8_pt);
 
   phys.gamma = PhysicsObject_Gamma(LorentzVector(ev.g_px,ev.g_py,ev.g_pz,ev.g_en), ev.g_iso1, ev.g_iso2, ev.g_iso3, ev.g_sihih, ev.g_sipip, ev.g_r9, ev.g_hoe, ev.g_eop);
  
