@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.31 $
+\RCS$Revision: 1.32 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.31 2011/09/14 08:57:54 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.32 2011/09/14 09:53:12 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -1007,7 +1007,7 @@ Tables~\ref{tab:gluglucutandcountyields_0jets},
 and ~\ref{tab:gluglucutandcountyields_2jets}
 summarize the results obtained after applying the selection just described.
 An overall good agreement is found between data and direct comparison with MC
-for all categories except the 1-jet bin in the $ee$channel where a slight excess is observed. 
+for all categories except the 1-jet bin in the $ee$ channel where a slight excess is observed. 
 The data-driven estimate of the instrumental and top backgrounds will be discussed in the next sections. 
 
 %%%
@@ -1230,9 +1230,33 @@ The training is performed in different bins of jet multiplicity as this
 different signal signatures are expected and has it is expected to enhance the signal significance
 especially in the low jet multiplicity bins.
 
-The output of the discriminant for different jet multiplicity bins is shown in Figs.~\ref{fig:likelihoodout_dimu}
-and ~\ref{fig:likelihoodout_diele}. The distributions are shown for data and MC including all backgrounds
-and the signal used for training.
+The output of the discriminant for different jet multiplicity bins is shown in 
+Fig~\ref{fig:likelihoodout_lowmass} for the low mass search and in 
+Figs.~\ref{fig:likelihoodout_dimu} and ~\ref{fig:likelihoodout_diele} for the high mass search.
+For the low (high) mass search the medium (tight) \RMET selection is applied before
+evaluating the likelihood discriminator.
+All distributions are shown for data and the full MC 
+(including the partial signal and background sub-samples used for the training of the discriminator).
+An overall fair agreement is observed between data and MC.
+The performance of the discriminator is observed to be poorer for higher jet multiplicity bins 
+where the residual top and $Z$ background tends to resemble the signal due to the pre-selection applied.
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.3\textwidth]{img/mumueq0jets_Likelihoodtight_200}
+\includegraphics[width=0.3\textwidth]{img/mumueq1jets_Likelihoodtight_200}
+\includegraphics[width=0.3\textwidth]{img/mumugeq2jets_Likelihoodtight_200}\\
+\includegraphics[width=0.3\textwidth]{img/eeeq0jets_Likelihoodtight_200}
+\includegraphics[width=0.3\textwidth]{img/eeeq1jets_Likelihoodtight_200}
+\includegraphics[width=0.3\textwidth]{img/eegeq2jets_Likelihoodtight_200}
+\caption{Output of the $m_{H^0}=$200~GeV/c$^2$ likelihood discriminant for data and MC in the
+  di-muon ({\em top}) and di-electron ({\em bottom}) final states. The different columns refer to different jet multiplicity bins:
+  =0 jets ({\em left}), =1 jets ({\em center}) and $\geq$~2 jets ({\em right}).
+}
+\label{fig:likelihoodout_lowmass}
+\end{center}
+\end{figure}
+
 
 \begin{figure}[htp]
 \begin{center}
@@ -1251,7 +1275,7 @@ and the signal used for training.
 \caption{Output of the likelihood discriminant for data and MC in the
   di-muon final state. The different columns refer to different jet multiplicity bins:
   =0 jets ({\em left}), =1 jets ({\em center}) and $\geq$~2 jets ({\em right}).
-  From {\em top} to {\em bottom} different signal masses are shown: from 200 to 600 GeV/c$^2$
+  From {\em top} to {\em bottom} different signal masses are shown: from 300 to 600 GeV/c$^2$
   in steps of 100~GeV/c$^2$.
 }
 \label{fig:likelihoodout_dimu}
@@ -1279,6 +1303,7 @@ and the signal used for training.
 \end{center}
 \end{figure}
 
+\clearpage
 
 %%
 %% VBF selection
@@ -1292,7 +1317,7 @@ The backgrounds can be further reduced by applying the third lepton-veto and by 
 The \RMET threshold has been choosen to have a selection efficiency of $10^{-3}$ on Drell-Yan events
 (cf. Sec.~\ref{subsec:redmet}).
 It is shown that these simple cuts are sufficient to have an expected background yields below 1, as shown on Table~\ref{tab:vbfcutandcountyields}.
-As it can be seen from the same table, the dominant background for the VBF selection are the $gg \rightarrow VV \rightarrow >1l \geq 1nu$ events
+As it can be seen from the same table, the dominant background for the VBF selection are the $gg \rightarrow VV \rightarrow \geq 1\ell \geq 1\nu$ events
 
 \begin{table}[htp]
 \caption{Event yields after VBF selection for the di-electron and di-muon channel in events.}
