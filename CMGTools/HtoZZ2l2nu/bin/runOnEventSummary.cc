@@ -39,9 +39,9 @@ TH1D *getHistogramForVariable(TString variable)
 {
   TH1D *h=0;
   if(variable=="dphill")         h = new TH1D( variable, ";#Delta#phi(l^{(1)},l^{(2)});Events",100,-3.2,3.2);
-  if(variable=="dphizleadl")     h = new TH1D( variable, ";#Delta#phi(l^{(1)},Z);Events",100,-3.2,3.2);
+  if(variable=="dphizleadl")     h = new TH1D( variable, ";#Delta#phi(l^{(1)},Z);Events / (0.1 rad)",15,0,1.5);
   if(variable=="detall")         h = new TH1D( variable, ";#Delta#eta(l^{(1)},l^{(2)});Events",100,-5,5);
-  if(variable=="drll")           h = new TH1D( variable, ";#DeltaR(l^{(1)},l^{(2)});Events",100,0,6);
+  if(variable=="drll")           h = new TH1D( variable, ";#DeltaR(l^{(1)},l^{(2)}) / (0.1 rad);Events",20,0,6);
   if(variable=="mindrlz")        h = new TH1D( variable, ";min #DeltaR(l,Z);Events",100,0,6);
   if(variable=="maxdrlz")        h = new TH1D( variable, ";max #DeltaR(l,Z);Events",100,0,6);
   if(variable=="ptl1")           h = new TH1D( variable, ";p_{T}(l^{(1)});Events", 100,0,1000);
@@ -49,7 +49,7 @@ TH1D *getHistogramForVariable(TString variable)
   if(variable=="ptsum")          h = new TH1D( variable, ";#Sigma p_{T}(l^{(i)});Events", 100,0,1000);
   if(variable=="mtl1")           h = new TH1D( variable, ";M_{T}(l^{(1)},E_{T}^{miss});Events", 100,0,1000);
   if(variable=="mtl2")           h = new TH1D( variable, ";M_{T}(l^{(2)},E_{T}^{miss});Events", 100,0,1000);
-  if(variable=="mtsum")          h = new TH1D( variable, ";#Sigma M_{T}(l^{(i)},E_{T}^{miss});Events", 100,0,1000);
+  if(variable=="mtsum")          h = new TH1D( variable, ";#Sigma M_{T}(l^{(i)},E_{T}^{miss});Events / 20 GeV/c^{2}", 50,0,1000);
 
   if(variable=="zmass")          h = new TH1D( variable, ";M^{ll};Events", 100,91-31,91+31);
   if(variable=="zpt")            h = new TH1D( variable, ";p_{T}^{ll};Events", 100,0,400);
@@ -269,9 +269,14 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(6,"SSVHEM || JBPL");
   controlHistos.addHistogram( h );
 
+  controlHistos.addHistogram( new TH1D( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",100,0,3.4) );
+  controlHistos.addHistogram( new TH1D( "minmtjmet", ";min M_{T}(jet,E_{T}^{miss}) [GeV/c^{2}];Events",100,0,250) );
+  controlHistos.addHistogram( new TH1D( "mindrjz", ";min #DeltaR(jet,Z);Events",100,0,6) );
+  controlHistos.addHistogram( new TH1D( "minmjz", ";min M(jet,Z) [GeV/c^{2}];Events",100,0,500) );
+
   //met control
-  TString metTypes[]  = {"met",          "projMet",           "minMet",           "minProjMet",            "redMet",          "redMetD0",              "centralMet",           "cleanMet",          "unclusteredMet", "clusteredMet", "cmsRedMet"};
-  TString metTitles[] = {"E_{T}^{miss}", "proj-E_{T}^{miss}", "min-E_{T}^{miss}", "min-proj-E_{T}^{miss}", "red-E_{T}^{miss}", "red-E_{T}^{miss}(D0)", "central-E_{T}^{miss}", "clean-E_{T}^{miss}", "unclustered-E_{T}^{miss}", "clustered-E_{T}^{miss}", "cms-red-E^{T}_{miss}" };
+  TString metTypes[]  = {"met",          "projMet",           "minMet",           "minProjMet",            "redMet",          "redMetD0",              "centralMet",           "cleanMet",          "unclusteredMet", "clusteredOtherVtxMet", "cmsRedMet"};
+  TString metTitles[] = {"E_{T}^{miss}", "proj-E_{T}^{miss}", "min-E_{T}^{miss}", "min-proj-E_{T}^{miss}", "red-E_{T}^{miss}", "red-E_{T}^{miss}(D0)", "central-E_{T}^{miss}", "clean-E_{T}^{miss}", "unclustered-E_{T}^{miss}", "clustered-E_{T}^{miss}", "clustered-E_{T}^{miss}", "cms-red-E^{T}_{miss}" };
   for(size_t i=0; i<sizeof(metTypes)/sizeof(TString);i++)
     {
       controlHistos.addHistogram( new TH1D( metTypes[i], ";"+metTitles[i]+";Events", 100,0,500) );
@@ -289,12 +294,18 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH2F ("metvsclusteredMet", ";E_{T}^{miss};clustered-E_{T}^{miss}", 100,0,500,100,0,500) );  
   controlHistos.addHistogram( new TH2F ("metvscentralMet", ";E_{T}^{miss};central-E_{T}^{miss}", 100,0,500,100,0,500) );  
   
-  controlHistos.addHistogram( new TH1D( "sumEt",                ";#Sigma E_{T} [GeV];Events", 100,0,500) );
-  controlHistos.addHistogram( new TH1D( "chSumEtFrac",          ";#Sigma E_{T}^{charged}/#Sigma E_{T};Events", 100,0,1.) );
-  controlHistos.addHistogram( new TH1D( "neutSumEtFrac",        ";#Sigma E_{T}^{neutral}/#Sigma E_{T};Events", 100,0,1.) );
-  controlHistos.addHistogram( new TH1D( "centralSumEtFrac",     ";#Sigma E_{T}(|#eta|<2.4)/#Sigma E_{T};Events", 100,0,1.) );
-  controlHistos.addHistogram( new TH1D( "centralChSumEtFrac",   ";#Sigma E_{T}^{charged}(|#eta|<2.4)/#Sigma E_{T}(|#eta|<2.4);Events", 100,0,1.) );
-  controlHistos.addHistogram( new TH1D( "centralNeutSumEtFrac", ";#Sigma E_{T}^{neutral}(|#eta|<2.4)/#Sigma E_{T}(|#eta|<2.4);Events", 100,0,1.) );
+  controlHistos.addHistogram( new TH1D("sumEt",                    ";#Sigma E_{T} [GeV];Events", 100,0,1000) );
+  controlHistos.addHistogram( new TH1D("primVertexSumEt",          ";Primary Vertex : #Sigma E_{T} [GeV];Events", 100,0,1000) );
+  controlHistos.addHistogram( new TH1D("otherVertexSumEt",         ";Other Vertices : #Sigma_{vtx} #Sigma E_{T} [GeV];Events", 100,0,1000) );
+  controlHistos.addHistogram( new TH1D("chSumEtFrac",              ";#Sigma E_{T}^{charged}/#Sigma E_{T};Events", 100,0,1.) );
+  controlHistos.addHistogram( new TH1D("neutSumEtFrac",            ";#Sigma E_{T}^{neutral}/#Sigma E_{T};Events", 100,0,1.) );
+  controlHistos.addHistogram( new TH1D("centralSumEtFrac",         ";#Sigma E_{T}(|#eta|<2.4)/#Sigma E_{T};Events", 100,0,1.) );
+  controlHistos.addHistogram( new TH1D("centralChSumEtFrac",       ";#Sigma E_{T}^{charged}(|#eta|<2.4)/#Sigma E_{T};Events", 100,0,1.) );
+  controlHistos.addHistogram( new TH1D("centralNeutSumEtFrac",     ";#Sigma E_{T}^{neutral}(|#eta|<2.4)/#Sigma E_{T};Events", 100,0,1.) );
+  controlHistos.addHistogram( new TH1D("chPrimVertexSumEtFrac",    ";#Sigma E_{T}^{charged}(PV)/#Sigma E_{T};Events", 100,0,1.) );
+  controlHistos.addHistogram( new TH1D("neutPrimVertexSumEtFrac",  ";#Sigma E_{T}^{neutral}(PV)/#Sigma E_{T};Events", 100,0,1.) );
+  controlHistos.addHistogram( new TH1D("chOthervertexSumEtFrac",   ";#Sigma_{oth.vtx} #Sigma E_{T}^{charged}/#Sigma E_{T};Events", 100,0,1.) );
+  controlHistos.addHistogram( new TH1D("neutOthervertexSumEtFrac", ";#Sigma_{oth.vtx} #Sigma E_{T}^{neutral}/#Sigma E_{T};Events", 100,0,1.) );
 
   //cut optimization plots
   controlHistos.addHistogram( new TH1F ("cutOptMediumdphill", ";#delta #phi^{l,l};#red-E_{T}^{miss,#parallel};",25,0.,3.2) );
@@ -338,7 +349,7 @@ int main(int argc, char* argv[])
 
   //replicate monitor for interesting categories
   TString cats[]={"ee","emu","mumu"};
-  TString subCats[]={"","eq0jets","eq1jets","geq2jets","vbf"};
+  TString subCats[]={"","1to3vtx","4to9vtx","geq10vtx","eq0jets","eq1jets","geq2jets","vbf"};
   for(size_t icat=0;icat<sizeof(cats)/sizeof(TString); icat++)
     for(size_t isubcat=0;isubcat<sizeof(subCats)/sizeof(TString); isubcat++)
       controlHistos.initMonitorForStep(cats[icat]+subCats[isubcat]);
@@ -456,6 +467,7 @@ int main(int argc, char* argv[])
       LorentzVector clusteredMetP4=phys.met[3];
       LorentzVector centralMetP4=phys.met[5];
       LorentzVector cleanMetP4=phys.met[6];
+      LorentzVector clusteredOtherVtxMetP4=phys.met[7];
       LorentzVectorCollection recoJetsP4;
 
       //uncomment the following lines when ready for evaluation of systematics
@@ -507,9 +519,25 @@ int main(int argc, char* argv[])
       //z+met kinematics
       LorentzVector zll  = phys.leptons[0]+phys.leptons[1];
       LorentzVector zvv  = metP4;
+
       int zrank(0);
+      double mindphijmet(9999.), minmtjmet(9999.),mindrjz(9999.), minmjz(9999.);
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++) 
-	if(phys.jets[ijet].pt()>zll.pt()) zrank++;
+	{
+	  if(phys.jets[ijet].pt()>zll.pt()) zrank++;
+
+	  double dphijmet=fabs(deltaPhi(zvv.phi(),phys.jets[ijet].phi()));
+	  if(mindphijmet>dphijmet) mindphijmet=dphijmet;
+	  double mtjmet=mtComp.compute(phys.jets[ijet],zvv,false);
+	  if(mtjmet<minmtjmet) minmtjmet=mtjmet;
+
+	  double drjz=deltaR(zll,phys.jets[ijet]);
+	  if(mindrjz>drjz) mindrjz=drjz;
+	  LorentzVector jz=phys.jets[ijet]+zll;
+	  double mjz=jz.mass();
+	  if(mjz<minmjz) minmjz=mjz;
+	}
+
       Float_t dphill     = deltaPhi(phys.leptons[0].phi(),phys.leptons[1].phi());
       Float_t detall     = phys.leptons[0].eta()-phys.leptons[1].eta();
       Float_t drll       = deltaR(phys.leptons[0],phys.leptons[1]);
@@ -553,7 +581,8 @@ int main(int argc, char* argv[])
       Float_t centralMet = min(zvv.pt(),centralMetP4.pt());
       Float_t unclusteredMet = min(cleanMet,centralMet);
       Float_t clusteredMet = clusteredMetP4.pt();
-      
+      Float_t clusteredOtherVtxMet=clusteredOtherVtxMetP4.pt();
+
       //cms red met
       TVector2 clusteredMetProj=rmetComp.project(clusteredMetP4);
       TVector2 cleanMetProj=rmetComp.project(cleanMetP4);
@@ -704,10 +733,15 @@ int main(int argc, char* argv[])
       
       //fill control histograms
       TString catsToFill[]={"all",evcat};
-      TString subCatsToFill[]={"",subcat};
+      std::vector<TString> subCatsToFill;
+      subCatsToFill.push_back("");
+      subCatsToFill.push_back(subcat);
+      if(ev.nvtx<4)        subCatsToFill.push_back("1to3vtx");
+      else if(ev.nvtx>=10) subCatsToFill.push_back("geq10vtx");
+      else                 subCatsToFill.push_back("4to9vtx");
       for(size_t ic=0; ic<sizeof(catsToFill)/sizeof(TString); ic++)
 	{
-	  for(size_t isc=0; isc<sizeof(subCatsToFill)/sizeof(TString); isc++)
+	  for(size_t isc=0; isc<subCatsToFill.size(); isc++)
 	    {
 	      TString ctf=catsToFill[ic]+subCatsToFill[isc];
 	      
@@ -758,14 +792,11 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("zrank",ctf,zrank,weight);
 	      controlHistos.fill2DHisto("zptvszeta", ctf,zll.pt(),zll.eta(),weight);
 	      controlHistos.fillHisto("dphill",ctf,dphill,weight);
-	      controlHistos.fillHisto("drll",ctf,drll,weight);
 	      controlHistos.fillHisto("mindrlz",ctf,mindrlz,weight);
 	      controlHistos.fillHisto("maxdrlz",ctf,maxdrlz,weight);
-	      controlHistos.fillHisto("dphizleadl",ctf,dphizleadl,weight);
 	      controlHistos.fillHisto("ptsum",ctf,ptsum,weight);
 	      controlHistos.fillHisto("mtl1",ctf,mtl1,weight);
 	      controlHistos.fillHisto("mtl2",ctf,mtl2,weight);
-	      controlHistos.fillHisto("mtsum",ctf,mtsum,weight);
 	      
 	      //Z window
 	      if(!passZmass)  continue;
@@ -799,9 +830,9 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("zmassctrl",ctf,passBveto+2*passMediumRedMet,weight);
 	      if(!passBveto) continue;
 	      controlHistos.fillHisto("eventflow",ctf,4,weight);
-	      
+      
 	      //met control
-	      Float_t metTypeValues[]={zvv.pt(), projMet, minMet, minProjMet, redMet, redMet_d0, centralMet, cleanMet, unclusteredMet, clusteredMet,cmsRedMet};
+	      Float_t metTypeValues[]={zvv.pt(), projMet, minMet, minProjMet, redMet, redMet_d0, centralMet, cleanMet, unclusteredMet, clusteredMet,clusteredOtherVtxMet,cmsRedMet};
 	      for(size_t imt=0; imt<sizeof(metTypes)/sizeof(TString);imt++)
 		{
 		  controlHistos.fillHisto(metTypes[imt], ctf,metTypeValues[imt],weight);
@@ -818,14 +849,32 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("cmsRedMetcomps", ctf,cmsRedMetL,cmsRedMetT,weight);	
 	      
 	      controlHistos.fillHisto("sumEt",                ctf,ev.sumEt,weight);
+	      controlHistos.fillHisto("primVertexSumEt",      ctf,ev.primVertexSumEt,weight);
+	      controlHistos.fillHisto("otherVertexSumEt",     ctf,ev.otherVertexSumEt,weight);
 	      if(ev.sumEt>0)
 		{
-		  controlHistos.fillHisto("chSumEtFrac",          ctf,ev.chsumEt/ev.sumEt,weight);
-		  controlHistos.fillHisto("neutSumEtFrac",        ctf,ev.neutsumEt/ev.sumEt,weight);
-		  controlHistos.fillHisto("centralSumEtFrac",     ctf,ev.sumEtcentral/ev.sumEt,weight);
-		  controlHistos.fillHisto("centralChSumEtFrac",   ctf,ev.chsumEtcentral/ev.sumEtcentral,weight);
-		  controlHistos.fillHisto("centralNeutSumEtFrac", ctf,ev.neutsumEtcentral/ev.sumEtcentral,weight);
+		  //fixme: redo properly the ntuples and remove this stupid mapping
+		  float sumEtcentral=ev.chsumEtcentral;
+		  float chSumEtcentral=ev.neutsumEt;
+		  float neutSumEtcentral=ev.neutsumEtcentral;
+		  float chSumEt=ev.sumEtcentral;
+		  float neutsumEt=ev.chsumEt;
+		  controlHistos.fillHisto("chSumEtFrac",          ctf,chSumEt/ev.sumEt,weight);
+		  controlHistos.fillHisto("neutSumEtFrac",        ctf,neutsumEt/ev.sumEt,weight);
+		  controlHistos.fillHisto("centralSumEtFrac",     ctf,sumEtcentral/ev.sumEt,weight);
+		  controlHistos.fillHisto("centralChSumEtFrac",   ctf,chSumEtcentral/ev.sumEt,weight);
+		  controlHistos.fillHisto("centralNeutSumEtFrac", ctf,neutSumEtcentral/ev.sumEt,weight);
+		  controlHistos.fillHisto("chPrimVertexSumEtFrac",          ctf,ev.primVertexChSumEt/ev.sumEt,weight);
+		  controlHistos.fillHisto("neutPrimVertexSumEtFrac",        ctf,ev.primVertexNeutSumEt/ev.sumEt,weight);
+		  controlHistos.fillHisto("chOtherVertexSumEtFrac",          ctf,ev.otherVertexChSumEt/ev.sumEt,weight);
+		  controlHistos.fillHisto("neutOtherVertexSumEtFrac",        ctf,ev.otherVertexNeutSumEt/ev.sumEt,weight);
+		 
 		}
+
+	      controlHistos.fillHisto("mindphijmet",ctf,mindphijmet,weight);
+	      controlHistos.fillHisto("minmtjmet",ctf,minmtjmet,weight);
+	      controlHistos.fillHisto("mindrjz",ctf,mindrjz,weight);
+	      controlHistos.fillHisto("minmjz",ctf,minmjz,weight);
 	      
 	      if(!passMediumRedMet) continue;
 	      controlHistos.fillHisto("eventflow",ctf,5,weight);
@@ -857,6 +906,9 @@ int main(int argc, char* argv[])
 	      // MVA ANALYSIS
 	      //
 	      //control for discriminators evaluated
+	      controlHistos.fillHisto("dphizleadl",ctf,dphizleadl,weight);
+	      controlHistos.fillHisto("drll",ctf,drll,weight);
+	      controlHistos.fillHisto("mtsum",ctf,mtsum,weight);
 	      //for(size_t ivar=0; ivar<varsList.size(); ivar++)  controlHistos.fillHisto(varsList[ivar],ctf,tmvaVars[ivar],weight);
 	      for(size_t imet=0; imet<methodList.size(); imet++)
 		{

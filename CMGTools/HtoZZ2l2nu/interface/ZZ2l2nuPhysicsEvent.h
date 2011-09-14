@@ -55,7 +55,7 @@ typedef std::vector<PhysicsObject_Gamma>  PhysicsObjectGammaCollection;
 //
 struct PhysicsEvent_t
 {
-  LorentzVector met[7];
+  LorentzVector met[8];
   LorentzVector vtx;
   LorentzVector gamma;
   PhysicsObjectJetCollection jets;

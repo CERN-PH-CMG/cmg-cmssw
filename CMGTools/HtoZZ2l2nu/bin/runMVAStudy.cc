@@ -82,7 +82,9 @@ int main(int argc, char *argv[])
   //
   // get signal and background trees
   //
+  cout << url << endl;
   TFile *fin=TFile::Open(url);
+  if(fin==0) return -1;
   std::vector<TTree *> procTrees;
   for(size_t iproc=0; iproc<procList.size(); iproc++)  
     {
@@ -114,6 +116,7 @@ int main(int argc, char *argv[])
   for(size_t iproc=0; iproc<procList.size(); iproc++)
     {
       //train proc
+      cout << procTrees[iproc] << endl;
       evSummaryHandler.attachToTree(procTrees[iproc]);
       for (Int_t i=0; i<evSummaryHandler.getEntries(); i++) 
 	{

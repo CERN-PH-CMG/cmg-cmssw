@@ -705,9 +705,9 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
       }
     if(sumEts.size()>0)
       {
-	ev.sumEt = sumEts[0];              ev.sumEtcentral = sumEts[1];
-	ev.chsumEt = sumEts[2];            ev.chsumEtcentral = sumEts[3];
-	ev.neutsumEt = sumEts[4];          ev.neutsumEtcentral = sumEts[5];
+	ev.sumEt = sumEts[0];              ev.sumEtcentral = sumEts[3];
+	ev.chsumEt = sumEts[1];            ev.chsumEtcentral = sumEts[4];
+	ev.neutsumEt = sumEts[2];          ev.neutsumEtcentral = sumEts[5];
 	ev.primVertexSumEt = sumEts[6];    ev.primVertexChSumEt = sumEts[7];    ev.primVertexNeutSumEt = sumEts[8];
 	ev.otherVertexSumEt = sumEts[9];   ev.otherVertexChSumEt = sumEts[10];  ev.otherVertexNeutSumEt = sumEts[11];
       }

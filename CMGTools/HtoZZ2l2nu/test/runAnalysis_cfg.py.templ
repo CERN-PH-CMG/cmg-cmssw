@@ -19,5 +19,5 @@ runProcess = cms.PSet(
     etaResolFileName = cms.string("${CMSSW_RELEASE_BASE}/src/CondFormats/JetMETObjects/data/Spring10_EtaResolution_AK5PF.txt"),
     jesUncFileName = cms.string("${CMSSW_RELEASE_BASE}/src/CondFormats/JetMETObjects/data/Spring10_Uncertainty_AK5PF.txt"),
     useMVA = cms.bool(@useMVA),	
-    tmvaInput = redMETstudy 	
+    tmvaInput = simpleDiscriminator
     )

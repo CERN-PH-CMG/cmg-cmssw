@@ -153,11 +153,11 @@ namespace tmva
   //
   TH1D *getHistogramForDiscriminator(TString method)
   {
-    if (method=="Likelihood")    return new TH1D( method,  method + ";" + method + ";Events", 50, 0, 1 );               
-    if (method=="LikelihoodD")   return new TH1D( method,  method + ";" + method + ";Events", 50, 0, 1 );
-    if (method=="LikelihoodPCA") return new TH1D( method,  method + ";" + method + ";Events", 50, 0, 1 );
-    if (method=="LikelihoodKDE") return new TH1D( method,  method + ";" + method + ";Events", 50, 0, 1 );
-    if (method=="LikelihoodMIX") return new TH1D( method,  method + ";" + method + ";Events", 50,  0, 1 );
+    if (method=="Likelihood")    return new TH1D( method,  method + ";" + method + ";Events", 20, 0, 1 );               
+    if (method=="LikelihoodD")   return new TH1D( method,  method + ";" + method + ";Events", 20, 0, 1 );
+    if (method=="LikelihoodPCA") return new TH1D( method,  method + ";" + method + ";Events", 20, 0, 1 );
+    if (method=="LikelihoodKDE") return new TH1D( method,  method + ";" + method + ";Events", 20, 0, 1 );
+    if (method=="LikelihoodMIX") return new TH1D( method,  method + ";" + method + ";Events", 20,  0, 1 );
     if (method=="PDERS")         return new TH1D( method,  method + ";" + method + ";Events", 50,  0, 1 );
     if (method=="PDERSD")        return new TH1D( method,  method + ";" + method + ";Events", 50,  0, 1 );
     if (method=="PDERSPCA")      return new TH1D( method,  method + ";" + method + ";Events", 50,  0, 1 );
