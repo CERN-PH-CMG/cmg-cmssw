@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, time
 import subprocess
 
 import castortools
@@ -94,6 +94,35 @@ class IntegrityCheck(object):
         print 'Total entries in DBS: %i' % self.eventsTotal
         print 'Total entries in processed files: %i' % self.eventsSeen
         print 'Fraction of dataset processed: %f' % (self.eventsSeen/(1.*self.eventsTotal))
+        
+    def structured(self):
+        
+        if self.test_result is None:
+            self.test()
+        
+        totalGood = 0
+        totalBad = 0
+            
+        report = {'data':{},'dataset':self.options.name,\
+                  'status':True,'storage':self.topdir,'time':time.asctime(),'user':self.options.user}
+        for dirname, files in self.test_result.iteritems():
+            for name, status in files.iteritems():
+                fname = os.path.join(dirname,name)
+                report['data'][fname] = status
+                if status[0]:
+                    totalGood += 1
+                else:
+                    totalBad += 1
+                
+        report['dataset_entries'] = self.eventsTotal
+        report['dataset_fraction'] = (self.eventsSeen/(1.*self.eventsTotal))
+        report['filelist_entries'] = self.eventsSeen
+
+        report['filelist_good'] = totalGood
+        report['filelist_bad'] = totalBad
+        report['filelist_nfiles'] = totalGood + totalBad
+
+        return report
     
     def stageHost(self):
         """Returns the CASTOR instance to use"""
@@ -158,4 +187,8 @@ if __name__ == '__main__':
         check = IntegrityCheck(d,opts)
         check.test()
         check.report()
+        report = check.structured()
+        
+        import json
+        print json.dumps(report, sort_keys=True, indent=4)
     
