@@ -130,6 +130,7 @@ If no -s option is provided, it is assumed that the current user is the user on 
 
         # Check if files are contiguous and set valid variable accordingly
         files = log.checkContiguity(targetDir)
+        
         if files[-1] == "VALID":
                 dataset['Status'] = "VALID"
         del files[-1]

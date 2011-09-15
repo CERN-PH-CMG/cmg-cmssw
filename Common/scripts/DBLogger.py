@@ -218,6 +218,20 @@ class DBLogger:
     def _stdNameFromGrid(self,name):
         
         return name.split("_"+name.split("_")[-3]+ "_"+name.split("_")[-2]+"_"+name.split("_")[-1])[0]
+
+    def _checkIfNamed(self, name):
+        suffix = []
+        suffix = name.rstrip(".root").split("_")
+        A =False
+        B =False
+        try: tester = int(suffix[-1])
+        except: A = True
+        try: tester = int(suffix[-2])
+        except: B=True
+
+        if A and B:
+            return True
+        else: return False
         
     def checkContiguity(self, targetDir):
         #GET ALL ROOT NAMES
@@ -243,7 +257,7 @@ class DBLogger:
                     # If item is from grid
                     if self.checkRootType(listItem):
                         #If items are the same
-                        if self._stdNameFromGrid(listItem)==self._stdNameFromGrid(filename) and listItem.split("_")[-2]==filename.split("_")[-2]:
+                        if self._stdNameFromGrid(listItem)==self._stdNameFromGrid(filename):
                             #print listItem
                             fileGroup.append(listItem)
                             
@@ -270,58 +284,66 @@ class DBLogger:
         validity = []
         # Count through the groups
         for group in fileGroups:
+            
             # Set name of group to be returned
             groupName = ""
             
             # Set an array for numbers
             numbers = []
 
-            # Exract the filenumber from each file in the group and add it to the numbers array
-            if self.checkRootType(group[0]):
-                for element in group:
-                    num = element.split("_")[-3]
-                    numbers.append(int(num))
+            
+            if self._checkIfNamed(group[0]):
+                validity.append(group[0])
+                print group[0]
             else:
-                
-                for element in group:
-                    num = element.rstrip(".root").split("_")[-1]
-                    numbers.append(int(num))
-                
-            count = 0
-            # Sort Numbers so that they are in ascending order
-            numbers.sort()
-            if numbers[0] == 1: count +=1
-            # Check that all numbers are there and index every element
-            for i in numbers:
-                # If an element is erroneous call up a flag and move on to the next set
-                if i != count:
-                    groupFlag = False
-                    
+                # Exract the filenumber from each file in the group and add it to the numbers array
+                if self.checkRootType(group[0]):
+                    for element in group:
+                        num = element.split("_")[-3]
+                        numbers.append(int(num))
+                else:
 
-                count+=1
+                    for element in group:
+                        num = element.rstrip(".root").split("_")[-1]
+                        numbers.append(int(num))
 
-            # Create names for file groups
-            if self.checkRootType(group[0]):
-                # Create name for grid type in format: name_[a-n]_identifier_XXX.root
-                arr = group[0].split("_")
-                arr[-1] = "XXX.root"
-                arr[-3] = "["+str(numbers[0])+"-" + str(numbers[-1])+"]"
-                groupName = "_".join(arr)
-                print groupName
-            else:
-                # Create name for normal type in format name_[a-n].root
-                groupName = group[0].rstrip(str(numbers[0])+".root") +"["+str(numbers[0])+"-"+ str(numbers[-1])+"].root"
-                print groupName
+                count = 0
+                # Sort Numbers so that they are in ascending order
+                numbers.sort()
+                if numbers[0] == 1: count +=1
+                # Check that all numbers are there and index every element
+                for i in numbers:
+                    # If an element is erroneous call up a flag and move on to the next set
+                    if i != count:
+                        groupFlag = False
 
 
-            # Append group name with contiguity to return array
-            if groupFlag==True:
-                validity.append(groupName+": CONTIGUOUS")
-            else:
-                validity.append(groupName+": NON-CONTIGUOUS")
-                setFlag = False
+                    count+=1
+                # Create names for file groups
+                if self.checkRootType(group[0]):
+                    # Create name for grid type in format: name_[a-n]_identifier_XXX.root
+                    arr = group[0].split("_")
+                    arr[-1] = "XXX.root"
+                    arr[-3] = "["+str(numbers[0])+"-" + str(numbers[-1])+"]"
+                    groupName = "_".join(arr)
+                    print groupName
+                else:
+                    # Create name for normal type in format name_[a-n].root
+                    groupName = group[0].rstrip(str(numbers[0])+".root") +"["+str(numbers[0])+"-"+ str(numbers[-1])+"].root"
+                    print groupName
+
+
+                # Append group name with contiguity to return array
+                if groupFlag==True:
+                    validity.append(groupName+": CONTIGUOUS")
+                else:
+                    validity.append(groupName+": NON-CONTIGUOUS")
+                    setFlag = False
+
+
         # If there are non-contiguous file sets, return false and print error message.
         # Otherwise return true
+
         if setFlag==False:
             print "There are non-contigious root files"
             validity.append("INVALID")

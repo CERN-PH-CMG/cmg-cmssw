@@ -118,18 +118,25 @@ class savannahConnect:
             self.br.submit()
             # Declare link variable
             link = name
+            posLink = []
+            posUser = []
+            flag = False
             # Try to access form (if you can, there was only 1 result)
             try:
                 # This line will throw the exception if it needs to be thrown
                 self.br.select_form(name='item_form')
                 # Check if task is 100% match
-                if re.search(name,self.br.form['summary']):
+                if re.match(self.br.form['summary'], name):
                     # Check task is "Open"
                     if self.br.form['status_id']==['1'] and self.br.form['category_id']==[category]:
                         # Check the task is not assigned to someone else
                         control = self.br.find_control('assigned_to')
                         if control.get_value_by_label() == [user]:
                             link = "["+self.br.response().geturl() +" "+ name+ "]"
+                        else:
+                            posLink.append( "["+self.br.response().geturl() +" "+ name+ "]")
+                            posUser.append(control.get_value_by_label())
+                else: print "Success"
                 self.br.back()
                 self.br.back()
             # If exception is thrown, a list of results was returned and we must navigate to the correct one
@@ -154,13 +161,35 @@ class savannahConnect:
                             # Go back to list of tasks, as break will cause algorithm to skip over inline back() instruction
                             self.br.back()
                             break
+                        else:
+                            posLink.append( "["+self.br.response().geturl() +" "+ name+ "]")
+                            posUser.append(control.get_value_by_label())
                     # Go back to list of tasks
                     self.br.back()
                 # Go back to main page
                 self.br.back()
-                self.br.back()            
+                self.br.back()
+            if link == name:
+                if len(posLink)>0:
+                    link = posLink[self._getOptionalParent(posUser, name)]
+                
             return link
-
+    def _getOptionalParent(self, posUser, name):
+        parentString = ""
+        count = 1
+        for i in posUser:
+            parentString += i[0] + ": [" + str(count)+"]\n"
+            
+            count+=1
+        while True: 
+            parent = raw_input("A parent was found but belonging to a different user please select one of the following users,\nor push any other key to exit:\n" + parentString)
+            try:
+                if int(parent)<=len(posUser):
+                    if int(parent)>0:
+                        return int(parent)-1
+            except: pass
+            return name
+        
     def _getSelfURL(self, name, user, category):
         # If logged in
         if self.valid==True and name != None:
