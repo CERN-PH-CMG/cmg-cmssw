@@ -24,6 +24,7 @@ public:
   void testElectron(TString inputtag="cmgElectronSel");
   void testMuon(TString inputtag="cmgMuonSel");
 //   void testMET(TString inputtag="cmgPFMET");
+  void testGenParticle(TString inputtag="genParticlesStatus3");
 
 private:
   
