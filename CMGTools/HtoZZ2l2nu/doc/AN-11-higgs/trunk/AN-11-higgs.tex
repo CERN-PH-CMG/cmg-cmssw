@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.37 $
+\RCS$Revision: 1.38 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.37 2011/09/14 15:11:56 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.38 2011/09/14 15:58:17 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -1452,6 +1452,9 @@ Details can be found in App.~\ref{sec:app:leptonisolation};
 \subsection{Background determination}
 \label{subsec:backgrounddet}
 
+\FIXME: the following sections are to be expanded in a newer version of the note.
+They summarize two contributions to the background determination of the instrumental background
+and of top background from data.
 
 %%%
 %%% Instrumental background
@@ -1526,7 +1529,6 @@ HCAL isolation                        & \multicolumn{2}{c}{$<$2.2 + 0.001$E_T$} 
 \end{table}
 
 
-
 %%%
 %%% Top 
 %%%
@@ -1539,6 +1541,8 @@ HCAL isolation                        & \multicolumn{2}{c}{$<$2.2 + 0.001$E_T$} 
 \subsection{Systematic uncertainties}
 \label{subsec:systunc}
 
+\FIXME: This section will be filled in the next version of the note. 
+Include discussion on the main systematics affecting the analysis.
 
 %
 %
@@ -1546,6 +1550,30 @@ HCAL isolation                        & \multicolumn{2}{c}{$<$2.2 + 0.001$E_T$} 
 \clearpage
 \section{Exclusion limits}
 \label{sec:excllimits}
+
+\FIXME: This section will be filled in the next version of the note. 
+Include statistical analysis based on the results obtained in the previous section.
+Combine ee+$\mu\mu$ channel in the 3-jet multiplcity bins and compare the cut and count
+analysis performance with the multivariate analysis performance.
+Add combination with VBF for the cut and count analysis.
+Include stand-alone contribution from the VBF analysis like shown in Tab.~\ref{tab:vbflimits}.
+
+\begin{table}[htp]
+\begin{center}
+\caption{Limits on the predicted SM qq$\rightarrow$H cross section set from the selected data.
+The 68\% uncertainty on the expected limit is included for reference.
+The uncertainty includes luminosity and MC statistics.}
+\label{tab:vbflimits}
+\begin{tabular}{lccccc} \hline\hline
+\multirow{2}{*}{$\sigma/\sigma_{SM}$} & \multicolumn{5}{c}{$m_{H^0}$ (GeV/c$^2$)} \\
+                                      & 200  & 300    & 400  & 500  & 500 \\\hline
+Expected (MC)                         & 5.7 $\pm$ 1.8 & 5.2 $\pm$ 1.6 & 9.0 $\pm$ 3.0 & 17.2 $\pm$ 5.2 & 32 $\pm$ 10  \\
+Data                                  & 5.1           & 4.7           & 8.24        & 15.7          & 29.6 \\\hline\hline
+                                      &      &      &      &      & \\
+{\small Obs=0  (hyp.)}                & {\small 3.95} & {\small 3.63} & {\small 6.29} & {\small 11.9} & {\small 22.5} \\
+\end{tabular}
+\end{center}
+\end{table}
 
 
 %
