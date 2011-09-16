@@ -198,7 +198,7 @@ class IntegrityCheck(object):
 
     def listFiles(self,dir):
         """Recursively list a file or directory on castor"""
-        return castortools.listFiles(self.options.resursive)
+        return castortools.listFiles(dir,self.options.resursive)
 
     def listRootFiles(self,dir):
         """filter out filenames so that they only contain root files"""
