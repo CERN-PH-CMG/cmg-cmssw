@@ -81,7 +81,7 @@ if os.path.isfile( sourceFile ):
     print sourceFile, 'already exists. use the -o option to define another file name'
     sys.exit(1)
 
-sourceFileList = 'sourceFileList.py %s "%s" > %s' % (cdir, options.pattern, sourceFile)
+sourceFileList = 'sourceFileList.py -c %s "%s" > %s' % (cdir, options.pattern, sourceFile)
 print sourceFileList
 os.system(sourceFileList)
 # compile new source file
