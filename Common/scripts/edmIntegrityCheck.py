@@ -42,13 +42,9 @@ class PublishToFileSystem(object):
     
     def get(self,dir):
         """Finds the lastest file and reads it"""
-        files = castortools.listFiles(castortools.lfnToCastor(dir))
-        filtered = [f[-1] for f in files if (f[-1].endswith('.txt') and os.path.basename(f[-1]).startswith(self.parent))]
-
-        files = []
-        for f in filtered:
-            files.append( (os.path.basename(f),f) )
-        files.sort()
+        re = '^%s_.*\.txt$' % self.parent
+        files = castortools.matchingFiles(dir, re)
+        files = sorted([ (os.path.basename(f),f) for f in files])
         if not files: return None
         return self.read(files[-1][1])
                 
