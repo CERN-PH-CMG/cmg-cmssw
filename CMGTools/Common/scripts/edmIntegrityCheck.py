@@ -72,6 +72,7 @@ class IntegrityCheck(object):
                 if not ds: continue
                 ds = '/%s' % ds
                 exists, data = check(ds)
+                self.options.name = ds
                 if exists: break
         else:
             exists, data = check(self.options.name)
