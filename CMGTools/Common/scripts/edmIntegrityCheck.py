@@ -1,8 +1,35 @@
-import os, sys, time
+import datetime, fnmatch, json, os, shutil, sys, tempfile
 import subprocess
 
 import castortools
 import Das
+
+class PublishToFileSystem(object):
+    
+    def __init__(self, parent):
+        if type(parent) == type(""):
+            self.parent = parent
+        else:
+            self.parent = parent.__class__.__name__
+    
+    def publish(self, report):
+        for path in report['PathList']:
+            _, name = tempfile.mkstemp('.txt',text=True)
+            json.dump(report, file(name,'w'), sort_keys=True, indent=4)
+            
+            fname = '%s_%s.txt' % (self.parent,report['DateCreated'])
+            castor_path = castortools.lfnToCastor(path)
+            
+            #this is bad, but castortools is giving me problems
+            if not os.system('rfcp %s %s' % (name,castor_path)):
+                os.system('rfrename %s/%s %s/%s' % (castor_path,os.path.basename(name),castor_path,fname))
+                print "File published: '%s/%s'" % (castor_path,fname)
+                os.remove(name)
+            else:
+                pathhash = path.replace('/','.')
+                hashed_name = 'PublishToFileSystem-%s-%s' % (pathhash,fname)
+                shutil.move(name, hashed_name)
+                print >>sys.stderr, "Cannot write to directory '%s' - written to local file '%s' instead." % (castor_path,hashed_name)
 
 class IntegrityCheck(object):
     
@@ -56,7 +83,6 @@ class IntegrityCheck(object):
         self.eventsTotal = 0
         for result in data['data']:
             self.eventsTotal += result['dataset']['nevents']
-        print "Total number of events in dataset is %i" % self.eventsTotal
     
     def test(self):
         if not castortools.fileExists(self.directory):
@@ -69,8 +95,11 @@ class IntegrityCheck(object):
         filesToTest = self.sortByBaseDir(self.listRootFiles(self.directory))
         for dir, filelist in filesToTest.iteritems():
             filemask = {}
-            for ff in filelist:
-                #if not 'tree' in ff: continue
+            #apply a UNIX wildcard if specified
+            filtered = filelist
+            if self.options.wildcard is not None:
+                filtered = fnmatch.filter(filelist,self.options.wildcard)
+            for ff in filtered:
                 fname = os.path.join(dir,ff)
                 OK, num = self.testFile(castortools.castorToLFN(fname))
                 filemask[ff] = (OK,num)
@@ -102,25 +131,39 @@ class IntegrityCheck(object):
         
         totalGood = 0
         totalBad = 0
-            
-        report = {'data':{},'dataset':self.options.name,\
-                  'status':True,'storage':self.topdir,'time':time.asctime(),'user':self.options.user}
+
+        report = {'data':{},
+                  'PrimaryDataset':self.options.name,
+                  'Name':self.dataset,
+                  'PhysicsGroup':'CMG',
+                  'Status':'VALID',
+                  'TierList':[],
+                  'AlgoList':[],
+                  'RunList':[],
+                  'PathList':[],
+                  'Topdir':self.topdir,
+                  'StageHost':self.stageHost(),
+                  'CreatedBy':self.options.user,
+                  'DateCreated':datetime.datetime.now().strftime("%s"),
+                  'Files':{}}
+        
         for dirname, files in self.test_result.iteritems():
+            report['PathList'].append(dirname)
             for name, status in files.iteritems():
                 fname = os.path.join(dirname,name)
-                report['data'][fname] = status
+                report['Files'][fname] = status
                 if status[0]:
                     totalGood += 1
                 else:
                     totalBad += 1
                 
-        report['dataset_entries'] = self.eventsTotal
-        report['dataset_fraction'] = (self.eventsSeen/(1.*self.eventsTotal))
-        report['filelist_entries'] = self.eventsSeen
+        report['PrimaryDatasetEntries'] = self.eventsTotal
+        report['PrimaryDatasetFraction'] = (self.eventsSeen/(1.*self.eventsTotal))
+        report['FilesEntries'] = self.eventsSeen
 
-        report['filelist_good'] = totalGood
-        report['filelist_bad'] = totalBad
-        report['filelist_nfiles'] = totalGood + totalBad
+        report['FilesGood'] = totalGood
+        report['FilesBad'] = totalBad
+        report['FilesCount'] = totalGood + totalBad
 
         return report
     
@@ -178,17 +221,19 @@ if __name__ == '__main__':
     das = Das.DASOptionParser()
     das.parser.add_option("-d", "--device", dest="device", default='cmst3',help='The storage device to write to')
     das.parser.add_option("-n", "--name", dest="name", default=None,help='The name of the dataset in DAS. Will be guessed if not specified')
+    das.parser.add_option("-p", "--printout", dest="printout", default=False, action='store_true',help='Print a report to stdout')    
     das.parser.add_option("-r", "--recursive", dest="resursive", default=False, action='store_true',help='Walk the mass storage device recursively')
     das.parser.add_option("-u", "--user", dest="user", default=os.getlogin(),help='The username to use when looking at mass storage devices')
+    das.parser.add_option("-w", "--wildcard", dest="wildcard", default=None,help='A UNIX style wildcard to specify which files to check')    
     (opts, datasets) = das.get_opt()
     
     for d in datasets:
         
         check = IntegrityCheck(d,opts)
         check.test()
-        check.report()
+        if opts.printout:
+            check.report()
         report = check.structured()
-        
-        import json
-        print json.dumps(report, sort_keys=True, indent=4)
-    
+        pub = PublishToFileSystem(check)
+        pub.publish(report)
+
