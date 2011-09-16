@@ -100,12 +100,18 @@ class IntegrityCheck(object):
             filtered = filelist
             if self.options.wildcard is not None:
                 filtered = fnmatch.filter(filelist,self.options.wildcard)
+            count = 0
             for ff in filtered:
                 fname = os.path.join(dir,ff)
+                if self.options.printout:
+                    print '[%i/%i]\t Checking %s...' % (count,len(filtered),fname),
                 OK, num = self.testFile(castortools.castorToLFN(fname))
                 filemask[ff] = (OK,num)
+                if self.options.printout:
+                    print (OK,num)
                 if OK:
                     self.eventsSeen += num
+                count += 1
             test_results[castortools.castorToLFN(dir)] = filemask
         self.test_result = test_results
     
