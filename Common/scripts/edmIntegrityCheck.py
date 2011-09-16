@@ -23,6 +23,7 @@ class PublishToFileSystem(object):
             #this is bad, but castortools is giving me problems
             if not os.system('rfcp %s %s' % (name,castor_path)):
                 os.system('rfrename %s/%s %s/%s' % (castor_path,os.path.basename(name),castor_path,fname))
+                os.system('rfchmod 644 %s/%s' % (castor_path,fname)) #needed so others can read these files - helps the production system
                 print "File published: '%s/%s'" % (castor_path,fname)
                 os.remove(name)
             else:
@@ -30,6 +31,27 @@ class PublishToFileSystem(object):
                 hashed_name = 'PublishToFileSystem-%s-%s' % (pathhash,fname)
                 shutil.move(name, hashed_name)
                 print >>sys.stderr, "Cannot write to directory '%s' - written to local file '%s' instead." % (castor_path,hashed_name)
+                
+    def read(self, lfn, local = False):
+        """Reads a report from storage"""
+        if local:
+            cat = file(lfn).read()
+        else:
+            cat = castortools.cat(castortools.lfnToCastor(lfn))
+        return json.loads(cat)
+    
+    def get(self,dir):
+        """Finds the lastest file and reads it"""
+        files = castortools.listFiles(castortools.lfnToCastor(dir))
+        filtered = [f[-1] for f in files if (f[-1].endswith('.txt') and os.path.basename(f[-1]).startswith(self.parent))]
+
+        files = []
+        for f in filtered:
+            files.append( (os.path.basename(f),f) )
+        files.sort()
+        if not files: return None
+        return self.read(files[-1][1])
+                
 
 class IntegrityCheck(object):
     
@@ -180,15 +202,7 @@ class IntegrityCheck(object):
 
     def listFiles(self,dir):
         """Recursively list a file or directory on castor"""
-        cmd = 'dirlist'
-        if self.options.resursive:
-            cmd = 'dirlistrec'
-        files = subprocess.Popen(['xrd',self.stageHost(),cmd, dir], stdout=subprocess.PIPE).communicate()[0]
-        result = []
-        for f in files.split('\n'):
-            s = f.split()
-            if s: result.append(tuple(s))
-        return result
+        return castortools.listFiles(self.options.resursive)
 
     def listRootFiles(self,dir):
         """filter out filenames so that they only contain root files"""

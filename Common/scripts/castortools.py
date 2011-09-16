@@ -360,7 +360,26 @@ def xrdcp( absDestDir, files ):
         print cpfile
         os.system(cpfile)
 
-        
-        
+def cat(lfn):
+    name = lfnToCastor(lfn)
+    if not fileExists(name):
+        raise Exception("File '%s' does not exist. Cannot do a cat." % name)
+    output = subprocess.Popen(['rfcat',name], stdout=subprocess.PIPE).communicate()[0]
+    return output
 
+def stageHost():
+    """Returns the CASTOR instance to use"""
+    return os.environ.get('STAGE_HOST','castorcms')
+        
+def listFiles(dir, rec = False):
+    """Recursively list a file or directory on castor"""
+    cmd = 'dirlist'
+    if rec:
+        cmd = 'dirlistrec'
+    files = subprocess.Popen(['xrd',stageHost(),cmd, dir], stdout=subprocess.PIPE).communicate()[0]
+    result = []
+    for f in files.split('\n'):
+        s = f.split()
+        if s: result.append(tuple(s))
+    return result
 
