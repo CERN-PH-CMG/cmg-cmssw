@@ -450,7 +450,6 @@ int main(int argc, char* argv[])
   for( int iev=evStart; iev<evEnd; iev++)
     {
       if(iev%1000==0) printf("\r [ %d/100 ] ",int(100*float(iev-evStart)/float(evEnd)));
-      
       evSummaryHandler.getEntry(iev);
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
 
