@@ -58,8 +58,7 @@ TH1D *getHistogramForVariable(TString variable)
   if(variable=="dphizz")         h = new TH1D( variable, ";#Delta#phi(Z_{ll},E_{T}^{miss});Events",100,-3.2,3.2);
   if(variable=="metoverzpt")     h = new TH1D( variable, ";type I E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9);
 
-  if(variable=="redMetL")        h = new TH1D( variable, ";red-E_{T}^{miss,#parallel};Events", 100,-250,250);
-  if(variable=="redMetT")        h = new TH1D( variable, ";red-E_{T}^{miss,#perp};Events", 100,-250,250);
+
   if(variable=="redMetoverzpt")  h = new TH1D( variable,  ";red-E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9);
 
   if(variable=="projMet")        h = new TH1D( variable, ";projected E_{T}^{miss};Events", 100,0,500);
@@ -234,30 +233,29 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(3,"#geq 4 leptons");
   controlHistos.addHistogram( h );
   
-  h=new TH1F("njets",";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5);
-  h->GetXaxis()->SetBinLabel(1,"=0");
-  h->GetXaxis()->SetBinLabel(2,"=1");
-  h->GetXaxis()->SetBinLabel(3,"=2");
-  h->GetXaxis()->SetBinLabel(4,"=3");
-  h->GetXaxis()->SetBinLabel(5,"#geq 4");
-  controlHistos.addHistogram(h);
-  controlHistos.addHistogram((TH1F *)h->Clone("njets3leptons"));
-
+  controlHistos.addHistogram(new TH1F("njets",";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5) );
+  controlHistos.addHistogram( new TH1F("njets3leptons",";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5) );
   controlHistos.addHistogram( new TH2F ("njetsvspu", ";Pileup events;Jets;Events", 25,0,25,5,0,5) );  
-  TH2F *h2 = (TH2F *) controlHistos.getHisto("njetsvspu");
-  h2->GetYaxis()->SetBinLabel(1,"=0");
-  h2->GetYaxis()->SetBinLabel(2,"=1");
-  h2->GetYaxis()->SetBinLabel(3,"=2");
-  h2->GetYaxis()->SetBinLabel(4,"=3");
-  h2->GetYaxis()->SetBinLabel(5,"#geq 4");
-  controlHistos.addHistogram( (TH2F *)h2->Clone("njetsincvspu") );
+  controlHistos.addHistogram(  new TH2F ("njetsincvspu", ";Pileup events;Jets;Events", 25,0,25,5,0,5) );   
+  for(size_t ibin=1; ibin<=5; ibin++)
+    {
+      TString label("");
+      if(ibin==5) label +="#geq";
+      else        label +="=";
+      label += (ibin-1);
+      controlHistos.getHisto("njets")->GetXaxis()->SetBinLabel(ibin,label);
+      controlHistos.getHisto("njets3leptons")->GetXaxis()->SetBinLabel(ibin,label);
+      controlHistos.getHisto("njetsvspu")->GetXaxis()->SetBinLabel(ibin,label);
+      controlHistos.getHisto("njetsincvspu")->GetXaxis()->SetBinLabel(ibin,label);
+    }
+
  
   h = new TH1F ("nbtags", ";b-tag multiplicity; Events", 3,0,3);  
   h->GetXaxis()->SetBinLabel(1,"0 b-tags");
   h->GetXaxis()->SetBinLabel(2,"1 b-tags");
   h->GetXaxis()->SetBinLabel(3,"#geq 2 b-tags");
   controlHistos.addHistogram( h );
-  controlHistos.addHistogram( (TH1F *)h->Clone("nbtags3leptons"));
+  controlHistos.addHistogram( new TH1F ("nbtags3leptons", ";b-tag multiplicity; Events", 3,0,3) );
 
   //used to optimize the b-veto
   h=new TH1F ("npassbveto", ";Pass b-tag veto; Events", 6,0,6);
@@ -275,51 +273,77 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1D( "minmjz", ";min M(jet,Z) [GeV/c^{2}];Events",100,0,500) );
 
   //met control
-  TString metTypes[]  = {"met",          "projMet",           "minMet",           "minProjMet",            "redMet",          "redMetD0",              "centralMet",           "cleanMet",          "unclusteredMet", "clusteredOtherVtxMet", "cmsRedMet"};
-  TString metTitles[] = {"E_{T}^{miss}", "proj-E_{T}^{miss}", "min-E_{T}^{miss}", "min-proj-E_{T}^{miss}", "red-E_{T}^{miss}", "red-E_{T}^{miss}(D0)", "central-E_{T}^{miss}", "clean-E_{T}^{miss}", "unclustered-E_{T}^{miss}", "clustered-E_{T}^{miss}", "clustered-E_{T}^{miss}", "cms-red-E^{T}_{miss}" };
-  for(size_t i=0; i<sizeof(metTypes)/sizeof(TString);i++)
+  std::map<TString,TString> metTypes;
+  metTypes["met"]                 = "E_{T}^{miss}";
+  metTypes["projMet"]             = "proj-E_{T}^{miss}";
+  metTypes["minProjMet"]          = "min-proj{E_{T}^{miss},assoc E_{T}^{miss} (charged)}";
+  metTypes["redMet"]              = "red-E_{T}^{miss}";
+  metTypes["redMetD0"]            = "red-E_{T}^{miss}(D0)";
+  metTypes["assocChargedMet"]     = "assoc E_{T}^{miss} (charged)";
+  metTypes["minAssocChargedMet"]  = "min{E_{T}^{miss},assoc E_{T}^{miss} (charged)}";
+  metTypes["centralMet"]          = "central-E_{T}^{miss}";
+  metTypes["minCentralMet"]       = "min{E_{T}^{miss},central-E_{T}^{miss}}";
+  metTypes["assocOtherVertexMet"] = "assoc-E_{T}^{miss} (other vtx)";
+  metTypes["cleanMet"]            = "clean-E_{T}^{miss}";
+  metTypes["minCleanMet"]         = "min{E_{T}^{miss},clean-E_{T}^{miss}}";
+  metTypes["assocMet"]            = "assoc-E_{T}^{miss}";
+  metTypes["minAssocMet"]         = "min{E_{T}^miss,assoc-E_{T}^{miss})";
+  metTypes["superMinMet"]         = "min{E_{T}^{miss},assoc-E_{T}^{miss},clean-E_{T}^{miss},central-E_{T}^{miss}}";
+  std::map<TString,double> metTypeValues;
+  for(std::map<TString,TString>::iterator it = metTypes.begin(); it!= metTypes.end(); it++)
     {
-      controlHistos.addHistogram( new TH1D( metTypes[i], ";"+metTitles[i]+";Events", 100,0,500) );
-      controlHistos.addHistogram( new TH2F (metTypes[i]+"vspu", ";Pileup events;"+metTitles[i]+";Events", 25,0,25,100,0,500) );  
+      metTypeValues[it->first]=0;
+      controlHistos.addHistogram( new TH1D( it->first, ";"+it->second+";Events", 100,0,500) );
+      controlHistos.addHistogram( new TH2F (it->first+"vspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );  
     }
+  controlHistos.addHistogram( new TH2F ("itpuvsootpu", ";In-Time Pileup; Out-of-time Pileup;Events", 30,0,30,30,0,30) );
   controlHistos.addHistogram( new TH2D ("redMetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) );
-  controlHistos.addHistogram( new TH2D ("cmsRedMetcomps", ";cms-red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) );
-  h=(TH1F *)getHistogramForVariable("redMetL");
-  controlHistos.addHistogram( h );
-  controlHistos.addHistogram( (TH1F *)h->Clone("cmsRedMetL") );
-  h=(TH1F *)getHistogramForVariable("redMetT");
-  controlHistos.addHistogram( h );
-  controlHistos.addHistogram( (TH1F *)h->Clone("cmsRedMetT") );
+  controlHistos.addHistogram( new TH1D( "redMetL", ";red-E_{T}^{miss,#parallel};Events", 100,-250,250) );
+  controlHistos.addHistogram( new TH1D( "redMetT", ";red-E_{T}^{miss,#perp};Events", 100,-250,250) );
   controlHistos.addHistogram( new TH2F ("metvstkmet", ";E_{T}^{miss};tk-E_{T}^{miss}", 100,0,500,100,0,500) );  
   controlHistos.addHistogram( new TH2F ("metvsclusteredMet", ";E_{T}^{miss};clustered-E_{T}^{miss}", 100,0,500,100,0,500) );  
   controlHistos.addHistogram( new TH2F ("metvscentralMet", ";E_{T}^{miss};central-E_{T}^{miss}", 100,0,500,100,0,500) );  
   
-  controlHistos.addHistogram( new TH1D("sumEt",                    ";#Sigma E_{T} [GeV];Events", 100,0,1000) );
+  controlHistos.addHistogram( new TH1D("sumEt",                    ";#Sigma E_{T} [GeV];Events", 100,0,2000) );
+  controlHistos.addHistogram( new TH1D("chSumEt",                    ";#Sigma E_{T}^{charged} [GeV];Events", 100,0,1000) );
+  controlHistos.addHistogram( new TH1D("neutSumEt",                    ";#Sigma E_{T}^{neutral} [GeV];Events", 100,0,1000) );
   controlHistos.addHistogram( new TH1D("primVertexSumEt",          ";Primary Vertex : #Sigma E_{T} [GeV];Events", 100,0,1000) );
   controlHistos.addHistogram( new TH1D("otherVertexSumEt",         ";Other Vertices : #Sigma_{vtx} #Sigma E_{T} [GeV];Events", 100,0,1000) );
   controlHistos.addHistogram( new TH1D("chSumEtFrac",              ";#Sigma E_{T}^{charged}/#Sigma E_{T};Events", 100,0,1.) );
   controlHistos.addHistogram( new TH1D("neutSumEtFrac",            ";#Sigma E_{T}^{neutral}/#Sigma E_{T};Events", 100,0,1.) );
+
+  TString ootConds[]={"LowOOTpu","MediumOOTpu","HighOOTpu","VeryHighOOTpu"};
+  for(size_t i=0; i<sizeof(ootConds)/sizeof(TString); i++)
+    {
+      controlHistos.addHistogram( new TH1D("sumEt"+ootConds[i],           ";#Sigma E_{T} [GeV];Events", 100,0,2000) );
+      controlHistos.addHistogram( new TH1D("neutSumEtFrac"+ootConds[i],   ";#Sigma E_{T}^{neutral}/#Sigma E_{T};Events", 100,0,1.) );
+    }
+
   controlHistos.addHistogram( new TH1D("centralSumEtFrac",         ";#Sigma E_{T}(|#eta|<2.4)/#Sigma E_{T};Events", 100,0,1.) );
   controlHistos.addHistogram( new TH1D("centralChSumEtFrac",       ";#Sigma E_{T}^{charged}(|#eta|<2.4)/#Sigma E_{T};Events", 100,0,1.) );
   controlHistos.addHistogram( new TH1D("centralNeutSumEtFrac",     ";#Sigma E_{T}^{neutral}(|#eta|<2.4)/#Sigma E_{T};Events", 100,0,1.) );
   controlHistos.addHistogram( new TH1D("chPrimVertexSumEtFrac",    ";#Sigma E_{T}^{charged}(PV)/#Sigma E_{T};Events", 100,0,1.) );
   controlHistos.addHistogram( new TH1D("neutPrimVertexSumEtFrac",  ";#Sigma E_{T}^{neutral}(PV)/#Sigma E_{T};Events", 100,0,1.) );
-  controlHistos.addHistogram( new TH1D("chOthervertexSumEtFrac",   ";#Sigma_{oth.vtx} #Sigma E_{T}^{charged}/#Sigma E_{T};Events", 100,0,1.) );
-  controlHistos.addHistogram( new TH1D("neutOthervertexSumEtFrac", ";#Sigma_{oth.vtx} #Sigma E_{T}^{neutral}/#Sigma E_{T};Events", 100,0,1.) );
+  controlHistos.addHistogram( new TH1D("chOtherVertexSumEtFrac",   ";#Sigma_{oth.vtx} #Sigma E_{T}^{charged}/#Sigma E_{T};Events", 100,0,1.) );
+  controlHistos.addHistogram( new TH1D("neutOtherVertexSumEtFrac", ";#Sigma_{oth.vtx} #Sigma E_{T}^{neutral}/#Sigma E_{T};Events", 100,0,1.) );
 
   //cut optimization plots
   controlHistos.addHistogram( new TH1F ("cutOptMediumdphill", ";#delta #phi^{l,l};#red-E_{T}^{miss,#parallel};",25,0.,3.2) );
   controlHistos.addHistogram( new TH2F ("cutOptMediumsummtvsredMetL", ";#Sigma M_{T};#red-E_{T}^{miss,#parallel};",50,0,2000,25, -251.,249) );
   
   //cut and count
-  h = new TH1F ("finaleventflow",";Category;Event count;",5,0,5);
-  h->GetXaxis()->SetBinLabel(1,"m=200");
-  h->GetXaxis()->SetBinLabel(2,"m=300");
-  h->GetXaxis()->SetBinLabel(3,"m=400");
-  h->GetXaxis()->SetBinLabel(4,"m=500");
-  h->GetXaxis()->SetBinLabel(5,"m=600");
-  controlHistos.addHistogram( h );
-
+  TString varsToInclude[]={"","jer","jesup","jesdown","hfactup","hfactdown","hrenup","hrendown","nopu","flatpu"};
+  for(size_t ivar=0; ivar<sizeof(varsToInclude)/sizeof(TString); ivar++)
+    {
+      h = new TH1F (varsToInclude[ivar]+"finaleventflow",";Category;Event count;",5,0,5);
+      h->GetXaxis()->SetBinLabel(1,"m=200");
+      h->GetXaxis()->SetBinLabel(2,"m=300");
+      h->GetXaxis()->SetBinLabel(3,"m=400");
+      h->GetXaxis()->SetBinLabel(4,"m=500");
+      h->GetXaxis()->SetBinLabel(5,"m=600");
+      controlHistos.addHistogram( h );
+    }
+  
   //VBF
   h = new TH1F ("VBFNEventsInc", ";Selection cut;Events", 15,0,15);
   h->GetXaxis()->SetBinLabel(1,"All");
@@ -349,7 +373,8 @@ int main(int argc, char* argv[])
 
   //replicate monitor for interesting categories
   TString cats[]={"ee","emu","mumu"};
-  TString subCats[]={"","1to3vtx","4to9vtx","geq10vtx","eq0jets","eq1jets","geq2jets","vbf"};
+  TString subCats[]={"","eq0jets","eq1jets","geq2jets","vbf"};
+  //TString subCats[]={"","1to3vtx","4to9vtx","geq10vtx"};
   for(size_t icat=0;icat<sizeof(cats)/sizeof(TString); icat++)
     for(size_t isubcat=0;isubcat<sizeof(subCats)/sizeof(TString); isubcat++)
       controlHistos.initMonitorForStep(cats[icat]+subCats[isubcat]);
@@ -378,7 +403,7 @@ int main(int argc, char* argv[])
   //check PU normalized entries 
   evSummaryHandler.getTree()->Draw(">>elist","normWeight==1");
   TEventList *elist = (TEventList*)gDirectory->Get("elist");
-  const Int_t normEntries = elist->GetN(); 
+  const Int_t normEntries = (elist==0 ? 0 : elist->GetN()); 
   if(normEntries==0) cout << "[Warning] Normalized PU entries is 0, check if the PU normalization producer was properly run" << endl;
 
   //MC normalization (to 1/pb)
@@ -428,17 +453,18 @@ int main(int argc, char* argv[])
       
       evSummaryHandler.getEntry(iev);
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
-      //      if(!ev.hasTrigger) continue;
-      if(duplicatesChecker.isDuplicate(ev.run,ev.lumi, ev.event)){
-           //printf("event %i-%i-%i is duplicated\n", ev.run, ev.lumi, ev.event);
-           NumberOfDuplicated++;
-           continue;
-      }
+
+      //uncomment if you are suspicious
+      //       if(duplicatesChecker.isDuplicate(ev.run,ev.lumi, ev.event)){
+      //            //printf("event %i-%i-%i is duplicated\n", ev.run, ev.lumi, ev.event);
+      //            NumberOfDuplicated++;
+      //            continue;
+      //       }
 
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
       float weight=ev.weight;
       if(!isMC) weight=1;
-      else if(ev.hptWeights[0]>1e-3) weight *= ev.hptWeights[0];
+      else if(ev.hptWeights[0]>1e-6) weight *= ev.hptWeights[0];
   
       //
       //event categories
@@ -450,7 +476,6 @@ int main(int argc, char* argv[])
      
       int eventCategory = eventClassifComp.Get(phys);
       TString subcat    = eventClassifComp.GetLabel(eventCategory);
-      
 
       //MC truth
       // LorentzVector genzll(0,0,0,0), genzvv(0,0,0,0), higgs(0,0,0,0);
@@ -462,36 +487,20 @@ int main(int argc, char* argv[])
       //  }
 
       //start analysis by the jet kinematics so that one can loop over JER/JES/b-tag systematic variations
-      LorentzVector recoMetP4=phys.met[0];
+      LorentzVector metP4=phys.met[0];
       LorentzVector trkMetP4=phys.met[1];
       LorentzVector clusteredMetP4=phys.met[3];
       LorentzVector centralMetP4=phys.met[5];
       LorentzVector cleanMetP4=phys.met[6];
       LorentzVector clusteredOtherVtxMetP4=phys.met[7];
-      LorentzVectorCollection recoJetsP4;
 
-      //uncomment the following lines when ready for evaluation of systematics
-      // jcomp.compute(recoJetsP4,phys.met[0]);
-      // LorentzVector metVars[] = { recoMetP4, 
-      // 				  jcomp.getVariedMet(jet::UncertaintyComputer::JER), 
-      // 				  jcomp.getVariedMet(jet::UncertaintyComputer::JES_DOWN), 
-      // 				  jcomp.getVariedMet(jet::UncertaintyComputer::JES_UP) };
-      // LorentzVectorCollection jetVars[] = {recoJetsP4,
-      // 					   jcomp.getVariedJets(jet::UncertaintyComputer::JER),
-      // 					   jcomp.getVariedJets(jet::UncertaintyComputer::JES_DOWN),
-      //					   jcomp.getVariedJets(jet::UncertaintyComputer::JES_UP)};
-      // TString systVars[]={"","}
-      // for(size_t ivar=0; ivar<sizeof(metVars)/sizeof(LorentzVector); ivar++) 
-      // 	{
-      // 	  LorentzVector metP4=metVars[ivar];
-      //          LorentzVectorCollection jetsp4=jetVars[ivar];
-
-      //count b-tags
+      //count jets and b-tags
       int njets(0),njetsinc(0);
       int nbtags(0),        nbtags_ssvhem(0),        nbtags_tchel(0),        nbtags_tche2(0),        nbtags_jbpl(0),        nbtags_ssvhemORtchel(0);
+      LorentzVectorCollection jetsP4;
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++) 
 	{
-	  recoJetsP4.push_back( phys.jets[ijet] );
+	  jetsP4.push_back( phys.jets[ijet] );
 	  njetsinc++;
 	  if(fabs(phys.jets[ijet].eta())<2.5)
 	    {
@@ -512,9 +521,23 @@ int main(int argc, char* argv[])
 	    }
 	}
 
-      //the jet/met collections to use
-      LorentzVector metP4=recoMetP4; 
-      LorentzVectorCollection jetsp4=recoJetsP4;
+      //compute systematic variations for JET/MET
+      jcomp.compute(jetsP4,phys.met[0]);
+      
+      LorentzVectorCollection metVars;
+      metVars.push_back( jcomp.getVariedMet(jet::UncertaintyComputer::JER) );
+      metVars.push_back( jcomp.getVariedMet(jet::UncertaintyComputer::JES_DOWN) );
+      metVars.push_back( jcomp.getVariedMet(jet::UncertaintyComputer::JES_UP) );
+
+      std::vector<LorentzVectorCollection> jetVars;
+      jetVars.push_back( jcomp.getVariedJets(jet::UncertaintyComputer::JER) );
+      jetVars.push_back( jcomp.getVariedJets(jet::UncertaintyComputer::JES_DOWN) );
+      jetVars.push_back( jcomp.getVariedJets(jet::UncertaintyComputer::JES_UP) );
+
+      std::vector<int>eventCategoryVars;
+      for(size_t ivar=0; ivar<3; ivar++)
+	eventCategoryVars.push_back( eventClassifComp.Get(phys, &(jetVars[ivar])) );
+
 
       //z+met kinematics
       LorentzVector zll  = phys.leptons[0]+phys.leptons[1];
@@ -555,52 +578,35 @@ int main(int argc, char* argv[])
       Float_t met        = zvv.pt();
       Float_t dphizz     = deltaPhi(zll.phi(),zvv.phi());
       Float_t mt         = mtComp.compute(zll,zvv,true);
-      Float_t metoverzpt = met/zpt;
       Float_t dphizleadl = ptl1>ptl2 ? deltaPhi(phys.leptons[0].phi(),zll.phi()) : deltaPhi(phys.leptons[1].phi(),zll.phi()) ;
 
       //redmet
-      rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsp4, zvv );
+      rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsP4, zvv );
       Float_t redMet_d0  = rmetComp.reducedMET(ReducedMETComputer::D0);
       Float_t redMet         = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
       Float_t redMetL        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
       Float_t redMetT        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
-      Float_t redMetoverzpt  = redMet/zpt;
-
+      
+      //redmet after variation
+      std::vector<Float_t> redMetVar, redMetLVar, mtsumsVar;
+      for(size_t ivar=0; ivar<3; ivar++)
+	{
+	  rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetVars[ivar], metVars[ivar]);
+	  redMetVar.push_back(rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED));
+	  redMetLVar.push_back(rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second);
+	  Float_t imtsum     = mtComp.compute(phys.leptons[0],metVars[ivar],false) + mtComp.compute(phys.leptons[1],metVars[ivar],false);
+	  mtsumsVar.push_back(imtsum);
+	}
+      
       //projected met
       Float_t projMet        = pmetComp.compute(phys.leptons[0], phys.leptons[1], zvv );
-      Float_t projMetoverzpt = projMet/zpt;
-
-      //minimized met
-      Float_t projTrkMet     = pmetComp.compute(phys.leptons[0],phys.leptons[1], trkMetP4);
-      Float_t minMet         = min(trkMetP4.pt(),zvv.pt());
-      //      Float_t minMetoverzpt  = minMet/zpt;
-      Float_t minProjMet        = min(fabs(projMet),fabs(projTrkMet));
-      // Float_t minProjMetoverzpt   = minMet/zpt;
+      Float_t projAssocChargedMet     = pmetComp.compute(phys.leptons[0],phys.leptons[1], trkMetP4);
       
-      Float_t cleanMet   = min(zvv.pt(),cleanMetP4.pt());
-      Float_t centralMet = min(zvv.pt(),centralMetP4.pt());
-      Float_t unclusteredMet = min(cleanMet,centralMet);
-      Float_t clusteredMet = clusteredMetP4.pt();
-      Float_t clusteredOtherVtxMet=clusteredOtherVtxMetP4.pt();
-
-      //cms red met
-      TVector2 clusteredMetProj=rmetComp.project(clusteredMetP4);
-      TVector2 cleanMetProj=rmetComp.project(cleanMetP4);
-      TVector2 centralMetProj=rmetComp.project(centralMetP4);
-      TVector2 metProj=rmetComp.project(zvv);
-      double cmsRedMetL=min(fabs(clusteredMetProj.Py()),
-			    min(
-				min(fabs(metProj.Py()),fabs(cleanMetProj.Py())   ),
-				min(fabs(metProj.Py()),fabs(centralMetProj.Py()) )
-				)
-			    );
-      double cmsRedMetT=min(fabs(clusteredMetProj.Px()),
-			    min(
-				min(fabs(metProj.Px()),fabs(cleanMetProj.Px())   ),
-				min(fabs(metProj.Px()),fabs(centralMetProj.Px()) )
-				)
-			    );
-      double cmsRedMet=sqrt(pow(cmsRedMetL,2)+pow(cmsRedMetT,2));
+      Float_t cleanMet            = cleanMetP4.pt();
+      Float_t centralMet          = centralMetP4.pt();
+      Float_t assocChargedMet     = trkMetP4.pt();
+      Float_t assocMet            =  clusteredMetP4.pt();
+      Float_t assocOtherVertexMet = clusteredOtherVtxMetP4.pt();
 
       //vbf variables 
       bool isVBF        = false;
@@ -656,21 +662,16 @@ int main(int argc, char* argv[])
 	  if(variable=="mtl1")           tmvaVars[ivar]=mtl1;
 	  if(variable=="mtl2")           tmvaVars[ivar]=mtl2;
 	  if(variable=="mtsum")          tmvaVars[ivar]=mtsum;
-	  
 	  if(variable=="zmass")          tmvaVars[ivar]=zmass;
 	  if(variable=="zpt")            tmvaVars[ivar]=zpt;
 	  if(variable=="zeta")           tmvaVars[ivar]=zeta;
 	  if(variable=="met")            tmvaVars[ivar]=met;
 	  if(variable=="dphizz")         tmvaVars[ivar]=dphizz;
           if(variable=="mt")             tmvaVars[ivar]=mt;
-	  if(variable=="metoverzpt")     tmvaVars[ivar]=metoverzpt;
-	  
 	  if(variable=="redMet")         tmvaVars[ivar]=redMet;
 	  if(variable=="redMetL")        tmvaVars[ivar]=redMetL;
 	  if(variable=="redMetT")        tmvaVars[ivar]=redMetT;
-	  if(variable=="redMetoverzpt")  tmvaVars[ivar]=redMetoverzpt;
 	  if(variable=="projMet")        tmvaVars[ivar]=projMet;
-	  if(variable=="projMetoverzpt") tmvaVars[ivar]=projMetoverzpt;
           if(variable=="dphizleadl")     tmvaVars[ivar]=dphizleadl;
 	}
       tmvaVars[varsList.size()] = eventCategory;
@@ -709,6 +710,14 @@ int main(int argc, char* argv[])
       bool passBveto(nbtags==0);
       bool passMediumRedMet(redMet>rmetComp.getCut(eventCategory,ReducedMETComputer::MEDIUMWP));
       bool passTightRedMet(redMet>rmetComp.getCut(eventCategory,ReducedMETComputer::TIGHTWP));
+      std::vector<bool> passMediumRedMetVars, passTightRedMetVars;
+      for(size_t ivar=0; ivar<3; ivar++)
+	{
+	  int ivarEvCat= eventCategoryVars[ivar];
+	  passMediumRedMetVars.push_back(redMetVar[ivar]>rmetComp.getCut(ivarEvCat,ReducedMETComputer::MEDIUMWP));
+	  passTightRedMetVars.push_back(redMetVar[ivar]>rmetComp.getCut(ivarEvCat,ReducedMETComputer::TIGHTWP));
+	}
+      
       bool passBaseCuts(passZmass && pass3dLeptonVeto && passBveto && passMediumRedMet);
       std::vector<int> zmassRegionBins;
       if(passZmass)                                                                 zmassRegionBins.push_back(0);
@@ -736,9 +745,9 @@ int main(int argc, char* argv[])
       std::vector<TString> subCatsToFill;
       subCatsToFill.push_back("");
       subCatsToFill.push_back(subcat);
-      if(ev.nvtx<4)        subCatsToFill.push_back("1to3vtx");
-      else if(ev.nvtx>=10) subCatsToFill.push_back("geq10vtx");
-      else                 subCatsToFill.push_back("4to9vtx");
+//       if(ev.nvtx<4)        subCatsToFill.push_back("1to3vtx");
+//       else if(ev.nvtx>=10) subCatsToFill.push_back("geq10vtx");
+//       else                 subCatsToFill.push_back("4to9vtx");
       for(size_t ic=0; ic<sizeof(catsToFill)/sizeof(TString); ic++)
 	{
 	  for(size_t isc=0; isc<subCatsToFill.size(); isc++)
@@ -832,42 +841,81 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("eventflow",ctf,4,weight);
       
 	      //met control
-	      Float_t metTypeValues[]={zvv.pt(), projMet, minMet, minProjMet, redMet, redMet_d0, centralMet, cleanMet, unclusteredMet, clusteredMet,clusteredOtherVtxMet,cmsRedMet};
-	      for(size_t imt=0; imt<sizeof(metTypes)/sizeof(TString);imt++)
+	      metTypeValues["met"]                 = met;
+	      metTypeValues["projMet"]             = projMet;
+	      metTypeValues["minProjMet"]          = min(projMet,projAssocChargedMet);
+	      metTypeValues["redMet"]              = redMet;
+	      metTypeValues["redMetD0"]            = redMet_d0;
+	      metTypeValues["assocChargedMet"]     = assocChargedMet;
+	      metTypeValues["minAssocChargedMet"]  = min(met,assocChargedMet);
+	      metTypeValues["centralMet"]          = centralMet;
+	      metTypeValues["minCentralMet"]       = min(met,centralMet);
+	      metTypeValues["assocOtherVertexMet"] = assocOtherVertexMet;
+	      metTypeValues["cleanMet"]            = cleanMet;
+	      metTypeValues["minCleanMet"]         = min(met,cleanMet);
+	      metTypeValues["assocMet"]            = assocMet;
+	      metTypeValues["minAssocMet"]         = min(met,assocMet);
+	      metTypeValues["superMinMet"]         = min(
+							 metTypeValues["minAssocMet"],
+							 min(
+							     metTypeValues["minCleanMet"],
+							     metTypeValues["centralMet"])
+							 );
+	      for(std::map<TString,double>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++) 	  
 		{
-		  controlHistos.fillHisto(metTypes[imt], ctf,metTypeValues[imt],weight);
-		  controlHistos.fill2DHisto(metTypes[imt]+"vspu", ctf,ev.ngenITpu,metTypeValues[imt],weight);
+		  controlHistos.fillHisto(it->first, ctf,it->second,weight);
+		  controlHistos.fill2DHisto(it->first+"vspu", ctf,ev.ngenITpu,it->second,weight);
 		}
-	      controlHistos.fill2DHisto("metvstkmet", ctf,zvv.pt(),trkMetP4.pt(),weight);
-	      controlHistos.fill2DHisto("metvsclusteredMet", ctf,zvv.pt(),clusteredMet,weight);
-	      controlHistos.fill2DHisto("metvscentralMet", ctf,zvv.pt(),centralMet,weight);
+	      controlHistos.fill2DHisto("metvstkmet", ctf,met,assocChargedMet,weight);
+	      controlHistos.fill2DHisto("metvsclusteredMet", ctf,met,assocMet,weight);
+	      controlHistos.fill2DHisto("metvscentralMet", ctf,met,centralMet,weight);
 	      controlHistos.fillHisto("redMetL", ctf,redMetL,weight);
 	      controlHistos.fillHisto("redMetT", ctf,redMetT,weight);
 	      controlHistos.fillHisto("redMetcomps", ctf,redMetL,redMetT,weight);	
-	      controlHistos.fillHisto("cmsRedMetL", ctf,cmsRedMetL,weight);
-	      controlHistos.fillHisto("cmsRedMetT", ctf,cmsRedMetT,weight);
-	      controlHistos.fillHisto("cmsRedMetcomps", ctf,cmsRedMetL,cmsRedMetT,weight);	
-	      
-	      controlHistos.fillHisto("sumEt",                ctf,ev.sumEt,weight);
-	      controlHistos.fillHisto("primVertexSumEt",      ctf,ev.primVertexSumEt,weight);
-	      controlHistos.fillHisto("otherVertexSumEt",     ctf,ev.otherVertexSumEt,weight);
-	      if(ev.sumEt>0)
+
+	      //fixme: redo properly the ntuples and remove this stupid mapping
+	      float leptonSumEt      = phys.leptons[0].pt()+phys.leptons[1].pt();
+	      float sumEt            = ev.sumEt-leptonSumEt;
+	      if(sumEt<0) cout << sumEt << endl;
+	      float sumEtcentral     = ev.chsumEtcentral-leptonSumEt;
+	      float chSumEtcentral   = ev.neutsumEt-leptonSumEt;
+	      float neutSumEtcentral = ev.neutsumEtcentral;
+	      float chSumEt          = ev.sumEtcentral-leptonSumEt;
+	      float neutsumEt        = ev.chsumEt;
+	      if(sumEt>0)
 		{
-		  //fixme: redo properly the ntuples and remove this stupid mapping
-		  float sumEtcentral=ev.chsumEtcentral;
-		  float chSumEtcentral=ev.neutsumEt;
-		  float neutSumEtcentral=ev.neutsumEtcentral;
-		  float chSumEt=ev.sumEtcentral;
-		  float neutsumEt=ev.chsumEt;
-		  controlHistos.fillHisto("chSumEtFrac",          ctf,chSumEt/ev.sumEt,weight);
-		  controlHistos.fillHisto("neutSumEtFrac",        ctf,neutsumEt/ev.sumEt,weight);
-		  controlHistos.fillHisto("centralSumEtFrac",     ctf,sumEtcentral/ev.sumEt,weight);
-		  controlHistos.fillHisto("centralChSumEtFrac",   ctf,chSumEtcentral/ev.sumEt,weight);
-		  controlHistos.fillHisto("centralNeutSumEtFrac", ctf,neutSumEtcentral/ev.sumEt,weight);
-		  controlHistos.fillHisto("chPrimVertexSumEtFrac",          ctf,ev.primVertexChSumEt/ev.sumEt,weight);
-		  controlHistos.fillHisto("neutPrimVertexSumEtFrac",        ctf,ev.primVertexNeutSumEt/ev.sumEt,weight);
-		  controlHistos.fillHisto("chOtherVertexSumEtFrac",          ctf,ev.otherVertexChSumEt/ev.sumEt,weight);
-		  controlHistos.fillHisto("neutOtherVertexSumEtFrac",        ctf,ev.otherVertexNeutSumEt/ev.sumEt,weight);
+		  controlHistos.fillHisto("sumEt",                ctf,sumEt,weight);
+		  controlHistos.fillHisto("chSumEt",              ctf,chSumEt,weight);
+		  controlHistos.fillHisto("neutSumEt",            ctf,neutsumEt,weight);
+		  controlHistos.fillHisto("primVertexSumEt",      ctf,ev.primVertexSumEt,weight);
+		  controlHistos.fillHisto("otherVertexSumEt",     ctf,ev.otherVertexSumEt,weight);
+		  if(isMC)
+		    {
+		      double sigma        = sqrt(double(ev.ngenITpu));
+		      double minCentralPu = -sigma;
+		      double maxCentralPu = sigma;
+		      double maxHighPu    = 2*sigma;
+		      double puDiff       = double(ev.ngenOOTpu-ev.ngenITpu);
+		      TString ootCond("");
+		      if(puDiff>=maxHighPu)         ootCond="VeryHighOOTpu";
+		      else if(puDiff>=maxCentralPu) ootCond="HighOOTpu";
+		      else if(puDiff>=minCentralPu) ootCond="MediumOOTpu";
+		      else                          ootCond="LowOOTpu";
+		      
+
+		      controlHistos.fillHisto("sumEt"+ootCond,ctf,sumEt,weight);
+		      controlHistos.fillHisto("neutSumEtFrac"+ootCond,ctf,neutsumEt/sumEt,weight);
+		      controlHistos.fill2DHisto("itpuvsootpu",ctf,ev.ngenITpu,ev.ngenOOTpu,weight);
+		    }
+		  controlHistos.fillHisto("chSumEtFrac",          ctf,chSumEt/sumEt,weight);
+		  controlHistos.fillHisto("neutSumEtFrac",        ctf,neutsumEt/sumEt,weight);
+		  controlHistos.fillHisto("centralSumEtFrac",     ctf,sumEtcentral/sumEt,weight);
+		  controlHistos.fillHisto("centralChSumEtFrac",   ctf,chSumEtcentral/sumEt,weight);
+		  controlHistos.fillHisto("centralNeutSumEtFrac", ctf,neutSumEtcentral/sumEt,weight);
+		  controlHistos.fillHisto("chPrimVertexSumEtFrac",          ctf,ev.primVertexChSumEt/sumEt,weight);
+		  controlHistos.fillHisto("neutPrimVertexSumEtFrac",        ctf,ev.primVertexNeutSumEt/sumEt,weight);
+		  controlHistos.fillHisto("chOtherVertexSumEtFrac",          ctf,ev.otherVertexChSumEt/sumEt,weight);
+		  controlHistos.fillHisto("neutOtherVertexSumEtFrac",        ctf,ev.otherVertexNeutSumEt/sumEt,weight);
 		 
 		}
 
@@ -876,19 +924,21 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("mindrjz",ctf,mindrjz,weight);
 	      controlHistos.fillHisto("minmjz",ctf,minmjz,weight);
 	      
-	      if(!passMediumRedMet) continue;
-	      controlHistos.fillHisto("eventflow",ctf,5,weight);
-	      if(passTightRedMet)    controlHistos.fillHisto("eventflow",ctf,6,weight);
 	      
 	      //sample is selected
-	      controlHistos.fillHisto("eventCategory",ctf,eventCategory,weight);
+	      if(passMediumRedMet) 
+		{
+		  controlHistos.fillHisto("eventflow",ctf,5,weight);
+		  controlHistos.fillHisto("eventCategory",ctf,eventCategory,weight);
+		  controlHistos.fillHisto("cutOptMediumdphill",ctf,fabs(dphill));
+		  controlHistos.fill2DHisto("cutOptMediumsummtvsredMetL",ctf,mtsum,redMetL,weight);
 		  
+		  if(passTightRedMet)    controlHistos.fillHisto("eventflow",ctf,6,weight);
+		}
+	      
 	      //
 	      // CUT & COUNT ANALYSIS
 	      //
-	      controlHistos.fillHisto("cutOptMediumdphill",ctf,fabs(dphill));
-	      controlHistos.fill2DHisto("cutOptMediumsummtvsredMetL",ctf,mtsum,redMetL,weight);
-		  
 	      //final selection (cut and count analysis)
 	      bool pass200( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
 	      bool pass300( passTightRedMet  && fabs(dphill)<2.5                      && redMetL>75       && mtsum>200);
@@ -900,11 +950,53 @@ int main(int argc, char* argv[])
 	      if(pass400) controlHistos.fillHisto("finaleventflow",ctf,2,weight);
 	      if(pass500) controlHistos.fillHisto("finaleventflow",ctf,3,weight);
 	      if(pass600) controlHistos.fillHisto("finaleventflow",ctf,4,weight);
+
+	      //systematic variations (computed per jet bin so fill only once) 		  
+	      if(isc==0)
+		{
+		  //jet energy scale related variations
+		  TString jetVarNames[]={"jer","jesup","jesdown"};
+		  for(size_t ivar=0; ivar<3; ivar++)
+		    {
+		      TString isubcat    = eventClassifComp.GetLabel( eventCategoryVars[ivar] );
+		      TString ictf= catsToFill[ic]+isubcat;
+		      bool ipass200( passMediumRedMetVars[ivar] && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetLVar[ivar])>50 && mtsumsVar[ivar]>150);
+		      bool ipass300( passTightRedMetVars[ivar]  && fabs(dphill)<2.5                      && redMetLVar[ivar]>75       && mtsumsVar[ivar]>200);
+		      bool ipass400( passTightRedMetVars[ivar]  && fabs(dphill)<2.0                      && redMetLVar[ivar]>75       && mtsumsVar[ivar]>300);
+		      bool ipass500( passTightRedMetVars[ivar]  && fabs(dphill)<2.0                      && redMetLVar[ivar]>100      && mtsumsVar[ivar]>400);
+		      bool ipass600( passTightRedMetVars[ivar]  && fabs(dphill)<1.5                      && redMetLVar[ivar]>150      && mtsumsVar[ivar]>450);
+		      if(ipass200) controlHistos.fillHisto(jetVarNames[ivar+1]+"finaleventflow",ictf,0,weight);
+		      if(ipass300) controlHistos.fillHisto(jetVarNames[ivar+1]+"finaleventflow",ictf,1,weight);
+		      if(ipass400) controlHistos.fillHisto(jetVarNames[ivar+1]+"finaleventflow",ictf,2,weight);
+		      if(ipass500) controlHistos.fillHisto(jetVarNames[ivar+1]+"finaleventflow",ictf,3,weight);
+		      if(ipass600) controlHistos.fillHisto(jetVarNames[ivar+1]+"finaleventflow",ictf,4,weight);
+		    }
+		 
+		  //re-weighting variations (Higgs, pileup scenario)
+		  TString wgtVarNames[]={"hrenup","hrendown","hfactup","hfactdown","nopu","flatpu"};
+		  Float_t rwgtVars[]={ev.weight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp],
+				      ev.weight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown],
+				      ev.weight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp],
+				      ev.weight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown],
+				      ev.normWeight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor],
+				      1.0*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]};
+		  for(size_t ivar=0; ivar<sizeof(wgtVarNames)/sizeof(TString); ivar++)
+                    {
+		      TString ictf= catsToFill[ic]+subcat;
+		      if(pass200) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflow",ictf,0,rwgtVars[ivar]);
+		      if(pass300) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflow",ictf,1,rwgtVars[ivar]);
+		      if(pass400) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflow",ictf,2,rwgtVars[ivar]);
+		      if(pass500) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflow",ictf,3,rwgtVars[ivar]);
+		      if(pass600) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflow",ictf,4,rwgtVars[ivar]);
+		    }
+		}
+
 		  
 		  
 	      //
 	      // MVA ANALYSIS
 	      //
+	      if(!passMediumRedMet) continue;
 	      //control for discriminators evaluated
 	      controlHistos.fillHisto("dphizleadl",ctf,dphizleadl,weight);
 	      controlHistos.fillHisto("drll",ctf,drll,weight);
@@ -967,7 +1059,7 @@ int main(int argc, char* argv[])
 		     << "%$\\Delta\\phi(l,l)=" << dphill << "$% " << "<br/>" << std::endl;
 	      
 	      *outf << "<i>Missing transverse energy</i>" << "<br/>" << std::endl;
-	      *outf << "%$E_{T}^{miss}=" << zvv.pt() << "$% "
+	      *outf << "%$E_{T}^{miss}=" << met << "$% "
 		    << "%$\\phi=" << zvv.phi() << "$% " << "<br/>" << std::endl;
 	      *outf << "%$red-E_{T}^{miss}=" << redMet << "$% "
 		    << "%$l="<< redMetL << "$% "
@@ -993,7 +1085,25 @@ int main(int argc, char* argv[])
   //save control plots to file
   outUrl += "/";
   outUrl += gSystem->BaseName(url);
-  
+
+
+  //report systematic variations as absolute differences with respect to standard
+  for(size_t icat=0;icat<sizeof(cats)/sizeof(TString); icat++)
+    {
+      for(size_t isubcat=0;isubcat<sizeof(subCats)/sizeof(TString); isubcat++)
+	{
+	  TString ctf=cats[icat]+subCats[isubcat];
+	  TH1 *hcentral = controlHistos.getHisto("finaleventflow",ctf);
+	  for(size_t ivar=1; ivar<sizeof(varsToInclude)/sizeof(TString); ivar++)
+	    {
+	      TH1 *hvar     = controlHistos.getHisto( varsToInclude[ivar]+"finaleventflow",ctf );
+	      hvar->Add(hcentral,-1);
+	    }
+	}
+    }
+
+
+  //save all to the file
   TFile *ofile=TFile::Open(outUrl, "recreate");
   TDirectory *baseOutDir=ofile->mkdir("localAnalysis");
   SelectionMonitor::StepMonitor_t &mons=controlHistos.getAllMonitors();

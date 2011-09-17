@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-mass=600
+mass=200
 
 # simple study
 simpleDiscriminator = cms.PSet(  evCategories = cms.vint32(0,1,2,3),
