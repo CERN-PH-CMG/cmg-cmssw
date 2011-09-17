@@ -4,8 +4,8 @@
 /** \class EventCategory
  *  No description available.
  *
- *  $Date: 2011/08/05 08:54:56 $
- *  $Revision: 1.1 $
+ *  $Date: 2011/08/05 09:53:44 $
+ *  $Revision: 1.2 $
  *  \author L. Quertenmont P. Silva
  */
 
@@ -28,7 +28,7 @@ public:
   /// Destructor
   virtual ~EventCategory();
 
-  int Get(const PhysicsEvent_t& phys);
+  int Get(const PhysicsEvent_t& phys,LorentzVectorCollection *variedJetsP4=0);
   TString GetLabel(int CategoryType);
   TString GetLabel(const PhysicsEvent_t& phys);
 

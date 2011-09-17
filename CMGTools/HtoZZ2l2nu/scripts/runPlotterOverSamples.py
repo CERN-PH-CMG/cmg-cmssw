@@ -71,17 +71,7 @@ def getControlPlots(descriptor,isData,inputDir='data',getFromDir='') :
     baseDirName='evAnalyzer/'
     if(len(getFromDir)>0): baseDirName=getFromDir
     dir = file.GetDirectory(baseDirName)
-    if( dir == 0 ) :
-        cresults={}
-        plots = file.GetListOfKeys();
-        for p in plots:
-            pname=p.GetName()
-            h = file.Get(pname)
-            h.SetDirectory(0)
-            h.Sumw2()
-            cresults[h.GetName()]=h
-        results.update(cresults)
-    else :
+    try:
         #get plots from file
         categs = dir.GetListOfKeys();
         cnorm=1
@@ -115,11 +105,22 @@ def getControlPlots(descriptor,isData,inputDir='data',getFromDir='') :
                 h.Sumw2()
                 centralresults[h.GetName()]=h
 
-        #rescale central results (assume latest normalization    
+        #rescale central results (assume latest normalization found)    
         if( not isData and cnorm!=0 and not noNorm) :
             for p in centralresults.items():
                 p[1].Scale(1./float(cnorm))
         results.update(centralresults)
+
+    except :
+        cresults={}
+        plots = file.GetListOfKeys();
+        for p in plots:
+            pname=p.GetName()
+            h = file.Get(pname)
+            h.SetDirectory(0)
+            h.Sumw2()
+            cresults[h.GetName()]=h
+        results.update(cresults)
         
     file.Close()
 
