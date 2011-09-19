@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.38 $
+\RCS$Revision: 1.39 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.38 2011/09/14 15:58:17 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.39 2011/09/16 12:24:18 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -1538,11 +1538,123 @@ HCAL isolation                        & \multicolumn{2}{c}{$<$2.2 + 0.001$E_T$} 
 %%
 %%
 %%
+\clearpage
 \subsection{Systematic uncertainties}
 \label{subsec:systunc}
 
-\FIXME: This section will be filled in the next version of the note. 
-Include discussion on the main systematics affecting the analysis.
+In the analysis just described different sources of systematic uncertainties might affect the number of observed events and/or the shapes of the discriminators.
+The main sources of systematic uncertainties are summarized and estimated in the following paragraphs.
+
+{\bf Instrumental uncertainties}
+
+%%%%
+{\it Luminosity}:
+
+The uncertainty on the integrated luminosity is estimated to be 4.5\%. This affects the predicted event yields for our signal
+and also the predicted event yields for all backgrounds which are not estimated directly from data.
+It's a fully correlated systematic among all processes fully predicted from MC.
+
+%%%%
+{\it Jet energy scale and resolution}:
+
+The uncertainty in the calibration of the jet energy scale affects directly the categorization of the events in different jet
+multiplicity bins and as potential VBF candidates. Notice that this effect contributes to a cross-bin migration but 
+it also contributes an overall increase/decrease of the number of selected events as due to miscalibration of the energy flow
+the \MET measurement (and consequently the \RMET variable) are affected.
+The estimate of the jet energy scale uncertainty is performed varying independently the jet energy scale up and down by 1-$\sigma$
+as measured by the Jet/MET group~\cite{CMS-TWIKI-GEN-jec}. The variation corresponds to a simple re-scaling of the jet 4-momentum as:
+$P \rightarrow P\cdot (1\pm \sigma_{JES}/p_T)$ where $\sigma_{JES}$ is the absolute uncertainty on the jet energy scale
+which is parametrized as function of the $p_T$ and $\eta$ of the jet. 
+This variation affects the energy imbalance of the detector and it is therefore propagated to re-compute the \MET measurement as:
+
+\begin{equation}
+\vec{E}_{T}^{miss'} = \vec{E}_{T}^{miss} - \displaystyle{\sum_{jets}} ( \pm \frac{\sigma}{p_T}) \cdot \vec{p}_{T} 
+\label{eq:jesmet}
+\end{equation}
+
+where the $\pm$ choice correponds to an up/down variation of the jet energy scale uncertainty.
+The uncertainties are considered separately, also for the purpose of the statistical analysis in Sec.~\ref{sec:excllimits}
+as the different variations lead to different jet bin migrations.
+
+Likewise the resolution of the jet reconstruction, i.e. the distribution of the detector response
+to an imcoming jet clustered from stable particles after parton showering, affects the analysis
+in a similar way as the one described for the jet energy scale uncertainty.
+The evaluation of this effect is important has punch-through energetic particles
+or the presence of dead channels in the detector introduce asymmetric effects in the detector response.
+The evaluation of this effect is simplified by the fact that we do not use the generator level jets
+but the reconstructed ones and smear their four momenta according to the resolutions expected from simulation~\cite{CMS-AN-2010-121}.
+For each event, the $p_T$,$\eta$ and $\phi$ of the reconstructed jets are smeared and the effect is propagated to the
+\MET measurement using Eq.~\ref{eq:jesmet}.
+In the case of the jet energy resolution effect we take the absolute value observed as the estimate for the
+the two sided (positive/negative) uncertainty.
+
+The variation of jet energy resolution and the two independent variations of the jet energy scale
+are a fully correlated systematic among all processes.
+
+%%%%
+{\it Pileup}:
+
+Pileup can induce a systematic uncertainty which affects mainly the \MET measurement but also the isolation and energy scale of the objects.
+For the moment we take the most conservative estimate of the pileup uncertainty by comparing the event yields without weighting the MC.  
+This yields a uniform pileup scenario up to 10 in-time interactions in simulation and has the benefit of testing qualitatively the robustness of the analysis.
+This is considered to be a fully correlated systematic among all processes.
+
+
+%%%%
+{\bf Theoretical uncertainties}
+
+%%%%
+{\it Cross sections}:
+
+For all background process which are not estimated from data the uncertainty on the cross section has to be taken into account.
+We use the values quoted in~\cite{CMS-TWIKI-GEN-xsec} and in ~\cite{CMS-TWIKI-GEN-xsecst}.
+The cross section for the signal is also affected by the theoretical uncertainty.
+The theory error breakdown for the cross sections usually takes into account the 
+scale uncertainties (factorization and renormalization are individually varied by a factor 2 up and down)
+and PDF uncertainties (from the uncorrelated combination of the independent fluctuations of the NLO PDF parameters).
+The uncertainty for the signal cross section is considered from the combination of the normalization/factorization scale uncertainties and PDF+$\alpha_S$
+as reported in~\cite{LHCHiggsCrossSectionWorkingGroup:2011ti}.
+Table~\ref{tab:xsecuncs} summarizes the final uncertainties considered for the production cross sections of the different processes
+
+\begin{table}[htp]
+\begin{center}
+\caption{Theoretical uncertainties on the production cross-sections of the different signal and background processes.
+The contributions included for each uncertainty are described in the text.
+The breakup of the uncertainties for each sub-channel is shown explicitly for signal (gluon-gluon/VBF) and for single top (t-,s-,tW-channel).}          
+\label{tab:xsecuncs}
+\begin{tabular}{lcl} \hline\hline
+Process                                           & Relative uncertainty (\%) \\\hline
+H(200)                                            & 7.7 {\small (7.4 / 2.2)}\\
+H(300)                                            & 7.7 {\small (7.1 / 2.8)}\\
+H(400)                                            & 8.0 {\small (7.2 / 2.8)}\\
+H(500)                                            & 8.6 {\small (7.6 / 2.8)}\\
+H(600)                                            & 9.3 {\small (8.1 / 2.8)}\\\hline
+Single Top                                        & 3.3 {\small (3.9 / 4.4 / 7.6)} \\
+W                                                 & 4.9 \\
+$Z/\gamma^{*}\rightarrow \ell$ (M$>$50 GeV/c$^2$) & 4.3 \\
+\ttbar                                            & 6.1 \\
+WW                                                & 3.5 \\
+WZ                                                & 3.8 \\
+ZZ                                                & 2.5 \\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+The uncertainty on the cross section is assigned independently for each process predicted from MC.
+
+%%%%%
+{\it Higgs $p_T$ spectrum}
+
+The generator used to describe the gluon-gluon production of the Higgs boson (\Powheg) is a NLO generator.
+The spectrum and cross section predicted by the event generator can therefore be corrected to a most NNLO+NNLL calculation
+using the HqT program. The reweighing procedure of the Higgs $p_T$ spectrum is affected by 
+similar uncertainties as the ones described for the theoretical cross section and can therefore be evaluated in similar way as described in the previous paragraphs.
+To propagate these effects in our analysis we replace the nominal reweighing of the Higgs $p_T$ in the simulation
+by weights corresponding to the up/down variations of the factorization and renormalization scales~\cite{CMS-TWIKI-GEN-higgspt}. 
+The variation of the final event yields in signal is therefore assigned as a systematic uncertainty.
+The uncertainty on Higgs $p_T$ spectrum affects only the signal predictions.
+As there are cross-contaminations between the different jet and VBF bins this uncertainty
+has to be considered for all the event categories.
 
 %
 %
@@ -1583,15 +1695,19 @@ Data                                  & 5.1           & 4.7           & 8.24    
 \section{Conclusions}
 \label{sec:conclusions}
 
+\FIXME: this document is still work in progress. 
+The conclusions will be added in the second version of the document.
+
 %% **DO NOT REMOVE BIBLIOGRAPHY**
 \bibliography{auto_generated}   % will be created by the tdr script.
 
 \clearpage
+
 %
 % APPENDIX
 %
 \appendix
-\section{Appendix: Lepton isolation}
+\section{Lepton isolation}
 \label{sec:app:leptonisolation}
 
 In this section we focus on two specific aspects affecting the determination of lepton isolation efficiency:
@@ -1650,7 +1766,7 @@ The standard $Z$ production is compared to the production in the Higgs decay cha
 
 
 
-\section{Appendix: Cut based optimization}
+\section{Cut based optimization}
 \label{sec:app:cutbasedoptimization}
 
 In this section we summarize the procedure adopted to optimized the selection of the cut based analysis for the search for Higgs boson.
@@ -1687,7 +1803,7 @@ All backgrounds, as predicted by simulation, are considered.}
 \end{center}
 \end{figure}
 
-\section{Appendix: Lepton Efficiency}
+\section{Lepton Efficiency}
 \label{sec:app:leptonefficiency}
   
 \subsection{Muon Identification Efficiency}
@@ -1755,8 +1871,10 @@ requirements is shown in Fig.~\ref{fig:EffDoubleMu13Mu8}.
 % May10 sample. For this reason the eff. for DoubleMu7 is still to be
 % computed.
 
-
-\section{Appendix: Control distributions for the discriminant-based analysis}
+%
+%
+%
+\section{Control distributions for the discriminant-based analysis}
 \label{sec:app:mvacontrol}
 
 \begin{figure}[htp]
@@ -1772,7 +1890,17 @@ of 1.1~1/fb.\texttt{FIXME: out-of-date, just a placeholder}}
 \end{center}
 \end{figure}
 
+%
+%
+%
+\section{Change log}
+\label{sec:app:changelog}
 
+{\bf Version 1}
+\begin{itemize}
+\item Describe event selection and different approaches followed for the search for the Higgs boson.
+\item Include results from the verification of the reconstruction of \MET.
+\end{itemize}
 
 \end{document}
 
