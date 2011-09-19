@@ -957,6 +957,14 @@ int main(int argc, char* argv[])
 	      bool pass400( passTightRedMet  && fabs(dphill)<2.0                      && redMetL>75       && mtsum>300);
 	      bool pass500( passTightRedMet  && fabs(dphill)<2.0                      && redMetL>100      && mtsum>400);
 	      bool pass600( passTightRedMet  && fabs(dphill)<1.5                      && redMetL>150 && mtsum>450);
+	      if(subcat=="vbf")
+		{
+		  pass200 = passMediumRedMet;
+		  pass300 = passMediumRedMet;
+		  pass400 = passMediumRedMet;
+		  pass500 = passMediumRedMet;
+		  pass600 = passMediumRedMet;
+		}
 	      if(pass200) controlHistos.fillHisto("finaleventflow",ctf,0,weight);
 	      if(pass300) controlHistos.fillHisto("finaleventflow",ctf,1,weight);
 	      if(pass400) controlHistos.fillHisto("finaleventflow",ctf,2,weight);
@@ -977,6 +985,14 @@ int main(int argc, char* argv[])
 		      bool ipass400( passTightRedMetVars[ivar]  && fabs(dphill)<2.0                      && redMetLVar[ivar]>75       && mtsumsVar[ivar]>300);
 		      bool ipass500( passTightRedMetVars[ivar]  && fabs(dphill)<2.0                      && redMetLVar[ivar]>100      && mtsumsVar[ivar]>400);
 		      bool ipass600( passTightRedMetVars[ivar]  && fabs(dphill)<1.5                      && redMetLVar[ivar]>150      && mtsumsVar[ivar]>450);
+		      if(subcat=="vbf")
+			{
+			  ipass200 = passMediumRedMetVars[ivar];
+			  ipass300 = passMediumRedMetVars[ivar];
+			  ipass400 = passMediumRedMetVars[ivar];
+			  ipass500 = passMediumRedMetVars[ivar];
+			  ipass600 = passMediumRedMetVars[ivar];
+			}
 		      if(ipass200) controlHistos.fillHisto(jetVarNames[ivar+1]+"finaleventflow",ictf,0,weight);
 		      if(ipass300) controlHistos.fillHisto(jetVarNames[ivar+1]+"finaleventflow",ictf,1,weight);
 		      if(ipass400) controlHistos.fillHisto(jetVarNames[ivar+1]+"finaleventflow",ictf,2,weight);
