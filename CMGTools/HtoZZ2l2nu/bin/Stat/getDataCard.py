@@ -103,7 +103,7 @@ for imp in xrange(0,len(masspts)):
     rateRow         = 'rate    '
     lumiRow         = 'lumi    lnN '
     thxsecRow       = 'thxsec  lnN '
-    mcStatsRow      = {'higgs':'stat lnN'}
+    mcStatsRow      = {'higgs':'stat lnN '}
     for ibckgs in bckgs.items() :  mcStatsRow[ibckgs[0]]= 'stat lnN '
     systsRows       = {}
     for isyst in systs.items():
