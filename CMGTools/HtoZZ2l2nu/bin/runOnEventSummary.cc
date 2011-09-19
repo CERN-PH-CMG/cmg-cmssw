@@ -116,6 +116,7 @@ int main(int argc, char* argv[])
   JetCorrectionUncertainty jecUnc(uncFile.Data());
   jet::UncertaintyComputer jcomp(&stdPtResol,&stdEtaResol,&stdPhiResol,&jecUnc);
   bool runSystematics                        = runProcess.getParameter<bool>("runSystematics");
+  if(runSystematics) { cout << "Systematics will be computed for this analysis" << endl; }
 
   //TMVA configuration
   TMVA::Reader *tmvaReader = 0;
