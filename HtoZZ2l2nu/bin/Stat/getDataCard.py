@@ -36,13 +36,14 @@ countHisto='finaleventflow'
 masspts=['200','300','400','500','600']
 evCats=['mumu','ee']
 evSubCats=['eq0jets','eq1jets','geq2jets']
-systs={"jesup":["jesup"],
+systs={"jer":["jer"],
+       "jesup":["jesup"],
        "jesdown":["jesdown"],
        "factscale":["hfactup","hfactdown"],
        "renscale":["hrenup","hrendown"],
        "pileup":["flatpu"]}
 
-sigXsecUnc=[1.108958801, 1.111920863, 1.118228673, 1.126111468, 1.135045566]
+sigXsecUnc=[1.077,1.077,1.080,1.086,1.093]
 
 bckgs={
     "zz":"ZZ",
@@ -140,7 +141,7 @@ for imp in xrange(0,len(masspts)):
                      if(centralSignal>0)   : signalYieldVar      += h.GetBinContent(imp+1)/centralSignal
                      if(signalYieldVar==0) : signalYieldVar=1.0
                      systvars.append(fabs(signalYieldVar))
-                systsRows[ isyst[0] ] += '{0:.4f} '.format( max(systvars) )
+                systsRows[ isyst[0] ] += '{0:.4f} '.format( min(max(systvars),2.0) )
 
             #background yields and systematics
             catBckgSummary={}
@@ -170,7 +171,7 @@ for imp in xrange(0,len(masspts)):
                         if(centralBckg>0) :   bckgYieldVar   += h.GetBinContent(imp+1)/centralBckg
                         if(bckgYieldVar==0) : bckgYieldVar   = 1.0
                         systvars.append(fabs(bckgYieldVar))
-                    systsRows[ isyst[0] ] += '{0:.4f} '.format( max(systvars) )
+                    systsRows[ isyst[0] ] += '{0:.4f} '.format( min(max(systvars),2.0) )
         
     fdatacard.write( binRow  + '\n')
     fdatacard.write( processRow  + '\n')
