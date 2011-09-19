@@ -732,11 +732,11 @@ int main(int argc, char* argv[])
 	  metVars.push_back( jcomp.getVariedMet(jet::UncertaintyComputer::JER) );
 	  jetVars.push_back( jcomp.getVariedJets(jet::UncertaintyComputer::JER) );
 
-	  metVars.push_back( jcomp.getVariedMet(jet::UncertaintyComputer::JES_DOWN) );
-	  jetVars.push_back( jcomp.getVariedJets(jet::UncertaintyComputer::JES_DOWN) );
-
 	  metVars.push_back( jcomp.getVariedMet(jet::UncertaintyComputer::JES_UP) );
 	  jetVars.push_back( jcomp.getVariedJets(jet::UncertaintyComputer::JES_UP) );
+
+	  metVars.push_back( jcomp.getVariedMet(jet::UncertaintyComputer::JES_DOWN) );
+	  jetVars.push_back( jcomp.getVariedJets(jet::UncertaintyComputer::JES_DOWN) );
 
 	  for(size_t ivar=0; ivar<3; ivar++)
 	    {
@@ -993,11 +993,11 @@ int main(int argc, char* argv[])
 			  ipass500 = passMediumRedMetVars[ivar];
 			  ipass600 = passMediumRedMetVars[ivar];
 			}
-		      if(ipass200) controlHistos.fillHisto(jetVarNames[ivar+1]+"finaleventflow",ictf,0,weight);
-		      if(ipass300) controlHistos.fillHisto(jetVarNames[ivar+1]+"finaleventflow",ictf,1,weight);
-		      if(ipass400) controlHistos.fillHisto(jetVarNames[ivar+1]+"finaleventflow",ictf,2,weight);
-		      if(ipass500) controlHistos.fillHisto(jetVarNames[ivar+1]+"finaleventflow",ictf,3,weight);
-		      if(ipass600) controlHistos.fillHisto(jetVarNames[ivar+1]+"finaleventflow",ictf,4,weight);
+		      if(ipass200) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,0,weight);
+		      if(ipass300) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,1,weight);
+		      if(ipass400) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,2,weight);
+		      if(ipass500) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,3,weight);
+		      if(ipass600) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,4,weight);
 		    }
 		 
 		  //re-weighting variations (Higgs, pileup scenario)
