@@ -91,6 +91,7 @@ for proc in procList :
             sedcmd = 'sed \"s%@input%' + eventsFile +'%;s%@outdir%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
             if(params.find('@useMVA')<0) : params = '@useMVA=False ' + params
             if(params.find('@saveSummaryTree')<0) : params = '@saveSummaryTree=False ' + params
+            if(params.find('@runSystematics')<0) : params = '@runSystematics=False ' + params
             if(len(params)>0) :
                 extracfgs = params.split(' ')
                 for icfg in extracfgs :
