@@ -69,34 +69,15 @@ class IntegrityCheck(object):
     def query(self):
         """Query DAS to find out how many events are in the dataset"""
 
-        host    = self.options.host
-        debug   = self.options.verbose
-        idx     = self.options.idx
-        limit   = self.options.limit
-        
-        def check(ds):
-            query = 'dataset=%s' % ds
-            data = eval(Das.get_data(host, query, idx, limit, debug))
-            if data['status'] != 'ok':
-                raise Exception("Das query failed: Output is '%s'" % data)
-            return (data['data'],data)
+        from ProductionTasks import BaseDataset
+        base = BaseDataset(self.dataset, self.options.user, self.options)
 
         data = None
-        if self.options.name is None:
-            #guess the dataset name in DBS
-            tokens = self.dataset.split(os.sep)
-            for i in reversed(xrange(len(tokens))):
-                ds = os.sep.join(tokens[1:i])
-                if not ds: continue
-                ds = '/%s' % ds
-                exists, data = check(ds)
-                self.options.name = ds
-                if exists: break
-        else:
-            exists, data = check(self.options.name)
-            if not exists:
-                raise Exception("Dataset '%s' not found in Das. Please check." % self.options.name)
-        
+        output = base.run({})
+        if output.has_key('das'):
+            self.options.name = output['name']
+            data = output['das']
+            
         if data is None:
             raise Exception("Dataset '%s' not found in Das. Please check." % self.dataset)
         self.eventsTotal = 0
