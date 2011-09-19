@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 
@@ -114,6 +115,7 @@ int main(int argc, char* argv[])
   TString uncFile =  runProcess.getParameter<std::string>("jesUncFileName"); gSystem->ExpandPathName(uncFile);
   JetCorrectionUncertainty jecUnc(uncFile.Data());
   jet::UncertaintyComputer jcomp(&stdPtResol,&stdEtaResol,&stdPhiResol,&jecUnc);
+  bool runSystematics                        = runProcess.getParameter<bool>("runSystematics");
 
   //TMVA configuration
   TMVA::Reader *tmvaReader = 0;
@@ -332,8 +334,20 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH2F ("cutOptMediumsummtvsredMetL", ";#Sigma M_{T};#red-E_{T}^{miss,#parallel};",50,0,2000,25, -251.,249) );
   
   //cut and count
-  TString varsToInclude[]={"","jer","jesup","jesdown","hfactup","hfactdown","hrenup","hrendown","nopu","flatpu"};
-  for(size_t ivar=0; ivar<sizeof(varsToInclude)/sizeof(TString); ivar++)
+  std::vector<TString> varsToInclude;
+  varsToInclude.push_back("");
+  if(runSystematics)
+    {
+      varsToInclude.push_back("jer");
+      varsToInclude.push_back("jesup");
+      varsToInclude.push_back("jesdown");
+      varsToInclude.push_back("hfactup");
+      varsToInclude.push_back("hfactdown");
+      varsToInclude.push_back("hrenup");
+      varsToInclude.push_back("hrendown");
+      varsToInclude.push_back("flatpu");
+    }
+  for(size_t ivar=0; ivar<varsToInclude.size(); ivar++)
     {
       h = new TH1F (varsToInclude[ivar]+"finaleventflow",";Category;Event count;",5,0,5);
       h->GetXaxis()->SetBinLabel(1,"m=200");
@@ -343,6 +357,7 @@ int main(int argc, char* argv[])
       h->GetXaxis()->SetBinLabel(5,"m=600");
       controlHistos.addHistogram( h );
     }
+   
   
   //VBF
   h = new TH1F ("VBFNEventsInc", ";Selection cut;Events", 15,0,15);
@@ -520,24 +535,6 @@ int main(int argc, char* argv[])
 	    }
 	}
 
-      //compute systematic variations for JET/MET
-      jcomp.compute(jetsP4,phys.met[0]);
-      
-      LorentzVectorCollection metVars;
-      metVars.push_back( jcomp.getVariedMet(jet::UncertaintyComputer::JER) );
-      metVars.push_back( jcomp.getVariedMet(jet::UncertaintyComputer::JES_DOWN) );
-      metVars.push_back( jcomp.getVariedMet(jet::UncertaintyComputer::JES_UP) );
-
-      std::vector<LorentzVectorCollection> jetVars;
-      jetVars.push_back( jcomp.getVariedJets(jet::UncertaintyComputer::JER) );
-      jetVars.push_back( jcomp.getVariedJets(jet::UncertaintyComputer::JES_DOWN) );
-      jetVars.push_back( jcomp.getVariedJets(jet::UncertaintyComputer::JES_UP) );
-
-      std::vector<int>eventCategoryVars;
-      for(size_t ivar=0; ivar<3; ivar++)
-	eventCategoryVars.push_back( eventClassifComp.Get(phys, &(jetVars[ivar])) );
-
-
       //z+met kinematics
       LorentzVector zll  = phys.leptons[0]+phys.leptons[1];
       LorentzVector zvv  = metP4;
@@ -585,18 +582,7 @@ int main(int argc, char* argv[])
       Float_t redMet         = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
       Float_t redMetL        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
       Float_t redMetT        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
-      
-      //redmet after variation
-      std::vector<Float_t> redMetVar, redMetLVar, mtsumsVar;
-      for(size_t ivar=0; ivar<3; ivar++)
-	{
-	  rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetVars[ivar], metVars[ivar]);
-	  redMetVar.push_back(rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED));
-	  redMetLVar.push_back(rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second);
-	  Float_t imtsum     = mtComp.compute(phys.leptons[0],metVars[ivar],false) + mtComp.compute(phys.leptons[1],metVars[ivar],false);
-	  mtsumsVar.push_back(imtsum);
-	}
-      
+    
       //projected met
       Float_t projMet        = pmetComp.compute(phys.leptons[0], phys.leptons[1], zvv );
       Float_t projAssocChargedMet     = pmetComp.compute(phys.leptons[0],phys.leptons[1], trkMetP4);
@@ -644,9 +630,11 @@ int main(int argc, char* argv[])
 	  PassBJetVeto = (VBFNBJets==0);
 	  isVBF        = (Pass2Jet30 && PassdEtaCut && PassiMCut && PassBJetVeto && PassJetVeto && PassLeptonIn);
 	}
-      
+     
 
-      //set the variables to be used in the MVA evaluation (independently of its use)
+      //
+      //MVA evaluation
+      //
       for(size_t ivar=0; ivar<varsList.size(); ivar++) 
 	{
 	  std::string variable=varsList[ivar];
@@ -675,9 +663,6 @@ int main(int argc, char* argv[])
 	}
       tmvaVars[varsList.size()] = eventCategory;
 
-      //
-      //MVA evaluation
-      //
       if(useMVA)
 	{
 	  //evaluate the methods
@@ -709,13 +694,6 @@ int main(int argc, char* argv[])
       bool passBveto(nbtags==0);
       bool passMediumRedMet(redMet>rmetComp.getCut(eventCategory,ReducedMETComputer::MEDIUMWP));
       bool passTightRedMet(redMet>rmetComp.getCut(eventCategory,ReducedMETComputer::TIGHTWP));
-      std::vector<bool> passMediumRedMetVars, passTightRedMetVars;
-      for(size_t ivar=0; ivar<3; ivar++)
-	{
-	  int ivarEvCat= eventCategoryVars[ivar];
-	  passMediumRedMetVars.push_back(redMetVar[ivar]>rmetComp.getCut(ivarEvCat,ReducedMETComputer::MEDIUMWP));
-	  passTightRedMetVars.push_back(redMetVar[ivar]>rmetComp.getCut(ivarEvCat,ReducedMETComputer::TIGHTWP));
-	}
       
       bool passBaseCuts(passZmass && pass3dLeptonVeto && passBveto && passMediumRedMet);
       std::vector<int> zmassRegionBins;
@@ -738,6 +716,42 @@ int main(int argc, char* argv[])
       if(passSideBand && passBveto && pass3dLeptonVeto && passMediumRedMet)         zmassRegionBins.push_back(16);
       if(passSideBand && passBveto && pass3dLeptonVeto && passTightRedMet)          zmassRegionBins.push_back(17);
 
+
+      //
+      // compute systematic variations for JET/MET
+      //
+      LorentzVectorCollection metVars;
+      std::vector<LorentzVectorCollection> jetVars;
+      std::vector<int>eventCategoryVars;
+      std::vector<Float_t> redMetVar, redMetLVar, mtsumsVar;
+      std::vector<bool> passMediumRedMetVars, passTightRedMetVars;
+      if(runSystematics)
+	{
+	  jcomp.compute(jetsP4,phys.met[0]);
+
+	  metVars.push_back( jcomp.getVariedMet(jet::UncertaintyComputer::JER) );
+	  jetVars.push_back( jcomp.getVariedJets(jet::UncertaintyComputer::JER) );
+
+	  metVars.push_back( jcomp.getVariedMet(jet::UncertaintyComputer::JES_DOWN) );
+	  jetVars.push_back( jcomp.getVariedJets(jet::UncertaintyComputer::JES_DOWN) );
+
+	  metVars.push_back( jcomp.getVariedMet(jet::UncertaintyComputer::JES_UP) );
+	  jetVars.push_back( jcomp.getVariedJets(jet::UncertaintyComputer::JES_UP) );
+
+	  for(size_t ivar=0; ivar<3; ivar++)
+	    {
+	      eventCategoryVars.push_back( eventClassifComp.Get(phys, &(jetVars[ivar])) );
+	      rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetVars[ivar], metVars[ivar]);
+	      redMetVar.push_back(rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED));
+	      redMetLVar.push_back(rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second);
+	      Float_t imtsum     = mtComp.compute(phys.leptons[0],metVars[ivar],false) + mtComp.compute(phys.leptons[1],metVars[ivar],false);
+	      mtsumsVar.push_back(imtsum);
+
+	      int ivarEvCat= eventCategoryVars[ivar];
+	      passMediumRedMetVars.push_back(redMetVar[ivar]>rmetComp.getCut(ivarEvCat,ReducedMETComputer::MEDIUMWP));
+	      passTightRedMetVars.push_back(redMetVar[ivar]>rmetComp.getCut(ivarEvCat,ReducedMETComputer::TIGHTWP));
+	    }
+	}
       
       //fill control histograms
       TString catsToFill[]={"all",evcat};
@@ -875,7 +889,6 @@ int main(int argc, char* argv[])
 	      //fixme: redo properly the ntuples and remove this stupid mapping
 	      float leptonSumEt      = phys.leptons[0].pt()+phys.leptons[1].pt();
 	      float sumEt            = ev.sumEt-leptonSumEt;
-	      if(sumEt<0) cout << sumEt << endl;
 	      float sumEtcentral     = ev.chsumEtcentral-leptonSumEt;
 	      float chSumEtcentral   = ev.neutsumEt-leptonSumEt;
 	      float neutSumEtcentral = ev.neutsumEtcentral;
@@ -951,7 +964,7 @@ int main(int argc, char* argv[])
 	      if(pass600) controlHistos.fillHisto("finaleventflow",ctf,4,weight);
 
 	      //systematic variations (computed per jet bin so fill only once) 		  
-	      if(isc==0)
+	      if(isc==0 && runSystematics)
 		{
 		  //jet energy scale related variations
 		  TString jetVarNames[]={"jer","jesup","jesdown"};
@@ -972,13 +985,12 @@ int main(int argc, char* argv[])
 		    }
 		 
 		  //re-weighting variations (Higgs, pileup scenario)
-		  TString wgtVarNames[]={"hrenup","hrendown","hfactup","hfactdown","nopu","flatpu"};
+		  TString wgtVarNames[]={"hrenup","hrendown","hfactup","hfactdown","flatpu"};
 		  Float_t rwgtVars[]={ev.weight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp],
 				      ev.weight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown],
 				      ev.weight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp],
 				      ev.weight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown],
-				      ev.normWeight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor],
-				      1.0*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]};
+				      ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]};
 		  for(size_t ivar=0; ivar<sizeof(wgtVarNames)/sizeof(TString); ivar++)
                     {
 		      TString ictf= catsToFill[ic]+subcat;
@@ -1084,23 +1096,6 @@ int main(int argc, char* argv[])
   //save control plots to file
   outUrl += "/";
   outUrl += gSystem->BaseName(url);
-
-
-  //report systematic variations as absolute differences with respect to standard
-  for(size_t icat=0;icat<sizeof(cats)/sizeof(TString); icat++)
-    {
-      for(size_t isubcat=0;isubcat<sizeof(subCats)/sizeof(TString); isubcat++)
-	{
-	  TString ctf=cats[icat]+subCats[isubcat];
-	  TH1 *hcentral = controlHistos.getHisto("finaleventflow",ctf);
-	  for(size_t ivar=1; ivar<sizeof(varsToInclude)/sizeof(TString); ivar++)
-	    {
-	      TH1 *hvar     = controlHistos.getHisto( varsToInclude[ivar]+"finaleventflow",ctf );
-	      hvar->Add(hcentral,-1);
-	    }
-	}
-    }
-
 
   //save all to the file
   TFile *ofile=TFile::Open(outUrl, "recreate");

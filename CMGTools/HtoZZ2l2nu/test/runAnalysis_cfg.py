@@ -7,6 +7,7 @@ runProcess = cms.PSet(
     outdir = cms.string("./"),
     isMC = cms.bool(True),
     mctruthmode=cms.int32(0),
+    runSystematics = cms.bool(@runSystematics),	
     xsec = cms.double(1),
     saveSummaryTree = cms.bool(False),
     useFitter=cms.bool(False),

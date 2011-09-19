@@ -9,6 +9,7 @@ runProcess = cms.PSet(
     mctruthmode=cms.int32(@mctruthmode),
     xsec = cms.double(@xsec),	
     saveSummaryTree = cms.bool(@saveSummaryTree),
+    runSystematics = cms.bool(@runSystematics),	
     weightsFile = cms.string("@weightsFile"),	 
     useFitter=cms.bool(False),	
     evStart = cms.int32(0),
