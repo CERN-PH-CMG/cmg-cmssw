@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.42 $
+\RCS$Revision: 1.43 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.42 2011/09/19 16:14:16 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.43 2011/09/19 20:49:23 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -1567,7 +1567,9 @@ the \MET measurement (and consequently the \RMET variable) are affected.
 The estimate of the jet energy scale uncertainty is performed varying independently the jet energy scale up and down by 1-$\sigma$
 as measured by the Jet/MET group~\cite{CMS-TWIKI-GEN-jec}. The variation corresponds to a simple re-scaling of the jet 4-momentum as:
 $P \rightarrow P\cdot (1\pm \sigma_{JES}/p_T)$ where $\sigma_{JES}$ is the absolute uncertainty on the jet energy scale
-which is parametrized as function of the $p_T$ and $\eta$ of the jet. 
+which is parametrized as function of the $p_T$ and $\eta$ of the jet
+\footnote{The parametrizations are taken from the database corresponding to the global tag used to process data.
+Details can be found at~\cite{CMS-TWIKI-GEN-jec}.}.
 This variation affects the energy imbalance of the detector and it is therefore propagated to re-compute the \MET measurement as:
 
 \begin{equation}
@@ -1602,42 +1604,45 @@ are a fully correlated systematic among all processes.
 
 \begin{table}[htp]
 \begin{center}
-\caption{Systematic uncertainty due to the variation of the jet energy scale for a mass selection of 300~GeV/c$^2$.
-The up/down variations are quoted separately for each event category and process.}
+\caption{Relative dystematic uncertainty due to the variation of the jet energy scale for a mass selection of 300~GeV/c$^2$.
+The up (down) variations are quoted separately as super(sub)-script for each event category and process.}
 \label{tab:jesuncs}
-\begin{tabular}{lcccccccc} \hline\hline
-\multirow{2}{*}{Event category}     & \multicolumn{4}{c}{$ee$}          & \multicolumn{4}{c}{$\mu\mu$} \\
-                                    & =0 jets & =1 jets & $\geq$ 2 jets & VBF & =0 jets & =1 jets & $\geq$ 2 jets & VBF\\\hline
-Signal                              &         &         &               &     &         &         &               &     \\
-ZZ                                  &         &         &               &     &         &         &               &     \\
-WW                                  &         &         &               &     &         &         &               &     \\
-WZ                                  &         &         &               &     &         &         &               &     \\
-Single Top                          &         &         &               &     &         &         &               &     \\
-\ttbar                              &         &         &               &     &         &         &               &     \\
-W+jets                              &         &         &               &     &         &         &               &     \\
-Z/$\gamma^{*}$+jets$\rightarrow$ ll &         &         &               &     &         &         &               &     \\\hline\hline
+\begin{tabular}{lcccccc} \hline\hline
+\multirow{2}{*}{Event category}     & \multicolumn{3}{c}{$\mu\mu$}                                 & \multicolumn{3}{c}{$ee$} \\
+                                    & =0 jets            & =1 jets            & $\geq$ 2 jets      & =0 jets            & =1 jets       & $\geq$ 2 jets \\\hline
+Signal                              & $^{0.995}_{1.073}$ & $^{0.991}_{1.032}$ & $^{0.989}_{0.930}$ & $^{0.967}_{1.072}$ & $^{0.989}_{1.021}$ & $^{0.986}_{0.931}$  \\\hline
+W+jets                              & $^{1.000}_{1.000}$ & $^{1.000}_{1.000}$ & $^{1.000}_{1.000}$ & $^{1.000}_{1.000}$ & $^{1.000}_{1.000}$ & $^{1.000}_{1.000}$  \\
+Z/$\gamma^{*}$+jets$\rightarrow$ ll & $^{1.000}_{1.000}$ & $^{1.000}_{1.071}$ & $^{0.771}_{1.102}$ & $^{1.000}_{1.000}$ & $^{1.000}_{1.000}$ & $^{0.986}_{1.039}$  \\
+\ttbar                              & $^{1.000}_{1.000}$ & $^{1.000}_{0.845}$ & $^{1.098}_{0.929}$ & $^{1.000}_{1.000}$ & $^{1.000}_{1.024}$ & $^{1.000}_{0.994}$  \\
+Single Top                          & $^{1.000}_{1.000}$ & $^{1.000}_{1.204}$ & $^{1.340}_{1.000}$ & $^{1.000}_{1.000}$ & $^{1.060}_{1.120}$ & $^{1.000}_{0.769}$  \\
+WW                                  & $^{1.012}_{1.000}$ & $^{1.205}_{1.091}$ & $^{1.000}_{0.973}$ & $^{1.016}_{1.000}$ & $^{1.102}_{1.095}$ & $^{1.118}_{0.889}$  \\
+WZ                                  & $^{0.990}_{1.058}$ & $^{1.002}_{1.031}$ & $^{0.969}_{0.917}$ & $^{0.999}_{1.078}$ & $^{0.964}_{1.019}$ & $^{1.009}_{0.939}$  \\
+ZZ                                  & $^{0.999}_{1.050}$ & $^{0.991}_{0.966}$ & $^{1.023}_{0.892}$ & $^{1.002}_{1.061}$ & $^{0.999}_{0.970}$ & $^{0.994}_{0.917}$  \\\hline\hline
 \end{tabular}
 \end{center}
 \end{table}
 
+
 \begin{table}[htp]
 \begin{center}
-\caption{Systematic uncertainty due to the variation of the jet energy resolution for a mass selection of 300~GeV/c$^2$.}
+\caption{Relative systematic uncertainty due to the variation of the jet energy resolution for a mass selection of 300~GeV/c$^2$.}
 \label{tab:jeruncs}
-\begin{tabular}{lcccccccc} \hline\hline
-\multirow{2}{*}{Event category}     & \multicolumn{4}{c}{$ee$}          & \multicolumn{4}{c}{$\mu\mu$} \\
-                                    & =0 jets & =1 jets & $\geq$ 2 jets & VBF & =0 jets & =1 jets & $\geq$ 2 jets & VBF\\\hline
-Signal                              &         &         &               &     &         &         &               &     \\
-ZZ                                  &         &         &               &     &         &         &               &     \\
-WW                                  &         &         &               &     &         &         &               &     \\
-WZ                                  &         &         &               &     &         &         &               &     \\
-Single Top                          &         &         &               &     &         &         &               &     \\
-\ttbar                              &         &         &               &     &         &         &               &     \\
-W+jets                              &         &         &               &     &         &         &               &     \\
-Z/$\gamma^{*}$+jets$\rightarrow$ ll &         &         &               &     &         &         &               &     \\\hline\hline
+\begin{tabular}{lcccccc} \hline\hline
+\multirow{2}{*}{Event category}     & \multicolumn{3}{c}{$ee$}          & \multicolumn{3}{c}{$\mu\mu$} \\
+                                    & =0 jets & =1 jets & $\geq$ 2 jets & =0 jets & =1 jets & $\geq$ 2 jets \\\hline
+Signal                              & 1.115   & 1.118   & 0.963         & 1.116   & 1.089   & 0.9760 \\\hline
+W+jets                              & 1.000   & 1.000   & 1.000         & 1.000   & 1.000   & 1.000 \\
+Z/$\gamma^{*}$+jets$\rightarrow$ ll & 1.000   & 2.000   & 1.481         & 1.000   & 2.000   & 2.000  \\
+\ttbar                              & 1.000   & 0.757   & 1.202         & 1.000   & 1.024   & 1.055  \\
+Single Top                          & 1.317   & 0.922   & 1.221         & 1.031   & 1.006   & 0.868 \\
+WW                                  & 1.011   & 1.430   & 1.416         & 0.991   & 1.121   & 1.122 \\
+WZ                                  & 1.090   & 1.066   & 1.024         & 1.084   & 1.037   & 0.963  \\
+ZZ                                  & 1.055   & 0.989   & 0.869         & 1.068   & 0.986   & 0.914 \\\hline\hline
 \end{tabular}
 \end{center}
 \end{table}
+
+
 
 
 %%%%
@@ -1697,30 +1702,33 @@ Pileup can induce a systematic uncertainty which affects mainly the \MET measure
 For the moment we take the most conservative estimate of the pileup uncertainty by comparing the event yields without weighting the MC.  
 This yields a uniform pileup scenario up to 10 in-time interactions in simulation and has the benefit of testing qualitatively the robustness of the analysis.
 Tab.~\ref{tab:puuncs} summarizes the estimate of the pileup uncertainty for a given mass point selection.
-Similiar uncertainties are obtained for the other mass points but omitted for simplicity of the manuscript.
+For most processes one can observe an increase of events with higher multiplicity of jets, 
+as previous discussed in Sec.~\ref{subsec:trigrec}.
+The exception seems to be single top for which the $b$-jet seems to be missed more often in high pileup scenario.
+A loss of efficiency in some bins might also be related to a loss of efficiency in the isolation selection of the leptons.
+Similar uncertainties are obtained for the other mass points but omitted for simplicity of the manuscript.
 This is considered to be a fully correlated systematic among all processes.
-
 
 \begin{table}[htp]
 \begin{center}
 \caption{Systematic uncertainty due to the variation of pileup for a mass selection of 300~GeV/c$^2$.}
 \label{tab:puuncs}
-\begin{tabular}{lcccccccc} \hline\hline
-\multirow{2}{*}{Event category}     & \multicolumn{4}{c}{$ee$}          & \multicolumn{4}{c}{$\mu\mu$} \\
-                                    & =0 jets & =1 jets & $\geq$ 2 jets & VBF & =0 jets & =1 jets & $\geq$ 2 jets & VBF\\\hline
-Signal                              &         &         &               &     &         &         &               &     \\
-ZZ                                  &         &         &               &     &         &         &               &     \\
-WW                                  &         &         &               &     &         &         &               &     \\
-WZ                                  &         &         &               &     &         &         &               &     \\
-Single Top                          &         &         &               &     &         &         &               &     \\
-\ttbar                              &         &         &               &     &         &         &               &     \\
-W+jets                              &         &         &               &     &         &         &               &     \\
-Z/$\gamma^{*}$+jets$\rightarrow$ ll &         &         &               &     &         &         &               &     \\\hline\hline
+\begin{tabular}{lcccccc} \hline\hline
+\multirow{2}{*}{Event category}     & \multicolumn{3}{c}{$\mu\mu$}          & \multicolumn{3}{c}{$ee$} \\
+                                    & =0 jets & =1 jets & $\geq$ 2 jets & =0 jets & =1 jets & $\geq$ 2 jets \\\hline
+Signal                              & 0.966   & 1.016   & 1.043         & 0.989   & 1.006   & 1.049         \\\hline
+W+jets                              & 1.000   & 1.000   & 1.000         & 1.000   & 1.000   & 1.000        \\
+Z/$\gamma^{*}$+jets$\rightarrow$ ll & 1.000   & 1.390   & 1.090         & 1.000   & 1.373   & 1.506        \\
+\ttbar                              & 1.000   & 0.797   & 1.173         & 1.000   & 0.924   & 0.983        \\
+Single Top                          & 1.267   & 1.031   & 0.906         & 0.925   & 1.078   & 0.965        \\
+WW                                  & 1.026   & 0.799   & 1.169         & 1.050   & 1.062   & 1.106         \\
+WZ                                  & 1.085   & 0.989   & 1.015         & 1.083   & 0.983   & 1.068        \\
+ZZ                                  & 1.028   & 1.028   & 1.135         & 1.038   & 0.983   & 1.019        \\\hline\hline
 \end{tabular}
 \end{center}
 \end{table}
 
-
+   
 %%%%
 {\bf Theoretical uncertainties}
 
@@ -1799,9 +1807,28 @@ similar uncertainties as the ones described for the theoretical cross section an
 To propagate these effects in our analysis we replace the nominal reweighing of the Higgs $p_T$ in the simulation
 by weights corresponding to the up/down variations of the factorization and renormalization scales~\cite{CMS-TWIKI-GEN-higgspt}. 
 The variation of the final event yields in signal is therefore assigned as a systematic uncertainty.
-The uncertainty on Higgs $p_T$ spectrum affects only the signal predictions.
+The uncertainty on Higgs $p_T$ spectrum affects only the signal predictions
+and it is summarized in Tab.~\ref{tab:hptuncs} for a given mass point as an example.
+For each source (renormalization or factorization scale) the uncertainty is taken conservatively as the maximum
+variation observed (after varying the nominal scale by a factor of 2 up and down).
+Similar results are obtained for other mass points but omitted for simplicity of the manuscript.
 As there are cross-contaminations between the different jet and VBF bins this uncertainty
 has to be considered for all the event categories.
+
+\begin{table}[htp]
+\begin{center}
+\caption{Systematic uncertainties affecting the final selection due to the event generator used to model the 300~GeV/c$^2$ signal.
+Two sources of systematic uncertainty affecting the prediction for the Higgs boson $p_T$ are quoted.}
+\label{tab:hptuncs}
+\begin{tabular}{lcccccc} \hline\hline
+\multirow{2}{*}{Event category}     & \multicolumn{3}{c}{$\mu\mu$}          & \multicolumn{3}{c}{$ee$} \\
+                                    & =0 jets & =1 jets & $\geq$ 2 jets & =0 jets & =1 jets & $\geq$ 2 jets  \\\hline
+Renormalization                     & 0.999   & 1.003   & 1.001         & 1.003   & 1.002   & 1.000   \\
+Factorization                       & 0.968   & 0.994   & 0.997         & 0.974   & 0.992   & 0.997 \\\hline\hline 
+\end{tabular}
+\end{center}
+\end{table}
+
 
 %
 %
