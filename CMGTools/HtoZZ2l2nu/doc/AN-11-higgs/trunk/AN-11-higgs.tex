@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.40 $
+\RCS$Revision: 1.42 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.40 2011/09/19 16:00:01 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.42 2011/09/19 16:14:16 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -24,9 +24,10 @@
 \providecommand{\pfJET}{{\textsc{pfJET}}\xspace}
 \providecommand{\Roofit}{{\textsc{Roofit}}\xspace}
 \providecommand{\MET}{{$E_{T}^{miss}$}\xspace}
-\providecommand{\tkMET}{{${\rm tk-}E_{T}^{miss}$}\xspace}
-\providecommand{\resMET}{{${\rm res-}E_{T}^{miss}$}\xspace}
-\providecommand{\clusMET}{{${\rm clust-}E_{T}^{miss}$}\xspace}
+\providecommand{\centralMET}{{${\rm central}-E_{T}^{miss}$}\xspace}
+\providecommand{\assocOvMET}{{${\rm assoc-}E_{T}^{miss} ({\rm other vtx})$}\xspace}
+\providecommand{\assocMET}{{${\rm assoc-}E_{T}^{miss}$}\xspace}
+\providecommand{\assocChMET}{{${\rm assoc-}E_{T}^{miss}({\rm charged})$}\xspace}
 \providecommand{\cleanMET}{{${\rm clean-}E_{T}^{miss}$}\xspace}
 \providecommand{\projMET}{{${\rm proj-}E_{T}^{miss}$}\xspace}
 \providecommand{\RMET}{{${\rm red-}\vec{E}_{T}^{miss}$}\xspace}
@@ -37,7 +38,7 @@
 
 %%%%%%%%%%%%%%%  Title page %%%%%%%%%%%%%%%%%%%%%%%%
 \cmsNoteHeader{AN-11-higgs} % This is over-written in the CMS environment: useful as preprint no. for export versions
-\title{Searching for the Higgs boson\\ in the ZZ$\rightarrow$ 2l2$\nu$ final state\\ with $\sqrt{s}=$7~TeV data}
+\title{Contribution to the search for the Higgs boson\\ in the ZZ$\rightarrow$ 2l2$\nu$ final state\\ with $\sqrt{s}=$7~TeV data}
 
 %Author is always "The CMS Collaboration" for PAS and papers, so author, etc, below will be ignored in those cases
 
@@ -868,7 +869,7 @@ $\varepsilon$(400)    & 91.2\%  & 89.1\%  &  81.3\% \\\hline\hline
 The performance of the \RMET can be further quantified relatively to the standard \MET measurement 
 as well as other \MET related variables. The \MET measurement can be made more robust against pileup contamination
 by considering the minimum of two transverse momenta sums: of all particle flow candidates (\MET) or of all 
-charged particle flow candidates which can be associated to the primary vertex of the event (\tkMET).
+charged particle flow candidates which can be associated to the primary vertex of the event (\assocChMET).
 This variable was introduced in Section~\ref{subsec:trigrec} to characterize the properties of the primary vertex.
 As it is built using a vertex constraint it is expected to have a small contamination from pileup.
 It's resolution is however degraded and has a non trivial dependence on the topology of the event,
@@ -885,7 +886,7 @@ Let $\delta\phi^{\rm min}=\min\{\delta\phi(E_{T}^{miss},l^1),\delta\phi(E_{T}^{m
 be the azimuthal angle between the \MET vector and the transverse momentum of the closest lepton.
 Then \projMET=\MET$\cdot\sin\delta\phi^{\rm min}$ if $\delta\phi^{\rm min}<\pi/2$ or \MET, otherwise.}.
 Following the prescription adopted by~\cite{CMS-PAS-HIG-11-003}
-the dependency on pile-up is reduced by taking the minimum \projMET computed from \MET and \tkMET.
+the dependency on pile-up is reduced by taking the minimum \projMET computed from \MET and \assocChMET.
 This minimization exploits further the correlation between both estimates in signal and 
 uncorrelation otherwise, as in Drell-Yan events.
 Fig.~\ref{fig:metperformances} summarize the performance of each variable 
@@ -911,7 +912,7 @@ The {\em top} plots show the results obtained in the Z-boson mass region while t
 The performances can be further compared in terms of robustness against the variation of the pileup scenario.
 This test is summarized in Fig~\ref{fig:metperformancevspileup}. 
 We conclude that all approaches have a dependency on the pileup scenario which is minimized when taking
-the \tkMET or \RMET approaches. The dependency for these pseudo-\MET variables is observed to be approximately linear
+the \assocChMET or \RMET approaches. The dependency for these pseudo-\MET variables is observed to be approximately linear
 in both the average and RMS of the spectrum.
 
 \begin{figure}[htp]
@@ -933,9 +934,9 @@ to minimize further the dependence of these variables against pileup.
 \subsection{Description of the FastJet-based clustering method}
 \label{subsec:fjpucontrol}
 
-In the previous section it was noticed that by taking the minimum of the \MET measurement and the \tkMET measurement for each event
+In the previous section it was noticed that by taking the minimum of the \MET measurement and the \assocChMET measurement for each event
 we can obtain an estimate of the \MET which is more robust against the contamination from pileup.
-The drawback of this approach is the loss of resolution in the measurement as \tkMET uses only the charged component of the event
+The drawback of this approach is the loss of resolution in the measurement as \assocChMET uses only the charged component of the event
 which can be measured up to a pseudo-rapidity of $|\eta|<$2.4 due to the limited acceptance of the tracker.
 However for the signal we're interested in we expect that the neutrinos are indeed emitted in the central region of the detector
 and therefore we expect a correlation between \MET measured using the information from the full detector and \MET measured using the central region.
@@ -975,38 +976,40 @@ Once the neutral candidate is associated it is removed from the list of particle
 \end{enumerate}
 
 Table~\ref{tab:pumettypes} summarizes the usage of the different clustered components in order further the \MET computation.
-Three extra \MET types are defined: residual (\resMET) built from all the candidates associated to secondary vertices,
-clustered (\clusMET) built from all the candidates associated to the primary vertex and clean (\cleanMET) computed
+Three extra \MET types are defined: residual (\assocOvMET) built from all the candidates associated to secondary vertices,
+clustered (\assocMET) built from all the candidates associated to the primary vertex and clean (\cleanMET) computed
 from removing from the standard \MET the candidates associated to other vertices.
 
 \begin{table}[htp]
 \caption{Definitions used for the different \MET approaches compared in this study.
-The particles (not) used in the computation of each \MET type are signaled with $\blacksquare$ ($\Box$). }
+The particles (not) used in the computation of each \MET type are signaled with $\blacksquare$ ($\Box$). 
+pVtx (oVtx) is used as a shorthand for primary (other) vertex(ices). }
 \label{tab:pumettypes}
 \begin{center}
-\begin{tabular}{lllllll} \hline\hline
-\multicolumn{2}{c}{\multirow{2}{*}{Particles}}           & \multicolumn{5}{c}{\MET type}     \\
-&                                                        & \MET           & \tkMET         & \resMET        & \clusMET         & \cleanMET      \\\hline
-\multirow{3}{*}{charged}  & all ($|\eta|<$2.4)           & $\blacksquare$ &                &                &                  & $\blacksquare$ \\
-                          & assoc. prim. vertex          &                & $\blacksquare$ &                & $\blacksquare$   &               \\
-                          & assoc. other vertices        &                &                & $\blacksquare$ &                  & $\Box$        \\\hline
-\multirow{3}{*}{neutrals} & all ($|\eta|<$5)             & $\blacksquare$ &                &                &                  & $\blacksquare$ \\
-                          & assoc. prim. vertex          &                &                &                & $\blacksquare$   &                \\
-                          & assoc. other vertices        &                &                & $\blacksquare$ &                  & $\Box$         \\\hline\hline
+\begin{tabular}{lcccccc} \hline\hline
+\multirow{3}{*}{Particles} & \multicolumn{3}{c}{\bf Charged}                    & \multicolumn{3}{c}{\bf Neutral}                       \\  
+                           & all             & \multicolumn{2}{c}{associated}   & all                             & \multicolumn{2}{c}{associated} \\
+                           & ($|\eta|<$2.4)  & pVtx           & oVtx            & ($|\eta|<$5)                  & pVtx           & oVtx \\\hline
+\MET                       & $\blacksquare$  &                &                 & $\blacksquare$                &                &                \\\hline
+\centralMET                & $\blacksquare$  &                &                 & $\blacksquare$ ($|\eta|<$2.4) &                &                \\\hline
+\assocChMET                &                 & $\blacksquare$ &                 &                               &                &                \\\hline
+\assocMET                  &                 & $\blacksquare$ &                 &                               & $\blacksquare$ &                 \\\hline
+\assocOvMET                &                 &                & $\blacksquare$  &                               &                & $\blacksquare$ \\\hline  
+\cleanMET                  & $\blacksquare$  &                & $\Box$          & $\blacksquare$                &                & $\Box$         \\\hline\hline 
 \end{tabular}
 \end{center}
 \end{table}
 
-Fig.~\ref{fig:metcorrelations} ({\em bottom}) depicts the correlation between \MET and \clusMET.
-It can be observed that while the resolution of \clustMET is slightly worse with respect to \tkMET,
+Fig.~\ref{fig:metcorrelations} ({\em bottom}) depicts the correlation between \MET and \assocMET.
+It can be observed that while the resolution of \clustMET is slightly worse with respect to \assocChMET,
 the correlation for signal improves while the background becomes less correlated.
 
 \begin{figure}[htp]
 \begin{center}
 \includegraphics[width=0.9\textwidth]{img/metvstkmet}
 \includegraphics[width=0.9\textwidth]{img/metvsclusteredMet}\\
-\caption{Correlation between \MET and \tkMET ({\em top})
- and between \MET and \clusMET ({\em bottom})
+\caption{Correlation between \MET and \assocChMET ({\em top})
+ and between \MET and \assocMET ({\em bottom})
  for a simulated Higgs (m=200~GeV/c$^2$) sample ({\em left}) 
  and a $Z\rightarrow ll$ sample ({\em right}) in the di-muon sample}.
 \label{fig:metcorrelations}
@@ -1568,7 +1571,7 @@ which is parametrized as function of the $p_T$ and $\eta$ of the jet.
 This variation affects the energy imbalance of the detector and it is therefore propagated to re-compute the \MET measurement as:
 
 \begin{equation}
-\vec{E}_{T}^{miss'} = \vec{E}_{T}^{miss} - \displaystyle{\sum_{jets}} ( \pm \frac{\sigma}{p_T}) \cdot \vec{p}_{T} 
+\vec{E}_{T}^{miss'} = \vec{E}_{T}^{miss} - \displaystyle{\sum_{jets}} ( \pm \frac{\sigma_{JES}}{p_T}) \cdot \vec{p}_{T} 
 \label{eq:jesmet}
 \end{equation}
 
@@ -1588,8 +1591,104 @@ For each event, the $p_T$,$\eta$ and $\phi$ of the reconstructed jets are smeare
 In the case of the jet energy resolution effect we take the absolute value observed as the estimate for the
 the two sided (positive/negative) uncertainty.
 
+Tab.~\ref{tab:jesuncs} and Tab..~\ref{tab:jeruncs} summarizes the estimates of the uncertainties due to jet energy scale and resolution
+for a specific mass selection. Similar systematic uncertainties are computed independently depending on the event selection applied
+but are note reproduced for simplicity of the manuscript
+\footnote{The actual values used can be found in the datacards used for the statistical analysis of Sec.~\ref{sec:excllimits}
+which are available in CVS~\cite{cvscode}.}.
 The variation of jet energy resolution and the two independent variations of the jet energy scale
 are a fully correlated systematic among all processes.
+
+
+\begin{table}[htp]
+\begin{center}
+\caption{Systematic uncertainty due to the variation of the jet energy scale for a mass selection of 300~GeV/c$^2$.
+The up/down variations are quoted separately for each event category and process.}
+\label{tab:jesuncs}
+\begin{tabular}{lcccccccc} \hline\hline
+\multirow{2}{*}{Event category}     & \multicolumn{4}{c}{$ee$}          & \multicolumn{4}{c}{$\mu\mu$} \\
+                                    & =0 jets & =1 jets & $\geq$ 2 jets & VBF & =0 jets & =1 jets & $\geq$ 2 jets & VBF\\\hline
+Signal                              &         &         &               &     &         &         &               &     \\
+ZZ                                  &         &         &               &     &         &         &               &     \\
+WW                                  &         &         &               &     &         &         &               &     \\
+WZ                                  &         &         &               &     &         &         &               &     \\
+Single Top                          &         &         &               &     &         &         &               &     \\
+\ttbar                              &         &         &               &     &         &         &               &     \\
+W+jets                              &         &         &               &     &         &         &               &     \\
+Z/$\gamma^{*}$+jets$\rightarrow$ ll &         &         &               &     &         &         &               &     \\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[htp]
+\begin{center}
+\caption{Systematic uncertainty due to the variation of the jet energy resolution for a mass selection of 300~GeV/c$^2$.}
+\label{tab:jeruncs}
+\begin{tabular}{lcccccccc} \hline\hline
+\multirow{2}{*}{Event category}     & \multicolumn{4}{c}{$ee$}          & \multicolumn{4}{c}{$\mu\mu$} \\
+                                    & =0 jets & =1 jets & $\geq$ 2 jets & VBF & =0 jets & =1 jets & $\geq$ 2 jets & VBF\\\hline
+Signal                              &         &         &               &     &         &         &               &     \\
+ZZ                                  &         &         &               &     &         &         &               &     \\
+WW                                  &         &         &               &     &         &         &               &     \\
+WZ                                  &         &         &               &     &         &         &               &     \\
+Single Top                          &         &         &               &     &         &         &               &     \\
+\ttbar                              &         &         &               &     &         &         &               &     \\
+W+jets                              &         &         &               &     &         &         &               &     \\
+Z/$\gamma^{*}$+jets$\rightarrow$ ll &         &         &               &     &         &         &               &     \\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+%%%%
+{\it $b$-tagging}:
+
+The effective $b$-tagging uncertainty is measured from data using a $b$-enriched sample~\cite{CMS-PAS-BTV-11-001}.
+The data-driven measurement yields data/MC scale correction factors
+for the $b$-tagging and mistag rates. These scale factors are approximately constant and independent of the kinematics of the jet.
+The scale factors can be applied to correct the MC expected event yields and the
+corresponding uncertainties can be used to project the systematic uncertainty of the analysis due to the use of $b$-tagging.
+The procedure adopted is the following: let $N_b$ ($N_q$) be the number of $b$ ($udscg$) jets observed in a pre-tagged event
+\footnote{The flavor of the jet is determined assessing MC truth.}.
+We assign the probability that the event will not generate any tag based
+on the knowledge of $\varepsilon_b$ ($\varepsilon_q$), i.e the average b-tagging (mistagging) efficiency in the simulation,
+the data-derived scale factor $S_F^b$ ($S_F^q$) for the $b$-tagging (mistagging) effiency
+and the number of $b$ ($udscg$) jets as follows:
+
+\begin{equation}
+p_0 = (1-S_F^b\varepsilon_b)^{N_b}(1-S_F^q\varepsilon_q)^{N_q}
+\label{eq:prob0btags}
+\end{equation}
+
+In order to propagate the uncertainty of the scale factors to the probability of an event to pass 
+the $b$-tag veto, one applies the standard the error propagation:
+
+\begin{equation}
+\delta p_0 = \sqrt{ 
+[N_b \sigma_{S_F^b} \varepsilon_b (1-S_F^b\varepsilon_b)^{N_b-1}(1-S_F^q\varepsilon_q)^{N_q} ]^2 +
+[N_q\sigma_{S_F^q} \varepsilon_q (1-S_F^b\varepsilon_b)^{N_b}(1-S_F^q\varepsilon_q)^{N_q-1} ]^2 }
+\label{eq:prob0btagsunc}
+\end{equation}
+
+The predicted number of events with 0 b-tags, i.e., passing the $b$-tagging veto described in Sec.~\ref{subsec:trigrec},
+is therefore obtained from the sum of the weights derived for each event in the pre-tagged sample, i.e.:
+
+\begin{equation}
+N_0 = \displaystyle{\sum_{k=1}^{N_{events}}} p_i^{0}
+\label{eq:passbveto}
+\end{equation} 
+
+and the corresponding uncertainty associated to the prediction of Eq.~\ref{eq:passbveto} is given by
+
+\begin{equation}
+\delta N_0 = \displaystyle{\sum_{k=1}^{N_{events}}} \delta p_i^{0}
+\label{eq:passbvetounc}
+\end{equation} 
+
+We use therefore the result of ~\ref{eq:passbvetounc} as the estimate of the $b$-veto uncertainty due to the uncertainty
+on the $b$ and mistag rates. The uncertainty is evaluated in the pre-tagged sample (after the 3$^{rd}$ lepton veto) and it is assumed
+for the rest of the selection. 
+
 
 %%%%
 {\it Pileup}:
@@ -1597,7 +1696,29 @@ are a fully correlated systematic among all processes.
 Pileup can induce a systematic uncertainty which affects mainly the \MET measurement but also the isolation and energy scale of the objects.
 For the moment we take the most conservative estimate of the pileup uncertainty by comparing the event yields without weighting the MC.  
 This yields a uniform pileup scenario up to 10 in-time interactions in simulation and has the benefit of testing qualitatively the robustness of the analysis.
+Tab.~\ref{tab:puuncs} summarizes the estimate of the pileup uncertainty for a given mass point selection.
+Similiar uncertainties are obtained for the other mass points but omitted for simplicity of the manuscript.
 This is considered to be a fully correlated systematic among all processes.
+
+
+\begin{table}[htp]
+\begin{center}
+\caption{Systematic uncertainty due to the variation of pileup for a mass selection of 300~GeV/c$^2$.}
+\label{tab:puuncs}
+\begin{tabular}{lcccccccc} \hline\hline
+\multirow{2}{*}{Event category}     & \multicolumn{4}{c}{$ee$}          & \multicolumn{4}{c}{$\mu\mu$} \\
+                                    & =0 jets & =1 jets & $\geq$ 2 jets & VBF & =0 jets & =1 jets & $\geq$ 2 jets & VBF\\\hline
+Signal                              &         &         &               &     &         &         &               &     \\
+ZZ                                  &         &         &               &     &         &         &               &     \\
+WW                                  &         &         &               &     &         &         &               &     \\
+WZ                                  &         &         &               &     &         &         &               &     \\
+Single Top                          &         &         &               &     &         &         &               &     \\
+\ttbar                              &         &         &               &     &         &         &               &     \\
+W+jets                              &         &         &               &     &         &         &               &     \\
+Z/$\gamma^{*}$+jets$\rightarrow$ ll &         &         &               &     &         &         &               &     \\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
 
 
 %%%%
@@ -1641,6 +1762,32 @@ ZZ                                                & 2.5 \\\hline\hline
 \end{table}
 
 The uncertainty on the cross section is assigned independently for each process predicted from MC.
+
+%%%%%
+{\it Single top tW contribution}
+
+The tW process is usually defined from the minimum interference with the \ttbar production
+by removing diagrams in which an internal top quark line in \ttbar production is converted into a final state $b$ quark
+by emission of a $W$ boson. This approach is used by default and should be compared
+with the result of diagram subtraction which includes terms to cancel locally the \ttbar contribution
+which maintain gauge invariance. Details can be found in~\cite{s:Giamm2010}.
+An extra systematic uncertainty is assigned to the tW process due to the differences found
+between the standard diagram removal (DR) and diagram subtraction (DS) scheme. 
+The differences found after the applying the medium selection cut for the \RMET variable are summarized in Tab~\ref{tab:twuncs}.
+We assume this systematic uncertainty for all the subsequent mass point selections.
+
+\begin{table}[htp]
+\begin{center}
+\caption{Systematic uncertainty affecting the final selection due to the theoretical definition of the $tW$ cross section.}
+\label{tab:twuncs}
+\begin{tabular}{lcccc} \hline\hline
+Event category                                    & =0 jets & =1 jets & $\geq$ 2 jets & VBF \\\hline
+Systematic uncertainty                            &         &         &               & \\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+ 
+
 
 %%%%%
 {\it Higgs $p_T$ spectrum}
