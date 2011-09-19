@@ -42,7 +42,7 @@ systs={"jesup":["jesup"],
        "renscale":["hrenup","hrendown"],
        "pileup":["flatpu"]}
 
-sigXsecUnc=[1.1067, 1.1083, 1.1131, 1.1192, 1.1265]
+sigXsecUnc=[1.108958801, 1.111920863, 1.118228673, 1.126111468, 1.135045566]
 
 bckgs={
     "zz":"ZZ",
@@ -102,11 +102,14 @@ for imp in xrange(0,len(masspts)):
     processCountRow = 'process '
     rateRow         = 'rate    '
     lumiRow         = 'lumi    lnN '
-    mcStatsRow      = 'mcstats lnN '
     thxsecRow       = 'thxsec  lnN '
+    mcStatsRow      = {'higgs':'stat lnN'}
+    for ibckgs in bckgs.items() :  mcStatsRow[ibckgs[0]]= 'stat lnN '
     systsRows       = {}
-    for isyst in systs.items(): systsRows[isyst[0]]= isyst[0] + ' lnN '
+    for isyst in systs.items():
+        systsRows[isyst[0]]= isyst[0] + ' lnN '
     
+
     for ec in evCats:
         for esc in evSubCats :
 
@@ -123,9 +126,12 @@ for imp in xrange(0,len(masspts)):
             processCountRow += '{0:d} '.format(0)
             rateRow         += '{0:.4f} '.format(centralSignal)
             lumiRow         += '{0:.4f} '.format(1.045)
-            mcStatsRow      += '{0:.4f} '.format(centralSignalError)
             thxsecRow       += '{0:.4f} '.format(sigXsecUnc[imp])
-            
+            for imc in mcStatsRow.items():
+                ival='1.0000 '
+                if( imc[0] == 'higgs') : ival='{0:.4f} '.format(centralSignalError)
+                mcStatsRow[ imc[0] ] = mcStatsRow[ imc[0] ] + ival
+                                
             for isyst in systs.items():
                 systvars=[]
                 for ivar in isyst[1] :
@@ -150,16 +156,19 @@ for imp in xrange(0,len(masspts)):
                 processCountRow += '{0:d} '.format(ibckgCtr)
                 rateRow         += '{0:.4f} '.format(centralBckg)
                 lumiRow         += '{0:.4f} '.format(1.045)
-                mcStatsRow      += '{0:.4f} '.format(centralBckgError)
                 thxsecRow       += '{0:.4f} '.format(bckgXsecUnc[ibckg[0]])
-                
+                for imc in mcStatsRow.items():
+                    ival='1.0000 '
+                    if( imc[0] == ibckg[0] ) : ival='{0:.4f} '.format(centralBckgError)
+                    mcStatsRow[ imc[0] ] = mcStatsRow[ imc[0] ] + ival
+
                 for isyst in systs.items():
                     systvars=[]
                     for ivar in isyst[1] :
                         h=f.Get(ibckg[1]+"/" + ec + esc + "_"+ ivar  +countHisto)
                         bckgYieldVar=0;
                         if(centralBckg>0) :   bckgYieldVar   += h.GetBinContent(imp+1)/centralBckg
-                        if(bckgYieldVar==0) : bckgYieldVar  =1.0
+                        if(bckgYieldVar==0) : bckgYieldVar   = 1.0
                         systvars.append(fabs(bckgYieldVar))
                     systsRows[ isyst[0] ] += '{0:.4f} '.format( max(systvars) )
         
@@ -169,8 +178,8 @@ for imp in xrange(0,len(masspts)):
     fdatacard.write( rateRow  + '\n')
     fdatacard.write( '----------------------------'  + '\n')
     fdatacard.write( lumiRow  + '\n')
-    fdatacard.write( mcStatsRow  + '\n')
     fdatacard.write( thxsecRow  + '\n')
+    for imc in mcStatsRow.items() :  fdatacard.write( imc[0]+imc[1] + '\n')
     for isyst in systsRows.items() : fdatacard.write( isyst[1]  + '\n')
 
     fdatacard.close()
