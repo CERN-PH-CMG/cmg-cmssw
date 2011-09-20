@@ -192,8 +192,7 @@ void computeLimit(){
    Backgrounds.push_back("W+jets");				BackgroundsLeg.push_back("W+jets");
    Backgrounds.push_back("Z-#gamma^{*}+jets#rightarrow ll");	BackgroundsLeg.push_back("DY");
 
-   //TFile* File = new TFile("../plotter.root");
-   TFile* File = new TFile("/afs/cern.ch/user/p/psilva/public/plotter.root");
+   TFile* File = new TFile("../plotter.root");
    std::vector<std::string> Sample;               std::vector<std::string> Legend;
    Sample.push_back("H(200)#rightarrow VV");      Legend.push_back("H200");
    Sample.push_back("H(300)#rightarrow VV");      Legend.push_back("H300");
@@ -254,16 +253,21 @@ void computeLimit(){
 
    std::string data = "data";
    std::string VV  = "ZZ;WW;WZ";
+   std::string ZZ  = "ZZ";
+   std::string WW  = "WW";
+   std::string WZ  = "WZ";
+   std::string TT = "t#bar{t}";
+   std::string ST = "Single top";
    std::string Top = "t#bar{t};Single top";
    std::string DY  = "Z-#gamma^{*}+jets#rightarrow ll";
    std::string WJ  = "W+jets";
    std::string H[6];  std::string mass_H[6];
    double HErr[6];
-   H[0] = "H(200)#rightarrow VV";   mass_H[0] = "200";  HErr[0] = 1.108958801;
-   H[1] = "H(300)#rightarrow VV";   mass_H[1] = "300";  HErr[1] = 1.111920863;
-   H[2] = "H(400)#rightarrow VV";   mass_H[2] = "400";  HErr[2] = 1.118228673;
-   H[3] = "H(500)#rightarrow VV";   mass_H[3] = "500";  HErr[3] = 1.126111468;
-   H[4] = "H(600)#rightarrow VV";   mass_H[4] = "600";  HErr[4] = 1.135045566;
+   H[0] = "H(200)#rightarrow VV";   mass_H[0] = "200";  HErr[0] = 1.077;
+   H[1] = "H(300)#rightarrow VV";   mass_H[1] = "300";  HErr[1] = 1.077;
+   H[2] = "H(400)#rightarrow VV";   mass_H[2] = "400";  HErr[2] = 1.080;
+   H[3] = "H(500)#rightarrow VV";   mass_H[3] = "500";  HErr[3] = 1.086;
+   H[4] = "H(600)#rightarrow VV";   mass_H[4] = "600";  HErr[4] = 1.093;
    double ObsLimit[5];  
    double ExpLimitm2[5];
    double ExpLimitm1[5];
@@ -310,10 +314,10 @@ void computeLimit(){
 //    string Channels[] = {"mumueq0jets", "mumueq1jets", "mumugeq2jets", "eeeq0jets", "eeeq1jets", "eegeq2jets"};
 //    string HistoName[] = {"_finaleventflow","_finaleventflow", "_finaleventflow", "_finaleventflow","_finaleventflow", "_finaleventflow"};
 //    int    BinForYields[] = {i+1, i+1, i+1, i+1, i+1, i+1};
-      string subChannelsDir[] = {H[i],DY,WJ, VV,Top};
-      double subChannelsThErr[] = {HErr[i],1.04345, 1.04976, sqrt(pow(1.0254,2) + pow(1.0349,2) + pow(1.0385,2)),sqrt(pow(1.0606,2) + pow(1.0334,2))};
+      string subChannelsDir[] = {H[i],DY,WJ, VV, Top};
+      double subChannelsThErr[] = {HErr[i],1.04345, 1.04976, sqrt(pow(1.0254,2)+ pow(1.0349,2) + pow(1.0385,2)), sqrt(pow(1.0606,2) + pow(1.0334,2))};
 
-      string subChannels[] = {"higgs","DY", "W+J", "VV", "Top"};
+      string subChannels[] = {"higgs","DY", "WJ", "VV", "Top"};
       int NsubChannels = sizeof(subChannels)/sizeof(string);
    
       FILE* pFile = fopen((string("datacard_") + Model[M] + mass_H[i] + ".txt").c_str(),"w");
@@ -322,7 +326,7 @@ void computeLimit(){
       fprintf(pFile,"# Counting experiment with multiple channels for testing\n");
       fprintf(pFile,"imax %i  number of channels\n",NChannels);
       fprintf(pFile,"jmax *  number of backgrounds ('*' = automatic)\n");
-      fprintf(pFile,"kmax %i  number of nuisance parameters (sources of systematical uncertainties)\n",7+NChannels*NsubChannels);
+      fprintf(pFile,"kmax *  number of nuisance parameters (sources of systematical uncertainties)\n");
       fprintf(pFile,"------------\n");
       fprintf(pFile,"# two channels, each with it's number of observed events\n");
       fprintf(pFile,"bin         ");for(int c=0;c<NChannels;c++){fprintf(pFile,"%7s   ",Channels[c].c_str());}fprintf(pFile,"\n");
@@ -344,21 +348,22 @@ void computeLimit(){
       fprintf(pFile,"rate         ");for(int c=0;c<NChannels;c++){for(int sc=0;sc<NsubChannels;sc++)fprintf(pFile,"%7f   ",Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + HistoName[c] ,BinForYields[c]).Rate);}fprintf(pFile,"\n");
 
       fprintf(pFile,"------------\n");
-      fprintf(pFile,"lumi     lnN ");for(int c=0;c<NChannels;c++){for(int sc=0;sc<NsubChannels;sc++)fprintf(pFile,"%7f   ",1.045);}fprintf(pFile,"\n");
-      fprintf(pFile,"thxsec   lnN ");for(int c=0;c<NChannels;c++){for(int sc=0;sc<NsubChannels;sc++)fprintf(pFile,"%7f   ",subChannelsThErr[sc]);}fprintf(pFile,"\n");
-      fprintf(pFile,"jesup    lnN ");for(int c=0;c<NChannels;c++){for(int sc=0;sc<NsubChannels;sc++){stYields tmpSyst = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + "jesup" + HistoName[c] ,BinForYields[c]); stYields tmp = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + HistoName[c] ,BinForYields[c]); fprintf(pFile,"%7f   ",tmp.Rate==0.0 ? 1.0 : tmpSyst.Rate/tmp.Rate);}}fprintf(pFile,"\n");
-      fprintf(pFile,"jesdown  lnN ");for(int c=0;c<NChannels;c++){for(int sc=0;sc<NsubChannels;sc++){stYields tmpSyst = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + "jesdown" + HistoName[c] ,BinForYields[c]); stYields tmp = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + HistoName[c] ,BinForYields[c]); fprintf(pFile,"%7f   ",tmp.Rate==0.0 ? 1.0 : tmpSyst.Rate/tmp.Rate);}}fprintf(pFile,"\n");
-      fprintf(pFile,"factscal lnN ");for(int c=0;c<NChannels;c++){for(int sc=0;sc<NsubChannels;sc++){stYields tmpSystA = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + "hfactup" + HistoName[c] ,BinForYields[c]); stYields tmpSystB = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + "hfactdown" + HistoName[c] ,BinForYields[c]); stYields tmp = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + HistoName[c] ,BinForYields[c]); fprintf(pFile,"%7f   ",tmp.Rate==0.0 ? 1.0 : std::max(tmpSystA.Rate,tmpSystB.Rate)/tmp.Rate);}}fprintf(pFile,"\n");
-      fprintf(pFile,"renscale lnN ");for(int c=0;c<NChannels;c++){for(int sc=0;sc<NsubChannels;sc++){stYields tmpSystA = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + "hrenup" + HistoName[c] ,BinForYields[c]); stYields tmpSystB = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + "hrendown" + HistoName[c] ,BinForYields[c]); stYields tmp = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + HistoName[c] ,BinForYields[c]); fprintf(pFile,"%7f   ",tmp.Rate==0.0 ? 1.0 : std::max(tmpSystA.Rate,tmpSystB.Rate)/tmp.Rate);}}fprintf(pFile,"\n");
-      fprintf(pFile,"pileup   lnN ");for(int c=0;c<NChannels;c++){for(int sc=0;sc<NsubChannels;sc++){stYields tmpSyst = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + "flatpu" + HistoName[c] ,BinForYields[c]); stYields tmp = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + HistoName[c] ,BinForYields[c]); fprintf(pFile,"%7f   ",tmp.Rate==0.0 ? 1.0 : tmpSyst.Rate/tmp.Rate);}}fprintf(pFile,"\n");
+      char pFileB[4096];  double Unc; bool isUncert=false;
+      isUncert=false; sprintf(pFileB,"lumi     lnN ");for(int c=0;c<NChannels;c++){for(int sc=0;sc<NsubChannels;sc++){Unc=1.045; isUncert|=(Unc!=1.0); sprintf(pFileB,"%s%7f   ",pFileB,Unc);}}if(isUncert)fprintf(pFile,"%s\n",pFileB);
+      isUncert=false; sprintf(pFileB,"thxsec   lnN ");for(int c=0;c<NChannels;c++){for(int sc=0;sc<NsubChannels;sc++){Unc=subChannelsThErr[sc]; isUncert|=(Unc!=1.0); sprintf(pFileB,"%s%7f   ",pFileB,Unc);}}if(isUncert)fprintf(pFile,"%s\n",pFileB);
+      isUncert=false; sprintf(pFileB,"jesup    lnN ");for(int c=0;c<NChannels;c++){for(int sc=0;sc<NsubChannels;sc++){stYields tmpSyst = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + "jesup" + HistoName[c] ,BinForYields[c]); stYields tmp = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + HistoName[c] ,BinForYields[c]); Unc=tmp.Rate==0.0 ? 1.0 : tmpSyst.Rate/tmp.Rate; isUncert|=(Unc!=1.0); sprintf(pFileB,"%s%7f   ",pFileB,Unc);}}if(isUncert)fprintf(pFile,"%s\n",pFileB);
+      isUncert=false; sprintf(pFileB,"jesdown  lnN ");for(int c=0;c<NChannels;c++){for(int sc=0;sc<NsubChannels;sc++){stYields tmpSyst = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + "jesdown" + HistoName[c] ,BinForYields[c]); stYields tmp = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + HistoName[c] ,BinForYields[c]);Unc=tmp.Rate==0.0 ? 1.0 : tmpSyst.Rate/tmp.Rate; isUncert|=(Unc!=1.0); sprintf(pFileB,"%s%7f   ",pFileB,Unc);}}if(isUncert)fprintf(pFile,"%s\n",pFileB);
+      isUncert=false; sprintf(pFileB,"factscal lnN ");for(int c=0;c<NChannels;c++){for(int sc=0;sc<NsubChannels;sc++){stYields tmpSystA = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + "hfactup" + HistoName[c] ,BinForYields[c]); stYields tmpSystB = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + "hfactdown" + HistoName[c] ,BinForYields[c]); stYields tmp = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + HistoName[c] ,BinForYields[c]); Unc=tmp.Rate==0.0 ? 1.0 : std::max(tmpSystA.Rate,tmpSystB.Rate)/tmp.Rate; isUncert|=(Unc!=1.0); sprintf(pFileB,"%s%7f   ",pFileB,Unc);}}if(isUncert)fprintf(pFile,"%s\n",pFileB);
+      isUncert=false; sprintf(pFileB,"renscale lnN ");for(int c=0;c<NChannels;c++){for(int sc=0;sc<NsubChannels;sc++){stYields tmpSystA = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + "hrenup" + HistoName[c] ,BinForYields[c]); stYields tmpSystB = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + "hrendown" + HistoName[c] ,BinForYields[c]); stYields tmp = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + HistoName[c] ,BinForYields[c]);   Unc=tmp.Rate==0.0 ? 1.0 : std::max(tmpSystA.Rate,tmpSystB.Rate)/tmp.Rate; isUncert|=(Unc!=1.0); sprintf(pFileB,"%s%7f   ",pFileB,Unc);}}if(isUncert)fprintf(pFile,"%s\n",pFileB); 
+      isUncert=false; sprintf(pFileB,"pileup   lnN ");for(int c=0;c<NChannels;c++){for(int sc=0;sc<NsubChannels;sc++){stYields tmpSyst = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + "flatpu" + HistoName[c] ,BinForYields[c]); stYields tmp = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + HistoName[c] ,BinForYields[c]); Unc=tmp.Rate==0.0 ? 1.0 : tmpSyst.Rate/tmp.Rate; isUncert|=(Unc!=1.0); sprintf(pFileB,"%s%7f   ",pFileB,Unc);}}if(isUncert)fprintf(pFile,"%s\n",pFileB);
 
-      for(int u=0;u<NChannels*NsubChannels;u++){
-         fprintf(pFile,"MCStat%02i lnN ",u);
+      for(int u=0;u<NsubChannels;u++){
+         isUncert=false; sprintf(pFileB,"MCStat%02i lnN ",u);
          for(int c=0;c<NChannels;c++){for(int sc=0;sc<NsubChannels;sc++){
-            if((c*NsubChannels+sc)==u){stYields tmp = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + HistoName[c] ,BinForYields[c]); fprintf(pFile,"%f   ",1.0+( tmp.Rate==0.0 ? 0 : (tmp.Err/tmp.Rate) ));
-            }else{                fprintf(pFile,"%f   ",1.0);
+            if(sc==u){stYields tmp = Efficiency(File,subChannelsDir[sc] ,string("/") + Channels[c] + "_" + HistoName[c] ,BinForYields[c]); Unc=1.0+( tmp.Rate==0.0 ? 0 : (tmp.Err/tmp.Rate)); isUncert|=(Unc!=1.0);  sprintf(pFileB,"%s%7f   ",pFileB,Unc);
+            }else{                Unc=1.0; isUncert|=(Unc!=1.0);  sprintf(pFileB,"%s%7f   ",pFileB,Unc);
             }      
-         }}fprintf(pFile,"\n");
+         }}if(isUncert)fprintf(pFile,"%s\n",pFileB);
       }
 
       fclose(pFile);
@@ -367,7 +372,7 @@ void computeLimit(){
       char Buffer[1024];
       printf("Running LandS on Higgs %s:",mass_H[i].c_str());
  //   sprintf(Buffer,"../../../../UserCode/mschen/LandS/test/lands.exe -M Bayesian -d %s --doExpectation 1 -t 1000000 > %s",(string("datacard_") + Model[M] + mass_H[i] + ".txt").c_str(),(string("datacard_") + Model[M] + mass_H[i] + ".out").c_str());
-      sprintf(Buffer,"../../../../UserCode/mschen/LandS/test/lands.exe -d %s -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 5000 --nToysForCLb 2500 --seed 1234 -n %s > %s &",(string("datacard_") + Model[M] + mass_H[i] + ".txt").c_str(),(string("Higgs") +  Model[M] + mass_H[i]).c_str(),(string("datacard_") + Model[M] + mass_H[i] + ".out").c_str());
+      sprintf(Buffer,"../../../../UserCode/mschen/LandS/test/lands.exe -d %s -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 5000 --nToysForCLb 2500 --seed 1234 -n %s > /tmp/%s &",(string("datacard_") + Model[M] + mass_H[i] + ".txt").c_str(),(string("Higgs") +  Model[M] + mass_H[i]).c_str(),(string("datacard_") + Model[M] + mass_H[i] + ".out").c_str());
    printf("%s\n",Buffer);
    system(Buffer);
    }}
