@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.43 $
+\RCS$Revision: 1.44 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.43 2011/09/19 20:49:23 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.44 2011/09/19 22:08:30 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -1421,6 +1421,18 @@ Data                                & 1                  &  \\\hline\hline
 \end{center}
 \end{table}
 
+Fig.~\ref{fig:vbf_candidate_ee} shows the event display of the di-electron event candidate selected in data.
+The dilepton has an invariant mass of 92.3~GeV/c$^2$, $p_T=$152 GeV/c$^2$ and $\eta=$-1.13.
+The \MET and \RMET are both 70.3~GeV and the total transverse mass of the system $M_T(Z,E_T^{miss})=$241~GeV/c$^2$.    
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{img/vbf_candidate_ee}
+\caption{Event display of a di-electron candidate event with VBF-like topology.}
+\label{fig:vbf_candidate_ee}
+\end{center}
+\end{figure}
+
 
 
 %%
@@ -1452,6 +1464,7 @@ Details can be found in App.~\ref{sec:app:leptonisolation};
 %%
 %% Background determination
 %%
+\clearpage
 \subsection{Background determination}
 \label{subsec:backgrounddet}
 
@@ -1537,6 +1550,13 @@ HCAL isolation                        & \multicolumn{2}{c}{$<$2.2 + 0.001$E_T$} 
 %%%
 \subsubsection{Data-driven estimation of residual top background}
 \label{subsubsec:topbackground}
+
+%%%
+%%% Di-bosons
+%%%
+\subsubsection{Control region for 3 lepton events}
+\label{subsubsec:threeleptoncontrol}
+
 
 %%
 %%
@@ -1781,16 +1801,20 @@ with the result of diagram subtraction which includes terms to cancel locally th
 which maintain gauge invariance. Details can be found in~\cite{s:Giamm2010}.
 An extra systematic uncertainty is assigned to the tW process due to the differences found
 between the standard diagram removal (DR) and diagram subtraction (DS) scheme. 
-The differences found after the applying the medium selection cut for the \RMET variable are summarized in Tab~\ref{tab:twuncs}.
-We assume this systematic uncertainty for all the subsequent mass point selections.
+The differences found after the applying the medium selection cut for the selection for\RMET variable are summarized in Tab~\ref{tab:twuncs}.
+For the VBF category the differences are quoted after the $b$-tagging veto. These two loose selections were chosen in order not to deplete the 
+MC statistics used for the estimate of this uncertainty. In the tight selection region almost no single top event survives.
+We assume therefore these systematic uncertainty for all the subsequent mass point selections.
+This systematic is only considered for the Single Top contribution.
 
 \begin{table}[htp]
 \begin{center}
 \caption{Systematic uncertainty affecting the final selection due to the theoretical definition of the $tW$ cross section.}
 \label{tab:twuncs}
-\begin{tabular}{lcccc} \hline\hline
-Event category                                    & =0 jets & =1 jets & $\geq$ 2 jets & VBF \\\hline
-Systematic uncertainty                            &         &         &               & \\\hline\hline
+\begin{tabular}{lcccccccc} \hline\hline
+\multirow{2}{*}{Event category}     & \multicolumn{4}{c}{$\mu\mu$}              & \multicolumn{4}{c}{$ee$} \\
+                                    & =0 jets & =1 jets & $\geq$ 2 jets & VBF   & =0 jets & =1 jets & $\geq$ 2 jets & VBF \\\hline
+Relative uncertainty                & 1.085   & 0.925   & 1.231         & 0.645 & 1.294   & 0.916   & 0.748         & 0.820 \\\hline\hline
 \end{tabular}
 \end{center}
 \end{table}
