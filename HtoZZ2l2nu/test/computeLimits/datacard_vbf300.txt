@@ -1,0 +1,37 @@
+****datacard ******
+
+# Counting experiment with multiple channels for testing
+imax 2  number of channels
+jmax *  number of backgrounds ('*' = automatic)
+kmax *  number of nuisance parameters (sources of systematical uncertainties)
+------------
+# two channels, each with it's number of observed events
+bin         mumuvbf     eevbf   
+observation 0.000000   1.000000   
+------------
+# now we list the expected events for signal and all backgrounds in
+those three bins
+# the second 'process' line must have a positive number for
+backgrounds, and 0 for signal
+# for the signal, we normalize the yields to an hypothetical cross
+section of 1/pb
+# so that we get an absolute limit in cross section in units of pb.
+# then we list the independent sources of uncertainties, and give
+their effect (syst. error)
+# on each process and bin
+bin          mumuvbf   mumuvbf   mumuvbf   mumuvbf   mumuvbf     eevbf     eevbf     eevbf     eevbf     eevbf   
+process        higgs        DY        WJ        VV       Top     higgs        DY        WJ        VV       Top   
+process            0         1         2         3         4         0         1         2         3         4   
+rate         0.342043   0.616303   0.000000   0.166690   0.107415   0.318715   0.968753   0.000000   0.106907   0.342796   
+------------
+lumi     lnN 1.045000   1.045000   1.045000   1.045000   1.045000   1.045000   1.045000   1.045000   1.045000   1.045000   
+thxsec   lnN 1.077000   1.043450   1.049760   1.789119   1.480807   1.077000   1.043450   1.049760   1.789119   1.480807   
+jesup    lnN 1.041149   1.276197   1.000000   0.986807   1.000000   1.049496   0.663323   1.000000   1.158258   1.004364   
+jesdown  lnN 0.880708   0.432525   1.000000   0.777172   0.056143   0.904322   0.984992   1.000000   0.842857   1.000000   
+factscal lnN 0.997721   1.000000   1.000000   1.000000   1.000000   0.993663   1.000000   1.000000   1.000000   1.000000   
+renscale lnN 0.997770   1.000000   1.000000   1.000000   1.000000   0.994458   1.000000   1.000000   1.000000   1.000000   
+pileup   lnN 1.070364   1.537559   1.000000   1.050318   1.390810   1.104886   0.978167   1.000000   1.266756   1.043664   
+MCStat00 lnN 1.038325   1.000000   1.000000   1.000000   1.000000   1.036737   1.000000   1.000000   1.000000   1.000000   
+MCStat01 lnN 1.000000   1.634337   1.000000   1.000000   1.000000   1.000000   1.514098   1.000000   1.000000   1.000000   
+MCStat03 lnN 1.000000   1.000000   1.000000   1.316070   1.000000   1.000000   1.000000   1.000000   1.313074   1.000000   
+MCStat04 lnN 1.000000   1.000000   1.000000   1.000000   1.676548   1.000000   1.000000   1.000000   1.000000   1.651100   
