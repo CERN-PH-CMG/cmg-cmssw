@@ -4,8 +4,8 @@
 /** \class ReducedMETComputer
  *  No description available.
  *
- *  $Date: 2011/08/11 13:16:01 $
- *  $Revision: 1.9 $
+ *  $Date: 2011/08/26 14:02:20 $
+ *  $Revision: 1.10 $
  *  \author G. Cerminara & D. Trocino & P. Silva
  */
 
@@ -205,8 +205,8 @@ public:
 	if(workingpoint==TIGHTWP)  cut=78.7;
 	break;
       case EventCategory::VBF :
-	if(workingpoint==MEDIUMWP) cut=50.0;  //the tuned point 56.3
-	if(workingpoint==TIGHTWP)  cut=50.0;
+	if(workingpoint==MEDIUMWP) cut=57.36;  //the tuned point 56.3
+	if(workingpoint==TIGHTWP)  cut=60.20;
 	break;
       }
     return cut;
