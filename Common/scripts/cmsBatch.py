@@ -106,7 +106,7 @@ echo 'sending the job directory back'
       script += """
 for file in *.root; do
 newFileName=`echo $file | sed -r -e 's/\./_%s\./'`
-cmsStage $file %s/$newFileName 
+cmsStage -f $file %s/$newFileName 
 done
 """ % (index, remoteDir)
           
@@ -130,7 +130,7 @@ echo 'sending the job directory back'
       script += """
 for file in *.root; do
 newFileName=`echo $file | sed -r -e 's/\./_%s\./'`
-cmsStage $file %s/$newFileName 
+cmsStage -f $file %s/$newFileName 
 done
 """ % (index, remoteDir)
 
