@@ -1,4 +1,4 @@
-import datetime, inspect, fnmatch, os, subprocess, tempfile
+import copy, datetime, inspect, fnmatch, os, re, subprocess, sys, tempfile, time
 
 import castortools
 import Das
@@ -174,13 +174,19 @@ class GenerateMask(Task):
     """Generates a file mask"""
     def __init__(self, dataset, user, options):
         Task.__init__(self,'GenerateMask', dataset, user, options)
+    def addOption(self, parser):
+        parser.add_option("-r", "--recursive", dest="resursive", default=False, action='store_true',help='Walk the mass storage device recursively')
+        parser.add_option("-p", "--printout", dest="printout", default=False, action='store_true',help='Print a report to stdout')        
     def run(self, input):
         
         report = None
         if self.options.check and not input['MaskPresent']:
             from edmIntegrityCheck import IntegrityCheck, PublishToFileSystem
             
-            check = IntegrityCheck(self.dataset,self.options)
+            options = copy.deepcopy(self.options)
+            options.user = self.user
+            
+            check = IntegrityCheck(self.dataset,options)
             check.test()
             report = check.structured()
             pub = PublishToFileSystem(check)
@@ -324,7 +330,206 @@ class RunTestEvents(Task):
 
         return input
     
- 
+class ExpandConfig(Task):
+    """Run edmConfigDump"""    
+
+    def __init__(self, dataset, user, options):
+        Task.__init__(self,'ExpandConfig', dataset, user, options)
+    def run(self, input):
+        
+        full = input['FullCFG']
+        jobdir = input['JobDir']
+
+        config = file(full).read()
+        source = os.path.join(jobdir,'test_cfg.py')
+        expanded = 'Expanded%s' % os.path.basename(full)
+        output = file(source,'w')
+        output.write(config)
+        output.write("file('%s','w').write(process.dumpPython())\n" % expanded)
+        output.close()
+
+        pwd = os.getcwd()
+        
+        error = None
+        try:
+            os.chdir(jobdir)
+            
+            child = subprocess.Popen(['python',os.path.basename(source)], stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+            stdout, stderr = child.communicate()
+            
+            if child.returncode != 0:
+                error = "Failed to edmConfigDump. Error was '%s' (%i)." % (stderr,child.returncode)
+            input['ExpandedFullCFG'] = os.path.join(jobdir,expanded)
+            
+        finally:
+            os.chdir(pwd)
+            
+        if error is not None:
+            raise Exception(error)
+
+        return input
+    
+class RunCMSBatch(Task):
+    """Run cmsBatch"""    
+
+    def __init__(self, dataset, user, options):
+        Task.__init__(self,'RunCMSBatch', dataset, user, options)
+    def addOption(self, parser):
+        parser.add_option("--batch_user", dest="batch_user", help="The user for LSF", default=os.getlogin())
+        parser.add_option("--run_batch", dest="run_batch", default=True, action='store_true',help='Run on the batch system')
+        parser.add_option("-N", "--numberOfInputFiles", dest="nInput",help="Number of input files per job",default=5,type=int)
+        parser.add_option("-q", "--queue", dest="queue", help="The LSF queue to use", default="1nh")        
+        parser.add_option("-t", "--tier", dest="tier",
+                          help="Tier: extension you can give to specify you are doing a new production. If you give a Tier, your new files will appear in sampleName/tierName, which will constitute a new dataset.",
+                          default="")               
+    def run(self, input):
+        
+        find = FindOnCastor(self.dataset,self.options.batch_user,self.options)
+        out = find.run({})
+        
+        full = input['ExpandedFullCFG']
+        jobdir = input['JobDir']
+        
+        sampleDir = os.path.join(out['directory'],self.options.tier)
+        sampleDir = castortools.castorToLFN(sampleDir)
+        
+        cmd = ['cmsBatch.py',str(self.options.nInput),os.path.basename(full),'-o','%s_Jobs' % self.options.tier,'--force']
+        cmd.extend(['-r',sampleDir])
+        if self.options.run_batch:
+            jname = "%s/%s" % (self.dataset,self.options.tier)
+            jname = jname.replace("//","/") 
+            cmd.extend(['-b',"'bsub -q %s -J %s < ./batchScript.sh | tee job_id.txt'" % (self.options.queue,jname)])
+        print " ".join(cmd)
+        
+        pwd = os.getcwd()
+        
+        error = None
+        try:
+            os.chdir(jobdir)
+            returncode = os.system(" ".join(cmd))
+
+            if returncode != 0:
+                error = "Running cmsBatch failed. Return code was %i." % returncode
+        finally:
+            os.chdir(pwd)
+            
+        if error is not None:
+            raise Exception(error)
+        
+        input['SampleDataset'] = "%s/%s" % (self.dataset,self.options.tier)
+        input['SampleOutputDir'] = sampleDir
+        input['LSFJobsTopDir'] = os.path.join(jobdir,'%s_Jobs' % self.options.tier)
+        return input 
+
+class MonitorJobs(Task):
+    """Monitor LSF jobs created with cmsBatch.py"""    
+    def __init__(self, dataset, user, options):
+        Task.__init__(self,'MonitorJobs', dataset, user, options)
+    
+    def getjobid(self, job_dir):
+        """Parse the LSF output to find the job id"""
+        input = os.path.join(job_dir,'job_id.txt')
+        result = None
+        if os.path.exists(input):
+            contents = file(input).read()
+            for c in contents.split('\n'):
+                if c and re.match('^Job <\\d*> is submitted to queue <.*>',c) is not None:
+                    try:
+                        result = c.split('<')[1].split('>')[0]
+                    except Exception, e:
+                        print >> sys.stderr, 'Job ID parsing error',str(e),c
+        return result
+    
+    def monitor(self, jobs, states = ['RUN','PEND']):
+        cmd = ['bjobs']
+        cmd.extend(jobs.values())
+        child = subprocess.Popen(cmd, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        stdout, stderr = child.communicate()
+
+        result = {}
+        if stdout:
+            lines = stdout.split('\n')
+            if lines:
+                for line in lines[1:]:
+                    tokens = line.split(' ')
+                    if len(tokens) < 10: continue
+                    id = tokens[0]
+                    status = tokens[3]
+                    if status not in states: continue
+                    result[id] = status
+        return result
+    
+    def run(self, input):
+        
+        jobsdir = input['LSFJobsTopDir']
+        if not os.path.exists(jobsdir):
+            raise Exception("LSF jobs dir does not exist: '%s'" % jobsdir)
+        
+        import glob
+        subjobs = [s for s in glob.glob("%s/Job_[0-9]*" % jobsdir) if os.path.isdir(s)]
+        jobs = {}
+        for s in subjobs:
+            jobs[s] = self.getjobid(s)
+
+        def checkStatus(stat):
+            result = {}
+            for j, id in jobs.iteritems():
+                if id is None:
+                    result[j] = 'UNKNOWN'
+                else:
+                    if stat.has_key(id):
+                        result[j] = stat[id]
+                    else:
+                        stdout = os.path.join(j,'LSFJOB_%s' % id,'STDOUT')
+                        if os.path.exists(stdout):
+                            result[j] = stdout
+                        else:
+                            result[j] = 'FAILED'
+            return result
+        
+        status = self.monitor(jobs)
+        count = 0
+        while status:
+            job_status = checkStatus(status)
+            time.sleep(60)
+            status = self.monitor(jobs)
+            if not (count % 6):
+                print '%s: Monitoring %i jobs (%s)' % (self.name,len(status),self.dataset)
+            count += 1
+            
+        input['LSFJobStatus'] = checkStatus(status)
+        return input   
+    
+class CheckJobStatus(Task):
+    """Check the job STDOUT"""    
+    def __init__(self, dataset, user, options):
+        Task.__init__(self,'CheckJobStatus', dataset, user, options)
+    def run(self, input):
+        
+        job_status = input['LSFJobStatus']
+
+        result = {}
+        for j, status in job_status.iteritems():
+            valid = True
+            if os.path.exists(status):
+                for line in file(status):
+                    if 'Exception' in line:
+                        result[j] = 'Exception'
+                        valid = False
+                        break
+                    if 'CPU time limit exceeded' in line:
+                        result[j] = 'CPUTimeExceeded'
+                        valid = False
+                        break
+                if valid:
+                    result[j] = 'VALID'
+            else:
+                result[j] = status
+        input['LSFJobStatusCheck'] = result
+        mask = GenerateMask(input['SampleDataset'],self.options.batch_user,self.options)
+        report = mask.run({'MaskPresent':False})
+        input['LSFJobReport'] = report['Report']
+        return input     
     
 if __name__ == '__main__':
     
@@ -344,7 +549,11 @@ if __name__ == '__main__':
              SourceCFG(dataset,user,options),
              FullCFG(dataset,user,options),
              CheckConfig(dataset,user,options),
-             RunTestEvents(dataset,user,options)
+             RunTestEvents(dataset,user,options),
+             ExpandConfig(dataset,user,options),
+             RunCMSBatch(dataset,user,options),
+             MonitorJobs(dataset,user,options),
+             CheckJobStatus(dataset,user,options)
              ]
     #allow the tasks to add extra options
     for t in tasks:
@@ -359,9 +568,9 @@ if __name__ == '__main__':
             t.options = op.options
             t.user = op.user
         
-            print t.name
+            print '%s:' % t.name
             previous = t.run(previous)
-            print '\t',previous
+            print '\t%s' % previous
         
         
     

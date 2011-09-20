@@ -31,6 +31,9 @@ class BatchManager:
         self.parser_.add_option("-r", "--remote-copy", dest="remoteCopy",
                           help="remote output directory for your jobs. Example: /store/cmst3/user/cbern/CMG/HT/Run2011A-PromptReco-v1/AOD/PAT_CMG/RA2. This directory *must* be provided as a logical file name (LFN). When this option is used, all root files produced by a job are copied to the remote directory, and the job index is appended to the root file name. The Logger directory is tarred and compressed into Logger.tgz, and sent to the remote output directory as well. Afterwards, use logger.py to access the information contained in Logger.tgz.",
                           default=None)
+        self.parser_.add_option("-f", "--force", action="store_true",
+                                dest="force", default=False,
+                                help="Don't ask any questions, just over-write")        
         # this opt can be removed
         self.parser_.add_option("-n", "--negate", action="store_true",
                                 dest="negate", default=False,
@@ -113,8 +116,9 @@ class BatchManager:
 
         if( os.path.isdir(self.outputDir_) == True ):
             input = ''
-            while input != 'y' and input != 'n':
-                input = raw_input( 'The directory ' + self.outputDir_ + ' exists. Are you sure you want to continue? its contents will be overwritten [y/n]' )
+            if not self.options_.force:
+                while input != 'y' and input != 'n':
+                    input = raw_input( 'The directory ' + self.outputDir_ + ' exists. Are you sure you want to continue? its contents will be overwritten [y/n]' )
             if input == 'n':
                 sys.exit(1)
             else:
