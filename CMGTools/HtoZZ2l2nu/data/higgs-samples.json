@@ -25,7 +25,7 @@
 	     {	
 		"dtag":"GGtoH200toWWtoLNuTauNu",
 		"dset":"GluGluToHToWWToLNuTauNu_M-200_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
-		"patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_06_22_HtoZZ2l2n/HZZ/luGluToHToWWToLNuTauNu_M-200_7TeV-powheg-pythia6"],
+		"patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_06_22_HtoZZ2l2n/HZZ/GluGluToHToWWToLNuTauNu_M-200_7TeV-powheg-pythia6"],
 		"xsec":5.27,
 		"br":[0.741,0.0486]
 	     },
@@ -54,20 +54,6 @@
 		"br":[0.261,0.0403896]
 	     }
 	  ]
-	},
-        {
-         "tag":"Z/#gamma^{*}+jets#rightarrow ll",
-         "isdata":false,
-	 "spimpose":true,
-         "color":"kAzure-2",
-         "data":[
-              {
-               "dtag":"DYJetsToLL",
-               "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
-               "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/ZZ/DYToLL/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
-               "xsec":3048
-              }
-          ]
-        }
+	}
     ]	
 }
