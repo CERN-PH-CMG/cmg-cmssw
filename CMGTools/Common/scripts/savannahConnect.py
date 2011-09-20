@@ -16,7 +16,7 @@ class savannahConnect:
         self.login(username, password)
 
     # From DbsProcessedDataset object prints to a string which can be posted on Savannah
-    def datasetString(self, details, files, tags, castorDir):
+    def datasetString(self, details, files, tags, castorDir, comment):
         detailArray = []
         # Print name and primary set at top
         detailArray.append( "*%s* " % details['PathList'][0])
@@ -68,6 +68,9 @@ class savannahConnect:
             detailString+="\n*Root files*:\n"
             for i in files:
                 detailString +="\t"+ i + "\n\n"
+
+        if comment!= None:
+            detailString+="\n*Additional Comments*\n"+ comment
         return detailString
 
     # Used to determine if login was successful
@@ -242,7 +245,7 @@ class savannahConnect:
             return False
 
 
-    def submitItem(self, dataset, files, tags,castorDir, username, test):
+    def submitItem(self, dataset, files, tags,castorDir, username, test, comment):
         # If logged in
         if self.valid == True:
             category = '100'
@@ -269,12 +272,12 @@ class savannahConnect:
                     # If dataset already exists
                     if previousEntry:
                         self.br.select_form(name='item_form')
-                        self.br.form['comment']= self.datasetString(dataset, files, tags, castorDir)
+                        self.br.form['comment']= self.datasetString(dataset, files, tags, castorDir, comment)
 
                     # If dataset is new
                     else:
                         self.br.select_form(name='trackers_form')
-                        self.br.form['details']= self.datasetString(dataset, files, tags, castorDir)
+                        self.br.form['details']= self.datasetString(dataset, files, tags, castorDir, comment)
                         dayMonthYear = datetime.date.fromtimestamp(int(dataset['DateCreated'])).strftime('%d-%B-%Y').split("-")
                         self.br.form['planned_starting_date_dayfd']=[dayMonthYear[0].lstrip("0")]
                         self.br.form.set_value_by_label([dayMonthYear[1]],'planned_starting_date_monthfd')
