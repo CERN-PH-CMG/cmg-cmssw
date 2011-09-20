@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.44 $
+\RCS$Revision: 1.45 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.44 2011/09/19 22:08:30 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.45 2011/09/20 07:27:05 psilva Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -1550,6 +1550,50 @@ HCAL isolation                        & \multicolumn{2}{c}{$<$2.2 + 0.001$E_T$} 
 %%%
 \subsubsection{Data-driven estimation of residual top background}
 \label{subsubsec:topbackground}
+
+We estimate the residual contamination from top (\ttbar and single top) background using the side-band of the $Z$ region,
+and the un-tagged and pre-tagged samples. For each channel ($ee$ and $mu\mu$) four exclusive categories are defined
+according to Tab.~\ref{tab:ttbarselregions}.
+
+\begin{table}[htp]
+\begin{center}
+\caption{Selection regions for top background estimate from data. The $\Box$ ($\blacksquare$) denotes the requirement or not of the b-tagging veto.}
+\label{tab:ttbarselregions}
+\begin{tabular}{lcc} \hline\hline
+Region                              & $M(\ell,\ell)$ GeV/c$^2$   & $b$ veto \\\hline
+A                                   & $]76,106[$                 & $\Box$ \\
+B                                   & $]61,76[ \cup ]106,121[$   & $\Box$ \\
+C                                   & $]76,106[$                 & $\blacksquare$\\
+D                                   & $]61,76[ \cup ]106,121[$   & $\blacksquare$\\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Let $N_t$ ($N_o$) be the total number of Top (other) events inside and outside the $Z$ mass region
+and $R_{in}$ ($k_{in}$) the ratio of Top (other) events which are found inside the $Z$ mass region with respect to the total number of events.
+Then, if $\varepsilon_t$ ($\varepsilon_o$) are the efficiency of the $b$-tagging veto for top (other) events,
+one can write the following relations for the event yields expected in the different regions:
+
+\begin{align}
+<N_A> = \varepsilon_t R_{in} N_t + \varepsilon_o k_{in} N_o \\
+<N_B> =  \varepsilon_t (1- R_{in}) N_t + \varepsilon_o (1- k_{in}) N_o \\  
+<N_C> = (1-\varepsilon_t) R_{in} N_t + (1-\varepsilon_o) k_{in} N_o \\
+<N_D> =  (1-\varepsilon_t) (1- R_{in}) N_t + (1-\varepsilon_o) (1-k_{in}) N_o   
+\label{eq:abcdfortop}
+\end{align}
+
+Taking $R_{in}$ and $k_{in}$ from simulation idepdendently for the $\mu\mu$ and $ee$ channels,
+and correcting the simulation predicted $\varepsilon_t$ and $\varepsilon_o$ using the data-driven scale factors
+for the $b$-tagging efficiency which will be discussed in more detail in Sec.~\ref{subsec:systunc},
+we determine $N_t$ ($N_o$) by maximizing the following likelihood:
+
+\begin{equation}
+\mathcal{L}=\displaystyle{\prod_{i=A,B,C,D}} \mathcal{P}_{oisson}(N_i, <N_i>)
+\label{eq:yieldsfit}
+\end{equation}
+
+where $N_i$ ($<N_i>$) are the number of observed (expected) events in each region.
+
 
 %%%
 %%% Di-bosons
