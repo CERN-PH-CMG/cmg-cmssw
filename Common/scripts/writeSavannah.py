@@ -50,6 +50,12 @@ If no -s option is provided, it is assumed that the current user is the user on 
                       dest="test",
                       help="Flag task as a test",
                       default=False )
+    # If user wants to add their own comments
+    parser.add_option("-C", "--comment",
+                      action = "store_true",
+                      dest="commented",
+                      help="Open comment prompt",
+                      default = False)
     
     
 
@@ -67,6 +73,9 @@ If no -s option is provided, it is assumed that the current user is the user on 
         parser.print_help()
         sys.exit(1)
 
+    # Get user comment if one is left
+    if options.commented:
+        comment = raw_input("Please enter your comment here:")
     # Store full dataset name
     dirOrFile = args[0]
 
@@ -142,7 +151,7 @@ If no -s option is provided, it is assumed that the current user is the user on 
         sav = savannahConnect(options.savuser, savpass)
 
         #Submit dataset to savannah and assign to files owner on Castor
-        savannahURL =sav.submitItem(dataset,files,tags,targetDir ,options.user, options.test)
+        savannahURL =sav.submitItem(dataset,files,tags,targetDir ,options.user, options.test, comment)
 
     except ValueError as err:
         print err, '. Exit!'
