@@ -2,9 +2,9 @@
 % The last version of these macros found before the maketitle will be the one on the front page,
 % so only the main file is tracked.
 % Do not edit by hand!
-\RCS$Revision: 1.46 $
+\RCS$Revision: 1.47 $
 %\RCS$HeadURL: svn+ssh://svn.cern.ch/reps/tdr2/notes/AN-11-higgs/trunk/AN-11-higgs.tex $
-\RCS$Id: AN-11-higgs.tex,v 1.46 2011/09/20 14:12:51 psilva Exp $
+\RCS$Id: AN-11-higgs.tex,v 1.47 2011/09/20 15:45:08 querten Exp $
 %%%%%%%%%%%%% ptdr definitions %%%%%%%%%%%%%%%%%%%%%
 \input{ptdr-definitions}
 
@@ -1964,7 +1964,49 @@ Include statistical analysis based on the results obtained in the previous secti
 Combine ee+$\mu\mu$ channel in the 3-jet multiplcity bins and compare the cut and count
 analysis performance with the multivariate analysis performance.
 Add combination with VBF for the cut and count analysis.
-Include stand-alone contribution from the VBF analysis like shown in Tab.~\ref{tab:vbflimits}.
+The resulting expected and observed limits can be found in the Tab.~\ref{tab:limits}, Tab.~\ref{tab:gglimits} and Tab.~\ref{tab:vbflimits} as well as in the Fig.~\ref{fig:exclusionplot}.
+
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{img/ExclusionPlot}
+\caption{Observed (black) and Expected (grey) exclusion limit at 95\% C.L. using events falling in the 0,1,2jets (Gluon-Gluon) and VBF analysis bins.  As well as the expected limit when using only the 0,1,2 jets bins or only the VBF bin.}
+\label{fig:exclusionplot}
+\end{center}
+\end{figure}
+
+
+\begin{table}[htp]
+\begin{center}
+\caption{Limits on the predicted SM H cross section set from the selected data.
+The 68\% uncertainty on the expected limit is included for reference.
+The uncertainty includes luminosity and MC statistics.}
+\label{tab:limits}
+\begin{tabular}{lccccc} \hline\hline
+\multirow{2}{*}{$\sigma/\sigma_{SM}$} & \multicolumn{5}{c}{$m_{H^0}$ (GeV/c$^2$)} \\
+                                      & 200  & 300    & 400  & 500  & 500 \\\hline
+Expected (MC)                         & 5.9 $\pm$ 1.9 & 2.8 $\pm$ 1.0 & 1.8 $\pm$ 0.6 &  2.6 $\pm$ 0.9 & 4.5$\pm$ 1.8 \\
+Data                                  & 4.6           & 2.8           & 1.9         & 2.6          & 3.7 \\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[htp]
+\begin{center}
+\caption{Limits on the predicted SM gg$\rightarrow$H cross section set from the selected data.
+The 68\% uncertainty on the expected limit is included for reference.
+The uncertainty includes luminosity and MC statistics.}
+\label{tab:gglimits}
+\begin{tabular}{lccccc} \hline\hline
+\multirow{2}{*}{$\sigma/\sigma_{SM}$} & \multicolumn{5}{c}{$m_{H^0}$ (GeV/c$^2$)} \\
+                                      & 200  & 300    & 400  & 500  & 500 \\\hline
+Expected (MC)                         & 11.4 $\pm$ 5.0 & 3.6 $\pm$ 1.2 & 2.2 $\pm$ 0.7 & 2.8 $\pm$ 1.1 & 4.8 $\pm$ 1.9  \\
+Data                                  & 11.7          & 4.2           & 2.3        & 2.8          & 4.0 \\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
 
 \begin{table}[htp]
 \begin{center}
@@ -1975,17 +2017,11 @@ The uncertainty includes luminosity and MC statistics.}
 \begin{tabular}{lccccc} \hline\hline
 \multirow{2}{*}{$\sigma/\sigma_{SM}$} & \multicolumn{5}{c}{$m_{H^0}$ (GeV/c$^2$)} \\
                                       & 200  & 300    & 400  & 500  & 500 \\\hline
-Expected (MC)                         & 5.7 $\pm$ 1.8 & 5.2 $\pm$ 1.6 & 9.0 $\pm$ 3.0 & 17.2 $\pm$ 5.2 & 32 $\pm$ 10  \\
-Data                                  & 5.1           & 4.7           & 8.24        & 15.7          & 29.6 \\\hline\hline
-                                      &      &      &      &      & \\
-{\small Obs=0  (hyp.)}                & {\small 3.95} & {\small 3.63} & {\small 6.29} & {\small 11.9} & {\small 22.5} \\
+Expected (MC)                         & 5.6 $\pm$ 1.5 & 5.2 $\pm$ 1.3 & 9.2 $\pm$ 2.0 & 18.5 $\pm$ 4.1 & 34.5 $\pm$ 7.5  \\
+Data                                  & 5.1           & 4.7           & 8.6        & 17.1          & 31.2 \\\hline\hline
 \end{tabular}
 \end{center}
 \end{table}
-
-
-
-
 
 
 %
