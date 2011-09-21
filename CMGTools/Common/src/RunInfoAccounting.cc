@@ -74,7 +74,15 @@ void cmg::RunInfoAccounting::processRunInfo(const edm::Run& aRun,
   
   eventWeight_ = -1;
   genCrossSection_ = -1;
-  genFilterEfficiency_ = finalGenEvents_/initialGenEvents_;
+
+  /// the initial and final numbers of gen events are not known in case 
+  /// the GenFilterInfo was not found. 
+  /// In this case, both numbers are set to 0, as well as the gen filter efficiency 
+  /// and the event weight. 
+  if(initialGenEvents_>0) 
+    genFilterEfficiency_ = finalGenEvents_/initialGenEvents_;
+  else 
+    genFilterEfficiency_ = 0;
 
   edm::Handle<GenRunInfoProduct> gen;
   if(aRun.getByLabel(edm::InputTag("generator"),gen)){
