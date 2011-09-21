@@ -5,11 +5,18 @@ import Das
 
 class Task(object):
     """Base class for Task API"""
-    def __init__(self, name, dataset, user, options):
+    def __init__(self, name, dataset, user, options, instance = None):
         self.name = name
+        self.instance = instance
         self.dataset = dataset
         self.user = user
         self.options = options
+    def getname(self):
+        """The name of the object, using the instance if needed"""
+        if self.instance is not None:
+            return '%s_%s' % (self.name,self.instance)
+        else:
+            return self.name
     def addOption(self, parser):
         """A hook for adding things to the parser"""
         pass
@@ -30,7 +37,7 @@ class ParseOptions(Task):
         self.options, self.dataset = self.das.get_opt()
         self.user = self.options.user
         if not self.dataset: raise Exception('TaskError: No dataset specified')
-        return {'options':self.options, 'dataset':self.dataset}    
+        return {'Options':self.options, 'Dataset':self.dataset}    
 
 class CheckDatasetExists(Task):
     def __init__(self, dataset, user, options):
@@ -55,7 +62,7 @@ class CheckDatasetExists(Task):
             raise Exception("Dataset not unique according to listSamples.py. Samples found were '%s'" % samples)
         if '//' in samples[0]:
             raise Exception("Too many slashes in sample name '%s'. Please check." % samples[0])
-        return {'dataset':samples[0]}
+        return {'Dataset':samples[0]}
 
 class BaseDataset(Task):
     """Query DAS to find dataset"""
@@ -99,11 +106,48 @@ class BaseDataset(Task):
         return data
     
     def run(self, input):
+        result = {}
         if (hasattr(self.options,'check') and self.options.check) or not hasattr(self.options,'check'):
             output = self.query(self.dataset)
-            input['name'] = self.options.name
-            input['das'] = output
-        return input
+        return {'Name':self.options.name,'Das':output}
+
+class GZipFiles(Task):
+    """GZip a list of files"""
+    def __init__(self, dataset, user, options):
+        Task.__init__(self,'GZipFiles', dataset, user, options)
+    def gzip(self, fileName):
+        import gzip
+        output = '%s.gz' % fileName
+        
+        f_in = open(fileName, 'rb')
+        f_out = gzip.open(output, 'wb')
+        f_out.writelines(f_in)
+        f_out.close()
+        f_in.close()
+        
+        return output
+           
+    def run(self, input):
+        files = input['FilesToCompress']['Files']
+        
+        compressed = []
+        for f in files:
+            if f is None or not f: continue
+            if os.path.exists(f): compressed.append(self.gzip(f))
+        return {'CompressedFiles':compressed}
+    
+class CleanFiles(Task):
+    """Remove a list of files"""
+    def __init__(self, dataset, user, options):
+        Task.__init__(self,'CleanFiles', dataset, user, options)
+    def run(self, input):
+        files = input['FilesToClean']['Files']
+        removed = []
+        for f in files:
+            if f is None or not f: continue
+            if os.path.exists(f): os.remove(f)
+            removed.append(f)
+        return {'CleanedFiles':removed}
 
 class FindOnCastor(Task):
     """Generate a source CFG"""
@@ -118,7 +162,7 @@ class FindOnCastor(Task):
         directory = directory.replace('//','/')
         if not castortools.fileExists(directory):
             raise Exception("Dataset directory '%s' does not exist" % directory)
-        return {'topdir':topdir,'directory':directory}  
+        return {'Topdir':topdir,'Directory':directory}  
 
 class CheckForMask(Task):
     """Test if a file mask is present"""
@@ -127,7 +171,7 @@ class CheckForMask(Task):
     def addOption(self, parser):
         parser.add_option("-c", "--check", dest="check", default=False, action='store_true',help='Check filemask if available')        
     def run(self, input):
-        dir = input['directory']
+        dir = input['FindOnCastor']['Directory']
 
         mask = "IntegrityCheck"
         file_mask = []  
@@ -140,18 +184,15 @@ class CheckForMask(Task):
                 from edmIntegrityCheck import PublishToFileSystem
                 p = PublishToFileSystem(mask)
                 report = p.get(dir)
-        
-        input['MaskPresent'] = report is not None
-        input['Report'] = report
-        return input
+        return {'MaskPresent':report is not None,'Report':report}
     
 class CheckForWrite(Task):
     def __init__(self, dataset, user, options):
         Task.__init__(self,'CheckForWrite', dataset, user, options)
     def run(self, input):
         """Check that the directory is writable"""
-        dir = input['directory']
-        if self.options.check and not input['MaskPresent']:
+        dir = input['FindOnCastor']['Directory']
+        if self.options.check:
             
             _, name = tempfile.mkstemp('.txt',text=True)
             testFile = file(name,'w')
@@ -164,11 +205,10 @@ class CheckForWrite(Task):
                 write = castortools.fileExists(fname)
                 if write:
                     os.system('rfrm %s' % fname)
-                    print 'can write to',dir
                 else:
                     raise Exception("Failed to write to directory '%s'" % dir)
             os.remove(name)
-        return input  
+        return {'Directory':dir,'WriteAccess':True}
     
 class GenerateMask(Task):
     """Generates a file mask"""
@@ -180,21 +220,26 @@ class GenerateMask(Task):
     def run(self, input):
         
         report = None
-        if self.options.check and not input['MaskPresent']:
+        if self.options.check and not input['CheckForMask']['MaskPresent']:
             from edmIntegrityCheck import IntegrityCheck, PublishToFileSystem
             
             options = copy.deepcopy(self.options)
             options.user = self.user
+
+            if input.has_key('BaseDataset'):
+                options.name = input['BaseDataset']['Name']
+            else:
+                options.name = None
             
             check = IntegrityCheck(self.dataset,options)
             check.test()
             report = check.structured()
             pub = PublishToFileSystem(check)
             pub.publish(report)
+        elif input['CheckForMask']['MaskPresent']:
+            report = input['CheckForMask']['Report']
         
-        input['MaskPresent'] = report is not None
-        input['Report'] = report
-        return input
+        return {'MaskPresent':report is not None,'Report':report}
 
 class CreateJobDirectory(Task):
     """Generate a job directory"""
@@ -211,24 +256,23 @@ class CreateJobDirectory(Task):
                 output = output[1:]
         if not os.path.exists(output):
             os.mkdir(output)
-        input['JobDir'] = output
-        return input
+        return {'JobDir':output}
 
 class SourceCFG(Task):
     """Generate a source CFG"""
     def __init__(self, dataset, user, options):
         Task.__init__(self,'SourceCFG', dataset, user, options)    
     def run(self, input):
-        dir = input['directory']
-        jobdir = input['JobDir']
+        dir = input['FindOnCastor']['Directory']
+        jobdir = input['CreateJobDirectory']['JobDir']
         
         pattern = fnmatch.translate(self.options.wildcard)
         files = castortools.matchingFiles( dir, pattern)
         if not files:
             raise Exception("No files matched pattern '%s' in directory '%s'." % (pattern,dir))
         
-        if self.options.check and input['MaskPresent']:
-            if input['Report']['FilesGood'] < 1:
+        if self.options.check and input['CheckForMask']['MaskPresent']:
+            if input['GenerateMask']['Report']['FilesGood'] < 1:
                 raise Exception('No good files found to run on')
         
         #same directory as this file
@@ -246,8 +290,7 @@ class SourceCFG(Task):
         output = file(source,'w')
         output.write(stdout)
         output.close()
-        input['SourceCFG'] = source
-        return input
+        return {'SourceCFG':source}
     
 class FullCFG(Task):
     """Generate the job CFG"""
@@ -257,13 +300,13 @@ class FullCFG(Task):
         parser.add_option("--cfg", dest="cfg", default=None, help='The top level CFG to run')           
     def run(self, input):
         
-        jobdir = input['JobDir']
+        jobdir = input['CreateJobDirectory']['JobDir']
 
         if self.options.cfg is None or not os.path.exists(self.options.cfg):
             raise Exception("The file '%s' does not exist. Please check." % self.options.cfg)
         
         config = file(self.options.cfg).read()
-        sourceFile = os.path.basename(input['SourceCFG'])
+        sourceFile = os.path.basename(input['SourceCFG']['SourceCFG'])
         if sourceFile.lower().endswith('.py'):
             sourceFile = sourceFile[:-3]
         
@@ -275,8 +318,7 @@ class FullCFG(Task):
         output.write('process.maxLuminosityBlocks.input = cms.untracked.int32(-1)\n')
         output.close()
 
-        input['FullCFG'] = source
-        return input
+        return {'FullCFG':source}
 
 class CheckConfig(Task):
     """Check the basic syntax, python path etc"""    
@@ -284,13 +326,13 @@ class CheckConfig(Task):
         Task.__init__(self,'CheckConfig', dataset, user, options)
     def run(self, input):
         
-        full = input['FullCFG']
+        full = input['FullCFG']['FullCFG']
         
         child = subprocess.Popen(['python',full], stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         stdout, stderr = child.communicate()
         if child.returncode != 0:
             raise Exception("Syntax check of cfg failed. Error was '%s'. (%i)" % (stderr,child.returncode))
-        return input   
+        return {'Status':'VALID'}   
 
 class RunTestEvents(Task):
     """Run cmsRun but with a small number of events"""    
@@ -299,8 +341,8 @@ class RunTestEvents(Task):
         Task.__init__(self,'RunTestEvents', dataset, user, options)
     def run(self, input):
         
-        full = input['FullCFG']
-        jobdir = input['JobDir']
+        full = input['FullCFG']['FullCFG']
+        jobdir = input['CreateJobDirectory']['JobDir']
         
         config = file(full).read()
         source = os.path.join(jobdir,'test_cfg.py')
@@ -328,7 +370,7 @@ class RunTestEvents(Task):
         if error is not None:
             raise Exception(error)
 
-        return input
+        return {'Status':'VALID','TestCFG':source}
     
 class ExpandConfig(Task):
     """Run edmConfigDump"""    
@@ -337,8 +379,8 @@ class ExpandConfig(Task):
         Task.__init__(self,'ExpandConfig', dataset, user, options)
     def run(self, input):
         
-        full = input['FullCFG']
-        jobdir = input['JobDir']
+        full = input['FullCFG']['FullCFG']
+        jobdir = input['CreateJobDirectory']['JobDir']
 
         config = file(full).read()
         source = os.path.join(jobdir,'test_cfg.py')
@@ -350,6 +392,7 @@ class ExpandConfig(Task):
 
         pwd = os.getcwd()
         
+        result = {}
         error = None
         try:
             os.chdir(jobdir)
@@ -359,7 +402,7 @@ class ExpandConfig(Task):
             
             if child.returncode != 0:
                 error = "Failed to edmConfigDump. Error was '%s' (%i)." % (stderr,child.returncode)
-            input['ExpandedFullCFG'] = os.path.join(jobdir,expanded)
+            result['ExpandedFullCFG'] = os.path.join(jobdir,expanded)
             
         finally:
             os.chdir(pwd)
@@ -367,7 +410,7 @@ class ExpandConfig(Task):
         if error is not None:
             raise Exception(error)
 
-        return input
+        return result
     
 class RunCMSBatch(Task):
     """Run cmsBatch"""    
@@ -387,10 +430,10 @@ class RunCMSBatch(Task):
         find = FindOnCastor(self.dataset,self.options.batch_user,self.options)
         out = find.run({})
         
-        full = input['ExpandedFullCFG']
-        jobdir = input['JobDir']
+        full = input['ExpandConfig']['ExpandedFullCFG']
+        jobdir = input['CreateJobDirectory']['JobDir']
         
-        sampleDir = os.path.join(out['directory'],self.options.tier)
+        sampleDir = os.path.join(out['Directory'],self.options.tier)
         sampleDir = castortools.castorToLFN(sampleDir)
         
         cmd = ['cmsBatch.py',str(self.options.nInput),os.path.basename(full),'-o','%s_Jobs' % self.options.tier,'--force']
@@ -415,11 +458,9 @@ class RunCMSBatch(Task):
             
         if error is not None:
             raise Exception(error)
-        
-        input['SampleDataset'] = "%s/%s" % (self.dataset,self.options.tier)
-        input['SampleOutputDir'] = sampleDir
-        input['LSFJobsTopDir'] = os.path.join(jobdir,'%s_Jobs' % self.options.tier)
-        return input 
+
+        return {'SampleDataset':"%s/%s" % (self.dataset,self.options.tier),
+                'SampleOutputDir':sampleDir,'LSFJobsTopDir':os.path.join(jobdir,'%s_Jobs' % self.options.tier)}
 
 class MonitorJobs(Task):
     """Monitor LSF jobs created with cmsBatch.py"""    
@@ -461,7 +502,7 @@ class MonitorJobs(Task):
     
     def run(self, input):
         
-        jobsdir = input['LSFJobsTopDir']
+        jobsdir = input['RunCMSBatch']['LSFJobsTopDir']
         if not os.path.exists(jobsdir):
             raise Exception("LSF jobs dir does not exist: '%s'" % jobsdir)
         
@@ -497,8 +538,7 @@ class MonitorJobs(Task):
                 print '%s: Monitoring %i jobs (%s)' % (self.name,len(status),self.dataset)
             count += 1
             
-        input['LSFJobStatus'] = checkStatus(status)
-        return input   
+        return {'LSFJobStatus':checkStatus(status),'LSFJobIDs':jobs}  
     
 class CheckJobStatus(Task):
     """Check the job STDOUT"""    
@@ -506,7 +546,7 @@ class CheckJobStatus(Task):
         Task.__init__(self,'CheckJobStatus', dataset, user, options)
     def run(self, input):
         
-        job_status = input['LSFJobStatus']
+        job_status = input['MonitorJobs']['LSFJobStatus']
 
         result = {}
         for j, status in job_status.iteritems():
@@ -517,7 +557,7 @@ class CheckJobStatus(Task):
                         result[j] = 'Exception'
                         valid = False
                         break
-                    if 'CPU time limit exceeded' in line:
+                    elif 'CPU time limit exceeded' in line:
                         result[j] = 'CPUTimeExceeded'
                         valid = False
                         break
@@ -525,11 +565,46 @@ class CheckJobStatus(Task):
                     result[j] = 'VALID'
             else:
                 result[j] = status
-        input['LSFJobStatusCheck'] = result
-        mask = GenerateMask(input['SampleDataset'],self.options.batch_user,self.options)
-        report = mask.run({'MaskPresent':False})
-        input['LSFJobReport'] = report['Report']
-        return input     
+
+        mask = GenerateMask(input['RunCMSBatch']['SampleDataset'],self.options.batch_user,self.options)
+        report = mask.run({'CheckForMask':{'MaskPresent':False}})
+        report['LSFJobStatusCheck'] = result
+        return report
+    
+class CleanJobFiles(Task):
+    """Removes and compresses auto-generated files"""    
+    def __init__(self, dataset, user, options):
+        Task.__init__(self,'CleanJobFiles', dataset, user, options)
+    def run(self, input):
+        
+        jobdir = input['CreateJobDirectory']['JobDir']
+        jobs = input['MonitorJobs']['LSFJobIDs']
+        job_status = input['MonitorJobs']['LSFJobStatus']
+        
+        actions = {'FilesToCompress':{'Files':[]},'FilesToClean':{'Files':[]}}
+        
+        actions['FilesToClean']['Files'].append(input['ExpandConfig']['ExpandedFullCFG'])
+        actions['FilesToClean']['Files'].append(input['RunTestEvents']['TestCFG'])
+
+        import glob
+        for rt in glob.iglob('%s/*.root' % jobdir):
+            actions['FilesToClean']['Files'].append(rt)
+        for pyc in glob.iglob('%s/*.pyc' % jobdir):
+            actions['FilesToClean']['Files'].append(pyc)
+
+        for j in jobs:
+            actions['FilesToCompress']['Files'].append(os.path.join(j,'run_cfg.py'))
+            
+            status = job_status[j]
+            if os.path.exists(status):
+                actions['FilesToCompress']['Files'].append(status)
+                
+        compress = GZipFiles(self.dataset,self.user,self.options)
+        compressed = compress.run(actions)
+
+        clean = CleanFiles(self.dataset,self.user,self.options)
+        removed = clean.run(actions)
+        return {'Cleaned':removed,'Compressed':compressed}
     
 if __name__ == '__main__':
     
@@ -553,7 +628,8 @@ if __name__ == '__main__':
              ExpandConfig(dataset,user,options),
              RunCMSBatch(dataset,user,options),
              MonitorJobs(dataset,user,options),
-             CheckJobStatus(dataset,user,options)
+             CheckJobStatus(dataset,user,options),
+             CleanJobFiles(dataset,user,options)
              ]
     #allow the tasks to add extra options
     for t in tasks:
@@ -561,16 +637,25 @@ if __name__ == '__main__':
     
     op.run({})
     for d in op.dataset:
+        
+        logfile = '%s.log' % d.replace('/','_')
+        output = file(logfile,'w')
+        
+        def log(s):
+            print s
+            print >> output,s
+        
         previous = {}
         for t in tasks:
 
             t.dataset = d
             t.options = op.options
             t.user = op.user
-        
-            print '%s:' % t.name
-            previous = t.run(previous)
-            print '\t%s' % previous
-        
+            
+            log('[%s] %s:' % (time.asctime(),t.getname()))
+            previous[t.getname()] = t.run(previous)
+            log('\t%s' % previous[t.getname()])
+            
+        output.close()
         
     
