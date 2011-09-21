@@ -99,7 +99,7 @@ class BaseDataset(Task):
         return data
     
     def run(self, input):
-        if self.options.check:
+        if (hasattr(self.options,'check') and self.options.check) or not hasattr(self.options,'check'):
             output = self.query(self.dataset)
             input['name'] = self.options.name
             input['das'] = output
@@ -133,7 +133,7 @@ class CheckForMask(Task):
         file_mask = []  
 
         report = None
-        if self.options.check:
+        if (hasattr(self.options,'check') and self.options.check) or not hasattr(self.options,'check'):
             file_mask = castortools.matchingFiles(dir, '^%s_.*\.txt$' % mask)
 
             if file_mask:
