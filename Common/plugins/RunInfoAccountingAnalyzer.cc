@@ -75,12 +75,19 @@ void cmg::RunInfoAccountingAnalyzer::endLuminosityBlock(edm::LuminosityBlock con
   edm::Handle<GenFilterInfo> genFilter;
   iLumi.getByLabel(genFilterInfoSrc_, genFilter);
 
-  nGenTotal_ += genFilter->numEventsTried();
-  nGenPassed_ += genFilter->numEventsPassed(); 
-  
-  std::cout<<"Gen Filter Efficiency: "<<std::endl;
-  printFilterInfo(iLumi, *genFilter);
+  if( genFilter.failedToGet() ) {
+    std::cout<<"Failed to get GenFilterInfo for filtering after generation."<<std::endl;
+    std::cout<<"you're probably reading an old sample or a relval. You will need handle the generator filter efficiency by hand when normalizing your MC sample to the data."<<std::endl;
+    nGenTotal_ += 0;
+    nGenPassed_ += 0; 
+  }
+  else {
+    nGenTotal_ += genFilter->numEventsTried();
+    nGenPassed_ += genFilter->numEventsPassed(); 
 
+    std::cout<<"Gen Filter Efficiency: "<<std::endl;
+    printFilterInfo(iLumi, *genFilter);
+  }
 }
 
 void cmg::RunInfoAccountingAnalyzer::printFilterInfo(const edm::LuminosityBlock& iLumi, const GenFilterInfo& filter) {
