@@ -74,9 +74,9 @@ class IntegrityCheck(object):
 
         data = None
         output = base.run({})
-        if output.has_key('das'):
-            self.options.name = output['name']
-            data = output['das']
+        if output.has_key('Das'):
+            self.options.name = output['Name']
+            data = output['Das']
             
         if data is None:
             raise Exception("Dataset '%s' not found in Das. Please check." % self.dataset)
