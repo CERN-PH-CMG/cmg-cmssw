@@ -636,26 +636,41 @@ if __name__ == '__main__':
         t.addOption(op.das.parser)
     
     op.run({})
-    for d in op.dataset:
+    
+    def log(output,s):
+        """Brain-dead utility function"""
+        print s
+        print >> output,s
+    
+    def work(dataset,op_parse,task_list):
+        """Do the work for one dataset"""
         
-        logfile = '%s.log' % d.replace('/','_')
+        logfile = '%s.log' % dataset.replace('/','_')
         output = file(logfile,'w')
         
-        def log(s):
-            print s
-            print >> output,s
-        
         previous = {}
-        for t in tasks:
+        for t in task_list:
 
-            t.dataset = d
-            t.options = op.options
-            t.user = op.user
+            t.dataset = dataset
+            t.options = op_parse.options
+            t.user = op_parse.user
             
-            log('[%s] %s:' % (time.asctime(),t.getname()))
+            log(output,'[%s] %s:' % (time.asctime(),t.getname()))
+            if t.__doc__:
+                log(output,t.__doc__)
             previous[t.getname()] = t.run(previous)
-            log('\t%s' % previous[t.getname()])
+            log(output,'\t%s' % previous[t.getname()])
             
         output.close()
+        
+        return logfile
+    
+    import multiprocessing
+    jobs = {}
+    for d in op.dataset:
+        p = multiprocessing.Process(target=work, args=(d,copy.deepcopy(op),copy.deepcopy(tasks)))
+        jobs[d] = p
+        p.start()
+ 
         
     
