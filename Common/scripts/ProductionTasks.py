@@ -61,7 +61,8 @@ class CheckDatasetExists(Task):
             raise Exception("Dataset '%s' not found by listSamples.py. Please check." % self.dataset)
         samples = [s for s in stdout.split('\n') if s]
         if not len(samples) == 1:
-            raise Exception("Dataset not unique according to listSamples.py. Samples found were '%s'" % samples)
+            if not self.dataset in samples:
+                raise Exception("Dataset not unique according to listSamples.py and no exact match found. Samples found were '%s'" % samples)
         if '//' in samples[0]:
             raise Exception("Too many slashes in sample name '%s'. Please check." % samples[0])
         return {'Dataset':samples[0]}
