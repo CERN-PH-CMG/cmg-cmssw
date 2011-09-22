@@ -173,13 +173,14 @@ int main(int argc, char* argv[])
   
   
   //book the control histograms
-  TH1F *h=new TH1F ("eventflow", ";Step;Events", 7,0,7);
+  TH1F *h=new TH1F ("eventflow", ";Step;Events", 8,0,8);
   h->GetXaxis()->SetBinLabel(2,"Preselected");
   h->GetXaxis()->SetBinLabel(3,"|M-M_{Z}|<15");
-  h->GetXaxis()->SetBinLabel(4,"3^{rd}-lepton veto");
-  h->GetXaxis()->SetBinLabel(5,"b-veto");
-  h->GetXaxis()->SetBinLabel(6,"red-E_{T}^{miss}>medium");
-  h->GetXaxis()->SetBinLabel(7,"red-E_{T}^{miss}>tight");
+  h->GetXaxis()->SetBinLabel(4,"Z_{pT}>25");
+  h->GetXaxis()->SetBinLabel(5,"3^{rd}-lepton veto");
+  h->GetXaxis()->SetBinLabel(6,"b-veto");
+  h->GetXaxis()->SetBinLabel(7,"red-E_{T}^{miss}>medium");
+  h->GetXaxis()->SetBinLabel(8,"red-E_{T}^{miss}>tight");
   controlHistos.addHistogram( h );
 
   h=new TH1F ("eventCategory", ";Event Category;Events", 4,0,4);
@@ -503,11 +504,11 @@ int main(int argc, char* argv[])
 
       //start analysis by the jet kinematics so that one can loop over JER/JES/b-tag systematic variations
       LorentzVector metP4=phys.met[0];
-      LorentzVector trkMetP4=phys.met[1];
-      LorentzVector clusteredMetP4=phys.met[3];
+      LorentzVector assocChargedMetP4=phys.met[1];
+      LorentzVector assocMetP4=phys.met[3];
       LorentzVector centralMetP4=phys.met[5];
       LorentzVector cleanMetP4=phys.met[6];
-      LorentzVector clusteredOtherVtxMetP4=phys.met[7];
+      LorentzVector assocOtherVertexMetP4=phys.met[7];
 
       //count jets and b-tags
       int njets(0),njetsinc(0);
@@ -586,13 +587,13 @@ int main(int argc, char* argv[])
     
       //projected met
       Float_t projMet        = pmetComp.compute(phys.leptons[0], phys.leptons[1], zvv );
-      Float_t projAssocChargedMet     = pmetComp.compute(phys.leptons[0],phys.leptons[1], trkMetP4);
+      Float_t projAssocChargedMet     = pmetComp.compute(phys.leptons[0],phys.leptons[1], assocChargedMetP4);
       
       Float_t cleanMet            = cleanMetP4.pt();
       Float_t centralMet          = centralMetP4.pt();
-      Float_t assocChargedMet     = trkMetP4.pt();
-      Float_t assocMet            =  clusteredMetP4.pt();
-      Float_t assocOtherVertexMet = clusteredOtherVtxMetP4.pt();
+      Float_t assocChargedMet     = assocChargedMetP4.pt();
+      Float_t assocMet            =  assocMetP4.pt();
+      Float_t assocOtherVertexMet = assocOtherVertexMetP4.pt();
 
       //vbf variables 
       bool isVBF        = false;
@@ -691,6 +692,7 @@ int main(int argc, char* argv[])
       //
       bool passZmass(fabs(zmass-91)<15);
       bool passSideBand( !passZmass && fabs(zmass-91)<30 );
+      bool passZpt(true);//zpt>25);
       bool pass3dLeptonVeto(ev.ln==0);
       bool passBveto(nbtags==0);
       bool passMediumRedMet(redMet>rmetComp.getCut(eventCategory,ReducedMETComputer::MEDIUMWP));
@@ -824,7 +826,10 @@ int main(int argc, char* argv[])
 	      //Z window
 	      if(!passZmass)  continue;
 	      controlHistos.fillHisto("eventflow",ctf,2,weight);
-	      
+	     
+              if(!passZpt) continue;
+              controlHistos.fillHisto("eventflow",ctf,3,weight);
+ 
 	      //extra leptons
 	      controlHistos.fillHisto("nleptons",ctf,ev.ln,weight);
 	      if(!pass3dLeptonVeto)
@@ -837,7 +842,7 @@ int main(int argc, char* argv[])
 		    }
 		  continue;
 		}
-	      controlHistos.fillHisto("eventflow",ctf,3,weight);
+	      controlHistos.fillHisto("eventflow",ctf,4,weight);
 	      
 	      //jet control
 	      controlHistos.fillHisto("njets",ctf,njets,weight);
@@ -852,7 +857,7 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("npassbveto",ctf,5, (nbtags==0)*weight);
 	      controlHistos.fillHisto("zmassctrl",ctf,passBveto+2*passMediumRedMet,weight);
 	      if(!passBveto) continue;
-	      controlHistos.fillHisto("eventflow",ctf,4,weight);
+	      controlHistos.fillHisto("eventflow",ctf,5,weight);
       
 	      //met control
 	      metTypeValues["met"]                 = met;
@@ -887,14 +892,15 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("redMetT", ctf,redMetT,weight);
 	      controlHistos.fillHisto("redMetcomps", ctf,redMetL,redMetT,weight);	
 
-	      //fixme: redo properly the ntuples and remove this stupid mapping
-	      float leptonSumEt      = phys.leptons[0].pt()+phys.leptons[1].pt();
-	      float sumEt            = ev.sumEt-leptonSumEt;
-	      float sumEtcentral     = ev.chsumEtcentral-leptonSumEt;
-	      float chSumEtcentral   = ev.neutsumEt-leptonSumEt;
-	      float neutSumEtcentral = ev.neutsumEtcentral;
-	      float chSumEt          = ev.sumEtcentral-leptonSumEt;
-	      float neutsumEt        = ev.chsumEt;
+              //fixme: redo properly the ntuples and remove this stupid mapping
+            float leptonSumEt      = phys.leptons[0].pt()+phys.leptons[1].pt();
+            float sumEt            = ev.sumEt           -leptonSumEt;
+            float sumEtcentral     = ev.sumEtcentral    -leptonSumEt;
+            float chSumEtcentral   = ev.chsumEtcentral  -leptonSumEt;
+            float neutSumEtcentral = ev.neutsumEtcentral;
+            float chSumEt          = ev.chsumEt         -leptonSumEt;
+            float neutsumEt        = ev.neutsumEt;
+
 	      if(sumEt>0)
 		{
 		  controlHistos.fillHisto("sumEt",                ctf,sumEt,weight);
@@ -941,12 +947,12 @@ int main(int argc, char* argv[])
 	      //sample is selected
 	      if(passMediumRedMet) 
 		{
-		  controlHistos.fillHisto("eventflow",ctf,5,weight);
+		  controlHistos.fillHisto("eventflow",ctf,6,weight);
 		  controlHistos.fillHisto("eventCategory",ctf,eventCategory,weight);
 		  controlHistos.fillHisto("cutOptMediumdphill",ctf,fabs(dphill));
 		  controlHistos.fill2DHisto("cutOptMediumsummtvsredMetL",ctf,mtsum,redMetL,weight);
 		  
-		  if(passTightRedMet)    controlHistos.fillHisto("eventflow",ctf,6,weight);
+		  if(passTightRedMet)    controlHistos.fillHisto("eventflow",ctf,7,weight);
 		}
 	      
 	      //
