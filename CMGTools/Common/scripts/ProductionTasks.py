@@ -546,6 +546,8 @@ class CheckJobStatus(Task):
     """Check the job STDOUT"""    
     def __init__(self, dataset, user, options):
         Task.__init__(self,'CheckJobStatus', dataset, user, options)
+    def addOption(self, parser):
+        parser.add_option("--output_wildcard", dest="output_wildcard", help="The wildcard to use when testing the output of this production (defaults to same as -w)", default=None)           
     def run(self, input):
         
         job_status = input['MonitorJobs']['LSFJobStatus']
@@ -568,7 +570,12 @@ class CheckJobStatus(Task):
             else:
                 result[j] = status
 
-        mask = GenerateMask(input['RunCMSBatch']['SampleDataset'],self.options.batch_user,self.options)
+        #allows a different wildcard in the final check.
+        options = copy.deepcopy(self.options)
+        if self.options.output_wildcard is not None:
+            options.wildcard = self.options.output_wildcard
+
+        mask = GenerateMask(input['RunCMSBatch']['SampleDataset'],self.options.batch_user,options)
         report = mask.run({'CheckForMask':{'MaskPresent':False}})
         report['LSFJobStatusCheck'] = result
         return report
