@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import datetime, fnmatch, json, os, shutil, sys, tempfile
 import subprocess
 
