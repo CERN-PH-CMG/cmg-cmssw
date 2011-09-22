@@ -74,6 +74,7 @@ If no -s option is provided, it is assumed that the current user is the user on 
         sys.exit(1)
 
     # Get user comment if one is left
+    comment = ""
     if options.commented:
         comment = raw_input("Please enter your comment here:")
     # Store full dataset name
