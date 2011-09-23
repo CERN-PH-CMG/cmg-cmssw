@@ -490,7 +490,7 @@ class MonitorJobs(Task):
                         print >> sys.stderr, 'Job ID parsing error',str(e),c
         return result
     
-    def monitor(self, jobs):
+    def monitor(self, jobs, previous):
 
         #executes bjobs with a list of job IDs
         cmd = ['bjobs']
@@ -519,9 +519,19 @@ class MonitorJobs(Task):
                     tokens = [t for t in line.split(' ') if t]
                     if len(tokens) < len(header): continue
                     id = tokens[header['JOBID']]
+                    user = tokens[header['USER']]
                     status = tokens[header['STAT']]
+                    
+                    #skip if id has been reassigned
+                    if user != self.options.batch_user: continue
 
                     result[id] = status
+        
+        #after one hour the status is no longer available     
+        if result:
+            for id in jobs.values():
+                if not result.has_key(id) and previous.has_key(id):
+                    result[id] = previous[id]
         return result
     
     def run(self, input):
@@ -563,14 +573,14 @@ class MonitorJobs(Task):
             return result
                     
         #continue monitoring while there are jobs to monitor
-        status = self.monitor(jobs)
+        status = self.monitor(jobs,{})
         monitorable = countJobs(status)
         count = 0
         
         while monitorable > 0:
             job_status = checkStatus(status)
             time.sleep(60)
-            status = self.monitor(jobs)
+            status = self.monitor(jobs,status)
             monitorable = countJobs(status)
             if not (count % 3):
                 print '%s: Monitoring %i jobs (%s)' % (self.name,monitorable,self.dataset)
