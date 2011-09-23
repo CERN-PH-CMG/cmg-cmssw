@@ -560,7 +560,7 @@ class MonitorJobs(Task):
                     st = stat[id]
                     if st in ['PEND','PSUSP','RUN','USUSP','SSUSP','WAIT']:
                         result += 1
-                return result
+            return result
                     
         #continue monitoring while there are jobs to monitor
         status = self.monitor(jobs)
