@@ -109,7 +109,7 @@ class BaseDataset(Task):
         return data
     
     def run(self, input):
-        result = {}
+        output = {}
         if (hasattr(self.options,'check') and self.options.check) or not hasattr(self.options,'check'):
             output = self.query(self.dataset)
         return {'Name':self.options.name,'Das':output}
@@ -127,7 +127,8 @@ class GZipFiles(Task):
         f_out.writelines(f_in)
         f_out.close()
         f_in.close()
-        
+        #remove the original file once we've gzipped it
+        os.remove(fileName)
         return output
            
     def run(self, input):
@@ -164,7 +165,11 @@ class FindOnCastor(Task):
         directory = '%s/%s' % (topdir,self.dataset)
         directory = directory.replace('//','/')
         if not castortools.fileExists(directory):
-            raise Exception("Dataset directory '%s' does not exist" % directory)
+            ret = -1
+            if hasattr(self,'create') and self.create:
+                ret = subprocess.call(['rfmkdir','-m','775','-p',directory])
+            if ret != 0: 
+                raise Exception("Dataset directory '%s' does not exist" % directory)
         return {'Topdir':topdir,'Directory':directory}  
 
 class CheckForMask(Task):
@@ -431,6 +436,7 @@ class RunCMSBatch(Task):
     def run(self, input):
         
         find = FindOnCastor(self.dataset,self.options.batch_user,self.options)
+        find.create = True
         out = find.run({})
         
         full = input['ExpandConfig']['ExpandedFullCFG']
@@ -484,22 +490,37 @@ class MonitorJobs(Task):
                         print >> sys.stderr, 'Job ID parsing error',str(e),c
         return result
     
-    def monitor(self, jobs, states = ['RUN','PEND']):
+    def monitor(self, jobs):
+
+        #executes bjobs with a list of job IDs
         cmd = ['bjobs']
         cmd.extend(jobs.values())
         child = subprocess.Popen(cmd, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         stdout, stderr = child.communicate()
 
+        def parseHeader(header):
+            """Parse the header from bjobs"""
+            tokens = [t for t in header.split(' ') if t]
+            result = {}
+            for i in xrange(len(tokens)):
+                result[tokens[i]] = i
+            return result
+
         result = {}
         if stdout:
             lines = stdout.split('\n')
             if lines:
+                header = parseHeader(lines[0])
+                if not 'STAT' in header or not 'JOBID' in header:
+                    print >> sys.stderr, 'Problem parsing bjobs header\n',lines
+                    return result
                 for line in lines[1:]:
-                    tokens = line.split(' ')
-                    if len(tokens) < 10: continue
-                    id = tokens[0]
-                    status = tokens[3]
-                    if status not in states: continue
+                    #TODO: Unreliable for some fields, e.g. dates
+                    tokens = [t for t in line.split(' ') if t]
+                    if len(tokens) < len(header): continue
+                    id = tokens[header['JOBID']]
+                    status = tokens[header['STAT']]
+
                     result[id] = status
         return result
     
@@ -523,22 +544,36 @@ class MonitorJobs(Task):
                 else:
                     if stat.has_key(id):
                         result[j] = stat[id]
-                    else:
-                        stdout = os.path.join(j,'LSFJOB_%s' % id,'STDOUT')
-                        if os.path.exists(stdout):
-                            result[j] = stdout
-                        else:
-                            result[j] = 'FAILED'
+                        if result[j] in ['DONE','EXIT']:
+                            stdout = os.path.join(j,'LSFJOB_%s' % id,'STDOUT')
+                            if os.path.exists(stdout):
+                                result[j] = stdout
+                            else:
+                                result[j] = 'NOSTDOUT'
             return result
         
+        def countJobs(stat):
+            """Count jobs that are monitorable - i.e. not in a final state"""
+            result = 0
+            for j, id in jobs.iteritems():
+                if id is not None and stat.has_key(id):
+                    st = stat[id]
+                    if st in ['PEND','PSUSP','RUN','USUSP','SSUSP','WAIT']:
+                        result += 1
+                return result
+                    
+        #continue monitoring while there are jobs to monitor
         status = self.monitor(jobs)
+        monitorable = countJobs(status)
         count = 0
-        while status:
+        
+        while monitorable > 0:
             job_status = checkStatus(status)
             time.sleep(60)
             status = self.monitor(jobs)
-            if not (count % 6):
-                print '%s: Monitoring %i jobs (%s)' % (self.name,len(status),self.dataset)
+            monitorable = countJobs(status)
+            if not (count % 3):
+                print '%s: Monitoring %i jobs (%s)' % (self.name,monitorable,self.dataset)
             count += 1
             
         return {'LSFJobStatus':checkStatus(status),'LSFJobIDs':jobs}  
@@ -564,6 +599,10 @@ class CheckJobStatus(Task):
                         break
                     elif 'CPU time limit exceeded' in line:
                         result[j] = 'CPUTimeExceeded'
+                        valid = False
+                        break
+                    elif 'Job Killed' in line:
+                        result[j] = 'JobKilled'
                         valid = False
                         break
                 if valid:
@@ -703,8 +742,16 @@ if __name__ == '__main__':
                 previous[t.getname()] = t.run(previous)
                 log(output,'%s: \t%s' % (dataset,previous[t.getname()]),tostdout=False)
             except Exception, e:
+
+                import traceback, StringIO
+                sb = StringIO.StringIO()
+                traceback.print_exc(file=sb)
+                tb = sb.getvalue()
+                sb.close()
+                
                 log(output,'%s: [%s] %s FAILED:' % (dataset,time.asctime(),t.getname()))
                 log(output,"%s: Error was '%s'" % (dataset,str(e)))
+                log(output,"%s: Traceback was '%s'" % (dataset,tb))
 
                 #TODO: Perhaps some cleaning?
                 break
