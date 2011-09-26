@@ -468,7 +468,7 @@ class RunCMSBatch(Task):
         if error is not None:
             raise Exception(error)
 
-        return {'SampleDataset':"%s/%s" % (self.dataset,self.options.tier),
+        return {'SampleDataset':"%s/%s" % (self.dataset,self.options.tier),'BatchUser':self.options.batch_user,
                 'SampleOutputDir':sampleDir,'LSFJobsTopDir':os.path.join(jobdir,'%s_Jobs' % self.options.tier)}
 
 class MonitorJobs(Task):
@@ -493,7 +493,7 @@ class MonitorJobs(Task):
     def monitor(self, jobs, previous):
 
         #executes bjobs with a list of job IDs
-        cmd = ['bjobs']
+        cmd = ['bjobs','-u',self.options.batch_user]
         cmd.extend(jobs.values())
         child = subprocess.Popen(cmd, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         stdout, stderr = child.communicate()
@@ -526,6 +526,18 @@ class MonitorJobs(Task):
                     if user != self.options.batch_user: continue
 
                     result[id] = status
+                    
+        if stderr:
+            lines = stderr.split('\n')
+            if lines:
+                for line in lines:
+                    if line and re.match('^Job <\\d*> is not found',line) is not None:
+                        try:
+                            id = line.split('<')[1].split('>')[0]
+                            if not result.has_key(id) and not previous.has_key(id):
+                                result[id] = 'FORGOTTEN'
+                        except Exception, e:
+                            print >> sys.stderr, 'Job ID parsing error in STDERR',str(e),line
         
         #after one hour the status is no longer available     
         if result:
@@ -554,7 +566,7 @@ class MonitorJobs(Task):
                 else:
                     if stat.has_key(id):
                         result[j] = stat[id]
-                        if result[j] in ['DONE','EXIT']:
+                        if result[j] in ['DONE','EXIT','FORGOTTEN']:
                             stdout = os.path.join(j,'LSFJOB_%s' % id,'STDOUT')
                             if os.path.exists(stdout):
                                 result[j] = stdout
@@ -643,7 +655,8 @@ class CleanJobFiles(Task):
         actions = {'FilesToCompress':{'Files':[]},'FilesToClean':{'Files':[]}}
         
         actions['FilesToClean']['Files'].append(input['ExpandConfig']['ExpandedFullCFG'])
-        actions['FilesToClean']['Files'].append(input['RunTestEvents']['TestCFG'])
+        if input.has_key('RunTestEvents'):
+            actions['FilesToClean']['Files'].append(input['RunTestEvents']['TestCFG'])
 
         import glob
         for rt in glob.iglob('%s/*.root' % jobdir):
