@@ -79,7 +79,7 @@ for file in files:
     if not bad_files.has_key(file):
         fileLine = "\t\t'%s'," % file
     else:
-        fileLine = "\t\t'###MarkedBad:%s'," % file
+        fileLine = "###MarkedBad\t'%s'," % file
     print fileLine
 print "])"
 
