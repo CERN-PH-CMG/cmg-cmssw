@@ -1,4 +1,5 @@
 <use name="AnalysisDataFormats/CMGTools"/>
+<use name="RecoMET/METAlgorithms"/>
 
 <export></export>
 <library name="CMGToolsCommonPlugins" file="*.cc">
