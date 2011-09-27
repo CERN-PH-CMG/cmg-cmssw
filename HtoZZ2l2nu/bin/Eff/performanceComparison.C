@@ -35,32 +35,58 @@ TObject* GetObjectFromPath(TDirectory* File, std::string Path, bool GetACopy=fal
 
 
 //
-TGraphAsymmErrors *getEfficiencyCurve(TH1 *signalProc, TH1 *bckgProc)
+TGraphAsymmErrors *getEfficiencyCurve(TH1 *signalProc, TH1 *bckgProc, bool Reverse=false)
 { 
   TGraphAsymmErrors *effGr = new TGraphAsymmErrors;
 	      
   //compute efficiency
   const int nbins=bckgProc->GetXaxis()->GetNbins();
+  int start = 1; int end=nbins; int step=1;
+//  if(Reverse){start=nbins; end=0; step=-1;}
+
   double bckgTotalError(0), signalTotalError(0);
   double bckgTotal=bckgProc->IntegralAndError(1,nbins,bckgTotalError,"width");
   double signalTotal=signalProc->IntegralAndError(1,nbins,signalTotalError,"width");
-  for(int xbin=1; xbin<=nbins; xbin++)
+
+  for(int xbin=start; xbin<=end; xbin+=step)
     {
       Double_t signalPassError(0), bckgPassError(0);
-      float signalPass = signalProc->IntegralAndError(xbin,nbins,signalPassError,"width");
-      float bckgPass   = bckgProc->IntegralAndError(xbin,nbins,bckgPassError,"width"); 
+      float signalPass, bckgPass;     
+
+      if(!Reverse){
+         signalPass = signalProc->IntegralAndError(xbin,nbins,signalPassError,"width");
+         bckgPass   = bckgProc->IntegralAndError(xbin,nbins,bckgPassError,"width"); 
+      }else{
+         signalPass = signalProc->IntegralAndError(1, xbin,signalPassError,"width");
+         bckgPass   = bckgProc->IntegralAndError(1, xbin,bckgPassError,"width");  
+      }
 		  
       //efficiency curve
       double effb=float(bckgPass/bckgTotal);
       double effbError=sqrt(pow(bckgPassError*bckgTotal,2)+pow(bckgPass*bckgTotalError,2))/pow(bckgTotal,2);
       double effsig=float(signalPass/signalTotal);
       double effsigError=sqrt(pow(signalPassError*signalTotal,2)+pow(signalPass*signalTotalError,2))/pow(signalTotal,2);
-      effGr->SetPoint(xbin-1,effsig,effb);
-      effGr->SetPointError(xbin-1,effsigError,effsigError,effbError,effbError);
+
+      int Bin = xbin-1;
+      effGr->SetPoint(Bin,effsig,effb);
+      effGr->SetPointError(Bin,effsigError,effsigError,effbError,effbError);
     }
 
   return effGr;
 }
+
+
+TGraph* Inverse(TGraph* graph){
+   TGraph* toReturn = new TGraph(graph->GetN());
+   for(int i=0;i<graph->GetN();i++){
+      double x, y;
+      graph->GetPoint(i,x,y);
+      toReturn->SetPoint(i,y,x);
+   }
+   return toReturn;
+}
+
+
 
 //
 void performanceComparison(string evcat="mumu", string signal="H(200)", string background="Z-#gamma^{*}+jets#rightarrow ll",  string fname="../../test/plotter.root")
@@ -73,9 +99,9 @@ void performanceComparison(string evcat="mumu", string signal="H(200)", string b
   gStyle->SetPadLeftMargin  (0.15);
   system("mkdir -p Img");
 
-  int colors[]  = {1,  kGreen-3, kGreen+3, kBlue, kBlue, kRed+3, kRed};
-  int styles[]  = {1,  2,        9,        9,     1,     1,      1};
-  int markers[] = {20, 24,       21,       25,    22,    24,     20};
+  int colors[]  = {1,  kGreen-3, kGreen+3, kBlue, kBlue, kRed+3, kRed, kRed};
+  int styles[]  = {1,  2,        9,        9,     1,     1,      1,    1};
+  int markers[] = {20, 24,       21,       25,    22,    24,     20,   24};
 
   //configure 
   TString meanFitFunc("pol3");
@@ -84,8 +110,12 @@ void performanceComparison(string evcat="mumu", string signal="H(200)", string b
   // TString names[]={"metvspu",       "minMetvspu",                       "minClusteredMetvspu",     "unclusteredMetvspu",     "superMinMetvspu"};
 //   TString titles[]={"E_{T}^{miss}", "min assoc. E_{T}^{miss}(charged)", "min assoc. E_{T}^{miss}", "min clean E_{T}^{miss}", "minimized E_{T}^{miss}"};
   
-  string names[]  ={"met_metvspu",      "met_assocMetvspu",       "met_cleanMetvspu", "met_minAssocChargedMetvspu", "met_minAssocMetvspu", "met_minCleanMetvspu", "met_superMinMetvspu"};
-  TString titles[] ={"E_{T}^{miss}", "assoc-E_{T}^{miss}", "clean E_{T}^{miss}", "min{E_{T}^{miss},assoc E_{T}^{miss} (charged)}", "min{E_{T}^miss,assoc-E_{T}^{miss})", "min{E_{T}^{miss},clean-E_{T}^{miss}}", "min{E_{T}^{miss},assoc-E_{T}^{miss},clean-E_{T}^{miss},central-E_{T}^{miss}}"};
+//  string names[]  ={"met_metvspu",      "met_assocMetvspu",       "met_cleanMetvspu", "met_minAssocChargedMetvspu", "met_minAssocMetvspu", "met_minCleanMetvspu", "met_superMinMetvspu", "met_redMetvspu"};
+//  TString titles[] ={"E_{T}^{miss}", "assoc-E_{T}^{miss}", "clean E_{T}^{miss}", "min{E_{T}^{miss},assoc E_{T}^{miss} (charged)}", "min{E_{T}^miss,assoc-E_{T}^{miss})", "min{E_{T}^{miss},clean-E_{T}^{miss}}", "min{E_{T}^{miss},assoc-E_{T}^{miss},clean-E_{T}^{miss},central-E_{T}^{miss}}", "red-E_{T}^{miss}"};
+
+    string names[]  ={"metL_metvspu",      "metL_assocMetvspu",       "metL_cleanMetvspu", "metL_minAssocChargedMetvspu", "metL_minAssocMetvspu", "metL_minCleanMetvspu", "metL_superMinMetvspu", "met_redMetvspu"};
+  TString titles[] ={"E_{T}^{miss}", "assoc-E_{T}^{miss}", "clean E_{T}^{miss}", "min{E_{T}^{miss},assoc E_{T}^{miss} (charged)}", "min{E_{T}^miss,assoc-E_{T}^{miss})", "min{E_{T}^{miss},clean-E_{T}^{miss}}", "min{E_{T}^{miss},assoc-E_{T}^{miss},clean-E_{T}^{miss},central-E_{T}^{miss}}", "red-E_{T}^{miss}"};
+
 
 
   //   TString names[]={"njetsvspu","njetsincvspu"};
@@ -125,7 +155,8 @@ void performanceComparison(string evcat="mumu", string signal="H(200)", string b
       fixExtremities(signalProj,true,true);
       TH1*bckgProj   = ((TH2 *)bckgProc)->ProjectionY("bckg_py",1,nxbins);
       fixExtremities(bckgProj,true,true);
-      TGraphAsymmErrors *gr = getEfficiencyCurve(signalProj, bckgProj );
+      TGraphAsymmErrors *gr = getEfficiencyCurve(signalProj, bckgProj, names[i].find("metL")!=std::string::npos );
+      delete signalProj; delete bckgProj;
       gr->SetName((names[i]+"_eff").c_str());
       gr->SetTitle(titles[i]);
       gr->SetLineColor(colors[i]);
@@ -136,6 +167,15 @@ void performanceComparison(string evcat="mumu", string signal="H(200)", string b
       gr->SetLineWidth(2);
       incEffGrList.push_back(gr);
 
+      TGraph* tmpgr = Inverse(gr);
+      printf("%35s : Beff=%6.2E --> Seff=%6.2E\n",names[i].c_str(), 1E-2, tmpgr->Eval(1E-2));
+      printf("%35s : Beff=%6.2E --> Seff=%6.2E\n",names[i].c_str(), 1E-3, tmpgr->Eval(1E-3));
+      printf("%35s : Beff=%6.2E --> Seff=%6.2E\n",names[i].c_str(), 1E-4, tmpgr->Eval(1E-4));
+      delete tmpgr;
+      
+
+
+
       //efficiency per bins
       std::vector<TGraphAsymmErrors *> ieffGrList;
       for(size_t ibin=0; ibin<effBins.size(); ibin++){ 
@@ -145,7 +185,8 @@ void performanceComparison(string evcat="mumu", string signal="H(200)", string b
 	  fixExtremities(bckgProj,true,true);
 
 	  //compute efficiency
-	  gr = getEfficiencyCurve(signalProj, bckgProj );
+	  gr = getEfficiencyCurve(signalProj, bckgProj, names[i].find("metL")!=std::string::npos );
+         delete signalProj; delete bckgProj;
 	  gr->SetName((names[i]+"_eff").c_str());
 	  gr->SetTitle(titles[i]);
 	  gr->SetLineColor(colors[i]);
@@ -193,6 +234,7 @@ void performanceComparison(string evcat="mumu", string signal="H(200)", string b
 	  
 	  bckgRMS->SetPoint(ibin-1,ibin-1,bckgProj->GetRMS()); 
 	  bckgRMS->SetPointError(ibin-1,0,0,bckgProj->GetRMSError(),bckgProj->GetRMSError()); 
+          delete signalProj; delete bckgProj;
 	}
       bckgMean->Fit(meanFitFunc,"Q+","",2,nxbins);
       bckgRMS->Fit(rmsFitFunc,"Q+","",2,nxbins);
@@ -224,7 +266,7 @@ void performanceComparison(string evcat="mumu", string signal="H(200)", string b
 
   //inclusive efficiency
   TCanvas *effC =  new TCanvas("effC", "Inclusive efficiency", 500,500);//getNewCanvas("effC","Inclusive efficiency",false);
-//  effC->SetWindowSize(500,500);
+//  effC->SetWindowSize(1000,1000);
   effC->cd();
   effC->SetLogy();
   TGraph *effFrame=new TGraph;

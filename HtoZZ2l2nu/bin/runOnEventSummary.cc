@@ -346,11 +346,12 @@ int main(int argc, char* argv[])
       metTypeValues[it->first]=LorentzVector(0,0,0,0);
       controlHistos.addHistogram( new TH1D( TString("met_") + it->first, ";"+it->second+";Events", 100,0,500) );
       controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"vspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
-      controlHistos.addHistogram( new TH2F( TString("metL_") + it->first+"vspu", ";Pileup events;"+it->second+";Events", 25,0,25,160,-300,500) );  
       controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"phimetphijet", ";#phi "+it->second+";#phi jet", 10,0,3.15,10,0,3.15) );
       controlHistos.addHistogram( new TH1D( TString("met_") + it->first+"mindphijmet", ";min #Delta#phi(jet,"+it->second+");Events",10,0,3.15) );
       controlHistos.addHistogram( new TH1D( TString("metL_") + it->first, ";Long: "+it->second+";Events", 160,-300,500) );
+      controlHistos.addHistogram( new TH2F( TString("metL_") + it->first+"vspu", ";Pileup events;Long: "+it->second+";Events", 25,0,25,160,-300,500) );  
       controlHistos.addHistogram( new TH1D( TString("metT_") + it->first, ";Trans: "+it->second+";Events", 160,-300,500) );
+      controlHistos.addHistogram( new TH2F( TString("metT_") + it->first+"vspu", ";Pileup events;Trans :"+it->second+";Events", 25,0,25,160,-300,500) );
       controlHistos.addHistogram( new TH2F( TString("metLT_") + it->first, ";Long: " +it->second+";Trans: " + it->second, 160,-300,500,160,-300,500) );
     }
   controlHistos.addHistogram( new TH2F ("itpuvsootpu", ";In-Time Pileup; Out-of-time Pileup;Events", 30,0,30,30,0,30) );
@@ -1018,9 +1019,10 @@ int main(int argc, char* argv[])
                   double LongMET  = zll2DLong .Px()*it->second.px() + zll2DLong .Py()*it->second.py();
                   double TransMET = zll2DTrans.Px()*it->second.px() + zll2DTrans.Py()*it->second.py();
                   controlHistos.fillHisto(TString("metL_") + it->first, ctf,LongMET,weight);
-                  controlHistos.fillHisto(TString("metT_") + it->first, ctf,TransMET,weight);
-                  controlHistos.fill2DHisto(TString("metLT_") + it->first, ctf,LongMET,TransMET,weight);
 		  controlHistos.fill2DHisto(TString("metL_") + it->first+"vspu", ctf,ev.ngenITpu,LongMET,weight);
+                  controlHistos.fillHisto(TString("metT_") + it->first, ctf,TransMET,weight);
+                  controlHistos.fill2DHisto(TString("metT_") + it->first+"vspu", ctf,ev.ngenITpu,TransMET,weight);
+                  controlHistos.fill2DHisto(TString("metLT_") + it->first, ctf,LongMET,TransMET,weight);
 		}
 
 	      controlHistos.fill2DHisto("metvstkmet", ctf,met,assocChargedMet,weight);
@@ -1111,10 +1113,10 @@ int main(int argc, char* argv[])
                   pass150 = passMediumRedMet;
                   pass170 = passMediumRedMet;
 		  pass200 = passMediumRedMet;
-		  pass300 = passMediumRedMet;
-		  pass400 = passMediumRedMet;
-		  pass500 = passMediumRedMet;
-		  pass600 = passMediumRedMet;
+		  pass300 = redMet>65;
+		  pass400 = redMet>65;
+		  pass500 = redMet>90;
+		  pass600 = redMet>90;
 		}
               if(pass130) controlHistos.fillHisto("finaleventflow",ctf,0,weight);
               if(pass150) controlHistos.fillHisto("finaleventflow",ctf,1,weight);
