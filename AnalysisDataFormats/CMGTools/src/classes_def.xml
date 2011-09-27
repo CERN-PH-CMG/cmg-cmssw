@@ -1,4 +1,6 @@
 <lcgdict>
+  <class name="TMatrixD" />
+  <class name="edm::Wrapper<TMatrixD>" />
   
   <class name="cmg::AbstractPhysicsObject" />
   <class name="edm::Wrapper<cmg::AbstractPhysicsObject>" />
