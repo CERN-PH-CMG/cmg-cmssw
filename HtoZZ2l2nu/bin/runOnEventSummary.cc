@@ -345,12 +345,13 @@ int main(int argc, char* argv[])
     {
       metTypeValues[it->first]=LorentzVector(0,0,0,0);
       controlHistos.addHistogram( new TH1D( TString("met_") + it->first, ";"+it->second+";Events", 100,0,500) );
-      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"vspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );  
-      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"phimetphijet", ";#phi "+it->second+";#phi jet", 10,0,3.4,10,0,3.4) );
-      controlHistos.addHistogram( new TH1D( TString("met_") + it->first+"mindphijmet", ";min #Delta#phi(jet,"+it->second+");Events",10,0,3.4) );
-      controlHistos.addHistogram( new TH1D( TString("metL_") + it->first, ";Long: "+it->second+";Events", 100,0,500) );
-      controlHistos.addHistogram( new TH1D( TString("metT_") + it->first, ";Trans: "+it->second+";Events", 100,0,500) );
-      controlHistos.addHistogram( new TH2F( TString("metLT_") + it->first, ";Long: " +it->second+";Trans: " + it->second, 100,0,500,100,0,500) );
+      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"vspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+      controlHistos.addHistogram( new TH2F( TString("metL_") + it->first+"vspu", ";Pileup events;"+it->second+";Events", 25,0,25,160,-300,500) );  
+      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"phimetphijet", ";#phi "+it->second+";#phi jet", 10,0,3.15,10,0,3.15) );
+      controlHistos.addHistogram( new TH1D( TString("met_") + it->first+"mindphijmet", ";min #Delta#phi(jet,"+it->second+");Events",10,0,3.15) );
+      controlHistos.addHistogram( new TH1D( TString("metL_") + it->first, ";Long: "+it->second+";Events", 160,-300,500) );
+      controlHistos.addHistogram( new TH1D( TString("metT_") + it->first, ";Trans: "+it->second+";Events", 160,-300,500) );
+      controlHistos.addHistogram( new TH2F( TString("metLT_") + it->first, ";Long: " +it->second+";Trans: " + it->second, 160,-300,500,160,-300,500) );
     }
   controlHistos.addHistogram( new TH2F ("itpuvsootpu", ";In-Time Pileup; Out-of-time Pileup;Events", 30,0,30,30,0,30) );
   controlHistos.addHistogram( new TH2D ("redMetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) );
@@ -795,7 +796,9 @@ int main(int argc, char* argv[])
       //
       bool passZmass(fabs(zmass-91)<15);
       bool passSideBand( !passZmass && fabs(zmass-91)<30 );
-      bool passZpt(true);//zpt>25);
+
+      bool passZpt(zpt>25);
+
       bool pass3dLeptonVeto(ev.ln==0);
       bool passBveto(nbtags==0);
       bool passMediumRedMet(redMet>rmetComp.getCut(eventCategory,ReducedMETComputer::MEDIUMWP));
@@ -1017,6 +1020,7 @@ int main(int argc, char* argv[])
                   controlHistos.fillHisto(TString("metL_") + it->first, ctf,LongMET,weight);
                   controlHistos.fillHisto(TString("metT_") + it->first, ctf,TransMET,weight);
                   controlHistos.fill2DHisto(TString("metLT_") + it->first, ctf,LongMET,TransMET,weight);
+		  controlHistos.fill2DHisto(TString("metL_") + it->first+"vspu", ctf,ev.ngenITpu,LongMET,weight);
 		}
 
 	      controlHistos.fill2DHisto("metvstkmet", ctf,met,assocChargedMet,weight);
