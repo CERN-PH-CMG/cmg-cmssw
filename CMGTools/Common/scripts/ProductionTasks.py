@@ -32,13 +32,21 @@ class ParseOptions(Task):
         Task.__init__(self,'ParseOptions', dataset, user, options)
         
         self.das = Das.DASOptionParser()
-        self.das.parser.add_option("-u", "--user", dest="user", default=os.getlogin(),help='The username to use when looking at mass storage devices')
-        self.das.parser.add_option("-w", "--wildcard", dest="wildcard", default='*.root',help='A UNIX style wildcard to specify which files to check')    
+        self.das.parser.usage = """
+%prog [options] <dataset>
+
+Example:
+
+ProductionTasks.py -u cbern -w PFAOD*.root -c -N 1 -q 8nh -t wreece_260911test --output_wildcard [!h]*.root --cfg patTuple_PF2PAT_forCMG_cfg.py /QCD_Pt-1800_TuneZ2_7TeV_pythia6/Summer11-PU_S3_START42_V11-v2/AODSIM/V2
+"""
+        self.das.parser.add_option("-u", "--user", dest="user", default=os.getlogin(),help='The username to use when looking at mass storage devices. Your login username is used by default.')
+        self.das.parser.add_option("-w", "--wildcard", dest="wildcard", default='*.root',help='A UNIX style wildcard to specify which input files to check before submitting the jobs')    
         
     def run(self, input):
         self.options, self.dataset = self.das.get_opt()
         self.user = self.options.user
-        if not self.dataset: raise Exception('TaskError: No dataset specified')
+        if not self.dataset:
+            raise Exception('TaskError: No dataset specified')
         return {'Options':self.options, 'Dataset':self.dataset}    
 
 class CheckDatasetExists(Task):
@@ -737,7 +745,11 @@ if __name__ == '__main__':
     sav = WriteSavannah(dataset,user,options)
     sav.addOption(op.das.parser)
     #get the options
-    op.run({})
+    try:
+        op.run({})
+    except:
+        op.das.parser.print_help()
+        sys.exit(1)
     
     #these tasks are quick and are done in the main thread (fail early...)
     simple_tasks = [CheckDatasetExists(dataset,user,options),FindOnCastor(dataset,user,options),sav]
