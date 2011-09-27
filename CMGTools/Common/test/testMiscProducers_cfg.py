@@ -9,8 +9,8 @@ from testCMGTools_cfg import *
 process.load('CMGTools.Common.miscProducers.misc_cff')
 process.p += process.miscSequence
 
-process.TFileService.fileName = 'histograms_testDeltaPhi.root'
-process.out.fileName = 'tree_testDeltaPhi.root'
+process.TFileService.fileName = 'histograms_testMisc.root'
+process.out.fileName = 'tree_testMisc.root'
 
 
 

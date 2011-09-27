@@ -62,7 +62,8 @@ particleFlowHemispheres = cms.untracked.vstring(
     )
 
 particleFlowMisc = cms.untracked.vstring(
-    'keep *_deltaPhiJetMET_*_*'
+    'keep *_deltaPhiJetMET_*_*',
+    'keep *_metSignificance_*_*'
     )
 
 particleFlow = particleFlowJets + particleFlowMET + particleFlowMuons + particleFlowTaus + particleFlowElectrons + particleFlowPhotons + particleFlowW + particleFlowVBF + particleFlowHemispheres + particleFlowMisc

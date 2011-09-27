@@ -7,7 +7,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 pickRelVal = False
 
 # turn on when running on MC
-runOnMC = False
+runOnMC = True
 
 # AK5 sequence with no cleaning is the default
 # the other sequences can be turned off with the following flags.
