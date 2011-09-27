@@ -358,6 +358,8 @@ class RunTestEvents(Task):
         output.write(config)
         output.write('process.out.outputCommands = cms.untracked.vstring("drop *")\n')
         output.write('process.maxEvents.input = cms.untracked.int32(5)\n')
+        output.write('if hasattr(process,"source"): process.source.fileNames = process.source.fileNames[:1]\n')
+        
         
         output.close()
 
@@ -521,9 +523,6 @@ class MonitorJobs(Task):
                     id = tokens[header['JOBID']]
                     user = tokens[header['USER']]
                     status = tokens[header['STAT']]
-                    
-                    #skip if id has been reassigned
-                    if user != self.options.batch_user: continue
 
                     result[id] = status
                     
@@ -576,26 +575,39 @@ class MonitorJobs(Task):
         
         def countJobs(stat):
             """Count jobs that are monitorable - i.e. not in a final state"""
-            result = 0
+            result = []
             for j, id in jobs.iteritems():
                 if id is not None and stat.has_key(id):
                     st = stat[id]
                     if st in ['PEND','PSUSP','RUN','USUSP','SSUSP','WAIT']:
-                        result += 1
+                        result.append(id)
             return result
+        
+        def writeKillScript(mon):
+            """Write a shell script to kill the jobs we know about"""
+            kill = os.path.join(jobsdir,'kill_jobs.sh')
+            output = file(kill,'w')
+            script = """
+#!/usr/bin/env bash
+echo "Killing jobs"
+bkill -u %s %s
+            """ % (self.options.batch_user," ".join(mon))
+            output.write(script)
+            output.close()
+            return mon
                     
         #continue monitoring while there are jobs to monitor
         status = self.monitor(jobs,{})
-        monitorable = countJobs(status)
+        monitorable = writeKillScript(countJobs(status))
         count = 0
         
         while monitorable > 0:
             job_status = checkStatus(status)
             time.sleep(60)
             status = self.monitor(jobs,status)
-            monitorable = countJobs(status)
+            monitorable = writeKillScript(countJobs(status))
             if not (count % 3):
-                print '%s: Monitoring %i jobs (%s)' % (self.name,monitorable,self.dataset)
+                print '%s: Monitoring %i jobs (%s)' % (self.name,len(monitorable),self.dataset)
             count += 1
             
         return {'LSFJobStatus':checkStatus(status),'LSFJobIDs':jobs}  
