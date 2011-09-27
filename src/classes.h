@@ -26,8 +26,13 @@
 
 #include <vector>
 
+#include <TMatrixD.h>
+
 namespace {
   struct CMGTools_AnalysisDataFormats {
+
+    TMatrixD  matrix_;
+    edm::Wrapper<TMatrixD> matrixv_;
 
     cmg::AbstractPhysicsObject a_;
     std::vector<cmg::AbstractPhysicsObject> av;
