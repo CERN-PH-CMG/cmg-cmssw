@@ -601,7 +601,7 @@ bkill -u %s %s
         monitorable = writeKillScript(countJobs(status))
         count = 0
         
-        while monitorable > 0:
+        while monitorable:
             job_status = checkStatus(status)
             time.sleep(60)
             status = self.monitor(jobs,status)
