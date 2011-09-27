@@ -1,0 +1,24 @@
+Any question? ask Colin.
+
+Installation: 
+------------
+
+This code was tested in the prerelease indicated below, but it should work with any CMSSW release more recent than 4_2_5.
+
+scram project CMSSW CMSSW_4_4_0_pre10
+cd CMSSW_4_4_0_pre10/src
+cmsenv 
+addpkg CommonTools/ParticleFlow
+cvs co -d cbern/PBNR UserCode/CMG/UserArea/cbern/PBNR
+scram b -j 4 
+
+Running 
+-------
+
+cd cbern/PBNR/test
+cmsRun testPBNR_cfg.py
+
+check the filtering information at the end of the output.
+you may also want to draw in root the neutral hadron and photon energy fractions of the PFJets in the resulting file, by doing for example:
+
+Events.Draw("recoPFJets_ak5PFJets__RECO.obj.neutralHadronEnergyFraction()","recoPFJets_ak5PFJets__RECO.obj.pt()>30"
