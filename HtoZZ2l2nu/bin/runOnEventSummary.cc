@@ -310,6 +310,12 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1D( "genHiggsMassRaw", ";gen Higgs Mass Before VBF reweighting;Events",100,0,600) );
   controlHistos.addHistogram( new TH1D( "genzllPt"  , ";gen Zll p_{T};Events",100,0,200) );
   controlHistos.addHistogram( new TH1D( "genzvvPt"  , ";gen Zvv p_{T};Events",100,0,200) );
+  controlHistos.addHistogram( new TH1D( "genzwinHiggsPt"  , ";gen Higgs p_{T};Events",100,0,200) );
+  controlHistos.addHistogram( new TH1D( "genzwinHiggsMass", ";gen Higgs Mass ;Events",100,0,600) );
+  controlHistos.addHistogram( new TH1D( "genzwinHiggsMassRaw", ";gen Higgs Mass Before VBF reweighting;Events",100,0,600) );
+  controlHistos.addHistogram( new TH1D( "genzwinzllPt"  , ";gen Zll p_{T};Events",100,0,200) );
+  controlHistos.addHistogram( new TH1D( "genzwinzvvPt"  , ";gen Zvv p_{T};Events",100,0,200) );
+
 
 
   controlHistos.addHistogram( new TH1D( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",100,0,3.4) );
@@ -340,8 +346,11 @@ int main(int argc, char* argv[])
       metTypeValues[it->first]=LorentzVector(0,0,0,0);
       controlHistos.addHistogram( new TH1D( TString("met_") + it->first, ";"+it->second+";Events", 100,0,500) );
       controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"vspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );  
+      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"phimetphijet", ";#phi "+it->second+";#phi jet", 10,0,3.4,10,0,3.4) );
       controlHistos.addHistogram( new TH1D( TString("met_") + it->first+"mindphijmet", ";min #Delta#phi(jet,"+it->second+");Events",10,0,3.4) );
-      controlHistos.addHistogram( new TH1D( TString("metL_") + it->first, ";"+it->second+";Events", 100,0,500) );
+      controlHistos.addHistogram( new TH1D( TString("metL_") + it->first, ";Long: "+it->second+";Events", 100,0,500) );
+      controlHistos.addHistogram( new TH1D( TString("metT_") + it->first, ";Trans: "+it->second+";Events", 100,0,500) );
+      controlHistos.addHistogram( new TH2F( TString("metLT_") + it->first, ";Long: " +it->second+";Trans: " + it->second, 100,0,500,100,0,500) );
     }
   controlHistos.addHistogram( new TH2F ("itpuvsootpu", ";In-Time Pileup; Out-of-time Pileup;Events", 30,0,30,30,0,30) );
   controlHistos.addHistogram( new TH2D ("redMetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) );
@@ -381,6 +390,7 @@ int main(int argc, char* argv[])
   //cut and count
   std::vector<TString> varsToInclude;
   varsToInclude.push_back("");
+  varsToInclude.push_back("zpt25");
   if(runSystematics)
     {
       varsToInclude.push_back("jer");
@@ -657,8 +667,9 @@ int main(int argc, char* argv[])
               metTypeValues["minAssocMet"]         = min(zvv,assocMetP4);
               metTypeValues["superMinMet"]         = min( metTypeValues["minAssocMet"],  min(metTypeValues["minCleanMet"], metTypeValues["centralMet"]) );
 
-      std::map<TString,double> metTypeValuesminJetdhi;
-      for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++){metTypeValuesminJetdhi[it->first] = 9999.0;}
+      std::map<TString,double> metTypeValuesminJetdphi;
+      std::map<TString,double> metTypeValuesminJetphi;
+      for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++){metTypeValuesminJetdphi[it->first] = 9999.0; metTypeValuesminJetphi[it->first] = 9999.0;}
       int zrank(0);
       double mindphijmet(9999.), minmtjmet(9999.),mindrjz(9999.), minmjz(9999.);
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++) 
@@ -666,11 +677,10 @@ int main(int argc, char* argv[])
 	  if(phys.jets[ijet].pt()>zll.pt()) zrank++;
 
 	  double dphijmet=fabs(deltaPhi(zvv.phi(),phys.jets[ijet].phi()));
-	  if(mindphijmet>dphijmet) mindphijmet=dphijmet;
 
           for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++){
              double tmpdphijmet=fabs(deltaPhi(it->second.phi(),phys.jets[ijet].phi()));             
-             if(metTypeValuesminJetdhi[it->first]>tmpdphijmet)metTypeValuesminJetdhi[it->first]=tmpdphijmet;
+             if(metTypeValuesminJetdphi[it->first]>tmpdphijmet){metTypeValuesminJetdphi[it->first]=tmpdphijmet;  metTypeValuesminJetphi[it->first] = phys.jets[ijet].phi();}
           }
 
 
@@ -863,12 +873,19 @@ int main(int argc, char* argv[])
 	    {
 	      TString ctf=catsToFill[ic]+subCatsToFill[isc];
 
-
               controlHistos.fillHisto("genHiggsPt"      ,ctf,    genhiggs.pt()   ,weight);
               controlHistos.fillHisto("genHiggsMass"    ,ctf,    genhiggs.mass() ,weight);
               controlHistos.fillHisto("genHiggsMassRaw" ,ctf,    genhiggs.mass() ,weight/VBFWeight);
               controlHistos.fillHisto("genzllPt"        ,ctf,    genzll.pt()     ,weight);
               controlHistos.fillHisto("genzvvPt"        ,ctf,    genzvv.pt()     ,weight);
+
+              if(passZmass){
+              controlHistos.fillHisto("genzwinHiggsPt"      ,ctf,    genhiggs.pt()   ,weight);
+              controlHistos.fillHisto("genzwinHiggsMass"    ,ctf,    genhiggs.mass() ,weight);
+              controlHistos.fillHisto("genzwinHiggsMassRaw" ,ctf,    genhiggs.mass() ,weight/VBFWeight);
+              controlHistos.fillHisto("genzwinzllPt"        ,ctf,    genzll.pt()     ,weight);
+              controlHistos.fillHisto("genzwinzvvPt"        ,ctf,    genzvv.pt()     ,weight);
+              }
 
 	      
 	      //event pre-selection
@@ -987,13 +1004,21 @@ int main(int argc, char* argv[])
 		{
 		  controlHistos.fillHisto(TString("met_") + it->first, ctf,it->second.pt(),weight);
 		  controlHistos.fill2DHisto(TString("met_") + it->first+"vspu", ctf,ev.ngenITpu,it->second.pt(),weight);
-                  controlHistos.fillHisto(TString("met_") + it->first+"mindphijmet",ctf,metTypeValuesminJetdhi[it->first], weight);
 
-                  TVector2 zll2D = TVector2(zll.px()/zll.pt(), zll.py()/zll.pt());
-                  double LongMET = zll2D.Px()*it->second.px() + zll2D.Py()*it->second.py();
+                  if(it->second.pt()>50 && metTypeValuesminJetdphi[it->first]<10){
+                     controlHistos.fillHisto(TString("met_") + it->first+"mindphijmet",ctf,metTypeValuesminJetdphi[it->first], weight);
+                     controlHistos.fill2DHisto(TString("met_") + it->first+"phimetphijet", ctf,it->second.phi(),metTypeValuesminJetphi[it->first],weight);
+                  }
+
+                  TVector2 zll2DLong  = TVector2(zll.px()/zll.pt(), zll.py()/zll.pt());
+                  TVector2 zll2DTrans = zll2DLong.Rotate(TMath::Pi()/2);
+                  double LongMET  = zll2DLong .Px()*it->second.px() + zll2DLong .Py()*it->second.py();
+                  double TransMET = zll2DTrans.Px()*it->second.px() + zll2DTrans.Py()*it->second.py();
                   controlHistos.fillHisto(TString("metL_") + it->first, ctf,LongMET,weight);
-
+                  controlHistos.fillHisto(TString("metT_") + it->first, ctf,TransMET,weight);
+                  controlHistos.fill2DHisto(TString("metLT_") + it->first, ctf,LongMET,TransMET,weight);
 		}
+
 	      controlHistos.fill2DHisto("metvstkmet", ctf,met,assocChargedMet,weight);
 	      controlHistos.fill2DHisto("metvsclusteredMet", ctf,met,assocMet,weight);
 	      controlHistos.fill2DHisto("metvscentralMet", ctf,met,centralMet,weight);
@@ -1095,6 +1120,20 @@ int main(int argc, char* argv[])
 	      if(pass400) controlHistos.fillHisto("finaleventflow",ctf,5,weight);
 	      if(pass500) controlHistos.fillHisto("finaleventflow",ctf,6,weight);
 	      if(pass600) controlHistos.fillHisto("finaleventflow",ctf,7,weight);
+
+
+              if(zpt>25){
+                 if(pass130) controlHistos.fillHisto("zpt25finaleventflow",ctf,0,weight);
+                 if(pass150) controlHistos.fillHisto("zpt25finaleventflow",ctf,1,weight);
+                 if(pass170) controlHistos.fillHisto("zpt25finaleventflow",ctf,2,weight);
+                 if(pass200) controlHistos.fillHisto("zpt25finaleventflow",ctf,3,weight);
+                 if(pass300) controlHistos.fillHisto("zpt25finaleventflow",ctf,4,weight);
+                 if(pass400) controlHistos.fillHisto("zpt25finaleventflow",ctf,5,weight);
+                 if(pass500) controlHistos.fillHisto("zpt25finaleventflow",ctf,6,weight);
+                 if(pass600) controlHistos.fillHisto("zpt25finaleventflow",ctf,7,weight);
+              }
+
+
 
 	      //systematic variations (computed per jet bin so fill only once) 		  
 	      if(isc==0 && runSystematics)
