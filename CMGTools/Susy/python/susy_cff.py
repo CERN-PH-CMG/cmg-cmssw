@@ -1,11 +1,22 @@
 import FWCore.ParameterSet.Config as cms
 
 from CMGTools.Susy.common.susy_cff import *
+from CMGTools.Susy.MultiJet.multijet_cff import *
 from CMGTools.Susy.RA1.RA1_cff import *
 from CMGTools.Susy.RA2.RA2_cff import *
 from CMGTools.Susy.Razor.razor_cff import *
 from CMGTools.Susy.LP.LP_cff import *
 from CMGTools.Common.countingSequences_cff import *
+
+multijetPath = cms.Path(
+    susySequence +
+    multijetSkimSequence
+    )
+
+multijetTriggerPath = cms.Path(
+    susySequence +
+    multijetTriggerSkimSequence
+    )
 
 RA1Path = cms.Path(
     susySequence *
