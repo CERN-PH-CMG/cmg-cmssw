@@ -191,7 +191,7 @@ TObject *formatPlot(TObject *h,
     h1->SetLineStyle(line);          h1->SetLineWidth(linew); h1->SetLineColor(linecolor);
     h1->SetMarkerColor(markercolor); h1->SetMarkerStyle(marker); 
     h1->SetFillColor(fillcolor);     h1->SetFillStyle(fill);
-    if( setSumw2 ) h1->Sumw2();
+    if( setSumw2 && h1->GetSumw2N()<=h1->GetNbinsX()) h1->Sumw2();
     if( detachFromCurrentDir ) h1->SetDirectory(0);
     ((TH1 *)h)->SetLabelFont(42, "XYZ");
     ((TH1 *)h)->SetTitleFont(62, "XYZ");
