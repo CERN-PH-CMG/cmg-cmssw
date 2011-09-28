@@ -21,6 +21,7 @@ process.setName_('SUSY')
 
 # process.load("CMGTools.Common.sources.HT.Run2011A_PromptReco_v1.AOD.PAT_CMG.source_tree_cff")
 process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.PAT_CMG.source_cff")
+#process.load("CMGTools.Common.sources.LM6_SUSY_sftsht_7TeV_pythia6.Summer11_PU_S4_START42_V11_v1.AODSIM.V2.PAT_CMG_V2_2_0.source_cff")
 
 ext = 'CMG'
 
@@ -39,6 +40,7 @@ process.schedule = cms.Schedule(
     process.RA1Path,
     process.RA2Path,
     process.razorPath,
+    process.razorTriggerPath,
     process.LPPath,
     process.outpath
     )
@@ -51,10 +53,10 @@ process.out.fileName = cms.untracked.string('susy_tree_%s.root' %  outFileNameEx
 process.out.outputCommands = cms.untracked.vstring('drop *')
 process.out.outputCommands += susyEventContent
 
-process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('RA2Path','razorPath', 'RA1Path', 'LPPath') )
+process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('RA2Path','razorPath','razorTriggerPath', 'RA1Path', 'LPPath') )
 #plot the correlations between the selection paths
 process.load('CMGTools.Common.histograms.triggerCorrelationHistograms_cfi')
-process.triggerCorrelationHistograms.names = cms.untracked.vstring('RA2Path','razorPath', 'RA1Path', 'LPPath')
+process.triggerCorrelationHistograms.names = cms.untracked.vstring('RA2Path','razorPath','razorTriggerPath', 'RA1Path', 'LPPath')
 process.schedule.append( process.triggerCorrelationHistogramsEndPath )
 
 process.TFileService = cms.Service(

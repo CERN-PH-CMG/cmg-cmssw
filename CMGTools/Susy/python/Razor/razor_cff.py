@@ -3,6 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.Common.skims.cmgCandSel_cfi import *
 from CMGTools.Common.skims.cmgCandCount_cfi import *
 from CMGTools.Common.skims.cmgCandMerge_cfi import *
+from CMGTools.Common.physicsObjectPrinter_cfi import physicsObjectPrinter
 
 # Current loose trigger requires pt > 40; eta < 3; R > 0.14; MR > 150
 #take the leading selected electrons + muons
@@ -43,6 +44,24 @@ razorPFJetsWithLeadingLeptons = cmgCandMerge.clone(
 #skim on leading objects - i.e. at least one ID'd jet and a lepton, or two jets
 razorLeadingObjectCount = cmgCandCount.clone( src = 'razorPFJetsWithLeadingLeptons', minNumber = 2 )
 
+#make a skim on the HLT - should match all Razor triggers
+from CMGTools.Common.skims.cmgTriggerObjectSel_cfi import *
+razorTriggerSel = cmgTriggerObjectSel.clone(
+                                            src = 'cmgTriggerObjectSel',
+                                            cut = 'getSelectionRegExp("^HLT_.*R0[0-9]+_MR[0-9]+.*_v[0-9]+$")'
+                                            )
+razorTriggerCount = cmgCandCount.clone( src = 'razorTriggerSel', minNumber = 1 )
+
+razorTriggerInfo = physicsObjectPrinter.clone(
+    inputCollection = cms.untracked.InputTag("razorTriggerSel"),
+    printSelections = cms.untracked.bool(True)
+    )
+
+razorTriggerSequence = cms.Sequence(
+    razorTriggerSel#*
+#    razorTriggerInfo
+    )
+
 #make the hemispheres
 from CMGTools.Common.factories.cmgHemi_cfi import cmgHemi
 from CMGTools.Common.factories.cmgDiHemi_cfi import cmgDiHemi
@@ -54,6 +73,7 @@ razorHemiHadBox = cmgHemi.clone(
     inputCollection = cms.VInputTag(
       cms.InputTag("razorPFJetSel")#only require kinematics, not ID
       ),
+      #balanceAlgorithm = cms.uint32(1)#use the MassBalance algo
     )
 )
 
@@ -66,14 +86,12 @@ razorDiHemiHadBox = cmgDiHemi.clone(
     #these are a little looser than the analysis cuts to give some sidebands                            
     razor = cms.PSet(
                      deltaPhi = cms.string('deltaPhi(leg1().phi(),leg2().phi()) < 2.8'),
-                     mr = cms.string('mR() >= 140'),
-                     r = cms.string('R() >= 0.1')
+                     mr = cms.string('mR() >= 195'),
+                     r = cms.string('R() >= 0.16')
     )
     )      
 )
 razorDiHemiHadBoxSel = cmgCandSel.clone( src = 'razorDiHemiHadBox', cut = 'getSelection("cuts_razor")' )
-
-from CMGTools.Common.physicsObjectPrinter_cfi import physicsObjectPrinter
 razorDiHemiHadBoxInfo = physicsObjectPrinter.clone(
     inputCollection = cms.untracked.InputTag("razorDiHemiHadBox"),
     printSelections = cms.untracked.bool(True)
@@ -105,8 +123,8 @@ razorMuStarMet = cmgBaseMETModifier.clone(
     )
 )
 #make the hemispheres using only jets that are not muons
-razorHemiMuStarBox = cmgHemi.clone(
-    cfg = cmgHemi.cfg.clone(
+razorHemiMuStarBox = razorHemiHadBox.clone(
+    cfg = razorHemiHadBox.cfg.clone(
     inputCollection = cms.VInputTag(
       cms.InputTag("razorPFJetsMuonVeto")
       ),
@@ -151,6 +169,7 @@ razorBoxesSequence = cms.Sequence(
     )
 
 razorObjectSequence = cms.Sequence(
+    razorTriggerSequence  +                                 
     razorElectronSequence + 
     razorMuonSequence +
     razorJetSequence +
@@ -174,10 +193,17 @@ razorSequence = cms.Sequence(
     razorHistogrammingSequence
     )
 
+#offline based selection
 razorSkimSequence = cms.Sequence(
     razorObjectSequence + 
     ~razorPFJetIDCount + #note the inversion - veto events with jets that fail the ID
     razorLeadingObjectCount+
     razorSelectedDiHemi*
     razorSelectedCount
+    )
+
+#trigger based selection - we take all Razor triggered events
+razorTriggerSkimSequence = cms.Sequence(
+    razorObjectSequence+
+    razorTriggerCount                                
     )
