@@ -88,7 +88,7 @@ def getControlPlots(descriptor,isData,inputDir='data',getFromDir='') :
                     hname=path+'/'+p.GetName()
                     h = file.Get(hname)
                     h.SetDirectory(0)
-                    h.Sumw2()
+                    if(h.GetSumw2N()<=h.GetNbinsX()): h.Sumw2()
                     cresults[h.GetName()]=h
                     if(hname.find('cutflow')<0): continue
                     if(hname.find('presel')>=0): continue
@@ -102,7 +102,7 @@ def getControlPlots(descriptor,isData,inputDir='data',getFromDir='') :
             except :
                 h = file.Get(path)
                 h.SetDirectory(0)
-                h.Sumw2()
+                if(h.GetSumw2N()<=h.GetNbinsX()): h.Sumw2()
                 centralresults[h.GetName()]=h
 
         #rescale central results (assume latest normalization found)    
@@ -118,7 +118,7 @@ def getControlPlots(descriptor,isData,inputDir='data',getFromDir='') :
             pname=p.GetName()
             h = file.Get(pname)
             h.SetDirectory(0)
-            h.Sumw2()
+            if(h.GetSumw2N()<=h.GetNbinsX()): h.Sumw2()
             cresults[h.GetName()]=h
         results.update(cresults)
         
@@ -280,7 +280,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
         leg=showPlotsAndMCtoDataComparison(c,stack,spimpose,data)
         formatForCmsPublic(c.cd(1),leg,plotLabel,isamp)
         c.SaveAs(outputDir+'/'+pname+'.png')
-        c.SaveAs(outputDir+'/'+pname+'.C')
+#        c.SaveAs(outputDir+'/'+pname+'.C')
         
         if(pname.find('cutflow')>=0 or pname.find('eventflow')>=0 or pname.find('evtflow')>=0) :
             try :
