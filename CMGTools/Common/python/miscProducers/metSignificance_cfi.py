@@ -1,6 +1,11 @@
 import FWCore.ParameterSet.Config as cms
+from RecoMET.METProducers.METSigParams_cfi import *
 
 metSignificance = cms.EDProducer(
     "METSignificanceProducer",
-    pfJets = cms.InputTag( 'pfJetsAK5' )
+    inputPATMuons = cms.InputTag('patMuonsAK5'),
+    inputPATElectrons = cms.InputTag('patElectronsAK5'),
+    inputPFJets = cms.InputTag('pfJetsAK5'),
+    inputPFCandidates = cms.InputTag('pfNoJetAK5'),
+    resolution = METSignificance_params
 )

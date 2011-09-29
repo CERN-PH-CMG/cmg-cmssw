@@ -29,7 +29,7 @@ def adaptSelectedPFJetForHPSTau(process,
     process.pfJetsForHPSTau = selectedPfJets.clone()
     process.pfJetsForHPSTau.src = "pfJets"+postfix
     process.pfJetsForHPSTau.cut = cms.string(jetSelection)
-    setattr(process, "pfJetsForHPSTau"+postfix, process.pfJetsForHPSTau)
+    setattr(process,"pfJetsForHPSTau"+postfix, process.pfJetsForHPSTau)
     getattr(process,"pfTausPreSequence"+postfix).insert(0,getattr(process,"pfJetsForHPSTau"+postfix))
     applyPostfix(process,"pfTausBase",postfix).jetSrc = "pfJetsForHPSTau"+postfix
     # need to fix the tau presequence because it depends on the new jet collection
@@ -43,3 +43,23 @@ def adaptSelectedPFJetForHPSTau(process,
     # must use the pfJets for the patJets otherwise we will have the selection on the patJets
     print 'Warning: switching patJet.jetSource from pfNoTau to pfJets, so no Tau cleaning can be applied'
     applyPostfix(process,"patJets",postfix).jetSource = "pfJets"+postfix
+
+def removeHPSTauIsolation(process,  postfix = ""):
+    print "removing tau isolation discriminators "
+    getattr(process,"pfTausBaseSequence"+postfix).remove(applyPostfix(process,"pfTausBaseDiscriminationByLooseChargedIsolation",postfix))
+    getattr(process,"pfTausBaseSequence"+postfix).remove(applyPostfix(process,"pfTausBaseDiscriminationByLooseIsolation",postfix))
+    getattr(process,"pfTaus"+postfix).discriminators = [cms.PSet(discriminator = cms.InputTag("pfTausBaseDiscriminationByDecayModeFinding"+postfix),
+                                                                 selectionCut = cms.double(0.5)
+                                                                 )]
+    
+def switchHPSTauIsolation(process, discriminator = "", postfix = ""):
+    print "switching to tau isolation discriminator "+discriminator
+    removeHPSTauIsolation(process, postfix = postfix)
+    process.hpsTauDefaultIsolation = getattr(process,discriminator+postfix).clone()    
+    process.hpsTauDefaultIsolation.PFTauProducer = cms.InputTag("hpsPFTauProducer"+postfix)
+    process.hpsTauDefaultIsolation.Prediscriminants.decayMode.Producer = cms.InputTag("pfTausBaseDiscriminationByDecayModeFinding"+postfix)
+    setattr(process,"hpsTauDefaultIsolation"+postfix, process.hpsTauDefaultIsolation )
+    getattr(process,"pfTausBaseSequence"+postfix).insert(3,getattr(process,"hpsTauDefaultIsolation"+postfix))
+    getattr(process,"pfTaus"+postfix).discriminators = [cms.PSet(discriminator = cms.InputTag("hpsTauDefaultIsolation"+postfix),
+                                                                 selectionCut = cms.double(0.5)
+                                                                 )]
