@@ -26,8 +26,10 @@ if len(sys.argv) != 2:
 events = Chain('Events',sys.argv[1])
 lumi = Chain('LuminosityBlocks',sys.argv[1])
 
-aliases = AliasSetter(events, eventsAliases, 'ANA')
-aliases = AliasSetter(lumi, luminosityBlocksAliases, 'ANA')
+aliases = AliasSetter(events, eventsAliases, 'PAT')
+aliases = AliasSetter(events, pat, 'PAT')
+aliases = AliasSetter(events, reco, 'RECO')
+aliases = AliasSetter(lumi, luminosityBlocksAliases, 'PAT')
 
 from CMGTools.RootTools.runLumiReport import *
 
