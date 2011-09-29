@@ -7,7 +7,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 pickRelVal = False
 
 # turn on when running on MC
-runOnMC = True
+runOnMC = False
 
 # AK5 sequence with no cleaning is the default
 # the other sequences can be turned off with the following flags.
@@ -124,7 +124,10 @@ if hpsTaus:
     adaptPFTaus(process,"hpsPFTau",postfix=postfixAK5)
     #  note that the following disables the tau cleaning in patJets
     adaptSelectedPFJetForHPSTau(process,jetSelection="pt()>15.0",postfix=postfixAK5)
-    
+    # currently (Sept 27,2011) there are three sets of tau isolation discriminators better to choose in CMG tuples.
+    removeHPSTauIsolation(process,postfix=postfixAK5)
+
+   
 # curing a weird bug in PAT..
 from CMGTools.Common.PAT.removePhotonMatching import removePhotonMatching
 removePhotonMatching( process, postfixAK5 )
@@ -140,6 +143,9 @@ getattr(process,"pfIsolatedElectrons"+postfixAK5).combinedIsolationCut = 999999
 from CMGTools.Common.PAT.addPATElectronID_cff import addPATElectronID
 addPATElectronID( process, postfixAK5 , runOnMC )
 
+# insert the PFMET sifnificance calculation
+from CMGTools.Common.PAT.addMETSignificance_cff import addMETSig
+addMETSig( process, postfixAK5 )
 
 # ---------------- Sequence AK5LC, lepton x-cleaning ---------------
 
@@ -161,6 +167,11 @@ getattr(process,"pfIsolatedMuons"+postfixAK5LC).combinedIsolationCut = 0.2
 getattr(process,"pfIsolatedElectrons"+postfixAK5LC).combinedIsolationCut = 0.2
 
 #COLIN : need to add the VBTF e and mu id
+
+# configure MET significance
+getattr(process,"PFMETSignificance"+postfixAK5LC).inputPATElectrons = cms.InputTag('patElectrons'+postfixAK5LC)   
+getattr(process,"PFMETSignificance"+postfixAK5LC).inputPATMuons = cms.InputTag('patMuons'+postfixAK5LC)
+
 
 print 'cloning AK5 sequence to prepare AK5LC sequence...Done'
 
@@ -192,6 +203,9 @@ getattr(process,"pfNoJet"+postfixAK7).enable = True
 removePhotonMatching( process, postfixAK7 )
 
 addPATElectronID( process, postfixAK7 , runOnMC )
+
+addMETSig(process,postfixAK7)
+
 
 # ---------------- Common stuff ---------------
 

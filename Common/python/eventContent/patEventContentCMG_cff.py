@@ -18,5 +18,6 @@ patEventContentCMG = cms.untracked.vstring(
     'drop recoVertexs_pfTauPileUpVerticesAK7_*_*',
     'drop recoBaseTagInfosOwned_selectedPatJetsAK7_tagInfos_*',
     # this guys is already present in the AK5 sequence
-    'drop recoVertexs_goodOfflinePrimaryVerticesLC_*_*'
+    'drop recoVertexs_goodOfflinePrimaryVerticesLC_*_*',
+    'keep *_PFMETSignificance*_*_*'
     )
