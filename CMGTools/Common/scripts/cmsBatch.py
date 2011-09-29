@@ -258,6 +258,9 @@ batchManager.parser_.add_option("-p", "--program", dest="prog",
 batchManager.parser_.add_option("-b", "--batch", dest="batch",
                                 help="batch command. default is: 'bsub -q 8nh < batchScript.sh'. You can also use 'nohup < ./batchScript.sh &' to run locally.",
                                 default="bsub -q 8nh < .batchScript.sh")
+batchManager.parser_.add_option("-c", "--command-args", dest="cmdargs",
+                                help="command line arguments for the job",
+                                default=None)
 
 (options,args) = batchManager.parser_.parse_args()
 batchManager.ParseOptions()
@@ -275,11 +278,23 @@ cfgFileName = args[1]
 
 print 'Loading cfg'
 
+pycfg_params = options.cmdargs
+trueArgv = sys.argv
+sys.argv = [cfgFileName]
+if pycfg_params:
+   sys.argv.extend(pycfg_params.split(' '))
+print  sys.argv
+
+
 # load cfg script
 handle = open(cfgFileName, 'r')
 cfo = imp.load_source("pycfg", cfgFileName, handle)
 process = cfo.process
 handle.close()
+
+# Restore original sys.argv
+sys.argv = trueArgv
+
 
 # keep track of the original source
 fullSource = process.source.clone()
