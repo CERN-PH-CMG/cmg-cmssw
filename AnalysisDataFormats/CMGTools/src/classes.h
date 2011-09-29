@@ -23,6 +23,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/Hemisphere.h"
 #include "AnalysisDataFormats/CMGTools/interface/Photon.h"
 #include "AnalysisDataFormats/CMGTools/interface/NamedObject.h"
+#include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
 
 #include <vector>
 
@@ -31,8 +32,11 @@
 namespace {
   struct CMGTools_AnalysisDataFormats {
 
+    cmg::METSignificance metsig_;
+    edm::Wrapper<cmg::METSignificance> metsige_;
+
     TMatrixD  matrix_;
-    edm::Wrapper<TMatrixD> matrixv_;
+    edm::Wrapper<TMatrixD> matrixe_;
 
     cmg::AbstractPhysicsObject a_;
     std::vector<cmg::AbstractPhysicsObject> av;
