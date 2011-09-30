@@ -1,3 +1,6 @@
+# this macro reads pat muons.
+
+
 events.SetAlias('ch','patMuonsPFlow.obj.chargedHadronIso()')
 events.SetAlias('nh','patMuonsPFlow.obj.neutralHadronIso()')
 events.SetAlias('ph','patMuonsPFlow.obj.photonIso()')
