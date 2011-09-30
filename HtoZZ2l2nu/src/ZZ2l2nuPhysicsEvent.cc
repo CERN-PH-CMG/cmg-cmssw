@@ -30,15 +30,15 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
   phys.met[7] = LorentzVector( ev.met8_pt*cos(ev.met8_phi), ev.met8_pt*sin(ev.met8_phi), 0, ev.met8_pt);
 
   /////////////////////////////////////////   TEMPORARY MOVING THIS CODE HERE, TO SWAP BACK THE SUM ET QUANTITIES IN THE RIGHT ORDER (NEED TO REDO THE NTUPLE OTHERWISE)
-  float sumEtcentral     = ev.chsumEtcentral;
-  float chSumEtcentral   = ev.neutsumEt;
-  float chSumEt          = ev.sumEtcentral;
-  float neutsumEt        = ev.chsumEt;
-
-  ev.sumEtcentral        = sumEtcentral;
-  ev.chsumEtcentral      = chSumEtcentral;
-  ev.chsumEt             = chSumEt;
-  ev.neutsumEt           = neutsumEt;
+  //   float sumEtcentral     = ev.chsumEtcentral;
+  //   float chSumEtcentral   = ev.neutsumEt;
+  //   float chSumEt          = ev.sumEtcentral;
+  //   float neutsumEt        = ev.chsumEt;
+  
+  //   ev.sumEtcentral        = sumEtcentral;
+  //   ev.chsumEtcentral      = chSumEtcentral;
+  //   ev.chsumEt             = chSumEt;
+  //   ev.neutsumEt           = neutsumEt;
   ////////////////////////////////////////////
 
   phys.gamma = PhysicsObject_Gamma(LorentzVector(ev.g_px,ev.g_py,ev.g_pz,ev.g_en), ev.g_iso1, ev.g_iso2, ev.g_iso3, ev.g_sihih, ev.g_sipip, ev.g_r9, ev.g_hoe, ev.g_eop);

@@ -96,6 +96,7 @@ ClusteredPFMetProducer::ClusteredPFMetProducer(const edm::ParameterSet& iConfig)
   controlHistos_("control")
 {
   produces<reco::PFMET>("clusteredPfMet");
+  produces<reco::PFMET>("clusteredPfMetWithFwd");
   produces<reco::PFMET>("clusteredOtherVtxPfMet");
   produces<reco::PFMET>("trkPfMet");
   produces<reco::PFMET>("globalPfMet");
@@ -103,7 +104,6 @@ ClusteredPFMetProducer::ClusteredPFMetProducer(const edm::ParameterSet& iConfig)
   produces<reco::PFMET>("cleanPfMet");
   produces<std::vector<double> >("globalPfMetSums"); 
   
-
   edm::Service<TFileService> fs;
   if(produceSummary_)
     evHandler_ = new MetSummaryHandler( fs->make<TTree>("data","MET Summary"), true);
@@ -389,6 +389,8 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   int           nchnotass(0),         nchass(0);
   LorentzVector globalChSum(0,0,0,0), globalNeutralSum(0,0,0,0), globalNeutralFwdSum(0,0,0,0), globalNeutral2v4Sum(0,0,0,0), globalNeutral2v4assSum(0,0,0,0), globalNeutral2v4notassSum(0,0,0,0);
   double        globalChSumEt(0),     globalNeutralSumEt(0),     globalNeutralFwdSumEt(0),     globalNeutral2v4SumEt(0),     globalNeutral2v4assSumEt(0),     globalNeutral2v4notassSumEt(0);
+  LorentzVector globalNonAssocNeutralFwdSum(0,0,0,0);
+  double        globalNonAssocNeutralFwdSumEt(0);
   for (size_t iPFCand=0; iPFCand<nPFCands; iPFCand++)
     {
       reco::PFCandidateRef candptr(pfCandsH_,iPFCand);
@@ -423,6 +425,13 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
 	      nneutfwd++;
 	      globalNeutralFwdSum += candptr->p4();
               globalNeutralFwdSumEt += candptr->pt();
+
+	      if(vertexAssociationMasks_[iPFCand]==-1)
+		{
+		  globalNonAssocNeutralFwdSum += candptr->p4();
+		  globalNonAssocNeutralFwdSumEt += candptr->pt();
+		}
+
 	    }
 	}
       else
@@ -766,6 +775,7 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   
   // and finally put it in the event
   std::auto_ptr<reco::PFMET> clusteredPfMetPtr(new reco::PFMET);
+  std::auto_ptr<reco::PFMET> clusteredPfMetWithFwdPtr(new reco::PFMET);
   std::auto_ptr<reco::PFMET> clusteredOtherVtxPfMetPtr(new reco::PFMET);
   std::auto_ptr<reco::PFMET> globalPfMetPtr(new reco::PFMET);
   std::auto_ptr<reco::PFMET> centralPfMetPtr(new reco::PFMET);
@@ -799,6 +809,16 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   pfOutput.sumet = vtxSumEt[0];
   pfOutput.phi = atan2(-vtxPFMet[0].py(),-vtxPFMet[0].px());
   *clusteredPfMetPtr = pf.addInfo(pfRecoCandsH,pfOutput);
+
+  LorentzVector clusteredPfMetWithFwd(vtxPFMet[0]+globalNonAssocNeutralFwdSum);
+  double clusteredPfMetWithFwdSumEt(vtxSumEt[0]+globalNonAssocNeutralFwdSumEt);
+  pfOutput.mex = -clusteredPfMetWithFwd.px();
+  pfOutput.mey = -clusteredPfMetWithFwd.py();
+  pfOutput.mez = -clusteredPfMetWithFwd.pz();
+  pfOutput.met = clusteredPfMetWithFwd.pt();
+  pfOutput.sumet = clusteredPfMetWithFwdSumEt;
+  pfOutput.phi = atan2(-clusteredPfMetWithFwd.py(),-clusteredPfMetWithFwd.px());
+  *clusteredPfMetWithFwdPtr = pf.addInfo(pfRecoCandsH,pfOutput);
 
   pfOutput.mex=0;
   pfOutput.mey=0;
@@ -850,6 +870,7 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
     }
 
   iEvent.put(clusteredPfMetPtr,"clusteredPfMet");
+  iEvent.put(clusteredPfMetWithFwdPtr,"clusteredPfMetWithFwd");
   iEvent.put(clusteredOtherVtxPfMetPtr,"clusteredOtherVtxPfMet");
   iEvent.put(globalPfMetPtr,"globalPfMet");
   iEvent.put(centralPfMetPtr,"centralPfMet");

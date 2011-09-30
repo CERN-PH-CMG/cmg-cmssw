@@ -339,6 +339,7 @@ int main(int argc, char* argv[])
   metTypes["minCleanMet"]         = "min{E_{T}^{miss},clean-E_{T}^{miss}}";
   metTypes["assocMet"]            = "assoc-E_{T}^{miss}";
   metTypes["minAssocMet"]         = "min{E_{T}^miss,assoc-E_{T}^{miss})";
+  metTypes["redAssocMet"]         = "red-assoc-E_{T}^{miss}";
   metTypes["superMinMet"]         = "min{E_{T}^{miss},assoc-E_{T}^{miss},clean-E_{T}^{miss},central-E_{T}^{miss}}";
   std::map<TString,LorentzVector> metTypeValues;
   for(std::map<TString,TString>::iterator it = metTypes.begin(); it!= metTypes.end(); it++)
@@ -633,15 +634,28 @@ int main(int argc, char* argv[])
       Float_t mt         = mtComp.compute(zll,zvv,true);
       Float_t dphizleadl = ptl1>ptl2 ? deltaPhi(phys.leptons[0].phi(),zll.phi()) : deltaPhi(phys.leptons[1].phi(),zll.phi()) ;
 
-      //redmet
+      //redmet (associated)
+      std::vector<LorentzVector> assocMetCollection(1,assocMetP4+zll);
+      rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0,assocMetCollection , zvv );
+      Float_t redAssocMet =  rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+      Float_t redAssocMetL        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+      Float_t redAssocMetT        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+      Float_t redAssocMetX        = rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
+      Float_t redAssocMetY        = rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
+
+      //redmet (standard)
       rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsP4, zvv );
       Float_t redMet_d0  = rmetComp.reducedMET(ReducedMETComputer::D0);
       Float_t redMetL_d0  = rmetComp.reducedMETComponents(ReducedMETComputer::D0).second;
       Float_t redMetT_d0  = rmetComp.reducedMETComponents(ReducedMETComputer::D0).first;
+      Float_t redMetX_d0        = rmetComp.reducedMETcartesian(ReducedMETComputer::D0).X();
+      Float_t redMetY_d0        = rmetComp.reducedMETcartesian(ReducedMETComputer::D0).Y();
       Float_t redMet         = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
       Float_t redMetL        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
       Float_t redMetT        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
-    
+      Float_t redMetX        = rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
+      Float_t redMetY        = rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
+      
       //projected met
       Float_t projMet        = pmetComp.compute(phys.leptons[0], phys.leptons[1], zvv );
       Float_t projAssocChargedMet     = pmetComp.compute(phys.leptons[0],phys.leptons[1], assocChargedMetP4);
@@ -652,23 +666,24 @@ int main(int argc, char* argv[])
       Float_t assocMet            =  assocMetP4.pt();
       Float_t assocOtherVertexMet = assocOtherVertexMetP4.pt();
 
-              //met control
-              metTypeValues["met"]                 = zvv;
-              metTypeValues["projMet"]             = LorentzVector(projMet,0,0,0);
-              metTypeValues["minProjMet"]          = min(metTypeValues["projMet"],LorentzVector(projAssocChargedMet,0,0,0) );
-              metTypeValues["redMet"]              = LorentzVector(redMetL,redMetT,0,0); 
-              metTypeValues["redMetD0"]            = LorentzVector(redMetL_d0, redMetT_d0, 0, 0);
-              metTypeValues["assocChargedMet"]     = assocChargedMetP4;
-              metTypeValues["minAssocChargedMet"]  = min(zvv,assocChargedMetP4);
-              metTypeValues["centralMet"]          = centralMetP4;
-              metTypeValues["minCentralMet"]       = min(zvv,centralMetP4);    
-              metTypeValues["assocOtherVertexMet"] = assocOtherVertexMetP4;    
-              metTypeValues["cleanMet"]            = cleanMetP4;
-              metTypeValues["minCleanMet"]         = min(zvv,cleanMetP4);
-              metTypeValues["assocMet"]            = assocMetP4;
-              metTypeValues["minAssocMet"]         = min(zvv,assocMetP4);
-              metTypeValues["superMinMet"]         = min( metTypeValues["minAssocMet"],  min(metTypeValues["minCleanMet"], metTypeValues["centralMet"]) );
-
+      //met control
+      metTypeValues["met"]                 = zvv;
+      metTypeValues["projMet"]             = LorentzVector(projMet,0,0,0);
+      metTypeValues["minProjMet"]          = min(metTypeValues["projMet"],LorentzVector(projAssocChargedMet,0,0,0) );
+      metTypeValues["redMet"]              = LorentzVector(redMetX,redMetY,0,redMet); 
+      metTypeValues["redMetD0"]            = LorentzVector(redMetX_d0, redMetY_d0, 0, redMet_d0);
+      metTypeValues["redAssocMet"]         = LorentzVector(redAssocMetX,redAssocMetY,0,redAssocMet);
+      metTypeValues["assocChargedMet"]     = assocChargedMetP4;
+      metTypeValues["minAssocChargedMet"]  = min(zvv,assocChargedMetP4);
+      metTypeValues["centralMet"]          = centralMetP4;
+      metTypeValues["minCentralMet"]       = min(zvv,centralMetP4);    
+      metTypeValues["assocOtherVertexMet"] = assocOtherVertexMetP4;    
+      metTypeValues["cleanMet"]            = cleanMetP4;
+      metTypeValues["minCleanMet"]         = min(zvv,cleanMetP4);
+      metTypeValues["assocMet"]            = assocMetP4;
+      metTypeValues["minAssocMet"]         = min(zvv,assocMetP4);
+      metTypeValues["superMinMet"]         = min( metTypeValues["minAssocMet"],  min(metTypeValues["minCleanMet"], metTypeValues["centralMet"]) );
+      
       std::map<TString,double> metTypeValuesminJetdphi;
       std::map<TString,double> metTypeValuesminJetphi;
       for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++){metTypeValuesminJetdphi[it->first] = 9999.0; metTypeValuesminJetphi[it->first] = 9999.0;}
