@@ -12,12 +12,17 @@ leptonFactory = cms.PSet(
     ## the isolation is computed) plus a VPSet called vetoes, made of any of the following
     ## vetoes: ThresholdVeto, ConeVeto, RectangularEtaPhiVeto (more vetoes can be implemented if needed)
     ## look at DataFormats/RecoCandidate/src/IsoDepositVetos.cc for their meaning.
-    chargedIsoPar=cms.PSet(
+    chargedHadronIsoPar=cms.PSet(
       coneSize=cms.double(0.4),
       vetoes=cms.VPSet()#no veto
       ),
 
-    neutralIsoPar=cms.PSet(
+    puChargedHadronIsoPar=cms.PSet(
+      coneSize=cms.double(0.4),
+      vetoes=cms.VPSet()#no veto
+      ),
+
+    neutralHadronIsoPar=cms.PSet(
       coneSize=cms.double(0.4),
       vetoes=cms.VPSet()#no veto
       ),

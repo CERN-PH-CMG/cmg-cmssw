@@ -29,20 +29,22 @@ template <class LeptonType>
 class LeptonSettingTool : public SettingTool<LeptonType,cmg::Lepton<LeptonType> >{
 	public:
 		LeptonSettingTool(const edm::ParameterSet& ps):
-            charged_(pat::PfChargedHadronIso),
-            neutral_(pat::PfNeutralHadronIso),
+            chargedHadron_(pat::PfChargedHadronIso),
+            puChargedHadron_(pat::PfPUChargedHadronIso),
+            neutralHadron_(pat::PfNeutralHadronIso),
             photon_(pat::PfGammaIso),
             useIsoDeposits_(ps.getParameter<bool>("useIsoDeposits")),
             vertexTag_(ps.getParameter<edm::InputTag>("vertexCollection")),
             vertexType_(convert_vertex_types(ps.getParameter<int>("vertexType"))){
-            chargedIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("chargedIsoPar"));
-            neutralIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("neutralIsoPar"));
+            chargedHadronIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("chargedHadronIsoPar"));
+            puChargedHadronIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("puChargedHadronIsoPar"));
+            neutralHadronIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("neutralHadronIsoPar"));
             photonsIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("photonsIsoPar"));
             
             if(!ps.getParameter<bool>("useParticleFlowIso")){
                 //switch to "traditional" isolation
-                charged_ = pat::TrackIso;
-                neutral_ = pat::HcalIso;
+                chargedHadron_ = pat::TrackIso;
+                neutralHadron_ = pat::HcalIso;
                 photon_ = pat::EcalIso;
             }
             
@@ -75,16 +77,20 @@ class LeptonSettingTool : public SettingTool<LeptonType,cmg::Lepton<LeptonType> 
         reco::TrackBase::Point getVertex(const edm::Event&, const edm::EventSetup&) const;
     
         /// parameters for charged hadron isolation value
-        SpecificIsolation chargedIsoPar_;
+        SpecificIsolation chargedHadronIsoPar_;
+
+        /// parameters for pile-up charged hadron isolation value 
+        SpecificIsolation puChargedHadronIsoPar_;
 
         /// parameters for neutral hadron isolation value
-        SpecificIsolation neutralIsoPar_;
+        SpecificIsolation neutralHadronIsoPar_;
 
         /// parameters for photon isolation value
         SpecificIsolation photonsIsoPar_;
         
-        pat::IsolationKeys charged_;
-        pat::IsolationKeys neutral_;
+        pat::IsolationKeys chargedHadron_;
+        pat::IsolationKeys puChargedHadron_;
+        pat::IsolationKeys neutralHadron_;
         pat::IsolationKeys photon_;
         const bool useIsoDeposits_;
         
@@ -112,29 +118,35 @@ void cmg::LeptonSettingTool<LeptonType>::set(const LeptonType& lepton, cmg::Lept
     // type of particle. 
 
     // retrieve the AbsVetos from the SpecificIsolation
-    AbsVetos chargedVetos = chargedIsoPar_.getAbsVetoes();
-    AbsVetos neutralVetos = neutralIsoPar_.getAbsVetoes();
+    AbsVetos chargedHadronVetos = chargedHadronIsoPar_.getAbsVetoes();
+    AbsVetos puChargedHadronVetos = puChargedHadronIsoPar_.getAbsVetoes();
+    AbsVetos neutralHadronVetos = neutralHadronIsoPar_.getAbsVetoes();
     AbsVetos photonsVetos = photonsIsoPar_.getAbsVetoes();
 
-    // center the deposits around the lepton
-    for(unsigned int i = 0; i<chargedVetos.size(); i++){
-        chargedVetos[i]->centerOn(Eta,Phi);
+    // center the vetoes around the lepton
+    for(unsigned int i = 0; i<chargedHadronVetos.size(); i++){
+        chargedHadronVetos[i]->centerOn(Eta,Phi);
     }
-    for(unsigned int i = 0; i<neutralVetos.size(); i++){
-        neutralVetos[i]->centerOn(Eta,Phi);
+    for(unsigned int i = 0; i<puChargedHadronVetos.size(); i++){
+        puChargedHadronVetos[i]->centerOn(Eta,Phi);
+    }
+    for(unsigned int i = 0; i<neutralHadronVetos.size(); i++){
+        neutralHadronVetos[i]->centerOn(Eta,Phi);
     }
     for(unsigned int i = 0; i<photonsVetos.size(); i++){
         photonsVetos[i]->centerOn(Eta,Phi);
     }
 
-    obj->chargedIso_ = (lepton->isoDeposit(charged_)->depositAndCountWithin( chargedIsoPar_.coneSize(), chargedVetos, false ).first);
-    obj->neutralIso_ = (lepton->isoDeposit(neutral_)->depositAndCountWithin( neutralIsoPar_.coneSize(), neutralVetos, false ).first);
+    obj->chargedHadronIso_ = (lepton->isoDeposit(chargedHadron_)->depositAndCountWithin( chargedHadronIsoPar_.coneSize(), chargedHadronVetos, false ).first);
+    obj->puChargedHadronIso_ = (lepton->isoDeposit(puChargedHadron_)->depositAndCountWithin( puChargedHadronIsoPar_.coneSize(), puChargedHadronVetos, false ).first);
+    obj->neutralHadronIso_ = (lepton->isoDeposit(neutralHadron_)->depositAndCountWithin( neutralHadronIsoPar_.coneSize(), neutralHadronVetos, false ).first);
     obj->photonIso_ = (lepton->isoDeposit(photon_)->depositAndCountWithin( photonsIsoPar_.coneSize(), photonsVetos ,false ).first);
   
   }else{
     //ignore everything and just taked the cached value from pat
-    obj->chargedIso_ = lepton->userIsolation(charged_);
-    obj->neutralIso_ = lepton->userIsolation(neutral_);
+    obj->chargedHadronIso_ = lepton->userIsolation(chargedHadron_);
+    obj->puChargedHadronIso_ = lepton->userIsolation(puChargedHadron_);
+    obj->neutralHadronIso_ = lepton->userIsolation(neutralHadron_);
     obj->photonIso_ = lepton->userIsolation(photon_);
   }
 }

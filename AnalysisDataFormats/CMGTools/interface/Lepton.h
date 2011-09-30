@@ -18,64 +18,88 @@ template <class LeptonType> class LeptonSettingTool;
 
 template <class LeptonType>
 class Lepton : public cmg::PhysicsObjectWithPtr< LeptonType >{
-public:
+ public:
+  
+  Lepton(){}
+
+  Lepton(const LeptonType& o):
+    cmg::PhysicsObjectWithPtr<LeptonType>::PhysicsObjectWithPtr(o),
+    charge_(UnSet(int)),
+    chargedHadronIso_(UnSet(double)),
+    puChargedHadronIso_(UnSet(double)),
+    neutralHadronIso_(UnSet(double)),
+    photonIso_(UnSet(double)),
+    dxy_(UnSet(float)),
+    dz_(UnSet(float)){}
+    
+  virtual ~Lepton(){}
+  
+  int charge() const{
+    return charge_;
+  }
+  
+  //isolations    
+  double chargedHadronIso() const{
+    return chargedHadronIso_;
+  }
+  
+  double puChargedHadronIso() const{
+    return puChargedHadronIso_;
+  }
+  
+  double neutralHadronIso() const{
+    return neutralHadronIso_;
+  }
+  
+  double photonIso() const{
+    return photonIso_;
+  }
+  
+  /// absolute isolation. if dBetaFactor > 0, the delta beta correction is applied. 
+  double absIso(float dBetaFactor=0) const{
+    // in this case, dbeta correction is asked, but 
+    // the input for this correction is not available. 
+    // better returning an unphysical result than applying a wrong correction.
+    if(dBetaFactor>0 && puChargedHadronIso()<0) return -1;
+
+    double neutralIso = neutralHadronIso() + photonIso();
+    double corNeutralIso = neutralIso - dBetaFactor * puChargedHadronIso();
+
+    return chargedHadronIso() + ( corNeutralIso>0 ? corNeutralIso : 0 ) ;   
+  }
+  
+  /// relative isolation. if dBetaFactor > 0, the delta beta correction is applied. 
+  double relIso(float dBetaFactor=0) const{
+    double abs = absIso(dBetaFactor)/this->pt();
+    return abs >=0 ? abs : -1;
+  }
+    
+  /// transverse impact parameter
+  float dxy() const{
+    return dxy_;
+  }
+
+  /// longitudinal impact parameter
+  float dz() const{
+    return dz_;
+  }
+  
+  friend class cmg::LeptonSettingTool<LeptonType>;
 	
-	Lepton(){
-	}
-	Lepton(const LeptonType& o):
-		cmg::PhysicsObjectWithPtr<LeptonType>::PhysicsObjectWithPtr(o),
-        charge_(UnSet(int)),
-        chargedIso_(UnSet(double)),
-        neutralIso_(UnSet(double)),
-        photonIso_(UnSet(double)),
-        dxy_(UnSet(float)),
-        dz_(UnSet(float)){
-		}
-	virtual ~Lepton(){
-	}
+ private:
+  ///COLIN: why a charge_ datamember here? should already be in a base class
+  int charge_;
 
-    int charge() const{
-        return charge_;
-    }
-
-    //isolations    
-    double chargedIso() const{
-        return chargedIso_;
-    }
-    double neutralIso() const{
-        return neutralIso_;
-    }
-    double photonIso() const{
-        return photonIso_;
-    }
-    double absIso() const{
-        return chargedIso() + neutralIso() + photonIso();   
-    }
-    double relIso() const{
-        return absIso()/this->pt();
-    }
-    
-    //impart parameters
-    float dxy() const{
-        return dxy_;
-    }
-    float dz() const{
-        return dz_;
-    }
-    
-	friend class cmg::LeptonSettingTool<LeptonType>;
-	
-private:
-
-    int charge_;
-    double chargedIso_;
-    double neutralIso_;
-    double photonIso_;
-    
-    float dxy_;
-    float dz_;
-
-
+  double chargedHadronIso_;
+  
+  /// isolation w/r to charged hadrons from pile-up vertices
+  /// used in the delta beta correction
+  double puChargedHadronIso_;
+  double neutralHadronIso_;
+  double photonIso_;
+  
+  float dxy_;
+  float dz_;
 };
 
 }
