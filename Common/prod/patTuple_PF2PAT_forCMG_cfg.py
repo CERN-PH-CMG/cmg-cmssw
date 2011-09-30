@@ -4,16 +4,16 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 ### MASTER FLAGS  ######################################################################
 
 # turn this on if you want to pick a relval in input (see below)
-pickRelVal = False
+pickRelVal = True
 
 # turn on when running on MC
-runOnMC = False
+runOnMC = True
 
 # AK5 sequence with no cleaning is the default
 # the other sequences can be turned off with the following flags.
 #JOSE: no need to run these guys for what you are up to
 runAK5LC = True
-runAK7 = True
+runAK7 = False
 
 #COLIN: will need to include the event filters in tagging mode
 
@@ -21,7 +21,7 @@ runAK7 = True
 hpsTaus = True
 
 #COLIN: the following leads to rare segmentation faults
-doJetPileUpCorrection = True
+doJetPileUpCorrection = False
 
 #patTaus can now be saved even when running the CMG sequence.
 doEmbedPFCandidatesInTaus = True
@@ -61,16 +61,16 @@ print sep_line
 # process.source.fileNames = cms.untracked.vstring(['file:PFAOD.root'])
 
 # process.load("CMGTools.Common.sources.SingleMu.Run2011A_May10ReReco_v1.AOD.source_cff")
-process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.V2.source_cff")
+# process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.V2.source_cff")
 
 if pickRelVal:
     process.source = cms.Source(
         "PoolSource",
         fileNames = cms.untracked.vstring(
-        pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_2_5'
-                              , relVal        = 'RelValTTbar'
-                              , globalTag     = 'MC_42_V12'
-                              , numberOfFiles = 1
+        pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_3_0_pre2'
+                              , relVal        = 'RelValZmumuJets_Pt_20_300PU1'
+                              , globalTag     = 'MC_42_V9_PU_E7TeV_AVE_2_BX2808'
+                              , numberOfFiles = -1
                               )
         )
         )
@@ -136,8 +136,8 @@ getattr(process,"pfNoMuon"+postfixAK5).enable = False
 getattr(process,"pfNoElectron"+postfixAK5).enable = False 
 getattr(process,"pfNoTau"+postfixAK5).enable = False 
 getattr(process,"pfNoJet"+postfixAK5).enable = True
-getattr(process,"pfIsolatedMuons"+postfixAK5).combinedIsolationCut = 999999
-getattr(process,"pfIsolatedElectrons"+postfixAK5).combinedIsolationCut = 999999
+getattr(process,"pfIsolatedMuons"+postfixAK5).isolationCut = 999999
+getattr(process,"pfIsolatedElectrons"+postfixAK5).isolationCut = 999999
 
 # adding vbtf and cic electron IDs
 from CMGTools.Common.PAT.addPATElectronID_cff import addPATElectronID
@@ -163,8 +163,8 @@ cloneProcessingSnippet(process, getattr(process, 'patPF2PATSequence'+postfixAK5)
 postfixAK5LC = postfixAK5+postfixLC
 getattr(process,"pfNoMuon"+postfixAK5LC).enable = True
 getattr(process,"pfNoElectron"+postfixAK5LC).enable = True 
-getattr(process,"pfIsolatedMuons"+postfixAK5LC).combinedIsolationCut = 0.2
-getattr(process,"pfIsolatedElectrons"+postfixAK5LC).combinedIsolationCut = 0.2
+getattr(process,"pfIsolatedMuons"+postfixAK5LC).isolationCut = 0.2
+getattr(process,"pfIsolatedElectrons"+postfixAK5LC).isolationCut = 0.2
 
 #COLIN : need to add the VBTF e and mu id
 

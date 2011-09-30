@@ -1,20 +1,25 @@
 # this macro reads pat muons.
 
+# mus = 'patMuons_selectedPatMuonsAK5LC__PAT'
+# mus = 'patMuons_selectedPatMuonsAK5__PAT'
+mus = 'mus'
 
-events.SetAlias('ch','patMuonsPFlow.obj.chargedHadronIso()')
-events.SetAlias('nh','patMuonsPFlow.obj.neutralHadronIso()')
-events.SetAlias('ph','patMuonsPFlow.obj.photonIso()')
+events.SetAlias('ch',mus + '.obj.chargedHadronIso()')
+events.SetAlias('nh',mus + '.obj.neutralHadronIso()')
+events.SetAlias('ph',mus + '.obj.photonIso()')
 
-events.SetAlias('chpu','patMuonsPFlow.obj.puChargedHadronIso()')
+events.SetAlias('chpu',mus + '.obj.puChargedHadronIso()')
 
 events.SetAlias('comb', 'ch+nh+ph')
 
-events.SetAlias('pt', 'patMuonsPFlow.obj.pt()')
+events.SetAlias('pt', mus + '.obj.pt()')
 events.SetAlias('nvert','vertices.@obj.size()')
 
 events.SetAlias('combrel', 'comb/pt')
 
 events.SetAlias('combrelDBeta', '(ch + max(0, nh+ph-0.5*chpu))/pt')
+events.SetAlias('combrelDBeta1', '(ch + max(0, nh+ph-chpu))/pt')
+events.SetAlias('combrelDBeta2', '(ch + max(0, nh+ph-2*chpu))/pt')
 
 
 nEv = 9999999
@@ -28,11 +33,18 @@ from ROOT import TProfile
 pr1 = TProfile('pr1',';N_{vertices};Isolation',10,1,10)
 pr1.SetStats(0)
 pr1.SetLineColor(1)
-events.Draw('combrel:nvert>>pr1','','', nEv)
+events.Draw('combrel:nvert>>pr1','combrel<0.15','', nEv)
 
 pr2 = TProfile('pr2','',10,1,10)
 pr2.SetLineColor(4)
-events.Draw('combrelDBeta:nvert>>pr2','','same',nEv)
+events.Draw('combrelDBeta:nvert>>pr2','combrel<0.15','same',nEv)
+
+pr3 = TProfile('pr3','',10,1,10)
+events.Draw('combrelDBeta1:nvert>>pr3','combrel<0.15','same',nEv)
+
+pr4 = TProfile('pr4','',10,1,10)
+events.Draw('combrelDBeta2:nvert>>pr4','combrel<0.15','same',nEv)
+
 
 legend = TLegend(0.12,0.12,0.4,0.3)
 legend.AddEntry( 'pr1', 'no dbeta')
