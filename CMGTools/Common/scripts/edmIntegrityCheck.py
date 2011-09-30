@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import datetime, fnmatch, json, os, shutil, sys, tempfile
+import copy, datetime, fnmatch, json, os, shutil, sys, tempfile
 import subprocess
 
 import castortools
@@ -83,8 +83,15 @@ class IntegrityCheck(object):
         if data is None:
             raise Exception("Dataset '%s' not found in Das. Please check." % self.dataset)
         self.eventsTotal = 0
+        
+        #there can be multiple datasets with the same name. If so we take the most recent
+        #eliminates double counting of entries in DAS and so we get the fractions right
+        datasets = []
         for result in data['data']:
-            self.eventsTotal += result['dataset']['nevents']
+            datasets.append( (result['das']['expire'], result) )
+        datasets.sort()
+        if datasets:
+            self.eventsTotal = datasets[-1][1]['dataset']['nevents']
     
     def test(self):
         if not castortools.fileExists(self.directory):
@@ -229,9 +236,16 @@ if __name__ == '__main__':
     
     for d in datasets:
         
-        check = IntegrityCheck(d,opts)
+        #allows us to specify the user in the dataset string
+        op = copy.deepcopy(opts)
+        tokens = d.split('%')
+        if len(tokens) == 2:
+            op.user = tokens[0]
+            d = tokens[1]
+        
+        check = IntegrityCheck(d,op)
         check.test()
-        if opts.printout:
+        if op.printout:
             check.report()
         report = check.structured()
         pub = PublishToFileSystem(check)
