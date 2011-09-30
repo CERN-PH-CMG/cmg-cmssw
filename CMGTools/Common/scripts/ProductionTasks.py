@@ -751,13 +751,19 @@ if __name__ == '__main__':
         op.das.parser.print_help()
         sys.exit(1)
     
+    def splitUser(dataSample,UserName):
+        tokens = dataSample.split('%')
+        if len(tokens) == 2:
+            UserName = tokens[0]
+            dataSample = tokens[1]
+        return (dataSample,UserName)
+    
     #these tasks are quick and are done in the main thread (fail early...)
     simple_tasks = [CheckDatasetExists(dataset,user,options),FindOnCastor(dataset,user,options),sav]
     for d in op.dataset:
         for t in simple_tasks:
-            t.dataset = d
             t.options = op.options
-            t.user = op.user
+            t.dataset, t.user = splitUser(d,op.user)
             t.run({})
     
     def callback(result):
@@ -778,9 +784,8 @@ if __name__ == '__main__':
         previous = {}
         for t in task_list:
 
-            t.dataset = dataset
             t.options = op_parse.options
-            t.user = op_parse.user
+            t.dataset, t.user = splitUser(dataset,op_parse.user)
             
             log(output,'%s: [%s] %s:' % (dataset,time.asctime(),t.getname()))
             if t.__doc__:
