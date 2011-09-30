@@ -54,6 +54,8 @@ from CMGTools.Susy.susyEventContent_cff import susyEventContent
 process.out.fileName = cms.untracked.string('susy_tree_%s.root' %  outFileNameExt)
 process.out.outputCommands = cms.untracked.vstring('drop *')
 process.out.outputCommands += susyEventContent
+from CMGTools.Common.eventContent.eventCleaning_cff import eventCleaning
+process.out.outputCommands.extend( eventCleaning )
 
 process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('multijetPath','multijetTriggerPath','RA2Path','razorPath','razorTriggerPath', 'RA1Path', 'LPPath') )
 #plot the correlations between the selection paths
