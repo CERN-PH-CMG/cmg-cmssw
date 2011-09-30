@@ -11,12 +11,14 @@ from CMGTools.Common.skims.leadingCMGMuonSelector_cfi import leadingCMGMuonSelec
 razorLeadingMuon = leadingCMGMuonSelector.clone(inputCollection = "susyMuon", index = cms.int32(1))
 # use an additional pt cut for electrons, but keep the common ID
 from CMGTools.Common.skims.cmgElectronSel_cfi import *
-razorElectron = cmgElectronSel.clone(src = "susyElectron", cut = 'pt() > 20')
+razorElectron80 = cmgElectronSel.clone(src = "susyElectron", cut = 'getSelection("cuts_vbtf80ID")')
+razorElectron95 = cmgElectronSel.clone(src = "susyElectron", cut = 'getSelection("cuts_vbtf95ID")')
 from CMGTools.Common.skims.leadingCMGElectronSelector_cfi import leadingCMGElectronSelector
-razorLeadingElectron = leadingCMGElectronSelector.clone(inputCollection = "razorElectron", index = cms.int32(1))
+razorLeadingElectron = leadingCMGElectronSelector.clone(inputCollection = "susyElectron", index = cms.int32(1))
 
 razorElectronSequence = cms.Sequence(
-    razorElectron*                                
+    razorElectron80+                               
+    razorElectron95+    
     razorLeadingElectron
     )
 razorMuonSequence = cms.Sequence(
@@ -163,7 +165,18 @@ razorJetSequence = cms.Sequence(
     razorPFJetsWithLeadingLeptons
 )
 
+from CMGTools.Susy.Razor.razorBoxDef_cff import razorBoxDef
+razorBoxDef = razorBoxDef.clone(
+    tightElectrons = cms.InputTag('razorElectron80'),
+    looseElectrons = cms.InputTag('razorElectron95'),
+    tightMuons = cms.InputTag('susyMuon'),
+    looseMuons = cms.InputTag('susyMuon'),
+    jets = cms.InputTag('razorPFJetSel'),
+    bjets = cms.InputTag('razorPFBJetSel') 
+)
+
 razorBoxesSequence = cms.Sequence(
+    razorBoxDef+
     razorHadronicBoxSequence +
     razorMuStarBoxSequence
     )
