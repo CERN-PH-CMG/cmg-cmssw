@@ -103,12 +103,12 @@ if __name__ == '__main__':
             ),
             useIsoDeposits = cms.bool(False),
             useParticleFlowIso = cms.bool(True),
-            chargedIsoPar = cms.PSet(
+            chargedHadronIsoPar = cms.PSet(
                 coneSize = cms.double(0.4),
                 vetoes = cms.VPSet()
             ),
             vertexCollection = cms.InputTag("offlineBeamSpot"),
-            neutralIsoPar = cms.PSet(
+            neutralHadronIsoPar = cms.PSet(
                 coneSize = cms.double(0.4),
                 vetoes = cms.VPSet()
             )
