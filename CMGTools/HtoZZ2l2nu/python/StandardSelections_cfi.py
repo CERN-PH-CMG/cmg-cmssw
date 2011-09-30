@@ -114,7 +114,11 @@ BaseMetSelection = cms.PSet( source = cms.InputTag("patMETsPFlow"),
                                                            "ClusteredPFMetProducer:centralPfMet",
                                                            "ClusteredPFMetProducer:cleanPfMet",
                                                            "ClusteredPFMetProducer:clusteredOtherVtxPfMet",
-                                                           "ClusteredPFMetProducer:trkPfMet"),
+                                                           "ClusteredPFMetProducer:clusteredPfMetWithFwd",
+                                                           "ClusteredPFMetProducerPt5:clusteredPfMet",
+                                                           "ClusteredPFMetProducerPt5:clusteredPfMetWithFwd",
+                                                           "ClusteredPFMetProducerPt10:clusteredPfMet",
+                                                           "ClusteredPFMetProducerPt10:clusteredPfMetWithFwd"),
                              sumEtSources = cms.InputTag("ClusteredPFMetProducer:globalPfMetSums")
                              )
 

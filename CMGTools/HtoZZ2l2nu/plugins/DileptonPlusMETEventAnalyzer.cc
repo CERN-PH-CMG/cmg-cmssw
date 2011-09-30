@@ -697,11 +697,16 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.met3_phi = 0;               ev.met3_pt=reducedMET;      
     if(clusteredMets.size()>0)
       {
-	ev.met4_phi = clusteredMets[0].phi(); ev.met4_pt=clusteredMets[0].pt();
-	ev.met5_phi = clusteredMets[1].phi(); ev.met5_pt=clusteredMets[1].pt();
-	ev.met6_phi = clusteredMets[2].phi(); ev.met6_pt=clusteredMets[2].pt();
-	ev.met7_phi = clusteredMets[3].phi(); ev.met7_pt=clusteredMets[3].pt();
-	ev.met8_phi = clusteredMets[4].phi(); ev.met8_pt=clusteredMets[4].pt();
+	ev.met4_phi  = clusteredMets[0].phi();   ev.met4_pt  = clusteredMets[0].pt();
+	ev.met5_phi  = clusteredMets[1].phi();   ev.met5_pt  = clusteredMets[1].pt();
+	ev.met6_phi  = clusteredMets[2].phi();   ev.met6_pt  = clusteredMets[2].pt();
+	ev.met7_phi  = clusteredMets[3].phi();   ev.met7_pt  = clusteredMets[3].pt();
+	ev.met8_phi  = clusteredMets[4].phi();   ev.met8_pt  = clusteredMets[4].pt();
+	ev.met9_phi  = clusteredMets[5].phi();   ev.met9_pt  = clusteredMets[5].pt();
+	ev.met10_phi = clusteredMets[6].phi();   ev.met10_pt = clusteredMets[6].pt();
+	ev.met11_phi = clusteredMets[7].phi();   ev.met11_pt = clusteredMets[7].pt();
+	ev.met12_phi = clusteredMets[8].phi();   ev.met12_pt = clusteredMets[8].pt();
+	ev.met13_phi = clusteredMets[9].phi();   ev.met13_pt = clusteredMets[9].pt();
       }
     if(sumEts.size()>0)
       {
