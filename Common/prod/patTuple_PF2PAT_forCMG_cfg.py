@@ -4,7 +4,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 ### MASTER FLAGS  ######################################################################
 
 # turn this on if you want to pick a relval in input (see below)
-pickRelVal = True
+pickRelVal = False
 
 # turn on when running on MC
 runOnMC = True
@@ -13,7 +13,7 @@ runOnMC = True
 # the other sequences can be turned off with the following flags.
 #JOSE: no need to run these guys for what you are up to
 runAK5LC = True
-runAK7 = False
+runAK7 = True
 
 #COLIN: will need to include the event filters in tagging mode
 
@@ -21,7 +21,7 @@ runAK7 = False
 hpsTaus = True
 
 #COLIN: the following leads to rare segmentation faults
-doJetPileUpCorrection = False
+doJetPileUpCorrection = True
 
 #patTaus can now be saved even when running the CMG sequence.
 doEmbedPFCandidatesInTaus = True
@@ -62,6 +62,7 @@ print sep_line
 
 # process.load("CMGTools.Common.sources.SingleMu.Run2011A_May10ReReco_v1.AOD.source_cff")
 # process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.V2.source_cff")
+process.load("CMGTools.Common.sources.VBF_HToTauTau_M_115_7TeV_powheg_pythia6_tauola.Summer11_PU_S4_START42_V11_v1.AODSIM.V2.source_cff")
 
 if pickRelVal:
     process.source = cms.Source(
@@ -77,7 +78,7 @@ if pickRelVal:
 
 
 # print "WARNING!!!!!!!!!!!!!!!! remove the following line (see .cfg) before running on the batch!"
-# process.source.fileNames = process.source.fileNames[:10]
+# process.source.fileNames = process.source.fileNames[:12]
 
 print 'PF2PAT+PAT+CMG for files:'
 print process.source.fileNames
