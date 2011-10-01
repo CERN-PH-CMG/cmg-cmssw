@@ -95,9 +95,9 @@ ClusteredPFMetProducer::ClusteredPFMetProducer(const edm::ParameterSet& iConfig)
   produceSummary_(iConfig.getParameter<bool>("produceSummary")),
   controlHistos_("control")
 {
-  produces<reco::PFMET>("clusteredPfMet");
-  produces<reco::PFMET>("clusteredPfMetWithFwd");
-  produces<reco::PFMET>("clusteredOtherVtxPfMet");
+  produces<reco::PFMET>("assocPfMet");
+  produces<reco::PFMET>("assocPfMetWithFwd");
+  produces<reco::PFMET>("assocOtherVtxPfMet");
   produces<reco::PFMET>("trkPfMet");
   produces<reco::PFMET>("globalPfMet");
   produces<reco::PFMET>("centralPfMet");
@@ -774,9 +774,9 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
       }
   
   // and finally put it in the event
-  std::auto_ptr<reco::PFMET> clusteredPfMetPtr(new reco::PFMET);
-  std::auto_ptr<reco::PFMET> clusteredPfMetWithFwdPtr(new reco::PFMET);
-  std::auto_ptr<reco::PFMET> clusteredOtherVtxPfMetPtr(new reco::PFMET);
+  std::auto_ptr<reco::PFMET> assocPfMetPtr(new reco::PFMET);
+  std::auto_ptr<reco::PFMET> assocPfMetWithFwdPtr(new reco::PFMET);
+  std::auto_ptr<reco::PFMET> assocOtherVtxPfMetPtr(new reco::PFMET);
   std::auto_ptr<reco::PFMET> globalPfMetPtr(new reco::PFMET);
   std::auto_ptr<reco::PFMET> centralPfMetPtr(new reco::PFMET);
   std::auto_ptr<reco::PFMET> cleanPfMetPtr(new reco::PFMET);
@@ -808,17 +808,17 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   pfOutput.met = vtxPFMet[0].pt();
   pfOutput.sumet = vtxSumEt[0];
   pfOutput.phi = atan2(-vtxPFMet[0].py(),-vtxPFMet[0].px());
-  *clusteredPfMetPtr = pf.addInfo(pfRecoCandsH,pfOutput);
+  *assocPfMetPtr = pf.addInfo(pfRecoCandsH,pfOutput);
 
-  LorentzVector clusteredPfMetWithFwd(vtxPFMet[0]+globalNonAssocNeutralFwdSum);
-  double clusteredPfMetWithFwdSumEt(vtxSumEt[0]+globalNonAssocNeutralFwdSumEt);
-  pfOutput.mex = -clusteredPfMetWithFwd.px();
-  pfOutput.mey = -clusteredPfMetWithFwd.py();
-  pfOutput.mez = -clusteredPfMetWithFwd.pz();
-  pfOutput.met = clusteredPfMetWithFwd.pt();
-  pfOutput.sumet = clusteredPfMetWithFwdSumEt;
-  pfOutput.phi = atan2(-clusteredPfMetWithFwd.py(),-clusteredPfMetWithFwd.px());
-  *clusteredPfMetWithFwdPtr = pf.addInfo(pfRecoCandsH,pfOutput);
+  LorentzVector assocPfMetWithFwd(vtxPFMet[0]+globalNonAssocNeutralFwdSum);
+  double assocPfMetWithFwdSumEt(vtxSumEt[0]+globalNonAssocNeutralFwdSumEt);
+  pfOutput.mex = -assocPfMetWithFwd.px();
+  pfOutput.mey = -assocPfMetWithFwd.py();
+  pfOutput.mez = -assocPfMetWithFwd.pz();
+  pfOutput.met = assocPfMetWithFwd.pt();
+  pfOutput.sumet = assocPfMetWithFwdSumEt;
+  pfOutput.phi = atan2(-assocPfMetWithFwd.py(),-assocPfMetWithFwd.px());
+  *assocPfMetWithFwdPtr = pf.addInfo(pfRecoCandsH,pfOutput);
 
   pfOutput.mex=0;
   pfOutput.mey=0;
@@ -833,7 +833,7 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
     }
   pfOutput.met = sqrt(pow(pfOutput.mex,2)+pow(pfOutput.mey,2));
   pfOutput.phi = atan2(pfOutput.mey,pfOutput.mex);
-  *clusteredOtherVtxPfMetPtr = pf.addInfo(pfRecoCandsH,pfOutput);
+  *assocOtherVtxPfMetPtr = pf.addInfo(pfRecoCandsH,pfOutput);
   
   pfOutput.mex = -vtxChSum[0].px();
   pfOutput.mey = -vtxChSum[0].py();
@@ -869,9 +869,9 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
       (*globalPfMetSumsPtr)[11] += vtxNeutralSumEt[ivtx]; 
     }
 
-  iEvent.put(clusteredPfMetPtr,"clusteredPfMet");
-  iEvent.put(clusteredPfMetWithFwdPtr,"clusteredPfMetWithFwd");
-  iEvent.put(clusteredOtherVtxPfMetPtr,"clusteredOtherVtxPfMet");
+  iEvent.put(assocPfMetPtr,"assocPfMet");
+  iEvent.put(assocPfMetWithFwdPtr,"assocPfMetWithFwd");
+  iEvent.put(assocOtherVtxPfMetPtr,"assocOtherVtxPfMet");
   iEvent.put(globalPfMetPtr,"globalPfMet");
   iEvent.put(centralPfMetPtr,"centralPfMet");
   iEvent.put(trkPfMetPtr,"trkPfMet");
