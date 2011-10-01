@@ -109,16 +109,16 @@ BaseDileptonSelection = cms.PSet( minDileptonMass = cms.double(0),
 # base values for met selection -----------------------------------------------------
 BaseMetSelection = cms.PSet( source = cms.InputTag("patMETsPFlow"),
                              trksource = cms.InputTag("hzzPFMetProducer:hzzTkMet"),
-                             hzzmetSources = cms.VInputTag("ClusteredPFMetProducer:clusteredPfMet",
+                             hzzmetSources = cms.VInputTag("ClusteredPFMetProducer:assocPfMet",
                                                            "ClusteredPFMetProducer:globalPfMet",
                                                            "ClusteredPFMetProducer:centralPfMet",
                                                            "ClusteredPFMetProducer:cleanPfMet",
-                                                           "ClusteredPFMetProducer:clusteredOtherVtxPfMet",
-                                                           "ClusteredPFMetProducer:clusteredPfMetWithFwd",
-                                                           "ClusteredPFMetProducerPt5:clusteredPfMet",
-                                                           "ClusteredPFMetProducerPt5:clusteredPfMetWithFwd",
-                                                           "ClusteredPFMetProducerPt10:clusteredPfMet",
-                                                           "ClusteredPFMetProducerPt10:clusteredPfMetWithFwd"),
+                                                           "ClusteredPFMetProducer:assocOtherVtxPfMet",
+                                                           "ClusteredPFMetProducer:assocPfMetWithFwd",
+                                                           "ClusteredPFMetProducerPt5:assocPfMet",
+                                                           "ClusteredPFMetProducerPt5:assocPfMetWithFwd",
+                                                           "ClusteredPFMetProducerPt10:assocPfMet",
+                                                           "ClusteredPFMetProducerPt10:assocPfMetWithFwd"),
                              sumEtSources = cms.InputTag("ClusteredPFMetProducer:globalPfMetSums")
                              )
 
