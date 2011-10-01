@@ -2,8 +2,8 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.Common.factories.cmgDiObject_cfi import diObjectFactory
 
 tauEFactory = diObjectFactory.clone(
-       leg1Collection = cms.InputTag('cmgTau'),
-       leg2Collection = cms.InputTag('cmgElectron')
+       leg1Collection = cms.InputTag('cmgTauSel'),
+       leg2Collection = cms.InputTag('cmgElectronSel')
 )
 
 cmgTauE = cms.EDFilter(
