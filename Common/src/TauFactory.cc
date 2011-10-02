@@ -68,13 +68,6 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
   }
 
 
-  //rho parameter (PU energy density)
-  edm::Handle<double> rhoParameterHandle;
-  iEvent.getByLabel(edm::InputTag(rhoPFJetsCollection_.label(),"rho", ""),rhoParameterHandle);
-  if( !rhoParameterHandle.isValid() ) edm::LogError("DataNotAvailable")<< "No rho label available \n";
-  output->addUserData("rho",(*rhoParameterHandle));
-
-
   //generator info  
   if(input->genJet()){
     //visible part of the generated jet 

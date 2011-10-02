@@ -12,7 +12,6 @@ particleFlowJets = cms.untracked.vstring(
 particleFlowMET = cms.untracked.vstring(
     'keep  *_cmgPFMET*_*_*',
     'drop *_cmgPFMETSel*_*_*',
-    'keep *_PFMETSignificance*_*_*'
     # 'keep  *_cmgMETPFCandidates*_*_*',
     # here add the other PF-based MET objects, even the base ones. 
     )
@@ -64,7 +63,8 @@ particleFlowHemispheres = cms.untracked.vstring(
 
 particleFlowMisc = cms.untracked.vstring(
     'keep *_deltaPhiJetMET_*_*',
-    'keep *_metSignificance_*_*'
+    'keep *_PFMETSignificance*_*_*',
+    'keep double_kt6PFJetsAK*_rho_*'
     )
 
 particleFlow = particleFlowJets + particleFlowMET + particleFlowMuons + particleFlowTaus + particleFlowElectrons + particleFlowPhotons + particleFlowW + particleFlowVBF + particleFlowHemispheres + particleFlowMisc
