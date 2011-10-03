@@ -13,4 +13,7 @@ jetId = [
     'keep cmgPFJets_cmgPFJet*Failed_*_*'
     ]
 
-eventContent = leptons + trigger + jetId 
+gen = [
+    'keep LHEEventProduct_*_*_*'   
+    ]
+eventContent = leptons + trigger + jetId + gen

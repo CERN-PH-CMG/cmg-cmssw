@@ -8,26 +8,34 @@ from CMGTools.Common.physicsObjectPrinter_cfi import physicsObjectPrinter
 # Current loose trigger requires pt > 40; eta < 3; R > 0.14; MR > 150
 #take the leading selected electrons + muons
 from CMGTools.Common.skims.leadingCMGMuonSelector_cfi import leadingCMGMuonSelector
-razorLeadingMuon = leadingCMGMuonSelector.clone(inputCollection = "susyMuon", index = cms.int32(1))
-# use an additional pt cut for electrons, but keep the common ID
-from CMGTools.Common.skims.cmgElectronSel_cfi import *
-razorElectron80 = cmgElectronSel.clone(src = "susyElectron", cut = 'getSelection("cuts_vbtf80ID")')
-razorElectron95 = cmgElectronSel.clone(src = "susyElectron", cut = 'getSelection("cuts_vbtf95ID")')
-from CMGTools.Common.skims.leadingCMGElectronSelector_cfi import leadingCMGElectronSelector
-razorLeadingElectron = leadingCMGElectronSelector.clone(inputCollection = "susyElectron", index = cms.int32(1))
-
-razorElectronSequence = cms.Sequence(
-    razorElectron80+                               
-    razorElectron95+    
-    razorLeadingElectron
-    )
+from CMGTools.Common.skims.cmgMuonSel_cfi import *
+#for box selection
+razorMuonTight = cmgMuonSel.clone(src = "susyMuon", cut = '(abs(eta()) < 2.1)')
+#the muon trigger requires an 8 gev muon - HLT_Mu8_R005_MR200_v* 
+razorLeadingMuon = leadingCMGMuonSelector.clone(inputCollection = "razorMuonTight", index = cms.int32(1))
 razorMuonSequence = cms.Sequence(
+    razorMuonTight+                                 
     razorLeadingMuon
+    )
+
+from CMGTools.Common.skims.cmgElectronSel_cfi import *
+#for box selection
+razorElectronTight = cmgElectronSel.clone(src = "susyElectron", cut = 'pt() > 20 && getSelection("cuts_vbtf80ID")')
+razorElectronLoose = cmgElectronSel.clone(src = "susyElectron", cut = 'getSelection("cuts_vbtf95ID")')
+from CMGTools.Common.skims.leadingCMGElectronSelector_cfi import leadingCMGElectronSelector
+razorLeadingElectron = leadingCMGElectronSelector.clone(inputCollection = "razorElectronTight", index = cms.int32(1))
+# the electron trigger is HLT_Ele10_CaloIdL_CaloIsoVL_TrkIdVL_R005_MR200_v*
+razorElectronSequence = cms.Sequence(
+    razorElectronTight+                               
+    razorElectronLoose+    
+    razorLeadingElectron
     )
 
 # id the jets
 from CMGTools.Common.skims.cmgPFJetSel_cfi import *
 razorPFJetSel = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = 'pt()>60 && abs(eta)<3.0' )
+# we need at least one jet
+razorPFJetCount = cmgCandCount.clone( src = 'razorPFJetSel', minNumber = 1 )
 # filter out B-tagged jets for latter use 
 razorPFBJetSel = cmgPFJetSel.clone( src = 'razorPFJetSel', cut = 'getSelection("cuts_btag_loose")' )
 
@@ -43,7 +51,7 @@ razorPFJetsWithLeadingLeptons = cmgCandMerge.clone(
       cms.InputTag("razorPFJetSel"),                    
     )
     )
-#skim on leading objects - i.e. at least one ID'd jet and a lepton, or two jets
+#skim on leading objects - i.e. at least one jet and a tight lepton, or two jets
 razorLeadingObjectCount = cmgCandCount.clone( src = 'razorPFJetsWithLeadingLeptons', minNumber = 2 )
 
 #make a skim on the HLT - should match all Razor triggers
@@ -75,7 +83,7 @@ razorHemiHadBox = cmgHemi.clone(
     inputCollection = cms.VInputTag(
       cms.InputTag("razorPFJetSel")#only require kinematics, not ID
       ),
-      #balanceAlgorithm = cms.uint32(1)#use the MassBalance algo
+      balanceAlgorithm = cms.uint32(1)#use the MassBalance algo
     )
 )
 
@@ -115,6 +123,8 @@ razorPFJetsMuonVeto = deltaRJetMuons.clone(
     inputCollection = cms.InputTag('razorPFJetSel'),#only require kinematics, not ID
     vetoCollection = cms.InputTag('susyMuon')
 )
+# filter out B-tagged jets for latter use 
+razorPFBJetsMuonVeto = cmgPFJetSel.clone( src = 'razorPFJetsMuonVeto', cut = 'getSelection("cuts_btag_loose")' )
 #recalculate the MET
 from CMGTools.Common.Tools.cmgBaseMETModifier_cfi import cmgBaseMETModifier
 razorMuStarMet = cmgBaseMETModifier.clone(
@@ -143,6 +153,7 @@ razorDiHemiMuStarBoxSel = razorDiHemiHadBoxSel.clone( src = 'razorDiHemiMuStarBo
 razorDiHemiHistogramsMuStarBox = razorDiHemiHistogramsHadBox.clone(inputCollection = 'razorDiHemiMuStarBox')
 razorMuStarBoxSequence = cms.Sequence(
     razorPFJetsMuonVeto* 
+    razorPFBJetsMuonVeto*
     razorMuStarMet* 
     razorHemiMuStarBox*
     razorDiHemiMuStarBox*
@@ -167,16 +178,20 @@ razorJetSequence = cms.Sequence(
 
 from CMGTools.Susy.Razor.razorBoxDef_cff import razorBoxDef
 razorBoxDef = razorBoxDef.clone(
-    tightElectrons = cms.InputTag('razorElectron80'),
-    looseElectrons = cms.InputTag('razorElectron95'),
-    tightMuons = cms.InputTag('susyMuon'),
+    tightElectrons = cms.InputTag('razorElectronTight'),
+    looseElectrons = cms.InputTag('razorElectronLoose'),
+    tightMuons = cms.InputTag('razorMuonTight'),
     looseMuons = cms.InputTag('susyMuon'),
     jets = cms.InputTag('razorPFJetSel'),
     bjets = cms.InputTag('razorPFBJetSel') 
 )
+#make sure we keep all EleMu events
+razorBoxDefSel = cmgCandSel.clone( src = 'razorBoxDef', cut = 'getSelection("cuts_EleMu")' )
+razorBoxDefCount = cmgCandCount.clone( src = 'razorBoxDefSel', minNumber = 1 )
 
 razorBoxesSequence = cms.Sequence(
-    razorBoxDef+
+    razorBoxDef*  
+    razorBoxDefSel+    
     razorHadronicBoxSequence +
     razorMuStarBoxSequence
     )
@@ -209,8 +224,13 @@ razorSequence = cms.Sequence(
 #offline based selection
 razorSkimSequence = cms.Sequence(
     razorObjectSequence + 
+    # require no jets to fail ID
     ~razorPFJetIDCount + #note the inversion - veto events with jets that fail the ID
+    # require at least on high pt jet
+    razorPFJetCount+
+    # require another jet or a tight lepton
     razorLeadingObjectCount+
+    # loose cuts on R and MR
     razorSelectedDiHemi*
     razorSelectedCount
     )
@@ -218,5 +238,13 @@ razorSkimSequence = cms.Sequence(
 #trigger based selection - we take all Razor triggered events
 razorTriggerSkimSequence = cms.Sequence(
     razorObjectSequence+
+    #make any Rxx_MRxx trigger
     razorTriggerCount                                
+    )
+
+#looser skim on EleMu events for btagging
+razorEleMuSequence = cms.Sequence(
+    razorObjectSequence*
+    # Take anything that would lie in the EleMu box - just tight electron, tight muon
+    razorBoxDefCount                                
     )

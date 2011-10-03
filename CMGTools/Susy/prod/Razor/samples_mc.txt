@@ -44,8 +44,8 @@ benitezj%/ZZ_TuneZ2_7TeV_pythia6_tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
 benitezj%/WW_TuneZ2_7TeV_pythia6_tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
 benitezj%/WZ_TuneZ2_7TeV_pythia6_tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
 
-*wreece%/ZJetsToNuNu_100_HT_200_7TeV-madgraph/Summer11-PU_S4_START42_V11-v1/AODSIM
-*wreece%/ZJetsToNuNu_200_HT_inf_7TeV-madgraph/Summer11-PU_S4_START42_V11-v1/AODSIM
-*wreece%/ZJetsToNuNu_50_HT_100_7TeV-madgraph/Summer11-PU_S4_START42_V11-v1/AODSIM
-*wreece%/QCD_Pt-80toInf_6GenJets_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM
-*wreece%/QCDtoBBbar_Pt-25_jetenriched_Tune4C_7TeV-pythia8/Summer11-PU_S4_START42_V11-v1/AODSIM
+wreece%/ZJetsToNuNu_100_HT_200_7TeV-madgraph/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+wreece%/ZJetsToNuNu_200_HT_inf_7TeV-madgraph/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+wreece%/ZJetsToNuNu_50_HT_100_7TeV-madgraph/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+wreece%/QCD_Pt-80toInf_6GenJets_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+wreece%/QCDtoBBbar_Pt-25_jetenriched_Tune4C_7TeV-pythia8/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
