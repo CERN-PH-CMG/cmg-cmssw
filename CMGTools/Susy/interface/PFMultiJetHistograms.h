@@ -1,5 +1,5 @@
-#ifndef PFBJETHISTOGRAMS_H_
-#define PFBJETHISTOGRAMS_H_
+#ifndef PFMULTIJETHISTOGRAMS_H_
+#define PFMULTIJETHISTOGRAMS_H_
 
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
 #include "CMGTools/Common/interface/HistogramCreator.h"
@@ -7,10 +7,12 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 
+#include <string>
+
 namespace cmg{
-  class PFBJetHistograms : public cmg::HistogramCreator<cmg::PFJet>{
+  class PFMultiJetHistograms : public cmg::HistogramCreator<cmg::PFJet>{
     public:
-        PFBJetHistograms(const edm::ParameterSet& ps):
+        PFMultiJetHistograms(const edm::ParameterSet& ps):
             cmg::HistogramCreator<type>::HistogramCreator(ps){
         }
         virtual void fill(const type& cand){}
@@ -18,8 +20,12 @@ namespace cmg{
         
      protected:
         virtual void defineHistograms();
+        
+        std::string indexedHistogram(const std::string& name, unsigned int index) const;
+        
+        
 };
 
 }
 
-#endif /*PFBJETHISTOGRAMS_H_*/
+#endif /*PFMULTIJETHISTOGRAMS_H_*/

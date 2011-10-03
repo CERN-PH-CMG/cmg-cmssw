@@ -204,16 +204,19 @@ razorObjectSequence = cms.Sequence(
     razorBoxesSequence    
     )
 
-from CMGTools.Susy.histograms.pfBJetHistograms_cff import pfJetHistograms
+from CMGTools.Susy.histograms.pfBJetHistograms_cff import pfBJetHistograms
+from CMGTools.Susy.histograms.pfMultiJetHistograms_cff import pfMultiJetHistograms
 #BJet histograms
-razorBJetHistograms = pfJetHistograms.clone(inputCollection = cms.InputTag("razorPFJetSel"))
+razorBJetHistograms = pfBJetHistograms.clone(inputCollection = cms.InputTag("razorPFJetSel"))
+razorMultiJetHistograms = pfMultiJetHistograms.clone(inputCollection = cms.InputTag("razorPFJetSel"))
 
 razorHistogrammingSequence  = cms.Sequence(
     #Razor histograms                                       
     razorDiHemiHistogramsHadBox+
     razorDiHemiHistogramsMuStarBox+
     #btag histograms
-    razorBJetHistograms
+    razorBJetHistograms+
+    razorMultiJetHistograms
 )
 
 razorSequence = cms.Sequence(
