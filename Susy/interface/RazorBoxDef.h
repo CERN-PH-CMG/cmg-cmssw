@@ -1,6 +1,7 @@
 #ifndef RAZORBOXDEF_H_
 #define RAZORBOXDEF_H_
 
+#include "AnalysisDataFormats/CMGTools/interface/PhysicsObject.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -10,11 +11,13 @@
 #include "FWCore/Utilities/interface/Exception.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
+#include <vector>
+
 namespace razor{
 
     enum Boxes{ EleMu = 0, MuMu, EleEle, Mu, Ele, Had};
     
-    class RazorBox{
+    class RazorBox : public cmg::AbstractPhysicsObject{
         public:
             RazorBox():
                 box_(Had),njet_(0),nbjet_(0){
@@ -48,7 +51,8 @@ namespace razor{
             }
             unsigned int nBJets() const{
                 return nbjet_;
-            }             
+            }
+            
         private:
             Boxes box_;
             unsigned int njet_;
@@ -65,6 +69,7 @@ public:
   }
   
   typedef edm::View<reco::Candidate> CandidateView;
+  typedef std::vector<razor::RazorBox> collection;
   unsigned int countThreshold(const edm::Handle<CandidateView>& handle, const double pt) const{
     unsigned int result = 0;
     for(CandidateView::const_iterator it = handle->begin(); it != handle->end(); ++it){

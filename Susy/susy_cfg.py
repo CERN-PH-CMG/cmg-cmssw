@@ -42,6 +42,7 @@ process.schedule = cms.Schedule(
     process.RA1Path,
     process.RA2Path,
     process.razorPath,
+    process.razorEleMuPath,
     process.razorTriggerPath,
     process.LPPath,
     process.outpath
@@ -57,10 +58,10 @@ process.out.outputCommands += susyEventContent
 from CMGTools.Common.eventContent.eventCleaning_cff import eventCleaning
 process.out.outputCommands.extend( eventCleaning )
 
-process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('multijetPath','multijetTriggerPath','RA2Path','razorPath','razorTriggerPath', 'RA1Path', 'LPPath') )
+process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('multijetPath','multijetTriggerPath','RA2Path','razorEleMuPath','razorPath','razorTriggerPath', 'RA1Path', 'LPPath') )
 #plot the correlations between the selection paths
 process.load('CMGTools.Common.histograms.triggerCorrelationHistograms_cfi')
-process.triggerCorrelationHistograms.names = cms.untracked.vstring('multijetPath','multijetTriggerPath','RA2Path','razorPath','razorTriggerPath', 'RA1Path', 'LPPath')
+process.triggerCorrelationHistograms.names = cms.untracked.vstring('multijetPath','multijetTriggerPath','RA2Path','razorEleMuPath','razorPath','razorTriggerPath', 'RA1Path', 'LPPath')
 process.schedule.append( process.triggerCorrelationHistogramsEndPath )
 
 process.TFileService = cms.Service(

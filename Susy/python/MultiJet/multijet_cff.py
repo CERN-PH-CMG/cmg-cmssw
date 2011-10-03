@@ -13,10 +13,13 @@ multiPFJetSel50Count = cmgCandCount.clone( src = 'multiPFJetSel50', minNumber = 
 
 #make a skim on the HLT - should match all multi triggers
 from CMGTools.Common.skims.cmgTriggerObjectSel_cfi import *
+# triggers from the MultiJet, ElectronHad and MuHad PDs
 multiTriggerSel = cmgTriggerObjectSel.clone(
                                             src = 'cmgTriggerObjectSel',
                                             cut = 'getSelectionRegExp("^HLT_QuadJet[0-9]+.*_v[0-9]+$") ||'\
-                                                ' getSelectionRegExp("^HLT_EightJet[0-9]+.*_v[0-9]+$")'
+                                                ' getSelectionRegExp("^HLT_EightJet[0-9]+.*_v[0-9]+$") ||'\
+                                                ' getSelectionRegExp("^HLT_.*Mu[0-9]+.*Quad.*Jet[0-9]+.*_v[0-9]+$") ||'\
+                                                ' getSelectionRegExp("^HLT_Ele[0-9]+.*Quad.*Jet[0-9]+.*_v[0-9]+$")'
                                             )
 multiTriggerCount = cmgCandCount.clone( src = 'multiTriggerSel', minNumber = 1 )
 

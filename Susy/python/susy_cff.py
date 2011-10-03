@@ -38,6 +38,11 @@ razorTriggerPath = cms.Path(
     razorTriggerSkimSequence
     )
 
+razorEleMuPath = cms.Path(
+    susySequence +
+    razorEleMuSequence
+    )
+
 LPPath = cms.Path(
     susySequence +
     LPSkimSequence

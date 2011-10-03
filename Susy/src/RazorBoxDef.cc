@@ -9,7 +9,7 @@ RazorBoxDef::RazorBoxDef(const edm::ParameterSet & iConfig) :
     jets_(iConfig.getParameter<edm::InputTag>("jets")),
     bjets_(iConfig.getParameter<edm::InputTag>("bjets")){
 
-        produces<razor::RazorBox>();
+        produces<collection>();
 
 }
 
@@ -54,8 +54,18 @@ void RazorBoxDef::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
     }else if( nTEle20 > 0 ){
         box = razor::Ele;
     }
+  
+    std::auto_ptr<collection> pOut(new collection);
     
-    std::auto_ptr<razor::RazorBox> pOut(new razor::RazorBox(box,njets,nbjets) ); 
+    razor::RazorBox rb(box,njets,nbjets);  
+    rb.addSelection("cuts_EleMu",box == razor::EleMu);
+    rb.addSelection("cuts_MuMu",box == razor::MuMu);
+    rb.addSelection("cuts_EleEle",box == razor::EleEle);
+    rb.addSelection("cuts_Mu",box == razor::Mu);
+    rb.addSelection("cuts_Ele",box == razor::Ele);
+    rb.addSelection("cuts_Had",box == razor::Had);
+    pOut->push_back(rb);
+    
     iEvent.put( pOut );
 
 }
