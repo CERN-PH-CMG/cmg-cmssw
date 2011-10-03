@@ -1,8 +1,6 @@
 <lcgdict>
 
- <class name="PlotDiTaus"/>
  <class name="BaseAnalysis"/>
- <class name="DiTauAnalysis"/>
  <class name="TauMuAnalysis"/>
  <class name="Sample"/>
 

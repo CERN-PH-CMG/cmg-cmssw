@@ -71,8 +71,8 @@ cmgTauMuSelAgainstElectronHistograms =cmgTauMuSelHistograms.clone()
 cmgTauMuSelAgainstElectronHistograms.inputCollection = cms.InputTag("cmgTauMuSelAgainstElectron")
                                        
 
-#cmgTauMuSelIsolationHistograms =cmgTauMuSelHistograms.clone()
-#cmgTauMuSelIsolationHistograms.inputCollection = cms.InputTag("cmgTauMuSelIsolation")
+cmgTauMuSelIsolationHistograms =cmgTauMuSelHistograms.clone()
+cmgTauMuSelIsolationHistograms.inputCollection = cms.InputTag("cmgTauMuSelIsolation")
                                        
 
 #cmgTauMuSelHistograms =cmgTauMuSelHistograms.clone()
