@@ -1,21 +1,21 @@
 
 
-from CMGTools.H2TauTau.skims.cmgTauMuSelClean_cfi import *
-from CMGTools.H2TauTau.skims.cmgTauMuSelCleanHistos_cfi import *
+from CMGTools.H2TauTau.skims.cmgTauMuSel_cfi import *
+from CMGTools.H2TauTau.skims.cmgTauMuSelHistos_cfi import *
 
-cmgTauMuSelCleanSequence = cms.Sequence(
+cmgTauMuSelSequence = cms.Sequence(
     cmgTauMuSelMass
     +cmgTauMuSelCharge
     +cmgTauMuSelPt
     +cmgTauMuSelEta
     +cmgTauMuSelAgainstMuon
     +cmgTauMuSelAgainstElectron
-    +cmgTauMuSelSumPtIsolation
+#    +cmgTauMuSelIsolation
     
-    +cmgTauMuSelClean
+    +cmgTauMuSel
     )
 
-cmgTauMuSelCleanHistogramsSequence = cms.Sequence(
+cmgTauMuSelHistogramsSequence = cms.Sequence(
     cmgTauMuSelHistograms
     
     +cmgTauMuSelMassHistograms
@@ -24,9 +24,8 @@ cmgTauMuSelCleanHistogramsSequence = cms.Sequence(
     +cmgTauMuSelEtaHistograms
     +cmgTauMuSelAgainstMuonHistograms
     +cmgTauMuSelAgainstElectronHistograms
-    +cmgTauMuSelSumPtIsolationHistograms
-    
-    
-    +cmgTauMuSelCleanHistograms
+#    +cmgTauMuSelIsolationHistograms
+       
+    +cmgTauMuSelHistograms
     )
 

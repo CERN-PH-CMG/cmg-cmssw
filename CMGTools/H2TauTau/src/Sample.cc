@@ -13,6 +13,7 @@ Sample::Sample():
   sampleChain_(NULL),
   firstrun_(0),
   lastrun_(0),
+  effCorrFactor_(1.0),
   histFile_(NULL),
   dataType_(""),
   color_(0),
@@ -32,6 +33,7 @@ Sample::Sample(const char * name, const char * path):
   sampleChain_(NULL),
   firstrun_(0),
   lastrun_(0),
+  effCorrFactor_(1.0),
   histFile_(NULL),
   dataType_(""),
   color_(0),
@@ -67,6 +69,11 @@ bool Sample::init(){
     cout<<" processing efficiency read is invalid"<<endl;
     return 0;
   }
+
+  //print the trigger paths  
+  cout<<"TriggerPaths:"<<endl;
+  for(std::vector<std::string>::const_iterator trig=trigPaths_.begin(); trig!=trigPaths_.end(); trig++)
+    cout<<trig->c_str()<<endl;
   
 
   return init_=1;

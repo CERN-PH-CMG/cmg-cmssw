@@ -35,11 +35,12 @@ public:
   bool init();
 
   void setCrossection(float crossection){crossection_=crossection;} //in pb
-  void setSampleLumi(float lumi){lumi_=lumi;}//for Data
-  void setSampleGenEvents(int Ngen){genEvents_=Ngen;}//for MC
+  void setSampleLumi(float lumi){lumi_=lumi*getProcessEff();}//for Data //correct for batch job failures
+  void setSampleGenEvents(int Ngen){genEvents_=Ngen*getProcessEff();}//for MC //correct for batch job failures
   
   void addTrigPath(std::string pathname){trigPaths_.push_back(pathname);}
   void setRunRange(unsigned int first, unsigned int last){firstrun_=first; lastrun_=last;}
+  void setEffCorrFactor(float factor){effCorrFactor_=factor;}
 
   bool addHisto(TH1* hist) {
     if(!hist)return 0;
@@ -74,7 +75,8 @@ public:
     TIterator* keyiter=keys->MakeIterator();
     for(TKey* histname=(TKey*)keyiter->Next(); histname; histname=(TKey*)keyiter->Next()){
       TH1* hist=(TH1*)histFile_->Get(histname->GetName());
-      hist->Scale(lumi/(getLumi()*getProcessEff()));//note correction for processing eff.
+      hist->Scale(effCorrFactor_);//correct for difference between Data and MC efficiency
+      hist->Scale(lumi/getLumi());
     }
     return 1;
   }
@@ -151,6 +153,7 @@ private:
   std::vector<std::string> trigPaths_;
   unsigned int firstrun_;
   unsigned int lastrun_;
+  float effCorrFactor_;
 
   TFile* histFile_;
 

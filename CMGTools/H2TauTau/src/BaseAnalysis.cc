@@ -53,24 +53,29 @@ bool BaseAnalysis::init(){
   
   //read the pile-up weights
   TFile DataPUP("tuples/Pileup_2011_EPS_8_jul.root","read");
-  TFile MCPUP("tuples/MCPileUp.root","read");
+  TFile MCPUP("tuples/MCPUP.root","read");
   gROOT->cd();
   TH1D* DataPUPHisto=(TH1D*)DataPUP.Get("pileup");
-  TH1D* MCPUPHisto=(TH1D*)MCPUP.Get("nPUPVertexHisto_");
+  TH1D* MCPUPHisto=(TH1D*)MCPUP.Get("MCPUPHisto");
   if(!DataPUPHisto || !MCPUPHisto){
     cout<<"DataPUPHisto or MCPUPHisto do not exist"<<endl;
     return 0;
   }
-  if(DataPUPHisto->GetXaxis()->GetNbins()!=MCPUPHisto->GetXaxis()->GetNbins()){
+  if(DataPUPHisto->GetXaxis()->GetNbins()<25 || MCPUPHisto->GetXaxis()->GetNbins()< 25){
     cout<<"DataPUPHisto does not have same number of bins as  MCPUPHisto"<<endl;
     return 0;
   }
+  DataPUPHisto->Scale(1./DataPUPHisto->Integral());
+  MCPUPHisto->Scale(1./MCPUPHisto->Integral());
   mcPUPWeightHisto_=new TH1F("mcPUPWeightHisto","",25,-.5,24.5);
-  for(int b=1;b<=DataPUPHisto->GetXaxis()->GetNbins();b++)
-    if(MCPUPHisto->GetBinContent(b)>0)mcPUPWeightHisto_->SetBinContent(b,DataPUPHisto->GetBinContent(b)/MCPUPHisto->GetBinContent(b));
+  for(int b=1;b<=25;b++)
+    if(MCPUPHisto->GetBinContent(b)>0) 
+      mcPUPWeightHisto_->SetBinContent(b,DataPUPHisto->GetBinContent(b)/MCPUPHisto->GetBinContent(b));
     else mcPUPWeightHisto_->SetBinContent(b,0);
 
-  ///create histograms each sample
+ 
+
+  ///init each sample
   std::vector<Sample*>::const_iterator s=samples_.begin();
   for(int i=0; s!=samples_.end(); ++s, i++){
     if(!(samples_[i]->init())) return 0;
@@ -92,7 +97,7 @@ bool BaseAnalysis::addHistos(Sample* s){
   if(!s->addHisto((TH1*)(new TH2F(TString(s->GetName())+"_vertexXYHisto","",100,0.2,0.3,100,0.34,0.44))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_vertexZHisto","",100,-20,20))))return 0;
   
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_nVertexPUPWeightHisto","",25,-.5,24.5))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_nVertexPUPHisto","",25,-.5,24.5))))return 0;
   
   return 1;
 }
@@ -108,7 +113,7 @@ bool BaseAnalysis::getHistos(Sample* s){
   if(!(vertexXYHisto_=(TH2F*)(s->getHisto("vertexXYHisto"))))return 0;
   if(!(vertexZHisto_=(TH1F*)(s->getHisto("vertexZHisto"))))return 0;
 
-  if(!(nVertexPUPWeightHisto_=(TH1F*)(s->getHisto("nVertexPUPWeightHisto"))))return 0;
+  if(!(nVertexPUPWeightHisto_=(TH1F*)(s->getHisto("nVertexPUPHisto"))))return 0;
 
 
   return 1;
@@ -141,7 +146,7 @@ bool BaseAnalysis::fillHistos(const fwlite::Event * event ){
       }    
     }
     nPUPVertexHisto_->Fill(npv);
-    if(0<npv && npv< mcPUPWeightHisto_->GetXaxis()->GetNbins()) mcPUPWeight_= mcPUPWeightHisto_->GetBinContent(npv);
+    if(-1 < npv && npv < mcPUPWeightHisto_->GetXaxis()->GetNbins()) mcPUPWeight_= mcPUPWeightHisto_->GetBinContent(npv+1);//npv starts at 0
   }
 
 
@@ -217,6 +222,45 @@ bool BaseAnalysis::createHistos(TString samplename){
 
 
 
+bool BaseAnalysis::createMCPUPHisto(){
+  //create a histogram with the MC PUP distribution
+  //this must be done with unselected MC events
+  TH1D MCPUPHisto("MCPUPHisto","Npv",31,-.5,30.5);//must include 0
+
+  std::vector<std::string> list;
+  list.push_back("/tmp/tree_CMG_1.root");
+  list.push_back("/tmp/tree_CMG_2.root");
+  list.push_back("/tmp/tree_CMG_3.root");
+  list.push_back("/tmp/tree_CMG_4.root");
+  list.push_back("/tmp/tree_CMG_5.root");
+  fwlite::ChainEvent chain(list);
 
 
+  Int_t ievt=0;
+  for(chain.toBegin(); !chain.atEnd() && ievt <  truncateEvents_; ++chain, ++ievt){
+    if(ievt%printFreq_==0)cout<<ievt<<" done"<<endl;
+    const fwlite::Event * event = chain.event();
 
+    //get the number of pile up vertexes
+    edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
+    event->getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
+    std::vector<PileupSummaryInfo>::const_iterator PVI;  
+    int npv=-1;
+    for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {    
+      int BX = PVI->getBunchCrossing();    
+      if(BX == 0) { 
+	npv = PVI->getPU_NumInteractions();
+	continue;
+      }    
+    }
+    MCPUPHisto.Fill(npv);
+    
+  }
+
+  TFile F("./MCPUP.root","recreate");
+  if(F.IsZombie())return 0;
+  MCPUPHisto.Write();
+  F.Close();
+
+  return 1;
+}

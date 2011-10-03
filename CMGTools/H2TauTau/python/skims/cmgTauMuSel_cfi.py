@@ -25,15 +25,15 @@ cmgTauMuSelAgainstMuon = cms.EDFilter("CmgTauMuSelector",src = cms.InputTag( "cm
 cmgTauMuSelAgainstElectron = cms.EDFilter("CmgTauMuSelector",src = cms.InputTag( "cmgTauMuSelAgainstMuon" ),
                                              cut = cms.string( " leg1().tauID(\"againstElectronLoose\")==1 " ))
 
-#a similar cut is defined in PF2PAT hpsPFTauProducer but was not applied
-cmgTauMuSelSumPtIsolation = cms.EDFilter("CmgTauMuSelector",src = cms.InputTag( "cmgTauMuSelAgainstElectron" ),
-                               cut = cms.string( " (leg1().trackIso() + max( leg1().gammaIso() - 0.025*3.14159*leg1().userData(\"rho\") , 0.0 )) < 2.0 " ))
+
+#cmgTauMuSelIsolation = cms.EDFilter("CmgTauMuSelector",src = cms.InputTag( "cmgTauMuSelAgainstElectron" ),
+#                               cut = cms.string( " (leg1().trackIso() + max( leg1().gammaIso() - 0.025*3.14159*leg1().userData(\"rho\") , 0.0 )) < 2.0 " ))
 
 
 ######
 ##last selector makes no cuts, just to create a final list with always the same name.
 ######
-cmgTauMuSelClean = cms.EDFilter("CmgTauMuSelector",src = cms.InputTag( "cmgTauMuSelSumPtIsolation" ),
+cmgTauMuSel = cms.EDFilter("CmgTauMuSelector",src = cms.InputTag( "cmgTauMuSelAgainstElectron" ),
                                 cut = cms.string( "" ))
 
 

@@ -7,6 +7,8 @@
 #include "AnalysisDataFormats/CMGTools/interface/Tau.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 
+#include "CMGTools/H2TauTau/interface/TriggerEfficiency.h"
+
 class TauMuAnalysis : public BaseAnalysis {
 
 public:
@@ -21,8 +23,9 @@ public:
   virtual bool createHistos(TString samplename="");
 
   bool plotVisMass();
-  bool plotDistribution(TString histname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords);
-  
+  bool plotDistribution(TString histname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords, Float_t* axesrange, bool log=0);
+   
+
 protected:
   virtual bool addHistos(Sample* s);
   virtual bool getHistos(Sample* s);
@@ -62,6 +65,9 @@ private:
   TH1F* muDzPUPHisto_;
   TH1F* tauPtPUPHisto_;
   TH1F* tauIsoPUPHisto_;
+  TH1F* tauTrackIsoPUPHisto_;
+  TH1F* tauNeutralIsoPUPHisto_;
+  TH1F* tauRhoPUPHisto_;
   TH1F* tauDxyPUPHisto_;
   TH1F* tauDzPUPHisto_;
   TH1F* metPUPHisto_;
@@ -71,8 +77,10 @@ private:
 
   std::vector<std::string> triggerPaths_;
 
+  TriggerEfficiency triggerEff_;
 
   float computePZeta(const cmg::Tau * tau1, const cmg::Muon * tau2, const cmg::BaseMET * met);
+  float computeTauIso(const cmg::Tau * tau);
 
   ClassDef(TauMuAnalysis, 1);
 };
