@@ -80,7 +80,7 @@ cmgTauMuSelAgainstElectronHistograms.inputCollection = cms.InputTag("cmgTauMuSel
 
 
 cmgTauMuSelCleanHistograms =cmgTauMuSelHistograms.clone()
-cmgTauMuSelCleanHistograms.inputCollection = cms.InputTag("cmgTauMuSel")
+cmgTauMuSelCleanHistograms.inputCollection = cms.InputTag("cmgTauMuSelClean")
                                           
 
 
