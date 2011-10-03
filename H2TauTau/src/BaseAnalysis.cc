@@ -171,12 +171,6 @@ bool BaseAnalysis::fillHistos(const fwlite::Event * event ){
   return 1;
 }
 
-bool BaseAnalysis::scaleWeightHistos(Sample* s){
-  if(!getHistos(s))return 0;  
-  nVertexPUPWeightHisto_->Scale(nVertexHisto_->Integral()/nVertexPUPWeightHisto_->Integral());
-  
-  return 1;
-}
 
 
 
@@ -198,9 +192,10 @@ bool BaseAnalysis::createHistos(TString samplename){
     return 0;
   }
   fwlite::ChainEvent chain=*(sample_->getEvents());
-  //note: cannot use the pointer to the chain in the sample, event loop crashes after first file
+  //note: cannot give the pointer to the chain in the sample, event loop crashes after first file
   
   Int_t ievt=0;
+  Int_t goodevts=0;
   for(chain.toBegin(); !chain.atEnd() && ievt <  truncateEvents_; ++chain, ++ievt){
     if(ievt%printFreq_==0)cout<<ievt<<" done"<<endl;
     const fwlite::Event * event = chain.event();
@@ -208,11 +203,10 @@ bool BaseAnalysis::createHistos(TString samplename){
     if(!applySelections(event))continue;
 
     if(!fillHistos(event))return 0;
+    goodevts++;
 
   }
-
-  //scale weighted histograms
-  if(!scaleWeightHistos(sample_))return 0;
+  cout<<goodevts<<" events passed selections"<<endl;
 
   //
   if(!sample_->save())return 0;

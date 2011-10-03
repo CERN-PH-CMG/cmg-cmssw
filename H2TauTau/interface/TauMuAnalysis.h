@@ -29,7 +29,6 @@ public:
 protected:
   virtual bool addHistos(Sample* s);
   virtual bool getHistos(Sample* s);
-  virtual bool scaleWeightHistos(Sample* s);
   virtual bool applySelections(const fwlite::Event * event);
   virtual bool fillHistos(const fwlite::Event * event );
 

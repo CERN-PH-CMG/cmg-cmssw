@@ -56,7 +56,6 @@ protected:
   virtual bool getHistos(Sample* s);
   virtual bool applySelections(const fwlite::Event * event);
   virtual bool fillHistos(const fwlite::Event * event );
-  virtual bool scaleWeightHistos(Sample* s);
 
   std::vector<Sample*> samples_;
   Sample* sample_;

@@ -9,7 +9,7 @@
 class TriggerEfficiency {
 public:
   TriggerEfficiency(){} ;
-  double ratio(double pt) const ; 
+  double ratio(int trigpt, double pt) const ; 
 
 private:
   double efficiency(double m, double m0, double sigma, double alpha, double n, double norm) const ;

@@ -110,7 +110,7 @@ bool TauMuAnalysis::init(){
   //print out the trigger eff:
   cout<<"trigger efficiencies"<<endl;
   for(Int_t p=0;p<100;p+=10)
-    cout<<p<<" "<<triggerEff_.ratio((double)p)<<endl;
+    cout<<p<<" "<<triggerEff_.ratio(0,(double)p)<<" "<<triggerEff_.ratio(10,(double)p)<<" "<<triggerEff_.ratio(15,(double)p)<<endl;
 
 
   
@@ -358,35 +358,6 @@ bool TauMuAnalysis::fillHistos(const fwlite::Event * event ){
   return 1;
 }
 
-
-bool TauMuAnalysis::scaleWeightHistos(Sample* s){
-
-  if(!BaseAnalysis::scaleWeightHistos(s))return 0;
-
-
-  diTauMassPUPHisto_->Scale(diTauMassHisto_->Integral()/diTauMassPUPHisto_->Integral());
-  diTauEtaPUPHisto_->Scale(diTauEtaHisto_->Integral()/diTauEtaPUPHisto_->Integral());
-  diTauPtPUPHisto_->Scale(diTauPtHisto_->Integral()/diTauPtPUPHisto_->Integral());  
-
-  muPtPUPHisto_->Scale(muPtHisto_->Integral()/muPtPUPHisto_->Integral());
-  muIsoPUPHisto_->Scale(muIsoHisto_->Integral()/muIsoPUPHisto_->Integral());
-  muDxyPUPHisto_->Scale(muDxyHisto_->Integral()/muDxyPUPHisto_->Integral());
-  muDzPUPHisto_->Scale(muDzHisto_->Integral()/muDzPUPHisto_->Integral());
-
-  tauPtPUPHisto_->Scale(tauPtHisto_->Integral()/tauPtPUPHisto_->Integral());
-  tauIsoPUPHisto_->Scale(tauIsoHisto_->Integral()/tauIsoPUPHisto_->Integral());
-  tauDxyPUPHisto_->Scale(tauDxyHisto_->Integral()/tauDxyPUPHisto_->Integral());
-  tauDzPUPHisto_->Scale(tauDzHisto_->Integral()/tauDzPUPHisto_->Integral());
-
-  metPUPHisto_->Scale(metHisto_->Integral()/metPUPHisto_->Integral());
-  pZetaVisPUPHisto_->Scale(pZetaHisto_->Integral()/pZetaVisPUPHisto_->Integral());
-  pZetaMETPUPHisto_->Scale(pZetaHisto_->Integral()/pZetaMETPUPHisto_->Integral());
-  pZetaPUPHisto_->Scale(pZetaHisto_->Integral()/pZetaPUPHisto_->Integral());
-
-  //->Scale(->Integral()/->Integral());
-  
-  return 1;
-}  
 
 bool TauMuAnalysis::createHistos(TString samplename){
 

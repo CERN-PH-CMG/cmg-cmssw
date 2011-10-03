@@ -10,7 +10,7 @@ cmgTauMuSelCleanSequence = cms.Sequence(
     +cmgTauMuSelEta
     +cmgTauMuSelAgainstMuon
     +cmgTauMuSelAgainstElectron
-#    +cmgTauMuSelIsolation
+    +cmgTauMuSelIsolation
     
     +cmgTauMuSelClean
     )
@@ -24,7 +24,7 @@ cmgTauMuSelCleanHistogramsSequence = cms.Sequence(
     +cmgTauMuSelEtaHistograms
     +cmgTauMuSelAgainstMuonHistograms
     +cmgTauMuSelAgainstElectronHistograms
-#    +cmgTauMuSelIsolationHistograms
+    +cmgTauMuSelIsolationHistograms
        
     +cmgTauMuSelCleanHistograms
     )
