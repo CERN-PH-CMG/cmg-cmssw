@@ -347,7 +347,6 @@ int main(int argc, char* argv[])
   metTypes["assocMet"]            = "assoc-E_{T}^{miss}";
   metTypes["minAssocMet"]         = "min{E_{T}^miss,assoc-E_{T}^{miss})";
 //  metTypes["superMinMet"]         = "min{E_{T}^{miss},assoc-E_{T}^{miss},clean-E_{T}^{miss},central-E_{T}^{miss}}";
-//  metTypes["redAssocMet"]         = "red{E_{T}^miss,assoc-E_{T}^{miss})";
   metTypes["redMinAssocMet"]         = "red{min{E_{T}^miss,assoc-E_{T}^{miss}}, unclustered E_{T}^{miss})";
   std::map<TString,LorentzVector> metTypeValues;
   for(std::map<TString,TString>::iterator it = metTypes.begin(); it!= metTypes.end(); it++)
@@ -368,8 +367,16 @@ int main(int argc, char* argv[])
       controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"geq080zptvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
       controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "geq060zpt", ";"+it->second+">0.6 z p_{T};Events", 100,0,500) );
       controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"geq060zptvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
-      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "geq40zpt", ";"+it->second+">1.0 z p_{T};Events", 100,0,500) );
-      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"geq40zptvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "geq040zpt", ";"+it->second+">0.4 z p_{T};Events", 100,0,500) );
+      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"geq040zptvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+
+      controlHistos.addHistogram( new TH2F( TString("met_") + it->first + "pfmet", ";" +it->second+"; pfmet", 40,0,200,40,0,200) );
+      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "geq080pfmet", ";"+it->second+">0.8 pfmet;Events", 100,0,500) );
+      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"geq080pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "geq060pfmet", ";"+it->second+">0.6 pfmet;Events", 100,0,500) );
+      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"geq060pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "geq040pfmet", ";"+it->second+">0.4 z pfmet;Events", 100,0,500) );
+      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"geq040pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
     }
   controlHistos.addHistogram( new TH2F ("itpuvsootpu", ";In-Time Pileup; Out-of-time Pileup;Events", 30,0,30,30,0,30) );
   controlHistos.addHistogram( new TH2F ("redMetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 50, -251.,249,50, -251.,249.) );
@@ -664,13 +671,6 @@ int main(int argc, char* argv[])
       Float_t redMetX        = rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
       Float_t redMetY        = rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
 
-      rAmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, zvv, assocMetP4 );   
-      Float_t redAssocMet    = rAmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t redAssocMetL   = rAmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      Float_t redAssocMetT   = rAmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
-      Float_t redAssocMetX   = rAmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
-      Float_t redAssocMetY   = rAmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-
       rAmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsP4, min(zvv,assocMetP4) );
       Float_t redminAssocMet    = rAmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
       Float_t redminAssocMetL   = rAmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
@@ -707,7 +707,6 @@ int main(int argc, char* argv[])
               metTypeValues["assocMet"]            = assocMetP4;
               metTypeValues["minAssocMet"]         = min(zvv,assocMetP4);
               metTypeValues["superMinMet"]         = min( metTypeValues["minAssocMet"],  min(metTypeValues["minCleanMet"], metTypeValues["centralMet"]) );
-              metTypeValues["redAssocMet"]         = LorentzVector(redAssocMetX,redAssocMetY,0,redAssocMet);
               metTypeValues["redMinAssocMet"]      = LorentzVector(redminAssocMetX,redminAssocMetY,0,redminAssocMet);
 
       std::map<TString,double> metTypeValuesminJetdphi;
@@ -1076,8 +1075,18 @@ int main(int argc, char* argv[])
                   controlHistos.fill2DHisto(TString("met_") + it->first+"geq080zptvspu", ctf,ev.ngenITpu, it->second.pt()>=0.8*zll.pt() ? it->second.pt() : 0.0,weight);
                   controlHistos.fillHisto(TString("met_") + it->first+"geq060zpt", ctf,it->second.pt()>=0.6*zll.pt() ? it->second.pt() : 0.0,weight);
                   controlHistos.fill2DHisto(TString("met_") + it->first+"geq060zptvspu", ctf,ev.ngenITpu,it->second.pt()>=0.6*zll.pt() ? it->second.pt() : 0.0,weight);
-                  controlHistos.fillHisto(TString("met_") + it->first+"geq40zpt", ctf,it->second.pt()>=0.4*zll.pt() ? it->second.pt() : 0.0,weight);
-                  controlHistos.fill2DHisto(TString("met_") + it->first+"geq40zptvspu", ctf,ev.ngenITpu,it->second.pt()>=0.4*zll.pt() ? it->second.pt() : 0.0,weight);
+                  controlHistos.fillHisto(TString("met_") + it->first+"geq040zpt", ctf,it->second.pt()>=0.4*zll.pt() ? it->second.pt() : 0.0,weight);
+                  controlHistos.fill2DHisto(TString("met_") + it->first+"geq040zptvspu", ctf,ev.ngenITpu,it->second.pt()>=0.4*zll.pt() ? it->second.pt() : 0.0,weight);
+
+
+                  controlHistos.fill2DHisto(TString("met_") + it->first+"pfmet", ctf,it->second.pt(),zvv.pt(),weight);
+                  controlHistos.fillHisto(TString("met_") + it->first+"geq080pfmet", ctf,it->second.pt()>=0.8*zvv.pt() ? it->second.pt() : 0.0,weight);
+                  controlHistos.fill2DHisto(TString("met_") + it->first+"geq080pfmetvspu", ctf,ev.ngenITpu,it->second.pt()>=0.8*zvv.pt() ? it->second.pt() : 0.0,weight);
+                  controlHistos.fillHisto(TString("met_") + it->first+"geq060pfmet", ctf,it->second.pt()>=0.6*zvv.pt() ? it->second.pt() : 0.0,weight);
+                  controlHistos.fill2DHisto(TString("met_") + it->first+"geq060pfmetvspu", ctf,ev.ngenITpu,it->second.pt()>=0.6*zvv.pt() ? it->second.pt() : 0.0,weight);
+                  controlHistos.fillHisto(TString("met_") + it->first+"geq040pfmet", ctf,it->second.pt()>=0.4*zvv.pt() ? it->second.pt() : 0.0,weight);
+                  controlHistos.fill2DHisto(TString("met_") + it->first+"geq040pfmetvspu", ctf,ev.ngenITpu,it->second.pt()>=0.4*zvv.pt() ? it->second.pt() : 0.0,weight);
+
 
                   if(it->second.pt()>50 && metTypeValuesminJetdphi[it->first]<10){
                      controlHistos.fillHisto(TString("met_") + it->first+"mindphijmet",ctf,metTypeValuesminJetdphi[it->first], weight);
