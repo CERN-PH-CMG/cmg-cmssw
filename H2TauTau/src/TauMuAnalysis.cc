@@ -42,6 +42,9 @@ TauMuAnalysis::TauMuAnalysis():
   muIsoPUPHisto_(NULL),
   tauPtPUPHisto_(NULL),
   tauIsoPUPHisto_(NULL),
+  tauTrackIsoPUPHisto_(NULL),
+  tauNeutralIsoPUPHisto_(NULL),
+  tauRhoPUPHisto_(NULL),
   metPUPHisto_(NULL),
   pZetaVisPUPHisto_(NULL),
   pZetaMETPUPHisto_(NULL),
@@ -76,6 +79,9 @@ TauMuAnalysis::TauMuAnalysis(const char * name):
   muDzPUPHisto_(NULL),
   tauPtPUPHisto_(NULL),
   tauIsoPUPHisto_(NULL),
+  tauTrackIsoPUPHisto_(NULL),
+  tauNeutralIsoPUPHisto_(NULL),
+  tauRhoPUPHisto_(NULL),
   tauDxyPUPHisto_(NULL),
   tauDzPUPHisto_(NULL),
   metPUPHisto_(NULL),
@@ -100,6 +106,13 @@ bool TauMuAnalysis::init(){
     
     cout<<"TauMuAnalysis  Initialized sample "<<samples_[i]->GetName()<<" "<<samples_[i]->GetTitle()<<endl;
   }
+
+  //print out the trigger eff:
+  cout<<"trigger efficiencies"<<endl;
+  for(Int_t p=0;p<100;p+=10)
+    cout<<p<<" "<<triggerEff_.ratio((double)p)<<endl;
+
+
   
   return 1;
 }
@@ -112,34 +125,37 @@ bool TauMuAnalysis::addHistos(Sample* s){
 
   //add histos to s
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauNHisto","",5,-.5,4.5))))return 0;
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauMassHisto","",300,0,300))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauMassHisto","",400,0,400))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauEtaHisto","",120,-6,6))))return 0;
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauPtHisto","",100,0,100))))return 0; 
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muPtHisto","",100,0,100))))return 0; 
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauPtHisto","",200,0,200))))return 0; 
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muPtHisto","",200,0,200))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muIsoHisto","",100,0,.5))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muDxyHisto","",100,0,.5))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muDzHisto","",100,0,.5))))return 0; 
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauPtHisto","",100,0,100))))return 0; 
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauPtHisto","",200,0,200))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauIsoHisto","",100,0,5))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauDxyHisto","",100,0,.5))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauDzHisto","",100,0,.5))))return 0;  
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_metHisto","",100,0,100))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_metHisto","",200,0,200))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_pZetaVisHisto","",120,-10,110))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_pZetaMETHisto","",100,-40,60))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_pZetaHisto","",180,-140,40))))return 0;
 
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauMassPUPHisto","",300,0,300))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauMassPUPHisto","",400,0,400))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauEtaPUPHisto","",120,-6,6))))return 0;
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauPtPUPHisto","",100,0,100))))return 0;
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muPtPUPHisto","",100,0,100))))return 0; 
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauPtPUPHisto","",200,0,200))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muPtPUPHisto","",200,0,200))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muIsoPUPHisto","",100,0,.5))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muDxyPUPHisto","",100,0,.5))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muDzPUPHisto","",100,0,.5))))return 0; 
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauPtPUPHisto","",100,0,100))))return 0; 
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauPtPUPHisto","",200,0,200))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauIsoPUPHisto","",100,0,5))))return 0; 
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauTrackIsoPUPHisto","",100,0,5))))return 0; 
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauNeutralIsoPUPHisto","",100,0,5))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauRhoPUPHisto","",100,0,.5))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauDxyPUPHisto","",100,0,.5))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauDzPUPHisto","",100,0,.5))))return 0; 
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_metPUPHisto","",100,0,100))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_metPUPHisto","",200,0,200))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_pZetaVisPUPHisto","",120,-10,110))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_pZetaMETPUPHisto","",100,-40,60))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_pZetaPUPHisto","",180,-140,40))))return 0;
@@ -180,6 +196,9 @@ bool TauMuAnalysis::getHistos(Sample* s){
   if(!(muDzPUPHisto_=(TH1F*)(s->getHisto("muDzPUPHisto"))))return 0;
   if(!(tauPtPUPHisto_=(TH1F*)(s->getHisto("tauPtPUPHisto"))))return 0;
   if(!(tauIsoPUPHisto_=(TH1F*)(s->getHisto("tauIsoPUPHisto"))))return 0;
+  if(!(tauTrackIsoPUPHisto_=(TH1F*)(s->getHisto("tauTrackIsoPUPHisto"))))return 0;
+  if(!(tauNeutralIsoPUPHisto_=(TH1F*)(s->getHisto("tauNeutralIsoPUPHisto"))))return 0;
+  if(!(tauRhoPUPHisto_=(TH1F*)(s->getHisto("tauRhoPUPHisto"))))return 0;
   if(!(tauDxyPUPHisto_=(TH1F*)(s->getHisto("tauDxyPUPHisto"))))return 0;
   if(!(tauDzPUPHisto_=(TH1F*)(s->getHisto("tauDzPUPHisto"))))return 0;
   if(!(metPUPHisto_=(TH1F*)(s->getHisto("metPUPHisto"))))return 0;
@@ -206,6 +225,10 @@ float TauMuAnalysis::computePZeta(const cmg::Tau * tau1, const cmg::Muon * tau2,
   Float_t pZeta=pZetaVis+pZetaMET;
   
   return pZeta-1.5*pZetaVis;
+}
+
+float TauMuAnalysis::computeTauIso(const cmg::Tau * tau){
+  return (tau->trackIso()+std::max( (tau->gammaIso() - tau->userData("rho")*TMath::Pi()*0.5*0.5), 0.0)); 
 }
 
 bool TauMuAnalysis::applySelections(const fwlite::Event * event){
@@ -238,30 +261,29 @@ bool TauMuAnalysis::applySelections(const fwlite::Event * event){
   edm::InputTag particletag_(inputTag_.c_str());
   edm::Handle< std::vector<cmg::TauMu> > vec;
   event->getByLabel(particletag_, vec);
-  //int nselected=0;
   int icand=0;
-  //bool candsel[20];
   diTauSelList_.clear();
   for(std::vector<cmg::TauMu>::const_iterator cand=vec->begin(); cand!=vec->end(); ++cand, icand++){    
-    //    candsel[icand]=0;
-      
-    float pzeta=computePZeta(&(cand->leg1()),&(cand->leg2()),&(*(met->begin())));
     
+    ////selections on the tau
     //     if(cand->leg1().pt()<20.0)continue;
-    //     if(tauiso>2.0)continue;
     if(cand->leg1().tauID("againstMuonTight")!=1) continue;
+    //if(computeTauIso(&(cand->leg1()))> 2.0) continue; // rho parameter isn't right
+    
+
+    ////selections on the muon
     //     if(cand->leg2().pt()<15.0)continue;
-    if(cand->leg2().relIso()>0.1)continue;    
     //    if(cand->leg2().dxy()>0.045)continue;    
-    //    if(cand->leg2().dz()>0.2)continue;    
-    //    if(cand->leg2().ptResolution()/cand->leg2().pt()>0.1)continue;    
-    if(pzeta<-20.0)continue;
+    //    if(cand->leg2().dz()>0.2)continue;        
+    if(cand->leg2().relIso()>0.1)continue;    
+    //    if(ptResolution/pt>0.1)continue;    
+
+    ////other 
+    if(computePZeta(&(cand->leg1()),&(cand->leg2()),&(*(met->begin())))<-20.0)continue;
 
     diTauSelList_.push_back(*cand);
-    //candsel[icand]=1;
-    //    nselected++;
   }
-  if(diTauSelList_.size()==0) return 1;
+  if(diTauSelList_.size()==0) return 0;
   
 
   return 1;
@@ -276,50 +298,54 @@ bool TauMuAnalysis::fillHistos(const fwlite::Event * event ){
   edm::Handle< std::vector<cmg::BaseMET> > met;
   event->getByLabel(mettag,met);
    
-//   edm::InputTag particletag_(inputTag_.c_str());
-//   edm::Handle< std::vector<cmg::TauMu> > vec;
-//   event->getByLabel(particletag_, vec);
-
   //fill the diTau histograms
   diTauNHisto_->Fill(diTauSelList_.size());
   for(std::vector<cmg::TauMu>::const_iterator cand=diTauSelList_.begin(); cand!=diTauSelList_.end(); ++cand){
     
-    float tauiso=cand->leg1().trackIso() + max(cand->leg1().gammaIso() - 0.025*3.14159*cand->leg1().userData("rho"), 0.0);
+    float tauiso=computeTauIso(&(cand->leg1()));
     float pzeta=computePZeta(&(cand->leg1()),&(cand->leg2()),&(*(met->begin())));
-
 
     diTauMassHisto_->Fill(cand->mass());
     diTauEtaHisto_->Fill(cand->eta());
     diTauPtHisto_->Fill(cand->eta());
-    diTauMassPUPHisto_->Fill(cand->mass(),mcPUPWeight_);
-    diTauEtaPUPHisto_->Fill(cand->eta(),mcPUPWeight_);
-    diTauPtPUPHisto_->Fill(cand->eta(),mcPUPWeight_);  
 
     metHisto_->Fill(met->begin()->energy());
-    metPUPHisto_->Fill(met->begin()->energy(),mcPUPWeight_);
- 
+
     tauPtHisto_->Fill(cand->leg1().pt());
     tauIsoHisto_->Fill(tauiso);
     tauDxyHisto_->Fill(cand->leg1().dxy());
     tauDzHisto_->Fill(cand->leg1().dz());
-    tauPtPUPHisto_->Fill(cand->leg1().pt(),mcPUPWeight_);
-    tauIsoPUPHisto_->Fill(tauiso,mcPUPWeight_);
-    tauDxyPUPHisto_->Fill(cand->leg1().dxy(),mcPUPWeight_);
-    tauDzPUPHisto_->Fill(cand->leg1().dz(),mcPUPWeight_);
 
     muPtHisto_->Fill(cand->leg2().pt());
     muIsoHisto_->Fill(cand->leg2().relIso());
     muDxyHisto_->Fill(cand->leg2().dxy());
     muDzHisto_->Fill(cand->leg2().dz());
+
+    //pZetaVisHisto_->Fill(pZetaVis);
+    //pZetaMETHisto_->Fill(pZetaMET);
+    pZetaHisto_->Fill(pzeta);
+
+
+    ////////////Reweighted histograms
+    diTauMassPUPHisto_->Fill(cand->mass(),mcPUPWeight_);
+    diTauEtaPUPHisto_->Fill(cand->eta(),mcPUPWeight_);
+    diTauPtPUPHisto_->Fill(cand->eta(),mcPUPWeight_);  
+
+    metPUPHisto_->Fill(met->begin()->energy(),mcPUPWeight_);
+ 
+    tauPtPUPHisto_->Fill(cand->leg1().pt(),mcPUPWeight_);
+    tauIsoPUPHisto_->Fill(tauiso,mcPUPWeight_);
+    tauTrackIsoPUPHisto_->Fill(cand->leg1().trackIso(),mcPUPWeight_);
+    tauNeutralIsoPUPHisto_->Fill(cand->leg1().gammaIso(),mcPUPWeight_);
+    tauRhoPUPHisto_->Fill((cand->leg1().userData("rho"))*TMath::Pi()*0.5*0.5,mcPUPWeight_);
+    tauDxyPUPHisto_->Fill(cand->leg1().dxy(),mcPUPWeight_);
+    tauDzPUPHisto_->Fill(cand->leg1().dz(),mcPUPWeight_);
+
     muPtPUPHisto_->Fill(cand->leg2().pt(),mcPUPWeight_);
     muIsoPUPHisto_->Fill(cand->leg2().relIso(),mcPUPWeight_);
     muDxyPUPHisto_->Fill(cand->leg2().dxy(),mcPUPWeight_);
     muDzPUPHisto_->Fill(cand->leg2().dz(),mcPUPWeight_);
   
-
-    //pZetaVisHisto_->Fill(pZetaVis);
-    //pZetaMETHisto_->Fill(pZetaMET);
-    pZetaHisto_->Fill(pzeta);
     //     pZetaVisPUPHisto_->Fill(pZetaVis,mcPUPWeight_);
     //     pZetaMETPUPHisto_->Fill(pZetaMET,mcPUPWeight_);
     pZetaPUPHisto_->Fill(pzeta,mcPUPWeight_);  
@@ -386,6 +412,7 @@ bool TauMuAnalysis::createHistos(TString samplename){
 
   //event loop
   Int_t ievt=0;
+  Int_t goodevts=0;
   for(chain.toBegin(); !chain.atEnd() && ievt <  truncateEvents_; ++chain, ++ievt){
     if(ievt%printFreq_==0)cout<<ievt<<" done"<<endl;
     const fwlite::Event * event = chain.event();    
@@ -393,11 +420,10 @@ bool TauMuAnalysis::createHistos(TString samplename){
     if(!applySelections(event)) continue;
 
     if(!fillHistos(event)) return 0;
+    goodevts++;
 
   }
-
-  //rescale
-  if(!scaleWeightHistos(sample_))return 0;
+  cout<<goodevts<<" events passed selections"<<endl;
   
   //
   if(!sample_->save())return 0;
@@ -540,6 +566,8 @@ bool  TauMuAnalysis::plotVisMass(){
   hData_SS->GetYaxis()->SetTitle(TString("Events / ")+(long)rebin+" GeV");
   hData_SS->GetXaxis()->SetTitle("m_{vis}   (GeV)");
 
+  THStack hMCSSStack("hMCSSStack","MCSS");
+
   s=samples_.begin();
   for(int i=0; s!=samples_.end(); ++s, i++){
     if(samples_[i]->getDataType()=="Data_SS"){
@@ -549,11 +577,14 @@ bool  TauMuAnalysis::plotVisMass(){
     }
     if(samples_[i]->getDataType()=="MC_SS"){
       hMC_SS->Add(samples_[i]->getHistoFromFile(histoname));
+      if(samples_[i]->getHistoFromFile(histoname)->Integral()/(hData_SS->Integral())>0.01)//only plot if significant
+	hMCSSStack.Add(samples_[i]->getHistoFromFile(histoname),"hist");
     }
   }
 
   C.Clear();
   hData_SS->Draw("hist pe");
+  hMCSSStack.Draw("hist same");
   hMC_SS->Draw("hist same");
   C.Print("TauMuAnalysis_plotVisMass.ps");  
 
@@ -641,7 +672,7 @@ bool  TauMuAnalysis::plotVisMass(){
 }
 
 
-bool TauMuAnalysis::plotDistribution(TString histoname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords){
+bool TauMuAnalysis::plotDistribution(TString histoname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords, Float_t* axesrange, bool log){
 
   
   TCanvas C("C",TString("TauMuAnalysis_")+histoname+".ps");
@@ -649,97 +680,91 @@ bool TauMuAnalysis::plotDistribution(TString histoname, Int_t rebin, TString xla
   
   float totalDataLumi=0.;
 
-  Int_t padcounter=0;
-  std::vector<Sample*>::const_iterator s=samples_.begin();
-  for(int i=0; s!=samples_.end(); ++s, i++){
-    if(samples_[i]->getDataType()=="Data"){
+  Int_t padcounter=0; 
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+    if((*s)->getDataType()=="Data"){
       C.cd(++padcounter);
-      TH1F*hmass=(TH1F*)(samples_[i]->getHistoFromFile(histoname));
-      if(!hmass){cout<<" no histo found for "<<samples_[i]->GetName()<<endl; return 0;}
+      TH1F*hmass=(TH1F*)((*s)->getHistoFromFile(histoname));
+      if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
       hmass->Rebin(rebin);
-      totalDataLumi+=samples_[i]->getLumi()*samples_[i]->getProcessEff();
+      totalDataLumi+=(*s)->getLumi()*(*s)->getProcessEff();
+      cout<<(*s)->GetName()<<" "<<hmass->Integral()<<endl;  
     }
   }
 
 
   padcounter=0;
-  s=samples_.begin();
-  for(int i=0; s!=samples_.end(); ++s, i++){
-    if(samples_[i]->getDataType()=="Data_SS"){
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+    if((*s)->getDataType()=="Data_SS"){
       C.cd(++padcounter);
-      TH1F*hmass=(TH1F*)(samples_[i]->getHistoFromFile(histoname));
-      if(!hmass){cout<<" no histo found for "<<samples_[i]->GetName()<<endl; return 0;}
+      TH1F*hmass=(TH1F*)((*s)->getHistoFromFile(histoname));
+      if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
       hmass->Rebin(rebin);
+      cout<<(*s)->GetName()<<" "<<hmass->Integral()<<endl;  
     }
   }
 
 
   padcounter=0;
-  s=samples_.begin();
-  for(int i=0; s!=samples_.end(); ++s, i++){
-    if(samples_[i]->getDataType()=="MC" || samples_[i]->getDataType()=="Signal" ){
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+    if((*s)->getDataType()=="MC" || (*s)->getDataType()=="Signal" ){
       C.cd(++padcounter);
-      samples_[i]->scaleLumi(totalDataLumi);
-      TH1F*hmass=(TH1F*)(samples_[i]->getHistoFromFile(histoname));
-      if(!hmass){cout<<" no histo found for "<<samples_[i]->GetName()<<endl; return 0;}
+      (*s)->scaleLumi(totalDataLumi);
+      TH1F*hmass=(TH1F*)((*s)->getHistoFromFile(histoname));
+      if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
       hmass->Rebin(rebin);
-      cout<<samples_[i]->GetName()<<" "<<hmass->Integral()<<endl;  
+      cout<<(*s)->GetName()<<" "<<hmass->Integral()<<endl;  
     }
   }
-
+  
 
   padcounter=0;
-  s=samples_.begin();
-  for(int i=0; s!=samples_.end(); ++s, i++){
-    if(samples_[i]->getDataType()=="MC_SS"){
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+    if((*s)->getDataType()=="MC_SS"){
       C.cd(++padcounter);
-      samples_[i]->scaleLumi(totalDataLumi);
-      TH1F*hmass=(TH1F*)(samples_[i]->getHistoFromFile(histoname));
-      if(!hmass){cout<<" no histo found for "<<samples_[i]->GetName()<<endl; return 0;}
+      (*s)->scaleLumi(totalDataLumi);
+      TH1F*hmass=(TH1F*)((*s)->getHistoFromFile(histoname));
+      if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
       hmass->Rebin(rebin);
+      cout<<(*s)->GetName()<<" "<<hmass->Integral()<<endl;  
     }
   }
 
 
   ////////////////////////////////////
-  //Plot the weighted Same-Sign MC and Data
+  //Determine the QCD background
   ///////////////////////////////////
-  Sample totalMC_SS("totalMC_SS",".");
-  addHistos(&totalMC_SS);
-  TH1F*hMC_SS=(TH1F*)totalMC_SS.getHisto(histoname);
-  Sample totalData_SS("totalData_SS",".");
-  addHistos(&totalData_SS);
-  TH1F*hData_SS=(TH1F*)totalData_SS.getHisto(histoname);
-  if(!hMC_SS || !hData_SS) return 0;
-  hMC_SS->Rebin(rebin);
-  hData_SS->Rebin(rebin);
+  Sample QCD("QCD",".");
+  QCD.setDataType("MC");//MC type need below
+  QCD.setPlotOrder(0);
+  addHistos(&QCD);
+  samples_.push_back(&QCD);//include the QCD for ordering as well
+  TH1F*hQCD=(TH1F*)QCD.getHisto(histoname);
+  hQCD->Rebin(rebin);
 
-  s=samples_.begin();
-  for(int i=0; s!=samples_.end(); ++s, i++){
-    if(samples_[i]->getDataType()=="Data_SS"){
-      hData_SS->Add(samples_[i]->getHistoFromFile(histoname));  
-      hData_SS->SetFillColor(samples_[i]->getColor());
-      hData_SS->SetLineColor(samples_[i]->getColor());
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+    if((*s)->getDataType()=="Data_SS"){
+      hQCD->Add((*s)->getHistoFromFile(histoname));  
+      hQCD->SetFillColor((*s)->getColor());
+      //hQCD->SetLineColor((*s)->getColor());
     }
-    if(samples_[i]->getDataType()=="MC_SS"){
-      hMC_SS->Add(samples_[i]->getHistoFromFile(histoname));
+    if((*s)->getDataType()=="MC_SS"){
+      ///QCD background determined from SS Data - SS MC, should be biggest
+      hQCD->Add((*s)->getHistoFromFile(histoname),-1.0);
     }
   }
 
-
   /////////////////////////
-  ////sort the samples according to size
+  ////sort the samples accordin to plot order
   //////////////////////////
   std::vector<Sample*> orderedSamples;
-  std::vector<Sample*>::const_iterator si=samples_.begin();
-  unsigned int orderindex=1;
-  for(int i=0; si!=samples_.end(); ++si, i++){
-    if(samples_[i]->getDataType()=="MC"){
-      std::vector<Sample*>::const_iterator sj=samples_.begin();
-      for(int j=0; sj!=samples_.end(); ++sj, j++){
-	if(samples_[j]->getDataType()=="MC"){
-	  if(samples_[j]->getPlotOrder()==orderindex){
-	    orderedSamples.push_back(samples_[j]);
+  unsigned int orderindex=0;
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+    if((*s)->getDataType()=="MC"){      
+      for(std::vector<Sample*>::const_iterator sj=samples_.begin(); sj!=samples_.end(); ++sj){
+	if((*sj)->getDataType()=="MC"){
+	  if((*sj)->getPlotOrder()==orderindex){
+	    orderedSamples.push_back((*sj));
 	    orderindex++;		  
 	  }
 	}
@@ -748,60 +773,70 @@ bool TauMuAnalysis::plotDistribution(TString histoname, Int_t rebin, TString xla
   }
 
 
-  ////////////////////////
-  /////Plot the stacked MC
-  ////////////////////////
-  TLegend legend;
-  THStack hMCStack("hMCStack","MC");
-  hData_SS->Add(hMC_SS,-1.0);  ///QCD background determined from SS Data - SS MC, should be biggest
-  hMCStack.Add(hData_SS,"hist");
-  legend.AddEntry(hData_SS,"QCD","f");
-  ///////add MC's
-  std::vector<Sample*>::const_iterator smc=orderedSamples.begin();
-  for(int i=0; smc!=orderedSamples.end(); ++smc,i++){
-    if(orderedSamples[i]->getHistoFromFile(histoname)->Integral()/(2*hData_SS->Integral())>0.01){//only plot if significant
-      hMCStack.Add(orderedSamples[i]->getHistoFromFile(histoname),"hist");
-      legend.AddEntry(orderedSamples[i]->getHistoFromFile(histoname),orderedSamples[i]->GetName(),"f");
-    }
-  }
-  ///////////////////////
-
   ////////////////////////////////////
   //Plot the weighted MC and Data
   ///////////////////////////////////
   Sample totalMC("totalMC",".");
   addHistos(&totalMC);
   TH1F*hMC=(TH1F*)totalMC.getHisto(histoname);
+  hMC->Rebin(rebin);
+
   Sample totalData("totalData",".");
   addHistos(&totalData);
   TH1F*hData=(TH1F*)totalData.getHisto(histoname);
+  hData->Rebin(rebin);
+
   Sample Signal("Signal",".");
   addHistos(&Signal);
   TH1F*hSignal=(TH1F*)Signal.getHisto(histoname);
-  if(!hMC || !hData || !hSignal) return 0;
-  hMC->Rebin(rebin);
-  hData->Rebin(rebin);
   hSignal->Rebin(rebin);
-  legend.AddEntry(hSignal,"H#rightarrow#tau#tau","l");
-  legend.AddEntry(hData,"Data","p");
 
-  ///Sum all samples
-  hMC->Add(hData_SS);
-  s=samples_.begin();
-  for(int i=0; s!=samples_.end(); ++s, i++){
-    if(samples_[i]->getDataType()=="Data"){
-      hData->Add(samples_[i]->getHistoFromFile(histoname));  
+  for(std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+    if((*s)->getDataType()=="Data"){
+      hData->Add((*s)->getHistoFromFile(histoname));  
     }
-    if(samples_[i]->getDataType()=="MC"){
-      hMC->Add(samples_[i]->getHistoFromFile(histoname));
+    if((*s)->getDataType()=="MC"){
+      if(TString((*s)->GetName())=="QCD") hMC->Add((*s)->getHisto(histoname));
+      else hMC->Add((*s)->getHistoFromFile(histoname));
     }
-    if(samples_[i]->getDataType()=="Signal"){
-      hSignal->Add(samples_[i]->getHistoFromFile(histoname));
+    if((*s)->getDataType()=="Signal"){
+      hSignal->Add((*s)->getHistoFromFile(histoname));
     }
   }
 
+  ////////////////////////
+  /////Stack the MC
+  ////////////////////////
+  TLegend legend;
+  THStack hMCStack("hMCStack","MC");
+  for(std::vector<Sample*>::const_iterator s=orderedSamples.begin(); s!=orderedSamples.end(); ++s){
+    TH1* h=NULL;
+    if(TString((*s)->GetName())=="QCD") h=(*s)->getHisto(histoname);
+    else h=(*s)->getHistoFromFile(histoname);
+    
+    if((h->Integral()/hData->Integral())>0.01){//only plot if significant
+      hMCStack.Add(h,"hist");
+      legend.AddEntry(h,(*s)->GetName(),"f");
+    }
+  }
 
+  
+  ///////////////////////
+  ///Make plot 
+  ///////////////////////
+  legend.AddEntry(hSignal,"H#rightarrow#tau#tau","l");
+  legend.AddEntry(hData,TString("Data  (")+(long)totalDataLumi+" pb^{-1})","p");
   C.Clear();
+  if(log){
+    hData->GetYaxis()->SetRangeUser(1,hData->GetMaximum()*1.3);
+    C.SetLogy(1);
+  }else {
+    hData->GetYaxis()->SetRangeUser(0,hData->GetMaximum()*1.2);
+  }
+  if(axesrange){
+    hData->GetXaxis()->SetRangeUser(axesrange[0],axesrange[1]);
+    hData->GetYaxis()->SetRangeUser(axesrange[2],axesrange[3]);
+  }
   hData->SetStats(0);
   hData->GetXaxis()->SetTitle(xlabel);
   hData->GetYaxis()->SetTitle(ylabel);
@@ -816,8 +851,48 @@ bool TauMuAnalysis::plotDistribution(TString histoname, Int_t rebin, TString xla
   legend.SetY2NDC(legendcoords[3]);
   legend.SetTextSize(.04);
   legend.Draw();
+  C.Update();
   C.Print(TString("TauMuAnalysis_")+histoname+".ps");  
   /////////////////////////////////////////////////
+
+
+  /////////////////////////
+  ////Print out the event yields
+  //////////////////////////
+  std::vector<Sample*> sizeOrderedSamples;  
+  float sizeorder=10000000;
+  for(std::vector<Sample*>::const_iterator si=samples_.begin(); si!=samples_.end(); ++si)
+    if((*si)->getDataType()=="MC"){
+      Sample* biggestSample=NULL;
+      float sizelargest=0;
+      for(std::vector<Sample*>::const_iterator sj=samples_.begin(); sj!=samples_.end(); ++sj)
+	if((*sj)->getDataType()=="MC"){
+	  TH1* h=NULL;
+	  if(TString((*sj)->GetName())=="QCD") h = (*sj)->getHisto(histoname);
+	  else h = (*sj)->getHistoFromFile(histoname);
+	  
+	  if(h->Integral() < (sizeorder-0.01) && h->Integral() > (sizelargest+0.01)){	    
+	    biggestSample= *sj ;
+	    sizelargest=h->Integral();
+	  }
+	}
+      
+      sizeOrderedSamples.push_back(biggestSample);    
+      sizeorder = sizelargest;
+    }
+  Float_t totalMCYield=0.;
+  for(std::vector<Sample*>::const_iterator s=sizeOrderedSamples.begin(); s!=sizeOrderedSamples.end(); ++s){
+    Int_t yield = 0;
+    if(TString((*s)->GetName())=="QCD")  yield = (*s)->getHisto(histoname)->Integral();
+    else  yield = (*s)->getHistoFromFile(histoname)->Integral();
+
+    cout<<yield<<" "<<(*s)->GetName()<<endl;
+    totalMCYield+=yield;
+  }
+  cout<<"Total MC = "<<totalMCYield<<endl;
+  cout<<"Higgs "<<hSignal->Integral()<<endl;
+  cout<<"Data "<<hData->Integral()<<endl;
+
 
 
 

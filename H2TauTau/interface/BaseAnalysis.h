@@ -39,6 +39,8 @@ public:
   BaseAnalysis(const char * name);
   virtual ~BaseAnalysis();
 
+  bool createMCPUPHisto();
+
   void addSample(Sample* sample){samples_.push_back(sample);}
   
   virtual bool init();

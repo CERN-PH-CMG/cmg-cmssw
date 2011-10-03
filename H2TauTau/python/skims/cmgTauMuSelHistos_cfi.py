@@ -1,9 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 
 
-cmgDiTauSelHistograms = cms.EDAnalyzer(
-    "CmgDiTauHistograms",
-    inputCollection = cms.InputTag("cmgDiTauSel"),
+cmgTauMuSelHistograms = cms.EDAnalyzer(
+    "CmgTauMuHistograms",
+    inputCollection = cms.InputTag("cmgTauMuSel"),
     histograms = cms.untracked.PSet(
 
       pt = cms.untracked.VPSet(
@@ -47,40 +47,40 @@ cmgDiTauSelHistograms = cms.EDAnalyzer(
 )
 
 
-cmgDiTauSelMassHistograms =cmgDiTauSelHistograms.clone()
-cmgDiTauSelMassHistograms.inputCollection = cms.InputTag("cmgDiTauSelMass")
+cmgTauMuSelMassHistograms =cmgTauMuSelHistograms.clone()
+cmgTauMuSelMassHistograms.inputCollection = cms.InputTag("cmgTauMuSelMass")
                                        
 
-cmgDiTauSelChargeHistograms =cmgDiTauSelHistograms.clone()
-cmgDiTauSelChargeHistograms.inputCollection = cms.InputTag("cmgDiTauSelCharge")
+cmgTauMuSelChargeHistograms =cmgTauMuSelHistograms.clone()
+cmgTauMuSelChargeHistograms.inputCollection = cms.InputTag("cmgTauMuSelCharge")
                                        
 
-cmgDiTauSelPtHistograms =cmgDiTauSelHistograms.clone()
-cmgDiTauSelPtHistograms.inputCollection = cms.InputTag("cmgDiTauSelPt")
+cmgTauMuSelPtHistograms =cmgTauMuSelHistograms.clone()
+cmgTauMuSelPtHistograms.inputCollection = cms.InputTag("cmgTauMuSelPt")
                                        
 
-cmgDiTauSelEtaHistograms =cmgDiTauSelHistograms.clone()
-cmgDiTauSelEtaHistograms.inputCollection = cms.InputTag("cmgDiTauSelEta")
+cmgTauMuSelEtaHistograms =cmgTauMuSelHistograms.clone()
+cmgTauMuSelEtaHistograms.inputCollection = cms.InputTag("cmgTauMuSelEta")
                                        
 
-cmgDiTauSelAgainstMuonHistograms =cmgDiTauSelHistograms.clone()
-cmgDiTauSelAgainstMuonHistograms.inputCollection = cms.InputTag("cmgDiTauSelAgainstMuon")
+cmgTauMuSelAgainstMuonHistograms =cmgTauMuSelHistograms.clone()
+cmgTauMuSelAgainstMuonHistograms.inputCollection = cms.InputTag("cmgTauMuSelAgainstMuon")
                                        
 
-cmgDiTauSelAgainstElectronHistograms =cmgDiTauSelHistograms.clone()
-cmgDiTauSelAgainstElectronHistograms.inputCollection = cms.InputTag("cmgDiTauSelAgainstElectron")
+cmgTauMuSelAgainstElectronHistograms =cmgTauMuSelHistograms.clone()
+cmgTauMuSelAgainstElectronHistograms.inputCollection = cms.InputTag("cmgTauMuSelAgainstElectron")
                                        
 
-cmgDiTauSelSumPtIsolationHistograms =cmgDiTauSelHistograms.clone()
-cmgDiTauSelSumPtIsolationHistograms.inputCollection = cms.InputTag("cmgDiTauSelSumPtIsolation")
+#cmgTauMuSelIsolationHistograms =cmgTauMuSelHistograms.clone()
+#cmgTauMuSelIsolationHistograms.inputCollection = cms.InputTag("cmgTauMuSelIsolation")
                                        
 
-#cmgDiTauSelHistograms =cmgDiTauSelHistograms.clone()
-#cmgDiTauSelHistograms.inputCollection = cms.InputTag("cmgDiTauSel")
-#                                       
+#cmgTauMuSelHistograms =cmgTauMuSelHistograms.clone()
+#cmgTauMuSelHistograms.inputCollection = cms.InputTag("cmgTauMuSel")
 
-cmgDiTauSelCleanHistograms =cmgDiTauSelHistograms.clone()
-cmgDiTauSelCleanHistograms.inputCollection = cms.InputTag("cmgDiTauSelClean")
+
+cmgTauMuSelCleanHistograms =cmgTauMuSelHistograms.clone()
+cmgTauMuSelCleanHistograms.inputCollection = cms.InputTag("cmgTauMuSel")
                                           
 
 
