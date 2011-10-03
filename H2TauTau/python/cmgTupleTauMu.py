@@ -1,8 +1,20 @@
+from PhysicsTools.PatAlgos.patTemplate_cfg import *
 import FWCore.ParameterSet.Config as cms
+import os.path
+
 from CMGTools.H2TauTau.tools import vertexCollection
 
-
 process.setName_('CMGDiTau')
+
+#process.load("CMGTools.Common.sources.VBF_HToTauTau_M_115_7TeV_powheg_pythia6_tauola.Summer11_PU_S4_START42_V11_v1.AODSIM.V2.source_cff")
+#process.source.fileNames = cms.untracked.vstring(['/store/cmst3/user/benitezj/CMG/GluGluToHToTauTau_M-105_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0/tree_CMG_1.root'])
+process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.MessageLogger.cerr.FwkReport.reportEvery = 10
+process.out.fileName = cms.untracked.string(os.path.expandvars('tree_CMG.root'))
+process.TFileService = cms.Service("TFileService",fileName = cms.string("histograms_CMG.root"))
+runOnMC = True
+
 
 ######
 process.load('CMGTools.Common.tauMu_cff')
@@ -37,12 +49,12 @@ process.out.outputCommands.append( 'keep *_addPileupInfo_*_HLT')
 process.out.outputCommands.append( "keep *_"+vertexCollection+"_*_RECO" )
 process.out.outputCommands.append( 'keep *_TriggerResults_*_PAT')
 process.out.outputCommands.append( 'keep *_cmgTriggerObjectSel_*_PAT')
-process.out.outputCommands.append( 'keep *_cmgTauMuSel_*_*' )
 process.out.outputCommands.append( 'keep *_cmgTauSel_*_*' )
 process.out.outputCommands.append( 'keep *_cmgMuonSel_*_*' )
 process.out.outputCommands.append( 'keep *_cmgElectronSel_*_*' )
 process.out.outputCommands.append( 'keep *_cmgPFJetSel_*_*' )
 process.out.outputCommands.append( 'keep *_cmgPFMET_*_*')
+process.out.outputCommands.append( 'keep *_cmgTauMuSelClean_*_*' )
 process.out.outputCommands.append( 'keep *_cmgDiJetVBF*_*_*')
 
 

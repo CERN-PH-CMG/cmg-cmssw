@@ -1,9 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
 
-#cmgTauMuSelTrue = cms.EDFilter("CmgTauMuSelector",src = cms.InputTag( "cmgTauMuSel" ),cut = cms.string( " leg1().genJetp4().Pt() > 0.0  && leg2().genJetp4().Pt() > 0.0 " ))
-cmgTauMuSelTrue = cms.EDFilter("CmgTauMuSelector",src = cms.InputTag( "cmgTauMuSel" ),cut = cms.string( " leg1().genJetp4().Pt() > 0.0 " ))
-
 ##Basic Selections on the TauMu
 cmgTauMuSelMass = cms.EDFilter("CmgTauMuSelector",src = cms.InputTag( "cmgTauMuSel" ),
                                cut = cms.string( " mass() > 1.0 " ))
@@ -32,8 +29,9 @@ cmgTauMuSelAgainstElectron = cms.EDFilter("CmgTauMuSelector",src = cms.InputTag(
 
 ######
 ##last selector makes no cuts, just to create a final list with always the same name.
+## need to add Clean tag because cmgTauMuSel already exists in CMGTools/Common
 ######
-cmgTauMuSel = cms.EDFilter("CmgTauMuSelector",src = cms.InputTag( "cmgTauMuSelAgainstElectron" ),
+cmgTauMuSelClean = cms.EDFilter("CmgTauMuSelector",src = cms.InputTag( "cmgTauMuSelAgainstElectron" ),
                                 cut = cms.string( "" ))
 
 
