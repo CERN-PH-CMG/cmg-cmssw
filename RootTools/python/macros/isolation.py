@@ -2,31 +2,81 @@
 
 # mus = 'patMuons_selectedPatMuonsAK5LC__PAT'
 # mus = 'patMuons_selectedPatMuonsAK5__PAT'
-mus = 'mus'
 
-events.SetAlias('ch',mus + '.obj.chargedHadronIso()')
-events.SetAlias('nh',mus + '.obj.neutralHadronIso()')
-events.SetAlias('ph',mus + '.obj.photonIso()')
-
-events.SetAlias('chpu',mus + '.obj.puChargedHadronIso()')
-
-events.SetAlias('comb', 'ch+nh+ph')
-
-events.SetAlias('pt', mus + '.obj.pt()')
-events.SetAlias('nvert','vertices.@obj.size()')
-
-events.SetAlias('combrel', 'comb/pt')
-
-events.SetAlias('combrelDBeta', '(ch + max(0, nh+ph-0.5*chpu))/pt')
-events.SetAlias('combrelDBeta1', '(ch + max(0, nh+ph-chpu))/pt')
-events.SetAlias('combrelDBeta2', '(ch + max(0, nh+ph-2*chpu))/pt')
+def setAliases( tree, mus, dBetaFactor = 0.5): 
+    tree.SetAlias('ch',mus + '.obj[0].chargedHadronIso()')
+    tree.SetAlias('nh',mus + '.obj[0].neutralHadronIso()')
+    tree.SetAlias('ph',mus + '.obj[0].photonIso()')
+    
+    tree.SetAlias('chpu',mus + '.obj[0].puChargedHadronIso()')
+    
+    tree.SetAlias('comb', 'ch+nh+ph')
+    
+    tree.SetAlias('pt', mus + '.obj[0].pt()')
+    tree.SetAlias('nvert','vertices.@obj.size()')
+    
+    tree.SetAlias('combrel', 'comb/pt')
+    
+    tree.SetAlias('combrelDBeta', '(ch + max(0, nh+ph-%f*chpu))/pt' % dBetaFactor)
+#     tree.SetAlias('combrelDBeta1', '(ch + max(0, nh+ph-chpu))/pt')
+#     tree.SetAlias('combrelDBeta2', '(ch + max(0, nh+ph-2*chpu))/pt')
 
 
 nEv = 9999999
 
+from CMGTools.RootTools.Style import *
+
 # plot effect of the dbeta correction
 
+class MyHistograms:
+    def __init__(self, name):
+        self.name = name
+        pass
+    def formatHistos(self, style):
+        style.formatHisto( self.h1_NVert )
+        style.formatHisto( self.h1_NVert_Iso )
+        style.formatHisto( self.eff_NVert )
+    def effVsNVert(self, cut, addCut, nEvents):
+        self.h1_NVert = TH1F('h1_NVert'+self.name,'',10,1,10)
+        self.h1_NVert_Iso = self.h1_NVert.Clone('h1_NVert_Iso'+self.name)
+        events.Draw('nvert>>h1_NVert'+self.name, addCut,'goff', nEvents)
+        events.Draw('nvert>>h1_NVert_Iso'+self.name, addCut + '&&' + cut,'goff', nEvents)
+        self.eff_NVert = self.h1_NVert_Iso.Clone('eff_NVert'+self.name)
+        self.eff_NVert.SetTitle(';#Vertices;Isolation Efficiency')
+        self.eff_NVert.SetStats(0)
+        self.eff_NVert.Sumw2()
+        self.h1_NVert.Sumw2()   
+        self.eff_NVert.Divide( self.h1_NVert_Iso, self.h1_NVert, 1, 1, 'B')
+        print self.h1_NVert.GetEntries()
+        
+
+dBetaFactor = 0.5
+setAliases( events, 'mus', dBetaFactor)
+
 cVsVert = TCanvas('cVsVert','Isolation vs Number of vertices')
+
+nEv = 999999
+
+addCut = '1'
+isoCut = '0.1'
+histos15 = MyHistograms('combrel15')
+histos15.effVsNVert( 'combrel<'+isoCut, addCut, nEv)
+histos15.formatHistos( sRedPoints )
+
+histosDBeta15 = MyHistograms('combrelDBeta15')
+histosDBeta15.effVsNVert( 'combrelDBeta<'+isoCut, addCut, nEv)
+histosDBeta15.formatHistos( sBlueSquares )
+
+histos15.eff_NVert.GetYaxis().SetRangeUser(0.5,1)
+histos15.eff_NVert.Draw()
+histosDBeta15.eff_NVert.Draw('same')
+
+legend = TLegend(0.12,0.12,0.63,0.33, 'addtl_cut = %s; iso < %s; #Delta#beta fact=%2.2f' % (addCut, isoCut,dBetaFactor) )
+legend.AddEntry(histos15.eff_NVert, 'No #Delta#beta correction')
+legend.AddEntry(histosDBeta15.eff_NVert, '#Delta#beta correction')
+legend.Draw()
+
+gPad.SaveAs('dbetaCorEffect_%s_%s_%2.2f.png' % (addCut, isoCut, dBetaFactor))
 
 from ROOT import TProfile
 
