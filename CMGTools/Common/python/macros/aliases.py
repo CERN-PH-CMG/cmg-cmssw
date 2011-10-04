@@ -40,6 +40,7 @@ cmgObjects = {
     'met':'cmgBaseMETs_cmgPFMET__',
     'eles':'cmgElectrons_cmgElectronSel__',
     'mus':'cmgMuons_cmgMuonSel__',
+    'diMus':'cmgMuoncmgMuoncmgDiObjects_cmgDiMuonSel__'
     }
 
 filters = {
