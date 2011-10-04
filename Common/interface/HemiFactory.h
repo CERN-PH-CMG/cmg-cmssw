@@ -9,12 +9,16 @@
 #include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
 #include "AnalysisDataFormats/CMGTools/interface/Hemisphere.h"
 #include "CMGTools/Common/interface/Factory.h"
+#include "CMGTools/Common/interface/HemiBalanceAlgos.h"
 #include "CMGTools/Common/interface/SettingTool.h"
 #include "CMGTools/Common/interface/MultiObjectSettingTool.h"
+
+#include <memory>
 
 namespace cmg {
 
   typedef std::vector<edm::InputTag> VInputTag;
+
 
   class HemisphereFactory : public Factory<cmg::Hemisphere>,
     public SettingTool<std::vector<edm::Ptr<reco::Candidate> >, cmg::Hemisphere> {
@@ -22,9 +26,15 @@ namespace cmg {
   public:
     HemisphereFactory(const edm::ParameterSet& ps) :
       hemisphereLabel_(ps.getParameter<VInputTag>("inputCollection")),
-      maxNCand_(ps.getParameter<uint32_t>("maxCand"))
-        {
+      maxNCand_(ps.getParameter<uint32_t>("maxCand")),
+      balance_(new cmg::PtBalance){
+        if(ps.exists("balanceAlgorithm")){
+            if(ps.getParameter<uint32_t>("balanceAlgorithm") == cmg::Balance::MassBalance){
+                balance_ = std::auto_ptr<cmg::Balance>(new cmg::MassBalance);
+            }
         }
+      }
+        
     typedef cmg::Factory<cmg::Hemisphere>::event_ptr event_ptr;
     virtual event_ptr create(const edm::Event&,
                              const edm::EventSetup&) const;
@@ -35,6 +45,7 @@ namespace cmg {
     VInputTag const hemisphereLabel_;
     size_t maxNCand_;
     MultiObjectSettingTool const multiObjectFactory_;
+    std::auto_ptr<cmg::Balance> balance_;
   };
 
 } // namespace cmg
