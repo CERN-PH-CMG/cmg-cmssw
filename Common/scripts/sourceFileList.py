@@ -4,24 +4,7 @@ from optparse import OptionParser
 import sys,os, pprint, re
 import castortools
 
-
-
-def sourceFileList( files ):
-    print '''
-import FWCore.ParameterSet.Config as cms
-
-source = cms.Source(
-"PoolSource",
-'''
-    print 'noEventSort = cms.untracked.bool(True),'
-    print 'duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),'
-
-    print "fileNames = cms.untracked.vstring("
-    for file in files:
-        fileLine = "'file:%s'," % os.path.abspath(file)
-        print fileLine
-        print ")"
-        print ")"    
+    
 
 
 parser = OptionParser()
@@ -61,25 +44,7 @@ if options.check and file_mask:
             if not status[0]:
                 bad_files[name] = status[1]
 
-print '''
-import FWCore.ParameterSet.Config as cms
 
-source = cms.Source(
-\t"PoolSource",
-'''
-print '\tnoEventSort = cms.untracked.bool(True),'
-print '\tduplicateCheckMode = cms.untracked.string("noDuplicateCheck"),'
-print "\tfileNames = cms.untracked.vstring()"
-print ")"
-
-print 'source.fileNames.extend(['
-for file in files:
-    file = file.replace('//','/')
-#     file = file.replace( protocol+'/castor/cern.ch/cms/store', '/store')  
-    if not bad_files.has_key(file):
-        fileLine = "\t\t'%s'," % file
-    else:
-        fileLine = "###MarkedBad\t'%s'," % file
-    print fileLine
-print "])"
+from sourceFileListCff import sourceFileListCff
+print sourceFileListCff( files, bad_files)
 
