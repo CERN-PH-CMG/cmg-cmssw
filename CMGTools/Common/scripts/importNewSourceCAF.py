@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 # Colin
-# creates new source file for a dataset on castor
+# creates new source file for a dataset on CAF
 # compiles the python module
 # prints the line to be added to the cfg. 
 
-import os, sys,  imp, re, pprint, string
+import os, sys,  imp, re, pprint, string, subprocess
 from optparse import OptionParser
 
-import castortools
 
+import castortools
 
 parser = OptionParser()
 parser.usage = """
 importNewSource.py <sampleName>
-Create the source file corresponding to a given sample on castor. Run it from the package where you want to put the source cff, for example CMGTools/Common.
+Create the source file corresponding to a given sample on CAF. Run it from the package where you want to put the source cff, for example CMGTools/Common.
 
 For example, the source file for /HT/Run2011A-May10ReReco-v1/AOD
 would be placed in
@@ -27,17 +27,6 @@ parser.add_option("-n", "--negate", action="store_true",
                   dest="negate",
                   help="do not proceed",
                   default=False)
-
-
-#parser.add_option("-c", "--castorBaseDir", 
-#                  dest="castorBaseDir",
-#                  help="Base castor directory. Subdirectories will be created automatically for each prod",
-#                  default=castorBaseDir.defaultCastorBaseDir)
-
-parser.add_option("-u", "--user", 
-                  dest="user",
-                  help="User who is the owner of the castor base directory, where the sample is located.",
-                  default=os.environ['USER'] )
 parser.add_option("-p", "--pattern", 
                   dest="pattern",
                   help="Regexp pattern for root files in castor dir.",
@@ -55,21 +44,20 @@ if len(args)!=1:
 
 sampleName = args[0].rstrip('/')
 
-# checking castor dir -----------------
+# getting all files from this sample -----------------
 
-import castorBaseDir
+dbs = 'dbs search --query="find file where dataset like %s"' % sampleName
 
-cdir = castortools.lfnToCastor( castorBaseDir.castorBaseDir( options.user ) )
-cdir += sampleName
+dbsOut = os.popen(dbs)
 
-if not castortools.fileExists(cdir):
-    print 'importNewSource: castor directory does not exist. Exit!'
-    sys.exit(1)
+# allFiles = []
+for line in dbsOut:
+    if line.find('/store')==-1:
+        continue
+    line = line.rstrip()
+    # print 'line',line
+    # allFiles.append(line)
 
-
-# sourceFileList = 'sourceFileList.py -c %s "%s" > %s' % (cdir, options.pattern, sourceFile)
 
 from doImportNewSource import doImportNewSource
-doImportNewSource( sampleName,
-                   'sourceFileList.py %s "%s"' % (cdir, options.pattern),
-                   options.output ) 
+doImportNewSource( sampleName, 'sourceFileListCAF.py ' + sampleName, options.output)
