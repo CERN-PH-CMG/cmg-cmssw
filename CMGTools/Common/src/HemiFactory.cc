@@ -124,11 +124,6 @@ cmg::HemisphereFactory::create(const edm::Event& iEvent,
       indVec.push_back(i);
     }
 
-    double sumET = 0.;
-    for (std::vector<edm::Ptr<reco::Candidate> >::const_iterator it = candidates.begin();
-         it != candidates.end(); ++it) {
-      sumET += (*it)->et();
-    }
     double minImbalance = std::numeric_limits<double>::max();
     std::vector<size_t> bestCombination;
 
@@ -145,14 +140,26 @@ cmg::HemisphereFactory::create(const edm::Event& iEvent,
              it != indVec.begin() + i; ++it) {
           msg << *it << ", ";
         }
-        double sumET0 = 0.;
+        
+        //create tempory hemispheres
+        std::vector<edm::Ptr<reco::Candidate> > tmp0;
+        std::vector<edm::Ptr<reco::Candidate> > tmp1;
+        
+        //first hemisphere
         for (std::vector<size_t>::const_iterator it = indVec.begin();
              it != indVec.begin() + i; ++it) {
-          sumET0 += candidates[*it]->et();
+                tmp0.push_back(candidates[*it]);
         }
-        double diffET = abs(sumET - 2. * sumET0);
-        if (diffET < minImbalance) {
-          minImbalance = diffET;
+        //second hemisphere
+        for (std::vector<size_t>::const_iterator it = indVec.begin() + i;
+             it != indVec.end(); ++it) {
+                tmp1.push_back(candidates[*it]);
+        }        
+        assert( (tmp0.size() + tmp1.size()) == indVec.size() );
+        
+        double diff = balance_->balance(tmp0,tmp1);
+        if (diff < minImbalance) {
+          minImbalance = diff;
           bestCombination.resize(i);
           std::copy(indVec.begin(), indVec.begin() + i,
                     bestCombination.begin());
