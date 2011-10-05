@@ -28,6 +28,11 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
   phys.met[5] = LorentzVector( ev.met6_pt*cos(ev.met6_phi), ev.met6_pt*sin(ev.met6_phi), 0, ev.met6_pt);
   phys.met[6] = LorentzVector( ev.met7_pt*cos(ev.met7_phi), ev.met7_pt*sin(ev.met7_phi), 0, ev.met7_pt);
   phys.met[7] = LorentzVector( ev.met8_pt*cos(ev.met8_phi), ev.met8_pt*sin(ev.met8_phi), 0, ev.met8_pt);
+  phys.met[8]  = LorentzVector( ev.met9_pt *cos(ev.met9_phi ), ev.met9_pt *sin(ev.met9_phi ), 0, ev.met9_pt );
+  phys.met[9]  = LorentzVector( ev.met10_pt*cos(ev.met10_phi), ev.met10_pt*sin(ev.met10_phi), 0, ev.met10_pt);
+  phys.met[10] = LorentzVector( ev.met11_pt*cos(ev.met11_phi), ev.met11_pt*sin(ev.met11_phi), 0, ev.met11_pt);
+  phys.met[11] = LorentzVector( ev.met12_pt*cos(ev.met12_phi), ev.met12_pt*sin(ev.met12_phi), 0, ev.met12_pt);
+  phys.met[12] = LorentzVector( ev.met13_pt*cos(ev.met13_phi), ev.met13_pt*sin(ev.met13_phi), 0, ev.met13_pt);
 
   /////////////////////////////////////////   TEMPORARY MOVING THIS CODE HERE, TO SWAP BACK THE SUM ET QUANTITIES IN THE RIGHT ORDER (NEED TO REDO THE NTUPLE OTHERWISE)
   //   float sumEtcentral     = ev.chsumEtcentral;
