@@ -71,5 +71,5 @@ if not castortools.fileExists(cdir):
 
 from doImportNewSource import doImportNewSource
 doImportNewSource( sampleName,
-                   'sourceFileList.py %s "%s"' % (cdir, options.pattern),
+                   'sourceFileList.py -c %s "%s"' % (cdir, options.pattern),
                    options.output ) 
