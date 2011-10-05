@@ -40,9 +40,12 @@ if options.check and file_mask:
     p = PublishToFileSystem(mask)
     report = p.get(dir)
     if report is not None and report:
+        dup = report.get('ValidDuplicates',{})
         for name, status in report['Files'].iteritems():
             if not status[0]:
-                bad_files[name] = status[1]
+                bad_files[name] = 'MarkedBad'
+            elif dup.has_key(name):
+                bad_files[name] = 'ValidDup'
 
 
 from sourceFileListCff import sourceFileListCff
