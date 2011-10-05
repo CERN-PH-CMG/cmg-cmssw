@@ -133,6 +133,7 @@ class IntegrityCheck(object):
 
         good_duplicates = {}
         bad_jobs = set()
+        sum_dup = 0
         for i in xrange(mmin,mmax+1):
             if files.has_key(i):
                 duplicates = files[i]
@@ -142,9 +143,10 @@ class IntegrityCheck(object):
                 if len(duplicates) > 1:
                     for d in duplicates[:-1]:
                         good_duplicates[d[1]] = filemask[d[1]][1]
+                        sum_dup += good_duplicates[d[1]]
             else:
                 bad_jobs.add(i)
-        return good_duplicates, sorted(list(bad_jobs))
+        return good_duplicates, sorted(list(bad_jobs)), sum_dup
     
     def test(self):
         if not castortools.fileExists(self.directory):
@@ -176,7 +178,9 @@ class IntegrityCheck(object):
             test_results[castortools.castorToLFN(dir)] = filemask
         self.test_result = test_results
 
-        self.duplicates, self.bad_jobs = self.stripDuplicates()
+        self.duplicates, self.bad_jobs, sum_dup = self.stripDuplicates()
+        #remove duplicate entries from the event count
+        self.eventsSeen -= sum_dup
     
     def report(self):
         
