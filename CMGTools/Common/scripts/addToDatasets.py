@@ -5,8 +5,8 @@
 import os
 
 
-def addToDatasets(sampleAndTier):
-    notThere = os.system( 'grep %s ~/public/DataSets.txt' % sampleAndTier )
+def addToDatasets(sampleAndTier, user=os.getlogin()):
+    notThere = os.system( 'grep %s ~%s/public/DataSets.txt' % (user,sampleAndTier) )
     if notThere:
-        os.system('echo %s >> ~/public/DataSets.txt' % sampleAndTier ) 
+        os.system('echo %s >> ~%s/public/DataSets.txt' % (user,sampleAndTier) ) 
 

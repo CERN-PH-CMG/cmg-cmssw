@@ -45,6 +45,9 @@ parser.add_option("-f", "--force", action="store_true",
                   dest="force", 
                   help="Force creation of the destination castor directory. To be used with care, first run without this option",
                   default=False)
+parser.add_option("-u", "--user", dest="user", 
+                  help="The username to use for the CASTOR location. You must have write permissions",
+                  default=os.getlogin())
 
 
 (options,args) = parser.parse_args()
@@ -72,7 +75,7 @@ except:
 # preparing castor dir -----------------
 
 import castorBaseDir
-cdir = castortools.lfnToCastor( castorBaseDir.myCastorBaseDir() )
+cdir = castortools.lfnToCastor( castorBaseDir.castorBaseDir(user=options.user) )
 cdir += sampleNameDir
 
 if castortools.isCastorFile( cdir ) and not options.force:
@@ -81,12 +84,9 @@ if castortools.isCastorFile( cdir ) and not options.force:
     print 'Please check. If everything is fine, run again with the -f option.'
     sys.exit(1)
 
-rfmkdir = 'rfmkdir -p ' + cdir
+rfmkdir = 'rfmkdir -m 775 -p ' + cdir
 print rfmkdir
 os.system( rfmkdir )
-rfchmod = 'rfchmod 775 ' + cdir
-print rfchmod
-os.system( rfchmod )
 
 # making local crab directory ---------
 ldir = '.' + sampleNameDir
@@ -143,7 +143,7 @@ outDir = cdir.replace('/castor/cern.ch','')
 newCrab.write('[USER]\n')
 newCrab.write('user_remote_dir = %s\n' % outDir  )
 
-addToDatasets( sampleNameDir ) 
+addToDatasets( sampleNameDir , user = options.user) 
 
 from logger import logger
 
