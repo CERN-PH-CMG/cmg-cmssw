@@ -27,21 +27,49 @@ class Task(object):
         return {}
     
 class ParseOptions(Task):
-    """Option parser"""
+    """Common options for the script __main__: used by all production tasks"""
     def __init__(self, dataset, user, options):
         Task.__init__(self,'ParseOptions', dataset, user, options)
+
+        usage = """%prog [options] <dataset>
         
-        self.das = Das.DASOptionParser()
-        self.das.parser.usage = """
-%prog [options] <dataset>
+The %prog script aims to take a list of samples and process them on the batch system. Submission
+may be done serially (by setting --max_threads to 1), or in parallel (the default).
+
+The basic flow is:
+
+    1) Check that the sample to run on exists
+    2) Generate a source CFG
+    3) Run locally and check everything works with a small number of events
+    4) Submit to the batch system 
+    5) Wait until the jobs are finished
+    6) Check the jobs ran OK and that the files are good
 
 Example:
 
-ProductionTasks.py -u cbern -w PFAOD*.root -c -N 1 -q 8nh -t wreece_260911test --output_wildcard [!h]*.root --cfg patTuple_PF2PAT_forCMG_cfg.py /QCD_Pt-1800_TuneZ2_7TeV_pythia6/Summer11-PU_S3_START42_V11-v2/AODSIM/V2
+ProductionTasks.py -u cbern -w PFAOD*.root -c -N 1 -q 8nh -t PAT_CMG_V2_2_0 --output_wildcard [!h]*.root --cfg patTuple_PF2PAT_forCMG_cfg.py /QCD_Pt-1800_TuneZ2_7TeV_pythia6/Summer11-PU_S3_START42_V11-v2/AODSIM/V2
+
+It is often useful to store the sample names in a file, in which case you could instead do:
+
+ProductionTasks.py -w PFAOD*.root -c -N 1 -q 8nh -t PAT_CMG_V2_2_0 --output_wildcard [!h]*.root --cfg patTuple_PF2PAT_forCMG_cfg.py `cat samples_mc.txt`
+
+An example file might contain:
+
+palencia%/Tbar_TuneZ2_tW-channel-DR_7TeV-powheg-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+benitezj%/ZZ_TuneZ2_7TeV_pythia6_tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+wreece%/ZJetsToNuNu_100_HT_200_7TeV-madgraph/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+
+The CASTOR username for each sample is given before the '%'.
+
+Each step in the flow has a task associated with it, which may set options. The options for each task are 
+documented below.
+
 """
-        self.das.parser.add_option("-u", "--user", dest="user", default=os.getlogin(),help='The username to use when looking at mass storage devices. Your login username is used by default.')
-        self.das.parser.add_option("-w", "--wildcard", dest="wildcard", default='*.root',help='A UNIX style wildcard to specify which input files to check before submitting the jobs')    
-        
+        self.das = Das.DASOptionParser(usage=usage)
+    def addOption(self, parser):
+        parser.add_option("-u", "--user", dest="user", default=os.getlogin(),help='The username to use when looking at mass storage devices. Your login username is used by default.')
+        parser.add_option("-w", "--wildcard", dest="wildcard", default='*.root',help='A UNIX style wildcard to specify which input files to check before submitting the jobs')    
+        parser.add_option("--max_threads", dest="max_threads", default=None,help='The maximum number of threads to use in the production')
     def run(self, input):
         self.options, self.dataset = self.das.get_opt()
         self.user = self.options.user
@@ -50,6 +78,7 @@ ProductionTasks.py -u cbern -w PFAOD*.root -c -N 1 -q 8nh -t wreece_260911test -
         return {'Options':self.options, 'Dataset':self.dataset}    
 
 class CheckDatasetExists(Task):
+    """Use 'listSamples.py' to check that the dataset exists in the production system."""
     def __init__(self, dataset, user, options):
         Task.__init__(self,'CheckDatasetExists', dataset, user, options)
     def addOption(self, parser):
@@ -76,7 +105,7 @@ class CheckDatasetExists(Task):
         return {'Dataset':samples[0]}
 
 class BaseDataset(Task):
-    """Query DAS to find dataset"""
+    """Query DAS to find dataset name in DBS - see https://cmsweb.cern.ch/das/"""
     def __init__(self, dataset, user, options):
         Task.__init__(self,'BaseDataset', dataset, user, options)
     def addOption(self, parser):
@@ -162,7 +191,7 @@ class CleanFiles(Task):
         return {'CleanedFiles':removed}
 
 class FindOnCastor(Task):
-    """Generate a source CFG"""
+    """Checks that the sample specified exists in the CASTOR area of the user specified. The directory must exist."""
     def __init__(self, dataset, user, options):
         Task.__init__(self,'FindOnCastor', dataset, user, options)
     def addOption(self, parser):
@@ -181,7 +210,7 @@ class FindOnCastor(Task):
         return {'Topdir':topdir,'Directory':directory}  
 
 class CheckForMask(Task):
-    """Test if a file mask is present"""
+    """Tests if a file mask, created by edmIntegrityCheck.py, is present already and reads it if so."""
     def __init__(self, dataset, user, options):
         Task.__init__(self,'CheckForMask', dataset, user, options)
     def addOption(self, parser):
@@ -203,6 +232,7 @@ class CheckForMask(Task):
         return {'MaskPresent':report is not None,'Report':report}
     
 class CheckForWrite(Task):
+    """Checks whether you have write access to the CASTOR directory specified"""
     def __init__(self, dataset, user, options):
         Task.__init__(self,'CheckForWrite', dataset, user, options)
     def run(self, input):
@@ -227,7 +257,7 @@ class CheckForWrite(Task):
         return {'Directory':dir,'WriteAccess':True}
     
 class GenerateMask(Task):
-    """Generates a file mask"""
+    """Uses edmIntegrityCheck.py to generate a file mask for the sample if one is not already present."""
     def __init__(self, dataset, user, options):
         Task.__init__(self,'GenerateMask', dataset, user, options)
     def addOption(self, parser):
@@ -258,7 +288,7 @@ class GenerateMask(Task):
         return {'MaskPresent':report is not None,'Report':report}
 
 class CreateJobDirectory(Task):
-    """Generate a job directory"""
+    """Generates a job directory on your local drive"""
     def __init__(self, dataset, user, options):
         Task.__init__(self,'CreateJobDirectory', dataset, user, options)
     def addOption(self, parser):
@@ -275,7 +305,7 @@ class CreateJobDirectory(Task):
         return {'JobDir':output}
 
 class SourceCFG(Task):
-    """Generate a source CFG"""
+    """Generate a source CFG using 'sourceFileList.py' by listing the CASTOR directory specified. Applies the file wildcard, '--wildcard'"""
     def __init__(self, dataset, user, options):
         Task.__init__(self,'SourceCFG', dataset, user, options)    
     def run(self, input):
@@ -309,7 +339,7 @@ class SourceCFG(Task):
         return {'SourceCFG':source}
     
 class FullCFG(Task):
-    """Generate the job CFG"""
+    """Generate the full CFG needed to run the job and writes it to the job directory"""
     def __init__(self, dataset, user, options):
         Task.__init__(self,'FullCFG', dataset, user, options)
     def addOption(self, parser):
@@ -337,7 +367,7 @@ class FullCFG(Task):
         return {'FullCFG':source}
 
 class CheckConfig(Task):
-    """Check the basic syntax, python path etc"""    
+    """Check the basic syntax of a CFG file by running python on it."""    
     def __init__(self, dataset, user, options):
         Task.__init__(self,'CheckConfig', dataset, user, options)
     def run(self, input):
@@ -351,7 +381,7 @@ class CheckConfig(Task):
         return {'Status':'VALID'}   
 
 class RunTestEvents(Task):
-    """Run cmsRun but with a small number of events"""    
+    """Run cmsRun but with a small number of events on the job CFG."""    
 
     def __init__(self, dataset, user, options):
         Task.__init__(self,'RunTestEvents', dataset, user, options)
@@ -391,7 +421,7 @@ class RunTestEvents(Task):
         return {'Status':'VALID','TestCFG':source}
     
 class ExpandConfig(Task):
-    """Run edmConfigDump"""    
+    """Runs edmConfigDump to produce an expanded cfg file"""    
 
     def __init__(self, dataset, user, options):
         Task.__init__(self,'ExpandConfig', dataset, user, options)
@@ -431,7 +461,7 @@ class ExpandConfig(Task):
         return result
     
 class RunCMSBatch(Task):
-    """Run cmsBatch"""    
+    """Run the 'cmsBatch.py' command on your CFG, submitting to the CERN batch system"""    
 
     def __init__(self, dataset, user, options):
         Task.__init__(self,'RunCMSBatch', dataset, user, options)
@@ -482,7 +512,7 @@ class RunCMSBatch(Task):
                 'SampleOutputDir':sampleDir,'LSFJobsTopDir':os.path.join(jobdir,'%s_Jobs' % self.options.tier)}
 
 class MonitorJobs(Task):
-    """Monitor LSF jobs created with cmsBatch.py"""    
+    """Monitor LSF jobs created with cmsBatch.py. Blocks until all jobs are finished."""    
     def __init__(self, dataset, user, options):
         Task.__init__(self,'MonitorJobs', dataset, user, options)
     
@@ -621,7 +651,7 @@ bkill -u %s %s
         return {'LSFJobStatus':checkStatus(status),'LSFJobIDs':jobs}  
     
 class CheckJobStatus(Task):
-    """Check the job STDOUT"""    
+    """Checks the job STDOUT to catch common problems like exceptions, CPU time exceeded. Sets the job status in the report accordingly."""    
     def __init__(self, dataset, user, options):
         Task.__init__(self,'CheckJobStatus', dataset, user, options)
     def addOption(self, parser):
@@ -663,7 +693,7 @@ class CheckJobStatus(Task):
         return report
     
 class CleanJobFiles(Task):
-    """Removes and compresses auto-generated files"""    
+    """Removes and compresses auto-generated files from the job directory to save space."""    
     def __init__(self, dataset, user, options):
         Task.__init__(self,'CleanJobFiles', dataset, user, options)
     def run(self, input):
@@ -699,7 +729,7 @@ class CleanJobFiles(Task):
         return {'Cleaned':removed,'Compressed':compressed}
     
 class WriteSavannah(Task):
-    """Call the writeSavannah.py script"""    
+    """Call the 'writeSavannah.py' script in order to log the sample"""    
 
     def __init__(self, dataset, user, options):
         Task.__init__(self,'WriteSavannah', dataset, user, options)
@@ -714,12 +744,25 @@ class WriteSavannah(Task):
     
 if __name__ == '__main__':
     
+    from optparse import OptionGroup
+    def addOptionFromTask(task, name = None):
+        if name is None:
+            name = task.name
+        usage = "Options for the ProductionTask '%s'" % name
+        if task.__doc__:
+            usage = task.__doc__
+        g = OptionGroup(op.das.parser,name,usage)
+        task.addOption(g)
+        if g.option_list:
+            op.das.parser.add_option_group(g)
+    
     dataset = None
     user = os.getlogin()
     options = {}
     
     op = ParseOptions(dataset,user,options)
-    op.das.parser.add_option("--max_threads", dest="max_threads", default=None,help='The maximum number of threads to use')
+    addOptionFromTask(op,name=os.path.basename(sys.argv[0]))
+
     
     tasks = [CheckDatasetExists(dataset,user,options),
              FindOnCastor(dataset,user,options),
@@ -738,12 +781,14 @@ if __name__ == '__main__':
              CheckJobStatus(dataset,user,options),
              CleanJobFiles(dataset,user,options)
              ]
+    
     #allow the tasks to add extra options
     for t in tasks:
-        t.addOption(op.das.parser)
+        addOptionFromTask(t)
+                
     #sigh! treat write savannah differently
     sav = WriteSavannah(dataset,user,options)
-    sav.addOption(op.das.parser)
+    addOptionFromTask(sav)
     #get the options
     try:
         op.run({})
