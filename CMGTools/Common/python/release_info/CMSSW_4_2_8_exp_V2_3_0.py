@@ -1,7 +1,7 @@
 # See https://savannah.cern.ch/task/index.php?20954
 {
     'UserCode/CMG/AnalysisDataFormats/CMGTools': ['cbern_isolation_30Sep11', 'AnalysisDataFormats/CMGTools'],
-    'UserCode/CMG/CMGTools/Common':              ['cbern_Oct4', 'CMGTools/Common'],
+    'UserCode/CMG/CMGTools/Common':              ['wreece_051011', 'CMGTools/Common'],
     'UserCode/CMG/CMGTools/RootTools':           ['cbern_isolation_30Sep11', 'CMGTools/RootTools'],
     'CommonTools/ParticleFlow':                  ['B4_2_X_V00-03-00', 'CommonTools/ParticleFlow'],
     'UserCode/csander/DataFormats/AnomalousEcalDataFormats' :     ['V110523_BE', 'DataFormats/AnomalousEcalDataFormats'],
