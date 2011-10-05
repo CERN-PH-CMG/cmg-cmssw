@@ -15,32 +15,36 @@ import time
 import json
 import urllib
 import urllib2
-from   optparse import OptionParser
+from   optparse import OptionParser, OptionGroup
 
 class DASOptionParser: 
     """
     DAS cache client option parser
     """
-    def __init__(self):
-        self.parser = OptionParser()
-        self.parser.add_option("-v", "--verbose", action="store", 
+    def __init__(self, usage = None):
+        if usage is None:
+            usage = 'usage: %prog [options] --query "dataset=/HT/Run2011A-*/AOD"'
+        self.parser = OptionParser(usage=usage)
+        group = OptionGroup(self.parser,"Das options","These options relate to the Das client interface.")
+        group.add_option("-v", "--verbose", action="store", 
                                type="int", default=0, dest="verbose",
              help="verbose output")
-        self.parser.add_option("--query", action="store", type="string", 
+        group.add_option("--query", action="store", type="string", 
                                default=False, dest="query",
              help="specify query for your request")
-        self.parser.add_option("--host", action="store", type="string", 
+        group.add_option("--host", action="store", type="string", 
                                default='https://cmsweb.cern.ch', dest="host",
              help="specify host name of DAS cache server, default https://cmsweb.cern.ch")
-        self.parser.add_option("--idx", action="store", type="int", 
+        group.add_option("--idx", action="store", type="int", 
                                default=0, dest="idx",
              help="start index for returned result set, aka pagination, use w/ limit")
-        self.parser.add_option("--limit", action="store", type="int", 
+        group.add_option("--limit", action="store", type="int", 
                                default=10, dest="limit",
              help="number of returned results (results per page)")
-        self.parser.add_option("--format", action="store", type="string", 
+        group.add_option("--format", action="store", type="string", 
                                default="json", dest="format",
              help="specify return data format (json or plain), default json")
+        self.parser.add_option_group(group)
     def get_opt(self):
         """
         Returns parse list of options
