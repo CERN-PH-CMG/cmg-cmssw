@@ -158,17 +158,16 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("otherVertexNeutSumEt",    &evSummary_.otherVertexNeutSumEt, "otherVertexNeutSumEt/F");
 
   //Gamma Info
-  t_->Branch("g_px",      &evSummary_.g_px,        "g_px/F");
-  t_->Branch("g_py",      &evSummary_.g_py,        "g_py/F");
-  t_->Branch("g_pz",      &evSummary_.g_pz,        "g_pz/F");
-  t_->Branch("g_en",      &evSummary_.g_en,        "g_en/F");
-  t_->Branch("g_iso1",    &evSummary_.g_iso1,      "g_iso1/F");
-  t_->Branch("g_iso2",    &evSummary_.g_iso2,      "g_iso2/F");
-  t_->Branch("g_iso3",    &evSummary_.g_iso3,      "g_iso3/F");
-  t_->Branch("g_sihih",   &evSummary_.g_sihih,     "g_sihih/F");
-  t_->Branch("g_sipip",   &evSummary_.g_sipip,     "g_sipip/F");
-  t_->Branch("g_r9",      &evSummary_.g_r9,        "g_r9/F");
-  t_->Branch("g_eop",     &evSummary_.g_eop,       "g_eop/F");
+  t_->Branch("gn",        &evSummary_.gn,         "gn/I"); 
+  t_->Branch("g_px",      evSummary_.g_px,        "g_px[gn]/F");
+  t_->Branch("g_py",      evSummary_.g_py,        "g_py[gn]/F");
+  t_->Branch("g_pz",      evSummary_.g_pz,        "g_pz[gn]/F");
+  t_->Branch("g_en",      evSummary_.g_en,        "g_en[gn]/F");
+  t_->Branch("g_iso1",    evSummary_.g_iso1,      "g_iso1[gn]/F");
+  t_->Branch("g_iso2",    evSummary_.g_iso2,      "g_iso2[gn]/F");
+  t_->Branch("g_iso3",    evSummary_.g_iso3,      "g_iso3[gn]/F");
+  t_->Branch("g_sihih",   evSummary_.g_sihih,     "g_sihih[gn]/F");
+  t_->Branch("g_r9",      evSummary_.g_r9,        "g_r9[gn]/F");
 
   //Higgs Info
   t_->Branch("h_px",      &evSummary_.h_px,        "h_px/F");
@@ -336,20 +335,18 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   if(t_->GetBranch("otherVertexChSumEt"))   t_->GetBranch("otherVertexChSumEt")->SetAddress(&evSummary_.otherVertexChSumEt);
   if(t_->GetBranch("primVertexNeutSumEt"))  t_->GetBranch("primVertexNeutSumEt")->SetAddress(&evSummary_.primVertexNeutSumEt);
   if(t_->GetBranch("otherVertexNeutSumEt")) t_->GetBranch("otherVertexNeutSumEt")->SetAddress(&evSummary_.otherVertexNeutSumEt);
-
   
   //Gamma Info
-  t_->GetBranch("g_px")     ->SetAddress( &evSummary_.g_px);
-  t_->GetBranch("g_py")     ->SetAddress( &evSummary_.g_py);
-  t_->GetBranch("g_pz")     ->SetAddress( &evSummary_.g_pz);
-  t_->GetBranch("g_en")     ->SetAddress( &evSummary_.g_en);
-  t_->GetBranch("g_iso1")   ->SetAddress( &evSummary_.g_iso1);
-  t_->GetBranch("g_iso2")   ->SetAddress( &evSummary_.g_iso2);
-  t_->GetBranch("g_iso3")   ->SetAddress( &evSummary_.g_iso3);
-  t_->GetBranch("g_sihih")  ->SetAddress( &evSummary_.g_sihih);
-  t_->GetBranch("g_sipip")  ->SetAddress( &evSummary_.g_sipip);
-  t_->GetBranch("g_r9")     ->SetAddress( &evSummary_.g_r9);
-  t_->GetBranch("g_eop")    ->SetAddress( &evSummary_.g_eop);
+  t_->GetBranch("gn")->SetAddress(&evSummary_.gn);
+  t_->GetBranch("g_px")->SetAddress(evSummary_.g_px);
+  t_->GetBranch("g_py")->SetAddress(evSummary_.g_py);
+  t_->GetBranch("g_pz")->SetAddress(evSummary_.g_pz);
+  t_->GetBranch("g_en")->SetAddress(evSummary_.g_en);
+  t_->GetBranch("g_iso1")->SetAddress(evSummary_.g_iso1);
+  t_->GetBranch("g_iso2")->SetAddress(evSummary_.g_iso2);
+  t_->GetBranch("g_iso3")->SetAddress(evSummary_.g_iso3);
+  t_->GetBranch("g_sihih")->SetAddress(evSummary_.g_sihih);
+  t_->GetBranch("g_r9")->SetAddress(evSummary_.g_r9);
   
   //Higgs Info
   t_->GetBranch("h_px")     ->SetAddress( &evSummary_.h_px);

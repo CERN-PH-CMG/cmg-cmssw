@@ -2,6 +2,12 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("HtoZZto2l2nu")
 
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+process.GlobalTag.globaltag = 'START42_V13::All'
+process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("Configuration.StandardSequences.MagneticField_cff")
+
+
 from CMGTools.HtoZZ2l2nu.localPatTuples_cff import configureFromCommandLine
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring()
@@ -23,9 +29,11 @@ process.load('CMGTools.HtoZZ2l2nu.CleanEventAnalyzer_cfi')
 process.TFileService = cms.Service("TFileService", fileName = cms.string(outputFile) )
 
 if(needsPtReweight) :
-    process.p = cms.Path(process.ClusteredPFMetSequence*process.hkfactorSequence*process.puWeights*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
+    #process.p = cms.Path(process.ClusteredPFMetSequence*process.hkfactorSequence*process.puWeights*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
+    process.p = cms.Path(process.ClusteredPFMetSequence*process.hkfactorSequence*process.puWeights*process.cleanEvent*process.evAnalyzer)
 else :
-    process.p = cms.Path(process.ClusteredPFMetSequence*process.puWeights*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
+    #process.p = cms.Path(process.ClusteredPFMetSequence*process.puWeights*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
+    process.p = cms.Path(process.ClusteredPFMetSequence*process.puWeights*process.cleanEvent*process.evAnalyzer)
 
 # message logger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")

@@ -282,8 +282,8 @@
 	     {	
 		"dtag":"VBFtoH200toWWto2L2Nu",
 		"dset":"/VBF_ToHToWWTo2L2NU_M-200_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
-		"patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/HZZ/VBF_ToHToWWTo2L2NU_M-200_7TeV-powheg-pythia6"],
-		"xsec":0.6333,
+		"patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/HZZ/VBF_HToWWTo2L2Nu_M-200_7TeV-powheg-pythia6"],
+		"xsec":0.6371,
                 "br":[0.741,0.046656]
 	     }
 	]
@@ -319,8 +319,8 @@
              },
              {
                 "dtag":"VBFtoH300toWWto2L2Nu",
-                "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/HZZ/VBF_ToHToWWTo2L2NU_M-300_7TeV-powheg-pythia6"],
-		"xsec":0.301,
+                "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/HZZ/VBF_HToWWTo2L2Nu_M-300_7TeV-powheg-pythia6"],
+		"xsec":0.298,
 		"br":[0.692,0.046656]
              }
           ]
@@ -358,8 +358,8 @@
              {
                 "dtag":"VBFtoH400toWWto2L2Nu",
                 "dset":" /VBF_ToHToWWTo2L2NU_M-400_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
-                "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/HZZ/VBF_ToHToWWTo2L2NU_M-400_7TeV-powheg-pythia6"],
-                "xsec":0.1634,
+                "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/HZZ/VBF_HToWWTo2L2Nu_M-400_7TeV-powheg-pythia6"],
+                "xsec":0.1610,
                 "br":[0.582,0.046656]
              }
           ]
@@ -396,9 +396,9 @@
              },
              {
                 "dtag":"VBFtoH500toWWto2L2Nu",
-                "dset":" /VBF_ToHToWWTo2L2NU_M-500_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
-                "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/HZZ/VBF_ToHToWWTo2L2NU_M-500_7TeV-powheg-pythia6"],
-                "xsec":0.0968,
+                "dset":" /VBF_HToWWTo2L2Nu_M-500_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
+                "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/HZZ/VBF_HToWWTo2L2Nu_M-500_7TeV-powheg-pythia6"],
+                "xsec":0.0946,
                 "br":[0.546,0.046656]
              }
           ]

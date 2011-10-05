@@ -4,7 +4,7 @@ from PhysicsTools.PatAlgos.patEventContent_cff import patEventContentNoCleaning,
 ##
 ## dilepton filters
 ##
-def configureOutput(process,selPaths=['eePath', 'mumuPath', 'emuPath'],outFile='patTuple.root'):
+def configureOutput(process,selPaths=['eePath', 'mumuPath', 'emuPath', 'photonPath'],outFile='/tmp/patTuple.root'):
     process.load('Configuration.EventContent.EventContent_cff')
     process.out.SelectEvents=cms.untracked.PSet( SelectEvents = cms.vstring(selPaths) )
     process.out.fileName = cms.untracked.string(outFile)

@@ -41,8 +41,10 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
   //   ev.neutsumEt           = neutsumEt;
   ////////////////////////////////////////////
 
-  phys.gamma = PhysicsObject_Gamma(LorentzVector(ev.g_px,ev.g_py,ev.g_pz,ev.g_en), ev.g_iso1, ev.g_iso2, ev.g_iso3, ev.g_sihih, ev.g_sipip, ev.g_r9, ev.g_hoe, ev.g_eop);
- 
+  //gamams
+  for(Int_t ipart=0; ipart<ev.gn; ipart++)
+    phys.gammas.push_back( PhysicsObject_Gamma(LorentzVector(ev.g_px[ipart],ev.g_py[ipart],ev.g_pz[ipart],ev.g_en[ipart]), ev.g_iso1[ipart], ev.g_iso2[ipart], ev.g_iso3[ipart], ev.g_sihih[ipart], ev.g_r9[ipart], ev.g_hoe[ipart]) );
+     
   //similar for the mc truth
   LorentzVector hp4(ev.h_px, ev.h_py, ev.h_pz, ev.h_en);
   phys.genhiggs.push_back( PhysicsObject(hp4,25) );

@@ -79,36 +79,30 @@ int main(int argc, char* argv[])
 		   125,150,175,200,250,300,350,400,500,600,700,800,900,1000,2000};
   int nqtBins=sizeof(qtAxis)/sizeof(double)-1;
 
-  controlHistos.addHistogram( new TH1D ("eta", ";#eta;Events", 100,-2.6,2.6) );
-  controlHistos.addHistogram( new TH1F ("npu", ";Pileup;Events", 30,0,30) );
-  TString reg[]={"eb","ee"};
-  for(size_t ireg=0; ireg<2; ireg++)
-    {
-      controlHistos.addHistogram( new TH1D (reg[ireg]+"qt", ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", nqtBins, qtAxis) );
-      controlHistos.addHistogram( new TH2D (reg[ireg]+"qtvsnjets", ";p_{T}^{#gamma} [GeV/c];Jets;Events / (2.5 GeV/c)", nqtBins, qtAxis,6,0,6) );
-      controlHistos.addHistogram( new TH1F (reg[ireg]+"metoverqt", ";type I E_{T}^{miss}/p_{T}^{#gamma};Events", 100,0,2.5) );
-      controlHistos.addHistogram( new TH1F (reg[ireg]+"met", ";type-I E_{T}^{miss} [GeV];Events", 100,0,200) );  
-      controlHistos.addHistogram( new TH1F (reg[ireg]+"redmet", ";red-E_{T}^{miss} [GeV];Events", 100,0,200) );  
-      controlHistos.addHistogram( new TH1F (reg[ireg]+"njets", ";Jets;Events", 4,0,4) );  
-      controlHistos.addHistogram( new TH1F (reg[ireg]+"ptjets", ";p_{T} [GeV/c];Jets", 100,0,250) );  
-      controlHistos.addHistogram( new TH1F (reg[ireg]+"dphijetmet", ";min #Delta#phi(jet,MET);Events", 100,-3.2,3.2) );  
-      controlHistos.addHistogram( new TH1F (reg[ireg]+"redmetL", ";red-E_{T}^{miss,#parallel};Events", 100,-250,250) );
-      controlHistos.addHistogram( new TH1F (reg[ireg]+"redmetT", ";red-E_{T}^{miss,#perp};Events", 100,-250,250) );
-      controlHistos.addHistogram( (TH1D *)(new TH2D ("reg[ireg]+redmetLvsredmetT", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 100, -251.,249,100, -251.,249.) ) );
-    }
-  //trigger categories
-  //  Int_t photoncats[]={0,20,30,50,75,90,125};
   Int_t photoncats[]={0,20,30,50,75,125};
   const size_t nPhotonCats=sizeof(photoncats)/sizeof(Int_t);
-  for(size_t icat=1; icat<nPhotonCats; icat++)
+  for(size_t icat=0; icat<nPhotonCats; icat++)
     {
       TString subcat("photon"); subcat+=photoncats[icat];
-      controlHistos.initMonitorForStep(subcat);
-      controlHistos.initMonitorForStep(subcat+"eq0jets");
-      controlHistos.initMonitorForStep(subcat+"eq1jets");
-      controlHistos.initMonitorForStep(subcat+"geq2jets");
-      controlHistos.initMonitorForStep(subcat+"vbf");
+      if(photoncats[icat]==0) subcat="";
+      controlHistos.addHistogram( new TH1F (subcat+"nvtx", ";Vertices;Events", 30,0,30) );
+      controlHistos.addHistogram( new TH1D (subcat+"eta", ";#eta;Events", 100,-2.6,2.6) );
+      controlHistos.addHistogram( new TH1D (subcat+"qt", ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", nqtBins, qtAxis) );
+      controlHistos.addHistogram( new TH1F (subcat+"njets", ";Jets;Events", 4,0,4) );  
+      //  controlHistos.addHistogram( new TH2D (subcat+"qtvsnjets", ";p_{T}^{#gamma} [GeV/c];Jets;Events / (2.5 GeV/c)", nqtBins, qtAxis,6,0,6) );
+      controlHistos.addHistogram( new TH1F (subcat+"met", ";type-I E_{T}^{miss} [GeV];Events", 100,0,200) );  
+      controlHistos.addHistogram( new TH1F (subcat+"assocmet", ";assoc-E_{T}^{miss} [GeV];Events", 100,0,200) );  
+      controlHistos.addHistogram( new TH1F (subcat+"assoctrkmet", ";assoc-trk-E_{T}^{miss} [GeV];Events", 100,0,200) );  
+      controlHistos.addHistogram( new TH1F (subcat+"redmet", ";red-E_{T}^{miss} [GeV];Events", 100,0,200) );  
+      controlHistos.addHistogram( new TH1F (subcat+"redmetL", ";red-E_{T}^{miss,#parallel};Events", 100,-250,250) );
+      controlHistos.addHistogram( new TH1F (subcat+"redmetT", ";red-E_{T}^{miss,#perp};Events", 100,-250,250) );
     }
+
+  controlHistos.initMonitorForStep("eq0jets");
+  controlHistos.initMonitorForStep("eq1jets");
+  controlHistos.initMonitorForStep("geq2jets");
+  controlHistos.initMonitorForStep("vbf");
+
 
   //start the met computers
   ReducedMETComputer rmetComp(1., 1., 1., 1., 1.);
@@ -135,8 +129,6 @@ int main(int argc, char* argv[])
     }
   //run the analysis
   std::set<int> trigList;
-  LorentzVector nullP4(0,0,0,0);
-  double puWeights[]={0.157604, 0.439638, 0.935174, 1.53779, 1.96657, 2.14567, 2.05675, 1.76878, 1.39373, 1.03143, 0.729504, 0.497438, 0.331889, 0.212978, 0.138625, 0.0864396, 0.0530587, 0.0328417, 0.0202008, 0.0216363, 0, 0, 0, 0, 0, };  
   for( int iev=evStart; iev<evEnd; iev++)
     {
       if(iev%1000==0) printf("\r [ %d/100 ] ",int(100*float(iev-evStart)/float(evEnd)));
@@ -147,18 +139,18 @@ int main(int argc, char* argv[])
       int eventCategory = eventClassifComp.Get(phys);
       TString subcat    = eventClassifComp.GetLabel(eventCategory);
       
-      bool isGammaEvent(ev.cat>3 && phys.gamma.pt()>0);
-      float weight=puWeights[ev.ngenITpu]; //ev.weight;
+      bool isGammaEvent(ev.cat>3 && ev.gn==1 && phys.gammas[0].pt()>0);
+      float weight=ev.weight;
       
       //event categories
       LorentzVector gamma(0,0,0,0);
-      TString evcat("photon");
       int triggerThr(0);
       if(isGammaEvent)
 	{
-	  gamma=phys.gamma;
+	  gamma=phys.gammas[0];
 	  
 	  triggerThr=(ev.cat-22)/1000;
+	  if(triggerThr==0) continue;
 	  trigList.insert(triggerThr);
 	  
 	  bool rejectEvent(false);
@@ -188,20 +180,29 @@ int main(int argc, char* argv[])
 	      triggerThr=photoncats[icat];
 	    }
 	}
-
+      
       //minimum threshold
       if(gamma.pt()<20) continue;
-      TString region("eb");
-      if(fabs(gamma.eta())>1.47) region="ee";
+      
+      TString phoCat("photon");
+      phoCat += triggerThr;
 
-      evcat += triggerThr;
-
-      int njets30(0),njets(0);
+      //select jets
+      int njets30(0),njets(0), nbjets(0);
+      std::vector<LorentzVector> jetsp4;
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
 	{
+
+	  bool passJBPL(phys.jets[ijet].btag2>1.33);
+	  bool passSSVHEM(phys.jets[ijet].btag3>1.74);
+	  double dr=deltaR(phys.jets[ijet],gamma);
+	  if(dr<0.1) continue;
 	  njets   += (phys.jets[ijet].pt()>15 && fabs(phys.jets[ijet].eta())<2.5);
 	  njets30 += (phys.jets[ijet].pt()>30);
+	  if(phys.jets[ijet].pt()>30) nbjets += (passJBPL || passSSVHEM); 
+	  jetsp4.push_back( phys.jets[ijet] );
 	}
+      if(ev.ln>0 || nbjets>0) continue;
 
       //reweight to reproduce pt weight
       double ptweight(1.0);
@@ -225,57 +226,44 @@ int main(int argc, char* argv[])
 	}
       weight *= ptweight;
       
-      //jet/met kinematics and systematic variations
-      LorentzVector met=phys.met[0];
-      LorentzVectorCollection jetsp4;
-      double mindphijetmet(1000.);
-      for(size_t ijet=0; ijet<phys.jets.size(); ijet++) 
-	{
-	  double dphi=deltaPhi(phys.jets[ijet].phi(),met.phi());
-	  if(fabs(dphi)<fabs(mindphijetmet)) mindphijetmet=dphi;
-	  jetsp4.push_back( phys.jets[ijet] );
-	}
+      //met
+      LorentzVector metP4=phys.met[0];
+      LorentzVector assocChargedMetP4=phys.met[1];
+      LorentzVector assocMetP4=phys.met[3];
 
-      //redmet
-      rmetComp.compute(gamma,0,nullP4,0, jetsp4, met, true );
+      Float_t met = metP4.pt();
+      LorentzVector nullP4(0,0,0,0);
+      rmetComp.compute(gamma,0,nullP4,0, jetsp4, metP4, true );
       double redmet = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
       double redmetL = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
       double redmetT = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+      Float_t assocChargedMet     = assocChargedMetP4.pt();
+      Float_t assocMet            =  assocMetP4.pt();
 
       //fill control histograms
-      TString cats[]={"all",evcat};
-      TString subCats[]={"",subcat};
+      TString cats[]={"all",subcat};
+      TString subcats[]={"",phoCat};
       for(size_t ic=0; ic<sizeof(cats)/sizeof(TString); ic++)
 	{
-	  for(size_t isc=0; isc<sizeof(subCats)/sizeof(TString); isc++)
+	  for(size_t isc=0; isc<sizeof(subcats)/sizeof(TString); isc++)
 	    {
-	      TString ctf=cats[ic]+subCats[isc];
+	      TString ctf=cats[ic];
+	      controlHistos.fillHisto(subcats[isc]+"nvtx",ctf, ev.nvtx,weight);
+	      controlHistos.fillHisto(subcats[isc]+"qt",ctf, gamma.pt(),weight,true);
+	      controlHistos.fillHisto(subcats[isc]+"eta",ctf, gamma.eta(),weight,true);
 	      
-	      controlHistos.fillHisto("npu",ctf, ev.ngenITpu,weight);
-	      controlHistos.fillHisto("eta",ctf, gamma.eta(),weight,true);
-
-	      if(jetsp4.size()) controlHistos.fillHisto(region+"dphijetmet",ctf, mindphijetmet,weight);
-	      controlHistos.fillHisto(region+"njets",ctf, njets,weight);
-	      controlHistos.fill2DHisto(region+"qtvsnjets",ctf, gamma.pt(), njets,weight,true);
-	      controlHistos.fillHisto(region+"qt",ctf, gamma.pt(),weight,true);
-	     
-	      controlHistos.fillHisto(region+"met", ctf, met.pt(),weight);
-	      controlHistos.fillHisto(region+"redmet", ctf, redmet,weight);
-	      controlHistos.fillHisto(region+"metoverqt", ctf,met.pt()/gamma.pt(),weight);	      
- 	      controlHistos.fillHisto(region+"redmetL", ctf,redmetL,weight);	      
-	      controlHistos.fillHisto(region+"redmetT", ctf,redmetT,weight);	      
-	      controlHistos.fill2DHisto(region+"redmetLvsredmetT", ctf,redmetL,redmetT,weight);	      
-
-	      for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
-		{
-		  if (phys.jets[ijet].pt()>15 && fabs(phys.jets[ijet].eta())<2.5)
-		    controlHistos.fillHisto(region+"ptjets",ctf, phys.jets[ijet].pt(),weight);
-		}
+	      controlHistos.fillHisto(subcats[isc]+"njets",ctf, njets,weight);
+	      controlHistos.fill2DHisto(subcats[isc]+"qtvsnjets",ctf, gamma.pt(), njets,weight,true);
+	      
+	      controlHistos.fillHisto(subcats[isc]+"met", ctf, met,weight);
+	      controlHistos.fillHisto(subcats[isc]+"assocmet", ctf, assocMet,weight);
+	      controlHistos.fillHisto(subcats[isc]+"assoctrkmet", ctf, assocChargedMet,weight);
+	      controlHistos.fillHisto(subcats[isc]+"redmet", ctf, redmet,weight);
+	      controlHistos.fillHisto(subcats[isc]+"redmetL", ctf,redmetL,weight);	      
+	      controlHistos.fillHisto(subcats[isc]+"redmetT", ctf,redmetT,weight);	      
 	    }
 	}
-    }
-  
-  
+    }    
   
   //MC normalization (to 1/pb)
   float cnorm=1.0;
@@ -283,8 +271,7 @@ int main(int argc, char* argv[])
     {
       TH1F *cutflowH = (TH1F *) file->Get("evAnalyzer/h2zz/photon/photon_cutflow");
       if(cutflowH==0) cutflowH = (TH1F *) file->Get("evAnalyzer/h2zz/cutflow");
-      if(cutflowH)
-	cnorm=cutflowH->GetBinContent(1);
+      if(cutflowH)    cnorm=cutflowH->GetBinContent(1);
       cout << "The initial number of events was " << cnorm << endl;
       if(rescaleFactor>0) 
 	{
@@ -323,9 +310,10 @@ int main(int argc, char* argv[])
   for(SelectionMonitor::StepMonitor_t::iterator it =mons.begin(); it!= mons.end(); it++)
     {
       TString moncat=it->first;
-      moncat.ReplaceAll("eq0jets","");
-      moncat.ReplaceAll("eq1jets","");
-      moncat.ReplaceAll("geq2jets","");
+      cout << moncat << endl;
+      //       moncat.ReplaceAll("eq0jets","");
+      //       moncat.ReplaceAll("eq1jets","");
+      //       moncat.ReplaceAll("geq2jets","");
       if(outDirs.find(moncat)==outDirs.end()) outDirs[moncat]=baseOutDir->mkdir(moncat);
       outDirs[moncat]->cd();
       for(SelectionMonitor::Monitor_t::iterator hit=it->second.begin(); hit!= it->second.end(); hit++)

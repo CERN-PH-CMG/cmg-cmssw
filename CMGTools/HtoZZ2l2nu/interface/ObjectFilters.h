@@ -21,6 +21,9 @@
 #include "DataFormats/PatCandidates/interface/TriggerEvent.h"
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "FWCore/Common/interface/TriggerNames.h"
+
 #include "TVector3.h"
 #include "TH1D.h"
 
@@ -93,6 +96,10 @@ namespace vertex
 
 namespace photon
 {
+  std::pair<std::string,double> getPhotonTrigThreshold(edm::Handle<edm::TriggerResults> &triggerBitsH,
+                                                       const edm::TriggerNames &triggerNames,
+                                                       std::vector<std::string> &gammaTriggers);
+  
   CandidateCollection filter(edm::Handle<edm::View<reco::Candidate> > &hPhoton, 
 			     EcalClusterLazyTools &lazyTool,
 			     edm::Handle<EcalRecHitCollection> ebrechits,
@@ -142,7 +149,7 @@ namespace dilepton
   /**
      @short selects the dileptons
    */
-  enum DileptonClassification {UNKNOWN=0,MUMU=1,EE=2,EMU=3,ETAU=4,MUTAU=5};
+  enum DileptonClassification {UNKNOWN=0,MUMU=1,EE=2,EMU=3,ETAU=4,MUTAU=5, GAMMA=22};
   std::pair<CandidateWithVertex,CandidateWithVertex> filter(CandidateWithVertexCollection &selLeptons, 
 							    const edm::ParameterSet &iConfig,
 							    const edm::EventSetup &iSetup);
