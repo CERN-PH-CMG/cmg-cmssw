@@ -17,7 +17,8 @@ source.fileNames.extend([
         if not bad_files.has_key(file):
             fileLine = "\t\t'%s'," % file
         else:
-            fileLine = "###MarkedBad\t'%s'," % file
+            reason = bad_files[file]
+            fileLine = "###%s\t'%s'," % (reason,file)
         fileLine += '\n'
         str += fileLine 
     str += "])"
