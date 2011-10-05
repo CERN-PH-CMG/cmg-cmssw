@@ -93,6 +93,59 @@ class IntegrityCheck(object):
         if datasets:
             self.eventsTotal = datasets[-1][1]['dataset']['nevents']
     
+    def stripDuplicates(self):
+        
+        import re
+        
+        filemask = {}
+        for dirname, files in self.test_result.iteritems():
+            for name, status in files.iteritems():
+                fname = os.path.join(dirname,name)
+                filemask[fname] = status
+        
+        def isCrabFile(name):
+            dir, fname = os.path.split(name)
+            base, ext = os.path.splitext(fname)
+            return re.match(".*_\d+_\d+_\w+$",base) is not None, base
+        def getCrabIndex(base):
+            tokens = base.split('_')
+            if len(tokens) > 2:
+                return (int(tokens[-3]),int(tokens[-2]))
+            return None
+            
+        files = {}
+        
+        mmin = 1000000000
+        mmax = -100000000
+        for f in filemask:
+            isCrab, base = isCrabFile(f)
+            if isCrab:
+                index = getCrabIndex(base)
+                if index is not None:
+                    jobid, retry = index
+                    
+                    mmin = min(mmin,jobid)
+                    mmax = max(mmax,jobid)
+                    if files.has_key(jobid) and filemask[f][0]:
+                        files[jobid].append((retry, f))
+                    elif filemask[f][0]:
+                        files[jobid] = [(retry, f)]
+
+        good_duplicates = {}
+        bad_jobs = set()
+        for i in xrange(mmin,mmax+1):
+            if files.has_key(i):
+                duplicates = files[i]
+                duplicates.sort()
+
+                fname = duplicates[-1][1]
+                if len(duplicates) > 1:
+                    for d in duplicates[:-1]:
+                        good_duplicates[d[1]] = filemask[d[1]][1]
+            else:
+                bad_jobs.add(i)
+        return good_duplicates, sorted(list(bad_jobs))
+    
     def test(self):
         if not castortools.fileExists(self.directory):
             raise Exception("The top level directory '%s' for this dataset does not exist" % self.directory)
@@ -122,6 +175,8 @@ class IntegrityCheck(object):
                 count += 1
             test_results[castortools.castorToLFN(dir)] = filemask
         self.test_result = test_results
+
+        self.duplicates, self.bad_jobs = self.stripDuplicates()
     
     def report(self):
         
@@ -134,10 +189,16 @@ class IntegrityCheck(object):
         for dirname, files in self.test_result.iteritems():
             print 'Directory: %s' % dirname
             for name, status in files.iteritems():
-                print '\t\t %s: %s' % (name, str(status))
+                fname = os.path.join(dirname,name)
+                if not fname in self.duplicates:
+                    print '\t\t %s: %s' % (name, str(status))
+                else:
+                    print '\t\t %s: %s (Valid duplicate)' % (name, str(status))
         print 'Total entries in DBS: %i' % self.eventsTotal
         print 'Total entries in processed files: %i' % self.eventsSeen
         print 'Fraction of dataset processed: %f' % (self.eventsSeen/(1.*self.eventsTotal))
+        if self.bad_jobs:
+            print "Bad Crab Jobs: '%s'" % ','.join([str(j) for j in self.bad_jobs])
         
     def structured(self):
         
@@ -148,6 +209,7 @@ class IntegrityCheck(object):
         totalBad = 0
 
         report = {'data':{},
+                  'ReportVersion':2,
                   'PrimaryDataset':self.options.name,
                   'Name':self.dataset,
                   'PhysicsGroup':'CMG',
@@ -179,6 +241,9 @@ class IntegrityCheck(object):
         report['FilesGood'] = totalGood
         report['FilesBad'] = totalBad
         report['FilesCount'] = totalGood + totalBad
+        
+        report['BadJobs'] = self.bad_jobs
+        report['ValidDuplicates'] = self.duplicates
 
         return report
     
