@@ -13,7 +13,15 @@ BaseTriggerSelection.triggerPaths.extend(muEG)
 #BaseTriggerSelection.triggerPaths.extend(singleEle)
 BaseTriggerSelection.triggerPaths.extend(singleMu)
 BaseTriggerSelection.triggerPaths.extend(mcTrigs)
-
+BaseTriggerSelection.gammaTriggers = cms.vstring('HLT_Photon20_CaloIdVL_IsoL',
+                                                 'HLT_Photon30_CaloIdVL_IsoL',
+                                                 'HLT_Photon50_CaloIdVL_IsoL',
+                                                 'HLT_Photon75_CaloIdVL_IsoL',
+                                                 'HLT_Photon90_CaloIdVL_IsoL',
+                                                 'HLT_Photon125',
+                                                 'HLT_Photon135',
+                                                 'HLT_Photon200'
+                                                 )
 
 # base values for the vertex selection ------------------------------------------
 BaseGeneratorSelection = cms.PSet( source = cms.InputTag("prunedGen"),
@@ -56,7 +64,7 @@ BaseLooseMuonsSelection = BaseMuonsSelection.clone( minPt = cms.double(5),
                                                     )
 
 # base values for photon selection ----------------------------------------------
-BasePhotonsSelection = cms.PSet( source = cms.InputTag("patPhotons"),
+BasePhotonsSelection = cms.PSet( source = cms.InputTag("selectedPatPhotons"),
                                  ebrechits = cms.InputTag("reducedEcalRecHitsEB"),
                                  eerechits = cms.InputTag("reducedEcalRecHitsEE"),
                                  minEt = cms.double(0), 

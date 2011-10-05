@@ -46,7 +46,7 @@ def addTriggerMatchingForLeptons(process, postfix='') :
 ##
 ## adds pat sequence
 ##
-def addPatSequence(process, runOnMC, addPhotons=False) :
+def addPatSequence(process, runOnMC, addPhotons=True) :
 
     #PF2PAT
     postfix = "PFlow"

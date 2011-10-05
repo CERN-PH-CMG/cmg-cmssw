@@ -69,7 +69,8 @@ struct ZZ2l2nuSummary_t
   Float_t neutsumEt, neutsumEtcentral, primVertexNeutSumEt, otherVertexNeutSumEt;
 
   //gamma candidate
-  Float_t g_px  , g_py  , g_pz  , g_en, g_iso1, g_iso2, g_iso3, g_sihih, g_sipip, g_r9, g_hoe, g_eop;
+  Int_t gn;
+  Float_t g_px[MAXPARTICLES], g_py[MAXPARTICLES]  , g_pz[MAXPARTICLES]  , g_en[MAXPARTICLES], g_iso1[MAXPARTICLES], g_iso2[MAXPARTICLES], g_iso3[MAXPARTICLES], g_sihih[MAXPARTICLES], g_r9[MAXPARTICLES], g_hoe[MAXPARTICLES];
 
   //gen level event
   Float_t h_px, h_py, h_pz, h_en;

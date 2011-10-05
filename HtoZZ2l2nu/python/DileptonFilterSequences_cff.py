@@ -48,5 +48,22 @@ def addDileptonFilters(process):
                                                  process.emuCandidates*
                                                  process.emuCandidateCounter*
                                                  process.emuSelectionCounter)
-    
-    print " *** {mumu,ee,emu}CandidateSquences created"
+
+    #photons
+    process.photonPreselectionCounter = process.mumuPreselectionCounter.clone()
+    process.photonSelectionCounter = process.mumuPreselectionCounter.clone()
+    process.selectedPatPhotons = cms.EDFilter("PATPhotonSelector",
+                                              src = cms.InputTag("patPhotons"),
+                                              cut = cms.string("et>20 && abs(eta)<2.4 && (abs(eta)<1.4442|| abs(eta)>1.566) && !hasPixelSeed && trkSumPtSolidConeDR04<5 && ecalRecHitSumEtConeDR04<10 && hcalTowerSumEtConeDR04<5")  
+                                              )
+    process.countPatPhotons = cms.EDFilter("PATCandViewCountFilter",
+                                           minNumber = cms.uint32(1),
+                                           maxNumber = cms.uint32(999999),
+                                           src = cms.InputTag("selectedPatPhotons")
+                                           )
+    process.photonCandidateSequence = cms.Sequence( process.photonPreselectionCounter*
+                                                    process.selectedPatPhotons*
+                                                    process.countPatPhotons*
+                                                    process.photonSelectionCounter )
+
+    print " *** {mumu,ee,emu,photon}CandidateSquences created"

@@ -11,7 +11,7 @@
         "data":[
              {
                 "dtag":"UN_300_30K",
-                "dset":" /UNPART_Z_1_300_30000_MC_START42_v1/padeken-UNPART_Z_1_300_30000_MC_START42_v1-437dd600f15c05ef65f3683a5464105b/USER",
+                "dset":"/UNPART_Z_1_300_30000_MC_START42_v1/padeken-UNPART_Z_1_300_30000_MC_START42_v1-437dd600f15c05ef65f3683a5464105b/USER",
                 "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_09_19_HtoZZ2l2n/HZZ/UN_300_30K"],
 		"xsec":2.589781,
 		"br":[1.0,1.0]
@@ -29,7 +29,7 @@
         "data":[
              {
                 "dtag":"UN_600_10K",
-                "dset":" /UNPART_Z_1_600_10000_MC_START42_v1/padeken-UNPART_Z_1_600_10000_MC_START42_v1-437dd600f15c05ef65f3683a5464105b/USER",
+                "dset":"/UNPART_Z_1_600_10000_MC_START42_v1/padeken-UNPART_Z_1_600_10000_MC_START42_v1-437dd600f15c05ef65f3683a5464105b/USER",
                 "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_09_19_HtoZZ2l2n/HZZ/UN_600_10K"],
                 "xsec":0.0696530,
                 "br":[1.0,1.0]
@@ -47,8 +47,8 @@
         "data":[
              {
                 "dtag":"UN_700_2K",
-                "dset":" /UNPART_Z_1_700_2000_MC_START42_v1/padeken-UNPART_Z_1_700_2000_MC_START42_v1-437dd600f15c05ef65f3683a5464105b/USER",
-                "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_09_19_HtoZZ2l2n/HZZ/UN_700_2K,
+                "dset":"/UNPART_Z_1_700_2000_MC_START42_v1/padeken-UNPART_Z_1_700_2000_MC_START42_v1-437dd600f15c05ef65f3683a5464105b/USER",
+                "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_09_19_HtoZZ2l2n/HZZ/UN_700_2K"],
                 "xsec":0.1657350,
                 "br":[1.0,1.0]
              }

@@ -168,6 +168,7 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
     controlHistos_.initMonitorForStep("ee");
     controlHistos_.initMonitorForStep("mumu");
     controlHistos_.initMonitorForStep("emu");
+    controlHistos_.initMonitorForStep("gamma");
   }
   catch(std::exception &e){
     cout << e.what() << endl;
@@ -421,8 +422,11 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     std::string istream="mumu";
     if(selPath==2) istream="ee";
     if(selPath==3) istream="emu";
+    bool isGammaEvent(false);
+    if(selPath>=22) { isGammaEvent=true; istream="gamma"; }
     controlHistos_.fillHisto("cutflow","all",2,weight);
     controlHistos_.fillHisto("cutflow",istream,2,weight);
+
     // 
     // VERTEX KINEMATICS (get primary vertex selected)       
     // 
@@ -461,45 +465,67 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     // LEPTON KINEMATICS
     //
     //basic dilepton kinematics
-    reco::CandidatePtr lepton1 = evhyp["leg1"];
-    LorentzVector lepton1P(lepton1->p4());
-    int l1id=lepton::getLeptonId(lepton1);
-    double lepton1pterr=lepton::getPtErrorFor(lepton1);
-    std::vector<double> lepton1iso=lepton::getLeptonIso(lepton1);
-    const reco::GenParticle *genLepton=lepton::getLeptonGenMatch(lepton1);
-    int genid1 = (genLepton==0? 0 : genLepton->pdgId());
-    ev.l1_px=lepton1P.px(); ev.l1_py=lepton1P.py(); ev.l1_pz=lepton1P.pz(); ev.l1_en=lepton1P.energy();  ev.l1_id=l1id; ev.l1_genid = genid1;  ev.l1_ptErr=lepton1pterr;  ev.l1_iso1=lepton1iso[0]; ev.l1_iso2=lepton1iso[1]; ev.l1_iso3=lepton1iso[2];
-    ev.l1_pid= (fabs(l1id)==lepton::MUON ? 
-		getMuonPidSummary( dynamic_cast<const pat::Muon &>(*(lepton1.get())) ) :
-		getElectronPidSummary( dynamic_cast<const pat::Electron &>(*(lepton1.get())) ) );
+    bool isZcandidate(true);
+    LorentzVector lepton1P(0,0,0,0),lepton2P(0,0,0,0);
+    if(!isGammaEvent)
+      {
+	reco::CandidatePtr lepton1 = evhyp["leg1"];
+	lepton1P=lepton1->p4();
+	int l1id=lepton::getLeptonId(lepton1);
+	double lepton1pterr=lepton::getPtErrorFor(lepton1);
+	std::vector<double> lepton1iso=lepton::getLeptonIso(lepton1);
+	const reco::GenParticle *genLepton=lepton::getLeptonGenMatch(lepton1);
+	int genid1 = (genLepton==0? 0 : genLepton->pdgId());
+	ev.l1_px=lepton1P.px(); ev.l1_py=lepton1P.py(); ev.l1_pz=lepton1P.pz(); ev.l1_en=lepton1P.energy();  ev.l1_id=l1id; ev.l1_genid = genid1;  ev.l1_ptErr=lepton1pterr;  ev.l1_iso1=lepton1iso[0]; ev.l1_iso2=lepton1iso[1]; ev.l1_iso3=lepton1iso[2];
+	ev.l1_pid= (fabs(l1id)==lepton::MUON ? 
+		    getMuonPidSummary( dynamic_cast<const pat::Muon &>(*(lepton1.get())) ) :
+		    getElectronPidSummary( dynamic_cast<const pat::Electron &>(*(lepton1.get())) ) );
+	
+	reco::CandidatePtr lepton2 = evhyp["leg2"];
+	lepton2P=lepton2->p4();
+	int l2id=lepton::getLeptonId(lepton2);
+	double lepton2pterr=lepton::getPtErrorFor(lepton2);
+	std::vector<double> lepton2iso=lepton::getLeptonIso(lepton2);
+	genLepton=lepton::getLeptonGenMatch(lepton2);
+	int genid2 = (genLepton==0? 0 : genLepton->pdgId());
+	ev.l2_px=lepton2P.px(); ev.l2_py=lepton2P.py(); ev.l2_pz=lepton2P.pz(); ev.l2_en=lepton2P.energy();  ev.l2_id=l2id; ev.l2_genid = genid2;  ev.l2_ptErr=lepton2pterr;  ev.l2_iso1=lepton2iso[0]; ev.l2_iso2=lepton2iso[1]; ev.l2_iso3=lepton2iso[2];
+	ev.l2_pid= (fabs(l2id)==lepton::MUON ? 
+		    getMuonPidSummary( dynamic_cast<const pat::Muon &>(*(lepton2.get())) ) :
+		    getElectronPidSummary( dynamic_cast<const pat::Electron &>(*(lepton2.get())) ) );
+	
+	bool isOS(lepton1->charge()*lepton2->charge()<0);
+	TString dilCat( isOS ? "osdilepton" : "ssdilepton" );
+	
+	//select Z window
+	LorentzVector dileptonP=lepton1P+lepton2P;
+	controlHistos_.fillHisto(dilCat+"_mass",istream,dileptonP.mass(),weight);
+	isZcandidate=(fabs(dileptonP.mass()-91)<15);
+	//if(dileptonP.mass()<40) return;
+	//if(fabs(l1id)==fabs(l2id) && fabs(dileptonP.mass()-91)>15) return;
+	//if(!isZcandidate) return;
+	
+	double dphill=deltaPhi(lepton1P.phi(),lepton2P.phi());
+	controlHistos_.fillHisto(dilCat+"_sumpt",istream,lepton1P.pt()+lepton2P.pt(),weight);
+	controlHistos_.fillHisto(dilCat+"_pt",istream,dileptonP.pt(),weight);
+	controlHistos_.fillHisto(dilCat+"_dphi",istream, fabs(dphill) ,weight );
+      }
 
-    reco::CandidatePtr lepton2 = evhyp["leg2"];
-    LorentzVector lepton2P(lepton2->p4());
-    int l2id=lepton::getLeptonId(lepton2);
-    double lepton2pterr=lepton::getPtErrorFor(lepton2);
-    std::vector<double> lepton2iso=lepton::getLeptonIso(lepton2);
-    genLepton=lepton::getLeptonGenMatch(lepton2);
-    int genid2 = (genLepton==0? 0 : genLepton->pdgId());
-    ev.l2_px=lepton2P.px(); ev.l2_py=lepton2P.py(); ev.l2_pz=lepton2P.pz(); ev.l2_en=lepton2P.energy();  ev.l2_id=l2id; ev.l2_genid = genid2;  ev.l2_ptErr=lepton2pterr;  ev.l2_iso1=lepton2iso[0]; ev.l2_iso2=lepton2iso[1]; ev.l2_iso3=lepton2iso[2];
-    ev.l2_pid= (fabs(l2id)==lepton::MUON ? 
-		getMuonPidSummary( dynamic_cast<const pat::Muon &>(*(lepton2.get())) ) :
-		getElectronPidSummary( dynamic_cast<const pat::Electron &>(*(lepton2.get())) ) );
-
-    bool isOS(lepton1->charge()*lepton2->charge()<0);
-    TString dilCat( isOS ? "osdilepton" : "ssdilepton" );
-
-    //select Z window
-    LorentzVector dileptonP=lepton1P+lepton2P;
-    controlHistos_.fillHisto(dilCat+"_mass",istream,dileptonP.mass(),weight);
-    bool isZcandidate(fabs(dileptonP.mass()-91)<15);
-    //if(dileptonP.mass()<40) return;
-    //if(fabs(l1id)==fabs(l2id) && fabs(dileptonP.mass()-91)>15) return;
-    //if(!isZcandidate) return;
-
-    double dphill=deltaPhi(lepton1P.phi(),lepton2P.phi());
-    controlHistos_.fillHisto(dilCat+"_sumpt",istream,lepton1P.pt()+lepton2P.pt(),weight);
-    controlHistos_.fillHisto(dilCat+"_pt",istream,dileptonP.pt(),weight);
-    controlHistos_.fillHisto(dilCat+"_dphi",istream, fabs(dphill) ,weight );
+    //photons
+    ev.gn=0;
+    for (pat::eventhypothesis::Looper<pat::Photon> pho = evhyp.loopAs<pat::Photon>("photon"); pho; ++pho)
+      {
+	ev.g_px[ev.gn]=pho->px();
+	ev.g_py[ev.gn]=pho->py();
+	ev.g_pz[ev.gn]=pho->pz();
+	ev.g_en[ev.gn]=pho->energy();
+	ev.g_r9[ev.gn] = pho->r9();   
+	ev.g_hoe[ev.gn]=pho->hadronicOverEm();  
+	ev.g_sihih[ev.gn]=pho->sigmaIetaIeta();
+	ev.g_iso1[ev.gn] = pho->trkSumPtSolidConeDR04();
+	ev.g_iso2[ev.gn] = pho->ecalRecHitSumEtConeDR04();
+	ev.g_iso3[ev.gn] = pho->hcalTowerSumEtConeDR04();
+	ev.gn++;
+      }
 
     //other isolated leptons
     ev.ln=0;
@@ -534,6 +560,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.ln++;
       }
     controlHistos_.fillHisto("nleptons",istream,2+ev.ln,weight);
+
     bool pass3rdLepton=(ev.ln==0);
     if(pass3rdLepton)
       {
@@ -560,8 +587,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	jetmomenta.push_back(jet->p4());
 	float jbp=jet->bDiscriminator("jetBProbabilityBJetTags");
 	float ssvhe=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
-	nbjets += (jbp>1.33 || ssvhe>1.74);
-
+	if(jet->pt()>30 && fabs(jet->eta())<2.4) nbjets += (jbp>1.33 || ssvhe>1.74);
+	
 	controlHistos_.fillHisto("jetfassoc",istream,jet::fAssoc(jet.get(),primVertex.get()),weight);
 	controlHistos_.fillHisto("jetbtags",istream,jet->bDiscriminator("jetBProbabilityBJetTags"),weight);
 	controlHistos_.fillHisto("jetpt",istream,jet->pt(),weight);
@@ -593,37 +620,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	  }
       }
     
-    //deprecated
-    //count the pu jets
-    //  std::vector<reco::CandidatePtr> pujets= evhyp.all("pujet");
-    //     int npujets(0),npubjets(0);
-    //     std::vector<LorentzVector> pujetmomenta;
-    //     std::vector<const pat::Jet *> puJets;
-    //     for (pat::eventhypothesis::Looper<pat::Jet> jet = evhyp.loopAs<pat::Jet>("pujet"); jet; ++jet) 
-    //       {
-    // 	npujets++;
-    // 	pujetmomenta.push_back(jet->p4());
-    // 	puJets.push_back( jet.get() );
-    // 	float btag=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
-    // 	npubjets += (btag>1.74);
-    // 	controlHistos_.fillHisto("pujetfassoc",istream,jet::fAssoc(jet.get(),primVertex.get()),weight);
-    // 	controlHistos_.fillHisto("pujetbtags",istream,btag,weight);
-    //         controlHistos_.fillHisto("pujetpt",istream,jet->pt(),weight);
-    // 	controlHistos_.fillHisto("pujeteta",istream,jet->eta(),weight);
-    
-    // 	ev.jn_px[ev.jn] = jet->px();  ev.jn_py[ev.jn]=jet->py();  ev.jn_pz[ev.jn]=jet->pz(); ev.jn_en[ev.jn]=jet->energy();
-    // 	const reco::Candidate *genParton = jet->genParton();
-    // 	ev.jn_genid[ev.jn] = genParton ? genParton->pdgId() : -9999;
-    // 	ev.jn_btag1[ev.jn]=jet->bDiscriminator("trackCountingHighEffBJetTags");
-    // 	ev.jn_btag2[ev.jn]=jet->bDiscriminator("trackCountingHighPurBJetTags");
-    // 	ev.jn_btag3[ev.jn]=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
-    // 	ev.jn_btag4[ev.jn]=jet->bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
-    // 	ev.jn_vtxAssoc[ev.jn]=false;
-    // 	ev.jn++;
-    //       }
-    //     controlHistos_.fillHisto("pujetmult",istream,npujets,weight);
-    // controlHistos_.fillHisto("pujetbmult",istream,npubjets,weight);
-
     //
     // MET kinematics
     //
@@ -673,15 +669,14 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     }
 
     //reduced met
-    //rmet_.compute(lepton1->p4(),lepton1pterr, lepton2->p4(),lepton2pterr, jetmomenta, met);
-    rmet_.compute(lepton1->p4(),0, lepton2->p4(),0, jetmomenta, met);
+    rmet_.compute(lepton1P,0, lepton2P,0, jetmomenta, met,isGammaEvent);
     float reducedMET=rmet_.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
     
     //projected MET
-    float projMet = pmet_.compute(lepton1->p4(),lepton2->p4(),met);
-    float projTrkmet = pmet_.compute(lepton1->p4(),lepton2->p4(),trkmet);
+    float projMet =  pmet_.compute(lepton1P,lepton2P,met);
+    float projTrkmet =  pmet_.compute(lepton1P,lepton2P,trkmet);
     float puffoMet = min(fabs(projMet),fabs(projTrkmet));
- 
+    
     //met control histograms
     controlHistos_.fillHisto("met",istream,met.pt(),weight);
     controlHistos_.fillHisto("trkmet",istream,trkmet.pt(),weight);
@@ -690,7 +685,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     controlHistos_.fillHisto("projmet",istream,projMet,weight);
     controlHistos_.fillHisto("projtrkmet",istream,projTrkmet,weight);
     controlHistos_.fillHisto("puffomet",istream,puffoMet,weight);
-
+    
     //save for posterior analysis
     ev.met1_phi = met.phi();       ev.met1_pt=  met.pt();
     ev.met2_phi = trkmet.phi();    ev.met2_pt=trkmet.pt();
@@ -726,12 +721,12 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	controlHistos_.fillHisto("cutflow","all",6,weight);
 	controlHistos_.fillHisto("cutflow",istream,6,weight);
       }
-  
+    
 
     //fill the events selection flags
     ev.pass=eventCategory;    
     if(pass3rdLepton) 
-    {
+      {
       ev.pass += 1000;
       if(passBveto)   
 	{
@@ -760,7 +755,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 void DileptonPlusMETEventAnalyzer::endLuminosityBlock(const edm::LuminosityBlock & iLumi, const edm::EventSetup & iSetup)
 {
   //  cout << "[DileptonPlusMETEventAnalyzer::endLuminosityBlock]" << endl;
-  TString streams[]={"ee","mumu","emu"};
+  TString streams[]={"ee","mumu","emu","gamma"};
   edm::Handle<edm::MergeableCounter> ctrHandle;
   iLumi.getByLabel("startCounter", ctrHandle);
   for(size_t istream=0; istream<sizeof(streams)/sizeof(TString); istream++)

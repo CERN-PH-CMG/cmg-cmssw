@@ -42,9 +42,9 @@ public :
 class PhysicsObject_Gamma : public LorentzVector
 { 
 public : 
-  PhysicsObject_Gamma(LorentzVector vec, Float_t ptErr_=0, Float_t iso1_=0, Float_t iso2_=0, Float_t iso3_=0, Float_t sihih_=0, Float_t sipip_=0, Float_t r9_=0, Float_t hoe_=0, Float_t eop_=0):
-    LorentzVector(vec), iso1(iso1_), iso2(iso2_), iso3(iso3_), sihih(sihih_), sipip(sipip_), r9(r9_), hoe(hoe_), eop(eop_) { }
-    Float_t iso1, iso2, iso3, sihih, sipip, r9, hoe, eop;
+  PhysicsObject_Gamma(LorentzVector vec, Float_t ptErr_=0, Float_t iso1_=0, Float_t iso2_=0, Float_t iso3_=0, Float_t sihih_=0, Float_t r9_=0, Float_t hoe_=0):
+    LorentzVector(vec), iso1(iso1_), iso2(iso2_), iso3(iso3_), sihih(sihih_), r9(r9_), hoe(hoe_) { }
+    Float_t iso1, iso2, iso3, sihih, r9, hoe;
 };
 
 typedef std::vector<PhysicsObject>        PhysicsObjectCollection;
@@ -57,7 +57,7 @@ struct PhysicsEvent_t
 {
   LorentzVector met[13];
   LorentzVector vtx;
-  LorentzVector gamma;
+  PhysicsObjectGammaCollection gammas;
   PhysicsObjectJetCollection jets;
   PhysicsObjectLeptonCollection leptons;
 

@@ -11,7 +11,7 @@
 	      {
                "dtag":"DYJetsToTauTau",
 	       "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
-	       "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/ZZ/DYToLL/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
+	       "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/DYToLL/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
                "xsec":1016
               }
           ]
@@ -26,7 +26,7 @@
 	      {
                "dtag":"DYJetsToLL",
 	       "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
-	       "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/ZZ/DYToLL/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
+	       "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/DYToLL/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
                "xsec":2032
               }
           ]
@@ -41,34 +41,42 @@
 	"data":[
 	     {	
 		"dtag":"G_Pt-15to30_TuneZ2_7TeV_pythia6",
+		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ_11.10.03/G/G_Pt-15to30_TuneZ2_7TeV_pythia6"],
 		"xsec":172000
 	     },
 	     {	
 		"dtag":"G_Pt-30to50_TuneZ2_7TeV_pythia6",
+		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ_11.10.03/G/G_Pt-30to50_TuneZ2_7TeV_pythia6"],
 		"xsec":16700
 	     },
 	     {	
 		"dtag":"G_Pt-50to80_TuneZ2_7TeV_pythia6",
+		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ_11.10.03/G/G_Pt-50to80_TuneZ2_7TeV_pythia6"],
 		"xsec":2720
 	     },
 	     {	
 		"dtag":"G_Pt-80to120_TuneZ2_7TeV_pythia6",
+		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ_11.10.03/G/G_Pt-80to120_TuneZ2_7TeV_pythia6"],
 		"xsec":447
 	     },
 	     {	
 		"dtag":"G_Pt-120to170_TuneZ2_7TeV_pythia6",
+		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ_11.10.03/G/G_Pt-120to170_TuneZ2_7TeV_pythia6"],
 		"xsec":84.2
 	     },
 	     {	
 		"dtag":"G_Pt-170to300_TuneZ2_7TeV_pythia6",
+		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ_11.10.03/G/G_Pt-170to300_TuneZ2_7TeV_pythia6"],
 		"xsec":22.6
 	     },
 	     {	
 		"dtag":"G_Pt-300to470_TuneZ2_7TeV_pythia6",
+		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ_11.10.03/G/G_Pt-300to470_TuneZ2_7TeV_pythia6"],
 		"xsec":1.49
 	     },
 	     {	
 		"dtag":"G_Pt-470to800_TuneZ2_7TeV_pythia6",
+		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ_11.10.03/G/G_Pt-470to800_TuneZ2_7TeV_pythia6"],
 		"xsec":0.132
 	     }
 	  ]
