@@ -112,9 +112,9 @@ int main(int argc, char* argv[])
   std::map<double,double> SampleHiggsWidth;    std::map<string,double> SampleHiggsWeightInt;
   SampleHiggsWidth[130]=   0.00487;            SampleHiggsWeightInt["VBFtoH130toZZto2L2Nu.root"]=1.000001;   SampleHiggsWeightInt["VBFtoH130toWWto2L2Nu.root"]=0.999999;
   SampleHiggsWidth[140]=   0.00812;            SampleHiggsWeightInt["VBFtoH140toZZto2L2Nu.root"]=1.000000;   SampleHiggsWeightInt["VBFtoH140toWWto2L2Nu.root"]=1.000000;
-  SampleHiggsWidth[150]=   0.0173;             SampleHiggsWeightInt["VBFtoH150toZZto2L2Nu.root"]=1.000000;   SampleHiggsWeightInt["VBFtoH150toWWto2L2Nu.root"]=1.000004;
+  SampleHiggsWidth[150]=   0.0173;             SampleHiggsWeightInt["VBFtoH150toZZto2L2Nu.root"]=0.999996;   SampleHiggsWeightInt["VBFtoH150toWWto2L2Nu.root"]=1.000004;
   SampleHiggsWidth[160]=   0.0829;             SampleHiggsWeightInt["VBFtoH160toZZto2L2Nu.root"]=1.000000;   SampleHiggsWeightInt["VBFtoH160toWWto2L2Nu.root"]=1.000000;
-  SampleHiggsWidth[170]=   0.38;               SampleHiggsWeightInt["VBFtoH170toZZto2L2Nu.root"]=1.000359;   SampleHiggsWeightInt["VBFtoH170toWWto2L2Nu.root"]=0.999766;
+  SampleHiggsWidth[170]=   0.38;               SampleHiggsWeightInt["VBFtoH170toZZto2L2Nu.root"]=1.000359;   SampleHiggsWeightInt["VBFtoH170toWWto2L2Nu.root"]=1.000212;
   SampleHiggsWidth[180]=   0.63;               SampleHiggsWeightInt["VBFtoH180toZZto2L2Nu.root"]=1.000000;   SampleHiggsWeightInt["VBFtoH180toWWto2L2Nu.root"]=1.000000;
   SampleHiggsWidth[190]=   1.04;               SampleHiggsWeightInt["VBFtoH190toZZto2L2Nu.root"]=1.000000;   SampleHiggsWeightInt["VBFtoH190toWWto2L2Nu.root"]=1.000000;
   SampleHiggsWidth[200]=   1.43;               SampleHiggsWeightInt["VBFtoH200toZZto2L2Nu.root"]=0.999749;   SampleHiggsWeightInt["VBFtoH200toWWto2L2Nu.root"]=0.999183;
@@ -337,9 +337,9 @@ int main(int argc, char* argv[])
 //  metTypes["minProjMet"]          = "min-proj{E_{T}^{miss},assoc E_{T}^{miss} (charged)}";
   metTypes["redMet"]              = "red-E_{T}^{miss}";
 //  metTypes["redMetD0"]            = "red-E_{T}^{miss}(D0)";
-//  metTypes["assocChargedMet"]     = "assoc E_{T}^{miss} (charged)";
+  metTypes["assocChargedMet"]     = "assoc E_{T}^{miss} (charged)";
   metTypes["minAssocChargedMet"]  = "min{E_{T}^{miss},assoc E_{T}^{miss} (charged)}";
-//  metTypes["centralMet"]          = "central-E_{T}^{miss}";
+  metTypes["centralMet"]          = "central-E_{T}^{miss}";
 //  metTypes["minCentralMet"]       = "min{E_{T}^{miss},central-E_{T}^{miss}}";
 //  metTypes["assocOtherVertexMet"] = "assoc-E_{T}^{miss} (other vtx)";
 //  metTypes["cleanMet"]            = "clean-E_{T}^{miss}";
@@ -348,6 +348,13 @@ int main(int argc, char* argv[])
   metTypes["minAssocMet"]         = "min{E_{T}^miss,assoc-E_{T}^{miss})";
 //  metTypes["superMinMet"]         = "min{E_{T}^{miss},assoc-E_{T}^{miss},clean-E_{T}^{miss},central-E_{T}^{miss}}";
   metTypes["redMinAssocMet"]         = "red{min{E_{T}^miss,assoc-E_{T}^{miss}}, unclustered E_{T}^{miss})";
+  metTypes["assocMet5"]            = "assoc-E_{T}^{miss} (pT>5)";
+  metTypes["assocMet10"]           = "assoc-E_{T}^{miss} (pT>10)";
+  metTypes["minAssocFwdMet"]         = "min{E_{T}^miss,assoc-E_{T}^{miss} + Fwd)";
+  metTypes["assocFwdMet"]            = "assoc-E_{T}^{miss} + Fwd";
+  metTypes["assocFwdMet5"]            = "assoc-E_{T}^{miss} + Fwd (pT>5)";
+  metTypes["assocFwdMet10"]           = "assoc-E_{T}^{miss} + Fwd (pT>10)";
+
   std::map<TString,LorentzVector> metTypeValues;
   for(std::map<TString,TString>::iterator it = metTypes.begin(); it!= metTypes.end(); it++)
     {
@@ -371,12 +378,12 @@ int main(int argc, char* argv[])
       controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"geq040zptvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
 
       controlHistos.addHistogram( new TH2F( TString("met_") + it->first + "pfmet", ";" +it->second+"; pfmet", 40,0,200,40,0,200) );
-      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "geq080pfmet", ";"+it->second+">0.8 pfmet;Events", 100,0,500) );
-      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"geq080pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
-      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "geq060pfmet", ";"+it->second+">0.6 pfmet;Events", 100,0,500) );
-      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"geq060pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
-      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "geq040pfmet", ";"+it->second+">0.4 z pfmet;Events", 100,0,500) );
-      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"geq040pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "leq120pfmet", ";"+it->second+"<1.2 pfmet;Events", 100,0,500) );
+      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"leq120pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "leq140pfmet", ";"+it->second+"<1.4 pfmet;Events", 100,0,500) );
+      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"leq140pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "leq160pfmet", ";"+it->second+"<1.6 z pfmet;Events", 100,0,500) );
+      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"leq160pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
     }
   controlHistos.addHistogram( new TH2F ("itpuvsootpu", ";In-Time Pileup; Out-of-time Pileup;Events", 30,0,30,30,0,30) );
   controlHistos.addHistogram( new TH2F ("redMetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 50, -251.,249,50, -251.,249.) );
@@ -607,6 +614,11 @@ int main(int argc, char* argv[])
       LorentzVector centralMetP4=phys.met[5];
       LorentzVector cleanMetP4=phys.met[6];
       LorentzVector assocOtherVertexMetP4=phys.met[7];
+      LorentzVector assocFwdMetP4=phys.met[8];
+      LorentzVector assocMet5P4=phys.met[9];
+      LorentzVector assocFwdMet5P4=phys.met[10];
+      LorentzVector assocMet10P4=phys.met[11];
+      LorentzVector assocFwdMet10P4=phys.met[12];
 
       //count jets and b-tags
       int njets(0),njetsinc(0);
@@ -708,6 +720,12 @@ int main(int argc, char* argv[])
               metTypeValues["minAssocMet"]         = min(zvv,assocMetP4);
               metTypeValues["superMinMet"]         = min( metTypeValues["minAssocMet"],  min(metTypeValues["minCleanMet"], metTypeValues["centralMet"]) );
               metTypeValues["redMinAssocMet"]      = LorentzVector(redminAssocMetX,redminAssocMetY,0,redminAssocMet);
+              metTypeValues["assocMet5"]           = assocMet5P4;
+              metTypeValues["assocMet10"]          = assocMet10P4;
+              metTypeValues["assocFwdMet"]         = assocFwdMetP4;
+              metTypeValues["assocFwdMet5"]        = assocFwdMet5P4;
+              metTypeValues["assocFwdMet10"]       = assocFwdMet10P4;
+              metTypeValues["minAssocFwdMet"]      = min(zvv,metTypeValues["assocFwdMet"]);
 
       std::map<TString,double> metTypeValuesminJetdphi;
       std::map<TString,double> metTypeValuesminJetphi;
@@ -1080,12 +1098,12 @@ int main(int argc, char* argv[])
 
 
                   controlHistos.fill2DHisto(TString("met_") + it->first+"pfmet", ctf,it->second.pt(),zvv.pt(),weight);
-                  controlHistos.fillHisto(TString("met_") + it->first+"geq080pfmet", ctf,it->second.pt()>=0.8*zvv.pt() ? it->second.pt() : 0.0,weight);
-                  controlHistos.fill2DHisto(TString("met_") + it->first+"geq080pfmetvspu", ctf,ev.ngenITpu,it->second.pt()>=0.8*zvv.pt() ? it->second.pt() : 0.0,weight);
-                  controlHistos.fillHisto(TString("met_") + it->first+"geq060pfmet", ctf,it->second.pt()>=0.6*zvv.pt() ? it->second.pt() : 0.0,weight);
-                  controlHistos.fill2DHisto(TString("met_") + it->first+"geq060pfmetvspu", ctf,ev.ngenITpu,it->second.pt()>=0.6*zvv.pt() ? it->second.pt() : 0.0,weight);
-                  controlHistos.fillHisto(TString("met_") + it->first+"geq040pfmet", ctf,it->second.pt()>=0.4*zvv.pt() ? it->second.pt() : 0.0,weight);
-                  controlHistos.fill2DHisto(TString("met_") + it->first+"geq040pfmetvspu", ctf,ev.ngenITpu,it->second.pt()>=0.4*zvv.pt() ? it->second.pt() : 0.0,weight);
+                  controlHistos.fillHisto(TString("met_") + it->first+"leq120pfmet", ctf, it->second.pt()<=1.2*zvv.pt() ? zvv.pt() : 0.0,weight);
+                  controlHistos.fill2DHisto(TString("met_") + it->first+"leq120pfmetvspu", ctf,ev.ngenITpu,it->second.pt()<=1.2*zvv.pt() ? zvv.pt() : 0.0,weight);
+                  controlHistos.fillHisto(TString("met_") + it->first+"leq140pfmet", ctf,it->second.pt()<=1.4*zvv.pt() ? zvv.pt() : 0.0,weight);
+                  controlHistos.fill2DHisto(TString("met_") + it->first+"leq140pfmetvspu", ctf,ev.ngenITpu,it->second.pt()<=1.4*zvv.pt() ? zvv.pt() : 0.0,weight);
+                  controlHistos.fillHisto(TString("met_") + it->first+"leq160pfmet", ctf,it->second.pt()<=1.6*zvv.pt() ? zvv.pt() : 0.0,weight);
+                  controlHistos.fill2DHisto(TString("met_") + it->first+"leq160pfmetvspu", ctf,ev.ngenITpu,it->second.pt()<=1.6*zvv.pt() ? zvv.pt() : 0.0,weight);
 
 
                   if(it->second.pt()>50 && metTypeValuesminJetdphi[it->first]<10){
