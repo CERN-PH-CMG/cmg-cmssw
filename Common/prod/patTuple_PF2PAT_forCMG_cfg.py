@@ -189,13 +189,14 @@ jetAlgoAK7="AK7"
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgoAK7, runOnMC=runOnMC, postfix=postfixAK7,
           jetCorrections=('AK7PF', jetCorrections))
 
-if doJetPileUpCorrection:
-    enablePileUpCorrection( process, postfix=postfixAK7)
+# if doJetPileUpCorrection:
+#    enablePileUpCorrection( process, postfix=postfixAK7)
 
 # no need for taus in AK7 sequence. could remove the whole tau sequence to gain time?
 # if hpsTaus:
 #    adaptPFTaus(process,"hpsPFTau",postfix=postfixAK7)
 
+# no top projection: 
 getattr(process,"pfNoMuon"+postfixAK7).enable = False 
 getattr(process,"pfNoElectron"+postfixAK7).enable = False 
 getattr(process,"pfNoTau"+postfixAK7).enable = False 
@@ -203,9 +204,9 @@ getattr(process,"pfNoJet"+postfixAK7).enable = True
 
 removePhotonMatching( process, postfixAK7 )
 
-addPATElectronID( process, postfixAK7 , runOnMC )
+# addPATElectronID( process, postfixAK7 , runOnMC )
 
-addMETSig(process,postfixAK7)
+# addMETSig(process,postfixAK7)
 
 
 # ---------------- Common stuff ---------------
