@@ -60,6 +60,9 @@ namespace cmg{
     
     /// keeping track of another filtering efficiency, e.g. at PF2PAT+PAT+CMG level
     edm::InputTag  filterInfoSrc_;
+
+    /// run on MC? 
+    bool  runOnMC_;
     
   };
 
