@@ -18,11 +18,8 @@ def setAliases( tree, mus, dBetaFactor = 0.5):
     tree.SetAlias('combrel', 'comb/pt')
     
     tree.SetAlias('combrelDBeta', '(ch + max(0, nh+ph-%f*chpu))/pt' % dBetaFactor)
-#     tree.SetAlias('combrelDBeta1', '(ch + max(0, nh+ph-chpu))/pt')
-#     tree.SetAlias('combrelDBeta2', '(ch + max(0, nh+ph-2*chpu))/pt')
+    
 
-
-nEv = 9999999
 
 from CMGTools.RootTools.Style import *
 
@@ -37,9 +34,11 @@ class MyHistograms:
         style.formatHisto( self.h1_NVert_Iso )
         style.formatHisto( self.eff_NVert )
     def effVsNVert(self, cut, addCut, nEvents):
-        self.h1_NVert = TH1F('h1_NVert'+self.name,'',10,1,10)
+        self.h1_NVert = TH1F('h1_NVert'+self.name,'',20,0,20)
         self.h1_NVert_Iso = self.h1_NVert.Clone('h1_NVert_Iso'+self.name)
+        print 'n_tot...'
         events.Draw('nvert>>h1_NVert'+self.name, addCut,'goff', nEvents)
+        print 'n_sel...'
         events.Draw('nvert>>h1_NVert_Iso'+self.name, addCut + '&&' + cut,'goff', nEvents)
         self.eff_NVert = self.h1_NVert_Iso.Clone('eff_NVert'+self.name)
         self.eff_NVert.SetTitle(';#Vertices;Isolation Efficiency')
@@ -57,26 +56,43 @@ cVsVert = TCanvas('cVsVert','Isolation vs Number of vertices')
 
 nEv = 999999
 
-addCut = '1'
+zCut =  '   diMus.@obj.size()==1'
+zCut += '&& diMus.obj[0].mass()>70 && diMus.obj[0].mass()<115'
+zCut += '&& diMus.obj[0].leg1().charge()*diMus.obj[0].leg2().charge()<0'
+
+tagCut1 = 'diMus.obj[0].leg1().pt()>20'
+tagCut1 += '&& diMus.obj[0].leg1().relIso()<0.2'
+# tagCut1 += '&& diMus.obj[0].leg1().getSelection("cuts_vbtfmuon_dxy")<0.2'
+tagCut1 += '&& diMus.obj[0].leg1().getSelection("cuts_vbtfmuon")'
+
+tagCut = zCut + ' && ' + tagCut1
+
 isoCut = '0.1'
-histos15 = MyHistograms('combrel15')
-histos15.effVsNVert( 'combrel<'+isoCut, addCut, nEv)
-histos15.formatHistos( sRedPoints )
+probeCut = 'diMus.obj[0].leg2().relIso()<'+isoCut 
 
-histosDBeta15 = MyHistograms('combrelDBeta15')
-histosDBeta15.effVsNVert( 'combrelDBeta<'+isoCut, addCut, nEv)
-histosDBeta15.formatHistos( sBlueSquares )
+histos = MyHistograms('combrel')
+histos.effVsNVert( probeCut, tagCut, nEv)
+histos.formatHistos( sRedPoints )
 
-histos15.eff_NVert.GetYaxis().SetRangeUser(0.5,1)
-histos15.eff_NVert.Draw()
-histosDBeta15.eff_NVert.Draw('same')
+probeCut = 'diMus.obj[0].leg2().relIso(0.5)<'+isoCut 
 
-legend = TLegend(0.12,0.12,0.63,0.33, 'addtl_cut = %s; iso < %s; #Delta#beta fact=%2.2f' % (addCut, isoCut,dBetaFactor) )
-legend.AddEntry(histos15.eff_NVert, 'No #Delta#beta correction')
-legend.AddEntry(histosDBeta15.eff_NVert, '#Delta#beta correction')
+histosDBeta = MyHistograms('combrelDBeta')
+histosDBeta.effVsNVert( probeCut, tagCut, nEv)
+histosDBeta.formatHistos( sBlueSquares )
+
+histos.eff_NVert.GetYaxis().SetRangeUser(0.3,1)
+histos.eff_NVert.Draw()
+histosDBeta.eff_NVert.Draw('same')
+
+legend = TLegend(0.12,0.12,0.63,0.33, 'iso < %s; #Delta#beta fact=%2.2f' % (isoCut,dBetaFactor) )
+legend.AddEntry(histos.eff_NVert, 'No #Delta#beta correction')
+legend.AddEntry(histosDBeta.eff_NVert, '#Delta#beta correction')
 legend.Draw()
 
-gPad.SaveAs('dbetaCorEffect_%s_%s_%2.2f.png' % (addCut, isoCut, dBetaFactor))
+gPad.SaveAs('dbetaCorEffect_%s_%2.2f.png' % (isoCut, dBetaFactor))
+
+
+
 
 from ROOT import TProfile
 
