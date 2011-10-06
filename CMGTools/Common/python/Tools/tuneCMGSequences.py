@@ -25,6 +25,12 @@ def removeObject( process, object, postfix ):
         pass
 
     try:
+        size = getattr( process, object + 'SelSize' + postfix )
+        getattr( process, 'collectionSizeSequence'+postfix ).remove( size )
+    except:
+        pass
+
+    try:
         skim = getattr( process, object + 'SkimSequence' + postfix )
         getattr( process, 'skimSequence'+postfix ).remove( skim )
     except:

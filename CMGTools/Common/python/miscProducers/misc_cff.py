@@ -5,8 +5,9 @@ from CMGTools.Common.miscProducers.metSignificance_cfi import *
 from CMGTools.Common.miscProducers.collectionSize.collectionSize_cff import *
 
 miscSequence = cms.Sequence(
-    deltaPhiJetMET +
-    # MET significance can not run reading the patTuple, hence is not included here
+    # this guy looks for a MET in its sequence, due to our cloning... 
+    # deltaPhiJetMET +
+    # MET significance can not run reading the patTuple in input, hence is not included here
     # metSignificance +
     collectionSizeSequence
     ) 
