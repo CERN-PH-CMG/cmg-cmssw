@@ -52,9 +52,9 @@ process.load('CMGTools.Common.analysis_cff')
 # now, we're going to tune the default analysis sequence to our needs
 # by modifying the parameters of the modules present in this sequence. 
 
-# removing the taus, as PFCandidate embedding does not work, hence an exception in the cmg Tau factory
-from CMGTools.Common.Tools.tuneCMGSequences import removeObject
-removeObject( process, 'tau', '') 
+# removing the taus, as PFCandidate embedding does not work, hence an exception in the cmg Tau factory - not needed anymore
+# from CMGTools.Common.Tools.tuneCMGSequences import removeObject
+# removeObject( process, 'tau', '') 
 
 # Select events with 2 jet ...  
 # process.cmgPFJetCount.minNumber = 2

@@ -50,9 +50,9 @@ process.TFileService = cms.Service("TFileService",
 # default analysis sequence    
 process.load('CMGTools.Common.analysis_cff')
 
-# removing the taus, as PFCandidate embedding does not work, hence an exception in the cmg Tau factory
-from CMGTools.Common.Tools.tuneCMGSequences import removeObject
-removeObject( process, 'tau', '') 
+# removing the taus, as PFCandidate embedding does not work, hence an exception in the cmg Tau factory - not needed anymore 
+# from CMGTools.Common.Tools.tuneCMGSequences import removeObject
+# removeObject( process, 'tau', '') 
 
 if runOnMC:
     process.load("CMGTools.Common.runInfoAccounting_cfi")
