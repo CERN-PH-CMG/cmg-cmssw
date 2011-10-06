@@ -12,7 +12,7 @@ from CMGTools.Common.cutSummary_cff import *
 from CMGTools.Common.histogram_cff import *
 from CMGTools.Common.trigger_cff import *
 
-# from CMGTools.Common.miscProducers.misc_cff import *
+from CMGTools.Common.miscProducers.misc_cff import *
 
 cmgObjectSequence = cms.Sequence(
     jetSequence +
@@ -24,10 +24,11 @@ cmgObjectSequence = cms.Sequence(
     )
 
 
-
 analysisSequence = cms.Sequence(
     # build the CMG objects and select them
     cmgObjectSequence +
+    # build miscellaneous objects not inheriting from cmg::PhysicsObject
+    miscSequence + 
     # skimming (counting the selected CMG objects)
     skimSequence +
     # summary of cuts for all objects, after skimming

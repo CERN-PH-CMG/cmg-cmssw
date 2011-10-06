@@ -113,3 +113,6 @@ DEFINE_FWK_MODULE(CmgTauMuSelector);
 DEFINE_FWK_MODULE(CmgMuESelector);
 
 DEFINE_FWK_MODULE(GenParticleSelector);
+
+DEFINE_FWK_MODULE(VertexSizeProducer);
+DEFINE_FWK_MODULE(CandidateSizeProducer);

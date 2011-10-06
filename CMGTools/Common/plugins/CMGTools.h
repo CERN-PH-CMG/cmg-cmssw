@@ -54,6 +54,7 @@
 #include "CommonTools/UtilAlgos/interface/ObjectSelector.h"
 #include "CommonTools/UtilAlgos/interface/SingleElementCollectionSelector.h"
 
+#include "CMGTools/Common/plugins/CollectionSizeProducer.h"
 
 // Colin: should add cmg to the type names where applicable.
 
@@ -296,5 +297,9 @@ typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::MuE> > C
 
 
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<reco::GenParticle> > GenParticleSelector;
+
+
+typedef CollectionSizeProducer< std::vector<reco::Vertex> > VertexSizeProducer;
+typedef CollectionSizeProducer< edm::View<reco::Candidate> > CandidateSizeProducer;
 
 #endif
