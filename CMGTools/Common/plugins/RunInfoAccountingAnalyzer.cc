@@ -13,7 +13,8 @@ cmg::RunInfoAccountingAnalyzer::RunInfoAccountingAnalyzer(const edm::ParameterSe
   runInfoAccounting_( *fs_, name_ ), runNumber_(-1), 
   fileChanged_(false), currentRun_(0), nTotal_(0), nPassed_(0), nGenTotal_(0), nGenPassed_(0),
   genFilterInfoSrc_(ps.getParameter<edm::InputTag>("genFilterInfoSrc") ),
-  filterInfoSrc_(ps.getParameter<edm::InputTag>("filterInfoSrc") )
+  filterInfoSrc_(ps.getParameter<edm::InputTag>("filterInfoSrc") ),
+  runOnMC_(ps.getParameter<bool>("runOnMC") )
 {}
 
 void cmg::RunInfoAccountingAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
@@ -76,8 +77,10 @@ void cmg::RunInfoAccountingAnalyzer::endLuminosityBlock(edm::LuminosityBlock con
   iLumi.getByLabel(genFilterInfoSrc_, genFilter);
 
   if( genFilter.failedToGet() ) {
-    std::cout<<"Failed to get GenFilterInfo for filtering after generation."<<std::endl;
-    std::cout<<"you're probably reading an old sample or a relval. You will need handle the generator filter efficiency by hand when normalizing your MC sample to the data."<<std::endl;
+    if( runOnMC_ ) {
+      std::cout<<"Failed to get GenFilterInfo for filtering after generation."<<std::endl;
+      std::cout<<"you're probably reading an old sample or a relval. You will need handle the generator filter efficiency by hand when normalizing your MC sample to the data."<<std::endl;
+    }
     nGenTotal_ += 0;
     nGenPassed_ += 0; 
   }
