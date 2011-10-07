@@ -859,7 +859,7 @@ int main(int argc, char* argv[])
       bool passZpt(zpt>25);
 
       bool pass3dLeptonVeto(ev.ln==0);
-      bool passBveto(nbtags==0);
+      bool passBveto(nbtags_tche2==0);//nbtags==0);
       bool passMediumRedMet(redMet>rmetComp.getCut(eventCategory,ReducedMETComputer::MEDIUMWP));
       bool passTightRedMet(redMet>rmetComp.getCut(eventCategory,ReducedMETComputer::TIGHTWP));
       
@@ -1085,6 +1085,14 @@ int main(int argc, char* argv[])
 */
 	      for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++) 	  
 		{
+                  if(it->second.pt()>50 && metTypeValuesminJetdphi[it->first]<10){
+                     controlHistos.fillHisto(TString("met_") + it->first+"mindphijmet",ctf,metTypeValuesminJetdphi[it->first], weight);
+//                     controlHistos.fill2DHisto(TString("met_") + it->first+"phimetphijet", ctf,it->second.phi(),metTypeValuesminJetphi[it->first],weight);
+                  }
+
+
+                  if(mindphijmet<0.3)continue;
+
 		  controlHistos.fillHisto(TString("met_") + it->first, ctf,it->second.pt(),weight);
 		  controlHistos.fill2DHisto(TString("met_") + it->first+"vspu", ctf,ev.ngenITpu,it->second.pt(),weight);
                   controlHistos.fill2DHisto(TString("met_") + it->first+"zpt", ctf,it->second.pt(),zpt,weight);
@@ -1105,11 +1113,6 @@ int main(int argc, char* argv[])
                   controlHistos.fillHisto(TString("met_") + it->first+"leq160pfmet", ctf,it->second.pt()<=1.6*zvv.pt() ? zvv.pt() : 0.0,weight);
                   controlHistos.fill2DHisto(TString("met_") + it->first+"leq160pfmetvspu", ctf,ev.ngenITpu,it->second.pt()<=1.6*zvv.pt() ? zvv.pt() : 0.0,weight);
 
-
-                  if(it->second.pt()>50 && metTypeValuesminJetdphi[it->first]<10){
-                     controlHistos.fillHisto(TString("met_") + it->first+"mindphijmet",ctf,metTypeValuesminJetdphi[it->first], weight);
-//                     controlHistos.fill2DHisto(TString("met_") + it->first+"phimetphijet", ctf,it->second.phi(),metTypeValuesminJetphi[it->first],weight);
-                  }
 
                   TVector2 zll2DLong  = TVector2(zll.px()/zll.pt(), zll.py()/zll.pt());
                   TVector2 zll2DTrans = zll2DLong.Rotate(TMath::Pi()/2);
@@ -1195,15 +1198,25 @@ int main(int argc, char* argv[])
 	      //
 	      // CUT & COUNT ANALYSIS
 	      //
-	      //final selection (cut and count analysis)
-              bool pass130( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
-              bool pass150( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
-              bool pass170( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
-	      bool pass200( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
-	      bool pass300( passTightRedMet  && fabs(dphill)<2.5                      && redMetL>75       && mtsum>200);
-	      bool pass400( passTightRedMet  && fabs(dphill)<2.0                      && redMetL>75       && mtsum>300);
-	      bool pass500( passTightRedMet  && fabs(dphill)<2.0                      && redMetL>100      && mtsum>400);
-	      bool pass600( passTightRedMet  && fabs(dphill)<1.5                      && redMetL>150 && mtsum>450);
+//	      //final selection (cut and count analysis)
+//              bool pass130( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
+//              bool pass150( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
+//              bool pass170( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
+//	      bool pass200( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
+//	      bool pass300( passTightRedMet  && fabs(dphill)<2.5                      && redMetL>75       && mtsum>200);
+//	      bool pass400( passTightRedMet  && fabs(dphill)<2.0                      && redMetL>75       && mtsum>300);
+//	      bool pass500( passTightRedMet  && fabs(dphill)<2.0                      && redMetL>100      && mtsum>400);
+//	      bool pass600( passTightRedMet  && fabs(dphill)<1.5                      && redMetL>150 && mtsum>450);
+
+              bool pass130( zvv.pt()>69  && mindphijmet>0.62 && mt>216 && mt<272);
+              bool pass150( zvv.pt()>69  && mindphijmet>0.62 && mt>216 && mt<272);
+              bool pass170( zvv.pt()>69  && mindphijmet>0.62 && mt>216 && mt<272);
+              bool pass200( zvv.pt()>69  && mindphijmet>0.62 && mt>216 && mt<272);
+              bool pass300( zvv.pt()>83  && mindphijmet>0.28 && mt>242 && mt<320);
+              bool pass400( zvv.pt()>112 && mindphijmet>0.00 && mt>392 && mt<386);
+              bool pass500( zvv.pt()>141 && mindphijmet>0.00 && mt>336          );
+              bool pass600( zvv.pt()>170 && mindphijmet>0.00 && mt>377          );
+
 	      if(subcat=="vbf")
 		{
                   pass130 = passMediumRedMet;
