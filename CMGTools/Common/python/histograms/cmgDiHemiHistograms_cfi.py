@@ -49,15 +49,6 @@ cmgDiHemiHistograms = cms.EDAnalyzer(
                 title = cms.untracked.string("#alpha_{T}")
                 )
             ),
-        betaR = cms.untracked.VPSet(
-            cms.untracked.PSet(
-                var = cms.untracked.string('betaR()'),
-                nbins = cms.untracked.int32(10),
-                low = cms.untracked.double(-1),
-                high = cms.untracked.double(1),
-                title = cms.untracked.string("#beta_{R}")
-                )
-            ),
         mR = cms.untracked.VPSet(
             cms.untracked.PSet(
                 var = cms.untracked.string('mR()'),
