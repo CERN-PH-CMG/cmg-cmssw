@@ -319,12 +319,13 @@ if runCMG:
     process.outpath += process.outcmg
 
 process.load("CMGTools.Common.runInfoAccounting_cff")
-process.ria = cms.Sequence(
-    process.runInfoAccountingDataSequence
-    )
 if runOnMC:
     process.ria = cms.Sequence(
         process.runInfoAccountingSequence
+    )
+else:
+    process.ria = cms.Sequence(
+        process.runInfoAccountingDataSequence
     )
 
 process.outpath += process.ria
