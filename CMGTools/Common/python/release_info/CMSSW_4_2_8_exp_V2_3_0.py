@@ -1,8 +1,8 @@
 # See https://savannah.cern.ch/task/index.php?20954
 {
     'UserCode/CMG/AnalysisDataFormats/CMGTools': ['cbern_isolation_30Sep11', 'AnalysisDataFormats/CMGTools'],
-    'UserCode/CMG/CMGTools/Common':              ['wreece_051011c', 'CMGTools/Common'],
-    'UserCode/CMG/CMGTools/RootTools':           ['cbern_isolation_30Sep11', 'CMGTools/RootTools'],
+    'UserCode/CMG/CMGTools/Common':              ['cbern_collectionSize_06Oct11', 'CMGTools/Common'],
+    'UserCode/CMG/CMGTools/RootTools':           ['cbern_iso_06Oct11', 'CMGTools/RootTools'],
     'CommonTools/ParticleFlow':                  ['B4_2_X_V00-03-00', 'CommonTools/ParticleFlow'],
     'UserCode/csander/DataFormats/AnomalousEcalDataFormats' :     ['V110523_BE', 'DataFormats/AnomalousEcalDataFormats'],
     'DataFormats/PatCandidates' :                ['V06-04-19-02', 'DataFormats/PatCandidates'],
@@ -16,4 +16,3 @@
     'RecoTauTag/RecoTau' :                       ['V01-02-07', 'RecoTauTag/RecoTau'],
     'RecoTauTag/TauTagTools' :                   ['V01-02-00', 'RecoTauTag/TauTagTools'],
 }
-
