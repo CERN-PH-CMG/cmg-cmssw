@@ -45,10 +45,10 @@ class DiObject : public AbstractPhysicsObject{
 
     virtual ~DiObject(){}
 
-    T leg1() const{
+    const T& leg1() const{
         return leg1_;
     }
-    U leg2() const{
+    const U& leg2() const{
         return leg2_;
     }
 
