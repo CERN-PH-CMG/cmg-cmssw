@@ -133,7 +133,8 @@ for proc in procList :
 
                 #submit the jobs
                 for ijob in range(njobs) :
-                    localParams = newParams + ' -src=' + dir + ' -tag=' + d['dtag'] + '_' + str(idir)
+                    localParams = newParams + ' -src=' + dir + ' -tag=' + d['dtag']
+		    if(idir>1) : localParams += '_' + str(idir)
                     if(fperjob>0) : localParams += ' -f=' + str(ijob*fperjob) + ' -step=' + str(fperjob)
                     print "**** Starting new job with the following parameters ****"
                     print localParams
