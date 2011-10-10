@@ -174,7 +174,9 @@ class GZipFiles(Task):
         compressed = []
         for f in files:
             if f is None or not f: continue
-            if os.path.exists(f): compressed.append(self.gzip(f))
+            if os.path.exists(f):
+                gz = self.gzip(f)
+                compressed.append(gz)
         return {'CompressedFiles':compressed}
     
 class CleanFiles(Task):
@@ -460,6 +462,17 @@ class ExpandConfig(Task):
 
         return result
     
+class WriteToDatasets(Task):
+    """Publish the sample to 'Datasets.txt' if required"""    
+    def __init__(self, dataset, user, options):
+        Task.__init__(self,'WriteToDatasets', dataset, user, options)
+    def run(self, input):
+        from addToDatasets import addToDatasets
+        name = "%s/%s" % (self.dataset,self.options.tier)
+        name = name.replace('//','/')
+        added = addToDatasets(name, user = self.options.batch_user)
+        return {'Added':added, 'Name':name}       
+    
 class RunCMSBatch(Task):
     """Run the 'cmsBatch.py' command on your CFG, submitting to the CERN batch system"""    
 
@@ -607,6 +620,8 @@ class MonitorJobs(Task):
                             stdout = os.path.join(j,'LSFJOB_%s' % id,'STDOUT')
                             if os.path.exists(stdout):
                                 result[j] = stdout
+                            elif os.path.exists('%s.gz' % stdout):
+                                result[j] = '%s.gz' % stdout
                             else:
                                 result[j] = 'NOSTDOUT'
             return result
@@ -664,7 +679,15 @@ class CheckJobStatus(Task):
         for j, status in job_status.iteritems():
             valid = True
             if os.path.exists(status):
-                for line in file(status):
+
+                fileHandle = None
+                if status.endswith('.gz') or status.endswith('.GZ'):
+                    import gzip
+                    fileHandle = gzip.GzipFile(status)
+                else:
+                    fileHandle = file(status)
+
+                for line in fileHandle:
                     if 'Exception' in line:
                         result[j] = 'Exception'
                         valid = False
@@ -776,6 +799,7 @@ if __name__ == '__main__':
              CheckConfig(dataset,user,options),
              RunTestEvents(dataset,user,options),
              ExpandConfig(dataset,user,options),
+             WriteToDatasets(dataset,user,options),
              RunCMSBatch(dataset,user,options),
              MonitorJobs(dataset,user,options),
              CheckJobStatus(dataset,user,options),
@@ -859,6 +883,8 @@ if __name__ == '__main__':
     
     #submit the main work in a multi-threaded way
     import multiprocessing
+    if op.options.max_threads is not None and op.options.max_threads:
+        op.options.max_threads = int(op.options.max_threads)
     pool = multiprocessing.Pool(processes=op.options.max_threads)
     print op.dataset
     for d in op.dataset:
