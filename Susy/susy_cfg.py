@@ -22,6 +22,8 @@ process.setName_('SUSY')
 # process.load("CMGTools.Common.sources.HT.Run2011A_PromptReco_v1.AOD.PAT_CMG.source_tree_cff")
 process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.PAT_CMG.source_cff")
 #process.load("CMGTools.Common.sources.LM6_SUSY_sftsht_7TeV_pythia6.Summer11_PU_S4_START42_V11_v1.AODSIM.V2.PAT_CMG_V2_2_0.source_cff")
+process.load("CMGTools.Common.sources.RelValTTbar.CMSSW_4_2_3_START42_V12_v2.GEN_SIM_RECO.PAT_CMG_V2_3_0.source_cff")
+process.source.fileNames = ['file:tree_CMG.root']
 
 ext = 'CMG'
 
