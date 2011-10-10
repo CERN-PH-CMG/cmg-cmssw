@@ -64,6 +64,7 @@
   <class name="edm::Wrapper<std::vector<cmg::Electron> >"/>
 
   <class name="cmg::Muon"/>
+  <class name="edm::Ptr< cmg::Muon > "/>
   <class name="cmg::Lepton<pat::MuonPtr>" />
   <class name="cmg::PhysicsObjectWithPtr<pat::MuonPtr>" />
   <class name="std::vector<cmg::Muon>"/>

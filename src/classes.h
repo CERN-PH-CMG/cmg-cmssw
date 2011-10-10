@@ -94,6 +94,7 @@ namespace {
     edm::Wrapper<std::vector<cmg::Electron> > eev;
 
     cmg::Muon m_;
+    edm::Ptr< cmg::Muon > mp;
     std::vector<cmg::Muon> mv;
     edm::Wrapper<cmg::Muon> em;
     edm::Wrapper<std::vector<cmg::Muon> > emv;

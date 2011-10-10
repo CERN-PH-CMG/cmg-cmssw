@@ -21,7 +21,8 @@ namespace cmg {
   typedef cmg::DiObject<cmg::Photon, cmg::Photon> DiPhoton;
   typedef cmg::DiObject<cmg::Electron,cmg::Electron> DiElectron;
   typedef cmg::DiObject<cmg::BaseJet,cmg::BaseJet> DiJet;
-  typedef cmg::DiObject<cmg::Muon,cmg::Muon> DiMuon;
+  //  typedef cmg::DiObject< edm::Ptr<cmg::Muon>, edm::Ptr< cmg::Muon> > DiMuon;
+  typedef cmg::DiObject<cmg::Muon, cmg::Muon > DiMuon;
   typedef cmg::DiObject<cmg::PFJet,cmg::PFJet> DiPFJet;
   typedef cmg::DiObject<cmg::Tau,cmg::Tau> DiTau;
   typedef cmg::DiObject<cmg::Tau,cmg::Electron> TauE;
