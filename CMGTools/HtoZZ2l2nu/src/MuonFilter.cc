@@ -8,6 +8,7 @@ namespace muon{
   CandidateWithVertexCollection filter(edm::Handle<edm::View<reco::Candidate> > &hMu, 
 				       std::vector<reco::VertexRef> &goodVertices,
 				       const reco::BeamSpot &theBeamSpot,
+                                       const double& rho,
 				       const edm::ParameterSet &iConfig)
   {
     CandidateWithVertexCollection selMuons;
@@ -58,7 +59,7 @@ namespace muon{
 	    }
 	  
 	  //isolation
-	  double relIso = lepton::getLeptonIso( muonPtr, mPt )[lepton::REL_ISO];
+	  double relIso = lepton::getLeptonIso( muonPtr, mPt, rho )[lepton::REL_ISO];
 	  if(relIso>maxRelIso) continue;
 	  
 	  //muon is selected (add vertex)

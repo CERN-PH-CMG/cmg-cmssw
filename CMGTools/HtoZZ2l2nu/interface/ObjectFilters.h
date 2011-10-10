@@ -116,6 +116,7 @@ namespace muon
   CandidateWithVertexCollection filter(edm::Handle<edm::View<reco::Candidate> > &hMu, 
 				       std::vector<reco::VertexRef> &goodVertices, 
 				       const reco::BeamSpot &theBeamSpot,
+				       const double& rho,
 				       const edm::ParameterSet &iConfig);
 }
 
@@ -128,6 +129,7 @@ namespace electron
 				       edm::Handle<edm::View<reco::Candidate> > &hMu, 
 				       std::vector<reco::VertexRef> &goodVertices, 
 				       const reco::BeamSpot &theBeamSpot,
+                                       const double& rho,
 				       const edm::ParameterSet &iConfig);
 }
 
@@ -137,7 +139,7 @@ namespace lepton
      @short wrappers for common operations with leptons
    */
   enum {ELECTRON=11, MUON=13};
-  enum IsolType { ECAL_ISO=0, HCAL_ISO, TRACKER_ISO, REL_ISO};
+  enum IsolType { ECAL_ISO=0, HCAL_ISO, TRACKER_ISO, REL_ISO, N_ISO, C_ISO, G_ISO};
   int getLeptonId(reco::CandidatePtr &lepton);
   double getPtErrorFor(reco::CandidatePtr &lepton);
   std::vector<double> getLeptonIso(reco::CandidatePtr &lepton, float minRelNorm=20, float puOffsetCorrection=0);

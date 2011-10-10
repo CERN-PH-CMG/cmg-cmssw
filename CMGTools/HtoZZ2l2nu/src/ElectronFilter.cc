@@ -9,6 +9,7 @@ namespace electron{
 				       edm::Handle<edm::View<reco::Candidate> > &hMu, 
 				       std::vector<reco::VertexRef> &goodVertices,
 				       const reco::BeamSpot &theBeamSpot,
+                                       const double& rho,
 				       const edm::ParameterSet &iConfig)
   {
     CandidateWithVertexCollection selElectrons;
@@ -65,7 +66,7 @@ namespace electron{
 	  if( nTrackLostHits>maxTrackLostHits) continue;
 	  
 	  //isolation
-	  double relIso = lepton::getLeptonIso( elePtr, ePt)[lepton::REL_ISO];
+	  double relIso = lepton::getLeptonIso( elePtr, ePt, rho)[lepton::REL_ISO];
 	  if(relIso>maxRelIso) continue;
 	  
 	  //cross clean with overlapping muons
