@@ -51,7 +51,7 @@ BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlow"),
                                minValidTrackerHits = cms.int32(11),
                                minValidMuonHits=cms.int32(1),
                                maxDistToBeamSpot=cms.double(0.02),
-                               id = cms.string("TMLastStationAngTight"),
+                               id = cms.string(""),#TMLastStationAngTight"),
                                maxRelIso = cms.double(0.15)
                                )
 

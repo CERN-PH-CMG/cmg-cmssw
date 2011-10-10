@@ -151,8 +151,8 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   //select muons (id+very loose isolation)
   Handle<View<Candidate> > hMu; 
   iEvent.getByLabel(objConfig["Muons"].getParameter<edm::InputTag>("source"), hMu);
-  CandidateWithVertexCollection selLooseMuons = muon::filter(hMu, selVertices, *beamSpot, objConfig["LooseMuons"]);
-  CandidateWithVertexCollection selMuons = muon::filter(hMu, selVertices, *beamSpot, objConfig["Muons"]);
+  CandidateWithVertexCollection selLooseMuons = muon::filter(hMu, selVertices, *beamSpot, *rho, objConfig["LooseMuons"]);
+  CandidateWithVertexCollection selMuons = muon::filter(hMu, selVertices, *beamSpot, *rho, objConfig["Muons"]);
   
   for(size_t iMuon=0; iMuon< hMu.product()->size(); ++iMuon)
     {
@@ -193,8 +193,8 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   //select electrons (id+conversion veto+very loose isolation)
   Handle<View<Candidate> > hEle; 
   iEvent.getByLabel(objConfig["Electrons"].getParameter<edm::InputTag>("source"), hEle);
-  CandidateWithVertexCollection selLooseElectrons = electron::filter(hEle, hMu, selVertices, *beamSpot, objConfig["LooseElectrons"]);
-  CandidateWithVertexCollection selElectrons = electron::filter(hEle, hMu, selVertices, *beamSpot, objConfig["Electrons"]);
+  CandidateWithVertexCollection selLooseElectrons = electron::filter(hEle, hMu, selVertices, *beamSpot, *rho, objConfig["LooseElectrons"]);
+  CandidateWithVertexCollection selElectrons = electron::filter(hEle, hMu, selVertices, *beamSpot, *rho, objConfig["Electrons"]);
   for(size_t iEle=0; iEle< hEle.product()->size(); ++iEle)
     {
       reco::CandidatePtr elePtr = hEle->ptrAt(iEle);

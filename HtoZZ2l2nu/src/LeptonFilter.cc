@@ -50,33 +50,34 @@ namespace lepton{
   //returns the standard lepton isolation
   std::vector<double> getLeptonIso(reco::CandidatePtr &lepton,float minRelNorm, float puOffsetCorrection)
   {
-    std::vector<double> leptonIso(4,99999.);
+    std::vector<double> leptonIso(7,99999.);
     if(lepton.get()==0) return leptonIso;
 
     int lid=fabs(getLeptonId(lepton));
     if( lid==lepton::MUON )
       {
 	const pat::Muon *mu=dynamic_cast<const pat::Muon *>( lepton.get() );
-	// 	leptonIso[ECAL_ISO]=mu->ecalIso();
-	// 	leptonIso[HCAL_ISO]=mu->hcalIso();
-	// 	leptonIso[TRACKER_ISO]=mu->trackIso();
-	leptonIso[HCAL_ISO]=mu->neutralHadronIso();
-	leptonIso[TRACKER_ISO]=mu->chargedHadronIso();
-	leptonIso[ECAL_ISO]=mu->photonIso ();
+	leptonIso[N_ISO]=mu->neutralHadronIso();
+	leptonIso[C_ISO]=mu->chargedHadronIso();
+	leptonIso[G_ISO]=mu->photonIso ();
+ 	leptonIso[ECAL_ISO]=mu->ecalIso();
+	leptonIso[HCAL_ISO]=mu->hcalIso();
+	leptonIso[TRACKER_ISO]=mu->trackIso();
       }
     else if( lid==lepton::ELECTRON )
       {
 	//ecal barrel pedestal is subtracted
 	const pat::Electron *ele=dynamic_cast<const pat::Electron *>( lepton.get() );
-	// 	leptonIso[ECAL_ISO]=ele->ecalIso();
-	// 	if(ele->isEB()) leptonIso[ECAL_ISO] = max(leptonIso[ECAL_ISO]-1.0,0.);
-	// 	leptonIso[HCAL_ISO]=ele->hcalIso();
-	// 	leptonIso[TRACKER_ISO]=ele->trackIso();
-	leptonIso[HCAL_ISO]=ele->neutralHadronIso();
-	leptonIso[TRACKER_ISO]=ele->chargedHadronIso();
-	leptonIso[ECAL_ISO]=ele->photonIso ();
+	leptonIso[N_ISO]=ele->neutralHadronIso();
+	leptonIso[C_ISO]=ele->chargedHadronIso();
+	leptonIso[G_ISO]=ele->photonIso ();
+	leptonIso[ECAL_ISO]=ele->ecalIso();
+//	if(ele->isEB()) leptonIso[ECAL_ISO] = max(leptonIso[ECAL_ISO]-1.0,0.);
+	leptonIso[HCAL_ISO]=ele->hcalIso();
+	leptonIso[TRACKER_ISO]=ele->trackIso();
+
       }
-    leptonIso[REL_ISO]=(max(leptonIso[ECAL_ISO]+leptonIso[HCAL_ISO]-puOffsetCorrection,0.)+leptonIso[TRACKER_ISO])/max(float(lepton->pt()),float(minRelNorm));
+    leptonIso[REL_ISO]=(max(leptonIso[ECAL_ISO]+leptonIso[HCAL_ISO]-puOffsetCorrection*0.28,0.)+leptonIso[TRACKER_ISO])/max(float(lepton->pt()),float(minRelNorm));
     
     return leptonIso;
   }
