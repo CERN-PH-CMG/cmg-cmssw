@@ -205,7 +205,7 @@ void Draw2DHistogram(Object& Root, std::string RootDir, std::string HistoName){
       while(SavePath.find("(")!=std::string::npos)SavePath.replace(SavePath.find("("),1,"");
       while(SavePath.find(")")!=std::string::npos)SavePath.replace(SavePath.find(")"),1,"");
       while(SavePath.find("^")!=std::string::npos)SavePath.replace(SavePath.find("^"),1,"");
-      while(SavePath.find("/")!=std::string::npos)SavePath.replace(SavePath.find("/"),1,"_");
+      while(SavePath.find("/")!=std::string::npos)SavePath.replace(SavePath.find("/"),1,"-");
       SavePath = outDir + SavePath;
       system(string(("rm -f ") + SavePath).c_str());
       c1->SaveAs(SavePath.c_str());
@@ -283,7 +283,7 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    while(SavePath.find("(")!=std::string::npos)SavePath.replace(SavePath.find("("),1,"");
    while(SavePath.find(")")!=std::string::npos)SavePath.replace(SavePath.find(")"),1,"");
    while(SavePath.find("^")!=std::string::npos)SavePath.replace(SavePath.find("^"),1,"");
-   while(SavePath.find("/")!=std::string::npos)SavePath.replace(SavePath.find("/"),1,"_");
+   while(SavePath.find("/")!=std::string::npos)SavePath.replace(SavePath.find("/"),1,"-");
    SavePath = outDir + SavePath;
    system(string(("rm -f ") + SavePath).c_str());
    c1->SaveAs(SavePath.c_str());
@@ -394,7 +394,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    while(SavePath.find("(")!=std::string::npos)SavePath.replace(SavePath.find("("),1,"");
    while(SavePath.find(")")!=std::string::npos)SavePath.replace(SavePath.find(")"),1,"");
    while(SavePath.find("^")!=std::string::npos)SavePath.replace(SavePath.find("^"),1,"");
-   while(SavePath.find("/")!=std::string::npos)SavePath.replace(SavePath.find("/"),1,"_");
+   while(SavePath.find("/")!=std::string::npos)SavePath.replace(SavePath.find("/"),1,"-");
    SavePath = outDir + SavePath;
    system(string(("rm -f ") + SavePath).c_str());
    c1->SaveAs(SavePath.c_str());
@@ -463,7 +463,7 @@ void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
          while(SavePath.find("(")!=std::string::npos)SavePath.replace(SavePath.find("("),1,"");
          while(SavePath.find(")")!=std::string::npos)SavePath.replace(SavePath.find(")"),1,"");
          while(SavePath.find("^")!=std::string::npos)SavePath.replace(SavePath.find("^"),1,"");
-         while(SavePath.find("/")!=std::string::npos)SavePath.replace(SavePath.find("/"),1,"_");
+         while(SavePath.find("/")!=std::string::npos)SavePath.replace(SavePath.find("/"),1,"-");
          SavePath = outDir + SavePath;
          system(string(("rm -f ") + SavePath).c_str());
          pFile = fopen(SavePath.c_str(), "w");
