@@ -114,7 +114,7 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
       }   
       if(!hist)continue;
 
-      string dirName = Process[i]["tag"].c_str();while(dirName.find("/")!=std::string::npos)dirName.replace(dirName.find("/"),1,"_");
+      string dirName = Process[i]["tag"].c_str();while(dirName.find("/")!=std::string::npos)dirName.replace(dirName.find("/"),1,"-");
       OutputFile->cd();
       TDirectory* subdir = OutputFile->GetDirectory(dirName.c_str());
       if(!subdir || subdir==OutputFile) subdir = OutputFile->mkdir(dirName.c_str());
