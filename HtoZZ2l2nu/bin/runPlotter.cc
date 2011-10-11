@@ -106,12 +106,13 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
 
          TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + ".root").c_str());
+         if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
          TH1* tmphist = (TH1*) GetObjectFromPath(File,HistoName); 
-         if(j==0){gROOT->cd(); hist = (TH1*)tmphist->Clone(tmphist->GetName());hist->Scale(Weight);}else{hist->Add(tmphist,Weight);}
-
+         if(!hist){gROOT->cd(); hist = (TH1*)tmphist->Clone(tmphist->GetName());hist->Scale(Weight);}else{hist->Add(tmphist,Weight);}
          delete tmphist;
          delete File;
       }   
+      if(!hist)continue;
 
       string dirName = Process[i]["tag"].c_str();while(dirName.find("/")!=std::string::npos)dirName.replace(dirName.find("/"),1,"_");
       OutputFile->cd();
@@ -175,11 +176,13 @@ void Draw2DHistogram(Object& Root, std::string RootDir, std::string HistoName){
          std::vector<Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
 
          TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + ".root").c_str());
+         if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
          TH1* tmphist = (TH1*) GetObjectFromPath(File,HistoName); 
-         if(j==0){gROOT->cd(); hist = (TH1*)tmphist->Clone(tmphist->GetName());hist->Scale(Weight);}else{hist->Add(tmphist,Weight);}
+         if(!hist){gROOT->cd(); hist = (TH1*)tmphist->Clone(tmphist->GetName());hist->Scale(Weight);}else{hist->Add(tmphist,Weight);}
          delete tmphist;
          delete File;
       }   
+      if(!hist)continue;
 
       hist->SetTitle("");
       hist->SetStats(kFALSE);
@@ -245,11 +248,14 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
 
          TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + ".root").c_str());
+         if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
          TH1* tmphist = (TH1*) GetObjectFromPath(File,HistoName); 
-         if(j==0){gROOT->cd(); hist = (TH1*)tmphist->Clone(tmphist->GetName());hist->Scale(Weight);}else{hist->Add(tmphist,Weight);}
+         if(!hist){gROOT->cd(); hist = (TH1*)tmphist->Clone(tmphist->GetName());hist->Scale(Weight);}else{hist->Add(tmphist,Weight);}
          delete tmphist;
          delete File;
       }   
+      if(!hist)continue;
+
       SaveName = hist->GetName();
       ObjectToDelete.push_back(hist);
       hist->SetTitle("");
@@ -312,13 +318,15 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
 
          TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + ".root").c_str());
+         if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
          TH1* tmphist = (TH1*) GetObjectFromPath(File,HistoName); 
-         if(j==0){gROOT->cd(); hist = (TH1*)tmphist->Clone(tmphist->GetName());hist->Scale(Weight);}else{hist->Add(tmphist,Weight);}
-//         if(j==0){hist = (TH1*)tmphist->Clone("tmp");hist->Scale(Weight);}else{hist->Add(tmphist,Weight);}
+         if(!hist){gROOT->cd(); hist = (TH1*)tmphist->Clone(tmphist->GetName());hist->Scale(Weight);}else{hist->Add(tmphist,Weight);}
+//         if(!hist){hist = (TH1*)tmphist->Clone("tmp");hist->Scale(Weight);}else{hist->Add(tmphist,Weight);}
 
          delete tmphist;
          delete File;
       }   
+      if(!hist)continue;
 
       SaveName = hist->GetName();
       if(Process[i].isTag("color" ) )hist->SetLineColor  ((int)Process[i][ "color"].toDouble()); else hist->SetLineColor  (1);
@@ -430,6 +438,7 @@ void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
    for(unsigned int i=0;i<Process.size();i++){
       TH1* hist = NULL;
       std::vector<JSONWrapper::Object> Samples = (Process[i])["data"].daughters();
+
       for(unsigned int j=0;j<Samples.size();j++){
          double Weight = 1.0;
          if(!Process[i]["isdata"].toBool())Weight*= iLumi;
@@ -437,14 +446,16 @@ void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
 
          TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + ".root").c_str());
+         if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
          TH1* tmphist = (TH1*) GetObjectFromPath(File,HistoName); 
-         if(j==0){gROOT->cd(); hist = (TH1*)tmphist->Clone(tmphist->GetName());hist->Scale(Weight);}else{hist->Add(tmphist,Weight);}
+         if(!hist){gROOT->cd(); hist = (TH1*)tmphist->Clone(tmphist->GetName());hist->Scale(Weight);}else{hist->Add(tmphist,Weight);}
          delete tmphist;
          delete File;
-      }  
- 
+      } 
+      if(!hist)continue;
+
       if(!pFile){
-          string SavePath = string(hist->GetName()) + ".tex";
+         string SavePath = string(hist->GetName()) + ".tex";
          while(SavePath.find("*")!=std::string::npos)SavePath.replace(SavePath.find("*"),1,"");
          while(SavePath.find("#")!=std::string::npos)SavePath.replace(SavePath.find("#"),1,"");
          while(SavePath.find("{")!=std::string::npos)SavePath.replace(SavePath.find("{"),1,"");
@@ -500,13 +511,16 @@ void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
           for(int b=1;b<=hist->GetXaxis()->GetNbins();b++){sprintf(numberastext,"%s & %s",numberastext, toLatexRounded(hist->GetBinContent(b), hist->GetBinError(b)).c_str());}
           fprintf(pFile, "%s %s \\\\\n",CleanTag.c_str(), numberastext);
        }
-   }
-   fprintf(pFile,"\\hline\n");
-   fprintf(pFile,"\\end{tabular}\n");
-   fprintf(pFile,"\\end{center}\n");
-   fprintf(pFile,"\\end{table}\n");
 
-   fclose(pFile);
+   }
+
+   if(pFile){
+      fprintf(pFile,"\\hline\n");
+      fprintf(pFile,"\\end{tabular}\n");
+      fprintf(pFile,"\\end{center}\n");
+      fprintf(pFile,"\\end{table}\n");
+      fclose(pFile);
+   }
    for(unsigned int d=0;d<ObjectToDelete.size();d++){delete ObjectToDelete[d];}ObjectToDelete.clear();
 }
 
@@ -523,9 +537,10 @@ int main(int argc, char* argv[]){
    gStyle->SetPalette(1);
    gStyle->SetNdivisions(505);
 
-
-   for(int i=0;i<argc;i++){
+   for(int i=1;i<argc;i++){
      string arg(argv[i]);
+     //printf("--- %i - %s\n",i,argv[i]);
+
      if(arg.find("--help")!=string::npos){
         printf("--help   --> print this helping text\n");
 
@@ -541,15 +556,17 @@ int main(int argc, char* argv[]){
         printf("--noTex  --> Do not create latex table (when possible)\n");
         printf("--noRoot --> Do not make a summary .root file\n");
         printf("--noPlot --> Do not creates plot files (useful to speedup processing)\n");
+
+        printf("command line example: runPlotter --json ../data/beauty-samples.json --iLumi 2007 --inDir OUT/ --outDir OUT/plots/ --outFile plotter.root --noRoot --noPlot\n");
      }
 
-     if(arg.find("--iLumi"  )!=string::npos && i+1<argc){ sprintf(argv[i+1],"%f",iLumi); }
+     if(arg.find("--iLumi"  )!=string::npos && i+1<argc){ sscanf(argv[i+1],"%lf",&iLumi); i++; printf("Lumi = %f\n", iLumi); }
 
-     if(arg.find("--inDir"  )!=string::npos && i+1<argc){ inDir    = argv[i+1];    }
-     if(arg.find("--outDir" )!=string::npos && i+1<argc){ outDir   = argv[i+1];    }
-     if(arg.find("--outFile")!=string::npos && i+1<argc){ outFile  = argv[i+1];    }
-     if(arg.find("--json"   )!=string::npos && i+1<argc){ jsonFile = argv[i+1];    }
-     if(arg.find("--only"   )!=string::npos && i+1<argc){ objectSearchKey = argv[i+1];    }
+     if(arg.find("--inDir"  )!=string::npos && i+1<argc){ inDir    = argv[i+1];  i++;  printf("inDir = %s\n", inDir.c_str()); }
+     if(arg.find("--outDir" )!=string::npos && i+1<argc){ outDir   = argv[i+1];  i++;  printf("outDir = %s\n", outDir.c_str());  }
+     if(arg.find("--outFile")!=string::npos && i+1<argc){ outFile  = argv[i+1];  i++; printf("output file = %s\n", outFile.c_str()); }
+     if(arg.find("--json"   )!=string::npos && i+1<argc){ jsonFile = argv[i+1];  i++;  }
+     if(arg.find("--only"   )!=string::npos && i+1<argc){ objectSearchKey = argv[i+1]; i++;    }
 
      if(arg.find("--no2D"  )!=string::npos){ do2D = false;    }
      if(arg.find("--no1D"  )!=string::npos){ do1D = false;    }
@@ -557,6 +574,7 @@ int main(int argc, char* argv[]){
      if(arg.find("--noRoot")!=string::npos){ StoreInFile = false;    }
      if(arg.find("--noPlot")!=string::npos){ doPlot = false;    }
    } 
+   system( (string("mkdir -p ") + outDir).c_str());
 
 
    JSONWrapper::Object Root(jsonFile, true);
