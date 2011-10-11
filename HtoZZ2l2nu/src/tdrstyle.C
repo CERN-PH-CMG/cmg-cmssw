@@ -3,6 +3,7 @@
 // .L tdrstyle.C
 // setTDRStyle()
 //
+#include "TROOT.h"
 #include "TStyle.h"
 #include "TPad.h"
 
@@ -164,6 +165,6 @@ void setTDRStyle() {
 
 //   gStyle->cd();
 
-  //gROOT->ForceStyle();
+  gROOT->ForceStyle();
 
 }
