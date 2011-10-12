@@ -8,7 +8,6 @@ import FWCore.ParameterSet.Config as cms
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 from CMGTools.Common.eventContent.everything_cff import everything
 from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
-from CMGTools.Common.Tools.tuneCMGSequences import removeObject
 from CMGTools.Common.physicsObjectPrinter_cfi import physicsObjectPrinter
 
 ##########
@@ -23,8 +22,8 @@ print sep_line
 
 process.setName_("CMG")
 
-# Pick up the SingleMu data files.
-process.load("CMGTools.ZmumuJetsTutorial.sources.SingleMu.Run2011A_May10ReReco_v1.AOD.PAT_CMG_V2.source_PAT_cff")
+# Pick up a di-muon data file (EWK Z skim)
+process.load("CMGTools.Common.sources.DoubleMu.Run2011A_ZMu_PromptSkim_v6.RAW_RECO.PAT_CMG_V2_3_0_JecPileUpDecoupled.source_cff")
 
 # One can limit the number of files to avoid some of the CASTOR
 # overhead (i.e., faster start-up).
@@ -74,10 +73,6 @@ process.load("CMGTools.Common.analysis_cff")
 
 # Switch on production of trigger objects.
 process.cmgTriggerObject.cfg.useTriggerObjects = cms.untracked.bool(True)
-
-# Remove the taus, as PFCandidate embedding does not work, hence an
-# exception in the cmg Tau factory.
-removeObject(process, "tau", "")
 
 # Select events with 2 jets ...
 # process.cmgPFJetCount.minNumber = 2
