@@ -201,9 +201,14 @@ class MyBatchManager( BatchManager ):
           
           process.source.fileNames = fullSource.fileNames[iFileMin:iFileMax]
           print process.source
-          
+
        cfgFile = open(jobDir+'/run_cfg.py','w')
-       cfgFile.write(process.dumpPython())
+       cfgFile.write('import FWCore.ParameterSet.Config as cms\n\n')
+       cfgFile.write('import os,sys\n')
+       # need to import most of the config from the base directory containing all jobs
+       cfgFile.write("sys.path.append('%s')\n" % os.path.dirname(jobDir) )
+       cfgFile.write('from base_cfg import *\n')
+       cfgFile.write('process.source = ' + process.source.dumpPython() + '\n')
        cfgFile.close()
        
     def SubmitJob( self, jobDir ):
@@ -325,7 +330,16 @@ else:
 
 batchManager.PrepareJobs( listOfValues )
 
+# preparing master cfg file
+
+cfgFile = open(batchManager.outputDir_+'/base_cfg.py','w')
+cfgFile.write( process.dumpPython() + '\n')
+cfgFile.close()
+
 batchManager.SubmitJobs()
+
+
+# logging
 
 from logger import logger
 
