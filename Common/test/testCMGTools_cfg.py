@@ -20,8 +20,9 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
 
 
 
-process.load("CMGTools.Common.sources.RelValZMM.CMSSW_4_2_5_START42_V12_v1.GEN_SIM_RECO.source_cff")
+# process.load("CMGTools.Common.sources.RelValZMM.CMSSW_4_2_5_START42_V12_v1.GEN_SIM_RECO.source_cff")
 # process.load("CMGTools.Common.sources.SingleMu.Run2011A_May10ReReco_v1.AOD.PAT_CMG_V2.source_PAT_cff")
+process.load("CMGTools.Common.sources.DoubleMu.Run2011A_ZMu_PromptSkim_v6.RAW_RECO.PAT_CMG_V2_3_0_JecPileUpDecoupled.source_cff")
 
 # process.source.fileNames = cms.untracked.vstring(
 #     'file:../prod/patTuple_PF2PAT.root'
