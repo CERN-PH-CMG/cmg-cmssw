@@ -1,8 +1,9 @@
 # See https://savannah.cern.ch/task/index.php?20954
 {
-    'UserCode/CMG/AnalysisDataFormats/CMGTools': ['cbern_isolation_30Sep11', 'AnalysisDataFormats/CMGTools'],
-    'UserCode/CMG/CMGTools/Common':              ['wreece_071011', 'CMGTools/Common'],
+    'UserCode/CMG/AnalysisDataFormats/CMGTools': ['cbern_memleak_10Oct11', 'AnalysisDataFormats/CMGTools'],
+    'UserCode/CMG/CMGTools/Common':              ['cbern_cmsBatch_12Oct11', 'CMGTools/Common'],
     'UserCode/CMG/CMGTools/RootTools':           ['cbern_iso_06Oct11', 'CMGTools/RootTools'],
+    'UserCode/CMG/CMGTools/ZmumuJetsTutorial':           ['cbern_tutorial_12Oct11', 'CMGTools/ZmumuJetsTutorial'],
     'CommonTools/ParticleFlow':                  ['B4_2_X_V00-03-00', 'CommonTools/ParticleFlow'],
     'UserCode/csander/DataFormats/AnomalousEcalDataFormats' :     ['V110523_BE', 'DataFormats/AnomalousEcalDataFormats'],
     'DataFormats/PatCandidates' :                ['V06-04-19-02', 'DataFormats/PatCandidates'],
