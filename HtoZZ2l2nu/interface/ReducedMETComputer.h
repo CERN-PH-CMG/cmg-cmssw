@@ -4,8 +4,8 @@
 /** \class ReducedMETComputer
  *  No description available.
  *
- *  $Date: 2011/08/26 14:02:20 $
- *  $Revision: 1.10 $
+ *  $Date: 2011/09/20 09:38:32 $
+ *  $Revision: 1.11 $
  *  \author G. Cerminara & D. Trocino & P. Silva
  */
 
@@ -60,6 +60,14 @@ public:
 	       const LorentzVector& met,
 	       bool isZcandidate=false,
 	       bool debug=false);
+
+
+  void compute(const LorentzVector& lepton1, double sigmaPt1,
+               const LorentzVector& lepton2, double sigmaPt2,
+               const LorentzVector& met1,
+               const LorentzVector& met2,
+               const LorentzVector& met3, bool debug=false);
+
 
   /// get the event category
   int event_categ;

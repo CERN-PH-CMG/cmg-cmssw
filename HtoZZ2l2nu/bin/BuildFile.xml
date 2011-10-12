@@ -16,5 +16,6 @@
  <bin name="runMVAStudy" file="../src/ZZ2l2nuSummaryHandler.cc ../src/ZZ2l2nuPhysicsEvent.cc ../src/EventCategory.cc ../src/ReducedMETComputer.cc ../src/TMVAUtils.cc runMVAStudy.cc"></bin>
  <bin name="runMCtruthStudy" file="../src/setStyle.C ../src/plotter.C ../src/ZZ2l2nuSummaryHandler.cc ../src/ZZ2l2nuPhysicsEvent.cc ../src/EventCategory.cc ../src/ReducedMETFitter.cc ../src/ReducedMETComputer.cc runMCtruthStudy.cc"></bin>
  <bin name="runVBF" file="../src/setStyle.C ../src/plotter.C ../src/ZZ2l2nuSummaryHandler.cc ../src/ZZ2l2nuPhysicsEvent.cc ../src/ReducedMETFitter.cc ../src/ReducedMETComputer.cc ../src/EventCategory.cc runVBF.cc"></bin>
+ <bin name="runPlotter" file="runPlotter.cc"></bin>
 </environment>
 <Flags CXXFLAGS="-g"/>
