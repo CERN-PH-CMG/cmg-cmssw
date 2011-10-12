@@ -1,6 +1,6 @@
 # See https://savannah.cern.ch/task/index.php?20954
 {
-    'UserCode/CMG/AnalysisDataFormats/CMGTools': ['cbern_isolation_30Sep11', 'AnalysisDataFormats/CMGTools'],
+    'UserCode/CMG/AnalysisDataFormats/CMGTools': ['cbern_memleak_10Oct11', 'AnalysisDataFormats/CMGTools'],
     'UserCode/CMG/CMGTools/Common':              ['wreece_071011', 'CMGTools/Common'],
     'UserCode/CMG/CMGTools/RootTools':           ['cbern_iso_06Oct11', 'CMGTools/RootTools'],
     'CommonTools/ParticleFlow':                  ['B4_2_X_V00-03-00', 'CommonTools/ParticleFlow'],
