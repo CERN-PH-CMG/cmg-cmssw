@@ -93,7 +93,16 @@ int main(int argc, char* argv[])
   //start computers
   ProjectedMETComputer pmetComp;
   ReducedMETComputer rmetComp(1., 1., 1., 1., 1.);
-  ReducedMETComputer rAmetComp(1., 1., 1., 1., 1.);
+  ReducedMETComputer rTComp(1., 1., 1., 1., 1.);
+  ReducedMETComputer rAComp(1., 1., 1., 1., 1.);
+  ReducedMETComputer rCComp(1., 1., 1., 1., 1.);
+  ReducedMETComputer rTAComp(1., 1., 1., 1., 1.);
+  ReducedMETComputer rTCComp(1., 1., 1., 1., 1.);
+  ReducedMETComputer rACComp(1., 1., 1., 1., 1.);
+  ReducedMETComputer r3Comp(1., 1., 1., 1., 1.);
+  ReducedMETComputer rmAComp(1., 1., 1., 1., 1.);
+
+
   //ReducedMETFitter rmetFitter(runProcess);
   TransverseMassComputer mtComp;
   EventCategory eventClassifComp;
@@ -332,31 +341,48 @@ int main(int argc, char* argv[])
 
   //met control
   std::map<TString,TString> metTypes;
-  metTypes["met"]                 = "E_{T}^{miss}";
 //  metTypes["projMet"]             = "proj-E_{T}^{miss}";
 //  metTypes["minProjMet"]          = "min-proj{E_{T}^{miss},assoc E_{T}^{miss} (charged)}";
-  metTypes["redMet"]              = "red-E_{T}^{miss}";
+//  metTypes["redMet"]              = "red-E_{T}^{miss}";
 //  metTypes["redMetD0"]            = "red-E_{T}^{miss}(D0)";
-  metTypes["assocChargedMet"]     = "assoc E_{T}^{miss} (charged)";
-  metTypes["minAssocChargedMet"]  = "min{E_{T}^{miss},assoc E_{T}^{miss} (charged)}";
-  metTypes["centralMet"]          = "central-E_{T}^{miss}";
+//  metTypes["centralMet"]          = "central-E_{T}^{miss}";
 //  metTypes["minCentralMet"]       = "min{E_{T}^{miss},central-E_{T}^{miss}}";
 //  metTypes["assocOtherVertexMet"] = "assoc-E_{T}^{miss} (other vtx)";
 //  metTypes["cleanMet"]            = "clean-E_{T}^{miss}";
 //  metTypes["minCleanMet"]         = "min{E_{T}^{miss},clean-E_{T}^{miss}}";
-  metTypes["assocMet"]            = "assoc-E_{T}^{miss}";
-  metTypes["minAssocMet"]         = "min{E_{T}^miss,assoc-E_{T}^{miss})";
 //  metTypes["superMinMet"]         = "min{E_{T}^{miss},assoc-E_{T}^{miss},clean-E_{T}^{miss},central-E_{T}^{miss}}";
-  metTypes["redMinAssocMet"]         = "red{min{E_{T}^miss,assoc-E_{T}^{miss}}, unclustered E_{T}^{miss})";
-  metTypes["assocMet5"]            = "assoc-E_{T}^{miss} (pT>5)";
-  metTypes["assocMet10"]           = "assoc-E_{T}^{miss} (pT>10)";
+//  metTypes["redminAssocMet"]         = "red{min{E_{T}^miss,assoc-E_{T}^{miss}}, unclustered E_{T}^{miss})";
+//  metTypes["assocMet5"]            = "assoc-E_{T}^{miss} (pT>5)";
+//  metTypes["assocMet10"]           = "assoc-E_{T}^{miss} (pT>10)";
 //  metTypes["minAssocFwdMet"]         = "min{E_{T}^miss,assoc-E_{T}^{miss} + Fwd)";
 //  metTypes["assocFwdMet"]            = "assoc-E_{T}^{miss} + Fwd";
 //  metTypes["assocFwdMet5"]            = "assoc-E_{T}^{miss} + Fwd (pT>5)";
 //  metTypes["assocFwdMet10"]           = "assoc-E_{T}^{miss} + Fwd (pT>10)";
-  metTypes["clusteredMet"]            = "clustered-E_{T}^{miss}";
-  metTypes["minclusteredMet"]            = "min (E_{T}^{miss}, clustered-E_{T}^{miss})";
-  metTypes["minclusteredAssocMet"]            = "min(clustered-E_{T}^{miss},assoc E_{T}^{miss})";
+//  metTypes["redClusteredAssocPFMet"]         = "red(E_{T}^{miss},clustered-E_{T}^{miss},assoc E_{T}^{miss})";
+
+
+
+  metTypes["met"]                 = "E_{T}^{miss}";
+  metTypes["assocChargedMet"]     = "assoc-E_{T}^{miss}(charged)";
+  metTypes["assocMet"]            = "assoc-E_{T}^{miss}";
+  metTypes["clusteredMet"]        = "clustered-E_{T}^{miss}";
+  metTypes["minAssocChargedMet"]  = "min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))";
+  metTypes["minAssocMet"]         = "min(E_{T}^{miss},assoc-E_{T}^{miss})";
+  metTypes["minClusteredMet"]     = "min(E_{T}^{miss},clustered-E_{T}^{miss})";
+  metTypes["minTAssocMet"]       = "min(assoc-E_{T}^{miss}(charged),assoc-E_{T}^{miss})";
+  metTypes["minTClusteredMet"]   = "min(assoc-E_{T}^{miss}(charged),clustered-E_{T}^{miss})";
+  metTypes["minAClusteredMet"]    = "min(assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
+  metTypes["min3Met"]             = "min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
+  metTypes["min4Met"]             = "min(E_{T}^{miss},assoc-E_{T}^{miss}(charged),assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
+  metTypes["redMet"]              = "red(E_{T}^{miss},clustered-E_{T}^{miss})";
+  metTypes["redAssocChargedMet"]  = "red(E_{T}^{miss},assoc-E_{T}^{miss}(charged))";
+  metTypes["redAssocMet"]         = "red(E_{T}^{miss},assoc-E_{T}^{miss})";
+  metTypes["redClusteredMet"]     = "red(E_{T}^{miss},clustered-E_{T}^{miss})";
+  metTypes["redTAssocMet"]        = "red(assoc-E_{T}^{miss}(charged),assoc-E_{T}^{miss})";
+  metTypes["redTClusteredMet"]    = "red(assoc-E_{T}^{miss}(charged),clustered-E_{T}^{miss})";
+  metTypes["redAClusteredMet"]    = "red(assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
+  metTypes["red3Met"]             = "red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
+  metTypes["redminAssocMet"]      = "red(min(E_{T}^{miss},assoc-E_{T}^{miss}),clustered E_{T}^{miss})";
 
 
   std::map<TString,LorentzVector> metTypeValues;
@@ -372,22 +398,22 @@ int main(int argc, char* argv[])
 //      controlHistos.addHistogram( new TH1F( TString("metT_") + it->first, ";Trans: "+it->second+";Events", 160,-300,500) );
 //      controlHistos.addHistogram( new TH2F( TString("metT_") + it->first+"vspu", ";Pileup events;Trans :"+it->second+";Events", 25,0,25,160,-300,500) );
 //      controlHistos.addHistogram( new TH2F( TString("metLT_") + it->first, ";Long: " +it->second+";Trans: " + it->second, 160,-300,500,160,-300,500) );
-      controlHistos.addHistogram( new TH2F( TString("met_") + it->first + "zpt", ";" +it->second+"; z p_{T}", 40,0,200,40,0,200) );
-      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "minzpt", ";min(z p_{T}, "  +it->second+");Events", 100,0,500) );
-      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "geq080zpt", ";"+it->second+">0.8 z p_{T};Events", 100,0,500) );
-      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"geq080zptvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+//      controlHistos.addHistogram( new TH2F( TString("met_") + it->first + "zpt", ";" +it->second+"; z p_{T}", 40,0,200,40,0,200) );
+//      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "minzpt", ";min(z p_{T}, "  +it->second+");Events", 100,0,500) );
+//      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "geq080zpt", ";"+it->second+">0.8 z p_{T};Events", 100,0,500) );
+//      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"geq080zptvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
       controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "geq060zpt", ";"+it->second+">0.6 z p_{T};Events", 100,0,500) );
       controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"geq060zptvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
-      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "geq040zpt", ";"+it->second+">0.4 z p_{T};Events", 100,0,500) );
-      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"geq040zptvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+//      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "geq040zpt", ";"+it->second+">0.4 z p_{T};Events", 100,0,500) );
+//      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"geq040zptvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
 
-      controlHistos.addHistogram( new TH2F( TString("met_") + it->first + "pfmet", ";" +it->second+"; pfmet", 40,0,200,40,0,200) );
-      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "leq120pfmet", ";"+it->second+"<1.2 pfmet;Events", 100,0,500) );
-      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"leq120pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
-      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "leq140pfmet", ";"+it->second+"<1.4 pfmet;Events", 100,0,500) );
-      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"leq140pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
-      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "leq160pfmet", ";"+it->second+"<1.6 z pfmet;Events", 100,0,500) );
-      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"leq160pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+//      controlHistos.addHistogram( new TH2F( TString("met_") + it->first + "pfmet", ";" +it->second+"; pfmet", 40,0,200,40,0,200) );
+//      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "leq120pfmet", ";"+it->second+"<1.2 pfmet;Events", 100,0,500) );
+//      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"leq120pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+//      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "leq140pfmet", ";"+it->second+"<1.4 pfmet;Events", 100,0,500) );
+//      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"leq140pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+//      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "leq160pfmet", ";"+it->second+"<1.6 z pfmet;Events", 100,0,500) );
+//      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"leq160pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
     }
   controlHistos.addHistogram( new TH2F ("itpuvsootpu", ";In-Time Pileup; Out-of-time Pileup;Events", 30,0,30,30,0,30) );
   controlHistos.addHistogram( new TH2F ("redMetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 50, -251.,249,50, -251.,249.) );
@@ -678,7 +704,7 @@ int main(int argc, char* argv[])
       Float_t dphizleadl = ptl1>ptl2 ? deltaPhi(phys.leptons[0].phi(),zll.phi()) : deltaPhi(phys.leptons[1].phi(),zll.phi()) ;
 
       //redmet
-      rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsP4, zvv );
+      rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsP4, zvv);
       Float_t redMet_d0  = rmetComp.reducedMET(ReducedMETComputer::D0);
       Float_t redMetL_d0  = rmetComp.reducedMETComponents(ReducedMETComputer::D0).second;
       Float_t redMetT_d0  = rmetComp.reducedMETComponents(ReducedMETComputer::D0).first;
@@ -690,16 +716,66 @@ int main(int argc, char* argv[])
       Float_t redMetX        = rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
       Float_t redMetY        = rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
 
-      rAmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsP4, min(zvv,assocMetP4) );
-      Float_t redminAssocMet    = rAmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t redminAssocMetL   = rAmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      Float_t redminAssocMetT   = rAmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
-      Float_t redminAssocMetX   = rAmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
-      Float_t redminAssocMetY   = rAmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
 
 
+      //cross-check that the second computer is giving same result as the first one
+      rTComp.compute(phys.leptons[0],0,phys.leptons[1], 0, assocChargedMetP4, zvv, zvv );
+      Float_t rTMet         = rTComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+      Float_t rTMetL        = rTComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+      Float_t rTMetT        = rTComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+      Float_t rTMetX        = rTComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
+      Float_t rTMetY        = rTComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
 
- 
+      rAComp.compute(phys.leptons[0],0,phys.leptons[1], 0, assocMetP4, zvv, zvv );
+      Float_t rAMet         = rAComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+      Float_t rAMetL        = rAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+      Float_t rAMetT        = rAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+      Float_t rAMetX        = rAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
+      Float_t rAMetY        = rAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
+
+      rCComp.compute(phys.leptons[0],0,phys.leptons[1], 0, clusteredMetP4, zvv, zvv);
+      Float_t rCMet         = rCComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+      Float_t rCMetL        = rCComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+      Float_t rCMetT        = rCComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+      Float_t rCMetX        = rCComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
+      Float_t rCMetY        = rCComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
+      //printf("---> %f %f\n",rCMetX,rCMetY);
+
+      rTAComp.compute(phys.leptons[0],0,phys.leptons[1], 0, assocChargedMetP4, assocMetP4, assocMetP4 );
+      Float_t rTAMet         = rTAComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+      Float_t rTAMetL        = rTAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+      Float_t rTAMetT        = rTAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+      Float_t rTAMetX        = rTAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
+      Float_t rTAMetY        = rTAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
+
+      rTCComp.compute(phys.leptons[0],0,phys.leptons[1], 0, assocChargedMetP4, clusteredMetP4, clusteredMetP4 );
+      Float_t rTCMet         = rTCComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+      Float_t rTCMetL        = rTCComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+      Float_t rTCMetT        = rTCComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+      Float_t rTCMetX        = rTCComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
+      Float_t rTCMetY        = rTCComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
+
+      rACComp.compute(phys.leptons[0],0,phys.leptons[1], 0, assocMetP4, clusteredMetP4, clusteredMetP4 );
+      Float_t rACMet         = rACComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+      Float_t rACMetL        = rACComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+      Float_t rACMetT        = rACComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+      Float_t rACMetX        = rACComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
+      Float_t rACMetY        = rACComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
+
+      r3Comp.compute(phys.leptons[0],0,phys.leptons[1], 0, zvv, assocMetP4, clusteredMetP4 );
+      Float_t r3Met         = r3Comp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+      Float_t r3MetL        = r3Comp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+      Float_t r3MetT        = r3Comp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+      Float_t r3MetX        = r3Comp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
+      Float_t r3MetY        = r3Comp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
+
+      rmAComp.compute(phys.leptons[0],0,phys.leptons[1], 0, min(zvv,assocMetP4), clusteredMetP4, clusteredMetP4 );
+      Float_t rmAMet         = rmAComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
+      Float_t rmAMetL        = rmAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+      Float_t rmAMetT        = rmAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+      Float_t rmAMetX        = rmAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
+      Float_t rmAMetY        = rmAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
+
       //projected met
       Float_t projMet        = pmetComp.compute(phys.leptons[0], phys.leptons[1], zvv );
       Float_t projAssocChargedMet     = pmetComp.compute(phys.leptons[0],phys.leptons[1], assocChargedMetP4);
@@ -712,30 +788,57 @@ int main(int argc, char* argv[])
 
               //met control
               metTypeValues["met"]                 = zvv;
-              metTypeValues["projMet"]             = LorentzVector(projMet,0,0,0);
-              metTypeValues["minProjMet"]          = min(metTypeValues["projMet"],LorentzVector(projAssocChargedMet,0,0,0) );
-              metTypeValues["redMet"]              = LorentzVector(redMetX,redMetY,0,redMet); 
-              metTypeValues["redMetD0"]            = LorentzVector(redMetX_d0, redMetY_d0, 0, redMet_d0);
               metTypeValues["assocChargedMet"]     = assocChargedMetP4;
-              metTypeValues["minAssocChargedMet"]  = min(zvv,assocChargedMetP4);
-              metTypeValues["centralMet"]          = centralMetP4;
-              metTypeValues["minCentralMet"]       = min(zvv,centralMetP4);    
-              metTypeValues["assocOtherVertexMet"] = assocOtherVertexMetP4;    
-              metTypeValues["cleanMet"]            = cleanMetP4;
-              metTypeValues["minCleanMet"]         = min(zvv,cleanMetP4);
               metTypeValues["assocMet"]            = assocMetP4;
-              metTypeValues["minAssocMet"]         = min(zvv,assocMetP4);
-              metTypeValues["superMinMet"]         = min( metTypeValues["minAssocMet"],  min(metTypeValues["minCleanMet"], metTypeValues["centralMet"]) );
-              metTypeValues["redMinAssocMet"]      = LorentzVector(redminAssocMetX,redminAssocMetY,0,redminAssocMet);
-              metTypeValues["assocMet5"]           = assocMet5P4;
-              metTypeValues["assocMet10"]          = assocMet10P4;
-              metTypeValues["assocFwdMet"]         = assocFwdMetP4;
-              metTypeValues["assocFwdMet5"]        = assocFwdMet5P4;
-              metTypeValues["assocFwdMet10"]       = assocFwdMet10P4;
-              metTypeValues["minAssocFwdMet"]      = min(zvv,metTypeValues["assocFwdMet"]);
               metTypeValues["clusteredMet"]        = clusteredMetP4;
-              metTypeValues["minclusteredMet"]     = min(zvv,clusteredMetP4);
-              metTypeValues["minclusteredAssocMet"]     = min(assocMetP4,clusteredMetP4);
+              metTypeValues["minAssocChargedMet"]  = min(zvv,assocChargedMetP4);
+              metTypeValues["minAssocMet"]         = min(zvv,assocMetP4);
+              metTypeValues["minClusteredMet"]     = min(zvv,clusteredMetP4);
+              metTypeValues["minTAssocMet"]       = min(assocChargedMetP4,assocMetP4);
+              metTypeValues["minTClusteredMet"]   = min(assocChargedMetP4,clusteredMetP4);
+              metTypeValues["minAClusteredMet"]    = min(assocMetP4,clusteredMetP4);
+              metTypeValues["min3Met"]             = min(zvv, min(assocMetP4,clusteredMetP4));
+              metTypeValues["min4Met"]             = min(min(zvv,assocChargedMetP4), min(assocMetP4,clusteredMetP4));
+
+              metTypeValues["redMet"]              = LorentzVector(redMetX,redMetY,0,redMet); 
+              metTypeValues["redAssocChargedMet"]  = LorentzVector(rTMetX,rTMetY,0,rTMet);
+              metTypeValues["redAssocMet"]         = LorentzVector(rAMetX ,rAMetY ,0,rAMet );
+              metTypeValues["redClusteredMet"]     = LorentzVector(rCMetX ,rCMetY ,0,rCMet );
+              metTypeValues["redTAssocMet"]        = LorentzVector(rTAMetX ,rTAMetY ,0,rTAMet );
+              metTypeValues["redTClusteredMet"]    = LorentzVector(rTCMetX ,rTCMetY ,0,rTCMet );
+              metTypeValues["redAClusteredMet"]    = LorentzVector(rACMetX  ,rACMetY  ,0,rACMet  );
+              metTypeValues["red3Met"]             = LorentzVector(r3MetX   ,r3MetY   ,0,r3Met   );
+              metTypeValues["redminAssocMet"]      = LorentzVector(rmAMetX  ,rmAMetY  ,0,rmAMet  );
+
+
+//              metTypeValues["met"]                 = zvv;
+//              metTypeValues["projMet"]             = LorentzVector(projMet,0,0,0);
+//              metTypeValues["minProjMet"]          = min(metTypeValues["projMet"],LorentzVector(projAssocChargedMet,0,0,0) );
+//              metTypeValues["redMet"]              = LorentzVector(redMetX,redMetY,0,redMet); 
+//              metTypeValues["redMetD0"]            = LorentzVector(redMetX_d0, redMetY_d0, 0, redMet_d0);
+//              metTypeValues["assocChargedMet"]     = assocChargedMetP4;
+//              metTypeValues["minAssocChargedMet"]  = min(zvv,assocChargedMetP4);
+//              metTypeValues["centralMet"]          = centralMetP4;
+//              metTypeValues["minCentralMet"]       = min(zvv,centralMetP4);    
+//              metTypeValues["assocOtherVertexMet"] = assocOtherVertexMetP4;    
+//              metTypeValues["cleanMet"]            = cleanMetP4;
+//              metTypeValues["minCleanMet"]         = min(zvv,cleanMetP4);
+//              metTypeValues["assocMet"]            = assocMetP4;
+//              metTypeValues["minAssocMet"]         = min(zvv,assocMetP4);
+//              metTypeValues["superMinMet"]         = min( metTypeValues["minAssocMet"],  min(metTypeValues["minCleanMet"], metTypeValues["centralMet"]) );
+//              metTypeValues["redminAssocMet"]      = LorentzVector(redminAssocMetX,redminAssocMetY,0,redminAssocMet);
+//              metTypeValues["assocMet5"]           = assocMet5P4;
+//              metTypeValues["assocMet10"]          = assocMet10P4;
+//              metTypeValues["assocFwdMet"]         = assocFwdMetP4;
+//              metTypeValues["assocFwdMet5"]        = assocFwdMet5P4;
+//              metTypeValues["assocFwdMet10"]       = assocFwdMet10P4;
+//              metTypeValues["minAssocFwdMet"]      = min(zvv,metTypeValues["assocFwdMet"]);
+//              metTypeValues["clusteredMet"]        = clusteredMetP4;
+//              metTypeValues["minClusteredMet"]     = min(zvv,clusteredMetP4);
+//              metTypeValues["minClusteredAssocMet"]     = min(assocMetP4,clusteredMetP4);
+//              metTypeValues["minClusteredAssocPFMet"]     = min(zvv, min(assocMetP4,clusteredMetP4));
+//              metTypeValues["redClusteredAssocPFMet"]     = LorentzVector(redClusteredAssocPFMetX,redClusteredAssocPFMetY,0,redClusteredAssocPFMet);
+
 
 
       std::map<TString,double> metTypeValuesminJetdphi;

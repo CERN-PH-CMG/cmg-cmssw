@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2011/07/04 22:53:51 $
- *  $Revision: 1.11 $
+ *  $Date: 2011/07/19 09:01:05 $
+ *  $Revision: 1.12 $
  *  \author G. Cerminara & D. Trocino
  */
 
@@ -74,7 +74,7 @@ TVector2 ReducedMETComputer::project(const LorentzVector &part)
 }
 
 
-//
+// 
 void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt1,
 				 const LorentzVector& theLepton2, double sigmaPt2,
 				 const LorentzVectorCollection& theJets,
@@ -92,10 +92,6 @@ void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt
        std::pair<TVector2, TVector2> thrust=defineThrust(theLepton1,sigmaPt1,theLepton2,sigmaPt2);
        a_l=thrust.first;  
        a_t=thrust.second;
-
-       //      std::pair<TVector2, TVector2> thrust=defineThrust(theLepton1,sigmaPt1,theLepton2,sigmaPt2);
-       //       a_t=dil.Unit();
-       //       a_l = a_t.Rotate(TMath::Pi()/2);
     }
   else 
     {
@@ -129,11 +125,25 @@ void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt
   unclProj_long = uncl*a_l;
   unclProj_perp = uncl*a_t;
 
+
+  if(debug){
+     printf("(%f , %f) - (%f , %f)\n", sumJetProj_long,sumJetProj_perp,unclProj_long,unclProj_perp);
+  }
+
+
+
   //take the minimum recoil possible depending on the event category type
   recoilProj_long = min(sumJetProj_long, -1.*(unclProj_long));
   recoilProj_long=min(recoilProj_long,0.);
   recoilProj_perp = min(sumJetProj_perp, -1.*(unclProj_perp));
   recoilProj_perp=min(recoilProj_perp,0.);   
+
+
+  if(debug){
+     printf("RECOIL : (%f , %f)\n", recoilProj_long, recoilProj_perp);
+  }
+
+
 
 //   if(event_categ==DILMETPJETSLIKE) 
 //     {
@@ -159,6 +169,12 @@ void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt
       deltaDileptonProj_long=0;
     }
 
+
+  if(debug){
+     printf("DIL : (%f , %f)\n", deltaDileptonProj_perp, deltaDileptonProj_long);
+  }
+
+
   //
   // D0 ORIGINAL VERSION
   //
@@ -177,6 +193,13 @@ void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt
   redMET = sqrt( pow(reducedMET_long,2) + pow(reducedMET_perp,2) );
   redMETxy=reducedMET_long*a_l+reducedMET_perp*a_t;
 
+
+  if(debug){
+     printf("RED : (%f , %f)\n", reducedMET_long, reducedMET_perp);
+  }
+
+
+
   //
   // CMS MINIMIZED VERSION
   //
@@ -194,6 +217,11 @@ void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt
   redMETminRmet = sqrt(pow(reducedMETminRmet_long,2)+pow(reducedMETminRmet_perp,2));
   redMETminRmetxy=reducedMETminRmet_long*a_l+reducedMETminRmet_perp*a_t;
 
+  if(debug){
+     printf("CMS : (%f , %f)\n", reducedMETminRmet_long, reducedMETminRmet_perp);
+  }
+
+
   //
   // CMS INDEPEDENT MINIMIZATION VERSION
   //
@@ -205,6 +233,9 @@ void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt
   redMETIndminRmetxy=reducedMETIndminRmet_long*a_l+reducedMETIndminRmet_perp*a_t;
 
 
+  if(debug){
+     printf("IND : (%f , %f)\n", reducedMETIndminRmet_long, reducedMETIndminRmet_perp);
+  }
 
   
   //debug the event
@@ -240,6 +271,182 @@ void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt
 // 	   << "TVector2 redmet(" << redMETxy.Px() << "," << redMETxy.Py() << ");" << endl << endl;
     }
 }
+
+
+
+
+
+void ReducedMETComputer::compute(const LorentzVector& theLepton1, double sigmaPt1,
+				 const LorentzVector& theLepton2, double sigmaPt2,
+				 const LorentzVector& theMET1,
+				 const LorentzVector& theMET2,
+                                 const LorentzVector& theMET3, bool debug
+				 ) 
+{
+
+  //the dilepton candidate
+  TVector2 dil(theLepton1.px()+theLepton2.px(),theLepton1.py()+theLepton2.py());
+
+  //define the thrust
+       std::pair<TVector2, TVector2> thrust=defineThrust(theLepton1,sigmaPt1,theLepton2,sigmaPt2);
+       a_l=thrust.first;  
+       a_t=thrust.second;
+
+  //project the dilepton
+  dileptonProj_long = dil*a_l;
+  dileptonProj_perp = dil*a_t;
+
+  //project the met
+  TVector2 pfMET1(theMET1.Px(),theMET1.py());
+  TVector2 uncl1=pfMET1+dil;
+  double uncl1Proj_long = uncl1*a_l;
+  double uncl1Proj_perp = uncl1*a_t;
+  TVector2 pfMET2(theMET2.Px(),theMET2.py());
+  TVector2 uncl2=pfMET2+dil;
+  double uncl2Proj_long = uncl2*a_l;
+  double uncl2Proj_perp = uncl2*a_t;
+  TVector2 pfMET3(theMET3.Px(),theMET3.py());
+  TVector2 uncl3=pfMET3+dil;
+  double uncl3Proj_long = uncl3*a_l;
+  double uncl3Proj_perp = uncl3*a_t;
+
+  if(debug){
+     printf("(%f , %f) - (%f , %f)  - (%f , %f)\n", uncl1Proj_long,uncl1Proj_perp,uncl2Proj_long,uncl2Proj_perp,uncl3Proj_long,uncl3Proj_perp);
+  }
+
+
+
+  //take the minimum recoil possible depending on the event category type
+  recoilProj_long = min(-1.0*uncl1Proj_long, min(-1.0*uncl2Proj_long,-1.0*uncl3Proj_long));
+  recoilProj_long=min(recoilProj_long,0.);
+  recoilProj_perp = min(-1.0*uncl1Proj_perp, min(-1.0*uncl2Proj_perp,-1.0*uncl3Proj_perp));
+  recoilProj_perp=min(recoilProj_perp,0.);   
+
+
+  if(debug){
+     printf("RECOIL : (%f , %f)\n", recoilProj_long, recoilProj_perp);
+  }
+
+
+  //propagate the lepton uncertainty (if larger than unity assume 100% rel. uncertainty)
+      double relErrPt1 = min(sigmaPt1/theLepton1.pt(), 1.);
+      double relErrPt2 = min(sigmaPt2/theLepton2.pt(), 1.);
+      LorentzVector loweredLepton1 = theLepton1*(1.0-relErrPt1);
+      LorentzVector loweredLepton2 = theLepton2*(1.0-relErrPt2);
+      std::pair<TVector2, TVector2> loweredThrust=defineThrust(loweredLepton1,sigmaPt1,loweredLepton2,sigmaPt2);
+      float loweredDileptonProj_perp = dil*loweredThrust.second;
+      deltaDileptonProj_perp = loweredDileptonProj_perp - dileptonProj_perp;
+      deltaDileptonProj_long = ( -relErrPt1*TVector2(theLepton1.px(),theLepton1.py()) + relErrPt2*TVector2(theLepton2.px(),theLepton2.py()) )*a_l;
+
+
+  if(debug){
+     printf("DIL : (%f , %f)\n", deltaDileptonProj_perp, deltaDileptonProj_long);
+  }
+
+
+  //
+  // D0 ORIGINAL VERSION
+  //
+  //recoil is minimized independently
+  recoilProj_long = min(-1.0*uncl1Proj_long, min(-1.0*uncl2Proj_long,-1.0*uncl3Proj_long));
+  recoilProj_long=min(recoilProj_long,0.);
+  prefRec_long= ( (-1.0*uncl1Proj_long)< min(-1.*uncl2Proj_long,-1.*uncl3Proj_long) ? CLUSTERED : UNCLUSTERED);
+
+  recoilProj_perp = min(-1.0*uncl1Proj_perp, min(-1.0*uncl2Proj_perp,-1.0*uncl3Proj_perp));
+  recoilProj_perp=min(recoilProj_perp,0.);
+  prefRec_perp= ( (-1.0*uncl1Proj_perp)<min(-1.*(uncl2Proj_perp),-1.*(uncl3Proj_perp)) ? CLUSTERED : UNCLUSTERED);
   
+  //compute the reduced met components
+  reducedMET_long = max( (dileptonProj_long + kRecoil_long*recoilProj_long + kSigmaPt_long*deltaDileptonProj_long), 0.);
+  reducedMET_perp = max( (dileptonProj_perp + kRecoil_perp*recoilProj_perp + kSigmaPt_perp*deltaDileptonProj_perp), 0.);
+  redMET = sqrt( pow(reducedMET_long,2) + pow(reducedMET_perp,2) );
+  redMETxy=reducedMET_long*a_l+reducedMET_perp*a_t;
 
 
+  if(debug){
+     printf("RED : (%f , %f)\n", reducedMET_long, reducedMET_perp);
+  }
+
+
+  //
+  // CMS MINIMIZED VERSION
+  //
+  double uncl1RedMet_long = dileptonProj_long - kRecoil_long*uncl1Proj_long + kSigmaPt_long*deltaDileptonProj_long;
+  double uncl1RedMet_perp = dileptonProj_perp - kRecoil_perp*uncl1Proj_perp + kSigmaPt_perp*deltaDileptonProj_perp;
+  double uncl1RedMet      = sqrt(pow(uncl1RedMet_long,2)+pow(uncl1RedMet_perp,2));
+
+  double uncl2RedMet_long = dileptonProj_long - kRecoil_long*uncl2Proj_long + kSigmaPt_long*deltaDileptonProj_long;
+  double uncl2RedMet_perp = dileptonProj_perp - kRecoil_perp*uncl2Proj_perp + kSigmaPt_perp*deltaDileptonProj_perp;
+  double uncl2RedMet      = sqrt(pow(uncl2RedMet_long,2)+pow(uncl2RedMet_perp,2));
+
+  double uncl3RedMet_long = dileptonProj_long - kRecoil_long*uncl3Proj_long + kSigmaPt_long*deltaDileptonProj_long;
+  double uncl3RedMet_perp = dileptonProj_perp - kRecoil_perp*uncl3Proj_perp + kSigmaPt_perp*deltaDileptonProj_perp;
+  double uncl3RedMet      = sqrt(pow(uncl3RedMet_long,2)+pow(uncl3RedMet_perp,2));
+ 
+  if(uncl1RedMet<uncl2RedMet && uncl1RedMet<uncl3RedMet){
+     prefRecminRmet         = UNCLUSTERED;
+     reducedMETminRmet_long = uncl1RedMet_long;
+     reducedMETminRmet_perp = uncl1RedMet_perp;
+  }else if(uncl2RedMet<uncl1RedMet && uncl2RedMet<uncl3RedMet){
+     prefRecminRmet         = CLUSTERED;
+     reducedMETminRmet_long = uncl2RedMet_long;
+     reducedMETminRmet_perp = uncl2RedMet_perp;
+  }else{
+     prefRecminRmet         = CLUSTERED;
+     reducedMETminRmet_long = uncl3RedMet_long;
+     reducedMETminRmet_perp = uncl3RedMet_perp;
+  }
+  redMETminRmet = sqrt(pow(reducedMETminRmet_long,2)+pow(reducedMETminRmet_perp,2));
+  redMETminRmetxy=reducedMETminRmet_long*a_l+reducedMETminRmet_perp*a_t;
+
+
+  
+  if(debug){
+     printf("CMS : (%f , %f)\n", reducedMETminRmet_long, reducedMETminRmet_perp);
+  }
+
+
+  //
+  // CMS INDEPEDENT MINIMIZATION VERSION
+  //
+  prefRecIndMin_long        = (fabs(uncl1RedMet_long) < fabs(uncl2RedMet_long) ? UNCLUSTERED : CLUSTERED );
+  prefRecIndMin_perp        = (fabs(uncl1RedMet_perp) < fabs(uncl2RedMet_perp) ? UNCLUSTERED : CLUSTERED );
+
+  if(fabs(uncl1RedMet_long)<fabs(uncl2RedMet_long) && fabs(uncl1RedMet_long)<fabs(uncl3RedMet_long)){
+     prefRecIndMin_long     = UNCLUSTERED;
+     reducedMETIndminRmet_long = uncl1RedMet_long;
+  }else if(fabs(uncl2RedMet_long)<fabs(uncl1RedMet_long) && fabs(uncl2RedMet_long)<fabs(uncl3RedMet_long)){
+     prefRecIndMin_long     = CLUSTERED;
+     reducedMETIndminRmet_long = uncl2RedMet_long;
+  }else{
+     prefRecIndMin_long     = CLUSTERED;
+     reducedMETIndminRmet_long = uncl3RedMet_long;
+  }
+
+  if(fabs(uncl1RedMet_perp)<fabs(uncl2RedMet_perp) && fabs(uncl1RedMet_perp)<fabs(uncl3RedMet_perp)){
+     prefRecIndMin_perp     = UNCLUSTERED;
+     reducedMETIndminRmet_perp = uncl1RedMet_perp;
+  }else if(fabs(uncl2RedMet_perp)<fabs(uncl1RedMet_perp) && fabs(uncl2RedMet_perp)<fabs(uncl3RedMet_perp)){
+     prefRecIndMin_perp     = CLUSTERED;
+     reducedMETIndminRmet_perp = uncl2RedMet_perp;
+  }else{
+     prefRecIndMin_perp     = CLUSTERED;
+     reducedMETIndminRmet_perp = uncl3RedMet_perp;
+  }
+  redMETIndminRmet = sqrt(pow(reducedMETIndminRmet_long,2)+pow(reducedMETIndminRmet_perp,2));
+  redMETIndminRmetxy=reducedMETIndminRmet_long*a_l+reducedMETIndminRmet_perp*a_t;
+
+  if(debug){
+     printf("IND : (%f , %f)\n", reducedMETIndminRmet_long, reducedMETIndminRmet_perp);
+     printf("XY  : (%f , %f)\n", redMETIndminRmetxy.X(), redMETIndminRmetxy.Y());
+  } 
+
+
+
+
+
+  if(debug){
+     printf("----------------------------------------\n");
+  }
+
+}
