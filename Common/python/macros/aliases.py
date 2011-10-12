@@ -40,7 +40,9 @@ cmgObjects = {
     'met':'cmgBaseMETs_cmgPFMET__',
     'eles':'cmgElectrons_cmgElectronSel__',
     'mus':'cmgMuons_cmgMuonSel__',
-    'diMus':'cmgMuoncmgMuoncmgDiObjects_cmgDiMuonSel__'
+    'diMus':'cmgMuoncmgMuoncmgDiObjects_cmgDiMuonSel__',
+    'Nvertices':'int_vertexSize__',
+    'Nmus':'int_muonSelSize__'
     }
 
 filters = {
