@@ -246,9 +246,10 @@ class CheckForWrite(Task):
             testFile = file(name,'w')
             testFile.write('Test file')
             testFile.close()
-            
+
+            store = castortools.castorToLFN(dir) 
             #this is bad, but castortools is giving me problems
-            if not os.system('rfcp %s %s' % (name,dir)):
+            if not os.system('cmsStage %s %s' % (name,store)):
                 fname = '%s/%s' % (dir,os.path.basename(name))
                 write = castortools.fileExists(fname)
                 if write:

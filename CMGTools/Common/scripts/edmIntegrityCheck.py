@@ -23,7 +23,7 @@ class PublishToFileSystem(object):
             castor_path = castortools.lfnToCastor(path)
             
             #this is bad, but castortools is giving me problems
-            if not os.system('rfcp %s %s' % (name,castor_path)):
+            if not os.system('cmsStage %s %s' % (name,path)):
                 os.system('rfrename %s/%s %s/%s' % (castor_path,os.path.basename(name),castor_path,fname))
                 os.system('rfchmod 644 %s/%s' % (castor_path,fname)) #needed so others can read these files - helps the production system
                 print "File published: '%s/%s'" % (castor_path,fname)
