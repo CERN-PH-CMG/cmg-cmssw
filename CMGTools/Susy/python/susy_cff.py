@@ -6,6 +6,7 @@ from CMGTools.Susy.RA1.RA1_cff import *
 from CMGTools.Susy.RA2.RA2_cff import *
 from CMGTools.Susy.Razor.razor_cff import *
 from CMGTools.Susy.LP.LP_cff import *
+from CMGTools.Susy.LeptonicStop.leptonicstop_cff import *
 from CMGTools.Common.countingSequences_cff import *
 
 multijetPath = cms.Path(
@@ -16,6 +17,16 @@ multijetPath = cms.Path(
 multijetTriggerPath = cms.Path(
     susySequence +
     multijetTriggerSkimSequence
+    )
+
+leptonicStopPath = cms.Path(
+    susySequence +
+    leptonicStopSkimSequence
+    )
+
+leptonicStopTriggerPath = cms.Path(
+    susySequence +
+    leptonicStopTriggerSkimSequence
     )
 
 RA1Path = cms.Path(
