@@ -127,5 +127,6 @@ if __name__ == '__main__':
     from ROOT import gROOT, TFile,gPad
     gROOT.Macro( os.path.expanduser( '~/rootlogon.C' ) )
     file = TFile( sys.argv[1] )
+    dir = sys.argv[2]
     rootDir = RootDir( file, sRedPoints )
-    rootDir.subDirs_['cmgMuonHistograms'].Draw()
+    rootDir.subDirs_[dir].DrawAll()
