@@ -18,7 +18,7 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.setName_('H2TAUTAU')
 
-process.source.fileNames = ['file:tree_CMG_4.root']
+process.load("CMGTools.H2TauTau.sources.VBF_HToTauTau_M_115_7TeV_powheg_pythia6_tauola.Summer11_PU_S4_START42_V11_v1.AODSIM.V2.PAT_CMG_V2_3_0.source_cff")
 
 ext = 'CMG'
 
