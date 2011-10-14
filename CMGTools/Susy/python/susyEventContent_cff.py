@@ -9,10 +9,10 @@ from CMGTools.Susy.LP.LPEventContent_cff import *
 from CMGTools.Susy.common.eventContent_cff import eventContent as commonEventContent
 
 susyEventContent = everything
-susyEventContent += RA1EventContent
-susyEventContent += RA2EventContent
+#susyEventContent += RA1EventContent
+#susyEventContent += RA2EventContent
 susyEventContent += razorEventContent
 susyEventContent += leptonicStopEventContent
-susyEventContent += LPEventContent
+#susyEventContent += LPEventContent
 susyEventContent += commonEventContent
  

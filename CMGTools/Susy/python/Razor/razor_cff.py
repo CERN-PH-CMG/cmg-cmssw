@@ -10,24 +10,27 @@ from CMGTools.Common.physicsObjectPrinter_cfi import physicsObjectPrinter
 from CMGTools.Common.skims.leadingCMGMuonSelector_cfi import leadingCMGMuonSelector
 from CMGTools.Common.skims.cmgMuonSel_cfi import *
 #for box selection
-razorMuonTight = cmgMuonSel.clone(src = "susyMuon", cut = '(abs(eta()) < 2.1)')
 #the muon trigger requires an 8 gev muon - HLT_Mu8_R005_MR200_v* 
+razorMuonLoose = cmgMuonSel.clone(src = "cmgMuonSel", cut = "(pt() > 10.) && (abs(eta()) < 2.4) && getSelection('cuts_vbtfmuon_isGlobal') && getSelection('cuts_vbtfmuon_isTracker') && getSelection('cuts_vbtfmuon_dxy')")
+razorMuonTight = cmgMuonSel.clone(src = "razorMuonLoose", cut = "(abs(eta()) < 2.1) && relIso(0.5)<0.15 && getSelection('cuts_vbtfmuon')")
+
 razorLeadingMuon = leadingCMGMuonSelector.clone(inputCollection = "razorMuonTight", index = cms.int32(1))
 razorMuonSequence = cms.Sequence(
+    razorMuonLoose*
     razorMuonTight+                                 
     razorLeadingMuon
     )
 
 from CMGTools.Common.skims.cmgElectronSel_cfi import *
 #for box selection
-razorElectronTight = cmgElectronSel.clone(src = "susyElectron", cut = 'pt() > 20 && getSelection("cuts_vbtf80ID")')
 razorElectronLoose = cmgElectronSel.clone(src = "susyElectron", cut = 'getSelection("cuts_vbtf95ID")')
+razorElectronTight = cmgElectronSel.clone(src = "razorElectronLoose", cut = 'pt() > 20 && getSelection("cuts_vbtf80ID")')
 from CMGTools.Common.skims.leadingCMGElectronSelector_cfi import leadingCMGElectronSelector
 razorLeadingElectron = leadingCMGElectronSelector.clone(inputCollection = "razorElectronTight", index = cms.int32(1))
 # the electron trigger is HLT_Ele10_CaloIdL_CaloIsoVL_TrkIdVL_R005_MR200_v*
 razorElectronSequence = cms.Sequence(
-    razorElectronTight+                               
-    razorElectronLoose+    
+    razorElectronLoose*
+    razorElectronTight+                                   
     razorLeadingElectron
     )
 
@@ -121,7 +124,7 @@ razorHadronicBoxSequence = cms.Sequence(
 from CMGTools.Common.miscProducers.deltaRJetMuons_cfi import deltaRJetMuons
 razorPFJetsMuonVeto = deltaRJetMuons.clone(
     inputCollection = cms.InputTag('razorPFJetSel'),#only require kinematics, not ID
-    vetoCollection = cms.InputTag('susyMuon')
+    vetoCollection = cms.InputTag('razorMuonLoose')
 )
 # filter out B-tagged jets for latter use 
 razorPFBJetsMuonVeto = cmgPFJetSel.clone( src = 'razorPFJetsMuonVeto', cut = 'getSelection("cuts_btag_loose")' )
@@ -129,7 +132,7 @@ razorPFBJetsMuonVeto = cmgPFJetSel.clone( src = 'razorPFJetsMuonVeto', cut = 'ge
 from CMGTools.Common.Tools.cmgBaseMETModifier_cfi import cmgBaseMETModifier
 razorMuStarMet = cmgBaseMETModifier.clone(
     cfg = cmgBaseMETModifier.cfg.clone(
-    inputCollection = cms.InputTag("susyMuon"),
+    inputCollection = cms.InputTag("razorMuonLoose"),
     metCollection = cms.InputTag("cmgPFMET"),
     operator = cms.string('+') #Add the muons to the MET                                               
     )
@@ -181,7 +184,7 @@ razorBoxDef = razorBoxDef.clone(
     tightElectrons = cms.InputTag('razorElectronTight'),
     looseElectrons = cms.InputTag('razorElectronLoose'),
     tightMuons = cms.InputTag('razorMuonTight'),
-    looseMuons = cms.InputTag('susyMuon'),
+    looseMuons = cms.InputTag('razorMuonLoose'),
     jets = cms.InputTag('razorPFJetSel'),
     bjets = cms.InputTag('razorPFBJetSel') 
 )

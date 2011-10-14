@@ -19,9 +19,9 @@ multiTriggerSel = cmgTriggerObjectSel.clone(
                                             cut = 'getSelectionRegExp("^HLT_QuadJet[0-9]+.*_v[0-9]+$") ||'\
                                                 ' getSelectionRegExp("^HLT_EightJet[0-9]+.*_v[0-9]+$") ||'\
                                                 ' getSelectionRegExp("^HLT_.*Mu[0-9]+.*Quad.*Jet[0-9]+.*_v[0-9]+$") ||'\
-                                                ' getSelectionRegExp("^HLT_.*Mu[0-9]+_TriCentralJet[0-9]+_v[0-9]+$") ||'\
+                                                ' getSelectionRegExp("^HLT_.*Mu[0-9]+_TriCentral.*Jet[0-9]+_v[0-9]+$") ||'\
                                                 ' getSelectionRegExp("^HLT_Ele[0-9]+.*Quad.*Jet[0-9]+.*_v[0-9]+$") ||'\
-                                                ' getSelectionRegExp("^HLT_Ele[0-9]+.*TriCentralJet[0-9]+_v[0-9]+$") ||'
+                                                ' getSelectionRegExp("^HLT_Ele[0-9]+.*TriCentral.*Jet[0-9]+_v[0-9]+$") ||'
                                                 ' getSelectionRegExp("^HLT_Ele[0-9]+.*CentralTriJet[0-9]+_v[0-9]+$")'
                                             )
 multiTriggerCount = cmgCandCount.clone( src = 'multiTriggerSel', minNumber = 1 )

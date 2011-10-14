@@ -9,21 +9,21 @@ from CMGTools.Common.miscProducers.collectionSize.collectionSize_cff import cand
 # count high pt jets
 from CMGTools.Common.skims.cmgPFJetSel_cfi import *
 
-#cf the HLT TriCentralJet30 trigger
-leptonicStopPFJetSel30 = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = 'pt()>30 && abs(eta)<2.4' )
-leptonicStopPFJetSelSize = candidateSize.clone(src = cms.InputTag('leptonicStopPFJetSel30'))
-leptonicStopPFJetSel30Count = cmgCandCount.clone( src = 'leptonicStopPFJetSel30', minNumber = 3 )
+#cf the HLT TriCentralJet30 trigger - only cut on eta to get inside the tracker volume
+leptonicStopPFJetSel = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = 'pt() >= 25 && abs(eta)<2.4' )
+leptonicStopPFJetSelSize = candidateSize.clone(src = cms.InputTag('leptonicStopPFJetSel'))
+leptonicStopPFJetSelCount = cmgCandCount.clone( src = 'leptonicStopPFJetSel', minNumber = 3 )
 
 #count the number of btags with a medium tag
-leptonicStopPFBJetSel = cmgPFJetSel.clone( src = 'leptonicStopPFJetSel30', cut = 'getSelection("cuts_btag_medium")' )
+leptonicStopPFBJetSel = cmgPFJetSel.clone( src = 'leptonicStopPFJetSel', cut = 'getSelection("cuts_btag_medium")' )
 leptonicStopPFBJetSelSize = candidateSize.clone(src = cms.InputTag('leptonicStopPFBJetSel'))
 
 #ID at lower pt threshold - used to veto event - the number of jets that fail loose jet ID
-leptonicStopSelID = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = '(pt()>25 && abs(eta)<3.0) && (!getSelection("cuts_looseJetId"))' )
+leptonicStopSelID = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = '(pt()>20 && abs(eta)<3.0) && (!getSelection("cuts_looseJetId"))' )
 leptonicStopIDCount = cmgCandCount.clone( src = 'leptonicStopSelID', minNumber = 1 ) #filter inverted below
 
 leptonicStopJetSequence = cms.Sequence(
-    leptonicStopPFJetSel30*
+    leptonicStopPFJetSel*
     leptonicStopPFJetSelSize*
     leptonicStopSelID*
     leptonicStopPFBJetSel*
@@ -133,7 +133,7 @@ leptonicStopZSequence = cms.Sequence(
 #add the lepton vetos now
 from CMGTools.Common.miscProducers.deltaRJetMuons_cfi import deltaRJetMuons
 leptonicStopPFJetsMuonVeto = deltaRJetMuons.clone(
-    inputCollection = cms.InputTag('leptonicStopPFJetSel30'),#only require kinematics, not ID
+    inputCollection = cms.InputTag('leptonicStopPFJetSel'),#only require kinematics, not ID
     vetoCollection = cms.InputTag('leptonicStopMuonTight')
 )
 from CMGTools.Common.miscProducers.deltaRJetElectrons_cfi import deltaRJetElectrons
@@ -161,15 +161,20 @@ from CMGTools.Common.skims.cmgTriggerObjectSel_cfi import *
 leptonicStopTriggerSel = cmgTriggerObjectSel.clone(
                                             src = 'cmgTriggerObjectSel',
                                             cut = 'getSelectionRegExp("^HLT_.*Mu[0-9]+.*Quad.*Jet[0-9]+.*_v[0-9]+$") ||'\
-                                                ' getSelectionRegExp("^HLT_.*Mu[0-9]+_TriCentralJet[0-9]+_v[0-9]+$") ||'\
+                                                ' getSelectionRegExp("^HLT_.*Mu[0-9]+_TriCentral.*Jet[0-9]+_v[0-9]+$") ||'\
                                                 ' getSelectionRegExp("^HLT_Ele[0-9]+.*Quad.*Jet[0-9]+.*_v[0-9]+$") ||'\
-                                                ' getSelectionRegExp("^HLT_Ele[0-9]+.*TriCentralJet[0-9]+_v[0-9]+$") ||'
+                                                ' getSelectionRegExp("^HLT_Ele[0-9]+.*TriCentral.*Jet[0-9]+_v[0-9]+$") ||'
                                                 ' getSelectionRegExp("^HLT_Ele[0-9]+.*CentralTriJet[0-9]+_v[0-9]+$")'
                                             )
 leptonicStopTriggerCount = cmgCandCount.clone( src = 'leptonicStopTriggerSel', minNumber = 1 )
+leptonicStopTriggerInfo = physicsObjectPrinter.clone(
+    inputCollection = cms.untracked.InputTag("leptonicStopTriggerSel"),
+    printSelections = cms.untracked.bool(True)
+    )
 
 leptonicStopTriggerSequence = cms.Sequence(
-    leptonicStopTriggerSel
+    leptonicStopTriggerSel#*
+#    leptonicStopTriggerInfo
     )
 
 leptonicStopObjectSequence = cms.Sequence(
@@ -191,7 +196,7 @@ leptonicStopSkimSequence = cms.Sequence(
     #at least one tight lepton
     leptonicStopLeadingObjectCount +
     # at least 3 jets
-    leptonicStopPFJetSel30Count+
+    leptonicStopPFJetSelCount+
     # no ID failures
     ~leptonicStopIDCount+
     # cut the low Mt QCD

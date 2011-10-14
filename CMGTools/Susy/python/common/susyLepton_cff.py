@@ -10,7 +10,7 @@ susyElectron = cmgElectronSel.clone(
     )
 
 susyMuon = cmgMuonSel.clone(
-    cut = "(pt() > 10.) && (abs(eta()) < 2.4) && relIso()<0.15 && getSelection('cuts_vbtfmuon')", 
+    cut = "(pt() > 10.) && (abs(eta()) < 2.4) && relIso(0.5)<0.15 && getSelection('cuts_vbtfmuon')", 
     src = 'cmgMuonSel'
     )
 
