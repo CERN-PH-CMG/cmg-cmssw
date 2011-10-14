@@ -22,7 +22,7 @@ class JetHistograms: public cmg::HistogramCreator<cmg::PFJet> {
 
   virtual ~JetHistograms();
 
-  virtual void fill(const type& cand);
+  virtual void fill(const type& cand, const type& dummy1, const type& dummy2);
   virtual void fill(const edm::Event& iEvent, const edm::EventSetup& iSetup){
     cmg::HistogramCreator<type>::fill(iEvent,iSetup);
   }

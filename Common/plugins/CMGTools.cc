@@ -8,6 +8,8 @@ DEFINE_FWK_MODULE(TPCMGPFJetOnPFJet);
 
 DEFINE_FWK_MODULE(MultiObjectPOProducer);
 DEFINE_FWK_MODULE(PhotonPOProducer);
+
+DEFINE_FWK_MODULE(DiPFCandidatePOProducer);
 DEFINE_FWK_MODULE(DiPhotonPOProducer);
 DEFINE_FWK_MODULE(HemispherePOProducer);
 DEFINE_FWK_MODULE(FatJetPOProducer);
@@ -91,6 +93,7 @@ DEFINE_FWK_MODULE(IndexCMGPFJetSelector);
 DEFINE_FWK_MODULE(IndexCMGElectronSelector);
 DEFINE_FWK_MODULE(IndexCMGMuonSelector);
 
+DEFINE_FWK_MODULE(CmgDiPFCandidateSelector);
 DEFINE_FWK_MODULE(CmgDiFatJetSelector);
 DEFINE_FWK_MODULE(CmgDiPFJetSelector);
 DEFINE_FWK_MODULE(CmgDiBaseJetSelector);

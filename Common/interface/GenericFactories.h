@@ -6,7 +6,7 @@
 
 namespace cmg{
     
-    typedef PhysicsObjectFactory< PFCandPtr > PFCandFactory;
+    typedef PhysicsObjectFactory< PFCandidatePtr > PFCandidateFactory;
     typedef PhysicsObjectFactory< GenParticlePtr > GenParticleFactory;
     typedef PhysicsObjectFactory< GenJetPtr > GenJetFactory;
     
