@@ -18,7 +18,7 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.setName_('H2TAUTAU')
 
-process.source.fileNames = ['file:TestSamples/HTauTau115/all.root']
+process.source.fileNames = ['file:tree_CMG_4.root']
 
 ext = 'CMG'
 
@@ -31,23 +31,26 @@ outFileNameExt = ext
 
 process.load('CMGTools.H2TauTau.Colin.h2TauTau_cff')
 
+process.cmgTauMuSel.cut._value += ' && mass()>60' 
 
 process.schedule = cms.Schedule(
     process.tauMuPath,    
-    process.tauEPath,
+    # process.tauEPath,
     process.outpath
     )
 
 
-process.out.fileName = cms.untracked.string('h2tautau_tree_%s.root' %  outFileNameExt)
+process.out.fileName = cms.untracked.string('h2TauTau_tree_%s.root' %  outFileNameExt)
+from CMGTools.H2TauTau.Colin.eventContent.h2TauTau_cff import h2TauTau as h2TauTauEventContent
+process.out.outputCommands.extend( h2TauTauEventContent ) 
 process.out.outputCommands = cms.untracked.vstring('keep *')
-from CMGTools.H2TauTau.Colin.eventContent.h2tautau_cff import h2tautau as h2tautauEventContent
-process.out.outputCommands.extend( h2tautauEventContent ) 
+
+
 process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('tauMuPath') )
 
 process.TFileService = cms.Service(
     "TFileService",
-    fileName = cms.string("h2tautau_histograms_%s.root" %  outFileNameExt)
+    fileName = cms.string("h2TauTau_histograms_%s.root" %  outFileNameExt)
     )
 
 print process.out.dumpPython()
