@@ -60,17 +60,19 @@
 
 typedef PhysicsObjectProducer<cmg::MultiObjectFactory> MultiObjectPOProducer;
 typedef PhysicsObjectProducer<cmg::PhotonFactory> PhotonPOProducer;
+
+typedef PhysicsObjectProducer<cmg::DiPFCandidateFactory> DiPFCandidatePOProducer;
 typedef PhysicsObjectProducer<cmg::DiPhotonFactory> DiPhotonPOProducer;
 typedef PhysicsObjectProducer<cmg::HemisphereFactory> HemispherePOProducer;
 typedef PhysicsObjectProducer<cmg::FatJetFactory> FatJetPOProducer;
 typedef PhysicsObjectProducer<cmg::DiFatJetFactory> DiFatJetPOProducer;
-
 typedef PhysicsObjectProducer<cmg::DiHemisphereFactory> DiHemispherePOProducer;
 typedef PhysicsObjectProducer<cmg::DiElectronFactory> DiElectronPOProducer;
 typedef PhysicsObjectProducer<cmg::DiMuonFactory> DiMuonPOProducer;
 typedef PhysicsObjectProducer<cmg::DiJetFactory> DiJetPOProducer;
 typedef PhysicsObjectProducer<cmg::DiPFJetFactory> DiPFJetPOProducer;
 typedef PhysicsObjectProducer<cmg::DiTauFactory> DiTauPOProducer;
+
 typedef PhysicsObjectProducer<cmg::ElectronFactory> ElectronPOProducer;
 typedef PhysicsObjectProducer<cmg::MuonFactory> MuonPOProducer;
 typedef PhysicsObjectProducer<cmg::TauFactory> TauPOProducer;
@@ -82,7 +84,7 @@ typedef PhysicsObjectProducer<cmg::PFJetFactory> PFJetPOProducer;
 typedef PhysicsObjectProducer<cmg::BaseMETFactory<> > BaseMETPOProducer;
 typedef PhysicsObjectProducer<cmg::BaseMETModificationFactory> BaseMETModifier;
 typedef PhysicsObjectProducer<cmg::BaseMETFactory<pat::MET> > PATMETPOProducer;
-typedef PhysicsObjectProducer<cmg::PFCandFactory> PFCandidatePOProducer;
+typedef PhysicsObjectProducer<cmg::PFCandidateFactory> PFCandidatePOProducer;
 typedef PhysicsObjectProducer<cmg::GenParticleFactory> GenParticlePOProducer;
 typedef PhysicsObjectProducer<cmg::GenJetFactory> GenJetPOProducer;
 typedef PhysicsObjectProducer<cmg::WENuFactory> WENuPOProducer;
@@ -163,6 +165,8 @@ typedef cmg::IndexObjectsSelector<cmg::Muon> IndexCMGMuonSelector;
 /*   std::vector<cmg::DiFatJet>, */
 /*   StringCutObjectSelector<cmg::DiFatJet> */
 /*   > CmgDiFatJetSelector; */
+
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiPFCandidate> > CmgDiPFCandidateSelector;
 
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiFatJet> > CmgDiFatJetSelector;
 

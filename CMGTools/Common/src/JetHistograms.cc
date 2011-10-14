@@ -36,7 +36,7 @@ void cmg::JetHistograms::defineHistograms(){
 }
 
 
-void cmg::JetHistograms::fill( const type& jet ) {
+void cmg::JetHistograms::fill( const type& jet, const type& dummy1, const type& dummy2 ) {
   for( unsigned i=0; i<cHists_.size(); ++i) {
     cHists_[i].fill( jet.component(i+1), jet);
   }

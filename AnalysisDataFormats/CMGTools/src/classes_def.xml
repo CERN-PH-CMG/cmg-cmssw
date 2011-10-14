@@ -16,6 +16,11 @@
   <class name="std::vector<cmg::NamedObject>" />
   <class name="edm::Wrapper<std::vector<cmg::NamedObject> >" />
   
+  <class name="cmg::DiPFCandidate"/>
+  <class name="std::vector<cmg::DiPFCandidate>"/>
+  <class name="edm::Wrapper<cmg::DiPFCandidate>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiPFCandidate> >"/>
+  
   <class name="cmg::DiHemisphere"/>
   <class name="std::vector<cmg::DiHemisphere>"/>
   <class name="edm::Wrapper<cmg::DiHemisphere>"/>
@@ -111,10 +116,10 @@
   <class name="pat::strbitset" />
   <class name="std::map<std::basic_string<char>,unsigned int>" />
   
-  <class name="cmg::PFCand"/>
-  <class name="std::vector<cmg::PFCand>"/>
-  <class name="edm::Wrapper<cmg::PFCand>"/>
-  <class name="edm::Wrapper<std::vector<cmg::PFCand> >"/>
+  <class name="cmg::PFCandidate"/>
+  <class name="std::vector<cmg::PFCandidate>"/>
+  <class name="edm::Wrapper<cmg::PFCandidate>"/>
+  <class name="edm::Wrapper<std::vector<cmg::PFCandidate> >"/>
 
   <class name="cmg::GenParticle"/>
   <class name="std::vector<cmg::GenParticle>"/>

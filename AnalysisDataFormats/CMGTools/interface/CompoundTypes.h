@@ -14,8 +14,11 @@
 
 #include "AnalysisDataFormats/CMGTools/interface/GenericTypes.h"
 
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+
 namespace cmg {
 
+  typedef cmg::DiObject<cmg::PFCandidate, cmg::PFCandidate> DiPFCandidate;
   typedef cmg::DiObject<cmg::Hemisphere, cmg::Hemisphere> DiHemisphere;
   typedef cmg::DiObject<cmg::FatJet, cmg::FatJet> DiFatJet;
   typedef cmg::DiObject<cmg::Photon, cmg::Photon> DiPhoton;

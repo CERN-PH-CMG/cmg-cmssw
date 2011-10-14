@@ -48,6 +48,11 @@ namespace {
     edm::Wrapper<cmg::NamedObject> noe;
     edm::Wrapper<std::vector<cmg::NamedObject> > nowv;
 
+    cmg::DiPFCandidate dpfc_;
+    std::vector<cmg::DiPFCandidate> dpfcv;
+    edm::Wrapper<cmg::DiPFCandidate> wdpfc;
+    edm::Wrapper<std::vector<cmg::DiPFCandidate> > wdpfcv;
+
     cmg::DiHemisphere dh_;
     std::vector<cmg::DiHemisphere> dhv;
     edm::Wrapper<cmg::DiHemisphere> wdh;
@@ -131,10 +136,10 @@ namespace {
     static const cmg::TriBool f_ = cmg::tbFalse;
     static const cmg::TriBool t_ = cmg::tbTrue;
 
-    cmg::PFCand pfcand_;
-    std::vector<cmg::PFCand> pfcandv_;
-    edm::Wrapper<cmg::PFCand> wpfcand_;
-    edm::Wrapper<std::vector<cmg::PFCand> > wpfcandv_;
+    cmg::PFCandidate pfcand_;
+    std::vector<cmg::PFCandidate> pfcandv_;
+    edm::Wrapper<cmg::PFCandidate> wpfcand_;
+    edm::Wrapper<std::vector<cmg::PFCandidate> > wpfcandv_;
 
     cmg::GenParticle genpart_;
     std::vector<cmg::GenParticle> genpartv_;
