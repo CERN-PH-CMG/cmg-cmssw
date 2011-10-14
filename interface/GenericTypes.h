@@ -12,8 +12,8 @@
 
 namespace cmg{
     
-    typedef edm::Ptr< reco::PFCandidate > PFCandPtr;
-    typedef PhysicsObjectWithPtr< PFCandPtr > PFCand;
+    typedef edm::Ptr< reco::PFCandidate > PFCandidatePtr;
+    typedef PhysicsObjectWithPtr< PFCandidatePtr > PFCandidate;
     
     typedef edm::Ptr< reco::GenParticle > GenParticlePtr;
     typedef PhysicsObjectWithPtr< GenParticlePtr > GenParticle;
