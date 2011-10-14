@@ -13,19 +13,34 @@ class Style:
         self.lineColor_ = lineColor
         self.lineWidth_ = lineWidth
         
-
-    def formatHisto( self, hist ):
+        
+    def formatHisto( self, hist, title=None):
         hist.SetMarkerStyle( self.markerStyle_ )
         hist.SetMarkerColor( self.markerColor_ )
         hist.SetLineStyle( self.lineStyle_ )
         hist.SetLineColor( self.lineColor_ )
         hist.SetLineWidth( self.lineWidth_ )
+        hist.GetXaxis().SetTitleSize(0.05)
+        hist.GetYaxis().SetTitleSize(0.05)
+        hist.GetYaxis().SetTitleOffset(1.2)
+        if title!=None:
+            hist.SetTitle( title )
         return hist
+
+def formatPad( pad ):
+    pad.SetLeftMargin(0.14)
+    pad.SetBottomMargin(0.12)
 
 # the following are the styles to be used by everybody.
 # more standard styles can be added on demand.
 
 sBlack = Style()
 sBlue = Style(lineColor=4, markerColor=4)
+sGreen = Style(lineColor=8, markerColor=8)
+sRed = Style(lineColor=2, markerColor=2)
+
 sRedPoints = Style(markerColor = 2)
+
+sBlackSquares = Style(markerStyle = 21)
 sBlueSquares = Style(lineColor=4, markerStyle = 21, markerColor=4)
+sGreenSquares = Style( lineColor=8, markerStyle = 21, markerColor=8 )
