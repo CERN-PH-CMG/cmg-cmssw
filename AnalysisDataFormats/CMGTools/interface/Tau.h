@@ -15,7 +15,6 @@
 #include <vector>
 #include <string>
 
-using namespace std;
 
 namespace cmg
 {
@@ -86,20 +85,24 @@ namespace cmg
     int decayMode() const {return decayMode_;}
 
     //tau ID's
-    bool tauID(string idname) const { 
+    bool tauID(const std::string& idname) const { 
       for(int i=0;i<NCMGTAUIDS;i++)
 	if(tauID_[i]==idname) return 1; //passed
       return 0;//failed
     } 
 
+    bool tauID(const char* idname) const {
+      return tauID( std::string(idname) );
+    }
+
     //user data
-    float userData(string dataname) const {
+    float userData(const std::string& dataname) const {
       for(int i=0;i<NCMGTAUUSERDATA;i++)
 	if(dataname==userDataName_[i])return userData_[i];
-      cout<<"cmg::Tau userData : "<<dataname<<" not found. Available are : ";
+      std::cout<<"cmg::Tau userData : "<<dataname<<" not found. Available are : ";
       for(int i=0;i<NCMGTAUUSERDATA;i++)
-	cout<<userData_[i]<<", ";
-      cout<<endl;
+	std::cout<<userData_[i]<<", ";
+      std::cout<<std::endl;
       return 0.0;
     }
 
@@ -129,15 +132,15 @@ namespace cmg
     float trackIso_;
     float gammaIso_;
     int decayMode_;
-    string tauID_[NCMGTAUIDS];
+    std::string tauID_[NCMGTAUIDS];
 
 
     float userData_[NCMGTAUUSERDATA];
-    string userDataName_[NCMGTAUUSERDATA];
-    bool addUserData(string name,float value){
+    std::string userDataName_[NCMGTAUUSERDATA];
+    bool addUserData(const std::string& name,float value){
       for(int i=0;i<NCMGTAUUSERDATA;i++)
 	if(userDataName_[i]==name){
-	  cout<<"cmg::Tau::addUserData  "<<name<<" already exists"<<endl;
+	  std::cout<<"cmg::Tau::addUserData  "<<name<<" already exists"<<std::endl;
 	  return 0;
 	}      
       for(int i=0;i<NCMGTAUUSERDATA;i++)
@@ -146,7 +149,7 @@ namespace cmg
 	  userData_[i]=value;
 	  return 1;
 	}
-      cout<<"cmg::Tau::addUserData unable to save user data: "<<name<<endl;
+      std::cout<<"cmg::Tau::addUserData unable to save user data: "<<name<<std::endl;
       return 0;
     }
     
