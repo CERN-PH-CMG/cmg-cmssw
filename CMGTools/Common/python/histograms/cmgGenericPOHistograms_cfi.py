@@ -7,9 +7,9 @@ cmgGenericPOHistograms = cms.EDAnalyzer(
         charge = cms.untracked.VPSet(
             cms.untracked.PSet(
                var = cms.untracked.string('charge()'),
-               nbins = cms.untracked.int32(4),
-               low = cms.untracked.double(-2),
-               high = cms.untracked.double(2),
+               nbins = cms.untracked.int32(5),
+               low = cms.untracked.double(-2.5),
+               high = cms.untracked.double(2.5),
                title = cms.untracked.string("charge")
                )
             ),
