@@ -10,6 +10,8 @@ from CMGTools.RootTools.RootTools import *
 
 gROOT.Macro( os.path.expanduser( '~/rootlogon.C' ) )
 
+# adding current directory in PYTHONPATH
+sys.path.append('.')
 
 process = 'ANA'
 
