@@ -2,6 +2,10 @@ import FWCore.ParameterSet.Config as cms
 
 from CMGTools.Common.diTau_cff import *
 
+from CMGTools.H2TauTau.Colin.objects.tauMuCuts_cff import * 
+
+cmgTauMu.cuts = tauMuCuts.clone()
+
 # pt cut on the tau and mu leg. taking a margin w/r to the AN
 cmgTauMuSel.cut = 'leg1().pt()>18 && leg2().pt()>14'
 
