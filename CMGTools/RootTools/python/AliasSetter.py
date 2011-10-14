@@ -5,7 +5,8 @@ import re
 
 class AliasSetter:
     def __init__(self, tree, aliases, process):
-        print 'setting aliases for tree'
+        print '---'
+        print 'setting aliases for tree ', tree.GetName()
         pprint.pprint( aliases )
         self.tree = tree
         self.aliases = aliases

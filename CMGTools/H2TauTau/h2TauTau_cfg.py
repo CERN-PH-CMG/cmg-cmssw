@@ -31,7 +31,6 @@ outFileNameExt = ext
 
 process.load('CMGTools.H2TauTau.Colin.h2TauTau_cff')
 
-process.cmgTauMuSel.cut._value += ' && mass()>60' 
 
 process.schedule = cms.Schedule(
     process.tauMuPath,    
