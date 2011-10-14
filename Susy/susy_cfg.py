@@ -19,11 +19,9 @@ doSkimHighMET = False
 cut_highMET = 'pt()>50'
 process.setName_('SUSY')
 
-# process.load("CMGTools.Common.sources.HT.Run2011A_PromptReco_v1.AOD.PAT_CMG.source_tree_cff")
-process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.PAT_CMG.source_cff")
-#process.load("CMGTools.Common.sources.LM6_SUSY_sftsht_7TeV_pythia6.Summer11_PU_S4_START42_V11_v1.AODSIM.V2.PAT_CMG_V2_2_0.source_cff")
-process.load("CMGTools.Common.sources.RelValTTbar.CMSSW_4_2_3_START42_V12_v2.GEN_SIM_RECO.PAT_CMG_V2_3_0.source_cff")
-process.source.fileNames = ['file:tree_CMG.root']
+process.load("CMGTools.Common.sources.TTJets_TuneZ2_7TeV_madgraph_tauola.Summer11_PU_S4_START42_V11_v1.AODSIM.V2.PAT_CMG_V2_3_0.source_cff")
+#process.source.fileNames = ['file:tree_CMG.root']
+#process.source.fileNames = process.source.fileNames[:10]
 
 ext = 'CMG'
 
@@ -39,14 +37,16 @@ process.load('CMGTools.Susy.susy_cff')
 # process.susySchedule.remove( process.runInfoAccountingPath )
 
 process.schedule = cms.Schedule(
+    process.leptonicStopPath,
+    process.leptonicStopTriggerPath,
     process.multijetPath,
     process.multijetTriggerPath,                                
-    process.RA1Path,
-    process.RA2Path,
+#    process.RA1Path,
+#    process.RA2Path,
     process.razorPath,
     process.razorEleMuPath,
     process.razorTriggerPath,
-    process.LPPath,
+#    process.LPPath,
     process.outpath
     )
 
@@ -60,10 +60,10 @@ process.out.outputCommands += susyEventContent
 from CMGTools.Common.eventContent.eventCleaning_cff import eventCleaning
 process.out.outputCommands.extend( eventCleaning )
 
-process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('multijetPath','multijetTriggerPath','RA2Path','razorEleMuPath','razorPath','razorTriggerPath', 'RA1Path', 'LPPath') )
+process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('leptonicStopPath','leptonicStopTriggerPath','multijetPath','multijetTriggerPath','razorEleMuPath','razorPath','razorTriggerPath') )
 #plot the correlations between the selection paths
 process.load('CMGTools.Common.histograms.triggerCorrelationHistograms_cfi')
-process.triggerCorrelationHistograms.names = cms.untracked.vstring('multijetPath','multijetTriggerPath','RA2Path','razorEleMuPath','razorPath','razorTriggerPath', 'RA1Path', 'LPPath')
+process.triggerCorrelationHistograms.names = cms.untracked.vstring('leptonicStopPath','leptonicStopTriggerPath','multijetPath','multijetTriggerPath','razorEleMuPath','razorPath','razorTriggerPath')
 process.schedule.append( process.triggerCorrelationHistogramsEndPath )
 
 process.TFileService = cms.Service(
