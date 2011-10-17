@@ -33,6 +33,8 @@ cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm
 
     const edm::TriggerNames& triggerNames = iEvent.triggerNames(*triggerResults);
     edm::TriggerNames::Strings const& names = triggerNames.triggerNames();
+    
+    unsigned int pset = hlt_.prescaleSet(iEvent,iSetup);
 
     // Store which triggers passed and failed.
     std::map<std::string,bool> triggerMap;
@@ -97,7 +99,8 @@ cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm
                 // object.
                 for(std::map<std::string,bool>::const_iterator jt = triggerMap.begin();
                     jt != triggerMap.end(); ++jt) {
-                  it->addSelection(jt->first, jt->second);
+                  const int prescale = (pset > 0) ? hlt_.prescaleValue(pset,jt->first) : pset;      
+                  it->addSelectionWithPrescale(jt->first, jt->second,prescale);
                 }
                 it->addSelection(isRealDataString, isRealData);
             }
@@ -108,7 +111,9 @@ cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm
         // passed.
         cmg::TriggerObject to;
         for(std::map<std::string,bool>::const_iterator jt = triggerMap.begin(); jt != triggerMap.end(); ++jt) {
-            to.addSelection(jt->first,jt->second);
+            const int prescale = (pset > 0) ? hlt_.prescaleValue(pset,jt->first) : pset;
+            to.addSelectionWithPrescale(jt->first,jt->second,prescale);
+            //std::cout << "Prescale: " << jt->first << ":" << prescale << "\t - " << jt->second << " " << to.getPrescale(jt->first) << std::endl;
         }
         to.addSelection(isRealDataString,isRealData);
         result->push_back(to);
@@ -147,10 +152,11 @@ std::string cmg::TriggerObjectFactory::getProcessName(edm::Run& iRun, const std:
     return nameProcess;
 }
 
-bool cmg::TriggerObjectFactory::beginRun(edm::Run& iRun, edm::EventSetup const&) {
+bool cmg::TriggerObjectFactory::beginRun(edm::Run& iRun, edm::EventSetup const& iSetup) {
 
     if( (processName_ != "") && ( (processName_ == "*") || (processName_ == "@") ) ) {
         processName_ = getProcessName(iRun,tagTriggerEvent_);
     }
-    return true;
+    bool changed = false;
+    return hlt_.init(iRun,iSetup,processName_,changed);
 }

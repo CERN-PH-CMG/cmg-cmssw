@@ -99,7 +99,7 @@ class CheckDatasetExists(Task):
         samples = [s for s in stdout.split('\n') if s]
         if not len(samples) == 1:
             if not self.dataset in samples:
-                raise Exception("Dataset not unique according to listSamples.py and no exact match found. Samples found were '%s'" % samples)
+                raise Exception("Dataset '%s' not unique according to listSamples.py and no exact match found. Samples found were '%s'" % (self.dataset,samples) )
         if '//' in samples[0]:
             raise Exception("Too many slashes in sample name '%s'. Please check." % samples[0])
         return {'Dataset':samples[0]}
@@ -828,12 +828,24 @@ if __name__ == '__main__':
             dataSample = tokens[1]
         return (dataSample,UserName)
     
+    def splitTier(dataSample, tier):
+        tokens = [t for t in tier.split('/') if t]
+        
+        sample = dataSample
+        t = tier
+        if len(tokens) > 1:
+            sample = os.path.join(dataSample,*tokens[:-1])
+            sample = sample.replace('//','/')
+            t = tokens[-1]
+        return sample, t
+    
     #these tasks are quick and are done in the main thread (fail early...)
     simple_tasks = [CheckDatasetExists(dataset,user,options),FindOnCastor(dataset,user,options),sav]
     for d in op.dataset:
         for t in simple_tasks:
-            t.options = op.options
+            t.options = copy.deepcopy(op.options)
             t.dataset, t.user = splitUser(d,op.user)
+            t.dataset, t.options.tier = splitTier(t.dataset, t.options.tier)
             t.run({})
     
     def callback(result):
@@ -854,8 +866,9 @@ if __name__ == '__main__':
         previous = {}
         for t in task_list:
 
-            t.options = op_parse.options
+            t.options = copy.deepcopy(op_parse.options)
             t.dataset, t.user = splitUser(dataset,op_parse.user)
+            t.dataset, t.options.tier = splitTier(t.dataset, t.options.tier)
             
             log(output,'%s: [%s] %s:' % (dataset,time.asctime(),t.getname()))
             if t.__doc__:
