@@ -9,6 +9,8 @@
 #include "CMGTools/Common/interface/Factory.h"
 #include "CMGTools/Common/interface/SettingTool.h"
 
+#include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
+
 namespace cmg{
 
 class TriggerObjectFactory : public Factory<cmg::TriggerObject>{
@@ -31,6 +33,9 @@ class TriggerObjectFactory : public Factory<cmg::TriggerObject>{
         std::string processName_;
         const bool useTriggerObjects_;
         const std::string tagTriggerEvent_;
+        
+        //trigger info
+        HLTConfigProvider hlt_;
         
 };
 
