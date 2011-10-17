@@ -4,6 +4,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/NamedObject.h"
 #include "AnalysisDataFormats/CMGTools/interface/PatTypes.h"
 #include "AnalysisDataFormats/CMGTools/interface/PhysicsObject.h"
+#include "AnalysisDataFormats/CMGTools/interface/UnSet.h"
 
 namespace cmg {
 
@@ -15,19 +16,36 @@ class TriggerObjectFactory;
 class TriggerObject : public PhysicsObjectWithPtr<pat::TriggerObjectPtr>, public cmg::NamedObject{
 
    public:
+    typedef std::map<pat::strbitset::index_type::size_t,int> prescaleMap;
+   
     explicit TriggerObject():
       PhysicsObjectWithPtr<value>::PhysicsObjectWithPtr(),
-      cmg::NamedObject(){
+      cmg::NamedObject(),
+      minPrescale_(-UnSet(int)){
     }
     explicit TriggerObject(const value& cand, const std::string& name):
       PhysicsObjectWithPtr<value>::PhysicsObjectWithPtr(cand),
-      cmg::NamedObject(name){
+      cmg::NamedObject(name),
+      minPrescale_(-UnSet(int)){
     }
     virtual ~TriggerObject(){
     }
     
+    int getPrescale(const std::string& name) const;
+    int getPrescale(const char* s) const{
+        return getPrescale(std::string(s));
+    }
+    int getMinimumPrescale() const{
+        return minPrescale_;  
+    }
+   protected:
+        int getIndex(const std::string& name) const;
+        void addSelectionWithPrescale(const std::string& name, const bool value, const int prescale);
+
    private:
     friend class TriggerObjectFactory;
+    prescaleMap prescales_;
+    int minPrescale_;
 };
 
 }

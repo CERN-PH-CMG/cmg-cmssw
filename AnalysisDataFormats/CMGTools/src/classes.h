@@ -187,6 +187,7 @@ namespace {
     edm::Wrapper<std::vector<cmg::Photon> > wvpp_;
 
     cmg::TriggerObject topp_;
+    cmg::TriggerObject::prescaleMap topp_map_;
     std::vector<cmg::TriggerObject> vtopp_;
     edm::Wrapper<cmg::TriggerObject> wtopp_;
     edm::Ptr<pat::TriggerObject> ptopp_;

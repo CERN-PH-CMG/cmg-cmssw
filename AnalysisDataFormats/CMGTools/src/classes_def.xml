@@ -168,6 +168,7 @@
   <class name="edm::Wrapper<std::vector<cmg::Photon> >"/>
 
   <class name="cmg::TriggerObject"/>
+  <class name="cmg::TriggerObject::prescaleMap"/>
   <class name="cmg::PhysicsObjectWithPtr<pat::TriggerObjectPtr>" />
   <class name="std::vector<cmg::TriggerObject>"/>
   <class name="edm::Wrapper<cmg::TriggerObject>"/>
