@@ -296,11 +296,16 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
 
 void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string HistoName){
    TCanvas* c1 = new TCanvas("c1","c1",800,800);
-   c1->SetLogy(true);
+   TPad* t1 = new TPad("t1","t1", 0.0, 0.20, 1.0, 1.0);
+   t1->Draw();
+   t1->cd();
+   t1->SetLogy(true);
 
    TLegend* legA  = new TLegend(0.51,0.93,0.67,0.75, "NDC");
    TLegend* legB  = new TLegend(0.67,0.93,0.83,0.75, "NDC");
    THStack* stack = new THStack("MC","MC");
+   TH1*     mc   = NULL;
+   TH1*     data = NULL;
    std::vector<TObject*> ObjectToDelete;
 
    std::string SaveName = "";
@@ -350,6 +355,8 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
          //Add to Stack
          stack->Add(hist, "HIST");               
          legA->AddEntry(hist, Process[i]["tag"].c_str(), "F");
+
+         if(!mc){mc = (TH1D*)hist->Clone("mc");}else{mc->Add(hist);}
        }else{
           //Add to Canvas   
           if(stack){
@@ -362,6 +369,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
              stack=NULL;
           }
           if(Process[i]["isdata"].toBool()){
+             data = (TH1D*)hist->Clone("RatioHistogram");
              legA->AddEntry(hist, Process[i]["tag"].c_str(), "P");
              hist->Draw("E1 same");
           }else{
@@ -386,6 +394,22 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    legB->SetHeader("");
    legB->Draw("same");
 
+
+   c1->cd();
+   TPad* t2 = new TPad("t2","t2", 0.0, 0.0, 1.0, 0.2);
+   t2->Draw();
+   t2->cd();
+   t2->SetGridy(true);
+   data->Divide(mc);
+   data->GetYaxis()->SetTitle("Obs/Ref");
+   data->GetYaxis()->SetTitleSize(0.12);
+   data->GetYaxis()->SetTitleOffset(0.2);
+   data->GetXaxis()->SetTitle("");
+   data->SetMinimum(0);
+   data->SetMaximum(5);
+   data->Draw("E1");
+
+   c1->cd();
    string SavePath = SaveName + ".png";
    while(SavePath.find("*")!=std::string::npos)SavePath.replace(SavePath.find("*"),1,"");
    while(SavePath.find("#")!=std::string::npos)SavePath.replace(SavePath.find("#"),1,"");
@@ -398,6 +422,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    SavePath = outDir + SavePath;
    system(string(("rm -f ") + SavePath).c_str());
    c1->SaveAs(SavePath.c_str());
+   c1->SaveAs((SavePath+".C").c_str());
    delete c1;
    for(unsigned int d=0;d<ObjectToDelete.size();d++){delete ObjectToDelete[d];}ObjectToDelete.clear();
    delete legA;
