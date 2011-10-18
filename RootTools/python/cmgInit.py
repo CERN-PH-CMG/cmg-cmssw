@@ -16,12 +16,13 @@ sys.path.append('.')
 process = 'ANA'
 
 
+from CMGTools.RootTools.Style import *
 from CMGTools.RootTools.TreeFunctions import *
 from CMGTools.RootTools.AliasSetter import * 
 from CMGTools.RootTools.CutCorrelations import * 
 from CMGTools.Common.macros.aliases import * 
 
-if len(sys.argv) != 2:
+if len(sys.argv) < 2:
     print 'please provide the pattern to your root files in argument'
     sys.exit(1)
 
