@@ -422,7 +422,6 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    SavePath = outDir + SavePath;
    system(string(("rm -f ") + SavePath).c_str());
    c1->SaveAs(SavePath.c_str());
-   c1->SaveAs((SavePath+".C").c_str());
    delete c1;
    for(unsigned int d=0;d<ObjectToDelete.size();d++){delete ObjectToDelete[d];}ObjectToDelete.clear();
    delete legA;
