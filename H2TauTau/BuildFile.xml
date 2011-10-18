@@ -1,24 +1,25 @@
 
-<use   name="boost"/>
-<use   name="rootcintex"/>
+<use name="boost"/>
+<use name="rootcintex"/>
 <use name="rootrflx"/>
 <use name="roofitcore"/>
 
 <use name="FWCore/Framework"/>
 <use name="FWCore/ParameterSet"/>
 <use name="FWCore/FWLite"/>
-<use   name="DataFormats/FWLite"/>
-<use   name="FWCore/PythonParameterSet"/>
-<use   name="DataFormats/PatCandidates"/>
-<use   name="CommonTools/Utils"/>
-<use   name="PhysicsTools/FWLite"/>
-<use   name="PhysicsTools/Utilities"/>
-<use   name="PhysicsTools/PatUtils"/>
-<use   name="PhysicsTools/PatExamples"/>
-<use   name="PhysicsTools/SelectorUtils"/>
+<use name="DataFormats/FWLite"/>
+<use name="FWCore/PythonParameterSet"/>
+<use name="DataFormats/PatCandidates"/>
+<use name="CommonTools/Utils"/>
+<use name="PhysicsTools/FWLite"/>
+<use name="PhysicsTools/Utilities"/>
+<use name="PhysicsTools/PatUtils"/>
+<use name="PhysicsTools/PatExamples"/>
+<use name="PhysicsTools/SelectorUtils"/>
 
 <use name="AnalysisDataFormats/CMGTools"/>
 
+<use name="TauAnalysis/SVFitStandAlone"/>
 
 <export>
   <lib   name="1"/>

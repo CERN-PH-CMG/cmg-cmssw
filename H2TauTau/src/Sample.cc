@@ -14,11 +14,13 @@ Sample::Sample():
   firstrun_(0),
   lastrun_(0),
   effCorrFactor_(1.0),
+  outputpath_(GetTitle()),
   histFile_(NULL),
   dataType_(""),
   color_(0),
   lstyle_(0),
   plotOrder_(0),
+  applyRecoilCorr_(0),
   init_(0)
 {}
 
@@ -34,11 +36,13 @@ Sample::Sample(const char * name, const char * path):
   firstrun_(0),
   lastrun_(0),
   effCorrFactor_(1.0),
+  outputpath_(path),
   histFile_(NULL),
   dataType_(""),
   color_(0),
   lstyle_(0),
   plotOrder_(0),
+  applyRecoilCorr_(0),
   init_(0)
 {
   
@@ -137,37 +141,28 @@ fwlite::ChainEvent*  Sample::getEvents(){
 }
 
 
-bool Sample::save(TFile* file){
+bool Sample::save(){
   
   if(sampleHist_.size()==0){
     cout<<GetName()<<": no histos to save"<<endl; return 0;
   }
-
-  TFile* fi;
-  if(file)fi=file;
-  else {
-    system(TString("rm -f ")+GetTitle()+"/Sample_Histograms.root");
-    fi=new TFile(TString(GetTitle())+"/Sample_Histograms.root","recreate");    
-    if(fi->IsZombie()){
-      cout<<"Sample "<<GetName()<<" Unable to create histograms file"<<endl;
-      return 0;
-    }
+  
+  TFile fi(outputpath_+"/"+GetName()+"_Sample_Histograms.root","recreate");    
+  if(fi.IsZombie()){
+    cout<<"Sample "<<GetName()<<" Unable to create histograms file"<<endl;
+    return 0;
   }
-    
-  fi->cd();
+  
+  fi.cd();
   std::vector<TH1*>::const_iterator h=sampleHist_.begin();
   for( int i=0; h!=sampleHist_.end(); ++h, i++){
     cout<<"save: "<<i<<" "<<sampleHist_[i]->GetName()<<endl;
     sampleHist_[i]->Write();
   }
 
-  cout<<"Sample "<<GetName()<<" saved histograms in "<<fi->GetName()<<endl;
+  fi.Close();
+  cout<<"Sample "<<GetName()<<" saved histograms in "<<fi.GetName()<<endl;  
 
-  
-  if(!file){
-    fi->Close();
-    delete fi;
-  }
  
   return 1;
 }

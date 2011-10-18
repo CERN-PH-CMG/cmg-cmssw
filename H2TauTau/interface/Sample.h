@@ -31,14 +31,18 @@ public:
   Sample(const char * name, const char * path);
   virtual ~Sample();
   
-  //set
   bool init();
 
+  void setOutputPath(TString path){outputpath_=path;}
   void setCrossection(float crossection){crossection_=crossection;} //in pb
   void setSampleLumi(float lumi){lumi_=lumi*getProcessEff();}//for Data //correct for batch job failures
   void setSampleGenEvents(int Ngen){genEvents_=Ngen*getProcessEff();}//for MC //correct for batch job failures
   
   void addTrigPath(std::string pathname){trigPaths_.push_back(pathname);}
+  void addTrigPaths(std::vector<std::string> * paths){
+    if(!paths)return;
+    for(std::vector<std::string>::const_iterator p=paths->begin(); p!=paths->end(); ++p) trigPaths_.push_back(*p);
+  }
   void setRunRange(unsigned int first, unsigned int last){firstrun_=first; lastrun_=last;}
   void setEffCorrFactor(float factor){effCorrFactor_=factor;}
 
@@ -50,8 +54,14 @@ public:
     }
     if(lstyle_>0) hist->SetLineStyle(lstyle_);
     sampleHist_.push_back(hist);
+    mainsampleHist_.push_back(hist);
     return 1;
   }
+  void cloneHistos(TString tag){
+    for(std::vector<TH1*>::const_iterator h=mainsampleHist_.begin(); h!=mainsampleHist_.end(); ++h)
+      sampleHist_.push_back((TH1*)(*h)->Clone(TString((*h)->GetName())+"_"+tag));
+  }
+
   
   bool setDataType(TString type){
     dataType_=type;
@@ -61,14 +71,15 @@ public:
   void setColor(Int_t color){color_=color;}
   void setLineStyle(Int_t lstyle){lstyle_=lstyle;}
   void setPlotOrder(unsigned int n){plotOrder_=n;}
+  void setApplyRecoilCorr(bool applyCorr){applyRecoilCorr_=applyCorr;}
 
   bool scaleLumi(Float_t lumi){
     if(!histFile_){
-      histFile_=new TFile(TString(GetTitle())+"/Sample_Histograms.root","read");
+      histFile_=new TFile(outputpath_+"/"+GetName()+"_Sample_Histograms.root","read");
       if(histFile_->IsZombie()) return NULL;
       if(!histFile_->GetListOfKeys()) return NULL;
       if(histFile_->GetListOfKeys()->GetSize()==0) return NULL;
-      cout<<" opened file :"<<TString(GetTitle())+"/Sample_Histograms.root"<<endl;
+      cout<<" opened file :"<<outputpath_+"/"+GetName()+"_Sample_Histograms.root"<<endl;
     }
     TList* keys=histFile_->GetListOfKeys();
     if(!keys)return 0;
@@ -88,6 +99,7 @@ public:
   float getCrossection(){return crossection_;}
   float getProcessEff(){return processeff_;}  
   TString getDataType(){return dataType_;}
+  int getSampleGenEvents(){return genEvents_;}
 
   float getLumi(){ 
     if(dataType_=="Data" || dataType_=="Data_SS")return lumi_;
@@ -100,15 +112,14 @@ public:
   Int_t getColor(){return color_;}
   Int_t getLineStyle(){return lstyle_;}
   unsigned int getPlotOrder(){return plotOrder_;}
+  bool getApplyRecoilCorr(){return applyRecoilCorr_;}
   
+
   fwlite::ChainEvent* getEvents();
   
-  TH1* getHisto(TString name){
-    std::vector<TH1*>::const_iterator h=sampleHist_.begin();
-    for(int i=0; h!=sampleHist_.end(); ++h, i++){
-      if(TString(sampleHist_[i]->GetName())==TString(GetName())+"_"+name) return sampleHist_[i];
-    }
-
+  TH1* getHisto(TString name){    
+    for(std::vector<TH1*>::const_iterator h=sampleHist_.begin(); h!=sampleHist_.end(); ++h)
+      if(TString((*h)->GetName()) == TString(GetName())+"_"+name) return *h;
     cout<<"Sample "<<GetName()<<" histo "<<name<<" not found "<<endl;
     return NULL;
   }
@@ -117,21 +128,21 @@ public:
   TH1* getHistoFromFile(TString name){
     
     if(!histFile_){
-      histFile_=new TFile(TString(GetTitle())+"/Sample_Histograms.root","read");
+      histFile_=new TFile(outputpath_+"/"+GetName()+"_Sample_Histograms.root","read");
       if(histFile_->IsZombie()) return NULL;
       if(!histFile_->GetListOfKeys()) return NULL;
       if(histFile_->GetListOfKeys()->GetSize()==0) return NULL;
-      cout<<" opened file :"<<TString(GetTitle())+"/Sample_Histograms.root"<<endl;
+      cout<<" opened file :"<<outputpath_+"/"+GetName()+"_Sample_Histograms.root"<<endl;
     }
     
     return (TH1*)histFile_->Get(TString(GetName())+"_"+name) ;
   }
 
-  std::vector<std::string> getTrigPaths(){return trigPaths_;}
+  std::vector<std::string> * getTrigPaths(){return &trigPaths_;}
   unsigned int getFirstRun(){return firstrun_;}
   unsigned int getLastRun(){return lastrun_;}
 
-  bool save(TFile* file=NULL);
+  bool save();
 
 
   void print();
@@ -149,20 +160,25 @@ private:
   float processeff_;
   std::vector<std::string> sampleList_; 
   fwlite::ChainEvent* sampleChain_;
-  std::vector<TH1*> sampleHist_;
+  std::vector<TH1*> sampleHist_;//all histos including clones
+  std::vector<TH1*> mainsampleHist_;//list of histos added with addHisto()
   std::vector<std::string> trigPaths_;
   unsigned int firstrun_;
   unsigned int lastrun_;
   float effCorrFactor_;
 
+  TString outputpath_;
   TFile* histFile_;
 
   TString dataType_;
   Int_t color_;
   Int_t lstyle_;
   unsigned int plotOrder_;
+  bool applyRecoilCorr_;
+
   bool init_;
   
+    
 
   ClassDef(Sample, 1);
 };
