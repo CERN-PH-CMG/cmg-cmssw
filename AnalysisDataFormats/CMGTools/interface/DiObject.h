@@ -24,64 +24,55 @@ class DiObject : public AbstractPhysicsObject{
     }
     DiObject(const T& leg1, const U& leg2):
         AbstractPhysicsObject(reco::LeafCandidate(leg1.charge()+leg2.charge(),leg1.p4()+leg2.p4())),
-        leg1_(leg1),
-        leg2_(leg2),
-        mT_(UnSet(Double_t)),
-        alphaT_(UnSet(Double_t)),
-        mR_(UnSet(Double_t)),
-        mRT_(UnSet(Double_t)),
-        lp_(UnSet(Double_t)){
+      leg1_(leg1),
+      leg2_(leg2),
+      mT_(UnSet(Double_t)),
+      alphaT_(UnSet(Double_t)),
+      mR_(UnSet(Double_t)),
+      mRT_(UnSet(Double_t)),
+      lp_(UnSet(Double_t)), 
+      pZeta_(UnSet(Double_t)) {
     }
     DiObject(const DiObject<T,U>& other):
-        AbstractPhysicsObject(other),
-        leg1_(other.leg1()),
-        leg2_(other.leg2()),
-        mT_(other.mT_),
-        alphaT_(other.alphaT_),
-        mR_(other.mR_),
-        mRT_(other.mRT_),
-        lp_(other.lp_){
+      AbstractPhysicsObject(other),
+      leg1_(other.leg1()),
+      leg2_(other.leg2()),
+      mT_(other.mT_),
+      alphaT_(other.alphaT_),
+      mR_(other.mR_),
+      mRT_(other.mRT_),
+      lp_(other.lp_), 
+      pZeta_(other.pZeta_) {
     }
 
     virtual ~DiObject(){}
 
-    const T& leg1() const{
-        return leg1_;
-    }
-    const U& leg2() const{
-        return leg2_;
-    }
+    const T& leg1() const{ return leg1_; }
 
-    virtual double mT() const {
-      return mT_;
-    }
+    const U& leg2() const{ return leg2_; }
+
+    virtual double mT() const { return mT_; }
 
     ///The RA1 variable alpha_T
-    Double_t const alphaT() const{
-      return alphaT_;
-    }
+    Double_t const alphaT() const { return alphaT_; }
 
     ///The Razor variable M_R
-    Double_t mR() const{
-        return mR_;
-    }
+    Double_t mR() const { return mR_; }
 
     ///The Razor variable M_T^R
-    Double_t mRT() const{
-        return mRT_;
-    }
+    Double_t mRT() const { return mRT_; }
+
     ///The Razor variable R
-    Double_t R() const{
-        return (mR() > 0) ? mRT()/mR() : UnSet(Double_t);
-    }
+    Double_t R() const { return (mR() > 0) ? mRT()/mR() : UnSet(Double_t); }
+
     ///The Razor variable Rsq
-    Double_t Rsq() const{
-        return (mR() > 0) ? (mRT()/mR())*(mRT()/mR()) : UnSet(Double_t);
-    }
+    Double_t Rsq() const { return (mR() > 0) ? (mRT()/mR())*(mRT()/mR()) : UnSet(Double_t); }
+ 
     ///The lepton projection (LP) variable
-    Double_t lp() const{
-        return lp_;
-    }
+    Double_t lp() const { return lp_; }
+
+    ///The pzeta variable, for H->tau tau
+    double pZeta() const { return pZeta_;}
 
     virtual void accept(AbstractPhysicsObjectVisitor* v) const{
       v->visit(this);
@@ -133,9 +124,18 @@ class DiObject : public AbstractPhysicsObject{
 
     Double_t mT_;
     Double_t alphaT_;
-    Double_t mR_; //The Razor MR
-    Double_t mRT_; //The Razor M_T^R
-    Double_t lp_; //The lepton projection (LP)
+
+    /// The Razor MR
+    Double_t mR_; 
+
+    /// The Razor M_T^R
+    Double_t mRT_;
+    
+    /// The lepton projection (LP)
+    Double_t lp_; 
+
+    /// the pzeta variable (for H->tau tau)
+    double   pZeta_; 
 
     friend class cmg::DiObjectFactory<T,U>;
 
