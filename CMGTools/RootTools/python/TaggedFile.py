@@ -7,6 +7,12 @@ class TaggedFile:
     def __init__( self, name ):
         self.file = TFile( self.makeFileName(name) , 'recreate')
         
+    def Close(self):
+        self.file.Close()
+        
+    def ls(self):
+        self.file.ls()
+        
     def makeFileName( self, name ):
         stamp = datetime.today().strftime('%d%b%yT%H%M%S')
         tmpName = name.replace('.root', '_' + stamp + '.root')
