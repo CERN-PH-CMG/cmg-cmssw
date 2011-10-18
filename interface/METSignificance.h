@@ -27,7 +27,8 @@ namespace cmg
     virtual ~METSignificance(){
     }
     
-    TMatrixD * significance(){return &significance_;}
+    //COLIN : would be better to return a const reference
+    const TMatrixD * significance() const {return &significance_;}
 	
   private:
 
