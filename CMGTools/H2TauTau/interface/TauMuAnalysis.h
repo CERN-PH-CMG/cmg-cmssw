@@ -6,8 +6,10 @@
 #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
 #include "AnalysisDataFormats/CMGTools/interface/Tau.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
+#include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
 
 #include "CMGTools/H2TauTau/interface/TriggerEfficiency.h"
+#include "CMGTools/H2TauTau/interface/RecoilCorrector.h"
 
 class TauMuAnalysis : public BaseAnalysis {
 
@@ -28,18 +30,30 @@ public:
 
 protected:
   virtual bool addHistos(Sample* s);
-  virtual bool getHistos(Sample* s);
-  virtual bool applySelections(const fwlite::Event * event);
-  virtual bool fillHistos(const fwlite::Event * event );
+  virtual bool getHistos(Sample* s, TString tag = "");
+  virtual bool fillVariables(const fwlite::Event * event);
+  virtual bool applySelections(TString exceptcut="");
+  virtual bool fillHistos(double weight = 1);
 
 private:
     
   string inputTag_;
+  edm::Handle< std::vector<cmg::TauMu> > diTauList_;
   std::vector<cmg::TauMu> diTauSelList_;
+  edm::Handle< std::vector<cmg::BaseMET> > met_;
+  edm::Handle< cmg::METSignificance >  metsig_;
+  edm::Handle< std::vector<cmg::Muon> > diLeptonVetoList_;
+  const reco::GenParticle * genBoson_;
+  bool trigpass_;
+  TriggerEfficiency triggerEff_;
+  RecoilCorrector recoilCorr_;
+  Int_t genEventType_;//1=ZtoEE, 3=ZToMuMu, 5=ZToTauTau, 6=ZToOther, 11=WToENu, 13=WToMuNu, 15=WToENu,
+  
 
-  //histos for output
+  //histos
   TH1F* diTauNHisto_;
   TH1F* diTauMassHisto_;
+  TH1F* diTauMassSVFitHisto_;
   TH1F* diTauEtaHisto_;
   TH1F* diTauPtHisto_;
   TH1F* muPtHisto_;
@@ -51,35 +65,14 @@ private:
   TH1F* tauDxyHisto_;
   TH1F* tauDzHisto_;
   TH1F* metHisto_;
-  TH1F* pZetaVisHisto_;
-  TH1F* pZetaMETHisto_;
   TH1F* pZetaHisto_;
 
-  TH1F* diTauMassPUPHisto_;
-  TH1F* diTauEtaPUPHisto_;
-  TH1F* diTauPtPUPHisto_;
-  TH1F* muPtPUPHisto_;
-  TH1F* muIsoPUPHisto_;
-  TH1F* muDxyPUPHisto_;
-  TH1F* muDzPUPHisto_;
-  TH1F* tauPtPUPHisto_;
-  TH1F* tauIsoPUPHisto_;
-  TH1F* tauTrackIsoPUPHisto_;
-  TH1F* tauNeutralIsoPUPHisto_;
-  TH1F* tauRhoPUPHisto_;
-  TH1F* tauDxyPUPHisto_;
-  TH1F* tauDzPUPHisto_;
-  TH1F* metPUPHisto_;
-  TH1F* pZetaVisPUPHisto_;
-  TH1F* pZetaMETPUPHisto_;
-  TH1F* pZetaPUPHisto_;
 
-  std::vector<std::string> triggerPaths_;
+  float computePZeta(const cmg::Tau * tau1, const cmg::Muon * tau2, const cmg::BaseMET * met, const reco::GenParticle * genBoson = NULL);
 
-  TriggerEfficiency triggerEff_;
-
-  float computePZeta(const cmg::Tau * tau1, const cmg::Muon * tau2, const cmg::BaseMET * met);
   float computeTauIso(const cmg::Tau * tau);
+
+  bool computeDiLeptonVeto(const cmg::Muon * muon);
 
   ClassDef(TauMuAnalysis, 1);
 };

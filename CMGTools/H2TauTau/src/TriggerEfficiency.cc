@@ -46,11 +46,11 @@ double TriggerEfficiency::efficiency(double m, double m0, double sigma, double a
 
 double TriggerEfficiency::ratio(int trigpt, double pt) const
 {
-  double r = 0. ;
-  if (pt<15) return r ;
+  double r = 1. ;
+  if (pt<10) return r ;
 
-  double effdata = efficiency(pt,19.1016,2.54719,6.45551,34.9826,0.933025) ;//2011 data 0.832 fb-1
-  double effMC = efficiency(pt,18.3632,1.05792,0.409811,4.28198,0.841393) ; //PU reweighting, Summer11_S4
+  double effdata = 1.;
+  double effMC = 1.;
   
   if(trigpt==10){
     effdata =efficiency(pt,5.0403,4.84108,2.89048,26.6496,0.910342);
@@ -59,6 +59,10 @@ double TriggerEfficiency::ratio(int trigpt, double pt) const
   if(trigpt==15){
     effdata =efficiency(pt,14.3758,0.980896,1.48308,1.42603,1);
     effMC = efficiency(pt,15.5267,1.49683,6.4306,30.9974,0.804055);
+  }
+  if(trigpt==20){
+    effdata = efficiency(pt,19.1016,2.54719,6.45551,34.9826,0.933025) ;//2011 data 0.832 fb-1
+    effMC = efficiency(pt,18.3632,1.05792,0.409811,4.28198,0.841393) ; //PU reweighting, Summer11_S4
   }
 
   if (effMC>0.) r = effdata/effMC ;
