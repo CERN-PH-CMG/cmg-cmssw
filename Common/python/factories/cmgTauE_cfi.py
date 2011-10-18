@@ -3,7 +3,9 @@ from CMGTools.Common.factories.cmgDiObject_cfi import diObjectFactory
 
 tauEFactory = diObjectFactory.clone(
        leg1Collection = cms.InputTag('cmgTauSel'),
-       leg2Collection = cms.InputTag('cmgElectronSel')
+       leg2Collection = cms.InputTag('cmgElectronSel'),
+       metCollection = cms.InputTag('cmgPFMET')       
+
 )
 
 cmgTauE = cms.EDFilter(
