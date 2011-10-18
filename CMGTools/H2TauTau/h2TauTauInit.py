@@ -1,11 +1,37 @@
+# call me like this:
+#
+#  python -i h2TauTauInit.py 'TauPlusX_V6/Job*/*tree*root' TauPlusX_V6
+#
+
+
 print 'initializing h->tau tau root environment'
 
-# aliases
+# aliases  ----------------------------------------------------------
+
+# default CMG aliases:
 from CMGTools.RootTools.cmgInit import *
-from CMGTools.H2TauTau.macros.h2TauTau import *
+# specific aliases for this analysis
+from CMGTools.H2TauTau.macros.h2TauTauAliases import *
+aliases = AliasSetter(events, h2TauTauAliases, 'H2TAUTAU')
 
-aliases = AliasSetter(events, h2TauTau, 'H2TAUTAU')
+# plotting ----------------------------------------------------------
 
-events.Draw('tauMu.obj.mass()>>hWelcome','tauMu.obj.getSelection("cuts_baseline")','')
-events.GetHistogram().SetTitle('Welcome to the H#rightarrow#tau#tau analysis!')
-gPad.Modified()
+# This file contains some default histograms, and shows how
+# python classes can be used to manage histograms 
+from CMGTools.H2TauTau.macros.H2TauTauHistograms import *
+
+# the first argument is the pattern of input root files,see cmgInit.py
+# the second argument is the name of your histograms, e.g. data, signal, WJets, whatever
+# the output root file will start with this name.
+allHists = H2TauTauHistograms( sys.argv[2] )
+
+nEvents = 999999
+allHists.fillHistos( events, 'tauMu.obj.getSelection("cuts_baseline")',nEvents)
+
+gDirectory.ls()
+
+# styles are defined in CMGTools.RootTools.Style
+allHists.formatHistos( sBlack )
+allHists.diTau.h_vismass.Draw()
+allHists.Write()
+
