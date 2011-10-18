@@ -45,6 +45,7 @@ class DiObjectFactory : public cmg::Factory< cmg::DiObject<T,U> >, public cmg::S
         double mR(T const& l1, U const& l2) const;
         double mRT(T const& l1, U const& l2, const reco::Candidate& met) const;
         double lp(T const& l1, cmg::DiObject<T,U>* const obj) const;
+	double pZeta(T const& l1, U const& l2, const reco::Candidate& met) const;
 
         const edm::InputTag leg1Label_;
         const edm::InputTag leg2Label_;
@@ -83,10 +84,16 @@ typename cmg::DiObjectFactory<T,U>::event_ptr cmg::DiObjectFactory<T,U>::create(
     edm::Handle<collection2> leg2Cands;
     iEvent.getByLabel(leg2Label_,leg2Cands);
     
+    
     edm::Handle<met_collection> metCands;
-    const bool metAvailable = iEvent.getByLabel(metLabel_,metCands);
+    bool metAvailable = false;
+    if( !(metLabel_ == edm::InputTag()) ) {
+      metAvailable = true; 
+      iEvent.getByLabel(metLabel_,metCands);
+    }
     
     
+
     typename cmg::DiObjectFactory<T,U>::event_ptr result(new collection);
     if( !leg1Cands->size() || !leg2Cands->size() ){
         return result;  
@@ -101,9 +108,10 @@ typename cmg::DiObjectFactory<T,U>::event_ptr cmg::DiObjectFactory<T,U>::create(
             cmg::DiObject<T, U> cmgTmp = sameCollection ? cmg::make(*it,*jt) : cmg::DiObject<T,U>(*it,*jt); 
             
             cmg::DiObjectFactory<T, U>::set(std::make_pair(cmgTmp.leg1(),cmgTmp.leg2()),&cmgTmp);
-            if(metAvailable && metCands->size()){
-                cmg::DiObjectFactory<T, U>::set(std::make_pair(cmgTmp.leg1(),cmgTmp.leg2()),metCands->at(0),&cmgTmp);
-            }   
+	    /*             if(metAvailable && metCands->size()){ */
+	    if(metAvailable && ! metCands->empty() ) 
+	      cmg::DiObjectFactory<T, U>::set(std::make_pair(cmgTmp.leg1(),cmgTmp.leg2()),metCands->at(0),&cmgTmp);
+	    /*             }    */
             result->push_back(cmgTmp);
       }
     }
@@ -136,6 +144,7 @@ void cmg::DiObjectFactory<T, U>::set(const std::pair<T,U>& pair, const reco::Can
       obj->lp_ = lp(pair.first, obj);
     //calculate the Razor variables with MET
     obj->mRT_ = mRT(pair.first, pair.second, met);
+    obj->pZeta_ = pZeta(pair.first, pair.second, met);
 }
 
 template<typename T, typename U>
@@ -200,6 +209,22 @@ double cmg::DiObjectFactory<T, U>::mRT(T const& ja, U const& jb, const reco::Can
     temp = std::sqrt(temp);
     if(TMath::IsNaN(temp)) temp = UnSet(Double_t);
     return temp;
+}
+
+template<typename T, typename U>
+double cmg::DiObjectFactory<T, U>::pZeta(T const& tau1, U const& tau2, const reco::Candidate& met) const{
+
+  TVector3 tau1P=TVector3(tau1.p4().x(),tau1.p4().y(),tau1.p4().z());
+  TVector3 tau2P=TVector3(tau2.p4().x(),tau2.p4().y(),tau2.p4().z());
+  TVector3 tau1PT=TVector3(tau1.p4().x(),tau1.p4().y(),0.);
+  TVector3 tau2PT=TVector3(tau2.p4().x(),tau2.p4().y(),0.);
+  TVector3 metPT=TVector3(met.p4().x(),met.p4().y(),0.);
+  TVector3 zetaAxis=(tau1PT.Unit() + tau2PT.Unit()).Unit();
+  double pZetaVis=tau1PT*zetaAxis + tau2PT*zetaAxis;
+  double pZetaMET=metPT*zetaAxis;
+  double tmp=pZetaVis+pZetaMET;
+  
+  return tmp-1.5*pZetaVis;
 }
 
 template<typename T, typename U>

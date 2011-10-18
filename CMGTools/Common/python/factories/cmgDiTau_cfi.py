@@ -1,10 +1,11 @@
 import FWCore.ParameterSet.Config as cms
 from CMGTools.Common.factories.cmgDiObject_cfi import diObjectFactory
 
-ditauFactory = diObjectFactory.clone(leg1Collection = cms.InputTag("cmgTauSel"),
-                                     leg2Collection = cms.InputTag("cmgTauSel"),
-                                     metCollection = cms.InputTag("")
-                                     )
+ditauFactory = diObjectFactory.clone(
+    leg1Collection = cms.InputTag("cmgTauSel"),
+    leg2Collection = cms.InputTag("cmgTauSel"),
+    metCollection = cms.InputTag('cmgPFMET')       
+    )
 
 
 cmgDiTau = cms.EDFilter("DiTauPOProducer",
