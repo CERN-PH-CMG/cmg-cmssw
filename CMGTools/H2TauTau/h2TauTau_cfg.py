@@ -3,7 +3,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 ##########
 
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -18,14 +18,19 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.setName_('H2TAUTAU')
 
-process.load("CMGTools.H2TauTau.sources.VBF_HToTauTau_M_115_7TeV_powheg_pythia6_tauola.Summer11_PU_S4_START42_V11_v1.AODSIM.V2.PAT_CMG_V2_3_0.source_cff")
+from CMGTools.Production.datasetToSource import *
+process.source = datasetToSource(
+    'cmgtools',
+    # '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0',
+    '/VBF_HToTauTau_M-115_7TeV-powheg-pythia6-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0',
+    'tree.*root') 
 
-ext = 'CMG'
-
-# output to be stored
+process.source.fileNames = process.source.fileNames[:12]
 
 print 'processing:'
 print process.source.fileNames
+
+ext = 'CMG'
 
 outFileNameExt = ext
 
