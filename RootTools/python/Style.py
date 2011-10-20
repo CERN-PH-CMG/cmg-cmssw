@@ -22,13 +22,13 @@ class Style:
         hist.SetLineWidth( self.lineWidth_ )
         hist.GetXaxis().SetTitleSize(0.05)
         hist.GetYaxis().SetTitleSize(0.05)
-        hist.GetYaxis().SetTitleOffset(1.2)
+        hist.GetYaxis().SetTitleOffset(1.5)
         if title!=None:
             hist.SetTitle( title )
         return hist
 
 def formatPad( pad ):
-    pad.SetLeftMargin(0.14)
+    pad.SetLeftMargin(0.15)
     pad.SetBottomMargin(0.12)
 
 # the following are the styles to be used by everybody.
