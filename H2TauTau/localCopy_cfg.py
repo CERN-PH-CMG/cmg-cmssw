@@ -13,21 +13,10 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 
-process.load("Configuration.EventContent.EventContent_cff")
+from CMGTools.H2TauTau.Colin.eventContent.tauMu_cff import tauMu as tauMuEventContent
 process.out = cms.OutputModule(
     "PoolOutputModule",
-    # process.RECOSIMEventContent,
-    outputCommands =  cms.untracked.vstring(
-      'keep *',
-      'drop *_*AK7*_*_*', 
-      'drop *_*AK5LC*_*_*',  #?
-      'drop *_cmgDiTau*_*_*',  #?
-      'drop *_cmgTauMu_*_*',
-      'keep *_PFMETSignificance*_*_*',
-      'drop *_*TauE*_*_*',
-      'drop *_*MuE*_*_*',
-      'drop pat*_*_*_*'
-      ),
+    outputCommands = tauMuEventContent,
     fileName = cms.untracked.string('testEventContent.root'),
     # fileName = cms.untracked.string('AODSIM.root'),
     )
