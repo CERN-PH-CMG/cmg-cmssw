@@ -8,6 +8,8 @@ print sep_line
 print "CMGTools main test"
 print sep_line
 
+
+
 process.setName_('ANA')
 
 process.maxEvents = cms.untracked.PSet(
@@ -72,7 +74,17 @@ if runOnMC:
     process.load("CMGTools.Common.runInfoAccounting_cfi")
     process.outpath += process.runInfoAccounting
 
+import os 
+rootfile_dir = os.environ['CMSSW_BASE'] + 'src/CMGTools/Common/data'
+process.vertexWeight = cms.EDFilter(
+    "VertexWeightProducer",
+    src = cms.InputTag(''),
+    inputHistMC = cms.string( rootfile_dir + '/Pileup_Summer11MC.root'),
+    inputHistData = cms.string( rootfile_dir + '/Pileup_2011_EPS_8_jul.root'),
+    )
+
 process.p = cms.Path(
+    process.vertexWeight + 
     process.analysisSequence
 )
 process.GlobalTag.globaltag = cms.string(getGlobalTag(runOnMC))
