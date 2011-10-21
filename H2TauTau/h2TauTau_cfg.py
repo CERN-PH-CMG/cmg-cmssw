@@ -43,7 +43,6 @@ print process.source
 
 process.load('CMGTools.H2TauTau.Colin.h2TauTau_cff')
 
-process.cmgTauMuSel.cut = ''
 
 process.schedule = cms.Schedule(
     process.tauMuPath,    
