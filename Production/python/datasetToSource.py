@@ -13,6 +13,14 @@ def datasetToSource( user, dataset, pattern):
 	fileNames = cms.untracked.vstring()
         )
     
-    source.fileNames.extend( data.listOfFiles() )
+    source.fileNames.extend( data.listOfGoodFiles() )
 
     return source
+
+
+if __name__ == '__main__':
+    import sys,pprint 
+    source = datasetToSource( sys.argv[1], sys.argv[2], sys.argv[3])
+    dump = source.dumpPython()
+    dump = dump.replace("'/store","\n'/store")
+    print dump
