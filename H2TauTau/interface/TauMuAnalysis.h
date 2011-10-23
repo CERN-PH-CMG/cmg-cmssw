@@ -20,7 +20,7 @@ public:
   virtual ~TauMuAnalysis();
 
   void setInputTag(string tag){inputTag_=tag;}
-  
+
   virtual bool init();
   virtual bool createHistos(TString samplename="");
 
@@ -48,7 +48,7 @@ private:
   TriggerEfficiency triggerEff_;
   RecoilCorrector recoilCorr_;
   Int_t genEventType_;//1=ZtoEE, 3=ZToMuMu, 5=ZToTauTau, 6=ZToOther, 11=WToENu, 13=WToMuNu, 15=WToENu,
-  
+
 
   //histos
   TH1F* diTauNHisto_;

@@ -9,6 +9,7 @@ BaseAnalysis::BaseAnalysis():
   truncateEvents_(100000000),
   printFreq_(100),
   mcPUPWeight_(1),
+  outputpath_("./"),
   runNumberHisto_(NULL),
   nVertexHisto_(NULL),
   vertexXYHisto_(NULL),
@@ -23,6 +24,7 @@ BaseAnalysis::BaseAnalysis(const char * name):
   truncateEvents_(100000000),
   printFreq_(100),
   mcPUPWeight_(1),
+  outputpath_("./"),
   runNumberHisto_(NULL),
   nVertexHisto_(NULL),
   vertexXYHisto_(NULL),
@@ -70,6 +72,7 @@ bool BaseAnalysis::init(){
   ///init each sample
   std::vector<Sample*>::const_iterator s=samples_.begin();
   for(int i=0; s!=samples_.end(); ++s, i++){
+    samples_[i]->setOutputPath(outputpath_);
     if(!(samples_[i]->init())) return 0;
  
     cout<<"BaseAnalysis Initialized sample "<<samples_[i]->GetName()<<" "<<samples_[i]->GetTitle()<<endl;

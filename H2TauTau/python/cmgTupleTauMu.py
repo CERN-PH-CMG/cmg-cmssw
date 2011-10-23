@@ -7,6 +7,8 @@ from CMGTools.H2TauTau.tools import vertexCollection
 process.setName_('CMGDiTau')
 
 #process.source.fileNames = cms.untracked.vstring(['/store/cmst3/user/benitezj/CMG/GluGluToHToTauTau_M-105_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0/tree_CMG_1.root'])
+
+
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
@@ -15,24 +17,17 @@ process.TFileService = cms.Service("TFileService",fileName = cms.string("histogr
 runOnMC = False
 selectSS = False
 
-
-
-#Apply json file (seehttps://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideGoodLumiSectionsJSONFile#cmsRun)
+####Apply json file (see https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideGoodLumiSectionsJSONFile#cmsRun)
 if runOnMC == False:
-    import PhysicsTools.PythonAnalysis.LumiList as LumiList   ## cvs co-r V00-00-01  /PhysicsTools/PythonAnalysis
-    import FWCore.ParameterSet.Types as CfgTypes
-    ##for SingleMu and TauPlusX May data
-    #myLumis = LumiList.LumiList(filename ='/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v3.txt').getCMSSWString().split(',')
-    ##for TauPlusX v4
-    #myLumis = LumiList.LumiList(filename ='/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/Cert_160404-173692_7TeV_PromptReco_Collisions11_JSON.txt').getCMSSWString().split(',')
-    ##for TauPlusX Aug
-    #myLumis = LumiList.LumiList(filename ='/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/Cert_170249-172619_7TeV_ReReco5Aug_Collisions11_JSON_v2.txt').getCMSSWString().split(',')
-    ##for TauPlusX v6
-    #myLumis = LumiList.LumiList(filename ='/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/Cert_160404-177053_7TeV_PromptReco_Collisions11_JSON.txt').getCMSSWString().split(',')
-    process.source.lumisToProcess = CfgTypes.untracked(CfgTypes.VLuminosityBlockRange())
-    process.source.lumisToProcess.extend(myLumis)
-
-
+    from CMGTools.Common.Tools.applyJSON_cff  import *
+    #applyJSON(process,'/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/finalSingleMuMay.txt')
+    #applyJSON(process,'/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/finalTauPlusXMay.txt')
+    #applyJSON(process,'/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/finalTauPlusXv4.txt')
+    #applyJSON(process,'/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/finalTauPlusXAug.txt')
+    #applyJSON(process,'/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/finalTauPlusXv6.txt')
+    applyJSON(process,'/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/finalTauPlusX.txt')
+    ##note that this currently works only for TauPlusX so SingleMu needs to be done separately
+    
 ######
 process.load('CMGTools.Common.tauMu_cff')
 process.tauMuFactory.leg1Collection = cms.InputTag("cmgTauSel")

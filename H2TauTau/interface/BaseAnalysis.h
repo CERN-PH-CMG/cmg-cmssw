@@ -45,6 +45,8 @@ public:
 
   void addSample(Sample* sample){samples_.push_back(sample);}
   
+  void setOutputPath(TString path){outputpath_=path;}
+
   virtual bool init();
 
   virtual bool createHistos(TString samplename="RelValZTT");
@@ -70,6 +72,7 @@ protected:
   unsigned int lumiblock_;
   unsigned int eventid_;
   edm::Handle< std::vector<reco::Vertex> > vertices_;
+  TString outputpath_;
 
   ///Histograms
   TH1F* runNumberHisto_;
@@ -84,7 +87,7 @@ protected:
 private:
 
   TH1F* mcPUPWeightHisto_;
-
+  
 
 
   ClassDef(BaseAnalysis, 1);
