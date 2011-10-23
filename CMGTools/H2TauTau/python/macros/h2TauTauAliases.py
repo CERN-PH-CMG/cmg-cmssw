@@ -5,5 +5,8 @@ diTauAliases = {
     'diTau':'cmgTaucmgTaucmgDiObjects_cmgDiTauSel__'    
     }
 
+tauMuBase = {
+    'tauMuBase':'cmgTaucmgMuoncmgDiObjects_cmgTauMuBaselineSel__',
+    }
 
-h2TauTauAliases = dict(  diTauAliases.items() )
+h2TauTauAliases = dict(  diTauAliases.items() + tauMuBase.items() )

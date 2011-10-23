@@ -14,10 +14,16 @@ cmgTauMu.cuts = tauMuCuts.clone()
 
 cmgTauMuSel.cut = 'getSelection("cuts_skimming")'
 
+cmgTauMuBaselineSel = cmgTauMuSel.clone(
+    src = 'cmgTauMuSel',
+    cut = 'getSelection("cuts_baseline")'
+    )
+
 # ---- tau e channel : for now, same cuts as for tau mu
 
 # cmgTauESel.cut = cmgTauMuSel.cut
 
 objectSequence = cms.Sequence(
-    diTauSequence
+    diTauSequence +
+    cmgTauMuBaselineSel
     )
