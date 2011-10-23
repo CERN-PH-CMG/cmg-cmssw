@@ -7,10 +7,17 @@ from CMGTools.H2TauTau.Colin.histograms.histogramSkim_cff import *
 
 tauMuPath = cms.Path(
     objectSequence + 
-    # histogramSequence +  
     tauMuSkimSequence +
     histogramSkimSequence 
     )
+
+
+tauMuBaselinePath = cms.Path(
+    objectSequence + 
+    tauMuBaselineSkimSequence
+    )
+
+
 
 tauEPath = cms.Path(
     objectSequence + 
