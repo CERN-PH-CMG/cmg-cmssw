@@ -10,20 +10,25 @@ print sep_line
 process.setName_('ANA')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(20000)
+    input = cms.untracked.int32(-1)
     )
 
 process.maxLuminosityBlocks = cms.untracked.PSet( 
     input = cms.untracked.int32(-1)
     )
 
+from CMGTools.Production.datasetToSource import *
+process.source = datasetToSource(
+    'cbern',
+    '/QCD_Pt-30to50_TuneZ2_7TeV_pythia6/Summer11-PU_S3_START42_V11-v2/AODSIM/V2',
+    'PFAOD.*root'
+    ) 
 
-process.load("CMGTools.Common.sources.DoubleMu.Run2011A_ZMu_PromptSkim_v6.RAW_RECO.source_cff")
 
 # reading the first 10 files:
 nFiles = 10
 print 'WARNING: RESTRICTING INPUT TO THE FIRST', nFiles, 'FILES'
-process.source.fileNames = process.source.fileNames[:nFiles-1] 
+# process.source.fileNames = process.source.fileNames[:nFiles-1] 
 
 print process.source.fileNames
 
@@ -40,7 +45,6 @@ process.out.dropMetaData = cms.untracked.string('PRIOR')
 process.pfPhotonSel = cms.EDFilter(
     "GenericPFCandidateSelector",
     src = cms.InputTag("particleFlow"),
-    # cut = cms.string("pt()>1 && energy()>1 && particleId()==4 && abs( eta() )<1.4")
     cut = cms.string("energy()>2 && particleId()==4 && abs( eta() )<1.4")
 )
 
@@ -57,6 +61,7 @@ from CMGTools.Common.factories.cmgDiPFCandidate_cfi import *
 process.diPhoton = cmgDiPFCandidate.clone()
 process.diPhoton.cfg.leg1Collection = 'photonSel'
 process.diPhoton.cfg.leg2Collection = 'photonSel'
+process.diPhoton.cfg.metCollection = ''
 
 from CMGTools.Common.skims.cmgDiPFCandidateSel_cfi import *
 process.diPhotonSel = cmgDiPFCandidateSel.clone(
