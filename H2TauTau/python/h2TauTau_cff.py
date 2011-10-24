@@ -1,9 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.H2TauTau.Colin.objects.object_cff import *
-from CMGTools.H2TauTau.Colin.skims.skim_cff import *
-from CMGTools.H2TauTau.Colin.histograms.histogram_cff import *
-from CMGTools.H2TauTau.Colin.histograms.histogramSkim_cff import *
+from CMGTools.H2TauTau.objects.object_cff import *
+from CMGTools.H2TauTau.skims.skim_cff import *
+from CMGTools.H2TauTau.histograms.histogram_cff import *
+from CMGTools.H2TauTau.histograms.histogramSkim_cff import *
 
 tauMuPath = cms.Path(
     objectSequence + 
