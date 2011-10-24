@@ -5,6 +5,8 @@ import copy, datetime, inspect, fnmatch, os, re, subprocess, sys, tempfile, time
 import castortools
 import Das
 
+from CMGTools.Production.dataset import *
+
 class Task(object):
     """Base class for Task API"""
     def __init__(self, name, dataset, user, options, instance = None):
@@ -47,7 +49,7 @@ The basic flow is:
 
 Example:
 
-ProductionTasks.py -u cbern -w PFAOD*.root -c -N 1 -q 8nh -t PAT_CMG_V2_2_0 --output_wildcard [!h]*.root --cfg patTuple_PF2PAT_forCMG_cfg.py /QCD_Pt-1800_TuneZ2_7TeV_pythia6/Summer11-PU_S3_START42_V11-v2/AODSIM/V2
+ProductionTasks.py -u cbern -w 'PFAOD*.root' -c -N 1 -q 8nh -t PAT_CMG_V2_2_0 --output_wildcard '[!h]*.root' --cfg patTuple_PF2PAT_forCMG_cfg.py /QCD_Pt-1800_TuneZ2_7TeV_pythia6/Summer11-PU_S3_START42_V11-v2/AODSIM/V2
 
 It is often useful to store the sample names in a file, in which case you could instead do:
 
@@ -316,28 +318,12 @@ class SourceCFG(Task):
         jobdir = input['CreateJobDirectory']['JobDir']
         
         pattern = fnmatch.translate(self.options.wildcard)
-        files = castortools.matchingFiles( dir, pattern)
-        if not files:
-            raise Exception("No files matched pattern '%s' in directory '%s'." % (pattern,dir))
-        
-        if self.options.check and input['CheckForMask']['MaskPresent']:
-            if input['GenerateMask']['Report']['FilesGood'] < 1:
-                raise Exception('No good files found to run on')
-        
-        #same directory as this file
-        scriptsDir = os.path.dirname(inspect.getsourcefile(SourceCFG))
-        script = os.path.join(scriptsDir,'sourceFileList.py')
-        
-        cmd = ['python',script,dir,pattern]
-        if self.options.check:
-            cmd.append('-c')
-        stdout = subprocess.Popen(cmd, stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[0]
-        if not stdout:
-            raise Exception("No source cfg generated")
 
+        data = Dataset(self.user, self.dataset, pattern)
+        
         source = os.path.join(jobdir,'source_cfg.py')
         output = file(source,'w')
-        output.write(stdout)
+        output.write('files = ' + str(data.listOfGoodFiles()) + '\n')
         output.close()
         return {'SourceCFG':source}
     
@@ -362,7 +348,8 @@ class FullCFG(Task):
         source = os.path.join(jobdir,'full_cfg.py')
         output = file(source,'w')
         output.write(config)
-        output.write('\nprocess.load("%s")\n' % sourceFile)
+        output.write('\nfrom %s import *\n' % sourceFile)
+        output.write('\nprocess.source.fileNames = files\n')        
         output.write('if hasattr(process,"maxEvents"): process.maxEvents.input = cms.untracked.int32(-1)\n')
         output.write('if hasattr(process,"maxLuminosityBlocks"): process.maxLuminosityBlocks.input = cms.untracked.int32(-1)\n')
         output.close()
@@ -598,7 +585,8 @@ class MonitorJobs(Task):
         return result
     
     def run(self, input):
-        
+
+        # return #COLIN
         jobsdir = input['RunCMSBatch']['LSFJobsTopDir']
         if not os.path.exists(jobsdir):
             raise Exception("LSF jobs dir does not exist: '%s'" % jobsdir)
@@ -818,7 +806,9 @@ if __name__ == '__main__':
     try:
         op.run({})
     except:
-        op.das.parser.print_help()
+        #COLIN commented the print_help because it was kind of masking the exceptions...
+        # op.das.parser.print_help()
+        # print err
         sys.exit(1)
     
     def splitUser(dataSample,UserName):
