@@ -35,9 +35,10 @@ print process.source.fileNames
 # output module for EDM event (ntuple)
 process.out.fileName = cms.untracked.string('tree_pi0s.root')
 from CMGTools.Common.eventContent.everything_cff import everything 
-process.out.outputCommands = cms.untracked.vstring( 'drop *',
-                                                    'keep *_particleFlow_*_*',
-                                                    'keep *_diPhotonSel_*_*')
+process.out.outputCommands = everything
+process.out.outputCommands.extend( ['keep *_particleFlow__*',
+                                    'keep *_diPhotonSel_*_*'] ) 
+
 process.out.dropMetaData = cms.untracked.string('PRIOR')
 
 # select photons 
