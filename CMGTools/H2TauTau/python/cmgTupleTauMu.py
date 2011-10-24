@@ -2,7 +2,8 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 import FWCore.ParameterSet.Config as cms
 import os.path
 
-from CMGTools.H2TauTau.tools import vertexCollection
+# from CMGTools.H2TauTau.tools import vertexCollection
+vertexCollection = "offlinePrimaryVertices"
 
 process.setName_('CMGDiTau')
 

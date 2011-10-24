@@ -48,10 +48,9 @@ if dataset_name.find('Run201')>-1:
     applyJSON(process, json )
 
 
-
 # Sequence & path definition -------------------------------------------------
 
-process.load('CMGTools.H2TauTau.Colin.h2TauTau_cff')
+process.load('CMGTools.H2TauTau.h2TauTau_cff')
 
 
 process.schedule = cms.Schedule(
@@ -67,7 +66,6 @@ process.schedule = cms.Schedule(
 
 
 # OUTPUT definition ----------------------------------------------------------
-
 
 
 # skim (basic selection)     ------

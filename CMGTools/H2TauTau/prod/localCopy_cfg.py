@@ -13,7 +13,7 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 
-from CMGTools.H2TauTau.Colin.eventContent.tauMu_cff import tauMu as tauMuEventContent
+from CMGTools.H2TauTau.eventContent.tauMu_cff import tauMu as tauMuEventContent
 process.out = cms.OutputModule(
     "PoolOutputModule",
     outputCommands = tauMuEventContent,
