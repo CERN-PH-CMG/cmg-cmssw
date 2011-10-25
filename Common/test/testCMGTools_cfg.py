@@ -33,7 +33,7 @@ process.load("CMGTools.Common.sources.DoubleMu.Run2011A_ZMu_PromptSkim_v6.RAW_RE
 # reading the first 10 files:
 nFiles = 10
 print 'WARNING: RESTRICTING INPUT TO THE FIRST', nFiles, 'FILES'
-process.source.fileNames = process.source.fileNames[:nFiles-1] 
+process.source.fileNames = process.source.fileNames[:nFiles] 
 
 print process.source.fileNames
 
