@@ -4,8 +4,12 @@
 ## September 12th 2011
 
 from datetime import datetime
-from savannahConnect import savannahConnect
-import sys,os, re, subprocess, datetime, castortools, castorBaseDir, glob, DBLogger, getpass
+from CMGTools.Production.savannahConnect import savannahConnect
+import sys,os, re, subprocess, datetime
+import CMGTools.Production.castortools as castortools
+import CMGTools.Production.castorBaseDir as castorBaseDir
+import CMGTools.Production.DBLogger as DBLogger
+import getpass, glob
 from optparse import OptionParser
 from DBSAPI.dbsProcessedDataset import DbsProcessedDataset
 from DBSAPI.dbsPrimaryDataset import DbsPrimaryDataset
