@@ -16,6 +16,7 @@ sys.path.append('.')
 process = 'ANA'
 
 
+from CMGTools.RootTools.TaggedFile import *
 from CMGTools.RootTools.Style import *
 from CMGTools.RootTools.TreeFunctions import *
 from CMGTools.RootTools.AliasSetter import * 

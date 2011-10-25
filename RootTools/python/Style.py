@@ -39,8 +39,20 @@ sBlue = Style(lineColor=4, markerColor=4)
 sGreen = Style(lineColor=8, markerColor=8)
 sRed = Style(lineColor=2, markerColor=2)
 
-sRedPoints = Style(markerColor = 2)
 
 sBlackSquares = Style(markerStyle = 21)
 sBlueSquares = Style(lineColor=4, markerStyle = 21, markerColor=4)
 sGreenSquares = Style( lineColor=8, markerStyle = 21, markerColor=8 )
+sRedSquares = Style(lineColor=2, markerStyle = 21, markerColor=2)
+
+
+styleSet = [sBlack, sBlue, sGreen, sRed, sBlackSquares, sBlueSquares, sGreenSquares, sRedSquares]
+iStyle = 0
+
+def nextStyle():
+    global iStyle
+    style = styleSet[iStyle]
+    iStyle = iStyle+1
+    if iStyle>=len(styleSet):
+        iStyle = 0
+    return style
