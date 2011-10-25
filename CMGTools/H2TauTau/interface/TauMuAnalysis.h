@@ -68,7 +68,7 @@ private:
   TH1F* pZetaHisto_;
 
 
-  float computePZeta(const cmg::Tau * tau1, const cmg::Muon * tau2, const cmg::BaseMET * met, const reco::GenParticle * genBoson = NULL);
+  float computePZeta(const cmg::Tau * tau1, const cmg::Muon * tau2);
 
   float computeTauIso(const cmg::Tau * tau);
 

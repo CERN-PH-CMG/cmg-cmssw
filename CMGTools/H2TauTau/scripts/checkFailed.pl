@@ -3,7 +3,7 @@
 
 $taskdir=shift;
 $resubmit=shift;
-$currentpath=$ENV{'PWD'};
+$prevpath=$ENV{'PWD'};
 
 print "checkFailed.pl will check for failed jobs in $taskdir\n";
 
@@ -100,27 +100,27 @@ foreach $job (@executefiles){
 	    if($resubmit==1){
 		print "resubmitting ${taskdir}/${job}\n";
 
-		$lsf=`ls $taskdir/$job/ | grep LSFJOB_ `;	
+		$lsf=`ls ${taskdir}/${job}/ | grep LSFJOB_ `;	
 		chomp($lsf);
 		@lsftype=split("LSFJOB_",$lsf);
 		if($lsftype[1]>0){
-		    #print "rm -rf $taskdir/$job/$lsf \n";
-		    system("rm -rf $taskdir/$job/$lsf");
+		    #print "rm -R -f ${taskdir}/${job}/${lsf}\n";
+		    `rm -R -f ${taskdir}/${job}/${lsf}`;
 		}
 	
-		$cfg=`ls $taskdir/$job/ | grep run_cfg `;	
+		$cfg=`ls ${taskdir}/${job}/ | grep run_cfg `;	
 		chomp($cfg);
 		@cfgtype=split("py",$cfg);
 		if($cfgtype[1] eq ".gz"){
-		    #print "gunzip $taskdir/$job/$cfg \n";
-		    system("gunzip $taskdir/$job/$cfg");
+		    #print "gunzip ${taskdir}/${job}/${cfg}\n";
+		    `gunzip ${taskdir}/${job}/${cfg}`;
 		}
 
 
-		chdir("$taskdir/$job/") or die "Cant chdir to $taskdir/$job/ $!";
+		chdir("${taskdir}/${job}/") or die "Cant chdir to ${taskdir}/${job}/ $!";
 		#print "bsub -q 8nh < batchScript.sh \n";
-		system("bsub -q 8nh < batchScript.sh");
-		chdir($currentpath);
+		`bsub -q 8nh < batchScript.sh`;
+		chdir($prevpath);
 		$nresubmitted++;
 	    }
 	}		

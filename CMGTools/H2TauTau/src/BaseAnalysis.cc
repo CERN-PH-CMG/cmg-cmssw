@@ -43,7 +43,8 @@ BaseAnalysis::~BaseAnalysis(){
 bool BaseAnalysis::init(){
   
   //read the pile-up weights
-  TFile DataPUP("Pileup_2011_EPS_8_jul.root","read");
+  //Pileup_2011_EPS_8_jul.root
+  TFile DataPUP("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/PileUp/Pileup_2011_to_172802_LP_LumiScale.root","read");
   TFile MCPUP("Pileup_Summer11MC.root","read");
   if(DataPUP.IsZombie()||MCPUP.IsZombie()){
     cout<<DataPUP.GetName()<<" or "<<MCPUP.GetName()<<" not valid "<<endl;

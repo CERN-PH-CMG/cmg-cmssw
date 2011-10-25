@@ -131,8 +131,8 @@ bool TauMuAnalysis::getHistos(Sample* s, TString tag){
   return 1;
 }
 
-float TauMuAnalysis::computePZeta(const cmg::Tau * tau1, const cmg::Muon * tau2, const cmg::BaseMET * met, const reco::GenParticle * genBoson){
-  if(!tau1 || !tau2 || !met) return 0.;
+float TauMuAnalysis::computePZeta(const cmg::Tau * tau1, const cmg::Muon * tau2){
+  if(!tau1 || !tau2 || met_->size()!=1) return 0.;
   //1) zeta axis is the bisector between tau1 and tau2 momentum vectors
   //2) project visible energy onto zeta axis
   //3) project MET onto zeta axis
@@ -140,13 +140,13 @@ float TauMuAnalysis::computePZeta(const cmg::Tau * tau1, const cmg::Muon * tau2,
   TVector3 tau2P=TVector3(tau2->p4().x(),tau2->p4().y(),tau2->p4().z());
   TVector3 tau1PT=TVector3(tau1->p4().x(),tau1->p4().y(),0.);
   TVector3 tau2PT=TVector3(tau2->p4().x(),tau2->p4().y(),0.);
-  TVector3 metPT=TVector3(met->p4().x(),met->p4().y(),0.);
+  TVector3 metPT=TVector3(met_->begin()->p4().x(),met_->begin()->p4().y(),0.);
   TVector3 zetaAxis=(tau1PT.Unit() + tau2PT.Unit()).Unit();
   Float_t pZetaVis=(tau1PT + tau2PT)*zetaAxis;
 
   //////apply recoil correction to MET on Z-->tau tau and W->l nu
-  if(sample_->getApplyRecoilCorr() && genBoson && (genEventType_==5 || genEventType_==11 || genEventType_==13 || genEventType_==15)){      
-    TVector3 genBosonPT=TVector3(genBoson->p4().x(),genBoson->p4().y(),0.);
+  if(sample_->getApplyRecoilCorr() && genBoson_ && (genEventType_==5 || genEventType_==11 || genEventType_==13 || genEventType_==15)){      
+    TVector3 genBosonPT=TVector3(genBoson_->p4().x(),genBoson_->p4().y(),0.);
     double met = metPT.Mag();
     double metphi = metPT.Phi();    
     TVector3 recoLeptonPT = tau1PT+tau2PT;
@@ -215,39 +215,34 @@ bool TauMuAnalysis::fillVariables(const fwlite::Event * event){
   ///get the gen Boson
   genBoson_ = NULL;
   genEventType_=0;
+  if(sample_->getDataType()=="MC" || sample_->getDataType()=="MC_SS"){  
+    edm::Handle< std::vector<reco::GenParticle> > genParticles;
+    event->getByLabel(edm::InputTag("genParticlesStatus3"),genParticles);    
+    for(std::vector<reco::GenParticle>::const_iterator g=genParticles->begin(); g!=genParticles->end(); ++g){    
+      //cout<<g->pdgId()<<" "<<g->p4().pt()<<endl;
+      if((abs(g->pdgId())==23 || abs(g->pdgId())==24) && genBoson_==NULL )
+	genBoson_=&(*g);
+    }
+    //if(genBoson_)cout<<"genBoson_ ref = "<<genBoson_<<endl;
 
-//   if(sample_->getDataType()=="MC" || sample_->getDataType()=="MC_SS"){  
-//     edm::Handle< std::vector<reco::GenParticle> > genParticles;
-//     event->getByLabel(edm::InputTag("genParticlesStatus3"),genParticles);    
-//     for(std::vector<reco::GenParticle>::const_iterator g=genParticles->begin(); g!=genParticles->end(); ++g){    
-//       //cout<<g->pdgId()<<" "<<g->p4().pt()<<endl;
-//       if((abs(g->pdgId())==23 || abs(g->pdgId())==24) && genBoson_==NULL )
-// 	genBoson_=&(*g);
-//     }
-//     //if(genBoson_)cout<<"genBoson_ ref = "<<genBoson_<<endl;
-
-//     //determine type of generated event
-//     int genTaus=0;
-//     int genMuons=0;
-//     int genElectrons=0;
-//     if(genBoson_){      
-//       for(std::vector<reco::GenParticle>::const_iterator g=genParticles->begin(); g!=genParticles->end(); ++g){    
-// 	if(abs(g->pdgId())==11 && g->mother()==genBoson_) genElectrons++;
-// 	if(abs(g->pdgId())==13 && g->mother()==genBoson_) genMuons++;
-// 	if(abs(g->pdgId())==15 && g->mother()==genBoson_) genTaus++;
-//       }
-//       if(abs(genBoson_->pdgId())==23 && genElectrons==2)   genEventType_=1;
-//       if(abs(genBoson_->pdgId())==23 && genMuons==2)       genEventType_=3;
-//       if(abs(genBoson_->pdgId())==23 && genTaus==2)        genEventType_=5;
-//       if(abs(genBoson_->pdgId())==24 && genElectrons==1)   genEventType_=11;
-//       if(abs(genBoson_->pdgId())==24 && genMuons==1)       genEventType_=13;
-//       if(abs(genBoson_->pdgId())==24 && genTaus==1)        genEventType_=15;
-//     }
-//   }
-  //exit(0);
-  
-
-
+    //determine type of generated event
+    int genTaus=0;
+    int genMuons=0;
+    int genElectrons=0;
+    if(genBoson_){      
+      for(std::vector<reco::GenParticle>::const_iterator g=genParticles->begin(); g!=genParticles->end(); ++g){    
+	if(abs(g->pdgId())==11 && g->mother()==genBoson_) genElectrons++;
+	if(abs(g->pdgId())==13 && g->mother()==genBoson_) genMuons++;
+	if(abs(g->pdgId())==15 && g->mother()==genBoson_) genTaus++;
+      }
+      if(abs(genBoson_->pdgId())==23 && genElectrons==2)   genEventType_=1;
+      if(abs(genBoson_->pdgId())==23 && genMuons==2)       genEventType_=3;
+      if(abs(genBoson_->pdgId())==23 && genTaus==2)        genEventType_=5;
+      if(abs(genBoson_->pdgId())==24 && genElectrons==1)   genEventType_=11;
+      if(abs(genBoson_->pdgId())==24 && genMuons==1)       genEventType_=13;
+      if(abs(genBoson_->pdgId())==24 && genTaus==1)        genEventType_=15;
+    }
+  }
 
   
   return 1;
@@ -278,7 +273,7 @@ bool TauMuAnalysis::applySelections(TString exceptcut){
     if(exceptcut!="muiso") if(cand->leg2().relIso()>0.1)continue;    
 
     ////other 
-    if(exceptcut!="pzeta") if(computePZeta(&(cand->leg1()),&(cand->leg2()),&(*(met_->begin())),genBoson_)<-20.0) continue;
+    if(exceptcut!="pzeta") if(computePZeta(&(cand->leg1()),&(cand->leg2()))<-20.0) continue;
     if(exceptcut!="dileptonveto")if(computeDiLeptonVeto(&(cand->leg2()))) continue;
 
 
@@ -292,14 +287,14 @@ bool TauMuAnalysis::applySelections(TString exceptcut){
 
 bool TauMuAnalysis::fillHistos(double weight ){
   
-  if(!BaseAnalysis::fillHistos()) return 0;
+  if(!BaseAnalysis::fillHistos(weight)) return 0;
   
   //fill the diTau histograms
   diTauNHisto_->Fill(diTauSelList_.size());
   for(std::vector<cmg::TauMu>::const_iterator cand=diTauSelList_.begin(); cand!=diTauSelList_.end(); ++cand){
     
     //float tauiso=computeTauIso(&(cand->leg1()));
-    float pzeta=computePZeta(&(cand->leg1()),&(cand->leg2()),&(*(met_->begin())),genBoson_);
+    float pzeta=computePZeta(&(cand->leg1()),&(cand->leg2()));
 
     diTauMassHisto_->Fill(cand->mass(),weight);
     diTauEtaHisto_->Fill(cand->eta(),weight);
@@ -315,34 +310,38 @@ bool TauMuAnalysis::fillHistos(double weight ){
     muDxyHisto_->Fill(cand->leg2().dxy(),weight);
     muDzHisto_->Fill(cand->leg2().dz(),weight);
 
-    metHisto_->Fill(met_->begin()->energy(),weight);  
+
     pZetaHisto_->Fill(pzeta,weight);  
 
 
-//     /////svfit
-//     TMatrixD covMET(2,2);
-//     covMET[0][0] = (*(metsig_->significance()))[0][0];
-//     covMET[0][1] = (*(metsig_->significance()))[0][1];
-//     covMET[1][0] = (*(metsig_->significance()))[1][0];
-//     covMET[1][1] = (*(metsig_->significance()))[1][1];    
-//     NSVfitStandalone::Vector measuredMET((*(met_->begin())).p4().x(),(*(met_->begin())).p4().y(),0);
-//     NSVfitStandalone::Vector l1(cand->leg1().p4().x(),cand->leg1().p4().y(),cand->leg1().p4().z());
-//     NSVfitStandalone::Vector l2(cand->leg2().p4().x(),cand->leg2().p4().y(),cand->leg2().p4().z());
-//     std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
-//     NSVfitStandalone::LorentzVector p1(cand->leg1().p4().x(),cand->leg1().p4().y(),cand->leg1().p4().z(),cand->leg1().p4().t());
-//     NSVfitStandalone::LorentzVector p2(cand->leg2().p4().x(),cand->leg2().p4().y(),cand->leg2().p4().z(),cand->leg2().p4().t());
-//     measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kHadDecay,p1));    
-//     measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay,p2));
-//     NSVfitStandaloneAlgorithm algo(measuredTauLeptons,measuredMET,covMET,0);//(TMatrixD&)(*(metsig_->significance())),0);
-//     algo.maxObjFunctionCalls(5000);
-//     //algo.addLogM(false);
-//     //algo.metPower(0.5)
-//     // run the fit
-//     algo.fit();
-//     //     if(algo.isValidSolution()){
-//     //       //std::cout << "... m mit   : " << algo.fittedDiTauSystem().mass() << std::endl;
-//     //     }
-//     diTauMassSVFitHisto_->Fill(algo.fittedDiTauSystem().mass(),weight);
+    /////svfit
+    TVector3 tau1PT=TVector3((&(cand->leg1()))->p4().x(),(&(cand->leg1()))->p4().y(),0.);
+    TVector3 tau2PT=TVector3((&(cand->leg2()))->p4().x(),(&(cand->leg2()))->p4().y(),0.);
+    TVector3 metPT=TVector3((&(*(met_->begin())))->p4().x(),(&(*(met_->begin())))->p4().y(),0.);
+    if(sample_->getApplyRecoilCorr() && genBoson_ && (genEventType_==5 || genEventType_==11 || genEventType_==13 || genEventType_==15)){      
+      TVector3 genBosonPT=TVector3(genBoson_->p4().x(),genBoson_->p4().y(),0.);
+      double met = metPT.Mag();
+      double metphi = metPT.Phi();    
+      TVector3 recoLeptonPT = tau1PT+tau2PT;
+      if(genEventType_==11 || genEventType_==13 || genEventType_==15) recoLeptonPT = tau2PT; //use only the muon for WJets
+      recoilCorr_.Correct(met,metphi,genBosonPT.Mag(),genBosonPT.Phi(),recoLeptonPT.Mag(),recoLeptonPT.Phi());
+      metPT.SetMagThetaPhi(met,TMath::Pi()/2.,metphi);
+    }
+    NSVfitStandalone::Vector measuredMET(metPT.x(),metPT.y(),0);
+    std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
+    NSVfitStandalone::LorentzVector p1(cand->leg1().p4().x(),cand->leg1().p4().y(),cand->leg1().p4().z(),cand->leg1().p4().t());
+    NSVfitStandalone::LorentzVector p2(cand->leg2().p4().x(),cand->leg2().p4().y(),cand->leg2().p4().z(),cand->leg2().p4().t());
+    measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kHadDecay,p1));    
+    measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay,p2));
+    NSVfitStandaloneAlgorithm algo(measuredTauLeptons,measuredMET,(TMatrixD&)(*(metsig_->significance())),0);
+    algo.maxObjFunctionCalls(5000);
+    //algo.addLogM(false);
+    //algo.metPower(0.5)
+    algo.fit();
+    //     if(algo.isValidSolution())
+    diTauMassSVFitHisto_->Fill(algo.fittedDiTauSystem().mass(),weight);
+    metHisto_->Fill(metPT.Mag(),weight);  
+
 
   }
  
