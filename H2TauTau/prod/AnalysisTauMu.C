@@ -12,8 +12,9 @@
   //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/Veto";
   //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/NotRecoilCorrected";
   //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/Final";
-  //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/SVFit";
-  TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/SVFitJson";
+  //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/Json";
+  TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/SVFit";
+
 
   analysis.setOutputPath(path);
 
@@ -94,7 +95,7 @@
 //   SingleMuMay.addTrigPath("HLT_IsoMu12_v1");
 //   analysis.addSample(&SingleMuMay);
 
-  Sample TauPlusXMay("TauPlusXMay","/data/benitezj/RootFiles/TauPlusX/Run2011A-May10ReReco-v1/AOD/V2/PAT_CMG_V2_3_0/cmgTauMu");
+  Sample TauPlusXMay("TauPlusXMay","/data/benitezj/RootFiles/TauPlusX/Run2011A-May10ReReco-v1/AOD/V2/PAT_CMG_V2_3_0/TauMu");
   TauPlusXMay.setDataType("Data");
   //TauPlusXMay.setSampleLumi(159781779.041/1000000.);
   TauPlusXMay.setSampleLumi(168.597);//168.597
@@ -104,7 +105,7 @@
   TauPlusXMay.addTrigPath("HLT_IsoMu12_LooseIsoPFTau10_v4");
   analysis.addSample(&TauPlusXMay);
 
-  Sample TauPlusXv4("TauPlusXv4","/data/benitezj/RootFiles/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_3_0/cmgTauMu");
+  Sample TauPlusXv4("TauPlusXv4","/data/benitezj/RootFiles/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_3_0/TauMu");
   TauPlusXv4.setDataType("Data");
   //TauPlusXv4.setSampleLumi(886790147.468/1000000.);
   TauPlusXv4.setSampleLumi(929.748);//929.748
@@ -114,7 +115,7 @@
   TauPlusXv4.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v6");
   analysis.addSample(&TauPlusXv4);
 
-  Sample TauPlusXAug("TauPlusXAug","/data/benitezj/RootFiles/TauPlusX/Run2011A-05Aug2011-v1/AOD/V2/PAT_CMG_V2_3_0/cmgTauMu");
+  Sample TauPlusXAug("TauPlusXAug","/data/benitezj/RootFiles/TauPlusX/Run2011A-05Aug2011-v1/AOD/V2/PAT_CMG_V2_3_0/TauMu");
   TauPlusXAug.setDataType("Data");
   //TauPlusXAug.setSampleLumi(361738235.319/1000000.);
   TauPlusXAug.setSampleLumi(373.349);//373.349
@@ -122,7 +123,7 @@
   TauPlusXAug.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v8");
   analysis.addSample(&TauPlusXAug);
 
-  Sample TauPlusXv6("TauPlusXv6","/data/benitezj/RootFiles/TauPlusX/Run2011A-PromptReco-v6/AOD/V2/PAT_CMG_V2_3_0/cmgTauMu");
+  Sample TauPlusXv6("TauPlusXv6","/data/benitezj/RootFiles/TauPlusX/Run2011A-PromptReco-v6/AOD/V2/PAT_CMG_V2_3_0/TauMu");
   TauPlusXv6.setDataType("Data");
   TauPlusXv6.setRunRange(170000,172802);
   //TauPlusXv6.setSampleLumi(120000073.059/1000000.);
@@ -237,15 +238,15 @@
   if(!analysis.init()){cout<<" could not init"<<endl;return 0;}
   
   
-  //  /////////////////create histos
-  //   //   analysis.createHistos("Higgs");
+//   //  /////////////////create histos
+//   //   //   analysis.createHistos("Higgs");
 //   analysis.createHistos("DYJetsToLL");
 //   analysis.createHistos("WJetsToLNu");
 //   analysis.createHistos("TTJets");
-  //   //   analysis.createHistos("WW");
-  //   //   analysis.createHistos("WZ");
-  //   //   analysis.createHistos("ZZ");
-  //   analysis.createHistos("SingleMuMay");
+//   //   analysis.createHistos("WW");
+//   //   analysis.createHistos("WZ");
+//   //   analysis.createHistos("ZZ");
+//   //analysis.createHistos("SingleMuMay");
 //   analysis.createHistos("TauPlusXMay");
 //   analysis.createHistos("TauPlusXv4");
 //   analysis.createHistos("TauPlusXAug");
@@ -254,10 +255,10 @@
 //   analysis.createHistos("DYJetsToLL_SS");
 //   analysis.createHistos("WJetsToLNu_SS");
 //   analysis.createHistos("TTJets_SS");
-  //   //   analysis.createHistos("WW_SS");
-  //   //   analysis.createHistos("WZ_SS");
-  //   //   analysis.createHistos("ZZ_SS");
-  //   analysis.createHistos("SingleMuMay_SS");
+//   //   analysis.createHistos("WW_SS");
+//   //   analysis.createHistos("WZ_SS");
+//   //   analysis.createHistos("ZZ_SS");
+//   //analysis.createHistos("SingleMuMay_SS");
 //   analysis.createHistos("TauPlusXMay_SS");
 //   analysis.createHistos("TauPlusXv4_SS");
 //   analysis.createHistos("TauPlusXAug_SS");
@@ -281,39 +282,42 @@
 //   Float_t r[4]={160000,175000,0,400};
 //   analysis.plotDistribution("runNumberHisto",0,"","",c,r);
 
-  //  Float_t c[4]={.5,.75,.42,.81};
-  //  analysis.plotDistribution("nVertexHisto",0," # of reco. vertices ","",c);
+//   Float_t c[4]={.5,.75,.42,.81};
+//   Float_t r[4]={-0.5,24.5,0,4000};
+//   analysis.plotDistribution("nVertexHisto",1," # of reco. vertices ","",c,r);
 
-  //   Float_t c[4]={.5,.75,.42,.81};
-  //   Float_t r[4]={0,200,5,100000};
-  //   analysis.plotDistribution("muPtHisto",5," #mu p_{T}   (GeV)","Events / 5 GeV",c,r,1);
+//     Float_t c[4]={.5,.75,.42,.81};
+//     Float_t r[4]={0,100,0,1500};
+//     analysis.plotDistribution("muPtHisto",1," #mu p_{T}   (GeV)","Events / 1 GeV",c,r);
 
 //   Float_t c[4]={.5,.75,.42,.81};
-//   analysis.plotDistribution("muIsoHisto_muiso",2," muon isolation  ","",c,0);
+//   Float_t r[4]={0,0.5,0,6000};
+//   analysis.plotDistribution("muIsoHisto_muiso",1," muon isolation  ","",c,r);
 
 //   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,200,5,11000};
-//   analysis.plotDistribution("tauPtHisto",5," #tau p_{T}   (GeV)","Events / 5 GeV",c,r,0);
+//   Float_t r[4]={0,100,0,1800};
+//   analysis.plotDistribution("tauPtHisto",1," #tau p_{T}   (GeV)","Events / 1 GeV",c,r);
 
   //   Float_t c[4]={.5,.75,.42,.81};
   //   analysis.plotDistribution("tauIsoHisto",2," tau isolation  ","",c,0);
 
-  //Float_t c[4]={.5,.75,.42,.81};
-  //analysis.plotDistribution("metHisto",2," MET   (GeV)","Events / 2 GeV",c);
+//   Float_t c[4]={.5,.75,.42,.81};
+//   Float_t r[4]={0,150,0,2000};
+//  analysis.plotDistribution("metHisto",2," MET   (GeV)","Events / 2 GeV",c,r);
   
 //    Float_t c[4]={.15,.45,.42,.81};
 //    Float_t r[4]={-140,40,0,6000};
 //    analysis.plotDistribution("pZetaHisto_pzeta",6,"P_{#zeta} - 1.5*P_{#zeta}^{vis}    (GeV)","Events / 6 GeV",c,r);
   
-  Float_t c[4]={.5,.75,.42,.81};
-  Float_t r[4]={0,300,0,4000};
 //   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,350,5,1e7};
-  analysis.plotDistribution("diTauMassHisto",5,"m_{vis}   (GeV)","Events / 5 GeV",c,r,0);
+//   Float_t r[4]={0,300,0,4000};
+// //   Float_t c[4]={.5,.75,.42,.81};
+// //   Float_t r[4]={0,350,5,1e7};
+//   analysis.plotDistribution("diTauMassHisto",5,"m_{vis}   (GeV)","Events / 5 GeV",c,r,0);
 
 //   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,300,0,2200};
-//   analysis.plotDistribution("diTauMassSVFitHisto",5," mass   (GeV)","Events / 5 GeV",c,r,0);
+//   Float_t r[4]={0,300,0,1400};
+//   analysis.plotDistribution("diTauMassSVFitHisto",5," mass   (GeV)","Events / 5 GeV",c,r);
   
 
   //  return 1;
