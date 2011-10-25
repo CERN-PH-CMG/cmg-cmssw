@@ -73,8 +73,11 @@ misc = {
     'dPhiMin':'float_deltaPhiJetMET__' 
     }
 
+weights = {
+    'wVertexEPSJul8':'double_vertexWeightEPSJul8__'
+    }
 
-eventsAliases = dict(cmgObjects.items() + filters.items() + eventId.items() + gen.items() + misc.items() )
+eventsAliases = dict(cmgObjects.items() + filters.items() + eventId.items() + gen.items() + misc.items()  + weights.items() )
 
 luminosityBlocksAliases = {
     'lumi':'LuminosityBlockAuxiliary.id().luminosityBlock()',
