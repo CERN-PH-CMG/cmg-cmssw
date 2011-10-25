@@ -56,30 +56,3 @@ class Dataset():
             if self.bad_files.has_key(file):
                 status = self.bad_files[file]
             print file, status
-
-if __name__ == '__main__':
-
-    import sys
-    from optparse import OptionParser
-    
-    parser = OptionParser()
-    parser.usage = "%prog <user> <dataset>\nPrints information on a sample."
-    parser.add_option("-p", "--pattern", dest="pattern", default='.*tree.*root',help='regexp pattern for root file printout')
-
-    (options,args) = parser.parse_args()
-
-    if len(args)!=2:
-        parser.print_help()
-        sys.exit(1)
-
-    user = args[0]
-    name = args[1]
-
-    data = Dataset( user, name, options.pattern)
-    data.printInfo()
-    data.printFiles()
-
-    # print 'good files: '
-
-    # import pprint
-    # pprint.pprint( data.listOfGoodFiles() )
