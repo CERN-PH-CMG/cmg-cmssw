@@ -48,7 +48,7 @@ process.out.outputCommands = cms.untracked.vstring(
     )
 
 
-process.load('CMGTools.Common.miscProducers.vertexWeight.vertexWeight_cff')
+process.load('CMGTools.Common.generator.vertexWeight.vertexWeight_cff')
 
 process.p = cms.Path(
     process.vertexWeightSequence
