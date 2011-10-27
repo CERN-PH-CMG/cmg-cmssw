@@ -37,6 +37,9 @@ namespace cmg {
     /// \return the matched MC parton flavour
     Int_t partonFlavour() const{ return partonFlavour_;}
     
+    /// \return the jet area 
+    float jetArea() const {return jetArea_;} 
+
     /// \return a correction factor that can be applied to the jet energy or pT to bring
     /// it back to the uncorrected value
     Float_t rawFactor() const {return rawFactor_;}
@@ -55,6 +58,9 @@ namespace cmg {
     
     //parton flavour
     Int_t partonFlavour_;
+
+    /// jet area
+    float  jetArea_;
 
     /// Correction factor that can be applied to the jet energy or pT
     /// to bring it back to the uncorrected value.
