@@ -39,7 +39,6 @@
 #include "CMGTools/Common/plugins/PhysicsObjectProducer.h"
 #include "CMGTools/Common/interface/TriggerObjectFactory.h"
 
-
 #include "CMGTools/Common/interface/GenericPhysicsObjectSelectorDefinition.h"
 
 // COLIN why not in plugins?
@@ -55,6 +54,13 @@
 #include "CommonTools/UtilAlgos/interface/SingleElementCollectionSelector.h"
 
 #include "CMGTools/Common/plugins/CollectionSizeProducer.h"
+
+#include "CMGTools/Common/plugins/JetEnergyCorrector.h"
+
+
+typedef cmg::JetEnergyCorrector<cmg::BaseJet> BaseJetCorrector;
+typedef cmg::JetEnergyCorrector<cmg::PFJet> PFJetCorrector;
+
 
 // Colin: should add cmg to the type names where applicable.
 
