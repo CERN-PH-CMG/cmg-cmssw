@@ -68,7 +68,10 @@ void cmg::BaseJetFactory::set(const pat::JetPtr& input,
     }
     output->partonFlavour_ = input->partonFlavour();
     
+    output->jetArea_ = input->jetArea();
+
     output->rawFactor_ = input->jecFactor(0);
+
     if (fillJecUncertainty_) {
       JES_->setJetEta(input->eta());
       // NOTE: This should be the L2L3-corrected pT.

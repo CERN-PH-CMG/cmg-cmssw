@@ -119,3 +119,6 @@ DEFINE_FWK_MODULE(GenParticleSelector);
 
 DEFINE_FWK_MODULE(VertexSizeProducer);
 DEFINE_FWK_MODULE(CandidateSizeProducer);
+
+DEFINE_FWK_MODULE(BaseJetCorrector);
+DEFINE_FWK_MODULE(PFJetCorrector);
