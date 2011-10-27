@@ -3,16 +3,20 @@
 #  python -i h2TauTauInit.py 'TauPlusX_V6/Job*/*tree*root' TauPlusX_V6
 #
 
+from CMGTools.RootTools.cmgInit import *
+from CMGTools.H2TauTau.macros.h2TauTauAliases import *
 
 print 'initializing h->tau tau root environment'
 
 # aliases  ----------------------------------------------------------
 
 # default CMG aliases:
-from CMGTools.RootTools.cmgInit import *
 # specific aliases for this analysis
-from CMGTools.H2TauTau.macros.h2TauTauAliases import *
-aliases = AliasSetter(events, h2TauTauAliases, 'H2TAUTAU')
+
+def h2TauTauInit(pattern):
+    (events,lumi) = cmgInit(pattern)
+    aliases = AliasSetter(events, h2TauTauAliases, 'H2TAUTAU')
+    return events,lumi
 
 # plotting ----------------------------------------------------------
 
