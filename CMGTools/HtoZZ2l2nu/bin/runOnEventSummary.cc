@@ -34,6 +34,10 @@
 #include "TEventList.h"
 
 #include "Math/GenVector/Boost.h"
+
+
+
+
  
 using namespace std;
 
@@ -89,6 +93,28 @@ LorentzVector min(const LorentzVector& a, const LorentzVector& b){
 int main(int argc, char* argv[])
 {
   SelectionMonitor controlHistos; //plot storage
+
+
+  //Prepare vectors for cut optimization
+  std::vector<double> optim_Cuts_met;
+  std::vector<double> optim_Cuts_mindphi;
+  std::vector<double> optim_Cuts_mtmin;
+  std::vector<double> optim_Cuts_mtmax;
+
+  for(double met=60;met<190;met+=10.0){
+     for(double mindphi=0.0;mindphi<0.80;mindphi+=0.10){
+        for(double mtmin=220;mtmin<460;mtmin+=20){
+           for(double mtmax=mtmin+50;mtmax<820;mtmax+=50){
+              if(mtmax>=820)mtmax=3000;
+              optim_Cuts_met    .push_back(met);
+              optim_Cuts_mindphi.push_back(mindphi);
+              optim_Cuts_mtmin  .push_back(mtmin);
+              optim_Cuts_mtmax  .push_back(mtmax);
+           }
+        }
+     }
+  }
+
 
   //start computers
   ProjectedMETComputer pmetComp;
@@ -484,7 +510,23 @@ int main(int argc, char* argv[])
       h->GetXaxis()->SetBinLabel(8,"m=600");
       controlHistos.addHistogram( h );
     }
-   
+
+
+  //optimization
+  controlHistos.addHistogram( new TH1F ("optim_eventflow"  , ";cut index;yields" ,optim_Cuts_met.size(),0,optim_Cuts_met.size()) );
+  TH1F* Hoptim_cut_met     =  new TH1F ("optim_cut_met"    , ";cut index;met"    ,optim_Cuts_met.size(),0,optim_Cuts_met.size()) ;
+  TH1F* Hoptim_cut_mindphi =  new TH1F ("optim_cut_mindphi", ";cut index;mindphi",optim_Cuts_met.size(),0,optim_Cuts_met.size()) ;
+  TH1F* Hoptim_cut_mtmin   =  new TH1F ("optim_cut_mtmin"  , ";cut index;mtmin"  ,optim_Cuts_met.size(),0,optim_Cuts_met.size()) ;
+  TH1F* Hoptim_cut_mtmax   =  new TH1F ("optim_cut_mtmax"  , ";cut index;mtmax"  ,optim_Cuts_met.size(),0,optim_Cuts_met.size()) ;
+  //fill optimization bookmark histo at the first event loop
+  for(unsigned int index=0;index<optim_Cuts_met.size();index++){
+    Hoptim_cut_met    ->Fill(index, optim_Cuts_met[index]);    
+    Hoptim_cut_mindphi->Fill(index, optim_Cuts_mindphi[index]);
+    Hoptim_cut_mtmin  ->Fill(index, optim_Cuts_mtmin[index]);
+    Hoptim_cut_mtmax  ->Fill(index, optim_Cuts_mtmax[index]);
+  }
+
+
   
   //VBF
   h = new TH1F ("VBFNEventsInc", ";Selection cut;Events", 15,0,15);
@@ -589,6 +631,18 @@ int main(int argc, char* argv[])
       spyHandler->initTree(outT,false);
     }  
   if(!isMC) outf=new ofstream("highmetevents.txt",ios::app);  
+
+
+
+
+
+
+
+
+
+
+
+
     
   
   //run the analysis
@@ -1073,7 +1127,9 @@ int main(int argc, char* argv[])
 	{
 	  for(size_t isc=0; isc<subCatsToFill.size(); isc++)
 	    {
-	      TString ctf=catsToFill[ic]+subCatsToFill[isc];
+	      TString ctf=catsToFill[ic]+subCatsToFill[isc];   
+
+
 
               controlHistos.fillHisto("genHiggsPt"      ,ctf,    genhiggs.pt()   ,weight);
               controlHistos.fillHisto("genHiggsMass"    ,ctf,    genhiggs.mass() ,weight);
@@ -1349,6 +1405,12 @@ int main(int argc, char* argv[])
                  if(pass600) controlHistos.fillHisto("zpt25finaleventflow",ctf,7,weight);
               }
 
+	      //booking for optimization
+              for(unsigned int index=0;index<optim_Cuts_met.size();index++){
+                 if(zvv.pt()>optim_Cuts_met[index] && mindphijmet>optim_Cuts_mindphi[index] && mt>optim_Cuts_mtmin[index] && mt<optim_Cuts_mtmax[index])
+                 controlHistos.fillHisto("optim_eventflow"          ,ctf,    index, weight);
+              }
+
 
 
 	      //systematic variations (computed per jet bin so fill only once) 		  
@@ -1508,6 +1570,10 @@ int main(int argc, char* argv[])
   //save all to the file
   TFile *ofile=TFile::Open(outUrl, "recreate");
   TDirectory *baseOutDir=ofile->mkdir("localAnalysis");
+    Hoptim_cut_met    ->Write();
+    Hoptim_cut_mindphi->Write();
+    Hoptim_cut_mtmin  ->Write();
+    Hoptim_cut_mtmax  ->Write();
   SelectionMonitor::StepMonitor_t &mons=controlHistos.getAllMonitors();
   std::map<TString, TDirectory *> outDirs;
   outDirs["all"]=baseOutDir->mkdir("all");
