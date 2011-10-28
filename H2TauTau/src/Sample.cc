@@ -20,6 +20,7 @@ Sample::Sample():
   lstyle_(0),
   plotOrder_(0),
   applyRecoilCorr_(0),
+  applyTauRateWeight_(0),
   init_(0)
 {}
 
@@ -41,6 +42,7 @@ Sample::Sample(const char * name, const char * path):
   lstyle_(0),
   plotOrder_(0),
   applyRecoilCorr_(0),
+  applyTauRateWeight_(0),
   init_(0)
 {
   

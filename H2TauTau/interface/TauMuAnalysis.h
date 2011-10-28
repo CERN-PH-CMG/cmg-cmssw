@@ -10,6 +10,7 @@
 
 #include "CMGTools/H2TauTau/interface/TriggerEfficiency.h"
 #include "CMGTools/H2TauTau/interface/RecoilCorrector.h"
+#include "CMGTools/H2TauTau/interface/TauRate.h"
 
 class TauMuAnalysis : public BaseAnalysis {
 
@@ -44,10 +45,13 @@ private:
   edm::Handle< cmg::METSignificance >  metsig_;
   edm::Handle< std::vector<cmg::Muon> > diLeptonVetoList_;
   const reco::GenParticle * genBoson_;
+  Int_t genEventType_;//1=ZtoEE, 3=ZToMuMu, 5=ZToTauTau, 6=ZToOther, 11=WToENu, 13=WToMuNu, 15=WToENu,
   bool trigpass_;
+
   TriggerEfficiency triggerEff_;
   RecoilCorrector recoilCorr_;
-  Int_t genEventType_;//1=ZtoEE, 3=ZToMuMu, 5=ZToTauTau, 6=ZToOther, 11=WToENu, 13=WToMuNu, 15=WToENu,
+  TauRate tauRate_;
+
 
 
   //histos
@@ -66,9 +70,11 @@ private:
   TH1F* tauDzHisto_;
   TH1F* metHisto_;
   TH1F* pZetaHisto_;
+  TH1F* transverseMassHisto_;
 
-
-  float computePZeta(const cmg::Tau * tau1, const cmg::Muon * tau2);
+  void applyRecoilCorr(const cmg::TauMu * cand, TVector3 * MET);
+  float computePZeta(const cmg::TauMu * cand);
+  float computeTransverseMass(const cmg::TauMu * cand);
 
   float computeTauIso(const cmg::Tau * tau);
 

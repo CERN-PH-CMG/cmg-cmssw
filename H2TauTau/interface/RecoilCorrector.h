@@ -36,8 +36,8 @@ class RecoilCorrector
 {
 
 public:
-  RecoilCorrector(string iNameZDat = "recoilfitZDat.root",
-		  string iNameZMC  = "recoilfitZMC.root",
+  RecoilCorrector(string iNameZDat = "/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/data/recoilfitZDat.root",
+		  string iNameZMC  = "/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/data/recoilfitZMC.root",
 		  int iSeed=0xDEADBEEF);
   void Correct(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi);
   
@@ -47,7 +47,7 @@ protected:
 		 std::vector<TF1*> &iU1RMS2Fit,std::vector<TF1*> &iU1Sig3Fit,
 		 std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,std::vector<TF1*> &iU2RMS1Fit,
 		 std::vector<TF1*> &iU2RMS2Fit,std::vector<TF1*> &iU2Sig3Fit,
-		 std::string iFName = "recoilfit-new.root"); 
+		 std::string iFName = "/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/data/recoilfit-new.root"); 
   void metDistribution(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
 		       double iLepPt,double iLepPhi,TRandom1 *iRand,
 		       TF1 *iU1RWFit   ,TF1 *iU1RZDatFit  ,TF1 *iU1RZMCFit,

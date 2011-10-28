@@ -13,12 +13,18 @@
   //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/NotRecoilCorrected";
   //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/Final";
   //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/Json";
-  TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/SVFit";
 
+  //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/SVFit";
+  //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/SVFitErr";
+
+  //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/TauRate";
+  
+  TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/massT";
+  //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/massTRecoilCorr";
 
   analysis.setOutputPath(path);
 
-  ////////////////////////////
+  /////////////////////////
   //define samples    
   /////////////////////////
   Sample WJetsToLNu("WJetsToLNu","/data/benitezj/RootFiles/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0/cmgTauMu");
@@ -29,7 +35,8 @@
   WJetsToLNu.setSampleGenEvents(53227112); //  53655290 = PFAOD integrity, 81352581 = "DBS"
   WJetsToLNu.addTrigPath("HLT_IsoMu12_v1");
   WJetsToLNu.setEffCorrFactor(MCEffCorrFactor);
-  analysis.addSample(&WJetsToLNu);
+  WJetsToLNu.setApplyTauRateWeight(0);
+  analysis.addSample(&WJetsToLNu);  
   
   Sample TTJets("TTJets","/data/benitezj/RootFiles/TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0/cmgTauMu");
   TTJets.setDataType("MC");
@@ -97,7 +104,6 @@
 
   Sample TauPlusXMay("TauPlusXMay","/data/benitezj/RootFiles/TauPlusX/Run2011A-May10ReReco-v1/AOD/V2/PAT_CMG_V2_3_0/TauMu");
   TauPlusXMay.setDataType("Data");
-  //TauPlusXMay.setSampleLumi(159781779.041/1000000.);
   TauPlusXMay.setSampleLumi(168.597);//168.597
   TauPlusXMay.setRunRange(163262,170000);
   TauPlusXMay.addTrigPath("HLT_IsoMu12_LooseIsoPFTau10_v1");
@@ -107,7 +113,6 @@
 
   Sample TauPlusXv4("TauPlusXv4","/data/benitezj/RootFiles/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_3_0/TauMu");
   TauPlusXv4.setDataType("Data");
-  //TauPlusXv4.setSampleLumi(886790147.468/1000000.);
   TauPlusXv4.setSampleLumi(929.748);//929.748
   TauPlusXv4.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v2");//include just in case ??
   TauPlusXv4.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v4");//include just in case ??
@@ -117,7 +122,6 @@
 
   Sample TauPlusXAug("TauPlusXAug","/data/benitezj/RootFiles/TauPlusX/Run2011A-05Aug2011-v1/AOD/V2/PAT_CMG_V2_3_0/TauMu");
   TauPlusXAug.setDataType("Data");
-  //TauPlusXAug.setSampleLumi(361738235.319/1000000.);
   TauPlusXAug.setSampleLumi(373.349);//373.349
   TauPlusXAug.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v6");//include just in case ??
   TauPlusXAug.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v8");
@@ -126,7 +130,6 @@
   Sample TauPlusXv6("TauPlusXv6","/data/benitezj/RootFiles/TauPlusX/Run2011A-PromptReco-v6/AOD/V2/PAT_CMG_V2_3_0/TauMu");
   TauPlusXv6.setDataType("Data");
   TauPlusXv6.setRunRange(170000,172802);
-  //TauPlusXv6.setSampleLumi(120000073.059/1000000.);
   TauPlusXv6.setSampleLumi(124.683);//124.683
   TauPlusXv6.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v6");//include just in case ??
   TauPlusXv6.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v8");
@@ -145,6 +148,7 @@
   WJetsToLNu_SS.setSampleGenEvents(WJetsToLNu.getSampleGenEvents());
   WJetsToLNu_SS.addTrigPaths(WJetsToLNu.getTrigPaths());
   WJetsToLNu_SS.setEffCorrFactor(MCEffCorrFactor);
+  WJetsToLNu_SS.setApplyTauRateWeight(WJetsToLNu.getApplyTauRateWeight());
   analysis.addSample(&WJetsToLNu_SS);
   
   Sample TTJets_SS("TTJets_SS",(const char*)(TString(TTJets.GetTitle())+"_SS"));
@@ -246,7 +250,7 @@
 //   //   analysis.createHistos("WW");
 //   //   analysis.createHistos("WZ");
 //   //   analysis.createHistos("ZZ");
-//   //analysis.createHistos("SingleMuMay");
+//   //   analysis.createHistos("SingleMuMay");
 //   analysis.createHistos("TauPlusXMay");
 //   analysis.createHistos("TauPlusXv4");
 //   analysis.createHistos("TauPlusXAug");
@@ -258,7 +262,7 @@
 //   //   analysis.createHistos("WW_SS");
 //   //   analysis.createHistos("WZ_SS");
 //   //   analysis.createHistos("ZZ_SS");
-//   //analysis.createHistos("SingleMuMay_SS");
+//   //   analysis.createHistos("SingleMuMay_SS");
 //   analysis.createHistos("TauPlusXMay_SS");
 //   analysis.createHistos("TauPlusXv4_SS");
 //   analysis.createHistos("TauPlusXAug_SS");
@@ -300,20 +304,29 @@
 
   //   Float_t c[4]={.5,.75,.42,.81};
   //   analysis.plotDistribution("tauIsoHisto",2," tau isolation  ","",c,0);
-
+  
 //   Float_t c[4]={.5,.75,.42,.81};
 //   Float_t r[4]={0,150,0,2000};
-//  analysis.plotDistribution("metHisto",2," MET   (GeV)","Events / 2 GeV",c,r);
+//   analysis.plotDistribution("metHisto",2," MET   (GeV)","Events / 2 GeV",c,r);
+
+//   Float_t c[4]={.5,.75,.42,.81};
+//   Float_t r[4]={0,150,0,3000};
+//   analysis.plotDistribution("metHisto_massT",2," MET   (GeV)","Events / 2 GeV",c,r);
   
 //    Float_t c[4]={.15,.45,.42,.81};
 //    Float_t r[4]={-140,40,0,6000};
 //    analysis.plotDistribution("pZetaHisto_pzeta",6,"P_{#zeta} - 1.5*P_{#zeta}^{vis}    (GeV)","Events / 6 GeV",c,r);
   
 //   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,300,0,4000};
-// //   Float_t c[4]={.5,.75,.42,.81};
-// //   Float_t r[4]={0,350,5,1e7};
-//   analysis.plotDistribution("diTauMassHisto",5,"m_{vis}   (GeV)","Events / 5 GeV",c,r,0);
+//   Float_t r[4]={0,200,0,2000};
+//  analysis.plotDistribution("transverseMassHisto_massT",2,"m_{T}   (GeV)","Events / 2 GeV",c,r);
+  
+
+  Float_t c[4]={.5,.75,.42,.81};
+  Float_t r[4]={0,300,0,4000};
+//   Float_t c[4]={.5,.75,.42,.81};
+//   Float_t r[4]={0,350,5,1e7};
+  analysis.plotDistribution("diTauMassHisto",5,"m_{vis}   (GeV)","Events / 5 GeV",c,r,0);
 
 //   Float_t c[4]={.5,.75,.42,.81};
 //   Float_t r[4]={0,300,0,1400};
