@@ -43,9 +43,8 @@ BaseAnalysis::~BaseAnalysis(){
 bool BaseAnalysis::init(){
   
   //read the pile-up weights
-  //Pileup_2011_EPS_8_jul.root
-  TFile DataPUP("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/PileUp/Pileup_2011_to_172802_LP_LumiScale.root","read");
-  TFile MCPUP("Pileup_Summer11MC.root","read");
+  TFile DataPUP("/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/data/Pileup_2011_to_172802_LP_LumiScale.root","read");
+  TFile MCPUP("/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/data/Pileup_Summer11MC.root","read");
   if(DataPUP.IsZombie()||MCPUP.IsZombie()){
     cout<<DataPUP.GetName()<<" or "<<MCPUP.GetName()<<" not valid "<<endl;
   }
@@ -200,23 +199,49 @@ bool BaseAnalysis::createHistos(TString samplename){
 }
 
 
-
 bool BaseAnalysis::createMCPUPHisto(){
+
   //create a histogram with the MC PUP distribution
   //this must be done with unselected MC events
-  TH1D MCPUPHisto("MCPUPHisto","Npv",31,-.5,30.5);//must include 0
+  TH1D MCPUPHisto("pileup","",36,-.5,35.5);//must include 0
 
   std::vector<std::string> list;
+  list.push_back("/tmp/tree_CMG_0.root");
   list.push_back("/tmp/tree_CMG_1.root");
   list.push_back("/tmp/tree_CMG_2.root");
   list.push_back("/tmp/tree_CMG_3.root");
   list.push_back("/tmp/tree_CMG_4.root");
   list.push_back("/tmp/tree_CMG_5.root");
+  list.push_back("/tmp/tree_CMG_6.root");
+  list.push_back("/tmp/tree_CMG_7.root");
+  list.push_back("/tmp/tree_CMG_8.root");
+  list.push_back("/tmp/tree_CMG_9.root");
+  list.push_back("/tmp/tree_CMG_10.root");
+  list.push_back("/tmp/tree_CMG_11.root");
+  list.push_back("/tmp/tree_CMG_12.root");
+  list.push_back("/tmp/tree_CMG_13.root");
+  list.push_back("/tmp/tree_CMG_14.root");
+  list.push_back("/tmp/tree_CMG_15.root");
+  list.push_back("/tmp/tree_CMG_16.root");
+  list.push_back("/tmp/tree_CMG_17.root");
+  list.push_back("/tmp/tree_CMG_18.root");
+  list.push_back("/tmp/tree_CMG_19.root");
+  list.push_back("/tmp/tree_CMG_20.root");
+  list.push_back("/tmp/tree_CMG_21.root");
+  list.push_back("/tmp/tree_CMG_22.root");
+  list.push_back("/tmp/tree_CMG_23.root");
+  list.push_back("/tmp/tree_CMG_24.root");
+  list.push_back("/tmp/tree_CMG_25.root");
+  list.push_back("/tmp/tree_CMG_26.root");
+  list.push_back("/tmp/tree_CMG_27.root");
+  list.push_back("/tmp/tree_CMG_28.root");
+  list.push_back("/tmp/tree_CMG_29.root");
+  list.push_back("/tmp/tree_CMG_30.root");
   fwlite::ChainEvent chain(list);
 
 
   Int_t ievt=0;
-  for(chain.toBegin(); !chain.atEnd() && ievt <  truncateEvents_; ++chain, ++ievt){
+  for(chain.toBegin(); !chain.atEnd() ; ++chain, ++ievt){
     if(ievt%printFreq_==0)cout<<ievt<<" done"<<endl;
     const fwlite::Event * event = chain.event();
 
@@ -228,8 +253,8 @@ bool BaseAnalysis::createMCPUPHisto(){
     for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {    
       int BX = PVI->getBunchCrossing();    
       if(BX == 0) { 
-	npv = PVI->getPU_NumInteractions();
-	continue;
+        npv = PVI->getPU_NumInteractions();
+        continue;
       }    
     }
     MCPUPHisto.Fill(npv);
@@ -243,6 +268,7 @@ bool BaseAnalysis::createMCPUPHisto(){
 
   return 1;
 }
+
 
 
 void BaseAnalysis::printMCGen(edm::Handle< std::vector<reco::GenParticle> > * genList){

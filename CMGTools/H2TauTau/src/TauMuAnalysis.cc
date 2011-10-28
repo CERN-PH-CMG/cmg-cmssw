@@ -2,6 +2,7 @@
 #include <THStack.h>
 #include <TString.h>
 #include <TVector3.h>
+#include <TLorentzVector.h>
 #include <TLegend.h>
 
 #include "AnalysisDataFormats/CMGTools/interface/TriggerObject.h"
@@ -30,7 +31,8 @@ TauMuAnalysis::TauMuAnalysis():
   tauDxyHisto_(NULL),
   tauDzHisto_(NULL),
   metHisto_(NULL),
-  pZetaHisto_(NULL)
+  pZetaHisto_(NULL),
+  transverseMassHisto_(NULL)
 {
 }
 
@@ -50,8 +52,8 @@ TauMuAnalysis::TauMuAnalysis(const char * name):
   tauDxyHisto_(NULL),
   tauDzHisto_(NULL),
   metHisto_(NULL),
-  pZetaHisto_(NULL)
-
+  pZetaHisto_(NULL),
+  transverseMassHisto_(NULL)
 {
  
 }
@@ -99,6 +101,7 @@ bool TauMuAnalysis::addHistos(Sample* s){
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauDzHisto","",100,0,.5))))return 0;  
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_metHisto","",200,0,200))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_pZetaHisto","",180,-140,40))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_transverseMassHisto","",200,0,200))))return 0;
 
   return 1;
 }
@@ -127,40 +130,57 @@ bool TauMuAnalysis::getHistos(Sample* s, TString tag){
   if(!(tauDzHisto_=(TH1F*)(s->getHisto(TString("tauDzHisto")+tag))))return 0;
   if(!(metHisto_=(TH1F*)(s->getHisto(TString("metHisto")+tag))))return 0;
   if(!(pZetaHisto_=(TH1F*)(s->getHisto(TString("pZetaHisto")+tag))))return 0;
+  if(!(transverseMassHisto_=(TH1F*)(s->getHisto(TString("transverseMassHisto")+tag))))return 0;
 
   return 1;
 }
 
-float TauMuAnalysis::computePZeta(const cmg::Tau * tau1, const cmg::Muon * tau2){
-  if(!tau1 || !tau2 || met_->size()!=1) return 0.;
+
+void TauMuAnalysis::applyRecoilCorr(const cmg::TauMu * cand, TVector3 * MET){
+  if(!(sample_->getApplyRecoilCorr()
+       && genBoson_ 
+       && (genEventType_==5 || genEventType_==11 || genEventType_==13 || genEventType_==15))) return;
+
+  TVector3 tau1PT=TVector3(cand->leg1().p4().x(),cand->leg1().p4().y(),0.);
+  TVector3 tau2PT=TVector3(cand->leg2().p4().x(),cand->leg2().p4().y(),0.);
+  TVector3 genBosonPT=TVector3(genBoson_->p4().x(),genBoson_->p4().y(),0.);
+  double met = MET->Mag();
+  double metphi = MET->Phi();    
+  TVector3 recoLeptonPT = tau1PT+tau2PT;
+  if(genEventType_==11 || genEventType_==13 || genEventType_==15) recoLeptonPT = tau2PT; //use only the muon for WJets
+  recoilCorr_.Correct(met,metphi,genBosonPT.Mag(),genBosonPT.Phi(),recoLeptonPT.Mag(),recoLeptonPT.Phi());
+  MET->SetMagThetaPhi(met,TMath::Pi()/2.,metphi);
+}
+
+
+
+float TauMuAnalysis::computePZeta(const cmg::TauMu * cand){
+  if(!cand || met_->size()!=1) return 0.;
   //1) zeta axis is the bisector between tau1 and tau2 momentum vectors
   //2) project visible energy onto zeta axis
   //3) project MET onto zeta axis
-  TVector3 tau1P=TVector3(tau1->p4().x(),tau1->p4().y(),tau1->p4().z());
-  TVector3 tau2P=TVector3(tau2->p4().x(),tau2->p4().y(),tau2->p4().z());
-  TVector3 tau1PT=TVector3(tau1->p4().x(),tau1->p4().y(),0.);
-  TVector3 tau2PT=TVector3(tau2->p4().x(),tau2->p4().y(),0.);
+  TVector3 tau1PT=TVector3(cand->leg1().p4().x(),cand->leg1().p4().y(),0.);
+  TVector3 tau2PT=TVector3(cand->leg2().p4().x(),cand->leg2().p4().y(),0.);
   TVector3 metPT=TVector3(met_->begin()->p4().x(),met_->begin()->p4().y(),0.);
+  applyRecoilCorr(cand,&metPT);
+
   TVector3 zetaAxis=(tau1PT.Unit() + tau2PT.Unit()).Unit();
   Float_t pZetaVis=(tau1PT + tau2PT)*zetaAxis;
-
-  //////apply recoil correction to MET on Z-->tau tau and W->l nu
-  if(sample_->getApplyRecoilCorr() && genBoson_ && (genEventType_==5 || genEventType_==11 || genEventType_==13 || genEventType_==15)){      
-    TVector3 genBosonPT=TVector3(genBoson_->p4().x(),genBoson_->p4().y(),0.);
-    double met = metPT.Mag();
-    double metphi = metPT.Phi();    
-    TVector3 recoLeptonPT = tau1PT+tau2PT;
-    if(genEventType_==11 || genEventType_==13 || genEventType_==15) recoLeptonPT = tau2PT; //use only the muon for WJets
-    //cout<<"met before "<<met<<" "<<metphi<<endl;
-    recoilCorr_.Correct(met,metphi,genBosonPT.Mag(),genBosonPT.Phi(),recoLeptonPT.Mag(),recoLeptonPT.Phi());
-    //cout<<"met after "<<met<<" "<<metphi<<endl;
-    metPT.SetMagThetaPhi(met,TMath::Pi()/2.,metphi);
-  }
-
   Float_t pZetaMET=metPT*zetaAxis;
   Float_t pZeta=pZetaVis+pZetaMET;
   
   return pZeta-1.5*pZetaVis;
+}
+
+float TauMuAnalysis::computeTransverseMass(const cmg::TauMu * cand){
+  if(!cand) return 0.;
+
+  TVector3 muonPT=TVector3(cand->leg2().p4().x(),cand->leg2().p4().y(),0.);
+  TVector3 metPT=TVector3(met_->begin()->p4().x(),met_->begin()->p4().y(),0.);
+  applyRecoilCorr(cand,&metPT);
+
+  //return sqrt(2.0*muonPT.Mag()*metPT.Mag()*(1-cos(metPT.Phi()-muonPT.Phi())));
+  return (TLorentzVector(muonPT,muonPT.Mag()) + TLorentzVector(metPT,metPT.Mag())).Mag();
 }
 
 float TauMuAnalysis::computeTauIso(const cmg::Tau * tau){
@@ -170,13 +190,10 @@ float TauMuAnalysis::computeTauIso(const cmg::Tau * tau){
 bool TauMuAnalysis::computeDiLeptonVeto(const cmg::Muon * muon){
 
   for(std::vector<cmg::Muon>::const_iterator m=diLeptonVetoList_->begin(); m!=diLeptonVetoList_->end(); ++m){  
-    //apply selections on second muon
     if(m->charge()==muon->charge())continue;//note this also makes sure it is not the same muon already used
     if(m->pt()<15.0)continue;
-    //if(fabs(m->eta())>2.1)continue;//cut not mentioned in NOTE ??
-    if(m->relIso()>0.1)continue;//NOTE uses deltaBeta corrected Iso<0.3
-
-    //cout<<"vetoed: "<<muon->pdgId()<<" "<<muon->pt()<<" , "<<m->pdgId()<<" "<<m->pt()<<endl;
+    if(fabs(m->eta())>2.1)continue;
+    if(m->relIso()>0.3)continue;
     return 1;
   }
   
@@ -273,7 +290,8 @@ bool TauMuAnalysis::applySelections(TString exceptcut){
     if(exceptcut!="muiso") if(cand->leg2().relIso()>0.1)continue;    
 
     ////other 
-    if(exceptcut!="pzeta") if(computePZeta(&(cand->leg1()),&(cand->leg2()))<-20.0) continue;
+    //if(exceptcut!="pzeta") if(computePZeta(&(*cand))<-20.0) continue;
+    if(exceptcut!="massT") if(computeTransverseMass(&(*cand))>40.0) continue;
     if(exceptcut!="dileptonveto")if(computeDiLeptonVeto(&(cand->leg2()))) continue;
 
 
@@ -293,15 +311,20 @@ bool TauMuAnalysis::fillHistos(double weight ){
   diTauNHisto_->Fill(diTauSelList_.size());
   for(std::vector<cmg::TauMu>::const_iterator cand=diTauSelList_.begin(); cand!=diTauSelList_.end(); ++cand){
     
-    //float tauiso=computeTauIso(&(cand->leg1()));
-    float pzeta=computePZeta(&(cand->leg1()),&(cand->leg2()));
+    if(sample_->getApplyTauRateWeight() && (genEventType_==11 || genEventType_==13 || genEventType_==15)){
+      float w=tauRate_.getScale(TauRate::Inclusive,cand->leg1().pt(),cand->leg1().eta());
+      if(cand->leg1().decayMode()==0)tauRate_.getScale(TauRate::OneProng,cand->leg1().pt(),cand->leg1().eta());
+      if(cand->leg1().decayMode()==1)tauRate_.getScale(TauRate::OneProngEM,cand->leg1().pt(),cand->leg1().eta());
+      if(cand->leg1().decayMode()==2)tauRate_.getScale(TauRate::OneProngEM,cand->leg1().pt(),cand->leg1().eta());
+      if(cand->leg1().decayMode()==10)tauRate_.getScale(TauRate::ThreeProng,cand->leg1().pt(),cand->leg1().eta());
+      weight = weight*w;
+    }
 
     diTauMassHisto_->Fill(cand->mass(),weight);
     diTauEtaHisto_->Fill(cand->eta(),weight);
     diTauPtHisto_->Fill(cand->eta(),weight);  
 
     tauPtHisto_->Fill(cand->leg1().pt(),weight);
-    //tauIsoHisto_->Fill(tauiso,weight);
     tauDxyHisto_->Fill(cand->leg1().dxy(),weight);
     tauDzHisto_->Fill(cand->leg1().dz(),weight);
 
@@ -310,37 +333,28 @@ bool TauMuAnalysis::fillHistos(double weight ){
     muDxyHisto_->Fill(cand->leg2().dxy(),weight);
     muDzHisto_->Fill(cand->leg2().dz(),weight);
 
-
-    pZetaHisto_->Fill(pzeta,weight);  
-
-
-    /////svfit
-    TVector3 tau1PT=TVector3((&(cand->leg1()))->p4().x(),(&(cand->leg1()))->p4().y(),0.);
-    TVector3 tau2PT=TVector3((&(cand->leg2()))->p4().x(),(&(cand->leg2()))->p4().y(),0.);
+    pZetaHisto_->Fill(computePZeta(&(*cand)),weight);  
+    transverseMassHisto_->Fill(computeTransverseMass(&(*cand)),weight);  
+    
+    /////correct MET
     TVector3 metPT=TVector3((&(*(met_->begin())))->p4().x(),(&(*(met_->begin())))->p4().y(),0.);
-    if(sample_->getApplyRecoilCorr() && genBoson_ && (genEventType_==5 || genEventType_==11 || genEventType_==13 || genEventType_==15)){      
-      TVector3 genBosonPT=TVector3(genBoson_->p4().x(),genBoson_->p4().y(),0.);
-      double met = metPT.Mag();
-      double metphi = metPT.Phi();    
-      TVector3 recoLeptonPT = tau1PT+tau2PT;
-      if(genEventType_==11 || genEventType_==13 || genEventType_==15) recoLeptonPT = tau2PT; //use only the muon for WJets
-      recoilCorr_.Correct(met,metphi,genBosonPT.Mag(),genBosonPT.Phi(),recoLeptonPT.Mag(),recoLeptonPT.Phi());
-      metPT.SetMagThetaPhi(met,TMath::Pi()/2.,metphi);
-    }
-    NSVfitStandalone::Vector measuredMET(metPT.x(),metPT.y(),0);
-    std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
-    NSVfitStandalone::LorentzVector p1(cand->leg1().p4().x(),cand->leg1().p4().y(),cand->leg1().p4().z(),cand->leg1().p4().t());
-    NSVfitStandalone::LorentzVector p2(cand->leg2().p4().x(),cand->leg2().p4().y(),cand->leg2().p4().z(),cand->leg2().p4().t());
-    measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kHadDecay,p1));    
-    measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay,p2));
-    NSVfitStandaloneAlgorithm algo(measuredTauLeptons,measuredMET,(TMatrixD&)(*(metsig_->significance())),0);
-    algo.maxObjFunctionCalls(5000);
-    //algo.addLogM(false);
-    //algo.metPower(0.5)
-    algo.fit();
-    //     if(algo.isValidSolution())
-    diTauMassSVFitHisto_->Fill(algo.fittedDiTauSystem().mass(),weight);
+    applyRecoilCorr(&(*cand),&metPT);
     metHisto_->Fill(metPT.Mag(),weight);  
+
+//     /////SVFit
+//     NSVfitStandalone::Vector measuredMET(metPT.x(),metPT.y(),0);
+//     std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
+//     NSVfitStandalone::LorentzVector p1(cand->leg1().p4().x(),cand->leg1().p4().y(),cand->leg1().p4().z(),cand->leg1().p4().t());
+//     NSVfitStandalone::LorentzVector p2(cand->leg2().p4().x(),cand->leg2().p4().y(),cand->leg2().p4().z(),cand->leg2().p4().t());
+//     measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kHadDecay,p1));    
+//     measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay,p2));
+//     NSVfitStandaloneAlgorithm algo(measuredTauLeptons,measuredMET,(TMatrixD&)(*(metsig_->significance())),0);
+//     algo.maxObjFunctionCalls(5000);
+//     //algo.addLogM(false);
+//     //algo.metPower(0.5)
+//     algo.fit();
+//     if(algo.isValidSolution())
+//       diTauMassSVFitHisto_->Fill(algo.fittedDiTauSystem().mass(),weight);    
 
 
   }
@@ -348,11 +362,7 @@ bool TauMuAnalysis::fillHistos(double weight ){
   return 1;
 }
 
-//     TMatrixD covMET(2,2);
-//     covMET[0][0] = 100;
-//     covMET[0][1] = 0;
-//     covMET[1][0] = 0;
-//     covMET[1][1] = 200;    
+
     ///l1=muon , l2=tau
     //NSVfitStandalone::Vector l1(l1Pt*TMath::Sin(l1Phi ),l1Pt*TMath::Cos(l1Phi ), l1Pt*TMath::Tan(2*TMath::Exp(-l1Eta)));
     //NSVfitStandalone::Vector l2(l2Pt*TMath::Sin(l2Phi ),l2Pt*TMath::Cos(l2Phi ), l2Pt*TMath::Tan(2*TMath::Exp(-l2Eta)));        
@@ -371,14 +381,16 @@ bool TauMuAnalysis::createHistos(TString samplename){
   sample_->cloneHistos("tauiso");
   sample_->cloneHistos("tauagainstmuon");
   sample_->cloneHistos("muiso");
-  sample_->cloneHistos("pzeta");
+  //sample_->cloneHistos("pzeta");
+  sample_->cloneHistos("massT");
   sample_->cloneHistos("dileptonveto");
 
   if(!sample_->getEvents()){
     cout<<" No fwlit::ChainEvent found in sample "<<sample_->GetName()<<endl;
     return 0;
   }
- 
+
+  
   fwlite::ChainEvent chain=*(sample_->getEvents());
   //note: cannot use the pointer to the chain in the sample, event loop crashes after first file
 
@@ -389,46 +401,39 @@ bool TauMuAnalysis::createHistos(TString samplename){
     const fwlite::Event * event = chain.event();        
     if(!fillVariables(event)) return 0;
     if(ievt%printFreq_==0)cout<<ievt<<" events done , run = "<<runnumber_<<" , lumiblock = "<<lumiblock_<<" , eventid = "<<eventid_<<endl;
-
     
     //event selections
     if(!BaseAnalysis::applySelections()) continue;
     
-    //fill (N-1) cut histograms here
-    if(applySelections("tauiso")){      
-      if(!getHistos(sample_,"tauiso"))return 0;
-      if(!fillHistos(mcPUPWeight_))return 0;
-    }
-    if(applySelections("tauagainstmuon")){      
-      if(!getHistos(sample_,"tauagainstmuon"))return 0;
-      if(!fillHistos(mcPUPWeight_))return 0;
-    }
-    if(applySelections("muiso")){      
-      if(!getHistos(sample_,"muiso"))return 0;
-      if(!fillHistos(mcPUPWeight_))return 0;
-    }
-    if(applySelections("pzeta")){      
-      if(!getHistos(sample_,"pzeta"))return 0;
-      if(!fillHistos(mcPUPWeight_))return 0;
-    }
-    if(applySelections("dileptonveto")){      
-      if(!getHistos(sample_,"dileptonveto"))return 0;
-      if(!fillHistos(mcPUPWeight_))return 0;
-    }
+//     //fill (N-1) cut histograms here
+//     if(applySelections("tauiso")){      
+//       if(!getHistos(sample_,"tauiso"))return 0;
+//       if(!fillHistos(mcPUPWeight_))return 0;
+//     }
+//     if(applySelections("tauagainstmuon")){      
+//       if(!getHistos(sample_,"tauagainstmuon"))return 0;
+//       if(!fillHistos(mcPUPWeight_))return 0;
+//     }
+//     if(applySelections("muiso")){      
+//       if(!getHistos(sample_,"muiso"))return 0;
+//       if(!fillHistos(mcPUPWeight_))return 0;
+//     }
+//     if(applySelections("dileptonveto")){      
+//       if(!getHistos(sample_,"dileptonveto"))return 0;
+//       if(!fillHistos(mcPUPWeight_))return 0;
+//     }
 
 
+    if(applySelections("massT")){      
+      if(!getHistos(sample_,"massT"))return 0;
+      if(!fillHistos(mcPUPWeight_))return 0;
+    }
     //fill fully selected histograms 
-    if(applySelections()){      
-      
-//       if(80.< diTauSelList_.begin()->mass() && diTauSelList_.begin()->mass() < 100.){
-// 	edm::Handle< std::vector<reco::GenParticle> > genParticles;
-// 	event->getByLabel(edm::InputTag("genParticlesStatus3"),genParticles);  
-// 	printMCGen(&genParticles);
-//       }
-
+    if(applySelections()){           
       if(!getHistos(sample_))return 0;
       if(!fillHistos(mcPUPWeight_))return 0;
       goodevts++;//only for fully selected events
+      //cout<<runnumber_<<" "<<lumiblock_<<" "<<eventid_<<endl;
     }
 
   }
@@ -507,32 +512,59 @@ bool TauMuAnalysis::plotDistribution(TString histoname, Int_t rebin, TString xla
   }
 
 
+  Float_t WJetsBelowCorr=1.;
+  Float_t WJetsSSBelowCorr=1.;
+
+//   ///////////////////////////////
+//   /////Determine correction factor for WJets from Data < -40 , assuming binning pZetaHisto","",180,-140,40)))
+//   //////////////////////////////
+//   cout<<"Determine WJetsSS from pZeta below -40: assume original binning pZetaHisto ,180,-140,40"<<endl;
+//   Float_t WJetsSSBelow=0; Float_t MCSSBelow=0; Float_t DataSSBelow=0;
+//   for(std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+//     if((*s)->getDataType()=="Data_SS")
+//       DataSSBelow+=(*s)->getHistoFromFile("pZetaHisto_pzeta")->Integral(1,100);  
+//     else if(TString((*s)->GetName())=="WJetsToLNu_SS")
+//       WJetsSSBelow=(*s)->getHistoFromFile("pZetaHisto_pzeta")->Integral(1,100);    
+//     else if((*s)->getDataType()=="MC_SS") MCSSBelow+=(*s)->getHistoFromFile("pZetaHisto_pzeta")->Integral(1,100);
+//   }
+//   WJetsSSBelowCorr=(DataSSBelow-MCSSBelow)/WJetsSSBelow;
+ 
+//   Float_t WJetsBelow=0; Float_t MCBelow=0; Float_t DataBelow=0;
+//   for(std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+//     if((*s)->getDataType()=="Data")
+//       DataBelow+=(*s)->getHistoFromFile("pZetaHisto_pzeta")->Integral(1,100); 
+//     else if((*s)->getDataType()=="MC"){
+//       if(TString((*s)->GetName())=="WJetsToLNu") WJetsBelow=(*s)->getHistoFromFile("pZetaHisto_pzeta")->Integral(1,100);    
+//       else MCBelow+=(*s)->getHistoFromFile("pZetaHisto_pzeta")->Integral(1,100);
+//     }
+//   }
+//   WJetsBelowCorr=(DataBelow-MCBelow)/WJetsBelow;
+
+
   ///////////////////////////////
-  /////Determine correction factor for WJets from Data < -40 , assuming binning pZetaHisto","",180,-140,40)))
+  /////Determine correction factor for WJets from massT > 50, assuming binning ,200,0,200)))
   //////////////////////////////
-  cout<<"Determine WJetsSS from pZeta below -40: assume original binning pZetaHisto ,180,-140,40"<<endl;
+  cout<<"Determine WJetsSS from transverse mass > 50, assuming binning ,200,0,200"<<endl;
   Float_t WJetsSSBelow=0; Float_t MCSSBelow=0; Float_t DataSSBelow=0;
   for(std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
     if((*s)->getDataType()=="Data_SS")
-      DataSSBelow+=(*s)->getHistoFromFile("pZetaHisto_pzeta")->Integral(1,100);  
+      DataSSBelow+=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(51,200);  
     else if(TString((*s)->GetName())=="WJetsToLNu_SS")
-      WJetsSSBelow=(*s)->getHistoFromFile("pZetaHisto_pzeta")->Integral(1,100);    
-    else if((*s)->getDataType()=="MC_SS") MCSSBelow+=(*s)->getHistoFromFile("pZetaHisto_pzeta")->Integral(1,100);
+      WJetsSSBelow=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(51,200);    
+    else if((*s)->getDataType()=="MC_SS") MCSSBelow+=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(51,200);
   }
-  Float_t WJetsSSBelowCorr=(DataSSBelow-MCSSBelow)/WJetsSSBelow;
-  cout<<"Yields: WJetsSS="<<WJetsSSBelow<<" OtherMCSS="<<MCSSBelow<<" DataSS="<<DataSSBelow<<" WJetsSSCorr="<<WJetsSSBelowCorr<<endl;
+  WJetsSSBelowCorr=(DataSSBelow-MCSSBelow)/WJetsSSBelow;
  
   Float_t WJetsBelow=0; Float_t MCBelow=0; Float_t DataBelow=0;
   for(std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
     if((*s)->getDataType()=="Data")
-      DataBelow+=(*s)->getHistoFromFile("pZetaHisto_pzeta")->Integral(1,100); 
+      DataBelow+=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(51,200); 
     else if((*s)->getDataType()=="MC"){
-      if(TString((*s)->GetName())=="WJetsToLNu") WJetsBelow=(*s)->getHistoFromFile("pZetaHisto_pzeta")->Integral(1,100);    
-      else MCBelow+=(*s)->getHistoFromFile("pZetaHisto_pzeta")->Integral(1,100);
+      if(TString((*s)->GetName())=="WJetsToLNu") WJetsBelow=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(51,200);    
+      else MCBelow+=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(51,200);
     }
   }
-  Float_t WJetsBelowCorr=(DataBelow-MCBelow)/WJetsBelow;
-  cout<<"Yields: WJets="<<WJetsBelow<<" OtherMC="<<MCBelow<<" Data="<<DataBelow<<" WJetsCorr="<<WJetsBelowCorr<<endl;
+  WJetsBelowCorr=(DataBelow-MCBelow)/WJetsBelow;
 
 
   ///////////////////////////////////////////////////
@@ -542,84 +574,169 @@ bool TauMuAnalysis::plotDistribution(TString histoname, Int_t rebin, TString xla
     ((TH1F*)((*s)->getHistoFromFile(histoname)))->Rebin(rebin);
     
 
+//   //////////////////////////////////////////////////////////
+//   ///Make a plot of the pZeta Distribution in the SS sample
+//   ///////////////////////////////////////////////////////////
+//   TH1F hDataSSpZeta("hDataSSpZeta","",30,-140,40);
+//   THStack hMCSSStackpZeta("hMCSSStackpZeta","MC");
+//   TLegend legendSSpZeta;
+//   legendSSpZeta.AddEntry(&hDataSSpZeta,TString("DataSS (")+(long)totalDataLumi+" pb^{-1})","p");
+//   for(std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+//     if((*s)->getDataType()=="Data_SS"){
+//       TH1F* h=(TH1F*)((*s)->getHistoFromFile("pZetaHisto_pzeta"));    
+//       h=(TH1F*)h->Clone(TString(h->GetName())+"rebin");
+//       if(h->GetXaxis()->GetNbins()!=30)h->Rebin(6);//before rebinning check if it is already rebinned above
+//       hDataSSpZeta.Add(h);
+//       delete h;
+//     }
+//     if((*s)->getDataType()=="MC_SS"){
+//       TH1F* h=(TH1F*)((*s)->getHistoFromFile("pZetaHisto_pzeta"));    
+//       h=(TH1F*)h->Clone(TString(h->GetName())+"rebin");
+//       if(h->GetXaxis()->GetNbins()!=30)h->Rebin(6);
+//       hMCSSStackpZeta.Add(h,"hist");
+//       legendSSpZeta.AddEntry(h,(*s)->GetName(),"f");
+//     }
+//   }
+//   C.Clear();
+//   hDataSSpZeta.SetStats(0);
+//   hDataSSpZeta.GetYaxis()->SetTitle("Evetns / 6 GeV");
+//   hDataSSpZeta.GetXaxis()->SetTitle("P_{#zeta} - 1.5*P_{#zeta}^{vis}    (GeV)");
+//   hDataSSpZeta.Draw("hist pe");
+//   hMCSSStackpZeta.Draw("same");
+//   legendSSpZeta.SetX1NDC(0.16);
+//   legendSSpZeta.SetX2NDC(0.45);
+//   legendSSpZeta.SetY1NDC(0.45);
+//   legendSSpZeta.SetY2NDC(0.8);
+//   legendSSpZeta.SetTextSize(.04);
+//   legendSSpZeta.Draw();
+//   hDataSSpZeta.Draw("pe same");
+//   C.Print(outputpath_+"/TauMuAnalysis_"+histoname+".ps");  
+
+
+//   ///Make a plot of the pZeta Distribution in the OS sample
+//   TH1F hDataOSpZeta("hDataOSpZeta","",30,-140,40);
+//   THStack hMCOSStackpZeta("hMCOSStackpZeta","MC");
+//   TLegend legendOSpZeta;
+//   legendOSpZeta.AddEntry(&hDataOSpZeta,TString("Data (")+(long)totalDataLumi+" pb^{-1})","p");
+//   for(std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+//     if((*s)->getDataType()=="Data"){
+//       TH1F* h=(TH1F*)((*s)->getHistoFromFile("pZetaHisto_pzeta"));    
+//       h=(TH1F*)h->Clone(TString(h->GetName())+"rebin");
+//       if(h->GetXaxis()->GetNbins()!=30)h->Rebin(6);
+//       hDataOSpZeta.Add(h);
+//       delete h;
+//     }
+//     if((*s)->getDataType()=="MC"){
+//       TH1F* h=(TH1F*)((*s)->getHistoFromFile("pZetaHisto_pzeta"));    
+//       h=(TH1F*)h->Clone(TString(h->GetName())+"rebin");
+//       if(h->GetXaxis()->GetNbins()!=30)h->Rebin(6);
+//       hMCOSStackpZeta.Add(h,"hist");
+//       legendOSpZeta.AddEntry(h,(*s)->GetName(),"f");
+//     }
+//   }
+//   C.Clear();
+//   hDataOSpZeta.SetStats(0);
+//   hDataOSpZeta.GetYaxis()->SetTitle("Evetns / 6 GeV");
+//   hDataOSpZeta.GetXaxis()->SetTitle("P_{#zeta} - 1.5*P_{#zeta}^{vis}    (GeV)");
+//   hDataOSpZeta.Draw("hist pe");
+//   hMCOSStackpZeta.Draw("same");
+//   legendOSpZeta.SetX1NDC(0.16);
+//   legendOSpZeta.SetX2NDC(0.4);
+//   legendOSpZeta.SetY1NDC(0.45);
+//   legendOSpZeta.SetY2NDC(0.8);
+//   legendOSpZeta.SetTextSize(.04);
+//   legendOSpZeta.Draw();
+//   hDataOSpZeta.Draw("pe same");
+//   C.Print(outputpath_+"/TauMuAnalysis_"+histoname+".ps");  
+//   /////////////////////////////////////////////////////////////////
+
+
+  
   //////////////////////////////////////////////////////////
-  ///Make a plot of the pZeta Distribution in the SS sample
+  ///Make a plot of the mT Distribution in the SS sample
   ///////////////////////////////////////////////////////////
-  TH1F hDataSSpZeta("hDataSSpZeta","",30,-140,40);
-  THStack hMCSSStackpZeta("hMCSSStackpZeta","MC");
-  TLegend legendSSpZeta;
-  legendSSpZeta.AddEntry(&hDataSSpZeta,TString("DataSS (")+(long)totalDataLumi+" pb^{-1})","p");
+  TH1F hDataSSmassT("hDataSSmassT","",100,0,200);
+  THStack hMCSSStackmassT("hMCSSStackmassT","MC");
+  TLegend legendSSmassT;
+  legendSSmassT.SetLineColor(0);
+  legendSSmassT.SetBorderSize(1);
+  legendSSmassT.AddEntry(&hDataSSmassT,TString("DataSS (")+(long)totalDataLumi+" pb^{-1})","p");
   for(std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
     if((*s)->getDataType()=="Data_SS"){
-      TH1F* h=(TH1F*)((*s)->getHistoFromFile("pZetaHisto_pzeta"));    
+      TH1F* h=(TH1F*)((*s)->getHistoFromFile("transverseMassHisto_massT"));    
       h=(TH1F*)h->Clone(TString(h->GetName())+"rebin");
-      if(h->GetXaxis()->GetNbins()!=30)h->Rebin(6);//before rebinning check if it is already rebinned above
-      hDataSSpZeta.Add(h);
+      if(h->GetXaxis()->GetNbins()!=100)h->Rebin(2);//before rebinning check if it is already rebinned above
+      hDataSSmassT.Add(h);
       delete h;
     }
     if((*s)->getDataType()=="MC_SS"){
-      TH1F* h=(TH1F*)((*s)->getHistoFromFile("pZetaHisto_pzeta"));    
+      TH1F* h=(TH1F*)((*s)->getHistoFromFile("transverseMassHisto_massT"));    
       h=(TH1F*)h->Clone(TString(h->GetName())+"rebin");
-      if(h->GetXaxis()->GetNbins()!=30)h->Rebin(6);
-      hMCSSStackpZeta.Add(h,"hist");
-      legendSSpZeta.AddEntry(h,(*s)->GetName(),"f");
+      if(h->GetXaxis()->GetNbins()!=100)h->Rebin(2);
+      hMCSSStackmassT.Add(h,"hist");
+      legendSSmassT.AddEntry(h,(*s)->GetName(),"f");
     }
   }
   C.Clear();
-  hDataSSpZeta.SetStats(0);
-  hDataSSpZeta.GetYaxis()->SetTitle("Evetns / 6 GeV");
-  hDataSSpZeta.GetXaxis()->SetTitle("P_{#zeta} - 1.5*P_{#zeta}^{vis}    (GeV)");
-  hDataSSpZeta.Draw("hist pe");
-  hMCSSStackpZeta.Draw("same");
-  legendSSpZeta.SetX1NDC(0.16);
-  legendSSpZeta.SetX2NDC(0.45);
-  legendSSpZeta.SetY1NDC(0.45);
-  legendSSpZeta.SetY2NDC(0.8);
-  legendSSpZeta.SetTextSize(.04);
-  legendSSpZeta.Draw();
-  hDataSSpZeta.Draw("pe same");
+  hDataSSmassT.SetStats(0);
+  hDataSSmassT.GetYaxis()->SetTitle("Events / 2 GeV");
+  hDataSSmassT.GetXaxis()->SetTitle("mass_{T}    (GeV)");
+  hDataSSmassT.Draw("hist pe");
+  hMCSSStackmassT.Draw("same");
+  legendSSmassT.SetX1NDC(0.50);
+  legendSSmassT.SetX2NDC(0.78);
+  legendSSmassT.SetY1NDC(0.45);
+  legendSSmassT.SetY2NDC(0.8);
+  legendSSmassT.SetTextSize(.04);
+  legendSSmassT.Draw();
+  hDataSSmassT.Draw("pe same");
   C.Print(outputpath_+"/TauMuAnalysis_"+histoname+".ps");  
 
 
-  ///Make a plot of the pZeta Distribution in the OS sample
-  TH1F hDataOSpZeta("hDataOSpZeta","",30,-140,40);
-  THStack hMCOSStackpZeta("hMCOSStackpZeta","MC");
-  TLegend legendOSpZeta;
-  legendOSpZeta.AddEntry(&hDataOSpZeta,TString("Data (")+(long)totalDataLumi+" pb^{-1})","p");
+  ///Make a plot of the massT Distribution in the OS sample
+  TH1F hDataOSmassT("hDataOSmassT","",100,0,200);
+  THStack hMCOSStackmassT("hMCOSStackmassT","MC");
+  TLegend legendOSmassT;   
+  legendOSmassT.SetLineColor(0);
+  legendOSmassT.SetBorderSize(1);
+  legendOSmassT.AddEntry(&hDataOSmassT,TString("Data (")+(long)totalDataLumi+" pb^{-1})","p");
   for(std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
     if((*s)->getDataType()=="Data"){
-      TH1F* h=(TH1F*)((*s)->getHistoFromFile("pZetaHisto_pzeta"));    
+      TH1F* h=(TH1F*)((*s)->getHistoFromFile("transverseMassHisto_massT"));    
       h=(TH1F*)h->Clone(TString(h->GetName())+"rebin");
-      if(h->GetXaxis()->GetNbins()!=30)h->Rebin(6);
-      hDataOSpZeta.Add(h);
+      if(h->GetXaxis()->GetNbins()!=100)h->Rebin(2);
+      hDataOSmassT.Add(h);
       delete h;
     }
     if((*s)->getDataType()=="MC"){
-      TH1F* h=(TH1F*)((*s)->getHistoFromFile("pZetaHisto_pzeta"));    
+      TH1F* h=(TH1F*)((*s)->getHistoFromFile("transverseMassHisto_massT"));    
       h=(TH1F*)h->Clone(TString(h->GetName())+"rebin");
-      if(h->GetXaxis()->GetNbins()!=30)h->Rebin(6);
-      hMCOSStackpZeta.Add(h,"hist");
-      legendOSpZeta.AddEntry(h,(*s)->GetName(),"f");
+      if(h->GetXaxis()->GetNbins()!=100)h->Rebin(2);
+      hMCOSStackmassT.Add(h,"hist");
+      legendOSmassT.AddEntry(h,(*s)->GetName(),"f");
     }
   }
   C.Clear();
-  hDataOSpZeta.SetStats(0);
-  hDataOSpZeta.GetYaxis()->SetTitle("Evetns / 6 GeV");
-  hDataOSpZeta.GetXaxis()->SetTitle("P_{#zeta} - 1.5*P_{#zeta}^{vis}    (GeV)");
-  hDataOSpZeta.Draw("hist pe");
-  hMCOSStackpZeta.Draw("same");
-  legendOSpZeta.SetX1NDC(0.16);
-  legendOSpZeta.SetX2NDC(0.4);
-  legendOSpZeta.SetY1NDC(0.45);
-  legendOSpZeta.SetY2NDC(0.8);
-  legendOSpZeta.SetTextSize(.04);
-  legendOSpZeta.Draw();
-  hDataOSpZeta.Draw("pe same");
+  hDataOSmassT.SetStats(0);
+  hDataOSmassT.GetYaxis()->SetTitle("Events / 2 GeV");
+  hDataOSmassT.GetXaxis()->SetTitle("mass_{T}    (GeV)");
+  hDataOSmassT.Draw("hist pe");
+  hMCOSStackmassT.Draw("same");
+  legendOSmassT.SetX1NDC(0.50);
+  legendOSmassT.SetX2NDC(0.78);
+  legendOSmassT.SetY1NDC(0.45);
+  legendOSmassT.SetY2NDC(0.8);
+  legendOSmassT.SetTextSize(.04);
+  legendOSmassT.Draw();
+  hDataOSmassT.Draw("pe same");
   C.Print(outputpath_+"/TauMuAnalysis_"+histoname+".ps");  
   /////////////////////////////////////////////////////////////////
 
 
   
+
+  cout<<"Yields: WJetsSS="<<WJetsSSBelow<<" OtherMCSS="<<MCSSBelow<<" DataSS="<<DataSSBelow<<" WJetsSSCorr="<<WJetsSSBelowCorr<<endl;
+  cout<<"Yields: WJets="<<WJetsBelow<<" OtherMC="<<MCBelow<<" Data="<<DataBelow<<" WJetsCorr="<<WJetsBelowCorr<<endl;
   /////////////////////////////////////////
   ////////Correct the WJets 
   //////////////////////////////////////////

@@ -71,6 +71,7 @@ public:
   void setLineStyle(Int_t lstyle){lstyle_=lstyle;}
   void setPlotOrder(unsigned int n){plotOrder_=n;}
   void setApplyRecoilCorr(bool applyCorr){applyRecoilCorr_=applyCorr;}
+  void setApplyTauRateWeight(bool applyWeight){applyTauRateWeight_=applyWeight;}
 
   bool scaleLumi(Float_t lumi){
     if(dataType_=="Data" || dataType_=="Data_SS") return 0;
@@ -110,6 +111,7 @@ public:
   Int_t getLineStyle(){return lstyle_;}
   unsigned int getPlotOrder(){return plotOrder_;}
   bool getApplyRecoilCorr(){return applyRecoilCorr_;}
+  bool getApplyTauRateWeight(){return applyTauRateWeight_;}
   
 
   fwlite::ChainEvent* getEvents();
@@ -171,6 +173,7 @@ private:
   Int_t lstyle_;
   unsigned int plotOrder_;
   bool applyRecoilCorr_;
+  bool applyTauRateWeight_;
 
   bool init_;
   
