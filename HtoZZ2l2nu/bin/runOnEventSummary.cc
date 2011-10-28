@@ -365,6 +365,10 @@ int main(int argc, char* argv[])
   metTypes["met"]                 = "E_{T}^{miss}";
   metTypes["assocChargedMet"]     = "assoc-E_{T}^{miss}(charged)";
   metTypes["assocMet"]            = "assoc-E_{T}^{miss}";
+  metTypes["assocCMet"]           = "assocC-E_{T}^{miss}";
+  metTypes["assocFwdCMet"]        = "assoc + clust Fwd E_{T}^{miss}";
+  metTypes["assocFwdMet"]         = "assoc + Fwd E_{T}^{miss}";
+  metTypes["assocFwd2Met"]        = "assoc + Fwd2 E_{T}^{miss}";
   metTypes["clusteredMet"]        = "clustered-E_{T}^{miss}";
   metTypes["minAssocChargedMet"]  = "min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))";
   metTypes["minAssocMet"]         = "min(E_{T}^{miss},assoc-E_{T}^{miss})";
@@ -385,12 +389,13 @@ int main(int argc, char* argv[])
   metTypes["redminAssocMet"]      = "red(min(E_{T}^{miss},assoc-E_{T}^{miss}),clustered E_{T}^{miss})";
 
 
+
   std::map<TString,LorentzVector> metTypeValues;
   for(std::map<TString,TString>::iterator it = metTypes.begin(); it!= metTypes.end(); it++)
     {
       metTypeValues[it->first]=LorentzVector(0,0,0,0);
       controlHistos.addHistogram( new TH1F( TString("met_") + it->first, ";"+it->second+";Events", 100,0,500) );
-      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"vspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"vspu", ";Pileup events;"+it->second+";Events", 25,0,25,200,0,500) );
 //      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"phimetphijet", ";#phi "+it->second+";#phi jet", 10,0,3.15,10,0,3.15) );
       controlHistos.addHistogram( new TH1F( TString("met_") + it->first+"mindphijmet", ";min #Delta#phi(jet,"+it->second+");Events",10,0,3.15) );
 //      controlHistos.addHistogram( new TH1F( TString("metL_") + it->first, ";Long: "+it->second+";Events", 160,-300,500) );
@@ -419,8 +424,9 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH2F ("redMetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 50, -251.,249,50, -251.,249.) );
   controlHistos.addHistogram( new TH1F( "redMetL", ";red-E_{T}^{miss,#parallel};Events", 100,-250,250) );
   controlHistos.addHistogram( new TH1F( "redMetT", ";red-E_{T}^{miss,#perp};Events", 100,-250,250) );
-  controlHistos.addHistogram( new TH2F ("metvstkmet", ";E_{T}^{miss};tk-E_{T}^{miss}", 50,0,500,50,0,500) );  
-  controlHistos.addHistogram( new TH2F ("metvsclusteredMet", ";E_{T}^{miss};clustered-E_{T}^{miss}", 50,0,500,50,0,500) );  
+  controlHistos.addHistogram( new TH2F ("metvstkmet", ";E_{T}^{miss};assoc-E_{T}^{miss}(charged)", 50,0,500,50,0,500) );  
+  controlHistos.addHistogram( new TH2F ("metvsassoc", ";E_{T}^{miss};assoc-E_{T}^{miss}", 50,0,500,50,0,500) );  
+  controlHistos.addHistogram( new TH2F ("metvsclustered", ";E_{T}^{miss};clustered-E_{T}^{miss}", 50,0,500,50,0,500) );    
   controlHistos.addHistogram( new TH2F ("metvscentralMet", ";E_{T}^{miss};central-E_{T}^{miss}", 50,0,500,50,0,500) );  
   
   controlHistos.addHistogram( new TH1F("sumEt",                    ";#Sigma E_{T} [GeV];Events", 100,0,2000) );
@@ -644,8 +650,11 @@ int main(int argc, char* argv[])
       int njets(0),njetsinc(0);
       int nbtags(0),        nbtags_ssvhem(0),        nbtags_tchel(0),        nbtags_tche2(0),        nbtags_jbpl(0),        nbtags_ssvhemORtchel(0);
       LorentzVectorCollection jetsP4;
+      LorentzVector fwdClusteredMetP4(0,0,0,0);
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++) 
 	{
+          if(fabs(phys.jets[ijet].eta())>2.4)fwdClusteredMetP4-=phys.jets[ijet];
+
 	  jetsP4.push_back( phys.jets[ijet] );
 	  njetsinc++;
 	  if(fabs(phys.jets[ijet].eta())<2.5)
@@ -681,7 +690,9 @@ int main(int argc, char* argv[])
       LorentzVector assocMet10P4=phys.met[11];
       LorentzVector assocFwdMet10P4=phys.met[12];
       LorentzVector clusteredMetP4 = -1*zll;  for(unsigned int i=0;i<jetsP4.size();i++){clusteredMetP4 -= jetsP4[i];}
-
+      LorentzVector assocFwdCMetP4 = assocMetP4 + fwdClusteredMetP4;
+      LorentzVector assocCMetP4=phys.met[13];
+      LorentzVector assocFwd2MetP4=phys.met[14];
 
       //z+met kinematics
       Float_t dphill     = deltaPhi(phys.leptons[0].phi(),phys.leptons[1].phi());
@@ -790,6 +801,10 @@ int main(int argc, char* argv[])
               metTypeValues["met"]                 = zvv;
               metTypeValues["assocChargedMet"]     = assocChargedMetP4;
               metTypeValues["assocMet"]            = assocMetP4;
+              metTypeValues["assocCMet"]           = assocCMetP4;
+              metTypeValues["assocFwdCMet"]        = assocFwdCMetP4;
+              metTypeValues["assocFwdMet"]         = assocFwdMetP4;
+              metTypeValues["assocFwd2Met"]        = assocFwd2MetP4;
               metTypeValues["clusteredMet"]        = clusteredMetP4;
               metTypeValues["minAssocChargedMet"]  = min(zvv,assocChargedMetP4);
               metTypeValues["minAssocMet"]         = min(zvv,assocMetP4);
@@ -1207,8 +1222,11 @@ int main(int argc, char* argv[])
 //                  controlHistos.fill2DHisto(TString("metLT_") + it->first, ctf,LongMET,TransMET,weight);
 		}
 
+
+
 	      controlHistos.fill2DHisto("metvstkmet", ctf,met,assocChargedMet,weight);
-	      controlHistos.fill2DHisto("metvsclusteredMet", ctf,met,assocMet,weight);
+	      controlHistos.fill2DHisto("metvsassoc", ctf,met,assocMetP4.pt(),weight);
+              controlHistos.fill2DHisto("metvsclustered", ctf,met,clusteredMetP4.pt(),weight);
 	      controlHistos.fill2DHisto("metvscentralMet", ctf,met,centralMet,weight);
 	      controlHistos.fillHisto("redMetL", ctf,redMetL,weight);
 	      controlHistos.fillHisto("redMetT", ctf,redMetT,weight);
