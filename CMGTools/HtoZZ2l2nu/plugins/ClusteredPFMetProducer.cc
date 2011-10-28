@@ -96,7 +96,9 @@ ClusteredPFMetProducer::ClusteredPFMetProducer(const edm::ParameterSet& iConfig)
   controlHistos_("control")
 {
   produces<reco::PFMET>("assocPfMet");
+  produces<reco::PFMET>("assocPfMetCorrected");
   produces<reco::PFMET>("assocPfMetWithFwd");
+  produces<reco::PFMET>("assocPfMetWithFwd2");
   produces<reco::PFMET>("assocOtherVtxPfMet");
   produces<reco::PFMET>("trkPfMet");
   produces<reco::PFMET>("globalPfMet");
@@ -337,8 +339,9 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   // - build jets from associated candidates
   // - compute charged sums, associated neutral sums
   std::map<int, std::vector<reco::PFJet> > vtxJets;
-  LorentzVectorCollection vtxChSum(nVtx,LorentzVector(0,0,0,0)), vtxNeutralSum(nVtx,LorentzVector(0,0,0,0)),  vtxPFMet(nVtx,LorentzVector(0,0,0,0));
-  std::vector<double>     vtxChSumEt(nVtx,0),                    vtxNeutralSumEt(nVtx,0),                     vtxSumEt(nVtx,0);
+  LorentzVectorCollection vtxChSum(nVtx,LorentzVector(0,0,0,0)), vtxNeutralSum(nVtx,LorentzVector(0,0,0,0)),  betaCorrectionSum(nVtx,LorentzVector(0,0,0,0)), vtxPFMet(nVtx,LorentzVector(0,0,0,0));   
+  std::vector<double>     vtxChSumEt(nVtx,0),                    vtxNeutralSumEt(nVtx,0),                     betaCorrectionSumEt(nVtx,0),                    vtxSumEt(nVtx,0);                       
+
   for(size_t iVtx=0; iVtx<nVtx; iVtx++)
     {
       const std::vector<bool> candMasks = getPFCandidatesMaskForVertex(iVtx);
@@ -376,6 +379,23 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
 	    {
 	      vtxChSum[iVtx]   += candRef->p4();
 	      vtxChSumEt[iVtx] += candRef->pt();
+            }
+          else if(vertexAssociationMasks_[iPFCand]!=int(iVtx))
+            {
+              //BetaCorrection --> Removing 50% of the energy of the charged inside the jets (assuming that there is twice more charged than neutral from PU inside this jet)
+              jIt=jetColl.begin();
+              for(;jIt!=jItEnd; jIt++)
+                {
+
+                  if(jIt->pt()<minJetPt_ || fabs(jIt->eta()) > maxJetEta_) continue;
+                  double dr = deltaR(jIt->eta(),jIt->phi(), candRef->eta(), candRef->phi());
+                  if(dr>jetCone_) continue;
+
+                  //association is done for the first jet only
+                  betaCorrectionSum[iVtx]              -= 0.5 * candRef->p4();
+                  betaCorrectionSumEt[iVtx]            -= 0.5 * candRef->pt();
+                  break;
+                }
 	    }
 	}
       
@@ -391,6 +411,8 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   double        globalChSumEt(0),     globalNeutralSumEt(0),     globalNeutralFwdSumEt(0),     globalNeutral2v4SumEt(0),     globalNeutral2v4assSumEt(0),     globalNeutral2v4notassSumEt(0);
   LorentzVector globalNonAssocNeutralFwdSum(0,0,0,0);
   double        globalNonAssocNeutralFwdSumEt(0);
+  LorentzVector globalNonAssocNeutralFwd2Sum(0,0,0,0);
+  double        globalNonAssocNeutralFwd2SumEt(0);
   for (size_t iPFCand=0; iPFCand<nPFCands; iPFCand++)
     {
       reco::PFCandidateRef candptr(pfCandsH_,iPFCand);
@@ -433,6 +455,12 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
 		}
 
 	    }
+
+          if( fabs(candptr->eta())>2.2 && vertexAssociationMasks_[iPFCand]==-1 ){
+                  globalNonAssocNeutralFwd2Sum += candptr->p4();
+                  globalNonAssocNeutralFwd2SumEt += candptr->pt();
+          }
+
 	}
       else
 	{
@@ -775,7 +803,9 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   
   // and finally put it in the event
   std::auto_ptr<reco::PFMET> assocPfMetPtr(new reco::PFMET);
+  std::auto_ptr<reco::PFMET> assocPfMetCorrectedPtr(new reco::PFMET);
   std::auto_ptr<reco::PFMET> assocPfMetWithFwdPtr(new reco::PFMET);
+  std::auto_ptr<reco::PFMET> assocPfMetWithFwd2Ptr(new reco::PFMET);
   std::auto_ptr<reco::PFMET> assocOtherVtxPfMetPtr(new reco::PFMET);
   std::auto_ptr<reco::PFMET> globalPfMetPtr(new reco::PFMET);
   std::auto_ptr<reco::PFMET> centralPfMetPtr(new reco::PFMET);
@@ -810,6 +840,18 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   pfOutput.phi = atan2(-vtxPFMet[0].py(),-vtxPFMet[0].px());
   *assocPfMetPtr = pf.addInfo(pfRecoCandsH,pfOutput);
 
+  LorentzVector vtxPFMetCorrected =   vtxChSum  [0] + vtxNeutralSum  [0];
+   double       vtxPFMetCorrectedEt=  vtxChSumEt[0] + vtxNeutralSumEt[0];
+  if(vtxNeutralSum[0].pt()>betaCorrectionSum[0].pt()){ vtxPFMetCorrected -= betaCorrectionSum[0];  vtxPFMetCorrectedEt -= betaCorrectionSumEt[0];}
+  pfOutput.mex = -vtxPFMetCorrected.px();
+  pfOutput.mey = -vtxPFMetCorrected.py();
+  pfOutput.mez = -vtxPFMetCorrected.pz();
+  pfOutput.met = vtxPFMetCorrected.pt();
+  pfOutput.sumet = vtxPFMetCorrectedEt;
+  pfOutput.phi = atan2(-vtxPFMetCorrected.py(),-vtxPFMetCorrected.px());
+  *assocPfMetCorrectedPtr = pf.addInfo(pfRecoCandsH,pfOutput);
+
+
   LorentzVector assocPfMetWithFwd(vtxPFMet[0]+globalNonAssocNeutralFwdSum);
   double assocPfMetWithFwdSumEt(vtxSumEt[0]+globalNonAssocNeutralFwdSumEt);
   pfOutput.mex = -assocPfMetWithFwd.px();
@@ -819,6 +861,19 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   pfOutput.sumet = assocPfMetWithFwdSumEt;
   pfOutput.phi = atan2(-assocPfMetWithFwd.py(),-assocPfMetWithFwd.px());
   *assocPfMetWithFwdPtr = pf.addInfo(pfRecoCandsH,pfOutput);
+
+
+  LorentzVector assocPfMetWithFwd2(vtxPFMet[0]+globalNonAssocNeutralFwd2Sum);
+  double assocPfMetWithFwd2SumEt(vtxSumEt[0]+globalNonAssocNeutralFwd2SumEt);
+  pfOutput.mex = -assocPfMetWithFwd2.px();
+  pfOutput.mey = -assocPfMetWithFwd2.py();
+  pfOutput.mez = -assocPfMetWithFwd2.pz();
+  pfOutput.met = assocPfMetWithFwd2.pt();
+  pfOutput.sumet = assocPfMetWithFwd2SumEt;
+  pfOutput.phi = atan2(-assocPfMetWithFwd2.py(),-assocPfMetWithFwd2.px());
+  *assocPfMetWithFwd2Ptr = pf.addInfo(pfRecoCandsH,pfOutput);
+
+
 
   pfOutput.mex=0;
   pfOutput.mey=0;
@@ -870,7 +925,9 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
     }
 
   iEvent.put(assocPfMetPtr,"assocPfMet");
+  iEvent.put(assocPfMetCorrectedPtr,"assocPfMetCorrected");
   iEvent.put(assocPfMetWithFwdPtr,"assocPfMetWithFwd");
+  iEvent.put(assocPfMetWithFwd2Ptr,"assocPfMetWithFwd2");
   iEvent.put(assocOtherVtxPfMetPtr,"assocOtherVtxPfMet");
   iEvent.put(globalPfMetPtr,"globalPfMet");
   iEvent.put(centralPfMetPtr,"centralPfMet");
