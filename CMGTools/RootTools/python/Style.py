@@ -38,6 +38,7 @@ sBlack = Style()
 sBlue = Style(lineColor=4, markerColor=4)
 sGreen = Style(lineColor=8, markerColor=8)
 sRed = Style(lineColor=2, markerColor=2)
+sYellow = Style(lineColor=1, markerColor=5)
 
 
 sBlackSquares = Style(markerStyle = 21)
