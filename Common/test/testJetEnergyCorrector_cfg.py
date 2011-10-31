@@ -39,8 +39,10 @@ print process.source.fileNames
 
 # output module for EDM event (ntuple)
 process.out.fileName = cms.untracked.string('tree_testVertexWeight.root')
-from CMGTools.Common.eventContent.everything_cff import everything 
+from CMGTools.Common.eventContent.everything_cff import everything
+
 process.out.outputCommands = everything
+process.out.outputCommands.append( 'keep cmgPFJets_cmgPFJetCorrector_*_*' )
 
 process.load('CMGTools.Common.miscProducers.cmgPFJetCorrector_cfi')
 
