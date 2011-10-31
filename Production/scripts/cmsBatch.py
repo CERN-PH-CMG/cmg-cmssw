@@ -78,8 +78,7 @@ cp -r $jobdir $PBS_O_WORKDIR
 
 
 def batchScriptCERN( remoteDir, index ):
-   
-   
+   '''prepare the LSF version of the batch script, to run on LSF'''
    script = """#!/bin/bash
 #BSUB -q 8nm
 echo 'environment:'
@@ -98,9 +97,6 @@ echo 'running'
 echo
 echo 'sending the job directory back'
 """ % prog
-   
-#   castorCopy = ''
-
 
    if remoteDir != '':
       script += """
@@ -108,8 +104,7 @@ for file in *.root; do
 newFileName=`echo $file | sed -r -e 's/\./_%s\./'`
 cmsStage -f $file %s/$newFileName 
 done
-""" % (index, remoteDir)
-          
+""" % (index, remoteDir)         
    script += 'rm *.root\n'
    script += 'cp -rf * $LS_SUBCWD\n'
    
@@ -117,8 +112,8 @@ done
 
 
 def batchScriptLocal(  remoteDir, index ):
-   
-   
+   '''prepare a local version of the batch script, to run using nohup'''
+
    script = """#!/bin/bash
 echo 'running'
 %s run_cfg.py
@@ -133,89 +128,91 @@ newFileName=`echo $file | sed -r -e 's/\./_%s\./'`
 cmsStage -f $file %s/$newFileName 
 done
 """ % (index, remoteDir)
-
    return script
 
 
+class CmsBatchException( Exception):
+   '''Exception class for this script'''
+   
+   def __init__(self, value):
+      self.value = value
+      
+   def __str__(self):
+      return str( self.value)
+
+
 class MyBatchManager( BatchManager ):
+   '''Batch manager specific to cmsRun processes.''' 
+         
+   def RunningMode(self, batch):
+      '''Returns "LXPLUS", "LOCAL" or None,
+      
+      "LXPLUS" : batch command is bsub, and logged on lxplus
+      "LOCAL" : batch command is nohup.
+      In all other cases, a CmsBatchException is raised
+      '''
+      
+      hostName = os.environ['HOSTNAME']
+      onLxplus =  hostName.startswith('lxplus')
+      batchCmd = batch.split()[0]
+      
+      if batchCmd == 'bsub':
+         if not onLxplus:
+            err = 'Cannot run %s on %s' % (batchCmd, hostName)
+            raise CmsBatchException( err )
+         else:
+            err = 'running on LSF : %s from %s' % (batchCmd, hostName)
+            raise CmsBatchException( err )            
+      elif batchCmd == 'nohup':
+         print 'running locally : %s on %s' % (batchCmd, hostName)
+         return 'LOCAL'
+      else:
+         err = 'unknown batch command: X%sX' % batchCmd
+         raise CmsBatchException( err )           
 
-    # prepare a job
-    def PrepareJobUser(self, jobDir, value ):
 
-       process.source = fullSource.clone()
-
-       #prepare the batch script
-       scriptFileName = jobDir+'/batchScript.sh'
-       scriptFile = open(scriptFileName,'w')
-
-       # are we at CERN or somewhere else? testing the afs path
-       cwd = os.getcwd()
-       
-       patternLxplus = re.compile( '^lxplus' )
-       onLxplus = patternLxplus.match( os.environ['HOSTNAME'] ) 
-       patternBatch = re.compile( '\w*bsub')
-       wantBatch = patternBatch.match( options.batch )
-
-       local = False
-
-       storeDir = self.remoteOutputDir_.replace('/castor/cern.ch/cms','')
-       
-       if onLxplus:
-          print 'Running on LXPLUS'
-          if wantBatch:
-             print 'Wanna use batch system'
-             scriptFile.write( batchScriptCERN( storeDir,
-                                                value) )
-          else:
-             print 'Wanna use local ressources'
-             local = True
-       else:
-          if wantBatch:
-             print "your -b option contains the string bsub, and you're not on lxplus... aborting"
-             sys.exit(1)
-          else:
-             print 'Not on lxplus, running locally'
-             local = True
-
-       if local:
-          scriptFile.write( batchScriptLocal( storeDir,
-                                              value) )          
-  
-          
-       scriptFile.close()
-       os.system('chmod +x %s' % scriptFileName)
-
-       #prepare the cfg
-       
-       # replace the list of fileNames by a chunk of filenames:
-       if generator:
-          randSvc = RandomNumberServiceHelper(process.RandomNumberGeneratorService)
-          randSvc.populate()
-       else:
-
-          print "grouping : ", grouping
-          print "value : ", value
-          
-          iFileMin = (value)*grouping 
-          iFileMax = (value+1)*grouping 
-          
-          process.source.fileNames = fullSource.fileNames[iFileMin:iFileMax]
-          print process.source
-
-       cfgFile = open(jobDir+'/run_cfg.py','w')
-       cfgFile.write('import FWCore.ParameterSet.Config as cms\n\n')
-       cfgFile.write('import os,sys\n')
-       # need to import most of the config from the base directory containing all jobs
-       cfgFile.write("sys.path.append('%s')\n" % os.path.dirname(jobDir) )
-       cfgFile.write('from base_cfg import *\n')
-       cfgFile.write('process.source = ' + process.source.dumpPython() + '\n')
-       cfgFile.close()
-       
-    def SubmitJob( self, jobDir ):
-       os.system( self.options_.batch )
-       print 'waiting 5 seconds to give castor some time...'
-       time.sleep(5)
-       print 'done'
+   def PrepareJobUser(self, jobDir, value ):
+      '''Prepare one job. This function is called by the base class.'''
+      
+      process.source = fullSource.clone()
+      
+      #prepare the batch script
+      scriptFileName = jobDir+'/batchScript.sh'
+      scriptFile = open(scriptFileName,'w')
+      storeDir = self.remoteOutputDir_.replace('/castor/cern.ch/cms','')
+      mode = self.RunningMode(options.batch)
+      if mode == 'LXPLUS':
+         scriptFile.write( batchScriptCERN( storeDir, value) )
+      elif mode == 'LOCAL':
+         scriptFile.write( batchScriptLocal( storeDir, value) ) 
+      scriptFile.close()
+      os.system('chmod +x %s' % scriptFileName)
+      
+      
+      #prepare the cfg
+      # replace the list of fileNames by a chunk of filenames:
+      if generator:
+         randSvc = RandomNumberServiceHelper(process.RandomNumberGeneratorService)
+         randSvc.populate()
+      else:
+         print "grouping : ", grouping
+         print "value : ", value 
+         iFileMin = (value)*grouping 
+         iFileMax = (value+1)*grouping 
+         process.source.fileNames = fullSource.fileNames[iFileMin:iFileMax]
+         print process.source
+      cfgFile = open(jobDir+'/run_cfg.py','w')
+      cfgFile.write('import FWCore.ParameterSet.Config as cms\n\n')
+      cfgFile.write('import os,sys\n')
+      # need to import most of the config from the base directory containing all jobs
+      cfgFile.write("sys.path.append('%s')\n" % os.path.dirname(jobDir) )
+      cfgFile.write('from base_cfg import *\n')
+      cfgFile.write('process.source = ' + process.source.dumpPython() + '\n')
+      cfgFile.close()
+      
+   def SubmitJob( self, jobDir ):
+      '''Submit a job.'''
+      os.system( self.options_.batch )
 
 batchManager = MyBatchManager()
 
@@ -276,10 +273,17 @@ if len(args)!=2:
    batchManager.parser_.print_help()
    sys.exit(1)
 
+# testing that we run a sensible batch command. If not, exit.
+runningMode = None
+try:
+   runningMode = batchManager.RunningMode( options.batch )
+except CmsBatchException as err:
+   print err
+   sys.exit(1)
+
 grouping = int(args[0])
 nJobs = grouping
 cfgFileName = args[1]
-# queue = options.queue
 
 print 'Loading cfg'
 
@@ -336,7 +340,12 @@ cfgFile = open(batchManager.outputDir_+'/base_cfg.py','w')
 cfgFile.write( process.dumpPython() + '\n')
 cfgFile.close()
 
-batchManager.SubmitJobs()
+# need to wait 5 seconds to give castor some time
+waitingTime = 5
+if runningMode == 'LOCAL':
+   # of course, not the case when running with nohup
+   waitingTime = 0
+batchManager.SubmitJobs( waitingTime )
 
 
 # logging
@@ -359,4 +368,5 @@ if not batchManager.options_.negate:
       log.stageOut( batchManager.remoteOutputDir_ )
       
 os.chdir( oldPwd )
+
 

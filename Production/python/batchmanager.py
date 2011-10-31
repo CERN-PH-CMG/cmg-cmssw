@@ -3,7 +3,13 @@
 from datetime import datetime
 from optparse import OptionParser
 
-import sys, string, os, re, pprint, shutil
+import sys
+import string
+import os
+import re
+import pprint
+import shutil
+import time
 
 import CMGTools.Production.castortools as castortools
 
@@ -77,20 +83,10 @@ class BatchManager:
         
     def PrepareJobs(self, listOfValues ):
         print 'PREPARING JOBS ======== '
-        
-        # self.ParseOptions()
- 
-#        self.ManageOutputDir()
-        #self.CheckBatchScript( self.options_.batchScript )
-
         self.listOfJobs_ = []
-
         print listOfValues
-
-        # prepare jobs
         for value in listOfValues:
             self.PrepareJob( value )
-        
         print "list of jobs:"
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint( self.listOfJobs_)
@@ -127,45 +123,44 @@ class BatchManager:
         self.mkdir( self.outputDir_ )
  
 
-    # prepare job for a given value
     def PrepareJob( self, value):
+        '''Prepare a job for a given value.
+
+        calls PrepareJobUser, which should be overloaded by the user.
+        '''
         print 'PrepareJob : %s' % value 
         jobDir = '%s/Job_%s' % (self.outputDir_, value)
         print '\t',jobDir 
         self.mkdir( jobDir )
         self.listOfJobs_.append( jobDir )
-
-        # if self.options_.batchScript != '':
-        #    shutil.copy( self.options_.batchScript, jobDir)
-
         self.PrepareJobUser( jobDir, value )
         
     def PrepareJobUser(self, value ):
+        '''Hook allowing user to define how one of his jobs should be prepared.'''
         print '\to be customized'
 
    
-    def SubmitJobs( self ):
-
+    def SubmitJobs( self, waitingTimeInSec=0 ):
+        '''Submit all jobs. Possibly wait between each job'''
+        
         if(self.options_.negate):
             print '*NOT* SUBMITTING JOBS - exit '
             return
-
-           
         print 'SUBMITTING JOBS ======== '
-
         for jobDir  in self.listOfJobs_:
             root = os.getcwd()
-
             # run it
             print 'processing ', jobDir
             os.chdir( jobDir )
             self.SubmitJob( jobDir )
-
             # and come back
             os.chdir(root)
+            print 'waiting %s seconds...' % waitingTimeInSec
+            time.sleep( waitingTimeInSec )
+            print 'done.'
 
-    # generate outputFile 
     def SubmitJob( self, jobDir ):
+        '''Hook for job submission.'''
         print 'submitting (to be customized): ', jobDir  
 
 

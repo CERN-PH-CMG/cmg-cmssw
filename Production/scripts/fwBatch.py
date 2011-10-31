@@ -18,7 +18,7 @@ Example:
 First do:
 cd $CMSSW_BASE/src/CMGTools/Common/test
 
-fwBatch.py -N 1 testCMGTools_cfg.py /HT/Run2011A-May10ReReco-v1/AOD/PAT_CMG_MAX -q 'nohup ./batchScript.sh &' -t Test
+fwBatch.py -N 1 testCMGTools_cfg.py /HT/Run2011A-May10ReReco-v1/AOD/PAT_CMG_MAX -b 'nohup ./batchScript.sh &' -t Test
 
 output:
 starting prod for sample: /HT/Run2011A-May10ReReco-v1/AOD/PAT_CMG_MAX
