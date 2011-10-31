@@ -3,10 +3,19 @@ from ROOT import TLegend
 import re
 
 class Legend( TLegend ):
+    '''Legend initialized from a text file.
+
+    The text file should contain one line of the following form
+    to define the legend boundaries
+    xmin ymin xmax ymax
+
+    The other lines are used as legend entries. 
+    '''
     def __init__(self, legendFile, objects):
         self.buildLegend(legendFile, objects)
         
     def buildLegend(self, legendFile, objects ):
+        '''For each object, use the corresponding legend entry'''
         legendDesc = open( legendFile )
         FLOAT = '-*\d+[.\d*]*'
         pattmp = '\s*(FLOAT)\s+(FLOAT)\s+(FLOAT)\s+(FLOAT)\s*'
