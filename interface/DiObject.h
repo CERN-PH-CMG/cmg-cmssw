@@ -19,9 +19,12 @@ class DiObject : public AbstractPhysicsObject{
     typedef T type1;
     typedef U type2;
 
+    /// default constructor
     DiObject():
       AbstractPhysicsObject(), alphaT_(UnSet(Double_t)) {
     }
+
+    /// constructs from leg1 and leg2  
     DiObject(const T& leg1, const U& leg2):
         AbstractPhysicsObject(reco::LeafCandidate(leg1.charge()+leg2.charge(),leg1.p4()+leg2.p4())),
       leg1_(leg1),
@@ -31,8 +34,15 @@ class DiObject : public AbstractPhysicsObject{
       mR_(UnSet(Double_t)),
       mRT_(UnSet(Double_t)),
       lp_(UnSet(Double_t)), 
-      pZeta_(UnSet(Double_t)) {
+      pZetaMET_(UnSet(Double_t)),
+      pZetaVis_(UnSet(Double_t)),
+      mTLeg1_(UnSet(Double_t)),
+      mTLeg2_(UnSet(Double_t)),
+      massSVFit_(UnSet(Double_t))
+	{
     }
+    
+    /// copy constructor
     DiObject(const DiObject<T,U>& other):
       AbstractPhysicsObject(other),
       leg1_(other.leg1()),
@@ -42,7 +52,11 @@ class DiObject : public AbstractPhysicsObject{
       mR_(other.mR_),
       mRT_(other.mRT_),
       lp_(other.lp_), 
-      pZeta_(other.pZeta_) {
+      pZetaMET_(other.pZetaMET_), 
+      pZetaVis_(other.pZetaVis_), 
+      mTLeg1_(other.mTLeg1_), 
+      mTLeg2_(other.mTLeg2_),
+      massSVFit_(other.massSVFit_) {
     }
 
     virtual ~DiObject(){}
@@ -72,8 +86,23 @@ class DiObject : public AbstractPhysicsObject{
     Double_t lp() const { return lp_; }
 
     ///The pzeta variable, for H->tau tau
-    double pZeta() const { return pZeta_;}
+    double pZeta() const { return pZetaVis_+pZetaMET_ - 1.5*pZetaVis_;}
 
+    ///The pzeta-MET variable, for H->tau tau
+    double pZetaMET() const { return pZetaMET_;}
+
+    ///The pzeta-Vis variable, for H->tau tau
+    double pZetaVis() const { return pZetaVis_;}
+
+    ///transverse mass M_T between the first leg and the MET
+    double mTLeg1() const { return mTLeg1_; }
+
+    ///transverse mass M_T between the second leg and the MET 
+    double mTLeg2() const { return mTLeg2_; }
+
+    ///mass from SVFit
+    double massSVFit() const { return massSVFit_; }
+    
     virtual void accept(AbstractPhysicsObjectVisitor* v) const{
       v->visit(this);
       v->visit(&leg1_);
@@ -121,7 +150,8 @@ class DiObject : public AbstractPhysicsObject{
 
     T leg1_;
     U leg2_;
-
+    
+    /// M_T between the two legs (one of them can be the MET)
     Double_t mT_;
     Double_t alphaT_;
 
@@ -134,8 +164,22 @@ class DiObject : public AbstractPhysicsObject{
     /// The lepton projection (LP)
     Double_t lp_; 
 
-    /// the pzeta variable (for H->tau tau)
-    double   pZeta_; 
+    /// the pzeta-MET variable (for H->tau tau)
+    double   pZetaMET_; 
+
+    /// the pzeta-vis variable (for H->tau tau)
+    double   pZetaVis_;
+
+    /// M_T between the first leg and the MET
+    /// filled when the MET collection is specified
+    double   mTLeg1_;
+
+    /// M_T between the second leg and the MET
+    /// filled when the MET collection is specified 
+    double   mTLeg2_;
+
+    /// SVFit mass
+    double   massSVFit_;
 
     friend class cmg::DiObjectFactory<T,U>;
 
