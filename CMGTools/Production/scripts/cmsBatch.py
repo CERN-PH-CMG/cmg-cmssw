@@ -162,6 +162,7 @@ class MyBatchManager( BatchManager ):
             raise CmsBatchException( err )
          else:
             print 'running on LSF : %s from %s' % (batchCmd, hostName)
+            return 'LXPLUS'
       elif batchCmd == 'nohup':
          print 'running locally : %s on %s' % (batchCmd, hostName)
          return 'LOCAL'
