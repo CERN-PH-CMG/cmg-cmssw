@@ -2,6 +2,10 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 import FWCore.ParameterSet.Config as cms
 # from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
 
+process.load('Configuration.StandardSequences.Services_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+process.GlobalTag.globaltag = 'GR_R_42_V19::All'
+
 sep_line = "-" * 50
 print
 print sep_line
@@ -38,7 +42,7 @@ process.source.fileNames = process.source.fileNames[:nFiles]
 print process.source.fileNames
 
 # output module for EDM event (ntuple)
-process.out.fileName = cms.untracked.string('tree_testVertexWeight.root')
+process.out.fileName = cms.untracked.string('tree_testJEC.root')
 from CMGTools.Common.eventContent.everything_cff import everything
 
 process.out.outputCommands = everything
@@ -47,6 +51,8 @@ process.out.outputCommands.append( 'keep cmgPFJets_cmgPFJetCorrector_*_*' )
 process.load('CMGTools.Common.miscProducers.cmgPFJetCorrector_cfi')
 
 process.cmgPFJetCorrector.verbose = True
+process.cmgPFJetCorrector.levels = ['L1FastJet','L2Relative','L3Absolute']
+
 process.p = cms.Path(
     process.cmgPFJetCorrector
 )
