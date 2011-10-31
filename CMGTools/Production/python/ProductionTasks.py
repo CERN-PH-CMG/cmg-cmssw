@@ -79,24 +79,25 @@ documented below.
         return {'Options':self.options, 'Dataset':self.dataset}    
 
 class CheckDatasetExists(Task):
-    """Use 'listSamples.py' to check that the dataset exists in the production system."""
+    """Use 'listSamples.py' to check that the dataset exists in the production system.
+
+    Colin: one should rather use the CMGTools.Production.dataset module
+    """
     def __init__(self, dataset, user, options):
         Task.__init__(self,'CheckDatasetExists', dataset, user, options)
     def addOption(self, parser):
         parser.add_option("-l", "--listLevel", dest="listLevel", help="list level", default=False)        
     def run(self, input):
-        #same directory as this file
-        scriptsDir = os.path.dirname(inspect.getsourcefile(CheckDatasetExists))
-        script = os.path.join(scriptsDir,'listSamples.py')
-        
+        script = 'listSamples.py'
         pattern = fnmatch.translate(self.options.wildcard)
         listLevel = self.options.listLevel
-        cmd = ['python',script,self.dataset,'-u',self.user]
+        cmd = [script,self.dataset,'-u',self.user]
+        print cmd
         if listLevel:
             cmd.extend(['-l',listLevel])
         stdout = subprocess.Popen(cmd, stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[0]
         if not stdout:
-            raise Exception("Dataset '%s' not found by listSamples.py. Please check." % self.dataset)
+            raise Exception("Dataset %s not found by listSamples.py. Please check. \n command: %s" % (self.dataset, cmd))
         samples = [s for s in stdout.split('\n') if s]
         if not len(samples) == 1:
             if not self.dataset in samples:
