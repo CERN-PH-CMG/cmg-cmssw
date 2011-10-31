@@ -48,6 +48,7 @@ namespace cmg {
     Float_t uncOnFourVectorScale() const {return uncOnFourVectorScale_;}
 
     friend class BaseJetFactory;
+    template <class> friend class JetEnergyCorrector;
 
   private:
  
