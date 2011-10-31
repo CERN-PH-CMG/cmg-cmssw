@@ -12,7 +12,7 @@ class LegHistograms:
         
     def fillHistos(self, tree, cut='', nEvents=999999999):
         print 'filling histograms: ' + self.name
-        tree.Draw('tauMu.obj.%s().pt()>>%s' % (self.leg, self.h_pt.GetName()),cut,'goff',nEvents)
+        tree.Draw('tauMu.obj[0].%s().pt()>>%s' % (self.leg, self.h_pt.GetName()),cut,'goff',nEvents)
         
     def formatHistos(self, style ):
         for hist in self.hists:

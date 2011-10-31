@@ -1,41 +1,31 @@
-# call me like this:
-#
-#  python -i h2TauTauInit.py 'TauPlusX_V6/Job*/*tree*root' TauPlusX_V6
-#
-
 from CMGTools.RootTools.cmgInit import *
 from CMGTools.H2TauTau.macros.h2TauTauAliases import *
-
-print 'initializing h->tau tau root environment'
+from CMGTools.H2TauTau.macros.H2TauTauHistograms import *
 
 # aliases  ----------------------------------------------------------
 
-# default CMG aliases:
-# specific aliases for this analysis
 
 def h2TauTauInit(pattern):
     (events,lumi) = cmgInit(pattern)
     aliases = AliasSetter(events, h2TauTauAliases, 'H2TAUTAU')
     return events,lumi
 
-# plotting ----------------------------------------------------------
 
-# This file contains some default histograms, and shows how
-# python classes can be used to manage histograms 
-from CMGTools.H2TauTau.macros.H2TauTauHistograms import *
+if __name__ == '__main__':
 
-# the first argument is the pattern of input root files,see cmgInit.py
-# the second argument is the name of your histograms, e.g. data, signal, WJets, whatever
-# the output root file will start with this name.
-## allHists = H2TauTauHistograms( sys.argv[2] )
+    from optparse import OptionParser
 
-## nEvents = 999999
-## allHists.fillHistos( events, 'tauMu.obj.getSelection("cuts_baseline")',nEvents)
+    parser = OptionParser()
+    parser.usage = """
+    %prog <patter to root files>\n
+    Initialize the environment and create a chain with these files.
+    """
 
-## gDirectory.ls()
+    (options,args) = parser.parse_args()
+    if len(args)!=1:
+        print 'please provide a pattern for your root files'
+        sys.exit(1)
+    pattern = args[0]
 
-## # styles are defined in CMGTools.RootTools.Style
-## allHists.formatHistos( sBlack )
-## allHists.diTau.h_vismass.Draw()
-## allHists.Write()
-
+    print 'initializing h->tau tau root environment'
+    (events,lumi) = h2TauTauInit( pattern )
