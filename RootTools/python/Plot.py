@@ -8,25 +8,36 @@ class Histogram:
     def __init__(self, name, obj, layer=0, stack=True):
         self.name = name 
         self.obj = obj
+        self.weighted = copy.deepcopy(self.obj)
         self.layer = layer
         self.stack = stack
-    
+        self.SetWeight(1)
+        
     def __str__(self):
         return self.name + ' / ' + self.obj.GetName() + ', L=' + str(self.layer)
+
+    def SetWeight(self, weight):
+        self.weighted = copy.deepcopy(self.obj)
+        self.weight = weight
+        self.weighted.Scale(weight)
 
     def AddEntry(self, legend, legendLine=None):
         if legendLine == None:
             legendLine = self.name
         legend.AddEntry(self.obj, legendLine)
 
-    def Draw(self):
-        self.obj.Draw()
+    def Draw(self, opt=''):
+        self.weighted.Draw(opt)
+
+    def Integral(self):
+        return self.weighted.Integral()
 
     def DrawNormalized(self):
         self.obj.DrawNormalized()
 
     def Normalize(self):
         self.obj.Scale( 1/self.obj.Integral() )
+
 
 
 class Stack:
@@ -44,7 +55,7 @@ class Stack:
             return
         self.obj = THStack(self.name,'')
         for hist in self.hists:
-            self.obj.Add(hist)
+            self.obj.Add(hist.weighted)
         self.obj.Draw( opt )
         self.updateTitles()
 
@@ -73,8 +84,8 @@ class Stack:
     def updateTitles( self ):
         if len( self.hists )==0:
             return        
-        self.obj.GetXaxis().SetTitle( self.hists[0].GetXaxis().GetTitle() )
-        self.obj.GetYaxis().SetTitle( self.hists[0].GetYaxis().GetTitle() )
+        self.obj.GetXaxis().SetTitle( self.hists[0].obj.GetXaxis().GetTitle() )
+        self.obj.GetYaxis().SetTitle( self.hists[0].obj.GetYaxis().GetTitle() )
         
 
 class Plot:
@@ -124,7 +135,7 @@ class Plot:
     def Draw(self, opt = ''):
         same = ''
         for hist in self.sortedHistograms():
-            hist.obj.Draw( same + opt)
+            hist.Draw( same + opt)
             if same == '':
                 same = 'same'
         self.DrawLegend()
@@ -196,7 +207,7 @@ class Plot:
         self.buildStack(self.sortedHistograms())
         self.stack.Draw( opt )
         for hist in self.nostack:
-            hist.obj.Draw('same')
+            hist.Draw('same')
         self.DrawLegend()
 
     def DrawNormalizedStack(self, opt=''):
@@ -212,7 +223,7 @@ class Plot:
         self.nostack = []
         for hist in hists:
             if hist.stack:
-                self.stack.Add( hist.obj )
+                self.stack.Add( hist )
             else:
                 self.nostack.append(hist)
     
