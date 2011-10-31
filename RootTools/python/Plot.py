@@ -1,92 +1,12 @@
-from CMGTools.RootTools.Legend import *
-from ROOT import TH1, THStack
-
 from operator import itemgetter, attrgetter
 import copy
 
-class Histogram:
-    def __init__(self, name, obj, layer=0, stack=True):
-        self.name = name 
-        self.obj = obj
-        self.weighted = copy.deepcopy(self.obj)
-        self.layer = layer
-        self.stack = stack
-        self.SetWeight(1)
-        
-    def __str__(self):
-        return self.name + ' / ' + self.obj.GetName() + ', L=' + str(self.layer)
+from ROOT import TH1, THStack, TLegend
 
-    def SetWeight(self, weight):
-        self.weighted = copy.deepcopy(self.obj)
-        self.weight = weight
-        self.weighted.Scale(weight)
-
-    def AddEntry(self, legend, legendLine=None):
-        if legendLine == None:
-            legendLine = self.name
-        legend.AddEntry(self.obj, legendLine)
-
-    def Draw(self, opt=''):
-        self.weighted.Draw(opt)
-
-    def Integral(self):
-        return self.weighted.Integral()
-
-    def DrawNormalized(self):
-        self.obj.DrawNormalized()
-
-    def Normalize(self):
-        self.obj.Scale( 1/self.obj.Integral() )
+from CMGTools.RootTools.Histogram import Histogram
+from CMGTools.RootTools.Stack import Stack
 
 
-
-class Stack:
-    def __init__(self, name):
-        self.name = name
-        self.hists = []
-        self.integral = 0
-        
-    def Add(self, hist):
-        self.hists.append( copy.deepcopy(hist) )
-        self.integral += hist.Integral()
-        
-    def Draw(self, opt=''):
-        if len( self.hists )==0:
-            return
-        self.obj = THStack(self.name,'')
-        for hist in self.hists:
-            self.obj.Add(hist.weighted)
-        self.obj.Draw( opt )
-        self.updateTitles()
-
-    def DrawNormalized(self, opt ):
-        if len( self.hists )==0:
-            return
-        integral = 0
-        self.normHists = []
-        self.obj = THStack(self.name,'')
-        for hist in self.hists:
-            normHist = copy.deepcopy(hist)
-            normHist.Scale( 1/self.integral )
-            self.normHists.append( normHist )
-            self.obj.Add( normHist)
-        self.obj.Draw( opt )
-        self.updateTitles()
-
-    def Normalize(self):
-        for hist in self.hists:
-            hist.Scale( 1/self.integral )        
-
-    def Divide(self, otherHist):
-        for hist in self.hists:
-            hist.Divide(otherHist)
-    
-    def updateTitles( self ):
-        if len( self.hists )==0:
-            return        
-        self.obj.GetXaxis().SetTitle( self.hists[0].obj.GetXaxis().GetTitle() )
-        self.obj.GetYaxis().SetTitle( self.hists[0].obj.GetYaxis().GetTitle() )
-        
 
 class Plot:
     def __init__(self, name):
