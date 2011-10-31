@@ -56,14 +56,12 @@ print sep_line
 
 ### SOURCE DEFINITION  ################################################################
 
-
-# process.source.fileNames = cms.untracked.vstring(['/store/relval/CMSSW_4_2_5/RelValTTbar/GEN-SIM-RECO/START42_V12-v1/0113/1C538A2F-799E-E011-8A7E-0026189438BD.root'])
-
-# process.source.fileNames = cms.untracked.vstring(['file:PFAOD.root'])
-
-# process.load("CMGTools.Common.sources.SingleMu.Run2011A_May10ReReco_v1.AOD.source_cff")
-# process.load("CMGTools.Common.sources.HT.Run2011A_May10ReReco_v1.AOD.V2.source_cff")
-# process.load("CMGTools.Common.sources.VBF_HToTauTau_M_115_7TeV_powheg_pythia6_tauola.Summer11_PU_S4_START42_V11_v1.AODSIM.V2.source_cff")
+from CMGTools.Production.datasetToSource import *
+process.source = datasetToSource(
+    'palencia',
+    '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2',
+    'PFAOD.*root'
+    ) 
 
 if pickRelVal:
     process.source = cms.Source(
@@ -79,7 +77,7 @@ if pickRelVal:
 
 
 # print "WARNING!!!!!!!!!!!!!!!! remove the following line (see .cfg) before running on the batch!"
-process.source.fileNames = process.source.fileNames[:12]
+process.source.fileNames = process.source.fileNames[:10]
 
 print 'PF2PAT+PAT+CMG for files:'
 print process.source.fileNames
