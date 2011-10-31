@@ -54,13 +54,13 @@ class RootDir:
                 rootDir.walk()
                 self.subDirs_[subdir.GetName()] = rootDir
 
-    def DrawAll( self ):
+    def DrawAll( self, xsize=800, ysize=800):
         """Draw all histograms in the RootDir canvas. Note that histograms in a given sub-directory can be drawn by doing: this.subDirs_['theSubDir'].Draw()"""
         
         nPlots = len(self.histograms_)
 
         if nPlots:
-            self.canvas_ = TCanvas(self.tDir_.GetName(),self.tDir_.GetName(), 1000, 1000)
+            self.canvas_ = TCanvas(self.tDir_.GetName(),self.tDir_.GetName(), xsize, ysize)
 
             ny = int(math.sqrt (nPlots) )
             nx = int(math.ceil( nPlots / float(ny) ))
@@ -78,7 +78,7 @@ class RootDir:
             self.canvas_.Update()
         
         for key in self.subDirs_.iterkeys():
-            self.subDirs_[key].Draw()
+            self.subDirs_[key].DrawAll()
 
     def h( self, histName ):
         """Returns an histogram in this RootDir or in its subdirectories. 
@@ -102,9 +102,9 @@ class RootDir:
             else:
                 return None
 
-    def Draw( self, histName, *args ):
+    def Draw( self, histName):
         """Draws an histogram. Use the absolute path."""
-        hist = self.h(histName).Draw(*args)
+        hist = self.h(histName).Draw()
 
     def Print( self, path=None):
         """Print the contents of this RootDir, including its sub-directories."""
@@ -123,10 +123,46 @@ class RootDir:
         
 
 if __name__ == '__main__':
+
     import os, sys
+
+    filename = os.environ.get('PYTHONSTARTUP')
+    if filename and os.path.isfile(filename):
+        exec(open(filename).read())
+
     from ROOT import gROOT, TFile,gPad
     gROOT.Macro( os.path.expanduser( '~/rootlogon.C' ) )
-    file = TFile( sys.argv[1] )
-    dir = sys.argv[2]
-    rootDir = RootDir( file, sRedPoints )
-    rootDir.subDirs_[dir].DrawAll()
+
+
+    from optparse import OptionParser
+    import sys
+    
+    parser = OptionParser()
+    
+    parser.usage = '''
+    RootDir.py <root file name>
+    '''
+    parser.add_option("-l", "--list", 
+                      dest="list", 
+                      help="listing mode",
+                      action='store_true',
+                      default=False)
+
+    (options,args) = parser.parse_args()
+
+    if len(args) != 1:
+        print 'ERROR: please provide an input root file'
+        print args
+        sys.exit(1)
+
+    fileName = args[0]
+
+    file = TFile( fileName )
+    # dir = sys.argv[2]
+    rootDir = RootDir( file, sRed )
+
+    if options.list:
+        rootDir.Print()
+        
+    
+    # rootDir.subDirs_[dir].DrawAll()
