@@ -44,6 +44,7 @@ namespace cmg {
     /// it back to the uncorrected value
     Float_t rawFactor() const {return rawFactor_;}
 
+    /// Uncertainty on four vector energy scale.
     Float_t uncOnFourVectorScale() const {return uncOnFourVectorScale_;}
 
     friend class BaseJetFactory;
