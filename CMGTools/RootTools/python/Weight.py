@@ -8,10 +8,10 @@ class Weight( PersistentDict ):
 
     def GetWeight(self):
         '''Return the weight, and fill weight-related attributes'''
-        self.genNEvents = float(self.value('genNEvents'))
-        self.genEff = float(self.value('genEff'))
-        self.xSection = float(self.value('xSection'))
-        self.intLumi  = float(self.value('intLumi'))
+        self.genNEvents = float(self.Value('genNEvents'))
+        self.genEff = float(self.Value('genEff'))
+        self.xSection = float(self.Value('xSection'))
+        self.intLumi  = float(self.Value('intLumi'))
         return self.xSection * self.intLumi / ( self.genNEvents * self.genEff) 
 
     def SetIntLumi(self, lumi):
