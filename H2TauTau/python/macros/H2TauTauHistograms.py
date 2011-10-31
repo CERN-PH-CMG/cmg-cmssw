@@ -8,9 +8,9 @@ class H2TauTauHistograms:
 
         self.file = TaggedFile( name + '.root')
         
-        self.diTau = DiTauHistograms( name + '_tauMu')
-        self.tau = LegHistograms(name + '_tau','leg1')
-        self.mu = LegHistograms(name + '_mu','leg2')
+        self.diTau = DiTauHistograms( 'tauMu')
+        self.tau = LegHistograms( 'tau','leg1')
+        self.mu = LegHistograms( 'mu','leg2')
         
         self.hists = []
         self.hists.append( self.diTau )
@@ -29,3 +29,8 @@ class H2TauTauHistograms:
     def Write(self):
         for hist in self.hists:
             hist.Write( self.file.file )
+
+    def __str__(self):
+        print 'Histograms', name
+
+        
