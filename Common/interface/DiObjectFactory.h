@@ -40,12 +40,14 @@ class DiObjectFactory : public cmg::Factory< cmg::DiObject<T,U> >, public cmg::S
 
     private:
 
-        double mT(T const& l1, U const& l2) const;
+/*         double mT(T const& l1, U const& l2) const; */
+	double mT( const reco::Candidate& l1, const reco::Candidate& l2) const;
         double alphaT(T const& l1, U const& l2) const;
         double mR(T const& l1, U const& l2) const;
         double mRT(T const& l1, U const& l2, const reco::Candidate& met) const;
         double lp(T const& l1, cmg::DiObject<T,U>* const obj) const;
-	double pZeta(T const& l1, U const& l2, const reco::Candidate& met) const;
+	std::pair<double, double> pZeta(T const& l1, U const& l2, 
+					const reco::Candidate& met) const;
 
         const edm::InputTag leg1Label_;
         const edm::InputTag leg2Label_;
@@ -144,11 +146,16 @@ void cmg::DiObjectFactory<T, U>::set(const std::pair<T,U>& pair, const reco::Can
       obj->lp_ = lp(pair.first, obj);
     //calculate the Razor variables with MET
     obj->mRT_ = mRT(pair.first, pair.second, met);
-    obj->pZeta_ = pZeta(pair.first, pair.second, met);
+    std::pair<double,double> pZetaVars = pZeta(pair.first, pair.second, met);
+    obj->pZetaVis_ = pZetaVars.first;
+    obj->pZetaMET_ = pZetaVars.second;    
+    obj->mTLeg1_ = mT(pair.first, met);
+    obj->mTLeg2_ = mT(pair.second, met);    
 }
 
 template<typename T, typename U>
-  double cmg::DiObjectFactory<T, U>::mT(T const& l1, U const& l2) const
+/*   double cmg::DiObjectFactory<T, U>::mT(T const& l1, U const& l2) const */
+  double cmg::DiObjectFactory<T, U>::mT( const reco::Candidate& l1, const reco::Candidate& l2) const
 {
   // transverse mass
   return std::sqrt( std::pow(l1.pt()+l2.pt(), 2) - 
@@ -212,7 +219,9 @@ double cmg::DiObjectFactory<T, U>::mRT(T const& ja, U const& jb, const reco::Can
 }
 
 template<typename T, typename U>
-double cmg::DiObjectFactory<T, U>::pZeta(T const& tau1, U const& tau2, const reco::Candidate& met) const{
+std::pair<double,double> cmg::DiObjectFactory<T, U>::pZeta(T const& tau1, 
+							   U const& tau2, 
+							   const reco::Candidate& met) const{
 
   TVector3 tau1P=TVector3(tau1.p4().x(),tau1.p4().y(),tau1.p4().z());
   TVector3 tau2P=TVector3(tau2.p4().x(),tau2.p4().y(),tau2.p4().z());
@@ -222,9 +231,11 @@ double cmg::DiObjectFactory<T, U>::pZeta(T const& tau1, U const& tau2, const rec
   TVector3 zetaAxis=(tau1PT.Unit() + tau2PT.Unit()).Unit();
   double pZetaVis=tau1PT*zetaAxis + tau2PT*zetaAxis;
   double pZetaMET=metPT*zetaAxis;
-  double tmp=pZetaVis+pZetaMET;
-  
-  return tmp-1.5*pZetaVis;
+  /*   double tmp=pZetaVis+pZetaMET; */
+  /*   return tmp-1.5*pZetaVis; */
+
+  std::pair< double, double> result(pZetaVis, pZetaMET);
+  return result;
 }
 
 template<typename T, typename U>
