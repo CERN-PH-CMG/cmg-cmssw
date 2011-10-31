@@ -19,5 +19,6 @@
     'RecoTauTag/RecoTau' :                       ['V01-02-07', 'RecoTauTag/RecoTau'],
     'RecoTauTag/TauTagTools' :                   ['V01-02-00', 'RecoTauTag/TauTagTools'],
     'UserCode/TauAnalysis/SVFitStandAlone' :     ['cbern_start_18Oct11', 'TauAnalysis/SVFitStandAlone'],
+    'GeneratorInterface/GenFilters':             ['V00-11-00-01','GeneratorInterface/GenFilters'],
 }
 

@@ -6,9 +6,11 @@ from CMGTools.Common.generator.listParticles_cfi import *
 from CMGTools.Common.generator.vertexWeight.vertexWeight_cff import *
 
 from SimGeneral.HepPDTESSource.pythiapdt_cfi import *
+from GeneratorInterface.GenFilters.TotalKinematicsFilter_cfi import *
 
 genSequence = cms.Sequence(
-    genParticlesStatus3
+    totalKinematicsFilter
+    + genParticlesStatus3
     + genLeptonsSequence
     + listParticles
     + vertexWeightSequence
