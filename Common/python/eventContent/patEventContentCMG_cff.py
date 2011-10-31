@@ -11,6 +11,7 @@ patEventContentCMG = cms.untracked.vstring(
     'keep recoVertexs_*_*_*',
     'keep recoBeamSpot_*_*_*',
     'keep L1GlobalTriggerObjectMapRecord_*_*_*',
+    'keep L1GlobalTriggerReadoutRecord_gtDigis_*_*',
     'keep *_TriggerResults_*_*',
     'keep *_hltTriggerSummaryAOD_*_*',
     # dropping AK7 taus
