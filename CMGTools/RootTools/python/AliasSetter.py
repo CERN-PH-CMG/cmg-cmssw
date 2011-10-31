@@ -30,7 +30,7 @@ class AliasSetter:
            if match != None:
                fullAliased += process
                
-           print alias, fullAliased 
+           # print alias, fullAliased 
            self.tree.SetAlias( alias, fullAliased )
             
 
