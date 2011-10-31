@@ -616,7 +616,7 @@ int main(int argc, char* argv[]){
       if(i%TreeStep==0){printf(".");fflush(stdout);}
       if(objectSearchKey != "" && histlist[i].Name.find(objectSearchKey)==std::string::npos)continue;
 
-        if(doTex && histlist[i].Name.find("eventflow")!=std::string::npos){    ConvertToTex(Root,inDir,histlist[i].Name);     }
+        if(doTex && histlist[i].Name.find("eventflow")!=std::string::npos && histlist[i].Name.find("optim_eventflow")==std::string::npos){    ConvertToTex(Root,inDir,histlist[i].Name);     }
         if(doPlot && do2D  && !histlist[i].isTH1){                                       Draw2DHistogram(Root,inDir,histlist[i].Name);  }
         if(doPlot && do1D  &   histlist[i].isTH1){                                       Draw1DHistogram(Root,inDir,histlist[i].Name);  }
 
