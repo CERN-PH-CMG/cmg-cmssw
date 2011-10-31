@@ -161,8 +161,7 @@ class MyBatchManager( BatchManager ):
             err = 'Cannot run %s on %s' % (batchCmd, hostName)
             raise CmsBatchException( err )
          else:
-            err = 'running on LSF : %s from %s' % (batchCmd, hostName)
-            raise CmsBatchException( err )            
+            print 'running on LSF : %s from %s' % (batchCmd, hostName)
       elif batchCmd == 'nohup':
          print 'running locally : %s on %s' % (batchCmd, hostName)
          return 'LOCAL'
@@ -344,6 +343,7 @@ cfgFile.close()
 waitingTime = 5
 if runningMode == 'LOCAL':
    # of course, not the case when running with nohup
+   # because we will never have enough processes to saturate castor.
    waitingTime = 0
 batchManager.SubmitJobs( waitingTime )
 
