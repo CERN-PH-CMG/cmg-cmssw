@@ -223,8 +223,8 @@ std::pair<double,double> cmg::DiObjectFactory<T, U>::pZeta(T const& tau1,
 							   U const& tau2, 
 							   const reco::Candidate& met) const{
 
-  TVector3 tau1P=TVector3(tau1.p4().x(),tau1.p4().y(),tau1.p4().z());
-  TVector3 tau2P=TVector3(tau2.p4().x(),tau2.p4().y(),tau2.p4().z());
+/*   TVector3 tau1P=TVector3(tau1.p4().x(),tau1.p4().y(),tau1.p4().z()); */
+/*   TVector3 tau2P=TVector3(tau2.p4().x(),tau2.p4().y(),tau2.p4().z()); */
   TVector3 tau1PT=TVector3(tau1.p4().x(),tau1.p4().y(),0.);
   TVector3 tau2PT=TVector3(tau2.p4().x(),tau2.p4().y(),0.);
   TVector3 metPT=TVector3(met.p4().x(),met.p4().y(),0.);
