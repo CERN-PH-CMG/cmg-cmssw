@@ -150,7 +150,7 @@ if __name__ == '__main__':
     
     parser = OptionParser()
     parser.usage = '''
-    plot.py hist_name directory
+    plot.py <hist_name> <directory>
     plot the same histogram from several root files in a given directory
     '''
 
