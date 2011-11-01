@@ -5,7 +5,7 @@
 import os, sys,  imp, re, pprint, string
 from optparse import OptionParser
 
-import CMGTools.Production.castortools
+import CMGTools.Production.castortools as castortools
 from CMGTools.Production.addToDatasets import *
 
 parser = OptionParser()
