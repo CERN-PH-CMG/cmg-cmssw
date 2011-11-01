@@ -27,17 +27,17 @@ from CMGTools.Common.macros.aliases import *
 TREES = []
 
 
-def Init( pattern):
+def Init( pattern, process='PAT'):
     events = Chain('Events', pattern)
     lumi = Chain('LuminosityBlocks', pattern)
 
     TREES.append(events)
     TREES.append(lumi)
     
-    aliases = AliasSetter(events, eventsAliases, 'PAT')
+    aliases = AliasSetter(events, eventsAliases, process)
     aliases = AliasSetter(events, pat, 'PAT')
     aliases = AliasSetter(events, reco, 'RECO')
-    aliases = AliasSetter(lumi, luminosityBlocksAliases, 'PAT')
+    aliases = AliasSetter(lumi, luminosityBlocksAliases, process)
 
     return events,lumi
 
@@ -54,7 +54,11 @@ if __name__ == '__main__':
     Example:
     \t RootInit.py "*.root"
     '''
-
+    parser.add_option("-p", "--process", 
+                      dest="process", 
+                      help="process name for the CMG objects, usually PAT or ANA",
+                      default='PAT')
+    
     (options,args) = parser.parse_args()
 
     if len(args)!=1:
@@ -65,4 +69,4 @@ if __name__ == '__main__':
 
     pattern = args[0]
 
-    (events, lumi) = Init( pattern )
+    (events, lumi) = Init( pattern, options.process)
