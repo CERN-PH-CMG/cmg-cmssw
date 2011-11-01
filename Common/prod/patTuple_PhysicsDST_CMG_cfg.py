@@ -171,8 +171,28 @@ process.cmgCaloBaseJet.cfg.inputCollection = 'selectedPatJetsAK5Calo'
 
 process.cmgFatJet.cfg.inputCollection = 'cmgPFBaseJetSel'
 
+#Colin : patMuons give segfault
+process.patSequence = cms.Sequence(
+    # patMuons+
+    process.patJetCorrFactors+
+    process.patJetCorrFactorsAK5Calo+
+    process.patJets+
+    process.patJetsAK5CaloCor+
+    process.patJetsAK5Calo+
+    # patCandidateSummary+
+    # selectedPatMuons+
+    process.selectedPatJets+
+    process.selectedPatJetsAK5CaloCor+
+    process.selectedPatJetsAK5Calo 
+    # selectedPatCandidateSummary+
+    #countPatMuons+
+    #countPatLeptons+
+    #countPatJets
+    )
+
 process.p = cms.Path(
-    process.patDefaultSequence +
+    # process.patDefaultSequence +
+    process.patSequence +
     # PFJet factory wants to access PFCandidates.
     # implement a mode to work with JetSpecific
     process.cmgPFBaseJet +
