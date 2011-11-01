@@ -2,7 +2,7 @@
 {
     'UserCode/CMG/AnalysisDataFormats/CMGTools': ['cbern_h2tautauvars_31Oct11', 'AnalysisDataFormats/CMGTools'],
     'UserCode/CMG/CMGTools/Common':              ['cbern_h2tautauvars_31Oct11', 'CMGTools/Common'],
-    'UserCode/CMG/CMGTools/Production':          ['cbern_cleaning_31Oct11', 'CMGTools/Production'],
+    'UserCode/CMG/CMGTools/Production':          ['cbern_josefix_01Nov11', 'CMGTools/Production'],
     'UserCode/CMG/CMGTools/RootTools':           ['cbern_Plot_27Oct11', 'CMGTools/RootTools'],
     'UserCode/CMG/CMGTools/ZmumuJetsTutorial':   ['cbern_tutorial_12Oct11', 'CMGTools/ZmumuJetsTutorial'],
     'CommonTools/ParticleFlow':                  ['B4_2_X_cbern_dbetaoff_14Oct11', 'CommonTools/ParticleFlow'],
