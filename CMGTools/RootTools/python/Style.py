@@ -9,25 +9,25 @@ class Style:
                  lineWidth = 2,
                  fillColor = None,
                  fillStyle = 3001 ):
-        self.markerStyle_ = markerStyle
-        self.markerColor_ = markerColor
-        self.lineStyle_ = lineStyle
-        self.lineColor_ = lineColor
-        self.lineWidth_ = lineWidth
+        self.markerStyle = markerStyle
+        self.markerColor = markerColor
+        self.lineStyle = lineStyle
+        self.lineColor = lineColor
+        self.lineWidth = lineWidth
         if fillColor is None:
-            self.fillColor_ = lineColor
+            self.fillColor = lineColor
         else:
-            self.fillColor_ = fillColor
-        self.fillStyle_ = fillStyle
+            self.fillColor = fillColor
+        self.fillStyle = fillStyle
         
     def formatHisto( self, hist, title=None):
-        hist.SetMarkerStyle( self.markerStyle_ )
-        hist.SetMarkerColor( self.markerColor_ )
-        hist.SetLineStyle( self.lineStyle_ )
-        hist.SetLineColor( self.lineColor_ )
-        hist.SetLineWidth( self.lineWidth_ )
-        hist.SetFillColor( self.fillColor_ )
-        hist.SetFillStyle( self.fillStyle_ )
+        hist.SetMarkerStyle( self.markerStyle )
+        hist.SetMarkerColor( self.markerColor )
+        hist.SetLineStyle( self.lineStyle )
+        hist.SetLineColor( self.lineColor )
+        hist.SetLineWidth( self.lineWidth )
+        hist.SetFillColor( self.fillColor )
+        hist.SetFillStyle( self.fillStyle )
         hist.GetXaxis().SetTitleSize(0.05)
         hist.GetYaxis().SetTitleSize(0.05)
         hist.GetYaxis().SetTitleOffset(1.5)

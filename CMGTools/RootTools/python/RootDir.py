@@ -9,13 +9,13 @@ class RootDir:
     """Manages a TDirectory in PyROOT, and allows easy access to the histograms and plotting"""
     
     def __init__( self, tDir, style=None):
-        self.tDir_ = tDir
-        self.histograms_ = {}
-        self.subDirs_ = {}
-        self.style_ = style
-        self.walk()
+        self.tDir = tDir
+        self.histograms = {}
+        self.subDirs = {}
+        self.style = style
+        self._Walk()
         
-    def loadHistograms( self, tDir ):
+    def _LoadHistograms( self, tDir ):
         """Looks for all histograms in the directory, and stores them in a dictionary indexed by their key"""
         listOfKeys = tDir.GetListOfKeys()
         for key in listOfKeys:
@@ -24,25 +24,25 @@ class RootDir:
             if hist.InheritsFrom('TH1'):
                 # print hist.GetName()
                 
-                if self.style_ != None:
-                    hist = self.style_.formatHisto( hist )
-                self.histograms_[key.GetName()] = hist 
+                if self.style != None:
+                    hist = self.style.formatHisto( hist )
+                self.histograms[key.GetName()] = hist 
 
-    def setStyle( self, style ):
+    def SetStyle( self, style ):
         """Set style for all histograms, in this directory and its sub-directories. See Style module for more information"""
-        self.style_ = style
-        for key in self.histograms_.iterkeys():
-            self.histograms_[key] = style.formatHisto( self.histograms_[key] )
-        for key in self.subDirs_.iterkeys():
-            self.subDirs_[key].setStyle( style )
+        self.style = style
+        for key in self.histograms.iterkeys():
+            self.histograms[key] = style.formatHisto( self.histograms[key] )
+        for key in self.subDirs.iterkeys():
+            self.subDirs[key].SetStyle( style )
             
-    def walk( self ):        
+    def _Walk( self ):        
         """loads histograms, create RootDirs for each subdirectory. RootDirs are stored in a dictionary, just like the histograms.""" 
 
-        file = self.tDir_
+        file = self.tDir
         # print 'file : ', file.GetName()
     
-        self.loadHistograms( self.tDir_ )
+        self._LoadHistograms( self.tDir )
         # pattern = re.compile(regexp)
     
         listOfKeys = file.GetListOfKeys()
@@ -50,37 +50,37 @@ class RootDir:
             keyname = key.GetName()
             subdir = file.GetDirectory( keyname )
             if subdir != None:
-                rootDir = RootDir( subdir, self.style_ )
-                rootDir.walk()
-                self.subDirs_[subdir.GetName()] = rootDir
+                rootDir = RootDir( subdir, self.style )
+                rootDir._Walk()
+                self.subDirs[subdir.GetName()] = rootDir
 
     def DrawAll( self, xsize=800, ysize=800):
-        """Draw all histograms in the RootDir canvas. Note that histograms in a given sub-directory can be drawn by doing: this.subDirs_['theSubDir'].Draw()"""
+        """Draw all histograms in the RootDir canvas. Note that histograms in a given sub-directory can be drawn by doing: this.subDirs['theSubDir'].Draw()"""
         
-        nPlots = len(self.histograms_)
+        nPlots = len(self.histograms)
 
         if nPlots:
-            self.canvas_ = TCanvas(self.tDir_.GetName(),self.tDir_.GetName(), xsize, ysize)
+            self.canvas = TCanvas(self.tDir.GetName(),self.tDir.GetName(), xsize, ysize)
 
             ny = int(math.sqrt (nPlots) )
             nx = int(math.ceil( nPlots / float(ny) ))
 
             print nPlots, ny, nx
         
-            self.canvas_.Divide(nx, ny)
+            self.canvas.Divide(nx, ny)
             i = 1
-            for key in self.histograms_.iterkeys():
-                self.canvas_.cd(i)
-                self.histograms_[key].Draw()
+            for key in self.histograms.iterkeys():
+                self.canvas.cd(i)
+                self.histograms[key].Draw()
                 i = i+1
 
-            self.canvas_.Modified()
-            self.canvas_.Update()
+            self.canvas.Modified()
+            self.canvas.Update()
         
-        for key in self.subDirs_.iterkeys():
-            self.subDirs_[key].DrawAll()
+        for key in self.subDirs.iterkeys():
+            self.subDirs[key].DrawAll()
 
-    def h( self, histName ):
+    def Hist( self, histName ):
         """Returns an histogram in this RootDir or in its subdirectories. 
         as histName, give the absolute path, which can be obtained from the
         Print function
@@ -88,7 +88,7 @@ class RootDir:
         pathList = histName.split('/')
         if len(pathList) == 1:
             histKey = pathList[0]
-            hist = self.histograms_[ histKey ]
+            hist = self.histograms[ histKey ]
             if hist!=None:
                 return hist
             else:
@@ -96,29 +96,32 @@ class RootDir:
         else:
             subDirKey = pathList.pop(0)
             print subDirKey
-            subDir = self.subDirs_[subDirKey]
+            subDir = self.subDirs[subDirKey]
             if subDir!=None:
                 return subDir.h( string.join(pathList, '/') )
             else:
                 return None
 
+    def SubDir(self, dirName):
+        return self.subDirs[dirName]
+    
     def Draw( self, histName):
         """Draws an histogram. Use the absolute path."""
         hist = self.h(histName).Draw()
 
     def Print( self, path=None):
         """Print the contents of this RootDir, including its sub-directories."""
-        for key in self.histograms_.iterkeys():
+        for key in self.histograms.iterkeys():
             if path!=None:
                 print path+'/'+key
             
-        for key in self.subDirs_.iterkeys():
+        for key in self.subDirs.iterkeys():
             print key
 
             subPath = key
             if path!=None:
                 subPath = path + '/' + key
-            self.subDirs_[key].Print( subPath )
+            self.subDirs[key].Print( subPath )
         
         
 
