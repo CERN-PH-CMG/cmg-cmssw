@@ -1,7 +1,7 @@
 #!/bin/env python
 
 
-from CMGTools.H2TauTau.macros.h2TauTauInit import *
+from CMGTools.H2TauTau.macros.H2TauTauInit import *
 from CMGTools.H2TauTau.macros.H2TauTauHistograms import *
 
 from optparse import OptionParser
@@ -37,7 +37,7 @@ print 'WARNING: the cut is not finalized yet.... '
 pattern = args[0]
 name = args[1]
 
-(events,lumi) = h2TauTauInit( pattern )
+(events,lumi) = H2TauTauInit( pattern )
 
 histos = H2TauTauHistograms( name )
 histos.fillHistos( events, options.cut )
