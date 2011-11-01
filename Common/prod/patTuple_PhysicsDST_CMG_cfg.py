@@ -71,7 +71,7 @@ process.source.fileNames=([
 		'/store/data/Run2011B/PhysicsDST/RAW/v1/000/179/959/CC1F559B-1800-E111-97EC-003048F01E88.root',
 ])
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet( 
     input = cms.untracked.int32(-1)
@@ -161,8 +161,28 @@ process.patJetsAK5CaloCor.embedPFCandidates = cms.bool(False)
 if hasattr(process,'kt6PFJets'):
     process.patDefaultSequence.remove(process.kt6PFJets)
 
+process.load('CMGTools.Common.analysis_cff')
+process.load('CMGTools.Common.factories.cmgFatJet_cfi')
+process.load('CMGTools.Common.factories.cmgDiFatJet_cfi')
+
+process.cmgPFBaseJet.cfg.inputCollection = 'selectedPatJets'
+
+process.cmgCaloBaseJet.cfg.inputCollection = 'selectedPatJetsAK5Calo'
+
+process.cmgFatJet.cfg.inputCollection = 'cmgPFBaseJetSel'
+
 process.p = cms.Path(
-    process.patDefaultSequence
+    process.patDefaultSequence +
+    # PFJet factory wants to access PFCandidates.
+    # implement a mode to work with JetSpecific
+    process.cmgPFBaseJet +
+    process.cmgPFBaseJetSel +
+    process.cmgCaloBaseJet +
+    process.cmgCaloBaseJetSel +
+    # doing the fat jets only from PF jets for now. 
+    process.cmgFatJet +
+    process.cmgDiFatJet
+    
 )
 
 process.out.outputCommands = cms.untracked.vstring('keep *',
@@ -178,7 +198,10 @@ process.out.outputCommands = cms.untracked.vstring('keep *',
 						   'drop patJets_patJets_*_*',
 						   'drop patJets_patJetsAK5Calo_*_*',
 						   'drop patJets_patJetsAK5CaloCor_*_*',
-						   ) 
+						   )
+
+# from CMGTools.Common.eventContent.everything_cff import everything 
+# process.out.outputCommands.extend( everything )
 
 from CMGTools.Common.eventContent.runInfoAccounting_cff import runInfoAccounting
 #process.out.outputCommands += runInfoAccounting
