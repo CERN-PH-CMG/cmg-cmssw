@@ -19,6 +19,8 @@ runProcess = cms.PSet(
     phiResolFileName = cms.string("${CMSSW_RELEASE_BASE}/src/CondFormats/JetMETObjects/data/Spring10_PhiResolution_AK5PF.txt"),
     etaResolFileName = cms.string("${CMSSW_RELEASE_BASE}/src/CondFormats/JetMETObjects/data/Spring10_EtaResolution_AK5PF.txt"),
     jesUncFileName = cms.string("${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/GR_R_42_V20_AK5PFchs_Uncertainty.txt"),
+    mcpileup = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/Summer11Truth.root'),
+    datapileup = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/PileupTruth2011A.root'),	
     useMVA = cms.bool(@useMVA),	
     tmvaInput = simpleDiscriminator
     )
