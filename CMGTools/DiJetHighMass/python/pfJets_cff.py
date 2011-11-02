@@ -13,7 +13,7 @@ from CMGTools.DiJetHighMass.histograms.cmgDiJetHistograms_cfi import *
 from CMGTools.DiJetHighMass.histograms.diJetLorentzVector_cfi import *
 
 from CMGTools.Common.selections.kinematics_cfi import kinematics
-from CMGTools.Common.selections.jetid_cfi import looseJetId
+from CMGTools.Common.selections.jetId_cfi import looseJetId
 
 patJet = 'selectedPatJets'
 pfJet = 'cmgPFJet'
