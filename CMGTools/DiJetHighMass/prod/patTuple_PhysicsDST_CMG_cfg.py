@@ -76,7 +76,7 @@ from CMGTools.Common.Tools.applyJSON_cff import *
 json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/DCSOnly/json_DCSONLY.txt'
 applyJSON(process, json )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet( 
     input = cms.untracked.int32(-1)
@@ -92,6 +92,27 @@ print process.GlobalTag.globaltag
 
 process.out.fileName = cms.untracked.string('patTuple_PhysicsDST.root' )
 
+# trigger filters
+process.hltCaloPath = cms.EDFilter('HLTHighLevel',
+    TriggerResultsTag  = cms.InputTag('TriggerResults','','HLT'),
+    HLTPaths           = cms.vstring('DST_FatJetMass300_DR1p1_Deta2p0_v*',
+                                     ),
+    eventSetupPathsKey = cms.string(''),
+    andOr              = cms.bool(True), #----- True = OR, False = AND between the HLTPaths
+    throw              = cms.bool(False)
+)
+
+process.hltPFPath = cms.EDFilter('HLTHighLevel',
+    TriggerResultsTag  = cms.InputTag('TriggerResults','','HLT'),
+    HLTPaths           = cms.vstring('DST_FatJetMass400_DR1p1_Deta2p0_RunPF_v*',
+                                     'DST_HT350_RunPF_v*',
+                                     ),
+    eventSetupPathsKey = cms.string(''),
+    andOr              = cms.bool(True), #----- True = OR, False = AND between the HLTPaths
+    throw              = cms.bool(False)
+)
+
+# PAT sequence
 from PhysicsTools.PatAlgos.tools.coreTools import *
 removeMCMatching( process ) 
 removeCleaning( process ) 
@@ -113,7 +134,7 @@ from PhysicsTools.PatAlgos.tools.jetTools import *
 switchJetCollection( process, cms.InputTag('hltAntiKT5PFJets'),
                      doJTA=False,
 		     doBTagging=False,
-		     jetCorrLabel=('AK5PF',[]), #'L1FastJet','L2Relative','L3Absolute','L2L3Residual'
+		     jetCorrLabel=None, #('AK5PF',['L1FastJet','L2Relative','L3Absolute','L2L3Residual']),
 		     doType1MET=False,
 		     genJetCollection=None,
 		     doJetID=False)
@@ -121,17 +142,17 @@ process.patJets.addDiscriminators = cms.bool(False)
 process.patJets.embedCaloTowers = cms.bool(False)
 process.patJets.embedGenJetMatch = cms.bool(False)
 process.patJets.embedPFCandidates = cms.bool(False)
-process.patJetCorrFactors.primaryVertices = cms.InputTag("hltPixelVertices")
-process.patJetCorrFactors.rho = cms.InputTag("hltAntiKT5PFJets","rho")
-process.patJetCorrFactors.useNPV = cms.bool(False)
-process.patJetCorrFactors.useRho = cms.bool(True)
+#process.patJetCorrFactors.primaryVertices = cms.InputTag("hltPixelVertices")
+#process.patJetCorrFactors.rho = cms.InputTag("hltAntiKT5PFJets","rho")
+#process.patJetCorrFactors.useNPV = cms.bool(False)
+#process.patJetCorrFactors.useRho = cms.bool(True)
 
 addJetCollection( process, cms.InputTag('hltAntiKT5CaloJetsSelected'),
                   algoLabel='AK5',
                   typeLabel='Calo',
                   doJTA=False,
 		  doBTagging=False,
-		  jetCorrLabel=('AK5Calo',[]), #'L1Offset','L2Relative','L3Absolute','L2L3Residual'
+		  jetCorrLabel=None, #('AK5Calo',['L1Offset','L2Relative','L3Absolute','L2L3Residual']),
 		  doType1MET=False,
 		  doL1Cleaning=False,
 		  doL1Counters=False,
@@ -141,10 +162,10 @@ process.patJetsAK5Calo.addDiscriminators = cms.bool(False)
 process.patJetsAK5Calo.embedCaloTowers = cms.bool(False)
 process.patJetsAK5Calo.embedGenJetMatch = cms.bool(False)
 process.patJetsAK5Calo.embedPFCandidates = cms.bool(False)
-process.patJetCorrFactorsAK5Calo.primaryVertices = cms.InputTag("hltPixelVertices")
-process.patJetCorrFactorsAK5Calo.rho = cms.InputTag("hltAntiKT5PFJets","rho")
-process.patJetCorrFactorsAK5Calo.useNPV = cms.bool(True)
-process.patJetCorrFactorsAK5Calo.useRho = cms.bool(False)
+#process.patJetCorrFactorsAK5Calo.primaryVertices = cms.InputTag("hltPixelVertices")
+#process.patJetCorrFactorsAK5Calo.rho = cms.InputTag("hltAntiKT5PFJets","rho")
+#process.patJetCorrFactorsAK5Calo.useNPV = cms.bool(True)
+#process.patJetCorrFactorsAK5Calo.useRho = cms.bool(False)
 
 addJetCollection( process , cms.InputTag('hltCaloJetCorrectedSelected'),
                   algoLabel='AK5',
@@ -163,52 +184,15 @@ process.patJetsAK5CaloCor.embedCaloTowers = cms.bool(False)
 process.patJetsAK5CaloCor.embedGenJetMatch = cms.bool(False)
 process.patJetsAK5CaloCor.embedPFCandidates = cms.bool(False)
 
-if hasattr(process,'kt6PFJets'):
-    process.patDefaultSequence.remove(process.kt6PFJets)
+process.caloPatSequence = cms.Sequence(
+    process.patJetsAK5CaloCor +
+    process.patJetsAK5Calo
+)
 
-process.load('CMGTools.Common.analysis_cff')
-process.load('CMGTools.Common.factories.cmgFatJet_cfi')
-process.load('CMGTools.Common.factories.cmgDiFatJet_cfi')
-
-process.cmgPFJet.cfg.inputCollection = 'selectedPatJets'
-process.cmgPFJet.cfg.useConstituents = False
-
-process.cmgCaloBaseJet.cfg.inputCollection = 'selectedPatJetsAK5Calo'
-
-process.cmgFatJet.cfg.inputCollection = 'cmgPFJetSel'
-
-#Colin : patMuons give segfault
-process.patSequence = cms.Sequence(
-    # patMuons+
-    process.patJetCorrFactors+
-    process.patJetCorrFactorsAK5Calo+
-    process.patJets+
-    process.patJetsAK5CaloCor+
-    process.patJetsAK5Calo+
-    # patCandidateSummary+
-    # selectedPatMuons+
-    process.selectedPatJets+
-    process.selectedPatJetsAK5CaloCor+
-    process.selectedPatJetsAK5Calo 
-    # selectedPatCandidateSummary+
-    #countPatMuons+
-    #countPatLeptons+
-    #countPatJets
-    )
-
-process.p = cms.Path(
-    # process.patDefaultSequence +
-    process.patSequence +
-    # PFJet factory wants to access PFCandidates.
-    # implement a mode to work with JetSpecific
-    process.cmgPFJet +
-    process.cmgPFJetSel +
-    process.cmgCaloBaseJet +
-    process.cmgCaloBaseJetSel +
-    # doing the fat jets only from PF jets for now. 
-    process.cmgFatJet +
-    process.cmgDiFatJet
-    
+process.pfPatSequence = cms.Sequence(
+    process.caloPatSequence +
+    process.patMuons +
+    process.patJets
 )
 
 process.out.outputCommands = cms.untracked.vstring('keep *',
@@ -219,12 +203,50 @@ process.out.outputCommands = cms.untracked.vstring('keep *',
 						   'drop recoGenJets_*_*_*',
 						   'drop CaloTowers_*_*_*',
 						   'drop recoBaseTagInfoOwned_*_*_*',
-						   'drop patJetCorrFactorsedmValueMap_*_*_*',
-						   'drop patMuons_patMuons_*_*',
-						   'drop patJets_patJets_*_*',
-						   'drop patJets_patJetsAK5Calo_*_*',
-						   'drop patJets_patJetsAK5CaloCor_*_*',
 						   )
+
+# CMG analysis
+process.load('CMGTools.Common.analysis_cff')
+process.load('CMGTools.Common.factories.cmgFatJet_cfi')
+process.load('CMGTools.Common.factories.cmgDiFatJet_cfi')
+
+process.cmgPFJet.cfg.inputCollection = 'patJets'
+process.cmgPFJet.cfg.useConstituents = False
+process.cmgPFJet.cfg.baseJetFactory.fillJec = False
+process.cmgCaloBaseJet.cfg.inputCollection = 'patJetsAK5Calo'
+process.cmgCaloBaseJet.cfg.fillJec = False
+process.cmgFatJet.cfg.inputCollection = 'cmgPFJetSel'
+
+process.caloAnalysisSequence = cms.Sequence(
+    process.cmgCaloBaseJet +
+    process.cmgCaloBaseJetSel
+)
+
+process.pfAnalysisSequence = cms.Sequence(
+    # PFJet factory wants to access PFCandidates.
+    # implement a mode to work with JetSpecific
+    process.cmgPFJet +
+    process.cmgPFJetSel +
+    # doing the fat jets only from PF jets for now. 
+    process.cmgFatJet+
+    process.cmgDiFatJet
+)
+
+process.caloAnalysis = cms.Path(
+    process.hltCaloPath *
+    process.caloPatSequence *
+    process.caloAnalysisSequence
+)
+
+process.pfAnalysis = cms.Path(
+    process.hltPFPath *
+    process.pfPatSequence *
+    process.pfAnalysisSequence
+)
+
+process.out.SelectEvents = cms.untracked.PSet(
+    SelectEvents = cms.vstring('caloAnalysis','pfAnalysis')
+)
 
 # from CMGTools.Common.eventContent.everything_cff import everything 
 # process.out.outputCommands.extend( everything )
