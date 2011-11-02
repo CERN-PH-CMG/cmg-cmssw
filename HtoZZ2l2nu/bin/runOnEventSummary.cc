@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 
@@ -16,6 +15,8 @@
 #include "CMGTools/HtoZZ2l2nu/interface/TMVAUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
 #include "CMGTools/HtoZZ2l2nu/interface/DuplicatesChecker.h"
+
+#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
@@ -132,6 +133,9 @@ int main(int argc, char* argv[])
   //ReducedMETFitter rmetFitter(runProcess);
   TransverseMassComputer mtComp;
   EventCategory eventClassifComp;
+
+  reweight::PoissonMeanShifter PShiftUp(+0.6);
+  reweight::PoissonMeanShifter PShiftDown(-0.6);
 
   // load framework libraries
   gSystem->Load( "libFWCoreFWLite" );
@@ -262,6 +266,8 @@ int main(int argc, char* argv[])
 
   //vertex
   controlHistos.addHistogram( new TH1F("nvtx",";Vertices;Events",25,0,25) );
+  controlHistos.addHistogram( new TH1F("nvtxPlus",";Vertices;Events",25,0,25) );
+  controlHistos.addHistogram( new TH1F("nvtxMinus",";Vertices;Events",25,0,25) );
 
   //dilepton control 
   controlHistos.addHistogram( getHistogramForVariable("zeta") );
@@ -1185,6 +1191,11 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("eventflow",ctf,1,weight);
 	      controlHistos.fillHisto("nvtx",ctf,ev.nvtx,weight);
 	      
+	      double TotalWeight_plus = PShiftUp.ShiftWeight( ev.ngenITpu );
+	      double TotalWeight_minus = PShiftDown.ShiftWeight( ev.ngenITpu );
+	      controlHistos.fillHisto("nvtxPlus",ctf,ev.nvtx,weight*TotalWeight_plus);
+	      controlHistos.fillHisto("nvtxMinus",ctf,ev.nvtx,weight*TotalWeight_minus);
+
 	      //dilepton control plots
 	      controlHistos.fillHisto("zmass",ctf,zmass,weight);
 	      for(std::vector<int>::iterator regIt = zmassRegionBins.begin(); regIt<zmassRegionBins.end(); regIt++) controlHistos.fillHisto("zmassregionCtr",ctf,*regIt,weight);
@@ -1306,11 +1317,11 @@ int main(int argc, char* argv[])
 		  controlHistos.fillHisto("otherVertexSumEt",     ctf,ev.otherVertexSumEt,weight);
 		  if(isMC)
 		    {
-		      double sigma        = sqrt(double(ev.ngenITpu));
+		      double sigma        = sqrt(double(2*ev.ngenITpu));
 		      double minCentralPu = -sigma;
 		      double maxCentralPu = sigma;
 		      double maxHighPu    = 2*sigma;
-		      double puDiff       = double(ev.ngenOOTpu-ev.ngenITpu);
+		      double puDiff       = double(ev.ngenOOTpu-2*ev.ngenITpu);
 		      TString ootCond("");
 		      if(puDiff>=maxHighPu)         ootCond="VeryHighOOTpu";
 		      else if(puDiff>=maxCentralPu) ootCond="HighOOTpu";

@@ -354,7 +354,7 @@ void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doDiff,floa
       if( ((TClass*)dataToMCH->IsA())->InheritsFrom("TH2") ) opt="colz";
       if(canvasFilled) opt +="same";
       dataToMCH->Draw(opt);
-      dataToMCH->GetYaxis()->SetRangeUser(0,5.3);
+      dataToMCH->GetYaxis()->SetRangeUser(0,2.3);
       dataToMCH->GetXaxis()->SetTitleOffset(0.85);
       dataToMCH->GetXaxis()->SetLabelSize(0.04 * yscale);
       dataToMCH->GetXaxis()->SetTitleSize(0.05 * yscale);

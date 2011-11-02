@@ -23,7 +23,7 @@
 #include "DataFormats/GsfTrackReco/interface/GsfTrackFwd.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
-
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
 #include "FWCore/Utilities/interface/Exception.h"
@@ -104,6 +104,7 @@ ClusteredPFMetProducer::ClusteredPFMetProducer(const edm::ParameterSet& iConfig)
   produces<reco::PFMET>("globalPfMet");
   produces<reco::PFMET>("centralPfMet");
   produces<reco::PFMET>("cleanPfMet");
+  produces<std::vector<int> >("pvAssocCandidates");
   produces<std::vector<double> >("globalPfMetSums"); 
   
   edm::Service<TFileService> fs;
@@ -812,6 +813,18 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   std::auto_ptr<reco::PFMET> cleanPfMetPtr(new reco::PFMET);
   std::auto_ptr<reco::PFMET> trkPfMetPtr(new reco::PFMET);
 
+
+  //check which candidates got associated
+  std::vector<int> pvAssocCandidates;
+  for (size_t iPFCand=0; iPFCand<nPFCands; iPFCand++)
+    {
+      if(vertexAssociationMasks_[iPFCand]!=0) continue;
+      pvAssocCandidates.push_back( iPFCand );
+    }
+  std::auto_ptr< std::vector<int> > pvAssocCandidatesPtr( new std::vector<int> );
+  pvAssocCandidatesPtr->resize(pvAssocCandidates.size());
+  for(size_t iPFCand=0; iPFCand<pvAssocCandidates.size(); iPFCand++) (*pvAssocCandidatesPtr)[iPFCand] = pvAssocCandidates[iPFCand];
+
   CommonMETData pfOutput;
   PFSpecificAlgo pf;
   edm::Handle<edm::View<reco::Candidate> > pfRecoCandsH;
@@ -923,7 +936,8 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
       (*globalPfMetSumsPtr)[10] += vtxChSumEt[ivtx]; 
       (*globalPfMetSumsPtr)[11] += vtxNeutralSumEt[ivtx]; 
     }
-
+  
+  iEvent.put(pvAssocCandidatesPtr,"pvAssocCandidates");
   iEvent.put(assocPfMetPtr,"assocPfMet");
   iEvent.put(assocPfMetCorrectedPtr,"assocPfMetCorrected");
   iEvent.put(assocPfMetWithFwdPtr,"assocPfMetWithFwd");

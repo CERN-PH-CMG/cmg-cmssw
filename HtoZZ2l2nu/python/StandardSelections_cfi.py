@@ -51,8 +51,9 @@ BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlow"),
                                minValidTrackerHits = cms.int32(11),
                                minValidMuonHits=cms.int32(1),
                                maxDistToBeamSpot=cms.double(0.02),
-                               id = cms.string(""),#TMLastStationAngTight"),
-                               maxRelIso = cms.double(0.15)
+                               id = cms.string("TMLastStationAngTight"),
+                               maxRelIso = cms.double(0.15),
+                               usePFIso = cms.bool(False)
                                )
 
 # base values for loose muon selection ----------------------------------------------
@@ -65,14 +66,18 @@ BaseLooseMuonsSelection = BaseMuonsSelection.clone( minPt = cms.double(5),
 
 # base values for photon selection ----------------------------------------------
 BasePhotonsSelection = cms.PSet( source = cms.InputTag("selectedPatPhotons"),
+                                 conversionSource = cms.InputTag("allConversions"),
+                                 trackSource = cms.InputTag("generalTracks"),
                                  ebrechits = cms.InputTag("reducedEcalRecHitsEB"),
                                  eerechits = cms.InputTag("reducedEcalRecHitsEE"),
+                                 id = cms.string(""),
                                  minEt = cms.double(0), 
                                  maxEta = cms.double(2.5),
                                  maxSihihEB = cms.double(0.013),
                                  maxSihihEE = cms.double(0.03),
                                  maxHoE = cms.double(0.05),
-                                 minSipipEB = cms.double(0.0)
+                                 minSipipEB = cms.double(0.0),
+                                 phoCorrection=cms.string('/afs/cern.ch/user/b/bendavid/cmspublic/regweights/gbrph.root')
                                  )
 
 # base values for electron selection ----------------------------------------------
@@ -84,9 +89,10 @@ BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectronsPF
                                    applyConversionVeto = cms.bool(True),
                                    maxDistToBeamSpot=cms.double(0.04),
                                    maxTrackLostHits = cms.int32(1),
-                                   id = cms.string("eidVBTF85"),
+                                   id = cms.string("eidVBTF80"),
                                    maxRelIso = cms.double(0.15),
-                                   minDeltaRtoMuons = cms.double(0.1)
+                                   minDeltaRtoMuons = cms.double(0.1),
+                                   usePFIso = cms.bool(False)
                                    )
 
 # base values for electron selection ----------------------------------------------
@@ -116,7 +122,7 @@ BaseDileptonSelection = cms.PSet( minDileptonMass = cms.double(0),
 
 # base values for met selection -----------------------------------------------------
 BaseMetSelection = cms.PSet( source = cms.InputTag("patMETsPFlow"),
-                             trksource = cms.InputTag("hzzPFMetProducer:hzzTkMet"),
+                             trksource = cms.InputTag("trackMetProducer"),
                              hzzmetSources = cms.VInputTag("ClusteredPFMetProducer:assocPfMet",
                                                            "ClusteredPFMetProducer:globalPfMet",
                                                            "ClusteredPFMetProducer:centralPfMet",
@@ -129,6 +135,8 @@ BaseMetSelection = cms.PSet( source = cms.InputTag("patMETsPFlow"),
                                                            "ClusteredPFMetProducerPt10:assocPfMetWithFwd",
                                                            "ClusteredPFMetProducer:assocPfMetCorrected",
                                                            "ClusteredPFMetProducer:assocPfMetWithFwd2"),
+                             pfCands = cms.InputTag("particleFlow"),
+                             pvAssocCandidatesSource = cms.InputTag("ClusteredPFMetProducer:pvAssocCandidates"),
                              sumEtSources = cms.InputTag("ClusteredPFMetProducer:globalPfMetSums")
                              )
 

@@ -1,38 +1,7 @@
 {
     "proc":[
 	{
-	 "tag":"Z/#gamma^{*}+jets#rightarrow #tau#tau",
-         "isdata":false,
-         "color":"835",
-	 "lcolor":1,
-	 "lwidth":1,
-         "mctruthmode":2,
-         "data":[
-	      {
-               "dtag":"DYJetsToTauTau",
-	       "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
-	       "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/DYToLL/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
-               "xsec":1016
-              }
-          ]
-	},
-	{
-	 "tag":"Z/#gamma^{*}+jets#rightarrow ll",
-         "isdata":false,
-         "color":"831",
-	 "lcolor":1,
-         "mctruthmode":1,
-         "data":[
-	      {
-               "dtag":"DYJetsToLL",
-	       "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
-	       "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/DYToLL/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
-               "xsec":2032
-              }
-          ]
-	},
-	{
-	"tag":"#gamma+jets (simulation)",
+	"tag":"#gamma+jets",
         "isdata":false,
 	"spimpose":true,
 	"color":"1",
@@ -80,6 +49,20 @@
 		"xsec":0.132
 	     }
 	  ]
-    	}
+    	},
+        {
+	  "tag":"Z/#gamma^{*}+jets",
+	  "isdata":false,
+          "color":"831",
+	  "lcolor":1,
+          "data":[
+	     	 {
+               		"dtag":"DYJetsToLL",
+	       		"dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
+	       		"patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/DYToLL/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
+              		"xsec":3048
+	          }
+        	 ]
+	}
     ]	
 }

@@ -3,6 +3,7 @@
 
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
+#include "CMGTools/HtoZZ2l2nu/interface/GammaEventHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ReducedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/TransverseMassComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
@@ -64,17 +65,16 @@ int main(int argc, char* argv[])
   TString url=runProcess.getParameter<std::string>("input");
   TString outdir=runProcess.getParameter<std::string>("outdir");
   bool isMC = runProcess.getParameter<bool>("isMC");
-  int mctruthmode = runProcess.getParameter<int>("mctruthmode");
   
   int evStart=runProcess.getParameter<int>("evStart");
   int evEnd=runProcess.getParameter<int>("evEnd");
   TString dirname = runProcess.getParameter<std::string>("dirName");
 
-  TString gammaPtWeightsFile =  runProcess.getParameter<std::string>("weightsFile"); gSystem->ExpandPathName(gammaPtWeightsFile);
+  GammaEventHandler gammaEvHandler(runProcess);
+
   
   //control Histos
   SelectionMonitor controlHistos;
-  TH1F *zmassH=getZMassHisto();
 
   std::map<TString,TString> metTypes;
   metTypes["met"                 ]="E_{T}^{miss}";
@@ -90,22 +90,17 @@ int main(int argc, char* argv[])
   metTypes["red3Met"             ]="red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
   std::map<TString,LorentzVector> metTypeValues;
 
-  float minJetPt(15);
-  bool doInclusiveEventCategories(true);
-  if(doInclusiveEventCategories) minJetPt=30;
-  Int_t photoncats[]={0,20,30,50,75,125};
-  //Int_t photoncats[]={0,20,30,50,75,90,125,135,200};
-  const size_t nPhotonCats=sizeof(photoncats)/sizeof(Int_t);
   std::vector<TString> photonSubcats;
   std::vector<TString> dilCats;
   dilCats.push_back("ee");
   dilCats.push_back("mumu");
-  for(size_t icat=0; icat<nPhotonCats; icat++)
+  for(size_t icat=0; icat<gammaEvHandler.nCategories(); icat++)
     {
       for(size_t idilcat=0; idilcat<dilCats.size(); idilcat++)
 	{
-	  TString subcat("photon"); subcat+=photoncats[icat]; 
-	  if(photoncats[icat]==0) subcat="";
+	  int triggerThr=gammaEvHandler.category(icat);
+	  TString subcat("photon"); subcat+=triggerThr;
+	  if(triggerThr==0) subcat="";
 	  subcat+=dilCats[idilcat];
 	  photonSubcats.push_back(subcat);
 	  controlHistos.addHistogram( new TH1F (subcat+"nvtx", ";Vertices;Events", 30,0,30) );
@@ -134,36 +129,6 @@ int main(int argc, char* argv[])
 	  controlHistos.addHistogram( new TH1F (subcat+"evtctr", ";Mass;Events", 8,0,8) );
 	}
     }
-
-  std::map<TString,TH1 *> wgtsH;
-  bool weight2D(false);
-  TFile *fwgt=TFile::Open(gammaPtWeightsFile);
-  if(fwgt)
-    {
-      TString wgtName = gammaPtWeightsFile;
-      wgtName=gSystem->BaseName(wgtName.ReplaceAll(".root",""));
-      wgtName=((TObjString *)(wgtName.Tokenize("_")->At(1)))->GetString();
-      for(size_t icat=0; icat<sizeof(categories)/sizeof(TString); icat++)
-	{
-	  for(size_t isubcat=0; isubcat<photonSubcats.size(); isubcat++)
-	    {
-	      TString key=categories[icat]+photonSubcats[isubcat];
-	      TH1 *h=(TH1 *)fwgt->Get(key+wgtName);
-	      if(h==0) continue;
-	      wgtsH[key] = h;
-	      wgtsH[key]->SetDirectory(0);
-	      weight2D = ((TClass*)wgtsH[key]->IsA())->InheritsFrom("TH2");
-	      cout << "Adding weight for category: " << key << endl;
-	    }
-	}
-      fwgt->Close();
-      if(wgtsH.size()) cout << "Gamma Pt will be reweighted using " 
-			    << (weight2D ? "2d" : "1d") 
-			    << " distribution found @ " 
-			    << gammaPtWeightsFile << endl;
-    }
-
-
 
   //replicate plots for other categories
   for(size_t icat=0; icat<sizeof(categories)/sizeof(TString); icat++)  controlHistos.initMonitorForStep(categories[icat]);
@@ -207,71 +172,38 @@ int main(int argc, char* argv[])
     {
       if(iev%1000==0) printf("\r [ %d/100 ] ",int(100*float(iev-evStart)/float(evEnd)));
       evSummaryHandler.getEntry(iev);
+
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
-
-      bool isGammaEvent(ev.cat>3);
-      int eventCategory = eventClassifComp.Get(phys,0,isGammaEvent);
+      int eventCategory = eventClassifComp.Get(phys);
       TString subcat    = eventClassifComp.GetLabel(eventCategory);
-      
+      bool isGammaEvent = gammaEvHandler.isGood(phys);
+      if(!isGammaEvent && ev.cat != dilepton::EE && ev.cat !=dilepton::MUMU) continue;
+
       float weight=ev.weight;
       
       //event categories
       std::vector<TString> dilCats;
       LorentzVector gamma(0,0,0,0);
       int triggerThr(0);
-      float r9(0);
+      float r9(0),ensf(1.0);
       if(isGammaEvent)
 	{
-	  //cross check: only 1 prompt gamma allowed
-	  if(ev.gn!=1) continue;
-	  gamma=phys.gammas[0];
-	  if(gamma.pt()<1) continue;
-	  if(fabs(gamma.eta())>1.4442 && fabs(gamma.eta())<1.566) continue;
-
-	  //get the trigger threshold
-	  triggerThr=(ev.cat-22)/1000;
-	  if(triggerThr==0) continue;
-	  trigList.insert(triggerThr);
-
-	  //check if pt is within the trigger threshold range 
-	  bool rejectEvent(false);
-	  for(size_t icat=0; icat<nPhotonCats-1; icat++)
-	    {
-	      if(photoncats[icat]!=triggerThr) continue;
-	      if(gamma.pt()<photoncats[icat] || gamma.pt()>=photoncats[icat+1]) rejectEvent=true;
-	    }
-	  if(rejectEvent) continue;
-
-	  r9=phys.gammas[0].r9;
-	  gamma *= ev.g_ecorr[0];
-
-	  //generate random mass from Z line shape
-	  float mass(0);
-	  while(fabs(mass-91)>15) mass = zmassH->GetRandom();
-	  gamma=LorentzVector(gamma.px(),gamma.py(),gamma.pz(),sqrt(pow(mass,2)+pow(gamma.energy(),2)));
-	  
 	  dilCats.push_back("ee");
 	  dilCats.push_back("mumu");
+	  dilCats.push_back("ll");
+	  r9   = phys.gammas[0].r9;
+	  ensf = ev.g_ecorr[0];
+	  gamma=gammaEvHandler.massiveGamma("ll");
 	}
       else
 	{
 	  gamma=phys.leptons[0]+phys.leptons[1];
 	  if(fabs(gamma.mass()-91)>15) continue;
-
-	  if(ev.cat != dilepton::MUMU && ev.cat!=dilepton::EE) continue;
 	  if(ev.cat==dilepton::MUMU) dilCats.push_back("mumu");
 	  if(ev.cat==dilepton::EE)   dilCats.push_back("ee");
-
-	  //find the trigger - threshold category (assume 100% efficiency...) 
-	  if(gamma.pt()>=photoncats[nPhotonCats-1]) triggerThr=photoncats[nPhotonCats-1];
-	  else
-	    {
-	      size_t icat=0;
-	      for(; icat<nPhotonCats-1; icat++)	
-		if(gamma.pt()>=photoncats[icat] && gamma.pt()<photoncats[icat+1]) break;
-	      triggerThr=photoncats[icat];
-	    }
+	  
+	  triggerThr=gammaEvHandler.findTriggerCategoryFor( gamma.pt() );
 	}
       
       //minimum threshold
@@ -296,68 +228,13 @@ int main(int argc, char* argv[])
 	  if(dr<0.1) continue;
 	  //if(mjv<91) continue;
 
-	  njets   += (phys.jets[ijet].pt()>minJetPt && fabs(phys.jets[ijet].eta())<2.5);
+	  njets   += (phys.jets[ijet].pt()>30 && fabs(phys.jets[ijet].eta())<2.5);
 	  if(phys.jets[ijet].pt()>30) nbjets += (passJBPL || passSSVHEM); 
 	  jetsp4.push_back( phys.jets[ijet] );
 	  ht += phys.jets[ijet].pt();
 	  if(mjv<minmjv) minmjv=mjv;
 	}
       if(ev.ln>0 || nbjets>0) continue;
-
-      //revert to inclusive event categories
-      if(doInclusiveEventCategories && eventCategory != EventCategory::VBF)
-	{
-	  if(njets==0)
-	    {
-	      eventCategory = EventCategory::EQ0JETS;
-	      subcat    = "eq0jets";
-	    }
-	  else if(njets==1)
-	    {
-	      eventCategory = EventCategory::EQ1JETS;
-	      subcat    = "eq1jets";
-	    }
-	  else if(njets>=2) 
-	    {
-	      eventCategory = EventCategory::GEQ2JETS;
-	      subcat    = "geq2jets";
-	    }
-	}
-
-
-      //reweight to reproduce pt weight
-      std::map<TString, float> qtWeights;
-      if(isGammaEvent)
- 	{
-
-	  for(size_t idcat=0; idcat<dilCats.size(); idcat++)
-	    {
-	      float qtweight(1.0);
-	      qtWeights[dilCats[idcat]]=qtweight;
-
-	      TString wgtKey=subcat+phoCat+dilCats[idcat];
-	      if( wgtsH.find(wgtKey)== wgtsH.end()) continue;
-
-	      //take the last bin weight if pT>max available
-	      TH1 *theH = wgtsH[wgtKey];
-	      for(int ibin=1; ibin<=theH->GetXaxis()->GetNbins(); ibin++)
-		{
-		  if(gamma.pt()<theH->GetXaxis()->GetBinLowEdge(ibin) ) break;
-		  if(weight2D)
-		    {
-		      if(gammaPtWeightsFile.Contains("eta"))        qtweight = theH->GetBinContent(ibin,theH->GetYaxis()->FindBin(fabs(gamma.eta())));
-		      else if(gammaPtWeightsFile.Contains("njets")) qtweight = theH->GetBinContent(ibin,theH->GetYaxis()->FindBin(njets));
-		      else                                          qtweight = theH->GetBinContent(ibin,theH->GetYaxis()->FindBin(ht));
-		    }
-		  else
-		    {
-		      qtweight = theH->GetBinContent(ibin);
-		    }
-		}
-	      if(qtweight>100) continue;
-	      qtWeights[dilCats[idcat]]=qtweight;
-	    }
-	}
 
       //met
       LorentzVector metP4=phys.met[0];
@@ -379,90 +256,55 @@ int main(int argc, char* argv[])
 	  if(!phys.gammas[0].isConv) assocMetP4 -= gamma;
 	}
 
-      Float_t met = metP4.pt();
       LorentzVector nullP4(0,0,0,0);
-      rmetComp.compute(gamma,0,nullP4,0, jetsp4, metP4, true );
-      double redmet  = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      double redmetL = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      double redmetT = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
-      Float_t assocChargedMet  = assocChargedMetP4.pt();
-      Float_t assocMet         = assocMetP4.pt();
-      Float_t assocMetOtherVtx = assocMetOtherVtxP4.pt();
-      Float_t minAssocMet      = min(assocMet,met);
 
       //redmet
       rmetComp.compute(gamma,0,nullP4,0, jetsp4, metP4, true );
-      Float_t redMet_d0  = rmetComp.reducedMET(ReducedMETComputer::D0);
-      Float_t redMetL_d0  = rmetComp.reducedMETComponents(ReducedMETComputer::D0).second;
-      Float_t redMetT_d0  = rmetComp.reducedMETComponents(ReducedMETComputer::D0).first;
-      Float_t redMetX_d0  = rmetComp.reducedMETcartesian(ReducedMETComputer::D0).X();
-      Float_t redMetY_d0  = rmetComp.reducedMETcartesian(ReducedMETComputer::D0).Y();
+      //Float_t redMet_d0  = rmetComp.reducedMET(ReducedMETComputer::D0);
       Float_t redMet         = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t redMetL        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      Float_t redMetT        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t redMetX        = rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
       Float_t redMetY        = rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
 
       //cross-check that the second computer is giving same result as the first one
       rTComp.compute(gamma,0,nullP4,0,assocChargedMetP4, metP4, metP4,true );
       Float_t rTMet         = rTComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rTMetL        = rTComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      Float_t rTMetT        = rTComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t rTMetX        = rTComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
       Float_t rTMetY        = rTComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
 
       rAComp.compute(gamma,0,nullP4,0, assocMetP4, metP4, metP4,true );
       Float_t rAMet         = rAComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rAMetL        = rAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      Float_t rAMetT        = rAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t rAMetX        = rAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
       Float_t rAMetY        = rAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
 
       rCComp.compute(gamma,0,nullP4,0, clusteredMetP4, metP4, metP4, true);
       Float_t rCMet         = rCComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rCMetL        = rCComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      Float_t rCMetT        = rCComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t rCMetX        = rCComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
       Float_t rCMetY        = rCComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-     //printf("---> %f %f\n",rCMetX,rCMetY);
 
       rTAComp.compute(gamma,0,nullP4,0, assocChargedMetP4, assocMetP4, assocMetP4 ,true );
       Float_t rTAMet         = rTAComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rTAMetL        = rTAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      Float_t rTAMetT        = rTAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t rTAMetX        = rTAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
       Float_t rTAMetY        = rTAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
 
       rTCComp.compute(gamma,0,nullP4,0, assocChargedMetP4, clusteredMetP4, clusteredMetP4,true );
       Float_t rTCMet         = rTCComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rTCMetL        = rTCComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      Float_t rTCMetT        = rTCComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t rTCMetX        = rTCComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
       Float_t rTCMetY        = rTCComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
 
       rACComp.compute(gamma,0,nullP4,0, assocMetP4, clusteredMetP4, clusteredMetP4, true );
       Float_t rACMet         = rACComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rACMetL        = rACComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      Float_t rACMetT        = rACComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t rACMetX        = rACComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
       Float_t rACMetY        = rACComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-
+      
       r3Comp.compute(gamma,0,nullP4, 0, metP4, assocMetP4, clusteredMetP4,true );
       Float_t r3Met         = r3Comp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t r3MetL        = r3Comp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      Float_t r3MetT        = r3Comp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t r3MetX        = r3Comp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
       Float_t r3MetY        = r3Comp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
 
       rmAComp.compute(gamma,0,nullP4, 0, min(metP4,assocMetP4), clusteredMetP4, clusteredMetP4,true );
       Float_t rmAMet         = rmAComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rmAMetL        = rmAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      Float_t rmAMetT        = rmAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t rmAMetX        = rmAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
       Float_t rmAMetY        = rmAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-
-      Float_t cleanMet            = cleanMetP4.pt();
-      Float_t centralMet          = centralMetP4.pt();
 
       //met control
       metTypeValues["met"]                 = metP4;
@@ -493,7 +335,7 @@ int main(int argc, char* argv[])
       double mindphijmet(9999.);
       for(size_t ijet=0; ijet<jetsp4.size(); ijet++)
         {
-	  if(jetsp4[ijet].pt()<minJetPt || fabs(jetsp4[ijet].eta())>2.5)continue;
+	  if(jetsp4[ijet].pt()<30 || fabs(jetsp4[ijet].eta())>2.5)continue;
 	  double dphijmet=fabs(deltaPhi(metP4.phi(),jetsp4[ijet].phi()));
 	  mindphijmet = min(mindphijmet,dphijmet);
 	}
@@ -508,6 +350,9 @@ int main(int argc, char* argv[])
       bool pass500( fabs(mindphijmet)>0.   && metP4.pt()>148 && mt>382 && mt<605);
       bool pass550( fabs(mindphijmet)>0.   && metP4.pt()>157 && mt>413 && mt<684);
       bool pass600( fabs(mindphijmet)>0.   && metP4.pt()>159 && mt>452 && mt<767);
+
+      //reweight to reproduce pt weight in a gamma sample
+      std::map<TString, float> qtWeights = gammaEvHandler.getWeights();
 
       //fill control histograms
       TString cats[]={"all",subcat};

@@ -20,6 +20,7 @@
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/PatCandidates/interface/TriggerEvent.h"
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
+#include "DataFormats/EgammaCandidates/interface/Conversion.h"
 
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "FWCore/Common/interface/TriggerNames.h"
@@ -103,8 +104,15 @@ namespace photon
   CandidateCollection filter(edm::Handle<edm::View<reco::Candidate> > &hPhoton, 
 			     EcalClusterLazyTools &lazyTool,
 			     edm::Handle<EcalRecHitCollection> ebrechits,
+			     edm::Handle<std::vector<reco::Track> > & hTracks,
+			     edm::Handle<edm::View<reco::Candidate> > &hEle,
+			     edm::Handle<std::vector<reco::Conversion> > &hConversions,
+			     std::vector<reco::VertexRef> &selVertices,
+			     double rho,
 			     const edm::ParameterSet &iConfig,
 			     double minEt=0.);
+
+  const reco::Conversion *matchToConversion(const pat::Photon *pho, const reco::Vertex *pv, edm::Handle<std::vector<reco::Conversion> > &hConversions);
 }
 
 
@@ -139,7 +147,7 @@ namespace lepton
      @short wrappers for common operations with leptons
    */
   enum {ELECTRON=11, MUON=13};
-  enum IsolType { ECAL_ISO=0, HCAL_ISO, TRACKER_ISO, REL_ISO, N_ISO, C_ISO, G_ISO};
+  enum IsolType { ECAL_ISO=0, HCAL_ISO, TRACKER_ISO, REL_ISO, N_ISO, C_ISO, G_ISO, PFREL_ISO};
   int getLeptonId(reco::CandidatePtr &lepton);
   double getPtErrorFor(reco::CandidatePtr &lepton);
   std::vector<double> getLeptonIso(reco::CandidatePtr &lepton, float minRelNorm=20, float puOffsetCorrection=0);

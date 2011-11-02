@@ -132,19 +132,31 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   edm::Handle< double > rho;
   iEvent.getByLabel( objConfig["Jets"].getParameter<edm::InputTag>("rho"),rho);
 
+  Handle<View<Candidate> > hEle; 
+  iEvent.getByLabel(objConfig["Electrons"].getParameter<edm::InputTag>("source"), hEle);
+  
   //select photons (id+tight isolation)
   CandidateWithVertexCollection isolPhotonsWithVertex;
   CandidateCollection  isolPhotons;
   try{
     edm::Handle<edm::View<reco::Candidate> > hPhoton;
     iEvent.getByLabel( objConfig["Photons"].getParameter<edm::InputTag>("source"), hPhoton );
+  
+    edm::Handle<std::vector<reco::Track> > hTracks;
+    iEvent.getByLabel( objConfig["Photons"].getParameter<edm::InputTag>("trackSource"), hTracks );
+
     edm::Handle<EcalRecHitCollection> ebrechits;
     iEvent.getByLabel( objConfig["Photons"].getParameter<edm::InputTag>("ebrechits"), ebrechits );
     EcalClusterLazyTools lazyTool(iEvent,iSetup,
 				  objConfig["Photons"].getParameter<edm::InputTag>("ebrechits"),
 				  objConfig["Photons"].getParameter<edm::InputTag>("eerechits"));
-    isolPhotons=photon::filter(hPhoton,lazyTool,ebrechits,objConfig["Photons"],20);
-    for(CandidateCollection::iterator pIt = isolPhotons.begin(); pIt != isolPhotons.end(); pIt++) isolPhotonsWithVertex.push_back( CandidateWithVertex(*pIt, selVertices[0]) );
+
+    edm::Handle<std::vector<reco::Conversion> > hConversions;
+    iEvent.getByLabel(objConfig["Photons"].getParameter<edm::InputTag>("conversionSource"), hConversions);
+
+    isolPhotons=photon::filter(hPhoton,lazyTool,ebrechits,hTracks,hEle,hConversions,selVertices,*rho,objConfig["Photons"],20);
+    if(selVertices.size())
+      for(CandidateCollection::iterator pIt = isolPhotons.begin(); pIt != isolPhotons.end(); pIt++) isolPhotonsWithVertex.push_back( CandidateWithVertex(*pIt, selVertices[0]) );
   }catch(std::exception &e){
   }
 
@@ -189,10 +201,8 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
 	  controlHistos_.fillHisto("relisovsnpu",*cIt,nITpu,isol[REL_ISO],weight);
 	}
     }
-
+  
   //select electrons (id+conversion veto+very loose isolation)
-  Handle<View<Candidate> > hEle; 
-  iEvent.getByLabel(objConfig["Electrons"].getParameter<edm::InputTag>("source"), hEle);
   CandidateWithVertexCollection selLooseElectrons = electron::filter(hEle, hMu, selVertices, *beamSpot, *rho, objConfig["LooseElectrons"]);
   CandidateWithVertexCollection selElectrons = electron::filter(hEle, hMu, selVertices, *beamSpot, *rho, objConfig["Electrons"]);
   for(size_t iEle=0; iEle< hEle.product()->size(); ++iEle)
@@ -237,13 +247,13 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   selLooseLeptons.insert(selLooseLeptons.end(),selLooseElectrons.begin(),selLooseElectrons.end());
   CandidateWithVertexCollection selLeptons = selMuons;
   selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
-  
+    
   //build the dilepton (all tightly isolated leptons will be returned)
   auto_ptr<reco::VertexCollection> primVertices(new reco::VertexCollection() );
   if(selLeptons.size()>0)
     {
       selStep=2;
-
+  
       //search for dileptons
       CandidateWithVertexCollection isolLeptons;
       std::pair<CandidateWithVertex,CandidateWithVertex> dileptonWithVertex = dilepton::filter(selLeptons, objConfig["Dileptons"], iSetup);
@@ -283,11 +293,11 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
     }
   
   //a gamma+jets event
-  else if(selLooseLeptons.size()==0 && selLeptons.size()==0 && isolPhotons.size()>0) 
+  else if(selLooseLeptons.size()==0 && selLeptons.size()==0 && isolPhotons.size()>0 && selVertices.size()>0) 
     { 
       selStep=3;
       selPath=dilepton::GAMMA+1000*photonTrig.second; 
-      
+
       //add also the jets                                                                                                                                                                                                                                                                                              
       Handle<View<Candidate> > hJet;
       iEvent.getByLabel(objConfig["Jets"].getParameter<edm::InputTag>("source"), hJet);
@@ -302,6 +312,7 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   for(CandidateWithVertexCollection::iterator pIt = isolPhotonsWithVertex.begin(); pIt != isolPhotonsWithVertex.end(); pIt++)   hyp.add( pIt->first , "photon" );
   
   //add the met
+  
   Handle<View<Candidate> > hMET; 
   iEvent.getByLabel(objConfig["MET"].getParameter<edm::InputTag>("source"), hMET);
   CandidatePtr met = hMET->ptrAt(0);
@@ -325,12 +336,12 @@ void DileptonPlusMETEventProducer::produce(edm::Event &iEvent, const edm::EventS
   auto_ptr<std::vector<pat::EventHypothesis> > hyps(new std::vector<pat::EventHypothesis>() );
   hyps->push_back(hyp);
   iEvent.put(hyps,"selectedEvent");
-
+  
   auto_ptr<std::vector<int> > selectionInfo(new std::vector<int>());
   selectionInfo->push_back( selPath );
   selectionInfo->push_back( selStep );
   iEvent.put(selectionInfo,"selectionInfo");
-
+  
   iEvent.put(primVertices,"selectedVertices");
 }
 

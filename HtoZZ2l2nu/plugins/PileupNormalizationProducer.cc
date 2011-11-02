@@ -5,19 +5,23 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
-#include "CMGTools/HtoZZ2l2nu/interface/PileupFilter.h"
+
+#include "TRandom.h"
 
 class PileupNormalizationProducer : public edm::EDProducer 
 {
 public:
+
   PileupNormalizationProducer(const edm::ParameterSet &iConfig) ;
   virtual void produce( edm::Event &iEvent, const edm::EventSetup &iSetup) ;
   
 private:
-  TH1D *puUnfoldedH_;
-  float maxWeight_;
+
+  edm::LumiReWeighting LumiWeights_;
+  double maxWeight_;
 };
 
 
@@ -26,21 +30,18 @@ using namespace std;
 
 //
 PileupNormalizationProducer::PileupNormalizationProducer(const edm::ParameterSet &iConfig)
+  :  LumiWeights_(iConfig.getParameter<std::string>("mc"), iConfig.getParameter<std::string>("data"), "pileup","pileup")
 {
   produces<float>("puWeight");
   produces<float>("renPuWeight");
-  produces<int>("nITpu");  
-  produces<int>("nOOTpu");  
 
-  //generate weight distribution
-  std::vector<double> mc   = iConfig.getParameter<std::vector<double> >("mcDistribution");
-  std::vector<double> data = iConfig.getParameter<std::vector<double> >("dataDistribution");
-  puUnfoldedH_ = pileup::generateWeightsFrom(mc,data,maxWeight_);
+  LumiWeights_.weight3D_init();
 
-  cout << "pileup re-weighting:  {";
-  for(int ibin=1; ibin<=puUnfoldedH_->GetXaxis()->GetNbins(); ibin++)
-    cout << puUnfoldedH_->GetBinContent(ibin) << ", ";
-  cout << "};" << endl;
+  maxWeight_=0;
+  for(int nm1=0; nm1<=30; nm1++)
+    for(int n0=0; n0<=30; n0++)
+      for(int np1=0; np1<=30; np1++)
+	maxWeight_ = max( LumiWeights_.weight3D( nm1,n0,np1) , maxWeight_);
 }
 
 //
@@ -51,8 +52,6 @@ void PileupNormalizationProducer::produce(edm::Event &iEvent, const edm::EventSe
 
   auto_ptr<float> puWeight(new float);
   auto_ptr<float> renPuWeight(new float);
-  auto_ptr<int> nITpu(new int);
-  auto_ptr<int> nOOTpu(new int);
 
   if(iEvent.isRealData())  
     {
@@ -62,30 +61,34 @@ void PileupNormalizationProducer::produce(edm::Event &iEvent, const edm::EventSe
   else
     {
       //get the number of generated pileup events
-      edm::Handle<std::vector<PileupSummaryInfo> > puInfoH;
-      iEvent.getByType(puInfoH);
-      int npuevents(0),nootpuevents(0);
-      if(puInfoH.isValid())
+      edm::Handle<std::vector<PileupSummaryInfo> > PupInfo;
+      iEvent.getByType(PupInfo);
+      
+      int nm1 = -1; int n0 = -1; int np1 = -1;
+      for(std::vector<PileupSummaryInfo>::const_iterator PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) 
 	{
-	  for(std::vector<PileupSummaryInfo>::const_iterator it = puInfoH->begin(); it != puInfoH->end(); it++)
-	    {
-	      if(it->getBunchCrossing() !=0) nootpuevents += it->getPU_NumInteractions(); 
-	      else                           npuevents    = it->getPU_NumInteractions();
-	    }
+	  int BX = PVI->getBunchCrossing();
+	  if(BX == -1) nm1 = PVI->getPU_NumInteractions();
+	  if(BX == 0)  n0 = PVI->getPU_NumInteractions();
+	  if(BX == 1)  np1 = PVI->getPU_NumInteractions();
 	}
-
-      std::vector<double> theWeights = pileup::getWeightsFor(npuevents,puUnfoldedH_,maxWeight_);
-      *puWeight    = theWeights[pileup::MCTODATA];
-      *renPuWeight = theWeights[pileup::MCTODATAINTEGER];
-      *nITpu       = npuevents;
-      *nOOTpu      = nootpuevents;
+      
+      float weight = LumiWeights_.weight3D( nm1,n0,np1);
+      float renWeight=1.0;
+      if(maxWeight_>0)
+	{
+	  float randWeight=gRandom->Uniform();
+          if(randWeight>weight/maxWeight_) renWeight=0;
+	}
+      *puWeight = weight;
+      *renPuWeight = renWeight;
     }
+
+  cout << *puWeight << " " << *renPuWeight << endl;
   
   //put in the event
   iEvent.put(puWeight,"puWeight");
   iEvent.put(renPuWeight,"renPuWeight");
-  iEvent.put(nITpu,"nITpu");
-  iEvent.put(nOOTpu,"nOOTpu");
 }
 
 //  

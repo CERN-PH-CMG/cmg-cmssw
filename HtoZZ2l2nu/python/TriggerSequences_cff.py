@@ -6,7 +6,7 @@ import FWCore.ParameterSet.Config as cms
 def addGammaTriggerSequence(process) :
    
     gammaTrigs=['HLT_Photon20_CaloIdVL_IsoL_v1','HLT_Photon20_CaloIdVL_IsoL_v2','HLT_Photon20_CaloIdVL_IsoL_v3','HLT_Photon20_CaloIdVL_IsoL_v4','HLT_Photon20_CaloIdVL_IsoL_v5','HLT_Photon20_CaloIdVL_IsoL_v6','HLT_Photon20_CaloIdVL_IsoL_v7','HLT_Photon20_CaloIdVL_IsoL_v8','HLT_Photon20_CaloIdVL_IsoL_v9',
-                'HLT_Photon30_CaloIdVL_IsoL_v1','HLT_Photon30_CaloIdVL_IsoL_v2','HLT_Photon30_CaloIdVL_IsoL_v3','HLT_Photon30_CaloIdVL_IsoL_v4','HLT_Photon30_CaloIdVL_IsoL_v5','HLT_Photon30_CaloIdVL_IsoL_v6','HLT_Photon30_CaloIdVL_IsoL_v7','HLT_Photon30_CaloIdVL_IsoL_v8','HLT_Photon30_CaloIdVL_IsoL_v9',
+                'HLT_Photon30_CaloIdVL_IsoL_v1','HLT_Photon30_CaloIdVL_IsoL_v2','HLT_Photon30_CaloIdVL_IsoL_v3','HLT_Photon30_CaloIdVL_IsoL_v4','HLT_Photon30_CaloIdVL_IsoL_v5','HLT_Photon30_CaloIdVL_IsoL_v6','HLT_Photon30_CaloIdVL_IsoL_v7','HLT_Photon30_CaloIdVL_IsoL_v8','HLT_Photon30_CaloIdVL_IsoL_v9','HLT_Photon30_CaloIdVL_IsoL_v10',
                 'HLT_Photon50_CaloIdVL_IsoL_v1','HLT_Photon50_CaloIdVL_IsoL_v2','HLT_Photon50_CaloIdVL_IsoL_v3','HLT_Photon50_CaloIdVL_IsoL_v4','HLT_Photon50_CaloIdVL_IsoL_v5','HLT_Photon50_CaloIdVL_IsoL_v6','HLT_Photon50_CaloIdVL_IsoL_v7','HLT_Photon50_CaloIdVL_IsoL_v8','HLT_Photon50_CaloIdVL_IsoL_v9',
                 'HLT_Photon75_CaloIdVL_IsoL_v1','HLT_Photon75_CaloIdVL_IsoL_v2','HLT_Photon75_CaloIdVL_IsoL_v3','HLT_Photon75_CaloIdVL_IsoL_v4','HLT_Photon75_CaloIdVL_IsoL_v5','HLT_Photon75_CaloIdVL_IsoL_v6','HLT_Photon75_CaloIdVL_IsoL_v7','HLT_Photon75_CaloIdVL_IsoL_v8','HLT_Photon75_CaloIdVL_IsoL_v9',
                 'HLT_Photon90_CaloIdVL_IsoL_v1','HLT_Photon90_CaloIdVL_IsoL_v2','HLT_Photon90_CaloIdVL_IsoL_v3','HLT_Photon90_CaloIdVL_IsoL_v4','HLT_Photon90_CaloIdVL_IsoL_v5','HLT_Photon90_CaloIdVL_IsoL_v6','HLT_Photon90_CaloIdVL_IsoL_v7','HLT_Photon90_CaloIdVL_IsoL_v8','HLT_Photon90_CaloIdVL_IsoL_v9',
@@ -47,21 +47,25 @@ def getTriggerPaths() :
                  'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v5',  #start run 167039
                  'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v6',
                  'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7'
-                 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v8'
+                 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v8',
+                 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v9'
+                 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v10'
                  ]
     doubleMu = ['HLT_DoubleMu7_v1', 'HLT_DoubleMu7_v2',                     #start run 160404
                 'HLT_Mu13_Mu8_v1', 'HLT_Mu13_Mu8_v2', 'HLT_Mu13_Mu8_v3',    #start run 165088 
-                'HLT_Mu13_Mu8_v4', 'HLT_Mu13_Mu8_v5', 'HLT_Mu13_Mu8_v6', 'HLT_Mu13_Mu8_v7' 
+                'HLT_Mu13_Mu8_v4', 'HLT_Mu13_Mu8_v5', 'HLT_Mu13_Mu8_v6', 'HLT_Mu13_Mu8_v7',
+                'HLT_Mu13_Mu8_v8', 'HLT_Mu13_Mu8_v9', 'HLT_Mu13_Mu8_v10', 'HLT_Mu13_Mu8_v11'
                 ]
     muEG = ['HLT_Mu17_Ele8_CaloIdL_v1', 'HLT_Mu17_Ele8_CaloIdL_v2', 'HLT_Mu17_Ele8_CaloIdL_v3',   #start run 160404
             'HLT_Mu17_Ele8_CaloIdL_v4', 'HLT_Mu17_Ele8_CaloIdL_v5', 'HLT_Mu17_Ele8_CaloIdL_v6',
             'HLT_Mu17_Ele8_CaloIdL_v7', 'HLT_Mu17_Ele8_CaloIdL_v8'
             'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v1', 'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v2', 'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v3', #start run 167039
-            'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v4',
+            'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v4', 'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v5', 'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v6', 'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v7',
             'HLT_Mu8_Ele17_CaloIdL_v1', 'HLT_Mu8_Ele17_CaloIdL_v2', 'HLT_Mu8_Ele17_CaloIdL_v3',     #start run 160404
             'HLT_Mu8_Ele17_CaloIdL_v4', 'HLT_Mu8_Ele17_CaloIdL_v5', 'HLT_Mu8_Ele17_CaloIdL_v6',
             'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v1', 'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v2', 'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v3', #start run 167039
-            'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v4'
+            'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v4', 'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v5', 'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v6',
+            'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v7'
             ]
     singleMu = ['HLT_IsoMu17_v1', 'HLT_IsoMu17_v2', 'HLT_IsoMu17_v3',  #start run 160404
                 'HLT_IsoMu17_v4', 'HLT_IsoMu17_v5', 'HLT_IsoMu17_v6',
@@ -72,7 +76,8 @@ def getTriggerPaths() :
                 'HLT_IsoMu24_v2', 'HLT_IsoMu24_v3', 'HLT_IsoMu24_v4',
                 'HLT_IsoMu24_v5', 'HLT_IsoMu24_v6', 'HLT_IsoMu24_v7', 
                 'HLT_IsoMu24_v8',
-                'HLT_IsoMu30_eta2p1_v1', 'HLT_IsoMu30_eta2p1_v2', 'HLT_IsoMu30_eta2p1_v3' #start run 173236
+                'HLT_IsoMu30_eta2p1_v1', 'HLT_IsoMu30_eta2p1_v2', 'HLT_IsoMu30_eta2p1_v3', #start run 173236
+                'HLT_IsoMu34_eta2p1_v1'
                 ]
     #forget it...
     singleEle = []
@@ -137,6 +142,7 @@ def addTriggerSequence(process, trigFilter='ee') :
     if(trigFilter=='ee')   : process.trigSequence = cms.Sequence(process.preTriggerCounter*process.eeTrigSequence*process.triggerCounter)
     if(trigFilter=='mumu') : process.trigSequence = cms.Sequence(process.preTriggerCounter*process.mumuTrigSequence*process.triggerCounter)
     if(trigFilter=='emu')  : process.trigSequence = cms.Sequence(process.preTriggerCounter*process.emuTrigSequence*process.triggerCounter)
+    if(trigFilter=='emutaureplacement')  :  process.trigSequence = cms.Sequence(process.preTriggerCounter*process.triggerCounter)
     if(trigFilter=='e')    : process.trigSequence = cms.Sequence(process.preTriggerCounter*process.singleEleTrigSequence*process.triggerCounter)
     if(trigFilter=='mu')   : process.trigSequence = cms.Sequence(process.preTriggerCounter*process.singleMuTrigSequence*process.triggerCounter)
     if(trigFilter=='photon') :    addGammaTriggerSequence(process)

@@ -76,8 +76,10 @@ def addPreselectionSequences(process) :
 """
 """
 def addLumifilter(process,fname='') :
-    myLumis = LumiList.LumiList(filename = fname).getCMSSWString().split(',')
-    process.source.lumisToProcess = CfgTypes.untracked(CfgTypes.VLuminosityBlockRange())
-    process.source.lumisToProcess.extend(myLumis)
+    if(len(fname)>0):
+        myLumis = LumiList.LumiList(filename = fname).getCMSSWString().split(',')
+        process.source.lumisToProcess = CfgTypes.untracked(CfgTypes.VLuminosityBlockRange())
+        process.source.lumisToProcess.extend(myLumis)
+        print 'Lumi sections will be filtered with: ' + fname 
                             
     

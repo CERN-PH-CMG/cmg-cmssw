@@ -22,18 +22,20 @@ process.ClusteredPFMetProducerPt5 = ClusteredPFMetProducer.clone( minJetPt = cms
 process.ClusteredPFMetProducerPt10 = ClusteredPFMetProducer.clone( minJetPt = cms.double(10.0) )
 process.ClusteredPFMetSequence = cms.Sequence(process.ClusteredPFMetProducer*process.ClusteredPFMetProducerPt5*process.ClusteredPFMetProducerPt10)
 
+from CMGTools.HtoZZ2l2nu.PileupNormalizationProducer_cfi import puWeights
+process.puWeights      = puWeights.clone( data = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/PileupTruth2011AplusB.root') )
+process.puWeights2011A = puWeights.clone( data = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/PileupTruth2011A.root') )
+process.puWeights2011B = puWeights.clone( data = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/PileupTruth2011B.root') )
+process.puWeightSequence(process.puWeights+process.puWeights2011A+process.puWeights2011B)
+
 process.load('CMGTools.HtoZZ2l2nu.CleanEventProducer_cfi')
-process.load('CMGTools.HtoZZ2l2nu.CleanEventFilter_cfi')
-process.load('CMGTools.HtoZZ2l2nu.PileupNormalizationProducer_cfi')
 process.load('CMGTools.HtoZZ2l2nu.CleanEventAnalyzer_cfi')
 process.TFileService = cms.Service("TFileService", fileName = cms.string(outputFile) )
 
 if(needsPtReweight) :
-    #process.p = cms.Path(process.ClusteredPFMetSequence*process.hkfactorSequence*process.puWeights*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
-    process.p = cms.Path(process.ClusteredPFMetSequence*process.hkfactorSequence*process.puWeights*process.cleanEvent*process.evAnalyzer)
+    process.p = cms.Path(process.ClusteredPFMetSequence*process.hkfactorSequence*process.puWeightSequence*process.cleanEvent*process.evAnalyzer)
 else :
-    #process.p = cms.Path(process.ClusteredPFMetSequence*process.puWeights*process.cleanEvent*process.cleanEventFilter*process.evAnalyzer)
-    process.p = cms.Path(process.ClusteredPFMetSequence*process.puWeights*process.cleanEvent*process.evAnalyzer)
+    process.p = cms.Path(process.ClusteredPFMetSequence*process.puWeightSequence*process.cleanEvent*process.evAnalyzer)
 
 # message logger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
