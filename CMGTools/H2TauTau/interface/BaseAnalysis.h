@@ -41,26 +41,24 @@ public:
   BaseAnalysis(const char * name);
   virtual ~BaseAnalysis();
 
-  bool createMCPUPHisto();
-
-  void addSample(Sample* sample){samples_.push_back(sample);}
-  
+  void addSample(Sample* sample){samples_.push_back(sample);}  
   void setOutputPath(TString path){outputpath_=path;}
-
-  virtual bool init();
-
-  virtual bool createHistos(TString samplename="RelValZTT");
- 
-
   void setTruncateEvents(int maxEvents){truncateEvents_=maxEvents;}
   void setPrintFreq(int freq){ printFreq_=freq;}
 
+  virtual bool init();
+  virtual bool createHistos(TString samplename="RelValZTT");
+
+  bool createMCPUPHisto();
+
 protected:
+
   virtual bool addHistos(Sample* s);
   virtual bool getHistos(Sample* s, TString tag = "");
   virtual bool fillVariables(const fwlite::Event * event);
   virtual bool applySelections();
   virtual bool fillHistos(double weight = 1.);
+
 
   std::vector<Sample*> samples_;
   Sample* sample_;
