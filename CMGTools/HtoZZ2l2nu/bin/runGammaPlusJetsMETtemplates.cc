@@ -37,8 +37,6 @@ LorentzVector min(const LorentzVector& a, const LorentzVector& b)
   return b;
 }
 
-TH1F *getZMassHisto();
-
 //
 int main(int argc, char* argv[])
 {
@@ -71,8 +69,10 @@ int main(int argc, char* argv[])
 
   GammaEventHandler gammaEvHandler(runProcess);
   edm::LumiReWeighting LumiWeights(runProcess.getParameter<std::string>("mcpileup"), runProcess.getParameter<std::string>("datapileup"), "pileup","pileup");
-  LumiWeights.weight3D_init();
-  
+  std::string puWeightFile = runProcess.getParameter<std::string>("puWeightFile");
+  if(puWeightFile.size()==0)  LumiWeights.weight3D_init();
+  else                        LumiWeights.weight3D_init(puWeightFile);
+
   //control Histos
   SelectionMonitor controlHistos;
 
@@ -482,107 +482,3 @@ int main(int argc, char* argv[])
 }  
 
 
-
-TH1F *getZMassHisto()
-{
-  TH1F *h7 = new TH1F("h7","Z/#gamma^{*}+jets#rightarrow ll",100,60,122);
-  h7->SetBinContent(2,224.5647);
-  h7->SetBinContent(3,554.0167);
-  h7->SetBinContent(4,566.5224);
-  h7->SetBinContent(5,552.7701);
-  h7->SetBinContent(6,587.4919);
-  h7->SetBinContent(7,610.8146);
-  h7->SetBinContent(8,616.3866);
-  h7->SetBinContent(9,616.8841);
-  h7->SetBinContent(10,621.0645);
-  h7->SetBinContent(11,655.2755);
-  h7->SetBinContent(12,662.3901);
-  h7->SetBinContent(13,691.3835);
-  h7->SetBinContent(14,718.0921);
-  h7->SetBinContent(15,710.9708);
-  h7->SetBinContent(16,748.7878);
-  h7->SetBinContent(17,768.9978);
-  h7->SetBinContent(18,828.2835);
-  h7->SetBinContent(19,855.2431);
-  h7->SetBinContent(20,889.053);
-  h7->SetBinContent(21,917.1881);
-  h7->SetBinContent(22,970.9272);
-  h7->SetBinContent(23,1031.813);
-  h7->SetBinContent(24,1046.726);
-  h7->SetBinContent(25,1126.527);
-  h7->SetBinContent(26,1207.563);
-  h7->SetBinContent(27,1273.453);
-  h7->SetBinContent(28,1425.611);
-  h7->SetBinContent(29,1544.184);
-  h7->SetBinContent(30,1618.689);
-  h7->SetBinContent(31,1746.936);
-  h7->SetBinContent(32,1953.294);
-  h7->SetBinContent(33,2162.93);
-  h7->SetBinContent(34,2427.241);
-  h7->SetBinContent(35,2699.189);
-  h7->SetBinContent(36,3063.189);
-  h7->SetBinContent(37,3487.09);
-  h7->SetBinContent(38,4049.625);
-  h7->SetBinContent(39,4698.98);
-  h7->SetBinContent(40,5681.619);
-  h7->SetBinContent(41,6748.15);
-  h7->SetBinContent(42,8294.227);
-  h7->SetBinContent(43,10273.09);
-  h7->SetBinContent(44,13067.44);
-  h7->SetBinContent(45,16761.06);
-  h7->SetBinContent(46,22010.14);
-  h7->SetBinContent(47,28787.83);
-  h7->SetBinContent(48,37092.34);
-  h7->SetBinContent(49,45319.52);
-  h7->SetBinContent(50,50338.48);
-  h7->SetBinContent(51,50795.45);
-  h7->SetBinContent(52,45510.67);
-  h7->SetBinContent(53,37119.49);
-  h7->SetBinContent(54,28424.62);
-  h7->SetBinContent(55,20781.35);
-  h7->SetBinContent(56,15177.01);
-  h7->SetBinContent(57,11095.01);
-  h7->SetBinContent(58,8337.408);
-  h7->SetBinContent(59,6395.614);
-  h7->SetBinContent(60,4982.944);
-  h7->SetBinContent(61,4076.928);
-  h7->SetBinContent(62,3297.828);
-  h7->SetBinContent(63,2729.356);
-  h7->SetBinContent(64,2307.547);
-  h7->SetBinContent(65,1985.329);
-  h7->SetBinContent(66,1668.291);
-  h7->SetBinContent(67,1501.595);
-  h7->SetBinContent(68,1293.719);
-  h7->SetBinContent(69,1140.973);
-  h7->SetBinContent(70,1012.907);
-  h7->SetBinContent(71,933.1086);
-  h7->SetBinContent(72,814.4987);
-  h7->SetBinContent(73,723.5501);
-  h7->SetBinContent(74,711.6543);
-  h7->SetBinContent(75,615.81);
-  h7->SetBinContent(76,576.3617);
-  h7->SetBinContent(77,550.0873);
-  h7->SetBinContent(78,476.4019);
-  h7->SetBinContent(79,479.9992);
-  h7->SetBinContent(80,462.6855);
-  h7->SetBinContent(81,398.6108);
-  h7->SetBinContent(82,381.3881);
-  h7->SetBinContent(83,356.9314);
-  h7->SetBinContent(84,347.377);
-  h7->SetBinContent(85,315.4952);
-  h7->SetBinContent(86,285.8653);
-  h7->SetBinContent(87,284.8145);
-  h7->SetBinContent(88,269.4411);
-  h7->SetBinContent(89,259.0076);
-  h7->SetBinContent(90,235.7017);
-  h7->SetBinContent(91,212.6829);
-  h7->SetBinContent(92,210.0757);
-  h7->SetBinContent(93,220.422);
-  h7->SetBinContent(94,201.8417);
-  h7->SetBinContent(95,191.1922);
-  h7->SetBinContent(96,201.9856);
-  h7->SetBinContent(97,164.9426);
-  h7->SetBinContent(98,173.8608);
-  h7->SetBinContent(99,58.11536);
-  return h7;
-}

@@ -88,7 +88,8 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys)
   for(size_t idilcat=0; idilcat<sizeof(dilCategories)/sizeof(TString); idilcat++)
     {
       float mass(0);
-      while(fabs(mass-91)>15) mass = zmassH_[dilCategories[idilcat]]->GetRandom();
+      if(zmassH_.find(dilCategories[idilcat])!=zmassH_.end())
+	while(fabs(mass-91)>15) mass = zmassH_[dilCategories[idilcat]]->GetRandom();
       massiveGamma_[dilCategories[idilcat]]=LorentzVector(gamma.px(),gamma.py(),gamma.pz(),sqrt(pow(mass,2)+pow(gamma.energy(),2)));
       
       float weight(1.0);
