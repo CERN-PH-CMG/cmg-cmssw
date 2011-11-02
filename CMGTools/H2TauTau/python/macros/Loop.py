@@ -14,10 +14,10 @@ pprint.pprint(pattern)
 events = Events( pattern )
 
 
+diTauHandle = Handle('std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>')
 for i,event in enumerate(events):
     if i%100 ==0:
         print 'event', i
         
-    diTauHandle = Handle('std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>')
     event.getByLabel('cmgTauMuBaselineSel', diTauHandle)
     diTaus = diTauHandle.product()
