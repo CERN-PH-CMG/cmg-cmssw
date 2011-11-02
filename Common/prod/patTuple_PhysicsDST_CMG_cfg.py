@@ -72,9 +72,9 @@ process.source.fileNames=([
 ])
 
 # COLIN : Cert JSON not ready, too bad.
-# from CMGTools.Common.Tools.applyJSON_cff import *
-# json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/ ..'
-# applyJSON(process, json )
+from CMGTools.Common.Tools.applyJSON_cff import *
+json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/DCSOnly/json_DCSONLY.txt'
+applyJSON(process, json )
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
