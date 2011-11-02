@@ -8,6 +8,7 @@
 cmg::BaseJetFactory::BaseJetFactory(const edm::ParameterSet& ps):
   jetLabel_(ps.getParameter<edm::InputTag>("inputCollection")),
   btagType_(ps.getParameter<std::vector<std::string> >("btagType")),
+  fillJec_(ps.getParameter<bool>("fillJec")),
   fillJecUncertainty_(ps.getParameter<bool>("fillJecUncertainty")),
   jecPath_(""),
   JES_(0)
@@ -70,7 +71,9 @@ void cmg::BaseJetFactory::set(const pat::JetPtr& input,
     
     output->jetArea_ = input->jetArea();
 
-    output->rawFactor_ = input->jecFactor(0);
+    if (fillJec_) {
+      output->rawFactor_ = input->jecFactor(0);
+    }
 
     if (fillJecUncertainty_) {
       JES_->setJetEta(input->eta());

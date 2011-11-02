@@ -30,6 +30,7 @@ namespace cmg {
     const edm::InputTag jetLabel_;
     const std::vector<std::string> btagType_;
 
+    const bool fillJec_;
     const bool fillJecUncertainty_;
     std::string jecPath_;
     int jecUncDirection_;

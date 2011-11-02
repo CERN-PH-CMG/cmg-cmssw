@@ -14,6 +14,7 @@ baseJetFactory = cms.PSet(
                               'simpleSecondaryVertexHighEffBJetTags',#4
                               'simpleSecondaryVertexHighPurBJetTags'#5
                               ),
+       fillJec = cms.bool(True),
        fillJecUncertainty = cms.bool(True),
        jecPath = cms.string("CondFormats/JetMETObjects/data/Spring10_Uncertainty_AK5Calo.txt")
        )
