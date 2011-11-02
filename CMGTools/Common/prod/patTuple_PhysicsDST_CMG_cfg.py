@@ -71,7 +71,12 @@ process.source.fileNames=([
 		'/store/data/Run2011B/PhysicsDST/RAW/v1/000/179/959/CC1F559B-1800-E111-97EC-003048F01E88.root',
 ])
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+# COLIN : Cert JSON not ready, too bad.
+# from CMGTools.Common.Tools.applyJSON_cff import *
+# json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/ ..'
+# applyJSON(process, json )
+
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet( 
     input = cms.untracked.int32(-1)
@@ -165,11 +170,12 @@ process.load('CMGTools.Common.analysis_cff')
 process.load('CMGTools.Common.factories.cmgFatJet_cfi')
 process.load('CMGTools.Common.factories.cmgDiFatJet_cfi')
 
-process.cmgPFBaseJet.cfg.inputCollection = 'selectedPatJets'
+process.cmgPFJet.cfg.inputCollection = 'selectedPatJets'
+process.cmgPFJet.cfg.useConstituents = False
 
 process.cmgCaloBaseJet.cfg.inputCollection = 'selectedPatJetsAK5Calo'
 
-process.cmgFatJet.cfg.inputCollection = 'cmgPFBaseJetSel'
+process.cmgFatJet.cfg.inputCollection = 'cmgPFJetSel'
 
 #Colin : patMuons give segfault
 process.patSequence = cms.Sequence(
@@ -195,8 +201,8 @@ process.p = cms.Path(
     process.patSequence +
     # PFJet factory wants to access PFCandidates.
     # implement a mode to work with JetSpecific
-    process.cmgPFBaseJet +
-    process.cmgPFBaseJetSel +
+    process.cmgPFJet +
+    process.cmgPFJetSel +
     process.cmgCaloBaseJet +
     process.cmgCaloBaseJetSel +
     # doing the fat jets only from PF jets for now. 

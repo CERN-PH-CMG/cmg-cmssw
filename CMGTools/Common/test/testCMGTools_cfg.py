@@ -28,7 +28,9 @@ runOnMC = True
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
     'cmgtools',
-    '/ZZ_TuneZ2_7TeV_pythia6_tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0',
+    # '/ZZ_TuneZ2_7TeV_pythia6_tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0',
+    # '/QCD_Pt-170to300_TuneZ2_7TeV_pythia6/Summer11-PU_S3_START42_V11-v2/AODSIM/V2/PAT_CMG_V2_3_0',
+    '/TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0',
     'patTuple_PF2PAT.*root'
     ) 
 
@@ -93,3 +95,4 @@ process.schedule = cms.Schedule(
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) ) 
+

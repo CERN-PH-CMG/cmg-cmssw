@@ -17,14 +17,15 @@ class PFJetFactory : public Factory<cmg::PFJet>{
   public:
     PFJetFactory(const edm::ParameterSet& ps):
       jetLabel_(ps.getParameter<edm::InputTag>("inputCollection")),
-      baseJetFactory_(ps.getParameter<edm::ParameterSet>("baseJetFactory")){
-      }
+      baseJetFactory_(ps.getParameter<edm::ParameterSet>("baseJetFactory")), 
+      useConstituents_(ps.getParameter<bool>("useConstituents")) {}
+
     virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
     
   private:
     const edm::InputTag jetLabel_;
     const BaseJetFactory baseJetFactory_;
-    
+    bool  useConstituents_;
   };
 
 }

@@ -22,12 +22,7 @@ cmg::PFJetFactory::event_ptr cmg::PFJetFactory::create(const edm::Event& iEvent,
     baseJetFactory_.set(jetPtr,&cmgjet);
     
     const pat::Jet& jet = *mi;
-    std::vector<reco::PFCandidatePtr> pfCandPtrs = jet.getPFConstituents();
     
-    //    float maxPt = 0;
-    //     float ptRelLeadingHadron = -1;
-    //     float ptRelWLeadingHadron = -1;
-  
     int nCharged = 0;
     int nPhotons = 0;
     int nNeutral = 0;
@@ -52,78 +47,114 @@ cmg::PFJetFactory::event_ptr cmg::PFJetFactory::create(const edm::Event& iEvent,
     float ptHFHad = 0;
     float ptHFEM = 0;
   
+    float fractionCharged = 0;
+    float fractionPhotons = 0;
+    float fractionNeutral = 0;
+    float fractionElectrons = 0;
+    float fractionMuons = 0;
+    float fractionHFHad = 0;
+    float fractionHFEM = 0;
+  
     float totalEnergyFromConst = 0; 
 
-    for(unsigned i=0; i<pfCandPtrs.size(); ++i) {
-      const reco::PFCandidate& cand = *(pfCandPtrs[i]);
-      reco::Candidate::LorentzVector jetWithoutCand = jet.p4() - cand.p4();       
 
-      totalEnergyFromConst += cand.energy();
+    if( useConstituents_ ) {
 
-//       double ptRel = ROOT::Math::VectorUtil::Perp( cand.momentum(), 
-// 						   jet.momentum() );
-//       double ptRelWithout = ROOT::Math::VectorUtil::Perp( cand.momentum(), 
-// 							  jetWithoutCand.Vect() );
+      std::vector<reco::PFCandidatePtr> pfCandPtrs = jet.getPFConstituents();
 
-//       pat::strbitset result = electronSelector_.getBitTemplate();
+      for(unsigned i=0; i<pfCandPtrs.size(); ++i) {
+	const reco::PFCandidate& cand = *(pfCandPtrs[i]);
+	reco::Candidate::LorentzVector jetWithoutCand = jet.p4() - cand.p4();       
 
-      switch( cand.particleId() ) {
-      case reco::PFCandidate::h: 
-// 	idInfo_.addPtRelHadron( ptRel ); 
-// 	idInfo_.addPtRelWHadron( ptRelWithout ); 
-// 	if( cand.pt()>maxPt) {
-// 	  maxPt = cand.pt();
-// 	  ptRelLeadingHadron = ptRel;
-// 	  ptRelWLeadingHadron = ptRelWithout;
-// 	}
-	nCharged++;
-	energyCharged += cand.energy(); 
-	ptCharged += cand.pt(); 
-	break;
-      case reco::PFCandidate::e: 
-// 	if( checkElectrons_ && electronSelector_(cand, result) ) {
-// 	  idInfo_.setPtRelElectron( ptRel ); 
-// 	  idInfo_.setPtRelWElectron( ptRelWithout ); 
-// 	}
-	nElectrons++;
-	energyElectrons += cand.energy(); 
-	ptElectrons += cand.pt(); 
-	break;
-      case reco::PFCandidate::mu:
-	// use of the muon selector not yet implemented
-// 	if( checkMuons_ ) {
-// 	  idInfo_.setPtRelMuon( ptRel ); 
-// 	  idInfo_.setPtRelWMuon( ptRelWithout ); 
-// 	}
-	nMuons++;
-	energyMuons += cand.energy(); 
-	ptMuons += cand.pt(); 
-	break;
-      case reco::PFCandidate::gamma:
-	nPhotons++;
-	energyPhotons += cand.energy(); 
-	ptPhotons += cand.pt(); 
-	break;
-      case reco::PFCandidate::h0:
-	nNeutral++;
-	energyNeutral += cand.energy(); 
-	ptNeutral += cand.pt(); 
-	break;
-      case reco::PFCandidate::h_HF:
-	nHFHad++;
-	energyHFHad += cand.energy(); 
-	ptHFHad += cand.pt(); 
-	break;
-      case reco::PFCandidate::egamma_HF:
-	nHFEM++;
-	energyHFEM += cand.energy(); 
-	ptHFEM += cand.pt(); 
-	break;
-      default: break;
+	totalEnergyFromConst += cand.energy();
+
+	switch( cand.particleId() ) {
+	case reco::PFCandidate::h: 
+	  nCharged++;
+	  energyCharged += cand.energy(); 
+	  ptCharged += cand.pt(); 
+	  break;
+	case reco::PFCandidate::e: 
+	  nElectrons++;
+	  energyElectrons += cand.energy(); 
+	  ptElectrons += cand.pt(); 
+	  break;
+	case reco::PFCandidate::mu:
+	  // use of the muon selector not yet implemented
+	  nMuons++;
+	  energyMuons += cand.energy(); 
+	  ptMuons += cand.pt(); 
+	  break;
+	case reco::PFCandidate::gamma:
+	  nPhotons++;
+	  energyPhotons += cand.energy(); 
+	  ptPhotons += cand.pt(); 
+	  break;
+	case reco::PFCandidate::h0:
+	  nNeutral++;
+	  energyNeutral += cand.energy(); 
+	  ptNeutral += cand.pt(); 
+	  break;
+	case reco::PFCandidate::h_HF:
+	  nHFHad++;
+	  energyHFHad += cand.energy(); 
+	  ptHFHad += cand.pt(); 
+	  break;
+	case reco::PFCandidate::egamma_HF:
+	  nHFEM++;
+	  energyHFEM += cand.energy(); 
+	  ptHFEM += cand.pt(); 
+	  break;
+	default: break;
+	}
       }
+
+      fractionCharged = energyCharged / totalEnergyFromConst;
+      fractionElectrons = energyElectrons / totalEnergyFromConst;
+      fractionMuons = energyMuons / totalEnergyFromConst;
+      fractionPhotons = energyPhotons / totalEnergyFromConst;
+      fractionNeutral = energyNeutral / totalEnergyFromConst;
+      fractionHFEM = energyHFEM / totalEnergyFromConst;
+      fractionHFHad = energyHFHad / totalEnergyFromConst;
+    }
+    else {
+      // using the JetSpecific structure stored in the pat jet
+
+      nCharged = jet.chargedHadronMultiplicity();
+      nElectrons = jet.electronMultiplicity();
+      nMuons = jet.muonMultiplicity();
+      nPhotons = jet.photonMultiplicity();
+      nNeutral = jet.neutralHadronMultiplicity();
+      nHFEM = jet.HFEMMultiplicity();
+      nHFHad = jet.HFHadronMultiplicity();
+      
+      ptCharged = jet.chargedHadronEnergyFraction() * jet.pt();
+      ptElectrons = jet.electronEnergyFraction() * jet.pt();
+      ptMuons = jet.muonEnergyFraction() * jet.pt();
+      ptPhotons = jet.photonEnergyFraction() * jet.pt();
+      ptNeutral = jet.neutralHadronEnergyFraction() * jet.pt();
+      ptHFEM = jet.HFEMEnergyFraction() * jet.pt();
+      ptHFHad = jet.HFHadronEnergyFraction() * jet.pt();
+      
+      energyCharged = jet.chargedHadronEnergyFraction() * jet.energy();
+      energyElectrons = jet.electronEnergyFraction() * jet.energy();
+      energyMuons = jet.muonEnergyFraction() * jet.energy();
+      energyPhotons = jet.photonEnergyFraction() * jet.energy();
+      energyNeutral = jet.neutralHadronEnergyFraction() * jet.energy();
+      energyHFEM = jet.HFEMEnergyFraction() * jet.energy();
+      energyHFHad = jet.HFHadronEnergyFraction() * jet.energy();
+      
+      fractionCharged = jet.chargedHadronEnergyFraction();
+      fractionElectrons = jet.electronEnergyFraction();
+      fractionMuons = jet.muonEnergyFraction();
+      fractionPhotons = jet.photonEnergyFraction();
+      fractionNeutral = jet.neutralHadronEnergyFraction();
+      fractionHFEM = jet.HFEMEnergyFraction();
+      fractionHFHad = jet.HFHadronEnergyFraction();
+      
+	
     }
 
-    
     cmgjet.components_[reco::PFCandidate::h].setNumber(nCharged);
     cmgjet.components_[reco::PFCandidate::e].setNumber(nElectrons);
     cmgjet.components_[reco::PFCandidate::mu].setNumber(nMuons);
@@ -148,31 +179,17 @@ cmg::PFJetFactory::event_ptr cmg::PFJetFactory::create(const edm::Event& iEvent,
     cmgjet.components_[reco::PFCandidate::egamma_HF].setEnergy(energyHFEM);
     cmgjet.components_[reco::PFCandidate::h_HF].setEnergy(energyHFHad);
 
-    // compute and fill energy fractions 
+    cmgjet.components_[reco::PFCandidate::h].setFraction(fractionCharged);
+    cmgjet.components_[reco::PFCandidate::e].setFraction(fractionElectrons);
+    cmgjet.components_[reco::PFCandidate::mu].setFraction(fractionMuons);
+    cmgjet.components_[reco::PFCandidate::gamma].setFraction(fractionPhotons);
+    cmgjet.components_[reco::PFCandidate::h0].setFraction(fractionNeutral);
+    cmgjet.components_[reco::PFCandidate::egamma_HF].setFraction(fractionHFEM);
+    cmgjet.components_[reco::PFCandidate::h_HF].setFraction(fractionHFHad);
 
-    energyCharged /= totalEnergyFromConst;
-    energyElectrons /= totalEnergyFromConst;
-    energyMuons /= totalEnergyFromConst;
-    energyPhotons /= totalEnergyFromConst;
-    energyNeutral /= totalEnergyFromConst;
-    energyHFHad /= totalEnergyFromConst;
-    energyHFEM /= totalEnergyFromConst;
-
-    cmgjet.components_[reco::PFCandidate::h].setFraction(energyCharged);
-    cmgjet.components_[reco::PFCandidate::e].setFraction(energyElectrons);
-    cmgjet.components_[reco::PFCandidate::mu].setFraction(energyMuons);
-    cmgjet.components_[reco::PFCandidate::gamma].setFraction(energyPhotons);
-    cmgjet.components_[reco::PFCandidate::h0].setFraction(energyNeutral);
-    cmgjet.components_[reco::PFCandidate::egamma_HF].setFraction(energyHFEM);
-    cmgjet.components_[reco::PFCandidate::h_HF].setFraction(energyHFHad);
-
-//     cmgjet.setPtRelLeadingHadron( ptRelLeadingHadron );
-//     cmgjet.setPtRelWLeadingHadron( ptRelLeadingHadron );
 
     result->push_back(cmgjet);
   }
-//   for(cmg::PFJetFactory::collection::const_iterator it = result->begin(); it != result->end(); ++it){
-//     std::cout << "Created a jet: " << *it << std::endl;
-//   }
+
   return result;
 }
