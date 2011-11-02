@@ -31,11 +31,16 @@ def configureOutput(process,selPaths=['eePath', 'mumuPath', 'emuPath', 'photonPa
                 'keep recoGenJets_ak5GenJets_*_*',
                 'keep *_chargedMetProducer_*_*',
                 'keep *_trackMetProducer_*_*',
-                'keep *_hzzPFMetProducer_*_*',
                 'keep *_generalTracks_*_*',
                 'keep patPhotons_*_*_*',
+                'keep recoConversions_allConversions_*_*',
+                'keep recoPhotonCores_*_*_*',
+                'keep recoPhotons_*_*_*',
+                'keep recoCaloClusters_hybridSuperClusters_*_*',
                 'keep *_reducedEcalRecHitsEB_*_*',
                 'keep *_reducedEcalRecHitsEE_*_*',
+                'keep *_generator_weight_EmbeddedRECO', # tau replacement
+                'keep *_TriggerResults_*_EmbeddedRECO',
                 'keep double*_*_rho_'+process.name_(),
                 'keep double*_*_sigma_'+process.name_(),
                 'keep recoPFCandidates_particleFlow_*_*']

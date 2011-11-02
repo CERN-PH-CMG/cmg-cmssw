@@ -3,12 +3,14 @@
 <use name="FWCore/FWLite"/>
 <use name="FWCore/ServiceRegistry"/>
 <use name="FWCore/Services"/>
+<use name="PhysicsTools/Utilities"/>
 <use name="PhysicsTools/UtilAlgos"/>
 <use name="PhysicsTools/PatUtils"/>
 <use name="DataFormats/FWLite"/>
 <use name="DataFormats/Histograms"/>
 <use name="DataFormats/VertexReco"/>
 <use name="DataFormats/BeamSpot"/>
+<use name="DataFormats/EgammaCandidates"/>
 <use name="DataFormats/PatCandidates"/>
 <use name="SimDataFormats/GeneratorProducts"/>
 <use name="CondFormats/JetMETObjects"/>

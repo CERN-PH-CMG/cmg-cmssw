@@ -133,9 +133,6 @@ def addPatSequence(process, runOnMC, addPhotons=True) :
     process.chargedMetProducer.collectionTag = cms.InputTag("particleFlow")
     process.trackMetProducer = process.chargedMetProducer.clone(minNeutralPt = 99999., maxNeutralEta = 0)
     
-    #hzz met
-    process.load("CMGTools.HtoZZ2l2nu.HZZPFMetProducer_cfi")
-
     #alternative met collections
     process.pfMETPFlowNoPileup = process.pfMETPFlow.clone(src=cms.InputTag("pfNoPileUpPFlow"))
     process.patMETsPFlowNoPileup = process.patMETsPFlow.clone(metSource=cms.InputTag("pfMETPFlowNoPileup"))
@@ -143,8 +140,7 @@ def addPatSequence(process, runOnMC, addPhotons=True) :
     process.pfMETPFlowPileup = process.pfMETPFlow.clone(jets=cms.InputTag("ak5PFJets"))
     process.patMETsPFlowPileup = process.patMETsPFlow.clone(metSource=cms.InputTag("pfMETPFlowPileup"))
 
-    process.hzzmetSequence = cms.Sequence(process.hzzPFMetProducer*
-                                          process.chargedMetProducer*
+    process.hzzmetSequence = cms.Sequence(process.chargedMetProducer*
                                           process.trackMetProducer*
                                           process.pfMETPFlowNoPileup*process.patMETsPFlowNoPileup*
                                           process.pfMETPFlowPileup*process.patMETsPFlowPileup)

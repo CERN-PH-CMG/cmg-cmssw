@@ -26,6 +26,7 @@ namespace electron{
       double maxRelIso = iConfig.getParameter<double>("maxRelIso");
       double minDeltaRtoMuons = iConfig.getParameter<double>("minDeltaRtoMuons");
       double maxDistToBeamSpot = iConfig.getParameter<double>("maxDistToBeamSpot");
+      bool usePFIso = iConfig.getParameter<bool>("usePFIso");
 
       //iterate over the electrons
       for(size_t iElec=0; iElec< hEle.product()->size(); ++iElec)
@@ -66,7 +67,7 @@ namespace electron{
 	  if( nTrackLostHits>maxTrackLostHits) continue;
 	  
 	  //isolation
-	  double relIso = lepton::getLeptonIso( elePtr, ePt, rho)[lepton::REL_ISO];
+	  double relIso = lepton::getLeptonIso( elePtr, ePt, rho)[usePFIso ? lepton::PFREL_ISO : lepton::REL_ISO];
 	  if(relIso>maxRelIso) continue;
 	  
 	  //cross clean with overlapping muons

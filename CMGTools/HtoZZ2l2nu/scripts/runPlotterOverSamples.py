@@ -280,7 +280,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
         leg=showPlotsAndMCtoDataComparison(c,stack,spimpose,data)
         formatForCmsPublic(c.cd(1),leg,plotLabel,isamp)
         c.SaveAs(outputDir+'/'+pname+'.png')
-#        c.SaveAs(outputDir+'/'+pname+'.C')
+        c.SaveAs(outputDir+'/'+pname+'.C')
         
         if(pname.find('cutflow')>=0 or pname.find('eventflow')>=0 or pname.find('evtflow')>=0) :
             try :
@@ -310,15 +310,17 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
                 prefix=ptokens[0]
                 subcat=''
                 if(prefix.find('eq0jets')>=0) :     subcat='eq0jets'
-                elif(prefix.find('eq1jets')>=0) :   subcat='eq1jets'
                 elif(prefix.find('geq1jets')>=0) :  subcat='geq1jets'
-                elif(prefix.find('eq2jets')>=0) :   subcat='eq2jets'
+                elif(prefix.find('eq1jets')>=0) :   subcat='eq1jets'
                 elif(prefix.find('geq2jets')>=0) :  subcat='geq2jets'
+                elif(prefix.find('eq2jets')>=0) :   subcat='eq2jets'
                 elif(prefix.find('geq3jets')>=0) :  subcat='geq3jets'
+                elif(prefix.find('eq3jets')>=0) :  subcat='eq3jets'
                 elif(prefix.find('eq0btags')>=0) :  subcat='eq0btags'
-                elif(prefix.find('eq1btags')>=0) :  subcat='eq1btags'
                 elif(prefix.find('geq1btags')>=0) : subcat='geq1btags'
+                elif(prefix.find('eq1btags')>=0) :  subcat='eq1btags'
                 elif(prefix.find('geq2btags')>=0) : subcat='geq2btags'
+                elif(prefix.find('eq2btags')>=0) : subcat='eq2btags'
                 elif(prefix.find('vbf')>=0) :       subcat='vbf'
                 else :
                     subcat=prefix
@@ -336,7 +338,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
     fileObj.write(json.dumps( { 'categories':categories,
                                 'subcategories':subcategories,
                                 'plots':finalplots,
-                                'ploturl':outputDir},
+                                'ploturl':''},
                               sort_keys=True,
                               indent=4 ) )
     fileObj.close()
@@ -355,7 +357,7 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
     spimposeplots=[]
     dataplots=[]
     plottitles=[]
-    generalLabel='CMS preliminary,#sqrt{s}=7 TeV, #int L=' +str(integratedLumi)+' pb^{-1}'
+    generalLabel='CMS preliminary, #sqrt{s}=7 TeV, #int L=%3.1f fb^{-1}' % (integratedLumi/1000)
 
     samplehtml="<tr><th colspan=\"3\"><large>Samples used in analysis</large></th></tr>"
     
@@ -451,14 +453,15 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
             else : dataplots.append(procplots)
 
             #save copy in plotter.root
-            pOut = TFile.Open("plotter.root","UPDATE")
+            pOut = TFile.Open(outputDir+"/plotter.root","UPDATE")
             pOut.cd()
             #pDir = pOut.mkdir( 'proc_'+str(iprocess) )
             pDir = pOut.mkdir( tag.replace('/','-') )
             pDir.cd()
             for i in xrange(0,len(procplots)): procplots[i].Write()
             pOut.Close()
-            
+
+    print 'Output plots available @ ' + outputDir + '/plotter.root'
     showControlPlots(stackplots,spimposeplots,dataplots,plottitles,generalLabel,outputDir,samplehtml)
 
 
@@ -505,7 +508,7 @@ for o,a in opts:
 os.system('rm -rf plotter.root')
 
 #run the script
-print ' Integrated lumi is:' + str(integratedLumi) + ' /pb'
+print ' Integrated lumi is: %3.1f fb' % (integratedLumi/1000)
 print ' Samples defined in: ' +  samplesDB
 print ' Plots in: ' + inputDir
 runOverSamples( samplesDB, integratedLumi,inputDir, outputDir, getFromDir )

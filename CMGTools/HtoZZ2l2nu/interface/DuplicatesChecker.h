@@ -34,6 +34,15 @@ class DuplicatesChecker{
            }
            return true;
         }
+        bool isDuplicate(unsigned int Run, unsigned int Lumi, unsigned int Event,unsigned int cat){
+	  char tmp[255];sprintf(tmp,"%i_%i_%i_%i",Run,Lumi,Event,cat);
+	  RunEventHashMap::iterator it = map.find(tmp);
+	  if(it==map.end()){
+	    map[tmp] = true;
+	    return false;
+	  }
+	  return true;
+        }
 };
 
 #endif

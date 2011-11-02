@@ -72,8 +72,10 @@ struct ZZ2l2nuSummary_t
 
   //gamma candidate
   Int_t gn;
-  Float_t g_px[MAXPARTICLES], g_py[MAXPARTICLES]  , g_pz[MAXPARTICLES]  , g_en[MAXPARTICLES], g_iso1[MAXPARTICLES], g_iso2[MAXPARTICLES], g_iso3[MAXPARTICLES], g_sihih[MAXPARTICLES], g_r9[MAXPARTICLES], g_hoe[MAXPARTICLES];
-
+  Float_t g_px[MAXPARTICLES], g_py[MAXPARTICLES]  , g_pz[MAXPARTICLES]  , g_en[MAXPARTICLES], g_iso1[MAXPARTICLES], g_iso2[MAXPARTICLES], g_iso3[MAXPARTICLES], g_sihih[MAXPARTICLES], g_r9[MAXPARTICLES], g_hoe[MAXPARTICLES],g_ecorr[MAXPARTICLES];
+  Bool_t g_conv[MAXPARTICLES];
+  Float_t g_conv_px[MAXPARTICLES],g_conv_py[MAXPARTICLES],g_conv_pz[MAXPARTICLES],g_conv_en[MAXPARTICLES];
+  
   //gen level event
   Float_t h_px, h_py, h_pz, h_en;
   Int_t nmcparticles;
@@ -97,14 +99,19 @@ class ZZ2l2nuSummaryHandler{
 
   //read mode
   bool attachToTree(TTree *t);
-  void getEntry(int ientry) { if(t_) t_->GetEntry(ientry); }
+  void getEntry(int ientry) { 
+    resetStruct();
+    if(t_) t_->GetEntry(ientry); 
+  }
   int getEntries() { return (t_ ? t_->GetEntriesFast() : 0); }
 
   //getter
   TTree *getTree() { return t_; }
 
- private:
+  void resetStruct();
 
+ private:
+  
   //the tree
   TTree *t_;
 };

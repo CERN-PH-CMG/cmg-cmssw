@@ -1,5 +1,6 @@
 #include "CMGTools/HtoZZ2l2nu/interface/JetEnergyUncertaintyComputer.h"
 #include "TMath.h"
+#include "TLorentzVector.h"
 
 namespace jet
 {
@@ -23,10 +24,9 @@ namespace jet
 		double newpt = (1.0+ptScaleRes)*jets[ijet].pt();
 		double neweta = etaRes+jets[ijet].eta();
 		double newphi = phiRes+jets[ijet].phi();
-		LorentzVector newJet(newpt*TMath::Cos(newphi),
-				     newpt*TMath::Sin(newphi),
-				     newpt*TMath::SinH(neweta),
-				     jets[ijet].mass());
+		TLorentzVector pjet(0,0,0,0);
+		pjet.SetPtEtaPhiM(newpt,neweta,newphi,jets[ijet].mass());
+		LorentzVector newJet(pjet.Px(),pjet.Py(),pjet.Pz(),pjet.E());
 		newJets.push_back(newJet);
 		jetDiff += (newJet-jets[ijet]);
 	      }

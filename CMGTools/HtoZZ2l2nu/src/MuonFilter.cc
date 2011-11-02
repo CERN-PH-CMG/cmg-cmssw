@@ -24,6 +24,7 @@ namespace muon{
       int minValidTrackerHits = iConfig.getParameter<int>("minValidTrackerHits");
       int minValidMuonHits = iConfig.getParameter<int>("minValidMuonHits");
       double maxDistToBeamSpot = iConfig.getParameter<double>("maxDistToBeamSpot");
+      bool usePFIso = iConfig.getParameter<bool>("usePFIso");
 
       //iterate over the muons
       for(size_t iMuon=0; iMuon< hMu.product()->size(); ++iMuon)      
@@ -59,7 +60,7 @@ namespace muon{
 	    }
 	  
 	  //isolation
-	  double relIso = lepton::getLeptonIso( muonPtr, mPt, rho )[lepton::REL_ISO];
+	  double relIso = lepton::getLeptonIso( muonPtr, mPt, rho )[usePFIso ? lepton::PFREL_ISO : lepton::REL_ISO];
 	  if(relIso>maxRelIso) continue;
 	  
 	  //muon is selected (add vertex)

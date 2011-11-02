@@ -175,6 +175,12 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("g_iso3",    evSummary_.g_iso3,      "g_iso3[gn]/F");
   t_->Branch("g_sihih",   evSummary_.g_sihih,     "g_sihih[gn]/F");
   t_->Branch("g_r9",      evSummary_.g_r9,        "g_r9[gn]/F");
+  t_->Branch("g_ecorr",   evSummary_.g_ecorr,     "g_ecorr[gn]/F");
+  t_->Branch("g_conv",    evSummary_.g_conv,      "g_conv[gn]/O");
+  t_->Branch("g_conv_px", evSummary_.g_conv_px,   "g_conv_px[gn]/F");
+  t_->Branch("g_conv_py", evSummary_.g_conv_py,   "g_conv_py[gn]/F");
+  t_->Branch("g_conv_pz", evSummary_.g_conv_pz,   "g_conv_pz[gn]/F");
+  t_->Branch("g_conv_en", evSummary_.g_conv_en,   "g_conv_en[gn]/F");
 
   //Higgs Info
   t_->Branch("h_px",      &evSummary_.h_px,        "h_px/F");
@@ -360,7 +366,13 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("g_iso3")->SetAddress(evSummary_.g_iso3);
   t_->GetBranch("g_sihih")->SetAddress(evSummary_.g_sihih);
   t_->GetBranch("g_r9")->SetAddress(evSummary_.g_r9);
-  
+  if( t_->GetBranch("g_conv") )    t_->GetBranch("g_conv")->SetAddress( evSummary_.g_conv );
+  if( t_->GetBranch("g_conv_px") ) t_->GetBranch("g_conv_px")->SetAddress( evSummary_.g_conv_px );
+  if( t_->GetBranch("g_conv_py") ) t_->GetBranch("g_conv_py")->SetAddress( evSummary_.g_conv_py );
+  if( t_->GetBranch("g_conv_pz") ) t_->GetBranch("g_conv_pz")->SetAddress( evSummary_.g_conv_pz );
+  if( t_->GetBranch("g_conv_en") ) t_->GetBranch("g_conv_en")->SetAddress( evSummary_.g_conv_en );
+  if( t_->GetBranch("g_ecorr") )   t_->GetBranch("g_ecorr")->SetAddress( evSummary_.g_ecorr );
+
   //Higgs Info
   t_->GetBranch("h_px")     ->SetAddress( &evSummary_.h_px);
   t_->GetBranch("h_py")     ->SetAddress( &evSummary_.h_py);
@@ -378,6 +390,16 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   return true;
 }
 
+//
+void ZZ2l2nuSummaryHandler::resetStruct()
+{
+  evSummary_.run=0;    evSummary_.lumi=0;   evSummary_.event=0;  evSummary_.cat=0;
+  evSummary_.l1_px=0;  evSummary_.l1_py=0;  evSummary_.l1_pz=0;  evSummary_.l1_en=0;
+  evSummary_.l2_px=0;  evSummary_.l2_py=0;  evSummary_.l2_pz=0;  evSummary_.l2_en=0;
+  evSummary_.jn=0;
+  evSummary_.ln=0;
+  evSummary_.gn=0;
+}
 
 //
 void ZZ2l2nuSummaryHandler::fillTree()

@@ -50,7 +50,7 @@ namespace lepton{
   //returns the standard lepton isolation
   std::vector<double> getLeptonIso(reco::CandidatePtr &lepton,float minRelNorm, float puOffsetCorrection)
   {
-    std::vector<double> leptonIso(7,99999.);
+    std::vector<double> leptonIso(8,99999.);
     if(lepton.get()==0) return leptonIso;
 
     int lid=fabs(getLeptonId(lepton));
@@ -77,7 +77,9 @@ namespace lepton{
 	leptonIso[TRACKER_ISO]=ele->trackIso();
 
       }
+  
     leptonIso[REL_ISO]=(max(leptonIso[ECAL_ISO]+leptonIso[HCAL_ISO]-puOffsetCorrection*0.28,0.)+leptonIso[TRACKER_ISO])/max(float(lepton->pt()),float(minRelNorm));
+    leptonIso[PFREL_ISO]=(leptonIso[N_ISO]+leptonIso[G_ISO]+leptonIso[C_ISO])/max(float(lepton->pt()),float(minRelNorm));
     
     return leptonIso;
   }
