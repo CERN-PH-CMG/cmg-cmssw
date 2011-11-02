@@ -43,32 +43,35 @@ BaseAnalysis::~BaseAnalysis(){
 bool BaseAnalysis::init(){
   
   //read the pile-up weights
-  TFile DataPUP("/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/data/Pileup_2011_to_172802_LP_LumiScale.root","read");
-  TFile MCPUP("/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/data/Pileup_Summer11MC.root","read");
+  //TFile DataPUP("/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/data/Pileup_2011_to_172802_LP_LumiScale.root","read");
+  TFile DataPUP("/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/data/PileUp_160404-173692_2.1invfb.pileup.root","read");
+  TFile MCPUP("/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/data/Pileup_Summer11MC_36bins.root","read");
   if(DataPUP.IsZombie()||MCPUP.IsZombie()){
     cout<<DataPUP.GetName()<<" or "<<MCPUP.GetName()<<" not valid "<<endl;
   }
   gROOT->cd();
   TH1D* DataPUPHisto=(TH1D*)DataPUP.Get("pileup");
-  TH1D* MCPUPHisto=(TH1D*)MCPUP.Get("MCPUPHisto");
-  if(!DataPUPHisto || !MCPUPHisto){
-    cout<<"DataPUPHisto or MCPUPHisto do not exist"<<endl;
-    return 0;
+  if(!DataPUPHisto){
+    cout<<"Data pileup do not exist"<<endl;    return 0;
   }
-  if(DataPUPHisto->GetXaxis()->GetNbins()<25 || MCPUPHisto->GetXaxis()->GetNbins()< 25){
+  TH1D* MCPUPHisto=(TH1D*)MCPUP.Get("pileup");
+  if(!MCPUPHisto){
+    cout<<"MC pileup do not exist"<<endl; return 0;
+  }
+
+  if(DataPUPHisto->GetXaxis()->GetNbins()!=MCPUPHisto->GetXaxis()->GetNbins()){
     cout<<"DataPUPHisto does not have same number of bins as  MCPUPHisto"<<endl;
     return 0;
   }
   DataPUPHisto->Scale(1./DataPUPHisto->Integral());
   MCPUPHisto->Scale(1./MCPUPHisto->Integral());
-  mcPUPWeightHisto_=new TH1F("mcPUPWeightHisto","",25,-.5,24.5);
-  for(int b=1;b<=25;b++)
+  mcPUPWeightHisto_=new TH1F("mcPUPWeightHisto","",DataPUPHisto->GetXaxis()->GetNbins(),-0.5,DataPUPHisto->GetXaxis()->GetNbins()-0.5);
+  for(int b=1;b<=DataPUPHisto->GetXaxis()->GetNbins();b++)
     if(MCPUPHisto->GetBinContent(b)>0) 
       mcPUPWeightHisto_->SetBinContent(b,DataPUPHisto->GetBinContent(b)/MCPUPHisto->GetBinContent(b));
     else mcPUPWeightHisto_->SetBinContent(b,0);
 
  
-
   ///init each sample
   std::vector<Sample*>::const_iterator s=samples_.begin();
   for(int i=0; s!=samples_.end(); ++s, i++){
@@ -78,6 +81,12 @@ bool BaseAnalysis::init(){
     cout<<"BaseAnalysis Initialized sample "<<samples_[i]->GetName()<<" "<<samples_[i]->GetTitle()<<endl;
   }
   
+  return 1;
+}
+
+bool BaseAnalysis::createHistos(TString samplename){
+  //currently undefined
+
   return 1;
 }
 
@@ -151,49 +160,6 @@ bool BaseAnalysis::fillHistos(double weight){
   nVertexHisto_->Fill(vertices_->size(),weight);
   vertexXYHisto_->Fill(vertices_->begin()->x(),vertices_->begin()->y(),weight);
   vertexZHisto_->Fill(vertices_->begin()->z(),weight);
-
-  return 1;
-}
-
-
-bool BaseAnalysis::createHistos(TString samplename){
-  
-  std::vector<Sample*>::const_iterator s=samples_.begin();
-  for(int i=0; s!=samples_.end(); ++s,i++)
-    if(samples_[i]->GetName()==samplename) sample_ = samples_[i];
-
-  if(!sample_){cout<<"sample "<<samplename<<" was not found"<<endl; return 0;}
-  //sample_->print();
-
-  if(!addHistos(sample_))return 0;
-
-  if(!getHistos(sample_))return 0;
-
-  if(!sample_->getEvents()){
-    cout<<" No fwlite::ChainEvent found in sample "<<sample_->GetName()<<endl;
-    return 0;
-  }
-  fwlite::ChainEvent chain=*(sample_->getEvents());
-  //note: cannot give the pointer to the chain in the sample, event loop crashes after first file
-  
-  Int_t ievt=0;
-  Int_t goodevts=0;
-  for(chain.toBegin(); !chain.atEnd() && ievt <  truncateEvents_; ++chain, ++ievt){
-    if(ievt%printFreq_==0)cout<<ievt<<" done"<<endl;
-    const fwlite::Event * event = chain.event();
-
-    if(!fillVariables(event))return 0;
-    
-    if(!applySelections()) continue;
-    
-    if(!fillHistos(mcPUPWeight_))return 0;
-    goodevts++;
-    
-  }
-  cout<<goodevts<<" events passed selections"<<endl;
-
-  //
-  if(!sample_->save())return 0;
 
   return 1;
 }
