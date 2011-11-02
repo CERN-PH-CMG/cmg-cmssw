@@ -8,6 +8,7 @@
 <use name="FWCore/PythonParameterSet"/>
 <use name="FWCore/FWLite"/>
 <use name="PhysicsTools/FWLite"/>
+<use name="PhysicsTools/Utilities"/>
 <use name="RecoBTag/Records"/>
 <use name="CondFormats/PhysicsToolsObjects"/>
 <environment>

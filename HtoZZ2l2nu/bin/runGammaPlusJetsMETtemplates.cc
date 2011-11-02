@@ -10,14 +10,13 @@
 #include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
 #include "CMGTools/HtoZZ2l2nu/interface/SelectionMonitor.h"
-#include "CMGTools/HtoZZ2l2nu/interface/JetEnergyUncertaintyComputer.h"
-#include "CondFormats/JetMETObjects/interface/JetResolution.h"
-#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 #include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
+#include "CMGTools/HtoZZ2l2nu/interface/JetEnergyUncertaintyComputer.h"
 
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 
 #include "Math/GenVector/Boost.h"
 
@@ -71,7 +70,8 @@ int main(int argc, char* argv[])
   TString dirname = runProcess.getParameter<std::string>("dirName");
 
   GammaEventHandler gammaEvHandler(runProcess);
-
+  edm::LumiReWeighting LumiWeights(runProcess.getParameter<std::string>("mcpileup"), runProcess.getParameter<std::string>("datapileup"), "pileup","pileup");
+  LumiWeights.weight3D_init();
   
   //control Histos
   SelectionMonitor controlHistos;
@@ -181,7 +181,9 @@ int main(int argc, char* argv[])
       if(!isGammaEvent && ev.cat != dilepton::EE && ev.cat !=dilepton::MUMU) continue;
 
       float weight=ev.weight;
-      
+      float newweight = LumiWeights.weight3D( ev.ngenOOTpu/2, ev.ngenITpu, ev.ngenOOTpu/2 );
+      cout << weight << " " << newweight << endl;
+
       //event categories
       std::vector<TString> dilCats;
       LorentzVector gamma(0,0,0,0);
