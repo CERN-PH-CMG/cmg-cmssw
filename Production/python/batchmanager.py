@@ -51,31 +51,29 @@ class BatchManager:
         else:
             # removing possible trailing slash
             self.remoteOutputDir_ = self.options_.remoteCopy.rstrip('/')
-
             if not castortools.isLFN( self.remoteOutputDir_ ):
                 print 'When providing an output directory, you must give its LFN, starting by /store. You gave:'
                 print self.remoteOutputDir_
-                sys.exit(1)
-            
-            self.remoteOutputDir_ = castortools.lfnToCastor( self.remoteOutputDir_ )
-            
-            nsls = 'nsls %s > /dev/null' % self.remoteOutputDir_
-            dirExist = os.system( nsls )
+                sys.exit(1)          
+            self.remoteOutputDir_ = castortools.lfnToEOS( self.remoteOutputDir_ )
+            dirExist = castortools.isEOSDir( self.remoteOutputDir_ )           
+            # nsls = 'nsls %s > /dev/null' % self.remoteOutputDir_
+            # dirExist = os.system( nsls )
             if dirExist != 0:
                 print 'creating ', self.remoteOutputDir_
-                os.system('nsmkdir -p ' + self.remoteOutputDir_ )
+                castortools.createEOSDir( self.remoteOutputDir_ )
+                # os.system('nsmkdir -p ' + self.remoteOutputDir_ )
                 # print 'check that the castor output directory specified with the -r option exists.'
                 # sys.exit(1)
                 #        self.remoteOutputFile_ = os.path.basename( self.options_.remoteCopy )
             else:
                 # directory exists.
                 if self.options_.negate == False:
-                    if not castortools.protectedRemove( self.remoteOutputDir_, '.*root'):
-                        # the user does not want to delete the root files
-                        sys.exit(1)
-                
+                    #COLIN need to reimplemented protectedRemove in eostools
+                    raise ValueError('directory ', self.remoteOutputDir_, ' already exists.')
+                    # if not castortools.protectedRemove( self.remoteOutputDir_, '.*root'):
+                    # the user does not want to delete the root files                          
         self.remoteOutputFile_ = ""
-
         self.ManageOutputDir()
 
         
@@ -88,7 +86,6 @@ class BatchManager:
         print "list of jobs:"
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint( self.listOfJobs_)
-
 
 
     # create output dir, if necessary
