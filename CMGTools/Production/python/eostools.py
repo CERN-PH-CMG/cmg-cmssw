@@ -1,7 +1,9 @@
 #!/usr/bin/env python
+"""
+A module to manipulate files on EOS. Intended to have the same interface as castortools.py
+"""
 
-import sys,os,re
-import subprocess
+import sys, os, re
 
 def setCAFPath():
     """Hack to get the CAF scripts on the PYTHOPATH"""
@@ -15,12 +17,12 @@ def runXRDCommand(path, cmd, *args):
     """Run an xrd command"""
     
     lfn = eosToLFN(path)
-    pfn = lfnToPFN(lfn)
-    tokens = cmsIO.splitPFN(pfn)
+    tokens = cmsIO.splitPFN(lfnToPFN(lfn))
     
-    command = ['xrd',tokens[1],cmd, tokens[2]]
+    command = ['xrd', tokens[1], cmd, tokens[2]]
     command.extend(args)
     runner = cmsIO.cmsFileManip()
+    print ' '.join(command)
     return runner.runCommand(command)
 
 def runEOSCommand(path, cmd, *args):
@@ -31,7 +33,7 @@ def runEOSCommand(path, cmd, *args):
     tokens = cmsIO.splitPFN(pfn)
     
     #obviously, this is not nice
-    command = ['/afs/cern.ch/project/eos/installation/0.1.0-22d/bin/eos.select',cmd]
+    command = ['/afs/cern.ch/project/eos/installation/0.1.0-22d/bin/eos.select', cmd]
     command.extend(args)
     command.append(tokens[2])
     runner = cmsIO.cmsFileManip()
@@ -56,6 +58,7 @@ def lfnToPFN( path, tfcProt = 'rfio'):
     return entity.pfn
 
 def lfnToEOS( path ):
+    """Converts a LFN to a EOS PFN"""
     if isLFN(path):
         pfn = '/eos/cms/' + path
         return pfn.replace('//','/') 
@@ -83,7 +86,6 @@ isCastorFile = isEOSFile
 def fileExists( path ):
     """Check whether a file exists either on EOS or locally"""
     
-    lfn = eosToLFN(path)
     eos = isEOSDir(path)
     
     result = False
@@ -107,19 +109,19 @@ createCastorDir = createEOSDir
 def isDirectory(path):
     """Checks whether a lfn is a file or a directory"""
 
-    out,err,ret = runXRDCommand(path,'existdir')
+    out, _, _ = runXRDCommand(path,'existdir')
     return 'The directory exists' in out
 
 def isFile(path):
     """Checks whether a lfn is a file or a directory"""
 
-    out,err,ret = runXRDCommand(path,'existfile')
+    out, _, _ = runXRDCommand(path,'existfile')
     return 'The file exists' in out
 
 def chmod(path, mode):
     """Does chmod on a file or directory"""
     #
-    return runEOSCommand(path,'chmod','-r',str(mode))
+    return runEOSCommand(path, 'chmod', '-r', str(mode))
 
 
 def listFiles(path, rec = False):
@@ -129,7 +131,7 @@ def listFiles(path, rec = False):
     if rec:
         cmd = 'dirlistrec'
 
-    files, err, ret = runXRDCommand(path,cmd)
+    files, _, _ = runXRDCommand(path, cmd)
     result = []
     for line in files.split('\n'):
         tokens = [t for t in line.split() if t]
@@ -139,9 +141,9 @@ def listFiles(path, rec = False):
     return result
 
 def which(cmd):
-    command = ['which',cmd]
+    command = ['which', cmd]
     runner = cmsIO.cmsFileManip()
-    out, err, ret = runner.runCommand(command)
+    out, _, _ = runner.runCommand(command)
     
     lines = [line for line in out.split('\n') if line]
     if len(lines) == 1:
@@ -153,19 +155,20 @@ def which(cmd):
 
 def ls(path, rec = False):
     """Provides a simple list of the specified directory"""
-    list = listFiles(path, rec)
-    return [eosToLFN(t[-1]) for t in list]
+    return [eosToLFN(t[-1]) for t in listFiles(path, rec)]
 
-def rm(path, tfcProt = 'rfio'):
+def rm(path):
     """Delete a file from EOS"""
     
     lfn = eosToLFN(path)
-
-    entity = cmsIO.cmsFile(lfn, tfcProt )
+    if not fileExists(path):
+        return
+    
     if isDirectory(lfn):
-        entity.rmdir([])
+        runXRDCommand(lfn,'rmdir')
     elif isFile(lfn):
-        entity.rm([])
+        runXRDCommand(lfn,'rm')
+
 
 def remove( files, rec = False):
     """Remove a list of files and directories, possibly recursively"""
@@ -173,17 +176,85 @@ def remove( files, rec = False):
     for path in files:
         lfn = eosToLFN(path)
         if not rec:
-            rm(lfn)
+            rm(path)
         else:
             #this should be used with care
             file_list = ls(path, rec = True)
             file_list.append(lfn)
             
             #order the files in depth order - i.e. remove the deepest files first
-            files_rec = sorted([(len([ff for ff in f.split('/') if ff]),f) for f in file_list if f and f.startswith(lfn)], reverse = True)
+            files_rec = sorted([(len([ff for ff in f.split('/') if ff]), f) for f in file_list if f and f.startswith(lfn)], reverse = True)
             
             for f in files_rec:
                 rm(f[1])
+                
+def cat(path):
+    """Does 'cat' on a remote file"""
+    out, err, _ = runXRDCommand(path,'cat')
+  
+    lines = []
+    if out:
+        pattern = re.compile('cat returned [0-9]+')
+        
+        for line in out.split('\n'):
+            if line and pattern.match(line) is not None:
+                break
+            else:
+                lines.append(line)
+    if err:
+        print >> sys.stderr, out
+        print >> sys.stderr, err
+    return '\n'.join(lines)
+
+def xrdcp(src, dest):
+    """Does a copy of files using xrd"""
+    
+    recursive = False
+    
+    #first the src file
+    pfn_src = src
+    if os.path.exists(src):
+        #local
+        pfn_src = src
+        if os.path.isdir(src):
+            recursive = True
+    elif fileExists(src):
+        src = eosToLFN(src)
+        pfn_src = lfnToPFN(src)
+        if isDirectory(src):
+            recursive = True
+            
+    #now the dest
+    pfn_dest = dest
+    if isEOSDir(dest):
+        dest = eosToLFN(dest)
+        pfn_dest = lfnToPFN(dest)
+        if isDirectory(dest):
+            tokens = cmsIO.splitPFN(pfn_dest)
+            pfn_dest = '%s://%s//%s/' % (tokens[0],tokens[1],tokens[2])
+    elif os.path.exists(dest):
+        pfn_dest = dest
+
+    command = ['xrdcp','-force']
+    if recursive:
+        command.append('-R')
+    command.append(pfn_src)
+    command.append(pfn_dest)
+    
+    runner = cmsIO.cmsFileManip()
+    out, err, ret = runner.runCommand(command)
+    if err:
+        print >> sys.stderr, out
+        print >> sys.stderr, err
+    return ret
+
+def move(src, dest):
+    """Move filename1 to filename2 locally to the same server"""
+    
+    src = eosToLFN(src)
+    dest = eosToLFN(dest)
+
+    runXRDCommand(src,'mv', lfnToEOS(dest))
                 
 def matchingFiles( path, regexp):
     """Return a list of files matching a regexp"""
@@ -191,26 +262,6 @@ def matchingFiles( path, regexp):
     pattern = re.compile( regexp )
     files = ls(path)
     return [f for f in files if pattern.match(f) is not None]
-
-def xrdcp( absDestDir, files ):
-    cp = 'cp'
-    destIsCastorDir = isCastorDir(absDestDir)
-    if destIsCastorDir: 
-        cp = 'xrdcp'
-        createCastorDir( absDestDir )
-        
-    for file in files:
-
-        cpfile = '%s %s %s' % (cp, file,absDestDir)
-        
-        if destIsCastorDir == False:
-            if isCastorDir( os.path.abspath(file) ):
-                cp = 'xrdcp'
-                cpfile = '%s "root://castorcms/%s?svcClass=cmst3&stageHost=castorcms" %s' % (cp, file,absDestDir)
-
-        print cpfile
-        os.system(cpfile)
-
     
 if __name__ == '__main__':
     
@@ -223,6 +274,11 @@ if __name__ == '__main__':
             
             self.castorfile = '/castor/cern.ch/cms/store/cmst3/user/wreece/EOS_TEST/test_file.txt'
             self.eosfile = '/eos/cms/store/cmst3/user/wreece/EOS_TEST/test_file.txt'
+            
+        def tearDown(self):
+            
+            if fileExists(self.eosfile + 'FOO'): rm(self.eosfile + 'FOO')
+            if fileExists(self.eosfile + 'FOO2'): rm(self.eosfile + 'FOO2')
         
         def testWhich(self):
             
@@ -238,10 +294,10 @@ if __name__ == '__main__':
             self.assertTrue(isLFN(lfn))
         
         def testLFNToCastor(self):
-            self.assertNotEqual(lfnToCastor(self.eosfile),castortools.lfnToCastor(self.castorfile))
+            self.assertNotEqual(lfnToCastor(self.eosfile), castortools.lfnToCastor(self.castorfile))
             
         def testCastorToLFN(self):
-            self.assertEqual(castorToLFN(self.eosfile),castortools.castorToLFN(self.castorfile))
+            self.assertEqual(castorToLFN(self.eosfile), castortools.castorToLFN(self.castorfile))
         
         def testIsEOSDir(self):
             self.assertTrue(isEOSDir(eosToLFN(self.eosfile + 'FOO'))) #should still work if it doesn't exist
@@ -261,25 +317,25 @@ if __name__ == '__main__':
             self.assertTrue(fileExists(local))
             self.assertFalse(fileExists(local + 'FOO'))
             
-            self.assertEqual(fileExists(local),castortools.fileExists(local))
-            self.assertEqual(fileExists(local + 'FOO'),castortools.fileExists(local + 'FOO'))
+            self.assertEqual(fileExists(local), castortools.fileExists(local))
+            self.assertEqual(fileExists(local + 'FOO'), castortools.fileExists(local + 'FOO'))
             
         def testIsDirectory(self):
             
-            dir = os.path.dirname(self.eosfile)
-            self.assertTrue(isDirectory(dir))
+            d = os.path.dirname(self.eosfile)
+            self.assertTrue(isDirectory(d))
             self.assertFalse(isDirectory(self.eosfile))
             
         def testIsFile(self):
             
-            dir = os.path.dirname(self.eosfile)
-            self.assertFalse(isFile(dir))
+            d = os.path.dirname(self.eosfile)
+            self.assertFalse(isFile(d))
             self.assertTrue(isFile(self.eosfile))
             
         def testCreateEOSDir(self):
             
-            dir = os.path.join(os.path.dirname(self.eosfile),'TEST_DIR','BAR','FOO')
-            path = createEOSDir(dir)
+            d = os.path.join(os.path.dirname(self.eosfile), 'TEST_DIR', 'BAR', 'FOO')
+            path = createEOSDir(d)
             self.assertTrue(isEOSDir(path))
             self.assertTrue(fileExists(path))
             
@@ -290,16 +346,74 @@ if __name__ == '__main__':
             
         def testChmod(self):
             
-            out, err, ret = chmod(os.path.dirname(self.eosfile),'775')
-            self.assertEquals(ret,0)
+            _, _, ret = chmod(os.path.dirname(self.eosfile),'775')
+            self.assertEquals(ret, 0)
             
         def testMatchingFiles(self):
             
-            dir = os.path.dirname(self.eosfile)
-            matches = matchingFiles(dir, '.*test_file\\.txt$')
-            self.assertEqual(len(matches),1)
-            self.assertEqual(matches[0],eosToLFN(self.eosfile))
+            d = os.path.dirname(self.eosfile)
+            matches = matchingFiles(d, '.*test_file\\.txt$')
+            self.assertEqual(len(matches), 1)
+            self.assertEqual(matches[0], eosToLFN(self.eosfile))
             
+        def testCat(self):
+            self.assertEqual(cat(self.eosfile), 'This is some text')
+            self.assertEqual(cat(self.eosfile + 'FOO'), '')
+            
+        def testRemove(self):
+            
+            xrdcp(self.eosfile, self.eosfile + 'FOO')
+            self.assertTrue( fileExists(self.eosfile + 'FOO'))
+            remove([self.eosfile + 'FOO'])
+            self.assertFalse( fileExists(self.eosfile + 'FOO'))
+            
+            xrdcp(self.eosfile, self.eosfile + 'FOO')
+            self.assertTrue( fileExists(self.eosfile + 'FOO'))
+            remove([self.eosfile + 'FOO'], rec = True)
+            self.assertFalse( fileExists(self.eosfile + 'FOO'))
+        
+        def testCp(self):
+            
+            xrdcp(self.eosfile, self.eosfile + 'FOO')
+            self.assertTrue( fileExists(self.eosfile + 'FOO'))
+            rm(self.eosfile + 'FOO')
+            
+            import inspect
+            this = inspect.getsourcefile(TestEosTools)
+            
+            d = os.path.dirname(self.eosfile)
+            name = os.path.basename(this)
+            xrdcp(this,d)
+            self.assertTrue( fileExists(os.path.join(d,name)) )
+            rm( os.path.join(d,name) )
+            
+            xrdcp(self.eosfile, os.getcwd())
+            local = os.path.join(os.getcwd(), os.path.basename(self.eosfile))
+            self.assertTrue( os.path.exists(local) )
+            os.remove(local)
+            
+            xrdcp(self.eosfile, local)
+            self.assertTrue( os.path.exists(local) )
+            os.remove(local) 
+            
+        def testMove(self):
+            
+            xrdcp(self.eosfile, self.eosfile + 'FOO')
+            self.assertTrue( fileExists(self.eosfile + 'FOO') )
+
+            move(self.eosfile + 'FOO', self.eosfile + 'FOO2')
+            self.assertTrue( fileExists(self.eosfile + 'FOO2'))
+            self.assertFalse( fileExists(self.eosfile + 'FOO'))
+
+            rm(self.eosfile + 'FOO')
+            rm(self.eosfile + 'FOO2')
+            
+#            d = os.path.join(os.path.dirname(self.eosfile), 'TEST_DIR')
+#            path = createEOSDir(d)
+#            xrdcp(self.eosfile, path)
+#            move(path, d+'2')
+#            self.assertTrue( fileExists(d + '2'))
+#            self.assertTrue( isDirectory(d + '2'))
             
     suite = unittest.TestLoader().loadTestsFromTestCase(TestEosTools)
     unittest.TextTestRunner(verbosity=2).run(suite)
