@@ -26,11 +26,11 @@ if (not runOnData):
 
 
 if runOnData:
-    process.source.fileNames = cms.untracked.vstring('/store/data/Run2011A/HT/AOD/PromptReco-v1/000/161/312/FCDA9BD1-0358-E011-BB89-003048F024C2.root')
+    process.source.fileNames = cms.untracked.vstring('/store/cmst3/user/lucieg/CMG/MuHad/Run2011A-PromptReco-v4/AOD/PFAOD_95_1_sDI.root')
     if runAtFNAL:
         process.source.fileNames = cms.untracked.vstring('file:/uscms/home/mgouzevi/work/TEST_SAMPLES/Data_skim.root')
 else:
-    process.source.fileNames = cms.untracked.vstring('/store/relval/CMSSW_4_1_4/RelValTTbar/GEN-SIM-RECO/START311_V2-v1/0013/2A878D65-7D60-E011-9308-00261894393D.root')   
+    process.source.fileNames = cms.untracked.vstring('/store/cmst3/user/lucieg/CMG/MuHad/Run2011A-PromptReco-v4/AOD/PFAOD_95_1_sDI.root')
     if runAtFNAL:
         process.source.fileNames = cms.untracked.vstring('file:/uscms/home/mgouzevi/work/TEST_SAMPLES/Reco_RSGraviton_500_skim.root')
 
@@ -70,8 +70,7 @@ myJetSequence(process)
 
 
 process.analysisSequence = cms.Sequence(
-    process.jetSequence +
-    process.runInfoAccounting
+    process.jetSequence
     )
 
 
@@ -86,6 +85,14 @@ process.p = cms.Path(
     process.analysisSequence +
     process.select
     )
+
+
+if not runOnData:
+   process.load("CMGTools.Common.runInfoAccounting/runInfoAccounting_cfi")
+   process.outpath += process.runInfoAccounting
+else:
+   process.load("CMGTools.Common.runInfoAccounting/runInfoAccountingData_cfi")
+   process.outpath += process.runInfoAccountingData
 
 process.out.SelectEvents.SelectEvents.append('p')
 
