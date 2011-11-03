@@ -11,13 +11,16 @@ class Dataset():
         self.castorDir = castortools.lfnToCastor( self.lfnDir )
         self.pollFiles( pattern )
         self.pollBadFiles()
+        print 'dataset ready'
         
     def pollFiles(self, pattern='.*root'):
         '''fills list of files, taking all root files matching the pattern in the castor dir'''
+        print 'dataset: accessing list of files'
         self.files = castortools.matchingFiles( self.castorDir, pattern )
 
     def pollBadFiles(self):
         '''fills the list of bad files from the IntegrityCheck log'''
+        print 'dataset: accessing bad file mask (is it too long? run edmIntegrity check yourself)'
         mask = "IntegrityCheck"
         file_mask = castortools.matchingFiles(self.castorDir, '^%s_.*\.txt$' % mask)
         self.bad_files = {}    

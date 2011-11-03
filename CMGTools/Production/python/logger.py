@@ -1,7 +1,7 @@
 
 import sys,os, re, subprocess, datetime
 
-import CMGTools.Production.castortools as castortools
+import CMGTools.Production.eostools as castortools
 
 class logger:
 
@@ -149,7 +149,7 @@ class logger:
 
     def stageOut(self, castorDir):
 
-        castorDir = castortools.castorToLFN( castorDir )
+        castorDir = castortools.eosToLFN( castorDir )
         if not castortools.isLFN( castorDir ):
             print 'cannot stage out, you need to provide an LFN as a destination directory, beginning with /store .'
             return False
