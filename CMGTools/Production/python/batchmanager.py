@@ -4,14 +4,12 @@ from datetime import datetime
 from optparse import OptionParser
 
 import sys
-import string
 import os
 import re
 import pprint
-import shutil
 import time
 
-import CMGTools.Production.castortools as castortools
+import CMGTools.Production.eostools as castortools
 
 class BatchManager:
     """
