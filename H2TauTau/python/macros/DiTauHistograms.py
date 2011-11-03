@@ -16,6 +16,10 @@ class DiTauHistograms:
         print 'filling histograms: ' + self.name
         tree.Draw('tauMu.obj[0].pZeta()>>'+self.h_pzeta.GetName(),cut,'goff',nEvents)
         tree.Draw('tauMu.obj[0].mass()>>'+self.h_vismass.GetName(),cut,'goff',nEvents)
+
+    def fillDiTau(self, diTau):
+        self.h_pzeta.Fill( diTau.pZeta() )
+        self.h_vismass.Fill( diTau.mass() )
         
     def formatHistos(self, style ):
         for hist in self.hists:
