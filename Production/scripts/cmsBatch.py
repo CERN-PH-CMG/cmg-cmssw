@@ -99,6 +99,7 @@ echo 'sending the job directory back'
 """ % prog
 
    if remoteDir != '':
+      remoteDir = remoteDir.replace('/eos/cms','')
       script += """
 for file in *.root; do
 newFileName=`echo $file | sed -r -e 's/\./_%s\./'`
@@ -343,7 +344,8 @@ cfgFile.write( process.dumpPython() + '\n')
 cfgFile.close()
 
 # need to wait 5 seconds to give castor some time
-waitingTime = 5
+# now on EOS, should be ok. reducing to 1 sec
+waitingTime = 1
 if runningMode == 'LOCAL':
    # of course, not the case when running with nohup
    # because we will never have enough processes to saturate castor.
