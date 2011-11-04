@@ -1,16 +1,18 @@
 
 from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
 
-import sys,os,imp
+import os
 
-
-import CMGTools.Production.castortools as castortools
 from CMGTools.Production.relvalDefinition import *
 from CMGTools.Production.addToDatasets import *
+from CMGTools.Production.castorBaseDir import myCastorBaseDir
 
 # main parameters
     
-def processRelVal( relval, cfgFileName, process, negate, tier=None):
+def processRelVal( relval, cfgFileName, process, negate, tier=None, batch = None):
+    
+    if batch is None:
+        batch = 'bsub -q %s -J %s < ./batchScript.sh | tee job_id.txt' % relval
     
     relvalID = relval.id()
 
@@ -43,7 +45,7 @@ def processRelVal( relval, cfgFileName, process, negate, tier=None):
         dataset += '/' + tier
         
     outDir = '.' + dataset
-    castorOutDir = castorBaseDir + '/' + dataset
+    castorOutDir = myCastorBaseDir() + '/' + dataset
 
     #if tier!=None:
     #    castorOutDir += '/' + tier
@@ -55,7 +57,7 @@ def processRelVal( relval, cfgFileName, process, negate, tier=None):
     # output directory creation will be handled by cmsBatch
     # os.system( 'mkdir -p ' + outDir )
     
-    cmsBatch = "cmsBatch.py 1 tmpConfig.py -r %s -o %s -b '%s' " % (castorOutDir,outDir,options.batch)
+    cmsBatch = "cmsBatch.py 1 tmpConfig.py -r %s -o %s -b '%s' " % (castorOutDir, outDir, batch)
     if negate:
         cmsBatch += ' -n'
     print cmsBatch
