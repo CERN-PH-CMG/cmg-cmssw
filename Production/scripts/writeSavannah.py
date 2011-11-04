@@ -5,11 +5,11 @@
 
 from datetime import datetime
 from CMGTools.Production.savannahConnect import savannahConnect
-import sys,os, re, subprocess, datetime
-import CMGTools.Production.castortools as castortools
+import sys, os, datetime
+import CMGTools.Production.eostools as castortools
 import CMGTools.Production.castorBaseDir as castorBaseDir
 import CMGTools.Production.DBLogger as DBLogger
-import getpass, glob
+import getpass
 from optparse import OptionParser
 from DBSAPI.dbsProcessedDataset import DbsProcessedDataset
 from DBSAPI.dbsPrimaryDataset import DbsPrimaryDataset
