@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
-from CMGTools.Production.edmIntegrityCheck import *
+from CMGTools.Production.edmIntegrityCheck import PublishToFileSystem, IntegrityCheck
+import Das
+
+import copy, os
 
 if __name__ == '__main__':
     
