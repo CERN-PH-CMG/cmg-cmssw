@@ -97,13 +97,19 @@ def addPatSequence(process, runOnMC, addPhotons=True) :
     #electron ID
     process.load("ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff")
     process.load("RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_DataTuning_cfi")
+    process.load("RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_cfi")
     process.electronIDSequence = cms.Sequence(
         process.simpleEleIdSequence +
         process.eidVeryLoose +
         process.eidLoose +
         process.eidMedium +
         process.eidTight +
-        process.eidSuperTight
+        process.eidSuperTight+
+        process.eidVeryLooseMC +
+        process.eidLooseMC +
+        process.eidMediumMC +
+        process.eidTightMC +
+        process.eidSuperTightMC
         )
 
     applyPostfix( process, 'patElectrons', postfix ).electronIDSources = cms.PSet(
@@ -117,7 +123,12 @@ def addPatSequence(process, runOnMC, addPhotons=True) :
         eidLoose = cms.InputTag("eidLoose"),
         eidMedium = cms.InputTag("eidMedium"),
         eidTight = cms.InputTag("eidTight"),
-        eidSuperTight = cms.InputTag("eidSuperTight")
+        eidSuperTight = cms.InputTag("eidSuperTight"),
+        eidVeryLooseMC = cms.InputTag("eidVeryLooseMC"),
+        eidLooseMC = cms.InputTag("eidLooseMC"),
+        eidMediumMC = cms.InputTag("eidMediumMC"),
+        eidTightMC = cms.InputTag("eidTightMC"),
+        eidSuperTightMC = cms.InputTag("eidSuperTightMC")       
         )
 
     #add secondary vertex mass to jets

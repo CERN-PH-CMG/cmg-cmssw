@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
   TString url=runProcess.getParameter<std::string>("input");
   TString outdir=runProcess.getParameter<std::string>("outdir");
   bool isMC = runProcess.getParameter<bool>("isMC");
-  
+  int mctruthmode = runProcess.getParameter<int>("mctruthmode");
   int evStart=runProcess.getParameter<int>("evStart");
   int evEnd=runProcess.getParameter<int>("evEnd");
   TString dirname = runProcess.getParameter<std::string>("dirName");
@@ -108,6 +108,7 @@ int main(int argc, char* argv[])
 	  controlHistos.addHistogram( new TH1D (subcat+"qt", ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", 200,0,600) );
 	  controlHistos.addHistogram( new TH1D (subcat+"ptjets", ";p_{T}^{jet} [GeV/c];Jets / (2.5 GeV/c)", 200,0,600) );
 	  controlHistos.addHistogram( new TH1D (subcat+"ht", ";H_{T} [GeV];Events", 100,0,500) );
+	  if(icat==0) controlHistos.addHistogram( new TH1D (dilCats[idilcat]+"zmass",";M^{ll};Events", 100,91-31,91+31) );
 	  controlHistos.addHistogram( new TH1D (subcat+"mt", ";M_{T} [GeV];Events", 100,0,1000) );
 	  controlHistos.addHistogram( new TH1D (subcat+"dphill", ";#Delta#phi(l^{1},l^{2})[rad];Events", 100,0,3.2) );
 	  controlHistos.addHistogram( new TH1F (subcat+"njets", ";Jets;Events", 6,0,6) );
@@ -178,11 +179,11 @@ int main(int argc, char* argv[])
       int eventCategory = eventClassifComp.Get(phys);
       TString subcat    = eventClassifComp.GetLabel(eventCategory);
       bool isGammaEvent = gammaEvHandler.isGood(phys);
-      if(!isGammaEvent && ev.cat != dilepton::EE && ev.cat !=dilepton::MUMU) continue;
+      if(mctruthmode==22 && !isGammaEvent) continue;
+      if(!isGammaEvent && ev.cat != EE && ev.cat !=MUMU) continue;
 
-      float weight=ev.weight;
-      float newweight = LumiWeights.weight3D( ev.ngenOOTpu/2, ev.ngenITpu, ev.ngenOOTpu/2 );
-      cout << weight << " " << newweight << endl;
+      //float weight=ev.weight;
+      float weight = LumiWeights.weight3D( ev.ngenOOTpu/2, ev.ngenITpu, ev.ngenOOTpu/2 );
 
       //event categories
       std::vector<TString> dilCats;
@@ -194,24 +195,24 @@ int main(int argc, char* argv[])
 	  dilCats.push_back("ee");
 	  dilCats.push_back("mumu");
 	  dilCats.push_back("ll");
-	  r9   = phys.gammas[0].r9;
-	  ensf = ev.g_ecorr[0];
-	  gamma=gammaEvHandler.massiveGamma("ll");
+	  r9         = phys.gammas[0].r9;
+	  ensf       = ev.g_ecorr[0];
+	  gamma      = gammaEvHandler.massiveGamma("ll");
+	  triggerThr = gammaEvHandler.triggerThr();
 	}
       else
 	{
 	  gamma=phys.leptons[0]+phys.leptons[1];
 	  if(fabs(gamma.mass()-91)>15) continue;
-	  if(ev.cat==dilepton::MUMU) dilCats.push_back("mumu");
-	  if(ev.cat==dilepton::EE)   dilCats.push_back("ee");
-	  
+	  if(ev.cat==MUMU) dilCats.push_back("mumu");
+	  if(ev.cat==EE)   dilCats.push_back("ee");
+	  dilCats.push_back("ll");
 	  triggerThr=gammaEvHandler.findTriggerCategoryFor( gamma.pt() );
 	}
       
       //minimum threshold
       if(gamma.pt()<20 || gamma.pt()>500) continue;
-      if(fabs(gamma.eta())>1.4442) continue;
-
+      
       TString phoCat("photon");
       phoCat += triggerThr;
 
@@ -342,7 +343,7 @@ int main(int argc, char* argv[])
 	  mindphijmet = min(mindphijmet,dphijmet);
 	}
 
-      Float_t mt         = mtComp.compute(gamma,metP4,true);
+      Float_t mt = mtComp.compute(gamma,metP4,true);
 
       bool pass250( fabs(mindphijmet)>0.47 && metP4.pt()>59  && mt>222 && mt<272);
       bool pass300( fabs(mindphijmet)>0.33 && metP4.pt()>76  && mt>264 && mt<331);
@@ -367,7 +368,11 @@ int main(int argc, char* argv[])
 	      for(size_t idc=0; idc<dilCats.size(); idc++)
 		{
 		  float iweight=weight;
-		  if(isGammaEvent) iweight*=qtWeights[dilCats[idc]];
+		  if(isGammaEvent) 
+		    {
+		      iweight*=qtWeights[dilCats[idc]];
+		    }
+		  if(ic==0 && isc==0)  controlHistos.fillHisto(dilCats[idc]+"zmass",ctf,gamma.mass(),iweight);
 
 		  TString pre= subcats[isc]+dilCats[idc];
 		  controlHistos.fillHisto(pre+"nvtx",ctf, ev.nvtx,iweight);

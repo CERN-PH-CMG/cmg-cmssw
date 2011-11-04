@@ -32,167 +32,90 @@
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 typedef std::vector<LorentzVector> LorentzVectorCollection;
-typedef std::pair<reco::CandidatePtr, reco::VertexRef> CandidateWithVertex;
-typedef std::vector<reco::CandidatePtr> CandidateCollection;
-typedef std::vector<CandidateWithVertex> CandidateWithVertexCollection;
-typedef std::pair<reco::CandidateBaseRef,std::string> TriggerCandidate;
-typedef std::vector<TriggerCandidate> TriggerCandidateCollection;
 
-namespace trigger
+enum PhysicsChannels  { NOTDIL, DIL_OTHER, DY_MUMU, DY_EE, DY_TAUTAU, HIGGS };
+enum PhysicsObjects   { MET=0,JET=1,ELECTRON=11, MUON=13,PHOTON=22};
+enum DileptonChannels { UNKNOWN=0,MUMU=1,EE=2,EMU=3,ETAU=4,MUTAU=5, GAMMA=22};
+enum IsolType         { ECAL_ISO=0, HCAL_ISO, TRACKER_ISO, REL_ISO, N_ISO, C_ISO, G_ISO, PFREL_ISO};
+
+
+///                            ///   
+/// VERTEX SELECTION UTILITIES ///                                                                                                                                                                                                                                                                 
+///                            /// 
+std::vector<reco::VertexRef> getGoodVertices(edm::Handle<reco::VertexCollection> &hVtx, const edm::ParameterSet &iConfig);
+float getVertexMomentumFlux(const reco::Vertex *vtx, float minWeight=0.5);
+
+template<class T>
+std::pair<bool,Measurement1D> getImpactParameter(const T &trk, reco::Vertex *vtx, const edm::EventSetup &iSetup, bool is3d=true)
 {
-  void getLeadDileptonTriggerCandidates(edm::Event &iEvent, const edm::ParameterSet &iConfig, 
-					std::vector<const reco::Candidate *> &muons, 
-					std::vector<const reco::Candidate *> &electrons);
+  edm::ESHandle<TransientTrackBuilder> trackBuilder;
+  iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", trackBuilder);
+  reco::TransientTrack tt = trackBuilder->build(trk);
+  if(is3d) return IPTools::absoluteImpactParameter3D(tt, *vtx);
+  else     return IPTools::absoluteTransverseImpactParameter(tt, *vtx);
 }
-
-namespace gen
-{
-  /**
-     @short wrapper to access generator level event (aka MC truth)
-   */
-  std::map<std::string, std::vector<reco::CandidatePtr> > filter(edm::Handle<edm::View<reco::Candidate> > &hGen, const edm::ParameterSet &iConfig);
-  const reco::Candidate *getFinalStateFor(const reco::Candidate *p);
-
-  enum DYchannels {HIGGS, DIL_OTHER, DY_MUMU, DY_EE, DY_TAUTAU };
-  int assignDileptonChannel(edm::Handle<edm::View<reco::Candidate> > &genParticles);
-}
-
-namespace vertex
-{
-  /**
-     @short wrapper for the selection of vertices
-   */
-  std::vector<reco::VertexRef> filter(edm::Handle<reco::VertexCollection> &hVtx, const edm::ParameterSet &iConfig);
-  float getVertexMomentumFlux(const reco::Vertex *vtx, float minWeight=0.5);
-
-  /**
-     @short wrappers for the handling of single track related quantities
-   */
-  template<class T>
-  std::pair<bool,Measurement1D> getImpactParameter(const T &trk, reco::Vertex *vtx, const edm::EventSetup &iSetup, bool is3d=true)
-    {
-      edm::ESHandle<TransientTrackBuilder> trackBuilder;
-      iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", trackBuilder);
-      reco::TransientTrack tt = trackBuilder->build(trk);
-      if(is3d) return IPTools::absoluteImpactParameter3D(tt, *vtx);
-      else     return IPTools::absoluteTransverseImpactParameter(tt, *vtx);
-    }
   
-  template<class T>
-  reco::VertexRef getClosestVertexTo(const T *trk, std::vector<reco::VertexRef> &selVertices)
+template<class T>
+reco::VertexRef getClosestVertexTo(const T *trk, std::vector<reco::VertexRef> &selVertices)
+{
+  reco::VertexRef bestvtx;
+  double bestDz(1.0e7);
+  for(std::vector<reco::VertexRef>::iterator vIt = selVertices.begin(); vIt != selVertices.end(); vIt++)
     {
-      reco::VertexRef bestvtx;
-      double bestDz(1.0e7);
-      for(std::vector<reco::VertexRef>::iterator vIt = selVertices.begin(); vIt != selVertices.end(); vIt++)
-	{
-	  double dz = fabs( trk->dz( vIt->get()->position() ) );
-	  if( dz>bestDz ) continue;
-	  bestvtx=*vIt;
-	  bestDz=dz;
-	}
-      return bestvtx;
+      double dz = fabs( trk->dz( vIt->get()->position() ) );
+      if( dz>bestDz ) continue;
+      bestvtx=*vIt;
+      bestDz=dz;
     }
+  return bestvtx;
 }
 
 
-namespace photon
-{
-  std::pair<std::string,double> getPhotonTrigThreshold(edm::Handle<edm::TriggerResults> &triggerBitsH,
-                                                       const edm::TriggerNames &triggerNames,
-                                                       std::vector<std::string> &gammaTriggers);
-  
-  CandidateCollection filter(edm::Handle<edm::View<reco::Candidate> > &hPhoton, 
-			     EcalClusterLazyTools &lazyTool,
-			     edm::Handle<EcalRecHitCollection> ebrechits,
-			     edm::Handle<std::vector<reco::Track> > & hTracks,
-			     edm::Handle<edm::View<reco::Candidate> > &hEle,
-			     edm::Handle<std::vector<reco::Conversion> > &hConversions,
-			     std::vector<reco::VertexRef> &selVertices,
-			     double rho,
-			     const edm::ParameterSet &iConfig,
-			     double minEt=0.);
-
-  const reco::Conversion *matchToConversion(const pat::Photon *pho, const reco::Vertex *pv, edm::Handle<std::vector<reco::Conversion> > &hConversions);
-}
+///                            ///   
+/// LEPTON SELECTION UTILITIES ///
+///                            ///   
+std::vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> > &hMu, const reco::BeamSpot &theBeamSpot, const double& rho, const edm::ParameterSet &iConfig);
+std::vector<reco::CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &hEle,  edm::Handle<edm::View<reco::Candidate> > &hMu, const reco::BeamSpot &theBeamSpot, const double& rho, const edm::ParameterSet &iConfig);
+std::vector<reco::CandidatePtr> getDileptonCandidate(std::vector<reco::CandidatePtr> &selLeptons,  const edm::ParameterSet &iConfig,  const edm::EventSetup &iSetup);
+int getLeptonId(reco::CandidatePtr &lepton);
+int getDileptonId(std::vector<reco::CandidatePtr> &dilepton);
+double getLeptonPtError(reco::CandidatePtr &lepton);
+std::vector<double> getLeptonIso(reco::CandidatePtr &lepton, float minRelNorm=20, float puOffsetCorrection=0);
+const reco::GenParticle *getLeptonGenMatch(reco::CandidatePtr &lepton);
 
 
-namespace muon
-{
-  /**
-     @short muon selector (associates a primary vertex
-   */
-  CandidateWithVertexCollection filter(edm::Handle<edm::View<reco::Candidate> > &hMu, 
-				       std::vector<reco::VertexRef> &goodVertices, 
-				       const reco::BeamSpot &theBeamSpot,
-				       const double& rho,
-				       const edm::ParameterSet &iConfig);
-}
+///                            ///   
+/// PHOTON SELECTION UTILITIES ///
+///                            ///   
+std::vector<reco::CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hPhoton, 
+					 EcalClusterLazyTools &lazyTool, edm::Handle<EcalRecHitCollection> ebrechits,
+					 edm::Handle<std::vector<reco::Track> > & hTracks, edm::Handle<edm::View<reco::Candidate> > &hEle,
+					 edm::Handle<std::vector<reco::Conversion> > &hConversions,
+					 double rho, const edm::ParameterSet &iConfig);
+const reco::Conversion *matchPhotonToConversion(const pat::Photon *pho, edm::Handle<std::vector<reco::Conversion> > &hConversions);
 
-namespace electron
-{
-  /**
-     @short electron selector (cross cleans agains muons and associates a primary vertex)
-   */
-  CandidateWithVertexCollection filter(edm::Handle<edm::View<reco::Candidate> > &hEle, 
-				       edm::Handle<edm::View<reco::Candidate> > &hMu, 
-				       std::vector<reco::VertexRef> &goodVertices, 
-				       const reco::BeamSpot &theBeamSpot,
-                                       const double& rho,
-				       const edm::ParameterSet &iConfig);
-}
 
-namespace lepton
-{
-  /**
-     @short wrappers for common operations with leptons
-   */
-  enum {ELECTRON=11, MUON=13};
-  enum IsolType { ECAL_ISO=0, HCAL_ISO, TRACKER_ISO, REL_ISO, N_ISO, C_ISO, G_ISO, PFREL_ISO};
-  int getLeptonId(reco::CandidatePtr &lepton);
-  double getPtErrorFor(reco::CandidatePtr &lepton);
-  std::vector<double> getLeptonIso(reco::CandidatePtr &lepton, float minRelNorm=20, float puOffsetCorrection=0);
-  const reco::GenParticle *getLeptonGenMatch(reco::CandidatePtr &lepton);
-}
 
-namespace dilepton
-{
-  /**
-     @short selects the dileptons
-   */
-  enum DileptonClassification {UNKNOWN=0,MUMU=1,EE=2,EMU=3,ETAU=4,MUTAU=5, GAMMA=22};
-  std::pair<CandidateWithVertex,CandidateWithVertex> filter(CandidateWithVertexCollection &selLeptons, 
-							    const edm::ParameterSet &iConfig,
-							    const edm::EventSetup &iSetup);
-  int classify(std::pair<CandidateWithVertex,CandidateWithVertex> &selDilepton);
-}
+///                            ///   
+/// JET SELECTION UTILITIES    ///
+///                            ///   
+std::vector<reco::CandidatePtr> getGoodJets(edm::Handle<edm::View<reco::Candidate> > &hJet, std::vector<reco::CandidatePtr> &selPhysicsObjects, const edm::ParameterSet &iConfig);
+double computeVtxAssocFracForJet(const pat::Jet *jet, const reco::Vertex *vtx);
 
-namespace jet
-{
-  /**
-     @short selects jets and associates the vertex (from the vertex with highest betaAssoc value)
-   */
-  CandidateWithVertexCollection filter(edm::Handle<edm::View<reco::Candidate> > &hJet, 
-				       CandidateWithVertexCollection &selLeptons, 
-				       std::vector<reco::VertexRef> &goodVertices,
-				       const edm::ParameterSet &iConfig);
-  void classifyJetsForDileptonEvent(CandidateWithVertexCollection &selJets, 
-				    std::pair<CandidateWithVertex,CandidateWithVertex> &dilepton,
-				    CandidateWithVertexCollection &assocJets, 
-				    CandidateWithVertexCollection &puJets,
-				    double maxDz=0.1);
-  double fAssoc(const pat::Jet *jet, const reco::Vertex *vtx);
-}
 
-namespace met
-{
-  /**
-     @short returns standard MET, corrected for all the selected jets and corrected for all the PU jets
-  */
-  enum MetTypes { RAWMET=0, TYPEIMET, CORRECTED_TYPEIMET };
-  LorentzVectorCollection filter(LorentzVector &pfMET, std::vector<const pat::Jet *> &assocJets, std::vector<const pat::Jet *> &puJets, bool isRaw=false);
+///                           ///
+/// GENERATOR LEVEL UTILITIES ///
+///                           ///
+int assignPhysicsChannel(edm::Handle<edm::View<reco::Candidate> > &genParticles);
+std::vector<const reco::Candidate *> getGeneratorEvent(edm::Handle<edm::View<reco::Candidate> > &hGen, const edm::ParameterSet &iConfig);
+const reco::Candidate *getGeneratorFinalStateFor(const reco::Candidate *p);
 
-}
 
+//                    //
+// TRIGGER UTILITILES //
+//                    //
+std::pair<std::string,double> getHighestPhotonTrigThreshold(edm::Handle<edm::TriggerResults> &triggerBitsH, const edm::TriggerNames &triggerNames,  std::vector<std::string> &gammaTriggers);
+bool checkIfTriggerFired(edm::Handle<edm::TriggerResults> &allTriggerBis, const edm::TriggerNames &triggerNames, std::vector<std::string> &trigList); 
 
 
 #endif
