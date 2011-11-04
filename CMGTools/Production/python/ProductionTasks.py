@@ -92,7 +92,6 @@ class CheckDatasetExists(Task):
         pattern = fnmatch.translate(self.options.wildcard)
         listLevel = self.options.listLevel
         cmd = [script,self.dataset,'-u',self.user]
-        print cmd
         if listLevel:
             cmd.extend(['-l',listLevel])
         stdout = subprocess.Popen(cmd, stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[0]
@@ -208,8 +207,9 @@ class FindOnCastor(Task):
         if not castortools.fileExists(directory):
             ret = -1
             if hasattr(self,'create') and self.create:
-                ret = subprocess.call(['rfmkdir','-m','775','-p',directory])
-            if ret != 0: 
+                castortools.createCastorDir(directory)
+                castortools.chmod(directory,'775')
+            if castortools.isDirectory(directory): 
                 raise Exception("Dataset directory '%s' does not exist" % directory)
         return {'Topdir':topdir,'Directory':directory}  
 
@@ -255,7 +255,7 @@ class CheckForWrite(Task):
                 fname = '%s/%s' % (dir,os.path.basename(name))
                 write = castortools.fileExists(fname)
                 if write:
-                    os.system('rfrm %s' % fname)
+                    castortools.rm(fname)
                 else:
                     raise Exception("Failed to write to directory '%s'" % dir)
             os.remove(name)
