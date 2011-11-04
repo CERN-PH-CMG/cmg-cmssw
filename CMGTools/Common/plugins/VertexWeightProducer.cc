@@ -25,15 +25,8 @@ class VertexWeightProducer : public edm::EDProducer{
 
  private:
 
-  TH1* getHistogram(const char* name, TFile* file);
-  
   edm::InputTag src_;
-  TH1D* histMC_;
-  TH1D* histData_;
   TH1D* histWeight_;
-  TFile* fileMC_;
-  TFile* fileData_;
-
   bool verbose_;
 };
 
@@ -41,51 +34,41 @@ VertexWeightProducer::VertexWeightProducer(const edm::ParameterSet& ps):
   src_(ps.getParameter<edm::InputTag>("src")), 
   verbose_(ps.getUntrackedParameter<bool>("verbose",false)) {
 
-  TFile* fileMC_ = new TFile( ps.getParameter<std::string>("inputHistMC").c_str() );
-  TFile* fileData_ = new TFile( ps.getParameter<std::string>("inputHistData").c_str() );
-  
-  if(fileData_->IsZombie()||fileMC_->IsZombie()){
-    cout<<fileData_->GetName()<<" or "<<fileMC_->GetName()<<" not valid "<<endl;
-    assert(false);
-    //COLIN throw exception
-  }
 
+  TFile fileData( ps.getParameter<std::string>("inputHistData").c_str() );  
+  if(fileData.IsZombie())
+    throw cms::Exception("VertexWeightProducer")<<" bad input Data file "<<fileData.GetName();
+
+  TFile fileMC( ps.getParameter<std::string>("inputHistMC").c_str() );
+  if(fileMC.IsZombie())
+    throw cms::Exception("VertexWeightProducer")<<" bad input MC file "<<fileMC.GetName();
  
-  histData_ = (TH1D*) getHistogram("pileup", fileData_);
-  histMC_ = (TH1D*) getHistogram("MCPUPHisto", fileMC_);
-  
-  histData_->Scale( 1/histData_->Integral() );
-  histMC_->Scale( 1/histMC_->Integral() );
+  TH1D* histData = (TH1D*)fileData.Get("pileup");
+  if(!histData) 
+    throw cms::Exception("VertexWeightProducer")<<"Data histogram doesn't exist in file "<<fileData.GetName();
 
-  // truncating the histogram with the largest number of bins to the shortest. 
-  //COLIN do that before or after normalization? 
-  int minNbinsX = histData_->GetNbinsX() >= histMC_->GetNbinsX() ? histMC_->GetNbinsX() : histData_->GetNbinsX();
+  TH1D* histMC = (TH1D*)fileMC.Get("pileup");
+  if(!histMC) 
+    throw cms::Exception("VertexWeightProducer")<<"MC histogram doesn't exist in file "<<fileMC.GetName();
 
-  histWeight_ = new TH1D("weight", "", minNbinsX, 0, minNbinsX);
-  for(int ib = 1; ib<=minNbinsX; ++ib ) {
-    histWeight_->SetBinContent( ib,  histData_->GetBinContent(ib)/histMC_->GetBinContent(ib) );
+
+  //Normalize to 1
+  histData->Scale(1./histData->Integral());
+  histMC->Scale(1./histMC->Integral());
+
+  //set binning to the one with less bins
+  int nbins=histData->GetNbinsX()<histMC->GetNbinsX() ? histData->GetNbinsX() : histMC->GetNbinsX();    
+  histWeight_ = new TH1D("histWeight","",nbins,-0.5,nbins-0.5);
+  for(int ib = 1; ib<=nbins; ++ib ) {
+    if(histMC->GetBinContent(ib)>0.0) histWeight_->SetBinContent( ib,  histData->GetBinContent(ib)/histMC->GetBinContent(ib) );
+    else  histWeight_->SetBinContent( ib,0.0);
   }
 
-  cout<<histWeight_->GetNbinsX()<<" "<<histMC_->GetNbinsX()<<" "<<histData_->GetNbinsX()<<endl;
-  
-  //   histWeight_->Divide( histMC_ );
-
-  //COLIN throw exception
 
   produces<double>();
 
 }
 
-
-TH1* VertexWeightProducer::getHistogram(const char* name, TFile* file) {
-  TH1* hist = (TH1*)file->Get( name );
-  if(!hist) {
-    throw cms::Exception("VertexWeightProducer")<<"histogram "<<name
-						<<"doesn't exist in file "<<file->GetName();
-  }
-  else 
-    return hist;
-}
 
 
 VertexWeightProducer::~VertexWeightProducer() {
@@ -98,28 +81,20 @@ void VertexWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
   edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
   iEvent.getByLabel(src_, PupInfo);
  
-  double mcPUPWeight = 1.0;
+  double mcPUPWeight = 0.;//default weight is set to 0 in case npv is out of range
   int npv=-1;
+  for( std::vector<PileupSummaryInfo>::const_iterator PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) 
+    if(PVI->getBunchCrossing() == 0) npv = PVI->getPU_NumInteractions();
 
-  for( std::vector<PileupSummaryInfo>::const_iterator PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {    
-    int BX = PVI->getBunchCrossing();    
-    if(BX == 0) { 
-      npv = PVI->getPU_NumInteractions();
-      continue;
-    }    
-  }
-  assert(npv>-1);
-
-  if( npv > histWeight_->GetNbinsX() ) {
-    double smallWeight = 0.000000001;
-    edm::LogError("VertexWeightProducer")<<"number of interactions: "<<npv<<" > the number of bins in the weight histogram: "<< histWeight_->GetNbinsX() <<". Setting weight to "<<smallWeight;
-    mcPUPWeight = smallWeight;
-  }
-  else 
-    mcPUPWeight = histWeight_->GetBinContent( npv+1 ); 
+  if(  0<= npv && npv < histWeight_->GetNbinsX()  ) 
+    mcPUPWeight = histWeight_->GetBinContent( npv+1 ); //npv=0 corresponds to bin # 1
   
   if( verbose_ )
-    cout<<npv<<" "<<mcPUPWeight<<" "<<histMC_->GetNbinsX()<<endl;
+    cout<<" npv="<<npv
+	<<" weight="<<mcPUPWeight
+	<<" histXmin="<<histWeight_->GetXaxis()->GetXmin()
+	<<" histXmax="<<histWeight_->GetXaxis()->GetXmax()
+	<<endl;
 
   std::auto_ptr<double> output( new double( mcPUPWeight ) ); 
   iEvent.put( output );
