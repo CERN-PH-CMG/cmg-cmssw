@@ -301,7 +301,6 @@ vector<double> getLeptonIso(reco::CandidatePtr &lepton,float minRelNorm, float p
 //
 vector<CandidatePtr> getDileptonCandidate(vector<CandidatePtr> &selLeptons,  const edm::ParameterSet &iConfig, const edm::EventSetup &iSetup)
 {
-  bool candidateFound(false);
   vector<CandidatePtr> selDilepton;
   
   try{
@@ -327,8 +326,8 @@ vector<CandidatePtr> getDileptonCandidate(vector<CandidatePtr> &selLeptons,  con
 	    //build the dilepton candidate
 	    double candsumpt=lep1Ptr->pt()+lep2Ptr->pt();
 	    
-	    //take candidate if none or leading in sum pT
-	    if(candidateFound) 
+	    //if a candidate is already available take this if leading in sum pT
+	    if(selDilepton.size()==2) 
 	      {
 		double sumpt=selDilepton[0]->pt()+selDilepton[1]->pt();
 		if(sumpt>candsumpt) continue;
