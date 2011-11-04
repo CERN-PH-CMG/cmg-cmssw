@@ -641,7 +641,7 @@ const reco::Conversion *matchPhotonToConversion(const pat::Photon *pho, edm::Han
 //                            //
 
 //
-vector<const reco::Candidate *> filter(edm::Handle<edm::View<reco::Candidate> > &hGen, const edm::ParameterSet &iConfig)
+vector<const reco::Candidate *> getGeneratorEvent(edm::Handle<edm::View<reco::Candidate> > &hGen, const edm::ParameterSet &iConfig)
 {
   vector<const reco::Candidate *> particles;
   
