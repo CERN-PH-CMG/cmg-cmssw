@@ -49,7 +49,6 @@ int main(int argc, char* argv[])
   TString url=runProcess.getParameter<std::string>("input");
   TString outdir=runProcess.getParameter<std::string>("outdir");
   bool isMC = runProcess.getParameter<bool>("isMC");
-  bool useFitter = runProcess.getParameter<bool>("useFitter");
   int evStart=runProcess.getParameter<int>("evStart");
   int evEnd=runProcess.getParameter<int>("evEnd");
   TString dirname = runProcess.getParameter<std::string>("dirName");
@@ -250,9 +249,9 @@ int main(int argc, char* argv[])
 
       //event categories
       TString evcat("");
-      if(ev.cat==dilepton::EMU)  evcat="emu";
-      if(ev.cat==dilepton::MUMU) evcat="mumu";
-      if(ev.cat==dilepton::EE)   evcat="ee";
+      if(ev.cat==EMU)  evcat="emu";
+      if(ev.cat==MUMU) evcat="mumu";
+      if(ev.cat==EE)   evcat="ee";
       TString cats[]={"all",evcat};
 
 

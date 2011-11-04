@@ -33,9 +33,9 @@ process.load('CMGTools.HtoZZ2l2nu.CleanEventAnalyzer_cfi')
 process.TFileService = cms.Service("TFileService", fileName = cms.string(outputFile) )
 
 if(needsPtReweight) :
-    process.p = cms.Path(process.ClusteredPFMetSequence*process.hkfactorSequence*process.puWeightSequence*process.cleanEvent*process.evAnalyzer)
+    process.p = cms.Path(process.ClusteredPFMetSequence*process.hkfactorSequence*process.puWeightSequencet*process.evAnalyzer)
 else :
-    process.p = cms.Path(process.ClusteredPFMetSequence*process.puWeightSequence*process.cleanEvent*process.evAnalyzer)
+    process.p = cms.Path(process.ClusteredPFMetSequence*process.puWeightSequence*process.evAnalyzer)
 
 # message logger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")

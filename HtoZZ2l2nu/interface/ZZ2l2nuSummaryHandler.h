@@ -26,7 +26,7 @@ struct ZZ2l2nuSummary_t
   Bool_t hasTrigger;
 
   //gen level 
-  Int_t nvtx, ngenITpu,ngenOOTpu;
+  Int_t nvtx, ngenITpu,ngenOOTpu,ngenOOTpum1;
   Float_t weight, normWeight, hptWeights[5];
   Float_t rho;
   Float_t pthat,genWeight, qscale, x1,x2;

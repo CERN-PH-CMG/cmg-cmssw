@@ -1,5 +1,7 @@
 #include "CMGTools/HtoZZ2l2nu/interface/GammaEventHandler.h"
 
+using namespace std;
+
 //
 GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
 {
@@ -20,12 +22,13 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
       TString wgtName = gammaPtWeightsFile;
       wgtName=gSystem->BaseName(wgtName.ReplaceAll(".root",""));
       wgtName=((TObjString *)(wgtName.Tokenize("_")->At(1)))->GetString();
-      
+      wgtName=wgtName.ReplaceAll("gamma","gamma_"); 
       TString categories[]={"eq0jets","eq1jets","geq2jets","vbf"};
       TString dilCategories[]={"ee","mumu","ll"};
+    
       for(size_t icat=0; icat<sizeof(categories)/sizeof(TString); icat++)
 	{
-	  for(size_t idilcat=0; icat<sizeof(dilCategories)/sizeof(TString); idilcat++)
+	  for(size_t idilcat=0; idilcat<sizeof(dilCategories)/sizeof(TString); idilcat++)
 	    {
 	      for(size_t itrig=0; itrig<gammaCats_.size(); itrig++)
 		{
@@ -33,7 +36,6 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
 		  TString key=categories[icat]+"_photon";
 		  key += gammaCats_[itrig];
 		  key += dilCategories[idilcat];
-		  
 		  TH1 *h=(TH1 *)fwgt_->Get(key+wgtName);
 		  if(h==0) continue;
 		  wgtsH_[key] = h;
@@ -41,6 +43,13 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
 		}
 	    }
 	}
+
+      for(size_t idilcat=0; idilcat<sizeof(dilCategories)/sizeof(TString); idilcat++)
+	{
+	  zmassH_[dilCategories[idilcat]]= (TH1 *) fwgt_->Get(dilCategories[idilcat]+"zmass");
+	  zmassH_[dilCategories[idilcat]]->SetDirectory(0);
+	}
+
       fwgt_->Close();
     }
   
@@ -94,7 +103,6 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys)
       
       float weight(1.0);
       evWeights_[dilCategories[idilcat]]=weight;
-      
       TString wgtKey=evCategoryLabel+"_"+photonCategory_+dilCategories[idilcat];
       if( wgtsH_.find(wgtKey) == wgtsH_.end()) continue;
       

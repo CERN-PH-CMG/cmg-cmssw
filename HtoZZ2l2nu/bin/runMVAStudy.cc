@@ -17,7 +17,6 @@
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
 #include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
-#include "CMGTools/HtoZZ2l2nu/interface/ReducedMETFitter.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ReducedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/TransverseMassComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ProjectedMETComputer.h"
@@ -35,7 +34,6 @@ int main(int argc, char *argv[])
   //init computers
   ProjectedMETComputer pmetComp;
   ReducedMETComputer rmetComp(1., 1., 1., 1., 1.);
-  //ReducedMETFitter rmetFitter(runProcess);                                                                                                                                                                                                   
   TransverseMassComputer mtComp;
   EventCategory eventClassifComp;
 

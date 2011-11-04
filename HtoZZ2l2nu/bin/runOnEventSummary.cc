@@ -3,10 +3,9 @@
 
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
-#include "CMGTools/HtoZZ2l2nu/interface/GammaEventHandler.h"
-#include "CMGTools/HtoZZ2l2nu/interface/ReducedMETFitter.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ReducedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/TransverseMassComputer.h"
+#include "CMGTools/HtoZZ2l2nu/interface/GammaEventHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ProjectedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
 #include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
@@ -146,13 +145,8 @@ int main(int argc, char* argv[])
   ReducedMETComputer r3Comp(1., 1., 1., 1., 1.);
   ReducedMETComputer rmAComp(1., 1., 1., 1., 1.);
 
-
-  //ReducedMETFitter rmetFitter(runProcess);
   TransverseMassComputer mtComp;
   EventCategory eventClassifComp;
-
-  reweight::PoissonMeanShifter PShiftUp(+0.6);
-  reweight::PoissonMeanShifter PShiftDown(-0.6);
 
   // load framework libraries
   gSystem->Load( "libFWCoreFWLite" );
@@ -185,11 +179,29 @@ int main(int argc, char* argv[])
   const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
   TString url=runProcess.getParameter<std::string>("input");
   TString outdir=runProcess.getParameter<std::string>("outdir");
-  bool isMC = runProcess.getParameter<bool>("isMC");
-  double xsec = runProcess.getParameter<double>("xsec");
-
   TString outUrl( outdir );
   gSystem->Exec("mkdir -p " + outUrl);
+
+  bool isMC = runProcess.getParameter<bool>("isMC");
+  double xsec = runProcess.getParameter<double>("xsec");
+  int mctruthmode=runProcess.getParameter<int>("mctruthmode");
+
+  //handler for gamma processes
+  GammaEventHandler *gammaEvHandler=0;
+  if(mctruthmode==22) 
+    {
+      isMC=false;
+      gammaEvHandler = new GammaEventHandler(runProcess);
+    }
+
+  //pileup weighting
+  edm::LumiReWeighting LumiWeights(runProcess.getParameter<std::string>("mcpileup"), runProcess.getParameter<std::string>("datapileup"), "pileup","pileup");
+  std::string puWeightFile = runProcess.getParameter<std::string>("puWeightFile");
+  if(puWeightFile.size()==0)  LumiWeights.weight3D_init();
+  else                        LumiWeights.weight3D_init(puWeightFile);
+  reweight::PoissonMeanShifter PShiftUp(+0.6);
+  reweight::PoissonMeanShifter PShiftDown(-0.6);
+
 
   //tree info
   int evStart=runProcess.getParameter<int>("evStart");
@@ -217,13 +229,6 @@ int main(int argc, char* argv[])
   std::vector<int> evCategories           = tmvaInput.getParameter<std::vector<int> >("evCategories");
   std::string weightsDir                  = tmvaInput.getParameter<std::string>("weightsDir");
   std::string studyTag                    = tmvaInput.getParameter<std::string>("studyTag");
-
-  GammaEventHandler gammaEvHandler(runProcess);
-  edm::LumiReWeighting LumiWeights(runProcess.getParameter<std::string>("mcpileup"), runProcess.getParameter<std::string>("datapileup"), "pileup","pileup");
-  std::string puWeightFile = runProcess.getParameter<std::string>("puWeightFile");
-  if(puWeightFile.size()==0)  LumiWeights.weight3D_init();
-  else                        LumiWeights.weight3D_init(puWeightFile);
-
 
   std::vector<Float_t> discriResults(methodList.size(),0);
   Float_t pdeFoamError(0), pdeFoamSig(0), fisherProb(0), fisherRarity(0);
@@ -529,7 +534,8 @@ int main(int argc, char* argv[])
       varsToInclude.push_back("hfactdown");
       varsToInclude.push_back("hrenup");
       varsToInclude.push_back("hrendown");
-      varsToInclude.push_back("flatpu");
+      varsToInclude.push_back("puup");
+      varsToInclude.push_back("pudown");
     }
   for(size_t ivar=0; ivar<varsToInclude.size(); ivar++)
     {
@@ -652,7 +658,6 @@ int main(int argc, char* argv[])
   DuplicatesChecker duplicatesChecker;
 
   double VBFWEIGHTINTEGRAL = 0;
-
     
   // init summary tree (unweighted events for MVA training) 
   bool saveSummaryTree = runProcess.getParameter<bool>("saveSummaryTree");
@@ -677,9 +682,8 @@ int main(int argc, char* argv[])
     }  
   if(!isMC) outf=new ofstream("highmetevents.txt",ios::app);  
 
-
-
   //run the analysis
+  //
   unsigned int NumberOfDuplicated = 0;
   for( int iev=evStart; iev<evEnd; iev++)
     {
@@ -695,12 +699,33 @@ int main(int argc, char* argv[])
       //       }
 
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
-//      float weight=ev.weight;
+      
+      //OOT pu condition
+      TString ootCond("");
+      if(isMC)
+	{
+	  double sigma        = sqrt(double(2*ev.ngenITpu));
+	  double minCentralPu = -sigma;
+	  double maxCentralPu = sigma;
+	  double maxHighPu    = 2*sigma;
+	  double puDiff       = double(ev.ngenOOTpu-2*ev.ngenITpu);
+	  if(puDiff>=maxHighPu)         ootCond="VeryHighOOTpu";
+	  else if(puDiff>=maxCentralPu) ootCond="HighOOTpu";
+	  else if(puDiff>=minCentralPu) ootCond="MediumOOTpu";
+	  else                          ootCond="LowOOTpu";
+	}
+
+      //pileup and Higgs pT weight
+      //float weight=ev.weight;
       float weight = LumiWeights.weight3D( ev.ngenOOTpu/2, ev.ngenITpu, ev.ngenOOTpu/2 );
+      double TotalWeight_plus = PShiftUp.ShiftWeight( ev.ngenITpu );
+      double TotalWeight_minus = PShiftDown.ShiftWeight( ev.ngenITpu );
+
       if(!isMC) weight=1;
       else if(ev.hptWeights[0]>1e-6) weight *= ev.hptWeights[0];
-      double VBFWeight=1.0;
 
+      // -> do we have to do this for every event ? 
+      double VBFWeight=1.0;
       string FileName = string(url.Data());
       size_t VBFStringpos = FileName.find("VBF");
       if(VBFStringpos!=string::npos){
@@ -716,13 +741,26 @@ int main(int argc, char* argv[])
       //
       //event categories
       //
-      TString evcat("");
-      if(ev.cat==dilepton::EMU)  continue;//evcat="emu";
-      if(ev.cat==dilepton::MUMU) evcat="mumu";
-      if(ev.cat==dilepton::EE)   evcat="ee";
+      std::vector<TString> evcats;
+      if(ev.cat==EMU)  continue;//evcats.push_back("emu");
+      if(ev.cat==MUMU) evcats.push_back("mumu");
+      if(ev.cat==EE)   evcats.push_back("ee");
+
+      if(isMC && mctruthmode==1 && ev.mccat!=DY_EE && ev.mccat!=DY_MUMU)  continue;
+      if(isMC && mctruthmode==2 && ev.mccat!=DY_TAUTAU) continue;
      
       int eventCategory = eventClassifComp.Get(phys);
       TString subcat    = eventClassifComp.GetLabel(eventCategory);
+
+      bool isGammaEvent(false);
+      if(gammaEvHandler)
+	{
+	  isGammaEvent=gammaEvHandler->isGood(phys);
+	  if(mctruthmode==22 && !isGammaEvent) continue;
+	  evcats.push_back("mumu");
+	  evcats.push_back("ee");
+	}
+
 
       //MC truth
       LorentzVector genzll(0,0,0,0), genzvv(0,0,0,0), genhiggs(0,0,0,0);
@@ -732,14 +770,8 @@ int main(int argc, char* argv[])
          genhiggs = phys.genhiggs[0];
       }
 
-      LorentzVector zll  = phys.leptons[0]+phys.leptons[1];
+      LorentzVector zll = isGammaEvent ? gammaEvHandler->massiveGamma("ll") : phys.leptons[0]+phys.leptons[1];
       LorentzVector zvv  = phys.met[0];
-
-      bool isGammaEvent = gammaEvHandler.isGood(phys);
-      if(isGammaEvent){
-         zll = gammaEvHandler.massiveGamma("ll");
-      }
-
 
       //count jets and b-tags
       int njets(0),njetsinc(0);
@@ -788,18 +820,23 @@ int main(int argc, char* argv[])
       LorentzVector assocFwdCMetP4 = assocMetP4 + fwdClusteredMetP4;
       LorentzVector assocCMetP4=phys.met[13];
       LorentzVector assocFwd2MetP4=phys.met[14];
+      if(isGammaEvent)
+        {
+          assocChargedMetP4 -= zll;
+          if(!phys.gammas[0].isConv) assocMetP4 -= zll;
+        }
 
       //z+met kinematics
-      Float_t dphill     = deltaPhi(phys.leptons[0].phi(),phys.leptons[1].phi());
-      Float_t detall     = phys.leptons[0].eta()-phys.leptons[1].eta();
-      Float_t drll       = deltaR(phys.leptons[0],phys.leptons[1]);
-      Float_t mindrlz    = min( deltaR(phys.leptons[0],zll), deltaR(phys.leptons[1],zll) );
-      Float_t maxdrlz    = max( deltaR(phys.leptons[0],zll), deltaR(phys.leptons[1],zll) );
-      Float_t ptl1       = phys.leptons[0].pt();
-      Float_t ptl2       = phys.leptons[1].pt();
+      Float_t dphill     = isGammaEvent ? 0 : deltaPhi(phys.leptons[0].phi(),phys.leptons[1].phi());
+      Float_t detall     = isGammaEvent ? 0 : phys.leptons[0].eta()-phys.leptons[1].eta();
+      Float_t drll       = isGammaEvent ? 0 : deltaR(phys.leptons[0],phys.leptons[1]);
+      Float_t mindrlz    = isGammaEvent ? 0 : min( deltaR(phys.leptons[0],zll), deltaR(phys.leptons[1],zll) );
+      Float_t maxdrlz    = isGammaEvent ? 0 : max( deltaR(phys.leptons[0],zll), deltaR(phys.leptons[1],zll) );
+      Float_t ptl1       = isGammaEvent ? 0 : phys.leptons[0].pt();
+      Float_t ptl2       = isGammaEvent ? 0 : phys.leptons[1].pt();
       Float_t ptsum      = ptl1+ptl2;
-      Float_t mtl1       = mtComp.compute(phys.leptons[0],zvv,false);
-      Float_t mtl2       = mtComp.compute(phys.leptons[1],zvv,false);
+      Float_t mtl1       = isGammaEvent ? 0 : mtComp.compute(phys.leptons[0],zvv,false);
+      Float_t mtl2       = isGammaEvent ? 0 : mtComp.compute(phys.leptons[1],zvv,false);
       Float_t mtsum      = mtl1+mtl2;
       Float_t zmass      = zll.mass();
       Float_t zpt        = zll.pt();
@@ -807,152 +844,126 @@ int main(int argc, char* argv[])
       Float_t met        = zvv.pt();
       Float_t dphizz     = deltaPhi(zll.phi(),zvv.phi());
       Float_t mt         = mtComp.compute(zll,zvv,true);
-      Float_t dphizleadl = ptl1>ptl2 ? deltaPhi(phys.leptons[0].phi(),zll.phi()) : deltaPhi(phys.leptons[1].phi(),zll.phi()) ;
+      Float_t dphizleadl = isGammaEvent ? 0 : ( ptl1>ptl2 ? deltaPhi(phys.leptons[0].phi(),zll.phi()) : deltaPhi(phys.leptons[1].phi(),zll.phi()) );
 
       //redmet
-      rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsP4, zvv);
-      Float_t redMet_d0  = rmetComp.reducedMET(ReducedMETComputer::D0);
-      Float_t redMetL_d0  = rmetComp.reducedMETComponents(ReducedMETComputer::D0).second;
-      Float_t redMetT_d0  = rmetComp.reducedMETComponents(ReducedMETComputer::D0).first;
-      Float_t redMetX_d0  = rmetComp.reducedMETcartesian(ReducedMETComputer::D0).X();
-      Float_t redMetY_d0  = rmetComp.reducedMETcartesian(ReducedMETComputer::D0).Y();
+      LorentzVector nullP4(0,0,0,0);
+      if(!isGammaEvent) rmetComp.compute(phys.leptons[0], 0, phys.leptons[1], 0, jetsP4, zvv);
+      else              rmetComp.compute(zll,             0, nullP4,          0, jetsP4, zvv, true);
+      //Float_t redMet_d0  = rmetComp.reducedMET(ReducedMETComputer::D0);
+      //Float_t redMetL_d0  = rmetComp.reducedMETComponents(ReducedMETComputer::D0).second;
+      //Float_t redMetT_d0  = rmetComp.reducedMETComponents(ReducedMETComputer::D0).first;
+      //Float_t redMetX_d0  = rmetComp.reducedMETcartesian(ReducedMETComputer::D0).X();
+      //Float_t redMetY_d0  = rmetComp.reducedMETcartesian(ReducedMETComputer::D0).Y();
       Float_t redMet         = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
       Float_t redMetL        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
       Float_t redMetT        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t redMetX        = rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
       Float_t redMetY        = rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
 
-
-
       //cross-check that the second computer is giving same result as the first one
-      rTComp.compute(phys.leptons[0],0,phys.leptons[1], 0, assocChargedMetP4, zvv, zvv );
+      if(!isGammaEvent) rTComp.compute(phys.leptons[0], 0, phys.leptons[1], 0, assocChargedMetP4, zvv, zvv );
+      else              rTComp.compute(zll,           0, nullP4,          0, assocChargedMetP4, zvv, zvv, true);
       Float_t rTMet         = rTComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rTMetL        = rTComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      Float_t rTMetT        = rTComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+      //Float_t rTMetL        = rTComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+      //Float_t rTMetT        = rTComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t rTMetX        = rTComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
       Float_t rTMetY        = rTComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
 
-      rAComp.compute(phys.leptons[0],0,phys.leptons[1], 0, assocMetP4, zvv, zvv );
+      if(!isGammaEvent) rAComp.compute(phys.leptons[0],0,phys.leptons[1], 0, assocMetP4, zvv, zvv );
+      else              rAComp.compute(zll,           0, nullP4,          0, assocMetP4, zvv, zvv, true);
       Float_t rAMet         = rAComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rAMetL        = rAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      Float_t rAMetT        = rAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+      //Float_t rAMetL        = rAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+      //Float_t rAMetT        = rAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t rAMetX        = rAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
       Float_t rAMetY        = rAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
 
-      rCComp.compute(phys.leptons[0],0,phys.leptons[1], 0, clusteredMetP4, zvv, zvv);
+      if(!isGammaEvent)  rCComp.compute(phys.leptons[0],0, phys.leptons[1], 0, clusteredMetP4, zvv, zvv);
+      else               rCComp.compute(zll,            0, nullP4,          0, clusteredMetP4, zvv, zvv, true);
       Float_t rCMet         = rCComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rCMetL        = rCComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      Float_t rCMetT        = rCComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+      //Float_t rCMetL        = rCComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+      //Float_t rCMetT        = rCComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t rCMetX        = rCComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
       Float_t rCMetY        = rCComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-      //printf("---> %f %f\n",rCMetX,rCMetY);
-
-      rTAComp.compute(phys.leptons[0],0,phys.leptons[1], 0, assocChargedMetP4, assocMetP4, assocMetP4 );
+      
+      if(!isGammaEvent) rTAComp.compute(phys.leptons[0],0, phys.leptons[1], 0, assocChargedMetP4, assocMetP4, assocMetP4 );
+      else              rTAComp.compute(zll,            0, nullP4,          0, assocChargedMetP4, assocMetP4, zvv, true);
       Float_t rTAMet         = rTAComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rTAMetL        = rTAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      Float_t rTAMetT        = rTAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+      //Float_t rTAMetL        = rTAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+      //Float_t rTAMetT        = rTAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t rTAMetX        = rTAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
       Float_t rTAMetY        = rTAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
 
-      rTCComp.compute(phys.leptons[0],0,phys.leptons[1], 0, assocChargedMetP4, clusteredMetP4, clusteredMetP4 );
+      if(!isGammaEvent) rTCComp.compute(phys.leptons[0],0,phys.leptons[1], 0, assocChargedMetP4, clusteredMetP4, clusteredMetP4 );
+      else              rTCComp.compute(zll,            0, nullP4,          0, assocChargedMetP4, clusteredMetP4, clusteredMetP4, true);
       Float_t rTCMet         = rTCComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rTCMetL        = rTCComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      Float_t rTCMetT        = rTCComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+      //Float_t rTCMetL        = rTCComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+      //Float_t rTCMetT        = rTCComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t rTCMetX        = rTCComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
       Float_t rTCMetY        = rTCComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
 
-      rACComp.compute(phys.leptons[0],0,phys.leptons[1], 0, assocMetP4, clusteredMetP4, clusteredMetP4 );
+      if(!isGammaEvent) rACComp.compute(phys.leptons[0],0,phys.leptons[1], 0, assocMetP4, clusteredMetP4, clusteredMetP4 );
+      else              rACComp.compute(zll,            0, nullP4,          0, assocMetP4, clusteredMetP4, clusteredMetP4, true);
       Float_t rACMet         = rACComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rACMetL        = rACComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      Float_t rACMetT        = rACComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+      //Float_t rACMetL        = rACComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+      //Float_t rACMetT        = rACComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t rACMetX        = rACComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
       Float_t rACMetY        = rACComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
 
-      r3Comp.compute(phys.leptons[0],0,phys.leptons[1], 0, zvv, assocMetP4, clusteredMetP4 );
+      if(!isGammaEvent) r3Comp.compute(phys.leptons[0],0, phys.leptons[1], 0, zvv, assocMetP4, clusteredMetP4 );
+      else              r3Comp.compute(zll,            0, nullP4,          0, zvv, assocMetP4, clusteredMetP4,true);
       Float_t r3Met         = r3Comp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t r3MetL        = r3Comp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      Float_t r3MetT        = r3Comp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+      //Float_t r3MetL        = r3Comp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+      //Float_t r3MetT        = r3Comp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t r3MetX        = r3Comp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
       Float_t r3MetY        = r3Comp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
 
-      rmAComp.compute(phys.leptons[0],0,phys.leptons[1], 0, min(zvv,assocMetP4), clusteredMetP4, clusteredMetP4 );
+      if(!isGammaEvent) rmAComp.compute(phys.leptons[0],0,phys.leptons[1], 0, min(zvv,assocMetP4), clusteredMetP4, clusteredMetP4 );
+      else              rmAComp.compute(zll,            0, nullP4,          0, min(zvv,assocMetP4), clusteredMetP4, clusteredMetP4,true);
       Float_t rmAMet         = rmAComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rmAMetL        = rmAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      Float_t rmAMetT        = rmAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+      //Float_t rmAMetL        = rmAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
+      //Float_t rmAMetT        = rmAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
       Float_t rmAMetX        = rmAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
       Float_t rmAMetY        = rmAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
 
       //projected met
-      Float_t projMet        = pmetComp.compute(phys.leptons[0], phys.leptons[1], zvv );
-      Float_t projAssocChargedMet     = pmetComp.compute(phys.leptons[0],phys.leptons[1], assocChargedMetP4);
-      
-      Float_t cleanMet            = cleanMetP4.pt();
+      Float_t projMet              =  isGammaEvent ? 0 : pmetComp.compute(phys.leptons[0], phys.leptons[1], zvv );
+      //Float_t projAssocChargedMet   = isGammaEvent ? 0 : pmetComp.compute(phys.leptons[0],phys.leptons[1], assocChargedMetP4);
+      //Float_t cleanMet            = cleanMetP4.pt();
       Float_t centralMet          = centralMetP4.pt();
       Float_t assocChargedMet     = assocChargedMetP4.pt();
-      Float_t assocMet            =  assocMetP4.pt();
-      Float_t assocOtherVertexMet = assocOtherVertexMetP4.pt();
 
-              //met control
-              metTypeValues["met"]                 = zvv;
-              metTypeValues["centralMet"]          = centralMetP4;
-              metTypeValues["assocChargedMet"]     = assocChargedMetP4;
-              metTypeValues["assocMet"]            = assocMetP4;
-              metTypeValues["assocCMet"]           = assocCMetP4;
-              metTypeValues["assocFwdCMet"]        = assocFwdCMetP4;
-              metTypeValues["assocFwdMet"]         = assocFwdMetP4;
-              metTypeValues["assocFwd2Met"]        = assocFwd2MetP4;
-              metTypeValues["clusteredMet"]        = clusteredMetP4;
-              metTypeValues["mincentralAssocMet"]  = min(centralMetP4,assocMetP4);
-              metTypeValues["minAssocChargedMet"]  = min(zvv,assocChargedMetP4);
-              metTypeValues["minAssocMet"]         = min(zvv,assocMetP4);
-              metTypeValues["minClusteredMet"]     = min(zvv,clusteredMetP4);
-              metTypeValues["minTAssocMet"]       = min(assocChargedMetP4,assocMetP4);
-              metTypeValues["minTClusteredMet"]   = min(assocChargedMetP4,clusteredMetP4);
-              metTypeValues["minAClusteredMet"]    = min(assocMetP4,clusteredMetP4);
-              metTypeValues["min3Met"]             = min(zvv, min(assocMetP4,clusteredMetP4));
-              metTypeValues["min4Met"]             = min(min(zvv,assocChargedMetP4), min(assocMetP4,clusteredMetP4));
+      //Float_t assocMet            = assocMetP4.pt();
+      //Float_t assocOtherVertexMet = assocOtherVertexMetP4.pt();
 
-              metTypeValues["redMet"]              = LorentzVector(redMetX,redMetY,0,redMet); 
-              metTypeValues["redAssocChargedMet"]  = LorentzVector(rTMetX,rTMetY,0,rTMet);
-              metTypeValues["redAssocMet"]         = LorentzVector(rAMetX ,rAMetY ,0,rAMet );
-              metTypeValues["redClusteredMet"]     = LorentzVector(rCMetX ,rCMetY ,0,rCMet );
-              metTypeValues["redTAssocMet"]        = LorentzVector(rTAMetX ,rTAMetY ,0,rTAMet );
-              metTypeValues["redTClusteredMet"]    = LorentzVector(rTCMetX ,rTCMetY ,0,rTCMet );
-              metTypeValues["redAClusteredMet"]    = LorentzVector(rACMetX  ,rACMetY  ,0,rACMet  );
-              metTypeValues["red3Met"]             = LorentzVector(r3MetX   ,r3MetY   ,0,r3Met   );
-              metTypeValues["redminAssocMet"]      = LorentzVector(rmAMetX  ,rmAMetY  ,0,rmAMet  );
-
-
-//              metTypeValues["met"]                 = zvv;
-//              metTypeValues["projMet"]             = LorentzVector(projMet,0,0,0);
-//              metTypeValues["minProjMet"]          = min(metTypeValues["projMet"],LorentzVector(projAssocChargedMet,0,0,0) );
-//              metTypeValues["redMet"]              = LorentzVector(redMetX,redMetY,0,redMet); 
-//              metTypeValues["redMetD0"]            = LorentzVector(redMetX_d0, redMetY_d0, 0, redMet_d0);
-//              metTypeValues["assocChargedMet"]     = assocChargedMetP4;
-//              metTypeValues["minAssocChargedMet"]  = min(zvv,assocChargedMetP4);
-//              metTypeValues["centralMet"]          = centralMetP4;
-//              metTypeValues["minCentralMet"]       = min(zvv,centralMetP4);    
-//              metTypeValues["assocOtherVertexMet"] = assocOtherVertexMetP4;    
-//              metTypeValues["cleanMet"]            = cleanMetP4;
-//              metTypeValues["minCleanMet"]         = min(zvv,cleanMetP4);
-//              metTypeValues["assocMet"]            = assocMetP4;
-//              metTypeValues["minAssocMet"]         = min(zvv,assocMetP4);
-//              metTypeValues["superMinMet"]         = min( metTypeValues["minAssocMet"],  min(metTypeValues["minCleanMet"], metTypeValues["centralMet"]) );
-//              metTypeValues["redminAssocMet"]      = LorentzVector(redminAssocMetX,redminAssocMetY,0,redminAssocMet);
-//              metTypeValues["assocMet5"]           = assocMet5P4;
-//              metTypeValues["assocMet10"]          = assocMet10P4;
-//              metTypeValues["assocFwdMet"]         = assocFwdMetP4;
-//              metTypeValues["assocFwdMet5"]        = assocFwdMet5P4;
-//              metTypeValues["assocFwdMet10"]       = assocFwdMet10P4;
-//              metTypeValues["minAssocFwdMet"]      = min(zvv,metTypeValues["assocFwdMet"]);
-//              metTypeValues["clusteredMet"]        = clusteredMetP4;
-//              metTypeValues["minClusteredMet"]     = min(zvv,clusteredMetP4);
-//              metTypeValues["minClusteredAssocMet"]     = min(assocMetP4,clusteredMetP4);
-//              metTypeValues["minClusteredAssocPFMet"]     = min(zvv, min(assocMetP4,clusteredMetP4));
-//              metTypeValues["redClusteredAssocPFMet"]     = LorentzVector(redClusteredAssocPFMetX,redClusteredAssocPFMetY,0,redClusteredAssocPFMet);
-
-
-
+      //met control
+      metTypeValues["met"]                 = zvv;
+      metTypeValues["assocChargedMet"]     = assocChargedMetP4;
+      metTypeValues["assocMet"]            = assocMetP4;
+      metTypeValues["assocCMet"]           = assocCMetP4;
+      metTypeValues["assocFwdCMet"]        = assocFwdCMetP4;
+      metTypeValues["assocFwdMet"]         = assocFwdMetP4;
+      metTypeValues["assocFwd2Met"]        = assocFwd2MetP4;
+      metTypeValues["clusteredMet"]        = clusteredMetP4;
+      metTypeValues["minAssocChargedMet"]  = min(zvv,assocChargedMetP4);
+      metTypeValues["minAssocMet"]         = min(zvv,assocMetP4);
+      metTypeValues["minClusteredMet"]     = min(zvv,clusteredMetP4);
+      metTypeValues["minTAssocMet"]       = min(assocChargedMetP4,assocMetP4);
+      metTypeValues["minTClusteredMet"]   = min(assocChargedMetP4,clusteredMetP4);
+      metTypeValues["minAClusteredMet"]    = min(assocMetP4,clusteredMetP4);
+      metTypeValues["min3Met"]             = min(zvv, min(assocMetP4,clusteredMetP4));
+      metTypeValues["min4Met"]             = min(min(zvv,assocChargedMetP4), min(assocMetP4,clusteredMetP4));
+      
+      metTypeValues["redMet"]              = LorentzVector(redMetX,redMetY,0,redMet); 
+      metTypeValues["redAssocChargedMet"]  = LorentzVector(rTMetX,rTMetY,0,rTMet);
+      metTypeValues["redAssocMet"]         = LorentzVector(rAMetX ,rAMetY ,0,rAMet );
+      metTypeValues["redClusteredMet"]     = LorentzVector(rCMetX ,rCMetY ,0,rCMet );
+      metTypeValues["redTAssocMet"]        = LorentzVector(rTAMetX ,rTAMetY ,0,rTAMet );
+      metTypeValues["redTClusteredMet"]    = LorentzVector(rTCMetX ,rTCMetY ,0,rTCMet );
+      metTypeValues["redAClusteredMet"]    = LorentzVector(rACMetX  ,rACMetY  ,0,rACMet  );
+      metTypeValues["red3Met"]             = LorentzVector(r3MetX   ,r3MetY   ,0,r3Met   );
+      metTypeValues["redminAssocMet"]      = LorentzVector(rmAMetX  ,rmAMetY  ,0,rmAMet  );
+      
       std::map<TString,double> metTypeValuesminJetdphi;
       std::map<TString,double> metTypeValuesminJetphi;
       for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++){metTypeValuesminJetdphi[it->first] = 9999.0; metTypeValuesminJetphi[it->first] = 9999.0;}
@@ -960,16 +971,16 @@ int main(int argc, char* argv[])
       double mindphijmet(9999.), minmtjmet(9999.),mindrjz(9999.), minmjz(9999.);
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++) 
 	{
-	  if(phys.jets[ijet].pt()>zll.pt()) zrank++;
+	  if(phys.jets[ijet].pt()>zpt) zrank++;
 
-	  double dphijmet=fabs(deltaPhi(zvv.phi(),phys.jets[ijet].phi()));
+	  //double dphijmet=fabs(deltaPhi(zvv.phi(),phys.jets[ijet].phi()));
 
           for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++){
              double tmpdphijmet=fabs(deltaPhi(it->second.phi(),phys.jets[ijet].phi()));             
              if(metTypeValuesminJetdphi[it->first]>tmpdphijmet){metTypeValuesminJetdphi[it->first]=tmpdphijmet;  metTypeValuesminJetphi[it->first] = phys.jets[ijet].phi();}
           }
 
-
+	  
 	  double mtjmet=mtComp.compute(phys.jets[ijet],zvv,false);
 	  if(mtjmet<minmtjmet) minmtjmet=mtjmet;
 
@@ -979,10 +990,16 @@ int main(int argc, char* argv[])
 	  double mjz=jz.mass();
 	  if(mjz<minmjz) minmjz=mjz;
 	}
+
+      //sum ETs
+      float sumEt            = ev.sumEt           - ptsum;
+      float sumEtcentral     = ev.sumEtcentral    - ptsum;
+      float chSumEtcentral   = ev.chsumEtcentral  - ptsum;
+      float neutSumEtcentral = ev.neutsumEtcentral;
+      float chSumEt          = ev.chsumEt         - ptsum;
+      float neutsumEt        = ev.neutsumEt;
+      
       mindphijmet = metTypeValuesminJetdphi["met"]; 
-
-
-
 
       //vbf variables 
       bool isVBF        = false;
@@ -1006,12 +1023,20 @@ int main(int argc, char* argv[])
 	  int VBFCentral30Jets = 0;
 	  double MinEta, MaxEta;
 	  if(phys.jets[0].eta()<phys.jets[1].eta()){MinEta=phys.jets[0].eta(); MaxEta=phys.jets[1].eta();}else{MinEta=phys.jets[1].eta(); MaxEta=phys.jets[0].eta();}
-	  if(phys.leptons[0].eta()>MinEta && phys.leptons[0].eta()<MaxEta)VBFCentralLeptons++;  if(phys.leptons[1].eta()>MinEta && phys.leptons[1].eta()<MaxEta)VBFCentralLeptons++;
-	  for(size_t ijet=2; ijet<phys.jets.size(); ijet++) {
-	    if(phys.jets[ijet].pt()<30)continue; 
-	    if(phys.jets[ijet].eta()>MinEta && phys.jets[ijet].eta()<MaxEta)VBFCentral30Jets++; 
-	    if(phys.jets[ijet].btag2>1.33 || phys.jets[ijet].btag3>1.74)VBFNBJets++; 
-	  }
+	  if(isGammaEvent)
+	    {
+	      if(phys.leptons[0].eta()>MinEta && phys.leptons[0].eta()<MaxEta)VBFCentralLeptons++;  if(phys.leptons[1].eta()>MinEta && phys.leptons[1].eta()<MaxEta)VBFCentralLeptons++;
+	    }
+	  else
+	    {
+	      if(zll.eta()>MinEta && zll.eta()<MaxEta) VBFCentralLeptons=2;
+	    }
+	  for(size_t ijet=2; ijet<phys.jets.size(); ijet++) 
+	    {
+	      if(phys.jets[ijet].pt()<30)continue; 
+	      if(phys.jets[ijet].eta()>MinEta && phys.jets[ijet].eta()<MaxEta)VBFCentral30Jets++; 
+	      if(phys.jets[ijet].btag2>1.33 || phys.jets[ijet].btag3>1.74)VBFNBJets++; 
+	    }
 	  
 	  Pass2Jet30   = true;
 	  PassdEtaCut  = (fabs(VBFdEta)>4.0);
@@ -1137,11 +1162,10 @@ int main(int argc, char* argv[])
 	    }
 	}
 
-
-//      ROOT::Math::Boost cmboost(genhiggs.BoostToCM());
-//      LorentzVector cmzll(cmboost(zll));
-//      LorentzVector cmzvv(cmboost(zvv));
-
+      
+      //      ROOT::Math::Boost cmboost(genhiggs.BoostToCM());
+      //      LorentzVector cmzll(cmboost(zll));
+      //      LorentzVector cmzvv(cmboost(zvv));
       LorentzVector transverseHiggs(genhiggs.px(),genhiggs.py(), 0,sqrt(pow(genhiggs.mass(),2)+pow(genhiggs.pt(),2)));
       ROOT::Math::Boost cmboost(transverseHiggs.BoostToCM());
       LorentzVector cmzll(cmboost(zll));
@@ -1149,261 +1173,238 @@ int main(int argc, char* argv[])
 
       
       //fill control histograms
-      TString catsToFill[]={"all",evcat};
+      std::vector<TString> catsToFill;
+      catsToFill.push_back("all");
+      for(size_t ic=0; ic<evcats.size(); ic++) catsToFill.push_back(evcats[ic]);
       std::vector<TString> subCatsToFill;
       subCatsToFill.push_back("");
       subCatsToFill.push_back(subcat);
-//       if(ev.nvtx<4)        subCatsToFill.push_back("1to3vtx");
-//       else if(ev.nvtx>=10) subCatsToFill.push_back("geq10vtx");
-//       else                 subCatsToFill.push_back("4to9vtx");
-      for(size_t ic=0; ic<sizeof(catsToFill)/sizeof(TString); ic++)
+      //       if(ev.nvtx<4)        subCatsToFill.push_back("1to3vtx");
+      //       else if(ev.nvtx>=10) subCatsToFill.push_back("geq10vtx");
+      //       else                 subCatsToFill.push_back("4to9vtx");
+      for(size_t ic=0; ic<catsToFill.size(); ic++)
 	{
 	  for(size_t isc=0; isc<subCatsToFill.size(); isc++)
 	    {
 	      TString ctf=catsToFill[ic]+subCatsToFill[isc];   
+	      
+	      float iweight=weight;
+	      if(gammaEvHandler)
+		{
+		  TString dilCh=catsToFill[ic];
+		  if(dilCh=="all") dilCh="ll";
+		  iweight *= gammaEvHandler->getWeight(dilCh);
+		}
 
-
-
-              controlHistos.fillHisto("genHiggsPt"      ,ctf,    genhiggs.pt()   ,weight);
-              controlHistos.fillHisto("genHiggsMass"    ,ctf,    genhiggs.mass() ,weight);
-              controlHistos.fillHisto("genHiggsMassRaw" ,ctf,    genhiggs.mass() ,weight/VBFWeight);
-              controlHistos.fillHisto("genzllPt"        ,ctf,    genzll.pt()     ,weight);
-              controlHistos.fillHisto("genzvvPt"        ,ctf,    genzvv.pt()     ,weight);
+	      
+              controlHistos.fillHisto("genHiggsPt"      ,ctf,    genhiggs.pt()   ,iweight);
+              controlHistos.fillHisto("genHiggsMass"    ,ctf,    genhiggs.mass() ,iweight);
+              controlHistos.fillHisto("genHiggsMassRaw" ,ctf,    genhiggs.mass() ,iweight/VBFWeight);
+              controlHistos.fillHisto("genzllPt"        ,ctf,    genzll.pt()     ,iweight);
+              controlHistos.fillHisto("genzvvPt"        ,ctf,    genzvv.pt()     ,iweight);
 
               if(passZmass){
-              controlHistos.fillHisto("genzwinHiggsPt"      ,ctf,    genhiggs.pt()   ,weight);
-              controlHistos.fillHisto("genzwinHiggsMass"    ,ctf,    genhiggs.mass() ,weight);
-              controlHistos.fillHisto("genzwinHiggsMassRaw" ,ctf,    genhiggs.mass() ,weight/VBFWeight);
-              controlHistos.fillHisto("genzwinzllPt"        ,ctf,    genzll.pt()     ,weight);
-              controlHistos.fillHisto("genzwinzvvPt"        ,ctf,    genzvv.pt()     ,weight);
+		controlHistos.fillHisto("genzwinHiggsPt"      ,ctf,    genhiggs.pt()   ,iweight);
+		controlHistos.fillHisto("genzwinHiggsMass"    ,ctf,    genhiggs.mass() ,iweight);
+		controlHistos.fillHisto("genzwinHiggsMassRaw" ,ctf,    genhiggs.mass() ,iweight/VBFWeight);
+		controlHistos.fillHisto("genzwinzllPt"        ,ctf,    genzll.pt()     ,iweight);
+		controlHistos.fillHisto("genzwinzvvPt"        ,ctf,    genzvv.pt()     ,iweight);
               }
- 
-	      
+ 	      
 	      //event pre-selection
 	      if(!passZmass && !passSideBand)                                      continue;
 	      
 	      //VBF control
-	      if(true                                                                                       )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    0                ,weight);
-	      if(Pass2Jet30                                                                                 )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    1                ,weight);
-	      if(PassdEtaCut                                                                                )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    2                ,weight);
-	      if(PassdEtaCut && PassiMCut                                                                   )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    3                ,weight);
-	      if(PassdEtaCut && PassiMCut && PassLeptonIn                                                   )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    4                ,weight);
-	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                                    )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    5                ,weight);
-	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto                    )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    6                ,weight);
-	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto && pass3dLeptonVeto)controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    7                ,weight);
+	      if(true                                                                                       )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    0                ,iweight);
+	      if(Pass2Jet30                                                                                 )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    1                ,iweight);
+	      if(PassdEtaCut                                                                                )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    2                ,iweight);
+	      if(PassdEtaCut && PassiMCut                                                                   )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    3                ,iweight);
+	      if(PassdEtaCut && PassiMCut && PassLeptonIn                                                   )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    4                ,iweight);
+	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                                    )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    5                ,iweight);
+	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto                    )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    6                ,iweight);
+	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto && pass3dLeptonVeto)controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    7                ,iweight);
 	      
-	      if(Pass2Jet30                                                              )controlHistos.fillHisto("VBFdEtaInc"          ,ctf,    fabs(VBFdEta)    ,weight);
-	      if(PassdEtaCut                                                             )controlHistos.fillHisto("VBFiMassInc"         ,ctf,    VBFSyst.M()      ,weight);
-	      if(PassdEtaCut && PassiMCut                                                )controlHistos.fillHisto("VBFcenLeptonVetoInc" ,ctf,    VBFCentralLeptons,weight);
-	      if(PassdEtaCut && PassiMCut && PassLeptonIn                                )controlHistos.fillHisto("VBFcen30JetVetoInc"  ,ctf,    VBFCentral30Jets ,weight);
-	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                 )controlHistos.fillHisto("VBFNBJets30Inc"      ,ctf,    VBFNBJets        ,weight);
+	      if(Pass2Jet30                                                              )controlHistos.fillHisto("VBFdEtaInc"          ,ctf,    fabs(VBFdEta)    ,iweight);
+	      if(PassdEtaCut                                                             )controlHistos.fillHisto("VBFiMassInc"         ,ctf,    VBFSyst.M()      ,iweight);
+	      if(PassdEtaCut && PassiMCut                                                )controlHistos.fillHisto("VBFcenLeptonVetoInc" ,ctf,    VBFCentralLeptons,iweight);
+	      if(PassdEtaCut && PassiMCut && PassLeptonIn                                )controlHistos.fillHisto("VBFcen30JetVetoInc"  ,ctf,    VBFCentral30Jets ,iweight);
+	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                 )controlHistos.fillHisto("VBFNBJets30Inc"      ,ctf,    VBFNBJets        ,iweight);
 	      
-	      if(               PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFdEtaNM1C"         ,ctf,    fabs(VBFdEta)    ,weight);
-	      if(PassdEtaCut              && PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFiMassNM1C"        ,ctf,    VBFSyst.M()      ,weight);
-	      if(PassdEtaCut && PassiMCut                 && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFcenLeptonVetoNM1C",ctf,    VBFCentralLeptons,weight);
+	      if(               PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFdEtaNM1C"         ,ctf,    fabs(VBFdEta)    ,iweight);
+	      if(PassdEtaCut              && PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFiMassNM1C"        ,ctf,    VBFSyst.M()      ,iweight);
+	      if(PassdEtaCut && PassiMCut                 && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFcenLeptonVetoNM1C",ctf,    VBFCentralLeptons,iweight);
 	      if(Pass2Jet30                                              && PassBJetVeto && !pass3dLeptonVeto)                                       
 		{
-		  controlHistos.fillHisto("VBFcen30JetVeto3rdlepton"  ,ctf,    VBFCentral30Jets ,weight);
-		  controlHistos.fillHisto("VBFNBJets303rdlepton"      ,ctf,    VBFNBJets        ,weight);
-		  controlHistos.fillHisto("VBFdEta3rdlepton"          ,ctf,    fabs(VBFdEta)    ,weight);
-		  controlHistos.fillHisto("VBFiMass3rdlepton"         ,ctf,    VBFSyst.M()      ,weight);
+		  controlHistos.fillHisto("VBFcen30JetVeto3rdlepton"  ,ctf,    VBFCentral30Jets ,iweight);
+		  controlHistos.fillHisto("VBFNBJets303rdlepton"      ,ctf,    VBFNBJets        ,iweight);
+		  controlHistos.fillHisto("VBFdEta3rdlepton"          ,ctf,    fabs(VBFdEta)    ,iweight);
+		  controlHistos.fillHisto("VBFiMass3rdlepton"         ,ctf,    VBFSyst.M()      ,iweight);
 		}
 	      
-	      if(PassdEtaCut && PassiMCut && PassLeptonIn                && PassBJetVeto )controlHistos.fillHisto("VBFcen30JetVetoNM1C" ,ctf,    VBFCentral30Jets ,weight);
-	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                 )controlHistos.fillHisto("VBFNBJets30NM1C"     ,ctf,    VBFNBJets        ,weight);
-	      if(                            PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fill2DHisto("VBFdEtaiMassNM1C"  ,ctf,    fabs(VBFdEta), VBFSyst.M(), weight);
-	      if(redMet>50 &&                PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fill2DHisto("VBFdEtaiMassNM1C2" ,ctf,    fabs(VBFdEta), VBFSyst.M(), weight);
+	      if(PassdEtaCut && PassiMCut && PassLeptonIn                && PassBJetVeto )controlHistos.fillHisto("VBFcen30JetVetoNM1C" ,ctf,    VBFCentral30Jets ,iweight);
+	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                 )controlHistos.fillHisto("VBFNBJets30NM1C"     ,ctf,    VBFNBJets        ,iweight);
+	      if(                            PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fill2DHisto("VBFdEtaiMassNM1C"  ,ctf,    fabs(VBFdEta), VBFSyst.M(), iweight);
+	      if(redMet>50 &&                PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fill2DHisto("VBFdEtaiMassNM1C2" ,ctf,    fabs(VBFdEta), VBFSyst.M(), iweight);
 	      
 	      //inclusive control
-	      controlHistos.fillHisto("eventflow",ctf,1,weight);
-	      controlHistos.fillHisto("nvtx",ctf,ev.nvtx,weight);
+	      controlHistos.fillHisto("eventflow",ctf,1,iweight);
+	      controlHistos.fillHisto("nvtx",ctf,ev.nvtx,iweight);
+	      controlHistos.fillHisto("nvtxPlus",ctf,ev.nvtx,iweight*TotalWeight_plus);
+	      controlHistos.fillHisto("nvtxMinus",ctf,ev.nvtx,iweight*TotalWeight_minus);
 	      
-	      double TotalWeight_plus = PShiftUp.ShiftWeight( ev.ngenITpu );
-	      double TotalWeight_minus = PShiftDown.ShiftWeight( ev.ngenITpu );
-	      controlHistos.fillHisto("nvtxPlus",ctf,ev.nvtx,weight*TotalWeight_plus);
-	      controlHistos.fillHisto("nvtxMinus",ctf,ev.nvtx,weight*TotalWeight_minus);
-
 	      //dilepton control plots
-	      controlHistos.fillHisto("zmass",ctf,zmass,weight);
-	      for(std::vector<int>::iterator regIt = zmassRegionBins.begin(); regIt<zmassRegionBins.end(); regIt++) controlHistos.fillHisto("zmassregionCtr",ctf,*regIt,weight);
-	      controlHistos.fillHisto("zeta",ctf,zll.eta(),weight);
-	      controlHistos.fillHisto("zpt",ctf,zll.pt(),weight);
-	      controlHistos.fillHisto("zrank",ctf,zrank,weight);
-	      controlHistos.fill2DHisto("zptvszeta", ctf,zll.pt(),zll.eta(),weight);
-	      controlHistos.fillHisto("dphill",ctf,dphill,weight);
-	      controlHistos.fillHisto("mindrlz",ctf,mindrlz,weight);
-	      controlHistos.fillHisto("maxdrlz",ctf,maxdrlz,weight);
-	      controlHistos.fillHisto("ptsum",ctf,ptsum,weight);
-	      controlHistos.fillHisto("mtl1",ctf,mtl1,weight);
-	      controlHistos.fillHisto("mtl2",ctf,mtl2,weight);
-              controlHistos.fillHisto("mt",ctf,mt,weight);
+	      controlHistos.fillHisto("zmass",ctf,zmass,iweight);
+	      for(std::vector<int>::iterator regIt = zmassRegionBins.begin(); regIt<zmassRegionBins.end(); regIt++) controlHistos.fillHisto("zmassregionCtr",ctf,*regIt,iweight);
+	      controlHistos.fillHisto("zeta",ctf,zeta,iweight);
+	      controlHistos.fillHisto("zpt",ctf,zpt,iweight);
+	      controlHistos.fillHisto("zrank",ctf,zrank,iweight);
+	      controlHistos.fill2DHisto("zptvszeta", ctf,zpt,zeta,iweight);
+	      controlHistos.fillHisto("dphill",ctf,dphill,iweight);
+	      controlHistos.fillHisto("mindrlz",ctf,mindrlz,iweight);
+	      controlHistos.fillHisto("maxdrlz",ctf,maxdrlz,iweight);
+	      controlHistos.fillHisto("ptsum",ctf,ptsum,iweight);
+	      controlHistos.fillHisto("mtl1",ctf,mtl1,iweight);
+	      controlHistos.fillHisto("mtl2",ctf,mtl2,iweight);
+              controlHistos.fillHisto("mt",ctf,mt,iweight);
 	      
 	      //Z window
 	      if(!passZmass)  continue;
-	      controlHistos.fillHisto("eventflow",ctf,2,weight);
+	      controlHistos.fillHisto("eventflow",ctf,2,iweight);
 	     
 	      //jet control
-	      controlHistos.fillHisto("njets",ctf,njets,weight);
-	      controlHistos.fill2DHisto("njetsvspu",ctf,ev.ngenITpu,njets,weight);
-	      controlHistos.fill2DHisto("njetsincvspu",ctf,ev.ngenITpu,njetsinc,weight);
-	      controlHistos.fillHisto("nbtags",ctf, nbtags,weight);
-	      controlHistos.fillHisto("npassbveto",ctf,0, (nbtags_ssvhem==0)*weight);
-	      controlHistos.fillHisto("npassbveto",ctf,1, (nbtags_tchel==0)*weight);
-	      controlHistos.fillHisto("npassbveto",ctf,2, (nbtags_tche2==0)*weight);
-	      controlHistos.fillHisto("npassbveto",ctf,3, (nbtags_jbpl==0)*weight);
-	      controlHistos.fillHisto("npassbveto",ctf,4, (nbtags_ssvhemORtchel==0)*weight);
-	      controlHistos.fillHisto("npassbveto",ctf,5, (nbtags==0)*weight);
-	      controlHistos.fillHisto("zmassctrl",ctf,passBveto+2*passMediumRedMet,weight);
+	      controlHistos.fillHisto("njets",ctf,njets,iweight);
+	      controlHistos.fill2DHisto("njetsvspu",ctf,ev.ngenITpu,njets,iweight);
+	      controlHistos.fill2DHisto("njetsincvspu",ctf,ev.ngenITpu,njetsinc,iweight);
+	      controlHistos.fillHisto("nbtags",ctf, nbtags,iweight);
+	      controlHistos.fillHisto("npassbveto",ctf,0, (nbtags_ssvhem==0)*iweight);
+	      controlHistos.fillHisto("npassbveto",ctf,1, (nbtags_tchel==0)*iweight);
+	      controlHistos.fillHisto("npassbveto",ctf,2, (nbtags_tche2==0)*iweight);
+	      controlHistos.fillHisto("npassbveto",ctf,3, (nbtags_jbpl==0)*iweight);
+	      controlHistos.fillHisto("npassbveto",ctf,4, (nbtags_ssvhemORtchel==0)*iweight);
+	      controlHistos.fillHisto("npassbveto",ctf,5, (nbtags==0)*iweight);
+	      controlHistos.fillHisto("zmassctrl",ctf,passBveto+2*passMediumRedMet,iweight);
+
 	      if(!passBveto) continue;
-	      controlHistos.fillHisto("eventflow",ctf,3,weight);
+	      controlHistos.fillHisto("eventflow",ctf,3,iweight);
 
 
               if(!passZpt) continue;
-              controlHistos.fillHisto("eventflow",ctf,4,weight);
+              controlHistos.fillHisto("eventflow",ctf,4,iweight);
 
 	      //extra leptons
-	      controlHistos.fillHisto("nleptons",ctf,ev.ln,weight);
+	      controlHistos.fillHisto("nleptons",ctf,ev.ln,iweight);
 	      if(!pass3dLeptonVeto)
 		{
-		  controlHistos.fillHisto("njets3leptons",ctf,njets,weight);
-		  controlHistos.fillHisto("nbtags3leptons",ctf,nbtags,weight);
-		  if(passBveto)
-		    {
-		      
-		    }
+		  controlHistos.fillHisto("njets3leptons",ctf,njets,iweight);
+		  controlHistos.fillHisto("nbtags3leptons",ctf,nbtags,iweight);
 		  continue;
 		}
-	      controlHistos.fillHisto("eventflow",ctf,5,weight);
+	      controlHistos.fillHisto("eventflow",ctf,5,iweight);
 	      
 
-
-              if(isMC && genhiggs.pt()>0){
-              controlHistos.fillHisto("CMzllP"      ,ctf,    cmzll.pt()   ,weight);
-              controlHistos.fillHisto("CMzvvP"      ,ctf,    cmzvv.pt()   ,weight);
-              controlHistos.fillHisto("CMDeltazP"   ,ctf,    cmzll.pt()-cmzvv.pt()   ,weight);
-              controlHistos.fillHisto("CMiMass"     ,ctf,    mtComp.compute(cmzll,cmzvv,true)   ,weight);
-              }
+              if(isMC && genhiggs.pt()>0)
+		{
+		  controlHistos.fillHisto("CMzllP"      ,ctf,    cmzll.pt()   ,iweight);
+		  controlHistos.fillHisto("CMzvvP"      ,ctf,    cmzvv.pt()   ,iweight);
+		  controlHistos.fillHisto("CMDeltazP"   ,ctf,    cmzll.pt()-cmzvv.pt()   ,iweight);
+		  controlHistos.fillHisto("CMiMass"     ,ctf,    mtComp.compute(cmzll,cmzvv,true)   ,iweight);
+		}
 
 	      for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++) 	  
 		{
-                  if(it->second.pt()>50 && metTypeValuesminJetdphi[it->first]<10){
-                     controlHistos.fillHisto(TString("met_") + it->first+"mindphijmet",ctf,metTypeValuesminJetdphi[it->first], weight);
-//                     controlHistos.fill2DHisto(TString("met_") + it->first+"phimetphijet", ctf,it->second.phi(),metTypeValuesminJetphi[it->first],weight);
-                  }
-
-
+                  if(it->second.pt()>50 && metTypeValuesminJetdphi[it->first]<10)
+		    {
+		      controlHistos.fillHisto(TString("met_") + it->first+"mindphijmet",ctf,metTypeValuesminJetdphi[it->first], iweight);
+		      // controlHistos.fill2DHisto(TString("met_") + it->first+"phimetphijet", ctf,it->second.phi(),metTypeValuesminJetphi[it->first],iweight);
+		    }
+		  
                   if(mindphijmet<0.3)continue;
-
-		  controlHistos.fillHisto(TString("met_") + it->first, ctf,it->second.pt(),weight);
-		  controlHistos.fill2DHisto(TString("met_") + it->first+"vspu", ctf,ev.ngenITpu,it->second.pt(),weight);
-                  controlHistos.fill2DHisto(TString("met_") + it->first+"zpt", ctf,it->second.pt(),zpt,weight);
-                  controlHistos.fillHisto(TString("met_") + it->first+"minzpt", ctf,std::min(it->second.pt(),zll.pt()),weight);
-                  controlHistos.fillHisto(TString("met_") + it->first+"geq080zpt", ctf,it->second.pt()>=0.8*zll.pt() ? it->second.pt() : 0.0,weight);
-                  controlHistos.fill2DHisto(TString("met_") + it->first+"geq080zptvspu", ctf,ev.ngenITpu, it->second.pt()>=0.8*zll.pt() ? it->second.pt() : 0.0,weight);
-                  controlHistos.fillHisto(TString("met_") + it->first+"geq060zpt", ctf,it->second.pt()>=0.6*zll.pt() ? it->second.pt() : 0.0,weight);
-                  controlHistos.fill2DHisto(TString("met_") + it->first+"geq060zptvspu", ctf,ev.ngenITpu,it->second.pt()>=0.6*zll.pt() ? it->second.pt() : 0.0,weight);
-                  controlHistos.fillHisto(TString("met_") + it->first+"geq040zpt", ctf,it->second.pt()>=0.4*zll.pt() ? it->second.pt() : 0.0,weight);
-                  controlHistos.fill2DHisto(TString("met_") + it->first+"geq040zptvspu", ctf,ev.ngenITpu,it->second.pt()>=0.4*zll.pt() ? it->second.pt() : 0.0,weight);
+		  controlHistos.fillHisto(TString("met_") + it->first, ctf,it->second.pt(),iweight);
+		  controlHistos.fill2DHisto(TString("met_") + it->first+"vspu", ctf,ev.ngenITpu,it->second.pt(),iweight);
+                  controlHistos.fill2DHisto(TString("met_") + it->first+"zpt", ctf,it->second.pt(),zpt,iweight);
+                  controlHistos.fillHisto(TString("met_") + it->first+"minzpt", ctf,std::min(it->second.pt(),zll.pt()),iweight);
+                  controlHistos.fillHisto(TString("met_") + it->first+"geq080zpt", ctf,it->second.pt()>=0.8*zll.pt() ? it->second.pt() : 0.0,iweight);
+                  controlHistos.fill2DHisto(TString("met_") + it->first+"geq080zptvspu", ctf,ev.ngenITpu, it->second.pt()>=0.8*zll.pt() ? it->second.pt() : 0.0,iweight);
+                  controlHistos.fillHisto(TString("met_") + it->first+"geq060zpt", ctf,it->second.pt()>=0.6*zll.pt() ? it->second.pt() : 0.0,iweight);
+                  controlHistos.fill2DHisto(TString("met_") + it->first+"geq060zptvspu", ctf,ev.ngenITpu,it->second.pt()>=0.6*zll.pt() ? it->second.pt() : 0.0,iweight);
+                  controlHistos.fillHisto(TString("met_") + it->first+"geq040zpt", ctf,it->second.pt()>=0.4*zll.pt() ? it->second.pt() : 0.0,iweight);
+                  controlHistos.fill2DHisto(TString("met_") + it->first+"geq040zptvspu", ctf,ev.ngenITpu,it->second.pt()>=0.4*zll.pt() ? it->second.pt() : 0.0,iweight);
 
                   TVector2 zll2DLong  = TVector2(zll.px()/zll.pt(), zll.py()/zll.pt());
                   TVector2 zll2DTrans = zll2DLong.Rotate(TMath::Pi()/2);
-                  double LongMET  = zll2DLong .Px()*it->second.px() + zll2DLong .Py()*it->second.py();
-                  double TransMET = zll2DTrans.Px()*it->second.px() + zll2DTrans.Py()*it->second.py();
-//                  controlHistos.fillHisto(TString("metL_") + it->first, ctf,LongMET,weight);
-//		  controlHistos.fill2DHisto(TString("metL_") + it->first+"vspu", ctf,ev.ngenITpu,LongMET,weight);
-//                  controlHistos.fillHisto(TString("metT_") + it->first, ctf,TransMET,weight);
-//                  controlHistos.fill2DHisto(TString("metT_") + it->first+"vspu", ctf,ev.ngenITpu,TransMET,weight);
-//                  controlHistos.fill2DHisto(TString("metLT_") + it->first, ctf,LongMET,TransMET,weight);
+                  //double LongMET  = zll2DLong .Px()*it->second.px() + zll2DLong .Py()*it->second.py();
+                  //double TransMET = zll2DTrans.Px()*it->second.px() + zll2DTrans.Py()*it->second.py();
+		  //controlHistos.fillHisto(TString("metL_") + it->first, ctf,LongMET,iweight);
+		  //controlHistos.fill2DHisto(TString("metL_") + it->first+"vspu", ctf,ev.ngenITpu,LongMET,iweight);
+		  //controlHistos.fillHisto(TString("metT_") + it->first, ctf,TransMET,iweight);
+		  //controlHistos.fill2DHisto(TString("metT_") + it->first+"vspu", ctf,ev.ngenITpu,TransMET,iweight);
+		  //controlHistos.fill2DHisto(TString("metLT_") + it->first, ctf,LongMET,TransMET,iweight);
 		}
 
-
-
-	      controlHistos.fill2DHisto("metvstkmet", ctf,met,assocChargedMet,weight);
-	      controlHistos.fill2DHisto("metvsassoc", ctf,met,assocMetP4.pt(),weight);
-              controlHistos.fill2DHisto("metvsclustered", ctf,met,clusteredMetP4.pt(),weight);
-	      controlHistos.fill2DHisto("metvscentralMet", ctf,met,centralMet,weight);
-              controlHistos.fill2DHisto("centralMetvsassocMet", ctf,centralMet,assocMetP4.pt(),weight);
-
-	      controlHistos.fillHisto("redMetL", ctf,redMetL,weight);
-	      controlHistos.fillHisto("redMetT", ctf,redMetT,weight);
-	      controlHistos.fillHisto("redMetcomps", ctf,redMetL,redMetT,weight);	
-
-              //fixme: redo properly the ntuples and remove this stupid mapping
-            float leptonSumEt      = phys.leptons[0].pt()+phys.leptons[1].pt();
-            float sumEt            = ev.sumEt           -leptonSumEt;
-            float sumEtcentral     = ev.sumEtcentral    -leptonSumEt;
-            float chSumEtcentral   = ev.chsumEtcentral  -leptonSumEt;
-            float neutSumEtcentral = ev.neutsumEtcentral;
-            float chSumEt          = ev.chsumEt         -leptonSumEt;
-            float neutsumEt        = ev.neutsumEt;
+	      controlHistos.fill2DHisto("metvstkmet", ctf,met,assocChargedMet,iweight);
+	      controlHistos.fill2DHisto("metvsassoc", ctf,met,assocMetP4.pt(),iweight);
+              controlHistos.fill2DHisto("metvsclustered", ctf,met,clusteredMetP4.pt(),iweight);
+	      controlHistos.fill2DHisto("metvscentralMet", ctf,met,centralMet,iweight);
+	      controlHistos.fillHisto("redMetL", ctf,redMetL,iweight);
+	      controlHistos.fillHisto("redMetT", ctf,redMetT,iweight);
+	      controlHistos.fillHisto("redMetcomps", ctf,redMetL,redMetT,iweight);	
 
 	      if(sumEt>0)
 		{
-		  controlHistos.fillHisto("sumEt",                ctf,sumEt,weight);
-		  controlHistos.fillHisto("chSumEt",              ctf,chSumEt,weight);
-		  controlHistos.fillHisto("neutSumEt",            ctf,neutsumEt,weight);
-		  controlHistos.fillHisto("primVertexSumEt",      ctf,ev.primVertexSumEt,weight);
-		  controlHistos.fillHisto("otherVertexSumEt",     ctf,ev.otherVertexSumEt,weight);
+		  controlHistos.fillHisto("sumEt",                ctf,sumEt,iweight);
+		  controlHistos.fillHisto("chSumEt",              ctf,chSumEt,iweight);
+		  controlHistos.fillHisto("neutSumEt",            ctf,neutsumEt,iweight);
+		  controlHistos.fillHisto("primVertexSumEt",      ctf,ev.primVertexSumEt,iweight);
+		  controlHistos.fillHisto("otherVertexSumEt",     ctf,ev.otherVertexSumEt,iweight);
+
 		  if(isMC)
 		    {
-		      double sigma        = sqrt(double(2*ev.ngenITpu));
-		      double minCentralPu = -sigma;
-		      double maxCentralPu = sigma;
-		      double maxHighPu    = 2*sigma;
-		      double puDiff       = double(ev.ngenOOTpu-2*ev.ngenITpu);
-		      TString ootCond("");
-		      if(puDiff>=maxHighPu)         ootCond="VeryHighOOTpu";
-		      else if(puDiff>=maxCentralPu) ootCond="HighOOTpu";
-		      else if(puDiff>=minCentralPu) ootCond="MediumOOTpu";
-		      else                          ootCond="LowOOTpu";
-		      
-
-		      controlHistos.fillHisto("sumEt"+ootCond,ctf,sumEt,weight);
-		      controlHistos.fillHisto("neutSumEtFrac"+ootCond,ctf,neutsumEt/sumEt,weight);
-		      controlHistos.fill2DHisto("itpuvsootpu",ctf,ev.ngenITpu,ev.ngenOOTpu,weight);
+		      controlHistos.fillHisto("sumEt"+ootCond,ctf,sumEt,iweight);
+		      controlHistos.fillHisto("neutSumEtFrac"+ootCond,ctf,neutsumEt/sumEt,iweight);
+		      controlHistos.fill2DHisto("itpuvsootpu",ctf,ev.ngenITpu,ev.ngenOOTpu,iweight);
 		    }
-		  controlHistos.fillHisto("chSumEtFrac",          ctf,chSumEt/sumEt,weight);
-		  controlHistos.fillHisto("neutSumEtFrac",        ctf,neutsumEt/sumEt,weight);
-		  controlHistos.fillHisto("centralSumEtFrac",     ctf,sumEtcentral/sumEt,weight);
-		  controlHistos.fillHisto("centralChSumEtFrac",   ctf,chSumEtcentral/sumEt,weight);
-		  controlHistos.fillHisto("centralNeutSumEtFrac", ctf,neutSumEtcentral/sumEt,weight);
-		  controlHistos.fillHisto("chPrimVertexSumEtFrac",          ctf,ev.primVertexChSumEt/sumEt,weight);
-		  controlHistos.fillHisto("neutPrimVertexSumEtFrac",        ctf,ev.primVertexNeutSumEt/sumEt,weight);
-		  controlHistos.fillHisto("chOtherVertexSumEtFrac",          ctf,ev.otherVertexChSumEt/sumEt,weight);
-		  controlHistos.fillHisto("neutOtherVertexSumEtFrac",        ctf,ev.otherVertexNeutSumEt/sumEt,weight);
+		  controlHistos.fillHisto("chSumEtFrac",          ctf,chSumEt/sumEt,iweight);
+		  controlHistos.fillHisto("neutSumEtFrac",        ctf,neutsumEt/sumEt,iweight);
+		  controlHistos.fillHisto("centralSumEtFrac",     ctf,sumEtcentral/sumEt,iweight);
+		  controlHistos.fillHisto("centralChSumEtFrac",   ctf,chSumEtcentral/sumEt,iweight);
+		  controlHistos.fillHisto("centralNeutSumEtFrac", ctf,neutSumEtcentral/sumEt,iweight);
+		  controlHistos.fillHisto("chPrimVertexSumEtFrac",          ctf,ev.primVertexChSumEt/sumEt,iweight);
+		  controlHistos.fillHisto("neutPrimVertexSumEtFrac",        ctf,ev.primVertexNeutSumEt/sumEt,iweight);
+		  controlHistos.fillHisto("chOtherVertexSumEtFrac",          ctf,ev.otherVertexChSumEt/sumEt,iweight);
+		  controlHistos.fillHisto("neutOtherVertexSumEtFrac",        ctf,ev.otherVertexNeutSumEt/sumEt,iweight);
 		 
 		}
-
-	      controlHistos.fillHisto("mindphijmet",ctf,mindphijmet,weight);
-	      controlHistos.fillHisto("minmtjmet",ctf,minmtjmet,weight);
-	      controlHistos.fillHisto("mindrjz",ctf,mindrjz,weight);
-	      controlHistos.fillHisto("minmjz",ctf,minmjz,weight);
+	      
+	      controlHistos.fillHisto("mindphijmet",ctf,mindphijmet,iweight);
+	      controlHistos.fillHisto("minmtjmet",ctf,minmtjmet,iweight);
+	      controlHistos.fillHisto("mindrjz",ctf,mindrjz,iweight);
+	      controlHistos.fillHisto("minmjz",ctf,minmjz,iweight);
 	      
 	      
 	      //sample is selected
 	      if(passMediumRedMet) 
 		{
-		  controlHistos.fillHisto("eventflow",ctf,6,weight);
-		  controlHistos.fillHisto("eventCategory",ctf,eventCategory,weight);
+		  controlHistos.fillHisto("eventflow",ctf,6,iweight);
+		  controlHistos.fillHisto("eventCategory",ctf,eventCategory,iweight);
 		  controlHistos.fillHisto("cutOptMediumdphill",ctf,fabs(dphill));
-		  controlHistos.fill2DHisto("cutOptMediumsummtvsredMetL",ctf,mtsum,redMetL,weight);
+		  controlHistos.fill2DHisto("cutOptMediumsummtvsredMetL",ctf,mtsum,redMetL,iweight);
 		  
-		  if(passTightRedMet)    controlHistos.fillHisto("eventflow",ctf,7,weight);
+		  if(passTightRedMet)    controlHistos.fillHisto("eventflow",ctf,7,iweight);
 		}
 	      
 	      //
 	      // CUT & COUNT ANALYSIS
 	      //
-//	      //final selection (cut and count analysis)
-//              bool pass130( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
-//              bool pass150( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
-//              bool pass170( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
-//	      bool pass200( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
-//	      bool pass300( passTightRedMet  && fabs(dphill)<2.5                      && redMetL>75       && mtsum>200);
-//	      bool pass400( passTightRedMet  && fabs(dphill)<2.0                      && redMetL>75       && mtsum>300);
-//	      bool pass500( passTightRedMet  && fabs(dphill)<2.0                      && redMetL>100      && mtsum>400);
-//	      bool pass600( passTightRedMet  && fabs(dphill)<1.5                      && redMetL>150 && mtsum>450);
-
+	      //	      //final selection (cut and count analysis)
+	      //              bool pass130( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
+	      //              bool pass150( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
+	      //              bool pass170( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
+	      //	      bool pass200( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
+	      //	      bool pass300( passTightRedMet  && fabs(dphill)<2.5                      && redMetL>75       && mtsum>200);
+	      //	      bool pass400( passTightRedMet  && fabs(dphill)<2.0                      && redMetL>75       && mtsum>300);
+	      //	      bool pass500( passTightRedMet  && fabs(dphill)<2.0                      && redMetL>100      && mtsum>400);
+	      //	      bool pass600( passTightRedMet  && fabs(dphill)<1.5                      && redMetL>150 && mtsum>450);
+	      
               bool pass130( zvv.pt()>69  && mindphijmet>0.62 && mt>216 && mt<272);
               bool pass150( zvv.pt()>69  && mindphijmet>0.62 && mt>216 && mt<272);
               bool pass170( zvv.pt()>69  && mindphijmet>0.62 && mt>216 && mt<272);
@@ -1412,7 +1413,6 @@ int main(int argc, char* argv[])
               bool pass400( zvv.pt()>112 && mindphijmet>0.00 && mt>292);
               bool pass500( zvv.pt()>141 && mindphijmet>0.00 && mt>336          );
               bool pass600( zvv.pt()>170 && mindphijmet>0.00 && mt>377          );
-
 	      if(subcat=="vbf")
 		{
                   pass130 = passMediumRedMet;
@@ -1424,26 +1424,26 @@ int main(int argc, char* argv[])
 		  pass500 = redMet>90;
 		  pass600 = redMet>90;
 		}
-              if(pass130) controlHistos.fillHisto("finaleventflow",ctf,0,weight);
-              if(pass150) controlHistos.fillHisto("finaleventflow",ctf,1,weight);
-              if(pass170) controlHistos.fillHisto("finaleventflow",ctf,2,weight);
-	      if(pass200) controlHistos.fillHisto("finaleventflow",ctf,3,weight);
-	      if(pass300) controlHistos.fillHisto("finaleventflow",ctf,4,weight);
-	      if(pass400) controlHistos.fillHisto("finaleventflow",ctf,5,weight);
-	      if(pass500) controlHistos.fillHisto("finaleventflow",ctf,6,weight);
-	      if(pass600) controlHistos.fillHisto("finaleventflow",ctf,7,weight);
+              if(pass130) controlHistos.fillHisto("finaleventflow",ctf,0,iweight);
+              if(pass150) controlHistos.fillHisto("finaleventflow",ctf,1,iweight);
+              if(pass170) controlHistos.fillHisto("finaleventflow",ctf,2,iweight);
+	      if(pass200) controlHistos.fillHisto("finaleventflow",ctf,3,iweight);
+	      if(pass300) controlHistos.fillHisto("finaleventflow",ctf,4,iweight);
+	      if(pass400) controlHistos.fillHisto("finaleventflow",ctf,5,iweight);
+	      if(pass500) controlHistos.fillHisto("finaleventflow",ctf,6,iweight);
+	      if(pass600) controlHistos.fillHisto("finaleventflow",ctf,7,iweight);
 
-
-              if(zpt>25){
-                 if(pass130) controlHistos.fillHisto("zpt25finaleventflow",ctf,0,weight);
-                 if(pass150) controlHistos.fillHisto("zpt25finaleventflow",ctf,1,weight);
-                 if(pass170) controlHistos.fillHisto("zpt25finaleventflow",ctf,2,weight);
-                 if(pass200) controlHistos.fillHisto("zpt25finaleventflow",ctf,3,weight);
-                 if(pass300) controlHistos.fillHisto("zpt25finaleventflow",ctf,4,weight);
-                 if(pass400) controlHistos.fillHisto("zpt25finaleventflow",ctf,5,weight);
-                 if(pass500) controlHistos.fillHisto("zpt25finaleventflow",ctf,6,weight);
-                 if(pass600) controlHistos.fillHisto("zpt25finaleventflow",ctf,7,weight);
-              }
+              if(zpt>25)
+		{
+		  if(pass130) controlHistos.fillHisto("zpt25finaleventflow",ctf,0,iweight);
+		  if(pass150) controlHistos.fillHisto("zpt25finaleventflow",ctf,1,iweight);
+		  if(pass170) controlHistos.fillHisto("zpt25finaleventflow",ctf,2,iweight);
+		  if(pass200) controlHistos.fillHisto("zpt25finaleventflow",ctf,3,iweight);
+		  if(pass300) controlHistos.fillHisto("zpt25finaleventflow",ctf,4,iweight);
+		  if(pass400) controlHistos.fillHisto("zpt25finaleventflow",ctf,5,iweight);
+		  if(pass500) controlHistos.fillHisto("zpt25finaleventflow",ctf,6,iweight);
+		  if(pass600) controlHistos.fillHisto("zpt25finaleventflow",ctf,7,iweight);
+		}
 
 	      //booking for optimization
               for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
@@ -1455,9 +1455,6 @@ int main(int argc, char* argv[])
                  if(redMet>optim_Cuts2_redmet[index] && zpt>optim_Cuts2_zpt[index] && drll>optim_Cuts2_drll[index])
                  controlHistos.fillHisto("optim_eventflow2"          ,ctf,    index, weight);
               }
-
-
-
 
 	      //systematic variations (computed per jet bin so fill only once) 		  
 	      if(isc==0 && runSystematics)
@@ -1487,23 +1484,24 @@ int main(int argc, char* argv[])
 			  ipass500 = passMediumRedMetVars[ivar];
 			  ipass600 = passMediumRedMetVars[ivar];
 			}
-                      if(ipass130) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,0,weight);
-                      if(ipass150) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,1,weight);
-                      if(ipass170) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,2,weight);
-		      if(ipass200) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,3,weight);
-		      if(ipass300) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,4,weight);
-		      if(ipass400) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,5,weight);
-		      if(ipass500) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,6,weight);
-		      if(ipass600) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,7,weight);
+                      if(ipass130) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,0,iweight);
+                      if(ipass150) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,1,iweight);
+                      if(ipass170) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,2,iweight);
+		      if(ipass200) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,3,iweight);
+		      if(ipass300) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,4,iweight);
+		      if(ipass400) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,5,iweight);
+		      if(ipass500) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,6,iweight);
+		      if(ipass600) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,7,iweight);
 		    }
 		 
 		  //re-weighting variations (Higgs, pileup scenario)
-		  TString wgtVarNames[]={"hrenup","hrendown","hfactup","hfactdown","flatpu"};
-		  Float_t rwgtVars[]={ev.weight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp],
-				      ev.weight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown],
-				      ev.weight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp],
-				      ev.weight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown],
-				      ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]};
+		  TString wgtVarNames[]={"hrenup","hrendown","hfactup","hfactdown","puup","pudown"};
+ 		  Float_t rwgtVars[]={iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor],
+				      iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor],
+				      iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor],
+				      iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor],
+				      iweight*TotalWeight_plus,
+				      iweight*TotalWeight_minus};
 		  for(size_t ivar=0; ivar<sizeof(wgtVarNames)/sizeof(TString); ivar++)
                     {
 		      TString ictf= catsToFill[ic]+subcat;
@@ -1517,34 +1515,35 @@ int main(int argc, char* argv[])
 		      if(pass600) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflow",ictf,7,rwgtVars[ivar]);
 		    }
 		}
-
-		  
+	  
 		  
 	      //
 	      // MVA ANALYSIS
 	      //
 	      if(!passMediumRedMet) continue;
+
 	      //control for discriminators evaluated
-	      controlHistos.fillHisto("dphizleadl",ctf,dphizleadl,weight);
-	      controlHistos.fillHisto("drll",ctf,drll,weight);
-	      controlHistos.fillHisto("mtsum",ctf,mtsum,weight);
-	      //for(size_t ivar=0; ivar<varsList.size(); ivar++)  controlHistos.fillHisto(varsList[ivar],ctf,tmvaVars[ivar],weight);
+	      controlHistos.fillHisto("dphizleadl",ctf,dphizleadl,iweight);
+	      controlHistos.fillHisto("drll",ctf,drll,iweight);
+	      controlHistos.fillHisto("mtsum",ctf,mtsum,iweight);
+
 	      for(size_t imet=0; imet<methodList.size(); imet++)
 		{
-		  controlHistos.fillHisto(methodList[imet],ctf,discriResults[imet],weight);
-		  if(passTightRedMet) controlHistos.fillHisto(methodList[imet]+"tight",ctf,discriResults[imet],weight);
+		  controlHistos.fillHisto(methodList[imet],ctf,discriResults[imet],iweight);
+		  if(passTightRedMet) controlHistos.fillHisto(methodList[imet]+"tight",ctf,discriResults[imet],iweight);
 		  
 		  //per-event error
 		  if (methodList[imet]=="PDEFoam")
 		    {
-		      controlHistos.fillHisto("PDEFoam_Err",ctf,pdeFoamError,weight);
-		      controlHistos.fillHisto("PDEFoam_Sig",ctf,pdeFoamSig,weight);
+		      controlHistos.fillHisto("PDEFoam_Err",ctf,pdeFoamError,iweight);
+		      controlHistos.fillHisto("PDEFoam_Sig",ctf,pdeFoamSig,iweight);
 		    }
+		  
 		  //probability for Fisher discriminant
 		  if (methodList[imet]=="Fisher") 
 		    {
-		      controlHistos.fillHisto("Fisher_Proba",ctf, fisherProb, weight);
-		      controlHistos.fillHisto("Fisher_Rarity",ctf, fisherRarity, weight);
+		      controlHistos.fillHisto("Fisher_Proba",ctf, fisherProb, iweight);
+		      controlHistos.fillHisto("Fisher_Rarity",ctf, fisherRarity, iweight);
 		    }
 		}
 	    }
@@ -1558,7 +1557,8 @@ int main(int argc, char* argv[])
 	{
 	  //update the pass and wiehgt fields
 	  ev.pass=passMediumRedMet+passTightRedMet;
-	  ev.weight=summaryWeight*weight;		      
+	  ev.weight=summaryWeight*weight;		
+	  if(gammaEvHandler) ev.weight  *= gammaEvHandler->getWeight("ll");
 	  spyHandler->fillTree();
 	  
 	  //write in twiki format the intersting event
@@ -1608,7 +1608,7 @@ int main(int argc, char* argv[])
   
   //all done with the events file
   file->Close();
-
+  
   //save control plots to file
   outUrl += "/";
   outUrl += gSystem->BaseName(url);
@@ -1627,7 +1627,7 @@ int main(int argc, char* argv[])
   std::map<TString, TDirectory *> outDirs;
   outDirs["all"]=baseOutDir->mkdir("all");
   outDirs["ee"]=baseOutDir->mkdir("ee");
-//  outDirs["emu"]=baseOutDir->mkdir("emu");
+  //  outDirs["emu"]=baseOutDir->mkdir("emu");
   outDirs["mumu"]=baseOutDir->mkdir("mumu");
   for(SelectionMonitor::StepMonitor_t::iterator it =mons.begin(); it!= mons.end(); it++)
     {
@@ -1642,7 +1642,7 @@ int main(int argc, char* argv[])
 //	      && !((TClass*)hit->second->IsA())->InheritsFrom("TGraph") )
 //	    fixExtremities(hit->second,true,true);
 	  hit->second->Write();
-
+	  
 	}
     }
   ofile->Close();
