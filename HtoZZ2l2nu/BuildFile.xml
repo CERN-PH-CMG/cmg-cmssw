@@ -3,11 +3,6 @@
 <use name="FWCore/FWLite"/>
 <use name="FWCore/ServiceRegistry"/>
 <use name="FWCore/Services"/>
-<use name="PhysicsTools/Utilities"/>
-<use name="PhysicsTools/UtilAlgos"/>
-<use name="PhysicsTools/PatUtils"/>
-<use name="DataFormats/FWLite"/>
-<use name="DataFormats/Histograms"/>
 <use name="DataFormats/VertexReco"/>
 <use name="DataFormats/BeamSpot"/>
 <use name="DataFormats/EgammaCandidates"/>
@@ -15,9 +10,9 @@
 <use name="SimDataFormats/GeneratorProducts"/>
 <use name="CondFormats/JetMETObjects"/>
 <use name="RecoEcal/EgammaCoreTools"/>
-<use name="root"/>
+<use name="PhysicsTools/UtilAlgos"/>
+<use name="PhysicsTools/Utilities"/>
 <use name="roottmva"/>
-<use name="rootrflx"/>
 <use name="roofit"/>
 <export>
   <lib name="1"/>

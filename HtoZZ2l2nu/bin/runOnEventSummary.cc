@@ -96,7 +96,6 @@ int main(int argc, char* argv[])
 {
   SelectionMonitor controlHistos; //plot storage
 
-
   //Prepare vectors for cut optimization
   std::vector<double> optim_Cuts1_met;
   std::vector<double> optim_Cuts1_mindphi;
@@ -131,8 +130,6 @@ int main(int argc, char* argv[])
   }
 
 
-
-
   //start computers
   ProjectedMETComputer pmetComp;
   TransverseMassComputer mtComp;
@@ -164,7 +161,6 @@ int main(int argc, char* argv[])
   SampleHiggsWidth[600]= 123;                  SampleHiggsWeightInt["VBFtoH600toZZto2L2Nu.root"]=0.792347;   SampleHiggsWeightInt["VBFtoH600toWWto2L2Nu.root"]=0.807353;
 
 
-
   // configure the process
   const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
   TString url=runProcess.getParameter<std::string>("input");
@@ -191,7 +187,6 @@ int main(int argc, char* argv[])
   else                        LumiWeights.weight3D_init(puWeightFile);
   reweight::PoissonMeanShifter PShiftUp(+0.6);
   reweight::PoissonMeanShifter PShiftDown(-0.6);
-
 
   //tree info
   int evStart=runProcess.getParameter<int>("evStart");
@@ -262,7 +257,6 @@ int main(int argc, char* argv[])
 	    }
 	}
     }
-  
   
   //book the control histograms
   TH1F *h=new TH1F ("eventflow", ";Step;Events", 8,0,8);
@@ -365,7 +359,6 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(5,"SSVHEM || TCHEL");
   h->GetXaxis()->SetBinLabel(6,"SSVHEM || JBPL");
   controlHistos.addHistogram( h );
-
 
   //used for GenLevel
   controlHistos.addHistogram( new TH1F( "genHiggsPt"  , ";gen Higgs p_{T};Events",100,0,200) );
@@ -604,7 +597,7 @@ int main(int argc, char* argv[])
   for(size_t icat=0;icat<sizeof(cats)/sizeof(TString); icat++)
     for(size_t isubcat=0;isubcat<sizeof(subCats)/sizeof(TString); isubcat++)
       controlHistos.initMonitorForStep(cats[icat]+subCats[isubcat]);
-  
+
   //open the file and get events tree
   ZZ2l2nuSummaryHandler evSummaryHandler;
   TFile *file = TFile::Open(url);

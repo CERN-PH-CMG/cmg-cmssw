@@ -1,22 +1,9 @@
-<use name="root"/>
-<use name="roofit"/>
-<use name="roottmva"/>
-<use name="rootgraphics"/>
-<use name="boost_program_options"/>
-<use name="CondFormats/JetMETObjects"/>
-<use name="FWCore/ParameterSet"/>
-<use name="FWCore/PythonParameterSet"/>
-<use name="FWCore/FWLite"/>
-<use name="PhysicsTools/FWLite"/>
-<use name="PhysicsTools/Utilities"/>
-<use name="RecoBTag/Records"/>
-<use name="CondFormats/PhysicsToolsObjects"/>
+<use name="CMGTools/HtoZZ2l2nu"/>
 <environment>
- <bin name="runOnEventSummary" file="../src/setStyle.C ../src/plotter.C ../src/ZZ2l2nuSummaryHandler.cc ../src/ZZ2l2nuPhysicsEvent.cc ../src/EventCategory.cc ../src/MacroUtils.cc ../src/METUtils.cc ../src/TMVAUtils.cc ../src/GammaEventHandler.cc runOnEventSummary.cc"></bin>
- <bin name="runGammaPlusJetsMETtemplates" file="../src/setStyle.C ../src/plotter.C ../src/ZZ2l2nuSummaryHandler.cc ../src/ZZ2l2nuPhysicsEvent.cc ../src/EventCategory.cc ../src/MacroUtils.cc ../src/METUtils.cc ../src/GammaEventHandler.cc runGammaPlusJetsMETtemplates.cc"></bin>
- <bin name="runMVAStudy" file="../src/ZZ2l2nuSummaryHandler.cc ../src/ZZ2l2nuPhysicsEvent.cc ../src/EventCategory.cc ../src/METUtils.cc ../src/TMVAUtils.cc runMVAStudy.cc"></bin>
- <bin name="runVBF" file="../src/setStyle.C ../src/plotter.C ../src/ZZ2l2nuSummaryHandler.cc ../src/ZZ2l2nuPhysicsEvent.cc ../src/EventCategory.cc ../src/MacroUtils.cc ../src/METUtils.cc ../src/TMVAUtils.cc ../src/GammaEventHandler.cc runVBF.cc"></bin>
-
+ <bin name="runOnEventSummary" file="runOnEventSummary.cc"></bin>
+ <bin name="runGammaPlusJetsMETtemplates" file="runGammaPlusJetsMETtemplates.cc"></bin>
+ <bin name="runMVAStudy" file="runMVAStudy.cc"></bin>
+ <bin name="runVBF" file="runVBF.cc"></bin>
  <bin name="runPlotter" file="runPlotter.cc"></bin>
 </environment>
 <Flags CXXFLAGS="-g"/>
