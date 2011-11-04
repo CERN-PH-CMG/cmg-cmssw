@@ -4,7 +4,7 @@
 
 import re, types, cookielib, datetime
 
-import CMGTools.Production.castortools as castortools
+import CMGTools.Production.eostools as castortools
 import CMGTools.Production.mechanize as mechanize
 
 

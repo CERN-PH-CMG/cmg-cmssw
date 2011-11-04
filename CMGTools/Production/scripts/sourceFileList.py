@@ -2,7 +2,7 @@
 
 from optparse import OptionParser
 import sys,os, pprint, re
-import CMGTools.Production.castortools
+import CMGTools.Production.eostools as castortools
 
     
 parser = OptionParser()
@@ -26,7 +26,7 @@ if not exists:
     sys.exit(1)
 
 
-files = castortools.matchingFiles( dir, regexp, addProtocol = True)
+files = castortools.matchingFiles( dir, regexp)
 
 mask = "IntegrityCheck"
 file_mask = []  
