@@ -4,8 +4,7 @@
 # compiles the python module
 # prints the line to be added to the cfg. 
 
-import os, sys,  imp, re, pprint, string
-from optparse import OptionParser
+import os, sys, re
 
 def doImportNewSource( sampleName, sourceFileListCmd, fileName = 'source_cff.py'):
     # making local source directory ---------

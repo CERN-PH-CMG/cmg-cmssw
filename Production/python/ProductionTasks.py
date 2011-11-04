@@ -1,10 +1,10 @@
 
 import copy, datetime, inspect, fnmatch, os, re, subprocess, sys, tempfile, time
 
-import CMGTools.Production.castortools as castortools
+import CMGTools.Production.eostools as castortools
 import CMGTools.Production.Das as Das
 
-from CMGTools.Production.dataset import *
+from CMGTools.Production.dataset import Dataset
 
 class Task(object):
     """Base class for Task API"""

@@ -1,7 +1,5 @@
-import sys,os, re, subprocess, datetime,  glob
-import CMGTools.Production.savannahConnect as savannahConnect 
-import CMGTools.Production.castortools as castortools
-import CMGTools.Production.castorBaseDir as castorBaseDir
+import os, re, datetime
+import CMGTools.Production.eostools as castortools
 
 from DBSAPI.dbsApiException import *
 

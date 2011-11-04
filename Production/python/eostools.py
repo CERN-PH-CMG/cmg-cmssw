@@ -69,6 +69,8 @@ lfnToCastor = lfnToEOS
 
 def isEOSDir( path ):
     """Checks whether this file or directory is stored on EOS."""
+    if os.path.exists(path):
+        return False
     pfn = lfnToPFN(eosToLFN(path))
     tokens = cmsIO.splitPFN(pfn)
     return tokens and tokens[1].lower().startswith('eos')
@@ -261,7 +263,7 @@ def matchingFiles( path, regexp):
 
     pattern = re.compile( regexp )
     files = ls(path)
-    return [f for f in files if pattern.match(f) is not None]
+    return [f for f in files if pattern.match(os.path.basename(f))  is not None]
     
 if __name__ == '__main__':
     
