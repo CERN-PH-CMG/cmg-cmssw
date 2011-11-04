@@ -4,27 +4,33 @@
 # compiles the python module
 # prints the line to be added to the cfg. 
 
-import os, sys,  imp, re, pprint, string
+import os, sys, re
 from optparse import OptionParser
 
-import CMGTools.Production.castortools as castortools
+import CMGTools.Production.eostools as castortools
 
 
 def allSampleInfo( sampleName, listLevel ):
 
     if listLevel == 3:
-        os.system("rfdir %s | awk '{print \"%s/\"$9}'" % (castorDir,castorDir) )
+        contents = castortools.ls(castorDir)
+        for c in contents:
+            print c
+        #os.system("rfdir %s | awk '{print \"%s/\"$9}'" % (castorDir,castorDir) )
         return
 
     print sampleName
 
     if listLevel>0:
         print '------------------------------------------------------------------------------------------------------------'
-        print 'castor:'
+        print 'PFN:'
         print castorDir
+        print 'LFN:'
         print castortools.castorToLFN(castorDir)
-    if listLevel>1: 
-        os.system('rfdir ' + castorDir )
+    if listLevel>1:
+        contents = castortools.listFiles(castorDir)
+        for c in contents:
+            print '\t'.join(c)
     if listLevel>0 and localDir!=None:
         print 'local:'
         print localDir
