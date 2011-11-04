@@ -35,7 +35,7 @@
 
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
-#include "CMGTools/HtoZZ2l2nu/interface/ReducedMETComputer.h"
+#include "CMGTools/HtoZZ2l2nu/interface/METUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ProjectedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
@@ -73,7 +73,6 @@ private:
   int getElectronPidSummary(const pat::Electron *ele);
 
   std::map<std::string, edm::ParameterSet> objConfig_;
-  ReducedMETComputer rmet_;
   ProjectedMETComputer pmet_;
   ZZ2l2nuSummaryHandler summaryHandler_;
   TSelectionMonitor controlHistos_;
@@ -85,8 +84,7 @@ using namespace std;
 
 //
 DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterSet &iConfig)
-  : rmet_(1.0,1.0,0.0,0.0,1.0),
-    controlHistos_( iConfig.getParameter<std::string>("dtag") )
+  : controlHistos_( iConfig.getParameter<std::string>("dtag") )
 {
   try{
 
