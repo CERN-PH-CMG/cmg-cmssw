@@ -105,6 +105,8 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
          if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
 
+         if(HistoName.find("optim_cut")!=string::npos){Weight=1.0;}
+
          TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + ".root").c_str());
          if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
          TH1* tmphist = (TH1*) GetObjectFromPath(File,HistoName); 
@@ -224,7 +226,7 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    T->SetFillColor(0);
    T->SetFillStyle(0);  T->SetLineColor(0);
    T->SetTextAlign(32);
-  char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #int L=%.0f pb^{-1}", iLumi);
+  char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #int L=%.1f fb^{-1}", iLumi/1000);
    T->AddText(Buffer);
 
    std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
@@ -322,6 +324,8 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
          if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
 
+         if(HistoName.find("optim_cut")!=string::npos){Weight=1.0;}
+
          TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + ".root").c_str());
          if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
          TH1* tmphist = (TH1*) GetObjectFromPath(File,HistoName); 
@@ -383,7 +387,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    T->SetFillColor(0);
    T->SetFillStyle(0);  T->SetLineColor(0);
    T->SetTextAlign(32);
-  char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #int L=%.0f pb^{-1}", iLumi);
+  char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #int L=%.1f pb^{-1}", iLumi/1000);
    T->AddText(Buffer);
    T->Draw("same");
 

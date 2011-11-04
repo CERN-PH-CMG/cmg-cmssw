@@ -11,7 +11,7 @@
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
 #include "CMGTools/HtoZZ2l2nu/interface/SelectionMonitor.h"
 #include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
-#include "CMGTools/HtoZZ2l2nu/interface/JetEnergyUncertaintyComputer.h"
+#include "CMGTools/HtoZZ2l2nu/interface/MacroUtils.h"
 
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"

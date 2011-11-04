@@ -3,6 +3,7 @@
 
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
+#include "CMGTools/HtoZZ2l2nu/interface/GammaEventHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ReducedMETFitter.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ReducedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/TransverseMassComputer.h"
@@ -11,8 +12,8 @@
 #include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
 #include "CMGTools/HtoZZ2l2nu/interface/SelectionMonitor.h"
-#include "CMGTools/HtoZZ2l2nu/interface/JetEnergyUncertaintyComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/TMVAUtils.h"
+#include "CMGTools/HtoZZ2l2nu/interface/MacroUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
 #include "CMGTools/HtoZZ2l2nu/interface/DuplicatesChecker.h"
 
@@ -24,6 +25,7 @@
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 
 #include "TSystem.h"
 #include "TFile.h"
@@ -97,24 +99,39 @@ int main(int argc, char* argv[])
 
 
   //Prepare vectors for cut optimization
-  std::vector<double> optim_Cuts_met;
-  std::vector<double> optim_Cuts_mindphi;
-  std::vector<double> optim_Cuts_mtmin;
-  std::vector<double> optim_Cuts_mtmax;
-
+  std::vector<double> optim_Cuts1_met;
+  std::vector<double> optim_Cuts1_mindphi;
+  std::vector<double> optim_Cuts1_mtmin;
+  std::vector<double> optim_Cuts1_mtmax;
   for(double met=60;met<190;met+=10.0){
      for(double mindphi=0.0;mindphi<0.80;mindphi+=0.10){
         for(double mtmin=220;mtmin<460;mtmin+=20){
            for(double mtmax=mtmin+50;mtmax<820;mtmax+=50){
               if(mtmax>=820)mtmax=3000;
-              optim_Cuts_met    .push_back(met);
-              optim_Cuts_mindphi.push_back(mindphi);
-              optim_Cuts_mtmin  .push_back(mtmin);
-              optim_Cuts_mtmax  .push_back(mtmax);
+              optim_Cuts1_met    .push_back(met);
+              optim_Cuts1_mindphi.push_back(mindphi);
+              optim_Cuts1_mtmin  .push_back(mtmin);
+              optim_Cuts1_mtmax  .push_back(mtmax);
            }
         }
      }
   }
+
+
+  std::vector<double> optim_Cuts2_redmet;
+  std::vector<double> optim_Cuts2_zpt;
+  std::vector<double> optim_Cuts2_drll;
+  for(double redmet=50;redmet<190;redmet+=10.0){
+     for(double zpt=25;zpt<105;zpt+=10){
+        for(double drll=0;drll<1.0;drll+=0.5){
+              optim_Cuts2_redmet    .push_back(redmet);
+              optim_Cuts2_zpt       .push_back(zpt);
+              optim_Cuts2_drll      .push_back(drll);
+        }
+     }
+  }
+
+
 
 
   //start computers
@@ -188,7 +205,6 @@ int main(int argc, char* argv[])
   JetResolution stdPtResol(ptFileName.Data(),true);
   TString uncFile =  runProcess.getParameter<std::string>("jesUncFileName"); gSystem->ExpandPathName(uncFile);
   JetCorrectionUncertainty jecUnc(uncFile.Data());
-  jet::UncertaintyComputer jcomp(&stdPtResol,&stdEtaResol,&stdPhiResol,&jecUnc);
   bool runSystematics                        = runProcess.getParameter<bool>("runSystematics");
   if(runSystematics) { cout << "Systematics will be computed for this analysis" << endl; }
 
@@ -201,6 +217,13 @@ int main(int argc, char* argv[])
   std::vector<int> evCategories           = tmvaInput.getParameter<std::vector<int> >("evCategories");
   std::string weightsDir                  = tmvaInput.getParameter<std::string>("weightsDir");
   std::string studyTag                    = tmvaInput.getParameter<std::string>("studyTag");
+
+  GammaEventHandler gammaEvHandler(runProcess);
+  edm::LumiReWeighting LumiWeights(runProcess.getParameter<std::string>("mcpileup"), runProcess.getParameter<std::string>("datapileup"), "pileup","pileup");
+  std::string puWeightFile = runProcess.getParameter<std::string>("puWeightFile");
+  if(puWeightFile.size()==0)  LumiWeights.weight3D_init();
+  else                        LumiWeights.weight3D_init(puWeightFile);
+
 
   std::vector<Float_t> discriResults(methodList.size(),0);
   Float_t pdeFoamError(0), pdeFoamSig(0), fisherProb(0), fisherRarity(0);
@@ -395,6 +418,7 @@ int main(int argc, char* argv[])
 
 
   metTypes["met"]                 = "E_{T}^{miss}";
+  metTypes["centralMet"]          = "central-E_{T}^{miss}";
   metTypes["assocChargedMet"]     = "assoc-E_{T}^{miss}(charged)";
   metTypes["assocMet"]            = "assoc-E_{T}^{miss}";
   metTypes["assocCMet"]           = "assocC-E_{T}^{miss}";
@@ -419,12 +443,12 @@ int main(int argc, char* argv[])
   metTypes["redAClusteredMet"]    = "red(assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
   metTypes["red3Met"]             = "red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
   metTypes["redminAssocMet"]      = "red(min(E_{T}^{miss},assoc-E_{T}^{miss}),clustered E_{T}^{miss})";
+  metTypes["mincentralAssocMet"]         = "min(cental-E_{T}^{miss},assoc-E_{T}^{miss})";
 
 
 
   std::map<TString,LorentzVector> metTypeValues;
-  for(std::map<TString,TString>::iterator it = metTypes.begin(); it!= metTypes.end(); it++)
-    {
+  for(std::map<TString,TString>::iterator it = metTypes.begin(); it!= metTypes.end(); it++){
       metTypeValues[it->first]=LorentzVector(0,0,0,0);
       controlHistos.addHistogram( new TH1F( TString("met_") + it->first, ";"+it->second+";Events", 100,0,500) );
       controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"vspu", ";Pileup events;"+it->second+";Events", 25,0,25,200,0,500) );
@@ -460,6 +484,10 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH2F ("metvsassoc", ";E_{T}^{miss};assoc-E_{T}^{miss}", 50,0,500,50,0,500) );  
   controlHistos.addHistogram( new TH2F ("metvsclustered", ";E_{T}^{miss};clustered-E_{T}^{miss}", 50,0,500,50,0,500) );    
   controlHistos.addHistogram( new TH2F ("metvscentralMet", ";E_{T}^{miss};central-E_{T}^{miss}", 50,0,500,50,0,500) );  
+  controlHistos.addHistogram( new TH2F ("centralMetvsassocMet", ";central-E_{T}^{miss};assoc-E_{T}^{miss}", 50,0,500,50,0,500) );
+
+
+
   
   controlHistos.addHistogram( new TH1F("sumEt",                    ";#Sigma E_{T} [GeV];Events", 100,0,2000) );
   controlHistos.addHistogram( new TH1F("chSumEt",                    ";#Sigma E_{T}^{charged} [GeV];Events", 100,0,1000) );
@@ -519,20 +547,29 @@ int main(int argc, char* argv[])
 
 
   //optimization
-  controlHistos.addHistogram( new TH1F ("optim_eventflow"  , ";cut index;yields" ,optim_Cuts_met.size(),0,optim_Cuts_met.size()) );
-  TH1F* Hoptim_cut_met     =  new TH1F ("optim_cut_met"    , ";cut index;met"    ,optim_Cuts_met.size(),0,optim_Cuts_met.size()) ;
-  TH1F* Hoptim_cut_mindphi =  new TH1F ("optim_cut_mindphi", ";cut index;mindphi",optim_Cuts_met.size(),0,optim_Cuts_met.size()) ;
-  TH1F* Hoptim_cut_mtmin   =  new TH1F ("optim_cut_mtmin"  , ";cut index;mtmin"  ,optim_Cuts_met.size(),0,optim_Cuts_met.size()) ;
-  TH1F* Hoptim_cut_mtmax   =  new TH1F ("optim_cut_mtmax"  , ";cut index;mtmax"  ,optim_Cuts_met.size(),0,optim_Cuts_met.size()) ;
+  controlHistos.addHistogram ( new TH1F ("optim_eventflow1"  , ";cut index;yields" ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) );
+  TH1F* Hoptim_cuts1_met     =  new TH1F ("optim_cut1_met"    , ";cut index;met"    ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ;
+  TH1F* Hoptim_cuts1_mindphi =  new TH1F ("optim_cut1_mindphi", ";cut index;mindphi",optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ;
+  TH1F* Hoptim_cuts1_mtmin   =  new TH1F ("optim_cut1_mtmin"  , ";cut index;mtmin"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ;
+  TH1F* Hoptim_cuts1_mtmax   =  new TH1F ("optim_cut1_mtmax"  , ";cut index;mtmax"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ;
   //fill optimization bookmark histo at the first event loop
-  for(unsigned int index=0;index<optim_Cuts_met.size();index++){
-    Hoptim_cut_met    ->Fill(index, optim_Cuts_met[index]);    
-    Hoptim_cut_mindphi->Fill(index, optim_Cuts_mindphi[index]);
-    Hoptim_cut_mtmin  ->Fill(index, optim_Cuts_mtmin[index]);
-    Hoptim_cut_mtmax  ->Fill(index, optim_Cuts_mtmax[index]);
+  for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
+    Hoptim_cuts1_met    ->Fill(index, optim_Cuts1_met[index]);    
+    Hoptim_cuts1_mindphi->Fill(index, optim_Cuts1_mindphi[index]);
+    Hoptim_cuts1_mtmin  ->Fill(index, optim_Cuts1_mtmin[index]);
+    Hoptim_cuts1_mtmax  ->Fill(index, optim_Cuts1_mtmax[index]);
   }
 
-
+  controlHistos.addHistogram ( new TH1F ("optim_eventflow2"  , ";cut index;yields" ,optim_Cuts2_redmet.size(),0,optim_Cuts2_redmet.size()) );
+  TH1F* Hoptim_cuts2_redmet  =  new TH1F ("optim_cut2_redmet" , ";cut index;redmet" ,optim_Cuts2_redmet.size(),0,optim_Cuts2_redmet.size()) ;
+  TH1F* Hoptim_cuts2_zpt     =  new TH1F ("optim_cut2_zpt"    , ";cut index;zpt"    ,optim_Cuts2_redmet.size(),0,optim_Cuts2_redmet.size()) ;
+  TH1F* Hoptim_cuts2_drll    =  new TH1F ("optim_cut2_drll"   , ";cut index;drll"   ,optim_Cuts2_redmet.size(),0,optim_Cuts2_redmet.size()) ;
+  //fill optimization bookmark histo at the first event loop
+  for(unsigned int index=0;index<optim_Cuts2_redmet.size();index++){
+    Hoptim_cuts2_redmet ->Fill(index, optim_Cuts2_redmet[index]);
+    Hoptim_cuts2_zpt    ->Fill(index, optim_Cuts2_zpt[index]);
+    Hoptim_cuts2_drll   ->Fill(index, optim_Cuts2_drll[index]);
+  } 
   
   //VBF
   h = new TH1F ("VBFNEventsInc", ";Selection cut;Events", 15,0,15);
@@ -592,22 +629,24 @@ int main(int argc, char* argv[])
       return -1;
     }
 
+
+
+
+  //MC normalization (to 1/pb)
+  float cnorm=1.0;
+  if(isMC){
+      TH1F *cutflowH = (TH1F *) file->Get("evAnalyzer/h2zz/mumu/mumu_cutflow");
+      if(cutflowH) cnorm=cutflowH->GetBinContent(1);
+      if(rescaleFactor>0) cnorm /= rescaleFactor;
+  }
+  TH1F* Hcutflow     =  new TH1F ("cutflow"    , "cutflow"    ,1,0,1) ;
+  Hcutflow->SetBinContent(1,cnorm);
+
   //check PU normalized entries 
   evSummaryHandler.getTree()->Draw(">>elist","normWeight==1");
   TEventList *elist = (TEventList*)gDirectory->Get("elist");
   const Int_t normEntries = (elist==0 ? 0 : elist->GetN()); 
   if(normEntries==0) cout << "[Warning] Normalized PU entries is 0, check if the PU normalization producer was properly run" << endl;
-
-  //MC normalization (to 1/pb)
-  float cnorm=1.0;
-  if(isMC)
-    {
-      TH1F *cutflowH = (TH1F *) file->Get("evAnalyzer/h2zz/mumu/mumu_cutflow");
-      if(cutflowH) cnorm=cutflowH->GetBinContent(1);
-      if(rescaleFactor>0) cnorm /= rescaleFactor;
-    }
-  cout << "xSec x Br=" << xsec << " total entries=" << totalEntries << " normalized PU entries=" << normEntries << " obtained from " << cnorm << " generated events" 
-       << " => L=" << cnorm/xsec << " /pb" << endl; 
   
   //Event Duplicates checker init
   DuplicatesChecker duplicatesChecker;
@@ -625,7 +664,7 @@ int main(int argc, char* argv[])
   float summaryWeight(1);
   if(saveSummaryTree && normEntries>0)
     {
-      summaryWeight = xsec * float(totalEntries) / (cnorm * float(normEntries) );
+      summaryWeight = -1;//xsec * float(totalEntries) / (cnorm * float(normEntries) );
       spyHandler = new ZZ2l2nuSummaryHandler;
       spyFile = TFile::Open(outUrl + "/EventSummaries.root","UPDATE");
       TString evtag=gSystem->BaseName(url);
@@ -640,17 +679,6 @@ int main(int argc, char* argv[])
 
 
 
-
-
-
-
-
-
-
-
-
-    
-  
   //run the analysis
   unsigned int NumberOfDuplicated = 0;
   for( int iev=evStart; iev<evEnd; iev++)
@@ -667,7 +695,8 @@ int main(int argc, char* argv[])
       //       }
 
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
-      float weight=ev.weight;
+//      float weight=ev.weight;
+      float weight = LumiWeights.weight3D( ev.ngenOOTpu/2, ev.ngenITpu, ev.ngenOOTpu/2 );
       if(!isMC) weight=1;
       else if(ev.hptWeights[0]>1e-6) weight *= ev.hptWeights[0];
       double VBFWeight=1.0;
@@ -705,6 +734,12 @@ int main(int argc, char* argv[])
 
       LorentzVector zll  = phys.leptons[0]+phys.leptons[1];
       LorentzVector zvv  = phys.met[0];
+
+      bool isGammaEvent = gammaEvHandler.isGood(phys);
+      if(isGammaEvent){
+         zll = gammaEvHandler.massiveGamma("ll");
+      }
+
 
       //count jets and b-tags
       int njets(0),njetsinc(0);
@@ -859,6 +894,7 @@ int main(int argc, char* argv[])
 
               //met control
               metTypeValues["met"]                 = zvv;
+              metTypeValues["centralMet"]          = centralMetP4;
               metTypeValues["assocChargedMet"]     = assocChargedMetP4;
               metTypeValues["assocMet"]            = assocMetP4;
               metTypeValues["assocCMet"]           = assocCMetP4;
@@ -866,6 +902,7 @@ int main(int argc, char* argv[])
               metTypeValues["assocFwdMet"]         = assocFwdMetP4;
               metTypeValues["assocFwd2Met"]        = assocFwd2MetP4;
               metTypeValues["clusteredMet"]        = clusteredMetP4;
+              metTypeValues["mincentralAssocMet"]  = min(centralMetP4,assocMetP4);
               metTypeValues["minAssocChargedMet"]  = min(zvv,assocChargedMetP4);
               metTypeValues["minAssocMet"]         = min(zvv,assocMetP4);
               metTypeValues["minClusteredMet"]     = min(zvv,clusteredMetP4);
@@ -942,7 +979,7 @@ int main(int argc, char* argv[])
 	  double mjz=jz.mass();
 	  if(mjz<minmjz) minmjz=mjz;
 	}
-
+      mindphijmet = metTypeValuesminJetdphi["met"]; 
 
 
 
@@ -1084,17 +1121,7 @@ int main(int argc, char* argv[])
       std::vector<bool> passMediumRedMetVars, passTightRedMetVars;
       if(runSystematics)
 	{
-	  jcomp.compute(jetsP4,phys.met[0]);
-
-	  metVars.push_back( jcomp.getVariedMet(jet::UncertaintyComputer::JER) );
-	  jetVars.push_back( jcomp.getVariedJets(jet::UncertaintyComputer::JER) );
-
-	  metVars.push_back( jcomp.getVariedMet(jet::UncertaintyComputer::JES_UP) );
-	  jetVars.push_back( jcomp.getVariedJets(jet::UncertaintyComputer::JES_UP) );
-
-	  metVars.push_back( jcomp.getVariedMet(jet::UncertaintyComputer::JES_DOWN) );
-	  jetVars.push_back( jcomp.getVariedJets(jet::UncertaintyComputer::JES_DOWN) );
-
+	  jet::computeVariation(jetsP4,phys.met[0],jetVars, metVars, &stdPtResol,&stdEtaResol,&stdPhiResol,&jecUnc);
 	  for(size_t ivar=0; ivar<3; ivar++)
 	    {
 	      eventCategoryVars.push_back( eventClassifComp.Get(phys, &(jetVars[ivar])) );
@@ -1295,6 +1322,8 @@ int main(int argc, char* argv[])
 	      controlHistos.fill2DHisto("metvsassoc", ctf,met,assocMetP4.pt(),weight);
               controlHistos.fill2DHisto("metvsclustered", ctf,met,clusteredMetP4.pt(),weight);
 	      controlHistos.fill2DHisto("metvscentralMet", ctf,met,centralMet,weight);
+              controlHistos.fill2DHisto("centralMetvsassocMet", ctf,centralMet,assocMetP4.pt(),weight);
+
 	      controlHistos.fillHisto("redMetL", ctf,redMetL,weight);
 	      controlHistos.fillHisto("redMetT", ctf,redMetT,weight);
 	      controlHistos.fillHisto("redMetcomps", ctf,redMetL,redMetT,weight);	
@@ -1417,10 +1446,16 @@ int main(int argc, char* argv[])
               }
 
 	      //booking for optimization
-              for(unsigned int index=0;index<optim_Cuts_met.size();index++){
-                 if(zvv.pt()>optim_Cuts_met[index] && mindphijmet>optim_Cuts_mindphi[index] && mt>optim_Cuts_mtmin[index] && mt<optim_Cuts_mtmax[index])
-                 controlHistos.fillHisto("optim_eventflow"          ,ctf,    index, weight);
+              for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
+                 if(zvv.pt()>optim_Cuts1_met[index] && mindphijmet>optim_Cuts1_mindphi[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
+                 controlHistos.fillHisto("optim_eventflow1"          ,ctf,    index, weight);
               }
+
+              for(unsigned int index=0;index<optim_Cuts2_redmet.size();index++){
+                 if(redMet>optim_Cuts2_redmet[index] && zpt>optim_Cuts2_zpt[index] && drll>optim_Cuts2_drll[index])
+                 controlHistos.fillHisto("optim_eventflow2"          ,ctf,    index, weight);
+              }
+
 
 
 
@@ -1569,7 +1604,7 @@ int main(int argc, char* argv[])
 	    }
 	}
     }
-    
+
   
   //all done with the events file
   file->Close();
@@ -1577,14 +1612,17 @@ int main(int argc, char* argv[])
   //save control plots to file
   outUrl += "/";
   outUrl += gSystem->BaseName(url);
-
   //save all to the file
   TFile *ofile=TFile::Open(outUrl, "recreate");
   TDirectory *baseOutDir=ofile->mkdir("localAnalysis");
-    Hoptim_cut_met    ->Write();
-    Hoptim_cut_mindphi->Write();
-    Hoptim_cut_mtmin  ->Write();
-    Hoptim_cut_mtmax  ->Write();
+//    Hcutflow            ->Write();
+    Hoptim_cuts1_met    ->Write();
+    Hoptim_cuts1_mindphi->Write();
+    Hoptim_cuts1_mtmin  ->Write();
+    Hoptim_cuts1_mtmax  ->Write();
+    Hoptim_cuts2_redmet ->Write();
+    Hoptim_cuts2_zpt    ->Write();
+    Hoptim_cuts2_drll   ->Write();
   SelectionMonitor::StepMonitor_t &mons=controlHistos.getAllMonitors();
   std::map<TString, TDirectory *> outDirs;
   outDirs["all"]=baseOutDir->mkdir("all");
@@ -1600,10 +1638,9 @@ int main(int argc, char* argv[])
       outDirs[icat]->cd();
       for(SelectionMonitor::Monitor_t::iterator hit=it->second.begin(); hit!= it->second.end(); hit++)
 	{
-	  if(isMC && cnorm>0) hit->second->Scale(1./cnorm);
-	  if( !((TClass*)hit->second->IsA())->InheritsFrom("TH2")
-	      && !((TClass*)hit->second->IsA())->InheritsFrom("TGraph") )
-	    fixExtremities(hit->second,true,true);
+//	  if( !((TClass*)hit->second->IsA())->InheritsFrom("TH2")
+//	      && !((TClass*)hit->second->IsA())->InheritsFrom("TGraph") )
+//	    fixExtremities(hit->second,true,true);
 	  hit->second->Write();
 
 	}
@@ -1622,3 +1659,5 @@ int main(int argc, char* argv[])
   printf("TotalNumber of duplicated is %i/%i = %f%%\n",NumberOfDuplicated,evEnd,(100.0*NumberOfDuplicated)/evEnd);
   printf("VBF WEIGHT INTEGRAL = %f\n",VBFWEIGHTINTEGRAL/evEnd);
 }  
+
+
