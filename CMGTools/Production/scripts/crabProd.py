@@ -2,11 +2,11 @@
 # Colin
 # interface to CRAB, a bit like multicrab
 
-import os, sys,  imp, re, pprint, string
+import os, sys, re
 from optparse import OptionParser
 
-import CMGTools.Production.castortools as castortools
-from CMGTools.Production.addToDatasets import *
+import CMGTools.Production.eostools as castortools
+from CMGTools.Production.addToDatasets import addToDatasets
 
 parser = OptionParser()
 parser.usage = """
@@ -50,7 +50,7 @@ parser.add_option("-u", "--user", dest="user",
                   default=os.getlogin())
 
 
-(options,args) = parser.parse_args()
+(options, args) = parser.parse_args()
 
 if len(args)!=1:
     parser.print_help()
@@ -68,8 +68,8 @@ if options.tier != "":
 
 try:
     oldCrab = open('crab.cfg','r')
-except:
-    print 'cannot find crab.cfg file in current directory'
+except Exception, e:
+    print "Cannot find crab.cfg file in current directory. Error was '%s'." % str(e)
     sys.exit(1)
 
 # preparing castor dir -----------------
@@ -86,7 +86,8 @@ if castortools.isCastorFile( cdir ) and not options.force:
 
 rfmkdir = 'rfmkdir -m 775 -p ' + cdir
 print rfmkdir
-os.system( rfmkdir )
+castortools.createCastorDir(cdir)
+castortools.chmod(cdir, '775')
 
 # making local crab directory ---------
 ldir = '.' + sampleNameDir
@@ -139,9 +140,8 @@ for line in oldCrab.readlines():
 newCrab.write('[CMSSW]\n')
 newCrab.write('datasetpath = '+sampleName+'\n')
 
-outDir = cdir.replace('/castor/cern.ch','')
 newCrab.write('[USER]\n')
-newCrab.write('user_remote_dir = %s\n' % outDir  )
+newCrab.write('user_remote_dir = %s\n' % castortools.castorToLFN(cdir)  )
 
 addToDatasets( sampleNameDir , user = options.user) 
 
