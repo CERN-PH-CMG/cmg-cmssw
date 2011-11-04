@@ -280,7 +280,7 @@ void performanceSummary(string OutDir, string evcat, string signal, string backg
 
   TFile *f=TFile::Open(fname.c_str());
 //  TFile *g=TFile::Open("gammaTemplates.root");
-  TFile *g=TFile::Open("gammaTemplates_data.root");
+  TFile *g=NULL;//TFile::Open("gammaTemplates_data.root");
 
   TMultiGraph* mgraphS   = new TMultiGraph();
   TMultiGraph* mgraphDY  = new TMultiGraph();
@@ -436,7 +436,7 @@ void performancePU(string OutDir, string evcat, string signal, string background
   TString rmsFitFunc("pol3");
 
   TFile *f=TFile::Open(fname.c_str());
-  TFile *g=TFile::Open("gammaTemplates_data.root");
+  TFile *g=NULL;//TFile::Open("gammaTemplates_data.root");
   std::vector<TGraphAsymmErrors*> bckgMeanList, bckgRMSList;
   std::vector<TGraphAsymmErrors *> incEffGrList;
   std::vector< std::vector<TGraphAsymmErrors *> > effGrList; 
@@ -828,24 +828,30 @@ void performanceComparison(string OutDir="Img", string evcat="mumu", string sign
 */
 
 
-/*
+
   names.clear();                             titles.clear();
   names.push_back("met"                 );   titles.push_back("E_{T}^{miss}");
-  names.push_back("minAssocChargedMet"  );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))");
+//  names.push_back("minAssocChargedMet"  );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))");
+//  names.push_back("minAssocMet"         );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss})");
+//  names.push_back("minClusteredMet"     );   titles.push_back("min(E_{T}^{miss},clustered-E_{T}^{miss})");
+//  names.push_back("min3Met"             );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
+//  names.push_back("redAssocMet"         );   titles.push_back("red(E_{T}^{miss},assoc-E_{T}^{miss})");
+//  names.push_back("redClusteredMet"     );   titles.push_back("red(E_{T}^{miss},clustered-E_{T}^{miss})");
+//  names.push_back("red3Met"             );   titles.push_back("red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
+  names.push_back("centralMet"           );   titles.push_back("central E_{T}^{miss}");
+  names.push_back("assocMet"            );   titles.push_back("assoc-E_{T}^{miss}");
+  names.push_back("assocCMet"            );   titles.push_back("assoc-E_{T}^{miss} + #delta#beta");
   names.push_back("minAssocMet"         );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss})");
-  names.push_back("minClusteredMet"     );   titles.push_back("min(E_{T}^{miss},clustered-E_{T}^{miss})");
-  names.push_back("min3Met"             );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
-  names.push_back("redAssocMet"         );   titles.push_back("red(E_{T}^{miss},assoc-E_{T}^{miss})");
-  names.push_back("redClusteredMet"     );   titles.push_back("red(E_{T}^{miss},clustered-E_{T}^{miss})");
-  names.push_back("red3Met"             );   titles.push_back("red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
+  names.push_back("mincentralAssocMet"    );   titles.push_back("min(cental-E_{T}^{miss},assoc-E_{T}^{miss})");
   performancePU(OutDir, evcat, signal, background,  fname, names, titles);
-  performanceSummary(OutDir, evcat, signal, background,  fname, names, titles);
-  performanceSummary(OutDir+"eq0j", evcat+"eq0jets" , signal, background,  fname, names, titles);
-  performanceSummary(OutDir+"eq1j", evcat+"eq1jets" , signal, background,  fname, names, titles);
-  performanceSummary(OutDir+"eq2j", evcat+"geq2jets", signal, background,  fname, names, titles);
-*/
+//  performanceSummary(OutDir, evcat, signal, background,  fname, names, titles);
+//  performanceSummary(OutDir+"eq0j", evcat+"eq0jets" , signal, background,  fname, names, titles);
+//  performanceSummary(OutDir+"eq1j", evcat+"eq1jets" , signal, background,  fname, names, titles);
+//  performanceSummary(OutDir+"eq2j", evcat+"geq2jets", signal, background,  fname, names, titles);
 
 
+
+/*
   names.clear();                             titles.clear();
   names.push_back("met"                 );   titles.push_back("E_{T}^{miss}");
 //  names.push_back("minAssocChargedMet"  );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))");
@@ -857,7 +863,7 @@ void performanceComparison(string OutDir="Img", string evcat="mumu", string sign
 //  names.push_back("red3Met"             );   titles.push_back("red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
   performancePU(OutDir, evcat, signal, background,  fname, names, titles);
 //  performanceSummary(OutDir + "GJData_", evcat, signal, background,  fname, names, titles);
-
+*/
 
 
 /*
