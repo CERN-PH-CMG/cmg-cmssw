@@ -4,7 +4,7 @@
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
 #include "CMGTools/HtoZZ2l2nu/interface/GammaEventHandler.h"
-#include "CMGTools/HtoZZ2l2nu/interface/ReducedMETComputer.h"
+#include "CMGTools/HtoZZ2l2nu/interface/METUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/TransverseMassComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
 #include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
@@ -134,17 +134,6 @@ int main(int argc, char* argv[])
   //replicate plots for other categories
   for(size_t icat=0; icat<sizeof(categories)/sizeof(TString); icat++)  controlHistos.initMonitorForStep(categories[icat]);
 
-  //start the met computers
-  ReducedMETComputer rmetComp(1., 1., 1., 1., 1.);
-  ReducedMETComputer rTComp(1., 1., 1., 1., 1.);
-  ReducedMETComputer rAComp(1., 1., 1., 1., 1.);
-  ReducedMETComputer rCComp(1., 1., 1., 1., 1.);
-  ReducedMETComputer rTAComp(1., 1., 1., 1., 1.);
-  ReducedMETComputer rTCComp(1., 1., 1., 1., 1.);
-  ReducedMETComputer rACComp(1., 1., 1., 1., 1.);
-  ReducedMETComputer r3Comp(1., 1., 1., 1., 1.);
-  ReducedMETComputer rmAComp(1., 1., 1., 1., 1.);
-
   //open the file and get events tree
   TFile *file = TFile::Open(url);
   if(file==0) return -1;
@@ -259,55 +248,20 @@ int main(int argc, char* argv[])
 	  if(!phys.gammas[0].isConv) assocMetP4 -= gamma;
 	}
 
-      LorentzVector nullP4(0,0,0,0);
-
-      //redmet
-      rmetComp.compute(gamma,0,nullP4,0, jetsp4, metP4, true );
-      //Float_t redMet_d0  = rmetComp.reducedMET(ReducedMETComputer::D0);
-      Float_t redMet         = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t redMetX        = rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
-      Float_t redMetY        = rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-
-      //cross-check that the second computer is giving same result as the first one
-      rTComp.compute(gamma,0,nullP4,0,assocChargedMetP4, metP4, metP4,true );
-      Float_t rTMet         = rTComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rTMetX        = rTComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
-      Float_t rTMetY        = rTComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-
-      rAComp.compute(gamma,0,nullP4,0, assocMetP4, metP4, metP4,true );
-      Float_t rAMet         = rAComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rAMetX        = rAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
-      Float_t rAMetY        = rAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-
-      rCComp.compute(gamma,0,nullP4,0, clusteredMetP4, metP4, metP4, true);
-      Float_t rCMet         = rCComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rCMetX        = rCComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
-      Float_t rCMetY        = rCComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-
-      rTAComp.compute(gamma,0,nullP4,0, assocChargedMetP4, assocMetP4, assocMetP4 ,true );
-      Float_t rTAMet         = rTAComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rTAMetX        = rTAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
-      Float_t rTAMetY        = rTAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-
-      rTCComp.compute(gamma,0,nullP4,0, assocChargedMetP4, clusteredMetP4, clusteredMetP4,true );
-      Float_t rTCMet         = rTCComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rTCMetX        = rTCComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
-      Float_t rTCMetY        = rTCComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-
-      rACComp.compute(gamma,0,nullP4,0, assocMetP4, clusteredMetP4, clusteredMetP4, true );
-      Float_t rACMet         = rACComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rACMetX        = rACComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
-      Float_t rACMetY        = rACComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-      
-      r3Comp.compute(gamma,0,nullP4, 0, metP4, assocMetP4, clusteredMetP4,true );
-      Float_t r3Met         = r3Comp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t r3MetX        = r3Comp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
-      Float_t r3MetY        = r3Comp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-
-      rmAComp.compute(gamma,0,nullP4, 0, min(metP4,assocMetP4), clusteredMetP4, clusteredMetP4,true );
-      Float_t rmAMet         = rmAComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t rmAMetX        = rmAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
-      Float_t rmAMetY        = rmAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
+      METUtils::stRedMET redMetInfo;
+      LorentzVector nullP4   = LorentzVector(0,0,0,0);
+      LorentzVector lep1     = gamma;
+      LorentzVector lep2     = nullP4;
+      LorentzVector rTMetP4  = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , metP4                  , true);
+      LorentzVector rAMetP4  = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocMetP4         , metP4                  , true);
+      LorentzVector rCMetP4  = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, clusteredMetP4     , metP4                  , true);
+      LorentzVector rTAMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , assocMetP4             , true);
+      LorentzVector rTCMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , clusteredMetP4         , true);
+      LorentzVector rACMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocMetP4         , clusteredMetP4         , true);
+      LorentzVector r3MetP4  = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocMetP4         , clusteredMetP4, metP4  , true);
+      LorentzVector rmAMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, min(metP4,assocMetP4), clusteredMetP4, metP4, true);
+      LorentzVector redMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsp4             , metP4                  , true, &redMetInfo);
+      double redMet = redMetP4.pt();   double redMetL = redMetInfo.redMET_l; double redMetT = redMetInfo.redMET_t;
 
       //met control
       metTypeValues["met"]                 = metP4;
@@ -323,16 +277,19 @@ int main(int argc, char* argv[])
       metTypeValues["minAClusteredMet"]    = min(assocMetP4,clusteredMetP4);
       metTypeValues["min3Met"]             = min(metP4, min(assocMetP4,clusteredMetP4));
       metTypeValues["min4Met"]             = min(min(metP4,assocChargedMetP4), min(assocMetP4,clusteredMetP4));
-      metTypeValues["redMet"]              = LorentzVector(redMetX,redMetY,0,redMet); 
-      metTypeValues["redAssocChargedMet"]  = LorentzVector(rTMetX,rTMetY,0,rTMet);
-      metTypeValues["redAssocMet"]         = LorentzVector(rAMetX ,rAMetY ,0,rAMet );
-      metTypeValues["redClusteredMet"]     = LorentzVector(rCMetX ,rCMetY ,0,rCMet );
-      metTypeValues["redTAssocMet"]        = LorentzVector(rTAMetX ,rTAMetY ,0,rTAMet );
-      metTypeValues["redTClusteredMet"]    = LorentzVector(rTCMetX ,rTCMetY ,0,rTCMet );
-      metTypeValues["redAClusteredMet"]    = LorentzVector(rACMetX  ,rACMetY  ,0,rACMet  );
-      metTypeValues["red3Met"]             = LorentzVector(r3MetX   ,r3MetY   ,0,r3Met   );
-      metTypeValues["redminAssocMet"]      = LorentzVector(rmAMetX  ,rmAMetY  ,0,rmAMet  );
+      metTypeValues["redMet"]              = redMetP4;
+      metTypeValues["redAssocChargedMet"]  = rTMetP4;
+      metTypeValues["redAssocMet"]         = rAMetP4;
+      metTypeValues["redClusteredMet"]     = rCMetP4;
+      metTypeValues["redTAssocMet"]        = rTAMetP4;
+      metTypeValues["redTClusteredMet"]    = rTCMetP4;
+      metTypeValues["redAClusteredMet"]    = rACMetP4;
+      metTypeValues["red3Met"]             = r3MetP4;
+      metTypeValues["redminAssocMet"]      = rmAMetP4;
       
+
+
+
       double dphivmet(deltaPhi(metP4.phi(),gamma.phi()));
 
       double mindphijmet(9999.);

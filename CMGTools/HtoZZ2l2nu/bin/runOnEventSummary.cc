@@ -3,7 +3,7 @@
 
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
-#include "CMGTools/HtoZZ2l2nu/interface/ReducedMETComputer.h"
+#include "CMGTools/HtoZZ2l2nu/interface/METUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/TransverseMassComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/GammaEventHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ProjectedMETComputer.h"
@@ -135,16 +135,6 @@ int main(int argc, char* argv[])
 
   //start computers
   ProjectedMETComputer pmetComp;
-  ReducedMETComputer rmetComp(1., 1., 1., 1., 1.);
-  ReducedMETComputer rTComp(1., 1., 1., 1., 1.);
-  ReducedMETComputer rAComp(1., 1., 1., 1., 1.);
-  ReducedMETComputer rCComp(1., 1., 1., 1., 1.);
-  ReducedMETComputer rTAComp(1., 1., 1., 1., 1.);
-  ReducedMETComputer rTCComp(1., 1., 1., 1., 1.);
-  ReducedMETComputer rACComp(1., 1., 1., 1., 1.);
-  ReducedMETComputer r3Comp(1., 1., 1., 1., 1.);
-  ReducedMETComputer rmAComp(1., 1., 1., 1., 1.);
-
   TransverseMassComputer mtComp;
   EventCategory eventClassifComp;
 
@@ -576,6 +566,8 @@ int main(int argc, char* argv[])
     Hoptim_cuts2_zpt    ->Fill(index, optim_Cuts2_zpt[index]);
     Hoptim_cuts2_drll   ->Fill(index, optim_Cuts2_drll[index]);
   } 
+  TH1F* Hcutflow     =  new TH1F ("cutflow"    , "cutflow"    ,1,0,1) ;
+
   
   //VBF
   h = new TH1F ("VBFNEventsInc", ";Selection cut;Events", 15,0,15);
@@ -645,7 +637,6 @@ int main(int argc, char* argv[])
       if(cutflowH) cnorm=cutflowH->GetBinContent(1);
       if(rescaleFactor>0) cnorm /= rescaleFactor;
   }
-  TH1F* Hcutflow     =  new TH1F ("cutflow"    , "cutflow"    ,1,0,1) ;
   Hcutflow->SetBinContent(1,cnorm);
 
   //check PU normalized entries 
@@ -846,95 +837,29 @@ int main(int argc, char* argv[])
       Float_t mt         = mtComp.compute(zll,zvv,true);
       Float_t dphizleadl = isGammaEvent ? 0 : ( ptl1>ptl2 ? deltaPhi(phys.leptons[0].phi(),zll.phi()) : deltaPhi(phys.leptons[1].phi(),zll.phi()) );
 
+
+
+
       //redmet
-      LorentzVector nullP4(0,0,0,0);
-      if(!isGammaEvent) rmetComp.compute(phys.leptons[0], 0, phys.leptons[1], 0, jetsP4, zvv);
-      else              rmetComp.compute(zll,             0, nullP4,          0, jetsP4, zvv, true);
-      //Float_t redMet_d0  = rmetComp.reducedMET(ReducedMETComputer::D0);
-      //Float_t redMetL_d0  = rmetComp.reducedMETComponents(ReducedMETComputer::D0).second;
-      //Float_t redMetT_d0  = rmetComp.reducedMETComponents(ReducedMETComputer::D0).first;
-      //Float_t redMetX_d0  = rmetComp.reducedMETcartesian(ReducedMETComputer::D0).X();
-      //Float_t redMetY_d0  = rmetComp.reducedMETcartesian(ReducedMETComputer::D0).Y();
-      Float_t redMet         = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      Float_t redMetL        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      Float_t redMetT        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
-      Float_t redMetX        = rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
-      Float_t redMetY        = rmetComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-
-      //cross-check that the second computer is giving same result as the first one
-      if(!isGammaEvent) rTComp.compute(phys.leptons[0], 0, phys.leptons[1], 0, assocChargedMetP4, zvv, zvv );
-      else              rTComp.compute(zll,           0, nullP4,          0, assocChargedMetP4, zvv, zvv, true);
-      Float_t rTMet         = rTComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      //Float_t rTMetL        = rTComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      //Float_t rTMetT        = rTComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
-      Float_t rTMetX        = rTComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
-      Float_t rTMetY        = rTComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-
-      if(!isGammaEvent) rAComp.compute(phys.leptons[0],0,phys.leptons[1], 0, assocMetP4, zvv, zvv );
-      else              rAComp.compute(zll,           0, nullP4,          0, assocMetP4, zvv, zvv, true);
-      Float_t rAMet         = rAComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      //Float_t rAMetL        = rAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      //Float_t rAMetT        = rAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
-      Float_t rAMetX        = rAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
-      Float_t rAMetY        = rAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-
-      if(!isGammaEvent)  rCComp.compute(phys.leptons[0],0, phys.leptons[1], 0, clusteredMetP4, zvv, zvv);
-      else               rCComp.compute(zll,            0, nullP4,          0, clusteredMetP4, zvv, zvv, true);
-      Float_t rCMet         = rCComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      //Float_t rCMetL        = rCComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      //Float_t rCMetT        = rCComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
-      Float_t rCMetX        = rCComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
-      Float_t rCMetY        = rCComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-      
-      if(!isGammaEvent) rTAComp.compute(phys.leptons[0],0, phys.leptons[1], 0, assocChargedMetP4, assocMetP4, assocMetP4 );
-      else              rTAComp.compute(zll,            0, nullP4,          0, assocChargedMetP4, assocMetP4, zvv, true);
-      Float_t rTAMet         = rTAComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      //Float_t rTAMetL        = rTAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      //Float_t rTAMetT        = rTAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
-      Float_t rTAMetX        = rTAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
-      Float_t rTAMetY        = rTAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-
-      if(!isGammaEvent) rTCComp.compute(phys.leptons[0],0,phys.leptons[1], 0, assocChargedMetP4, clusteredMetP4, clusteredMetP4 );
-      else              rTCComp.compute(zll,            0, nullP4,          0, assocChargedMetP4, clusteredMetP4, clusteredMetP4, true);
-      Float_t rTCMet         = rTCComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      //Float_t rTCMetL        = rTCComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      //Float_t rTCMetT        = rTCComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
-      Float_t rTCMetX        = rTCComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
-      Float_t rTCMetY        = rTCComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-
-      if(!isGammaEvent) rACComp.compute(phys.leptons[0],0,phys.leptons[1], 0, assocMetP4, clusteredMetP4, clusteredMetP4 );
-      else              rACComp.compute(zll,            0, nullP4,          0, assocMetP4, clusteredMetP4, clusteredMetP4, true);
-      Float_t rACMet         = rACComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      //Float_t rACMetL        = rACComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      //Float_t rACMetT        = rACComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
-      Float_t rACMetX        = rACComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
-      Float_t rACMetY        = rACComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-
-      if(!isGammaEvent) r3Comp.compute(phys.leptons[0],0, phys.leptons[1], 0, zvv, assocMetP4, clusteredMetP4 );
-      else              r3Comp.compute(zll,            0, nullP4,          0, zvv, assocMetP4, clusteredMetP4,true);
-      Float_t r3Met         = r3Comp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      //Float_t r3MetL        = r3Comp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      //Float_t r3MetT        = r3Comp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
-      Float_t r3MetX        = r3Comp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
-      Float_t r3MetY        = r3Comp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
-
-      if(!isGammaEvent) rmAComp.compute(phys.leptons[0],0,phys.leptons[1], 0, min(zvv,assocMetP4), clusteredMetP4, clusteredMetP4 );
-      else              rmAComp.compute(zll,            0, nullP4,          0, min(zvv,assocMetP4), clusteredMetP4, clusteredMetP4,true);
-      Float_t rmAMet         = rmAComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-      //Float_t rmAMetL        = rmAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-      //Float_t rmAMetT        = rmAComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
-      Float_t rmAMetX        = rmAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).X();
-      Float_t rmAMetY        = rmAComp.reducedMETcartesian(ReducedMETComputer::INDEPENDENTLYMINIMIZED).Y();
+      METUtils::stRedMET redMetInfo;      
+      LorentzVector nullP4   = LorentzVector(0,0,0,0);
+      LorentzVector lep1     = isGammaEvent ? zll    : phys.leptons[0];
+      LorentzVector lep2     = isGammaEvent ? nullP4 : phys.leptons[1];
+      LorentzVector rTMetP4  = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , zvv                , isGammaEvent);
+      LorentzVector rAMetP4  = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocMetP4         , zvv                , isGammaEvent);
+      LorentzVector rCMetP4  = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, clusteredMetP4     , zvv                , isGammaEvent);
+      LorentzVector rTAMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , assocMetP4         , isGammaEvent);
+      LorentzVector rTCMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , clusteredMetP4     , isGammaEvent);
+      LorentzVector rACMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocMetP4         , clusteredMetP4     , isGammaEvent);
+      LorentzVector r3MetP4  = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocMetP4         , clusteredMetP4, zvv, isGammaEvent);
+      LorentzVector rmAMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, min(zvv,assocMetP4), clusteredMetP4, zvv, isGammaEvent);
+      LorentzVector redMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsP4             , zvv                , isGammaEvent, &redMetInfo);
+      double redMet = redMetP4.pt();   double redMetL = redMetInfo.redMET_l; double redMetT = redMetInfo.redMET_t;
 
       //projected met
       Float_t projMet              =  isGammaEvent ? 0 : pmetComp.compute(phys.leptons[0], phys.leptons[1], zvv );
-      //Float_t projAssocChargedMet   = isGammaEvent ? 0 : pmetComp.compute(phys.leptons[0],phys.leptons[1], assocChargedMetP4);
-      //Float_t cleanMet            = cleanMetP4.pt();
       Float_t centralMet          = centralMetP4.pt();
       Float_t assocChargedMet     = assocChargedMetP4.pt();
-
-      //Float_t assocMet            = assocMetP4.pt();
-      //Float_t assocOtherVertexMet = assocOtherVertexMetP4.pt();
 
       //met control
       metTypeValues["met"]                 = zvv;
@@ -948,21 +873,20 @@ int main(int argc, char* argv[])
       metTypeValues["minAssocChargedMet"]  = min(zvv,assocChargedMetP4);
       metTypeValues["minAssocMet"]         = min(zvv,assocMetP4);
       metTypeValues["minClusteredMet"]     = min(zvv,clusteredMetP4);
-      metTypeValues["minTAssocMet"]       = min(assocChargedMetP4,assocMetP4);
-      metTypeValues["minTClusteredMet"]   = min(assocChargedMetP4,clusteredMetP4);
+      metTypeValues["minTAssocMet"]        = min(assocChargedMetP4,assocMetP4);
+      metTypeValues["minTClusteredMet"]    = min(assocChargedMetP4,clusteredMetP4);
       metTypeValues["minAClusteredMet"]    = min(assocMetP4,clusteredMetP4);
       metTypeValues["min3Met"]             = min(zvv, min(assocMetP4,clusteredMetP4));
-      metTypeValues["min4Met"]             = min(min(zvv,assocChargedMetP4), min(assocMetP4,clusteredMetP4));
-      
-      metTypeValues["redMet"]              = LorentzVector(redMetX,redMetY,0,redMet); 
-      metTypeValues["redAssocChargedMet"]  = LorentzVector(rTMetX,rTMetY,0,rTMet);
-      metTypeValues["redAssocMet"]         = LorentzVector(rAMetX ,rAMetY ,0,rAMet );
-      metTypeValues["redClusteredMet"]     = LorentzVector(rCMetX ,rCMetY ,0,rCMet );
-      metTypeValues["redTAssocMet"]        = LorentzVector(rTAMetX ,rTAMetY ,0,rTAMet );
-      metTypeValues["redTClusteredMet"]    = LorentzVector(rTCMetX ,rTCMetY ,0,rTCMet );
-      metTypeValues["redAClusteredMet"]    = LorentzVector(rACMetX  ,rACMetY  ,0,rACMet  );
-      metTypeValues["red3Met"]             = LorentzVector(r3MetX   ,r3MetY   ,0,r3Met   );
-      metTypeValues["redminAssocMet"]      = LorentzVector(rmAMetX  ,rmAMetY  ,0,rmAMet  );
+      metTypeValues["min4Met"]             = min(min(zvv,assocChargedMetP4), min(assocMetP4,clusteredMetP4));      
+      metTypeValues["redMet"]              = redMetP4; 
+      metTypeValues["redAssocChargedMet"]  = rTMetP4;
+      metTypeValues["redAssocMet"]         = rAMetP4;
+      metTypeValues["redClusteredMet"]     = rCMetP4;
+      metTypeValues["redTAssocMet"]        = rTAMetP4;
+      metTypeValues["redTClusteredMet"]    = rTCMetP4;
+      metTypeValues["redAClusteredMet"]    = rACMetP4;
+      metTypeValues["red3Met"]             = r3MetP4;
+      metTypeValues["redminAssocMet"]      = rmAMetP4;
       
       std::map<TString,double> metTypeValuesminJetdphi;
       std::map<TString,double> metTypeValuesminJetphi;
@@ -1111,8 +1035,8 @@ int main(int argc, char* argv[])
 
       bool pass3dLeptonVeto(true); for(unsigned int i=2;i<phys.leptons.size();i++){if(phys.leptons[i].pt()>10)pass3dLeptonVeto=false;}
       bool passBveto(nbtags_tche2==0);//nbtags==0);
-      bool passMediumRedMet(redMet>rmetComp.getCut(eventCategory,ReducedMETComputer::MEDIUMWP));
-      bool passTightRedMet(redMet>rmetComp.getCut(eventCategory,ReducedMETComputer::TIGHTWP));
+      bool passMediumRedMet(redMet>METUtils::getRedMETCut(eventCategory,METUtils::MEDIUMWP));
+      bool passTightRedMet(redMet>METUtils::getRedMETCut(eventCategory,METUtils::TIGHTWP));
       
       bool passBaseCuts(passZmass && pass3dLeptonVeto && passBveto && passMediumRedMet);
       std::vector<int> zmassRegionBins;
@@ -1150,15 +1074,19 @@ int main(int argc, char* argv[])
 	  for(size_t ivar=0; ivar<3; ivar++)
 	    {
 	      eventCategoryVars.push_back( eventClassifComp.Get(phys, &(jetVars[ivar])) );
-	      rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetVars[ivar], metVars[ivar]);
-	      redMetVar.push_back(rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED));
-	      redMetLVar.push_back(rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second);
+
+              METUtils::stRedMET temp_redMetInfo;
+              LorentzVector temp_redMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, phys.leptons[0], 0, phys.leptons[1], 0, jetVars[ivar], metVars[ivar], false, &temp_redMetInfo);
+              double temp_redMetL = temp_redMetInfo.redMET_l;
+	      redMetVar.push_back(temp_redMetP4.pt());
+	      redMetLVar.push_back(temp_redMetL);
+
 	      Float_t imtsum     = mtComp.compute(phys.leptons[0],metVars[ivar],false) + mtComp.compute(phys.leptons[1],metVars[ivar],false);
 	      mtsumsVar.push_back(imtsum);
 
 	      int ivarEvCat= eventCategoryVars[ivar];
-	      passMediumRedMetVars.push_back(redMetVar[ivar]>rmetComp.getCut(ivarEvCat,ReducedMETComputer::MEDIUMWP));
-	      passTightRedMetVars.push_back(redMetVar[ivar]>rmetComp.getCut(ivarEvCat,ReducedMETComputer::TIGHTWP));
+	      passMediumRedMetVars.push_back(redMetVar[ivar]>METUtils::getRedMETCut(ivarEvCat,METUtils::MEDIUMWP));
+	      passTightRedMetVars.push_back(redMetVar[ivar]>METUtils::getRedMETCut(ivarEvCat,METUtils::TIGHTWP));
 	    }
 	}
 

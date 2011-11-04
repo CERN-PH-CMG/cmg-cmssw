@@ -17,7 +17,7 @@
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
 #include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
-#include "CMGTools/HtoZZ2l2nu/interface/ReducedMETComputer.h"
+#include "CMGTools/HtoZZ2l2nu/interface/METUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/TransverseMassComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ProjectedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/TMVAUtils.h"
@@ -33,7 +33,6 @@ int main(int argc, char *argv[])
 {
   //init computers
   ProjectedMETComputer pmetComp;
-  ReducedMETComputer rmetComp(1., 1., 1., 1., 1.);
   TransverseMassComputer mtComp;
   EventCategory eventClassifComp;
 
@@ -157,11 +156,11 @@ int main(int argc, char *argv[])
           Float_t dphizleadl = ptl1>ptl2 ? deltaPhi(phys.leptons[0].phi(),zll.phi()) : deltaPhi(phys.leptons[1].phi(),zll.phi()) ;
   
 	  //redmet
-	  rmetComp.compute(phys.leptons[0],0,phys.leptons[1], 0, jetsP4, zvv );
-	  // int rMetCateg = rmetComp.getEventCategory();
-	  Float_t redMet         = rmetComp.reducedMET(ReducedMETComputer::INDEPENDENTLYMINIMIZED);
-	  Float_t redMetL        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).second;
-	  Float_t redMetT        = rmetComp.reducedMETComponents(ReducedMETComputer::INDEPENDENTLYMINIMIZED).first;
+          METUtils::stRedMET redMetInfo;
+          LorentzVector redMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, phys.leptons[0], 0, phys.leptons[1], 0, jetsP4             , zvv                , false, &redMetInfo);
+	  Float_t redMet         = redMetP4.pt();
+	  Float_t redMetL        = redMetInfo.redMET_l;
+	  Float_t redMetT        = redMetInfo.redMET_t;
 	  Float_t redMetoverzpt  = redMet/zpt;
 	  Float_t redMetLplusZpt = redMetL+zpt;
 
