@@ -1,8 +1,7 @@
-from CMGTools.Production.dataset import *
+from CMGTools.Production.dataset import Dataset
+import FWCore.ParameterSet.Config as cms
 
 def datasetToSource( user, dataset, pattern):
-    
-    import FWCore.ParameterSet.Config as cms
     
     data = Dataset( user, dataset, pattern )
     

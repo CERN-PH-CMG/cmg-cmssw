@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
-from CMGTools.Production.castorBaseDir import *
-from CMGTools.Production.castortools import *
+from CMGTools.Production.castorBaseDir import castorBaseDir
+import CMGTools.Production.eostools as castortools
 
 class Dataset():
     def __init__(self, user, name, pattern='.*root'):
         self.name = name
         self.user = user
+        self.pattern = pattern
         self.lfnDir = castorBaseDir(user) + name
         self.castorDir = castortools.lfnToCastor( self.lfnDir )
         self.pollFiles( pattern )

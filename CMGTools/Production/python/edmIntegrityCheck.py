@@ -1,12 +1,15 @@
 #!/usr/bin/env python
+"""
+Classes to check that a set of ROOT files are OK and publish a report
+"""
 
-import copy, datetime, fnmatch, json, os, shutil, sys, tempfile
+import datetime, fnmatch, json, os, shutil, sys, tempfile
 import subprocess
 
-import CMGTools.Production.castortools as castortools
-import CMGTools.Production.Das as Das
+import CMGTools.Production.eostools as castortools
 
 class PublishToFileSystem(object):
+    """Write a report to storage"""
     
     def __init__(self, parent):
         if type(parent) == type(""):
@@ -15,24 +18,31 @@ class PublishToFileSystem(object):
             self.parent = parent.__class__.__name__
     
     def publish(self, report):
+        """Publish a file"""
         for path in report['PathList']:
-            _, name = tempfile.mkstemp('.txt',text=True)
+            _, name = tempfile.mkstemp('.txt', text=True)
             json.dump(report, file(name,'w'), sort_keys=True, indent=4)
             
-            fname = '%s_%s.txt' % (self.parent,report['DateCreated'])
-            castor_path = castortools.lfnToCastor(path)
+            fname = '%s_%s.txt' % (self.parent, report['DateCreated'])
+            #rename the file locally - TODO: This is a potential problem
+            nname = os.path.join(os.path.dirname(name),fname)
+            os.rename(name, nname)
             
-            #this is bad, but castortools is giving me problems
-            if not os.system('cmsStage %s %s' % (name,path)):
-                os.system('rfrename %s/%s %s/%s' % (castor_path,os.path.basename(name),castor_path,fname))
-                os.system('rfchmod 644 %s/%s' % (castor_path,fname)) #needed so others can read these files - helps the production system
-                print "File published: '%s/%s'" % (castor_path,fname)
-                os.remove(name)
+            castor_path = castortools.lfnToCastor(path)
+            new_name = '%s/%s' % (castor_path, fname)
+            
+            if not castortools.xrdcp(nname,path) and castortools.fileExists(new_name):
+                
+                #castortools.move(old_name, new_name)
+                #castortools.chmod(new_name, '644')
+
+                print "File published: '%s'" % castortools.castorToLFN(new_name)
+                os.remove(nname)
             else:
                 pathhash = path.replace('/','.')
-                hashed_name = 'PublishToFileSystem-%s-%s' % (pathhash,fname)
+                hashed_name = 'PublishToFileSystem-%s-%s' % (pathhash, fname)
                 shutil.move(name, hashed_name)
-                print >>sys.stderr, "Cannot write to directory '%s' - written to local file '%s' instead." % (castor_path,hashed_name)
+                print >> sys.stderr, "Cannot write to directory '%s' - written to local file '%s' instead." % (castor_path, hashed_name)
                 
     def read(self, lfn, local = False):
         """Reads a report from storage"""
@@ -42,12 +52,13 @@ class PublishToFileSystem(object):
             cat = castortools.cat(castortools.lfnToCastor(lfn))
         return json.loads(cat)
     
-    def get(self,dir):
+    def get(self, dir):
         """Finds the lastest file and reads it"""
-        re = '^%s_.*\.txt$' % self.parent
-        files = castortools.matchingFiles(dir, re)
-        files = sorted([ (os.path.basename(f),f) for f in files])
-        if not files: return None
+        reg = '^%s_.*\.txt$' % self.parent
+        files = castortools.matchingFiles(dir, reg)
+        files = sorted([ (os.path.basename(f), f) for f in files])
+        if not files:
+            return None
         return self.read(files[-1][1])
                 
 
@@ -59,8 +70,8 @@ class IntegrityCheck(object):
 
         self.dataset = dataset
         self.options = options
-        self.topdir = castortools.lfnToCastor('/store/%s/user/%s/CMG' % (self.options.device,self.options.user))
-        self.directory = os.path.join(self.topdir,*self.dataset.split(os.sep))
+        self.topdir = castortools.lfnToCastor('/store/%s/user/%s/CMG' % (self.options.device, self.options.user))
+        self.directory = os.path.join(self.topdir, *self.dataset.split(os.sep))
         
         #event counters
         self.eventsTotal = -1
@@ -100,17 +111,17 @@ class IntegrityCheck(object):
         filemask = {}
         for dirname, files in self.test_result.iteritems():
             for name, status in files.iteritems():
-                fname = os.path.join(dirname,name)
+                fname = os.path.join(dirname, name)
                 filemask[fname] = status
         
         def isCrabFile(name):
-            dir, fname = os.path.split(name)
-            base, ext = os.path.splitext(fname)
-            return re.match(".*_\d+_\d+_\w+$",base) is not None, base
+            _, fname = os.path.split(name)
+            base, _ = os.path.splitext(fname)
+            return re.match(".*_\d+_\d+_\w+$", base) is not None, base
         def getCrabIndex(base):
             tokens = base.split('_')
             if len(tokens) > 2:
-                return (int(tokens[-3]),int(tokens[-2]))
+                return (int(tokens[-3]), int(tokens[-2]))
             return None
             
         files = {}
@@ -124,8 +135,8 @@ class IntegrityCheck(object):
                 if index is not None:
                     jobid, retry = index
                     
-                    mmin = min(mmin,jobid)
-                    mmax = max(mmax,jobid)
+                    mmin = min(mmin, jobid)
+                    mmax = max(mmax, jobid)
                     if files.has_key(jobid) and filemask[f][0]:
                         files[jobid].append((retry, f))
                     elif filemask[f][0]:
@@ -134,7 +145,7 @@ class IntegrityCheck(object):
         good_duplicates = {}
         bad_jobs = set()
         sum_dup = 0
-        for i in xrange(mmin,mmax+1):
+        for i in xrange(mmin, mmax+1):
             if files.has_key(i):
                 duplicates = files[i]
                 duplicates.sort()
@@ -162,16 +173,16 @@ class IntegrityCheck(object):
             #apply a UNIX wildcard if specified
             filtered = filelist
             if self.options.wildcard is not None:
-                filtered = fnmatch.filter(filelist,self.options.wildcard)
+                filtered = fnmatch.filter(filelist, self.options.wildcard)
             count = 0
             for ff in filtered:
-                fname = os.path.join(dir,ff)
+                fname = os.path.join(dir, ff)
                 if self.options.printout:
-                    print '[%i/%i]\t Checking %s...' % (count,len(filtered),fname),
+                    print '[%i/%i]\t Checking %s...' % (count, len(filtered),fname),
                 OK, num = self.testFile(castortools.castorToLFN(fname))
                 filemask[ff] = (OK,num)
                 if self.options.printout:
-                    print (OK,num)
+                    print (OK, num)
                 if OK:
                     self.eventsSeen += num
                 count += 1
@@ -193,7 +204,7 @@ class IntegrityCheck(object):
         for dirname, files in self.test_result.iteritems():
             print 'Directory: %s' % dirname
             for name, status in files.iteritems():
-                fname = os.path.join(dirname,name)
+                fname = os.path.join(dirname, name)
                 if not fname in self.duplicates:
                     print '\t\t %s: %s' % (name, str(status))
                 else:
@@ -231,7 +242,7 @@ class IntegrityCheck(object):
         for dirname, files in self.test_result.iteritems():
             report['PathList'].append(dirname)
             for name, status in files.iteritems():
-                fname = os.path.join(dirname,name)
+                fname = os.path.join(dirname, name)
                 report['Files'][fname] = status
                 if status[0]:
                     totalGood += 1
@@ -290,3 +301,10 @@ class IntegrityCheck(object):
             if error in stdout: return (False,-1)
         return (True,self.getParseNumberOfEvents(stdout))
 
+
+if __name__ == '__main__':
+    
+    pub = PublishToFileSystem('Test')
+    report = {'DateCreated':'123456','PathList':['/store/cmst3/user/wreece']}
+    pub.publish(report)
+    print pub.get('/store/cmst3/user/wreece')

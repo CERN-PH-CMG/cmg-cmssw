@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 import os
-import CMGTools.Production.castortools as castortools
+import CMGTools.Production.eostools as castortools
 
 def castorBaseDir( user=os.environ['USER']):
-    dir = '/store/cmst3/user/'+user+'/CMG'
-    exists = castortools.fileExists( castortools.lfnToCastor(dir) )
+    """Gets the top level directory to use for writing for 'user'"""
+    d = '/store/cmst3/user/'+user+'/CMG'
+    exists = castortools.fileExists( castortools.lfnToCastor(d) )
     if exists:
-        return dir
+        return d
     else:
-        print 'directory', dir, 'does not exist. Are you sure about the username?'
-        raise NameError(dir)
+        print 'directory', d, 'does not exist. Are you sure about the username?'
+        raise NameError(d)
 
 def myCastorBaseDir():
+    """Gets the top level directory to use for writing for the current user"""
     return castorBaseDir()
