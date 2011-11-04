@@ -199,7 +199,9 @@ def cat(path):
         pattern = re.compile('cat returned [0-9]+')
         
         for line in out.split('\n'):
-            if line and pattern.match(line) is not None:
+            match = pattern.search(line)
+            if line and match is not None:
+                lines.append(line.replace(match.group(0),''))
                 break
             else:
                 lines.append(line)

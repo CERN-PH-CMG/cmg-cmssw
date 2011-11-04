@@ -81,7 +81,6 @@ class IntegrityCheck(object):
     
     def query(self):
         """Query DAS to find out how many events are in the dataset"""
-
         from CMGTools.Production.ProductionTasks import BaseDataset
         base = BaseDataset(self.dataset, self.options.user, self.options)
 
