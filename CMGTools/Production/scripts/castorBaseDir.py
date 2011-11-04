@@ -1,8 +1,6 @@
 #!/usr/bin/env python
-import os
-
-import CMGTools.Production.castortools as castortools
-from CMGTools.Production.castorBaseDir import * 
+import CMGTools.Production.eostools as castortools
+from CMGTools.Production.castorBaseDir import castorBaseDir
 
 if __name__ == '__main__':
     import sys
