@@ -4,8 +4,8 @@ import CMGTools.Production.eostools as castortools
 
 def castorBaseDir( user=os.environ['USER']):
     """Gets the top level directory to use for writing for 'user'"""
-    # d = '/store/cmst3/user/'+user+'/CMG'
-    d = '/store/cmst3/user/'+user+'/CMGTmp'
+    d = '/store/cmst3/user/'+user+'/CMG'
+    # d = '/store/cmst3/user/'+user+'/CMGTmp'
     exists = castortools.fileExists( castortools.lfnToCastor(d) )
     if exists:
         return d
