@@ -303,6 +303,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    t1->cd();
    t1->SetLogy(true);
 
+
    TLegend* legA  = new TLegend(0.51,0.93,0.67,0.75, "NDC");
    TLegend* legB  = new TLegend(0.67,0.93,0.83,0.75, "NDC");
    THStack* stack = new THStack("MC","MC");
@@ -404,13 +405,25 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    t2->Draw();
    t2->cd();
    t2->SetGridy(true);
+   t2->SetPad(0,0.0,1.0,0.2);
+   t2->SetTopMargin(0);
+   t2->SetBottomMargin(0.5);
+   float yscale = (1.0-0.2)/(0.18-0);
+
    data->Divide(mc);
    data->GetYaxis()->SetTitle("Obs/Ref");
-   data->GetYaxis()->SetTitleSize(0.12);
-   data->GetYaxis()->SetTitleOffset(0.2);
-   data->GetXaxis()->SetTitle("");
+   data->GetXaxis()->SetTitle("");//mc->GetXaxis()->GetTitle());
    data->SetMinimum(0);
-   data->SetMaximum(5);
+   data->SetMaximum(2.2);
+   data->GetXaxis()->SetTitleOffset(1.3);
+   data->GetXaxis()->SetLabelSize(0.033*yscale);
+   data->GetXaxis()->SetTitleSize(0.036*yscale);
+   data->GetXaxis()->SetTickLength(0.03*yscale);
+   data->GetYaxis()->SetTitleOffset(0.3);
+   data->GetYaxis()->SetNdivisions(5);
+   data->GetYaxis()->SetLabelSize(0.033*yscale);
+   data->GetYaxis()->SetTitleSize(0.036*yscale);
+
    data->Draw("E1");
 
    c1->cd();
@@ -586,6 +599,8 @@ int main(int argc, char* argv[]){
         printf("--noPlot --> Do not creates plot files (useful to speedup processing)\n");
 
         printf("command line example: runPlotter --json ../data/beauty-samples.json --iLumi 2007 --inDir OUT/ --outDir OUT/plots/ --outFile plotter.root --noRoot --noPlot\n");
+
+	return 0;
      }
 
      if(arg.find("--iLumi"  )!=string::npos && i+1<argc){ sscanf(argv[i+1],"%lf",&iLumi); i++; printf("Lumi = %f\n", iLumi); }
