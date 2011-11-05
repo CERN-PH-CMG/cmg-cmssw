@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 """
-A module to manipulate files on EOS. Intended to have the same interface as castortools.py
+A module to manipulate files on EOS or on the local file system. Intended to have the same interface as castortools.py.
 """
 
-import sys, os, re
+import sys
+import os
+import re
+import pprint
+import shutil
 
 def setCAFPath():
     """Hack to get the CAF scripts on the PYTHOPATH"""
@@ -13,8 +17,9 @@ def setCAFPath():
 setCAFPath()
 import cmsIO
 
+
 def runXRDCommand(path, cmd, *args):
-    """Run an xrd command"""
+    """Run an xrd command."""
     
     lfn = eosToLFN(path)
     tokens = cmsIO.splitPFN(lfnToPFN(lfn))
@@ -22,8 +27,9 @@ def runXRDCommand(path, cmd, *args):
     command = ['xrd', tokens[1], cmd, tokens[2]]
     command.extend(args)
     runner = cmsIO.cmsFileManip()
-    print ' '.join(command)
+    # print ' '.join(command)
     return runner.runCommand(command)
+
 
 def runEOSCommand(path, cmd, *args):
     """Run an eos command"""
@@ -39,43 +45,61 @@ def runEOSCommand(path, cmd, *args):
     runner = cmsIO.cmsFileManip()
     return runner.runCommand(command)
 
+
 def isLFN( path ):
-    """Tests whether this path is a CMS LFN"""
-    return re.match('^/store.*', path ) is not None
+    """Tests whether this path is a CMS LFN (/store...)"""
+    # return re.match('^/store.*', path ) is not None
+    return path.startswith('/store')
+
+
+def isEOS( path ):
+    """Tests whether this path is a CMS EOS (/eos...)"""
+    return path.startswith('/eos')
+
 
 def eosToLFN( path ):
     """Converts a EOS PFN to an LFN"""
-    if not isLFN(path):
-        return path.replace('/eos/cms','')
-    else:
-        return path
+    return path.replace('/eos/cms','')
+    # if not isLFN(path):
+    #    return path.replace('/eos/cms','')
+    #else:
+    #    return path
+    
 #also define an alias for backwards compatibility
 castorToLFN = eosToLFN
+
 
 def lfnToPFN( path, tfcProt = 'rfio'):
     """Converts an LFN to a PFN"""
     entity = cmsIO.cmsFile( path, tfcProt )
     return entity.pfn
 
+
 def lfnToEOS( path ):
-    """Converts a LFN to a EOS PFN"""
+    """Converts LFN to EOS"""
     if isLFN(path):
         pfn = '/eos/cms/' + path
         return pfn.replace('//','/') 
     else:
         return path
+
 #also define an alias for backwards compatibility
 lfnToCastor = lfnToEOS
 
 def isEOSDir( path ):
     """Checks whether this file or directory is stored on EOS."""
-    if os.path.exists(path):
+    if os.path.exists( path ):
+        return False
+    if not path.startswith('/eos') and not path.startswith('/store'):
         return False
     pfn = lfnToPFN(eosToLFN(path))
+    # print 'PFN',pfn
+    # print 'done'
     tokens = cmsIO.splitPFN(pfn)
     return tokens and tokens[1].lower().startswith('eos')
 #also define an alias for backwards compatibility
 isCastorDir = isEOSDir
+
 
 def isEOSFile( path, tfcProt = 'rfio'):
     """Checks whether this file exists"""
@@ -85,28 +109,45 @@ def isEOSFile( path, tfcProt = 'rfio'):
 #also define an alias for backwards compatibility
 isCastorFile = isEOSFile
 
+
 def fileExists( path ):
     """Check whether a file exists either on EOS or locally"""
-    
+
     eos = isEOSDir(path)
-    
     result = False
     if eos:
+        # print 'eos', path
         result = isEOSFile(path)
     else:
+        # print 'not eos', path
         #check locally
         result = os.path.exists(path)
+    # print result
     return result
 
 def createEOSDir( path ):
     """Makes a directory in EOS"""
     lfn = eosToLFN(path)
+    # print 'creating', path
     if not isEOSFile(lfn):
         entity = cmsIO.cmsFile( lfn,"stageout")
         entity.mkdir([])
+        # print 'created ', path
     return path
 #also define an alias for backwards compatibility
 createCastorDir = createEOSDir
+
+
+def mkdir(path):
+    """Create a directory, either on EOS or locally"""
+    # print 'mkdir', path
+    if isEOS( path ) or isLFN(path):
+        createEOSDir(path)
+    else:
+        # recursive directory creation (like mkdir -p)
+        os.makedirs(path)
+    return path
+
 
 def isDirectory(path):
     """Checks whether a lfn is a file or a directory"""
@@ -114,11 +155,18 @@ def isDirectory(path):
     out, _, _ = runXRDCommand(path,'existdir')
     return 'The directory exists' in out
 
+
 def isFile(path):
     """Checks whether a lfn is a file or a directory"""
 
-    out, _, _ = runXRDCommand(path,'existfile')
-    return 'The file exists' in out
+    if not path.startswith('/eos') and not path.startswith('/store'):
+        if( os.path.isfile(path) ):
+            return True
+        else:
+            return False
+    else: 
+        out, _, _ = runXRDCommand(path,'existfile')
+        return 'The file exists' in out
 
 def chmod(path, mode):
     """Does chmod on a file or directory"""
@@ -127,19 +175,39 @@ def chmod(path, mode):
 
 
 def listFiles(path, rec = False):
-    """Provides a list of the specified directory"""
+    """Provides a list of the specified directory
 
+    COLIN : does not work for local directories...
+    """
+    # -- listing on the local filesystem --
+    if os.path.isdir( path ):
+        if not rec:
+            # not recursive
+            return [ '/'.join([path,file]) for file in os.listdir( path )]
+        else:
+            # recursive, directories are put in the list first,
+            # followed by the list of all files in the directory tree
+            result = []
+            allFiles = []
+            for root,dirs,files in os.walk(path):
+                result.extend( [ '/'.join([root,dir]) for dir in dirs] )
+                allFiles.extend( [ '/'.join([root,file]) for file in files] )
+            result.extend(allFiles)
+            return result
+    # -- listing on EOS --
     cmd = 'dirlist'
     if rec:
         cmd = 'dirlistrec'
-
     files, _, _ = runXRDCommand(path, cmd)
     result = []
     for line in files.split('\n'):
         tokens = [t for t in line.split() if t]
         if tokens:
             #convert to an LFN
-            result.append(tuple(tokens))
+            # result.append(tuple(tokens))
+            #COLIN need same interface for eos and local fs
+            result.append( tokens[4])
+    # print result
     return result
 
 def which(cmd):
@@ -155,25 +223,35 @@ def which(cmd):
     else:
         return lines
 
+
 def ls(path, rec = False):
-    """Provides a simple list of the specified directory"""
-    return [eosToLFN(t[-1]) for t in listFiles(path, rec)]
+    """Provides a simple list of the specified directory, works on EOS and locally"""
+    return [eosToLFN(t) for t in listFiles(path, rec)]
 
-def rm(path):
-    """Delete a file from EOS"""
-    
-    lfn = eosToLFN(path)
-    if not fileExists(path):
-        return
-    
-    if isDirectory(lfn):
-        runXRDCommand(lfn,'rmdir')
-    elif isFile(lfn):
-        runXRDCommand(lfn,'rm')
 
+def rm(path, rec=False):
+    """rm, works on EOS and locally.
+
+    Colin: should implement a -f mode and a confirmation when deleting dirs recursively."""
+    # print 'rm ', path
+    path = lfnToEOS(path)
+    if isEOS(path):
+        if rec:
+            runEOSCommand(path, 'rm', '-r')
+        else: 
+            runEOSCommand(path,'rm')
+    elif os.path.exists(path):
+        if not rec:
+            os.remove( path )
+        else:
+            shutil.rmtree(path)
+    else:
+        raise ValueError(path + ' is not EOS and not local... should not happen!')
 
 def remove( files, rec = False):
-    """Remove a list of files and directories, possibly recursively"""
+    """Remove a list of files and directories, possibly recursively
+
+    Colin: Is that obsolete? why not use rm?"""
     
     for path in files:
         lfn = eosToLFN(path)
@@ -191,27 +269,36 @@ def remove( files, rec = False):
                 rm(f[1])
                 
 def cat(path):
-    """Does 'cat' on a remote file"""
-    out, err, _ = runXRDCommand(path,'cat')
-  
-    lines = []
-    if out:
-        pattern = re.compile('cat returned [0-9]+')
-        
-        for line in out.split('\n'):
-            match = pattern.search(line)
-            if line and match is not None:
-                lines.append(line.replace(match.group(0),''))
-                break
-            else:
-                lines.append(line)
-    if err:
-        print >> sys.stderr, out
-        print >> sys.stderr, err
-    return '\n'.join(lines)
-
+    """cat, works on EOS and locally"""
+    path = lfnToEOS(path)
+    if isEOS(path):
+        out, err, _ = runXRDCommand(path,'cat') 
+        lines = []
+        if out:
+            pattern = re.compile('cat returned [0-9]+')
+            for line in out.split('\n'):
+                print line
+                if line and pattern.match(line) is not None:
+                    break
+                else:
+                    lines.append(line)
+        if err:
+            print >> sys.stderr, out
+            print >> sys.stderr, err
+        allLines = ''
+        if len(lines)>0:
+            allLines = '\n'.join(lines)
+            allLines += '\n'
+        return allLines
+    else:
+        file = open(path)
+        lines = file.readlines()
+        return ''.join(lines)
+    
 def xrdcp(src, dest):
-    """Does a copy of files using xrd"""
+    """Does a copy of files using xrd.
+
+    Colin: implement a generic cp interface as done for rm, ls, etc?"""
     
     recursive = False
     
@@ -227,6 +314,8 @@ def xrdcp(src, dest):
         pfn_src = lfnToPFN(src)
         if isDirectory(src):
             recursive = True
+    else:
+        raise ValueError(src + ' does not exist.')
             
     #now the dest
     pfn_dest = dest
@@ -241,16 +330,51 @@ def xrdcp(src, dest):
 
     command = ['xrdcp','-force']
     if recursive:
-        command.append('-R')
+        # print 'recursive'
+        topDir = src.rstrip('/').split('/')[-1]
+        if topDir != '.':
+            dest = '/'.join([dest, topDir])
+            # print 'mkdir ' + dest
+            mkdir( dest )
+        files = listFiles(src, rec=True)
+        # pprint.pprint( [file[4] for file in files] )
+        for srcFile in files:
+            # srcFile = file[4]
+            pfnSrcFile = srcFile
+            if isEOSDir(srcFile):
+                srcFile = eosToLFN(srcFile)
+                pfnSrcFile = lfnToPFN(srcFile)
+            destFile = srcFile.replace( src, '' )
+            destFile = '/'.join([dest,destFile])
+            pfnDestFile = destFile
+            if isEOSDir(destFile):
+                lfnDestFile = eosToLFN(destFile)
+                pfnDestFile = lfnToPFN(lfnDestFile)
+            # print 'srcFile', pfnSrcFile
+            # print 'destFile', pfnDestFile
+            if isFile(srcFile):
+                _xrdcpSingleFile(  pfnSrcFile, pfnDestFile )
+            else:
+                mkdir(destFile)
+    else:
+        _xrdcpSingleFile( pfn_src, pfn_dest )
+
+
+def _xrdcpSingleFile( pfn_src, pfn_dest):
+    """Copies a single file using xrd."""
+    
+    command = ['xrdcp','-force']
     command.append(pfn_src)
     command.append(pfn_dest)
-    
-    runner = cmsIO.cmsFileManip()
-    out, err, ret = runner.runCommand(command)
-    if err:
-        print >> sys.stderr, out
-        print >> sys.stderr, err
-    return ret
+    # print ' '.join(command)
+    run = True
+    if run: 
+        runner = cmsIO.cmsFileManip()
+        out, err, ret = runner.runCommand(command)
+        if err:
+            print >> sys.stderr, out
+            print >> sys.stderr, err
+        return ret
 
 def move(src, dest):
     """Move filename1 to filename2 locally to the same server"""
@@ -263,163 +387,10 @@ def move(src, dest):
 def matchingFiles( path, regexp):
     """Return a list of files matching a regexp"""
 
+    # print path, regexp
     pattern = re.compile( regexp )
     files = ls(path)
+    # print files
     return [f for f in files if pattern.match(os.path.basename(f))  is not None]
     
-if __name__ == '__main__':
-    
-    import castortools
-    import unittest
-    
-    class TestEosTools(unittest.TestCase):
-        
-        def setUp(self):
-            
-            self.castorfile = '/castor/cern.ch/cms/store/cmst3/user/wreece/EOS_TEST/test_file.txt'
-            self.eosfile = '/eos/cms/store/cmst3/user/wreece/EOS_TEST/test_file.txt'
-            
-        def tearDown(self):
-            
-            if fileExists(self.eosfile + 'FOO'): rm(self.eosfile + 'FOO')
-            if fileExists(self.eosfile + 'FOO2'): rm(self.eosfile + 'FOO2')
-        
-        def testWhich(self):
-            
-            self.assertEqual(which('bash'),'/usr/local/bin/bash')
-            self.assertEqual(which('ls'),'/bin/ls')
-        
-        def testIsLFN(self):
-            
-            self.assertFalse(isLFN(self.castorfile))
-            self.assertFalse(isLFN(self.eosfile))
-            
-            lfn = eosToLFN(self.eosfile)
-            self.assertTrue(isLFN(lfn))
-        
-        def testLFNToCastor(self):
-            self.assertNotEqual(lfnToCastor(self.eosfile), castortools.lfnToCastor(self.castorfile))
-            
-        def testCastorToLFN(self):
-            self.assertEqual(castorToLFN(self.eosfile), castortools.castorToLFN(self.castorfile))
-        
-        def testIsEOSDir(self):
-            self.assertTrue(isEOSDir(eosToLFN(self.eosfile + 'FOO'))) #should still work if it doesn't exist
-            self.assertTrue(isEOSDir(eosToLFN(self.eosfile)))
-            self.assertTrue(isEOSDir(self.eosfile))
-            self.assertFalse(isEOSDir(self.castorfile))
-            
-        def testIsEOSFile(self):
-            self.assertTrue(isEOSFile(self.eosfile))
-            self.assertFalse(isEOSFile(self.eosfile + 'FOO'))
-            
-        def testFileExists(self):
-            self.assertTrue(fileExists(self.eosfile))
-            self.assertFalse(fileExists(self.eosfile + 'FOO'))
-            
-            local = '/dev/null'
-            self.assertTrue(fileExists(local))
-            self.assertFalse(fileExists(local + 'FOO'))
-            
-            self.assertEqual(fileExists(local), castortools.fileExists(local))
-            self.assertEqual(fileExists(local + 'FOO'), castortools.fileExists(local + 'FOO'))
-            
-        def testIsDirectory(self):
-            
-            d = os.path.dirname(self.eosfile)
-            self.assertTrue(isDirectory(d))
-            self.assertFalse(isDirectory(self.eosfile))
-            
-        def testIsFile(self):
-            
-            d = os.path.dirname(self.eosfile)
-            self.assertFalse(isFile(d))
-            self.assertTrue(isFile(self.eosfile))
-            
-        def testCreateEOSDir(self):
-            
-            d = os.path.join(os.path.dirname(self.eosfile), 'TEST_DIR', 'BAR', 'FOO')
-            path = createEOSDir(d)
-            self.assertTrue(isEOSDir(path))
-            self.assertTrue(fileExists(path))
-            
-            self.assertTrue(isDirectory(path))
-            
-            remove([os.path.join(os.path.dirname(self.eosfile),'TEST_DIR')], rec = True)
-            self.assertFalse(fileExists(path))
-            
-        def testChmod(self):
-            
-            _, _, ret = chmod(os.path.dirname(self.eosfile),'775')
-            self.assertEquals(ret, 0)
-            
-        def testMatchingFiles(self):
-            
-            d = os.path.dirname(self.eosfile)
-            matches = matchingFiles(d, '.*test_file\\.txt$')
-            self.assertEqual(len(matches), 1)
-            self.assertEqual(matches[0], eosToLFN(self.eosfile))
-            
-        def testCat(self):
-            self.assertEqual(cat(self.eosfile), 'This is some text')
-            self.assertEqual(cat(self.eosfile + 'FOO'), '')
-            
-        def testRemove(self):
-            
-            xrdcp(self.eosfile, self.eosfile + 'FOO')
-            self.assertTrue( fileExists(self.eosfile + 'FOO'))
-            remove([self.eosfile + 'FOO'])
-            self.assertFalse( fileExists(self.eosfile + 'FOO'))
-            
-            xrdcp(self.eosfile, self.eosfile + 'FOO')
-            self.assertTrue( fileExists(self.eosfile + 'FOO'))
-            remove([self.eosfile + 'FOO'], rec = True)
-            self.assertFalse( fileExists(self.eosfile + 'FOO'))
-        
-        def testCp(self):
-            
-            xrdcp(self.eosfile, self.eosfile + 'FOO')
-            self.assertTrue( fileExists(self.eosfile + 'FOO'))
-            rm(self.eosfile + 'FOO')
-            
-            import inspect
-            this = inspect.getsourcefile(TestEosTools)
-            
-            d = os.path.dirname(self.eosfile)
-            name = os.path.basename(this)
-            xrdcp(this,d)
-            self.assertTrue( fileExists(os.path.join(d,name)) )
-            rm( os.path.join(d,name) )
-            
-            xrdcp(self.eosfile, os.getcwd())
-            local = os.path.join(os.getcwd(), os.path.basename(self.eosfile))
-            self.assertTrue( os.path.exists(local) )
-            os.remove(local)
-            
-            xrdcp(self.eosfile, local)
-            self.assertTrue( os.path.exists(local) )
-            os.remove(local) 
-            
-        def testMove(self):
-            
-            xrdcp(self.eosfile, self.eosfile + 'FOO')
-            self.assertTrue( fileExists(self.eosfile + 'FOO') )
 
-            move(self.eosfile + 'FOO', self.eosfile + 'FOO2')
-            self.assertTrue( fileExists(self.eosfile + 'FOO2'))
-            self.assertFalse( fileExists(self.eosfile + 'FOO'))
-
-            rm(self.eosfile + 'FOO')
-            rm(self.eosfile + 'FOO2')
-            
-#            d = os.path.join(os.path.dirname(self.eosfile), 'TEST_DIR')
-#            path = createEOSDir(d)
-#            xrdcp(self.eosfile, path)
-#            move(path, d+'2')
-#            self.assertTrue( fileExists(d + '2'))
-#            self.assertTrue( isDirectory(d + '2'))
-            
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestEosTools)
-    unittest.TextTestRunner(verbosity=2).run(suite)
-            
-            
