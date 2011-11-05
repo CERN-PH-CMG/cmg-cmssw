@@ -1536,14 +1536,14 @@ int main(int argc, char* argv[])
   //save all to the file
   TFile *ofile=TFile::Open(outUrl, "recreate");
   TDirectory *baseOutDir=ofile->mkdir("localAnalysis");
-//    Hcutflow            ->Write();
-    Hoptim_cuts1_met    ->Write();
-    Hoptim_cuts1_mindphi->Write();
-    Hoptim_cuts1_mtmin  ->Write();
-    Hoptim_cuts1_mtmax  ->Write();
-    Hoptim_cuts2_redmet ->Write();
-    Hoptim_cuts2_zpt    ->Write();
-    Hoptim_cuts2_drll   ->Write();
+  Hcutflow            ->Write();
+  Hoptim_cuts1_met    ->Write();
+  Hoptim_cuts1_mindphi->Write();
+  Hoptim_cuts1_mtmin  ->Write();
+  Hoptim_cuts1_mtmax  ->Write();
+  Hoptim_cuts2_redmet ->Write();
+  Hoptim_cuts2_zpt    ->Write();
+  Hoptim_cuts2_drll   ->Write();
   SelectionMonitor::StepMonitor_t &mons=controlHistos.getAllMonitors();
   std::map<TString, TDirectory *> outDirs;
   outDirs["all"]=baseOutDir->mkdir("all");
@@ -1559,11 +1559,10 @@ int main(int argc, char* argv[])
       outDirs[icat]->cd();
       for(SelectionMonitor::Monitor_t::iterator hit=it->second.begin(); hit!= it->second.end(); hit++)
 	{
-//	  if( !((TClass*)hit->second->IsA())->InheritsFrom("TH2")
-//	      && !((TClass*)hit->second->IsA())->InheritsFrom("TGraph") )
-//	    fixExtremities(hit->second,true,true);
+	  //	  if( !((TClass*)hit->second->IsA())->InheritsFrom("TH2")
+	  //	      && !((TClass*)hit->second->IsA())->InheritsFrom("TGraph") )
+	  //	    fixExtremities(hit->second,true,true);
 	  hit->second->Write();
-	  
 	}
     }
   ofile->Close();
