@@ -48,6 +48,8 @@ inputdir=''
 outdir=''
 lumi=1
 cfg_file=''
+split=1
+segment=0
 params=''
 for o,a in opts:
     if o in("-?", "-h"):
@@ -86,25 +88,33 @@ for proc in procList :
             br = getByLabel(d,'br',[])
             if(xsec>0 and not isdata) :
                 for ibr in br :  xsec = xsec*ibr
-            
-            eventsFile=inputdir + '/' + dtag + '.root'
-            sedcmd = 'sed \"s%@input%' + eventsFile +'%;s%@outdir%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
-            if(params.find('@useMVA')<0) : params = '@useMVA=False ' + params
-            if(params.find('@saveSummaryTree')<0) : params = '@saveSummaryTree=False ' + params
-            if(params.find('@runSystematics')<0) : params = '@runSystematics=False ' + params
-            if(len(params)>0) :
-                extracfgs = params.split(' ')
-                for icfg in extracfgs :
-                    varopt=icfg.split('=')
-                    if(len(varopt)<2) : continue
-                    sedcmd += 's%' + varopt[0] + '%' + varopt[1] + '%;'
-            sedcmd += '\"' 
-            cfgfile=outdir +'/'+ dtag + '_cfg.py'
-            os.system('cat ' + cfg_file + ' | ' + sedcmd + ' > ' + cfgfile)
-            if(not subtoBatch) :
-                os.system(theExecutable + ' ' + cfgfile)
-            else :
-                os.system('submit2batch.sh -q' + queue +' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
+            split=getByLabel(d,'split',1)
+
+	    for segment in range(0,split) :
+                if(split==1): 
+	            	eventsFile=inputdir + '/' + dtag + '.root'
+                else:
+                        eventsFile=inputdir + '/' + dtag + '_' + str(segment) + '.root'
+            	sedcmd = 'sed \"s%@input%' + eventsFile +'%;s%@outdir%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
+            	if(params.find('@useMVA')<0) : params = '@useMVA=False ' + params
+            	if(params.find('@saveSummaryTree')<0) : params = '@saveSummaryTree=False ' + params
+            	if(params.find('@runSystematics')<0) : params = '@runSystematics=False ' + params
+            	if(len(params)>0) :
+                	extracfgs = params.split(' ')
+                	for icfg in extracfgs :
+                    		varopt=icfg.split('=')
+                    		if(len(varopt)<2) : continue
+                    		sedcmd += 's%' + varopt[0] + '%' + varopt[1] + '%;'
+            	sedcmd += '\"'
+		if(split==1): 
+	            	cfgfile=outdir +'/'+ dtag + '_cfg.py'
+		else:
+                        cfgfile=outdir +'/'+ dtag +'_' + str(segment) + '_cfg.py'
+            	os.system('cat ' + cfg_file + ' | ' + sedcmd + ' > ' + cfgfile)
+            	if(not subtoBatch) :
+                	os.system(theExecutable + ' ' + cfgfile)
+            	else :
+                	os.system('submit2batch.sh -q' + queue +' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
     
 #run plotter over results
 if(not subtoBatch) :

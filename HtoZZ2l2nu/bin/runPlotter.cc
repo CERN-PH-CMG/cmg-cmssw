@@ -40,7 +40,8 @@ string jsonFile = "../../data/beauty-samples.json";
 string outDir  = "Img/";
 string outFile = "plotter.root";
 
- 
+std::map<string, double> initialNumberOfEvents;
+
 
 TObject* GetObjectFromPath(TDirectory* File, std::string Path, bool GetACopy=false)
 {
@@ -77,7 +78,19 @@ struct NameAndType{
    NameAndType(std::string Name_,  bool isTH1_){Name = Name_; isTH1 = isTH1_;}
 };
 
-void GetListOfObject(TDirectory* dir, std::vector<NameAndType>& histlist, std::string parentPath=""){
+void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::vector<NameAndType>& histlist, TDirectory* dir=NULL, std::string parentPath=""){
+   TFile* file = NULL;
+   if(parentPath=="" && !dir){
+      std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
+      std::vector<JSONWrapper::Object> Samples = (Process[0])["data"].daughters();
+      int split = 1;
+      if(Samples[0].isTag("split"))split = Samples[0]["split"].toInt();
+      char segmentExt[255];if(split){sprintf(segmentExt,"_%i.root",0);}else{sprintf(segmentExt,".root");}
+      TFile* file = new TFile((RootDir + (Samples[0])["dtag"].toString() + segmentExt).c_str());
+      dir = file;
+   }
+
+
    if(dir==NULL)return;
    TList* list = dir->GetListOfKeys();
    for(int i=0;i<list->GetSize();i++){
@@ -85,8 +98,36 @@ void GetListOfObject(TDirectory* dir, std::vector<NameAndType>& histlist, std::s
       if(tmp->InheritsFrom("TH1")){
          histlist.push_back(NameAndType(parentPath+list->At(i)->GetName(), !(tmp->InheritsFrom("TH2") || tmp->InheritsFrom("TH3")) ) );
       }else{
-         GetListOfObject((TDirectory*)tmp,histlist, parentPath+ list->At(i)->GetName()+"/" );
+         GetListOfObject(Root,RootDir,histlist,(TDirectory*)tmp,parentPath+ list->At(i)->GetName()+"/" );
       }
+   }
+
+
+   if(file)delete dir;
+}
+
+void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, std::string HistoName){
+   std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
+   for(unsigned int i=0;i<Process.size();i++){
+      std::vector<JSONWrapper::Object> Samples = (Process[i])["data"].daughters();
+      for(unsigned int j=0;j<Samples.size();j++){
+	 int split = 1;
+	 if(Samples[j].isTag("split"))split = Samples[j]["split"].toInt();
+
+         TH1* tmphist = NULL;
+         for(int s=0;s<split;s++){
+	    char segmentExt[255];if(split){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
+
+            TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + segmentExt).c_str());
+            if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
+            TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName); 
+            if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
+            delete tmptmphist;
+            delete File;
+         }
+         initialNumberOfEvents[(Samples[j])["dtag"].toString()] = tmphist->GetBinContent(1);
+         delete tmphist;
+      }   
    }
 }
 
@@ -104,15 +145,26 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
          if(!Process[i]["isdata"].toBool())Weight*= iLumi;
          if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
+         Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
 
          if(HistoName.find("optim_cut")!=string::npos){Weight=1.0;}
 
-         TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + ".root").c_str());
-         if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
-         TH1* tmphist = (TH1*) GetObjectFromPath(File,HistoName); 
+         int split = 1;
+         if(Samples[j].isTag("split"))split = Samples[j]["split"].toInt();
+         TH1* tmphist = NULL;
+         for(int s=0;s<split;s++){
+            char segmentExt[255];if(split){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
+
+            TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + segmentExt).c_str());
+            if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
+            TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName); 
+            if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
+            delete tmptmphist;
+            delete File;
+         }
+         if(!tmphist)continue;
          if(!hist){gROOT->cd(); hist = (TH1*)tmphist->Clone(tmphist->GetName());hist->Scale(Weight);}else{hist->Add(tmphist,Weight);}
          delete tmphist;
-         delete File;
       }   
       if(!hist)continue;
 
@@ -155,70 +207,6 @@ void fixExtremities(TH1* h,bool addOverflow, bool addUnderflow)
     }
 }
 
-/*
-void Draw2DHistogram(Object& Root, std::string RootDir, std::string HistoName){
-
-   TPaveText* T = new TPaveText(0.40,0.995,0.85,0.945, "NDC");
-   T->SetFillColor(0);
-   T->SetFillStyle(0);  T->SetLineColor(0);
-   T->SetTextAlign(32);
-   T->AddText("CMS preliminary, #sqrt{s}=7 TeV, #int L=2007 pb^{-1}");
-
-   std::vector<Object> Process = Root["proc"].daughters();
-   for(unsigned int i=0;i<Process.size();i++){
-      TCanvas* c1 = new TCanvas("c1","c1",800,800);
-      c1->SetLogz(true);
-
-      TH1* hist = NULL;
-      std::vector<Object> Samples = (Process[i])["data"].daughters();
-      for(unsigned int j=0;j<Samples.size();j++){
-         double Weight = 1.0;
-         if(!Process[i]["isdata"].toBool())Weight*= 2007.0;
-         if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
-         std::vector<Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
-
-         TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + ".root").c_str());
-         if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
-         TH1* tmphist = (TH1*) GetObjectFromPath(File,HistoName); 
-         if(!hist){gROOT->cd(); hist = (TH1*)tmphist->Clone(tmphist->GetName());hist->Scale(Weight);}else{hist->Add(tmphist,Weight);}
-         delete tmphist;
-         delete File;
-      }   
-      if(!hist)continue;
-
-      hist->SetTitle("");
-      hist->SetStats(kFALSE);
-
-      hist->Draw("COLZ");
-      T->Draw("same");
-
-      TPaveText* leg = new TPaveText(0.10,0.995,0.35,0.945, "NDC");
-      leg->SetFillColor(0);
-      leg->SetFillStyle(0);  leg->SetLineColor(0);
-      leg->SetTextAlign(12);
-      leg->AddText(Process[i]["tag"].c_str());
-      leg->Draw("same");
-
-      string SavePath = HistoName + "_" + Process[i]["tag"].c_str() + ".png";
-      while(SavePath.find("*")!=std::string::npos)SavePath.replace(SavePath.find("*"),1,"");
-      while(SavePath.find("#")!=std::string::npos)SavePath.replace(SavePath.find("#"),1,"");
-      while(SavePath.find("{")!=std::string::npos)SavePath.replace(SavePath.find("{"),1,"");
-      while(SavePath.find("}")!=std::string::npos)SavePath.replace(SavePath.find("}"),1,"");
-      while(SavePath.find("(")!=std::string::npos)SavePath.replace(SavePath.find("("),1,"");
-      while(SavePath.find(")")!=std::string::npos)SavePath.replace(SavePath.find(")"),1,"");
-      while(SavePath.find("^")!=std::string::npos)SavePath.replace(SavePath.find("^"),1,"");
-      while(SavePath.find("/")!=std::string::npos)SavePath.replace(SavePath.find("/"),1,"-");
-      SavePath = outDir + SavePath;
-      system(string(("rm -f ") + SavePath).c_str());
-      c1->SaveAs(SavePath.c_str());
-      delete c1;
-      delete leg;
-      delete hist;
-   }
-   delete T;
-}
-*/
-
 void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string HistoName){
    std::string SaveName = "";
 
@@ -248,13 +236,24 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
          if(!Process[i]["isdata"].toBool())Weight*= iLumi;
          if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
+         Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
 
-         TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + ".root").c_str());
-         if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
-         TH1* tmphist = (TH1*) GetObjectFromPath(File,HistoName); 
+         int split = 1;
+         if(Samples[j].isTag("split"))split = Samples[j]["split"].toInt();
+         TH1* tmphist = NULL;
+         for(int s=0;s<split;s++){
+            char segmentExt[255];if(split){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
+
+            TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + segmentExt).c_str());
+            if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
+            TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName); 
+            if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmphist);}
+            delete tmptmphist;
+            delete File;
+         }
+         if(!tmphist)continue;
          if(!hist){gROOT->cd(); hist = (TH1*)tmphist->Clone(tmphist->GetName());hist->Scale(Weight);}else{hist->Add(tmphist,Weight);}
          delete tmphist;
-         delete File;
       }   
       if(!hist)continue;
 
@@ -303,7 +302,6 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    t1->cd();
    t1->SetLogy(true);
 
-
    TLegend* legA  = new TLegend(0.51,0.93,0.67,0.75, "NDC");
    TLegend* legB  = new TLegend(0.67,0.93,0.83,0.75, "NDC");
    THStack* stack = new THStack("MC","MC");
@@ -314,27 +312,35 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    std::string SaveName = "";
    std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
    for(unsigned int i=0;i<Process.size();i++){
-//      printf("Process=%s\n", (Process[i])["tag"].toString().c_str());
-
       TH1* hist = NULL;
       std::vector<JSONWrapper::Object> Samples = (Process[i])["data"].daughters();
       for(unsigned int j=0;j<Samples.size();j++){
-//         printf("   SubSample=%s\n",(Samples[j])["dtag"].toString().c_str());
          double Weight = 1.0;
          if(!Process[i]["isdata"].toBool())Weight*= iLumi;
          if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
+         printf("Weight = %f -->", Weight);
+         Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
+         printf(" %f\n", Weight);
 
          if(HistoName.find("optim_cut")!=string::npos){Weight=1.0;}
 
-         TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + ".root").c_str());
-         if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
-         TH1* tmphist = (TH1*) GetObjectFromPath(File,HistoName); 
-         if(!hist){gROOT->cd(); hist = (TH1*)tmphist->Clone(tmphist->GetName());hist->Scale(Weight);}else{hist->Add(tmphist,Weight);}
-//         if(!hist){hist = (TH1*)tmphist->Clone("tmp");hist->Scale(Weight);}else{hist->Add(tmphist,Weight);}
+         int split = 1; 
+         if(Samples[j].isTag("split"))split = Samples[j]["split"].toInt();
+         TH1* tmphist = NULL;
+         for(int s=0;s<split;s++){
+            char segmentExt[255];if(split){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
 
+            TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + segmentExt).c_str());
+            if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
+            TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName);
+            if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmphist);}
+            delete tmptmphist;
+            delete File;
+         }
+         if(!tmphist)continue;
+         if(!hist){gROOT->cd(); hist = (TH1*)tmphist->Clone(tmphist->GetName());hist->Scale(Weight);}else{hist->Add(tmphist,Weight);}
          delete tmphist;
-         delete File;
       }   
       if(!hist)continue;
 
@@ -399,32 +405,20 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    legB->SetHeader("");
    legB->Draw("same");
 
-
+   if(data && mc){
    c1->cd();
    TPad* t2 = new TPad("t2","t2", 0.0, 0.0, 1.0, 0.2);
    t2->Draw();
    t2->cd();
    t2->SetGridy(true);
-   t2->SetPad(0,0.0,1.0,0.2);
-   t2->SetTopMargin(0);
-   t2->SetBottomMargin(0.5);
-   float yscale = (1.0-0.2)/(0.18-0);
-
    data->Divide(mc);
    data->GetYaxis()->SetTitle("Obs/Ref");
-   data->GetXaxis()->SetTitle("");//mc->GetXaxis()->GetTitle());
+   data->GetYaxis()->SetTitleSize(0.12);
+   data->GetYaxis()->SetTitleOffset(0.2);
+   data->GetXaxis()->SetTitle("");
    data->SetMinimum(0);
-   data->SetMaximum(2.2);
-   data->GetXaxis()->SetTitleOffset(1.3);
-   data->GetXaxis()->SetLabelSize(0.033*yscale);
-   data->GetXaxis()->SetTitleSize(0.036*yscale);
-   data->GetXaxis()->SetTickLength(0.03*yscale);
-   data->GetYaxis()->SetTitleOffset(0.3);
-   data->GetYaxis()->SetNdivisions(5);
-   data->GetYaxis()->SetLabelSize(0.033*yscale);
-   data->GetYaxis()->SetTitleSize(0.036*yscale);
-
    data->Draw("E1");
+   }
 
    c1->cd();
    string SavePath = SaveName + ".png";
@@ -480,19 +474,33 @@ void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
       TH1* hist = NULL;
       std::vector<JSONWrapper::Object> Samples = (Process[i])["data"].daughters();
 
+
+
+
       for(unsigned int j=0;j<Samples.size();j++){
          double Weight = 1.0;
          if(!Process[i]["isdata"].toBool())Weight*= iLumi;
          if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
+         Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
 
-         TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + ".root").c_str());
-         if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
-         TH1* tmphist = (TH1*) GetObjectFromPath(File,HistoName); 
+         int split = 1;
+         if(Samples[j].isTag("split"))split = Samples[j]["split"].toInt();
+         TH1* tmphist = NULL;
+         for(int s=0;s<split;s++){
+            char segmentExt[255];if(split){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
+
+            TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + segmentExt).c_str());
+            if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
+            TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName);
+            if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmphist);}
+            delete tmptmphist;
+            delete File;
+         }
+         if(!tmphist)continue;
          if(!hist){gROOT->cd(); hist = (TH1*)tmphist->Clone(tmphist->GetName());hist->Scale(Weight);}else{hist->Add(tmphist,Weight);}
          delete tmphist;
-         delete File;
-      } 
+      }
       if(!hist)continue;
 
       if(!pFile){
@@ -599,8 +607,6 @@ int main(int argc, char* argv[]){
         printf("--noPlot --> Do not creates plot files (useful to speedup processing)\n");
 
         printf("command line example: runPlotter --json ../data/beauty-samples.json --iLumi 2007 --inDir OUT/ --outDir OUT/plots/ --outFile plotter.root --noRoot --noPlot\n");
-
-	return 0;
      }
 
      if(arg.find("--iLumi"  )!=string::npos && i+1<argc){ sscanf(argv[i+1],"%lf",&iLumi); i++; printf("Lumi = %f\n", iLumi); }
@@ -619,12 +625,10 @@ int main(int argc, char* argv[]){
    } 
    system( (string("mkdir -p ") + outDir).c_str());
 
-
    JSONWrapper::Object Root(jsonFile, true);
-   TFile* File = new TFile((inDir + Root["proc"][0]["tag"].toString() + ".root").c_str());
+   GetInitialNumberOfEvents(Root,inDir,"cutflow");  //Used to get the rescale factor based on the total number of events geenrated
    std::vector<NameAndType> histlist;
-   GetListOfObject(File,histlist);
-   delete File;
+   GetListOfObject(Root,inDir,histlist);
 
    TFile* OutputFile = NULL;
    if(StoreInFile) OutputFile = new TFile(outFile.c_str(),"RECREATE");
@@ -643,5 +647,8 @@ int main(int argc, char* argv[]){
         if(StoreInFile && do1D  &&  histlist[i].isTH1){                                  SavingToFile(Root,inDir,histlist[i].Name, OutputFile); }
    }printf("\n");
    if(StoreInFile) OutputFile->Close();
+
+   Root.Print();
+
 }
 
