@@ -26,9 +26,8 @@ from CMGTools.HtoZZ2l2nu.PileupNormalizationProducer_cfi import puWeights
 process.puWeights      = puWeights.clone( data = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/PileupTruth2011AplusB.root') )
 process.puWeights2011A = puWeights.clone( data = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/PileupTruth2011A.root') )
 process.puWeights2011B = puWeights.clone( data = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/PileupTruth2011B.root') )
-process.puWeightSequence(process.puWeights+process.puWeights2011A+process.puWeights2011B)
+process.puWeightSequence = cms.Sequence(process.puWeights+process.puWeights2011A+process.puWeights2011B)
 
-process.load('CMGTools.HtoZZ2l2nu.CleanEventProducer_cfi')
 process.load('CMGTools.HtoZZ2l2nu.CleanEventAnalyzer_cfi')
 process.TFileService = cms.Service("TFileService", fileName = cms.string(outputFile) )
 
