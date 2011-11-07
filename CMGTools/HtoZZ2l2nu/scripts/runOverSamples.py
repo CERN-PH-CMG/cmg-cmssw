@@ -8,6 +8,11 @@ import commands
 #check castor directory for duplicates
 def checkCastorDirectory(outdir):
     rfdir_cmd = "rfdir " + outdir
+    isEOS=False
+    if(outdir.find('/store/cmst3')==0) :
+        isEOS=True
+        splitOnString=','
+        rfdir_cmd='cmsLs ' + dir + ' | grep root | awk \'{print $5}\''
     nOutFile = 0
     outCastorDir_out = commands.getstatusoutput(rfdir_cmd)
     jobNumbers = []
@@ -18,8 +23,10 @@ def checkCastorDirectory(outdir):
         castorLines = outCastorDir_out[1].split("\n")
         if len(castorLines) != 0:
             for castorFileLine in castorLines:
+                fileName=castorFileLine
                 if "root" in castorFileLine:
-                    fileName = castorFileLine.split()[8]
+                    if(isEOS) : fileName=commands.getstatusoutput('cmsPfn '+ fileName)[1]
+                    else :      fileName = castorFileLine.split()[8]
                     jobNumber=-1
                     try:
                         jobNumber = int(fileName.split("_")[1])
@@ -27,7 +34,9 @@ def checkCastorDirectory(outdir):
                         continue
                     if jobNumber in jobNumbers:
                         if not jobNumber in duplicatedJobs:  duplicatedJobs.append(jobNumber)
-                        duplicatedFiles.append(fileName)
+                        if(isEOS) : duplicatedFiles.append(castorFileLine)
+                        else      : duplicatedFiles.append(fileName)
+                        
                     else :
                         jobNumbers.append(jobNumber)
                         origFiles.append(fileName)
@@ -36,7 +45,9 @@ def checkCastorDirectory(outdir):
     print '   - Found ' + str(len(duplicatedJobs)) + ' job id duplicates @ ' + outdir
     print '   - Removing ' + str(len(duplicatedFiles)) + ' files'
     for f in duplicatedFiles :
-        commands.getstatusoutput('rfrm ' +outdir + '/' + f)
+        if(isEOS) : commands.getstatusoutput('cmsRm ' + f)
+        else : commands.getstatusoutput('rfrm ' +outdir + '/' + f)
+
 
 
 #print usage

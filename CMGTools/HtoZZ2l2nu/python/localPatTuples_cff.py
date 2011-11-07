@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import os,sys
 import getopt
+import commands
 
 """
 lists the files available in castor
@@ -17,6 +18,9 @@ def fillFromCastor(dir,ffile=0,step=-1):
     prefix='rfio'
     if(dir.find('castor')>=0) :
         os.system('rfdir ' + dir + ' | awk \'{print $9}\' > /tmp/castorDump')
+    elif(dir.find('/store/cmst3')==0):
+        prefix='eoscms'
+        os.system('a=(`cmsLs ' + dir + ' | grep root | awk \'{print $5}\'`); for i in ${a[@]}; do cmsPfn ${i} >> /tmp/castorDump; done')
     else:
         prefix='file'
         os.system('ls ' + dir + ' > /tmp/castorDump')
@@ -27,7 +31,12 @@ def fillFromCastor(dir,ffile=0,step=-1):
         if(len(line)==0) : continue
         if(line.find('root')<0) : continue
         if(line.find('histograms')>0 or line.find('monitor')>0): continue
-        sline=str(prefix+'://' + dir + '/' + line.split()[0])
+        sline=''
+        if(prefix=='eoscms') :
+            sline=line
+        else :
+            sline=str(prefix+'://' + dir + '/' + line.split()[0])
+        if(len(sline)==0): continue
         if(ifile>=ffile):
             if( (step<0) or  (step>0 and ifile<ffile+step) ):
                 localdataset.extend( [ sline ] )
