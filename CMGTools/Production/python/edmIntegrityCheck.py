@@ -271,7 +271,7 @@ class IntegrityCheck(object):
 
     def listRootFiles(self,dir):
         """filter out filenames so that they only contain root files"""
-        return [f[-1] for f in self.listFiles(dir) if f[-1].lower().endswith('.root')]
+        return [f for f in self.listFiles(dir) if f.lower().endswith('.root')]
 
     def sortByBaseDir(self,files):
         """Sort files into directories"""
