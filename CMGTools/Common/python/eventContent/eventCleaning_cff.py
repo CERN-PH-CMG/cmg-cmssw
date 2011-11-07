@@ -9,6 +9,9 @@ eventCleaning += cms.untracked.vstring(
     'keep *_BeamHaloSummary_*_*',
     'keep *_recovRecHitFilter_*_*',
     'keep *_eeNoiseFilter_*_*',
-    'keep *_trackingFailureFilter_*_*'
+    'keep *_trackingFailureFilter_*_*',
+    'keep *_goodPrimaryVertexFilter_*_*',
+    'keep *_scrapingFilter_*_*',
+    'keep *_totalKinematicsFilterCMG_*_*'
     )
 

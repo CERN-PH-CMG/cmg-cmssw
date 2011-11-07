@@ -36,6 +36,14 @@ from CMGTools.Common.eventCleaning.eeNoiseFilter_cfi import *
 
 from CMGTools.Common.eventCleaning.trackingFailureFilter_cfi import *
 
+# PV filter in tagging mode
+
+from CMGTools.Common.eventCleaning.goodPrimaryVertexFilter_cfi import *
+
+# scraping filter in tagging mode
+
+from CMGTools.Common.eventCleaning.scrapingFilter_cfi import *
+
 
 eventCleaningTaggingSequence = cms.Sequence(
     ecalDeadCellTaggingSequence + 
@@ -43,10 +51,10 @@ eventCleaningTaggingSequence = cms.Sequence(
     selectGoodPFEventsTaggingSequence +
     recovRecHitFilter +
     eeNoiseFilter +
-    trackingFailureFilter
+    trackingFailureFilter +
+    goodPrimaryVertexFilter +
+    scrapingFilter 
     )
-
-from CMGTools.Common.eventCleaning.scrapingFilter_cfi import *
 from CMGTools.Common.eventCleaning.goodPVFilter_cfi import *
 
 eventCleaningFilteringSequence = cms.Sequence(
@@ -55,8 +63,8 @@ eventCleaningFilteringSequence = cms.Sequence(
     )
 
 eventCleaningSequence = cms.Sequence(
-    eventCleaningFilteringSequence + 
-    eventCleaningTaggingSequence
+    eventCleaningTaggingSequence 
+    # eventCleaningFilteringSequence     # Now we apply the filters in tagging mode
     # selectGoodPFEventsSequence +
     # note: the following will produce a boolean in the EDM but
     # does not filter events
