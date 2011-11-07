@@ -116,7 +116,10 @@ for proc in procList :
                 nfiles=len(filenames)
 
                 njobs=1
-                if(fperjob>0) : njobs=nfiles/fperjob+1
+		sleep=0;
+                if(fperjob>0) : 
+			njobs=nfiles/fperjob+1
+			sleep=2*fperjob/6;
                 
                 #substitute some job parameters by json file parameters
                 newParams=''
@@ -140,6 +143,7 @@ for proc in procList :
                     print localParams
                     if(subtoBatch) :
                         os.system('submit2batch.sh ' + scriptFile + ' ' + localParams)                   
+			os.system('sleep ' + str(sleep) + 's')
                     else :
                         os.system(scriptFile + ' '  + localParams)
 
