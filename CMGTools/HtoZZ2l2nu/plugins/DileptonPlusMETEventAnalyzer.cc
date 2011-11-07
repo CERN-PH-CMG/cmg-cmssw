@@ -317,8 +317,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     std::vector<CandidatePtr> selLooseElectrons = getGoodElectrons(hEle, hMu, *beamSpot, *rho, objConfig_["LooseElectrons"]);
     std::vector<CandidatePtr> selElectrons      = getGoodElectrons(hEle, hMu, *beamSpot, *rho, objConfig_["Electrons"]);
 
-    cout << selMuons.size() << " " << selElectrons.size() << endl; 
-
     //inclusive collection of leptons to store
     std::vector<CandidatePtr> selLooseLeptons = selLooseMuons;
     selLooseLeptons.insert(selLooseLeptons.end(),selLooseElectrons.begin(),selLooseElectrons.end());
