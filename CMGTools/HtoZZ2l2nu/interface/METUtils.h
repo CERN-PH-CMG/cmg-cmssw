@@ -4,8 +4,8 @@
 /** \class METUtils
  *  No description available.
  *
- *  $Date: 2011/11/02 15:32:02 $
- *  $Revision: 1.13 $
+ *  $Date: 2011/11/04 16:54:46 $
+ *  $Revision: 1.1 $
  *  \author G. Cerminara & D. Trocino & P. Silva
  */
 
@@ -119,6 +119,7 @@ namespace METUtils{
   inline std::pair<double, double> dileptonPtCorrComponents() const{   return std::make_pair(deltaDileptonProj_long,deltaDileptonProj_perp);    }
 */
   double getRedMETCut(int eventCategory, int workingpoint=MEDIUMWP);
+  LorentzVector projectedMET(const LorentzVector& lepton1, const LorentzVector& lepton2, const LorentzVector& met, stRedMET* out=NULL);
 
 }
 #endif

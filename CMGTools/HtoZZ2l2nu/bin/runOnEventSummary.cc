@@ -6,7 +6,6 @@
 #include "CMGTools/HtoZZ2l2nu/interface/METUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/TransverseMassComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/GammaEventHandler.h"
-#include "CMGTools/HtoZZ2l2nu/interface/ProjectedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
 #include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
@@ -131,7 +130,6 @@ int main(int argc, char* argv[])
 
 
   //start computers
-  ProjectedMETComputer pmetComp;
   TransverseMassComputer mtComp;
   EventCategory eventClassifComp;
 
@@ -850,7 +848,7 @@ int main(int argc, char* argv[])
       double redMet = redMetP4.pt();   double redMetL = redMetInfo.redMET_l; double redMetT = redMetInfo.redMET_t;
 
       //projected met
-      Float_t projMet              =  isGammaEvent ? 0 : pmetComp.compute(phys.leptons[0], phys.leptons[1], zvv );
+      Float_t projMet              =  isGammaEvent ? 0 : METUtils::projectedMET(phys.leptons[0], phys.leptons[1], zvv).pt();
       Float_t centralMet          = centralMetP4.pt();
       Float_t assocChargedMet     = assocChargedMetP4.pt();
 

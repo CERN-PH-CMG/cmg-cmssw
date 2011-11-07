@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2011/11/02 15:32:04 $
- *  $Revision: 1.14 $
+ *  $Date: 2011/11/04 16:54:56 $
+ *  $Revision: 1.1 $
  *  \author G. Cerminara & D. Trocino
  */
 
@@ -239,6 +239,45 @@ LorentzVector redMET(RedMetType Type, const LorentzVector& theLepton1, double si
       }
     return cut;
   }
+
+
+  LorentzVector projectedMET(const LorentzVector& lepton1, const LorentzVector& lepton2, const LorentzVector& met, stRedMET* out){
+    TVector2 a_l,a_t;
+    double projectedMET_long, projectedMET_perp;
+    double projEtMiss;
+    int event_categ;
+    double minDeltaPhi;
+
+        double dphi1=deltaPhi(lepton1.phi(),met.phi());
+        double dphi2=deltaPhi(lepton2.phi(),met.phi());
+        minDeltaPhi = (fabs(dphi1) < fabs(dphi2) ? dphi1 : dphi2);
+        projEtMiss = met.pt() * ( fabs(minDeltaPhi) > TMath::Pi()/2 ? 1.0 : fabs(TMath::Sin(fabs(minDeltaPhi))) );
+        event_categ= ( fabs(minDeltaPhi) > TMath::Pi()/2 ? OPENANGLE : COLLIMATED );
+
+        //project along / transversely to the closest lepton
+        LorentzVector refLepton( (fabs(dphi1) < fabs(dphi2) ? lepton1 : lepton2) );
+        TVector2 refLeptonPt(refLepton.px(),refLepton.py());
+        TVector2 metxy(met.px(),met.py());
+        a_l =  refLeptonPt.Unit();
+        a_t = a_l.Rotate(TMath::Pi()/2);
+        if(a_t*metxy<0) a_t *=-1;
+        projectedMET_long = (event_categ==COLLIMATED ? 0. : metxy*a_l);
+        projectedMET_perp = metxy*a_t;
+        TVector2 projMETxy=a_l*projectedMET_long+a_t*projectedMET_perp;
+
+        if(out){
+           out->a_l = a_l;
+           out->a_t = a_t;
+           out->redMETxy = projMETxy;
+           out->redMET_l = projectedMET_long;
+           out->redMET_t = projectedMET_perp;
+        }
+
+        return LorentzVector( projMETxy.X(),projMETxy.Y(),0,projEtMiss);
+  }
+
+
+
 
 
 }

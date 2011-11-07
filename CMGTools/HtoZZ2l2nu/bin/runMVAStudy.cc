@@ -19,7 +19,6 @@
 #include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
 #include "CMGTools/HtoZZ2l2nu/interface/METUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/TransverseMassComputer.h"
-#include "CMGTools/HtoZZ2l2nu/interface/ProjectedMETComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/TMVAUtils.h"
 
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
@@ -32,7 +31,6 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   //init computers
-  ProjectedMETComputer pmetComp;
   TransverseMassComputer mtComp;
   EventCategory eventClassifComp;
 
@@ -165,7 +163,7 @@ int main(int argc, char *argv[])
 	  Float_t redMetLplusZpt = redMetL+zpt;
 
 	  //projected met
-	  Float_t projMet        = pmetComp.compute(phys.leptons[0], phys.leptons[1], zvv );
+	  Float_t projMet        =  METUtils::projectedMET(phys.leptons[0], phys.leptons[1], zvv).pt();
 	  Float_t projMetoverzpt = projMet/zpt;
 	  
 	  //update the variables
