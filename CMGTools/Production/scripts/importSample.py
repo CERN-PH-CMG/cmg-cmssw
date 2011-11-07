@@ -7,7 +7,7 @@
 import os, sys,  imp, re, pprint, string
 from optparse import OptionParser
 
-import CMGTools.Production.castortools as castortools
+import CMGTools.Production.eostools as castortools
 
 parser = OptionParser()
 parser.usage = "%prog <sampleName>\nImport a sample locally."

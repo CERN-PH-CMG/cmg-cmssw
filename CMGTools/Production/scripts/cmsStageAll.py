@@ -3,7 +3,7 @@
 
 from optparse import OptionParser
 import sys,os, re, pprint
-import CMGTools.Production.castortools as castortools
+import CMGTools.Production.eostools as castortools
 
 parser = OptionParser()
 parser.usage = """
