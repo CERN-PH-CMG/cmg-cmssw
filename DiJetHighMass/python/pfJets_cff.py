@@ -39,7 +39,7 @@ cmgPFJet.cuts.jetKinematics.eta = cms.string('abs(eta()) < 2.5')
 # Select PF PF Leading Jet
 cmgPFLeadJet = leadingCMGPFJetSelector.clone()
 cmgPFLeadJet.inputCollection = pfJet
-cmgPFLeadJet.index = cms.untracked.int32(2)
+cmgPFLeadJet.index = cms.int32(2)
 
 
 
@@ -47,7 +47,7 @@ cmgPFLeadJet.index = cms.untracked.int32(2)
 diPFJetFactory = cms.PSet(            
     leg1Collection = cms.InputTag(pfLeadJet),
     leg2Collection = cms.InputTag(pfLeadJet),
-    metCollection = cms.InputTag("cmgPFMET")
+    metCollection = cms.InputTag("patMETsAK5")
     )
 
 cmgPFDiJet = cmgDiPFJet.clone()
@@ -58,7 +58,7 @@ cmgPFDiJet.cfg = diPFJetFactory
 cmgFatJetFactory = cms.PSet(            
     leg1Collection = cms.InputTag(pfLeadJet),
     leg2Collection = cms.InputTag(pfLeadJet),
-    metCollection = cms.InputTag("cmgPFMET")
+    metCollection = cms.InputTag("patMETsAK5")
     )
 
 cmgPFFatJet = cmgFatJet.clone()

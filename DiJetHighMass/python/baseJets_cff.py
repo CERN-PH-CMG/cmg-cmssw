@@ -35,7 +35,7 @@ cmgBaseJet.cuts.jetKinematics.pt = cms.string('pt > 30')
 # Select Base Leading Jet
 cmgBaseLeadJet = leadingCMGBaseJetSelector.clone()
 cmgBaseLeadJet.inputCollection = baseJet
-cmgBaseLeadJet.index = cms.untracked.int32(2)
+cmgBaseLeadJet.index = cms.int32(2)
 
 # Produce Base Dijet
 diBaseJetFactory = cms.PSet(            

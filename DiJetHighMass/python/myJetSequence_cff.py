@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.Common.factories.cmgBaseMET_cfi import cmgBaseMET
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
 
-def myPFJetSequence( process, postfix ): 
+def myPFJetSequence( process, postfix, doFat): 
 
     patJet = 'selectedPatJets' + postfix
     pfJet = 'cmgPFJet' + postfix
@@ -17,7 +17,7 @@ def myPFJetSequence( process, postfix ):
     cloneProcessingSnippet(process, process.pfJetSequence, postfix)
 
     getattr(process, "cmgPFJet" + postfix).cfg.inputCollection = cms.InputTag(patJet)
-    getattr(process, "cmgPFLeadJet" + postfix).inputCollection = cms.untracked.InputTag(pfJet)
+    getattr(process, "cmgPFLeadJet" + postfix).inputCollection = cms.InputTag(pfJet)
     getattr(process, "cmgPFDiJet" + postfix).cfg.leg1Collection = cms.InputTag(pfLeadJet)
     getattr(process, "cmgPFDiJet" + postfix).cfg.leg2Collection = cms.InputTag(pfLeadJet)
 
@@ -43,7 +43,14 @@ def myPFJetSequence( process, postfix ):
     getattr(process, "cmgPFFatDiJetLorentzVector" + postfix).inputCollection = cms.InputTag(pfFatTightDiJet)
     getattr(process, "cmgPFFatDiJetHistograms" + postfix).inputCollection = cms.InputTag(pfFatTightDiJet)
     getattr(process, "cmgPFDiJetHistograms_FatJets" + postfix).inputCollection = cms.InputTag(pfFatTightDiJet)
-    
+
+    if (not doFat):
+        getattr(process, "pfJetSequence" + postfix).remove(getattr(process, "cmgPFFatJet" + postfix))
+        getattr(process, "pfJetSequence" + postfix).remove(getattr(process, "cmgPFFatDiJet" + postfix))
+        getattr(process, "pfJetSequence" + postfix).remove(getattr(process, "cmgPFFatTightDiJet" + postfix))
+        getattr(process, "pfJetSequence" + postfix).remove(getattr(process, "cmgPFFatDiJetLorentzVector" + postfix))
+        getattr(process, "pfJetSequence" + postfix).remove(getattr(process, "cmgPFFatDiJetHistograms" + postfix))
+        getattr(process, "pfJetSequence" + postfix).remove(getattr(process, "cmgPFDiJetHistograms_FatJets" + postfix))
 
 
 def myBaseJetSequence( process, postfix ): 
@@ -59,7 +66,7 @@ def myBaseJetSequence( process, postfix ):
     cloneProcessingSnippet(process, process.baseJetSequence, postfix)
 
     getattr(process, "cmgBaseJet" + postfix).cfg.inputCollection = cms.InputTag(patJet)
-    getattr(process, "cmgBaseLeadJet" + postfix).inputCollection = cms.untracked.InputTag(baseJet)
+    getattr(process, "cmgBaseLeadJet" + postfix).inputCollection = cms.InputTag(baseJet)
     getattr(process, "cmgBaseDiJet" + postfix).cfg.leg1Collection = cms.InputTag(baseLeadJet)
     getattr(process, "cmgBaseDiJet" + postfix).cfg.leg2Collection = cms.InputTag(baseLeadJet)
 
@@ -75,20 +82,20 @@ def myBaseJetSequence( process, postfix ):
 
 def myJetSequence( process ): 
 
-    postfixAK5PF = "AK5PF"
-    postfixAK7PF = "AK7PF"
+    postfixAK5PF = "AK5"
+    postfixAK7PF = "AK7"
     postfixAK7Calo = "AK7Calo"
 
-    myBaseJetSequence( process, postfixAK7Calo )
-    myPFJetSequence( process, postfixAK5PF )
-    myPFJetSequence( process, postfixAK7PF )
+    myBaseJetSequence( process, postfixAK7Calo)
 
-    process.cmgPFMET = cmgBaseMET.clone()
-    process.cmgPFMET.cfg.inputCollection = "patMETs"
+    doFat = True
+    myPFJetSequence( process, postfixAK5PF, doFat)
+
+    doFat = False
+    myPFJetSequence( process, postfixAK7PF, doFat )
 
     process.jetSequence = cms.Sequence(
-        process.cmgPFMET +
-        getattr(process, "baseJetSequence" + postfixAK7Calo) +
+#        getattr(process, "baseJetSequence" + postfixAK7Calo) +
         getattr(process, "pfJetSequence" + postfixAK5PF) +
         getattr(process, "pfJetSequence" + postfixAK7PF)
         )
