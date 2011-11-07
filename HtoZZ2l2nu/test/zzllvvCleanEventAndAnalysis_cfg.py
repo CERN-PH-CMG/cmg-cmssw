@@ -7,32 +7,56 @@ process.GlobalTag.globaltag = 'START42_V13::All'
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
-
-from CMGTools.HtoZZ2l2nu.localPatTuples_cff import configureFromCommandLine
+#the source is configured from the command line
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring()
                             )
+
+# wrapper to query command line
+from CMGTools.HtoZZ2l2nu.localPatTuples_cff import configureFromCommandLine
 castorDir, outputFile, process.source.fileNames = configureFromCommandLine()
+
+# histogram service
+process.TFileService = cms.Service("TFileService", fileName = cms.string(outputFile) )
+
+# higgs pT reweighter
 from CMGTools.HtoZZ2l2nu.GeneratorLevelSequences_cff import addHiggsPtReweighting
 needsPtReweight=addHiggsPtReweighting(process,castorDir)
 
+# our MET prroducer
 from CMGTools.HtoZZ2l2nu.ClusteredPFMetProducer_cfi import ClusteredPFMetProducer
 process.ClusteredPFMetProducer = ClusteredPFMetProducer.clone()
 process.ClusteredPFMetProducerPt5 = ClusteredPFMetProducer.clone( minJetPt = cms.double(5.0) )
 process.ClusteredPFMetProducerPt10 = ClusteredPFMetProducer.clone( minJetPt = cms.double(10.0) )
 process.ClusteredPFMetSequence = cms.Sequence(process.ClusteredPFMetProducer*process.ClusteredPFMetProducerPt5*process.ClusteredPFMetProducerPt10)
 
+#pileup normalization
 from CMGTools.HtoZZ2l2nu.PileupNormalizationProducer_cfi import puWeights
 process.puWeights      = puWeights.clone( data = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/PileupTruth2011AplusB.root') )
-process.puWeights2011A = puWeights.clone( data = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/PileupTruth2011A.root') )
-process.puWeights2011B = puWeights.clone( data = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/PileupTruth2011B.root') )
-process.puWeightSequence = cms.Sequence(process.puWeights+process.puWeights2011A+process.puWeights2011B)
+process.puWeightSequence = cms.Sequence(process.puWeights)
 
-process.load('CMGTools.HtoZZ2l2nu.CleanEventAnalyzer_cfi')
-process.TFileService = cms.Service("TFileService", fileName = cms.string(outputFile) )
+#
+# configure the analyzer (cf. base values are in the StandardSelections_cfi)
+#
+from CMGTools.HtoZZ2l2nu.StandardSelections_cfi import *
+process.evAnalyzer = cms.EDAnalyzer("DileptonPlusMETEventAnalyzer",
+                                    dtag=cms.string('h2zz'),
+                                    Trigger = BaseTriggerSelection.clone(),
+                                    Generator = BaseGeneratorSelection.clone(),
+                                    Vertices = BaseVertexSelection.clone(),
+                                    Photons = BasePhotonsSelection.clone(),
+                                    LooseMuons = BaseLooseMuonsSelection.clone(),
+                                    Muons = BaseMuonsSelection.clone(),
+                                    LooseElectrons = BaseLooseElectronsSelection.clone(),
+                                    Electrons = BaseElectronsSelection.clone(),
+                                    Dileptons = BaseDileptonSelection.clone(),
+                                    Jets = BaseJetSelection.clone(),
+                                    MET = BaseMetSelection.clone()
+                                    ) 
 
+#the path to execute
 if(needsPtReweight) :
-    process.p = cms.Path(process.ClusteredPFMetSequence*process.hkfactorSequence*process.puWeightSequencet*process.evAnalyzer)
+    process.p = cms.Path(process.ClusteredPFMetSequence*process.hkfactorSequence*process.puWeightSequence*process.evAnalyzer)
 else :
     process.p = cms.Path(process.ClusteredPFMetSequence*process.puWeightSequence*process.evAnalyzer)
 

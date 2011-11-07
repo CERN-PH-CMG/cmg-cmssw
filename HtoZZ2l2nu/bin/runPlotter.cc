@@ -99,6 +99,7 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::vector
          histlist.push_back(NameAndType(parentPath+list->At(i)->GetName(), !(tmp->InheritsFrom("TH2") || tmp->InheritsFrom("TH3")) ) );
       }else{
          GetListOfObject(Root,RootDir,histlist,(TDirectory*)tmp,parentPath+ list->At(i)->GetName()+"/" );
+
       }
    }
 
@@ -125,10 +126,13 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, st
             delete tmptmphist;
             delete File;
          }
+
+	 bool isMC( !Process[i]["isdata"].toBool() && !Process[i]["isdatadriven"].toBool() );
          double cnorm = 1.0;
          if(tmphist)cnorm = tmphist->GetBinContent(1);
-         if(cnorm<=0)cnorm = 1.0;
+         if(cnorm<=0 || isMC)cnorm = 1.0;
          initialNumberOfEvents[(Samples[j])["dtag"].toString()] = cnorm;
+
          delete tmphist;
       }   
    }

@@ -1005,6 +1005,7 @@ int main(int argc, char* argv[])
       //
       // event pre-selection
       //
+      bool passLooseKinematics(zpt>20);
       bool passZmass(fabs(zmass-91)<15);
       bool passSideBand( !passZmass && fabs(zmass-91)<30 );
 
@@ -1117,7 +1118,7 @@ int main(int argc, char* argv[])
               }
  	      
 	      //event pre-selection
-	      if(!passZmass && !passSideBand)                                      continue;
+	      if(!passZmass && !passSideBand && !passLooseKinematics)                                      continue;
 	      
 	      //VBF control
 	      if(true                                                                                       )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    0                ,iweight);
