@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 highMass = cms.EDFilter(
     "CmgDiPFJetSelector",    
-    src = cms.InputTag("cmgPFDiJetAK5PF"),
+    src = cms.InputTag("cmgPFDiJetAK5"),
     cut = cms.string("getSelection(\"cuts_dijetKinematics_looseMass\") && getSelection(\"cuts_dijetKinematics_looseDeltaEta\")"),
 )
 
