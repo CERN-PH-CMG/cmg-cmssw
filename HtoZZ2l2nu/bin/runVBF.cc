@@ -12,7 +12,6 @@
 #include "CMGTools/HtoZZ2l2nu/interface/TMVAUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/MacroUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
-#include "CMGTools/HtoZZ2l2nu/interface/DuplicatesChecker.h"
 
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 
@@ -94,7 +93,6 @@ int main(int argc, char* argv[])
 {
   SelectionMonitor controlHistos; //plot storage
 
-
   //Prepare vectors for cut optimization
   std::vector<double> optim_Cuts1_met;
   std::vector<double> optim_Cuts1_mindphi;
@@ -129,8 +127,6 @@ int main(int argc, char* argv[])
   }
 
 
-
-
   //start computers
   EventCategory eventClassifComp;
 
@@ -160,7 +156,6 @@ int main(int argc, char* argv[])
   SampleHiggsWidth[600]= 123;                  SampleHiggsWeightInt["VBFtoH600toZZto2L2Nu.root"]=0.792347;   SampleHiggsWeightInt["VBFtoH600toWWto2L2Nu.root"]=0.807353;
 
 
-
   // configure the process
   const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
   TString url=runProcess.getParameter<std::string>("input");
@@ -187,7 +182,6 @@ int main(int argc, char* argv[])
   else                        LumiWeights.weight3D_init(puWeightFile);
   reweight::PoissonMeanShifter PShiftUp(+0.6);
   reweight::PoissonMeanShifter PShiftDown(-0.6);
-
 
   //tree info
   int evStart=runProcess.getParameter<int>("evStart");
@@ -258,7 +252,6 @@ int main(int argc, char* argv[])
 	    }
 	}
     }
-  
   
   //book the control histograms
   TH1F *h=new TH1F ("eventflow", ";Step;Events", 8,0,8);
@@ -361,7 +354,6 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(5,"SSVHEM || TCHEL");
   h->GetXaxis()->SetBinLabel(6,"SSVHEM || JBPL");
   controlHistos.addHistogram( h );
-
 
   //used for GenLevel
   controlHistos.addHistogram( new TH1F( "genHiggsPt"  , ";gen Higgs p_{T};Events",100,0,200) );
@@ -600,7 +592,7 @@ int main(int argc, char* argv[])
   for(size_t icat=0;icat<sizeof(cats)/sizeof(TString); icat++)
     for(size_t isubcat=0;isubcat<sizeof(subCats)/sizeof(TString); isubcat++)
       controlHistos.initMonitorForStep(cats[icat]+subCats[isubcat]);
-  
+
   //open the file and get events tree
   ZZ2l2nuSummaryHandler evSummaryHandler;
   TFile *file = TFile::Open(url);
@@ -641,9 +633,6 @@ int main(int argc, char* argv[])
   const Int_t normEntries = (elist==0 ? 0 : elist->GetN()); 
   if(normEntries==0) cout << "[Warning] Normalized PU entries is 0, check if the PU normalization producer was properly run" << endl;
   
-  //Event Duplicates checker init
-  DuplicatesChecker duplicatesChecker;
-
   double VBFWEIGHTINTEGRAL = 0;
     
   // init summary tree (unweighted events for MVA training) 
@@ -671,21 +660,13 @@ int main(int argc, char* argv[])
 
   //run the analysis
   //
-  unsigned int NumberOfDuplicated = 0;
   for( int iev=evStart; iev<evEnd; iev++)
     {
       if(iev%1000==0) printf("\r [ %d/100 ] ",int(100*float(iev-evStart)/float(evEnd)));
       evSummaryHandler.getEntry(iev);
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
 
-      //uncomment if you are suspicious
-      //       if(duplicatesChecker.isDuplicate(ev.run,ev.lumi, ev.event)){
-      //            //printf("event %i-%i-%i is duplicated\n", ev.run, ev.lumi, ev.event);
-      //            NumberOfDuplicated++;
-      //            continue;
-      //       }
-
-      PhysicsEvent_t phys=getPhysicsEventFrom(ev);
+        PhysicsEvent_t phys=getPhysicsEventFrom(ev);
       
       //OOT pu condition
       TString ootCond("");
@@ -1539,7 +1520,7 @@ int main(int argc, char* argv[])
   //save all to the file
   TFile *ofile=TFile::Open(outUrl, "recreate");
   TDirectory *baseOutDir=ofile->mkdir("localAnalysis");
-//    Hcutflow            ->Write();
+    Hcutflow            ->Write();
     Hoptim_cuts1_met    ->Write();
     Hoptim_cuts1_mindphi->Write();
     Hoptim_cuts1_mtmin  ->Write();
@@ -1579,9 +1560,6 @@ int main(int argc, char* argv[])
       spyFile->Close();
       if(!isMC) outf->close();
     }
-
-  printf("TotalNumber of duplicated is %i/%i = %f%%\n",NumberOfDuplicated,evEnd,(100.0*NumberOfDuplicated)/evEnd);
-  printf("VBF WEIGHT INTEGRAL = %f\n",VBFWEIGHTINTEGRAL/evEnd);
 }  
 
 
