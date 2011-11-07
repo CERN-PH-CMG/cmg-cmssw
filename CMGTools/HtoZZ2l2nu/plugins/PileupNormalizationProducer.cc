@@ -35,7 +35,9 @@ PileupNormalizationProducer::PileupNormalizationProducer(const edm::ParameterSet
   produces<float>("puWeight");
   produces<float>("renPuWeight");
 
-  LumiWeights_.weight3D_init();
+  std::string puWeightFile=iConfig.getParameter<std::string>("puWeightFile");
+  if(puWeightFile.size()==0) LumiWeights_.weight3D_init();
+  else                       LumiWeights_.weight3D_init(puWeightFile);
 
   maxWeight_=0;
   for(int nm1=0; nm1<=30; nm1++)
@@ -84,8 +86,6 @@ void PileupNormalizationProducer::produce(edm::Event &iEvent, const edm::EventSe
       *renPuWeight = renWeight;
     }
 
-  cout << *puWeight << " " << *renPuWeight << endl;
-  
   //put in the event
   iEvent.put(puWeight,"puWeight");
   iEvent.put(renPuWeight,"renPuWeight");

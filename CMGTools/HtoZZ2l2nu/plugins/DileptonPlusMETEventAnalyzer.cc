@@ -565,7 +565,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     summaryHandler_.fillTree();
     
   }catch(std::exception &e){
-    std::cout << "[CleanEventAnalysis][analyze] failed with " << e.what() << std::endl;
+    std::cout << "[DileptonPlusMETEventAnalyzer][analyze] failed with " << e.what() << std::endl;
   }
 
 }
