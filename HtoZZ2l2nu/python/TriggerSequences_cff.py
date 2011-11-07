@@ -26,11 +26,11 @@ def addGammaTriggerSequence(process) :
 
 def getTriggerPaths() :
     mcTrigs = ['HLT_IsoMu17_v5',
-#               'HLT_DoubleMu3_v3',
-#               'HLT_DoubleMu6_v1',
+               #               'HLT_DoubleMu3_v3',
+               #               'HLT_DoubleMu6_v1',
                'HLT_DoubleMu7_v1',
                'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2',
-#               'HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v2',
+               #               'HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v2',
                'HLT_Mu8_Ele17_CaloIdL_v2',
                'HLT_Mu10_Ele10_CaloIdL_v3',
                'HLT_Mu17_Ele8_CaloIdL_v2']
@@ -44,40 +44,93 @@ def getTriggerPaths() :
                  'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v6',
                  'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v7',
                  'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v8',
-                 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v5',  #start run 167039
+                 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v1',
+                 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v2',
+                 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v3',
+                 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v4',  
+                 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v5', #start run 167039
                  'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v6',
-                 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7'
+                 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7',
                  'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v8',
-                 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v9'
+                 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v9',
                  'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v10'
                  ]
-    doubleMu = ['HLT_DoubleMu7_v1', 'HLT_DoubleMu7_v2',                     #start run 160404
-                'HLT_Mu13_Mu8_v1', 'HLT_Mu13_Mu8_v2', 'HLT_Mu13_Mu8_v3',    #start run 165088 
-                'HLT_Mu13_Mu8_v4', 'HLT_Mu13_Mu8_v5', 'HLT_Mu13_Mu8_v6', 'HLT_Mu13_Mu8_v7',
-                'HLT_Mu13_Mu8_v8', 'HLT_Mu13_Mu8_v9', 'HLT_Mu13_Mu8_v10', 'HLT_Mu13_Mu8_v11'
+    doubleMu = ['HLT_DoubleMu7_v1',              #start run 160404
+                'HLT_DoubleMu7_v2',       
+                'HLT_Mu13_Mu8_v1',               #start run 165088 
+                'HLT_Mu13_Mu8_v2',
+                'HLT_Mu13_Mu8_v3',  
+                'HLT_Mu13_Mu8_v4',
+                'HLT_Mu13_Mu8_v5',
+                'HLT_Mu13_Mu8_v6',
+                'HLT_Mu13_Mu8_v7',
+                'HLT_Mu13_Mu8_v8',
+                'HLT_Mu13_Mu8_v9',
+                'HLT_Mu13_Mu8_v10',
+                'HLT_Mu13_Mu8_v11'
                 ]
-    muEG = ['HLT_Mu17_Ele8_CaloIdL_v1', 'HLT_Mu17_Ele8_CaloIdL_v2', 'HLT_Mu17_Ele8_CaloIdL_v3',   #start run 160404
-            'HLT_Mu17_Ele8_CaloIdL_v4', 'HLT_Mu17_Ele8_CaloIdL_v5', 'HLT_Mu17_Ele8_CaloIdL_v6',
-            'HLT_Mu17_Ele8_CaloIdL_v7', 'HLT_Mu17_Ele8_CaloIdL_v8'
-            'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v1', 'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v2', 'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v3', #start run 167039
-            'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v4', 'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v5', 'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v6', 'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v7',
-            'HLT_Mu8_Ele17_CaloIdL_v1', 'HLT_Mu8_Ele17_CaloIdL_v2', 'HLT_Mu8_Ele17_CaloIdL_v3',     #start run 160404
-            'HLT_Mu8_Ele17_CaloIdL_v4', 'HLT_Mu8_Ele17_CaloIdL_v5', 'HLT_Mu8_Ele17_CaloIdL_v6',
-            'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v1', 'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v2', 'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v3', #start run 167039
-            'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v4', 'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v5', 'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v6',
+    muEG = ['HLT_Mu17_Ele8_CaloIdL_v1',  #start run 160404
+            'HLT_Mu17_Ele8_CaloIdL_v2',
+            'HLT_Mu17_Ele8_CaloIdL_v3',   
+            'HLT_Mu17_Ele8_CaloIdL_v4',
+            'HLT_Mu17_Ele8_CaloIdL_v5',
+            'HLT_Mu17_Ele8_CaloIdL_v6',
+            'HLT_Mu17_Ele8_CaloIdL_v7',
+            'HLT_Mu17_Ele8_CaloIdL_v8'
+            'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v1', #start run 167039
+            'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v2',
+            'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v3', 
+            'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v4',
+            'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v5',
+            'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v6',
+            'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v7',
+            'HLT_Mu8_Ele17_CaloIdL_v1',   #start run 160404
+            'HLT_Mu8_Ele17_CaloIdL_v2',
+            'HLT_Mu8_Ele17_CaloIdL_v3',     
+            'HLT_Mu8_Ele17_CaloIdL_v4',
+            'HLT_Mu8_Ele17_CaloIdL_v5',
+            'HLT_Mu8_Ele17_CaloIdL_v6',
+            'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v1', #start run 167039
+            'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v2',
+            'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v3', 
+            'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v4',
+            'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v5',
+            'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v6',
             'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v7'
             ]
-    singleMu = ['HLT_IsoMu17_v1', 'HLT_IsoMu17_v2', 'HLT_IsoMu17_v3',  #start run 160404
-                'HLT_IsoMu17_v4', 'HLT_IsoMu17_v5', 'HLT_IsoMu17_v6',
-                'HLT_IsoMu17_v7', 'HLT_IsoMu17_v8', 'HLT_IsoMu17_v9',
-                'HLT_IsoMu17_v10', 'HLT_IsoMu17_v11', 'HLT_IsoMu17_v12',
+    singleMu = ['HLT_IsoMu17_v1',  #start run 160404
+                'HLT_IsoMu17_v2',
+                'HLT_IsoMu17_v3',  
+                'HLT_IsoMu17_v4',
+                'HLT_IsoMu17_v5',
+                'HLT_IsoMu17_v6',
+                'HLT_IsoMu17_v7',
+                'HLT_IsoMu17_v8',
+                'HLT_IsoMu17_v9',
+                'HLT_IsoMu17_v10',
+                'HLT_IsoMu17_v11',
+                'HLT_IsoMu17_v12',
                 'HLT_IsoMu17_v13',
-                'HLT_IsoMu24_v1', 'HLT_IsoMu24_v2', 'HLT_IsoMu24_v3',  #start run 160404
-                'HLT_IsoMu24_v2', 'HLT_IsoMu24_v3', 'HLT_IsoMu24_v4',
-                'HLT_IsoMu24_v5', 'HLT_IsoMu24_v6', 'HLT_IsoMu24_v7', 
+                'HLT_IsoMu24_v1',   #start run 160404
+                'HLT_IsoMu24_v2',
+                'HLT_IsoMu24_v3',  
+                'HLT_IsoMu24_v4',
+                'HLT_IsoMu24_v5',
+                'HLT_IsoMu24_v6',
+                'HLT_IsoMu24_v7', 
                 'HLT_IsoMu24_v8',
-                'HLT_IsoMu30_eta2p1_v1', 'HLT_IsoMu30_eta2p1_v2', 'HLT_IsoMu30_eta2p1_v3', #start run 173236
-                'HLT_IsoMu34_eta2p1_v1'
+                'HLT_IsoMu30_eta2p1_v1',   #start run 173236
+                'HLT_IsoMu30_eta2p1_v2',
+                'HLT_IsoMu30_eta2p1_v3',
+                'HLT_IsoMu30_eta2p1_v4',
+                'HLT_IsoMu30_eta2p1_v5',
+                'HLT_IsoMu30_eta2p1_v6',
+                'HLT_IsoMu30_eta2p1_v7',
+                'HLT_IsoMu34_eta2p1_v1',   #start run 173236
+                'HLT_IsoMu34_eta2p1_v2',
+                'HLT_IsoMu34_eta2p1_v3',
+                'HLT_IsoMu34_eta2p1_v4',
+                'HLT_IsoMu34_eta2p1_v5'
                 ]
     #forget it...
     singleEle = []
@@ -113,7 +166,7 @@ def addTriggerSequence(process, trigFilter='ee') :
     process.emuTrigSequence=cms.Sequence(~process.eetrigFilter*
                                          ~process.mumutrigFilter*
                                          process.emutrigFilter)
-
+    
     # single muon
     process.singlemutrigFilter = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT")
     process.singlemutrigFilter.throw = cms.bool(False)

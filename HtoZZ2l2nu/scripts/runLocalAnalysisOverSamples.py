@@ -16,6 +16,7 @@ def usage() :
     print '  -c : templated configuration file to steer the job'
     print '  -l : luminosity (pb)'
     print '  -p : extra parameters configure'
+    print '  -t : tag to match sample'
     print ' '
     exit(-1)
 
@@ -33,7 +34,7 @@ def getByLabel(desc,key,defaultVal=None) :
 #parse the options 
 try:
      # retrive command line options
-     shortopts  = "s:e:j:d:o:c:l:p:h?"
+     shortopts  = "s:e:j:d:o:c:l:p:t:h?"
      opts, args = getopt.getopt( sys.argv[1:], shortopts )
 except getopt.GetoptError:
      # print help information and exit:
@@ -51,6 +52,7 @@ cfg_file=''
 split=1
 segment=0
 params=''
+onlytag='all'
 for o,a in opts:
     if o in("-?", "-h"):
         usage()
@@ -66,6 +68,7 @@ for o,a in opts:
     elif o in('-l'): lumi=float(a)
     elif o in('-c'): cfg_file = a
     elif o in('-p'): params = a
+    elif o in('-t'): onlytag = a
                                         
 #open the file which describes the sample
 jsonFile = open(samplesDB,'r')
@@ -86,6 +89,9 @@ for proc in procList :
             dtag = getByLabel(d,'dtag','')
             xsec = getByLabel(d,'xsec',-1)
             br = getByLabel(d,'br',[])
+            if(onlytag!='all') :
+                if(dtag.find(onlytag)<0) : continue
+                                
             if(xsec>0 and not isdata) :
                 for ibr in br :  xsec = xsec*ibr
             split=getByLabel(d,'split',1)
