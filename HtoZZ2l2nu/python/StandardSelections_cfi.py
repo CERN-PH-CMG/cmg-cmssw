@@ -51,7 +51,7 @@ BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlow"),
                                minValidTrackerHits = cms.int32(11),
                                minValidMuonHits=cms.int32(1),
                                maxDistToBeamSpot=cms.double(0.02),
-                               id = cms.string("TMLastStationAngTight"),
+                               id = cms.string(""),#TMLastStationAngTight"),
                                maxRelIso = cms.double(0.15),
                                usePFIso = cms.bool(False)
                                )
@@ -89,7 +89,7 @@ BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectronsPF
                                    applyConversionVeto = cms.bool(True),
                                    maxDistToBeamSpot=cms.double(0.04),
                                    maxTrackLostHits = cms.int32(1),
-                                   id = cms.string("eidVBTF80"),
+                                   id = cms.string("eidVBTF85"),
                                    maxRelIso = cms.double(0.15),
                                    minDeltaRtoMuons = cms.double(0.1),
                                    usePFIso = cms.bool(False)
