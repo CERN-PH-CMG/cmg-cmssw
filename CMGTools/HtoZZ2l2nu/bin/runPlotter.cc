@@ -122,8 +122,11 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, st
             TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + segmentExt).c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName); 
-            if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
-            delete tmptmphist;
+	    if(tmptmphist)
+	      {
+		if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
+		delete tmptmphist;
+	      }
             delete File;
          }
 
@@ -132,7 +135,7 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, st
          if(tmphist)cnorm = tmphist->GetBinContent(1);
          if(cnorm<=0 || isMC)cnorm = 1.0;
          initialNumberOfEvents[(Samples[j])["dtag"].toString()] = cnorm;
-
+	 
          delete tmphist;
       }   
    }
@@ -416,13 +419,26 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    t2->Draw();
    t2->cd();
    t2->SetGridy(true);
+   t2->SetPad(0,0.0,1.0,0.2);
+   t2->SetTopMargin(0);
+   t2->SetBottomMargin(0.5);
+   float yscale = (1.0-0.2)/(0.18-0);
    data->Divide(mc);
    data->GetYaxis()->SetTitle("Obs/Ref");
-   data->GetYaxis()->SetTitleSize(0.12);
-   data->GetYaxis()->SetTitleOffset(0.2);
    data->GetXaxis()->SetTitle("");
    data->SetMinimum(0);
    data->SetMaximum(data->GetBinContent(data->GetMaximumBin())*1.10);
+   //data->SetMinimum(0);
+   //data->SetMaximum(2.2);
+   data->GetXaxis()->SetTitleOffset(1.3);
+   data->GetXaxis()->SetLabelSize(0.033*yscale);
+   data->GetXaxis()->SetTitleSize(0.036*yscale);
+   data->GetXaxis()->SetTickLength(0.03*yscale);
+   data->GetYaxis()->SetTitleOffset(0.3);
+   data->GetYaxis()->SetNdivisions(5);
+   data->GetYaxis()->SetLabelSize(0.033*yscale);
+   data->GetYaxis()->SetTitleSize(0.036*yscale);
+   
    data->Draw("E1");
    }
 
