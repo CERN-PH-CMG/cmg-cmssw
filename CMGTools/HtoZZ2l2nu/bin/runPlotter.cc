@@ -85,7 +85,7 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::vector
       std::vector<JSONWrapper::Object> Samples = (Process[0])["data"].daughters();
       int split = 1;
       if(Samples[0].isTag("split"))split = Samples[0]["split"].toInt();
-      char segmentExt[255];if(split){sprintf(segmentExt,"_%i.root",0);}else{sprintf(segmentExt,".root");}
+      char segmentExt[255];if(split>1){sprintf(segmentExt,"_%i.root",0);}else{sprintf(segmentExt,".root");}
       TFile* file = new TFile((RootDir + (Samples[0])["dtag"].toString() + segmentExt).c_str());
       dir = file;
    }
@@ -116,7 +116,7 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, st
 
          TH1* tmphist = NULL;
          for(int s=0;s<split;s++){
-	    char segmentExt[255];if(split){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
+	    char segmentExt[255];if(split>1){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
 
             TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + segmentExt).c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
@@ -125,7 +125,10 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, st
             delete tmptmphist;
             delete File;
          }
-         initialNumberOfEvents[(Samples[j])["dtag"].toString()] = tmphist->GetBinContent(1);
+         double cnorm = 1.0;
+         if(tmphist)cnorm = tmphist->GetBinContent(1);
+         if(cnorm<=0)cnorm = 1.0;
+         initialNumberOfEvents[(Samples[j])["dtag"].toString()] = cnorm;
          delete tmphist;
       }   
    }
@@ -153,7 +156,7 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
          if(Samples[j].isTag("split"))split = Samples[j]["split"].toInt();
          TH1* tmphist = NULL;
          for(int s=0;s<split;s++){
-            char segmentExt[255];if(split){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
+            char segmentExt[255];if(split>1){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
 
             TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + segmentExt).c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
@@ -242,7 +245,7 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
          if(Samples[j].isTag("split"))split = Samples[j]["split"].toInt();
          TH1* tmphist = NULL;
          for(int s=0;s<split;s++){
-            char segmentExt[255];if(split){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
+            char segmentExt[255];if(split>1){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
 
             TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + segmentExt).c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
@@ -319,9 +322,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
          if(!Process[i]["isdata"].toBool())Weight*= iLumi;
          if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
-         printf("Weight = %f -->", Weight);
          Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
-         printf(" %f\n", Weight);
 
          if(HistoName.find("optim_cut")!=string::npos){Weight=1.0;}
 
@@ -329,7 +330,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
          if(Samples[j].isTag("split"))split = Samples[j]["split"].toInt();
          TH1* tmphist = NULL;
          for(int s=0;s<split;s++){
-            char segmentExt[255];if(split){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
+            char segmentExt[255];if(split>1){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
 
             TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + segmentExt).c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
@@ -417,6 +418,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    data->GetYaxis()->SetTitleOffset(0.2);
    data->GetXaxis()->SetTitle("");
    data->SetMinimum(0);
+   data->SetMaximum(data->GetBinContent(data->GetMaximumBin())*1.10);
    data->Draw("E1");
    }
 
@@ -488,7 +490,7 @@ void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
          if(Samples[j].isTag("split"))split = Samples[j]["split"].toInt();
          TH1* tmphist = NULL;
          for(int s=0;s<split;s++){
-            char segmentExt[255];if(split){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
+            char segmentExt[255];if(split>1){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
 
             TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + segmentExt).c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
@@ -626,9 +628,13 @@ int main(int argc, char* argv[]){
    system( (string("mkdir -p ") + outDir).c_str());
 
    JSONWrapper::Object Root(jsonFile, true);
+   std::cout << "TESTA\n";
    GetInitialNumberOfEvents(Root,inDir,"cutflow");  //Used to get the rescale factor based on the total number of events geenrated
+   std::cout << "TESTB\n";
    std::vector<NameAndType> histlist;
    GetListOfObject(Root,inDir,histlist);
+   std::cout << "TESTC\n";
+
 
    TFile* OutputFile = NULL;
    if(StoreInFile) OutputFile = new TFile(outFile.c_str(),"RECREATE");
