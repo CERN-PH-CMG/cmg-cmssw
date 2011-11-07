@@ -4,8 +4,8 @@
 /** \class METUtils
  *  No description available.
  *
- *  $Date: 2011/11/04 16:54:46 $
- *  $Revision: 1.1 $
+ *  $Date: 2011/11/07 08:49:24 $
+ *  $Revision: 1.2 $
  *  \author G. Cerminara & D. Trocino & P. Silva
  */
 
@@ -120,7 +120,7 @@ namespace METUtils{
 */
   double getRedMETCut(int eventCategory, int workingpoint=MEDIUMWP);
   LorentzVector projectedMET(const LorentzVector& lepton1, const LorentzVector& lepton2, const LorentzVector& met, stRedMET* out=NULL);
-
+  double transverseMass(LorentzVector &visible, LorentzVector &invisible, bool assumeSameMass=false);
 }
 #endif
 

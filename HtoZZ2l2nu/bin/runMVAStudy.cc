@@ -18,8 +18,8 @@
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
 #include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
 #include "CMGTools/HtoZZ2l2nu/interface/METUtils.h"
-#include "CMGTools/HtoZZ2l2nu/interface/TransverseMassComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/TMVAUtils.h"
+#include "DataFormats/Math/interface/deltaR.h"
 
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
@@ -31,7 +31,6 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   //init computers
-  TransverseMassComputer mtComp;
   EventCategory eventClassifComp;
 
   //load fwlite
@@ -141,15 +140,15 @@ int main(int argc, char *argv[])
 	  Float_t ptl1       = phys.leptons[0].pt();
 	  Float_t ptl2       = phys.leptons[1].pt();
 	  Float_t ptsum      = ptl1+ptl2;
-	  Float_t mtl1       = mtComp.compute(phys.leptons[0],zvv,false);
-	  Float_t mtl2       = mtComp.compute(phys.leptons[1],zvv,false);
+	  Float_t mtl1       = METUtils::transverseMass(phys.leptons[0],zvv,false);
+	  Float_t mtl2       = METUtils::transverseMass(phys.leptons[1],zvv,false);
 	  Float_t mtsum      = mtl1+mtl2;
 	  Float_t zmass      = zll.mass();
 	  Float_t zpt        = zll.pt();
 	  Float_t zeta       = zll.eta();
 	  Float_t met        = zvv.pt();
 	  Float_t dphizz     = deltaPhi(zll.phi(),zvv.phi());
-	  Float_t mt         = mtComp.compute(zll,zvv,true);
+	  Float_t mt         = METUtils::transverseMass(zll,zvv,true);
 	  Float_t metoverzpt = met/zpt;
           Float_t dphizleadl = ptl1>ptl2 ? deltaPhi(phys.leptons[0].phi(),zll.phi()) : deltaPhi(phys.leptons[1].phi(),zll.phi()) ;
   

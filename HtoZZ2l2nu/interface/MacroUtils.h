@@ -1,6 +1,7 @@
 #ifndef MacroUtils_h
 #define MacroUtils_h
 
+#include "DataFormats/Math/interface/deltaR.h"
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 

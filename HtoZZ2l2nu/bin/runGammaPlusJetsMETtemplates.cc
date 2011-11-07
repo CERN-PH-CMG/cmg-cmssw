@@ -5,7 +5,6 @@
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
 #include "CMGTools/HtoZZ2l2nu/interface/GammaEventHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/METUtils.h"
-#include "CMGTools/HtoZZ2l2nu/interface/TransverseMassComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
 #include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
@@ -51,7 +50,6 @@ int main(int argc, char* argv[])
       return 0;
     }
 
-  TransverseMassComputer mtComp;
   TRandom2 rndGen;
 
   EventCategory eventClassifComp;
@@ -300,7 +298,7 @@ int main(int argc, char* argv[])
 	  mindphijmet = min(mindphijmet,dphijmet);
 	}
 
-      Float_t mt = mtComp.compute(gamma,metP4,true);
+      Float_t mt = METUtils::transverseMass(gamma,metP4,true);
 
       bool pass250( fabs(mindphijmet)>0.47 && metP4.pt()>59  && mt>222 && mt<272);
       bool pass300( fabs(mindphijmet)>0.33 && metP4.pt()>76  && mt>264 && mt<331);
