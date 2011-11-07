@@ -393,4 +393,19 @@ def matchingFiles( path, regexp):
     # print files
     return [f for f in files if pattern.match(os.path.basename(f))  is not None]
     
+def cmsStage( absDestDir, files, force):
+    """Runs cmsStage with LFNs if possible"""
 
+    destIsEOSDir = isEOSDir(absDestDir)
+    if destIsEOSDir: 
+        createEOSDir( absDestDir )
+
+    for fname in files:
+        command = ['cmsStage']
+        if force:
+            command.append('-f')
+        command.append(eosToLFN(fname))
+        command.append(eosToLFN(absDestDir))
+        print ' '.join(command)
+        runner = cmsIO.cmsFileManip()
+        runner.runCommand(command)
