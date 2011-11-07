@@ -13,6 +13,12 @@
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 typedef std::vector<LorentzVector> LorentzVectorCollection;
 
+
+
+LorentzVector min(const LorentzVector& a, const LorentzVector& b);
+double weightVBF(std::string SampleName, double m_gen, double mass);
+
+
 namespace jet
 {
     enum UncertaintyVariations { JES_UP, JES_DOWN, JER };
@@ -23,6 +29,8 @@ namespace jet
 
 
 
+
+// CODE FOR DUPLICATE EVENTS CHECKING
 namespace __gnu_cxx{
         template<> struct hash< std::string >{
                 size_t operator()( const std::string& x ) const{ return hash< const char* >()( x.c_str() );  }
