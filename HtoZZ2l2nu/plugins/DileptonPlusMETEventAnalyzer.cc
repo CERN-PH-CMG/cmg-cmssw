@@ -563,13 +563,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	LorentzVector dilP4=dilepton[0]->p4()+dilepton[1]->p4();
 	if( fabs(dilP4.mass()-91)<15 ) ev.pass +=5000;
       }
-<<<<<<< DileptonPlusMETEventAnalyzer.cc
 
-=======
-       
-    cout << "Saving now!" << endl;
-
->>>>>>> 1.74
     // finish event summary
     summaryHandler_.fillTree();
     
