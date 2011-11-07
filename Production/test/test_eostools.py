@@ -1,7 +1,8 @@
-import castortools
 import unittest
 import os
-from eostools import *
+
+import CMGTools.Production.castortools as castortools
+from CMGTools.Production.eostools import *
 
 class TestEosTools(unittest.TestCase):
     
