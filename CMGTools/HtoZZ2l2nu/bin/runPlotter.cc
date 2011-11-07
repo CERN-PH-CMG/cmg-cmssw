@@ -367,7 +367,8 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
       hist->SetTitle("");
       hist->SetStats(kFALSE);
       hist->SetMinimum(1E-3);
-      hist->SetMaximum(1E6);
+      //hist->SetMaximum(1E6);
+      hist->SetMaximum(hist->GetBinContent(hist->GetMaximumBin())*1.10);
       ObjectToDelete.push_back(hist);
 
       if((!Process[i].isTag("spimpose") || !Process[i]["spimpose"].toBool()) && !Process[i]["isdata"].toBool()){
@@ -402,16 +403,18 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    T->SetFillColor(0);
    T->SetFillStyle(0);  T->SetLineColor(0);
    T->SetTextAlign(32);
-  char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #int L=%.1f pb^{-1}", iLumi/1000);
+   char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #int L=%.1f fb^{-1}", iLumi/1000);
    T->AddText(Buffer);
    T->Draw("same");
 
    legA->SetFillColor(0); legA->SetFillStyle(0); legA->SetLineColor(0);
    legA->SetHeader("");
    legA->Draw("same");
+   legA->SetTextFont(42);
    legB->SetFillColor(0); legB->SetFillStyle(0); legB->SetLineColor(0);
    legB->SetHeader("");
    legB->Draw("same");
+   legB->SetTextFont(42);
 
    if(data && mc){
    c1->cd();
@@ -426,10 +429,10 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    data->Divide(mc);
    data->GetYaxis()->SetTitle("Obs/Ref");
    data->GetXaxis()->SetTitle("");
-   data->SetMinimum(0);
-   data->SetMaximum(data->GetBinContent(data->GetMaximumBin())*1.10);
    //data->SetMinimum(0);
-   //data->SetMaximum(2.2);
+   //data->SetMaximum(data->GetBinContent(data->GetMaximumBin())*1.10);
+   data->SetMinimum(0);
+   data->SetMaximum(2.2);
    data->GetXaxis()->SetTitleOffset(1.3);
    data->GetXaxis()->SetLabelSize(0.033*yscale);
    data->GetXaxis()->SetTitleSize(0.036*yscale);
@@ -649,12 +652,10 @@ int main(int argc, char* argv[]){
    system( (string("mkdir -p ") + outDir).c_str());
 
    JSONWrapper::Object Root(jsonFile, true);
-   std::cout << "TESTA\n";
    GetInitialNumberOfEvents(Root,inDir,"cutflow");  //Used to get the rescale factor based on the total number of events geenrated
-   std::cout << "TESTB\n";
+
    std::vector<NameAndType> histlist;
    GetListOfObject(Root,inDir,histlist);
-   std::cout << "TESTC\n";
 
 
    TFile* OutputFile = NULL;
