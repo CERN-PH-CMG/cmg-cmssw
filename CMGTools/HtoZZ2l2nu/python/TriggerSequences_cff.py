@@ -76,7 +76,7 @@ def getTriggerPaths() :
             'HLT_Mu17_Ele8_CaloIdL_v5',
             'HLT_Mu17_Ele8_CaloIdL_v6',
             'HLT_Mu17_Ele8_CaloIdL_v7',
-            'HLT_Mu17_Ele8_CaloIdL_v8'
+            'HLT_Mu17_Ele8_CaloIdL_v8',
             'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v1', #start run 167039
             'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v2',
             'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v3', 
