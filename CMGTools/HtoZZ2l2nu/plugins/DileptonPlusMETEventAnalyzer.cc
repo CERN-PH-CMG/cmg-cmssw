@@ -317,6 +317,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     std::vector<CandidatePtr> selLooseElectrons = getGoodElectrons(hEle, hMu, *beamSpot, *rho, objConfig_["LooseElectrons"]);
     std::vector<CandidatePtr> selElectrons      = getGoodElectrons(hEle, hMu, *beamSpot, *rho, objConfig_["Electrons"]);
 
+    cout << selMuons.size() << " " << selElectrons.size() << endl; 
+
     //inclusive collection of leptons to store
     std::vector<CandidatePtr> selLooseLeptons = selLooseMuons;
     selLooseLeptons.insert(selLooseLeptons.end(),selLooseElectrons.begin(),selLooseElectrons.end());
@@ -326,6 +328,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //dilepton candidate
     std::vector<CandidatePtr> dilepton = getDileptonCandidate(selLeptons, objConfig_["Dileptons"], iSetup);
     ev.cat = getDileptonId(dilepton);
+    cout << " ---->" << selLeptons.size() << " yields "<< dilepton.size() << " = " << ev.cat << endl; 
     if(dilepton.size()==2)
       {
 	const reco::GenParticle *genLepton = getLeptonGenMatch(dilepton[0]);
@@ -561,6 +564,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	if( fabs(dilP4.mass()-91)<15 ) ev.pass +=5000;
       }
        
+    cout << "Saving now!" << endl;
+
     // finish event summary
     summaryHandler_.fillTree();
     
@@ -584,6 +589,7 @@ void DileptonPlusMETEventAnalyzer::endLuminosityBlock(const edm::LuminosityBlock
 	if(!ctrHandle.isValid()) continue;
 	controlHistos_.fillHisto("cutflow","all",istep,ctrHandle->value);
       }catch(std::exception){
+	controlHistos_.fillHisto("cutflow","all",istep);
       }
     }
 }

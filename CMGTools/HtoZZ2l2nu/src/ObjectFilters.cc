@@ -167,6 +167,7 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 	double eSuperClusterEt  = sc->energy()/cosh(sc->eta());
 	double eEta = ele->eta();
 	double scEta= ele->superCluster()->eta();
+
 	if(ePt<minPt || fabs(eEta)>maxEta || eSuperClusterEt<minSuperClusterEt) continue; 
 	if(vetoTransitionElectrons && fabs(scEta)>1.4442 && fabs(scEta)<1.566) continue;
 	
@@ -654,7 +655,6 @@ vector<const reco::Candidate *> getGeneratorEvent(edm::Handle<edm::View<reco::Ca
 	  if(genPtr->status()!=3) continue;
 	  int pdgid=genPtr->pdgId();
 	  if(fabs(pdgid)!= filterId) continue;
-	  
 	  particles.push_back( genPtr );
 
 	  //check mothers
@@ -666,7 +666,6 @@ vector<const reco::Candidate *> getGeneratorEvent(edm::Handle<edm::View<reco::Ca
 	    }
 	  
 	  //check daughters
-	  genPtr = getGeneratorFinalStateFor(genPtr);
 	  for(size_t idau=0; idau<genPtr->numberOfDaughters(); idau++)
 	    {
 	      const reco::Candidate *daughter = genPtr->daughter(idau);
@@ -674,7 +673,6 @@ vector<const reco::Candidate *> getGeneratorEvent(edm::Handle<edm::View<reco::Ca
 	      particles.push_back(daughter);
 	      
 	      //check the final states
-	      daughter = getGeneratorFinalStateFor(daughter);
 	      for(size_t igrandau =0; igrandau<daughter->numberOfDaughters(); igrandau++)
 		{
 		  const reco::Candidate *granddaughter = daughter->daughter(igrandau);
@@ -682,6 +680,7 @@ vector<const reco::Candidate *> getGeneratorEvent(edm::Handle<edm::View<reco::Ca
 		  particles.push_back(granddaughter);
 		}
 	    }
+
 	}
     }catch(exception &e){
     cout << "[generator] failed with : " << e.what() << endl;
