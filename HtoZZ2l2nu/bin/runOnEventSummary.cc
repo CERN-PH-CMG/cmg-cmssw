@@ -1,5 +1,6 @@
 #include <iostream>
 #include <boost/shared_ptr.hpp>
+#include "Math/GenVector/Boost.h"
 
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
@@ -31,16 +32,9 @@
 #include "TH2F.h"
 #include "TProfile.h"
 #include "TEventList.h"
-
-#include "Math/GenVector/Boost.h"
-
-
-
-
  
 using namespace std;
 
-//
 TH1F *getHistogramForVariable(TString variable)
 {
   TH1F *h=0;
@@ -73,20 +67,6 @@ TH1F *getHistogramForVariable(TString variable)
   return h;
 }
 
-
-double VBFreweighting (double decay_width, double m_gen, double mass){
-
-	double weight_BW;
-	double s = pow(mass,2);
-	weight_BW = s/pow(m_gen,2) * (pow(s-pow(m_gen,2),2)+ pow(m_gen*decay_width,2)) / (pow(s-pow(m_gen,2),2)+ pow(m_gen*decay_width*s/(pow(m_gen,2)),2));
-
-	return(weight_BW);
-}
-
-LorentzVector min(const LorentzVector& a, const LorentzVector& b){
-   if(a.pt()<=b.pt())return a;
-   return b;
-}
 
 //
 int main(int argc, char* argv[])
@@ -139,22 +119,6 @@ int main(int argc, char* argv[])
     std::cout << "Usage : " << argv[0] << " parameters_cfg.py" << std::endl;
     return 0;
   }
-
-
-  std::map<double,double> SampleHiggsWidth;    std::map<string,double> SampleHiggsWeightInt;
-  SampleHiggsWidth[130]=   0.00487;            SampleHiggsWeightInt["VBFtoH130toZZto2L2Nu.root"]=1.000001;   SampleHiggsWeightInt["VBFtoH130toWWto2L2Nu.root"]=0.999999;
-  SampleHiggsWidth[140]=   0.00812;            SampleHiggsWeightInt["VBFtoH140toZZto2L2Nu.root"]=1.000000;   SampleHiggsWeightInt["VBFtoH140toWWto2L2Nu.root"]=1.000000;
-  SampleHiggsWidth[150]=   0.0173;             SampleHiggsWeightInt["VBFtoH150toZZto2L2Nu.root"]=0.999996;   SampleHiggsWeightInt["VBFtoH150toWWto2L2Nu.root"]=1.000004;
-  SampleHiggsWidth[160]=   0.0829;             SampleHiggsWeightInt["VBFtoH160toZZto2L2Nu.root"]=1.000000;   SampleHiggsWeightInt["VBFtoH160toWWto2L2Nu.root"]=1.000000;
-  SampleHiggsWidth[170]=   0.38;               SampleHiggsWeightInt["VBFtoH170toZZto2L2Nu.root"]=1.000359;   SampleHiggsWeightInt["VBFtoH170toWWto2L2Nu.root"]=1.000212;
-  SampleHiggsWidth[180]=   0.63;               SampleHiggsWeightInt["VBFtoH180toZZto2L2Nu.root"]=1.000000;   SampleHiggsWeightInt["VBFtoH180toWWto2L2Nu.root"]=1.000000;
-  SampleHiggsWidth[190]=   1.04;               SampleHiggsWeightInt["VBFtoH190toZZto2L2Nu.root"]=1.000000;   SampleHiggsWeightInt["VBFtoH190toWWto2L2Nu.root"]=1.000000;
-  SampleHiggsWidth[200]=   1.43;               SampleHiggsWeightInt["VBFtoH200toZZto2L2Nu.root"]=0.999749;   SampleHiggsWeightInt["VBFtoH200toWWto2L2Nu.root"]=0.999183;
-  SampleHiggsWidth[300]=   8.43;               SampleHiggsWeightInt["VBFtoH300toZZto2L2Nu.root"]=0.987308;   SampleHiggsWeightInt["VBFtoH300toWWto2L2Nu.root"]=0.989306;
-  SampleHiggsWidth[400]=  29.2;                SampleHiggsWeightInt["VBFtoH400toZZto2L2Nu.root"]=0.951238;   SampleHiggsWeightInt["VBFtoH400toWWto2L2Nu.root"]=0.950328;
-  SampleHiggsWidth[500]=  68;                  SampleHiggsWeightInt["VBFtoH500toZZto2L2Nu.root"]=0.881467;   SampleHiggsWeightInt["VBFtoH500toWWto2L2Nu.root"]=0.883517;
-  SampleHiggsWidth[600]= 123;                  SampleHiggsWeightInt["VBFtoH600toZZto2L2Nu.root"]=0.792347;   SampleHiggsWeightInt["VBFtoH600toWWto2L2Nu.root"]=0.807353;
-
 
   // configure the process
   const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
@@ -700,8 +664,7 @@ int main(int argc, char* argv[])
         string StringMass = FileName.substr(VBFStringpos+6,3);
         double SampleHiggsMass;
         sscanf(StringMass.c_str(),"%lf",&SampleHiggsMass);
-        if(iev==evStart)printf("###\nSAMPLE MASS IS %f --> Weight=%f\n###\n",SampleHiggsMass,SampleHiggsWeightInt[FileName.substr(VBFStringpos)]);
-        VBFWeight = VBFreweighting(SampleHiggsWidth[SampleHiggsMass], SampleHiggsMass, phys.genhiggs[0].mass() )  / SampleHiggsWeightInt[FileName.substr(VBFStringpos)];
+        VBFWeight = weightVBF(FileName.substr(VBFStringpos),SampleHiggsMass, phys.genhiggs[0].mass() );
         weight*= VBFWeight;
         VBFWEIGHTINTEGRAL += VBFWeight;
       }
@@ -1118,7 +1081,7 @@ int main(int argc, char* argv[])
               }
  	      
 	      //event pre-selection
-	      if(!passZmass && !passSideBand && !passLooseKinematics)                                      continue;
+	      if(!passZmass && !passSideBand && !passLooseKinematics)                            continue;
 	      
 	      //VBF control
 	      if(true                                                                                       )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    0                ,iweight);
