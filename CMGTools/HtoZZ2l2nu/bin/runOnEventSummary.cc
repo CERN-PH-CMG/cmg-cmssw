@@ -12,7 +12,6 @@
 #include "CMGTools/HtoZZ2l2nu/interface/TMVAUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/MacroUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
-#include "CMGTools/HtoZZ2l2nu/interface/DuplicatesChecker.h"
 
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 
@@ -634,9 +633,6 @@ int main(int argc, char* argv[])
   const Int_t normEntries = (elist==0 ? 0 : elist->GetN()); 
   if(normEntries==0) cout << "[Warning] Normalized PU entries is 0, check if the PU normalization producer was properly run" << endl;
   
-  //Event Duplicates checker init
-  DuplicatesChecker duplicatesChecker;
-
   double VBFWEIGHTINTEGRAL = 0;
     
   // init summary tree (unweighted events for MVA training) 
@@ -664,21 +660,13 @@ int main(int argc, char* argv[])
 
   //run the analysis
   //
-  unsigned int NumberOfDuplicated = 0;
   for( int iev=evStart; iev<evEnd; iev++)
     {
       if(iev%1000==0) printf("\r [ %d/100 ] ",int(100*float(iev-evStart)/float(evEnd)));
       evSummaryHandler.getEntry(iev);
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
 
-      //uncomment if you are suspicious
-      //       if(duplicatesChecker.isDuplicate(ev.run,ev.lumi, ev.event)){
-      //            //printf("event %i-%i-%i is duplicated\n", ev.run, ev.lumi, ev.event);
-      //            NumberOfDuplicated++;
-      //            continue;
-      //       }
-
-      PhysicsEvent_t phys=getPhysicsEventFrom(ev);
+        PhysicsEvent_t phys=getPhysicsEventFrom(ev);
       
       //OOT pu condition
       TString ootCond("");
@@ -1572,9 +1560,6 @@ int main(int argc, char* argv[])
       spyFile->Close();
       if(!isMC) outf->close();
     }
-
-  printf("TotalNumber of duplicated is %i/%i = %f%%\n",NumberOfDuplicated,evEnd,(100.0*NumberOfDuplicated)/evEnd);
-  printf("VBF WEIGHT INTEGRAL = %f\n",VBFWEIGHTINTEGRAL/evEnd);
 }  
 
 
