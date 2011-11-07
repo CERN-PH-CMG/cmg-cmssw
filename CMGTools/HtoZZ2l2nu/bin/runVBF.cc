@@ -4,7 +4,6 @@
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
 #include "CMGTools/HtoZZ2l2nu/interface/METUtils.h"
-#include "CMGTools/HtoZZ2l2nu/interface/TransverseMassComputer.h"
 #include "CMGTools/HtoZZ2l2nu/interface/GammaEventHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
 #include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
@@ -133,7 +132,6 @@ int main(int argc, char* argv[])
 
 
   //start computers
-  TransverseMassComputer mtComp;
   EventCategory eventClassifComp;
 
   // load framework libraries
@@ -824,15 +822,15 @@ int main(int argc, char* argv[])
       Float_t ptl1       = isGammaEvent ? 0 : phys.leptons[0].pt();
       Float_t ptl2       = isGammaEvent ? 0 : phys.leptons[1].pt();
       Float_t ptsum      = ptl1+ptl2;
-      Float_t mtl1       = isGammaEvent ? 0 : mtComp.compute(phys.leptons[0],zvv,false);
-      Float_t mtl2       = isGammaEvent ? 0 : mtComp.compute(phys.leptons[1],zvv,false);
+      Float_t mtl1       = isGammaEvent ? 0 : METUtils::transverseMass(phys.leptons[0],zvv,false);
+      Float_t mtl2       = isGammaEvent ? 0 : METUtils::transverseMass(phys.leptons[1],zvv,false);
       Float_t mtsum      = mtl1+mtl2;
       Float_t zmass      = zll.mass();
       Float_t zpt        = zll.pt();
       Float_t zeta       = zll.eta();
       Float_t met        = zvv.pt();
       Float_t dphizz     = deltaPhi(zll.phi(),zvv.phi());
-      Float_t mt         = mtComp.compute(zll,zvv,true);
+      Float_t mt         = METUtils::transverseMass(zll,zvv,true);
       Float_t dphizleadl = isGammaEvent ? 0 : ( ptl1>ptl2 ? deltaPhi(phys.leptons[0].phi(),zll.phi()) : deltaPhi(phys.leptons[1].phi(),zll.phi()) );
 
 
@@ -903,7 +901,7 @@ int main(int argc, char* argv[])
           }
 
 	  
-	  double mtjmet=mtComp.compute(phys.jets[ijet],zvv,false);
+	  double mtjmet=METUtils::transverseMass(phys.jets[ijet],zvv,false);
 	  if(mtjmet<minmtjmet) minmtjmet=mtjmet;
 
 	  double drjz=deltaR(zll,phys.jets[ijet]);
@@ -1079,7 +1077,7 @@ int main(int argc, char* argv[])
 	      redMetVar.push_back(temp_redMetP4.pt());
 	      redMetLVar.push_back(temp_redMetL);
 
-	      Float_t imtsum     = mtComp.compute(phys.leptons[0],metVars[ivar],false) + mtComp.compute(phys.leptons[1],metVars[ivar],false);
+	      Float_t imtsum     = METUtils::transverseMass(phys.leptons[0],metVars[ivar],false) + METUtils::transverseMass(phys.leptons[1],metVars[ivar],false);
 	      mtsumsVar.push_back(imtsum);
 
 	      int ivarEvCat= eventCategoryVars[ivar];
@@ -1233,7 +1231,7 @@ int main(int argc, char* argv[])
 		  controlHistos.fillHisto("CMzllP"      ,ctf,    cmzll.pt()   ,iweight);
 		  controlHistos.fillHisto("CMzvvP"      ,ctf,    cmzvv.pt()   ,iweight);
 		  controlHistos.fillHisto("CMDeltazP"   ,ctf,    cmzll.pt()-cmzvv.pt()   ,iweight);
-		  controlHistos.fillHisto("CMiMass"     ,ctf,    mtComp.compute(cmzll,cmzvv,true)   ,iweight);
+		  controlHistos.fillHisto("CMiMass"     ,ctf,    METUtils::transverseMass(cmzll,cmzvv,true)   ,iweight);
 		}
 
 	      for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++) 	  

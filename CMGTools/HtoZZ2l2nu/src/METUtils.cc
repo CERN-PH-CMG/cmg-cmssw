@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2011/11/04 16:54:56 $
- *  $Revision: 1.1 $
+ *  $Date: 2011/11/07 08:48:53 $
+ *  $Revision: 1.2 $
  *  \author G. Cerminara & D. Trocino
  */
 
@@ -277,6 +277,20 @@ LorentzVector redMET(RedMetType Type, const LorentzVector& theLepton1, double si
   }
 
 
+
+
+  double transverseMass(LorentzVector &visible, LorentzVector &invisible, bool assumeSameMass){
+      if(assumeSameMass){
+          LorentzVector sum=visible+invisible;
+          double tMass = TMath::Power(TMath::Sqrt(TMath::Power(visible.pt(),2)+pow(visible.mass(),2))+TMath::Sqrt(TMath::Power(invisible.pt(),2)+pow(visible.mass(),2)),2);
+          tMass-=TMath::Power(sum.pt(),2);
+          return TMath::Sqrt(tMass);
+      }else{
+          double dphi=fabs(deltaPhi(invisible.phi(),visible.phi()));
+          return TMath::Sqrt(2*invisible.pt()*visible.pt()*(1-TMath::Cos(dphi)));
+      }
+      return -1;
+  }
 
 
 
