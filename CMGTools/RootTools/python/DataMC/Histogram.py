@@ -7,7 +7,7 @@ class Histogram( object ):
     This class does not inherit from a ROOT class as we could want to use it
     with a TH1D, TH1F, and even a 2D at some point.
 
-    Histograms contain the original ROOT histogram, obj, and a weighted version,
+    Histogram contains the original ROOT histogram, obj, and a weighted version,
     weigthed, originally set equal to obj (weight == 1).
     - layer : can be used to order histograms
     - stack : to decide whether the histogram
@@ -16,24 +16,37 @@ class Histogram( object ):
     the same GetName(), coming from different TDirectories.
     '''
 
-    def __init__(self, name, obj, layer=0, stack=True):
+    def __init__(self, name, obj, layer=0, legendLine=None, stack=True):
         # name is a user defined name
-        self.name = name 
+        self.name = name
+        if legendLine is None:
+            self.legendLine = name
+        else:
+            self.legendLine = legendLine
         self.obj = obj
         # self.weighted = copy.deepcopy(self.obj)
         self.layer = layer
         self.stack = stack
+        self.on = True
         # after construction, weighted histogram = base histogram
         self.SetWeight(1)
         
     def __str__(self):
         return self.name + ' / ' + self.obj.GetName() + ', L=' + str(self.layer)
 
+    def Rebin(self, factor):
+        self.obj.Rebin( factor )
+        self.weighted.Rebin(factor)
+    
     def SetWeight(self, weight):
         '''Set the weight and create the weighted histogram.'''
         self.weighted = copy.deepcopy(self.obj)
         self.weight = weight
         self.weighted.Scale(weight)
+
+    def Scale(self, scale):
+        '''Scale the histogram (multiply the weight by scale)'''
+        self.SetWeight( self.weight * scale )
 
     def SetStyle(self, style):
         '''Set the style for the original and weighted histograms.'''
@@ -53,12 +66,34 @@ class Histogram( object ):
         else:
             self.obj.Draw(opt)
 
-    def Integral(self, weighted=True):
-        '''Returns the integral of the weighted (or original) histogram.'''
-        if weighted is True:
-            return self.weighted.Integral()
+    def Add(self, other, coeff):
+        self.obj.Add( other.obj, coeff )
+        self.weighted.Add( other.weighted, coeff )
+        return self
+
+    def Integral(self, weighted=True, xmin=None, xmax=None ):
+        if type( weighted ) is not bool:
+            raise ValueError('weighted should be a boolean')
+        if xmin is not None:
+            bmin = self.obj.FindFixBin( xmin )
         else:
-            return self.obj.Integral()
+            bmin = None
+        if xmax is not None:
+            bmax = self.obj.FindFixBin( xmax ) - 1 
+        else:
+            bmax = None
+        hist = self.weighted
+        if weighted is False:
+            hist = self.obj
+        if bmin is None and bmax is None:
+            return hist.Integral()
+        elif bmin is not None and bmax is not None:
+            if (xmax - xmin) % self.obj.GetBinWidth(1) != 0:
+                raise ValueError('boundaries should define an integer number of bins. nbins=%d, xmin=%3.3f, xmax=%3.3f' % (self.obj.GetNbinsX(), self.obj.GetXaxis().GetXmin(), self.obj.GetXaxis().GetXmax()) )
+            return hist.Integral(bmin, bmax)
+        else:
+            raise ValueError('if specifying one boundary, you must specify the other')
+
 
     def DrawNormalized(self):
         '''Draw a normalized version of this histogram.
