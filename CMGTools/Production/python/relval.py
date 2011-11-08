@@ -11,10 +11,9 @@ from CMGTools.Production.castorBaseDir import myCastorBaseDir
     
 def processRelVal( relval, cfgFileName, process, negate, tier=None, batch = None):
     
-    if batch is None:
-        batch = 'bsub -q %s -J %s < ./batchScript.sh | tee job_id.txt' % relval
-    
     relvalID = relval.id()
+    if batch is None:
+        batch = 'bsub -q 1nh -J %s < ./batchScript.sh | tee job_id.txt' % relvalID  
 
     files = pickRelValInputFiles(
         cmsswVersion  =  relval.cmssw
@@ -22,7 +21,8 @@ def processRelVal( relval, cfgFileName, process, negate, tier=None, batch = None
         , globalTag = relval.tag
         , numberOfFiles = 999
         )
-
+    if not files:
+        raise Exception("No relval files found for '%s'" % relvalID )
 
     # changing the source to the chosen relval files
     process.source.fileNames = files
