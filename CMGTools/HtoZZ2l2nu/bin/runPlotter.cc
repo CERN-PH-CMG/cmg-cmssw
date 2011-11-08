@@ -666,17 +666,23 @@ int main(int argc, char* argv[]){
    for(unsigned int i=0;i<histlist.size();i++){
       if(i%TreeStep==0){printf(".");fflush(stdout);}
       if(objectSearchKey != "" && histlist[i].Name.find(objectSearchKey)==std::string::npos)continue;
-
-        if(doTex && histlist[i].Name.find("eventflow")!=std::string::npos && histlist[i].Name.find("optim_eventflow")==std::string::npos){    ConvertToTex(Root,inDir,histlist[i].Name);     }
-        if(doPlot && do2D  && !histlist[i].isTH1){                                       Draw2DHistogram(Root,inDir,histlist[i].Name);  }
-        if(doPlot && do1D  &   histlist[i].isTH1){                                       Draw1DHistogram(Root,inDir,histlist[i].Name);  }
-
-        if(StoreInFile && do2D  && !histlist[i].isTH1){                                  SavingToFile(Root,inDir,histlist[i].Name, OutputFile); }
-        if(StoreInFile && do1D  &&  histlist[i].isTH1){                                  SavingToFile(Root,inDir,histlist[i].Name, OutputFile); }
+      
+      system(("echo \"" + histlist[i].Name + "\" >> /tmp/histlist.csv").c_str());
+      if(doTex && histlist[i].Name.find("eventflow")!=std::string::npos && histlist[i].Name.find("optim_eventflow")==std::string::npos){    ConvertToTex(Root,inDir,histlist[i].Name);     }
+      if(doPlot && do2D  && !histlist[i].isTH1){                                       Draw2DHistogram(Root,inDir,histlist[i].Name);  }
+      if(doPlot && do1D  &   histlist[i].isTH1){                                       Draw1DHistogram(Root,inDir,histlist[i].Name);  }
+      
+      if(StoreInFile && do2D  && !histlist[i].isTH1){                                  SavingToFile(Root,inDir,histlist[i].Name, OutputFile); }
+      if(StoreInFile && do1D  &&  histlist[i].isTH1){                                  SavingToFile(Root,inDir,histlist[i].Name, OutputFile); }
    }printf("\n");
    if(StoreInFile) OutputFile->Close();
+   
 
+   system(("python ${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/html/generateJSONplotterFromList.py -i /tmp/histlist.csv -o "+outDir+"/plotter.json").c_str());
+   system("rm /tmp/histlist.csv");
+   system(("cp ${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/html/index.html " + outDir).c_str());
+   printf("You can browse the results using %s/index.html\n",outDir.c_str());
+   
    Root.Print();
-
 }
 

@@ -110,6 +110,7 @@ int main(int argc, char* argv[])
 	  controlHistos.addHistogram( new TH1D (subcat+"mt", ";M_{T} [GeV];Events", 100,0,1000) );
 	  controlHistos.addHistogram( new TH1D (subcat+"dphill", ";#Delta#phi(l^{1},l^{2})[rad];Events", 100,0,3.2) );
 	  controlHistos.addHistogram( new TH1F (subcat+"njets", ";Jets;Events", 6,0,6) );
+	  controlHistos.addHistogram( new TH1F (subcat+"nbtags", ";b-tag multiplcity;Events", 6,0,6) );
 	  controlHistos.addHistogram( new TH2D (subcat+"qtvseta", ";p_{T}^{#gamma} [GeV/c];#eta;Events / (2.5 GeV/c)", 200,0,600,50,0,2.6) );
 	  controlHistos.addHistogram( new TH2D (subcat+"qtvsht", ";p_{T}^{#gamma} [GeV/c];H_{T} [GeV/c];Events / (2.5 GeV/c)", 200,0,600,200,0,1000) );
 	  controlHistos.addHistogram( new TH2D (subcat+"metvsr9", ";E_{T}^{miss};R_{9}", 100,0,250,100,0,1.0) );
@@ -198,7 +199,7 @@ int main(int argc, char* argv[])
 	}
       
       //minimum threshold
-      if(gamma.pt()<20 || gamma.pt()>500) continue;
+      if(gamma.pt()<25) continue;
       
       TString phoCat("photon");
       phoCat += triggerThr;
@@ -210,8 +211,9 @@ int main(int argc, char* argv[])
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
 	{
 
-	  bool passJBPL(phys.jets[ijet].btag2>1.33);
-	  bool passSSVHEM(phys.jets[ijet].btag3>1.74);
+	  bool passTCHEL(phys.jets[ijet].btag1>1.7);
+	  //	  bool passSSVHEM(phys.jets[ijet].btag3>1.74);
+	  // bool passJBPL(phys.jets[ijet].btag2>1.33);
 	  double dr=deltaR(phys.jets[ijet],gamma);
 	  LorentzVector jv=phys.jets[ijet]+gamma;
 	  float mjv=jv.mass();
@@ -219,12 +221,13 @@ int main(int argc, char* argv[])
 	  //if(mjv<91) continue;
 
 	  njets   += (phys.jets[ijet].pt()>30 && fabs(phys.jets[ijet].eta())<2.5);
-	  if(phys.jets[ijet].pt()>30) nbjets += (passJBPL || passSSVHEM); 
+	  //if(phys.jets[ijet].pt()>30) nbjets += (passJBPL || passSSVHEM); 
+	  if(phys.jets[ijet].pt()>30 && fabs(phys.jets[ijet].eta())<2.5) nbjets += passTCHEL;
 	  jetsp4.push_back( phys.jets[ijet] );
 	  ht += phys.jets[ijet].pt();
 	  if(mjv<minmjv) minmjv=mjv;
 	}
-      if(ev.ln>0 || nbjets>0) continue;
+      if(ev.ln>0) continue;
 
       //met
       LorentzVector metP4=phys.met[0];
@@ -284,9 +287,7 @@ int main(int argc, char* argv[])
       metTypeValues["redAClusteredMet"]    = rACMetP4;
       metTypeValues["red3Met"]             = r3MetP4;
       metTypeValues["redminAssocMet"]      = rmAMetP4;
-      
-
-
+     
 
       double dphivmet(deltaPhi(metP4.phi(),gamma.phi()));
 
@@ -322,14 +323,15 @@ int main(int argc, char* argv[])
 	    {
 	      for(size_t idc=0; idc<dilCats.size(); idc++)
 		{
-		  float iweight=weight;
-		  if(isGammaEvent) 
-		    {
-		      iweight*=qtWeights[dilCats[idc]];
-		    }
-		  if(ic==0 && isc==0)  controlHistos.fillHisto(dilCats[idc]+"zmass",ctf,gamma.mass(),iweight);
-
 		  TString pre= subcats[isc]+dilCats[idc];
+		  float iweight=weight;
+		  if(isGammaEvent) iweight*=qtWeights[dilCats[idc]];
+
+		  controlHistos.fillHisto(pre+"nbtags",ctf, nbjets,iweight);
+		  if(nbjets) continue;
+		  
+		  if(ic==0 && isc==0)  controlHistos.fillHisto(dilCats[idc]+"zmass",ctf,gamma.mass(),iweight);
+		  
 		  controlHistos.fillHisto(pre+"nvtx",ctf, ev.nvtx,iweight);
 		  controlHistos.fillHisto(pre+"qt",ctf, gamma.pt(),iweight);
 		  controlHistos.fillHisto(pre+"eta",ctf, fabs(gamma.eta()),iweight);
