@@ -1,6 +1,8 @@
 import os
 import sys
 import pprint
+import logging
+import copy
 
 from DataFormats.FWLite import Events, Handle
 
@@ -10,49 +12,61 @@ from CMGTools.H2TauTau.macros.AutoHandle import AutoHandle
 from CMGTools.H2TauTau.macros.Counter import Counter
 
 
-
-#COLIN Need a Counter class and a HistCounters class to represent all counters. 
-#COLIN Need a class to represent the ditau, with a print function etc. can I directly inherit from the diTau that is read from the file? 
+#COLIN Need a HistCounters class to represent all counters. 
 #COLIN Need a base Loop class 
+
+class DiTau:
+    '''Extends the cmg::DiTau functionalities.'''
+    def __init__(self, ditau):
+        self.ditau = ditau
+
+    def __getattr__(self,name):
+        '''all accessors  from cmg::DiTau are transferred to this class.'''
+        return getattr(self.ditau, name)
+
+    def __str__(self):
+        return 'ditau: mvis=%3.2f, mT=%3.2f, pZeta=%3.2f' % (self.ditau.mass(),
+                                                             self.ditau.mTLeg2(),
+                                                             self.ditau.pZeta() ) 
+
 
 class Loop:
     '''Manages looping and navigation on a set of events.'''
-    def __init__(self, name, listOfFiles ):
+    def __init__(self, name, listOfFiles, triggers=None):
         '''Build a loop object.
 
         listOfFiles can be "*.root".
         name will be used to make the output directory'''
-        self.name = name
+
         self.events = Events( listOfFiles )
         self.InitHandles()
-#         self.nTot = 0
-#         self.nSel = 0
-
-        self.diTau = None
+        self.triggers = self.DecodeTriggerList(triggers)
         
         # if name exists as a directory, build another name.
+        self.name = name
         index = 0
         while True:
-            try: 
+            try:
+                print 'mkdir', self.name
                 os.mkdir( self.name )
                 break
             except OSError:
                 index += 1
                 self.name = '%s_%d' % (name, index)
 
-        # declaring histograms
+        self.logger = logging.getLogger(name)
+        self.logger.addHandler(logging.FileHandler('/'.join([self.name,
+                                                            'log.txt'])))
+        self.counters = []
         self.histograms = []
-        self.histsOS = H2TauTauHistograms( '/'.join([self.name, 'OS']) )
-        self.histograms.append( self.histsOS )
-        self.histsSS = H2TauTauHistograms( '/'.join([self.name, 'SS']) )
-        self.histograms.append( self.histsSS )
 
-        
-    def InitHandles(self):
-        '''Initialize all handles for the products we want to read'''
-        self.handles = {}
-        self.handles['cmgTauMuBaselineSel'] =  AutoHandle( 'cmgTauMuBaselineSel',
-                                                           'std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>') 
+
+    def DecodeTriggerList(self, triggers):
+        if triggers is None:
+            return None
+        triglist = triggers.split('%')
+        return triglist
+
 
     def LoadCollections(self, event ):
         '''Load all collections'''
@@ -60,66 +74,111 @@ class Loop:
             handle.Load( event )
             # could do something clever to get the products... a setattr maybe?
 
-    def ToEvent( self, iEvent ):
-        '''Navigate to a given event number, and load all collections'''
-        self.events.to(iEvent)
-        self.LoadCollections(self.events)
-        self.tauMus = self.handles['cmgTauMuBaselineSel'].product()
-        # print self.tauMus[0].mass()
+
+    def triggerPassed(self, triggerObject, triggerList = None):
+        '''returns true if at least one of the triggers in self.triggers passes.'''
+        if triggerList is None:
+            triggerList = self.triggers
+        if not triggerList or len(triggerList)==0:
+            return True
+        # just doing an OR of all triggers: 
+        return reduce( lambda x,y : x or y,
+                       [triggerObject.getSelectionRegExp( trigger ) for trigger in triggerList])
+
         
-    def Loop(self, nEvents=float('inf') ):
-        '''Loop on a given number of events'''
-        # self.nTot = 0
-        # self.nSel = 0
+    def InitHandles(self):
+        '''Initialize all handles for the products we want to read'''
+        self.handles = {}
+        self.handles['cmgTauMuBaselineSel'] =  AutoHandle( 'cmgTauMuBaselineSel',
+                                                           'std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>')
+        self.handles['cmgTriggerObjectSel'] =  AutoHandle( 'cmgTriggerObjectSel',
+                                                           'std::vector<cmg::TriggerObject>>')
+        
+
+    def InitOutput(self):
+        '''Initialize histograms physics objects, counters.'''
+        # declaring histograms
+        self.histograms = []
+        self.histsOS = H2TauTauHistograms( '/'.join([self.name, 'OS']) )
+        self.histograms.append( self.histsOS )
+        self.histsSS = H2TauTauHistograms( '/'.join([self.name, 'SS']) )
+        self.histograms.append( self.histsSS )
+
+        # declaring physics objects
+        self.diTau = None
+        self.triggerObject = None
 
         # declaring counters
-        self.exactlyOneDiTau = Counter('exactlyOneDiTau')
+        self.counters = []
+        self.count_exactlyOneDiTau = Counter('exactlyOneDiTau')
+        self.counters.append( self.count_exactlyOneDiTau  )
+        self.count_triggerPassed = Counter('triggerPassed')
+        self.counters.append( self.count_triggerPassed )
+        
 
+    def ToEvent( self, iEv ):
+        '''Navigate to a given event and process it.'''
+        self.events.to(iEv)
+        self.LoadCollections(self.events)
+        
+        self.diTaus = self.handles['cmgTauMuBaselineSel'].product()
+        self.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
+
+        self.count_triggerPassed.inc('a: All events')
+        if not self.triggerPassed(self.triggerObject):
+            return False
+        self.count_triggerPassed.inc('b: Trig OK  ')
+        
+        self.count_exactlyOneDiTau.inc('a')
+        if len(self.diTaus)==0:
+            print 'Event %d : No tau mu.' % i
+            return False
+        if len(self.diTaus)>1:
+            # print 'Event %d : Too many tau-mus: n = %d' % (iEv, len(self.diTaus)) 
+            #COLIN could be nice to have a counter class which knows why events are rejected. make histograms with that.
+            self.logger.warning('Ev %d: more than 1 di-tau : n = %d' % (iEv,
+                                                                        len(self.diTaus)))
+            return False
+        # self.nSel += 1
+        self.count_exactlyOneDiTau.inc('b')
+        self.diTau = DiTau( self.diTaus[0] )
+        #Colin: the following is working, generalize it
+        # myDiTau = DiTau( self.diTau )
+        # print myDiTau, myDiTau.energy()
+        if self.diTau.charge() == 0:
+            self.histsOS.fillDiTau( self.diTau )
+        else:
+            self.histsSS.fillDiTau( self.diTau )
+        return True
+
+                
+    def Loop(self, nEvents=float('inf') ):
+        '''Loop on a given number of events, and call ToEvent for each event.'''
+        print 'starting loop'
+        self.InitOutput()
         for iEv in range(0, self.events.size() ):
             # print event
             if iEv ==nEvents:
-                return
-            # self.nTot += 1
-            self.exactlyOneDiTau.inc('a')
+                break
             if iEv%1000 ==0:
                 print 'event', iEv
-
-            # self.LoadCollections(event)
-            # tauMus = self.handles['cmgTauMuBaselineSel'].product()
             self.ToEvent( iEv )
+        self.logger.warning( str(self) )
 
-            # do I want to put the following in ToEvent?
-            # should I call that function processEvent? 
-            if len(self.tauMus)==0:
-                print 'Event %d : No tau mu.' % i
-                continue
-            if len(self.tauMus)>1:
-                print 'Event %d : Too many tau-mus: n = %d' % (iEv, len(self.tauMus)) 
-                #COLIN could be nice to have a counter class which knows why events are rejected. make histograms with that.
-                continue
-            # self.nSel += 1
-            self.exactlyOneDiTau.inc('b')
-            self.diTau = self.tauMus[0]
-            if self.diTau.charge() == 0:
-                self.histsOS.fillDiTau( self.diTau )
-            else:
-                self.histsSS.fillDiTau( self.diTau )
-                
 
     def Write(self):
         '''Write all histograms to their root files'''
         for hist in self.histograms:
             hist.Write()
 
+
     def __str__(self):
-        retstr = 'Loop %s\n' % self.name
-        retstr += str(self.exactlyOneDiTau)
-        return retstr
-#        return 'Loop %s : %d / %d = %f events selected' % (self.name,
-#                                                           self.nSel,
-#                                                           self.nTot,
-#                                                           float(self.nSel)/self.nTot) 
-        
+        name = 'Loop %s' % self.name
+        strcount = [str(counter) for counter in self.counters ]
+        triggers = str( self.triggers )
+        return '\n'.join([name, triggers] + strcount)
+    
+
 
 if __name__ == '__main__':
 
@@ -127,21 +186,28 @@ if __name__ == '__main__':
 
     parser = OptionParser()
     parser.usage = """
-    %prog <root files>
-    Loop on events in root files and fill histograms
+    %prog component_name <root files>
+    Loop on events in root files and fill histograms.
+    component_name could be e.g. WJets, whatever you want. 
     """
     parser.add_option("-N", "--nevents", 
                       dest="nevents", 
                       help="number of events to process",
                       default=float('inf'))
+    parser.add_option("-t", "--triggerlist", 
+                      dest="triggerlist", 
+                      help="trigger list")
+    
     (options,args) = parser.parse_args()
-    if len(args) == 0:
-        print 'ERROR: please provide at least one root file'
+    if len(args) < 2:
+        print 'ERROR: please provide the component name and at least one root file'
         sys.exit(1)
 
     nEv = float(options.nevents)
 
-    loop = Loop( 'Test', args )
+    # args[0] is the component_name. Then come the root files
+    loop = Loop( args[0], args[1:], options.triggerlist)
+    print loop
     loop.Loop( nEv )
     loop.Write()
     print loop
