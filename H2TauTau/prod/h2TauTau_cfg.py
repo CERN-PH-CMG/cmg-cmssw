@@ -3,18 +3,21 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 ########## CONTROL CARDS
 
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
     )
 
 # -1 : process all files
-numberOfFilesToProcess = 10
+numberOfFilesToProcess = 5
 
-dataset_user = 'cmgtools' 
+# dataset_user = 'cmgtools' 
 # dataset_name = '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0'
-dataset_name = '/TauPlusX/Run2011A-PromptReco-v6/AOD/V2/PAT_CMG_V2_3_0'
+# dataset_name = '/TauPlusX/Run2011A-PromptReco-v6/AOD/V2/PAT_CMG_V2_3_0'
+
+dataset_user = 'cbern' 
+dataset_name = '/CMGTmp/WJets'
 
 # JSON: will be applied if dataset_name contains the string 'Run201' (data)
 
