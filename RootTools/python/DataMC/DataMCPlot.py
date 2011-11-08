@@ -8,7 +8,7 @@ from CMGTools.RootTools.DataMC.Stack import Stack
 
 
 
-class DataMCPlot:
+class DataMCPlot(object):
     '''Handles a Data vs MC plot.
 
     Features a list of histograms (some of them being stacked),
@@ -19,23 +19,27 @@ class DataMCPlot:
         self.histosDict = {}
         self.histos = []
         self.name = name
-        self.legend = TLegend(0.13,0.66,0.44,0.89)
-        self.legendOn = True
         self.stack = None
+        self.legendOn = True
+        self.legend = None
         
-    def AddHistogram(self, name, histo, layer=0, legendLine=None):
+    def AddHistogram(self, name, histo, layer=0, legendLine = None):
         '''Add a ROOT histogram, with a given name.
 
         Histograms will be drawn by increasing layer.'''
-        tmp = Histogram(name, histo, layer)
+        tmp = Histogram(name, histo, layer, legendLine)
         self.histos.append( tmp )
         self.histosDict[name] = tmp
-        tmp.AddEntry( self.legend, legendLine)
+        # tmp.AddEntry( self.legend, legendLine)
         
     def _SortedHistograms(self):
-        '''Returns the histogram dictionary, sorted by increasing layer.'''
+        '''Returns the histogram dictionary, sorted by increasing layer,
+        excluding histograms which are not "on".
+
+        This function is used in all the Draw functions.'''
         byLayer = sorted( self.histos, key=attrgetter('layer') )
-        return byLayer
+        byLayerOn = [ hist for hist in byLayer if (hist.on is True) ]
+        return byLayerOn
 
 
     def Hist(self, histName):
@@ -62,10 +66,22 @@ class DataMCPlot:
                 same = 'same'
         self.DrawLegend()
 
+
+    def CreateLegend(self):
+        if self.legend is None:
+            self.legend = TLegend(0.13,0.66,0.44,0.89)
+        else:
+            self.legend.Clear()
+        for hist in self._SortedHistograms():
+            hist.AddEntry( self.legend )
+            
+
     def DrawLegend(self):
         '''Draw the legend.'''
         if self.legendOn:
+            self.CreateLegend()
             self.legend.Draw('same')
+
                 
     def DrawRatio(self):
         '''Draw ratios : h_i / h_0.
@@ -177,6 +193,11 @@ class DataMCPlot:
         for hist in self.nostack:
             hist.obj.DrawNormalized('same')
         self.DrawLegend()
+
+
+    def Rebin(self, factor):
+        for hist in self.histos:
+            hist.Rebin(factor)
 
     def _BuildStack(self, hists):
         '''build a stack from a list of Histograms.

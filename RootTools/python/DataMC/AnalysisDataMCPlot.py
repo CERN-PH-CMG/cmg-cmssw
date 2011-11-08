@@ -21,7 +21,7 @@ class AnalysisDataMC( DataMCPlot ):
     see __init__ for more information'''
 
 
-    def __init__(self, histName, directory, name = None ):
+    def __init__(self, histName, directory, weights = None, name = None ):
         '''The input should be the name of a directory containing:
         - a set of root files, e.g. data_whatever.root, TTJets_somethingelse.root,
         ZJets_blah.root... 
@@ -36,8 +36,10 @@ class AnalysisDataMC( DataMCPlot ):
         "intLumi":1000
         }
 
-        Such weight files can be constructed semi-automatically for your samples,
-        contact Colin to know more. 
+        If you prefer, you can pass a dictionary containing the weights.
+        
+        This class is just an example. Feel Free to subclass it, or to subclass DataMCPlot
+        directly. 
         '''
         if name == None:
             name = ':'.join( [directory, histName] )
@@ -45,13 +47,18 @@ class AnalysisDataMC( DataMCPlot ):
         self.histName = histName
         self.directory = directory
         self._InitPrefs()
-        self._ReadWeights( '/'.join( [directory, 'Weights'] ) )
+        if weights is None:
+            self._ReadWeights( '/'.join( [directory, 'Weights'] ) )
+        else:
+            self.weights = weights
         self._ReadHistograms( directory )
         
     def _InitPrefs(self):
         '''Definine preferences for each component'''
         self.histPref = {}
         self.histPref['data'] = {'style':sBlack, 'layer':-99}
+        self.histPref['PromptReco-v4'] = {'style':sBlack, 'layer':-1000}
+        self.histPref['PromptReco-v6'] = {'style':sBlack, 'layer':-900}
         self.histPref['TTJets'] = {'style':sBlue, 'layer':1} 
         self.histPref['WJets'] = {'style':sRed, 'layer':2}  
         self.histPref['DYJets'] = {'style':sYellow, 'layer':3}  
@@ -80,17 +87,15 @@ class AnalysisDataMC( DataMCPlot ):
             print 'read weight : ', weight
             
     def _ReadHistograms(self, directory):
-        '''Read the histogram histName from all root files in directory.
+        '''Get the histograms.
 
-        Styles and weights are applied to each histogram.'''
+        Styles and weights are applied to each histogram.
+        See AnalysisDataMC._GetFileNames().'''
         layer = 0
         self.files = []
-        fileNames = glob.glob( '/'.join([directory,'*.root']) )
-        if len(fileNames) == 0:
-            raise AnalysisDataMCError('no file matching pattern *.root in ' + directory)
+        fileNames = self._GetFileNames(directory)
         print 'reading files:'
         for fileName in sorted(fileNames):
-            print '\t', fileName 
             self.files.append(TFile(fileName))
             hist = self.files[-1].Get(self.histName)
             if hist == None:
@@ -98,27 +103,39 @@ class AnalysisDataMC( DataMCPlot ):
                                     'does not exist in file', fileName)
             hist.SetStats(0)
             hist.Sumw2()
-            legendLine = os.path.splitext(fileName)[0].split('_')[0]
-            basename = os.path.basename(fileName)
-            pref = self._GetHistPref( self._ComponentName(basename) )
+            componentName = self._ComponentName(fileName)
+            print '\t', componentName, fileName
+            legendLine = componentName
+            pref = self._GetHistPref( componentName )
             layer = pref['layer']
-            self.AddHistogram( basename, hist, layer, legendLine)
-            if basename.lower().find('data')>-1:
+            self.AddHistogram( componentName, hist, layer, legendLine)
+            if componentName.lower().find('data')>-1:
                 print '\t\tremoving from stack', hist
-                self.Hist(basename).stack = False
-            self.Hist(basename).SetStyle( pref['style'] )
+                self.Hist(componentName).stack = False
+            self.Hist(componentName).SetStyle( pref['style'] )
         self._ApplyWeights()
 
+    def _GetFileNames(self, directory):
+        '''Returns a list of file names from a directory.
+
+        AnalysisDataMC._GetFileNames returns all root file names.
+        Feel free to overload this function.'''
+        fileNames = glob.glob( '/'.join([directory,'*.root']))
+        if len(fileNames) == 0:
+            raise AnalysisDataMCError('no file matching pattern *.root in ' + directory)
+        return fileNames
+
     def _ComponentName(self, name):
-        '''If name == foo_barblah.root, returns foo.'''
-        base = os.path.splitext(name)[0]
+        '''If name is /dir1/dir2/foo_barblah.root, returns foo.
+        Feel free to overload this function.'''
+        base = os.path.splitext(os.path.basename(name))[0]
         return base.split('_')[0]
 
     def _GetWeight(self, histName ):
         '''Return the Weight corresponding to a given component.
 
         For "data", returns None.'''
-        componentName = self._ComponentName(histName)
+        componentName = histName
         if componentName != 'data':
             try:
                 return self.weights[ componentName ]

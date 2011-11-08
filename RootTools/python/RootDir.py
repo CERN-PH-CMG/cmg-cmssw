@@ -54,7 +54,7 @@ class RootDir:
                 rootDir._Walk()
                 self.subDirs[subdir.GetName()] = rootDir
 
-    def DrawAll( self, xsize=800, ysize=800):
+    def DrawAll( self, xsize=800, ysize=800, opt=''):
         """Draw all histograms in the RootDir canvas. Note that histograms in a given sub-directory can be drawn by doing: this.subDirs['theSubDir'].Draw()"""
         
         nPlots = len(self.histograms)
@@ -62,23 +62,40 @@ class RootDir:
         if nPlots:
             self.canvas = TCanvas(self.tDir.GetName(),self.tDir.GetName(), xsize, ysize)
 
-            ny = int(math.sqrt (nPlots) )
-            nx = int(math.ceil( nPlots / float(ny) ))
+            # ny = int(math.sqrt (nPlots) ) 
+            # nx = int(math.ceil( nPlots / float(ny) ))
 
+            nx, ny = self._Pave( nPlots )
             print nPlots, ny, nx
         
             self.canvas.Divide(nx, ny)
             i = 1
             for key in self.histograms.iterkeys():
                 self.canvas.cd(i)
-                self.histograms[key].Draw()
+                self.histograms[key].Draw(opt)
                 i = i+1
 
             self.canvas.Modified()
             self.canvas.Update()
         
         for key in self.subDirs.iterkeys():
-            self.subDirs[key].DrawAll()
+            self.subDirs[key].DrawAll(xsize, ysize, opt)
+
+
+    def _Pave(self, nPlots):
+        '''Most efficient use of the canvas space for a given number of plots.
+        Trying to keep the canvas more or less square.'''
+        nx = 1
+        ny = 1
+        lastIsNx = False
+        while nx * ny < nPlots:
+            if not lastIsNx:
+                nx += 1
+                lastIsNx = True
+            else:
+                ny += 1
+                lastIsNx = False
+        return nx, ny
 
     def Hist( self, histName ):
         """Returns an histogram in this RootDir or in its subdirectories. 
@@ -147,9 +164,13 @@ if __name__ == '__main__':
     '''
     parser.add_option("-l", "--list", 
                       dest="list", 
-                      help="listing mode",
+                      help="listing mode, no drawing.",
                       action='store_true',
                       default=False)
+    parser.add_option("-d", "--dirname", 
+                      dest="dirname", 
+                      help="Draw a subdirectory",
+                      default=None)
 
     (options,args) = parser.parse_args()
 
@@ -161,11 +182,12 @@ if __name__ == '__main__':
     fileName = args[0]
 
     file = TFile( fileName )
-    # dir = sys.argv[2]
     rootDir = RootDir( file, sRed )
-
-    if options.list:
-        rootDir.Print()
+    if options.dirname is not None:
+        rootDir = rootDir.SubDir( options.dirname )
+    rootDir.Print()
+    if not options.list:
+        rootDir.DrawAll()
         
     
     # rootDir.subDirs_[dir].DrawAll()
