@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from CMGTools.Production.relval import *
+import imp
 
 if __name__ == '__main__':
 
@@ -21,7 +22,7 @@ if __name__ == '__main__':
                       help="Batch command. Same as in cmsBatch.py",
                       default="bsub -q 1nh < batchScript.sh")
     
-    import CMGTools.Production.castorBaseDir
+    import CMGTools.Production.castorBaseDir as castorBaseDir
     
 #    parser.add_option("-c", "--castorBaseDir", 
 #                      dest="castorBaseDir",
@@ -64,7 +65,7 @@ if __name__ == '__main__':
     remotes = []
     myRelvals = []
     for relval in relvals.list:
-        (local,remote) = processRelVal(relval, cfgFileName, process, options.negate, options.tier)
+        (local,remote) = processRelVal(relval, cfgFileName, process, options.negate, options.tier, options.batch)
         locals.append( local )
         remotes.append( remote ) 
         myRelvals.append( relval )
