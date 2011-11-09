@@ -133,7 +133,8 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, st
 	 bool isMC( !Process[i]["isdata"].toBool() && !Process[i]["isdatadriven"].toBool() );
          double cnorm = 1.0;
          if(tmphist)cnorm = tmphist->GetBinContent(1);
-         if(cnorm<=0 || isMC)cnorm = 1.0;
+         if(cnorm<=0 || !isMC)cnorm = 1.0;
+         if(cnorm==1 && isMC)printf("is there a problem with %s ? cnorm = %f\n",(Samples[j])["dtag"].toString().c_str(), cnorm);
          initialNumberOfEvents[(Samples[j])["dtag"].toString()] = cnorm;
 	 
          delete tmphist;
@@ -682,7 +683,5 @@ int main(int argc, char* argv[]){
    system("rm /tmp/histlist.csv");
    system(("cp ${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/html/index.html " + outDir).c_str());
    printf("You can browse the results using %s/index.html\n",outDir.c_str());
-   
-   Root.Print();
 }
 

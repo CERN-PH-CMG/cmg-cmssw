@@ -35,77 +35,9 @@
  
 using namespace std;
 
-TH1F *getHistogramForVariable(TString variable)
-{
-  TH1F *h=0;
-  if(variable=="dphill")         h = new TH1F( variable, ";#Delta#phi(l^{(1)},l^{(2)});Events",100,-3.2,3.2);
-  if(variable=="dphizleadl")     h = new TH1F( variable, ";#Delta#phi(l^{(1)},Z);Events / (0.1 rad)",15,0,1.5);
-  if(variable=="detall")         h = new TH1F( variable, ";#Delta#eta(l^{(1)},l^{(2)});Events",100,-5,5);
-  if(variable=="drll")           h = new TH1F( variable, ";#DeltaR(l^{(1)},l^{(2)}) / (0.1 rad);Events",20,0,6);
-  if(variable=="mindrlz")        h = new TH1F( variable, ";min #DeltaR(l,Z);Events",100,0,6);
-  if(variable=="maxdrlz")        h = new TH1F( variable, ";max #DeltaR(l,Z);Events",100,0,6);
-  if(variable=="ptl1")           h = new TH1F( variable, ";p_{T}(l^{(1)});Events", 100,0,1000);
-  if(variable=="ptl2")           h = new TH1F( variable, ";p_{T}(l^{(2)});Events", 100,0,1000);
-  if(variable=="ptsum")          h = new TH1F( variable, ";#Sigma p_{T}(l^{(i)});Events", 100,0,1000);
-  if(variable=="mtl1")           h = new TH1F( variable, ";M_{T}(l^{(1)},E_{T}^{miss});Events", 100,0,1000);
-  if(variable=="mtl2")           h = new TH1F( variable, ";M_{T}(l^{(2)},E_{T}^{miss});Events", 100,0,1000);
-  if(variable=="mtsum")          h = new TH1F( variable, ";#Sigma M_{T}(l^{(i)},E_{T}^{miss});Events / 20 GeV/c^{2}", 50,0,1000);
-
-  if(variable=="zmass")          h = new TH1F( variable, ";M^{ll};Events", 100,91-31,91+31);
-  if(variable=="zpt")            h = new TH1F( variable, ";p_{T}^{ll};Events", 100,0,400);
-  if(variable=="zeta")           h = new TH1F( variable, ";#eta^{ll};Events", 100,-5,5);
-  if(variable=="met")            h = new TH1F( variable, ";E_{T}^{miss};Events", 100,0,500);
-  if(variable=="dphizz")         h = new TH1F( variable, ";#Delta#phi(Z_{ll},E_{T}^{miss});Events",100,-3.2,3.2);
-  if(variable=="metoverzpt")     h = new TH1F( variable, ";type I E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9);
-
-
-  if(variable=="redMetoverzpt")  h = new TH1F( variable,  ";red-E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9);
-
-  if(variable=="projMet")        h = new TH1F( variable, ";projected E_{T}^{miss};Events", 100,0,500);
-  if(variable=="projMetoverzpt") h = new TH1F( variable, ";projected E_{T}^{miss}/p_{T}(Z);Events", 100,-1,9);
-
-  return h;
-}
-
-
-//
 int main(int argc, char* argv[])
 {
   SelectionMonitor controlHistos; //plot storage
-
-  //Prepare vectors for cut optimization
-  std::vector<double> optim_Cuts1_met;
-  std::vector<double> optim_Cuts1_mindphi;
-  std::vector<double> optim_Cuts1_mtmin;
-  std::vector<double> optim_Cuts1_mtmax;
-  for(double met=60;met<190;met+=10.0){
-     for(double mindphi=0.0;mindphi<0.80;mindphi+=0.10){
-        for(double mtmin=220;mtmin<460;mtmin+=20){
-           for(double mtmax=mtmin+50;mtmax<820;mtmax+=50){
-              if(mtmax>=820)mtmax=3000;
-              optim_Cuts1_met    .push_back(met);
-              optim_Cuts1_mindphi.push_back(mindphi);
-              optim_Cuts1_mtmin  .push_back(mtmin);
-              optim_Cuts1_mtmax  .push_back(mtmax);
-           }
-        }
-     }
-  }
-
-
-  std::vector<double> optim_Cuts2_redmet;
-  std::vector<double> optim_Cuts2_zpt;
-  std::vector<double> optim_Cuts2_drll;
-  for(double redmet=50;redmet<190;redmet+=10.0){
-     for(double zpt=25;zpt<105;zpt+=10){
-        for(double drll=0;drll<1.0;drll+=0.5){
-              optim_Cuts2_redmet    .push_back(redmet);
-              optim_Cuts2_zpt       .push_back(zpt);
-              optim_Cuts2_drll      .push_back(drll);
-        }
-     }
-  }
-
 
   //start computers
   EventCategory eventClassifComp;
@@ -133,11 +65,10 @@ int main(int argc, char* argv[])
 
   //handler for gamma processes
   GammaEventHandler *gammaEvHandler=0;
-  if(mctruthmode==22) 
-    {
-      isMC=false;
-      gammaEvHandler = new GammaEventHandler(runProcess);
-    }
+  if(mctruthmode==22){
+     isMC=false;
+     gammaEvHandler = new GammaEventHandler(runProcess);
+  }
 
   //pileup weighting
   edm::LumiReWeighting LumiWeights(runProcess.getParameter<std::string>("mcpileup"), runProcess.getParameter<std::string>("datapileup"), "pileup","pileup");
@@ -164,59 +95,19 @@ int main(int argc, char* argv[])
   bool runSystematics                        = runProcess.getParameter<bool>("runSystematics");
   if(runSystematics) { cout << "Systematics will be computed for this analysis" << endl; }
 
-  //TMVA configuration
-  TMVA::Reader *tmvaReader = 0;
-  bool useMVA                             = runProcess.getParameter<bool>("useMVA");
-  edm::ParameterSet tmvaInput             = runProcess.getParameter<edm::ParameterSet>("tmvaInput");
-  std::vector<std::string> methodList     = tmvaInput.getParameter<std::vector<std::string> >("methodList");
-  std::vector<std::string> varsList       = tmvaInput.getParameter<std::vector<std::string> >("varsList");
-  std::vector<int> evCategories           = tmvaInput.getParameter<std::vector<int> >("evCategories");
-  std::string weightsDir                  = tmvaInput.getParameter<std::string>("weightsDir");
-  std::string studyTag                    = tmvaInput.getParameter<std::string>("studyTag");
 
-  std::vector<Float_t> discriResults(methodList.size(),0);
-  Float_t pdeFoamError(0), pdeFoamSig(0), fisherProb(0), fisherRarity(0);
-  std::vector<Float_t> tmvaVars(varsList.size()+1,0);
 
-  //control histograms for variables of interest are booked by default
-  //   for(size_t ivar=0; ivar<varsList.size(); ivar++) 
-  //     {
-  //       TH1 *h=getHistogramForVariable( varsList[ivar] );
-  //       controlHistos.addHistogram( h );
-  //     }
-  if(useMVA)
-    {
-      std::cout << "==> Start TMVA Classification with " << methodList.size() << " methods and " << varsList.size() << " variables" << std::endl;
 
-      //start the reader for the variables and methods
-      tmvaReader = new TMVA::Reader( "!Color:!Silent" );
-      for(size_t ivar=0; ivar<varsList.size(); ivar++)   tmvaReader->AddVariable( varsList[ivar], &tmvaVars[ivar] );
-      tmvaReader->AddSpectator("eventCategory", &tmvaVars[varsList.size()]);
 
-      //book the methods
-      for(size_t imet=0; imet<methodList.size(); imet++)
-	{
-          //open the file with the method description
-	  TString weightFile = weightsDir + "/" + studyTag + ( evCategories.size()>1 ? "_Category_" + methodList[imet] : "") + TString(".weights.xml");
-          gSystem->ExpandPathName(weightFile);
+  //isVBF sample ?
+  bool isVBF = ( string(url.Data()).find("VBF") != string::npos);
+  double VBFHiggsMass=0; string VBFString = "";
+  if(isVBF){
+     size_t VBFStringpos =  string(url.Data()).find("VBF");
+     string StringMass = string(url.Data()).substr(VBFStringpos+6,3);  sscanf(StringMass.c_str(),"%lf",&VBFHiggsMass);
+     VBFString = string(url.Data()).substr(VBFStringpos);
+  }
 
-	  tmvaReader->BookMVA(methodList[imet], weightFile);
-	  TH1 *h=tmva::getHistogramForDiscriminator( methodList[imet] );
-	  controlHistos.addHistogram( h );
-	  controlHistos.addHistogram( (TH1 *) h->Clone( h->GetName()+TString("tight") ) );
-	  if(methodList[imet]=="PDEFoam") 
-	    {
-	      controlHistos.addHistogram( new TH1F( "PDEFoam_Err",    "PDEFoam error",        100,  0, 1 ) );
-	      controlHistos.addHistogram( new TH1F( "PDEFoam_Sig",    "PDEFoam significance", 100,  0, 10 ) );
-	    }
-	  else if(methodList[imet]=="Fisher") 
-	    {
-	      controlHistos.addHistogram( new TH1F( "Fisher_Proba",  "Fisher_Proba",  100, 0, 1 ) );
-	      controlHistos.addHistogram( new TH1F( "Fisher_Rarity", "Fisher_Rarity", 100, 0, 1 ) );
-	    }
-	}
-    }
-  
   //book the control histograms
   TH1F *h=new TH1F ("eventflow", ";Step;Events", 8,0,8);
   h->GetXaxis()->SetBinLabel(2,"Preselected");
@@ -241,10 +132,10 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1F("nvtxMinus",";Vertices;Events",25,0,25) );
 
   //dilepton control 
-  controlHistos.addHistogram( getHistogramForVariable("zeta") );
-  controlHistos.addHistogram( getHistogramForVariable("zpt") );
+  controlHistos.addHistogram( new TH1F( "zeta", ";#eta^{ll};Events", 100,-5,5) );
+  controlHistos.addHistogram( new TH1F( "zpt", ";p_{T}^{ll};Events", 100,0,400) );
   controlHistos.addHistogram( new TH1F("zrank",";Z hardness;Events",5,0,5) );
-  h=(TH1F *)getHistogramForVariable("zmass");
+  h=(TH1F *) new TH1F( "zmass", ";M^{ll};Events", 100,91-31,91+31);
   controlHistos.addHistogram( h );
   h=new TH1F ("zmassregionCtr", ";Selection region;Events", 18,0,18);
   h->GetXaxis()->SetBinLabel(1, "Z");
@@ -267,16 +158,17 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(18,"~Z,~b,=2l,tight");
   controlHistos.addHistogram( h );
 
-  controlHistos.addHistogram( getHistogramForVariable("dphill") );
-  controlHistos.addHistogram( getHistogramForVariable("drll") );
-  controlHistos.addHistogram( getHistogramForVariable("dphizleadl") );
-  controlHistos.addHistogram( getHistogramForVariable("mindrlz") );
-  controlHistos.addHistogram( getHistogramForVariable("maxdrlz") );
-  controlHistos.addHistogram( getHistogramForVariable("ptsum") );
-  controlHistos.addHistogram( getHistogramForVariable("mtsum") );
-  controlHistos.addHistogram( getHistogramForVariable("mtl1") );
-  controlHistos.addHistogram( getHistogramForVariable("mtl2") );
-  controlHistos.addHistogram( getHistogramForVariable("mt") );
+  controlHistos.addHistogram( new TH1F( "dphill", ";#Delta#phi(l^{(1)},l^{(2)});Events",100,-3.2,3.2) );
+  controlHistos.addHistogram( new TH1F( "drll",   ";#DeltaR(l^{(1)},l^{(2)}) / (0.1 rad);Events",20,0,6) );
+  controlHistos.addHistogram( new TH1F( "dphizleadl", ";#Delta#phi(l^{(1)},Z);Events / (0.1 rad)",15,0,1.5) );
+  controlHistos.addHistogram( new TH1F( "mindrlz", ";min #DeltaR(l,Z);Events",100,0,6) );
+  controlHistos.addHistogram( new TH1F( "maxdrlz", ";max #DeltaR(l,Z);Events",100,0,6) );
+  controlHistos.addHistogram( new TH1F( "ptsum", ";#Sigma p_{T}(l^{(i)});Events", 100,0,1000));
+  controlHistos.addHistogram( new TH1F( "mtsum", ";#Sigma M_{T}(l^{(i)},E_{T}^{miss});Events / 20 GeV/c^{2}", 50,0,1000) );
+  controlHistos.addHistogram( new TH1F( "mtl1", ";M_{T}(l^{(1)},E_{T}^{miss});Events", 100,0,1000) );
+  controlHistos.addHistogram( new TH1F( "mtl2", ";M_{T}(l^{(2)},E_{T}^{miss});Events", 100,0,1000) );
+  controlHistos.addHistogram( new TH1F( "mt"  , ";M_{T},E_{T}^{miss});Events", 100,0,1000) );
+
 
   //object multiplicity
   h=new TH1F("nleptons",";Leptons;Events",3,0,3);
@@ -289,8 +181,7 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1F("njets3leptons",";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5) );
   controlHistos.addHistogram( new TH2F ("njetsvspu", ";Pileup events;Jets;Events", 25,0,25,5,0,5) );  
   controlHistos.addHistogram(  new TH2F ("njetsincvspu", ";Pileup events;Jets;Events", 25,0,25,5,0,5) );   
-  for(size_t ibin=1; ibin<=5; ibin++)
-    {
+  for(size_t ibin=1; ibin<=5; ibin++){
       TString label("");
       if(ibin==5) label +="#geq";
       else        label +="=";
@@ -299,9 +190,8 @@ int main(int argc, char* argv[])
       controlHistos.getHisto("njets3leptons")->GetXaxis()->SetBinLabel(ibin,label);
       controlHistos.getHisto("njetsvspu")->GetXaxis()->SetBinLabel(ibin,label);
       controlHistos.getHisto("njetsincvspu")->GetXaxis()->SetBinLabel(ibin,label);
-    }
+  }
 
- 
   h = new TH1F ("nbtags", ";b-tag multiplicity; Events", 3,0,3);  
   h->GetXaxis()->SetBinLabel(1,"0 b-tags");
   h->GetXaxis()->SetBinLabel(2,"1 b-tags");
@@ -445,11 +335,10 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1F("neutSumEtFrac",            ";#Sigma E_{T}^{neutral}/#Sigma E_{T};Events", 100,0,1.) );
 
   TString ootConds[]={"LowOOTpu","MediumOOTpu","HighOOTpu","VeryHighOOTpu"};
-  for(size_t i=0; i<sizeof(ootConds)/sizeof(TString); i++)
-    {
+  for(size_t i=0; i<sizeof(ootConds)/sizeof(TString); i++){
       controlHistos.addHistogram( new TH1F("sumEt"+ootConds[i],           ";#Sigma E_{T} [GeV];Events", 100,0,2000) );
       controlHistos.addHistogram( new TH1F("neutSumEtFrac"+ootConds[i],   ";#Sigma E_{T}^{neutral}/#Sigma E_{T};Events", 100,0,1.) );
-    }
+  }
 
   controlHistos.addHistogram( new TH1F("centralSumEtFrac",         ";#Sigma E_{T}(|#eta|<2.4)/#Sigma E_{T};Events", 100,0,1.) );
   controlHistos.addHistogram( new TH1F("centralChSumEtFrac",       ";#Sigma E_{T}^{charged}(|#eta|<2.4)/#Sigma E_{T};Events", 100,0,1.) );
@@ -467,8 +356,7 @@ int main(int argc, char* argv[])
   std::vector<TString> varsToInclude;
   varsToInclude.push_back("");
   varsToInclude.push_back("zpt25");
-  if(runSystematics)
-    {
+  if(runSystematics){
       varsToInclude.push_back("jer");
       varsToInclude.push_back("jesup");
       varsToInclude.push_back("jesdown");
@@ -478,9 +366,9 @@ int main(int argc, char* argv[])
       varsToInclude.push_back("hrendown");
       varsToInclude.push_back("puup");
       varsToInclude.push_back("pudown");
-    }
-  for(size_t ivar=0; ivar<varsToInclude.size(); ivar++)
-    {
+  }
+
+  for(size_t ivar=0; ivar<varsToInclude.size(); ivar++){
       h = new TH1F (varsToInclude[ivar]+"finaleventflow",";Category;Event count;",8,0,8);
       h->GetXaxis()->SetBinLabel(1,"m=130");
       h->GetXaxis()->SetBinLabel(2,"m=150");
@@ -491,16 +379,35 @@ int main(int argc, char* argv[])
       h->GetXaxis()->SetBinLabel(7,"m=500");
       h->GetXaxis()->SetBinLabel(8,"m=600");
       controlHistos.addHistogram( h );
-    }
-
+  }
 
   //optimization
+
+
+  //Prepare vectors for cut optimization
+  std::vector<double> optim_Cuts1_met;
+  std::vector<double> optim_Cuts1_mindphi;
+  std::vector<double> optim_Cuts1_mtmin;
+  std::vector<double> optim_Cuts1_mtmax;
+  for(double met=50;met<190;met+=2.0){
+     for(double mindphi=0.0;mindphi<0.80;mindphi+=0.10){
+        for(double mtmin=220;mtmin<460;mtmin+=20){
+           for(double mtmax=mtmin+50;mtmax<820;mtmax+=50){
+              if(mtmax>=820)mtmax=3000;
+              optim_Cuts1_met    .push_back(met);
+              optim_Cuts1_mindphi.push_back(mindphi);
+              optim_Cuts1_mtmin  .push_back(mtmin);
+              optim_Cuts1_mtmax  .push_back(mtmax);
+           }
+        }
+     }
+  }
+
   controlHistos.addHistogram ( new TH1F ("optim_eventflow1"  , ";cut index;yields" ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) );
   TH1F* Hoptim_cuts1_met     =  new TH1F ("optim_cut1_met"    , ";cut index;met"    ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ;
   TH1F* Hoptim_cuts1_mindphi =  new TH1F ("optim_cut1_mindphi", ";cut index;mindphi",optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ;
   TH1F* Hoptim_cuts1_mtmin   =  new TH1F ("optim_cut1_mtmin"  , ";cut index;mtmin"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ;
   TH1F* Hoptim_cuts1_mtmax   =  new TH1F ("optim_cut1_mtmax"  , ";cut index;mtmax"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ;
-  //fill optimization bookmark histo at the first event loop
   for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
     Hoptim_cuts1_met    ->Fill(index, optim_Cuts1_met[index]);    
     Hoptim_cuts1_mindphi->Fill(index, optim_Cuts1_mindphi[index]);
@@ -508,16 +415,38 @@ int main(int argc, char* argv[])
     Hoptim_cuts1_mtmax  ->Fill(index, optim_Cuts1_mtmax[index]);
   }
 
-  controlHistos.addHistogram ( new TH1F ("optim_eventflow2"  , ";cut index;yields" ,optim_Cuts2_redmet.size(),0,optim_Cuts2_redmet.size()) );
-  TH1F* Hoptim_cuts2_redmet  =  new TH1F ("optim_cut2_redmet" , ";cut index;redmet" ,optim_Cuts2_redmet.size(),0,optim_Cuts2_redmet.size()) ;
-  TH1F* Hoptim_cuts2_zpt     =  new TH1F ("optim_cut2_zpt"    , ";cut index;zpt"    ,optim_Cuts2_redmet.size(),0,optim_Cuts2_redmet.size()) ;
-  TH1F* Hoptim_cuts2_drll    =  new TH1F ("optim_cut2_drll"   , ";cut index;drll"   ,optim_Cuts2_redmet.size(),0,optim_Cuts2_redmet.size()) ;
-  //fill optimization bookmark histo at the first event loop
-  for(unsigned int index=0;index<optim_Cuts2_redmet.size();index++){
-    Hoptim_cuts2_redmet ->Fill(index, optim_Cuts2_redmet[index]);
-    Hoptim_cuts2_zpt    ->Fill(index, optim_Cuts2_zpt[index]);
-    Hoptim_cuts2_drll   ->Fill(index, optim_Cuts2_drll[index]);
-  } 
+
+  std::vector<double> optim_Cuts2_met;
+  std::vector<double> optim_Cuts2_mindphi;
+  std::vector<double> optim_Cuts2_mtmin;
+  std::vector<double> optim_Cuts2_mtmax;
+  for(double met=50;met<190;met+=2.0){
+     for(double mindphi=0.0;mindphi<0.80;mindphi+=0.10){
+        for(double mtmin=220;mtmin<460;mtmin+=20){
+           for(double mtmax=mtmin+50;mtmax<820;mtmax+=50){
+              if(mtmax>=820)mtmax=3000;
+              optim_Cuts2_met    .push_back(met);
+              optim_Cuts2_mindphi.push_back(mindphi);
+              optim_Cuts2_mtmin  .push_back(mtmin);
+              optim_Cuts2_mtmax  .push_back(mtmax);
+           }
+        }
+     }
+  }
+
+  controlHistos.addHistogram ( new TH1F ("optim_eventflow2"  , ";cut index;yields" ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) );
+  TH1F* Hoptim_cuts2_met     =  new TH1F ("optim_cut2_met"    , ";cut index;met"    ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ;
+  TH1F* Hoptim_cuts2_mindphi =  new TH1F ("optim_cut2_mindphi", ";cut index;mindphi",optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ;
+  TH1F* Hoptim_cuts2_mtmin   =  new TH1F ("optim_cut2_mtmin"  , ";cut index;mtmin"  ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ;
+  TH1F* Hoptim_cuts2_mtmax   =  new TH1F ("optim_cut2_mtmax"  , ";cut index;mtmax"  ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ;
+  for(unsigned int index=0;index<optim_Cuts2_met.size();index++){
+    Hoptim_cuts2_met    ->Fill(index, optim_Cuts2_met[index]);
+    Hoptim_cuts2_mindphi->Fill(index, optim_Cuts2_mindphi[index]);
+    Hoptim_cuts2_mtmin  ->Fill(index, optim_Cuts2_mtmin[index]);
+    Hoptim_cuts2_mtmax  ->Fill(index, optim_Cuts2_mtmax[index]);
+  }
+
+  //Renormalization
   TH1F* Hcutflow     =  new TH1F ("cutflow"    , "cutflow"    ,1,0,1) ;
 
   
@@ -553,9 +482,10 @@ int main(int argc, char* argv[])
   TString cats[]={"ee","mumu"};
   TString subCats[]={"","eq0jets","eq1jets","geq2jets","vbf"};
   //TString subCats[]={"","1to3vtx","4to9vtx","geq10vtx"};
-  for(size_t icat=0;icat<sizeof(cats)/sizeof(TString); icat++)
-    for(size_t isubcat=0;isubcat<sizeof(subCats)/sizeof(TString); isubcat++)
+  for(size_t icat=0;icat<sizeof(cats)/sizeof(TString); icat++){
+    for(size_t isubcat=0;isubcat<sizeof(subCats)/sizeof(TString); isubcat++){
       controlHistos.initMonitorForStep(cats[icat]+subCats[isubcat]);
+  }}
 
   //open the file and get events tree
   ZZ2l2nuSummaryHandler evSummaryHandler;
@@ -563,31 +493,27 @@ int main(int argc, char* argv[])
   printf("Looping on %s\n",url.Data());
   if(file==0) return -1;
   if(file->IsZombie()) return -1;
-  if( !evSummaryHandler.attachToTree( (TTree *)file->Get(dirname) ) ) 
-    {
+  if( !evSummaryHandler.attachToTree( (TTree *)file->Get(dirname) ) ){
       file->Close();
       return -1;
-    }
+  }
 
   //check run range to compute scale factor (if not all entries are used)
   const Int_t totalEntries= evSummaryHandler.getEntries();
   float rescaleFactor( evEnd>0 ?  float(totalEntries)/float(evEnd-evStart) : -1 );
   if(evEnd<0 || evEnd>evSummaryHandler.getEntries() ) evEnd=totalEntries;
-  if(evStart > evEnd ) 
-    {
+  if(evStart > evEnd ){
       file->Close();
       return -1;
-    }
-
-
-
+  }
 
   //MC normalization (to 1/pb)
   float cnorm=1.0;
   if(isMC){
-      TH1F *cutflowH = (TH1F *) file->Get("evAnalyzer/h2zz/mumu/mumu_cutflow");
+      TH1F* cutflowH = (TH1F *) file->Get("evAnalyzer/h2zz/cutflow");
       if(cutflowH) cnorm=cutflowH->GetBinContent(1);
       if(rescaleFactor>0) cnorm /= rescaleFactor;
+      printf("cnorm = %f\n",cnorm);
   }
   Hcutflow->SetBinContent(1,cnorm);
 
@@ -599,33 +525,8 @@ int main(int argc, char* argv[])
   
   double VBFWEIGHTINTEGRAL = 0;
     
-  // init summary tree (unweighted events for MVA training) 
-  bool saveSummaryTree = runProcess.getParameter<bool>("saveSummaryTree");
-  if(!isMC) saveSummaryTree=false; //temporary for now
-  TFile *spyFile=0;
-  TDirectory *spyDir=0;
-  ofstream *outf=0;
-  ZZ2l2nuSummaryHandler *spyHandler=0;
-  float summaryWeight(1);
-  if(saveSummaryTree && normEntries>0)
-    {
-      summaryWeight = -1;//xsec * float(totalEntries) / (cnorm * float(normEntries) );
-      spyHandler = new ZZ2l2nuSummaryHandler;
-      spyFile = TFile::Open(outUrl + "/EventSummaries.root","UPDATE");
-      TString evtag=gSystem->BaseName(url);
-      evtag.ReplaceAll(".root","");
-      spyFile->rmdir(evtag);
-      spyDir = spyFile->mkdir(evtag);
-      TTree *outT = evSummaryHandler.getTree()->CloneTree(0);
-      outT->SetDirectory(spyDir);
-      spyHandler->initTree(outT,false);
-    }  
-  if(!isMC) outf=new ofstream("highmetevents.txt",ios::app);  
-
   //run the analysis
-  //
-  for( int iev=evStart; iev<evEnd; iev++)
-    {
+  for( int iev=evStart; iev<evEnd; iev++){
       if(iev%1000==0) printf("\r [ %d/100 ] ",int(100*float(iev-evStart)/float(evEnd)));
       evSummaryHandler.getEntry(iev);
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
@@ -634,8 +535,7 @@ int main(int argc, char* argv[])
       
       //OOT pu condition
       TString ootCond("");
-      if(isMC)
-	{
+      if(isMC){
 	  double sigma        = sqrt(double(2*ev.ngenITpu));
 	  double minCentralPu = -sigma;
 	  double maxCentralPu = sigma;
@@ -645,28 +545,19 @@ int main(int argc, char* argv[])
 	  else if(puDiff>=maxCentralPu) ootCond="HighOOTpu";
 	  else if(puDiff>=minCentralPu) ootCond="MediumOOTpu";
 	  else                          ootCond="LowOOTpu";
-	}
+      }
 
       //pileup and Higgs pT weight
       //float weight=ev.weight;
-      float weight = LumiWeights.weight3D( ev.ngenOOTpu/2, ev.ngenITpu, ev.ngenOOTpu/2 );
-      double TotalWeight_plus = PShiftUp.ShiftWeight( ev.ngenITpu );
-      double TotalWeight_minus = PShiftDown.ShiftWeight( ev.ngenITpu );
-
-      if(!isMC) weight=1;
-      else if(ev.hptWeights[0]>1e-6) weight *= ev.hptWeights[0];
-
-      // -> do we have to do this for every event ? 
-      double VBFWeight=1.0;
-      string FileName = string(url.Data());
-      size_t VBFStringpos = FileName.find("VBF");
-      if(VBFStringpos!=string::npos){
-        string StringMass = FileName.substr(VBFStringpos+6,3);
-        double SampleHiggsMass;
-        sscanf(StringMass.c_str(),"%lf",&SampleHiggsMass);
-        VBFWeight = weightVBF(FileName.substr(VBFStringpos),SampleHiggsMass, phys.genhiggs[0].mass() );
-        weight*= VBFWeight;
-        VBFWEIGHTINTEGRAL += VBFWeight;
+      float weight = 1.0;
+      double TotalWeight_plus = 1.0;
+      double TotalWeight_minus = 1.0;
+      if(isMC){
+        weight = LumiWeights.weight3D( ev.ngenOOTpu/2, ev.ngenITpu, ev.ngenOOTpu/2 );
+        TotalWeight_plus = PShiftUp.ShiftWeight( ev.ngenITpu );
+        TotalWeight_minus = PShiftDown.ShiftWeight( ev.ngenITpu );
+        if(isVBF)weight *= weightVBF(VBFString,VBFHiggsMass, phys.genhiggs[0].mass() );         
+        if(ev.hptWeights[0]>1e-6)weight *= ev.hptWeights[0];
       }
   
       //
@@ -684,13 +575,12 @@ int main(int argc, char* argv[])
       TString subcat    = eventClassifComp.GetLabel(eventCategory);
 
       bool isGammaEvent(false);
-      if(gammaEvHandler)
-	{
+      if(gammaEvHandler){
 	  isGammaEvent=gammaEvHandler->isGood(phys);
 	  if(mctruthmode==22 && !isGammaEvent) continue;
 	  evcats.push_back("mumu");
 	  evcats.push_back("ee");
-	}
+      }
 
 
       //MC truth
@@ -709,30 +599,27 @@ int main(int argc, char* argv[])
       int nbtags(0),        nbtags_ssvhem(0),        nbtags_tchel(0),        nbtags_tche2(0),        nbtags_jbpl(0),        nbtags_ssvhemORtchel(0);
       LorentzVectorCollection jetsP4;
       LorentzVector fwdClusteredMetP4(0,0,0,0);
-      for(size_t ijet=0; ijet<phys.jets.size(); ijet++) 
-	{
+      for(size_t ijet=0; ijet<phys.jets.size(); ijet++){
           if(fabs(phys.jets[ijet].eta())>2.4)fwdClusteredMetP4-=phys.jets[ijet];
 
 	  jetsP4.push_back( phys.jets[ijet] );
 	  njetsinc++;
-	  if(fabs(phys.jets[ijet].eta())<2.5)
-	    {
+	  if(fabs(phys.jets[ijet].eta())<2.5){
 	      njets++;
 	      bool passTCHEL(phys.jets[ijet].btag1>1.7);
 	      bool passTCHE2(phys.jets[ijet].btag1>2.0);
 	      bool passJBPL(phys.jets[ijet].btag2>1.33);
 	      bool passSSVHEM(phys.jets[ijet].btag3>1.74);
-	      if(phys.jets[ijet].pt()>30)
-		{
+	      if(phys.jets[ijet].pt()>30){
 		  nbtags          += (passJBPL || passSSVHEM);
 		  nbtags_ssvhem   += passSSVHEM;
 		  nbtags_tchel    += passTCHEL;
 		  nbtags_tche2    += passTCHE2;
 		  nbtags_jbpl     += passJBPL;
 		  nbtags_ssvhemORtchel += (passTCHEL || passSSVHEM);
-		}
-	    }
-	}
+              }
+	  }
+      }
 
 
       //start analysis by the jet kinematics so that one can loop over JER/JES/b-tag systematic variations
@@ -751,11 +638,10 @@ int main(int argc, char* argv[])
       LorentzVector assocFwdCMetP4 = assocMetP4 + fwdClusteredMetP4;
       LorentzVector assocCMetP4=phys.met[13];
       LorentzVector assocFwd2MetP4=phys.met[14];
-      if(isGammaEvent)
-        {
+      if(isGammaEvent){
           assocChargedMetP4 -= zll;
           if(!phys.gammas[0].isConv) assocMetP4 -= zll;
-        }
+      }
 
       //z+met kinematics
       Float_t dphill     = isGammaEvent ? 0 : deltaPhi(phys.leptons[0].phi(),phys.leptons[1].phi());
@@ -776,9 +662,6 @@ int main(int argc, char* argv[])
       Float_t dphizz     = deltaPhi(zll.phi(),zvv.phi());
       Float_t mt         = METUtils::transverseMass(zll,zvv,true);
       Float_t dphizleadl = isGammaEvent ? 0 : ( ptl1>ptl2 ? deltaPhi(phys.leptons[0].phi(),zll.phi()) : deltaPhi(phys.leptons[1].phi(),zll.phi()) );
-
-
-
 
       //redmet
       METUtils::stRedMET redMetInfo;      
@@ -833,8 +716,7 @@ int main(int argc, char* argv[])
       for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++){metTypeValuesminJetdphi[it->first] = 9999.0; metTypeValuesminJetphi[it->first] = 9999.0;}
       int zrank(0);
       double mindphijmet(9999.), minmtjmet(9999.),mindrjz(9999.), minmjz(9999.);
-      for(size_t ijet=0; ijet<phys.jets.size(); ijet++) 
-	{
+      for(size_t ijet=0; ijet<phys.jets.size(); ijet++){
 	  if(phys.jets[ijet].pt()>zpt) zrank++;
 
 	  //double dphijmet=fabs(deltaPhi(zvv.phi(),phys.jets[ijet].phi()));
@@ -853,7 +735,7 @@ int main(int argc, char* argv[])
 	  LorentzVector jz=phys.jets[ijet]+zll;
 	  double mjz=jz.mass();
 	  if(mjz<minmjz) minmjz=mjz;
-	}
+      }
 
       //sum ETs
       float sumEt            = ev.sumEt           - ptsum;
@@ -880,27 +762,22 @@ int main(int argc, char* argv[])
       int     VBFNBJets=0;
       LorentzVector VBFSyst;
 
-      if(phys.jets.size()>=2 && phys.jets [0].pt()>30.0 && phys.jets [1].pt()>30.0)
-	{
+      if(phys.jets.size()>=2 && phys.jets [0].pt()>30.0 && phys.jets [1].pt()>30.0){
 	  VBFSyst =  phys.jets[0] + phys.jets[1];
 	  VBFdEta = fabs(   phys.jets[0].eta() -    phys.jets[1].eta()); if(phys.jets[0].eta()* phys.jets[1].eta()>0)VBFdEta*=-1;
 	  int VBFCentral30Jets = 0;
 	  double MinEta, MaxEta;
 	  if(phys.jets[0].eta()<phys.jets[1].eta()){MinEta=phys.jets[0].eta(); MaxEta=phys.jets[1].eta();}else{MinEta=phys.jets[1].eta(); MaxEta=phys.jets[0].eta();}
-	  if(isGammaEvent)
-	    {
+	  if(isGammaEvent){
 	      if(phys.leptons[0].eta()>MinEta && phys.leptons[0].eta()<MaxEta)VBFCentralLeptons++;  if(phys.leptons[1].eta()>MinEta && phys.leptons[1].eta()<MaxEta)VBFCentralLeptons++;
-	    }
-	  else
-	    {
+	  }else{
 	      if(zll.eta()>MinEta && zll.eta()<MaxEta) VBFCentralLeptons=2;
-	    }
-	  for(size_t ijet=2; ijet<phys.jets.size(); ijet++) 
-	    {
+	  }
+	  for(size_t ijet=2; ijet<phys.jets.size(); ijet++){
 	      if(phys.jets[ijet].pt()<30)continue; 
 	      if(phys.jets[ijet].eta()>MinEta && phys.jets[ijet].eta()<MaxEta)VBFCentral30Jets++; 
 	      if(phys.jets[ijet].btag2>1.33 || phys.jets[ijet].btag3>1.74)VBFNBJets++; 
-	    }
+	  }
 	  
 	  Pass2Jet30   = true;
 	  PassdEtaCut  = (fabs(VBFdEta)>4.0);
@@ -909,62 +786,8 @@ int main(int argc, char* argv[])
 	  PassJetVeto  = (VBFCentral30Jets==0);
 	  PassBJetVeto = (VBFNBJets==0);
 	  isVBF        = (Pass2Jet30 && PassdEtaCut && PassiMCut && PassBJetVeto && PassJetVeto && PassLeptonIn);
-	}
+      }
      
-
-      //
-      //MVA evaluation
-      //
-      for(size_t ivar=0; ivar<varsList.size(); ivar++) 
-	{
-	  std::string variable=varsList[ivar];
-	  if(variable=="dphill")         tmvaVars[ivar]=dphill;
-	  if(variable=="detall")         tmvaVars[ivar]=detall;
-	  if(variable=="drll")           tmvaVars[ivar]=drll;
-	  if(variable=="mindrlz")        tmvaVars[ivar]=mindrlz;
-	  if(variable=="maxdrlz")        tmvaVars[ivar]=maxdrlz;
-	  if(variable=="ptl1")           tmvaVars[ivar]=ptl1;
-	  if(variable=="ptl2")           tmvaVars[ivar]=ptl2;
-	  if(variable=="ptsum")          tmvaVars[ivar]=ptsum;
-	  if(variable=="mtl1")           tmvaVars[ivar]=mtl1;
-	  if(variable=="mtl2")           tmvaVars[ivar]=mtl2;
-	  if(variable=="mtsum")          tmvaVars[ivar]=mtsum;
-	  if(variable=="zmass")          tmvaVars[ivar]=zmass;
-	  if(variable=="zpt")            tmvaVars[ivar]=zpt;
-	  if(variable=="zeta")           tmvaVars[ivar]=zeta;
-	  if(variable=="met")            tmvaVars[ivar]=met;
-	  if(variable=="dphizz")         tmvaVars[ivar]=dphizz;
-          if(variable=="mt")             tmvaVars[ivar]=mt;
-	  if(variable=="redMet")         tmvaVars[ivar]=redMet;
-	  if(variable=="redMetL")        tmvaVars[ivar]=redMetL;
-	  if(variable=="redMetT")        tmvaVars[ivar]=redMetT;
-	  if(variable=="projMet")        tmvaVars[ivar]=projMet;
-          if(variable=="dphizleadl")     tmvaVars[ivar]=dphizleadl;
-	}
-      tmvaVars[varsList.size()] = eventCategory;
-
-      if(useMVA)
-	{
-	  //evaluate the methods
-	  for(size_t imet=0; imet<methodList.size(); imet++)
-	    {
-	      discriResults[imet]=tmvaReader->EvaluateMVA( methodList[imet] );
-	     
-	      //per-event error
-	      if (methodList[imet]=="PDEFoam")
-		{
-		  pdeFoamError = tmvaReader->GetMVAError();
-		  pdeFoamSig   = (pdeFoamError>1.e-50 ? discriResults[imet]/pdeFoamError : 0.);
-		}
-	      //probability for Fisher discriminant
-	      if (methodList[imet]=="Fisher") 
-		{
-		  fisherProb   = tmvaReader->GetProba("Fisher");
-		  fisherRarity = tmvaReader->GetRarity("Fisher");
-		}
-	    }
-	}
-
       //
       // event pre-selection
       //
@@ -1009,11 +832,9 @@ int main(int argc, char* argv[])
       std::vector<int>eventCategoryVars;
       std::vector<Float_t> redMetVar, redMetLVar, mtsumsVar;
       std::vector<bool> passMediumRedMetVars, passTightRedMetVars;
-      if(runSystematics)
-	{
+      if(runSystematics){
 	  jet::computeVariation(jetsP4,phys.met[0],jetVars, metVars, &stdPtResol,&stdEtaResol,&stdPhiResol,&jecUnc);
-	  for(size_t ivar=0; ivar<3; ivar++)
-	    {
+	  for(size_t ivar=0; ivar<3; ivar++){
 	      eventCategoryVars.push_back( eventClassifComp.Get(phys, &(jetVars[ivar])) );
 
               METUtils::stRedMET temp_redMetInfo;
@@ -1028,8 +849,8 @@ int main(int argc, char* argv[])
 	      int ivarEvCat= eventCategoryVars[ivar];
 	      passMediumRedMetVars.push_back(redMetVar[ivar]>METUtils::getRedMETCut(ivarEvCat,METUtils::MEDIUMWP));
 	      passTightRedMetVars.push_back(redMetVar[ivar]>METUtils::getRedMETCut(ivarEvCat,METUtils::TIGHTWP));
-	    }
-	}
+	  }
+      }
 
       
       //      ROOT::Math::Boost cmboost(genhiggs.BoostToCM());
@@ -1051,31 +872,25 @@ int main(int argc, char* argv[])
       //       if(ev.nvtx<4)        subCatsToFill.push_back("1to3vtx");
       //       else if(ev.nvtx>=10) subCatsToFill.push_back("geq10vtx");
       //       else                 subCatsToFill.push_back("4to9vtx");
-      for(size_t ic=0; ic<catsToFill.size(); ic++)
-	{
-	  for(size_t isc=0; isc<subCatsToFill.size(); isc++)
-	    {
+      for(size_t ic=0; ic<catsToFill.size(); ic++){
+	  for(size_t isc=0; isc<subCatsToFill.size(); isc++){
 	      TString ctf=catsToFill[ic]+subCatsToFill[isc];   
 	      
 	      float iweight=weight;
-	      if(gammaEvHandler)
-		{
+	      if(gammaEvHandler){
 		  TString dilCh=catsToFill[ic];
 		  if(dilCh=="all") dilCh="ll";
 		  iweight *= gammaEvHandler->getWeight(dilCh);
-		}
+              }	      
 
-	      
               controlHistos.fillHisto("genHiggsPt"      ,ctf,    genhiggs.pt()   ,iweight);
               controlHistos.fillHisto("genHiggsMass"    ,ctf,    genhiggs.mass() ,iweight);
-              controlHistos.fillHisto("genHiggsMassRaw" ,ctf,    genhiggs.mass() ,iweight/VBFWeight);
               controlHistos.fillHisto("genzllPt"        ,ctf,    genzll.pt()     ,iweight);
               controlHistos.fillHisto("genzvvPt"        ,ctf,    genzvv.pt()     ,iweight);
 
               if(passZmass){
 		controlHistos.fillHisto("genzwinHiggsPt"      ,ctf,    genhiggs.pt()   ,iweight);
 		controlHistos.fillHisto("genzwinHiggsMass"    ,ctf,    genhiggs.mass() ,iweight);
-		controlHistos.fillHisto("genzwinHiggsMassRaw" ,ctf,    genhiggs.mass() ,iweight/VBFWeight);
 		controlHistos.fillHisto("genzwinzllPt"        ,ctf,    genzll.pt()     ,iweight);
 		controlHistos.fillHisto("genzwinzvvPt"        ,ctf,    genzvv.pt()     ,iweight);
               }
@@ -1102,13 +917,12 @@ int main(int argc, char* argv[])
 	      if(               PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFdEtaNM1C"         ,ctf,    fabs(VBFdEta)    ,iweight);
 	      if(PassdEtaCut              && PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFiMassNM1C"        ,ctf,    VBFSyst.M()      ,iweight);
 	      if(PassdEtaCut && PassiMCut                 && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFcenLeptonVetoNM1C",ctf,    VBFCentralLeptons,iweight);
-	      if(Pass2Jet30                                              && PassBJetVeto && !pass3dLeptonVeto)                                       
-		{
+	      if(Pass2Jet30                                              && PassBJetVeto && !pass3dLeptonVeto){
 		  controlHistos.fillHisto("VBFcen30JetVeto3rdlepton"  ,ctf,    VBFCentral30Jets ,iweight);
 		  controlHistos.fillHisto("VBFNBJets303rdlepton"      ,ctf,    VBFNBJets        ,iweight);
 		  controlHistos.fillHisto("VBFdEta3rdlepton"          ,ctf,    fabs(VBFdEta)    ,iweight);
 		  controlHistos.fillHisto("VBFiMass3rdlepton"         ,ctf,    VBFSyst.M()      ,iweight);
-		}
+              }
 	      
 	      if(PassdEtaCut && PassiMCut && PassLeptonIn                && PassBJetVeto )controlHistos.fillHisto("VBFcen30JetVetoNM1C" ,ctf,    VBFCentral30Jets ,iweight);
 	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                 )controlHistos.fillHisto("VBFNBJets30NM1C"     ,ctf,    VBFNBJets        ,iweight);
@@ -1162,30 +976,26 @@ int main(int argc, char* argv[])
 
 	      //extra leptons
 	      controlHistos.fillHisto("nleptons",ctf,ev.ln,iweight);
-	      if(!pass3dLeptonVeto)
-		{
+	      if(!pass3dLeptonVeto){
 		  controlHistos.fillHisto("njets3leptons",ctf,njets,iweight);
 		  controlHistos.fillHisto("nbtags3leptons",ctf,nbtags,iweight);
 		  continue;
-		}
+              }
 	      controlHistos.fillHisto("eventflow",ctf,5,iweight);
 	      
 
-              if(isMC && genhiggs.pt()>0)
-		{
+              if(isMC && genhiggs.pt()>0){
 		  controlHistos.fillHisto("CMzllP"      ,ctf,    cmzll.pt()   ,iweight);
 		  controlHistos.fillHisto("CMzvvP"      ,ctf,    cmzvv.pt()   ,iweight);
 		  controlHistos.fillHisto("CMDeltazP"   ,ctf,    cmzll.pt()-cmzvv.pt()   ,iweight);
 		  controlHistos.fillHisto("CMiMass"     ,ctf,    METUtils::transverseMass(cmzll,cmzvv,true)   ,iweight);
-		}
+              }
 
-	      for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++) 	  
-		{
-                  if(it->second.pt()>50 && metTypeValuesminJetdphi[it->first]<10)
-		    {
+	      for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++){
+                  if(it->second.pt()>50 && metTypeValuesminJetdphi[it->first]<10){
 		      controlHistos.fillHisto(TString("met_") + it->first+"mindphijmet",ctf,metTypeValuesminJetdphi[it->first], iweight);
 		      // controlHistos.fill2DHisto(TString("met_") + it->first+"phimetphijet", ctf,it->second.phi(),metTypeValuesminJetphi[it->first],iweight);
-		    }
+                  }
 		  
                   if(mindphijmet<0.3)continue;
 		  controlHistos.fillHisto(TString("met_") + it->first, ctf,it->second.pt(),iweight);
@@ -1208,7 +1018,7 @@ int main(int argc, char* argv[])
 		  //controlHistos.fillHisto(TString("metT_") + it->first, ctf,TransMET,iweight);
 		  //controlHistos.fill2DHisto(TString("metT_") + it->first+"vspu", ctf,ev.ngenITpu,TransMET,iweight);
 		  //controlHistos.fill2DHisto(TString("metLT_") + it->first, ctf,LongMET,TransMET,iweight);
-		}
+              }
 
 	      controlHistos.fill2DHisto("metvstkmet", ctf,met,assocChargedMet,iweight);
 	      controlHistos.fill2DHisto("metvsassoc", ctf,met,assocMetP4.pt(),iweight);
@@ -1218,20 +1028,18 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("redMetT", ctf,redMetT,iweight);
 	      controlHistos.fillHisto("redMetcomps", ctf,redMetL,redMetT,iweight);	
 
-	      if(sumEt>0)
-		{
+	      if(sumEt>0){
 		  controlHistos.fillHisto("sumEt",                ctf,sumEt,iweight);
 		  controlHistos.fillHisto("chSumEt",              ctf,chSumEt,iweight);
 		  controlHistos.fillHisto("neutSumEt",            ctf,neutsumEt,iweight);
 		  controlHistos.fillHisto("primVertexSumEt",      ctf,ev.primVertexSumEt,iweight);
 		  controlHistos.fillHisto("otherVertexSumEt",     ctf,ev.otherVertexSumEt,iweight);
 
-		  if(isMC)
-		    {
+		  if(isMC){
 		      controlHistos.fillHisto("sumEt"+ootCond,ctf,sumEt,iweight);
 		      controlHistos.fillHisto("neutSumEtFrac"+ootCond,ctf,neutsumEt/sumEt,iweight);
 		      controlHistos.fill2DHisto("itpuvsootpu",ctf,ev.ngenITpu,ev.ngenOOTpu,iweight);
-		    }
+		  }
 		  controlHistos.fillHisto("chSumEtFrac",          ctf,chSumEt/sumEt,iweight);
 		  controlHistos.fillHisto("neutSumEtFrac",        ctf,neutsumEt/sumEt,iweight);
 		  controlHistos.fillHisto("centralSumEtFrac",     ctf,sumEtcentral/sumEt,iweight);
@@ -1240,9 +1048,8 @@ int main(int argc, char* argv[])
 		  controlHistos.fillHisto("chPrimVertexSumEtFrac",          ctf,ev.primVertexChSumEt/sumEt,iweight);
 		  controlHistos.fillHisto("neutPrimVertexSumEtFrac",        ctf,ev.primVertexNeutSumEt/sumEt,iweight);
 		  controlHistos.fillHisto("chOtherVertexSumEtFrac",          ctf,ev.otherVertexChSumEt/sumEt,iweight);
-		  controlHistos.fillHisto("neutOtherVertexSumEtFrac",        ctf,ev.otherVertexNeutSumEt/sumEt,iweight);
-		 
-		}
+		  controlHistos.fillHisto("neutOtherVertexSumEtFrac",        ctf,ev.otherVertexNeutSumEt/sumEt,iweight);		 
+              }
 	      
 	      controlHistos.fillHisto("mindphijmet",ctf,mindphijmet,iweight);
 	      controlHistos.fillHisto("minmtjmet",ctf,minmtjmet,iweight);
@@ -1251,15 +1058,14 @@ int main(int argc, char* argv[])
 	      
 	      
 	      //sample is selected
-	      if(passMediumRedMet) 
-		{
+	      if(passMediumRedMet){
 		  controlHistos.fillHisto("eventflow",ctf,6,iweight);
 		  controlHistos.fillHisto("eventCategory",ctf,eventCategory,iweight);
 		  controlHistos.fillHisto("cutOptMediumdphill",ctf,fabs(dphill));
 		  controlHistos.fill2DHisto("cutOptMediumsummtvsredMetL",ctf,mtsum,redMetL,iweight);
 		  
 		  if(passTightRedMet)    controlHistos.fillHisto("eventflow",ctf,7,iweight);
-		}
+              }
 	      
 	      //
 	      // CUT & COUNT ANALYSIS
@@ -1282,8 +1088,7 @@ int main(int argc, char* argv[])
               bool pass400( zvv.pt()>112 && mindphijmet>0.00 && mt>292);
               bool pass500( zvv.pt()>141 && mindphijmet>0.00 && mt>336          );
               bool pass600( zvv.pt()>170 && mindphijmet>0.00 && mt>377          );
-	      if(subcat=="vbf")
-		{
+	      if(subcat=="vbf"){
                   pass130 = passMediumRedMet;
                   pass150 = passMediumRedMet;
                   pass170 = passMediumRedMet;
@@ -1292,7 +1097,8 @@ int main(int argc, char* argv[])
 		  pass400 = redMet>65;
 		  pass500 = redMet>90;
 		  pass600 = redMet>90;
-		}
+              }
+
               if(pass130) controlHistos.fillHisto("finaleventflow",ctf,0,iweight);
               if(pass150) controlHistos.fillHisto("finaleventflow",ctf,1,iweight);
               if(pass170) controlHistos.fillHisto("finaleventflow",ctf,2,iweight);
@@ -1302,8 +1108,7 @@ int main(int argc, char* argv[])
 	      if(pass500) controlHistos.fillHisto("finaleventflow",ctf,6,iweight);
 	      if(pass600) controlHistos.fillHisto("finaleventflow",ctf,7,iweight);
 
-              if(zpt>25)
-		{
+              if(zpt>25){
 		  if(pass130) controlHistos.fillHisto("zpt25finaleventflow",ctf,0,iweight);
 		  if(pass150) controlHistos.fillHisto("zpt25finaleventflow",ctf,1,iweight);
 		  if(pass170) controlHistos.fillHisto("zpt25finaleventflow",ctf,2,iweight);
@@ -1312,7 +1117,7 @@ int main(int argc, char* argv[])
 		  if(pass400) controlHistos.fillHisto("zpt25finaleventflow",ctf,5,iweight);
 		  if(pass500) controlHistos.fillHisto("zpt25finaleventflow",ctf,6,iweight);
 		  if(pass600) controlHistos.fillHisto("zpt25finaleventflow",ctf,7,iweight);
-		}
+              }
 
 	      //booking for optimization
               for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
@@ -1320,18 +1125,16 @@ int main(int argc, char* argv[])
                  controlHistos.fillHisto("optim_eventflow1"          ,ctf,    index, weight);
               }
 
-              for(unsigned int index=0;index<optim_Cuts2_redmet.size();index++){
-                 if(redMet>optim_Cuts2_redmet[index] && zpt>optim_Cuts2_zpt[index] && drll>optim_Cuts2_drll[index])
+              for(unsigned int index=0;index<optim_Cuts2_met.size();index++){
+                 if(redMet>optim_Cuts2_met[index] && mindphijmet>optim_Cuts2_mindphi[index] && mt>optim_Cuts2_mtmin[index] && mt<optim_Cuts2_mtmax[index])
                  controlHistos.fillHisto("optim_eventflow2"          ,ctf,    index, weight);
               }
 
 	      //systematic variations (computed per jet bin so fill only once) 		  
-	      if(isc==0 && runSystematics)
-		{
+	      if(isc==0 && runSystematics){
 		  //jet energy scale related variations
 		  TString jetVarNames[]={"jer","jesup","jesdown"};
-		  for(size_t ivar=0; ivar<3; ivar++)
-		    {
+		  for(size_t ivar=0; ivar<3; ivar++){
 		      TString isubcat    = eventClassifComp.GetLabel( eventCategoryVars[ivar] );
 		      TString ictf= catsToFill[ic]+isubcat;
                       bool ipass130( passMediumRedMetVars[ivar] && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetLVar[ivar])>50 && mtsumsVar[ivar]>150);
@@ -1342,8 +1145,7 @@ int main(int argc, char* argv[])
 		      bool ipass400( passTightRedMetVars[ivar]  && fabs(dphill)<2.0                      && redMetLVar[ivar]>75       && mtsumsVar[ivar]>300);
 		      bool ipass500( passTightRedMetVars[ivar]  && fabs(dphill)<2.0                      && redMetLVar[ivar]>100      && mtsumsVar[ivar]>400);
 		      bool ipass600( passTightRedMetVars[ivar]  && fabs(dphill)<1.5                      && redMetLVar[ivar]>150      && mtsumsVar[ivar]>450);
-		      if(subcat=="vbf")
-			{
+		      if(subcat=="vbf"){
                           ipass130 = passMediumRedMetVars[ivar];
                           ipass150 = passMediumRedMetVars[ivar];
                           ipass170 = passMediumRedMetVars[ivar];
@@ -1352,7 +1154,7 @@ int main(int argc, char* argv[])
 			  ipass400 = passMediumRedMetVars[ivar];
 			  ipass500 = passMediumRedMetVars[ivar];
 			  ipass600 = passMediumRedMetVars[ivar];
-			}
+                      }
                       if(ipass130) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,0,iweight);
                       if(ipass150) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,1,iweight);
                       if(ipass170) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,2,iweight);
@@ -1361,7 +1163,7 @@ int main(int argc, char* argv[])
 		      if(ipass400) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,5,iweight);
 		      if(ipass500) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,6,iweight);
 		      if(ipass600) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,7,iweight);
-		    }
+                  }
 		 
 		  //re-weighting variations (Higgs, pileup scenario)
 		  TString wgtVarNames[]={"hrenup","hrendown","hfactup","hfactdown","puup","pudown"};
@@ -1371,8 +1173,7 @@ int main(int argc, char* argv[])
 				      iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor],
 				      iweight*TotalWeight_plus,
 				      iweight*TotalWeight_minus};
-		  for(size_t ivar=0; ivar<sizeof(wgtVarNames)/sizeof(TString); ivar++)
-                    {
+		  for(size_t ivar=0; ivar<sizeof(wgtVarNames)/sizeof(TString); ivar++){
 		      TString ictf= catsToFill[ic]+subcat;
                       if(pass130) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflow",ictf,0,rwgtVars[ivar]);
                       if(pass150) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflow",ictf,1,rwgtVars[ivar]);
@@ -1382,96 +1183,56 @@ int main(int argc, char* argv[])
 		      if(pass400) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflow",ictf,5,rwgtVars[ivar]);
 		      if(pass500) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflow",ictf,6,rwgtVars[ivar]);
 		      if(pass600) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflow",ictf,7,rwgtVars[ivar]);
-		    }
-		}
-	  
-		  
-	      //
-	      // MVA ANALYSIS
-	      //
-	      if(!passMediumRedMet) continue;
-
-	      //control for discriminators evaluated
-	      controlHistos.fillHisto("dphizleadl",ctf,dphizleadl,iweight);
-	      controlHistos.fillHisto("drll",ctf,drll,iweight);
-	      controlHistos.fillHisto("mtsum",ctf,mtsum,iweight);
-
-	      for(size_t imet=0; imet<methodList.size(); imet++)
-		{
-		  controlHistos.fillHisto(methodList[imet],ctf,discriResults[imet],iweight);
-		  if(passTightRedMet) controlHistos.fillHisto(methodList[imet]+"tight",ctf,discriResults[imet],iweight);
-		  
-		  //per-event error
-		  if (methodList[imet]=="PDEFoam")
-		    {
-		      controlHistos.fillHisto("PDEFoam_Err",ctf,pdeFoamError,iweight);
-		      controlHistos.fillHisto("PDEFoam_Sig",ctf,pdeFoamSig,iweight);
-		    }
-		  
-		  //probability for Fisher discriminant
-		  if (methodList[imet]=="Fisher") 
-		    {
-		      controlHistos.fillHisto("Fisher_Proba",ctf, fisherProb, iweight);
-		      controlHistos.fillHisto("Fisher_Rarity",ctf, fisherRarity, iweight);
-		    }
-		}
-	    }
-	}
+		  }
+              }
+          }
+      }
     
   
-      //
       // summary tree for the selected events
-      //
-      if(saveSummaryTree && (passBaseCuts || isVBF))
-	{
-	  //update the pass and wiehgt fields
-	  ev.pass=passMediumRedMet+passTightRedMet;
-	  ev.weight=summaryWeight*weight;		
-	  if(gammaEvHandler) ev.weight  *= gammaEvHandler->getWeight("ll");
-	  spyHandler->fillTree();
-	  
-	  //write in twiki format the intersting event
-	  if(outf && passTightRedMet)	
-	    {
-	      *outf << "<b>"<< subcat << " event</b> @ " << url << "<br/>" << std::endl;
-	      *outf << "%$Run=" <<  ev.run << "$% %$Lumi=" << ev.lumi << "$% %$Event=" << ev.event <<"$%" << "<br/>" << std::endl;
-	      
-	      *outf << "<i>Leptons</i>" << "<br/>" << std::endl;
-	      for(size_t ilep=0; ilep<2; ilep++)
-		*outf << "%$l_{" << ilep+1 << "}=" << phys.leptons[ilep].id << "$% "
-		      << "%$p_T=" << phys.leptons[ilep].pt() << "$% "
-		      << "%$\\eta=" << phys.leptons[ilep].eta() << "$% "
-		      << "%$\\phi=" << phys.leptons[ilep].phi() << "$% "
-		      << "%$I_{neut}=" << phys.leptons[ilep].iso1 << "$% "
-		      << "%$I_{ch}=" << phys.leptons[ilep].iso2  << "$% "
-		      << "%$I_{pho}=" << phys.leptons[ilep].iso3 << "$% " << "<br/>" << std::endl; 
-	      
-	      *outf << "<i>Dilepton</i>" << "<br/>" << std::endl;
-	      *outf  << "%$p_{T}^{ll}=" << zll.pt() << "$% "
-		     << "%$\\eta^{ll}=" << zll.eta() << "$% "
-		     << "%$\\phi^{ll}=" << zll.phi() << "$% "
-		     << "%$m^{ll}=" << zll.mass() << "$% "   
-		     << "%$\\Delta R(l,l)=" << drll << "$% "
-		     << "%$\\Delta\\phi(l,l)=" << dphill << "$% " << "<br/>" << std::endl;
-	      
-	      *outf << "<i>Missing transverse energy</i>" << "<br/>" << std::endl;
-	      *outf << "%$E_{T}^{miss}=" << met << "$% "
-		    << "%$\\phi=" << zvv.phi() << "$% " << "<br/>" << std::endl;
-	      *outf << "%$red-E_{T}^{miss}=" << redMet << "$% "
-		    << "%$l="<< redMetL << "$% "
-		    << "%$t=" << redMetT << "$% " << "<br/>" << std::endl;
-	      
-	      *outf << "<i>Transverse mass</i>" << "<br/>" << std::endl;
-	      *outf << "%$\\sum M_T(l,E_{T}^{miss})=" << mtl1+mtl2 << "$% "
-		    << "%$M_T(Z,E_{T}^{miss})=" << mt << "$% " << "<br/>" << std::endl; 
-	      
-	      *outf << "<i>Jet activity</i>" << "<br/>" << std::endl;
-	      *outf << "%$N {jets}(p_T>15)= " << ev.jn << "$% "
-		    << "%$\\rho=" << ev.rho << "$% "  << "<br/>" << std::endl;
-	      
-	      *outf << "------" << endl;
-	    }
-	}
+//    if(saveSummaryTree && (passBaseCuts || isVBF))
+//	{
+//	  if(outf && passTightRedMet)	
+//	    {
+//	      *outf << "<b>"<< subcat << " event</b> @ " << url << "<br/>" << std::endl;
+//	      *outf << "%$Run=" <<  ev.run << "$% %$Lumi=" << ev.lumi << "$% %$Event=" << ev.event <<"$%" << "<br/>" << std::endl;
+//	      
+//	      *outf << "<i>Leptons</i>" << "<br/>" << std::endl;
+//	      for(size_t ilep=0; ilep<2; ilep++)
+//		*outf << "%$l_{" << ilep+1 << "}=" << phys.leptons[ilep].id << "$% "
+//		      << "%$p_T=" << phys.leptons[ilep].pt() << "$% "
+//		      << "%$\\eta=" << phys.leptons[ilep].eta() << "$% "
+//		      << "%$\\phi=" << phys.leptons[ilep].phi() << "$% "
+//		      << "%$I_{neut}=" << phys.leptons[ilep].iso1 << "$% "
+//		      << "%$I_{ch}=" << phys.leptons[ilep].iso2  << "$% "
+//		      << "%$I_{pho}=" << phys.leptons[ilep].iso3 << "$% " << "<br/>" << std::endl; 
+//	      
+//	      *outf << "<i>Dilepton</i>" << "<br/>" << std::endl;
+//	      *outf  << "%$p_{T}^{ll}=" << zll.pt() << "$% "
+//		     << "%$\\eta^{ll}=" << zll.eta() << "$% "
+//		     << "%$\\phi^{ll}=" << zll.phi() << "$% "
+//		     << "%$m^{ll}=" << zll.mass() << "$% "   
+//		     << "%$\\Delta R(l,l)=" << drll << "$% "
+//		     << "%$\\Delta\\phi(l,l)=" << dphill << "$% " << "<br/>" << std::endl;
+//	      
+//	      *outf << "<i>Missing transverse energy</i>" << "<br/>" << std::endl;
+//	      *outf << "%$E_{T}^{miss}=" << met << "$% "
+//		    << "%$\\phi=" << zvv.phi() << "$% " << "<br/>" << std::endl;
+//	      *outf << "%$red-E_{T}^{miss}=" << redMet << "$% "
+//		    << "%$l="<< redMetL << "$% "
+//		    << "%$t=" << redMetT << "$% " << "<br/>" << std::endl;
+//	      
+//	      *outf << "<i>Transverse mass</i>" << "<br/>" << std::endl;
+//	      *outf << "%$\\sum M_T(l,E_{T}^{miss})=" << mtl1+mtl2 << "$% "
+//		    << "%$M_T(Z,E_{T}^{miss})=" << mt << "$% " << "<br/>" << std::endl; 
+//	      
+//	      *outf << "<i>Jet activity</i>" << "<br/>" << std::endl;
+//	      *outf << "%$N {jets}(p_T>15)= " << ev.jn << "$% "
+//		    << "%$\\rho=" << ev.rho << "$% "  << "<br/>" << std::endl;
+//	      
+//	      *outf << "------" << endl;
+//	    }
+//	}
     }
 
   
@@ -1489,41 +1250,27 @@ int main(int argc, char* argv[])
     Hoptim_cuts1_mindphi->Write();
     Hoptim_cuts1_mtmin  ->Write();
     Hoptim_cuts1_mtmax  ->Write();
-    Hoptim_cuts2_redmet ->Write();
-    Hoptim_cuts2_zpt    ->Write();
-    Hoptim_cuts2_drll   ->Write();
+    Hoptim_cuts2_met    ->Write();
+    Hoptim_cuts2_mindphi->Write();
+    Hoptim_cuts2_mtmin  ->Write();
+    Hoptim_cuts2_mtmax  ->Write();
   SelectionMonitor::StepMonitor_t &mons=controlHistos.getAllMonitors();
   std::map<TString, TDirectory *> outDirs;
   outDirs["all"]=baseOutDir->mkdir("all");
   outDirs["ee"]=baseOutDir->mkdir("ee");
   //  outDirs["emu"]=baseOutDir->mkdir("emu");
   outDirs["mumu"]=baseOutDir->mkdir("mumu");
-  for(SelectionMonitor::StepMonitor_t::iterator it =mons.begin(); it!= mons.end(); it++)
-    {
+  for(SelectionMonitor::StepMonitor_t::iterator it =mons.begin(); it!= mons.end(); it++){
       TString icat("all");
       if(it->first.BeginsWith("ee")) icat="ee";
       if(it->first.BeginsWith("emu")) continue;//icat="emu";
       if(it->first.BeginsWith("mumu")) icat="mumu";
       outDirs[icat]->cd();
-      for(SelectionMonitor::Monitor_t::iterator hit=it->second.begin(); hit!= it->second.end(); hit++)
-	{
-//	  if( !((TClass*)hit->second->IsA())->InheritsFrom("TH2")
-//	      && !((TClass*)hit->second->IsA())->InheritsFrom("TGraph") )
-//	    fixExtremities(hit->second,true,true);
+      for(SelectionMonitor::Monitor_t::iterator hit=it->second.begin(); hit!= it->second.end(); hit++){
 	  hit->second->Write();
-	  
-	}
-    }
+      }
+  }
   ofile->Close();
-
-  if(saveSummaryTree)
-    {
-      spyDir->cd();
-      spyHandler->getTree()->Write();
-      spyFile->Write();
-      spyFile->Close();
-      if(!isMC) outf->close();
-    }
 }  
 
 
