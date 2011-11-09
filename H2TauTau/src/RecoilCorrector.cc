@@ -67,14 +67,14 @@ void RecoilCorrector::CorrectType2(double &met, double &metphi, double lGenPt, d
   fJet = njet; if(njet > 2) fJet = 2;  
   if(fJet >= int(fF1U1Fit.size())) fJet = 0; 
   metDistributionType2(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,fF1U1Fit[fJet],
-		       fD1U1Fit     [fJet],fM1U1Fit     [fJet],
+		       fD1U1Fit[fJet],fM1U1Fit[fJet],
 		       fD1U1RMSSMFit[fJet],fM1U1RMSSMFit[fJet],
-		       fD1U1RMS1Fit [fJet],fM1U1RMS1Fit [fJet],
-		       fD1U1RMS2Fit [fJet],fM1U1RMS2Fit [fJet],
+		       fD1U1RMS1Fit[fJet],fM1U1RMS1Fit[fJet],
+		       fD1U1RMS2Fit[fJet],fM1U1RMS2Fit[fJet],
 		       fD1U2RMSSMFit[fJet],fM1U2RMSSMFit[fJet],
-		       fD1U2RMS1Fit [fJet],fM1U2RMS1Fit [fJet],
-		       fD1U2RMS2Fit [fJet],fM1U2RMS2Fit [fJet],
-		       fF1U1U2Corr  [fJet],fM1U1U2Corr  [fJet], 
+		       fD1U2RMS1Fit[fJet],fM1U2RMS1Fit[fJet],
+		       fD1U2RMS2Fit[fJet],fM1U2RMS2Fit[fJet],
+		       fF1U1U2Corr[fJet],fM1U1U2Corr[fJet], 
 		       iU1,iU2,iFluc);
 }
 void RecoilCorrector::Correct(double &pfmet, double &pfmetphi, double &trkmet, double &trkmetphi, 
@@ -221,6 +221,8 @@ void RecoilCorrector::metDistribution(double &iMet,double &iMPhi,double iGenPt,d
 		                      TF1 *iU1U2Corr,
 				      double &iU1, double &iU2,
 		                      double iFluc) {
+
+
   double lRescale  = sqrt((TMath::Pi())/2.);		     
   double pU1       = CorrVal(iGenPt,iU1RZDatFit->Eval(iGenPt),PFU1); //iU1RZDatFit->Eval(iGenPt);//CorrVal(iGenPt,iU1RZDatFit->Eval(iGenPt),PFU1);
   double pU2       = 0; //Right guys are for cumulants => code deleted
@@ -231,7 +233,7 @@ void RecoilCorrector::metDistribution(double &iMet,double &iMPhi,double iGenPt,d
   double pSigma2_1 = CorrVal(iGenPt,iU2S1ZDatFit->Eval(iGenPt),PFS1U2)*lRescale*CorrVal(iGenPt,iU2MSZDatFit->Eval(iGenPt),PFS1U2);
   double pSigma2_2 = CorrVal(iGenPt,iU2S2ZDatFit->Eval(iGenPt),PFS2U2)*lRescale*CorrVal(iGenPt,iU2MSZDatFit->Eval(iGenPt),PFS2U2);
   //double pMU1      = fabs(iU1RZDatFit->GetParameter(1));
-  
+
   //Uncertainty propagation
   if(iFluc != 0) { 
     double lEUR1    = getError(iGenPt,iU1RZDatFit ,PFU1);
@@ -269,7 +271,6 @@ void RecoilCorrector::metDistribution(double &iMet,double &iMPhi,double iGenPt,d
   //double pVal2_1 = correlatedSeed(pSigma2_1,lU1U2,0.,0.,pCorr2,pCorr1,0.,0.);
   //double pVal2_2 = correlatedSeed(pSigma2_2,lU1U2,0.,0.,pCorrT2,pCorrT1,0.,0.);
 
-
   pU1   = (pVal1_1+pU1);//(pVal0 < pFrac1)*(pVal1_1+pU1)+(pVal0 > pFrac1)*(pVal1_2+pU1);
   pU2   = (pVal2_1+pU2);//(pVal1 < pFrac2)*(pVal2_1+pU2)+(pVal1 > pFrac2)*(pVal2_2+pU2);
 
@@ -279,6 +280,8 @@ void RecoilCorrector::metDistribution(double &iMet,double &iMPhi,double iGenPt,d
   iMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
   iU1   = pU1; 
   iU2   = pU2;
+
+
   return;
 }
 void RecoilCorrector::metDistributionType1(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
@@ -365,7 +368,8 @@ void RecoilCorrector::metDistributionType2(double &iMet,double &iMPhi,double iGe
 					   TF1 *iU2S1ZDatFit, TF1 *iU2S1ZMCFit,  		   		   
 					   TF1 *iU2S2ZDatFit, TF1 *iU2S2ZMCFit,  		   		   
 					   TF1 *iU1U2ZDatCorr,TF1 *iU1U2ZMCCorr,
-					   double &iU1,double &iU2,double iFluc) {
+					   double &iU1,double &iU2,double iFluc){
+
   double pDefU1    = iU1Default->Eval(iGenPt);
   double lRescale  = sqrt((TMath::Pi())/2.);		     
   double pDU1       = iU1RZDatFit ->Eval(iGenPt);
@@ -381,8 +385,8 @@ void RecoilCorrector::metDistributionType2(double &iMet,double &iMPhi,double iGe
   pDFrac1           = (pDFrac1-pDSigma1_2)/(pDSigma1_1-pDSigma1_2);
   pDFrac2           = (pDFrac2-pDSigma2_2)/(pDSigma2_1-pDSigma2_2);
 
-  double pMU1       = iU1RZMCFit  ->Eval(iGenPt);
-  double pMU2       = 0; 
+  //double pMU1       = iU1RZMCFit  ->Eval(iGenPt);//Jose
+  //double pMU2       = 0; //Jose
   double pMFrac1    = iU1MSZMCFit ->Eval(iGenPt)*lRescale;
   double pMSigma1_1 = iU1S1ZMCFit ->Eval(iGenPt)*pMFrac1;
   double pMSigma1_2 = iU1S2ZMCFit ->Eval(iGenPt)*pMFrac1;
@@ -425,7 +429,7 @@ void RecoilCorrector::metDistributionType2(double &iMet,double &iMPhi,double iGe
 
   double p1Charge        = pU1Diff/fabs(pU1Diff);
   double p2Charge        = pU2Diff/fabs(pU2Diff);
-  double pTU1Diff        = pU1Diff;
+  //double pTU1Diff        = pU1Diff;//Jose
   // double lMU1U2  = iU1U2ZMCCorr->Eval(iGenPt);
   // pU1Diff                = deCorrelate(pMMean1,lMU1U2,0.,0.,pU1Diff/pMMean1,pU2Diff/pMMean1 ,0.,0.);
   //pU2Diff                = deCorrelate(pMMean2,lMU1U2,0.,0.,pU2Diff/pMMean2,pTU1Diff/pMMean2,0.,0.);
@@ -433,7 +437,8 @@ void RecoilCorrector::metDistributionType2(double &iMet,double &iMPhi,double iGe
   double pU2ValM         = diGausPVal(fabs(pU2Diff),pMFrac2,pMSigma2_1,pMSigma2_2);
   double pU1ValD         = diGausPInverse(pU1ValM  ,pDFrac1,pDSigma1_1,pDSigma1_2);
   double pU2ValD         = diGausPInverse(pU2ValM  ,pDFrac2,pDSigma2_1,pDSigma2_2);
-  
+
+
   //double lDU1U2  = 0;//iU1U2ZDatCorr->Eval(iGenPt);
   //pU1ValD        = correlatedSeed(pDMean1,lDU1U2,0.,0.,pU1ValD/pDMean1,pU2ValD/pDMean1,0.,0.);
   //pU2ValD        = correlatedSeed(pDMean2,lDU1U2,0.,0.,pU2ValD/pDMean2,pU1ValD/pDMean2,0.,0.);
@@ -446,10 +451,12 @@ void RecoilCorrector::metDistributionType2(double &iMet,double &iMPhi,double iGe
   iMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
   iU1   = pU1; 
   iU2   = pU2;
+
+
   return;
-  //Not Used Current
-  iU1U2ZMCCorr ->Eval(iGenPt);
-  iU1U2ZDatCorr->Eval(iGenPt);
+//   //Not Used Current
+//   iU1U2ZMCCorr ->Eval(iGenPt);
+//   iU1U2ZDatCorr->Eval(iGenPt);
 }
 
 void RecoilCorrector::metDistribution(double &iPFMet,double &iPFMPhi,double &iTKMet,double &iTKMPhi,

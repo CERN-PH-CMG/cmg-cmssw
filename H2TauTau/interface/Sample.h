@@ -48,10 +48,8 @@ public:
 
   bool addHisto(TH1* hist) {
     if(!hist)return 0;
-    if(color_>0){
-      hist->SetFillColor(color_);
-      hist->SetLineColor(color_);
-    }
+    if(color_>0)hist->SetFillColor(color_);
+    if(lcolor_>0)hist->SetLineColor(lcolor_);
     if(lstyle_>0) hist->SetLineStyle(lstyle_);
     sampleHist_.push_back(hist);
     mainsampleHist_.push_back(hist);
@@ -68,10 +66,15 @@ public:
   }
   
   void setColor(Int_t color){color_=color;}
+  void setLineColor(Int_t color){lcolor_=color;}
   void setLineStyle(Int_t lstyle){lstyle_=lstyle;}
   void setPlotOrder(unsigned int n){plotOrder_=n;}
-  void setApplyRecoilCorr(bool applyCorr){applyRecoilCorr_=applyCorr;}
+  void setPlotLabel(TString label){plotLabel_=label;}
+  void setLegendOption(TString opt){legendOption_=opt;}
+  void setRecoilCorr(TString processfile){applyRecoilCorr_=1; recoilCorrProcessFile_=processfile;}
   void setApplyTauRateWeight(bool applyWeight){applyTauRateWeight_=applyWeight;}
+  void setTruthEventType(unsigned int eventtype){truthEventType_=eventtype;}
+
 
   bool scaleLumi(Float_t lumi){
     if(dataType_=="Data" || dataType_=="Data_SS") return 0;
@@ -108,11 +111,15 @@ public:
   }
   
   Int_t getColor(){return color_;}
+  Int_t getLineColor(){return lcolor_;}
   Int_t getLineStyle(){return lstyle_;}
   unsigned int getPlotOrder(){return plotOrder_;}
+  TString getPlotLabel(){return plotLabel_;}
+  TString getLegendOption(){return legendOption_;}
   bool getApplyRecoilCorr(){return applyRecoilCorr_;}
+  TString getRecoilCorrProcessFile(){return recoilCorrProcessFile_;}
   bool getApplyTauRateWeight(){return applyTauRateWeight_;}
-  
+  unsigned int getTruthEventType(){return truthEventType_;}
 
   fwlite::ChainEvent* getEvents();
   
@@ -164,21 +171,24 @@ private:
   unsigned int firstrun_;
   unsigned int lastrun_;
   float effCorrFactor_;
+  TString recoilCorrProcessFile_;
 
   TString outputpath_;
   TFile* histFile_;
 
   TString dataType_;
   Int_t color_;
+  Int_t lcolor_;
   Int_t lstyle_;
   unsigned int plotOrder_;
+  TString plotLabel_;
+  TString legendOption_;
   bool applyRecoilCorr_;
   bool applyTauRateWeight_;
+  unsigned int truthEventType_;
 
   bool init_;
-  
     
-
   ClassDef(Sample, 1);
 };
 
