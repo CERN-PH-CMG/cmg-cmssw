@@ -28,9 +28,9 @@ def allSampleInfo( sampleName, listLevel ):
         print 'LFN:'
         print castortools.castorToLFN(castorDir)
     if listLevel>1:
-        contents = castortools.listFiles(castorDir)
+        contents = castortools.ls(castorDir)
         for c in contents:
-            print '\t'.join(c)
+            print c
     if listLevel>0 and localDir!=None:
         print 'local:'
         print localDir
