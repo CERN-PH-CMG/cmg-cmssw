@@ -72,7 +72,18 @@ castorToLFN = eosToLFN
 def lfnToPFN( path, tfcProt = 'rfio'):
     """Converts an LFN to a PFN"""
     entity = cmsIO.cmsFile( path, tfcProt )
-    return entity.pfn
+#    tokens = cmsIO.splitPFN(entity.pfn)
+    pfn = '%s://%s//%s/' % (entity.protocol,entity.host,entity.path)
+    
+    pfn = entity.pfn
+    if tfcProt == 'rfio' and \
+        entity.path.startswith("/eos/cms/") and \
+                str(entity.stat()).startswith("Error 3011: Unable to stat"):
+
+            self.host = 'castorcms'
+            pfn.replace("/eos/cms","/castor/cern.ch/cms")
+            pfn.replace("eoscms","castorcms")
+    return pfn
 
 
 def lfnToEOS( path ):
