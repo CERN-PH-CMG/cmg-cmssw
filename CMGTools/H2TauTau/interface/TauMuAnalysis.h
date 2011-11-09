@@ -23,14 +23,16 @@ public:
   virtual ~TauMuAnalysis();
 
   void setInputTag(string tag){inputTag_=tag;}
+  void setQCDOStoSSRatio(Float_t ratio){QCDOStoSSRatio_=ratio;}
+  
 
   virtual bool init();
   virtual bool createHistos(TString samplename="");
 
   void calcSVFit(bool calc){calcsvfit_=calc;}
 
-  bool plotVisMass();
   bool plotDistribution(TString histname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords, Float_t* axesrange, bool log=0);
+  bool plot(TString histname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords, Float_t* axesrange, bool log=0);
    
 
 protected:
@@ -50,25 +52,32 @@ private:
   edm::Handle< cmg::METSignificance >  metsig_;  
   edm::Handle< std::vector<cmg::Muon> > diLeptonVetoList_;
   std::vector<cmg::PFJet> pfJetList_;
+  std::vector<cmg::PFJet> pfJetListLC_;
   const reco::GenParticle * genBoson_;
   const reco::GenParticle * genBosonL1_;
   const reco::GenParticle * genBosonL2_;
-  Int_t genEventType_;//1=ZtoEE, 3=ZToMuMu, 5=ZToTauTau, 6=ZToOther, 11=WToENu, 13=WToMuNu, 15=WToENu
-  Int_t truthEventType_;//1=ZtoEE, 3=ZToMuMu, 5=ZToTauTau, 6=ZOther 11=WToENu, 13=WToMuNu, 15=WToENu, 16=WOther
+  unsigned int genEventType_;//1=ZtoEE, 3=ZToMuMu, 5=ZToTauTau, 6=ZToOther, 11=WToENu, 13=WToMuNu, 15=WToENu
+  unsigned int truthEventType_;//1=ZtoEE, 3=ZToMuMu, 5=ZToTauTau, 6=ZOther 11=WToENu, 13=WToMuNu, 15=WToENu, 16=WOther
+  unsigned int eventCategorySM_;//SM search
+  const cmg::PFJet * boostedJet_;
+  const cmg::PFJet * VBFJet1_;
+  const cmg::PFJet * VBFJet2_;
   bool trigpass_;
   bool calcsvfit_;
 
 
-  TriggerEfficiency triggerEff_;
-  RecoilCorrector recoilCorr_;
+  Float_t QCDOStoSSRatio_;
+  RecoilCorrector * recoilCorr_;
   TauRate tauRate_;
-
+  TriggerEfficiency triggerEff_;
 
 
   //histos
   TH1F* diTauNHisto_;
   TH1F* diTauMassHisto_;
   TH1F* diTauMassSVFitHisto_;
+  TH1F* svFitConvergeHisto_;
+  TH1F* svFitCov00Histo_;
   TH1F* diTauEtaHisto_;
   TH1F* diTauPtHisto_;
   TH1F* muPtHisto_;
@@ -85,7 +94,14 @@ private:
   TH1F* transverseMassHisto_;
   TH1F* njetHisto_;
 
+  TH1F* diTauMassVBFHisto_;
+  TH1F* diJetMassVBFHisto_;
+  TH1F* diJetDeltaEtaVBFHisto_;
+  TH1F* diTauMassBoostedHisto_;
+  TH1F* jetPtBoostedHisto_;
+  TH1F* diTauMassInclusiveHisto_;
 
+  void fillPFJetListLC(const cmg::TauMu * cand);
   void applyRecoilCorr(const cmg::TauMu * cand, TVector3 * MET);
   float computePZeta(const cmg::TauMu * cand);
   float computeTransverseMass(const cmg::TauMu * cand);

@@ -19,7 +19,6 @@
 
 <use name="AnalysisDataFormats/CMGTools"/>
 
-<use name="TauAnalysis/SVFitStandAlone"/>
 
 <export>
   <lib   name="1"/>

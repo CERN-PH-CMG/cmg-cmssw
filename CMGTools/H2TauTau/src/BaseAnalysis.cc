@@ -170,6 +170,7 @@ bool BaseAnalysis::createMCPUPHisto(){
   //create a histogram with the MC PUP distribution
   //this must be done with unselected MC events
   TH1D MCPUPHisto("pileup","",36,-.5,35.5);//must include 0
+  MCPUPHisto.Sumw2();
 
   std::vector<std::string> list;
   list.push_back("/tmp/tree_CMG_0.root");
@@ -227,6 +228,7 @@ bool BaseAnalysis::createMCPUPHisto(){
     
   }
 
+  MCPUPHisto.Scale(1./MCPUPHisto.Integral());
   TFile F("./MCPUP.root","recreate");
   if(F.IsZombie())return 0;
   MCPUPHisto.Write();
@@ -237,9 +239,9 @@ bool BaseAnalysis::createMCPUPHisto(){
 
 
 
-void BaseAnalysis::printMCGen(edm::Handle< std::vector<reco::GenParticle> > * genList){
+void BaseAnalysis::printMCGen(edm::Handle< std::vector<reco::GenParticle> > & genList){
   cout<<" Begin MC print out for event: "<<runnumber_<<" "<<lumiblock_<<" "<<eventid_<<endl;
-  for(std::vector<reco::GenParticle>::const_iterator g=(*genList)->begin(); g!=(*genList)->end(); ++g){    
+  for(std::vector<reco::GenParticle>::const_iterator g=genList->begin(); g!=genList->end(); ++g){    
     cout<<"pdgID = "<<g->pdgId()<<" , pt = "<<g->p4().pt()<<" motherRef="<<g->mother()<<endl;
   }
 }

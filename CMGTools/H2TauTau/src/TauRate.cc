@@ -30,6 +30,6 @@ float TauRate::getScaleError(TauType iType,double iPt,double iEta) {
   }    
   if(lH == 0) return 1;
   double lE = lH->GetBinError  (lH->GetXaxis()->FindBin(iPt),lH->GetYaxis()->FindBin(fabs(iEta)));
-  double lV = lH->GetBinContent(lH->GetXaxis()->FindBin(iPt),lH->GetYaxis()->FindBin(fabs(iEta)));
+  //double lV = lH->GetBinContent(lH->GetXaxis()->FindBin(iPt),lH->GetYaxis()->FindBin(fabs(iEta)));
   return lE;
 }

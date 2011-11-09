@@ -80,7 +80,8 @@ protected:
 
   
   //useful functions
-  void printMCGen(edm::Handle< std::vector<reco::GenParticle> > * genList);
+  edm::Handle< std::vector<reco::GenParticle> > genParticles_;
+  void printMCGen(edm::Handle< std::vector<reco::GenParticle> > & genList);
 
 private:
 
