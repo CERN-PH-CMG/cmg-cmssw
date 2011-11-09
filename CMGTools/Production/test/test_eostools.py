@@ -41,7 +41,7 @@ class TestEosTools(unittest.TestCase):
     
     def testWhich(self):
         
-        self.assertEqual(which('bash'),'/usr/local/bin/bash')
+        self.assertEqual(which('cp'),'/bin/cp')
         self.assertEqual(which('ls'),'/bin/ls')
     
     def testIsLFN(self):
@@ -119,6 +119,7 @@ class TestEosTools(unittest.TestCase):
         xrdcp(self.eosfile, self.localfile)
         self.assertEqual(cat(self.eosfile), cat(self.localfile))
         self.assertEqual(cat(self.eosfile + 'FOO'), '')
+        self.assertFalse('cat returned' in cat(self.eosfile))
         
     def testRemove(self):
         

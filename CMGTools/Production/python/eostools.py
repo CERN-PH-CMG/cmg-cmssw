@@ -277,23 +277,24 @@ def cat(path):
         if out:
             pattern = re.compile('cat returned [0-9]+')
             for line in out.split('\n'):
-                print line
-                if line and pattern.match(line) is not None:
+                match = pattern.search(line)
+                if line and match is not None:
+                    lines.append(line.replace(match.group(0),''))
                     break
                 else:
                     lines.append(line)
         if err:
             print >> sys.stderr, out
             print >> sys.stderr, err
-        allLines = ''
-        if len(lines)>0:
-            allLines = '\n'.join(lines)
+        allLines = '\n'.join(lines)
+        if allLines and not allLines.endswith('\n'):
             allLines += '\n'
         return allLines
     else:
-        file = open(path)
-        lines = file.readlines()
-        return ''.join(lines)
+        content = file(path).read()
+        if content and not content.endswith('\n'):
+            content += '\n'
+        return content
     
 def xrdcp(src, dest):
     """Does a copy of files using xrd.
