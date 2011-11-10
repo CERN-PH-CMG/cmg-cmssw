@@ -57,11 +57,12 @@ class CrabStatus(object):
             closed = job.get('closed')
             id = job.get('jobId')
             ret = job.get('applicationReturnCode')
+            aret = ret = job.get('wrapperReturnCode')
             processStatus = job.get('processStatus')
             scheduleStatus = job.get('statusScheduler')
             sub = int(job.get('submission',0))
 
-            status = '%s_%s_%s' % (processStatus,scheduleStatus,ret)
+            status = '%s_%s_%s_%s' % (processStatus,scheduleStatus,ret,aret)
             if self.job_info.has_key(status):
                 self.job_info[status].append(id)
             else:
@@ -84,14 +85,14 @@ class CrabStatus(object):
         print '# Submission counts: %s' % str(self.sub_count)
 
 
-    def resubmit(self, status = 'created_Cleared_[0-9]+'):
+    def resubmit(self, status = 'created_Cleared_[0-9]+_[0-9]+'):
 
         resub = []
 
         for key, job_list in self.job_info.iteritems():
             tokens = key.split('_')
             if re.match(status,key) is not None:
-                if not tokens[-1] == '0':
+                if not tokens[-1] == '0' or not tokens[-2] == '0':
                     resub.extend(job_list)
             elif tokens and tokens[1] == 'Aborted':
                 resub.extend(job_list)
