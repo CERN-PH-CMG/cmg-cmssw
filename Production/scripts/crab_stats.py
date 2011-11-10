@@ -16,7 +16,8 @@ class CrabStatus(object):
         stdout, stderr = subprocess.Popen(cmd, stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
 
         if stderr:
-            print sys.stderr, stderr
+            print >>sys.stderr, stderr
+            print >>sys.stderr, stdout
 
         for line in stdout.split('\n'):
             if line.startswith('Log file is'):
@@ -27,9 +28,7 @@ class CrabStatus(object):
                     base_dir = os.path.join(*tokens[:-2])
                     if log.startswith(os.sep) and not base_dir.startswith(os.sep):
                         base_dir = os.sep + base_dir
-                    print base_dir
                     xml_file = os.path.join(base_dir,'share',report_name)
-                    print xml_file
                     if os.path.exists(xml_file):
                         return xml_file
         return None
@@ -90,10 +89,12 @@ class CrabStatus(object):
         resub = []
 
         for key, job_list in self.job_info.iteritems():
+            tokens = key.split('_')
             if re.match(status,key) is not None:
-                tokens = key.split('_')
                 if not tokens[-1] == '0':
                     resub.extend(job_list)
+            elif tokens and tokens[1] == 'Aborted':
+                resub.extend(job_list)
 
         if resub:
             jobs = ','.join(sorted(resub))
