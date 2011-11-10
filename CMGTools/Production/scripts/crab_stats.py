@@ -88,6 +88,7 @@ class CrabStatus(object):
     def resubmit(self, status = 'created_Cleared_[0-9]+_[0-9]+'):
 
         resub = []
+        sub = []
 
         for key, job_list in self.job_info.iteritems():
             tokens = key.split('_')
@@ -96,14 +97,18 @@ class CrabStatus(object):
                     resub.extend(job_list)
             elif tokens and tokens[1] == 'Aborted':
                 resub.extend(job_list)
+            elif tokens and tokens[1] == 'Created':
+                sub.extend(job_list)
 
-        if resub:
+        if resub or sub:
             jobs = ','.join(sorted(resub))
             script = """#!/usr/bin/env bash
 crab -getoutput %s
 crab -resubmit %s
 #crab -forceResubmit %s
-""" % (jobs,jobs,jobs)
+#created jobs not submitted
+#crab -forceResubmit %s
+""" % (jobs,jobs,jobs, ','.join(sub))
             print script
 
     def __del__(self):
