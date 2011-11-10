@@ -64,6 +64,7 @@ typedef cmg::JetEnergyCorrector<cmg::PFJet> PFJetCorrector;
 
 // Colin: should add cmg to the type names where applicable.
 
+
 typedef PhysicsObjectProducer<cmg::MultiObjectFactory> MultiObjectPOProducer;
 typedef PhysicsObjectProducer<cmg::PhotonFactory> PhotonPOProducer;
 
@@ -101,6 +102,8 @@ typedef PhysicsObjectProducer<cmg::TriggerObjectFactory> TriggerObjectPOProducer
 typedef PhysicsObjectProducer<cmg::TauEFactory> TauEPOProducer;
 typedef PhysicsObjectProducer<cmg::TauMuFactory> TauMuPOProducer;
 typedef PhysicsObjectProducer<cmg::MuEFactory> MuEPOProducer;
+
+typedef PhysicsObjectProducer<cmg::TauMuUpdateFactory> TauMuUpdatePOProducer;
 
 // histogrammers 
 
