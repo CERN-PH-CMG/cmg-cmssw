@@ -13,7 +13,7 @@
     'PhysicsTools/SelectorUtils' :               ['V00-03-24', 'PhysicsTools/SelectorUtils'],
     'PhysicsTools/UtilAlgos' :                   ['V08-02-14', 'PhysicsTools/UtilAlgos'],
     'RecoJets/Configuration' :                   ['V02-04-17', 'RecoJets/Configuration'],
-    'RecoLuminosity/LumiDB' :                    ['V03-03-00', 'RecoLuminosity/LumiDB'],
+    'RecoLuminosity/LumiDB' :                    ['V03-03-07', 'RecoLuminosity/LumiDB'],
     'UserCode/RecoParticleFlow/PostProcessing':  ['Colin_June23', 'RecoParticleFlow/PostProcessing'],
     'RecoTauTag/Configuration' :                 ['V01-02-03', 'RecoTauTag/Configuration'],
     'RecoTauTag/RecoTau' :                       ['V01-02-07', 'RecoTauTag/RecoTau'],
