@@ -6,7 +6,7 @@ from CMGTools.H2TauTau.macros.H2TauTauHistograms import *
 
 
 def H2TauTauInit(pattern):
-    (events,lumi) = RootInit(pattern)
+    (events,lumi) = Init(pattern)
     # adding aliases specific to this analysis
     aliases = AliasSetter(events, h2TauTauAliases, 'H2TAUTAU')
     return events,lumi

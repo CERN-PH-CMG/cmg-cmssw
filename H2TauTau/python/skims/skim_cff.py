@@ -2,19 +2,19 @@ from CMGTools.Common.skims.cmgTauMuCount_cfi import *
 from CMGTools.Common.skims.cmgTauECount_cfi import *
 
 cmgTauMuCount.minNumber = 1
+tauMuCount = cmgTauMuCount.clone( minNumber = 1,
+                                  src = 'cmgTauMuCorSel')
 
-cmgTauMuBaselineCount = cmgTauMuCount.clone(
-    minNumber = 1,
-    src = 'cmgTauMuBaselineSel'
-    )
+tauMuBaselineCount = tauMuCount.clone( src = 'cmgTauMuCorBaselineSel')
 
 
 tauMuSkimSequence = cms.Sequence(
-    cmgTauMuCount
+    tauMuCount 
     )
 
+
 tauMuBaselineSkimSequence = cms.Sequence(
-    cmgTauMuBaselineCount
+    tauMuBaselineCount
     )
 
 
