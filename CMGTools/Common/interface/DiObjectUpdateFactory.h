@@ -42,9 +42,9 @@ typename cmg::DiObjectUpdateFactory<T>::event_ptr cmg::DiObjectUpdateFactory<T>:
   edm::Handle<met_collection> metCands;
   iEvent.getByLabel(metLabel_,metCands);
   
-  if(metCands->empty() ) {
-    throw cms::Exception("MET collection is empty.");
-  }
+/*   if(metCands->empty() ) { */
+/*     throw cms::Exception("MET collection is empty."); */
+/*   } */
   if(metCands->size() != diObjects->size() ) {
     throw cms::Exception("MET and Di-object collections should have the same size.");
   }

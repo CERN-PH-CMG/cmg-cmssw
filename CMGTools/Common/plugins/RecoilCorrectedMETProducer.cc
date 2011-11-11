@@ -65,6 +65,7 @@ private:
 
   RecoilCorrector*  corrector_;
 
+  bool enable_;
   bool verbose_;
 };
 
@@ -77,6 +78,7 @@ RecoilCorrectedMETProducer::RecoilCorrectedMETProducer(const edm::ParameterSet &
   deltaRCut_(0.5),
   leptonLeg_( iConfig.getParameter<int>("leptonLeg") ),
   correctionType_( static_cast<CorrectionType>( iConfig.getParameter<int>("correctionType") ) ), 
+  enable_( iConfig.getParameter<bool>("enable") ),
   verbose_( iConfig.getUntrackedParameter<bool>("verbose", false ) ) {
   
   std::string fileCorrectTo = iConfig.getParameter<std::string>("fileCorrectTo");
@@ -99,20 +101,32 @@ RecoilCorrectedMETProducer::RecoilCorrectedMETProducer(const edm::ParameterSet &
 
 void RecoilCorrectedMETProducer::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
 
+  typedef std::auto_ptr< std::vector< MetType > >  OutPtr;
+
   edm::Handle< std::vector<MetType> > metH;
   iEvent.getByLabel(metSrc_, metH);
 
   edm::Handle< std::vector<RecBosonType> > recBosonH;
   iEvent.getByLabel(recBosonSrc_, recBosonH);
 
+
+  if( metH->size()!=1) 
+    throw cms::Exception("Input MET collection should have size 1.");
+
+  if( ! enable_ ) {
+    const MetType& met = (*metH)[0];
+    // when disabled, put one copy of the MET in the output collection
+    // for each rec boson in input. 
+    OutPtr pOut(new std::vector< MetType >(recBosonH->size(), met) );
+    iEvent.put( pOut ); 
+    return;
+  }
+
   edm::Handle< std::vector<reco::GenParticle> > genBosonH;
   iEvent.getByLabel(genBosonSrc_, genBosonH);
 
   edm::Handle< JetCollectionType > jetH;
   iEvent.getByLabel(jetSrc_, jetH);
-
-  if( metH->size()!=1) 
-    throw cms::Exception("Input MET collection should have size 1.");
 
   if( genBosonH->size()!=1) 
     throw cms::Exception("Input GenBoson collection should have size 1.");
@@ -165,7 +179,7 @@ void RecoilCorrectedMETProducer::produce(edm::Event & iEvent, const edm::EventSe
     std::cout<<"Looping on reconstructed bosons:"<<std::endl;
   }
   
-  std::auto_ptr< std::vector< MetType > > pOut(new std::vector< MetType > ); 
+  OutPtr pOut(new std::vector< MetType > ); 
   for( unsigned i=0; i<recBosonH->size(); ++i) {
     const RecBosonType& recBoson = recBosonH->at(i);
 
