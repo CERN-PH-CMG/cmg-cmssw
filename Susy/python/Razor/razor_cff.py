@@ -11,7 +11,7 @@ from CMGTools.Common.skims.leadingCMGMuonSelector_cfi import leadingCMGMuonSelec
 from CMGTools.Common.skims.cmgMuonSel_cfi import *
 #for box selection
 #the muon trigger requires an 8 gev muon - HLT_Mu8_R005_MR200_v* 
-razorMuonLoose = cmgMuonSel.clone(src = "cmgMuonSel", cut = "(pt() > 10.) && (abs(eta()) < 2.4) && getSelection('cuts_vbtfmuon_isGlobal') && getSelection('cuts_vbtfmuon_isTracker') && getSelection('cuts_vbtfmuon_dxy')")
+razorMuonLoose = cmgMuonSel.clone(src = "cmgMuonSel", cut = "(pt() > 10.) && (abs(eta()) < 2.4) && getSelection('cuts_vbtfmuon_isGlobal') && getSelection('cuts_vbtfmuon_numberOfValidTrackerHits')")
 razorMuonTight = cmgMuonSel.clone(src = "razorMuonLoose", cut = "(abs(eta()) < 2.1) && relIso(0.5)<0.15 && getSelection('cuts_vbtfmuon')")
 
 razorLeadingMuon = leadingCMGMuonSelector.clone(inputCollection = "razorMuonTight", index = cms.int32(1))
@@ -23,8 +23,8 @@ razorMuonSequence = cms.Sequence(
 
 from CMGTools.Common.skims.cmgElectronSel_cfi import *
 #for box selection
-razorElectronLoose = cmgElectronSel.clone(src = "susyElectron", cut = 'getSelection("cuts_vbtf95ID")')
-razorElectronTight = cmgElectronSel.clone(src = "razorElectronLoose", cut = 'pt() > 20 && getSelection("cuts_vbtf80ID")')
+razorElectronLoose = cmgElectronSel.clone(src = "cmgElectronSel", cut = '(pt()> 10.) && (abs(eta()) < 2.5) && (abs(eta()) < 1.4442 || abs(eta()) > 1.566) && getSelection("cuts_vbtf95ID")')
+razorElectronTight = cmgElectronSel.clone(src = "razorElectronLoose", cut = '(pt() > 20) && getSelection("cuts_vbtf80ID") && (relIso() < 0.2) && (abs(dxy()) < 0.02)')
 from CMGTools.Common.skims.leadingCMGElectronSelector_cfi import leadingCMGElectronSelector
 razorLeadingElectron = leadingCMGElectronSelector.clone(inputCollection = "razorElectronTight", index = cms.int32(1))
 # the electron trigger is HLT_Ele10_CaloIdL_CaloIsoVL_TrkIdVL_R005_MR200_v*
@@ -93,7 +93,8 @@ razorHemiHadBox = cmgHemi.clone(
 razorDiHemiHadBox = cmgDiHemi.clone(
     cfg = cmgDiHemi.cfg.clone(
     leg1Collection = cms.InputTag('razorHemiHadBox'),
-    leg2Collection = cms.InputTag('razorHemiHadBox')                    
+    leg2Collection = cms.InputTag('razorHemiHadBox'),
+    metCollection = cms.InputTag('cmgPFMET')                  
     ),
     cuts = cmgDiHemi.cuts.clone(
     #these are a little looser than the analysis cuts to give some sidebands                            

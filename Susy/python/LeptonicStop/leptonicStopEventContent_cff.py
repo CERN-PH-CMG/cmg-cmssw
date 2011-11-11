@@ -9,8 +9,15 @@ leptonicStopEventContent += cms.untracked.vstring(
 #                                           #the objects, W's, Z's, and jets
                                            'keep *_leptonicStopWMuNuSel_*_*',
                                            'keep *_leptonicStopWENuSel_*_*',
+                                           #W's with modified met
+                                           'keep *_leptonicStopWMuNuNoEle_*_*',                                           
+                                           'keep *_leptonicStopWMuNuNoMu_*_*',
+                                           'keep *_leptonicStopWEleNuNoEle_*_*',
+                                           'keep *_leptonicStopWEleNuNoMu_*_*',
+                                           #Z
                                            'keep *_leptonicStopDiMuon_*_*',
                                            'keep *_leptonicStopDiElectron_*_*',
+                                           #lepton cleaned jets
                                            'keep *_leptonicStopPFJetsLeptonVeto_*_*',
 #                                           leptons
                                            'keep *_leptonicStopElectronTight_*_*',
@@ -22,5 +29,7 @@ leptonicStopEventContent += cms.untracked.vstring(
                                            'keep *_leptonicStopPFBJetSelSize_*_*',
                                            'keep *_leptonicStopPFBJetsLeptonVetoSize_*_*',
                                            #the trigger objects to check
+                                           'keep *_leptonicStopTriggerSel_*_*',
+                                           #the modified MET objects
                                            'keep *_leptonicStopTriggerSel_*_*',
                                            )

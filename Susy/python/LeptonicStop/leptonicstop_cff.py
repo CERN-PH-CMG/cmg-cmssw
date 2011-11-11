@@ -10,7 +10,7 @@ from CMGTools.Common.miscProducers.collectionSize.collectionSize_cff import cand
 from CMGTools.Common.skims.cmgPFJetSel_cfi import *
 
 #cf the HLT TriCentralJet30 trigger - only cut on eta to get inside the tracker volume
-leptonicStopPFJetSel = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = 'pt() >= 25 && abs(eta)<2.4' )
+leptonicStopPFJetSel = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = 'pt() >= 30 && abs(eta)<2.4' )
 leptonicStopPFJetSelSize = candidateSize.clone(src = cms.InputTag('leptonicStopPFJetSel'))
 leptonicStopPFJetSelCount = cmgCandCount.clone( src = 'leptonicStopPFJetSel', minNumber = 3 )
 
@@ -34,7 +34,7 @@ leptonicStopJetSequence = cms.Sequence(
 from CMGTools.Common.skims.leadingCMGMuonSelector_cfi import leadingCMGMuonSelector
 from CMGTools.Common.skims.cmgMuonSel_cfi import *
 #the tight selection is a subset of the loose selection
-leptonicStopMuonLoose = cmgMuonSel.clone(src = "cmgMuonSel", cut = "(pt() > 10.) && (abs(eta()) < 2.4) && getSelection('cuts_vbtfmuon_isGlobal') && getSelection('cuts_vbtfmuon_isTracker') && getSelection('cuts_vbtfmuon_dxy')")
+leptonicStopMuonLoose = cmgMuonSel.clone(src = "cmgMuonSel", cut = "(pt() > 10.) && (abs(eta()) < 2.4) && getSelection('cuts_vbtfmuon_isGlobal') && getSelection('cuts_vbtfmuon_numberOfValidTrackerHits')")
 leptonicStopMuonTight = cmgMuonSel.clone(src = "leptonicStopMuonLoose", cut = "(pt() > 17.) && (abs(eta()) < 2.1) && relIso(0.5)<0.15 && getSelection('cuts_vbtfmuon')")
 leptonicStopLeadingMuon = leadingCMGMuonSelector.clone(inputCollection = "leptonicStopMuonTight", index = cms.int32(1))
 #HLT - isoMu17 eta cut at eta 2.5
@@ -47,8 +47,8 @@ leptonicStopMuonSequence = cms.Sequence(
 from CMGTools.Common.skims.cmgElectronSel_cfi import *
 from CMGTools.Common.skims.leadingCMGElectronSelector_cfi import leadingCMGElectronSelector
 #the tight selection is a subset of the loose selection
-leptonicStopElectronLoose = cmgElectronSel.clone(src = "susyElectron", cut = 'getSelection("cuts_vbtf95ID")')
-leptonicStopElectronTight = cmgElectronSel.clone(src = "leptonicStopElectronLoose", cut = 'pt() > 25. && getSelection("cuts_vbtf80ID")')
+leptonicStopElectronLoose = cmgElectronSel.clone(src = "cmgElectronSel", cut = '(pt()> 10.) && (abs(eta()) < 2.5) && (abs(eta()) < 1.4442 || abs(eta()) > 1.566) && getSelection("cuts_vbtf95ID")')
+leptonicStopElectronTight = cmgElectronSel.clone(src = "leptonicStopElectronLoose", cut = 'pt() > 25. && getSelection("cuts_vbtf80ID") && (relIso() < 0.2) && (abs(dxy()) < 0.02)')
 leptonicStopLeadingElectron = leadingCMGElectronSelector.clone(inputCollection = "leptonicStopElectronTight", index = cms.int32(1))
 # the electron trigger is HLT Ele25, eta 2.5
 leptonicStopElectronSequence = cms.Sequence(
@@ -67,10 +67,52 @@ leptonicStopLeadingLeptons = cmgCandMerge.clone(
 #require one tight lepton - don't care which
 leptonicStopLeadingObjectCount = cmgCandCount.clone( src = 'leptonicStopLeadingLeptons', minNumber = 1 )
 
+from CMGTools.Susy.topprojections.electronprojector_cff import * 
+from CMGTools.Susy.topprojections.muonprojector_cff import * 
+
+leptonicStopNoLeadingElectron = electronOnElectron.clone(
+    topCollection = cms.InputTag('leptonicStopLeadingElectron'),
+    bottomCollection = cms.InputTag('leptonicStopElectronLoose')
+)  
+
+leptonicStopNoLeadingMuon = muonOnMuon.clone(
+    topCollection = cms.InputTag('leptonicStopLeadingMuon'),
+    bottomCollection = cms.InputTag('leptonicStopMuonLoose')
+)                                        
+
 leptonicStopLeptonSequence = cms.Sequence(
     leptonicStopMuonSequence+
     leptonicStopElectronSequence*
-    leptonicStopLeadingLeptons
+    leptonicStopLeadingLeptons*
+    leptonicStopNoLeadingElectron+
+    leptonicStopNoLeadingMuon
+    )
+
+#add a MET cut - but not too tight for the moment
+leptonicStopMET = cmgCandSel.clone(src = 'cmgPFMET', cut = 'et() >= 50')
+leptonicStopMETCount = cmgCandCount.clone( src = 'leptonicStopMET', minNumber = 1 )
+
+#recalculate the MET, removing the leading tight lepton
+from CMGTools.Common.Tools.cmgBaseMETModifier_cfi import cmgBaseMETModifier
+leptonicStopMETNoMu = cmgBaseMETModifier.clone(
+    cfg = cmgBaseMETModifier.cfg.clone(
+    inputCollection = cms.InputTag("leptonicStopNoLeadingMuon"),
+    metCollection = cms.InputTag("cmgPFMET"),
+    operator = cms.string('+') #Add the muons to the MET                                               
+    )
+)
+leptonicStopMETNoEle = cmgBaseMETModifier.clone(
+    cfg = cmgBaseMETModifier.cfg.clone(
+    inputCollection = cms.InputTag("leptonicStopNoLeadingElectron"),
+    metCollection = cms.InputTag("cmgPFMET"),
+    operator = cms.string('+') #Add the electrons to the MET                                               
+    )
+)
+
+leptonicStopMETSequence = cms.Sequence(
+    leptonicStopMET+
+    leptonicStopMETNoMu+
+    leptonicStopMETNoEle              
     )
 
 #now build the W candidates
@@ -85,13 +127,13 @@ from CMGTools.Common.skims.cmgWMuNuCount_cfi import *
 #use the tight leptons and throw away the low MT region
 leptonicStopWENu = cmgWENu.clone()
 leptonicStopWENu.cfg.leg1Collection = "leptonicStopElectronTight"
-leptonicStopWENu.cuts.mt = cms.string('mT() >= 20')
+leptonicStopWENu.cuts.mt = cms.string('mT() >= 30')
 leptonicStopWENuSel = cmgWENuSel.clone(src = "leptonicStopWENu", cut = "getSelection('cuts_mt')")
 
 #use the tight leptons and throw away the low MT region
 leptonicStopWMuNu = cmgWMuNu.clone()
 leptonicStopWMuNu.cfg.leg1Collection = "leptonicStopMuonTight"
-leptonicStopWMuNu.cuts.mt = cms.string('mT() >= 20')
+leptonicStopWMuNu.cuts.mt = cms.string('mT() >= 30')
 leptonicStopWMuNuSel = cmgWMuNuSel.clone(src = "leptonicStopWMuNu", cut = "getSelection('cuts_mt')")
 
 #require at least one W candidate to pass the selection
@@ -103,12 +145,27 @@ leptonicStopW = cmgCandMerge.clone(
     )
 leptonicStopWCount = cmgCandCount.clone( src = 'leptonicStopW', minNumber = 1 )
 
+#remake the W's with the modified MET
+leptonicStopWMuNuNoMu = leptonicStopWMuNu.clone()
+leptonicStopWMuNuNoMu.cfg.leg2Collection = "leptonicStopMETNoMu"
+leptonicStopWMuNuNoEle = leptonicStopWMuNu.clone()
+leptonicStopWMuNuNoEle.cfg.leg2Collection = "leptonicStopMETNoEle"
+
+leptonicStopWEleNuNoMu = leptonicStopWENu.clone()
+leptonicStopWEleNuNoMu.cfg.leg2Collection = "leptonicStopMETNoMu"
+leptonicStopWEleNuNoEle = leptonicStopWENu.clone()
+leptonicStopWEleNuNoEle.cfg.leg2Collection = "leptonicStopMETNoEle"
+
 leptonicStopWSequence = cms.Sequence(
     leptonicStopWENu*
     leptonicStopWENuSel+
     leptonicStopWMuNu*
     leptonicStopWMuNuSel*
-    leptonicStopW                         
+    leptonicStopW+
+    leptonicStopWMuNuNoMu+
+    leptonicStopWMuNuNoEle+
+    leptonicStopWEleNuNoMu+
+    leptonicStopWEleNuNoEle    
     )
 
 #now veto the Z mass window
@@ -146,14 +203,12 @@ leptonicStopPFBJetsLeptonVeto = cmgPFJetSel.clone( src = 'leptonicStopPFJetsLept
 leptonicStopPFBJetsLeptonVetoSize = candidateSize.clone(src = cms.InputTag('leptonicStopPFBJetsLeptonVeto'))
 leptonicStopPFJetsLeptonVetoCount = cmgCandCount.clone( src = 'leptonicStopPFJetsLeptonVeto', minNumber = 3 )
 
-
 leptonicStopVetoSequence = cms.Sequence(
     leptonicStopPFJetsMuonVeto*
     leptonicStopPFJetsLeptonVeto*
     leptonicStopPFBJetsLeptonVeto*
     leptonicStopPFBJetsLeptonVetoSize
     )
-
 
 #make a skim on the HLT - should match all leptonicStop triggers
 from CMGTools.Common.skims.cmgTriggerObjectSel_cfi import *
@@ -180,6 +235,7 @@ leptonicStopTriggerSequence = cms.Sequence(
 leptonicStopObjectSequence = cms.Sequence(
     leptonicStopJetSequence + 
     leptonicStopLeptonSequence +
+    leptonicStopMETSequence +    
     leptonicStopWSequence +
     leptonicStopZSequence +
     leptonicStopVetoSequence + 
@@ -199,6 +255,8 @@ leptonicStopSkimSequence = cms.Sequence(
     leptonicStopPFJetSelCount+
     # no ID failures
     ~leptonicStopIDCount+
+    # cut on MET
+    leptonicStopMETCount+
     # cut the low Mt QCD
     leptonicStopWCount+
     # at least 3 jets after the veto
