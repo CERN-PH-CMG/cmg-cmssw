@@ -38,7 +38,7 @@ cbern%/LM11_SUSY_sftsht_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
 cbern%/LM12_SUSY_sftsht_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
 cbern%/LM13_SUSY_sftsht_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
 cbern%/LM0_SUSY_sftsht_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
-cbern%/LM1_SUSY_sftsht_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/
+cbern%/LM1_SUSY_sftsht_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
 palencia%/TTJets_TuneZ2_mass161_5_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v3/AODSIM/V2
 palencia%/TTJets_TuneZ2_mass163_5_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v3/AODSIM/V2
 palencia%/TTJets_TuneZ2_mass166_5_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v3/AODSIM/V2
