@@ -9,14 +9,14 @@ def setupRecoilCorrection( process, datasetName ):
         print '\tENABLED : Z->l tau mode (tau is true)'
         process.recoilCorMETTauMu.enable = True
         process.recoilCorMETTauMu.fileCorrectTo = '/'.join([rootfile_dir,
-                                                           'recoilfit_wjets_njet.root'])
-        process.recoilCorMETTauMu.leptonLeg = 2
+                                                            'recoilfit_zjets_ltau_njet.root'])
+        process.recoilCorMETTauMu.leptonLeg = 0
     elif datasetName.startswith( '/WJetsToLNu' ):
         print '\tENABLED : W+jet mode (tau is fake)'
         process.recoilCorMETTauMu.enable = True
         process.recoilCorMETTauMu.fileCorrectTo = '/'.join([rootfile_dir,
-                                                            'recoilfit_zjets_ltau_njet.root'])
-        process.recoilCorMETTauMu.leptonLeg = 0
+                                                           'recoilfit_wjets_njet.root'])
+        process.recoilCorMETTauMu.leptonLeg = 2
     else:
         print '\tDISABLED'
         process.metRecoilCorInputSequence.remove( process.genWorZ ) 
