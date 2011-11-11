@@ -1,29 +1,39 @@
 import FWCore.ParameterSet.Config as cms
 
 from CMGTools.Common.diTau_cff import *
+from CMGTools.Common.generator.metRecoilCorrection.metRecoilCorrection_cff import *
+from CMGTools.Common.factories.cmgTauMuCor_cfi import *
 
 from CMGTools.H2TauTau.objects.tauMuCuts_cff import * 
 
 cmgTauMu.cuts = tauMuCuts.clone()
-
-# pt cut on the tau and mu leg. taking a margin w/r to the AN
-# cmgTauMuSel.cut = 'leg1().pt()>18 && leg2().pt()>14'
-
-# removing di-taus for which both legs come from the same object. 
-# cmgTauMuSel.cut._value += ' && mass()>10'
+cmgTauMuCor.cuts = tauMuCuts.clone()
 
 cmgTauMuSel.cut = 'getSelection("cuts_skimming")'
 
-cmgTauMuBaselineSel = cmgTauMuSel.clone(
-    src = 'cmgTauMuSel',
-    cut = 'getSelection("cuts_baseline")'
-    )
+cmgTauMuCorSel = cmgTauMuSel.clone( src = 'cmgTauMuCor' )
 
-# ---- tau e channel : for now, same cuts as for tau mu
+cmgTauMuBaselineSel = cmgTauMuSel.clone( src = 'cmgTauMuSel',
+                                         cut = 'getSelection("cuts_baseline")' )
+cmgTauMuCorBaselineSel = cmgTauMuBaselineSel.clone( src = 'cmgTauMuCorSel' ) 
 
-# cmgTauESel.cut = cmgTauMuSel.cut
+recoilCorMETTauMu =  recoilCorrectedMET.clone( recBosonSrc = 'cmgTauMuSel')
+cmgTauMuCor.cfg.metCollection = 'recoilCorMETTauMu'
 
-objectSequence = cms.Sequence(
-    diTauSequence +
-    cmgTauMuBaselineSel
-    )
+tauMuSequence = cms.Sequence( cmgTauMu +
+                              cmgTauMuSel +
+                              cmgTauMuBaselineSel + 
+                              recoilCorMETTauMu +
+                              cmgTauMuCor + 
+                              cmgTauMuCorSel +
+                              cmgTauMuCorBaselineSel )
+
+
+
+
+
+metRecoilCorInputSequence = cms.Sequence( cmgPFJetForRecoil +
+                                          genWorZ )
+
+objectSequence = cms.Sequence( metRecoilCorInputSequence + 
+                               tauMuSequence )
