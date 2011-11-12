@@ -38,7 +38,9 @@ string objectSearchKey = "";
 string inDir   = "OUTNew/";
 string jsonFile = "../../data/beauty-samples.json";
 string outDir  = "Img/";
+string plotExt = ".png";
 string outFile = "plotter.root";
+string cutflowhisto = "cutflow";
 
 std::map<string, double> initialNumberOfEvents;
 
@@ -95,6 +97,7 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::vector
    TList* list = dir->GetListOfKeys();
    for(int i=0;i<list->GetSize();i++){
       TObject* tmp = GetObjectFromPath(dir,list->At(i)->GetName(),false);
+      if(tmp->InheritsFrom("TTree")) continue;
       if(tmp->InheritsFrom("TH1")){
          histlist.push_back(NameAndType(parentPath+list->At(i)->GetName(), !(tmp->InheritsFrom("TH2") || tmp->InheritsFrom("TH3")) ) );
       }else{
@@ -287,7 +290,7 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    }
    c1->cd(0);
    //T->Draw("same");
-   string SavePath = SaveName + ".png";
+   string SavePath = SaveName + plotExt;
    while(SavePath.find("*")!=std::string::npos)SavePath.replace(SavePath.find("*"),1,"");
    while(SavePath.find("#")!=std::string::npos)SavePath.replace(SavePath.find("#"),1,"");
    while(SavePath.find("{")!=std::string::npos)SavePath.replace(SavePath.find("{"),1,"");
@@ -447,7 +450,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    }
 
    c1->cd();
-   string SavePath = SaveName + ".png";
+   string SavePath = SaveName + plotExt;
    while(SavePath.find("*")!=std::string::npos)SavePath.replace(SavePath.find("*"),1,"");
    while(SavePath.find("#")!=std::string::npos)SavePath.replace(SavePath.find("#"),1,"");
    while(SavePath.find("{")!=std::string::npos)SavePath.replace(SavePath.find("{"),1,"");
@@ -631,6 +634,8 @@ int main(int argc, char* argv[]){
         printf("--noTex  --> Do not create latex table (when possible)\n");
         printf("--noRoot --> Do not make a summary .root file\n");
         printf("--noPlot --> Do not creates plot files (useful to speedup processing)\n");
+	printf("--plotExt --> extension to save\n");
+	printf("--cutflow --> name of the histogram with the original number of events (cutflow by default)\n");
 
         printf("command line example: runPlotter --json ../data/beauty-samples.json --iLumi 2007 --inDir OUT/ --outDir OUT/plots/ --outFile plotter.root --noRoot --noPlot\n");
 	return 0;
@@ -649,11 +654,13 @@ int main(int argc, char* argv[]){
      if(arg.find("--noTex" )!=string::npos){ doTex= false;    }
      if(arg.find("--noRoot")!=string::npos){ StoreInFile = false;    }
      if(arg.find("--noPlot")!=string::npos){ doPlot = false;    }
+     if(arg.find("--plotExt" )!=string::npos && i+1<argc){ plotExt   = argv[i+1];  i++;  printf("saving plots as = %s\n", plotExt.c_str());  }
+     if(arg.find("--cutflow" )!=string::npos && i+1<argc){ cutflowhisto   = argv[i+1];  i++;  printf("Normalizing from 1st bin in = %s\n", cutflowhisto.c_str());  }
    } 
    system( (string("mkdir -p ") + outDir).c_str());
 
    JSONWrapper::Object Root(jsonFile, true);
-   GetInitialNumberOfEvents(Root,inDir,"cutflow");  //Used to get the rescale factor based on the total number of events geenrated
+   GetInitialNumberOfEvents(Root,inDir,cutflowhisto);  //Used to get the rescale factor based on the total number of events geenrated
 
    std::vector<NameAndType> histlist;
    GetListOfObject(Root,inDir,histlist);
@@ -664,6 +671,7 @@ int main(int argc, char* argv[]){
    printf("Progressing Bar              :0%%       20%%       40%%       60%%       80%%       100%%\n");
    printf("                             :");
    int TreeStep = histlist.size()/50;if(TreeStep==0)TreeStep=1;
+   system("echo \"\" > /tmp/histlist.csv");
    for(unsigned int i=0;i<histlist.size();i++){
       if(i%TreeStep==0){printf(".");fflush(stdout);}
       if(objectSearchKey != "" && histlist[i].Name.find(objectSearchKey)==std::string::npos)continue;
