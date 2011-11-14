@@ -4,7 +4,7 @@ from CMGTools.Common.diTau_cff import *
 from CMGTools.Common.generator.metRecoilCorrection.metRecoilCorrection_cff import *
 from CMGTools.Common.factories.cmgTauMuCor_cfi import *
 
-from CMGTools.H2TauTau.objects.tauMuSVFit_cfi import tauMuSVFit as cmgTauMuCorSelSVFit
+from CMGTools.H2TauTau.objects.tauMuSVFit_cfi import tauMuSVFit as cmgTauMuCorPreSelSVFit
 
 from CMGTools.H2TauTau.objects.tauMuCuts_cff import * 
 
@@ -13,26 +13,25 @@ cmgTauMuCor.cuts = tauMuCuts.clone()
 
 cmgTauMuSel.cut = 'getSelection("cuts_skimming")'
 
-cmgTauMuCorSel = cmgTauMuSel.clone( src = 'cmgTauMuCor' )
+cmgTauMuFullSel = cmgTauMuSel.clone( src = 'cmgTauMuSel',
+                                     cut = 'getSelection("cuts_baseline")' )
 
-cmgTauMuBaselineSel = cmgTauMuSel.clone( src = 'cmgTauMuSel',
-                                         cut = 'getSelection("cuts_baseline")' )
-cmgTauMuCorBaselineSel = cmgTauMuBaselineSel.clone( src = 'cmgTauMuCorSelSVFit' ) 
+
+cmgTauMuCorPreSel = cmgTauMuSel.clone( src = 'cmgTauMuCor' )
+
+cmgTauMuCorFullSelSVFit = cmgTauMuFullSel.clone( src = 'cmgTauMuCorPreSelSVFit' ) 
 
 recoilCorMETTauMu =  recoilCorrectedMET.clone( recBosonSrc = 'cmgTauMuSel')
 cmgTauMuCor.cfg.metCollection = 'recoilCorMETTauMu'
 
 tauMuSequence = cms.Sequence( cmgTauMu +
                               cmgTauMuSel +
-                              cmgTauMuBaselineSel + 
+                              cmgTauMuFullSel + 
                               recoilCorMETTauMu +
                               cmgTauMuCor + 
-                              cmgTauMuCorSel +
-                              cmgTauMuCorSelSVFit  + 
-                              cmgTauMuCorBaselineSel )
-
-
-
+                              cmgTauMuCorPreSel +
+                              cmgTauMuCorPreSelSVFit  + 
+                              cmgTauMuCorFullSelSVFit )
 
 
 metRecoilCorInputSequence = cms.Sequence( cmgPFJetForRecoil +

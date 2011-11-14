@@ -1,10 +1,11 @@
 tauMuAliases = {
-    'tauMuAll':'cmgTaucmgMuoncmgDiObjects_cmgTauMu__',
-    'tauMu':'cmgTaucmgMuoncmgDiObjects_cmgTauMuSel__',
-    'tauMuBase':'cmgTaucmgMuoncmgDiObjects_cmgTauMuBaselineSel__',
-    'tauMuCorAll':'cmgTaucmgMuoncmgDiObjects_cmgTauMuCor__',
-    'tauMuCor':'cmgTaucmgMuoncmgDiObjects_cmgTauMuCorSel__',
-    'tauMuCorBase':'cmgTaucmgMuoncmgDiObjects_cmgTauMuCorBaselineSel__' }
+    'tauMuUncAll':'cmgTaucmgMuoncmgDiObjects_cmgTauMu__',
+    'tauMuUncPreSel':'cmgTaucmgMuoncmgDiObjects_cmgTauMuPreSel__',
+    'tauMuUncFullSel':'cmgTaucmgMuoncmgDiObjects_cmgTauMuFullSel__',
+    'tauMuAll':'cmgTaucmgMuoncmgDiObjects_cmgTauMuCor__',
+    'tauMuPreSel':'cmgTaucmgMuoncmgDiObjects_cmgTauMuCorPreSelSVFit__',
+    'tauMuFullSel':'cmgTaucmgMuoncmgDiObjects_cmgTauMuCorFullSelSVFit__',
+    }
 
 
 

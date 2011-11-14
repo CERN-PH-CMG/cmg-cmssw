@@ -89,8 +89,8 @@ class Loop:
     def InitHandles(self):
         '''Initialize all handles for the products we want to read'''
         self.handles = {}
-        self.handles['cmgTauMuBaselineSel'] =  AutoHandle( 'cmgTauMuBaselineSel',
-                                                           'std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>')
+        self.handles['cmgTauMuFullSel'] =  AutoHandle( 'cmgTauMuFullSel',
+                                                       'std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>')
         self.handles['cmgTriggerObjectSel'] =  AutoHandle( 'cmgTriggerObjectSel',
                                                            'std::vector<cmg::TriggerObject>>')
         
@@ -121,7 +121,7 @@ class Loop:
         self.events.to(iEv)
         self.LoadCollections(self.events)
         
-        self.diTaus = self.handles['cmgTauMuBaselineSel'].product()
+        self.diTaus = self.handles['cmgTauMuFullSel'].product()
         self.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
 
         self.count_triggerPassed.inc('a: All events')
