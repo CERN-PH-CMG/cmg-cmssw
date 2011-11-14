@@ -429,35 +429,24 @@
                   "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/SingleMu/SingleMu-05Aug2011"]
 		},
                 {
-                  "dtag":"DoubleMuPromptRecov6_172620_173244",
+	          "dtag":"DoubleMuPromptRecov6_172620_173244",
                   "dset":"/DoubleMu/Run2011A-PromptReco-v6/AOD",
                   "patdir":["/castor/cern.ch//cms/store/cmst3/user/psilva/Data/DoubleMuon/DoubleMu-PromptReco-v6-172620-173244"]
 		},
-                {
-                  "dtag":"DoubleElectronPromptRecov6_172620_173244",
-                  "dset":"/DoubleElectron/Run2011A-PromptReco-v6/AOD",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/DoubleElectron/DoubleElectron-PromptReco-172620-173244"]
-		},
-                {
-                  "dtag":"MuEGPromptRecov6_172620_173244",
-                  "dset":"/MuEG/Run2011A-PromptReco-v6/AOD",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/MuEG/MuEG-PromptReco-v6-172620-173244"]
-		},
-                {
-                  "dtag":"SingleMuPromptRecov6_172620_173244",
-                  "dset":"/SingleMu/Run2011A-PromptReco-v6/AOD",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/SingleMu/SingleMu-PromptReco-v6-172620-173244"]
-		},
-
                 {
 	          "dtag":"DoubleMuPromptRecov6_173380_173692",
                   "dset":"/DoubleMu/Run2011A-PromptReco-v6/AOD",
                   "patdir":["/castor/cern.ch//cms/store/cmst3/user/psilva/Data/DoubleMuon/DoubleMu-PromptReco-v6-173380_173692"]
 		},
-                {
-                  "dtag":"DoubleElectronPromptRecov6_173380_173692",
+		{
+                  "dtag":"DoubleElectronPromptRecov6",
                   "dset":"/DoubleElectron/Run2011A-PromptReco-v6/AOD",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/DoubleElectron/DoubleElectron-PromptReco-173380_173692"]
+                  "patdir":["/store/cmst3/user/psilva/Data/DoubleElectron/DoubleElectron-PromptReco-v6"]
+                },
+                {
+                  "dtag":"MuEGPromptRecov6_172620_173244",
+                  "dset":"/MuEG/Run2011A-PromptReco-v6/AOD",
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/MuEG/MuEG-PromptReco-v6-172620-173244"]
 		},
                 {
                   "dtag":"MuEGPromptRecov6_173380_173692",
@@ -465,10 +454,30 @@
                   "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/MuEG/MuEG-PromptReco-v6-173380_173692"]
 		},
                 {
+                  "dtag":"SingleMuPromptRecov6_172620_173244",
+                  "dset":"/SingleMu/Run2011A-PromptReco-v6/AOD",
+                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/SingleMu/SingleMu-PromptReco-v6-172620-173244"]
+		},
+                {
                   "dtag":"SingleMuPromptRecov6_173380_173692",
                   "dset":"/SingleMu/Run2011A-PromptReco-v6/AOD",
                   "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/SingleMu/SingleMu-PromptReco-v6-173380_173692"]
-		}
+		},
+		{
+                  "dtag":"DoubleMuPromptReco2011B",
+                  "dset":"/DoubleMu/Run2011B-PromptReco-v6/AOD",
+                  "patdir":["/store/cmst3/user/psilva/Data/DoubleMuon/DoubleMu-2011B-PromptReco"]
+                },
+                {
+                  "dtag":"DoubleElectronPromptReco2011B",
+                  "dset":"/DoubleElectron/Run2011B-PromptReco-v6/AOD",
+                  "patdir":["/store/cmst3/user/psilva/Data/DoubleElectron/DoubleElectron-2011B-PromptReco"]
+                },
+                {
+                  "dtag":"MuEGPromptReco2011B",
+                  "dset":"/MuEG/Run2011B-PromptReco-v6/AOD",
+                  "patdir":["/store/cmst3/user/psilva/Data/MuEG/MuEG-2011B-PromptReco"]
+                }
              ]
 	}
     ]	
