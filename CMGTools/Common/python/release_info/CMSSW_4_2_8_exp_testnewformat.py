@@ -1,4 +1,4 @@
-[ ('AnalysisDataFormats/CMGTools', 'AnalysisDataFormats/CMGTools', 'cbern_svfit_14Nov11'),
+[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_svfit_14Nov11'),
   ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_svfit_14Nov11'),
   ('CMGTools/H2TauTau', 'CMGTools/H2TauTau', 'cbern_svfit_14Nov11'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_11Nov11'),
