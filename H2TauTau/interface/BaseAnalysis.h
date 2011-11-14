@@ -41,6 +41,7 @@ public:
   BaseAnalysis(const char * name);
   virtual ~BaseAnalysis();
 
+  void setVerbosity(unsigned int level){verbosity_=level;}
   void addSample(Sample* sample){samples_.push_back(sample);}  
   void setOutputPath(TString path){outputpath_=path;}
   void setTruncateEvents(int maxEvents){truncateEvents_=maxEvents;}
@@ -54,15 +55,16 @@ public:
 protected:
 
   virtual bool addHistos(Sample* s);
-  virtual bool getHistos(Sample* s, TString tag = "");
+  virtual bool getHistos(TString tag = "");
   virtual bool fillVariables(const fwlite::Event * event);
   virtual bool applySelections();
-  virtual bool fillHistos(double weight = 1.);
+  virtual bool fillHistos(TString tag = "", double weight = 1.);
 
 
   std::vector<Sample*> samples_;
   Sample* sample_;
 
+  unsigned int verbosity_;
   int truncateEvents_;
   int printFreq_;
   float mcPUPWeight_;

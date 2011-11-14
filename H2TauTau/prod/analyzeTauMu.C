@@ -1,15 +1,20 @@
-{
-  
+{  
   TauMuAnalysis analysis("analysis");
-  //analysis.setTruncateEvents(10);
-  analysis.setPrintFreq(500);
+  analysis.setVerbosity(1);
+  analysis.setTruncateEvents(10); 
+  analysis.makeAllHistos(0);
+  analysis.setPrintFreq(1);
   analysis.setInputTag("cmgTauMuSelClean");
-  analysis.calcSVFit(0);
-  analysis.setQCDOStoSSRatio(1.06);
+  analysis.calcSVFit(1);
 
+  analysis.setQCDOStoSSRatio(1.06);
   float MCEffCorrFactor = 0.968 * 0.92; 
 
-  TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/21fbCat";
+  TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/Test";
+
+  //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/21fbCat";
+  //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/21fbCatRecoil";
+  //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/21fbCatSVFitRecoil";
 
   analysis.setOutputPath(path);
 
@@ -114,19 +119,19 @@
   //   ZZ.setEffCorrFactor(MCEffCorrFactor);
   //   analysis.addSample(&ZZ);
   
-  Sample Higgs("Higgs","/data/benitezj/RootFiles/GluGluToHToTauTau_M-115_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0/TauMu");
-  Higgs.setDataType("MC");
-  Higgs.setColor(0);
-  Higgs.setLineColor(1);
-  Higgs.setLineStyle(2);
-  Higgs.setPlotLabel("5 x SM Higgs(115)");
-  Higgs.setLegendOption("L");
-  Higgs.setCrossection(18.12*0.0765);
-  Higgs.setRecoilCorr("/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/data/recoilfits/recoilfit_zjets_ltau_njet.root");
-  Higgs.setSampleGenEvents(196002);
-  Higgs.addTrigPath("HLT_IsoMu12_v1");
-  Higgs.setEffCorrFactor(MCEffCorrFactor*5);
-  analysis.addSample(&Higgs);    
+//   Sample Higgs("Higgs","/data/benitezj/RootFiles/GluGluToHToTauTau_M-115_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0/TauMu");
+//   Higgs.setDataType("MC");
+//   Higgs.setColor(0);
+//   Higgs.setLineColor(1);
+//   Higgs.setLineStyle(2);
+//   Higgs.setPlotLabel("5 x SM Higgs(115)");
+//   Higgs.setLegendOption("L");
+//   Higgs.setCrossection(18.12*0.0765);
+//   Higgs.setRecoilCorr("/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/data/recoilfits/recoilfit_zjets_ltau_njet.root");
+//   Higgs.setSampleGenEvents(196002);
+//   Higgs.addTrigPath("HLT_IsoMu12_v1");
+//   Higgs.setEffCorrFactor(MCEffCorrFactor*5);
+//   analysis.addSample(&Higgs);    
 
 //   Sample Higgs4("Higgs4","/data/benitezj/RootFiles/GluGluToHToTauTau_M-115_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2_/PAT_CMG_V2_4_0/TauMu");
 //   Higgs4.setDataType("MC");
@@ -316,141 +321,6 @@
   ///////////initialize
   if(!analysis.init()){cout<<" could not init"<<endl;return 0;}
   
-  
-//   /////////////////create histos
-// //  analysis.createHistos("Higgs4");
-//  analysis.createHistos("Higgs");
-//   analysis.createHistos("ZToMuMu");
-//   analysis.createHistos("ZToTauTau");
-//   analysis.createHistos("ZToLJet");
-//   analysis.createHistos("WJetsToLNu");
-//   analysis.createHistos("TTJets");
-//   //   analysis.createHistos("WW");
-//   //   analysis.createHistos("WZ");
-//   //   analysis.createHistos("ZZ");
-//   //   analysis.createHistos("SingleMuMay");
-//   analysis.createHistos("TauPlusXMay");
-//   analysis.createHistos("TauPlusXv4");
-//   analysis.createHistos("TauPlusXAug");
-//   analysis.createHistos("TauPlusXv6");
-  
-//   analysis.createHistos("ZToMuMu_SS");
-//   analysis.createHistos("ZToTauTau_SS");
-//   analysis.createHistos("ZToLJet_SS");
-//   analysis.createHistos("WJetsToLNu_SS");
-//   analysis.createHistos("TTJets_SS");
-//   //   analysis.createHistos("WW_SS");
-//   //   analysis.createHistos("WZ_SS");
-//   //   analysis.createHistos("ZZ_SS");
-//   //   analysis.createHistos("SingleMuMay_SS");
-//   analysis.createHistos("TauPlusXMay_SS");
-//   analysis.createHistos("TauPlusXv4_SS");
-//   analysis.createHistos("TauPlusXAug_SS");
-//   analysis.createHistos("TauPlusXv6_SS");
-  
-  
-  
-  //can only do one plot at a time for now 
-  WJetsToLNu.setPlotOrder(1);   WJetsToLNu_SS.setPlotOrder(1);
-  ZToLJet.setPlotOrder(2);   ZToLJet_SS.setPlotOrder(2);
-  TTJets.setPlotOrder(3);       TTJets_SS.setPlotOrder(3);
-  ZToMuMu.setPlotOrder(4);   ZToMuMu_SS.setPlotOrder(4);
-  ZToTauTau.setPlotOrder(5);   ZToTauTau_SS.setPlotOrder(5);
-  Higgs.setPlotOrder(6);  
 
-  
-
-
-//   Float_t c[4]={0,0,0,0};
-//   Float_t r[4]={160000,175000,0,400};
-//   analysis.plot("runNumberHisto",0,"","",c,r);
-
-//   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={-0.5,24.5,0,4000};
-//   analysis.plot("nVertexHisto",1," # of reco. vertices ","",c,r);
-
-//     Float_t c[4]={.5,.75,.42,.81};
-//     Float_t r[4]={0,100,0,1500};
-//     analysis.plot("muPtHisto",1," #mu p_{T}   (GeV)","Events / 1 GeV",c,r);
-
-//   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,0.5,0,6000};
-//   analysis.plot("muIsoHisto_muiso",1," muon isolation  ","",c,r);
-
-//   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,100,0,1800};
-//   analysis.plot("tauPtHisto",1," #tau p_{T}   (GeV)","Events / 1 GeV",c,r);
-
-  //   Float_t c[4]={.5,.75,.42,.81};
-  //   analysis.plot("tauIsoHisto",2," tau isolation  ","",c,0);
-  
-//   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,150,0,5000};
-//   analysis.plot("metHisto",4," MET   (GeV)","Events / 4 GeV",c,r);
-
-//   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,150,0,5000};
-//   analysis.plot("metHisto_massT",4," MET   (GeV)","Events / 4 GeV",c,r);
-  
-//   Float_t c[4]={.5,.75,.48,.83};
-//   Float_t r[4]={-3.2,3.2,0,1600};
-//   analysis.plot("metphiHisto_massT",1," MET #phi ","",c,r);
-
-//    Float_t c[4]={.15,.45,.42,.81};
-//    Float_t r[4]={-140,40,0,6000};
-//    analysis.plot("pZetaHisto_pzeta",6,"P_{#zeta} - 1.5*P_{#zeta}^{vis}    (GeV)","Events / 6 GeV",c,r);
-  
-//   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,200,0,2500};
-//   analysis.plot("transverseMassHisto_massT",2,"m_{T}   (GeV)","Events / 2 GeV",c,r);
-
-
-//   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={-0.5,5.5,0,35000};
-//   analysis.plot("njetHisto_massT",1,"# of jets","",c,r);
-  
-//   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,200,0,3500};
-// //   Float_t c[4]={.5,.75,.42,.81};
-// //   Float_t r[4]={0,350,5,1e7};
-//   analysis.plot("diTauMassHisto",4,"m_{vis}   (GeV)","Events / 4 GeV",c,r,0);
-
-//   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,300,0,4000};
-//   analysis.plot("diTauMassSVFitHisto",8," mass   (GeV)","Events / 8 GeV",c,r);
-
-//    Float_t c[4]={.5,.75,.42,.81};
-//    Float_t r[4]={0,400,0,3000};
-//    analysis.plot("svFitCov00Histo",10,"matrix element 00","Events",c,r);
-
-
-  Float_t c[4]={.5,.75,.42,.81};
-  Float_t r[4]={0,200,0,30};
-  analysis.plot("diTauMassVBFHisto",20,"m_{vis}   (GeV)","Events / 20 GeV",c,r,0);
-
-//   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={300,1000,0,30};
-//   analysis.plot("diJetMassVBFHisto",100,"m_{jj} (GeV)","Events / 100 GeV",c,r,0);
-
-//   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={3,10,0,60};
-//   analysis.plot("diJetDeltaEtaVBFHisto",10,"|#Delta#eta_{jj}|","Events / 1",c,r,0);
-
-    
-
-
-
-  //  return 1;
-  gROOT->ProcessLine(".q");
 }
-
-
-  ///triggers run on Higgs MC
-// HLT_IsoMu12_LooseIsoPFTau10_v2  0
-// HLT_IsoMu12_v1  1
-// HLT_IsoMu15_v5  1
-// HLT_IsoMu17_CentralJet40_BTagIP_v2      0
-// HLT_IsoMu17_v5  1
-// HLT_IsoMu24_v1  1
-// HLT_IsoMu30_v1  1
 

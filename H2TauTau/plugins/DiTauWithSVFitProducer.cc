@@ -6,15 +6,12 @@
 #include "FWCore/Utilities/interface/Exception.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-// #include "DataFormats/Candidate/interface/LeafCandidate.h"
-// #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-// #include "DataFormats/Math/interface/deltaR.h"
-
 #include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
-// #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
-// #include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
 
-// #include "CMGTools/Common/interface/RecoilCorrector.h"
+#include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
+#include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
+#include "TauAnalysis/SVFitStandAlone/interface/NSVfitStandaloneAlgorithm.h"
+
 
 #include <sstream>
 
@@ -35,6 +32,8 @@ private:
   
   /// source diobject inputtag
   edm::InputTag diTauSrc_;
+  edm::InputTag metSrc_;
+  edm::InputTag metsigSrc_;
 
   bool verbose_;
 };
@@ -42,6 +41,8 @@ private:
 
 DiTauWithSVFitProducer::DiTauWithSVFitProducer(const edm::ParameterSet & iConfig) : 
   diTauSrc_( iConfig.getParameter<edm::InputTag>("diTauSrc") ),
+  metSrc_( iConfig.getParameter<edm::InputTag>("metSrc") ),
+  metsigSrc_( iConfig.getParameter<edm::InputTag>("metsigSrc") ),
   verbose_( iConfig.getUntrackedParameter<bool>("verbose", false ) ) {
   
   // will produce a collection containing a copy of each di-object in input, 
@@ -61,6 +62,15 @@ void DiTauWithSVFitProducer::produce(edm::Event & iEvent, const edm::EventSetup 
   edm::Handle< DiTauCollection > diTauH;
   iEvent.getByLabel(diTauSrc_, diTauH);
   
+  ///get the MET 
+  edm::Handle< std::vector<cmg::BaseMET> > met;
+  iEvent.getByLabel(metSrc_,met);
+  
+  //get the MET significance
+  edm::Handle< cmg::METSignificance > metsig;
+  iEvent.getByLabel(metsigSrc_,metsig); 
+
+
   typedef std::auto_ptr< DiTauCollection >  OutPtr;
   OutPtr pOut( new DiTauCollection() );
 
@@ -78,11 +88,20 @@ void DiTauWithSVFitProducer::produce(edm::Event & iEvent, const edm::EventSetup 
       std::cout<<"\t\tleg2: "<<diTau.leg2()<<std::endl;
     }
 
-    // here, copy input diTau, and set SVFit mass
-    // now setting it to twice the mass
 
+    //Note that this works only for di-objects where the tau is the leg1 and mu is leg2
+    NSVfitStandalone::Vector measuredMET((*(met->begin())).p4().x(),(*(met->begin())).p4().y(),0);
+    std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
+    NSVfitStandalone::LorentzVector p1(diTau.leg1().p4());
+    measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kHadDecay,p1));    
+    NSVfitStandalone::LorentzVector p2(diTau.leg2().p4());
+    measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay,p2));
+    NSVfitStandaloneAlgorithm algo(measuredTauLeptons,measuredMET,metsig->significance(),0);
+    algo.maxObjFunctionCalls(5000);
+    algo.fit();
+    
     pOut->push_back( diTau );
-    pOut->back().setMassSVFit( 2*diTau.mass() );
+    pOut->back().setMassSVFit(algo.fittedDiTauSystem().mass());
   }
   
   iEvent.put( pOut ); 
