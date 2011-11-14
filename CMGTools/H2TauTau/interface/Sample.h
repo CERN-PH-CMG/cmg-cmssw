@@ -59,7 +59,7 @@ public:
     for(std::vector<TH1*>::const_iterator h=mainsampleHist_.begin(); h!=mainsampleHist_.end(); ++h)
       sampleHist_.push_back((TH1*)(*h)->Clone(TString((*h)->GetName())+"_"+tag));
   }
-
+  void addTree(TTree* tree){tree_=tree;}
   
   void setDataType(TString type){
     dataType_=type;
@@ -175,6 +175,7 @@ private:
 
   TString outputpath_;
   TFile* histFile_;
+  TTree* tree_;
 
   TString dataType_;
   Int_t color_;

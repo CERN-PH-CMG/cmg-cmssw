@@ -6,30 +6,22 @@
 BaseAnalysis::BaseAnalysis():
   TNamed("BaseAnalysis","BaseAnalysis"),
   sample_(NULL),
+  verbosity_(0),
   truncateEvents_(100000000),
   printFreq_(100),
   mcPUPWeight_(1),
-  outputpath_("./"),
-  runNumberHisto_(NULL),
-  nVertexHisto_(NULL),
-  vertexXYHisto_(NULL),
-  vertexZHisto_(NULL),
-  mcPUPWeightHisto_(NULL)
+  outputpath_("./")
 {
 }
 
 BaseAnalysis::BaseAnalysis(const char * name):
   TNamed(name,name),
   sample_(NULL),
+  verbosity_(0),
   truncateEvents_(100000000),
   printFreq_(100),
   mcPUPWeight_(1),
-  outputpath_("./"),
-  runNumberHisto_(NULL),
-  nVertexHisto_(NULL),
-  vertexXYHisto_(NULL),
-  vertexZHisto_(NULL),
-  mcPUPWeightHisto_(NULL)
+  outputpath_("./")
 {
 
 }
@@ -101,15 +93,15 @@ bool BaseAnalysis::addHistos(Sample* s){
   return 1;
 }
 
-bool BaseAnalysis::getHistos(Sample* s, TString tag){
-  if(!s)return 0;
+bool BaseAnalysis::getHistos(TString tag){
+  if(!sample_)return 0;
 
   if(tag!="")tag=TString("_")+tag;
 
-  if(!(runNumberHisto_=(TH1F*)(s->getHisto(TString("runNumberHisto")+tag))))return 0;
-  if(!(nVertexHisto_=(TH1F*)(s->getHisto(TString("nVertexHisto")+tag))))return 0;
-  if(!(vertexXYHisto_=(TH2F*)(s->getHisto(TString("vertexXYHisto")+tag))))return 0;
-  if(!(vertexZHisto_=(TH1F*)(s->getHisto(TString("vertexZHisto")+tag))))return 0;
+  if(!(runNumberHisto_=(TH1F*)(sample_->getHisto(TString("runNumberHisto")+tag))))return 0;
+  if(!(nVertexHisto_=(TH1F*)(sample_->getHisto(TString("nVertexHisto")+tag))))return 0;
+  if(!(vertexXYHisto_=(TH2F*)(sample_->getHisto(TString("vertexXYHisto")+tag))))return 0;
+  if(!(vertexZHisto_=(TH1F*)(sample_->getHisto(TString("vertexZHisto")+tag))))return 0;
 
   return 1;
 }
@@ -153,7 +145,8 @@ bool BaseAnalysis::applySelections(){
   return 1;
 }
 
-bool BaseAnalysis::fillHistos(double weight){
+bool BaseAnalysis::fillHistos(TString tag, double weight){
+  if(!BaseAnalysis::getHistos(tag)) return 0;
 
   runNumberHisto_->Fill(runnumber_);
   

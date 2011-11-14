@@ -15,6 +15,7 @@ Sample::Sample():
   effCorrFactor_(1.0),
   outputpath_(GetTitle()),
   histFile_(NULL),
+  tree_(NULL),
   dataType_(""),
   color_(0),
   lcolor_(0),
@@ -39,6 +40,7 @@ Sample::Sample(const char * name, const char * path):
   effCorrFactor_(1.0),
   outputpath_(path),
   histFile_(NULL),
+  tree_(NULL),
   dataType_(""),
   color_(0),
   lcolor_(0),
@@ -56,6 +58,12 @@ Sample::~Sample(){
   
   if(sampleChain_!=NULL)delete sampleChain_;
   if(histFile_!=NULL)  delete histFile_;
+
+  std::vector<TH1*>::const_iterator h=sampleHist_.begin();
+  for( int i=0; h!=sampleHist_.end(); ++h, i++)
+    delete sampleHist_[i];
+
+  if(tree_!=NULL) delete tree_;
   
 }
 
@@ -117,11 +125,16 @@ bool Sample::save(){
   }
   
   fi.cd();
+
+  ///save histos
   std::vector<TH1*>::const_iterator h=sampleHist_.begin();
   for( int i=0; h!=sampleHist_.end(); ++h, i++){
     //cout<<"save: "<<i<<" "<<sampleHist_[i]->GetName()<<endl;
     sampleHist_[i]->Write();
   }
+
+  //save tree
+  if(tree_)tree_->Write();
 
   fi.Close();
   cout<<"Sample "<<GetName()<<" saved histograms in "<<fi.GetName()<<endl;  

@@ -30,6 +30,7 @@ public:
   virtual bool createHistos(TString samplename="");
 
   void calcSVFit(bool calc){calcsvfit_=calc;}
+  void makeAllHistos(bool makeall){makeAllHistos_=makeall;}
 
   bool plotDistribution(TString histname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords, Float_t* axesrange, bool log=0);
   bool plot(TString histname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords, Float_t* axesrange, bool log=0);
@@ -37,19 +38,19 @@ public:
 
 protected:
   virtual bool addHistos(Sample* s);
-  virtual bool getHistos(Sample* s, TString tag = "");
+  virtual bool getHistos(TString tag = "");
   virtual bool fillVariables(const fwlite::Event * event);
   virtual bool applySelections(TString exceptcut="");
-  virtual bool fillHistos(double weight = 1);
+  virtual bool fillHistos(TString tag = "", double weight = 1);
 
 private:
-    
+     
   string inputTag_;
   edm::Handle< std::vector<cmg::TauMu> > diTauList_;
   std::vector<cmg::TauMu> diTauSelList_;
   const cmg::TauMu * diTauSel_;
-  edm::Handle< std::vector<cmg::BaseMET> > met_;
-  edm::Handle< cmg::METSignificance >  metsig_;  
+  const cmg::BaseMET * met_;
+  const TMatrixD * metsig_;  
   edm::Handle< std::vector<cmg::Muon> > diLeptonVetoList_;
   std::vector<cmg::PFJet> pfJetList_;
   std::vector<cmg::PFJet> pfJetListLC_;
@@ -64,6 +65,7 @@ private:
   const cmg::PFJet * VBFJet2_;
   bool trigpass_;
   bool calcsvfit_;
+  bool makeAllHistos_;
 
 
   Float_t QCDOStoSSRatio_;
@@ -109,6 +111,21 @@ private:
   float computeTauIso(const cmg::Tau * tau);
 
   bool computeDiLeptonVeto(const cmg::Muon * muon);
+
+
+  ///output tree definition
+  TTree* tree_;
+  float tree_eventweight_;
+  float tree_ditaumass_;
+  float tree_svfitmass_;
+  float tree_taupt_;
+  float tree_mupt_;
+  float tree_transversemass_;
+  float tree_met_;
+  int   tree_svfitstatus_;
+  float tree_svfitedm_;
+
+
 
   ClassDef(TauMuAnalysis, 1);
 };
