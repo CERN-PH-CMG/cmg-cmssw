@@ -1,6 +1,6 @@
 # See https://savannah.cern.ch/task/index.php?20954
 {
-    'UserCode/CMG/AnalysisDataFormats/CMGTools': ['cbern_h2tautauvars_31Oct11', 'AnalysisDataFormats/CMGTools'],
+    'UserCode/CMG/AnalysisDataFormats/CMGTools': ['cbern_svfit_14Nov11', 'AnalysisDataFormats/CMGTools'],
     'UserCode/CMG/CMGTools/Common':              ['cbern_recoil_11Nov11', 'CMGTools/Common'],
     'UserCode/CMG/CMGTools/Production':          ['cbern_11Nov11', 'CMGTools/Production'],
     'UserCode/CMG/CMGTools/RootTools':           ['cbern_11Nov11', 'CMGTools/RootTools'],
