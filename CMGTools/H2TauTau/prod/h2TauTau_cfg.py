@@ -57,9 +57,9 @@ process.load('CMGTools.H2TauTau.h2TauTau_cff')
 
 process.schedule = cms.Schedule(
     # this path corresponds to the basic preselection:
-    process.tauMuPath,
+    process.tauMuPreSelPath,
     # and this one to the full baseline selection
-    process.tauMuBaselinePath,    
+    process.tauMuFullSelPath,    
     # process.tauEPath,
     process.outpath
     )
@@ -77,18 +77,18 @@ setupRecoilCorrection( process, dataset_name )
 # skim (basic selection)     ------
 
 outFileNameExt = 'CMG'
-basicName = 'h2TauTau_tree_%s.root' %  outFileNameExt
+basicName = 'h2TauTau_presel_tree_%s.root' %  outFileNameExt
 process.out.fileName = cms.untracked.string( basicName )
 from CMGTools.H2TauTau.eventContent.tauMu_cff import tauMu as tauMuEventContent
 process.out.outputCommands.extend( tauMuEventContent ) 
-process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('tauMuPath') )
+process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('tauMuPreSelPath') )
 
 
 # full baseline selection    ------
 
 process.outBaseline = process.out.clone()
-process.outBaseline.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('tauMuBaselinePath') )
-baselineName = 'h2TauTau_baseline_tree_%s.root' % outFileNameExt
+process.outBaseline.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('tauMuFullSelPath') )
+baselineName = 'h2TauTau_fullsel_tree_%s.root' % outFileNameExt
 process.outBaseline.fileName = baselineName
 
 process.outpath += process.outBaseline

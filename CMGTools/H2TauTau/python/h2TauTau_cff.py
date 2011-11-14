@@ -5,16 +5,19 @@ from CMGTools.H2TauTau.skims.skim_cff import *
 from CMGTools.H2TauTau.histograms.histogram_cff import *
 from CMGTools.H2TauTau.histograms.histogramSkim_cff import *
 
-tauMuPath = cms.Path(
+# preselection
+
+tauMuPreSelPath = cms.Path(
     objectSequence + 
-    tauMuSkimSequence +
+    tauMuPreSelSkimSequence +
     histogramSkimSequence 
     )
 
 
-tauMuBaselinePath = cms.Path(
+# full selection
+tauMuFullSelPath = cms.Path(
     objectSequence + 
-    tauMuBaselineSkimSequence
+    tauMuFullSelSkimSequence
     )
 
 
