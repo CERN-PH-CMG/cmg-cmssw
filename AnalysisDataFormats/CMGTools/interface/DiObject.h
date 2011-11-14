@@ -102,6 +102,9 @@ class DiObject : public AbstractPhysicsObject{
 
     ///mass from SVFit
     double massSVFit() const { return massSVFit_; }
+
+    ///set mass from SVFit 
+    void setMassSVFit(double mass) { massSVFit_ = mass; }
     
     virtual void accept(AbstractPhysicsObjectVisitor* v) const{
       v->visit(this);
