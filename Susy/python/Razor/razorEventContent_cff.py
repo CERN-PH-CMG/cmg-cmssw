@@ -6,7 +6,6 @@ razorEventContent = cms.untracked.vstring()
 
 razorEventContent += cms.untracked.vstring(
                                            #'keep *_razor*_*_*'
-                                           'keep *_razorLeading*_*_*',
                                            'keep cmgBaseMETs_razor*Met_*_*',
                                            'keep cmgHemispheres_razorHemi*Box_*_*',
                                            'keep cmgHemispherecmgHemispherecmgDiObjects_razorDiHemi*Box_*_*',

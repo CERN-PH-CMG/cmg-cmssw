@@ -8,5 +8,6 @@ electronOnElectron = cms.EDProducer(
     bottomCollection = cms.InputTag('cmgElectronSel'),
     #
     name = cms.untracked.string('electronOnElectron'),
-    verbose = cms.untracked.bool(True)
+    verbose = cms.untracked.bool(False)
 )
+

@@ -8,5 +8,6 @@ muonOnMuon = cms.EDProducer(
     bottomCollection = cms.InputTag('cmgMuonSel'),
     #
     name = cms.untracked.string('muonOnMuon'),
-    verbose = cms.untracked.bool(True)
+    verbose = cms.untracked.bool(False)
 )
+
