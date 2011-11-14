@@ -403,7 +403,7 @@ def matchingFiles( path, regexp):
     pattern = re.compile( regexp )
     files = ls(path)
     # print files
-    return [f for f in files if pattern.match(os.path.basename(f))  is not None]
+    return [f for f in files if pattern.match(os.path.basename(f)) is not None]
     
 def cmsStage( absDestDir, files, force):
     """Runs cmsStage with LFNs if possible"""
