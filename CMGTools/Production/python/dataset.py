@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import pprint
 
 from CMGTools.Production.castorBaseDir import castorBaseDir
 import CMGTools.Production.eostools as castortools
@@ -13,14 +14,21 @@ class Dataset():
         self.lfnDir = castorBaseDir(user) + name
         self.castorDir = castortools.lfnToCastor( self.lfnDir )
         self.pollFiles( pattern )
+        self.getFileSizes()
         self.pollBadFiles()
         
     def pollFiles(self, pattern='.*root'):
         '''fills list of files, taking all root files matching the pattern in the castor dir'''
         self.files = castortools.matchingFiles( self.castorDir, pattern )
-
+        if len(self.files)==0:
+            raise ValueError(' '.join( ['No file matching',
+                                        pattern, 'in', self.castorDir] ))
+                             
     def pollBadFiles(self):
-        '''fills the list of bad files from the IntegrityCheck log'''
+        '''fills the list of bad files from the IntegrityCheck log.
+
+        When the integrity check file is not available,
+        files are considered as good.'''
         mask = "IntegrityCheck"
         file_mask = castortools.matchingFiles(self.castorDir, '^%s_.*\.txt$' % mask)
         self.bad_files = {}    
@@ -35,6 +43,21 @@ class Dataset():
                         self.bad_files[name] = 'MarkedBad'
                     elif dup.has_key(name):
                         self.bad_files[name] = 'ValidDup'
+
+    def getFileSizes(self):
+        lsout = castortools.runEOSCommand(self.castorDir, 'ls','-l')[0]
+        lsout = lsout.split('\n')
+        # pprint.pprint(lsout)
+        self.filesAndSizes = {}
+        for entry in lsout:
+            values = entry.split()
+            if( len(values) != 9):
+                continue
+            file = values[8]
+            size = values[4]
+            self.filesAndSizes[file] = size 
+        # pprint.pprint(self.filesAndSizes)
+        # lsout = lsout.split('\n')
 
     def listOfFiles(self):
         return self.files
@@ -51,11 +74,17 @@ class Dataset():
         print 'LFN         :  ' + self.lfnDir
         print 'Castor path :  ' + self.castorDir
 
-    def printFiles(self):
+    def printFiles(self, abspath=True, info=True):
         if self.files == None:
             self.pollFiles(self.pattern)
         for file in self.files:
             status = 'OK'
             if self.bad_files.has_key(file):
                 status = self.bad_files[file]
-            print file, status
+            if abspath == False:
+                file = os.path.basename(file)
+            if info:
+                print status.ljust(10), self.filesAndSizes[file].rjust(10), \
+                      '\t', file
+            else:
+                print file 
