@@ -1,6 +1,5 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_svfit_14Nov11'),
   ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_svfit_14Nov11'),
-  ('CMGTools/H2TauTau', 'CMGTools/H2TauTau', 'cbern_svfit_14Nov11'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_11Nov11'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_11Nov11'),
   ('CMGTools/ZmumuJetsTutorial', 'UserCode/CMG/CMGTools/ZmumuJetsTutorial', 'cbern_tutorial_12Oct11'),
