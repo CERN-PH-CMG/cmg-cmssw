@@ -68,6 +68,7 @@ class AnalysisDataMC( DataMCPlot ):
         try:
             return self.histPref[name]
         except KeyError:
+            print 'cannot find preference for hist',name
             return {'style':sBlack, 'layer':999}
 
     def _ReadWeights(self, dirName):
@@ -91,29 +92,30 @@ class AnalysisDataMC( DataMCPlot ):
 
         Styles and weights are applied to each histogram.
         See AnalysisDataMC._GetFileNames().'''
-        layer = 0
+        # layer = 0
         self.files = []
         fileNames = self._GetFileNames(directory)
         print 'reading files:'
-        for fileName in sorted(fileNames):
+        for layer, fileName in enumerate( sorted(fileNames) ):
             self.files.append(TFile(fileName))
             hist = self.files[-1].Get(self.histName)
             if hist == None:
-                raise AnalysisDataMCError('histogram', self.histName,
-                                    'does not exist in file', fileName)
+                raise ValueError(' '.join(['histogram', self.histName,
+                                           'does not exist in file', fileName]))
             hist.SetStats(0)
             hist.Sumw2()
             componentName = self._ComponentName(fileName)
             print '\t', componentName, fileName
             legendLine = componentName
-            pref = self._GetHistPref( componentName )
-            layer = pref['layer']
             self.AddHistogram( componentName, hist, layer, legendLine)
-            if componentName.lower().find('data')>-1:
-                print '\t\tremoving from stack', hist
-                self.Hist(componentName).stack = False
-            self.Hist(componentName).SetStyle( pref['style'] )
+            # pref = self._GetHistPref( componentName )
+            # layer = pref['layer']
+            # if componentName.lower().find('data')>-1:
+            #     print '\t\tremoving from stack', hist
+            #     self.Hist(componentName).stack = False
+            # self.Hist(componentName).SetStyle( pref['style'] )
         self._ApplyWeights()
+        self._ApplyPrefs()
 
     def _GetFileNames(self, directory):
         '''Returns a list of file names from a directory.
@@ -122,7 +124,7 @@ class AnalysisDataMC( DataMCPlot ):
         Feel free to overload this function.'''
         fileNames = glob.glob( '/'.join([directory,'*.root']))
         if len(fileNames) == 0:
-            raise AnalysisDataMCError('no file matching pattern *.root in ' + directory)
+            raise ValueError('no file matching pattern *.root in ' + directory)
         return fileNames
 
     def _ComponentName(self, name):
@@ -140,7 +142,7 @@ class AnalysisDataMC( DataMCPlot ):
             try:
                 return self.weights[ componentName ]
             except KeyError:
-                print 'Please add a weight for file ', histName, ' in your Weights/ directory'
+                print 'Weight not found for component', histName
                 return None
         else:
             return None
@@ -149,15 +151,20 @@ class AnalysisDataMC( DataMCPlot ):
         '''Applies weights to all histograms. Can be used to set the integrated luminosity.'''
         for hist in self.histos:
             weight = self._GetWeight( hist.name )
-            # print 'weighting ', hist
             if weight != None:
                 if lumi>0:
                     weight.SetIntLumi( lumi ) 
-                # print '\t', weight
                 hist.SetWeight( weight.GetWeight() )
             else:
                 if hist.name.lower().find('data')==-1:
                     print '\tWARNING: no weight file found, setting weight to 1'
+
+    def _ApplyPrefs(self):
+        for hist in self.histos:
+            pref = self._GetHistPref( hist.name )
+            hist.layer = pref['layer']
+            hist.SetStyle( pref['style'] )
+            
 
 if __name__ == '__main__':
 

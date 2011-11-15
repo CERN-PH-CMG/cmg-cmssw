@@ -1,7 +1,7 @@
 from operator import itemgetter, attrgetter
 import copy
 
-from ROOT import TH1, THStack, TLegend, TLine
+from ROOT import TH1, THStack, TLegend, TLine, gPad
 
 from CMGTools.RootTools.DataMC.Histogram import Histogram
 from CMGTools.RootTools.DataMC.Stack import Stack
@@ -22,6 +22,7 @@ class DataMCPlot(object):
         self.stack = None
         self.legendOn = True
         self.legend = None
+        self.legendBorders = 0.13,0.66,0.44,0.89
         
     def AddHistogram(self, name, histo, layer=0, legendLine = None):
         '''Add a ROOT histogram, with a given name.
@@ -56,6 +57,7 @@ class DataMCPlot(object):
             if same == '':
                 same = 'same'
         self.DrawLegend()
+        gPad.Update()
 
     def Draw(self, opt = ''):
         '''All histograms are drawn.'''
@@ -65,11 +67,12 @@ class DataMCPlot(object):
             if same == '':
                 same = 'same'
         self.DrawLegend()
+        gPad.Update()
 
 
     def CreateLegend(self):
         if self.legend is None:
-            self.legend = TLegend(0.13,0.66,0.44,0.89)
+            self.legend = TLegend( *self.legendBorders )
         else:
             self.legend.Clear()
         for hist in self._SortedHistograms():
@@ -104,6 +107,7 @@ class DataMCPlot(object):
             if same == '':
                 same = 'same'
         self.DrawLegend()
+        gPad.Update()
 
     def DrawRatioStack(self,opt=''):
         '''Draw ratios.
@@ -128,6 +132,7 @@ class DataMCPlot(object):
             self.ratios.append( ratio )
         self.DrawLegend()
         self.DrawRatioLines(denom)
+        gPad.Update()
                 
     def DrawNormalizedRatioStack(self,opt=''):
         '''Draw ratios.
@@ -159,6 +164,7 @@ class DataMCPlot(object):
             self.ratios.append( ratio )        
         self.DrawLegend()
         self.DrawRatioLines(denom)
+        gPad.Update()
 
 
     def DrawRatioLines(self, hist, frac=0.2):
@@ -182,6 +188,8 @@ class DataMCPlot(object):
         for hist in self.nostack:
             hist.Draw('same')
         self.DrawLegend()
+        gPad.Update()
+
 
     def DrawNormalizedStack(self, opt=''):
         '''Draw all histograms, some of them in a stack.
@@ -193,11 +201,13 @@ class DataMCPlot(object):
         for hist in self.nostack:
             hist.obj.DrawNormalized('same')
         self.DrawLegend()
+        gPad.Update()
 
 
     def Rebin(self, factor):
         for hist in self.histos:
             hist.Rebin(factor)
+
 
     def _BuildStack(self, hists):
         '''build a stack from a list of Histograms.
