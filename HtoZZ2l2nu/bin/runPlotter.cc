@@ -261,7 +261,7 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
             TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + segmentExt).c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName); 
-            if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmphist);}
+            if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
             delete tmptmphist;
             delete File;
          }
@@ -346,7 +346,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
             TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + segmentExt).c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName);
-            if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmphist);}
+            if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
             delete tmptmphist;
             delete File;
          }
@@ -388,7 +388,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
              stack->GetXaxis()->SetTitle(hist->GetXaxis()->GetTitle());
              stack->GetYaxis()->SetTitle(hist->GetYaxis()->GetTitle());
              stack->SetMinimum(hist->GetMinimum());
-             stack->SetMaximum(hist->GetMaximum());
+             //stack->SetMaximum(hist->GetMaximum());
              ObjectToDelete.push_back(stack);
              stack=NULL;
           }
@@ -522,7 +522,7 @@ void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
             TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + segmentExt).c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName);
-            if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmphist);}
+            if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
             delete tmptmphist;
             delete File;
          }
