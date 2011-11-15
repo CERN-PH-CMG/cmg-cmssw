@@ -283,7 +283,6 @@ int main(int argc, char* argv[])
   metTypes["mincentralAssocMet"]         = "min(cental-E_{T}^{miss},assoc-E_{T}^{miss})";
 
 
-
   std::map<TString,LorentzVector> metTypeValues;
   for(std::map<TString,TString>::iterator it = metTypes.begin(); it!= metTypes.end(); it++){
       metTypeValues[it->first]=LorentzVector(0,0,0,0);
