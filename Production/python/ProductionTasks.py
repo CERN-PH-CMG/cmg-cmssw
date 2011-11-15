@@ -73,6 +73,7 @@ documented below.
         parser.add_option("--max_threads", dest="max_threads", default=None,help='The maximum number of threads to use in the production')
     def run(self, input):
         self.options, self.dataset = self.das.get_opt()
+        self.dataset = [d for d in self.dataset if not d.startswith('#')]
         self.user = self.options.user
         if not self.dataset:
             raise Exception('TaskError: No dataset specified')
