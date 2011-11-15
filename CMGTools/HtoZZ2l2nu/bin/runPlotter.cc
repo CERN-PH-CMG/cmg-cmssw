@@ -43,6 +43,7 @@ string outFile = "plotter.root";
 string cutflowhisto = "cutflow";
 
 std::map<string, double> initialNumberOfEvents;
+std::map<string, bool>   FileExist;
 
 
 TObject* GetObjectFromPath(TDirectory* File, std::string Path, bool GetACopy=false)
@@ -122,8 +123,9 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, st
          for(int s=0;s<split;s++){
 	    char segmentExt[255];if(split>1){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
 
-            TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + segmentExt).c_str());
-            if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
+            string FileName = RootDir + (Samples[j])["dtag"].toString() + segmentExt;
+            TFile* File = new TFile(FileName.c_str());
+            if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) ){FileExist[FileName]=false; continue; }else{FileExist[FileName]=true;}
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName); 
 	    if(tmptmphist)
 	      {
@@ -169,7 +171,9 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
          for(int s=0;s<split;s++){
             char segmentExt[255];if(split>1){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
 
-            TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + segmentExt).c_str());
+            string FileName = RootDir + (Samples[j])["dtag"].toString() + segmentExt;
+            if(!FileExist[FileName])continue;
+            TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName); 
             if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
@@ -258,7 +262,9 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
          for(int s=0;s<split;s++){
             char segmentExt[255];if(split>1){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
 
-            TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + segmentExt).c_str());
+            string FileName = RootDir + (Samples[j])["dtag"].toString() + segmentExt;
+            if(!FileExist[FileName])continue;
+            TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName); 
             if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
@@ -343,7 +349,9 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
          for(int s=0;s<split;s++){
             char segmentExt[255];if(split>1){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
 
-            TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + segmentExt).c_str());
+            string FileName = RootDir + (Samples[j])["dtag"].toString() + segmentExt;
+            if(!FileExist[FileName])continue;
+            TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName);
             if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
@@ -519,7 +527,9 @@ void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
          for(int s=0;s<split;s++){
             char segmentExt[255];if(split>1){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
 
-            TFile* File = new TFile((RootDir + (Samples[j])["dtag"].toString() + segmentExt).c_str());
+            string FileName = RootDir + (Samples[j])["dtag"].toString() + segmentExt;
+            if(!FileExist[FileName])continue;
+            TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName);
             if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
