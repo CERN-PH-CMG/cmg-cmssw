@@ -66,7 +66,7 @@ class Histogram( object ):
         else:
             self.obj.Draw(opt)
 
-    def Add(self, other, coeff):
+    def Add(self, other, coeff=1):
         self.obj.Add( other.obj, coeff )
         self.weighted.Add( other.weighted, coeff )
         return self
