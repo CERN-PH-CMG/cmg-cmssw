@@ -126,6 +126,7 @@
          "lcolor":1,
          "data":[
               {
+               "split":9,
 	       "dtag":"DYJetsToLL",
                "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
                "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/DYToLL/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
@@ -464,17 +465,17 @@
                   "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/SingleMu/SingleMu-PromptReco-v6-173380_173692"]
 		},
 		{
-                  "dtag":"DoubleMuPromptReco2011B",
+                  "dtag":"DoubleMuPromptReco_2011B",
                   "dset":"/DoubleMu/Run2011B-PromptReco-v6/AOD",
                   "patdir":["/store/cmst3/user/psilva/Data/DoubleMuon/DoubleMu-2011B-PromptReco"]
                 },
                 {
-                  "dtag":"DoubleElectronPromptReco2011B",
+                  "dtag":"DoubleElectronPromptReco_2011B",
                   "dset":"/DoubleElectron/Run2011B-PromptReco-v6/AOD",
                   "patdir":["/store/cmst3/user/psilva/Data/DoubleElectron/DoubleElectron-2011B-PromptReco"]
                 },
                 {
-                  "dtag":"MuEGPromptReco2011B",
+                  "dtag":"MuEGPromptReco_2011B",
                   "dset":"/MuEG/Run2011B-PromptReco-v6/AOD",
                   "patdir":["/store/cmst3/user/psilva/Data/MuEG/MuEG-2011B-PromptReco"]
                 }
