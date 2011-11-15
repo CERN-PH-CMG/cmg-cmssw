@@ -80,6 +80,8 @@ private:
   TH1F* diTauMassSVFitHisto_;
   TH1F* svFitConvergeHisto_;
   TH1F* svFitCov00Histo_;
+  TH1F* svFitEigen0Histo_;
+  TH1F* svFitEigen1Histo_;
   TH1F* diTauEtaHisto_;
   TH1F* diTauPtHisto_;
   TH1F* muPtHisto_;
@@ -124,6 +126,8 @@ private:
   float tree_met_;
   int   tree_svfitstatus_;
   float tree_svfitedm_;
+  float tree_svfiteigenval0_;
+  float tree_svfiteigenval1_;
 
 
 
