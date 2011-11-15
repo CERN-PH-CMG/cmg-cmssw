@@ -1,4 +1,3 @@
-Package TauAnalysis/SVFitStandAlone not in local area -> removed from relinfo
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_svfit_14Nov11'),
   ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_releaseInfo_15Nov11'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_15Nov11_b'),
