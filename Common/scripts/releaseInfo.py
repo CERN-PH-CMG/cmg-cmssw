@@ -82,7 +82,7 @@ def relInfo( fileName, verbose = False):
                 newtag = tag
                 break
         if newtag is None:
-            print 'Package', oldpack, 'not in local area -> removed from relinfo'
+            print '# Package', oldpack, 'not in local area -> removed from relinfo'
             continue
         # print 'NEW', oldpack, newtag
         new_relInfo.append( (oldpack, cvsmod, newtag ) )
