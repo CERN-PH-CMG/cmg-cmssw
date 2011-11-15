@@ -21,10 +21,10 @@ class DiTauHistograms:
         tree.Draw('tauMu.obj[0].mass()>>'+self.h_vismass.GetName(),cut,'goff',nEvents)
         tree.Draw('tauMu.obj[0].mTLeg2()>>'+self.h_mT.GetName(),cut,'goff',nEvents)
 
-    def fillDiTau(self, diTau):
-        self.h_pzeta.Fill( diTau.pZeta() )
-        self.h_vismass.Fill( diTau.mass() )
-        self.h_mT.Fill( diTau.mTLeg2() )
+    def fillDiTau(self, diTau, weight=1):
+        self.h_pzeta.Fill( diTau.pZeta(), weight)
+        self.h_vismass.Fill( diTau.mass(), weight)
+        self.h_mT.Fill( diTau.mTLeg2(), weight)
         
     def formatHistos(self, style ):
         for hist in self.hists:

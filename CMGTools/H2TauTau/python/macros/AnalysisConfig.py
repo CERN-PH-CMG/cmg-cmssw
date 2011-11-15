@@ -23,6 +23,7 @@ class Component(object):
             self.xsection = float(self.xsection)
         self.eff_corrfactor = self.items.setdefault('eff_corrfactor', '1')
         self.eff_corrfactor = eval(self.eff_corrfactor)
+        self.vertexWeight = self.items.setdefault('vertexweight', None)
         #COLIN: warning, n_gen_events is a string here...
         self.n_gen_events = self.items.setdefault('n_gen_events', -1)
         self.n_gen_events = int( self.n_gen_events)
@@ -41,6 +42,9 @@ class Component(object):
             raise ValueError('\n'.join(['lumi must be specified for data samples.',str(self)]))
 
     def GetWeight(self):
+        '''Returns the weight, for a MC sample
+
+        COLIN: Hum what happens when called on a data sample?'''
         return Weight( self.n_gen_events,
                        self.xsection,
                        self.gen_eff,
@@ -54,11 +58,13 @@ class Component(object):
             files     = %s
             trigger   = %s
             eff_corr_factor = %3.4f
+            vertexweight = %s 
             xsection  = %s
             n_gen_events = %s
             recoil    = %s 
             MC?       = %s 
-            ''' % (self.name, self.files, self.triggers, self.eff_corrfactor, 
+            ''' % (self.name, self.files, self.triggers, self.eff_corrfactor,
+                   str(self.vertexWeight),
                    self.xsection, self.n_gen_events, self.recoil, self.isMC)
         else:
             return '''%s :
@@ -75,15 +81,20 @@ class Defaults(object):
     def __init__(self, config):
         self.items = config.defaults()
         self.components = self.items['components'].split(',')
+        # remove empty strings from component list
+        # happens in case of a trailing of leading coma..
+        self.components = filter( lambda x : x is not '', self.components)
         self.mc_eff_corrfactor = self.items.setdefault('mc_eff_corrfactor', 1)
         self.mc_eff_corrfactor = eval(self.mc_eff_corrfactor)
+        self.mc_vertexWeight = self.items.setdefault('mc_vertexweight', None)
 
     def __str__(self):
         header = 'GLOBAL:'
         components = '\tComponents: '
         components += ', '.join(self.components)
         mc_eff_corrfactor = '\tmc_eff_corrfactor = %3.4f' % self.mc_eff_corrfactor
-        return '\n'.join( [header, components, mc_eff_corrfactor] )
+        mc_vertexWeight = '\tmc_vertexWeight = %s' % str(self.mc_vertexWeight)
+        return '\n'.join( [header, components, mc_eff_corrfactor, mc_vertexWeight] )
 
     
 class AnalysisConfig(object):

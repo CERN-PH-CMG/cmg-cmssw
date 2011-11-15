@@ -32,22 +32,24 @@ class DiTau:
 
 class Loop:
     '''Manages looping and navigation on a set of events.'''
-    def __init__(self, name, listOfFiles, triggers=None):
+    def __init__(self, name, listOfFiles,
+                 triggers=None,
+                 vertexWeight=None):
         '''Build a loop object.
 
         listOfFiles can be "*.root".
         name will be used to make the output directory'''
 
         self.events = Events( listOfFiles )
-        self.InitHandles()
         self.triggers = self.DecodeTriggerList(triggers)
+        self.vertexWeight = vertexWeight
         
         # if name exists as a directory, build another name.
         self.name = name
         index = 0
         while True:
             try:
-                print 'mkdir', self.name
+                # print 'mkdir', self.name
                 os.mkdir( self.name )
                 break
             except OSError:
@@ -59,6 +61,7 @@ class Loop:
                                                             'log.txt'])))
         self.counters = []
         self.histograms = []
+        self.InitHandles()
 
 
     def DecodeTriggerList(self, triggers):
@@ -89,10 +92,15 @@ class Loop:
     def InitHandles(self):
         '''Initialize all handles for the products we want to read'''
         self.handles = {}
-        self.handles['cmgTauMuFullSel'] =  AutoHandle( 'cmgTauMuFullSel',
-                                                       'std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>')
+        self.handles['cmgTauMuCorFullSelSVFit'] =  AutoHandle( 'cmgTauMuCorFullSelSVFit',
+                                                               'std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>')
         self.handles['cmgTriggerObjectSel'] =  AutoHandle( 'cmgTriggerObjectSel',
                                                            'std::vector<cmg::TriggerObject>>')
+        if self.vertexWeight is not None: 
+            self.handles['vertexWeight'] = AutoHandle( self.vertexWeight,
+                                                   'double' )
+        self.handles['vertices'] = AutoHandle( 'offlinePrimaryVertices',
+                                               'std::vector<reco::Vertex>' )
         
 
     def InitOutput(self):
@@ -121,7 +129,7 @@ class Loop:
         self.events.to(iEv)
         self.LoadCollections(self.events)
         
-        self.diTaus = self.handles['cmgTauMuFullSel'].product()
+        self.diTaus = self.handles['cmgTauMuCorFullSelSVFit'].product()
         self.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
 
         self.count_triggerPassed.inc('a: All events')
@@ -142,13 +150,23 @@ class Loop:
         # self.nSel += 1
         self.count_exactlyOneDiTau.inc('b')
         self.diTau = DiTau( self.diTaus[0] )
+
+        self.eventWeight = 1
+        if self.vertexWeight is not None:
+            self.vertexWeight = self.handles['vertexWeight'].product()[0]
+            self.eventWeight *= self.vertexWeight
+
+        self.vertices = self.handles['vertices'].product()
+        
         #Colin: the following is working, generalize it
         # myDiTau = DiTau( self.diTau )
         # print myDiTau, myDiTau.energy()
         if self.diTau.charge() == 0:
-            self.histsOS.fillDiTau( self.diTau )
+            self.histsOS.fillDiTau( self.diTau, self.eventWeight)
+            self.histsOS.fillVertices( self.vertices, self.eventWeight )
         else:
-            self.histsSS.fillDiTau( self.diTau )
+            self.histsSS.fillDiTau( self.diTau, self.eventWeight)
+            self.histsSS.fillVertices( self.vertices, self.eventWeight )
         return True
 
                 
@@ -175,7 +193,8 @@ class Loop:
     def __str__(self):
         name = 'Loop %s' % self.name
         strcount = [str(counter) for counter in self.counters ]
-        triggers = str( self.triggers )
+        triggers = ': '.join( ['triggers', str(self.triggers)] )
+        vertexWeight = ': '.join( ['vertex weight', str(self.vertexWeight) ])
         return '\n'.join([name, triggers] + strcount)
     
 
@@ -196,7 +215,12 @@ if __name__ == '__main__':
                       default=float('inf'))
     parser.add_option("-t", "--triggerlist", 
                       dest="triggerlist", 
-                      help="trigger list")
+                      help="trigger list",
+                      default=None)
+    parser.add_option("-v", "--vertexWeight", 
+                      dest="vertexWeight", 
+                      help="vertex weight module name.",
+                      default=None)
     
     (options,args) = parser.parse_args()
     if len(args) < 2:
@@ -206,7 +230,9 @@ if __name__ == '__main__':
     nEv = float(options.nevents)
 
     # args[0] is the component_name. Then come the root files
-    loop = Loop( args[0], args[1:], options.triggerlist)
+    loop = Loop( args[0], args[1:],
+                 triggers = options.triggerlist,
+                 vertexWeight = options.vertexWeight)
     print loop
     loop.Loop( nEv )
     loop.Write()

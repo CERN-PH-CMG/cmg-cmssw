@@ -1,4 +1,4 @@
-from ROOT import TTree, TH1F, TH2F, TProfile, TLegend, gDirectory
+from ROOT import TTree, TH1F, TH2F, TProfile, gDirectory
 
 class LegHistograms:
     def __init__(self, name, leg):
@@ -14,8 +14,8 @@ class LegHistograms:
         print 'filling histograms: ' + self.name
         tree.Draw('tauMu.obj[0].%s().pt()>>%s' % (self.leg, self.h_pt.GetName()),cut,'goff',nEvents)
 
-    def fillLeg(self, leg):
-        self.h_pt.Fill( leg.pt() )
+    def fillLeg(self, leg, weight ):
+        self.h_pt.Fill( leg.pt(), weight )
         
     def formatHistos(self, style ):
         for hist in self.hists:

@@ -13,9 +13,12 @@ def CallBack( result ):
     print 'production done:\n', str(result)
 
 def RunLoop( comp ):
+    #COLIN need to be able to catch exceptions! 
     fullName = '/'.join( [procName, comp.name ] )
     files = glob.glob(comp.files)
-    loop = Loop( fullName, files, comp.triggers)
+    loop = Loop( fullName, files,
+                 triggers = comp.triggers,
+                 vertexWeight = comp.vertexWeight )
     print loop
     loop.Loop()
     loop.Write()
