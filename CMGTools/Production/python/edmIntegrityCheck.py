@@ -7,6 +7,7 @@ import datetime, fnmatch, json, os, shutil, sys, tempfile
 import subprocess
 
 import CMGTools.Production.eostools as castortools
+from CMGTools.Production.castorBaseDir import castorBaseDir
 
 class PublishToFileSystem(object):
     """Write a report to storage"""
@@ -70,7 +71,7 @@ class IntegrityCheck(object):
 
         self.dataset = dataset
         self.options = options
-        self.topdir = castortools.lfnToCastor('/store/%s/user/%s/CMG' % (self.options.device, self.options.user))
+        self.topdir = castortools.lfnToCastor( castorBaseDir(user=options.user) )
         self.directory = os.path.join(self.topdir, *self.dataset.split(os.sep))
         
         #event counters
