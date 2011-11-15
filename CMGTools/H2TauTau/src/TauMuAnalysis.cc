@@ -17,6 +17,7 @@
 #include "TauAnalysis/SVFitStandAlone/interface/NSVfitStandaloneAlgorithm.h"
 //#include "CMGTools/H2TauTau/interface/NSVfitStandaloneAlgorithm.h"
 
+#include <TVectorD.h>
 
 TauMuAnalysis::TauMuAnalysis():
   BaseAnalysis(),
@@ -72,6 +73,8 @@ bool TauMuAnalysis::addHistos(Sample* s){
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauMassSVFitHisto","",800,0,800))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_svFitConvergeHisto","",6,-0.5,5.5))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_svFitCov00Histo","",1000,0,1000))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_svFitEigen0Histo","",1000,0,1000))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_svFitEigen1Histo","",1000,0,1000))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauEtaHisto","",120,-6,6))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauPtHisto","",200,0,200))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muPtHisto","",200,0,200))))return 0; 
@@ -113,6 +116,8 @@ bool TauMuAnalysis::getHistos(TString tag){
   if(!(diTauMassSVFitHisto_=(TH1F*)(sample_->getHisto(TString("diTauMassSVFitHisto")+tag))))return 0;
   if(!(svFitConvergeHisto_=(TH1F*)(sample_->getHisto(TString("svFitConvergeHisto")+tag))))return 0;
   if(!(svFitCov00Histo_=(TH1F*)(sample_->getHisto(TString("svFitCov00Histo")+tag))))return 0;
+  if(!(svFitEigen0Histo_=(TH1F*)(sample_->getHisto(TString("svFitEigen0Histo")+tag))))return 0;
+  if(!(svFitEigen1Histo_=(TH1F*)(sample_->getHisto(TString("svFitEigen1Histo")+tag))))return 0;
   if(!(diTauEtaHisto_=(TH1F*)(sample_->getHisto(TString("diTauEtaHisto")+tag))))return 0;
   if(!(diTauPtHisto_=(TH1F*)(sample_->getHisto(TString("diTauPtHisto")+tag))))return 0;
   if(!(muPtHisto_=(TH1F*)(sample_->getHisto(TString("muPtHisto")+tag))))return 0;
@@ -525,7 +530,7 @@ bool TauMuAnalysis::fillHistos(TString tag, double weight ){
   metphiHisto_->Fill(metCorr.Phi(),weight);  
 
   ///SVFit
-  if(calcsvfit_&&tag==""){
+  if(calcsvfit_ && tag==""){
     if(verbosity_>1) cout<<"Calculating SVFit mass"<<endl;
     NSVfitStandalone::Vector measuredMET(metCorr.x(),metCorr.y(),0);
     std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
@@ -546,6 +551,14 @@ bool TauMuAnalysis::fillHistos(TString tag, double weight ){
     svFitCov00Histo_->Fill((*metsig_)[0][0],weight);
     svFitConvergeHisto_->Fill(tree_svfitstatus_,weight);
 
+    //study the matrix elements
+    TVectorD eigenValues(2);
+    TMatrixD eigenVectors(2,2);
+    eigenVectors=metsig_->EigenVectors(eigenValues);
+    tree_svfiteigenval0_=eigenValues[0];  
+    tree_svfiteigenval1_=eigenValues[1];
+    svFitEigen0Histo_->Fill(tree_svfiteigenval0_,weight);
+    svFitEigen1Histo_->Fill(tree_svfiteigenval1_,weight);
   }
  
 
@@ -596,11 +609,13 @@ bool TauMuAnalysis::createHistos(TString samplename){
   tree_->Branch("ditaumass",&tree_ditaumass_,"ditaumass/F");
   tree_->Branch("taupt",&tree_taupt_,"taupt/F");
   tree_->Branch("mupt",&tree_mupt_,"mupt/F");
+  tree_->Branch("met",&tree_met_,"met/F");
   tree_->Branch("transversemass",&tree_transversemass_,"transversemass/F");
   tree_->Branch("svfitstatus",&tree_svfitstatus_,"svfitstatus/I");
   tree_->Branch("svfitmass",&tree_svfitmass_,"svfitmass/F");
   tree_->Branch("svfitedm",&tree_svfitedm_,"svfitedm/F");
-  tree_->Branch("met",&tree_met_,"met/F");
+  tree_->Branch("svfiteigenval0",&tree_svfiteigenval0_,"svfiteigenval0/F");
+  tree_->Branch("svfiteigenval1",&tree_svfiteigenval1_,"svfiteigenval1/F");
   sample_->addTree(tree_);
 
 

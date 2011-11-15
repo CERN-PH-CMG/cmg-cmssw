@@ -2,8 +2,8 @@
   TauMuAnalysis analysis("analysis");
   analysis.setVerbosity(1);
   analysis.setTruncateEvents(10); 
-  analysis.makeAllHistos(0);
-  analysis.setPrintFreq(1);
+  analysis.makeAllHistos(1);
+  analysis.setPrintFreq(1000);
   analysis.setInputTag("cmgTauMuSelClean");
   analysis.calcSVFit(1);
 
@@ -15,6 +15,7 @@
   //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/21fbCat";
   //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/21fbCatRecoil";
   //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/21fbCatSVFitRecoil";
+  //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/21fbMETSig";
 
   analysis.setOutputPath(path);
 
