@@ -1,3 +1,9 @@
+
+def printWeights( weights ):
+    for key, value in weights.iteritems():
+        print key
+        print value 
+
 class Weight( object ):
     '''make names uniform wrt Component.
 
@@ -34,5 +40,16 @@ class Weight( object ):
         self.dict['intLumi'] = lumi
 
     def __str__(self):
-        return ' genN = %d, xsec = %5.5 pb, genEff = %2.2, lumi = %5.2f, addWeight = %3.2f -> weight = %3.5f' % ( self.genNEvents, self.xSection, self.genEff, self.intLumi, self.addWeight, self.GetWeight())
-    
+        if self.xSection is None:          
+            return ' intLumi = %5.2f, addWeight = %3.2f' \
+               % ( self.intLumi,
+                   self.addWeight )
+        else:
+            return ' genN = %d, xsec = %5.5f pb, genEff = %2.2f, intLumi = %5.2f, addWeight = %3.2f -> weight = %3.5f' \
+                   % ( self.genNEvents,
+                       self.xSection,
+                       self.genEff,
+                       self.intLumi,
+                       self.addWeight,
+                       self.GetWeight() )
+        
