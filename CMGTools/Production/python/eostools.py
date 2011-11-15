@@ -141,9 +141,10 @@ def createEOSDir( path ):
     lfn = eosToLFN(path)
     # print 'creating', path
     if not isEOSFile(lfn):
-        entity = cmsIO.cmsFile( lfn,"stageout")
-        entity.mkdir([])
-        # print 'created ', path
+        runEOSCommand(lfn,'mkdir','-p')
+#        entity = cmsIO.cmsFile( lfn,"stageout")
+#        entity.mkdir([])
+#        # print 'created ', path
     return path
 #also define an alias for backwards compatibility
 createCastorDir = createEOSDir
