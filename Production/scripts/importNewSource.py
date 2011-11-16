@@ -7,7 +7,7 @@
 import os, sys,  imp, re, pprint, string
 from optparse import OptionParser
 
-import CMGTools.Production.castortools as castortools
+import CMGTools.Production.eostools as castortools
 
 
 parser = OptionParser()
@@ -57,7 +57,7 @@ sampleName = args[0].rstrip('/')
 
 # checking castor dir -----------------
 
-import CMGTools.Production.castorBaseDir
+import CMGTools.Production.castorBaseDir as castorBaseDir
 
 cdir = castortools.lfnToCastor( castorBaseDir.castorBaseDir( options.user ) )
 cdir += sampleName
