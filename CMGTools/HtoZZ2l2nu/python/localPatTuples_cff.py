@@ -25,7 +25,7 @@ def fillFromCastor(dir,ffile=0,step=-1):
         prefix='file'
         lscommand='ls ' + dir
         lsout = commands.getstatusoutput(lscommand)[1].split()
-        
+
     #check for the files needed (first file, firstfile+step)
     ifile=0
     for line in lsout :
@@ -33,23 +33,22 @@ def fillFromCastor(dir,ffile=0,step=-1):
         if(len(line)==0) : continue
         if(line.find('root')<0) : continue
 
-        sline=''
-        if(prefix=='eoscms') :
-            sline=line
-        elif(prefix=='singlefile') :
-            sline='file://' + line
-        else :
-            sline=str(prefix+'://' + dir + '/' + line.split()[0])
-            if(len(sline)==0): continue
-
         if(ifile>=ffile):
             if( (step<0) or  (step>0 and ifile<ffile+step) ):
-                localdataset.extend( [ sline ] )
-                print sline
-        ifile=ifile+1
-    print localdataset
-    return localdataset
+                
+                sline=''
+                if(prefix=='eoscms') :
+                    sline=commands.getstatusoutput('cmsPfn ' + line )[1]
+                elif(prefix=='singlefile') :
+                    sline='file://' + line
+                else :
+                    sline=str(prefix+'://' + dir + '/' + line.split()[0])
+                    if(len(sline)==0): continue
 
+                localdataset.extend( [ sline ] )
+        ifile=ifile+1
+
+    return localdataset
 
 """
 wrapper to read the configuration from comand line
