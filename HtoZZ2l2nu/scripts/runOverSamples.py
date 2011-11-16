@@ -14,6 +14,7 @@ def checkCastorDirectory(outdir):
         splitOnString=','
         rfdir_cmd='cmsLs ' + dir + ' | grep root | awk \'{print $5}\''
     nOutFile = 0
+
     outCastorDir_out = commands.getstatusoutput(rfdir_cmd)
     jobNumbers = []
     duplicatedJobs = []
@@ -25,12 +26,12 @@ def checkCastorDirectory(outdir):
             for castorFileLine in castorLines:
                 fileName=castorFileLine
                 if "root" in castorFileLine:
-                    #if(isEOS) : fileName=commands.getstatusoutput('cmsPfn '+ fileName)[1]
                     if(not isEOS) : fileName = castorFileLine.split()[8]
                     jobNumber=-1
                     try:
-                        print fileName
-                        print fileName.split("_")
+                        fileBaseName=os.path.basename(fileName)
+                        print fileBaseName
+                        print fileBaseName.split("_")
                         jobNumber = int(fileName.split("_")[1])
                     except:
                         continue
@@ -120,7 +121,7 @@ for proc in procList :
             if(onlytag!='all') :
                 itag=d['dtag']
                 if(itag.find(onlytag)<0) : continue
-
+                
             idir=0
             for dir in alldirs:
                 idir=idir+1
