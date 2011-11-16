@@ -6,6 +6,18 @@ from optparse import OptionParser
 import subprocess
 import urllib
 
+
+ENABLE=True 
+
+def isInputDict(seq):
+    '''Duck-typing a sequence to see if its a dictionary'''
+    try:
+        seq.keys()
+        return True
+    except:
+        return False
+
+
 def getCPUCount():
     
     result = 1
@@ -76,8 +88,6 @@ class InstallCMGTools(object):
         parser.add_option("", "--recipe", type="string",
                           dest="recipe", default=None,
                           help="Recipe to follow (useful for 'experimental' releases)")
-        parser.add_option("-c", "--cvs", type="string", dest="cvs_command", default="checkout",
-            help="write a cvs command. e.g. '--cvs checkout' or '--cvs update'")
         parser.add_option("-b", "--build", action="store_true", dest="build", default=False,
             help="Build the packages after checking out")
         options, args = parser.parse_args()
@@ -89,38 +99,21 @@ class InstallCMGTools(object):
         return options, args
 
     def init(self):
-        """Checkout and/or update CMGTools"""
+        """Checkout CMGTools"""
 
-        if self.options.cvs_command == 'checkout' or self.options.cvs_command == 'co':
+        self.installCMSSW()
+        
+        pwd = os.getcwd()
+        try:
+            src = os.path.join(self.options.installation_directory,self.options.cmssw_version,'src')
+            os.chdir(src)
+            self.checkoutCMGTools()
+        finally:
+            os.chdir(pwd)
 
-            self.installCMSSW()
-
-            pwd = os.getcwd()
-            try:
-                src = os.path.join(self.options.installation_directory,self.options.cmssw_version,'src')
-                os.chdir(src)
-                self.checkoutCMGTools()
-            finally:
-                os.chdir(pwd)
-
-        if self.options.cvs_command == 'update' or self.options.cvs_command == 'up':
-
-            pwd = os.getcwd()
-            try:
-                src = os.path.join(self.options.installation_directory,self.options.cmssw_version,'src')
-                if not os.path.exists(src):
-                    print("**************************************************")
-                    print("* Run checkout first. e.g. > ... --cvs=checkout' *")
-                    print("**************************************************")
-                else:
-                    os.chdir(src)
-                    self.updateCMGTools()
-            finally:
-                os.chdir(pwd)
 
     def installCMSSW(self):
         """Install CMSSW"""
-
         if not os.path.exists(self.options.installation_directory):
             os.mkdir(self.options.installation_directory)
 
@@ -129,27 +122,43 @@ class InstallCMGTools(object):
         finally:
             subprocess.call(['scram', 'project', 'CMSSW', '%s' % self.options.cmssw_version])
 
-    def checkoutCMGTools(self):
-        """Checkout CMGTools"""
-        for key in self.dic_list.keys():
-            cmd = 'cvs checkout '
-            #add a tag if needed
-            if not self.dic_list[key][0].lower() == 'head':
-                cmd += '-r %s ' % self.dic_list[key][0]
-            #specify a target directory if needed
-            if self.dic_list[key][1] and key != self.dic_list[key][1]:
-                cmd += '-d %s ' % self.dic_list[key][1]
-            cmd = '%s %s' % (cmd,key)
-            print cmd
+
+    def checkout(self, pack, cvsmod, tag, doit = True):
+        '''Check out one package.'''
+
+        tagcmd = ' '.join( ['-r', tag] )
+        if tag.lower() == 'head':
+            tagcmd = ''
+
+        dircmd = ''
+        if pack != cvsmod:
+            dircmd = ' '.join( ['-d', pack] )
+
+        cmd = ' '.join( ['cvs co', tagcmd, dircmd, cvsmod] )
+        print cmd
+        if doit:
             os.system(cmd)
 
-    def updateCMGTools(self):
-        """Update CMGTools"""
-        for key in self.dic_list.keys():
-            if not self.dic_list[key][0].lower() == 'head':
-                os.system('cvs update -r %s -d %s' % (self.dic_list[key][0], self.dic_list[key][1]))
-            else:
-                os.system('cvs update -A -d %s' % (self.dic_list[key][1]))
+
+    def checkoutCMGTools(self):
+        """Checkout CMGTools"""
+        if not isInputDict( self.dic_list):
+            for pack, cvsmod, tag in self.dic_list:
+                self.checkout( pack, cvsmod, tag, doit=ENABLE)
+        else:
+            # the following is kept for backward compatibility
+            for key in self.dic_list.keys():
+                cmd = 'cvs checkout '
+                #add a tag if needed
+                if not self.dic_list[key][0].lower() == 'head':
+                    cmd += '-r %s ' % self.dic_list[key][0]
+                #specify a target directory if needed
+                if self.dic_list[key][1] and key != self.dic_list[key][1]:
+                    cmd += '-d %s ' % self.dic_list[key][1]
+                cmd = '%s %s' % (cmd,key)
+                print cmd
+                os.system(cmd)
+
 
 ######################################################################
 
