@@ -47,6 +47,7 @@ class DiObject : public AbstractPhysicsObject{
       AbstractPhysicsObject(other),
       leg1_(other.leg1()),
       leg2_(other.leg2()),
+      met_(other.met()),
       mT_(other.mT_),
       alphaT_(other.alphaT_),
       mR_(other.mR_),
@@ -64,6 +65,8 @@ class DiObject : public AbstractPhysicsObject{
     const T& leg1() const{ return leg1_; }
 
     const U& leg2() const{ return leg2_; }
+
+    const reco::LeafCandidate& met() const { return met_;}
 
     virtual double mT() const { return mT_; }
 
@@ -153,6 +156,7 @@ class DiObject : public AbstractPhysicsObject{
 
     T leg1_;
     U leg2_;
+    reco::LeafCandidate met_;
     
     /// M_T between the two legs (one of them can be the MET)
     Double_t mT_;

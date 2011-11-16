@@ -36,7 +36,7 @@ class DiObjectFactory : public cmg::Factory< cmg::DiObject<T,U> >, public cmg::S
         
         ///Set alphaT etc
         virtual void set(const std::pair<T,U>& pair, cmg::DiObject<T,U>* const obj) const;
-        virtual void set(const std::pair<T,U>& pair, const reco::Candidate& met, cmg::DiObject<T,U>* const obj) const;
+        virtual void set(const std::pair<T,U>& pair, const reco::LeafCandidate& met, cmg::DiObject<T,U>* const obj) const;
 
     private:
 
@@ -78,7 +78,7 @@ typename cmg::DiObjectFactory<T,U>::event_ptr cmg::DiObjectFactory<T,U>::create(
     typedef typename std::set<typename cmg::DiObject<T,U> > set;
     typedef edm::View<T> collection1;
     typedef edm::View<U> collection2;
-    typedef edm::View<reco::Candidate> met_collection;
+    typedef edm::View<reco::LeafCandidate> met_collection;
     
     edm::Handle<collection1> leg1Cands;
     iEvent.getByLabel(leg1Label_,leg1Cands);
@@ -140,17 +140,18 @@ void cmg::DiObjectFactory<T, U>::set(const std::pair<T,U>& pair, cmg::DiObject<T
 }
 
 template<typename T, typename U>
-void cmg::DiObjectFactory<T, U>::set(const std::pair<T,U>& pair, const reco::Candidate& met, cmg::DiObject<T,U>* const obj) const{
-    obj->mT_ = mT(pair.first, pair.second);
-    if (pair.first.isElectron() || pair.first.isMuon())
-      obj->lp_ = lp(pair.first, obj);
-    //calculate the Razor variables with MET
-    obj->mRT_ = mRT(pair.first, pair.second, met);
-    std::pair<double,double> pZetaVars = pZeta(pair.first, pair.second, met);
-    obj->pZetaVis_ = pZetaVars.first;
-    obj->pZetaMET_ = pZetaVars.second;    
-    obj->mTLeg1_ = mT(pair.first, met);
-    obj->mTLeg2_ = mT(pair.second, met);    
+void cmg::DiObjectFactory<T, U>::set(const std::pair<T,U>& pair, const reco::LeafCandidate& met, cmg::DiObject<T,U>* const obj) const{
+  obj->met_ = met;
+  obj->mT_ = mT(pair.first, pair.second);
+  if (pair.first.isElectron() || pair.first.isMuon())
+    obj->lp_ = lp(pair.first, obj);
+  //calculate the Razor variables with MET
+  obj->mRT_ = mRT(pair.first, pair.second, met);
+  std::pair<double,double> pZetaVars = pZeta(pair.first, pair.second, met);
+  obj->pZetaVis_ = pZetaVars.first;
+  obj->pZetaMET_ = pZetaVars.second;    
+  obj->mTLeg1_ = mT(pair.first, met);
+  obj->mTLeg2_ = mT(pair.second, met);    
 }
 
 template<typename T, typename U>
