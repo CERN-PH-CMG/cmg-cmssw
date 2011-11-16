@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2011/09/17 20:35:20 $
- *  $Revision: 1.5 $
+ *  $Date: 2011/11/02 15:32:04 $
+ *  $Revision: 1.6 $
  *  \author L. Quertenmont
  */
 
@@ -11,7 +11,22 @@
 using namespace std;
 
 
-EventCategory::EventCategory(){}
+EventCategory::EventCategory(bool VBFBinningOnly_){
+     VBFBinningOnly = VBFBinningOnly_;
+     if(VBFBinningOnly){
+        ZZ2l2nuCategoryLabel = new TString[3];
+        ZZ2l2nuCategoryLabel[0] = "novbf";
+        ZZ2l2nuCategoryLabel[1] = "vbf";
+        ZZ2l2nuCategoryLabel[2] = "";
+     }else{
+        ZZ2l2nuCategoryLabel = new TString[5];
+        ZZ2l2nuCategoryLabel[0] = "eq0jets";
+        ZZ2l2nuCategoryLabel[1] = "eq1jets";
+        ZZ2l2nuCategoryLabel[2] = "geq2jets";
+        ZZ2l2nuCategoryLabel[3] = "vbf";
+        ZZ2l2nuCategoryLabel[4] = "";
+     }
+}
 EventCategory::~EventCategory(){}
 
 //
@@ -100,14 +115,15 @@ int EventCategory::Get(const PhysicsEvent_t& phys, LorentzVectorCollection *vari
 
 //
 TString EventCategory::GetLabel(int CategoryType){
-  return ZZ2l2nuCategoryLabel[CategoryType];
+  if(VBFBinningOnly){
+     if(CategoryType<=2)return ZZ2l2nuCategoryLabel[0];
+     return ZZ2l2nuCategoryLabel[1];
+  }else{
+     return ZZ2l2nuCategoryLabel[CategoryType];
+  }
 }
 
 //
 TString EventCategory::GetLabel(const PhysicsEvent_t& phys){
-  return ZZ2l2nuCategoryLabel[Get(phys)];
+  return GetLabel(Get(phys));
 }
-
- 
-
-
