@@ -1,3 +1,8 @@
+#MultiJet
+cmgtools%/MultiJet/Run2011A-05Aug2011-v1/AOD/V2
+cmgtools%/MultiJet/Run2011A-May10ReReco-v1/AOD/V2
+cmgtools%/MultiJet/Run2011A-PromptReco-v4/AOD/V2
+cmgtools%/MultiJet/Run2011A-PromptReco-v6/AOD/V2
 #MuHad
 cmgtools%/MuHad/Run2011A-05Aug2011-v1/AOD/V2
 cmgtools%/MuHad/Run2011A-May10ReReco-v1/AOD/V2
@@ -8,11 +13,6 @@ cmgtools%/ElectronHad/Run2011A-05Aug2011-v1/AOD/V2
 ##lucieg%/ElectronHad/Run2011A-May10ReReco-v1/AOD/V2
 cmgtools%/ElectronHad/Run2011A-PromptReco-v4/AOD/V2
 cmgtools%/ElectronHad/Run2011A-PromptReco-v6/AOD/V2
-#MultiJet
-cmgtools%/MultiJet/Run2011A-05Aug2011-v1/AOD/V2
-##cmgtools%/MultiJet/Run2011A-May10ReReco-v1/AOD/V2
-cmgtools%/MultiJet/Run2011A-PromptReco-v4/AOD/V2
-cmgtools%/MultiJet/Run2011A-PromptReco-v6/AOD/V2
 #HT
 ##/HT/Run2011A-05Aug2011-v1/AOD/V2
 ##lucieg%/HT/Run2011A-May10ReReco-v1/AOD/V2
