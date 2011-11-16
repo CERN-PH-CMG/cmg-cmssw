@@ -32,7 +32,7 @@ private:
   
   /// source diobject inputtag
   edm::InputTag diTauSrc_;
-  edm::InputTag metSrc_;
+//   edm::InputTag metSrc_;
   edm::InputTag metsigSrc_;
 
   bool verbose_;
@@ -41,7 +41,7 @@ private:
 
 DiTauWithSVFitProducer::DiTauWithSVFitProducer(const edm::ParameterSet & iConfig) : 
   diTauSrc_( iConfig.getParameter<edm::InputTag>("diTauSrc") ),
-  metSrc_( iConfig.getParameter<edm::InputTag>("metSrc") ),
+//   metSrc_( iConfig.getParameter<edm::InputTag>("metSrc") ),
   metsigSrc_( iConfig.getParameter<edm::InputTag>("metsigSrc") ),
   verbose_( iConfig.getUntrackedParameter<bool>("verbose", false ) ) {
   
@@ -54,17 +54,19 @@ DiTauWithSVFitProducer::DiTauWithSVFitProducer(const edm::ParameterSet & iConfig
 void DiTauWithSVFitProducer::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
 
   
-  if(verbose_) {
-    std::cout<<"DiTauWithSVFitProducer"<<std::endl;
-    std::cout<<"+++"<<std::endl;
-  }
 
   edm::Handle< DiTauCollection > diTauH;
   iEvent.getByLabel(diTauSrc_, diTauH);
+
+
+  if(verbose_ && !diTauH->empty() ) {
+    std::cout<<"DiTauWithSVFitProducer"<<std::endl;
+    std::cout<<"+++"<<std::endl;
+  }
   
-  ///get the MET 
-  edm::Handle< std::vector<cmg::BaseMET> > met;
-  iEvent.getByLabel(metSrc_,met);
+//   ///get the MET 
+//   edm::Handle< std::vector<cmg::BaseMET> > met;
+//   iEvent.getByLabel(metSrc_,met);
   
   //get the MET significance
   edm::Handle< cmg::METSignificance > metsig;
@@ -74,23 +76,25 @@ void DiTauWithSVFitProducer::produce(edm::Event & iEvent, const edm::EventSetup 
   typedef std::auto_ptr< DiTauCollection >  OutPtr;
   OutPtr pOut( new DiTauCollection() );
 
-  if(verbose_) {
-    std::cout<<"Looping on "<<diTauH->size()<<"input di-objects:"<<std::endl;
+  if(verbose_ && !diTauH->empty()) {
+    std::cout<<"Looping on "<<diTauH->size()<<" input di-objects:"<<std::endl;
   }
 
   for( unsigned i=0; i<diTauH->size(); ++i) {
     const DiTauType& diTau = diTauH->at(i);
+    const reco::LeafCandidate met = diTau.met();
 
     if(verbose_) {
       std::cout<<"  ---------------- "<<std::endl;
       std::cout<<"\trec boson: "<<diTau<<std::endl;
       std::cout<<"\t\tleg1: "<<diTau.leg1()<<std::endl;
       std::cout<<"\t\tleg2: "<<diTau.leg2()<<std::endl;
+      std::cout<<"\t\tMET = "<<met.et()<<", phi_MET = "<<met.phi()<<std::endl;      
     }
 
-
+    
     //Note that this works only for di-objects where the tau is the leg1 and mu is leg2
-    NSVfitStandalone::Vector measuredMET((*(met->begin())).p4().x(),(*(met->begin())).p4().y(),0);
+    NSVfitStandalone::Vector measuredMET( met.p4().x(), met.p4().y(), 0);
     std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
     NSVfitStandalone::LorentzVector p1(diTau.leg1().p4());
     measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kHadDecay,p1));    
@@ -111,7 +115,7 @@ void DiTauWithSVFitProducer::produce(edm::Event & iEvent, const edm::EventSetup 
   
   iEvent.put( pOut ); 
 
-  if(verbose_) {
+  if(verbose_ && !diTauH->empty()) {
     std::cout<<"DiTauWithSVFitProducer done"<<std::endl;
     std::cout<<"***"<<std::endl;
   }
