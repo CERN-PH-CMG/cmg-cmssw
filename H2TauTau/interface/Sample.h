@@ -76,7 +76,7 @@ public:
   void setTruthEventType(unsigned int eventtype){truthEventType_=eventtype;}
 
 
-  bool scaleLumi(Float_t lumi){
+  bool scale(Float_t factor){
     if(dataType_=="Data" || dataType_=="Data_SS") return 0;
     if(!histFile_){//check the histograms exist
       histFile_=new TFile(outputpath_+"/"+GetName()+"_Sample_Histograms.root","read");
@@ -90,9 +90,11 @@ public:
     if(!keys)return 0;
     TIterator* keyiter=keys->MakeIterator();
     for(TKey* histname=(TKey*)keyiter->Next(); histname; histname=(TKey*)keyiter->Next())
-      ((TH1*)histFile_->Get(histname->GetName()))->Scale((effCorrFactor_*lumi)/getLumi());
+      ((TH1*)histFile_->Get(histname->GetName()))->Scale(factor);//(effCorrFactor_*lumi)/getLumi()
     return 1;
   }
+
+
 
 
   //access
@@ -101,6 +103,7 @@ public:
   float getCrossection(){return crossection_;}
   TString getDataType(){return dataType_;}
   int getSampleGenEvents(){return genEvents_;}
+  float getEffCorrFactor(){return effCorrFactor_;}
 
   float getLumi(){ 
     if(dataType_=="Data" || dataType_=="Data_SS")return lumi_;

@@ -32,7 +32,12 @@ public:
   void calcSVFit(bool calc){calcsvfit_=calc;}
   void makeAllHistos(bool makeall){makeAllHistos_=makeall;}
 
-  bool plotDistribution(TString histname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords, Float_t* axesrange, bool log=0);
+  bool scaleHistos();
+  TH1F* getQCD(TString histoname);
+  TH1F* getData(TString histoname);
+  TH1F* getDataSS(TString histoname);
+  
+  //bool plotDistribution(TString histname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords, Float_t* axesrange, bool log=0);
   bool plot(TString histname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords, Float_t* axesrange, bool log=0);
    
 
