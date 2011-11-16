@@ -99,9 +99,14 @@ void DiTauWithSVFitProducer::produce(edm::Event & iEvent, const edm::EventSetup 
     NSVfitStandaloneAlgorithm algo(measuredTauLeptons,measuredMET,metsig->significance(),0);
     algo.maxObjFunctionCalls(5000);
     algo.fit();
-    
+    double massSVFit = algo.fittedDiTauSystem().mass();
+
     pOut->push_back( diTau );
-    pOut->back().setMassSVFit(algo.fittedDiTauSystem().mass());
+    pOut->back().setMassSVFit( massSVFit );
+    
+    if(verbose_) {
+      std::cout<<"\tm_vis = "<<diTau.mass()<<", m_svfit = "<<massSVFit<<std::endl;
+    }
   }
   
   iEvent.put( pOut ); 

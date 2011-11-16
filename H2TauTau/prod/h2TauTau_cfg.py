@@ -123,3 +123,4 @@ print 'baseline selection EDM output:  ', baselineName
 print 'basic selection EDM output   :  ', basicName
 print 'histograms output            :  ', histName 
 
+process.cmgTauMuCorPreSelSVFit.verbose = True
