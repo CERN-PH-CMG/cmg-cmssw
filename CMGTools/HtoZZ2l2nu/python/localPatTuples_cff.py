@@ -6,7 +6,7 @@ import commands
 """
 lists the files available in castor
 """
-def fillFromCastor(dir,ffile=0,step=-1):
+def fillFromCastor(dir,ffile=0,step=-1,generatePfn=True):
 
     localdataset=cms.untracked.vstring()
  
@@ -38,7 +38,8 @@ def fillFromCastor(dir,ffile=0,step=-1):
                 
                 sline=''
                 if(prefix=='eoscms') :
-                    sline=commands.getstatusoutput('cmsPfn ' + line )[1]
+                    if(generatePfn) : sline=commands.getstatusoutput('cmsPfn ' + line )[1]
+                    else            : sline=line
                 elif(prefix=='singlefile') :
                     sline='file://' + line
                 else :
