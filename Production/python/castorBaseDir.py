@@ -2,17 +2,22 @@
 import os
 import CMGTools.Production.eostools as castortools
 
+def getUserAndArea(user):
+    """Factor out the magic user hack for use in other classes"""
+    
+    area = 'user'
+    
+    tokens = user.split('_')
+    if tokens and len(tokens) > 1:
+        user = tokens[0]
+        area = tokens[1]
+    return user, area
+
 def castorBaseDir( user=os.environ['USER'], area = None):
     """Gets the top level directory to use for writing for 'user'"""
     
     if area is None:
-        #magic string for group area
-        tokens = user.split('_')
-        if tokens and len(tokens) > 1:
-            user = tokens[0]
-            area = tokens[1]
-        else:
-            area = 'user'
+        user, area = getUserAndArea(user)
     
     d = '/store/cmst3/%s/%s/CMG' % (area,user)
     exists = castortools.fileExists( castortools.lfnToCastor(d) )
