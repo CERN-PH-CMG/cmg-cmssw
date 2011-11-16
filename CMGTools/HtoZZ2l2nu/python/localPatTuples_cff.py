@@ -7,42 +7,47 @@ import commands
 lists the files available in castor
 """
 def fillFromCastor(dir,ffile=0,step=-1):
- 
-    #a root file is already there
-    if(dir.find(".root")>=0):
-        localdataset=cms.untracked.vstring()
-        localdataset.extend( [ str(dir) ] )
-        return localdataset
 
-    #it is a directory (check if it is castor or not)
-    prefix='rfio'
+    localdataset=cms.untracked.vstring()
+ 
+    #check if it is a directory (check if it is castor, eos or local)
+    prefix='singlefile'
+    lsout=[dir]
     if(dir.find('castor')>=0) :
-        os.system('rfdir ' + dir + ' | awk \'{print $9}\' > /tmp/castorDump')
+        prefix='rfio'
+        lscommand ='rfdir ' + dir + ' | awk \'{print $9}\''
+        lsout = commands.getstatusoutput(lscommand)[1].split()
     elif(dir.find('/store/cmst3')==0):
         prefix='eoscms'
-        os.system('a=(`cmsLs ' + dir + ' | grep root | awk \'{print $5}\'`); for i in ${a[@]}; do cmsPfn ${i} >> /tmp/castorDump; done')
-    else:
+        lscommand = 'cmsLs ' + dir + ' | grep root | awk \'{print $5}\''
+        lsout = commands.getstatusoutput(lscommand)[1].split()
+    elif(dir.find('.root')<0):
         prefix='file'
-        os.system('ls ' + dir + ' > /tmp/castorDump')
-    inFile = open('/tmp/castorDump', 'r')
-    localdataset=cms.untracked.vstring()
+        lscommand='ls ' + dir
+        lsout = commands.getstatusoutput(lscommand)[1].split()
+        
+    #check for the files needed (first file, firstfile+step)
     ifile=0
-    for line in inFile.readlines():
+    for line in lsout :
+        if(type(line) is not str ) : continue
         if(len(line)==0) : continue
         if(line.find('root')<0) : continue
-        if(line.find('histograms')>0 or line.find('monitor')>0): continue
+
         sline=''
         if(prefix=='eoscms') :
             sline=line
+        elif(prefix=='singlefile') :
+            sline='file://' + line
         else :
             sline=str(prefix+'://' + dir + '/' + line.split()[0])
-        if(len(sline)==0): continue
+            if(len(sline)==0): continue
+
         if(ifile>=ffile):
             if( (step<0) or  (step>0 and ifile<ffile+step) ):
                 localdataset.extend( [ sline ] )
+                print sline
         ifile=ifile+1
-
-    os.system('rm /tmp/castorDump')
+    print localdataset
     return localdataset
 
 
