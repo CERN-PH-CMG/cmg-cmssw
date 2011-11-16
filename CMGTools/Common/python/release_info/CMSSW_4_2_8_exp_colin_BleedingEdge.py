@@ -1,7 +1,7 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_metInDiObjects_16Nov11'),
   ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_metInDiObjects_16Nov11'),
-  ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_metInDiObjects_16Nov11'),
-  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_15Nov11_b'),
+  ('CMGTools/H2TauTau', 'UserCode/CMGTools/H2TauTau', 'cbern_hook_16Nov11'),
+  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_workflow_16Nov11'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_15Nov11'),
   ('CMGTools/ZmumuJetsTutorial', 'UserCode/CMG/CMGTools/ZmumuJetsTutorial', 'cbern_tutorial_12Oct11'),
   ('CommonTools/ParticleFlow', 'CommonTools/ParticleFlow', 'B4_2_X_cbern_dbetaoff_14Oct11'),
@@ -19,7 +19,3 @@
   ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-02-07'),
   ('RecoTauTag/TauTagTools', 'RecoTauTag/TauTagTools', 'V01-02-00'),
   ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseNov14')]
-# The following packages were not in the input release_info.
-# Please make sure that the CVS module is correct!
-#	CMGTools/H2TauTau                        cbern_metInDiObjects_16Nov11
-#	TauAnalysis/SVFitStandAlone              joseNov14
