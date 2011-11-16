@@ -15,8 +15,8 @@ numberOfFilesToProcess = 5
 
 dataset_user = 'cmgtools' 
 # dataset_name = '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0'
-# dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0'
-dataset_name = '/TauPlusX/Run2011A-PromptReco-v6/AOD/V2/PAT_CMG_V2_3_0'
+dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0'
+# dataset_name = '/TauPlusX/Run2011A-PromptReco-v6/AOD/V2/PAT_CMG_V2_3_0'
 
 # JSON: will be applied if dataset_name contains the string 'Run201' (data)
 
@@ -42,13 +42,8 @@ if numberOfFilesToProcess>0:
     process.source.fileNames = process.source.fileNames[:numberOfFilesToProcess]
 
 
-# attach JSON mask to the source if reading a data file
-json = None
-if dataset_name.find('Run201')>-1:
-    from CMGTools.Common.Tools.applyJSON_cff import *
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-178078_7TeV_PromptReco_Collisions11_JSON.txt'
-    applyJSON(process, json )
-
+###ProductionTaskHook$$$
+    
 
 # Sequence & path definition -------------------------------------------------
 
@@ -60,10 +55,21 @@ process.schedule = cms.Schedule(
     process.tauMuPreSelPath,
     # and this one to the full baseline selection
     process.tauMuFullSelPath,    
-    # process.tauEPath,
     process.outpath
     )
 
+
+json = None
+if dataset_name.find('Run201')>-1:
+    #DATA
+    # attach JSON mask to the source if reading a data file
+    from CMGTools.Common.Tools.applyJSON_cff import *
+    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-178078_7TeV_PromptReco_Collisions11_JSON.txt'
+    applyJSON(process, json )
+else:
+    #SIMULATION
+    process.load('CMGTools.Common.generator.vertexWeight.vertexWeight_cff')
+    process.objectSequence += process.vertexWeightSequence
 
 # setting up the recoil correction according to the input file ---------------
 
