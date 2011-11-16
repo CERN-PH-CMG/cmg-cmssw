@@ -329,6 +329,33 @@ class SourceCFG(Task):
         output.write('files = ' + str(data.listOfGoodFiles()) + '\n')
         output.close()
         return {'SourceCFG':source}
+
+
+def insertLines( insertedTo, toInsert ):
+    '''insert a sequence in another sequence.
+
+    the sequence is inserted either at the end, or at the position
+    of the HOOK, if it is found.
+    The HOOK is considered as being found if
+      str(elem).find(###ProductionTaskHook$$$)
+    is true for one of the elements in the insertedTo sequence. 
+    '''
+    HOOK = '###ProductionTaskHook$$$'
+    hookIndex = None
+    for index, line in enumerate(insertedTo):
+        line = str(line)
+        if line.find(HOOK)>-1:
+            hookIndex = index
+            break        
+    if hookIndex is not None:
+        before = insertedTo[:hookIndex]
+        after = insertedTo[hookIndex:]
+        result = before + toInsert + after
+        return result
+    else:
+        insertedTo.extend( toInsert )
+        return insertedTo
+
     
 class FullCFG(Task):
     """Generate the full CFG needed to run the job and writes it to the job directory"""
@@ -343,20 +370,28 @@ class FullCFG(Task):
         if self.options.cfg is None or not os.path.exists(self.options.cfg):
             raise Exception("The file '%s' does not exist. Please check." % self.options.cfg)
         
-        config = file(self.options.cfg).read()
+        config = file(self.options.cfg).readlines()
         sourceFile = os.path.basename(input['SourceCFG']['SourceCFG'])
         if sourceFile.lower().endswith('.py'):
             sourceFile = sourceFile[:-3]
         
         source = os.path.join(jobdir,'full_cfg.py')
         output = file(source,'w')
-        output.write(config)
-        output.write('\nfrom %s import *\n' % sourceFile)
-        output.write('\nprocess.source.fileNames = files\n')        
-        output.write('if hasattr(process,"maxEvents"): process.maxEvents.input = cms.untracked.int32(-1)\n')
-        output.write('if hasattr(process,"maxLuminosityBlocks"): process.maxLuminosityBlocks.input = cms.untracked.int32(-1)\n')
-        output.close()
 
+        toInsert = ['\nfrom %s import *\n' % sourceFile,
+                    'process.source.fileNames = files\n',
+                    'if hasattr(process,"maxEvents"): process.maxEvents.input = cms.untracked.int32(-1)\n'
+                    'if hasattr(process,"maxLuminosityBlocks"): process.maxLuminosityBlocks.input = cms.untracked.int32(-1)\n'
+                    ]
+        config = insertLines( config, toInsert )
+        output.writelines(config)
+        output.close()
+        #output.write(config)
+        #output.write('\nfrom %s import *\n' % sourceFile)
+        #output.write('\nprocess.source.fileNames = files\n')        
+        #output.write('if hasattr(process,"maxEvents"): process.maxEvents.input = cms.untracked.int32(-1)\n')
+        #output.write('if hasattr(process,"maxLuminosityBlocks"): process.maxLuminosityBlocks.input = cms.untracked.int32(-1)\n')
+        #output.close()
         return {'FullCFG':source}
 
 class CheckConfig(Task):
@@ -383,17 +418,17 @@ class RunTestEvents(Task):
         full = input['FullCFG']['FullCFG']
         jobdir = input['CreateJobDirectory']['JobDir']
         
-        config = file(full).read()
+        config = file(full).readlines()
         source = os.path.join(jobdir,'test_cfg.py')
         output = file(source,'w')
-        output.write(config)
-        output.write('process.out.outputCommands = cms.untracked.vstring("drop *")\n')
-        output.write('process.maxEvents.input = cms.untracked.int32(5)\n')
-        output.write('if hasattr(process,"source"): process.source.fileNames = process.source.fileNames[:1]\n')
-        
-        
+        toInsert = ['\nprocess.out.outputCommands = cms.untracked.vstring("drop *")\n',
+                    'process.maxEvents.input = cms.untracked.int32(5)\n',
+                    'if hasattr(process,"source"): process.source.fileNames = process.source.fileNames[:1]\n'
+                    ]
+        config = insertLines( config, toInsert )
+        output.writelines(config)
         output.close()
-
+                
         pwd = os.getcwd()
         
         error = None
