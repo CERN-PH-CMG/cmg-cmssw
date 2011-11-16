@@ -272,6 +272,7 @@ int main(int argc, char* argv[])
   metTypes["min3Met"]             = "min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
   metTypes["min4Met"]             = "min(E_{T}^{miss},assoc-E_{T}^{miss}(charged),assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
   metTypes["redMet"]              = "red(E_{T}^{miss},clustered-E_{T}^{miss})";
+  metTypes["redMetD0"]            = "red-E_{T}^{miss}(D0)";
   metTypes["redAssocChargedMet"]  = "red(E_{T}^{miss},assoc-E_{T}^{miss}(charged))";
   metTypes["redAssocMet"]         = "red(E_{T}^{miss},assoc-E_{T}^{miss})";
   metTypes["redClusteredMet"]     = "red(E_{T}^{miss},clustered-E_{T}^{miss})";
@@ -682,6 +683,7 @@ int main(int argc, char* argv[])
       LorentzVector rmAMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, min(zvv,assocMetP4), clusteredMetP4, zvv, isGammaEvent);
       LorentzVector redMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsP4             , zvv                , isGammaEvent, &redMetInfo);
       double redMet = redMetP4.pt();   double redMetL = redMetInfo.redMET_l; double redMetT = redMetInfo.redMET_t;
+      LorentzVector redMetD0P4 = METUtils::redMET(METUtils::D0, lep1, 0, lep2, 0, jetsP4             , zvv                , isGammaEvent); 
 
       //projected met
       Float_t projMet              =  isGammaEvent ? 0 : METUtils::projectedMET(phys.leptons[0], phys.leptons[1], zvv).pt();
@@ -707,6 +709,7 @@ int main(int argc, char* argv[])
       metTypeValues["min3Met"]             = min(zvv, min(assocMetP4,clusteredMetP4));
       metTypeValues["min4Met"]             = min(min(zvv,assocChargedMetP4), min(assocMetP4,clusteredMetP4));      
       metTypeValues["redMet"]              = redMetP4; 
+      metTypeValues["redMetD0"]              = redMetD0P4;
       metTypeValues["redAssocChargedMet"]  = rTMetP4;
       metTypeValues["redAssocMet"]         = rAMetP4;
       metTypeValues["redClusteredMet"]     = rCMetP4;
