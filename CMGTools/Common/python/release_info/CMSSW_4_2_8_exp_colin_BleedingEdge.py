@@ -1,6 +1,6 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_metInDiObjects_16Nov11'),
   ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_metInDiObjects_16Nov11'),
-  ('CMGTools/H2TauTau', 'UserCode/CMGTools/H2TauTau', 'cbern_metInDiObjects_16Nov11'),
+  ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_metInDiObjects_16Nov11'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_15Nov11_b'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_15Nov11'),
   ('CMGTools/ZmumuJetsTutorial', 'UserCode/CMG/CMGTools/ZmumuJetsTutorial', 'cbern_tutorial_12Oct11'),
