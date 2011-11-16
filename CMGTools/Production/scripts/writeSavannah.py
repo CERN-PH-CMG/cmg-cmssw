@@ -85,10 +85,12 @@ If no -s option is provided, it is assumed that the current user is the user on 
     dirOrFile = args[0]
 
     # Castor base directory for specified user
-    castorBaseDir = castortools.lfnToCastor(castorBaseDir.castorBaseDir(options.user))
+    baseDir = castortools.lfnToCastor(castorBaseDir.castorBaseDir(options.user))
+    #get the user, after taking account of the user_area hack
+    user, _ = castorBaseDir.getUserAndArea(options.user)
 
     # Locations of Logger(.tgz) and containing folder on Castor
-    targetDir = castorBaseDir + "/" + args[0].lstrip("/").rstrip("/")
+    targetDir = baseDir + "/" + args[0].lstrip("/").rstrip("/")
     targetTgz = targetDir + "/Logger.tgz"
 
     # Get array containing 1) Primary dataset name; 2) Dataset Name; 3+) Tiers
@@ -124,7 +126,7 @@ If no -s option is provided, it is assumed that the current user is the user on 
                                   RunList = [],
                                   PathList = [dirOrFile,],
                                   ParentList = [],
-                                  CreatedBy = options.user,
+                                  CreatedBy = user,
                                   DateCreated = datetime.datetime.now().strftime("%s"),
                                   )
 
@@ -156,7 +158,7 @@ If no -s option is provided, it is assumed that the current user is the user on 
         sav = savannahConnect(options.savuser, savpass)
 
         #Submit dataset to savannah and assign to files owner on Castor
-        savannahURL =sav.submitItem(dataset,files,tags,targetDir ,options.user, options.test, comment)
+        savannahURL =sav.submitItem(dataset,files,tags,targetDir ,user, options.test, comment)
 
     except ValueError as err:
         print err, '. Exit!'
