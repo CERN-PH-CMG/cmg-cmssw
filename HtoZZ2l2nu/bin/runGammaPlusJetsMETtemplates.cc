@@ -67,10 +67,7 @@ int main(int argc, char* argv[])
 
   GammaEventHandler gammaEvHandler(runProcess);
   edm::LumiReWeighting LumiWeights(runProcess.getParameter<std::string>("mcpileup"), runProcess.getParameter<std::string>("datapileup"), "pileup","pileup");
-  std::string puWeightFile = runProcess.getParameter<std::string>("puWeightFile");
-  if(puWeightFile.size()==0)  LumiWeights.weight3D_init();
-  else                        LumiWeights.weight3D_init(puWeightFile);
-
+  
   //control Histos
   SelectionMonitor controlHistos;
 
@@ -171,7 +168,8 @@ int main(int argc, char* argv[])
       if(!isGammaEvent && ev.cat != EE && ev.cat !=MUMU) continue;
 
       //float weight=ev.weight;
-      float weight = LumiWeights.weight3D( ev.ngenOOTpu/2, ev.ngenITpu, ev.ngenOOTpu/2 );
+      float weight = 1.0;
+      if(isMC) LumiWeights.weight( ev.ngenITpu );
 
       //event categories
       std::vector<TString> dilCats;

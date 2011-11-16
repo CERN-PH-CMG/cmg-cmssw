@@ -25,10 +25,12 @@ def checkCastorDirectory(outdir):
             for castorFileLine in castorLines:
                 fileName=castorFileLine
                 if "root" in castorFileLine:
-                    if(isEOS) : fileName=commands.getstatusoutput('cmsPfn '+ fileName)[1]
-                    else :      fileName = castorFileLine.split()[8]
+                    #if(isEOS) : fileName=commands.getstatusoutput('cmsPfn '+ fileName)[1]
+                    if(not isEOS) : fileName = castorFileLine.split()[8]
                     jobNumber=-1
                     try:
+                        print fileName
+                        print fileName.split("_")
                         jobNumber = int(fileName.split("_")[1])
                     except:
                         continue
@@ -44,9 +46,9 @@ def checkCastorDirectory(outdir):
                         
     print '   - Found ' + str(len(duplicatedJobs)) + ' job id duplicates @ ' + outdir
     print '   - Removing ' + str(len(duplicatedFiles)) + ' files'
-    for f in duplicatedFiles :
-        if(isEOS) : commands.getstatusoutput('cmsRm ' + f)
-        else : commands.getstatusoutput('rfrm ' +outdir + '/' + f)
+#    for f in duplicatedFiles :
+#        if(isEOS) : commands.getstatusoutput('cmsRm ' + f)
+#        else : commands.getstatusoutput('rfrm ' +outdir + '/' + f)
 
 
 
