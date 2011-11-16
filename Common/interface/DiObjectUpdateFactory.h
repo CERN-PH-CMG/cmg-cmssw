@@ -34,7 +34,7 @@ template< typename T >
 typename cmg::DiObjectUpdateFactory<T>::event_ptr cmg::DiObjectUpdateFactory<T>::create(const edm::Event& iEvent, const edm::EventSetup&) const{
     
   typedef std::vector< T > collection;
-  typedef edm::View<reco::Candidate> met_collection;
+  typedef edm::View<reco::LeafCandidate> met_collection;
   
   edm::Handle<collection> diObjects;
   iEvent.getByLabel(diObjectLabel_,diObjects);
