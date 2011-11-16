@@ -4,8 +4,8 @@
 /** \class EventCategory
  *  No description available.
  *
- *  $Date: 2011/09/17 20:35:19 $
- *  $Revision: 1.3 $
+ *  $Date: 2011/11/02 15:32:02 $
+ *  $Revision: 1.4 $
  *  \author L. Quertenmont P. Silva
  */
 
@@ -16,17 +16,20 @@
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
 
-const TString ZZ2l2nuCategoryLabel[] = {"eq0jets","eq1jets","geq2jets", "vbf"};
-
 class EventCategory {
 public:
+  bool VBFBinningOnly;
+  TString* ZZ2l2nuCategoryLabel;
   enum CategoryType { EQ0JETS, EQ1JETS, GEQ2JETS, VBF };
   
   
   /// Constructor
-  EventCategory();
+  EventCategory(bool VBFBinningOnly_=false);
+  
   /// Destructor
   virtual ~EventCategory();
+
+  int GetLabelSize(){return VBFBinningOnly ? 3 : 5;}
 
   int Get(const PhysicsEvent_t& phys,LorentzVectorCollection *variedJetsP4=0);
   TString GetLabel(int CategoryType);
@@ -34,6 +37,7 @@ public:
 
   int GetCentralJetCount() { return NJetsCentral; }
   int GetVBFJetCount() { return NJetsVBF; }
+  TString GetRawLabel(int i){return ZZ2l2nuCategoryLabel[i];}
 
  private :
   int NJetsCentral,NJetsVBF;

@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
   SelectionMonitor controlHistos; //plot storage
 
   //start computers
-  EventCategory eventClassifComp;
+  EventCategory eventClassifComp(true);
 
   // load framework libraries
   gSystem->Load( "libFWCoreFWLite" );
@@ -479,10 +479,15 @@ int main(int argc, char* argv[])
   //replicate monitor for interesting categories
 //  TString cats[]={"ee","emu","mumu"};
   TString cats[]={"ee","mumu"};
-  TString subCats[]={"","eq0jets","eq1jets","geq2jets","vbf"};
+//  TString subCats[]={"","eq0jets","eq1jets","geq2jets","vbf"};
+   TString* subCats=new TString[eventClassifComp.GetLabelSize()];
+   for(int i=0;i<eventClassifComp.GetLabelSize();i++){
+      subCats[i] = eventClassifComp.GetRawLabel(i);
+   }
+
   //TString subCats[]={"","1to3vtx","4to9vtx","geq10vtx"};
   for(size_t icat=0;icat<sizeof(cats)/sizeof(TString); icat++){
-    for(size_t isubcat=0;isubcat<sizeof(subCats)/sizeof(TString); isubcat++){
+    for(int isubcat=0;isubcat<eventClassifComp.GetLabelSize(); isubcat++){
       controlHistos.initMonitorForStep(cats[icat]+subCats[isubcat]);
   }}
 
@@ -685,6 +690,7 @@ int main(int argc, char* argv[])
 
       //met control
       metTypeValues["met"]                 = zvv;
+      metTypeValues["centralMet"]          = centralMetP4;
       metTypeValues["assocChargedMet"]     = assocChargedMetP4;
       metTypeValues["assocMet"]            = assocMetP4;
       metTypeValues["assocCMet"]           = assocCMetP4;
