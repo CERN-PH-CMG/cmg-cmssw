@@ -5,6 +5,8 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 
+#include <cmath>
+
 cmg::BaseJetFactory::BaseJetFactory(const edm::ParameterSet& ps):
   jetLabel_(ps.getParameter<edm::InputTag>("inputCollection")),
   btagType_(ps.getParameter<std::vector<std::string> >("btagType")),
@@ -75,7 +77,8 @@ void cmg::BaseJetFactory::set(const pat::JetPtr& input,
       output->rawFactor_ = input->jecFactor(0);
     }
 
-    if (fillJecUncertainty_) {
+    //there is an Exception at eta > 5.0
+    if (fillJecUncertainty_ && (fabs(input->eta()) <= 5.) ){
       JES_->setJetEta(input->eta());
       // NOTE: This should be the L2L3-corrected pT.
       JES_->setJetPt(input->pt());
