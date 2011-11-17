@@ -75,14 +75,14 @@ int main(int argc, char* argv[])
   metTypes["met"                 ]="E_{T}^{miss}";
   metTypes["assocChargedMet"     ]="assoc-E_{T}^{miss}(charged)";
   metTypes["assocMet"            ]="assoc-E_{T}^{miss}";
-  metTypes["assocOtherVtxMet"    ]="assoc-E_{T}^{miss}(other vtx)";
-  metTypes["minAssocChargedMet"  ]="min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))";
-  metTypes["minAssocMet"         ]="min(E_{T}^{miss},assoc-E_{T}^{miss})";
-  metTypes["minClusteredMet"     ]="min(E_{T}^{miss},clustered-E_{T}^{miss})";
-  metTypes["min3Met"             ]="min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
-  metTypes["redAssocMet"         ]="red(E_{T}^{miss},assoc-E_{T}^{miss})";
+  //  metTypes["assocOtherVtxMet"    ]="assoc-E_{T}^{miss}(other vtx)";
+  //   metTypes["minAssocChargedMet"  ]="min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))";
+  //  metTypes["minAssocMet"         ]="min(E_{T}^{miss},assoc-E_{T}^{miss})";
+  //  metTypes["minClusteredMet"     ]="min(E_{T}^{miss},clustered-E_{T}^{miss})";
+  //  metTypes["min3Met"             ]="min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
+  //  metTypes["redAssocMet"         ]="red(E_{T}^{miss},assoc-E_{T}^{miss})";
   metTypes["redClusteredMet"     ]="red(E_{T}^{miss},clustered-E_{T}^{miss})";
-  metTypes["red3Met"             ]="red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
+  //  metTypes["red3Met"             ]="red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
   std::map<TString,LorentzVector> metTypeValues;
 
   std::vector<TString> photonSubcats;
@@ -94,24 +94,30 @@ int main(int argc, char* argv[])
       for(size_t idilcat=0; idilcat<dilCats.size(); idilcat++)
 	{
 	  int triggerThr=gammaEvHandler.category(icat);
-	  TString subcat("photon"); subcat+=triggerThr;
-	  if(triggerThr==0) subcat="";
-	  subcat+=dilCats[idilcat];
+	  TString subcat=dilCats[idilcat];
+	  if(triggerThr==0) 
+	    {
+	      controlHistos.addHistogram( new TH1D (subcat+"qt", ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", 200,0,600) );
+	      controlHistos.addHistogram( new TH1D (subcat+"eta", ";#eta;Events", 100,0,2.6) );
+	      controlHistos.addHistogram( new TH2D (subcat+"qtvseta", ";p_{T}^{#gamma} [GeV/c];#eta;Events / (2.5 GeV/c)", 200,0,600,50,0,2.6) );
+	      controlHistos.addHistogram( new TH2D (subcat+"qtvsnvtx", ";p_{T}^{#gamma} [GeV/c];Vertices;Events", 200,0,600,30,0,30) );
+	      controlHistos.addHistogram( new TH1D (subcat+"zmass",";M^{ll};Events", 100,91-31,91+31) );
+	      controlHistos.addHistogram( new TH1F (subcat+"evtctr", ";Mass;Events", 8,0,8) );
+	    }
+	  else
+	    subcat ="photon"; subcat+=triggerThr; subcat += dilCats[idilcat];
 	  photonSubcats.push_back(subcat);
+
+	  //these are worth to monitor per sub-category
 	  controlHistos.addHistogram( new TH1F (subcat+"nvtx", ";Vertices;Events", 30,0,30) );
-	  controlHistos.addHistogram( new TH1D (subcat+"eta", ";#eta;Events", 100,0,2.6) );
-	  controlHistos.addHistogram( new TH1D (subcat+"qt", ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", 200,0,600) );
 	  controlHistos.addHistogram( new TH1D (subcat+"ptjets", ";p_{T}^{jet} [GeV/c];Jets / (2.5 GeV/c)", 200,0,600) );
 	  controlHistos.addHistogram( new TH1D (subcat+"ht", ";H_{T} [GeV];Events", 100,0,500) );
-	  if(icat==0) controlHistos.addHistogram( new TH1D (dilCats[idilcat]+"zmass",";M^{ll};Events", 100,91-31,91+31) );
+
 	  controlHistos.addHistogram( new TH1D (subcat+"mt", ";M_{T} [GeV];Events", 100,0,1000) );
 	  controlHistos.addHistogram( new TH1D (subcat+"dphill", ";#Delta#phi(l^{1},l^{2})[rad];Events", 100,0,3.2) );
 	  controlHistos.addHistogram( new TH1F (subcat+"njets", ";Jets;Events", 6,0,6) );
 	  controlHistos.addHistogram( new TH1F (subcat+"nbtags", ";b-tag multiplcity;Events", 6,0,6) );
-	  controlHistos.addHistogram( new TH2D (subcat+"qtvseta", ";p_{T}^{#gamma} [GeV/c];#eta;Events / (2.5 GeV/c)", 200,0,600,50,0,2.6) );
-	  controlHistos.addHistogram( new TH2D (subcat+"qtvsht", ";p_{T}^{#gamma} [GeV/c];H_{T} [GeV/c];Events / (2.5 GeV/c)", 200,0,600,200,0,1000) );
-	  controlHistos.addHistogram( new TH2D (subcat+"metvsr9", ";E_{T}^{miss};R_{9}", 100,0,250,100,0,1.0) );
-	  controlHistos.addHistogram( new TH2D (subcat+"qtvsnjets", ";p_{T}^{#gamma} [GeV/c];N_{jets};Events / (2 GeV/c)", 300,0,600,5,0,5) );
+
 	  controlHistos.addHistogram( new TH1F (subcat+"minmjv", ";min M(jet,V);Events", 100,0,500) );
 	  controlHistos.addHistogram( new TH1F (subcat+"mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events", 100,0,3.2) );
 	  controlHistos.addHistogram( new TH1F (subcat+"dphivmet", ";#Delta#phi(boson,E_{T}^{miss});Events", 100,0,3.2) );
@@ -119,11 +125,9 @@ int main(int argc, char* argv[])
 	    {
 	      metTypeValues[it->first]=LorentzVector(0,0,0,0);
 	      controlHistos.addHistogram( new TH1F( subcat+TString("met_") + it->first, ";"+it->second+";Events", 200,0,500) );
-	      controlHistos.addHistogram( new TH1F( subcat+TString("met_") + it->first+TString("overqt"), ";"+it->second+";Events", 200,0,20) );
 	      controlHistos.addHistogram( new TH2F( subcat+TString("met_") + it->first+"vspu", ";Pileup events;"+it->second+";Events", 25,0,25,200,0,500) );
 	    }
 	  
-	  controlHistos.addHistogram( new TH1F (subcat+"evtctr", ";Mass;Events", 8,0,8) );
 	}
     }
 
@@ -167,7 +171,6 @@ int main(int argc, char* argv[])
       if(mctruthmode==22 && !isGammaEvent) continue;
       if(!isGammaEvent && ev.cat != EE && ev.cat !=MUMU) continue;
 
-      //float weight=ev.weight;
       float weight = 1.0;
       if(isMC) LumiWeights.weight( ev.ngenITpu );
 
@@ -203,23 +206,19 @@ int main(int argc, char* argv[])
       phoCat += triggerThr;
 
       //select jets
-      int njets(0), nbjets(0);
+      int njets=eventClassifComp.GetCentralJetCount();
+      int nbjets(0);
       std::vector<LorentzVector> jetsp4;
       float minmjv(9999999.),ht(0.);
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
 	{
 
-	  bool passTCHEL(phys.jets[ijet].btag1>1.7);
-	  //	  bool passSSVHEM(phys.jets[ijet].btag3>1.74);
-	  // bool passJBPL(phys.jets[ijet].btag2>1.33);
+	  bool passTCHEL(phys.jets[ijet].btag1>2);
 	  double dr=deltaR(phys.jets[ijet],gamma);
 	  LorentzVector jv=phys.jets[ijet]+gamma;
 	  float mjv=jv.mass();
 	  if(dr<0.1) continue;
-	  //if(mjv<91) continue;
-
 	  njets   += (phys.jets[ijet].pt()>30 && fabs(phys.jets[ijet].eta())<2.5);
-	  //if(phys.jets[ijet].pt()>30) nbjets += (passJBPL || passSSVHEM); 
 	  if(phys.jets[ijet].pt()>30 && fabs(phys.jets[ijet].eta())<2.5) nbjets += passTCHEL;
 	  jetsp4.push_back( phys.jets[ijet] );
 	  ht += phys.jets[ijet].pt();
@@ -251,40 +250,40 @@ int main(int argc, char* argv[])
       LorentzVector nullP4   = LorentzVector(0,0,0,0);
       LorentzVector lep1     = gamma;
       LorentzVector lep2     = nullP4;
-      LorentzVector rTMetP4  = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , metP4                  , true);
-      LorentzVector rAMetP4  = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocMetP4         , metP4                  , true);
+      //      LorentzVector rTMetP4  = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , metP4                  , true);
+      //      LorentzVector rAMetP4  = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocMetP4         , metP4                  , true);
       LorentzVector rCMetP4  = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, clusteredMetP4     , metP4                  , true);
-      LorentzVector rTAMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , assocMetP4             , true);
-      LorentzVector rTCMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , clusteredMetP4         , true);
-      LorentzVector rACMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocMetP4         , clusteredMetP4         , true);
-      LorentzVector r3MetP4  = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocMetP4         , clusteredMetP4, metP4  , true);
-      LorentzVector rmAMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, min(metP4,assocMetP4), clusteredMetP4, metP4, true);
-      LorentzVector redMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsp4             , metP4                  , true, &redMetInfo);
-      double redMet = redMetP4.pt();   double redMetL = redMetInfo.redMET_l; double redMetT = redMetInfo.redMET_t;
+      //      LorentzVector rTAMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , assocMetP4             , true);
+      //      LorentzVector rTCMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , clusteredMetP4         , true);
+      //      LorentzVector rACMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocMetP4         , clusteredMetP4         , true);
+      //      LorentzVector r3MetP4  = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocMetP4         , clusteredMetP4, metP4  , true);
+      //      LorentzVector rmAMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, min(metP4,assocMetP4), clusteredMetP4, metP4, true);
+      //      LorentzVector redMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsp4             , metP4                  , true, &redMetInfo);
+      //      double redMet = redMetP4.pt();   double redMetL = redMetInfo.redMET_l; double redMetT = redMetInfo.redMET_t;
 
       //met control
       metTypeValues["met"]                 = metP4;
       metTypeValues["assocChargedMet"]     = assocChargedMetP4;
       metTypeValues["assocMet"]            = assocMetP4;
-      metTypeValues["clusteredMet"]        = clusteredMetP4;
-      metTypeValues["minAssocChargedMet"]  = min(metP4,assocChargedMetP4);
-      metTypeValues["minAssocMet"]         = min(metP4,assocMetP4);
-      metTypeValues["assocOtherVtxMet"]    = assocMetOtherVtxP4;
-      metTypeValues["minClusteredMet"]     = min(metP4,clusteredMetP4);
-      metTypeValues["minTAssocMet"]        = min(assocChargedMetP4,assocMetP4);
-      metTypeValues["minTClusteredMet"]    = min(assocChargedMetP4,clusteredMetP4);
-      metTypeValues["minAClusteredMet"]    = min(assocMetP4,clusteredMetP4);
-      metTypeValues["min3Met"]             = min(metP4, min(assocMetP4,clusteredMetP4));
-      metTypeValues["min4Met"]             = min(min(metP4,assocChargedMetP4), min(assocMetP4,clusteredMetP4));
-      metTypeValues["redMet"]              = redMetP4;
-      metTypeValues["redAssocChargedMet"]  = rTMetP4;
-      metTypeValues["redAssocMet"]         = rAMetP4;
+      //      metTypeValues["clusteredMet"]        = clusteredMetP4;
+      //      metTypeValues["minAssocChargedMet"]  = min(metP4,assocChargedMetP4);
+      //      metTypeValues["minAssocMet"]         = min(metP4,assocMetP4);
+      //      metTypeValues["assocOtherVtxMet"]    = assocMetOtherVtxP4;
+      //      metTypeValues["minClusteredMet"]     = min(metP4,clusteredMetP4);
+      //      metTypeValues["minTAssocMet"]        = min(assocChargedMetP4,assocMetP4);
+      //      metTypeValues["minTClusteredMet"]    = min(assocChargedMetP4,clusteredMetP4);
+      //      metTypeValues["minAClusteredMet"]    = min(assocMetP4,clusteredMetP4);
+      //      metTypeValues["min3Met"]             = min(metP4, min(assocMetP4,clusteredMetP4));
+      //      metTypeValues["min4Met"]             = min(min(metP4,assocChargedMetP4), min(assocMetP4,clusteredMetP4));
+      //      metTypeValues["redMet"]              = redMetP4;
+      //      metTypeValues["redAssocChargedMet"]  = rTMetP4;
+      //      metTypeValues["redAssocMet"]         = rAMetP4;
       metTypeValues["redClusteredMet"]     = rCMetP4;
-      metTypeValues["redTAssocMet"]        = rTAMetP4;
-      metTypeValues["redTClusteredMet"]    = rTCMetP4;
-      metTypeValues["redAClusteredMet"]    = rACMetP4;
-      metTypeValues["red3Met"]             = r3MetP4;
-      metTypeValues["redminAssocMet"]      = rmAMetP4;
+      //      metTypeValues["redTAssocMet"]        = rTAMetP4;
+      //      metTypeValues["redTClusteredMet"]    = rTCMetP4;
+      //      metTypeValues["redAClusteredMet"]    = rACMetP4;
+      //      metTypeValues["red3Met"]             = r3MetP4;
+      //      metTypeValues["redminAssocMet"]      = rmAMetP4;
      
 
       double dphivmet(deltaPhi(metP4.phi(),gamma.phi()));
@@ -310,7 +309,7 @@ int main(int argc, char* argv[])
 
       //reweight to reproduce pt weight in a gamma sample
       std::map<TString, float> qtWeights = gammaEvHandler.getWeights();
-
+      
       //fill control histograms
       TString cats[]={"all",subcat};
       TString subcats[]={"",phoCat};
@@ -323,8 +322,10 @@ int main(int argc, char* argv[])
 		{
 		  TString pre= subcats[isc]+dilCats[idc];
 		  float iweight=weight;
-		  if(isGammaEvent) iweight*=qtWeights[dilCats[idc]];
-
+		  if(isGammaEvent)
+		    {
+		      iweight*=qtWeights[dilCats[idc]];
+		    }
 		  controlHistos.fillHisto(pre+"nbtags",ctf, nbjets,iweight);
 		  if(nbjets) continue;
 		  
@@ -336,9 +337,7 @@ int main(int argc, char* argv[])
 		  
 		  controlHistos.fillHisto(pre+"njets",ctf, njets,iweight);
 		  controlHistos.fill2DHisto(pre+"qtvseta",ctf, gamma.pt(), fabs(gamma.eta()),iweight);
-		  controlHistos.fill2DHisto(pre+"metvsr9",ctf, metTypeValues["met"].pt(),r9,iweight);
-		  controlHistos.fill2DHisto(pre+"qtvsnjets",ctf, gamma.pt(), (njets>4 ? 4:njets),iweight);
-		  controlHistos.fill2DHisto(pre+"qtvsht",ctf, gamma.pt(), ht,iweight);
+		  controlHistos.fill2DHisto(pre+"qtvsnvtx",ctf, gamma.pt(),ev.nvtx,iweight);
 		  controlHistos.fillHisto(pre+"ht",ctf, ht,iweight);
 		  controlHistos.fillHisto(pre+"mt",ctf, mt,iweight);
 		  if(ht>0) 
@@ -354,7 +353,6 @@ int main(int argc, char* argv[])
 		  for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++)
 		    {
 		      controlHistos.fillHisto(   pre+TString("met_") + it->first,        ctf, it->second.pt(), iweight);
-		      controlHistos.fillHisto(   pre+TString("met_") + it->first+"overqt",        ctf, it->second.pt()/gamma.pt(), iweight);
 		      controlHistos.fill2DHisto( pre+TString("met_") + it->first+"vspu", ctf, ev.ngenITpu,     it->second.pt(),  iweight);
 		    }
 		  
@@ -376,7 +374,7 @@ int main(int argc, char* argv[])
   float cnorm=1.0;
   if(isMC)
     {
-      TH1F *cutflowH = (TH1F *) file->Get("evAnalyzer/h2zz/photon/photon_cutflow");
+      TH1F *cutflowH = (TH1F *) file->Get("evAnalyzer/h2zz/cutflow");
       if(cutflowH==0) cutflowH = (TH1F *) file->Get("evAnalyzer/h2zz/cutflow");
       if(cutflowH)    cnorm=cutflowH->GetBinContent(1);
       cout << "The initial number of events was " << cnorm << endl;
@@ -418,9 +416,6 @@ int main(int argc, char* argv[])
   for(SelectionMonitor::StepMonitor_t::iterator it =mons.begin(); it!= mons.end(); it++)
     {
       TString moncat=it->first;
-      //       moncat.ReplaceAll("eq0jets","");
-      //       moncat.ReplaceAll("eq1jets","");
-      //       moncat.ReplaceAll("geq2jets","");
       if(outDirs.find(moncat)==outDirs.end()) outDirs[moncat]=baseOutDir->mkdir(moncat);
       outDirs[moncat]->cd();
       for(SelectionMonitor::Monitor_t::iterator hit=it->second.begin(); hit!= it->second.end(); hit++)

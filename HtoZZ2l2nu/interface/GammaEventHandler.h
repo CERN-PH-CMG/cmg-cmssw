@@ -2,7 +2,7 @@
  * Wrapper for common operations on a gamma event
  * Get weights/mass shapes from file
  * Analyze event and assign trigger categories, weights and massive candidates
- * $Date: 2011/09/17 20:35:20 $
+ * $Date: 2011/11/02 15:32:02 $
  * $Revision: 1.1 $
  * \author Pedro Silva
  */
@@ -23,7 +23,7 @@ class GammaEventHandler
 {
  public: 
 
-  enum WeightMode {PT,PTANDETA,PTANDNJETS};
+  enum WeightMode {PT,PTANDETA,PTANDNVTX};
   
   GammaEventHandler(const edm::ParameterSet &runProcess);
 
