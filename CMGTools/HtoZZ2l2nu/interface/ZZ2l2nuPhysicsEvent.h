@@ -67,6 +67,7 @@ struct PhysicsEvent_t
 {
   float weight;
   int cat;
+  int nvtx;
   LorentzVector met[15];
   LorentzVector vtx;
   PhysicsObjectGammaCollection gammas;

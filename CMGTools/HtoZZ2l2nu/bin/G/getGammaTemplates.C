@@ -86,7 +86,7 @@ TH1 *deriveGammaWeightsFrom(TH1 *z, TH1 *g)
 
 
 //
-void getGammaWeights(TString inputFile="plotter_raw.root",bool isData=false,string var2dName="eta")
+void getGammaWeights(TString inputFile="mc_raw.root",bool isData=false,string var2dName="nvtx")
 {
 
   string cats[]={"eq0jets","eq1jets","geq2jets","vbf"};
@@ -103,25 +103,6 @@ void getGammaWeights(TString inputFile="plotter_raw.root",bool isData=false,stri
     }
   
   //plots to retrieve
-  std::vector<string> subcats;
-  subcats.push_back("photon20");
-  subcats.push_back("photon30");
-  subcats.push_back("photon50");
-  if(isData) 
-    {
-      subcats.push_back("photon75"); 
-      //  subcats.push_back("photon90"); 
-      subcats.push_back("photon125");
-      // subcats.push_back("photon135");
-      //subcats.push_back("photon200");
-    }
-  else
-    {
-      subcats.push_back("photon75"); 
-      subcats.push_back("photon125");
-    }
-  const size_t nsubcats=subcats.size();
-  
   string var2dTitle(var2dName);
   var2dName = "vs"+var2dName;
 
@@ -138,7 +119,7 @@ void getGammaWeights(TString inputFile="plotter_raw.root",bool isData=false,stri
   TH1F *hinc=0;
   for(size_t idcat=0; idcat<dilCats.size(); idcat++)
     {
-      TH1F *h=(TH1F *) getObjectFromPath(fin,modDir+"/"+dilCats[idcat]+"zmass",false)->Clone(TString(dilCats[idcat]+"zmass"));
+      TH1F *h=(TH1F *) getObjectFromPath(fin,modDir+"/"+dilCats[idcat]+"zmass",true);
       h->SetDirectory(0);
       h->SetBinContent(1,0);
       h->SetBinContent(h->GetXaxis()->GetNbins(),0);
@@ -165,90 +146,81 @@ void getGammaWeights(TString inputFile="plotter_raw.root",bool isData=false,stri
       p->SetLogx();
       p->SetLogy();
 
-      //first reweight individually each pT category
-      for(size_t isubcat=0; isubcat<nsubcats; isubcat++)
+      //build the plots for each dilepton channel (and sum inclusively)
+      TH1F *incGammaPt=0,   *incZPt=0;
+      TH2F *incGammaPt2d=0, *incZPt2d=0;
+      for(size_t idcat=0; idcat<dilCats.size(); idcat++)
 	{
-
-	  //build the plots for each dilepton channel (and sum inclusively)
-	  TH1F *incGammaPt=0,   *incZPt=0;
-	  TH2F *incGammaPt2d=0, *incZPt2d=0;
-	  for(size_t idcat=0; idcat<dilCats.size(); idcat++)
+	  string baseName=cats[icat]+"_";
+	  
+	  //gamma plots
+	  TH1F *iGammaPt   = (TH1F *)getObjectFromPath( fin, dataDir+"/"+baseName+dilCats[idcat]+"qt", true);
+	  iGammaPt->SetDirectory(0);
+	  TH2F *iGammaPt2d = (TH2F *)getObjectFromPath( fin, dataDir+"/"+baseName+dilCats[idcat]+"qt"+var2dName, true);
+	  iGammaPt2d->SetDirectory(0);
+	  if(incGammaPt==0)
 	    {
-	      string baseName=cats[icat]+"_"+subcats[isubcat];
-
-	      //gamma plots
-	      TH1F *iGammaPt   = (TH1F *)getObjectFromPath( fin, dataDir+"/"+baseName+dilCats[idcat]+"qt", false);
-	      iGammaPt = (TH1F *) iGammaPt->Clone(TString(baseName+dilCats[idcat]+"gamma_pt"));
-	      iGammaPt->SetDirectory(0);
-	      TH2F *iGammaPt2d = (TH2F *)getObjectFromPath( fin, dataDir+"/"+baseName+dilCats[idcat]+"qt"+var2dName, false);
-	      iGammaPt2d = (TH2F *) iGammaPt2d->Clone(TString(baseName+dilCats[idcat]+"gamma_pt"+var2dName));
-	      iGammaPt2d->SetDirectory(0);
-	      if(incGammaPt==0)
-		{
-		  incGammaPt   = (TH1F *) iGammaPt->Clone(TString(baseName+"llgamma_pt"));
-		  incGammaPt->SetDirectory(0);
-		  incGammaPt2d = (TH2F *) iGammaPt2d->Clone(TString(baseName+"llgamma_pt"+var2dName));
-		  incGammaPt2d->SetDirectory(0);
-		}
+	      incGammaPt   = (TH1F *) iGammaPt->Clone(TString(baseName+"llqt"));
+	      incGammaPt->SetDirectory(0);
+	      incGammaPt2d = (TH2F *) iGammaPt2d->Clone(TString(baseName+"llqt"+var2dName));
+	      incGammaPt2d->SetDirectory(0);
+	    }
 	      
-	      //z plots
-	      TH1F *iZPt   = (TH1F *)getObjectFromPath( fin, modDir+"/"+baseName+dilCats[idcat]+"qt", false);
-	      iZPt = (TH1F *) iZPt->Clone(TString(baseName+dilCats[idcat]+"z_pt"));
-	      iZPt->SetDirectory(0);
-	      TH2F *iZPt2d   = (TH2F *)getObjectFromPath( fin, modDir+"/"+baseName+dilCats[idcat]+"qt"+var2dName, false);
-	      iZPt2d = (TH2F *) iZPt2d->Clone(TString(baseName+dilCats[idcat]+"z_pt"+var2dName));
-	      iZPt2d->SetDirectory(0);
-	      if(incZPt==0)
-		{
-		  incZPt   = (TH1F *) iZPt->Clone(TString(baseName+"llz_pt"));
-		  incZPt->SetDirectory(0);
-		  incZPt2d = (TH2F *) iZPt2d->Clone(TString(baseName+"llz_pt"+var2dName));
-		  incZPt2d->SetDirectory(0);
-		}
-	      else
-		{
-		  incZPt->Add(iZPt);
-		  incZPt2d->Add(iZPt2d);
-		}
-
-	      //compute the weights
-	      TH1F *iPtWeight=(TH1F *) deriveGammaWeightsFrom( iZPt, iGammaPt );
-	      TH2F *iPtWeight2d= (TH2F *) deriveGammaWeightsFrom( iZPt2d, iGammaPt2d);
-	      
-	      //store 
-	      gammaPt.push_back( iGammaPt );
-	      gammaPt2d.push_back( iGammaPt2d );
-	      zPt.push_back( iZPt );
-	      zPt2d.push_back( iZPt2d );
-	      ptWeights.push_back( iPtWeight );
-	      ptWeights2d.push_back( iPtWeight2d );
-	      
-	      //draw the 1d weights
- 	      iPtWeight->SetMarkerColor(isubcat%3+1);
-	      iPtWeight->SetLineColor(isubcat%3+1);
-	      iPtWeight->SetFillStyle(0);
-	      if(idcat==0){ iPtWeight->SetMarkerStyle(24); }
-	      
-	      iPtWeight->Draw(isubcat==0 && idcat==0? "e1":"e1same");
-	      iPtWeight->GetYaxis()->SetRangeUser(1e-4,10);
-	      iPtWeight->GetXaxis()->SetRangeUser(10,1000);
-
+	  //z plots
+	  TH1F *iZPt   = (TH1F *)getObjectFromPath( fin, modDir+"/"+baseName+dilCats[idcat]+"qt");
+	  iZPt = (TH1F *) iZPt->Clone(string(modDir+"/"+baseName+dilCats[idcat]+"zqt").c_str());
+	  iZPt->SetDirectory(0);
+	  TH2F *iZPt2d   = (TH2F *)getObjectFromPath( fin, modDir+"/"+baseName+dilCats[idcat]+"qt"+var2dName);
+	  iZPt2d = (TH2F *) iZPt2d->Clone(string(modDir+"/"+baseName+dilCats[idcat]+"qt"+var2dName).c_str());
+	  iZPt2d->SetDirectory(0);
+	  if(incZPt==0)
+	    {
+	      incZPt   = (TH1F *) iZPt->Clone(TString(baseName+"llzqt"));
+	      incZPt->SetDirectory(0);
+	      incZPt2d = (TH2F *) iZPt2d->Clone(TString(baseName+"llzqt"+var2dName));
+	      incZPt2d->SetDirectory(0);
+	    }
+	  else
+	    {
+	      incZPt->Add(iZPt);
+	      incZPt2d->Add(iZPt2d);
 	    }
 
-	  //compute the inclusive weights
-	  TH1F *ptWeight=(TH1F *) deriveGammaWeightsFrom( incZPt, incGammaPt );
-	  TH2F *ptWeight2d= (TH2F *) deriveGammaWeightsFrom( incZPt2d, incGammaPt2d);
-
-	  //store
-	  gammaPt.push_back( incGammaPt );
-	  gammaPt2d.push_back( incGammaPt2d );
-	  zPt.push_back( incZPt );
-	  zPt2d.push_back( incZPt2d );
-	  ptWeights.push_back(ptWeight);
-	  ptWeights2d.push_back(ptWeight2d);
+	  //compute the weights
+	  TH1F *iPtWeight=(TH1F *) deriveGammaWeightsFrom( iZPt, iGammaPt );
+	  TH2F *iPtWeight2d= (TH2F *) deriveGammaWeightsFrom( iZPt2d, iGammaPt2d);
+	      
+	  //store 
+	  gammaPt.push_back( iGammaPt );
+	  gammaPt2d.push_back( iGammaPt2d );
+	  zPt.push_back( iZPt );
+	  zPt2d.push_back( iZPt2d );
+	  ptWeights.push_back( iPtWeight );
+	  ptWeights2d.push_back( iPtWeight2d );
+	      
+	  //draw the 1d weights
+	  iPtWeight->SetMarkerColor(icat%3+1);
+	  iPtWeight->SetLineColor(icat%3+1);
+	  iPtWeight->SetFillStyle(0);
+	  iPtWeight->SetMarkerStyle(idcat==0 ? 24 : 20);
+	      
+	  iPtWeight->Draw(idcat==0 ? "e1":"e1same");
+	  iPtWeight->GetYaxis()->SetRangeUser(1e-4,10);
+	  iPtWeight->GetXaxis()->SetRangeUser(10,1000);
 	}
       
-
+      //compute the inclusive weights
+      TH1F *ptWeight=(TH1F *) deriveGammaWeightsFrom( incZPt, incGammaPt );
+      TH2F *ptWeight2d= (TH2F *) deriveGammaWeightsFrom( incZPt2d, incGammaPt2d);
+      
+      //store
+      gammaPt.push_back( incGammaPt );
+      gammaPt2d.push_back( incGammaPt2d );
+      zPt.push_back( incZPt );
+      zPt2d.push_back( incZPt2d );
+      ptWeights.push_back(ptWeight);
+      ptWeights2d.push_back(ptWeight2d);
+      
       TPaveText *pave = new TPaveText(0.25,0.75,0.45,0.95,"NDC");
       pave->SetBorderSize(0);
       pave->SetFillStyle(0);
@@ -262,7 +234,7 @@ void getGammaWeights(TString inputFile="plotter_raw.root",bool isData=false,stri
 
   
   //save histograms to file
-  TString foutName="gammapt"+var2dName;
+  TString foutName="gammaqt"+var2dName;
   foutName += "weight.root";
   if(isData) foutName = "data_"+foutName;
   else       foutName = "mc_"+foutName;
@@ -277,14 +249,11 @@ void getGammaWeights(TString inputFile="plotter_raw.root",bool isData=false,stri
       ptWeights[iplot]->Write();
       ptWeights2d[iplot]->Write();
   }
-  for(size_t iplot=0; iplot<massLines.size(); iplot++)
-    {
-      massLines[iplot]->Write();
-    }
+  for(size_t iplot=0; iplot<massLines.size(); iplot++)  massLines[iplot]->Write();
   fout->Close();
 
+  //save canvas
   cnv2->SaveAs("plots/gammaptweights.C");
-  cnv2->SaveAs("plots/gammaptweights.pdf");
   cnv2->SaveAs("plots/gammaptweights.png");
   
   cout << "*** Gamma pT weights (inclusive/differential) available @ " << foutName << endl;
@@ -342,7 +311,7 @@ void getGammaTemplates(TString inputFile="/data/psilva/Higgs/ntuples_2011.11.01/
 
   TString subcats[]={"eq0jets","eq1jets","geq2jets"};//,"vbf"};
   TString subcatLabels[]={"=0 jets", "=1 jets", "#geq 2 jets","VBF"};
-  TString variables[]={"met","ht","qt","eta","mt","mindphijmet","dphivmet","redClusteredMet","minAssocChargedMet","njets"};
+  TString variables[]={"met"};//,"ht","qt","eta","mt","mindphijmet","dphivmet","redClusteredMet","minAssocChargedMet","njets"};
   
   //output
   TFile *fout = TFile::Open("gammaTemplates.root","RECREATE");

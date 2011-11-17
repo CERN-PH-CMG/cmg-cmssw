@@ -14,7 +14,7 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
 
   weightMode_=PT;
   if(gammaPtWeightsFile.Contains("eta"))        weightMode_=PTANDETA;
-  else if(gammaPtWeightsFile.Contains("njets")) weightMode_=PTANDNJETS;
+  else if(gammaPtWeightsFile.Contains("nvtx"))  weightMode_=PTANDNVTX;
 
   fwgt_=TFile::Open(gammaPtWeightsFile);
   if(fwgt_)
@@ -22,28 +22,24 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
       TString wgtName = gammaPtWeightsFile;
       wgtName=gSystem->BaseName(wgtName.ReplaceAll(".root",""));
       wgtName=((TObjString *)(wgtName.Tokenize("_")->At(1)))->GetString();
-      wgtName=wgtName.ReplaceAll("gamma","gamma_"); 
+      wgtName=wgtName.ReplaceAll("gamma",""); 
       TString categories[]={"eq0jets","eq1jets","geq2jets","vbf"};
       TString dilCategories[]={"ee","mumu","ll"};
     
+      //event weights
       for(size_t icat=0; icat<sizeof(categories)/sizeof(TString); icat++)
 	{
 	  for(size_t idilcat=0; idilcat<sizeof(dilCategories)/sizeof(TString); idilcat++)
 	    {
-	      for(size_t itrig=0; itrig<gammaCats_.size(); itrig++)
-		{
-		  if(gammaCats_[itrig]<=0) continue;
-		  TString key=categories[icat]+"_photon";
-		  key += gammaCats_[itrig];
-		  key += dilCategories[idilcat];
-		  TH1 *h=(TH1 *)fwgt_->Get(key+wgtName);
-		  if(h==0) continue;
-		  wgtsH_[key] = h;
-		  wgtsH_[key]->SetDirectory(0);
-		}
+	      TString key=categories[icat]+"_"+dilCategories[idilcat];
+	      TH1 *h=(TH1 *)fwgt_->Get(key+wgtName);
+	      if(h==0) continue;
+	      wgtsH_[key] = h;
+	      wgtsH_[key]->SetDirectory(0);
 	    }
 	}
 
+      //mass shapes
       for(size_t idilcat=0; idilcat<sizeof(dilCategories)/sizeof(TString); idilcat++)
 	{
 	  zmassH_[dilCategories[idilcat]]= (TH1 *) fwgt_->Get(dilCategories[idilcat]+"zmass");
@@ -93,27 +89,39 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys)
   TString dilCategories[]={"ee","mumu","ll"};
   int eventCategory       = eventClassifComp_.Get(phys);
   TString evCategoryLabel = eventClassifComp_.GetLabel(eventCategory);
-  int njets = eventClassifComp_.GetCentralJetCount();
+
   for(size_t idilcat=0; idilcat<sizeof(dilCategories)/sizeof(TString); idilcat++)
     {
       float mass(0);
       if(zmassH_.find(dilCategories[idilcat])!=zmassH_.end())
-	while(fabs(mass-91)>15) mass = zmassH_[dilCategories[idilcat]]->GetRandom();
+	{
+	  if(zmassH_[dilCategories[idilcat]]->Integral())
+	    while(fabs(mass-91)>15) 
+	      mass = zmassH_[dilCategories[idilcat]]->GetRandom();
+	}
       massiveGamma_[dilCategories[idilcat]]=LorentzVector(gamma.px(),gamma.py(),gamma.pz(),sqrt(pow(mass,2)+pow(gamma.energy(),2)));
       
       float weight(1.0);
       evWeights_[dilCategories[idilcat]]=weight;
-      TString wgtKey=evCategoryLabel+"_"+photonCategory_+dilCategories[idilcat];
-      if( wgtsH_.find(wgtKey) == wgtsH_.end()) continue;
+      TString wgtKey=evCategoryLabel+"_"+dilCategories[idilcat];
+      if( wgtsH_.find(wgtKey) == wgtsH_.end()) 
+	{
+	  //	  cout << "[Warning] can't find weight for " << wgtKey << endl;
+	  continue;
+	}
       
       //take the last bin weight if pT>max available
       TH1 *theH = wgtsH_[wgtKey];
       for(int ibin=1; ibin<=theH->GetXaxis()->GetNbins(); ibin++)
 	{
-	  if(gamma.pt()<theH->GetXaxis()->GetBinLowEdge(ibin) ) break;
-	  if(weightMode_==PT)              weight=theH->GetBinContent(ibin);
+	  if(gamma.pt()<theH->GetXaxis()->GetBinLowEdge(ibin) ) 
+	    {
+	      //cout << wgtKey << " " << ibin-1 << " " << gamma.pt() << " " << triggerThr_ << " " << weight << " "<< endl;
+	      break;
+	    }
+	  if(weightMode_==PT)              weight = theH->GetBinContent(ibin);
 	  else if(weightMode_==PTANDETA)   weight = theH->GetBinContent(ibin,theH->GetYaxis()->FindBin(fabs(gamma.eta())));
-	  else if(weightMode_==PTANDNJETS) weight = theH->GetBinContent(ibin,theH->GetYaxis()->FindBin(njets));
+	  else if(weightMode_==PTANDNVTX) weight = theH->GetBinContent(ibin,theH->GetYaxis()->FindBin(phys.nvtx));
 	}
       evWeights_[dilCategories[idilcat]]=weight;
     }

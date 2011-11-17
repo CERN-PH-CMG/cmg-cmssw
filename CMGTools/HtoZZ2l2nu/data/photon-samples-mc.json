@@ -27,6 +27,7 @@
 	"color":"1",
 	"lcolor":1,
 	"fill":0,
+	"mctruthmode":22,
 	"data":[
 	     {	
 		"dtag":"G_Pt-15to30_TuneZ2_7TeV_pythia6",

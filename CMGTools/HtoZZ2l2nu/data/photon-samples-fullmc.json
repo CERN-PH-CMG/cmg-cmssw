@@ -41,7 +41,7 @@
 	},
 	{
          "tag":"Di-photon",
- 	         "isdata":false,
+         "isdata":false,
          "color":"592",
          "lcolor":1,
          "data":[
@@ -72,32 +72,10 @@
          ]
         },
 	{
-	 "tag":"Z/#gamma^{*}+jets#rightarrow ll",
-	 "spimpose":true,
-         "isdata":false,
-         "color":"kRed",
-	 "fill":0,
-         "data":[
-	      {
-               "dtag":"DYJetsToMuMu",
-	       "dset":"/DYToMuMu_M-20_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v2/AODSIM",
-	       "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva//HZZ_11.10.03/G/DYToMuMu_M-20_TuneZ2_7TeV-pythia6"],
-               "xsec":1300
-              },
-	      {
-               "dtag":"DYJetsToEE",
-	       "dset":"/DYToEE_M-20_TuneZ2_7TeV-pythia6/Summer11-PU_S3_START42_V11-v2/AODSIM",
-	       "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva//HZZ_11.10.03/G/DYToEE_M-20_TuneZ2_7TeV-pythia6"],
-               "xsec":1300
-              }
-          ]
-	},
-	{
 	"tag":"#gamma+jets (simulation)",
         "isdata":false,
-	"color":"1",
+	"color":"kOrange",
 	"lcolor":1,
-	"fill":0,
 	"data":[
 	     {	
 		"dtag":"G_Pt-15to30_TuneZ2_7TeV_pythia6",
@@ -140,6 +118,29 @@
 		"xsec":0.132
 	     }
 	  ]
-    	}
+    	},
+	{
+	 "tag":"Z/#gamma^{*}+jets#rightarrow ll",
+         "isdata":false,
+	 "color":"2",
+	 "lcolor":2,
+	 "lwidth":2,
+	 "fill":0,
+	 "spimpose":true,
+         "data":[
+	      {
+               "dtag":"DYJetsToMuMu",
+	       "dset":"/DYToMuMu_M-20_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v2/AODSIM",
+	       "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva//HZZ_11.10.03/G/DYToMuMu_M-20_TuneZ2_7TeV-pythia6"],
+               "xsec":1300
+              },
+	      {
+               "dtag":"DYJetsToEE",
+	       "dset":"/DYToEE_M-20_TuneZ2_7TeV-pythia6/Summer11-PU_S3_START42_V11-v2/AODSIM",
+	       "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva//HZZ_11.10.03/G/DYToEE_M-20_TuneZ2_7TeV-pythia6"],
+               "xsec":1300
+              }
+          ]
+	}
     ]	
 }

@@ -13,8 +13,7 @@
 #include "CMGTools/HtoZZ2l2nu/interface/TMVAUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/MacroUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
-
-#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
+#include "CMGTools/HtoZZ2l2nu/interface/BtagUncertaintyComputer.h"
 
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
@@ -93,6 +92,9 @@ int main(int argc, char* argv[])
   TString uncFile =  runProcess.getParameter<std::string>("jesUncFileName"); gSystem->ExpandPathName(uncFile);
   JetCorrectionUncertainty jecUnc(uncFile.Data());
   bool runSystematics                        = runProcess.getParameter<bool>("runSystematics");
+
+  btag::UncertaintyComputer bcomp(0.837, 0.95, 0.06, 0.286, 1.15, 0.11);
+
   if(runSystematics) { cout << "Systematics will be computed for this analysis" << endl; }
 
 
@@ -353,9 +355,11 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH2F ("cutOptMediumsummtvsredMetL", ";#Sigma M_{T};#red-E_{T}^{miss,#parallel};",50,0,2000,25, -251.,249) );
   
   //cut and count
+  controlHistos.addHistogram( new TH1F("btag0proj",   ";Events with 0 b-tags;Events", 1,0,1) );
+  controlHistos.addHistogram( new TH1F("btag0projup",   ";Events with 0 b-tags (+);Events", 1,0,1) );
+  controlHistos.addHistogram( new TH1F("btag0projdown",   ";Events with 0 b-tags (-);Events", 1,0,1) );
   std::vector<TString> varsToInclude;
   varsToInclude.push_back("");
-  varsToInclude.push_back("zpt25");
   if(runSystematics){
       varsToInclude.push_back("jer");
       varsToInclude.push_back("jesup");
@@ -369,16 +373,38 @@ int main(int argc, char* argv[])
   }
 
   for(size_t ivar=0; ivar<varsToInclude.size(); ivar++){
-      h = new TH1F (varsToInclude[ivar]+"finaleventflow",";Category;Event count;",8,0,8);
-      h->GetXaxis()->SetBinLabel(1,"m=130");
-      h->GetXaxis()->SetBinLabel(2,"m=150");
-      h->GetXaxis()->SetBinLabel(3,"m=170");
-      h->GetXaxis()->SetBinLabel(4,"m=200");
-      h->GetXaxis()->SetBinLabel(5,"m=300");
-      h->GetXaxis()->SetBinLabel(6,"m=400");
-      h->GetXaxis()->SetBinLabel(7,"m=500");
-      h->GetXaxis()->SetBinLabel(8,"m=600");
-      controlHistos.addHistogram( h );
+    TH1 *hmet = new TH1F (varsToInclude[ivar]+"finaleventflowmet",";Category;Event count;",8,0,8);
+    hmet->GetXaxis()->SetBinLabel(1,"m=130");
+    hmet->GetXaxis()->SetBinLabel(2,"m=150");
+    hmet->GetXaxis()->SetBinLabel(3,"m=170");
+    hmet->GetXaxis()->SetBinLabel(4,"m=200");
+    hmet->GetXaxis()->SetBinLabel(5,"m=300");
+    hmet->GetXaxis()->SetBinLabel(6,"m=400");
+    hmet->GetXaxis()->SetBinLabel(7,"m=500");
+    hmet->GetXaxis()->SetBinLabel(8,"m=600");
+    controlHistos.addHistogram( hmet );
+
+    TH1 *hrmet = new TH1F (varsToInclude[ivar]+"finaleventflowrmet",";Category;Event count;",8,0,8);
+    hrmet->GetXaxis()->SetBinLabel(1,"m=130");
+    hrmet->GetXaxis()->SetBinLabel(2,"m=150");
+    hrmet->GetXaxis()->SetBinLabel(3,"m=170");
+    hrmet->GetXaxis()->SetBinLabel(4,"m=200");
+    hrmet->GetXaxis()->SetBinLabel(5,"m=300");
+    hrmet->GetXaxis()->SetBinLabel(6,"m=400");
+    hrmet->GetXaxis()->SetBinLabel(7,"m=500");
+    hrmet->GetXaxis()->SetBinLabel(8,"m=600");
+    controlHistos.addHistogram( hrmet );
+    
+    TH1 *hvbf = new TH1F (varsToInclude[ivar]+"finaleventflowvbf",";Category;Event count;",8,0,8);
+    hvbf->GetXaxis()->SetBinLabel(1,"MET>50");
+    hvbf->GetXaxis()->SetBinLabel(2,"MET>55");
+    hvbf->GetXaxis()->SetBinLabel(3,"MET>60");
+    hvbf->GetXaxis()->SetBinLabel(4,"MET>65");
+    hvbf->GetXaxis()->SetBinLabel(5,"red-MET>50");
+    hvbf->GetXaxis()->SetBinLabel(6,"red-MET>55");
+    hvbf->GetXaxis()->SetBinLabel(7,"red-MET>60");
+    hvbf->GetXaxis()->SetBinLabel(8,"red-MET>65");
+    controlHistos.addHistogram( hvbf );
   }
 
   //optimization
@@ -558,7 +584,8 @@ int main(int argc, char* argv[])
       double TotalWeight_plus = 1.0;
       double TotalWeight_minus = 1.0;
       if(isMC){
-        weight = LumiWeights.weight3D( ev.ngenOOTpu/2, ev.ngenITpu, ev.ngenOOTpu/2 );
+        //weight = LumiWeights.weight3D( ev.ngenOOTpum1, ev.ngenITpu, ev.ngenOOTpu );
+	weight = LumiWeights.weight( ev.ngenITpu );
         TotalWeight_plus = PShiftUp.ShiftWeight( ev.ngenITpu );
         TotalWeight_minus = PShiftDown.ShiftWeight( ev.ngenITpu );
         if(isVBF)weight *= weightVBF(VBFString,VBFHiggsMass, phys.genhiggs[0].mass() );         
@@ -604,6 +631,7 @@ int main(int argc, char* argv[])
       int nbtags(0),        nbtags_ssvhem(0),        nbtags_tchel(0),        nbtags_tche2(0),        nbtags_jbpl(0),        nbtags_ssvhemORtchel(0);
       LorentzVectorCollection jetsP4;
       LorentzVector fwdClusteredMetP4(0,0,0,0);
+      int nheavyjets(0), nlightsjets(0);
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++){
           if(fabs(phys.jets[ijet].eta())>2.4)fwdClusteredMetP4-=phys.jets[ijet];
 
@@ -622,10 +650,17 @@ int main(int argc, char* argv[])
 		  nbtags_tche2    += passTCHE2;
 		  nbtags_jbpl     += passJBPL;
 		  nbtags_ssvhemORtchel += (passTCHEL || passSSVHEM);
+
+		  nheavyjets += (fabs(phys.jets[ijet].genid)==5);
+		  nlightsjets += (fabs(phys.jets[ijet].genid)!=5);
               }
 	  }
       }
-
+      bcomp.compute(nheavyjets,nlightsjets);
+      std::vector<btag::Weight_t> wgt = bcomp.getWeights();
+      double p0btags = wgt[0].first;  
+      double p0btags_err=wgt[0].second;
+      
 
       //start analysis by the jet kinematics so that one can loop over JER/JES/b-tag systematic variations
       LorentzVector metP4=phys.met[0];
@@ -807,8 +842,8 @@ int main(int argc, char* argv[])
 
       bool pass3dLeptonVeto(true); for(unsigned int i=2;i<phys.leptons.size();i++){if(phys.leptons[i].pt()>10)pass3dLeptonVeto=false;}
       bool passBveto(nbtags_tche2==0);//nbtags==0);
-      bool passMediumRedMet(redMet>METUtils::getRedMETCut(eventCategory,METUtils::MEDIUMWP));
-      bool passTightRedMet(redMet>METUtils::getRedMETCut(eventCategory,METUtils::TIGHTWP));
+      bool passMediumRedMet(50);
+      bool passTightRedMet(84);//redMet>METUtils::getRedMETCut(eventCategory,METUtils::TIGHTWP));
       
       bool passBaseCuts(passZmass && pass3dLeptonVeto && passBveto && passMediumRedMet);
       std::vector<int> zmassRegionBins;
@@ -835,32 +870,27 @@ int main(int argc, char* argv[])
       //
       // compute systematic variations for JET/MET
       //
-      LorentzVectorCollection metVars;
+      LorentzVectorCollection metVars, redMetVars;
       std::vector<LorentzVectorCollection> jetVars;
-      std::vector<int>eventCategoryVars;
-      std::vector<Float_t> redMetVar, redMetLVar, mtsumsVar;
-      std::vector<bool> passMediumRedMetVars, passTightRedMetVars;
-      if(runSystematics){
+      std::vector<int> eventCategoryVars;
+      std::vector<Float_t>  mtVars;
+      if(runSystematics)
+	{
 	  jet::computeVariation(jetsP4,phys.met[0],jetVars, metVars, &stdPtResol,&stdEtaResol,&stdPhiResol,&jecUnc);
-	  for(size_t ivar=0; ivar<3; ivar++){
+	  for(size_t ivar=0; ivar<3; ivar++)
+	    {
 	      eventCategoryVars.push_back( eventClassifComp.Get(phys, &(jetVars[ivar])) );
-
-              METUtils::stRedMET temp_redMetInfo;
-              LorentzVector temp_redMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, phys.leptons[0], 0, phys.leptons[1], 0, jetVars[ivar], metVars[ivar], false, &temp_redMetInfo);
-              double temp_redMetL = temp_redMetInfo.redMET_l;
-	      redMetVar.push_back(temp_redMetP4.pt());
-	      redMetLVar.push_back(temp_redMetL);
-
-	      Float_t imtsum     = METUtils::transverseMass(phys.leptons[0],metVars[ivar],false) + METUtils::transverseMass(phys.leptons[1],metVars[ivar],false);
-	      mtsumsVar.push_back(imtsum);
-
-	      int ivarEvCat= eventCategoryVars[ivar];
-	      passMediumRedMetVars.push_back(redMetVar[ivar]>METUtils::getRedMETCut(ivarEvCat,METUtils::MEDIUMWP));
-	      passTightRedMetVars.push_back(redMetVar[ivar]>METUtils::getRedMETCut(ivarEvCat,METUtils::TIGHTWP));
-	  }
-      }
-
-      
+	      
+	      METUtils::stRedMET temp_redMetInfo;
+	      LorentzVector temp_redMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetVars[ivar], metVars[ivar], isGammaEvent, &temp_redMetInfo);
+	      //double temp_redMetL = temp_redMetInfo.redMET_l;
+	      redMetVars.push_back(temp_redMetP4);
+	      
+	      Float_t imt     = METUtils::transverseMass(zll,metVars[ivar],true);
+	      mtVars.push_back(imt);
+	    }
+	}
+            
       //      ROOT::Math::Boost cmboost(genhiggs.BoostToCM());
       //      LorentzVector cmzll(cmboost(zll));
       //      LorentzVector cmzvv(cmboost(zvv));
@@ -868,7 +898,6 @@ int main(int argc, char* argv[])
       ROOT::Math::Boost cmboost(transverseHiggs.BoostToCM());
       LorentzVector cmzll(cmboost(zll));
       LorentzVector cmzvv(cmboost(zvv));
-
       
       //fill control histograms
       std::vector<TString> catsToFill;
@@ -877,9 +906,6 @@ int main(int argc, char* argv[])
       std::vector<TString> subCatsToFill;
       subCatsToFill.push_back("");
       subCatsToFill.push_back(subcat);
-      //       if(ev.nvtx<4)        subCatsToFill.push_back("1to3vtx");
-      //       else if(ev.nvtx>=10) subCatsToFill.push_back("geq10vtx");
-      //       else                 subCatsToFill.push_back("4to9vtx");
       for(size_t ic=0; ic<catsToFill.size(); ic++){
 	  for(size_t isc=0; isc<subCatsToFill.size(); isc++){
 	      TString ctf=catsToFill[ic]+subCatsToFill[isc];   
@@ -966,7 +992,7 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("njets",ctf,njets,iweight);
 	      controlHistos.fill2DHisto("njetsvspu",ctf,ev.ngenITpu,njets,iweight);
 	      controlHistos.fill2DHisto("njetsincvspu",ctf,ev.ngenITpu,njetsinc,iweight);
-	      controlHistos.fillHisto("nbtags",ctf, nbtags,iweight);
+	      controlHistos.fillHisto("nbtags",ctf, nbtags_tche2,iweight);
 	      controlHistos.fillHisto("npassbveto",ctf,0, (nbtags_ssvhem==0)*iweight);
 	      controlHistos.fillHisto("npassbveto",ctf,1, (nbtags_tchel==0)*iweight);
 	      controlHistos.fillHisto("npassbveto",ctf,2, (nbtags_tche2==0)*iweight);
@@ -974,6 +1000,11 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("npassbveto",ctf,4, (nbtags_ssvhemORtchel==0)*iweight);
 	      controlHistos.fillHisto("npassbveto",ctf,5, (nbtags==0)*iweight);
 	      controlHistos.fillHisto("zmassctrl",ctf,passBveto+2*passMediumRedMet,iweight);
+
+	      
+	      controlHistos.fillHisto("btag0proj",ctf,0,iweight*p0btags);
+	      controlHistos.fillHisto("btag0projup",ctf,0,iweight*min(p0btags+p0btags_err,1.0));
+	      controlHistos.fillHisto("btag0projdown",ctf,0,iweight*max(p0btags-p0btags_err,0.0));
 
 	      if(!passBveto) continue;
 	      controlHistos.fillHisto("eventflow",ctf,3,iweight);
@@ -1075,172 +1106,186 @@ int main(int argc, char* argv[])
 		  if(passTightRedMet)    controlHistos.fillHisto("eventflow",ctf,7,iweight);
               }
 	      
-	      //
-	      // CUT & COUNT ANALYSIS
-	      //
-	      //	      //final selection (cut and count analysis)
-	      //              bool pass130( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
-	      //              bool pass150( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
-	      //              bool pass170( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
-	      //	      bool pass200( passMediumRedMet && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetL)>50 && mtsum>150);
-	      //	      bool pass300( passTightRedMet  && fabs(dphill)<2.5                      && redMetL>75       && mtsum>200);
-	      //	      bool pass400( passTightRedMet  && fabs(dphill)<2.0                      && redMetL>75       && mtsum>300);
-	      //	      bool pass500( passTightRedMet  && fabs(dphill)<2.0                      && redMetL>100      && mtsum>400);
-	      //	      bool pass600( passTightRedMet  && fabs(dphill)<1.5                      && redMetL>150 && mtsum>450);
-	      
-              bool pass130( zvv.pt()>69  && mindphijmet>0.62 && mt>216 && mt<272);
-              bool pass150( zvv.pt()>69  && mindphijmet>0.62 && mt>216 && mt<272);
-              bool pass170( zvv.pt()>69  && mindphijmet>0.62 && mt>216 && mt<272);
-              bool pass200( zvv.pt()>69  && mindphijmet>0.62 && mt>216 && mt<272);
-              bool pass300( zvv.pt()>83  && mindphijmet>0.28 && mt>242 && mt<320);
-              bool pass400( zvv.pt()>112 && mindphijmet>0.00 && mt>292);
-              bool pass500( zvv.pt()>141 && mindphijmet>0.00 && mt>336          );
-              bool pass600( zvv.pt()>170 && mindphijmet>0.00 && mt>377          );
-	      if(subcat=="vbf"){
-                  pass130 = passMediumRedMet;
-                  pass150 = passMediumRedMet;
-                  pass170 = passMediumRedMet;
-		  pass200 = passMediumRedMet;
-		  pass300 = redMet>65;
-		  pass400 = redMet>65;
-		  pass500 = redMet>90;
-		  pass600 = redMet>90;
-              }
-
-              if(pass130) controlHistos.fillHisto("finaleventflow",ctf,0,iweight);
-              if(pass150) controlHistos.fillHisto("finaleventflow",ctf,1,iweight);
-              if(pass170) controlHistos.fillHisto("finaleventflow",ctf,2,iweight);
-	      if(pass200) controlHistos.fillHisto("finaleventflow",ctf,3,iweight);
-	      if(pass300) controlHistos.fillHisto("finaleventflow",ctf,4,iweight);
-	      if(pass400) controlHistos.fillHisto("finaleventflow",ctf,5,iweight);
-	      if(pass500) controlHistos.fillHisto("finaleventflow",ctf,6,iweight);
-	      if(pass600) controlHistos.fillHisto("finaleventflow",ctf,7,iweight);
-
-              if(zpt>25){
-		  if(pass130) controlHistos.fillHisto("zpt25finaleventflow",ctf,0,iweight);
-		  if(pass150) controlHistos.fillHisto("zpt25finaleventflow",ctf,1,iweight);
-		  if(pass170) controlHistos.fillHisto("zpt25finaleventflow",ctf,2,iweight);
-		  if(pass200) controlHistos.fillHisto("zpt25finaleventflow",ctf,3,iweight);
-		  if(pass300) controlHistos.fillHisto("zpt25finaleventflow",ctf,4,iweight);
-		  if(pass400) controlHistos.fillHisto("zpt25finaleventflow",ctf,5,iweight);
-		  if(pass500) controlHistos.fillHisto("zpt25finaleventflow",ctf,6,iweight);
-		  if(pass600) controlHistos.fillHisto("zpt25finaleventflow",ctf,7,iweight);
-              }
 
 	      //booking for optimization
               for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
-                 if(zvv.pt()>optim_Cuts1_met[index] && mindphijmet>optim_Cuts1_mindphi[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
-                 controlHistos.fillHisto("optim_eventflow1"          ,ctf,    index, weight);
+		if(zvv.pt()>optim_Cuts1_met[index] && mindphijmet>optim_Cuts1_mindphi[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
+		  controlHistos.fillHisto("optim_eventflow1"          ,ctf,    index, weight);
               }
-
+	      
               for(unsigned int index=0;index<optim_Cuts2_met.size();index++){
-                 if(redMet>optim_Cuts2_met[index] && mindphijmet>optim_Cuts2_mindphi[index] && mt>optim_Cuts2_mtmin[index] && mt<optim_Cuts2_mtmax[index])
-                 controlHistos.fillHisto("optim_eventflow2"          ,ctf,    index, weight);
+		if(redMet>optim_Cuts2_met[index] && mindphijmet>optim_Cuts2_mindphi[index] && mt>optim_Cuts2_mtmin[index] && mt<optim_Cuts2_mtmax[index])
+		  controlHistos.fillHisto("optim_eventflow2"          ,ctf,    index, weight);
               }
+	      
+	      
+	      //
+	      // CUT & COUNT ANALYSIS
+	      //
+	      //final selection (cut and count analysis)
+	      if(zpt>25)
+		{
+		  bool pass130met( zvv.pt()>50 && mindphijmet>0.74 && mt>171 && mt<296);
+		  bool pass150met( zvv.pt()>50 && mindphijmet>0.7  && mt>193 && mt<284);
+		  bool pass170met( zvv.pt()>50 && mindphijmet>0.66 && mt>185 && mt<276);
+		  bool pass200met( zvv.pt()>50 && mindphijmet>0.6  && mt>220 && mt<270);
+		  bool pass300met( zvv.pt()>86 && mindphijmet>0.4  && mt>260 && mt<310);
+		  bool pass400met( zvv.pt()>118 && mindphijmet>0.2 && mt>340 && mt<440);
+		  bool pass500met( zvv.pt()>166 && mindphijmet>0.1 && mt>340 && mt<740); 
+		  bool pass600met( zvv.pt()>188 && mindphijmet>0.1 && mt>440 && mt<740);
+		  if(pass130met) controlHistos.fillHisto("finaleventflowmet",ctf,0,iweight);
+		  if(pass150met) controlHistos.fillHisto("finaleventflowmet",ctf,1,iweight);
+		  if(pass170met) controlHistos.fillHisto("finaleventflowmet",ctf,2,iweight);
+		  if(pass200met) controlHistos.fillHisto("finaleventflowmet",ctf,3,iweight);
+		  if(pass300met) controlHistos.fillHisto("finaleventflowmet",ctf,4,iweight);
+		  if(pass400met) controlHistos.fillHisto("finaleventflowmet",ctf,5,iweight);
+		  if(pass500met) controlHistos.fillHisto("finaleventflowmet",ctf,6,iweight);
+		  if(pass600met) controlHistos.fillHisto("finaleventflowmet",ctf,7,iweight);
+		  
+		  bool pass130rmet( rCMetP4.pt()>50  && mindphijmet>0.74 && mt>171 && mt<296);
+		  bool pass150rmet( rCMetP4.pt()>50  && mindphijmet>0.7  && mt>193 && mt<284);
+		  bool pass170rmet( rCMetP4.pt()>50  && mindphijmet>0.66 && mt>185 && mt<276);
+		  bool pass200rmet( rCMetP4.pt()>50  && mindphijmet>0.6  && mt>220 && mt<270);
+		  bool pass300rmet( rCMetP4.pt()>84  && mindphijmet>0.2  && mt>260 && mt<310);
+		  bool pass400rmet( rCMetP4.pt()>110 && mindphijmet>0.2  && mt>340 && mt<440);
+		  bool pass500rmet( rCMetP4.pt()>156 && mindphijmet>0.1  && mt>340 && mt<740); 
+		  bool pass600rmet( rCMetP4.pt()>156 && mindphijmet>0.1  && mt>440 && mt<790);
+		  if(pass130rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,0,iweight);
+		  if(pass150rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,1,iweight);
+		  if(pass170rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,2,iweight);
+		  if(pass200rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,3,iweight);
+		  if(pass300rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,4,iweight);
+		  if(pass400rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,5,iweight);
+		  if(pass500rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,6,iweight);
+		  if(pass600rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,7,iweight);		  
 
-	      //systematic variations (computed per jet bin so fill only once) 		  
-	      if(isc==0 && runSystematics){
-		  //jet energy scale related variations
-		  TString jetVarNames[]={"jer","jesup","jesdown"};
-		  for(size_t ivar=0; ivar<3; ivar++){
-		      TString isubcat    = eventClassifComp.GetLabel( eventCategoryVars[ivar] );
-		      TString ictf= catsToFill[ic]+isubcat;
-                      bool ipass130( passMediumRedMetVars[ivar] && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetLVar[ivar])>50 && mtsumsVar[ivar]>150);
-                      bool ipass150( passMediumRedMetVars[ivar] && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetLVar[ivar])>50 && mtsumsVar[ivar]>150);
-                      bool ipass170( passMediumRedMetVars[ivar] && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetLVar[ivar])>50 && mtsumsVar[ivar]>150);
-		      bool ipass200( passMediumRedMetVars[ivar] && fabs(dphill)<2.75 && fabs(dphill)>1.0 && fabs(redMetLVar[ivar])>50 && mtsumsVar[ivar]>150);
-		      bool ipass300( passTightRedMetVars[ivar]  && fabs(dphill)<2.5                      && redMetLVar[ivar]>75       && mtsumsVar[ivar]>200);
-		      bool ipass400( passTightRedMetVars[ivar]  && fabs(dphill)<2.0                      && redMetLVar[ivar]>75       && mtsumsVar[ivar]>300);
-		      bool ipass500( passTightRedMetVars[ivar]  && fabs(dphill)<2.0                      && redMetLVar[ivar]>100      && mtsumsVar[ivar]>400);
-		      bool ipass600( passTightRedMetVars[ivar]  && fabs(dphill)<1.5                      && redMetLVar[ivar]>150      && mtsumsVar[ivar]>450);
-		      if(subcat=="vbf"){
-                          ipass130 = passMediumRedMetVars[ivar];
-                          ipass150 = passMediumRedMetVars[ivar];
-                          ipass170 = passMediumRedMetVars[ivar];
-			  ipass200 = passMediumRedMetVars[ivar];
-			  ipass300 = passMediumRedMetVars[ivar];
-			  ipass400 = passMediumRedMetVars[ivar];
-			  ipass500 = passMediumRedMetVars[ivar];
-			  ipass600 = passMediumRedMetVars[ivar];
-                      }
-                      if(ipass130) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,0,iweight);
-                      if(ipass150) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,1,iweight);
-                      if(ipass170) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,2,iweight);
-		      if(ipass200) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,3,iweight);
-		      if(ipass300) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,4,iweight);
-		      if(ipass400) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,5,iweight);
-		      if(ipass500) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,6,iweight);
-		      if(ipass600) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflow",ictf,7,iweight);
-                  }
+		  bool passvbf50met( zvv.pt() > 50);
+		  bool passvbf55met( zvv.pt() > 55);
+		  bool passvbf60met( zvv.pt() > 60);
+		  bool passvbf65met( zvv.pt() > 65);
+		  bool passvbf50rmet( rCMetP4.pt() > 50);
+		  bool passvbf55rmet( rCMetP4.pt() > 50);
+		  bool passvbf60rmet( rCMetP4.pt() > 50);
+		  bool passvbf65rmet( rCMetP4.pt() > 50);
+		  if(passvbf50met) controlHistos.fillHisto("finaleventflowvbf",ctf,0,iweight);
+		  if(passvbf55met) controlHistos.fillHisto("finaleventflowvbf",ctf,1,iweight);
+		  if(passvbf60met) controlHistos.fillHisto("finaleventflowvbf",ctf,2,iweight);
+		  if(passvbf65met) controlHistos.fillHisto("finaleventflowvbf",ctf,3,iweight);
+		  if(passvbf50rmet) controlHistos.fillHisto("finaleventflowvbf",ctf,4,iweight);
+		  if(passvbf55rmet) controlHistos.fillHisto("finaleventflowvbf",ctf,5,iweight);
+		  if(passvbf60rmet) controlHistos.fillHisto("finaleventflowvbf",ctf,6,iweight);
+		  if(passvbf65rmet) controlHistos.fillHisto("finaleventflowvbf",ctf,7,iweight);		  
+		
+		  
+		  //systematic variations (computed per jet bin so fill only once) 		  
+		  if(isc==0 && runSystematics)
+		    {
+		      
+		      //jet energy scale related variations
+		      TString jetVarNames[]={"jer","jesup","jesdown"};
+		      for(size_t ivar=0; ivar<3; ivar++)
+			{
+			  TString isubcat    = eventClassifComp.GetLabel( eventCategoryVars[ivar] );
+			  TString ictf= catsToFill[ic]+isubcat;
+			  
+			  bool ipass130met( metVars[ivar].pt()>50  && mindphijmet>0.74 && mtVars[ivar]>171 && mtVars[ivar]<296);
+			  bool ipass150met( metVars[ivar].pt()>50  && mindphijmet>0.7  && mtVars[ivar]>193 && mtVars[ivar]<284);
+			  bool ipass170met( metVars[ivar].pt()>50  && mindphijmet>0.66 && mtVars[ivar]>185 && mtVars[ivar]<276);
+			  bool ipass200met( metVars[ivar].pt()>50  && mindphijmet>0.6  && mtVars[ivar]>220 && mtVars[ivar]<270);
+			  bool ipass300met( metVars[ivar].pt()>86  && mindphijmet>0.4  && mtVars[ivar]>260 && mtVars[ivar]<310);
+			  bool ipass400met( metVars[ivar].pt()>118 && mindphijmet>0.2  && mtVars[ivar]>340 && mtVars[ivar]<440);
+			  bool ipass500met( metVars[ivar].pt()>166 && mindphijmet>0.1  && mtVars[ivar]>340 && mtVars[ivar]<740); 
+			  bool ipass600met( metVars[ivar].pt()>188 && mindphijmet>0.1  && mtVars[ivar]>440 && mtVars[ivar]<740);
+			  if(ipass130met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,0,iweight);
+			  if(ipass150met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,1,iweight);
+			  if(ipass170met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,2,iweight);
+			  if(ipass200met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,3,iweight);
+			  if(ipass300met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,4,iweight);
+			  if(ipass400met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,5,iweight);
+			  if(ipass500met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,6,iweight);
+			  if(ipass600met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,7,iweight);
+			  
+			  
+			  bool ipass130rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.74 && mtVars[ivar]>171 && mtVars[ivar]<296);
+			  bool ipass150rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.7  && mtVars[ivar]>193 && mtVars[ivar]<284);
+			  bool ipass170rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.66 && mtVars[ivar]>185 && mtVars[ivar]<276);
+			  bool ipass200rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.6  && mtVars[ivar]>220 && mtVars[ivar]<270);
+			  bool ipass300rmet( redMetVars[ivar].pt()>84  && mindphijmet>0.2  && mtVars[ivar]>260 && mtVars[ivar]<310);
+			  bool ipass400rmet( redMetVars[ivar].pt()>110 && mindphijmet>0.2  && mtVars[ivar]>340 && mtVars[ivar]<440);
+			  bool ipass500rmet( redMetVars[ivar].pt()>156 && mindphijmet>0.1  && mtVars[ivar]>340 && mtVars[ivar]<740); 
+			  bool ipass600rmet( redMetVars[ivar].pt()>156 && mindphijmet>0.1  && mtVars[ivar]>440 && mtVars[ivar]<790);
+			  if(ipass130rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,0,iweight);
+			  if(ipass150rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,1,iweight);
+			  if(ipass170rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,2,iweight);
+			  if(ipass200rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,3,iweight);
+			  if(ipass300rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,4,iweight);
+			  if(ipass400rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,5,iweight);
+			  if(ipass500rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,6,iweight);
+			  if(ipass600rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,7,iweight);		  
+			  
+			  
+			  bool ipassvbf50met( metVars[ivar].pt() > 50);
+			  bool ipassvbf55met( metVars[ivar].pt() > 55);
+			  bool ipassvbf60met( metVars[ivar].pt() > 60);
+			  bool ipassvbf65met( metVars[ivar].pt() > 65);
+			  bool ipassvbf50rmet( redMetVars[ivar].pt() > 50);
+			  bool ipassvbf55rmet( redMetVars[ivar].pt() > 50);
+			  bool ipassvbf60rmet( redMetVars[ivar].pt() > 50);
+			  bool ipassvbf65rmet( redMetVars[ivar].pt() > 50);
+			  if(ipassvbf50met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,0,iweight);
+			  if(ipassvbf55met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,1,iweight);
+			  if(ipassvbf60met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,2,iweight);
+			  if(ipassvbf65met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,3,iweight);
+			  if(ipassvbf50rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,4,iweight);
+			  if(ipassvbf55rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,5,iweight);
+			  if(ipassvbf60rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,6,iweight);
+			  if(ipassvbf65rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,7,iweight);		  
+			}
+		    }
 		 
 		  //re-weighting variations (Higgs, pileup scenario)
 		  TString wgtVarNames[]={"hrenup","hrendown","hfactup","hfactdown","puup","pudown"};
- 		  Float_t rwgtVars[]={iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor],
+ 		  Float_t rwgtVars[]={iweight,
+				      iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor],
 				      iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor],
 				      iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor],
 				      iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor],
 				      iweight*TotalWeight_plus,
 				      iweight*TotalWeight_minus};
-		  for(size_t ivar=0; ivar<sizeof(wgtVarNames)/sizeof(TString); ivar++){
+		  for(size_t ivar=0; ivar<sizeof(wgtVarNames)/sizeof(TString); ivar++)
+		    {
 		      TString ictf= catsToFill[ic]+subcat;
-                      if(pass130) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflow",ictf,0,rwgtVars[ivar]);
-                      if(pass150) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflow",ictf,1,rwgtVars[ivar]);
-                      if(pass170) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflow",ictf,2,rwgtVars[ivar]);
-		      if(pass200) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflow",ictf,3,rwgtVars[ivar]);
-		      if(pass300) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflow",ictf,4,rwgtVars[ivar]);
-		      if(pass400) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflow",ictf,5,rwgtVars[ivar]);
-		      if(pass500) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflow",ictf,6,rwgtVars[ivar]);
-		      if(pass600) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflow",ictf,7,rwgtVars[ivar]);
+		      
+		      if(pass130met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ictf,0,rwgtVars[ivar]);
+		      if(pass150met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ictf,1,rwgtVars[ivar]);
+		      if(pass170met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ictf,2,rwgtVars[ivar]);
+		      if(pass200met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ictf,3,rwgtVars[ivar]);
+		      if(pass300met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ictf,4,rwgtVars[ivar]);
+		      if(pass400met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ictf,5,rwgtVars[ivar]);
+		      if(pass500met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ictf,6,rwgtVars[ivar]);
+		      if(pass600met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ictf,7,rwgtVars[ivar]);
+		      
+		      if(pass130rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ictf,0,rwgtVars[ivar]);
+		      if(pass150rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ictf,1,rwgtVars[ivar]);
+		      if(pass170rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ictf,2,rwgtVars[ivar]);
+		      if(pass200rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ictf,3,rwgtVars[ivar]);
+		      if(pass300rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ictf,4,rwgtVars[ivar]);
+		      if(pass400rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ictf,5,rwgtVars[ivar]);
+		      if(pass500rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ictf,6,rwgtVars[ivar]);
+		      if(pass600rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ictf,7,rwgtVars[ivar]);		  
+
+		      if(passvbf50met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ictf,0,rwgtVars[ivar]);
+		      if(passvbf55met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ictf,1,rwgtVars[ivar]);
+		      if(passvbf60met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ictf,2,rwgtVars[ivar]);
+		      if(passvbf65met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ictf,3,rwgtVars[ivar]);
+		      if(passvbf50rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ictf,4,rwgtVars[ivar]);
+		      if(passvbf55rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ictf,5,rwgtVars[ivar]);
+		      if(passvbf60rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ictf,6,rwgtVars[ivar]);
+		      if(passvbf65rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ictf,7,rwgtVars[ivar]);		  
 		  }
               }
           }
       }
-    
-  
-      // summary tree for the selected events
-//    if(saveSummaryTree && (passBaseCuts || isVBF))
-//	{
-//	  if(outf && passTightRedMet)	
-//	    {
-//	      *outf << "<b>"<< subcat << " event</b> @ " << url << "<br/>" << std::endl;
-//	      *outf << "%$Run=" <<  ev.run << "$% %$Lumi=" << ev.lumi << "$% %$Event=" << ev.event <<"$%" << "<br/>" << std::endl;
-//	      
-//	      *outf << "<i>Leptons</i>" << "<br/>" << std::endl;
-//	      for(size_t ilep=0; ilep<2; ilep++)
-//		*outf << "%$l_{" << ilep+1 << "}=" << phys.leptons[ilep].id << "$% "
-//		      << "%$p_T=" << phys.leptons[ilep].pt() << "$% "
-//		      << "%$\\eta=" << phys.leptons[ilep].eta() << "$% "
-//		      << "%$\\phi=" << phys.leptons[ilep].phi() << "$% "
-//		      << "%$I_{neut}=" << phys.leptons[ilep].iso1 << "$% "
-//		      << "%$I_{ch}=" << phys.leptons[ilep].iso2  << "$% "
-//		      << "%$I_{pho}=" << phys.leptons[ilep].iso3 << "$% " << "<br/>" << std::endl; 
-//	      
-//	      *outf << "<i>Dilepton</i>" << "<br/>" << std::endl;
-//	      *outf  << "%$p_{T}^{ll}=" << zll.pt() << "$% "
-//		     << "%$\\eta^{ll}=" << zll.eta() << "$% "
-//		     << "%$\\phi^{ll}=" << zll.phi() << "$% "
-//		     << "%$m^{ll}=" << zll.mass() << "$% "   
-//		     << "%$\\Delta R(l,l)=" << drll << "$% "
-//		     << "%$\\Delta\\phi(l,l)=" << dphill << "$% " << "<br/>" << std::endl;
-//	      
-//	      *outf << "<i>Missing transverse energy</i>" << "<br/>" << std::endl;
-//	      *outf << "%$E_{T}^{miss}=" << met << "$% "
-//		    << "%$\\phi=" << zvv.phi() << "$% " << "<br/>" << std::endl;
-//	      *outf << "%$red-E_{T}^{miss}=" << redMet << "$% "
-//		    << "%$l="<< redMetL << "$% "
-//		    << "%$t=" << redMetT << "$% " << "<br/>" << std::endl;
-//	      
-//	      *outf << "<i>Transverse mass</i>" << "<br/>" << std::endl;
-//	      *outf << "%$\\sum M_T(l,E_{T}^{miss})=" << mtl1+mtl2 << "$% "
-//		    << "%$M_T(Z,E_{T}^{miss})=" << mt << "$% " << "<br/>" << std::endl; 
-//	      
-//	      *outf << "<i>Jet activity</i>" << "<br/>" << std::endl;
-//	      *outf << "%$N {jets}(p_T>15)= " << ev.jn << "$% "
-//		    << "%$\\rho=" << ev.rho << "$% "  << "<br/>" << std::endl;
-//	      
-//	      *outf << "------" << endl;
-//	    }
-//	}
     }
 
   
