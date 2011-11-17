@@ -66,6 +66,20 @@ class Histogram( object ):
         else:
             self.obj.Draw(opt)
 
+    def GetYaxis(self, opt='', weighted=True):
+        '''All these functions could be written in a clever and compact way'''
+        if weighted is True:
+            return self.weighted.GetYaxis()
+        else:
+            return self.obj.GetYaxis()  
+
+    def GetMaximum(self, opt='', weighted=True):
+        '''All these functions could be written in a clever and compact way'''
+        if weighted is True:
+            return self.weighted.GetMaximum()
+        else:
+            return self.obj.GetMaximum()  
+       
     def Add(self, other, coeff=1):
         self.obj.Add( other.obj, coeff )
         self.weighted.Add( other.weighted, coeff )

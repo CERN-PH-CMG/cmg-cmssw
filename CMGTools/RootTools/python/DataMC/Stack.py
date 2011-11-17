@@ -1,5 +1,6 @@
 import copy
-from ROOT import THStack
+from ROOT import THStack, gPad
+from CMGTools.RootTools.Style import sBlue,sBlack
 
 class Stack:
     '''Attempt to overcome the defficiencies of the THStack class.
@@ -8,10 +9,18 @@ class Stack:
     - hists    : a list of Histogram (from this package,
     we\'re not taking about ROOT histograms here
     - integral : the integral of the stack.'''
+
+    STAT_ERRORS = True
+    STYLE = copy.copy(sBlack)
+    STYLE.markerStyle = 1 
+    
     def __init__(self, name):
         self.name = name
         self.hists = []
         self.integral = 0
+        self.totalHist = None
+        self.statErrors = Stack.STAT_ERRORS
+        self.style = Stack.STYLE
         
     def Add(self, hist):
         '''Add an Histogram.'''
@@ -19,15 +28,48 @@ class Stack:
         self.hists.append( copy.deepcopy(hist) )
         self.integral += hist.Integral()
         
-    def Draw(self, opt=''):
+    def Draw(self, opt='', ymin = None, ymax=None):
         '''Draw the stack. opt are the ROOT options'''
         if len( self.hists )==0:
             return
         self.obj = THStack(self.name,'')
+        self.totalHist = None
         for hist in self.hists:
             self.obj.Add(hist.weighted)
-        self.obj.Draw( opt )
+            if self.totalHist is None:
+                self.totalHist = copy.deepcopy( hist )
+            else: 
+                self.totalHist.Add( hist )
+        self.SetStyle(self.style)
+        # drawing the first histogram in the stack
+        # as a support histo.
+        # otherwise, can't change y axis range (ROOT!@#!)
+        # we draw it as hist so that the markers don't appear.
+        self.hists[0].Draw('hist')
+        self.obj.Draw( opt+'same' )
+        # need to redraw the axes, which are now "under"
+        # the stacked histograms. 
+        self.hists[0].Draw('axissame')
+        if ymin is None:
+            ymin = 0.1
+        if ymax is None:
+            ymax = self.totalHist.GetMaximum()*1.1
+        self.hists[0].GetYaxis().SetRangeUser( ymin, ymax )
+        self._DrawStatErrors()
         self._updateTitles()
+
+    def _DrawStatErrors(self):
+        '''Draw statistical errors if statErrors is True.'''
+        if self.statErrors is False:
+            return
+        self.totalHist.Draw('same')
+        
+    def SetStyle(self, style ):
+        '''Set the style for the total histogram'''
+        self.style = style 
+        self.totalHist.SetStyle( self.style )
+        if gPad:
+            gPad.Update()
 
     def DrawNormalized(self, opt ):
         '''Draw a normalized version of the stack (integral=1).'''
