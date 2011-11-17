@@ -34,6 +34,7 @@ bool do1D  = true;
 bool doTex = true;
 bool StoreInFile = true;
 bool doPlot = true;
+bool splitCanvas = false;
 string objectSearchKey = "";
 string inDir   = "OUTNew/";
 string jsonFile = "../../data/beauty-samples.json";
@@ -224,6 +225,92 @@ void fixExtremities(TH1* h,bool addOverflow, bool addUnderflow)
       h->SetBinError(nbins+1,0);
     }
 }
+
+
+void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, std::string HistoName){
+   std::string SaveName = "";
+
+   TPaveText* T = new TPaveText(0.40,0.995,0.85,0.945, "NDC");
+   T->SetFillColor(0);
+   T->SetFillStyle(0);  T->SetLineColor(0);
+   T->SetTextAlign(32);
+  char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #int L=%.1f fb^{-1}", iLumi/1000);
+   T->AddText(Buffer);
+
+   std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
+   std::vector<TObject*> ObjectToDelete;
+   for(unsigned int i=0;i<Process.size();i++){
+      TCanvas* c1 = new TCanvas("c1","c1",500,500);
+      c1->SetLogz(true);
+
+      TH1* hist = NULL;
+      std::vector<JSONWrapper::Object> Samples = (Process[i])["data"].daughters();
+      for(unsigned int j=0;j<Samples.size();j++){
+         double Weight = 1.0;
+         if(!Process[i]["isdata"].toBool()  && !Process[i]["isdatadriven"].toBool())Weight*= iLumi;
+         if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
+         std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
+         Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
+
+         int split = 1;
+         if(Samples[j].isTag("split"))split = Samples[j]["split"].toInt();
+         TH1* tmphist = NULL;
+         for(int s=0;s<split;s++){
+            char segmentExt[255];if(split>1){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
+
+            string FileName = RootDir + (Samples[j])["dtag"].toString() + segmentExt;
+            if(!FileExist[FileName])continue;
+            TFile* File = new TFile(FileName.c_str());
+            if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
+            TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName); 
+            if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
+            delete tmptmphist;
+            delete File;
+         }
+         if(!tmphist)continue;
+         if(!hist){gROOT->cd(); hist = (TH1*)tmphist->Clone(tmphist->GetName());hist->Scale(Weight);}else{hist->Add(tmphist,Weight);}
+         delete tmphist;
+      }   
+      if(!hist)continue;
+
+      SaveName = hist->GetName();
+      ObjectToDelete.push_back(hist);
+      hist->SetTitle("");
+      hist->SetStats(kFALSE);
+
+      hist->Draw("COLZ");
+  
+      TPaveText* leg = new TPaveText(0.20,0.95,0.40,0.80, "NDC");
+      leg->SetFillColor(0);
+      leg->SetFillStyle(0);  leg->SetLineColor(0);
+      leg->SetTextAlign(12);
+      leg->AddText(Process[i]["tag"].c_str());
+      leg->Draw("same");
+      ObjectToDelete.push_back(leg);
+//      delete leg;
+//      delete hist;
+
+      T->Draw("same");
+
+      string SavePath = SaveName + "_" + (Process[i])["tag"].toString() + plotExt;
+      while(SavePath.find("*")!=std::string::npos)SavePath.replace(SavePath.find("*"),1,"");
+      while(SavePath.find("#")!=std::string::npos)SavePath.replace(SavePath.find("#"),1,"");
+      while(SavePath.find("{")!=std::string::npos)SavePath.replace(SavePath.find("{"),1,"");
+      while(SavePath.find("}")!=std::string::npos)SavePath.replace(SavePath.find("}"),1,"");
+      while(SavePath.find("(")!=std::string::npos)SavePath.replace(SavePath.find("("),1,"");
+      while(SavePath.find(")")!=std::string::npos)SavePath.replace(SavePath.find(")"),1,"");
+      while(SavePath.find("^")!=std::string::npos)SavePath.replace(SavePath.find("^"),1,"");
+      while(SavePath.find("/")!=std::string::npos)SavePath.replace(SavePath.find("/"),1,"-");
+      SavePath = outDir + SavePath;
+      system(string(("rm -f ") + SavePath).c_str());
+      c1->SaveAs(SavePath.c_str());
+      delete c1;
+   }
+
+   for(unsigned int d=0;d<ObjectToDelete.size();d++){delete ObjectToDelete[d];}ObjectToDelete.clear();
+   delete T;
+}
+
 
 void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string HistoName){
    std::string SaveName = "";
@@ -646,6 +733,7 @@ int main(int argc, char* argv[]){
         printf("--noPlot --> Do not creates plot files (useful to speedup processing)\n");
 	printf("--plotExt --> extension to save\n");
 	printf("--cutflow --> name of the histogram with the original number of events (cutflow by default)\n");
+        printf("--splitCanvas --> (only for 2D plots) save all the samples in separated pltos\n");
 
         printf("command line example: runPlotter --json ../data/beauty-samples.json --iLumi 2007 --inDir OUT/ --outDir OUT/plots/ --outFile plotter.root --noRoot --noPlot\n");
 	return 0;
@@ -666,6 +754,7 @@ int main(int argc, char* argv[]){
      if(arg.find("--noPlot")!=string::npos){ doPlot = false;    }
      if(arg.find("--plotExt" )!=string::npos && i+1<argc){ plotExt   = argv[i+1];  i++;  printf("saving plots as = %s\n", plotExt.c_str());  }
      if(arg.find("--cutflow" )!=string::npos && i+1<argc){ cutflowhisto   = argv[i+1];  i++;  printf("Normalizing from 1st bin in = %s\n", cutflowhisto.c_str());  }
+     if(arg.find("--splitCanvas")!=string::npos){ splitCanvas = true;    }
    } 
    system( (string("mkdir -p ") + outDir).c_str());
 
@@ -688,7 +777,7 @@ int main(int argc, char* argv[]){
       
       system(("echo \"" + histlist[i].Name + "\" >> /tmp/histlist.csv").c_str());
       if(doTex && histlist[i].Name.find("eventflow")!=std::string::npos && histlist[i].Name.find("optim_eventflow")==std::string::npos){    ConvertToTex(Root,inDir,histlist[i].Name);     }
-      if(doPlot && do2D  && !histlist[i].isTH1){                                       Draw2DHistogram(Root,inDir,histlist[i].Name);  }
+      if(doPlot && do2D  && !histlist[i].isTH1){                      if(!splitCanvas){Draw2DHistogram(Root,inDir,histlist[i].Name);  }else{Draw2DHistogramSplitCanvas(Root,inDir,histlist[i].Name);}}
       if(doPlot && do1D  &   histlist[i].isTH1){                                       Draw1DHistogram(Root,inDir,histlist[i].Name);  }
       
       if(StoreInFile && do2D  && !histlist[i].isTH1){                                  SavingToFile(Root,inDir,histlist[i].Name, OutputFile); }
