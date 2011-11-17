@@ -1164,9 +1164,9 @@ int main(int argc, char* argv[])
 		  bool passvbf60met( zvv.pt() > 60);
 		  bool passvbf65met( zvv.pt() > 65);
 		  bool passvbf50rmet( rCMetP4.pt() > 50);
-		  bool passvbf55rmet( rCMetP4.pt() > 50);
-		  bool passvbf60rmet( rCMetP4.pt() > 50);
-		  bool passvbf65rmet( rCMetP4.pt() > 50);
+		  bool passvbf55rmet( rCMetP4.pt() > 55);
+		  bool passvbf60rmet( rCMetP4.pt() > 60);
+		  bool passvbf65rmet( rCMetP4.pt() > 65);
 		  if(passvbf50met) controlHistos.fillHisto("finaleventflowvbf",ctf,0,iweight);
 		  if(passvbf55met) controlHistos.fillHisto("finaleventflowvbf",ctf,1,iweight);
 		  if(passvbf60met) controlHistos.fillHisto("finaleventflowvbf",ctf,2,iweight);
@@ -1228,9 +1228,9 @@ int main(int argc, char* argv[])
 			  bool ipassvbf60met( metVars[ivar].pt() > 60);
 			  bool ipassvbf65met( metVars[ivar].pt() > 65);
 			  bool ipassvbf50rmet( redMetVars[ivar].pt() > 50);
-			  bool ipassvbf55rmet( redMetVars[ivar].pt() > 50);
-			  bool ipassvbf60rmet( redMetVars[ivar].pt() > 50);
-			  bool ipassvbf65rmet( redMetVars[ivar].pt() > 50);
+			  bool ipassvbf55rmet( redMetVars[ivar].pt() > 55);
+			  bool ipassvbf60rmet( redMetVars[ivar].pt() > 60);
+			  bool ipassvbf65rmet( redMetVars[ivar].pt() > 65);
 			  if(ipassvbf50met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,0,iweight);
 			  if(ipassvbf55met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,1,iweight);
 			  if(ipassvbf60met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,2,iweight);
