@@ -3,9 +3,9 @@ from CMGTools.Common.skims.cmgTauECount_cfi import *
 
 cmgTauMuCount.minNumber = 1
 tauMuPreSelCount = cmgTauMuCount.clone( minNumber = 1,
-                                        src = 'cmgTauMuCorPreSelSVFit')
+                                        src = 'cmgTauMuCorSVFitPreSel')
 
-tauMuFullSelCount = tauMuPreSelCount.clone( src = 'cmgTauMuCorFullSelSVFit')
+tauMuFullSelCount = tauMuPreSelCount.clone( src = 'cmgTauMuCorSVFitFullSel')
 
 
 tauMuPreSelSkimSequence = cms.Sequence(
