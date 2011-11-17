@@ -907,7 +907,7 @@ int main(int argc, char* argv[])
       subCatsToFill.push_back("");
       subCatsToFill.push_back(subcat);
       for(size_t ic=0; ic<catsToFill.size(); ic++){
-	  for(size_t isc=0; isc<subCatsToFill.size(); isc++){
+	for(size_t isc=0; isc<subCatsToFill.size(); isc++){
 	      TString ctf=catsToFill[ic]+subCatsToFill[isc];   
 	      
 	      float iweight=weight;
@@ -1178,9 +1178,8 @@ int main(int argc, char* argv[])
 		
 		  
 		  //systematic variations (computed per jet bin so fill only once) 		  
-		  if(isc==0 && runSystematics)
+		  if(runSystematics)
 		    {
-		      
 		      //jet energy scale related variations
 		      TString jetVarNames[]={"jer","jesup","jesdown"};
 		      for(size_t ivar=0; ivar<3; ivar++)
