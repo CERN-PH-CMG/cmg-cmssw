@@ -1,4 +1,5 @@
 import os
+import shutil
 import glob
 import sys
 from multiprocessing import Pool
@@ -14,7 +15,7 @@ def CallBack( result ):
 
 def RunLoop( comp ):
     #COLIN need to be able to catch exceptions! 
-    fullName = '/'.join( [procName, comp.name ] )
+    fullName = '/'.join( [outDir, comp.name ] )
     files = glob.glob(comp.files)
     loop = Loop( fullName, files,
                  triggers = comp.triggers,
@@ -40,7 +41,7 @@ def CreateOutputDir(dir, components):
     '''Creates the output dir, dealing with the case where dir exists.'''
     answer = None 
     try:
-        os.mkdir(procName)
+        os.mkdir(dir)
         return True
     except OSError:
         print 'directory %s already exists' % dir
@@ -121,7 +122,7 @@ mc = 0
         print 'ERROR: please provide the processing name and the component list'
         sys.exit(1)
 
-    procName = args[0]
+    outDir = args[0]
     cfgFile = args[1]
 
     # jobArgs = PersistentDict( 'jobArgs', componentList)
@@ -132,9 +133,11 @@ mc = 0
         print comp
     if len(selComps)>10:
         raise ValueError('too many threads')
-    if not CreateOutputDir(procName,
+    if not CreateOutputDir(outDir,
                            selComps.keys()):
-        sys.exit(0)    
+        print 'exiting'
+        sys.exit(0)
+    shutil.copy( cfgFile, outDir )
     pool = Pool(processes=len(selComps))
     for name,comp in selComps.iteritems():
         print 'submitting', name
