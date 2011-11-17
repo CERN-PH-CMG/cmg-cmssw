@@ -59,7 +59,8 @@ void cmg::DeltaRVetoProducer<T>::produce(edm::Event & iEvent, const edm::EventSe
 
     std::auto_ptr<collection> result(new collection); 
     //Order N^2 so lets hope there aren't too many veto objects. Will be fine for any sensible use
-    for(typename collection::const_iterator it = input->begin(); it != input->end(); ++it){
+    unsigned int key = 0;
+    for(typename collection::const_iterator it = input->begin(); it != input->end(); ++it, ++key){
         bool accept = true;
         for(edm::View<reco::Candidate>::const_iterator jt = vetos->begin(); jt != vetos->end(); ++jt){
             const double dR = reco::deltaR(*it,*jt);
@@ -72,7 +73,13 @@ void cmg::DeltaRVetoProducer<T>::produce(edm::Event & iEvent, const edm::EventSe
                 break;
             }
         }
-        if(accept) result->push_back(*it);
+        
+        if(accept){
+            //add to event and set the source pointer for the TopProjector
+            T accepted(*it);
+            accepted.setSourceCandidatePtr( reco::CandidatePtr( input, key ) );
+            result->push_back(accepted);
+        }
     }
     iEvent.put(result); 
 }
