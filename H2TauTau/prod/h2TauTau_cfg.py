@@ -11,7 +11,9 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
     )
 
 # -1 : process all files
-numberOfFilesToProcess = 5
+numberOfFilesToProcess = -1
+
+debugEventContent = True
 
 dataset_user = 'cmgtools' 
 # dataset_name = '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0'
@@ -86,7 +88,11 @@ outFileNameExt = 'CMG'
 basicName = 'h2TauTau_presel_tree_%s.root' %  outFileNameExt
 process.out.fileName = cms.untracked.string( basicName )
 from CMGTools.H2TauTau.eventContent.tauMu_cff import tauMu as tauMuEventContent
-process.out.outputCommands.extend( tauMuEventContent ) 
+from CMGTools.H2TauTau.eventContent.tauMu_cff import tauMuDebug as tauMuDebugEventContent
+if debugEventContent:
+    process.out.outputCommands.extend( tauMuDebugEventContent )
+else:
+    process.out.outputCommands.extend( tauMuEventContent )
 process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('tauMuPreSelPath') )
 
 
@@ -125,9 +131,11 @@ print
 print sep_line
 print 'OUPUT:'
 print sep_line
-print 'baseline selection EDM output:  ', baselineName
-print 'basic selection EDM output   :  ', basicName
-print 'histograms output            :  ', histName 
+justn = 30 
+print 'baseline selection EDM output'.ljust(justn), baselineName
+print 'basic selection EDM output'.ljust(justn), basicName
+print 'histograms output'.ljust(justn), histName 
+print 'Debug event content'.ljust(justn), debugEventContent
 
 # you can enable printouts of most modules like this:
 # process.cmgTauMuCorPreSelSVFit.verbose = True
