@@ -19,7 +19,7 @@ public:
   };
 
   TauRate():
-    lFile("/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/data/TauDataMCScale.root","read")
+    lFile("../data/TauDataMCScale.root","read")
   { 
     fRAllProng   = (TH2F*) lFile.FindObjectAny("AllProng");   fRAllProng->SetDirectory(0);
     fR1Prong     = (TH2F*) lFile.FindObjectAny("OneProng");   fR1Prong  ->SetDirectory(0);
