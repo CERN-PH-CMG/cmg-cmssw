@@ -128,9 +128,9 @@
   Higgs.setColor(0);
   Higgs.setLineColor(1);
   Higgs.setLineStyle(2);
-  Higgs.setPlotLabel("10 x SM Higgs(115)");
+  Higgs.setPlotLabel("SM Higgs(115)");
   Higgs.setLegendOption("L");
-  Higgs.setCrossection(18.12*0.0765*10);//not sure
+  Higgs.setCrossection(18.12*0.0765);//not sure
   Higgs.setSampleGenEvents(196002);
   Higgs.addTrigPath("HLT_IsoMu12_v1");
   Higgs.setEffCorrFactor(MCEffCorrFactor);
