@@ -122,19 +122,20 @@
   //   ZZ.setEffCorrFactor(MCEffCorrFactor);
   //   analysis.addSample(&ZZ);
   
-//   Sample Higgs("Higgs","/data/benitezj/RootFiles/GluGluToHToTauTau_M-115_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0/TauMu");
-//   Higgs.setDataType("MC");
-//   Higgs.setColor(0);
-//   Higgs.setLineColor(1);
-//   Higgs.setLineStyle(2);
-//   Higgs.setPlotLabel("5 x SM Higgs(115)");
-//   Higgs.setLegendOption("L");
-//   Higgs.setCrossection(18.12*0.0765);
-//   Higgs.setRecoilCorr("../data/recoilfits/recoilfit_zjets_ltau_njet.root");
-//   Higgs.setSampleGenEvents(196002);
-//   Higgs.addTrigPath("HLT_IsoMu12_v1");
-//   Higgs.setEffCorrFactor(MCEffCorrFactor*5);
-//   analysis.addSample(&Higgs);    
+  Sample Higgs("Higgs","/data/benitezj/RootFiles/GluGluToHToTauTau_M-115_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0/TauMu");
+  Higgs.setDataType("MC");
+  Higgs.setRecoilCorr("../data/recoilfits/recoilfit_zjets_ltau_njet.root");
+  Higgs.setColor(0);
+  Higgs.setLineColor(1);
+  Higgs.setLineStyle(2);
+  Higgs.setPlotLabel("10 x SM Higgs(115)");
+  Higgs.setLegendOption("L");
+  Higgs.setCrossection(18.12*0.0765*10);//not sure
+  Higgs.setSampleGenEvents(196002);
+  Higgs.addTrigPath("HLT_IsoMu12_v1");
+  Higgs.setEffCorrFactor(MCEffCorrFactor);
+  analysis.addSample(&Higgs);    
+
 
 //   Sample Higgs4("Higgs4","/data/benitezj/RootFiles/GluGluToHToTauTau_M-115_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2_/PAT_CMG_V2_4_0/TauMu");
 //   Higgs4.setDataType("MC");
