@@ -709,7 +709,22 @@ bool TauMuAnalysis::createHistos(TString samplename){
 
 
 bool TauMuAnalysis::scaleHistos(){
-  
+ 
+
+  //////needed by the data-card for limits before any rescalings
+  Int_t WJetsSideBandMin=60;
+  Float_t WJetsSignal=0.;  Float_t WJetsSideBand=0.;
+  for(std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+    if((*s)->getDataType()=="MC"){
+      if(TString((*s)->GetName())=="WJetsToLNu"){
+	WJetsSignal=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(1,40); 
+	WJetsSideBand=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(WJetsSideBandMin+1,200); 
+      }
+    }
+  }
+  cout<<" Ratio of (WJets Signal)/(WJets SideBand) = "<<WJetsSignal/WJetsSideBand<<endl;
+
+ 
   cout<<" List of Data samples: "<<endl;
   float totalDataLumi=0.;
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
@@ -745,48 +760,52 @@ bool TauMuAnalysis::scaleHistos(){
   }
 
 
-  Float_t WJetsBelowCorr=1.;
-  Float_t WJetsSSBelowCorr=1.;
+  Float_t WJetsAboveCorr=1.;
+  Float_t WJetsSSAboveCorr=1.;
 
   ///////////////////////////////
-  /////Determine correction factor for WJets from massT > 50, assuming binning ,200,0,200)))
+  /////Determine correction factor for WJets from massT 
   //////////////////////////////
-  cout<<"Determine WJetsSS from transverse mass > 50, assuming binning ,200,0,200"<<endl;
-  Float_t WJetsSSBelow=0; Float_t MCSSBelow=0; Float_t DataSSBelow=0;
+  cout<<"Determine WJetsSS  from sideband"<<endl;
+  Float_t WJetsSSAbove=0; Float_t MCSSAbove=0; Float_t DataSSAbove=0;
   for(std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
     if((*s)->getDataType()=="Data_SS")
-      DataSSBelow+=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(51,200);  
+      DataSSAbove+=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(WJetsSideBandMin+1,200);  
     else if(TString((*s)->GetName())=="WJetsToLNu_SS")
-      WJetsSSBelow=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(51,200);    
-    else if((*s)->getDataType()=="MC_SS") MCSSBelow+=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(51,200);
+      WJetsSSAbove=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(WJetsSideBandMin+1,200);    
+    else if((*s)->getDataType()=="MC_SS") MCSSAbove+=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(WJetsSideBandMin+1,200);
   }
-  WJetsSSBelowCorr=(DataSSBelow-MCSSBelow)/WJetsSSBelow;
+  WJetsSSAboveCorr=(DataSSAbove-MCSSAbove)/WJetsSSAbove;
  
-  Float_t WJetsBelow=0; Float_t MCBelow=0; Float_t DataBelow=0;
+  Float_t WJetsAbove=0; Float_t MCAbove=0; Float_t DataAbove=0;
   for(std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
     if((*s)->getDataType()=="Data")
-      DataBelow+=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(51,200); 
+      DataAbove+=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(WJetsSideBandMin+1,200); 
     else if((*s)->getDataType()=="MC"){
-      if(TString((*s)->GetName())=="WJetsToLNu") WJetsBelow=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(51,200);    
-      else MCBelow+=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(51,200);
+      if(TString((*s)->GetName())=="WJetsToLNu"){
+	WJetsAbove=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(WJetsSideBandMin+1,200);    
+      }else MCAbove+=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(WJetsSideBandMin+1,200);
     }
   }
-  WJetsBelowCorr=(DataBelow-MCBelow)/WJetsBelow;
+  WJetsAboveCorr=(DataAbove-MCAbove)/WJetsAbove;
 
 
-  cout<<"WJetsSS Correction = "<<WJetsSSBelowCorr<<endl;
-  cout<<"WJetsOS Correction = "<<WJetsBelowCorr<<endl;
+  cout<<"Data SS yield in side-band = "<<DataSSAbove<<endl;
+  cout<<"MC SS yield in side-band = "<<MCSSAbove<<endl;
+  cout<<"WJetsSS Correction = "<<WJetsSSAboveCorr<<endl;
+  cout<<"WJetsOS Correction = "<<WJetsAboveCorr<<endl;
   /////////////////////////////////////////
   ////////Rescale the WJets 
   //////////////////////////////////////////
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
     if(TString((*s)->GetName())=="WJetsToLNu_SS"){
-      (*s)->scale(WJetsSSBelowCorr);
+      (*s)->scale(WJetsSSAboveCorr);
     }
     if(TString((*s)->GetName())=="WJetsToLNu"){
-      (*s)->scale(WJetsBelowCorr);
+      (*s)->scale(WJetsAboveCorr);
     }
   }
+
 
 
   return 1;
@@ -909,7 +928,6 @@ TH1F* TauMuAnalysis::getData(TString histoname){
  
   return h;
 }
-
 
 
 bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords, Float_t* axesrange, bool log){
