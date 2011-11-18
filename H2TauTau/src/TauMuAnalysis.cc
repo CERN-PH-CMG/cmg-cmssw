@@ -539,7 +539,31 @@ bool TauMuAnalysis::fillHistos(TString tag, double weight ){
     NSVfitStandalone::LorentzVector p2(diTauSel_->leg2().p4());
     measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay,p2));
 
-    NSVfitStandaloneAlgorithm algo(measuredTauLeptons,measuredMET,metsig_,verbosity_);
+    TMatrixD metsigCorr(2,2);
+    metsigCorr[0][0]=(*metsig_)[0][0];
+    metsigCorr[0][1]=(*metsig_)[0][1];
+    metsigCorr[1][0]=(*metsig_)[1][0];
+    metsigCorr[1][1]=(*metsig_)[1][1];
+
+//     ///////fix the eigenvalues of the matrix to match the Data:
+//     if(sample_->getDataType()=="MC" || sample_->getDataType()=="MC_SS"){
+//       TVectorD eigenVals(2);
+//       TMatrixD eigenVects(2,2);
+//       eigenVects=metsig_->EigenVectors(eigenVals);    
+//       TMatrixD eigenVectsInv(2,2);
+//       eigenVectsInv=eigenVects;
+//       eigenVectsInv.Invert();
+//       TMatrixD metsigEigen(2,2);
+//       metsigEigen[0][0]=(124.079/117.751)*eigenVals[0];//correction factors determined from 2.1 fb-1 and Summer11 MC after pile-up reweighting
+//       metsigEigen[0][1]=0.;
+//       metsigEigen[1][0]=0.;
+//       metsigEigen[1][1]=(84.422/78.108)*eigenVals[1];      
+//       metsigCorr=eigenVects*metsigEigen*eigenVectsInv;
+//     }
+////==>Very small correction obtained on svfit mass, mean of MC: 103.38 --> 103.36  (mean of Data: 102.03)
+
+
+    NSVfitStandaloneAlgorithm algo(measuredTauLeptons,measuredMET,&metsigCorr,verbosity_);
     algo.maxObjFunctionCalls(5000);
     algo.fit();
     
@@ -548,17 +572,20 @@ bool TauMuAnalysis::fillHistos(TString tag, double weight ){
     tree_svfitedm_=algo.edm();
 
     diTauMassSVFitHisto_->Fill(tree_svfitmass_,weight);        
-    svFitCov00Histo_->Fill((*metsig_)[0][0],weight);
+    svFitCov00Histo_->Fill(metsigCorr[0][0],weight);
     svFitConvergeHisto_->Fill(tree_svfitstatus_,weight);
 
     //study the matrix elements
     TVectorD eigenValues(2);
     TMatrixD eigenVectors(2,2);
-    eigenVectors=metsig_->EigenVectors(eigenValues);
+    eigenVectors=metsigCorr.EigenVectors(eigenValues);
     tree_svfiteigenval0_=eigenValues[0];  
     tree_svfiteigenval1_=eigenValues[1];
     svFitEigen0Histo_->Fill(tree_svfiteigenval0_,weight);
     svFitEigen1Histo_->Fill(tree_svfiteigenval1_,weight);
+
+    
+
   }
  
 
@@ -630,8 +657,8 @@ bool TauMuAnalysis::createHistos(TString samplename){
   recoilCorr_=NULL;
   RecoilCorrector recoilCorr((const char*)(sample_->getRecoilCorrProcessFile()));
   if(sample_->getApplyRecoilCorr()){
-    recoilCorr.addMCFile("/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/data/recoilfit_zmm42X_njet.root");
-    recoilCorr.addDataFile("/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/data/recoilfit_datamm_njet.root");
+    recoilCorr.addMCFile("../data/recoilfit_zmm42X_njet.root");
+    recoilCorr.addDataFile("../data/recoilfit_datamm_njet.root");
     recoilCorr_=&recoilCorr;
   }
   ////use with correctAll
@@ -718,8 +745,8 @@ bool TauMuAnalysis::scaleHistos(){
   }
 
 
-  Float_t WJetsBelowCorr=0.94;//default values
-  Float_t WJetsSSBelowCorr=1.11;
+  Float_t WJetsBelowCorr=1.;
+  Float_t WJetsSSBelowCorr=1.;
 
   ///////////////////////////////
   /////Determine correction factor for WJets from massT > 50, assuming binning ,200,0,200)))
@@ -766,30 +793,106 @@ bool TauMuAnalysis::scaleHistos(){
 }
 
 
+
+
+TH1F* TauMuAnalysis::getDataSS(TString histoname){
+
+  cout<<" Calculating Total Data SS: "<<endl;
+  TH1F* href=(TH1F*)((*(samples_.begin()))->getHistoFromFile(histoname));
+  if(!href){cout<<" histoname not found in first sample"<<endl; return 0;}
+
+  TH1F* h=new TH1F("hData_SS","",href->GetXaxis()->GetNbins(),href->GetXaxis()->GetXmin(),href->GetXaxis()->GetXmax());
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
+    if((*s)->getDataType()=="Data_SS")
+      h->Add((*s)->getHistoFromFile(histoname));  
+ 
+  return h;
+}
+
+
+TH1F* TauMuAnalysis::getMCSS(TString histoname){
+
+  cout<<" Calculating Total MC SS: "<<endl;
+  TH1F* href=(TH1F*)((*(samples_.begin()))->getHistoFromFile(histoname));
+  if(!href){cout<<" histoname not found in first sample"<<endl; return 0;}
+
+  TH1F* h=new TH1F("hMC_SS","",href->GetXaxis()->GetNbins(),href->GetXaxis()->GetXmin(),href->GetXaxis()->GetXmax());
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
+    if((*s)->getDataType()=="MC_SS")
+      h->Add((*s)->getHistoFromFile(histoname));  
+ 
+  return h;
+}
+
 TH1F* TauMuAnalysis::getQCD(TString histoname){
 
   cout<<" Calculating QCD: "<<endl;
   TH1F* href=(TH1F*)((*(samples_.begin()))->getHistoFromFile(histoname));
   if(!href){cout<<" histoname not found in first sample"<<endl; return 0;}
 
-  TH1F* hQCD=new TH1F("hQCD","",href->GetXaxis()->GetNbins(),href->GetXaxis()->GetXmin(),href->GetXaxis()->GetXmax());
-  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
-    if((*s)->getDataType()=="Data_SS"){
-      hQCD->Add((*s)->getHistoFromFile(histoname));  
-      hQCD->SetLineColor((*s)->getColor());
-      hQCD->SetFillColor((*s)->getColor());
-    }
-    if((*s)->getDataType()=="MC_SS"){
-      hQCD->Add((*s)->getHistoFromFile(histoname),-1.);
-    }
-  }
+  TH1F* h=new TH1F("hQCD","",href->GetXaxis()->GetNbins(),href->GetXaxis()->GetXmin(),href->GetXaxis()->GetXmax());
+  h->SetLineWidth(1);
+  h->SetLineColor(kMagenta-10);
+  h->SetFillColor(kMagenta-10);
   
-  cout<<"QCD before OS/SS rescaling = "<<hQCD->Integral()<<endl;
-  hQCD->Scale(QCDOStoSSRatio_);
-  cout<<"QCD after OS/SS rescaling = "<<hQCD->Integral()<<endl;
+  TH1F* hDataSS=getDataSS(histoname);
+  if(hDataSS){
+    cout<<"Data SS yield = "<<hDataSS->Integral()<<endl;
+    h->Add(hDataSS);
+  }
+  else {cout<<"Data SS not determined"<<endl; return 0;}
+  delete hDataSS;
+
+  TH1F* hMCSS=getMCSS(histoname);
+  if(hMCSS){
+    cout<<"MC SS yield = "<<hMCSS->Integral()<<endl;
+    h->Add(hMCSS,-1.);
+  }
+  else {cout<<"MC SS not determined"<<endl; return 0;}
+  delete hMCSS;
+
+  cout<<"QCD before OS/SS rescaling = "<<h->Integral()<<endl;
+  h->Scale(QCDOStoSSRatio_);
+  cout<<"QCD after OS/SS rescaling = "<<h->Integral()<<endl;
   /////////////////////////////////////
+
+  return h;
+}
+
+TH1F* TauMuAnalysis::getMC(TString histoname){
+
+  cout<<" Calculating Total MC: "<<endl;
+  TH1F* href=(TH1F*)((*(samples_.begin()))->getHistoFromFile(histoname));
+  if(!href){cout<<" histoname not found in first sample"<<endl; return 0;}
+
+  TH1F* h=new TH1F("hMC","",href->GetXaxis()->GetNbins(),href->GetXaxis()->GetXmin(),href->GetXaxis()->GetXmax());
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
+    if((*s)->getDataType()=="MC")
+      h->Add((*s)->getHistoFromFile(histoname));  
+  
  
-  return hQCD;
+  return h;
+}
+
+TH1F* TauMuAnalysis::getBackground(TString histoname){
+
+  cout<<" Calculating Total MC: "<<endl;
+  TH1F* href=(TH1F*)((*(samples_.begin()))->getHistoFromFile(histoname));
+  if(!href){cout<<" histoname not found in first sample"<<endl; return 0;}
+
+  TH1F* h=new TH1F("hBackground","",href->GetXaxis()->GetNbins(),href->GetXaxis()->GetXmin(),href->GetXaxis()->GetXmax());
+
+  TH1F*hMC=getMC(histoname);
+  if(hMC)h->Add(hMC);
+  else {cout<<"MC not determined"<<endl; return 0;}
+  delete hMC;
+
+  TH1F*hQCD=getQCD(histoname);
+  if(hQCD)h->Add(hQCD);
+  else {cout<<"QCD not determined"<<endl; return 0;}
+  delete hQCD;
+ 
+  return h;
 }
 
 
@@ -799,39 +902,20 @@ TH1F* TauMuAnalysis::getData(TString histoname){
   TH1F* href=(TH1F*)((*(samples_.begin()))->getHistoFromFile(histoname));
   if(!href){cout<<" histoname not found in first sample"<<endl; return 0;}
 
-  TH1F* hData=new TH1F("hData","",href->GetXaxis()->GetNbins(),href->GetXaxis()->GetXmin(),href->GetXaxis()->GetXmax());
-  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
-    if((*s)->getDataType()=="Data"){
-      hData->Add((*s)->getHistoFromFile(histoname));  
-    }
-  }
-  
+  TH1F* h=new TH1F("hData","",href->GetXaxis()->GetNbins(),href->GetXaxis()->GetXmin(),href->GetXaxis()->GetXmax());
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
+    if((*s)->getDataType()=="Data")
+      h->Add((*s)->getHistoFromFile(histoname));  
  
-  return hData;
-}
-
-
-TH1F* TauMuAnalysis::getDataSS(TString histoname){
-
-  cout<<" Calculating Total Data: "<<endl;
-  TH1F* href=(TH1F*)((*(samples_.begin()))->getHistoFromFile(histoname));
-  if(!href){cout<<" histoname not found in first sample"<<endl; return 0;}
-
-  TH1F* hData_SS=new TH1F("hData_SS","",href->GetXaxis()->GetNbins(),href->GetXaxis()->GetXmin(),href->GetXaxis()->GetXmax());
-  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
-    if((*s)->getDataType()=="Data_SS"){
-      hData_SS->Add((*s)->getHistoFromFile(histoname));  
-    }
-  }
-  
- 
-  return hData_SS;
+  return h;
 }
 
 
 
 bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords, Float_t* axesrange, bool log){
-
+  if(!legendcoords || !axesrange){
+    cout<<"No legend cordinates or axes ranges"<<endl; return 0;
+  }
   
   if(!scaleHistos())return 0;
 
@@ -878,16 +962,50 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   }
 
 
+  
+  TCanvas C("C",TString("TauMuAnalysis_")+histoname+".ps");
+  C.Print(outputpath_+"/TauMuAnalysis_"+histoname+".ps[");
+  
+  
+  ////Data SS and MC SS
+  TH1F* hDataSS=getDataSS(histoname);
+  if(!hDataSS){cout<<" Total Data SS not determined "<<endl; return 0;}
+  TH1F* hMCSS=getMCSS(histoname);
+  if(!hMCSS){cout<<" Total MC SS not determined "<<endl; return 0;}
+  C.Clear();
+  hDataSS->Draw("pe");
+  hMCSS->Draw("hist same");
+  C.Print(outputpath_+"/TauMuAnalysis_"+histoname+".ps"); 
+  
 
      
-  /////
+  /////QCD
   TH1F* hQCD=getQCD(histoname);
   if(!hQCD){cout<<" QCD not determined "<<endl; return 0;}
-  
+
+
+  ////Total Data
+  TH1F* hData=getData(histoname);
+  if(!hData){cout<<" Total Data not determined "<<endl; return 0;}
+  cout<<"Data "<<(int)(hData->Integral())<<endl;
+
+  ////Total MC
+  TH1F* hBkg=getBackground(histoname);
+  if(!hBkg){cout<<" Total MC not determined "<<endl; return 0;}
+  cout<<"MC "<<(int)(hBkg->Integral())<<endl;
+  hBkg->SetLineWidth(1);
+
+
+  ////////////////////////
+  cout<<"Creating MCStack:"<<endl;
+  TLegend legend;
+  legend.SetLineColor(0);
+  legend.SetBorderSize(1);
+  legend.AddEntry(hData,"Data","p");
 
   cout<<" Sorting the MC samples by plot order"<<endl;
   /////////////////////////
-  ////sort the samples accordin to plot order
+  ////sort the samples according to plot order
   //////////////////////////
   std::vector<Sample*> orderedMCSamples;
   unsigned int orderindex=1;
@@ -904,21 +1022,6 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
       }
     }
   }
-
-
-  ////
-  TH1F* hData=getData(histoname);
-  if(!hData){cout<<" Total Data not determined "<<endl; return 0;}
-  cout<<"Data "<<(int)(hData->Integral())<<endl;
-
-
-  ////////////////////////
-  cout<<"Creating MCStack:"<<endl;
-
-  TLegend legend;
-  legend.SetLineColor(0);
-  legend.SetBorderSize(1);
-  legend.AddEntry(hData,"Data","p");
 
   THStack hMCStack("hMCStack","MC");//dont't set any of the regular histogram properties on the THStack will crash.
   hMCStack.Add(hQCD,"hist");
@@ -938,37 +1041,25 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   cout<<"Total MC = "<<MCTotalYield<<endl;
   
 
-  
-  TCanvas C("C",TString("TauMuAnalysis_")+histoname+".ps");
-  C.Print(outputpath_+"/TauMuAnalysis_"+histoname+".ps[");
-  
   cout<<" Creating Plot:"<<endl;
   ///////////////////////
   ///Make plot 
   ///////////////////////
   C.Clear();
-  hData->GetYaxis()->SetRangeUser(0, hData->GetMaximum()*1.2);
-  if(log){
-    hData->GetYaxis()->SetRangeUser(1, hData->GetMaximum()*1.3);
-    C.SetLogy(1);
-  }
-  if(axesrange){
-    hData->GetXaxis()->SetRangeUser(axesrange[0],axesrange[1]);
-    hData->GetYaxis()->SetRangeUser(axesrange[2],axesrange[3]);
-  }
+  hData->GetXaxis()->SetRangeUser(axesrange[0],axesrange[1]);
+  hData->GetYaxis()->SetRangeUser(axesrange[2],axesrange[3]);
+  if(log) C.SetLogy(1);
   hData->SetStats(0);
   hData->GetXaxis()->SetTitle(xlabel);
   hData->GetYaxis()->SetTitle(ylabel);
-  //hMC.Draw("hist");
   hData->Draw("hist pe");
   //////////////////////////
   hMCStack.Draw("hist same");  
-  hData->Draw("hist pe same");
-  TH1F*hMCTot=(TH1F*)(hMCStack.GetStack()->Last()->Clone("MCTot"));
-  hMCTot->SetFillColor(0);
-  hMCTot->SetLineColor(1);
-  hMCTot->Draw("histsame");       
-  hMCStack.GetHistogram()->Draw("same");
+  hData->Draw("hist pe same");//bring Data points back to front
+  hBkg->SetFillColor(0);
+  hBkg->SetLineColor(1);
+  hBkg->Draw("histsame");//draw outline of MC        
+  hMCStack.GetHistogram()->Draw("same");//bring axes back to front 
   legend.SetX1NDC(legendcoords[0]);
   legend.SetX2NDC(legendcoords[1]);
   legend.SetY1NDC(legendcoords[2]);
@@ -977,26 +1068,46 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   legend.Draw();
   C.Update();
   C.Print(outputpath_+"/TauMuAnalysis_"+histoname+".ps");  
-  /////////////////////////////////////////////////
-
-
-  cout<<"Making residual plot"<<endl;
-  C.Clear();
-  TLine line;
-  hData->Sumw2();
-  hData->Add(((TH1F*)(hMCStack.GetStack()->Last())),-1);
-  //hData->GetYaxis()->SetRangeUser(-5,5);
-  hData->GetYaxis()->SetTitle("Data - MC");
-  hData->Draw("hist pe");
-  if(axesrange)
-    line.DrawLine(axesrange[0],0,axesrange[1],0);
-  else line.DrawLine(hData->GetXaxis()->GetXmin(),0,hData->GetXaxis()->GetXmax(),0);
-  C.Print(outputpath_+"/TauMuAnalysis_"+histoname+".ps");  
 
   
+  TH1F*hResid=(TH1F*)hData->Clone("hResid");//get here before make stats 
+  
+
+  ///////////////////////////////////
+  //show the histogram stats
+  C.Clear();
+  hData->SetStats(1);
+  hData->Draw();
+  C.Print(outputpath_+"/TauMuAnalysis_"+histoname+".ps"); 
+  C.Clear();
+  hBkg->GetXaxis()->SetRange(hData->GetXaxis()->GetFirst(),hData->GetXaxis()->GetLast());
+  hBkg->GetYaxis()->SetRange(hData->GetYaxis()->GetFirst(),hData->GetYaxis()->GetLast());
+  hBkg->SetStats(1);
+  hBkg->Draw();
+  C.Print(outputpath_+"/TauMuAnalysis_"+histoname+".ps"); 
+
+
+  ////////////////////////////////////
+  cout<<"Making residual plot"<<endl;
+  C.Clear();
+  hResid->Sumw2();
+  hResid->Add(hBkg,-1);
+  hResid->GetYaxis()->SetTitle("Data - Background");
+  hResid->SetStats(0);
+  hResid->Draw("hist pe");
+  TLine line;
+  if(axesrange)
+    line.DrawLine(axesrange[0],0,axesrange[1],0);
+  else line.DrawLine(hResid->GetXaxis()->GetXmin(),0,hResid->GetXaxis()->GetXmax(),0);
+  C.Print(outputpath_+"/TauMuAnalysis_"+histoname+".ps");  
 
 
   C.Print(outputpath_+"/TauMuAnalysis_"+histoname+".ps]");
+  
+  delete hQCD;
+  delete hData;
+  delete hBkg;
+  delete hResid;
 
   return 1;
 

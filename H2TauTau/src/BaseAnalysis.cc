@@ -35,9 +35,8 @@ BaseAnalysis::~BaseAnalysis(){
 bool BaseAnalysis::init(){
   
   //read the pile-up weights
-  //TFile DataPUP("/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/data/Pileup_2011_to_172802_LP_LumiScale.root","read");
-  TFile DataPUP("/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/data/PileUp_160404-173692_2.1invfb.pileup.root","read");
-  TFile MCPUP("/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/data/Pileup_Summer11MC_36bins.root","read");
+  TFile DataPUP("../data/PileUp_160404-173692_2.1invfb.pileup.root","read");
+  TFile MCPUP("../data/Pileup_Summer11MC_36bins.root","read");
   if(DataPUP.IsZombie()||MCPUP.IsZombie()){
     cout<<DataPUP.GetName()<<" or "<<MCPUP.GetName()<<" not valid "<<endl;
   }
