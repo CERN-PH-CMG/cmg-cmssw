@@ -1,7 +1,7 @@
 {  
   TauMuAnalysis analysis("analysis");
   analysis.setVerbosity(0);
-  analysis.setTruncateEvents(10); 
+  //analysis.setTruncateEvents(10); 
   analysis.makeAllHistos(1);
   analysis.setPrintFreq(1000);
   analysis.setInputTag("cmgTauMuSelClean");
@@ -10,13 +10,13 @@
   analysis.setQCDOStoSSRatio(1.06);
   float MCEffCorrFactor = 0.968 * 0.92; 
 
-  TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/Test";
+  //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/Test";
 
   //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/21fbCat";
   //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/21fbCatRecoil";
   //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/21fbCatSVFitRecoil";
-  //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/21fbMETSig";
   
+  TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/21fbMETSig";  
   //TString path="/afs/cern.ch/user/b/benitezj/scratch0/CMGTools/CMSSW_4_2_8/src/CMGTools/H2TauTau/prod/21fbMETSigFix";//did not fix svfit mass
 
   analysis.setOutputPath(path);
@@ -321,9 +321,7 @@
   TauPlusXv6_SS.addTrigPaths(TauPlusXv6.getTrigPaths());
   analysis.addSample(&TauPlusXv6_SS);
 
-  ///////////initialize
-  if(!analysis.init()){cout<<" could not init"<<endl;return 0;}
-  
 
+ 
 }
 

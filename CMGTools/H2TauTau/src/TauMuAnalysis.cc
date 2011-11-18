@@ -684,10 +684,10 @@ bool TauMuAnalysis::createHistos(TString samplename){
     
     //fill (N-1) cut histograms here
     if(makeAllHistos_){
-      //if(applySelections("tauiso")) if(!fillHistos("tauiso",mcPUPWeight_))return 0;
-      //if(applySelections("tauagainstmuon")) if(!fillHistos("tauagainstmuon",mcPUPWeight_))return 0;
-      //if(applySelections("muiso")) if(!fillHistos("muiso",mcPUPWeight_))return 0;
-      //if(applySelections("dileptonveto")) if(!fillHistos("dileptonveto",mcPUPWeight_))return 0;
+      if(applySelections("tauiso")) if(!fillHistos("tauiso",mcPUPWeight_))return 0;
+      if(applySelections("tauagainstmuon")) if(!fillHistos("tauagainstmuon",mcPUPWeight_))return 0;
+      if(applySelections("muiso")) if(!fillHistos("muiso",mcPUPWeight_))return 0;
+      if(applySelections("dileptonveto")) if(!fillHistos("dileptonveto",mcPUPWeight_))return 0;
       if(applySelections("massT")) if(!fillHistos("massT",mcPUPWeight_))return 0;   
     }
     //fill fully selected histograms 
