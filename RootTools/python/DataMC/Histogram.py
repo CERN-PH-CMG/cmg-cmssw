@@ -66,6 +66,13 @@ class Histogram( object ):
         else:
             self.obj.Draw(opt)
 
+    def GetXaxis(self, opt='', weighted=True):
+        '''All these functions could be written in a clever and compact way'''
+        if weighted is True:
+            return self.weighted.GetXaxis()
+        else:
+            return self.obj.GetXaxis()  
+
     def GetYaxis(self, opt='', weighted=True):
         '''All these functions could be written in a clever and compact way'''
         if weighted is True:
