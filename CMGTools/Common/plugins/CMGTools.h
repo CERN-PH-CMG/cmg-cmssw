@@ -32,7 +32,7 @@
 #include "CMGTools/Common/interface/PFJetFactory.h"
 
 #include "CMGTools/Common/interface/TauFactory.h"
-#include "CMGTools/Common/interface/JetScaler.h"
+#include "CMGTools/Common/interface/Scaler.h"
 #include "CMGTools/Common/interface/BaseJetFactory.h"
 #include "CMGTools/Common/interface/BaseMETFactory.h"
 #include "CMGTools/Common/interface/BaseMETModificationFactory.h"
@@ -85,8 +85,9 @@ typedef PhysicsObjectProducer<cmg::MuonFactory> MuonPOProducer;
 typedef PhysicsObjectProducer<cmg::TauFactory> TauPOProducer;
 typedef PhysicsObjectProducer<cmg::QuadMuonFactory> QuadMuonPOProducer;
 typedef PhysicsObjectProducer<cmg::BaseJetFactory> BaseJetPOProducer;
-typedef PhysicsObjectProducer<cmg::JetScaler<cmg::BaseJet> > BaseJetPOScaler;
-typedef PhysicsObjectProducer<cmg::JetScaler<cmg::PFJet> > PFJetPOScaler;
+typedef PhysicsObjectProducer<cmg::Scaler<cmg::BaseJet> > BaseJetPOScaler;
+typedef PhysicsObjectProducer<cmg::Scaler<cmg::PFJet> > PFJetPOScaler;
+typedef PhysicsObjectProducer<cmg::Scaler<cmg::Tau> > TauPOScaler;
 typedef PhysicsObjectProducer<cmg::PFJetFactory> PFJetPOProducer;
 typedef PhysicsObjectProducer<cmg::BaseMETFactory<> > BaseMETPOProducer;
 typedef PhysicsObjectProducer<cmg::BaseMETModificationFactory> BaseMETModifier;

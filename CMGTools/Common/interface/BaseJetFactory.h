@@ -33,7 +33,7 @@ namespace cmg {
     const bool fillJec_;
     const bool fillJecUncertainty_;
     std::string jecPath_;
-    int jecUncDirection_;
+/* COLIN not needed ?    int jecUncDirection_; */
 
     JetCorrectionUncertainty* JES_;
   };
