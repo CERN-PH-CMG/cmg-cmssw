@@ -100,6 +100,8 @@ namespace cmg{
     typedef std::vector<AbstractPhysicsObject const *> Daughters;
     Daughters getDaughters(const bool include_this = false) const;
     	
+    virtual Float_t uncOnFourVectorScale() const {return 0;}
+    
   protected:
     ///Used to copy selections
     pat::strbitset selections;
