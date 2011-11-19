@@ -137,11 +137,16 @@ mc = 0
                            selComps.keys()):
         print 'exiting'
         sys.exit(0)
-    shutil.copy( cfgFile, outDir )
-    pool = Pool(processes=len(selComps))
-    for name,comp in selComps.iteritems():
-        print 'submitting', name
-        pool.apply_async( RunLoop, [comp], callback=CallBack)     
-    pool.close()
-    pool.join()
 
+    if len(selComps)>1:
+        shutil.copy( cfgFile, outDir )
+        pool = Pool(processes=len(selComps))
+        for name,comp in selComps.iteritems():
+            print 'submitting', name
+            pool.apply_async( RunLoop, [comp], callback=CallBack)     
+        pool.close()
+        pool.join()
+    else:
+        # when running only one loop, do not use multiprocessor module.
+        # then, the exceptions are visible -> use only one sample for testing
+        RunLoop( comp )
