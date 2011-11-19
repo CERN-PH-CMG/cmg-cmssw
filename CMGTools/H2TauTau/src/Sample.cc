@@ -87,7 +87,8 @@ fwlite::ChainEvent*  Sample::getEvents(){
     chainNEvents_=0;
     for(Long_t id=0;id<5000;id++){
       //test the files
-      std::string colln=(const char*)(TString(GetTitle())+"/tree_CMG_"+id+".root");
+      //std::string colln=(const char*)(TString(GetTitle())+"/tree_CMG_"+id+".root");
+      std::string colln=(const char*)(TString(GetTitle())+"/h2TauTau_fullsel_tree_CMG_"+id+".root");
       if(access(colln.c_str(), F_OK ) == -1 )continue; 
       TFile ftest(colln.c_str(),"read");
       if(ftest.IsZombie()){ cout<<colln<<" is Zombie "<<endl; continue;}

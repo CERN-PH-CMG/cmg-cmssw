@@ -23,6 +23,6 @@ muCuts = cms.PSet(
       dz = cms.string('abs(leg2().dz()) < 0.2')
       ),
     iso = cms.PSet(
-      relIsoDBeta = cms.string('leg2().relIso(0.5)<0.1')
+      relIsoDBeta = cms.string('leg2().relIso()<0.1')
     )
     )

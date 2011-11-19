@@ -24,7 +24,8 @@ public:
 
   void setInputTag(string tag){inputTag_=tag;}
   void setQCDOStoSSRatio(Float_t ratio){QCDOStoSSRatio_=ratio;}
-  
+  void setQCDColor(Int_t color){QCDColor_=color;}
+
 
   virtual bool init();
   virtual bool createHistos(TString samplename="");
@@ -77,6 +78,7 @@ private:
 
 
   Float_t QCDOStoSSRatio_;
+  Int_t QCDColor_;
   RecoilCorrector * recoilCorr_;
   TauRate tauRate_;
   TriggerEfficiency triggerEff_;
