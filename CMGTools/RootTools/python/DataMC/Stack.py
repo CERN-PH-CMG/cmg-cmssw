@@ -28,7 +28,8 @@ class Stack:
         self.hists.append( copy.deepcopy(hist) )
         self.integral += hist.Integral()
         
-    def Draw(self, opt='', ymin = None, ymax=None):
+    def Draw(self, opt='',
+             xmin=None, xmax=None, ymin = None, ymax=None):
         '''Draw the stack. opt are the ROOT options'''
         if len( self.hists )==0:
             return
@@ -40,23 +41,30 @@ class Stack:
                 self.totalHist = copy.deepcopy( hist )
             else: 
                 self.totalHist.Add( hist )
+        self._Draw( opt, self.hists, xmin, xmax, ymin, ymax)
+
+    def _Draw( self, opt, hists, xmin, xmax, ymin, ymax):
         self.SetStyle(self.style)
         # drawing the first histogram in the stack
         # as a support histo.
         # otherwise, can't change y axis range (ROOT!@#!)
         # we draw it as hist so that the markers don't appear.
-        self.hists[0].Draw('hist')
+        hist = hists[0]
+        hist.Draw('hist')
         self.obj.Draw( opt+'same' )
         # need to redraw the axes, which are now "under"
         # the stacked histograms. 
-        self.hists[0].Draw('axissame')
+        hist.Draw('axissame')
         if ymin is None:
             ymin = 0.1
         if ymax is None:
             ymax = self.totalHist.GetMaximum()*1.1
-        self.hists[0].GetYaxis().SetRangeUser( ymin, ymax )
+        hist.GetYaxis().SetRangeUser( ymin, ymax )
+        if xmin is not None and xmax is not None:
+            hist.GetXaxis().SetRangeUser( xmin, xmax )
         self._DrawStatErrors()
-        self._updateTitles()
+        self._updateTitles( hist )
+       
 
     def _DrawStatErrors(self):
         '''Draw statistical errors if statErrors is True.'''
@@ -71,21 +79,28 @@ class Stack:
         if gPad:
             gPad.Update()
 
-    def DrawNormalized(self, opt ):
+    def DrawNormalized(self, opt='',
+                       xmin=None, xmax=None, ymin = None, ymax=None ):
         '''Draw a normalized version of the stack (integral=1).'''
         if len( self.hists )==0:
             return
         integral = 0
         self.normHists = []
         self.obj = THStack(self.name,'')
+        self.totalHist = None
         for hist in self.hists:
-            normHist = copy.deepcopy(hist.weighted)
-            normHist.Scale( 1/self.integral )
+            normHist = copy.deepcopy(hist)
+            normHist.Scale(1/self.integral)
             self.normHists.append( normHist )
-            self.obj.Add( normHist)
-        self.obj.Draw( opt )
-        self._updateTitles()
-
+            self.obj.Add( normHist.weighted)
+            if self.totalHist is None:
+                self.totalHist = copy.deepcopy( normHist )
+            else: 
+                self.totalHist.Add( normHist )
+        # self.obj.Draw( opt )
+        # self._updateTitles()
+        self._Draw( opt, self.normHists, xmin, xmax, ymin, ymax)
+        
     def Normalize(self):
         '''Normalize the stack.
 
@@ -99,10 +114,8 @@ class Stack:
         for hist in self.hists:
             hist.weighted.Divide(otherHist)
     
-    def _updateTitles( self ):
+    def _updateTitles( self,hist ):
         '''Update the axis titles of the stack to the titles of the first histogram in the stack.'''
-        if len( self.hists )==0:
-            return        
-        self.obj.GetXaxis().SetTitle( self.hists[0].obj.GetXaxis().GetTitle() )
-        self.obj.GetYaxis().SetTitle( self.hists[0].obj.GetYaxis().GetTitle() )
+        self.obj.GetXaxis().SetTitle( hist.obj.GetXaxis().GetTitle() )
+        self.obj.GetYaxis().SetTitle( hist.obj.GetYaxis().GetTitle() )
         

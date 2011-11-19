@@ -85,7 +85,7 @@ class AnalysisDataMC( DataMCPlot ):
             componentName = os.path.splitext( componentName )[0]
             weight = Weight(componentName, file)
             self.weights[componentName] = weight
-            print 'read weight : ', weight
+            # print 'read weight : ', weight
             
     def _ReadHistograms(self, directory):
         '''Get the histograms.
@@ -95,7 +95,7 @@ class AnalysisDataMC( DataMCPlot ):
         # layer = 0
         self.files = []
         fileNames = self._GetFileNames(directory)
-        print 'reading files:'
+        # print 'reading files:'
         for layer, fileName in enumerate( sorted(fileNames) ):
             self.files.append(TFile(fileName))
             hist = self.files[-1].Get(self.histName)
@@ -105,7 +105,7 @@ class AnalysisDataMC( DataMCPlot ):
             hist.SetStats(0)
             hist.Sumw2()
             componentName = self._ComponentName(fileName)
-            print '\t', componentName, fileName
+            # print '\t', componentName, fileName
             legendLine = componentName
             self.AddHistogram( componentName, hist, layer, legendLine)
             # pref = self._GetHistPref( componentName )

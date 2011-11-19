@@ -23,6 +23,8 @@ class DataMCPlot(object):
         self.legendOn = True
         self.legend = None
         self.legendBorders = 0.13,0.66,0.44,0.89
+        self.lastDraw = None
+        self.lastDrawArgs = None
         
     def AddHistogram(self, name, histo, layer=0, legendLine = None):
         '''Add a ROOT histogram, with a given name.
@@ -60,6 +62,8 @@ class DataMCPlot(object):
                 same = 'same'
         self.DrawLegend()
         gPad.Update()
+        self.lastDraw = self.DrawNormalized
+        self.lastDrawArgs = [ opt ]
 
     def Draw(self, opt = ''):
         '''All histograms are drawn.'''
@@ -70,6 +74,8 @@ class DataMCPlot(object):
                 same = 'same'
         self.DrawLegend()
         gPad.Update()
+        self.lastDraw = self.Draw
+        self.lastDrawArgs = [ opt ]
 
 
     def CreateLegend(self, ratio=False):
@@ -77,12 +83,10 @@ class DataMCPlot(object):
             self.legend = TLegend( *self.legendBorders )
         else:
             self.legend.Clear()
-        for index, hist in enumerate(self._SortedHistograms(reverse=True)):
-            if index == 0 and ratio:
-                # the first histogram is used as denominator
-                # so does not appear in the plot, and should not be
-                # added in the legend
-                continue
+        hists = self._SortedHistograms(reverse=True)
+        if ratio:
+            hists = hists[:-1] # removing the last histo.
+        for index, hist in enumerate(hists):
             hist.AddEntry( self.legend )
             
 
@@ -115,8 +119,11 @@ class DataMCPlot(object):
                 same = 'same'
         self.DrawLegend( ratio=True )
         gPad.Update()
+        self.lastDraw = self.DrawRatio
+        self.lastDrawArgs = [ opt ]
 
-    def DrawRatioStack(self,opt='', ymin=None, ymax=None):
+    def DrawRatioStack(self,opt='',
+                       xmin=None, xmax=None, ymin=None, ymax=None):
         '''Draw ratios.
 
         The stack is considered as a single histogram.'''
@@ -129,10 +136,12 @@ class DataMCPlot(object):
             histForRatios.append( hist )
         self._BuildStack( histForRatios )
         self.stack.Divide( denom.obj )
-        self.stack.Draw(opt, ymin, ymax )
+        self.stack.Draw(opt,
+                        xmin=xmin, xmax=xmax,
+                        ymin=ymin, ymax=ymax )
         self.ratios = []
         for hist in self.nostack:
-            print 'nostack ', hist
+            # print 'nostack ', hist
             ratio = copy.deepcopy( hist )
             ratio.obj.Divide( denom.obj )
             ratio.obj.Draw('same')
@@ -140,8 +149,12 @@ class DataMCPlot(object):
         self.DrawLegend( ratio=True )
         self.DrawRatioLines(denom)
         gPad.Update()
+        self.lastDraw = self.DrawRatioStack
+        self.lastDrawArgs = [ opt, ymin, ymax]
                 
-    def DrawNormalizedRatioStack(self,opt='', ymin=None, ymax=None):
+    def DrawNormalizedRatioStack(self,opt='',
+                                 xmin=None, xmax=None,
+                                 ymin=None, ymax=None):
         '''Draw ratios.
 
         The stack is considered as a single histogram.
@@ -160,10 +173,12 @@ class DataMCPlot(object):
         self.stack.Normalize()
         denom.Normalize()
         self.stack.Divide( denom.weighted )
-        self.stack.Draw(opt, ymin, ymax )
+        self.stack.Draw(opt,
+                        xmin=xmin, xmax=xmax,
+                        ymin=ymin, ymax=ymax )
         self.ratios = []
         for hist in self.nostack:
-            print 'nostack ', hist
+            # print 'nostack ', hist
             ratio = copy.deepcopy( hist )
             ratio.Normalize()
             ratio.obj.Divide( denom.weighted )
@@ -172,6 +187,8 @@ class DataMCPlot(object):
         self.DrawLegend( ratio=True )
         self.DrawRatioLines(denom)
         gPad.Update()
+        self.lastDraw = self.DrawNormalizedRatioStack
+        self.lastDrawArgs = [ opt ]
 
 
     def DrawRatioLines(self, hist, frac=0.2):
@@ -186,34 +203,44 @@ class DataMCPlot(object):
         line.DrawLine(xmin, 1-frac, xmax, 1-frac)
         
                 
-    def DrawStack(self, opt=''):
+    def DrawStack(self, opt='',
+                  xmin=None, xmax=None, ymin=None, ymax=None):
         '''Draw all histograms, some of them in a stack.
 
         if Histogram.stack is True, the histogram is put in the stack.'''
         self._BuildStack(self._SortedHistograms())
-        self.stack.Draw( opt )
+        self.stack.Draw(opt,
+                        xmin=xmin, xmax=xmax,
+                        ymin=ymin, ymax=ymax )
         for hist in self.nostack:
             hist.Draw('same')
         self.DrawLegend()
         gPad.Update()
+        self.lastDraw = self.DrawStack
+        self.lastDrawArgs = [ opt ]
 
 
-    def DrawNormalizedStack(self, opt=''):
+    def DrawNormalizedStack(self, opt='',
+                            xmin=None, xmax=None, ymin=None, ymax=None ):
         '''Draw all histograms, some of them in a stack.
 
         if Histogram.stack is True, the histogram is put in the stack.
         all histograms out of the stack, and the stack itself, are shown as PDFs.'''
         self._BuildStack(self._SortedHistograms())
-        self.stack.DrawNormalized( opt )
+        self.stack.DrawNormalized(opt,
+                        xmin=xmin, xmax=xmax,
+                        ymin=ymin, ymax=ymax )
         for hist in self.nostack:
             hist.obj.DrawNormalized('same')
         self.DrawLegend()
         gPad.Update()
-
+        self.lastDraw = self.DrawNormalizedStack
+        self.lastDrawArgs = [ opt ]
 
     def Rebin(self, factor):
         for hist in self.histos:
             hist.Rebin(factor)
+        self.lastDraw( *self.lastDrawArgs)
 
 
     def _BuildStack(self, hists):
