@@ -4,12 +4,14 @@ from CMGTools.Common.selections.kinematics_cfi import kinematics
 
 baseJetScaler = cms.PSet(
     inputCollection = cms.InputTag("cmgPFJet"),
-    jecUncDirection = cms.double(0.)
+    nSigma = cms.double(0.),
+    uncertainty = cms.double(-1)
     )
 
 cmgPFJetUp = cms.EDFilter(
     "PFJetPOScaler",
-    cfg = baseJetScaler.clone(jecUncDirection = 2.),
+    #COLIN why 2 and not 1?
+    cfg = baseJetScaler.clone(nSigma = 2.),
     cuts = cms.PSet(
     jetKinematics = kinematics.clone()
     )
@@ -17,7 +19,7 @@ cmgPFJetUp = cms.EDFilter(
 
 cmgPFJetDown = cms.EDFilter(
     "PFJetPOScaler",
-    cfg = baseJetScaler.clone(jecUncDirection = -2.),
+    cfg = baseJetScaler.clone(nSigma = -2.),
     cuts = cms.PSet(
     jetKinematics = kinematics.clone()
     )
