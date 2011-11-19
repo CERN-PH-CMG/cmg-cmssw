@@ -69,3 +69,9 @@ cbern%/GluGluToHToTauTau_M-125_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1
 cbern%/GluGluToHToTauTau_M-130_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
 cbern%/GluGluToHToTauTau_M-135_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
 cbern%/GluGluToHToTauTau_M-140_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+mgouzevi%/ZprimeToBBbar_M-500_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+mgouzevi%/ZprimeToBBbar_M-700_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+mgouzevi%/ZprimeToBBbar_M-1200_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+mgouzevi%/ZprimeToBBbar_M-2000_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+mgouzevi%/ZprimeToBBbar_M-3500_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+
