@@ -7,5 +7,6 @@ tauSkimCuts = cms.PSet(
       pt = cms.string('leg1().pt()>18'),
       eta = tauCuts.kinematics.eta
     ),
-    id = tauCuts.id.clone()
+    id = tauCuts.id.clone(),
+    iso = cms.string('leg1().tauID("byVLooseCombinedIsolationDeltaBetaCorr")')
     )

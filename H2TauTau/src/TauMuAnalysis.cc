@@ -25,6 +25,7 @@ TauMuAnalysis::TauMuAnalysis():
   calcsvfit_(0),
   makeAllHistos_(1),
   QCDOStoSSRatio_(0),
+  QCDColor_(kMagenta-10),
   recoilCorr_(0)
 {
 }
@@ -35,6 +36,7 @@ TauMuAnalysis::TauMuAnalysis(const char * name):
   calcsvfit_(0),
   makeAllHistos_(1),
   QCDOStoSSRatio_(0),
+  QCDColor_(kMagenta-10),
   recoilCorr_(0)
 {
  
@@ -369,18 +371,15 @@ bool TauMuAnalysis::applySelections(TString exceptcut){
 
     ////selections on the tau
     //if(exceptcut!="taupt") if(cand->leg1().pt()<20.0)continue; //applied in preseleciton
-    if(exceptcut!="tauagainstmuon") if(cand->leg1().tauID("againstMuonTight")!=1) continue;
+    if(exceptcut!="tauagainstmuon") if(cand->leg1().tauID("againstMuonTight")!=1.) continue;
     if(exceptcut!="tauiso") if(cand->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr")!=1.) continue; 
     //if(exceptcut!="tauiso") if(computeTauIso(&(cand->leg1()))> 2.0) continue; 
     
-
     ////selections on the muon
     //if(exceptcut!="mupt") if(cand->leg2().pt()<15.0)continue;//applied in preseleciton
     //if(exceptcut!="mudxy") if(cand->leg2().dxy()>0.045)continue;    
     //if(exceptcut!="mudz") if(cand->leg2().dz()>0.2)continue;        
     if(exceptcut!="muiso") if(cand->leg2().relIso()>0.1)continue;    
-
-
 
     ////other 
     if(exceptcut!="dileptonveto")if(computeDiLeptonVeto(&(cand->leg2()))) continue;
@@ -850,9 +849,6 @@ TH1F* TauMuAnalysis::getQCD(TString histoname){
   if(!href){cout<<" histoname not found in first sample"<<endl; return 0;}
 
   TH1F* h=new TH1F("hQCD","",href->GetXaxis()->GetNbins(),href->GetXaxis()->GetXmin(),href->GetXaxis()->GetXmax());
-  h->SetLineWidth(1);
-  h->SetLineColor(kMagenta-10);
-  h->SetFillColor(kMagenta-10);
   
   TH1F* hDataSS=getDataSS(histoname);
   if(hDataSS){
@@ -895,7 +891,7 @@ TH1F* TauMuAnalysis::getMC(TString histoname){
 
 TH1F* TauMuAnalysis::getBackground(TString histoname){
 
-  cout<<" Calculating Total MC: "<<endl;
+  cout<<" Calculating Total Background: "<<endl;
   TH1F* href=(TH1F*)((*(samples_.begin()))->getHistoFromFile(histoname));
   if(!href){cout<<" histoname not found in first sample"<<endl; return 0;}
 
@@ -994,12 +990,8 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   hDataSS->Draw("pe");
   hMCSS->Draw("hist same");
   C.Print(outputpath_+"/TauMuAnalysis_"+histoname+".ps"); 
-  
-
-     
-  /////QCD
-  TH1F* hQCD=getQCD(histoname);
-  if(!hQCD){cout<<" QCD not determined "<<endl; return 0;}
+  delete hDataSS;
+  delete hMCSS;
 
 
   ////Total Data
@@ -1012,7 +1004,13 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   if(!hBkg){cout<<" Total MC not determined "<<endl; return 0;}
   cout<<"MC "<<(int)(hBkg->Integral())<<endl;
   hBkg->SetLineWidth(1);
-
+     
+  /////QCD
+  TH1F* hQCD=getQCD(histoname);
+  if(!hQCD){cout<<" QCD not determined "<<endl; return 0;}
+  hQCD->SetLineWidth(1);
+  hQCD->SetLineColor(QCDColor_);
+  hQCD->SetFillColor(QCDColor_);
 
   ////////////////////////
   cout<<"Creating MCStack:"<<endl;
