@@ -19,6 +19,8 @@ class DiTau:
     '''Extends the cmg::DiTau functionalities.'''
     def __init__(self, ditau):
         self.ditau = ditau
+        p4 = LorentzVector( 1,0,0,1)
+        self.ditau.setP4(p4)
 
     def __getattr__(self,name):
         '''all accessors  from cmg::DiTau are transferred to this class.'''
@@ -111,6 +113,10 @@ class Loop:
         self.histograms.append( self.histsOS )
         self.histsSS = H2TauTauHistograms( '/'.join([self.name, 'SS']) )
         self.histograms.append( self.histsSS )
+        self.histsOSLowMT = H2TauTauHistograms( '/'.join([self.name, 'OSLowMT']) )
+        self.histograms.append( self.histsOSLowMT )
+        self.histsSSLowMT = H2TauTauHistograms( '/'.join([self.name, 'SSLowMT']) )
+        self.histograms.append( self.histsSSLowMT )
 
         # declaring physics objects
         self.diTau = None
@@ -158,15 +164,20 @@ class Loop:
 
         self.vertices = self.handles['vertices'].product()
         
-        #Colin: the following is working, generalize it
-        # myDiTau = DiTau( self.diTau )
-        # print myDiTau, myDiTau.energy()
+        # COLIN make filling just one function call?
+        # in this class? in the histogram class?
         if self.diTau.charge() == 0:
             self.histsOS.fillDiTau( self.diTau, self.eventWeight)
             self.histsOS.fillVertices( self.vertices, self.eventWeight )
+            if( self.diTau.mTLeg2()<40 ):
+                self.histsOSLowMT.fillDiTau( self.diTau, self.eventWeight)
+                self.histsOSLowMT.fillVertices( self.vertices, self.eventWeight )
         else:
             self.histsSS.fillDiTau( self.diTau, self.eventWeight)
             self.histsSS.fillVertices( self.vertices, self.eventWeight )
+            if( self.diTau.mTLeg2()<40 ):
+                self.histsSSLowMT.fillDiTau( self.diTau, self.eventWeight)
+                self.histsSSLowMT.fillVertices( self.vertices, self.eventWeight )
         return True
 
                 
@@ -224,6 +235,7 @@ if __name__ == '__main__':
     
     (options,args) = parser.parse_args()
     if len(args) < 2:
+        parser.print_help()
         print 'ERROR: please provide the component name and at least one root file'
         sys.exit(1)
 

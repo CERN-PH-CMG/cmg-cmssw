@@ -7,8 +7,6 @@ from CMGTools.RootTools.DataMC.AnalysisDataMCPlot import AnalysisDataMC
 from CMGTools.H2TauTau.macros.Weight import Weight
 from CMGTools.H2TauTau.macros.Weight import printWeights
 
-#COLIN need to generalize this macro to make the stacked plot for any kind of hist
-# try with vertices
 #COLIN this macro does not work when a component is symlinked! is it what I want?
 #COLIN need to be able to merge 2 components together:
 # - WW, WZ, ZZ
@@ -33,15 +31,15 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.filePattern = filePattern
         self.selComponents = selComponents
         super(H2TauTauDataMC, self).__init__(histName, directory, weights)
-        if histName.endswith('mT'):
-            offset = 0.4
-            self.legendBorders = 0.13+offset,0.66,0.44+offset,0.89
+        # if histName.endswith('mT') or histName.find('mass')>-1:
+        offset = 0.45
+        self.legendBorders = 0.13+offset,0.66,0.44+offset,0.89
 
         self.dataComponents = [ key for key, value in selComponents.iteritems() \
                                 if value.isMC is False ]
         self.groupDataComponents( self.dataComponents, groupDataName)
 
-        print self
+        # print self
         
 
     def groupDataComponents( self, dataComponents, name ):
@@ -54,13 +52,12 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.intLumi = 0
         # self.dataComponents = dataComponents
         data = None
-        intLumi = 0 
         for component in dataComponents:
             # print component
             hist = self.Hist(component)
             hist.stack = False
             hist.on = False
-            intLumi += self.weights[component].intLumi
+            self.intLumi += self.weights[component].intLumi
             if data is None:
                 # keep first histogram
                 data = copy.deepcopy( hist )
@@ -75,7 +72,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         # set lumi for all MC samples:
         for component, weight in self.weights.iteritems():
             if component not in dataComponents:
-                self.weights[component].intLumi = intLumi
+                self.weights[component].intLumi = self.intLumi
         self._ApplyWeights()
         self._ApplyPrefs()
         
@@ -192,17 +189,25 @@ def getQCD( plotSS, plotOS, dataName ):
 
 def plot( hist, weights, wJetScaleSS, wJetScaleOS ):
 
-    ss = H2TauTauDataMC(hist, anaDir,
+    ssign = H2TauTauDataMC(hist, anaDir,
                         selComponents,
-                        'SS.root', weights)
-    ss.Hist('WJets').Scale( wJetScaleSS ) 
-    os = H2TauTauDataMC(hist, anaDir,
+                        'SSLowMT.root', weights)
+    ssign.Hist('WJets').Scale( wJetScaleSS ) 
+    osign = H2TauTauDataMC(hist, anaDir,
                         selComponents,
-                        'OS.root', weights)
-    os.Hist('WJets').Scale( wJetScaleOS ) 
+                        'OSLowMT.root', weights)
+    osign.Hist('WJets').Scale( wJetScaleOS ) 
     
-    return ss, os
+    return ssign, osign
 
+
+def savePlot(name):
+    if gPad is None:
+        print 'no active canvas'
+        return
+    fileName = '%s/%s' % (anaDir, name)
+    print 'pad', gPad.GetName(), 'saved to', fileName    
+    gPad.SaveAs( fileName )   
 
 if __name__ == '__main__':
 
@@ -227,7 +232,7 @@ if __name__ == '__main__':
 
     cfgFile = args[0]
     anaDir = args[1]
-    hist = args[2]
+    hists = [ hist for hist in args[2].split(',') if hist is not '' ]
 
     dataName = 'Data'
 
@@ -249,10 +254,30 @@ if __name__ == '__main__':
                           'OS.root', weights)
     wJetScaleOS = wJetScale( mtOS, dataName)
 
+    SSD = {}
+    OSD = {}
+    canvases = []
 
-    ss,os = plot( hist, weights, wJetScaleSS, wJetScaleOS )
+    xmin = None
+    xmax = None
+    
+    for hist in hists:
+        print 'Processing: ',hist,dataName, anaDir
+        ssign,osign = plot( hist, weights, wJetScaleSS, wJetScaleOS )
+        ssQCD, osQCD = getQCD( ssign, osign, dataName )
+        canvases.append(TCanvas( hist, hist, 800, 600))
+        SSD[hist] = ssQCD
+        OSD[hist] = osQCD
+        histName = os.path.basename( hist )
+        osQCD.DrawStack('HIST', xmin=xmin, xmax=xmax )
+        savePlot( histName + '_lin.png') 
+        gPad.SetLogy()
+        savePlot( histName + '_log.png') 
+        gPad.SetLogy(False)
+        osQCD.DrawRatioStack('HIST', xmin=xmin, xmax=xmax, ymin=0.001, ymax=2)
+        savePlot( histName + '_ratio.png') 
 
-    ssQCD, osQCD = getQCD( ss, os, dataName )
-    osQCD.DrawStack('HIST')
-   
+    # OSD[ hists[0] ].DrawStack('HIST')
+
+        
     
