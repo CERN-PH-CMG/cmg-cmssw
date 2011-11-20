@@ -1,0 +1,107 @@
+=========Additional files============================
+
+These files are needed.
+
+Line 45,46 -> tdrStyle.C -> style definition
+
+Line 5 -> QstarBinned_qg.h -> shape from interpolation method.
+
+This file also requires  "shape_qg.h" file.
+
+Line 6 -> ResonancesCrossSection.h -> Resonance cross section values from theory
+
+Line 49 -> histograms_1p010fbm1.root -> files which has histogram which are made ReadTree_new4.C..
+
+I don't know what macro file Maxime has.. 
+
+But it should work with maxime file. 
+
+However, It shoud have data and MC both in the same file.
+Of course, you can change this..
+
+==========What we need to change in this file when there is new histogram file==========
+
+I'll skip contents in pave and labels. 
+
+Line 124, 125, and 126 -> scale factor for data, mc comparison.
+
+Line 127 -> lumi (unit is /pb)
+
+Line 186, 235, 242, 271, 279, 282, 294 ,341, 344, 346, 723 -> change the low dijet mass cut (838 in the attached file) and high dijet mass edge (3854 in the attached file). Line 186 is only for low dijet mass.
+
+You also need to change the range of plots. 
+In that case you can do SetRangeUser to find places where you need to change.
+
+You need to change parameters for fits which are explained following section
+
+==========fit function================================
+From line 10 ~ 33
+
+from first to last it's for
+line10 -> Alternate 4 parameters fit
+Line17 -> Default fit
+Line24 -> Alternate 3 parameters fit
+Line30 -> Alternate 2 parameters fit
+
+Line 186~192 -> fit for QCD
+Line 195~201 -> fit for QCD UP
+Line 204~210 -> fit for QCD DOWN
+Line 271~279 -> fit for default
+Line 282~287 -> fit for alternate 4 parameters fit
+Line 294~301 -> fit for 3 parameters fit
+
+You can check fit status. change the parameters until you get converged status.
+
+from top you will see 
+QCD -> QCD up-> QCD down-> default -> default -> 4parameter -> 3parameter
+
+==========11 plots============
+
+This file makes 11 plots. 
+
+All these plots are made for some purpose. 
+
+Once you see the plots you will know what they are for.
+
+c1 -> DijetMass Cross Section with default Fit
+c2 -> DijetMass Cross Section with All Fit
+c3 -> DijetMass cross section with Fit and QCD MC
+c4 -> Data/MC
+c5 -> Dijet mass cross section with the signals
+c6 -> (Data-Fit)/Fit
+c7 -> (Data-Fit)/Error
+c8 -> (Data-Fit)/Fit for the All Fits
+c9 -> (Data-Fit)/Error the All Fits
+c10 -> Data/Fit with the All signal
+c11 -> default fit and pull 
+
+===========Error message========
+
+Warning in <ROOT::Math::GSLInterpolator::Integ>: input domain error
+
+This error message was not found with CMSSW 3XX but found with CMSSW 4XX.
+
+It doesn't make any problems in plots or results. 
+
+I didn't spend time to fix this.
+
+============The plots with bands===========
+
+They are made by using THStack.
+It's first found at Line 382~386, Then 455~459.
+
+============Resonance shape controll=========
+
+Line 505~629 is for the resonance shape for excited quark and string in differential (cross section vs dijet mass plot)
+
+You don't need to really touch this one but there are some cases you need to take care.
+
+You will see the shape doesn't make sense (sudden drop of high mass tail usually...), and make some error message you didn't see before. 
+
+In this case change the mass range. 
+
+now it's set for 0.6 ~ 1.28 or 1.26. change this values.. usually narrowing helps resoving the problem.
+
+
+
+
