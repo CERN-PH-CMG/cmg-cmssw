@@ -199,21 +199,16 @@ class FindOnCastor(Task):
     """Checks that the sample specified exists in the CASTOR area of the user specified. The directory must exist."""
     def __init__(self, dataset, user, options):
         Task.__init__(self,'FindOnCastor', dataset, user, options)
-#    def addOption(self, parser):
-#        parser.add_option("-d", "--device", dest="device", default='cmst3',help='The storage device to write to')
-#        parser.add_option("-g", "--group", dest="group", default='CMG',help='The analysis group')        
     def run(self, input):
         topdir = castortools.lfnToCastor(castorBaseDir(user=self.user))
-        #topdir = castortools.lfnToCastor('/store/%s/user/%s/%s' % (self.options.device,self.user,self.options.group))
         directory = '%s/%s' % (topdir,self.dataset)
         directory = directory.replace('//','/')
         if not castortools.fileExists(directory):
-            ret = -1
             if hasattr(self,'create') and self.create:
                 castortools.createCastorDir(directory)
                 castortools.chmod(directory,'775')
-            if castortools.isDirectory(directory): 
-                raise Exception("Dataset directory '%s' does not exist" % directory)
+        if not castortools.isDirectory(directory): 
+            raise Exception("Dataset directory '%s' does not exist or could not be created" % directory)
         return {'Topdir':topdir,'Directory':directory}  
 
 class CheckForMask(Task):
