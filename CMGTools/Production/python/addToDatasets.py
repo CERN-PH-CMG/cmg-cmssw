@@ -10,3 +10,8 @@ def addToDatasets(sampleAndTier, user=os.getlogin()):
     if notThere:
         os.system('echo %s >> ~%s/public/DataSets.txt' % (sampleAndTier,user) ) 
     return not notThere
+
+
+if __name__ == '__main__':
+    import sys
+    addToDatasets(sys.argv[1], sys.argv[2])
