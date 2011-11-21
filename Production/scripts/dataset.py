@@ -34,9 +34,3 @@ if __name__ == '__main__':
     data.printFiles(abspath = options.abspath,
                     info = not options.noinfo)
 
-    data.getFileSizes()
-    
-    # print 'good files: '
-
-    # import pprint
-    # pprint.pprint( data.listOfGoodFiles() )
