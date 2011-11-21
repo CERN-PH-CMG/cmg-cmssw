@@ -491,8 +491,9 @@ class WriteToDatasets(Task):
         from CMGTools.Production.addToDatasets import addToDatasets
         name = "%s/%s" % (self.dataset,self.options.tier)
         name = name.replace('//','/')
-        added = addToDatasets(name, user = self.options.batch_user)
-        return {'Added':added, 'Name':name}       
+        user = self.options.batch_user
+        added = addToDatasets(name, user = user)
+        return {'Added':added, 'Name':name, 'User':user}       
     
 class RunCMSBatch(Task):
     """Run the 'cmsBatch.py' command on your CFG, submitting to the CERN batch system"""    
