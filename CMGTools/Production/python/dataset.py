@@ -14,7 +14,7 @@ class Dataset():
         self.lfnDir = castorBaseDir(user) + name
         self.castorDir = castortools.lfnToCastor( self.lfnDir )
         self.pollFiles( pattern )
-        self.getFileSizes()
+        self.extractFileSizes()
         self.pollBadFiles()
         
     def pollFiles(self, pattern='.*root'):
@@ -31,7 +31,8 @@ class Dataset():
         files are considered as good.'''
         mask = "IntegrityCheck"
         file_mask = castortools.matchingFiles(self.castorDir, '^%s_.*\.txt$' % mask)
-        self.bad_files = {}    
+        self.bad_files = {}
+        self.good_files = []
         if file_mask:
             from CMGTools.Production.edmIntegrityCheck import PublishToFileSystem
             p = PublishToFileSystem(mask)
@@ -39,12 +40,15 @@ class Dataset():
             if report is not None and report:
                 dup = report.get('ValidDuplicates',{})
                 for name, status in report['Files'].iteritems():
+                    # print name, status
                     if not status[0]:
                         self.bad_files[name] = 'MarkedBad'
                     elif dup.has_key(name):
                         self.bad_files[name] = 'ValidDup'
+                    else:
+                        self.good_files.append( name )
 
-    def getFileSizes(self):
+    def extractFileSizes(self):
         '''Get the file size for each file, from the eos ls -l command.'''
         lsout = castortools.runEOSCommand(self.castorDir, 'ls','-l')[0]
         lsout = lsout.split('\n')
@@ -53,7 +57,8 @@ class Dataset():
             values = entry.split()
             if( len(values) != 9):
                 continue
-            file = values[8]
+            # using full abs path as a key.
+            file = '/'.join([self.lfnDir, values[8]])
             size = values[4]
             self.filesAndSizes[file] = size 
 
@@ -82,12 +87,13 @@ class Dataset():
             status = 'OK'
             if self.bad_files.has_key(file):
                 status = self.bad_files[file]
-            else:
+            elif file not in self.good_files:
                 status = 'UNKNOWN'
+            fileNameToPrint = file
             if abspath == False:
-                file = os.path.basename(file)
+                fileNameToPrint = os.path.basename(file)
             if info:
                 print status.ljust(10), self.filesAndSizes[file].rjust(10), \
-                      '\t', file
+                      '\t', fileNameToPrint
             else:
-                print file 
+                print fileNameToPrint
