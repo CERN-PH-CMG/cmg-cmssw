@@ -9,14 +9,9 @@ tauScaler = cms.PSet(
     uncertainty = cms.double(0.03)
     )
 
-cmgTauUp = cms.EDFilter(
+cmgTauScaler = cms.EDFilter(
     "TauPOScaler",
-    cfg = tauScaler.clone(nSigma = 1.),
+    cfg = tauScaler.clone(nSigma = 0.),
     cuts = cms.PSet()
 )
 
-cmgTauDown = cms.EDFilter(
-    "TauPOScaler",
-    cfg = tauScaler.clone(nSigma = -1.),
-    cuts = cms.PSet()
-)
