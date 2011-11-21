@@ -102,6 +102,7 @@ int main(int argc, char* argv[])
 
 
   //isVBF sample ?
+  bool isGG = ( string(url.Data()).find("GGto") != string::npos);
   bool isVBF = ( string(url.Data()).find("VBF") != string::npos);
   double VBFHiggsMass=0; string VBFString = "";
   if(isVBF){
@@ -1180,6 +1181,8 @@ int main(int argc, char* argv[])
 		  //systematic variations (computed per jet bin so fill only once) 		  
 		  if(runSystematics)
 		    {
+
+                      if(isc==0){
 		      //jet energy scale related variations
 		      TString jetVarNames[]={"jer","jesup","jesdown"};
 		      for(size_t ivar=0; ivar<3; ivar++)
@@ -1240,48 +1243,50 @@ int main(int argc, char* argv[])
 			  if(ipassvbf60rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,6,iweight);
 			  if(ipassvbf65rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,7,iweight);		  
 			}
-		    }
+                     }
 		 
 		  //re-weighting variations (Higgs, pileup scenario)
 		  TString wgtVarNames[]={"hrenup","hrendown","hfactup","hfactdown","puup","pudown"};
  		  Float_t rwgtVars[]={iweight,
-				      iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor],
-				      iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor],
-				      iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor],
-				      iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor],
+				      isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]   : iweight,
+				      isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] : iweight,
+				      isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]  : iweight,
+				      isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]: iweight,
 				      iweight*TotalWeight_plus,
 				      iweight*TotalWeight_minus};
 		  for(size_t ivar=0; ivar<sizeof(wgtVarNames)/sizeof(TString); ivar++)
 		    {
-		      TString ictf= catsToFill[ic]+subcat;
+//		      TString ictf= catsToFill[ic]+subcat;
 		      
-		      if(pass130met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ictf,0,rwgtVars[ivar]);
-		      if(pass150met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ictf,1,rwgtVars[ivar]);
-		      if(pass170met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ictf,2,rwgtVars[ivar]);
-		      if(pass200met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ictf,3,rwgtVars[ivar]);
-		      if(pass300met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ictf,4,rwgtVars[ivar]);
-		      if(pass400met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ictf,5,rwgtVars[ivar]);
-		      if(pass500met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ictf,6,rwgtVars[ivar]);
-		      if(pass600met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ictf,7,rwgtVars[ivar]);
+		      if(pass130met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,0,rwgtVars[ivar]);
+		      if(pass150met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,1,rwgtVars[ivar]);
+		      if(pass170met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,2,rwgtVars[ivar]);
+		      if(pass200met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,3,rwgtVars[ivar]);
+		      if(pass300met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,4,rwgtVars[ivar]);
+		      if(pass400met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,5,rwgtVars[ivar]);
+		      if(pass500met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,6,rwgtVars[ivar]);
+		      if(pass600met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,7,rwgtVars[ivar]);
 		      
-		      if(pass130rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ictf,0,rwgtVars[ivar]);
-		      if(pass150rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ictf,1,rwgtVars[ivar]);
-		      if(pass170rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ictf,2,rwgtVars[ivar]);
-		      if(pass200rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ictf,3,rwgtVars[ivar]);
-		      if(pass300rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ictf,4,rwgtVars[ivar]);
-		      if(pass400rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ictf,5,rwgtVars[ivar]);
-		      if(pass500rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ictf,6,rwgtVars[ivar]);
-		      if(pass600rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ictf,7,rwgtVars[ivar]);		  
+		      if(pass130rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,0,rwgtVars[ivar]);
+		      if(pass150rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,1,rwgtVars[ivar]);
+		      if(pass170rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,2,rwgtVars[ivar]);
+		      if(pass200rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,3,rwgtVars[ivar]);
+		      if(pass300rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,4,rwgtVars[ivar]);
+		      if(pass400rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,5,rwgtVars[ivar]);
+		      if(pass500rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,6,rwgtVars[ivar]);
+		      if(pass600rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,7,rwgtVars[ivar]);		  
 
-		      if(passvbf50met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ictf,0,rwgtVars[ivar]);
-		      if(passvbf55met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ictf,1,rwgtVars[ivar]);
-		      if(passvbf60met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ictf,2,rwgtVars[ivar]);
-		      if(passvbf65met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ictf,3,rwgtVars[ivar]);
-		      if(passvbf50rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ictf,4,rwgtVars[ivar]);
-		      if(passvbf55rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ictf,5,rwgtVars[ivar]);
-		      if(passvbf60rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ictf,6,rwgtVars[ivar]);
-		      if(passvbf65rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ictf,7,rwgtVars[ivar]);		  
+		      if(passvbf50met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,0,rwgtVars[ivar]);
+		      if(passvbf55met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,1,rwgtVars[ivar]);
+		      if(passvbf60met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,2,rwgtVars[ivar]);
+		      if(passvbf65met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,3,rwgtVars[ivar]);
+		      if(passvbf50rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,4,rwgtVars[ivar]);
+		      if(passvbf55rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,5,rwgtVars[ivar]);
+		      if(passvbf60rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,6,rwgtVars[ivar]);
+		      if(passvbf65rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,7,rwgtVars[ivar]);		  
 		  }
+
+                 }
               }
           }
       }
