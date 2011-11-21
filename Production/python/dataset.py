@@ -45,9 +45,9 @@ class Dataset():
                         self.bad_files[name] = 'ValidDup'
 
     def getFileSizes(self):
+        '''Get the file size for each file, from the eos ls -l command.'''
         lsout = castortools.runEOSCommand(self.castorDir, 'ls','-l')[0]
         lsout = lsout.split('\n')
-        # pprint.pprint(lsout)
         self.filesAndSizes = {}
         for entry in lsout:
             values = entry.split()
@@ -56,15 +56,16 @@ class Dataset():
             file = values[8]
             size = values[4]
             self.filesAndSizes[file] = size 
-        # pprint.pprint(self.filesAndSizes)
-        # lsout = lsout.split('\n')
 
     def listOfFiles(self):
+        '''Returns all files, even the bad ones.'''
         return self.files
 
     def listOfGoodFiles(self):
+        '''Returns all files flagged as good in the integrity check text output,
+        or not present in this file, are considered as good.'''
         self.good_files = []
-        for file in self.files:
+        for file in self.files:            
             if not self.bad_files.has_key(file):
                 self.good_files.append( file )
         return self.good_files
@@ -81,6 +82,8 @@ class Dataset():
             status = 'OK'
             if self.bad_files.has_key(file):
                 status = self.bad_files[file]
+            else:
+                status = 'UNKNOWN'
             if abspath == False:
                 file = os.path.basename(file)
             if info:
