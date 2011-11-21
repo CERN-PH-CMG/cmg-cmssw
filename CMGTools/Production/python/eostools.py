@@ -10,7 +10,7 @@ import pprint
 import shutil
 
 def setCAFPath():
-    """Hack to get the CAF scripts on the PYTHOPATH"""
+    """Hack to get the CAF scripts on the PYTHONPATH"""
     caf = '/afs/cern.ch/cms/caf/python'
     if caf not in sys.path:
         sys.path.append(caf)
@@ -19,7 +19,10 @@ import cmsIO
 
 
 def runXRDCommand(path, cmd, *args):
-    """Run an xrd command."""
+    """Run an xrd command.
+
+    !!! Will, what is happening in case of problem?
+    ??? At some point, should return a list of lines instead of a string."""
     
     lfn = eosToLFN(path)
     tokens = cmsIO.splitPFN(lfnToPFN(lfn))
@@ -32,7 +35,11 @@ def runXRDCommand(path, cmd, *args):
 
 
 def runEOSCommand(path, cmd, *args):
-    """Run an eos command"""
+    """Run an eos command.
+
+    !!! Will, when the EOS command fails, it passes silently...
+    I think we should really try and raise an exception in case of problems.
+    should be possible as the return code is provided in the tuple returned by runner."""
     
     lfn = eosToLFN(path)
     pfn = lfnToPFN(lfn)
@@ -47,30 +54,39 @@ def runEOSCommand(path, cmd, *args):
 
 
 def isLFN( path ):
-    """Tests whether this path is a CMS LFN (/store...)"""
+    """Tests whether this path is a CMS LFN (name starts with /store...)"""
     # return re.match('^/store.*', path ) is not None
     return path.startswith('/store')
 
 
 def isEOS( path ):
-    """Tests whether this path is a CMS EOS (/eos...)"""
+    """Tests whether this path is a CMS EOS (name starts with /eos...)"""
     return path.startswith('/eos')
 
 
 def eosToLFN( path ):
-    """Converts a EOS PFN to an LFN"""
+    """Converts a EOS PFN to an LFN.
+
+    Just strip out /eos/cms from path.
+    If this string is not found, return path.
+    ??? Shouldn't we raise an exception instead?"""
     return path.replace('/eos/cms','')
-    # if not isLFN(path):
-    #    return path.replace('/eos/cms','')
-    #else:
-    #    return path
-    
+
 #also define an alias for backwards compatibility
 castorToLFN = eosToLFN
 
 
 def lfnToPFN( path, tfcProt = 'rfio'):
-    """Converts an LFN to a PFN"""
+    """Converts an LFN to a PFN. For example:
+    /store/cmst3/user/cbern/CMG/TauPlusX/Run2011A-03Oct2011-v1/AOD/V2/PAT_CMG_V2_4_0/H2TAUTAU_Nov21
+    ->
+    root://eoscms//eos/cms/store/cmst3/user/cbern/CMG/TauPlusX/Run2011A-03Oct2011-v1/AOD/V2/PAT_CMG_V2_4_0/H2TAUTAU_Nov21?svcClass=cmst3&stageHost=castorcms
+
+    This function only checks path, and does not access the storage system.
+    If the path is in /store/cmst3, it assumes that the CMST3 svcClass is to be used.
+    Otherwise, is uses the default one. 
+    
+    ??? what is tfcprot? """
     entity = cmsIO.cmsFile( path, tfcProt )
 #    tokens = cmsIO.splitPFN(entity.pfn)
     pfn = '%s://%s//%s/' % (entity.protocol,entity.host,entity.path)
@@ -87,7 +103,10 @@ def lfnToPFN( path, tfcProt = 'rfio'):
 
 
 def lfnToEOS( path ):
-    """Converts LFN to EOS"""
+    """Converts LFN to EOS.
+
+    If path is not an LFN in the first place, return path.
+    ??? shouldn't we raise an exception?"""
     if isLFN(path):
         pfn = '/eos/cms/' + path
         return pfn.replace('//','/') 
@@ -98,31 +117,84 @@ def lfnToEOS( path ):
 lfnToCastor = lfnToEOS
 
 def isEOSDir( path ):
-    """Checks whether this file or directory is stored on EOS."""
+    """Returns True if path is either:
+    /store/...
+    or
+    /eos/cms/store/...
+
+    Otherwise, returns False.
+
+    WARNING!! This function does not check for path existence,
+    and returns true also for plain files.
+    !!! Will, is my summary correct? 
+    """
     if os.path.exists( path ):
+        # path does not exist
+        # COLIN: I think this condition could be removed,
+        # as it duplicates the following one. 
         return False
     if not path.startswith('/eos') and not path.startswith('/store'):
+        # neither an EOS PFN or a LFN.
         return False
+    # at this stage, we must have an EOS PFN or an LFN
     pfn = lfnToPFN(eosToLFN(path))
-    # print 'PFN',pfn
-    # print 'done'
     tokens = cmsIO.splitPFN(pfn)
     return tokens and tokens[1].lower().startswith('eos')
+
 #also define an alias for backwards compatibility
 isCastorDir = isEOSDir
 
 
 def isEOSFile( path, tfcProt = 'rfio'):
-    """Checks whether this file exists"""
+    """Returns True if path is a file or directory stored on EOS (checks for path existence)
+    ??? This function does not behave well if passed a non EOS path...
+    returns lots of error messages like:
+>>> eostools.isEOSFile('/store/asdfasfd')
+Command (['ls', '/', 's', 't', 'o', 'r', 'e', '/', 'a', 's', 'd', 'f', 'a', 's', 'f', 'd', '/store']) failed with return code: 2
+ls: s: No such file or directory
+ls: t: No such file or directory
+ls: o: No such file or directory
+ls: r: No such file or directory
+ls: e: No such file or directory
+ls: a: No such file or directory
+ls: s: No such file or directory
+ls: d: No such file or directory
+ls: f: No such file or directory
+ls: a: No such file or directory
+ls: s: No such file or directory
+ls: f: No such file or directory
+ls: d: No such file or directory
+ls: /store: No such file or directory
+
+ls: s: No such file or directory
+ls: t: No such file or directory
+ls: o: No such file or directory
+ls: r: No such file or directory
+ls: e: No such file or directory
+ls: a: No such file or directory
+ls: s: No such file or directory
+ls: d: No such file or directory
+ls: f: No such file or directory
+ls: a: No such file or directory
+ls: s: No such file or directory
+ls: f: No such file or directory
+ls: d: No such file or directory
+ls: /store: No such file or directory
+
+False
+    """
     lfn = eosToLFN(path)
     entity = cmsIO.cmsFile( os.path.dirname(lfn), tfcProt )
     return lfn in entity.ls(lfn)
 #also define an alias for backwards compatibility
+
 isCastorFile = isEOSFile
 
 
 def fileExists( path ):
-    """Check whether a file exists either on EOS or locally"""
+    """Returns true if path is a file or directory stored locally, or on EOS.
+
+    This function checks for the file or directory existence."""
 
     eos = isEOSDir(path)
     result = False
@@ -136,16 +208,22 @@ def fileExists( path ):
     # print result
     return result
 
+
 def createEOSDir( path ):
-    """Makes a directory in EOS"""
+    """Makes a directory in EOS
+
+    ???Will, I'm quite worried by the fact that if this path already exists, and is
+    a file, everything will 'work'. But then we have a file, and not a directory,
+    while we expect a dir..."""
     lfn = eosToLFN(path)
-    # print 'creating', path
     if not isEOSFile(lfn):
+    # if not isDirectory(lfn):
         runEOSCommand(lfn,'mkdir','-p')
 #        entity = cmsIO.cmsFile( lfn,"stageout")
 #        entity.mkdir([])
 #        # print 'created ', path
     return path
+
 #also define an alias for backwards compatibility
 createCastorDir = createEOSDir
 
@@ -162,14 +240,29 @@ def mkdir(path):
 
 
 def isDirectory(path):
-    """Checks whether a lfn is a file or a directory"""
+    """Returns True if path is a directory on EOS.
+
+    Tests for file existence. 
+    This function returns False for EOS files, and crashes with local paths
+
+    ???Will, this function also seems to work for paths like:
+    /eos/cms/...
+    ??? I think that it should work also for local files, see isFile."""
 
     out, _, _ = runXRDCommand(path,'existdir')
     return 'The directory exists' in out
 
 
 def isFile(path):
-    """Checks whether a lfn is a file or a directory"""
+    """Returns True if a path is a file.
+
+    Tests for file existence.
+    Returns False for directories.
+    Works on EOS and local paths.
+    
+    ???This function works with local files, so not the same as isDirectory...
+    isFile and isDirectory should behave the same.
+    """
 
     if not path.startswith('/eos') and not path.startswith('/store'):
         if( os.path.isfile(path) ):
@@ -188,8 +281,6 @@ def chmod(path, mode):
 
 def listFiles(path, rec = False):
     """Provides a list of the specified directory
-
-    COLIN : does not work for local directories...
     """
     # -- listing on the local filesystem --
     if os.path.isdir( path ):
@@ -264,7 +355,6 @@ def remove( files, rec = False):
     """Remove a list of files and directories, possibly recursively
 
     Colin: Is that obsolete? why not use rm?"""
-    
     for path in files:
         lfn = eosToLFN(path)
         if not rec:
