@@ -31,6 +31,8 @@ using namespace std;
 #include <TText.h>
 #include <TString.h>
 
+#define NTauID 14
+
 void TestCMGTaus::testTau(TString inputtag){
   cout<<dirname_<<" "<<inputtag<<endl;
   
@@ -72,9 +74,9 @@ void TestCMGTaus::testTau(TString inputtag){
   std::string pfTauMode[5]={"oneProng0Pi0","oneProng1Pi0","oneProng2Pi0","threeProng0Pi0","other"};
   
 
-  TH1F HTauIDPass("HTtauIDPass","tauID passed",11,-0.5,10.5); HTauIDPass.GetXaxis()->SetTitle(" ");
-  TH1F HTauIDFail("HTtauIDFail","tauID fail",11,-0.5,10.5); HTauIDFail.GetXaxis()->SetTitle(" ");
-  std::string tauidname[10]={  "againstElectronLoose" ,
+  TH1F HTauIDPass("HTtauIDPass","tauID passed",NTauID+1,0,NTauID+1); HTauIDPass.GetXaxis()->SetTitle(" ");
+  TH1F HTauIDFail("HTtauIDFail","tauID fail",NTauID+1,0,NTauID+1); HTauIDFail.GetXaxis()->SetTitle(" ");
+  std::string tauidname[NTauID]={  "againstElectronLoose" ,
 			       "againstElectronMedium" ,
 			       "againstElectronTight" ,
 			       "againstMuonLoose"   ,
@@ -83,7 +85,12 @@ void TestCMGTaus::testTau(TString inputtag){
 			       "byMediumIsolation" ,
 			       "byTightIsolation"  ,
 			       "byVLooseIsolation"  ,
-			       "decayModeFinding"  };
+			       "decayModeFinding"  ,
+			       "byVLooseCombinedIsolationDeltaBetaCorr",
+			       "byLooseCombinedIsolationDeltaBetaCorr",
+			       "byMediumCombinedIsolationDeltaBetaCorr",
+			       "byTightCombinedIsolationDeltaBetaCorr"
+  };
 
   //generator info 
   TH1F HptGen("HptGen","genJet pt",100,1,101); HptGen.GetXaxis()->SetTitle(" p_{T} (GeV) ");
@@ -153,8 +160,9 @@ void TestCMGTaus::testTau(TString inputtag){
       else if(cand->decayMode()==10)HDecaymode.Fill(3);
       else HDecaymode.Fill(4);
 
-      for(Int_t i=0;i<10;i++)
-	if(cand->tauID( tauidname[i] ))  HTauIDPass.AddBinContent(i+1); else HTauIDFail.AddBinContent(i+1);
+      for(Int_t i=0;i<NTauID;i++)
+	if(cand->tauID( tauidname[i] ))  HTauIDPass.AddBinContent(i+1); 
+	else HTauIDFail.AddBinContent(i+1);
  
       if(cand->genJetp4().pt() > 0.0 ){
 	HptGen.Fill(cand->genJetp4().pt());
@@ -258,19 +266,23 @@ void TestCMGTaus::testTau(TString inputtag){
   Canv.Clear();
   HTauIDPass.SetStats(0);
   HTauIDPass.GetXaxis()->SetNdivisions(0);
-  HTauIDPass.Draw("hist");
-  text.SetTextAngle(-35.);
-  for(Int_t i=0;i<10;i++)
-    text.DrawText(i,0.0-0.02*HTauIDPass.GetMaximum(),TString(tauidname[i]));
+  HTauIDPass.SetLineColor(1);
+  HTauIDPass.SetFillStyle(1);
+  HTauIDPass.Draw("hist bar");
+  text.SetTextAngle(-25.);
+  for(Int_t i=0;i<NTauID;i++)
+    text.DrawText(i+0.4,0.0-0.02*HTauIDPass.GetMaximum(),TString(tauidname[i]));
   Canv.Print(psfile);
   Canv.Clear();
   HTauIDFail.SetStats(0);
   HTauIDFail.GetXaxis()->SetNdivisions(0);
-  HTauIDFail.Draw("hist");  
-  for(Int_t i=0;i<10;i++)
-    text.DrawText(i,0.0-0.02*HTauIDFail.GetMaximum(),TString(tauidname[i]));
-  text.SetTextAngle(-45.);
+  HTauIDFail.SetLineColor(1);
+  HTauIDFail.SetFillStyle(1);
+  HTauIDFail.Draw("hist bar");  
+  for(Int_t i=0;i<NTauID;i++)
+    text.DrawText(i+0.4,0.0-0.02*HTauIDFail.GetMaximum(),TString(tauidname[i]));
   Canv.Print(psfile);
+  text.SetTextAngle(-45.);
 
 
   Canv.Clear();
