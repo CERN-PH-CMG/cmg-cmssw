@@ -4,8 +4,10 @@ from CMGTools.Common.diTau_cff import *
 from CMGTools.H2TauTau.objects.tauMuCuts_cff import * 
 
 from CMGTools.Common.generator.metRecoilCorrection.metRecoilCorrection_cff import *
+from CMGTools.Common.factories.cmgTauScaler_cfi import  cmgTauScaler
 from CMGTools.Common.factories.cmgTauMuCor_cfi import cmgTauMuCor 
 from CMGTools.H2TauTau.objects.tauMuSVFit_cfi import tauMuSVFit 
+
 
 
 # no correction, no svfit ---------------------------------------------------
@@ -13,6 +15,7 @@ from CMGTools.H2TauTau.objects.tauMuSVFit_cfi import tauMuSVFit
 # attaching the cuts defined in this module
 # to the di-tau factory
 cmgTauMu.cuts = tauMuCuts.clone()
+cmgTauMu.cfg.leg1Collection = 'cmgTauScaler'
 
 # preselection 
 cmgTauMuPreSel = cmgTauMuSel.clone( cut = 'getSelection("cuts_skimming")')
@@ -21,7 +24,8 @@ cmgTauMuPreSel = cmgTauMuSel.clone( cut = 'getSelection("cuts_skimming")')
 cmgTauMuFullSel = cmgTauMuSel.clone( src = 'cmgTauMuPreSel',
                                      cut = 'getSelection("cuts_baseline")' )
 
-tauMuStdSequence = cms.Sequence( cmgTauMu +
+tauMuStdSequence = cms.Sequence( cmgTauScaler +
+                                 cmgTauMu +
                                  cmgTauMuPreSel +
                                  cmgTauMuFullSel )
 
@@ -46,9 +50,7 @@ cmgTauMuCorSVFitPreSel.diTauSrc = 'cmgTauMuCorPreSel'
 cmgTauMuCorSVFitFullSel = cmgTauMuFullSel.clone( src = 'cmgTauMuCorSVFitPreSel' ) 
 
 
-tauMuCorSVFitSequence = cms.Sequence( cmgTauMu +
-                                      cmgTauMuPreSel +
-                                      recoilCorMETTauMu +
+tauMuCorSVFitSequence = cms.Sequence( recoilCorMETTauMu +
                                       cmgTauMuCorPreSel +
                                       cmgTauMuCorSVFitPreSel +
                                       cmgTauMuCorSVFitFullSel )
