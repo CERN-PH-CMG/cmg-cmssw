@@ -56,21 +56,21 @@ class BatchManager:
                 print self.remoteOutputDir_
                 sys.exit(1)          
             self.remoteOutputDir_ = castortools.lfnToEOS( self.remoteOutputDir_ )
-            dirExist = castortools.isEOSDir( self.remoteOutputDir_ )           
+            dirExist = castortools.isDirectory( self.remoteOutputDir_ )           
             # nsls = 'nsls %s > /dev/null' % self.remoteOutputDir_
             # dirExist = os.system( nsls )
-            if dirExist != 0:
+            if dirExist is False:
                 print 'creating ', self.remoteOutputDir_
+                if castortools.isEOSFile( self.remoteOutputDir_ ):
+                    # the output directory is currently a file..
+                    # need to remove it.
+                    castortools.rm( self.remoteOutputDir_ )
                 castortools.createEOSDir( self.remoteOutputDir_ )
-                # os.system('nsmkdir -p ' + self.remoteOutputDir_ )
-                # print 'check that the castor output directory specified with the -r option exists.'
-                # sys.exit(1)
-                #        self.remoteOutputFile_ = os.path.basename( self.options_.remoteCopy )
             else:
                 # directory exists.
-                if self.options_.negate == False:
-                    #COLIN need to reimplemented protectedRemove in eostools
-                    raise ValueError('directory ', self.remoteOutputDir_, ' already exists.')
+                if self.options_.negate is False and self.options_.force is False:
+                    #COLIN need to reimplement protectedRemove in eostools
+                    raise ValueError(  ' '.join(['directory ', self.remoteOutputDir_, ' already exists.']))
                     # if not castortools.protectedRemove( self.remoteOutputDir_, '.*root'):
                     # the user does not want to delete the root files                          
         self.remoteOutputFile_ = ""
