@@ -4,8 +4,10 @@
 
 import os
 
+from CMGTools.Production.castorBaseDir import getUserAndArea
 
 def addToDatasets(sampleAndTier, user=os.getlogin()):
+    user, _ = getUserAndArea(user) #for if we have a magic user name
     notThere = os.system( 'grep %s ~%s/public/DataSets.txt' % (sampleAndTier,user) )
     if notThere:
         os.system('echo %s >> ~%s/public/DataSets.txt' % (sampleAndTier,user) ) 
