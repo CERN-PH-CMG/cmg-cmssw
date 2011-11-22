@@ -50,6 +50,8 @@ bool SelectionMonitor::fillProfile(TString name, TString tag, double valx, doubl
 */
 void SelectionMonitor::initMonitorForStep(TString tag)
 {
+  if(hasStep(tag)) return;
+
   //clone all all histograms to the new monitor
   Monitor_t newMonitor;
   for(Monitor_t::iterator hit = allMonitors_["all"].begin();

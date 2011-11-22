@@ -522,7 +522,6 @@ int main(int argc, char* argv[])
       for(int isubcat=0;isubcat<eventClassifComp.GetLabelSize(); isubcat++)
 	{
 	  TString ctf=cats[icat]+subCats[isubcat];
-	  if(controlHistos.hasStep(ctf)) continue;
 	  controlHistos.initMonitorForStep(ctf);
 	}
     }
@@ -1203,121 +1202,126 @@ int main(int argc, char* argv[])
 		    {
 
                       if(isc==0){
-		      //jet energy scale related variations
-		      TString jetVarNames[]={"jer","jesup","jesdown"};
-		      for(size_t ivar=0; ivar<3; ivar++)
-			{
-			  TString isubcat    = eventClassifComp.GetLabel( eventCategoryVars[ivar] );
-			  TString ictf= catsToFill[ic]+isubcat;
+			
+			//jet energy scale related variations
+			TString jetVarNames[]={"jer","jesup","jesdown"};
+			for(size_t ivar=0; ivar<3; ivar++)
+			  {
+			    TString isubcat    = eventClassifComp.GetLabel( eventCategoryVars[ivar] );
+			    for(size_t kSubCat=0; kSubCat<2; kSubCat++)
+			      {
+				if(kSubCat==1) isubcat="";
+
+				TString ictf= catsToFill[ic]+isubcat;
 			  
-			  bool ipass130met( metVars[ivar].pt()>50  && mindphijmet>0.74 && mtVars[ivar]>171 && mtVars[ivar]<296);
-			  bool ipass150met( metVars[ivar].pt()>50  && mindphijmet>0.7  && mtVars[ivar]>193 && mtVars[ivar]<284);
-			  bool ipass170met( metVars[ivar].pt()>50  && mindphijmet>0.66 && mtVars[ivar]>185 && mtVars[ivar]<276);
-			  bool ipass200met( metVars[ivar].pt()>50  && mindphijmet>0.6  && mtVars[ivar]>220 && mtVars[ivar]<270);
-			  bool ipass300met( metVars[ivar].pt()>86  && mindphijmet>0.4  && mtVars[ivar]>260 && mtVars[ivar]<310);
-			  bool ipass400met( metVars[ivar].pt()>118 && mindphijmet>0.2  && mtVars[ivar]>340 && mtVars[ivar]<440);
-			  bool ipass500met( metVars[ivar].pt()>166 && mindphijmet>0.1  && mtVars[ivar]>340 && mtVars[ivar]<740); 
-			  bool ipass600met( metVars[ivar].pt()>188 && mindphijmet>0.1  && mtVars[ivar]>440 && mtVars[ivar]<740);
-			  if(ipass130met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,0,iweight);
-			  if(ipass150met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,1,iweight);
-			  if(ipass170met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,2,iweight);
-			  if(ipass200met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,3,iweight);
-			  if(ipass300met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,4,iweight);
-			  if(ipass400met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,5,iweight);
-			  if(ipass500met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,6,iweight);
-			  if(ipass600met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,7,iweight);
-			  
-			  
-			  bool ipass130rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.74 && mtVars[ivar]>171 && mtVars[ivar]<296);
-			  bool ipass150rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.7  && mtVars[ivar]>193 && mtVars[ivar]<284);
-			  bool ipass170rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.66 && mtVars[ivar]>185 && mtVars[ivar]<276);
-			  bool ipass200rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.6  && mtVars[ivar]>220 && mtVars[ivar]<270);
-			  bool ipass300rmet( redMetVars[ivar].pt()>84  && mindphijmet>0.2  && mtVars[ivar]>260 && mtVars[ivar]<310);
-			  bool ipass400rmet( redMetVars[ivar].pt()>110 && mindphijmet>0.2  && mtVars[ivar]>340 && mtVars[ivar]<440);
-			  bool ipass500rmet( redMetVars[ivar].pt()>156 && mindphijmet>0.1  && mtVars[ivar]>340 && mtVars[ivar]<740); 
-			  bool ipass600rmet( redMetVars[ivar].pt()>156 && mindphijmet>0.1  && mtVars[ivar]>440 && mtVars[ivar]<790);
-			  if(ipass130rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,0,iweight);
-			  if(ipass150rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,1,iweight);
-			  if(ipass170rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,2,iweight);
-			  if(ipass200rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,3,iweight);
-			  if(ipass300rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,4,iweight);
-			  if(ipass400rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,5,iweight);
-			  if(ipass500rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,6,iweight);
-			  if(ipass600rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,7,iweight);		  
+				bool ipass130met( metVars[ivar].pt()>50  && mindphijmet>0.74 && mtVars[ivar]>171 && mtVars[ivar]<296);
+				bool ipass150met( metVars[ivar].pt()>50  && mindphijmet>0.7  && mtVars[ivar]>193 && mtVars[ivar]<284);
+				bool ipass170met( metVars[ivar].pt()>50  && mindphijmet>0.66 && mtVars[ivar]>185 && mtVars[ivar]<276);
+				bool ipass200met( metVars[ivar].pt()>50  && mindphijmet>0.6  && mtVars[ivar]>220 && mtVars[ivar]<270);
+				bool ipass300met( metVars[ivar].pt()>86  && mindphijmet>0.4  && mtVars[ivar]>260 && mtVars[ivar]<310);
+				bool ipass400met( metVars[ivar].pt()>118 && mindphijmet>0.2  && mtVars[ivar]>340 && mtVars[ivar]<440);
+				bool ipass500met( metVars[ivar].pt()>166 && mindphijmet>0.1  && mtVars[ivar]>340 && mtVars[ivar]<740); 
+				bool ipass600met( metVars[ivar].pt()>188 && mindphijmet>0.1  && mtVars[ivar]>440 && mtVars[ivar]<740);
+				if(ipass130met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,0,iweight);
+				if(ipass150met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,1,iweight);
+				if(ipass170met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,2,iweight);
+				if(ipass200met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,3,iweight);
+				if(ipass300met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,4,iweight);
+				if(ipass400met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,5,iweight);
+				if(ipass500met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,6,iweight);
+				if(ipass600met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,7,iweight);
 			  
 			  
-			  bool ipassvbf50met( metVars[ivar].pt() > 50);
-			  bool ipassvbf55met( metVars[ivar].pt() > 55);
-			  bool ipassvbf60met( metVars[ivar].pt() > 60);
-			  bool ipassvbf65met( metVars[ivar].pt() > 65);
-			  bool ipassvbf50rmet( redMetVars[ivar].pt() > 50);
-			  bool ipassvbf55rmet( redMetVars[ivar].pt() > 55);
-			  bool ipassvbf60rmet( redMetVars[ivar].pt() > 60);
-			  bool ipassvbf65rmet( redMetVars[ivar].pt() > 65);
-			  if(ipassvbf50met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,0,iweight);
-			  if(ipassvbf55met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,1,iweight);
-			  if(ipassvbf60met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,2,iweight);
-			  if(ipassvbf65met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,3,iweight);
-			  if(ipassvbf50rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,4,iweight);
-			  if(ipassvbf55rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,5,iweight);
-			  if(ipassvbf60rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,6,iweight);
-			  if(ipassvbf65rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,7,iweight);		  
-			}
-                     }
+				bool ipass130rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.74 && mtVars[ivar]>171 && mtVars[ivar]<296);
+				bool ipass150rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.7  && mtVars[ivar]>193 && mtVars[ivar]<284);
+				bool ipass170rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.66 && mtVars[ivar]>185 && mtVars[ivar]<276);
+				bool ipass200rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.6  && mtVars[ivar]>220 && mtVars[ivar]<270);
+				bool ipass300rmet( redMetVars[ivar].pt()>84  && mindphijmet>0.2  && mtVars[ivar]>260 && mtVars[ivar]<310);
+				bool ipass400rmet( redMetVars[ivar].pt()>110 && mindphijmet>0.2  && mtVars[ivar]>340 && mtVars[ivar]<440);
+				bool ipass500rmet( redMetVars[ivar].pt()>156 && mindphijmet>0.1  && mtVars[ivar]>340 && mtVars[ivar]<740); 
+				bool ipass600rmet( redMetVars[ivar].pt()>156 && mindphijmet>0.1  && mtVars[ivar]>440 && mtVars[ivar]<790);
+				if(ipass130rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,0,iweight);
+				if(ipass150rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,1,iweight);
+				if(ipass170rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,2,iweight);
+				if(ipass200rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,3,iweight);
+				if(ipass300rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,4,iweight);
+				if(ipass400rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,5,iweight);
+				if(ipass500rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,6,iweight);
+				if(ipass600rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,7,iweight);		  
+			  
+			  
+				bool ipassvbf50met( metVars[ivar].pt() > 50);
+				bool ipassvbf55met( metVars[ivar].pt() > 55);
+				bool ipassvbf60met( metVars[ivar].pt() > 60);
+				bool ipassvbf65met( metVars[ivar].pt() > 65);
+				bool ipassvbf50rmet( redMetVars[ivar].pt() > 50);
+				bool ipassvbf55rmet( redMetVars[ivar].pt() > 55);
+				bool ipassvbf60rmet( redMetVars[ivar].pt() > 60);
+				bool ipassvbf65rmet( redMetVars[ivar].pt() > 65);
+				if(ipassvbf50met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,0,iweight);
+				if(ipassvbf55met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,1,iweight);
+				if(ipassvbf60met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,2,iweight);
+				if(ipassvbf65met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,3,iweight);
+				if(ipassvbf50rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,4,iweight);
+				if(ipassvbf55rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,5,iweight);
+				if(ipassvbf60rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,6,iweight);
+				if(ipassvbf65rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,7,iweight);		  
+			      }
+			  }
+		      }
 		 
-		  //re-weighting variations (Higgs, pileup scenario)
-		  TString wgtVarNames[]={"hrenup","hrendown","hfactup","hfactdown","puup","pudown"};
- 		  Float_t rwgtVars[]={ isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]   : iweight ,
-				       isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] : iweight ,
-				       isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]  : iweight ,
-				       isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]: iweight ,
-				      iweight*TotalWeight_plus,
-				      iweight*TotalWeight_minus};
-		  if(ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] <0.5)
-		    cout << phys.genhiggs[0].pt() << " " << isGG 
-			 << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] 
-			 << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]
-			 << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]
-			 << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]
-			 << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown] << endl;
+		      //re-weighting variations (Higgs, pileup scenario)
+		      TString wgtVarNames[]={"hrenup","hrendown","hfactup","hfactdown","puup","pudown"};
+		      Float_t rwgtVars[]={ isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]   : iweight ,
+					   isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] : iweight ,
+					   isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]  : iweight ,
+					   isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]: iweight ,
+					   iweight*TotalWeight_plus,
+					   iweight*TotalWeight_minus};
+		      if(ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] <0.5)
+			cout << phys.genhiggs[0].pt() << " " << isGG 
+			     << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] 
+			     << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]
+			     << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]
+			     << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]
+			     << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown] << endl;
 		  
-		  for(size_t ivar=0; ivar<sizeof(wgtVarNames)/sizeof(TString); ivar++)
-		    {
-//		      TString ictf= catsToFill[ic]+subcat;
+		      for(size_t ivar=0; ivar<sizeof(wgtVarNames)/sizeof(TString); ivar++)
+			{
+			  //		      TString ictf= catsToFill[ic]+subcat;
+			  if(pass130met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,0,rwgtVars[ivar]);
+			  if(pass150met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,1,rwgtVars[ivar]);
+			  if(pass170met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,2,rwgtVars[ivar]);
+			  if(pass200met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,3,rwgtVars[ivar]);
+			  if(pass300met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,4,rwgtVars[ivar]);
+			  if(pass400met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,5,rwgtVars[ivar]);
+			  if(pass500met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,6,rwgtVars[ivar]);
+			  if(pass600met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,7,rwgtVars[ivar]);
 		      
-		      if(pass130met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,0,rwgtVars[ivar]);
-		      if(pass150met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,1,rwgtVars[ivar]);
-		      if(pass170met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,2,rwgtVars[ivar]);
-		      if(pass200met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,3,rwgtVars[ivar]);
-		      if(pass300met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,4,rwgtVars[ivar]);
-		      if(pass400met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,5,rwgtVars[ivar]);
-		      if(pass500met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,6,rwgtVars[ivar]);
-		      if(pass600met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,7,rwgtVars[ivar]);
-		      
-		      if(pass130rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,0,rwgtVars[ivar]);
-		      if(pass150rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,1,rwgtVars[ivar]);
-		      if(pass170rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,2,rwgtVars[ivar]);
-		      if(pass200rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,3,rwgtVars[ivar]);
-		      if(pass300rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,4,rwgtVars[ivar]);
-		      if(pass400rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,5,rwgtVars[ivar]);
-		      if(pass500rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,6,rwgtVars[ivar]);
-		      if(pass600rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,7,rwgtVars[ivar]);		  
+			  if(pass130rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,0,rwgtVars[ivar]);
+			  if(pass150rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,1,rwgtVars[ivar]);
+			  if(pass170rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,2,rwgtVars[ivar]);
+			  if(pass200rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,3,rwgtVars[ivar]);
+			  if(pass300rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,4,rwgtVars[ivar]);
+			  if(pass400rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,5,rwgtVars[ivar]);
+			  if(pass500rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,6,rwgtVars[ivar]);
+			  if(pass600rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,7,rwgtVars[ivar]);		  
 
-		      if(passvbf50met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,0,rwgtVars[ivar]);
-		      if(passvbf55met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,1,rwgtVars[ivar]);
-		      if(passvbf60met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,2,rwgtVars[ivar]);
-		      if(passvbf65met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,3,rwgtVars[ivar]);
-		      if(passvbf50rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,4,rwgtVars[ivar]);
-		      if(passvbf55rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,5,rwgtVars[ivar]);
-		      if(passvbf60rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,6,rwgtVars[ivar]);
-		      if(passvbf65rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,7,rwgtVars[ivar]);		  
-		  }
+			  if(passvbf50met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,0,rwgtVars[ivar]);
+			  if(passvbf55met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,1,rwgtVars[ivar]);
+			  if(passvbf60met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,2,rwgtVars[ivar]);
+			  if(passvbf65met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,3,rwgtVars[ivar]);
+			  if(passvbf50rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,4,rwgtVars[ivar]);
+			  if(passvbf55rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,5,rwgtVars[ivar]);
+			  if(passvbf60rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,6,rwgtVars[ivar]);
+			  if(passvbf65rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,7,rwgtVars[ivar]);		  
+			}
 
-                 }
-              }
-          }
+		    }
+		}
+	}
       }
-    }
+  }
 
   
   //all done with the events file
