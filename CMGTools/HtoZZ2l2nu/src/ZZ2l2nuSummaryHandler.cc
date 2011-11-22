@@ -404,6 +404,72 @@ void ZZ2l2nuSummaryHandler::resetStruct()
 }
 
 //
+void ZZ2l2nuSummaryHandler::verifyHiggsWeights(double mass)
+{
+  if(mass<=0) return;
+  if(evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor]>0) return;
+  if(mass==150)
+    {
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor]          =0.571479;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]    =0.522875;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]  =0.619653;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]   =0.545910;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown] =0.598498;
+    }
+  else if(mass==170)
+    {
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor]          =0.567314;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]    =0.519901;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]  =0.620177;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]   =0.542312;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown] =0.595977;
+    }
+  else if(mass==200)
+    {
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor]          =0.483326;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]    =0.441178;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]  =0.533986;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]   =0.458908;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown] =0.510265;
+    }
+  else if(mass==300)
+    {
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor]          =0.494557;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]    =0.451674;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]  =0.546543;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]   =0.466305;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown] =0.524908;
+    }
+  else if(mass==400)
+    {
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor]          =0.477833;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]    =0.437723;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]  =0.527121;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]   =0.447774;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown] =0.507471;
+    }
+  else if(mass==500)
+    {
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor]          =0.579820;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]    =0.521803;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]  =0.657312;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]   =0.544898;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown] =0.616089;
+    }
+  else if(mass==600)
+    {
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor]          =0.597757;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]    =0.539433;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]  =0.675379;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]   =0.582621;
+      evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown] =0.668825;
+    }
+
+  cout << "[ZZ2l2nuSummaryHandler::verifyHiggsWeights] fixed Higgs pT weight to last known value: " << evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor] << endl;
+}
+
+
+//
 void ZZ2l2nuSummaryHandler::fillTree()
 {
   if(t_) t_->Fill();
