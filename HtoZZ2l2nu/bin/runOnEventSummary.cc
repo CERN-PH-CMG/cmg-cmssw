@@ -559,26 +559,25 @@ int main(int argc, char* argv[])
   double VBFWEIGHTINTEGRAL = 0;
     
   //run the analysis
-  for( int iev=evStart; iev<evEnd; iev++)
-    {
+  for( int iev=evStart; iev<evEnd; iev++){
       if(iev%1000==0) printf("\r [ %d/100 ] ",int(100*float(iev-evStart)/float(evEnd)));
       evSummaryHandler.getEntry(iev);
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
-      
-      PhysicsEvent_t phys=getPhysicsEventFrom(ev);
+
+        PhysicsEvent_t phys=getPhysicsEventFrom(ev);
       
       //OOT pu condition
       TString ootCond("");
       if(isMC){
-	double sigma        = sqrt(double(2*ev.ngenITpu));
-	double minCentralPu = -sigma;
-	double maxCentralPu = sigma;
-	double maxHighPu    = 2*sigma;
-	double puDiff       = double(ev.ngenOOTpu-2*ev.ngenITpu);
-	if(puDiff>=maxHighPu)         ootCond="VeryHighOOTpu";
-	else if(puDiff>=maxCentralPu) ootCond="HighOOTpu";
-	else if(puDiff>=minCentralPu) ootCond="MediumOOTpu";
-	else                          ootCond="LowOOTpu";
+	  double sigma        = sqrt(double(2*ev.ngenITpu));
+	  double minCentralPu = -sigma;
+	  double maxCentralPu = sigma;
+	  double maxHighPu    = 2*sigma;
+	  double puDiff       = double(ev.ngenOOTpu-2*ev.ngenITpu);
+	  if(puDiff>=maxHighPu)         ootCond="VeryHighOOTpu";
+	  else if(puDiff>=maxCentralPu) ootCond="HighOOTpu";
+	  else if(puDiff>=minCentralPu) ootCond="MediumOOTpu";
+	  else                          ootCond="LowOOTpu";
       }
 
       //pileup and Higgs pT weight
@@ -591,9 +590,9 @@ int main(int argc, char* argv[])
 	weight = LumiWeights.weight( ev.ngenITpu );
         TotalWeight_plus = PShiftUp.ShiftWeight( ev.ngenITpu );
         TotalWeight_minus = PShiftDown.ShiftWeight( ev.ngenITpu );
-        if(isVBF)                         weight *= weightVBF(VBFString,VBFHiggsMass, phys.genhiggs[0].mass() );         
-        if(isGG && ev.hptWeights[0]>1e-6) weight *= ev.hptWeights[0];
-	else if (isGG && ev.hptWeights[0]<1e-6) continue;
+        if(isVBF)weight *= weightVBF(VBFString,VBFHiggsMass, phys.genhiggs[0].mass() );         
+        if(isGG && ev.hptWeights[0]>1e-6) weight *= ev.hptWeights[0]; 
+        else if (isGG && ev.hptWeights[0]<1e-6) continue; 
       }
   
       //
@@ -1250,10 +1249,10 @@ int main(int argc, char* argv[])
 		 
 		  //re-weighting variations (Higgs, pileup scenario)
 		  TString wgtVarNames[]={"hrenup","hrendown","hfactup","hfactdown","puup","pudown"};
- 		  Float_t rwgtVars[]={ isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]   : iweight ,
-				       isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] : iweight ,
-				       isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]  : iweight ,
-				       isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]: iweight ,
+ 		  Float_t rwgtVars[]={ isGG && (ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]>1e-6) ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]   : iweight ,
+				       isGG && (ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]>1e-6) ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] : iweight ,
+				       isGG && (ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]>1e-6) ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]  : iweight ,
+				       isGG && (ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]>1e-6) ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]: iweight ,
 				      iweight*TotalWeight_plus,
 				      iweight*TotalWeight_minus};
 
