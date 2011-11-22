@@ -89,6 +89,7 @@ class CrabStatus(object):
 
         resub = []
         sub = []
+        match = []
 
         for key, job_list in self.job_info.iteritems():
             tokens = key.split('_')
@@ -99,16 +100,22 @@ class CrabStatus(object):
                 resub.extend(job_list)
             elif tokens and tokens[1] == 'Created':
                 sub.extend(job_list)
+            elif tokens and tokens[1] == 'CannotSubmit':
+                match.extend(job_list)
 
         if resub or sub:
             jobs = ','.join(sorted(resub))
+            mj = ','.join(sorted(match))
             script = """#!/usr/bin/env bash
 crab -getoutput %s
 crab -resubmit %s
 #crab -forceResubmit %s
 #created jobs not submitted
 #crab -forceResubmit %s
-""" % (jobs,jobs,jobs, ','.join(sub))
+#Cannot submit
+crab -match %s
+crab -resubmit %s
+""" % (jobs,jobs,jobs, ','.join(sub),mj,mj)
             print script
 
     def __del__(self):
