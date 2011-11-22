@@ -103,6 +103,8 @@ class ZZ2l2nuSummaryHandler{
     resetStruct();
     if(t_) t_->GetEntry(ientry); 
   }
+
+  void verifyHiggsWeights(double mass=0);
   int getEntries() { return (t_ ? t_->GetEntriesFast() : 0); }
 
   //getter
@@ -111,7 +113,7 @@ class ZZ2l2nuSummaryHandler{
   void resetStruct();
 
  private:
-  
+
   //the tree
   TTree *t_;
 };

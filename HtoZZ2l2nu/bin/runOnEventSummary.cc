@@ -102,15 +102,20 @@ int main(int argc, char* argv[])
 
 
   //isVBF sample ?
+  double HiggsMass=0; string VBFString = ""; string GGString("");
   bool isGG  = isMC && ( string(url.Data()).find("GG" )  != string::npos);
   bool isVBF = isMC && ( string(url.Data()).find("VBF")  != string::npos);
-  double VBFHiggsMass=0; string VBFString = "";
-  if(isVBF){
+  if(isGG){
+    size_t GGStringpos =  string(url.Data()).find("GG");
+    string StringMass = string(url.Data()).substr(GGStringpos+5,3);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
+    GGString = string(url.Data()).substr(GGStringpos);
+  }
+  else if(isVBF){
      size_t VBFStringpos =  string(url.Data()).find("VBF");
-     string StringMass = string(url.Data()).substr(VBFStringpos+6,3);  sscanf(StringMass.c_str(),"%lf",&VBFHiggsMass);
+     string StringMass = string(url.Data()).substr(VBFStringpos+6,3);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
      VBFString = string(url.Data()).substr(VBFStringpos);
   }
-  printf("isGG = %i     isVBF=%i\n",(int)isGG, (int)isVBF);
+  printf("isGG = %i     isVBF=%i  HiggsMass=%i\n",(int)isGG, (int)isVBF,(int)HiggsMass);
 
   //book the control histograms
   TH1F *h=new TH1F ("eventflow", ";Step;Events", 8,0,8);
@@ -590,9 +595,12 @@ int main(int argc, char* argv[])
 	weight = LumiWeights.weight( ev.ngenITpu );
         TotalWeight_plus = PShiftUp.ShiftWeight( ev.ngenITpu );
         TotalWeight_minus = PShiftDown.ShiftWeight( ev.ngenITpu );
-        if(isVBF)weight *= weightVBF(VBFString,VBFHiggsMass, phys.genhiggs[0].mass() );         
-        if(isGG && ev.hptWeights[0]>1e-6) weight *= ev.hptWeights[0]; 
-        else if (isGG && ev.hptWeights[0]<1e-6) continue; 
+        if(isVBF)                         weight *= weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );         
+        if(isGG){
+	  evSummaryHandler.verifyHiggsWeights(HiggsMass);
+	  weight *= ev.hptWeights[0];
+	  //	else if (isGG && ev.hptWeights[0]<1e-6) continue;
+	}
       }
   
       //
@@ -610,13 +618,13 @@ int main(int argc, char* argv[])
       TString subcat    = eventClassifComp.GetLabel(eventCategory);
 
       bool isGammaEvent(false);
-      if(gammaEvHandler){
+      if(gammaEvHandler)
+	{
 	  isGammaEvent=gammaEvHandler->isGood(phys);
 	  if(mctruthmode==22 && !isGammaEvent) continue;
 	  evcats.push_back("mumu");
 	  evcats.push_back("ee");
-      }
-
+	}
 
       //MC truth
       LorentzVector genzll(0,0,0,0), genzvv(0,0,0,0), genhiggs(0,0,0,0);
@@ -762,16 +770,15 @@ int main(int argc, char* argv[])
       for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++){metTypeValuesminJetdphi[it->first] = 9999.0; metTypeValuesminJetphi[it->first] = 9999.0;}
       int zrank(0);
       double mindphijmet(9999.), minmtjmet(9999.),mindrjz(9999.), minmjz(9999.);
-      for(size_t ijet=0; ijet<phys.jets.size(); ijet++){
+      for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
+	{
 	  if(phys.jets[ijet].pt()>zpt) zrank++;
-
 	  //double dphijmet=fabs(deltaPhi(zvv.phi(),phys.jets[ijet].phi()));
-
-          for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++){
-             double tmpdphijmet=fabs(deltaPhi(it->second.phi(),phys.jets[ijet].phi()));             
-             if(metTypeValuesminJetdphi[it->first]>tmpdphijmet){metTypeValuesminJetdphi[it->first]=tmpdphijmet;  metTypeValuesminJetphi[it->first] = phys.jets[ijet].phi();}
-          }
-
+	  for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++)
+	    {
+	      double tmpdphijmet=fabs(deltaPhi(it->second.phi(),phys.jets[ijet].phi()));             
+	      if(metTypeValuesminJetdphi[it->first]>tmpdphijmet){metTypeValuesminJetdphi[it->first]=tmpdphijmet;  metTypeValuesminJetphi[it->first] = phys.jets[ijet].phi();}
+	    }
 	  
 	  double mtjmet=METUtils::transverseMass(phys.jets[ijet],zvv,false);
 	  if(mtjmet<minmtjmet) minmtjmet=mtjmet;
@@ -1255,7 +1262,14 @@ int main(int argc, char* argv[])
 				       isGG && (ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]>1e-6) ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]: iweight ,
 				      iweight*TotalWeight_plus,
 				      iweight*TotalWeight_minus};
-
+		  if(ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] <0.5)
+		    cout << phys.genhiggs[0].pt() << " " << isGG 
+			 << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] 
+			 << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]
+			 << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]
+			 << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]
+			 << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown] << endl;
+		  
 		  for(size_t ivar=0; ivar<sizeof(wgtVarNames)/sizeof(TString); ivar++)
 		    {
 //		      TString ictf= catsToFill[ic]+subcat;
