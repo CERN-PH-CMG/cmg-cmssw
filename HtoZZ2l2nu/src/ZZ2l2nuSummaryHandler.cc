@@ -465,7 +465,7 @@ void ZZ2l2nuSummaryHandler::verifyHiggsWeights(double mass)
       evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown] =0.668825;
     }
 
-  cout << "[ZZ2l2nuSummaryHandler::verifyHiggsWeights] fixed Higgs pT weight to last known value: " << evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor] << endl;
+  //  cout << "[ZZ2l2nuSummaryHandler::verifyHiggsWeights] fixed Higgs pT weight to last known value: " << evSummary_.hptWeights[ZZ2l2nuSummary_t::hKfactor] << endl;
 }
 
 
