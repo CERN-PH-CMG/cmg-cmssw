@@ -46,7 +46,7 @@ void DijetMass_chiyoung_2(){
   gROOT->ProcessLine("setTDRStyle()");
   
   // Input Files  
-  TFile *inputFile = TFile::Open("../Basic_quality_plots/2011/histograms_1p010fbm1.root", "READ");
+  TFile *inputFile = TFile::Open("histograms_1p010fbm1.root", "READ");
   
   // Histograms 
   TH1F* hDijetMass = (TH1F *) inputFile->Get("h_DijetMass_data_fat");
@@ -313,7 +313,8 @@ void DijetMass_chiyoung_2(){
     g->GetXaxis()->SetRangeUser(700,4000.0);
     g->GetYaxis()->SetRangeUser(0.000005,5);
     g->Draw("APZ");
-    
+
+
     TLegend *leg = new TLegend(0.2718121,0.756993,0.5268456,0.9143357);
     leg->SetTextSize(0.03146853);
     leg->SetLineColor(1);
@@ -324,6 +325,9 @@ void DijetMass_chiyoung_2(){
     leg->AddEntry(fit,"Fit","L");
     leg->Draw("same");
     pave_fit->Draw("same");
+    c1->SaveAs("Plots/DijetMassCrossSectionWithFit.png");
+    c1->SaveAs("Plots/DijetMassCrossSectionWithFit.eps");
+
 
     //Dijet Mass cross section with all considered fits	
     TCanvas* c2 = new TCanvas("c2","DijetMass Cross Section with All Fit");
@@ -395,6 +399,9 @@ void DijetMass_chiyoung_2(){
     htmp->SetLineColor(1);
     htmp->SetLineWidth(1); 
     htmp->SetLineColor(5);
+    c2->SaveAs("Plots/DijetMassCrossSectionWithAllFit.png");
+    c2->SaveAs("Plots/DijetMassCrossSectionWithAllFit.eps");
+
 
     //DijetMass cross section with Fit and QCD MC 
     TCanvas *c3 = new TCanvas("c3","DijetMass cross section with Fit and QCD MC");
@@ -463,6 +470,8 @@ void DijetMass_chiyoung_2(){
    hJESplus2->SetLineColor(5);
    hJESminus2->SetFillColor(10);
    hJESminus2->SetLineColor(5);
+   c3->SaveAs("Plots/DijetMassCrossSectionWithFitAndQCDMC.png");
+   c3->SaveAs("Plots/DijetMassCrossSectionWithFitAndQCDMC.eps");
 
    // Data ovet PTYHIA QCD MC	
    TCanvas *c4 = new TCanvas("Ratio","Data/PTYHIA");
@@ -627,6 +636,10 @@ void DijetMass_chiyoung_2(){
    gr_qstar2_3->SetLineColor(2);
    gr_qstar2_3->SetLineStyle(5);
    gr_qstar2_3->SetLineWidth(2);
+   c4->SaveAs("Plots/RatioDataPYTHIA.png");
+   c4->SaveAs("Plots/RatioDataPYTHIA.eps");
+
+
 
    TCanvas *c5 = new TCanvas("c5","Dijet mass cross section with the signals");
    c5->SetLogy();
@@ -787,6 +800,9 @@ void DijetMass_chiyoung_2(){
    hratio->SetMarkerStyle(20);
    hratio->SetMarkerColor(1);
    hratio->SetLineColor(1);	
+   c5->SaveAs("Plots/DijetMassCrossSectionWithSignal.png");
+   c5->SaveAs("Plots/DijetMassCrossSectionWithSignal.eps");
+
 
    TCanvas* c6 = new TCanvas("c6","(Data-Fit)/Fit");
    hDiff->SetTitle("");
@@ -819,6 +835,10 @@ void DijetMass_chiyoung_2(){
    pt_c6_qstar1->Draw("sames");
    pt_c6_qstar2->Draw("sames");
 
+   c6->SaveAs("Plots/DataMinusFitDividedByFit.png");
+   c6->SaveAs("Plots/DataMinusFitDividedByFit.eps");
+
+
    TCanvas* c7 = new TCanvas("c7","(Data-Fit)/Error");
    hPulls->GetXaxis()->SetTitle("Dijet Mass (GeV)");
    hPulls->GetYaxis()->SetTitle("(Data-Fit)/Error");
@@ -828,6 +848,9 @@ void DijetMass_chiyoung_2(){
    hPulls->Draw("ep");
    l->Draw("same");  
 	
+   c7->SaveAs("Plots/DataMinusFitDividedByError.png");
+   c7->SaveAs("Plots/DataMinusFitDividedByError.eps");
+
    TCanvas* c8 = new TCanvas("c8","(Data-Fit)/Fit for the All Fits");
    hDiff->Draw("APZ");
    hDiff_4par->Draw("pzsame");
@@ -839,6 +862,9 @@ void DijetMass_chiyoung_2(){
    leg->AddEntry(hPulls_4par,"Alternate Fit A (4 Par.)","PL");
    leg->AddEntry(hPulls_3par,"Alternate Fit B (3 Par.)","PL");
    leg->Draw("same");
+   c8->SaveAs("Plots/DataMinusFitDividedByFitForAllFits.png");
+   c8->SaveAs("Plots/DataMinusFitDividedByFitForAllFits.eps");
+
 
    TCanvas* c9 = new TCanvas("c9","(Data-Fit)/Error the All Fits");
    hPulls->Draw("ep");
@@ -851,7 +877,11 @@ void DijetMass_chiyoung_2(){
    leg->AddEntry(hPulls_4par,"Alternate Fit A (4 Par.)","PL");
    leg->AddEntry(hPulls_3par,"Alternate Fit B (3 Par.)","PL");
    leg->Draw("same");
-	
+
+   c9->SaveAs("Plots/DataMinusFitDividedByErrorForAllFits.png");
+   c9->SaveAs("Plots/DataMinusFitDividedByErrorForAllFits.eps");	
+
+
    TCanvas* c10 = new TCanvas("c10","Data/Fit with the All signal");
    c10->SetLogy(1);
    hratio->SetTitle("");
@@ -887,7 +917,8 @@ void DijetMass_chiyoung_2(){
 
    pave->Draw("smaes");
 
-
+   c10->SaveAs("Plots/DataMinusFitWithAllSignal.png");
+   c10->SaveAs("Plots/DataMinusFitWithAllSignal.eps");
 
 
    TCanvas* c11 = new TCanvas("c11","default fit and pull");
@@ -993,5 +1024,9 @@ void DijetMass_chiyoung_2(){
 
    TLine *line = new TLine(700.,0,4000,0);
    line->Draw("");
+
+   c11->SaveAs("Plots/DefaultFitAndPull.png");
+   c11->SaveAs("Plots/DefaultFitAndPull.eps");
+
 }
 
