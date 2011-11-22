@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 
@@ -105,7 +106,10 @@ int main(int argc, char* argv[])
 	      controlHistos.addHistogram( new TH1F (subcat+"evtctr", ";Mass;Events", 8,0,8) );
 	    }
 	  else
-	    subcat ="photon"; subcat+=triggerThr; subcat += dilCats[idilcat];
+	    {
+	      subcat ="photon"; subcat+=triggerThr; subcat += dilCats[idilcat];
+	    }
+
 	  photonSubcats.push_back(subcat);
 
 	  //these are worth to monitor per sub-category
@@ -120,6 +124,7 @@ int main(int argc, char* argv[])
 
 	  controlHistos.addHistogram( new TH1F (subcat+"minmjv", ";min M(jet,V);Events", 100,0,500) );
 	  controlHistos.addHistogram( new TH1F (subcat+"mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events", 100,0,3.2) );
+	  controlHistos.addHistogram( new TH1F (subcat+"mindphijmetcut50", ";min #Delta#phi(jet,E_{T}^{miss});Events", 100,0,3.2) );
 	  controlHistos.addHistogram( new TH1F (subcat+"dphivmet", ";#Delta#phi(boson,E_{T}^{miss});Events", 100,0,3.2) );
 	  for(std::map<TString,TString>::iterator it = metTypes.begin(); it!= metTypes.end(); it++)
 	    {
@@ -169,10 +174,12 @@ int main(int argc, char* argv[])
       TString subcat    = eventClassifComp.GetLabel(eventCategory);
       bool isGammaEvent = gammaEvHandler.isGood(phys);
       if(mctruthmode==22 && !isGammaEvent) continue;
+      if(mctruthmode==1 && isGammaEvent) continue;
       if(!isGammaEvent && ev.cat != EE && ev.cat !=MUMU) continue;
 
       float weight = 1.0;
-      if(isMC) LumiWeights.weight( ev.ngenITpu );
+      //no pileup reweighting for closure test
+      //if(isMC) LumiWeights.weight( ev.ngenITpu );
 
       //event categories
       std::vector<TString> dilCats;
@@ -287,6 +294,7 @@ int main(int argc, char* argv[])
      
 
       double dphivmet(deltaPhi(metP4.phi(),gamma.phi()));
+      //if(isGammaEvent && dphivmet>2.8) continue;
 
       double mindphijmet(9999.);
       for(size_t ijet=0; ijet<jetsp4.size(); ijet++)
@@ -322,9 +330,11 @@ int main(int argc, char* argv[])
 		{
 		  TString pre= subcats[isc]+dilCats[idc];
 		  float iweight=weight;
-		  if(isGammaEvent)
+		  if(isGammaEvent) iweight*=qtWeights[dilCats[idc]];
+		  else
 		    {
-		      iweight*=qtWeights[dilCats[idc]];
+		      if(metP4.pt()>150)
+			cout << iweight << " " << ctf << " " << pre << " " << ev.run << " " << ev.lumi << " " << ev.event << endl;
 		    }
 		  controlHistos.fillHisto(pre+"nbtags",ctf, nbjets,iweight);
 		  if(nbjets) continue;
@@ -344,6 +354,7 @@ int main(int argc, char* argv[])
 		    {
 		      controlHistos.fillHisto(pre+"minmjv",ctf, minmjv,iweight);
 		      controlHistos.fillHisto(pre+"mindphijmet",ctf, fabs(mindphijmet),iweight);
+		      if(metP4.pt()>50) controlHistos.fillHisto(pre+"mindphijmetcut50",ctf, fabs(mindphijmet),iweight);
 		    }
 		  controlHistos.fillHisto(pre+"dphivmet",ctf, fabs(dphivmet),iweight);
 		  
