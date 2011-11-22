@@ -511,19 +511,30 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1F ("VBFNBJets303rdlepton", ";N BJets (pT>30);Events", 10,0,10) );
 
   //replicate monitor for interesting categories
-//  TString cats[]={"ee","emu","mumu"};
-  TString cats[]={"ee","mumu"};
-//  TString subCats[]={"","eq0jets","eq1jets","geq2jets","vbf"};
-   TString* subCats=new TString[eventClassifComp.GetLabelSize()];
-   for(int i=0;i<eventClassifComp.GetLabelSize();i++){
+  TString cats[]={"ee","mumu","all"};
+  TString* subCats=new TString[eventClassifComp.GetLabelSize()];
+  for(int i=0;i<eventClassifComp.GetLabelSize();i++) 
+    {
       subCats[i] = eventClassifComp.GetRawLabel(i);
-   }
+    }
+  for(size_t icat=0;icat<sizeof(cats)/sizeof(TString); icat++)
+    {
+      for(int isubcat=0;isubcat<eventClassifComp.GetLabelSize(); isubcat++)
+	{
+	  TString ctf=cats[icat]+subCats[isubcat];
+	  if(controlHistos.hasStep(ctf)) continue;
+	  controlHistos.initMonitorForStep(ctf);
+	}
+    }
+  
+  cout << "We have the following categories" << endl;
+  for(SelectionMonitor::StepMonitor_t::iterator it=controlHistos.getAllMonitors().begin(); 
+      it != controlHistos.getAllMonitors().end(); 
+      it++)
+    {
+      cout << it->first << endl;
+    }
 
-  //TString subCats[]={"","1to3vtx","4to9vtx","geq10vtx"};
-  for(size_t icat=0;icat<sizeof(cats)/sizeof(TString); icat++){
-    for(int isubcat=0;isubcat<eventClassifComp.GetLabelSize(); isubcat++){
-      controlHistos.initMonitorForStep(cats[icat]+subCats[isubcat]);
-  }}
 
   //open the file and get events tree
   ZZ2l2nuSummaryHandler evSummaryHandler;
@@ -918,8 +929,8 @@ int main(int argc, char* argv[])
       subCatsToFill.push_back(subcat);
       for(size_t ic=0; ic<catsToFill.size(); ic++){
 	for(size_t isc=0; isc<subCatsToFill.size(); isc++){
-	      TString ctf=catsToFill[ic]+subCatsToFill[isc];   
-	      
+	      TString ctf=catsToFill[ic]+subCatsToFill[isc];  
+
 	      float iweight=weight;
 	      if(gammaEvHandler){
 		  TString dilCh=catsToFill[ic];
@@ -1256,10 +1267,10 @@ int main(int argc, char* argv[])
 		 
 		  //re-weighting variations (Higgs, pileup scenario)
 		  TString wgtVarNames[]={"hrenup","hrendown","hfactup","hfactdown","puup","pudown"};
- 		  Float_t rwgtVars[]={ isGG && (ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]>1e-6) ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]   : iweight ,
-				       isGG && (ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]>1e-6) ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] : iweight ,
-				       isGG && (ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]>1e-6) ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]  : iweight ,
-				       isGG && (ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]>1e-6) ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]: iweight ,
+ 		  Float_t rwgtVars[]={ isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]   : iweight ,
+				       isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] : iweight ,
+				       isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]  : iweight ,
+				       isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]: iweight ,
 				      iweight*TotalWeight_plus,
 				      iweight*TotalWeight_minus};
 		  if(ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] <0.5)
