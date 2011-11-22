@@ -102,14 +102,15 @@ int main(int argc, char* argv[])
 
 
   //isVBF sample ?
-  bool isGG = ( string(url.Data()).find("GGto") != string::npos);
-  bool isVBF = ( string(url.Data()).find("VBF") != string::npos);
+  bool isGG  = isMC && ( string(url.Data()).find("GG" )  != string::npos);
+  bool isVBF = isMC && ( string(url.Data()).find("VBF")  != string::npos);
   double VBFHiggsMass=0; string VBFString = "";
   if(isVBF){
      size_t VBFStringpos =  string(url.Data()).find("VBF");
      string StringMass = string(url.Data()).substr(VBFStringpos+6,3);  sscanf(StringMass.c_str(),"%lf",&VBFHiggsMass);
      VBFString = string(url.Data()).substr(VBFStringpos);
   }
+  printf("isGG = %i     isVBF=%i\n",(int)isGG, (int)isVBF);
 
   //book the control histograms
   TH1F *h=new TH1F ("eventflow", ";Step;Events", 8,0,8);
@@ -1247,13 +1248,13 @@ int main(int argc, char* argv[])
 		 
 		  //re-weighting variations (Higgs, pileup scenario)
 		  TString wgtVarNames[]={"hrenup","hrendown","hfactup","hfactdown","puup","pudown"};
- 		  Float_t rwgtVars[]={iweight,
-				      isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]   : iweight,
-				      isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] : iweight,
-				      isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]  : iweight,
-				      isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]: iweight,
+ 		  Float_t rwgtVars[]={ isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]   : iweight ,
+				       isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] : iweight ,
+				       isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]  : iweight ,
+				       isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]: iweight ,
 				      iweight*TotalWeight_plus,
 				      iweight*TotalWeight_minus};
+
 		  for(size_t ivar=0; ivar<sizeof(wgtVarNames)/sizeof(TString); ivar++)
 		    {
 //		      TString ictf= catsToFill[ic]+subcat;
