@@ -126,6 +126,7 @@
 	 "lcolor":2,
 	 "lwidth":2,
 	 "fill":0,
+	 "mctruthmode":1,
 	 "spimpose":true,
          "data":[
 	      {
