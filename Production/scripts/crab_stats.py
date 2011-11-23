@@ -113,8 +113,8 @@ crab -resubmit %s
 #created jobs not submitted
 #crab -forceResubmit %s
 #Cannot submit
-crab -match %s
-crab -resubmit %s
+#crab -match %s
+#crab -resubmit %s
 """ % (jobs,jobs,jobs, ','.join(sub),mj,mj)
             print script
 
