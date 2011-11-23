@@ -723,6 +723,10 @@ class CheckJobStatus(Task):
                         result[j] = 'JobKilled'
                         valid = False
                         break
+                    elif 'A fatal system signal has occurred' in line:
+                        result[j] = 'SegFault'
+                        valid = False
+                        break
                 if valid:
                     result[j] = 'VALID'
             else:
