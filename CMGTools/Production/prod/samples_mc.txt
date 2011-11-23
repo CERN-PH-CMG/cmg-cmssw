@@ -74,4 +74,18 @@ mgouzevi%/ZprimeToBBbar_M-700_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/
 mgouzevi%/ZprimeToBBbar_M-1200_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
 mgouzevi%/ZprimeToBBbar_M-2000_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
 mgouzevi%/ZprimeToBBbar_M-3500_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+mgouzevi%/QstarToJJ_M-500_TuneD6T_7TeV_pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+mgouzevi%/QstarToJJ_M-700_TuneD6T_7TeV_pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+mgouzevi%/QstarToJJ_M-1200_TuneD6T_7TeV_pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+mgouzevi%/QstarToJJ_M-2000_TuneD6T_7TeV_pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+mgouzevi%/QstarToJJ_M-3500_TuneD6T_7TeV_pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V
+mgouzevi%/QstarToJJ_M_4000_TuneD6T_7TeV_pythia6/AODSIM/V2
+mgouzevi%/QstarToJJ_M_5000_TuneD6T_7TeV_pythia6/AODSIM/V2
+mgouzevi%/RSGravitonToJJ_M-500_TuneD6T_7TeV_pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+mgouzevi%/RSGravitonToJJ_M-700_TuneD6T_7TeV_pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+mgouzevi%/RSGravitonToJJ_M-1200_TuneD6T_7TeV_pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+mgouzevi%/RSGravitonToJJ_M-2000_TuneD6T_7TeV_pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+mgouzevi%/RSGravitonToJJ_M-3500_TuneD6T_7TeV_pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2
+mgouzevi%/RSGravitonToJJ_M_4000_TuneD6T_7TeV_pythia6/AODSIM/V2
+mgouzevi%/RSGravitonToJJ_M_5000_TuneD6T_7TeV_pythia6/AODSIM/V2
 
