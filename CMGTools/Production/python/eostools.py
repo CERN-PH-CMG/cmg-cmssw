@@ -33,7 +33,6 @@ def runXRDCommand(path, cmd, *args):
     # print ' '.join(command)
     return runner.runCommand(command)
 
-
 def runEOSCommand(path, cmd, *args):
     """Run an eos command.
 
@@ -279,7 +278,7 @@ def chmod(path, mode):
     return runEOSCommand(path, 'chmod', '-r', str(mode))
 
 
-def listFiles(path, rec = False):
+def listFiles(path, rec = False, full_info = False):
     """Provides a list of the specified directory
     """
     # -- listing on the local filesystem --
@@ -309,7 +308,10 @@ def listFiles(path, rec = False):
             #convert to an LFN
             # result.append(tuple(tokens))
             #COLIN need same interface for eos and local fs
-            result.append( tokens[4])
+            if full_info:
+                result.append( tokens)
+            else:
+                result.append( tokens[4])
     # print result
     return result
 
