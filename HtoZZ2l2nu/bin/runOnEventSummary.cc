@@ -72,8 +72,8 @@ int main(int argc, char* argv[])
   //pileup weighting
   edm::LumiReWeighting LumiWeights(runProcess.getParameter<std::string>("mcpileup"), runProcess.getParameter<std::string>("datapileup"), "pileup","pileup");
   std::string puWeightFile = runProcess.getParameter<std::string>("puWeightFile");
-  if(puWeightFile.size()==0)  LumiWeights.weight3D_init();
-  else                        LumiWeights.weight3D_init(puWeightFile);
+//  if(puWeightFile.size()==0)  LumiWeights.weight3D_init();
+//  else                        LumiWeights.weight3D_init(puWeightFile);
   reweight::PoissonMeanShifter PShiftUp(+0.6);
   reweight::PoissonMeanShifter PShiftDown(-0.6);
 
@@ -380,7 +380,7 @@ int main(int argc, char* argv[])
   }
 
   for(size_t ivar=0; ivar<varsToInclude.size(); ivar++){
-    TH1 *hmet = new TH1F (varsToInclude[ivar]+"finaleventflowmet",";Category;Event count;",8,0,8);
+    TH1 *hmet = new TH1F (varsToInclude[ivar]+"finaleventflowmet",";Category;Event count;",10,0,10);
     hmet->GetXaxis()->SetBinLabel(1,"m=130");
     hmet->GetXaxis()->SetBinLabel(2,"m=150");
     hmet->GetXaxis()->SetBinLabel(3,"m=170");
@@ -389,9 +389,11 @@ int main(int argc, char* argv[])
     hmet->GetXaxis()->SetBinLabel(6,"m=400");
     hmet->GetXaxis()->SetBinLabel(7,"m=500");
     hmet->GetXaxis()->SetBinLabel(8,"m=600");
+    hmet->GetXaxis()->SetBinLabel(9,"syst1");
+    hmet->GetXaxis()->SetBinLabel(10,"syst2");
     controlHistos.addHistogram( hmet );
 
-    TH1 *hrmet = new TH1F (varsToInclude[ivar]+"finaleventflowrmet",";Category;Event count;",8,0,8);
+    TH1 *hrmet = new TH1F (varsToInclude[ivar]+"finaleventflowrmet",";Category;Event count;",10,0,10);
     hrmet->GetXaxis()->SetBinLabel(1,"m=130");
     hrmet->GetXaxis()->SetBinLabel(2,"m=150");
     hrmet->GetXaxis()->SetBinLabel(3,"m=170");
@@ -400,9 +402,11 @@ int main(int argc, char* argv[])
     hrmet->GetXaxis()->SetBinLabel(6,"m=400");
     hrmet->GetXaxis()->SetBinLabel(7,"m=500");
     hrmet->GetXaxis()->SetBinLabel(8,"m=600");
+    hrmet->GetXaxis()->SetBinLabel(9,"syst1");
+    hrmet->GetXaxis()->SetBinLabel(10,"syst2");
     controlHistos.addHistogram( hrmet );
     
-    TH1 *hvbf = new TH1F (varsToInclude[ivar]+"finaleventflowvbf",";Category;Event count;",8,0,8);
+    TH1 *hvbf = new TH1F (varsToInclude[ivar]+"finaleventflowvbf",";Category;Event count;",10,0,10);
     hvbf->GetXaxis()->SetBinLabel(1,"MET>50");
     hvbf->GetXaxis()->SetBinLabel(2,"MET>55");
     hvbf->GetXaxis()->SetBinLabel(3,"MET>60");
@@ -411,6 +415,8 @@ int main(int argc, char* argv[])
     hvbf->GetXaxis()->SetBinLabel(6,"red-MET>55");
     hvbf->GetXaxis()->SetBinLabel(7,"red-MET>60");
     hvbf->GetXaxis()->SetBinLabel(8,"red-MET>65");
+    hvbf->GetXaxis()->SetBinLabel(9,"syst1");
+    hvbf->GetXaxis()->SetBinLabel(10,"syst2");
     controlHistos.addHistogram( hvbf );
   }
 
@@ -1153,6 +1159,9 @@ int main(int argc, char* argv[])
 		  bool pass400met( zvv.pt()>118 && mindphijmet>0.2 && mt>340 && mt<440);
 		  bool pass500met( zvv.pt()>166 && mindphijmet>0.1 && mt>340 && mt<740); 
 		  bool pass600met( zvv.pt()>188 && mindphijmet>0.1 && mt>440 && mt<740);
+                  bool passSyst1met( zvv.pt()>50 && mindphijmet>0.05 && mt>150);
+                  bool passSyst2met( zvv.pt()>60 && mindphijmet>0.1  && mt>170);
+
 		  if(pass130met) controlHistos.fillHisto("finaleventflowmet",ctf,0,iweight);
 		  if(pass150met) controlHistos.fillHisto("finaleventflowmet",ctf,1,iweight);
 		  if(pass170met) controlHistos.fillHisto("finaleventflowmet",ctf,2,iweight);
@@ -1161,6 +1170,8 @@ int main(int argc, char* argv[])
 		  if(pass400met) controlHistos.fillHisto("finaleventflowmet",ctf,5,iweight);
 		  if(pass500met) controlHistos.fillHisto("finaleventflowmet",ctf,6,iweight);
 		  if(pass600met) controlHistos.fillHisto("finaleventflowmet",ctf,7,iweight);
+                  if(passSyst1met) controlHistos.fillHisto("finaleventflowmet",ctf,8,iweight);
+                  if(passSyst2met) controlHistos.fillHisto("finaleventflowmet",ctf,9,iweight);
 		  
 		  bool pass130rmet( rCMetP4.pt()>50  && mindphijmet>0.74 && mt>171 && mt<296);
 		  bool pass150rmet( rCMetP4.pt()>50  && mindphijmet>0.7  && mt>193 && mt<284);
@@ -1170,6 +1181,8 @@ int main(int argc, char* argv[])
 		  bool pass400rmet( rCMetP4.pt()>110 && mindphijmet>0.2  && mt>340 && mt<440);
 		  bool pass500rmet( rCMetP4.pt()>156 && mindphijmet>0.1  && mt>340 && mt<740); 
 		  bool pass600rmet( rCMetP4.pt()>156 && mindphijmet>0.1  && mt>440 && mt<790);
+                  bool passSyst1rmet( rCMetP4.pt()>50 && mindphijmet>0.05 && mt>150);
+                  bool passSyst2rmet( rCMetP4.pt()>60 && mindphijmet>0.1  && mt>170);
 		  if(pass130rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,0,iweight);
 		  if(pass150rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,1,iweight);
 		  if(pass170rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,2,iweight);
@@ -1178,6 +1191,8 @@ int main(int argc, char* argv[])
 		  if(pass400rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,5,iweight);
 		  if(pass500rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,6,iweight);
 		  if(pass600rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,7,iweight);		  
+                  if(passSyst1rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,8,iweight);
+                  if(passSyst2rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,9,iweight);
 
 		  bool passvbf50met( zvv.pt() > 50);
 		  bool passvbf55met( zvv.pt() > 55);
@@ -1187,6 +1202,9 @@ int main(int argc, char* argv[])
 		  bool passvbf55rmet( rCMetP4.pt() > 55);
 		  bool passvbf60rmet( rCMetP4.pt() > 60);
 		  bool passvbf65rmet( rCMetP4.pt() > 65);
+                  bool passvbfSyst1met( zvv.pt() > 40);
+                  bool passvbfSyst2met( rCMetP4.pt() > 40);
+
 		  if(passvbf50met) controlHistos.fillHisto("finaleventflowvbf",ctf,0,iweight);
 		  if(passvbf55met) controlHistos.fillHisto("finaleventflowvbf",ctf,1,iweight);
 		  if(passvbf60met) controlHistos.fillHisto("finaleventflowvbf",ctf,2,iweight);
@@ -1195,6 +1213,8 @@ int main(int argc, char* argv[])
 		  if(passvbf55rmet) controlHistos.fillHisto("finaleventflowvbf",ctf,5,iweight);
 		  if(passvbf60rmet) controlHistos.fillHisto("finaleventflowvbf",ctf,6,iweight);
 		  if(passvbf65rmet) controlHistos.fillHisto("finaleventflowvbf",ctf,7,iweight);		  
+                  if(passvbfSyst1met) controlHistos.fillHisto("finaleventflowvbf",ctf,8,iweight);
+                  if(passvbfSyst2met) controlHistos.fillHisto("finaleventflowvbf",ctf,9,iweight);
 		
 		  
 		  //systematic variations (computed per jet bin so fill only once) 		  
@@ -1222,6 +1242,8 @@ int main(int argc, char* argv[])
 				bool ipass400met( metVars[ivar].pt()>118 && mindphijmet>0.2  && mtVars[ivar]>340 && mtVars[ivar]<440);
 				bool ipass500met( metVars[ivar].pt()>166 && mindphijmet>0.1  && mtVars[ivar]>340 && mtVars[ivar]<740); 
 				bool ipass600met( metVars[ivar].pt()>188 && mindphijmet>0.1  && mtVars[ivar]>440 && mtVars[ivar]<740);
+                                bool ipassSyst1met(  metVars[ivar].pt()>50 && mindphijmet>0.05 && mtVars[ivar]>150);
+                                bool ipassSyst2met(  metVars[ivar].pt()>60 && mindphijmet>0.1  && mtVars[ivar]>170);
 				if(ipass130met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,0,iweight);
 				if(ipass150met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,1,iweight);
 				if(ipass170met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,2,iweight);
@@ -1230,7 +1252,8 @@ int main(int argc, char* argv[])
 				if(ipass400met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,5,iweight);
 				if(ipass500met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,6,iweight);
 				if(ipass600met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,7,iweight);
-			  
+                                if(ipassSyst1met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,8,iweight);
+                                if(ipassSyst2met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,9,iweight);		  
 			  
 				bool ipass130rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.74 && mtVars[ivar]>171 && mtVars[ivar]<296);
 				bool ipass150rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.7  && mtVars[ivar]>193 && mtVars[ivar]<284);
@@ -1240,6 +1263,8 @@ int main(int argc, char* argv[])
 				bool ipass400rmet( redMetVars[ivar].pt()>110 && mindphijmet>0.2  && mtVars[ivar]>340 && mtVars[ivar]<440);
 				bool ipass500rmet( redMetVars[ivar].pt()>156 && mindphijmet>0.1  && mtVars[ivar]>340 && mtVars[ivar]<740); 
 				bool ipass600rmet( redMetVars[ivar].pt()>156 && mindphijmet>0.1  && mtVars[ivar]>440 && mtVars[ivar]<790);
+                                bool ipassSyst1rmet( redMetVars[ivar].pt()>50 && mindphijmet>0.05 && mtVars[ivar]>150);
+                                bool ipassSyst2rmet( redMetVars[ivar].pt()>60 && mindphijmet>0.1  && mtVars[ivar]>170);
 				if(ipass130rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,0,iweight);
 				if(ipass150rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,1,iweight);
 				if(ipass170rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,2,iweight);
@@ -1248,8 +1273,9 @@ int main(int argc, char* argv[])
 				if(ipass400rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,5,iweight);
 				if(ipass500rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,6,iweight);
 				if(ipass600rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,7,iweight);		  
-			  
-			  
+                                if(ipassSyst1rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,8,iweight);
+                                if(ipassSyst2rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,9,iweight);
+		  			  
 				bool ipassvbf50met( metVars[ivar].pt() > 50);
 				bool ipassvbf55met( metVars[ivar].pt() > 55);
 				bool ipassvbf60met( metVars[ivar].pt() > 60);
@@ -1258,6 +1284,8 @@ int main(int argc, char* argv[])
 				bool ipassvbf55rmet( redMetVars[ivar].pt() > 55);
 				bool ipassvbf60rmet( redMetVars[ivar].pt() > 60);
 				bool ipassvbf65rmet( redMetVars[ivar].pt() > 65);
+                                bool ipassvbfSyst1met( metVars[ivar].pt() > 40);
+                                bool ipassvbfSyst2met( redMetVars[ivar].pt() > 40);
 				if(ipassvbf50met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,0,iweight);
 				if(ipassvbf55met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,1,iweight);
 				if(ipassvbf60met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,2,iweight);
@@ -1266,6 +1294,8 @@ int main(int argc, char* argv[])
 				if(ipassvbf55rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,5,iweight);
 				if(ipassvbf60rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,6,iweight);
 				if(ipassvbf65rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,7,iweight);		  
+                                if(ipassvbfSyst1met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,8,iweight);
+                                if(ipassvbfSyst2met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,9,iweight);
 			      }
 			  }
 		      }
@@ -1297,6 +1327,8 @@ int main(int argc, char* argv[])
 			  if(pass400met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,5,rwgtVars[ivar]);
 			  if(pass500met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,6,rwgtVars[ivar]);
 			  if(pass600met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,7,rwgtVars[ivar]);
+                          if(passSyst1met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,8,rwgtVars[ivar]);
+                          if(passSyst2met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,9,rwgtVars[ivar]);
 		      
 			  if(pass130rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,0,rwgtVars[ivar]);
 			  if(pass150rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,1,rwgtVars[ivar]);
@@ -1306,6 +1338,8 @@ int main(int argc, char* argv[])
 			  if(pass400rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,5,rwgtVars[ivar]);
 			  if(pass500rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,6,rwgtVars[ivar]);
 			  if(pass600rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,7,rwgtVars[ivar]);		  
+                          if(passSyst1rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,8,rwgtVars[ivar]);
+                          if(passSyst2rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,9,rwgtVars[ivar]);
 
 			  if(passvbf50met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,0,rwgtVars[ivar]);
 			  if(passvbf55met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,1,rwgtVars[ivar]);
@@ -1315,6 +1349,8 @@ int main(int argc, char* argv[])
 			  if(passvbf55rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,5,rwgtVars[ivar]);
 			  if(passvbf60rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,6,rwgtVars[ivar]);
 			  if(passvbf65rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,7,rwgtVars[ivar]);		  
+                          if(passvbfSyst1met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,8,rwgtVars[ivar]);
+                          if(passvbfSyst2met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,9,rwgtVars[ivar]);
 			}
 
 		    }
