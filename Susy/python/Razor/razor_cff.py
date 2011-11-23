@@ -107,7 +107,7 @@ razorDiHemiHadBox = cmgDiHemi.clone(
     #these are a little looser than the analysis cuts to give some sidebands                            
     razor = cms.PSet(
                      deltaPhi = cms.string('deltaPhi(leg1().phi(),leg2().phi()) < 2.8'),
-                     mr = cms.string('mR() >= 200'),
+                     mr = cms.string('mR() >= 100'),
                      r = cms.string('R() >= 0.14')
     )
     )      
