@@ -53,6 +53,7 @@ razorPFJetsMuonVeto = deltaRJetMuons.clone(
 razorPFJetCount = cmgCandCount.clone( src = 'razorPFJetsMuonVeto', minNumber = 2 )
 # filter out B-tagged jets for latter use 
 razorPFBJetSel = cmgPFJetSel.clone( src = 'razorPFJetsMuonVeto', cut = 'getSelection("cuts_btag_loose")' )
+razorPFBJetCount = cmgCandCount.clone( src = 'razorPFBJetSel', minNumber = 1 )
 
 razorJetSequence = cms.Sequence(
     razorPFJetSel+
@@ -213,7 +214,9 @@ razorSkimSequence = cms.Sequence(
     # require no jets to fail ID
     ~razorPFJetIDCount + #note the inversion - veto events with jets that fail the ID
     # require at least two high pt jets
-    razorPFJetCount+
+    razorPFJetCount*
+    #at least one loose btag
+    razorPFBJetCount+
     # loose cuts on R and MR
     razorSelectedDiHemi*
     razorSelectedCount

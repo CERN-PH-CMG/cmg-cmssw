@@ -19,7 +19,13 @@ doSkimHighMET = False
 cut_highMET = 'pt()>50'
 process.setName_('SUSY')
 
-process.load("CMGTools.Common.sources.TTJets_TuneZ2_7TeV_madgraph_tauola.Summer11_PU_S4_START42_V11_v1.AODSIM.V2.PAT_CMG_V2_3_0.source_cff")
+from CMGTools.Production.datasetToSource import *
+process.source = datasetToSource(
+    'cmgtools',
+    '/MultiJet/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_4_0',
+    #'/TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0',
+    'tree_CMG_[0-9]+\\.root'
+    ) 
 #process.source.fileNames = ['file:tree_CMG.root']
 #process.source.fileNames = process.source.fileNames[:10]
 
@@ -47,6 +53,8 @@ process.schedule = cms.Schedule(
     process.razorEleMuPath,
     process.razorTriggerPath,
 #    process.LPPath,
+    process.razorMJPath,
+    process.razorMJTriggerPath,
     process.outpath
     )
 
@@ -60,10 +68,10 @@ process.out.outputCommands += susyEventContent
 from CMGTools.Common.eventContent.eventCleaning_cff import eventCleaning
 process.out.outputCommands.extend( eventCleaning )
 
-process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('leptonicStopPath','leptonicStopTriggerPath','multijetPath','multijetTriggerPath','razorEleMuPath','razorPath','razorTriggerPath') )
+process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('leptonicStopPath','leptonicStopTriggerPath','multijetPath','multijetTriggerPath','razorEleMuPath','razorPath','razorTriggerPath','razorMJPath','razorMJTriggerPath') )
 #plot the correlations between the selection paths
 process.load('CMGTools.Common.histograms.triggerCorrelationHistograms_cfi')
-process.triggerCorrelationHistograms.names = cms.untracked.vstring('leptonicStopPath','leptonicStopTriggerPath','multijetPath','multijetTriggerPath','razorEleMuPath','razorPath','razorTriggerPath')
+process.triggerCorrelationHistograms.names = cms.untracked.vstring('leptonicStopPath','leptonicStopTriggerPath','multijetPath','multijetTriggerPath','razorEleMuPath','razorPath','razorTriggerPath','razorMJPath','razorMJTriggerPath')
 process.schedule.append( process.triggerCorrelationHistogramsEndPath )
 
 process.TFileService = cms.Service(
