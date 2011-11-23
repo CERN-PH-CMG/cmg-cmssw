@@ -5,6 +5,7 @@ from CMGTools.Susy.MultiJet.multijet_cff import *
 from CMGTools.Susy.RA1.RA1_cff import *
 from CMGTools.Susy.RA2.RA2_cff import *
 from CMGTools.Susy.Razor.razor_cff import *
+from CMGTools.Susy.RazorMultiJet.razorMultijet_cff import *
 from CMGTools.Susy.LP.LP_cff import *
 from CMGTools.Susy.LeptonicStop.leptonicstop_cff import *
 from CMGTools.Common.countingSequences_cff import *
@@ -52,6 +53,16 @@ razorTriggerPath = cms.Path(
 razorEleMuPath = cms.Path(
     susySequence +
     razorEleMuSequence
+    )
+
+razorMJPath = cms.Path(
+    susySequence +
+    razorMJSkimSequence
+    )
+
+razorMJTriggerPath = cms.Path(
+    susySequence +
+    razorMJTriggerSkimSequence
     )
 
 LPPath = cms.Path(
