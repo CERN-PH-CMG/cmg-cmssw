@@ -5,8 +5,8 @@ import FWCore.ParameterSet.Config as cms
 ##
 puWeights = cms.EDProducer("PileupNormalizationProducer",
                            integerWeightsOnly = cms.bool(False),
-                           mc   = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/Summer11Truth.root'),
-                           data = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/PileupTruth2011AplusB.root'),
+                           mc   = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/Summer11Observed.root'),
+                           data = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/Pileup2011AplusB.root'),
                            puWeightFile = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/Weight3D_2011AplusB.root'),
                            use3D = cms.bool(True)
                            )

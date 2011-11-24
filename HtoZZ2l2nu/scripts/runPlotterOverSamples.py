@@ -190,7 +190,7 @@ def savePlotAsTable(stackplots=None,spimposeplots=None,dataplots=None,outUrl='ta
 """
 shows the control plots
 """
-def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitles=None,generalLabel='CMS preliminary',outputDir='data/plots', samplehtml='') :
+def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitles=None,generalLabel='CMS preliminary',outputDir='data/plots', samplehtml='',forceNormalization=True) :
 
     if(len(stackplots)==0 and len(spimposeplots)==0 and len(dataplots)==0) : return
 
@@ -277,7 +277,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
             
         plotLabel = generalLabel
         c.Clear()
-        leg=showPlotsAndMCtoDataComparison(c,stack,spimpose,data)
+        leg=showPlotsAndMCtoDataComparison(c,stack,spimpose,data,True,forceNormalization)
         formatForCmsPublic(c.cd(1),leg,plotLabel,isamp)
         c.SaveAs(outputDir+'/'+pname+'.png')
         c.SaveAs(outputDir+'/'+pname+'.C')
@@ -348,8 +348,8 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
 """
 Parses a json file and retrieves the necessary info
 """
-def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='data/plots', getFromDir='') :
-
+def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='data/plots', getFromDir='', forceNormalization=False ) :
+  
     #open the file which describes the sample
     jsonFile = open(samplesDB,'r')
     procList=json.load(jsonFile,encoding='utf-8').items()
@@ -462,7 +462,7 @@ def runOverSamples(samplesDB, integratedLumi=1.0, inputDir='data', outputDir='da
             pOut.Close()
 
     print 'Output plots available @ ' + outputDir + '/plotter.root'
-    showControlPlots(stackplots,spimposeplots,dataplots,plottitles,generalLabel,outputDir,samplehtml)
+    showControlPlots(stackplots,spimposeplots,dataplots,plottitles,generalLabel,outputDir,samplehtml,forceNormalization)
 
 
 #print usage
@@ -474,6 +474,7 @@ def usage() :
     print '  -i : input directory'
     print '  -o : output directory'
     print '  -d : root directory'
+    print '  -n : force normalization'
     print '  -f : output format (csv, e.g. C,png,root,pdf)'
     print ' '
                                         
@@ -481,7 +482,7 @@ def usage() :
 #parse the options 
 try:
      # retrive command line options
-     shortopts  = "l:j:i:o:d:h?"
+     shortopts  = "l:n:j:i:o:d:f:h?"
      opts, args = getopt.getopt( sys.argv[1:], shortopts )
 except getopt.GetoptError:
      # print help information and exit:
@@ -495,6 +496,7 @@ inputDir='data'
 outputDir='data/plots'
 getFromDir=''
 samplesDB=''
+forceNormalization=False
 for o,a in opts:
     if o in("-?", "-h"):
         usage()
@@ -504,14 +506,16 @@ for o,a in opts:
     elif o in('-d'): getFromDir = a
     elif o in('-l'): integratedLumi=float(a)
     elif o in('-o'): outputDir=a
-
+    elif o in('-n'): forceNormalization=True
+    
 os.system('rm -rf plotter.root')
+
 
 #run the script
 print ' Integrated lumi is: %3.1f fb' % (integratedLumi/1000)
 print ' Samples defined in: ' +  samplesDB
 print ' Plots in: ' + inputDir
-runOverSamples( samplesDB, integratedLumi,inputDir, outputDir, getFromDir )
+runOverSamples( samplesDB, integratedLumi,inputDir, outputDir, getFromDir, forceNormalization )
 print ' Output stored in: ' + outputDir
 os.system('cp ${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/html/index.html ' + outputDir)
 print ' Can browse the results using: ' + outputDir + '/index.html'
