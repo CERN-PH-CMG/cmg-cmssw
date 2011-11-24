@@ -25,7 +25,7 @@ runOverSamples.py -j data/beauty-samples.json -p "-cfg=/afs/cern.ch/user/p/psilv
 #
 
 ## generate unweigthed distributions
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples-fullmc.json -d /castor/cern.ch/cms/store/cmst3/user/querten/11_11_07_HtoZZ2l2nNTuples -o ~/scratch0/gamma/  -c test/runAnalysis_cfg.py.templ -p -s True
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples-fullmc.json -d /castor/cern.ch/cms//store/cmst3/user/psilva/HZZ_11.11.24 -o ~/scratch0/gamma/  -c test/runAnalysis_cfg.py.templ -s 8nh
 
 ## generate plotter.root
 runPlotter --iLumi 4616 --inDir ~/scratch0/gamma/ --outDir /tmp/psilva/ --json data/photon-samples-fullmc.json
@@ -33,7 +33,7 @@ runPlotter --iLumi 4616 --inDir ~/scratch0/gamma/ --outDir /tmp/psilva/ --json d
 ## use bin/G/getGammaTemplates.C to generate the weights for the sampe
 
 ## run again with weights
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples-fullmc.json -d /castor/cern.ch/cms/store/cmst3/user/querten/11_11_07_HtoZZ2l2nNTuples -o ~/scratch0/gamma/  -c test/runAnalysis_cfg.py.templ -p "@weightsFile=/afs/cern.ch/user/p/psilva/public/GammaWeights/mc_gammaqtvsnvtxweight.root" -s True
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples-fullmc.json -d /castor/cern.ch/cms//store/cmst3/user/psilva/HZZ_11.11.24 -o ~/scratch0/gamma/  -c test/runAnalysis_cfg.py.templ -p "@weightsFile=/afs/cern.ch/user/p/psilva/public/GammaWeights/mc_gammaqtvsnvtxweight.root" -s 8nh
 
 ## similar procedure for data: can use data/photon-samples-data.json instead
 
