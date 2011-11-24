@@ -11,7 +11,12 @@ from CMGTools.H2TauTau.macros.Loop import Loop
 from CMGTools.H2TauTau.macros.AnalysisConfig import AnalysisConfig
 
 def CallBack( result ):
-    print 'production done:\n', str(result)
+    pass
+    print 'production done:', str(result)
+
+def RunLoopAsync(comp):
+    loop = RunLoop( comp )
+    return loop.name
 
 def RunLoop( comp ):
     #COLIN need to be able to catch exceptions! 
@@ -21,10 +26,11 @@ def RunLoop( comp ):
                  triggers = comp.triggers,
                  vertexWeight = comp.vertexWeight )
     print loop
-    loop.Loop()
+    # print options.nevents
+    loop.Loop( options.nevents )
     loop.Write()
     print loop
-    return fullName
+    return loop
 
 def TestComponentList( complist ):
     badPattern = False
@@ -46,7 +52,8 @@ def CreateOutputDir(dir, components):
     except OSError:
         print 'directory %s already exists' % dir
         print 'contents: '
-        pprint( os.listdir(dir) )
+        dirlist = [path for path in os.listdir(dir) if os.path.isdir( '/'.join([dir, path]) )]
+        pprint( dirlist )
         print 'component list: '
         pprint( components )
         while answer not in ['Y','y','yes','N','n','no']:
@@ -116,14 +123,27 @@ lumi = 658.886
 mc = 0
  
     """
+    parser.add_option("-N", "--nevents", 
+                      dest="nevents", 
+                      help="number of events to process",
+                      default=-1)
     
     (options,args) = parser.parse_args()
     if len(args) != 2:
+        parser.print_help()
         print 'ERROR: please provide the processing name and the component list'
         sys.exit(1)
 
     outDir = args[0]
+    if os.path.exists(outDir) and not os.path.isdir( outDir ):
+        parser.print_help()
+        print 'ERROR: when it exists, first argument must be a directory.'
+        sys.exit(2)
     cfgFile = args[1]
+    if not os.path.isfile( cfgFile ):
+        parser.print_help()
+        print 'ERROR: second argument must be an existing file (your input cfg).'
+        sys.exit(3)
 
     # jobArgs = PersistentDict( 'jobArgs', componentList)
 
@@ -143,10 +163,10 @@ mc = 0
         pool = Pool(processes=len(selComps))
         for name,comp in selComps.iteritems():
             print 'submitting', name
-            pool.apply_async( RunLoop, [comp], callback=CallBack)     
+            pool.apply_async( RunLoopAsync, [comp], callback=CallBack)     
         pool.close()
         pool.join()
     else:
         # when running only one loop, do not use multiprocessor module.
         # then, the exceptions are visible -> use only one sample for testing
-        RunLoop( comp )
+        loop = RunLoop( comp )
