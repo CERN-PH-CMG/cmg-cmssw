@@ -21,12 +21,12 @@
 #endif
 
 
-TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool buildLegend=true, TString legopt="lpf");
+TLegend *showPlots(TPad *c, TList &stack, TList &spimpose, TList &data, bool buildLegend=true, TString legopt="lpf",bool forceNormalization=false);
 TLegend *showStackPlot(TPad *c, TList &stack, bool buildLegend=true, TString legopt="lpf");
 TLegend *showSimplePlot(TPad *c, TList &data, bool buildLegend=true, TString legopt="lpf");
 void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doDiff=false, float yscale=1);
 TString getPlotAsTable(TList *stack, TList *spimpose, TList *data);
 std::pair<TH1D *,TH1D *> getProjections(TH2D *);
-TLegend *showPlotsAndMCtoDataComparison(TPad *p, TList &stack, TList &spimpose, TList &data, bool setLogy=true);
+TLegend *showPlotsAndMCtoDataComparison(TPad *p, TList &stack, TList &spimpose, TList &data, bool setLogy=true,bool forceNormalization=false);
 
 #endif

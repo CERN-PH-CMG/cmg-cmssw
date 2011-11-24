@@ -23,12 +23,12 @@ std::pair<TH1D *,TH1D *> getProjections(TH2D *histo)
 
 
 //
-TLegend *showPlotsAndMCtoDataComparison(TPad *p, TList &stack, TList &spimpose, TList &data, bool setLogy)
+TLegend *showPlotsAndMCtoDataComparison(TPad *p, TList &stack, TList &spimpose, TList &data, bool setLogy,bool forceNormalization)
 {
   p->Divide(1,2);
   TPad *subp=(TPad *)p->cd(1);
   subp->SetPad(0,0.3,1.0,1.0);
-  TLegend *leg=showPlots(subp,stack,spimpose,data);
+  TLegend *leg=showPlots(subp,stack,spimpose,data,true,"lpf",forceNormalization);
   formatForCmsPublic(subp,leg,"",5);
   if(setLogy) subp->SetLogy();
   
@@ -44,7 +44,7 @@ TLegend *showPlotsAndMCtoDataComparison(TPad *p, TList &stack, TList &spimpose, 
 
 
 //
-TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origdata, bool buildLegend, TString legopt)
+TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origdata, bool buildLegend, TString legopt, bool forceNormalization)
 {
   if(c==0) return 0;
   if( origstack.First()==0 && origspimpose.First()==0 && origdata.First()==0 ) return 0;
@@ -64,6 +64,7 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
   TObject *key = 0; 
   TList data;
   TIterator *dataIt = origdata.MakeIterator();
+  double totalData(0);
   while ( (key = dataIt->Next()) ) 
     {
       TH1 *p = (TH1 *) key;
@@ -73,12 +74,13 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
       allKeys.push_back(std::pair<TObject *,TString>(p,p->GetTitle()));
       TString newname("data"); newname += allKeys.size();
       data.AddFirst ( p->Clone(newname) );
+      totalData += p->Integral(0,p->GetXaxis()->GetNbins()+1);
     }
   
   //add the plots to superimpose
   TList spimpose;
   TIterator *spimposeIt = origspimpose.MakeIterator();
-  while ( (key = spimposeIt->Next()) ) 
+   while ( (key = spimposeIt->Next()) ) 
     {
       TH1 *p = (TH1 *) key;
       th2dfound |= ((TClass*)key->IsA())->InheritsFrom("TH2");
@@ -93,7 +95,8 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
   THStack *hstack = new THStack("stack",title);  
   TList stack;
   TIterator *reverseStackIt = origstack.MakeIterator(kIterBackward);
-  while ( (key = reverseStackIt->Next()) ) 
+ double totalMC(0); 
+ while ( (key = reverseStackIt->Next()) ) 
     {
       TH1 *p = (TH1 *) key;
       th2dfound |= ((TClass*)key->IsA())->InheritsFrom("TH2");
@@ -102,8 +105,15 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
       allKeys.push_back(std::pair<TObject *,TString>(p,p->GetTitle()));
       TString newname("h"); newname += allKeys.size();
       stack.AddFirst ( p->Clone(newname) );
+      totalMC += p->Integral(0,p->GetXaxis()->GetNbins()+1);
     }
-  
+
+
+  double sf=1.0;
+  if(forceNormalization && totalMC>0) sf=totalData/totalMC;
+  cout << "Force normalization by: " << sf << "(" << forceNormalization << ")" << endl;
+
+
   //build the legend
   TLegend *leg = new TLegend(0.7,0.96-0.05*allKeys.size(),0.93,0.96,NULL,"brNDC");
   leg->SetBorderSize(1);
@@ -228,6 +238,7 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
 	  while ( (key = stackIt->Next()) ) 
 	    {
 	      TH1 *p = (TH1 *) key;
+	      p->Scale(sf);
 	      refFrame->Add(p);
 	      hstack->Add( p );
 	    }

@@ -129,8 +129,8 @@ int main(int argc, char* argv[])
 	  for(std::map<TString,TString>::iterator it = metTypes.begin(); it!= metTypes.end(); it++)
 	    {
 	      metTypeValues[it->first]=LorentzVector(0,0,0,0);
-	      controlHistos.addHistogram( new TH1F( subcat+TString("met_") + it->first, ";"+it->second+";Events", 200,0,500) );
-	      controlHistos.addHistogram( new TH2F( subcat+TString("met_") + it->first+"vspu", ";Pileup events;"+it->second+";Events", 25,0,25,200,0,500) );
+	      controlHistos.addHistogram( new TH1F( subcat+TString("met_") + it->first, ";"+it->second+";Events", 100,0,500) );
+	      controlHistos.addHistogram( new TH2F( subcat+TString("met_") + it->first+"vspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
 	    }
 	  
 	}
@@ -178,7 +178,7 @@ int main(int argc, char* argv[])
       if(!isGammaEvent && ev.cat != EE && ev.cat !=MUMU) continue;
 
       float weight = 1.0;
-      if(isMC && gammaEvHandler.weightMode()!=GammaEventHandler::NOWEIGHTS) weight = LumiWeights.weight( ev.ngenITpu );
+      if(isMC /*&& gammaEvHandler.weightMode()!=GammaEventHandler::NOWEIGHTS*/) weight = LumiWeights.weight( ev.ngenITpu );
 
       //event categories
       std::vector<TString> dilCats;

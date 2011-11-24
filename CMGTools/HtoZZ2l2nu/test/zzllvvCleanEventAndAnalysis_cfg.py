@@ -32,7 +32,9 @@ process.ClusteredPFMetSequence = cms.Sequence(process.ClusteredPFMetProducer*pro
 
 #pileup normalization
 from CMGTools.HtoZZ2l2nu.PileupNormalizationProducer_cfi import puWeights
-process.puWeights      = puWeights.clone( data = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/PileupTruth2011AplusB.root') )
+process.puWeights      = puWeights.clone( data = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/Pileup2011AplusB.root'),
+                                          mc   = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/Summer11Observed.root')
+                                          )
 process.puWeightSequence = cms.Sequence(process.puWeights)
 
 #
