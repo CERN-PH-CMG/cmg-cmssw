@@ -22,6 +22,7 @@
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
+#include "PhysicsTools/Utilities/interface/Lumi3DReWeighting.h"
 
 #include "TSystem.h"
 #include "TFile.h"
@@ -176,13 +177,13 @@ int main(int argc, char* argv[])
     }
 
   //pileup weighting
-  edm::LumiReWeighting LumiWeights(runProcess.getParameter<std::string>("mcpileup"), runProcess.getParameter<std::string>("datapileup"), "pileup","pileup");
+  edm::Lumi3DReWeighting LumiWeights(runProcess.getParameter<std::string>("mcpileup"), runProcess.getParameter<std::string>("datapileup"), "pileup","pileup");
   std::string puWeightFile = runProcess.getParameter<std::string>("puWeightFile");
-  if(puWeightFile.size()==0)  LumiWeights.weight3D_init();
+  if(puWeightFile.size()==0)  LumiWeights.weight3D_init(1.0);
   else                        LumiWeights.weight3D_init(puWeightFile);
   reweight::PoissonMeanShifter PShiftUp(+0.6);
   reweight::PoissonMeanShifter PShiftDown(-0.6);
-
+  
   //tree info
   int evStart=runProcess.getParameter<int>("evStart");
   int evEnd=runProcess.getParameter<int>("evEnd");

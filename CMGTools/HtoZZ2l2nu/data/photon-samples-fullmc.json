@@ -1,7 +1,7 @@
 {
     "proc":[
 	{
-         "tag":"W/Z+#gamma",
+         "tag":"Z+#gamma",
          "isdata":false,
          "color":"590",
          "lcolor":1,
@@ -30,13 +30,34 @@
                "dset":"ZGToNuNuG_TuneZ2_7TeV-madgraph",
                "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva//HZZ_11.10.03/G/ZGToNuNuG_TuneZ2_7TeV-madgraph"],
                "xsec":3.426
-              },
+              }
+	  ]
+	},
+	{
+	 "tag":"W+#gamma",
+         "isdata":false,
+         "color":"594",
+         "lcolor":1,
+         "mctruthmode":22,
+	 "data":[
               {
                "dtag":"WGToENuG",
                "dset":"WGToENuG_TuneZ2_7TeV-madgraph",
                "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva//HZZ_11.10.03/G/WGToENuG_TuneZ2_7TeV-madgraph"],
                "xsec":114.7
-              }
+              },
+	      {
+		"dtag":"WGToMuNuG",
+		"dset":"WGToMuNuG_TuneZ2_7TeV-madgraph",
+               	"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/G/WGToMuNuG_TuneZ2_7TeV-madgraph"],
+               	"xsec":114.6
+	       },
+	      {
+		"dtag":"WGToTauNuG",
+		"dset":"WGToTauNuG_TuneZ2_7TeV-madgraph",
+               	"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/G/WGToTauNuG_TuneZ2_7TeV-madgraph"],
+               	"xsec":104.6
+	       }
 	   ]
 	},
 	{
@@ -72,7 +93,49 @@
          ]
         },
 	{
-	"tag":"#gamma+jets (simulation)",
+	 "tag":"W+jets",
+         "isdata":false,
+         "color":"809",
+	 "lcolor":1,
+         "data":[
+		{
+		 "dtag":"WJetsToLNu",
+                 "dset":"/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
+                 "patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/WJetsToLNu/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola"],
+                 "xsec":31314
+                }
+	 ]
+	},
+	{
+	"tag":"QCD",
+        "isdata":false,
+	"color":"kYellow",
+	"lcolor":1,
+	"data":[
+	     {	
+		"dtag":"QCDPt20to30",
+		"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6"],
+		"xsec":2502660
+	     },
+	     {	
+		"dtag":"QCDPt30to80",
+		"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6"],
+		"xsec":3625840
+	     },
+	     {	
+		"dtag":"QCDPt80to170",
+		"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/QCD_Pt-80to170_EMEnriched_TuneZ2_7TeV-pythia6"],
+		"xsec":142813.8
+	     },
+	     {	
+		"dtag":"QCDPt170to300",
+		"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/QCD_Pt-170to300_TuneZ2_7TeV_pythia6"],
+		"xsec":24300.0
+	     }
+	  ]
+    	},
+	{
+	"tag":"#gamma+jets",
         "isdata":false,
 	"color":"kOrange",
 	"lcolor":1,

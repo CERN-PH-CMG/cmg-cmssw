@@ -533,7 +533,7 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
 	    hasId &= (sihih<maxSihihEE);
 
 	}catch(exception &e){
-	  cout << "Photon core is missing (assuming photon eta and no pixel seed)" << endl;
+	  //cout << "Photon core is missing (assuming photon eta and no pixel seed)" << endl;
 	}
 	
 	//check if photon is in good region of ECAL

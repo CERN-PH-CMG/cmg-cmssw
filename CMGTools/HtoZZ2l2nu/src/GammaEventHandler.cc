@@ -4,6 +4,7 @@ using namespace std;
 
 //
 GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
+  : weightMode_(NOWEIGHTS)
 {
   //trigger thresholds to consider
   gammaCats_ = runProcess.getParameter<std::vector<int> >("gammaCategories"); 
@@ -12,13 +13,14 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
   TString gammaPtWeightsFile =  runProcess.getParameter<std::string>("weightsFile"); 
   gSystem->ExpandPathName(gammaPtWeightsFile);
 
-  weightMode_=PT;
-  if(gammaPtWeightsFile.Contains("eta"))        weightMode_=PTANDETA;
-  else if(gammaPtWeightsFile.Contains("nvtx"))  weightMode_=PTANDNVTX;
-
   fwgt_=TFile::Open(gammaPtWeightsFile);
   if(fwgt_)
     {
+
+      weightMode_=PT;
+      if(gammaPtWeightsFile.Contains("eta"))        weightMode_=PTANDETA;
+      else if(gammaPtWeightsFile.Contains("nvtx"))  weightMode_=PTANDNVTX;
+      
       TString wgtName = gammaPtWeightsFile;
       wgtName=gSystem->BaseName(wgtName.ReplaceAll(".root",""));
       wgtName=((TObjString *)(wgtName.Tokenize("_")->At(1)))->GetString();
@@ -50,7 +52,8 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
     }
   
   if(wgtsH_.size()) 
-    std::cout << "[GammaEventHandler] gamma spectrum will be reweighted using distributions found @ "  << gammaPtWeightsFile << std::endl;
+    std::cout << "[GammaEventHandler] gamma spectrum will be reweighted using distributions found @ "  << gammaPtWeightsFile 
+	      << " weight mode is: " << weightMode_ << std::endl;
 }
 
 

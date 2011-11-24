@@ -71,9 +71,9 @@ int main(int argc, char* argv[])
 
   //pileup weighting
   edm::LumiReWeighting LumiWeights(runProcess.getParameter<std::string>("mcpileup"), runProcess.getParameter<std::string>("datapileup"), "pileup","pileup");
-  std::string puWeightFile = runProcess.getParameter<std::string>("puWeightFile");
-//  if(puWeightFile.size()==0)  LumiWeights.weight3D_init();
-//  else                        LumiWeights.weight3D_init(puWeightFile);
+  //  std::string puWeightFile = runProcess.getParameter<std::string>("puWeightFile");
+  //  if(puWeightFile.size()==0)  LumiWeights.weight3D_init();
+  //  else                        LumiWeights.weight3D_init(puWeightFile);
   reweight::PoissonMeanShifter PShiftUp(+0.6);
   reweight::PoissonMeanShifter PShiftDown(-0.6);
 

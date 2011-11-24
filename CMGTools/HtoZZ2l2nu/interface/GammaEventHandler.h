@@ -2,8 +2,8 @@
  * Wrapper for common operations on a gamma event
  * Get weights/mass shapes from file
  * Analyze event and assign trigger categories, weights and massive candidates
- * $Date: 2011/11/02 15:32:02 $
- * $Revision: 1.1 $
+ * $Date: 2011/11/17 11:25:10 $
+ * $Revision: 1.2 $
  * \author Pedro Silva
  */
 
@@ -23,7 +23,7 @@ class GammaEventHandler
 {
  public: 
 
-  enum WeightMode {PT,PTANDETA,PTANDNVTX};
+  enum WeightMode {NOWEIGHTS, PT, PTANDETA, PTANDNVTX};
   
   GammaEventHandler(const edm::ParameterSet &runProcess);
 
@@ -38,7 +38,7 @@ class GammaEventHandler
   size_t nCategories() { return gammaCats_.size(); }
   int category(size_t icat) {  return (gammaCats_.size() > icat ? gammaCats_[icat] : 0 ); }
   std::vector<int> categories() { return gammaCats_; }
-  
+  int weightMode() { return weightMode_; }
   int findTriggerCategoryFor(float pt);
 
   ~GammaEventHandler();

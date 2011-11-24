@@ -34,25 +34,6 @@ TObject* getObjectFromPath(TDirectory* File, std::string Path, bool GetACopy=fal
 }
 
 //
-TH1 *getGammaControlHisto(TString dir,TString cat,TString subcat,TString dilChannel,TString var, TString type, bool rebin) 
-{
-  TString ipath= dir +"/" +cat +"_" +subcat;
-  TH1 *histo=0;
-  if(dilChannel!="ll") histo=(TH1 *)getObjectFromPath( fin, (ipath+dilChannel+ivar).Data(), true);
-  else
-    {
-      histo=(TH1 *)getObjectFromPath( fin, (ipath+"mumu"+ivar).Data(), true);
-      histo->Add((TH1 *)getObjectFromPath( fin, (ipath+"ee"+ivar).Data() ) );
-    }
-  if(rebin) histo->Rebin();
-  
-  TString newName=type+cat+"_"+subcat+dilChannel;
-  histo->SetName(newName);
-  histo->SetDirectory(0);
-}
-
-
-//
 float getIntegral(TH1 *h,double min=-1,double max=-1)
 {
   if(h==0) return 0;
@@ -68,44 +49,6 @@ float getIntegral(TH1 *h,double min=-1,double max=-1)
   return h->Integral(firstbin,lastbin);
 }
 
-		
-
-//
-TH1 *getIntegratedBias(TH1 *data,TH1 *mc,Float_t maxVal=-1)
-{
-  
-  TH1 *datainteg=(TH1F *)data->Clone("datainteg");
-  datainteg->Reset("ICE");
-  TH1 *mcinteg=(TH1F *)mc->Clone("mcinteg");
-  mcinteg->Reset("ICE");
-  
-
-  if(maxVal==-1)maxVal=data->GetXaxis()->GetXmax();
-  int maxbin=datainteg->GetXaxis()->FindBin(maxVal);
-  for(int ibin=maxbin; ibin>=1 ; --ibin)
-    {
-      double integ=0, integmc=0;
-      double err=0,errmc=0;
-      
-      integ = data->IntegralAndError(ibin,maxbin,err);
-      datainteg->SetBinContent(ibin,integ);
-      datainteg->SetBinError(ibin,err);
-
-      integmc = mc->IntegralAndError(ibin,maxbin,errmc);
-      mcinteg->SetBinContent(ibin,integmc);
-      mcinteg->SetBinError(ibin,errmc);
-    }
-
-  TH1 *syst=(TH1 *) datainteg->Clone("syst");
-  syst->Add(mcinteg,-1);
-  syst->Divide(mcinteg);
-  syst->Scale(100);
-  
-  delete datainteg;
-  delete mcinteg;
-
-  return syst;
-}
 
 //
 float getScaleFactor(TH1 *h1, TH1 *h2,double minVal,double maxVal)
@@ -141,7 +84,6 @@ TH1 *deriveGammaWeightsFrom(TH1 *z, TH1 *g)
   return wgt;
 }
 
-
 //
 void getGammaWeights(TString inputFile="mc_raw.root",bool isData=false,string var2dName="nvtx")
 {
@@ -156,7 +98,7 @@ void getGammaWeights(TString inputFile="mc_raw.root",bool isData=false,string va
   if(!isData)
     {
       modDir="Z-#gamma^{*}+jets#rightarrow ll";
-      dataDir="#gamma+jets (simulation)";
+      dataDir="#gamma+jets";
     }
   
   //plots to retrieve
@@ -317,137 +259,234 @@ void getGammaWeights(TString inputFile="mc_raw.root",bool isData=false,string va
 }
 
 
+
 //
-void getGammaTemplate(TString inputFile="/data/psilva/Higgs/ntuples_2011.11.01/plotter/mc_weighted_njets.root",
-		      TString dilChannel="mumu",
-		      TString var="met_met",
-		      bool isData=false, 
-		      bool rebin=false)
+void getGammaTemplates(TString inputFile="/data/psilva/Higgs/ntuples_2011.11.01/plotter/mc_weighted_njets.root",TString dilChannel="mumu",bool isData=false)
 {
+
   TString outDir="plots/";
   gSystem->Exec("mkdir -p " + outDir);
-  
+
+  bool applySF( inputFile.Contains("_eta"));
 
   TString theLegend("CMS simulation");
   if(isData) theLegend="CMS preliminary";
-  if(dilChannel=="mumu") theLegend += ",#mu#mu events";
-  if(dilChannel=="ee")   theLegend += ",ee events";
-  if(dilChannel=="ll")   theLegend += ",ee/#mu#mu events";
-
+//   if(dilChannel=="mumu") theLegend += ",#mu#mu events";
+//   if(dilChannel=="ee")   theLegend += ",ee events";
+//   if(dilChannel=="ll")   
+  theLegend += ",ee/#mu#mu events";
+    
   string modDir="|M_{ll}-91|<15 GeV-c^{2}";
   string dataDir="#gamma+jets";
-  string contDir="W/Z+#gamma";
-  std::string contTitle=contDir;
+  string compDir="Z+#gamma";
+  std::string compTitle=compDir;
   if(!isData)
     {
       modDir="Z-#gamma^{*}+jets#rightarrow ll";
       dataDir="#gamma+jets (simulation)";
-      contTitle="";
+      //      compDir="Z-#gamma^{*}+jets#rightarrow ll (Madgraph)";
+      //      compTitle="Z/#gamma^{*}+jets (Madgraph)";
+      compDir="";//Z+#gamma";
+      compTitle="";//Z+#gamma";
     }
   
   //plots to retrieve
   std::vector<TString> cats, catLabels;
-  cats.push_back("photon20");  catLabels.push_back("20<p_{T}^{#gamma}<30");
-  cats.push_back("photon30");  catLabels.push_back("30<p_{T}^{#gamma}<50");
+  //cats.push_back("photon20");  catLabels.push_back("20<p_{T}^{#gamma}<30");
+  //cats.push_back("photon30");  catLabels.push_back("30<p_{T}^{#gamma}<50");
   cats.push_back("photon50");  catLabels.push_back("50<p_{T}^{#gamma}<75");
-  cats.push_back("photon75");  catLabels.push_back("75<p_{T}^{#gamma}<125");
-  cats.push_back("photon125"); catLabels.push_back("p_{T}^{#gamma}>125");
+  if(isData) 
+    {
+      cats.push_back("photon75");   catLabels.push_back("75<p_{T}^{#gamma}<90");
+      cats.push_back("photon90");   catLabels.push_back("90<p_{T}^{#gamma}<125");
+      cats.push_back("photon125");  catLabels.push_back("125<p_{T}^{#gamma}<135");
+      cats.push_back("photon135");  catLabels.push_back("135<p_{T}^{#gamma}<200");
+      cats.push_back("photon200");  catLabels.push_back("p_{T}^{#gamma}>200");
+    }
+  else
+    {
+      cats.push_back("photon75");  catLabels.push_back("75<p_{T}^{#gamma}<125");
+      cats.push_back("photon125"); catLabels.push_back("p_{T}^{#gamma}>125");
+    }
 
-  TString subcats[]={"eq0jets","eq1jets","geq2jets","vbf"};
+
+  TString subcats[]={"eq0jets","eq1jets","geq2jets"};//,"vbf"};
   TString subcatLabels[]={"=0 jets", "=1 jets", "#geq 2 jets","VBF"};
+  TString variables[]={"met","ht","qt","eta","mt","mindphijmet","dphivmet","redClusteredMet","minAssocChargedMet","njets"};
   
   //output
   TFile *fout = TFile::Open("gammaTemplates.root","RECREATE");
   fout->Close();
   
+  TFile *fin = TFile::Open(inputFile);
+    
   setStyle();
-
-  //get plots from file
-  TFile *fin = TFile::Open(inputFile);    
   const size_t ncats=cats.size();
   const size_t nsubcats=sizeof(subcats)/sizeof(TString);
-  std::vector<TH1*>gammaVariables, zVariables, contVariables;
-  std::vector<TH1 *> gammaIncVariables, zIncVariables, contIncVariables;
-  TH1 *gammaSum=0,*zSum=0,*contSum=0;
-  for(size_t icat=0; icat<ncats; icat++)
-    {
-      for(size_t iscat=0; iscat<nsubcats; iscat++)
-	{
-	  TH1 *iGammaVariable = (TH1 *) getGammaControlHisto(dataDir, subcats[iscat],cats[icat], dilChannel.Data(), var,"gamma",rebin);
-	  iGammaVariable->SetFillStyle(0);
-	  iGammaVariable->SetLineColor(1);
-	  iGammaVariable->SetFillColor(1);
-	  iGammaVariable->SetMarkerSize(0.8);
-	  iGammaVariable->SetMarkerColor(1);
-	  iGammaVariable->SetTitle("#gamma+jets");
-	  gammaVariables.push_back(iGammaVariable);
-	  if(gammaIncVariables.size()<iscat) 
-	    { 
-	      gammaIncVariables.push_back( (TH1 *) iGammaVariable->Clone("gamma_"+subcats[iscat]) ); 
-	      gammaSum = (TH1 *)  iGammaVariable->Clone("gamma");
-	    }
-	  else                               
-	    { 
-	      gammaIncVariables[iscat]->Add( iGammaVariable ); 
-	      gammaSum->Add( iGammaVariable );
-	    }
-	
-	  TH1 *iZVariable = (TH1 *) getGammaControlHisto(modDir, subcats[iscat], cats[icat], dilChannel.Data(), var, "z", rebin);
-	  iZVariable->SetLineColor(kRed);
-	  iZVariable->SetFillStyle(0);
-	  iZVariable->SetFillColor(kRed);
-	  iZVariable->SetMarkerColor(kRed);
-	  iZVariable->SetDirectory(0);
-	  iZVariable->SetTitle("Z/#gamma^{*}+jets");
-	  zVariables.push_back(iZVariable);
-	  if(zIncVariables.size()<iscat) 
-	    {
-	      zIncVariables.push_back( iZVariable->Clone("z_"+subcats[iscat]) );
-	      zSum = (TH1 *) iZVariable->Clone("z");
-	    }
-	  else
-	    { 
-	      zIncVariables[iscat]->Add(iZVariable); 
-	      zSum->Add(iZVariable);
-	    }
-
-	  TH1 *iContVariable = (TH1 *) getGammaControlHisto(contDir, subcats[iscat], cats[icat], dilChannel.Data(), var, "cont", rebin);
-	  iContVariable->SetLineColor(kGreen+4);
-	  iContVariable->SetFillStyle(0);
-	  iContVariable->SetFillColor(kGreen+4);
-	  iContVariable->SetMarkerColor(kGreen+4);
-	  iContVariable->SetDirectory(0);
-	  iContVariable->SetTitle(contTitle);
-	  contVariables.push_back(iContVariable);
-	  if(contIncVariables.size()<iscat) 
-	    {
-	      contIncVariables.push_back( iContVariable->Clone("cont_"+subcats[iscat]) ); 
-	      contSum = (TH1 *) iContVariable->Clone("cont");
-	    }
-	  else
-	    { 
-	      contIncVariables[iscat]->Add( iContVariable ); 
-	      contSum->Add( iContVariable );
-	    }
-	}
-    }
-
-
-  
-
+  const size_t nvars=sizeof(variables)/sizeof(TString);
+  std::map<std::pair<int,int>, float> metBasedSF;
   for(size_t iv=0; iv<nvars; iv++)
     {
       TCanvas *cnv = getNewCanvas(variables[iv]+"c",variables[iv]+"c",false);
       cnv->Clear();
       cnv->SetWindowSize(nsubcats*400,(ncats-isData)*200);
       cnv->Divide(nsubcats,ncats,0,0);
-		      
+	
+      std::vector<TH1*>gammaVariables, zVariables, zCompVariables;
+      TH1 *gammaSum=0,*zSum=0,*zCompSum=0;
+      TH2F *gamma2dSum=0, *z2dSum=0;
+
+      bool kinVariable(false);
+      if(variables[iv]=="eta" 
+	 || variables[iv]=="qt"
+	 || variables[iv]=="ht"
+	 || variables[iv]=="mt"
+	 || variables[iv]=="dphill"
+	 || variables[iv]=="ptjets"
+	 || variables[iv]=="njets"  	 
+	 || variables[iv]=="minmjv"
+	 || variables[iv]=="metoverqt"
+	 || variables[iv]=="redClusteredMetoverqt"
+	 || variables[iv]=="evtctr"
+	 || variables[iv]=="mindphijmet" 
+	 || variables[iv]=="dphivmet"
+	 ) kinVariable=true;
+
+      for(size_t icat=0; icat<ncats; icat++)
+	{
+	  for(size_t iscat=0; iscat<nsubcats; iscat++)
+	    {
+	      TPad *p= (TPad *) cnv->cd(1+iscat+nsubcats*icat);
+	      if(iscat==0)          p->SetLeftMargin(0.12);
+	      if(iscat==nsubcats-1) p->SetRightMargin(0.05);
+	      if(icat==ncats-1)     p->SetBottomMargin(0.15);
+	      	      
+	      string ivar("");
+	      if(!kinVariable) ivar+="met_"; 
+	      ivar+=variables[iv];
+	      
+	      //gamma variable
+	      string ipath=dataDir +"/";
+	      ipath += subcats[iscat].Data();
+	      ipath +="_"; 
+	      ipath += cats[icat].Data();
+	      TH1 *iGammaVariable = 0;
+	      if(dilChannel!="ll") iGammaVariable=(TH1 *)getObjectFromPath( fin, ipath+dilChannel.Data()+ivar, true);
+	      else
+		{
+		  iGammaVariable=(TH1 *)getObjectFromPath( fin, ipath+"mumu"+ivar, true);
+		  iGammaVariable->Add((TH1 *)getObjectFromPath( fin, ipath+"ee"+ivar));
+		}
+	      if(iGammaVariable==0) continue;
+	      iGammaVariable->SetDirectory(0);
+	      iGammaVariable->SetFillStyle(0);
+	      iGammaVariable->SetLineColor(1);
+	      iGammaVariable->SetFillColor(1);
+	      iGammaVariable->SetMarkerSize(0.8);
+	      iGammaVariable->SetMarkerColor(1);
+	      iGammaVariable->SetTitle("#gamma+jets");
+	      TString newName=TString("gamma")+subcats[iscat]+TString("_")+cats[icat]+dilChannel;
+	      iGammaVariable->SetName(newName);
+	      TH2 *iGamma2dVariable = 0;
+	      if(dilChannel!="ll") iGamma2dVariable=(TH2 *)getObjectFromPath( fin, ipath+dilChannel.Data()+ivar+"vspu", true);
+              else
+                {
+                  iGamma2dVariable=(TH2 *)getObjectFromPath( fin, ipath+"mumu"+ivar+"vspu", true);
+                  if(iGamma2dVariable) iGamma2dVariable->Add((TH2 *)getObjectFromPath( fin, ipath+"ee"+ivar+"vspu"));
+                }
+	      
+	      //Z variable
+	      ipath=modDir +"/";
+	      ipath += subcats[iscat].Data();
+	      ipath +="_"; 
+	      ipath += cats[icat].Data();
+	      TH1 *iZVariable = 0;
+	      if(dilChannel!="ll") iZVariable=(TH1 *)getObjectFromPath( fin, ipath+dilChannel.Data()+ivar, true);
+	      else
+		{
+		  iZVariable=(TH1 *)getObjectFromPath( fin, ipath+"mumu"+ivar, true);
+		  iZVariable->Add((TH1 *)getObjectFromPath( fin, ipath+"ee"+ivar));
+		}
+	      if(iZVariable==0) continue;
+	      iZVariable->SetLineColor(kRed);
+	      iZVariable->SetFillStyle(0);
+	      iZVariable->SetFillColor(kRed);
+	      iZVariable->SetMarkerColor(kRed);
+	      iZVariable->SetDirectory(0);
+	      iZVariable->SetTitle("Z/#gamma^{*}+jets");
+	      newName=TString("z")+subcats[iscat]+TString("_")+cats[icat]+dilChannel;
+	      iZVariable->SetName(newName);
+	      TH2 *iZ2dVariable=0;
+	      if(dilChannel!="ll") iZ2dVariable=(TH2 *)getObjectFromPath( fin, ipath+dilChannel.Data()+ivar+"vspu", true);
+              else
+                {
+                  iZ2dVariable=(TH2 *)getObjectFromPath( fin, ipath+"mumu"+ivar+"vspu",true);
+                  if(iZ2dVariable) iZ2dVariable->Add((TH2 *)getObjectFromPath( fin, ipath+"ee"+ivar+"vspu"));
+                }
+	      
+	      
+	      //comparison
+	      TH1 *iZCompVariable = 0;
+	      if(compDir.size()>0)
+		{
+// 		  iZCompVariable = (TH1 *) getObjectFromPath(fin,compDir+"/"+idist,true );
+// 		  iZCompVariable->SetDirectory(0);
+// 		  iZCompVariable->SetTitle(compTitle.c_str());
+// 		  iZCompVariable->SetFillStyle(0);
+// 		  iZCompVariable->SetFillColor(0);
+// 		  iZCompVariable->SetLineColor(1);
+// 		  iZCompVariable->SetMarkerColor(1);
+// 		  iZCompVariable->SetMarkerStyle(1);
+// 		  iZCompVariable->SetLineStyle(2);
+// 		  iZCompVariable->SetLineWidth(2);
+		}
+
+	      if(getIntegral(iGammaVariable)>0) 
+		{ 
+		  float sf=1;
+		  
+		  std::pair<int,int> key(icat,iscat);
+		  if(variables[iv]=="met")
+		    {
+		      sf=getScaleFactor(iZVariable,iGammaVariable,0,35);
+		      metBasedSF[ key ] = sf;
+		    }
+		  else if( metBasedSF.find(key) != metBasedSF.end() )
+		    sf = metBasedSF[key];
+
+		  if(iZCompVariable)
+		    {
+		      float icompSf=getIntegral(iZVariable)/(getIntegral(iGammaVariable)+getIntegral(iZCompVariable));
+		      iZCompVariable->Scale(icompSf);
+		    }
+		  if(applySF)
+		    {
+		      iGammaVariable->Scale(sf);
+		      if(!kinVariable) iGamma2dVariable->Scale(sf);
+		    }
+		}
+		
 	      
 	      //draw distributions retrieved
 	      iZVariable->Draw("hist");
 	      iZVariable->GetYaxis()->SetRangeUser(1e-5,10);
-
-
+	      if(iZCompVariable) iZCompVariable->Draw("histsame");
+	      iGammaVariable->Draw("e2same");
+	      if(getIntegral(iGammaVariable)>0 and getIntegral(iZVariable)>0)
+		{
+		  TPaveText *pave = new TPaveText(0.5,0.65,1.0,0.95,"NDC");
+		  pave->SetBorderSize(0);
+		  pave->SetFillStyle(0);
+		  pave->SetTextAlign(32);
+		  pave->SetTextFont(42);
+		  pave->AddText(catLabels[icat])->SetTextFont(62);
+		  pave->AddText(subcatLabels[iscat])->SetTextFont(62);
+		  pave->AddText("");
+		  char buf[100];
+		  sprintf(buf,"#chi^{2}/ndof %3.3f", iZVariable->Chi2Test(iGammaVariable,"WWCHI2/NDF") );
+		  pave->AddText(buf);
+		  pave->Draw();
+		}
 	      p->SetLogy();
 	      p->Modified();
 	      p->Update();
@@ -462,6 +501,13 @@ void getGammaTemplate(TString inputFile="/data/psilva/Higgs/ntuples_2011.11.01/p
 		  zVariables[iscat]->Reset("ICE");
 		  zVariables[iscat]->SetDirectory(0);
 		  
+		  if(iZCompVariable)
+		    {
+		      zCompVariables.push_back( (TH1 *) iZCompVariable->Clone(subcats[iscat]+"_zcomp_"+variables[iv]) );
+		      zCompVariables[iscat]->Reset("ICE");
+		      zCompVariables[iscat]->SetDirectory(0);
+		    }
+
 		  if(gammaSum==0)
 		    {
 		      gammaSum =  (TH1 *)iGammaVariable->Clone(subcats[iscat]+"_gammasum_"+variables[iv]);
@@ -478,6 +524,13 @@ void getGammaTemplate(TString inputFile="/data/psilva/Higgs/ntuples_2011.11.01/p
 		      zSum =  (TH1 *)iZVariable->Clone(subcats[iscat]+"_zsum_"+variables[iv]);
 		      zSum->Reset("ICE");
 		      zSum->SetDirectory(0);
+
+		      if(iZCompVariable)
+			{
+			  zCompSum =  (TH1 *)iZCompVariable->Clone(subcats[iscat]+"_zcompsum_"+variables[iv]);
+			  zCompSum->Reset("ICE");
+			  zCompSum->SetDirectory(0);
+			}
 		    }
 		}
 	      
@@ -486,6 +539,11 @@ void getGammaTemplate(TString inputFile="/data/psilva/Higgs/ntuples_2011.11.01/p
 	      if(!kinVariable) gamma2dSum->Add(iGamma2dVariable);
 	      zVariables[iscat]->Add(iZVariable);
 	      zSum->Add(iZVariable);
+	      if(iZCompVariable)
+		{
+		  zCompVariables[iscat]->Add(iZCompVariable);
+		  zCompSum->Add(iZCompVariable);
+		}
 	    }
 	}
 
@@ -514,6 +572,7 @@ void getGammaTemplate(TString inputFile="/data/psilva/Higgs/ntuples_2011.11.01/p
 	  TList *spimpose = new TList;
 	  stack->Add(zVariables[i-1]);    	 
 	  data->Add(gammaVariables[i-1]);
+	  if(zCompVariables.size()>=i) spimpose->Add(zCompVariables[i-1]);
 
 	  TPad *pad=(TPad *)cnv2->cd(i);
 	  TLegend *leg=showPlotsAndMCtoDataComparison(pad,*stack,*spimpose,*data);
@@ -550,6 +609,7 @@ void getGammaTemplate(TString inputFile="/data/psilva/Higgs/ntuples_2011.11.01/p
       TList *spimpose = new TList;
       stack->Add(zSum);
       data->Add(gammaSum);
+      if(zCompSum) spimpose->Add(zCompSum);
       TLegend *leg=showPlotsAndMCtoDataComparison(cnv3,*stack,*spimpose,*data);
       TPad *pad=(TPad *)cnv3->cd(1);      
       formatForCmsPublic(pad,leg,theLegend,2);
@@ -574,26 +634,76 @@ void getGammaTemplate(TString inputFile="/data/psilva/Higgs/ntuples_2011.11.01/p
       cnv3->Update();
       cnv3->SaveAs(outDir+variables[iv]+"suminc.png");
       cnv3->SaveAs(outDir+variables[iv]+"suminc.C");
+    }
 
-
-      TH1 *integBias = getIntegratedBias(gammaSum,zSum);
-      TCanvas *cnv4 = getNewCanvas(variables[iv]+"biasc",variables[iv]+"biasc",false);
-      cnv4->Clear();
-      cnv4->SetWindowSize(600,600);
-      integBias->Draw();
-      formatForCmsPublic(cnv4,0,theLegend,1);
-      cnv4->cd();
-      cnv4->Modified();
-      cnv4->Update();
-      cnv4->SaveAs(outDir+variables[iv]+"bias.png");
-      cnv4->SaveAs(outDir+variables[iv]+"bias.C");
-  }
-  
   fin->Close();
 }
 
 
-    
+//   
+void getContaminationTable(TString finURL,Float_t minMet=50)
+{
+  TFile *fin = TFile::Open(finURL);
+  TString cats[]={"eq0jets","eq1jets","geq2jets","vbf"};
+  TString catLabel[]={"=0 jets", "=1 jets","#geq 2 jets", "VBF"};
+  TString procs[]={"Z+#gamma","W+#gamma","Di-photon","W+jets","QCD","#gamma+jets"};
+  TString phocats[]={"photon20","photon30","photon50","photon75","photon125"};
+  
+  TH1F *normCounter=0;
+  std::vector<TH1F *> histoCounters;
+  const size_t ncats=sizeof(cats)/sizeof(TString);
+  for(size_t icat=0; icat<ncats; icat++)
+    { 
+      for(size_t ipho=0; ipho<sizeof(phocats)/sizeof(TString); ipho++)
+	{
+	  for(size_t iproc=0; iproc<sizeof(procs)/sizeof(TString); iproc++)
+	    {
+	      TString path=procs[iproc]+"/"+cats[icat]+"_"+phocats[ipho]+"eemet_met";
+	      TH1 *h = (TH1 *) getObjectFromPath(fin,path.Data(),false);
+	      Int_t ibin=h->GetXaxis()->FindBin(minMet);
+	      Int_t maxbins=h->GetXaxis()->GetNbins()+1;
+	
+	      if(icat==0 && ipho==0)
+		{
+		  TString name("h"); name += iproc;
+		  histoCounters.push_back( new TH1F(name,procs[iproc],ncats,0,ncats));
+		  if(normCounter==0) normCounter = (TH1F *) histoCounters[iproc]->Clone("normctr");
+
+		  histoCounters[iproc]->SetLineColor( h->GetLineColor() );
+		  histoCounters[iproc]->SetFillColor( h->GetFillColor() );
+		  histoCounters[iproc]->SetMarkerColor( h->GetMarkerColor() );
+		  histoCounters[iproc]->SetLineStyle( h->GetLineStyle() );
+		  histoCounters[iproc]->SetMarkerStyle( h->GetMarkerStyle() );
+		  histoCounters[iproc]->SetFillStyle( h->GetFillStyle() );
+		  histoCounters[iproc]->SetDirectory(0);
+		  
+		  for(size_t jcat=0; jcat<ncats; jcat++)  histoCounters[iproc]->GetXaxis()->SetBinLabel(jcat+1,catLabel[jcat]);
+		}
+	      histoCounters[iproc]->Fill(icat,h->Integral(ibin,maxbins));
+	      normCounter->Fill(icat,h->Integral(ibin,maxbins));
+	    }
+	}
+    }
+
+
+  //show 
+  TList *stack  = new TList;
+  for(size_t iproc=0; iproc<sizeof(procs)/sizeof(TString); iproc++)  
+    {
+      histoCounters[iproc]->Divide(normCounter);
+      stack->Add(histoCounters[iproc]);
+    }
+  setStyle();
+  TCanvas *cnv = getNewCanvas("c","c",false);
+  cnv->Clear();
+  cnv->SetWindowSize(600,600);
+  TLegend *leg=showStackPlot(cnv,*stack);
+  formatForCmsPublic(cnv,leg,"CMS simulation",histoCounters.size());
+
+  
+  //  fin->Close();
+}
+
 
 
 

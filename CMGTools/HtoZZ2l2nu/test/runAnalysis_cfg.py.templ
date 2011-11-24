@@ -20,7 +20,6 @@ runProcess = cms.PSet(
     jesUncFileName = cms.string("${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/GR_R_42_V20_AK5PFchs_Uncertainty.txt"),
     mcpileup = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/Summer11Truth.root'),
     datapileup = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/Pileup2011AplusB.root'),	
-    puWeightFile = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/Weight3D_2011AplusB.root'),
     gammaCategories = cms.vint32(0,20,30,50,75,125),
     useMVA = cms.bool(@useMVA),	
     tmvaInput = simpleDiscriminator

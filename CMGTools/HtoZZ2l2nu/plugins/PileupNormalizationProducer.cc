@@ -37,19 +37,18 @@ PileupNormalizationProducer::PileupNormalizationProducer(const edm::ParameterSet
   produces<float>("puWeight");
   produces<float>("renPuWeight");
 
-  use3D_ = iConfig.getParameter<bool>("use3D");
-
-  std::string puWeightFile=iConfig.getParameter<std::string>("puWeightFile");
+  use3D_ = false; //iConfig.getParameter<bool>("use3D");
 
   maxWeight_=0;
   if(use3D_)
     {
-      if(puWeightFile.size()==0) LumiWeights_.weight3D_init();
-      else                        LumiWeights_.weight3D_init(puWeightFile);
-      for(int nm1=0; nm1<=30; nm1++)
-	for(int n0=0; n0<=30; n0++)
-	  for(int np1=0; np1<=30; np1++)
-	    maxWeight_ = max( LumiWeights_.weight3D( nm1,n0,np1) , maxWeight_);
+      //std::string puWeightFile=iConfig.getParameter<std::string>("puWeightFile");
+      //      if(puWeightFile.size()==0) LumiWeights_.weight3D_init();
+      //      else                        LumiWeights_.weight3D_init(puWeightFile);
+      //for(int nm1=0; nm1<=30; nm1++)
+	//for(int n0=0; n0<=30; n0++)
+	  // for(int np1=0; np1<=30; np1++)
+	    //maxWeight_ = max( LumiWeights_.weight3D( nm1,n0,np1) , maxWeight_);
     }
   else
     {
@@ -90,7 +89,7 @@ void PileupNormalizationProducer::produce(edm::Event &iEvent, const edm::EventSe
 	  if(BX == 1)  np1 += PVI->getPU_NumInteractions();
 	}
       
-      float weight = use3D_ ? LumiWeights_.weight3D( nm1,n0,np1) : LumiWeights_.weight(n0) ;
+      float weight = LumiWeights_.weight(n0); //use3D_ ? LumiWeights_.weight3D( nm1,n0,np1) : LumiWeights_.weight(n0) ;
       float renWeight=1.0;
       if(maxWeight_>0)
 	{
