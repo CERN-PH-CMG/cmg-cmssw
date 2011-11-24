@@ -24,7 +24,7 @@ class Component(object):
         self.eff_corrfactor = self.items.setdefault('eff_corrfactor', '1')
         self.eff_corrfactor = eval(self.eff_corrfactor)
         self.vertexWeight = self.items.setdefault('vertexweight', None)
-        if self.vertexWeight is not None and self.vertexWeight.strip() == 'none':
+        if self.vertexWeight is not None and self.vertexWeight.strip().lower() == 'none':
             self.vertexWeight = None
         #COLIN: warning, n_gen_events is a string here...
         self.n_gen_events = self.items.setdefault('n_gen_events', -1)

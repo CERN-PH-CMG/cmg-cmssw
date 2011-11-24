@@ -5,7 +5,7 @@ class DiTauHistograms:
         self.name = name
 
         self.h_pzeta = TH1F(name+'_h_pzeta', ';p_{#zeta} (GeV)', 150, -200,100)
-        self.h_vismass = TH1F(name+'_h_vismass', ';m_{vis} (GeV)', 40, 0, 200)
+        self.h_vismass = TH1F(name+'_h_vismass', ';m_{vis} (GeV)', 50, 0, 200)
         self.h_svfitmass = TH1F(name+'_h_svfitmass', ';m_{SVFit} (GeV)', 38, 0, 304)
         self.h_mT = TH1F(name+'_h_mT', ';m_{T} (GeV)', 100,0,200)
 

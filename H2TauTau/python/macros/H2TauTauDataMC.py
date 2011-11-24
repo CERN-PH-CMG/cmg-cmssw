@@ -4,8 +4,10 @@ from fnmatch import fnmatch
 from ROOT import kPink
 
 from CMGTools.RootTools.DataMC.AnalysisDataMCPlot import AnalysisDataMC
+from CMGTools.RootTools.Style import formatPad
 from CMGTools.H2TauTau.macros.Weight import Weight
 from CMGTools.H2TauTau.macros.Weight import printWeights
+from CMGTools.H2TauTau.macros.HistogramSet import histogramSet
 
 #COLIN this macro does not work when a component is symlinked! is it what I want?
 #COLIN need to be able to merge 2 components together:
@@ -32,8 +34,9 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.selComponents = selComponents
         super(H2TauTauDataMC, self).__init__(histName, directory, weights)
         # if histName.endswith('mT') or histName.find('mass')>-1:
-        offset = 0.45
-        self.legendBorders = 0.13+offset,0.66,0.44+offset,0.89
+        offsetx = 0.55
+        offsety = 0.1
+        self.legendBorders = 0.13+offsetx,0.66+offsety,0.44+offsetx,0.89+offsety
 
         self.dataComponents = [ key for key, value in selComponents.iteritems() \
                                 if value.isMC is False ]
@@ -83,6 +86,8 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['Data'] = {'style':sBlack, 'layer':-99}
         self.histPref['PromptReco-v4'] = {'style':sBlue, 'layer':-1000}
         self.histPref['PromptReco-v6'] = {'style':sRed, 'layer':-1100}
+        self.histPref['03Oct2011'] = {'style':sYellow, 'layer':-1105}
+        self.histPref['05Aug2011-v1'] = {'style':sBlack, 'layer':-1150}
         self.histPref['May10ReReco-v1'] = {'style':sGreen, 'layer':-1200}
         self.histPref['TTJets'] = {'style':sBlue, 'layer':1} 
         self.histPref['WJets'] = {'style':sRed, 'layer':2}  
@@ -93,7 +98,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         '''Overloading a function from the base classes.
         Tells this class how to find the root files in the analysis directory'''
         fileNames = []
-        for root,dirs,files in os.walk(directory):
+        for root,dirs,files in os.walk(directory, followlinks=True):
             if root is directory:
                 continue
             if os.path.basename(root) not in self.selComponents:
@@ -116,7 +121,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
     def __str__(self):
         id = 'H2TauTauDataMC : histo = %s, dir = %s, file = %s' % ( self.histName,
                                                                     self.directory,
-                                                                    self.filePattern )      
+                                                                    self.filePattern )
         return '\n'.join( [id, super(H2TauTauDataMC, self).__str__()] )
         
 
@@ -187,15 +192,15 @@ def getQCD( plotSS, plotOS, dataName ):
     return plotSSWithQCD, plotOSWithQCD
     
 
-def plot( hist, weights, wJetScaleSS, wJetScaleOS ):
+def plot( hist, weights, wJetScaleSS, wJetScaleOS, range='LowMT'):
 
     ssign = H2TauTauDataMC(hist, anaDir,
                         selComponents,
-                        'SSLowMT.root', weights)
+                        'SS%s.root' % range, weights)
     ssign.Hist('WJets').Scale( wJetScaleSS ) 
     osign = H2TauTauDataMC(hist, anaDir,
                         selComponents,
-                        'OSLowMT.root', weights)
+                        'OS%s.root' % range, weights)
     osign.Hist('WJets').Scale( wJetScaleOS ) 
     
     return ssign, osign
@@ -209,6 +214,9 @@ def savePlot(name):
     print 'pad', gPad.GetName(), 'saved to', fileName    
     gPad.SaveAs( fileName )   
 
+
+
+
 if __name__ == '__main__':
 
     import copy
@@ -218,30 +226,41 @@ if __name__ == '__main__':
 
     parser = OptionParser()
     parser.usage = '''
-    %prog <cfgFile> <anaDir> <hist>
+    %prog <cfgFile> <anaDir>
 
     cfgFile: analysis configuration file, see CMGTools.H2TauTau.macros.MultiLoop
     anaDir: analysis directory containing all components, see CMGTools.H2TauTau.macros.MultiLoop.
     hist: histogram you want to plot
     '''
+    parser.add_option("-r", "--range", 
+                      dest="range", 
+                      help="range. Default is LowMT.",
+                      default='LowMT')
+    parser.add_option("-H", "--histlist", 
+                      dest="histlist", 
+                      help="histogram list",
+                      default=None)
+    parser.add_option("-G", "--histgroup", 
+                      dest="histgroup", 
+                      help="histogram group",
+                      default=None)
+    
     
     (options,args) = parser.parse_args()
-    if len(args) < 2:
+    if len(args) != 2:
         parser.print_help()
         sys.exit(1)
 
     cfgFile = args[0]
     anaDir = args[1]
-    hists = [ hist for hist in args[2].split(',') if hist is not '' ]
-
+    hists = histogramSet( options )
     dataName = 'Data'
-
     anacfg = AnalysisConfig( cfgFile )
     selComponents = anacfg.SelectedComponents()
     
     weights = dict( [ (key,comp.GetWeight()) \
                       for key, comp in selComponents.iteritems()] )
-
+    
     # get WJet scaling factor for same sign
     mtSS = H2TauTauDataMC('tauMu/tauMu_h_mT', anaDir,
                           selComponents,
@@ -256,28 +275,43 @@ if __name__ == '__main__':
 
     SSD = {}
     OSD = {}
+    OSDR = {}
     canvases = []
 
     xmin = None
     xmax = None
-    
-    for hist in hists:
+
+    for hist in sorted(hists):
         print 'Processing: ',hist,dataName, anaDir
-        ssign,osign = plot( hist, weights, wJetScaleSS, wJetScaleOS )
+        ssign,osign = plot( hist, weights, wJetScaleSS, wJetScaleOS, options.range)
         ssQCD, osQCD = getQCD( ssign, osign, dataName )
-        canvases.append(TCanvas( hist, hist, 800, 600))
+        canvas = TCanvas( hist, hist, 750, 700)
+        canvasRatio = TCanvas( hist + '_ratio', hist + '_ratio', 750, 700)
+        canvases.append( canvas )  
+        canvases.append( canvasRatio )  
+        formatPad( canvas )
+        formatPad( canvasRatio )
         SSD[hist] = ssQCD
         OSD[hist] = osQCD
         histName = os.path.basename( hist )
+        canvas.cd()
+#         if histName.find('_iso')>-1:
+#            osQCD.Rebin(2)
+#            ssQCD.Rebin(2)
+#            xmin = 0
+#            xmax = 0.2
         osQCD.DrawStack('HIST', xmin=xmin, xmax=xmax )
         savePlot( histName + '_lin.png') 
         gPad.SetLogy()
         savePlot( histName + '_log.png') 
         gPad.SetLogy(False)
-        osQCD.DrawRatioStack('HIST', xmin=xmin, xmax=xmax, ymin=0.001, ymax=2)
+        gPad.Update()
+        canvasRatio.cd()
+        osQCDRatio = copy.deepcopy(osQCD)
+        OSDR[hist] = osQCDRatio
+        osQCDRatio.DrawRatioStack('HIST', xmin=xmin, xmax=xmax, ymin=0.001, ymax=2)
         savePlot( histName + '_ratio.png') 
 
-    # OSD[ hists[0] ].DrawStack('HIST')
 
         
     

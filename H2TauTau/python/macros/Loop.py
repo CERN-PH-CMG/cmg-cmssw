@@ -10,28 +10,17 @@ from CMGTools.H2TauTau.macros.H2TauTauInit import *
 from CMGTools.H2TauTau.macros.H2TauTauHistograms import H2TauTauHistograms
 from CMGTools.H2TauTau.macros.AutoHandle import AutoHandle
 from CMGTools.H2TauTau.macros.Counter import Counter
+from CMGTools.H2TauTau.macros.CountLeptons import leptonAcceptFromDiTaus, leptonAcceptFromLeptons
+from CMGTools.H2TauTau.macros.PhysicsObjects import DiTau, Lepton, Jet, bestDiTau
 
 
-#COLIN Need a HistCounters class to represent all counters. 
-#COLIN Need a base Loop class 
-
-class DiTau:
-    '''Extends the cmg::DiTau functionalities.'''
-    def __init__(self, ditau):
-        self.ditau = ditau
-        p4 = LorentzVector( 1,0,0,1)
-        self.ditau.setP4(p4)
-
-    def __getattr__(self,name):
-        '''all accessors  from cmg::DiTau are transferred to this class.'''
-        return getattr(self.ditau, name)
-
-    def __str__(self):
-        return 'ditau: mvis=%3.2f, mT=%3.2f, pZeta=%3.2f' % (self.ditau.mass(),
-                                                             self.ditau.mTLeg2(),
-                                                             self.ditau.pZeta() ) 
-
-
+#COLIN Need a HistCounters class to represent all counters.
+#COLIN Can counters have branches?
+#COLIN Can counters be merged? use a single counter?
+#COLIN Need a base Loop class
+#COLIN can the loop be written in a more pythonic way? should be able to iterate over it...
+#      get some inspiration from the Events class... can maybe inherit from it? 
+        
 class Loop:
     '''Manages looping and navigation on a set of events.'''
     def __init__(self, name, listOfFiles,
@@ -44,7 +33,7 @@ class Loop:
 
         self.events = Events( listOfFiles )
         self.triggers = self.DecodeTriggerList(triggers)
-        self.vertexWeight = vertexWeight
+        self.vertexWeightLabel = vertexWeight
         
         # if name exists as a directory, build another name.
         self.name = name
@@ -94,15 +83,19 @@ class Loop:
     def InitHandles(self):
         '''Initialize all handles for the products we want to read'''
         self.handles = {}
-        self.handles['cmgTauMuCorFullSelSVFit'] =  AutoHandle( 'cmgTauMuCorFullSelSVFit',
+        self.handles['cmgTauMuCorFullSelSVFit'] =  AutoHandle( 'cmgTauMuCorSVFitFullSel',
                                                                'std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>')
         self.handles['cmgTriggerObjectSel'] =  AutoHandle( 'cmgTriggerObjectSel',
                                                            'std::vector<cmg::TriggerObject>>')
-        if self.vertexWeight is not None: 
-            self.handles['vertexWeight'] = AutoHandle( self.vertexWeight,
-                                                   'double' )
+        if self.vertexWeightLabel is not None: 
+            self.handles['vertexWeight'] = AutoHandle( self.vertexWeightLabel,
+                                                       'double' )
         self.handles['vertices'] = AutoHandle( 'offlinePrimaryVertices',
                                                'std::vector<reco::Vertex>' )
+        self.handles['leptons'] = AutoHandle( 'cmgMuonSel',
+                                              'std::vector<cmg::Muon>' )
+        #self.handles['jets'] = AutoHandle( 'cmgPFJetSel',
+        #                                   'std::vector<cmg::PFJet>' )
         
 
     def InitOutput(self):
@@ -124,41 +117,76 @@ class Loop:
 
         # declaring counters
         self.counters = []
-        self.count_exactlyOneDiTau = Counter('exactlyOneDiTau')
-        self.counters.append( self.count_exactlyOneDiTau  )
         self.count_triggerPassed = Counter('triggerPassed')
         self.counters.append( self.count_triggerPassed )
+        self.count_exactlyOneDiTau = Counter('exactlyOneDiTau')
+        self.counters.append( self.count_exactlyOneDiTau  )
         
 
     def ToEvent( self, iEv ):
         '''Navigate to a given event and process it.'''
         self.events.to(iEv)
         self.LoadCollections(self.events)
-        
-        self.diTaus = self.handles['cmgTauMuCorFullSelSVFit'].product()
+
+        # reading CMG objects from the handle
+        cmgDiTaus = self.handles['cmgTauMuCorFullSelSVFit'].product()
+        cmgLeptons = self.handles['leptons'].product()
         self.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
+        # cmgJets = self.handles['jets'].product()
+
+        # print len(self.jets)
+        # print self.jets[0].pt()
+        
+        
+        # converting them into my own python objects
+        self.diTaus = [ DiTau(diTau) for diTau in cmgDiTaus ]
+        self.leptons = [ Lepton(lepton) for lepton in cmgLeptons ]
+        # self.jets = [ Jet(jet) for jet in cmgJets ]
+        
+        # self.diTaus = self.handles['cmgTauMuCorFullSelSVFit'].product()
+        # self.leptons = self.handles['leptons'].product()
+        # self.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
 
         self.count_triggerPassed.inc('a: All events')
         if not self.triggerPassed(self.triggerObject):
             return False
-        self.count_triggerPassed.inc('b: Trig OK  ')
+        self.count_triggerPassed.inc('b: Trig OK ')
         
-        self.count_exactlyOneDiTau.inc('a')
+        self.count_exactlyOneDiTau.inc('a: any # of di-taus ')
         if len(self.diTaus)==0:
             print 'Event %d : No tau mu.' % i
             return False
         if len(self.diTaus)>1:
             # print 'Event %d : Too many tau-mus: n = %d' % (iEv, len(self.diTaus)) 
-            #COLIN could be nice to have a counter class which knows why events are rejected. make histograms with that.
+            #COLIN could be nice to have a counter class
+            # which knows why events are rejected. make histograms with that.
             self.logger.warning('Ev %d: more than 1 di-tau : n = %d' % (iEv,
                                                                         len(self.diTaus)))
-            return False
-        # self.nSel += 1
-        self.count_exactlyOneDiTau.inc('b')
-        self.diTau = DiTau( self.diTaus[0] )
+
+        self.count_exactlyOneDiTau.inc('b: at least 1 di-tau ')
+        
+        # diTaus = [ DiTau(diTau) for diTau in self.diTaus ]
+        # pprint.pprint( map(str, self.leptons) ) 
+        # print map(testMuon, self.leptons)
+        
+        # if not leptonAcceptFromDiTaus(self.diTaus):
+        if not leptonAcceptFromLeptons(self.leptons):
+            return False 
+        self.count_exactlyOneDiTau.inc('c: exactly one lepton ')        
+
+#       oppCharge = [diTau for diTau in diTaus if diTau.charge()==0]
+#        if len(oppCharge)>0:
+#            self.count_exactlyOneDiTau.inc('b: at least 1 di-tau with charge 0')           
+        self.diTau = self.diTaus[0]
+        if len(self.diTaus)>1:
+            self.diTau = bestDiTau( self.diTaus )
+        elif len(self.diTaus)==1:
+            self.count_exactlyOneDiTau.inc('d: exactly 1 di-tau ')
+        else:
+            raise ValueError('should not happen!')
 
         self.eventWeight = 1
-        if self.vertexWeight is not None:
+        if self.vertexWeightLabel is not None:
             self.vertexWeight = self.handles['vertexWeight'].product()[0]
             self.eventWeight *= self.vertexWeight
 
@@ -167,6 +195,7 @@ class Loop:
         # COLIN make filling just one function call?
         # in this class? in the histogram class?
         if self.diTau.charge() == 0:
+            self.count_exactlyOneDiTau.inc('e: opposite charge ')
             self.histsOS.fillDiTau( self.diTau, self.eventWeight)
             self.histsOS.fillVertices( self.vertices, self.eventWeight )
             if( self.diTau.mTLeg2()<40 ):
@@ -181,13 +210,13 @@ class Loop:
         return True
 
                 
-    def Loop(self, nEvents=float('inf') ):
+    def Loop(self, nEvents=-1 ):
         '''Loop on a given number of events, and call ToEvent for each event.'''
         print 'starting loop'
         self.InitOutput()
+        nEvents = int(nEvents)
         for iEv in range(0, self.events.size() ):
-            # print event
-            if iEv ==nEvents:
+            if iEv == nEvents:
                 break
             if iEv%1000 ==0:
                 print 'event', iEv
@@ -205,8 +234,8 @@ class Loop:
         name = 'Loop %s' % self.name
         strcount = [str(counter) for counter in self.counters ]
         triggers = ': '.join( ['triggers', str(self.triggers)] )
-        vertexWeight = ': '.join( ['vertex weight', str(self.vertexWeight) ])
-        return '\n'.join([name, triggers] + strcount)
+        vertexWeight = ': '.join( ['vertex weight', str(self.vertexWeightLabel) ])
+        return '\n'.join([name, triggers, vertexWeight] + strcount)
     
 
 

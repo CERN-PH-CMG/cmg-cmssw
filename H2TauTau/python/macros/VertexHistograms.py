@@ -6,7 +6,7 @@ class VertexHistograms:
         self.name = name
 
         self.h_nvertices = TH1F(name+'_h_nvertices', ';# vertices',
-                                25,0,25)
+                                25,-0.5,24.5)
 
         self.hists = []
         self.hists.append( self.h_nvertices )
