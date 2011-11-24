@@ -40,7 +40,8 @@ if __name__ == '__main__':
              RunCMSBatch(dataset,user,options),
              MonitorJobs(dataset,user,options),
              CheckJobStatus(dataset,user,options),
-             CleanJobFiles(dataset,user,options)
+             CleanJobFiles(dataset,user,options),
+             WriteJobReport(dataset,user,options)
              ]
     
     #allow the tasks to add extra options
@@ -129,6 +130,13 @@ if __name__ == '__main__':
                 #TODO: Perhaps some cleaning?
                 break
             
+        output.close()
+        
+        #dump the output in a python friendly format
+        import pickle
+        dumpfile = '%s.pkl' % dataset.replace('/','_')
+        output = file(dumpfile,'wb')
+        pickle.dump(previous, output)
         output.close()
         
         return logfile

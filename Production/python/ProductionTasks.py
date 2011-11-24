@@ -305,7 +305,7 @@ class CreateJobDirectory(Task):
                 output = output[1:]
         if not os.path.exists(output):
             os.mkdir(output)
-        return {'JobDir':output}
+        return {'JobDir':output,'PWD':os.getcwd()}
 
 class SourceCFG(Task):
     """Generate a source CFG using 'sourceFileList.py' by listing the CASTOR directory specified. Applies the file wildcard, '--wildcard'"""
@@ -318,10 +318,15 @@ class SourceCFG(Task):
         pattern = fnmatch.translate(self.options.wildcard)
 
         data = Dataset(self.user, self.dataset, pattern)
+        good_files = data.listOfGoodFiles()
+        bad_files = [fname for fname in data.listOfFiles() if not fname in good_files]
         
         source = os.path.join(jobdir,'source_cfg.py')
         output = file(source,'w')
-        output.write('files = ' + str(data.listOfGoodFiles()) + '\n')
+        output.write('###SourceCFG:\t%d GoodFiles; %d BadFiles found in mask\n' % (len(good_files),len(bad_files)) )
+        output.write('files = ' + str(good_files) + '\n')
+        for bad_file in bad_files:
+            output.write("###SourceCFG:\tBadInMask '%s'\n" % bad_file)
         output.close()
         return {'SourceCFG':source}
 
@@ -381,12 +386,6 @@ class FullCFG(Task):
         config = insertLines( config, toInsert )
         output.writelines(config)
         output.close()
-        #output.write(config)
-        #output.write('\nfrom %s import *\n' % sourceFile)
-        #output.write('\nprocess.source.fileNames = files\n')        
-        #output.write('if hasattr(process,"maxEvents"): process.maxEvents.input = cms.untracked.int32(-1)\n')
-        #output.write('if hasattr(process,"maxLuminosityBlocks"): process.maxLuminosityBlocks.input = cms.untracked.int32(-1)\n')
-        #output.close()
         return {'FullCFG':source}
 
 class CheckConfig(Task):
@@ -632,6 +631,10 @@ class MonitorJobs(Task):
             jobs[s] = self.getjobid(s)
 
         def checkStatus(stat):
+            
+            #gzip files on the fly
+            actions = {'FilesToCompress':{'Files':[]}}
+            
             result = {}
             for j, id in jobs.iteritems():
                 if id is None:
@@ -642,11 +645,16 @@ class MonitorJobs(Task):
                         if result[j] in ['DONE','EXIT','FORGOTTEN']:
                             stdout = os.path.join(j,'LSFJOB_%s' % id,'STDOUT')
                             if os.path.exists(stdout):
-                                result[j] = stdout
+                                #compress this file
+                                actions['FilesToCompress']['Files'].append(stdout)
+                                result[j] = '%s.gz' % stdout
                             elif os.path.exists('%s.gz' % stdout):
                                 result[j] = '%s.gz' % stdout
                             else:
                                 result[j] = 'NOSTDOUT'
+                                
+            compress = GZipFiles(self.dataset,self.user,self.options)
+            compress.run(actions)
             return result
         
         def countJobs(stat):
@@ -719,7 +727,7 @@ class CheckJobStatus(Task):
                         result[j] = 'CPUTimeExceeded'
                         valid = False
                         break
-                    elif 'Job Killed' in line:
+                    elif 'Killed' in line:
                         result[j] = 'JobKilled'
                         valid = False
                         break
@@ -741,6 +749,45 @@ class CheckJobStatus(Task):
         report = mask.run({'CheckForMask':{'MaskPresent':False}})
         report['LSFJobStatusCheck'] = result
         return report
+    
+class WriteJobReport(Task):
+    """Write a summary report on each job"""    
+    def __init__(self, dataset, user, options):
+        Task.__init__(self,'WriteJobReport', dataset, user, options)
+    def run(self, input):
+        
+        report = input['CheckJobStatus']
+        
+        #collect a list of jobs by status
+        states = {}
+        for j, status in report['LSFJobStatusCheck'].iteritems():
+            if not states.has_key(status):
+                states[status] = []
+            states[status].append(j)
+        jobdir = input['CreateJobDirectory']['PWD']
+        if not os.path.exists(jobdir):
+            raise Exception("Top level job directory not found: '%s'" % jobdir)
+        report = os.path.join(input['CreateJobDirectory']['JobDir'],'resubmit.sh')
+
+        output = file(report_file,'w')
+        output.write('#!/usr/bin/env bash\n')
+        
+        if report['MaskPresent']:
+            mask = report['Report']
+            output.write('#PrimaryDatasetFraction: %f\n' % mask['PrimaryDatasetFraction'])
+            output.write('#FilesGood: %i\n' % mask['FilesGood'])
+            output.write('#FilesBad: %i\n' % mask['FilesBad'])        
+        
+        for status, jobs in states.iteritems():
+            output.write('# %d jobs found in state %s\n' % (len(jobs),status) )
+            if status == 'VALID':
+                continue
+            for j in jobs:
+                jdir = os.path.join(jobdir,j)
+                output.write('pushd %s; bsub -q %s -J RESUB < ./batchScript.sh | tee job_id_resub.txt; popd\n' % (jdir,self.options.queue))
+        output.close()
+            
+        return {'SummaryFile':report_file}
     
 class CleanJobFiles(Task):
     """Removes and compresses auto-generated files from the job directory to save space."""    
@@ -765,9 +812,6 @@ class CleanJobFiles(Task):
             actions['FilesToClean']['Files'].append(pyc)
 
         for j in jobs:
-            #COLIN: no need to compress that anymore
-            # actions['FilesToCompress']['Files'].append(os.path.join(j,'run_cfg.py'))
-            
             status = job_status[j]
             if os.path.exists(status):
                 actions['FilesToCompress']['Files'].append(status)
@@ -791,5 +835,3 @@ class WriteSavannah(Task):
     def run(self, input):
         #ret = os.system('writeSavannah.py -u %s -s %s -T %s' % (self.user,self.options.savuser,self.dataset))
         return {'SavannahWritten':False}
-
-    
