@@ -1,7 +1,8 @@
 from ROOT import TTree, TH1F, TH2F, TProfile, gDirectory
 
-#COLIN need a base histogram class
-class VertexHistograms:
+from CMGTools.H2TauTau.macros.Histograms import Histograms
+
+class VertexHistograms(Histograms):
     def __init__(self, name ):
         self.name = name
 
@@ -11,10 +12,10 @@ class VertexHistograms:
         self.hists = []
         self.hists.append( self.h_nvertices )
         
-    def fillVertices(self, vertices, weight=1):
+    def FillVertices(self, vertices, weight=1):
         self.h_nvertices.Fill( len(vertices), weight)
         
-    def formatHistos(self, style ):
+    def FormatHistos(self, style ):
         for hist in self.hists:
             style.formatHisto( hist )
             

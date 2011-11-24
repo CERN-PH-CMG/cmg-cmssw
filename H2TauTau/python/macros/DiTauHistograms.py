@@ -1,6 +1,9 @@
 from ROOT import TTree, TH1F, TH2F, TProfile, TLegend, gDirectory
 
-class DiTauHistograms:
+from CMGTools.H2TauTau.macros.Histograms import Histograms
+
+
+class DiTauHistograms(Histograms):
     def __init__(self, name):
         self.name = name
 
@@ -17,26 +20,15 @@ class DiTauHistograms:
         self.hists.append( self.h_mT )
         
         
-    def fillHistos(self, tree, cut='', nEvents=999999999):
-        print 'filling histograms: ' + self.name
+    def FillHistos(self, tree, cut='', nEvents=999999999):
+        print 'Filling histograms: ' + self.name
         tree.Draw('tauMu.obj[0].pZeta()>>'+self.h_pzeta.GetName(),cut,'goff',nEvents)
         tree.Draw('tauMu.obj[0].mass()>>'+self.h_vismass.GetName(),cut,'goff',nEvents)
         tree.Draw('tauMu.obj[0].mTLeg2()>>'+self.h_mT.GetName(),cut,'goff',nEvents)
 
-    def fillDiTau(self, diTau, weight=1):
+    def FillDiTau(self, diTau, weight=1):
         self.h_pzeta.Fill( diTau.pZeta(), weight)
         self.h_vismass.Fill( diTau.mass(), weight)
         self.h_svfitmass.Fill( diTau.massSVFit(), weight)
         self.h_mT.Fill( diTau.mTLeg2(), weight)
         
-    def formatHistos(self, style ):
-        for hist in self.hists:
-            style.formatHisto( hist )
-            
-            
-    def Write(self, dir ):
-        self.dir = dir.mkdir( self.name )
-        self.dir.cd()
-        for hist in self.hists:
-            hist.Write()
-        dir.cd()

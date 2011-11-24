@@ -7,7 +7,7 @@ import copy
 from DataFormats.FWLite import Events, Handle
 
 from CMGTools.H2TauTau.macros.H2TauTauInit import *
-from CMGTools.H2TauTau.macros.H2TauTauHistograms import H2TauTauHistograms
+from CMGTools.H2TauTau.macros.H2TauTauHistogramList import H2TauTauHistogramList
 from CMGTools.H2TauTau.macros.AutoHandle import AutoHandle
 from CMGTools.H2TauTau.macros.Counter import Counter
 from CMGTools.H2TauTau.macros.CountLeptons import leptonAcceptFromDiTaus, leptonAcceptFromLeptons
@@ -85,6 +85,8 @@ class Loop:
         self.handles = {}
         self.handles['cmgTauMuCorFullSelSVFit'] =  AutoHandle( 'cmgTauMuCorSVFitFullSel',
                                                                'std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>')
+        self.handles['cmgTauMu'] =  AutoHandle( 'cmgTauMu',
+                                                'std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>')
         self.handles['cmgTriggerObjectSel'] =  AutoHandle( 'cmgTriggerObjectSel',
                                                            'std::vector<cmg::TriggerObject>>')
         if self.vertexWeightLabel is not None: 
@@ -102,13 +104,13 @@ class Loop:
         '''Initialize histograms physics objects, counters.'''
         # declaring histograms
         self.histograms = []
-        self.histsOS = H2TauTauHistograms( '/'.join([self.name, 'OS']) )
+        self.histsOS = H2TauTauHistogramList( '/'.join([self.name, 'OS']) )
         self.histograms.append( self.histsOS )
-        self.histsSS = H2TauTauHistograms( '/'.join([self.name, 'SS']) )
+        self.histsSS = H2TauTauHistogramList( '/'.join([self.name, 'SS']) )
         self.histograms.append( self.histsSS )
-        self.histsOSLowMT = H2TauTauHistograms( '/'.join([self.name, 'OSLowMT']) )
+        self.histsOSLowMT = H2TauTauHistogramList( '/'.join([self.name, 'OSLowMT']) )
         self.histograms.append( self.histsOSLowMT )
-        self.histsSSLowMT = H2TauTauHistograms( '/'.join([self.name, 'SSLowMT']) )
+        self.histsSSLowMT = H2TauTauHistogramList( '/'.join([self.name, 'SSLowMT']) )
         self.histograms.append( self.histsSSLowMT )
 
         # declaring physics objects
@@ -125,28 +127,23 @@ class Loop:
 
     def ToEvent( self, iEv ):
         '''Navigate to a given event and process it.'''
+        self.iEvent = iEv
         self.events.to(iEv)
         self.LoadCollections(self.events)
 
         # reading CMG objects from the handle
+        #COLIN this kind of stuff could be automatized
         cmgDiTaus = self.handles['cmgTauMuCorFullSelSVFit'].product()
         cmgLeptons = self.handles['leptons'].product()
         self.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
         # cmgJets = self.handles['jets'].product()
-
-        # print len(self.jets)
-        # print self.jets[0].pt()
-        
         
         # converting them into my own python objects
+        #COLIN can be automatized
         self.diTaus = [ DiTau(diTau) for diTau in cmgDiTaus ]
         self.leptons = [ Lepton(lepton) for lepton in cmgLeptons ]
         # self.jets = [ Jet(jet) for jet in cmgJets ]
         
-        # self.diTaus = self.handles['cmgTauMuCorFullSelSVFit'].product()
-        # self.leptons = self.handles['leptons'].product()
-        # self.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
-
         self.count_triggerPassed.inc('a: All events')
         if not self.triggerPassed(self.triggerObject):
             return False
@@ -168,15 +165,14 @@ class Loop:
         # diTaus = [ DiTau(diTau) for diTau in self.diTaus ]
         # pprint.pprint( map(str, self.leptons) ) 
         # print map(testMuon, self.leptons)
-        
+
+        #if leptonAcceptFromDiTaus(self.diTaus) != leptonAcceptFromLeptons(self.leptons):
+        #    raise ValueError('lepton veto discrepancy!')
         # if not leptonAcceptFromDiTaus(self.diTaus):
         if not leptonAcceptFromLeptons(self.leptons):
             return False 
         self.count_exactlyOneDiTau.inc('c: exactly one lepton ')        
 
-#       oppCharge = [diTau for diTau in diTaus if diTau.charge()==0]
-#        if len(oppCharge)>0:
-#            self.count_exactlyOneDiTau.inc('b: at least 1 di-tau with charge 0')           
         self.diTau = self.diTaus[0]
         if len(self.diTaus)>1:
             self.diTau = bestDiTau( self.diTaus )
@@ -192,21 +188,21 @@ class Loop:
 
         self.vertices = self.handles['vertices'].product()
         
-        # COLIN make filling just one function call?
+        # COLIN make Filling just one function call?
         # in this class? in the histogram class?
         if self.diTau.charge() == 0:
             self.count_exactlyOneDiTau.inc('e: opposite charge ')
-            self.histsOS.fillDiTau( self.diTau, self.eventWeight)
-            self.histsOS.fillVertices( self.vertices, self.eventWeight )
+            self.histsOS.FillDiTau( self.diTau, self.eventWeight)
+            self.histsOS.FillVertices( self.vertices, self.eventWeight )
             if( self.diTau.mTLeg2()<40 ):
-                self.histsOSLowMT.fillDiTau( self.diTau, self.eventWeight)
-                self.histsOSLowMT.fillVertices( self.vertices, self.eventWeight )
+                self.histsOSLowMT.FillDiTau( self.diTau, self.eventWeight)
+                self.histsOSLowMT.FillVertices( self.vertices, self.eventWeight )
         else:
-            self.histsSS.fillDiTau( self.diTau, self.eventWeight)
-            self.histsSS.fillVertices( self.vertices, self.eventWeight )
+            self.histsSS.FillDiTau( self.diTau, self.eventWeight)
+            self.histsSS.FillVertices( self.vertices, self.eventWeight )
             if( self.diTau.mTLeg2()<40 ):
-                self.histsSSLowMT.fillDiTau( self.diTau, self.eventWeight)
-                self.histsSSLowMT.fillVertices( self.vertices, self.eventWeight )
+                self.histsSSLowMT.FillDiTau( self.diTau, self.eventWeight)
+                self.histsSSLowMT.FillVertices( self.vertices, self.eventWeight )
         return True
 
                 
@@ -220,7 +216,11 @@ class Loop:
                 break
             if iEv%1000 ==0:
                 print 'event', iEv
-            self.ToEvent( iEv )
+            try:
+                self.ToEvent( iEv )
+            except ValueError:
+                #COLIN should not be a value error
+                break 
         self.logger.warning( str(self) )
 
 
@@ -246,7 +246,7 @@ if __name__ == '__main__':
     parser = OptionParser()
     parser.usage = """
     %prog component_name <root files>
-    Loop on events in root files and fill histograms.
+    Loop on events in root files and Fill histograms.
     component_name could be e.g. WJets, whatever you want. 
     """
     parser.add_option("-N", "--nevents", 

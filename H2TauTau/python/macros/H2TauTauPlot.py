@@ -2,7 +2,7 @@
 
 
 from CMGTools.H2TauTau.macros.H2TauTauInit import *
-from CMGTools.H2TauTau.macros.H2TauTauHistograms import *
+from CMGTools.H2TauTau.macros.H2TauTauHistogramList import *
 
 from optparse import OptionParser
 import sys
@@ -39,6 +39,6 @@ name = args[1]
 
 (events,lumi) = H2TauTauInit( pattern )
 
-histos = H2TauTauHistograms( name )
-histos.fillHistos( events, options.cut )
+histos = H2TauTauHistogramList( name )
+histos.FillHistos( events, options.cut )
 histos.Write()

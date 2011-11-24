@@ -16,9 +16,9 @@ def leptonsFromDiTaus( diTaus ):
 
 
 def testMuon( muon ):
-    '''basically recoding the muon selection of muCuts_cff'''
+    '''basically recoding the muon selection of muCuts_cff, except for the eta range.'''
     if muon.pt()>15 and \
-       abs( muon.eta() ) < 2.1 and \
+       abs( muon.eta() ) < 2.5 and \
        muon.isGlobal() and \
        muon.isTracker() and \
        muon.numberOfValidTrackerHits() > 10 and \

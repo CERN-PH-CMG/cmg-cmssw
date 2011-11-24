@@ -14,7 +14,7 @@ numberOfFilesToProcess = 10
 
 dataset_user = 'cbern' 
 # dataset_name = '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0'
-dataset_name = '/TauPlusX/Run2011A-05Aug2011-v1/AOD/V2/PAT_CMG_V2_3_0/H2TAUTAU_Nov16'
+dataset_name = '/TauPlusX/Run2011A-05Aug2011-v1/AOD/V2/PAT_CMG_V2_4_0/H2TAUTAU_Nov21'
 dataset_pattern = 'h2TauTau_presel_tree.*root'
 
 

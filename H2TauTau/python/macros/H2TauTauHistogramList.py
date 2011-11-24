@@ -5,9 +5,8 @@ from ROOT import TFile
 from CMGTools.H2TauTau.macros.DiTauHistograms import *
 from CMGTools.H2TauTau.macros.LegHistograms import *
 from CMGTools.H2TauTau.macros.VertexHistograms import *
-#  from CMGTools.RootTools.TaggedFile import *
 
-class H2TauTauHistograms:
+class H2TauTauHistogramList( object ):
     def __init__(self,name):
         self.name = name
 
@@ -30,22 +29,22 @@ class H2TauTauHistograms:
         self.hists.append( self.mu )     
         self.hists.append( self.vertex )
         
-    def fillHistos(self, events, cut='', nEvents = 9999999999):
-        print 'filling histograms: ' + self.name
+    def FillHistos(self, events, cut='', nEvents = 9999999999):
+        print 'Filling histograms: ' + self.name
         for hist in self.hists:
-            hist.fillHistos( events, cut, nEvents )
+            hist.FillHistos( events, cut, nEvents )
 
-    def fillDiTau(self, diTau, weight=1):
-        self.diTau.fillDiTau( diTau, weight )
-        self.tau.fillLeg( diTau.leg1(), weight )
-        self.mu.fillLeg( diTau.leg2(), weight )
+    def FillDiTau(self, diTau, weight=1):
+        self.diTau.FillDiTau( diTau, weight )
+        self.tau.FillLeg( diTau.leg1(), weight )
+        self.mu.FillLeg( diTau.leg2(), weight )
 
-    def fillVertices(self, vertices, weight=1):
-        self.vertex.fillVertices( vertices, weight )
+    def FillVertices(self, vertices, weight=1):
+        self.vertex.FillVertices( vertices, weight )
 
-    def formatHistos(self, style):
+    def FormatHistos(self, style):
         for hist in self.hists:
-            hist.formatHistos( style )
+            hist.FormatHistos( style )
 
     def Write(self):
         for hist in self.hists:
