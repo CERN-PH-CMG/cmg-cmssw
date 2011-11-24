@@ -1,6 +1,6 @@
 from CMGTools.RootTools.RootInit import *
 from CMGTools.H2TauTau.macros.h2TauTauAliases import *
-from CMGTools.H2TauTau.macros.H2TauTauHistograms import *
+from CMGTools.H2TauTau.macros.H2TauTauHistogramList import *
 
 # aliases  ----------------------------------------------------------
 

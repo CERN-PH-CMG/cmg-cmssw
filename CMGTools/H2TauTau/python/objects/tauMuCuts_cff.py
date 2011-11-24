@@ -7,6 +7,7 @@ from CMGTools.H2TauTau.objects.tauSkimCuts_cff import *
 
 tauMuCuts = cms.PSet(
     baseline = cms.PSet(
+         mass = cms.string('mass()>10'),
          muLeg = muCuts.clone(),
          tauLeg = tauCuts.clone()
          ),

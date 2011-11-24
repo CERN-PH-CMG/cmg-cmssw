@@ -18,18 +18,21 @@ def RunLoopAsync(comp):
     loop = RunLoop( comp )
     return loop.name
 
-def RunLoop( comp ):
-    #COLIN need to be able to catch exceptions! 
+def RunLoop( comp, iEvent=None):
     fullName = '/'.join( [outDir, comp.name ] )
     files = glob.glob(comp.files)
     loop = Loop( fullName, files,
                  triggers = comp.triggers,
                  vertexWeight = comp.vertexWeight )
     print loop
-    # print options.nevents
-    loop.Loop( options.nevents )
-    loop.Write()
-    print loop
+    if iEvent is None:
+        loop.Loop( options.nevents )
+        loop.Write()
+        print loop
+    else:
+        loop.InitOutput()
+        iEvent = int(iEvent)
+        loop.ToEvent( iEvent )
     return loop
 
 def TestComponentList( complist ):
@@ -127,13 +130,17 @@ mc = 0
                       dest="nevents", 
                       help="number of events to process",
                       default=-1)
+    parser.add_option("-i", "--iEvent", 
+                      dest="iEvent", 
+                      help="jump to a given event. ignored in multiprocessing.",
+                      default=None)
+
     
     (options,args) = parser.parse_args()
     if len(args) != 2:
         parser.print_help()
         print 'ERROR: please provide the processing name and the component list'
         sys.exit(1)
-
     outDir = args[0]
     if os.path.exists(outDir) and not os.path.isdir( outDir ):
         parser.print_help()
@@ -144,8 +151,6 @@ mc = 0
         parser.print_help()
         print 'ERROR: second argument must be an existing file (your input cfg).'
         sys.exit(3)
-
-    # jobArgs = PersistentDict( 'jobArgs', componentList)
 
     anacfg = AnalysisConfig( cfgFile )
     selComps = anacfg.SelectedComponents()
@@ -169,4 +174,5 @@ mc = 0
     else:
         # when running only one loop, do not use multiprocessor module.
         # then, the exceptions are visible -> use only one sample for testing
-        loop = RunLoop( comp )
+        loop = RunLoop( comp, options.iEvent )
+        #COLIN add an option to jump to an event.
