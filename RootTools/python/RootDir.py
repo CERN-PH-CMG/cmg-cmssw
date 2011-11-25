@@ -70,7 +70,7 @@ class RootDir:
         
             self.canvas.Divide(nx, ny)
             i = 1
-            for key in self.histograms.iterkeys():
+            for key in sorted(self.histograms.iterkeys()):
                 self.canvas.cd(i)
                 self.histograms[key].Draw(opt)
                 i = i+1
@@ -78,7 +78,7 @@ class RootDir:
             self.canvas.Modified()
             self.canvas.Update()
         
-        for key in self.subDirs.iterkeys():
+        for key in sorted(self.subDirs.iterkeys()):
             self.subDirs[key].DrawAll(xsize, ysize, opt)
 
 
@@ -119,6 +119,9 @@ class RootDir:
             else:
                 return None
 
+    def h(self, histName):
+        return self.histograms[ histName ]
+
     def SubDir(self, dirName):
         return self.subDirs[dirName]
     
@@ -126,20 +129,25 @@ class RootDir:
         """Draws an histogram. Use the absolute path."""
         hist = self.h(histName).Draw()
 
-    def Print( self, path=None):
+    def Print( self, path=None, printout=None):
         """Print the contents of this RootDir, including its sub-directories."""
-        for key in self.histograms.iterkeys():
+        if printout == None:
+            printout = [] # list of lines
+        for key in sorted(self.histograms.iterkeys()):
             if path!=None:
-                print path+'/'+key
-            
-        for key in self.subDirs.iterkeys():
-            print key
-
+                printout.append( path+'/'+key )
+            else:
+                printout.append(key)
+        for key in sorted(self.subDirs.iterkeys()):
+            # printout.append( key )
             subPath = key
             if path!=None:
                 subPath = path + '/' + key
-            self.subDirs[key].Print( subPath )
-        
+            printout = self.subDirs[key].Print( subPath, printout )
+        return printout
+
+    def __str__(self):
+        return '\n'.join( self.Print() ) 
         
 
 if __name__ == '__main__':
@@ -185,9 +193,9 @@ if __name__ == '__main__':
     rootDir = RootDir( file, sRed )
     if options.dirname is not None:
         rootDir = rootDir.SubDir( options.dirname )
-    rootDir.Print()
+    print rootDir
     if not options.list:
         rootDir.DrawAll()
-        
+  
     
     # rootDir.subDirs_[dir].DrawAll()

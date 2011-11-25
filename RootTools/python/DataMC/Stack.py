@@ -14,13 +14,14 @@ class Stack:
     STYLE = copy.copy(sBlack)
     STYLE.markerStyle = 1 
     
-    def __init__(self, name):
+    def __init__(self, name, ytitle=None):
         self.name = name
         self.hists = []
         self.integral = 0
         self.totalHist = None
         self.statErrors = Stack.STAT_ERRORS
         self.style = Stack.STYLE
+        self.ytitle = ytitle
         
     def Add(self, hist):
         '''Add an Histogram.'''
@@ -51,6 +52,8 @@ class Stack:
         # we draw it as hist so that the markers don't appear.
         hist = hists[0]
         hist.Draw('hist')
+        if self.ytitle is not None:
+            hist.GetYaxis().SetTitle( self.ytitle )
         self.obj.Draw( opt+'same' )
         # need to redraw the axes, which are now "under"
         # the stacked histograms. 
@@ -61,9 +64,12 @@ class Stack:
             ymax = self.totalHist.GetMaximum()*1.1
         hist.GetYaxis().SetRangeUser( ymin, ymax )
         if xmin is not None and xmax is not None:
+            # without the little offset,
+            # the range includes the bin over xmax !@(*
+            xmax = xmax - 1e-9
             hist.GetXaxis().SetRangeUser( xmin, xmax )
         self._DrawStatErrors()
-        self._updateTitles( hist )
+        # self._updateTitles( hist )
        
 
     def _DrawStatErrors(self):
@@ -116,6 +122,7 @@ class Stack:
     
     def _updateTitles( self,hist ):
         '''Update the axis titles of the stack to the titles of the first histogram in the stack.'''
-        self.obj.GetXaxis().SetTitle( hist.obj.GetXaxis().GetTitle() )
-        self.obj.GetYaxis().SetTitle( hist.obj.GetYaxis().GetTitle() )
+        print 'update', hist.GetYaxis().GetTitle()
+        self.obj.GetXaxis().SetTitle( hist.GetXaxis().GetTitle() )
+        self.obj.GetYaxis().SetTitle( hist.GetYaxis().GetTitle() )
         
