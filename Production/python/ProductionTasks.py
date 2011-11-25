@@ -717,8 +717,17 @@ class CheckJobStatus(Task):
                     fileHandle = gzip.GzipFile(status)
                 else:
                     fileHandle = file(status)
-
+                
+                open_count = 0
+                close_count = 0
                 for line in fileHandle:
+                    #start by counting files opened and closed
+                    #suggestion from Enrique
+                    if 'pened file' in line:
+                        open_count += 1
+                    if 'losed file' in line:
+                        close_count += 1
+                    
                     if 'Exception' in line:
                         result[j] = 'Exception'
                         valid = False
@@ -735,6 +744,10 @@ class CheckJobStatus(Task):
                         result[j] = 'SegFault'
                         valid = False
                         break
+                    
+                if valid and open_count != close_count:
+                    result[j] = 'FileOpenCloseMismatch'
+                    valid = False
                 if valid:
                     result[j] = 'VALID'
             else:
