@@ -1,7 +1,7 @@
 import os
 
-dirReprocessing = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing'
-dirPrompt = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt'
+# dirReprocessing = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing'
+# dirPrompt = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt'
 defaultDict = '/'.join( [ os.environ['CMSSW_BASE'],
                           'src/CMGTools/H2TauTau/json/officialJSONS.txt' ] )
 
@@ -16,15 +16,15 @@ def jsonPick( dataset, samplesAndJSONs=None):
     for line in jsonDictFile:
         sample, json = line.split()
         jsons[sample] = json
-    dir = dirReprocessing
-    if 'Prompt' in dataset:
-        dir = dirPrompt
+    # dir = dirReprocessing
+    # if 'Prompt' in dataset:
+    #     dir = dirPrompt
     # stripping out the last part of the dataset name
     # to keep only the base official dataset name
     dsfields = dataset.lstrip('/').split('/')[0:3]
     baseDataSet = '/'+'/'.join( dsfields )
     jsonFile = jsons[ baseDataSet ]
-    jsonAbsPath = '/'.join( [dir, jsonFile] )
+    jsonAbsPath = jsonFile
     if not os.path.isfile(jsonAbsPath):
         raise ValueError( ' '.join([jsonAbsPath,
                                     'does not exist.']) )
