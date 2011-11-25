@@ -813,7 +813,7 @@ class CleanJobFiles(Task):
 
         for j in jobs:
             status = job_status[j]
-            if os.path.exists(status):
+            if os.path.exists(status) and not status.endswith('.gz'):
                 actions['FilesToCompress']['Files'].append(status)
                 
         compress = GZipFiles(self.dataset,self.user,self.options)
