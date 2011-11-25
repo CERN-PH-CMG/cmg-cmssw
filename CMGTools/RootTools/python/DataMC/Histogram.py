@@ -16,7 +16,7 @@ class Histogram( object ):
     the same GetName(), coming from different TDirectories.
     '''
 
-    def __init__(self, name, obj, layer=0, legendLine=None, stack=True):
+    def __init__(self, name, obj, layer=0., legendLine=None, stack=True):
         # name is a user defined name
         self.name = name
         if legendLine is None:
@@ -32,7 +32,18 @@ class Histogram( object ):
         self.SetWeight(1)
         
     def __str__(self):
-        return self.name + ' / ' + self.obj.GetName() + ', L=' + str(self.layer)
+        fmt = '{self.name:<10} / {hname:<10},\t Layer ={self.layer:8.1f}, w = {weighted:8.1f}, u = {unweighted:8.1f}'
+        tmp = fmt.format(self=self,
+                         hname = self.obj.GetName(),
+                         weighted = self.Yield(weighted=True),
+                         unweighted = self.Yield(weighted=False) )
+        return tmp
+
+    def Yield(self, weighted=True):
+        hist = self.weighted
+        if not weighted:
+            hist = self.obj
+        return hist.Integral( 0, hist.GetNbinsX()+1)
 
     def Rebin(self, factor):
         self.obj.Rebin( factor )
@@ -107,7 +118,7 @@ class Histogram( object ):
         if weighted is False:
             hist = self.obj
         if bmin is None and bmax is None:
-            return hist.Integral()
+            return hist.Integral(0, hist.GetNbinsX()+1)
         elif bmin is not None and bmax is not None:
             if (xmax - xmin) % self.obj.GetBinWidth(1) != 0:
                 raise ValueError('boundaries should define an integer number of bins. nbins=%d, xmin=%3.3f, xmax=%3.3f' % (self.obj.GetNbinsX(), self.obj.GetXaxis().GetXmin(), self.obj.GetXaxis().GetXmax()) )
