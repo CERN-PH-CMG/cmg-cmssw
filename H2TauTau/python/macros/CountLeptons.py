@@ -1,24 +1,24 @@
 
 
-def leptonsFromDiTaus( diTaus ):
-    '''Returns a dictionary of leptons used as leg2 in a collection of diTaus.
+## def leptonsFromDiTaus( diTaus ):
+##     '''Returns a dictionary of leptons used as leg2 in a collection of diTaus.
 
-    The dictionary is indexed by sourcePtr, so 
-    two leg2s with the same sourcePtr are considered as being the same,
-    and enter the dictionary only once.'''
-    leptons = {}
-    for diTau in diTaus:
-        # print diTau, diTau.leg2().pt()
-        lepton = diTau.leg2()
-        ptr = lepton.sourcePtr()
-        leptons[ (ptr.key(), ptr.id().id()) ] = lepton
-    return leptons
+##     The dictionary is indexed by sourcePtr, so 
+##     two leg2s with the same sourcePtr are considered as being the same,
+##     and enter the dictionary only once.'''
+##     leptons = {}
+##     for diTau in diTaus:
+##         # print diTau, diTau.leg2().pt()
+##         lepton = diTau.leg2()
+##         ptr = lepton.sourcePtr()
+##         leptons[ (ptr.key(), ptr.id().id()) ] = lepton
+##     return leptons
 
 
-def testMuon( muon ):
-    '''basically recoding the muon selection of muCuts_cff, except for the eta range.'''
-    if muon.pt()>15 and \
-       abs( muon.eta() ) < 2.5 and \
+def testMuonTight( muon, ptCut=15 ):
+    '''basically recoding the muon selection of muCuts_cff.'''
+    if muon.pt()>ptCut and \
+       abs( muon.eta() ) < 2.1 and \
        muon.isGlobal() and \
        muon.isTracker() and \
        muon.numberOfValidTrackerHits() > 10 and \
@@ -29,6 +29,20 @@ def testMuon( muon ):
        abs(muon.dxy()) < 0.045 and \
        abs(muon.dz()) < 0.2 and \
        muon.relIso(0.5)<0.1:
+        return True
+    else:
+        return False
+
+
+def testMuonLoose( muon, ptCut=15 ):
+    '''Loose muon selection, for the lepton veto'''
+       #COLIN: not sure the vertex constraints should be kept 
+    if muon.pt()>ptCut and \
+       abs( muon.eta() ) < 2.5 and \
+       muon.isGlobal() and \
+       abs(muon.dxy()) < 0.045 and \
+       abs(muon.dz()) < 0.2 and \
+       muon.relIso(0.5)<0.3:
         return True
     else:
         return False
@@ -57,18 +71,27 @@ def noOppositeChargePair( leptons ):
         return True
     
 
-def leptonAcceptFromDiTaus( diTaus ):
-    '''Returns False if the diTaus altogether contain at least a pair of leptons
-    of opposite charge on their leg2.'''
-    # print 'lepton accept'
-    # print map( str, diTaus)
-    leptons = leptonsFromDiTaus( diTaus )
-    return noOppositeChargePair( leptons.values() )
+## def leptonAcceptFromDiTaus( diTaus ):
+##     '''Returns False if the diTaus altogether contain at least a pair of leptons
+##     of opposite charge on their leg2.'''
+##     # print 'lepton accept'
+##     # print map( str, diTaus)
+##     leptons = leptonsFromDiTaus( diTaus )
+##     # return noOppositeChargePair( leptons.values() )
+##     return len(leptons)<2
 
 
-def leptonAcceptFromLeptons( allLeptons ):
+def leptonAccept( allLeptons ):
     # print 'from leptonsq'
-    leptons = filter( testMuon, allLeptons )
-    return noOppositeChargePair( leptons )
+    tightLeptons = set(filter( testMuonTight, allLeptons ))
+    looseLeptons = set(filter( testMuonLoose, allLeptons ))
+    if not tightLeptons.issubset( looseLeptons):
+        #COLIN: hehe not sure about that 
+        raise ValueError('tight leptons must be a subset of loose leptons')
+    # return noOppositeChargePair( leptons )
+    #COLIN: the following works if the previous exception didn't fire
+    # otherwise, could do an xor
+    nLeptons = len(looseLeptons)
+    return nLeptons<2
     
 

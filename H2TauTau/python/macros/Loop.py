@@ -10,7 +10,7 @@ from CMGTools.H2TauTau.macros.H2TauTauInit import *
 from CMGTools.H2TauTau.macros.H2TauTauHistogramList import H2TauTauHistogramList
 from CMGTools.H2TauTau.macros.AutoHandle import AutoHandle
 from CMGTools.H2TauTau.macros.Counter import Counter
-from CMGTools.H2TauTau.macros.CountLeptons import leptonAcceptFromDiTaus, leptonAcceptFromLeptons
+from CMGTools.H2TauTau.macros.CountLeptons import leptonAccept
 from CMGTools.H2TauTau.macros.PhysicsObjects import DiTau, Lepton, Jet, bestDiTau
 
 
@@ -166,10 +166,10 @@ class Loop:
         # pprint.pprint( map(str, self.leptons) ) 
         # print map(testMuon, self.leptons)
 
-        #if leptonAcceptFromDiTaus(self.diTaus) != leptonAcceptFromLeptons(self.leptons):
+        #if leptonAcceptFromDiTaus(self.diTaus) != leptonAccept(self.leptons):
         #    raise ValueError('lepton veto discrepancy!')
         # if not leptonAcceptFromDiTaus(self.diTaus):
-        if not leptonAcceptFromLeptons(self.leptons):
+        if not leptonAccept(self.leptons):
             return False 
         self.count_exactlyOneDiTau.inc('c: exactly one lepton ')        
 
