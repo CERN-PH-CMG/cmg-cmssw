@@ -41,7 +41,8 @@ if numberOfFilesToProcess > 0:
 json = None
 if dataset_name.find('Run201')>-1:
     from CMGTools.Common.Tools.applyJSON_cff import *
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-178078_7TeV_PromptReco_Collisions11_JSON.txt'
+    from CMGTools.H2TauTau.tools.jsonPick import *
+    json = jsonPick( dataset_name )
     applyJSON(process, json )
 
 

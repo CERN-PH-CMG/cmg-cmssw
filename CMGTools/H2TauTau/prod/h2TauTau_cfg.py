@@ -64,10 +64,8 @@ process.schedule = cms.Schedule(
 json = None
 if dataset_name.find('Run201')>-1:
     #DATA
-    # attach JSON mask to the source if reading a data file
     from CMGTools.Common.Tools.applyJSON_cff import *
     from CMGTools.H2TauTau.tools.jsonPick import *
-    # json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-178078_7TeV_PromptReco_Collisions11_JSON.txt'
     json = jsonPick( dataset_name )
     applyJSON(process, json )
 else:
