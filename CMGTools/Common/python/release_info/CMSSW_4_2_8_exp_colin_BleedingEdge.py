@@ -1,6 +1,6 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_tauscaler_19Nov11'),
   ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_25Nov11'),
-  ('CMGTools/H2TauTau', 'UserCode/CMGTools/H2TauTau', 'cbern_jsonpick_25Nov11'),
+  ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_jsonpick_25Nov11'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_fromWill_25Nov11'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_datamc_25Nov11'),
   ('CMGTools/ZmumuJetsTutorial', 'UserCode/CMG/CMGTools/ZmumuJetsTutorial', 'cbern_tutorial_12Oct11'),
