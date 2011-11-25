@@ -767,7 +767,7 @@ class WriteJobReport(Task):
         jobdir = input['CreateJobDirectory']['PWD']
         if not os.path.exists(jobdir):
             raise Exception("Top level job directory not found: '%s'" % jobdir)
-        report = os.path.join(input['CreateJobDirectory']['JobDir'],'resubmit.sh')
+        report_file = os.path.join(input['CreateJobDirectory']['JobDir'],'resubmit.sh')
 
         output = file(report_file,'w')
         output.write('#!/usr/bin/env bash\n')
