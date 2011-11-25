@@ -1,6 +1,9 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 ##########
+from CMGTools.Common.Tools.applyJSON_cff import applyJSON
+json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-180252_7TeV_PromptReco_Collisions11_JSON.txt'
+applyJSON(process, json )
 
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
@@ -12,7 +15,7 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
 ##########
 
 # Message logger setup.
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 doSkimHighMET = False
