@@ -64,12 +64,21 @@ Sample::~Sample(){
     delete sampleHist_[i];
 
   if(tree_!=NULL) delete tree_;
+
+  for(std::vector<int*>::const_iterator c=countervalue_.begin(); c!=countervalue_.end(); ++c)
+    delete *c;    
   
 }
 
 
 bool Sample::init(){
   if(init_)return 1;
+
+
+  //counter for fully selected events
+  countername_.push_back(TString(""));
+  countervalue_.push_back(new int(0));
+
 
   //print the trigger paths  
   cout<<"TriggerPaths:"<<endl;
@@ -86,19 +95,24 @@ fwlite::ChainEvent*  Sample::getEvents(){
   if(!sampleChain_){
     chainNEvents_=0;
     for(Long_t id=0;id<5000;id++){
-      //test the files
       //std::string colln=(const char*)(TString(GetTitle())+"/tree_CMG_"+id+".root");
-      std::string colln=(const char*)(TString(GetTitle())+"/h2TauTau_fullsel_tree_CMG_"+id+".root");
-      if(access(colln.c_str(), F_OK ) == -1 )continue; 
-      TFile ftest(colln.c_str(),"read");
-      if(ftest.IsZombie()){ cout<<colln<<" is Zombie "<<endl; continue;}
-      if(!ftest.GetListOfKeys()){ cout<<colln<<" has no keys "<<endl; continue;}
-      TTree*tree=(TTree*)ftest.Get("Events");
-      if(!tree){ cout<<colln<<" has no tree "<<endl; continue;}
-      //add the good files to the chain
-      sampleList_.push_back(colln);
+      std::string collnpre=(const char*)(TString(GetTitle())+"/h2TauTau_presel_tree_CMG_"+id+".root");
+      std::string collnfull=(const char*)(TString(GetTitle())+"/h2TauTau_fullsel_tree_CMG_"+id+".root");
+      TFile* ftest=NULL;
+      if(access(collnpre.c_str(), F_OK ) != -1 )
+	ftest=new TFile(collnpre.c_str(),"read");
+      else if(access(collnfull.c_str(), F_OK ) != -1 )
+	ftest=new TFile(collnfull.c_str(),"read");
+      if(!ftest)continue;
+      if(ftest->IsZombie()){ cout<<ftest->GetName()<<" is Zombie "<<endl; continue;}
+      if(!ftest->GetListOfKeys()){ cout<<ftest->GetName()<<" has no keys "<<endl; continue;}
+      TTree*tree=(TTree*)ftest->Get("Events");
+      if(!tree){ cout<<ftest->GetName()<<" has no tree "<<endl; continue;}
+      sampleList_.push_back(ftest->GetName());      //add the good files to the chain
       chainNEvents_+=tree->GetEntriesFast();      
+      delete ftest;
     }
+    if(sampleList_.size()>5000){cout<<"too many files in directory"<<endl; return 0;}
     cout<<GetName()<<" "<<sampleList_.size()<<" files added,  with "<<chainNEvents_<<" chain events."<<endl;
 
     if(sampleList_.size()==0){

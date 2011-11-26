@@ -21,6 +21,8 @@
 
 <use name="TauAnalysis/SVFitStandAlone"/>
 
+<use name="CMGTools/Common"/>
+
 <export>
   <lib   name="1"/>
 </export>

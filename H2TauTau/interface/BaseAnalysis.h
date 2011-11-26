@@ -28,6 +28,7 @@ using namespace std;
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "AnalysisDataFormats/CMGTools/interface/TriggerObject.h"
 
 #include "CMGTools/H2TauTau/interface/Sample.h"
 
@@ -46,6 +47,7 @@ public:
   void setOutputPath(TString path){outputpath_=path;}
   void setTruncateEvents(int maxEvents){truncateEvents_=maxEvents;}
   void setPrintFreq(int freq){ printFreq_=freq;}
+  void setPupWeightName(string weightname){pupWeightName_=weightname;}
 
   virtual bool init();
   virtual bool createHistos(TString samplename="RelValZTT");
@@ -58,8 +60,9 @@ protected:
   virtual bool getHistos(TString tag = "");
   virtual bool fillVariables(const fwlite::Event * event);
   virtual bool applySelections();
-  virtual bool fillHistos(TString tag = "", double weight = 1.);
+  virtual bool fillHistos(TString tag = "");
 
+  bool fillPUPWeightHisto();
 
   std::vector<Sample*> samples_;
   Sample* sample_;
@@ -67,12 +70,15 @@ protected:
   unsigned int verbosity_;
   int truncateEvents_;
   int printFreq_;
-  float mcPUPWeight_;
+  string pupWeightName_;
+  float eventWeight_;
+  float pupWeight_;
   unsigned int runnumber_;
   unsigned int lumiblock_;
   unsigned int eventid_;
   edm::Handle< std::vector<reco::Vertex> > vertices_;
   TString outputpath_;
+  bool trigpass_;
 
   ///Histograms
   TH1F* runNumberHisto_;

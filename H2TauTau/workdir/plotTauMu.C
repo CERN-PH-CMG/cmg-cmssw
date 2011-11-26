@@ -1,5 +1,5 @@
 void plotTauMu(){  
-  gROOT->ProcessLine(".x ./TauMuConfig_.C");
+  gROOT->ProcessLine(".x ./TauMuConfig.C");
   
   WJetsToLNu.setColor(kRed+2);
   WJetsToLNu.setLineColor(WJetsToLNu.getColor());
@@ -65,7 +65,9 @@ void plotTauMu(){
  
 
   if(!analysis.init()){cout<<" could not init"<<endl;return 0;}
- 
+  
+  analysis.printRawYields("diTauMassHisto_massT");
+
 
   //can only do one plot at a time for now 
 //   Float_t c[4]={0,0,0,0};
@@ -77,19 +79,28 @@ void plotTauMu(){
 //   analysis.plot("nVertexHisto",1," # of reco. vertices ","",c,r);
 
 //     Float_t c[4]={.5,.75,.42,.81};
-//     Float_t r[4]={0,100,0,2000};
-//     analysis.plot("muPtHisto",1," #mu p_{T}   (GeV)","Events / 1 GeV",c,r);
+//     Float_t r[4]={0,100,0,5000};
+//     analysis.plot("muPtHisto",5," #mu p_{T}   (GeV)","Events / 2.5 GeV",c,r);
+
+//   Float_t c[4]={.6,.85,.42,.81};
+//   Float_t r[4]={-2.5,2.5,0,2000};
+//   analysis.plot("muEtaHisto",2," #eta_{#mu}","Events / 0.1",c,r);
 
 //   Float_t c[4]={.5,.75,.42,.81};
 //   Float_t r[4]={0,0.5,0,8000};
-//   analysis.plot("muIsoHisto_muiso",1," muon isolation  ","",c,r);
+//   analysis.plot("muIsoHisto_muiso",2," muon relIso()","",c,r);
 
 //   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,100,0,4500};
-//   analysis.plot("tauPtHisto",2," #tau p_{T}   (GeV)","Events / 2 GeV",c,r);
+//   Float_t r[4]={0,100,0,5000};
+//   analysis.plot("tauPtHisto",5," #tau p_{T}   (GeV)","Events / 2.5 GeV",c,r);
 
-  //   Float_t c[4]={.5,.75,.42,.81};
-  //   analysis.plot("tauIsoHisto",2," tau isolation  ","",c,0);
+//   Float_t c[4]={.6,.85,.42,.81};
+//   Float_t r[4]={-2.5,2.5,0,2000};
+//   analysis.plot("tauEtaHisto",2," #eta_{#tau}","Events / 0.1",c,r);
+
+
+//   Float_t c[4]={.5,.75,.42,.81};
+//   analysis.plot("tauIsoHisto",2," tau isolation  ","",c,0);
   
 //   Float_t c[4]={.5,.75,.42,.81};
 //   Float_t r[4]={0,150,0,5000};
@@ -108,19 +119,19 @@ void plotTauMu(){
 //    analysis.plot("pZetaHisto_pzeta",6,"P_{#zeta} - 1.5*P_{#zeta}^{vis}    (GeV)","Events / 6 GeV",c,r);
   
 //   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,200,0,2500};
-//   analysis.plot("transverseMassHisto_massT",2,"m_{T}   (GeV)","Events / 2 GeV",c,r);
+//   Float_t r[4]={0,200,0,5000};
+//   analysis.plot("transverseMassHisto_massT",4,"m_{T}   (GeV)","Events / 2 GeV",c,r);
 
 //   Float_t c[4]={.6,.85,.42,.81};
 //   //Float_t r[4]={-0.5,5.5,0,25000};
 //   Float_t r[4]={-0.5,5.5,1,500000};
 //   analysis.plot("njetHisto",1,"# of jets","",c,r,1);
   
-  Float_t c[4]={.5,.75,.42,.81};
-  Float_t r[4]={0,200,0,3500};
 //   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,350,5,1e7};
-  analysis.plot("diTauMassHisto",4,"m_{vis}   (GeV)","Events / 4 GeV",c,r,0);
+//   Float_t r[4]={0,200,0,3500};
+// //   Float_t c[4]={.5,.75,.42,.81};
+// //   Float_t r[4]={0,350,5,1e7};
+//   analysis.plot("diTauMassHisto",4,"m_{vis}   (GeV)","Events / 4 GeV",c,r,0);
 
 //   Float_t c[4]={.5,.75,.42,.81};
 //   Float_t r[4]={0,300,0,4000};

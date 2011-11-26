@@ -9,7 +9,8 @@
 #include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
 
 #include "CMGTools/H2TauTau/interface/TriggerEfficiency.h"
-#include "CMGTools/H2TauTau/interface/RecoilCorrector.h"
+//#include "CMGTools/H2TauTau/interface/RecoilCorrector.h"
+//#include "CMGTools/Common/interface/RecoilCorrector.h"
 #include "CMGTools/H2TauTau/interface/TauRate.h"
 
 #include <TVector3.h>
@@ -23,6 +24,7 @@ public:
   virtual ~TauMuAnalysis();
 
   void setInputTag(string tag){inputTag_=tag;}
+  void setdiLeptonVetoListName(string diLeptonVetoListName){diLeptonVetoListName_=diLeptonVetoListName;}
   void setQCDOStoSSRatio(Float_t ratio){QCDOStoSSRatio_=ratio;}
   void setQCDColor(Int_t color){QCDColor_=color;}
 
@@ -41,16 +43,18 @@ public:
   TH1F* getBackground(TString histoname);
   TH1F* getData(TString histoname);
 
-  //bool plotDistribution(TString histname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords, Float_t* axesrange, bool log=0);
-  bool plot(TString histname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords, Float_t* axesrange, bool log=0);
+  bool printRawYields(TString histoname);
+
+  //bool plotDistribution(TString histoname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords, Float_t* axesrange, bool log=0);
+  bool plot(TString histoname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords, Float_t* axesrange, bool log=0);
    
 
 protected:
   virtual bool addHistos(Sample* s);
   virtual bool getHistos(TString tag = "");
   virtual bool fillVariables(const fwlite::Event * event);
-  virtual bool applySelections(TString exceptcut="");
-  virtual bool fillHistos(TString tag = "", double weight = 1);
+  virtual bool applySelections(TString exceptcut = "");
+  virtual bool fillHistos(TString tag = "");
 
 private:
      
@@ -60,6 +64,7 @@ private:
   const cmg::TauMu * diTauSel_;
   const cmg::BaseMET * met_;
   const TMatrixD * metsig_;  
+  string diLeptonVetoListName_;
   edm::Handle< std::vector<cmg::Muon> > diLeptonVetoList_;
   std::vector<cmg::PFJet> pfJetList_;
   std::vector<cmg::PFJet> pfJetListLC_;
@@ -71,15 +76,14 @@ private:
   unsigned int eventCategorySM_;//SM search
   const cmg::PFJet * boostedJet_;
   const cmg::PFJet * VBFJet1_;
-  const cmg::PFJet * VBFJet2_;
-  bool trigpass_;
+  const cmg::PFJet * VBFJet2_; 
   bool calcsvfit_;
   bool makeAllHistos_;
-
+  float tauFakeWeight_;
 
   Float_t QCDOStoSSRatio_;
   Int_t QCDColor_;
-  RecoilCorrector * recoilCorr_;
+  //RecoilCorrector * recoilCorr_;
   TauRate tauRate_;
   TriggerEfficiency triggerEff_;
 
@@ -88,20 +92,27 @@ private:
   TH1F* diTauNHisto_;
   TH1F* diTauMassHisto_;
   TH1F* diTauMassSVFitHisto_;
+  TH1F* diTauEtaHisto_;
+  TH1F* diTauPtHisto_;
+
   TH1F* svFitConvergeHisto_;
   TH1F* svFitCov00Histo_;
   TH1F* svFitEigen0Histo_;
   TH1F* svFitEigen1Histo_;
-  TH1F* diTauEtaHisto_;
-  TH1F* diTauPtHisto_;
+
   TH1F* muPtHisto_;
+  TH1F* muEtaHisto_;
   TH1F* muIsoHisto_;
+  TH1F* muIsoDBHisto_;
   TH1F* muDxyHisto_;
   TH1F* muDzHisto_;
+
   TH1F* tauPtHisto_;
+  TH1F* tauEtaHisto_;
   TH1F* tauIsoHisto_; 
   TH1F* tauDxyHisto_;
   TH1F* tauDzHisto_;
+
   TH1F* metHisto_;
   TH1F* metphiHisto_;
   TH1F* pZetaHisto_;
@@ -117,12 +128,10 @@ private:
 
   void fillPFJetListLC(const cmg::TauMu * cand);
   void applyRecoilCorr(const cmg::TauMu * cand, TVector3 * MET);
-  float computePZeta(const cmg::TauMu * cand);
-  float computeTransverseMass(const cmg::TauMu * cand);
-
-  float computeTauIso(const cmg::Tau * tau);
-
-  bool computeDiLeptonVeto(const cmg::Muon * muon);
+  //float computePZeta(const cmg::TauMu * cand);
+  //float computeTransverseMass(const cmg::TauMu * cand);
+  //float computeTauIso(const cmg::Tau * tau);
+  bool computeDiLeptonVeto();
 
 
   ///output tree definition
@@ -131,7 +140,10 @@ private:
   float tree_ditaumass_;
   float tree_svfitmass_;
   float tree_taupt_;
+  float tree_taueta_;
   float tree_mupt_;
+  float tree_mueta_;
+  float tree_muiso_;
   float tree_transversemass_;
   float tree_met_;
   int   tree_svfitstatus_;

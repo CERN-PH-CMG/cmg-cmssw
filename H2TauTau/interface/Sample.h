@@ -58,6 +58,11 @@ public:
   void cloneHistos(TString tag){
     for(std::vector<TH1*>::const_iterator h=mainsampleHist_.begin(); h!=mainsampleHist_.end(); ++h)
       sampleHist_.push_back((TH1*)(*h)->Clone(TString((*h)->GetName())+"_"+tag));
+
+    //counters for n-1 cut events
+    countername_.push_back(tag);
+    countervalue_.push_back(new int(0));
+
   }
   void addTree(TTree* tree){tree_=tree;}
   
@@ -65,6 +70,18 @@ public:
     dataType_=type;
   }
   
+  void incrementCounter(TString tag){    
+    int idx=0;
+    for(std::vector<TString>::const_iterator name=countername_.begin(); name!=countername_.end(); ++name,idx++)
+      if((*name)==tag) (*(countervalue_[idx]))++;    
+  }
+  void printCounters(){    
+    cout<<GetName()<<" Selection counters :"<<endl;
+    int idx=0;
+    for(std::vector<TString>::const_iterator name=countername_.begin(); name!=countername_.end(); ++name,idx++)
+      cout<<(*name)<<" "<<*(countervalue_[idx])<<endl;
+  }
+
   void setColor(Int_t color){color_=color;}
   void setLineColor(Int_t color){lcolor_=color;}
   void setLineStyle(Int_t lstyle){lstyle_=lstyle;}
@@ -141,7 +158,7 @@ public:
       if(histFile_->IsZombie()) return NULL;
       if(!histFile_->GetListOfKeys()) return NULL;
       if(histFile_->GetListOfKeys()->GetSize()==0) return NULL;
-      cout<<" opened file :"<<outputpath_+"/"+GetName()+"_Sample_Histograms.root"<<endl;
+      //cout<<" opened file :"<<outputpath_+"/"+GetName()+"_Sample_Histograms.root"<<endl;
     }
     
     return (TH1*)histFile_->Get(TString(GetName())+"_"+name) ;
@@ -190,6 +207,9 @@ private:
   bool applyRecoilCorr_;
   bool applyTauRateWeight_;
   unsigned int truthEventType_;
+
+  std::vector<TString> countername_;
+  std::vector<int*> countervalue_;
 
   bool init_;
     
