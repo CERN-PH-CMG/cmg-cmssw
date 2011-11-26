@@ -6,7 +6,6 @@
 #include <TLegend.h>
 #include <TLine.h>
 
-#include "AnalysisDataFormats/CMGTools/interface/TriggerObject.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "FWCore/Common/interface/TriggerNames.h"
@@ -15,29 +14,28 @@
 #include "DataFormats/Math/interface/deltaR.h"
 
 #include "TauAnalysis/SVFitStandAlone/interface/NSVfitStandaloneAlgorithm.h"
-//#include "CMGTools/H2TauTau/interface/NSVfitStandaloneAlgorithm.h"
 
 #include <TVectorD.h>
 
 TauMuAnalysis::TauMuAnalysis():
   BaseAnalysis(),
   inputTag_(""),
+  diLeptonVetoListName_(""),
   calcsvfit_(0),
   makeAllHistos_(1),
   QCDOStoSSRatio_(0),
-  QCDColor_(kMagenta-10),
-  recoilCorr_(0)
+  QCDColor_(kMagenta-10)
 {
 }
 
 TauMuAnalysis::TauMuAnalysis(const char * name):
   BaseAnalysis(name),
-  inputTag_("cmgTauMuSelClean"),
+  inputTag_(""),
+  diLeptonVetoListName_(""),
   calcsvfit_(0),
   makeAllHistos_(1),
   QCDOStoSSRatio_(0),
-  QCDColor_(kMagenta-10),
-  recoilCorr_(0)
+  QCDColor_(kMagenta-10)
 {
  
 }
@@ -71,19 +69,22 @@ bool TauMuAnalysis::addHistos(Sample* s){
   if(!BaseAnalysis::addHistos(s))return 0;
   
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauNHisto","",5,-.5,4.5))))return 0;
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauMassHisto","",400,0,400))))return 0;
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauMassSVFitHisto","",800,0,800))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauMassHisto","",1000,0,1000))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauMassSVFitHisto","",1000,0,1000))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_svFitConvergeHisto","",6,-0.5,5.5))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_svFitCov00Histo","",1000,0,1000))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_svFitEigen0Histo","",1000,0,1000))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_svFitEigen1Histo","",1000,0,1000))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauEtaHisto","",120,-6,6))))return 0;
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauPtHisto","",200,0,200))))return 0; 
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muPtHisto","",200,0,200))))return 0; 
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauPtHisto","",400,0,200))))return 0; 
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muPtHisto","",400,0,200))))return 0; 
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muEtaHisto","",120,-3,3))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muIsoHisto","",100,0,.5))))return 0; 
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muIsoDBHisto","",100,0,.5))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muDxyHisto","",100,0,.5))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muDzHisto","",100,0,.5))))return 0; 
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauPtHisto","",200,0,200))))return 0; 
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauPtHisto","",400,0,200))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauEtaHisto","",120,-3,3))))return 0;  
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauIsoHisto","",100,0,5))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauDxyHisto","",100,0,.5))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauDzHisto","",100,0,.5))))return 0;  
@@ -93,14 +94,14 @@ bool TauMuAnalysis::addHistos(Sample* s){
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_njetHisto","",10,-0.5,9.5))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_metphiHisto","",64,-3.2,3.2))))return 0;
 
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauMassBoostedHisto","",400,0,400))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauMassBoostedHisto","",1000,0,1000))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_jetPtBoostedHisto","",500,0,500))))return 0;
   
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauMassVBFHisto","",400,0,400))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauMassVBFHisto","",1000,0,1000))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diJetMassVBFHisto","",1000,0,1000))))return 0;    
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diJetDeltaEtaVBFHisto","",100,0,10))))return 0;
 
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauMassInclusiveHisto","",400,0,400))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauMassInclusiveHisto","",1000,0,1000))))return 0;
 
 
 
@@ -123,11 +124,14 @@ bool TauMuAnalysis::getHistos(TString tag){
   if(!(diTauEtaHisto_=(TH1F*)(sample_->getHisto(TString("diTauEtaHisto")+tag))))return 0;
   if(!(diTauPtHisto_=(TH1F*)(sample_->getHisto(TString("diTauPtHisto")+tag))))return 0;
   if(!(muPtHisto_=(TH1F*)(sample_->getHisto(TString("muPtHisto")+tag))))return 0;
+  if(!(muEtaHisto_=(TH1F*)(sample_->getHisto(TString("muEtaHisto")+tag))))return 0;
   if(!(muIsoHisto_=(TH1F*)(sample_->getHisto(TString("muIsoHisto")+tag))))return 0;
+  if(!(muIsoDBHisto_=(TH1F*)(sample_->getHisto(TString("muIsoDBHisto")+tag))))return 0;
   if(!(muPtHisto_=(TH1F*)(sample_->getHisto(TString("muPtHisto")+tag))))return 0;
   if(!(muDxyHisto_=(TH1F*)(sample_->getHisto(TString("muDxyHisto")+tag))))return 0;
   if(!(muDzHisto_=(TH1F*)(sample_->getHisto(TString("muDzHisto")+tag))))return 0;
   if(!(tauPtHisto_=(TH1F*)(sample_->getHisto(TString("tauPtHisto")+tag))))return 0;
+  if(!(tauEtaHisto_=(TH1F*)(sample_->getHisto(TString("tauEtaHisto")+tag))))return 0;
   if(!(tauIsoHisto_=(TH1F*)(sample_->getHisto(TString("tauIsoHisto")+tag))))return 0;
   if(!(tauDxyHisto_=(TH1F*)(sample_->getHisto(TString("tauDxyHisto")+tag))))return 0;
   if(!(tauDzHisto_=(TH1F*)(sample_->getHisto(TString("tauDzHisto")+tag))))return 0;
@@ -184,73 +188,80 @@ void TauMuAnalysis::fillPFJetListLC(const cmg::TauMu * cand){
   
 }
 
-void TauMuAnalysis::applyRecoilCorr(const cmg::TauMu * cand, TVector3 * MET){
-  if(!(sample_->getApplyRecoilCorr()
-       && genBoson_ 
-       && (genEventType_==1 || genEventType_==3 || genEventType_==5
-	   || genEventType_==11 || genEventType_==13 || genEventType_==15))) return;
+// void TauMuAnalysis::applyRecoilCorr(const cmg::TauMu * cand, TVector3 * MET){
+//   if(!(sample_->getApplyRecoilCorr()
+//        && genBoson_ 
+//        && (genEventType_==1 || genEventType_==3 || genEventType_==5
+// 	   || genEventType_==11 || genEventType_==13 || genEventType_==15))) return;
 
-  TVector3 tau1PT=TVector3(cand->leg1().p4().x(),cand->leg1().p4().y(),0.);
-  TVector3 tau2PT=TVector3(cand->leg2().p4().x(),cand->leg2().p4().y(),0.);
-  TVector3 genBosonPT=TVector3(genBoson_->p4().x(),genBoson_->p4().y(),0.);
-  double met = MET->Mag();
-  double metphi = MET->Phi();    
-  TVector3 recoLeptonPT = tau2PT; //use only the muon for WJets
-  if(genEventType_==1 || genEventType_==3 || genEventType_==5) recoLeptonPT += tau1PT; 
-  double pU1      = 0;  //--
-  double pU2      = 0;  //--
-  recoilCorr_->CorrectType1(met,metphi,genBosonPT.Mag(),genBosonPT.Phi(),recoLeptonPT.Mag(),recoLeptonPT.Phi(),pU1,pU2,0.,pfJetListLC_.size());
-  //recoilCorr_->CorrectType2(met,metphi,genBosonPT.Mag(),genBosonPT.Phi(),recoLeptonPT.Mag(),recoLeptonPT.Phi(),pU1,pU2,0.,pfJetListLC_.size());
-  //recoilCorr_->CorrectAll(met,metphi,genBosonPT.Mag(),genBosonPT.Phi(),recoLeptonPT.Mag(),recoLeptonPT.Phi(),pU1,pU2,0.,pfJetListLC_.size());
-  MET->SetMagThetaPhi(met,TMath::Pi()/2.,metphi);
-}
-
-
-
-float TauMuAnalysis::computePZeta(const cmg::TauMu * cand){
-  if(!cand || !met_) return 0.;
-  //1) zeta axis is the bisector between tau1 and tau2 momentum vectors
-  //2) project visible energy onto zeta axis
-  //3) project MET onto zeta axis
-  TVector3 tau1PT=TVector3(cand->leg1().p4().x(),cand->leg1().p4().y(),0.);
-  TVector3 tau2PT=TVector3(cand->leg2().p4().x(),cand->leg2().p4().y(),0.);
-  TVector3 metPT=TVector3(met_->p4().x(),met_->p4().y(),0.);
-  applyRecoilCorr(cand,&metPT);
-
-  TVector3 zetaAxis=(tau1PT.Unit() + tau2PT.Unit()).Unit();
-  Float_t pZetaVis=(tau1PT + tau2PT)*zetaAxis;
-  Float_t pZetaMET=metPT*zetaAxis;
-  Float_t pZeta=pZetaVis+pZetaMET;
+//   TVector3 tau1PT=TVector3(cand->leg1().p4().x(),cand->leg1().p4().y(),0.);
+//   TVector3 tau2PT=TVector3(cand->leg2().p4().x(),cand->leg2().p4().y(),0.);
+//   TVector3 genBosonPT=TVector3(genBoson_->p4().x(),genBoson_->p4().y(),0.);
+//   double met = MET->Mag();
+//   double metphi = MET->Phi();    
+//   TVector3 recoLeptonPT = tau2PT; //use only the muon for WJets
+//   if(genEventType_==1 || genEventType_==3 || genEventType_==5) recoLeptonPT += tau1PT; 
+//   double pU1      = 0;  //--
+//   double pU2      = 0;  //--
   
-  return pZeta-1.5*pZetaVis;
-}
+//   if(verbosity_>0)cout<<met<<"   "<<metphi<<"   "<<genBosonPT.Mag()<<"   "<<genBosonPT.Phi()<<"   "<<recoLeptonPT.Mag()<<"   "<<recoLeptonPT.Phi()<<"   "<<pfJetListLC_.size()<<endl;
+//   recoilCorr_->CorrectType1(met,metphi,genBosonPT.Mag(),genBosonPT.Phi(),recoLeptonPT.Mag(),recoLeptonPT.Phi(),pU1,pU2,0.,pfJetListLC_.size());
+//   //recoilCorr_->CorrectType2(met,metphi,genBosonPT.Mag(),genBosonPT.Phi(),recoLeptonPT.Mag(),recoLeptonPT.Phi(),pU1,pU2,0.,pfJetListLC_.size());
+//   //recoilCorr_->CorrectAll(met,metphi,genBosonPT.Mag(),genBosonPT.Phi(),recoLeptonPT.Mag(),recoLeptonPT.Phi(),pU1,pU2,0.,pfJetListLC_.size());
+//   if(verbosity_>0)cout<<met<<"   "<<metphi<<"   "<<genBosonPT.Mag()<<"   "<<genBosonPT.Phi()<<"   "<<recoLeptonPT.Mag()<<"   "<<recoLeptonPT.Phi()<<"   "<<pfJetListLC_.size()<<endl;
 
-float TauMuAnalysis::computeTransverseMass(const cmg::TauMu * cand){
-  if(!cand || !met_) return 0.;
+//   MET->SetMagThetaPhi(met,TMath::Pi()/2.,metphi);
+// }
 
-  TVector3 muonPT=TVector3(cand->leg2().p4().x(),cand->leg2().p4().y(),0.);
-  TVector3 metPT=TVector3(met_->p4().x(),met_->p4().y(),0.);
-  applyRecoilCorr(cand,&metPT);
 
-  //return sqrt(2.0*muonPT.Mag()*metPT.Mag()*(1-cos(metPT.Phi()-muonPT.Phi())));
-  return (TLorentzVector(muonPT,muonPT.Mag()) + TLorentzVector(metPT,metPT.Mag())).Mag();
-}
 
-float TauMuAnalysis::computeTauIso(const cmg::Tau * tau){
-  return (tau->trackIso()+std::max( (tau->gammaIso() - tau->userData("rho")*TMath::Pi()*0.5*0.5), 0.0)); 
-}
+// float TauMuAnalysis::computePZeta(const cmg::TauMu * cand){
+//   if(!cand || !met_) return 0.;
+//   //1) zeta axis is the bisector between tau1 and tau2 momentum vectors
+//   //2) project visible energy onto zeta axis
+//   //3) project MET onto zeta axis
+//   TVector3 tau1PT=TVector3(cand->leg1().p4().x(),cand->leg1().p4().y(),0.);
+//   TVector3 tau2PT=TVector3(cand->leg2().p4().x(),cand->leg2().p4().y(),0.);
+//   TVector3 metPT=TVector3(met_->p4().x(),met_->p4().y(),0.);
+//   applyRecoilCorr(cand,&metPT);
 
-bool TauMuAnalysis::computeDiLeptonVeto(const cmg::Muon * muon){
+//   TVector3 zetaAxis=(tau1PT.Unit() + tau2PT.Unit()).Unit();
+//   Float_t pZetaVis=(tau1PT + tau2PT)*zetaAxis;
+//   Float_t pZetaMET=metPT*zetaAxis;
+//   Float_t pZeta=pZetaVis+pZetaMET;
+  
+//   return pZeta-1.5*pZetaVis;
+// }
 
+// float TauMuAnalysis::computeTransverseMass(const cmg::TauMu * cand){
+//   if(!cand || !met_) return 0.;
+
+//   TVector3 muonPT=TVector3(cand->leg2().p4().x(),cand->leg2().p4().y(),0.);
+//   TVector3 metPT=TVector3(met_->p4().x(),met_->p4().y(),0.);
+//   applyRecoilCorr(cand,&metPT);
+
+//   //return sqrt(2.0*muonPT.Mag()*metPT.Mag()*(1-cos(metPT.Phi()-muonPT.Phi())));
+//   return (TLorentzVector(muonPT,muonPT.Mag()) + TLorentzVector(metPT,metPT.Mag())).Mag();
+// }
+
+// float TauMuAnalysis::computeTauIso(const cmg::Tau * tau){
+//   return (tau->trackIso()+std::max( (tau->gammaIso() - tau->userData("rho")*TMath::Pi()*0.5*0.5), 0.0)); 
+// }
+
+bool TauMuAnalysis::computeDiLeptonVeto(){
+  
+  int nmuons=0;
   for(std::vector<cmg::Muon>::const_iterator m=diLeptonVetoList_->begin(); m!=diLeptonVetoList_->end(); ++m){  
-    if(m->charge()==muon->charge())continue;//note this also makes sure it is not the same muon already used
     if(m->pt()<15.0)continue;
-    if(fabs(m->eta())>2.1)continue;
-    if(m->relIso(0.5)>0.3)continue;
-    return 1;
+    if(fabs(m->eta())>2.5)continue;
+    if(m->relIso(0.5)>0.3)continue;    
+    if(m->isGlobal()<0.5)continue; 
+    if(m->dxy()>0.45)continue; 
+    if(m->dz()>0.2)continue; 
+    nmuons++;
   }
-  
-  return 0;
+    
+  return nmuons>=2;
 }
 
 
@@ -258,19 +269,6 @@ bool TauMuAnalysis::fillVariables(const fwlite::Event * event){
 
   //event level variables
   if(!BaseAnalysis::fillVariables(event))return 0;
-
-  ///check trigger
-  trigpass_=0;
-  edm::Handle< std::vector<cmg::TriggerObject> > trig;
-  event->getByLabel(edm::InputTag("cmgTriggerObjectSel","","PAT"),trig);
-  if(sample_->getTrigPaths()->size()==0)trigpass_=1;//no trigger requirement
-  for(std::vector<std::string>::const_iterator path=sample_->getTrigPaths()->begin(); path!=sample_->getTrigPaths()->end(); path++){
-    //trig->begin()->printSelections(cout);
-    if(trig->begin()->hasSelection(path->c_str()))
-      if(trig->begin()->getSelection(path->c_str())){
-	trigpass_=1;
-      }
-  }
   
   ///get the MET 
   edm::Handle< std::vector<cmg::BaseMET> > met;
@@ -285,7 +283,7 @@ bool TauMuAnalysis::fillVariables(const fwlite::Event * event){
   event->getByLabel(edm::InputTag(inputTag_.c_str()),diTauList_);
 
   //get the muons for the di-lepton veto
-  event->getByLabel(edm::InputTag("cmgMuonSel"),diLeptonVetoList_);
+  event->getByLabel(edm::InputTag(diLeptonVetoListName_.c_str()),diLeptonVetoList_);
   
   ///get the gen Boson and set the genEventType
   genBoson_ = NULL;
@@ -348,53 +346,47 @@ bool TauMuAnalysis::applySelections(TString exceptcut){
 
   //if none are selected returns 0
   diTauSel_=NULL;
-
-  ///check the trigger
-  if(!trigpass_) return 0;
   
   //separate the Z->ll at gen level here, will speed up processing
   //cand be done because a reconstruced tau-tau candidate can only be truth-matched if there is actually a generated Z-->tau tau, for example
   if(sample_->getTruthEventType()==1 || sample_->getTruthEventType()==3 || sample_->getTruthEventType()==5
      || sample_->getTruthEventType()==11 || sample_->getTruthEventType()==13 || sample_->getTruthEventType()==15)
     if(sample_->getTruthEventType()!=genEventType_) return 0;
-  
 
-  //select TauMu cands
+  ////other 
+  if(exceptcut!="dileptonveto") if(computeDiLeptonVeto()) return 0;
+
+  //apply full selections on Tau and Mu cands
   diTauSelList_.clear();
   for(std::vector<cmg::TauMu>::const_iterator cand=diTauList_->begin(); cand!=diTauList_->end(); ++cand){    
-    
-    ///SS or OS separation 
-    if(sample_->getDataType()=="MC_SS" || sample_->getDataType()=="Data_SS")
-      if(fabs(cand->charge())!=2.)continue;
-    if(sample_->getDataType()=="MC" || sample_->getDataType()=="Data")
-      if(cand->charge()!=0.)continue;
-
+      
     ////selections on the tau
-    //if(exceptcut!="taupt") if(cand->leg1().pt()<20.0)continue; //applied in preseleciton
-    if(exceptcut!="tauagainstmuon") if(cand->leg1().tauID("againstMuonTight")!=1.) continue;
-    if(exceptcut!="tauiso") if(cand->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr")!=1.) continue; 
-    //if(exceptcut!="tauiso") if(computeTauIso(&(cand->leg1()))> 2.0) continue; 
-    
+    if(exceptcut!="taupt") if(cand->leg1().pt()<20.0)continue;
+    if(exceptcut!="taueta") if(fabs(cand->leg1().eta())>2.3)continue;
+    if(exceptcut!="tauagainstelectron") if(cand->leg1().tauID("againstElectronLoose")<0.5) continue;
+    if(exceptcut!="tauagainstmuon") if(cand->leg1().tauID("againstMuonTight")<0.5) continue;
+    if(exceptcut!="tauiso") if(cand->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr")<0.5) continue; 
+        
     ////selections on the muon
-    //if(exceptcut!="mupt") if(cand->leg2().pt()<15.0)continue;//applied in preseleciton
-    //if(exceptcut!="mudxy") if(cand->leg2().dxy()>0.045)continue;    
-    //if(exceptcut!="mudz") if(cand->leg2().dz()>0.2)continue;        
-    if(exceptcut!="muiso") if(cand->leg2().relIso()>0.1)continue;    
-
-    ////other 
-    if(exceptcut!="dileptonveto")if(computeDiLeptonVeto(&(cand->leg2()))) continue;
-    //if(exceptcut!="pzeta") if(computePZeta(&(*cand))<-20.0) continue;
-
-
-    //transverse mass uses recoil corrections which use number of jets
-    fillPFJetListLC(&(*cand));
-    if(exceptcut!="massT") if(computeTransverseMass(&(*cand))>40.0) continue;
-
+    if(exceptcut!="mupt") if(cand->leg2().pt()<15.0)continue;
+    if(exceptcut!="mueta") if(fabs(cand->leg2().eta())>2.1)continue;
+    if(exceptcut!="muid")
+      if(cand->leg2().dxy() > 0.045
+	 || cand->leg2().dz() > 0.2
+	 || cand->leg2().isGlobal() < 0.5 
+	 || cand->leg2().isTracker() < 0.5
+	 || cand->leg2().numberOfValidTrackerHits() <= 10
+	 || cand->leg2().numberOfValidPixelHits() == 0
+	 || cand->leg2().numberOfValidMuonHits() == 0
+	 || cand->leg2().numberOfMatches() <= 1
+	 || cand->leg2().normalizedChi2() >= 10
+	 ) continue;    
+    if(exceptcut!="muiso") if(cand->leg2().relIso(0.5)>0.1)continue;    
 
     diTauSelList_.push_back(*cand);
   }
   if(diTauSelList_.size()==0) return 0;
-  
+
   //choose the best candidate
   diTauSel_=&(*diTauSelList_.begin());
   double highsumpt=diTauSel_->leg1().pt()+diTauSel_->leg2().pt();
@@ -403,7 +395,25 @@ bool TauMuAnalysis::applySelections(TString exceptcut){
       diTauSel_=&(*cand);
       highsumpt=diTauSel_->leg1().pt()+diTauSel_->leg2().pt();
     }
+
+  //determine the jets
+  //transverse mass uses recoil corrections which use number of jets
   fillPFJetListLC(diTauSel_);
+  
+  ///apply selections on di-tau cands here
+  //if(exceptcut!="massT") if(computeTransverseMass(diTauSel_)>40.0)  return 0;
+  if(exceptcut!="massT") if(diTauSel_->mTLeg2()>40.0) return 0;
+  
+  ///SS or OS separation 
+  if(sample_->getDataType()=="MC_SS" || sample_->getDataType()=="Data_SS"){
+    if(fabs(diTauSel_->charge())!=2.)return 0;
+  }else if(sample_->getDataType()=="MC" || sample_->getDataType()=="Data"){
+    if(diTauSel_->charge()!=0.)return 0;
+  }else{
+    cout<<sample_->GetName()<<" Unrecognized data type"<<endl;
+    return 0;
+  }
+
 
   //truth match the reconstructed candidates:
   truthEventType_=0;
@@ -475,135 +485,148 @@ bool TauMuAnalysis::applySelections(TString exceptcut){
   }
 
 
+  
+  //   //apply tau fake rate reweighting
+  tauFakeWeight_=1.;//do not comment out needs to be used
+  //   if(sample_->getApplyTauRateWeight()){
+  //     tauFakeWeight_=tauRate_.getScale(TauRate::Inclusive,diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+  //     if(diTauSel_->leg1().decayMode()==0)tauFakeWeight_=tauRate_.getScale(TauRate::OneProng,diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+  //     if(diTauSel_->leg1().decayMode()==1)tauFakeWeight_=tauRate_.getScale(TauRate::OneProngEM,diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+  //     if(diTauSel_->leg1().decayMode()==2)tauFakeWeight_=tauRate_.getScale(TauRate::OneProngEM,diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+  //     if(diTauSel_->leg1().decayMode()==10)tauFakeWeight_=tauRate_.getScale(TauRate::ThreeProng,diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+  //   }
+
+
   return 1;
 }
 
-bool TauMuAnalysis::fillHistos(TString tag, double weight ){
+bool TauMuAnalysis::fillHistos(TString tag){
   
-  if(!BaseAnalysis::fillHistos(tag,weight)) return 0;
+  if(!applySelections(tag))return 1;//no cands passed selections
+  sample_->incrementCounter(tag);//fill counter
+
+  //determine event weight
+  eventWeight_ = pupWeight_*tauFakeWeight_;
+
+  if(!BaseAnalysis::fillHistos(tag)) return 0;
 
   if(!TauMuAnalysis::getHistos(tag)) return 0;
 
   //fill the diTau histograms
-  diTauNHisto_->Fill(diTauSelList_.size(),weight);
-  
-  //apply tau fake rate reweighting
-  if(sample_->getApplyTauRateWeight()){
-    float w=tauRate_.getScale(TauRate::Inclusive,diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-    if(diTauSel_->leg1().decayMode()==0)w=tauRate_.getScale(TauRate::OneProng,diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-    if(diTauSel_->leg1().decayMode()==1)w=tauRate_.getScale(TauRate::OneProngEM,diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-    if(diTauSel_->leg1().decayMode()==2)w=tauRate_.getScale(TauRate::OneProngEM,diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-    if(diTauSel_->leg1().decayMode()==10)w=tauRate_.getScale(TauRate::ThreeProng,diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-    weight = weight*w;
-  }
-  
+  diTauNHisto_->Fill(diTauSelList_.size(),eventWeight_);
+    
   tree_ditaumass_=diTauSel_->mass();
   tree_taupt_=diTauSel_->leg1().pt();
+  tree_taueta_=diTauSel_->leg1().eta();
   tree_mupt_=diTauSel_->leg2().pt();
-  tree_transversemass_=computeTransverseMass(diTauSel_);
+  tree_mueta_=diTauSel_->leg2().eta();
+  tree_muiso_=diTauSel_->leg2().relIso(0.5);
+  //tree_transversemass_=computeTransverseMass(diTauSel_);
+  tree_transversemass_=diTauSel_->mTLeg2();
 
-  ///
-  diTauMassHisto_->Fill(diTauSel_->mass(),weight); 
-  diTauEtaHisto_->Fill(diTauSel_->eta(),weight);
-  diTauPtHisto_->Fill(diTauSel_->eta(),weight);  
+  diTauMassHisto_->Fill(tree_ditaumass_,eventWeight_); 
+  diTauPtHisto_->Fill(diTauSel_->pt(),eventWeight_);  
+  diTauEtaHisto_->Fill(diTauSel_->eta(),eventWeight_);
 
-  tauPtHisto_->Fill(tree_taupt_,weight); 
-  tauDxyHisto_->Fill(diTauSel_->leg1().dxy(),weight); 
-  tauDzHisto_->Fill(diTauSel_->leg1().dz(),weight);
+  tauPtHisto_->Fill(tree_taupt_,eventWeight_); 
+  tauEtaHisto_->Fill(tree_taueta_,eventWeight_); 
+  tauIsoHisto_->Fill(diTauSel_->leg2().relIso(0.5),eventWeight_);
+  tauDxyHisto_->Fill(diTauSel_->leg1().dxy(),eventWeight_); 
+  tauDzHisto_->Fill(diTauSel_->leg1().dz(),eventWeight_);
 
-  muPtHisto_->Fill(tree_mupt_,weight);
-  muIsoHisto_->Fill(diTauSel_->leg2().relIso(),weight);
-  muDxyHisto_->Fill(diTauSel_->leg2().dxy(),weight);
-  muDzHisto_->Fill(diTauSel_->leg2().dz(),weight);
+  muPtHisto_->Fill(tree_mupt_,eventWeight_);
+  muEtaHisto_->Fill(tree_mueta_,eventWeight_);
+  muIsoHisto_->Fill(tree_muiso_,eventWeight_);
+  muIsoDBHisto_->Fill(diTauSel_->leg2().relIso(0.5),eventWeight_);
+  muDxyHisto_->Fill(diTauSel_->leg2().dxy(),eventWeight_);
+  muDzHisto_->Fill(diTauSel_->leg2().dz(),eventWeight_);
 
-  pZetaHisto_->Fill(computePZeta(diTauSel_),weight);  
-  transverseMassHisto_->Fill(tree_transversemass_,weight);  
+  transverseMassHisto_->Fill(tree_transversemass_,eventWeight_);  
 
-  ///Correct the MET here
-  TVector3 metCorr(met_->p4().x(),met_->p4().y(),0.);
-  applyRecoilCorr(diTauSel_,&metCorr);
+  //TVector3 metCorr(met_->p4().x(),met_->p4().y(),0.);
+  //applyRecoilCorr(diTauSel_,&metCorr);
+  TVector3 metCorr(diTauSel_->met().p4().x(),diTauSel_->met().p4().y(),0.);
   tree_met_=metCorr.Mag();
     
-  ///
-  metHisto_->Fill(tree_met_,weight);  
-  metphiHisto_->Fill(metCorr.Phi(),weight);  
+  
+  metHisto_->Fill(tree_met_,eventWeight_);  
+  metphiHisto_->Fill(metCorr.Phi(),eventWeight_);  
 
   ///SVFit
   if(calcsvfit_ && tag==""){
-    if(verbosity_>1) cout<<"Calculating SVFit mass"<<endl;
-    NSVfitStandalone::Vector measuredMET(metCorr.x(),metCorr.y(),0);
-    std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
-    NSVfitStandalone::LorentzVector p1(diTauSel_->leg1().p4());
-    measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kHadDecay,p1));    
-    NSVfitStandalone::LorentzVector p2(diTauSel_->leg2().p4());
-    measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay,p2));
+//     if(verbosity_>1) cout<<"Calculating SVFit mass"<<endl;
+//     NSVfitStandalone::Vector measuredMET(metCorr.x(),metCorr.y(),0);
+//     std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
+//     NSVfitStandalone::LorentzVector p1(diTauSel_->leg1().p4());
+//     measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kHadDecay,p1));    
+//     NSVfitStandalone::LorentzVector p2(diTauSel_->leg2().p4());
+//     measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay,p2));
 
-    TMatrixD metsigCorr(2,2);
-    metsigCorr[0][0]=(*metsig_)[0][0];
-    metsigCorr[0][1]=(*metsig_)[0][1];
-    metsigCorr[1][0]=(*metsig_)[1][0];
-    metsigCorr[1][1]=(*metsig_)[1][1];
+//     TMatrixD metsigCorr(2,2);
+//     metsigCorr[0][0]=(*metsig_)[0][0];
+//     metsigCorr[0][1]=(*metsig_)[0][1];
+//     metsigCorr[1][0]=(*metsig_)[1][0];
+//     metsigCorr[1][1]=(*metsig_)[1][1];
 
-//     ///////fix the eigenvalues of the matrix to match the Data:
-//     if(sample_->getDataType()=="MC" || sample_->getDataType()=="MC_SS"){
-//       TVectorD eigenVals(2);
-//       TMatrixD eigenVects(2,2);
-//       eigenVects=metsig_->EigenVectors(eigenVals);    
-//       TMatrixD eigenVectsInv(2,2);
-//       eigenVectsInv=eigenVects;
-//       eigenVectsInv.Invert();
-//       TMatrixD metsigEigen(2,2);
-//       metsigEigen[0][0]=(124.079/117.751)*eigenVals[0];//correction factors determined from 2.1 fb-1 and Summer11 MC after pile-up reweighting
-//       metsigEigen[0][1]=0.;
-//       metsigEigen[1][0]=0.;
-//       metsigEigen[1][1]=(84.422/78.108)*eigenVals[1];      
-//       metsigCorr=eigenVects*metsigEigen*eigenVectsInv;
-//     }
-////==>Very small correction obtained on svfit mass, mean of MC: 103.38 --> 103.36  (mean of Data: 102.03)
+//     //     ///////fix the eigenvalues of the matrix to match the Data:
+//     //     if(sample_->getDataType()=="MC" || sample_->getDataType()=="MC_SS"){
+//     //       TVectorD eigenVals(2);
+//     //       TMatrixD eigenVects(2,2);
+//     //       eigenVects=metsig_->EigenVectors(eigenVals);    
+//     //       TMatrixD eigenVectsInv(2,2);
+//     //       eigenVectsInv=eigenVects;
+//     //       eigenVectsInv.Invert();
+//     //       TMatrixD metsigEigen(2,2);
+//     //       metsigEigen[0][0]=(124.079/117.751)*eigenVals[0];//correction factors determined from 2.1 fb-1 and Summer11 MC after pile-up reweighting
+//     //       metsigEigen[0][1]=0.;
+//     //       metsigEigen[1][0]=0.;
+//     //       metsigEigen[1][1]=(84.422/78.108)*eigenVals[1];      
+//     //       metsigCorr=eigenVects*metsigEigen*eigenVectsInv;
+//     //     }
+//     //     ///==>Very small correction obtained on svfit mass, mean of MC: 103.38 --> 103.36  (mean of Data: 102.03)
 
 
-    NSVfitStandaloneAlgorithm algo(measuredTauLeptons,measuredMET,&metsigCorr,verbosity_);
-    algo.maxObjFunctionCalls(5000);
-    algo.fit();
+//     NSVfitStandaloneAlgorithm algo(measuredTauLeptons,measuredMET,&metsigCorr,verbosity_);
+//     algo.maxObjFunctionCalls(5000);
+//     algo.fit();
     
-    tree_svfitstatus_=algo.fitStatus();
-    tree_svfitmass_=algo.fittedDiTauSystem().mass();
-    tree_svfitedm_=algo.edm();
-
-    diTauMassSVFitHisto_->Fill(tree_svfitmass_,weight);        
-    svFitCov00Histo_->Fill(metsigCorr[0][0],weight);
-    svFitConvergeHisto_->Fill(tree_svfitstatus_,weight);
-
-    //study the matrix elements
-    TVectorD eigenValues(2);
-    TMatrixD eigenVectors(2,2);
-    eigenVectors=metsigCorr.EigenVectors(eigenValues);
-    tree_svfiteigenval0_=eigenValues[0];  
-    tree_svfiteigenval1_=eigenValues[1];
-    svFitEigen0Histo_->Fill(tree_svfiteigenval0_,weight);
-    svFitEigen1Histo_->Fill(tree_svfiteigenval1_,weight);
-
+//     tree_svfitstatus_=algo.fitStatus();
+//     tree_svfitmass_=algo.fittedDiTauSystem().mass();
+//     tree_svfitedm_=algo.edm();
+    
+//     diTauMassSVFitHisto_->Fill(tree_svfitmass_,eventWeight_);        
+//     svFitCov00Histo_->Fill(metsigCorr[0][0],eventWeight_);
+//     svFitConvergeHisto_->Fill(tree_svfitstatus_,eventWeight_);
+    
+//     //study the matrix elements
+//     TVectorD eigenValues(2);
+//     TMatrixD eigenVectors(2,2);
+//     eigenVectors=metsigCorr.EigenVectors(eigenValues);
+//     tree_svfiteigenval0_=eigenValues[0];  
+//     tree_svfiteigenval1_=eigenValues[1];
+//     svFitEigen0Histo_->Fill(tree_svfiteigenval0_,eventWeight_);
+//     svFitEigen1Histo_->Fill(tree_svfiteigenval1_,eventWeight_);
     
 
+    tree_svfitmass_=diTauSel_->massSVFit();
+    diTauMassSVFitHisto_->Fill(tree_svfitmass_,eventWeight_);   
   }
- 
 
   
   //jets
-  njetHisto_->Fill(pfJetListLC_.size(),weight);
-
+  njetHisto_->Fill(pfJetListLC_.size(),eventWeight_);
 
   //category
   if(eventCategorySM_==1){
-    diTauMassBoostedHisto_->Fill(diTauSel_->mass(),weight);
-    jetPtBoostedHisto_->Fill(boostedJet_->pt(),weight);
+    diTauMassBoostedHisto_->Fill(diTauSel_->mass(),eventWeight_);
+    jetPtBoostedHisto_->Fill(boostedJet_->pt(),eventWeight_);
   }
   if(eventCategorySM_==2){
-    diTauMassVBFHisto_->Fill(diTauSel_->mass(),weight);
-    diJetMassVBFHisto_->Fill((VBFJet1_->p4()+VBFJet2_->p4()).mass(),weight);
-    diJetDeltaEtaVBFHisto_->Fill(fabs(VBFJet1_->eta()-VBFJet2_->eta()),weight);
+    diTauMassVBFHisto_->Fill(diTauSel_->mass(),eventWeight_);
+    diJetMassVBFHisto_->Fill((VBFJet1_->p4()+VBFJet2_->p4()).mass(),eventWeight_);
+    diJetDeltaEtaVBFHisto_->Fill(fabs(VBFJet1_->eta()-VBFJet2_->eta()),eventWeight_);
   }
-  if(eventCategorySM_==9)diTauMassInclusiveHisto_->Fill(diTauSel_->mass(),weight);
+  if(eventCategorySM_==9)diTauMassInclusiveHisto_->Fill(diTauSel_->mass(),eventWeight_);
 
 
 
@@ -621,12 +644,11 @@ bool TauMuAnalysis::createHistos(TString samplename){
   if(!addHistos(sample_))return 0;
   
   if(makeAllHistos_){
+    sample_->cloneHistos("dileptonveto");
     sample_->cloneHistos("tauiso");
     sample_->cloneHistos("tauagainstmuon");
     sample_->cloneHistos("muiso");
-    //sample_->cloneHistos("pzeta");
     sample_->cloneHistos("massT");
-    sample_->cloneHistos("dileptonveto");
   }
 
 
@@ -634,7 +656,9 @@ bool TauMuAnalysis::createHistos(TString samplename){
   tree_=new TTree(TString(sample_->GetName())+"_tree",TString(sample_->GetName())+"_tree",0);
   tree_->Branch("ditaumass",&tree_ditaumass_,"ditaumass/F");
   tree_->Branch("taupt",&tree_taupt_,"taupt/F");
+  tree_->Branch("taueta",&tree_taueta_,"taueta/F");
   tree_->Branch("mupt",&tree_mupt_,"mupt/F");
+  tree_->Branch("mueta",&tree_mueta_,"mueta/F");
   tree_->Branch("met",&tree_met_,"met/F");
   tree_->Branch("transversemass",&tree_transversemass_,"transversemass/F");
   tree_->Branch("svfitstatus",&tree_svfitstatus_,"svfitstatus/I");
@@ -652,17 +676,18 @@ bool TauMuAnalysis::createHistos(TString samplename){
 
 
 
-  ///init recoil corrector
-  recoilCorr_=NULL;
-  RecoilCorrector recoilCorr((const char*)(sample_->getRecoilCorrProcessFile()));
-  if(sample_->getApplyRecoilCorr()){
-    recoilCorr.addMCFile("../data/recoilfit_zmm42X_njet.root");
-    recoilCorr.addDataFile("../data/recoilfit_datamm_njet.root");
-    recoilCorr_=&recoilCorr;
-  }
+  /////init recoil corrector
+//   recoilCorr_=NULL;
+//   RecoilCorrector recoilCorr((const char*)(sample_->getRecoilCorrProcessFile()));
+//   cout<<(const char*)(sample_->getRecoilCorrProcessFile())<<endl;
+//   if(sample_->getApplyRecoilCorr()){
+//     recoilCorr.addMCFile("../data/recoilfit_zmm42X_njet.root");
+//     recoilCorr.addDataFile("../data/recoilfit_datamm_njet.root");
+//     recoilCorr_=&recoilCorr;
+//   }
   ////use with correctAll
-  //with datamm in constructor and not adding any other files correctAll over corrects 
-  //with zmm in constructor and adding datamm DataFile and zmm MCFile over corrects a bit
+  ////with datamm in constructor and not adding any other files correctAll over corrects 
+  ////with zmm in constructor and adding datamm DataFile and zmm MCFile over corrects a bit
 
 
   fwlite::ChainEvent chain=*(sample_->getEvents());
@@ -670,7 +695,7 @@ bool TauMuAnalysis::createHistos(TString samplename){
 
 
   Int_t ievt=0;
-  Int_t goodevts=0;
+  Int_t goodtrigevts=0;
   for(chain.toBegin(); !chain.atEnd() && ievt < truncateEvents_; ++chain, ++ievt){
     const fwlite::Event * event = chain.event();        
 
@@ -680,25 +705,24 @@ bool TauMuAnalysis::createHistos(TString samplename){
     
     //event level selections
     if(!BaseAnalysis::applySelections()) continue;
-    
+    goodtrigevts++;
+
     //fill (N-1) cut histograms here
     if(makeAllHistos_){
-      if(applySelections("tauiso")) if(!fillHistos("tauiso",mcPUPWeight_))return 0;
-      if(applySelections("tauagainstmuon")) if(!fillHistos("tauagainstmuon",mcPUPWeight_))return 0;
-      if(applySelections("muiso")) if(!fillHistos("muiso",mcPUPWeight_))return 0;
-      if(applySelections("dileptonveto")) if(!fillHistos("dileptonveto",mcPUPWeight_))return 0;
-      if(applySelections("massT")) if(!fillHistos("massT",mcPUPWeight_))return 0;   
-    }
-    //fill fully selected histograms 
-    if(applySelections()){           
-      if(!fillHistos("",mcPUPWeight_))return 0;
-      tree_->Fill();
-      goodevts++;//only for fully selected events
+//    if(!fillHistos("tauiso")) return 0;
+//    if(!fillHistos("tauagainstmuon")) return 0;
+      if(!fillHistos("muiso")) return 0;
+//    if(!fillHistos("dileptonveto")) return 0;
+      if(!fillHistos("massT")) return 0;   
     }
 
+    //fill fully selected histograms 
+    if(!fillHistos())return 0;
   }
-  cout<<goodevts<<" events passed selections"<<endl;
-  
+  cout<<sample_->GetName()<<" "<<ievt<<" events processed."<<endl;   
+  cout<<sample_->GetName()<<" "<<goodtrigevts<<" events passed trigger."<<endl;
+  sample_->printCounters();
+
   //
   if(!sample_->save())return 0;
   
@@ -714,11 +738,9 @@ bool TauMuAnalysis::scaleHistos(){
   Int_t WJetsSideBandMin=60;
   Float_t WJetsSignal=0.;  Float_t WJetsSideBand=0.;
   for(std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
-    if((*s)->getDataType()=="MC"){
-      if(TString((*s)->GetName())=="WJetsToLNu"){
-	WJetsSignal=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(1,40); 
-	WJetsSideBand=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(WJetsSideBandMin+1,200); 
-      }
+    if(TString((*s)->GetName())=="WJetsToLNu"){
+      WJetsSignal=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(1,40); 
+      WJetsSideBand=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(WJetsSideBandMin+1,200); 
     }
   }
   cout<<" Ratio of (WJets Signal)/(WJets SideBand) = "<<WJetsSignal/WJetsSideBand<<endl;
@@ -925,6 +947,49 @@ TH1F* TauMuAnalysis::getData(TString histoname){
   return h;
 }
 
+
+bool TauMuAnalysis::printRawYields(TString histoname){
+  
+  Float_t totalData=0;
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+    if((*s)->getDataType()=="Data"){
+      TH1F*hmass=(TH1F*)((*s)->getHistoFromFile(histoname));
+      if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
+      cout<<hmass->GetName()<<" "<<(int)(hmass->Integral(0,hmass->GetNbinsX()+1))<<endl;
+      totalData+=hmass->Integral(0,hmass->GetNbinsX()+1);
+    }
+  }
+  cout<<"Total Data  = "<<(int)(totalData)<<endl;
+
+  Float_t totalDataSS=0;
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+    if((*s)->getDataType()=="Data_SS"){
+      TH1F*hmass=(TH1F*)((*s)->getHistoFromFile(histoname));
+      if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
+      cout<<hmass->GetName()<<" "<<(int)(hmass->Integral(0,hmass->GetNbinsX()+1))<<endl;
+      totalDataSS+=hmass->Integral(0,hmass->GetNbinsX()+1);
+    }
+  }
+  cout<<"Total Data SS = "<<(int)(totalDataSS)<<endl;
+
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+    if((*s)->getDataType()=="MC"){
+      TH1F*hmass=(TH1F*)((*s)->getHistoFromFile(histoname));
+      if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
+      cout<<hmass->GetName()<<" "<<(int)(hmass->Integral(0,hmass->GetNbinsX()+1))<<endl;
+    }
+  }
+  
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+    if((*s)->getDataType()=="MC_SS"){
+      TH1F*hmass=(TH1F*)((*s)->getHistoFromFile(histoname));
+      if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
+      cout<<hmass->GetName()<<" "<<(int)(hmass->Integral(0,hmass->GetNbinsX()+1))<<endl;
+    }
+  }
+
+  return 1;
+}
 
 bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords, Float_t* axesrange, bool log){
   if(!legendcoords || !axesrange){
