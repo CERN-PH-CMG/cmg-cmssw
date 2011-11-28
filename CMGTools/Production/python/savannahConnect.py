@@ -2,7 +2,7 @@
 # Author: pmeckiff
 # Group: CMG
 
-import re, types, cookielib, datetime
+import re, types, cookielib, datetime, os
 
 import CMGTools.Production.eostools as castortools
 import CMGTools.Production.mechanize as mechanize
@@ -285,6 +285,17 @@ class savannahConnect:
                         self.br.form.set_value_by_label([dayMonthYear[1]],'planned_starting_date_monthfd')
                         self.br.form['planned_starting_date_yearfd']=dayMonthYear[2]
                         self.br.form['summary'] = dataset['PathList'][0]
+                        try:
+                            self.br.form.set_value_by_label([username], "custom_sb1")
+                        except:
+                            print "User %s is not a valid Files Owner, field will be blank" % assigned
+                        try:
+                            self.br.form.set_value_by_label([username], "assigned_to")
+                        except:
+                            self.br.form.set_value_by_label([os.environ['USER']], "assigned_to")
+                            print self.br.form['assigned_to']
+                            print "User \"%s\" is not a CMG group member on Savannah, task will be asigned to self" % username
+            
 
                     if test:self.br.form['category_id']= ['101']
                     self.br.form['priority']= ['5']
@@ -295,7 +306,6 @@ class savannahConnect:
 
                     # If user does not exist in group, savannah entry cannot be assigned, so do not submit
                     try:
-                        self.br.form.set_value_by_label([username], "assigned_to")
                         if previousEntry:
                             self.br.submit(id="submitreturn")
                         else:
