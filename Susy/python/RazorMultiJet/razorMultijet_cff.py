@@ -46,7 +46,8 @@ razorMJHemiHadBox = cmgHemi.clone(
     inputCollection = cms.VInputTag(
       cms.InputTag("razorMJPFJetSel30")
       ),
-      balanceAlgorithm = cms.uint32(1)#use the MassBalance algo
+      balanceAlgorithm = cms.uint32(1),#use the MassBalance algo
+      maxCand = cms.uint32(100)
     )
 )
 

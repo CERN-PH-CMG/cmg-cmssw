@@ -93,7 +93,8 @@ razorHemiHadBox = cmgHemi.clone(
     inputCollection = cms.VInputTag(
       cms.InputTag("razorPFJetsMuonVeto")
       ),
-      balanceAlgorithm = cms.uint32(1)#use the MassBalance algo
+      balanceAlgorithm = cms.uint32(1),#use the MassBalance algo
+      maxCand = cms.uint32(100)
     )
 )
 
@@ -192,15 +193,13 @@ from CMGTools.Susy.histograms.pfBJetHistograms_cff import pfBJetHistograms
 from CMGTools.Susy.histograms.pfMultiJetHistograms_cff import pfMultiJetHistograms
 #BJet histograms
 razorBJetHistograms = pfBJetHistograms.clone(inputCollection = cms.InputTag("razorPFJetsMuonVeto"))
-razorMultiJetHistograms = pfMultiJetHistograms.clone(inputCollection = cms.InputTag("razorPFJetsMuonVeto"))
 
 razorHistogrammingSequence  = cms.Sequence(
     #Razor histograms                                       
     razorDiHemiHistogramsHadBox+
     razorDiHemiHistogramsMuStarBox+
     #btag histograms
-    razorBJetHistograms+
-    razorMultiJetHistograms
+    razorBJetHistograms
 )
 
 razorSequence = cms.Sequence(
