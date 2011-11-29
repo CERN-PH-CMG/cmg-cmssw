@@ -83,6 +83,7 @@ namespace cmg
     float trackIso() const {return trackIso_;}
     float gammaIso() const {return gammaIso_;}
     int decayMode() const {return decayMode_;}
+    float eOverP() const {return (leadChargedHadrECalEnergy() + leadChargedHadrHCalEnergy()) * sin( theta() ) / leadChargedHadrPt();}
 
     //tau ID's
     bool tauID(const std::string& idname) const { 
