@@ -11,7 +11,7 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
     )
 
 # -1 : process all files
-numberOfFilesToProcess = -1
+numberOfFilesToProcess = 5
 
 debugEventContent = False
 

@@ -8,8 +8,7 @@ tauCuts = cms.PSet(
     id = cms.PSet(
       decay = cms.string('leg1().tauID("decayModeFinding")'),
       muVeto = cms.PSet(
-        tight = cms.string('leg1().tauID("againstMuonTight")'),
-        calo = cms.string('(leg1().leadChargedHadrECalEnergy() + leg1().leadChargedHadrHCalEnergy()) * sin( leg1().theta() ) / leg1().leadChargedHadrPt()')
+        tight = cms.string('leg1().tauID("againstMuonTight")')
       ),
       eVeto = cms.string('leg1().tauID("againstElectronLoose")')
       ),

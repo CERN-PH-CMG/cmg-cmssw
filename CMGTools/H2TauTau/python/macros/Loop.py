@@ -123,6 +123,8 @@ class Loop:
         self.counters.append( self.count_triggerPassed )
         self.count_exactlyOneDiTau = Counter('exactlyOneDiTau')
         self.counters.append( self.count_exactlyOneDiTau  )
+        self.count_singleDiTau = Counter('singleDiTau')
+        self.counters.append( self.count_singleDiTau )
         
 
     def ToEvent( self, iEv ):
@@ -180,6 +182,13 @@ class Loop:
             self.count_exactlyOneDiTau.inc('d: exactly 1 di-tau ')
         else:
             raise ValueError('should not happen!')
+
+        self.count_singleDiTau.inc('a:  best di-tau')
+        self.tau = Tau( self.diTau.leg1() )
+        if self.tau.calcEOverP() > 0.2:
+            self.count_singleDiTau.inc('b:   E/p > 0.2 ')
+        else:
+            return False
 
         self.eventWeight = 1
         if self.vertexWeightLabel is not None:

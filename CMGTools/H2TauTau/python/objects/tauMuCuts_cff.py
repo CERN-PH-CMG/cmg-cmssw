@@ -11,6 +11,8 @@ tauMuCuts = cms.PSet(
          muLeg = muCuts.clone(),
          tauLeg = tauCuts.clone()
          ),
+    # this cut is kept out of the baseline for now, until it is studied.
+    caloMuVeto = cms.string('leg1().eOverP()>0.2'),
     skimming = cms.PSet(
          mass = cms.string('mass()>10'),
          muLegSkimCuts = muSkimCuts.clone(),
