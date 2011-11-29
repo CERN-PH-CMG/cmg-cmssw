@@ -17,11 +17,14 @@ debugEventContent = False
 
 dataset_user = 'cmgtools' 
 # dataset_name = '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0'
-# dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0'
+dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0'
 # dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_4_0'
-dataset_name = '/TauPlusX/Run2011A-May10ReReco-v1/AOD/V2/PAT_CMG_V2_4_0'
+# dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_4_0'
+# dataset_name = '/TauPlusX/Run2011A-May10ReReco-v1/AOD/V2/PAT_CMG_V2_4_0'
+# dataset_name = '/TauPlusX/Run2011A-03Oct2011-v1/AOD/V2/PAT_CMG_V2_4_0'
+# dataset_name = '/TauPlusX/Run2011A-05Aug2011-v1/AOD/V2/PAT_CMG_V2_4_0'
 
-# JSON: will be applied if dataset_name contains the string 'Run201' (data)
+
 
 
 ##########
@@ -47,6 +50,7 @@ if numberOfFilesToProcess>0:
 
 ###ProductionTaskHook$$$
     
+runOnMC = process.source.fileNames[0].find('Run201')==-1
 
 # Sequence & path definition -------------------------------------------------
 
@@ -61,15 +65,14 @@ process.schedule = cms.Schedule(
     process.outpath
     )
 
+# set up JSON ---------------------------------------------------------------
 
-json = None
-if dataset_name.find('Run201')>-1:
-    #DATA
-    from CMGTools.Common.Tools.applyJSON_cff import *
-    from CMGTools.H2TauTau.tools.jsonPick import *
-    json = jsonPick( dataset_name )
-    applyJSON(process, json )
-else:
+from CMGTools.H2TauTau.tools.setupJSON import setupJSON
+json = setupJSON(process)
+
+# setting up vertex weighting -----------------------------------------------
+
+if runOnMC:
     #SIMULATION
     process.load('CMGTools.Common.generator.vertexWeight.vertexWeight_cff')
     process.objectSequence += process.vertexWeightSequence
@@ -126,9 +129,14 @@ print sep_line
 print 'INPUT:'
 print sep_line
 print process.source.fileNames
-if json != None:
-    print 'JSON:', json
 print
+print 'json:', json
+print
+print sep_line
+print 'PROCESSING'
+print sep_line
+print 'runOnMC:', runOnMC
+print 
 print sep_line
 print 'OUPUT:'
 print sep_line
