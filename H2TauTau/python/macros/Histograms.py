@@ -19,8 +19,8 @@ class Histograms(object):
                         self.hists.append(var)
             except:
                 pass
-        print 'TH1     list:', self.hists
-        print 'TNamed  list:', self.named
+        # print 'TH1     list:', self.hists
+        # print 'TNamed  list:', self.named
 
     def FormatHistos(self, style ):
         for hist in self.hists:
@@ -34,8 +34,3 @@ class Histograms(object):
         dir.cd()
 
         
-
-class SubHistograms( Histograms ):
-    def __init__(self, name):
-        self.h_pt = TH1F(name+'_h_pt', ';p_{T} (GeV)', 40, 0, 100)
-        super(SubHistograms, self).__init__( name )
