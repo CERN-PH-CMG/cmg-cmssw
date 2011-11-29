@@ -1,5 +1,5 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_tauEOverP_29Nov11'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_25Nov11'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_vertexWeight2_fromJose_29Nov11'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_tauEOverP_29Nov11'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_fromWill_25Nov11'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_mcyield_29Nov11'),
