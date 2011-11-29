@@ -232,9 +232,9 @@ if __name__ == '__main__':
     anaDir: analysis directory containing all components, see CMGTools.H2TauTau.macros.MultiLoop.
     hist: histogram you want to plot
     '''
-    parser.add_option("-r", "--range", 
-                      dest="range", 
-                      help="range. Default is LowMT.",
+    parser.add_option("-b", "--box", 
+                      dest="box", 
+                      help="box. Default is LowMT.",
                       default='LowMT')
     parser.add_option("-H", "--histlist", 
                       dest="histlist", 
@@ -243,6 +243,10 @@ if __name__ == '__main__':
     parser.add_option("-G", "--histgroup", 
                       dest="histgroup", 
                       help="histogram group",
+                      default=None)
+    parser.add_option("-r", "--rebin", 
+                      dest="rebin", 
+                      help="rebinning factor",
                       default=None)
     
     
@@ -283,8 +287,12 @@ if __name__ == '__main__':
 
     for hist in sorted(hists):
         print 'Processing: ',hist,dataName, anaDir
-        ssign,osign = plot( hist, weights, wJetScaleSS, wJetScaleOS, options.range)
+        ssign,osign = plot( hist, weights, wJetScaleSS, wJetScaleOS, options.box)
         ssQCD, osQCD = getQCD( ssign, osign, dataName )
+        if options.rebin is not None:
+            rebin = int( options.rebin )
+            osQCD.Rebin( rebin )
+            ssQCD.Rebin( rebin )
         canvas = TCanvas( hist, hist, 750, 700)
         canvasRatio = TCanvas( hist + '_ratio', hist + '_ratio', 750, 700)
         canvases.append( canvas )  
@@ -295,11 +303,11 @@ if __name__ == '__main__':
         OSD[hist] = osQCD
         histName = os.path.basename( hist )
         canvas.cd()
-#         if histName.find('_iso')>-1:
-#            osQCD.Rebin(2)
-#            ssQCD.Rebin(2)
-#            xmin = 0
-#            xmax = 0.2
+        #         if histName.find('_iso')>-1:
+        #            osQCD.Rebin(2)
+        #            ssQCD.Rebin(2)
+        #            xmin = 0
+        #            xmax = 0.2
         osQCD.DrawStack('HIST', xmin=xmin, xmax=xmax )
         savePlot( histName + '_lin.png') 
         gPad.SetLogy()

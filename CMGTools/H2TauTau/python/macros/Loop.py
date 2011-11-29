@@ -58,7 +58,7 @@ class Loop:
     def DecodeTriggerList(self, triggers):
         if triggers is None:
             return None
-        triglist = triggers.split('%')
+        triglist = triggers.split('|')
         return triglist
 
 
@@ -85,8 +85,8 @@ class Loop:
         self.handles = {}
         self.handles['cmgTauMuCorFullSelSVFit'] =  AutoHandle( 'cmgTauMuCorSVFitFullSel',
                                                                'std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>')
-        self.handles['cmgTauMu'] =  AutoHandle( 'cmgTauMu',
-                                                'std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>')
+##         self.handles['cmgTauMu'] =  AutoHandle( 'cmgTauMu',
+##                                                 'std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>')
         self.handles['cmgTriggerObjectSel'] =  AutoHandle( 'cmgTriggerObjectSel',
                                                            'std::vector<cmg::TriggerObject>>')
         if self.vertexWeightLabel is not None: 
