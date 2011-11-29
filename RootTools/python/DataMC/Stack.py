@@ -27,7 +27,7 @@ class Stack:
         '''Add an Histogram.'''
         # one MUST do a deepcopy here. 
         self.hists.append( copy.deepcopy(hist) )
-        self.integral += hist.Integral()
+        self.integral += hist.Yield( weighted=True )
         
     def Draw(self, opt='',
              xmin=None, xmax=None, ymin = None, ymax=None):
