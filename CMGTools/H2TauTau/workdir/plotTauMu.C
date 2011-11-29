@@ -66,7 +66,7 @@ void plotTauMu(){
 
   if(!analysis.init()){cout<<" could not init"<<endl;return 0;}
   
-  analysis.printRawYields("diTauMassHisto_massT");
+  analysis.printRawYields("diTauMassHisto");
 
 
   //can only do one plot at a time for now 
@@ -87,8 +87,8 @@ void plotTauMu(){
 //   analysis.plot("muEtaHisto",2," #eta_{#mu}","Events / 0.1",c,r);
 
 //   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,0.5,0,8000};
-//   analysis.plot("muIsoHisto_muiso",2," muon relIso()","",c,r);
+//   Float_t r[4]={0,0.5,0,13000};
+//   analysis.plot("muIsoHisto_muiso",2," muon relIso(0.5)"," Events / 0.01",c,r);
 
 //   Float_t c[4]={.5,.75,.42,.81};
 //   Float_t r[4]={0,100,0,5000};
@@ -127,11 +127,11 @@ void plotTauMu(){
 //   Float_t r[4]={-0.5,5.5,1,500000};
 //   analysis.plot("njetHisto",1,"# of jets","",c,r,1);
   
+  Float_t c[4]={.5,.75,.42,.81};
+  Float_t r[4]={0,200,0,3500};
 //   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,200,0,3500};
-// //   Float_t c[4]={.5,.75,.42,.81};
-// //   Float_t r[4]={0,350,5,1e7};
-//   analysis.plot("diTauMassHisto",4,"m_{vis}   (GeV)","Events / 4 GeV",c,r,0);
+//   Float_t r[4]={0,350,5,1e7};
+  analysis.plot("diTauMassHisto",4,"m_{vis}   (GeV)","Events / 4 GeV",c,r,0);
 
 //   Float_t c[4]={.5,.75,.42,.81};
 //   Float_t r[4]={0,300,0,4000};

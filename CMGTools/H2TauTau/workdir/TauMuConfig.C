@@ -20,15 +20,19 @@
   //TString outpath="./output/NewPreSelLepVeto";
   //TString outpath="./output/NewPreSelNewRecoil";
   //TString outpath="./output/NewPreSelOldSVFit";
-  TString outpath="./output/NewPreSelNewSVFit";
+  //TString outpath="./output/NewPreSelNewSVFit";
+  //TString outpath="./output/V240";
+  TString outpath="./output/V240Json";
 
   analysis.setOutputPath(outpath);
 
   //TString datapath="/data/benitezj/Samples/V2_3_0/JoseNov19";
   //TString tag="/PAT_CMG_V2_3_0/H2TAUTAU_Nov19";  
-
-  TString datapath="/data/benitezj/Samples/V2_3_0";
-  TString tag="/PAT_CMG_V2_3_0/H2TAUTAU_Nov19";  
+  //TString datapath="/data/benitezj/Samples/V2_3_0";
+  //TString tag="/PAT_CMG_V2_3_0/H2TAUTAU_Nov19";  
+  TString datapath="/data/benitezj/Samples/V2_4_0";
+  TString tag="/PAT_CMG_V2_4_0/H2TAUTAU_Nov21"; 
+  TString tagd="/PAT_CMG_V2_4_0/H2TAUTAU_Nov28"; 
 
 
 //   Sample TestSample("TestSample",(const char*)("../prod"));
@@ -146,14 +150,14 @@
 //   SingleMuMay.addTrigPath("HLT_IsoMu12_v1");
 //   analysis.addSample(&SingleMuMay);
 
-  Sample TauPlusXMay("TauPlusXMay",(const char*)(datapath+"/TauPlusX/Run2011A-May10ReReco-v1/AOD/V2"+tag));
+  Sample TauPlusXMay("TauPlusXMay",(const char*)(datapath+"/TauPlusX/Run2011A-May10ReReco-v1/AOD/V2"+tagd));
   TauPlusXMay.setDataType("Data");
   TauPlusXMay.setSampleLumi(168.597);
   TauPlusXMay.setRunRange(163262,170000);
   TauPlusXMay.addTrigPath("HLT_IsoMu12_LooseIsoPFTau10_v4");
   analysis.addSample(&TauPlusXMay);
 
-  Sample TauPlusXv4("TauPlusXv4",(const char*)(datapath+"/TauPlusX/Run2011A-PromptReco-v4/AOD/V2"+tag));
+  Sample TauPlusXv4("TauPlusXv4",(const char*)(datapath+"/TauPlusX/Run2011A-PromptReco-v4/AOD/V2"+tagd));
   TauPlusXv4.setDataType("Data");
   TauPlusXv4.setSampleLumi(929.748);
   TauPlusXv4.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v2");
@@ -162,19 +166,27 @@
   TauPlusXv4.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v6");
   analysis.addSample(&TauPlusXv4);
 
-  Sample TauPlusXAug("TauPlusXAug",(const char*)(datapath+"/TauPlusX/Run2011A-05Aug2011-v1/AOD/V2"+tag));
+  Sample TauPlusXAug("TauPlusXAug",(const char*)(datapath+"/TauPlusX/Run2011A-05Aug2011-v1/AOD/V2"+tagd));
   TauPlusXAug.setDataType("Data");
   TauPlusXAug.setSampleLumi(373.349);
   TauPlusXAug.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v8");
   analysis.addSample(&TauPlusXAug);
 
-  Sample TauPlusXv6("TauPlusXv6",(const char*)(datapath+"/TauPlusX/Run2011A-PromptReco-v6/AOD/V2"+tag));
-  TauPlusXv6.setDataType("Data");
-  //TauPlusXv6.setRunRange(170000,172802);
-  TauPlusXv6.setSampleLumi(658.886); //124.683);
-  TauPlusXv6.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v8");
-  TauPlusXv6.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v9");
-  analysis.addSample(&TauPlusXv6);
+//   Sample TauPlusXv6("TauPlusXv6",(const char*)(datapath+"/TauPlusX/Run2011A-PromptReco-v6/AOD/V2"+tagd));
+//   TauPlusXv6.setDataType("Data");
+//   //TauPlusXv6.setRunRange(170000,172802);
+//   TauPlusXv6.setSampleLumi(658.886); //124.683);
+//   TauPlusXv6.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v8");
+//   TauPlusXv6.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v9");
+//   analysis.addSample(&TauPlusXv6);
+
+  Sample TauPlusXOct3("TauPlusXOct3",(const char*)(datapath+"/TauPlusX/Run2011A-03Oct2011-v1/AOD/V2"+tagd));
+  TauPlusXOct3.setDataType("Data");
+  TauPlusXOct3.setSampleLumi(658.886);
+  TauPlusXOct3.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v8");
+  TauPlusXOct3.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v9");
+  analysis.addSample(&TauPlusXOct3);
+
 
   //////////////////////////////////////////////////////
   /////////////Same Sign samples////////////////////////
@@ -284,12 +296,19 @@
   TauPlusXAug_SS.addTrigPaths(TauPlusXAug.getTrigPaths());
   analysis.addSample(&TauPlusXAug_SS);
 
-  Sample TauPlusXv6_SS("TauPlusXv6_SS",TauPlusXv6.GetTitle());
-  TauPlusXv6_SS.setDataType("Data_SS");
-  TauPlusXv6_SS.setRunRange(TauPlusXv6.getFirstRun(),TauPlusXv6.getLastRun());
-  TauPlusXv6_SS.setSampleLumi(TauPlusXv6.getLumi());
-  TauPlusXv6_SS.addTrigPaths(TauPlusXv6.getTrigPaths());
-  analysis.addSample(&TauPlusXv6_SS);
+//   Sample TauPlusXv6_SS("TauPlusXv6_SS",TauPlusXv6.GetTitle());
+//   TauPlusXv6_SS.setDataType("Data_SS");
+//   TauPlusXv6_SS.setRunRange(TauPlusXv6.getFirstRun(),TauPlusXv6.getLastRun());
+//   TauPlusXv6_SS.setSampleLumi(TauPlusXv6.getLumi());
+//   TauPlusXv6_SS.addTrigPaths(TauPlusXv6.getTrigPaths());
+//   analysis.addSample(&TauPlusXv6_SS);
+
+  Sample TauPlusXOct3_SS("TauPlusXOct3_SS",TauPlusXOct3.GetTitle());
+  TauPlusXOct3_SS.setDataType("Data_SS");
+  TauPlusXOct3_SS.setRunRange(TauPlusXOct3.getFirstRun(),TauPlusXOct3.getLastRun());
+  TauPlusXOct3_SS.setSampleLumi(TauPlusXOct3.getLumi());
+  TauPlusXOct3_SS.addTrigPaths(TauPlusXOct3.getTrigPaths());
+  analysis.addSample(&TauPlusXOct3_SS);
 
 
  
