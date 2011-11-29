@@ -9,7 +9,7 @@ vertexWeight05AugReReco = cms.EDProducer(
     verbose = cms.untracked.bool( False ),
     src = cms.InputTag('addPileupInfo'),
     inputHistMC = cms.string( rootfile_dir + '/Pileup_Summer11MC.root'),
-    inputHistData = cms.string( centraldir + '/Cert_170249-172619_7TeV_ReReco5Aug_Collisions11_JSON_v2.pileup.root'),
+    inputHistData = cms.string( centraldir + '/Cert_170249-172619_7TeV_ReReco5Aug_Collisions11_JSON_v2.pileup_v2.root'),
     )
 
 

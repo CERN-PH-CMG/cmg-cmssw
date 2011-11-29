@@ -9,7 +9,7 @@ vertexWeightPromptRecov4 = cms.EDProducer(
     verbose = cms.untracked.bool( False ),
     src = cms.InputTag('addPileupInfo'),
     inputHistMC = cms.string( rootfile_dir + '/Pileup_Summer11MC.root'),
-    inputHistData = cms.string( centraldir + '/Cert_165088-167913_7TeV_PromptReco_JSON.pileup.root'),
+    inputHistData = cms.string( centraldir + '/Cert_165088-167913_7TeV_PromptReco_JSON.pileup_v2.root'),
     )
 
 
