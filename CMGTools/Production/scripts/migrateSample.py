@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import CMGTools.Production.eostools as castortools
 
 import os, sys
