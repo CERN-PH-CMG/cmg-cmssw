@@ -3,8 +3,8 @@ tauMuAliases = {
     'tauMuUncPreSel':'cmgTaucmgMuoncmgDiObjects_cmgTauMuPreSel__',
     'tauMuUncFullSel':'cmgTaucmgMuoncmgDiObjects_cmgTauMuFullSel__',
     'tauMuAll':'cmgTaucmgMuoncmgDiObjects_cmgTauMuCor__',
-    'tauMuPreSel':'cmgTaucmgMuoncmgDiObjects_cmgTauMuCorPreSelSVFit__',
-    'tauMuFullSel':'cmgTaucmgMuoncmgDiObjects_cmgTauMuCorFullSelSVFit__',
+    'tauMuPreSel':'cmgTaucmgMuoncmgDiObjects_cmgTauMuCorSVFitPreSel__',
+    'tauMuFullSel':'cmgTaucmgMuoncmgDiObjects_cmgTauMuCorSVFitFullSel__',
     }
 
 
