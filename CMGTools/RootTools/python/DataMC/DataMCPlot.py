@@ -25,6 +25,7 @@ class DataMCPlot(object):
         self.legendBorders = 0.13,0.66,0.44,0.89
         self.lastDraw = None
         self.lastDrawArgs = None
+        self.stack = None
         
     def AddHistogram(self, name, histo, layer=0, legendLine = None):
         '''Add a ROOT histogram, with a given name.
@@ -278,8 +279,12 @@ class DataMCPlot(object):
 
 
     def __str__(self):
+        if self.stack is None:
+            self._BuildStack(self._SortedHistograms(), ytitle='Events')
         tmp = [' '.join(['DataMCPlot: ', self.name])]
+        tmp.append( 'Histograms:' )
         for hist in self._SortedHistograms( reverse=True ):
-            tmp.append( ' '.join(['\t', str(hist)]) ) 
+            tmp.append( ' '.join(['\t', str(hist)]) )
+        tmp.append( 'Stack yield = {integ:7.1f}'.format( integ=self.stack.integral ) )
         return '\n'.join( tmp ) 
 
