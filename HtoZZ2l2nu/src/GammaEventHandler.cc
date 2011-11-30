@@ -8,10 +8,12 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
 {
   //trigger thresholds to consider
   gammaCats_ = runProcess.getParameter<std::vector<int> >("gammaCategories"); 
+  bool isMC = runProcess.getParameter<bool>("isMC");
   
   //open file and retrieve weights
   TString gammaPtWeightsFile =  runProcess.getParameter<std::string>("weightsFile"); 
   gSystem->ExpandPathName(gammaPtWeightsFile);
+  if(!isMC) gammaPtWeightsFile=gammaPtWeightsFile.ReplaceAll("mc_","data_");
 
   fwgt_=TFile::Open(gammaPtWeightsFile);
   if(fwgt_)
@@ -71,7 +73,6 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys)
   if( phys.cat<22) return isGoodEvent_;
   triggerThr_ = (phys.cat-22)/1000;
   if(triggerThr_==0) return isGoodEvent_;
-  photonCategory_="photon";  photonCategory_ += triggerThr_; 
 
   //require one gamma only in the event in the barrel with pT>20
   if( phys.gammas.size()==0 ) return isGoodEvent_;
@@ -83,10 +84,14 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys)
   //fix-me use trigger matching next time
   for(size_t icat=0; icat<gammaCats_.size()-1; icat++)
     {
-      if(gammaCats_[icat]!=triggerThr_) continue;
-      if(gamma.pt()<gammaCats_[icat] || gamma.pt()>=gammaCats_[icat+1]) return isGoodEvent_;
+      if(gammaCats_[icat]<triggerThr_) continue;
+      if(gamma.pt()<gammaCats_[icat] /*|| gamma.pt()>=gammaCats_[icat+1]*/) return isGoodEvent_;
+      if(gamma.pt()>=gammaCats_[icat+1]) triggerThr_ = findTriggerCategoryFor(gamma.pt());
+      else                               triggerThr_ = gammaCats_[icat];
       break;
     }
+  
+  photonCategory_="photon";  photonCategory_ += triggerThr_; 
   
   //generate a massive gamma and retrieve the weights for each dilepton channel
   TString dilCategories[]={"ee","mumu","ll"};

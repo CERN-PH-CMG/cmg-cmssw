@@ -53,7 +53,10 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
   //gamams
   for(Int_t ipart=0; ipart<ev.gn; ipart++)
     {
-      PhysicsObject_Gamma igamma(LorentzVector(ev.g_px[ipart],ev.g_py[ipart],ev.g_pz[ipart],ev.g_en[ipart]), ev.g_iso1[ipart], ev.g_iso2[ipart], ev.g_iso3[ipart], ev.g_sihih[ipart], ev.g_r9[ipart], ev.g_hoe[ipart]);
+      PhysicsObject_Gamma igamma(LorentzVector(ev.g_px[ipart],ev.g_py[ipart],ev.g_pz[ipart],ev.g_en[ipart]), 
+				 0., 
+				 ev.g_iso1[ipart], ev.g_iso2[ipart], ev.g_iso3[ipart], 
+				 ev.g_sihih[ipart], ev.g_r9[ipart], ev.g_hoe[ipart]);
       igamma.setConversionInfo(ev.g_conv[ipart],LorentzVector(ev.g_conv_px[ipart],ev.g_conv_py[ipart],ev.g_conv_pz[ipart],ev.g_conv_en[ipart]));
       phys.gammas.push_back( igamma );
     }

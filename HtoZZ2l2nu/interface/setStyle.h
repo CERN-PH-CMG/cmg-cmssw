@@ -26,7 +26,7 @@
 
 #endif
 
-TStyle *setStyle(bool gridOn=true);
+TStyle *setStyle(bool gridOn=false);
 TCanvas *getNewCanvas(TString name, TString title,bool setBatch);
 TObject *formatPlot(TObject *h,
 		    int color, int line, int linew, int marker, int fill,

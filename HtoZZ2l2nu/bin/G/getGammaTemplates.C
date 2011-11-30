@@ -34,19 +34,23 @@ TObject* getObjectFromPath(TDirectory* File, std::string Path, bool GetACopy=fal
 }
 
 //
-float getIntegral(TH1 *h,double min=-1,double max=-1)
+std::pair<float,float> getIntegral(TH1 *h,double min=-1,double max=-1,TString opt="")
 {
-  if(h==0) return 0;
+  if(h==0) return std::pair<float,float>(0.,0.);
   int firstbin=0;
   int lastbin=h->GetXaxis()->GetNbins()+1;
   
-  if(min!=-1 && max>min)
+  if(min!=-1)
     {
       firstbin=h->GetXaxis()->FindBin(min);
-      firstbin=h->GetXaxis()->FindBin(max);
     }
-
-  return h->Integral(firstbin,lastbin);
+  if(max>0)
+    {
+      lastbin=h->GetXaxis()->FindBin(max);
+    }
+  Double_t val(0),val_err(0);
+  val=h->IntegralAndError(firstbin,lastbin,val_err,opt);
+  return std::pair<float,float>(val,val_err);
 }
 
 
@@ -56,7 +60,7 @@ float getScaleFactor(TH1 *h1, TH1 *h2,double minVal,double maxVal)
   if(h1==0 || h2==0) return 0;
   if(h2->Integral()==0 || h1->Integral()==0) return 0;
 
-  float sf=getIntegral(h1,minVal,maxVal)/getIntegral(h2,minVal,maxVal);
+  float sf=getIntegral(h1,minVal,maxVal).first/getIntegral(h2,minVal,maxVal).first;
   if(h1->GetEntries()>100 && h2->GetEntries()>50)
     {
       TH1 *ratio=(TH1 *) h1->Clone("ratiotmp");
@@ -71,6 +75,8 @@ float getScaleFactor(TH1 *h1, TH1 *h2,double minVal,double maxVal)
   return sf;
 }
 
+
+
 //
 TH1 *deriveGammaWeightsFrom(TH1 *z, TH1 *g)
 {
@@ -84,6 +90,76 @@ TH1 *deriveGammaWeightsFrom(TH1 *z, TH1 *g)
   return wgt;
 }
 
+
+//
+void estimateGammaBackground(TString inputFile="plotter_weighted.root", string baseCat="eq0jets", string dilChannel="mumu",float cut=70)
+{
+
+  TFile *fin = TFile::Open(inputFile);
+  string modDir="Z-#gamma^{*}+jets#rightarrow ll";
+  string dataDir="data";
+
+  string trigCats[]={"photon55","photon75","photon90","photon125"};
+  TString cutStr(""); cutStr += (int)cut;
+
+  std::vector<string> metDirs;
+  metDirs.push_back("Z+#gamma#rightarrow l^{+}l^{-}#gamma");
+  metDirs.push_back("W+#gamma");
+  metDirs.push_back("W+jets");
+  metDirs.push_back("Z+#gamma#rightarrow#nu#nu#gamma");
+
+  float totalgamma(0), totalzmc(0),totalmet(0);
+  float totalgammaerr(0), totalzmcerr(0),totalmeterr(0);
+  float totalbckg(0), totalbckgerr(0);
+  for(size_t icat=0; icat<3; icat++)
+    {
+      //derive the scale factor for the photon+jets
+      string baseName=baseCat;
+      baseName += "_";
+      baseName+=trigCats[icat]+dilChannel;
+      //string baseName=trigCats[icat]+dilChannel;
+      TH1F *dphidata = (TH1F *)getObjectFromPath( fin, dataDir+"/"+baseName+string("mindphijmet"+cutStr), true);
+      dphidata->SetDirectory(0);
+      TH1F *dphimc = (TH1F *)getObjectFromPath( fin, modDir+"/"+baseName+string("mindphijmet"+cutStr), true);
+      dphimc->SetDirectory(0);
+
+      TH1F *dphimet= (TH1F *)getObjectFromPath( fin, metDirs[0]+"/"+baseName+string("mindphijmet"+cutStr), true);
+      dphimet->SetDirectory(0);
+      for(size_t i=1; i<metDirs.size(); i++)
+	dphimet->Add((TH1F *)getObjectFromPath( fin, metDirs[i]+"/"+baseName+string("mindphijmet"+cutStr), false) );
+      
+      std::pair<float,float> dataAbove05=getIntegral(dphidata,0.5);
+      std::pair<float,float> mcAbove05=getIntegral(dphimc,0.5);
+      std::pair<float,float> metAbove05=getIntegral(dphimet,0.5);
+
+      totalgamma    += dataAbove05.first;
+      totalgammaerr += pow(dataAbove05.second,2);
+
+      totalzmc      += mcAbove05.first;
+      totalzmcerr   += pow(mcAbove05.second,2);
+
+      totalmet      += metAbove05.first;
+      totalmeterr   += pow(metAbove05.second,2);
+
+      totalbckg+=max(float(totalgamma-totalmet),float(0.));
+      totalbckgerr+=totalgammaerr+totalmeterr;
+    }
+  totalgammaerr=sqrt(totalgammaerr);
+  totalzmcerr=sqrt(totalzmcerr);
+  totalmeterr=sqrt(totalmeterr);
+  totalbckgerr=sqrt(totalbckgerr);
+
+  cout << totalgamma << " +/- " << totalgammaerr << endl
+       << totalmet   << " +/- " << totalmeterr   << endl
+       << totalzmc   << " +/- " << totalzmcerr   << endl
+       << totalbckg  << " +/- " << totalbckgerr << endl;
+
+  
+  fin->Close();
+}
+
+
+
 //
 void getGammaWeights(TString inputFile="mc_raw.root",bool isData=false,string var2dName="nvtx")
 {
@@ -93,12 +169,21 @@ void getGammaWeights(TString inputFile="mc_raw.root",bool isData=false,string va
   const size_t ncats=sizeof(cats)/sizeof(string);
 
 
-  string modDir="|M_{ll}-91|<15 GeV-c^{2}";
-  string dataDir="#gamma+jets";
+  string modDir="Z-#gamma^{*}+jets#rightarrow ll";
+  std::vector<string> dataDirs;
   if(!isData)
     {
-      modDir="Z-#gamma^{*}+jets#rightarrow ll";
-      dataDir="#gamma+jets";
+      dataDirs.push_back("#gamma+jets");
+      dataDirs.push_back("QCD");
+      dataDirs.push_back("Di-photon");
+      dataDirs.push_back("Z+#gamma#rightarrow l^{+}l^{-}#gamma");
+      dataDirs.push_back("W+#gamma");
+      dataDirs.push_back("W+jets");
+      dataDirs.push_back("Z+#gamma#rightarrow#nu#nu#gamma");
+    }
+  else
+    {
+      dataDirs.push_back("data");
     }
   
   //plots to retrieve
@@ -153,10 +238,23 @@ void getGammaWeights(TString inputFile="mc_raw.root",bool isData=false,string va
 	  string baseName=cats[icat]+"_";
 	  
 	  //gamma plots
-	  TH1F *iGammaPt   = (TH1F *)getObjectFromPath( fin, dataDir+"/"+baseName+dilCats[idcat]+"qt", true);
-	  iGammaPt->SetDirectory(0);
-	  TH2F *iGammaPt2d = (TH2F *)getObjectFromPath( fin, dataDir+"/"+baseName+dilCats[idcat]+"qt"+var2dName, true);
-	  iGammaPt2d->SetDirectory(0);
+	  TH1F *iGammaPt=0;
+	  TH2F *iGammaPt2d=0;
+	  for(size_t idir=0; idir<dataDirs.size(); idir++)
+	    {
+	      if(iGammaPt==0)
+		{
+		  iGammaPt = (TH1F *)getObjectFromPath( fin, dataDirs[idir]+"/"+baseName+dilCats[idcat]+"qt", true);
+		  iGammaPt->SetDirectory(0);
+		  iGammaPt2d = (TH2F *)getObjectFromPath( fin, dataDirs[idir]+"/"+baseName+dilCats[idcat]+"qt"+var2dName, true);
+		  iGammaPt2d->SetDirectory(0);
+		}
+	      else
+		{
+		  iGammaPt->Add( (TH1F *)getObjectFromPath( fin, dataDirs[idir]+"/"+baseName+dilCats[idcat]+"qt", true) );
+		  iGammaPt2d->Add( (TH2F *)getObjectFromPath( fin, dataDirs[idir]+"/"+baseName+dilCats[idcat]+"qt"+var2dName, true) );
+		}
+	    }
 	  if(incGammaPt==0)
 	    {
 	      incGammaPt   = (TH1F *) iGammaPt->Clone(TString(baseName+"llqt"));
@@ -441,7 +539,7 @@ void getGammaTemplates(TString inputFile="/data/psilva/Higgs/ntuples_2011.11.01/
 // 		  iZCompVariable->SetLineWidth(2);
 		}
 
-	      if(getIntegral(iGammaVariable)>0) 
+	      if(getIntegral(iGammaVariable).first>0) 
 		{ 
 		  float sf=1;
 		  
@@ -456,7 +554,7 @@ void getGammaTemplates(TString inputFile="/data/psilva/Higgs/ntuples_2011.11.01/
 
 		  if(iZCompVariable)
 		    {
-		      float icompSf=getIntegral(iZVariable)/(getIntegral(iGammaVariable)+getIntegral(iZCompVariable));
+		      float icompSf=getIntegral(iZVariable).first/(getIntegral(iGammaVariable).first+getIntegral(iZCompVariable).first);
 		      iZCompVariable->Scale(icompSf);
 		    }
 		  if(applySF)
@@ -472,7 +570,7 @@ void getGammaTemplates(TString inputFile="/data/psilva/Higgs/ntuples_2011.11.01/
 	      iZVariable->GetYaxis()->SetRangeUser(1e-5,10);
 	      if(iZCompVariable) iZCompVariable->Draw("histsame");
 	      iGammaVariable->Draw("e2same");
-	      if(getIntegral(iGammaVariable)>0 and getIntegral(iZVariable)>0)
+	      if(getIntegral(iGammaVariable).first>0 and getIntegral(iZVariable).first>0)
 		{
 		  TPaveText *pave = new TPaveText(0.5,0.65,1.0,0.95,"NDC");
 		  pave->SetBorderSize(0);

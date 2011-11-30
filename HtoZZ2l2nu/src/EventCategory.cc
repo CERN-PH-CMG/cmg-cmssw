@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2011/11/02 15:32:04 $
- *  $Revision: 1.6 $
+ *  $Date: 2011/11/16 15:48:10 $
+ *  $Revision: 1.7 $
  *  \author L. Quertenmont
  */
 
@@ -108,8 +108,8 @@ int EventCategory::Get(const PhysicsEvent_t& phys, LorentzVectorCollection *vari
     }
 
   if(isVBF          )return VBF;
-  if(NJetsCentral>=2)return GEQ2JETS;
-  if(NJetsCentral==1)return EQ1JETS;
+  if(NJetsVBF>=2)return GEQ2JETS;
+  if(NJetsVBF==1)return EQ1JETS;
   return EQ0JETS;
 }
 
