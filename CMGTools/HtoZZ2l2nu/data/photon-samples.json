@@ -1,71 +1,96 @@
 {
     "proc":[
-	{
+   {
          "tag":"Z/#gamma^{*}+jets#rightarrow ll",
+         "spimpose":true,
          "isdata":false,
-         "color":"831",
-	 "mctruthmode":22,
-	 "lcolor":1,
+         "color":"kRed",
+	 "lwidth":2,
          "fill":0,
+	 "mctruthmode":2,
          "data":[
               {
-               "dtag":"DYJetsToMuMu",
-               "dset":"/DYToMuMu_M-20_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v2/AODSIM",
-               "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva//HZZ_11.10.03/G/DYToMuMu_M-20_TuneZ2_7TeV-pythia6"],
-               "xsec":1300
-              },
-              {
-               "dtag":"DYJetsToEE",
-               "dset":"/DYToEE_M-20_TuneZ2_7TeV-pythia6/Summer11-PU_S3_START42_V11-v2/AODSIM",
-               "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva//HZZ_11.10.03/G/DYToEE_M-20_TuneZ2_7TeV-pythia6"],
-               "xsec":1300
+               "dtag":"DYJetsToLL",
+               "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
+               "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/DYToLL/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
+               "xsec":3048
               }
           ]
         },
 	{
-         "tag":"Z+#gamma",
+         "tag":"Di-photon",
          "isdata":false,
-         "color":"590",
+         "color":"kYellow-2",
+         "lcolor":1,
+	 "mctruthmode":22,
+         "data":[
+              {
+               "dtag":"DiPhotonBorn_Pt_25to250",
+               "dset":"DiPhotonBorn_Pt-25To250_7TeV-pythia6",
+               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/DiPhotonBorn_Pt-25To250_7TeV-pythia6"],
+               "xsec":22.37
+              },
+              {
+               "dtag":"DiPhotonBorn_Pt_250",
+               "dset":"DiPhotonBorn_Pt-250_7TeV-pythia6",
+               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/DiPhotonBorn_Pt-250_7TeV-pythia6"],
+               "xsec":0.008072
+              },
+              {
+               "dtag":"DiPhotonBox_Pt_25to250",
+               "dset":"DiPhotonBox_Pt-25To250_7TeV-pythia6",
+               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/DiPhotonBox_Pt-25To250_7TeV-pythia6"],
+               "xsec":12.37
+              },
+              {
+               "dtag":"DiPhotonBox_Pt_250",
+               "dset":"DiPhotonBox_Pt-250_7TeV-pythia6",
+               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/DiPhotonBox_Pt-250_7TeV-pythia6"],
+               "xsec":0.000208
+              }
+         ]
+        },
+	{
+         "tag":"Z+#gamma#rightarrow l^{+}l^{-}#gamma",
+         "isdata":false,
+         "color":"831",
          "lcolor":1,
 	 "mctruthmode":22,
          "data":[
               {
                "dtag":"ZGToTauTau",
                "dset":"ZGToTauTauG_TuneZ2_7TeV-madgraph",
-               "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva//HZZ_11.10.03/G/ZGToTauTauG_TuneZ2_7TeV-madgraph"],
-               "xsec":34.16
+               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/ZGToTauTauG_TuneZ2_7TeV-madgraph"],
+               "xsec":30.79,
+	       "br":[1.39]	
               },
               {
                "dtag":"ZGToEE",
                "dset":"ZGToEEG_TuneZ2_7TeV-madgraph",
-               "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva//HZZ_11.10.03/G/ZGToEEG_TuneZ2_7TeV-madgraph"],
-               "xsec":33.58
+               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/ZGToEEG_TuneZ2_7TeV-madgraph"],
+               "xsec":34.16,
+	       "br":[1.39]	
               },
               {
                "dtag":"ZGToMuMu",
                "dset":"ZGToMuMuG_TuneZ2_7TeV-madgraph",
-               "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva//HZZ_11.10.03/G/ZGToMuMuG_TuneZ2_7TeV-madgraph"],
-               "xsec":30.75
-              },
-              {
-               "dtag":"ZGToNuNu",
-               "dset":"ZGToNuNuG_TuneZ2_7TeV-madgraph",
-               "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva//HZZ_11.10.03/G/ZGToNuNuG_TuneZ2_7TeV-madgraph"],
-               "xsec":3.426
+               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/ZGToMuMuG_TuneZ2_7TeV-madgraph"],
+               "xsec":33.58,
+	       "br":[1.39]
               }
 	  ]
 	},
 	{
 	 "tag":"W+#gamma",
          "isdata":false,
-         "color":"594",
+         "color":"596",
          "lcolor":1,
          "mctruthmode":22,
 	 "data":[
               {
                "dtag":"WGToENuG",
                "dset":"WGToENuG_TuneZ2_7TeV-madgraph",
-               "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva//HZZ_11.10.03/G/WGToENuG_TuneZ2_7TeV-madgraph"],
+               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/WGToENuG_TuneZ2_7TeV-madgraph"],
                "xsec":114.7
               },
 	      {
@@ -83,39 +108,6 @@
 	   ]
 	},
 	{
-         "tag":"Di-photon",
-         "isdata":false,
-         "color":"592",
-         "lcolor":1,
-	 "mctruthmode":22,
-         "data":[
-              {
-               "dtag":"DiPhotonBorn_Pt_25to250",
-               "dset":"DiPhotonBorn_Pt-25To250_7TeV-pythia6",
-               "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva//HZZ_11.10.03/G/DiPhotonBorn_Pt-25To250_7TeV-pythia6"],
-               "xsec":22.37
-              },
-              {
-               "dtag":"DiPhotonBorn_Pt_250",
-               "dset":"DiPhotonBorn_Pt-250_7TeV-pythia6",
-               "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva//HZZ_11.10.03/G/DiPhotonBorn_Pt-250_7TeV-pythia6"],
-               "xsec":0.008072
-              },
-              {
-               "dtag":"DiPhotonBox_Pt_25to250",
-               "dset":"DiPhotonBox_Pt-25To250_7TeV-pythia6",
-               "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva//HZZ_11.10.03/G/DiPhotonBox_Pt-25To250_7TeV-pythia6"],
-               "xsec":12.37
-              },
-              {
-               "dtag":"DiPhotonBox_Pt_250",
-               "dset":"DiPhotonBox_Pt-250_7TeV-pythia6",
-               "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva//HZZ_11.10.03/G/DiPhotonBox_Pt-250_7TeV-pythia6"],
-               "xsec":0.000208
-              }
-         ]
-        },
-	{
 	 "tag":"W+jets",
          "isdata":false,
          "color":"809",
@@ -129,6 +121,21 @@
                  "xsec":31314
                 }
 	 ]
+	},
+	{
+         "tag":"Z+#gamma#rightarrow#nu#nu#gamma",
+         "isdata":false,
+         "color":"8",
+         "lcolor":1,
+	 "mctruthmode":22,
+	 "data":[
+              {
+               "dtag":"ZGToNuNu",
+               "dset":"ZGToNuNuG_TuneZ2_7TeV-madgraph",
+               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/ZGToNuNuG_TuneZ2_7TeV-madgraph"],
+               "xsec":3.426
+              }
+	  ]
 	},
 	{
 	"tag":"QCD",
@@ -156,6 +163,16 @@
 		"dtag":"QCDPt170to300",
 		"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/QCD_Pt-170to300_TuneZ2_7TeV_pythia6"],
 		"xsec":24300.0
+	     },
+	     {	
+		"dtag":"QCDPt300to470",
+		"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/QCD_Pt-300to470_TuneZ2_7TeV_pythia6"],
+		"xsec":1170.0
+	     },
+	     {	
+		"dtag":"QCDPt470to600",
+		"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/QCD_Pt-470to600_TuneZ2_7TeV_pythia6"],
+		"xsec":70.2
 	     }
 	  ]
     	},
@@ -168,42 +185,42 @@
 	"data":[
 	     {	
 		"dtag":"G_Pt-15to30_TuneZ2_7TeV_pythia6",
-		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-15to30_TuneZ2_7TeV_pythia6"],
+		"patdir":["/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-15to30_TuneZ2_7TeV_pythia6"],
 		"xsec":172000
 	     },
 	     {	
 		"dtag":"G_Pt-30to50_TuneZ2_7TeV_pythia6",
-		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-30to50_TuneZ2_7TeV_pythia6"],
+		"patdir":["/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-30to50_TuneZ2_7TeV_pythia6"],
 		"xsec":16700
 	     },
 	     {	
 		"dtag":"G_Pt-50to80_TuneZ2_7TeV_pythia6",
-		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-50to80_TuneZ2_7TeV_pythia6"],
+		"patdir":["/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-50to80_TuneZ2_7TeV_pythia6"],
 		"xsec":2720
 	     },
 	     {	
 		"dtag":"G_Pt-80to120_TuneZ2_7TeV_pythia6",
-		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-80to120_TuneZ2_7TeV_pythia6"],
+		"patdir":["/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-80to120_TuneZ2_7TeV_pythia6"],
 		"xsec":447
 	     },
 	     {	
 		"dtag":"G_Pt-120to170_TuneZ2_7TeV_pythia6",
-		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-120to170_TuneZ2_7TeV_pythia6"],
+		"patdir":["/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-120to170_TuneZ2_7TeV_pythia6"],
 		"xsec":84.2
 	     },
 	     {	
 		"dtag":"G_Pt-170to300_TuneZ2_7TeV_pythia6",
-		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-170to300_TuneZ2_7TeV_pythia6"],
+		"patdir":["/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-170to300_TuneZ2_7TeV_pythia6"],
 		"xsec":22.6
 	     },
 	     {	
 		"dtag":"G_Pt-300to470_TuneZ2_7TeV_pythia6",
-		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-300to470_TuneZ2_7TeV_pythia6"],
+		"patdir":["/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-300to470_TuneZ2_7TeV_pythia6"],
 		"xsec":1.49
 	     },
 	     {	
 		"dtag":"G_Pt-470to800_TuneZ2_7TeV_pythia6",
-		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-470to800_TuneZ2_7TeV_pythia6"],
+		"patdir":["/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-470to800_TuneZ2_7TeV_pythia6"],
 		"xsec":0.132
 	     }
 	  ]
@@ -224,27 +241,22 @@
                 {
                   "dtag":"PhotonPromptRecov4",
                   "dset":"/Photon/Run2011A-PromptReco-v4/AOD",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/Photon/Photon-PromptReco-v4"]
+                  "patdir":["/castor/cern.ch//cms/store/cmst3/user/psilva/Data/Photon/Photon-PromptReco-v4"]
 		},
                 {
                   "dtag":"Photon05Aug2011",
                   "dset":"/Photon/Run2011A-05Aug2011-v1/AOD",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/Photon/Photon-05Aug2011"]
+                  "patdir":["/castor/cern.ch//cms/store/cmst3/user/psilva/Data/Photon/Photon-05Aug2011"]
 		},
                 {
-                  "dtag":"Photon_PromptReco_v6_172620_173244",
+                  "dtag":"Photon_PromptReco_v6",
                   "dset":"/Photon/Run2011A-PromptReco-v6/AOD",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/Photon/Photon-PromptReco-v6-172620-173244"]
+                  "patdir":["/store/cmst3/user/psilva/Data/Photon/Photon-PromptReco-v6"]
 		},
                 {
-                  "dtag":"Photon_PromptReco_v6_173380_173692",
-                  "dset":"/Photon/Run2011A-PromptReco-v6/AOD",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/Photon/Photon-PromptReco-v6-173380_173692"]
-		},
-                {
-                  "dtag":"Photon-2011B-PromptReco-175832-179431",
+                  "dtag":"Photon-2011B-PromptReco",
                   "dset":"/Photon/Run2011B-PromptReco-v1/AOD",
-		  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/Photon/Photon-2011B-PromptReco-175832-179431"]
+		  "patdir":["/store/cmst3/user/psilva/Data/Photon/Photon-2011B-PromptReco"]
 		}
 	   ]
 	}

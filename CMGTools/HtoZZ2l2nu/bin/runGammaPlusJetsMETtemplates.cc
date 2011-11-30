@@ -1,4 +1,5 @@
 
+
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 
@@ -54,7 +55,7 @@ int main(int argc, char* argv[])
   TRandom2 rndGen;
 
   EventCategory eventClassifComp;
-  TString categories[]={"eq0jets","eq1jets","geq2jets","vbf"};
+  TString categories[]={"eq0softjets","eq0jets","eq1jets","geq2jets","vbf"};
   
   //configure
   const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
@@ -99,7 +100,7 @@ int main(int argc, char* argv[])
 	  if(triggerThr==0) 
 	    {
 	      controlHistos.addHistogram( new TH1D (subcat+"qt", ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", 200,0,600) );
-	      controlHistos.addHistogram( new TH1D (subcat+"eta", ";#eta;Events", 100,0,2.6) );
+	      controlHistos.addHistogram( new TH1D (subcat+"eta", ";#eta;Events", 50,0,2.6) );
 	      controlHistos.addHistogram( new TH2D (subcat+"qtvseta", ";p_{T}^{#gamma} [GeV/c];#eta;Events / (2.5 GeV/c)", 200,0,600,50,0,2.6) );
 	      controlHistos.addHistogram( new TH2D (subcat+"qtvsnvtx", ";p_{T}^{#gamma} [GeV/c];Vertices;Events", 200,0,600,30,0,30) );
 	      controlHistos.addHistogram( new TH1D (subcat+"zmass",";M^{ll};Events", 100,91-31,91+31) );
@@ -112,25 +113,33 @@ int main(int argc, char* argv[])
 	  photonSubcats.push_back(subcat);
 
 	  //these are worth to monitor per sub-category
+	  controlHistos.addHistogram( new TH1F (subcat+"hoe", ";H/E;Events", 100,0.,0.1) );
+	  controlHistos.addHistogram( new TH1F (subcat+"r9", ";R9;Events", 100,0.8,1) );
+	  controlHistos.addHistogram( new TH1F (subcat+"sietaieta", ";#sigma i#eta i#eta;Events", 100,0,0.03) );
 	  controlHistos.addHistogram( new TH1F (subcat+"nvtx", ";Vertices;Events", 30,0,30) );
-	  controlHistos.addHistogram( new TH1D (subcat+"ptjets", ";p_{T}^{jet} [GeV/c];Jets / (2.5 GeV/c)", 200,0,600) );
+	  controlHistos.addHistogram( new TH1D (subcat+"ptjets", ";p_{T}^{jet} [GeV/c];Jets", 50,0,250) );
+	  controlHistos.addHistogram( new TH1D (subcat+"ptclosejet", ";p_{T}(closest jet) [GeV/c];Events", 50,0,250) );
 	  controlHistos.addHistogram( new TH1D (subcat+"ht", ";H_{T} [GeV];Events", 100,0,500) );
-
 	  controlHistos.addHistogram( new TH1D (subcat+"mt", ";M_{T} [GeV];Events", 100,0,1000) );
-	  controlHistos.addHistogram( new TH1D (subcat+"dphill", ";#Delta#phi(l^{1},l^{2})[rad];Events", 100,0,3.2) );
 	  controlHistos.addHistogram( new TH1F (subcat+"njets", ";Jets;Events", 6,0,6) );
-	  controlHistos.addHistogram( new TH1F (subcat+"nbtags", ";b-tag multiplcity;Events", 6,0,6) );
+	  controlHistos.addHistogram( new TH1F (subcat+"nbtags", ";b-tag multiplcity;Events", 5,0,5) );
 
 	  controlHistos.addHistogram( new TH1F (subcat+"minmjv", ";min M(jet,boson);Events", 100,0,500) );
-	  controlHistos.addHistogram( new TH1F (subcat+"mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events", 100,0,3.2) );
-	  controlHistos.addHistogram( new TH1F (subcat+"dphijboson", ";#Delta#phi(lead jet,boson);Events", 100,0,3.2) );
-	  controlHistos.addHistogram( new TH1F (subcat+"dphijsystboson", ";#Delta#phi(jet system,boson);Events", 100,0,3.2) );
-	  controlHistos.addHistogram( new TH1F (subcat+"dphivmet", ";#Delta#phi(boson,E_{T}^{miss});Events", 100,0,3.2) );
+	  controlHistos.addHistogram( new TH1F (subcat+"mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events", 14,0,3.5) );
+	  controlHistos.addHistogram( new TH1F (subcat+"mindphijmet50", ";min #Delta#phi(jet,E_{T}^{miss});Events", 14,0,3.5) );
+	  controlHistos.addHistogram( new TH1F (subcat+"mindphijmet70", ";min #Delta#phi(jet,E_{T}^{miss});Events", 14,0,3.5) );
+	  controlHistos.addHistogram( new TH1F (subcat+"dphivmet", ";#Delta#phi(boson,E_{T}^{miss});Events", 14,0,3.5) );
+	  double metAxis[]={0,10,20,30,40,50,60,70,80,90,100,120,140,160,180,200,250,300,400,500};
+	  int nMetBins=sizeof(metAxis)/sizeof(double)-1;
 	  for(std::map<TString,TString>::iterator it = metTypes.begin(); it!= metTypes.end(); it++)
 	    {
 	      metTypeValues[it->first]=LorentzVector(0,0,0,0);
-	      controlHistos.addHistogram( new TH1F( subcat+TString("met_") + it->first, ";"+it->second+";Events", 100,0,500) );
-	      controlHistos.addHistogram( new TH2F( subcat+TString("met_") + it->first+"vspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+	      //controlHistos.addHistogram( new TH1F( subcat+TString("met_") + it->first, ";"+it->second+";Events", 100,0,500) );
+	      controlHistos.addHistogram( new TH1F( subcat+TString("met_") + it->first, ";"+it->second+";Events", nMetBins,metAxis) );
+	      controlHistos.addHistogram( new TH1F( subcat+TString("met_") + it->first+TString("L"), ";"+it->second+"_{L}/q_{T};Events", 50,0,2) );
+	      //controlHistos.addHistogram( new TH1F( subcat+TString("met_") + it->first+TString("T"), ";"+it->second+"_{T}/q_{T};Events", 50,0,2) );
+	      //controlHistos.addHistogram( new TH2F( subcat+TString("met_") + it->first+"vspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+	      controlHistos.addHistogram( new TH2F( subcat+TString("met_") + it->first+"vsht", ";H_{T};"+it->second+";Events", 25,0,250,25,0,250) );
 	    }
 	  
 	}
@@ -178,25 +187,32 @@ int main(int argc, char* argv[])
       if(!isGammaEvent && ev.cat != EE && ev.cat !=MUMU) continue;
 
       float weight = 1.0;
-      if(isMC /*&& gammaEvHandler.weightMode()!=GammaEventHandler::NOWEIGHTS*/) weight = LumiWeights.weight( ev.ngenITpu );
+      if(isMC && !isGammaEvent)	{ weight = LumiWeights.weight( ev.ngenITpu ); }
 
       //event categories
       std::vector<TString> dilCats;
       LorentzVector gamma(0,0,0,0);
       int triggerThr(0);
-      float r9(0),ensf(1.0);
+      float r9(0),ensf(1.0),sietaieta(0),hoe(0);
+      bool passTightGammaId(false);
       if(isGammaEvent)
 	{
 	  dilCats.push_back("ee");
 	  dilCats.push_back("mumu");
 	  dilCats.push_back("ll");
-	  r9         = phys.gammas[0].r9;
+	  r9         = phys.gammas[0].r9*(isMC ? 1.005 : 1.0); 
+	  sietaieta  = phys.gammas[0].sihih;
+	  hoe        = phys.gammas[0].hoe;
 	  ensf       = ev.g_ecorr[0];
 	  gamma      = gammaEvHandler.massiveGamma("ll");
+	  gamma *= ensf;
 	  triggerThr = gammaEvHandler.triggerThr();
+	  if(r9>0.94 && sietaieta<0.0106 && sietaieta>0.) passTightGammaId=true;
+	  //if(sietaieta>0.) passTightGammaId=true;
 	}
       else
 	{
+	  passTightGammaId=true;
 	  gamma=phys.leptons[0]+phys.leptons[1];
 	  if(fabs(gamma.mass()-91)>15) continue;
 	  if(ev.cat==MUMU) dilCats.push_back("mumu");
@@ -206,13 +222,14 @@ int main(int argc, char* argv[])
 	}
       
       //minimum threshold
-      if(gamma.pt()<25) continue;
+      if(gamma.pt()<20) continue;
       
       TString phoCat("photon");
       phoCat += triggerThr;
 
       //select jets
-      int njets=eventClassifComp.GetCentralJetCount();
+      int njets=eventClassifComp.GetVBFJetCount();//CentralJetCount();
+      int nincjets(0);
       int nbjets(0);
       std::vector<LorentzVector> jetsp4;
       float minmjv(9999999.),ht(0.);
@@ -224,9 +241,9 @@ int main(int argc, char* argv[])
 	  LorentzVector jv=phys.jets[ijet]+gamma;
 	  float mjv=jv.mass();
 	  if(dr<0.1) continue;
-	  njets   += (phys.jets[ijet].pt()>30 && fabs(phys.jets[ijet].eta())<2.5);
-	  if(phys.jets[ijet].pt()>30 && fabs(phys.jets[ijet].eta())<2.5) nbjets += passTCHEL;
 	  jetsp4.push_back( phys.jets[ijet] );
+	  nincjets   += (phys.jets[ijet].pt()>15 && fabs(phys.jets[ijet].eta())<5.0);
+	  if(phys.jets[ijet].pt()>30 && fabs(phys.jets[ijet].eta())<2.5) nbjets += passTCHEL;
 	  ht += phys.jets[ijet].pt();
 	  if(mjv<minmjv) minmjv=mjv;
 	}
@@ -295,19 +312,19 @@ int main(int argc, char* argv[])
       double dphivmet(deltaPhi(metP4.phi(),gamma.phi()));
       //if(isGammaEvent && dphivmet>2.8) continue;
 
-      double mindphijmet(9999.);
+      double mindphijmet(9999.),ptclosejet(0.),etaclosejet(0.);
       LorentzVector leadJet(0,0,0,0), jetSyst;
       for(size_t ijet=0; ijet<jetsp4.size(); ijet++)
         {
 	  if(jetsp4[ijet].pt()>leadJet.pt()) leadJet=jetsp4[ijet];
 	  jetSyst += jetsp4[ijet];
 	  
-	  if(jetsp4[ijet].pt()<30 || fabs(jetsp4[ijet].eta())>2.5)continue;
+	  if(jetsp4[ijet].pt()<15 || fabs(jetsp4[ijet].eta())>5)continue;
 	  double dphijmet=fabs(deltaPhi(metP4.phi(),jetsp4[ijet].phi()));
 	  mindphijmet = min(mindphijmet,dphijmet);
+	  ptclosejet=jetsp4[ijet].pt();
+	  etaclosejet=jetsp4[ijet].eta();
 	}
-      double dphijboson = fabs(deltaPhi(gamma.phi(),leadJet.phi()));
-      double dphijsystboson = fabs(deltaPhi(gamma.phi(),jetSyst.phi()));
 
       Float_t mt = METUtils::transverseMass(gamma,metP4,true);
 
@@ -315,6 +332,7 @@ int main(int argc, char* argv[])
       std::map<TString, float> qtWeights = gammaEvHandler.getWeights();
       
       //fill control histograms
+      if(nincjets==0) subcat="eq0softjets";
       TString cats[]={"all",subcat};
       TString subcats[]={"",phoCat};
       for(size_t ic=0; ic<sizeof(cats)/sizeof(TString); ic++)
@@ -327,12 +345,19 @@ int main(int argc, char* argv[])
 		  TString pre= subcats[isc]+dilCats[idc];
 		  float iweight=weight;
 		  if(isGammaEvent)  iweight*=qtWeights[dilCats[idc]];
+		  if(iweight>6) continue;
+
+		  controlHistos.fillHisto(pre+"r9",ctf, r9,iweight);
+		  controlHistos.fillHisto(pre+"sietaieta",ctf, sietaieta,iweight);
+		  controlHistos.fillHisto(pre+"hoe",ctf, hoe,iweight);
+		  
+		  if(!passTightGammaId) continue;
 
 		  controlHistos.fillHisto(pre+"nbtags",ctf, nbjets,iweight);
 		  if(nbjets) continue;
 		  
 		  if(ic==0 && isc==0)  controlHistos.fillHisto(dilCats[idc]+"zmass",ctf,gamma.mass(),iweight);
-		  
+
 		  controlHistos.fillHisto(pre+"nvtx",ctf, ev.nvtx,iweight);
 		  controlHistos.fillHisto(pre+"qt",ctf, gamma.pt(),iweight);
 		  controlHistos.fillHisto(pre+"eta",ctf, fabs(gamma.eta()),iweight);
@@ -342,12 +367,13 @@ int main(int argc, char* argv[])
 		  controlHistos.fill2DHisto(pre+"qtvsnvtx",ctf, gamma.pt(),ev.nvtx,iweight);
 		  controlHistos.fillHisto(pre+"ht",ctf, ht,iweight);
 		  controlHistos.fillHisto(pre+"mt",ctf, mt,iweight);
-		  if(ht>0) 
+		  //if(ht>0) 
 		    {
 		      controlHistos.fillHisto(pre+"minmjv",ctf, minmjv,iweight);
 		      controlHistos.fillHisto(pre+"mindphijmet",ctf, fabs(mindphijmet),iweight);
-		      controlHistos.fillHisto(pre+"dphijboson",ctf,dphijboson,iweight);
-		      controlHistos.fillHisto(pre+"dphijsystboson",ctf,dphijsystboson,iweight);
+		      if(fabs(metP4.pt())>50) controlHistos.fillHisto(pre+"mindphijmet50",ctf, fabs(mindphijmet),iweight);
+		      if(fabs(metP4.pt())>70) controlHistos.fillHisto(pre+"mindphijmet70",ctf, fabs(mindphijmet),iweight);
+		      controlHistos.fillHisto(pre+"ptclosejet",ctf, ptclosejet,iweight);
 		    }
 		  controlHistos.fillHisto(pre+"dphivmet",ctf, fabs(dphivmet),iweight);
 		  
@@ -356,8 +382,18 @@ int main(int argc, char* argv[])
 		  
 		  for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++)
 		    {
-		      controlHistos.fillHisto(   pre+TString("met_") + it->first,        ctf, it->second.pt(), iweight);
-		      controlHistos.fill2DHisto( pre+TString("met_") + it->first+"vspu", ctf, ev.ngenITpu,     it->second.pt(),  iweight);
+		      LorentzVector theMetP4=it->second;
+		      TVector2 longi(gamma.px(),gamma.py());
+		      longi = longi.Unit();
+		      TVector2 perp = longi.Rotate(TMath::Pi()/2);
+		      TVector2 met2d(theMetP4.px(),theMetP4.py());
+		      double metL = fabs(met2d*longi);
+		      double metT = fabs(met2d*perp);
+		      controlHistos.fillHisto(   pre+TString("met_") + it->first,        ctf, theMetP4.pt(), iweight,true);
+		      controlHistos.fillHisto(   pre+TString("met_") + it->first+TString("L"),        ctf, metL/gamma.pt(), iweight,true);
+		      controlHistos.fillHisto(   pre+TString("met_") + it->first+TString("T"),        ctf, metT/gamma.pt(), iweight,true);
+		      controlHistos.fill2DHisto( pre+TString("met_") + it->first+"vsht", ctf, ht,     it->second.pt(),  iweight);
+		      //		      controlHistos.fill2DHisto( pre+TString("met_") + it->first+"vspu", ctf, ev.ngenITpu,     it->second.pt(),  iweight);
 		    }
 		}
 	    }

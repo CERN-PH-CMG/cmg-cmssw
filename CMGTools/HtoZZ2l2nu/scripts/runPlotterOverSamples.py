@@ -277,7 +277,7 @@ def showControlPlots(stackplots=None,spimposeplots=None,dataplots=None,plottitle
             
         plotLabel = generalLabel
         c.Clear()
-        leg=showPlotsAndMCtoDataComparison(c,stack,spimpose,data,True,forceNormalization)
+        leg=showPlotsAndMCtoDataComparison(c,stack,spimpose,data,True,forceNormalization)#,forceNormalization)
         formatForCmsPublic(c.cd(1),leg,plotLabel,isamp)
         c.SaveAs(outputDir+'/'+pname+'.png')
         c.SaveAs(outputDir+'/'+pname+'.C')

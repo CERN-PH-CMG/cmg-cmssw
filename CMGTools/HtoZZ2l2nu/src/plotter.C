@@ -4,6 +4,27 @@
 using namespace std;
 
 //
+TH1 *getIntegralFrom(TH1 *h,TString newname)
+{
+  TH1 *intH=0;
+  if(h==0) return intH;
+
+  intH = (TH1 *) h->Clone(newname);
+  intH->Reset("ICE");
+  
+  Int_t nbins=h->GetXaxis()->GetNbins();
+  for(Int_t ibin=1; ibin<=nbins; ibin++)
+    {
+      Double_t val(0),val_err(0);
+      val = h->IntegralAndError(ibin,nbins,val_err,"width");
+      intH->SetBinContent(ibin,val);
+      intH->SetBinError(ibin,val_err);
+    }
+  
+  return intH;
+}
+
+//
 std::pair<TH1D *,TH1D *> getProjections(TH2D *histo)
 {
   TH1D *px=histo->ProjectionX(histo->GetName()+TString("_px"));
@@ -23,12 +44,12 @@ std::pair<TH1D *,TH1D *> getProjections(TH2D *histo)
 
 
 //
-TLegend *showPlotsAndMCtoDataComparison(TPad *p, TList &stack, TList &spimpose, TList &data, bool setLogy,bool forceNormalization)
+TLegend *showPlotsAndMCtoDataComparison(TPad *p, TList &stack, TList &spimpose, TList &data, bool setLogy,bool forceNormalization,bool doIntegral)
 {
   p->Divide(1,2);
   TPad *subp=(TPad *)p->cd(1);
   subp->SetPad(0,0.3,1.0,1.0);
-  TLegend *leg=showPlots(subp,stack,spimpose,data,true,"lpf",forceNormalization);
+  TLegend *leg=showPlots(subp,stack,spimpose,data,true,"lpf",forceNormalization,doIntegral);
   formatForCmsPublic(subp,leg,"",5);
   if(setLogy) subp->SetLogy();
   
@@ -37,14 +58,14 @@ TLegend *showPlotsAndMCtoDataComparison(TPad *p, TList &stack, TList &spimpose, 
   subp->SetTopMargin(0);
   subp->SetBottomMargin(0.5);
   float yscale = (1.0-0.3)/(0.28-0);
-  showMCtoDataComparison(subp,stack,data,false,yscale);
+  showMCtoDataComparison(subp,stack,data,false,yscale,forceNormalization,doIntegral);
   
   return leg;
 }
 
 
 //
-TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origdata, bool buildLegend, TString legopt, bool forceNormalization)
+TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origdata, bool buildLegend, TString legopt, bool forceNormalization, bool doIntegral)
 {
   if(c==0) return 0;
   if( origstack.First()==0 && origspimpose.First()==0 && origdata.First()==0 ) return 0;
@@ -73,8 +94,9 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
       graphfound |= ((TClass*)key->IsA())->InheritsFrom("TGraph");
       allKeys.push_back(std::pair<TObject *,TString>(p,p->GetTitle()));
       TString newname("data"); newname += allKeys.size();
-      data.AddFirst ( p->Clone(newname) );
-      totalData += p->Integral(0,p->GetXaxis()->GetNbins()+1);
+      if(!doIntegral) data.AddFirst ( p->Clone(newname) );
+      else            data.AddFirst ( getIntegralFrom(p,newname) );
+      totalData += p->Integral(0,p->GetXaxis()->GetNbins()+1,"width");
     }
   
   //add the plots to superimpose
@@ -88,7 +110,8 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
       graphfound |= ((TClass*)key->IsA())->InheritsFrom("TGraph");
       allKeys.push_back(std::pair<TObject *,TString>(p,p->GetTitle()));
       TString newname("gr"); newname += allKeys.size();
-      spimpose.AddFirst ( p->Clone(newname) );
+      if(!doIntegral) spimpose.AddFirst ( p->Clone(newname) );
+      else            spimpose.AddFirst ( getIntegralFrom(p,newname) );
     }
 
   //loop over the stack in reversed sense
@@ -104,13 +127,24 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
       graphfound |= ((TClass*)key->IsA())->InheritsFrom("TGraph");
       allKeys.push_back(std::pair<TObject *,TString>(p,p->GetTitle()));
       TString newname("h"); newname += allKeys.size();
-      stack.AddFirst ( p->Clone(newname) );
-      totalMC += p->Integral(0,p->GetXaxis()->GetNbins()+1);
+      if(!doIntegral) stack.AddFirst ( p->Clone(newname) );
+      else            stack.AddFirst ( getIntegralFrom(p,newname) );  
+      totalMC += p->Integral(0,p->GetXaxis()->GetNbins()+1,"width");
     }
 
 
   double sf=1.0;
-  if(forceNormalization && totalMC>0) sf=totalData/totalMC;
+  if(forceNormalization && totalMC>0){
+    sf=totalData/totalMC;
+    TIterator *spimposeIt = spimpose.MakeIterator();
+    while ( (key = spimposeIt->Next()) )
+      {
+	TH1 *p = (TH1 *) key;
+	double totalp=p->Integral(0,p->GetXaxis()->GetNbins()+1,"width");
+	if(totalp>0)
+	  p->Scale(totalData/totalp);
+      }
+  }
   cout << "Force normalization by: " << sf << "(" << forceNormalization << ")" << endl;
 
 
@@ -310,7 +344,7 @@ TLegend *showSimplePlot(TPad *c, TList &data, bool buildLegend, TString legopt)
 
 
 //
-void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doDiff,float yscale)
+void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doDiff,float yscale,bool forceNormalization, bool doIntegral)
 {
   if(c==0) return;
   if( stack.First()==0 || data.First()==0 ) return;
@@ -318,7 +352,7 @@ void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doDiff,floa
   //prepare the pad
   c->cd();
   //c->SetGridx();
-  //c->SetGridy();
+  c->SetGridy();
   c->Clear();
   TString name=c->GetName();
   TString title=c->GetTitle();
@@ -327,6 +361,7 @@ void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doDiff,floa
   TH1 *sumH=0;
   TObject *key = 0; 
   TIterator *stackIt = stack.MakeIterator();
+  double totalPredicted(0);
   while ( (key = stackIt->Next()) ) 
     {
       //      if( ((TClass*)key->IsA())->InheritsFrom("TH2") ) continue;
@@ -336,7 +371,9 @@ void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doDiff,floa
 	sumH = (TH1 *) p->Clone(TString(p->GetName())+"sum"); 
 	sumH->Reset("ICE");
       }
-      sumH->Add(p);
+      totalPredicted += p->Integral(0,sumH->GetXaxis()->GetNbins()+1,"width");
+      if(!doIntegral) sumH->Add(p);
+      else            { TH1 *intP=getIntegralFrom(p,"tmp"); sumH->Add(intP); delete intP; }
     }
 
   //compare different data
@@ -345,19 +382,28 @@ void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doDiff,floa
   while ( (key = dataIt->Next()) ) 
     {
       TH1 *p = (TH1 *) key;
+      double totalData=p->Integral(0,p->GetXaxis()->GetNbins()+1,"width");
       //      if( ((TClass*)key->IsA())->InheritsFrom("TH2") ) continue;
       if( ((TClass*)key->IsA())->InheritsFrom("TGraph") ) continue;
 
-      TH1 *dataToMCH = (TH1 *) p->Clone(TString(p->GetName())+"_tomc");
+      TH1 *dataToMCH = !doIntegral ? 
+	(TH1 *) p->Clone(TString(p->GetName())+"_tomc") :
+	getIntegralFrom(p,TString(p->GetName())+"_tomc") ;
+      
       if(doDiff)
 	{
 	  dataToMCH->GetYaxis()->SetTitle("Obs-Ref");
-	  dataToMCH->Add(sumH,-1);
+	  dataToMCH->Add(sumH,forceNormalization ? -totalData/totalPredicted :-1.0);
 	}
       else
 	{
 	  dataToMCH->GetYaxis()->SetTitle("Obs/Ref");
-	  dataToMCH->Divide(sumH);
+	  if(!forceNormalization) dataToMCH->Divide(sumH);
+	  else
+	    {
+	      dataToMCH->Reset("ICE");
+	      dataToMCH->Divide(p,sumH,1.0,totalData/totalPredicted);
+	    }
 	}
 
       c->cd();
