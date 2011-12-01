@@ -1,7 +1,7 @@
 from ROOT import TTree, TH1F, TH2F, TProfile, gDirectory
 
 from CMGTools.H2TauTau.macros.Histograms import Histograms
-from CMGTools.H2TauTau.macros.PhysicsObjects import Tau,IsTau
+from CMGTools.H2TauTau.macros.PhysicsObjects import Tau,isTau
 
 class LegHistograms(Histograms):
     def __init__(self, name, leg):
@@ -38,7 +38,7 @@ class LegHistograms(Histograms):
         self.h_iso_ch.Fill( leg.chargedHadronIso(), weight )
         self.h_iso_nh.Fill( leg.neutralHadronIso(), weight )
         self.h_iso_ph.Fill( leg.photonIso(), weight )
-        if IsTau(leg):
+        if isTau(leg):
             tau = Tau( leg )
             self.h_eOverP.Fill( tau.calcEOverP() )
 

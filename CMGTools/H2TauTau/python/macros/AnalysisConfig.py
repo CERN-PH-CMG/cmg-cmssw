@@ -23,6 +23,10 @@ class Component(object):
             self.xsection = float(self.xsection)
         self.eff_corrfactor = self.items.setdefault('eff_corrfactor', '1')
         self.eff_corrfactor = eval(self.eff_corrfactor)
+        try:
+            self.useTurnOn = config.getboolean(componentName, 'use_turn_on')
+        except ConfigParser.NoOptionError:
+            self.useTurnOn = False
         self.vertexWeight = self.items.setdefault('vertexweight', None)
         if self.vertexWeight is not None and self.vertexWeight.strip().lower() == 'none':
             self.vertexWeight = None
@@ -60,12 +64,14 @@ class Component(object):
             files     = %s
             trigger   = %s
             eff_corr_factor = %3.4f
+            use_turn_on = %s
             vertexweight = %s 
             xsection  = %s
             n_gen_events = %s
             recoil    = %s 
             MC?       = %s 
             ''' % (self.name, self.files, self.triggers, self.eff_corrfactor,
+                   self.useTurnOn,
                    str(self.vertexWeight),
                    self.xsection, self.n_gen_events, self.recoil, self.isMC)
         else:
@@ -89,7 +95,10 @@ class Defaults(object):
         self.mc_eff_corrfactor = self.items.setdefault('mc_eff_corrfactor', 1)
         self.mc_eff_corrfactor = eval(self.mc_eff_corrfactor)
         self.mc_vertexWeight = self.items.setdefault('mc_vertexweight', None)
-
+        self.tauPtCut = float( self.items.get('tauptcut', -1.) )
+        self.leptonPtCut = float( self.items.get('leptonptcut', -1.) )
+        self.leptonEtaCut = float( self.items.get('leptonetacut', -1.) )
+        
     def __str__(self):
         header = 'GLOBAL:'
         components = '\tComponents: '

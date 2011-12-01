@@ -9,7 +9,7 @@ class Counter:
         or to increment an existing level.
 
         If you take care to give level names sorted in the way you want,
-        the Counter class can generate cut flow table.
+        the Counter class can generate a cut flow table.
         Just print the counter to get the table.
 
         For example:
@@ -33,10 +33,10 @@ class Counter:
             if prev == None:
                 prev = count
                 init = count
-            retstr += '\t %s\t %d\t %2.3f\t %2.3f\n' % (level,
-                                                        count,
-                                                        float(count)/prev,
-                                                        float(count)/init )
+            retstr += '\t {level:<40} {count} \t {eff1:4.2f} \t {eff2:4.2f}\n'.format(level=level,
+                                                                                count=count,
+                                                                                eff1=float(count)/prev,
+                                                                                eff2=float(count)/init )
             prev = count
         return retstr
 

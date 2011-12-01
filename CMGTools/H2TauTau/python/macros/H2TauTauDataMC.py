@@ -192,16 +192,18 @@ def getQCD( plotSS, plotOS, dataName ):
     return plotSSWithQCD, plotOSWithQCD
     
 
-def plot( hist, weights, wJetScaleSS, wJetScaleOS, range='LowMT'):
+def plot( hist, weights, wJetScaleSS, wJetScaleOS, box):
 
-    ssign = H2TauTauDataMC(hist, anaDir,
-                        selComponents,
-                        'SS%s.root' % range, weights)
-    ssign.Hist('WJets').Scale( wJetScaleSS ) 
     osign = H2TauTauDataMC(hist, anaDir,
-                        selComponents,
-                        'OS%s.root' % range, weights)
+                           selComponents,
+                           'LowMT_OS_%s.root' % box, weights)
     osign.Hist('WJets').Scale( wJetScaleOS ) 
+
+    boxss = box.replace('OS','SS')
+    ssign = H2TauTauDataMC(hist, anaDir,
+                           selComponents,
+                           'LowMT_SS_%s.root' % box, weights)
+    ssign.Hist('WJets').Scale( wJetScaleSS ) 
     
     return ssign, osign
 
@@ -226,16 +228,16 @@ if __name__ == '__main__':
 
     parser = OptionParser()
     parser.usage = '''
-    %prog <cfgFile> <anaDir>
+    %prog <anaDir> <cfgFile>
 
     cfgFile: analysis configuration file, see CMGTools.H2TauTau.macros.MultiLoop
     anaDir: analysis directory containing all components, see CMGTools.H2TauTau.macros.MultiLoop.
     hist: histogram you want to plot
     '''
-    parser.add_option("-b", "--box", 
+    parser.add_option("-B", "--box", 
                       dest="box", 
-                      help="box. Default is LowMT.",
-                      default='LowMT')
+                      help="box. Default is 0or1Jet",
+                      default='0or1Jet')
     parser.add_option("-H", "--histlist", 
                       dest="histlist", 
                       help="histogram list",
@@ -255,8 +257,8 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(1)
 
-    cfgFile = args[0]
-    anaDir = args[1]
+    anaDir = args[0]
+    cfgFile = args[1]
     hists = histogramSet( options )
     dataName = 'Data'
     anacfg = AnalysisConfig( cfgFile )
@@ -268,13 +270,13 @@ if __name__ == '__main__':
     # get WJet scaling factor for same sign
     mtSS = H2TauTauDataMC('tauMu/tauMu_h_mT', anaDir,
                           selComponents,
-                          'SS.root', weights)
+                          'HighMT_SS_%s.root' % options.box, weights)
     wJetScaleSS = wJetScale( mtSS, dataName)
 
     # get WJet scaling factor for opposite sign
     mtOS = H2TauTauDataMC('tauMu/tauMu_h_mT', anaDir,
                           selComponents, 
-                          'OS.root', weights)
+                          'HighMT_OS_%s.root' % options.box, weights)
     wJetScaleOS = wJetScale( mtOS, dataName)
 
     SSD = {}
