@@ -14,16 +14,13 @@ def CallBack( result ):
     pass
     print 'production done:', str(result)
 
-def RunLoopAsync(comp):
-    loop = RunLoop( comp )
+def RunLoopAsync(comp, defaults):
+    loop = RunLoop( comp, defaults)
     return loop.name
 
-def RunLoop( comp, iEvent=None):
+def RunLoop( comp, defaults, iEvent=None):
     fullName = '/'.join( [outDir, comp.name ] )
-    files = glob.glob(comp.files)
-    loop = Loop( fullName, files,
-                 triggers = comp.triggers,
-                 vertexWeight = comp.vertexWeight )
+    loop = Loop( fullName, comp, defaults )
     print loop
     if iEvent is None:
         loop.Loop( options.nevents )
@@ -59,15 +56,19 @@ def CreateOutputDir(dir, components):
         pprint( dirlist )
         print 'component list: '
         pprint( components )
-        while answer not in ['Y','y','yes','N','n','no']:
-            answer = raw_input('Continue? [y/n]')
-        if answer.lower().startswith('n'):
-            return False
-        elif answer.lower().startswith('y'):
+        if options.force is True:
+            print 'force mode, continue.'
             return True
         else:
-            raise ValueError( ' '.join(['answer can not have this value!',
-                                        answer]) )
+            while answer not in ['Y','y','yes','N','n','no']:
+                answer = raw_input('Continue? [y/n]')
+            if answer.lower().startswith('n'):
+                return False
+            elif answer.lower().startswith('y'):
+                return True
+            else:
+                raise ValueError( ' '.join(['answer can not have this value!',
+                                            answer]) )
 
 if __name__ == '__main__':
 
@@ -134,6 +135,11 @@ mc = 0
                       dest="iEvent", 
                       help="jump to a given event. ignored in multiprocessing.",
                       default=None)
+    parser.add_option("-f", "--force", 
+                      dest="force",
+                      action='store_true',
+                      help="don't ask questions in case output directory already exists.",
+                      default=False)
 
     
     (options,args) = parser.parse_args()
@@ -154,6 +160,7 @@ mc = 0
 
     anacfg = AnalysisConfig( cfgFile )
     selComps = anacfg.SelectedComponents()
+    defaults = anacfg.defaults
     for comp in selComps.values():
         print comp
     if len(selComps)>10:
@@ -168,11 +175,11 @@ mc = 0
         pool = Pool(processes=len(selComps))
         for name,comp in selComps.iteritems():
             print 'submitting', name
-            pool.apply_async( RunLoopAsync, [comp], callback=CallBack)     
+            pool.apply_async( RunLoopAsync, [comp, defaults], callback=CallBack)     
         pool.close()
         pool.join()
     else:
         # when running only one loop, do not use multiprocessor module.
         # then, the exceptions are visible -> use only one sample for testing
-        loop = RunLoop( comp, options.iEvent )
+        loop = RunLoop( comp, defaults, options.iEvent )
         #COLIN add an option to jump to an event.

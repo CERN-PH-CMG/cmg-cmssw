@@ -2,9 +2,10 @@ import os
 
 from ROOT import TFile
 
-from CMGTools.H2TauTau.macros.DiTauHistograms import *
-from CMGTools.H2TauTau.macros.LegHistograms import *
-from CMGTools.H2TauTau.macros.VertexHistograms import *
+from CMGTools.H2TauTau.macros.DiTauHistograms import DiTauHistograms
+from CMGTools.H2TauTau.macros.LegHistograms import LegHistograms
+from CMGTools.H2TauTau.macros.VertexHistograms import VertexHistograms
+from CMGTools.H2TauTau.macros.JetHistograms import JetHistograms
 
 class H2TauTauHistogramList( object ):
     def __init__(self,name):
@@ -22,12 +23,14 @@ class H2TauTauHistogramList( object ):
         self.tau = LegHistograms( 'tau','leg1')
         self.mu = LegHistograms( 'mu','leg2')
         self.vertex = VertexHistograms( 'vertex')
+        self.jets = JetHistograms( 'jets')
         
         self.hists = []
         self.hists.append( self.diTau )
         self.hists.append( self.tau )
         self.hists.append( self.mu )     
         self.hists.append( self.vertex )
+        self.hists.append( self.jets )
         
     def FillHistos(self, events, cut='', nEvents = 9999999999):
         print 'Filling histograms: ' + self.name
@@ -42,6 +45,14 @@ class H2TauTauHistogramList( object ):
     def FillVertices(self, vertices, weight=1):
         self.vertex.FillVertices( vertices, weight )
 
+    def FillJets(self, jets, weight=1):
+        self.jets.Fill( jets, weight )
+
+    def Fill(self, event, weight=1):
+        self.FillVertices( event.vertices, weight)
+        self.FillDiTau( event.diTau, weight)
+        self.FillJets( event.jets, weight )
+        
     def FormatHistos(self, style):
         for hist in self.hists:
             hist.FormatHistos( style )
