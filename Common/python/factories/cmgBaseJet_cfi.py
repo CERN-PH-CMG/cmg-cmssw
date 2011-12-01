@@ -12,7 +12,8 @@ baseJetFactory = cms.PSet(
                               'jetProbabilityBJetTags',#2
                               'jetBProbabilityBJetTags',#3
                               'simpleSecondaryVertexHighEffBJetTags',#4
-                              'simpleSecondaryVertexHighPurBJetTags'#5
+                              'simpleSecondaryVertexHighPurBJetTags',#5
+                              'combinedSecondaryVertexBJetTags'#6
                               ),
        fillJec = cms.bool(True),
        fillJecUncertainty = cms.bool(True),
