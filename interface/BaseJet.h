@@ -34,6 +34,8 @@ namespace cmg {
     /// \return btag discriminator
     double btag(unsigned int index = 0) const{ return index < btag_.size() ? btag_.at(index) : UnSet(double); }
     double btag(const char* s) const;
+    double bDiscriminator(const char* s) const{ return btag(s); }
+
     /// \return the matched MC parton flavour
     Int_t partonFlavour() const{ return partonFlavour_;}
     
@@ -53,7 +55,7 @@ namespace cmg {
   private:
  
     /// b tagging discriminators
-    typedef boost::array<double,6> TagArray;
+    typedef boost::array<double,7> TagArray;
     typedef boost::array<std::string,TagArray::static_size> TagNameArray;
     TagArray btag_;
     TagNameArray btagNames_;

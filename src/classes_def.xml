@@ -84,8 +84,8 @@
   <class name="edm::Wrapper<std::vector<cmg::Tau> >"/>
   
   <class name="cmg::BaseJet"/>
-  <class name="boost::array<double,6>" />
-  <class name="boost::array<std::basic_string<char>,6>" />
+  <class name="boost::array<double,7>" />
+  <class name="boost::array<std::basic_string<char>,7>" />
   <class name="cmg::PhysicsObjectWithPtr<pat::JetPtr>" />
   <class name="std::vector<cmg::BaseJet>"/>
   <class name="edm::Wrapper<cmg::BaseJet>"/>
