@@ -78,7 +78,8 @@ void SaveResults(TString sfile, double mH, double _limit, double _limitErr, doub
 	fTrees.Write();
 	fTrees.Close();
 }
-void run(TString inFileName, TString plotName, TString sfile="bands", double mH = -1){
+void run(TString inFileName, TString plotName, TString sfile="bands", double mH = -1, int debug = 0){
+	_debug = debug;
 	double m2s =	extractLimitAtQuantile(inFileName, plotName+"_-2sigma", 0.0275 );
 	double m2s_err = limitErr;
 	double m1s =	extractLimitAtQuantile(inFileName, plotName+"_-1sigma", 0.16 );
@@ -114,6 +115,7 @@ double extractLimitAtQuantile(TString inFileName, TString plotName, double d_qua
 	if (_debug > 0) std::cout << "Search for upper limit using pre-computed grid of p-values" << std::endl;
 
 	readAllToysFromFile(limitPlot_, f, d_quantile ); 
+	f->Close();
 	limitPlot_->Sort();
 	double minDist=1e3;
 	int n= limitPlot_->GetN();
@@ -127,7 +129,7 @@ double extractLimitAtQuantile(TString inFileName, TString plotName, double d_qua
 
 	limit = 0; limitErr = 0;
 	for (int i = 0; i < n; ++i) {
-		double x = limitPlot_->GetX()[i], y = limitPlot_->GetY()[i], ey = limitPlot_->GetErrorY(i);
+		double x = limitPlot_->GetX()[i], y = limitPlot_->GetY()[i]; //, ey = limitPlot_->GetErrorY(i);
 		if (fabs(y-clsTarget) < minDist) { limit = x; minDist = fabs(y-clsTarget); }
 	}
 	int ntmp =0;
@@ -239,6 +241,7 @@ void readAllToysFromFile(TGraphErrors*tge, TFile*f, double d_quantile) {
 	std::map<double, TTree*> gridCLsb; //r, <clsb, clserr>
 	std::map<double, TTree*> gridCLb; //r, <clsb, clserr>
 	std::map<double, double> gridQdata; //r, q_data
+	bool bdata = false;
 	while ((k = (TKey *) next()) != 0) {
 		double rVal;
 		TString name(k->GetName());
@@ -259,7 +262,20 @@ void readAllToysFromFile(TGraphErrors*tge, TFile*f, double d_quantile) {
 			name.Remove(0,name.Index("_Q")+2);
 			gridQdata[rVal]=name.Atof();
 			if (_debug > 2) std::cout << "  Do " << k->GetName() << " -> " << tmp << " --> " << rVal << " Q_data ="<<name<<" --> "<<name.Atof()<< std::endl;
+			bdata = true;
+		}else if(!bdata && name.BeginsWith("TESTED_R")){
+			rVal = name.ReplaceAll("TESTED_R","").Atof();
+			TTree *t = dynamic_cast<TTree *>(toyDir->Get(k->GetName()));
+			if(t!=NULL) {
+				TBranch *brQ;
+				double q;
+				t->SetBranchAddress("brT", &q, &brQ);
+				t->GetEntry(0);
+				gridQdata[rVal]=q;
+				if (_debug > 2) std::cout << "  Do " << k->GetName() << " -> " << name << " --> " << rVal << " Q_data ="<<q<< std::endl;
+			}
 		}
+
 
 	}
 
@@ -331,7 +347,8 @@ bool GetPValue(vector<double> vqsb, double qdata, double &ret, double &err){
 	double tmp = qdata;
 	int _nexps = vqsb.size();
 	for(int i=0; i<_nexps; i++){
-		if(vqsb[i]>=tmp)
+		//if(int(vqsb[i]*1000)>= int(tmp*1000))
+		if(vqsb[i]>= tmp)
 			ret ++ ;	
 	}		
 	ret/=_nexps;
@@ -348,5 +365,14 @@ bool GetPValue(vector<double> vqsb, double qdata, double &ret, double &err){
 		if(_debug)	cout<<"              Currently, we put p=1./"<<_nexps<<endl;
 		ret = 1./(double)_nexps;
 	}
+
+	if(_debug>=10){
+		cout<<" DELETEME "<<endl;
+		sort(vqsb.begin(), vqsb.end());
+		for(int i=0; i<_nexps; i++){
+			cout<<vqsb[i]<<endl;
+		}
+	}
+
 	return true;
 }
