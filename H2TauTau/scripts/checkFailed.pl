@@ -2,8 +2,8 @@
 # -w
 
 $taskdir=shift;
-$resubmit=shift;
-$prevpath=$ENV{'PWD'};
+#$resubmit=shift;
+#$prevpath=$ENV{'PWD'};
 
 print "checkFailed.pl will check for failed jobs in $taskdir\n";
 
@@ -22,12 +22,12 @@ foreach $job (@executefiles){
 	chomp($job);
 	$logfile=`find $taskdir/$job/ | grep STDOUT `;	
 	chomp($logfile);
-	@logfiletype=split("STDOUT",$logfile);
-	if($logfiletype[1] eq ".gz"){
-	    system("gunzip $logfile");
-	    $logfile=`find $taskdir/$job/ | grep STDOUT `;	
-	    chomp($logfile);
-	}
+#	@logfiletype=split("STDOUT",$logfile);
+#	if($logfiletype[1] eq ".gz"){
+#	    system("gunzip $logfile");
+#	    $logfile=`find $taskdir/$job/ | grep STDOUT `;	
+#	    chomp($logfile);
+#	}
 	#print "$logfile\n";
 
 
@@ -97,32 +97,32 @@ foreach $job (@executefiles){
 	}	
 	if($success==0){
 	    print "${taskdir}/${job} : Failed : EventsPassed $npassedevents/$nevents : $exitcode \n";
-	    if($resubmit==1){
-		print "resubmitting ${taskdir}/${job}\n";
-
-		$lsf=`ls ${taskdir}/${job}/ | grep LSFJOB_ `;	
-		chomp($lsf);
-		@lsftype=split("LSFJOB_",$lsf);
-		if($lsftype[1]>0){
-		    #print "rm -R -f ${taskdir}/${job}/${lsf}\n";
-		    `rm -R -f ${taskdir}/${job}/${lsf}`;
-		}
-	
-		$cfg=`ls ${taskdir}/${job}/ | grep run_cfg `;	
-		chomp($cfg);
-		@cfgtype=split("py",$cfg);
-		if($cfgtype[1] eq ".gz"){
-		    #print "gunzip ${taskdir}/${job}/${cfg}\n";
-		    `gunzip ${taskdir}/${job}/${cfg}`;
-		}
-
-
-		chdir("${taskdir}/${job}/") or die "Cant chdir to ${taskdir}/${job}/ $!";
-		#print "bsub -q 8nh < batchScript.sh \n";
-		`bsub -q 8nh < batchScript.sh`;
-		chdir($prevpath);
-		$nresubmitted++;
-	    }
+#	    if($resubmit==1){
+#		print "resubmitting ${taskdir}/${job}\n";
+#
+#		$lsf=`ls ${taskdir}/${job}/ | grep LSFJOB_ `;	
+#		chomp($lsf);
+#		@lsftype=split("LSFJOB_",$lsf);
+#		if($lsftype[1]>0){
+#		    #print "rm -R -f ${taskdir}/${job}/${lsf}\n";
+#		    `rm -R -f ${taskdir}/${job}/${lsf}`;
+#		}
+#	
+#		$cfg=`ls ${taskdir}/${job}/ | grep run_cfg `;	
+#		chomp($cfg);
+#		@cfgtype=split("py",$cfg);
+#		if($cfgtype[1] eq ".gz"){
+#		    #print "gunzip ${taskdir}/${job}/${cfg}\n";
+#		    `gunzip ${taskdir}/${job}/${cfg}`;
+#		}
+#
+#
+#		chdir("${taskdir}/${job}/") or die "Cant chdir to ${taskdir}/${job}/ $!";
+#		#print "bsub -q 8nh < batchScript.sh \n";
+#		`bsub -q 8nh < batchScript.sh`;
+#		chdir($prevpath);
+#		$nresubmitted++;
+#	    }
 	}		
 	$totalfiles++;
 	$ngoodevents+=$nevents; 

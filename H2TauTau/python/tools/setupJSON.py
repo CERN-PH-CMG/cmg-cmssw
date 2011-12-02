@@ -8,9 +8,9 @@ def setupJSON( process ):
 
     fileName = process.source.fileNames[0]
     print fileName
-    json = None
-    if fileName.find('Run201')>-1:
-        #COLIN : I think the if is not necessary anymore
-        json = jsonPick( fileName )
-        applyJSON(process, json )
+    #    json = None
+    #    if fileName.find('Run201')>-1:
+    #COLIN : I think the if is not necessary anymore
+    json = jsonPick( fileName )
+    applyJSON(process, json )
     return json

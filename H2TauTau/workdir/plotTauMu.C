@@ -1,69 +1,20 @@
 void plotTauMu(){  
   gROOT->ProcessLine(".x ./TauMuConfig.C");
-  
-  WJetsToLNu.setColor(kRed+2);
-  WJetsToLNu.setLineColor(WJetsToLNu.getColor());
-  WJetsToLNu.setPlotLabel("W");
-  WJetsToLNu.setLegendOption("f");
-
-  TTJets.setColor(kBlue-8);
-  TTJets.setLineColor(TTJets.getColor());
-  TTJets.setPlotLabel("t#bar{t}");
-  TTJets.setLegendOption("f");
-
-  ZToMuMu.setColor(kRed);//kRed+2);
-  ZToMuMu.setLineColor(ZToMuMu.getColor());
-  ZToMuMu.setPlotLabel("Z#rightarrow#mu^{+}#mu^{-}");
-  ZToMuMu.setLegendOption("f");
-
-  ZToTauTau.setColor(kOrange-4);
-  ZToTauTau.setLineColor(ZToTauTau.getColor());
-  ZToTauTau.setPlotLabel("Z#rightarrow#tau^{+}#tau^{-}");
-  ZToTauTau.setLegendOption("f");
-  
-  ZToLJet.setColor(kRed+2);
-  ZToLJet.setLineColor(ZToLJet.getColor());
-  ZToLJet.setPlotLabel("Z(l+jet)");
-  ZToLJet.setLegendOption("f");
-
-//   Higgs.setColor(0);
-//   Higgs.setLineColor(1);
-//   Higgs.setLineStyle(2);
-//   Higgs.setEffCorrFactor(MCEffCorrFactor*1);
-//   Higgs.setPlotLabel("1 x SM Higgs(m=115)");
-//   Higgs.setLegendOption("L");
-
-
-  WJetsToLNu_SS.setColor(WJetsToLNu.getColor());
-  WJetsToLNu_SS.setLineColor(WJetsToLNu.getColor());
-
-  TTJets_SS.setColor(TTJets.getColor());
-  TTJets_SS.setLineColor(TTJets.getColor());
-  TTJets_SS.setLegendOption(TTJets.getLegendOption());
-
-  ZToMuMu_SS.setColor(ZToMuMu.getColor());
-  ZToMuMu_SS.setLineColor(ZToMuMu.getColor());
-  ZToMuMu_SS.setLegendOption(ZToMuMu.getLegendOption());
-
-  ZToTauTau_SS.setColor(ZToTauTau.getColor());
-  ZToTauTau_SS.setLineColor(ZToTauTau.getColor());
-  ZToTauTau_SS.setLegendOption(ZToTauTau.getLegendOption());
-
-  ZToLJet_SS.setColor(ZToLJet.getColor());
-  ZToLJet_SS.setLineColor(ZToLJet.getColor());
-  ZToLJet_SS.setLegendOption(ZToLJet.getLegendOption());
-
-
-  analysis.setQCDColor(kMagenta-10);
-    
-  WJetsToLNu.setPlotOrder(1);   WJetsToLNu_SS.setPlotOrder(1);
-  ZToLJet.setPlotOrder(2);      ZToLJet_SS.setPlotOrder(2);
-  TTJets.setPlotOrder(3);       TTJets_SS.setPlotOrder(3);
-  ZToMuMu.setPlotOrder(4);      ZToMuMu_SS.setPlotOrder(4);
-  ZToTauTau.setPlotOrder(5);    ZToTauTau_SS.setPlotOrder(5);
-  //Higgs.setPlotOrder(6);  
  
 
+  //WJetsToLNu.setPlotLabel("W");
+  WJetsToLNu.setPlotLabel("Electroweak");
+  ZToLJet.setPlotLabel("Z(l+jet)");
+  TTJets.setPlotLabel("t#bar{t}");
+  ZToMuMu.setPlotLabel("Z#rightarrow#mu^{+}#mu^{-}");
+  ZToTauTau.setPlotLabel("Z#rightarrow#tau^{+}#tau^{-}");
+
+  analysis.setQCDColor(kMagenta-10);
+  analysis.setWJetsColor(kRed+2);
+  analysis.setTTJetsColor(kBlue-8);
+  analysis.setZMuMuColor(kRed);
+  analysis.setZTauTauColor(kOrange-4);
+    
   if(!analysis.init()){cout<<" could not init"<<endl;return 0;}
   
   analysis.printRawYields("diTauMassHisto");
@@ -79,7 +30,7 @@ void plotTauMu(){
 //   analysis.plot("nVertexHisto",1," # of reco. vertices ","",c,r);
 
 //     Float_t c[4]={.5,.75,.42,.81};
-//     Float_t r[4]={0,100,0,5000};
+//     Float_t r[4]={0,100,0,6500};
 //     analysis.plot("muPtHisto",5," #mu p_{T}   (GeV)","Events / 2.5 GeV",c,r);
 
 //   Float_t c[4]={.6,.85,.42,.81};
@@ -91,7 +42,7 @@ void plotTauMu(){
 //   analysis.plot("muIsoHisto_muiso",2," muon relIso(0.5)"," Events / 0.01",c,r);
 
 //   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,100,0,5000};
+//   Float_t r[4]={0,100,0,6500};
 //   analysis.plot("tauPtHisto",5," #tau p_{T}   (GeV)","Events / 2.5 GeV",c,r);
 
 //   Float_t c[4]={.6,.85,.42,.81};
@@ -119,7 +70,7 @@ void plotTauMu(){
 //    analysis.plot("pZetaHisto_pzeta",6,"P_{#zeta} - 1.5*P_{#zeta}^{vis}    (GeV)","Events / 6 GeV",c,r);
   
 //   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,200,0,5000};
+//   Float_t r[4]={0,200,0,6000};
 //   analysis.plot("transverseMassHisto_massT",4,"m_{T}   (GeV)","Events / 2 GeV",c,r);
 
 //   Float_t c[4]={.6,.85,.42,.81};
@@ -131,7 +82,7 @@ void plotTauMu(){
   Float_t r[4]={0,200,0,3500};
 //   Float_t c[4]={.5,.75,.42,.81};
 //   Float_t r[4]={0,350,5,1e7};
-  analysis.plot("diTauMassHisto",4,"m_{vis}   (GeV)","Events / 4 GeV",c,r,0);
+ analysis.plot("diTauMassHisto",4,"m_{vis}   (GeV)","Events / 4 GeV",c,r,0);
 
 //   Float_t c[4]={.5,.75,.42,.81};
 //   Float_t r[4]={0,300,0,4000};
@@ -178,3 +129,51 @@ void plotTauMu(){
   gROOT->ProcessLine(".q");
 }
 
+//   WJetsToLNu.setColor(kRed+2);
+//   WJetsToLNu.setLineColor(WJetsToLNu.getColor());
+
+//   WJetsToLNu.setLegendOption("f");
+
+//   TTJets.setColor(kBlue-8);
+//   TTJets.setLineColor(TTJets.getColor());
+//   TTJets.setLegendOption("f");
+
+//   ZToMuMu.setColor(kRed);//kRed+2);
+//   ZToMuMu.setLineColor(ZToMuMu.getColor());
+//   ZToMuMu.setLegendOption("f");
+
+//   ZToTauTau.setColor(kOrange-4);
+//   ZToTauTau.setLineColor(ZToTauTau.getColor());
+//   ZToTauTau.setLegendOption("f");
+  
+//   ZToLJet.setColor(kRed+2);
+//   ZToLJet.setLineColor(ZToLJet.getColor());
+
+//   ZToLJet.setLegendOption("f");
+
+//   Higgs.setColor(0);
+//   Higgs.setLineColor(1);
+//   Higgs.setLineStyle(2);
+//   Higgs.setEffCorrFactor(MCEffCorrFactor*1);
+//   Higgs.setPlotLabel("1 x SM Higgs(m=115)");
+//   Higgs.setLegendOption("L");
+
+
+//   WJetsToLNu_SS.setColor(WJetsToLNu.getColor());
+//   WJetsToLNu_SS.setLineColor(WJetsToLNu.getColor());
+
+//   TTJets_SS.setColor(TTJets.getColor());
+//   TTJets_SS.setLineColor(TTJets.getColor());
+//   TTJets_SS.setLegendOption(TTJets.getLegendOption());
+
+//   ZToMuMu_SS.setColor(ZToMuMu.getColor());
+//   ZToMuMu_SS.setLineColor(ZToMuMu.getColor());
+//   ZToMuMu_SS.setLegendOption(ZToMuMu.getLegendOption());
+
+//   ZToTauTau_SS.setColor(ZToTauTau.getColor());
+//   ZToTauTau_SS.setLineColor(ZToTauTau.getColor());
+//   ZToTauTau_SS.setLegendOption(ZToTauTau.getLegendOption());
+
+//   ZToLJet_SS.setColor(ZToLJet.getColor());
+//   ZToLJet_SS.setLineColor(ZToLJet.getColor());
+//   ZToLJet_SS.setLegendOption(ZToLJet.getLegendOption());

@@ -95,7 +95,6 @@ fwlite::ChainEvent*  Sample::getEvents(){
   if(!sampleChain_){
     chainNEvents_=0;
     for(Long_t id=0;id<5000;id++){
-      //std::string colln=(const char*)(TString(GetTitle())+"/tree_CMG_"+id+".root");
       std::string collnpre=(const char*)(TString(GetTitle())+"/h2TauTau_presel_tree_CMG_"+id+".root");
       std::string collnfull=(const char*)(TString(GetTitle())+"/h2TauTau_fullsel_tree_CMG_"+id+".root");
       TFile* ftest=NULL;

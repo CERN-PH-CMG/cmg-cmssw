@@ -16,14 +16,19 @@ numberOfFilesToProcess = 5
 debugEventContent = False
 
 dataset_user = 'cmgtools' 
-# dataset_name = '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0'
-dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0'
-# dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_4_0'
-# dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_4_0'
-# dataset_name = '/TauPlusX/Run2011A-May10ReReco-v1/AOD/V2/PAT_CMG_V2_4_0'
-# dataset_name = '/TauPlusX/Run2011A-03Oct2011-v1/AOD/V2/PAT_CMG_V2_4_0'
-# dataset_name = '/TauPlusX/Run2011A-05Aug2011-v1/AOD/V2/PAT_CMG_V2_4_0'
-
+#dataset_name = '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_4_0'
+#dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_4_0'
+#dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_4_0'
+#dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_4_0'
+#dataset_name = '/TauPlusX/Run2011A-May10ReReco-v1/AOD/V2/PAT_CMG_V2_4_0'
+#dataset_name = '/TauPlusX/Run2011A-03Oct2011-v1/AOD/V2/PAT_CMG_V2_4_0'
+#dataset_name = '/TauPlusX/Run2011A-05Aug2011-v1/AOD/V2/PAT_CMG_V2_4_0'
+#dataset_name = '/TauPlusX/Run2011B-PromptReco-v1/AOD/V2/PAT_CMG_V2_4_0'
+#dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011A_May10thRR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_4_0'
+#dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_4_0'
+#dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011A_Aug05thRR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_4_0'
+#dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_4_0'
+dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_4_0'
 
 
 
@@ -50,7 +55,8 @@ if numberOfFilesToProcess>0:
 
 ###ProductionTaskHook$$$
     
-runOnMC = process.source.fileNames[0].find('Run201')==-1
+runOnMC = process.source.fileNames[0].find('Run201')==-1 and process.source.fileNames[0].find('embedded')==-1
+
 
 # Sequence & path definition -------------------------------------------------
 
@@ -66,9 +72,9 @@ process.schedule = cms.Schedule(
     )
 
 # set up JSON ---------------------------------------------------------------
-
-from CMGTools.H2TauTau.tools.setupJSON import setupJSON
-json = setupJSON(process)
+if runOnMC==False:
+    from CMGTools.H2TauTau.tools.setupJSON import setupJSON
+    json = setupJSON(process)
 
 # setting up vertex weighting -----------------------------------------------
 
@@ -130,7 +136,8 @@ print 'INPUT:'
 print sep_line
 print process.source.fileNames
 print
-print 'json:', json
+if runOnMC==False:
+    print 'json:', json
 print
 print sep_line
 print 'PROCESSING'

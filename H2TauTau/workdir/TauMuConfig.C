@@ -10,8 +10,8 @@
   analysis.makeAllHistos(1);
   analysis.setPrintFreq(1000);
   analysis.calcSVFit(1);
-  analysis.setQCDOStoSSRatio(1.06);
-  float MCEffCorrFactor = 0.968 * 0.92; 
+  analysis.setQCDOStoSSRatio(1.11);//value from AN-11-390 v4
+  float MCEffCorrFactor = 1.0;// 0.968;// * 0.92; 
 
   //TString outpath="./output/Test";
 
@@ -22,7 +22,10 @@
   //TString outpath="./output/NewPreSelOldSVFit";
   //TString outpath="./output/NewPreSelNewSVFit";
   //TString outpath="./output/V240";
-  TString outpath="./output/V240Json";
+ 
+  //TString outpath="./output/V240Json";//compare embedded massT and vismass against this
+  //TString outpath="./output/V240Embedded";
+  TString outpath="./output/V240TauTrigger";
 
   analysis.setOutputPath(outpath);
 
@@ -33,6 +36,7 @@
   TString datapath="/data/benitezj/Samples/V2_4_0";
   TString tag="/PAT_CMG_V2_4_0/H2TAUTAU_Nov21"; 
   TString tagd="/PAT_CMG_V2_4_0/H2TAUTAU_Nov28"; 
+  TString tage="/PAT_CMG_V2_4_0/H2TAUTAU_Nov30"; 
 
 
 //   Sample TestSample("TestSample",(const char*)("../prod"));
@@ -48,7 +52,7 @@
   WJetsToLNu.setRecoilCorr("../data/recoilfit_wjets_njet.root"); 
   WJetsToLNu.setCrossection(31314);
   WJetsToLNu.setSampleGenEvents(53227112); //  53655290 = PFAOD integrity, 81352581 = "DBS"
-  WJetsToLNu.addTrigPath("HLT_IsoMu12_v1");
+  //WJetsToLNu.addTrigPath("HLT_IsoMu12_v1");
   WJetsToLNu.setEffCorrFactor(MCEffCorrFactor);
   WJetsToLNu.setApplyTauRateWeight(0);
   analysis.addSample(&WJetsToLNu);  
@@ -56,9 +60,9 @@
 
   Sample TTJets("TTJets",(const char*)(datapath+"/TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2"+tag));
   TTJets.setDataType("MC");
-  TTJets.setCrossection(157.5);
+  TTJets.setCrossection(165.8);//157.5=NLO theory, 165.8=CMS TOP-11-024
   TTJets.setSampleGenEvents(3542770); // 3701947=Enriques PFAOD integrity, 3701947="DBS"
-  TTJets.addTrigPath("HLT_IsoMu12_v1");
+  //TTJets.addTrigPath("HLT_IsoMu12_v1");
   TTJets.setEffCorrFactor(MCEffCorrFactor);
   analysis.addSample(&TTJets);
  
@@ -68,7 +72,7 @@
   ZToMuMu.setRecoilCorr("../data/recoilfit_zmm42X_njet.root");
   ZToMuMu.setCrossection(3048);
   ZToMuMu.setSampleGenEvents(34915945);// 35035820=PFAOD integrity, 36277961="DBS"
-  ZToMuMu.addTrigPath("HLT_IsoMu12_v1");
+  //ZToMuMu.addTrigPath("HLT_IsoMu12_v1");
   ZToMuMu.setEffCorrFactor(MCEffCorrFactor);
   analysis.addSample(&ZToMuMu);
 
@@ -78,7 +82,7 @@
   ZToTauTau.setRecoilCorr("../data/recoilfit_zjets_ltau_njet.root");
   ZToTauTau.setCrossection(3048);
   ZToTauTau.setSampleGenEvents(34915945);// 35035820=PFAOD integrity, 36277961="DBS"
-  ZToTauTau.addTrigPath("HLT_IsoMu12_v1");
+  //ZToTauTau.addTrigPath("HLT_IsoMu12_v1");
   ZToTauTau.setEffCorrFactor(MCEffCorrFactor);
   analysis.addSample(&ZToTauTau);
 
@@ -88,7 +92,7 @@
   ZToLJet.setRecoilCorr("../data/recoilfit_wjets_njet.root");
   ZToLJet.setCrossection(3048);
   ZToLJet.setSampleGenEvents(34915945);// 35035820=PFAOD integrity, 36277961="DBS"
-  ZToLJet.addTrigPath("HLT_IsoMu12_v1");
+  //ZToLJet.addTrigPath("HLT_IsoMu12_v1");
   ZToLJet.setEffCorrFactor(MCEffCorrFactor);
   analysis.addSample(&ZToLJet);
 
@@ -123,10 +127,8 @@
   
 //   Sample Higgs("Higgs",(const char*)(datapath+"/GluGluToHToTauTau_M-115_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2"+tag));
 //   Higgs.setDataType("MC");
-//   Higgs.setRecoilCorr("../data/recoilfit_zjets_ltau_njet.root");
 //   Higgs.setCrossection(18.12*0.0765);//not sure
 //   Higgs.setSampleGenEvents(196002);
-//   Higgs.addTrigPath("HLT_IsoMu12_v1");
 //   Higgs.setEffCorrFactor(MCEffCorrFactor);
 //   analysis.addSample(&Higgs);    
 
@@ -186,6 +188,28 @@
   TauPlusXOct3.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v8");
   TauPlusXOct3.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v9");
   analysis.addSample(&TauPlusXOct3);
+
+
+  Sample EmbeddedMay("EmbeddedMay",(const char*)(datapath+"/DoubleMu/StoreResults-DoubleMu_2011A_May10thRR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/"+tage));
+  EmbeddedMay.setDataType("Embedded");
+  analysis.addSample(&EmbeddedMay);
+
+  Sample EmbeddedV4("EmbeddedV4",(const char*)(datapath+"/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/"+tage));
+  EmbeddedV4.setDataType("Embedded");
+  analysis.addSample(&EmbeddedV4);
+
+  Sample EmbeddedAug("EmbeddedAug",(const char*)(datapath+"/DoubleMu/StoreResults-DoubleMu_2011A_Aug05thRR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/"+tage));
+  EmbeddedAug.setDataType("Embedded");
+  analysis.addSample(&EmbeddedAug);
+
+  Sample EmbeddedOct("EmbeddedOct",(const char*)(datapath+"/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/"+tage));
+  EmbeddedOct.setDataType("Embedded");
+  analysis.addSample(&EmbeddedOct);
+
+//   Sample Embedded2011B("Embedded2011B",(const char*)(datapath+"/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/"+tage));
+//   Embedded2011B.setDataType("Embedded");
+//   analysis.addSample(&Embedded2011B);
+
 
 
   //////////////////////////////////////////////////////
@@ -311,6 +335,24 @@
   analysis.addSample(&TauPlusXOct3_SS);
 
 
- 
+  Sample EmbeddedMay_SS("EmbeddedMay_SS",EmbeddedMay.GetTitle());
+  EmbeddedMay_SS.setDataType("Embedded_SS");
+  analysis.addSample(&EmbeddedMay_SS);
+
+  Sample EmbeddedV4_SS("EmbeddedV4_SS",EmbeddedV4.GetTitle());
+  EmbeddedV4_SS.setDataType("Embedded_SS");
+  analysis.addSample(&EmbeddedV4_SS);
+
+  Sample EmbeddedAug_SS("EmbeddedAug_SS",EmbeddedAug.GetTitle());
+  EmbeddedAug_SS.setDataType("Embedded_SS");
+  analysis.addSample(&EmbeddedAug_SS);
+
+  Sample EmbeddedOct_SS("EmbeddedOct_SS",EmbeddedOct.GetTitle());
+  EmbeddedOct_SS.setDataType("Embedded_SS");
+  analysis.addSample(&EmbeddedOct_SS);
+
+//   Sample Embedded2011B_SS("Embedded2011B_SS",Embedded2011B.GetTitle());
+//   Embedded2011B_SS.setDataType("Embedded_SS");
+//   analysis.addSample(&Embedded2011B_SS);
 }
 
