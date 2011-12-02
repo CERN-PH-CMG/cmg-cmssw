@@ -25,9 +25,13 @@ void histosForLimit(){
 
 
   ofstream file;
-  file.open("yields.txt");
+  file.open("muTau_SM0_template_noVV.txt");
+
+
+  char rootfilename[256];
+  sprintf(rootfilename, "muTau.root");
   
-  TFile* output = TFile::Open("muTau.root","recreate");
+  TFile* output = TFile::Open(rootfilename,"recreate");
   TDirectory* dir = output->mkdir("muTau_SM0");
   
   //histogram used for fit in limit calcualtion
@@ -160,14 +164,37 @@ void histosForLimit(){
   data_obs->Write();
   QCD->Write();
 
+  file << "imax 1" <<endl;
+  file << "jmax *" <<endl;
+  file << "kmax *" <<endl;
+  file << "shapes *  *  "<< rootfilename << "  $CHANNEL/$PROCESS $CHANNEL/$PROCESS_$SYSTEMATIC" << endl;
+  file << endl;
   file << "observation " << data_obs->Integral()<<endl;
-  file << "bin " << "muTau_SM0 " << "muTau_SM0 " << "muTau_SM0 " << "muTau_SM0 " << "muTau_SM0 " << "muTau_SM0 " << "muTau_SM0 " << endl;
-  file << "process " << "SM115 " << "ZTT " << "QCD " << "W " << "ZJ " << "ZL " << "TT " << endl;
-  file << "process " << "0 " << "1 " << "2 " << "3 " << "4 " << "5 " << "6 " << endl;
-  file << "rate " << SM115->Integral() << " " << ZTT->Integral() << " " << QCD->Integral() << " " << W->Integral() << " " << ZJ->Integral() << " " << ZL->Integral() << " " << TT->Integral() << endl;
-  
-  
-  file << "WJets_BR" << '\t' << W->Integral()/0.31296<<endl;
-  file << "QCD_BR" << '\t' << QCD->Integral()/1.06<<endl;
+  file<<endl;
+  file << "bin                                   muTau_SM0          muTau_SM0          muTau_SM0          muTau_SM0          muTau_SM0          muTau_SM0          muTau_SM0" << endl;
+  file << "process                                SM115              ZTT                QCD                 W                  ZJ                 ZL                 TT" << endl;
+  file << "process                                  0                 1                  2                  3                  4                  5                  6" << endl;
+  file << "rate                                     " << SM115->Integral() << "              " << ZTT->Integral() << "             " << QCD->Integral() << "            " << W->Integral() << "             " << ZJ->Integral() << "             " << ZL->Integral() << "            " << TT->Integral() << endl;
+  file << endl;
+  file <<"--------------------------------------------------------------------------------------------------------------"<<endl;
+  file <<"lumi                             lnN   1.045                     -                     -                     -                    -                     -                    -               luminosity"<<endl;
+  file <<"CMS_eff_m                        lnN   1.020                   1.020                   -                     -                  1.020                 1.020                1.020             muon ID /HLT"<<endl;
+  file <<"CMS_eff_t                        lnN   1.060                   1.060                   -                     -                    -                     -                  1.060             Tau IDf"<<endl;
+  file <<"CMS_scale_t                    shape   1.000                   1.000                   -                   1.000                1.000                 1.000                1.000             shape"<<endl;
+  file <<"CMS_htt_zttNorm                  lnN     -                     1.033                   -                     -                  1.033                 1.033                  -               ZTT Scale"<<endl;
+  file <<"CMS_htt_ttbarNorm                lnN     -                        -                    -                     -                    -                     -                  1.12              TTbar background"<<endl;
+  file <<"CMS_htt_DiBosonNorm              lnN     -                        -                    -                     -                    -                     -                    -               DiBoson background"<<endl;
+  file <<"CMS_htt_muTau_SM0_QCDNorm  gmN  "<<QCD->Integral()/1.11<<"     -                        -                   1.11                   -                    -                     -                    -               QCD Background"<<endl;
+  file <<"CMS_htt_muTau_SM0_QCDSyst        lnN     -                        -                   1.02                   -                    -                     -                    -               QCD Background"<<endl;
+  file <<"CMS_htt_muTau_SM0_WNorm    gmN "<<W->Integral()/0.317277<<"     -                        -                    -                   0.317277              -                     -                    -               W Background"<<endl;
+  file <<"CMS_htt_muTau_SM0_WSyst          lnN     -                        -                    -                   1.06                   -                     -                    -               W Background" <<endl;
+  file <<"CMS_htt_muTau_ZJetFakeTau        lnN     -                        -                    -                     -                  1.12                    -                    -               Z(jet->tau) background"<<endl;
+  file <<"CMS_htt_muTau_ZLeptonFakeTau     lnN     -                        -                    -                     -                    -                   1.258                  -               Z(l->tau)   background"<<endl;
+  file <<"CMS_scale_j                    shape    1.0                     1.0                    -                   1.0                  1.0                   1.0                  1.0              shape and norm from jets"<<endl;
+  file <<"pdf_qqbar                        lnN     -                        -                    -                     -                    -                     -                    -               PDF VBF"<<endl;
+  file <<"pdf_gg                           lnN   1.03                       -                    -                     -                    -                     -                    -               PDF VBF"<<endl;
+  file <<"QCDscale_ggH                     lnN   1.12                       -                    -                     -                    -                     -                    -               PDF VBF"<<endl;
+  file <<"QCDscale_qqH                     lnN      -                       -                    -                     -                    -                     -                    -               PDF VBF"<<endl;
+  file <<"UEPS                             lnN   0.96                       -                    -                     -                    -                     -                    -               PDF VBF"<<endl;
   
 }
