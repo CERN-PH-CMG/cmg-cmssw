@@ -4,5 +4,6 @@
  <class name="TauMuAnalysis"/>
  <class name="Sample"/>
 
+ <class name="TriggerEfficiency"/>
 
 </lcgdict>

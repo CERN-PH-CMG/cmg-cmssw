@@ -1,5 +1,0 @@
-cmgtools%/SingleMu/Run2011A-May10ReReco-v1/AOD/V2/PAT_CMG_V2_3_0
-cmgtools%/TauPlusX/Run2011A-May10ReReco-v1/AOD/V2/PAT_CMG_V2_3_0 
-cmgtools%/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_3_0  
-cmgtools%/TauPlusX/Run2011A-05Aug2011-v1/AOD/V2/PAT_CMG_V2_3_0  
-cmgtools%/TauPlusX/Run2011A-PromptReco-v6/AOD/V2/PAT_CMG_V2_3_0

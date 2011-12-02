@@ -27,6 +27,11 @@ public:
   void setdiLeptonVetoListName(string diLeptonVetoListName){diLeptonVetoListName_=diLeptonVetoListName;}
   void setQCDOStoSSRatio(Float_t ratio){QCDOStoSSRatio_=ratio;}
   void setQCDColor(Int_t color){QCDColor_=color;}
+  void setWJetsColor(Int_t color){WJetsColor_=color;}
+  void setTTJetsColor(Int_t color){TTJetsColor_=color;}
+  void setZMuMuColor(Int_t color){ZMuMuColor_=color;}
+  void setZTauTauColor(Int_t color){ZTauTauColor_=color;}
+  void setSignalColor(Int_t color){SignalColor_=color;}
 
 
   virtual bool init();
@@ -35,13 +40,18 @@ public:
   void calcSVFit(bool calc){calcsvfit_=calc;}
   void makeAllHistos(bool makeall){makeAllHistos_=makeall;}
 
-  bool scaleHistos();
-  TH1F* getDataSS(TString histoname);
-  TH1F* getMCSS(TString histoname);
+  bool scaleHistos();//contains logic for scaling samples before making plots
+  //all functions below return ownership of TH1F
+  TH1F* getTotalDataSS(TString histoname);//sum of SS Data samples 
+  TH1F* getTotalData(TString histoname);
+  TH1F* getTotalEmbeddedSS(TString histoname);
+  TH1F* getTotalEmbedded(TString histoname);
+  TH1F* getMCSS(TString histoname);//sum of SS MC's used in the QCD extraction (may exclude additional MC samples declared)
+  TH1F* getSample(TString samplename, TString histoname);//can be used to get histo for any MC or Data sample
   TH1F* getQCD(TString histoname);
-  TH1F* getMC(TString histoname);
-  TH1F* getBackground(TString histoname);
-  TH1F* getData(TString histoname);
+  TH1F* getZToTauTau(TString histoname);//Z-->tau tau (either from MC or Embedded)
+  TH1F* getTotalBackground(TString histoname);
+ 
 
   bool printRawYields(TString histoname);
 
@@ -79,14 +89,33 @@ private:
   const cmg::PFJet * VBFJet2_; 
   bool calcsvfit_;
   bool makeAllHistos_;
-  float tauFakeWeight_;
 
   Float_t QCDOStoSSRatio_;
-  Int_t QCDColor_;
   //RecoilCorrector * recoilCorr_;
   TauRate tauRate_;
+  float tauFakeWeight_;
   TriggerEfficiency triggerEff_;
+  float triggerEffWeight_;
 
+  float embeddedGenWeight_;
+
+
+
+  void fillPFJetListLC(const cmg::TauMu * cand);
+  //void applyRecoilCorr(const cmg::TauMu * cand, TVector3 * MET);
+  //float computePZeta(const cmg::TauMu * cand);
+  //float computeTransverseMass(const cmg::TauMu * cand);
+  //float computeTauIso(const cmg::Tau * tau);
+  bool computeDiLeptonVeto();
+
+
+  //
+  Int_t QCDColor_;
+  Int_t WJetsColor_;
+  Int_t TTJetsColor_;
+  Int_t ZMuMuColor_;
+  Int_t ZTauTauColor_;
+  Int_t SignalColor_;
 
   //histos
   TH1F* diTauNHisto_;
@@ -125,13 +154,6 @@ private:
   TH1F* diTauMassBoostedHisto_;
   TH1F* jetPtBoostedHisto_;
   TH1F* diTauMassInclusiveHisto_;
-
-  void fillPFJetListLC(const cmg::TauMu * cand);
-  void applyRecoilCorr(const cmg::TauMu * cand, TVector3 * MET);
-  //float computePZeta(const cmg::TauMu * cand);
-  //float computeTransverseMass(const cmg::TauMu * cand);
-  //float computeTauIso(const cmg::Tau * tau);
-  bool computeDiLeptonVeto();
 
 
   ///output tree definition
