@@ -1,21 +1,43 @@
 void histosForLimit(){
-  gROOT->ProcessLine(".x ./analyzeTauMu.C");
+  //defines samples
+  gROOT->ProcessLine(".x ../workdir/TauMuConfig.C");
   
-  analysis.setOutputPath("/afs/cern.ch/user/b/benitezj/public/21fbMETSig");
-  if(!analysis.init()){cout<<" could not init"<<endl;return 0;}
-  
+  //defines input histograms
+  analysis.setOutputPath("/afs/cern.ch/user/b/benitezj/public/V240TauTrigger");
+
+  //normalizes backgrounds for the data
+  if(!analysis.init()){cout<<" could not init"<<endl;return 0;}  
   if(!analysis.scaleHistos())return 0;
   
+
+  /* ***************************************
+    -access backgrounds like this (updated Dec 2)
+    -everything should be obtained from class interface/TauMuAnalysis.h
+    -individual backgrounds obtained using getSample(), except for ZtoTauTau and QCD 
+    ****************************************** 
+    analysis.getTotalDataSS(TString histoname);//sum of SS Data samples 
+    analysis.getTotalData(TString histoname);
+    analysis.getSample(TString samplename, TString histoname);//can be used to get histo for any MC or Data sample
+    analysis.getQCD(TString histoname);
+    analysis.getZToTauTau(TString histoname);//Z-->tau tau (either from MC or Embedded)
+    analysis.getTotalBackground(TString histoname);
+  */
+
+
   ofstream file;
   file.open("yields.txt");
   
   TFile* output = TFile::Open("muTau.root","recreate");
   TDirectory* dir = output->mkdir("muTau_SM0");
   
+  //histogram used for fit in limit calcualtion
+  TString histoname="diTauMassHisto";
+  
+
   TCanvas C("Canvas");
   C.Print("plots.ps[");
   
-  TH1F* SM115_gg = (TH1F*)(Higgs.getHistoFromFile("diTauMassHisto"));
+  TH1F* SM115_gg = new TH1F("H","",2000,0,1000);//(TH1F*)(analysis.getSample("Higgs",histoname));
   C.Clear();
   SM115_gg->Draw();
   C.Print("plots.ps");
@@ -26,7 +48,7 @@ void histosForLimit(){
   TH1F* SM115_CMS_scale_jUp = (TH1F*)SM115_gg->Clone("SM115_CMS_scale_jUp");
   TH1F* SM115_CMS_scale_jDown = (TH1F*)SM115_gg->Clone("SM115_CMS_scale_jDown");
   
-  TH1F* ZTauTau = (TH1F*)(ZToTauTau.getHistoFromFile("diTauMassHisto"));
+  TH1F* ZTauTau = (TH1F*)(analysis.getZToTauTau(histoname));
   C.Clear();
   ZTauTau->Draw();
   C.Print("plots.ps");
@@ -37,7 +59,7 @@ void histosForLimit(){
   TH1F* ZTT_CMS_scale_jUp = (TH1F*)ZTauTau->Clone("ZTT_CMS_scale_jUp");
   TH1F* ZTT_CMS_scale_jDown = (TH1F*)ZTauTau->Clone("ZTT_CMS_scale_jDown");
   
-  TH1F* ZMuMu = (TH1F*)(ZToMuMu.getHistoFromFile("diTauMassHisto"));
+  TH1F* ZMuMu = (TH1F*)(analysis.getSample("ZToMuMu",histoname));
   C.Clear();
   ZMuMu->Draw();
   C.Print("plots.ps");
@@ -48,7 +70,7 @@ void histosForLimit(){
   TH1F* ZL_CMS_scale_jUp = (TH1F*)ZMuMu->Clone("ZL_CMS_scale_jUp");
   TH1F* ZL_CMS_scale_jDown = (TH1F*)ZMuMu->Clone("ZL_CMS_scale_jDown");
   
-  TH1F* ZJets = (TH1F*)(ZToLJet.getHistoFromFile("diTauMassHisto"));
+  TH1F* ZJets = (TH1F*)(analysis.getSample("ZToLJet",histoname));
   C.Clear();
   ZJets->Draw();
   C.Print("plots.ps");
@@ -59,7 +81,7 @@ void histosForLimit(){
   TH1F* ZJ_CMS_scale_jUp = (TH1F*)ZJets->Clone("ZJ_CMS_scale_jUp");
   TH1F* ZJ_CMS_scale_jDown = (TH1F*)ZJets->Clone("ZJ_CMS_scale_jDown");
 
-  TH1F* WJets = (TH1F*)(WJetsToLNu.getHistoFromFile("diTauMassHisto"));
+  TH1F* WJets = (TH1F*)(analysis.getSample("WJetsToLNu",histoname));
   C.Clear();
   WJets->Draw();
   C.Print("plots.ps");
@@ -71,7 +93,7 @@ void histosForLimit(){
   TH1F* W_CMS_scale_jDown = (TH1F*)WJets->Clone("W_CMS_scale_jDown");
 
 
-  TH1F* TTJ = (TH1F*)(TTJets.getHistoFromFile("diTauMassHisto"));
+  TH1F* TTJ = (TH1F*)(analysis.getSample("TTJets",histoname));
   C.Clear();
   TTJ->Draw();
   C.Print("plots.ps");
@@ -83,19 +105,19 @@ void histosForLimit(){
   TH1F* TT_CMS_scale_jDown = (TH1F*)TTJ->Clone("TT_CMS_scale_jDown");
   
   
-  TH1F* data=analysis.getData("diTauMassHisto");
+  TH1F* data=analysis.getTotalData(histoname);
   C.Clear();
   data->Draw();
   C.Print("plots.ps");
 
   TH1F* data_obs = (TH1F*)data->Clone("data_obs");
 
-  //TH1F* data_obsSS=analysis.getDataSS("diTauMassHisto");
+  //TH1F* data_obsSS=analysis.getDataSS(histoname);
   //C.Clear();
   //data_obsSS->Draw();
   //C.Print("plots.ps");
   
-  TH1F* QCD_b=analysis.getQCD("diTauMassHisto");
+  TH1F* QCD_b=analysis.getQCD(histoname);
   C.Clear();
   QCD_b->Draw();
   C.Print("plots.ps");
