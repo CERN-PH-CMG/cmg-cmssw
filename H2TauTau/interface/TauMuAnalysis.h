@@ -26,6 +26,8 @@ public:
   void setInputTag(string tag){inputTag_=tag;}
   void setdiLeptonVetoListName(string diLeptonVetoListName){diLeptonVetoListName_=diLeptonVetoListName;}
   void setQCDOStoSSRatio(Float_t ratio){QCDOStoSSRatio_=ratio;}
+  void setTransverseMassSignalMax(Int_t max){transverseMassSignalMax_=max;}
+  void setTransverseMassSideBandMin(Int_t min){transverseMassSideBandMin_=min;}
   void setQCDColor(Int_t color){QCDColor_=color;}
   void setWJetsColor(Int_t color){WJetsColor_=color;}
   void setTTJetsColor(Int_t color){TTJetsColor_=color;}
@@ -91,7 +93,8 @@ private:
   bool makeAllHistos_;
 
   Float_t QCDOStoSSRatio_;
-  //RecoilCorrector * recoilCorr_;
+  Int_t transverseMassSignalMax_;
+  Int_t transverseMassSideBandMin_;
   TauRate tauRate_;
   float tauFakeWeight_;
   TriggerEfficiency triggerEff_;

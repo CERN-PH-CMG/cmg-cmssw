@@ -338,9 +338,9 @@ bool TauMuAnalysis::applySelections(TString exceptcut){
   if(exceptcut!="massT") if(diTauSel_->mTLeg2()>40.0) return 0;
   
   ///SS or OS separation 
-  if(sample_->getDataType()=="MC_SS" || sample_->getDataType()=="Data_SS" || sample_->getDataType()=="Embedded_SS"){
+  if(sample_->getDataType()=="MC_SS" || sample_->getDataType()=="Signal_SS" || sample_->getDataType()=="Data_SS" || sample_->getDataType()=="Embedded_SS"){
     if(fabs(diTauSel_->charge())!=2.)return 0;
-  }else if(sample_->getDataType()=="MC" || sample_->getDataType()=="Data" || sample_->getDataType()=="Embedded"){
+  }else if(sample_->getDataType()=="MC" || sample_->getDataType()=="Signal" || sample_->getDataType()=="Data" || sample_->getDataType()=="Embedded"){
     if(diTauSel_->charge()!=0.)return 0;
   }else{
     cout<<sample_->GetName()<<" Unrecognized data type"<<endl;
@@ -435,7 +435,9 @@ bool TauMuAnalysis::applySelections(TString exceptcut){
   /////determine trigger efficiency and set as an event weight
   /////////////////
   triggerEffWeight_=1.;
-  if(sample_->getDataType()=="MC" || sample_->getDataType()=="MC_SS" || sample_->getDataType()=="Embedded" || sample_->getDataType()=="Embedded_SS")
+  if(sample_->getDataType()=="MC" || sample_->getDataType()=="MC_SS" 
+     || sample_->getDataType()=="Signal" || sample_->getDataType()=="Signal_SS" 
+     || sample_->getDataType()=="Embedded" || sample_->getDataType()=="Embedded_SS")
     triggerEffWeight_= triggerEff_.effTau2011A(diTauSel_->leg1().pt()) * triggerEff_.effMu2011A(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
 
 
@@ -641,25 +643,59 @@ bool TauMuAnalysis::printRawYields(TString histoname){
     }
   }
 
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+    if((*s)->getDataType()=="Embedded"){
+      TH1F*hmass=(TH1F*)((*s)->getHistoFromFile(histoname));
+      if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
+      cout<<hmass->GetName()<<" "<<(int)(hmass->Integral(0,hmass->GetNbinsX()+1))<<endl;
+    }
+  }
+  
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+    if((*s)->getDataType()=="Embedded_SS"){
+      TH1F*hmass=(TH1F*)((*s)->getHistoFromFile(histoname));
+      if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
+      cout<<hmass->GetName()<<" "<<(int)(hmass->Integral(0,hmass->GetNbinsX()+1))<<endl;
+    }
+  }
+
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+    if((*s)->getDataType()=="Signal"){
+      TH1F*hmass=(TH1F*)((*s)->getHistoFromFile(histoname));
+      if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
+      cout<<hmass->GetName()<<" "<<(int)(hmass->Integral(0,hmass->GetNbinsX()+1))<<endl;
+    }
+  }
+  
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+    if((*s)->getDataType()=="Signal_SS"){
+      TH1F*hmass=(TH1F*)((*s)->getHistoFromFile(histoname));
+      if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
+      cout<<hmass->GetName()<<" "<<(int)(hmass->Integral(0,hmass->GetNbinsX()+1))<<endl;
+    }
+  }
+
   return 1;
 }
 
 
 bool TauMuAnalysis::scaleHistos(){
- 
 
   //////needed by the data-card for limits before any rescalings
-  Int_t WJetsSideBandMin=60;
   Float_t WJetsSignal=0.;  Float_t WJetsSideBand=0.;
+  if(transverseMassSignalMax_>transverseMassSideBandMin_)
+    cout<<"Inconsistent values: transverseMassSignalMax_ > transverseMassSideBandMin_"<<endl;
   for(std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
     if(TString((*s)->GetName())=="WJetsToLNu"){
-      WJetsSignal=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(1,40); 
-      WJetsSideBand=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(WJetsSideBandMin+1,200); 
+      TH1* h=(*s)->getHistoFromFile("transverseMassHisto_massT");
+      WJetsSignal=h->Integral(1,transverseMassSignalMax_); 
+      WJetsSideBand=h->Integral(transverseMassSideBandMin_+1,h->GetNbinsX()); 
     }
   }
-  cout<<" Ratio of (WJets Signal)/(WJets SideBand) = "<<WJetsSignal/WJetsSideBand<<endl;
-
+  cout<<" Ratio of (WJets below "<<transverseMassSignalMax_<<" GeV)/(WJets above "<<transverseMassSideBandMin_<<" GeV) = "<<WJetsSignal/WJetsSideBand<<endl;
  
+
+  /////////determine total lumi and scale MCs
   cout<<" List of Data samples: "<<endl;
   float totalDataLumi=0.;
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
@@ -667,27 +703,21 @@ bool TauMuAnalysis::scaleHistos(){
       totalDataLumi+=(*s)->getLumi();
       cout<<(*s)->GetName()<<endl;  
     }
-  }
-
-  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
     if((*s)->getDataType()=="Data_SS"){
       cout<<(*s)->GetName()<<endl;  
     }
   }
-
   cout<<"Total Data lumi = "<<totalDataLumi<<endl;
 
+  cout<<"  Normalizing MCs to luminosity: "<<endl;
   cout<<" List of MC samples: "<<endl;
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
-    if((*s)->getDataType()=="MC"){
+    if((*s)->getDataType()=="MC" || (*s)->getDataType()=="Signal"){
       (*s)->scale((*s)->getEffCorrFactor());
       (*s)->scale(totalDataLumi/(*s)->getLumi());
       cout<<(*s)->GetName()<<endl; 
     }
-  }
-  
-  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
-    if((*s)->getDataType()=="MC_SS"){
+    if((*s)->getDataType()=="MC_SS" || (*s)->getDataType()=="Signal_SS"){
       (*s)->scale((*s)->getEffCorrFactor());
       (*s)->scale(totalDataLumi/(*s)->getLumi());
       cout<<(*s)->GetName()<<endl;  
@@ -700,43 +730,46 @@ bool TauMuAnalysis::scaleHistos(){
   ///////////////////////////////
   /////Determine correction factor for WJets from massT sideband
   //////////////////////////////
-  Float_t WJetsAboveCorr=1.;
-  Float_t WJetsSSAboveCorr=1.;
-  cout<<"Determine WJetsSS  from sideband"<<endl;
-  Float_t WJetsSSAbove=0; Float_t MCSSAbove=0; Float_t DataSSAbove=0;
+  cout<<"Determining WJets  from sidebands"<<endl;
+
+  Float_t WJetsSSSideCorr=1.; Float_t WJetsSSSide=0; Float_t MCSSSide=0; Float_t DataSSSide=0;
+  Float_t WJetsSideCorr=1.; Float_t WJetsSide=0; Float_t MCSide=0; Float_t DataSide=0;
   for(std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+    TH1* h=(*s)->getHistoFromFile("transverseMassHisto_massT");
+
     if((*s)->getDataType()=="Data_SS")
-      DataSSAbove+=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(WJetsSideBandMin+1,200);  
-    else if(TString((*s)->GetName())=="WJetsToLNu_SS")
-      WJetsSSAbove=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(WJetsSideBandMin+1,200);    
-    else if((*s)->getDataType()=="MC_SS") MCSSAbove+=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(WJetsSideBandMin+1,200);
-  }
-  WJetsSSAboveCorr=(DataSSAbove-MCSSAbove)/WJetsSSAbove;
- 
-  Float_t WJetsAbove=0; Float_t MCAbove=0; Float_t DataAbove=0;
-  for(std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+      DataSSSide+=h->Integral(transverseMassSideBandMin_+1,h->GetNbinsX());  
+    
+    if((*s)->getDataType()=="MC_SS"){
+      if(TString((*s)->GetName())=="WJetsToLNu_SS")
+	WJetsSSSide=h->Integral(transverseMassSideBandMin_+1,h->GetNbinsX());    
+      else MCSSSide+=h->Integral(transverseMassSideBandMin_+1,h->GetNbinsX());
+    }
+
     if((*s)->getDataType()=="Data")
-      DataAbove+=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(WJetsSideBandMin+1,200); 
-    else if((*s)->getDataType()=="MC"){
-      if(TString((*s)->GetName())=="WJetsToLNu"){
-	WJetsAbove=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(WJetsSideBandMin+1,200);    
-      }else MCAbove+=(*s)->getHistoFromFile("transverseMassHisto_massT")->Integral(WJetsSideBandMin+1,200);
+      DataSide+=h->Integral(transverseMassSideBandMin_+1,h->GetNbinsX()); 
+    
+    if((*s)->getDataType()=="MC"){
+      if(TString((*s)->GetName())=="WJetsToLNu")
+	WJetsSide=h->Integral(transverseMassSideBandMin_+1,h->GetNbinsX());    
+      else MCSide+=h->Integral(transverseMassSideBandMin_+1,h->GetNbinsX());
     }
   }
-  WJetsAboveCorr=(DataAbove-MCAbove)/WJetsAbove;
+  WJetsSSSideCorr=(DataSSSide-MCSSSide)/WJetsSSSide;
+  WJetsSideCorr=(DataSide-MCSide)/WJetsSide;
 
 
-  cout<<"Data SS yield in side-band = "<<DataSSAbove<<endl;
-  cout<<"MC SS yield in side-band = "<<MCSSAbove<<endl;
-  cout<<"WJetsSS Correction = "<<WJetsSSAboveCorr<<endl;
-  cout<<"WJetsOS Correction = "<<WJetsAboveCorr<<endl;
+  cout<<"Data SS yield in side-band = "<<DataSSSide<<endl;
+  cout<<"MC SS yield in side-band = "<<MCSSSide<<endl;
+  cout<<"WJetsSS Correction = "<<WJetsSSSideCorr<<endl;
+  cout<<"WJetsOS Correction = "<<WJetsSideCorr<<endl;
 
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
     if(TString((*s)->GetName())=="WJetsToLNu_SS"){
-      (*s)->scale(WJetsSSAboveCorr);
+      (*s)->scale(WJetsSSSideCorr);
     }
     if(TString((*s)->GetName())=="WJetsToLNu"){
-      (*s)->scale(WJetsAboveCorr);
+      (*s)->scale(WJetsSideCorr);
     }
   }
 
@@ -756,7 +789,7 @@ bool TauMuAnalysis::scaleHistos(){
   if(ZToTauTauMC==0. || EmbeddedOS==0.){ cout<<" bad ZToTauTauMC or EmbeddedOS yields"<<endl; return 0;}
   cout<<"Rescaling Embedded samples by factor : "<<ZToTauTauMC/EmbeddedOS<<endl;
   for(std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
-    if((*s)->getDataType()=="Embedded")
+    if((*s)->getDataType()=="Embedded" || (*s)->getDataType()=="Embedded_SS")
       (*s)->scale(ZToTauTauMC/EmbeddedOS);
 
   return 1;
@@ -821,6 +854,8 @@ TH1F* TauMuAnalysis::getTotalEmbedded(TString histoname){
 
 
 TH1F* TauMuAnalysis::getMCSS(TString histoname){
+  ///Does not include Signals
+  ///currently uses ZToTauTau MC not the embedded
 
   cout<<" Calculating Total MC SS: "<<endl;
   TH1F* href=(TH1F*)((*(samples_.begin()))->getHistoFromFile(histoname));
@@ -907,36 +942,19 @@ TH1F* TauMuAnalysis::getTotalBackground(TString histoname){
 
   TH1F* h=new TH1F("hBackground","",href->GetXaxis()->GetNbins(),href->GetXaxis()->GetXmin(),href->GetXaxis()->GetXmax());
 
-
   TH1F*hQCD=getQCD(histoname);
-  if(hQCD)h->Add(hQCD);
-  else {cout<<"QCD not determined"<<endl; return 0;}
+  if(!hQCD)return 0;
+  h->Add(hQCD);
   delete hQCD;
-
-  TH1F*hTTJets=getSample("TTJets",histoname);
-  if(!hTTJets)return 0;
-  h->Add(hTTJets);
-  delete hTTJets;
-
-  TH1F*hWJetsToLNu=getSample("WJetsToLNu",histoname);
-  if(!hWJetsToLNu)return 0;
-  h->Add(hWJetsToLNu);
-  delete hWJetsToLNu;
-
-  TH1F*hZToLJet=getSample("ZToLJet",histoname);
-  if(!hZToLJet)return 0;
-  h->Add(hZToLJet);
-  delete hZToLJet;
-
-  TH1F*hZToMuMu=getSample("ZToMuMu",histoname);
-  if(!hZToMuMu)return 0;
-  h->Add(hZToMuMu);
-  delete hZToMuMu;
 
   TH1F*hZToTauTau=getZToTauTau(histoname);
   if(!hZToTauTau)return 0;
   h->Add(hZToTauTau);
   delete hZToTauTau;
+
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
+    if((*s)->getDataType()=="MC" && TString((*s)->GetName()) != "ZToTauTau")
+      h->Add((*s)->getHistoFromFile(histoname)); 
 
   
   return h;
@@ -951,50 +969,7 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   
   if(!scaleHistos())return 0;
 
-//   //rebin and set colors on the histos
-//   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
-//     if((*s)->getDataType()=="Data"){
-//       TH1F*hmass=(TH1F*)((*s)->getHistoFromFile(histoname));
-//       if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
-//       hmass->Rebin(rebin); 
-//     }
-//   }
 
-//   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
-//     if((*s)->getDataType()=="Data_SS"){
-//       TH1F*hmass=(TH1F*)((*s)->getHistoFromFile(histoname));
-//       if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
-//       hmass->Rebin(rebin); 
-//     }
-//   }
-
-
-//   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
-//     if((*s)->getDataType()=="MC"){
-//       TH1F*hmass=(TH1F*)((*s)->getHistoFromFile(histoname));
-//       if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
-//       hmass->SetFillColor((*s)->getColor());
-//       hmass->SetLineColor((*s)->getLineColor());
-//       hmass->SetLineStyle((*s)->getLineStyle());
-//       hmass->SetLineWidth(1);
-//       hmass->Rebin(rebin);
-//     }
-//   }
-  
-//   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
-//     if((*s)->getDataType()=="MC_SS"){
-//       TH1F*hmass=(TH1F*)((*s)->getHistoFromFile(histoname));
-//       if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
-//       hmass->SetFillColor((*s)->getColor());
-//       hmass->SetLineColor((*s)->getLineColor());
-//       hmass->SetLineStyle((*s)->getLineStyle());
-//       hmass->SetLineWidth(1);
-//       hmass->Rebin(rebin);
-//     }
-//   }
-
-
-  
   TCanvas C("C",TString("TauMuAnalysis_")+histoname+".ps");
   C.Print(outputpath_+"/TauMuAnalysis_"+histoname+".ps[");
   
@@ -1027,6 +1002,15 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   THStack hMCStack("hBkgStack","BkgStack");//dont't set any of the regular histogram properties on the THStack will crash.
  
   //
+  TH1F*hTTJets=getSample("TTJets",histoname);
+  if(!hTTJets)return 0;
+  hTTJets->Rebin(rebin);
+  hTTJets->SetLineWidth(1);
+  hTTJets->SetLineColor(TTJetsColor_);
+  hTTJets->SetFillColor(TTJetsColor_);
+  cout<<"TTJets "<<hTTJets->Integral(0,hTTJets->GetNbinsX()+1)<<endl;
+  hMCStack.Add(hTTJets,"hist");
+ 
   TH1F*hQCD=getQCD(histoname);
   if(!hQCD)return 0;
   hQCD->Rebin(rebin);
@@ -1043,28 +1027,35 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   hWJetsToLNu->SetLineColor(WJetsColor_);
   hWJetsToLNu->SetFillColor(WJetsColor_);
   cout<<"WJetsToLNu "<<hWJetsToLNu->Integral(0,hWJetsToLNu->GetNbinsX()+1)<<endl;
+  hMCStack.Add(hWJetsToLNu,"hist");
 
+  //combine Di-Bosons with WJets
+  TH1F*hWW=getSample("WW",histoname);
+  if(!hWW)return 0;
+  hWW->Rebin(rebin);  
+  cout<<"WW "<<hWW->Integral(0,hWW->GetNbinsX()+1)<<endl;
+  hWJetsToLNu->Add(hWW);
+  delete hWW;
+  TH1F*hWZ=getSample("WZ",histoname);
+  if(!hWZ)return 0;
+  hWZ->Rebin(rebin);  
+  hWJetsToLNu->Add(hWZ);
+  cout<<"WZ "<<hWZ->Integral(0,hWZ->GetNbinsX()+1)<<endl;
+  delete hWZ;
+  TH1F*hZZ=getSample("ZZ",histoname);
+  if(!hZZ)return 0;
+  hZZ->Rebin(rebin);
+  cout<<"ZZ "<<hZZ->Integral(0,hZZ->GetNbinsX()+1)<<endl; 
+  hWJetsToLNu->Add(hZZ);
+  delete hZZ;
+  //combine ZLJet with WJets
   TH1F*hZToLJet=getSample("ZToLJet",histoname);
   if(!hZToLJet)return 0;
   hZToLJet->Rebin(rebin);
-  hZToLJet->SetLineWidth(1);
-  hZToLJet->SetLineColor(WJetsColor_);
-  hZToLJet->SetFillColor(WJetsColor_);
-  cout<<"ZToLJet "<<hZToLJet->Integral(0,hZToLJet->GetNbinsX()+1)<<endl;
-
-  //combine W and Z->l+jet
+  cout<<"ZToLJet "<<hZToLJet->Integral(0,hZToLJet->GetNbinsX()+1)<<endl;  
   hWJetsToLNu->Add(hZToLJet);
-  hMCStack.Add(hWJetsToLNu,"hist");
+  delete hZToLJet;
 
-
-  TH1F*hTTJets=getSample("TTJets",histoname);
-  if(!hTTJets)return 0;
-  hTTJets->Rebin(rebin);
-  hTTJets->SetLineWidth(1);
-  hTTJets->SetLineColor(TTJetsColor_);
-  hTTJets->SetFillColor(TTJetsColor_);
-  hMCStack.Add(hTTJets,"hist");
-  cout<<"TTJets "<<hTTJets->Integral(0,hTTJets->GetNbinsX()+1)<<endl;
 
   TH1F*hZToMuMu=getSample("ZToMuMu",histoname);
   if(!hZToMuMu)return 0;
@@ -1099,10 +1090,9 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   legend.AddEntry(hData,hData->GetTitle(),"p");
   legend.AddEntry(hZToTauTau,hZToTauTau->GetTitle(),"f");
   legend.AddEntry(hZToMuMu,hZToMuMu->GetTitle(),"f");
-  legend.AddEntry(hTTJets,hTTJets->GetTitle(),"f");
-  //legend.AddEntry(hZToLJet,hZToLJet->GetTitle(),"f");
   legend.AddEntry(hWJetsToLNu,hWJetsToLNu->GetTitle(),"f");
   legend.AddEntry(hQCD,hQCD->GetTitle(),"f");
+  legend.AddEntry(hTTJets,hTTJets->GetTitle(),"f");
  
 
   cout<<" Creating Plot:"<<endl;
@@ -1171,7 +1161,6 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   delete hQCD;
   delete hTTJets;
   delete hWJetsToLNu;
-  delete hZToLJet;
   delete hZToMuMu;
   delete hZToTauTau;
   delete hBkg;
