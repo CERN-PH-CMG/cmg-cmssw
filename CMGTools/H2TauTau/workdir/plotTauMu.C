@@ -2,7 +2,7 @@ void plotTauMu(){
   gROOT->ProcessLine(".x ./TauMuConfig.C");
  
 
-  //WJetsToLNu.setPlotLabel("W");
+  //WJetsToLNu.setPlotLabel("W+jets");
   WJetsToLNu.setPlotLabel("Electroweak");
   ZToLJet.setPlotLabel("Z(l+jet)");
   TTJets.setPlotLabel("t#bar{t}");
@@ -71,7 +71,7 @@ void plotTauMu(){
   
 //   Float_t c[4]={.5,.75,.42,.81};
 //   Float_t r[4]={0,200,0,6000};
-//   analysis.plot("transverseMassHisto_massT",4,"m_{T}   (GeV)","Events / 2 GeV",c,r);
+//   analysis.plot("transverseMassHisto_massT",4,"m_{T}   (GeV)","Events / 4 GeV",c,r);
 
 //   Float_t c[4]={.6,.85,.42,.81};
 //   //Float_t r[4]={-0.5,5.5,0,25000};
@@ -85,8 +85,8 @@ void plotTauMu(){
  analysis.plot("diTauMassHisto",4,"m_{vis}   (GeV)","Events / 4 GeV",c,r,0);
 
 //   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,300,0,4000};
-//   analysis.plot("diTauMassSVFitHisto",8," mass   (GeV)","Events / 8 GeV",c,r);
+//   Float_t r[4]={0,300,0,5000};
+//   analysis.plot("diTauMassSVFitHisto",10," mass   (GeV)","Events / 10 GeV",c,r);
 
 //    Float_t c[4]={.5,.75,.42,.81};
 //    Float_t r[4]={0,400,0,3000};
