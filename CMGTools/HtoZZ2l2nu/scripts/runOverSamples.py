@@ -125,7 +125,7 @@ for proc in procList :
             idir=0
             for dir in alldirs:
                 idir=idir+1
-                checkCastorDirectory(dir)
+                #checkCastorDirectory(dir)
                 filenames=fillFromCastor(dir,0,-1,False)
                 nfiles=len(filenames)
 
