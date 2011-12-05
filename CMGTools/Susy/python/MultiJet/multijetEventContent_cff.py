@@ -11,5 +11,5 @@ multijetEventContent += cms.untracked.vstring(
                                             'keep *_multiMuonLoose_*_*',
                                             'keep *_multiPFJetsMuonVeto_*_*',
                                             'keep *_multiPFJetsMuonRequired_*_*',
-                                            'keep *_multiPFBJetsMuonRequired_*_*',
+                                            'keep *_multiPFBJetsMuonRequired*_*_*',
                                            )
