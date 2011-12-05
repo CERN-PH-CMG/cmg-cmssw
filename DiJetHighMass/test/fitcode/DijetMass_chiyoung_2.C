@@ -6,6 +6,18 @@
 #include "ResonancesCrossSection.h"
 #include "vector.h"
 
+double lumi = 1.0;
+double scaleFactor = 1.0;
+
+TH1F *hJESplus_temp = new TH1F();
+TH1F *hJESminus_temp = new TH1F();
+TH1F *hQCD = new TH1F();
+TH1F* hDijetMass = new TH1F();
+TH1F *hQCD_Xsec = new TH1F();
+TH1F *hPulls_add = new TH1F();
+TFile *inputFileMC;
+TFile *inputFile;
+
 // QCD fit function -- alternate 4 parameter fit function -- also used for QCD fit.
 Double_t fitQCD( Double_t *m, Double_t *p)
 {
@@ -36,6 +48,8 @@ Double_t fitQCD3( Double_t *m, Double_t *p)
 void DijetMass_chiyoung_2(){
 
   // definition of color 
+
+  lumi = 3500.0;
   
   Int_t ci_g, ci_b;   // for color index setting
   ci_g = TColor::GetColor("#006600");
@@ -46,18 +60,28 @@ void DijetMass_chiyoung_2(){
   gROOT->ProcessLine("setTDRStyle()");
   
   // Input Files  
-  TFile *inputFile = TFile::Open("histograms_1p010fbm1.root", "READ");
-  
+  //  TFile *inputFile = TFile::Open("histograms_1p010fbm1.root", "READ");
+  inputFile = TFile::Open("histograms_data_HT_340fb_Fat_ak5.root", "UPDATE");
   // Histograms 
-  TH1F* hDijetMass = (TH1F *) inputFile->Get("h_DijetMass_data_fat");
-  TH1F *hQCD = (TH1F*)inputFile->Get("fit_DijetMass_mc_wide");
+  hDijetMass = (TH1F*) inputFile->Get("h_DijetMass_data_fat;1");
+  //  TH1F *hQCDMC = (TH1F*)inputFile->Get("fit_DijetMass_mc_wide");
+  inputFileMC = TFile::Open("histograms_summer11_mc_ak5.root", "UPDATE");
+  hQCD = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat;1");
   
-  TH1F *hQCD_Xsec = (TH1F*)hDijetMass->Clone("hQCD_Xsec");
+  cout <<"Calc scale factor" << endl;
+  scaleFactor = hDijetMass->Integral(36, hDijetMass->GetNbinsX()) / hQCD->Integral(36, hDijetMass->GetNbinsX()) / lumi;
+  cout <<"scaleFactor = " << scaleFactor << endl;
+
+                                      
+  hQCD_Xsec = (TH1F*)hDijetMass->Clone("hQCD_Xsec");
   hQCD_Xsec->Reset();
   
-  TH1F *hJESplus_temp = (TH1F*)inputFile->Get("fit_DijetMass_mc_up_wide");
-  TH1F *hJESminus_temp = (TH1F*)inputFile->Get("fit_DijetMass_mc_down_wide");
+  //  TH1F *hJESplus_temp = (TH1F*)inputFile->Get("fit_DijetMass_mc_up_wide");
+  //  TH1F *hJESminus_temp = (TH1F*)inputFile->Get("fit_DijetMass_mc_down_wide");
   
+  hJESplus_temp = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat_up;1");
+  hJESminus_temp = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat_do;1");
+
   TH1F *hJESplus_temp2 =  (TH1F*)hJESplus_temp->Clone("hJESplus_temp2");
   hJESplus_temp2->Reset();
   TH1F *hJESminus_temp2 = (TH1F*)hJESplus_temp->Clone("hJESminus_temp2");
@@ -73,19 +97,22 @@ void DijetMass_chiyoung_2(){
   TH1F *hJESminus2 = (TH1F*)hJESplus_temp->Clone("hJESminus2");
   hJESminus2->Reset(); 
   
-  TH1F *hPulls_3par = (TH1F*)hDijetMass->Clone("Pulls");
-  TH1F *hPulls_4par = (TH1F*)hDijetMass->Clone("Pulls");
+  TH1F *hPulls_3par = (TH1F*)hDijetMass->Clone("Pulls_3par");
+  TH1F *hPulls_4par = (TH1F*)hDijetMass->Clone("Pulls_4par");
   TH1F *hPulls = (TH1F*)hDijetMass->Clone("Pulls");
-  TH1F *hPulls_add = (TH1F*)inputFile->Get("h_DijetMass_mc_wide");
+  //  TH1F *hPulls_add = (TH1F*)inputFile->Get("h_DijetMass_mc_wide");
+  hPulls_add = (TH1F*) hQCD->Clone("hPulls_add");
 
   hPulls_3par->Reset();
   hPulls_4par->Reset();
   hPulls->Reset();
   hPulls_add->Reset();
-
+  
   // Pave text
-  TPaveText *pave_fit = new TPaveText(0.55,0.72,0.9,0.92,"NDC");
+  TPaveText *pave_fit = new TPaveText(0.18,0.15,0.40,0.27,"NDC");
   //  pave_fit->AddText("CMS Preliminary");
+
+  
   pave_fit->AddText(" #sqrt{s} = 7 TeV");
   pave_fit->AddText("|#eta| < 2.5, |#Delta#eta| < 1.3");
   //  pave_fit->AddText("M_{jj} > 838 GeV");
@@ -99,8 +126,12 @@ void DijetMass_chiyoung_2(){
   pave_fit->SetTextAlign(12); 
   
   TPaveText *pave = new TPaveText(0.55,0.72,0.9,0.9,"NDC");
+  
   //  pave->AddText("CMS Preliminary");
-  pave->AddText("CMS  (1.0 fb^{-1})"); 
+  
+
+  pave->AddText(Form("CMS  (%.3f fb^{-1})", lumi/1000.)); 
+//  pave->AddText("Coucou"); 
   pave->AddText(" #sqrt{s} = 7 TeV");
   pave->AddText("M_{jj} > 838 GeV");
   pave->AddText("|#eta| < 2.5, |#Delta#eta| < 1.3");
@@ -112,19 +143,27 @@ void DijetMass_chiyoung_2(){
   pave->SetTextFont(42);
   pave->SetTextSize(0.03);
   pave->SetTextAlign(12); 
-
-  // make hQCD_Xsec histogram
-
+  
+ 
+  cout << " make hQCD_Xsec histogram " << endl;
+    
+  /*
   hQCD->Sumw2();
   hQCD_Xsec->Sumw2(); 
+
+  
   hJESplus_temp->Sumw2();
   hJESplus_temp2->Sumw2();
   hJESminus_temp->Sumw2();
   hJESminus_temp2->Sumw2();
-  hQCD->Scale(1.33*1010.0); 
-  hJESplus_temp->Scale(1.33*1010.0);
-  hJESminus_temp->Scale(1.33*1010.0);
-  double lumi = 1010; //pb^-1
+  */
+  
+  
+  hQCD->Scale(scaleFactor*lumi); 
+  hJESplus_temp->Scale(scaleFactor*lumi);
+  hJESminus_temp->Scale(scaleFactor*lumi);
+  
+   
   for(int i=0; i<hDijetMass->GetNbinsX(); i++){
     double n   = hQCD->GetBinContent(i+1);
     double err = hQCD->GetBinError(i+1);    
@@ -135,15 +174,21 @@ void DijetMass_chiyoung_2(){
     if(n>=1.0){
       hQCD_Xsec->SetBinContent(i+1, n/(dm*lumi));
       hQCD_Xsec->SetBinError(i+1, err/(dm*lumi));
+
+      cout << "n = " << n/(dm*lumi) << "err = " << err/(dm*lumi) << endl;
+
     }
     else{
       hQCD_Xsec->SetBinContent(i+1, 0.);
       hQCD_Xsec->SetBinError(i+1, 0.);
     }
+    
   }
+    
+  cout << "make hJESplus temp, this is hJESplus differential cross sction format" << endl;
+  
 
-  // make hJESplus temp, this is hJESplus differential cross sction format
-
+  
   for(int i=0; i<hDijetMass->GetNbinsX(); i++){
     double n   = hJESplus_temp->GetBinContent(i+1);
     double err = hJESplus_temp->GetBinError(i+1);    
@@ -182,17 +227,24 @@ void DijetMass_chiyoung_2(){
   }
    
  
+  cout << "Fit QCD " << endl << endl << endl;
+
+
    // QCD Fit -- fit to qcd
-   TF1 *f_qcd = new TF1("fit_qcd",fitQCD,838.0,5000.0,4); 
+   TF1 *f_qcd = new TF1("fit_qcd",fitQCD,838.0,4000.0,4); 
    gStyle->SetOptFit(1111); 
    f_qcd->SetParameter(0,6.15613e+18);
    f_qcd->SetParameter(1,-3.75321e+00);
    f_qcd->SetParameter(2,6.32703e+00);
    f_qcd->SetParameter(3,6.33149e+00);
-   hQCD_Xsec->Fit("fit_qcd","R");
+   hQCD_Xsec->Fit("fit_qcd", "R");
+
+   cout << "NDF = " << fit_qcd->GetNDF() << " FCN = " << fit_qcd->GetChisquare() << endl;
+
+  cout << "Fit QCD Up" << endl << endl << endl;
 
    // QCD up Fit -- fit to JES plus
-   TF1 *f_qcd_up = new TF1("fit_qcd_up",fitQCD,890.0,5000.0,4); 
+   TF1 *f_qcd_up = new TF1("fit_qcd_up",fitQCD,890.0,4000.0,4); 
    gStyle->SetOptFit(1111); 
    f_qcd_up->SetParameter(0,1.47700e+19);
    f_qcd_up->SetParameter(1,-4.03984e+00);
@@ -200,8 +252,10 @@ void DijetMass_chiyoung_2(){
    f_qcd_up->SetParameter(3,5.36806e+00);
    hJESplus_temp2->Fit("fit_qcd_up","R");
 
+   cout << "Fit QCD Do" << endl << endl << endl;
+
    // QCD down Fit -- fit to JES minus
-   TF1 *f_qcd_down = new TF1("fit_qcd_down",fitQCD,890.0,5000.0,4); 
+   TF1 *f_qcd_down = new TF1("fit_qcd_down",fitQCD,890.0,4000.0,4); 
    gStyle->SetOptFit(1111); 
    f_qcd_down->SetParameter(0,2.12985e+19);
    f_qcd_down->SetParameter(1,-4.63606e+00);
@@ -315,13 +369,13 @@ void DijetMass_chiyoung_2(){
     g->Draw("APZ");
 
 
-    TLegend *leg = new TLegend(0.2718121,0.756993,0.5268456,0.9143357);
+    TLegend *leg = new TLegend(0.25,0.77,0.48,0.92);
     leg->SetTextSize(0.03146853);
     leg->SetLineColor(1);
     leg->SetLineStyle(1);
     leg->SetLineWidth(1);
     leg->SetFillColor(0);
-    leg->AddEntry(g,"CMS (1.0 fb^{-1})","PL"); 
+    leg->AddEntry(g,Form("CMS  (%.3f fb^{-1})", lumi/1000.),"PL"); 
     leg->AddEntry(fit,"Fit","L");
     leg->Draw("same");
     pave_fit->Draw("same");
@@ -349,13 +403,13 @@ void DijetMass_chiyoung_2(){
     TString status_4par= gMinuit->fCstatu.Data();
     g2->Fit("fit_3par","+","sames",838.0,3854.0);
     TString status_3par= gMinuit->fCstatu.Data();
-    TLegend *leg = new TLegend(0.2718121,0.756993,0.5268456,0.9143357);
+    TLegend *leg = new TLegend(0.18,0.78,0.38,0.92);
     leg->SetTextSize(0.03146853);
     leg->SetLineColor(1);
     leg->SetLineStyle(1);
     leg->SetLineWidth(1);
     leg->SetFillColor(0);
-    leg->AddEntry(g,"CMS (1.0 fb^{-1})","PL");
+    leg->AddEntry(g,Form("CMS  (%.3f fb^{-1})", lumi/1000.),"PL");
     leg->AddEntry(fit,"Default Fit (4 Par.)","L");
     leg->AddEntry(fit_4par,"Alternate Fit A (4 Par.)","L");
     leg->AddEntry(fit_3par,"Alternate Fit B (3 Par.)","L");
@@ -423,15 +477,15 @@ void DijetMass_chiyoung_2(){
     fit->SetLineWidth(2);	
     g->Draw("samePZ");
     
-    TLegend *leg = new TLegend(0.2718121,0.756993,0.5268456,0.9143357);
+    TLegend *leg = new TLegend(0.22,0.78,0.45,0.93);
     leg->SetTextSize(0.03146853);
     leg->SetLineColor(1);
     leg->SetLineStyle(1);
     leg->SetLineWidth(1);
     leg->SetFillColor(0);
-    leg->AddEntry(g2,"CMS  (1.0 fb^{-1})","PL");
+    leg->AddEntry(g2, Form("CMS  (%.3f fb^{-1})", lumi/1000.),"PL");
     leg->AddEntry(fit,"Fit","L");
-    leg->AddEntry(f_qcd,"1.33#times(QCD Pythia + CMS Simulation)","L");
+    leg->AddEntry(f_qcd,Form("%.2f#times Pythia", scaleFactor),"L");
     leg->AddEntry(htmp,"JES Uncertainty","F");
     leg->Draw("same");
     pave_fit->Draw("same");
@@ -474,7 +528,7 @@ void DijetMass_chiyoung_2(){
    c3->SaveAs("Plots/DijetMassCrossSectionWithFitAndQCDMC.eps");
 
    // Data ovet PTYHIA QCD MC	
-   TCanvas *c4 = new TCanvas("Ratio","Data/PTYHIA");
+   TCanvas *c4 = new TCanvas("Ratio","Data/PYTHIA");
    h2->Draw("C");  
    h2->SetTitle("");
    h2->GetXaxis()->SetRangeUser(700,4000);
@@ -493,7 +547,7 @@ void DijetMass_chiyoung_2(){
    leg->SetLineStyle(1);
    leg->SetLineWidth(1);
    leg->SetFillColor(0);
-   leg->AddEntry(gratio,"CMS  (1.0 fb^{-1})","PL"); 
+   leg->AddEntry(gratio,Form("CMS  (%.3f fb^{-1})", lumi/1000.),"PL"); 
    leg->AddEntry(l,"QCD Pythia + CMS Simulation","L");
    leg->AddEntry(htmp2,"JES Uncertainty","F");
    leg->Draw("same");
@@ -657,28 +711,28 @@ void DijetMass_chiyoung_2(){
    gr_string1->Draw("same");
    gr_string2->Draw("same");
 
-   TPaveText *pt_c5_string1 = new TPaveText(0.45,0.7,0.6,0.8,"NDC");
+   TPaveText *pt_c5_string1 = new TPaveText(0.35,0.7,0.50,0.8,"NDC");
    pt_c5_string1->SetFillColor(0);
    pt_c5_string1->SetFillStyle(0);
    pt_c5_string1->SetBorderSize(0);
    pt_c5_string1->SetTextColor(ci_g);
    pt_c5_string1->AddText("S (1.8 TeV)");
 
-   TPaveText *pt_c5_string2 = new TPaveText(0.75,0.45,0.9,0.55,"NDC");
+   TPaveText *pt_c5_string2 = new TPaveText(0.65,0.45,0.8,0.55,"NDC");
    pt_c5_string2->SetFillColor(0);
    pt_c5_string2->SetFillStyle(0);
    pt_c5_string2->SetBorderSize(0);
    pt_c5_string2->SetTextColor(ci_g);
    pt_c5_string2->AddText("S (2.6 TeV)");
 
-   TPaveText *pt_c5_qstar1 = new TPaveText(0.25,0.45,0.4,0.55,"NDC");
+   TPaveText *pt_c5_qstar1 = new TPaveText(0.18,0.35,0.33,0.45,"NDC");
    pt_c5_qstar1->SetFillColor(0);
    pt_c5_qstar1->SetFillStyle(0);
    pt_c5_qstar1->SetBorderSize(0);
    pt_c5_qstar1->SetTextColor(2);
    pt_c5_qstar1->AddText("q* (1.5 TeV)");
 
-   TPaveText *pt_c5_qstar2 = new TPaveText(0.6,0.25,0.75,0.35,"NDC");
+   TPaveText *pt_c5_qstar2 = new TPaveText(0.32,0.25,0.47,0.35,"NDC");
    pt_c5_qstar2->SetFillColor(0);
    pt_c5_qstar2->SetFillStyle(0);
    pt_c5_qstar2->SetBorderSize(0);
@@ -690,12 +744,12 @@ void DijetMass_chiyoung_2(){
    pt_c5_qstar1->Draw("sames");
    pt_c5_qstar2->Draw("sames");
 	
-   TLegend *leg2 = new TLegend(0.2718121,0.756993,0.5268456,0.9143357);
+   TLegend *leg2 = new TLegend(0.22,0.78,0.45,0.93);
    leg2->SetTextSize(0.03146853);
    leg2->SetBorderSize(0);
    leg2->SetFillColor(0);
    leg2->SetFillStyle(0);
-   leg2->AddEntry(g,"CMS (1.0 fb^{-1})","PL");
+   leg2->AddEntry(g,Form("CMS  (%.3f fb^{-1})", lumi),"PL");
    leg2->AddEntry(fit,"Fit","L");
    leg2->AddEntry(gr_qstar1,"Excited Quark","L");
    leg2->AddEntry(gr_string1,"String Resonance","L");
@@ -809,7 +863,7 @@ void DijetMass_chiyoung_2(){
    hDiff->GetXaxis()->SetTitle("Dijet Mass (GeV)");
    hDiff->GetYaxis()->SetTitle("(Data-Fit)/Fit");
    hDiff->GetXaxis()->SetRangeUser(700.,4000.);
-   hDiff->GetYaxis()->SetRangeUser(-1.5,6.);
+   hDiff->GetYaxis()->SetRangeUser(-1.5,3.);
    hDiff->Draw("APZ");
    gr_qstar1_3->Draw("Lsame");
    gr_qstar2_3->Draw("Lsame");
@@ -818,14 +872,14 @@ void DijetMass_chiyoung_2(){
    l->Draw("same");
    pave->Draw("same");
 
-   TPaveText *pt_c6_qstar1 = new TPaveText(0.4,0.3,0.55,0.4,"NDC");
+   TPaveText *pt_c6_qstar1 = new TPaveText(0.20,0.3,0.35,0.4,"NDC");
    pt_c6_qstar1->SetFillColor(0);
    pt_c6_qstar1->SetTextColor(2);
    pt_c6_qstar1->SetFillStyle(0);
    pt_c6_qstar1->SetBorderSize(0);
    pt_c6_qstar1->AddText("q* (1.5 TeV)");
 
-   TPaveText *pt_c6_qstar2 = new TPaveText(0.7,0.3,0.85,0.4,"NDC");
+   TPaveText *pt_c6_qstar2 = new TPaveText(0.40,0.3,0.55,0.4,"NDC");
    pt_c6_qstar2->SetFillColor(0);
    pt_c6_qstar2->SetTextColor(2);
    pt_c6_qstar2->SetFillStyle(0);
@@ -856,7 +910,7 @@ void DijetMass_chiyoung_2(){
    hDiff_4par->Draw("pzsame");
    hDiff_3par->Draw("pzsame");
    l->Draw("same"); 
-   TLegend *leg = new TLegend(0.8,0.8,0.9,0.9);
+   TLegend *leg = new TLegend(0.4,0.6,0.85,0.92);
    leg->SetFillColor(0);
    leg->AddEntry(hPulls,"Default Fit (4 Par.)","PL");
    leg->AddEntry(hPulls_4par,"Alternate Fit A (4 Par.)","PL");
@@ -871,7 +925,7 @@ void DijetMass_chiyoung_2(){
    hPulls_4par->Draw("epsame");
    hPulls_3par->Draw("epsame");
    l->Draw("same");	
-   TLegend *leg = new TLegend(0.8,0.8,0.9,0.9);
+   TLegend *leg = new TLegend(0.65,0.7,0.92,0.92);
    leg->SetFillColor(0);
    leg->AddEntry(hPulls,"Default Fit (4 Par.)","PL");
    leg->AddEntry(hPulls_4par,"Alternate Fit A (4 Par.)","PL");
@@ -890,7 +944,7 @@ void DijetMass_chiyoung_2(){
    hratio->GetYaxis()->SetTitle("Data/Fit");
    hratio->SetMarkerStyle(20);
    hratio->GetXaxis()->SetRangeUser(700.,4000.);
-   hratio->GetYaxis()->SetRangeUser(0.5,20.);
+   hratio->GetYaxis()->SetRangeUser(0.5,6.);
    hratio->Draw("APZ");
    l->Draw("same");
 	
@@ -898,14 +952,14 @@ void DijetMass_chiyoung_2(){
    gr_qstar2_2->Draw("Lsame");
    
 
-   TPaveText *pt_c10_qstar1 = new TPaveText(0.4,0.3,0.55,0.4,"NDC");
+   TPaveText *pt_c10_qstar1 = new TPaveText(0.2,0.5,0.35,0.6, "NDC");
    pt_c10_qstar1->SetFillColor(0);
    pt_c10_qstar1->SetTextColor(2);
    pt_c10_qstar1->SetFillStyle(0);
    pt_c10_qstar1->SetBorderSize(0);
    pt_c10_qstar1->AddText("q* (1.5 TeV)");
 
-   TPaveText *pt_c10_qstar2 = new TPaveText(0.7,0.3,0.85,0.4,"NDC");
+   TPaveText *pt_c10_qstar2 = new TPaveText(0.5,0.5,0.65,0.6,"NDC");
    pt_c10_qstar2->SetFillColor(0);
    pt_c10_qstar2->SetTextColor(2);
    pt_c10_qstar2->SetFillStyle(0);
@@ -944,15 +998,15 @@ void DijetMass_chiyoung_2(){
 
    f_qcd->Draw("same");
    g->Draw("samePZ");
-   TLegend *leg = new TLegend(0.2718121,0.756993,0.5268456,0.9143357);
+   TLegend *leg = new TLegend(0.26,0.70,0.47,0.93);
    leg->SetTextSize(0.03146853);
    leg->SetLineColor(1);
    leg->SetLineStyle(1);
    leg->SetLineWidth(1);
    leg->SetFillColor(0);
-   leg->AddEntry(g,"CMS (1.0 fb^{-1})","PL"); 
+   leg->AddEntry(g,Form("CMS  (%.3f fb^{-1})", lumi),"PL"); 
    leg->AddEntry(fit,"Fit","L");
-   leg->AddEntry(f_qcd,"QCD Pythia + CMS Simulation","L");
+   leg->AddEntry(f_qcd,"QCD Pythia","L");
    leg->AddEntry(htmp,"JES Uncertainty","F");
    leg->AddEntry(gr_qstar1,"Excited Quark","L");
    leg->AddEntry(gr_string1,"String Resonance","L");
@@ -965,28 +1019,28 @@ void DijetMass_chiyoung_2(){
    gr_string1->Draw("same");
    gr_string2->Draw("same");
 
-   TPaveText *pt_c11_string1 = new TPaveText(0.45,0.7,0.6,0.8,"NDC");
+   TPaveText *pt_c11_string1 = new TPaveText(0.45,0.50,0.6,0.6,"NDC");
    pt_c11_string1->SetFillColor(0);
    pt_c11_string1->SetFillStyle(0);
    pt_c11_string1->SetBorderSize(0);
    pt_c11_string1->SetTextColor(TColor::GetColor("#006600"));
    pt_c11_string1->AddText("S (1.8 TeV)");
 
-   TPaveText *pt_c11_string2 = new TPaveText(0.75,0.45,0.9,0.55,"NDC");
+   TPaveText *pt_c11_string2 = new TPaveText(0.60,0.45,0.75,0.55,"NDC");
    pt_c11_string2->SetFillColor(0);
    pt_c11_string2->SetFillStyle(0);
    pt_c11_string2->SetBorderSize(0);
    pt_c11_string2->SetTextColor(TColor::GetColor("#006600"));
    pt_c11_string2->AddText("S (2.6 TeV)");
 
-   TPaveText *pt_c11_qstar1 = new TPaveText(0.25,0.45,0.4,0.55,"NDC");
+   TPaveText *pt_c11_qstar1 = new TPaveText(0.20,0.30,0.35,0.45,"NDC");
    pt_c11_qstar1->SetFillColor(0);
    pt_c11_qstar1->SetFillStyle(0);
    pt_c11_qstar1->SetBorderSize(0);
    pt_c11_qstar1->SetTextColor(2);
    pt_c11_qstar1->AddText("q* (1.5 TeV)");
 
-   TPaveText *pt_c11_qstar2 = new TPaveText(0.6,0.25,0.75,0.35,"NDC");
+   TPaveText *pt_c11_qstar2 = new TPaveText(0.40,0.15,0.55,0.20,"NDC");
    pt_c11_qstar2->SetFillColor(0);
    pt_c11_qstar2->SetFillStyle(0);
    pt_c11_qstar2->SetBorderSize(0);
@@ -1006,6 +1060,7 @@ void DijetMass_chiyoung_2(){
    p11_2->SetGridy();
    c11_2->SetTicky(1);
 
+   hPulls_add->SetTitle("");
    hPulls_add->GetXaxis()->SetTitle("Dijet Mass (GeV)");
    hPulls_add->GetXaxis()->SetTitleOffset(0.90);
    hPulls_add->GetXaxis()->SetTitleSize(0.18);
@@ -1027,6 +1082,8 @@ void DijetMass_chiyoung_2(){
 
    c11->SaveAs("Plots/DefaultFitAndPull.png");
    c11->SaveAs("Plots/DefaultFitAndPull.eps");
+
+   
 
 }
 
