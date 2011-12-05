@@ -6,14 +6,18 @@ from CMGTools.Common.skims.cmgCandMerge_cfi import *
 from CMGTools.Common.physicsObjectPrinter_cfi import physicsObjectPrinter
 
 ############### Jets
-btag = 'cuts_btag_medium'
+btag = 'btag(5) >= 2.0 || btag(0) >= 3.3'
 # count high pt jets
 from CMGTools.Common.skims.cmgPFJetSel_cfi import *
 #require 4 jets offline
-multiPFJetSel60 = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = 'pt()>60 && abs(eta)<2.5' )
-multiPFJetSel60Count = cmgCandCount.clone( src = 'multiPFJetSel60', minNumber = 4 )
-multiPFBJetSel60 = cmgPFJetSel.clone( src = 'multiPFJetSel60', cut = 'getSelection("%s")' % btag )
-multiPFBJetSel60Count = cmgCandCount.clone( src = 'multiPFBJetSel60', minNumber = 1 )
+multiPFJetSel40 = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = 'pt()>40 && abs(eta)<2.5' )
+multiPFJetSel60 = cmgPFJetSel.clone( src = 'multiPFJetSel40', cut = 'pt()>60' )
+
+multiPFJetSel40Count = cmgCandCount.clone( src = 'multiPFJetSel40', minNumber = 4 )
+multiPFJetSel60Count = cmgCandCount.clone( src = 'multiPFJetSel60', minNumber = 3 )
+
+multiPFBJetSel40 = cmgPFJetSel.clone( src = 'multiPFJetSel40', cut = btag)
+multiPFBJetSel40Count = cmgCandCount.clone( src = 'multiPFBJetSel40', minNumber = 1 )
 
 # id the jets
 #ID at lower pt threshold - used to veto event - the number of jets that fail loose jet ID
@@ -27,7 +31,7 @@ multiMuonLoose = cmgMuonSel.clone(src = "cmgMuonSel", cut = "(pt() > 10.) && (ab
 #find the jets that do not overlap with a jet
 from CMGTools.Common.miscProducers.deltaRJetMuons_cfi import deltaRJetMuons
 multiPFJetsMuonVeto = deltaRJetMuons.clone(
-    inputCollection = cms.InputTag('multiPFJetSel60'),
+    inputCollection = cms.InputTag('multiPFJetSel40'),
     vetoCollection = cms.InputTag('multiMuonLoose'),
     minDeltaR = cms.double(0.5)#value from Maxime
 )
@@ -36,9 +40,10 @@ multiPFJetsMuonVeto = deltaRJetMuons.clone(
 from CMGTools.Susy.topprojections.pfjetprojector_cff import * 
 multiPFJetsMuonRequired = pfJetOnPFJet.clone(
     topCollection = cms.InputTag('multiPFJetsMuonVeto'),
-    bottomCollection = cms.InputTag('multiPFJetSel60')
+    bottomCollection = cms.InputTag('multiPFJetSel40')
 )  
-multiPFBJetsMuonRequired = cmgPFJetSel.clone( src = 'multiPFJetsMuonRequired', cut = 'getSelection("%s")' % btag )
+multiPFBJetsMuonRequiredTCHEM = cmgPFJetSel.clone( src = 'multiPFJetsMuonRequired', cut = 'btag(0) >= 3.3' )
+multiPFBJetsMuonRequiredSSVHPT = cmgPFJetSel.clone( src = 'multiPFJetsMuonRequired', cut = 'btag(5) >= 2.0' )
 
 ############### Trigger
 #make a skim on the HLT - should match all multi triggers
@@ -71,12 +76,14 @@ multiMuonSequence = cms.Sequence(
 )
 
 multiJetSequence = cms.Sequence(
+    multiPFJetSel40*
     multiPFJetSel60+
     multiPFJetSelID*
-    multiPFBJetSel60*
+    multiPFBJetSel40*
     multiPFJetsMuonVeto*
     multiPFJetsMuonRequired*
-    multiPFBJetsMuonRequired
+    multiPFBJetsMuonRequiredTCHEM+
+    multiPFBJetsMuonRequiredSSVHPT
 )
 
 multiObjectSequence = cms.Sequence(
@@ -93,11 +100,12 @@ multiSequence = cms.Sequence(
 #offline based selection
 multijetSkimSequence = cms.Sequence(
     multiObjectSequence + 
+    multiPFJetSel40Count+
     multiPFJetSel60Count+
     #filter is inverted
     ~multiPFJetIDCount+
     multiTriggerQuadCount+
-    multiPFBJetSel60Count
+    multiPFBJetSel40Count
     )
 
 #trigger based selection - we take all multi triggered events
