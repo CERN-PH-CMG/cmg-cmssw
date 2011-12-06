@@ -1,4 +1,5 @@
 import os
+import imp
 from fnmatch import fnmatch
 
 from ROOT import kPink
@@ -16,14 +17,14 @@ from CMGTools.H2TauTau.macros.HistogramSet import histogramSet
 
 class H2TauTauDataMC( AnalysisDataMC ):
 
-    def __init__(self, histName, directory, selComponents,
+    def __init__(self, histName, directory, selComps,
                  filePattern, weights,
                  groupDataName = 'Data'):
         '''Constructor
 
         histName  : histogram to be plotted
         directory : analysis directory containing subdirectories for each component
-        selComponents : selected components (among the component subdirectories)
+        selComps : selected components (among the component subdirectories)
         filePattern : pattern to find a single root file in each component subdirectory
                       from which the histogram will be obtained.
         weights   : weight dictionary
@@ -31,14 +32,14 @@ class H2TauTauDataMC( AnalysisDataMC ):
                         with this name.
         '''
         self.filePattern = filePattern
-        self.selComponents = selComponents
+        self.selComps = selComps
         super(H2TauTauDataMC, self).__init__(histName, directory, weights)
         # if histName.endswith('mT') or histName.find('mass')>-1:
         offsetx = 0.55
         offsety = 0.1
         self.legendBorders = 0.13+offsetx,0.66+offsety,0.44+offsetx,0.89+offsety
 
-        self.dataComponents = [ key for key, value in selComponents.iteritems() \
+        self.dataComponents = [ key for key, value in selComps.iteritems() \
                                 if value.isMC is False ]
         self.groupDataComponents( self.dataComponents, groupDataName)
 
@@ -84,11 +85,11 @@ class H2TauTauDataMC( AnalysisDataMC ):
         '''Definine preferences for each component'''
         self.histPref = {}
         self.histPref['Data'] = {'style':sBlack, 'layer':-99}
-        self.histPref['PromptReco-v4'] = {'style':sBlue, 'layer':-1000}
-        self.histPref['PromptReco-v6'] = {'style':sRed, 'layer':-1100}
-        self.histPref['03Oct2011'] = {'style':sYellow, 'layer':-1105}
-        self.histPref['05Aug2011-v1'] = {'style':sBlack, 'layer':-1150}
-        self.histPref['May10ReReco-v1'] = {'style':sGreen, 'layer':-1200}
+        self.histPref['dPromptReco_v4'] = {'style':sBlue, 'layer':-1000}
+        self.histPref['dPromptReco_v6'] = {'style':sRed, 'layer':-1100}
+        self.histPref['d03Oct2011'] = {'style':sYellow, 'layer':-1105}
+        self.histPref['d05Aug2011_v1'] = {'style':sBlack, 'layer':-1150}
+        self.histPref['dMay10ReReco_v1'] = {'style':sGreen, 'layer':-1200}
         self.histPref['TTJets'] = {'style':sBlue, 'layer':1} 
         self.histPref['WJets'] = {'style':sRed, 'layer':2}  
         self.histPref['DYJets'] = {'style':sYellow, 'layer':3}
@@ -101,7 +102,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         for root,dirs,files in os.walk(directory, followlinks=True):
             if root is directory:
                 continue
-            if os.path.basename(root) not in self.selComponents:
+            if os.path.basename(root) not in self.selComps:
                 print root,'is not selected'
                 continue
             matchingFiles = [file for file in files if fnmatch(file, self.filePattern)]
@@ -144,7 +145,7 @@ def wJetScale( plot, dataName ):
     plot.Hist('Data - DY - TT').SetStyle( sPinkHollow )
 
     # determine scaling factor for the WJet MC
-    mtmin, mtmax = 50, 200
+    mtmin, mtmax = 60, 200
     # scale = WJets_data / WJets 
     scale_WJets = plot.Hist('Data - DY - TT').Integral(True, mtmin, mtmax) \
                   / plot.Hist('WJets').Integral(True, mtmin, mtmax)
@@ -152,7 +153,7 @@ def wJetScale( plot, dataName ):
     # plot.Hist('WJets').Scale(scale_WJets)
 
     # hide the WJets_data component from the plot. can be set to True interactively
-    plot.Hist('Data - DY - TT').on = False
+    plot.Hist('Data - DY - TT').on = True
 
     return scale_WJets
 
@@ -183,7 +184,7 @@ def getQCD( plotSS, plotOS, dataName ):
     plotOSWithQCD = copy.deepcopy( plotOS )
 
     qcdOS = copy.deepcopy( plotSSWithQCD.Hist('QCD') )
-    qcdOS.Scale( 1.06 )
+    qcdOS.Scale( 1.11 )
 
     plotOSWithQCD.AddHistogram('QCD', qcdOS.weighted, 1030)
     plotOSWithQCD.Hist('QCD').layer=2.5
@@ -195,13 +196,13 @@ def getQCD( plotSS, plotOS, dataName ):
 def plot( hist, weights, wJetScaleSS, wJetScaleOS, box):
 
     osign = H2TauTauDataMC(hist, anaDir,
-                           selComponents,
+                           selComps,
                            'LowMT_OS_%s.root' % box, weights)
     osign.Hist('WJets').Scale( wJetScaleOS ) 
 
     boxss = box.replace('OS','SS')
     ssign = H2TauTauDataMC(hist, anaDir,
-                           selComponents,
+                           selComps,
                            'LowMT_SS_%s.root' % box, weights)
     ssign.Hist('WJets').Scale( wJetScaleSS ) 
     
@@ -257,28 +258,33 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(1)
 
-    anaDir = args[0]
-    cfgFile = args[1]
-    hists = histogramSet( options )
     dataName = 'Data'
-    anacfg = AnalysisConfig( cfgFile )
-    selComponents = anacfg.SelectedComponents()
+
+    anaDir = args[0]
+    hists = histogramSet( options )
+    cfgFileName = args[1]
+    # anacfg = AnalysisConfig( cfgFileName )
+    # selComps = anacfg.SelectedComponents()
+    file = open( cfgFileName, 'r' )
+    cfg = imp.load_source( 'cfg', cfgFileName, file)
+
+    selComps = dict( [ (comp.name, comp) for comp in cfg.config.components ])
     
-    weights = dict( [ (key,comp.GetWeight()) \
-                      for key, comp in selComponents.iteritems()] )
+    weights = dict( [ (comp.name,comp.getWeight()) \
+                      for comp in cfg.config.components] )
     
     # get WJet scaling factor for same sign
     mtSS = H2TauTauDataMC('tauMu/tauMu_h_mT', anaDir,
-                          selComponents,
+                          selComps,
                           'HighMT_SS_%s.root' % options.box, weights)
     wJetScaleSS = wJetScale( mtSS, dataName)
-
+    
     # get WJet scaling factor for opposite sign
     mtOS = H2TauTauDataMC('tauMu/tauMu_h_mT', anaDir,
-                          selComponents, 
+                          selComps, 
                           'HighMT_OS_%s.root' % options.box, weights)
     wJetScaleOS = wJetScale( mtOS, dataName)
-
+    
     SSD = {}
     OSD = {}
     OSDR = {}
@@ -286,6 +292,7 @@ if __name__ == '__main__':
 
     xmin = None
     xmax = None
+
 
     for hist in sorted(hists):
         print 'Processing: ',hist,dataName, anaDir

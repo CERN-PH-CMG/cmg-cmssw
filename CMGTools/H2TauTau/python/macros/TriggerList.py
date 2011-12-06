@@ -3,10 +3,12 @@ from CMGTools.H2TauTau.macros.Counter import Counter as Trigger
 class TriggerList( object ):
 
     def __init__(self, triggerList):
-        self.triggerList = triggerList
-        self.triggers = self.decodeTriggerList( triggerList )
+        # self.triggerList = triggerList
+        self.triggerList = map( Trigger, triggerList )
+        # self.decodeTriggerList( triggerList )
 
     def decodeTriggerList(self, triggerList):
+        raise ValueError('this function is obsolete.')
         if triggerList is None:
             return None
         triglist = map( Trigger, triggerList.split('|') )
@@ -15,7 +17,7 @@ class TriggerList( object ):
     def triggerPassed(self, triggerObject, triggerList = None):
         '''returns true if at least one of the triggers in self.triggers passes.'''
         if triggerList is None:
-            triggerList = self.triggers
+            triggerList = self.triggerList
         if not triggerList or len(triggerList)==0:
             return True
         passed = False
@@ -31,11 +33,11 @@ class TriggerList( object ):
         #               [triggerObject.getSelectionRegExp( trigger ) for trigger in triggerList])
 
     def __str__(self):
-        head = 'TriggerList: {tlist}'.format(tlist = self.triggerList)
-        triggers = '\n'.join( map(str, self.triggers) )
-        return '\n'.join( [head, triggers] )
+        head = 'TriggerList'
+        triggers = ', '.join( map(str, self.triggerList) )
+        return ': '.join( [head, triggers] )
         
 if __name__ == '__main__':
-    list = 'HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v[5,6]|HLT_IsoMu15_LooseIsoPFTau15_v9'
+    list = ['HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v[5,6]','HLT_IsoMu15_LooseIsoPFTau15_v9']
     trigList = TriggerList( list )
     print trigList
