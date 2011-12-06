@@ -486,7 +486,7 @@ int main(int argc, char* argv[])
   }
 
   //Renormalization
-  TH1F* Hcutflow     =  new TH1F ("cutflow"    , "cutflow"    ,1,0,1) ;
+  TH1F* Hcutflow     =  new TH1F ("cutflow"    , "cutflow"    ,5,0,5) ;
 
   
   //VBF
@@ -607,7 +607,7 @@ int main(int argc, char* argv[])
       double TotalWeight_plus = 1.0;
       double TotalWeight_minus = 1.0;
       if(isMC){
-        //weight = LumiWeights.weight3D( ev.ngenOOTpum1, ev.ngenITpu, ev.ngenOOTpu );
+        //weight = LumiWeights.weight3D( ev.ngenOOTpum1, ev.ngenITpu, ev.ngenOOTpu );        
 	weight = LumiWeights.weight( ev.ngenITpu );
         TotalWeight_plus = PShiftUp.ShiftWeight( ev.ngenITpu );
         TotalWeight_minus = PShiftDown.ShiftWeight( ev.ngenITpu );
@@ -618,6 +618,13 @@ int main(int argc, char* argv[])
 	  //	else if (isGG && ev.hptWeights[0]<1e-6) continue;
 	}
       }
+
+      Hcutflow->Fill(1,1);
+      Hcutflow->Fill(2,weight);
+      Hcutflow->Fill(3,weight*TotalWeight_minus);
+      Hcutflow->Fill(4,weight*TotalWeight_plus);
+
+
   
       //
       //event categories
