@@ -487,7 +487,10 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
     double maxHoE=iConfig.getParameter<double>("maxHoE");
     double minSipipEb=iConfig.getParameter<double>("minSipipEB");
     string id = iConfig.getParameter<string>("id");
-    
+    bool requireNoTrack= iConfig.getParameter<bool>("requireNoTrack");
+    bool requireNoElectron= iConfig.getParameter<bool>("requireNoElectron");
+    bool requireR9= iConfig.getParameter<bool>("requireR9");
+
     //iterate over the photons
     for(size_t iPhoton=0; iPhoton< hPhoton.product()->size(); ++iPhoton)
       {
@@ -505,7 +508,9 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
 	float hoe = photon->hadronicOverEm();
 	bool hasId(hoe<maxHoE);
 	if(!id.empty()) hasId = photon->photonID(id);
-	
+	if(requireR9)
+	  hasId &= (photon->r9()>0.94);
+
 	//these require the photon core and tracks to be stored
 	bool hasPixelSeed(false);
 	try{
@@ -547,7 +552,7 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
 	if(phoConvMatch) { isPrompt=false; tType=11*11; }
 
 	float minDr(99999.);
-	if(hTracks.isValid())
+	if(hTracks.isValid() && requireNoTrack)
 	  {
 	    for(vector<reco::Track>::const_iterator tit = hTracks->begin(); tit != hTracks->end(); tit++)
 	      {
@@ -558,7 +563,7 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
 	      }
 	  }
 	
-	if(hEle.isValid())
+	if(hEle.isValid() && requireNoElectron)
 	  {
 	    for(edm::View<reco::Candidate>::const_iterator eit = hEle->begin(); eit != hEle->end(); eit++)
 	      {

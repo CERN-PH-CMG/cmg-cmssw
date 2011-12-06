@@ -86,7 +86,8 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
 {
   try{
 
-    std::string objs[]={"Generator", "Trigger", "Vertices", "Photons", "Electrons", "LooseElectrons", "Muons", "LooseMuons", "Dileptons", "Jets", "MET" };
+    std::string objs[]={"Generator", "Trigger", "Vertices", "Photons",
+			"Electrons", "LooseElectrons", "Muons", "LooseMuons", "Dileptons", "Jets", "MET" };
     for(size_t iobj=0; iobj<sizeof(objs)/sizeof(string); iobj++)
       objConfig_[ objs[iobj] ] = iConfig.getParameter<edm::ParameterSet>( objs[iobj] );
 
@@ -258,6 +259,11 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //event summary to be filled
     summaryHandler_.resetStruct();
     ZZ2l2nuSummary_t &ev = summaryHandler_.getEvent();
+
+    //pfmet
+    Handle<View<Candidate> > hMET;
+    event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("source"), hMET);
+    CandidatePtr pfmet = hMET->ptrAt(0);
    
     //event header
     ev.run    = event.id().run();
@@ -489,9 +495,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     // MET SELECTION
     //
     //pf-met
-    Handle<View<Candidate> > hMET;
-    event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("source"), hMET);
-    CandidatePtr pfmet = hMET->ptrAt(0);
     ev.met1_phi = pfmet->phi();    ev.met1_pt=  pfmet->pt();
  
     //pseudo-mets

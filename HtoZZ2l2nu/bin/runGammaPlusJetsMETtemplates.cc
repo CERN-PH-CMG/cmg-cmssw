@@ -104,6 +104,8 @@ int main(int argc, char* argv[])
 	      controlHistos.addHistogram( new TH2D (subcat+"qtvseta", ";p_{T}^{#gamma} [GeV/c];#eta;Events / (2.5 GeV/c)", 200,0,600,50,0,2.6) );
 	      controlHistos.addHistogram( new TH2D (subcat+"qtvsnvtx", ";p_{T}^{#gamma} [GeV/c];Vertices;Events", 200,0,600,30,0,30) );
 	      controlHistos.addHistogram( new TH1D (subcat+"zmass",";M^{ll};Events", 100,91-31,91+31) );
+	      controlHistos.addHistogram( new TH1D (subcat+"finaleventflowmet",";Category;Event count;",8,0,8) );
+	      controlHistos.addHistogram( new TH1D (subcat+"finaleventflowrmet",";Category;Event count;",8,0,8) );
 	    }
 	  else
 	    {
@@ -222,7 +224,7 @@ int main(int argc, char* argv[])
 	}
       
       //minimum threshold
-      if(gamma.pt()<20) continue;
+      if(gamma.pt()<55) continue;
       
       TString phoCat("photon");
       phoCat += triggerThr;
@@ -328,6 +330,46 @@ int main(int argc, char* argv[])
 
       Float_t mt = METUtils::transverseMass(gamma,metP4,true);
 
+      //final event selection
+      
+       bool pass130met( metP4.pt()>50 && mindphijmet>0.74 && mt>171 && mt<296);
+       bool pass150met( metP4.pt()>50 && mindphijmet>0.7  && mt>193 && mt<284);
+       bool pass170met( metP4.pt()>50 && mindphijmet>0.66 && mt>185 && mt<276);
+       bool pass200met( metP4.pt()>50 && mindphijmet>0.6  && mt>220 && mt<270);
+       bool pass300met( metP4.pt()>86 && mindphijmet>0.4  && mt>260 && mt<310);
+       bool pass400met( metP4.pt()>118 && mindphijmet>0.2 && mt>340 && mt<440);
+       bool pass500met( metP4.pt()>166 && mindphijmet>0.1 && mt>340 && mt<740);
+       bool pass600met( metP4.pt()>188 && mindphijmet>0.1 && mt>440 && mt<740);
+       bool passSyst1met( metP4.pt()>50 && mindphijmet>0.05 && mt>150);
+       bool passSyst2met( metP4.pt()>60 && mindphijmet>0.1  && mt>170);
+
+       // HIG-11-026 selection
+       //        bool pass130met( metP4.pt()>70   && mindphijmet>0.5  && mt>222 && mt<272);
+       //        bool pass150met( metP4.pt()>79   && mindphijmet>0.5  && mt>264 && mt<331);
+       //        bool pass170met( metP4.pt()>95   && mindphijmet>0.5  && mt>298 && mt<393);
+       //        bool pass200met( metP4.pt()>115  && mindphijmet>0.5  && mt>327 && mt<460);
+       //        bool pass300met( metP4.pt()>134  && mindphijmet>0.5  && mt>354 && mt<531);
+       //        bool pass400met( metP4.pt()>150  && mindphijmet>0.5  && mt>382 && mt<605);
+       //        bool pass500met( metP4.pt()>159  && mindphijmet>0.5  && mt>413 && mt<684);
+       //        bool pass600met( metP4.pt()>160  && mindphijmet>0.5  && mt>452 && mt<767);
+       //        bool passSyst1met( metP4.pt()>50 && mindphijmet>0.5  && mt>150);
+       //       bool passSyst2met( metP4.pt()>60 && mindphijmet>0.5  && mt>170);
+       
+
+      bool pass130rmet( rCMetP4.pt()>50  && mindphijmet>0.74 && mt>171 && mt<296);
+      bool pass150rmet( rCMetP4.pt()>50  && mindphijmet>0.7  && mt>193 && mt<284);
+      bool pass170rmet( rCMetP4.pt()>50  && mindphijmet>0.66 && mt>185 && mt<276);
+      bool pass200rmet( rCMetP4.pt()>50  && mindphijmet>0.6  && mt>220 && mt<270);
+      bool pass300rmet( rCMetP4.pt()>84  && mindphijmet>0.2  && mt>260 && mt<310);
+      bool pass400rmet( rCMetP4.pt()>110 && mindphijmet>0.2  && mt>340 && mt<440);
+      bool pass500rmet( rCMetP4.pt()>156 && mindphijmet>0.1  && mt>340 && mt<740);
+      bool pass600rmet( rCMetP4.pt()>156 && mindphijmet>0.1  && mt>440 && mt<790);
+      bool passSyst1rmet( rCMetP4.pt()>50 && mindphijmet>0.05 && mt>150);
+      bool passSyst2rmet( rCMetP4.pt()>60 && mindphijmet>0.1  && mt>170);
+
+
+
+
       //reweight to reproduce pt weight in a gamma sample
       std::map<TString, float> qtWeights = gammaEvHandler.getWeights();
       
@@ -345,7 +387,7 @@ int main(int argc, char* argv[])
 		  TString pre= subcats[isc]+dilCats[idc];
 		  float iweight=weight;
 		  if(isGammaEvent)  iweight*=qtWeights[dilCats[idc]];
-		  if(iweight>6) continue;
+		  if(iweight>10) continue;
 
 		  controlHistos.fillHisto(pre+"r9",ctf, r9,iweight);
 		  controlHistos.fillHisto(pre+"sietaieta",ctf, sietaieta,iweight);
@@ -358,6 +400,25 @@ int main(int argc, char* argv[])
 		  
 		  if(ic==0 && isc==0)  controlHistos.fillHisto(dilCats[idc]+"zmass",ctf,gamma.mass(),iweight);
 
+		  //event flow
+		  if(pass130met) controlHistos.fillHisto(pre+"finaleventflowmet",ctf,0,iweight);
+                  if(pass150met) controlHistos.fillHisto(pre+"finaleventflowmet",ctf,1,iweight);
+                  if(pass170met) controlHistos.fillHisto(pre+"finaleventflowmet",ctf,2,iweight);
+                  if(pass200met) controlHistos.fillHisto(pre+"finaleventflowmet",ctf,3,iweight);
+                  if(pass300met) controlHistos.fillHisto(pre+"finaleventflowmet",ctf,4,iweight);
+                  if(pass400met) controlHistos.fillHisto(pre+"finaleventflowmet",ctf,5,iweight);
+                  if(pass500met) controlHistos.fillHisto(pre+"finaleventflowmet",ctf,6,iweight);
+                  if(pass600met) controlHistos.fillHisto(pre+"finaleventflowmet",ctf,7,iweight);
+		  
+		  if(pass130rmet) controlHistos.fillHisto(pre+"finaleventflowrmet",ctf,0,iweight);
+                  if(pass150rmet) controlHistos.fillHisto(pre+"finaleventflowrmet",ctf,1,iweight);
+                  if(pass170rmet) controlHistos.fillHisto(pre+"finaleventflowrmet",ctf,2,iweight);
+                  if(pass200rmet) controlHistos.fillHisto(pre+"finaleventflowrmet",ctf,3,iweight);
+                  if(pass300rmet) controlHistos.fillHisto(pre+"finaleventflowrmet",ctf,4,iweight);
+                  if(pass400rmet) controlHistos.fillHisto(pre+"finaleventflowrmet",ctf,5,iweight);
+                  if(pass500rmet) controlHistos.fillHisto(pre+"finaleventflowrmet",ctf,6,iweight);
+                  if(pass600rmet) controlHistos.fillHisto(pre+"finaleventflowrmet",ctf,7,iweight);
+		  
 		  controlHistos.fillHisto(pre+"nvtx",ctf, ev.nvtx,iweight);
 		  controlHistos.fillHisto(pre+"qt",ctf, gamma.pt(),iweight);
 		  controlHistos.fillHisto(pre+"eta",ctf, fabs(gamma.eta()),iweight);

@@ -12,7 +12,7 @@
               {
                "dtag":"DYJetsToLL",
                "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
-               "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/DYToLL/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
+               "patdir":["/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/DYToLL/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
                "xsec":3048
               }
           ]
@@ -50,93 +50,6 @@
               }
          ]
         },
-	{
-         "tag":"Z+#gamma#rightarrow l^{+}l^{-}#gamma",
-         "isdata":false,
-         "color":"831",
-         "lcolor":1,
-	 "mctruthmode":22,
-         "data":[
-              {
-               "dtag":"ZGToTauTau",
-               "dset":"ZGToTauTauG_TuneZ2_7TeV-madgraph",
-               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/ZGToTauTauG_TuneZ2_7TeV-madgraph"],
-               "xsec":30.79,
-	       "br":[1.39]	
-              },
-              {
-               "dtag":"ZGToEE",
-               "dset":"ZGToEEG_TuneZ2_7TeV-madgraph",
-               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/ZGToEEG_TuneZ2_7TeV-madgraph"],
-               "xsec":34.16,
-	       "br":[1.39]	
-              },
-              {
-               "dtag":"ZGToMuMu",
-               "dset":"ZGToMuMuG_TuneZ2_7TeV-madgraph",
-               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/ZGToMuMuG_TuneZ2_7TeV-madgraph"],
-               "xsec":33.58,
-	       "br":[1.39]
-              }
-	  ]
-	},
-	{
-	 "tag":"W+#gamma",
-         "isdata":false,
-         "color":"596",
-         "lcolor":1,
-         "mctruthmode":22,
-	 "data":[
-              {
-               "dtag":"WGToENuG",
-               "dset":"WGToENuG_TuneZ2_7TeV-madgraph",
-               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/WGToENuG_TuneZ2_7TeV-madgraph"],
-               "xsec":114.7
-              },
-	      {
-		"dtag":"WGToMuNuG",
-		"dset":"WGToMuNuG_TuneZ2_7TeV-madgraph",
-               	"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/G/WGToMuNuG_TuneZ2_7TeV-madgraph"],
-               	"xsec":114.6
-	       },
-	      {
-		"dtag":"WGToTauNuG",
-		"dset":"WGToTauNuG_TuneZ2_7TeV-madgraph",
-               	"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/G/WGToTauNuG_TuneZ2_7TeV-madgraph"],
-               	"xsec":104.6
-	       }
-	   ]
-	},
-	{
-	 "tag":"W+jets",
-         "isdata":false,
-         "color":"809",
-	 "lcolor":1,
-	 "mctruthmode":22,
-         "data":[
-		{
-		 "dtag":"WJetsToLNu",
-                 "dset":"/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
-                 "patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/WJetsToLNu/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola"],
-                 "xsec":31314
-                }
-	 ]
-	},
-	{
-         "tag":"Z+#gamma#rightarrow#nu#nu#gamma",
-         "isdata":false,
-         "color":"8",
-         "lcolor":1,
-	 "mctruthmode":22,
-	 "data":[
-              {
-               "dtag":"ZGToNuNu",
-               "dset":"ZGToNuNuG_TuneZ2_7TeV-madgraph",
-               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/ZGToNuNuG_TuneZ2_7TeV-madgraph"],
-               "xsec":3.426
-              }
-	  ]
-	},
 	{
 	"tag":"QCD",
         "isdata":false,
@@ -226,6 +139,93 @@
 	  ]
     	},
 	{
+         "tag":"Z+#gamma#rightarrow l^{+}l^{-}#gamma",
+         "isdata":false,
+         "color":"831",
+         "lcolor":1,
+	 "mctruthmode":22,
+         "data":[
+              {
+               "dtag":"ZGToTauTau",
+               "dset":"ZGToTauTauG_TuneZ2_7TeV-madgraph",
+               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/ZGToTauTauG_TuneZ2_7TeV-madgraph"],
+               "xsec":30.79,
+	       "br":[1.39]	
+              },
+              {
+               "dtag":"ZGToEE",
+               "dset":"ZGToEEG_TuneZ2_7TeV-madgraph",
+               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/ZGToEEG_TuneZ2_7TeV-madgraph"],
+               "xsec":34.16,
+	       "br":[1.39]	
+              },
+              {
+               "dtag":"ZGToMuMu",
+               "dset":"ZGToMuMuG_TuneZ2_7TeV-madgraph",
+               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/ZGToMuMuG_TuneZ2_7TeV-madgraph"],
+               "xsec":33.58,
+	       "br":[1.39]
+              }
+	  ]
+	},
+	{
+	 "tag":"W+#gamma",
+         "isdata":false,
+         "color":"596",
+         "lcolor":1,
+         "mctruthmode":22,
+	 "data":[
+              {
+               "dtag":"WGToENuG",
+               "dset":"WGToENuG_TuneZ2_7TeV-madgraph",
+               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/WGToENuG_TuneZ2_7TeV-madgraph"],
+               "xsec":114.7
+              },
+	      {
+		"dtag":"WGToMuNuG",
+		"dset":"WGToMuNuG_TuneZ2_7TeV-madgraph",
+               	"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/G/WGToMuNuG_TuneZ2_7TeV-madgraph"],
+               	"xsec":114.6
+	       },
+	      {
+		"dtag":"WGToTauNuG",
+		"dset":"WGToTauNuG_TuneZ2_7TeV-madgraph",
+               	"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/G/WGToTauNuG_TuneZ2_7TeV-madgraph"],
+               	"xsec":104.6
+	       }
+	   ]
+	},
+	{
+	 "tag":"W+jets",
+         "isdata":false,
+         "color":"809",
+	 "lcolor":1,
+	 "mctruthmode":22,
+         "data":[
+		{
+		 "dtag":"WJetsToLNu",
+                 "dset":"/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
+                 "patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/WJetsToLNu/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola"],
+                 "xsec":31314
+                }
+	 ]
+	},
+	{
+         "tag":"Z+#gamma#rightarrow#nu#nu#gamma",
+         "isdata":false,
+         "color":"8",
+         "lcolor":1,
+	 "mctruthmode":22,
+	 "data":[
+              {
+               "dtag":"ZGToNuNu",
+               "dset":"ZGToNuNuG_TuneZ2_7TeV-madgraph",
+               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/ZGToNuNuG_TuneZ2_7TeV-madgraph"],
+               "xsec":3.426
+              }
+	  ]
+	},
+	{
 	"tag":"data",
         "isdata":true,
 	"color":"1",
@@ -236,17 +236,17 @@
 	       {
                   "dtag":"PhotonMay10th",
                   "dset":"/Photon/Run2011A-PromptReco-v4/AOD",
-                  "patdir":["/castor/cern.ch//cms/store/cmst3/user/psilva/Data/Photon/Photon-May10th"]
+                  "patdir":["/store/cmst3/user/psilva/Data/Photon/Photon-May10th"]
 		},
                 {
                   "dtag":"PhotonPromptRecov4",
                   "dset":"/Photon/Run2011A-PromptReco-v4/AOD",
-                  "patdir":["/castor/cern.ch//cms/store/cmst3/user/psilva/Data/Photon/Photon-PromptReco-v4"]
+                  "patdir":["/store/cmst3/user/psilva/Data/Photon/Photon-PromptReco-v4"]
 		},
                 {
                   "dtag":"Photon05Aug2011",
                   "dset":"/Photon/Run2011A-05Aug2011-v1/AOD",
-                  "patdir":["/castor/cern.ch//cms/store/cmst3/user/psilva/Data/Photon/Photon-05Aug2011"]
+                  "patdir":["/store/cmst3/user/psilva/Data/Photon/Photon-05Aug2011"]
 		},
                 {
                   "dtag":"Photon_PromptReco_v6",

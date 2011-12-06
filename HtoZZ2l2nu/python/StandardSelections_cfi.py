@@ -72,11 +72,14 @@ BasePhotonsSelection = cms.PSet( source = cms.InputTag("selectedPatPhotons"),
                                  eerechits = cms.InputTag("reducedEcalRecHitsEE"),
                                  id = cms.string(""),
                                  minEt = cms.double(0), 
-                                 maxEta = cms.double(2.5),
+                                 maxEta = cms.double(1.4442),#2.5),
                                  maxSihihEB = cms.double(0.013),
                                  maxSihihEE = cms.double(0.03),
                                  maxHoE = cms.double(0.05),
                                  minSipipEB = cms.double(0.0),
+                                 requireNoElectron = cms.bool(True),
+                                 requireNoTrack = cms.bool(True),
+                                 requireR9 = cms.bool(False),
                                  phoCorrection=cms.string('/afs/cern.ch/user/b/bendavid/cmspublic/regweights/gbrph.root')
                                  )
 
