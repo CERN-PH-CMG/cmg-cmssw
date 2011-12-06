@@ -99,7 +99,7 @@ void estimateGammaBackground(TString inputFile="plotter_weighted.root", string b
   string modDir="Z-#gamma^{*}+jets#rightarrow ll";
   string dataDir="data";
 
-  string trigCats[]={"photon55","photon75","photon90","photon125"};
+  string trigCats[]={"photon55","photon75","photon90","photon125","photon135"};
   TString cutStr(""); cutStr += (int)cut;
 
   std::vector<string> metDirs;
@@ -128,9 +128,9 @@ void estimateGammaBackground(TString inputFile="plotter_weighted.root", string b
       for(size_t i=1; i<metDirs.size(); i++)
 	dphimet->Add((TH1F *)getObjectFromPath( fin, metDirs[i]+"/"+baseName+string("mindphijmet"+cutStr), false) );
       
-      std::pair<float,float> dataAbove05=getIntegral(dphidata,0.5);
-      std::pair<float,float> mcAbove05=getIntegral(dphimc,0.5);
-      std::pair<float,float> metAbove05=getIntegral(dphimet,0.5);
+      std::pair<float,float> dataAbove05=getIntegral(dphidata,0.);//0.5);
+      std::pair<float,float> mcAbove05=getIntegral(dphimc,0.);//.5);
+      std::pair<float,float> metAbove05=getIntegral(dphimet,0.);//.5);
 
       totalgamma    += dataAbove05.first;
       totalgammaerr += pow(dataAbove05.second,2);
@@ -176,10 +176,10 @@ void getGammaWeights(TString inputFile="mc_raw.root",bool isData=false,string va
       dataDirs.push_back("#gamma+jets");
       dataDirs.push_back("QCD");
       dataDirs.push_back("Di-photon");
-      dataDirs.push_back("Z+#gamma#rightarrow l^{+}l^{-}#gamma");
-      dataDirs.push_back("W+#gamma");
+      //      dataDirs.push_back("Z+#gamma#rightarrow l^{+}l^{-}#gamma");
+      // dataDirs.push_back("W+#gamma");
       dataDirs.push_back("W+jets");
-      dataDirs.push_back("Z+#gamma#rightarrow#nu#nu#gamma");
+      //  dataDirs.push_back("Z+#gamma#rightarrow#nu#nu#gamma");
     }
   else
     {
@@ -381,7 +381,7 @@ void getGammaTemplates(TString inputFile="/data/psilva/Higgs/ntuples_2011.11.01/
   if(!isData)
     {
       modDir="Z-#gamma^{*}+jets#rightarrow ll";
-      dataDir="#gamma+jets (simulation)";
+      dataDir="#gamma+jets";
       //      compDir="Z-#gamma^{*}+jets#rightarrow ll (Madgraph)";
       //      compTitle="Z/#gamma^{*}+jets (Madgraph)";
       compDir="";//Z+#gamma";
@@ -390,23 +390,15 @@ void getGammaTemplates(TString inputFile="/data/psilva/Higgs/ntuples_2011.11.01/
   
   //plots to retrieve
   std::vector<TString> cats, catLabels;
-  //cats.push_back("photon20");  catLabels.push_back("20<p_{T}^{#gamma}<30");
-  //cats.push_back("photon30");  catLabels.push_back("30<p_{T}^{#gamma}<50");
+  cats.push_back("photon20");  catLabels.push_back("20<p_{T}^{#gamma}<30");
+  cats.push_back("photon30");  catLabels.push_back("30<p_{T}^{#gamma}<50");
   cats.push_back("photon50");  catLabels.push_back("50<p_{T}^{#gamma}<75");
-  if(isData) 
-    {
-      cats.push_back("photon75");   catLabels.push_back("75<p_{T}^{#gamma}<90");
-      cats.push_back("photon90");   catLabels.push_back("90<p_{T}^{#gamma}<125");
-      cats.push_back("photon125");  catLabels.push_back("125<p_{T}^{#gamma}<135");
-      cats.push_back("photon135");  catLabels.push_back("135<p_{T}^{#gamma}<200");
-      cats.push_back("photon200");  catLabels.push_back("p_{T}^{#gamma}>200");
-    }
-  else
-    {
-      cats.push_back("photon75");  catLabels.push_back("75<p_{T}^{#gamma}<125");
-      cats.push_back("photon125"); catLabels.push_back("p_{T}^{#gamma}>125");
-    }
-
+  cats.push_back("photon75");   catLabels.push_back("75<p_{T}^{#gamma}<90");
+  cats.push_back("photon90");   catLabels.push_back("90<p_{T}^{#gamma}<125");
+  cats.push_back("photon125");  catLabels.push_back("125<p_{T}^{#gamma}<135");
+  cats.push_back("photon135");  catLabels.push_back("135<p_{T}^{#gamma}<200");
+  //    cats.push_back("photon200");  catLabels.push_back("p_{T}^{#gamma}>200");
+  
 
   TString subcats[]={"eq0jets","eq1jets","geq2jets"};//,"vbf"};
   TString subcatLabels[]={"=0 jets", "=1 jets", "#geq 2 jets","VBF"};
@@ -546,8 +538,9 @@ void getGammaTemplates(TString inputFile="/data/psilva/Higgs/ntuples_2011.11.01/
 		  std::pair<int,int> key(icat,iscat);
 		  if(variables[iv]=="met")
 		    {
-		      sf=getScaleFactor(iZVariable,iGammaVariable,0,35);
-		      metBasedSF[ key ] = sf;
+		      //sf=getScaleFactor(iZVariable,iGammaVariable,0,35);
+		      // metBasedSF[ key ] = sf;
+		      metBasedSF[ key ] = 1.0;
 		    }
 		  else if( metBasedSF.find(key) != metBasedSF.end() )
 		    sf = metBasedSF[key];
@@ -739,68 +732,107 @@ void getGammaTemplates(TString inputFile="/data/psilva/Higgs/ntuples_2011.11.01/
 
 
 //   
-void getContaminationTable(TString finURL,Float_t minMet=50)
+void getContaminationTable(TString inputFile="plotter_weighted.root", string histoname="finaleventflowmet", string dilChannel="mumu")
 {
-  TFile *fin = TFile::Open(finURL);
-  TString cats[]={"eq0jets","eq1jets","geq2jets","vbf"};
-  TString catLabel[]={"=0 jets", "=1 jets","#geq 2 jets", "VBF"};
-  TString procs[]={"Z+#gamma","W+#gamma","Di-photon","W+jets","QCD","#gamma+jets"};
-  TString phocats[]={"photon20","photon30","photon50","photon75","photon125"};
   
-  TH1F *normCounter=0;
-  std::vector<TH1F *> histoCounters;
-  const size_t ncats=sizeof(cats)/sizeof(TString);
-  for(size_t icat=0; icat<ncats; icat++)
-    { 
-      for(size_t ipho=0; ipho<sizeof(phocats)/sizeof(TString); ipho++)
-	{
-	  for(size_t iproc=0; iproc<sizeof(procs)/sizeof(TString); iproc++)
-	    {
-	      TString path=procs[iproc]+"/"+cats[icat]+"_"+phocats[ipho]+"eemet_met";
-	      TH1 *h = (TH1 *) getObjectFromPath(fin,path.Data(),false);
-	      Int_t ibin=h->GetXaxis()->FindBin(minMet);
-	      Int_t maxbins=h->GetXaxis()->GetNbins()+1;
-	
-	      if(icat==0 && ipho==0)
-		{
-		  TString name("h"); name += iproc;
-		  histoCounters.push_back( new TH1F(name,procs[iproc],ncats,0,ncats));
-		  if(normCounter==0) normCounter = (TH1F *) histoCounters[iproc]->Clone("normctr");
+  TFile *fin = TFile::Open(inputFile);
+  string modDir="Z-#gamma^{*}+jets#rightarrow ll";
+  string dataDir="data";
+  
+  string trigCats[]={"eq0jets","eq1jets","geq2jets","vbf"};
+  //string trigCats[]={"vbf"};
+  int ntrigcats=sizeof(trigCats)/sizeof(string);
 
-		  histoCounters[iproc]->SetLineColor( h->GetLineColor() );
-		  histoCounters[iproc]->SetFillColor( h->GetFillColor() );
-		  histoCounters[iproc]->SetMarkerColor( h->GetMarkerColor() );
-		  histoCounters[iproc]->SetLineStyle( h->GetLineStyle() );
-		  histoCounters[iproc]->SetMarkerStyle( h->GetMarkerStyle() );
-		  histoCounters[iproc]->SetFillStyle( h->GetFillStyle() );
-		  histoCounters[iproc]->SetDirectory(0);
-		  
-		  for(size_t jcat=0; jcat<ncats; jcat++)  histoCounters[iproc]->GetXaxis()->SetBinLabel(jcat+1,catLabel[jcat]);
-		}
-	      histoCounters[iproc]->Fill(icat,h->Integral(ibin,maxbins));
-	      normCounter->Fill(icat,h->Integral(ibin,maxbins));
+  std::vector<string> metDirs;
+  metDirs.push_back("Z+#gamma#rightarrow l^{+}l^{-}#gamma");
+  metDirs.push_back("W+#gamma");
+  metDirs.push_back("W+jets");
+  metDirs.push_back("Z+#gamma#rightarrow#nu#nu#gamma");
+
+  TH1F *evtflowdata=0,*evtflowmc=0,*evtflowmet=0,*evtflowfinal=0;
+  for(size_t icat=0; icat<ntrigcats; icat++)
+    {
+      //derive the scale factor for the photon+jets
+      string baseName=trigCats[icat]+"_"+dilChannel;
+      //string baseName=dilChannel;
+      
+      TH1F *ievtflowdata = (TH1F *)getObjectFromPath( fin, dataDir+"/"+baseName+histoname);
+      if(evtflowdata==0) 
+	{
+	  evtflowdata = (TH1F *) ievtflowdata->Clone("evtflowdata");
+	  evtflowdata->SetDirectory(0);
+	}
+      else
+	evtflowdata->Add(ievtflowdata);
+
+      TH1F *ievtflowmc = (TH1F *)getObjectFromPath( fin, modDir+"/"+baseName+histoname);
+      if(evtflowmc==0)
+	{
+	  evtflowmc = (TH1F *) ievtflowmc->Clone("evtflowmc");
+	  evtflowmc->SetDirectory(0);
+	}
+      else
+	evtflowmc->Add(ievtflowmc);
+
+      TH1F *ievtflowmet = 0;
+      if(metDirs.size())
+	{
+	  ievtflowmet=(TH1F *)getObjectFromPath( fin, metDirs[0]+"/"+baseName+histoname,true)->Clone("ievtflowmet");
+	  ievtflowmet->SetDirectory(0);
+	  if(evtflowmet==0)
+	    {
+	      evtflowmet = (TH1F *) ievtflowmet->Clone("evtflowmc");
+	      evtflowmet->SetDirectory(0);
 	    }
+	  else
+	    evtflowmet->Add(ievtflowmet);
+	  for(size_t i=1; i<metDirs.size(); i++)
+	    {
+	      TH1F *h = (TH1F *)getObjectFromPath( fin, metDirs[i]+"/"+baseName+histoname, false);
+	      evtflowmet->Add(h);
+	      ievtflowmet->Add(h);
+	    }
+	}
+      
+      if(evtflowfinal==0)
+	{
+	  evtflowfinal=(TH1F *) ievtflowdata->Clone("evtflowfinal");
+	  evtflowfinal->SetDirectory(0);
+	  evtflowfinal->Reset("ICE");
+	}
+      
+      for(int ibin=1; ibin<=evtflowfinal->GetXaxis()->GetNbins(); ibin++)
+	{
+	  float totalGamma    = ievtflowdata->GetBinContent(ibin);
+
+	  float totalMet    = ievtflowmet?ievtflowmet->GetBinContent(ibin):0;
+	  float totalMetErr = ievtflowmet?ievtflowmet->GetBinError(ibin):0;
+
+	  float totalbckg    = max(float(totalGamma-totalMet),float(0.));
+	  float totalbckgerr = sqrt(totalGamma+pow(totalMetErr,2));
+	  if(ibin==4) cout <<  totalGamma << " " << totalMet << " " << totalbckg << endl;
+	  
+	  float curTotalFinal = evtflowfinal->GetBinContent(ibin)+totalbckg;
+	  float curTotalErr   = sqrt( pow(evtflowfinal->GetBinError(ibin),2) + pow(totalbckgerr,2) );
+	  
+	  evtflowfinal->SetBinContent(ibin,curTotalFinal);
+	  evtflowfinal->SetBinError(ibin,curTotalErr);
 	}
     }
 
-
-  //show 
-  TList *stack  = new TList;
-  for(size_t iproc=0; iproc<sizeof(procs)/sizeof(TString); iproc++)  
+  for(int ibin=1; ibin<=evtflowfinal->GetXaxis()->GetNbins(); ibin++)
     {
-      histoCounters[iproc]->Divide(normCounter);
-      stack->Add(histoCounters[iproc]);
+       cout << evtflowmc->GetXaxis()->GetBinLabel(ibin) << "\t | "
+	   << evtflowmc->GetBinContent(ibin) 
+ 	   << "+/-" << evtflowmc->GetBinError(ibin) << "\t | "
+	   << evtflowfinal->GetBinContent(ibin) 
+	   << " +" << evtflowfinal->GetBinError(ibin)
+	   << " -" << min(evtflowfinal->GetBinError(ibin),evtflowfinal->GetBinContent(ibin)) << endl;
     }
-  setStyle();
-  TCanvas *cnv = getNewCanvas("c","c",false);
-  cnv->Clear();
-  cnv->SetWindowSize(600,600);
-  TLegend *leg=showStackPlot(cnv,*stack);
-  formatForCmsPublic(cnv,leg,"CMS simulation",histoCounters.size());
-
   
-  //  fin->Close();
+  fin->Close();
 }
+
 
 
 
