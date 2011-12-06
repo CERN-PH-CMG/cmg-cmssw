@@ -78,32 +78,28 @@ class Regions1D( object ):
 
 class JetRegions( object ):
 
-    def __init__(self):
-        #COLIN check these cuts
-        self.ptBoosted = 150
-        self.ptVBF = 30
-        self.massVBF = 400
-        self.deltaEtaVBF = 4.0
-        # super( JetRegions, self ).__init__()
+    def __init__(self, cuts):
+        self.cuts = cuts
 
     def regionNames(self):
         return ['VBF','Boosted','0or1Jet','Remains']
 
     def test(self, event):
-        jets = event.jets
-        selJets = filter( lambda j : j.pt()>self.ptVBF, jets )
+        selJets = event.jets
+        vbf = None 
+        if len(selJets) > 1:
+            vbf = event.vbf
         if len(selJets) > 1 and \
-               selJets[0].eta() * selJets[1].eta() < 0 and \
-               abs( selJets[0].eta() - selJets[1].eta() ) > self.deltaEtaVBF:
-            # missing:
-            # Mjj > 400
-            # no additional jet in gap
+               vbf.mjj > self.cuts.VBF_Mjj and \
+               vbf.deta > self.cuts.VBF_Deta and \
+               vbf.leadJets[0].eta() * vbf.leadJets[1].eta() < 0 and \
+               len( vbf.centralJets ) == 0:
             return 'VBF'
-        elif len(selJets) > 0 and selJets[0].pt()>self.ptBoosted:
+        elif len(selJets) > 0 and selJets[0].pt()>self.cuts.Boosted_JetPt:
             # missing : veto on b-tagged jets in emu channel
             return 'Boosted'
         elif len(selJets)==0 or \
-             ( len(selJets)==1 and selJets[0].pt()<self.ptBoosted ):
+             ( len(selJets)==1 and selJets[0].pt()<self.cuts.Boosted_JetPt ):
             return '0or1Jet'
         else:
             return 'Remains'
@@ -111,10 +107,10 @@ class JetRegions( object ):
 
 class MTRegions( Regions1D ):
     '''SM cuts'''
-    def __init__(self):
+    def __init__(self, cuts):
         super( MTRegions, self ).__init__()
-        self.addRegion('LowMT', 0, 40)
-        self.addRegion('HighMT', 60, float('inf') )
+        self.addRegion('LowMT', 0, cuts.MT_low)
+        self.addRegion('HighMT', cuts.MT_high, float('inf') )
         
     def test(self, event):
         ditau = event.diTau
@@ -136,11 +132,11 @@ class SignRegions( Regions1D ):
 
 class H2TauTauRegions( object ):
     '''Puts together SM regions'''
-    def __init__(self):
+    def __init__(self, cuts):
         self.dimensions = []
-        self.dimensions.append( MTRegions() )
+        self.dimensions.append( MTRegions(cuts) )
         self.dimensions.append( SignRegions() )
-        self.dimensions.append( JetRegions() )
+        self.dimensions.append( JetRegions(cuts) )
 
     def test(self, event):
         # print 'H2TauTauRegions'

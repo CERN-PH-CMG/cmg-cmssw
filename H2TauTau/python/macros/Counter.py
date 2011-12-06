@@ -33,12 +33,30 @@ class Counter:
             if prev == None:
                 prev = count
                 init = count
-            retstr += '\t {level:<40} {count} \t {eff1:4.2f} \t {eff2:4.2f}\n'.format(level=level,
+            retstr += '\t {level:<40} {count:>9} \t {eff1:4.2f} \t {eff2:6.4f}\n'.format(level=level,
                                                                                 count=count,
                                                                                 eff1=float(count)/prev,
                                                                                 eff2=float(count)/init )
             prev = count
         return retstr
+
+
+
+
+class Counters:
+    
+    def __init__( self ):
+        self.counters = []
+        self.ranks = {}
+        
+    def addCounter(self, name):
+        self.ranks[ name ] = len( self.counters )
+        self.counters.append( Counter(name) ) 
+
+    def counter(self, name):
+        return self.counters[ self.ranks[name] ] 
+
+
 
 if __name__ == '__main__':
     c = Counter('Test')
@@ -48,3 +66,7 @@ if __name__ == '__main__':
     c.inc('a: All events')
     c.inc('b: pt cut')
     print c
+
+    cs = Counters()
+    cs.addCounter('test')
+    print cs.counters
