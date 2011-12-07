@@ -63,3 +63,17 @@ if __name__ == '__main__':
     
     can1 = drawCurves( tauCurves, 'tau')
     can2 = drawCurves( muCurves, 'mu')
+
+
+    def graphEta( curves, pt = 20):
+
+        
+        etaMax = 3.
+        etaBin = 2*etaMax / npoints
+        
+        for np in range(0, npoints):
+            eta = -etaMax + np * etaBin  
+            for period, struct in curves.iteritems():
+                (fun, gr) = struct
+                gr.SetPoint( np, eta, fun( pt, eta) )
+

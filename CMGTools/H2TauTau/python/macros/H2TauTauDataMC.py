@@ -93,6 +93,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['TTJets'] = {'style':sBlue, 'layer':1} 
         self.histPref['WJets'] = {'style':sRed, 'layer':2}  
         self.histPref['DYJets'] = {'style':sYellow, 'layer':3}
+        self.histPref['DYJets_Fakes'] = {'style':sBlack, 'layer':2.5}
 
 
     def _GetFileNames(self, directory):
@@ -129,31 +130,36 @@ class H2TauTauDataMC( AnalysisDataMC ):
 
     
     
-def wJetScale( plot, dataName ):
+def wJetScale( mtplot, dataName ):
     
     # WJets_data = data - DY - TTbar 
-    wjet = copy.deepcopy(plot.Hist(dataName))
-    wjet.Add(plot.Hist('DYJets'), -1)
-    wjet.Add(plot.Hist('TTJets'), -1)
+    wjet = copy.deepcopy(mtplot.Hist(dataName))
+    wjet.Add(mtplot.Hist('DYJets'), -1)
+    try:
+        dyJetsFakes = mtplot.Hist('DYJets_Fakes')
+        wjet.Add(mtplot.Hist('DYJets_Fakes'), -1)
+    except:
+        pass
+    wjet.Add(mtplot.Hist('TTJets'), -1)
 
     # adding the WJets_data estimation to the stack
-    plot.AddHistogram( 'Data - DY - TT', wjet.weighted, 1010)
-    plot.Hist('Data - DY - TT').stack = False
+    mtplot.AddHistogram( 'Data - DY - TT', wjet.weighted, 1010)
+    mtplot.Hist('Data - DY - TT').stack = False
     # with a nice pink color
     pink = kPink+7
     sPinkHollow = Style( lineColor=pink, markerColor=pink, markerStyle=4)
-    plot.Hist('Data - DY - TT').SetStyle( sPinkHollow )
+    mtplot.Hist('Data - DY - TT').SetStyle( sPinkHollow )
 
     # determine scaling factor for the WJet MC
     mtmin, mtmax = 60, 200
     # scale = WJets_data / WJets 
-    scale_WJets = plot.Hist('Data - DY - TT').Integral(True, mtmin, mtmax) \
-                  / plot.Hist('WJets').Integral(True, mtmin, mtmax)
+    scale_WJets = mtplot.Hist('Data - DY - TT').Integral(True, mtmin, mtmax) \
+                  / mtplot.Hist('WJets').Integral(True, mtmin, mtmax)
     # apply this additional scaling factor to the WJet component 
-    # plot.Hist('WJets').Scale(scale_WJets)
+    # mtplot.Hist('WJets').Scale(scale_WJets)
 
-    # hide the WJets_data component from the plot. can be set to True interactively
-    plot.Hist('Data - DY - TT').on = True
+    # hide the WJets_data component from the mtplot. can be set to True interactively
+    mtplot.Hist('Data - DY - TT').on = True
 
     return scale_WJets
 
@@ -169,6 +175,13 @@ def getQCD( plotSS, plotOS, dataName ):
     # QCD_data = data - DY - TTbar - W
     qcd = copy.deepcopy(plotSSWithQCD.Hist(dataName))
     qcd.Add(plotSSWithQCD.Hist('DYJets'), -1)
+    try:
+        dyJetsFakes = plotSS.Hist('DYJets_Fakes')
+        qcd.Add(dyJetsFakes, -1)
+    except:
+        print 'cannot find DYJets_Fakes'
+        pass
+
     qcd.Add(plotSSWithQCD.Hist('TTJets'), -1)
     qcd.Add(plotSSWithQCD.Hist('WJets'), -1)
 
@@ -187,23 +200,23 @@ def getQCD( plotSS, plotOS, dataName ):
     qcdOS.Scale( 1.11 )
 
     plotOSWithQCD.AddHistogram('QCD', qcdOS.weighted, 1030)
-    plotOSWithQCD.Hist('QCD').layer=2.5
+    plotOSWithQCD.Hist('QCD').layer=1.5
     # plotOSWithQCD.DrawStack('HIST')
 
     return plotSSWithQCD, plotOSWithQCD
     
 
-def plot( hist, weights, wJetScaleSS, wJetScaleOS, box):
+def makePlot( hist, weights, wJetScaleSS, wJetScaleOS, box, mtregion):
 
     osign = H2TauTauDataMC(hist, anaDir,
                            selComps,
-                           'LowMT_OS_%s.root' % box, weights)
+                           '%s_OS_%s.root' % (mtregion, box), weights)
     osign.Hist('WJets').Scale( wJetScaleOS ) 
 
     boxss = box.replace('OS','SS')
     ssign = H2TauTauDataMC(hist, anaDir,
                            selComps,
-                           'LowMT_SS_%s.root' % box, weights)
+                           '%s_SS_%s.root' % (mtregion, box), weights)
     ssign.Hist('WJets').Scale( wJetScaleSS ) 
     
     return ssign, osign
@@ -239,6 +252,10 @@ if __name__ == '__main__':
                       dest="box", 
                       help="box. Default is Inclusive",
                       default='Inclusive')
+    parser.add_option("-M", "--mtregion", 
+                      dest="mtregion", 
+                      help="mT region. Default is LowMT",
+                      default='Inclusive')
     parser.add_option("-H", "--histlist", 
                       dest="histlist", 
                       help="histogram list",
@@ -269,9 +286,18 @@ if __name__ == '__main__':
     cfg = imp.load_source( 'cfg', cfgFileName, file)
 
     selComps = dict( [ (comp.name, comp) for comp in cfg.config.components ])
+
+    dySplit = False
+    if 'DYJets_Fakes' in os.listdir( anaDir ):
+        dySplit = True
+    if dySplit:
+        print 'adding DYJets_Fakes'
+        dyJetsFakeComp = copy.copy( selComps['DYJets'] )
+        dyJetsFakeComp.name = 'DYJets_Fakes'
+        selComps[dyJetsFakeComp.name] = dyJetsFakeComp
     
     weights = dict( [ (comp.name,comp.getWeight()) \
-                      for comp in cfg.config.components] )
+                      for comp in selComps.values() ] )
     
     # get WJet scaling factor for same sign
     mtSS = H2TauTauDataMC('tauMu/tauMu_h_mT', anaDir,
@@ -296,7 +322,8 @@ if __name__ == '__main__':
 
     for hist in sorted(hists):
         print 'Processing: ',hist,dataName, anaDir
-        ssign,osign = plot( hist, weights, wJetScaleSS, wJetScaleOS, options.box)
+        ssign,osign = makePlot( hist, weights, wJetScaleSS, wJetScaleOS,
+                                options.box, options.mtregion)
         ssQCD, osQCD = getQCD( ssign, osign, dataName )
         if options.rebin is not None:
             rebin = int( options.rebin )

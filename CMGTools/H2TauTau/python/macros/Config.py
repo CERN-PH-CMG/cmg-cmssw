@@ -22,6 +22,9 @@ class Component(object):
     def __init__(self, name, files, triggers=None ):
         self.name = name 
         self.files = files
+        self.isMC = False
+        self.isData = False
+        self.isEmbed = False
         if isinstance(triggers, basestring):
             self.triggers = [triggers]
         else:
@@ -36,12 +39,27 @@ class Component(object):
         all.extend(varlines)
         return '\n'.join( all )
 
+
+class EmbedComponent( Component ):
+
+    def __init__(self, name, files, triggers, tauEffWeight, muEffWeight ):
+        super(EmbedComponent, self).__init__(name, files, triggers )
+        self.isEmbed = True
+        self.tauEffWeight = tauEffWeight
+        self.muEffWeight = muEffWeight
+
+    def getWeight( self, intLumi = None):
+        return Weight( genNEvents = -1,
+                       xSection = None,
+                       genEff = -1,
+                       intLumi = None ) 
+
         
 class DataComponent( Component ):
 
     def __init__(self, name, files, intLumi, triggers ):
         super(DataComponent, self).__init__(name, files, triggers)
-        self.isMC = False
+        self.isData = True 
         self.intLumi = intLumi
 
     def getWeight( self, intLumi = None):
@@ -49,6 +67,7 @@ class DataComponent( Component ):
                        xSection = None,
                        genEff = -1,
                        intLumi = self.intLumi ) 
+
 
 class MCComponent( Component ): 
 

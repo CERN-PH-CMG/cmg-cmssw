@@ -1,7 +1,8 @@
+import copy
 import CMGTools.H2TauTau.macros.Config as htt
 
 
-period = 'Period_2011B'
+period = 'Period_2011A'
 
 
 baseDir = '2011'
@@ -83,6 +84,7 @@ DYJets = htt.MCComponent(
     muEffWeight = mc_muEffWeight,    
     effCorrFactor = mc_effCorrFactor )
 
+
 WJets = htt.MCComponent(
     name = 'WJets',
     files ='{baseDir}/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_4_0/H2TAUTAU_Nov29/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
@@ -156,17 +158,8 @@ elif period == 'Period_2011AB':
     selectedComponents.extend( data_2011A )
     selectedComponents.extend( data_2011B )
 
-# selectedComponents = [
-#    DYJets,
-#    WJets, TTJets,
-#    # dMay10ReReco_v1,dPromptReco_v4, d05Aug2011_v1, d03Oct2011,
-#    d2011B
-#    ]
 
-
-
-
-# selectedComponents = selectedComponents[:1]
+# selectedComponents = [WJets]
 
 config = htt.Config( components = selectedComponents,
                      cuts = cuts )

@@ -6,10 +6,7 @@ import imp
 from multiprocessing import Pool
 from pprint import pprint
 
-#COLIN: I think I don't need PersistentDict
-from CMGTools.RootTools.PersistentDict import PersistentDict
-from CMGTools.H2TauTau.macros.Loop import Loop
-# from CMGTools.H2TauTau.macros.Config import Config
+from CMGTools.H2TauTau.macros.Loop2 import Loop
 
 def CallBack( result ):
     pass
@@ -120,7 +117,7 @@ if __name__ == '__main__':
     selComps = cfg.config.components
     for comp in selComps:
         print comp
-    if len(selComps)>10:
+    if len(selComps)>12:
         raise ValueError('too many threads')
     if not CreateOutputDir(outDir, selComps):
         print 'exiting'
