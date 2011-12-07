@@ -1,14 +1,20 @@
 import CMGTools.H2TauTau.macros.Config as htt
 
+
+period = 'Period_2011B'
+
+
 baseDir = '2011'
 filePattern = '*fullsel*root'
+fixedMuWeight = False
 
-mc_triggers = 'HLT_IsoMu12_v1'
+# mc_triggers = 'HLT_IsoMu12_v1'
+mc_triggers = []
 
 # cut values 
 cuts = htt.Cuts()
 cuts.tauPt = 20.
-cuts.lepPt = 15. #WARNING 
+cuts.lepPt = 17. 
 cuts.lepEta = float('+inf')
 
 cuts.jetPt = 30.
@@ -27,12 +33,29 @@ cuts.MT_high = 60
 mc_lep_effCorrFactor = 0.968
 mc_tau_effCorrFactor = 0.92
 # mc_addtl = 0.786
-mc_effCorrFactor = mc_lep_effCorrFactor * mc_tau_effCorrFactor 
+# mc_effCorrFactor = mc_lep_effCorrFactor * mc_tau_effCorrFactor 
+mc_effCorrFactor = 1.
 
 # the following depends on the period... 
 # event MC weighting factors
-mc_vertexWeight = 'vertexWeight2invfb'
-mc_tauTriggerTOC = None
+
+mc_vertexWeight = None
+mc_tauEffWeight = None
+mc_muEffWeight = None
+
+if period == 'Period_2011A':
+    mc_vertexWeight = 'vertexWeight2invfb'
+    mc_tauEffWeight = 'effTau2011A'
+    mc_muEffWeight = 'effMu2011A'
+elif period == 'Period_2011B':
+    mc_vertexWeight = 'vertexWeight2011B'
+    mc_tauEffWeight = 'effTau2011B'
+    mc_muEffWeight = 'effMu2011B'
+elif period == 'Period_2011AB':
+    mc_vertexWeight = 'vertexWeight2011AB'
+    mc_tauEffWeight = 'effTau2011AB'
+    mc_muEffWeight = 'effMu2011AB'
+
 # vertexWeight2011AB
 # vertexWeight05AugReReco
 # vertexWeight2invfb  For v4 + v6 + may10 + aug5
@@ -43,6 +66,11 @@ mc_tauTriggerTOC = None
 # vertexWeightPromptRecov6
 
 
+# here, the place to hack around
+if fixedMuWeight:
+    mc_muEffWeight = None
+    mc_effCorrFactor = mc_lep_effCorrFactor
+  
 
 DYJets = htt.MCComponent(
     name = 'DYJets',
@@ -51,8 +79,9 @@ DYJets = htt.MCComponent(
     nGenEvents = 34915945,
     triggers = mc_triggers,
     vertexWeight = mc_vertexWeight,
-    effCorrFactor = mc_effCorrFactor,
-    tauTriggerTOC = mc_tauTriggerTOC )
+    tauEffWeight = mc_tauEffWeight,
+    muEffWeight = mc_muEffWeight,    
+    effCorrFactor = mc_effCorrFactor )
 
 WJets = htt.MCComponent(
     name = 'WJets',
@@ -61,8 +90,9 @@ WJets = htt.MCComponent(
     nGenEvents = 53227112,
     triggers = mc_triggers,
     vertexWeight = mc_vertexWeight,
-    effCorrFactor = mc_effCorrFactor,
-    tauTriggerTOC = mc_tauTriggerTOC )
+    tauEffWeight = mc_tauEffWeight,
+    muEffWeight = mc_muEffWeight,    
+    effCorrFactor = mc_effCorrFactor )
 
 TTJets = htt.MCComponent(
     name = 'TTJets',
@@ -71,8 +101,9 @@ TTJets = htt.MCComponent(
     nGenEvents = 3542770,
     triggers = mc_triggers,
     vertexWeight = mc_vertexWeight,
-    effCorrFactor = mc_effCorrFactor,
-    tauTriggerTOC = mc_tauTriggerTOC )
+    tauEffWeight = mc_tauEffWeight,
+    muEffWeight = mc_muEffWeight,    
+    effCorrFactor = mc_effCorrFactor )
 
 
 dMay10ReReco_v1 = htt.DataComponent(
@@ -113,14 +144,29 @@ d2011B = htt.DataComponent(
                 'HLT_IsoMu15_LooseIsoPFTau15_v[9,10,11,12,13]'] )
 
 
-selectedComponents = [
-    DYJets, WJets,
-    TTJets,
-    dMay10ReReco_v1,
-    dPromptReco_v4, d05Aug2011_v1,
-    d03Oct2011
-    ]
+MC = [DYJets, WJets, TTJets]
+data_2011A = [dMay10ReReco_v1,dPromptReco_v4, d05Aug2011_v1, d03Oct2011]
+data_2011B = [d2011B]
+selectedComponents = list( MC )
+if period == 'Period_2011A':
+    selectedComponents.extend( data_2011A )
+elif period == 'Period_2011B':
+    selectedComponents.extend( data_2011B )
+elif period == 'Period_2011AB':
+    selectedComponents.extend( data_2011A )
+    selectedComponents.extend( data_2011B )
 
+# selectedComponents = [
+#    DYJets,
+#    WJets, TTJets,
+#    # dMay10ReReco_v1,dPromptReco_v4, d05Aug2011_v1, d03Oct2011,
+#    d2011B
+#    ]
+
+
+
+
+# selectedComponents = selectedComponents[:1]
 
 config = htt.Config( components = selectedComponents,
                      cuts = cuts )
