@@ -237,8 +237,8 @@ if __name__ == '__main__':
     '''
     parser.add_option("-B", "--box", 
                       dest="box", 
-                      help="box. Default is 0or1Jet",
-                      default='0or1Jet')
+                      help="box. Default is Inclusive",
+                      default='Inclusive')
     parser.add_option("-H", "--histlist", 
                       dest="histlist", 
                       help="histogram list",

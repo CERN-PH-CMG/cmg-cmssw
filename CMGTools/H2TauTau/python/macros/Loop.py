@@ -18,12 +18,10 @@ from CMGTools.H2TauTau.macros.CountLeptons import leptonAccept
 from CMGTools.H2TauTau.macros.PhysicsObjects import DiTau, Lepton, Jet, Tau, bestDiTau
 from CMGTools.H2TauTau.macros.Jets import testJet
 from CMGTools.H2TauTau.macros.Jets import VBF
-from CMGTools.H2TauTau.macros.TurnOnCurve import TurnOnCurve
+from CMGTools.H2TauTau.macros.TriggerEfficiency import TriggerEfficiency
 from CMGTools.H2TauTau.macros.TriggerList import TriggerList
 from CMGTools.H2TauTau.macros.Regions import H2TauTauRegions
 
-#COLIN put the counters in a list so that they stay sorted? 
-#COLIN my cuts are defined in different places (Regions and Loop). I feel uncomfortable... 
 #COLIN need a Counter for each region
 #COLIN add jet ID (check the effect of jetID)
 #COLIN Can counters have branches?
@@ -50,40 +48,50 @@ class Loop:
         listOfFiles can be "*.root".
         name will be used to make the output directory'''
 
+        self.name = name
         self.cmp = component
         self.cfg = cfg 
         self.events = Events( glob.glob( self.cmp.files) )
         self.triggerList = TriggerList( self.cmp.triggers )
-        # self.tauPtCut = self.cfg.tauPtCut
-        # self.leptonPtCut = self.cfg.leptonPtCut
-        # self.leptonEtaCut = self.cfg.leptonEtaCut
-
-        self.cmp.turnOnCurve = None
         if self.cmp.isMC:
-            if self.cmp.tauTriggerTOC is not None:
-                self.cmp.turnOnCurve = TurnOnCurve( self.cmp.tauTriggerTOC )
+            self.trigEff = TriggerEfficiency()
+            self.trigEff.tauEff = None
+            self.trigEff.lepEff = None
+            if self.cmp.tauEffWeight is not None:
+                self.trigEff.tauEff = getattr( self.trigEff,
+                                               self.cmp.tauEffWeight )
+            if self.cmp.muEffWeight is not None:
+                self.trigEff.lepEff = getattr( self.trigEff,
+                                               self.cmp.muEffWeight )
+        
+        #self.cmp.turnOnCurve = None
+        #if self.cmp.isMC:
+        #    if self.cmp.tauTriggerTOC is not None:
+        #        self.cmp.turnOnCurve = TurnOnCurve( self.cmp.tauTriggerTOC )
  
-        # if name exists as a directory, build another name.
-        self.name = name
-        index = 0
-        while True:
-            try:
-                # print 'mkdir', self.name
-                os.mkdir( self.name )
-                break
-            except OSError:
-                index += 1
-                self.name = '%s_%d' % (name, index)
-
-        self.logger = logging.getLogger(name)
-        self.logger.addHandler(logging.FileHandler('/'.join([self.name,
-                                                            'log.txt'])))
+        self._MakeOutputDir()
         self.counters = Counters()
         self.averages = {}        
         # self.histograms = []
         self.InitHandles()
 
 
+    def _MakeOutputDir(self):
+        index = 0
+        name = self.name
+        while True:
+            try:
+                # print 'mkdir', self.name
+                os.mkdir( name )
+                break
+            except OSError:
+                index += 1
+                name = '%s_%d' % (self.name, index)
+            
+        self.logger = logging.getLogger(self.name)
+        self.logger.addHandler(logging.FileHandler('/'.join([self.name,
+                                                            'log.txt'])))
+        
 
     def LoadCollections(self, event ):
         '''Load all collections'''
@@ -129,7 +137,9 @@ class Loop:
         self.counters.addCounter('singleDiTau')
         self.counters.addCounter('VBF')
         
-        self.averages['triggerWeight']=Average('triggerWeight')
+        # self.averages['triggerWeight']=Average('triggerWeight')
+        self.averages['lepEffWeight']=Average('lepEffWeight')
+        self.averages['tauEffWeight']=Average('tauEffWeight')
         self.averages['vertexWeight']=Average('vertexWeight')
         self.averages['eventWeight']=Average('eventWeight')
 
@@ -239,17 +249,31 @@ class Loop:
 
 
         self.event.eventWeight = 1
-        self.event.triggerWeight = 1
+        # self.event.triggerWeight = 1
         self.event.vertexWeight = 1
+        self.event.tauEffWeight = 1
+        self.event.lepEffWeight = 1
         if self.cmp.isMC:
             self.event.vertexWeight = self.handles['vertexWeight'].product()[0]
             self.event.eventWeight *= self.event.vertexWeight
-            if self.cmp.turnOnCurve is not None:
-                self.event.triggerWeight = self.cmp.turnOnCurve.weight(
-                    self.event.tau.pt() )
-                self.event.eventWeight *= self.event.triggerWeight
+            if self.trigEff.tauEff is not None:
+                self.event.tauEffWeight = self.trigEff.tauEff(self.event.tau.pt())
+            if self.trigEff.lepEff is not None:
+                self.event.lepEffWeight = self.trigEff.lepEff(
+                    self.event.lepton.pt(),
+                    self.event.lepton.eta() )
+            self.event.eventWeight = self.event.vertexWeight * \
+                                     self.event.tauEffWeight * \
+                                     self.event.lepEffWeight
+            
+            # if self.cmp.turnOnCurve is not None:
+            #    self.event.triggerWeight = self.cmp.turnOnCurve.weight(
+            #        self.event.tau.pt() )
+            #    self.event.eventWeight *= self.event.triggerWeight
 
-        self.averages['triggerWeight'].add( self.event.triggerWeight )
+        # self.averages['triggerWeight'].add( self.event.triggerWeight )
+        self.averages['tauEffWeight'].add( self.event.tauEffWeight )
+        self.averages['lepEffWeight'].add( self.event.lepEffWeight )
         self.averages['vertexWeight'].add( self.event.vertexWeight )
         self.averages['eventWeight'].add( self.event.eventWeight ) 
 
