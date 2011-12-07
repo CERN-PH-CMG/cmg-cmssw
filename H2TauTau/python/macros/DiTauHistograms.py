@@ -10,6 +10,8 @@ class DiTauHistograms(Histograms):
         self.h_vismass = TH1F(name+'_h_vismass', ';m_{vis} (GeV)', 50, 0, 200)
         self.h_svfitmass = TH1F(name+'_h_svfitmass', ';m_{SVFit} (GeV)', 38, 0, 304)
         self.h_mT = TH1F(name+'_h_mT', ';m_{T} (GeV)', 100,0,200)
+        self.h_dr1 = TH1F(name+'_h_dr1', ';#DeltaR', 1000,-2,8)
+        self.h_dr2 = TH1F(name+'_h_dr2', ';#DeltaR', 1000,-2,8)
         
         super(DiTauHistograms, self).__init__(name)
 
@@ -24,4 +26,7 @@ class DiTauHistograms(Histograms):
         self.h_vismass.Fill( diTau.mass(), weight)
         self.h_svfitmass.Fill( diTau.massSVFit(), weight)
         self.h_mT.Fill( diTau.mTLeg2(), weight)
-        
+        self.h_dr1.Fill( diTau.leg1DeltaR, weight)
+        self.h_dr2.Fill( diTau.leg2DeltaR, weight)
+            
+            
