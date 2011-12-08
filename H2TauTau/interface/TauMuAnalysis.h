@@ -35,6 +35,8 @@ public:
   void setZTauTauColor(Int_t color){ZTauTauColor_=color;}
   void setSignalColor(Int_t color){SignalColor_=color;}
 
+  Float_t getQCDOStoSSRatio(){return QCDOStoSSRatio_;}
+
 
   virtual bool init();
   virtual bool createHistos(TString samplename="");
@@ -51,11 +53,14 @@ public:
   TH1F* getMCSS(TString histoname);//sum of SS MC's used in the QCD extraction (may exclude additional MC samples declared)
   TH1F* getSample(TString samplename, TString histoname);//can be used to get histo for any MC or Data sample
   TH1F* getQCD(TString histoname);
+  TH1F* getDiBoson(TString histoname);
   TH1F* getZToTauTau(TString histoname);//Z-->tau tau (either from MC or Embedded)
   TH1F* getTotalBackground(TString histoname);
  
 
   bool printRawYields(TString histoname);
+  Float_t getWJetsSignalToSBFraction();
+
 
   //bool plotDistribution(TString histoname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords, Float_t* axesrange, bool log=0);
   bool plot(TString histoname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords, Float_t* axesrange, bool log=0);
@@ -85,12 +90,10 @@ private:
   const reco::GenParticle * genBosonL2_;
   unsigned int genEventType_;//1=ZtoEE, 3=ZToMuMu, 5=ZToTauTau, 6=ZToOther, 11=WToENu, 13=WToMuNu, 15=WToENu
   unsigned int truthEventType_;//1=ZtoEE, 3=ZToMuMu, 5=ZToTauTau, 6=ZOther 11=WToENu, 13=WToMuNu, 15=WToENu, 16=WOther
-  unsigned int eventCategorySM_;//SM search
-  const cmg::PFJet * boostedJet_;
-  const cmg::PFJet * VBFJet1_;
-  const cmg::PFJet * VBFJet2_; 
+  unsigned int eventCategorySM_;//SM search 
   bool calcsvfit_;
   bool makeAllHistos_;
+  float deltaRTruth_;
 
   Float_t QCDOStoSSRatio_;
   Int_t transverseMassSignalMax_;
@@ -102,14 +105,14 @@ private:
 
   float embeddedGenWeight_;
 
-
-
   void fillPFJetListLC(const cmg::TauMu * cand);
   //void applyRecoilCorr(const cmg::TauMu * cand, TVector3 * MET);
   //float computePZeta(const cmg::TauMu * cand);
   //float computeTransverseMass(const cmg::TauMu * cand);
   //float computeTauIso(const cmg::Tau * tau);
   bool computeDiLeptonVeto();
+
+  int truthMatchTau();//1=e, 3=mu, 5=tau, 9=other
 
 
   //
@@ -121,21 +124,14 @@ private:
   Int_t SignalColor_;
 
   //histos
-  TH1F* diTauNHisto_;
   TH1F* diTauMassHisto_;
   TH1F* diTauMassSVFitHisto_;
   TH1F* diTauEtaHisto_;
   TH1F* diTauPtHisto_;
 
-  TH1F* svFitConvergeHisto_;
-  TH1F* svFitCov00Histo_;
-  TH1F* svFitEigen0Histo_;
-  TH1F* svFitEigen1Histo_;
-
   TH1F* muPtHisto_;
   TH1F* muEtaHisto_;
   TH1F* muIsoHisto_;
-  TH1F* muIsoDBHisto_;
   TH1F* muDxyHisto_;
   TH1F* muDzHisto_;
 
@@ -144,19 +140,24 @@ private:
   TH1F* tauIsoHisto_; 
   TH1F* tauDxyHisto_;
   TH1F* tauDzHisto_;
+  TH1F* tauEoPHisto_;
+  TH1F* tauHoPHisto_;
+  TH1F* tauEHoPHisto_;
+  TH1F* tauTruthDeltaRL1Histo_;
+  TH1F* tauTruthDeltaRL2Histo_;
+  TH1F* tauTruthHisto_;
 
   TH1F* metHisto_;
   TH1F* metphiHisto_;
-  TH1F* pZetaHisto_;
   TH1F* transverseMassHisto_;
-  TH1F* njetHisto_;
 
-  TH1F* diTauMassVBFHisto_;
-  TH1F* diJetMassVBFHisto_;
-  TH1F* diJetDeltaEtaVBFHisto_;
-  TH1F* diTauMassBoostedHisto_;
-  TH1F* jetPtBoostedHisto_;
-  TH1F* diTauMassInclusiveHisto_;
+  TH1F* njetHisto_;
+  TH1F* leadJetPtHisto_;
+  TH1F* leadJetEtaHisto_;
+  TH1F* diJetMassHisto_;
+  TH1F* diJetDeltaEtaHisto_;
+  TH1F* diJetEta1Eta2Histo_;
+
 
 
   ///output tree definition
@@ -171,10 +172,6 @@ private:
   float tree_muiso_;
   float tree_transversemass_;
   float tree_met_;
-  int   tree_svfitstatus_;
-  float tree_svfitedm_;
-  float tree_svfiteigenval0_;
-  float tree_svfiteigenval1_;
 
 
 

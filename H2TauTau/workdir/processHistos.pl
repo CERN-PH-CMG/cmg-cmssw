@@ -5,7 +5,7 @@ $NMAX=shift;
 
 @samples=(
 #	  "TTJets"
-#	  ,"ZToTauTau"
+	  "ZToTauTau"
 #	  ,"ZToMuMu"
 #	  ,"ZToLJet"
 #	  ,"WJetsToLNu"
@@ -40,16 +40,16 @@ $NMAX=shift;
 #	  ,"WW_SS"
 #	  ,"WZ_SS"
 #	  ,"ZZ_SS"
+#	  ,"HiggsGG115"
+#	  ,"HiggsVBF115"
 #	  ,"HiggsGG105"
 #	  ,"HiggsGG110"
-#	  ,"HiggsGG115"
 #	  ,"HiggsGG120"
 #	  ,"HiggsGG125"
 #	  ,"HiggsGG130"
 #	  ,"HiggsGG135"
 #	  ,"HiggsVBF105"
 #	  ,"HiggsVBF110"
-#	  ,"HiggsVBF115"
 #	  ,"HiggsVBF120"
 #	  ,"HiggsVBF125"
 #	  ,"HiggsVBF130"
@@ -57,19 +57,37 @@ $NMAX=shift;
 	  );
 $nsamples=@samples;
 
+##just check if all samples finished successfully
+if($NMAX==0){
+    $ngood=0;
+    for($i=0;$i<$nsamples;$i++){
+	$saved=`cat processHistos_${samples[$i]}.log | grep "saved histograms"`;
+	if($saved ne ""){
+	    $ngood++;
+	}else {
+	    print " bad job: processHistos_${samples[$i]}.log \n";
+	}
+    }
+    print "$ngood/$nsamples successful jobs\n";
+    exit;
+}
+
+##submit all jobs
 $index=0;
 $trial=0;
-while($trial<6000 && $index<$nsamples){
+while($trial<10000 && $index<$nsamples){
     $nroots=`ps -u benitezj | grep root.exe | wc -l`;
     #print "$trial $nroots\n";
     if($nroots<$NMAX){
 	#submit another
 	$samp="\\\"$samples[$index]\\\"";
-	print "time root -b -q -l \"batchSample.C\(${samp})\" >> processHistos_${samples[$index]}.log 2>&1 &\n";
-	system("time root -b -q -l \"batchSample.C\(${samp})\" >> processHistos_${samples[$index]}.log 2>&1 &");
+	$command="rm -f processHistos_${samples[$index]}.log; time root -b -q -l \"batchSample.C\(${samp})\" >> processHistos_${samples[$index]}.log 2>&1 &";
+	print "$command\n";
+	system("$command");
 	$index++;
     }
     $trial++;
-    sleep(10);
+    sleep(5);
 }
 print "Done submitting $index samples\n\n\n";
+exit;
