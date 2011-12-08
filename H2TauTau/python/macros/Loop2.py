@@ -17,6 +17,7 @@ from CMGTools.H2TauTau.macros.Counter import Counter, Counters
 from CMGTools.H2TauTau.macros.Average import Average
 from CMGTools.H2TauTau.macros.CountLeptons import leptonAccept
 from CMGTools.H2TauTau.macros.PhysicsObjects import DiTau, Lepton, GenParticle, Jet, Tau, bestDiTau
+from CMGTools.H2TauTau.macros.TauDecayModes import tauDecayModes
 from CMGTools.H2TauTau.macros.Jets import testJet
 from CMGTools.H2TauTau.macros.Jets import VBF
 from CMGTools.H2TauTau.macros.TriggerEfficiency import TriggerEfficiency
@@ -140,6 +141,7 @@ class Loop:
         self.averages = {}        
         # self.histograms = []
         self.InitHandles()
+        self.InitCounters()
     
 
     def LoadCollections(self, event ):
@@ -260,10 +262,11 @@ class Loop:
         
         self.counters.counter('singleDiTau').inc('a:  best di-tau')
         self.event.tau = Tau( self.event.diTau.leg1() )
-        if self.event.tau.calcEOverP() > 0.2:
-            self.counters.counter('singleDiTau').inc('b:   E/p > 0.2 ')
-        else:
+        if self.event.tau.decayMode() == 0 and \
+               self.event.tau.calcEOverP() < 0.2:
             return False
+        else:
+            self.counters.counter('singleDiTau').inc('b:   E/p > 0.2 ')
 
         if self.event.tau.pt()>cuts.tauPt:
             self.counters.counter('singleDiTau').inc('c:  tau pt > {ptCut:3.1f}'.format(ptCut = cuts.tauPt))
@@ -345,7 +348,7 @@ class Loop:
     def Loop(self, nEvents=-1 ):
         '''Loop on a given number of events, and call ToEvent for each event.'''
         print 'starting loop'
-        self.InitCounters()
+        # self.InitCounters()
         nEvents = int(nEvents)
         for iEv in range(0, self.events.size() ):
             if iEv == nEvents:

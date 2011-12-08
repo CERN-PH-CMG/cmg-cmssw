@@ -25,7 +25,7 @@ def RunLoop( comp, config, iEvent=None):
         loop.Write()
         print loop
     else:
-        loop.InitOutput()
+        # loop.InitOutput()
         iEvent = int(iEvent)
         loop.ToEvent( iEvent )
     return loop
