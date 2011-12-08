@@ -20,7 +20,19 @@ def fillFromCastor(dir,ffile=0,step=-1,generatePfn=True):
     elif(dir.find('/store/cmst3')==0):
         prefix='eoscms'
         lscommand = 'cmsLs ' + dir + ' | grep root | awk \'{print $5}\''
-        lsout = commands.getstatusoutput(lscommand)[1].split()
+        lsouttmp = commands.getstatusoutput(lscommand)[1].split()
+
+        #this is needed as cmsLs lists twice files staged from castor
+        lsout=[]
+        nduplicate=0
+        for l in lsouttmp :
+            if len(l)==0 : continue
+            if l in lsout :
+                nduplicate += 1
+                continue
+            lsout.append(l)
+        print 'Discarded ' + str(nduplicate)  + ' files duplicated in cmsLs output'
+        
     elif(dir.find('.root')<0):
         prefix='file'
         lscommand='ls ' + dir
