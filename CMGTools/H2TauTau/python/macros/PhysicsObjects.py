@@ -3,11 +3,14 @@ import math
 from ROOT import TLorentzVector
 
 from CMGTools.H2TauTau.macros.DeltaR import deltaR2
+from CMGTools.H2TauTau.macros.TauDecayModes import tauDecayModes
 
 class DiTau(object):
     '''Extends the cmg::DiTau functionalities.'''
     def __init__(self, ditau):
         self.ditau = ditau
+        self.tau = Tau( ditau.leg1() )
+        self.lepton = Lepton( ditau.leg2() )
         #p4 = LorentzVector( 1,0,0,1)
         # self.ditau.setP4(p4)
         self.leg1Gen = None
@@ -58,10 +61,14 @@ class DiTau(object):
         return getattr(self.ditau, name)
 
     def __str__(self):
-        return 'ditau: mvis=%3.2f, mT=%3.2f, pZeta=%3.2f, sumpT=%3.2f' % (self.ditau.mass(),
-                                                                          self.ditau.mTLeg2(),
-                                                                          self.ditau.pZeta(),
-                                                                          self.sumPt() ) 
+        header = 'DiTau: mvis=%3.2f, mT=%3.2f, pZeta=%3.2f, sumpT=%3.2f' \
+                 % (self.ditau.mass(),
+                    self.ditau.mTLeg2(),
+                    self.ditau.pZeta(),
+                    self.sumPt() )
+        tau = str( self.tau )
+        lepton = str( self.lepton ) 
+        return '\n'.join( [header, tau, lepton] )
         
 class PhysicsObject(object):
     '''Extends the cmg::PhysicsObject functionalities.'''
@@ -74,12 +81,13 @@ class PhysicsObject(object):
         return getattr(self.physObj, name)
 
     def __str__(self):
-        tmp = '{className}: {pdgId:>8}, pt = {pt:5.1f}, eta = {eta:5.2f}, phi = {phi:5.2f}'
+        tmp = '{className:<10}: {pdgId:>8}, pt = {pt:5.1f}, eta = {eta:5.2f}, phi = {phi:5.2f}'
         return tmp.format( className = self.__class__.__name__,
                            pdgId = self.pdgId(),
                            pt = self.pt(),
                            eta = self.eta(),
                            phi = self.phi() )
+
     
 class Tau( PhysicsObject ):
     
@@ -95,22 +103,27 @@ class Tau( PhysicsObject ):
                                  + self.tau.leadChargedHadrHCalEnergy()
         self.leadChargedMomentum = self.tau.leadChargedHadrPt() / math.sin(self.tau.theta())
         self.eOverP = self.leadChargedEnergy / self.leadChargedMomentum
-        return self.eOverP
-        
+        return self.eOverP         
+
     def __str__(self):
         lep = super(Tau, self).__str__()
-        spec = '\ttau: eOverP = {eOverP:4.2f}'.format(eOverP = self.calcEOverP() )
+        spec = '\tTau: decay = {decMode:<15}, eOverP = {eOverP:4.2f}'.format(
+            decMode = tauDecayModes.intToName( self.decayMode() ),
+            eOverP = self.calcEOverP()
+            )
         return '\n'.join([lep, spec])
 
 
-Jet = PhysicsObject
-Jet.__name__ = 'Jet'
 
-Lepton = PhysicsObject
-Lepton.__name__ = 'Lepton'
+class Jet( PhysicsObject):
+    pass
 
-GenParticle = PhysicsObject
-GenParticle.__name__ = 'GenParticle'
+class Lepton( PhysicsObject):
+    pass
+
+class GenParticle( PhysicsObject):
+    pass
+
 
 
 def isTau(leg):
@@ -128,4 +141,26 @@ def bestDiTau( diTaus ):
     best = max( diTaus, key=DiTau.sumPt) 
     return best 
 
+## http://cmslxr.fnal.gov/lxr/source/DataFormats/TauReco/interface/PFTau.h
+## 031 class PFTau : public BaseTau {
+## 032   public:
+## 033     enum hadronicDecayMode {
+## 034       kNull = -1,
+## 035       kOneProng0PiZero,
+## 036       kOneProng1PiZero,
+## 037       kOneProng2PiZero,
+## 038       kOneProng3PiZero,
+## 039       kOneProngNPiZero,
+## 040       kTwoProng0PiZero,
+## 041       kTwoProng1PiZero,
+## 042       kTwoProng2PiZero,
+## 043       kTwoProng3PiZero,
+## 044       kTwoProngNPiZero,
+## 045       kThreeProng0PiZero,
+## 046       kThreeProng1PiZero,
+## 047       kThreeProng2PiZero,
+## 048       kThreeProng3PiZero,
+## 049       kThreeProngNPiZero,
+## 050       kRareDecayMode
+## 051     };
 

@@ -19,7 +19,8 @@ class LegHistograms(Histograms):
         self.h_iso_nh = TH1F(name+'_h_iso_nh', ';nh iso', 50, 0, 20)
         self.h_iso_ph = TH1F(name+'_h_iso_ph', ';ph iso', 50, 0, 20)
 
-        self.h_eOverP = TH1F(name+'_h_eOverP', ';E / p', 50, 0, 1)
+        self.h_eOverP = TH1F(name+'_h_eOverP', ';E / p', 150, 0, 1.5)
+        self.h_decMode = TH1F(name+'_h_decMode', ';decay mode', 16, -0.5, 15.5)
 
         super(LegHistograms, self).__init__(name)
         
@@ -40,6 +41,7 @@ class LegHistograms(Histograms):
         self.h_iso_ph.Fill( leg.photonIso(), weight )
         if isTau(leg):
             tau = Tau( leg )
-            self.h_eOverP.Fill( tau.calcEOverP() )
+            self.h_eOverP.Fill( tau.calcEOverP(), weight )
+            self.h_decMode.Fill( tau.decayMode(), weight )
 
 

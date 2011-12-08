@@ -10,16 +10,11 @@ from CMGTools.H2TauTau.macros.Weight import Weight
 from CMGTools.H2TauTau.macros.Weight import printWeights
 from CMGTools.H2TauTau.macros.HistogramSet import histogramSet
 
-#COLIN this macro does not work when a component is symlinked! is it what I want?
-#COLIN need to be able to merge 2 components together:
-# - WW, WZ, ZZ
-# - all data periods, etc. [DONE]
 
 class H2TauTauDataMC( AnalysisDataMC ):
 
     def __init__(self, histName, directory, selComps,
-                 filePattern, weights,
-                 groupDataName = 'Data'):
+                 filePattern, weights, embed = True ):
         '''Constructor
 
         histName  : histogram to be plotted
@@ -40,11 +35,39 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.legendBorders = 0.13+offsetx,0.66+offsety,0.44+offsetx,0.89+offsety
 
         self.dataComponents = [ key for key, value in selComps.iteritems() \
-                                if value.isMC is False ]
+                                if value.isData is True ]
+        groupDataName = 'Data'
         self.groupDataComponents( self.dataComponents, groupDataName)
+        self.setupEmbedding( self.dataComponents, embed )
 
-        # print self
+    def setupEmbedding(self, dataComponents, doEmbedding ):
+
+        name = 'DYJets'
+        dyHist = self.Hist(name)
+        dyYield = dyHist.Yield()
         
+        # get the embedded samples corresponding to the data components
+        # merge them into a single embedded component
+        embed = None
+        for dataName in dataComponents:
+            if dataName.find('data_')==-1:
+                raise ValueError('the directory names for the data components should start by data...')
+            embedHistName = dataName.replace('data_', 'embed_')
+            embedHist = self.Hist( embedHistName )
+            embedHist.stack = False
+            embedHist.on = False
+            if doEmbedding:
+                if embed is None:
+                    embed = copy.deepcopy( embedHist )
+                    self.AddHistogram(name, embed.weighted, 3.5)
+                    self.Hist(name).stack = True
+                    continue
+                self.Hist(name).Add(embedHist)
+       
+        dyYield = dyHist.Yield()
+        embedYield = self.Hist(name).Yield()
+        self.Hist(name).Scale( dyYield / embedYield ) 
+        self._ApplyPrefs()                
 
     def groupDataComponents( self, dataComponents, name ):
         '''Groups all data components into a single component with name <name>.
@@ -85,10 +108,16 @@ class H2TauTauDataMC( AnalysisDataMC ):
         '''Definine preferences for each component'''
         self.histPref = {}
         self.histPref['Data'] = {'style':sBlack, 'layer':-99}
-        self.histPref['dPromptReco_v4'] = {'style':sBlue, 'layer':-1000}
-        self.histPref['dPromptReco_v6'] = {'style':sRed, 'layer':-1100}
-        self.histPref['d03Oct2011'] = {'style':sYellow, 'layer':-1105}
-        self.histPref['d05Aug2011_v1'] = {'style':sBlack, 'layer':-1150}
+        self.histPref['data_May10ReReco_v1'] = {'style':sViolet, 'layer':-1000}
+        self.histPref['data_PromptReco_v4'] = {'style':sBlue, 'layer':-1000}
+        self.histPref['data_PromptReco_v6'] = {'style':sRed, 'layer':-1100}
+        self.histPref['data_03Oct2011'] = {'style':sYellow, 'layer':-1105}
+        self.histPref['data_05Aug2011_v1'] = {'style':sBlack, 'layer':-1150}
+        self.histPref['embed_May10ReReco_v1'] = {'style':sViolet, 'layer':-1000}
+        self.histPref['embed_PromptReco_v4'] = {'style':sBlue, 'layer':-1000}
+        self.histPref['embed_PromptReco_v6'] = {'style':sRed, 'layer':-1100}
+        self.histPref['embed_03Oct2011'] = {'style':sYellow, 'layer':-1105}
+        self.histPref['embed_05Aug2011_v1'] = {'style':sBlack, 'layer':-1150}
         self.histPref['dMay10ReReco_v1'] = {'style':sGreen, 'layer':-1200}
         self.histPref['TTJets'] = {'style':sBlue, 'layer':1} 
         self.histPref['WJets'] = {'style':sRed, 'layer':2}  
@@ -128,6 +157,24 @@ class H2TauTauDataMC( AnalysisDataMC ):
         
 
 
+def prepareComponents(dir, config):
+
+    # list of components from configuration file
+    selComps = dict( [ (comp.name, comp) for comp in config.components ])
+
+    dySplit = False
+    if 'DYJets_Fakes' in os.listdir( dir ):
+        dySplit = True
+    if dySplit:
+        print 'adding DYJets_Fakes'
+        dyJetsFakeComp = copy.copy( selComps['DYJets'] )
+        dyJetsFakeComp.name = 'DYJets_Fakes'
+        selComps[dyJetsFakeComp.name] = dyJetsFakeComp
+        
+    weights = dict( [ (comp.name,comp.getWeight()) \
+                      for comp in selComps.values() ] )
+
+    return selComps, weights
     
     
 def wJetScale( mtplot, dataName ):
@@ -206,17 +253,20 @@ def getQCD( plotSS, plotOS, dataName ):
     return plotSSWithQCD, plotOSWithQCD
     
 
-def makePlot( hist, weights, wJetScaleSS, wJetScaleOS, box, mtregion):
+def makePlot( hist, weights, wJetScaleSS, wJetScaleOS,
+              box, mtregion, embed ):
 
     osign = H2TauTauDataMC(hist, anaDir,
                            selComps,
-                           '%s_OS_%s.root' % (mtregion, box), weights)
+                           '%s_OS_%s.root' % (mtregion, box), weights,
+                           embed )
     osign.Hist('WJets').Scale( wJetScaleOS ) 
 
     boxss = box.replace('OS','SS')
     ssign = H2TauTauDataMC(hist, anaDir,
                            selComps,
-                           '%s_SS_%s.root' % (mtregion, box), weights)
+                           '%s_SS_%s.root' % (mtregion, box), weights,
+                           embed)
     ssign.Hist('WJets').Scale( wJetScaleSS ) 
     
     return ssign, osign
@@ -255,7 +305,7 @@ if __name__ == '__main__':
     parser.add_option("-M", "--mtregion", 
                       dest="mtregion", 
                       help="mT region. Default is LowMT",
-                      default='Inclusive')
+                      default='LowMT')
     parser.add_option("-H", "--histlist", 
                       dest="histlist", 
                       help="histogram list",
@@ -264,10 +314,15 @@ if __name__ == '__main__':
                       dest="histgroup", 
                       help="histogram group",
                       default=None)
-    parser.add_option("-r", "--rebin", 
+    parser.add_option("-R", "--rebin", 
                       dest="rebin", 
                       help="rebinning factor",
                       default=None)
+    parser.add_option("-E", "--embed", 
+                      dest="embed", 
+                      help="Use embedd samples.",
+                      action="store_true",
+                      default=False)
     
     
     (options,args) = parser.parse_args()
@@ -280,35 +335,24 @@ if __name__ == '__main__':
     anaDir = args[0]
     hists = histogramSet( options )
     cfgFileName = args[1]
-    # anacfg = AnalysisConfig( cfgFileName )
-    # selComps = anacfg.SelectedComponents()
     file = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
 
-    selComps = dict( [ (comp.name, comp) for comp in cfg.config.components ])
-
-    dySplit = False
-    if 'DYJets_Fakes' in os.listdir( anaDir ):
-        dySplit = True
-    if dySplit:
-        print 'adding DYJets_Fakes'
-        dyJetsFakeComp = copy.copy( selComps['DYJets'] )
-        dyJetsFakeComp.name = 'DYJets_Fakes'
-        selComps[dyJetsFakeComp.name] = dyJetsFakeComp
+    selComps, weights = prepareComponents(anaDir, cfg.config)
     
-    weights = dict( [ (comp.name,comp.getWeight()) \
-                      for comp in selComps.values() ] )
     
     # get WJet scaling factor for same sign
     mtSS = H2TauTauDataMC('tauMu/tauMu_h_mT', anaDir,
                           selComps,
-                          'HighMT_SS_%s.root' % options.box, weights)
+                          'HighMT_SS_%s.root' % options.box, weights,
+                          options.embed )
     wJetScaleSS = wJetScale( mtSS, dataName)
     
     # get WJet scaling factor for opposite sign
     mtOS = H2TauTauDataMC('tauMu/tauMu_h_mT', anaDir,
                           selComps, 
-                          'HighMT_OS_%s.root' % options.box, weights)
+                          'HighMT_OS_%s.root' % options.box, weights,
+                          options.embed )
     wJetScaleOS = wJetScale( mtOS, dataName)
     
     SSD = {}
@@ -323,7 +367,7 @@ if __name__ == '__main__':
     for hist in sorted(hists):
         print 'Processing: ',hist,dataName, anaDir
         ssign,osign = makePlot( hist, weights, wJetScaleSS, wJetScaleOS,
-                                options.box, options.mtregion)
+                                options.box, options.mtregion, options.embed)
         ssQCD, osQCD = getQCD( ssign, osign, dataName )
         if options.rebin is not None:
             rebin = int( options.rebin )

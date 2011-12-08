@@ -108,38 +108,38 @@ TTJets = htt.MCComponent(
     effCorrFactor = mc_effCorrFactor )
 
 
-dMay10ReReco_v1 = htt.DataComponent(
-    name = 'dMay10ReReco_v1',
+data_May10ReReco_v1 = htt.DataComponent(
+    name = 'data_May10ReReco_v1',
     files ='{baseDir}/TauPlusX/Run2011A-May10ReReco-v1/AOD/V2/PAT_CMG_V2_4_0/H2TAUTAU_Dec2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     intLumi = 168.597,
     triggers = ['HLT_IsoMu12_LooseIsoPFTau10_v4'] )
 
-dPromptReco_v4 = htt.DataComponent(
-    name = 'dPromptReco_v4',
+data_PromptReco_v4 = htt.DataComponent(
+    name = 'data_PromptReco_v4',
     files ='{baseDir}/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_4_0/H2TAUTAU_Dec2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     intLumi = 929.748,
     triggers = ['HLT_IsoMu15_LooseIsoPFTau15_v[2,4,5,6]'] )
 
-d05Aug2011_v1 = htt.DataComponent(
-    name = 'd05Aug2011_v1',
+data_05Aug2011_v1 = htt.DataComponent(
+    name = 'data_05Aug2011_v1',
     files ='{baseDir}/TauPlusX/Run2011A-05Aug2011-v1/AOD/V2/PAT_CMG_V2_4_0/H2TAUTAU_Dec2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     intLumi = 373.349,
     triggers = ['HLT_IsoMu15_LooseIsoPFTau15_v8'] )
 
-dPromptReco_v6 = htt.DataComponent(
-    name = 'dPromptReco_v6',
+data_PromptReco_v6 = htt.DataComponent(
+    name = 'data_PromptReco_v6',
     files ='{baseDir}/TauPlusX/Run2011A-PromptReco-v6/AOD/V2/PAT_CMG_V2_4_0/H2TAUTAU_Dec2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     intLumi = 658.886,
     triggers = ['HLT_IsoMu15_LooseIsoPFTau15_v[8,9]'] )
 
-d03Oct2011 = htt.DataComponent(
-    name = 'd03Oct2011',
+data_03Oct2011 = htt.DataComponent(
+    name = 'data_03Oct2011',
     files ='{baseDir}/TauPlusX/Run2011A-03Oct2011-v1/AOD/V2/PAT_CMG_V2_4_0/H2TAUTAU_Dec2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     intLumi = 658.886,
     triggers = ['HLT_IsoMu15_LooseIsoPFTau15_v[8,9]'] )
 
-d2011B = htt.DataComponent(
-    name = 'd2011B',
+data_2011B = htt.DataComponent(
+    name = 'data_2011B',
     files ='{baseDir}/TauPlusX/Run2011B-PromptReco-v1/AOD/V2/PAT_CMG_V2_4_0/H2TAUTAU_Dec2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     intLumi = 2511.0,
     triggers = ['HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v[1,5,6]',
@@ -190,16 +190,17 @@ embed_2011B = htt.EmbedComponent(
 
 
 MC = [DYJets, WJets, TTJets]
-data_2011A = [dMay10ReReco_v1,dPromptReco_v4, d05Aug2011_v1, d03Oct2011]
+data_2011A = [data_May10ReReco_v1,data_PromptReco_v4,
+              data_05Aug2011_v1, data_03Oct2011]
 embed_2011A = [embed_May10ReReco_v1,embed_PromptReco_v4,
                embed_05Aug2011_v1, embed_03Oct2011]
-data_2011B = [d2011B]
+data_2011B = [data_2011B]
 embed_2011B = [embed_2011B]
 
 selectedComponents = list( MC )
 if period == 'Period_2011A':
     selectedComponents.extend( data_2011A )
-#    selectedComponents.extend( embed_2011A )    
+    selectedComponents.extend( embed_2011A )    
 elif period == 'Period_2011B':
     selectedComponents.extend( data_2011B )
     selectedComponents.extend( embed_2011B )    
@@ -210,7 +211,7 @@ elif period == 'Period_2011AB':
     selectedComponents.extend( embed_2011B )    
 
 
-# selectedComponents = [embed_May10ReReco_v1]
+# selectedComponents = [d2011B]
 
 config = htt.Config( components = selectedComponents,
                      cuts = cuts )

@@ -21,6 +21,9 @@ class H2TauTauHistogramList( object ):
         
         self.diTau = DiTauHistograms( 'tauMu')
         self.tau = LegHistograms( 'tau','leg1')
+        self.tau0 = LegHistograms( 'tau0','leg1')
+        self.tau1 = LegHistograms( 'tau1','leg1')
+        self.tau10 = LegHistograms( 'tau10','leg1')
         self.mu = LegHistograms( 'mu','leg2')
         self.vertex = VertexHistograms( 'vertex')
         self.jets = JetHistograms( 'jets')
@@ -28,6 +31,9 @@ class H2TauTauHistogramList( object ):
         self.hists = []
         self.hists.append( self.diTau )
         self.hists.append( self.tau )
+        self.hists.append( self.tau0 )
+        self.hists.append( self.tau1 )
+        self.hists.append( self.tau10 )
         self.hists.append( self.mu )     
         self.hists.append( self.vertex )
         self.hists.append( self.jets )
@@ -39,7 +45,15 @@ class H2TauTauHistogramList( object ):
 
     def FillDiTau(self, diTau, weight=1):
         self.diTau.FillDiTau( diTau, weight )
-        self.tau.FillLeg( diTau.leg1(), weight )
+        tau = diTau.leg1()
+        self.tau.FillLeg( tau, weight )
+        dec = tau.decayMode()
+        if dec == 0:
+            self.tau0.FillLeg( diTau.leg1(), weight )
+        elif dec == 1:
+            self.tau1.FillLeg( diTau.leg1(), weight )
+        elif dec == 10:
+            self.tau10.FillLeg( diTau.leg1(), weight )
         self.mu.FillLeg( diTau.leg2(), weight )
 
     def FillVertices(self, vertices, weight=1):
