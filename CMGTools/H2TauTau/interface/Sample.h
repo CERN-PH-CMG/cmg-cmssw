@@ -100,7 +100,7 @@ public:
       if(histFile_->IsZombie()) return NULL;
       if(!histFile_->GetListOfKeys()) return NULL;
       if(histFile_->GetListOfKeys()->GetSize()==0) return NULL;
-      cout<<" opened file :"<<outputpath_+"/"+GetName()+"_Sample_Histograms.root"<<endl;
+      //cout<<" opened file :"<<outputpath_+"/"+GetName()+"_Sample_Histograms.root"<<endl;
     }
     //scale all histograms
     TList* keys=histFile_->GetListOfKeys();
@@ -108,6 +108,8 @@ public:
     TIterator* keyiter=keys->MakeIterator();
     for(TKey* histname=(TKey*)keyiter->Next(); histname; histname=(TKey*)keyiter->Next())
       ((TH1*)histFile_->Get(histname->GetName()))->Scale(factor);//(effCorrFactor_*lumi)/getLumi()
+
+    cout<<"Scaled histos in "<<histFile_->GetName()<<" by "<<factor<<endl;
     return 1;
   }
 
@@ -160,8 +162,9 @@ public:
       if(histFile_->GetListOfKeys()->GetSize()==0) return NULL;
       //cout<<" opened file :"<<outputpath_+"/"+GetName()+"_Sample_Histograms.root"<<endl;
     }
-    
-    return (TH1*)histFile_->Get(TString(GetName())+"_"+name) ;
+    //histFile_->Print();
+    //cout<<"name="<<TString(GetName())+"_"+name<<"="<<endl;
+    return (TH1*)(histFile_->Get(TString(GetName())+"_"+name)) ;
   }
 
   std::vector<std::string> * getTrigPaths(){return &trigPaths_;}

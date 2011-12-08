@@ -22,6 +22,7 @@ TauMuAnalysis::TauMuAnalysis():
   inputTag_(""),
   diLeptonVetoListName_(""),
   calcsvfit_(0),
+  deltaRTruth_(0.2),
   makeAllHistos_(1),
   QCDOStoSSRatio_(0),
   QCDColor_(kMagenta-10)
@@ -33,6 +34,7 @@ TauMuAnalysis::TauMuAnalysis(const char * name):
   inputTag_(""),
   diLeptonVetoListName_(""),
   calcsvfit_(0),
+  deltaRTruth_(0.2),
   makeAllHistos_(1),
   QCDOStoSSRatio_(0),
   QCDColor_(kMagenta-10)
@@ -62,42 +64,38 @@ bool TauMuAnalysis::addHistos(Sample* s){
   
   if(!BaseAnalysis::addHistos(s))return 0;
   
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauNHisto","",5,-.5,4.5))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauMassHisto","",1000,0,1000))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauMassSVFitHisto","",1000,0,1000))))return 0;
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_svFitConvergeHisto","",6,-0.5,5.5))))return 0;
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_svFitCov00Histo","",1000,0,1000))))return 0;
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_svFitEigen0Histo","",1000,0,1000))))return 0;
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_svFitEigen1Histo","",1000,0,1000))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauEtaHisto","",120,-6,6))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauPtHisto","",400,0,200))))return 0; 
+
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muPtHisto","",400,0,200))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muEtaHisto","",120,-3,3))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muIsoHisto","",100,0,.5))))return 0; 
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muIsoDBHisto","",100,0,.5))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muDxyHisto","",100,0,.5))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_muDzHisto","",100,0,.5))))return 0; 
+
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauPtHisto","",400,0,200))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauEtaHisto","",120,-3,3))))return 0;  
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauIsoHisto","",100,0,5))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauDxyHisto","",100,0,.5))))return 0; 
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauDzHisto","",100,0,.5))))return 0;  
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauEoPHisto","",500,0.,5.0))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauHoPHisto","",500,0.,5.0))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauEHoPHisto","",500,0.,5.0))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauTruthDeltaRL1Histo","",200,0,2.0))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauTruthDeltaRL2Histo","",200,0,2.0))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_tauTruthHisto_","",10,0,10))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_metHisto","",200,0,200))))return 0;
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_pZetaHisto","",180,-140,40))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_transverseMassHisto","",200,0,200))))return 0;
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_njetHisto","",10,-0.5,9.5))))return 0;
   if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_metphiHisto","",64,-3.2,3.2))))return 0;
 
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauMassBoostedHisto","",1000,0,1000))))return 0;
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_jetPtBoostedHisto","",500,0,500))))return 0;
-  
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauMassVBFHisto","",1000,0,1000))))return 0;
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diJetMassVBFHisto","",1000,0,1000))))return 0;    
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diJetDeltaEtaVBFHisto","",100,0,10))))return 0;
-
-  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diTauMassInclusiveHisto","",1000,0,1000))))return 0;
-
-
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_njetHisto","",10,-0.5,9.5))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_leadJetPtHisto","",500,0,500))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_leadJetEtaHisto","",100,-5,5))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diJetMassHisto","",1000,0,1000))))return 0;    
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diJetDeltaEtaHisto","",200,-10,10))))return 0;
+  if(!s->addHisto((TH1*)(new TH1F(TString(s->GetName())+"_diJetEta1Eta2Histo","",60,-30,30))))return 0;
 
   return 1;
 }
@@ -108,41 +106,39 @@ bool TauMuAnalysis::getHistos(TString tag){
 
   if(tag!="")tag=TString("_")+tag;
 
-  if(!(diTauNHisto_=(TH1F*)(sample_->getHisto(TString("diTauNHisto")+tag))))return 0;
   if(!(diTauMassHisto_=(TH1F*)(sample_->getHisto(TString("diTauMassHisto")+tag))))return 0;
   if(!(diTauMassSVFitHisto_=(TH1F*)(sample_->getHisto(TString("diTauMassSVFitHisto")+tag))))return 0;
-  if(!(svFitConvergeHisto_=(TH1F*)(sample_->getHisto(TString("svFitConvergeHisto")+tag))))return 0;
-  if(!(svFitCov00Histo_=(TH1F*)(sample_->getHisto(TString("svFitCov00Histo")+tag))))return 0;
-  if(!(svFitEigen0Histo_=(TH1F*)(sample_->getHisto(TString("svFitEigen0Histo")+tag))))return 0;
-  if(!(svFitEigen1Histo_=(TH1F*)(sample_->getHisto(TString("svFitEigen1Histo")+tag))))return 0;
   if(!(diTauEtaHisto_=(TH1F*)(sample_->getHisto(TString("diTauEtaHisto")+tag))))return 0;
   if(!(diTauPtHisto_=(TH1F*)(sample_->getHisto(TString("diTauPtHisto")+tag))))return 0;
+
   if(!(muPtHisto_=(TH1F*)(sample_->getHisto(TString("muPtHisto")+tag))))return 0;
   if(!(muEtaHisto_=(TH1F*)(sample_->getHisto(TString("muEtaHisto")+tag))))return 0;
   if(!(muIsoHisto_=(TH1F*)(sample_->getHisto(TString("muIsoHisto")+tag))))return 0;
-  if(!(muIsoDBHisto_=(TH1F*)(sample_->getHisto(TString("muIsoDBHisto")+tag))))return 0;
-  if(!(muPtHisto_=(TH1F*)(sample_->getHisto(TString("muPtHisto")+tag))))return 0;
   if(!(muDxyHisto_=(TH1F*)(sample_->getHisto(TString("muDxyHisto")+tag))))return 0;
   if(!(muDzHisto_=(TH1F*)(sample_->getHisto(TString("muDzHisto")+tag))))return 0;
+
   if(!(tauPtHisto_=(TH1F*)(sample_->getHisto(TString("tauPtHisto")+tag))))return 0;
   if(!(tauEtaHisto_=(TH1F*)(sample_->getHisto(TString("tauEtaHisto")+tag))))return 0;
   if(!(tauIsoHisto_=(TH1F*)(sample_->getHisto(TString("tauIsoHisto")+tag))))return 0;
   if(!(tauDxyHisto_=(TH1F*)(sample_->getHisto(TString("tauDxyHisto")+tag))))return 0;
   if(!(tauDzHisto_=(TH1F*)(sample_->getHisto(TString("tauDzHisto")+tag))))return 0;
+  if(!(tauEoPHisto_=(TH1F*)(sample_->getHisto(TString("tauEoPHisto")+tag))))return 0;
+  if(!(tauHoPHisto_=(TH1F*)(sample_->getHisto(TString("tauHoPHisto")+tag))))return 0;
+  if(!(tauEHoPHisto_=(TH1F*)(sample_->getHisto(TString("tauEHoPHisto")+tag))))return 0;
+  if(!(tauTruthDeltaRL1Histo_=(TH1F*)(sample_->getHisto(TString("tauTruthDeltaRL1Histo")+tag))))return 0;
+  if(!(tauTruthDeltaRL2Histo_=(TH1F*)(sample_->getHisto(TString("tauTruthDeltaRL2Histo")+tag))))return 0;
+  if(!(tauTruthHisto_=(TH1F*)(sample_->getHisto(TString("tauTruthHisto")+tag))))return 0;
+
   if(!(metHisto_=(TH1F*)(sample_->getHisto(TString("metHisto")+tag))))return 0;
   if(!(metphiHisto_=(TH1F*)(sample_->getHisto(TString("metphiHisto")+tag))))return 0;
-  if(!(pZetaHisto_=(TH1F*)(sample_->getHisto(TString("pZetaHisto")+tag))))return 0;
   if(!(transverseMassHisto_=(TH1F*)(sample_->getHisto(TString("transverseMassHisto")+tag))))return 0;
+
   if(!(njetHisto_=(TH1F*)(sample_->getHisto(TString("njetHisto")+tag))))return 0;
-
-  if(!(diTauMassBoostedHisto_=(TH1F*)(sample_->getHisto(TString("diTauMassBoostedHisto")+tag))))return 0;
-  if(!(jetPtBoostedHisto_=(TH1F*)(sample_->getHisto(TString("jetPtBoostedHisto")+tag))))return 0;
-  
-  if(!(diTauMassVBFHisto_=(TH1F*)(sample_->getHisto(TString("diTauMassVBFHisto")+tag))))return 0;
-  if(!(diJetMassVBFHisto_=(TH1F*)(sample_->getHisto(TString("diJetMassVBFHisto")+tag))))return 0;
-  if(!(diJetDeltaEtaVBFHisto_=(TH1F*)(sample_->getHisto(TString("diJetDeltaEtaVBFHisto")+tag))))return 0;
-
-  if(!(diTauMassInclusiveHisto_=(TH1F*)(sample_->getHisto(TString("diTauMassInclusiveHisto")+tag))))return 0;
+  if(!(leadJetPtHisto_=(TH1F*)(sample_->getHisto(TString("leadJetPtHisto")+tag))))return 0;
+  if(!(leadJetEtaHisto_=(TH1F*)(sample_->getHisto(TString("leadJetEtaHisto")+tag))))return 0;
+  if(!(diJetMassHisto_=(TH1F*)(sample_->getHisto(TString("diJetMassHisto")+tag))))return 0;
+  if(!(diJetDeltaEtaHisto_=(TH1F*)(sample_->getHisto(TString("diJetDeltaEtaHisto")+tag))))return 0;
+  if(!(diJetEta1Eta2Histo_=(TH1F*)(sample_->getHisto(TString("diJetEta1Eta2Histo")+tag))))return 0;
 
   return 1;
 }
@@ -223,7 +219,7 @@ bool TauMuAnalysis::fillVariables(const fwlite::Event * event){
   genBosonL1_ = NULL;
   genBosonL2_ = NULL;
   genEventType_=0;
-  if(sample_->getDataType()=="MC" || sample_->getDataType()=="MC_SS"){  
+  if(sample_->getDataType()=="MC" || sample_->getDataType()=="MC_SS" || sample_->getDataType()=="Signal"){  
     event->getByLabel(edm::InputTag("genParticlesStatus3"),genParticles_);    
     for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){    
       //cout<<g->pdgId()<<" "<<g->p4().pt()<<endl;
@@ -275,6 +271,21 @@ bool TauMuAnalysis::fillVariables(const fwlite::Event * event){
   return 1;
 }
 
+int TauMuAnalysis::truthMatchTau(){
+  if(!diTauSel_)return 0;
+
+  if(sample_->getDataType()=="MC" || sample_->getDataType()=="MC_SS" || sample_->getDataType()=="Signal"){  
+    for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){    
+      if(abs(g->pdgId())==11) if(reco::deltaR(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),g->eta(),g->phi())<deltaRTruth_) return 1;
+      if(abs(g->pdgId())==13) if(reco::deltaR(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),g->eta(),g->phi())<deltaRTruth_) return 3;
+      if(abs(g->pdgId())==15) if(reco::deltaR(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),g->eta(),g->phi())<deltaRTruth_) return 5;
+    }
+  }
+
+  return 9;
+}
+
+
 bool TauMuAnalysis::applySelections(TString exceptcut){
 
   //if none are selected returns 0
@@ -299,9 +310,12 @@ bool TauMuAnalysis::applySelections(TString exceptcut){
     if(exceptcut!="tauagainstelectron") if(cand->leg1().tauID("againstElectronLoose")<0.5) continue;
     if(exceptcut!="tauagainstmuon") if(cand->leg1().tauID("againstMuonTight")<0.5) continue;
     if(exceptcut!="tauiso") if(cand->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr")<0.5) continue; 
+    if(exceptcut!="taueop") 
+      if(cand->leg1().decayMode()==0&&cand->leg1().p()>0.) 
+	if(((cand->leg1().leadChargedHadrECalEnergy()+cand->leg1().leadChargedHadrHCalEnergy())/cand->leg1().p())<0.2) continue; 
         
     ////selections on the muon
-    if(exceptcut!="mupt") if(cand->leg2().pt()<15.0)continue;
+    if(exceptcut!="mupt") if(cand->leg2().pt()<17.0)continue;
     if(exceptcut!="mueta") if(fabs(cand->leg2().eta())>2.1)continue;
     if(exceptcut!="muid")
       if(cand->leg2().dxy() > 0.045
@@ -330,11 +344,9 @@ bool TauMuAnalysis::applySelections(TString exceptcut){
     }
 
   //determine the jets
-  //transverse mass uses recoil corrections which use number of jets
   fillPFJetListLC(diTauSel_);
   
   ///apply selections on di-tau cands here
-  //if(exceptcut!="massT") if(computeTransverseMass(diTauSel_)>40.0)  return 0;
   if(exceptcut!="massT") if(diTauSel_->mTLeg2()>40.0) return 0;
   
   ///SS or OS separation 
@@ -354,10 +366,10 @@ bool TauMuAnalysis::applySelections(TString exceptcut){
     //Z-->ll
     if(abs(genBoson_->pdgId())==23){
       if(genBosonL1_&&genBosonL2_){
-	if(((reco::deltaR(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),genBosonL1_->eta(),genBosonL1_->phi())<0.2)
-	    ||(reco::deltaR(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),genBosonL2_->eta(),genBosonL2_->phi())<0.2))
-	   && ((reco::deltaR(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),genBosonL1_->eta(),genBosonL1_->phi())<0.2)
-	       ||(reco::deltaR(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),genBosonL2_->eta(),genBosonL2_->phi())<0.2))
+	if(((reco::deltaR(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),genBosonL1_->eta(),genBosonL1_->phi())<deltaRTruth_)
+	    ||(reco::deltaR(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),genBosonL2_->eta(),genBosonL2_->phi())<deltaRTruth_))
+	   && ((reco::deltaR(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),genBosonL1_->eta(),genBosonL1_->phi())<deltaRTruth_)
+	       ||(reco::deltaR(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),genBosonL2_->eta(),genBosonL2_->phi())<deltaRTruth_))
 	   ) truthEventType_=abs(genBosonL1_->pdgId())-10;
 	else truthEventType_=6;
       }else truthEventType_=6;
@@ -366,11 +378,11 @@ bool TauMuAnalysis::applySelections(TString exceptcut){
     //W-->lnu
     if(abs(genBoson_->pdgId())==24){
       if(genBosonL1_){
-	if(reco::deltaR(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),genBosonL1_->eta(),genBosonL1_->phi())<0.2)
+	if(reco::deltaR(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),genBosonL1_->eta(),genBosonL1_->phi())<deltaRTruth_)
 	  truthEventType_=abs(genBosonL1_->pdgId());
 	else truthEventType_=16;
       }else if(genBosonL2_){	  
-	if(reco::deltaR(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),genBosonL2_->eta(),genBosonL2_->phi())<0.2)
+	if(reco::deltaR(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),genBosonL2_->eta(),genBosonL2_->phi())<deltaRTruth_)
 	  truthEventType_=abs(genBosonL2_->pdgId());
 	else truthEventType_=16;
       }else truthEventType_=16;
@@ -383,44 +395,50 @@ bool TauMuAnalysis::applySelections(TString exceptcut){
     if(sample_->getTruthEventType()!=truthEventType_) return 0;
 
 
-  //SM event category:
+
+  //Define SM event category:
   eventCategorySM_=9;//inclusive
-  if(pfJetListLC_.size()==1){//Boosted: 1 jet with pt>150 and no other jets
-    if(pfJetListLC_.begin()->pt()>150.0){
-      eventCategorySM_=1;
-      boostedJet_=&(*(pfJetListLC_.begin()));
-    }
+  if(pfJetListLC_.size()<=1){//inclusive 
+    if(pfJetListLC_.size()==1){
+      if(pfJetListLC_.begin()->pt()<150.0)
+	eventCategorySM_=0;
+    }else eventCategorySM_=0;
   }
-  if(pfJetListLC_.size()>=2){//VBF: 1 dijet with m>400, |eta1-eta2| < 4 and no other jet in between
-    for(std::vector<cmg::PFJet>::const_iterator jet1=pfJetListLC_.begin(); jet1!=pfJetListLC_.end(); ++jet1){
-      for(std::vector<cmg::PFJet>::const_iterator jet2=pfJetListLC_.begin(); jet2!=pfJetListLC_.end(); ++jet2){
-	if((jet1->p4()+jet2->p4()).mass() > 400.0 
-	   && fabs(jet1->eta() - jet2->eta()) > 4.0 
-	   && jet1->eta()*jet2->eta() < 0.0
-	   ) {
- 	  bool pass=1;
-	  if(pfJetListLC_.size()>2){// check there is no additional jet in the eta gap between the VBF jets
-	    for(std::vector<cmg::PFJet>::const_iterator jet3=pfJetListLC_.begin(); jet3!=pfJetListLC_.end(); ++jet3){
-	      if(jet1->eta()<jet2->eta()) 
-		if(jet1->eta()<jet3->eta()&&jet3->eta()<jet2->eta()) pass=0;
-	      if(jet1->eta()>jet2->eta()) 
-		if(jet2->eta()<jet3->eta()&&jet3->eta()<jet1->eta()) pass=0;
-	    }
-	  }
-	  if(pass){
-	    eventCategorySM_=2;
-	    VBFJet1_=&(*(jet1));
-	    VBFJet2_=&(*(jet2));
-	  }
+  if(pfJetListLC_.size()==1){//Boosted: 1 jet with pt>150 and no other jets
+    if(pfJetListLC_.begin()->pt()>=150.0)
+      eventCategorySM_=1;
+  }
+  if(pfJetListLC_.size()>=2){//VBF: two leading jets must have  m>400, |eta1-eta2| < 4 and no other jet high pt in between    
+    if((pfJetListLC_[0].p4()+pfJetListLC_[1].p4()).mass() > 400.0 
+       && fabs(pfJetListLC_[0].eta() - pfJetListLC_[1].eta()) > 4.0 
+       && pfJetListLC_[0].eta()*pfJetListLC_[1].eta() < 0.0
+       ){
+      bool pass=1;
+      if(pfJetListLC_.size()>2){// check there is no additional central jet
+	for(std::vector<cmg::PFJet>::const_iterator jet3=pfJetListLC_.begin(); jet3!=pfJetListLC_.end(); ++jet3){
+	  if(pfJetListLC_[0].eta()<pfJetListLC_[1].eta()) 
+	    if(pfJetListLC_[0].eta()<jet3->eta()&&jet3->eta()<pfJetListLC_[1].eta()) pass=0;
+	  if(pfJetListLC_[0].eta()>pfJetListLC_[1].eta()) 
+	    if(pfJetListLC_[1].eta()<jet3->eta()&&jet3->eta()<pfJetListLC_[0].eta()) pass=0;
 	}
       }
+      if(pass) eventCategorySM_=2;
     }
   }
 
 
-  ////////////////////
-  // determine tau fake rate reweighting
-  /////////////////
+  return 1;
+}
+
+bool TauMuAnalysis::fillHistos(TString tag){
+  
+  if(!diTauSel_){
+    cout<<" diTauSel_ is NULL"<<endl; return 0;
+  }
+
+  sample_->incrementCounter(tag);//fill counter
+  
+  //tau fake rate reweight
   tauFakeWeight_=1.;//do not comment out needs to be used
   //   if(sample_->getApplyTauRateWeight()){
   //     tauFakeWeight_=tauRate_.getScale(TauRate::Inclusive,diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
@@ -431,89 +449,89 @@ bool TauMuAnalysis::applySelections(TString exceptcut){
   //   }
 
 
-  /////////////////
-  /////determine trigger efficiency and set as an event weight
-  /////////////////
+  /////trigger efficiency weight
   triggerEffWeight_=1.;
   if(sample_->getDataType()=="MC" || sample_->getDataType()=="MC_SS" 
      || sample_->getDataType()=="Signal" || sample_->getDataType()=="Signal_SS" 
-     || sample_->getDataType()=="Embedded" || sample_->getDataType()=="Embedded_SS")
-    triggerEffWeight_= triggerEff_.effTau2011A(diTauSel_->leg1().pt()) * triggerEff_.effMu2011A(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-
-
-  return 1;
-}
-
-bool TauMuAnalysis::fillHistos(TString tag){
+     || sample_->getDataType()=="Embedded" || sample_->getDataType()=="Embedded_SS"){
+    triggerEffWeight_ *= triggerEff_.effTau2011AB(diTauSel_->leg1().pt());
+    triggerEffWeight_ *= triggerEff_.effMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+    //triggerEffWeight_ *= triggerEff_.effTau2011B(diTauSel_->leg1().pt());
+    //triggerEffWeight_ *= triggerEff_.effMu2011B(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+  }
   
-  if(!applySelections(tag))return 1;//no cands passed selections
-  sample_->incrementCounter(tag);//fill counter
-
-  //determine event weight
+  //total event weight
   eventWeight_ = pupWeight_*embeddedGenWeight_*triggerEffWeight_;//*tauFakeWeight_
 
+  //event histos
   if(!BaseAnalysis::fillHistos(tag)) return 0;
 
+  //di-tau histos
   if(!TauMuAnalysis::getHistos(tag)) return 0;
 
-  //fill the diTau histograms
-  diTauNHisto_->Fill(diTauSelList_.size(),eventWeight_);
-    
   tree_ditaumass_=diTauSel_->mass();
+
   tree_taupt_=diTauSel_->leg1().pt();
   tree_taueta_=diTauSel_->leg1().eta();
+
   tree_mupt_=diTauSel_->leg2().pt();
   tree_mueta_=diTauSel_->leg2().eta();
   tree_muiso_=diTauSel_->leg2().relIso(0.5);
+
   tree_transversemass_=diTauSel_->mTLeg2();
-  TVector3 metCorr(diTauSel_->met().p4().x(),diTauSel_->met().p4().y(),0.);
-  tree_met_=metCorr.Mag();
-    
+  tree_met_=diTauSel_->met().pt();
+  tree_svfitmass_=diTauSel_->massSVFit();
 
   diTauMassHisto_->Fill(tree_ditaumass_,eventWeight_); 
   diTauPtHisto_->Fill(diTauSel_->pt(),eventWeight_);  
   diTauEtaHisto_->Fill(diTauSel_->eta(),eventWeight_);
+  diTauMassSVFitHisto_->Fill(tree_svfitmass_,eventWeight_);   
 
   tauPtHisto_->Fill(tree_taupt_,eventWeight_); 
   tauEtaHisto_->Fill(tree_taueta_,eventWeight_); 
-  tauIsoHisto_->Fill(diTauSel_->leg2().relIso(0.5),eventWeight_);
+  tauIsoHisto_->Fill(diTauSel_->leg1().relIso(0.5),eventWeight_);
   tauDxyHisto_->Fill(diTauSel_->leg1().dxy(),eventWeight_); 
   tauDzHisto_->Fill(diTauSel_->leg1().dz(),eventWeight_);
+  if(diTauSel_->leg1().decayMode()==0&&diTauSel_->leg1().p()>0.){
+    tauEoPHisto_->Fill(diTauSel_->leg1().leadChargedHadrECalEnergy()/diTauSel_->leg1().p(),eventWeight_);
+    tauHoPHisto_->Fill(diTauSel_->leg1().leadChargedHadrHCalEnergy()/diTauSel_->leg1().p(),eventWeight_);
+    tauEHoPHisto_->Fill(diTauSel_->leg1().eOverP(),eventWeight_);
+    if(0.98<diTauSel_->leg1().eOverP()&&diTauSel_->leg1().eOverP()<1.02)
+      printMCGen(genParticles_);
+  }
+  //for taus check the deltaR cut for truth-matching
+  if(genBosonL1_&&genBosonL2_){
+    tauTruthDeltaRL1Histo_->Fill(reco::deltaR(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),genBosonL1_->eta(),genBosonL1_->phi()),eventWeight_);
+    tauTruthDeltaRL2Histo_->Fill(reco::deltaR(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),genBosonL2_->eta(),genBosonL2_->phi()),eventWeight_);
+  }
+  //determine the origin of the tau: e,mu,tau, call the rest a jet
+  tauTruthHisto_->Fill(truthMatchTau(),eventWeight_);
+
+
 
   muPtHisto_->Fill(tree_mupt_,eventWeight_);
   muEtaHisto_->Fill(tree_mueta_,eventWeight_);
   muIsoHisto_->Fill(tree_muiso_,eventWeight_);
-  muIsoDBHisto_->Fill(diTauSel_->leg2().relIso(0.5),eventWeight_);
   muDxyHisto_->Fill(diTauSel_->leg2().dxy(),eventWeight_);
   muDzHisto_->Fill(diTauSel_->leg2().dz(),eventWeight_);
-
-  transverseMassHisto_->Fill(tree_transversemass_,eventWeight_);  
   
+  transverseMassHisto_->Fill(tree_transversemass_,eventWeight_);    
   metHisto_->Fill(tree_met_,eventWeight_);  
-  metphiHisto_->Fill(metCorr.Phi(),eventWeight_);  
+  metphiHisto_->Fill(diTauSel_->met().phi(),eventWeight_);  
 
-  ///SVFit
-  //  if(calcsvfit_ && tag==""){
-  tree_svfitmass_=diTauSel_->massSVFit();
-  diTauMassSVFitHisto_->Fill(tree_svfitmass_,eventWeight_);   
-  //}
-
-  
-  //jets
+  //jets 
   njetHisto_->Fill(pfJetListLC_.size(),eventWeight_);
 
-  //category
-  if(eventCategorySM_==1){
-    diTauMassBoostedHisto_->Fill(diTauSel_->mass(),eventWeight_);
-    jetPtBoostedHisto_->Fill(boostedJet_->pt(),eventWeight_);
+  //
+  if(pfJetListLC_.size()>=1){
+    leadJetPtHisto_->Fill(pfJetListLC_.begin()->pt(),eventWeight_);
+    leadJetEtaHisto_->Fill(pfJetListLC_.begin()->eta(),eventWeight_);
   }
-  if(eventCategorySM_==2){
-    diTauMassVBFHisto_->Fill(diTauSel_->mass(),eventWeight_);
-    diJetMassVBFHisto_->Fill((VBFJet1_->p4()+VBFJet2_->p4()).mass(),eventWeight_);
-    diJetDeltaEtaVBFHisto_->Fill(fabs(VBFJet1_->eta()-VBFJet2_->eta()),eventWeight_);
+  if(pfJetListLC_.size()>=2){
+    diJetMassHisto_->Fill((pfJetListLC_[0].p4()+pfJetListLC_[1].p4()).mass(),eventWeight_);
+    diJetDeltaEtaHisto_->Fill(pfJetListLC_[0].eta() - pfJetListLC_[1].eta(),eventWeight_);
+    diJetEta1Eta2Histo_->Fill(pfJetListLC_[0].eta()*pfJetListLC_[1].eta(),eventWeight_);
   }
-  if(eventCategorySM_==9)diTauMassInclusiveHisto_->Fill(diTauSel_->mass(),eventWeight_);
-
 
 
   return 1;
@@ -530,16 +548,24 @@ bool TauMuAnalysis::createHistos(TString samplename){
   if(!addHistos(sample_))return 0;
   
   if(makeAllHistos_){
-    sample_->cloneHistos("dileptonveto");
-    sample_->cloneHistos("tauiso");
-    sample_->cloneHistos("tauagainstmuon");
-    sample_->cloneHistos("muiso");
+    //sample_->cloneHistos("dileptonveto");
+    //sample_->cloneHistos("tauiso");
+    //sample_->cloneHistos("tauagainstmuon");
+    sample_->cloneHistos("taueop");
+    //sample_->cloneHistos("muiso");
+    sample_->cloneHistos("mupt");
     sample_->cloneHistos("massT");
+
+    sample_->cloneHistos("SM0");
+    sample_->cloneHistos("SM1");
+    sample_->cloneHistos("SM2");
+    sample_->cloneHistos("SM9");
   }
 
 
   //create the flat tree
   tree_=new TTree(TString(sample_->GetName())+"_tree",TString(sample_->GetName())+"_tree",0);
+  tree_->Branch("eventweight",&tree_eventweight_,"eventweight/F");
   tree_->Branch("ditaumass",&tree_ditaumass_,"ditaumass/F");
   tree_->Branch("taupt",&tree_taupt_,"taupt/F");
   tree_->Branch("taueta",&tree_taueta_,"taueta/F");
@@ -547,11 +573,7 @@ bool TauMuAnalysis::createHistos(TString samplename){
   tree_->Branch("mueta",&tree_mueta_,"mueta/F");
   tree_->Branch("met",&tree_met_,"met/F");
   tree_->Branch("transversemass",&tree_transversemass_,"transversemass/F");
-  tree_->Branch("svfitstatus",&tree_svfitstatus_,"svfitstatus/I");
   tree_->Branch("svfitmass",&tree_svfitmass_,"svfitmass/F");
-  tree_->Branch("svfitedm",&tree_svfitedm_,"svfitedm/F");
-  tree_->Branch("svfiteigenval0",&tree_svfiteigenval0_,"svfiteigenval0/F");
-  tree_->Branch("svfiteigenval1",&tree_svfiteigenval1_,"svfiteigenval1/F");
   sample_->addTree(tree_);
 
 
@@ -580,15 +602,29 @@ bool TauMuAnalysis::createHistos(TString samplename){
 
     //fill (N-1) cut histograms here
     if(makeAllHistos_){
-//    if(!fillHistos("tauiso")) return 0;
-//    if(!fillHistos("tauagainstmuon")) return 0;
-      if(!fillHistos("muiso")) return 0;
-//    if(!fillHistos("dileptonveto")) return 0;
-      if(!fillHistos("massT")) return 0;   
+      //      if(applySelections("tauiso")) if(!fillHistos("tauiso")) return 0;
+      //      if(applySelections("tauagainstmuon")) if(!fillHistos("tauagainstmuon")) return 0;
+      if(applySelections("taueop")) if(!fillHistos("taueop")) return 0;
+      //      if(applySelections("muiso")) if(!fillHistos("muiso")) return 0;
+      if(applySelections("mupt")) if(!fillHistos("mupt")) return 0;
+      //      if(applySelections("dileptonveto")) if(!fillHistos("dileptonveto")) return 0;
+      if(applySelections("massT")) if(!fillHistos("massT")) return 0;   
     }
 
-    //fill fully selected histograms 
-    if(!fillHistos())return 0;
+    //fill fully selected inclusive histograms 
+    if(applySelections()){
+      if(!fillHistos())return 0;
+
+      //category histos
+      if(makeAllHistos_){
+	if(eventCategorySM_==0) if(!fillHistos("SM0"))return 0;
+	if(eventCategorySM_==1) if(!fillHistos("SM1"))return 0;
+	if(eventCategorySM_==2) if(!fillHistos("SM2"))return 0;
+	if(eventCategorySM_==9) if(!fillHistos("SM9"))return 0; 
+      }
+    }
+    
+    
   }
   cout<<sample_->GetName()<<" "<<ievt<<" events processed."<<endl;   
   cout<<sample_->GetName()<<" "<<goodtrigevts<<" events passed trigger."<<endl;
@@ -678,8 +714,7 @@ bool TauMuAnalysis::printRawYields(TString histoname){
   return 1;
 }
 
-
-bool TauMuAnalysis::scaleHistos(){
+Float_t TauMuAnalysis::getWJetsSignalToSBFraction(){
 
   //////needed by the data-card for limits before any rescalings
   Float_t WJetsSignal=0.;  Float_t WJetsSideBand=0.;
@@ -692,8 +727,17 @@ bool TauMuAnalysis::scaleHistos(){
       WJetsSideBand=h->Integral(transverseMassSideBandMin_+1,h->GetNbinsX()); 
     }
   }
+  if(WJetsSideBand==0.)return 0.;
+
   cout<<" Ratio of (WJets below "<<transverseMassSignalMax_<<" GeV)/(WJets above "<<transverseMassSideBandMin_<<" GeV) = "<<WJetsSignal/WJetsSideBand<<endl;
  
+  return WJetsSignal/WJetsSideBand;
+}
+
+
+bool TauMuAnalysis::scaleHistos(){
+
+
 
   /////////determine total lumi and scale MCs
   cout<<" List of Data samples: "<<endl;
@@ -877,13 +921,15 @@ TH1F* TauMuAnalysis::getSample(TString samplename, TString histoname){
   if(!href){cout<<" histoname not found in first sample"<<endl; return 0;}
 
   TH1F* h=new TH1F(samplename,"",href->GetXaxis()->GetNbins(),href->GetXaxis()->GetXmin(),href->GetXaxis()->GetXmax());
+  bool found=0;
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
     if(TString((*s)->GetName())==samplename){
       h->Add((*s)->getHistoFromFile(histoname));
       h->SetTitle((*s)->getPlotLabel());
+      found=1;
     }  
   
-  if(h->Integral()==0.){
+  if(!found){
     cout<<"Sample distribution "<<samplename<<" "<<histoname<<" not found"<<endl;
     return NULL;
   }
@@ -919,6 +965,34 @@ TH1F* TauMuAnalysis::getQCD(TString histoname){
   h->Scale(QCDOStoSSRatio_);
   cout<<"QCD after OS/SS rescaling = "<<h->Integral()<<endl;
   /////////////////////////////////////
+
+  return h;
+}
+
+TH1F* TauMuAnalysis::getDiBoson(TString histoname){
+  cout<<" Calculating Di-Bosons: "<<endl;
+  TH1F* href=(TH1F*)((*(samples_.begin()))->getHistoFromFile(histoname));
+  if(!href){cout<<" histoname not found in first sample"<<endl; return 0;}
+
+  TH1F* h=new TH1F("hVV","VV",href->GetXaxis()->GetNbins(),href->GetXaxis()->GetXmin(),href->GetXaxis()->GetXmax());
+  
+  TH1F* hWW=getSample("WW",histoname);
+  if(!hWW)return 0;
+  cout<<"   WW "<<hWW->Integral(0,hWW->GetNbinsX()+1)<<endl;
+  h->Add(hWW);
+  delete hWW;
+
+  TH1F* hWZ=getSample("WZ",histoname);
+  if(!hWZ)return 0;
+  h->Add(hWZ);
+  cout<<"   WZ "<<hWZ->Integral(0,hWZ->GetNbinsX()+1)<<endl;
+  delete hWZ;
+
+  TH1F* hZZ=getSample("ZZ",histoname);
+  if(!hZZ)return 0;
+  cout<<"   ZZ "<<hZZ->Integral(0,hZZ->GetNbinsX()+1)<<endl; 
+  h->Add(hZZ);
+  delete hZZ;
 
   return h;
 }
@@ -1011,6 +1085,7 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   cout<<"TTJets "<<hTTJets->Integral(0,hTTJets->GetNbinsX()+1)<<endl;
   hMCStack.Add(hTTJets,"hist");
  
+  //
   TH1F*hQCD=getQCD(histoname);
   if(!hQCD)return 0;
   hQCD->Rebin(rebin);
@@ -1018,7 +1093,18 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   hQCD->SetLineColor(QCDColor_);
   hQCD->SetFillColor(QCDColor_);
   hMCStack.Add(hQCD,"hist");
-  cout<<"QCD "<<hQCD->Integral(0,hQCD->GetNbinsX()+1)<<endl;
+  cout<<"   QCD "<<hQCD->Integral(0,hQCD->GetNbinsX()+1)<<endl;
+
+  //combine ZLJet with QCD 
+  TH1F*hZToLJet=getSample("ZToLJet",histoname);
+  if(!hZToLJet)return 0;
+  hZToLJet->Rebin(rebin);
+  cout<<"   ZToLJet "<<hZToLJet->Integral(0,hZToLJet->GetNbinsX()+1)<<endl;  
+  hQCD->Add(hZToLJet);
+  delete hZToLJet;
+
+  cout<<"Fakes "<<hQCD->Integral(0,hQCD->GetNbinsX()+1)<<endl;
+
 
   TH1F*hWJetsToLNu=getSample("WJetsToLNu",histoname);
   if(!hWJetsToLNu)return 0;
@@ -1026,37 +1112,20 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   hWJetsToLNu->SetLineWidth(1);
   hWJetsToLNu->SetLineColor(WJetsColor_);
   hWJetsToLNu->SetFillColor(WJetsColor_);
-  cout<<"WJetsToLNu "<<hWJetsToLNu->Integral(0,hWJetsToLNu->GetNbinsX()+1)<<endl;
+  cout<<"   WJetsToLNu "<<hWJetsToLNu->Integral(0,hWJetsToLNu->GetNbinsX()+1)<<endl;
   hMCStack.Add(hWJetsToLNu,"hist");
 
   //combine Di-Bosons with WJets
-  TH1F*hWW=getSample("WW",histoname);
-  if(!hWW)return 0;
-  hWW->Rebin(rebin);  
-  cout<<"WW "<<hWW->Integral(0,hWW->GetNbinsX()+1)<<endl;
-  hWJetsToLNu->Add(hWW);
-  delete hWW;
-  TH1F*hWZ=getSample("WZ",histoname);
-  if(!hWZ)return 0;
-  hWZ->Rebin(rebin);  
-  hWJetsToLNu->Add(hWZ);
-  cout<<"WZ "<<hWZ->Integral(0,hWZ->GetNbinsX()+1)<<endl;
-  delete hWZ;
-  TH1F*hZZ=getSample("ZZ",histoname);
-  if(!hZZ)return 0;
-  hZZ->Rebin(rebin);
-  cout<<"ZZ "<<hZZ->Integral(0,hZZ->GetNbinsX()+1)<<endl; 
-  hWJetsToLNu->Add(hZZ);
-  delete hZZ;
-  //combine ZLJet with WJets
-  TH1F*hZToLJet=getSample("ZToLJet",histoname);
-  if(!hZToLJet)return 0;
-  hZToLJet->Rebin(rebin);
-  cout<<"ZToLJet "<<hZToLJet->Integral(0,hZToLJet->GetNbinsX()+1)<<endl;  
-  hWJetsToLNu->Add(hZToLJet);
-  delete hZToLJet;
+  TH1F*hVV=getDiBoson(histoname);
+  if(!hVV)return 0;
+  hVV->Rebin(rebin);  
+  cout<<"   Di-Boson "<<hVV->Integral(0,hVV->GetNbinsX()+1)<<endl;
+  hWJetsToLNu->Add(hVV);
+  delete hVV;
 
+  cout<<"ElectroWeak "<<hWJetsToLNu->Integral(0,hWJetsToLNu->GetNbinsX()+1)<<endl;
 
+  //combine Z->MuMu with WJets
   TH1F*hZToMuMu=getSample("ZToMuMu",histoname);
   if(!hZToMuMu)return 0;
   hZToMuMu->Rebin(rebin);
@@ -1064,7 +1133,11 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   hZToMuMu->SetLineColor(ZMuMuColor_);
   hZToMuMu->SetFillColor(ZMuMuColor_);
   hMCStack.Add(hZToMuMu,"hist");
-  cout<<"ZToMuMu "<<hZToMuMu->Integral(0,hZToMuMu->GetNbinsX()+1)<<endl;
+  cout<<"   ZToMuMu "<<hZToMuMu->Integral(0,hZToMuMu->GetNbinsX()+1)<<endl;
+  //hWJetsToLNu->Add(hZToMuMu);
+  //delete hZToMuMu;
+  
+
 
   TH1F*hZToTauTau=getZToTauTau(histoname);
   if(!hZToTauTau)return 0;
@@ -1080,8 +1153,8 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   if(!hData){cout<<" Total Data not determined "<<endl; return 0;}
   hData->Rebin(rebin);
 
-  cout<<"Total Background "<<(int)(hBkg->Integral())<<endl;
-  cout<<"Total Data "<<(int)(hData->Integral())<<endl;
+  cout<<"Total Background "<<(int)(hBkg->Integral(0,hBkg->GetNbinsX()+1))<<endl;
+  cout<<"Total Data "<<(int)(hData->Integral(0,hData->GetNbinsX()+1))<<endl;
 
   //create legend key
   TLegend legend;
@@ -1090,9 +1163,10 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   legend.AddEntry(hData,hData->GetTitle(),"p");
   legend.AddEntry(hZToTauTau,hZToTauTau->GetTitle(),"f");
   legend.AddEntry(hZToMuMu,hZToMuMu->GetTitle(),"f");
-  legend.AddEntry(hWJetsToLNu,hWJetsToLNu->GetTitle(),"f");
-  legend.AddEntry(hQCD,hQCD->GetTitle(),"f");
   legend.AddEntry(hTTJets,hTTJets->GetTitle(),"f");
+  legend.AddEntry(hWJetsToLNu,hWJetsToLNu->GetTitle(),"f");
+  legend.AddEntry(hQCD,"Fakes","f");
+
  
 
   cout<<" Creating Plot:"<<endl;
@@ -1124,8 +1198,9 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   C.Print(outputpath_+"/TauMuAnalysis_"+histoname+".ps");  
 
   
+  TH1F*hRatio=(TH1F*)hData->Clone("hRatio");//get here before make stats 
   TH1F*hResid=(TH1F*)hData->Clone("hResid");//get here before make stats 
-  
+  TLine line;
 
   ///////////////////////////////////
   //show the histogram stats
@@ -1142,6 +1217,20 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
 
 
   ////////////////////////////////////
+  cout<<"Making ratio plot"<<endl;
+  C.Clear();
+  hRatio->Sumw2();
+  hRatio->Divide(hBkg);
+  hRatio->GetYaxis()->SetTitle("Data/Background");
+  hRatio->SetStats(0);
+  hRatio->GetYaxis()->SetRangeUser(.5,1.5);
+  hRatio->Draw("hist pe");
+  if(axesrange)
+    line.DrawLine(axesrange[0],1,axesrange[1],1);
+  else line.DrawLine(hRatio->GetXaxis()->GetXmin(),0,hRatio->GetXaxis()->GetXmax(),0);
+  C.Print(outputpath_+"/TauMuAnalysis_"+histoname+".ps");  
+  delete hRatio;
+
   cout<<"Making residual plot"<<endl;
   C.Clear();
   hResid->Sumw2();
@@ -1149,7 +1238,6 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   hResid->GetYaxis()->SetTitle("Data - Background");
   hResid->SetStats(0);
   hResid->Draw("hist pe");
-  TLine line;
   if(axesrange)
     line.DrawLine(axesrange[0],0,axesrange[1],0);
   else line.DrawLine(hResid->GetXaxis()->GetXmin(),0,hResid->GetXaxis()->GetXmax(),0);
@@ -1157,15 +1245,15 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
 
 
   C.Print(outputpath_+"/TauMuAnalysis_"+histoname+".ps]");
+  delete hResid;
 
   delete hQCD;
   delete hTTJets;
   delete hWJetsToLNu;
-  delete hZToMuMu;
   delete hZToTauTau;
   delete hBkg;
   delete hData;
-  delete hResid;
+
 
   return 1;
 

@@ -1,6 +1,8 @@
 {  
   TauMuAnalysis analysis("analysis");
-  analysis.setPupWeightName("vertexWeight2invfb");
+  //analysis.setPupWeightName("vertexWeight2invfb");
+  analysis.setPupWeightName("vertexWeight2011AB");
+  //analysis.setPupWeightName("vertexWeight2011B");
   analysis.setInputTag("cmgTauMuCorSVFitFullSel");
   //analysis.setInputTag("cmgTauMuCorSVFitPreSel");
   analysis.setdiLeptonVetoListName("cmgMuonSel");
@@ -8,18 +10,24 @@
   analysis.setTransverseMassSignalMax(40);
   analysis.setTransverseMassSideBandMin(60);
   analysis.setVerbosity(0);
-  //analysis.setTruncateEvents(10); 
+
+  //analysis.setTruncateEvents(1000); 
   analysis.makeAllHistos(1);
   analysis.setPrintFreq(1000);
-  analysis.calcSVFit(1);
 
+  //analysis.calcSVFit(1);
   float MCEffCorrFactor = 1.0;// 0.968;// * 0.92; 
-  
+    
   //TString outpath="./output/Test";
   //TString outpath="./output/V240Json";//compare embedded massT and vismass against this
   //TString outpath="./output/V240Embedded";
   //TString outpath="./output/V240TauTrigger";
-  TString outpath="./output/V240VVHiggs";
+  //TString outpath="./output/V240VVHiggs";
+  //TString outpath="./output/V240EoverP";
+  //TString outpath="./output/V240MuPt";
+  
+  TString outpath="./output/V240AB";//changes done: 1)tau eff, 2)mu eff, 3) vertex-weight
+  //for B alone modified TauMuConfigB.C, TauMuAnalysis.cc, batchSample.C, processSamples.pl
   
   analysis.setOutputPath(outpath);
 
@@ -108,21 +116,26 @@
   //ZZ.addTrigPath("HLT_IsoMu12_v1");
   ZZ.setEffCorrFactor(MCEffCorrFactor);
   analysis.addSample(&ZZ);
-  
 
+  ///Crossections taken from here:
+  ///https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt7TeV#gluon_gluon_Fusion_Process 
+  ///Higgs --> tau tau branching ratios taken from http://arxiv.org/abs/1101.0593 v3
+  Float_t HiggsGGcross[8]={21.78,19.84,18.13,16.63,15.31,14.12,13.08,12.13};
+  Float_t HiggsVBFcross[8]={1.472,1.398,1.332,1.269,1.211,1.154,1.100,1.052};
+  Float_t HiggsTauTauBF[8]={8.25e-2,8.03e-2,7.65e-2,7.11e-2,6.37e-2,5.49e-2,4.52e-2,3.54e-2};
   Sample * HiggsGG[8];
   Sample * HiggsVBF[8];
   for(Int_t i=0;i<7;i++){
     HiggsGG[i]=new Sample((const char*)(TString("HiggsGG")+(long)(105+i*5)),(const char*)(datapath+"/GluGluToHToTauTau_M-"+(long)(105+i*5)+"_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V2"+tag));
     HiggsGG[i]->setDataType("Signal");
-    HiggsGG[i]->setCrossection(18.12*0.0765);//not sure
+    HiggsGG[i]->setCrossection(HiggsGGcross[i]*HiggsTauTauBF[i]);
     HiggsGG[i]->setSampleGenEvents(196002);
     HiggsGG[i]->setEffCorrFactor(MCEffCorrFactor);
     analysis.addSample(HiggsGG[i]);    
 
     HiggsVBF[i]=new Sample((const char*)(TString("HiggsVBF")+(long)(105+i*5)),(const char*)(datapath+"/VBF_HToTauTau_M-"+(long)(105+i*5)+"_7TeV-powheg-pythia6-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2"+tag));
     HiggsVBF[i]->setDataType("Signal");
-    HiggsVBF[i]->setCrossection(18.12*0.0765);//not sure
+    HiggsVBF[i]->setCrossection(HiggsVBFcross[i]*HiggsTauTauBF[i]);
     HiggsVBF[i]->setSampleGenEvents(196002);
     HiggsVBF[i]->setEffCorrFactor(MCEffCorrFactor);
     analysis.addSample(HiggsVBF[i]);    
@@ -158,16 +171,17 @@
   TauPlusXOct3.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v9");
   analysis.addSample(&TauPlusXOct3);
 
-//   Sample TauPlusX2011B("TauPlusX2011B",(const char*)(datapath+"/TauPlusX/Run2011B-PromptReco-v1/AOD/V2"+tag));
-//   TauPlusX2011B.setDataType("Data");
-//   TauPlusX2011B.setSampleLumi(2500);
-//   // HLT_IsoMu15_LooseIsoPFTau15_v9             173236 - 178380         1945    L1_SingleMu10    (Note! this trigger got prescaled in 2011B)
-//   // HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v5      178420 - 179889         706.7   L1_SingleMu14_Eta2p1    ET(tau)>20 GeV, |eta(mu)|<2.1
-//   // HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v6      179959 - 180252         120.7   L1_SingleMu14_Eta2p1    end of 2011 run 
-//   TauPlusX2011B.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v9");
-//   TauPlusX2011B.addTrigPath("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v5");
-//   TauPlusX2011B.addTrigPath("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v6");
-//   analysis.addSample(&TauPlusX2011B);
+  Sample TauPlusX2011B("TauPlusX2011B",(const char*)(datapath+"/TauPlusX/Run2011B-PromptReco-v1/AOD/V2"+tag));
+  TauPlusX2011B.setDataType("Data");
+  TauPlusX2011B.setSampleLumi(2511);
+  // HLT_IsoMu15_LooseIsoPFTau15_v9             173236 - 178380         1945    L1_SingleMu10    (Note! this trigger got prescaled in 2011B)
+  // HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v5      178420 - 179889         706.7   L1_SingleMu14_Eta2p1    ET(tau)>20 GeV, |eta(mu)|<2.1
+  // HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v6      179959 - 180252         120.7   L1_SingleMu14_Eta2p1    end of 2011 run 
+  TauPlusX2011B.addTrigPath("HLT_IsoMu15_LooseIsoPFTau15_v9");//to recover ~100pb-1 
+  TauPlusX2011B.addTrigPath("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1");//used when HLT_IsoMu15_LooseIsoPFTau15_v9 got prescaled 
+  TauPlusX2011B.addTrigPath("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v5");
+  TauPlusX2011B.addTrigPath("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v6");
+  analysis.addSample(&TauPlusX2011B);
 
 
   Sample EmbeddedMay("EmbeddedMay",(const char*)(datapath+"/DoubleMu/StoreResults-DoubleMu_2011A_May10thRR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/"+tag));
@@ -186,9 +200,9 @@
   EmbeddedOct.setDataType("Embedded");
   analysis.addSample(&EmbeddedOct);
 
-//   Sample Embedded2011B("Embedded2011B",(const char*)(datapath+"/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/"+tag));
-//   Embedded2011B.setDataType("Embedded");
-//   analysis.addSample(&Embedded2011B);
+  Sample Embedded2011B("Embedded2011B",(const char*)(datapath+"/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/"+tag));
+  Embedded2011B.setDataType("Embedded");
+  analysis.addSample(&Embedded2011B);
 
 
 
@@ -318,8 +332,39 @@
   EmbeddedOct_SS.setDataType("Embedded_SS");
   analysis.addSample(&EmbeddedOct_SS);
 
-//   Sample Embedded2011B_SS("Embedded2011B_SS",Embedded2011B.GetTitle());
-//   Embedded2011B_SS.setDataType("Embedded_SS");
-//   analysis.addSample(&Embedded2011B_SS);
+  Sample Embedded2011B_SS("Embedded2011B_SS",Embedded2011B.GetTitle());
+  Embedded2011B_SS.setDataType("Embedded_SS");
+  analysis.addSample(&Embedded2011B_SS);
 }
 
+
+  ///Crossections taken from here:
+  ///https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt7TeV#gluon_gluon_Fusion_Process 
+  ///Gluon-Gluon
+  // 105.0 	21.78 	20.8 	-15.5 	
+  // 110.0 	19.84 	20.4 	-15.3 	
+  // 115.0 	18.13 	20.0 	-15.3 	
+  // 120.0 	16.63 	19.7 	-15.1 	
+  // 125.0 	15.31 	19.5 	-15.1 	
+  // 130.0 	14.12 	19.2 	-15.1 	
+  // 135.0 	13.08 	18.9 	-15.0 	
+  // 140.0 	12.13 	18.8 	-14.9 
+  ///VBF  
+  // 105.0 	1.472 	2.5 	-2.4 	
+  // 110.0 	1.398 	2.8 	-2.3 	
+  // 115.0 	1.332 	2.5 	-2.3 	
+  // 120.0 	1.269 	2.8 	-2.5 	
+  // 125.0 	1.211 	2.7 	-2.4 	
+  // 130.0 	1.154 	2.8 	-2.3 	
+  // 135.0 	1.100 	3.0 	-2.2 	
+  // 140.0 	1.052 	2.8 	-2.2 	
+
+  ///Higgs --> tau tau branching ratios taken from http://arxiv.org/abs/1101.0593 v3
+  // 105  8.25e-2 
+  // 110  8.03e-2 
+  // 115  7.65e-2 
+  // 120  7.11e-2 
+  // 125  6.37e-2 
+  // 130  5.49e-2 
+  // 135  4.52e-2 
+  // 140  3.54e-2 
