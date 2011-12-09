@@ -303,7 +303,7 @@ void DijetMass_chiyoung_2(){
 		veyl[i] = nl/(lumi*dm);
 		veyh[i] = nh/(lumi*dm);  
 	}
-	else if (n>=25)
+	else if (n>=25 && mass >= 890)
 	{
 		veyl[i] = sqrt(n)/(lumi*dm);
 		veyh[i] = sqrt(n)/(lumi*dm);
@@ -333,10 +333,10 @@ void DijetMass_chiyoung_2(){
     fit->SetParameter(3,1.93728e-01);
     fit->SetLineWidth(2);
     fit->SetLineColor(4);
-    g->Fit("fit","","",890.0,3854.0);	
+    g->Fit("fit","","",944.0,3854.0);	
     
     //Alternate Fits 4 parameter
-    TF1 *f_4par = new TF1("fit_4par",fitQCD,890.0,3854.0,4); // 4 Par. Fit
+    TF1 *f_4par = new TF1("fit_4par",fitQCD,944.0,3854.0,4); // 4 Par. Fit
     gStyle->SetOptFit(1111); 
     f_4par->SetParameter(0,3.08269e+16);
     f_4par->SetParameter(1,8.23385e+00);
@@ -348,7 +348,7 @@ void DijetMass_chiyoung_2(){
 
 
     //Alternate Fits 3 parameter
-    TF1 *f_3par = new TF1("fit_3par",fitQCD2,890.0,3854.0,3); // 3 Par. Fit
+    TF1 *f_3par = new TF1("fit_3par",fitQCD2,944.0,3854.0,3); // 3 Par. Fit
     gStyle->SetOptFit(1111);
     f_3par->SetParameter(0,6.32475e+15);
     f_3par->SetParameter(1,9.89115e+00);
@@ -399,12 +399,12 @@ void DijetMass_chiyoung_2(){
     g2->GetXaxis()->SetRangeUser(700,4200);
     g2->GetYaxis()->SetRangeUser(0.000001,50);
     g2->Draw("APZ");
-    g2->Fit("fit","","sames",890.0,3854.0);
+    g2->Fit("fit","","sames",944.0,3854.0);
 
     TString status_default= gMinuit->fCstatu.Data();
-    g2->Fit("fit_4par","+","sames",890.0,3854.0);
+    g2->Fit("fit_4par","+","sames",944.0,3854.0);
     TString status_4par= gMinuit->fCstatu.Data();
-    g2->Fit("fit_3par","+","sames",890.0,3854.0);
+    g2->Fit("fit_3par","+","sames",944.0,3854.0);
     TString status_3par= gMinuit->fCstatu.Data();
     TLegend *leg = new TLegend(0.18,0.78,0.38,0.92);
     leg->SetTextSize(0.03146853);
@@ -801,14 +801,14 @@ void DijetMass_chiyoung_2(){
 	eyh_pulls[i] = veyh[i]/fit_default;
 	eyl_pulls[i] = veyl[i]/fit_default;
 				
-	if(m<=890 || m>3854){
+	if(m<=944 || m>3854){
 		pulls_3par[i] = -999;
 		pulls_4par[i] = -999;
 		pulls[i] = -999;
 	}
 		
 	if(error != 0.){
-	  std::cout << "m = " << m << std::endl;
+	  //	  std::cout << "m = " << m << std::endl;
 	  double q_star=0.0;
 		hPulls_3par->SetBinContent(i+1,(data-fit_3p)/error3p);
 		hPulls_3par->SetBinError(i+1,1.);
@@ -819,18 +819,20 @@ void DijetMass_chiyoung_2(){
 		hPulls_add->SetBinContent(i+1,(data-fit_default)/error);
 		hPulls_add->SetBinError(i+1,1.);
 
-		std::cout << "size2 = " << size2 << std::endl;
-
+		//	std::cout << "size2 = " << size2 << std::endl;
+		cout << "bin " << i+1 << "\t [" << hPulls_4par->GetBinLowEdge(i+1) << ", " 
+		     << hPulls_4par->GetBinLowEdge(i+1)+hPulls_4par->GetBinWidth(i+1) << "]\t chi = " 
+		     << Form("%.1f", (data-fit_default)/error) << "\t chi2 = " << Form("%.1f", (data-fit_default)/error*(data-fit_default)/error) << endl;
 		for (int j=0;j<size2;j++)
 		  {
 		    if (mass2[j] == m)
 		      {
-			std::cout << "m = " << m << "q2[" << j << "] = " << q2[j] << std::endl;
+			//			std::cout << "m = " << m << "q2[" << j << "] = " << q2[j] << std::endl;
 			q_star = q2[j];
 		      }
 		      
 		  }
-		std::cout << "data = " << data << " ,   fit_default = " << fit_default << std::endl;
+		//		std::cout << "data = " << data << " ,   fit_default = " << fit_default << std::endl;
 		
 		//		calculating_chi2 += ((data-fit_default-q_star)/error)*((data-fit_default-q_star)/error);
 		calculating_chi2 += ((data-fit_default)/error)*((data-fit_default)/error);
@@ -993,26 +995,32 @@ void DijetMass_chiyoung_2(){
 
    c11->Divide(1,2,0,0,0);
    c11->cd(1);
-
+   
    p11_1 = (TPad*)c11->GetPad(1);
    p11_1->SetPad(0.01,0.22,0.99,0.98);
    p11_1->SetLogy();
    p11_1->SetRightMargin(0.05);
    p11_1->SetTopMargin(0.05);
+   
+   TH1F *vFrame = p11_1->DrawFrame(700.0,0.000001,4200.0,10.0);
+   vFrame->SetTitle("");
+   vFrame->SetXTitle("Dijet Mass (GeV)");
+   vFrame->GetXaxis()->SetTitleSize(0.06);
+   vFrame->SetYTitle("d#sigma/dm (pb/GeV)");
 
    h->SetTitle("");
 
-   h->Draw("C");
+   h->Draw("SAMEC");
 
-   h->GetXaxis()->SetRangeUser(700,4200);
+   //   h->GetXaxis()->SetRangeUser(700.,4200.);
    //   h->GetYaxis()->SetRangeUser(0.00001,50.);
-   h->GetXaxis()->SetTitle("Dijet Mass (GeV)");
-   h->GetXaxis()->SetTitleSize(0.06);
-   h->GetYaxis()->SetTitle("d#sigma/dm (pb/GeV)");
+   // h->GetXaxis()->SetTitle("Dijet Mass (GeV)");
+   //  h->GetXaxis()->SetTitleSize(0.06);
+   //  h->GetYaxis()->SetTitle("d#sigma/dm (pb/GeV)");
 
 
    f_qcd->Draw("same");
-   g->Draw("samePZ");
+   g->Draw("sameP");
    TLegend *leg = new TLegend(0.28,0.70,0.49,0.93);
    leg->SetTextSize(0.03146853);
    leg->SetLineColor(1);
@@ -1066,7 +1074,7 @@ void DijetMass_chiyoung_2(){
    pt_c11_string2->Draw("sames");
    pt_c11_qstar1->Draw("sames");
    pt_c11_qstar2->Draw("sames");
-
+   
    c11->cd(2);
    p11_2 = (TPad*)c11->GetPad(2);
    p11_2->SetPad(0.01,0.02,0.99,0.24);
@@ -1075,26 +1083,28 @@ void DijetMass_chiyoung_2(){
    p11_2->SetGridy();
    c11_2->SetTicky(1);
 
-   hPulls_add->SetTitle("");
-   hPulls_add->GetXaxis()->SetTitle("Dijet Mass (GeV)");
-   hPulls_add->GetXaxis()->SetTitleOffset(0.90);
-   hPulls_add->GetXaxis()->SetTitleSize(0.18);
-   hPulls_add->GetXaxis()->SetLabelSize(0.18);
-   hPulls_add->GetYaxis()->SetTitle("Significance");
-   hPulls_add->GetYaxis()->SetTitleOffset(0.38);
-   hPulls_add->GetYaxis()->SetTitleSize(0.16);
-   hPulls_add->GetYaxis()->SetLabelSize(0.10);
-   hPulls_add->GetXaxis()->SetRangeUser(700.,4200.);
-   hPulls_add->GetYaxis()->SetRangeUser(-2.51,2.51);
-   hPulls_add->SetLineWidth(0);
+
+   TH1F *vFrame2 = p11_2->DrawFrame(700.0, -3.31, 4200.0, 3.31);
+   vFrame2->SetTitle("");
+   vFrame2->SetXTitle("Dijet Mass (GeV)");
+   vFrame2->GetXaxis()->SetTitleSize(0.06);
+   vFrame2->SetYTitle("Significance");
+   vFrame2->GetYaxis()->SetTitleSize(0.16);
+   vFrame2->GetYaxis()->SetLabelSize(0.10);
+   vFrame2->GetXaxis()->SetTitleOffset(0.90);
+   vFrame2->GetXaxis()->SetTitleSize(0.18);
+   vFrame2->GetXaxis()->SetLabelSize(0.18);
+
+
+    hPulls_add->SetLineWidth(0);
    hPulls_add->SetFillColor(2);
    hPulls_add->SetLineColor(2);
 
-   hPulls_add->Draw("HIST");
+   hPulls_add->Draw("SAMEHIST");
 
    TLine *line = new TLine(700.,0,4200,0);
    line->Draw("");
-
+   
    c11->SaveAs("Plots/DefaultFitAndPull.png");
    c11->SaveAs("Plots/DefaultFitAndPull.eps");
 
