@@ -66,7 +66,9 @@ void DijetMass_chiyoung_JetMass(){
   inputFile = TFile::Open("histograms_data_HT_Run2010_2011_136033_180252_4663pbm1_ak5_JetMass.root", "READ");
   //  inputFile = TFile::Open("histograms_data_HT_340fb_Fat_ak5.root", "UPDATE");
   // Histograms 
-  hDijetMass = (TH1F*) inputFile->Get("h_DijetMass_data_JetMassCuts_pf;1");
+  ////  hDijetMass = (TH1F*) inputFile->Get("h_DijetMass_data_JetMassCuts_pf;1");
+  hDijetMass = (TH1F*) inputFile->Get("h_DijetMass_data_JetMassCuts_fat;1");
+                                       
   //  TH1F *hQCDMC = (TH1F*)inputFile->Get("fit_DijetMass_mc_wide");
   inputFileMC = TFile::Open("histograms_summer11_mc_ak5.root", "UPDATE");
   hQCD = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat;1");
