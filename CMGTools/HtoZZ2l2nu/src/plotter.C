@@ -307,9 +307,9 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
 	{
 	  TH1 *p = (TH1 *) key;
 	  p->SetMarkerSize(1.3);
-	  if(canvasFilled) p->Draw("e2same");
+	  if(canvasFilled) p->Draw("e1same");
 	  else {
-	    p->Draw("e2"); 
+	    p->Draw("e1"); 
 	    refFrame=p;
 	    canvasFilled=true; 
 	  }
@@ -407,11 +407,11 @@ void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doDiff,floa
 	}
 
       c->cd();
-      TString opt("e2");
+      TString opt("e1");
       if( ((TClass*)dataToMCH->IsA())->InheritsFrom("TH2") ) opt="colz";
       if(canvasFilled) opt +="same";
       dataToMCH->Draw(opt);
-      dataToMCH->GetYaxis()->SetRangeUser(0,2.3);
+      dataToMCH->GetYaxis()->SetRangeUser(0,2.2);
       dataToMCH->GetXaxis()->SetTitleOffset(0.85);
       dataToMCH->GetXaxis()->SetLabelSize(0.04 * yscale);
       dataToMCH->GetXaxis()->SetTitleSize(0.05 * yscale);
@@ -419,6 +419,7 @@ void showMCtoDataComparison(TPad *c, TList &stack, TList &data, bool doDiff,floa
       dataToMCH->GetYaxis()->SetTitleOffset(0.5);
       dataToMCH->GetYaxis()->SetLabelSize(0.04 * yscale);
       dataToMCH->GetYaxis()->SetTitleSize(0.04 * yscale);
+      dataToMCH->GetYaxis()->SetNdivisions(5);
       canvasFilled=true;
     }
 

@@ -76,6 +76,8 @@ vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> >
       int minValidMuonHits = iConfig.getParameter<int>("minValidMuonHits");
       double maxDistToBeamSpot = iConfig.getParameter<double>("maxDistToBeamSpot");
       bool usePFIso = iConfig.getParameter<bool>("usePFIso");
+      bool requireTracker = iConfig.getParameter<bool>("requireTracker"); 
+      bool requireGlobal = iConfig.getParameter<bool>("requireGlobal"); 
 
       //iterate over the muons
       for(size_t iMuon=0; iMuon< hMu.product()->size(); ++iMuon)      
@@ -85,8 +87,9 @@ vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> >
 
 	  //muon type
 	  bool isTracker = muon->isTrackerMuon();
+	  if(requireTracker && !isTracker)  continue;
 	  bool isGlobal = muon->isGlobalMuon();
-	  if(!isTracker || !isGlobal) continue;
+	  if(requireGlobal && !isGlobal) continue;
 
 	  //kinematics
 	  double mPt = muon->pt();

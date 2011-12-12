@@ -58,7 +58,8 @@ namespace jet
 		double neweta = etaRes+jets[ijet].eta();
 		double newphi = phiRes+jets[ijet].phi();
 		TLorentzVector pjet(0,0,0,0);
-		pjet.SetPtEtaPhiM(newpt,neweta,newphi,jets[ijet].mass());
+		//		pjet.SetPtEtaPhiM(newpt,neweta,newphi,jets[ijet].mass());
+		pjet.SetPtEtaPhiM(newpt,jets[ijet].eta(),jets[ijet].phi(),jets[ijet].mass());
 		LorentzVector newJet(pjet.Px(),pjet.Py(),pjet.Pz(),pjet.E());
 		newJets.push_back(newJet);
 		jetDiff += (newJet-jets[ijet]);

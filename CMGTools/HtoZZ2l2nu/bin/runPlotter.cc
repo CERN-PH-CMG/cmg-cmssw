@@ -104,9 +104,8 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::vector
       if(tmp->InheritsFrom("TTree")) continue;
       if(tmp->InheritsFrom("TH1")){
          histlist.push_back(NameAndType(parentPath+list->At(i)->GetName(), !(tmp->InheritsFrom("TH2") || tmp->InheritsFrom("TH3")) ) );
-      }else{
+      }else if(tmp->InheritsFrom("TDirectory")){
          GetListOfObject(Root,RootDir,histlist,(TDirectory*)tmp,parentPath+ list->At(i)->GetName()+"/" );
-
       }
    }
 
