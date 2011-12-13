@@ -4,7 +4,7 @@ import CMGTools.H2TauTau.macros.MultiLoop as MultiLoop
 import imp
 import difflib
 
-RUNLOOP = False
+RUNLOOP = True
 
 class TestMuTauAnalysis(unittest.TestCase):
 
