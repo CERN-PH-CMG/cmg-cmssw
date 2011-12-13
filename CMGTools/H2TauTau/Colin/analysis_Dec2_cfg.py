@@ -33,7 +33,7 @@ cuts.MT_high = 60
 # MC smearing / scaling
 
 mc_jet_scale = 1.
-mc_jet_smear = 0.1
+mc_jet_smear = 0.
 
 # global MC weighting factors
 mc_lep_effCorrFactor = 0.968
