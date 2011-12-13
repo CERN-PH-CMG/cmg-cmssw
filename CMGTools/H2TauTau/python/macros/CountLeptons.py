@@ -81,7 +81,7 @@ def noOppositeChargePair( leptons ):
 ##     return len(leptons)<2
 
 
-def leptonAccept( allLeptons ):
+def muonAccept( allLeptons ):
     # print 'from leptonsq'
     tightLeptons = set(filter( testMuonTight, allLeptons ))
     looseLeptons = set(filter( testMuonLoose, allLeptons ))
