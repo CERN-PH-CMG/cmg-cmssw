@@ -25,6 +25,7 @@ class VBF( object ):
         if etamin > etamax:
             etamin, etamax = etamax, etamin
         def isCentral( jet ):
+            #COLIN: shouln't I take a margin? 
             eta = jet.eta()
             if etamin < eta and eta < etamax:
                 return True

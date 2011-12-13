@@ -27,6 +27,9 @@ class H2TauTauHistogramList( object ):
         self.mu = LegHistograms( 'mu','leg2')
         self.vertex = VertexHistograms( 'vertex')
         self.jets = JetHistograms( 'jets')
+        self.dirtyJets = JetHistograms( 'dirtyJets')
+        self.jetsVBF = JetHistograms( 'jetsVBF')
+        self.leadJet = JetHistograms( 'leadJet')
         
         self.hists = []
         self.hists.append( self.diTau )
@@ -37,6 +40,9 @@ class H2TauTauHistogramList( object ):
         self.hists.append( self.mu )     
         self.hists.append( self.vertex )
         self.hists.append( self.jets )
+        self.hists.append( self.dirtyJets )
+        self.hists.append( self.jetsVBF )
+        self.hists.append( self.leadJet )
         
     def FillHistos(self, events, cut='', nEvents = 9999999999):
         print 'Filling histograms: ' + self.name
@@ -59,13 +65,15 @@ class H2TauTauHistogramList( object ):
     def FillVertices(self, vertices, weight=1):
         self.vertex.FillVertices( vertices, weight )
 
-    def FillJets(self, jets, weight=1):
-        self.jets.Fill( jets, weight )
-
     def Fill(self, event, weight=1):
         self.FillVertices( event.vertices, weight)
         self.FillDiTau( event.diTau, weight)
-        self.FillJets( event.jets, weight )
+        self.jets.Fill( event.jets, weight )
+        self.dirtyJets.Fill( event.dirtyJets, weight )
+        if len( event.jets )>1:
+            self.jetsVBF.Fill( event.jets[:2], weight )
+        if len( event.jets )>0:
+            self.leadJet.Fill( [event.jets[0]], weight )
         
     def FormatHistos(self, style):
         for hist in self.hists:

@@ -64,10 +64,12 @@ class H2TauTauDataMC( AnalysisDataMC ):
                     continue
                 self.Hist(name).Add(embedHist)
        
-        dyYield = dyHist.Yield()
-        embedYield = self.Hist(name).Yield()
-        self.Hist(name).Scale( dyYield / embedYield ) 
-        self._ApplyPrefs()                
+        # dyYield = dyHist.Yield()
+        # print '2', dyYield
+        if doEmbedding:
+            embedYield = self.Hist(name).Yield()
+            self.Hist(name).Scale( dyYield / embedYield ) 
+            self._ApplyPrefs()                
 
     def groupDataComponents( self, dataComponents, name ):
         '''Groups all data components into a single component with name <name>.

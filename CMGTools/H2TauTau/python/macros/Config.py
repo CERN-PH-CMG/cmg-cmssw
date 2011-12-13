@@ -30,7 +30,6 @@ class Component(object):
         else:
             self.triggers = triggers
 
-
     def __str__(self):
         header = 'Component: ' + self.name
         varlines = ['\t{var:<15}:   {value}'.format(var=var, value=value) \
@@ -82,6 +81,8 @@ class MCComponent( Component ):
         self.tauEffWeight = tauEffWeight
         self.muEffWeight = muEffWeight
         self.effCorrFactor = effCorrFactor
+        self.jetScale = 1  
+        self.jetSmear = 0  
         # self.tauTriggerTOC = tauTriggerTOC
         #COLIN: need to adapt turn on curve to period, see Jose's code
         # self.tauTriggerTOC = TurnOnCurve()

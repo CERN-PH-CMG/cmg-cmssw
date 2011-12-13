@@ -30,6 +30,11 @@ cuts.MT_low = 40
 cuts.MT_high = 60
 
 
+# MC smearing / scaling
+
+mc_jet_scale = 1.
+mc_jet_smear = 0.1
+
 # global MC weighting factors
 mc_lep_effCorrFactor = 0.968
 mc_tau_effCorrFactor = 0.92
@@ -190,6 +195,11 @@ embed_2011B = htt.EmbedComponent(
 
 
 MC = [DYJets, WJets, TTJets]
+for mc in MC:
+    # could handle the weights in the same way
+    mc.jetScale = mc_jet_scale
+    mc.jetSmear = mc_jet_smear
+
 data_2011A = [data_May10ReReco_v1,data_PromptReco_v4,
               data_05Aug2011_v1, data_03Oct2011]
 embed_2011A = [embed_May10ReReco_v1,embed_PromptReco_v4,
@@ -210,8 +220,7 @@ elif period == 'Period_2011AB':
     selectedComponents.extend( data_2011B )
     selectedComponents.extend( embed_2011B )    
 
-
-# selectedComponents = [d2011B]
+# selectedComponents = [DYJets]
 
 config = htt.Config( components = selectedComponents,
                      cuts = cuts )

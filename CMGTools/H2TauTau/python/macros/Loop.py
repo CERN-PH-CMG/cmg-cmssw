@@ -176,7 +176,15 @@ class Loop:
         self.event.diTaus = [ DiTau(diTau) for diTau in cmgDiTaus ]
         self.event.leptons = [ Lepton(lepton) for lepton in cmgLeptons ]
         self.event.jets = [ Jet(jet) for jet in cmgJets if testJet(jet, self.cfg.cuts) ]
-
+        self.event.jets = []
+        for cmgJet in cmgJets:
+            if not testJet( jet, self.cfg.cuts):
+                continue
+            jet = Jet( cmgJet )
+            # print jet.energy()
+            jet.scaleEnergy( 1 )
+            # print jet.energy()
+            self.event.jets.append(jet)
 
         self.counters.counter('triggerPassed').inc('a: All events')
         if not self.triggerList.triggerPassed(self.event.triggerObject):
