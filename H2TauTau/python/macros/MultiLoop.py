@@ -8,25 +8,28 @@ from pprint import pprint
 
 from CMGTools.H2TauTau.macros.Loop2 import Loop
 
+# global, to be used interactively when only one component is processed.
+loop = None 
+
 def CallBack( result ):
     pass
     print 'production done:', str(result)
 
-def RunLoopAsync(comp, config):
-    loop = RunLoop( comp, config)
+def RunLoopAsync(comp, outDir, config, options):
+    loop = RunLoop( comp, outDir, config, options)
     return loop.name
 
-def RunLoop( comp, config, iEvent=None):
+def RunLoop( comp, outDir, config, options):
     fullName = '/'.join( [outDir, comp.name ] )
     loop = Loop( fullName, comp, config )
     print loop
-    if iEvent is None:
+    if options.iEvent is None:
         loop.Loop( options.nevents )
         loop.Write()
         print loop
     else:
         # loop.InitOutput()
-        iEvent = int(iEvent)
+        iEvent = int(options.iEvent)
         loop.ToEvent( iEvent )
     return loop
 
@@ -41,7 +44,7 @@ def TestComponentList( complist ):
         raise ValueError('Check your component list')
 
 
-def CreateOutputDir(dir, components):
+def CreateOutputDir(dir, components, force):
     '''Creates the output dir, dealing with the case where dir exists.'''
     answer = None 
     try:
@@ -54,7 +57,7 @@ def CreateOutputDir(dir, components):
         pprint( dirlist )
         print 'component list: '
         print [comp.name for comp in components]
-        if options.force is True:
+        if force is True:
             print 'force mode, continue.'
             return True
         else:
@@ -68,10 +71,54 @@ def CreateOutputDir(dir, components):
                 raise ValueError( ' '.join(['answer can not have this value!',
                                             answer]) )
 
+def main( options, args ):
+    
+    if len(args) != 2:
+        parser.print_help()
+        print 'ERROR: please provide the processing name and the component list'
+        sys.exit(1)
+        
+    outDir = args[0]
+    if os.path.exists(outDir) and not os.path.isdir( outDir ):
+        parser.print_help()
+        print 'ERROR: when it exists, first argument must be a directory.'
+        sys.exit(2)
+    cfgFileName = args[1]
+    if not os.path.isfile( cfgFileName ):
+        parser.print_help()
+        print 'ERROR: second argument must be an existing file (your input cfg).'
+        sys.exit(3)
+
+    file = open( cfgFileName, 'r' )
+    cfg = imp.load_source( 'cfg', cfgFileName, file)
+    selComps = cfg.config.components
+    for comp in selComps:
+        print comp
+    if len(selComps)>14:
+        raise ValueError('too many threads: ' + len(selComps))
+    if not CreateOutputDir(outDir, selComps, options.force):
+        print 'exiting'
+        sys.exit(0)
+    if len(selComps)>1:
+        shutil.copy( cfgFileName, outDir )
+        pool = Pool(processes=len(selComps))
+        for comp in selComps:
+            print 'submitting', comp.name
+            pool.apply_async( RunLoopAsync, [comp, outDir, cfg.config, options],
+                              callback=CallBack)     
+        pool.close()
+        pool.join()
+    else:
+        # when running only one loop, do not use multiprocessor module.
+        # then, the exceptions are visible -> use only one sample for testing
+        global loop
+        loop = RunLoop( comp, outDir, cfg.config, options )
+
+
+
 if __name__ == '__main__':
-
     from optparse import OptionParser
-
+    
     parser = OptionParser()
     parser.usage = """
     %prog <name> <analysis_cfg>
@@ -92,45 +139,6 @@ if __name__ == '__main__':
                       help="don't ask questions in case output directory already exists.",
                       default=False)
 
-    
     (options,args) = parser.parse_args()
-    if len(args) != 2:
-        parser.print_help()
-        print 'ERROR: please provide the processing name and the component list'
-        sys.exit(1)
-    outDir = args[0]
-    if os.path.exists(outDir) and not os.path.isdir( outDir ):
-        parser.print_help()
-        print 'ERROR: when it exists, first argument must be a directory.'
-        sys.exit(2)
-    cfgFileName = args[1]
-    if not os.path.isfile( cfgFileName ):
-        parser.print_help()
-        print 'ERROR: second argument must be an existing file (your input cfg).'
-        sys.exit(3)
 
-    # anacfg = AnalysisConfig( cfgFileName )   
-    # selComps = anacfg.SelectedComponents()
-    # defaults = anacfg.defaults
-    file = open( cfgFileName, 'r' )
-    cfg = imp.load_source( 'cfg', cfgFileName, file)
-    selComps = cfg.config.components
-    for comp in selComps:
-        print comp
-    if len(selComps)>14:
-        raise ValueError('too many threads: ' + len(selComps))
-    if not CreateOutputDir(outDir, selComps):
-        print 'exiting'
-        sys.exit(0)
-    if len(selComps)>1:
-        shutil.copy( cfgFileName, outDir )
-        pool = Pool(processes=len(selComps))
-        for comp in selComps:
-            print 'submitting', comp.name
-            pool.apply_async( RunLoopAsync, [comp, cfg.config], callback=CallBack)     
-        pool.close()
-        pool.join()
-    else:
-        # when running only one loop, do not use multiprocessor module.
-        # then, the exceptions are visible -> use only one sample for testing
-        loop = RunLoop( comp, cfg.config, options.iEvent )
+    main(options, args)
