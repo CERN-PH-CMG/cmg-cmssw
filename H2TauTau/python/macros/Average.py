@@ -1,3 +1,4 @@
+#ROOTTOOLS
 class Average:
     '''Need to implement error and RMS'''
     def __init__(self, name):

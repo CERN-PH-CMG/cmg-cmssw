@@ -117,8 +117,8 @@ if __name__ == '__main__':
     selComps = cfg.config.components
     for comp in selComps:
         print comp
-    if len(selComps)>12:
-        raise ValueError('too many threads')
+    if len(selComps)>14:
+        raise ValueError('too many threads: ' + len(selComps))
     if not CreateOutputDir(outDir, selComps):
         print 'exiting'
         sys.exit(0)

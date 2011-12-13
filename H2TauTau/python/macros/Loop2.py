@@ -4,12 +4,13 @@ import pprint
 import logging
 import copy
 import glob
+import random
 
 from ROOT import TLorentzVector
 
 from DataFormats.FWLite import Events, Handle
 
-# from CMGTools.H2TauTau.macros.DeltaR import deltaR 
+from CMGTools.H2TauTau.macros.DeltaR import cleanObjectCollection
 from CMGTools.H2TauTau.macros.H2TauTauInit import *
 from CMGTools.H2TauTau.macros.H2TauTauHistogramList import H2TauTauHistogramList
 from CMGTools.H2TauTau.macros.AutoHandle import AutoHandle
@@ -163,6 +164,7 @@ class Loop:
         self.handles = {}
         self.mchandles = {}
         self.embhandles = {}
+        #MUON
         self.handles['cmgTauMuCorFullSelSVFit'] =  AutoHandle( 'cmgTauMuCorSVFitFullSel',
                                                                'std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>')
 ##         self.handles['cmgTauMu'] =  AutoHandle( 'cmgTauMu',
@@ -174,6 +176,7 @@ class Loop:
                                                        'double' )
         self.handles['vertices'] = AutoHandle( 'offlinePrimaryVertices',
                                                'std::vector<reco::Vertex>' )
+        #MUON
         self.handles['leptons'] = AutoHandle( 'cmgMuonSel',
                                               'std::vector<cmg::Muon>' )
         self.handles['jets'] = AutoHandle( 'cmgPFJetSel',
@@ -225,8 +228,18 @@ class Loop:
         # converting them into my own python objects
         self.event.diTaus = [ DiTau(diTau) for diTau in cmgDiTaus ]
         self.event.leptons = [ Lepton(lepton) for lepton in cmgLeptons ]
-        self.event.jets = [ Jet(jet) for jet in cmgJets if testJet(jet, self.cfg.cuts) ]
-         
+
+        # self.event.dirtyJets = [ Jet(jet) for jet in cmgJets if testJet(jet, self.cfg.cuts) ] 
+        self.event.dirtyJets = []
+        for cmgJet in cmgJets:
+            jet = Jet( cmgJet )
+            if self.cmp.isMC:
+                scale = random.gauss( self.cmp.jetScale, self.cmp.jetSmear)
+                jet.scaleEnergy( scale )
+            if not testJet( cmgJet, self.cfg.cuts):
+                continue
+            self.event.dirtyJets.append(jet)
+
         
         self.counters.counter('triggerPassed').inc('a: All events')
         if not self.triggerList.triggerPassed(self.event.triggerObject):
@@ -245,7 +258,8 @@ class Loop:
                                                                         len(self.event.diTaus)))
 
         self.counters.counter('exactlyOneDiTau').inc('b: at least 1 di-tau ')
-        
+
+        #MUONS
         if not leptonAccept(self.event.leptons):
             return False 
         self.counters.counter('exactlyOneDiTau').inc('c: exactly one lepton ')        
@@ -284,6 +298,24 @@ class Loop:
         else:
             return False
 
+        ##################  Starting from here, we have the di-tau ###############
+
+
+        # clean up jet collection
+
+        self.event.jets = cleanObjectCollection( self.event.dirtyJets,
+                                                 masks = [self.event.diTau.leg1(),
+                                                          self.event.diTau.leg2() ],
+                                                 deltaRMin = 0.5 )
+#         print '-----------'
+#        if len(self.event.dirtyJets)>0:
+#            print 'Dirty:'
+#            print '\n\t'.join( map(str, self.event.dirtyJets) )
+#            print self.event.diTau
+#            print 'Clean:'
+#            print '\n\t'.join( map(str, self.event.jets) )
+        
+
         self.counters.counter('VBF').inc('a: all events ') 
         if len(self.event.jets)>1:
             self.counters.counter('VBF').inc('b: at least 2 jets ') 
@@ -318,6 +350,7 @@ class Loop:
         if self.cmp.isMC or self.cmp.isEmbed:
             if self.trigEff.tauEff is not None:
                 self.event.tauEffWeight = self.trigEff.tauEff(self.event.tau.pt())
+            #MUONS
             if self.trigEff.lepEff is not None:
                 self.event.lepEffWeight = self.trigEff.lepEff( self.event.lepton.pt(),
                                                                self.event.lepton.eta() )
@@ -378,9 +411,6 @@ class Loop:
         component = str(self.cmp)
         counters = map(str, self.counters.counters) 
         strave = map(str, self.averages.values())
-        # triggers = ': '.join( ['triggers', str(self.triggers)] )
-        # trigs = str( self.triggerList )
-        # vertexWeight = ': '.join( ['vertex weight', str(self.cmp.vertexWeight) ])
         return '\n'.join([name, component] +
                          counters + strave )
     

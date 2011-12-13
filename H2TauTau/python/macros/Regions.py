@@ -11,7 +11,7 @@ class RegionsBase( object ):
 
 class Regions1D( object ):
     '''Handles a set of regions along 1 dimension (region_name, min, max).
-    
+    ROOTOOLS
     The regions should be non-overlapping.'''
 
     def __init__(self, complete=False):

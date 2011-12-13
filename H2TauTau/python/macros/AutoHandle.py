@@ -1,8 +1,10 @@
+#ROOTTOOLS
 from DataFormats.FWLite import Events, Handle
 
 class AutoHandle( Handle ):
     '''Handle + label.'''
     def __init__(self, label, type):
+        '''Note: label can be a tuple : (module_label, collection_label, process)'''
         self.label = label
         self.type = type
         Handle.__init__(self, self.type)

@@ -52,9 +52,7 @@ class DiTau(object):
             # print self.leg2Gen
             self.leg1DeltaR = math.sqrt( dR2leg1Min )
             self.leg2DeltaR = math.sqrt( dR2leg2Min )
-            return (self.leg1DeltaR, self.leg2DeltaR)
-        
-        
+            return (self.leg1DeltaR, self.leg2DeltaR)        
         
     def __getattr__(self, name):
         '''all accessors  from cmg::DiTau are transferred to this class.'''
@@ -75,6 +73,11 @@ class PhysicsObject(object):
 
     def __init__(self, physObj):
         self.physObj = physObj
+
+    def scaleEnergy( self, scale ):
+        p4 = self.physObj.p4()
+        p4 *= scale 
+        self.physObj.setP4( p4 )  
         
     def __getattr__(self,name):
         '''all accessors  from cmg::DiTau are transferred to this class.'''
@@ -135,32 +138,9 @@ def isTau(leg):
     return True
 
 
-
 def bestDiTau( diTaus ):
     '''returns the diTau with the max sumPt'''
     best = max( diTaus, key=DiTau.sumPt) 
     return best 
 
-## http://cmslxr.fnal.gov/lxr/source/DataFormats/TauReco/interface/PFTau.h
-## 031 class PFTau : public BaseTau {
-## 032   public:
-## 033     enum hadronicDecayMode {
-## 034       kNull = -1,
-## 035       kOneProng0PiZero,
-## 036       kOneProng1PiZero,
-## 037       kOneProng2PiZero,
-## 038       kOneProng3PiZero,
-## 039       kOneProngNPiZero,
-## 040       kTwoProng0PiZero,
-## 041       kTwoProng1PiZero,
-## 042       kTwoProng2PiZero,
-## 043       kTwoProng3PiZero,
-## 044       kTwoProngNPiZero,
-## 045       kThreeProng0PiZero,
-## 046       kThreeProng1PiZero,
-## 047       kThreeProng2PiZero,
-## 048       kThreeProng3PiZero,
-## 049       kThreeProngNPiZero,
-## 050       kRareDecayMode
-## 051     };
 
