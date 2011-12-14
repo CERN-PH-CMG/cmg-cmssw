@@ -134,6 +134,7 @@ private:
   TH1F* muIsoHisto_;
   TH1F* muDxyHisto_;
   TH1F* muDzHisto_;
+  TH1F* muTruthDeltaRHisto_;
 
   TH1F* tauPtHisto_;
   TH1F* tauEtaHisto_;
@@ -141,17 +142,21 @@ private:
   TH1F* tauDxyHisto_;
   TH1F* tauDzHisto_;
   TH1F* tauEoPHisto_;
+  TH1F* tauEoP1Histo_;
+  TH1F* tauEtaEoP1Histo_;
+  TH1F* tauPtEoP1Histo_;
   TH1F* tauHoPHisto_;
   TH1F* tauEHoPHisto_;
-  TH1F* tauTruthDeltaRL1Histo_;
-  TH1F* tauTruthDeltaRL2Histo_;
+  TH1F* tauTruthDeltaRHisto_;
   TH1F* tauTruthHisto_;
+  TH1F* tauDecayModeHisto_;
 
   TH1F* metHisto_;
   TH1F* metphiHisto_;
   TH1F* transverseMassHisto_;
 
   TH1F* njetHisto_;
+  TH1F* njetLCHisto_;
   TH1F* leadJetPtHisto_;
   TH1F* leadJetEtaHisto_;
   TH1F* diJetMassHisto_;
@@ -167,6 +172,10 @@ private:
   float tree_svfitmass_;
   float tree_taupt_;
   float tree_taueta_;
+  int   tree_tautruth_;
+  float tree_tauehop_;
+  float tree_taueop_;
+  int   tree_taudecaymode_;
   float tree_mupt_;
   float tree_mueta_;
   float tree_muiso_;

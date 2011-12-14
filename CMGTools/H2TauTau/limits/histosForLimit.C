@@ -14,13 +14,66 @@ TH1F* changeBinning(TH1F* hinput, int rebin,float xmax){
   return houtput;
 }
 
+std::string fillString(std::string input){
+  if(input.size()>15){
+    cout<<"input string size too long"<<endl;
+    exit(0);
+  }
+  std::string output=input;
+  for(Int_t i=0;i<15;i++)
+    if(i>=input.size())output+=" ";
+  
+  return output;
+}
+
+std::string fillStringLong(std::string input){
+  if(input.size()>40){
+    cout<<"input string size too long"<<endl;
+    exit(0);
+  }
+  std::string output=input;
+  for(Int_t i=0;i<40;i++)
+    if(i>=input.size())output+=" ";
+  
+  return output;
+}
+
+std::string fillInt(int input){
+
+  char  inchar[100];
+  sprintf(inchar,"%d",input);
+  std::string newinput(inchar);
+  if(newinput.size()>15){
+    cout<<"input string size too long"<<endl;
+    exit(0);
+  }
+  std::string output=newinput;
+  for(Int_t i=0;i<15;i++)
+    if(i>=newinput.size())output+=" ";
+  
+  return output;
+}
+
+std::string fillFloat(float input){
+
+  char  inchar[100];
+  sprintf(inchar,"%.3f",input);
+  std::string newinput(inchar);
+  if(newinput.size()>15){
+    cout<<"input string size too long"<<endl;
+    exit(0);
+  }
+  std::string output=newinput;
+  for(Int_t i=0;i<15;i++)
+    if(i>=newinput.size())output+=" ";
+    
+ return output;
+}
+
 void histosForLimit(){
   //defines samples
-  gROOT->ProcessLine(".x ../workdir/TauMuConfig.C");
+  gROOT->ProcessLine(".x ../workdir/TauMuConfig_limits.C");
   
-  //defines input histograms
-  analysis.setOutputPath("/afs/cern.ch/user/b/benitezj/public/V240AB");
-
   //normalizes backgrounds for the data
   if(!analysis.init()){cout<<" could not init"<<endl;return 0;}  
   if(!analysis.scaleHistos())return 0;
@@ -293,28 +346,110 @@ void histosForLimit(){
   file << "observation " << data_obs->Integral()<<endl;
   file<<endl;
 
-  file << "bin muTau_SM0 muTau_SM0 muTau_SM0 muTau_SM0 muTau_SM0 muTau_SM0 muTau_SM0 muTau_SM0 muTau_SM0" << endl;
-  file << "process SM115 VBF115 ZTT QCD W ZJ ZL TT VV" << endl;
-  file << "process -1 0 1 2 3 4 5 6 7" << endl;
-  file << "rate " << SM115->Integral() << " "<< VBF115->Integral()  << " " << ZTT->Integral() << " " << QCD->Integral() << " " << W->Integral() 
-       << " " << ZJ->Integral() << " " << ZL->Integral() << " " << TT->Integral() << " " << VV->Integral()  << endl;
+
+  file <<fillStringLong("bin")<<fillString(" ")
+       <<fillString("muTau_SM0")
+       <<fillString("muTau_SM0")
+       <<fillString("muTau_SM0")
+       <<fillString("muTau_SM0")
+       <<fillString("muTau_SM0")
+       <<fillString("muTau_SM0")
+       <<fillString("muTau_SM0")
+       <<fillString("muTau_SM0")
+       <<fillString("muTau_SM0")<<endl;
+  file <<fillStringLong("process")<<fillString(" ")
+       <<fillString("SM115")
+       <<fillString("VBF115")
+       <<fillString("ZTT")
+       <<fillString("QCD")
+       <<fillString("W")
+       <<fillString("ZJ")
+       <<fillString("ZL")
+       <<fillString("TT")
+       <<fillString("VV")<<endl;
+  file <<fillStringLong("process")<<fillString(" ")
+       <<fillInt(-1)
+       <<fillInt(0)
+       <<fillInt(1)
+       <<fillInt(2)
+       <<fillInt(3)
+       <<fillInt(4)
+       <<fillInt(5)
+       <<fillInt(6)
+       <<fillInt(7)<<endl;
+  file <<fillStringLong("rate")<<fillString(" ")
+       <<fillInt(SM115->Integral())
+       <<fillInt(VBF115->Integral())
+       <<fillInt(ZTT->Integral())
+       <<fillInt(QCD->Integral())
+       <<fillInt(W->Integral())
+       <<fillInt(ZJ->Integral())
+       <<fillInt(ZL->Integral())
+       <<fillInt(TT->Integral())
+       <<fillInt(VV->Integral())<<endl;
+
   file << endl;
-
-  file <<"-------------------------------------------------------"<<endl;
-  file <<"lumi lnN 1.045 1.045 - - 1.045 1.045 1.045 1.045 1.045 luminosity"<<endl;
-  file <<"CMS_htt_zttNorm lnN - - 1.033 - - 1.033 1.033 - - ZTT Scale"<<endl;
-
-  file <<"CMS_htt_muTau_SM0_QCDNorm  gmN  "<<(int)(QCD->Integral()/analysis.getQCDOStoSSRatio())<<"     -          -              -                  "<<analysis.getQCDOStoSSRatio()<<"                   -                    -                     -                    -           -     QCD Background"<<endl;
-  file <<"CMS_htt_muTau_SM0_WNorm    gmN "<<(int)(W->Integral()/analysis.getWJetsSignalToSBFraction())<<"     -         -               -                    -                   "<<analysis.getWJetsSignalToSBFraction()<<"              -                     -                    -        -       W Background"<<endl;
+  file <<"-------------------------------"<<endl;
 
 
-//   file << "bin                                   muTau_SM0          muTau_SM0          muTau_SM0          muTau_SM0          muTau_SM0          muTau_SM0          muTau_SM0" << endl;
-//   file << "process                                SM115              ZTT                QCD                 W                  ZJ                 ZL                 TT" << endl;
-//   file << "process                                  0                 1                  2                  3                  4                  5                  6" << endl;
-//   file << "rate                                     " << SM115->Integral() << "              " << ZTT->Integral() << "             " << QCD->Integral() << "            " << W->Integral() << "             " << ZJ->Integral() << "             " << ZL->Integral() << "            " << TT->Integral() << endl;
+  file <<fillStringLong("lumi")<<fillString("lnN")
+       <<fillFloat(1.045)
+       <<fillFloat(1.045)
+       <<fillString("-")
+       <<fillString("-")
+       <<fillFloat(1.045)
+       <<fillFloat(1.045)
+       <<fillFloat(1.045)
+       <<fillFloat(1.045)
+       <<fillFloat(1.045)
+       <<"luminosity"<<endl;
+
+  file <<fillStringLong("CMS_htt_muTau_SM0_QCDNorm")<<fillString("gmN")
+       <<fillInt(QCD->Integral()/analysis.getQCDOStoSSRatio())
+       <<fillString("-")
+       <<fillString("-")
+       <<fillFloat(analysis.getQCDOStoSSRatio())
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<"QCD Background"<<endl;
+
+  file <<fillStringLong("CMS_htt_muTau_SM0_WNorm")<<fillString("gmN")
+       <<fillInt(W->Integral()/analysis.getWJetsSignalToSBFraction())
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillFloat(analysis.getWJetsSignalToSBFraction())
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<"W Background"<<endl;
+
+//  TString space="          ";
+//   file << "bin                          "<<space<<"muTau_SM0"<<space<<"muTau_SM0"<<space<<"muTau_SM0"<<space<<"muTau_SM0"<<space<<"muTau_SM0"<<space<<"muTau_SM0"<<space<<"muTau_SM0"<<space<<"muTau_SM0"<<space<<"muTau_SM0"<< endl;
+//   file << "process                      "<<space<<"SM115"<<space<<"VBF115"<<space<<"ZTT"<<space<<"QCD"<<space<<"W"<<space<<"ZJ"<<space<<"ZL"<<space<<"TT"<<space<<"VV"<< endl;
+//   file << "process                      "<<space<<" -1  "<<space<<"   0  "<<space<<" 1 "<<space<<" 2 "<<space<<"3"<<space<<" 4"<<space<<" 5"<<space<<" 6"<<space<<" 7"<< endl;
+//   file << "rate                         "<<space<<SM115->Integral()<<space<<VBF115->Integral()<<space<<ZTT->Integral()<<space<<QCD->Integral()<<space<<W->Integral()<<space<<ZJ->Integral()<<space<<ZL->Integral()<<space<<TT->Integral()<<space<<VV->Integral()  << endl;
 //   file << endl;
-//   file <<"--------------------------------------------------------------------------------------------------------------"<<endl;
-//   file <<"lumi                             lnN   1.045                     -                     -                     -                    -                     -                    -               luminosity"<<endl;
+
+//   file <<"-------------------------------------------------------"<<endl;
+//   file <<"lumi                       lnN"<<space<<"1.045"<<space<<"1.045"<<space<<"-"<<space<<"-"<<space<<"1.045"<<space<<"1.045"<<space<<"1.045"<<space<<"1.045"<<space<<"1.045"<<space<<"luminosity"<<endl;
+//   file <<"CMS_htt_zttNorm            lnN"<<space<<"-"<<space<<"-"<<space<<"1.033"<<space<<"-"<<space<<"-"<<space<<"1.033"<<space<<"1.033"<<space<<"-"<<space<<"-"<<space<<"ZTT"<<space<<"Scale"<<endl;
+
+//   file <<"CMS_htt_muTau_SM0_QCDNorm  gmN"<<space<<(int)(QCD->Integral()/analysis.getQCDOStoSSRatio())<<"-"<<space<<"-"<<space<<"-"<<analysis.getQCDOStoSSRatio()<<"-"<<space<<"-"<<space<<"-"<<space<<"-"<<space<<"QCD Background"<<endl;
+//   file <<"CMS_htt_muTau_SM0_WNorm    gmN"<<(int)(W->Integral()/analysis.getWJetsSignalToSBFraction())<<"-"<<space<<"-"<<space<<"-"<<space<<"-"<<analysis.getWJetsSignalToSBFraction()<<"-"<<space<<"-"<<space<<"-"<<space<<"-"<<space<<"W Background"<<endl;
+
+
+  //   file <<"bin                                   muTau_SM0          muTau_SM0          muTau_SM0          muTau_SM0          muTau_SM0          muTau_SM0          muTau_SM0" << endl;
+  //   file <<"process                                SM115              ZTT                QCD                 W                  ZJ                 ZL                 TT" << endl;
+  //   file <<"process                                  0                 1                  2                  3                  4                  5                  6" << endl;
+  //   file <<"rate                                     " << SM115->Integral() << "              " << ZTT->Integral() << "             " << QCD->Integral() << "            " << W->Integral() << "             " << ZJ->Integral() << "             " << ZL->Integral() << "            " << TT->Integral() << endl;
+  //   file << endl;
+  //   file <<"--------------------------------------------------------------------------------------------------------------"<<endl;
+  //   file <<"lumi                             lnN   1.045                     -                     -                     -                    -                     -               -               luminosity"<<endl;
 //   file <<"CMS_eff_m                        lnN   1.020                   1.020                   -                     -                  1.020                 1.020                1.020             muon ID /HLT"<<endl;
 //   file <<"CMS_eff_t                        lnN   1.060                   1.060                   -                     -                    -                     -                  1.060             Tau IDf"<<endl;
 //   file <<"CMS_scale_t                    shape   1.000                   1.000                   -                   1.000                1.000                 1.000                1.000             shape"<<endl;
