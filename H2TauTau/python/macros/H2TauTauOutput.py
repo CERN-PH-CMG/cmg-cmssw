@@ -1,5 +1,6 @@
 import os 
 from CMGTools.H2TauTau.macros.H2TauTauHistogramList import H2TauTauHistogramList
+from CMGTools.H2TauTau.macros.Output import Output
 
 def inclusiveRegionName(name):
     newName = name.split('_')[0:2]
@@ -13,12 +14,13 @@ def wholeMTRegionName(name):
     return '_'.join( newName )
     
 
-class H2TauTauOutput:
+class H2TauTauOutput(Output):
 
     def __init__(self, name, regions ):
-        self.name = name
-        self._MakeOutputDir()
-        self.histoLists = {}
+##         self.name = name
+##         self._MakeOutputDir()
+##         self.histoLists = {}
+        super(H2TauTauOutput, self).__init__(name)
 
         inclusiveRegions = set()
         for regionName in regions.regionNames():
@@ -34,17 +36,17 @@ class H2TauTauOutput:
         for regionName in wholeMTRegions:
             self.histoLists[ regionName ] = H2TauTauHistogramList( '/'.join([self.name, regionName ])) 
        
-    def _MakeOutputDir(self):
-        index = 0
-        name = self.name
-        while True:
-            try:
-                # print 'mkdir', self.name
-                os.mkdir( name )
-                break
-            except OSError:
-                index += 1
-                name = '%s_%d' % (self.name, index)
+##     def _MakeOutputDir(self):
+##         index = 0
+##         name = self.name
+##         while True:
+##             try:
+##                 # print 'mkdir', self.name
+##                 os.mkdir( name )
+##                 break
+##             except OSError:
+##                 index += 1
+##                 name = '%s_%d' % (self.name, index)
             
     def Fill(self, event, regionName ):
         histoList = self.histoLists[regionName]
@@ -62,7 +64,7 @@ class H2TauTauOutput:
         histoList = self.histoLists[wholeMTRegNameInclusive]
         histoList.Fill( event, event.eventWeight )
 
-    def Write(self):
-        for histoList in self.histoLists.values():
-            histoList.Write()
+##     def Write(self):
+##         for histoList in self.histoLists.values():
+##             histoList.Write()
 

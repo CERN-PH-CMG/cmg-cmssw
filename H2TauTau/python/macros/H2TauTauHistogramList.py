@@ -53,13 +53,14 @@ class H2TauTauHistogramList( object ):
         self.diTau.FillDiTau( diTau, weight )
         tau = diTau.leg1()
         self.tau.FillLeg( tau, weight )
-        dec = tau.decayMode()
-        if dec == 0:
-            self.tau0.FillLeg( diTau.leg1(), weight )
-        elif dec == 1:
-            self.tau1.FillLeg( diTau.leg1(), weight )
-        elif dec == 10:
-            self.tau10.FillLeg( diTau.leg1(), weight )
+        if hasattr(tau, 'decayMode'):
+            dec = tau.decayMode()
+            if dec == 0:
+                self.tau0.FillLeg( diTau.leg1(), weight )
+            elif dec == 1:
+                self.tau1.FillLeg( diTau.leg1(), weight )
+            elif dec == 10:
+                self.tau10.FillLeg( diTau.leg1(), weight )
         self.mu.FillLeg( diTau.leg2(), weight )
 
     def FillVertices(self, vertices, weight=1):
