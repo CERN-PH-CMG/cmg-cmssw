@@ -33,7 +33,6 @@
 #include "TEventList.h"
  
 using namespace std;
-
 int main(int argc, char* argv[])
 {
   SelectionMonitor controlHistos; //plot storage
@@ -58,9 +57,18 @@ int main(int argc, char* argv[])
   TString outUrl( outdir );
   gSystem->Exec("mkdir -p " + outUrl);
 
+
+
+
   bool isMC = runProcess.getParameter<bool>("isMC");
   double xsec = runProcess.getParameter<double>("xsec");
   int mctruthmode=runProcess.getParameter<int>("mctruthmode");
+
+
+  TString outTxtUrl= outUrl + "/" + gSystem->BaseName(url) + ".txt";
+  FILE* outTxtFile = NULL;
+  if(!isMC)outTxtFile = fopen(outTxtUrl.Data(), "w");
+  printf("TextFile URL = %s\n",outTxtUrl.Data());
 
   //handler for gamma processes
   GammaEventHandler *gammaEvHandler=0;
@@ -1222,6 +1230,59 @@ int main(int argc, char* argv[])
 		  if(passvbf65rmet) controlHistos.fillHisto("finaleventflowvbf",ctf,7,iweight);		  
                   if(passvbfSyst1met) controlHistos.fillHisto("finaleventflowvbf",ctf,8,iweight);
                   if(passvbfSyst2met) controlHistos.fillHisto("finaleventflowvbf",ctf,9,iweight);
+
+
+                  if(isc==0 && outTxtFile && (passvbf50met || passvbf50rmet) && string(subcat.Data())=="vbf"){
+                      fprintf(outTxtFile, "<b>%s event</b> @ %s <br/>\n", subcat.Data(), url.Data());
+                      fprintf(outTxtFile, "%%$Run=%i$%% %%$Lumi=%i$%% %%$Event=%i$%% <br/>\n",  ev.run,  ev.lumi, ev.event);
+
+                       fprintf(outTxtFile, "%%$VBF  MET SELECTION: (>50)=%i (>55)=%i (>60)=%i (>65)=%i $%% <br/>\n", passvbf50met, passvbf55met, passvbf60met, passvbf65met );
+                       fprintf(outTxtFile, "%%$VBF RMET SELECTION: (>50)=%i (>55)=%i (>60)=%i (>65)=%i $%% <br/>\n", passvbf50rmet, passvbf55rmet, passvbf60rmet, passvbf65rmet );
+
+
+
+                      fprintf(outTxtFile, "<i>Leptons</i> <br/>\n");
+                      for(size_t ilep=0; ilep<2; ilep++){
+                         fprintf(outTxtFile, "%%$l_{%i} = %i $%% ", (int)ilep+1, phys.leptons[ilep].id);
+                 	 fprintf(outTxtFile, "%%$p_{T}=%f $%% ", phys.leptons[ilep].pt());
+                         fprintf(outTxtFile, "%%$\\eta=%f $%% ", phys.leptons[ilep].eta());
+                         fprintf(outTxtFile, "%%$\\phi=%f $%% ", phys.leptons[ilep].phi());
+                         fprintf(outTxtFile, "%%$I_{neu}=%f $%%", phys.leptons[ilep].iso1);
+                         fprintf(outTxtFile, "%%$I_{ch}=%f $%%", phys.leptons[ilep].iso2);
+                         fprintf(outTxtFile, "%%$I_{pho}=%f $%%", phys.leptons[ilep].iso3);
+                         fprintf(outTxtFile, "<br/>\n");
+                      }
+
+                      fprintf(outTxtFile, "<i>Dilepton</i> <br/>\n");
+                      fprintf(outTxtFile, "%%$p_{T}^{ll}=%f $%% ", zll.pt());
+                      fprintf(outTxtFile, "%%$\\eta^{ll}=%f $%% ", zll.eta());
+                      fprintf(outTxtFile, "%%$\\phi^{ll}=%f $%% ", zll.phi());
+                      fprintf(outTxtFile, "%%$m^{ll}=%f $%% ", zll.mass());
+                      fprintf(outTxtFile, "%%$\\Delta R(l,l)=%f $%% ", drll);
+                      fprintf(outTxtFile, "%%$\\Delta phi(l,l)=%f $%% ", dphill);
+                      fprintf(outTxtFile, "<br/>\n");
+                
+                      fprintf(outTxtFile, "<i>Missing transverse energy</i> <br/>\n");
+                      fprintf(outTxtFile, "%%$E_{T}^{miss}=%f $%% %%$\\phi=%f$%% <br/>\n ", met, zvv.phi());
+                      fprintf(outTxtFile, "%%$red-E_{T}^{miss}=%f $%% %%$l=%f$%%  %%$t=%f$%% <br/>\n ", redMet, redMetL, redMetT);
+                
+                      fprintf(outTxtFile, "<i>Transverse mass</i> <br/>\n");
+                      fprintf(outTxtFile, "%%$\\sum M_{T}(l, E_{T}^{miss})=%f $%% %%$M_{T}(Z, E_{T}^{miss})=%f $%% <br/>\n ", mtl1+mtl2, mt);
+                
+                      fprintf(outTxtFile, "<i>Jet activity</i> <br/>\n");
+                      fprintf(outTxtFile, "%%$N^{p_{T}>15}_{jet}=%i $%% %%$\\rho=%f$%% <br/>\n ", ev.jn, ev.rho);
+                
+                      fprintf(outTxtFile, "------\n");
+                  }
+                
+
+
+
+
+
+
+
+
 		
 		  
 		  //systematic variations (computed per jet bin so fill only once) 		  
@@ -1402,6 +1463,11 @@ int main(int argc, char* argv[])
       }
   }
   ofile->Close();
+
+  if(outTxtFile)fclose(outTxtFile);
 }  
+
+
+
 
 
