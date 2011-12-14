@@ -6,7 +6,8 @@ import imp
 from multiprocessing import Pool
 from pprint import pprint
 
-from CMGTools.H2TauTau.macros.Loop3 import TauMuAnalyzer as Loop
+# from CMGTools.H2TauTau.macros.DiMuAnalyzer import DiMuAnalyzer as Analyzer
+from CMGTools.H2TauTau.macros.TauMuAnalyzer import TauMuAnalyzer as Analyzer
 
 # global, to be used interactively when only one component is processed.
 loop = None 
@@ -21,7 +22,7 @@ def RunLoopAsync(comp, outDir, config, options):
 
 def RunLoop( comp, outDir, config, options):
     fullName = '/'.join( [outDir, comp.name ] )
-    loop = Loop( fullName, comp, config )
+    loop = Analyzer( fullName, comp, config )
     print loop
     if options.iEvent is None:
         loop.Loop( options.nevents )
