@@ -13,4 +13,3 @@ cmgTriggerObject = cms.EDFilter("TriggerObjectPOProducer",
        )
 )
 
-cmgTriggerObjectSequence = cms.Sequence(cmgTriggerObject)

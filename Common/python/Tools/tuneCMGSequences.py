@@ -43,3 +43,5 @@ def tuneCMGSequences(process, postpostfix=''):
     removeObject( process, 'electron', 'AK7'+postpostfix)
     removeObject( process, 'met', 'AK7'+postpostfix)
     removeObject( process, 'met', 'AK5LC'+postpostfix)
+    removeObject( process, 'trigger', 'AK5LC'+postpostfix)
+    removeObject( process, 'trigger', 'AK7'+postpostfix)
