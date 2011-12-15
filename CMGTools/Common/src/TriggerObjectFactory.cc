@@ -55,7 +55,7 @@ cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm
               // Current trigger passed for this object.
                 for(unsigned int index = 0; index < triggerObjects->size(); index++) {
                     pat::TriggerObjectStandAlone sa = triggerObjects->at(index);
-                    if(sa.path(it->first, true, false)) {
+                    if(sa.path(it->first, false, false)) {//Jose Dec 14, 2011: switched from  true,false -> false,false otherwise does not pass the objects
                         pat::TriggerObjectPtr o(triggerObjects, index);
                         cmg::TriggerObject to(o, it->first);
                         result->push_back(to);
@@ -99,8 +99,10 @@ cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm
                 // object.
                 for(std::map<std::string,bool>::const_iterator jt = triggerMap.begin();
                     jt != triggerMap.end(); ++jt) {
-                  const int prescale = (pset > 0) ? hlt_.prescaleValue(pset,jt->first) : pset;      
-                  it->addSelectionWithPrescale(jt->first, jt->second,prescale);
+		  if(jt->second || saveAllHLTPathsInObjs_){//only save HLT name if triggered, saves ~30% of CMG tuple size
+		    const int prescale = (pset > 0) ? hlt_.prescaleValue(pset,jt->first) : pset;      
+		    it->addSelectionWithPrescale(jt->first, jt->second,prescale);
+		  }
                 }
                 it->addSelection(isRealDataString, isRealData);
             }

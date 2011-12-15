@@ -20,6 +20,7 @@ class TriggerObjectFactory : public Factory<cmg::TriggerObject>{
             triggerObjectsLabel_(ps.getParameter<edm::InputTag>("triggerObjects")),
             processName_(ps.getUntrackedParameter<std::string>("processName","")),
             useTriggerObjects_(ps.getUntrackedParameter<bool>("useTriggerObjects",false)),
+	    saveAllHLTPathsInObjs_(ps.getUntrackedParameter<bool>("saveAllHLTPathsInObjs",false)),
             tagTriggerEvent_( "hltTriggerSummaryAOD" ){
         }
         virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
@@ -32,6 +33,7 @@ class TriggerObjectFactory : public Factory<cmg::TriggerObject>{
         const edm::InputTag triggerObjectsLabel_;
         std::string processName_;
         const bool useTriggerObjects_;
+        const bool saveAllHLTPathsInObjs_;
         const std::string tagTriggerEvent_;
         
         //trigger info
