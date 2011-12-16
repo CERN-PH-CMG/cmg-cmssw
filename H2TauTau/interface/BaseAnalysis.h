@@ -52,8 +52,6 @@ public:
   virtual bool init();
   virtual bool createHistos(TString samplename="RelValZTT");
 
-  bool createMCPUPHisto();
-
 protected:
 
   virtual bool addHistos(Sample* s);

@@ -69,9 +69,9 @@ void plotTauMu(){
 //   Float_t r[4]={-2.4,2.4,0,200};
 //   analysis.plot("tauEtaEoP1Histo",10," #eta_{#tau}","Events / 0.5",c,r);
 
-  Float_t c[4]={.5,.75,.42,.81};
-  Float_t r[4]={0,100,0,600};
-  analysis.plot("tauPtEoP1Histo",20," #tau p_{T}   (GeV)","Events / 10 GeV",c,r);
+//   Float_t c[4]={.5,.75,.42,.81};
+//   Float_t r[4]={0,100,0,600};
+//   analysis.plot("tauPtEoP1Histo",20," #tau p_{T}   (GeV)","Events / 10 GeV",c,r);
 
 //   Float_t c[4]={.5,.75,.42,.81};
 //   analysis.plot("tauIsoHisto",2," tau isolation  ","",c,0);
@@ -108,7 +108,7 @@ void plotTauMu(){
 
 //   ////Jets at inclusive level
 //   Float_t c[4]={.55,.8,.47,.81};
-//   Float_t r[4]={-0.5,5.5,0,40000};
+//   Float_t r[4]={-0.5,5.5,0,25000};
 //   //Float_t r[4]={-0.5,5.5,1,500000};
 //   analysis.plot("njetHisto",1,"# of jets","",c,r,0);
 
