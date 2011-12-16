@@ -1253,8 +1253,9 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   hRatio->Divide(hBkg);
   hRatio->GetYaxis()->SetTitle("Data/Background");
   hRatio->SetStats(0);
-  if(0.5<hRatio->GetMinimum()&&hRatio->GetMaximum()<1.5) hRatio->GetYaxis()->SetRangeUser(.5,1.5);
-  else hRatio->GetYaxis()->SetRangeUser(0.,hRatio->GetMaximum());
+  //if(0.5<hRatio->GetMinimum()&&hRatio->GetMaximum()<1.5)
+  hRatio->GetYaxis()->SetRangeUser(.5,1.5);
+  //else hRatio->GetYaxis()->SetRangeUser(0.,hRatio->GetMaximum());
   hRatio->Draw("hist pe");
   if(axesrange)
     line.DrawLine(axesrange[0],1,axesrange[1],1);
