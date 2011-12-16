@@ -58,6 +58,11 @@ cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm
                     if(sa.path(it->first, false, false)) {//Jose Dec 14, 2011: switched from  true,false -> false,false otherwise does not pass the objects
                         pat::TriggerObjectPtr o(triggerObjects, index);
                         cmg::TriggerObject to(o, it->first);
+
+			std::vector< std::string > filters=sa.filterLabels();//add the filters this object passed needed for checking the last path filter
+			for(std::vector< std::string >::const_iterator label=filters.begin();label!=filters.end();label++)
+			  to.addSelection(*label,1);
+
                         result->push_back(to);
                         triggerObjectPaths.insert(std::make_pair(to, it->first));
                     }
