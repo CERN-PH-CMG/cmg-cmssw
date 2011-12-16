@@ -8,14 +8,13 @@ from CMGTools.Common.physicsObjectPrinter_cfi import physicsObjectPrinter
 ############### Jets
 # count high pt jets
 from CMGTools.Common.skims.cmgPFJetSel_cfi import *
-#require 6 jets offline, of which 4 must be hard
+#require 6 jets offline, of which 2 must be hard
 #QuadJet trigger cuts at pt >80, eta < 5.0
-razorMJPFJetSel30 = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = 'pt()>30 && abs(eta)<5.0' )
+razorMJPFJetSel30 = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = 'pt()>30 && abs(eta)<3.0' )
 razorMJPFJetSel80 = cmgPFJetSel.clone( src = 'razorMJPFJetSel30', cut = 'pt()>80' )
-razorMJPFBJetSel30 = cmgPFJetSel.clone( src = 'razorMJPFJetSel30', cut = 'getSelection("cuts_btag_loose") && abs(eta)<2.4')
 
 razorMJPFJetSel30Count = cmgCandCount.clone( src = 'razorMJPFJetSel30', minNumber = 6 )
-razorMJPFJetSel80Count = cmgCandCount.clone( src = 'razorMJPFJetSel80', minNumber = 4 )
+razorMJPFJetSel80Count = cmgCandCount.clone( src = 'razorMJPFJetSel80', minNumber = 2 )
 
 # id the jets
 #used to veto event - the number of jets that fail loose jet ID
@@ -26,17 +25,13 @@ razorMJPFJetIDCount = cmgCandCount.clone( src = 'razorMJPFJetSelID', minNumber =
 #make a skim on the HLT - should match all multi triggers
 from CMGTools.Common.skims.cmgTriggerObjectSel_cfi import *
 # triggers from the MultiJet, ElectronHad and MuHad PDs
-#razorMJTriggerSel = cmgTriggerObjectSel.clone(
-#                                            src = 'cmgTriggerObjectSel',
-#                                            cut = 'getSelectionRegExp("^HLT_QuadJet[0-9]+.*_v[0-9]+$") ||'\
-#                                                ' getSelectionRegExp("^HLT_SixJet[0-9]+.*_v[0-9]+$") ||'\
-#                                                ' getSelectionRegExp("^HLT_EightJet[0-9]+.*_v[0-9]+$") ||'\
-#                                                ' getSelectionRegExp("^HLT_.*Mu[0-9]+.*Quad.*Jet[0-9]+.*_v[0-9]+$") ||'\
-#                                                ' getSelectionRegExp("^HLT_Ele[0-9]+.*Quad.*Jet[0-9]+.*_v[0-9]+$")'\
-#                                            )
 razorMJTriggerSel = cmgTriggerObjectSel.clone(
                                             src = 'cmgTriggerObjectSel',
-                                            cut = 'getSelectionRegExp("^HLT_.*_v[0-9]+$")'
+                                            cut = 'getSelectionRegExp("^HLT_QuadJet[0-9]+.*_v[0-9]+$") ||'\
+                                                ' getSelectionRegExp("^HLT_SixJet[0-9]+.*_v[0-9]+$") ||'\
+                                                ' getSelectionRegExp("^HLT_EightJet[0-9]+.*_v[0-9]+$") ||'\
+                                                ' getSelectionRegExp("^HLT_.*Mu[0-9]+.*Quad.*Jet[0-9]+.*_v[0-9]+$") ||'\
+                                                ' getSelectionRegExp("^HLT_Ele[0-9]+.*Quad.*Jet[0-9]+.*_v[0-9]+$")'\
                                             )
 razorMJTriggerCount = cmgCandCount.clone( src = 'razorMJTriggerSel', minNumber = 1 )
 
@@ -70,9 +65,8 @@ razorMJTriggerSequence = cms.Sequence(
 
 razorMJJetSequence = cms.Sequence(
     razorMJPFJetSel30*
-    razorMJPFJetSel80*
     razorMJPFJetSelID*
-    razorMJPFBJetSel30*
+    razorMJPFJetSel80*
     razorMJHemiHadBox*
     razorMJDiHemiHadBox    
 )
@@ -93,11 +87,6 @@ razorMJSkimSequence = cms.Sequence(
     razorMJPFJetSel30Count+
     razorMJPFJetSel80Count+
     #filter is inverted
-    ~razorMJPFJetIDCount
-    )
-
-#trigger based selection - we take all multi triggered events
-razorMJTriggerSkimSequence = cms.Sequence(
-    razorMJObjectSequence+
-    razorMJTriggerCount                                
+    ~razorMJPFJetIDCount+
+    razorMJTriggerCount
     )

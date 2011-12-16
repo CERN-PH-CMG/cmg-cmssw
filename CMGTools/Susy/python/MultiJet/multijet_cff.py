@@ -6,6 +6,7 @@ from CMGTools.Common.skims.cmgCandMerge_cfi import *
 from CMGTools.Common.physicsObjectPrinter_cfi import physicsObjectPrinter
 
 ############### Jets
+#SSCHPT or TCHEM 
 btag = 'btag(5) >= 2.0 || btag(0) >= 3.3'
 # count high pt jets
 from CMGTools.Common.skims.cmgPFJetSel_cfi import *
@@ -18,11 +19,6 @@ multiPFJetSel60Count = cmgCandCount.clone( src = 'multiPFJetSel60', minNumber = 
 
 multiPFBJetSel40 = cmgPFJetSel.clone( src = 'multiPFJetSel40', cut = btag)
 multiPFBJetSel40Count = cmgCandCount.clone( src = 'multiPFBJetSel40', minNumber = 1 )
-
-# id the jets
-#ID at lower pt threshold - used to veto event - the number of jets that fail loose jet ID
-multiPFJetSelID = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = '(pt()>30 && abs(eta)<3.0) && (!getSelection("cuts_looseJetId"))' )
-multiPFJetIDCount = cmgCandCount.clone( src = 'multiPFJetSelID', minNumber = 1 ) #filter inverted below
 
 ############### Muons
 from CMGTools.Common.skims.cmgMuonSel_cfi import *
@@ -78,7 +74,6 @@ multiMuonSequence = cms.Sequence(
 multiJetSequence = cms.Sequence(
     multiPFJetSel40*
     multiPFJetSel60+
-    multiPFJetSelID*
     multiPFBJetSel40*
     multiPFJetsMuonVeto*
     multiPFJetsMuonRequired*
@@ -102,8 +97,6 @@ multijetSkimSequence = cms.Sequence(
     multiObjectSequence + 
     multiPFJetSel40Count+
     multiPFJetSel60Count+
-    #filter is inverted
-    ~multiPFJetIDCount+
     multiTriggerQuadCount+
     multiPFBJetSel40Count
     )

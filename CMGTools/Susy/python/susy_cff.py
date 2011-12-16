@@ -60,11 +60,6 @@ razorMJPath = cms.Path(
     razorMJSkimSequence
     )
 
-razorMJTriggerPath = cms.Path(
-    susySequence +
-    razorMJTriggerSkimSequence
-    )
-
 LPPath = cms.Path(
     susySequence +
     LPSkimSequence

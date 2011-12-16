@@ -14,9 +14,9 @@ susyEventContent = everything
 susyEventContent += multijetEventContent
 #susyEventContent += RA1EventContent
 #susyEventContent += RA2EventContent
-susyEventContent += razorEventContent
+#susyEventContent += razorEventContent
 susyEventContent += razorMJjetEventContent
-susyEventContent += leptonicStopEventContent
+#susyEventContent += leptonicStopEventContent
 #susyEventContent += LPEventContent
 susyEventContent += commonEventContent
  
