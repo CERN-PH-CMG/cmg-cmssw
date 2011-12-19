@@ -87,6 +87,5 @@ razorMJSkimSequence = cms.Sequence(
     razorMJPFJetSel30Count+
     razorMJPFJetSel80Count+
     #filter is inverted
-    ~razorMJPFJetIDCount+
-    razorMJTriggerCount
+    ~razorMJPFJetIDCount
     )
