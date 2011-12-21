@@ -38,6 +38,7 @@ class Event:
 class DiMuAnalyzer( Looper ):
 
     def __init__(self, name, component, cfg):
+        super( DiMuAnalyzer, self).__init__(component.fraction)
         self.name = name
         self.cmp = component
         self.cfg = cfg 
@@ -277,8 +278,10 @@ class DiMuAnalyzer( Looper ):
         self.event.eventWeight = 1
         # self.event.triggerWeight = 1
         self.event.vertexWeight = 1
-
-        self.event.eventWeight = self.event.vertexWeight
+        if self.cmp.isMC:
+            self.event.vertexWeight = self.handles['vertexWeight'].product()[0]
+            self.event.eventWeight = self.event.vertexWeight
+            
         self.output.Fill( self.event )
         
         self.averages['vertexWeight'].add( self.event.vertexWeight )
