@@ -6,8 +6,8 @@ import imp
 from multiprocessing import Pool
 from pprint import pprint
 
-# from CMGTools.H2TauTau.macros.DiMuAnalyzer import DiMuAnalyzer as Analyzer
-from CMGTools.H2TauTau.macros.TauMuAnalyzer import TauMuAnalyzer as Analyzer
+from CMGTools.H2TauTau.macros.DiMuAnalyzer import DiMuAnalyzer as Analyzer
+# from CMGTools.H2TauTau.macros.TauMuAnalyzer import TauMuAnalyzer as Analyzer
 
 # global, to be used interactively when only one component is processed.
 loop = None 
@@ -126,10 +126,11 @@ if __name__ == '__main__':
     For each component, start a Loop.
     'name' is whatever you want.
     """
+
     parser.add_option("-N", "--nevents", 
                       dest="nevents", 
                       help="number of events to process",
-                      default=-1)
+                      default=None)
     parser.add_option("-i", "--iEvent", 
                       dest="iEvent", 
                       help="jump to a given event. ignored in multiprocessing.",

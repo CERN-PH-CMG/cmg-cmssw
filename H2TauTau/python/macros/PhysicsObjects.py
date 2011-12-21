@@ -99,6 +99,7 @@ class DiTau(object):
         tau = str( self.tau )
         lepton = str( self.lepton ) 
         return '\n'.join( [header, tau, lepton] )
+
         
 class PhysicsObject(object):
     '''Extends the cmg::PhysicsObject functionalities.'''

@@ -19,12 +19,13 @@ class Cuts(object):
 
 class Component(object):
 
-    def __init__(self, name, files, triggers=None ):
+    def __init__(self, name, files, triggers=None, fraction=1):
         self.name = name 
         self.files = files
         self.isMC = False
         self.isData = False
         self.isEmbed = False
+        self.fraction = fraction
         if isinstance(triggers, basestring):
             self.triggers = [triggers]
         else:
@@ -41,8 +42,8 @@ class Component(object):
 
 class EmbedComponent( Component ):
 
-    def __init__(self, name, files, triggers, tauEffWeight, muEffWeight ):
-        super(EmbedComponent, self).__init__(name, files, triggers )
+    def __init__(self, name, files, triggers, tauEffWeight, muEffWeight, fraction=1):
+        super(EmbedComponent, self).__init__(name, files, triggers, fraction)
         self.isEmbed = True
         self.tauEffWeight = tauEffWeight
         self.muEffWeight = muEffWeight
@@ -51,13 +52,14 @@ class EmbedComponent( Component ):
         return Weight( genNEvents = -1,
                        xSection = None,
                        genEff = -1,
-                       intLumi = None ) 
+                       intLumi = None,
+                       addWeight = 1/float(self.fraction) ) 
 
         
 class DataComponent( Component ):
 
-    def __init__(self, name, files, intLumi, triggers ):
-        super(DataComponent, self).__init__(name, files, triggers)
+    def __init__(self, name, files, intLumi, triggers, fraction=1):
+        super(DataComponent, self).__init__(name, files, triggers, fraction)
         self.isData = True 
         self.intLumi = intLumi
 
@@ -65,15 +67,16 @@ class DataComponent( Component ):
         return Weight( genNEvents = -1,
                        xSection = None,
                        genEff = -1,
-                       intLumi = self.intLumi ) 
+                       intLumi = self.intLumi,
+                       addWeight = 1/float(self.fraction) ) 
 
 
 class MCComponent( Component ): 
 
     def __init__(self, name, files, xSection, nGenEvents,
                  triggers, vertexWeight, tauEffWeight, muEffWeight,
-                 effCorrFactor):
-        super(MCComponent, self).__init__(name, files, triggers)
+                 effCorrFactor, fraction=1):
+        super(MCComponent, self).__init__(name, files, triggers, fraction)
         self.isMC = True
         self.xSection = xSection
         self.nGenEvents = nGenEvents
@@ -95,7 +98,8 @@ class MCComponent( Component ):
         return Weight( genNEvents = self.nGenEvents,
                        xSection = self.xSection,
                        intLumi = None,
-                       genEff = 1/self.effCorrFactor )
+                       genEff = 1/self.effCorrFactor,
+                       addWeight = 1/float(self.fraction) )
 
 class Period( object ):
 

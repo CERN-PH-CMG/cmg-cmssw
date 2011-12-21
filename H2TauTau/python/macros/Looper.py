@@ -1,15 +1,15 @@
+import math
 
 class Looper(object):
 
-    def __init__(self):
-        # self.analyzers = [ self ]
-        pass
-
-    def Loop(self, nEvents=-1 ):
+    def __init__(self, fraction):
+        self.fraction = fraction
+        
+    def Loop( self, nEvents=None ):
         '''Loop on a given number of events, and call ToEvent for each event.'''
         print 'starting loop'
-        # self.InitCounters()
-        nEvents = int(nEvents)
+        if nEvents is None:
+            nEvents = math.ceil( self.events.size() * self.fraction )         
         for iEv in range(0, self.events.size() ):
             if iEv == nEvents:
                 break
