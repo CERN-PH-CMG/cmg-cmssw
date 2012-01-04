@@ -87,11 +87,13 @@ if len(args)!=1:
 castorDir = ""
 localDir = ""
 
-dataSets = '/afs/cern.ch/user/'
-dataSets += options.user[0]
-dataSets += '/'
-dataSets += options.user + "/public/DataSets.txt"
+# opions.user could be of the form user_area
+user,area = cBaseDir.getUserAndArea(options.user)
 
+dataSets = '/afs/cern.ch/user/{first}/{user}/public/DataSets.txt'.format(
+    first = user[0], # first letter of the username
+    user = user
+    )
 
 ifile=open(dataSets,'r')
 
@@ -101,29 +103,19 @@ castorBaseDir = castortools.lfnToCastor(cBaseDir.castorBaseDir( options.user ))
 
 for line in ifile.readlines():
     line = line.rstrip()
-
     if line[0]!='/': continue 
-
     if pattern.search( line ):
-        # preparing castor dir -----------------
-
         sampleName = line
-
         try:
             castorDir = castorBaseDir + sampleName
         except:
             sys.exit(1)
-
-        # making local source directory ---------
-
         localDir = None
         try:
             localDir = os.environ['CMGLOCALBASEDIR']
             localDir += sampleName
         except:
             pass
-        
-
         allSampleInfo( sampleName, int(options.listLevel) )
 
 

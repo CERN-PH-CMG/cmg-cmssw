@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os 
 
 from CMGTools.Production.datasetToSource import *
 
