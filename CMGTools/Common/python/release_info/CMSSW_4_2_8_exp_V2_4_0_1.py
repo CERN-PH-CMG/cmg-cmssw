@@ -1,5 +1,5 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_h2tautauvars_31Oct11'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'enrique_taggingFilters_07nov11'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_V2401_04Jan12'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_CMSDataset_04Jan12'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_rootdirstyle_01Nov11'),
   ('CMGTools/ZmumuJetsTutorial', 'UserCode/CMG/CMGTools/ZmumuJetsTutorial', 'cbern_tutorial_12Oct11'),
@@ -18,3 +18,4 @@
   ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-02-07'),
   ('RecoTauTag/TauTagTools', 'RecoTauTag/TauTagTools', 'V01-02-00'),
   ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'cbern_start_18Oct11')]
+
