@@ -28,9 +28,14 @@ if __name__ == '__main__':
 
     user = options.user
     name = args[0]
-
-    data = Dataset( user, name, options.pattern)
+    info = not options.noinfo
+    
+    if user == 'CMS':
+        data = CMSDataset( name )
+        info = False
+    else:
+        data = Dataset( user, name, options.pattern)
     data.printInfo()
     data.printFiles(abspath = options.abspath,
-                    info = not options.noinfo)
+                    info = info)
 
