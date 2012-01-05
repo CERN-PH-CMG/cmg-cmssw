@@ -19,25 +19,31 @@ namespace cmg {
   
   class PFJet : public BaseJet {
   public:
-    
+    ///number of PFCandidates types, see PFCandidate.h
     static const unsigned NCANDTYPES;
     
-    PFJet() : components_(NCANDTYPES) {}
-    PFJet(const value& m): BaseJet(m), components_(NCANDTYPES) {}
+    PFJet() : components_(NCANDTYPES), ptd_(-999) {}
+    PFJet(const value& m): BaseJet(m), components_(NCANDTYPES), ptd_(-999) {}
 
     virtual ~PFJet(){}
     
     const PFJetComponent& component(unsigned ci) const; 
 
     const int nConstituents() const;
+    float ptd() const {return ptd_;}
 
     friend class PFJetFactory;
     
   private:
+    ///contains one PFJetComponent for each type of PFCandidate. 
+    ///see PFJetComponent
     std::vector<PFJetComponent> components_; 
- 
-    static PFJetComponent dummy_;
 
+    /// just a dummy PFJetComponent, returned by the component accessor
+    /// in case of problems
+    static PFJetComponent dummy_;
+    
+    float ptd_;
   };
 }
 

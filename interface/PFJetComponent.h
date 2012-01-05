@@ -1,7 +1,7 @@
 #ifndef __AnalysisDataFormats_CMGTools_JetComponent__
 #define __AnalysisDataFormats_CMGTools_JetComponent__
 
-#include "DataFormats/Math/interface/LorentzVector.h"
+// #include "DataFormats/Math/interface/LorentzVector.h"
 /* #include "AnalysisDataFormats/CMGTools/interface/FloatValue.h" */
 
 #include <vector>
@@ -9,10 +9,10 @@
 
 namespace cmg {
   
-  typedef math::PtEtaPhiMLorentzVector LorentzVector;
+  // typedef math::PtEtaPhiMLorentzVector LorentzVector;
   
   //TODO: simplify the interface - add a Component class? 
-  class PFJetComponent : public LorentzVector {
+  class PFJetComponent {
   public:
     PFJetComponent();
     
