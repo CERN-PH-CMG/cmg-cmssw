@@ -57,16 +57,24 @@ cmg::PFJetFactory::event_ptr cmg::PFJetFactory::create(const edm::Event& iEvent,
   
     float totalEnergyFromConst = 0; 
 
+    float ptd = -1.0;
 
     if( useConstituents_ ) {
 
       std::vector<reco::PFCandidatePtr> pfCandPtrs = jet.getPFConstituents();
 
+      //Alessio, implement ptd calculation here
+
+      float sumpt2 = 0;
+      float sumpt = 0;
       for(unsigned i=0; i<pfCandPtrs.size(); ++i) {
 	const reco::PFCandidate& cand = *(pfCandPtrs[i]);
 	reco::Candidate::LorentzVector jetWithoutCand = jet.p4() - cand.p4();       
 
 	totalEnergyFromConst += cand.energy();
+
+	sumpt2 += cand.pt() * cand.pt();
+	sumpt += cand.pt();
 
 	switch( cand.particleId() ) {
 	case reco::PFCandidate::h: 
@@ -108,6 +116,7 @@ cmg::PFJetFactory::event_ptr cmg::PFJetFactory::create(const edm::Event& iEvent,
 	default: break;
 	}
       }
+      ptd = sqrt( sumpt2 ) / sumpt; 
 
       fractionCharged = energyCharged / totalEnergyFromConst;
       fractionElectrons = energyElectrons / totalEnergyFromConst;
@@ -187,6 +196,7 @@ cmg::PFJetFactory::event_ptr cmg::PFJetFactory::create(const edm::Event& iEvent,
     cmgjet.components_[reco::PFCandidate::egamma_HF].setFraction(fractionHFEM);
     cmgjet.components_[reco::PFCandidate::h_HF].setFraction(fractionHFHad);
 
+    cmgjet.ptd_ = ptd;
 
     result->push_back(cmgjet);
   }
