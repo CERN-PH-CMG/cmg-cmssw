@@ -8,6 +8,7 @@
   ('DataFormats/PatCandidates', 'DataFormats/PatCandidates', 'V06-04-19-02'),
   ('GeneratorInterface/GenFilters', 'GeneratorInterface/GenFilters', 'V00-11-00-01'),
   ('JetMETAnalysis/ecalDeadCellTools', 'JetMETAnalysis/ecalDeadCellTools', 'Colin_TaggingMode_June30'),
+  ('PhysicsTools/HepMCCandAlgos', 'PhysicsTools/HepMCCandAlgos', 'V11-03-16'),
   ('PhysicsTools/PatAlgos', 'PhysicsTools/PatAlgos', 'V08-06-48'),
   ('PhysicsTools/SelectorUtils', 'PhysicsTools/SelectorUtils', 'V00-03-24'),
   ('PhysicsTools/UtilAlgos', 'PhysicsTools/UtilAlgos', 'V08-02-14'),
@@ -17,5 +18,4 @@
   ('RecoTauTag/Configuration', 'RecoTauTag/Configuration', 'V01-02-03'),
   ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-02-07'),
   ('RecoTauTag/TauTagTools', 'RecoTauTag/TauTagTools', 'V01-02-00'),
-  ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'cbern_start_18Oct11')]
-
+  ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'cbern_start_18Oct11') ]
