@@ -343,7 +343,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.l1_en    = dilepton[0]->energy();  
 	ev.l1_id    = getLeptonId(dilepton[0]);
 	ev.l1_ptErr = getLeptonPtError(dilepton[0]); 
-	ev.l2_genid = (genLepton==0? 0 : genLepton->pdgId());
+	ev.l1_genid = (genLepton==0? 0 : genLepton->pdgId());
 	ev.l1_iso1  = leptoniso[ECAL_ISO]; 
 	ev.l1_iso2  = leptoniso[HCAL_ISO]; 
 	ev.l1_iso3  = leptoniso[TRACKER_ISO];
