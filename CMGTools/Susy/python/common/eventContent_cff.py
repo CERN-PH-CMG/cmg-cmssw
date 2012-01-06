@@ -36,4 +36,9 @@ cmg = [
     'drop cmgMETSignificance_PFMETSignificanceAK5LC_*_*'
 ]
 
-eventContent = trigger + gen + reco + pat + cmg + jetId
+filters = [
+    'drop bool_*_*_*',
+    'keep int_*_*_*',
+]
+
+eventContent = trigger + gen + reco + pat + cmg + jetId + filters

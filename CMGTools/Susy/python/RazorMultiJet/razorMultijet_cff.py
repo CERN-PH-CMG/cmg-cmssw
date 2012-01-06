@@ -45,7 +45,7 @@ razorMJHemiHadBox = cmgHemi.clone(
     inputCollection = cms.VInputTag(
       cms.InputTag("razorMJPFJetSel30")
       ),
-      balanceAlgorithm = cms.uint32(1),#use the MassBalance algo
+      balanceAlgorithm = cms.uint32(2),#use the TopMassBalance algo
       maxCand = cms.uint32(100)
     )
 )
@@ -87,5 +87,6 @@ razorMJSkimSequence = cms.Sequence(
     razorMJPFJetSel30Count+
     razorMJPFJetSel80Count+
     #filter is inverted
-    ~razorMJPFJetIDCount
+    ~razorMJPFJetIDCount+
+    razorMJTriggerCount
     )
