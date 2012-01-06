@@ -102,7 +102,11 @@ class IntegrityCheck(object):
             datasets.append( (result['das']['expire'], result) )
         datasets.sort()
         if datasets:
-            self.eventsTotal = datasets[-1][1]['dataset']['nevents']
+            ds = datasets[-1][1]['dataset']
+            if ds and type(ds) == type([]):
+                self.eventsTotal = datasets[-1][1]['dataset'][0]['nevents']
+            else:
+                self.eventsTotal = datasets[-1][1]['dataset']['nevents']
     
     def stripDuplicates(self):
         
