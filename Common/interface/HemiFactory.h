@@ -31,6 +31,8 @@ namespace cmg {
         if(ps.exists("balanceAlgorithm")){
             if(ps.getParameter<uint32_t>("balanceAlgorithm") == cmg::Balance::MassBalance){
                 balance_ = std::auto_ptr<cmg::Balance>(new cmg::MassBalance);
+            }else if(ps.getParameter<uint32_t>("balanceAlgorithm") == cmg::Balance::TopMassBalance){
+                balance_ = std::auto_ptr<cmg::Balance>(new cmg::TopMassBalance);
             }
         }
       }
