@@ -11,7 +11,7 @@ namespace cmg{
  
     class Balance{
         public:
-            enum Algorithms {PtBalance=0,MassBalance=1};
+            enum Algorithms {PtBalance=0,MassBalance=1, TopMassBalance=2};
             typedef std::vector<edm::Ptr<reco::Candidate> > Candidates;
             virtual double balance(const Candidates& a, const Candidates& b) const = 0;
     };
@@ -45,6 +45,24 @@ namespace cmg{
                     bSum += (*it)->p4();
                 }
                 return aSum.M2() + bSum.M2();
+            }
+    };
+    
+    class TopMassBalance : public Balance{
+        public:
+            virtual double balance(const Candidates& a, const Candidates& b) const{
+                /** Implements the Razor algorithm for top decays*/
+                LorentzVector aSum(0., 0., 0., 0.);
+                for(Candidates::const_iterator it = a.begin(); it != a.end(); it++){
+                    aSum += (*it)->p4();
+                }
+                LorentzVector bSum(0., 0., 0., 0.);                
+                for(Candidates::const_iterator it = b.begin(); it != b.end(); it++){
+                    bSum += (*it)->p4();
+                }
+                //PDG 2011 top mass is 172.9 \pm 0.6 \pm 0.9 => mt^2 = 29894.41 in GeV
+                const double mt2 = 29894.41;
+                return (aSum.M2()-mt2) + (bSum.M2()-mt2);
             }
     };
     
