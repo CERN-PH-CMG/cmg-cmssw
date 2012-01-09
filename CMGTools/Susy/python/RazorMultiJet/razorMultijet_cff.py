@@ -66,7 +66,10 @@ razorMJTriggerSequence = cms.Sequence(
 razorMJJetSequence = cms.Sequence(
     razorMJPFJetSel30*
     razorMJPFJetSelID*
-    razorMJPFJetSel80*
+    razorMJPFJetSel80
+)
+
+razorMJHemiSequence = cms.Sequence(
     razorMJHemiHadBox*
     razorMJDiHemiHadBox    
 )
@@ -88,5 +91,7 @@ razorMJSkimSequence = cms.Sequence(
     razorMJPFJetSel80Count+
     #filter is inverted
     ~razorMJPFJetIDCount+
-    razorMJTriggerCount
+    razorMJTriggerCount+
+    #finally run the Razor code
+    razorMJHemiSequence
     )
