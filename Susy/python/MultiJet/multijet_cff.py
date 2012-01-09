@@ -74,7 +74,10 @@ multiMuonSequence = cms.Sequence(
 multiJetSequence = cms.Sequence(
     multiPFJetSel40*
     multiPFJetSel60+
-    multiPFBJetSel40*
+    multiPFBJetSel40
+)
+
+multiMuonJetSequence = cms.Sequence(
     multiPFJetsMuonVeto*
     multiPFJetsMuonRequired*
     multiPFBJetsMuonRequiredTCHEM+
@@ -98,7 +101,9 @@ multijetSkimSequence = cms.Sequence(
     multiPFJetSel40Count+
     multiPFJetSel60Count+
     multiTriggerQuadCount+
-    multiPFBJetSel40Count
+    multiPFBJetSel40Count+
+    #Now do the slow muon stuff
+    multiMuonJetSequence
     )
 
 #trigger based selection - we take all multi triggered events
