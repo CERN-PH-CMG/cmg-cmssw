@@ -1,27 +1,27 @@
-#ifndef TESTCMGTAUS_H_
-#define TESTCMGTAUS_H_
+#ifndef TESTTRIG_H_
+#define TESTTRIG_H_
 
 #include <iomanip>
 
 #include <TString.h>
 
-class TestCMGTaus {
+class TestTrig {
 public:
   
-  TestCMGTaus():
+  TestTrig():
     dirname_(""),
     firstfile_(1),
     lastfile_(1){
   };
-  TestCMGTaus(TString filename, Int_t firstfile, Int_t lastfile):
+  TestTrig(TString filename, Int_t firstfile, Int_t lastfile):
     dirname_(filename),
     firstfile_(firstfile),
     lastfile_(lastfile){
   };
-  ~TestCMGTaus(){};
+  ~TestTrig(){};
 
-  void testTau(TString inputtag="cmgTauSel");
 
+  void testMuTauTrig(TString inputtag="cmgTauSel");
 
 private:
   
@@ -33,4 +33,4 @@ private:
 
 
 
-#endif /*TESTCMGTAUS_H_*/
+#endif /*TESTTRIG_H_*/

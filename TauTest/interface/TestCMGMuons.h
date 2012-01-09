@@ -1,27 +1,26 @@
-#ifndef TESTCMGTAUS_H_
-#define TESTCMGTAUS_H_
+#ifndef TESTCMGMUONS_H_
+#define TESTCMGMUONS_H_
 
 #include <iomanip>
 
 #include <TString.h>
 
-class TestCMGTaus {
+class TestCMGMuons {
 public:
   
-  TestCMGTaus():
+  TestCMGMuons():
     dirname_(""),
     firstfile_(1),
     lastfile_(1){
   };
-  TestCMGTaus(TString filename, Int_t firstfile, Int_t lastfile):
+  TestCMGMuons(TString filename, Int_t firstfile, Int_t lastfile):
     dirname_(filename),
     firstfile_(firstfile),
     lastfile_(lastfile){
   };
-  ~TestCMGTaus(){};
+  ~TestCMGMuons(){};
 
-  void testTau(TString inputtag="cmgTauSel");
-
+  void testMuon(TString inputtag="cmgMuonSel");
 
 private:
   
@@ -33,4 +32,4 @@ private:
 
 
 
-#endif /*TESTCMGTAUS_H_*/
+#endif /*TESTCMGMUONS_H_*/
