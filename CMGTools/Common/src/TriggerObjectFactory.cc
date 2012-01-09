@@ -46,72 +46,36 @@ cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm
     }
 
     if(useTriggerObjects_) {
-        typedef std::multimap<cmg::TriggerObject,std::string> pathMap;
-        pathMap triggerObjectPaths;
-        for(std::map<std::string, bool>::const_iterator it = triggerMap.begin();
-            it != triggerMap.end(); ++it) {
-            // Store the trigger objects.
-            if(it->second) {
-              // Current trigger passed for this object.
-                for(unsigned int index = 0; index < triggerObjects->size(); index++) {
-                    pat::TriggerObjectStandAlone sa = triggerObjects->at(index);
-                    if(sa.path(it->first, false, false)) {//Jose Dec 14, 2011: switched from  true,false -> false,false otherwise does not pass the objects
-                        pat::TriggerObjectPtr o(triggerObjects, index);
-                        cmg::TriggerObject to(o, it->first);
 
-			std::vector< std::string > filters=sa.filterLabels();//add the filters this object passed needed for checking the last path filter
-			for(std::vector< std::string >::const_iterator label=filters.begin();label!=filters.end();label++)
-			  to.addSelection(*label,1);
+      //copy the pat trigger objects into a cmg::TriggerObject collection
+      for(unsigned int index = 0; index < triggerObjects->size(); index++) {
+	pat::TriggerObjectStandAlone sa = triggerObjects->at(index);
+	pat::TriggerObjectPtr o(triggerObjects, index);
+	cmg::TriggerObject to(o,"");
 
-                        result->push_back(to);
-                        triggerObjectPaths.insert(std::make_pair(to, it->first));
-                    }
-                }
-            }
-        }
-        std::sort(result->begin(), result->end());
-        std::reverse(result->begin(), result->end());
+	//check if this object fired at least one path to remove unwanted objects 
+	bool fired=0;
+	for(std::map<std::string,bool>::const_iterator path = triggerMap.begin(); path != triggerMap.end(); ++path)
+	  if(path->second)
+	    if(sa.path(path->first, false, false)) {
+	      //use path() method with checkLastFilter=false because complex filters are not handled properly
+	      //see this posting: https://hypernews.cern.ch/HyperNews/CMS/get/physTools/2651/1.html
+	      //last filter requirement can be applied later using the filter labels 
+	      fired=1;
+	      to.addSelection(path->first,1);//save the HLT paths the object was used in,
+	    }
+	
+	if(!fired) continue;
 
-        // Filter out the same trigger object from different trigger
-        // paths.
-        std::set<cmg::TriggerObject> triggers;
-        for(collection::iterator it = result->begin(); it != result->end(); ++it) {
-            std::pair<std::set<cmg::TriggerObject>::iterator, bool> set_it = triggers.insert(*it);
+	//save the filter labels for each trigger object, needed for trigger-matching
+	std::vector< std::string > filters=sa.filterLabels();
+	for(std::vector< std::string >::const_iterator label=filters.begin();label!=filters.end();label++)
+	  to.addSelection(*label,1);
 
-            // This is not unique so we erase it.
-            if(!set_it.second) {
-                it = result->erase(it);
-                --it;
-            } else {
-
-                // Now reset the trigger match.
-                for(std::map<std::string, bool>::const_iterator jt = triggerMap.begin();
-                    jt != triggerMap.end(); ++jt) {
-                    triggerMap[jt->first] = false;
-                }
-
-                // This is unique so we set the selection.
-                std::pair<pathMap::iterator, pathMap::iterator> ret;
-                ret = triggerObjectPaths.equal_range(*it);
-
-                // All of the trigger objects that are equal.
-                for(pathMap::iterator kt= ret.first; kt!= ret.second; ++kt) {
-                    triggerMap[(*kt).second] = true;
-                }
-
-                // Store *all* of the trigger results in each object,
-                // but most will be false as not relevant to this
-                // object.
-                for(std::map<std::string,bool>::const_iterator jt = triggerMap.begin();
-                    jt != triggerMap.end(); ++jt) {
-		  if(jt->second || saveAllHLTPathsInObjs_){//only save HLT name if triggered, saves ~30% of CMG tuple size
-		    const int prescale = (pset > 0) ? hlt_.prescaleValue(pset,jt->first) : pset;      
-		    it->addSelectionWithPrescale(jt->first, jt->second,prescale);
-		  }
-                }
-                it->addSelection(isRealDataString, isRealData);
-            }
-        }
+	
+	result->push_back(to);
+      }
+      
 
     } else {
         // Just store a single trigger object and set which triggers
@@ -125,6 +89,7 @@ cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm
         to.addSelection(isRealDataString,isRealData);
         result->push_back(to);
     }
+
     return result;
 }
 
