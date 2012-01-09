@@ -52,7 +52,8 @@ VertexWeight3DProducer::VertexWeight3DProducer(const edm::ParameterSet& ps):
   LumiWeights_ = new edm::Lumi3DReWeighting(ps.getParameter<std::string>("inputHistMC").c_str()
 					    ,ps.getParameter<std::string>("inputHistData").c_str()
 					    , "pileup"
-					    , "pileup");
+					    , "pileup"
+					    , "");
   LumiWeights_->weight3D_init(1.0);//scale factor can be used for systematic variations
 
   produces<double>();

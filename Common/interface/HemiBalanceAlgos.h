@@ -52,11 +52,11 @@ namespace cmg{
         public:
             virtual double balance(const Candidates& a, const Candidates& b) const{
                 /** Implements the Razor algorithm for top decays*/
-                LorentzVector aSum(0., 0., 0., 0.);
+                reco::Candidate::LorentzVector aSum(0., 0., 0., 0.);
                 for(Candidates::const_iterator it = a.begin(); it != a.end(); it++){
                     aSum += (*it)->p4();
                 }
-                LorentzVector bSum(0., 0., 0., 0.);                
+                reco::Candidate::LorentzVector bSum(0., 0., 0., 0.);                
                 for(Candidates::const_iterator it = b.begin(); it != b.end(); it++){
                     bSum += (*it)->p4();
                 }
