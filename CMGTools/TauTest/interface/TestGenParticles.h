@@ -1,27 +1,26 @@
-#ifndef TESTCMGTAUS_H_
-#define TESTCMGTAUS_H_
+#ifndef TESTGEN_H_
+#define TESTGEN_H_
 
 #include <iomanip>
 
 #include <TString.h>
 
-class TestCMGTaus {
+class TestGenParticles {
 public:
   
-  TestCMGTaus():
+  TestGenParticles():
     dirname_(""),
     firstfile_(1),
     lastfile_(1){
   };
-  TestCMGTaus(TString filename, Int_t firstfile, Int_t lastfile):
+  TestGenParticles(TString filename, Int_t firstfile, Int_t lastfile):
     dirname_(filename),
     firstfile_(firstfile),
     lastfile_(lastfile){
   };
-  ~TestCMGTaus(){};
+  ~TestGenParticles(){};
 
-  void testTau(TString inputtag="cmgTauSel");
-
+  void testGenParticle(TString inputtag="genParticlesStatus3");
 
 private:
   
@@ -33,4 +32,4 @@ private:
 
 
 
-#endif /*TESTCMGTAUS_H_*/
+#endif /*TESTGEN_H_*/
