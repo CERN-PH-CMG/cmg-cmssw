@@ -60,9 +60,9 @@ namespace cmg{
                 for(Candidates::const_iterator it = b.begin(); it != b.end(); it++){
                     bSum += (*it)->p4();
                 }
-                //PDG 2011 top mass is 172.9 \pm 0.6 \pm 0.9 => mt^2 = 29894.41 in GeV
-                const double mt2 = 29894.41;
-                return (aSum.M2()-mt2) + (bSum.M2()-mt2);
+                //PDG 2011 top mass is 172.9 \pm 0.6 \pm 0.9
+                const double mt = 172.9;
+                return ((aSum.mass()-mt)*(aSum.mass()-mt)) + ((bSum.mass()-mt)*(bSum.mass()-mt));
             }
     };
     
