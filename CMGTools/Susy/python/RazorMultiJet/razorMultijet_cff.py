@@ -45,7 +45,7 @@ razorMJHemiHadBox = cmgHemi.clone(
     inputCollection = cms.VInputTag(
       cms.InputTag("razorMJPFJetSel30")
       ),
-      balanceAlgorithm = cms.uint32(2),#use the TopMassBalance algo
+      balanceAlgorithm = cms.uint32(1),#use the MassBalance algo
       maxCand = cms.uint32(100)
     )
 )
@@ -57,6 +57,26 @@ razorMJDiHemiHadBox = cmgDiHemi.clone(
     metCollection = cms.InputTag('cmgPFMET')                  
     )    
 )
+
+razorMJHemiHadBoxTop = cmgHemi.clone(
+    cfg = cmgHemi.cfg.clone(
+    inputCollection = cms.VInputTag(
+      cms.InputTag("razorMJPFJetSel30")
+      ),
+      balanceAlgorithm = cms.uint32(2),#use the TopMassBalance algo
+      maxCand = cms.uint32(100)
+    )
+)
+
+razorMJDiHemiHadBoxTop = cmgDiHemi.clone(
+    cfg = cmgDiHemi.cfg.clone(
+    leg1Collection = cms.InputTag('razorMJHemiHadBoxTop'),
+    leg2Collection = cms.InputTag('razorMJHemiHadBoxTop'),
+    metCollection = cms.InputTag('cmgPFMET')                  
+    )    
+)
+
+
 
 ############### Run the sequences
 razorMJTriggerSequence = cms.Sequence(
@@ -71,7 +91,9 @@ razorMJJetSequence = cms.Sequence(
 
 razorMJHemiSequence = cms.Sequence(
     razorMJHemiHadBox*
-    razorMJDiHemiHadBox    
+    razorMJDiHemiHadBox+
+    razorMJHemiHadBoxTop*
+    razorMJDiHemiHadBoxTop     
 )
 
 razorMJObjectSequence = cms.Sequence(
