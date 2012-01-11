@@ -27,17 +27,17 @@ if __name__ == '__main__':
 
     from CMGTools.Production.datasetToSource import *
 #    files = getFiles(
-#                     ['/MultiJet/Run2011A-PromptReco-v6/AOD/V2/PAT_CMG_V2_4_0/L1MultiJetSkim/wreece_051211',
-#                      '/MultiJet/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_4_0/L1MultiJetSkim/wreece_051211',
-#                      '/MultiJet/Run2011A-May10ReReco-v1/AOD/V2/PAT_CMG_V2_4_0/L1MultiJetSkim/wreece_051211',
-#                      '/MultiJet/Run2011A-05Aug2011-v1/AOD/V2/PAT_CMG_V2_4_0/L1MultiJetSkim/wreece_051211',
-#                      '/MultiJet/Run2011B-PromptReco-v1/AOD/V2/PAT_CMG_V2_4_0/L1MultiJetSkim/wreece_051211'
+#                     [#'/MultiJet/Run2011A-PromptReco-v6/AOD/V2/PAT_CMG_V2_4_0/L1MultiJetSkim/wreece_051211',
+#                      #'/MultiJet/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_4_0/L1MultiJetSkim/wreece_051211',
+#                      #'/MultiJet/Run2011A-May10ReReco-v1/AOD/V2/PAT_CMG_V2_4_0/L1MultiJetSkim/wreece_051211',
+#                      '/MultiJet/Run2011A-05Aug2011-v1/AOD/V2/PAT_CMG_V2_4_0/L1MultiJetSkim/wreece_090112',
+#                      #'/MultiJet/Run2011B-PromptReco-v1/AOD/V2/PAT_CMG_V2_4_0/L1MultiJetSkim/wreece_051211'
 #                      ],
 #                      'wreece',
 #                      'susy_tree_CMG_[0-9]+.root'
 #                     )
     files = getFiles(
-                     ['/TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_4_0/wreece_281111/razorMJ/wreece_051211',
+                     ['/TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_4_0/wreece_060112',
                       ],
                       'wreece',
                       'susy_tree_CMG_[0-9]+.root'
@@ -70,16 +70,16 @@ if __name__ == '__main__':
     pathTriggerH = Handle("edm::TriggerResults")
     
     store = RootFile.RootFile(options.outputFile)
-    ptAllBJets = rt.TH1D('ptAllBJets','pT of all tagged jets',15,50,600)
+    ptAllBJets = rt.TH1D('ptAllBJets','pT of all tagged jets',200,0,2000)
     store.add(ptAllBJets)
     
-    ptMuBJets = rt.TH1D('ptMuBJets','pT of tagged jets with a muon',15,50,600)
+    ptMuBJets = rt.TH1D('ptMuBJets','pT of tagged jets with a muon',200,0,2000)
     store.add(ptMuBJets)
     
-    ptMu = rt.TH1D('ptMu','pT of selected muons',15,10,200)
+    ptMu = rt.TH1D('ptMu','pT of selected muons',29,10,300)
     store.add(ptMu)
     
-    ptMuJ = rt.TH1D('ptMuJ','pT of selected muons within jets',30,10,300)
+    ptMuJ = rt.TH1D('ptMuJ','pT of selected muons within jets',29,10,300)
     store.add(ptMuJ)
     
     deltaRMuJ = rt.TH1D('deltaRMuJ','deltaR between the muon and the b jet',40,0,4)
@@ -90,9 +90,13 @@ if __name__ == '__main__':
     
     tcheAllBJets = rt.TH1D('tcheAllBJets','TCHE',50,0,50)
     store.add(tcheAllBJets)
+    ssvhpAllBJets = rt.TH1D('ssvhpAllBJets','SSVHP',50,0,50)
+    store.add(ssvhpAllBJets)
     
     tcheMuBJets = rt.TH1D('tcheMuBJets','TCHE',50,0,50)
     store.add(tcheMuBJets)
+    ssvhpMuBJets = rt.TH1D('ssvhpMuBJets','SSVHP',50,0,50)
+    store.add(ssvhpMuBJets)
     
 #    ssvhptAllBJets = rt.TH1D('ssvhptAllBJets','TCHE',50,0,50)
     
@@ -111,11 +115,11 @@ if __name__ == '__main__':
             print 'Event %d' % event_count
         event_count += 1
         
-#        if event_count > 100000:
+#        if event_count > 10000:
 #            break
         
         #start by testing that the Razor path fired this event
-        event.getByLabel(('TriggerResults','','SUSY'),pathTriggerH)
+        event.getByLabel(('TriggerResults','','MJSkim'),pathTriggerH)
         pathTrigger = pathTriggerH.product()
         
         #start by vetoing events that didn't pass the MultiJet path
@@ -128,9 +132,12 @@ if __name__ == '__main__':
         muons = muonH.product()
         
         event.getByLabel(('cmgPFJetSel'), allPFBJetsH)
-        allPFBJets = [j for j in allPFBJetsH.product() if (j.btag(0) >= 3.3 and j.pt() >= 40 and abs(j.eta()) <= 2.5)]
+        #allPFBJets = [j for j in allPFBJetsH.product() if (j.btag(0) >= 3.3 and j.pt() >= 40 and abs(j.eta()) <= 2.5)]
+        allPFBJets = [j for j in allPFBJetsH.product() if (j.btag(5) >= 2.0 and j.pt() >= 40 and abs(j.eta()) <= 2.5)]
+        if not allPFBJets: continue
         
-        event.getByLabel(('multiPFBJetsMuonRequiredTCHEM'), muonPFBJetsH)
+        event.getByLabel(('multiPFBJetsMuonRequiredSSVHPT'), muonPFBJetsH)
+        #event.getByLabel(('multiPFBJetsMuonRequiredTCHEM'), muonPFBJetsH)
         muonPFBJets = muonPFBJetsH.product()
         
         for m in muons:
@@ -139,10 +146,12 @@ if __name__ == '__main__':
         for b in allPFBJets:
             ptAllBJets.Fill(b.pt())
             tcheAllBJets.Fill(b.btag(0))
+            ssvhpAllBJets.Fill(b.btag(5))
             
         for b in muonPFBJets:
             ptMuBJets.Fill(b.pt())
             tcheMuBJets.Fill(b.btag(0))
+            ssvhpAllBJets.Fill(b.btag(5))
             
             for m in muons:
                 dr = deltaR(b,m)
@@ -151,5 +160,15 @@ if __name__ == '__main__':
                     ptMuJet.Fill(m.pt(),b.pt())
                     ptMuJ.Fill(m.pt())
                 
-        
+    ptMuEff = ptMuBJets.Clone('ptJetEff')
+    ptMuEff.Sumw2()
+    ptMuEff.Divide(ptAllBJets)
+    store.add(ptMuEff)
+    
+    ptMuJEff = ptMuJ.Clone('ptMuJEff')
+    ptMuJEff.Sumw2()
+    ptMuJEff.Divide(ptMu)
+    store.add(ptMuJEff)
+
+    
     store.write()
