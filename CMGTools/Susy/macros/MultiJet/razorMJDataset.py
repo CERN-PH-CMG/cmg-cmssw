@@ -34,12 +34,17 @@ if __name__ == '__main__':
     # https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideAboutPythonConfigFile#VarParsing_Example
     from FWCore.ParameterSet.VarParsing import VarParsing
     options = VarParsing ('python')
-    options.outputFile = 'razorMJDatasets.root'
+    options.outputFile = None
     options.register ('inputDirectory',
                   None, # default value
                   VarParsing.multiplicity.singleton, # singleton or list
                   VarParsing.varType.string,          # string, int, or float
                   "A directory to read root files from")
+    options.register ('outputDirectory',
+                  '.', # default value
+                  VarParsing.multiplicity.singleton, # singleton or list
+                  VarParsing.varType.string,          # string, int, or float
+                  "A directory to write root files to")
     options.register ('datasetName',
                   None,
                   VarParsing.multiplicity.singleton, # singleton or list
@@ -54,6 +59,11 @@ if __name__ == '__main__':
     options.parseArguments()
     if options.inputDirectory is not None:
         listDirectory(options.inputDirectory, options.inputFiles, options.maxFiles)
+        
+    if True:
+        names = [f for f in options.datasetName.split('/') if f]
+        name = '%s-%s.root' % (names[0],names[-1])
+        options.outputFile = os.path.join(options.outputDirectory,name)
         
     files = getFiles(
                       [options.datasetName],
@@ -71,6 +81,8 @@ struct Variables{\
     Double_t mR;\
     Double_t R;\
     Double_t Rsq;\
+    Double_t mRMB;\
+    Double_t RsqMB;\
     Double_t maxTCHE;\
     Double_t maxSSVP;\
     Double_t nextTCHE;\
@@ -90,6 +102,8 @@ struct Variables{\
     Double_t jet6Eta;\
     Double_t hemi1Mass;\
     Double_t hemi2Mass;\
+    Double_t hemi1MassMB;\
+    Double_t hemi2MassMB;\
 };""")
     
     rt.gROOT.ProcessLine("""
@@ -108,17 +122,17 @@ struct Info{\
     Int_t hemisphereBalance;\
 };""")
     
-    filter_tags = [('ecalDeadCellTPfilter',''),
-                   ('HBHENoiseFilterResultProducer2010','HBHENoiseFilterResult'),
-                   ('HBHENoiseFilterResultProducer2011IsoDefault','HBHENoiseFilterResult'),
-                   ('HBHENoiseFilterResultProducer2011NonIsoRecommended','HBHENoiseFilterResult'),
-                   ('eeNoiseFilter','Result'),
-                   ('goodPrimaryVertexFilter','Result'),
-                   ('greedyMuonsTagging','Result'),
-                   ('inconsistentMuonsTagging','Result'),
-                   ('recovRecHitFilter','Result'),
-                   ('scrapingFilter','Result'),
-                   ('trackingFailureFilter','Result')]
+    filter_tags = [('ecalDeadCellTPfilter'),
+                   ('HBHENoiseFilterResultProducer2010'),
+                   ('HBHENoiseFilterResultProducer2011IsoDefault'),
+                   ('HBHENoiseFilterResultProducer2011NonIsoRecommended'),
+                   ('eeNoiseFilter'),
+                   ('goodPrimaryVertexFilter'),
+                   ('greedyMuonsTagging'),
+                   ('inconsistentMuonsTagging'),
+                   ('recovRecHitFilter'),
+                   ('scrapingFilter'),
+                   ('trackingFailureFilter')]
 
     rt.gROOT.ProcessLine("""
 struct Filters{\
@@ -171,7 +185,7 @@ struct Filters{\
     
     triggerH = Handle('std::vector<cmg::TriggerObject>')
     countH = Handle('int')
-    filterH = Handle('bool')
+    filterH = Handle('int')
     
     # path trigger
     pathTriggerH = Handle("edm::TriggerResults")
@@ -207,7 +221,8 @@ struct Filters{\
 
         for f in filter_tags:
             event.getByLabel(f,filterH)
-            print f,filterH,filterH.product()
+            result = filterH.product()[0]
+            setattr(filters,f,result)
 
         for i in xrange(len(jets)):
             name = 'jet%iPt' % (i + 1)
@@ -239,7 +254,7 @@ struct Filters{\
         filters.eightTriggerFilter = hlt.getSelectionRegExp("^HLT_EightJet[0-9]+.*_v[0-9]+$")
         filters.triggerFilter = filters.quadTriggerFilter or filters.sixTriggerFilter or filters.eightTriggerFilter
         
-        event.getByLabel(('razorMJDiHemiHadBox'),hemiHadH)
+        event.getByLabel(('razorMJDiHemiHadBoxTop'),hemiHadH)
         if not len(hemiHadH.product()): continue
         hemiHad = hemiHadH.product()[0]
 
@@ -249,6 +264,15 @@ struct Filters{\
         vars.hemi1Mass = hemiHad.leg1().mass()
         vars.hemi2Mass = hemiHad.leg2().mass()
         info.hemisphereBalance = (10*hemiHad.leg1().numConstituents()) + hemiHad.leg2().numConstituents()
+        
+        #also get the old definition
+        event.getByLabel(('razorMJDiHemiHadBox'),hemiHadH)
+        if len(hemiHadH.product()):
+            hemi = hemiHadH.product()[0]
+            vars.RsqMB = hemi.Rsq()
+            vars.mRMB = hemi.mR()
+            vars.hemi1MassMB = hemi.leg1().mass()
+            vars.hemi2MassMB = hemi.leg2().mass()
 
         event.getByLabel(('cmgElectronSel'),electronH)
         event.getByLabel(('cmgMuonSel'),muonH)
