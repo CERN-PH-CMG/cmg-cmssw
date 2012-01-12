@@ -175,6 +175,7 @@ typedef cmg::IndexObjectsSelector<cmg::Muon> IndexCMGMuonSelector;
 /*   std::vector<cmg::DiFatJet>, */
 /*   StringCutObjectSelector<cmg::DiFatJet> */
 /*   > CmgDiFatJetSelector; */
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::PhysicsObjectWithPtr<cmg::GenJetPtr> > > CmgGenJetPOSelector;
 
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiPFCandidate> > CmgDiPFCandidateSelector;
 

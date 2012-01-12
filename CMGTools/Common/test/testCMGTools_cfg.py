@@ -44,7 +44,8 @@ print process.source.fileNames
 process.out.fileName = cms.untracked.string('tree_testCMGTools.root')
 from CMGTools.Common.eventContent.everything_cff import everything 
 process.out.outputCommands = cms.untracked.vstring( 'drop *',
-                                                    'keep *_*IdTight*_*_*')
+                                                    'keep *_*IdTight*_*_*',
+                                                    )
 process.out.outputCommands.extend( everything ) 
 process.out.dropMetaData = cms.untracked.string('PRIOR')
 
@@ -72,14 +73,18 @@ removeObject( process, 'tau', '')
 
 # note: we're reading ttbar events
 
+# process.load('CMGTools.Common.factories.genJetFactory_cfi')
+
+# from CMGTools.Common.skims.cmgPOSel_cfi import cmgPOSel
+# process.cmgPOSelJets = cmgPOSel.clone( src='genJet', cut='pt>50') 
 
 process.p = cms.Path(
     process.analysisSequence
 )
 
 if runOnMC:
-    process.load("CMGTools.Common.generator.vertexWeight.vertexWeight_cff")
-    process.p += process.vertexWeightSequence
+    process.load("CMGTools.Common.gen_cff")
+    process.p += process.genJetsSequence
     process.load("CMGTools.Common.runInfoAccounting_cff")
     process.outpath += process.runInfoAccountingSequence
 

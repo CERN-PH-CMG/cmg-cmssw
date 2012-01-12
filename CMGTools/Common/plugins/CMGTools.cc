@@ -95,6 +95,7 @@ DEFINE_FWK_MODULE(IndexCMGPFJetSelector);
 DEFINE_FWK_MODULE(IndexCMGElectronSelector);
 DEFINE_FWK_MODULE(IndexCMGMuonSelector);
 
+DEFINE_FWK_MODULE(CmgGenJetPOSelector);
 DEFINE_FWK_MODULE(CmgDiPFCandidateSelector);
 DEFINE_FWK_MODULE(CmgDiFatJetSelector);
 DEFINE_FWK_MODULE(CmgDiPFJetSelector);

@@ -34,9 +34,12 @@ cmgCaloBaseJetSel = cmgBaseJetSel.clone(src = 'cmgCaloBaseJet')
 cmgCaloBaseJetLead = leadingCMGBaseJetSelector.clone()
 cmgCaloBaseJetLead.inputCollection = 'cmgCaloBaseJet'
 
-cmgPFJetSel.cut = 'pt()>15'
-cmgPFBaseJetSel.cut = 'pt()>15'
-cmgCaloBaseJetSel.cut = 'pt()>15'
+# this pt cut is also going to be used to select GenJets,
+# see CMGTools.Common.gen.generator.genJets_cff
+ptCut = 'pt()>15'
+cmgPFJetSel.cut = ptCut
+cmgPFBaseJetSel.cut = ptCut
+cmgCaloBaseJetSel.cut = ptCut
 
 from CMGTools.Common.jetId_cff import *
 
