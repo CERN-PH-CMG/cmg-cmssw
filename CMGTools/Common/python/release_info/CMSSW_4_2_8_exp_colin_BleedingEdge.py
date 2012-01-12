@@ -1,5 +1,5 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_ptd_05Jan12'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'jose_TrigObjs_9Jan12'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_genJets_12Jan11'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_fromWill_09Jan12'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_mcyield_29Nov11'),
   ('CMGTools/ZmumuJetsTutorial', 'UserCode/CMG/CMGTools/ZmumuJetsTutorial', 'cbern_tutorial_12Oct11'),
