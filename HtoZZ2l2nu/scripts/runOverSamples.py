@@ -77,7 +77,7 @@ except getopt.GetoptError:
      usage()
      sys.exit(1)
 
-subtoBatch=False
+subtoBatch=''
 samplesDB=''
 dirtag=''
 fperjob=-1
@@ -87,7 +87,7 @@ for o,a in opts:
     if o in("-?", "-h"):
         usage()
         sys.exit(0)
-    elif o in('-s'): subtoBatch=True
+    elif o in('-s'): subtoBatch=a
     elif o in('-j'): samplesDB = a
     elif o in('-d'): dirtag = a
     elif o in('-t'): onlytag = a
@@ -155,8 +155,8 @@ for proc in procList :
                     if(fperjob>0) : localParams += ' -f=' + str(ijob*fperjob) + ' -step=' + str(fperjob)
                     print "**** Starting new job with the following parameters ****"
                     print localParams
-                    if(subtoBatch) :
-                        os.system('submit2batch.sh ' + scriptFile + ' ' + localParams)                   
+                    if(len(subtoBatch)>0) :
+                        os.system('submit2batch.sh -q' + subtoBatch + ' ' + scriptFile + ' ' + localParams)                   
 			os.system('sleep ' + str(sleep) + 's')
                     else :
                         os.system(scriptFile + ' '  + localParams)
