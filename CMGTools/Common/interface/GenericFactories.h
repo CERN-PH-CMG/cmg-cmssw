@@ -5,10 +5,14 @@
 #include "CMGTools/Common/interface/PhysicsObjectFactory.h"
 
 namespace cmg{
-    
-    typedef PhysicsObjectFactory< PFCandidatePtr > PFCandidateFactory;
-    typedef PhysicsObjectFactory< GenParticlePtr > GenParticleFactory;
-    typedef PhysicsObjectFactory< GenJetPtr > GenJetFactory;
+
+  //these factories will produce PhysicsObjectWithPtr<T> 
+  //where T is for example a PFCandidatePtr. 
+  //in which case the concrete type of the produced objects is:
+  // PhysicsObjectWithPtr<PFCandidatePtr>
+  typedef PhysicsObjectFactory< PFCandidatePtr > PFCandidateFactory;
+  typedef PhysicsObjectFactory< GenParticlePtr > GenParticleFactory;
+  typedef PhysicsObjectFactory< GenJetPtr > GenJetFactory;
     
 }
 
