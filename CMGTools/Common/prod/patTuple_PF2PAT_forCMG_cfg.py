@@ -58,8 +58,9 @@ print sep_line
 
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
-    'palencia',
-    '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2',
+    'cbern',
+    '/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2',
+    # '/QCD_Pt-1400to1800_TuneZ2_7TeV_pythia6/Summer11-PU_S3_START42_V11-v2/AODSIM/V2',
     'PFAOD.*root'
     ) 
 
@@ -153,55 +154,57 @@ addMETSig( process, postfixAK5 )
 # lepton cleaning, AK5PFJets. This sequence is a clone of the AK5 sequence defined previously.
 # just modifying the x-cleaning parameters, and the isolation cut for x-cleaning
 
-print 'cloning AK5 sequence to prepare AK5LC sequence...'
+if runAK5LC:
+    print 'cloning AK5 sequence to prepare AK5LC sequence...'
 
-from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
-postfixLC = 'LC'
-# just cloning the first sequence, and enabling lepton cleaning 
-cloneProcessingSnippet(process, getattr(process, 'patPF2PATSequence'+postfixAK5), postfixLC)
+    from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
+    postfixLC = 'LC'
+    # just cloning the first sequence, and enabling lepton cleaning 
+    cloneProcessingSnippet(process, getattr(process, 'patPF2PATSequence'+postfixAK5), postfixLC)
 
-postfixAK5LC = postfixAK5+postfixLC
-getattr(process,"pfNoMuon"+postfixAK5LC).enable = True
-getattr(process,"pfNoElectron"+postfixAK5LC).enable = True 
-getattr(process,"pfIsolatedMuons"+postfixAK5LC).isolationCut = 0.2
-getattr(process,"pfIsolatedElectrons"+postfixAK5LC).isolationCut = 0.2
+    postfixAK5LC = postfixAK5+postfixLC
+    getattr(process,"pfNoMuon"+postfixAK5LC).enable = True
+    getattr(process,"pfNoElectron"+postfixAK5LC).enable = True 
+    getattr(process,"pfIsolatedMuons"+postfixAK5LC).isolationCut = 0.2
+    getattr(process,"pfIsolatedElectrons"+postfixAK5LC).isolationCut = 0.2
 
-#COLIN : need to add the VBTF e and mu id
+    #COLIN : need to add the VBTF e and mu id
 
-# configure MET significance
-getattr(process,"PFMETSignificance"+postfixAK5LC).inputPATElectrons = cms.InputTag('patElectrons'+postfixAK5LC)   
-getattr(process,"PFMETSignificance"+postfixAK5LC).inputPATMuons = cms.InputTag('patMuons'+postfixAK5LC)
+    # configure MET significance
+    getattr(process,"PFMETSignificance"+postfixAK5LC).inputPATElectrons = cms.InputTag('patElectrons'+postfixAK5LC)   
+    getattr(process,"PFMETSignificance"+postfixAK5LC).inputPATMuons = cms.InputTag('patMuons'+postfixAK5LC)
 
 
-print 'cloning AK5 sequence to prepare AK5LC sequence...Done'
+    print 'cloning AK5 sequence to prepare AK5LC sequence...Done'
 
 # ---------------- Sequence AK7, no lepton x-cleaning ---------------
 
 # PF2PAT+PAT sequence 3
 # no lepton cleaning, AK7PFJets
 
-postfixAK7 = "AK7"
-jetAlgoAK7="AK7"
+if runAK7: 
+    postfixAK7 = "AK7"
+    jetAlgoAK7="AK7"
 
-#COLIN : argh! AK7PFchs does not seem to exist yet...
-# Maxime should maybe contact the JEC group if he wants them 
-usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgoAK7, runOnMC=runOnMC, postfix=postfixAK7,
-          jetCorrections=('AK7PF', jetCorrections))
+    #COLIN : argh! AK7PFchs does not seem to exist yet...
+    # Maxime should maybe contact the JEC group if he wants them 
+    usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgoAK7, runOnMC=runOnMC, postfix=postfixAK7,
+              jetCorrections=('AK7PF', jetCorrections))
 
-# if doJetPileUpCorrection:
-#    enablePileUpCorrection( process, postfix=postfixAK7)
+    # if doJetPileUpCorrection:
+    #    enablePileUpCorrection( process, postfix=postfixAK7)
 
-# no need for taus in AK7 sequence. could remove the whole tau sequence to gain time?
-# if hpsTaus:
-#    adaptPFTaus(process,"hpsPFTau",postfix=postfixAK7)
+    # no need for taus in AK7 sequence. could remove the whole tau sequence to gain time?
+    # if hpsTaus:
+    #    adaptPFTaus(process,"hpsPFTau",postfix=postfixAK7)
 
-# no top projection: 
-getattr(process,"pfNoMuon"+postfixAK7).enable = False 
-getattr(process,"pfNoElectron"+postfixAK7).enable = False 
-getattr(process,"pfNoTau"+postfixAK7).enable = False 
-getattr(process,"pfNoJet"+postfixAK7).enable = True
+    # no top projection: 
+    getattr(process,"pfNoMuon"+postfixAK7).enable = False 
+    getattr(process,"pfNoElectron"+postfixAK7).enable = False 
+    getattr(process,"pfNoTau"+postfixAK7).enable = False 
+    getattr(process,"pfNoJet"+postfixAK7).enable = True
 
-removePhotonMatching( process, postfixAK7 )
+    removePhotonMatching( process, postfixAK7 )
 
 # addPATElectronID( process, postfixAK7 , runOnMC )
 
@@ -223,10 +226,6 @@ process.patTrigger.processName = cms.string('*')
 
 process.p = cms.Path( process.patTriggerDefaultSequence )
 
-# gen ---- 
-
-if runOnMC:
-    process.p += process.genSequence 
 
 # PF2PAT+PAT ---
 
@@ -243,6 +242,11 @@ if runAK7:
 process.load('CMGTools.Common.eventCleaning.eventCleaning_cff')
 
 process.p += process.eventCleaningSequence
+
+# gen ---- 
+
+if runOnMC:
+    process.p += process.genSequence 
 
  
 # CMG ---
@@ -312,7 +316,6 @@ process.outcmg = cms.OutputModule(
     outputCommands = everything,
     dropMetaData = cms.untracked.string('PRIOR')
     )
-
 
 if runCMG:
     process.outpath += process.outcmg
