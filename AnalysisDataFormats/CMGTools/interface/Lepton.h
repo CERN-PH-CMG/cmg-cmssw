@@ -26,6 +26,7 @@ class Lepton : public cmg::PhysicsObjectWithPtr< LeptonType >{
     cmg::PhysicsObjectWithPtr<LeptonType>::PhysicsObjectWithPtr(o),
     charge_(UnSet(int)),
     chargedHadronIso_(UnSet(double)),
+    chargedAllIso_(UnSet(double)),
     puChargedHadronIso_(UnSet(double)),
     neutralHadronIso_(UnSet(double)),
     photonIso_(UnSet(double)),
@@ -41,6 +42,10 @@ class Lepton : public cmg::PhysicsObjectWithPtr< LeptonType >{
   //isolations    
   double chargedHadronIso() const{
     return chargedHadronIso_;
+  }
+
+  double chargedAllIso() const{
+    return chargedAllIso_;
   }
   
   double puChargedHadronIso() const{
@@ -90,7 +95,11 @@ class Lepton : public cmg::PhysicsObjectWithPtr< LeptonType >{
   ///COLIN: why a charge_ datamember here? should already be in a base class
   int charge_;
 
+  /// isolation from charged hadrons
   double chargedHadronIso_;
+
+  /// isolation from charged particles
+  double chargedAllIso_;
   
   /// isolation w/r to charged hadrons from pile-up vertices
   /// used in the delta beta correction
