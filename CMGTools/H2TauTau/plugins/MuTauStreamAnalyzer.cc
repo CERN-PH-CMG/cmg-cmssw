@@ -1278,9 +1278,9 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
 //   else  decayMode_ = -99;
   
 
-  //COLINTD: talk to Lorenzo. Are these quantities used all the time in the analysis? 
-  //are they for a specific study?
-  //needed for control. 
+  //COLIN needed for control. ok added the signal cands to the cmg::Tau in a light format.
+  // btw I don't like the if... is there any way to know with respect to what 
+  // the deltas have been computed, from the output tree? 
 //   for(unsigned int k = 0 ; k < (leg2->signalPFGammaCands()).size() ; k++){
 //     reco::PFCandidateRef gamma = (leg2->signalPFGammaCands()).at(k);
 //     if( (leg2->leadPFChargedHadrCand()).isNonnull() ){
@@ -1295,7 +1295,23 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
 //     }
 //     gammaPt_->push_back(  gamma->pt() );
 //   }
-  
+  const cmg::SimpleParticle& leadCharged = leg2->leadPFChargedHadrCand();
+  for(unsigned int k = 0 ; k < leg2->signalPFCands().size() ; k++){
+    const cmg::SimpleParticle& gamma = leg2->signalPFCands()[k];
+    if( gamma.type() != 22) continue;    
+    if( leadCharged.type() != 0 ){
+      gammadR_->push_back(   Geom::deltaR( gamma, leadCharged ) );
+      gammadPhi_->push_back( Geom::deltaPhi( gamma, leadCharged ) );
+      gammadEta_->push_back( gamma.eta() - leadCharged.eta() ) ;
+    }
+    else{
+      gammadR_->push_back(   Geom::deltaR( gamma, leg2->p4() ) );
+      gammadPhi_->push_back( Geom::deltaPhi( gamma, leg2->p4() ) );
+      gammadEta_->push_back(  gamma.eta() - leg2->eta() ) ;
+    }
+    gammaPt_->push_back(  gamma.pt() );
+  }
+
   visibleTauMass_ = leg2->mass();
 
   //COLIN: we don't keep the tracks in the CMG tuple. 
@@ -1313,10 +1329,9 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
 //   }
   leadPFChargedHadrTrackPt_ = -99;
   leadPFChargedHadrTrackP_  = -99;
-  leadPFChargedHadrPt_  = leg2->leadChargedHadrPt();
-  //COLINTD : we don't have the following yet... how do I do in my analysis? 
+  leadPFChargedHadrPt_  = leadCharged.pt();
   //   leadPFChargedHadrP_  = leg2->leadPFChargedHadrCand()->p();  
-  leadPFChargedHadrP_ = 0;
+  leadPFChargedHadrP_ = leadCharged.energy();
 
   //COLIN: electronPreIDOutput is mva_e_pi. 
   //   leadPFChargedHadrMva_        =   leg2->electronPreIDOutput() ;	
@@ -1326,8 +1341,7 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
   //   leadPFChargedHadrEcalEnergy_ =  (leg2->leadPFChargedHadrCand()).isNonnull() ? (leg2->leadPFChargedHadrCand())->ecalEnergy() : -99;
   leadPFChargedHadrEcalEnergy_ =  leg2->leadChargedHadrEcalEnergy();
  
-  //COLINTD: weird... duplicated information for charged hadrons, irrelevant for photons?
-  //this is the leading PFCandidate in the tau, of any type, e.g. e-, photon, ...
+  //COLIN this is the leading PFCandidate in the tau, of any type, e.g. e-, photon, ...
   //   if( (leg2->leadPFCand()).isNonnull() ){
   //
   //     leadPFCandMva_               =  (leg2->leadPFCand())->mva_e_pi() ;	
@@ -1336,20 +1350,39 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
   //     leadPFCandPt_                =  (leg2->leadPFCand())->pt();
   //     leadPFCandP_                 =  (leg2->leadPFCand())->p();
   //   }
-  leadPFCandMva_               =  0;
-  //COLINTD: we don't have the following yet 
-  leadPFCandHcalEnergy_        =  0;
-  leadPFCandEcalEnergy_        =  leg2->leadNeutralCandEcalEnergy();
-  leadPFCandPt_                =  leg2->leadNeutralCandPt() ;
-  //COLINTD: we don't have the following yet
-  leadPFCandP_                 =  0;
- 
+  // look for lead PF cand:
   
-  //COLIN: we don't have the following numbers: 
-//   signalPFChargedHadrCands_ = (leg2->signalPFChargedHadrCands()).size();
-//   signalPFGammaCands_       = (leg2->signalPFGammaCands()).size();
-//   emFraction_ = leg2->emFraction();
-//   hasGsf_     = ((leg2->leadPFChargedHadrCand())->gsfTrackRef()).isNonnull() ? 1. : 0.;
+  const Tau::Constituents& signalCands = leg2->signalPFCands();
+  unsigned leadIndex = 0;
+  double ptMax = -1;
+  unsigned nChargedHadr = 0;
+  unsigned nGamma = 0;
+  for(unsigned i=0; i<signalCands.size(); ++i) {
+    const Tau::Constituent& cand = signalCands[i];
+    if(cand.pt() > ptMax ) {
+      ptMax = cand.pt();
+      leadIndex = i; 
+    }
+    if(cand.type() == 22) nGamma++;
+    if( abs(cand.type()) == 211 ) nChargedHadr++;    
+  }
+
+  //COLINTD: we don't have the following yet 
+  leadPFCandMva_               =  0;
+  leadPFCandHcalEnergy_        =  0;
+  leadPFCandEcalEnergy_        =  0;
+
+  leadPFCandPt_                =  signalCands[leadIndex].pt();
+  leadPFCandP_                 =  signalCands[leadIndex].energy();
+ 
+  //   signalPFChargedHadrCands_ = (leg2->signalPFChargedHadrCands()).size();
+  //   signalPFGammaCands_       = (leg2->signalPFGammaCands()).size();
+  signalPFChargedHadrCands_ = nChargedHadr; 
+  signalPFGammaCands_ = nGamma;
+  
+  //COLINTD: we don't have the following numbers: 
+  //   emFraction_ = leg2->emFraction();
+  //   hasGsf_     = ((leg2->leadPFChargedHadrCand())->gsfTrackRef()).isNonnull() ? 1. : 0.;
   
 
   tightestHPSWP_ = -1;
@@ -1411,12 +1444,13 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
 //   vetos2011PhotonLeg1.push_back( new isodeposit::ConeVeto(isodeposit::Direction(leg1->eta(),leg1->phi()),0.01));
 //   vetos2011PhotonLeg1.push_back( new isodeposit::ThresholdVeto(0.5));
   
-  //COLINTD replace by our isolation - PRIO1
+  //COLIN replace by our isolation
   //from which particles is the charged hadron iso done? 
-  // should use chargedParticleIso (save it also in cmg::Lepton)
+  // should use chargedParticleIso (save it also in cmg::Lepton)... 
+  // ... but that's not what Lorenzo is using ???
 //   chIsoLeg1v1_   = 
 //     leg1->isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4,vetos2010ChargedLeg1).first;
-  chIsoLeg1v1_   = leg1->chargedHadronIso();
+  chIsoLeg1v1_   = leg1->chargedAllIso();
 //   nhIsoLeg1v1_ = 
 //     leg1->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4,vetos2010NeutralLeg1).first;
   nhIsoLeg1v1_   = leg1->neutralHadronIso();
@@ -1434,10 +1468,10 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
   chIsoPULeg1v1_ = leg1->puChargedHadronIso(); //COLIN: not used for dbeta corrections
 //   nhIsoPULeg1v1_ = 
 //     leg1->isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.4,vetos2010NeutralLeg1).first;
-  nhIsoPULeg1v1_ = 0; //COLINTD - beware vetoes!!!
+  nhIsoPULeg1v1_ = 0; //COLINTD - beware vetoes!!! PRIO1
 //   phIsoPULeg1v1_ = 
 //     leg1->isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.4,vetos2010PhotonLeg1).first;
-  phIsoPULeg1v1_ = 0; //COLINTD - beware vetoes!!!
+  phIsoPULeg1v1_ = 0; //COLINTD - beware vetoes!!! PRIO1
   
 
   //COLIN: dumping V2.
