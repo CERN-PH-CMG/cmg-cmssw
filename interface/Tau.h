@@ -11,6 +11,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/PhysicsObject.h"
 #include "AnalysisDataFormats/CMGTools/interface/Lepton.h"
 #include "AnalysisDataFormats/CMGTools/interface/PatTypes.h"
+#include "AnalysisDataFormats/CMGTools/interface/SimpleParticle.h"
 
 #include <vector>
 #include <string>
@@ -29,6 +30,9 @@ namespace cmg
   class Tau : public cmg::Lepton<pat::TauPtr>{
   public:
     
+    typedef cmg::SimpleParticle Constituent; 
+    typedef std::vector< Constituent > Constituents;
+
     Tau(){
     }
 
@@ -69,8 +73,6 @@ namespace cmg
     virtual ~Tau(){
     }
     
-
-    //track related properties
     float leadChargedHadrPt() const {return leadChargedHadrPt_;}
     float leadChargedHadrCharge() const {return leadChargedHadrCharge_;}
     float leadChargedHadrHcalEnergy() const {return leadChargedHadrHcalEnergy_;}
@@ -78,17 +80,17 @@ namespace cmg
     float leadChargedHadrMvaEPi() const {return leadChargedHadrMvaEPi_;}
     reco::TrackBase::Point leadChargedHadrVertex() const {return leadChargedHadrVertex_;}
 
-    //neutral related properties
     float leadNeutralCandPt() const {return leadNeutralCandPt_;}
     float leadNeutralCandEcalEnergy() const {return leadNeutralCandEcalEnergy_;}
 
-    //general properties
     float particleIso() const {return particleIso_;}
     float isolationPFChargedHadrCandsPtSum() const {return isolationPFChargedHadrCandsPtSum_;}
     float isolationPFNeutralHadrCandsPtSum() const {return isolationPFNeutralHadrCandsPtSum_;}
     float isolationPFGammaCandsEtSum() const {return isolationPFGammaCandsEtSum_;}
     int decayMode() const {return decayMode_;}
     float eOverP() const {return (leadChargedHadrEcalEnergy() + leadChargedHadrHcalEnergy()) * sin( theta() ) / leadChargedHadrPt();}
+
+    const Constituents& signalPFCands() const {return signalPFCands_;}
 
     //tau ID's
     bool tauID(const std::string& idname) const { 
@@ -168,7 +170,7 @@ namespace cmg
     std::string genJetDecayMode_;
     math::XYZTLorentzVector genTaup4_;
 
-
+    Constituents  signalPFCands_;
   };
 
 }
