@@ -41,6 +41,7 @@ namespace cmg
       leadChargedHadrMvaEPi_(UnSet(double)),
       leadChargedHadrVertex_(reco::TrackBase::Point()),
       leadNeutralCandPt_(UnSet(double)),
+      //COLIN ECal should be ECAL or Ecal. Same for HCal
       leadNeutralCandECalEnergy_(UnSet(double)),
       particleIso_(UnSet(double)),
       trackIso_(UnSet(double)),
