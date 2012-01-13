@@ -95,7 +95,6 @@ def lfnToPFN( path, tfcProt = 'rfio'):
         entity.path.startswith("/eos/cms/") and \
                 str(entity.stat()).startswith("Error 3011: Unable to stat"):
 
-            self.host = 'castorcms'
             pfn.replace("/eos/cms","/castor/cern.ch/cms")
             pfn.replace("eoscms","castorcms")
     return pfn
