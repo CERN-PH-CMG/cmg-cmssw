@@ -91,6 +91,7 @@ namespace cmg
     float eOverP() const {return (leadChargedHadrEcalEnergy() + leadChargedHadrHcalEnergy()) * sin( theta() ) / leadChargedHadrPt();}
 
     const Constituents& signalPFCands() const {return signalPFCands_;}
+    const Constituent& leadPFChargedHadrCand() const {return leadPFChargedHadrCand_;}
 
     //tau ID's
     bool tauID(const std::string& idname) const { 
@@ -170,6 +171,7 @@ namespace cmg
     std::string genJetDecayMode_;
     math::XYZTLorentzVector genTaup4_;
 
+    Constituent   leadPFChargedHadrCand_;
     Constituents  signalPFCands_;
   };
 

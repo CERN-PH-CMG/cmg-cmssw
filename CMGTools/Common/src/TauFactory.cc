@@ -26,6 +26,12 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
   //track related
   reco::PFCandidateRef leadChargedHadrCand=input->leadPFChargedHadrCand();
   if(leadChargedHadrCand.isNonnull()){
+    const reco::PFCandidate& cand = *(input->leadPFChargedHadrCand().get());
+    output->leadPFChargedHadrCand_ = cmg::Tau::Constituent( cand.pdgId(), 
+							    cand.p4().pt(), cand.p4().eta(), 
+							    cand.p4().phi(),  cand.p4().mass());
+
+    //COLIN a bit of redundancy here ... should clean up at some point
     output->leadChargedHadrPt_  = leadChargedHadrCand->pt();
     output->leadChargedHadrCharge_  = leadChargedHadrCand->charge();
     output->leadChargedHadrHcalEnergy_    = leadChargedHadrCand->hcalEnergy();
@@ -49,7 +55,15 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
     output->leadNeutralCandEcalEnergy_ = leadNeutralCand->ecalEnergy();
   }
 
-
+  
+  for(unsigned int k = 0 ; k < input->signalPFCands().size() ; k++){
+    const reco::PFCandidate& cand = *(input->signalPFCands().at(k).get());
+    output->signalPFCands_.push_back( cmg::Tau::Constituent( cand.pdgId(), 
+							     cand.p4().pt(), cand.p4().eta(), 
+							     cand.p4().phi(),  cand.p4().mass() ) );
+  }
+  
+  
   //general variables 
   output->particleIso_ = input->particleIso();
   output->isolationPFChargedHadrCandsPtSum_ = input->isolationPFChargedHadrCandsPtSum();
