@@ -13,6 +13,9 @@ from CMGTools.Common.skims.cmgPFJetSel_cfi import *
 razorMJPFJetSel30 = cmgPFJetSel.clone( src = 'cmgPFJetSel', cut = 'pt()>30 && abs(eta)<3.0' )
 razorMJPFJetSel80 = cmgPFJetSel.clone( src = 'razorMJPFJetSel30', cut = 'pt()>80' )
 
+#we start by filtering very jetty events as we can't cope with them
+razorPFJetSelCount = cmgCandCount.clone( src = 'cmgPFJetSel', minNumber = 20 )
+#
 razorMJPFJetSel30Count = cmgCandCount.clone( src = 'razorMJPFJetSel30', minNumber = 6 )
 razorMJPFJetSel80Count = cmgCandCount.clone( src = 'razorMJPFJetSel80', minNumber = 2 )
 
@@ -35,6 +38,12 @@ razorMJTriggerSel = cmgTriggerObjectSel.clone(
                                             )
 razorMJTriggerCount = cmgCandCount.clone( src = 'razorMJTriggerSel', minNumber = 1 )
 
+razorMJL1TriggerSel = cmgTriggerObjectSel.clone(
+                                            src = 'cmgTriggerObjectSel',
+                                            cut = 'getSelectionRegExp("^HLT_L1MultiJet_v[0-9]+$")'\
+                                            )
+razorMJL1TriggerCount = cmgCandCount.clone( src = 'razorMJL1TriggerSel', minNumber = 1 )
+
 ############### MR and R
 #make the hemispheres
 from CMGTools.Common.factories.cmgHemi_cfi import cmgHemi
@@ -46,7 +55,7 @@ razorMJHemiHadBox = cmgHemi.clone(
       cms.InputTag("razorMJPFJetSel30")
       ),
       balanceAlgorithm = cms.uint32(1),#use the MassBalance algo
-      maxCand = cms.uint32(100)
+      maxCand = cms.uint32(50)
     )
 )
 
@@ -64,7 +73,7 @@ razorMJHemiHadBoxTop = cmgHemi.clone(
       cms.InputTag("razorMJPFJetSel30")
       ),
       balanceAlgorithm = cms.uint32(2),#use the TopMassBalance algo
-      maxCand = cms.uint32(100)
+      maxCand = cms.uint32(50)
     )
 )
 
@@ -76,14 +85,13 @@ razorMJDiHemiHadBoxTop = cmgDiHemi.clone(
     )    
 )
 
-
-
 ############### Run the sequences
 razorMJTriggerSequence = cms.Sequence(
-    razorMJTriggerSel
+    razorMJTriggerSel+
+    razorMJL1TriggerSel
     )
 
-razorMJJetSequence = cms.Sequence(
+razorMJJetSequence = cms.Sequence(                             
     razorMJPFJetSel30*
     razorMJPFJetSelID*
     razorMJPFJetSel80
@@ -98,7 +106,8 @@ razorMJHemiSequence = cms.Sequence(
 
 razorMJObjectSequence = cms.Sequence(
     razorMJJetSequence + 
-    razorMJTriggerSequence                              
+    razorMJTriggerSequence+
+    razorMJHemiSequence                            
     )
 
 
@@ -108,12 +117,33 @@ razorMJSequence = cms.Sequence(
 
 #offline based selection
 razorMJSkimSequence = cms.Sequence(
-    razorMJObjectSequence + 
+    #veto events with too many jets
+    ~razorPFJetSelCount+ 
+    #now make the sequence
+    razorMJObjectSequence +
+    #the selection 
     razorMJPFJetSel30Count+
     razorMJPFJetSel80Count+
     #filter is inverted
     ~razorMJPFJetIDCount+
-    razorMJTriggerCount+
-    #finally run the Razor code
-    razorMJHemiSequence
+    #apply trigger also
+    razorMJTriggerCount
+    )
+
+#just take all events that pass the trigger
+razorMJTriggerSkimSequence = cms.Sequence(
+    #veto events with too many jets
+    ~razorPFJetSelCount+ 
+    #now make the sequence
+    razorMJObjectSequence +
+    razorMJTriggerCount
+    )
+
+#take events which have the L1 passthrough
+razorMJL1TriggerSkimSequence = cms.Sequence(
+    #veto events with too many jets
+    ~razorPFJetSelCount+ 
+    #now make the sequence
+    razorMJObjectSequence +
+    razorMJL1TriggerCount
     )
