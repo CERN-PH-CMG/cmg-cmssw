@@ -11,11 +11,5 @@ from CMGTools.Susy.LP.LP_cff import *
 
 
 susySequence  = cms.Sequence(
-    susyLeptonSequence +
-    boolToIntSequence +
-    jetIdSequence + 
-    RA1Sequence +
-    RA2Sequence +
-    razorSequence +
-    LPSequence
+    boolToIntSequence
     )
