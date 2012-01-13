@@ -27,76 +27,82 @@ namespace cmg{
 
 template <class LeptonType>
 class LeptonSettingTool : public SettingTool<LeptonType,cmg::Lepton<LeptonType> >{
-	public:
-		LeptonSettingTool(const edm::ParameterSet& ps):
-            chargedHadron_(pat::PfChargedHadronIso),
-            puChargedHadron_(pat::PfPUChargedHadronIso),
-            neutralHadron_(pat::PfNeutralHadronIso),
-            photon_(pat::PfGammaIso),
-            useIsoDeposits_(ps.getParameter<bool>("useIsoDeposits")),
-            vertexTag_(ps.getParameter<edm::InputTag>("vertexCollection")),
-            vertexType_(convert_vertex_types(ps.getParameter<int>("vertexType"))){
-            chargedHadronIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("chargedHadronIsoPar"));
-            puChargedHadronIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("puChargedHadronIsoPar"));
-            neutralHadronIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("neutralHadronIsoPar"));
-            photonsIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("photonsIsoPar"));
-            
-            if(!ps.getParameter<bool>("useParticleFlowIso")){
-                //switch to "traditional" isolation
-                chargedHadron_ = pat::TrackIso;
-                neutralHadron_ = pat::HcalIso;
-                photon_ = pat::EcalIso;
-            }
-            
-		}
+  public:
+    LeptonSettingTool(const edm::ParameterSet& ps):
+      chargedHadron_(pat::PfChargedHadronIso),
+      chargedAll_(pat::PfChargedAllIso),		  
+      puChargedHadron_(pat::PfPUChargedHadronIso),
+      neutralHadron_(pat::PfNeutralHadronIso),
+      photon_(pat::PfGammaIso),
+      useIsoDeposits_(ps.getParameter<bool>("useIsoDeposits")),
+      vertexTag_(ps.getParameter<edm::InputTag>("vertexCollection")),
+      vertexType_(convert_vertex_types(ps.getParameter<int>("vertexType"))){
+      chargedHadronIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("chargedHadronIsoPar"));
+      chargedAllIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("chargedAllIsoPar"));
+      puChargedHadronIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("puChargedHadronIsoPar"));
+      neutralHadronIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("neutralHadronIsoPar"));
+      photonsIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("photonsIsoPar"));
+      
+      if(!ps.getParameter<bool>("useParticleFlowIso")){
+	//switch to "traditional" isolation
+	chargedHadron_ = pat::TrackIso;
+	neutralHadron_ = pat::HcalIso;
+	photon_ = pat::EcalIso;
+      }
+      
+    }
         
-        ///Set the isolation parameters etc
-        virtual void set(const LeptonType& lepton, cmg::Lepton<LeptonType>* const obj, const edm::Event&, const edm::EventSetup&) const;
-        
-        //Set the dxy and dz
-        template <class TrackType>
-        void set(const TrackType& track, cmg::Lepton<LeptonType>* const obj, const edm::Event&, const edm::EventSetup&) const;
-        
-        enum vertex_types {Primary=0,BeamSpot,Other=-1};
-	
-    typedef reco::isodeposit::AbsVetos AbsVetos;
+   ///Set the isolation parameters etc
+   virtual void set(const LeptonType& lepton, cmg::Lepton<LeptonType>* const obj, const edm::Event&, const edm::EventSetup&) const;
+   
+   //Set the dxy and dz
+   template <class TrackType>
+     void set(const TrackType& track, cmg::Lepton<LeptonType>* const obj, const edm::Event&, const edm::EventSetup&) const;
+   
+   enum vertex_types {Primary=0,BeamSpot,Other=-1};
+   
+   typedef reco::isodeposit::AbsVetos AbsVetos;
+   
+  private:
     
-    private:
+   vertex_types convert_vertex_types(const int i) const{
+     switch (i){
+     case Primary: return Primary;
+     case BeamSpot: return BeamSpot;
+     default:
+       edm::LogWarning("cmg::LeptonSettingTool") << "The vertex type specified was not found." << std::endl;
+       return Other; 
+     }
+   }
+        
+   //utilities for handling the vertex
+   reco::TrackBase::Point getVertex(const edm::Event&, const edm::EventSetup&) const;
     
-        vertex_types convert_vertex_types(const int i) const{
-            switch (i){
-             case Primary: return Primary;
-             case BeamSpot: return BeamSpot;
-             default:
-                edm::LogWarning("cmg::LeptonSettingTool") << "The vertex type specified was not found." << std::endl;
-                return Other; 
-            }
-        }
-        
-        //utilities for handling the vertex
-        reco::TrackBase::Point getVertex(const edm::Event&, const edm::EventSetup&) const;
-    
-        /// parameters for charged hadron isolation value
-        SpecificIsolation chargedHadronIsoPar_;
-
-        /// parameters for pile-up charged hadron isolation value 
-        SpecificIsolation puChargedHadronIsoPar_;
-
-        /// parameters for neutral hadron isolation value
-        SpecificIsolation neutralHadronIsoPar_;
-
-        /// parameters for photon isolation value
-        SpecificIsolation photonsIsoPar_;
-        
-        pat::IsolationKeys chargedHadron_;
-        pat::IsolationKeys puChargedHadron_;
-        pat::IsolationKeys neutralHadron_;
-        pat::IsolationKeys photon_;
-        const bool useIsoDeposits_;
-        
-        //tags for the dxy
-        edm::InputTag vertexTag_;
-        vertex_types vertexType_;
+   /// parameters for charged hadron isolation value
+   SpecificIsolation chargedHadronIsoPar_;
+   
+   /// parameters for charged particle isolation value
+   SpecificIsolation chargedAllIsoPar_;
+      
+   /// parameters for pile-up charged hadron isolation value 
+   SpecificIsolation puChargedHadronIsoPar_;
+   
+   /// parameters for neutral hadron isolation value
+   SpecificIsolation neutralHadronIsoPar_;
+   
+   /// parameters for photon isolation value
+   SpecificIsolation photonsIsoPar_;
+   
+   pat::IsolationKeys chargedHadron_;
+   pat::IsolationKeys chargedAll_;
+   pat::IsolationKeys puChargedHadron_;
+   pat::IsolationKeys neutralHadron_;
+   pat::IsolationKeys photon_;
+   const bool useIsoDeposits_;
+   
+   //tags for the dxy
+   edm::InputTag vertexTag_;
+   vertex_types vertexType_;
     	
 };
 
@@ -119,6 +125,7 @@ void cmg::LeptonSettingTool<LeptonType>::set(const LeptonType& lepton, cmg::Lept
 
     // retrieve the AbsVetos from the SpecificIsolation
     AbsVetos chargedHadronVetos = chargedHadronIsoPar_.getAbsVetoes();
+    AbsVetos chargedAllVetos = chargedAllIsoPar_.getAbsVetoes();
     AbsVetos puChargedHadronVetos = puChargedHadronIsoPar_.getAbsVetoes();
     AbsVetos neutralHadronVetos = neutralHadronIsoPar_.getAbsVetoes();
     AbsVetos photonsVetos = photonsIsoPar_.getAbsVetoes();
@@ -126,6 +133,9 @@ void cmg::LeptonSettingTool<LeptonType>::set(const LeptonType& lepton, cmg::Lept
     // center the vetoes around the lepton
     for(unsigned int i = 0; i<chargedHadronVetos.size(); i++){
         chargedHadronVetos[i]->centerOn(Eta,Phi);
+    }
+    for(unsigned int i = 0; i<chargedAllVetos.size(); i++){
+        chargedAllVetos[i]->centerOn(Eta,Phi);
     }
     for(unsigned int i = 0; i<puChargedHadronVetos.size(); i++){
         puChargedHadronVetos[i]->centerOn(Eta,Phi);
@@ -138,6 +148,7 @@ void cmg::LeptonSettingTool<LeptonType>::set(const LeptonType& lepton, cmg::Lept
     }
 
     obj->chargedHadronIso_ = (lepton->isoDeposit(chargedHadron_)->depositAndCountWithin( chargedHadronIsoPar_.coneSize(), chargedHadronVetos, false ).first);
+    obj->chargedAllIso_ = (lepton->isoDeposit(chargedAll_)->depositAndCountWithin( chargedAllIsoPar_.coneSize(), chargedAllVetos, false ).first);
     obj->puChargedHadronIso_ = (lepton->isoDeposit(puChargedHadron_)->depositAndCountWithin( puChargedHadronIsoPar_.coneSize(), puChargedHadronVetos, false ).first);
     obj->neutralHadronIso_ = (lepton->isoDeposit(neutralHadron_)->depositAndCountWithin( neutralHadronIsoPar_.coneSize(), neutralHadronVetos, false ).first);
     obj->photonIso_ = (lepton->isoDeposit(photon_)->depositAndCountWithin( photonsIsoPar_.coneSize(), photonsVetos ,false ).first);
@@ -145,6 +156,7 @@ void cmg::LeptonSettingTool<LeptonType>::set(const LeptonType& lepton, cmg::Lept
   }else{
     //ignore everything and just taked the cached value from pat
     obj->chargedHadronIso_ = lepton->userIsolation(chargedHadron_);
+    obj->chargedAllIso_ = lepton->userIsolation(chargedAll_);
     obj->puChargedHadronIso_ = lepton->userIsolation(puChargedHadron_);
     obj->neutralHadronIso_ = lepton->userIsolation(neutralHadron_);
     obj->photonIso_ = lepton->userIsolation(photon_);

@@ -17,6 +17,11 @@ leptonFactory = cms.PSet(
       vetoes=cms.VPSet()#no veto
       ),
 
+    chargedAllIsoPar=cms.PSet(
+      coneSize=cms.double(0.4),
+      vetoes=cms.VPSet()#no veto
+      ),
+
     puChargedHadronIsoPar=cms.PSet(
       coneSize=cms.double(0.4),
       vetoes=cms.VPSet()#no veto

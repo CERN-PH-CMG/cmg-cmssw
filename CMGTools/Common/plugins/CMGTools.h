@@ -148,7 +148,6 @@ typedef cmg::PhysicsObjectPrinter PhysicsObjectPrinter;
 
 
 
-
 // Leading-objects selectors.
 
 typedef cmg::LeadingObjectsSelector<pat::Jet> LeadingPatJetSelector;
