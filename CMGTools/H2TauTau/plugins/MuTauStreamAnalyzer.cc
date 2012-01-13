@@ -943,15 +943,16 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
       // with this solution I keep the pat::Tau and 
       // access the pat::Tau through the cmg::Tau
       //       const pat::TauPtr* patTauPtr = tau_i->sourcePtr();
-      //       const pat::Tau* patTau = patTauPtr->get();
+      //       const pat::Tau* tau = patTauPtr->get();
       //COLINTD talk to Jose - OK, all of that is in the cmg::Tau
-      const pat::Tau* patTau = tau_i->sourcePtr()->get();
-      sumIsoTau_i += patTau->isolationPFChargedHadrCandsPtSum();
-      //sumIsoTau_i += patTau->isolationPFGammaCandsEtSum();
+      //       const pat::Tau* tau = tau_i->sourcePtr()->get();
+      const Tau& tau = *tau_i;
+      sumIsoTau_i += tau.isolationPFChargedHadrCandsPtSum();
+      //sumIsoTau_i += tau.isolationPFGammaCandsEtSum();
       //COLINTD : is the code below really correct? Don't we want dbeta correction?
-      sumIsoTau_i += std::max( (patTau->isolationPFGammaCandsEtSum() -
+      sumIsoTau_i += std::max( (tau.isolationPFGammaCandsEtSum() -
 				rhoFastJet_*TMath::Pi()*0.5*0.5), 0.0);
-      //sumIsoTau_i += patTau->isolationPFNeutrHadrCandsEtSum();
+      //sumIsoTau_i += tau.isolationPFNeutrHadrCandsEtSum();
       if(sumIsoTau_i<sumIsoTau){
 	index = identifiedTaus[i];
 	sumIsoTau = sumIsoTau_i;
@@ -1321,9 +1322,9 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
   //   leadPFChargedHadrMva_        =   leg2->electronPreIDOutput() ;	
   leadPFChargedHadrMva_        =   leg2->leadChargedHadrMvaEPi() ;	
   //   leadPFChargedHadrHcalEnergy_ =  (leg2->leadPFChargedHadrCand()).isNonnull() ? (leg2->leadPFChargedHadrCand())->hcalEnergy() : -99 ;
-  leadPFChargedHadrHcalEnergy_ =  leg2->leadChargedHadrHCalEnergy();
+  leadPFChargedHadrHcalEnergy_ =  leg2->leadChargedHadrHcalEnergy();
   //   leadPFChargedHadrEcalEnergy_ =  (leg2->leadPFChargedHadrCand()).isNonnull() ? (leg2->leadPFChargedHadrCand())->ecalEnergy() : -99;
-  leadPFChargedHadrEcalEnergy_ =  leg2->leadChargedHadrECalEnergy();
+  leadPFChargedHadrEcalEnergy_ =  leg2->leadChargedHadrEcalEnergy();
  
   //COLINTD: weird... duplicated information for charged hadrons, irrelevant for photons?
   //this is the leading PFCandidate in the tau, of any type, e.g. e-, photon, ...
@@ -1338,7 +1339,7 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
   leadPFCandMva_               =  0;
   //COLINTD: we don't have the following yet 
   leadPFCandHcalEnergy_        =  0;
-  leadPFCandEcalEnergy_        =  leg2->leadNeutralCandECalEnergy();
+  leadPFCandEcalEnergy_        =  leg2->leadNeutralCandEcalEnergy();
   leadPFCandPt_                =  leg2->leadNeutralCandPt() ;
   //COLINTD: we don't have the following yet
   leadPFCandP_                 =  0;
@@ -1469,11 +1470,9 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
 //     pfMuons_->push_back(cand.p4());
 //   }
 
-  //COLINTD: don't know what to do with tau isolation. 
   //Check the link between iso in cmg::Lepton and iso in cmg::Tau 
   //assume pat::Tau is kept. 
-  //COLIN: trackIso is really a bad name.
-  chIsoLeg2_ = leg2->trackIso();
+  chIsoLeg2_ = leg2->isolationPFChargedHadrCandsPtSum();
   //   //
   //   if(verbose_){
   //     cout << "Tau z position " << (leg2->vertex()).z() << endl;
@@ -1484,12 +1483,14 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
   //   }
   //   //
   nhIsoLeg2_ = 0.;
-  //COLINTD: I think we don't have that...
+  // COLIN: recomputed in the TauFactory. Why don't we put that in the reco::Tau or pat::Tau 
+  // it it's needed? 
   //   for(unsigned int i = 0; i < (leg2->isolationPFNeutrHadrCands()).size(); i++){
   //     nhIsoLeg2_ += (leg2->isolationPFNeutrHadrCands()).at(i)->pt();
   //   }
+  nhIsoLeg2_ = leg2->isolationPFNeutralHadrCandsPtSum();
   //   phIsoLeg2_ = leg2->isolationPFGammaCandsEtSum();
-  phIsoLeg2_ = leg2->gammaIso();
+  phIsoLeg2_ = leg2->isolationPFGammaCandsEtSum();
 
   // cleaning
 //   for(unsigned int i = 0; i <vetos2010ChargedLeg1.size(); i++){

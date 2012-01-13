@@ -323,7 +323,7 @@ bool TauMuAnalysis::applySelections(TString exceptcut){
     if(exceptcut!="tauiso") if(cand->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr")<0.5) continue; 
     if(exceptcut!="taueop") 
       if(cand->leg1().decayMode()==0&&cand->leg1().p()>0.) 
-	if(((cand->leg1().leadChargedHadrECalEnergy()+cand->leg1().leadChargedHadrHCalEnergy())/cand->leg1().p())<0.2) continue; 
+	if(((cand->leg1().leadChargedHadrEcalEnergy()+cand->leg1().leadChargedHadrHcalEnergy())/cand->leg1().p())<0.2) continue; 
         
     ////selections on the muon
     if(exceptcut!="mupt") if(cand->leg2().pt()<17.0)continue;
@@ -490,7 +490,7 @@ bool TauMuAnalysis::fillHistos(TString tag){
   tree_taueta_=diTauSel_->leg1().eta();
   tree_tautruth_=truthMatchTau();
   tree_tauehop_=diTauSel_->leg1().eOverP();
-  tree_taueop_=diTauSel_->leg1().leadChargedHadrECalEnergy()/diTauSel_->leg1().p();
+  tree_taueop_=diTauSel_->leg1().leadChargedHadrEcalEnergy()/diTauSel_->leg1().p();
   tree_taudecaymode_=diTauSel_->leg1().decayMode();
 
   tree_transversemass_=diTauSel_->mTLeg2();
@@ -511,7 +511,7 @@ bool TauMuAnalysis::fillHistos(TString tag){
   if(tree_taudecaymode_==0&&diTauSel_->leg1().p()>0.){
     tauEoPHisto_->Fill(tree_taueop_,eventWeight_);
     tauEoP1Histo_->Fill(tree_taueop_,eventWeight_);
-    tauHoPHisto_->Fill(diTauSel_->leg1().leadChargedHadrHCalEnergy()/diTauSel_->leg1().p(),eventWeight_);
+    tauHoPHisto_->Fill(diTauSel_->leg1().leadChargedHadrHcalEnergy()/diTauSel_->leg1().p(),eventWeight_);
     tauEHoPHisto_->Fill(tree_tauehop_,eventWeight_);
     if(fabs(tree_taueop_-1.0)<.0001){
       tauEtaEoP1Histo_->Fill(tree_taueta_,eventWeight_);
@@ -577,7 +577,7 @@ bool TauMuAnalysis::createHistos(TString samplename){
     //sample_->cloneHistos("tauiso");
     //sample_->cloneHistos("tauagainstmuon");
     sample_->cloneHistos("taueop");
-    //sample_->cloneHistos("muiso");    tauEoPHisto_->Fill(diTauSel_->leg1().leadChargedHadrECalEnergy()/diTauSel_->leg1().p(),eventWeight_);
+    //sample_->cloneHistos("muiso");    tauEoPHisto_->Fill(diTauSel_->leg1().leadChargedHadrEcalEnergy()/diTauSel_->leg1().p(),eventWeight_);
     sample_->cloneHistos("mupt");
     sample_->cloneHistos("massT");
 
