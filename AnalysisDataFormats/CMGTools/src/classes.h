@@ -104,6 +104,9 @@ namespace {
     edm::Wrapper<cmg::Muon> em;
     edm::Wrapper<std::vector<cmg::Muon> > emv;
 
+    cmg::SimpleParticle sp;
+    std::vector<cmg::SimpleParticle> spv;    
+
     cmg::Tau t;
     std::vector<cmg::Tau> tv;
     edm::Wrapper<cmg::Tau> et;
