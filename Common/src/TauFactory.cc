@@ -28,8 +28,8 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
   if(leadChargedHadrCand.isNonnull()){
     output->leadChargedHadrPt_  = leadChargedHadrCand->pt();
     output->leadChargedHadrCharge_  = leadChargedHadrCand->charge();
-    output->leadChargedHadrHCalEnergy_    = leadChargedHadrCand->hcalEnergy();
-    output->leadChargedHadrECalEnergy_    = leadChargedHadrCand->ecalEnergy();
+    output->leadChargedHadrHcalEnergy_    = leadChargedHadrCand->hcalEnergy();
+    output->leadChargedHadrEcalEnergy_    = leadChargedHadrCand->ecalEnergy();
     output->leadChargedHadrMvaEPi_ = leadChargedHadrCand->mva_e_pi();
 
     reco::TrackRef chHadrtrk=leadChargedHadrCand->trackRef();
@@ -46,14 +46,20 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
   reco::PFCandidateRef leadNeutralCand=input->leadPFNeutralCand();
   if(leadNeutralCand.isNonnull()){
     output->leadNeutralCandPt_ = leadNeutralCand->pt();
-    output->leadNeutralCandECalEnergy_ = leadNeutralCand->ecalEnergy();
+    output->leadNeutralCandEcalEnergy_ = leadNeutralCand->ecalEnergy();
   }
 
 
   //general variables 
   output->particleIso_ = input->particleIso();
-  output->trackIso_ = input->isolationPFChargedHadrCandsPtSum();
-  output->gammaIso_ = input->isolationPFGammaCandsEtSum();
+  output->isolationPFChargedHadrCandsPtSum_ = input->isolationPFChargedHadrCandsPtSum();
+  output->isolationPFGammaCandsEtSum_ = input->isolationPFGammaCandsEtSum();
+  float nhIso = 0;
+  for(unsigned int i = 0; i < (input->isolationPFNeutrHadrCands()).size(); i++){
+    nhIso += (input->isolationPFNeutrHadrCands()).at(i)->pt();
+  }
+  output->isolationPFNeutralHadrCandsPtSum_ = nhIso;
+
   output->decayMode_ = input->decayMode();
   
   //copy the the tauIDs 
