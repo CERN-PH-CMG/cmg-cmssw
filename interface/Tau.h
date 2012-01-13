@@ -36,16 +36,19 @@ namespace cmg
       cmg::Lepton<value>::Lepton(m),
       leadChargedHadrPt_(UnSet(double)),
       leadChargedHadrCharge_(UnSet(int)),
-      leadChargedHadrHCalEnergy_(UnSet(double)),
-      leadChargedHadrECalEnergy_(UnSet(double)),
+      leadChargedHadrHcalEnergy_(UnSet(double)),
+      leadChargedHadrEcalEnergy_(UnSet(double)),
       leadChargedHadrMvaEPi_(UnSet(double)),
       leadChargedHadrVertex_(reco::TrackBase::Point()),
       leadNeutralCandPt_(UnSet(double)),
-      //COLIN ECal should be ECAL or Ecal. Same for HCal
-      leadNeutralCandECalEnergy_(UnSet(double)),
+      //COLIN Ecal should be ECAL or Ecal. Same for Hcal
+      leadNeutralCandEcalEnergy_(UnSet(double)),
       particleIso_(UnSet(double)),
-      trackIso_(UnSet(double)),
-      gammaIso_(UnSet(double)),
+/*       trackIso_(UnSet(double)), */
+/*       gammaIso_(UnSet(double)), */
+      isolationPFChargedHadrCandsPtSum_( UnSet(double) ),
+      isolationPFNeutralHadrCandsPtSum_( UnSet(double) ),
+      isolationPFGammaCandsEtSum_( UnSet(double) ),
       decayMode_(UnSet(int)),
       genJetp4_(math::XYZTLorentzVector(0.,0.,0.,0.)),
       genJetCharge_(0),
@@ -70,21 +73,22 @@ namespace cmg
     //track related properties
     float leadChargedHadrPt() const {return leadChargedHadrPt_;}
     float leadChargedHadrCharge() const {return leadChargedHadrCharge_;}
-    float leadChargedHadrHCalEnergy() const {return leadChargedHadrHCalEnergy_;}
-    float leadChargedHadrECalEnergy() const {return leadChargedHadrECalEnergy_;}
+    float leadChargedHadrHcalEnergy() const {return leadChargedHadrHcalEnergy_;}
+    float leadChargedHadrEcalEnergy() const {return leadChargedHadrEcalEnergy_;}
     float leadChargedHadrMvaEPi() const {return leadChargedHadrMvaEPi_;}
     reco::TrackBase::Point leadChargedHadrVertex() const {return leadChargedHadrVertex_;}
 
     //neutral related properties
     float leadNeutralCandPt() const {return leadNeutralCandPt_;}
-    float leadNeutralCandECalEnergy() const {return leadNeutralCandECalEnergy_;}
+    float leadNeutralCandEcalEnergy() const {return leadNeutralCandEcalEnergy_;}
 
     //general properties
     float particleIso() const {return particleIso_;}
-    float trackIso() const {return trackIso_;}
-    float gammaIso() const {return gammaIso_;}
+    float isolationPFChargedHadrCandsPtSum() const {return isolationPFChargedHadrCandsPtSum_;}
+    float isolationPFNeutralHadrCandsPtSum() const {return isolationPFNeutralHadrCandsPtSum_;}
+    float isolationPFGammaCandsEtSum() const {return isolationPFGammaCandsEtSum_;}
     int decayMode() const {return decayMode_;}
-    float eOverP() const {return (leadChargedHadrECalEnergy() + leadChargedHadrHCalEnergy()) * sin( theta() ) / leadChargedHadrPt();}
+    float eOverP() const {return (leadChargedHadrEcalEnergy() + leadChargedHadrHcalEnergy()) * sin( theta() ) / leadChargedHadrPt();}
 
     //tau ID's
     bool tauID(const std::string& idname) const { 
@@ -122,17 +126,20 @@ namespace cmg
 
     float leadChargedHadrPt_;
     float leadChargedHadrCharge_;
-    float leadChargedHadrHCalEnergy_;
-    float leadChargedHadrECalEnergy_;
+    float leadChargedHadrHcalEnergy_;
+    float leadChargedHadrEcalEnergy_;
     float leadChargedHadrMvaEPi_;
     reco::TrackBase::Point leadChargedHadrVertex_;
     
     float leadNeutralCandPt_;   
-    float leadNeutralCandECalEnergy_;   
+    float leadNeutralCandEcalEnergy_;   
    
     float particleIso_;
-    float trackIso_;
-    float gammaIso_;
+/*     float trackIso_; */
+/*     float gammaIso_; */
+    float isolationPFChargedHadrCandsPtSum_;
+    float isolationPFNeutralHadrCandsPtSum_;
+    float isolationPFGammaCandsEtSum_;
     int decayMode_;
     std::string tauID_[NCMGTAUIDS];
 
