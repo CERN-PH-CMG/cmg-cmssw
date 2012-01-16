@@ -324,6 +324,7 @@ bool TauMuAnalysis::applySelections(TString exceptcut){
     if(exceptcut!="taueop") 
       if(cand->leg1().decayMode()==0&&cand->leg1().p()>0.) 
 	if(((cand->leg1().leadChargedHadrEcalEnergy()+cand->leg1().leadChargedHadrHcalEnergy())/cand->leg1().p())<0.2) continue; 
+    if(exceptcut!="tautrigmatch")if(!trigObjMatch(cand->leg1().eta(),cand->leg1().phi(),"hltOverlapFilterIsoMu15IsoPFTau15"))continue;//hltPFTau15TrackLooseIso
         
     ////selections on the muon
     if(exceptcut!="mupt") if(cand->leg2().pt()<17.0)continue;
@@ -340,6 +341,7 @@ bool TauMuAnalysis::applySelections(TString exceptcut){
 	 || cand->leg2().normalizedChi2() >= 10
 	 ) continue;    
     if(exceptcut!="muiso") if(cand->leg2().relIso(0.5)>0.1)continue;    
+    if(exceptcut!="mutrigmatch")if(!trigObjMatch(cand->leg2().eta(),cand->leg2().phi(),"hltSingleMuIsoL3IsoFiltered15"))continue;
 
     diTauSelList_.push_back(*cand);
   }
@@ -577,9 +579,12 @@ bool TauMuAnalysis::createHistos(TString samplename){
     //sample_->cloneHistos("tauiso");
     //sample_->cloneHistos("tauagainstmuon");
     sample_->cloneHistos("taueop");
-    //sample_->cloneHistos("muiso");    tauEoPHisto_->Fill(diTauSel_->leg1().leadChargedHadrEcalEnergy()/diTauSel_->leg1().p(),eventWeight_);
+    //sample_->cloneHistos("muiso"); 
     sample_->cloneHistos("mupt");
     sample_->cloneHistos("massT");
+    sample_->cloneHistos("tautrigmatch");
+    sample_->cloneHistos("mutrigmatch");
+
 
     sample_->cloneHistos("SM0");
     sample_->cloneHistos("SM1");
@@ -637,7 +642,9 @@ bool TauMuAnalysis::createHistos(TString samplename){
       //      if(applySelections("muiso")) if(!fillHistos("muiso")) return 0;
       if(applySelections("mupt")) if(!fillHistos("mupt")) return 0;
       //      if(applySelections("dileptonveto")) if(!fillHistos("dileptonveto")) return 0;
-      if(applySelections("massT")) if(!fillHistos("massT")) return 0;   
+      if(applySelections("massT")) if(!fillHistos("massT")) return 0; 
+      if(applySelections("tautrigmatch")) if(!fillHistos("tautrigmatch")) return 0; 
+      if(applySelections("mutrigmatch")) if(!fillHistos("mutrigmatch")) return 0;   
     }
 
     //fill fully selected inclusive histograms 
@@ -1094,6 +1101,12 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   delete hMCSS;
 
 
+  ////Total Data
+  TH1F* hData=getTotalData(histoname);
+  if(!hData){cout<<" Total Data not determined "<<endl; return 0;}
+  hData->Rebin(rebin);
+
+
   ////Total MC
   ///must get here before getting individual components below because same histo object name is used for each component inside
   TH1F* hBkg=getTotalBackground(histoname);
@@ -1178,10 +1191,6 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   hMCStack.Add(hZToTauTau,"hist");
   cout<<"ZToTauTau "<<hZToTauTau->Integral(0,hZToTauTau->GetNbinsX()+1)<<endl;
 
-  ////Total Data
-  TH1F* hData=getTotalData(histoname);
-  if(!hData){cout<<" Total Data not determined "<<endl; return 0;}
-  hData->Rebin(rebin);
 
   cout<<"Total Background "<<(int)(hBkg->Integral(0,hBkg->GetNbinsX()+1))<<endl;
   cout<<"Total Data "<<(int)(hData->Integral(0,hData->GetNbinsX()+1))<<endl;
@@ -1193,9 +1202,9 @@ bool TauMuAnalysis::plot(TString histoname, Int_t rebin, TString xlabel, TString
   legend.AddEntry(hData,hData->GetTitle(),"p");
   legend.AddEntry(hZToTauTau,hZToTauTau->GetTitle(),"f");
   legend.AddEntry(hZToMuMu,hZToMuMu->GetTitle(),"f");
-  legend.AddEntry(hTTJets,hTTJets->GetTitle(),"f");
   legend.AddEntry(hWJetsToLNu,hWJetsToLNu->GetTitle(),"f");
   legend.AddEntry(hQCD,"Fakes","f");
+  legend.AddEntry(hTTJets,hTTJets->GetTitle(),"f");
 
  
 

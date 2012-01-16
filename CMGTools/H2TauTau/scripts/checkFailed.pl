@@ -2,9 +2,8 @@
 # -w
 
 $taskdir=shift;
-#$resubmit=shift;
-#$prevpath=$ENV{'PWD'};
-
+$gzipfiles=shift;
+$resubmit=shift;
 print "checkFailed.pl will check for failed jobs in $taskdir\n";
 
 opendir(DIR,$taskdir) or die "can't opendir ${taskdir} $!";
@@ -22,13 +21,6 @@ foreach $job (@executefiles){
 	chomp($job);
 	$logfile=`find $taskdir/$job/ | grep STDOUT `;	
 	chomp($logfile);
-#	@logfiletype=split("STDOUT",$logfile);
-#	if($logfiletype[1] eq ".gz"){
-#	    system("gunzip $logfile");
-#	    $logfile=`find $taskdir/$job/ | grep STDOUT `;	
-#	    chomp($logfile);
-#	}
-	#print "$logfile\n";
 
 
 	$success=0; 
@@ -38,6 +30,16 @@ foreach $job (@executefiles){
 	$npassedevents=0;	
 	$logexists=`[ -f ${logfile} ] && echo 1 || echo 0`;
 	if($logexists==1){
+
+	    $gzip=0;
+	    @logfiletype=split("STDOUT",$logfile);
+	    if($logfiletype[1] eq ".gz"){
+		system("gunzip $logfile");
+		$logfile=`find $taskdir/$job/ | grep STDOUT `;	
+		chomp($logfile);
+		$gzip=1;
+	    }
+
 	    $success=1; 
 	    open FILE, "< $logfile";	
 	    while($buffer=<FILE>){
@@ -77,57 +79,41 @@ foreach $job (@executefiles){
 		    $npassedevents=$exitword[7];
 		}				
 	    }
-
-
+	    close FILE;
+	    
 	    if($nevents < 2){ $success=0; $exitcode="${exitcode} EventsProcessed"; $noevents++;}
 	    
+	    ##gzip the log file only if it was previously gzipped otherwise job may still be running
+	    if($gzip==1 || $gzipfiles==1){
+		system("gzip $logfile");
+	    }
+	    
 	}
+
 	
-
-	###check the root file
-	#$rootexists = `nsls /castor/cern.ch/cms$outputdir/tree_CMG_${id}.root`;
-	#chomp($rootexists);
-	#if($rootexists eq ""){ $success=0;   $exitcode="no root file"; $nbadrootfiles++;}
-
 
 	############
 	if($success==1){
 	    $ngoodfiles++;
-	    #print "$logfile : Success : EventsPassed $npassedevents/$nevents \n";
 	}	
 	if($success==0){
 	    print "${taskdir}/${job} : Failed : EventsPassed $npassedevents/$nevents : $exitcode \n";
-#	    if($resubmit==1){
-#		print "resubmitting ${taskdir}/${job}\n";
-#
-#		$lsf=`ls ${taskdir}/${job}/ | grep LSFJOB_ `;	
-#		chomp($lsf);
-#		@lsftype=split("LSFJOB_",$lsf);
-#		if($lsftype[1]>0){
-#		    #print "rm -R -f ${taskdir}/${job}/${lsf}\n";
-#		    `rm -R -f ${taskdir}/${job}/${lsf}`;
-#		}
-#	
-#		$cfg=`ls ${taskdir}/${job}/ | grep run_cfg `;	
-#		chomp($cfg);
-#		@cfgtype=split("py",$cfg);
-#		if($cfgtype[1] eq ".gz"){
-#		    #print "gunzip ${taskdir}/${job}/${cfg}\n";
-#		    `gunzip ${taskdir}/${job}/${cfg}`;
-#		}
-#
-#
-#		chdir("${taskdir}/${job}/") or die "Cant chdir to ${taskdir}/${job}/ $!";
-#		#print "bsub -q 8nh < batchScript.sh \n";
-#		`bsub -q 8nh < batchScript.sh`;
-#		chdir($prevpath);
-#		$nresubmitted++;
-#	    }
+	    print "$logfile\n";
+
+	    if($resubmit==1){
+		$pwd=`pwd`;
+		chomp($pwd);
+		chdir("./${taskdir}/${job}/") or die "Cant chdir to ./${taskdir}/${job}/ $!";		
+		system("rm -rf LSFJOB_*");
+		system("bsub -q 2nd -J RESUB < ./batchScript.sh");
+		chdir("$pwd");
+	    }
+
 	}		
 	$totalfiles++;
 	$ngoodevents+=$nevents; 
 	$ntotpassedevents+=$npassedevents;
-	close FILE;
+
 }    
 
 print "checkFailed.pl Summary : files: $ngoodfiles/$totalfiles, events = $ntotpassedevents/$ngoodevents \n";
