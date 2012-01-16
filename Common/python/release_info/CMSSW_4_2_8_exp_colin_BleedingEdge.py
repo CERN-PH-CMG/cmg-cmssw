@@ -3,7 +3,7 @@
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_13Jan12'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_13Jan12'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_mcyield_29Nov11'),
-  ('CMGTools/ZmumuJetsTutorial', 'UserCode/CMG/CMGTools/ZmumuJetsTutorial', 'cbern_tutorial_12Oct11'),
+  ('CMGTools/ZmumuJetsTutorial', 'UserCode/CMG/CMGTools/ZmumuJetsTutorial', 'jhegeman_V2401_16Jan12'),
   ('CommonTools/ParticleFlow', 'CommonTools/ParticleFlow', 'B4_2_X_V00-03-01'),
   ('DataFormats/AnomalousEcalDataFormats', 'UserCode/csander/DataFormats/AnomalousEcalDataFormats', 'V110523_BE'),
   ('DataFormats/PatCandidates', 'DataFormats/PatCandidates', 'V06-04-19-03'),
