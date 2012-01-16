@@ -10,6 +10,8 @@ namespace cmg{
     
   class BaseMET : public AbstractPhysicsObject{
   public:
+    typedef reco::Candidate::LorentzVector GenMET; 
+
     BaseMET(const reco::LeafCandidate& cand):
       AbstractPhysicsObject(cand),
       sumEt_(UnSet(double)){
@@ -18,10 +20,13 @@ namespace cmg{
     BaseMET() : sumEt_(-1) {}
 
     double sumEt() const {return sumEt_;}
-		
+    const GenMET& genMET() const {return genMET_;}
+    
   private:
     double sumEt_;
     
+    GenMET genMET_;
+
     template <class T> friend class BaseMETFactory;
     friend class BaseMETModificationFactory;
 	
