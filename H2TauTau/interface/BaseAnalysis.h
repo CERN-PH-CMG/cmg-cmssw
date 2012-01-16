@@ -30,8 +30,8 @@ using namespace std;
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "AnalysisDataFormats/CMGTools/interface/TriggerObject.h"
 
-#include "CMGTools/H2TauTau/interface/Sample.h"
 
+#include "CMGTools/H2TauTau/interface/Sample.h"
 
 
 class BaseAnalysis : public TNamed {
@@ -49,8 +49,13 @@ public:
   void setPrintFreq(int freq){ printFreq_=freq;}
   void setPupWeightName(string weightname){pupWeightName_=weightname;}
 
+
+  void createMCPileUP();
+
+
   virtual bool init();
   virtual bool createHistos(TString samplename="RelValZTT");
+
 
 protected:
 
@@ -88,6 +93,9 @@ protected:
   //useful functions
   edm::Handle< std::vector<reco::GenParticle> > genParticles_;
   void printMCGen(edm::Handle< std::vector<reco::GenParticle> > & genList);
+  
+  edm::Handle< std::vector<cmg::TriggerObject> > trigObjs_;
+  bool trigObjMatch(float eta, float phi, std::string filter);
 
 private:
 
