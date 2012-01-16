@@ -9,6 +9,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 from CMGTools.Common.eventContent.everything_cff import everything
 from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
 from CMGTools.Common.physicsObjectPrinter_cfi import physicsObjectPrinter
+from CMGTools.Production.datasetToSource import *
 
 ##########
 
@@ -23,7 +24,11 @@ print sep_line
 process.setName_("CMG")
 
 # Pick up the data files (H->ZZ skim).
-process.load("CMGTools.Common.sources.DoubleMu.Run2011A_HZZ_PromptSkim_v6.AOD.PAT_CMG_V2_4_0.source_cff")
+process.source = datasetToSource(
+    "cmgtools",
+    "/DoubleMu/Run2011A-HZZ-PromptSkim-v6/AOD/PAT_CMG_V2_4_0",
+    "patTuple_PF2PAT_.*root"
+    )
 
 # One can limit the number of files to avoid some of the CASTOR
 # overhead (i.e., faster start-up).
