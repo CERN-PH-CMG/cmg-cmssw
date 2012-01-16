@@ -29,7 +29,7 @@ process.setName_('LORTREE')
 
 process.source = cms.Source(
     "PoolSource",
-    fileNames = cms.untracked.vstring( 'file:h2TauTau_presel_tree_CMG.root' )
+    fileNames = cms.untracked.vstring( 'file:h2TauTau_fullsel_tree_CMG.root' )
     )
     
 # Sequence & path definition -------------------------------------------------

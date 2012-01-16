@@ -78,40 +78,63 @@ void MuTauStreamAnalyzer::beginJob(){
 
   tRandom_ = new TRandom3();
  
+  //OK (for a good agreement on jet quantities, cut pt>30 && eta>-4.5)
   jetsBtagHE_  = new std::vector< double >();
   jetsBtagHP_  = new std::vector< double >();
 
+  //DIFF: Lorenzo's charged hadron fraction distribution seems skewed
+  // (less charged hadrons than we do - are they computed before JEC?)
   jetsChEfraction_  = new std::vector< float >();
+  //BAD: PRIO3 can be dropped
   jetsChNfraction_  = new std::vector< float >();
+  //BAD: we don't have that yet, PRIO2
   jetMoments_       = new std::vector< float >();
 
+  //OK
   gammadR_       = new std::vector< float >();
   gammadEta_     = new std::vector< float >();
   gammadPhi_     = new std::vector< float >();
   gammaPt_       = new std::vector< float >();
 
+  //BAD: Jose needs to implement that
   tauXTriggers_= new std::vector< int >();
   triggerBits_ = new std::vector< int >();
 
+  //DIFF: Lorenzo has a bit more uncorrected jets at low pT, and at pT>30. 
+  // I think it's due to the lack of pile-up charged hadron subtraction.
   jetsP4_          = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
+  //OK
   jetsIDP4_        = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
+  //BAD: not yet filled
   jetsIDUpP4_      = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
   jetsIDDownP4_    = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
   jetsIDL1OffsetP4_= new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
+  //BAD: need to fill the genjets, PRIO1
   genJetsIDP4_     = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
 
-  diTauVisP4_   = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
+  //OK
+  diTauVisP4_   = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >(); 
+  //BAD: we don't have collinear approx yet, PRIO3
   diTauCAP4_    = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
   diTauICAP4_   = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
-  diTauSVfitP4_ = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
+  //DIFF** 
+  diTauSVfitP4_ = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >(); 
 
+  //OK
   diTauLegsP4_    = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
+  //? some variables show up, others don't.
   genDiTauLegsP4_ = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
+  //OK 0: raw MET; 1: recoil corrected
   METP4_          = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
+  //BAD: not yet filled 
   genMETP4_       = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
+  //OK
   genVP4_         = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
 
+  //OK (note: I have muons below 15 in my tree; for a good agreement, cut pt>15
   extraMuons_   = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
+
+  //BAD - we don't care. 
   pfMuons_      = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
 
   std::vector< float > Summer11Lumi ;
@@ -412,22 +435,39 @@ void MuTauStreamAnalyzer::beginJob(){
   tree_->Branch("extraMuons","std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >",&extraMuons_);
   tree_->Branch("pfMuons","std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >",&pfMuons_);
 
+  //OK
   tree_->Branch("sumEt",&sumEt_,"sumEt/F");
+  //N/A
   tree_->Branch("mTauTauMin",&mTauTauMin_,"mTauTauMin/F");
+  //DIFF (small difference due to recoil correction, I think)
   tree_->Branch("MtLeg1",&MtLeg1_,"MtLeg1/F");
+  //BAD lorenzo's pzeta is the actual pzeta
   tree_->Branch("pZeta",&pZeta_,"pZeta/F");
+  //OK
   tree_->Branch("pZetaVis",&pZetaVis_,"pZetaVis/F");
+  //N/A we don't have that yet
   tree_->Branch("pZetaSig",&pZetaSig_,"pZetaSig/F");
 
+  //COLINTD: PRIO1 put isolation variables in v2, not v1. implement baseline vetoes.
+
+  //DIFF Lorenzo's using a large direction veto - why?
   tree_->Branch("chIsoLeg1v1",&chIsoLeg1v1_,"chIsoLeg1v1/F");
+  //DIFF Lorenzo has a threshold at pt=1GeV
   tree_->Branch("nhIsoLeg1v1",&nhIsoLeg1v1_,"nhIsoLeg1v1/F");
+  //DIFF Lorenzo has a threshold at pt=1GeV
   tree_->Branch("phIsoLeg1v1",&phIsoLeg1v1_,"phIsoLeg1v1/F");
+  //BAD, PRIO2
   tree_->Branch("elecIsoLeg1v1",&elecIsoLeg1v1_,"elecIsoLeg1v1/F");
+  //BAD, PRIO2
   tree_->Branch("muIsoLeg1v1",&muIsoLeg1v1_,"muIsoLeg1v1/F");
+  //OK
   tree_->Branch("chIsoPULeg1v1",&chIsoPULeg1v1_,"chIsoPULeg1v1/F");
+  //BAD, PRIO1
   tree_->Branch("nhIsoPULeg1v1",&nhIsoPULeg1v1_,"nhIsoPULeg1v1/F");
+  //BAD, PRIO1
   tree_->Branch("phIsoPULeg1v1",&phIsoPULeg1v1_,"phIsoPULeg1v1/F");
 
+  //PRIO3, I don't have v2
   tree_->Branch("chIsoLeg1v2",&chIsoLeg1v2_,"chIsoLeg1v2/F");
   tree_->Branch("nhIsoLeg1v2",&nhIsoLeg1v2_,"nhIsoLeg1v2/F");
   tree_->Branch("phIsoLeg1v2",&phIsoLeg1v2_,"phIsoLeg1v2/F");
@@ -437,57 +477,104 @@ void MuTauStreamAnalyzer::beginJob(){
   tree_->Branch("nhIsoPULeg1v2",&nhIsoPULeg1v2_,"nhIsoPULeg1v2/F");
   tree_->Branch("phIsoPULeg1v2",&phIsoPULeg1v2_,"phIsoPULeg1v2/F");
 
+  //OK
   tree_->Branch("chIsoLeg2",&chIsoLeg2_,"chIsoLeg2/F");
+  //OK
   tree_->Branch("nhIsoLeg2",&nhIsoLeg2_,"nhIsoLeg2/F");
+  //OK
   tree_->Branch("phIsoLeg2",&phIsoLeg2_,"phIsoLeg2/F");
+  //OK
   tree_->Branch("dxy1",&dxy1_,"dxy1/F");
+  //DIFF, we have a more spiky plot than Lorenzo
   tree_->Branch("dxy2",&dxy2_,"dxy2/F");
+  //OK
   tree_->Branch("dz1",&dz1_,"dz1/F");
+  //OK
   tree_->Branch("dz2",&dz2_,"dz2/F");
 
+  //OK
   tree_->Branch("run",&run_,"run/l");
+  //OK
   tree_->Branch("event",&event_,"event/l");
+  //OK
   tree_->Branch("lumi",&lumi_,"lumi/l");
+  //DIFF??
   tree_->Branch("numPV",&numPV_,"numPV/F");
+  //DIFF : I guess I have a looser selection upstream
   tree_->Branch("numOfDiTaus",&numOfDiTaus_,"numOfDiTaus/I");
+  //OK (once isolation is applied)
   tree_->Branch("numOfLooseIsoDiTaus",&numOfLooseIsoDiTaus_,"numOfLooseIsoDiTaus/I");
+  //BAD, PRIO1! Looks like I have a bad determination of the decay mode.
   tree_->Branch("decayMode",&decayMode_,"decayMode/I");
+  //OK
   tree_->Branch("tightestHPSWP",&tightestHPSWP_,"tightestHPSWP/I");
+  //OK
   tree_->Branch("tightestHPSDBWP",&tightestHPSDBWP_,"tightestHPSDBWP/I");
+  //OK
   tree_->Branch("visibleTauMass",&visibleTauMass_,"visibleTauMass/F");
 
+  //BAD: I don't have that
   tree_->Branch("leadPFChargedHadrTrackPt",&leadPFChargedHadrTrackPt_,"leadPFChargedHadrTrackPt/F");
+  //BAD: I don't have that
   tree_->Branch("leadPFChargedHadrTrackP", &leadPFChargedHadrTrackP_,"leadPFChargedHadrTrackP/F");
+  //OK 
   tree_->Branch("leadPFChargedHadrPt",&leadPFChargedHadrPt_,"leadPFChargedHadrPt/F");
+  //OK 
   tree_->Branch("leadPFChargedHadrP", &leadPFChargedHadrP_,"leadPFChargedHadrP/F");
+  //OK 
   tree_->Branch("leadPFChargedHadrMva",&leadPFChargedHadrMva_,"leadPFChargedHadrMva/F");
+  //OK 
   tree_->Branch("leadPFChargedHadrHcalEnergy",&leadPFChargedHadrHcalEnergy_,"leadPFChargedHadrHcalEnergy/F");
+  //OK 
   tree_->Branch("leadPFChargedHadrEcalEnergy",&leadPFChargedHadrEcalEnergy_,"leadPFChargedHadrEcalEnergy/F");
+
+  //BAD
   tree_->Branch("leadPFCandMva",&leadPFCandMva_,"leadPFCandMva/F");
+  //BAD
   tree_->Branch("leadPFCandHcalEnergy",&leadPFCandHcalEnergy_,"leadPFCandHcalEnergy/F");
+  //BAD
   tree_->Branch("leadPFCandEcalEnergy",&leadPFCandEcalEnergy_,"leadPFCandEcalEnergy/F");
+  //OK
   tree_->Branch("leadPFCandPt",&leadPFCandPt_,"leadPFCandPt/F");
+  //OK
   tree_->Branch("leadPFCandP",&leadPFCandP_,"leadPFCandP/F");
+  //BAD
   tree_->Branch("emFraction",&emFraction_,"emFraction/F");
+  //BAD
   tree_->Branch("hasGsf",&hasGsf_,"hasGsf/F");
+  //DIFF (small differences... Lorenzo has a charge selection maybe?)
   tree_->Branch("signalPFChargedHadrCands",&signalPFChargedHadrCands_,"signalPFChargedHadrCands/I");
+  //OK
   tree_->Branch("signalPFGammaCands",&signalPFGammaCands_,"signalPFGammaCands/I");
 
 
+  //OK
   tree_->Branch("isTauLegMatched",&isTauLegMatched_,"isTauLegMatched/I");
+  //OK
   tree_->Branch("isMuLegMatched",&isMuLegMatched_,"isMuLegMatched/I");
+  //OK
   tree_->Branch("muFlag",&muFlag_,"muFlag/I");
+  //BAD
   tree_->Branch("hasKft",&hasKft_,"hasKft/I");
 
+  //OK
   tree_->Branch("diTauCharge",&diTauCharge_,"diTauCharge/F");
+  //DIFF (I guess due to charged hadron pile-up subtraction)
   tree_->Branch("rhoFastJet",&rhoFastJet_,"rhoFastJet/F");
+  //BAD we don't have that - PRIO2
   tree_->Branch("rhoNeutralFastJet",&rhoNeutralFastJet_,"rhoNeutralFastJet/F");
+  //COLIN what is this? Forget about it
   tree_->Branch("mcPUweight",&mcPUweight_,"mcPUweight/F");
+  //OK
   tree_->Branch("nPUVertices",&nPUVertices_,"nPUVertices/I");
+  //Not in Lorenzo's tree
   tree_->Branch("nPUVerticesM1",&nPUVerticesM1_,"nPUVerticesM1/I");
+  //Not in Lorenzo's tree
   tree_->Branch("nPUVerticesP1",&nPUVerticesP1_,"nPUVerticesP1/I");
-
+  
+  //OK
   tree_->Branch("embeddingWeight",&embeddingWeight_,"embeddingWeight/F");
+  //does not work in mine, and not in Lorenzo's tree. 
   tree_->Branch("nPUtruth",  &nPUtruth_,  "nPUtruth/I");
 
 
@@ -973,6 +1060,7 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
   
   diTauCharge_ = theDiTau->charge();
   METP4_->push_back((*rawMet)[0].p4()); // raw met
+  //COLINTD PRIO1 : read recoil corrected MET (from diTau?)
   METP4_->push_back((*met)[0].p4());    // possibly rescaled met
   //COLINTD need the genMET - PRIO2
 //   if(isMC_) 
@@ -1215,22 +1303,22 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
 // 	       << " with pt " << (leg1->genParticleRefs())[l]->pt()
 // 	       << endl;
 // 	}
-      }
+//   }
     }
-
-  //COLIN: access gen leptons from the CMGTuple collection of leptons with status1.
+    
+    //COLIN: access gen leptons from the CMGTuple collection of leptons with status1.
     bool leg2IsFromMu = false;
     math::XYZTLorentzVectorD genMuP4(0,0,0,0);
     for(unsigned int k = 0; k < genLeptonsStatus1->size(); k ++){
-      if( abs((*genParticles)[k].pdgId()) != 13  || (*genParticles)[k].status()!=3 )
-        continue;
-      if(Geom::deltaR( (*genParticles)[k].p4(),leg2->p4())<0.15){
-        leg2IsFromMu = true;
-        genMuP4 = (*genParticles)[k].p4();
+      if( abs((*genLeptonsStatus1)[k].pdgId()) != 13  || (*genLeptonsStatus1)[k].status()!=3 )
+	continue;
+      if(Geom::deltaR( (*genLeptonsStatus1)[k].p4(),leg2->p4())<0.15){
+	leg2IsFromMu = true;
+	genMuP4 = (*genLeptonsStatus1)[k].p4();
       }
     }
-
-  //COLIN : access the genjet information from the cmg::Tau
+    
+    //COLIN : access the genjet information from the cmg::Tau
     std::string genDecMode = leg2->genJetDecayMode();
     if( ! genDecMode.empty() )
       genDiTauLegsP4_->push_back(leg2->genJetp4());
@@ -1269,7 +1357,7 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
 // 	     << endl;
 //       }
 //     }
-//   }
+  }
 
   //COLIN: here, only computing the decay mode, can access it directly.
 //   if((leg2->signalPFChargedHadrCands()).size()==1 && (leg2->signalPFGammaCands()).size()==0) decayMode_ = 0; 
@@ -1473,6 +1561,9 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
 //     leg1->isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.4,vetos2010PhotonLeg1).first;
   phIsoPULeg1v1_ = 0; //COLINTD - beware vetoes!!! PRIO1
   
+  //COLINTD: check isolation definition of muons
+  //COLINTD: implement Daniele's settings in PF2PAT
+  //COLINTD: after momentum rescaling of physics objects, need to recompute the MET (provide module)
 
   //COLIN: dumping V2.
 //   chIsoLeg1v2_   = 
@@ -1594,10 +1685,8 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
   std::map<double, math::XYZTLorentzVectorD ,MuTauStreamAnalyzer::more> sortedJetsIDDown;
   std::map<double, math::XYZTLorentzVectorD ,MuTauStreamAnalyzer::more> sortedGenJetsID;
   std::map<double, std::pair<float,float> ,  MuTauStreamAnalyzer::more> bTaggers;
-  std::map<double, std::pair<float,float> ,  MuTauStreamAnalyzer::more> jetPVassociation;
+  std::map<double, std::pair<float,float> ,  MuTauStreamAnalyzer::more> sortedJetsIDFracs;
   std::map<double, std::pair<float,float> ,  MuTauStreamAnalyzer::more> jetMoments;
-  
-
 
   for(unsigned int it = 0; it < jets->size() ; it++){
 
@@ -1675,9 +1764,10 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
       continue;
     }
 
-    //COLINB4 : what is this?
-    //Raw jets 
-    //     sortedJets.insert( make_pair( newJet->correctedJet("Uncorrected").p4().Pt() ,newJet->correctedJet("Uncorrected").p4() ) );
+    //COLIN storing raw jets
+    reco::Candidate::LorentzVector p4uncorrected =   newJet->rawFactor() * newJet->p4();
+    sortedJets.insert( make_pair( p4uncorrected.pt() ,
+				  p4uncorrected ) );
 
     if(newJet->p4().Pt() < minCorrPt_) continue;
 
@@ -1714,6 +1804,9 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
 	   << endl;
     
     sortedJetsID.insert(     make_pair( newJet->p4().Pt() ,  newJet->p4() ) );
+    sortedJetsIDFracs.insert(     make_pair( newJet->p4().Pt() ,  
+					     make_pair( newJet->component(PFCandidate::h).fraction(), 
+							newJet->component(PFCandidate::h0).fraction() ) ) );
     sortedJetsIDUp.insert(   make_pair( newJet->p4().Pt() ,  newJet->p4()*(1+shift) ) );
     sortedJetsIDDown.insert( make_pair( newJet->p4().Pt() ,  newJet->p4()*(1-shift) ) );
 
@@ -1764,10 +1857,11 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
     jetsBtagHE_->push_back( (it->second).first  );
     jetsBtagHP_->push_back( (it->second).second );
   }
-//   for(std::map<double, std::pair<float,float> >::iterator it = jetPVassociation.begin(); it != jetPVassociation.end() ; it++){
-//     jetsChEfraction_->push_back( (it->second).first  );
-//     jetsChNfraction_->push_back( (it->second).second );
-//   }
+  for(std::map<double, std::pair<float,float> >::iterator it = sortedJetsIDFracs.begin(); 
+      it != sortedJetsIDFracs.end() ; it++){
+    jetsChEfraction_->push_back( (it->second).first  );
+    jetsChNfraction_->push_back( 0 );
+  }
   for(std::map<double, std::pair<float,float> >::iterator it = jetMoments.begin(); it != jetMoments.end() ; it++){
     jetMoments_->push_back( (it->second).first  );
     jetMoments_->push_back( (it->second).second );
