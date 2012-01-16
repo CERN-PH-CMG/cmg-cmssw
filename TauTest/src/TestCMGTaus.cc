@@ -146,15 +146,15 @@ void TestCMGTaus::testTau(TString inputtag){
 
       HLeadChargedHadrPt.Fill(cand->leadChargedHadrPt());
       HLeadChargedHadrCharge.Fill(cand->leadChargedHadrCharge());
-      HLeadChargedHadrEcalEnergy.Fill(cand->leadChargedHadrECalEnergy());
-      HLeadChargedHadrHcalEnergy.Fill(cand->leadChargedHadrHCalEnergy());
+      HLeadChargedHadrEcalEnergy.Fill(cand->leadChargedHadrEcalEnergy());
+      HLeadChargedHadrHcalEnergy.Fill(cand->leadChargedHadrHcalEnergy());
       HVertex.Fill(cand->leadChargedHadrVertex().x(),cand->leadChargedHadrVertex().y());
       HVertexDiff.Fill(cand->leadChargedHadrVertex().x() - primVtx.x(),cand->leadChargedHadrVertex().y() - primVtx.y());
       HVertexZDiff.Fill(cand->dz());
       HVertexRDiff.Fill(cand->dxy());
       
       HLeadNeutralCandPt.Fill(cand->leadNeutralCandPt());    
-      HLeadNeutralCandEcalEnergy.Fill(cand->leadNeutralCandECalEnergy());    
+      HLeadNeutralCandEcalEnergy.Fill(cand->leadNeutralCandEcalEnergy());    
     
         
       if(cand->decayMode()==0)HDecaymode.Fill(0);
