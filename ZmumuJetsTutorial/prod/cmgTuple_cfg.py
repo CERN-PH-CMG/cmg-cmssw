@@ -22,8 +22,8 @@ print sep_line
 
 process.setName_("CMG")
 
-# Pick up a di-muon data file (EWK Z skim)
-process.load("CMGTools.Common.sources.DoubleMu.Run2011A_ZMu_PromptSkim_v6.RAW_RECO.PAT_CMG_V2_3_0_JecPileUpDecoupled.source_cff")
+# Pick up the data files (H->ZZ skim).
+process.load("CMGTools.Common.sources.DoubleMu.Run2011A_HZZ_PromptSkim_v6.AOD.PAT_CMG_V2_4_0.source_cff")
 
 # One can limit the number of files to avoid some of the CASTOR
 # overhead (i.e., faster start-up).
