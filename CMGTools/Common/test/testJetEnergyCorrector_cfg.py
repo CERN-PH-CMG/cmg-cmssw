@@ -4,7 +4,8 @@ import FWCore.ParameterSet.Config as cms
 
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'GR_R_42_V19::All'
+#process.GlobalTag.globaltag = 'GR_R_42_V23::All'  # for data
+process.GlobalTag.globaltag = 'START42_V17::All'  # for MC
 
 sep_line = "-" * 50
 print
