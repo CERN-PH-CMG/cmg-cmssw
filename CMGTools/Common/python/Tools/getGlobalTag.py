@@ -8,7 +8,9 @@ def getGlobalTag(runOnMC):
     if runOnMC:
         #default to startup, but use mc otherwise
         #return autoCond.get('startup',autoCond['mc'])
-        return 'START42_V13::All'
+        #return 'START42_V13::All'
+        return 'START42_V17::All'
     else:
         #return autoCond['com10']
-        return 'GR_R_42_V19::All'
+        #return 'GR_R_42_V19::All'
+        return 'GR_R_42_V23::All'
