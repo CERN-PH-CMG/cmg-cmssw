@@ -1,6 +1,6 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_ptd_05Jan12'),
   ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'jose_TrigObjs_9Jan12'),
-  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_fromWill_09Jan12'),
+  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'jose17jan12'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_mcyield_29Nov11'),
   ('CMGTools/ZmumuJetsTutorial', 'UserCode/CMG/CMGTools/ZmumuJetsTutorial', 'cbern_tutorial_12Oct11'),
   ('CommonTools/ParticleFlow', 'CommonTools/ParticleFlow', 'B4_2_X_cbern_dbetaoff_04Jan12_PFPileUpSpeed'),
