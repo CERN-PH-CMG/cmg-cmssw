@@ -29,7 +29,17 @@ process.setName_('LORTREE')
 
 process.source = cms.Source(
     "PoolSource",
-    fileNames = cms.untracked.vstring( 'file:h2TauTau_presel_tree_CMG.root' )
+    fileNames = cms.untracked.vstring(
+'file:/afs/cern.ch/user/c/cbern/localscratch/Analysis/Susy/Work/Lorenzo/V2_5_0_Test_v2/Job_0/h2TauTau_fullsel_tree_CMG.root',
+'file:/afs/cern.ch/user/c/cbern/localscratch/Analysis/Susy/Work/Lorenzo/V2_5_0_Test_v2/Job_1/h2TauTau_fullsel_tree_CMG.root',
+'file:/afs/cern.ch/user/c/cbern/localscratch/Analysis/Susy/Work/Lorenzo/V2_5_0_Test_v2/Job_2/h2TauTau_fullsel_tree_CMG.root',
+'file:/afs/cern.ch/user/c/cbern/localscratch/Analysis/Susy/Work/Lorenzo/V2_5_0_Test_v2/Job_3/h2TauTau_fullsel_tree_CMG.root',
+'file:/afs/cern.ch/user/c/cbern/localscratch/Analysis/Susy/Work/Lorenzo/V2_5_0_Test_v2/Job_4/h2TauTau_fullsel_tree_CMG.root',
+'file:/afs/cern.ch/user/c/cbern/localscratch/Analysis/Susy/Work/Lorenzo/V2_5_0_Test_v2/Job_5/h2TauTau_fullsel_tree_CMG.root',
+'file:/afs/cern.ch/user/c/cbern/localscratch/Analysis/Susy/Work/Lorenzo/V2_5_0_Test_v2/Job_6/h2TauTau_fullsel_tree_CMG.root',
+'file:/afs/cern.ch/user/c/cbern/localscratch/Analysis/Susy/Work/Lorenzo/V2_5_0_Test_v2/Job_7/h2TauTau_fullsel_tree_CMG.root',
+
+    )
     )
     
 # Sequence & path definition -------------------------------------------------
