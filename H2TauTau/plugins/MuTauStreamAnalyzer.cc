@@ -127,7 +127,7 @@ void MuTauStreamAnalyzer::beginJob(){
   genDiTauLegsP4_ = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
   //OK 0: raw MET; 1: recoil corrected
   METP4_          = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
-  //BAD???
+  //OK
   genMETP4_       = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
   //OK
   genVP4_         = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
@@ -468,14 +468,21 @@ void MuTauStreamAnalyzer::beginJob(){
   //BAD, PRIO1
   tree_->Branch("phIsoPULeg1v1",&phIsoPULeg1v1_,"phIsoPULeg1v1/F");
 
-  //PRIO3, I don't have v2
+  //OK
   tree_->Branch("chIsoLeg1v2",&chIsoLeg1v2_,"chIsoLeg1v2/F");
+  //OK
   tree_->Branch("nhIsoLeg1v2",&nhIsoLeg1v2_,"nhIsoLeg1v2/F");
+  //OK
   tree_->Branch("phIsoLeg1v2",&phIsoLeg1v2_,"phIsoLeg1v2/F");
+  //BAD, PRIO2
   tree_->Branch("elecIsoLeg1v2",&elecIsoLeg1v2_,"elecIsoLeg1v2/F");
+  //BAD, PRIO2
   tree_->Branch("muIsoLeg1v2",&muIsoLeg1v2_ ,"muIsoLeg1v2/F");
+  //DIFF, but I don't know what this is for.
   tree_->Branch("chIsoPULeg1v2",&chIsoPULeg1v2_,"chIsoPULeg1v2/F");
+  //OK
   tree_->Branch("nhIsoPULeg1v2",&nhIsoPULeg1v2_,"nhIsoPULeg1v2/F");
+  //OK
   tree_->Branch("phIsoPULeg1v2",&phIsoPULeg1v2_,"phIsoPULeg1v2/F");
 
   //OK
@@ -505,7 +512,7 @@ void MuTauStreamAnalyzer::beginJob(){
   tree_->Branch("numOfDiTaus",&numOfDiTaus_,"numOfDiTaus/I");
   //OK (once isolation is applied)
   tree_->Branch("numOfLooseIsoDiTaus",&numOfLooseIsoDiTaus_,"numOfLooseIsoDiTaus/I");
-  //BAD, PRIO1! Looks like I have a bad determination of the decay mode.
+  //OK
   tree_->Branch("decayMode",&decayMode_,"decayMode/I");
   //OK
   tree_->Branch("tightestHPSWP",&tightestHPSWP_,"tightestHPSWP/I");
@@ -1566,28 +1573,28 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
   // ... but that's not what Lorenzo is using ???
 //   chIsoLeg1v1_   = 
 //     leg1->isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4,vetos2010ChargedLeg1).first;
-  chIsoLeg1v1_   = leg1->chargedAllIso();
+  chIsoLeg1v2_   = leg1->chargedAllIso();
 //   nhIsoLeg1v1_ = 
 //     leg1->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4,vetos2010NeutralLeg1).first;
-  nhIsoLeg1v1_   = leg1->neutralHadronIso();
+  nhIsoLeg1v2_   = leg1->neutralHadronIso();
 //   phIsoLeg1v1_ = 
 //     leg1->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4,vetos2010PhotonLeg1).first;
-  phIsoLeg1v1_   = leg1->photonIso();
+  phIsoLeg1v2_   = leg1->photonIso();
 //   elecIsoLeg1v1_ = 
 //     leg1->isoDeposit(pat::User3Iso)->depositAndCountWithin(0.4,vetos2010ChargedLeg1).first;
-  elecIsoLeg1v1_ = 0; //COLINTD - PRIO2
+  elecIsoLeg1v2_ = 0; //COLINTD - PRIO2
 //   muIsoLeg1v1_   = 
 //     leg1->isoDeposit(pat::User2Iso)->depositAndCountWithin(0.4,vetos2010ChargedLeg1).first;
-  muIsoLeg1v1_ = 0; //COLINTD - PRIO2
+  muIsoLeg1v2_ = 0; //COLINTD - PRIO2
 //   chIsoPULeg1v1_ = 
 //     leg1->isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.4,vetos2010ChargedLeg1).first;
-  chIsoPULeg1v1_ = leg1->puChargedHadronIso(); //COLIN: not used for dbeta corrections
+  chIsoPULeg1v2_ = leg1->puChargedHadronIso(); //COLIN: not used for dbeta corrections
 //   nhIsoPULeg1v1_ = 
 //     leg1->isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.4,vetos2010NeutralLeg1).first;
-  nhIsoPULeg1v1_ = 0; //COLINTD - beware vetoes!!! PRIO1
+  nhIsoPULeg1v2_ = chIsoPULeg1v2_; //COLINTD - beware vetoes!!! PRIO1
 //   phIsoPULeg1v1_ = 
 //     leg1->isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.4,vetos2010PhotonLeg1).first;
-  phIsoPULeg1v1_ = 0; //COLINTD - beware vetoes!!! PRIO1
+  phIsoPULeg1v2_ = chIsoPULeg1v2_; //COLINTD - beware vetoes!!! PRIO1
   
   //COLINTD: check isolation definition of muons
   //COLINTD: implement Daniele's settings in PF2PAT
