@@ -1,5 +1,5 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_pzeta_17Jan11'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_genMET_17Jan11'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'palencia_newGT_17jan12'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_lorenzo_17Jan12'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'jose17jan12'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_mcyield_29Nov11'),
