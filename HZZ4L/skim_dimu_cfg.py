@@ -71,8 +71,7 @@ if runOnMC:
 outFileNameExt = 'CMG'
 basicName = 'tree_dimu_%s.root' %  outFileNameExt
 process.out.fileName = cms.untracked.string( basicName )
-from CMGTools.H2TauTau.eventContent.tauMu_cff import tauMu as tauMuEventContent
-process.out.outputCommands.extend( tauMuEventContent )
+process.out.outputCommands.append( 'keep *' )
 process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('p') )
 
 
