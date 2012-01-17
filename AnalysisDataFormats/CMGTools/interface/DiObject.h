@@ -87,9 +87,12 @@ class DiObject : public AbstractPhysicsObject{
  
     ///The lepton projection (LP) variable
     Double_t lp() const { return lp_; }
-
+    
     ///The pzeta variable, for H->tau tau
-    double pZeta() const { return pZetaVis_+pZetaMET_ - 1.5*pZetaVis_;}
+    double pZeta() const {return pZetaMET_ + pZetaVis_;}
+
+    ///The pzeta-based discriminator variable, for H->tau tau
+    double pZetaDisc() const { return pZetaVis_+pZetaMET_ - 1.5*pZetaVis_;}
 
     ///The pzeta-MET variable, for H->tau tau
     double pZetaMET() const { return pZetaMET_;}
