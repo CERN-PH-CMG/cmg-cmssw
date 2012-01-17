@@ -135,7 +135,7 @@ void MuTauStreamAnalyzer::beginJob(){
   //OK (note: I have muons below 15 in my tree; for a good agreement, cut pt>15
   extraMuons_   = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
 
-  //BAD - but we don't care. 
+  //BAD: PRIO3 - but we don't care. 
   pfMuons_      = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
 
   std::vector< float > Summer11Lumi ;
@@ -442,7 +442,7 @@ void MuTauStreamAnalyzer::beginJob(){
   tree_->Branch("mTauTauMin",&mTauTauMin_,"mTauTauMin/F");
   //DIFF (small difference due to recoil correction, I think)
   tree_->Branch("MtLeg1",&MtLeg1_,"MtLeg1/F");
-  //BAD lorenzo's pzeta is the actual pzeta
+  //BAD??? lorenzo's pzeta is the actual pzeta
   tree_->Branch("pZeta",&pZeta_,"pZeta/F");
   //OK
   tree_->Branch("pZetaVis",&pZetaVis_,"pZetaVis/F");
@@ -1071,7 +1071,6 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
   METP4_->push_back((*rawMet)[0].p4()); // raw met
   //COLINTD PRIO1 : read recoil corrected MET (from diTau?)
   METP4_->push_back((*met)[0].p4());    // possibly rescaled met
-  //COLINTD test that! 
   if(isMC_) 
     genMETP4_->push_back( (*rawMet)[0].genMET() );
   sumEt_  = (*met)[0].sumEt();
@@ -1373,7 +1372,27 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
 //   else if((leg2->signalPFChargedHadrCands()).size()==1 && (leg2->signalPFGammaCands()).size()>0)  decayMode_ = 1; 
 //   else if((leg2->signalPFChargedHadrCands()).size()==3) decayMode_ = 2; 
 //   else  decayMode_ = -99;
-  
+  // cout<<"decay mode"<<leg2->decayMode()<<endl;
+  switch( leg2->decayMode() ) {
+  case 0: 
+    decayMode_ = 0;
+    break;
+  case 1: 
+  case 2: 
+  case 3: 
+  case 4: 
+    decayMode_ = 1;
+    break;
+  case 10: 
+  case 11: 
+  case 12: 
+  case 13: 
+  case 14:
+    decayMode_ = 2;
+    break;
+  default:
+    decayMode_ = -99;
+  }
 
   //COLIN needed for control. ok added the signal cands to the cmg::Tau in a light format.
   // btw I don't like the if... is there any way to know with respect to what 
