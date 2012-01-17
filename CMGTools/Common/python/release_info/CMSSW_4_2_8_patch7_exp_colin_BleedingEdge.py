@@ -1,7 +1,7 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_pzeta_17Jan11'),
   ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_genMET_17Jan11'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_lorenzo_17Jan12'),
-  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_13Jan12'),
+  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'jose17jan12'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_mcyield_29Nov11'),
   ('CMGTools/ZmumuJetsTutorial', 'UserCode/CMG/CMGTools/ZmumuJetsTutorial', 'cbern_tutorial_12Oct11'),
   ('CommonTools/ParticleFlow', 'CommonTools/ParticleFlow', 'B4_2_X_V00-03-01'),
