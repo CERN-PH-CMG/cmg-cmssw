@@ -442,30 +442,21 @@ void MuTauStreamAnalyzer::beginJob(){
   tree_->Branch("mTauTauMin",&mTauTauMin_,"mTauTauMin/F");
   //DIFF (small difference due to recoil correction, I think)
   tree_->Branch("MtLeg1",&MtLeg1_,"MtLeg1/F");
-  //BAD??? lorenzo's pzeta is the actual pzeta
+  //OK
   tree_->Branch("pZeta",&pZeta_,"pZeta/F");
   //OK
   tree_->Branch("pZetaVis",&pZetaVis_,"pZetaVis/F");
   //N/A we don't have that yet
   tree_->Branch("pZetaSig",&pZetaSig_,"pZetaSig/F");
 
-  //COLINTD: PRIO1 put isolation variables in v2, not v1. implement baseline vetoes.
-
-  //DIFF Lorenzo's using a large direction veto - why?
+  //COLIN we don't care about v1 (2010 settings)
   tree_->Branch("chIsoLeg1v1",&chIsoLeg1v1_,"chIsoLeg1v1/F");
-  //DIFF Lorenzo has a threshold at pt=1GeV
   tree_->Branch("nhIsoLeg1v1",&nhIsoLeg1v1_,"nhIsoLeg1v1/F");
-  //DIFF Lorenzo has a threshold at pt=1GeV
   tree_->Branch("phIsoLeg1v1",&phIsoLeg1v1_,"phIsoLeg1v1/F");
-  //BAD, PRIO2
   tree_->Branch("elecIsoLeg1v1",&elecIsoLeg1v1_,"elecIsoLeg1v1/F");
-  //BAD, PRIO2
   tree_->Branch("muIsoLeg1v1",&muIsoLeg1v1_,"muIsoLeg1v1/F");
-  //OK
   tree_->Branch("chIsoPULeg1v1",&chIsoPULeg1v1_,"chIsoPULeg1v1/F");
-  //BAD, PRIO1
   tree_->Branch("nhIsoPULeg1v1",&nhIsoPULeg1v1_,"nhIsoPULeg1v1/F");
-  //BAD, PRIO1
   tree_->Branch("phIsoPULeg1v1",&phIsoPULeg1v1_,"phIsoPULeg1v1/F");
 
   //OK
@@ -521,9 +512,9 @@ void MuTauStreamAnalyzer::beginJob(){
   //OK
   tree_->Branch("visibleTauMass",&visibleTauMass_,"visibleTauMass/F");
 
-  //BAD: I don't have that
+  //BAD: PRIO2 I don't have that 
   tree_->Branch("leadPFChargedHadrTrackPt",&leadPFChargedHadrTrackPt_,"leadPFChargedHadrTrackPt/F");
-  //BAD: I don't have that
+  //BAD: PRIO2 I don't have that
   tree_->Branch("leadPFChargedHadrTrackP", &leadPFChargedHadrTrackP_,"leadPFChargedHadrTrackP/F");
   //OK 
   tree_->Branch("leadPFChargedHadrPt",&leadPFChargedHadrPt_,"leadPFChargedHadrPt/F");
@@ -536,19 +527,19 @@ void MuTauStreamAnalyzer::beginJob(){
   //OK 
   tree_->Branch("leadPFChargedHadrEcalEnergy",&leadPFChargedHadrEcalEnergy_,"leadPFChargedHadrEcalEnergy/F");
 
-  //BAD
+  //BAD: PRIO2 
   tree_->Branch("leadPFCandMva",&leadPFCandMva_,"leadPFCandMva/F");
-  //BAD
+  //BAD: PRIO2 
   tree_->Branch("leadPFCandHcalEnergy",&leadPFCandHcalEnergy_,"leadPFCandHcalEnergy/F");
-  //BAD
+  //BAD: PRIO2 
   tree_->Branch("leadPFCandEcalEnergy",&leadPFCandEcalEnergy_,"leadPFCandEcalEnergy/F");
   //OK
   tree_->Branch("leadPFCandPt",&leadPFCandPt_,"leadPFCandPt/F");
   //OK
   tree_->Branch("leadPFCandP",&leadPFCandP_,"leadPFCandP/F");
-  //BAD
+  //BAD: PRIO2 
   tree_->Branch("emFraction",&emFraction_,"emFraction/F");
-  //BAD
+  //BAD: PRIO2 
   tree_->Branch("hasGsf",&hasGsf_,"hasGsf/F");
   //DIFF (small differences... Lorenzo has a charge selection maybe?)
   tree_->Branch("signalPFChargedHadrCands",&signalPFChargedHadrCands_,"signalPFChargedHadrCands/I");
@@ -562,7 +553,7 @@ void MuTauStreamAnalyzer::beginJob(){
   tree_->Branch("isMuLegMatched",&isMuLegMatched_,"isMuLegMatched/I");
   //OK
   tree_->Branch("muFlag",&muFlag_,"muFlag/I");
-  //BAD
+  //BAD: PRIO2 
   tree_->Branch("hasKft",&hasKft_,"hasKft/I");
 
   //OK
