@@ -64,7 +64,7 @@ class savannahConnect:
             for i in tags:
                 tag = i.split(" ")[0]
                 package = i.split(" ")[1]
-                detailString +="_"+tag+"_ -- "+package +"\n"
+                detailString +="_"+tag+"_ - "+package +"\n"
             
         if files!=None:
             detailString+="\n*Root files*:\n"
