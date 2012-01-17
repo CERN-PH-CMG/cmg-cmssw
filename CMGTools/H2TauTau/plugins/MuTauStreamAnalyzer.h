@@ -62,6 +62,7 @@ class MuTauStreamAnalyzer : public edm::EDAnalyzer{
 
   edm::InputTag diTauTag_;
   edm::InputTag jetsTag_;
+  edm::InputTag genJetsTag_;
   edm::InputTag newJetsTag_;
   edm::InputTag metTag_;
   edm::InputTag rawMetTag_;

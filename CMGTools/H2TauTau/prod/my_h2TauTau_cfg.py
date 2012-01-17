@@ -95,7 +95,7 @@ process.source.fileNames.extend([
                 'file:2011/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_4_2_Test_v2/tree_CMG_12.root',
 ])
 
-
+process.source.fileNames = ['file:tree_CMG.root']
 
 # restricting the number of files to process to a given number
 if numberOfFilesToProcess>0:

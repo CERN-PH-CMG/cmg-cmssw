@@ -29,7 +29,7 @@ process.setName_('LORTREE')
 
 process.source = cms.Source(
     "PoolSource",
-    fileNames = cms.untracked.vstring( 'file:h2TauTau_fullsel_tree_CMG.root' )
+    fileNames = cms.untracked.vstring( 'file:h2TauTau_presel_tree_CMG.root' )
     )
     
 # Sequence & path definition -------------------------------------------------
@@ -48,6 +48,7 @@ process.muTauStreamAnalyzer = cms.EDAnalyzer(
     vertices       = cms.InputTag("offlinePrimaryVertices"),
     triggerResults = cms.InputTag("patTriggerEvent"),
     isMC           = cms.bool(runOnMC),
+    genJets        = cms.InputTag("genJetSel"), 
     deltaRLegJet   = cms.untracked.double(0.5),
     minCorrPt      = cms.untracked.double(15.),
     minJetID       = cms.untracked.double(0.5), # 1=loose,2=medium,3=tight

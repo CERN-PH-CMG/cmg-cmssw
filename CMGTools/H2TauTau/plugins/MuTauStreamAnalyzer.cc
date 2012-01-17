@@ -65,6 +65,7 @@ MuTauStreamAnalyzer::MuTauStreamAnalyzer(const edm::ParameterSet & iConfig){
   verticesTag_       = iConfig.getParameter<edm::InputTag>("vertices");
   triggerResultsTag_ = iConfig.getParameter<edm::InputTag>("triggerResults"); 
   isMC_              = iConfig.getParameter<bool>("isMC");
+  genJetsTag_        = iConfig.getParameter<edm::InputTag>("genJets"); 
   deltaRLegJet_      = iConfig.getUntrackedParameter<double>("deltaRLegJet",0.3);
   minCorrPt_         = iConfig.getUntrackedParameter<double>("minCorrPt",10.);
   minJetID_          = iConfig.getUntrackedParameter<double>("minJetID",0.5);
@@ -87,7 +88,7 @@ void MuTauStreamAnalyzer::beginJob(){
   jetsChEfraction_  = new std::vector< float >();
   //BAD: PRIO3 can be dropped
   jetsChNfraction_  = new std::vector< float >();
-  //BAD: we don't have that yet, PRIO2
+  //BAD: PRIO2 we don't have that yet
   jetMoments_       = new std::vector< float >();
 
   //OK
@@ -96,7 +97,7 @@ void MuTauStreamAnalyzer::beginJob(){
   gammadPhi_     = new std::vector< float >();
   gammaPt_       = new std::vector< float >();
 
-  //BAD: Jose needs to implement that
+  //BAD: PRIO1 : Jose needs to implement that
   tauXTriggers_= new std::vector< int >();
   triggerBits_ = new std::vector< int >();
 
@@ -105,16 +106,16 @@ void MuTauStreamAnalyzer::beginJob(){
   jetsP4_          = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
   //OK
   jetsIDP4_        = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
-  //BAD: not yet filled
+  //BAD: PRIO2 not yet filled
   jetsIDUpP4_      = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
   jetsIDDownP4_    = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
   jetsIDL1OffsetP4_= new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
-  //BAD: need to fill the genjets, PRIO1
+  //BAD: PRIO3 -the JEC will be checked externally. the genjets are available though.
   genJetsIDP4_     = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
 
   //OK
   diTauVisP4_   = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >(); 
-  //BAD: we don't have collinear approx yet, PRIO3
+  //BAD: PRIO3 we don't have collinear approx yet
   diTauCAP4_    = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
   diTauICAP4_   = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
   //DIFF** 
@@ -126,7 +127,7 @@ void MuTauStreamAnalyzer::beginJob(){
   genDiTauLegsP4_ = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
   //OK 0: raw MET; 1: recoil corrected
   METP4_          = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
-  //BAD: not yet filled 
+  //BAD???
   genMETP4_       = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
   //OK
   genVP4_         = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
@@ -134,7 +135,7 @@ void MuTauStreamAnalyzer::beginJob(){
   //OK (note: I have muons below 15 in my tree; for a good agreement, cut pt>15
   extraMuons_   = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
 
-  //BAD - we don't care. 
+  //BAD - but we don't care. 
   pfMuons_      = new std::vector< ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >();
 
   std::vector< float > Summer11Lumi ;
@@ -640,6 +641,8 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
   typedef std::vector<cmg::Muon> MuonCollection;  
   typedef cmg::BaseMET MET;
   typedef std::vector<cmg::BaseMET> METCollection;
+  typedef cmg::GenJet GenJet;
+  typedef std::vector< GenJet > GenJetCollection;
 
   edm::Handle<DiTauCollection> diTauHandle;
   iEvent.getByLabel(diTauTag_,diTauHandle);
@@ -740,7 +743,13 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
   const reco::GenParticleCollection* genParticles = 0;
   const reco::GenParticleCollection* genParticlesStatus3 = 0;
   const reco::GenParticleCollection* genLeptonsStatus1 = 0;
+  const GenJetCollection* genJets = 0;
+
   if(isMC_){
+    
+    edm::Handle<GenJetCollection> genJetsHandle;
+    iEvent.getByLabel( genJetsTag_, genJetsHandle);
+    genJets = genJetsHandle.product();    
 
     //COLIN read genParticles of status 3 from CMG-tuple
     edm::Handle<reco::GenParticleCollection> genStatus3Handle;
@@ -793,7 +802,7 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
 
   nPUtruth_          = -99;
 
-  const reco::GenJetCollection* tauGenJets = 0;
+//   const reco::GenJetCollection* tauGenJets = 0;
   if(isMC_){
     //COLIN: tauGenJets not necessary anymore.
     //can be added to CMG-tuple if needed. 
@@ -1062,9 +1071,9 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
   METP4_->push_back((*rawMet)[0].p4()); // raw met
   //COLINTD PRIO1 : read recoil corrected MET (from diTau?)
   METP4_->push_back((*met)[0].p4());    // possibly rescaled met
-  //COLINTD need the genMET - PRIO2
-//   if(isMC_) 
-//     genMETP4_->push_back( (*rawMet)[0].genMET()->p4() );
+  //COLINTD test that! 
+  if(isMC_) 
+    genMETP4_->push_back( (*rawMet)[0].genMET() );
   sumEt_  = (*met)[0].sumEt();
   //   MtLeg1_ =  theDiTau->mt1MET();
   MtLeg1_ =  theDiTau->mTLeg2();
