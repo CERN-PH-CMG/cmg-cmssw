@@ -94,7 +94,7 @@ class IntegrityCheck(object):
         if data is None:
             raise Exception("Dataset '%s' not found in Das. Please check." % self.dataset)
         self.eventsTotal = 0
-        
+
         #there can be multiple datasets with the same name. If so we take the most recent
         #eliminates double counting of entries in DAS and so we get the fractions right
         datasets = []
@@ -104,9 +104,16 @@ class IntegrityCheck(object):
         if datasets:
             ds = datasets[-1][1]['dataset']
             if ds and type(ds) == type([]):
-                self.eventsTotal = datasets[-1][1]['dataset'][0]['nevents']
+                if 'nevents' in datasets[-1][1]['dataset'][0]:
+                    self.eventsTotal = datasets[-1][1]['dataset'][0]['nevents']
+                elif 'nevents' in datasets[-1][1]['dataset'][1]:
+                    #try the second array index, maybe there was an error message in the first
+                    self.eventsTotal = datasets[-1][1]['dataset'][1]['nevents']
+                else:
+                    raise Exception("invalid dataset info")
             else:
                 self.eventsTotal = datasets[-1][1]['dataset']['nevents']
+        
     
     def stripDuplicates(self):
         
