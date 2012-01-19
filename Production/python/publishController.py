@@ -23,6 +23,11 @@ class PublishController(object):
         self._cmgdbAPI=CmgdbApi()
         self._username = username
         self._password = password
+    def cmgdbOnline(self):
+    	if self._cmgdbAPI is not None: return True
+    	else: return False
+    def loginValid(self):
+    	return findDSOnSav.validLogin(self._username, self._password)
         
     def chooseParent(parentName, dbs, category):
     	if dbs and self._dbsAPI is not None:
@@ -222,7 +227,8 @@ class PublishController(object):
     	
     	###### SORT THIS OUT 
     	if comment is not None:
-    		self.savannah.appendExtra("Comment:\n"+comment)
+    		comment = "*Comment:* "+comment
+    		self.savannah.appendExtra(comment)
     	if fileOps.getIntegrity() is not None:
     		self.savannah.appendExtra(fileOps.getIntegrity())
     	#if fileOps.getLFNGroups() is not None:
