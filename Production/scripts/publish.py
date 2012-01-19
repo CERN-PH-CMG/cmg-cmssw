@@ -52,10 +52,10 @@ If no -s option is provided, it is assumed that the current user is the user on 
                       default=False )
     # If user wants to add their own comments
     parser.add_option("-C", "--comment",
-                      action = "store_true",
+                      action = "store",
                       dest="commented",
-                      help="Open comment prompt",
-                      default = False)
+                      help="Take comment as arg",
+                      default = None)
     # If user wants to add their own comments
     parser.add_option("-D", "--dbs",
                       action = "store_true",
@@ -92,9 +92,8 @@ If no -s option is provided, it is assumed that the current user is the user on 
     	print "Can not publish base dataset. No file owner."
     	sys.exit(1)
     password = getpass.getpass("Enter NICE Password: ")
-    comment = None
-    if options.commented:
-    	comment = raw_input("Please enter comment:\n")
+    comment = options.commented
+
     # Store full dataset name
     
     opts = dict()
@@ -118,6 +117,9 @@ If no -s option is provided, it is assumed that the current user is the user on 
     	parentTaskID = None
     	
     	publishController = PublishController(options.user, password, dbsApi)
+    	if not publishController.loginValid():
+    		print "User authentication failed, exiting"
+    		sys.exit(1)
     	if procds['ParentList'][0].endswith("---*"):
     		procds['ParentList'][0] = publishController.chooseParent(procds['ParentList'][0], options.dbs, opts['category_id'])
     	if options.dbs:
@@ -126,15 +128,15 @@ If no -s option is provided, it is assumed that the current user is the user on 
     	print "\n------Savanah------\n"
     	(taskID, parentTaskID) = publishController.savannahPublish(procds, opts, comment)
     	
-    	print "\n-------CMGDB-------\n"
-    	try:
-    		if taskID is not None:
-    			publishController.cmgdbPublish(procds, dbsID, taskID, options.test)
-    			
-    		if parentTaskID is not None:
-    			publishController.cmgdbPublish(procds, parentDbsID, parentTaskID, options.test)
-        except ImportError:
-        	print "cx_Oracle not properly installed"
+    	if publishController.cmgdbOnline():
+    		print "\n-------CMGDB-------\n"
+    		try:
+    			if taskID is not None:
+    				publishController.cmgdbPublish(procds, dbsID, taskID, options.test)
+    			if parentTaskID is not None:
+    				publishController.cmgdbPublish(procds, parentDbsID, parentTaskID, options.test)
+    		except ImportError:
+    			print "cx_Oracle not properly installed"
 
     except ValueError as err:
         print err, '. Exit!'
