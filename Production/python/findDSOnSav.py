@@ -84,3 +84,32 @@ def getTaskID(name, category, username, password, isParent):
                 return None
     else: print "Login failed"
     return None
+    
+def validLogin(username, password):
+            br = mechanize.Browser()
+            br.open("https://savannah.cern.ch/projects/cmgsample/")
+            # Find Login link and follow it
+            if br.links(text_regex="Login"):
+            	try:
+                    br.follow_link(text_regex="Login")
+                    # Check response is HTML
+                    assert br.viewing_html()
+
+                    # Select password form (second item in forms list)
+                    br.select_form(nr=1)
+
+                    br.form['form_loginname']=username
+                    br.form['form_pw']=password
+                    br.submit()
+                    
+
+                    #for i in self.br.forms(): print i
+                    page = br.response().read()
+                    a = re.search("Not Logged In",page )
+                    if a != None:
+                             return False
+                             print "Client was unable to login, please check login details."
+                    else: 
+                    	return True
+                except:
+                	return False
