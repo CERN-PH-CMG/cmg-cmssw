@@ -14,6 +14,7 @@ from DBSAPI.dbsPrimaryDataset import DbsPrimaryDataset
 import CMGTools.Production.findDSOnSav as findDSOnSav
 from CMGTools.Production.castorToDbsFormatter import CastorToDbsFormatter
 from CMGTools.Production.nameOps import *
+import sys
 
 
 class PublishController(object):
@@ -110,6 +111,7 @@ class PublishController(object):
     	# Check if user has dataset files, and DO NOT allow publish if they do not
     	if len(fileOps.getRootFiles()) == 0:
         	print "No dataset found on Castor, exiting"
+        	sys.exit(1)
         	return None
 
     	
@@ -129,6 +131,7 @@ class PublishController(object):
     	# Check if user has dataset files, and DO NOT allow publish if they do not
     	if len(fileOps.getRootFiles()) == 0:
         	print "No dataset found on Castor, exiting"
+        	sys.exit(1)
         	return None
     	# Check dbsAPI is valid
     	if self._dbsAPI is None:
@@ -189,6 +192,7 @@ class PublishController(object):
     	# Check if user has dataset files, and DO NOT allow publish if they do not
     	if len(fileOps.getRootFiles()) == 0:
         	print "No dataset found on Castor, exiting"
+        	sys.exit(1)
         	return None
         
     	test = False
