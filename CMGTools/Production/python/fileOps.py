@@ -157,13 +157,17 @@ class FileOps(object):
             report = integrity.get(self.getLFN())
             # Build in some kind of wildcard
             if report is None and self._user == 'cmgtools' or self._user == os.environ['USER']:
-                checkopts = CheckValues(defaults = {'verbose': 0, 'idx': 0, 'format': 'json', 'user': 'cmgtools', 'printout': True, 'host': 'https://cmsweb.cern.ch', 'limit': 10, 'resursive': False, 'wildcard': '*', 'device': 'cmst3', 'query': False, 'name': None})
-                check = IntegrityCheck(self._setName, checkopts)
-                check.test()
-                check.report()
-                report = check.structured()
-                pub = PublishToFileSystem(check)
-                pub.publish(report)
+                try:
+                    checkopts = CheckValues(defaults = {'verbose': 0, 'idx': 0, 'format': 'json', 'user': self._user, 'printout': True, 'host': 'https://cmsweb.cern.ch', 'limit': 10, 'resursive': False, 'wildcard': '*', 'device': 'cmst3', 'query': False, 'name': None})
+                    check = IntegrityCheck(self._setName, checkopts)
+                    check.test()
+                    check.report()
+                    report = check.structured()
+                    pub = PublishToFileSystem(check)
+                    pub.publish(report)
+                except Exception as error:
+                    print "Integrity check failed."
+                    print error.args[0]
             if report is None:
                 "Integrity Check Failed - No results will be published"
             else:
