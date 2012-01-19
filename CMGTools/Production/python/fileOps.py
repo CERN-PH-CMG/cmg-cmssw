@@ -156,7 +156,7 @@ class FileOps(object):
             print self.getLFN()
             report = integrity.get(self.getLFN())
             # Build in some kind of wildcard
-            if report is None and self._user == 'cmgtools' or self._user == os.environ['USER']:
+            if report is None and (self._user == 'cmgtools' or self._user == os.environ['USER']):
                 try:
                     checkopts = CheckValues(defaults = {'verbose': 0, 'idx': 0, 'format': 'json', 'user': self._user, 'printout': True, 'host': 'https://cmsweb.cern.ch', 'limit': 10, 'resursive': False, 'wildcard': '*', 'device': 'cmst3', 'query': False, 'name': None})
                     check = IntegrityCheck(self._setName, checkopts)
@@ -175,6 +175,7 @@ class FileOps(object):
                     self._valid = True
                 integrityCheck['BadJobs'] = report['BadJobs']
                 integrityCheck['PrimaryDatasetFraction'] = report['PrimaryDatasetFraction']
+                integrityCheck['PrimaryDatasetEntries'] = report['PrimaryDatasetEntries']
                 integrityCheck['ValidDuplicates'] = report['ValidDuplicates']
                 self._integrity = integrityCheck
         
@@ -209,7 +210,7 @@ class FileOps(object):
         self._castorGroups = self._groups
         if self._groups is not None:
             for group in self._castorGroups:
-                group['name'] = self.getLFN() + group['name'].split("/")[-1]
+                group['name'] = self.getLFN()+ "/" + group['name'].split("/")[-1]
                 for file in group['files']:
                     file = self.getLFN() + file.split("/")[-1]
                 for file in group['duplicateFiles']:
