@@ -62,6 +62,12 @@ If no -s option is provided, it is assumed that the current user is the user on 
                       dest="dbs",
                       help="Use DBS",
                       default = False)
+    # If user wants to add their own comments
+    parser.add_option("-M", "--multi",
+                      action = "store",
+                      dest="multi",
+                      help="Takes argument as user%/sample/name and publishes all samples with that name",
+                      default = False)
     
     
     
@@ -128,7 +134,7 @@ If no -s option is provided, it is assumed that the current user is the user on 
     		if parentTaskID is not None:
     			publishController.cmgdbPublish(procds, parentDbsID, parentTaskID, options.test)
         except ImportError:
-        	print "cx_Oracle properly not properly installed"
+        	print "cx_Oracle not properly installed"
 
     except ValueError as err:
         print err, '. Exit!'
