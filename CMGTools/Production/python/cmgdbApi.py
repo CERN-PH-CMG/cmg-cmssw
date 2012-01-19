@@ -20,8 +20,9 @@ class CmgdbApi(object):
         try:
             self.conn = cx_Oracle.connect("cmgbookkeeping_user/Cmguser1@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=oradev11.cern.ch)(PORT=10121))(ENABLE=BROKEN)(CONNECT_DATA= (SID=DEVDB11)))")
             self.cur = self.conn.cursor()
-        except:
+        except Exception as dbError:
             print "Unable to connect to CMGDB"
+            print dbError.args[0]
             return None
 
     # Log a tag against a package
