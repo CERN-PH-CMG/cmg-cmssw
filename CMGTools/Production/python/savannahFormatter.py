@@ -69,21 +69,20 @@ class SavannahFormatter(object):
             self.dict["LFN Castor Directory"]="\n\t"+lfn
     
     def _recursiveRead(self, string, input, tabs):
-    	if input is None: return "Not found"
-    	if isinstance(input, int) or isinstance(input, float) or isinstance(input, str): 
-        	return tabs + " " + str(input)
+    	if input is None: return "\n"
+    	if isinstance(input, int) or isinstance(input, float) or isinstance(input, str):
+        	return tabs + " " + str(input)+"\n"
         	
     	elif type(input) is types.DictType :
-            if len(input.keys()) is 0:
-            	return ""
-            for i in input:
-            	
-            	if input[i] and input[i] is not None:
-            		string += tabs+" *"+i+":* \n"+self._recursiveRead("", input[i], tabs+"*")+"\n"
-            	else: return string
+    		if len(input.keys()) is 0:
+    			return "\n"
+    		for i in input:
+    			if input[i] is not None:
+    				string += tabs+"*"+i+"*: "+self._recursiveRead("", input[i], tabs)+"\n"
+    		return "\n" + string
         elif type(input) is types.ListType or type(input) is types.TupleType:
         	if len(input) is 0:
-        		return ""
+        		return "\n"
         	for i in input:
         		
         		string += self._recursiveRead(string, i, tabs)+"\n"
@@ -91,21 +90,20 @@ class SavannahFormatter(object):
         
         elif type(input) is not types.ListType and type(input) is not types.TupleType:
         	if isinstance(input,str) and len(input) is 0:
-        		return ""
+        		return "\n"
         	else:
-        		return tabs + " "+  str(input) 	
+        		return tabs + " "+  str(input) 	+"\n"
         else:
         	return ""
         	
 	
     def appendExtra(self, Extra):
-        if self.dict['User Fields']:
-            formattedString = self.dict['User Fields']
-        else: 
+        if len(self.dict['User Fields']) >0:
+        	formattedString = self.dict['User Fields']
+        else:
         	formattedString = "\n"
         	self.dict['User Fields'] = ""
-        
-        self.dict['User Fields']+=self._recursiveRead(formattedString, Extra, "")
+        self.dict['User Fields']=self._recursiveRead(formattedString, Extra, "")+"\n"
         
     def publish(self):
         info = ""
