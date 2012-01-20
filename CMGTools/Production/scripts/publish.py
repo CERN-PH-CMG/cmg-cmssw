@@ -21,13 +21,10 @@ if __name__ == '__main__':
 
     parser.usage = """
 %prog [options] <sampleName>
------
-sampleName should be given in the form /[PrimaryDS]/[ProcDS]/[Tiers]/*[Parent]
------
-Use this script to publish dataset details to DBS, CmgDB, and optionally savannah.
------
-If no -u option is provided, it is assumed that the current user is the files owner on Castor.
-If no -s option is provided, it is assumed that the current user is the user on Savannah 
+
+Use this script to publish dataset details to DBS, CmgDB, and savannah.
+Example:
+publish.py -F cbern /VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0_Test_v2
 """
     
     # If user is not specified default is current user
@@ -41,7 +38,7 @@ If no -s option is provided, it is assumed that the current user is the user on 
     parser.add_option("-u", "--user",
                       action = "store",
                       dest="user",
-                      help="If DBS and Savannah user is different to current user, enter Savannah username here",
+                      help="Specify the username to access both the DBS and savannah servers. Default is $USER.",
                       default=os.environ['USER'] )
     # If the purpose is to test the software use this parameter, it will not be recognised by the
     # non-testing algorithm
