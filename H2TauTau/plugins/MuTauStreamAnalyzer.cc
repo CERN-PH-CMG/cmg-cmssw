@@ -1068,7 +1068,7 @@ void MuTauStreamAnalyzer::analyze(const edm::Event & iEvent, const edm::EventSet
   diTauCharge_ = theDiTau->charge();
   METP4_->push_back((*rawMet)[0].p4()); // raw met
   //COLINTD PRIO1 : read recoil corrected MET (from diTau?)
-  METP4_->push_back((*met)[0].p4());    // possibly rescaled met
+  METP4_->push_back( theDiTau->met().p4());    // possibly rescaled met
   if(isMC_) 
     genMETP4_->push_back( (*rawMet)[0].genMET() );
   sumEt_  = (*met)[0].sumEt();

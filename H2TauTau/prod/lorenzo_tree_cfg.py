@@ -46,7 +46,7 @@ process.source = cms.Source(
 
 process.muTauStreamAnalyzer = cms.EDAnalyzer(
     "MuTauStreamAnalyzer",
-    diTaus         = cms.InputTag("cmgTauMuCorSVFitPreSel"),
+    diTaus         = cms.InputTag("cmgTauMuCorSVFitFullSel"),
     jets           = cms.InputTag("cmgPFJetSel"),
     newJets        = cms.InputTag(""),
     #COLIN warning uncorrected MET. corrected MET can be obtained from the diTau (I think)
