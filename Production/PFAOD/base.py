@@ -35,8 +35,8 @@ process.out = cms.OutputModule(
     fileName = cms.untracked.string( '' ),
     )
 
-process.load("CommonTools.ParticleFlow.PF2PAT_EventContent_cff")
-process.out.outputCommands.extend( process.prunedAODForPF2PATEventContent.outputCommands )
+from CMGTools.Production.PFAOD.PFAOD_EventContent_cff import *
+process.out.outputCommands.extend( bare )
 
 process.endpath = cms.EndPath(
     process.out
