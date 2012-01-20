@@ -74,7 +74,7 @@ If no -s option is provided, it is assumed that the current user is the user on 
     (options, args) = optManager.getOpt()
     options.url="http://cmsphys05.cern.ch:8081/cms_dbs_prod_local_01/servlet/DBSServlet"
     
-    dsName = args[0]
+    
     
     if options.dbs:
     	dbsApi = DbsApi(options.__dict__)
@@ -83,7 +83,8 @@ If no -s option is provided, it is assumed that the current user is the user on 
     if len(args)!=1:
         parser.print_help()
         sys.exit(1)
-        
+    
+    dsName = args[0]
     
     if len(dsName.lstrip(os.sep).rstrip(os.sep).split(os.sep)) < 3:
     	print "Error, please use valid name"
