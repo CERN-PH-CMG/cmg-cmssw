@@ -225,7 +225,7 @@ class PublishController(object):
     	self.savannah.addMain(procds,fileOps.getTags(),self._deleteExtras(fileOps.getLFNGroups()),fileOps.getCastor(), fileOps.getLFN())
     	
     	
-    	###### SORT THIS OUT 
+    	#Add comment if exists 
     	if comment is not None:
     		comment = "*Comment:* "+comment
     		self.savannah.appendExtra(comment)
@@ -284,6 +284,17 @@ class PublishController(object):
     		
     	# See if cmgdb already has record of ds with sav
     	cmgdbID = self._cmgdbAPI.getDatasetIDWithTaskID(taskID, test)
+    	
+    	# if no entry found, test (or non-test) set should be checked too
+    	
+    	if cmgdbID is None:
+    		categoryID = '101'
+    		if test:
+    			categoryID = '100'	
+    		altTaskID = findDSOnSav.getTaskID(procds['PathList'][0], categoryID, self._username, self._password, False)
+    		cmgdbID = self._cmgdbAPI.getDatasetIDWithTaskID(altTaskID, (not test))
+    		
+    			
     	
     	# If not see if dbs record exists
     	if cmgdbID is None:
