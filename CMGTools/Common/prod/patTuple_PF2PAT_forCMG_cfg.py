@@ -12,7 +12,7 @@ runOnMC = True
 # AK5 sequence with no cleaning is the default
 # the other sequences can be turned off with the following flags.
 #JOSE: no need to run these guys for what you are up to
-runAK5LC = True
+runAK5LC = True 
 runAK7 = True
 
 #COLIN: will need to include the event filters in tagging mode
@@ -41,6 +41,9 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
+from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
+process.GlobalTag.globaltag = cms.string(getGlobalTag(runOnMC))
+
 sep_line = "-" * 50
 print sep_line
 print 'running the following PF2PAT+PAT sequences:'
@@ -52,16 +55,20 @@ print 'HPS taus         : ', hpsTaus
 print 'produce CMG tuple: ', runCMG
 print 'run on MC        : ', runOnMC
 print sep_line
-
+print 'Global tag       : ', process.GlobalTag.globaltag
+print sep_line
 
 ### SOURCE DEFINITION  ################################################################
 
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
+    # to test MC:
     'cbern',
     '/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2',
-    # '/QCD_Pt-1400to1800_TuneZ2_7TeV_pythia6/Summer11-PU_S3_START42_V11-v2/AODSIM/V2',
-    'PFAOD.*root'
+    # to test Data:
+    # 'cmgtools',
+    # '/DoubleElectron/Run2011A-HZZ-PromptSkim-v6/AOD/V2', 
+    '.*root'
     ) 
 
 if pickRelVal:
@@ -76,6 +83,7 @@ if pickRelVal:
         )
         )
 
+# process.source.fileNames = ['file:AOD_TTJets_all.root']
 
 # print "WARNING!!!!!!!!!!!!!!!! remove the following line (see .cfg) before running on the batch!"
 process.source.fileNames = process.source.fileNames[:10]
@@ -85,8 +93,6 @@ print process.source.fileNames
 
 ### DEFINITION OF THE PF2PAT+PAT SEQUENCES #############################################
 
-from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
-process.GlobalTag.globaltag = cms.string(getGlobalTag(runOnMC))
 
 # load the PAT config
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
@@ -147,6 +153,7 @@ addPATElectronID( process, postfixAK5 , runOnMC )
 # insert the PFMET sifnificance calculation
 from CMGTools.Common.PAT.addMETSignificance_cff import addMETSig
 addMETSig( process, postfixAK5 )
+
 
 # ---------------- Sequence AK5LC, lepton x-cleaning ---------------
 
@@ -340,3 +347,5 @@ process.TFileService = cms.Service("TFileService",
 # print process.dumpPython()
 
 
+# process.load('CMGTools.Common.miscProducers.cmgPatElectronProducer_cfi')
+# process.p += process.cmgPatElectronProducer
