@@ -4,22 +4,23 @@ import os
 
 inputs = [
     'AOD_TTJets.root',
-    'AOD_DoubleMu.root',
-    'AOD_DoubleElectron.root',
-    'AOD_HT.root'
+#    'AOD_DoubleMu.root',
+#    'AOD_DoubleElectron.root',
+#    'AOD_HT.root'
     ]
 
 # run a set of cfgs on that file
 
 cfgs = [
-    'photons_cfg.py',
+#    'photons_cfg.py',
     'all_cfg.py',
-    'noCastor_cfg.py',
-    'tevMuons_cfg.py',
+#    'noCastor_cfg.py',
+#    'tevMuons_cfg.py',
     'bare_cfg.py',
     'V2_cfg.py',
-    'ak7calo_cfg.py',
-    'caloClusters_cfg.py'
+    'V3_cfg.py',
+#    'ak7calo_cfg.py',
+#    'caloClusters_cfg.py'
     ]
 
 # cfgs = cfgs[:1]

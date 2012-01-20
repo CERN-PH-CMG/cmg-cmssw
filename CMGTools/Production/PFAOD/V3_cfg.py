@@ -6,7 +6,7 @@ from base import *
 
 import __main__
 
-tag = 'V2'
+tag = 'V3'
 
 output = '_'.join( [sampleStr, tag] )
 output += '.root'
@@ -15,4 +15,4 @@ print 'output file', output
 
 process.out.fileName = output 
 
-process.out.outputCommands.extend( V2 )
+process.out.outputCommands.extend( V3 )
