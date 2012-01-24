@@ -71,6 +71,7 @@ class SavannahFormatter(object):
     def _recursiveRead(self, string, input, tabs):
     	if input is None: return "\n"
     	if isinstance(input, int) or isinstance(input, float) or isinstance(input, str):
+    		print tabs + " " + str(input)+"\n"
         	return tabs + " " + str(input)+"\n"
         	
     	elif type(input) is types.DictType :
@@ -98,12 +99,12 @@ class SavannahFormatter(object):
         	
 	
     def appendExtra(self, Extra):
-        if len(self.dict['User Fields']) >0:
+        if self.dict['User Fields'] is not "":
         	formattedString = self.dict['User Fields']
         else:
         	formattedString = "\n"
         	self.dict['User Fields'] = ""
-        self.dict['User Fields']=self._recursiveRead(formattedString, Extra, "")+"\n"
+        self.dict['User Fields']+=self._recursiveRead("", Extra, "")+"\n"
         
     def publish(self):
         info = ""
