@@ -9,14 +9,14 @@ def getNameWithID(taskID):
     try:
         br = mechanize.Browser()
         br.open("https://savannah.cern.ch/task/?"+str(taskID))
-        
         # Check response is HTML
         assert br.viewing_html()
         for i in br.response().readlines():
-            if re.search("original submission:", i):
-                line = i.split("original submission:")[1]
-                line = line.split("<strong>")[1]
-                return line.split("</strong>")[0]
+            if re.search("task #"+str(taskID)+"</a></em>: ", i):
+                line = i.split("task #"+str(taskID)+"</a></em>: ")[1]
+                print line.split("</h2>")[0]
+                return line.split("</h2>")[0]
+                
     except:
         print "Dataset not found on Savannah"
         return False
@@ -26,6 +26,7 @@ def getTaskID(name, category, username, password, isParent):
     try:
         br = mechanize.Browser()
         br.open("https://savannah.cern.ch/projects/cmgsample/")
+        
         br.follow_link(text_regex="Login")
         # Check response is HTML
         assert br.viewing_html()
@@ -36,19 +37,24 @@ def getTaskID(name, category, username, password, isParent):
         br.form['form_loginname']=username
         br.form['form_pw']=password
         br.submit()
-        
         br.follow_link(url_regex='/task/\?func\=search')
         br.select_form(nr=1)
-        br.form['words']=name
+        newName = name
+        if re.search("---\*", name):
+            newName = re.sub("---\*/.*", "---", name)
+            name = re.sub("---\*","---.*", name)
+        br.form['words']=newName
         br.submit()
     except:
         skip =True
     if skip is False:
         # Try to access form (if you can, there was only 1 result)
         try:
+            
             # This line will throw the exception if it needs to be thrown
             br.select_form(name='item_form')
             # Check if task is 100% match
+            print br.form['summary'], " ", name
             if re.search(name,br.form['summary']):
                 # Check task is "Open"
                 if br.form['status_id']==['1'] and br.form['category_id']==[category]:
@@ -62,11 +68,11 @@ def getTaskID(name, category, username, password, isParent):
         except:
             links = None
             # Retrieve a list of links
-            if isParent: links=br.links(text_regex=name)
+            if isParent: 
+                links=br.links(text_regex=name + "$")
             else: links=br.links(text_regex=name+"$")
             checkedLinks = []
             for i in links:
-                
                 #For every link follow it and examine::                
                 br.follow_link(i)
                 br.select_form(name='item_form')
@@ -74,7 +80,7 @@ def getTaskID(name, category, username, password, isParent):
                 # .. That status is "Open"
                 if br.form['status_id']==['1'] and br.form['category_id']==[category]:
                     for i in br.response().readlines():
-                        if re.search("<title>CMG", i)>0:
+                        if re.search("<title>CMG", i):
                     	    task = i.split("#")[1]
                     	    checkedLinks.append(task.split(",")[0])
             try:
