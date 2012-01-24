@@ -210,7 +210,7 @@ class PublishController(object):
     	parentTaskID = findDSOnSav.getTaskID(procds['ParentList'][0], opts['category_id'], self._username, self._password, True)
     	
     	if parentTaskID is not None and len(parentTaskID) > 0:
-    		procds['ParentList'][0]= "[https://savannah.cern.ch/task/?"+str(parentTaskID[0])+" "+getCastor(procds['ParentList'][0])+"]"
+    		procds['ParentList'][0]= "[https://savannah.cern.ch/task/?"+str(parentTaskID[0])+" "+findDSOnSav.getNameWithID(parentTaskID[0])+"]"
     		parentTaskID = parentTaskID[0]
     	else: parentTaskID = None
     		
@@ -230,7 +230,10 @@ class PublishController(object):
     		comment = "*Comment:* "+comment
     		self.savannah.appendExtra(comment)
     	if fileOps.getIntegrity() is not None:
-    		self.savannah.appendExtra(fileOps.getIntegrity())
+    		self.savannah.appendExtra("*Primary Dataset Entries:* "+str(fileOps.getIntegrity()['PrimaryDatasetEntries']))
+    		self.savannah.appendExtra("*Primary Dataset Fraction used:* "+str(fileOps.getIntegrity()['PrimaryDatasetFraction']))
+    		self.savannah.appendExtra("*Valid Duplicates:* "+str(fileOps.getIntegrity()['ValidDuplicates']))
+    		self.savannah.appendExtra("*Bad Jobs:* "+str(fileOps.getIntegrity()['BadJobs']))
     	#if fileOps.getLFNGroups() is not None:
     		#self.savannah.appendExtra(fileOps.getLFNGroups())
     		
