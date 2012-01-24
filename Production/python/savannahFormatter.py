@@ -42,6 +42,7 @@ class SavannahFormatter(object):
             self.dict["Created By"] = ProcDS['CreatedBy']
         if 'LastModifiedBy' in ProcDS:
             self.dict["Last Modified By"] = ProcDS['LastModifiedBy']
+        
         if tags is not None:    
             detailString = ""
             for i in tags:
@@ -71,7 +72,6 @@ class SavannahFormatter(object):
     def _recursiveRead(self, string, input, tabs):
     	if input is None: return "\n"
     	if isinstance(input, int) or isinstance(input, float) or isinstance(input, str):
-    		print tabs + " " + str(input)+"\n"
         	return tabs + " " + str(input)+"\n"
         	
     	elif type(input) is types.DictType :
