@@ -14,7 +14,7 @@ from DBSAPI.dbsPrimaryDataset import DbsPrimaryDataset
 import CMGTools.Production.findDSOnSav as findDSOnSav
 from CMGTools.Production.castorToDbsFormatter import CastorToDbsFormatter
 from CMGTools.Production.nameOps import *
-import sys
+import sys, re
 
 
 class PublishController(object):
@@ -212,6 +212,9 @@ class PublishController(object):
     	if parentTaskID is not None and len(parentTaskID) > 0:
     		procds['ParentList'][0]= "[https://savannah.cern.ch/task/?"+str(parentTaskID[0])+" "+findDSOnSav.getNameWithID(parentTaskID[0])+"]"
     		parentTaskID = parentTaskID[0]
+    	elif not re.search("--", procds['ParentList'][0]):
+    		procds['ParentList'][0]= "[https://cmsweb.cern.ch/das/request?view=list&limit=10&instance=cms_dbs_prod_global&input=dataset%3D%2F" +procds['ParentList'][0].lstrip("/").split("/")[0]+ "%2F" +procds['ParentList'][0].lstrip("/").split("/")[1]+"%2F" + procds['ParentList'][0].lstrip("/").split("/")[2]+ " "+ procds['ParentList'][0]+"]"
+    		parentTaskID = None
     	else: parentTaskID = None
     		
     			
