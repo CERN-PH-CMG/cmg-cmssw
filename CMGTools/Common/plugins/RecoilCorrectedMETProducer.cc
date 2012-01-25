@@ -26,7 +26,7 @@ public:
   typedef RecBosonType::type1 Leg1Type;
   typedef RecBosonType::type2 Leg2Type;
   typedef cmg::BaseMET MetType; 
-  typedef cmg::AbstractPhysicsObject   JetType;
+  typedef cmg::PFJet   JetType;
   typedef edm::View<JetType>           JetCollectionType;
 
   explicit RecoilCorrectedMETProducer(const edm::ParameterSet & iConfig);
@@ -151,8 +151,9 @@ void RecoilCorrectedMETProducer::produce(edm::Event & iEvent, const edm::EventSe
     break;
   case 22: // photon 
   case 23: // Z0
+  case 25: // Higgs
     if( leptonLeg_ != 0 ) 
-      throw cms::Exception("leptonLeg should be equal to 0 when running on Drell-Yan events.");   
+      throw cms::Exception("leptonLeg should be equal to 0 when running on Higgs or Drell-Yan events.");   
     break;
   default:
     throw cms::Exception("input genBoson should be a W or a Z0/gamma.");
@@ -188,6 +189,7 @@ void RecoilCorrectedMETProducer::produce(edm::Event & iEvent, const edm::EventSe
       std::cout<<"\trec boson: "<<recBoson<<std::endl;
       std::cout<<"\t\tleg1: "<<recBoson.leg1()<<std::endl;
       std::cout<<"\t\tleg2: "<<recBoson.leg2()<<std::endl;
+      std::cout<<"\t\tpassing baseline? "<<recBoson.getSelection("cuts_baseline")<<std::endl;
     }
 
     reco::Candidate::PolarLorentzVector lepton;
@@ -280,9 +282,14 @@ int  RecoilCorrectedMETProducer::nJets( const JetCollectionType& jets,
       nJets++;
     }
     else{
-      if(verbose_) 
-      std::cout<<"\t\texcluding jet "<<jet<<", dR1,dR2="
-	       <<sqrt(dR2leg1)<<","<<sqrt(dR2leg2)<<std::endl;
+      if(verbose_) {
+	std::cout<<"\t\texcluding jet "<<jet<<", dR1,dR2="
+		 <<sqrt(dR2leg1)<<", "<<sqrt(dR2leg2)<<std::endl;
+	//       std::cout<<jet.rawFactor()<<std::endl;
+	//       for(int ic=0; ic<jet.nConstituents(); ++ic) {
+	// 	const cmg::PFJetComponent& comp = jet.component(ic);
+	// 	std::cout<<comp<<std::endl;
+      }
     }
   }  
 
