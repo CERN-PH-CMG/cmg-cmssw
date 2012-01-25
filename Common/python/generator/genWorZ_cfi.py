@@ -8,5 +8,6 @@ genWorZ = cms.EDProducer(
     "keep status()==3 & pdgId = {W-}",
     "keep status()==3 & pdgId = {Z0}",
     "keep status()==3 & pdgId = {gamma}",
+    "keep status()==3 & pdgId = {h0}",
     )
 )
