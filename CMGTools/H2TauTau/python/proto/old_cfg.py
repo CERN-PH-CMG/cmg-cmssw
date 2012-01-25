@@ -121,7 +121,8 @@ data_May10ReReco_v1 = htt.DataComponent(
 
 data_PromptReco_v4 = htt.DataComponent(
     name = 'data_PromptReco_v4',
-    files ='{baseDir}/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_4_0/H2TAUTAU_Dec2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    # files ='{baseDir}/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_4_0/H2TAUTAU_Dec2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files ='{baseDir}/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_4_1/H2TAUTAU_Jan23/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     intLumi = 929.748,
     triggers = ['HLT_IsoMu15_LooseIsoPFTau15_v[2,4,5,6]'] )
 

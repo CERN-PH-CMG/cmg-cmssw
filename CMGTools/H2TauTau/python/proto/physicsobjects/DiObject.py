@@ -1,4 +1,4 @@
-from CMGTools.H2TauTau.proto.physicsobjects.PhysicsObjects import Muon
+from CMGTools.H2TauTau.proto.physicsobjects.PhysicsObjects import Muon, Tau
 
 class DiObject( object ):
     
@@ -28,12 +28,13 @@ class DiObject( object ):
         return '\n'.join( [header] )
 
 
+
 class DiMuon( DiObject ):
 
     def __init__(self, diobject):
         super(DiMuon, self).__init__(diobject)
-        self.mu1 = Muon( self.leg1() )
-        self.mu2 = Muon( self.leg2() )
+        self.mu1 = Muon( diobject.leg1() )
+        self.mu2 = Muon( diobject.leg2() )
 
     def __str__(self):
         header = 'DiMuon: mvis=%3.2f, sumpT=%3.2f' \
@@ -41,4 +42,16 @@ class DiMuon( DiObject ):
                     self.sumPt() )
         return '\n'.join( [header] )
 
-    
+
+
+class TauMuon( DiObject ):
+    def __init__(self, diobject):
+        super(TauMuon, self).__init__(diobject)
+        self.tau = Tau( diobject.leg1() )
+        self.mu = Muon( diobject.leg2() )
+
+    def leg1(self):
+        return self.tau
+
+    def leg2(self):
+        return self.mu

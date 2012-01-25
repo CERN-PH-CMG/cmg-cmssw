@@ -1,3 +1,5 @@
+import math
+
 class PhysicsObject(object):
     '''Extends the cmg::PhysicsObject functionalities.'''
 

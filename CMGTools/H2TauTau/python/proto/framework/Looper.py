@@ -42,8 +42,13 @@ class Looper(object):
         self.cfg_comp = cfg_comp 
         self.analyzers = map( self._buildAnalyzer, sequence )
         self.nPrint = nPrint 
-        # initialize FWLite chain on input file: 
-        self.events = Events( glob.glob( self.cfg_comp.files) )
+        # initialize FWLite chain on input file:
+        try:
+            self.events = Events( glob.glob( self.cfg_comp.files) )
+        except RuntimeError:
+            print 'cannot find any file matching pattern', self.cfg_comp.files
+            raise
+            
 
     def _buildAnalyzer(self, cfg_ana):
         print 'building analyzer', cfg_ana.name
@@ -64,18 +69,18 @@ class Looper(object):
 
     def loop(self, nEvents=None):
         '''Loop on a given number of events, and call ToEvent for each event.'''
-        print 'starting loop'
         if nEvents is None:
-            nEvents = float('+inf')
+            nEvents = self.events.size()
         else:
             nEvents = int(nEvents)
         eventSize = nEvents
+        print 'starting loop, to process', eventSize, 'events.'        
         for analyzer in self.analyzers:
             analyzer.beginLoop() 
         for iEv in range(0, eventSize):
             if iEv == nEvents:
                 break
-            if iEv%10 ==0:
+            if iEv%100 ==0:
                 print 'event', iEv
             self.process( iEv )
             if iEv<self.nPrint:
@@ -116,4 +121,4 @@ if __name__ == '__main__':
     sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
                                  'src/CMGTools/H2TauTau/python/proto/analyzers'] ))
     looper = Looper( 'name', cfg.selectedComponents[0], cfg.sequence, nPrint = 5)
-    looper.loop( 1000 )
+    looper.loop(5000)
