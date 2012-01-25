@@ -14,9 +14,8 @@ def setupRecoilCorrection( process ):
         else:
             return False
     
-    if lookup( fileName, '/DYJets' ):
-    # or \
-    #    lookup( fileName, '/VBF_HToTauTau' ):
+    if lookup( fileName, '/DYJets' ) or \
+           lookup( fileName, 'HToTauTau' ):
         print '\tENABLED : Z->l tau mode (tau is true)'
         process.recoilCorMETTauMu.enable = True
         process.recoilCorMETTauMu.fileCorrectTo = '/'.join([rootfile_dir,
