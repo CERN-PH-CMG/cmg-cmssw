@@ -9,11 +9,15 @@ class Looper(object):
         '''Loop on a given number of events, and call ToEvent for each event.'''
         print 'starting loop'
         if nEvents is None:
-            nEvents = math.ceil( self.events.size() * self.fraction )         
-        for iEv in range(0, self.events.size() ):
+            nEvents = self.events.size()
+        else:
+            nEvents = int(nEvents)
+        eventSize = nEvents
+        for iEv in range(0, eventSize ):
+            # print iEv, nEvents
             if iEv == nEvents:
                 break
-            if iEv%1000 ==0:
+            if iEv%100 ==0:
                 print 'event', iEv
             try:
                 self.process( iEv )

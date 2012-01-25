@@ -46,6 +46,21 @@ class DiLeptonAnalyzer( Analyzer ):
         if len(selDiLeptons) == 0:
             return False
         self.counters.counter('DiLepton').inc('legs 1 & 2 ok ')
+
+        selDiLeptons2 = []
+        for diLepton in selDiLeptons:
+            if diLepton.getSelection('cuts_baseline'):
+                selDiLeptons2.append( diLepton )
+        if len(selDiLeptons2) == 0:
+            return False
+        
+        self.counters.counter('DiLepton').inc( '{cut} ok'.format(
+            cut=self.cfg_ana.diLeptonCutString
+            ) )
+
+        if len(selDiLeptons2)==1:
+            self.counters.counter('DiLepton').inc('exactly 1 di-lepton')
+        
         event.diLepton = self.bestDiLepton( selDiLeptons )
 
         mass = event.diLepton.mass()
@@ -107,7 +122,11 @@ class DiLeptonAnalyzer( Analyzer ):
     def testTau(self, tau):
         '''Returns True if a tau passes a set of cuts.
         Can be used in testLeg1 and testLeg2, in child classes.'''
-        return True
+        if tau.decayMode() == 0 and \
+               tau.calcEOverP() < 0.2: #MUONS
+            return False
+        else:
+            return True
     
     def bestDiLepton(self, diLeptons):
         '''Returns the best diLepton (the one with highest pt1 + pt2).'''

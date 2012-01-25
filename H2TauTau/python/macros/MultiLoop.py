@@ -6,8 +6,8 @@ import imp
 from multiprocessing import Pool
 from pprint import pprint
 
-from CMGTools.H2TauTau.macros.DiMuAnalyzer import DiMuAnalyzer as Analyzer
-# from CMGTools.H2TauTau.macros.TauMuAnalyzer import TauMuAnalyzer as Analyzer
+# from CMGTools.H2TauTau.macros.DiMuAnalyzer import DiMuAnalyzer as Analyzer
+from CMGTools.H2TauTau.macros.TauMuAnalyzer import TauMuAnalyzer as Analyzer
 
 # global, to be used interactively when only one component is processed.
 loop = None 
