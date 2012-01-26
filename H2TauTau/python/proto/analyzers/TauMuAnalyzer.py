@@ -11,7 +11,7 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
 
     def declareHandles(self):
         super(TauMuAnalyzer, self).declareHandles()
-        print 'TauMuAnalyzer.declareHandles'
+        # print 'TauMuAnalyzer.declareHandles'
         self.handles['diLeptons'] = AutoHandle(
             'cmgTauMuCorSVFitFullSel',
             'std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>'
@@ -29,6 +29,17 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
     def testLeg2(self, leg):
         return self.testMuon(leg) and \
                super( TauMuAnalyzer, self).testLeg2( leg )
+
+    def testTau(self, tau):
+        '''Returns True if a tau passes a set of cuts.
+        Can be used in testLeg1 and testLeg2, in child classes.
+        
+        WARNING: the muon filter should be used only in the muon channel.'''
+        if tau.decayMode() == 0 and \
+               tau.calcEOverP() < 0.2: #reject muons faking taus in 2011B
+            return False
+        else:
+            return True
 
 
     def leptonAccept(self, leptons):
