@@ -1,12 +1,18 @@
+import logging 
+
 from CMGTools.H2TauTau.proto.framework.TriggerList import TriggerList
 from CMGTools.H2TauTau.proto.statistics.Counter import Counters
 
 class Analyzer(object):
-    def __init__(self, cfg_ana, cfg_comp):
+    def __init__(self, cfg_ana, cfg_comp, looperName ):
         self.name = cfg_ana.name
         self.verbose = cfg_ana.verbose
         self.cfg_ana = cfg_ana
         self.cfg_comp = cfg_comp
+        self.looperName = looperName
+        # this is the main logger corresponding to the looper.
+        # each analyzer could also declare its own logger
+        self.mainLogger = logging.getLogger( looperName )
         self.triggerList = TriggerList( self.cfg_comp.triggers )
 
     def declareHandles(self):
@@ -17,14 +23,14 @@ class Analyzer(object):
     def beginLoop(self):
         self.declareHandles()
         self.counters = Counters()
-        print 'beginLoop', self.cfg_ana.name
+        self.mainLogger.warning( 'beginLoop ' + self.cfg_ana.name ) 
 
+        
     def endLoop(self):
-        print self.cfg_ana
-        if hasattr(self, 'counters') and len( self.counters.counters ) > 0:
-            print 'Counters:'
-            count = map(str, self.counters.counters)
-            print '\n'.join( count )
+        #print self.cfg_ana
+        self.mainLogger.warning( '' )
+        self.mainLogger.warning( str(self) )
+        self.mainLogger.warning( '' )
 
     def process(self, iEvent, event ):
         print self.cfg_ana.name 
@@ -41,11 +47,17 @@ class Analyzer(object):
                 handle.Load( iEvent )
 
     def write(self):
-        print 'write', self.cfg_ana.name 
+        print 'writing not implemented for', self.cfg_ana.name 
 
     def __str__(self):
         ana = str( self.cfg_ana )
-        comp = str( self.cfg_comp )
-        return '\n'.join( [ana, comp] )
-
+        count = ''
+        if hasattr(self, 'counters') and len( self.counters.counters ) > 0:
+            # print 'Counters:'
+            count = '\n'.join(map(str, self.counters.counters))
+            # print '\n'.join( count )
+        return '\n'.join( [ana, count] )
+        # comp = str( self.cfg_comp )
+        # return '\n'.join( [ana, comp] )
+        
 

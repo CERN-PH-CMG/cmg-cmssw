@@ -61,14 +61,15 @@ class EmbedComponent( Component ):
     def __init__(self, name, **kwargs ):
         super( EmbedComponent, self).__init__( name = name,
                                                **kwargs )
-        self.tauEffWeight = None
-        self.muEffWeight = None
+        # self.tauEffWeight = None
+        # self.muEffWeight = None
+        #WARNING what to do here ?? 
         self.isEmbed = True
 
         
 class MCComponent( Component ):
     def __init__(self, name, files, triggers, xSection, nGenEvents,
-                 vertexWeight, effCorrFactor ):
+                 vertexWeight, tauEffWeight, muEffWeight, effCorrFactor ):
         super( MCComponent, self).__init__( name = name,
                                             files = files,
                                             triggers = triggers )
@@ -76,8 +77,8 @@ class MCComponent( Component ):
         self.nGenEvents = nGenEvents
         self.vertexWeight = vertexWeight
         self.effCorrFactor = effCorrFactor
-        self.tauEffWeight = None
-        self.muEffWeight = None
+        self.tauEffWeight = tauEffWeight
+        self.muEffWeight = muEffWeight
         self.isMC = True
 
 

@@ -7,6 +7,11 @@ from CMGTools.H2TauTau.proto.physicsobjects.PhysicsObjects import Lepton
 
 class DiLeptonAnalyzer( Analyzer ):
 
+    # The DiObject class will be used as the di-object class
+    # and the Lepton class as the lepton class
+    # Child classes override this choice, and can e.g. decide to use
+    # the TauMuon class as a di-object class
+    # ... not sure other people can understand this comment ;-)
     DiObjectClass = DiObject
     LeptonClass = Lepton 
 
@@ -23,6 +28,7 @@ class DiLeptonAnalyzer( Analyzer ):
         # choose best di-lepton
         # put in the event
         self.readCollections( iEvent )
+        # trigger stuff could be put in a separate analyzer
         event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
         event.diLeptons = map( self.__class__.DiObjectClass, self.handles['diLeptons'].product() )
         event.leptons = map( self.__class__.LeptonClass, self.handles['leptons'].product() ) 
@@ -38,30 +44,33 @@ class DiLeptonAnalyzer( Analyzer ):
         if not self.leptonAccept( event.leptons ):
             return False
         self.counters.counter('DiLepton').inc('lepton accept ')
-        selDiLeptons = []
-        for diLepton in event.diLeptons:
-            if self.testLeg1( diLepton.leg1() ) and \
-               self.testLeg2( diLepton.leg2() ) :
-                selDiLeptons.append( diLepton )
+
+        # testing leg1
+        selDiLeptons = [ diL for diL in event.diLeptons if \
+                         self.testLeg1( diL.leg1() ) ]
         if len(selDiLeptons) == 0:
             return False
-        self.counters.counter('DiLepton').inc('legs 1 & 2 ok ')
+        else:
+            self.counters.counter('DiLepton').inc('leg 1 ok.')
 
-        selDiLeptons2 = []
-        for diLepton in selDiLeptons:
-            if diLepton.getSelection('cuts_baseline'):
-                selDiLeptons2.append( diLepton )
-        if len(selDiLeptons2) == 0:
+        # testing leg2 
+        selDiLeptons = [ diL for diL in event.diLeptons if \
+                         self.testLeg2( diL.leg2() ) ]
+        if len(selDiLeptons) == 0:
             return False
-        
-        self.counters.counter('DiLepton').inc( '{cut} ok'.format(
-            cut=self.cfg_ana.diLeptonCutString
-            ) )
+        else:
+            self.counters.counter('DiLepton').inc('leg 2 ok.')
 
-        if len(selDiLeptons2)==1:
+        # testing di-lepton itself 
+        selDiLeptons = self.selectDiLeptons( selDiLeptons ) 
+        if len(selDiLeptons)==0:
+            return False
+        elif len(selDiLeptons)==1:
             self.counters.counter('DiLepton').inc('exactly 1 di-lepton')
         
         event.diLepton = self.bestDiLepton( selDiLeptons )
+        event.leg1 = event.diLepton.leg1()
+        event.leg2 = event.diLepton.leg2()
 
         mass = event.diLepton.mass()
         if self.cfg_ana.m_min < mass and mass < self.cfg_ana.m_max:
@@ -73,16 +82,35 @@ class DiLeptonAnalyzer( Analyzer ):
             return False
         return True
 
+
     def declareHandles(self):        
         super(DiLeptonAnalyzer, self).declareHandles()
         self.handles['cmgTriggerObjectSel'] =  AutoHandle(
             'cmgTriggerObjectSel',
             'std::vector<cmg::TriggerObject>'
             )
+
     
     def leptonAccept(self, leptons):
         '''Should implement a default version running on event.leptons.'''
         return True
+
+
+    def selectDiLeptons(self, diLeptons, cutString=None):
+        '''Returns the list of input di-leptons which verify the cutstring'''
+        if cutString is None:
+            if not hasattr( self.cfg_ana, 'diLeptonCutString' ):
+                return diLeptons
+            else:
+                cutString = self.cfg_ana.diLeptonCutString 
+        selDiLeptons = [ diL for diL in diLeptons if \
+                         diL.getSelection(cutString) ]
+        if len(selDiLeptons) > 0:
+            self.counters.counter('DiLepton').inc( 'di-lepton {cut} ok'.format(
+                cut=cutString
+                ) )
+        return selDiLeptons
+
 
     def testLeg(self, leg, pt, eta, iso):
         if leg.pt()>pt and \
@@ -91,18 +119,18 @@ class DiLeptonAnalyzer( Analyzer ):
             return True
         else:
             return False
+
     
     def testLeg1(self, leg):
-        '''Overload according to type.
-        Could provide a default test of pt,eta,charge...'''
+        '''Overload according to type, see e.g. TauMuAnalyzer.'''
         return self.testLeg( leg,
                              pt = self.cfg_ana.pt1,
                              eta = self.cfg_ana.eta1,
                              iso = self.cfg_ana.iso1 )
 
+
     def testLeg2(self, leg):
-        '''Overload according to type.
-        Could provide a default test of pt,eta,charge...'''
+        '''Overload according to type, see e.g. TauMuAnalyzer.'''
         return self.testLeg( leg,
                              pt = self.cfg_ana.pt2,
                              eta = self.cfg_ana.eta2,
@@ -113,20 +141,21 @@ class DiLeptonAnalyzer( Analyzer ):
         '''Returns True if a muon passes a set of cuts.
         Can be used in testLeg1 and testLeg2, in child classes.'''
         return True
+
     
     def testElectron(self, electron):
         '''Returns True if an electron passes a set of cuts.
         Can be used in testLeg1 and testLeg2, in child classes.'''
         return True
 
+
     def testTau(self, tau):
         '''Returns True if a tau passes a set of cuts.
-        Can be used in testLeg1 and testLeg2, in child classes.'''
-        if tau.decayMode() == 0 and \
-               tau.calcEOverP() < 0.2: #MUONS
-            return False
-        else:
-            return True
+        Can be used in testLeg1 and testLeg2, in child classes.
+
+        WARNING: the muon filter should be used only in the muon channel.'''
+        return True
+
     
     def bestDiLepton(self, diLeptons):
         '''Returns the best diLepton (the one with highest pt1 + pt2).'''
