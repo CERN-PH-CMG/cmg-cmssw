@@ -20,6 +20,7 @@ class VertexAnalyzer( Analyzer ):
         event.vertexWeight = 1
         if self.cfg_comp.isMC:
             event.vertexWeight = self.handles['vertexWeight'].product()[0]
+            event.eventWeight *= event.vertexWeight
         if self.verbose:
             print 'VertexAnalyzer: #vert = ', len(event.vertices), \
                   ', weight = ', event.vertexWeight

@@ -41,7 +41,9 @@ class LeptonWeighter( Analyzer ):
                 self.lepton = getattr( event, self.leptonName )
                 self.weight = self.trigEff.lepEff( self.lepton.pt(),
                                                    self.lepton.eta() )
-        setattr( event, '_'.join([self.leptonName, 'weight']), self.weight )
+        varName = '_'.join([self.leptonName, 'weight'])
+        setattr( event, varName, self.weight )
+        event.eventWeight *= self.weight
         if self.cfg_ana.verbose:
             print ' '.join([self.name, self.leptonName, str(self.weight), str(self.lepton) ])
                 

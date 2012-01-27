@@ -24,8 +24,11 @@ class H2TauTauEventSorter( Analyzer ):
 
         self.mchandles['genParticles'] = AutoHandle( 'genParticlesStatus3',
                                                      'std::vector<reco::GenParticle>' )
-#        self.embhandles['generatorWeight'] = AutoHandle( ('generator', 'weight'),
-#                                                         'double')
+#        self.mchandles['vertexWeight'] = AutoHandle( self.cfg_ana.vertexWeight,
+#                                                     'double' )
+
+        self.embhandles['generatorWeight'] = AutoHandle( ('generator', 'weight'),
+                                                         'double')
     
     def beginLoop(self):
         super(H2TauTauEventSorter,self).beginLoop()
@@ -36,7 +39,13 @@ class H2TauTauEventSorter( Analyzer ):
         self.readCollections( iEvent )
 
         #WARNING set up weighting
-
+#        if self.cfg_comp.isMC:
+#            event.vertexWeight = self.mchandles['vertexWeight'].product()[0]
+#            event.eventWeight *= event.vertexWeight
+        elif self.cfg_comp.isEmbed:
+            event.generatorWeight = self.embhandles['generatorWeight'].product()[0]
+            event.eventWeight *= event.generatorWeight
+            
         matched = None
         if self.cfg_comp.name == 'DYJets':
             genParticles = self.mchandles['genParticles'].product()
