@@ -98,6 +98,7 @@ vbfAna = cfg.Analyzer(
 
 eventSorter = cfg.Analyzer(
     'H2TauTauEventSorter',
+    vertexWeight = mc_vertexWeight,
     MT_low = 40,
     MT_high = 60,
     Boosted_JetPt = 150,
@@ -132,15 +133,19 @@ for mc in MC:
     mc.jetScale = mc_jet_scale
     mc.jetSmear = mc_jet_smear
 
-selectedComponents =  [ DYJets ]
+data = [data_Run2011A_PromptReco_v4]
+
+selectedComponents =  MC
+# selectedComponents.extend( data )
+
 
 sequence = cfg.Sequence( [
-    vertexAna,
-    TauMuAna,
-    muonWeighter, 
-    tauWeighter, 
-    vbfAna,
-    eventSorter
+   vertexAna,
+   TauMuAna,
+   muonWeighter, 
+   tauWeighter, 
+#    vbfAna,
+#    eventSorter
     ] )
 
 config = cfg.Config( components = selectedComponents,
