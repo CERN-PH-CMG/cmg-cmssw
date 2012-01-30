@@ -19,4 +19,3 @@ ClusteredPFMetProducer = cms.EDProducer('ClusteredPFMetProducer',
                                                             strategy = cms.int32(1)         # Best
                                                             )
                                         )
-
