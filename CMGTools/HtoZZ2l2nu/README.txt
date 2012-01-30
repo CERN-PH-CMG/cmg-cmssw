@@ -2,7 +2,7 @@
 # Tags for 2011 run CMSSW_4_2_4
 #
 --- Tag ---    -------- Package --------                        
-V11_12_31      CMGTools/HtoZZ2l2nu                              
+V2011          CMGTools/HtoZZ2l2nu                              
 v11_09_28      CommonTools/ClusteredPFMetProducer               
 HEAD           CommonTools/ParticleFlow                         
 NoTag          Configuration/Skimming                           
