@@ -61,21 +61,22 @@ def addPatSequence(process, runOnMC, addPhotons=True) :
     jecLevels=['L1FastJet','L2Relative','L3Absolute']
     if(not runOnMC) : jecLevels.append( 'L2L3Residual' )
 
+    #rho computed up to 2.5
+    process.load('RecoJets.Configuration.RecoPFJets_cff')
+    process.kt6PFJets25 = process.kt6PFJets.clone( doRhoFastjet = True )
+    process.kt6PFJets25.Rho_EtaMax = cms.double(2.5)
+
     #start PF2PAT
     usePF2PAT(process,
               runPF2PAT=True,
               runOnMC=runOnMC,
               jetAlgo=jetAlgo,
               postfix=postfix,
-              jetCorrections=(jecSetPF, jecLevels)
+              jetCorrections=(jecSetPF, jecLevels),
+              typeIMetCorrections=True
               )
     enablePileUpCorrection( process, postfix=postfix )
-
-    #disable mc matching for photons
-    removeMCMatching(process,names=['Photons'],postfix=postfix)
-    process.patElectronsPFlow.embedTrack=True
-    process.patMuonsPFlow.embedTrack=True
-           
+          
     #configure top projections
     getattr(process,"pfNoPileUp"+postfix).enable = True
     getattr(process,"pfNoMuon"+postfix).enable = True
@@ -84,17 +85,23 @@ def addPatSequence(process, runOnMC, addPhotons=True) :
     getattr(process,"pfNoTau"+postfix).enable = False
     getattr(process,"pfNoJet"+postfix).enable = False
 
-    #fix isolation to use a cone of 0.3 for both electrons and muons
-    applyPostfix(process,"isoValMuonWithNeutral",postfix).deposits[0].deltaR = cms.double(0.3)
-    applyPostfix(process,"isoValMuonWithCharged",postfix).deposits[0].deltaR = cms.double(0.3)
-    applyPostfix(process,"isoValMuonWithPhotons",postfix).deposits[0].deltaR = cms.double(0.3)
+    #muons
+    process.patMuonsPFlow.embedTrack=True
+    applyPostfix( process, 'pfIsolatedMuons', postfix ).isolationValueMapsCharged  = cms.VInputTag( cms.InputTag( 'muPFIsoValueCharged03' + postfix ) )
+    applyPostfix( process, 'pfIsolatedMuons', postfix ).deltaBetaIsolationValueMap = cms.InputTag( 'muPFIsoValuePU03' + postfix )
+    applyPostfix( process, 'pfIsolatedMuons', postfix ).isolationValueMapsNeutral  = cms.VInputTag( cms.InputTag( 'muPFIsoValueNeutral03' + postfix ), cms.InputTag( 'muPFIsoValueGamma03' + postfix ) )
+    applyPostfix( process, 'patMuons', postfix ).isolationValues.pfNeutralHadrons   = cms.InputTag( 'muPFIsoValueNeutral03' + postfix )
+    applyPostfix( process, 'patMuons', postfix ).isolationValues.pfPUChargedHadrons = cms.InputTag( 'muPFIsoValuePU03' + postfix )
+    applyPostfix( process, 'patMuons', postfix ).isolationValues.pfPhotons          = cms.InputTag( 'muPFIsoValueGamma03' + postfix )
+    applyPostfix( process, 'patMuons', postfix ).isolationValues.pfChargedHadrons   = cms.InputTag( 'muPFIsoValueCharged03' + postfix )
     applyPostfix(process,"pfIsolatedMuons",postfix).combinedIsolationCut = cms.double(9999.)
-    applyPostfix(process,"isoValElectronWithNeutral",postfix).deposits[0].deltaR = cms.double(0.3)
-    applyPostfix(process,"isoValElectronWithCharged",postfix).deposits[0].deltaR = cms.double(0.3)
-    applyPostfix(process,"isoValElectronWithPhotons",postfix).deposits[0].deltaR = cms.double(0.3)
+
+    #electrons
+    process.patElectronsPFlow.embedTrack=True
+    applyPostfix( process, 'isoValElectronWithCharged', postfix ).deposits[0].deltaR = 0.3
+    applyPostfix( process, 'isoValElectronWithNeutral', postfix ).deposits[0].deltaR = 0.3
+    applyPostfix( process, 'isoValElectronWithPhotons', postfix ).deposits[0].deltaR = 0.3
     applyPostfix(process,"pfIsolatedElectrons",postfix).combinedIsolationCut = cms.double(9999.)
-    
-    #electron ID
     process.load("ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff")
     process.load("RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_DataTuning_cfi")
     process.load("RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_cfi")
@@ -135,46 +142,24 @@ def addPatSequence(process, runOnMC, addPhotons=True) :
     applyPostfix( process, 'patJets', postfix ).tagInfoSources = cms.VInputTag( cms.InputTag("secondaryVertexTagInfosAOD"+postfix) )
     applyPostfix( process, 'patJets', postfix ).userData.userFunctions = cms.vstring( "? hasTagInfo('secondaryVertex') && tagInfoSecondaryVertex('secondaryVertex').nVertices() > 0 ? tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : -999")
     applyPostfix( process, 'patJets', postfix ).userData.userFunctionLabels = cms.vstring('secvtxMass')
-    
+
+   
     #add trigger match
     addTriggerMatchingForLeptons(process,postfix=postfix)
 
-    #puffo met
-    process.load("WWAnalysis.Tools.chargedMetProducer_cfi")
-    process.chargedMetProducer.collectionTag = cms.InputTag("particleFlow")
-    process.trackMetProducer = process.chargedMetProducer.clone(minNeutralPt = 99999., maxNeutralEta = 0)
+    #create the path
+    process.patDefaultSequence = cms.Sequence(
+        process.kt6PFJets25*
+        process.electronIDSequence*
+        getattr(process,"patPF2PATSequence"+postfix)
+        )
     
-    #alternative met collections
-    process.pfMETPFlowNoPileup = process.pfMETPFlow.clone(src=cms.InputTag("pfNoPileUpPFlow"))
-    process.patMETsPFlowNoPileup = process.patMETsPFlow.clone(metSource=cms.InputTag("pfMETPFlowNoPileup"))
 
-    process.pfMETPFlowPileup = process.pfMETPFlow.clone(jets=cms.InputTag("ak5PFJets"))
-    process.patMETsPFlowPileup = process.patMETsPFlow.clone(metSource=cms.InputTag("pfMETPFlowPileup"))
-
-    process.hzzmetSequence = cms.Sequence(process.chargedMetProducer*
-                                          process.trackMetProducer*
-                                          process.pfMETPFlowNoPileup*process.patMETsPFlowNoPileup*
-                                          process.pfMETPFlowPileup*process.patMETsPFlowPileup)
-    
-    if(addPhotons) :
-        # temporarily use std photons (switch to PF in 43x cf. with Daniele how to do it)
-        process.load('PhysicsTools.PatAlgos.producersLayer1.photonProducer_cff')
-        process.patPhotons.addGenMatch=cms.bool(False)
-
-        #create the path
-        process.patDefaultSequence = cms.Sequence(
-            process.electronIDSequence*
-            getattr(process,"patPF2PATSequence"+postfix)*
-            process.hzzmetSequence*
-            process.patPhotons
-            )
-    else :
-        process.patDefaultSequence = cms.Sequence(
-            process.electronIDSequence*
-            getattr(process,"patPF2PATSequence"+postfix)*
-            process.hzzmetSequence
-            )
-        
+    #some fixes for photons
+    #getattr(process,'patDefaultSequence').remove( getattr(process,'photonMatch'+postfix) )
+    #applyPostfix( process, 'patPhotons', postfix ).addGenMatch = cms.bool(False)
+    #removeMCMatching(process,names=['Photons'],postfix=postfix)
+    getattr(process,'patDefaultSequence').remove( getattr(process,'photonMatch'+postfix) )
 
     print " *** PAT path has been defined"
     

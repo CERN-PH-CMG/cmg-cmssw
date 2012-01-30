@@ -1,12 +1,10 @@
-
-
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
 
 PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
 {
   
   PhysicsEvent_t phys;
-  phys.weight=ev.weight;
+  phys.puWeight=ev.puWeight;
   phys.cat = ev.cat;
   phys.nvtx = ev.nvtx;
   phys.leptons.push_back(PhysicsObject_Lepton(LorentzVector(ev.l1_px,ev.l1_py,ev.l1_pz,ev.l1_en), ev.l1_id, ev.l1_genid, ev.l1_ptErr, ev.l1_iso1, ev.l1_iso2, ev.l1_iso3) );

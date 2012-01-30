@@ -23,8 +23,7 @@
   <use name="DataFormats/ParticleFlowCandidate"/>
   <use name="DataFormats/METReco"/>
   <use name="RecoMET/METAlgorithms"/>
-  <use name="RecoParticleFlow/PostProcessing"/>
-  <use name="HiggsAnalysis/HiggsToGammaGamma"/>
+  <use name="RecoJets/JetProducers"/>
   <use name="root"/>
   <use name="roottmva"/>
   <use name="rootrflx"/>

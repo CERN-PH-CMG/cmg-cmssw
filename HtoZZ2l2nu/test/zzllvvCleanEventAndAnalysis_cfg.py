@@ -2,28 +2,17 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("HtoZZto2l2nu")
 
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'START42_V13::All'
-process.load("Configuration.StandardSequences.Geometry_cff")
-process.load("Configuration.StandardSequences.MagneticField_cff")
-
 #the source is configured from the command line
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring()
                             )
-
-# wrapper to query command line
 from CMGTools.HtoZZ2l2nu.localPatTuples_cff import configureFromCommandLine
 castorDir, outputFile, process.source.fileNames = configureFromCommandLine()
 
 # histogram service
 process.TFileService = cms.Service("TFileService", fileName = cms.string(outputFile) )
 
-# higgs pT reweighter
-from CMGTools.HtoZZ2l2nu.GeneratorLevelSequences_cff import addHiggsPtReweighting
-needsPtReweight=addHiggsPtReweighting(process,castorDir)
-
-# our MET prroducer
+# our MET producer
 from CMGTools.HtoZZ2l2nu.ClusteredPFMetProducer_cfi import ClusteredPFMetProducer
 process.ClusteredPFMetProducer = ClusteredPFMetProducer.clone()
 process.ClusteredPFMetProducerPt5 = ClusteredPFMetProducer.clone( minJetPt = cms.double(5.0) )
@@ -54,13 +43,14 @@ process.evAnalyzer = cms.EDAnalyzer("DileptonPlusMETEventAnalyzer",
                                     Dileptons = BaseDileptonSelection.clone(),
                                     Jets = BaseJetSelection.clone(),
                                     MET = BaseMetSelection.clone()
-                                    ) 
+                                    )
+
+from CMGTools.HtoZZ2l2nu.GeneratorLevelSequences_cff import parseHiggsMass
+process.evAnalyzer.Generator.weightForHiggsMass = cms.double( parseHiggsMass(castorDir) )
 
 #the path to execute
-if(needsPtReweight) :
-    process.p = cms.Path(process.ClusteredPFMetSequence*process.hkfactorSequence*process.puWeightSequence*process.evAnalyzer)
-else :
-    process.p = cms.Path(process.ClusteredPFMetSequence*process.puWeightSequence*process.evAnalyzer)
+process.p = cms.Path(process.ClusteredPFMetSequence*process.puWeightSequence*process.evAnalyzer)
+
 
 # message logger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")

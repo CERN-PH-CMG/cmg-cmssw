@@ -617,7 +617,7 @@ int main(int argc, char* argv[])
       }
 
       //pileup and Higgs pT weight
-      //float weight=ev.weight;
+      //float weight=ev.puWeight;
       float weight = 1.0;
       double TotalWeight_plus = 1.0;
       double TotalWeight_minus = 1.0;

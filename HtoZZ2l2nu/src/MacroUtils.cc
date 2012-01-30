@@ -55,8 +55,8 @@ namespace jet
 		double etaRes = etaResol->resolutionEtaPt(jets[ijet].eta(),jets[ijet].pt())->GetRandom();
 		double phiRes = phiResol->resolutionEtaPt(jets[ijet].eta(),jets[ijet].pt())->GetRandom();
 		double newpt = (1.0+ptScaleRes)*jets[ijet].pt();
-		double neweta = etaRes+jets[ijet].eta();
-		double newphi = phiRes+jets[ijet].phi();
+		//double neweta = etaRes+jets[ijet].eta();
+		//double newphi = phiRes+jets[ijet].phi();
 		TLorentzVector pjet(0,0,0,0);
 		//		pjet.SetPtEtaPhiM(newpt,neweta,newphi,jets[ijet].mass());
 		pjet.SetPtEtaPhiM(newpt,jets[ijet].eta(),jets[ijet].phi(),jets[ijet].mass());

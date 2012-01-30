@@ -26,12 +26,10 @@ BaseTriggerSelection.gammaTriggers = cms.vstring('HLT_Photon20_CaloIdVL_IsoL',
 # base values for the vertex selection ------------------------------------------
 BaseGeneratorSelection = cms.PSet( source = cms.InputTag("prunedGen"),
                                    filterId = cms.int32(25),
+                                   weightForHiggsMass = cms.double(-1),
+                                   urlForHiggsPtWeights = cms.string(''),
                                    genJets=cms.InputTag("ak5GenJets"),
-                                   puReweight=cms.InputTag("puWeights:puWeight"),
-                                   normPuReweight=cms.InputTag("puWeights:renPuWeight"),
-                                   higgsPtWeights=cms.VInputTag("hKfactorStd",
-                                                                "hKfactorRup","hKfactorRdown",
-                                                                "hKfactorFup","hKfactorFdown")
+                                   puReweight=cms.InputTag("puWeights:puWeight")
                                    )
 
 
@@ -69,20 +67,23 @@ BaseLooseMuonsSelection = BaseMuonsSelection.clone( minPt = cms.double(5),
 # base values for photon selection ----------------------------------------------
 BasePhotonsSelection = cms.PSet( source = cms.InputTag("selectedPatPhotons"),
                                  conversionSource = cms.InputTag("allConversions"),
-                                 trackSource = cms.InputTag("generalTracks"),
                                  ebrechits = cms.InputTag("reducedEcalRecHitsEB"),
                                  eerechits = cms.InputTag("reducedEcalRecHitsEE"),
-                                 id = cms.string(""),
                                  minEt = cms.double(0), 
-                                 maxEta = cms.double(1.4442),#2.5),
-                                 maxSihihEB = cms.double(0.013),
-                                 maxSihihEE = cms.double(0.03),
+                                 maxEta = cms.double(2.5),
                                  maxHoE = cms.double(0.05),
-                                 minSipipEB = cms.double(0.0),
-                                 requireNoElectron = cms.bool(True),
-                                 requireNoTrack = cms.bool(True),
-                                 requireR9 = cms.bool(False),
-                                 phoCorrection=cms.string('/afs/cern.ch/user/b/bendavid/cmspublic/regweights/gbrph.root')
+                                 minSipipEB = cms.double(0.001),
+                                 minSihihEB = cms.double(0.001),
+                                 maxSihihEB = cms.double(0.011),
+                                 maxSihihEE = cms.double(0.03),
+                                 minR9 = cms.double(-1),
+                                 trkIsoCoeffsEB = cms.vdouble(2.0,  0.001,  0.0167),
+                                 trkIsoCoeffsEE = cms.vdouble(2.0,  0.001,  0.0032),
+                                 ecalIsoCoeffsEB = cms.vdouble(4.2, 0.006,  0.183),
+                                 ecalIsoCoeffsEE = cms.vdouble(4.2, 0.006,  0.090),
+                                 hcalIsoCoeffsEB = cms.vdouble(2.2, 0.0025, 0.062),
+                                 hcalIsoCoeffsEE = cms.vdouble(2.2, 0.025,  0.180),
+                                 requireNoElectron = cms.bool(True)
                                  )
 
 # base values for electron selection ----------------------------------------------

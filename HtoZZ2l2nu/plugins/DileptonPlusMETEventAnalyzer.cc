@@ -26,8 +26,6 @@
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
-#include "HiggsAnalysis/HiggsToGammaGamma/interface/EGEnergyCorrector.h"
-
 #include "TH1.h"
 #include "TH2.h"
 #include "TFile.h"
@@ -58,7 +56,7 @@ public:
   
 private:
 
-  float saveMCtruth(const edm::Event &event, const edm::EventSetup &iSetup );
+  void saveMCtruth(const edm::Event &event, const edm::EventSetup &iSetup );
 
   inline int getLeptonPidSummary(reco::CandidatePtr l)
   {
@@ -75,7 +73,6 @@ private:
   ZZ2l2nuSummaryHandler summaryHandler_;
   TSelectionMonitor controlHistos_;
   EventCategory eventClassifComp_;
-  EGEnergyCorrector       ecorr_;
 };
 
 using namespace std;
@@ -102,6 +99,9 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
     controlHistos_.addHistogram("cutflow", ";Steps; Events", nselFilters, 0.,nselFilters);
     TH1 *h = controlHistos_.getHisto("cutflow");
     for(size_t istep=0; istep<nselFilters; istep++) h->GetXaxis()->SetBinLabel(istep+1,selFilters[istep]);
+
+    controlHistos_.addHistogram("pileup", ";Pileup; Events",50,-0.5,49.5);
+    controlHistos_.addHistogram("pileuptrue", ";True pileup; Events",50,-0.5,49.5);
   }
   catch(std::exception &e){
     cout << e.what() << endl;
@@ -109,40 +109,41 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
 }
 
 //
-float DileptonPlusMETEventAnalyzer::saveMCtruth(const edm::Event &event, const edm::EventSetup &iSetup)
+void DileptonPlusMETEventAnalyzer::saveMCtruth(const edm::Event &event, const edm::EventSetup &iSetup)
 {
   ZZ2l2nuSummary_t &ev = summaryHandler_.getEvent();
   ev.nmcparticles=0;
 
   float weight(1.0);
-  ev.weight = 1.0;
-  if(event.isRealData())  return weight;
+  ev.puWeight = 1.0;
+  if(event.isRealData())  return;
 
   //pileup
   edm::Handle<float> puWeightHandle;
   event.getByLabel(objConfig_["Generator"].getParameter<edm::InputTag>("puReweight"), puWeightHandle );
   if(puWeightHandle.isValid()) weight = *(puWeightHandle.product());
-  ev.weight = weight;
+  ev.puWeight = weight;
 
-  edm::Handle<float> normPuWeightHandle;
-  event.getByLabel(objConfig_["Generator"].getParameter<edm::InputTag>("normPuReweight"), normPuWeightHandle );
-  if(normPuWeightHandle.isValid()) ev.normWeight = *(normPuWeightHandle.product());
-  
   edm::Handle<std::vector<PileupSummaryInfo> > puInfoH;
   event.getByType(puInfoH);
   int npuOOT(0),npuIT(0),npuOOTm1(0);
+  float truePU(0);
   if(puInfoH.isValid())
     {
       for(std::vector<PileupSummaryInfo>::const_iterator it = puInfoH->begin(); it != puInfoH->end(); it++)
 	{
-	  if(it->getBunchCrossing()==0) npuIT += it->getPU_NumInteractions();
+	  if(it->getBunchCrossing()==0) { npuIT += it->getPU_NumInteractions(); truePU = it->getTrueNumInteractions()/3.; }
 	  else                          npuOOT += it->getPU_NumInteractions();
 	  if(it->getBunchCrossing()<0)  npuOOTm1 += it->getPU_NumInteractions();
+
 	}
     }
   ev.ngenITpu=npuIT;
   ev.ngenOOTpu=npuOOT;
   ev.ngenOOTpum1=npuOOTm1;
+  controlHistos_.fillHisto("pileup","all",ev.ngenITpu);
+  controlHistos_.fillHisto("pileuptrue","all",truePU);
+
 
   //retrieve pdf info
   edm::Handle<GenEventInfoProduct> genEventInfoProd;
@@ -162,26 +163,21 @@ float DileptonPlusMETEventAnalyzer::saveMCtruth(const edm::Event &event, const e
     }
 
   //Higgs pT reweighting (for Powheg gg->H)
-  try{
-    ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]=1;
-    ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]=1;
-    ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]=1;
-    ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]=1;
-    ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]=1;
-
-    int iweight(0);
-    std::vector<edm::InputTag> ptWeightSources=objConfig_["Generator"].getParameter<std::vector<edm::InputTag> >("higgsPtWeights");
-    for(std::vector<edm::InputTag>::iterator tIt=ptWeightSources.begin();
-	tIt!=ptWeightSources.end();
-	tIt++,iweight++)
-      {
-	edm::Handle<double> hkfactorHandle;
-	event.getByLabel(*tIt,hkfactorHandle);
-	ev.hptWeights[iweight]=*hkfactorHandle;
-      }
-  }catch(std::exception &e){
-
-  }
+  ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]=1;
+  ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]=1;
+  ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]=1;
+  ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]=1;
+  ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]=1;
+  double mh = objConfig_["Generator"].getParameter<double>("weightForHiggsMass");
+  if(mh>0)
+    {
+      //FIXME: move this to stand-alone
+      //ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] = getWeightsFor(ZZ2l2nuSummary_t::hKfactor); 
+      //ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp] = getWeightsFor(ZZ2l2nuSummary_t::hKfactor_renUp); 
+      //ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown] = getWeightsFor(ZZ2l2nuSummary_t::hKfactor_renDown); 
+      //ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp] = getWeightsFor(ZZ2l2nuSummary_t::hKfactor_factUp); 
+      //ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown] = getWeightsFor(ZZ2l2nuSummary_t::hKfactor_factDown); 
+    }
 
   //generator level event
   Handle<View<Candidate> > hGen;
@@ -245,9 +241,6 @@ float DileptonPlusMETEventAnalyzer::saveMCtruth(const edm::Event &event, const e
       ev.mc_id[ev.nmcparticles]=1;
       ev.nmcparticles++;
     }
-    
-  //all done return the event weight
-  return weight;
 }
 
 
@@ -269,7 +262,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.run    = event.id().run();
     ev.lumi   = event.luminosityBlock();
     ev.event  = event.id().event();
-    ev.weight = saveMCtruth(event, iSetup );    
+    saveMCtruth(event, iSetup );    
     
     //
     // trigger
@@ -399,8 +392,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //
     edm::Handle<edm::View<reco::Candidate> > hPhoton;
     event.getByLabel( objConfig_["Photons"].getParameter<edm::InputTag>("source"), hPhoton );
-    edm::Handle<std::vector<reco::Track> > hTracks;
-    event.getByLabel( objConfig_["Photons"].getParameter<edm::InputTag>("trackSource"), hTracks );
     edm::Handle<EcalRecHitCollection> ebrechits;
     event.getByLabel( objConfig_["Photons"].getParameter<edm::InputTag>("ebrechits"), ebrechits );
     EcalClusterLazyTools lazyTool(event,iSetup,
@@ -412,14 +403,12 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("pvAssocCandidatesSource"),pvAssocCandidates);
     edm::Handle<reco::PFCandidateCollection> pfCandsH;
     event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("pfCands"), pfCandsH);
-    if( !ecorr_.IsInitialized() ) ecorr_.Initialize( iSetup, objConfig_["Photons"].getParameter<std::string>("phoCorrection") );
 
     ev.gn=0;
-    std::vector<CandidatePtr> selPhotons=getGoodPhotons(hPhoton,lazyTool,ebrechits,hTracks,hEle,hConversions,*rho,objConfig_["Photons"]);
+    std::vector<CandidatePtr> selPhotons=getGoodPhotons(hPhoton,lazyTool,ebrechits,hEle,hConversions,*rho,objConfig_["Photons"]);
     for(std::vector<CandidatePtr>::iterator phoIt = selPhotons.begin(); phoIt != selPhotons.end(); phoIt++)
       {
 	const reco::Photon *pho= dynamic_cast<const reco::Photon *>( phoIt->get() );
-	std::pair<double,double> cor = ecorr_.CorrectedEnergyWithError( *pho );
  	ev.g_px[ev.gn]    = pho->px();
 	ev.g_py[ev.gn]    = pho->py();
 	ev.g_pz[ev.gn]    = pho->pz();
@@ -430,7 +419,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.g_iso1[ev.gn]  = pho->trkSumPtSolidConeDR04();
 	ev.g_iso2[ev.gn]  = pho->ecalRecHitSumEtConeDR04();
 	ev.g_iso3[ev.gn]  = pho->hcalTowerSumEtConeDR04();
-	ev.g_ecorr[ev.gn] = cor.first/pho->energy();
 
 	//check if it has been matched to the PV bt the clustered MET producer
 	double minDR=9999.;
@@ -498,7 +486,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.met1_phi = pfmet->phi();    ev.met1_pt=  pfmet->pt();
  
     //pseudo-mets
-    LorentzVector trkmet(0,0,0,0);
     std::vector<double> sumEts; 
     std::vector<LorentzVector>  clusteredMets;
     try{
@@ -516,18 +503,11 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	  event.getByLabel(*it,clustMetH); 
 	  clusteredMets.push_back( LorentzVector(clustMetH->px(),clustMetH->py(),0,clustMetH->pt()) );
 	}
-      
-      //trk met (from WW , do we need it?)
-      edm::Handle< edm::ValueMap<reco::PFMET> > trkMetsH;
-      event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("trksource"), trkMetsH); 
-      const reco::PFMET &trkpfmetObj=(*trkMetsH)[primVertex];
-      trkmet=LorentzVector(trkpfmetObj.px(),trkpfmetObj.py(),0,trkpfmetObj.pt());
-
     }catch(std::exception &e){
-      //cout << e.what() << endl;
+      cout << e.what() << endl;
     }
 
-    ev.met2_phi = trkmet.phi();    ev.met2_pt=trkmet.pt();
+    ev.met2_phi = 0;               ev.met2_pt=0;
     ev.met3_phi = 0;               ev.met3_pt=0;
     if(clusteredMets.size()>0)
       {
@@ -602,6 +582,7 @@ int DileptonPlusMETEventAnalyzer::getElectronPidSummary(const pat::Electron *ele
   try{
     isEcalDriven = ele->ecalDrivenSeed();
   }catch(std::exception &e){
+    cout << e.what() << endl;
   }
 
   summary= ( (int(ele->electronID("eidVBTF70")) & 0x1) )

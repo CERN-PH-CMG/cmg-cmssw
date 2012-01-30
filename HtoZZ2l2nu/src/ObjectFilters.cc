@@ -470,13 +470,12 @@ double computeVtxAssocFracForJet(const pat::Jet *jet, const reco::Vertex *vtx)
 
 //
 vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hPhoton,
-					 EcalClusterLazyTools &lazyTool,
-					 edm::Handle<EcalRecHitCollection> ebrechits,
-					 edm::Handle<vector<reco::Track> > & hTracks,
-					 edm::Handle<edm::View<reco::Candidate> > &hEle,
-					 edm::Handle<vector<reco::Conversion> > &hConversions,
-					 double rho,
-					 const edm::ParameterSet &iConfig)
+				    EcalClusterLazyTools &lazyTool,
+				    edm::Handle<EcalRecHitCollection> ebrechits,
+				    edm::Handle<edm::View<reco::Candidate> > &hEle,
+				    edm::Handle<vector<reco::Conversion> > &hConversions,
+				    double rho,
+				    const edm::ParameterSet &iConfig)
 {
   vector<CandidatePtr> selPhotons;
   if(!hPhoton.isValid()) return selPhotons;
@@ -485,14 +484,20 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
   try{
     double minEt = iConfig.getParameter<double>("minEt");
     double maxEta = iConfig.getParameter<double>("maxEta");
+
+    double minSipipEb=iConfig.getParameter<double>("minSipipEB"); 
+    double minSihihEB=iConfig.getParameter<double>("minSihihEB");
     double maxSihihEB=iConfig.getParameter<double>("maxSihihEB");
     double maxSihihEE=iConfig.getParameter<double>("maxSihihEE");
+    double minR9= iConfig.getParameter<double>("minR9");
     double maxHoE=iConfig.getParameter<double>("maxHoE");
-    double minSipipEb=iConfig.getParameter<double>("minSipipEB");
-    string id = iConfig.getParameter<string>("id");
-    bool requireNoTrack= iConfig.getParameter<bool>("requireNoTrack");
+    std::vector<double> trkIsoCoeffsEB = iConfig.getParameter< std::vector<double> >("trkIsoCoeffsEB");
+    std::vector<double> trkIsoCoeffsEE = iConfig.getParameter< std::vector<double> >("trkIsoCoeffsEE");
+    std::vector<double> ecalIsoCoeffsEB = iConfig.getParameter< std::vector<double> >("ecalIsoCoeffsEB");
+    std::vector<double> ecalIsoCoeffsEE = iConfig.getParameter< std::vector<double> >("ecalIsoCoeffsEE");
+    std::vector<double> hcalIsoCoeffsEB = iConfig.getParameter< std::vector<double> >("hcalIsoCoeffsEB");
+    std::vector<double> hcalIsoCoeffsEE = iConfig.getParameter< std::vector<double> >("hcalIsoCoeffsEE");
     bool requireNoElectron= iConfig.getParameter<bool>("requireNoElectron");
-    bool requireR9= iConfig.getParameter<bool>("requireR9");
 
     //iterate over the photons
     for(size_t iPhoton=0; iPhoton< hPhoton.product()->size(); ++iPhoton)
@@ -503,18 +508,26 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
 	//kinematics
 	float et = photon->et();
 	float eta = photon->eta(); 
+	bool fallsInCrackRegion( fabs(eta)>1.4442 && fabs(eta)<1.566 );
+	bool isGood( et>minEt && fabs(eta)<maxEta && !fallsInCrackRegion);
 
 	//id
-	//float r9 = photon->r9();
 	float sihih = photon->sigmaIetaIeta();
 	float sipip(999999.);
 	float hoe = photon->hadronicOverEm();
 	bool hasId(hoe<maxHoE);
-	if(!id.empty()) hasId = photon->photonID(id);
-	if(requireR9)
-	  hasId &= (photon->r9()>0.94);
-
-	//these require the photon core and tracks to be stored
+	hasId &= (photon->r9()>minR9);
+	if(photon->isEB())
+	  {
+	      hasId &= (sihih<maxSihihEB);
+	      hasId &= (sihih>minSihihEB);
+	  }
+	else
+	  {
+	    hasId &= (sihih<maxSihihEE);
+	  }
+	
+	//these require the photon core to be stored
 	bool hasPixelSeed(false);
 	try{
 	  
@@ -535,37 +548,19 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
 
 	      hasId &= (!hasOutofTime);
 	      hasId &= (sipip>minSipipEb);
-	      hasId &= (sihih<maxSihihEB);
 	    }
-	  else
-	    hasId &= (sihih<maxSihihEE);
-
+	  
 	}catch(exception &e){
 	  //cout << "Photon core is missing (assuming photon eta and no pixel seed)" << endl;
 	}
 	
-	//check if photon is in good region of ECAL
-	bool fallsInCrackRegion( fabs(eta)>1.4442 && fabs(eta)<1.566 );
-	bool isGood( et>minEt && fabs(eta)<maxEta && !fallsInCrackRegion);
-	
-	//tighten prompt photon selection 
+
+	//check if photon is prompt and uncoverted
 	bool isPrompt( !hasPixelSeed );
 	int tType(0);
 	const reco::Conversion *phoConvMatch = matchPhotonToConversion( photon, hConversions );
 	if(phoConvMatch) { isPrompt=false; tType=11*11; }
-
 	float minDr(99999.);
-	if(hTracks.isValid() && requireNoTrack)
-	  {
-	    for(vector<reco::Track>::const_iterator tit = hTracks->begin(); tit != hTracks->end(); tit++)
-	      {
-		float dr =deltaR(tit->eta(),tit->phi(),photon->eta(),photon->phi());
-		if(dr>minDr) continue;
-		minDr=dr;
-		tType=1;
-	      }
-	  }
-	
 	if(hEle.isValid() && requireNoElectron)
 	  {
 	    for(edm::View<reco::Candidate>::const_iterator eit = hEle->begin(); eit != hEle->end(); eit++)
@@ -577,18 +572,23 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
 	      }
 	  }
 	if(minDr<0.05) isPrompt=false; 
+
+	//isolation
+	float trk_a(trkIsoCoeffsEB[0]),   trk_b(trkIsoCoeffsEB[1]),   trk_c(trkIsoCoeffsEB[2]);
+	float ecal_a(hcalIsoCoeffsEB[0]), ecal_b(ecalIsoCoeffsEB[1]), ecal_c(ecalIsoCoeffsEB[2]);
+	float hcal_a(hcalIsoCoeffsEB[0]), hcal_b(hcalIsoCoeffsEB[1]), hcal_c(hcalIsoCoeffsEB[2]);
+	if(!photon->isEB())
+	  {
+	    trk_a=trkIsoCoeffsEB[0];   trk_b=trkIsoCoeffsEB[1];   trk_c=trkIsoCoeffsEB[2];
+	    ecal_a=hcalIsoCoeffsEB[0]; ecal_b=ecalIsoCoeffsEB[1]; ecal_c=ecalIsoCoeffsEB[2];
+	    hcal_a=hcalIsoCoeffsEB[0]; hcal_b=hcalIsoCoeffsEB[1]; hcal_c=hcalIsoCoeffsEB[2];
+	  }
+	bool isTrkIso(photon->trkSumPtHollowConeDR04()< trk_a+trk_b*et+trk_c*rho);
+	bool isEcalIso(photon->ecalRecHitSumEtConeDR04()< ecal_a+ecal_b*et+ecal_c*rho);
+	bool isHcalIso(photon->hcalTowerSumEtConeDR04()< hcal_a+hcal_b*et+hcal_c*rho);
+	bool isIso(isTrkIso && isEcalIso && isHcalIso);
 	
-	//isolation (applying rho correction as in Hgg)
-	float Aeff_trk  (photon->isEB() ? 0.317 : 0.269);
-	float Aeff_ecal     (photon->isEB() ? 0.162 : 0.071);
-	float Aeff_hcal     (photon->isEB() ? 0.042 : 0.095);
-	float trkIso  = max(photon->trkSumPtSolidConeDR04()  - rho*Aeff_trk,  0.);
-	float ecalIso = max(photon->ecalRecHitSumEtConeDR04()- rho*Aeff_ecal, 0.);
-	float hcalIso = max(photon->hcalTowerSumEtConeDR04() - rho*Aeff_hcal, 0.);
-	bool isIso( (trkIso-1.5)/et  < 0.001);
-	isIso &=  ( (ecalIso-2.0)/et < 0.006);
-	isIso &=  ( (hcalIso-2.0)/et < 0.0025);
-	
+	//final photon selection
 	if(!isGood || !isPrompt || !hasId || !isIso) continue;
 	selPhotons.push_back( photonPtr );
       }
