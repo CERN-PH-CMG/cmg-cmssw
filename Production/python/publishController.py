@@ -29,8 +29,8 @@ class PublishController(object):
     def loginValid(self):
     	return findDSOnSav.validLogin(self._username, self._password)
         
-    def chooseParent(parentName, dbs, category):
-    	if dbs and self._dbsAPI is not None:
+    def chooseParent(parentName, category):
+    	if self._dbsAPI is not None:
     		parent = parentName.lstrip("/").split("/")
     		parentDatasets = self._dbsAPI.listProcessedDatasets(parent[0],parent[2],parent[1])
     		if len(parentDatasets) == 0:
@@ -89,10 +89,7 @@ class PublishController(object):
     				return sets[int(index)]
     			except:
     				print "Please add desired dataset"
-    				return None
-    	
-    	
-    		
+    				return None	
         
     def publish(self, procds, comment, opts):
     	# Initialise values for later use
@@ -115,8 +112,7 @@ class PublishController(object):
     	
     	# Check if user has dataset files, and DO NOT allow publish if they do not
     	if len(fileOps.getRootFiles()) == 0:
-        	print "No dataset found on Castor, exiting"
-        	sys.exit(1)
+        	raise NameError("No dataset files found on EOS, exiting")
         	return None
 
     	
@@ -135,8 +131,7 @@ class PublishController(object):
         
     	# Check if user has dataset files, and DO NOT allow publish if they do not
     	if len(fileOps.getRootFiles()) == 0:
-        	print "No dataset found on Castor, exiting"
-        	sys.exit(1)
+        	raise NameError("No dataset files found on EOS, exiting")
         	return None
     	# Check dbsAPI is valid
     	if self._dbsAPI is None:
@@ -196,8 +191,7 @@ class PublishController(object):
         
     	# Check if user has dataset files, and DO NOT allow publish if they do not
     	if len(fileOps.getRootFiles()) == 0:
-        	print "No dataset found on Castor, exiting"
-        	sys.exit(1)
+        	raise NameError("No dataset files found on EOS, exiting")
         	return None
         
     	test = False
@@ -235,8 +229,11 @@ class PublishController(object):
     	if fileOps.getIntegrity() is not None:
     		self.savannah.appendExtra("*Primary Dataset Entries:* "+str(fileOps.getIntegrity()['PrimaryDatasetEntries']))
     		self.savannah.appendExtra("*Primary Dataset Fraction used:* "+str(fileOps.getIntegrity()['PrimaryDatasetFraction']))
-    		self.savannah.appendExtra("*Valid Duplicates:* "+str(fileOps.getIntegrity()['ValidDuplicates']))
-    		self.savannah.appendExtra("*Bad Jobs:* "+str(fileOps.getIntegrity()['BadJobs']))
+    		validDuplicates = ["\n"]
+    		for i in fileOps.getIntegrity()['ValidDuplicates']:
+    			validDuplicates.append("* " +i+": \n** "+str(fileOps.getIntegrity()['ValidDuplicates'][i])+" events")
+    		self.savannah.appendExtra({"Valid Duplicates":validDuplicates})
+    		self.savannah.appendExtra({"Bad Jobs":fileOps.getIntegrity()['BadJobs']})
     	#if fileOps.getLFNGroups() is not None:
     		#self.savannah.appendExtra(fileOps.getLFNGroups())
     		
@@ -285,7 +282,7 @@ class PublishController(object):
     	release = fileOps.getRelease()
     	
     	if taskID is None and dbsID is None:
-    		print "No dataset found, nothing added to CMGDB"
+    		raise NameError("No dataset found, nothing added to CMGDB")
     		return None
     		
     	# See if cmgdb already has record of ds with sav
@@ -296,7 +293,7 @@ class PublishController(object):
     	if cmgdbID is None:
     		categoryID = '101'
     		if test:
-    			categoryID = '100'	
+    			categoryID = '103'	
     		altTaskID = findDSOnSav.getTaskID(procds['PathList'][0], categoryID, self._username, self._password, False)
     		cmgdbID = self._cmgdbAPI.getDatasetIDWithTaskID(altTaskID, (not test))
     		
