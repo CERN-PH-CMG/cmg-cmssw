@@ -149,7 +149,7 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
 
 
   //build the legend
-  TLegend *leg = new TLegend(0.7,0.96-0.05*allKeys.size(),0.93,0.96,NULL,"brNDC");
+  TLegend *leg = new TLegend(0.68,0.96-0.05*allKeys.size(),0.9,0.96,NULL,"brNDC");
   leg->SetBorderSize(1);
   leg->SetFillColor(0);
   leg->SetTextFont(42);
@@ -282,7 +282,8 @@ TLegend *showPlots(TPad *c, TList &origstack, TList &origspimpose, TList &origda
 	    {
 	      refFrame->Draw("hist");
 	      //refFrame->GetYaxis()->SetRangeUser(1e-3,1.0);
-	      refFrame->GetYaxis()->SetRangeUser(1e-3,1e6);
+	      //refFrame->GetYaxis()->SetRangeUser(1e-3,1e6);
+	      refFrame->GetYaxis()->SetRangeUser(1e-3,refFrame->GetMaximum()*1.25);
 	      hstack->Draw("histsame"); 
 	      canvasFilled=true;
 	    }

@@ -254,7 +254,7 @@ void formatForCmsPublic(TPad * c, TLegend *leg, TString title, int nsamp, float 
 
   float legx1=legx, legx2=legx+legw;
   float legy1 = legy, legy2 = legy-legh*(float)(nsamp);  
-  if(leg==0) leg = ((TPad *)c)->BuildLegend(legx,legy1,legx2,legy2);
+  if(leg==0) leg = ((TPad *)c)->BuildLegend(legx1,legy1,legx2,legy2);
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
   leg->SetFillStyle(0);
