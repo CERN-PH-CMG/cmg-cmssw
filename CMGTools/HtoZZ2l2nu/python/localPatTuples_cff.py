@@ -30,6 +30,10 @@ def fillFromCastor(dir,ffile=0,step=-1,generatePfn=True):
             if l in lsout :
                 nduplicate += 1
                 continue
+            #filter out CMG trees and histograms
+            basename = os.path.basename(l)
+            if(basename.find('tree_')==0) : continue
+            if(basename.find('histogram')==0): continue
             lsout.append(l)
         print 'Discarded ' + str(nduplicate)  + ' files duplicated in cmsLs output'
         

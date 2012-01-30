@@ -195,7 +195,7 @@ int main(int argc, char* argv[])
       std::vector<TString> dilCats;
       LorentzVector gamma(0,0,0,0);
       int triggerThr(0);
-      float r9(0),ensf(1.0),sietaieta(0),hoe(0);
+      float r9(0),sietaieta(0),hoe(0);
       bool passTightGammaId(false);
       if(isGammaEvent)
 	{
@@ -205,9 +205,7 @@ int main(int argc, char* argv[])
 	  r9         = phys.gammas[0].r9*(isMC ? 1.005 : 1.0); 
 	  sietaieta  = phys.gammas[0].sihih;
 	  hoe        = phys.gammas[0].hoe;
-	  ensf       = ev.g_ecorr[0];
 	  gamma      = gammaEvHandler.massiveGamma("ll");
-	  gamma *= ensf;
 	  triggerThr = gammaEvHandler.triggerThr();
 	  if(r9>0.94 && sietaieta<0.0106 && sietaieta>0.) passTightGammaId=true;
 	  //if(sietaieta>0.) passTightGammaId=true;

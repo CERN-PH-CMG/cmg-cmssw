@@ -65,7 +65,7 @@ typedef std::vector<PhysicsObject_Gamma>  PhysicsObjectGammaCollection;
 //
 struct PhysicsEvent_t
 {
-  float weight;
+  float puWeight;
   int cat;
   int nvtx;
   LorentzVector met[15];

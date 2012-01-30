@@ -1,34 +1,11 @@
 #
-# Tags for 2011 run CMSSW_4_2_4
+# Tags for CMSSW_4_4_3
 #
 --- Tag ---    -------- Package --------                        
-V2011          CMGTools/HtoZZ2l2nu                              
-v11_09_28      CommonTools/ClusteredPFMetProducer               
-HEAD           CommonTools/ParticleFlow                         
-NoTag          Configuration/Skimming                           
-V06-04-18      DataFormats/PatCandidates                        
-pm20111022a    HiggsAnalysis/HiggsToGammaGamma                  
-V00-4_2_X_patch2 HiggsAnalysis/HiggsToWW2Leptons                  
-V06-4_2_X      HiggsAnalysis/HiggsToWW2e                        
-V26Apr2011     JetMETAnalysis/simpleDRfilter                    
-V00-4_1_X      MyAnalysis/IsolationTools                        
-V08-06-38      PhysicsTools/PatAlgos                            
-V00-05-21      PhysicsTools/PatExamples                         
-V00-03-17      PhysicsTools/SelectorUtils                       
-V08-03-14      PhysicsTools/Utilities                           
-V01-03-11      RecoBTag/PerformanceDB                           
-V02-04-17      RecoJets/Configuration                           
-NoTag          RecoLuminosity/LumiDB                            
-V00-00-07      RecoMET/METAnalyzers                             
-Colin_June23   RecoParticleFlow/PostProcessing                  
-V01-02-02      RecoTauTag/Configuration                         
-V01-02-06      RecoTauTag/RecoTau                               
-V01-02-00      RecoTauTag/TauTagTools                           
-b4_2_x_2011Mar30 TauAnalysis/MCEmbeddingTools                     
-edm-20May2011  WWAnalysis/DataFormats                           
-WW_414_SKIM_V05 WWAnalysis/Filters                               
-R42X_S1_V00_S2_V00_S3_V00 WWAnalysis/Tools                                 
-
+NoTag          CMGTools/HtoZZ2l2nu                              
+V08-07-37      PhysicsTools/PatAlgos                            
+V08-03-17      PhysicsTools/Utilities                           
+---------------------------------------
 
 
 #

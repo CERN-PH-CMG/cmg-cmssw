@@ -3,7 +3,6 @@
  <bin name="runOnEventSummary" file="runOnEventSummary.cc"></bin>
  <bin name="runGammaPlusJetsMETtemplates" file="runGammaPlusJetsMETtemplates.cc"></bin>
  <bin name="runMVAStudy" file="runMVAStudy.cc"></bin>
- <bin name="runVBF" file="runVBF.cc"></bin>
  <bin name="runPlotter" file="runPlotter.cc"></bin>
 </environment>
 <Flags CXXFLAGS="-g"/>

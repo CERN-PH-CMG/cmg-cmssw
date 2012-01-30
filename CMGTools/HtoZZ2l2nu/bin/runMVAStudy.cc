@@ -201,7 +201,7 @@ int main(int argc, char *argv[])
 	    }
 	  tmvaVars[varCounter++] = eventCategory;
 
-	  double weight=procWeight[iproc]*ev.weight;
+	  double weight=procWeight[iproc]*ev.puWeight;
 	  if(procType[iproc]==1)
 	    {
 	      if ( i%2 == 0 ){ factory->AddSignalTrainingEvent( tmvaVars, weight ); nsigtrain++; }

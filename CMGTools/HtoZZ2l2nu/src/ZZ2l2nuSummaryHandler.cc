@@ -31,8 +31,7 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("ngenITpu",   &evSummary_.ngenITpu,   "ngenITpu/I");
   t_->Branch("ngenOOTpu",  &evSummary_.ngenOOTpu,  "ngenOOTpu/I");
   t_->Branch("ngenOOTpum1",  &evSummary_.ngenOOTpum1,  "ngenOOTpum1/I");
-  t_->Branch("weight",     &evSummary_.weight,     "weight/F");
-  t_->Branch("normWeight", &evSummary_.normWeight, "normWeight/F");
+  t_->Branch("puweight",     &evSummary_.puWeight,     "puweight/F");
   t_->Branch("hptWeights", evSummary_.hptWeights,  "hptWeights[5]/F");
   t_->Branch("pthat",      &evSummary_.pthat,      "pthat/F");
   t_->Branch("genWeight",  &evSummary_.genWeight,  "genWeight/F");
@@ -176,7 +175,6 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("g_iso3",    evSummary_.g_iso3,      "g_iso3[gn]/F");
   t_->Branch("g_sihih",   evSummary_.g_sihih,     "g_sihih[gn]/F");
   t_->Branch("g_r9",      evSummary_.g_r9,        "g_r9[gn]/F");
-  t_->Branch("g_ecorr",   evSummary_.g_ecorr,     "g_ecorr[gn]/F");
   t_->Branch("g_conv",    evSummary_.g_conv,      "g_conv[gn]/O");
   t_->Branch("g_conv_px", evSummary_.g_conv_px,   "g_conv_px[gn]/F");
   t_->Branch("g_conv_py", evSummary_.g_conv_py,   "g_conv_py[gn]/F");
@@ -222,8 +220,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("rho")->SetAddress( &evSummary_.rho );
 
   //generator level info
-  t_->GetBranch("weight")->SetAddress(&evSummary_.weight);
-  t_->GetBranch("normWeight")->SetAddress(&evSummary_.normWeight);
+  t_->GetBranch("puweight")->SetAddress(&evSummary_.puWeight);
   t_->GetBranch("hptWeights")->SetAddress(evSummary_.hptWeights);
   t_->GetBranch("ngenITpu")->SetAddress(&evSummary_.ngenITpu);
   t_->GetBranch("ngenOOTpu")->SetAddress(&evSummary_.ngenOOTpu);
@@ -373,7 +370,6 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   if( t_->GetBranch("g_conv_py") ) t_->GetBranch("g_conv_py")->SetAddress( evSummary_.g_conv_py );
   if( t_->GetBranch("g_conv_pz") ) t_->GetBranch("g_conv_pz")->SetAddress( evSummary_.g_conv_pz );
   if( t_->GetBranch("g_conv_en") ) t_->GetBranch("g_conv_en")->SetAddress( evSummary_.g_conv_en );
-  if( t_->GetBranch("g_ecorr") )   t_->GetBranch("g_ecorr")->SetAddress( evSummary_.g_ecorr );
 
   //Higgs Info
   t_->GetBranch("h_px")     ->SetAddress( &evSummary_.h_px);

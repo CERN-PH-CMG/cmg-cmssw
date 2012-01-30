@@ -87,11 +87,12 @@ const reco::GenParticle *getLeptonGenMatch(reco::CandidatePtr &lepton);
 ///                            ///   
 /// PHOTON SELECTION UTILITIES ///
 ///                            ///   
+// cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/Vgamma2011PhotonID
 std::vector<reco::CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hPhoton, 
-					 EcalClusterLazyTools &lazyTool, edm::Handle<EcalRecHitCollection> ebrechits,
-					 edm::Handle<std::vector<reco::Track> > & hTracks, edm::Handle<edm::View<reco::Candidate> > &hEle,
-					 edm::Handle<std::vector<reco::Conversion> > &hConversions,
-					 double rho, const edm::ParameterSet &iConfig);
+					       EcalClusterLazyTools &lazyTool, edm::Handle<EcalRecHitCollection> ebrechits,
+					       edm::Handle<edm::View<reco::Candidate> > &hEle,
+					       edm::Handle<std::vector<reco::Conversion> > &hConversions,
+					       double rho, const edm::ParameterSet &iConfig);
 const reco::Conversion *matchPhotonToConversion(const pat::Photon *pho, edm::Handle<std::vector<reco::Conversion> > &hConversions);
 
 

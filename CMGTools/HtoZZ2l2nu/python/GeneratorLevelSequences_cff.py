@@ -1,7 +1,4 @@
 import FWCore.ParameterSet.Config as cms
-from HiggsAnalysis.HiggsToWW2Leptons.HWWKFactorProducer_cfi import KFactorProducer
-from math import floor
-import re
 
 ###
 ### standard generator level sequence
@@ -50,49 +47,17 @@ def addGeneratorLevelSequence(process) :
     process.genLevelPath = cms.Path(process.prunedGen)
 
 
-##
-## adds the standard Powheg pT spectrum reweighting
-##
-def addHiggsPtReweighting(process,castorDir=''):
+def parseHiggsMass(url) :
+    mh=-1
 
     #reweighting applies to powheg gg->H processes
-    if(castorDir.find('GluGluToH')<0 or castorDir.find('powheg')<0): return False
-
+    if(url.find('GluGluToH')<0 or url.find('powheg')<0) : return mh
+  
     #find the mass (typ. GluGluToHToPotatoesToFriedPotatoes_M-***_7TeV-powheg-pythia6 )
-    castorDir.split('M-')
-    substring = re.findall(r'M-?([^\_>]+)',castorDir)
+    url.split('M-')
+    substring = re.findall(r'M-?([^\_>]+)',url)
     if(len(substring)==0) :
-        print 'Warning could not retrieve the Higgs mass from: ' + castorDir
+        print 'Warning could not retrieve the Higgs mass from: ' + url
         return False
     mh=int(substring[0])
-    if(mh>=600) :
-        print 'Warning no weights for such high mass: ' + str(mh)
-        return False
-    
-    #get the k-factors
-    stdFile='HiggsAnalysis/HiggsToWW2Leptons/data/kfactors_Std/kfactors_mh'+str(int(mh))+'_ren'+str(int(mh))+'_fac'+str(int(mh))+'.dat'
-    #    stdFile='HptScales/scalefactor.mh'+str(int(mh))+'.dat'
-    process.hKfactorStd   = KFactorProducer.clone( genParticlesTag = cms.InputTag('prunedGen'),
-                                                   Debug = cms.untracked.bool(False),
-                                                   ProcessID = cms.untracked.int32(10011),
-                                                   inputFilename=cms.untracked.string(stdFile) )
-    
-    rupFile='HiggsAnalysis/HiggsToWW2Leptons/data/kfactors_ScaleVariations/kfactors_mh'+str(int(mh))+'_ren'+str(int(2*mh))+'_fac'+str(int(mh))+'.dat'
-    process.hKfactorRup   = process.hKfactorStd.clone(inputFilename=cms.untracked.string(rupFile))
-    rdownFile='HiggsAnalysis/HiggsToWW2Leptons/data/kfactors_ScaleVariations/kfactors_mh'+str(int(mh))+'_ren'+str(int(floor(0.5*mh)))+'_fac'+str(int(mh))+'.dat'
-    process.hKfactorRdown = process.hKfactorStd.clone(inputFilename=cms.untracked.string(rdownFile) )
-    fupFile='HiggsAnalysis/HiggsToWW2Leptons/data/kfactors_ScaleVariations/kfactors_mh'+str(int(mh))+'_ren'+str(int(mh))+'_fac'+str(int(2*mh))+'.dat'    
-    process.hKfactorFup   = process.hKfactorStd.clone(inputFilename=cms.untracked.string(fupFile) )
-    fdownFile='HiggsAnalysis/HiggsToWW2Leptons/data/kfactors_ScaleVariations/kfactors_mh'+str(int(mh))+'_ren'+str(int(mh))+'_fac' + str(int(floor(0.5*mh)))+'.dat'
-    process.hKfactorFdown = process.hKfactorStd.clone(inputFilename=cms.untracked.string(fdownFile) )
-
-    print 'H pT reweighting sequence is defined from the following files'
-    print stdFile
-    print rupFile
-    print rdownFile
-    print fupFile
-    print fdownFile
-    process.hkfactorSequence = cms.Sequence( process.hKfactorStd * process.hKfactorRup * process.hKfactorRdown * process.hKfactorFup * process.hKfactorFdown )
-    return True
-
-
+    return mh
