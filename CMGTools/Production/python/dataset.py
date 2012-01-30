@@ -95,6 +95,8 @@ class Dataset( BaseDataset ):
         super(Dataset, self).__init__(user, name, pattern)
         self.buildListOfFiles( pattern )
         self.extractFileSizes()
+        self.maskExists = False
+        self.report = None
         self.buildListOfBadFiles()
         
     def buildListOfFiles(self, pattern='.*root'):
@@ -118,6 +120,8 @@ class Dataset( BaseDataset ):
             p = PublishToFileSystem(mask)
             report = p.get(self.castorDir)
             if report is not None and report:
+                self.maskExists = True
+                self.report = report
                 dup = report.get('ValidDuplicates',{})
                 for name, status in report['Files'].iteritems():
                     # print name, status
