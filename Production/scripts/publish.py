@@ -3,7 +3,7 @@
 ## @ CERN, Meyrin
 ## September 27th 2011
 
-import os, getpass, sys
+import os, getpass, sys, re
 from CMGTools.Production.castorToDbsFormatter import CastorToDbsFormatter
 from CMGTools.Production.publishController import PublishController
 from DBSAPI.dbsProcessedDataset import DbsProcessedDataset
@@ -13,6 +13,8 @@ from DBSAPI.dbsOptions import DbsOptionParser
 from DBSAPI.dbsApi import DbsApi
 from DBSAPI.dbsApiException import *
 from DBSAPI.dbsException import *
+from CMGTools.Production.publish import publish
+
 
 
 if __name__ == '__main__':
@@ -59,13 +61,13 @@ publish.py -F cbern /VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_
                       dest="dbs",
                       help="Use DBS",
                       default = False)
-    # If user wants to add their own comments
+    # If user wants to add multiple datasets from file
     parser.add_option("-M", "--multi",
-                      action = "store",
+                      action = "store_true",
                       dest="multi",
-                      help="Takes argument as user%/sample/name and publishes all samples with that name",
+                      help="""Argument is now LFN to location of .txt file
+                      Entries in the file should be on independant lines in the form: dataset fileowner 'comment'""",
                       default = False)
-    
     
     
     (options, args) = optManager.getOpt()
@@ -81,64 +83,29 @@ publish.py -F cbern /VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_
         parser.print_help()
         sys.exit(1)
     
-    dsName = args[0]
     
-    if len(dsName.lstrip(os.sep).rstrip(os.sep).split(os.sep)) < 3:
-    	print "Error, please use valid name"
-    	sys.exit(1)
-    elif len(dsName.lstrip(os.sep).rstrip(os.sep).split(os.sep)) < 4:
-    	print "Can not publish base dataset. No file owner."
-    	sys.exit(1)
+    
     password = getpass.getpass("Enter NICE Password: ")
-    comment = options.commented
-
-    # Store full dataset name
     
-    opts = dict()
-    formatter = CastorToDbsFormatter(dsName,options.fileown)
-    procds =formatter.getDataset()
-    dayMonthYear = date.fromtimestamp(int(procds['DateCreated'])).strftime('%d-%B-%Y').split("-")
-    opts['planned_starting_date_dayfd']=dayMonthYear[0].lstrip("0")
-    opts['planned_starting_date_monthfd']=dayMonthYear[1]    
-    opts['planned_starting_date_yearfd']=dayMonthYear[2]
-    if options.test:
-    	opts['category_id']='101'
-    else:opts['category_id']='100'
-    opts['assigned_to']=options.fileown
-    opts['summary'] = procds['PathList'][0]
-    
-    
-    try:
-    	dbsID = None
-    	parentDbsID = None
-    	taskID = None
-    	parentTaskID = None
-    	
-    	publishController = PublishController(options.user, password, dbsApi)
-    	if not publishController.loginValid():
-    		print "User authentication failed, exiting"
-    		sys.exit(1)
-    	if procds['ParentList'][0].endswith("---*"):
-    		procds['ParentList'][0] = publishController.chooseParent(procds['ParentList'][0], options.dbs, opts['category_id'])
-    	if options.dbs:
-    		print "\n--------DBS--------\n"
-    		publishController.dbsPublish(procds)
-    	print "\n------Savanah------\n"
-    	(taskID, parentTaskID) = publishController.savannahPublish(procds, opts, comment)
-    	
-    	if publishController.cmgdbOnline():
-    		print "\n-------CMGDB-------\n"
-    		try:
-    			if taskID is not None:
-    				publishController.cmgdbPublish(procds, dbsID, taskID, options.test)
-    			if parentTaskID is not None:
-    				publishController.cmgdbPublish(procds, parentDbsID, parentTaskID, options.test)
-    		except ImportError:
-    			print "cx_Oracle not properly installed"
-
-    except ValueError as err:
-        print err, '. Exit!'
-        sys.exit(1)
-
-
-
+    # For multiple file input
+    if options.multi:
+        file = open(args[0], 'r')
+        lines = file.readlines()
+        for line in lines:
+            try:
+                fileown = None
+                dataset = line.split(" ")[0]
+                if not re.search("---", dataset):
+                    fileown = line.split("'")[0].split(" ")[1]
+                comment = None
+                if len(line.split("'"))>1:
+                    comment = line.rstrip("'").split("'")[1]
+                publish(dataset,fileown,comment,options.test,dbsApi,options.user,password)
+            except Exception as err:
+                print err, "\nDataset not published"
+    # For singular file input
+    else:
+        dataset = args[0]
+        comment = options.commented
+        publish(dataset,options.fileown,comment,options.test,dbsApi,options.user,password)
+       
