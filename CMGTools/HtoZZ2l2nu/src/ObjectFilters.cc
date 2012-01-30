@@ -387,13 +387,13 @@ vector<CandidatePtr> getGoodJets(edm::Handle<edm::View<reco::Candidate> > &hJet,
     double minDeltaRtoLepton = iConfig.getParameter<double>("minDeltaRtoLepton");
     PFJetIDSelectionFunctor jetIdSelector( iConfig.getParameter<edm::ParameterSet>("jetId") );
     pat::strbitset hasId = jetIdSelector.getBitTemplate();
-    
+
     //iterate over the jets
     for(size_t iJet=0; iJet< hJet.product()->size(); ++iJet)
       {
 	reco::CandidatePtr jetPtr = hJet->ptrAt(iJet);
 	const pat::Jet *jet = dynamic_cast<const pat::Jet *>( jetPtr.get() );
-	  
+	
 	//basic kinematics
 	double pt = jet->pt();
 	double eta = jet->eta();

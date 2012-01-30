@@ -272,39 +272,46 @@ int main(int argc, char* argv[])
 
 
   metTypes["met"]                 = "E_{T}^{miss}";
-  metTypes["centralMet"]          = "central-E_{T}^{miss}";
+  //metTypes["centralMet"]          = "central-E_{T}^{miss}";
   metTypes["assocChargedMet"]     = "assoc-E_{T}^{miss}(charged)";
   metTypes["assocMet"]            = "assoc-E_{T}^{miss}";
-  metTypes["assocCMet"]           = "assocC-E_{T}^{miss}";
-  metTypes["assocFwdCMet"]        = "assoc + clust Fwd E_{T}^{miss}";
-  metTypes["assocFwdMet"]         = "assoc + Fwd E_{T}^{miss}";
-  metTypes["assocFwd2Met"]        = "assoc + Fwd2 E_{T}^{miss}";
+  // metTypes["assocCMet"]           = "assocC-E_{T}^{miss}";
+  //  metTypes["assocFwdCMet"]        = "assoc + clust Fwd E_{T}^{miss}";
+  //  metTypes["assocFwdMet"]         = "assoc + Fwd E_{T}^{miss}";
+  // metTypes["assocFwd2Met"]        = "assoc + Fwd2 E_{T}^{miss}";
   metTypes["clusteredMet"]        = "clustered-E_{T}^{miss}";
-  metTypes["minAssocChargedMet"]  = "min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))";
-  metTypes["minAssocMet"]         = "min(E_{T}^{miss},assoc-E_{T}^{miss})";
-  metTypes["minClusteredMet"]     = "min(E_{T}^{miss},clustered-E_{T}^{miss})";
-  metTypes["minTAssocMet"]       = "min(assoc-E_{T}^{miss}(charged),assoc-E_{T}^{miss})";
-  metTypes["minTClusteredMet"]   = "min(assoc-E_{T}^{miss}(charged),clustered-E_{T}^{miss})";
-  metTypes["minAClusteredMet"]    = "min(assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
-  metTypes["min3Met"]             = "min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
-  metTypes["min4Met"]             = "min(E_{T}^{miss},assoc-E_{T}^{miss}(charged),assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
+  // metTypes["minAssocChargedMet"]  = "min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))";
+  // metTypes["minAssocMet"]         = "min(E_{T}^{miss},assoc-E_{T}^{miss})";
+  // metTypes["minClusteredMet"]     = "min(E_{T}^{miss},clustered-E_{T}^{miss})";
+ //  metTypes["minTAssocMet"]       = "min(assoc-E_{T}^{miss}(charged),assoc-E_{T}^{miss})";
+//   metTypes["minTClusteredMet"]   = "min(assoc-E_{T}^{miss}(charged),clustered-E_{T}^{miss})";
+//   metTypes["minAClusteredMet"]    = "min(assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
+//   metTypes["min3Met"]             = "min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
+//   metTypes["min4Met"]             = "min(E_{T}^{miss},assoc-E_{T}^{miss}(charged),assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
   metTypes["redMet"]              = "red(E_{T}^{miss},clustered-E_{T}^{miss})";
   metTypes["redMetD0"]            = "red-E_{T}^{miss}(D0)";
-  metTypes["redAssocChargedMet"]  = "red(E_{T}^{miss},assoc-E_{T}^{miss}(charged))";
-  metTypes["redAssocMet"]         = "red(E_{T}^{miss},assoc-E_{T}^{miss})";
-  metTypes["redClusteredMet"]     = "red(E_{T}^{miss},clustered-E_{T}^{miss})";
-  metTypes["redTAssocMet"]        = "red(assoc-E_{T}^{miss}(charged),assoc-E_{T}^{miss})";
-  metTypes["redTClusteredMet"]    = "red(assoc-E_{T}^{miss}(charged),clustered-E_{T}^{miss})";
-  metTypes["redAClusteredMet"]    = "red(assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
-  metTypes["red3Met"]             = "red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
-  metTypes["redminAssocMet"]      = "red(min(E_{T}^{miss},assoc-E_{T}^{miss}),clustered E_{T}^{miss})";
-  metTypes["mincentralAssocMet"]         = "min(cental-E_{T}^{miss},assoc-E_{T}^{miss})";
+//   metTypes["redAssocChargedMet"]  = "red(E_{T}^{miss},assoc-E_{T}^{miss}(charged))";
+//   metTypes["redAssocMet"]         = "red(E_{T}^{miss},assoc-E_{T}^{miss})";
+//   metTypes["redClusteredMet"]     = "red(E_{T}^{miss},clustered-E_{T}^{miss})";
+//   metTypes["redTAssocMet"]        = "red(assoc-E_{T}^{miss}(charged),assoc-E_{T}^{miss})";
+//   metTypes["redTClusteredMet"]    = "red(assoc-E_{T}^{miss}(charged),clustered-E_{T}^{miss})";
+//   metTypes["redAClusteredMet"]    = "red(assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
+//   metTypes["red3Met"]             = "red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
+//   metTypes["redminAssocMet"]      = "red(min(E_{T}^{miss},assoc-E_{T}^{miss}),clustered E_{T}^{miss})";
+//   metTypes["mincentralAssocMet"]         = "min(cental-E_{T}^{miss},assoc-E_{T}^{miss})";
 
 
   std::map<TString,LorentzVector> metTypeValues;
   for(std::map<TString,TString>::iterator it = metTypes.begin(); it!= metTypes.end(); it++){
       metTypeValues[it->first]=LorentzVector(0,0,0,0);
       controlHistos.addHistogram( new TH1F( TString("met_") + it->first, ";"+it->second+";Events", 100,0,500) );
+      controlHistos.addHistogram( new TH1F( TString("metinc_") + it->first, ";"+it->second+";Events", 100,0,500) );
+      controlHistos.addHistogram( new TH1F( TString("metL_") + it->first, ";"+it->second+";Events", 100,-250,250) );
+      controlHistos.addHistogram( new TH1F( TString("metT_") + it->first, ";"+it->second+";Events", 100,-250,250) );
+      controlHistos.addHistogram( new TH1F( TString("metoverqt_") + it->first, ";"+it->second+";Events", 100,0,5) );
+      controlHistos.addHistogram( new TH1F( TString("metoverqtL_") + it->first, ";"+it->second+";Events", 100,-5,5) );
+      controlHistos.addHistogram( new TH1F( TString("metoverqtT_") + it->first, ";"+it->second+";Events", 100,-5,5) );
+
       controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"vspu", ";Pileup events;"+it->second+";Events", 25,0,25,200,0,500) );
 //      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"phimetphijet", ";#phi "+it->second+";#phi jet", 10,0,3.15,10,0,3.15) );
       controlHistos.addHistogram( new TH1F( TString("met_") + it->first+"mindphijmet", ";min #Delta#phi(jet,"+it->second+");Events",10,0,3.15) );
@@ -1077,8 +1084,23 @@ int main(int argc, char* argv[])
 		      // controlHistos.fill2DHisto(TString("met_") + it->first+"phimetphijet", ctf,it->second.phi(),metTypeValuesminJetphi[it->first],iweight);
                   }
 		  
+
+		  TVector2 metPt(it->second.px(), it->second.py());
+		  TVector2 dileptonPt(zll.px(), zll.py());
+		  TVector2 dileptonLongi( dileptonPt.Unit() );
+		  TVector2 dileptonPerp( dileptonLongi.Rotate(TMath::Pi()/2) );
+		  controlHistos.fillHisto(TString("metinc_") + it->first, ctf, metPt*dileptonLongi, iweight);
+		  controlHistos.fillHisto(TString("metL_") + it->first, ctf, metPt*dileptonLongi, iweight);
+		  controlHistos.fillHisto(TString("metT_") + it->first, ctf, metPt*dileptonPerp, iweight);
+		  controlHistos.fillHisto(TString("metoverqt_") + it->first, ctf, it->second.pt()/zpt, iweight);
+		  controlHistos.fillHisto(TString("metoverqtL_") + it->first, ctf, metPt*dileptonLongi/zpt, iweight);
+		  controlHistos.fillHisto(TString("metoverqtT_") + it->first, ctf, metPt*dileptonPerp/zpt,iweight);
+
+
                   if(mindphijmet<0.3)continue;
 		  controlHistos.fillHisto(TString("met_") + it->first, ctf,it->second.pt(),iweight);
+		  
+
 		  controlHistos.fill2DHisto(TString("met_") + it->first+"vspu", ctf,ev.ngenITpu,it->second.pt(),iweight);
                   controlHistos.fill2DHisto(TString("met_") + it->first+"zpt", ctf,it->second.pt(),zpt,iweight);
                   controlHistos.fillHisto(TString("met_") + it->first+"minzpt", ctf,std::min(it->second.pt(),zll.pt()),iweight);

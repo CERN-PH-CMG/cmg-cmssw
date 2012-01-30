@@ -33,6 +33,6 @@ TObject *formatPlot(TObject *h,
 		    bool detachFromCurrentDir, bool setSumw2,
 		    int linecolor, int fillcolor, int markercolor);
 void fixExtremities(TH1 *h,bool addOverflow, bool addUnderflow);
-void formatForCmsPublic(TPad * c, TLegend *leg, TString title, int nsamp, float legx=0.65, float legy=0.95, float legw=0.23, float legh=0.05, TString legopt="lpf");
+void formatForCmsPublic(TPad * c, TLegend *leg, TString title, int nsamp, float legx=0.65, float legy=0.95, float legw=0.2, float legh=0.05, TString legopt="lpf");
 
 #endif
