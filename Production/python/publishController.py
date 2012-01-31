@@ -190,7 +190,7 @@ class PublishController(object):
         fileOps = FileOps(getCastor(procds['PathList'][0]), getDbsUser(procds['PathList'][0]))
         
     	# Check if user has dataset files, and DO NOT allow publish if they do not
-    	if len(fileOps.getRootFiles()) == 0:
+    	if len(fileOps.getRootFiles()) == 0 or fileOps == None:
     		taskID = findDSOnSav.getTaskID(procds['PathList'][0], opts['category_id'], self._username, self._password, False)
     		ds = procds['PathList'][0]
     		if taskID is None:
