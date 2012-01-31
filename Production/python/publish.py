@@ -98,19 +98,15 @@ def publish(dsName,fileown,comment,test,dbsApi,user,password):
     except NameError as err:
         print err.args[0]
         if len(err.args)>1:
-            f = open("/afs/cern.ch/"+user+"/"+user[0]+"/pmeckiff/public/obsoleteDatasets.txt","a")
-            f.write(args[1])
+            print "Logging dataset: "+err.args[1] 
+            f = open("/afs/cern.ch/user/"+user[0]+"/"+user+"/public/obsoleteDatasets.txt","a")
+            if err.args[2] is not None:
+                f.write(err.args[1]+" https://savannah.cern.ch/task/?"+str(err.args[2])+"\n")
+            else:
+                f.write(err.args[1])
             f.close()
-            oldName = getCastor(args[1])
-            task = getTaskID(oldName,opts['100'], user,password, False)
-            if task is None
-                task = getTaskID(oldName,opts['103'], user,password, False)
-            if task is not None:
-                f = open("/afs/cern.ch/"+user+"/"+user[0]+"/pmeckiff/public/obsoleteDatasetsSavannah.txt","a")
-                f.write("https://savannah.cern.ch/task/?"+str(task))
-                f.close()
+            
         return None
-    except EOSError as err
 
 
 
