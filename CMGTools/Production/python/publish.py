@@ -102,8 +102,9 @@ def publish(dsName,fileown,comment,test,dbsApi,user,password):
             f.write(args[1])
             f.close()
             oldName = getCastor(args[1])
-            task = getTaskID(oldName,opts['category_id'], user,password, False)
-
+            task = getTaskID(oldName,opts['100'], user,password, False)
+            if task is None
+                task = getTaskID(oldName,opts['103'], user,password, False)
             if task is not None:
                 f = open("/afs/cern.ch/"+user+"/"+user[0]+"/pmeckiff/public/obsoleteDatasetsSavannah.txt","a")
                 f.write("https://savannah.cern.ch/task/?"+str(task))
