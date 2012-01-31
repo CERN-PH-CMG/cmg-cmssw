@@ -9,6 +9,7 @@ import CMGTools.Production.castorBaseDir as castorBaseDir
 from CMGTools.Production.edmIntegrityCheck import PublishToFileSystem
 from CMGTools.Production.edmIntegrityCheck import IntegrityCheck
 from optparse import Values as CheckValues
+
 class FileOps(object):
 
     
@@ -25,7 +26,7 @@ class FileOps(object):
         self._valid = False
         self._castorGroups = None
         castor = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user))+self._setName
-        print castor
+        
         # Check if local first (obviously)
         if os.path.isdir(setName) and user == os.environ['USER']:
             print "File is on local machine: " + local
@@ -33,22 +34,21 @@ class FileOps(object):
             self._localTags()
         # Check if on castor next
         elif eostools.fileExists(castor+"/Logger.tgz"):
-            print "File is directory on Castor"
+            print "File is directory on EOS"
             self._castor =  castor
             self._LFN = eostools.eosToLFN(castor)
             self._castorTags()
             self._checkContiguity()
         # If logger is not present but directory exists
         elif eostools.isDirectory(castor):
-            print "Directory is valid on Castor, but no logger file is present."
+            print "Directory is valid on EOS, but no logger file is present."
             self._castor = castor
             self._LFN = eostools.eosToLFN(castor)
-            print self._LFN
             self._checkContiguity()
             
         # If neither then raise an exception
         else:
-            raise ValueError(setName + ' is neither a tgz directory on castor or a local directory')
+            raise ValueError('No log file found for dataset: '+setName)
     
     def getIntegrity(self):
         return self._integrity
@@ -79,7 +79,6 @@ class FileOps(object):
     # Stage in the Logger.tgz file in a tmp file, load the showtags file and split it on newlines
     def _castorTags(self):
         f = tempfile.NamedTemporaryFile()
-        print f.name
         os.system("cmsStage -f "+self.getLFN() + "/Logger.tgz "+f.name)
         tar =tarfile.open(fileobj=f)
         file=tar.extractfile("Logger/logger_showtags.txt")
@@ -153,7 +152,6 @@ class FileOps(object):
         if len(fileNames) is not 0:
             
             integrity = PublishToFileSystem("IntegrityCheck")
-            print self.getLFN()
             report = integrity.get(self.getLFN())
             # Build in some kind of wildcard
             if report is None and (self._user == 'cmgtools' or self._user == os.environ['USER']):
@@ -215,6 +213,17 @@ class FileOps(object):
                     file = self.getLFN() + file.split("/")[-1]
                 for file in group['duplicateFiles']:
                     file = self.getLFN() + file.split("/")[-1]
+                
+                if self._integrity is not None:
+                    for file in group['duplicateFiles']:
+                        for valid in self._integrity['ValidDuplicates']:
+                            if file == valid:
+                                
+                                del(group['duplicateFiles'][group['duplicateFiles'].index(file)])
+                                break
+                    group['invalidDuplicates'] = group['duplicateFiles']
+                    del(group['duplicateFiles'])
+                
                 for file in group['missingFiles']:
                     file = self.getLFN() + file.split("/")[-1]
             
