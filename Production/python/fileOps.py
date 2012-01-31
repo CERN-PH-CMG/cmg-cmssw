@@ -48,7 +48,8 @@ class FileOps(object):
             
         # If neither then raise an exception
         else:
-            raise ValueError('No log file found for dataset: '+setName)
+            print 'No valid directory found for dataset: '+setName
+            return None
     
     def getIntegrity(self):
         return self._integrity
