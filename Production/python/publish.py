@@ -95,8 +95,13 @@ def publish(dsName,fileown,comment,test,dbsApi,user,password):
         print err, '.\nDataset not published'
         return None
     except NameError as err:
-        print err
+        print err.args[0]
+        if len(err.args)>1:
+            f = open("/afs/cern.ch/user/p/pmeckiff/public/obsoleteDatasets.txt","a")
+            f.write(args[1])
+            f.close()
         return None
+    except EOSError as err
 
 
 
