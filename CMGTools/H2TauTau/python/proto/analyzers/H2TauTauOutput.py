@@ -1,6 +1,6 @@
 import os 
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauHistogramList import H2TauTauHistogramList
-from CMGTools.H2TauTau.proto.framework.Output import Output
+from CMGTools.RootTools.fwlite.Output import Output
 
 def inclusiveRegionName(name):
     newName = name.split('_')[0:2]

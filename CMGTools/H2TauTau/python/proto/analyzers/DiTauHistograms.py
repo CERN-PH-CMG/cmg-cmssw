@@ -1,6 +1,6 @@
 from ROOT import TTree, TH1F, TH2F, TProfile, TLegend, gDirectory
 
-from CMGTools.H2TauTau.proto.framework.Histograms import Histograms
+from CMGTools.RootTools.fwlite.Histograms import Histograms
 
 
 class DiTauHistograms(Histograms):

@@ -1,8 +1,8 @@
 from CMGTools.H2TauTau.proto.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
-from CMGTools.H2TauTau.proto.framework.AutoHandle import AutoHandle
-from CMGTools.H2TauTau.proto.physicsobjects.DiObject import TauMuon
-from CMGTools.H2TauTau.proto.physicsobjects.PhysicsObjects import Muon
-from CMGTools.H2TauTau.macros.CountLeptons import muonAccept
+from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
+from CMGTools.RootTools.physicsobjects.DiObject import TauMuon
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon
+from CMGTools.H2TauTau.proto.analyzers.CountLeptons import muonAccept
 
 class TauMuAnalyzer( DiLeptonAnalyzer ):
 

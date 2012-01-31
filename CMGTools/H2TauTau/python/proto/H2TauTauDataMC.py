@@ -6,9 +6,9 @@ from ROOT import kPink
 
 from CMGTools.RootTools.DataMC.AnalysisDataMCPlot import AnalysisDataMC
 from CMGTools.RootTools.Style import formatPad
-from CMGTools.H2TauTau.macros.Weight import Weight
-from CMGTools.H2TauTau.macros.Weight import printWeights
-from CMGTools.H2TauTau.macros.HistogramSet import histogramSet
+from CMGTools.RootTools.fwlite.Weight import Weight
+from CMGTools.RootTools.fwlite.Weight import printWeights
+from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
 
 
 class H2TauTauDataMC( AnalysisDataMC ):
@@ -110,16 +110,16 @@ class H2TauTauDataMC( AnalysisDataMC ):
         '''Definine preferences for each component'''
         self.histPref = {}
         self.histPref['Data'] = {'style':sBlack, 'layer':-99}
-        self.histPref['data_May10ReReco_v1'] = {'style':sViolet, 'layer':-1000}
-        self.histPref['data_PromptReco_v4'] = {'style':sBlue, 'layer':-1000}
-        self.histPref['data_PromptReco_v6'] = {'style':sRed, 'layer':-1100}
-        self.histPref['data_03Oct2011'] = {'style':sYellow, 'layer':-1105}
-        self.histPref['data_05Aug2011_v1'] = {'style':sBlack, 'layer':-1150}
-        self.histPref['embed_May10ReReco_v1'] = {'style':sViolet, 'layer':-1000}
-        self.histPref['embed_PromptReco_v4'] = {'style':sBlue, 'layer':-1000}
-        self.histPref['embed_PromptReco_v6'] = {'style':sRed, 'layer':-1100}
-        self.histPref['embed_03Oct2011'] = {'style':sYellow, 'layer':-1105}
-        self.histPref['embed_05Aug2011_v1'] = {'style':sBlack, 'layer':-1150}
+        self.histPref['data_Run2011A_May10ReReco_v1'] = {'style':sViolet, 'layer':-1000}
+        self.histPref['data_Run2011A_PromptReco_v4'] = {'style':sBlue, 'layer':-1000}
+        self.histPref['data_Run2011A_PromptReco_v6'] = {'style':sRed, 'layer':-1100}
+        self.histPref['data_Run2011A_03Oct2011_v1'] = {'style':sYellow, 'layer':-1105}
+        self.histPref['data_Run2011A_05Aug2011_v1'] = {'style':sBlack, 'layer':-1150}
+        self.histPref['embed_Run2011A_May10ReReco_v1'] = {'style':sViolet, 'layer':-1000}
+        self.histPref['embed_Run2011A_PromptReco_v4'] = {'style':sBlue, 'layer':-1000}
+        self.histPref['embed_Run2011A_PromptReco_v6'] = {'style':sRed, 'layer':-1100}
+        self.histPref['embed_Run2011A_03Oct2011_v1'] = {'style':sYellow, 'layer':-1105}
+        self.histPref['embed_Run2011A_05Aug2011_v1'] = {'style':sBlack, 'layer':-1150}
         self.histPref['dMay10ReReco_v1'] = {'style':sGreen, 'layer':-1200}
         self.histPref['TTJets'] = {'style':sBlue, 'layer':1} 
         self.histPref['WJets'] = {'style':sRed, 'layer':2}  
@@ -146,7 +146,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
             else:
                 compName = root.split('/')[1]
                 fileNames.append( (compName, '/'.join([root, matchingFiles[0]])))
-        print fileNames
+        # print fileNames
         return fileNames
 
     def _ComponentName(self, name):
@@ -292,7 +292,6 @@ if __name__ == '__main__':
     import copy
     from optparse import OptionParser
     from CMGTools.RootTools.RootInit import *
-    from CMGTools.H2TauTau.macros.AnalysisConfig import AnalysisConfig
 
     parser = OptionParser()
     parser.usage = '''

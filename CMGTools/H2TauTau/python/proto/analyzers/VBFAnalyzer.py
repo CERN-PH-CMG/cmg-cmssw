@@ -1,10 +1,10 @@
 import random
-from CMGTools.H2TauTau.proto.framework.Analyzer import Analyzer
-from CMGTools.H2TauTau.proto.framework.AutoHandle import AutoHandle
-from CMGTools.H2TauTau.proto.physicsobjects.PhysicsObjects import Jet
-from CMGTools.H2TauTau.proto.physicsobjects.DeltaR import cleanObjectCollection
-from CMGTools.H2TauTau.proto.physicsobjects.VBF import VBF
-from CMGTools.H2TauTau.proto.statistics.Counter import Counter, Counters
+from CMGTools.RootTools.fwlite.Analyzer import Analyzer
+from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
+from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection
+from CMGTools.RootTools.physicsobjects.VBF import VBF
+from CMGTools.RootTools.statistics.Counter import Counter, Counters
 
 class VBFAnalyzer( Analyzer ):
     '''Analyze jets, and in particular VBF.'''

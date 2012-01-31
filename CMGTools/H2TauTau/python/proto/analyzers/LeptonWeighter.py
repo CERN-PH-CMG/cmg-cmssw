@@ -1,8 +1,8 @@
-from CMGTools.H2TauTau.proto.framework.Analyzer import Analyzer
-from CMGTools.H2TauTau.proto.framework.AutoHandle import AutoHandle
-from CMGTools.H2TauTau.proto.statistics.Average import Average
+from CMGTools.RootTools.fwlite.Analyzer import Analyzer
+from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
+from CMGTools.RootTools.statistics.Average import Average
 
-from CMGTools.H2TauTau.macros.TriggerEfficiency import TriggerEfficiency
+from CMGTools.H2TauTau.proto.TriggerEfficiency import TriggerEfficiency
 
 class LeptonWeighter( Analyzer ):
     '''Gets lepton efficiency weight and puts it in the event'''

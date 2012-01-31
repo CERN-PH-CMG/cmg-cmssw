@@ -1,5 +1,5 @@
 import copy
-import CMGTools.H2TauTau.proto.framework.Config as cfg
+import CMGTools.RootTools.fwlite.Config as cfg
 
 
 period = 'Period_2011A'
