@@ -191,7 +191,16 @@ class PublishController(object):
         
     	# Check if user has dataset files, and DO NOT allow publish if they do not
     	if len(fileOps.getRootFiles()) == 0:
-        	raise NameError("No dataset files found on EOS, exiting")
+    		taskID = findDSOnSav.getTaskID(procds['PathList'][0], opts['category_id'], self._username, self._password, False)
+    		ds = procds['PathList'][0]
+    		if taskID is None:
+    			taskID = findDSOnSav.getTaskID(getCastor(procds['PathList'][0]), opts['category_id'], self._username, self._password, False)
+    			ds = getCastor(procds['PathList'][0])
+    		#For old datasets
+    		if taskID is None:
+    			taskID = findDSOnSav.getTaskID(getCastor(procds['PathList'][0]), '100', self._username, self._password, False)
+    			ds = getCastor(procds['PathList'][0])
+        	raise NameError("No dataset files found on EOS, exiting",ds, taskID)
         	return None
         
     	test = False
