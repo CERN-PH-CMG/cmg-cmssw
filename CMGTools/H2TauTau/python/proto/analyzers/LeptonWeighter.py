@@ -1,5 +1,6 @@
 from CMGTools.H2TauTau.proto.framework.Analyzer import Analyzer
 from CMGTools.H2TauTau.proto.framework.AutoHandle import AutoHandle
+from CMGTools.H2TauTau.proto.statistics.Average import Average
 
 from CMGTools.H2TauTau.macros.TriggerEfficiency import TriggerEfficiency
 
@@ -27,9 +28,10 @@ class LeptonWeighter( Analyzer ):
     def beginLoop(self):
         print self, self.__class__
         super(LeptonWeighter,self).beginLoop()
-        self.counters.addCounter( self.name )
+        # self.counters.addCounter( self.name )
+        self.averages.add('leptonWeight', Average('leptonWeight') )
 
-        
+
     def process(self, iEvent, event):
         self.readCollections( iEvent )
         self.weight = 1 
@@ -44,6 +46,7 @@ class LeptonWeighter( Analyzer ):
         varName = '_'.join([self.leptonName, 'weight'])
         setattr( event, varName, self.weight )
         event.eventWeight *= self.weight
+        self.averages['leptonWeight'].add( self.weight )
         if self.cfg_ana.verbose:
             print ' '.join([self.name, self.leptonName, str(self.weight), str(self.lepton) ])
                 

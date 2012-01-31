@@ -145,8 +145,8 @@ class H2TauTauDataMC( AnalysisDataMC ):
                                     matchingFiles))
             else:
                 compName = root.split('/')[1]
-                fileNames.append( (compName, '/'.join([root, matchingFiles[0]])) ) 
-        pprint.pprint(fileNames)
+                fileNames.append( (compName, '/'.join([root, matchingFiles[0]])))
+        print fileNames
         return fileNames
 
     def _ComponentName(self, name):

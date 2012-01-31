@@ -220,7 +220,7 @@ elif period == 'Period_2011AB':
     selectedComponents.extend( data_2011B )
     selectedComponents.extend( embed_2011B )    
 
-selectedComponents = [data_PromptReco_v4]
+# selectedComponents = [data_PromptReco_v4]
 
 config = htt.Config( components = selectedComponents,
                      cuts = cuts )

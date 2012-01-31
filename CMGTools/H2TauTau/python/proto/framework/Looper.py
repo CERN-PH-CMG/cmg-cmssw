@@ -8,14 +8,18 @@ from CMGTools.H2TauTau.proto.framework.Event import Event
 
                 
 class Looper(object):
+    '''Creates a set of analyzers, and schedules the event processing.'''
 
     def __init__( self, name, cfg_comp, sequence, nPrint=0):
         '''Handles the processing of an event sample.
+        An Analyzer is built for each Config.Analyzer present
+        in sequence. The Looper can now be used to process an event,
+        or a collection of events in the sample. 
 
-        name    : name of the Looper, will determine the output directory
+        name    : name of the Looper, will be used as the output directory name
         cfg_comp: information for the input sample, see Config
-        sequence: an ordered list of analyzers
-        nPrint  : number of events to print
+        sequence: an ordered list of Config.Analyzer 
+        nPrint  : number of events to print at the beginning
         '''
         
         self.name = self._prepareOutput(name)
@@ -27,6 +31,7 @@ class Looper(object):
 
         self.cfg_comp = cfg_comp
         self.classes = {}
+        #TODO: should be a diclist? 
         self.analyzers = map( self._buildAnalyzer, sequence )
         self.nPrint = nPrint 
         # initialize FWLite chain on input file:
@@ -77,7 +82,11 @@ class Looper(object):
         return obj
 
     def loop(self, nEvents=None):
-        '''Loop on a given number of events, and call ToEvent for each event.'''
+        '''Loop on a given number of events.
+
+        At the beginning of the loop, Analyzer.beginLoop is called for each Analyzer.
+        At each event, self.process is called.
+        At the end of the loop, Analyzer.endLoop is called.'''
         if nEvents is None:
             nEvents = self.events.size()
         else:
@@ -102,8 +111,13 @@ class Looper(object):
         self.logger.warning( 'number of events processed: {nEv}'.format(nEv=eventSize) )
 
     def process(self, iEv ):
-        '''Run event processing for all analyzers in the sequence. Could use the returned
-        tuple to keep track of the failing analyzer.'''
+        '''Run event processing for all analyzers in the sequence.
+
+        This function is called by self.loop, but can also be called directly from
+        the python interpreter, to jump to a given event.
+
+        TODO: add an example for event investigation.
+        '''
         self.event = Event( iEv )
         self.iEvent = iEv
         self.events.to(iEv)
@@ -113,7 +127,9 @@ class Looper(object):
         return (True, analyzer.name)
             
     def write(self):
-        '''Writes all analyzers. See Analyzer for the meaning of Write...'''
+        '''Writes all analyzers.
+
+        See Analyzer.Write for more information.'''
         for analyzer in self.analyzers:
             analyzer.write()
         pass 

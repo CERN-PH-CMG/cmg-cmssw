@@ -1,12 +1,21 @@
 class Event(object):
+    '''Event class.
 
+    The Looper passes the Event object to each of its Analyzers, which in turn can:
+    - read some information
+    - add more information
+    - modify existing information.
+
+    The attributes of the Event object are dynamically modified as allowed by python.
+    The new attributes can be of any type.'''
+    
     def __init__(self, iEv):
         self.iEv = iEv
         #WARNING do I really want to define the weight here?
         self.eventWeight = 1
         
     def __str__(self):
-        # I might want to get such a function by default for all of my classes
+        '''A clever printout :-).'''
         header = '{type}:'.format( type=self.__class__.__name__)
         varlines = []
         for var,value in sorted(vars(self).iteritems()):

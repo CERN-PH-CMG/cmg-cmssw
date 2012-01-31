@@ -1,9 +1,14 @@
+from CMGTools.H2TauTau.proto.framework.Weight import Weight
+
+
 class CFG(object):
+    '''Base configuration class. The attributes are used to store parameters of any type'''
     def __init__(self, **kwargs):
+        '''All keyword arguments are added as attributes.'''
         self.__dict__.update( **kwargs )
         
     def __str__(self):
-        # I might want to get this function by default for all of my classes
+        '''A useful printout'''
         header = '{type}: {name}'.format( type=self.__class__.__name__,
                                           name=self.name)
         varlines = ['\t{var:<15}:   {value}'.format(var=var, value=value) \
@@ -14,7 +19,31 @@ class CFG(object):
         return '\n'.join( all )
 
 class Analyzer( CFG ):
+    '''Base analyzer configuration, see constructor'''
     def __init__(self, name, verbose=False, **kwargs):
+        '''
+        One could for example define the analyzer configuration for a
+        di-muon framework.Analyzer.Analyzer in the following way:
+        
+        ZMuMuAna = cfg.Analyzer(
+        "ZMuMuAnalyzer",
+        pt1 = 20,
+        pt2 = 20,
+        iso1 = 0.1,
+        iso2 = 0.1,
+        eta1 = 2,
+        eta2 = 2,
+        m_min = 0,
+        m_max = 200
+        )
+        
+        Any kinds of keyword arguments can be added.
+        The name must be present, and must be well chosen, as it will be used
+        by the Looper to find the module containing the Analyzer class.
+        This module should be in your PYTHONPATH. If not, modify your python path
+        accordingly in your script.
+        '''
+
         self.name = name
         self.verbose = verbose 
         # self.cfg = CFG(**kwargs)
@@ -22,7 +51,9 @@ class Analyzer( CFG ):
         
 
 class Sequence( list ):
-    '''A list with print functionalities. For analyzer sequence.'''
+    '''A list with print functionalities.
+
+    Used to define a sequence of analyzers.'''
     def __str__(self):
         tmp = [] 
         for index, ana in enumerate( self ):
@@ -32,6 +63,11 @@ class Sequence( list ):
         
 
 class Component( CFG ):
+    '''Base component class.
+
+    See the child classes:
+    DataComponent, MCComponent, EmbedComponent
+    for more information.'''
     def __init__(self, name, files, triggers=None):
         if isinstance(triggers, basestring):
             triggers = [triggers]
@@ -66,21 +102,40 @@ class EmbedComponent( Component ):
         #WARNING what to do here ?? 
         self.isEmbed = True
 
+    def getWeight( self, intLumi = None):
+        return Weight( genNEvents = -1,
+                       xSection = None,
+                       genEff = -1,
+                       intLumi = None,
+                       addWeight = 1. ) 
+
         
 class MCComponent( Component ):
-    def __init__(self, name, files, triggers, xSection, nGenEvents,
-                 vertexWeight, tauEffWeight, muEffWeight, effCorrFactor ):
+    def __init__(self, name, files, triggers, xSection,
+                 nGenEvents,
+                 # vertexWeight,tauEffWeight, muEffWeight,
+                 effCorrFactor ):
         super( MCComponent, self).__init__( name = name,
                                             files = files,
                                             triggers = triggers )
         self.xSection = xSection
         self.nGenEvents = nGenEvents
-        self.vertexWeight = vertexWeight
+        # self.vertexWeight = vertexWeight
         self.effCorrFactor = effCorrFactor
-        self.tauEffWeight = tauEffWeight
-        self.muEffWeight = muEffWeight
+        # self.tauEffWeight = tauEffWeight
+        # self.muEffWeight = muEffWeight
         self.isMC = True
 
+    def getWeight( self, intLumi = None):
+        if intLumi is None:
+            intLumi = Weight.FBINV
+        #COLIN THIS WEIGHT STUFF IS REALLY BAD!!
+        # use the existing Weight class or not? guess so...
+        return Weight( genNEvents = self.nGenEvents,
+                       xSection = self.xSection,
+                       intLumi = None,
+                       genEff = 1/self.effCorrFactor,
+                       addWeight = 1. )
 
 class Config( object ):
     '''Main configuration object, holds a sequence of analyzers, and

@@ -1,5 +1,6 @@
 from CMGTools.H2TauTau.proto.framework.Analyzer import Analyzer
 from CMGTools.H2TauTau.proto.framework.AutoHandle import AutoHandle
+from CMGTools.H2TauTau.proto.statistics.Average import Average
 
 from CMGTools.H2TauTau.proto.analyzers.Regions import H2TauTauRegions
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauOutput import H2TauTauOutput as H2TauTauOutput 
@@ -14,18 +15,16 @@ class H2TauTauEventSorter( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName):
         super(H2TauTauEventSorter,self).__init__(cfg_ana, cfg_comp, looperName)
         self.regions = H2TauTauRegions( self.cfg_ana )
-        dirName = '/'.join( [self.looperName, self.name] ) 
-        self.output = H2TauTauOutput(  dirName, self.regions  )
+        # dirName = '/'.join( [self.looperName, self.name] ) 
+        self.output = H2TauTauOutput(  looperName, self.regions  )
         if self.cfg_comp.name == 'DYJets':
-            self.outputFakes = H2TauTauOutput( dirName + '_Fakes', self.regions )
+            self.outputFakes = H2TauTauOutput( looperName + '_Fakes', self.regions )
 
     def declareHandles(self):
         super(H2TauTauEventSorter, self).declareHandles()
 
         self.mchandles['genParticles'] = AutoHandle( 'genParticlesStatus3',
                                                      'std::vector<reco::GenParticle>' )
-#        self.mchandles['vertexWeight'] = AutoHandle( self.cfg_ana.vertexWeight,
-#                                                     'double' )
 
         self.embhandles['generatorWeight'] = AutoHandle( ('generator', 'weight'),
                                                          'double')
@@ -33,18 +32,21 @@ class H2TauTauEventSorter( Analyzer ):
     def beginLoop(self):
         super(H2TauTauEventSorter,self).beginLoop()
         self.counters.addCounter('Sorter')
+        self.averages.add('generatorWeight', Average('generatorWeight') )
+        self.averages.add('eventWeight', Average('eventWeight') )
 
         
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
-        #WARNING set up weighting
-#        if self.cfg_comp.isMC:
-#            event.vertexWeight = self.mchandles['vertexWeight'].product()[0]
-#            event.eventWeight *= event.vertexWeight
-        elif self.cfg_comp.isEmbed:
+        event.generatorWeight = 1
+        if self.cfg_comp.isEmbed:
             event.generatorWeight = self.embhandles['generatorWeight'].product()[0]
             event.eventWeight *= event.generatorWeight
+        self.averages['generatorWeight'].add(event.generatorWeight)
+
+        # full weight 
+        self.averages['eventWeight'].add(event.eventWeight)
             
         matched = None
         if self.cfg_comp.name == 'DYJets':
