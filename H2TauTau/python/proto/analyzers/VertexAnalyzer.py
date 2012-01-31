@@ -1,6 +1,6 @@
-from CMGTools.H2TauTau.proto.framework.Analyzer import Analyzer
-from CMGTools.H2TauTau.proto.framework.AutoHandle import AutoHandle
-from CMGTools.H2TauTau.proto.statistics.Average import Average
+from CMGTools.RootTools.fwlite.Analyzer import Analyzer
+from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
+from CMGTools.RootTools.statistics.Average import Average
 
 class VertexAnalyzer( Analyzer ):
     '''Analyze vertices, add weight to MC events'''

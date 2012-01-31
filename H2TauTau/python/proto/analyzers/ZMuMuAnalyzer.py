@@ -1,7 +1,7 @@
 from CMGTools.H2TauTau.proto.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
-from CMGTools.H2TauTau.proto.framework.AutoHandle import AutoHandle
-from CMGTools.H2TauTau.proto.physicsobjects.DiObject import DiMuon
-from CMGTools.H2TauTau.proto.physicsobjects.PhysicsObjects import Muon
+from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
+from CMGTools.RootTools.physicsobjects.DiObject import DiMuon
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon
 
 
 class ZMuMuAnalyzer( DiLeptonAnalyzer ):

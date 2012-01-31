@@ -1,12 +1,12 @@
-from CMGTools.H2TauTau.proto.framework.Analyzer import Analyzer
-from CMGTools.H2TauTau.proto.framework.AutoHandle import AutoHandle
-from CMGTools.H2TauTau.proto.statistics.Average import Average
+from CMGTools.RootTools.fwlite.Analyzer import Analyzer
+from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
+from CMGTools.RootTools.statistics.Average import Average
 
 from CMGTools.H2TauTau.proto.analyzers.Regions import H2TauTauRegions
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauOutput import H2TauTauOutput as H2TauTauOutput 
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauOutput import inclusiveRegionName
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauOutput import wholeMTRegionName
-from CMGTools.H2TauTau.proto.physicsobjects.PhysicsObjects import GenParticle 
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle 
 
 class H2TauTauEventSorter( Analyzer ):
     '''Analyze the event content, and fills histograms for the signal

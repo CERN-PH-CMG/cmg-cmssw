@@ -1,9 +1,9 @@
 import operator 
-from CMGTools.H2TauTau.proto.framework.Analyzer import Analyzer
-from CMGTools.H2TauTau.proto.statistics.Counter import Counter, Counters
-from CMGTools.H2TauTau.proto.framework.AutoHandle import AutoHandle
-from CMGTools.H2TauTau.proto.physicsobjects.DiObject import DiObject
-from CMGTools.H2TauTau.proto.physicsobjects.PhysicsObjects import Lepton
+from CMGTools.RootTools.fwlite.Analyzer import Analyzer
+from CMGTools.RootTools.statistics.Counter import Counter, Counters
+from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
+from CMGTools.RootTools.physicsobjects.DiObject import DiObject
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton
 
 class DiLeptonAnalyzer( Analyzer ):
 
