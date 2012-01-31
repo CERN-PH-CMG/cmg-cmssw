@@ -13,7 +13,8 @@ from DBSAPI.dbsOptions import DbsOptionParser
 from DBSAPI.dbsApi import DbsApi
 from DBSAPI.dbsApiException import *
 from DBSAPI.dbsException import *
-from nameOps import *
+from CMGTools.Production.nameOps import *
+from CMGTools.Production.findDSOnSav import getTaskID
 
 
 
@@ -100,6 +101,13 @@ def publish(dsName,fileown,comment,test,dbsApi,user,password):
             f = open("/afs/cern.ch/user/p/pmeckiff/public/obsoleteDatasets.txt","a")
             f.write(args[1])
             f.close()
+            oldName = getCastor(args[1])
+            task = getTaskID(oldName,opts['category_id'], user,password, False)
+
+            if task is not None:
+                f = open("/afs/cern.ch/user/p/pmeckiff/public/obsoleteDatasetsSavannah.txt","a")
+                f.write("https://savannah.cern.ch/task/?"+str(task))
+                f.close()
         return None
     except EOSError as err
 
