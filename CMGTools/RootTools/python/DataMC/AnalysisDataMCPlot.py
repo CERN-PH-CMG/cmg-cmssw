@@ -97,9 +97,11 @@ class AnalysisDataMC( DataMCPlot ):
         # self.files = []
         fileNames = self._GetFileNames(directory)
         # print 'reading files:'
-        for layer, fileName in enumerate( sorted(fileNames) ):
+        for layer, compInfo in enumerate( sorted(fileNames) ):
             # COLIN files can't be deepcopied?
             # self.files.append(TFile(fileName))
+            compName, fileName = compInfo
+            # print 'ReadHistograms', compName, fileName
             file = TFile(fileName)
             hist = copy.deepcopy(file.Get(self.histName))
             if hist == None:
@@ -107,7 +109,8 @@ class AnalysisDataMC( DataMCPlot ):
                                            'does not exist in file', fileName]))
             hist.SetStats(0)
             hist.Sumw2()
-            componentName = self._ComponentName(fileName)
+            # componentName = self._ComponentName(compName)
+            componentName = compName
             # print '\t', componentName, fileName
             legendLine = componentName
             self.AddHistogram( componentName, hist, layer, legendLine)

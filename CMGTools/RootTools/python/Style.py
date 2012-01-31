@@ -1,4 +1,4 @@
-from ROOT import TH1
+from ROOT import TH1, kViolet
 
 class Style:
     def __init__(self,
@@ -49,6 +49,7 @@ sBlue = Style(lineColor=4, markerColor=4)
 sGreen = Style(lineColor=8, markerColor=8)
 sRed = Style(lineColor=2, markerColor=2)
 sYellow = Style(lineColor=1, markerColor=5, fillColor=5)
+sViolet = Style(lineColor=1, markerColor=kViolet, fillColor=kViolet)
 
 
 sBlackSquares = Style(markerStyle = 21)
