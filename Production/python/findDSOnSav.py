@@ -14,7 +14,6 @@ def getNameWithID(taskID):
         for i in br.response().readlines():
             if re.search("task #"+str(taskID)+"</a></em>: ", i):
                 line = i.split("task #"+str(taskID)+"</a></em>: ")[1]
-                print line.split("</h2>")[0]
                 return line.split("</h2>")[0]
                 
     except:
@@ -54,7 +53,6 @@ def getTaskID(name, category, username, password, isParent):
             # This line will throw the exception if it needs to be thrown
             br.select_form(name='item_form')
             # Check if task is 100% match
-            print br.form['summary'], " ", name
             if re.search(name,br.form['summary']):
                 # Check task is "Open"
                 if br.form['status_id']==['1'] and br.form['category_id']==[category]:
@@ -109,7 +107,6 @@ def validLogin(username, password):
                     br.submit()
                     
 
-                    #for i in self.br.forms(): print i
                     page = br.response().read()
                     a = re.search("Not Logged In",page )
                     if a != None:
