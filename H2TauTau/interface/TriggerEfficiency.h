@@ -25,17 +25,17 @@ public:
   // HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v6 	179959 - 180252 	120.7 	L1_SingleMu14_Eta2p1 	end of 2011 run 
 
 
-  double effTau2011A(double pt){
+  double effTau2011A(double pt, double eta=0){
     return ((168.6)*effLooseTau10(pt)
 	    +(139.0+545.1+4.3+245.6+785.7+246.5)*effLooseTau15(pt))/(168.6+139.0+545.1+4.3+245.6+785.7+246.527);
     //last number 246.5 obtained from runs 172620-->173692 in Oct3ReReco(=PromtReco-v6)
   }
-  double effTau2011B(double pt){
+  double effTau2011B(double pt, double eta=0){
     return ((0.1)*effLooseTau15(pt)
 	    +((1945-246.5-0.1)+706.7+120.7)*effLooseTau20(pt))/(0.1+1945-246.5-0.1+706.7+120.7);
     //first number 0.1 is an approximation because this trigger got prescaled and most of data is actually with LooseTau20
   }
-  double effTau2011AB(double pt){
+  double effTau2011AB(double pt, double eta=0){
     return ((168.6)*effLooseTau10(pt)
 	    +(139.0+545.1+4.3+245.6+785.7+246.5+0.1)*effLooseTau15(pt)
 	    +((1945-246.5-0.1)+706.7+120.7)*effLooseTau20(pt))/(168.6+139.0+545.1+4.3+245.6+785.7+246.5+0.1+(1945-246.5-0.1)+706.7+120.7);

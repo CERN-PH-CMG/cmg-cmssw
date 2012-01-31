@@ -35,6 +35,9 @@ class Counter(diclist):
 
 
 class Counters:
+    '''
+    TODO: could be a diclist? 
+    '''
     
     def __init__( self ):
         self.counters = []

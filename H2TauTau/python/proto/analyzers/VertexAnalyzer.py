@@ -1,5 +1,6 @@
 from CMGTools.H2TauTau.proto.framework.Analyzer import Analyzer
 from CMGTools.H2TauTau.proto.framework.AutoHandle import AutoHandle
+from CMGTools.H2TauTau.proto.statistics.Average import Average
 
 class VertexAnalyzer( Analyzer ):
     '''Analyze vertices, add weight to MC events'''
@@ -10,9 +11,14 @@ class VertexAnalyzer( Analyzer ):
             'offlinePrimaryVertices',
             'std::vector<reco::Vertex>'
             )
-        if self.cfg_comp.isMC and self.cfg_comp.vertexWeight is not None: 
-            self.handles['vertexWeight'] = AutoHandle( self.cfg_comp.vertexWeight,
+        if self.cfg_comp.isMC: 
+            self.handles['vertexWeight'] = AutoHandle( self.cfg_ana.vertexWeight,
                                                        'double' )
+
+    def beginLoop(self):
+        super(VertexAnalyzer,self).beginLoop()
+        self.averages.add('vertexWeight', Average('vertexWeight') )
+
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
@@ -21,6 +27,7 @@ class VertexAnalyzer( Analyzer ):
         if self.cfg_comp.isMC:
             event.vertexWeight = self.handles['vertexWeight'].product()[0]
             event.eventWeight *= event.vertexWeight
+        self.averages['vertexWeight'].add( event.vertexWeight )
         if self.verbose:
             print 'VertexAnalyzer: #vert = ', len(event.vertices), \
                   ', weight = ', event.vertexWeight
