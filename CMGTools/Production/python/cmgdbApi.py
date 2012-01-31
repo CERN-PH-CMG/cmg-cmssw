@@ -76,7 +76,7 @@ class CmgdbApi(object):
         try:
             return self.cur.execute("SELECT dataset_id from set_details where %s='%d'" % (taskType, int(taskID))).fetchone()[0]
         except: 
-            print "No dataset found"
+            print "Datset is new in CMGDB"
             return None
             
 
