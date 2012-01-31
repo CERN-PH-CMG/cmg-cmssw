@@ -61,6 +61,10 @@ class SavannahFormatter(object):
                 if "duplicateFiles" in group:
                 	detailString +="* Duplicate Files:\n"
                 	for i in group["duplicateFiles"]: detailString+="** "+ i+"\n"
+                if "invalidDuplicates" in group:
+                	detailString +="* Invalid Duplicate Files:\n"
+                	for i in group["invalidDuplicates"]: detailString+="** "+ i+"\n"
+                
                 if "qFiles" in group: detailString += "* No. of Files: " + str(group["qFiles"]) +"\n"
                 detailString+="\n"
             self.dict['Root Files'] = "\n" +detailString
