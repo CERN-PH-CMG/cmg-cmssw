@@ -45,6 +45,8 @@ class H2TauTauDataMC( AnalysisDataMC ):
         name = 'DYJets'
         dyHist = self.Hist(name)
         dyYield = dyHist.Yield()
+
+        newName = 'DYJets (emb)'
         
         # get the embedded samples corresponding to the data components
         # merge them into a single embedded component
@@ -59,17 +61,18 @@ class H2TauTauDataMC( AnalysisDataMC ):
             if doEmbedding:
                 if embed is None:
                     embed = copy.deepcopy( embedHist )
-                    self.AddHistogram(name, embed.weighted, 3.5)
-                    self.Hist(name).stack = True
+                    self.AddHistogram(newName, embed.weighted, 3.5)
+                    self.Hist(newName).stack = True
                     continue
-                self.Hist(name).Add(embedHist)
+                self.Hist(newName).Add(embedHist)
        
         # dyYield = dyHist.Yield()
         # print '2', dyYield
         if doEmbedding:
-            embedYield = self.Hist(name).Yield()
-            self.Hist(name).Scale( dyYield / embedYield ) 
-            self._ApplyPrefs()                
+            embedYield = self.Hist(newName).Yield()
+            self.Hist(newName).Scale( dyYield / embedYield ) 
+            self._ApplyPrefs()
+            self.Hist(name).on = False
 
     def groupDataComponents( self, dataComponents, name ):
         '''Groups all data components into a single component with name <name>.
@@ -124,6 +127,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['TTJets'] = {'style':sBlue, 'layer':1} 
         self.histPref['WJets'] = {'style':sRed, 'layer':2}  
         self.histPref['DYJets'] = {'style':sYellow, 'layer':3}
+        self.histPref['DYJets (emb)'] = {'style':sYellow, 'layer':3}
         self.histPref['DYJets_Fakes'] = {'style':sBlack, 'layer':2.5}
 
 
