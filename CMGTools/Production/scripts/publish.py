@@ -10,6 +10,7 @@ from DBSAPI.dbsProcessedDataset import DbsProcessedDataset
 from DBSAPI.dbsPrimaryDataset import DbsPrimaryDataset
 from datetime import *
 from DBSAPI.dbsOptions import DbsOptionParser
+from CMGTools.Production.findDSOnSav import validLogin
 from DBSAPI.dbsApi import DbsApi
 from DBSAPI.dbsApiException import *
 from DBSAPI.dbsException import *
@@ -86,6 +87,9 @@ publish.py -F cbern /VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_
     
     
     password = getpass.getpass("Enter NICE Password: ")
+    if not validLogin(options.user, password):
+    	print "Authentication Failed, exiting\n\n"
+    	sys.exit(1)
     
     # For multiple file input
     if options.multi:
