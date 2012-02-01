@@ -4,7 +4,7 @@ import CMGTools.RootTools.fwlite.Config as cfg
 
 period = 'Period_2011A'
 
-baseDir = '2011'
+baseDir = 'Samples'
 filePattern = '*fullsel*.root'
 fixedMuWeight = False
 
@@ -273,7 +273,7 @@ if period == 'Period_2011A':
 
 # selectedComponents = data_2011A
 # selectedComponents = [embed_Run2011A_PromptReco_v4]
-# selectedComponents  = [ WJets ]
+selectedComponents  = [ WJets ]
 
 sequence = cfg.Sequence( [
    vertexAna,
