@@ -1,6 +1,6 @@
 import math
 
-from CMGTools.H2TauTau.proto.physicsobjects.PhysicsObjects import Muon, Tau
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, Tau
 from CMGTools.RootTools.utils.DeltaR import deltaR2
 
 class DiObject( object ):

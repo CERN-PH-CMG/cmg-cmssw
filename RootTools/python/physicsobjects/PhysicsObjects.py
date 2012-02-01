@@ -1,6 +1,6 @@
 import math
 
-from CMGTools.H2TauTau.proto.physicsobjects.TauDecayModes import tauDecayModes
+from CMGTools.RootTools.physicsobjects.TauDecayModes import tauDecayModes
 
 class PhysicsObject(object):
     '''Extends the cmg::PhysicsObject functionalities.'''
