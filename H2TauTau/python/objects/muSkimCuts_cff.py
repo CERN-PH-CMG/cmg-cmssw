@@ -8,6 +8,6 @@ muSkimCuts = cms.PSet(
       eta = muCuts.kinematics.eta
       ),
     iso = cms.PSet(
-      relIsoDBeta = cms.string('leg2().relIso(0.5)<0.5')
+      relIsoDBeta = cms.string('leg2().relIso(0.5)<100.0')
       )
     )

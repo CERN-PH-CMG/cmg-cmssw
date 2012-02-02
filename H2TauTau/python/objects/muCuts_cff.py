@@ -8,7 +8,7 @@ import FWCore.ParameterSet.Config as cms
 
 muCuts = cms.PSet(
     kinematics = cms.PSet(
-      pt = cms.string('leg2().pt()>15'),
+      pt = cms.string('leg2().pt()>17'),
       eta = cms.string('abs(leg2().eta())<2.1')
     ),
     id = cms.PSet(
@@ -24,6 +24,6 @@ muCuts = cms.PSet(
       ),
     iso = cms.PSet(
       #COLIN the iso must be done on charged particles, not charged hadrons
-      relIsoDBeta = cms.string('leg2().relIso(0.5)<0.1')
+      relIsoDBeta = cms.string('leg2().relIso(0.5)<100.0')
     )
     )
