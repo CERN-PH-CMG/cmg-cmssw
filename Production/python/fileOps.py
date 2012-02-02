@@ -58,8 +58,18 @@ class FileOps(object):
             
         # If neither then raise an exception
         else:
-            print 'No valid directory found for dataset: '+setName
-            return None
+            if user == 'cmgtools':
+                castor2 = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user, 'group'))+self._setName
+                if eostools.fileExists(castor2+"/Logger.tgz") or eostools.isDirectory(castor2):
+                    castor = castor2
+                    print "File is directory on EOS"
+                    self._castor =  castor
+                    self._LFN = eostools.eosToLFN(castor)
+                    self._castorTags()
+                    self._checkContiguity()
+            else:
+                print 'No valid directory found for dataset: '+setName
+                return None
     
     def getIntegrity(self):
         return self._integrity
