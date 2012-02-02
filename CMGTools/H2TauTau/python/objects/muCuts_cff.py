@@ -24,6 +24,6 @@ muCuts = cms.PSet(
       ),
     iso = cms.PSet(
       #COLIN the iso must be done on charged particles, not charged hadrons
-      relIsoDBeta = cms.string('leg2().relIso(0.5)<100.0')
+      relIsoDBeta = cms.string('leg2().relIso(0.5, 1)<100.0')
     )
     )
