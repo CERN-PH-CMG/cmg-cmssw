@@ -12,8 +12,8 @@ runOnMC = True
 # AK5 sequence with no cleaning is the default
 # the other sequences can be turned off with the following flags.
 #JOSE: no need to run these guys for what you are up to
-runAK5LC = True 
-runAK7 = True
+runAK5LC = False 
+runAK7 = False
 
 #COLIN: will need to include the event filters in tagging mode
 
@@ -63,8 +63,10 @@ print sep_line
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
     # to test MC:
-    'cbern',
-    '/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2',
+    #'cbern',
+    #'/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2',
+    'CMS',
+    '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_Chamonix12_START44_V10-v2/AODSIM',
     # to test Data:
     # 'cmgtools',
     # '/DoubleElectron/Run2011A-HZZ-PromptSkim-v6/AOD/V2', 

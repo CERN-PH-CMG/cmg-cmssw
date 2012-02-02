@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 
 HBHENoiseFilter2010 = cms.EDFilter(
     'HBHENoiseFilter',
-    label = cms.InputTag('hcalnoise','','RECO'),
+    noiselabel = cms.InputTag('hcalnoise'),
     minRatio = cms.double(0.70),#use old E2/E10 cut
     maxRatio = cms.double(0.96),#use old E2/E10 cut
     useTS4TS5 = cms.bool(False),#do not use R45 cut 

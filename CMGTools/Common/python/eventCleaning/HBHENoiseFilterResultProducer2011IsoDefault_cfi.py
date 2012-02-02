@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 
 HBHENoiseFilterResultProducer2011IsoDefault = cms.EDProducer(
     'HBHENoiseFilterResultProducer',
-    label = cms.InputTag('hcalnoise','','RECO'),
+    noiselabel = cms.InputTag('hcalnoise'),
     minRatio = cms.double(-999.0),
     maxRatio = cms.double(999.0),
     useTS4TS5 = cms.bool(True),     #use R45
