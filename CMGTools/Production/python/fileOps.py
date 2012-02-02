@@ -45,7 +45,7 @@ class FileOps(object):
                 castor2 = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user, 'group'))+self._setName
                 if eostools.fileExists(castor2+"/Logger.tgz"):
                     castor = castor2
-                    print "File is directory on EOS"
+                    print "File is cmgtools group A directory on EOS"
                     self._castor =  castor
                     self._LFN = eostools.eosToLFN(castor)
                     self._castorTags()
@@ -60,12 +60,18 @@ class FileOps(object):
         else:
             if user == 'cmgtools':
                 castor2 = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user, 'group'))+self._setName
-                if eostools.fileExists(castor2+"/Logger.tgz") or eostools.isDirectory(castor2):
+                if eostools.fileExists(castor2+"/Logger.tgz"):
                     castor = castor2
-                    print "File is directory on EOS"
+                    print "File is cmgtools group directory on EOS"
                     self._castor =  castor
                     self._LFN = eostools.eosToLFN(castor)
                     self._castorTags()
+                    self._checkContiguity()
+                elif eostools.isDirectory(castor2):
+                    castor = castor2
+                    print "Directory is valid cmgtools group directory on EOS, but no logger file is present."
+                    self._castor = castor
+                    self._LFN = eostools.eosToLFN(castor)
                     self._checkContiguity()
             else:
                 print 'No valid directory found for dataset: '+setName
