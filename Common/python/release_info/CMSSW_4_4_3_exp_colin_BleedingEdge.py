@@ -1,17 +1,8 @@
-# Package CMGTools/H2TauTau not in local area -> removed from relinfo
-# Package CommonTools/ParticleFlow not in local area -> removed from relinfo
-# Package DataFormats/AnomalousEcalDataFormats not in local area -> removed from relinfo
-# Package DataFormats/PatCandidates not in local area -> removed from relinfo
-# Package GeneratorInterface/GenFilters not in local area -> removed from relinfo
-# Package PhysicsTools/PatUtils not in local area -> removed from relinfo
-# Package PhysicsTools/SelectorUtils not in local area -> removed from relinfo
-# Package PhysicsTools/UtilAlgos not in local area -> removed from relinfo
-# Package RecoJets/Configuration not in local area -> removed from relinfo
-# Package RecoTauTag/TauTagTools not in local area -> removed from relinfo
-[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_pzeta_17Jan11'),
+[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_chargedPartIso_02Feb12'),
   ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_44X_02Feb12'),
+  ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_chargedParticleIso_02Feb12'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_02Feb12'),
-  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_fwlite_b_01Feb12'),
+  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_chargedParticleIso_02Feb12'),
   ('CMGTools/ZmumuJetsTutorial', 'UserCode/CMG/CMGTools/ZmumuJetsTutorial', 'jhegeman_V2401_16Jan12'),
   ('JetMETAnalysis/ecalDeadCellTools', 'JetMETAnalysis/ecalDeadCellTools', 'Colin_TaggingMode_June30'),
   ('PhysicsTools/HepMCCandAlgos', 'PhysicsTools/HepMCCandAlgos', 'V11-03-16'),
@@ -22,3 +13,6 @@
   ('RecoTauTag/Configuration', 'RecoTauTag/Configuration', 'V01-02-12'),
   ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-02-16'),
   ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseNov14')]
+# The following packages were not in the input release_info.
+# Please make sure that the CVS module is correct!
+#	CMGTools/H2TauTau                        cbern_chargedParticleIso_02Feb12
