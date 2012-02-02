@@ -26,8 +26,7 @@ class FileOps(object):
         self._valid = False
         self._castorGroups = None
         castor = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user))+self._setName
-        if user == 'cmgtools' and not eostools.fileExists(castor+"/.*root"):
-            castor = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user, 'group'))+self._setName
+        
         # Check if local first (obviously)
         if os.path.isdir(setName) and user == os.environ['USER']:
             print "File is on local machine: " + local
@@ -42,10 +41,20 @@ class FileOps(object):
             self._checkContiguity()
         # If logger is not present but directory exists
         elif eostools.isDirectory(castor):
-            print "Directory is valid on EOS, but no logger file is present."
-            self._castor = castor
-            self._LFN = eostools.eosToLFN(castor)
-            self._checkContiguity()
+            if user == 'cmgtools':
+                castor2 = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user, 'group'))+self._setName
+                if eostools.fileExists(castor2+"/Logger.tgz"):
+                    castor = castor2
+                    print "File is directory on EOS"
+                    self._castor =  castor
+                    self._LFN = eostools.eosToLFN(castor)
+                    self._castorTags()
+                    self._checkContiguity()
+            else:
+                print "Directory is valid on EOS, but no logger file is present."
+                self._castor = castor
+                self._LFN = eostools.eosToLFN(castor)
+                self._checkContiguity()
             
         # If neither then raise an exception
         else:
