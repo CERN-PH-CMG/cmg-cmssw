@@ -214,10 +214,14 @@ class FileOps(object):
             else:
                 if report['Status'] == "VALID":
                     self._valid = True
-                integrityCheck['BadJobs'] = report['BadJobs']
-                integrityCheck['PrimaryDatasetFraction'] = report['PrimaryDatasetFraction']
-                integrityCheck['PrimaryDatasetEntries'] = report['PrimaryDatasetEntries']
-                integrityCheck['ValidDuplicates'] = report['ValidDuplicates']
+                if 'BadJobs' in report:
+                    integrityCheck['BadJobs'] = report['BadJobs']
+                if 'PrimaryDatasetFraction' in report:
+                    integrityCheck['PrimaryDatasetFraction'] = report['PrimaryDatasetFraction']
+                if 'PrimaryDatasetEntries' in report:
+                    integrityCheck['PrimaryDatasetEntries'] = report['PrimaryDatasetEntries']
+                if 'ValidDuplicates' in report:
+                    integrityCheck['ValidDuplicates'] = report['ValidDuplicates']
                 self._integrity = integrityCheck
         
         # Loop while there are still filenames that do not belong to a file group
