@@ -85,10 +85,11 @@ class FileOps(object):
                     self._LFN = eostools.eosToLFN(castor)
                     self._checkContiguity()
                 else:
-                    print 'No valid directory found for dataset: '+setName
+                    raise NameError('No valid directory found for dataset: '+setName, setName)
                     return None
             else:
-                print 'No valid directory found for dataset: '+setName
+                raise NameError('No valid directory found for dataset: '+setName, setName)
+                
                 return None
     
     def getIntegrity(self):
