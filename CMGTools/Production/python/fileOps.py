@@ -26,7 +26,7 @@ class FileOps(object):
         self._valid = False
         self._castorGroups = None
         castor = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user))+self._setName
-        
+
         # Check if local first (obviously)
         if os.path.isdir(setName) and user == os.environ['USER']:
             print "File is on local machine: " + local
@@ -45,10 +45,21 @@ class FileOps(object):
                 castor2 = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user, 'group'))+self._setName
                 if eostools.fileExists(castor2+"/Logger.tgz"):
                     castor = castor2
-                    print "File is cmgtools group A directory on EOS"
+                    print "File is cmgtools group directory on EOS"
                     self._castor =  castor
                     self._LFN = eostools.eosToLFN(castor)
                     self._castorTags()
+                    self._checkContiguity()
+                elif eostools.isDirectory(castor2):
+                    castor = castor2
+                    print "Directory is valid cmgtools group directory on EOS, but no logger file is present."
+                    self._castor = castor
+                    self._LFN = eostools.eosToLFN(castor)
+                    self._checkContiguity()
+                else:
+                    print "Directory is valid on EOS, but no logger file is present."
+                    self._castor = castor
+                    self._LFN = eostools.eosToLFN(castor)
                     self._checkContiguity()
             else:
                 print "Directory is valid on EOS, but no logger file is present."
@@ -73,6 +84,9 @@ class FileOps(object):
                     self._castor = castor
                     self._LFN = eostools.eosToLFN(castor)
                     self._checkContiguity()
+                else:
+                    print 'No valid directory found for dataset: '+setName
+                    return None
             else:
                 print 'No valid directory found for dataset: '+setName
                 return None
@@ -94,6 +108,7 @@ class FileOps(object):
         if self._castor is not None:				# If is file on Castor
         	return eostools.matchingFiles(self._LFN, ".*root")
         else:										# If local
+            
             return glob.glob(self.getLFN()+'/'+'/.*.root')  
   		
   	def getCastorRootFiles(self):
