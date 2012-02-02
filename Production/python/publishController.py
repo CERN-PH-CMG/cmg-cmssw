@@ -190,7 +190,7 @@ class PublishController(object):
         fileOps = FileOps(getCastor(procds['PathList'][0]), getDbsUser(procds['PathList'][0]))
         
     	# Check if user has dataset files, and DO NOT allow publish if they do not
-    	if fileOps is None:
+    	if fileOps.getRootFiles() is None or len(fileOps.getRootFiles()) == 0:
     		taskID = findDSOnSav.getTaskID(procds['PathList'][0], opts['category_id'], self._username, self._password, False)
     		ds = procds['PathList'][0]
     		if taskID is None:
@@ -200,20 +200,9 @@ class PublishController(object):
     		if taskID is None:
     			taskID = findDSOnSav.getTaskID(getCastor(procds['PathList'][0]), '100', self._username, self._password, False)
     			ds = getCastor(procds['PathList'][0])
-        	raise NameError("No directory found on EOS, exiting",ds, taskID)
+        	raise NameError("No dataset found on EOS, exiting",ds, taskID)
         	return None
-        elif len(fileOps.getRootFiles()) == 0:
-        	taskID = findDSOnSav.getTaskID(procds['PathList'][0], opts['category_id'], self._username, self._password, False)
-    		ds = procds['PathList'][0]
-    		if taskID is None:
-    			taskID = findDSOnSav.getTaskID(getCastor(procds['PathList'][0]), opts['category_id'], self._username, self._password, False)
-    			ds = getCastor(procds['PathList'][0])
-    		#For old datasets
-    		if taskID is None:
-    			taskID = findDSOnSav.getTaskID(getCastor(procds['PathList'][0]), '100', self._username, self._password, False)
-    			ds = getCastor(procds['PathList'][0])
-        	raise NameError("No dataset files found on EOS, exiting",ds, taskID)
-        	return None
+        
         
     	test = False
     	# If item is test
