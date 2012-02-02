@@ -25,8 +25,8 @@ class FileOps(object):
         self._integrity = None
         self._valid = False
         self._castorGroups = None
-        castor = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user, 'user'))+self._setName
-        if not eostools.fileExists(castor+"/.*root"):
+        castor = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user))+self._setName
+        if user == 'cmgtools' and not eostools.fileExists(castor+"/.*root"):
             castor = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user, 'group'))+self._setName
         # Check if local first (obviously)
         if os.path.isdir(setName) and user == os.environ['USER']:
