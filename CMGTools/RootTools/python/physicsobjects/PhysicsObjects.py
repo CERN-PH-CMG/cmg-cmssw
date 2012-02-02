@@ -51,9 +51,10 @@ class Tau( Lepton ):
     def calcEOverP(self):
         if self.eOverP is not None:
             return self.eOverP
-        self.leadChargedEnergy = self.tau.leadChargedHadrECalEnergy() \
-                                 + self.tau.leadChargedHadrHCalEnergy()
-        self.leadChargedMomentum = self.tau.leadChargedHadrPt() / math.sin(self.tau.theta())
+        self.leadChargedEnergy = self.tau.leadChargedHadrEcalEnergy() \
+                                 + self.tau.leadChargedHadrHcalEnergy()
+        # self.leadChargedMomentum = self.tau.leadChargedHadrPt() / math.sin(self.tau.theta())
+        self.leadChargedMomentum = self.tau.leadPFChargedHadrCand().energy()
         self.eOverP = self.leadChargedEnergy / self.leadChargedMomentum
         return self.eOverP         
 
