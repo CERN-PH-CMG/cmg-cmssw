@@ -4,7 +4,7 @@ import CMGTools.RootTools.fwlite.Config as cfg
 
 period = 'Period_2011A'
 
-baseDir = 'Samples'
+baseDir = '2011'
 filePattern = '*fullsel*.root'
 fixedMuWeight = False
 
