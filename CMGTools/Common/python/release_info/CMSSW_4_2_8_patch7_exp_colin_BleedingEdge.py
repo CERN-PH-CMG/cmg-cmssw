@@ -1,9 +1,8 @@
-[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_pzeta_17Jan11'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_miteid1_20Jan12'),
-  # need to deal with that
-  ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_20Jan12'),
-  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'jose17jan12'),
-  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_mcyield_29Nov11'),
+[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_chargedPartIso_02Feb12'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_recoilHiggs_25Jan12'),
+  ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_chargedParticleIso_02Feb12'),
+  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_02Feb12'),
+  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_chargedParticleIso_02Feb12'),
   ('CMGTools/ZmumuJetsTutorial', 'UserCode/CMG/CMGTools/ZmumuJetsTutorial', 'jhegeman_V2401_16Jan12'),
   # check the PF2PAT sequence for mistakes
   ('CommonTools/ParticleFlow', 'CommonTools/ParticleFlow', 'B4_2_X_cbern_eNoVeto_18Jan12'),
