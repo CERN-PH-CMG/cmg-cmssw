@@ -188,7 +188,6 @@ class PublishController(object):
     	
     	# Get file information
         fileOps = FileOps(getCastor(procds['PathList'][0]), getDbsUser(procds['PathList'][0]))
-        
     	# Check if user has dataset files, and DO NOT allow publish if they do not
     	if fileOps.getRootFiles() is None or len(fileOps.getRootFiles()) == 0:
     		taskID = findDSOnSav.getTaskID(procds['PathList'][0], opts['category_id'], self._username, self._password, False)
@@ -237,13 +236,18 @@ class PublishController(object):
     		comment = "*Comment:* "+comment
     		self.savannah.appendExtra(comment)
     	if fileOps.getIntegrity() is not None:
-    		self.savannah.appendExtra("*Primary Dataset Entries:* "+str(fileOps.getIntegrity()['PrimaryDatasetEntries']))
-    		self.savannah.appendExtra("*Primary Dataset Fraction used:* "+str(fileOps.getIntegrity()['PrimaryDatasetFraction']))
-    		validDuplicates = ["\n"]
-    		for i in fileOps.getIntegrity()['ValidDuplicates']:
-    			validDuplicates.append("* " +i+": \n** "+str(fileOps.getIntegrity()['ValidDuplicates'][i])+" events")
-    		self.savannah.appendExtra({"Valid Duplicates":validDuplicates})
-    		self.savannah.appendExtra({"Bad Jobs":fileOps.getIntegrity()['BadJobs']})
+    		report = fileOps.getIntegrity()
+    		if 'PrimaryDatasetEntries' in report:
+    			self.savannah.appendExtra("*Primary Dataset Entries:* "+str(report['PrimaryDatasetEntries']))
+    		if 'PrimaryDatasetFraction' in report:
+    			self.savannah.appendExtra("*Primary Dataset Fraction used:* "+str(report['PrimaryDatasetFraction']))
+    		if 'ValidDuplicates' in report:
+    			validDuplicates = ["\n"]
+    			for i in report['ValidDuplicates']:
+    				validDuplicates.append("* " +i+": \n** "+str(report['ValidDuplicates'][i])+" events")
+    			self.savannah.appendExtra({"Valid Duplicates":validDuplicates})
+    		if 'BadJobs' in report:
+    			self.savannah.appendExtra({"Bad Jobs":report['BadJobs']})
     	#if fileOps.getLFNGroups() is not None:
     		#self.savannah.appendExtra(fileOps.getLFNGroups())
     		
