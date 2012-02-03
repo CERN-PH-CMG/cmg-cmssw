@@ -226,20 +226,20 @@
   <class name="edm::Wrapper<std::vector<PATMuonNuPair> >"/>
 
 
-  <class name="cmg::TauE"/>
-  <class name="std::vector<cmg::TauE>"/>
-  <class name="edm::Wrapper<cmg::TauE>"/>
-  <class name="edm::Wrapper<std::vector<cmg::TauE> >"/>
+  <class name="cmg::TauEle"/>
+  <class name="std::vector<cmg::TauEle>"/>
+  <class name="edm::Wrapper<cmg::TauEle>"/>
+  <class name="edm::Wrapper<std::vector<cmg::TauEle> >"/>
 
   <class name="cmg::TauMu"/>
   <class name="std::vector<cmg::TauMu>"/>
   <class name="edm::Wrapper<cmg::TauMu>"/>
   <class name="edm::Wrapper<std::vector<cmg::TauMu> >"/>
 
-  <class name="cmg::MuE"/>
-  <class name="std::vector<cmg::MuE>"/>
-  <class name="edm::Wrapper<cmg::MuE>"/>
-  <class name="edm::Wrapper<std::vector<cmg::MuE> >"/>
+  <class name="cmg::MuEle"/>
+  <class name="std::vector<cmg::MuEle>"/>
+  <class name="edm::Wrapper<cmg::MuEle>"/>
+  <class name="edm::Wrapper<std::vector<cmg::MuEle> >"/>
   
 
 
