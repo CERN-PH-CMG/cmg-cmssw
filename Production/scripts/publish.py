@@ -102,17 +102,20 @@ publish.py -F cbern /VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_
             try:
                 fileown = None
                 dataset = line.split(" ")[0]
-                token = '"'
-                if len(line.split("'"))>1:
-                	token = "'"
+                
                 if not re.search("---", dataset):
-                	if len(line.split(token)[0].split(" "))> 1:
-                		fileown = line.split(token)[0].split(" ")[1]
-                	else:
-                		fileown = options.fileown
+                	if len(line.split(" ")) > 1:
+                		if len(line.split(" ")[1].split("'"))<2:
+                			fileown = line.split(" ")[1].rstrip("\n")
+                		else: fileown = options.fileown
+                	else: fileown = options.fileown
+                	
                 comment = None
-                if len(line.split(token))>1:
-                    comment = line.rstrip(token).split(token)[1]
+                if len(line.split("'"))>1:
+                	comment = line.rstrip("'").split("'")[1]
+                print dataset
+                print fileown
+                print comment
                 publish(dataset,fileown,comment,options.test,dbsApi,options.user,password)
             except Exception as err:
                 print err, "\nDataset not published"
