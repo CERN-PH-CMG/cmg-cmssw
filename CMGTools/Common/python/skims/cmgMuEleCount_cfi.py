@@ -4,9 +4,9 @@ import FWCore.ParameterSet.Config as cms
 # as they are subject to change. 
 # you should override these cuts in your analysis.
 
-cmgTauECount = cms.EDFilter(
+cmgMuEleCount = cms.EDFilter(
     "CandViewCountFilter",
-    src = cms.InputTag("cmgTauESel"),
+    src = cms.InputTag("cmgMuEleSel"),
     minNumber = cms.uint32(0),
     )
 

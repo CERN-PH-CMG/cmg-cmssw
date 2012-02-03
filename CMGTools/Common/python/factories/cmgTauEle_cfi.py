@@ -8,8 +8,8 @@ tauEFactory = diObjectFactory.clone(
 
 )
 
-cmgTauE = cms.EDFilter(
-    "TauEPOProducer",
+cmgTauEle = cms.EDFilter(
+    "TauElePOProducer",
     cfg = tauEFactory.clone(),
     cuts = cms.PSet(),
     )

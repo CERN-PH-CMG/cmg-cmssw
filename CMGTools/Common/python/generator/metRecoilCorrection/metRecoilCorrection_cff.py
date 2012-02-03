@@ -1,6 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.Common.generator.metRecoilCorrection.recoilCorrectedMET_cfi import *
+from CMGTools.Common.generator.metRecoilCorrection.recoilCorrectedMETTauMu_cfi import *
+from CMGTools.Common.generator.metRecoilCorrection.recoilCorrectedMETTauEle_cfi import *
+from CMGTools.Common.generator.metRecoilCorrection.recoilCorrectedMETMuEle_cfi import *
 from CMGTools.Common.generator.genWorZ_cfi import *
 from SimGeneral.HepPDTESSource.pythiapdt_cfi import *
 
@@ -12,5 +14,7 @@ cmgPFJetForRecoil = cmgPFJetSel.clone( cut = 'pt()>30 && abs(eta)<4.5',
 metRecoilCorrectionSequence= cms.Sequence(
     cmgPFJetForRecoil +
     genWorZ +
-    recoilCorrectedMET
+    recoilCorrectedMETTauMu + 
+    recoilCorrectedMETTauEle +
+    recoilCorrectedMETMuEle
     )
