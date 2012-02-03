@@ -10,11 +10,11 @@ import FWCore.ParameterSet.Config as cms
 import os 
 rootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/Common/data/metRecoilCorrection/'
 
-recoilCorrectedMETTauMu = cms.EDProducer(
-    "RecoilCorrectedMETProducerTauMu",
+recoilCorrectedMETTauEle = cms.EDProducer(
+    "RecoilCorrectedMETProducerTauEle",
     metSrc = cms.InputTag('cmgPFMET'),
     # the tau is on the first leg and the muon on the second leg
-    recBosonSrc = cms.InputTag('cmgTauMuSel'),
+    recBosonSrc = cms.InputTag('cmgTauEleSel'),
     genBosonSrc = cms.InputTag('genWorZ'),
     jetSrc = cms.InputTag('cmgPFJetForRecoil'),
     # 1: lepton is on leg1; 2: lepton is on leg2;
