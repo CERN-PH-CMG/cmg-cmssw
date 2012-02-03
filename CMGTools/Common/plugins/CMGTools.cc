@@ -20,10 +20,15 @@ DEFINE_FWK_MODULE(DiJetPOProducer);
 DEFINE_FWK_MODULE(DiFatJetPOProducer);
 DEFINE_FWK_MODULE(DiPFJetPOProducer);
 DEFINE_FWK_MODULE(DiTauPOProducer);
-DEFINE_FWK_MODULE(TauEPOProducer);
+DEFINE_FWK_MODULE(TauElePOProducer);
 DEFINE_FWK_MODULE(TauMuPOProducer);
-DEFINE_FWK_MODULE(MuEPOProducer);
+DEFINE_FWK_MODULE(MuElePOProducer);
 DEFINE_FWK_MODULE(TauMuUpdatePOProducer);
+DEFINE_FWK_MODULE(TauEleUpdatePOProducer);
+DEFINE_FWK_MODULE(MuEleUpdatePOProducer);
+DEFINE_FWK_MODULE(RecoilCorrectedMETProducerTauMu);
+DEFINE_FWK_MODULE(RecoilCorrectedMETProducerTauEle);
+DEFINE_FWK_MODULE(RecoilCorrectedMETProducerMuEle);
 DEFINE_FWK_MODULE(ElectronPOProducer);
 DEFINE_FWK_MODULE(MuonPOProducer);
 DEFINE_FWK_MODULE(TauPOProducer);
@@ -63,9 +68,9 @@ DEFINE_FWK_MODULE(CmgDiFatJetHistograms);
 DEFINE_FWK_MODULE(CmgDiJetHistograms);
 DEFINE_FWK_MODULE(CmgDiPFJetHistograms);
 
-DEFINE_FWK_MODULE(CmgTauEHistograms);
+DEFINE_FWK_MODULE(CmgTauEleHistograms);
 DEFINE_FWK_MODULE(CmgTauMuHistograms);
-DEFINE_FWK_MODULE(CmgMuEHistograms);
+DEFINE_FWK_MODULE(CmgMuEleHistograms);
 
 DEFINE_FWK_MODULE(LeafCandidateHistograms);
 DEFINE_FWK_MODULE(GenParticleHistograms);
@@ -114,9 +119,9 @@ DEFINE_FWK_MODULE(CmgWENuSelector);
 DEFINE_FWK_MODULE(CmgWMuNuSelector);
 DEFINE_FWK_MODULE(CmgTriggerObjectSelector);
 
-DEFINE_FWK_MODULE(CmgTauESelector);
+DEFINE_FWK_MODULE(CmgTauEleSelector);
 DEFINE_FWK_MODULE(CmgTauMuSelector);
-DEFINE_FWK_MODULE(CmgMuESelector);
+DEFINE_FWK_MODULE(CmgMuEleSelector);
 
 DEFINE_FWK_MODULE(GenParticleSelector);
 

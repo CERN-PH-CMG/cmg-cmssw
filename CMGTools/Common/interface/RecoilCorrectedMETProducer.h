@@ -10,7 +10,7 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
-#include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
+// #include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
 #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
 #include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
 
@@ -18,13 +18,13 @@
 
 #include <sstream>
 
+template< typename RecBosonType >
 class RecoilCorrectedMETProducer : public edm::EDProducer {
 
 public:
-  // will template the producer later
-  typedef cmg::TauMu RecBosonType;
-  typedef RecBosonType::type1 Leg1Type;
-  typedef RecBosonType::type2 Leg2Type;
+  // typedef cmg::TauMu RecBosonType;
+  typedef typename RecBosonType::type1 Leg1Type;
+  typedef typename RecBosonType::type2 Leg2Type;
   typedef cmg::BaseMET MetType; 
   typedef cmg::PFJet   JetType;
   typedef edm::View<JetType>           JetCollectionType;
@@ -70,7 +70,8 @@ private:
 };
 
 
-RecoilCorrectedMETProducer::RecoilCorrectedMETProducer(const edm::ParameterSet & iConfig) : 
+template< typename RecBosonType >
+RecoilCorrectedMETProducer< RecBosonType >::RecoilCorrectedMETProducer(const edm::ParameterSet & iConfig) : 
   metSrc_( iConfig.getParameter<edm::InputTag>("metSrc") ), 
   genBosonSrc_( iConfig.getParameter<edm::InputTag>("genBosonSrc") ),
   recBosonSrc_( iConfig.getParameter<edm::InputTag>("recBosonSrc") ),
@@ -99,7 +100,8 @@ RecoilCorrectedMETProducer::RecoilCorrectedMETProducer(const edm::ParameterSet &
 }
 
 
-void RecoilCorrectedMETProducer::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
+template< typename RecBosonType >
+void RecoilCorrectedMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
 
   typedef std::auto_ptr< std::vector< MetType > >  OutPtr;
 
@@ -258,8 +260,9 @@ void RecoilCorrectedMETProducer::produce(edm::Event & iEvent, const edm::EventSe
 
 
 
-int  RecoilCorrectedMETProducer::nJets( const JetCollectionType& jets, 
-					const RecBosonType& boson, float deltaR) {
+template< typename RecBosonType >
+int  RecoilCorrectedMETProducer< RecBosonType >::nJets( const JetCollectionType& jets, 
+							const RecBosonType& boson, float deltaR) {
   
   //COLIN : check that I should really remove jets matched to both legs
   // when working with Ws.
@@ -297,7 +300,6 @@ int  RecoilCorrectedMETProducer::nJets( const JetCollectionType& jets,
 }
 
 
+// #include "FWCore/Framework/interface/MakerMacros.h"
 
-#include "FWCore/Framework/interface/MakerMacros.h"
-
-DEFINE_FWK_MODULE(RecoilCorrectedMETProducer);
+// DEFINE_FWK_MODULE(RecoilCorrectedMETProducer);

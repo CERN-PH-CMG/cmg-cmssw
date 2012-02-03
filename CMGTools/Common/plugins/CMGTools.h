@@ -41,6 +41,8 @@
 
 #include "CMGTools/Common/interface/GenericPhysicsObjectSelectorDefinition.h"
 
+#include "CMGTools/Common/interface/RecoilCorrectedMETProducer.h"
+
 // COLIN why not in plugins?
 #include "CMGTools/Common/interface/CutSummaryAnalyzer.h"
 #include "CMGTools/Common/plugins/RunInfoAccountingAnalyzer.h"
@@ -100,11 +102,18 @@ typedef PhysicsObjectProducer<cmg::WMuNuFactory> WMuNuPOProducer;
 typedef PhysicsObjectProducer<cmg::WTauNuFactory> WTauNuPOProducer;
 typedef PhysicsObjectProducer<cmg::TriggerObjectFactory> TriggerObjectPOProducer;
 
-typedef PhysicsObjectProducer<cmg::TauEFactory> TauEPOProducer;
+typedef PhysicsObjectProducer<cmg::TauEleFactory> TauElePOProducer;
 typedef PhysicsObjectProducer<cmg::TauMuFactory> TauMuPOProducer;
-typedef PhysicsObjectProducer<cmg::MuEFactory> MuEPOProducer;
+typedef PhysicsObjectProducer<cmg::MuEleFactory> MuElePOProducer;
 
 typedef PhysicsObjectProducer<cmg::TauMuUpdateFactory> TauMuUpdatePOProducer;
+typedef PhysicsObjectProducer<cmg::TauEleUpdateFactory> TauEleUpdatePOProducer;
+typedef PhysicsObjectProducer<cmg::MuEleUpdateFactory> MuEleUpdatePOProducer;
+
+typedef RecoilCorrectedMETProducer<cmg::TauMu> RecoilCorrectedMETProducerTauMu; 
+typedef RecoilCorrectedMETProducer<cmg::TauEle> RecoilCorrectedMETProducerTauEle; 
+typedef RecoilCorrectedMETProducer<cmg::MuEle> RecoilCorrectedMETProducerMuEle; 
+
 
 // histogrammers 
 
@@ -131,9 +140,9 @@ typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiFatJet> > CmgDiFatJ
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiJet> > CmgDiJetHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiPFJet> > CmgDiPFJetHistograms;
 
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::TauE> > CmgTauEHistograms;
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::TauEle> > CmgTauEleHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::TauMu> > CmgTauMuHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::MuE> > CmgMuEHistograms;
+typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::MuEle> > CmgMuEleHistograms;
 
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<reco::LeafCandidate> > LeafCandidateHistograms;
 typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<reco::GenParticle> > GenParticleHistograms;
@@ -289,11 +298,11 @@ typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::WENu> > 
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::WMuNu> > CmgWMuNuSelector;
 
 /* typedef SingleObjectSelector< */
-/*   std::vector<cmg::TauE>, */
-/*   StringCutObjectSelector<cmg::TauE> */
-/*   > CmgTauESelector; */
+/*   std::vector<cmg::TauEle>, */
+/*   StringCutObjectSelector<cmg::TauEle> */
+/*   > CmgTauEleSelector; */
 
-typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::TauE> > CmgTauESelector;
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::TauEle> > CmgTauEleSelector;
 
 /* typedef SingleObjectSelector< */
 /*   std::vector<cmg::TauMu>, */
@@ -303,11 +312,11 @@ typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::TauE> > 
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::TauMu> > CmgTauMuSelector;
 
 /* typedef SingleObjectSelector< */
-/*   std::vector<cmg::MuE>, */
-/*   StringCutObjectSelector<cmg::MuE> */
-/*   > CmgMuESelector; */
+/*   std::vector<cmg::MuEle>, */
+/*   StringCutObjectSelector<cmg::MuEle> */
+/*   > CmgMuEleSelector; */
 
-typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::MuE> > CmgMuESelector;
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::MuEle> > CmgMuEleSelector;
 
 
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<reco::GenParticle> > GenParticleSelector;

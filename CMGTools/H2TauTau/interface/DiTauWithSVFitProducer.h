@@ -15,11 +15,11 @@
 
 #include <sstream>
 
+template< typename DiTauType>
 class DiTauWithSVFitProducer : public edm::EDProducer {
 
 public:
   // will template the producer later
-  typedef cmg::TauMu DiTauType;
   typedef std::vector< DiTauType > DiTauCollection;
 
   explicit DiTauWithSVFitProducer(const edm::ParameterSet & iConfig);
@@ -39,7 +39,8 @@ private:
 };
 
 
-DiTauWithSVFitProducer::DiTauWithSVFitProducer(const edm::ParameterSet & iConfig) : 
+template< typename DiTauType >
+DiTauWithSVFitProducer<DiTauType>::DiTauWithSVFitProducer(const edm::ParameterSet & iConfig) : 
   diTauSrc_( iConfig.getParameter<edm::InputTag>("diTauSrc") ),
 //   metSrc_( iConfig.getParameter<edm::InputTag>("metSrc") ),
   metsigSrc_( iConfig.getParameter<edm::InputTag>("metsigSrc") ),
@@ -51,23 +52,17 @@ DiTauWithSVFitProducer::DiTauWithSVFitProducer(const edm::ParameterSet & iConfig
 }
 
 
-void DiTauWithSVFitProducer::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
-
-  
+template< typename DiTauType >
+void DiTauWithSVFitProducer<DiTauType>::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
 
   edm::Handle< DiTauCollection > diTauH;
   iEvent.getByLabel(diTauSrc_, diTauH);
-
 
   if(verbose_ && !diTauH->empty() ) {
     std::cout<<"DiTauWithSVFitProducer"<<std::endl;
     std::cout<<"+++"<<std::endl;
   }
-  
-//   ///get the MET 
-//   edm::Handle< std::vector<cmg::BaseMET> > met;
-//   iEvent.getByLabel(metSrc_,met);
-  
+    
   //get the MET significance
   edm::Handle< cmg::METSignificance > metsig;
   iEvent.getByLabel(metsigSrc_,metsig); 
@@ -122,6 +117,6 @@ void DiTauWithSVFitProducer::produce(edm::Event & iEvent, const edm::EventSetup 
 }
 
 
-#include "FWCore/Framework/interface/MakerMacros.h"
+// #include "FWCore/Framework/interface/MakerMacros.h"
 
-DEFINE_FWK_MODULE(DiTauWithSVFitProducer);
+// DEFINE_FWK_MODULE(DiTauWithSVFitProducer);

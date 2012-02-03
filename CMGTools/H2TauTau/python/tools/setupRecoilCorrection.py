@@ -1,5 +1,7 @@
 from CMGTools.Common.generator.metRecoilCorrection.recoilCorrectedMET_cfi import rootfile_dir
 
+#TODO remove code duplication
+
 def setupRecoilCorrection( process ):
 
     print 'setting up recoil corrections:'
@@ -17,19 +19,46 @@ def setupRecoilCorrection( process ):
     if lookup( fileName, '/DYJets' ) or \
            lookup( fileName, 'HToTauTau' ):
         print '\tENABLED : Z->l tau mode (tau is true)'
-        process.recoilCorMETTauMu.enable = True
-        process.recoilCorMETTauMu.fileCorrectTo = '/'.join([rootfile_dir,
-                                                            'recoilfit_zjets_ltau_njet.root'])
-        process.recoilCorMETTauMu.leptonLeg = 0
+        if hasattr( process, 'recoilCorMETTauMu'):
+            process.recoilCorMETTauMu.enable = True
+            process.recoilCorMETTauMu.fileCorrectTo = '/'.join([rootfile_dir,
+                                                                'recoilfit_zjets_ltau_njet.root'])
+            process.recoilCorMETTauMu.leptonLeg = 0
+        if hasattr( process, 'recoilCorMETTauEle'):
+            process.recoilCorMETTauEle.enable = True
+            process.recoilCorMETTauEle.fileCorrectTo = '/'.join([rootfile_dir,
+                                                                'recoilfit_zjets_ltau_njet.root'])
+            process.recoilCorMETTauEle.leptonLeg = 0
+        if hasattr( process, 'recoilCorMETMuEle'):
+            process.recoilCorMETMuEle.enable = True
+            process.recoilCorMETMuEle.fileCorrectTo = '/'.join([rootfile_dir,
+                                                                'recoilfit_zjets_ltau_njet.root'])
+            process.recoilCorMETMuEle.leptonLeg = 0
     elif lookup( fileName, '/WJetsToLNu' ):
         print '\tENABLED : W+jet mode (tau is fake)'
-        process.recoilCorMETTauMu.enable = True
-        process.recoilCorMETTauMu.fileCorrectTo = '/'.join([rootfile_dir,
-                                                           'recoilfit_wjets_njet.root'])
-        process.recoilCorMETTauMu.leptonLeg = 2
+        if hasattr( process, 'recoilCorMETTauMu'):
+            process.recoilCorMETTauMu.enable = True
+            process.recoilCorMETTauMu.fileCorrectTo = '/'.join([rootfile_dir,
+                                                                'recoilfit_wjets_njet.root'])
+            process.recoilCorMETTauMu.leptonLeg = 2
+        if hasattr( process, 'recoilCorMETTauEle'):
+            process.recoilCorMETTauEle.enable = True
+            process.recoilCorMETTauEle.fileCorrectTo = '/'.join([rootfile_dir,
+                                                                'recoilfit_wjets_njet.root'])
+            process.recoilCorMETTauEle.leptonLeg = 2
+        if hasattr( process, 'recoilCorMETMuEle'):
+            process.recoilCorMETMuEle.enable = True
+            process.recoilCorMETMuEle.fileCorrectTo = '/'.join([rootfile_dir,
+                                                                'recoilfit_wjets_njet.root'])
+            process.recoilCorMETMuEle.leptonLeg = 2
     else:
         print '\tDISABLED'
         process.metRecoilCorInputSequence.remove( process.genWorZ ) 
-        process.recoilCorMETTauMu.enable = False
-        
+        if hasattr( process, 'recoilCorMETTauMu'):
+            process.recoilCorMETTauMu.enable = False            
+        if hasattr( process, 'recoilCorMETTauEle'):
+            process.recoilCorMETTauEle.enable = False
+        if hasattr( process, 'recoilCorMETMuEle'):
+            process.recoilCorMETMuEle.enable = False
+            
 
