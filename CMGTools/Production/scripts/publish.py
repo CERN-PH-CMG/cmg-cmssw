@@ -57,7 +57,7 @@ publish.py -F cbern /VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_
     group.add_option("-C", "--comment",
                       action = "store",
                       dest="commented",
-                      help="Take comment as arg",
+                      help="Take comment as an argument",
                       default = None)
     # If user wants to add their own comments
     group.add_option("-D", "--dbs",
@@ -70,7 +70,11 @@ publish.py -F cbern /VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_
                       action = "store_true",
                       dest="multi",
                       help="""Argument is now LFN to location of .txt file
-                      Entries in the file should be on independant lines in the form: dataset fileowner 'comment'""",
+                      Entries in the file should be on independant lines in the form: dataset fileowner 'comment'
+                      Comment is not compulsory, and if fileowner is not entered, $USER will be used as default.
+                      Comment MUST be enclosed in speech marks
+                      E.g. /DoubleMu/Run2011A-HZZ-PromptSkim-v6/AOD/V2 cmgtools 'This dataset's comment'
+                      Single or double speech marks are accepted""",
                       default = False)
     parser.add_option_group(group)
     
@@ -84,7 +88,7 @@ publish.py -F cbern /VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_
     else: dbsApi = None
     # Allow no more than one argument
     if len(args)!=1:
-        group.print_help()
+        parser.print_help()
         sys.exit(1)
     
     
