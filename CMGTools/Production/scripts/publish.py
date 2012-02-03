@@ -34,8 +34,7 @@ publish.py -F cbern /VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_
     group = OptionGroup(parser, "Publish Options", """These options are to be used alongside the publish.py
     without affecting DBS options""")
     genGroup = OptionGroup(parser, "Generic Options", """These options apply to both DBS and the Publish tools""")
-    dbsGroup = OptionGroup(parser, "DBS Options", """These options are for use with DBS.
-    If not using DBS, these options do nothing.""")
+    dbsGroup = OptionGroup(parser, "DBS Options", "These options are explicitly for Savannah and CMGDB")
     for i in parser._get_all_options():
     	opt_string = i.get_opt_string()
     	parser.remove_option(opt_string)
