@@ -107,6 +107,11 @@ If not entered, secure password prompt will appear.""",
     (options, args) = optManager.getOpt()
     options.url="http://cmsphys05.cern.ch:8081/cms_dbs_prod_local_01/servlet/DBSServlet"
     
+    # Allow no more than one argument
+    if len(args)!=1:
+        parser.print_help()
+        sys.exit(1)
+        
     if options.password == None:
     	password = getpass.getpass("Enter NICE Password: ")
     	options.password = password
@@ -118,13 +123,6 @@ If not entered, secure password prompt will appear.""",
     if options.dbs:
     	dbsApi = DbsApi(options.__dict__)
     else: dbsApi = None
-    # Allow no more than one argument
-    if len(args)!=1:
-        parser.print_help()
-        sys.exit(1)
-    
-    
-    
     
     
     # For multiple file input
