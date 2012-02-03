@@ -102,20 +102,30 @@ publish.py -F cbern /VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_
             try:
                 fileown = None
                 dataset = line.split(" ")[0]
-                
                 if not re.search("---", dataset):
-                	if len(line.split(" ")) > 1:
-                		if len(line.split(" ")[1].split("'"))<2:
-                			fileown = line.split(" ")[1].rstrip("\n")
-                		else: fileown = options.fileown
-                	else: fileown = options.fileown
+                	if len(line.split(" ")) == 2 and not (re.search("'",line) or re.search('"',line)):
+                		fileown = line.split(" ")[1].rstrip("\n")
+                	elif re.search("'",line):
+                		preComment = line.split("'")[0]
+                		if len(preComment.rstrip(" ").split(" ")) == 2:
+                			fileown = preComment.rstrip(" ").split(" ")[1]
+                		else:
+                			fileown = options.fileown
+                	elif re.search('"',line):
+                		preComment = line.split('"')[0]
+                		if len(preComment.rstrip(" ").split(" ")) == 2:
+                			fileown = preComment.rstrip(" ").split(" ")[1]
+                		else:
+                			fileown = options.fileown
+                	else:
+                		fileown = options.fileown
                 	
                 comment = None
                 if len(line.split("'"))>1:
                 	comment = line.rstrip("'").split("'")[1]
-                print dataset
-                print fileown
-                print comment
+                elif len(line.split("'"))>1:
+                	comment = line.rstrip('"').split('"')[1]
+
                 publish(dataset,fileown,comment,options.test,dbsApi,options.user,password)
             except Exception as err:
                 print err, "\nDataset not published"
