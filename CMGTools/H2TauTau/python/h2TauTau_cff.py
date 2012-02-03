@@ -3,6 +3,8 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.H2TauTau.objects.object_cff import *
 from CMGTools.H2TauTau.skims.skim_cff import *
 
+#TODO:tau scaling could be general
+
 # tau-mu ---
 
 # preselection
