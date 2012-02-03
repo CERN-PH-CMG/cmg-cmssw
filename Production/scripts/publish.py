@@ -103,7 +103,10 @@ publish.py -F cbern /VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_
                 fileown = None
                 dataset = line.split(" ")[0]
                 if not re.search("---", dataset):
-                	if len(line.split(" ")) == 2 and not (re.search("'",line) or re.search('"',line)):
+                	if len(line.rstrip(" ").lstrip(" ").split(" ")) ==1:
+                		dataset = line.rstrip("\n")
+                		fileown = options.fileown
+                	if len(line.split(" ")) >1 and re.search("'",line) is None and re.search('"',line) is None:
                 		fileown = line.split(" ")[1].rstrip("\n")
                 	elif re.search("'",line):
                 		preComment = line.split("'")[0]
