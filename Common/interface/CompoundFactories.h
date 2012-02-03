@@ -18,9 +18,9 @@ namespace cmg{
   typedef DiObjectFactory< cmg::DiPFJet::type1, cmg::DiPFJet::type2 > DiPFJetFactory;
   typedef DiObjectFactory< cmg::DiTau::type1, cmg::DiTau::type2 > DiTauFactory;
 
-  typedef DiObjectFactory< cmg::TauE::type1, cmg::TauE::type2 > TauEFactory;
+  typedef DiObjectFactory< cmg::TauEle::type1, cmg::TauEle::type2 > TauEleFactory;
   typedef DiObjectFactory< cmg::TauMu::type1, cmg::TauMu::type2 > TauMuFactory;
-  typedef DiObjectFactory< cmg::MuE::type1, cmg::MuE::type2 > MuEFactory;
+  typedef DiObjectFactory< cmg::MuEle::type1, cmg::MuEle::type2 > MuEleFactory;
 
   typedef DiObjectFactory< cmg::WENu::type1, cmg::WENu::type2 > WENuFactory;
   typedef DiObjectFactory< cmg::WMuNu::type1, cmg::WMuNu::type2 > WMuNuFactory;
@@ -29,6 +29,8 @@ namespace cmg{
   typedef DiObjectFactory< cmg::QuadMuon::type1, cmg::QuadMuon::type2 > QuadMuonFactory;
 
   typedef DiObjectUpdateFactory< cmg::TauMu > TauMuUpdateFactory;
+  typedef DiObjectUpdateFactory< cmg::TauEle > TauEleUpdateFactory;
+  typedef DiObjectUpdateFactory< cmg::MuEle > MuEleUpdateFactory;
   
     
 }

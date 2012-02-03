@@ -63,8 +63,8 @@ print sep_line
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
     # to test MC:
-    #'cbern',
-    #'/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2',
+    # 'cbern',
+    # '/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2',
     'CMS',
     '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_Chamonix12_START44_V10-v2/AODSIM',
     # to test Data:

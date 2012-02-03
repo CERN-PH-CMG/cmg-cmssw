@@ -2,17 +2,14 @@ import FWCore.ParameterSet.Config as cms
 
 from CMGTools.H2TauTau.objects.object_cff import *
 from CMGTools.H2TauTau.skims.skim_cff import *
-from CMGTools.H2TauTau.histograms.histogram_cff import *
-from CMGTools.H2TauTau.histograms.histogramSkim_cff import *
+
+# tau-mu ---
 
 # preselection
-
 tauMuPreSelPath = cms.Path(
     objectSequence + 
-    tauMuPreSelSkimSequence +
-    histogramSkimSequence 
+    tauMuPreSelSkimSequence 
     )
-
 
 # full selection
 tauMuFullSelPath = cms.Path(
@@ -21,9 +18,31 @@ tauMuFullSelPath = cms.Path(
     )
 
 
+# tau-ele ---
 
-tauEPath = cms.Path(
+# preselection
+tauElePreSelPath = cms.Path(
     objectSequence + 
-    tauESkimSequence     
-    # beware! can we put histogramSkimSequence here as well? aren't the histograms goign to be filled twice?
+    tauElePreSelSkimSequence 
+    )
+
+# full selection
+tauEleFullSelPath = cms.Path(
+    objectSequence + 
+    tauEleFullSelSkimSequence     
+    )
+
+
+# mu-ele ---
+
+# preselection
+muElePreSelPath = cms.Path(
+    objectSequence + 
+    muElePreSelSkimSequence 
+    )
+
+# full selection
+muEleFullSelPath = cms.Path(
+    objectSequence + 
+    muEleFullSelSkimSequence     
     )
