@@ -253,20 +253,20 @@ namespace {
     
 
     //for Tau-Tau
-    cmg::TauE taue;
-    std::vector<cmg::TauE> taue_;
-    edm::Wrapper<cmg::TauE> wtaue_;
-    edm::Wrapper<std::vector<cmg::TauE> > wtauev_;
+    cmg::TauEle taue;
+    std::vector<cmg::TauEle> taue_;
+    edm::Wrapper<cmg::TauEle> wtaue_;
+    edm::Wrapper<std::vector<cmg::TauEle> > wtauev_;
 
     cmg::TauMu taumu;
     std::vector<cmg::TauMu> taumu_;
     edm::Wrapper<cmg::TauMu> wtaumu_;
     edm::Wrapper<std::vector<cmg::TauMu> > wtaumuv_;
 
-    cmg::MuE mue;
-    std::vector<cmg::MuE> mue_;
-    edm::Wrapper<cmg::MuE> wmue_;
-    edm::Wrapper<std::vector<cmg::MuE> > wmuev_;
+    cmg::MuEle mue;
+    std::vector<cmg::MuEle> mue_;
+    edm::Wrapper<cmg::MuEle> wmue_;
+    edm::Wrapper<std::vector<cmg::MuEle> > wmuev_;
 
 
   };
