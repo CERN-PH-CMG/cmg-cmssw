@@ -7,9 +7,9 @@ masses =[1000., 1100., 1200., 1300., 1400., 1500., 1600., 1700., 1800., 1900., 2
 
 
 for mass in masses:
-    os.system("python submit.py " + str(mass) + " 0 30 Qstar_ak5_fat30 1nd")
-    os.system("python submit.py " + str(mass) + " 6 30 Qstar_ak5_fat30 1nd")
-    os.system("python submit.py " + str(mass) + " 0 30 RSGraviton_ak5_QQtoQQ_fat30 1nd")
-    os.system("python submit.py " + str(mass) + " 6 30 RSGraviton_ak5_QQtoQQ_fat30 1nd")
-    os.system("python submit.py " + str(mass) + " 0 30 RSGraviton_ak5_GGtoGG_fat30 1nd")
-    os.system("python submit.py " + str(mass) + " 6 30 RSGraviton_ak5_GGtoGG_fat30 1nd")
+    os.system("python ${CMSSW_BASE}/StatTools/BayesianDijetFit/scripts/submit.py " + str(mass) + " 0 30 Qstar_ak5_fat30 0 1nd")
+    os.system("python ${CMSSW_BASE}/StatTools/BayesianDijetFit/scripts/submit.py " + str(mass) + " 6 30 Qstar_ak5_fat30 0 1nd")
+    os.system("python ${CMSSW_BASE}/StatTools/BayesianDijetFit/scripts/submit.py " + str(mass) + " 0 30 RSGraviton_ak5_QQtoQQ_fat30 0 1nd")
+    os.system("python ${CMSSW_BASE}/StatTools/BayesianDijetFit/scripts/submit.py " + str(mass) + " 6 30 RSGraviton_ak5_QQtoQQ_fat30 0 1nd")
+    os.system("python ${CMSSW_BASE}/StatTools/BayesianDijetFit/scripts/submit.py " + str(mass) + " 0 30 RSGraviton_ak5_GGtoGG_fat30 0 1nd")
+    os.system("python ${CMSSW_BASE}/StatTools/BayesianDijetFit/scripts/submit.py " + str(mass) + " 6 30 RSGraviton_ak5_GGtoGG_fat30 0 1nd")

@@ -140,36 +140,42 @@ double DijetHelper::calcPDF1DIntegral(RooAbsPdf* pdf, RooRealVar* var, double mi
 }
 
 
-RooFitResult* doFit(std::string name, RooAbsPdf* pdf, RooAbsData* data, RooRealVar* var, RooAbsReal* nsig, RooAbsReal* nbkg, int nbins, double xlo, double xhi, const char* range, RooWorkspace* ws)
+RooFitResult* doFit(std::string name, RooAbsPdf* pdf, RooAbsData* data, RooRealVar* var, RooAbsReal* nsig, RooAbsReal* nbkg, int nbins, double xlo, double xhi, const char* range, RooWorkspace* ws, bool verbose)
 {
   double *binsx=new double[nbins+1];
   for(int i=0; i<nbins+1; i++) {
     binsx[i]=xlo+i*(xhi-xlo)/nbins;
   }
-  RooFitResult* result=DijetHelper::doFit(name, pdf, data, var, nsig, nbkg, nbins, binsx, range, ws);
+  RooFitResult* result=DijetHelper::doFit(name, pdf, data, var, nsig, nbkg, nbins, binsx, range, ws, verbose);
   delete[] binsx;
   return result;
 }
 
-RooFitResult* DijetHelper::doFit(std::string name, RooAbsPdf* pdf, RooAbsData* data, RooRealVar* var, RooAbsReal* nsig, RooAbsReal* nbkg, int nbins, double *binsx, const char* range, RooWorkspace* ws)
+RooFitResult* DijetHelper::doFit(std::string name, RooAbsPdf* pdf, RooAbsData* data, RooRealVar* var, RooAbsReal* nsig, RooAbsReal* nbkg, int nbins, double *binsx, const char* range, RooWorkspace* ws, bool verbose)
 {
-  TString label=name.c_str();
-  RooFitResult *fit = pdf->fitTo(*data, Save(kTRUE), Extended(kTRUE), Strategy(2), PrintLevel(1), RooFit::Range(range));
-  fit->Print();
 
-  // plot fit
-  TCanvas* cfit = new TCanvas(TString("cfit")+label,"fit",500,500);
-  RooPlot* plot = var->frame();
-  data->plotOn(plot, Binning(RooBinning(nbins, binsx)));
-  pdf->plotOn(plot, LineColor(kBlue+2), RooFit::NormRange(range), RooFit::Range(range));
-  pdf->plotOn(plot, RooFit::Components("signal"), RooFit::LineColor(kBlue+2), RooFit::NormRange(range), RooFit::Range(range));
-  pdf->plotOn(plot, RooFit::Components("background"), RooFit::LineColor(kBlue+2), RooFit::LineStyle(kDotted), RooFit::NormRange(range), RooFit::Range(range));
-  pdf->paramOn(plot, Layout(0.43, 0.88, 0.92), Format("NEU",AutoPrecision(1)) ); 
-  gPad->SetLogy();
-  gPad->SetGrid(1,1);
-  plot->GetYaxis()->SetRangeUser(0.1,plot->GetMaximum()*2.0);
-  plot->GetYaxis()->SetTitleOffset(1.2);
-  plot->Draw();
+  int printLevel = -1;
+  if (verbose) printLevel = 1;
+
+  TString label=name.c_str();
+  RooFitResult *fit = pdf->fitTo(*data, Save(kTRUE), Extended(kTRUE), Strategy(2), PrintLevel(printLevel), RooFit::Range(range));
+  if (verbose) fit->Print();
+
+
+    // plot fit
+    TCanvas* cfit = new TCanvas(TString("cfit")+label,"fit",500,500);
+    RooPlot* plot = var->frame();
+    data->plotOn(plot, Binning(RooBinning(nbins, binsx)));
+    pdf->plotOn(plot, LineColor(kBlue+2), RooFit::NormRange(range), RooFit::Range(range));
+    pdf->plotOn(plot, RooFit::Components("signal"), RooFit::LineColor(kBlue+2), RooFit::NormRange(range), RooFit::Range(range));
+    pdf->plotOn(plot, RooFit::Components("background"), RooFit::LineColor(kBlue+2), RooFit::LineStyle(kDotted), RooFit::NormRange(range), RooFit::Range(range));
+    pdf->paramOn(plot, Layout(0.43, 0.88, 0.92), Format("NEU",AutoPrecision(1)) ); 
+    gPad->SetLogy();
+    gPad->SetGrid(1,1);
+    plot->GetYaxis()->SetRangeUser(0.1,plot->GetMaximum()*2.0);
+    plot->GetYaxis()->SetTitleOffset(1.2);
+    plot->Draw();
+
 
   if(ws) {
     std::cout << "ASDF JPC: ";
@@ -184,7 +190,8 @@ RooFitResult* DijetHelper::doFit(std::string name, RooAbsPdf* pdf, RooAbsData* d
     ws->var("p1")->setConstant(true);
     ws->var("p2")->setConstant(true);
     ws->var("p3")->setConstant(true);
-    fit = pdf->fitTo(*data, Save(kTRUE), Extended(kTRUE), Strategy(2), PrintLevel(1));
+    fit = pdf->fitTo(*data, Save(kTRUE), Extended(kTRUE), Strategy(2), PrintLevel(printLevel));
+
     std::cout << "ASDF JPC: ";
     printVal(*ws->var("xs"));
     pdf->plotOn(plot, LineColor(kGreen+2));
@@ -193,7 +200,7 @@ RooFitResult* DijetHelper::doFit(std::string name, RooAbsPdf* pdf, RooAbsData* d
     ws->var("p1")->setVal(std::max(0.0,p1val+p1err));
     ws->var("p2")->setVal(p2val-p2err);
     ws->var("p3")->setVal(p3val-p3err);
-    fit = pdf->fitTo(*data, Save(kTRUE), Extended(kTRUE), Strategy(2), PrintLevel(1));
+    fit = pdf->fitTo(*data, Save(kTRUE), Extended(kTRUE), Strategy(2), PrintLevel(printLevel));
     std::cout << "ASDF JPC: ";
     printVal(*ws->var("xs"));
     pdf->plotOn(plot, LineColor(kRed+2));
@@ -209,7 +216,7 @@ RooFitResult* DijetHelper::doFit(std::string name, RooAbsPdf* pdf, RooAbsData* d
     ws->var("p3")->setVal(p3val); ws->var("p3")->setConstant(p3const);
   }
 
-  cfit->SaveAs(label+".gif");
+  if (verbose) cfit->SaveAs(label+".gif");
   delete plot;
 
   // calculate pull and diff
@@ -222,23 +229,23 @@ RooFitResult* DijetHelper::doFit(std::string name, RooAbsPdf* pdf, RooAbsData* d
     double content = hist->GetBinContent(i);
     double error = content>25 ? sqrt(content) :
       (TMath::ChisquareQuantile(0.95,2*(content+1)-TMath::ChisquareQuantile(0.05,2*content)))/4.0;
-
+    
     // evaluate the pdf
     var->setVal(hist->GetBinCenter(i));
     double fitval = pdf->getVal(&observables)*(nsig->getVal()+nbkg->getVal())*hist->GetBinWidth(i);
-
+    
     // calculate the pull and diff
     double pullval=error==0 ? 0 : (content-fitval)/error;
     double diffval=(content-fitval)/fitval;
     double differr=error/fitval;
     chi2+=fabs(pullval);
-
+    
     pull->SetBinContent(i, pullval);
     pull->SetBinError(i, 1.0);
     diff->SetBinContent(i, diffval);
     diff->SetBinError(i, differr);
   }
-
+    
   // draw pull
   TCanvas* cpull = new TCanvas(TString("cpull")+label,"pull",500,500);
   pull->SetMarkerStyle(20);
@@ -254,8 +261,8 @@ RooFitResult* DijetHelper::doFit(std::string name, RooAbsPdf* pdf, RooAbsData* d
   tex.SetTextAlign(12);
   tex.SetTextSize(0.04);
   tex.DrawLatex(0.22,0.88, title);
-  cpull->SaveAs(label+"_pull.gif");
-
+  if (verbose) cpull->SaveAs(label+"_pull.gif");
+  
   // draw diff
   TCanvas* cdiff = new TCanvas(TString("cdiff")+label,"(data-fit)/fit",500,500);
   diff->SetMarkerStyle(20);
@@ -264,7 +271,8 @@ RooFitResult* DijetHelper::doFit(std::string name, RooAbsPdf* pdf, RooAbsData* d
   diff->SetMinimum(-0.3);
   diff->Draw("E");
   tex.DrawLatex(0.22,0.88, title);
-  cdiff->SaveAs(label+"_diff.gif");
+  if (verbose) cdiff->SaveAs(label+"_diff.gif");
+  
 
   return fit;
 }

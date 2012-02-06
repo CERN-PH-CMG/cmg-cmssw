@@ -13,7 +13,8 @@ mass = sys.argv[1]
 statlevel = sys.argv[2]
 nPEs = sys.argv[3]
 Model = sys.argv[4]
-queue = sys.argv[5]
+verbose = sys.argv[5]
+queue = sys.argv[6]
 
 #######################################
 pwd = os.environ['PWD']
@@ -24,8 +25,10 @@ outputname = "out/src/submit_"+out+".src"
 print outputname
 outputfile = open(outputname,'w')
 outputfile.write('#!/bin/bash\n')
-outputfile.write("cd /afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/Analysis/Statistics/test; eval `scramv1 run -sh`\n")  # CHANGE WITH YOUR DIR TO DO CMSENV. LEAVE UNCHANGED THE REST!!!!
-outputfile.write("dijetStatsNewBackground " + str(mass) + " " + str(statlevel) + " " + str(nPEs) + " " + str(Model) + " -b -q &>out/res/masslimit_" + out + ".txt")
+outputfile.write("cd ${CMSSW_BASE}/StatTools/BayesianDijetFit/test; eval `scramv1 run -sh`\n")  # CHANGE WITH YOUR DIR TO DO CMSENV. LEAVE UNCHANGED THE REST!!!!
+outputfile.write("dijetStatsNewBackground " + str(mass) + " " + str(statlevel) + " " + str(nPEs) + " " + str(Model) + " " + str(verbose) + " -b -q &>out/res/masslimit_" + out + "_full.txt")
+outputfile.write("sed '/[#1]/d' out/res/masslimit_" + out + ".txt &>out/res/masslimit_" + out + "_full.txt")
+outputfile.write("rm out/res/masslimit_" + out + "_full.txt")
 outputfile.close
 os.system("echo bsub -q "+queue+" -o out/log/log_"+ out  + ".log source "+pwd+"/"+outputname)
 os.system("bsub -q "+queue+" -o out/log/log_"+ out  + ".log source "+pwd+"/"+outputname)
