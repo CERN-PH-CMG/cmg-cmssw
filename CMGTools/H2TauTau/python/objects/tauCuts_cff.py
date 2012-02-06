@@ -1,17 +1,42 @@
 import FWCore.ParameterSet.Config as cms
 
-tauCuts = cms.PSet(
-    kinematics = cms.PSet(
-      pt = cms.string('leg1().pt()>20'),
-      eta = cms.string('abs(leg1().eta())<2.3')
-    ),
-    id = cms.PSet(
-      decay = cms.string('leg1().tauID("decayModeFinding")'),
-      muVeto = cms.PSet(
-        tight = cms.string('leg1().tauID("againstMuonTight")')
-      ),
-      eVeto = cms.string('leg1().tauID("againstElectronLoose")')
-      ),
-    iso = cms.string('leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr")')
-    )
+def getTauCuts( leg, channel='tauMu', skim=False):
 
+    ptCut = 20.
+    etaCut = 2.3
+    muVeto = None
+    eVeto = None
+    if channel == 'tauMu':
+        muVeto = cms.string('{leg}().tauID("againstMuonTight")'.format(leg=leg))
+        eVeto = cms.string('{leg}().tauID("againstElectronLoose")'.format(leg=leg))
+    elif channel == 'tauEle':
+        muVeto = cms.string('{leg}().tauID("againstMuonLoose")'.format(leg=leg))
+        eVeto = cms.string('{leg}().tauID("againstElectronMVA")'.format(leg=leg))
+    else:
+        raise ValueError('bad channel specification:'+channel)
+
+    kinematics = cms.PSet(
+        pt = cms.string('{leg}().pt()>{ptCut}'.format(leg=leg, ptCut=ptCut)),
+        eta = cms.string('abs({leg}().eta())<{etaCut}'.format(leg=leg, etaCut=etaCut))
+        )
+    id = cms.PSet(
+        decay = cms.string('{leg}().tauID("decayModeFinding")'.format(leg=leg)),
+        muVeto = muVeto,
+        eVeto = eVeto
+        )
+    iso = cms.string('{leg}().tauID("byLooseCombinedIsolationDeltaBetaCorr")'.format(leg=leg) )
+
+
+    if not skim:
+        tauCuts = cms.PSet(
+            kinematics = kinematics.clone(),
+            id = id.clone(),
+            iso = iso
+            )
+    else:
+        tauCuts = cms.PSet(
+            kinematics = kinematics.clone(),
+            id = id.clone()
+            )
+    
+    return tauCuts
