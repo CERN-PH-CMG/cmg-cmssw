@@ -7,6 +7,16 @@ tauMuAliases = {
     'tauMuFullSel':'cmgTaucmgMuoncmgDiObjects_cmgTauMuCorSVFitFullSel__',
     }
 
+tauEleAliases = {
+    'tauEleUncAll':'cmgTaucmgElectroncmgDiObjects_cmgTauEle__',
+    'tauEleUncPreSel':'cmgTaucmgElectroncmgDiObjects_cmgTauElePreSel__',
+    'tauEleUncFullSel':'cmgTaucmgElectroncmgDiObjects_cmgTauEleFullSel__',
+    'tauEleAll':'cmgTaucmgElectroncmgDiObjects_cmgTauEleCor__',
+    'tauElePreSel':'cmgTaucmgElectroncmgDiObjects_cmgTauEleCorSVFitPreSel__',
+    'tauEleFullSel':'cmgTaucmgElectroncmgDiObjects_cmgTauEleCorSVFitFullSel__',
+    }
 
 
-h2TauTauAliases = dict(  tauMuAliases.items() )
+
+
+h2TauTauAliases = dict(  tauMuAliases.items() + tauEleAliases.items() )
