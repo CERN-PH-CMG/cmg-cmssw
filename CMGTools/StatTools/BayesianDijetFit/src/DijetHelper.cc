@@ -1,4 +1,4 @@
-#include "Analysis/Statistics/interface/DijetHelper.h"
+#include "StatTools/BayesianDijetFit/interface/DijetHelper.h"
 
 #include "RooDataHist.h"
 #include "RooDataSet.h"

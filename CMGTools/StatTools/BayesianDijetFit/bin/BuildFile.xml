@@ -1,5 +1,4 @@
-<use   name="Analysis/Statistics"/>
+<use   name="StatTools/BayesianDijetFit"/>
 <environment>
-  <bin   file="dijetStats.cc"></bin>
   <bin   file="dijetStatsNewBackground.cc"></bin>
 </environment>

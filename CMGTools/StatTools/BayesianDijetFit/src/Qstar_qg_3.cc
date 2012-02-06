@@ -8,7 +8,7 @@
 
 #include "Riostream.h" 
 
-#include "Analysis/Statistics/interface/Qstar_qg_3.h" 
+#include "StatTools/BayesianDijetFit/interface/Qstar_qg_3.h" 
 #include "RooAbsReal.h" 
 #include "RooAbsCategory.h" 
 
@@ -21,7 +21,7 @@
 
 #include <string>
 
-#include "Analysis/Statistics/interface/LineShapeDensityPdf.h"
+#include "StatTools/BayesianDijetFit/interface/LineShapeDensityPdf.h"
 
 
 //--------------------------------------------------------------------

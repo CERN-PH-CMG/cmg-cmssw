@@ -46,10 +46,10 @@
 #include <fstream>
 #include <string>
 
-#include "Analysis/Statistics/interface/DijetHelper.h"
-#include "Analysis/Statistics/interface/LineShapeDensityPdf.h"
-#include "Analysis/Statistics/interface/JPMCCalculator.h"
-#include "Analysis/Statistics/interface/Qstar_qg_3.h"
+#include "StatTools/BayesianDijetFit/interface/DijetHelper.h"
+#include "StatTools/BayesianDijetFit/interface/LineShapeDensityPdf.h"
+#include "StatTools/BayesianDijetFit/interface/JPMCCalculator.h"
+#include "StatTools/BayesianDijetFit/interface/Qstar_qg_3.h"
 
 using namespace RooFit;
 using namespace RooStats;
@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
 
 //  std::string DATASETFN="/afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/Analysis/Statistics/test/massFat_data_HT_Run2011AB_160404_180252_Fat30_ak5.txt";
 
-  std::string DATASETFN="/afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/Analysis/Statistics/test/massFat_data_HT_Run2011AB_160404_180252_FullStat_Fat30_ak5.txt";
+  std::string DATASETFN="/afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/StatTools/BayesianDijetFit/test/massFat_data_HT_Run2011AB_160404_180252_FullStat_Fat30_ak5.txt";
 
 //  std::string DATASETFN="/afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/Analysis/Statistics/test/massFat_data_HT_101fb_Fat_ak5.txt";
 

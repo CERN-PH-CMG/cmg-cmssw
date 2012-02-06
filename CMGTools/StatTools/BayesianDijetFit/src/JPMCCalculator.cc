@@ -1,4 +1,4 @@
-#include "Analysis/Statistics/interface/JPMCCalculator.h"
+#include "StatTools/BayesianDijetFit/interface/JPMCCalculator.h"
 
 #include "RooStats/ModelConfig.h"
 #include "RooStats/RooStatsUtils.h"
