@@ -95,3 +95,21 @@ def muonAccept( allLeptons ):
     return nLeptons<2
     
 
+
+def electronAccept( allLeptons ):
+    # print 'from leptonsq'
+##     tightLeptons = set(filter( testMuonTight, allLeptons ))
+##     looseLeptons = set(filter( testMuonLoose, allLeptons ))
+##     if not tightLeptons.issubset( looseLeptons):
+##         #COLIN: hehe not sure about that 
+##         raise ValueError('tight leptons must be a subset of loose leptons')
+##     # return noOppositeChargePair( leptons )
+##     #COLIN: the following works if the previous exception didn't fire
+##     # otherwise, could do an xor
+##     nLeptons = len(looseLeptons)
+##     return nLeptons<2
+    #TODO implement electronAccept
+    # print 'implement electronAccept'
+    return True
+    
+

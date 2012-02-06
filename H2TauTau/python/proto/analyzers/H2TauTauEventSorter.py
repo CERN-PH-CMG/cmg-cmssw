@@ -65,6 +65,7 @@ class H2TauTauEventSorter( Analyzer ):
         self.counters.counter('Sorter').inc('All events')
         if matched is None or matched is True:
             self.output.Fill( event, regionName )
+            self.counters.counter('Sorter').inc('Matched = None or True')
         elif matched is False: 
             self.outputFakes.Fill( event, regionName )
         else:
