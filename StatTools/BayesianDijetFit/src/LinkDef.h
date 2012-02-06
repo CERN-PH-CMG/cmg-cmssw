@@ -1,5 +1,5 @@
-#include "Analysis/Statistics/interface/Qstar_qg_3.h"
-#include "Analysis/Statistics/interface/JPMCCalculator.h"
+#include "StatTools/BayesianDijetFit/interface/Qstar_qg_3.h"
+#include "StatTools/BayesianDijetFit/interface/JPMCCalculator.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

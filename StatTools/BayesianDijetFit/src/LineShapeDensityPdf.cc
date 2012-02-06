@@ -1,4 +1,4 @@
-#include "Analysis/Statistics/interface/LineShapeDensityPdf.h"
+#include "StatTools/BayesianDijetFit/interface/LineShapeDensityPdf.h"
 #include "Math/Interpolator.h"
 #include "TH1F.h"
 #include "TArrayD.h"
