@@ -5,6 +5,7 @@ import CMGTools.Production.eostools as castortools
 import CMGTools.Production.Das as Das
 
 from CMGTools.Production.dataset import Dataset
+from CMGTools.Production.datasetToSource import createDataset
 from CMGTools.Production.castorBaseDir import castorBaseDir
 
 class Task(object):
@@ -81,31 +82,17 @@ documented below.
         return {'Options':self.options, 'Dataset':self.dataset}    
 
 class CheckDatasetExists(Task):
-    """Use 'listSamples.py' to check that the dataset exists in the production system.
-
-    Colin: one should rather use the CMGTools.Production.dataset module
+    """Use 'datasets.py' to check that the dataset exists in the production system.
     """
     def __init__(self, dataset, user, options):
         Task.__init__(self,'CheckDatasetExists', dataset, user, options)
-    def addOption(self, parser):
-        parser.add_option("-l", "--listLevel", dest="listLevel", help="list level", default=False)        
     def run(self, input):
-        script = 'listSamples.py'
-        pattern = fnmatch.translate(self.options.wildcard)
-        listLevel = self.options.listLevel
-        cmd = [script,self.dataset,'-u',self.user]
-        if listLevel:
-            cmd.extend(['-l',listLevel])
-        stdout = subprocess.Popen(cmd, stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[0]
-        if not stdout:
-            raise Exception("Dataset %s not found by listSamples.py. Please check. \n command: %s" % (self.dataset, cmd))
-        samples = [s for s in stdout.split('\n') if s]
-        if not len(samples) == 1:
-            if not self.dataset in samples:
-                raise Exception("Dataset '%s' not unique according to listSamples.py and no exact match found. Samples found were '%s'" % (self.dataset,samples) )
-        if '//' in samples[0]:
-            raise Exception("Too many slashes in sample name '%s'. Please check." % samples[0])
-        return {'Dataset':samples[0]}
+        data = createDataset(self.user, self.dataset, self.options.wildcard)
+        if( len(data.listOfGoodFiles()) == 0 ):
+            raise Exception('no good root file in dataset %s | %s | %s ' % (self.user,
+                                                                            self.dataset,
+                                                                            self.options.wildcard ))        
+        return {'Dataset':self.dataset}
 
 class BaseDataset(Task):
     """Query DAS to find dataset name in DBS - see https://cmsweb.cern.ch/das/"""
@@ -201,6 +188,8 @@ class FindOnCastor(Task):
     def __init__(self, dataset, user, options):
         Task.__init__(self,'FindOnCastor', dataset, user, options)
     def run(self, input):
+        if self.user == 'CMS':
+            return {'Topdir':None,'Directory':None}
         topdir = castortools.lfnToCastor(castorBaseDir(user=self.user))
         directory = '%s/%s' % (topdir,self.dataset)
         directory = directory.replace('//','/')
@@ -219,8 +208,11 @@ class CheckForMask(Task):
     def addOption(self, parser):
         parser.add_option("-c", "--check", dest="check", default=False, action='store_true',help='Check filemask if available')        
     def run(self, input):
+        #skip for DBS
+        if self.user == 'CMS':
+            return {'MaskPresent':True,'Report':'Files taken from DBS'}
+        
         dir = input['FindOnCastor']['Directory']
-
         mask = "IntegrityCheck"
         file_mask = []  
 
@@ -240,6 +232,8 @@ class CheckForWrite(Task):
         Task.__init__(self,'CheckForWrite', dataset, user, options)
     def run(self, input):
         """Check that the directory is writable"""
+        if self.user == 'CMS':
+            return {'Directory':None,'WriteAccess':True}
         dir = input['FindOnCastor']['Directory']
         if self.options.check:
             
@@ -313,12 +307,11 @@ class SourceCFG(Task):
     def __init__(self, dataset, user, options):
         Task.__init__(self,'SourceCFG', dataset, user, options)    
     def run(self, input):
-        dir = input['FindOnCastor']['Directory']
+
         jobdir = input['CreateJobDirectory']['JobDir']
-        
         pattern = fnmatch.translate(self.options.wildcard)
 
-        data = Dataset(self.user, self.dataset, pattern)
+        data = createDataset(self.user, self.dataset, pattern)
         good_files = data.listOfGoodFiles()
         bad_files = [fname for fname in data.listOfFiles() if not fname in good_files]
         
@@ -509,7 +502,6 @@ class RunCMSBatch(Task):
                           help="Tier: extension you can give to specify you are doing a new production. If you give a Tier, your new files will appear in sampleName/tierName, which will constitute a new dataset.",
                           default="")               
     def run(self, input):
-        
         find = FindOnCastor(self.dataset,self.options.batch_user,self.options)
         find.create = True
         out = find.run({})
