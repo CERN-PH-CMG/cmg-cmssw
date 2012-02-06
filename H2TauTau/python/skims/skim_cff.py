@@ -25,7 +25,7 @@ tauMuFullSelSkimSequence = cms.Sequence(
 
 cmgTauEleCount.minNumber = 1
 tauElePreSelCount = cmgTauEleCount.clone( minNumber = 1,
-                                        src = 'cmgTauEleCorSVFitPreSel')
+                                          src = 'cmgTauEleCorSVFitPreSel')
 
 tauEleFullSelCount = tauElePreSelCount.clone( src = 'cmgTauEleCorSVFitFullSel')
 

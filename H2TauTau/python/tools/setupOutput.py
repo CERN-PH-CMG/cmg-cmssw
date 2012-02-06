@@ -2,7 +2,7 @@ import os
 import FWCore.ParameterSet.Config as cms
 
 
-def addOutput( process, type12, debugEventContent=False):
+def addOutput( process, type12, debugEventContent=False, addPreSel=True):
 
     allowedTypes = ['tauMu', 'tauEle', 'muEle']
     if type12 not in allowedTypes:
@@ -65,22 +65,22 @@ def addOutput( process, type12, debugEventContent=False):
         )
     outBaseline.fileName = baselineName
 
-    setattr( process, os.path.splitext(basicName)[0], out )
     setattr( process, os.path.splitext(baselineName)[0], outBaseline )
-    
-    process.outpath += out
     process.outpath += outBaseline
     print 'adding output:', outBaseline.fileName
-    print 'adding output:', out.fileName
+    if addPreSel: 
+        setattr( process, os.path.splitext(basicName)[0], out )
+        process.outpath += out
+        print 'adding output:', out.fileName
     
     
 
-def addTauMuOutput( process, debugEventContent=False ):
-    addOutput(process,'tauMu', debugEventContent)
+def addTauMuOutput( process, debugEventContent=False, addPreSel=True):
+    addOutput(process,'tauMu', debugEventContent, addPreSel )
 
-def addTauEleOutput( process, debugEventContent=False ):
-    addOutput(process,'tauEle', debugEventContent)
+def addTauEleOutput( process, debugEventContent=False, addPreSel=True ):
+    addOutput(process,'tauEle', debugEventContent, addPreSel )
  
-def addMuEleOutput( process, debugEventContent=False ):
-    addOutput(process,'muEle', debugEventContent)
+def addMuEleOutput( process, debugEventContent=False, addPreSel=True ):
+    addOutput(process,'muEle', debugEventContent, addPreSel )
  
