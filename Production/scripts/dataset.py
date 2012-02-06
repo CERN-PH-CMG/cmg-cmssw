@@ -6,6 +6,7 @@ if __name__ == '__main__':
 
     import sys
     from optparse import OptionParser
+    import pprint
     
     parser = OptionParser()
     parser.usage = "%prog [options] <dataset>\nPrints information on a sample."
@@ -19,6 +20,10 @@ if __name__ == '__main__':
                       action = 'store_true',
                       default=False,
                       help='do not print additional info (file size and status)')
+    parser.add_option("-r", "--report", dest="report",
+                      action = 'store_true',
+                      default=False,
+                      help='Print edmIntegrityCheck report')
 
     (options,args) = parser.parse_args()
 
@@ -38,4 +43,6 @@ if __name__ == '__main__':
     data.printInfo()
     data.printFiles(abspath = options.abspath,
                     info = info)
+    if options.report:
+        pprint.pprint( data.report )
 
