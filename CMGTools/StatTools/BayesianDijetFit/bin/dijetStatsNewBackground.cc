@@ -117,6 +117,7 @@ int main(int argc, char* argv[])
   int statlevel = atoi(argv[2]);
   int numPEs = argc>=4 ? atoi(argv[3]) : 0;
   const char* cResonance = argc>=5 ? argv[4] : "No Resonance";
+  bool verbose_ = argc>=6 ? atoi(argv[5]) : 1;
   std::string sResonance(cResonance);
   int iResonance = 0;
 
@@ -125,6 +126,7 @@ int main(int argc, char* argv[])
   else if (sResonance.find("Qstar_ak5_fat30") != std::string::npos) iResonance = 13;
                                   
   cout << "cResonance = " << cResonance << "iResonance is = " << iResonance << endl;
+  cout << "Verbose = " << verbose_ << endl;
 
   // setup label
   char label[100];
@@ -237,9 +239,9 @@ int main(int argc, char* argv[])
   //  ws->var("invmass")->removeRange("SB1");
   //  ws->var("invmass")->removeRange("SB2");
   //} else {
-  fit=doFit(std::string("bfita")+label, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL");
-  fit=doFit(std::string("bfitb")+label, ws->pdf("modelb"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL");
-  fit=doFit(std::string("bfitc")+label, ws->pdf("modelc"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL");
+  fit=doFit(std::string("bfita")+label, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
+  fit=doFit(std::string("bfitb")+label, ws->pdf("modelb"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
+  fit=doFit(std::string("bfitc")+label, ws->pdf("modelc"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
   //}
 
   // integrate over model to get xs estimate as input to the B+S fit
@@ -293,11 +295,11 @@ int main(int argc, char* argv[])
       ws->var("pc2")->setConstant(true);
       ws->var("nbkg")->setConstant(true);
       
-      fit=doFit(std::string("bsfita")+pelabel, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL");
+      fit=doFit(std::string("bsfita")+pelabel, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
       //    fit=doFit(std::string("bsfitb")+pelabel, ws->pdf("modelb"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL");
       //    fit=doFit(std::string("bsfitc")+pelabel, ws->pdf("modelc"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL");
     } else {
-      fit=doFit(std::string("bsfita")+pelabel, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL");
+      fit=doFit(std::string("bsfita")+pelabel, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
       //    fit=doFit(std::string("bsfitb")+pelabel, ws->pdf("modelb"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL");
       //    fit=doFit(std::string("bsfitc")+pelabel, ws->pdf("modelc"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL");
 
