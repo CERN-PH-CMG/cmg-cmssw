@@ -106,15 +106,17 @@ for proc in procList :
                 if(eventsFile.find('/store/cmst3')==0)  : eventsFile = commands.getstatusoutput('cmsPfn ' + eventsFile)[1]
                         
             	sedcmd = 'sed \"s%@input%' + eventsFile +'%;s%@outdir%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
-            	if(params.find('@useMVA')<0) : params = '@useMVA=False ' + params
+            	if(params.find('@useMVA')<0) :          params = '@useMVA=False ' + params
+                if(params.find('@evStart')<0) :         params = '@evStart=0 ' + params
+                if(params.find('@evEnd')<0) :           params = '@evEnd=-1 ' + params
             	if(params.find('@saveSummaryTree')<0) : params = '@saveSummaryTree=False ' + params
-            	if(params.find('@runSystematics')<0) : params = '@runSystematics=False ' + params
+            	if(params.find('@runSystematics')<0) :  params = '@runSystematics=False ' + params
             	if(len(params)>0) :
-                	extracfgs = params.split(' ')
-                	for icfg in extracfgs :
-                    		varopt=icfg.split('=')
-                    		if(len(varopt)<2) : continue
-                    		sedcmd += 's%' + varopt[0] + '%' + varopt[1] + '%;'
+                    extracfgs = params.split(' ')
+                    for icfg in extracfgs :
+                        varopt=icfg.split('=')
+                        if(len(varopt)<2) : continue
+                        sedcmd += 's%' + varopt[0] + '%' + varopt[1] + '%;'
             	sedcmd += '\"'
 		if(split==1): 
 	            	cfgfile=outdir +'/'+ dtag + '_cfg.py'
