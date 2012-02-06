@@ -69,9 +69,8 @@ private:
   double minJetPt_, maxJetEta_;
   std::vector<int> vertexAssociationMasks_;
 
-  FastJetAlgoPFJetPFJet jetProducer_;
+  FastJetAlgoWrapper jetProducer_;
 
-  double jetCone_;
   bool minBiasMode_;
 
    bool simpleNeutralAssociation_;
@@ -89,7 +88,6 @@ ClusteredPFMetProducer::ClusteredPFMetProducer(const edm::ParameterSet& iConfig)
   minJetPt_(iConfig.getParameter<double>("minJetPt")),
   maxJetEta_(iConfig.getParameter<double>("maxJetEta")),
   jetProducer_(iConfig.getParameter<edm::ParameterSet>("fastjet")),
-  jetCone_(iConfig.getParameter<edm::ParameterSet>("fastjet").getParameter<double>("distance_par")),
   minBiasMode_(iConfig.getParameter<bool>("minBiasMode"))
 //  simpleNeutralAssociation_(iConfig.getParameter<bool>("simpleNeutralAssociation"))
 {
@@ -249,14 +247,14 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
       //Jet building
       std::vector<reco::PFJet> inputSeedJetAssociatedPartToiVtx;
       getSeedJetsFromCandidateAssociatedToVertex(inputSeedJetAssociatedPartToiVtx, iVtx);
-      vtxJets[iVtx] = jetProducer_.produce(inputSeedJetAssociatedPartToiVtx,false,false, 2.,99999); 
+      vtxJets[iVtx] = jetProducer_.produce(inputSeedJetAssociatedPartToiVtx,2.); 
       const std::vector<reco::PFJet> &jetColl=vtxJets[iVtx];
       std::vector<reco::PFJet>::const_iterator jIt(jetColl.begin()), jItEnd(jetColl.end());
 
       std::vector<reco::PFJet> inputSeedJetTemp;
       inputSeedJetTemp.insert(inputSeedJetTemp.end(), vtxJets[iVtx].begin(), vtxJets[iVtx].end());
       inputSeedJetTemp.insert(inputSeedJetTemp.end(), inputSeedJetForUnassocPart.begin(), inputSeedJetForUnassocPart.end() );
-      std::vector<reco::PFJet> vtxJetPlusNeutralTemp = jetProducer_.produce(inputSeedJetTemp,false,false, 2.,99999);
+      std::vector<reco::PFJet> vtxJetPlusNeutralTemp = jetProducer_.produce(inputSeedJetTemp, 2.);
       for(unsigned int i=0;i<vtxJetPlusNeutralTemp.size();i++){if(vtxJetPlusNeutralTemp[i].chargedMultiplicity()>0)vtxJetsPlusNeutral[iVtx].push_back(vtxJetPlusNeutralTemp[i]);}
 
 //      printf("### Inputs:\n");
@@ -316,7 +314,8 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
                  set_OvtxCharged[iVtx] += candRef->pt();
 
                  double dr = deltaR(vtxJetsPlusNeutral[iVtx][i].eta(),vtxJetsPlusNeutral[iVtx][i].phi(), candRef->eta(), candRef->phi());
-                 if(dr>jetCone_)continue;
+                 double jetCone = sqrt(pow(vtxJetsPlusNeutral[iVtx][i].etaetaMoment(),2) + pow(vtxJetsPlusNeutral[iVtx][i].phiphiMoment(),2));
+                 if(dr>jetCone)continue;
                  met_PvtxBetaCor[iVtx] += -0.5 * candRef->p4();
                  set_PvtxBetaCor[iVtx] += -0.5 * candRef->pt();
                  //A charged particle can be associated to only one single jet!
