@@ -73,33 +73,18 @@ int main(int argc, char* argv[])
   double MININVMASS = 890.; // HT-fat-4479/pb
 
   double MAXINVMASS = 5000.;
-//  std::string DATASETFN="/uscms/physics_grp/lpcjj/Dijet/7TeV/2011Jun03_382p703pbm1/dijet_mass_calo_382p703pbm1.txt";
-//  std::string DATASETFN="/uscms/physics_grp/lpcjj/Dijet/7TeV/2011Jun10_653p231pbm1/dijet_mass_calo_653p231pbm1.txt";
-//  std::string DATASETFN="/uscms/physics_grp/lpcjj/Dijet/7TeV/2011Jun10_653p231pbm1/dijet_mass_pf_653p231pbm1.txt";
-//  std::string DATASETFN="/uscms/physics_grp/lpcjj/Dijet/7TeV/2011Jun17_831pbm1/dijet_mass_HT_calo_831pbm1.txt";
-//  std::string DATASETFN="/uscms/physics_grp/lpcjj/Dijet/7TeV/2011Jun17_831pbm1/dijet_mass_HT_pf_831pbm1.txt";
-//    std::string DATASETFN="/uscms/physics_grp/lpcjj/Dijet/7TeV/2011Jun17_831pbm1/dijet_mass_HT_fat_831pbm1.txt";
-//  std::string DATASETFN="/uscms/physics_grp/lpcjj/Dijet/7TeV/2011Jun17_831pbm1/dijet_mass_Jet_calo_831pbm1.txt";
-//  std::string DATASETFN="/uscms/physics_grp/lpcjj/Dijet/7TeV/2011Jun17_831pbm1/dijet_mass_Jet_pf_831pbm1.txt";
-//  std::string DATASETFN="/uscms/physics_grp/lpcjj/Dijet/7TeV/2011Jun17_831pbm1/dijet_mass_Jet_fat_831pbm1.txt";
 
-//  std::string DATASETFN="/afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/Analysis/Statistics/test/massFat_data_HT_Run2011AB_160404_180252_Fat30_ak5.txt";
 
-  std::string DATASETFN="/afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/StatTools/BayesianDijetFit/test/massFat_data_HT_Run2011AB_160404_180252_FullStat_Fat30_ak5.txt";
+  //  std::string DATASETFN="../data/massFat_data_HT_Run2011A_160404_167784_Fat30_ak5.txt";
+  //  std::string DATASETFN="../data/massFat_MuPt10_data_HT_Run2011A_160404_167784_Fat30_ak5.txt";
 
-//  std::string DATASETFN="/afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/Analysis/Statistics/test/massFat_data_HT_101fb_Fat_ak5.txt";
+  //  std::string DATASETFN="../data/massFat_MuPt10_data_HT_Run2011AB_160404_180252_FullStat_Fat30_ak5.txt";
+  std::string DATASETFN="../data/massFat_data_HT_Run2011AB_160404_180252_FullStat_Fat30_ak5.txt";
 
-//  std::string DATASETFN="/afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/Analysis/Statistics/test/massFat_data_HT_Run2010_2011_136033_180252_massOut_ak5.txt";
-
-//  std::string DATASETFN="/uscms/physics_grp/lpcjj/Dijet/7TeV/2011Jul01_1p010fbm1/dijet_mass_HT_pf_1p010fbm1.txt";
-//  std::string DATASETFN="/uscms/physics_grp/lpcjj/Dijet/7TeV/2011Jul01_1p010fbm1/dijet_mass_HT_calo_1p010fbm1.txt";
-//  std::string DATASETFN="/uscms/physics_grp/lpcjj/Dijet/7TeV/2011Jul01_1p010fbm1/dijet_mass_Jet_fat_1p010fbm1.txt";
-//  std::string DATASETFN="/uscms/physics_grp/lpcjj/Dijet/7TeV/2011Jul01_1p010fbm1/dijet_mass_Jet_pf_1p010fbm1.txt";
-//  std::string DATASETFN="/uscms/physics_grp/lpcjj/Dijet/7TeV/2011Jul01_1p010fbm1/dijet_mass_Jet_calo_1p010fbm1.txt";
 
 
 //  double LUMI = 1010.;
-//  double LUMI = 4444.;
+
   double LUMI = 4677.;
   double LUMIERROR=0.06; // relative error on luminosity
   double JES=1.0;        // JES "value"
