@@ -87,7 +87,8 @@ class CheckDatasetExists(Task):
     def __init__(self, dataset, user, options):
         Task.__init__(self,'CheckDatasetExists', dataset, user, options)
     def run(self, input):
-        data = createDataset(self.user, self.dataset, self.options.wildcard)
+        pattern = fnmatch.translate(self.options.wildcard)
+        data = createDataset(self.user, self.dataset, pattern)
         if( len(data.listOfGoodFiles()) == 0 ):
             raise Exception('no good root file in dataset %s | %s | %s ' % (self.user,
                                                                             self.dataset,
