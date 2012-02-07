@@ -1,6 +1,6 @@
 import math
 
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, Tau
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, Tau, Electron
 from CMGTools.RootTools.utils.DeltaR import deltaR2
 
 class DiObject( object ):
@@ -46,25 +46,13 @@ class DiMuon( DiObject ):
         return '\n'.join( [header] )
 
 
-
-class TauMuon( DiObject ):
+class DiTau( DiObject ):
     def __init__(self, diobject):
-        super(TauMuon, self).__init__(diobject)
-        self.tau = Tau( diobject.leg1() )
-        self.mu = Muon( diobject.leg2() )
-        #COLIN some of the matching stuff could go up 
-        self.leg1Gen = None
-        self.leg2Gen = None
-        self.leg1DeltaR = -1
-        self.leg2DeltaR = -1
-
-    def leg1(self):
-        return self.tau
-
-    def leg2(self):
-        return self.mu
-
+        super(DiTau, self).__init__(diobject)
+        
     def match(self, genParticles):
+        #TODO review matching algorithm
+        #TODO move matching stuff even higher?
         # print self
         genTaus = []
         ZorPhoton = [22, 23]
@@ -95,3 +83,31 @@ class TauMuon( DiObject ):
             self.leg1DeltaR = math.sqrt( dR2leg1Min )
             self.leg2DeltaR = math.sqrt( dR2leg2Min )
             return (self.leg1DeltaR, self.leg2DeltaR)        
+
+
+class TauMuon( DiTau ):
+    def __init__(self, diobject):
+        super(TauMuon, self).__init__(diobject)
+        self.tau = Tau( diobject.leg1() )
+        self.mu = Muon( diobject.leg2() )
+
+    def leg1(self):
+        return self.tau
+
+    def leg2(self):
+        return self.mu
+
+
+
+class TauElectron( DiTau ):
+    def __init__(self, diobject):
+        super(TauElectron, self).__init__(diobject)
+        self.tau = Tau( diobject.leg1() )
+        self.ele = Electron( diobject.leg2() )
+
+    def leg1(self):
+        return self.tau
+
+    def leg2(self):
+        return self.ele
+

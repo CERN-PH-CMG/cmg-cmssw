@@ -1,6 +1,6 @@
 import logging 
 
-from CMGTools.RootTools.fwlite.TriggerList import TriggerList
+# from CMGTools.RootTools.fwlite.TriggerList import TriggerList
 from CMGTools.RootTools.statistics.Counter import Counters
 from CMGTools.RootTools.statistics.Average import Averages
 
@@ -28,7 +28,8 @@ class Analyzer(object):
         # this is the main logger corresponding to the looper.
         # each analyzer could also declare its own logger
         self.mainLogger = logging.getLogger( looperName )
-        self.triggerList = TriggerList( self.cfg_comp.triggers )
+        #         self.triggerList = TriggerList( self.cfg_comp.triggers )
+        self.beginLoopCalled = False
 
     def declareHandles(self):
         self.handles = {}
@@ -41,7 +42,7 @@ class Analyzer(object):
         self.counters = Counters()
         self.averages = Averages()
         self.mainLogger.warning( 'beginLoop ' + self.cfg_ana.name ) 
-
+        self.beginLoopCalled = True
         
     def endLoop(self):
         '''Automatically called by Looper, for all analyzers.'''
@@ -59,6 +60,9 @@ class Analyzer(object):
     def readCollections(self, iEvent ):
         '''You must call this function at the beginning of the process
         function of your child analyzer.'''
+        if not self.beginLoopCalled:
+            # necessary in case the user calls process to go straight to a given event, before looping
+            self.beginLoop()
         for str,handle in self.handles.iteritems():
             handle.Load( iEvent )
         if self.cfg_comp.isMC:
