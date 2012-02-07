@@ -2,6 +2,10 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("HtoZZto2l2nu")
 
+process.load("Configuration.StandardSequences.Geometry_cff")
+#process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+
+
 #the source is configured from the command line
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring()
@@ -36,17 +40,28 @@ process.evAnalyzer = cms.EDAnalyzer("DileptonPlusMETEventAnalyzer",
                                     Generator = BaseGeneratorSelection.clone(),
                                     Vertices = BaseVertexSelection.clone(),
                                     Photons = BasePhotonsSelection.clone(),
-                                    LooseMuons = BaseLooseMuonsSelection.clone(),
-                                    Muons = BaseMuonsSelection.clone(),
-                                    LooseElectrons = BaseLooseElectronsSelection.clone(),
-                                    Electrons = BaseElectronsSelection.clone(),
+                                    LooseMuons = BaseLooseMuonsSelection.clone( id = cms.string(''),
+                                                                                requireGlobal = cms.bool(False),
+                                                                                requireTracker = cms.bool(True),
+                                                                                maxRelIso = cms.double(999999.)
+                                                                                ),
+                                    Muons = BaseMuonsSelection.clone( requireGlobal = cms.bool(False),
+                                                                      requireTracker = cms.bool(True),
+                                                                      maxRelIso = cms.double(999999.)
+                                                                      ),
+                                    LooseElectrons = BaseLooseElectronsSelection.clone( id = cms.string(""),
+                                                                                        maxRelIso=cms.double(99999.)
+                                                                                        ),
+                                    Electrons = BaseElectronsSelection.clone( id = cms.string(''),
+                                                                              maxRelIso=cms.double(999999.)
+                                                                              ),
                                     Dileptons = BaseDileptonSelection.clone(),
                                     Jets = BaseJetSelection.clone(),
                                     MET = BaseMetSelection.clone()
                                     )
 
 from CMGTools.HtoZZ2l2nu.GeneratorLevelSequences_cff import parseHiggsMass
-process.evAnalyzer.Generator.weightForHiggsMass = cms.double( parseHiggsMass(castorDir) )
+process.evAnalyzer.Generator.weightForHiggsMass = cms.double( parseHiggsMass(url=castorDir) )
 
 #the path to execute
 process.p = cms.Path(process.ClusteredPFMetSequence*process.puWeightSequence*process.evAnalyzer)

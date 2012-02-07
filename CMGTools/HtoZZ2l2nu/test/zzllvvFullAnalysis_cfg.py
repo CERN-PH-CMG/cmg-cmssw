@@ -12,6 +12,7 @@ process.source = cms.Source("PoolSource",
                             )
 from CMGTools.HtoZZ2l2nu.localPatTuples_cff import configureFromCommandLine
 castorDir, outputFile, process.source.fileNames = configureFromCommandLine()
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 #get the global tag
 runOnMC=True

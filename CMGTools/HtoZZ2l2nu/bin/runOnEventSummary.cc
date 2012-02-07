@@ -217,13 +217,10 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1F ("nbtags3leptons", ";b-tag multiplicity; Events", 3,0,3) );
 
   //used to optimize the b-veto
-  h=new TH1F ("npassbveto", ";Pass b-tag veto; Events", 6,0,6);
-  h->GetXaxis()->SetBinLabel(1,"SSVHEM");
-  h->GetXaxis()->SetBinLabel(2,"TCHEL");
-  h->GetXaxis()->SetBinLabel(3,"TCHE>2");
-  h->GetXaxis()->SetBinLabel(4,"JBP");
-  h->GetXaxis()->SetBinLabel(5,"SSVHEM || TCHEL");
-  h->GetXaxis()->SetBinLabel(6,"SSVHEM || JBPL");
+  h=new TH1F ("npassbveto", ";Pass b-tag veto; Events", 3,0,3);
+  h->GetXaxis()->SetBinLabel(1,"TCHEL");
+  h->GetXaxis()->SetBinLabel(2,"TCHE>2");
+  h->GetXaxis()->SetBinLabel(3,"CSVL");
   controlHistos.addHistogram( h );
 
   //used for GenLevel
@@ -626,12 +623,8 @@ int main(int argc, char* argv[])
 	weight = LumiWeights.weight( ev.ngenITpu );
         TotalWeight_plus = PShiftUp.ShiftWeight( ev.ngenITpu );
         TotalWeight_minus = PShiftDown.ShiftWeight( ev.ngenITpu );
-        if(isVBF)                         weight *= weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );         
-        if(isGG){
-	  evSummaryHandler.verifyHiggsWeights(HiggsMass);
-	  weight *= ev.hptWeights[0];
-	  //	else if (isGG && ev.hptWeights[0]<1e-6) continue;
-	}
+        if(isVBF)         weight *= weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );         
+        if(isGG)  	  weight *= ev.hptWeights[0];
       }
 
       Hcutflow->Fill(1,1);
@@ -677,7 +670,7 @@ int main(int argc, char* argv[])
 
       //count jets and b-tags
       int njets(0),njetsinc(0);
-      int nbtags(0),        nbtags_ssvhem(0),        nbtags_tchel(0),        nbtags_tche2(0),        nbtags_jbpl(0),        nbtags_ssvhemORtchel(0);
+      int nbtags(0), nbtags_tchel(0),   nbtags_tche2(0),  nbtags_csvl(0);
       LorentzVectorCollection jetsP4;
       LorentzVector fwdClusteredMetP4(0,0,0,0);
       int nheavyjets(0), nlightsjets(0);
@@ -690,18 +683,14 @@ int main(int argc, char* argv[])
 	      njets++;
 	      bool passTCHEL(phys.jets[ijet].btag1>1.7);
 	      bool passTCHE2(phys.jets[ijet].btag1>2.0);
-	      bool passJBPL(phys.jets[ijet].btag2>1.33);
-	      bool passSSVHEM(phys.jets[ijet].btag3>1.74);
+	      bool passCSVL(phys.jets[ijet].btag2>0.244);
 	      if(phys.jets[ijet].pt()>30){
-		  nbtags          += (passJBPL || passSSVHEM);
-		  nbtags_ssvhem   += passSSVHEM;
-		  nbtags_tchel    += passTCHEL;
-		  nbtags_tche2    += passTCHE2;
-		  nbtags_jbpl     += passJBPL;
-		  nbtags_ssvhemORtchel += (passTCHEL || passSSVHEM);
-
-		  nheavyjets += (fabs(phys.jets[ijet].genid)==5);
-		  nlightsjets += (fabs(phys.jets[ijet].genid)!=5);
+		nbtags          += passTCHE2;
+		nbtags_tchel    += passTCHEL;
+		nbtags_tche2    += passTCHE2;
+		nbtags_csvl     += passCSVL;
+		nheavyjets += (fabs(phys.jets[ijet].genid)==5);
+		nlightsjets += (fabs(phys.jets[ijet].genid)!=5);
               }
 	  }
       }
@@ -867,7 +856,8 @@ int main(int argc, char* argv[])
 	  for(size_t ijet=2; ijet<phys.jets.size(); ijet++){
 	      if(phys.jets[ijet].pt()<30)continue; 
 	      if(phys.jets[ijet].eta()>MinEta && phys.jets[ijet].eta()<MaxEta)VBFCentral30Jets++; 
-	      if(phys.jets[ijet].btag2>1.33 || phys.jets[ijet].btag3>1.74)VBFNBJets++; 
+	      if(phys.jets[ijet].btag1>1.7) VBFNBJets++;
+	      //if(phys.jets[ijet].btag2>0.244)VBFNBJets++; 
 	  }
 	  
 	  Pass2Jet30   = true;
@@ -889,7 +879,7 @@ int main(int argc, char* argv[])
       bool passZpt(zpt>25);
 
       bool pass3dLeptonVeto(true); for(unsigned int i=2;i<phys.leptons.size();i++){if(phys.leptons[i].pt()>10)pass3dLeptonVeto=false;}
-      bool passBveto(nbtags_tche2==0);//nbtags==0);
+      bool passBveto(nbtags==0);
       bool passMediumRedMet(50);
       bool passTightRedMet(84);//redMet>METUtils::getRedMETCut(eventCategory,METUtils::TIGHTWP));
       
@@ -1040,13 +1030,10 @@ int main(int argc, char* argv[])
 	      controlHistos.fillHisto("njets",ctf,njets,iweight);
 	      controlHistos.fill2DHisto("njetsvspu",ctf,ev.ngenITpu,njets,iweight);
 	      controlHistos.fill2DHisto("njetsincvspu",ctf,ev.ngenITpu,njetsinc,iweight);
-	      controlHistos.fillHisto("nbtags",ctf, nbtags_tche2,iweight);
-	      controlHistos.fillHisto("npassbveto",ctf,0, (nbtags_ssvhem==0)*iweight);
-	      controlHistos.fillHisto("npassbveto",ctf,1, (nbtags_tchel==0)*iweight);
-	      controlHistos.fillHisto("npassbveto",ctf,2, (nbtags_tche2==0)*iweight);
-	      controlHistos.fillHisto("npassbveto",ctf,3, (nbtags_jbpl==0)*iweight);
-	      controlHistos.fillHisto("npassbveto",ctf,4, (nbtags_ssvhemORtchel==0)*iweight);
-	      controlHistos.fillHisto("npassbveto",ctf,5, (nbtags==0)*iweight);
+	      controlHistos.fillHisto("nbtags",ctf, nbtags,iweight);
+	      controlHistos.fillHisto("npassbveto",ctf,0, (nbtags_tchel==0)*iweight);
+	      controlHistos.fillHisto("npassbveto",ctf,1, (nbtags_tche2==0)*iweight);
+	      controlHistos.fillHisto("npassbveto",ctf,2, (nbtags_csvl==0)*iweight);
 	      controlHistos.fillHisto("zmassctrl",ctf,passBveto+2*passMediumRedMet,iweight);
 
 	      

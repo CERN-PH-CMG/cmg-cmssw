@@ -105,7 +105,19 @@ def addPatSequence(process, runOnMC, addPhotons=True) :
     process.load("ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff")
     process.load("RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_DataTuning_cfi")
     process.load("RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_cfi")
+
+    from SHarper.HEEPAnalyzer.HEEPSelectionCuts_cfi import *
+    process.HEEPId = cms.EDProducer("HEEPIdValueMapProducer",
+                                    eleLabel = cms.InputTag("gsfElectrons"),
+                                    barrelCuts = cms.PSet(heepBarrelCuts),
+                                    endcapCuts = cms.PSet(heepEndcapCuts)
+                                    )
+    process.HEEPId.barrelCuts.minEt = 5. #reset min et cut to 5 GeV
+    process.HEEPId.endcapCuts.minEt = 5. #reset min et cut to 5 GeV 
+    
+    
     process.electronIDSequence = cms.Sequence(
+        process.HEEPId +
         process.simpleEleIdSequence +
         process.eidVeryLoose +
         process.eidLoose +
@@ -120,6 +132,7 @@ def addPatSequence(process, runOnMC, addPhotons=True) :
         )
 
     applyPostfix( process, 'patElectrons', postfix ).electronIDSources = cms.PSet(
+        eidHEEP = cms.InputTag("HEEPId"),
         eidVBTF95 = cms.InputTag("simpleEleId95relIso"),
         eidVBTF90 = cms.InputTag("simpleEleId90relIso"),
         eidVBTF85 = cms.InputTag("simpleEleId85relIso"),

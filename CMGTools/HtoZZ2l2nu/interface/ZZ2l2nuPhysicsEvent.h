@@ -23,20 +23,21 @@ public :
 class PhysicsObject_Lepton : public LorentzVector
 {
 public :
-  PhysicsObject_Lepton(LorentzVector vec, Int_t id_,Int_t genid_=0, Float_t ptErr_=0, Float_t iso1_=0, Float_t iso2_=0, Float_t iso3_=0):
-    LorentzVector(vec), id(id_), genid(genid_), ptErr(ptErr_), iso1(iso1_), iso2(iso2_), iso3(iso3_) { }
+  PhysicsObject_Lepton(LorentzVector vec, Int_t id_,Int_t genid_=0, Float_t ptErr_=0, Float_t iso1_=0, Float_t iso2_=0, Float_t iso3_=0, Float_t pid_=0):
+    LorentzVector(vec), id(id_), genid(genid_), ptErr(ptErr_), iso1(iso1_), iso2(iso2_), iso3(iso3_),pid(pid_) { }
     Int_t id,genid;
     Float_t ptErr, iso1, iso2, iso3;
+    Int_t pid;
 };
 
 class PhysicsObject_Jet : public LorentzVector
 {
 public :
-  PhysicsObject_Jet(LorentzVector vec, Int_t genid_=0, Float_t btag1_=0, Float_t btag2_=0, Float_t btag3_=0, Float_t btag4_=0, Bool_t vtxAssoc_=false):
-    LorentzVector(vec), genid(genid_), btag1(btag1_), btag2(btag2_), btag3(btag3_), btag4(btag4_), vtxAssoc(vtxAssoc_) { }
+  PhysicsObject_Jet(LorentzVector vec, Int_t genid_=0, Float_t btag1_=0, Float_t btag2_=0, Float_t neutHadFrac_=0, Float_t neutEmFrac_=0, Float_t chHadFrac_=0, Int_t pid_=0):
+    LorentzVector(vec), genid(genid_), btag1(btag1_), btag2(btag2_), neutHadFrac(neutHadFrac_), neutEmFrac(neutEmFrac_), chHadFrac(chHadFrac_), pid(pid_) {}
     Int_t genid;
-    Float_t btag1, btag2, btag3, btag4; 
-    Bool_t vtxAssoc;
+    Float_t btag1, btag2, neutHadFrac, neutEmFrac, chHadFrac;
+    Int_t pid;
 };
 
 class PhysicsObject_Gamma : public LorentzVector
@@ -68,10 +69,10 @@ struct PhysicsEvent_t
   float puWeight;
   int cat;
   int nvtx;
-  LorentzVector met[15];
+  LorentzVectorCollection met;
   LorentzVector vtx;
   PhysicsObjectGammaCollection gammas;
-  PhysicsObjectJetCollection jets;
+  PhysicsObjectJetCollection jets, ajets;
   PhysicsObjectLeptonCollection leptons;
 
   PhysicsObjectCollection genjets, genleptons, genmet, genhiggs, gengammas;

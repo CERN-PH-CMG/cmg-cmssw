@@ -96,16 +96,24 @@ vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> >
 	  double mEta = muon->eta();
 	  if( mPt<minPt || fabs(mEta)>maxEta) continue; 
 
-	  //track selection
-	  double chi2 = muon->globalTrack()->normalizedChi2();	  
-	  double d0=muon->innerTrack()->dxy(theBeamSpot.position());
-	  //	  int nValidPixelHits = muon->globalTrack()->hitPattern().numberOfValidPixelHits();
-	  int nValidTrackerHits = muon->globalTrack()->hitPattern().numberOfValidTrackerHits();
-	  int nValidMuonHits = muon->globalTrack()->hitPattern().numberOfValidMuonHits();
-	  //	  int nMatches = muon->numberOfMatches();
-	  if(fabs(d0)>maxDistToBeamSpot) continue;
-	  if(chi2>maxTrackChi2 || nValidTrackerHits < minValidTrackerHits || nValidMuonHits<minValidMuonHits) continue;
+	  //beam spot compatibility
+	  if(requireTracker)
+	    {
+	      double d0=muon->innerTrack()->dxy(theBeamSpot.position());
+	      if(fabs(d0)>maxDistToBeamSpot) continue;
+	    }
 
+	  //global track selection	  
+	  if(requireGlobal)
+	    {
+	      double chi2 = muon->globalTrack()->normalizedChi2();	  
+	      // int nValidPixelHits = muon->globalTrack()->hitPattern().numberOfValidPixelHits();
+	      int nValidTrackerHits = muon->globalTrack()->hitPattern().numberOfValidTrackerHits();
+	      int nValidMuonHits = muon->globalTrack()->hitPattern().numberOfValidMuonHits();
+	      // int nMatches = muon->numberOfMatches();
+	      if(chi2>maxTrackChi2 || nValidTrackerHits < minValidTrackerHits || nValidMuonHits<minValidMuonHits) continue;
+	    }
+	  
 	  //id 
 	  if(!id.empty())
 	    {
