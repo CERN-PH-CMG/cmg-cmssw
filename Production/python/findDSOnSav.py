@@ -55,7 +55,10 @@ def getTaskID(name, category, username, password, isParent):
             # Check if task is 100% match
             if re.search(name,br.form['summary']):
                 # Check task is "Open"
-                if br.form['status_id']==['1'] and br.form['category_id']==[category]:
+                if br.form['category_id']==['101'] and category == '101':
+                    print "Test dataset"
+                
+                if br.form['status_id']==['1'] and ((br.form['category_id']==['101'] and category == '101') or (br.form['category_id']!=['101'] and category != '101')):
                     for i in br.response().readlines():
                         if re.search("<title>CMG", i)>0:
                     	    task = i.split("#")[1]
@@ -71,16 +74,17 @@ def getTaskID(name, category, username, password, isParent):
             else: links=br.links(text_regex=name+"$")
             checkedLinks = []
             for i in links:
+                
                 #For every link follow it and examine::                
                 br.follow_link(i)
                 br.select_form(name='item_form')
-
                 # .. That status is "Open"
-                if br.form['status_id']==['1'] and br.form['category_id']==[category]:
+                if br.form['status_id']==['1'] and ((br.form['category_id']==['101'] and category == '101') or (br.form['category_id']!=['101'] and category != '101')):
                     for i in br.response().readlines():
                         if re.search("<title>CMG", i):
                     	    task = i.split("#")[1]
                     	    checkedLinks.append(task.split(",")[0])
+            
             try:
                 if isParent: return checkedLinks
                 else: return checkedLinks[0]
