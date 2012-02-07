@@ -34,12 +34,12 @@ struct ZZ2l2nuSummary_t
   Int_t pass;
 
   //dilepton
-  Float_t l1_px  ,l1_py  ,l1_pz  ,l1_en, l1_ptErr, l1_iso1, l1_iso2, l1_iso3; Int_t l1_id, l1_genid, l1_pid;
-  Float_t l2_px  ,l2_py  ,l2_pz  ,l2_en, l2_ptErr, l2_iso1, l2_iso2, l2_iso3; Int_t l2_id, l2_genid, l2_pid;
+  Float_t l1_px  ,l1_py  ,l1_pz  ,l1_en, l1_ptErr, l1_iso1, l1_iso2, l1_iso3, l1_iso4; Int_t l1_id, l1_genid, l1_pid;
+  Float_t l2_px  ,l2_py  ,l2_pz  ,l2_en, l2_ptErr, l2_iso1, l2_iso2, l2_iso3, l2_iso4; Int_t l2_id, l2_genid, l2_pid;
 
   //other leptons
   Int_t ln;
-  Float_t ln_px[MAXPARTICLES],ln_py[MAXPARTICLES],ln_pz[MAXPARTICLES],ln_en[MAXPARTICLES], ln_ptErr[MAXPARTICLES], ln_iso1[MAXPARTICLES], ln_iso2[MAXPARTICLES], ln_iso3[MAXPARTICLES]; Int_t ln_id[MAXPARTICLES], ln_genid[MAXPARTICLES], ln_pid[MAXPARTICLES];
+  Float_t ln_px[MAXPARTICLES],ln_py[MAXPARTICLES],ln_pz[MAXPARTICLES],ln_en[MAXPARTICLES], ln_ptErr[MAXPARTICLES], ln_iso1[MAXPARTICLES], ln_iso2[MAXPARTICLES], ln_iso3[MAXPARTICLES], ln_iso4[MAXPARTICLES]; Int_t ln_id[MAXPARTICLES], ln_genid[MAXPARTICLES], ln_pid[MAXPARTICLES];
 
   //jets
   Int_t jn;
