@@ -78,6 +78,7 @@ vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> >
       bool usePFIso = iConfig.getParameter<bool>("usePFIso");
       bool requireTracker = iConfig.getParameter<bool>("requireTracker"); 
       bool requireGlobal = iConfig.getParameter<bool>("requireGlobal"); 
+      bool doDeltaBetaCorrection = iConfig.getParameter<bool>("doDeltaBetaCorrection");
 
       //iterate over the muons
       for(size_t iMuon=0; iMuon< hMu.product()->size(); ++iMuon)      
@@ -122,7 +123,10 @@ vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> >
 	    }
 	  
 	  //isolation
-	  double relIso = getLeptonIso( muonPtr, mPt, rho )[usePFIso ? PFREL_ISO : REL_ISO];
+	  float puOffsetCorrection = rho*0.3*0.3*3.1415;
+	  if(doDeltaBetaCorrection) puOffsetCorrection = 0.5*muon->puChargedHadronIso();
+
+	  double relIso = getLeptonIso( muonPtr, mPt, puOffsetCorrection)[usePFIso ? PFREL_ISO : REL_ISO];
 	  if(relIso>maxRelIso) continue;
 	  
 	  //muon is selected
@@ -155,6 +159,7 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
     double minDeltaRtoMuons = iConfig.getParameter<double>("minDeltaRtoMuons");
     double maxDistToBeamSpot = iConfig.getParameter<double>("maxDistToBeamSpot");
     bool usePFIso = iConfig.getParameter<bool>("usePFIso");
+    bool doDeltaBetaCorrection = iConfig.getParameter<bool>("doDeltaBetaCorrection");
     
     //iterate over the electrons
     for(size_t iElec=0; iElec< hEle.product()->size(); ++iElec)
@@ -196,7 +201,9 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 	if( nTrackLostHits>maxTrackLostHits) continue;
 	
 	//isolation
-	double relIso = getLeptonIso( elePtr, ePt, rho)[usePFIso ? PFREL_ISO : REL_ISO];
+	float puOffsetCorrection = rho*0.3*0.3*3.1415;
+	if(doDeltaBetaCorrection) puOffsetCorrection = 0.5*ele->puChargedHadronIso();
+	double relIso = getLeptonIso( elePtr, ePt, puOffsetCorrection)[usePFIso ? PFREL_ISO : REL_ISO];
 	if(relIso>maxRelIso) continue;
 	
 	//cross clean with overlapping muons
@@ -287,6 +294,7 @@ vector<double> getLeptonIso(reco::CandidatePtr &lepton,float minRelNorm, float p
       leptonIso[N_ISO]=l->neutralHadronIso();
       leptonIso[C_ISO]=l->chargedHadronIso();
       leptonIso[G_ISO]=l->photonIso ();
+      leptonIso[CPU_ISO]=l->puChargedHadronIso();
       leptonIso[ECAL_ISO]=l->ecalIso();
       leptonIso[HCAL_ISO]=l->hcalIso();
       leptonIso[TRACKER_ISO]=l->trackIso();
@@ -296,6 +304,7 @@ vector<double> getLeptonIso(reco::CandidatePtr &lepton,float minRelNorm, float p
       const pat::Electron *l=dynamic_cast<const pat::Electron *>( lepton.get() );
       leptonIso[N_ISO]=l->neutralHadronIso();
       leptonIso[C_ISO]=l->chargedHadronIso();
+      leptonIso[CPU_ISO]=l->puChargedHadronIso();
       leptonIso[G_ISO]=l->photonIso ();
       leptonIso[ECAL_ISO]=l->ecalIso();
       if(l->isEB()) leptonIso[ECAL_ISO] = max(leptonIso[ECAL_ISO]-1.0,0.);  
@@ -303,8 +312,8 @@ vector<double> getLeptonIso(reco::CandidatePtr &lepton,float minRelNorm, float p
       leptonIso[TRACKER_ISO]=l->trackIso();
     }
   
-  leptonIso[REL_ISO]=(max(leptonIso[ECAL_ISO]+leptonIso[HCAL_ISO]-puOffsetCorrection*0.3*0.3*3.1415,0.)+leptonIso[TRACKER_ISO])/max(float(lepton->pt()),float(minRelNorm));
-  leptonIso[PFREL_ISO]=(leptonIso[N_ISO]+leptonIso[G_ISO]+leptonIso[C_ISO])/max(float(lepton->pt()),float(minRelNorm));
+  leptonIso[REL_ISO]=(max(leptonIso[ECAL_ISO]+leptonIso[HCAL_ISO]-puOffsetCorrection,0.)+leptonIso[TRACKER_ISO])/max(float(lepton->pt()),float(minRelNorm));
+  leptonIso[PFREL_ISO]=(max(leptonIso[N_ISO]+leptonIso[G_ISO]-puOffsetCorrection,0.)+leptonIso[C_ISO])/max(float(lepton->pt()),float(minRelNorm));
   
   return leptonIso;
 }

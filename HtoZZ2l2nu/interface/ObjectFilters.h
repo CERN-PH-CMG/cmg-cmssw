@@ -36,7 +36,7 @@ typedef std::vector<LorentzVector> LorentzVectorCollection;
 enum PhysicsChannels  { NOTDIL, DIL_OTHER, DY_MUMU, DY_EE, DY_TAUTAU, HIGGS };
 enum PhysicsObjects   { MET=0,JET=1,ELECTRON=11, MUON=13,PHOTON=22};
 enum DileptonChannels { UNKNOWN=0,MUMU=1,EE=2,EMU=3,ETAU=4,MUTAU=5, GAMMA=22};
-enum IsolType         { ECAL_ISO=0, HCAL_ISO, TRACKER_ISO, REL_ISO, N_ISO, C_ISO, G_ISO, PFREL_ISO};
+enum IsolType         { ECAL_ISO=0, HCAL_ISO, TRACKER_ISO, REL_ISO, N_ISO, C_ISO, CPU_ISO, G_ISO, PFREL_ISO};
 
 
 ///                            ///   

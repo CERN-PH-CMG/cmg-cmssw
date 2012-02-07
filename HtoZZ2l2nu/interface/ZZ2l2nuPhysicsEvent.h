@@ -22,11 +22,11 @@ public :
 //
 class PhysicsObject_Lepton : public LorentzVector
 {
-public :
-  PhysicsObject_Lepton(LorentzVector vec, Int_t id_,Int_t genid_=0, Float_t ptErr_=0, Float_t iso1_=0, Float_t iso2_=0, Float_t iso3_=0, Float_t pid_=0):
-    LorentzVector(vec), id(id_), genid(genid_), ptErr(ptErr_), iso1(iso1_), iso2(iso2_), iso3(iso3_),pid(pid_) { }
+ public :
+  PhysicsObject_Lepton(LorentzVector vec, Int_t id_,Int_t genid_=0, Float_t ptErr_=0, Float_t iso1_=0, Float_t iso2_=0, Float_t iso3_=0, Float_t iso4_=0, Float_t pid_=0):
+    LorentzVector(vec), id(id_), genid(genid_), ptErr(ptErr_), iso1(iso1_), iso2(iso2_), iso3(iso3_), iso4(iso4_), pid(pid_) { }
     Int_t id,genid;
-    Float_t ptErr, iso1, iso2, iso3;
+    Float_t ptErr, iso1, iso2, iso3, iso4;
     Int_t pid;
 };
 

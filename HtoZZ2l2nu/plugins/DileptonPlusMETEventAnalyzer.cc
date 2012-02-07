@@ -343,6 +343,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.l1_iso1  = leptoniso[G_ISO]; 
 	ev.l1_iso2  = leptoniso[N_ISO]; 
 	ev.l1_iso3  = leptoniso[C_ISO];
+	ev.l1_iso4  = leptoniso[CPU_ISO];
 	ev.l1_pid   = getLeptonPidSummary( dilepton[0]);
 
 	genLepton = getLeptonGenMatch(dilepton[1]);
@@ -357,6 +358,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.l2_iso1   = leptoniso[G_ISO]; 
 	ev.l2_iso2   = leptoniso[N_ISO]; 
 	ev.l2_iso3   = leptoniso[C_ISO];
+	ev.l2_iso4   = leptoniso[CPU_ISO];
 	ev.l2_pid    = getLeptonPidSummary( dilepton[1]);
       }
     
@@ -385,6 +387,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.ln_iso1[ev.ln]  = leptoniso[G_ISO];
 	ev.ln_iso2[ev.ln]  = leptoniso[N_ISO];
 	ev.ln_iso3[ev.ln]  = leptoniso[C_ISO];
+	ev.ln_iso4[ev.ln]  = leptoniso[CPU_ISO];
 	ev.ln_pid[ev.ln]   = getLeptonPidSummary(*lit);
 	ev.ln++;
       }
@@ -576,8 +579,12 @@ int DileptonPlusMETEventAnalyzer::getElectronPidSummary(const pat::Electron *ele
 
   bool hasHEEPid(false);  
   try{
-    int myHeepBits[]={heep::CutCodes::DETETA,        heep::CutCodes::CRACK,       heep::CutCodes::DETAIN,          heep::CutCodes::DPHIIN,        heep::CutCodes::HADEM,
-		      heep::CutCodes::SIGMAIETAIETA, heep::CutCodes::E2X5OVER5X5, heep::CutCodes::ISOLEMHADDEPTH1, heep::CutCodes::ISOLHADDEPTH2, heep::CutCodes::NRMISSHITS};
+    int myHeepBits[]={heep::CutCodes::DETAIN,          
+		      heep::CutCodes::DPHIIN,        
+		      heep::CutCodes::HADEM,
+		      heep::CutCodes::SIGMAIETAIETA, 
+		      heep::CutCodes::E2X5OVER5X5,
+		      heep::CutCodes::NRMISSHITS};
     int heepIdVal( ele->electronID("eidHEEP"));
     hasHEEPid=true;
     if(heepIdVal>0)

@@ -56,6 +56,7 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("l1_iso1",    &evSummary_.l1_iso1,    "l1_iso1/F");
   t_->Branch("l1_iso2",    &evSummary_.l1_iso2,    "l1_iso2/F");
   t_->Branch("l1_iso3",    &evSummary_.l1_iso3,    "l1_iso3/F");
+  t_->Branch("l1_iso4",    &evSummary_.l1_iso4,    "l1_iso4/F");
 
   t_->Branch("l2_px",      &evSummary_.l2_px,      "l2_px/F");
   t_->Branch("l2_py",      &evSummary_.l2_py,      "l2_py/F");
@@ -68,6 +69,7 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("l2_iso1",    &evSummary_.l2_iso1,    "l2_iso1/F");
   t_->Branch("l2_iso2",    &evSummary_.l2_iso2,    "l2_iso2/F");
   t_->Branch("l2_iso3",    &evSummary_.l2_iso3,    "l2_iso3/F");
+  t_->Branch("l2_iso4",    &evSummary_.l2_iso4,    "l2_iso4/F");
 
   //selected additional-leptons
   t_->Branch("ln",         &evSummary_.ln,         "ln/I");
@@ -82,6 +84,7 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("ln_iso1",    evSummary_.ln_iso1,     "ln_iso1[ln]/F");
   t_->Branch("ln_iso2",    evSummary_.ln_iso2,     "ln_iso2[ln]/F");
   t_->Branch("ln_iso3",    evSummary_.ln_iso3,     "ln_iso3[ln]/F");
+  t_->Branch("ln_iso4",    evSummary_.ln_iso4,     "ln_iso4[ln]/F");
 
   //selected jets
   t_->Branch("jn",         &evSummary_.jn,         "jn/I");
@@ -223,6 +226,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("l1_iso1")   ->SetAddress( &evSummary_.l1_iso1);
   t_->GetBranch("l1_iso2")   ->SetAddress( &evSummary_.l1_iso2);
   t_->GetBranch("l1_iso3")   ->SetAddress( &evSummary_.l1_iso3);
+  if(t_->GetBranch("l1_iso4")) t_->GetBranch("l1_iso4")   ->SetAddress( &evSummary_.l1_iso4);
   
   t_->GetBranch("l2_px")     ->SetAddress( &evSummary_.l2_px);
   t_->GetBranch("l2_py")     ->SetAddress( &evSummary_.l2_py);
@@ -235,6 +239,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("l2_iso1")   ->SetAddress( &evSummary_.l2_iso1);
   t_->GetBranch("l2_iso2")   ->SetAddress( &evSummary_.l2_iso2);
   t_->GetBranch("l2_iso3")   ->SetAddress( &evSummary_.l2_iso3);
+  if(t_->GetBranch("l2_iso4")) t_->GetBranch("l2_iso4")   ->SetAddress( &evSummary_.l2_iso4);
   
   //selected additional-leptons
   t_->GetBranch("ln")        ->SetAddress( &evSummary_.ln);
@@ -249,6 +254,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("ln_iso1")   ->SetAddress(evSummary_.ln_iso1);
   t_->GetBranch("ln_iso2")   ->SetAddress(evSummary_.ln_iso2);
   t_->GetBranch("ln_iso3")   ->SetAddress(evSummary_.ln_iso3);
+  if(t_->GetBranch("ln_iso4")) t_->GetBranch("ln_iso4")   ->SetAddress(evSummary_.ln_iso4);
   
   //selected jets
   t_->GetBranch("jn")        ->SetAddress( &evSummary_.jn);

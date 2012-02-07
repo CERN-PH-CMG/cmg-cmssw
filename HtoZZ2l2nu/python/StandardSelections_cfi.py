@@ -53,7 +53,8 @@ BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlow"),
                                maxDistToBeamSpot=cms.double(0.02),
                                id = cms.string(""),#TMLastStationAngTight"),
                                maxRelIso = cms.double(0.15),
-                               usePFIso = cms.bool(False)
+                               usePFIso = cms.bool(False),
+                               doDeltaBetaCorrection = cms.bool(False)
                                )
 
 # base values for loose muon selection ----------------------------------------------
@@ -98,7 +99,8 @@ BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectronsPF
                                    id = cms.string("eidVBTF85"),
                                    maxRelIso = cms.double(0.15),
                                    minDeltaRtoMuons = cms.double(0.1),
-                                   usePFIso = cms.bool(False)
+                                   usePFIso = cms.bool(False),
+                                   doDeltaBetaCorrection = cms.bool(False)
                                    )
 
 # base values for electron selection ----------------------------------------------
