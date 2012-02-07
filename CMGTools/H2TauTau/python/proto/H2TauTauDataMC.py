@@ -38,7 +38,8 @@ class H2TauTauDataMC( AnalysisDataMC ):
                                 if value.isData is True ]
         groupDataName = 'Data'
         self.groupDataComponents( self.dataComponents, groupDataName)
-        self.setupEmbedding( self.dataComponents, embed )
+        if embed: 
+            self.setupEmbedding( self.dataComponents, embed )
 
     def setupEmbedding(self, dataComponents, doEmbedding ):
 

@@ -37,20 +37,26 @@ public:
   void setCrossection(float crossection){crossection_=crossection;} //in pb
   void setSampleLumi(float lumi){lumi_=lumi;}
   void setSampleGenEvents(int Ngen){genEvents_=Ngen;}
-  
-  void addTrigPath(std::string pathname){trigPaths_.push_back(pathname);}
-  void addTrigPaths(std::vector<std::string> * paths){
+  void setPileupWeight(std::string weight){pileupWeight_=weight;}
+
+  void addTrigPath(std::string pathname, std::string filterLeg1 = "", std::string filterLeg2 = ""){
+    std::vector<std::string> pth; pth.push_back(pathname); pth.push_back(filterLeg1);pth.push_back(filterLeg2);
+    trigPaths_.push_back(pth);
+  }
+  void addTrigPaths(std::vector<std::vector<std::string> > * paths){
     if(!paths)return;
-    for(std::vector<std::string>::const_iterator p=paths->begin(); p!=paths->end(); ++p) trigPaths_.push_back(*p);
+    for(std::vector<std::vector<std::string> >::const_iterator p=paths->begin(); p!=paths->end(); ++p)
+      trigPaths_.push_back(*p);
   }
   void setRunRange(unsigned int first, unsigned int last){firstrun_=first; lastrun_=last;}
   void setEffCorrFactor(float factor){effCorrFactor_=factor;}
 
+
+
+
   bool addHisto(TH1* hist) {
     if(!hist)return 0;
-    if(color_>0)hist->SetFillColor(color_);
-    if(lcolor_>0)hist->SetLineColor(lcolor_);
-    if(lstyle_>0) hist->SetLineStyle(lstyle_);
+    hist->Sumw2();
     sampleHist_.push_back(hist);
     mainsampleHist_.push_back(hist);
     return 1;
@@ -90,26 +96,30 @@ public:
   void setLegendOption(TString opt){legendOption_=opt;}
   void setRecoilCorr(TString processfile){applyRecoilCorr_=1; recoilCorrProcessFile_=processfile;}
   void setApplyTauRateWeight(bool applyWeight){applyTauRateWeight_=applyWeight;}
+  void setGenEventType(unsigned int eventtype){genEventType_=eventtype;}
   void setTruthEventType(unsigned int eventtype){truthEventType_=eventtype;}
 
 
   bool scale(Float_t factor){
-    if(dataType_=="Data" || dataType_=="Data_SS") return 0;
-    if(!histFile_){//check the histograms exist
-      histFile_=new TFile(outputpath_+"/"+GetName()+"_Sample_Histograms.root","read");
-      if(histFile_->IsZombie()) return NULL;
-      if(!histFile_->GetListOfKeys()) return NULL;
-      if(histFile_->GetListOfKeys()->GetSize()==0) return NULL;
-      //cout<<" opened file :"<<outputpath_+"/"+GetName()+"_Sample_Histograms.root"<<endl;
-    }
-    //scale all histograms
-    TList* keys=histFile_->GetListOfKeys();
-    if(!keys)return 0;
-    TIterator* keyiter=keys->MakeIterator();
-    for(TKey* histname=(TKey*)keyiter->Next(); histname; histname=(TKey*)keyiter->Next())
-      ((TH1*)histFile_->Get(histname->GetName()))->Scale(factor);//(effCorrFactor_*lumi)/getLumi()
 
-    cout<<"Scaled histos in "<<histFile_->GetName()<<" by "<<factor<<endl;
+//     if(!histFile_){//check the histograms exist
+//       histFile_=new TFile(outputpath_+"/"+GetName()+"_Sample_Histograms.root","read");
+//       if(histFile_->IsZombie()) return NULL;
+//       if(!histFile_->GetListOfKeys()) return NULL;
+//       if(histFile_->GetListOfKeys()->GetSize()==0) return NULL;
+//       //cout<<" opened file :"<<outputpath_+"/"+GetName()+"_Sample_Histograms.root"<<endl;
+//       gROOT->cd();
+//     }
+//     //scale all histograms
+//     TList* keys=histFile_->GetListOfKeys();
+//     if(!keys)return 0;
+//     TIterator* keyiter=keys->MakeIterator();
+//     for(TKey* histname=(TKey*)keyiter->Next(); histname; histname=(TKey*)keyiter->Next())
+//       ((TH1*)histFile_->Get(histname->GetName()))->Scale(factor);//(effCorrFactor_*lumi)/getLumi()
+//    cout<<"Scaled histos in "<<histFile_->GetName()<<" by "<<factor<<endl;
+    
+    normFactor_*=factor;
+
     return 1;
   }
 
@@ -121,16 +131,15 @@ public:
   int getNEvents(){return nEvents_;}
   float getCrossection(){return crossection_;}
   TString getDataType(){return dataType_;}
+  const std::string * getPileupWeight() const {return &pileupWeight_;}
   int getSampleGenEvents(){return genEvents_;}
   float getEffCorrFactor(){return effCorrFactor_;}
-
   float getLumi(){ 
-    if(dataType_=="Data" || dataType_=="Data_SS")return lumi_;
-    else {
-      if(crossection_<1e-6)return 0.;
-      return genEvents_/crossection_;
-    }
+    if(dataType_=="Data" || dataType_=="Data_SS" || dataType_=="Embedded" || dataType_=="Embedded_SS")return lumi_;
+    else if(crossection_>0.) return genEvents_/crossection_;
+    return 0.;
   }
+  float getNorm(){return normFactor_;}
   
   Int_t getColor(){return color_;}
   Int_t getLineColor(){return lcolor_;}
@@ -141,6 +150,7 @@ public:
   bool getApplyRecoilCorr(){return applyRecoilCorr_;}
   TString getRecoilCorrProcessFile(){return recoilCorrProcessFile_;}
   bool getApplyTauRateWeight(){return applyTauRateWeight_;}
+  unsigned int getGenEventType(){return genEventType_;}
   unsigned int getTruthEventType(){return truthEventType_;}
 
   fwlite::ChainEvent* getEvents();
@@ -153,21 +163,18 @@ public:
   }
 
   
-  TH1* getHistoFromFile(TString name){
-    
+  const TH1* getHistoFromFile(TString name){
     if(!histFile_){
       histFile_=new TFile(outputpath_+"/"+GetName()+"_Sample_Histograms.root","read");
       if(histFile_->IsZombie()) return NULL;
       if(!histFile_->GetListOfKeys()) return NULL;
       if(histFile_->GetListOfKeys()->GetSize()==0) return NULL;
-      //cout<<" opened file :"<<outputpath_+"/"+GetName()+"_Sample_Histograms.root"<<endl;
+      gROOT->cd();
     }
-    //histFile_->Print();
-    //cout<<"name="<<TString(GetName())+"_"+name<<"="<<endl;
     return (TH1*)(histFile_->Get(TString(GetName())+"_"+name)) ;
   }
 
-  std::vector<std::string> * getTrigPaths(){return &trigPaths_;}
+  std::vector<std::vector<std::string> > * getTrigPaths(){return &trigPaths_;}
   unsigned int getFirstRun(){return firstrun_;}
   unsigned int getLastRun(){return lastrun_;}
 
@@ -190,7 +197,7 @@ private:
   fwlite::ChainEvent* sampleChain_;
   std::vector<TH1*> sampleHist_;//all histos including clones
   std::vector<TH1*> mainsampleHist_;//list of histos added with addHisto()
-  std::vector<std::string> trigPaths_;
+  std::vector<std::vector<std::string> > trigPaths_;
   unsigned int firstrun_;
   unsigned int lastrun_;
   float effCorrFactor_;
@@ -201,6 +208,7 @@ private:
   TTree* tree_;
 
   TString dataType_;
+  std::string pileupWeight_;
   Int_t color_;
   Int_t lcolor_;
   Int_t lstyle_;
@@ -209,13 +217,16 @@ private:
   TString legendOption_;
   bool applyRecoilCorr_;
   bool applyTauRateWeight_;
+  unsigned int genEventType_;
   unsigned int truthEventType_;
 
   std::vector<TString> countername_;
   std::vector<int*> countervalue_;
 
+  float normFactor_;
   bool init_;
-    
+
+
   ClassDef(Sample, 1);
 };
 

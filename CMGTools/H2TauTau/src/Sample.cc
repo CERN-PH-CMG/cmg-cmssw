@@ -2,6 +2,7 @@
 
 //ClassImp(Sample);
 
+//do not use this default constructor may not be up to date
 Sample::Sample():
   TNamed("Sample","Sample"),
   crossection_(1.0),
@@ -23,7 +24,9 @@ Sample::Sample():
   plotOrder_(0),
   applyRecoilCorr_(0),
   applyTauRateWeight_(0),
+  genEventType_(0),
   truthEventType_(0),
+  normFactor_(1),
   init_(0)
 {}
 
@@ -48,7 +51,9 @@ Sample::Sample(const char * name, const char * path):
   plotOrder_(0),
   applyRecoilCorr_(0),
   applyTauRateWeight_(0),
+  genEventType_(0),
   truthEventType_(0),
+  normFactor_(1),
   init_(0)
 {
   
@@ -82,8 +87,8 @@ bool Sample::init(){
 
   //print the trigger paths  
   cout<<"TriggerPaths:"<<endl;
-  for(std::vector<std::string>::const_iterator trig=trigPaths_.begin(); trig!=trigPaths_.end(); trig++)
-    cout<<trig->c_str()<<endl;
+  for(std::vector<std::vector<std::string> >::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++)
+    cout<<(*path)[0].c_str()<<" "<<(*path)[1].c_str()<<" "<<(*path)[2].c_str()<<endl;
   
 
   return init_=1;

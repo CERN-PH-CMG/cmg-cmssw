@@ -13,10 +13,15 @@ class LeptonWeighter( Analyzer ):
         self.leptonName = self.cfg_ana.lepton
         self.lepton = None
         self.weight = None
+        self.weightFactor = 1.
+        self.trigEff = None
         if self.cfg_comp.isMC or self.cfg_comp.isEmbed:
-            self.trigEff = TriggerEfficiency()
-            self.trigEff.lepEff = getattr( self.trigEff,
-                                           self.cfg_ana.effWeight )
+            if isinstance( self.cfg_ana.effWeight, float ):
+                self.weightFactor = self.cfg_ana.effWeight
+            else:
+                self.trigEff = TriggerEfficiency()
+                self.trigEff.lepEff = getattr( self.trigEff,
+                                               self.cfg_ana.effWeight )
         
             
     def declareHandles(self):
@@ -39,7 +44,8 @@ class LeptonWeighter( Analyzer ):
             # if self.trigEff.tauEff is not None:
             #    event.tauEffWeight = self.trigEff.tauEff(event.tau.pt())
             #MUONS
-            if self.trigEff.lepEff is not None:
+            self.weight *= self.weightFactor
+            if self.trigEff is not None:
                 self.lepton = getattr( event, self.leptonName )
                 self.weight = self.trigEff.lepEff( self.lepton.pt(),
                                                    self.lepton.eta() )

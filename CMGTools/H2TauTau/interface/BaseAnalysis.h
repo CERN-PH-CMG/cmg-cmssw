@@ -21,7 +21,7 @@ using namespace std;
 #include <TH2F.h>
 #include <TCanvas.h>
 #include <TString.h>
-
+#include <TF1.h>
 
 #include "DataFormats/FWLite/interface/Event.h"
 #include "DataFormats/FWLite/interface/ChainEvent.h"
@@ -48,13 +48,18 @@ public:
   void setTruncateEvents(int maxEvents){truncateEvents_=maxEvents;}
   void setPrintFreq(int freq){ printFreq_=freq;}
   void setPupWeightName(string weightname){pupWeightName_=weightname;}
-
-
-  void createMCPileUP();
-
+  void setSmearHistoRes(float res){smearHistoRes_=res;}
 
   virtual bool init();
   virtual bool createHistos(TString samplename="RelValZTT");
+  
+  void deleteSamples(){
+    for(std::vector<Sample*>::const_iterator s=samples_.begin();s!=samples_.end();s++)
+      delete *s;
+    samples_.clear();
+  }  
+  
+  void createMCPileUP();
 
 
 protected:
@@ -64,8 +69,6 @@ protected:
   virtual bool fillVariables(const fwlite::Event * event);
   virtual bool applySelections();
   virtual bool fillHistos(TString tag = "");
-
-  bool fillPUPWeightHisto();
 
   std::vector<Sample*> samples_;
   Sample* sample_;
@@ -83,7 +86,7 @@ protected:
   TString outputpath_;
   bool trigpass_;
 
-  ///Histograms
+  ///Event level histograms Histograms
   TH1F* runNumberHisto_;
   TH1F* nVertexHisto_;
   TH2F* vertexXYHisto_;
@@ -95,12 +98,12 @@ protected:
   void printMCGen(edm::Handle< std::vector<reco::GenParticle> > & genList);
   
   edm::Handle< std::vector<cmg::TriggerObject> > trigObjs_;
-  bool trigObjMatch(float eta, float phi, std::string filter);
+  bool trigObjMatch(float eta, float phi, std::string path, std::string filter);
+
+  float smearHistoRes_;
+  TH1F* smearHisto(TH1F* h);
 
 private:
-
-  TH1F* mcPUPWeightHisto_;
-  
 
 
   ClassDef(BaseAnalysis, 1);
