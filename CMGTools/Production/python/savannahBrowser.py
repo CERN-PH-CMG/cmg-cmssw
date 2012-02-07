@@ -93,35 +93,33 @@ class SavannahBrowser(object):
                     self._br.form[name] = value
     def post(self, assigned):
     	if self._valid:
-    	    try:
-    	    	self._br.form.set_value_by_label([assigned], "custom_sb1")
-    	    except:
-    	    	print "User %s is not a valid Files Owner, field will be blank" % assigned
-            try:
-            	self._br.form.set_value_by_label([assigned], "assigned_to")
-            except:
-            	self._br.form.set_value_by_label([os.environ['USER']], "assigned_to")
-            	print self._br.form['assigned_to']
-            	print "User \"%s\" is not a CMG group member on Savannah, task will be asigned to self" % assigned
-            finally:
-            	try:
-            		#print self._br.form
-            		self._br.submit()
-            		
-            	except:   
-            		# If submit error occurred
-            		print "An error occured whilst submitting to Savannah"
-            		print "-No entry made on Savannah-"
-            		return None
+    		if re.search("_group", assigned): assigned = assigned.rstrip("_group")
+    		try:
+    			self._br.form.set_value_by_label([assigned], "custom_sb1")
+    		except:
+    			print "User %s is not a valid Files Owner, field will be blank" % assigned
+        	try:
+        		self._br.form.set_value_by_label([assigned], "assigned_to")
+        	except:
+        		self._br.form.set_value_by_label([os.environ['USER']], "assigned_to")
+        		print "User \"%s\" is not a CMG group member on Savannah, task will be asigned to self" % assigned
+        	finally:
+        		try:
+        			self._br.submit()
+        		except:   
+        			# If submit error occurred
+        			print "An error occured whilst submitting to Savannah"
+        			print "-No entry made on Savannah-"
+        			return None
             
             # Return the task no that users would use to access the savannah page
-            if self.newDS:
-            	for i in self._br.response().readlines():
-                    if re.search("New item posted", i)>0:
-                    	task = i.split("New item posted")[1]
-                    	task = task.split("\"")[1]
-                    	self.taskID = task.split("=")[-1].lstrip("/task/?")
-            if self.taskID is not None:
-            	print "Task URL: https://savannah.cern.ch/task/?" + str(self.taskID)
+        	if self.newDS:
+        		for i in self._br.response().readlines():
+        			if re.search("New item posted", i)>0:
+        				task = i.split("New item posted")[1]
+        				task = task.split("\"")[1]
+        				self.taskID = task.split("=")[-1].lstrip("/task/?")
+        	if self.taskID is not None:
+        		print "Task URL: https://savannah.cern.ch/task/?" + str(self.taskID)
         	return self.taskID
         
