@@ -13,14 +13,21 @@ class SavannahFormatter(object):
         self._taskID=taskID
         self._opts = opts
         savOpts = self._savannahBrowser.getOpts()
-        self.dict = {"Name": None, "Status": None, "LFN Castor Directory": None, "Castor Directory": None, "Parent Dataset": None, "Physics Group": None, "Date Created": None, "Created By": None, "Last Modified On": None, "Last Modified By":None, "Tags": None, "Root Files": None,"Error Files":None,"No. Files":None, "User Fields":""}
+        self.dict = {"Status": None, "LFN Castor Directory": None,"CMSSW Release":None,"Castor Directory": None, "Parent Dataset": None, "Physics Group": None, "Date Created": None, "Created By": None, "Last Modified On": None, "Last Modified By":None,"No. Files":None}
+        self.tags = ""
+        self.userFields = ""
+        self.files = ""
+        self.name = ""
+        self.comment = None
         for i in self._opts:
             if savOpts is not None:
             	if savOpts[i] is not None:
                 	self._savannahBrowser.addOption(i, self._opts[i])
         
-    def addMain(self, ProcDS, tags, files, castor, lfn):
-        self.dict["Name"] = ProcDS['PathList'][0]
+    def addMain(self, ProcDS, tags, files, castor, lfn, release, comment):
+        self.name = ProcDS['PathList'][0]
+        if comment is not None: self.comment = comment
+        	
         if len(ProcDS['ParentList']) >0 :
             self.dict["Parent Dataset"] = ProcDS['ParentList'][0]
         if 'LastModificationDate' in ProcDS:
@@ -50,7 +57,7 @@ class SavannahFormatter(object):
                 package = i
                 detailString +="_"+tag+"_ - "+package +"\n"
             if detailString is not "":
-            	self.dict['Tags']="\n"+detailString
+            	self.tags="\n"+detailString
         if files is not None:
             detailString=""
             for group in files:
@@ -67,11 +74,13 @@ class SavannahFormatter(object):
                 
                 if "qFiles" in group: detailString += "* No. of Files: " + str(group["qFiles"]) +"\n"
                 detailString+="\n"
-            self.dict['Root Files'] = "\n" +detailString
+            self.files = "\n" +detailString
         if castor is not None:
             self.dict["Castor Directory"]="\n\t"+castor
         if lfn is not None:
             self.dict["LFN Castor Directory"]="\n\t"+lfn
+        if release is not None:
+        	self.dict["CMSSW Release"] = release
     
     def _recursiveRead(self, string, input, tabs):
     	if input is None: return "\n"
@@ -103,22 +112,24 @@ class SavannahFormatter(object):
         	
 	
     def appendExtra(self, Extra):
-        if self.dict['User Fields'] is not "":
-        	formattedString = self.dict['User Fields']
+        if self.userFields is not "":
+        	formattedString = self.userFields
         else:
         	formattedString = "\n"
-        	self.dict['User Fields'] = ""
-        self.dict['User Fields']+=self._recursiveRead("", Extra, "")+"\n"
+        	self.userFields = ""
+        self.userFields+=self._recursiveRead("", Extra, "")+"\n"
         
     def publish(self):
-        info = ""
+        info = "*Dataset Name*: "+self.name + "\n\n"
+        if self.comment is not None: info += "*Comment*: "+self.comment+"\n\n"
         for i in self.dict:
         	if self.dict[i] is not None and len(self.dict[i])>0:
-        		if i == 'User Fields':
-        			info +=self.dict["User Fields"]+"\n"
-        		else:
-        			info +="*"+ i + "*: " + self.dict[i] +"\n"
+        		info +="*"+ i + "*: " + self.dict[i] +"\n"
         		info+="\n"
+        
+        if self.userFields != "": info += self.userFields+"\n\n"
+        if self.tags != "": info += "*Tags*: "+self.tags + "\n\n"
+        if self.files != "": info += "*Root Files*: "+self.files + "\n\n"
         if self._taskID is None:
             self._savannahBrowser.addOption("details", info)
         else: self._savannahBrowser.addOption("comment", info)
