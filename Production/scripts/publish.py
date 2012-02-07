@@ -31,7 +31,7 @@ Example:
 publish.py -F cbern /VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0_Test_v2
 """
     
-    group = OptionGroup(parser, "Publish Options", """These options are effect Savannah and CMGDB""")
+    group = OptionGroup(parser, "Publish Options", """These options affect Savannah and CMGDB""")
     genGroup = OptionGroup(parser, "Generic Options", """These options apply to both DBS and the Publish tools""")
     dbsGroup = OptionGroup(parser, "DBS Options", """These options are for use with DBS.
     If not using DBS, these options have no effect.""")
@@ -156,9 +156,8 @@ If not entered, secure password prompt will appear.""",
                 comment = None
                 if len(line.split("'"))>1:
                 	comment = line.rstrip("'").split("'")[1]
-                elif len(line.split("'"))>1:
+                elif len(line.split('"'))>1:
                 	comment = line.rstrip('"').split('"')[1]
-
                 publish(dataset,fileown,comment,options.test,dbsApi,options.username,password)
             except Exception as err:
                 print err, "\nDataset not published"
