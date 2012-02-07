@@ -29,14 +29,14 @@ class DiLeptonAnalyzer( Analyzer ):
         # put in the event
         self.readCollections( iEvent )
         # trigger stuff could be put in a separate analyzer
-        event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
+        # event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
         event.diLeptons = map( self.__class__.DiObjectClass, self.handles['diLeptons'].product() )
         event.leptons = map( self.__class__.LeptonClass, self.handles['leptons'].product() ) 
 
         self.counters.counter('DiLepton').inc('all events ')
-        if not self.triggerList.triggerPassed(event.triggerObject):
-            return False
-        self.counters.counter('DiLepton').inc('trigger passed ')
+        # if not self.triggerList.triggerPassed(event.triggerObject):
+        #    return False
+        # self.counters.counter('DiLepton').inc('trigger passed ')
             
         if len(event.diLeptons) == 0:
             return False
