@@ -25,7 +25,10 @@ class FileOps(object):
         self._integrity = None
         self._valid = False
         self._castorGroups = None
-        castor = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user))+self._setName
+        if re.search('group',user):
+            castor = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user.rstrip("_group"), "group"))+self._setName
+        else:
+            castor = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user))+self._setName
 
         # Check if local first (obviously)
         if os.path.isdir(setName) and user == os.environ['USER']:
@@ -41,56 +44,18 @@ class FileOps(object):
             self._checkContiguity()
         # If logger is not present but directory exists
         elif eostools.isDirectory(castor):
-            if user == 'cmgtools':
-                castor2 = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user, 'group'))+self._setName
-                if eostools.fileExists(castor2+"/Logger.tgz"):
-                    castor = castor2
-                    print "File is cmgtools group directory on EOS"
-                    self._castor =  castor
-                    self._LFN = eostools.eosToLFN(castor)
-                    self._castorTags()
-                    self._checkContiguity()
-                elif eostools.isDirectory(castor2):
-                    castor = castor2
-                    print "Directory is valid cmgtools group directory on EOS, but no logger file is present."
-                    self._castor = castor
-                    self._LFN = eostools.eosToLFN(castor)
-                    self._checkContiguity()
-                else:
-                    print "Directory is valid on EOS, but no logger file is present."
-                    self._castor = castor
-                    self._LFN = eostools.eosToLFN(castor)
-                    self._checkContiguity()
-            else:
-                print "Directory is valid on EOS, but no logger file is present."
-                self._castor = castor
-                self._LFN = eostools.eosToLFN(castor)
-                self._checkContiguity()
+            print "Directory is valid on EOS, but no logger file is present."
+             
+            self._castor = castor
+            self._LFN = eostools.eosToLFN(castor)
+            self._checkContiguity()
+            if getRootFile() is None: "Did you mean to use the group space?"
             
         # If neither then raise an exception
         else:
-            if user == 'cmgtools':
-                castor2 = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user, 'group'))+self._setName
-                if eostools.fileExists(castor2+"/Logger.tgz"):
-                    castor = castor2
-                    print "File is cmgtools group directory on EOS"
-                    self._castor =  castor
-                    self._LFN = eostools.eosToLFN(castor)
-                    self._castorTags()
-                    self._checkContiguity()
-                elif eostools.isDirectory(castor2):
-                    castor = castor2
-                    print "Directory is valid cmgtools group directory on EOS, but no logger file is present."
-                    self._castor = castor
-                    self._LFN = eostools.eosToLFN(castor)
-                    self._checkContiguity()
-                else:
-                    raise NameError('No valid directory found for dataset: '+setName, setName)
-                    return None
-            else:
-                raise NameError('No valid directory found for dataset: '+setName, setName)
-                
-                return None
+            if not re.search("group",user):raise NameError("No valid directory found for dataset did you mean to use the group space or perhaps a different user?: "+setName, setName)
+            else: raise NameError('No valid directory found for dataset: '+setName, setName)    
+            return None
     
     def getIntegrity(self):
         return self._integrity
@@ -109,7 +74,6 @@ class FileOps(object):
         if self._castor is not None:				# If is file on Castor
         	return eostools.matchingFiles(self._LFN, ".*root")
         else:										# If local
-            
             return glob.glob(self.getLFN()+'/'+'/.*.root')  
   		
   	def getCastorRootFiles(self):
@@ -212,10 +176,13 @@ class FileOps(object):
             if report is None:
                 "Integrity Check Failed - No results will be published"
             else:
+                
                 if report['Status'] == "VALID":
                     self._valid = True
                 if 'BadJobs' in report:
                     integrityCheck['BadJobs'] = report['BadJobs']
+                if 'FilesEntries' in report:
+                    integrityCheck['FilesEntries'] = report['FilesEntries']
                 if 'PrimaryDatasetFraction' in report:
                     integrityCheck['PrimaryDatasetFraction'] = report['PrimaryDatasetFraction']
                 if 'PrimaryDatasetEntries' in report:
