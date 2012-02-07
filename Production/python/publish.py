@@ -100,7 +100,7 @@ def publish(dsName,fileown,comment,test,dbsApi,user,password):
         if len(err.args)>1:
             print "Logging dataset: "+err.args[1] 
             f = open("/afs/cern.ch/user/"+user[0]+"/"+user+"/public/obsoleteDatasets.txt","a")
-            if len(err.args)>2 is not None:
+            if len(err.args)>2:
                 f.write(err.args[1]+" https://savannah.cern.ch/task/?"+str(err.args[2])+"\n")
             else:
                 f.write(err.args[1])
