@@ -43,29 +43,21 @@ struct ZZ2l2nuSummary_t
 
   //jets
   Int_t jn;
-  Float_t jn_px[MAXPARTICLES],jn_py[MAXPARTICLES],jn_pz[MAXPARTICLES],jn_en[MAXPARTICLES], jn_btag1[MAXPARTICLES], jn_btag2[MAXPARTICLES], jn_btag3[MAXPARTICLES], jn_btag4[MAXPARTICLES];  
-  Bool_t jn_vtxAssoc[MAXPARTICLES]; 
-  Int_t jn_genid[MAXPARTICLES], jn_genflav[MAXPARTICLES];
+  Float_t jn_px[MAXPARTICLES],    jn_py[MAXPARTICLES],      jn_pz[MAXPARTICLES],          jn_en[MAXPARTICLES];
+  Float_t jn_btag1[MAXPARTICLES], jn_btag2[MAXPARTICLES],   jn_neutHadFrac[MAXPARTICLES], jn_neutEmFrac[MAXPARTICLES], jn_chHadFrac[MAXPARTICLES], jn_pid[MAXPARTICLES];  
+  Int_t   jn_genid[MAXPARTICLES], jn_genflav[MAXPARTICLES];
+
+  Int_t ajn;
+  Float_t ajn_px[MAXPARTICLES],    ajn_py[MAXPARTICLES],    ajn_pz[MAXPARTICLES],          ajn_en[MAXPARTICLES]; 
+  Float_t ajn_btag1[MAXPARTICLES], ajn_btag2[MAXPARTICLES], ajn_neutHadFrac[MAXPARTICLES], ajn_neutEmFrac[MAXPARTICLES], ajn_chHadFrac[MAXPARTICLES], ajn_pid[MAXPARTICLES];  
+  Int_t   ajn_genid[MAXPARTICLES], ajn_genflav[MAXPARTICLES];
 
   //primary vertex
   Float_t vtx_px  ,vtx_py  ,vtx_pz  ,vtx_en;
   
   //met types
-  Float_t met1_phi ,met1_pt;
-  Float_t met2_phi ,met2_pt;
-  Float_t met3_phi ,met3_pt;
-  Float_t met4_phi ,met4_pt;
-  Float_t met5_phi ,met5_pt;
-  Float_t met6_phi ,met6_pt;
-  Float_t met7_phi ,met7_pt;
-  Float_t met8_phi ,met8_pt;
-  Float_t met9_phi ,met9_pt;
-  Float_t met10_phi ,met10_pt;
-  Float_t met11_phi ,met11_pt;
-  Float_t met12_phi ,met12_pt;
-  Float_t met13_phi ,met13_pt;
-  Float_t met14_phi ,met14_pt;
-  Float_t met15_phi ,met15_pt;
+  Int_t nmet;
+  Float_t met_phi[MAXPARTICLES] ,met_pt[MAXPARTICLES];
   Float_t sumEt,     sumEtcentral,     primVertexSumEt,     otherVertexSumEt;
   Float_t chsumEt,   chsumEtcentral,   primVertexChSumEt,   otherVertexChSumEt;
   Float_t neutsumEt, neutsumEtcentral, primVertexNeutSumEt, otherVertexNeutSumEt;
@@ -104,7 +96,6 @@ class ZZ2l2nuSummaryHandler{
     if(t_) t_->GetEntry(ientry); 
   }
 
-  void verifyHiggsWeights(double mass=0);
   int getEntries() { return (t_ ? t_->GetEntriesFast() : 0); }
 
   //getter

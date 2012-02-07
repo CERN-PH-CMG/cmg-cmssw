@@ -42,6 +42,8 @@
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 
+#include "SHarper/HEEPAnalyzer/interface/HEEPCutCodes.h"
+
 using namespace std;
 using namespace edm;
 using namespace reco;
@@ -73,6 +75,7 @@ private:
   ZZ2l2nuSummaryHandler summaryHandler_;
   TSelectionMonitor controlHistos_;
   EventCategory eventClassifComp_;
+
 };
 
 using namespace std;
@@ -337,9 +340,9 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.l1_id    = getLeptonId(dilepton[0]);
 	ev.l1_ptErr = getLeptonPtError(dilepton[0]); 
 	ev.l1_genid = (genLepton==0? 0 : genLepton->pdgId());
-	ev.l1_iso1  = leptoniso[ECAL_ISO]; 
-	ev.l1_iso2  = leptoniso[HCAL_ISO]; 
-	ev.l1_iso3  = leptoniso[TRACKER_ISO];
+	ev.l1_iso1  = leptoniso[G_ISO]; 
+	ev.l1_iso2  = leptoniso[N_ISO]; 
+	ev.l1_iso3  = leptoniso[C_ISO];
 	ev.l1_pid   = getLeptonPidSummary( dilepton[0]);
 
 	genLepton = getLeptonGenMatch(dilepton[1]);
@@ -351,9 +354,9 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.l2_id     = getLeptonId(dilepton[1]);
 	ev.l2_genid  = (genLepton==0? 0 : genLepton->pdgId());
 	ev.l2_ptErr  = getLeptonPtError(dilepton[1]);
-	ev.l2_iso1   = leptoniso[ECAL_ISO]; 
-	ev.l2_iso2   = leptoniso[HCAL_ISO]; 
-	ev.l2_iso3   = leptoniso[TRACKER_ISO];
+	ev.l2_iso1   = leptoniso[G_ISO]; 
+	ev.l2_iso2   = leptoniso[N_ISO]; 
+	ev.l2_iso3   = leptoniso[C_ISO];
 	ev.l2_pid    = getLeptonPidSummary( dilepton[1]);
       }
     
@@ -379,9 +382,9 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.ln_id[ev.ln]    = getLeptonId(*lit);
 	ev.ln_genid[ev.ln] = (genLepton==0? 0 : genLepton->pdgId());
 	ev.ln_ptErr[ev.ln] = getLeptonPtError(*lit);
-	ev.ln_iso1[ev.ln]  = leptoniso[ECAL_ISO];
-	ev.ln_iso2[ev.ln]  = leptoniso[HCAL_ISO];
-	ev.ln_iso3[ev.ln]  = leptoniso[TRACKER_ISO];
+	ev.ln_iso1[ev.ln]  = leptoniso[G_ISO];
+	ev.ln_iso2[ev.ln]  = leptoniso[N_ISO];
+	ev.ln_iso3[ev.ln]  = leptoniso[C_ISO];
 	ev.ln_pid[ev.ln]   = getLeptonPidSummary(*lit);
 	ev.ln++;
       }
@@ -466,24 +469,30 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.jn_pz[ev.jn] = jet->pz(); 
 	ev.jn_en[ev.jn] = jet->energy();
 	const reco::Candidate *genParton = jet->genParton();
-	ev.jn_genid[ev.jn]   = genParton ? genParton->pdgId() : -9999;
-	ev.jn_genflav[ev.jn] = jet->partonFlavour();
-	ev.jn_btag1[ev.jn]   = jet->bDiscriminator("trackCountingHighEffBJetTags");
-	ev.jn_btag2[ev.jn]   = jet->bDiscriminator("jetBProbabilityBJetTags");
-	ev.jn_btag3[ev.jn]   = jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
-	ev.jn_btag4[ev.jn]   = jet->bDiscriminator("trackCountingHighPurBJetTags");
-	ev.jn_vtxAssoc[ev.jn]=true;
-        ev.jn++;
+	ev.jn_genid[ev.jn]       = genParton ? genParton->pdgId() : -9999;
+	ev.jn_genflav[ev.jn]     = jet->partonFlavour();
+	ev.jn_btag1[ev.jn]       = jet->bDiscriminator("trackCountingHighEffBJetTags");
+	ev.jn_btag2[ev.jn]       = jet->bDiscriminator("combinedSecondaryVertexBJetTags");
+	ev.jn_neutHadFrac[ev.jn] = jet->neutralHadronEnergyFraction();
+	ev.jn_neutEmFrac[ev.jn]  = jet->neutralEmEnergyFraction();
+	ev.jn_chHadFrac[ev.jn]   = jet->chargedHadronEnergyFraction();
+	ev.jn++;
 
 	nbcands += (jet->pt()>30 && fabs(jet->eta())<2.4 && jet->bDiscriminator("trackCountingHighEffBJetTags")>2); 
       }
+
+    ev.ajn=0;
+
     
 
     //
     // MET SELECTION
     //
+    std::vector<edm::InputTag> clusteredMetSources = objConfig_["MET"].getParameter<std::vector<edm::InputTag> >("hzzmetSources");
+    ev.nmet=clusteredMetSources.size()+1;
+
     //pf-met
-    ev.met1_phi = pfmet->phi();    ev.met1_pt=  pfmet->pt();
+    ev.met_phi[0] = pfmet->phi();    ev.met_pt[0] =  pfmet->pt();
  
     //pseudo-mets
     std::vector<double> sumEts; 
@@ -492,46 +501,26 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
       
       edm::Handle< std::vector<double> > sumEtsH;
       event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("sumEtSources"),sumEtsH);
-      if(sumEtsH.isValid()) sumEts = *sumEtsH;
-
-      std::vector<edm::InputTag> clusteredMetSources = objConfig_["MET"].getParameter<std::vector<edm::InputTag> >("hzzmetSources");
-      for(std::vector<edm::InputTag>::iterator it = clusteredMetSources.begin();
-	  it != clusteredMetSources.end();
-	  it++)
+      if(sumEtsH.isValid())
+	{
+	  ev.sumEt = (*sumEtsH)[0];              ev.sumEtcentral = (*sumEtsH)[3];
+	  ev.chsumEt = (*sumEtsH)[1];            ev.chsumEtcentral = (*sumEtsH)[4];
+	  ev.neutsumEt = (*sumEtsH)[2];          ev.neutsumEtcentral = (*sumEtsH)[5];
+	  ev.primVertexSumEt = (*sumEtsH)[6];    ev.primVertexChSumEt = (*sumEtsH)[7];    ev.primVertexNeutSumEt = (*sumEtsH)[8];
+	  ev.otherVertexSumEt = (*sumEtsH)[9];   ev.otherVertexChSumEt = (*sumEtsH)[10];  ev.otherVertexNeutSumEt = (*sumEtsH)[11];
+	}
+      
+      for(size_t i=0; i<clusteredMetSources.size(); i++)
 	{
 	  edm::Handle< reco::PFMET > clustMetH;
-	  event.getByLabel(*it,clustMetH); 
-	  clusteredMets.push_back( LorentzVector(clustMetH->px(),clustMetH->py(),0,clustMetH->pt()) );
+	  event.getByLabel(clusteredMetSources[i],clustMetH); 
+	  LorentzVector iclustMet(clustMetH->px(),clustMetH->py(),0,clustMetH->pt());
+	  ev.met_phi[i+1]  = iclustMet.phi();   ev.met_pt[i+1]  = iclustMet.pt();
 	}
+
     }catch(std::exception &e){
       cout << e.what() << endl;
     }
-
-    ev.met2_phi = 0;               ev.met2_pt=0;
-    ev.met3_phi = 0;               ev.met3_pt=0;
-    if(clusteredMets.size()>0)
-      {
-	ev.met4_phi  = clusteredMets[0].phi();   ev.met4_pt  = clusteredMets[0].pt();
-	ev.met5_phi  = clusteredMets[1].phi();   ev.met5_pt  = clusteredMets[1].pt();
-	ev.met6_phi  = clusteredMets[2].phi();   ev.met6_pt  = clusteredMets[2].pt();
-	ev.met7_phi  = clusteredMets[3].phi();   ev.met7_pt  = clusteredMets[3].pt();
-	ev.met8_phi  = clusteredMets[4].phi();   ev.met8_pt  = clusteredMets[4].pt();
-	ev.met9_phi  = clusteredMets[5].phi();   ev.met9_pt  = clusteredMets[5].pt();
-	ev.met10_phi = clusteredMets[6].phi();   ev.met10_pt = clusteredMets[6].pt();
-	ev.met11_phi = clusteredMets[7].phi();   ev.met11_pt = clusteredMets[7].pt();
-	ev.met12_phi = clusteredMets[8].phi();   ev.met12_pt = clusteredMets[8].pt();
-	ev.met13_phi = clusteredMets[9].phi();   ev.met13_pt = clusteredMets[9].pt();
-        ev.met14_phi = clusteredMets[10].phi();  ev.met14_pt = clusteredMets[10].pt();
-        ev.met15_phi = clusteredMets[11].phi();  ev.met15_pt = clusteredMets[11].pt();
-      }
-    if(sumEts.size()>0)
-      {
-	ev.sumEt = sumEts[0];              ev.sumEtcentral = sumEts[3];
-	ev.chsumEt = sumEts[1];            ev.chsumEtcentral = sumEts[4];
-	ev.neutsumEt = sumEts[2];          ev.neutsumEtcentral = sumEts[5];
-	ev.primVertexSumEt = sumEts[6];    ev.primVertexChSumEt = sumEts[7];    ev.primVertexNeutSumEt = sumEts[8];
-	ev.otherVertexSumEt = sumEts[9];   ev.otherVertexChSumEt = sumEts[10];  ev.otherVertexNeutSumEt = sumEts[11];
-      }
         
     //set flags for coarse selection
     if(dilepton.size()==2)
@@ -539,12 +528,12 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.pass=ev.cat;
 	if(ev.ln==0)      ev.pass += 1000;
 	if(nbcands==0)    ev.pass += 2000;  
-	if(ev.met1_pt>60) ev.pass += 3000;
-	if(ev.met1_pt>10) ev.pass += 4000;
+	if(ev.met_pt[0]>60) ev.pass += 3000;
+	if(ev.met_pt[0]>100) ev.pass += 4000;
 	LorentzVector dilP4=dilepton[0]->p4()+dilepton[1]->p4();
 	if( fabs(dilP4.mass()-91)<15 ) ev.pass +=5000;
       }
-
+    
     // finish event summary
     summaryHandler_.fillTree();
     
@@ -585,17 +574,33 @@ int DileptonPlusMETEventAnalyzer::getElectronPidSummary(const pat::Electron *ele
     cout << e.what() << endl;
   }
 
+  bool hasHEEPid(false);  
+  try{
+    int myHeepBits[]={heep::CutCodes::DETETA,        heep::CutCodes::CRACK,       heep::CutCodes::DETAIN,          heep::CutCodes::DPHIIN,        heep::CutCodes::HADEM,
+		      heep::CutCodes::SIGMAIETAIETA, heep::CutCodes::E2X5OVER5X5, heep::CutCodes::ISOLEMHADDEPTH1, heep::CutCodes::ISOLHADDEPTH2, heep::CutCodes::NRMISSHITS};
+    int heepIdVal( ele->electronID("eidHEEP"));
+    hasHEEPid=true;
+    if(heepIdVal>0)
+      {
+	for(size_t ibit=0; ibit<sizeof(myHeepBits)/sizeof(int); ibit++)
+	  hasHEEPid &= !(heep::CutCodes::passCuts(heepIdVal,myHeepBits[ibit]));
+      }
+  }catch(std::exception &e){
+  }
+
   summary= ( (int(ele->electronID("eidVBTF70")) & 0x1) )
     | ( (int(ele->electronID("eidVBTF80")) & 0x1) << 1)
     | ( (int(ele->electronID("eidVBTF85")) & 0x1) << 2)
     | ( (int(ele->electronID("eidVBTF90")) & 0x1) << 3)
     | ( (int(ele->electronID("eidVBTF95")) & 0x1) << 4)
-    | ( (int(ele->electronID("eidVeryLoose")) & 0x1) << 5)
-    | ( (int(ele->electronID("eidLoose")) & 0x1) << 6)
-    | ( (int(ele->electronID("eidMedium")) & 0x1) << 7)
-    | ( (int(ele->electronID("eidTight")) & 0x1) << 8)
-    | ( (int(ele->electronID("eidSuperTight")) & 0x1) << 9)
-    | ( isEcalDriven << 10);
+    | ( (int(ele->electronID("eidVeryLooseMC")) & 0x1) << 5)
+    | ( (int(ele->electronID("eidLooseMC")) & 0x1) << 6)
+    | ( (int(ele->electronID("eidMediumMC")) & 0x1) << 7)
+    | ( (int(ele->electronID("eidTightMC")) & 0x1) << 8)
+    | ( (int(ele->electronID("eidSuperTightMC")) & 0x1) << 9)
+    | (hasHEEPid << 10)
+    | ( isEcalDriven << 11);
+ 
   return summary;
 }
 
@@ -606,7 +611,9 @@ int DileptonPlusMETEventAnalyzer::getMuonPidSummary(const pat::Muon *mu)
   summary=( (int(mu->muonID("GlobalMuonPromptTight")) & 0x1) )
     | ( (int(mu->muonID("TMLastStationLoose")) & 0x1) << 1)
     | ( (int(mu->muonID("TMLastStationTight")) & 0x1) << 2)
-    | ( (int(mu->muonID("TMLastStationAngTight")) & 0x1) << 3);
+    | ( (int(mu->muonID("TMLastStationAngTight")) & 0x1) << 3)
+    | (  mu->isTrackerMuon() << 4 )
+    | (  mu->isGlobalMuon() << 5 );
   return summary;
 }
 

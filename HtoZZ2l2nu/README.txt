@@ -1,33 +1,21 @@
-#
-# Tags for CMSSW_4_4_3
-#
---- Tag ---    -------- Package --------                        
-NoTag          CMGTools/HtoZZ2l2nu                              
-V08-07-37      PhysicsTools/PatAlgos                            
-V08-03-17      PhysicsTools/Utilities                           
----------------------------------------
+# Working version CMSSW_4_4_3
 
+#
+# installation
+#
+check TAGS.txt
+SHarper/HEEPAnalyzer : patch int -> float in HEEP id producer
+
+
+#
+# create pat-tuples
+#
+runOverSamples.py -j data/samples.json -p "-cfg=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_mc_cfg.py -castor=@patdir" -n 5 -s True -d aoddir
 
 #
 # create ntuples
 #
-runOverSamples.py -j data/beauty-samples.json -p "-cfg=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_2_4/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_2_4/src/CMGTools/HtoZZ2l2nu/data" -n 5 -s True -d patdir -t W
-
-runOverSamples.py -j data/beauty-samples.json -p "-cfg=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_2_4/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_2_4/src/CMGTools/HtoZZ2l2nu/data" -n 5 -s True -d patdir -t TT
-
-runOverSamples.py -j data/beauty-samples.json -p "-cfg=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_2_4/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_2_4/src/CMGTools/HtoZZ2l2nu/data" -n 5 -s True -d patdir -t Z
-
-runOverSamples.py -j data/beauty-samples.json -p "-cfg=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_2_4/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_2_4/src/CMGTools/HtoZZ2l2nu/data" -n 5 -s True -d patdir -t DY
-
-runOverSamples.py -j data/beauty-samples.json -p "-cfg=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_2_4/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_2_4/src/CMGTools/HtoZZ2l2nu/data" -n 5 -s True -d patdir -t SingleT
-
-runOverSamples.py -j data/beauty-samples.json -p "-cfg=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_2_4/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_2_4/src/CMGTools/HtoZZ2l2nu/data" -n 5 -s True -d patdir -t May10
-
-runOverSamples.py -j data/beauty-samples.json -p "-cfg=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_2_4/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_2_4/src/CMGTools/HtoZZ2l2nu/data" -n 5 -s True -d patdir -t v4
-
-runOverSamples.py -j data/beauty-samples.json -p "-cfg=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_2_4/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_2_4/src/CMGTools/HtoZZ2l2nu/data" -n 5 -s True -d patdir -t Aug05
-
-runOverSamples.py -j data/beauty-samples.json -p "-cfg=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_2_4/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_2_4/src/CMGTools/HtoZZ2l2nu/data" -n 5 -s True -d patdir -t v6
+runOverSamples.py -j data/samples.json -p "-cfg=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/data" -d patdir -s 8nh -t G
 
 #
 # run the analysis

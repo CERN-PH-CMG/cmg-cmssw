@@ -4,5 +4,6 @@
  <bin name="runGammaPlusJetsMETtemplates" file="runGammaPlusJetsMETtemplates.cc"></bin>
  <bin name="runMVAStudy" file="runMVAStudy.cc"></bin>
  <bin name="runPlotter" file="runPlotter.cc"></bin>
+ <bin name="runEffStudy" file="runEffStudy.cc"></bin>
 </environment>
 <Flags CXXFLAGS="-g"/>

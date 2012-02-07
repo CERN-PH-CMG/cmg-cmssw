@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2011/11/16 15:48:10 $
- *  $Revision: 1.7 $
+ *  $Date: 2011/11/30 13:46:40 $
+ *  $Revision: 1.8 $
  *  \author L. Quertenmont
  */
 
@@ -91,7 +91,8 @@ int EventCategory::Get(const PhysicsEvent_t& phys, LorentzVectorCollection *vari
 	      }
 	    if(jpt<30)continue; 
 	    if(jeta>MinEta && jeta<MaxEta) NCentralJet++;  
-	    if(phys.jets[ijet].btag2>1.33 || phys.jets[ijet].btag3>1.74) NBJets++; 
+	    if(phys.jets[ijet].btag1>1.7) NBJets++;              //TCHEL
+	    //if(phys.jets[ijet].btag2>0.244) NBJets++;          //CSVL
 	}
       
       if(!isGamma)
@@ -107,9 +108,9 @@ int EventCategory::Get(const PhysicsEvent_t& phys, LorentzVectorCollection *vari
       //       isVBF = (dEta>4.0) && (VBFSyst.M()>600) && (NCentralJet==0) && (NBJets==0) && (NCentralLepton==2);
     }
 
-  if(isVBF          )return VBF;
-  if(NJetsVBF>=2)return GEQ2JETS;
-  if(NJetsVBF==1)return EQ1JETS;
+  if(isVBF)       return VBF;
+  if(NJetsVBF>=2) return GEQ2JETS;
+  if(NJetsVBF==1) return EQ1JETS;
   return EQ0JETS;
 }
 

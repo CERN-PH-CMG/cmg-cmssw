@@ -2,8 +2,8 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 # global tag
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-if ( not runOnMC ): process.GlobalTag.globaltag = 'GR_R_42_V20::All' #'GR_R_42_V13::All'
-else:               process.GlobalTag.globaltag = 'START42_V13::All' #'START42_V12::All'
+if ( not runOnMC ): process.GlobalTag.globaltag = 'GR_R_44_V13::All'
+else:               process.GlobalTag.globaltag = 'START44_V12::All'
 
 # jet energy corrections
 process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
@@ -46,25 +46,28 @@ if(runOnMC):
     process.eePath = cms.Path(process.startCounter * process.patDefaultSequence * process.eeCandidateSequence )
     process.mumuPath  = cms.Path(process.startCounter * process.patDefaultSequence * process.mumuCandidateSequence )
     process.emuPath  = cms.Path(process.startCounter * process.patDefaultSequence * process.emuCandidateSequence )
-    process.photonPath = cms.Path(process.startCounter * process.patDefaultSequence * process.photonCandidateSequence )
+#    process.photonPath = cms.Path(process.startCounter * process.patDefaultSequence * process.photonCandidateSequence )
 else:
     process.eePath = cms.Path(process.startCounter * process.preselection * process.trigSequence * process.patDefaultSequence * process.eeCandidateSequence )
     process.mumuPath  = cms.Path(process.startCounter * process.preselection * process.trigSequence * process.patDefaultSequence * process.mumuCandidateSequence )
     process.emuPath  = cms.Path(process.startCounter * process.preselection * process.trigSequence * process.patDefaultSequence * process.emuCandidateSequence )
-    process.photonPath  = cms.Path(process.startCounter * process.preselection * process.trigSequence * process.patDefaultSequence * process.photonCandidateSequence )
+#    process.photonPath  = cms.Path(process.startCounter * process.preselection * process.trigSequence * process.patDefaultSequence * process.photonCandidateSequence )
 process.e = cms.EndPath( process.endCounter*process.out )
 
 # all done, schedule the execution
 if(runOnMC):
     from CMGTools.HtoZZ2l2nu.GeneratorLevelSequences_cff import addGeneratorLevelSequence
     addGeneratorLevelSequence(process)
-    process.schedule = cms.Schedule( process.genLevelPath, process.eePath, process.mumuPath, process.emuPath, process.photonPath, process.e )
+    #process.schedule = cms.Schedule( process.genLevelPath, process.eePath, process.mumuPath, process.emuPath, process.photonPath, process.e )
+    process.schedule = cms.Schedule( process.genLevelPath, process.eePath, process.mumuPath, process.emuPath, process.e )
 else :
-    process.schedule = cms.Schedule( process.eePath, process.mumuPath, process.emuPath, process.photonPath, process.e )
+    #process.schedule = cms.Schedule( process.eePath, process.mumuPath, process.emuPath, process.photonPath, process.e )
+    process.schedule = cms.Schedule( process.eePath, process.mumuPath, process.emuPath, process.e )
 
 # event output
 from CMGTools.HtoZZ2l2nu.OutputConfiguration_cff import configureOutput
 configureOutput(process)
+configureOutput(process,selPaths=['eePath', 'mumuPath', 'emuPath'])
 process.out.fileName = cms.untracked.string(outFile)
 
 print "Scheduling the following modules"

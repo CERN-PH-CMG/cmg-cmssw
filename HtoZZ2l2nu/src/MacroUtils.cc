@@ -52,8 +52,8 @@ namespace jet
 	    if(ivar==JER)
 	      {
 		double ptScaleRes = (ptResol->resolutionEtaPt(jets[ijet].eta(),jets[ijet].pt())->GetRandom()-1.0);
-		double etaRes = etaResol->resolutionEtaPt(jets[ijet].eta(),jets[ijet].pt())->GetRandom();
-		double phiRes = phiResol->resolutionEtaPt(jets[ijet].eta(),jets[ijet].pt())->GetRandom();
+		//double etaRes = etaResol->resolutionEtaPt(jets[ijet].eta(),jets[ijet].pt())->GetRandom();
+		//double phiRes = phiResol->resolutionEtaPt(jets[ijet].eta(),jets[ijet].pt())->GetRandom();
 		double newpt = (1.0+ptScaleRes)*jets[ijet].pt();
 		//double neweta = etaRes+jets[ijet].eta();
 		//double newphi = phiRes+jets[ijet].phi();
