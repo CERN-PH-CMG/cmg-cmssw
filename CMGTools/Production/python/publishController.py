@@ -185,7 +185,6 @@ class PublishController(object):
         	return None
         
     def savannahPublish(self, procds, opts, comment):
-    	
     	# Get file information
         fileOps = FileOps(getCastor(procds['PathList'][0]), getDbsUser(procds['PathList'][0]))
     	# Check if user has dataset files, and DO NOT allow publish if they do not
@@ -213,32 +212,31 @@ class PublishController(object):
     	parentTaskID = findDSOnSav.getTaskID(procds['ParentList'][0], opts['category_id'], self._username, self._password, True)
     	
     	if parentTaskID is not None and len(parentTaskID) > 0:
+    		if len(parentTaskID)>1: raise NameError("Multiple possible parents found for dataset: "+procds['PathList'][0]+". _getOption() method could be implemented here" )
     		procds['ParentList'][0]= "[https://savannah.cern.ch/task/?"+str(parentTaskID[0])+" "+findDSOnSav.getNameWithID(parentTaskID[0])+"]"
     		parentTaskID = parentTaskID[0]
     	elif not re.search("--", procds['ParentList'][0]):
     		procds['ParentList'][0]= "[https://cmsweb.cern.ch/das/request?view=list&limit=10&instance=cms_dbs_prod_global&input=dataset%3D%2F" +procds['ParentList'][0].lstrip("/").split("/")[0]+ "%2F" +procds['ParentList'][0].lstrip("/").split("/")[1]+"%2F" + procds['ParentList'][0].lstrip("/").split("/")[2]+ " "+ procds['ParentList'][0]+"]"
     		parentTaskID = None
-    	else: parentTaskID = None
+    	else: raise NameError("No Parent was found for Dataset: "+procds['PathList'][0]+" not publishing.",['PathList'][0],taskID)
     		
-    			
-    	
+    	passOpts = opts
+    	if taskID is not None:
+    		del(passOpts['category_id'])
     	
     	if fileOps.isValid():
 			procds['status'] = "VALID"
     	else: procds['status'] = "INVALID"
     	
-    	self.savannah = SavannahFormatter(self._username, self._password, taskID, opts )
-    	self.savannah.addMain(procds,fileOps.getTags(),self._deleteExtras(fileOps.getLFNGroups()),fileOps.getCastor(), fileOps.getLFN())
+    	self.savannah = SavannahFormatter(self._username, self._password, taskID, passOpts )
+    	self.savannah.addMain(procds,fileOps.getTags(),self._deleteExtras(fileOps.getLFNGroups()),fileOps.getCastor(), fileOps.getLFN(),fileOps.getRelease(), comment)
     	
-    	
-    	#Add comment if exists 
-    	if comment is not None:
-    		comment = "*Comment:* "+comment
-    		self.savannah.appendExtra(comment)
     	if fileOps.getIntegrity() is not None:
     		report = fileOps.getIntegrity()
     		if 'PrimaryDatasetEntries' in report:
     			self.savannah.appendExtra("*Primary Dataset Entries:* "+str(report['PrimaryDatasetEntries']))
+    		if 'FilesEntries' in report:
+    			self.savannah.appendExtra("*File Entries:* "+str(report['FilesEntries']))
     		if 'PrimaryDatasetFraction' in report:
     			self.savannah.appendExtra("*Primary Dataset Fraction used:* "+str(report['PrimaryDatasetFraction']))
     		if 'ValidDuplicates' in report:
