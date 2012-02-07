@@ -4,7 +4,7 @@
 # installation
 #
 check TAGS.txt
-SHarper/HEEPAnalyzer : patch int -> float in HEEP id producer
+SHarper/HEEPAnalyzer : patch int -> float in plugins/HEEPIdValueMapProducer.cc
 
 
 #

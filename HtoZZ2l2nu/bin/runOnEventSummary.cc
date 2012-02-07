@@ -700,22 +700,22 @@ int main(int argc, char* argv[])
       double p0btags_err=wgt[0].second;
       
 
-      //start analysis by the jet kinematics so that one can loop over JER/JES/b-tag systematic variations
+      //met variables: check BaseMetSelection @ StandardSelections_cfi.py
       LorentzVector metP4=phys.met[0];
-      LorentzVector assocChargedMetP4=phys.met[1];
-      LorentzVector assocMetP4=phys.met[3];
-      LorentzVector centralMetP4=phys.met[5];
-      LorentzVector cleanMetP4=phys.met[6];
-      LorentzVector assocOtherVertexMetP4=phys.met[7];
-      LorentzVector assocFwdMetP4=phys.met[8];
-      LorentzVector assocMet5P4=phys.met[9];
-      LorentzVector assocFwdMet5P4=phys.met[10];
-      LorentzVector assocMet10P4=phys.met[11];
-      LorentzVector assocFwdMet10P4=phys.met[12];
+      LorentzVector assocChargedMetP4=phys.met[5];
+      LorentzVector assocMetP4=phys.met[1];
+      LorentzVector centralMetP4=phys.met[3];
+      LorentzVector cleanMetP4=phys.met[4];
+      LorentzVector assocOtherVertexMetP4=phys.met[7]; //? not produced any longer
+      LorentzVector assocFwdMetP4=phys.met[6];
+      LorentzVector assocMet5P4=phys.met[9];        //?
+      LorentzVector assocFwdMet5P4=phys.met[10];    //?
+      LorentzVector assocMet10P4=phys.met[11];      //?
+      LorentzVector assocFwdMet10P4=phys.met[12];   //?
       LorentzVector clusteredMetP4 = -1*zll;  for(unsigned int i=0;i<jetsP4.size();i++){clusteredMetP4 -= jetsP4[i];}
       LorentzVector assocFwdCMetP4 = assocMetP4 + fwdClusteredMetP4;
-      LorentzVector assocCMetP4=phys.met[13];
-      LorentzVector assocFwd2MetP4=phys.met[14];
+      LorentzVector assocCMetP4=phys.met[13];       //?
+      LorentzVector assocFwd2MetP4=phys.met[14];    //?
       if(isGammaEvent){
           assocChargedMetP4 -= zll;
           if(!phys.gammas[0].isConv) assocMetP4 -= zll;
