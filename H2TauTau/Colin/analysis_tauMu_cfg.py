@@ -56,6 +56,11 @@ ZMuMuAna = cfg.Analyzer(
     m_max = 200
     )
 
+triggerAna = cfg.Analyzer(
+    'TriggerAnalyzer'
+    )
+
+
 TauMuAna = cfg.Analyzer(
     'TauMuAnalyzer',
     pt1 = 20,
@@ -276,13 +281,14 @@ if period == 'Period_2011A':
 # selectedComponents  = data_2011A 
 
 sequence = cfg.Sequence( [
-   vertexAna,
-   TauMuAna,
-   muonWeighter, 
-   tauWeighter, 
-   vbfAna,
-   eventSorter
-   ] )
+    triggerAna,
+    vertexAna,
+    TauMuAna,
+    muonWeighter, 
+    tauWeighter, 
+    vbfAna,
+    eventSorter
+    ] )
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
