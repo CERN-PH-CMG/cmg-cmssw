@@ -4,6 +4,7 @@ Load the libraries needed to use RootTools
 import ROOT as rt
 
 def loadLibs():
+    print 'loading FWLite.'
     #load the libaries needed
     from ROOT import gROOT,gSystem
     gSystem.Load("libFWCoreFWLite")

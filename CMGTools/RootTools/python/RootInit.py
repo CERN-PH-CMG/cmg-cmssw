@@ -22,7 +22,7 @@ from CMGTools.RootTools.GraphErrors import *
 from CMGTools.RootTools.Legend import * 
 from CMGTools.RootTools.runLumiReport import *
 
-from CMGTools.Common.macros.aliases import * 
+from CMGTools.Common.macros.aliases import *
 
 TREES = []
 

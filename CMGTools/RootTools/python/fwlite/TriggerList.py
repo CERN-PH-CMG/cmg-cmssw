@@ -3,16 +3,14 @@ from CMGTools.RootTools.statistics.Counter import Counter as Trigger
 class TriggerList( object ):
     '''TODO: is it the right package? need to document this class'''
     def __init__(self, triggerList):
-        # self.triggerList = triggerList
         self.triggerList = map( Trigger, triggerList )
-        # self.decodeTriggerList( triggerList )
 
-    def decodeTriggerList(self, triggerList):
-        raise ValueError('this function is obsolete.')
-        if triggerList is None:
-            return None
-        triglist = map( Trigger, triggerList.split('|') )
-        return triglist
+##     def decodeTriggerList(self, triggerList):
+##         raise ValueError('this function is obsolete.')
+##         if triggerList is None:
+##             return None
+##         triglist = map( Trigger, triggerList.split('|') )
+##         return triglist
 
     def triggerPassed(self, triggerObject, triggerList = None):
         '''returns true if at least one of the triggers in self.triggers passes.'''
@@ -34,8 +32,8 @@ class TriggerList( object ):
 
     def __str__(self):
         head = 'TriggerList'
-        triggers = ', '.join( map(str, self.triggerList) )
-        return ': '.join( [head, triggers] )
+        triggers = '\n'.join( map(str, self.triggerList) )
+        return ':\n'.join( [head, triggers] )
         
 if __name__ == '__main__':
     list = ['HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v[5,6]','HLT_IsoMu15_LooseIsoPFTau15_v9']
