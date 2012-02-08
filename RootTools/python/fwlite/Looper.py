@@ -2,7 +2,8 @@ import os
 import sys
 import imp
 import glob
-import logging 
+import logging
+import pprint 
 from DataFormats.FWLite import Events, Handle
 from CMGTools.RootTools.fwlite.Event import Event 
 
@@ -65,6 +66,7 @@ class Looper(object):
             print 'found class', theClass
             obj = theClass( cfg_ana, self.cfg_comp, self.outDir ) 
         except KeyError:
+            file = None
             try:
                 file, path, desc = imp.find_module( className )
                 mod  = imp.load_module( className ,
@@ -78,7 +80,13 @@ class Looper(object):
                 print 'loading class', theClass
                 obj = theClass( cfg_ana, self.cfg_comp, self.outDir )
             finally:
-                file.close()
+                try:
+                    file.close()
+                except AttributeError:
+                    print 'problem loading module', cfg_ana.name
+                    print 'please make sure that the module name is correct.'
+                    print 'if it is, is this module in your path, as defined below?'
+                    pprint.pprint( sorted( sys.path )) 
         return obj
 
     def loop(self, nEvents=None):

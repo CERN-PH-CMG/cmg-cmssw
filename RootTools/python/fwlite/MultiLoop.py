@@ -95,6 +95,8 @@ def main( options, args ):
 
     sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
                                  'src/CMGTools/H2TauTau/python/proto/analyzers'] ))
+    sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
+                                 'src/CMGTools/RootTools/python/analyzers'] ))
 
     selComps = cfg.config.components
     for comp in selComps:
