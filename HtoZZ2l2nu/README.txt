@@ -1,11 +1,11 @@
-# Working version CMSSW_4_4_3
-
 #
 # installation
 #
-check TAGS.txt
-SHarper/HEEPAnalyzer : patch int -> float in plugins/HEEPIdValueMapProducer.cc
-
+scramv1 project CMSSW CMSSW_4_4_3
+cd CMSSW_4_4_3/src/
+cvs co UserCode/CMG/CMGTools/HtoZZ2l2nu/TAGS.txt
+sh TAGS.txt
+scramv1 b
 
 #
 # create pat-tuples
