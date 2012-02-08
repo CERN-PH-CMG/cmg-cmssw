@@ -6,6 +6,7 @@
 #include "Math/LorentzVector.h"
 #include "TVector2.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
+#include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 typedef std::vector<LorentzVector> LorentzVectorCollection;
@@ -23,11 +24,30 @@ public :
 class PhysicsObject_Lepton : public LorentzVector
 {
  public :
-  PhysicsObject_Lepton(LorentzVector vec, Int_t id_,Int_t genid_=0, Float_t ptErr_=0, Float_t iso1_=0, Float_t iso2_=0, Float_t iso3_=0, Float_t iso4_=0, Float_t pid_=0):
-    LorentzVector(vec), id(id_), genid(genid_), ptErr(ptErr_), iso1(iso1_), iso2(iso2_), iso3(iso3_), iso4(iso4_), pid(pid_) { }
+  PhysicsObject_Lepton(LorentzVector vec, Int_t id_,Int_t genid_=0, Float_t ptErr_=0, 
+		       Float_t ecalIso_=0, Float_t hcalIso_=0, Float_t trkIso_=0, 
+		       Float_t gIso_=0,     Float_t chIso_=0,    Float_t puchIso_=0, Float_t nhIso_=0, Int_t passIso_=0,
+		       Float_t pid_=0):
+    LorentzVector(vec), id(id_), genid(genid_), ptErr(ptErr_), 
+    ecalIso(ecalIso_), hcalIso(hcalIso_), trkIso(trkIso_), gIso(gIso_), chIso(chIso_), puchIso(puchIso_), nhIso(nhIso_),  passIso(passIso_),
+    pid(pid_) { }
+
+    inline bool passesIso(int isoType=PFRELBETCORR_ISO)
+    {
+      bool pass(false);
+      switch(isoType)
+	{
+	case REL_ISO:          pass=(passIso & 0x1); break;
+	case RELRHOCORR_ISO:   pass=((passIso>>1) & 0x1); break;
+	case PFREL_ISO:        pass=((passIso>>2) & 0x1); break;
+	default:               pass=((passIso>>3) & 0x1); break;
+	}
+      return pass;
+    }
+
     Int_t id,genid;
-    Float_t ptErr, iso1, iso2, iso3, iso4;
-    Int_t pid;
+    Float_t ptErr, ecalIso, hcalIso, trkIso, gIso, chIso, puchIso, nhIso;
+    Int_t passIso, pid;
 };
 
 class PhysicsObject_Jet : public LorentzVector
