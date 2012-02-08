@@ -62,6 +62,8 @@ private:
 
   void getSeedJetsFromCandidateAssociatedToVertex(std::vector<reco::PFJet>& inputSeedJet, int iVtx);
 
+  double getJetRadius(const reco::PFJet& jet);
+
   edm::Handle<reco::VertexCollection> vtxH_;  
   edm::Handle<reco::PFCandidateCollection> pfCandsH_;
   edm::InputTag collectionTag_, vertexTag_;    
@@ -187,6 +189,12 @@ CommonMETData ClusteredPFMetProducer::getMETData(const LorentzVector& met, doubl
    return pfOutput;
 }
 
+double ClusteredPFMetProducer::getJetRadius(const reco::PFJet& jet){
+   for(double R=0.3;R<1.0;R+=0.1){
+      if(jet.etInAnnulus(0, R)>=0.90)return R;
+   }
+   return 0;
+}
 
 
 //
@@ -314,7 +322,7 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
                  set_OvtxCharged[iVtx] += candRef->pt();
 
                  double dr = deltaR(vtxJetsPlusNeutral[iVtx][i].eta(),vtxJetsPlusNeutral[iVtx][i].phi(), candRef->eta(), candRef->phi());
-                 double jetCone = sqrt(pow(vtxJetsPlusNeutral[iVtx][i].etaetaMoment(),2) + pow(vtxJetsPlusNeutral[iVtx][i].phiphiMoment(),2));
+                 double jetCone = getJetRadius(vtxJetsPlusNeutral[iVtx][i]);
                  if(dr>jetCone)continue;
                  met_PvtxBetaCor[iVtx] += -0.5 * candRef->p4();
                  set_PvtxBetaCor[iVtx] += -0.5 * candRef->pt();
