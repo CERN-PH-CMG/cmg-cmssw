@@ -92,6 +92,17 @@ int main(int argc, char* argv[])
       controlHistos.addHistogram( new TH1F( "l1pt" + idbit, ";p_{T}^{1} [GeV/c];Events", 20,0,500) );  
       controlHistos.addHistogram( new TH1F( "l2pt" + idbit, ";p_{T}^{2} [GeV/c];Events", 20,0,500) );
     }
+
+  controlHistos.addHistogram( new TH2F( "l1pfisovspu",   ";PF isolation/p_{T}^{1};Pileup;Events",30,0,0.3,30,0,30) );
+  controlHistos.addHistogram( new TH2F( "l1pfisocorrvspu",   ";PF isolation with #beta corr./p_{T}^{1};Pileup;Events",30,0,0.3,30,0,30) );
+  controlHistos.addHistogram( new TH2F( "l1detisovspu",   ";Detector isolation/p_{T}^{1};Pileup;Events",30,0,0.3,30,0,30) );
+  controlHistos.addHistogram( new TH2F( "l1detisocorrvspu",   ";Detector isolation with #rho corr./p_{T}^{1};Pileup;Events",30,0,0.3,30,0,30) );
+
+  controlHistos.addHistogram( new TH2F( "l2pfisovspu",   ";PF isolation/p_{T}^{1};Pileup;Events",30,0,0.3,30,0,30) );
+  controlHistos.addHistogram( new TH2F( "l2pfisocorrvspu",   ";PF isolation with #beta corr./p_{T}^{1};Pileup;Events",30,0,0.3,30,0,30) );
+  controlHistos.addHistogram( new TH2F( "l2detisovspu",   ";Detector isolation/p_{T}^{1};Pileup;Events",30,0,0.3,30,0,30) );
+  controlHistos.addHistogram( new TH2F( "l2detisocorrvspu",   ";Detector isolation with #rho corr./p_{T}^{1};Pileup;Events",30,0,0.3,30,0,30) );
+
   controlHistos.addHistogram( new TH2F( "pfiso1vsdrll",   ";PF isolation/p_{T}^{1};#DeltaR(l^{(1)},l^{(2)});Events",30,0,0.3,20,0,6) );
   controlHistos.addHistogram( new TH2F( "pfiso2vsdrll",   ";PF isolation/p_{T}^{2};#DeltaR(l^{(1)},l^{(2)});Events",30,0,0.3,20,0,6) );
 
@@ -160,9 +171,17 @@ int main(int argc, char* argv[])
 
       //z+met kinematics      
       PhysicsObject_Lepton l1 = phys.leptons[0].pt() > phys.leptons[1].pt() ? phys.leptons[0] : phys.leptons[1];
-      Float_t l1iso = l1.gIso+l1.chIso+l1.nhIso; 
+      Float_t l1pfiso = l1.gIso+l1.chIso+l1.nhIso; 
+      Float_t l1pfisocorr = l1.chIso+max(l1.gIso+l1.nhIso-0.5*l1.puchIso,0.);
+      Float_t l1detiso = l1.ecalIso+l1.trkIso+l1.hcalIso; 
+      Float_t l1detisocorr = l1.trkIso+max(l1.ecalIso+l1.trkIso-0.3*0.3*3.1415*ev.rho,0.);
+      
       PhysicsObject_Lepton l2 = phys.leptons[0].pt() > phys.leptons[1].pt() ? phys.leptons[1] : phys.leptons[0];
-      Float_t l2iso = l2.gIso+l2.chIso+l2.nhIso; 
+      Float_t l2pfiso = l2.gIso+l2.chIso+l2.nhIso; 
+      Float_t l2pfisocorr = l2.chIso+max(l2.gIso+l2.nhIso-0.5*l2.puchIso,0.);
+      Float_t l2detiso = l2.ecalIso+l2.trkIso+l2.hcalIso; 
+      Float_t l2detisocorr = l2.trkIso+max(l2.ecalIso+l2.trkIso-0.3*0.3*3.1415*ev.rho,0.);
+
       LorentzVector zll = l1+l2;
       LorentzVector zvv = phys.met[0];
       Float_t dphill     = deltaPhi(l1.phi(),l2.phi());
@@ -216,8 +235,19 @@ int main(int argc, char* argv[])
 	      if(((l2id >> idbits[ib]) & 0x1)) controlHistos.fillHisto("l2pt"+idtag,ctf,l2.pt(),weight);
 
 	    }
-	  controlHistos.fill2DHisto("pfiso1vsdrll",ctf,l1iso/l1.pt(),drll,weight);
-	  controlHistos.fill2DHisto("pfiso2vsdrll",ctf,l2iso/l2.pt(),drll,weight);
+	  controlHistos.fill2DHisto("pfiso1vsdrll",ctf,l1pfiso/l1.pt(),drll,weight);
+	  controlHistos.fill2DHisto("pfiso2vsdrll",ctf,l2pfiso/l2.pt(),drll,weight);
+
+	  controlHistos.fill2DHisto("l1pfisovspu",ctf,l1pfiso/l1.pt(),ev.ngenITpu,weight);
+	  controlHistos.fill2DHisto("l1pfisocorrvspu",ctf,l1pfisocorr/l1.pt(),ev.ngenITpu,weight);
+	  controlHistos.fill2DHisto("l1detisovspu",ctf,l1detiso/l1.pt(),ev.ngenITpu,weight);
+	  controlHistos.fill2DHisto("l1detisocorrvspu",ctf,l1detisocorr/l1.pt(),ev.ngenITpu,weight);
+
+	  controlHistos.fill2DHisto("l2pfisovspu",ctf,l2pfiso/l2.pt(),ev.ngenITpu,weight);
+	  controlHistos.fill2DHisto("l2pfisocorrvspu",ctf,l2pfisocorr/l2.pt(),ev.ngenITpu,weight);
+	  controlHistos.fill2DHisto("l2detisovspu",ctf,l2detiso/l2.pt(),ev.ngenITpu,weight);
+	  controlHistos.fill2DHisto("l2detisocorrvspu",ctf,l2detisocorr/l2.pt(),ev.ngenITpu,weight);
+
 	}
       } 
   }
