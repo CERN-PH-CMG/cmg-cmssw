@@ -66,6 +66,31 @@ def cleanObjectCollection( objects, masks, deltaRMin ):
             cleanObjects.append( object )
     return cleanObjects
 
+
+
+def bestMatch( object, matchCollection ):
+    deltaR2Min = float('+inf')
+    bm = None
+    for match in matchCollection:
+        dR2 = deltaR2( object.eta(), object.phi(),
+                       match.eta(), match.phi() )
+        if dR2 < deltaR2Min:
+            deltaR2Min = dR2
+            bm = match
+    return bm
+
+
+def matchObjectCollection( objects, matchCollection ):
+    pairs = {}
+    if len(objects)==0:
+        return pairs
+    if len(matchCollection)==0:
+        return dict( zip(objects, [None]*len(objects)) )
+    for object in objects:
+        pairs[object] = bestMatch( object, matchCollection )
+    return pairs
+
+
 if __name__ == '__main__':
 
     import sys
