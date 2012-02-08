@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.HtoZZ2l2nu.MVAStudyConfig_cfi import *
 
 runProcess = cms.PSet(
-    input = cms.string("/tmp/psilva/ntuples/GGtoH600toZZto2L2Nu.root"),
+    input = cms.string("GGtoH600toZZto2L2Nu.root"),
     outdir = cms.string("/tmp/psilva"),
     isMC = cms.bool(True),
     mctruthmode=cms.int32(0),

@@ -10,7 +10,7 @@ def addDileptonFilters(process):
     process.mumuSelectionCounter = process.mumuPreselectionCounter.clone()
     process.mumuCandidates = cms.EDProducer("CandViewShallowCloneCombiner",
                                             decay = cms.string('selectedPatMuonsPFlow selectedPatMuonsPFlow'),
-                                            cut = cms.string('mass>10 && daughter(0).pt > 15 && daughter(1).pt >15'),
+                                            cut = cms.string('mass>10 && daughter(0).pt > 20 && daughter(1).pt >20'),
                                             checkCharge = cms.bool(False)
                                             )
     process.mumuCandidateCounter = cms.EDFilter("CandViewCountFilter", src = cms.InputTag("mumuCandidates"), minNumber = cms.uint32(1))
@@ -25,7 +25,7 @@ def addDileptonFilters(process):
     process.eeSelectionCounter = process.mumuPreselectionCounter.clone()
     process.eeCandidates = cms.EDProducer("CandViewShallowCloneCombiner",
                                      decay = cms.string('selectedPatElectronsPFlow selectedPatElectronsPFlow'),
-                                     cut = cms.string('mass>10 && daughter(0).pt >15 && daughter(1).pt >15'),
+                                     cut = cms.string('mass>10 && daughter(0).pt >20 && daughter(1).pt >20'),
                                      checkCharge = cms.bool(False)
                                      )
     process.eeCandidateCounter = cms.EDFilter("CandViewCountFilter", src = cms.InputTag("eeCandidates"), minNumber = cms.uint32(1))
@@ -40,7 +40,7 @@ def addDileptonFilters(process):
     process.emuSelectionCounter = process.mumuPreselectionCounter.clone()
     process.emuCandidates = cms.EDProducer("CandViewShallowCloneCombiner",
                                            decay = cms.string('selectedPatElectronsPFlow selectedPatMuonsPFlow'),
-                                           cut = cms.string('mass>10 && daughter(0).pt >15 && daughter(1).pt >15'),
+                                           cut = cms.string('mass>10 && daughter(0).pt >20 && daughter(1).pt >20'),
                                            checkCharge = cms.bool(False)
                                            )
     process.emuCandidateCounter = cms.EDFilter("CandViewCountFilter", src = cms.InputTag("emuCandidates"), minNumber = cms.uint32(1))
