@@ -51,8 +51,12 @@ void DijetMass_chiyoung_2(){
   Init("Q*");
 
 
-  lumi = 4663.0;
-  
+//  lumi = 1025.;
+//  lumi = 2509.0;
+  //  lumi = 2168.0;
+  lumi = 4677.0;
+
+
   Int_t ci_g, ci_b;   // for color index setting
   ci_g = TColor::GetColor("#006600");
   ci_b = TColor::GetColor("#000099");
@@ -63,12 +67,22 @@ void DijetMass_chiyoung_2(){
   
   // Input Files  
   //  TFile *inputFile = TFile::Open("histograms_1p010fbm1.root", "READ");
-  inputFile = TFile::Open("histograms_data_HT_Run2010_2011_136033_180252_4663pbm1_ak5.root", "READ");
-  //  inputFile = TFile::Open("histograms_data_HT_340fb_Fat_ak5.root", "UPDATE");
+  inputFile = TFile::Open("../../data/histograms_data_HT_Run2011AB_160404_180252_Fat30_ak5_4677pbm1.root", "READ");
+  //  inputFile = TFile::Open("../../data/histograms_data_HT_Run2011A_160404_175770_Fat30_ak5_2168pbm1.root", "READ");
+  // inputFile = TFile::Open("../../data/histograms_data_HT_Run2011B_175832_180252_Fat30_ak5_2509pbm1.root", "READ");
+
+
+
+//  inputFile = TFile::Open("histograms_data_HT_Run2010_2011_136033_180252_4479pbm1_ak5.root", "READ");
+  //  inputFile = TFile::Open("histograms_data_HT_Run2010_Run2011A_2054pbm1_ak5.root", "UPDATE");
+  // inputFile = TFile::Open("histograms_data_HT_Run2011B_2425pbm1_ak5.root", "UPDATE");
+
+
   // Histograms 
   hDijetMass = (TH1F*) inputFile->Get("h_DijetMass_data_fat;1");
   //  TH1F *hQCDMC = (TH1F*)inputFile->Get("fit_DijetMass_mc_wide");
-  inputFileMC = TFile::Open("histograms_summer11_mc_ak5.root", "UPDATE");
+  //  inputFileMC = TFile::Open("histograms_summer11_mc_ak5.root", "UPDATE");
+  inputFileMC = TFile::Open("histograms_Fat30_summer11_mc_ak5.root", "UPDATE");
   hQCD = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat;1");
   
   cout <<"Calc scale factor" << endl;
@@ -303,7 +317,7 @@ void DijetMass_chiyoung_2(){
 		veyl[i] = nl/(lumi*dm);
 		veyh[i] = nh/(lumi*dm);  
 	}
-	else if (n>=25 && mass >= 890)
+	else if (n>=25 && mass >= 889)
 	{
 		veyl[i] = sqrt(n)/(lumi*dm);
 		veyh[i] = sqrt(n)/(lumi*dm);
@@ -325,7 +339,7 @@ void DijetMass_chiyoung_2(){
     TGraphAsymmErrors *g2 = new TGraphAsymmErrors(i,vx,vy,vexl,vexh,veyl,veyh);
 
     // Fit to data    
-    TF1 *fit = new TF1("fit",fitQCD1,890.0,3854.0,4); // 4 Par. Fit
+    TF1 *fit = new TF1("fit",fitQCD1,889.0,3854.0,4); // 4 Par. Fit
     gStyle->SetOptFit(1111); 
     fit->SetParameter(0,1.73132e-05);
     fit->SetParameter(1,6.80678e+00);
@@ -333,10 +347,10 @@ void DijetMass_chiyoung_2(){
     fit->SetParameter(3,1.93728e-01);
     fit->SetLineWidth(2);
     fit->SetLineColor(4);
-    g->Fit("fit","","",944.0,3854.0);	
+    g->Fit("fit","","",889.0,3854.0);	
     
     //Alternate Fits 4 parameter
-    TF1 *f_4par = new TF1("fit_4par",fitQCD,944.0,3854.0,4); // 4 Par. Fit
+    TF1 *f_4par = new TF1("fit_4par",fitQCD,889.0,3854.0,4); // 4 Par. Fit
     gStyle->SetOptFit(1111); 
     f_4par->SetParameter(0,3.08269e+16);
     f_4par->SetParameter(1,8.23385e+00);
@@ -348,7 +362,7 @@ void DijetMass_chiyoung_2(){
 
 
     //Alternate Fits 3 parameter
-    TF1 *f_3par = new TF1("fit_3par",fitQCD2,944.0,3854.0,3); // 3 Par. Fit
+    TF1 *f_3par = new TF1("fit_3par",fitQCD2,889.0,3854.0,3); // 3 Par. Fit
     gStyle->SetOptFit(1111);
     f_3par->SetParameter(0,6.32475e+15);
     f_3par->SetParameter(1,9.89115e+00);
@@ -399,12 +413,12 @@ void DijetMass_chiyoung_2(){
     g2->GetXaxis()->SetRangeUser(700,4200);
     g2->GetYaxis()->SetRangeUser(0.000001,50);
     g2->Draw("APZ");
-    g2->Fit("fit","","sames",944.0,3854.0);
+    g2->Fit("fit","","sames",889.0,3854.0);
 
     TString status_default= gMinuit->fCstatu.Data();
-    g2->Fit("fit_4par","+","sames",944.0,3854.0);
+    g2->Fit("fit_4par","+","sames",889.0,3854.0);
     TString status_4par= gMinuit->fCstatu.Data();
-    g2->Fit("fit_3par","+","sames",944.0,3854.0);
+    g2->Fit("fit_3par","+","sames",889.0,3854.0);
     TString status_3par= gMinuit->fCstatu.Data();
     TLegend *leg = new TLegend(0.18,0.78,0.38,0.92);
     leg->SetTextSize(0.03146853);
@@ -801,7 +815,7 @@ void DijetMass_chiyoung_2(){
 	eyh_pulls[i] = veyh[i]/fit_default;
 	eyl_pulls[i] = veyl[i]/fit_default;
 				
-	if(m<=944 || m>3854){
+	if(m<=889 || m>3854){
 		pulls_3par[i] = -999;
 		pulls_4par[i] = -999;
 		pulls[i] = -999;
@@ -1080,8 +1094,8 @@ void DijetMass_chiyoung_2(){
    p11_2->SetPad(0.01,0.02,0.99,0.24);
    p11_2->SetBottomMargin(0.35);
    p11_2->SetRightMargin(0.05);
-   p11_2->SetGridy();
-   c11_2->SetTicky(1);
+   p11_2->SetGridx();
+   c11_2->SetTickx(50);
 
 
    TH1F *vFrame2 = p11_2->DrawFrame(700.0, -3.31, 4200.0, 3.31);
