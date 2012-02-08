@@ -1,0 +1,8 @@
+#!/bin/bash
+
+a=(`cmsLs $1 | awk '{print $5}'`)
+for i in ${a[@]}; do 
+    cmsRm ${i};
+done
+
+cmsRm $1

@@ -6,14 +6,18 @@
 
 #include <iostream>
 #include <strstream>
+#include <map>
 
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
 
+#include "TString.h"
 #include "TSystem.h"
 #include "TFile.h"
 #include "TGraphAsymmErrors.h"
 #include "TH1.h"
+#include "TH2F.h"
 #include "TF1.h"
+#include "TProfile.h"
 #include "TLegend.h"
 #include "TPaveText.h"
 
@@ -38,9 +42,10 @@ void leptonSelEfficiency(TString url)
     {
 
       report << ch[ich] << endl;
-
-      std::vector<TH1 *> ptl[2];
+      
+      std::vector<TH1 *> ptl[2]; 
       std::vector<TGraphAsymmErrors *> effl[2];
+      std::vector<TProfile *> lIso[2];
       for(size_t id=0; id<=6; id++)
 	{
 	  TString idb(""); if(id) idb+=id;
@@ -64,8 +69,10 @@ void leptonSelEfficiency(TString url)
 	  
 	  for(size_t ilep=0; ilep<=1; ilep++)
 	    {
-	      TString lid("_l"); lid += (ilep+1); lid += "pt";
-	      TH1 *h = (TH1 *)fin->Get("localAnalysis/"+ch[ich]+"/"+ch[ich]+lid+idb);
+	      TString lid("_l"); lid += (ilep+1); 
+
+	      TString idHisto("pt"); idHisto += idb;
+	      TH1 *h = (TH1 *)fin->Get("localAnalysis/"+ch[ich]+"/"+ch[ich]+lid+idHisto);
 	      if(h==0) continue;
 	      if(h->Integral()==0) continue;
 	      h->SetDirectory(0);
@@ -75,32 +82,46 @@ void leptonSelEfficiency(TString url)
 	      if(id)
 		{
 		  TGraphAsymmErrors *gr = new TGraphAsymmErrors;  
-		  gr->SetName(ch[ich]+"eff"+lid+idb);
+		  gr->SetName(ch[ich]+"eff"+lid+idHisto);
 		  gr->BayesDivide(h,ptl[ilep][0]); 
 		  gr->SetTitle(idname);
 		  effl[ilep].push_back(gr); 
 		}
+	      else
+		{
+		  TString isoHistos[]={"pfisovspu","pfisocorrvspu","detisovspu","detisocorrvspu"};
+		  TString isoTitles[]={"PF","PF+#beta correction","detector","detector+#rho correction"};
+		  for(int iisoHisto=0; iisoHisto<4; iisoHisto++)
+		    {
+		      TH2F *h2 = (TH2F *) fin->Get("localAnalysis/"+ch[ich]+"/"+ch[ich]+lid+isoHistos[iisoHisto]);
+		      if(h2==0) continue;
+
+		      TProfile *prof=h2->ProfileX(ch[ich]+lid+isoHistos[iisoHisto]+"_prof");
+		      prof->SetDirectory(0);
+		      prof->SetTitle(isoTitles[iisoHisto]);
+		      lIso[ilep].push_back(prof);
+		    }
+		}
 	    }
 	}
-      
       TCanvas *c = new TCanvas("pt"+ch[ich],"pt"+ch[ich],1200,600);
       c->SetWindowSize(600,600);
       for(size_t ilep=0; ilep<2; ilep++)
 	{
 	  ptl[ilep][0]->SetLineColor(1+ilep);
-	  ptl[ilep][0]->Draw(ilep==0?"hist":"histsame");
-
+	  ptl[ilep][0]->DrawNormalized(ilep==0?"hist":"histsame");
+	  
 	}
       c->SaveAs(ch[ich]+"pt.png");
       
       c = new TCanvas("effid"+ch[ich],"effid"+ch[ich],1200,600);
       c->SetWindowSize(1200,600);
       c->Divide(2,1);
-
       for(size_t ilep=0; ilep<2; ilep++)
 	{
 	  c->cd(ilep+1);
 	  TLegend *leg = new TLegend(0.65,0.7,0.9,0.8);
+	  cout << __LINE__ << endl;
 	  for(size_t i=0; i<effl[ilep].size(); i++)
 	    {
 	      effl[ilep][i]->SetFillStyle(0);
@@ -136,8 +157,47 @@ void leptonSelEfficiency(TString url)
 
 	  c->SaveAs(ch[ich]+"eff.png");
 	}
-    }
+    
 
+      //isolation
+      c = new TCanvas("iso"+ch[ich],"iso"+ch[ich],1200,600);
+      c->SetWindowSize(1200,600);
+      c->Divide(2,1);
+
+      for(size_t ilep=0; ilep<2; ilep++)
+	{
+	  c->cd(ilep+1);
+	  TLegend *leg = new TLegend(0.65,0.7,0.9,0.8);
+	  for(size_t i=0; i<lIso[ilep].size(); i++)
+	    {
+	      lIso[ilep][i]->SetFillStyle(0);
+	      lIso[ilep][i]->SetMarkerStyle(markers[i]);
+	      lIso[ilep][i]->Draw(i==0?"ap":"p");
+	      lIso[ilep][i]->GetXaxis()->SetTitle( ptl[ilep][i]->GetXaxis()->GetTitle() );
+	      lIso[ilep][i]->GetYaxis()->SetTitle( "<Isolation>" );
+	      leg->AddEntry(lIso[ilep][i],lIso[ilep][i]->GetTitle(),"p");
+	    }
+	  if(ilep==0)
+	    {
+	      leg->SetFillStyle(0);
+	      leg->SetFillColor(0);
+	      leg->SetBorderSize(0);
+	      leg->SetTextFont(42);
+	      leg->Draw();
+	    }
+	  TPaveText *pave = new TPaveText(0.65,0.83,0.9,0.95,"brNDC");
+	  pave->SetBorderSize(0);
+	  pave->SetFillStyle(0);
+	  pave->SetTextAlign(32);
+	  pave->SetTextFont(42);
+	  pave->AddText(ilep==0 ? "leading lepton" : "sub-leading lepton");
+	  pave->Draw();
+
+	  c->SaveAs(ch[ich]+"iso.png");
+	}
+    }
+  
+  
   fin->Close();
 
   //
