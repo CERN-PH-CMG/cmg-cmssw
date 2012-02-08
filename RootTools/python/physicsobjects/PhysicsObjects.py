@@ -28,6 +28,9 @@ class PhysicsObject(object):
 class Jet( PhysicsObject):
     pass
 
+class GenJet( PhysicsObject):
+    pass
+
 class Lepton( PhysicsObject):
     pass
 
