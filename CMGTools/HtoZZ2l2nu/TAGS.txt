@@ -1,4 +1,8 @@
-NoTag          CMGTools/HtoZZ2l2nu                              
-V08-07-37      PhysicsTools/PatAlgos                            
-V08-03-17      PhysicsTools/Utilities                           
-V00-07-01      SHarper/HEEPAnalyzer 
+cvs co              -d CMGTools/HtoZZ2l2nu  UserCode/CMG/CMGTools/HtoZZ2l2nu
+cvs co -r V08-07-37                         PhysicsTools/PatAlgos                            
+cvs co -r V08-03-17                         PhysicsTools/Utilities                           
+cvs co -r V00-07-01 -d SHarper/HEEPAnalyzer UserCode/SHarper/HEEPAnalyzer 
+
+
+#patch the file
+sed -i 's/<int>/<float>/g' SHarper/HEEPAnalyzer/plugins/HEEPIdValueMapProducer.cc
