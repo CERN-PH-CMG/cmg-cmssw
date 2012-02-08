@@ -3,8 +3,7 @@
 #
 scramv1 project CMSSW CMSSW_4_4_3
 cd CMSSW_4_4_3/src/
-cvs co UserCode/CMG/CMGTools/HtoZZ2l2nu/TAGS.txt
-sh TAGS.txt
+cvs co -p UserCode/CMG/CMGTools/HtoZZ2l2nu/TAGS.txt | sh
 scramv1 b
 
 #
