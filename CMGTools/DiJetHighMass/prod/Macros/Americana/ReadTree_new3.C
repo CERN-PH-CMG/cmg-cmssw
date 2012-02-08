@@ -11,10 +11,23 @@ void ReadTree_new3()
   gSystem->Load("libFWCoreFWLite.so");
   AutoLibraryLoader::enable();
 
+  //  double dLumi = 4663.;
+  double dLumi = 4677.;
+
+
   // Canvas definition ----------------------------------
 
   TCanvas *c_DijetMass = new TCanvas("c_DijetMass","c_DijetMass",459,358,600,602);
   TCanvas *c_DijetMass_fat = new TCanvas("c_DijetMass_fat","c_DijetMass_fat",459,358,600,602);
+  TCanvas *c_DijetMass_fat_mu10 = new TCanvas("c_DijetMass_fat_mu10","c_DijetMass_fat_mu10",459,358,600,602);
+  TCanvas *c_DijetMass_fat_mu20 = new TCanvas("c_DijetMass_fat_mu20","c_DijetMass_fat_mu20",459,358,600,602);
+  TCanvas *c_DijetMass_fat_mu30 = new TCanvas("c_DijetMass_fat_mu30","c_DijetMass_fat_mu30",459,358,600,602);
+                      
+  TCanvas *c_DijetMass_fat_mu10_log = new TCanvas("c_DijetMass_fat_mu10_log","c_DijetMass_fat_mu10",459,358,600,602);
+  TCanvas *c_DijetMass_fat_mu20_log = new TCanvas("c_DijetMass_fat_mu20_log","c_DijetMass_fat_mu20",459,358,600,602);
+  TCanvas *c_DijetMass_fat_mu30_log = new TCanvas("c_DijetMass_fat_mu30_log","c_DijetMass_fat_mu30",459,358,600,602);
+
+
   TCanvas *c_DijetMass_log = new TCanvas("c_DijetMass_log","c_DijetMass_log",459,358,600,602);
   TCanvas *c_DijetMass_fat_log = new TCanvas("c_DijetMass_fat_log","c_DijetMass_fat_log",459,358,600,602);
   TCanvas *c_DijetMass_ratio = new TCanvas("c_DijetMass_ratio","c_DijetMass_ratio",459,358,600,602);
@@ -35,6 +48,7 @@ void ReadTree_new3()
   TCanvas *c_fPh = new TCanvas("c_fPh","c_fPh",459,378,600,602);
   TCanvas *c_fNh = new TCanvas("c_fNh","c_fNh",459,378,600,602);
   TCanvas *c_fEl = new TCanvas("c_fEl","c_fEl",459,378,600,602);
+  TCanvas *c_fMu = new TCanvas("c_fMu","c_fMu",459,378,600,602);
 
 
   TCanvas *c_DPhi = new TCanvas("c_DPhi","c_DPhi",459,378,600,602);
@@ -59,6 +73,9 @@ void ReadTree_new3()
   TCanvas *c_Phi_fat_2 = new TCanvas("c_Phi_fat_2","c_Phi_fat_2",459,378,600,602);
   TCanvas *c_n90hits = new TCanvas("c_n90hits","c_n90hits",459,378,600,602);
   TCanvas *c_n90hits_log = new TCanvas("c_n90hits_log","c_n90hits_log",459,378,600,602);
+
+  TCanvas *c_nVtx = new TCanvas("c_nVtx_fat","c_nVtx_fat",459,378,600,602);
+
   TCanvas *c_fHPD = new TCanvas("c_fHPD","c_fHPD",459,378,600,602);
   TCanvas *c_corPt = new TCanvas("c_corPt","c_corPt",459,378,600,602);
   TCanvas *c_corPt_1 = new TCanvas("c_corPt_1","c_corPt_1",459,378,600,602);
@@ -77,22 +94,25 @@ void ReadTree_new3()
   TCanvas *c_nTrkVtx = new TCanvas("c_nTrkVtx","c_nTrkVtx",459,378,600,602);
   TCanvas *c_nTrkCalo = new TCanvas("c_nTrkCalo","c_nTrkCalo",459,378,600,602);
 
+  TCanvas *c_Nrad_1_fat = new TCanvas("c_Nrad_1_fat","c_Nrad_1_fat",459,378,600,602);
+  TCanvas *c_Nrad_2_fat = new TCanvas("c_Nrad_2_fat","c_Nrad_2_fat",459,378,600,602);
+
+  TCanvas *c_DpT_data_fat = new TCanvas("c_DpT_data_fat","c_DpT_data_fat",459,378,600,602);
+  TCanvas *c_DpT_over_pT_data_fat  = new TCanvas("c_DpT_over_pT_data_fat","c_DpT_over_pT_data_fat",459,378,600,602);
+
+           
+  TCanvas *c_Deta_fatlead_fat_1 = new TCanvas("c_Deta_fatlead_fat_1","c_Deta_fatlead_fat_1",459,378,600,602);
+  TCanvas *c_Deta_fatlead_fat_2 = new TCanvas("c_Deta_fatlead_fat_2","c_Deta_fatlead_fat_2",459,378,600,602);
+
+  TCanvas *c_Dphi_fatlead_fat_1 = new TCanvas("c_Dphi_fatlead_fat_1","c_Dphi_fatlead_fat_1",459,378,600,602);
+  TCanvas *c_Dphi_fatlead_fat_2 = new TCanvas("c_Dphi_fatlead_fat_2","c_Dphi_fatlead_fat_2",459,378,600,602);
+
+
   // file definition ----------------------------------
 
-  //  TFile *inf_data  = TFile::Open("out/res/FullSample/histograms_data_HT_All.root");
-  //TFile *inf_data  = TFile::Open("out/res/FullSample/histograms_data_HT_ReReco.root");
-  TFile *inf_data  = TFile::Open("out/res/FullSample/histograms_data_HT_PromptReco.root");
+  TFile *inf_data  = TFile::Open("out/res/4fb/Fat30/histograms_data_HT_Run2011AB_160404_180252_Fat30_ak5_4677pbm1.root");
 
-  TFile *inf_mc_00 = TFile::Open("out/res/histograms_mc_170to300.root");
-  TFile *inf_mc_01 = TFile::Open("out/res/histograms_mc_300to470.root");
-  TFile *inf_mc_02 = TFile::Open("out/res/histograms_mc_470to600.root");
-  TFile *inf_mc_03 = TFile::Open("out/res/histograms_mc_600to800.root");
-  TFile *inf_mc_04 = TFile::Open("out/res/histograms_mc_800to1000.root");
-  TFile *inf_mc_05 = TFile::Open("out/res/histograms_mc_1000to1400.root");
-  TFile *inf_mc_06 = TFile::Open("out/res/histograms_mc_1400to1800.root");
-  TFile *inf_mc_07 = TFile::Open("out/res/histograms_mc_1800toinf.root");
-
-  TFile *outf = new TFile("histogrmas_201p348pbm1.root","RECREATE");
+  TFile *inf_mc = TFile::Open("out/res/histograms_Fat30_summer11_mc_ak5.root");
 
   // p_T and mass boundaries ---------------------------
   
@@ -113,87 +133,6 @@ void ReadTree_new3()
 
   // histogrmas definition ------------------------------
 
-  //  TH1 *h_DijetMass_data = new TH1F("h_DijetMass_data","DijetMass_data",83, xAxis1);
-  //  TH1 *h_DijetMass_data_fat = new TH1F("h_DijetMass_data_fat","DijetMass_data_fat",83, xAxis1);
-  TH1 *h_DijetMass_mc = new TH1F("h_DijetMass_mc","DijetMass_mc",83, xAxis1);
-  TH1 *h_DijetMass_mc_fat = new TH1F("h_DijetMass_mc_fat","DijetMass_mc_fat",83, xAxis1);
-  TH1 *h_DijetMass_ratio = new TH1F("h_DijetMass_ratio","DijetMass_ratio",83, xAxis1);
-  TH1 *h_DijetMass_ratio_fat = new TH1F("h_DijetMass_ratio_fat","DijetMass_ratio_fat",83, xAxis1);
-  //  TH1 *h_DijetMass_MI_nPVe1_data = new TH1F("h_DijetMass_MI_nPVe1_data","DijetMass_MI_nPVe1_data",83, xAxis1);
-  //  TH1 *h_DijetMass_MI_nPVg1_data = new TH1F("h_DijetMass_MI_nPVg1_data","DijetMass_MI_nPVg1_data",83, xAxis1);
-  TH1 *h_DijetMass_MI_nPVe1_mc = new TH1F("h_DijetMass_MI_nPVe1_mc","DijetMass_MI_nPVe1_mc",83, xAxis1);
-  TH1 *h_DijetMass_MI_nPVg1_mc = new TH1F("h_DijetMass_MI_nPVg1_mc","DijetMass_MI_nPVg1_mc",83, xAxis1);
-  //  TH2 *h_Eta_Phi_Scatter_data = new TH2F("h_Eta_Phi_Scatter","Eta_Phi_Scatter",100,-3,3,100,-3.2,3.2);
-  //  TH2 *h_Eta_Phi_Scatter_data_1 = new TH2F("h_Eta_Phi_Scatter_1","Eta_Phi_Scatter_1",100,-3,3,100,-3.2,3.2);
-  //  TH2 *h_Eta_Phi_Scatter_data_2 = new TH2F("h_Eta_Phi_Scatter_2","Eta_Phi_Scatter_2",100,-3,3,100,-3.2,3.2);
-  //  TH1 *h_MET_over_sumEt_data = new TH1F("h_MET_over_sumEt_data","MET_over_sumEt_data",25,0.0,1.0001);
-  TH1 *h_MET_over_sumEt_mc = new TH1F("h_MET_over_sumEt_mc","MET_over_sumEt_mc",25,0.0,1.0001);
-  //  TH1 *h_EMF_data = new TH1F("h_EMF_data","EMF_data",25,0.0,1.0001);
-  TH1 *h_EMF_mc = new TH1F("h_EMF_mc","EMF_mc",25,0.0,1.0001);
-  //  TH1 *h_DPhi_data = new TH1F("h_DPhi_data","DPhi_data",25,0.0,3.142);
-  //  TH1 *h_DPhi_data_fat = new TH1F("h_DPhi_data_fat","DPhi_data_fat",25,0.0,3.142);
-  TH1 *h_DPhi_mc = new TH1F("h_DPhi_mc","DPhi_mc",25,0.0,3.142);
-  TH1 *h_DPhi_mc_fat = new TH1F("h_DPhi_mc_fat","DPhi_mc_fat",25,0.0,3.142);
-  //  TH1 *h_Eta_data = new TH1F("h_Eta_data","Eta_data",60,-3.0,3.0);
-  //  TH1 *h_Eta_data_1 = new TH1F("h_Eta_data_1","Eta_data_1",60,-3.0,3.0);
-  //  TH1 *h_Eta_data_2 = new TH1F("h_Eta_data_2","Eta_data_2",60,-3.0,3.0);
-  //  TH1 *h_Eta_data_fat = new TH1F("h_Eta_data_fat","Eta_data_fat",60,-3.0,3.0);
-  //  TH1 *h_Eta_data_fat_1 = new TH1F("h_Eta_data_fat_1","Eta_data_fat_1",60,-3.0,3.0);
-  //  TH1 *h_Eta_data_fat_2 = new TH1F("h_Eta_data_fat_2","Eta_data_fat_2",60,-3.0,3.0);
-  TH1 *h_Eta_mc = new TH1F("h_Eta_mc","Eta_mc",60,-3.0,3.0);
-  TH1 *h_Eta_mc_1 = new TH1F("h_Eta_mc_1","Eta_mc_1",60,-3.0,3.0);
-  TH1 *h_Eta_mc_2 = new TH1F("h_Eta_mc_2","Eta_mc_2",60,-3.0,3.0);
-  TH1 *h_Eta_mc_fat = new TH1F("h_Eta_mc_fat","Eta_mc_fat",60,-3.0,3.0);
-  TH1 *h_Eta_mc_fat_1 = new TH1F("h_Eta_mc_fat_1","Eta_mc_fat_1",60,-3.0,3.0);
-  TH1 *h_Eta_mc_fat_2 = new TH1F("h_Eta_mc_fat_2","Eta_mc_fat_2",60,-3.0,3.0);
-  //  TH1 *h_DEta_data = new TH1F("h_DEta_data","DEta_data",15,0.,1.5);
-  //  TH1 *h_DEta_data_fat = new TH1F("h_DEta_data_fat","DEta_data_fat",15,0.,1.5);
-  TH1 *h_DEta_mc = new TH1F("h_DEta_mc","DEta_mc",15,0.,1.5);
-  TH1 *h_DEta_mc_fat = new TH1F("h_DEta_mc_fat","DEta_mc_fat",15,0.,1.5);
-  //  TH1 *h_Phi_data = new TH1F("h_Phi_data","Phi_data",18,-3.142,3.142);
-  //  TH1 *h_Phi_data_1 = new TH1F("h_Phi_data_1","Phi_data_1",18,-3.142,3.142);
-  //  TH1 *h_Phi_data_2 = new TH1F("h_Phi_data_2","Phi_data_2",18,-3.142,3.142);
-  //  TH1 *h_Phi_data_fat = new TH1F("h_Phi_data_fat","Phi_data_fat",18,-3.142,3.142);
-  //  TH1 *h_Phi_data_fat_1 = new TH1F("h_Phi_data_fat_1","Phi_data_fat_1",18,-3.142,3.142);
-  //  TH1 *h_Phi_data_fat_2 = new TH1F("h_Phi_data_fat_2","Phi_data_fat_2",18,-3.142,3.142);
-  TH1 *h_Phi_mc = new TH1F("h_Phi_mc","Phi_mc",18,-3.142,3.142);
-  TH1 *h_Phi_mc_1 = new TH1F("h_Phi_mc_1","Phi_mc_1",18,-3.142,3.142);
-  TH1 *h_Phi_mc_2 = new TH1F("h_Phi_mc_2","Phi_mc_2",18,-3.142,3.142);
-  TH1 *h_Phi_mc_fat = new TH1F("h_Phi_mc_fat","Phi_mc_fat",18,-3.142,3.142);
-  TH1 *h_Phi_mc_fat_1 = new TH1F("h_Phi_mc_fat_1","Phi_mc_fat_1",18,-3.142,3.142);
-  TH1 *h_Phi_mc_fat_2 = new TH1F("h_Phi_mc_fat_2","Phi_mc_fat_2",18,-3.142,3.142);
-  //  TH1 *h_n90hits_data = new TH1F("h_n90hits_data","n90hits_data",400,-0.5,399.5);
-  TH1 *h_n90hits_mc = new TH1F("n90hits_mc","n90hits_mc",400,-0.5,399.5);
-  //  TH1 *h_fHPD_data = new TH1F("h_fHPD_data","fHPD_data",25,0.0,1.0001);
-  TH1 *h_fHPD_mc = new TH1F("h_fHPD_mc","fHPD_mc",25,0.0,1.0001);
-  //  TH1 *h_corPt_data = new TH1F("h_corPt_data","corPt_data",54,ptBoundaries);
-  //  TH1 *h_corPt_data_1 = new TH1F("h_corPt_data_1","corPt_data_1",54,ptBoundaries);
-  //  TH1 *h_corPt_data_2 = new TH1F("h_corPt_data_2","corPt_data_2",54,ptBoundaries);
-  //  TH1 *h_corPt_data_fat = new TH1F("h_corPt_data_fat","corPt_data",54,ptBoundaries);
-  //  TH1 *h_corPt_data_fat_1 = new TH1F("h_corPt_data_fat_1","corPt_data_fat_1",54,ptBoundaries);
-  //  TH1 *h_corPt_data_fat_2 = new TH1F("h_corPt_data_fat_2","corPt_data_fat_2",54,ptBoundaries);
-  TH1 *h_corPt_mc = new TH1F("h_corPt_mc","corPt_mc",54,ptBoundaries);
-  TH1 *h_corPt_mc_1 = new TH1F("h_corPt_mc_1","corPt_mc_1",54,ptBoundaries);
-  TH1 *h_corPt_mc_2 = new TH1F("h_corPt_mc_2","corPt_mc_2",54,ptBoundaries);
-  TH1 *h_corPt_mc_fat = new TH1F("h_corPt_mc_fat","corPt_mc_fat",54,ptBoundaries);
-  TH1 *h_corPt_mc_fat_1 = new TH1F("h_corPt_mc_fat_1","corPt_mc_fat_1",54,ptBoundaries);
-  TH1 *h_corPt_mc_fat_2 = new TH1F("h_corPt_mc_fat_2","corPt_mc_fat_2",54,ptBoundaries);
-  //  TH1 *h_nTrkVtx_data = new TH1F("h_nTrkVtx_data","nTrkVtx_data",900,-0.5,899.5);
-  TH1 *h_nTrkVtx_mc = new TH1F("nTrkVtx_mc","nTrkVtx_mc",900,-0.5,899.5);
-  //  TH1 *h_nTrkCalo_data = new TH1F("h_nTrkCalo_data","nTrkCalo_data",100,-0.5,99.5);
-  TH1 *h_nTrkCalo_mc = new TH1F("nTrkCalo_mc","nTrkCalo_mc",100,-0.5,99.5);
-  //  TH1 *h_JCFVtx_data = new TH1F("h_JCFVtx_data","JCFVtx_data",25,-1.5,1.5);
-  //  TH1 *h_JCFVtx_mc = new TH1F("h_JCFVtx_mc","JCFVtx_mc",25,-1.5,1.5);
-  //  TH1 *h_JCFCalo_data = new TH1F("h_JCFCalo_data","JCFCalo_data",4000,-0.5,999.5);
-  //  TH1 *h_JCFCalo_mc = new TH1F("h_JCFCalo_mc","JCFCalo_mc",4000,-0.5,999.5);
-
-  //  TH1F *hPFCorMjj = new TH1F("PFCorMjj","PFCorMjj",500,0,5000);
-
-  TH1 *h_fCh_mc_fat = new TH1F("h_fCh_mc_fat","fCh_mc",25,0.0,1.0001);
-  TH1 *h_fNh_mc_fat = new TH1F("h_fNh_mc_fat","fNh_mc",25,0.0,1.0001);
-  TH1 *h_fPh_mc_fat = new TH1F("h_fPh_mc_fat","fPh_mc",25,0.0,1.0001);
-  TH1 *h_fEl_mc_fat = new TH1F("h_fEl_mc_fat","fEl_mc",25,0.0,1.0001);
-
 
   // TLegend definition -----------------------------------------------------
 
@@ -201,6 +140,9 @@ void ReadTree_new3()
   TLegend *l_DijetMass_fat = new TLegend(0.43,0.70,0.93,0.90);
   TLegend *l_DijetMass_log = new TLegend(0.43,0.70,0.93,0.90);
   TLegend *l_DijetMass_fat_log = new TLegend(0.43,0.70,0.93,0.90);
+  
+  l_DijetMass_fat_log->SetTextSize(0.03);
+
   TLegend *l_DijetMass_MI = new TLegend(0.43,0.70,0.93,0.90);
   TLegend *l_DijetMass_MI_log = new TLegend(0.43,0.70,0.93,0.90);
   TLegend *l_DijetMass_normalized_MI = new TLegend(0.43,0.70,0.93,0.90);
@@ -209,32 +151,57 @@ void ReadTree_new3()
   TLegend *l_MET_over_sumEt_log = new TLegend(0.43,0.70,0.93,0.90);
   TLegend *l_EMF = new TLegend(0.3456376,0.1602787,0.8573826,0.3292683,NULL,"brNDC");
 
-  TLegend *l_fCh = new TLegend(0.15,0.80,0.55,0.92,NULL,"brNDC");
-  TLegend *l_fNh = new TLegend(0.3456376,0.2602787,0.8573826,0.4292683,NULL,"brNDC");
-  TLegend *l_fPh = new TLegend(0.50,0.80,0.95,0.92,NULL,"brNDC");
+  TLegend *l_fCh = new TLegend(0.16,0.70,0.51,0.92,NULL,"brNDC");
+  TLegend *l_fNh = new TLegend(0.3456376,0.2602787,0.8573826,0.5092683,NULL,"brNDC");
+  TLegend *l_fPh = new TLegend(0.49,0.70,0.89,0.92,NULL,"brNDC");
+  TLegend *l_fEl = new TLegend(0.3456376,0.4002787,0.8573826,0.7092683,NULL,"brNDC");
+  TLegend *l_fMu = new TLegend(0.3456376,0.702787,0.8573826,0.9092683,NULL,"brNDC");
 
-  TLegend *l_fEl = new TLegend(0.3456376,0.2602787,0.8573826,0.4292683,NULL,"brNDC");
+  l_fCh->SetTextSize(0.020);
+  l_fPh->SetTextSize(0.025);
+  l_fNh->SetTextSize(0.03);
+  l_fEl->SetTextSize(0.03);
+  l_fMu->SetTextSize(0.03);
 
   TLegend *l_DPhi = new TLegend(0.20,0.70,0.70,0.90);
   TLegend *l_DPhi_log = new TLegend(0.20,0.70,0.70,0.90);
   TLegend *l_DPhi_fat = new TLegend(0.20,0.70,0.70,0.90);
   TLegend *l_DPhi_fat_log = new TLegend(0.20,0.70,0.70,0.90);
+
+l_DPhi_fat_log->SetTextSize(0.03);
+
   TLegend *l_Eta = new TLegend(0.2902685,0.1707317,0.8053691,0.325784,NULL,"brNDC");
   TLegend *l_Eta_1 = new TLegend(0.2902685,0.1707317,0.8053691,0.325784,NULL,"brNDC");
   TLegend *l_Eta_2 = new TLegend(0.2902685,0.1707317,0.8053691,0.325784,NULL,"brNDC");
   TLegend *l_Eta_fat = new TLegend(0.2902685,0.8,0.8053691,0.92,NULL,"brNDC");
+
+l_Eta_fat->SetTextSize(0.03);
+
+
   TLegend *l_Eta_fat_1 = new TLegend(0.2902685,0.1707317,0.8053691,0.325784,NULL,"brNDC");
   TLegend *l_Eta_fat_2 = new TLegend(0.2902685,0.1707317,0.8053691,0.325784,NULL,"brNDC");
   TLegend *l_DEta = new TLegend(0.2567114,0.2195122,0.7651007,0.4198606,NULL,"brNDC");
-  TLegend *l_DEta_fat = new TLegend(0.2567114,0.2195122,0.7651007,0.4198606,NULL,"brNDC");
-  TLegend *l_Phi = new TLegend(0.4295302,0.184669,0.9379195,0.3850174,NULL,"brNDC");
+  TLegend *l_DEta_fat = new TLegend(0.1867114,0.7595122,0.4051007,0.8598606,NULL,"brNDC");
+
+  l_DEta_fat->SetTextSize(0.025);
+
+  TLegend *l_Phi = new TLegend(0.4295302,0.604669,0.9379195,0.9050174,NULL,"brNDC");
+ 
+
+
+
   TLegend *l_Phi_1 = new TLegend(0.4295302,0.184669,0.9379195,0.3850174,NULL,"brNDC");
   TLegend *l_Phi_2 = new TLegend(0.4295302,0.184669,0.9379195,0.3850174,NULL,"brNDC");
-  TLegend *l_Phi_fat = new TLegend(0.4295302,0.184669,0.9379195,0.3850174,NULL,"brNDC");
+  TLegend *l_Phi_fat = new TLegend(0.3095302,0.604669,0.9379195,0.8050174,NULL,"brNDC");
+l_Phi_fat->SetTextSize(0.03);
+
   TLegend *l_Phi_fat_1 = new TLegend(0.4295302,0.184669,0.9379195,0.3850174,NULL,"brNDC");
   TLegend *l_Phi_fat_2 = new TLegend(0.4295302,0.184669,0.9379195,0.3850174,NULL,"brNDC");
   TLegend *l_n90hits = new TLegend(0.43,0.70,0.93,0.90);
   TLegend *l_n90hits_log = new TLegend(0.43,0.70,0.93,0.90);
+
+  TLegend *l_nVtx = new TLegend(0.43,0.70,0.93,0.90);
+
   TLegend *l_fHPD = new TLegend(0.43,0.70,0.93,0.90);
   TLegend *l_corPt = new TLegend(0.43,0.70,0.93,0.90);
   TLegend *l_corPt_1 = new TLegend(0.43,0.70,0.93,0.90);
@@ -245,12 +212,28 @@ void ReadTree_new3()
   TLegend *l_corPt_fat = new TLegend(0.43,0.70,0.93,0.90);
   TLegend *l_corPt_fat_1 = new TLegend(0.43,0.70,0.93,0.90);
   TLegend *l_corPt_fat_2 = new TLegend(0.43,0.70,0.93,0.90);
-  TLegend *l_corPt_fat_log = new TLegend(0.43,0.70,0.93,0.90);
+  TLegend *l_corPt_fat_log = new TLegend(0.30,0.70,0.93,0.90);
+
+  l_corPt_fat_log->SetTextSize(0.03);
+
   TLegend *l_corPt_fat_log_1 = new TLegend(0.43,0.70,0.93,0.90);
   TLegend *l_corPt_fat_log_2 = new TLegend(0.43,0.70,0.93,0.90);
   TLegend *l_nTrkVtx = new TLegend(0.43,0.70,0.93,0.90);
   TLegend *l_nTrkCalo = new TLegend(0.43,0.70,0.93,0.90);
   TLegend *l_JCFCalo = new TLegend(0.43,0.70,0.93,0.90);
+
+  TLegend *l_Nrad_1_fat = new TLegend(0.43,0.80,0.93,0.95);
+
+
+  TLegend *l_DpT_data_fat = new TLegend(0.43,0.70,0.93,0.90);
+           
+  TLegend *l_Deta_fatlead_fat_1 = new TLegend(0.60,0.75,0.93,0.90);
+  TLegend *l_Deta_fatlead_fat_2 = new TLegend(0.60,0.75,0.93,0.90);
+
+  TLegend *l_Dphi_fatlead_fat_1 = new TLegend(0.60,0.75,0.93,0.90);
+  TLegend *l_Dphi_fatlead_fat_2 = new TLegend(0.60,0.75,0.93,0.90);
+
+
 
   // TPave definition -------------------------------------
 
@@ -272,12 +255,18 @@ void ReadTree_new3()
 
   TH1* h_DijetMass_data= (TH1F *) inf_data->Get("h_DijetMass_data");
   TH1* h_DijetMass_data_fat= (TH1F *) inf_data->Get("h_DijetMass_data_fat");
+                                                          
+  TH1* h_DijetMass_data_fat_mu10= (TH1F *) inf_data->Get("h_DijetMass_data_fat_mu10");
+  TH1* h_DijetMass_data_fat_mu20= (TH1F *) inf_data->Get("h_DijetMass_data_fat_mu20");
+  TH1* h_DijetMass_data_fat_mu30= (TH1F *) inf_data->Get("h_DijetMass_data_fat_mu30");
+
+
   TH1* h_DijetMass_MI_nPVe1_data= (TH1F *) inf_data->Get("h_DijetMass_MI_nPVe1_data");
   TH1* h_DijetMass_MI_nPVg1_data= (TH1F *) inf_data->Get("h_DijetMass_MI_nPVg1_data");
   TH2* h_Eta_Phi_Scatter_data = (TH2F *) inf_data->Get("h_Eta_Phi_Scatter");
   TH2* h_Eta_Phi_Scatter_data_1 = (TH2F *) inf_data->Get("h_Eta_Phi_Scatter_1");
   TH2* h_Eta_Phi_Scatter_data_2 = (TH2F *) inf_data->Get("h_Eta_Phi_Scatter_2");
-  TH1* h_MET_over_sumEt_data= (TH1F *) inf_data->Get("h_MET_over_sumEt_data");
+  TH1* h_MET_over_sumEt_data= (TH1F *) inf_data->Get("h_MET_over_sumEt_fat_data");
   TH1* h_EMF_data= (TH1F *) inf_data->Get("h_EMF_data");
   TH1* h_DPhi_data= (TH1F *) inf_data->Get("h_DPhi_data");
   TH1* h_DPhi_data_fat= (TH1F *) inf_data->Get("h_DPhi_data_fat");
@@ -296,6 +285,9 @@ void ReadTree_new3()
   TH1* h_Phi_data_fat_1= (TH1F *) inf_data->Get("h_Phi_data_fat_1");
   TH1* h_Phi_data_fat_2= (TH1F *) inf_data->Get("h_Phi_data_fat_2");
   TH1* h_n90hits_data= (TH1F *) inf_data->Get("h_n90hits_data");
+
+  TH1* h_nVtx_data= (TH1F *) inf_data->Get("h_Nvx_fat");
+
   TH1* h_fHPD_data= (TH1F *) inf_data->Get("h_fHPD_data");
   TH1* h_corPt_data= (TH1F *) inf_data->Get("h_corPt_data");
   TH1* h_corPt_data_1= (TH1F *) inf_data->Get("h_corPt_data_1");
@@ -306,11 +298,40 @@ void ReadTree_new3()
   TH1* h_nTrkVtx_data= (TH1F *) inf_data->Get("h_nTrkVtx_data");
   TH1* h_nTrkCalo_data= (TH1F *) inf_data->Get("h_nTrkCalo_data");
 
-
+       
   TH1 *h_fCh_data_fat = (TH1F *) inf_data->Get("h_fCh_data_pf");
   TH1 *h_fNh_data_fat = (TH1F *) inf_data->Get("h_fNh_data_pf");
   TH1 *h_fPh_data_fat = (TH1F *) inf_data->Get("h_fPh_data_pf");
   TH1 *h_fEl_data_fat = (TH1F *) inf_data->Get("h_fEl_data_pf");
+  TH1 *h_fMu_data_fat = (TH1F *) inf_data->Get("h_fMu_data_pf");
+
+
+  TH1 *h_Nrad_1_fat =(TH1F *) inf_data->Get("h_Nrad_1_fat");
+  TH1 *h_Nrad_2_fat =(TH1F *) inf_data->Get("h_Nrad_2_fat");
+  //  TH1 *h_Dphi_fatlead_data_fat = (TH1F *) inf_data->Get("h_Dphi_fatlead_data_fat");
+  //  TH1 *h_Deta_fatlead_data_fat = (TH1F *) inf_data->Get("h_Deta_fatlead_data_fat");
+  TH1 *h_DpT_over_pT_data_fat = (TH1F *) inf_data->Get("h_DpT_over_pT_data_fat");
+  TH1 *h_DpT_data_fat  = (TH1F *) inf_data->Get("h_DpT_data_fat");
+
+  //  TH1 *h_Dphi_fatlead_data_fat_1 = (TH1F *) inf_data->Get("h_Dphi_fatlead_data_fat_1");
+  //  TH1 *h_Deta_fatlead_data_fat_1 = (TH1F *) inf_data->Get("h_Deta_fatlead_data_fat_1");
+  TH1 *h_DpT_over_pT_data_fat_1 = (TH1F *) inf_data->Get("h_DpT_over_pT_data_fat_1");
+  TH1 *h_DpT_data_fat_1  = (TH1F *) inf_data->Get("h_DpT_data_fat_1");
+
+  //  TH1 *h_Dphi_fatlead_data_fat_2 = (TH1F *) inf_data->Get("h_Dphi_fatlead_data_fat_2");
+  //  TH1 *h_Deta_fatlead_data_fat_2 = (TH1F *) inf_data->Get("h_Deta_fatlead_data_fat_2");
+  TH1 *h_DpT_over_pT_data_fat_2 = (TH1F *) inf_data->Get("h_DpT_over_pT_data_fat_2");
+  TH1 *h_DpT_data_fat_2  = (TH1F *) inf_data->Get("h_DpT_data_fat_2");
+
+
+  TH1 *h_Deta_fatlead_data_fat_1  = (TH1F *) inf_data->Get("h_Deta_data_fat_1;");
+  TH1 *h_Deta_fatlead_data_fat_2  = (TH1F *) inf_data->Get("h_Deta_data_fat_2;");
+
+  TH1 *h_Dphi_fatlead_data_fat_1  = (TH1F *) inf_data->Get("h_Dphi_data_fat_1;");
+  TH1 *h_Dphi_fatlead_data_fat_2  = (TH1F *) inf_data->Get("h_Dphi_data_fat_2;");
+
+
+
 
 
     std::cout << "test1" << std::endl;
@@ -324,692 +345,103 @@ void ReadTree_new3()
   float xs[8] = {2.426e+04, 1.168e+03, 7.022e+01, 1.555e+01, 1.844e+00, 3.321e-01, 1.087e-02, 3.575e-04};
 
   ///// inf_mc_00
+  TH1 *h_DijetMass_ratio = new TH1F("h_DijetMass_ratio","DijetMass_ratio",83, xAxis1);
+  TH1 *h_DijetMass_ratio_fat = new TH1F("h_DijetMass_ratio_fat","DijetMass_ratio_fat",83, xAxis1);
 
-  TH1F* h_DijetMass_mc_00= (TH1F *) inf_mc_00->Get("h_DijetMass_data");
-  TH1F* h_DijetMass_mc_fat_00= (TH1F *) inf_mc_00->Get("h_DijetMass_data_fat");
-  TH1F* h_DijetMass_MI_nPVe1_mc_00= (TH1F *) inf_mc_00->Get("h_DijetMass_MI_nPVe1_data");
-  TH1F* h_DijetMass_MI_nPVg1_mc_00= (TH1F *) inf_mc_00->Get("h_DijetMass_MI_nPVg1_data");
-  TH1F* h_MET_over_sumEt_mc_00= (TH1F *) inf_mc_00->Get("h_MET_over_sumEt_data");
-  TH1F* h_EMF_mc_00= (TH1F *) inf_mc_00->Get("h_EMF_data");
-  TH1F* h_DPhi_mc_00= (TH1F *) inf_mc_00->Get("h_DPhi_data");
-  TH1F* h_DPhi_mc_fat_00= (TH1F *) inf_mc_00->Get("h_DPhi_data_fat");
-  TH1F* h_Eta_mc_00= (TH1F *) inf_mc_00->Get("h_Eta_data");
-  TH1F* h_Eta_mc_1_00= (TH1F *) inf_mc_00->Get("h_Eta_data_1");
-  TH1F* h_Eta_mc_2_00= (TH1F *) inf_mc_00->Get("h_Eta_data_2");
-  TH1F* h_Eta_mc_fat_00= (TH1F *) inf_mc_00->Get("h_Eta_data_fat");
-  TH1F* h_Eta_mc_fat_1_00= (TH1F *) inf_mc_00->Get("h_Eta_data_fat_1");
-  TH1F* h_Eta_mc_fat_2_00= (TH1F *) inf_mc_00->Get("h_Eta_data_fat_2");
-  TH1F* h_DEta_mc_00= (TH1F *) inf_mc_00->Get("h_DEta_data");
-  TH1F* h_DEta_mc_fat_00= (TH1F *) inf_mc_00->Get("h_DEta_data_fat");
-  TH1F* h_Phi_mc_00= (TH1F *) inf_mc_00->Get("h_Phi_data");
-  TH1F* h_Phi_mc_1_00= (TH1F *) inf_mc_00->Get("h_Phi_data_1");
-  TH1F* h_Phi_mc_2_00= (TH1F *) inf_mc_00->Get("h_Phi_data_2");
-  TH1F* h_Phi_mc_fat_00= (TH1F *) inf_mc_00->Get("h_Phi_data_fat");
-  TH1F* h_Phi_mc_fat_1_00= (TH1F *) inf_mc_00->Get("h_Phi_data_fat_1");
-  TH1F* h_Phi_mc_fat_2_00= (TH1F *) inf_mc_00->Get("h_Phi_data_fat_2");
-  TH1F* h_n90hits_mc_00= (TH1F *) inf_mc_00->Get("n90hits_data");
-  TH1F* h_fHPD_mc_00= (TH1F *) inf_mc_00->Get("h_fHPD_data");
-  TH1F* h_corPt_mc_00= (TH1F *) inf_mc_00->Get("h_corPt_data");
-  TH1F* h_corPt_mc_1_00= (TH1F *) inf_mc_00->Get("h_corPt_data_1");
-  TH1F* h_corPt_mc_2_00= (TH1F *) inf_mc_00->Get("h_corPt_data_2");
-  TH1F* h_corPt_mc_fat_00= (TH1F *) inf_mc_00->Get("h_corPt_data_fat");
-  TH1F* h_corPt_mc_fat_1_00= (TH1F *) inf_mc_00->Get("h_corPt_data_fat_1");
-  TH1F* h_corPt_mc_fat_2_00= (TH1F *) inf_mc_00->Get("h_corPt_data_fat_2");
-  TH1F* h_nTrkVtx_mc_00= (TH1F *) inf_mc_00->Get("nTrkVtx_data");
-  TH1F* h_nTrkCalo_mc_00= (TH1F *) inf_mc_00->Get("nTrkCalo_data");
 
-  TH1 *h_fCh_mc_fat_00 =(TH1F *) inf_mc_00->Get("h_fCh_data_pf");
-  TH1 *h_fNh_mc_fat_00 =(TH1F *) inf_mc_00->Get("h_fNh_data_pf");
-  TH1 *h_fPh_mc_fat_00 =(TH1F *) inf_mc_00->Get("h_fPh_data_pf");
-  TH1 *h_fEl_mc_fat_00 =(TH1F *) inf_mc_00->Get("h_fEl_data_pf");
+  TH1F* h_DijetMass_mc= (TH1F *) inf_mc->Get("h_DijetMass_data;1");
+  TH1F* h_DijetMass_mc_fat= (TH1F *) inf_mc->Get("h_DijetMass_data_fat");
+      
+  TH1F* h_DijetMass_mc_fat_mu10= (TH1F *) inf_mc->Get("h_DijetMass_data_fat_mu10;1");
+  TH1F* h_DijetMass_mc_fat_mu20= (TH1F *) inf_mc->Get("h_DijetMass_data_fat_mu20;1");
+  TH1F* h_DijetMass_mc_fat_mu30= (TH1F *) inf_mc->Get("h_DijetMass_data_fat_mu30;1");
 
-  std::cout << "test2" << std::endl;
-  ///// inf_mc_1
+  TH1F* h_DijetMass_MI_nPVe1_mc= (TH1F *) inf_mc->Get("h_DijetMass_MI_nPVe1_data");
+  TH1F* h_DijetMass_MI_nPVg1_mc= (TH1F *) inf_mc->Get("h_DijetMass_MI_nPVg1_data");
+  TH1F* h_MET_over_sumEt_mc= (TH1F *) inf_mc->Get("h_MET_over_sumEt_fat_data");
+  TH1F* h_EMF_mc= (TH1F *) inf_mc->Get("h_EMF_data");
+  TH1F* h_DPhi_mc= (TH1F *) inf_mc->Get("h_DPhi_data");
+  TH1F* h_DPhi_mc_fat= (TH1F *) inf_mc->Get("h_DPhi_data_fat");
+  TH1F* h_Eta_mc= (TH1F *) inf_mc->Get("h_Eta_data");
+  TH1F* h_Eta_mc_1= (TH1F *) inf_mc->Get("h_Eta_data_1");
+  TH1F* h_Eta_mc_2= (TH1F *) inf_mc->Get("h_Eta_data_2");
+  TH1F* h_Eta_mc_fat= (TH1F *) inf_mc->Get("h_Eta_data_fat");
+  TH1F* h_Eta_mc_fat_1= (TH1F *) inf_mc->Get("h_Eta_data_fat_1");
+  TH1F* h_Eta_mc_fat_2= (TH1F *) inf_mc->Get("h_Eta_data_fat_2");
+  TH1F* h_DEta_mc= (TH1F *) inf_mc->Get("h_DEta_data");
+  TH1F* h_DEta_mc_fat= (TH1F *) inf_mc->Get("h_DEta_data_fat");
+  TH1F* h_Phi_mc= (TH1F *) inf_mc->Get("h_Phi_data");
+  TH1F* h_Phi_mc_1= (TH1F *) inf_mc->Get("h_Phi_data_1");
+  TH1F* h_Phi_mc_2= (TH1F *) inf_mc->Get("h_Phi_data_2");
+  TH1F* h_Phi_mc_fat= (TH1F *) inf_mc->Get("h_Phi_data_fat");
+  TH1F* h_Phi_mc_fat_1= (TH1F *) inf_mc->Get("h_Phi_data_fat_1");
+  TH1F* h_Phi_mc_fat_2= (TH1F *) inf_mc->Get("h_Phi_data_fat_2");
+  TH1F* h_n90hits_mc= (TH1F *) inf_mc->Get("h_n90hits_data");
 
-  TH1F* h_DijetMass_mc_01 = (TH1F *) inf_mc_01->Get("h_DijetMass_data");
-  TH1F* h_DijetMass_mc_fat_01 = (TH1F *) inf_mc_01->Get("h_DijetMass_data_fat");
-  TH1F* h_DijetMass_MI_nPVe1_mc_01 = (TH1F *) inf_mc_01->Get("h_DijetMass_MI_nPVe1_data");
-  TH1F* h_DijetMass_MI_nPVg1_mc_01 = (TH1F *) inf_mc_01->Get("h_DijetMass_MI_nPVg1_data");
-  TH1F* h_MET_over_sumEt_mc_01 = (TH1F *) inf_mc_01->Get("h_MET_over_sumEt_data");
-  TH1F* h_EMF_mc_01 = (TH1F *) inf_mc_01->Get("h_EMF_data");
-  TH1F* h_DPhi_mc_01 = (TH1F *) inf_mc_01->Get("h_DPhi_data");
-  TH1F* h_DPhi_mc_fat_01 = (TH1F *) inf_mc_01->Get("h_DPhi_data_fat");
-  TH1F* h_Eta_mc_01 = (TH1F *) inf_mc_01->Get("h_Eta_data");
-  TH1F* h_Eta_mc_1_01 = (TH1F *) inf_mc_01->Get("h_Eta_data_1");
-  TH1F* h_Eta_mc_2_01 = (TH1F *) inf_mc_01->Get("h_Eta_data_2");
-  TH1F* h_Eta_mc_fat_01 = (TH1F *) inf_mc_01->Get("h_Eta_data_fat");
-  TH1F* h_Eta_mc_fat_1_01 = (TH1F *) inf_mc_01->Get("h_Eta_data_fat_1");
-  TH1F* h_Eta_mc_fat_2_01 = (TH1F *) inf_mc_01->Get("h_Eta_data_fat_2");
-  TH1F* h_DEta_mc_01 = (TH1F *) inf_mc_01->Get("h_DEta_data");
-  TH1F* h_DEta_mc_fat_01 = (TH1F *) inf_mc_01->Get("h_DEta_data_fat");
-  TH1F* h_Phi_mc_01 = (TH1F *) inf_mc_01->Get("h_Phi_data");
-  TH1F* h_Phi_mc_1_01 = (TH1F *) inf_mc_01->Get("h_Phi_data_1");
-  TH1F* h_Phi_mc_2_01 = (TH1F *) inf_mc_01->Get("h_Phi_data_2");
-  TH1F* h_Phi_mc_fat_01 = (TH1F *) inf_mc_01->Get("h_Phi_data_fat");
-  TH1F* h_Phi_mc_fat_1_01 = (TH1F *) inf_mc_01->Get("h_Phi_data_fat_1");
-  TH1F* h_Phi_mc_fat_2_01 = (TH1F *) inf_mc_01->Get("h_Phi_data_fat_2");
-  TH1F* h_n90hits_mc_01 = (TH1F *) inf_mc_01->Get("n90hits_data");
-  TH1F* h_fHPD_mc_01 = (TH1F *) inf_mc_01->Get("h_fHPD_data");
-  TH1F* h_corPt_mc_01 = (TH1F *) inf_mc_01->Get("h_corPt_data");
-  TH1F* h_corPt_mc_1_01 = (TH1F *) inf_mc_01->Get("h_corPt_data_1");
-  TH1F* h_corPt_mc_2_01 = (TH1F *) inf_mc_01->Get("h_corPt_data_2");
-  TH1F* h_corPt_mc_fat_01 = (TH1F *) inf_mc_01->Get("h_corPt_data_fat");
-  TH1F* h_corPt_mc_fat_1_01 = (TH1F *) inf_mc_01->Get("h_corPt_data_fat_1");
-  TH1F* h_corPt_mc_fat_2_01 = (TH1F *) inf_mc_01->Get("h_corPt_data_fat_2");
-  TH1F* h_nTrkVtx_mc_01 = (TH1F *) inf_mc_01->Get("nTrkVtx_data");
-  TH1F* h_nTrkCalo_mc_01 = (TH1F *) inf_mc_01->Get("nTrkCalo_data");
+  TH1F* h_nVtx_mc= (TH1F *) inf_mc->Get("h_Nvx_fat");
 
-  TH1 *h_fCh_mc_fat_01 =(TH1F *) inf_mc_01->Get("h_fCh_data_pf");
-  TH1 *h_fNh_mc_fat_01 =(TH1F *) inf_mc_01->Get("h_fNh_data_pf");
-  TH1 *h_fPh_mc_fat_01 =(TH1F *) inf_mc_01->Get("h_fPh_data_pf");
-  TH1 *h_fEl_mc_fat_01 =(TH1F *) inf_mc_01->Get("h_fEl_data_pf");
+  TH1F* h_fHPD_mc= (TH1F *) inf_mc->Get("h_fHPD_data");
+  TH1F* h_corPt_mc= (TH1F *) inf_mc->Get("h_corPt_data");
+  TH1F* h_corPt_mc_1= (TH1F *) inf_mc->Get("h_corPt_data_1");
+  TH1F* h_corPt_mc_2= (TH1F *) inf_mc->Get("h_corPt_data_2");
+  TH1F* h_corPt_mc_fat= (TH1F *) inf_mc->Get("h_corPt_data_fat");
+  TH1F* h_corPt_mc_fat_1= (TH1F *) inf_mc->Get("h_corPt_data_fat_1");
+  TH1F* h_corPt_mc_fat_2= (TH1F *) inf_mc->Get("h_corPt_data_fat_2");
+  TH1F* h_nTrkVtx_mc= (TH1F *) inf_mc->Get("h_nTrkVtx_data");
+  TH1F* h_nTrkCalo_mc= (TH1F *) inf_mc->Get("h_nTrkCalo_data");
 
-   std::cout << "test3" << std::endl;
-  ///// inf_mc_2
+  TH1 *h_fCh_mc_fat   =(TH1F *) inf_mc->Get("h_fCh_data_pf");
+  TH1 *h_fNh_mc_fat   =(TH1F *) inf_mc->Get("h_fNh_data_pf");
+  TH1 *h_fPh_mc_fat   =(TH1F *) inf_mc->Get("h_fPh_data_pf");
+  TH1 *h_fEl_mc_fat   =(TH1F *) inf_mc->Get("h_fEl_data_pf");
+  TH1 *h_fMu_mc_fat   =(TH1F *) inf_mc->Get("h_fMu_data_pf");
 
-  TH1F* h_DijetMass_mc_02 = (TH1F *) inf_mc_02->Get("h_DijetMass_data");
-  TH1F* h_DijetMass_mc_fat_02 = (TH1F *) inf_mc_02->Get("h_DijetMass_data_fat");
-  TH1F* h_DijetMass_MI_nPVe1_mc_02 = (TH1F *) inf_mc_02->Get("h_DijetMass_MI_nPVe1_data");
-  TH1F* h_DijetMass_MI_nPVg1_mc_02 = (TH1F *) inf_mc_02->Get("h_DijetMass_MI_nPVg1_data");
-  TH1F* h_MET_over_sumEt_mc_02 = (TH1F *) inf_mc_02->Get("h_MET_over_sumEt_data");
-  TH1F* h_EMF_mc_02 = (TH1F *) inf_mc_02->Get("h_EMF_data");
-  TH1F* h_DPhi_mc_02 = (TH1F *) inf_mc_02->Get("h_DPhi_data");
-  TH1F* h_DPhi_mc_fat_02 = (TH1F *) inf_mc_02->Get("h_DPhi_data_fat");
-  TH1F* h_Eta_mc_02 = (TH1F *) inf_mc_02->Get("h_Eta_data");
-  TH1F* h_Eta_mc_1_02 = (TH1F *) inf_mc_02->Get("h_Eta_data_1");
-  TH1F* h_Eta_mc_2_02 = (TH1F *) inf_mc_02->Get("h_Eta_data_2");
-  TH1F* h_Eta_mc_fat_02 = (TH1F *) inf_mc_02->Get("h_Eta_data_fat");
-  TH1F* h_Eta_mc_fat_1_02 = (TH1F *) inf_mc_02->Get("h_Eta_data_fat_1");
-  TH1F* h_Eta_mc_fat_2_02 = (TH1F *) inf_mc_02->Get("h_Eta_data_fat_2");
-  TH1F* h_DEta_mc_02 = (TH1F *) inf_mc_02->Get("h_DEta_data");
-   std::cout << "test3_1" << std::endl;
-  TH1F* h_DEta_mc_fat_02 = (TH1F *) inf_mc_02->Get("h_DEta_data_fat");
-  TH1F* h_Phi_mc_02 = (TH1F *) inf_mc_02->Get("h_Phi_data");
-  TH1F* h_Phi_mc_1_02 = (TH1F *) inf_mc_02->Get("h_Phi_data_1");
-  TH1F* h_Phi_mc_2_02 = (TH1F *) inf_mc_02->Get("h_Phi_data_2");
-  TH1F* h_Phi_mc_fat_02 = (TH1F *) inf_mc_02->Get("h_Phi_data_fat");
-  TH1F* h_Phi_mc_fat_1_02 = (TH1F *) inf_mc_02->Get("h_Phi_data_fat_1");
-  TH1F* h_Phi_mc_fat_2_02 = (TH1F *) inf_mc_02->Get("h_Phi_data_fat_2");
-  TH1F* h_n90hits_mc_02 = (TH1F *) inf_mc_02->Get("n90hits_data");
-  TH1F* h_fHPD_mc_02 = (TH1F *) inf_mc_02->Get("h_fHPD_data");
-  TH1F* h_corPt_mc_02 = (TH1F *) inf_mc_02->Get("h_corPt_data");
-  TH1F* h_corPt_mc_1_02 = (TH1F *) inf_mc_02->Get("h_corPt_data_1");
-  TH1F* h_corPt_mc_2_02 = (TH1F *) inf_mc_02->Get("h_corPt_data_2");
-  TH1F* h_corPt_mc_fat_02 = (TH1F *) inf_mc_02->Get("h_corPt_data_fat");
-  TH1F* h_corPt_mc_fat_1_02 = (TH1F *) inf_mc_02->Get("h_corPt_data_fat_1");
-  TH1F* h_corPt_mc_fat_2_02 = (TH1F *) inf_mc_02->Get("h_corPt_data_fat_2");
-  TH1F* h_nTrkVtx_mc_02 = (TH1F *) inf_mc_02->Get("nTrkVtx_data");
-  TH1F* h_nTrkCalo_mc_02 = (TH1F *) inf_mc_02->Get("nTrkCalo_data");
- 
-  TH1 *h_fCh_mc_fat_02 =(TH1F *) inf_mc_02->Get("h_fCh_data_pf");
-  TH1 *h_fNh_mc_fat_02 =(TH1F *) inf_mc_02->Get("h_fNh_data_pf");
-  TH1 *h_fPh_mc_fat_02 =(TH1F *) inf_mc_02->Get("h_fPh_data_pf");
-  TH1 *h_fEl_mc_fat_02 =(TH1F *) inf_mc_02->Get("h_fEl_data_pf");
+  TH1 *h_Nrad_1_fat_mc  =(TH1F *) inf_mc->Get("h_Nrad_1_fat");
+  TH1 *h_Nrad_2_fat_mc  =(TH1F *) inf_mc->Get("h_Nrad_2_fat");
+  //  TH1 *h_Dphi_fatlead_data_fat_mc  = (TH1F *) inf_mc->Get("h_Dphi_fatlead_data_fat");
+  // TH1 *h_Deta_fatlead_data_fat_mc  = (TH1F *) inf_mc->Get("h_Deta_fatlead_data_fat");
+  TH1 *h_DpT_over_pT_data_fat_mc  = (TH1F *) inf_mc->Get("h_DpT_over_pT_data_fat");
+  TH1 *h_DpT_data_fat_mc   = (TH1F *) inf_mc->Get("h_DpT_data_fat");
 
-   std::cout << "test4" << std::endl;
-  ///// inf_mc_3
+  //  TH1 *h_Dphi_fatlead_data_fat_mc_1  = (TH1F *) inf_mc->Get("h_Dphi_fatlead_data_fat_1");
+  //  TH1 *h_Deta_fatlead_data_fat_mc_1  = (TH1F *) inf_mc->Get("h_Deta_fatlead_data_fat_1");
+  TH1 *h_DpT_over_pT_data_fat_mc_1  = (TH1F *) inf_mc->Get("h_DpT_over_pT_data_fat_1");
+  TH1 *h_DpT_data_fat_mc_1   = (TH1F *) inf_mc->Get("h_DpT_data_fat_1");
 
-  TH1F* h_DijetMass_mc_03 = (TH1F *) inf_mc_03->Get("h_DijetMass_data");
-  TH1F* h_DijetMass_mc_fat_03 = (TH1F *) inf_mc_03->Get("h_DijetMass_data_fat");
-  TH1F* h_DijetMass_MI_nPVe1_mc_03 = (TH1F *) inf_mc_03->Get("h_DijetMass_MI_nPVe1_data");
-  TH1F* h_DijetMass_MI_nPVg1_mc_03 = (TH1F *) inf_mc_03->Get("h_DijetMass_MI_nPVg1_data");
-  TH1F* h_MET_over_sumEt_mc_03 = (TH1F *) inf_mc_03->Get("h_MET_over_sumEt_data");
-  TH1F* h_EMF_mc_03 = (TH1F *) inf_mc_03->Get("h_EMF_data");
-  TH1F* h_DPhi_mc_03 = (TH1F *) inf_mc_03->Get("h_DPhi_data");
-  TH1F* h_DPhi_mc_fat_03 = (TH1F *) inf_mc_03->Get("h_DPhi_data_fat");
-  TH1F* h_Eta_mc_03 = (TH1F *) inf_mc_03->Get("h_Eta_data");
-  TH1F* h_Eta_mc_1_03 = (TH1F *) inf_mc_03->Get("h_Eta_data_1");
-  TH1F* h_Eta_mc_2_03 = (TH1F *) inf_mc_03->Get("h_Eta_data_2");
-  TH1F* h_Eta_mc_fat_03 = (TH1F *) inf_mc_03->Get("h_Eta_data_fat");
-  TH1F* h_Eta_mc_fat_1_03 = (TH1F *) inf_mc_03->Get("h_Eta_data_fat_1");
-  TH1F* h_Eta_mc_fat_2_03 = (TH1F *) inf_mc_03->Get("h_Eta_data_fat_2");
-  TH1F* h_DEta_mc_03 = (TH1F *) inf_mc_03->Get("h_DEta_data");
-  TH1F* h_DEta_mc_fat_03 = (TH1F *) inf_mc_03->Get("h_DEta_data_fat");
-  TH1F* h_Phi_mc_03 = (TH1F *) inf_mc_03->Get("h_Phi_data");
-  TH1F* h_Phi_mc_1_03 = (TH1F *) inf_mc_03->Get("h_Phi_data_1");
-  TH1F* h_Phi_mc_2_03 = (TH1F *) inf_mc_03->Get("h_Phi_data_2");
-  TH1F* h_Phi_mc_fat_03 = (TH1F *) inf_mc_03->Get("h_Phi_data_fat");
-  TH1F* h_Phi_mc_fat_1_03 = (TH1F *) inf_mc_03->Get("h_Phi_data_fat_1");
-  TH1F* h_Phi_mc_fat_2_03 = (TH1F *) inf_mc_03->Get("h_Phi_data_fat_2");
-  TH1F* h_n90hits_mc_03 = (TH1F *) inf_mc_03->Get("n90hits_data");
-  TH1F* h_fHPD_mc_03 = (TH1F *) inf_mc_03->Get("h_fHPD_data");
-  TH1F* h_corPt_mc_03 = (TH1F *) inf_mc_03->Get("h_corPt_data");
-  TH1F* h_corPt_mc_1_03 = (TH1F *) inf_mc_03->Get("h_corPt_data_1");
-  TH1F* h_corPt_mc_2_03 = (TH1F *) inf_mc_03->Get("h_corPt_data_2");
-  TH1F* h_corPt_mc_fat_03 = (TH1F *) inf_mc_03->Get("h_corPt_data_fat");
-  TH1F* h_corPt_mc_fat_1_03 = (TH1F *) inf_mc_03->Get("h_corPt_data_fat_1");
-  TH1F* h_corPt_mc_fat_2_03 = (TH1F *) inf_mc_03->Get("h_corPt_data_fat_2");
-  TH1F* h_nTrkVtx_mc_03 = (TH1F *) inf_mc_03->Get("nTrkVtx_data");
-  TH1F* h_nTrkCalo_mc_03 = (TH1F *) inf_mc_03->Get("nTrkCalo_data");
+  //  TH1 *h_Dphi_fatlead_data_fat_mc_2 = (TH1F *) inf_mc->Get("h_Dphi_fatlead_data_fat_2");
+  //  TH1 *h_Deta_fatlead_data_fat_mc_2 = (TH1F *) inf_mc->Get("h_Deta_fatlead_data_fat_2");
+  TH1 *h_DpT_over_pT_data_fat_mc_2 = (TH1F *) inf_mc->Get("h_DpT_over_pT_data_fat_2");
+  TH1 *h_DpT_data_fat_mc_2  = (TH1F *) inf_mc->Get("h_DpT_data_fat_2");
 
-  TH1 *h_fCh_mc_fat_03 =(TH1F *) inf_mc_03->Get("h_fCh_data_pf");
-  TH1 *h_fNh_mc_fat_03 =(TH1F *) inf_mc_03->Get("h_fNh_data_pf");
-  TH1 *h_fPh_mc_fat_03 =(TH1F *) inf_mc_03->Get("h_fPh_data_pf");
-  TH1 *h_fEl_mc_fat_03 =(TH1F *) inf_mc_03->Get("h_fEl_data_pf");
+       
+  TH1 *h_Deta_fatlead_mc_fat_1  = (TH1F *) inf_mc->Get("h_Deta_data_fat_1;");
+  TH1 *h_Deta_fatlead_mc_fat_2  = (TH1F *) inf_mc->Get("h_Deta_data_fat_2;");
+  TH1 *h_Dphi_fatlead_mc_fat_1  = (TH1F *) inf_mc->Get("h_Dphi_data_fat_1;");
+  TH1 *h_Dphi_fatlead_mc_fat_2  = (TH1F *) inf_mc->Get("h_Dphi_data_fat_2;");
 
-   std::cout << "test5" << std::endl;
-  ///// inf_mc_4
-   
-  TH1F* h_DijetMass_mc_04= (TH1F *) inf_mc_04->Get("h_DijetMass_data");
-  TH1F* h_DijetMass_mc_fat_04= (TH1F *) inf_mc_04->Get("h_DijetMass_data_fat");
-  TH1F* h_DijetMass_MI_nPVe1_mc_04= (TH1F *) inf_mc_04->Get("h_DijetMass_MI_nPVe1_data");
-  TH1F* h_DijetMass_MI_nPVg1_mc_04= (TH1F *) inf_mc_04->Get("h_DijetMass_MI_nPVg1_data");
-  TH1F* h_MET_over_sumEt_mc_04= (TH1F *) inf_mc_04->Get("h_MET_over_sumEt_data");
-  TH1F* h_EMF_mc_04= (TH1F *) inf_mc_04->Get("h_EMF_data");
-  TH1F* h_DPhi_mc_04= (TH1F *) inf_mc_04->Get("h_DPhi_data");
-  TH1F* h_DPhi_mc_fat_04= (TH1F *) inf_mc_04->Get("h_DPhi_data_fat");
-  TH1F* h_Eta_mc_04= (TH1F *) inf_mc_04->Get("h_Eta_data");
-  TH1F* h_Eta_mc_1_04= (TH1F *) inf_mc_04->Get("h_Eta_data_1");
-  TH1F* h_Eta_mc_2_04= (TH1F *) inf_mc_04->Get("h_Eta_data_2");
-  TH1F* h_Eta_mc_fat_04= (TH1F *) inf_mc_04->Get("h_Eta_data_fat");
-  TH1F* h_Eta_mc_fat_1_04= (TH1F *) inf_mc_04->Get("h_Eta_data_fat_1");
-  TH1F* h_Eta_mc_fat_2_04= (TH1F *) inf_mc_04->Get("h_Eta_data_fat_2");
-  TH1F* h_DEta_mc_04= (TH1F *) inf_mc_04->Get("h_DEta_data");
-  TH1F* h_DEta_mc_fat_04= (TH1F *) inf_mc_04->Get("h_DEta_data_fat");
-  TH1F* h_Phi_mc_04= (TH1F *) inf_mc_04->Get("h_Phi_data");
-  TH1F* h_Phi_mc_1_04= (TH1F *) inf_mc_04->Get("h_Phi_data_1");
-  TH1F* h_Phi_mc_2_04= (TH1F *) inf_mc_04->Get("h_Phi_data_2");
-  TH1F* h_Phi_mc_fat_04= (TH1F *) inf_mc_04->Get("h_Phi_data_fat");
-  TH1F* h_Phi_mc_fat_1_04= (TH1F *) inf_mc_04->Get("h_Phi_data_fat_1");
-  TH1F* h_Phi_mc_fat_2_04= (TH1F *) inf_mc_04->Get("h_Phi_data_fat_2");
-  TH1F* h_n90hits_mc_04= (TH1F *) inf_mc_04->Get("n90hits_data");
-  TH1F* h_fHPD_mc_04= (TH1F *) inf_mc_04->Get("h_fHPD_data");
-  TH1F* h_corPt_mc_04= (TH1F *) inf_mc_04->Get("h_corPt_data");
-  TH1F* h_corPt_mc_1_04= (TH1F *) inf_mc_04->Get("h_corPt_data_1");
-  TH1F* h_corPt_mc_2_04= (TH1F *) inf_mc_04->Get("h_corPt_data_2");
-  TH1F* h_corPt_mc_fat_04= (TH1F *) inf_mc_04->Get("h_corPt_data_fat");
-  TH1F* h_corPt_mc_fat_1_04= (TH1F *) inf_mc_04->Get("h_corPt_data_fat_1");
-  TH1F* h_corPt_mc_fat_2_04= (TH1F *) inf_mc_04->Get("h_corPt_data_fat_2");
-  TH1F* h_nTrkVtx_mc_04= (TH1F *) inf_mc_04->Get("nTrkVtx_data");
-  TH1F* h_nTrkCalo_mc_04= (TH1F *) inf_mc_04->Get("nTrkCalo_data");
 
-  TH1 *h_fCh_mc_fat_04 =(TH1F *) inf_mc_04->Get("h_fCh_data_pf");
-  TH1 *h_fNh_mc_fat_04 =(TH1F *) inf_mc_04->Get("h_fNh_data_pf");
-  TH1 *h_fPh_mc_fat_04 =(TH1F *) inf_mc_04->Get("h_fPh_data_pf");
-  TH1 *h_fEl_mc_fat_04 =(TH1F *) inf_mc_04->Get("h_fEl_data_pf");
-
-   std::cout << "test6" << std::endl;
-  ///// inf_mc_5
   
+  h_Deta_fatlead_data_fat_1->Sumw2();
+  h_Deta_fatlead_data_fat_2->Sumw2();
+  h_Dphi_fatlead_data_fat_1->Sumw2();
+  h_Dphi_fatlead_data_fat_2->Sumw2();
 
-  TH1F* h_DijetMass_mc_05 = (TH1F *) inf_mc_05->Get("h_DijetMass_data");
-  TH1F* h_DijetMass_mc_fat_05 = (TH1F *) inf_mc_05->Get("h_DijetMass_data_fat");
-  TH1F* h_DijetMass_MI_nPVe1_mc_05 = (TH1F *) inf_mc_05->Get("h_DijetMass_MI_nPVe1_data");
-  TH1F* h_DijetMass_MI_nPVg1_mc_05 = (TH1F *) inf_mc_05->Get("h_DijetMass_MI_nPVg1_data");
-  TH1F* h_MET_over_sumEt_mc_05 = (TH1F *) inf_mc_05->Get("h_MET_over_sumEt_data");
-  TH1F* h_EMF_mc_05 = (TH1F *) inf_mc_05->Get("h_EMF_data");
-  TH1F* h_DPhi_mc_05 = (TH1F *) inf_mc_05->Get("h_DPhi_data");
-  TH1F* h_DPhi_mc_fat_05 = (TH1F *) inf_mc_05->Get("h_DPhi_data_fat");
-  TH1F* h_Eta_mc_05 = (TH1F *) inf_mc_05->Get("h_Eta_data");
-  TH1F* h_Eta_mc_1_05 = (TH1F *) inf_mc_05->Get("h_Eta_data_1");
-  TH1F* h_Eta_mc_2_05 = (TH1F *) inf_mc_05->Get("h_Eta_data_2");
-  TH1F* h_Eta_mc_fat_05 = (TH1F *) inf_mc_05->Get("h_Eta_data_fat");
-  TH1F* h_Eta_mc_fat_1_05 = (TH1F *) inf_mc_05->Get("h_Eta_data_fat_1");
-  TH1F* h_Eta_mc_fat_2_05 = (TH1F *) inf_mc_05->Get("h_Eta_data_fat_2");
-  TH1F* h_DEta_mc_05 = (TH1F *) inf_mc_05->Get("h_DEta_data");
-  TH1F* h_DEta_mc_fat_05 = (TH1F *) inf_mc_05->Get("h_DEta_data_fat");
-  TH1F* h_Phi_mc_05 = (TH1F *) inf_mc_05->Get("h_Phi_data");
-  TH1F* h_Phi_mc_1_05 = (TH1F *) inf_mc_05->Get("h_Phi_data_1");
-  TH1F* h_Phi_mc_2_05 = (TH1F *) inf_mc_05->Get("h_Phi_data_2");
-  TH1F* h_Phi_mc_fat_05 = (TH1F *) inf_mc_05->Get("h_Phi_data_fat");
-  TH1F* h_Phi_mc_fat_1_05 = (TH1F *) inf_mc_05->Get("h_Phi_data_fat_1");
-  TH1F* h_Phi_mc_fat_2_05 = (TH1F *) inf_mc_05->Get("h_Phi_data_fat_2");
-  TH1F* h_n90hits_mc_05 = (TH1F *) inf_mc_05->Get("n90hits_data");
-  TH1F* h_fHPD_mc_05 = (TH1F *) inf_mc_05->Get("h_fHPD_data");
-  TH1F* h_corPt_mc_05 = (TH1F *) inf_mc_05->Get("h_corPt_data");
-  TH1F* h_corPt_mc_1_05 = (TH1F *) inf_mc_05->Get("h_corPt_data_1");
-  TH1F* h_corPt_mc_2_05 = (TH1F *) inf_mc_05->Get("h_corPt_data_2");
-  TH1F* h_corPt_mc_fat_05 = (TH1F *) inf_mc_05->Get("h_corPt_data_fat");
-  TH1F* h_corPt_mc_fat_1_05 = (TH1F *) inf_mc_05->Get("h_corPt_data_fat_1");
-  TH1F* h_corPt_mc_fat_2_05 = (TH1F *) inf_mc_05->Get("h_corPt_data_fat_2");
-  TH1F* h_nTrkVtx_mc_05 = (TH1F *) inf_mc_05->Get("nTrkVtx_data");
-  TH1F* h_nTrkCalo_mc_05 = (TH1F *) inf_mc_05->Get("nTrkCalo_data");
+  h_Nrad_1_fat->Sumw2();
+  h_Nrad_2_fat->Sumw2();
+  //  h_Dphi_fatlead_data_fat->Sumw2();
+  //  h_Deta_fatlead_data_fat->Sumw2();
+  h_DpT_over_pT_data_fat->Sumw2();
+  h_DpT_data_fat->Sumw2();
 
-  TH1 *h_fCh_mc_fat_05 =(TH1F *) inf_mc_05->Get("h_fCh_data_pf");
-  TH1 *h_fNh_mc_fat_05 =(TH1F *) inf_mc_05->Get("h_fNh_data_pf");
-  TH1 *h_fPh_mc_fat_05 =(TH1F *) inf_mc_05->Get("h_fPh_data_pf");
-  TH1 *h_fEl_mc_fat_05 =(TH1F *) inf_mc_05->Get("h_fEl_data_pf");
+  //  h_Dphi_fatlead_data_fat_1->Sumw2();
+  //  h_Deta_fatlead_data_fat_1->Sumw2();
+  h_DpT_over_pT_data_fat_1->Sumw2();
+  h_DpT_data_fat_1->Sumw2();
 
-   std::cout << "test7" << std::endl;
-  ///// inf_mc_06
-
-  TH1F* h_DijetMass_mc_06 = (TH1F *) inf_mc_06->Get("h_DijetMass_data");
-  TH1F* h_DijetMass_mc_fat_06 = (TH1F *) inf_mc_06->Get("h_DijetMass_data_fat");
-  TH1F* h_DijetMass_MI_nPVe1_mc_06 = (TH1F *) inf_mc_06->Get("h_DijetMass_MI_nPVe1_data");
-  TH1F* h_DijetMass_MI_nPVg1_mc_06 = (TH1F *) inf_mc_06->Get("h_DijetMass_MI_nPVg1_data");
-  TH1F* h_MET_over_sumEt_mc_06 = (TH1F *) inf_mc_06->Get("h_MET_over_sumEt_data");
-  TH1F* h_EMF_mc_06 = (TH1F *) inf_mc_06->Get("h_EMF_data");
-  TH1F* h_DPhi_mc_06 = (TH1F *) inf_mc_06->Get("h_DPhi_data");
-  TH1F* h_DPhi_mc_fat_06 = (TH1F *) inf_mc_06->Get("h_DPhi_data_fat");
-  TH1F* h_Eta_mc_06 = (TH1F *) inf_mc_06->Get("h_Eta_data");
-  TH1F* h_Eta_mc_1_06 = (TH1F *) inf_mc_06->Get("h_Eta_data_1");
-  TH1F* h_Eta_mc_2_06 = (TH1F *) inf_mc_06->Get("h_Eta_data_2");
-  TH1F* h_Eta_mc_fat_06 = (TH1F *) inf_mc_06->Get("h_Eta_data_fat");
-  TH1F* h_Eta_mc_fat_1_06 = (TH1F *) inf_mc_06->Get("h_Eta_data_fat_1");
-  TH1F* h_Eta_mc_fat_2_06 = (TH1F *) inf_mc_06->Get("h_Eta_data_fat_2");
-  TH1F* h_DEta_mc_06 = (TH1F *) inf_mc_06->Get("h_DEta_data");
-  TH1F* h_DEta_mc_fat_06 = (TH1F *) inf_mc_06->Get("h_DEta_data_fat");
-  TH1F* h_Phi_mc_06 = (TH1F *) inf_mc_06->Get("h_Phi_data");
-  TH1F* h_Phi_mc_1_06 = (TH1F *) inf_mc_06->Get("h_Phi_data_1");
-  TH1F* h_Phi_mc_2_06 = (TH1F *) inf_mc_06->Get("h_Phi_data_2");
-  TH1F* h_Phi_mc_fat_06 = (TH1F *) inf_mc_06->Get("h_Phi_data_fat");
-  TH1F* h_Phi_mc_fat_1_06 = (TH1F *) inf_mc_06->Get("h_Phi_data_fat_1");
-  TH1F* h_Phi_mc_fat_2_06 = (TH1F *) inf_mc_06->Get("h_Phi_data_fat_2");
-  TH1F* h_n90hits_mc_06 = (TH1F *) inf_mc_06->Get("n90hits_data");
-  TH1F* h_fHPD_mc_06 = (TH1F *) inf_mc_06->Get("h_fHPD_data");
-  TH1F* h_corPt_mc_06 = (TH1F *) inf_mc_06->Get("h_corPt_data");
-  TH1F* h_corPt_mc_1_06 = (TH1F *) inf_mc_06->Get("h_corPt_data_1");
-  TH1F* h_corPt_mc_2_06 = (TH1F *) inf_mc_06->Get("h_corPt_data_2");
-  TH1F* h_corPt_mc_fat_06 = (TH1F *) inf_mc_06->Get("h_corPt_data_fat");
-  TH1F* h_corPt_mc_fat_1_06 = (TH1F *) inf_mc_06->Get("h_corPt_data_fat_1");
-  TH1F* h_corPt_mc_fat_2_06 = (TH1F *) inf_mc_06->Get("h_corPt_data_fat_2");
-  TH1F* h_nTrkVtx_mc_06 = (TH1F *) inf_mc_06->Get("nTrkVtx_data");
-  TH1F* h_nTrkCalo_mc_06 = (TH1F *) inf_mc_06->Get("nTrkCalo_data");
-
-  TH1 *h_fCh_mc_fat_06 =(TH1F *) inf_mc_06->Get("h_fCh_data_pf");
-  TH1 *h_fNh_mc_fat_06 =(TH1F *) inf_mc_06->Get("h_fNh_data_pf");
-  TH1 *h_fPh_mc_fat_06 =(TH1F *) inf_mc_06->Get("h_fPh_data_pf");
-  TH1 *h_fEl_mc_fat_06 =(TH1F *) inf_mc_06->Get("h_fEl_data_pf");
-
-   std::cout << "test8" << std::endl;
-  ///// inf_mc_07
-
-  TH1F* h_DijetMass_mc_07 = (TH1F *) inf_mc_07->Get("h_DijetMass_data");
-  TH1F* h_DijetMass_mc_fat_07 = (TH1F *) inf_mc_07->Get("h_DijetMass_data_fat");
-  TH1F* h_DijetMass_MI_nPVe1_mc_07 = (TH1F *) inf_mc_07->Get("h_DijetMass_MI_nPVe1_data");
-  TH1F* h_DijetMass_MI_nPVg1_mc_07 = (TH1F *) inf_mc_07->Get("h_DijetMass_MI_nPVg1_data");
-  TH1F* h_MET_over_sumEt_mc_07 = (TH1F *) inf_mc_07->Get("h_MET_over_sumEt_data");
-  TH1F* h_EMF_mc_07 = (TH1F *) inf_mc_07->Get("h_EMF_data");
-  TH1F* h_DPhi_mc_07 = (TH1F *) inf_mc_07->Get("h_DPhi_data");
-  TH1F* h_DPhi_mc_fat_07 = (TH1F *) inf_mc_07->Get("h_DPhi_data_fat");
-  TH1F* h_Eta_mc_07 = (TH1F *) inf_mc_07->Get("h_Eta_data");
-  TH1F* h_Eta_mc_1_07 = (TH1F *) inf_mc_07->Get("h_Eta_data_1");
-  TH1F* h_Eta_mc_2_07 = (TH1F *) inf_mc_07->Get("h_Eta_data_2");
-  TH1F* h_Eta_mc_fat_07 = (TH1F *) inf_mc_07->Get("h_Eta_data_fat");
-  TH1F* h_Eta_mc_fat_1_07 = (TH1F *) inf_mc_07->Get("h_Eta_data_fat_1");
-  TH1F* h_Eta_mc_fat_2_07 = (TH1F *) inf_mc_07->Get("h_Eta_data_fat_2");
-  TH1F* h_DEta_mc_07 = (TH1F *) inf_mc_07->Get("h_DEta_data");
-  TH1F* h_DEta_mc_fat_07 = (TH1F *) inf_mc_07->Get("h_DEta_data_fat");
-  TH1F* h_Phi_mc_07 = (TH1F *) inf_mc_07->Get("h_Phi_data");
-  TH1F* h_Phi_mc_1_07 = (TH1F *) inf_mc_07->Get("h_Phi_data_1");
-  TH1F* h_Phi_mc_2_07 = (TH1F *) inf_mc_07->Get("h_Phi_data_2");
-  TH1F* h_Phi_mc_fat_07 = (TH1F *) inf_mc_07->Get("h_Phi_data_fat");
-  TH1F* h_Phi_mc_fat_1_07 = (TH1F *) inf_mc_07->Get("h_Phi_data_fat_1");
-  TH1F* h_Phi_mc_fat_2_07 = (TH1F *) inf_mc_07->Get("h_Phi_data_fat_2");
-  TH1F* h_n90hits_mc_07 = (TH1F *) inf_mc_07->Get("n90hits_data");
-  TH1F* h_fHPD_mc_07 = (TH1F *) inf_mc_07->Get("h_fHPD_data");
-  TH1F* h_corPt_mc_07 = (TH1F *) inf_mc_07->Get("h_corPt_data");
-  TH1F* h_corPt_mc_1_07 = (TH1F *) inf_mc_07->Get("h_corPt_data_1");
-  TH1F* h_corPt_mc_2_07 = (TH1F *) inf_mc_07->Get("h_corPt_data_2");
-  TH1F* h_corPt_mc_fat_07 = (TH1F *) inf_mc_07->Get("h_corPt_data_fat");
-  TH1F* h_corPt_mc_fat_1_07 = (TH1F *) inf_mc_07->Get("h_corPt_data_fat_1");
-  TH1F* h_corPt_mc_fat_2_07 = (TH1F *) inf_mc_07->Get("h_corPt_data_fat_2");
-  TH1F* h_nTrkVtx_mc_07 = (TH1F *) inf_mc_07->Get("nTrkVtx_data");
-  TH1F* h_nTrkCalo_mc_07 = (TH1F *) inf_mc_07->Get("nTrkCalo_data");
-
-  TH1 *h_fCh_mc_fat_07 =(TH1F *) inf_mc_07->Get("h_fCh_data_pf");
-  TH1 *h_fNh_mc_fat_07 =(TH1F *) inf_mc_07->Get("h_fNh_data_pf");
-  TH1 *h_fPh_mc_fat_07 =(TH1F *) inf_mc_07->Get("h_fPh_data_pf");
-  TH1 *h_fEl_mc_fat_07 =(TH1F *) inf_mc_07->Get("h_fEl_data_pf");
-
-   std::cout << "test9_0" << std::endl;
-  // _0
-
-   cout << "xs[0] = " << xs[0] << " event[0] = " << event[0] << endl;
-
-  h_DijetMass_mc->Add(h_DijetMass_mc_00,xs[0]/event[0]);
-   std::cout << "test9_0_1" << std::endl;
-  h_DijetMass_mc_fat->Add(h_DijetMass_mc_fat_00,xs[0]/event[0]);
-   std::cout << "test9_0_2" << std::endl;
-  h_DijetMass_MI_nPVe1_mc->Add(h_DijetMass_MI_nPVe1_mc_00,xs[0]/event[0]);
-   std::cout << "test9_0_3" << std::endl;
-  h_DijetMass_MI_nPVg1_mc->Add(h_DijetMass_MI_nPVg1_mc_00,xs[0]/event[0]);
-   std::cout << "test9_0_4" << std::endl;
-  h_MET_over_sumEt_mc->Add(h_MET_over_sumEt_mc_00,xs[0]/event[0]);
-   std::cout << "test9_0_5" << std::endl;
-  h_EMF_mc->Add(h_EMF_mc_00,xs[0]/event[0]);
-   std::cout << "test9_0_6" << std::endl;
-  h_DPhi_mc->Add(h_DPhi_mc_00,xs[0]/event[0]);
-   std::cout << "test9_0_7" << std::endl;
-  h_DPhi_mc_fat->Add(h_DPhi_mc_fat_00,xs[0]/event[0]);
-   std::cout << "test9_0_8" << std::endl;
-  h_Eta_mc->Add(h_Eta_mc_00,xs[0]/event[0]);
-   std::cout << "test9_0_9" << std::endl;
-  h_Eta_mc_1->Add(h_Eta_mc_1_00,xs[0]/event[0]);
-   std::cout << "test9_0_10" << std::endl;
-  h_Eta_mc_2->Add(h_Eta_mc_2_00,xs[0]/event[0]);
-   std::cout << "test9_0_11" << std::endl;
-  h_Eta_mc_fat->Add(h_Eta_mc_fat_00,xs[0]/event[0]);
-   std::cout << "test9_0_12" << std::endl;
-  h_Eta_mc_fat_1->Add(h_Eta_mc_fat_1_00,xs[0]/event[0]);
-   std::cout << "test9_0_13" << std::endl;
-  h_Eta_mc_fat_2->Add(h_Eta_mc_fat_2_00,xs[0]/event[0]);
-   std::cout << "test9_0_14" << std::endl;
-  h_DEta_mc->Add(h_DEta_mc_00,xs[0]/event[0]);
-   std::cout << "test9_0_15" << std::endl;
-  h_DEta_mc_fat->Add(h_DEta_mc_fat_00,xs[0]/event[0]);
-   std::cout << "test9_0_16" << std::endl;
-  h_Phi_mc->Add(h_Phi_mc_00,xs[0]/event[0]);
-   std::cout << "test9_0_17" << std::endl;
-  h_Phi_mc_1->Add(h_Phi_mc_1_00,xs[0]/event[0]);
-   std::cout << "test9_0_18" << std::endl;
-  h_Phi_mc_2->Add(h_Phi_mc_2_00,xs[0]/event[0]);
-   std::cout << "test9_0_19" << std::endl;
-  h_Phi_mc_fat->Add(h_Phi_mc_fat_00,xs[0]/event[0]);
-   std::cout << "test9_0_20" << std::endl;
-  h_Phi_mc_fat_1->Add(h_Phi_mc_fat_1_00,xs[0]/event[0]);
-   std::cout << "test9_0_21" << std::endl;
-  h_Phi_mc_fat_2->Add(h_Phi_mc_fat_2_00,xs[0]/event[0]);
-   std::cout << "test9_0_22" << std::endl;
-  h_n90hits_mc->Add(h_n90hits_mc_00,xs[0]/event[0]);
-   std::cout << "test9_0_23" << std::endl;
-  h_fHPD_mc->Add(h_fHPD_mc_00,xs[0]/event[0]);
-   std::cout << "test9_0_24" << std::endl;
-  h_corPt_mc->Add(h_corPt_mc_00,xs[0]/event[0]);
-   std::cout << "test9_0_25" << std::endl;
-  h_corPt_mc_1->Add(h_corPt_mc_1_00,xs[0]/event[0]);
-   std::cout << "test9_0_26" << std::endl;
-  h_corPt_mc_2->Add(h_corPt_mc_2_00,xs[0]/event[0]);
-   std::cout << "test9_0_27" << std::endl;
-  h_corPt_mc_fat->Add(h_corPt_mc_fat_00,xs[0]/event[0]);
-   std::cout << "test9_0_28" << std::endl;
-  h_corPt_mc_fat_1->Add(h_corPt_mc_fat_1_00,xs[0]/event[0]);
-   std::cout << "test9_0_29" << std::endl;
-  h_corPt_mc_fat_2->Add(h_corPt_mc_fat_2_00,xs[0]/event[0]);
-   std::cout << "test9_0_30" << std::endl;
-  h_nTrkVtx_mc->Add(h_nTrkVtx_mc_00,xs[0]/event[0]);
-   std::cout << "test9_0_31" << std::endl;
-  h_nTrkCalo_mc->Add(h_nTrkCalo_mc_00,xs[0]/event[0]);
-  std::cout << "test9_1" << std::endl;
-  h_fCh_mc_fat->Add(h_fCh_mc_fat_00,xs[0]/event[0]);
-  h_fNh_mc_fat->Add(h_fNh_mc_fat_00,xs[0]/event[0]);
-  h_fPh_mc_fat->Add(h_fPh_mc_fat_00,xs[0]/event[0]);
-  h_fEl_mc_fat->Add(h_fEl_mc_fat_00,xs[0]/event[0]);
-
-  // _1
-
-  h_DijetMass_mc->Add(h_DijetMass_mc_01,xs[1]/event[1]);
-  h_DijetMass_mc_fat->Add(h_DijetMass_mc_fat_01,xs[1]/event[1]);
-  h_DijetMass_MI_nPVe1_mc->Add(h_DijetMass_MI_nPVe1_mc_01,xs[1]/event[1]);
-  h_DijetMass_MI_nPVg1_mc->Add(h_DijetMass_MI_nPVg1_mc_01,xs[1]/event[1]);
-  h_MET_over_sumEt_mc->Add(h_MET_over_sumEt_mc_01,xs[1]/event[1]);
-  h_EMF_mc->Add(h_EMF_mc_01,xs[1]/event[1]);
-  h_DPhi_mc->Add(h_DPhi_mc_01,xs[1]/event[1]);
-  h_DPhi_mc_fat->Add(h_DPhi_mc_fat_01,xs[1]/event[1]);
-  h_Eta_mc->Add(h_Eta_mc_01,xs[1]/event[1]);
-  h_Eta_mc_1->Add(h_Eta_mc_1_01,xs[1]/event[1]);
-  h_Eta_mc_2->Add(h_Eta_mc_2_01,xs[1]/event[1]);
-  h_Eta_mc_fat->Add(h_Eta_mc_fat_01,xs[1]/event[1]);
-  h_Eta_mc_fat_1->Add(h_Eta_mc_fat_1_01,xs[1]/event[1]);
-  h_Eta_mc_fat_2->Add(h_Eta_mc_fat_2_01,xs[1]/event[1]);
-  h_DEta_mc->Add(h_DEta_mc_01,xs[1]/event[1]);
-  h_DEta_mc_fat->Add(h_DEta_mc_fat_01,xs[1]/event[1]);
-  h_Phi_mc->Add(h_Phi_mc_01,xs[1]/event[1]);
-  h_Phi_mc_1->Add(h_Phi_mc_1_01,xs[1]/event[1]);
-  h_Phi_mc_2->Add(h_Phi_mc_2_01,xs[1]/event[1]);
-  h_Phi_mc_fat->Add(h_Phi_mc_fat_01,xs[1]/event[1]);
-  h_Phi_mc_fat_1->Add(h_Phi_mc_fat_1_01,xs[1]/event[1]);
-  h_Phi_mc_fat_2->Add(h_Phi_mc_fat_2_01,xs[1]/event[1]);
-  h_n90hits_mc->Add(h_n90hits_mc_01,xs[1]/event[1]);
-  h_fHPD_mc->Add(h_fHPD_mc_01,xs[1]/event[1]);
-  h_corPt_mc->Add(h_corPt_mc_01,xs[1]/event[1]);
-  h_corPt_mc_1->Add(h_corPt_mc_1_01,xs[1]/event[1]);
-  h_corPt_mc_2->Add(h_corPt_mc_2_01,xs[1]/event[1]);
-  h_corPt_mc_fat->Add(h_corPt_mc_fat_01,xs[1]/event[1]);
-  h_corPt_mc_fat_1->Add(h_corPt_mc_fat_1_01,xs[1]/event[1]);
-  h_corPt_mc_fat_2->Add(h_corPt_mc_fat_2_01,xs[1]/event[1]);
-  h_nTrkVtx_mc->Add(h_nTrkVtx_mc_01,xs[1]/event[1]);
-  h_nTrkCalo_mc->Add(h_nTrkCalo_mc_01,xs[1]/event[1]);
-
-  h_fCh_mc_fat->Add(h_fCh_mc_fat_01,xs[1]/event[1]);
-  h_fNh_mc_fat->Add(h_fNh_mc_fat_01,xs[1]/event[1]);
-  h_fPh_mc_fat->Add(h_fPh_mc_fat_01,xs[1]/event[1]);
-  h_fEl_mc_fat->Add(h_fEl_mc_fat_01,xs[1]/event[1]);
-
-  std::cout << "test9_2" << std::endl;
-  // _2
-
-  h_DijetMass_mc->Add(h_DijetMass_mc_02,xs[2]/event[2]);
-  h_DijetMass_mc_fat->Add(h_DijetMass_mc_fat_02,xs[2]/event[2]);
-  h_DijetMass_MI_nPVe1_mc->Add(h_DijetMass_MI_nPVe1_mc_02,xs[2]/event[2]);
-  h_DijetMass_MI_nPVg1_mc->Add(h_DijetMass_MI_nPVg1_mc_02,xs[2]/event[2]);
-  h_MET_over_sumEt_mc->Add(h_MET_over_sumEt_mc_02,xs[2]/event[2]);
-  h_EMF_mc->Add(h_EMF_mc_02,xs[2]/event[2]);
-  h_DPhi_mc->Add(h_DPhi_mc_02,xs[2]/event[2]);
-  h_DPhi_mc_fat->Add(h_DPhi_mc_fat_02,xs[2]/event[2]);
-  h_Eta_mc->Add(h_Eta_mc_02,xs[2]/event[2]);
-  h_Eta_mc_1->Add(h_Eta_mc_1_02,xs[2]/event[2]);
-  h_Eta_mc_2->Add(h_Eta_mc_2_02,xs[2]/event[2]);
-  h_Eta_mc_fat->Add(h_Eta_mc_fat_02,xs[2]/event[2]);
-  h_Eta_mc_fat_1->Add(h_Eta_mc_fat_1_02,xs[2]/event[2]);
-  h_Eta_mc_fat_2->Add(h_Eta_mc_fat_2_02,xs[2]/event[2]);
-  h_DEta_mc->Add(h_DEta_mc_02,xs[2]/event[2]);
-  h_DEta_mc_fat->Add(h_DEta_mc_fat_02,xs[2]/event[2]);
-  h_Phi_mc->Add(h_Phi_mc_02,xs[2]/event[2]);
-  h_Phi_mc_1->Add(h_Phi_mc_1_02,xs[2]/event[2]);
-  h_Phi_mc_2->Add(h_Phi_mc_2_02,xs[2]/event[2]);
-  h_Phi_mc_fat->Add(h_Phi_mc_fat_02,xs[2]/event[2]);
-  h_Phi_mc_fat_1->Add(h_Phi_mc_fat_1_02,xs[2]/event[2]);
-  h_Phi_mc_fat_2->Add(h_Phi_mc_fat_2_02,xs[2]/event[2]);
-  h_n90hits_mc->Add(h_n90hits_mc_02,xs[2]/event[2]);
-  h_fHPD_mc->Add(h_fHPD_mc_02,xs[2]/event[2]);
-  h_corPt_mc->Add(h_corPt_mc_02,xs[2]/event[2]);
-  h_corPt_mc_1->Add(h_corPt_mc_1_02,xs[2]/event[2]);
-  h_corPt_mc_2->Add(h_corPt_mc_2_02,xs[2]/event[2]);
-  h_corPt_mc_fat->Add(h_corPt_mc_fat_02,xs[2]/event[2]);
-  h_corPt_mc_fat_1->Add(h_corPt_mc_fat_1_02,xs[2]/event[2]);
-  h_corPt_mc_fat_2->Add(h_corPt_mc_fat_2_02,xs[2]/event[2]);
-  h_nTrkVtx_mc->Add(h_nTrkVtx_mc_02,xs[2]/event[2]);
-  h_nTrkCalo_mc->Add(h_nTrkCalo_mc_02,xs[2]/event[2]);
-
-  h_fCh_mc_fat->Add(h_fCh_mc_fat_02,xs[2]/event[2]);
-  h_fNh_mc_fat->Add(h_fNh_mc_fat_02,xs[2]/event[2]);
-  h_fPh_mc_fat->Add(h_fPh_mc_fat_02,xs[2]/event[2]);
-  h_fEl_mc_fat->Add(h_fEl_mc_fat_02,xs[2]/event[2]);
-  std::cout << "test9_3" << std::endl;
-  // _3
-
-  h_DijetMass_mc->Add(h_DijetMass_mc_03,xs[3]/event[3]);
-  h_DijetMass_mc_fat->Add(h_DijetMass_mc_fat_03,xs[3]/event[3]);
-  h_DijetMass_MI_nPVe1_mc->Add(h_DijetMass_MI_nPVe1_mc_03,xs[3]/event[3]);
-  h_DijetMass_MI_nPVg1_mc->Add(h_DijetMass_MI_nPVg1_mc_03,xs[3]/event[3]);
-  h_MET_over_sumEt_mc->Add(h_MET_over_sumEt_mc_03,xs[3]/event[3]);
-  h_EMF_mc->Add(h_EMF_mc_03,xs[3]/event[3]);
-  h_DPhi_mc->Add(h_DPhi_mc_03,xs[3]/event[3]);
-  h_DPhi_mc_fat->Add(h_DPhi_mc_fat_03,xs[3]/event[3]);
-  h_Eta_mc->Add(h_Eta_mc_03,xs[3]/event[3]);
-  h_Eta_mc_1->Add(h_Eta_mc_1_03,xs[3]/event[3]);
-  h_Eta_mc_2->Add(h_Eta_mc_2_03,xs[3]/event[3]);
-  h_Eta_mc_fat->Add(h_Eta_mc_fat_03,xs[3]/event[3]);
-  h_Eta_mc_fat_1->Add(h_Eta_mc_fat_1_03,xs[3]/event[3]);
-  h_Eta_mc_fat_2->Add(h_Eta_mc_fat_2_03,xs[3]/event[3]);
-  h_DEta_mc->Add(h_DEta_mc_03,xs[3]/event[3]);
-  h_DEta_mc_fat->Add(h_DEta_mc_fat_03,xs[3]/event[3]);
-  h_Phi_mc->Add(h_Phi_mc_03,xs[3]/event[3]);
-  h_Phi_mc_1->Add(h_Phi_mc_1_03,xs[3]/event[3]);
-  h_Phi_mc_2->Add(h_Phi_mc_2_03,xs[3]/event[3]);
-  h_Phi_mc_fat->Add(h_Phi_mc_fat_03,xs[3]/event[3]);
-  h_Phi_mc_fat_1->Add(h_Phi_mc_fat_1_03,xs[3]/event[3]);
-  h_Phi_mc_fat_2->Add(h_Phi_mc_fat_2_03,xs[3]/event[3]);
-  h_n90hits_mc->Add(h_n90hits_mc_03,xs[3]/event[3]);
-  h_fHPD_mc->Add(h_fHPD_mc_03,xs[3]/event[3]);
-  h_corPt_mc->Add(h_corPt_mc_03,xs[3]/event[3]);
-  h_corPt_mc_1->Add(h_corPt_mc_1_03,xs[3]/event[3]);
-  h_corPt_mc_2->Add(h_corPt_mc_2_03,xs[3]/event[3]);
-  h_corPt_mc_fat->Add(h_corPt_mc_fat_03,xs[3]/event[3]);
-  h_corPt_mc_fat_1->Add(h_corPt_mc_fat_1_03,xs[3]/event[3]);
-  h_corPt_mc_fat_2->Add(h_corPt_mc_fat_2_03,xs[3]/event[3]);
-  h_nTrkVtx_mc->Add(h_nTrkVtx_mc_03,xs[3]/event[3]);
-  h_nTrkCalo_mc->Add(h_nTrkCalo_mc_03,xs[3]/event[3]);
-
-  h_fCh_mc_fat->Add(h_fCh_mc_fat_03,xs[3]/event[3]);
-  h_fNh_mc_fat->Add(h_fNh_mc_fat_03,xs[3]/event[3]);
-  h_fPh_mc_fat->Add(h_fPh_mc_fat_03,xs[3]/event[3]);
-  h_fEl_mc_fat->Add(h_fEl_mc_fat_03,xs[3]/event[3]);
-  std::cout << "test9_4" << std::endl;
-  // _4
-  
-  h_DijetMass_mc->Add(h_DijetMass_mc_04,xs[4]/event[4]);
-  h_DijetMass_mc_fat->Add(h_DijetMass_mc_fat_04,xs[4]/event[4]);
-  h_DijetMass_MI_nPVe1_mc->Add(h_DijetMass_MI_nPVe1_mc_04,xs[4]/event[4]);
-  h_DijetMass_MI_nPVg1_mc->Add(h_DijetMass_MI_nPVg1_mc_04,xs[4]/event[4]);
-  h_MET_over_sumEt_mc->Add(h_MET_over_sumEt_mc_04,xs[4]/event[4]);
-  h_EMF_mc->Add(h_EMF_mc_04,xs[4]/event[4]);
-  h_DPhi_mc->Add(h_DPhi_mc_04,xs[4]/event[4]);
-  h_DPhi_mc_fat->Add(h_DPhi_mc_fat_04,xs[4]/event[4]);
-  h_Eta_mc->Add(h_Eta_mc_04,xs[4]/event[4]);
-  h_Eta_mc_1->Add(h_Eta_mc_1_04,xs[4]/event[4]);
-  h_Eta_mc_2->Add(h_Eta_mc_2_04,xs[4]/event[4]);
-  h_Eta_mc_fat->Add(h_Eta_mc_fat_04,xs[4]/event[4]);
-  h_Eta_mc_fat_1->Add(h_Eta_mc_fat_1_04,xs[4]/event[4]);
-  h_Eta_mc_fat_2->Add(h_Eta_mc_fat_2_04,xs[4]/event[4]);
-  h_DEta_mc->Add(h_DEta_mc_04,xs[4]/event[4]);
-  h_DEta_mc_fat->Add(h_DEta_mc_fat_04,xs[4]/event[4]);
-  h_Phi_mc->Add(h_Phi_mc_04,xs[4]/event[4]);
-  h_Phi_mc_1->Add(h_Phi_mc_1_04,xs[4]/event[4]);
-  h_Phi_mc_2->Add(h_Phi_mc_2_04,xs[4]/event[4]);
-  h_Phi_mc_fat->Add(h_Phi_mc_fat_04,xs[4]/event[4]);
-  h_Phi_mc_fat_1->Add(h_Phi_mc_fat_1_04,xs[4]/event[4]);
-  h_Phi_mc_fat_2->Add(h_Phi_mc_fat_2_04,xs[4]/event[4]);
-  h_n90hits_mc->Add(h_n90hits_mc_04,xs[4]/event[4]);
-  h_fHPD_mc->Add(h_fHPD_mc_04,xs[4]/event[4]);
-  h_corPt_mc->Add(h_corPt_mc_04,xs[4]/event[4]);
-  h_corPt_mc_1->Add(h_corPt_mc_1_04,xs[4]/event[4]);
-  h_corPt_mc_2->Add(h_corPt_mc_2_04,xs[4]/event[4]);
-  h_corPt_mc_fat->Add(h_corPt_mc_fat_04,xs[4]/event[4]);
-  h_corPt_mc_fat_1->Add(h_corPt_mc_fat_1_04,xs[4]/event[4]);
-  h_corPt_mc_fat_2->Add(h_corPt_mc_fat_2_04,xs[4]/event[4]);
-  h_nTrkVtx_mc->Add(h_nTrkVtx_mc_04,xs[4]/event[4]);
-  h_nTrkCalo_mc->Add(h_nTrkCalo_mc_04,xs[4]/event[4]);
-
-
-  h_fCh_mc_fat->Add(h_fCh_mc_fat_04,xs[4]/event[4]);
-  h_fNh_mc_fat->Add(h_fNh_mc_fat_04,xs[4]/event[4]);
-  h_fPh_mc_fat->Add(h_fPh_mc_fat_04,xs[4]/event[4]);
-  h_fEl_mc_fat->Add(h_fEl_mc_fat_04,xs[4]/event[4]);
-  std::cout << "test9_5" << std::endl;
-  // _5
-  
-
-  h_DijetMass_mc->Add(h_DijetMass_mc_05,xs[5]/event[5]);
-  h_DijetMass_mc_fat->Add(h_DijetMass_mc_fat_05,xs[5]/event[5]);
-  h_DijetMass_MI_nPVe1_mc->Add(h_DijetMass_MI_nPVe1_mc_05,xs[5]/event[5]);
-  h_DijetMass_MI_nPVg1_mc->Add(h_DijetMass_MI_nPVg1_mc_05,xs[5]/event[5]);
-  h_MET_over_sumEt_mc->Add(h_MET_over_sumEt_mc_05,xs[5]/event[5]);
-  h_EMF_mc->Add(h_EMF_mc_05,xs[5]/event[5]);
-  h_DPhi_mc->Add(h_DPhi_mc_05,xs[5]/event[5]);
-  h_DPhi_mc_fat->Add(h_DPhi_mc_fat_05,xs[5]/event[5]);
-  h_Eta_mc->Add(h_Eta_mc_05,xs[5]/event[5]);
-  h_Eta_mc_1->Add(h_Eta_mc_1_05,xs[5]/event[5]);
-  h_Eta_mc_2->Add(h_Eta_mc_2_05,xs[5]/event[5]);
-  h_Eta_mc_fat->Add(h_Eta_mc_fat_05,xs[5]/event[5]);
-  h_Eta_mc_fat_1->Add(h_Eta_mc_fat_1_05,xs[5]/event[5]);
-  h_Eta_mc_fat_2->Add(h_Eta_mc_fat_2_05,xs[5]/event[5]);
-  h_DEta_mc->Add(h_DEta_mc_05,xs[5]/event[5]);
-  h_DEta_mc_fat->Add(h_DEta_mc_fat_05,xs[5]/event[5]);
-  h_Phi_mc->Add(h_Phi_mc_05,xs[5]/event[5]);
-  h_Phi_mc_1->Add(h_Phi_mc_1_05,xs[5]/event[5]);
-  h_Phi_mc_2->Add(h_Phi_mc_2_05,xs[5]/event[5]);
-  h_Phi_mc_fat->Add(h_Phi_mc_fat_05,xs[5]/event[5]);
-  h_Phi_mc_fat_1->Add(h_Phi_mc_fat_1_05,xs[5]/event[5]);
-  h_Phi_mc_fat_2->Add(h_Phi_mc_fat_2_05,xs[5]/event[5]);
-  h_n90hits_mc->Add(h_n90hits_mc_05,xs[5]/event[5]);
-  h_fHPD_mc->Add(h_fHPD_mc_05,xs[5]/event[5]);
-  h_corPt_mc->Add(h_corPt_mc_05,xs[5]/event[5]);
-  h_corPt_mc_1->Add(h_corPt_mc_1_05,xs[5]/event[5]);
-  h_corPt_mc_2->Add(h_corPt_mc_2_05,xs[5]/event[5]);
-  h_corPt_mc_fat->Add(h_corPt_mc_fat_05,xs[5]/event[5]);
-  h_corPt_mc_fat_1->Add(h_corPt_mc_fat_1_05,xs[5]/event[5]);
-  h_corPt_mc_fat_2->Add(h_corPt_mc_fat_2_05,xs[5]/event[5]);
-  h_nTrkVtx_mc->Add(h_nTrkVtx_mc_05,xs[5]/event[5]);
-  h_nTrkCalo_mc->Add(h_nTrkCalo_mc_05,xs[5]/event[5]);
-
-  h_fCh_mc_fat->Add(h_fCh_mc_fat_05,xs[5]/event[5]);
-  h_fNh_mc_fat->Add(h_fNh_mc_fat_05,xs[5]/event[5]);
-  h_fPh_mc_fat->Add(h_fPh_mc_fat_05,xs[5]/event[5]);
-  h_fEl_mc_fat->Add(h_fEl_mc_fat_05,xs[5]/event[5]);
-  std::cout << "test9_6" << std::endl;
-  // _6
-
-  h_DijetMass_mc->Add(h_DijetMass_mc_06,xs[6]/event[6]);
-  h_DijetMass_mc_fat->Add(h_DijetMass_mc_fat_06,xs[6]/event[6]);
-  h_DijetMass_MI_nPVe1_mc->Add(h_DijetMass_MI_nPVe1_mc_06,xs[6]/event[6]);
-  h_DijetMass_MI_nPVg1_mc->Add(h_DijetMass_MI_nPVg1_mc_06,xs[6]/event[6]);
-  h_MET_over_sumEt_mc->Add(h_MET_over_sumEt_mc_06,xs[6]/event[6]);
-  h_EMF_mc->Add(h_EMF_mc_06,xs[6]/event[6]);
-  h_DPhi_mc->Add(h_DPhi_mc_06,xs[6]/event[6]);
-  h_DPhi_mc_fat->Add(h_DPhi_mc_fat_06,xs[6]/event[6]);
-  h_Eta_mc->Add(h_Eta_mc_06,xs[6]/event[6]);
-  h_Eta_mc_1->Add(h_Eta_mc_1_06,xs[6]/event[6]);
-  h_Eta_mc_2->Add(h_Eta_mc_2_06,xs[6]/event[6]);
-  h_Eta_mc_fat->Add(h_Eta_mc_fat_06,xs[6]/event[6]);
-  h_Eta_mc_fat_1->Add(h_Eta_mc_fat_1_06,xs[6]/event[6]);
-  h_Eta_mc_fat_2->Add(h_Eta_mc_fat_2_06,xs[6]/event[6]);
-  h_DEta_mc->Add(h_DEta_mc_06,xs[6]/event[6]);
-  h_DEta_mc_fat->Add(h_DEta_mc_fat_06,xs[6]/event[6]);
-  h_Phi_mc->Add(h_Phi_mc_06,xs[6]/event[6]);
-  h_Phi_mc_1->Add(h_Phi_mc_1_06,xs[6]/event[6]);
-  h_Phi_mc_2->Add(h_Phi_mc_2_06,xs[6]/event[6]);
-  h_Phi_mc_fat->Add(h_Phi_mc_fat_06,xs[6]/event[6]);
-  h_Phi_mc_fat_1->Add(h_Phi_mc_fat_1_06,xs[6]/event[6]);
-  h_Phi_mc_fat_2->Add(h_Phi_mc_fat_2_06,xs[6]/event[6]);
-  h_n90hits_mc->Add(h_n90hits_mc_06,xs[6]/event[6]);
-  h_fHPD_mc->Add(h_fHPD_mc_06,xs[6]/event[6]);
-  h_corPt_mc->Add(h_corPt_mc_06,xs[6]/event[6]);
-  h_corPt_mc_1->Add(h_corPt_mc_1_06,xs[6]/event[6]);
-  h_corPt_mc_2->Add(h_corPt_mc_2_06,xs[6]/event[6]);
-  h_corPt_mc_fat->Add(h_corPt_mc_fat_06,xs[6]/event[6]);
-  h_corPt_mc_fat_1->Add(h_corPt_mc_fat_1_06,xs[6]/event[6]);
-  h_corPt_mc_fat_2->Add(h_corPt_mc_fat_2_06,xs[6]/event[6]);
-  h_nTrkVtx_mc->Add(h_nTrkVtx_mc_06,xs[6]/event[6]);
-  h_nTrkCalo_mc->Add(h_nTrkCalo_mc_06,xs[6]/event[6]);
-
-  h_fCh_mc_fat->Add(h_fCh_mc_fat_06,xs[6]/event[6]);
-  h_fNh_mc_fat->Add(h_fNh_mc_fat_06,xs[6]/event[6]);
-  h_fPh_mc_fat->Add(h_fPh_mc_fat_06,xs[6]/event[6]);
-  h_fEl_mc_fat->Add(h_fEl_mc_fat_06,xs[6]/event[6]);
-  std::cout << "test9_7" << std::endl;
-  // _7
-
-  h_DijetMass_mc->Add(h_DijetMass_mc_07,xs[7]/event[7]);
-  h_DijetMass_mc_fat->Add(h_DijetMass_mc_fat_07,xs[7]/event[7]);
-  h_DijetMass_MI_nPVe1_mc->Add(h_DijetMass_MI_nPVe1_mc_07,xs[7]/event[7]);
-  h_DijetMass_MI_nPVg1_mc->Add(h_DijetMass_MI_nPVg1_mc_07,xs[7]/event[7]);
-  h_MET_over_sumEt_mc->Add(h_MET_over_sumEt_mc_07,xs[7]/event[7]);
-  h_EMF_mc->Add(h_EMF_mc_07,xs[7]/event[7]);
-  h_DPhi_mc->Add(h_DPhi_mc_07,xs[7]/event[7]);
-  h_DPhi_mc_fat->Add(h_DPhi_mc_fat_07,xs[7]/event[7]);
-  h_Eta_mc->Add(h_Eta_mc_07,xs[7]/event[7]);
-  h_Eta_mc_1->Add(h_Eta_mc_1_07,xs[7]/event[7]);
-  h_Eta_mc_2->Add(h_Eta_mc_2_07,xs[7]/event[7]);
-  h_Eta_mc_fat->Add(h_Eta_mc_fat_07,xs[7]/event[7]);
-  h_Eta_mc_fat_1->Add(h_Eta_mc_fat_1_07,xs[7]/event[7]);
-  h_Eta_mc_fat_2->Add(h_Eta_mc_fat_2_07,xs[7]/event[7]);
-  h_DEta_mc->Add(h_DEta_mc_07,xs[7]/event[7]);
-  h_DEta_mc_fat->Add(h_DEta_mc_fat_07,xs[7]/event[7]);
-  h_Phi_mc->Add(h_Phi_mc_07,xs[7]/event[7]);
-  h_Phi_mc_1->Add(h_Phi_mc_1_07,xs[7]/event[7]);
-  h_Phi_mc_2->Add(h_Phi_mc_2_07,xs[7]/event[7]);
-  h_Phi_mc_fat->Add(h_Phi_mc_fat_07,xs[7]/event[7]);
-  h_Phi_mc_fat_1->Add(h_Phi_mc_fat_1_07,xs[7]/event[7]);
-  h_Phi_mc_fat_2->Add(h_Phi_mc_fat_2_07,xs[7]/event[7]);
-  h_n90hits_mc->Add(h_n90hits_mc_07,xs[7]/event[7]);
-  h_fHPD_mc->Add(h_fHPD_mc_07,xs[7]/event[7]);
-  h_corPt_mc->Add(h_corPt_mc_07,xs[7]/event[7]);
-  h_corPt_mc_1->Add(h_corPt_mc_1_07,xs[7]/event[7]);
-  h_corPt_mc_2->Add(h_corPt_mc_2_07,xs[7]/event[7]);
-  h_corPt_mc_fat->Add(h_corPt_mc_fat_07,xs[7]/event[7]);
-  h_corPt_mc_fat_1->Add(h_corPt_mc_fat_1_07,xs[7]/event[7]);
-  h_corPt_mc_fat_2->Add(h_corPt_mc_fat_2_07,xs[7]/event[7]);
-  h_nTrkVtx_mc->Add(h_nTrkVtx_mc_07,xs[7]/event[7]);
-  h_nTrkCalo_mc->Add(h_nTrkCalo_mc_07,xs[7]/event[7]);
-  
-  h_fCh_mc_fat->Add(h_fCh_mc_fat_07,xs[7]/event[7]);
-  h_fNh_mc_fat->Add(h_fNh_mc_fat_07,xs[7]/event[7]);
-  h_fPh_mc_fat->Add(h_fPh_mc_fat_07,xs[7]/event[7]);
-  h_fEl_mc_fat->Add(h_fEl_mc_fat_07,xs[7]/event[7]);
-
-  std::cout << "test9_8" << std::endl;
+  //  h_Dphi_fatlead_data_fat_2->Sumw2();
+  //  h_Deta_fatlead_data_fat_2->Sumw2();
+  h_DpT_over_pT_data_fat_2->Sumw2();
+  h_DpT_data_fat_2->Sumw2();
 
   h_DijetMass_data->Sumw2();
   h_DijetMass_data_fat->Sumw2();
@@ -1034,6 +466,9 @@ void ReadTree_new3()
   h_Phi_data_fat_1->Sumw2();
   h_Phi_data_fat_2->Sumw2();
   h_n90hits_data->Sumw2();
+
+  h_nVtx_data->Sumw2();
+
   h_fHPD_data->Sumw2();
   h_corPt_data->Sumw2();
   h_corPt_data_1->Sumw2();
@@ -1046,80 +481,147 @@ void ReadTree_new3()
 
    std::cout << "test10" << std::endl;
 
-  float DijetMass_data_weight=h_DijetMass_data->Integral();
-  float DijetMass_data_fat_weight=h_DijetMass_data_fat->Integral();
-  float DijetMass_mc_weight=h_DijetMass_mc->Integral();
-  float DijetMass_mc_fat_weight=h_DijetMass_mc_fat->Integral();
-  float DijetMass_nPVe1_data_weight=h_DijetMass_MI_nPVe1_data->Integral();
-  float DijetMass_nPVg1_data_weight=h_DijetMass_MI_nPVg1_data->Integral();
-  float DijetMass_nPVe1_mc_weight=h_DijetMass_MI_nPVe1_mc->Integral();
-  float DijetMass_nPVg1_mc_weight=h_DijetMass_MI_nPVg1_mc->Integral();
-  float MET_over_sumEt_data_weight=h_MET_over_sumEt_data->Integral();
-  float MET_over_sumEt_mc_weight=h_MET_over_sumEt_mc->Integral();
-  float EMF_data_weight=h_EMF_data->Integral();
-  float EMF_mc_weight=h_EMF_mc->Integral();
-  float DPhi_data_weight=h_DPhi_data->Integral();
-  float DPhi_data_fat_weight=h_DPhi_data_fat->Integral();
-  float DPhi_mc_weight=h_DPhi_mc->Integral();
-  float DPhi_mc_fat_weight=h_DPhi_mc_fat->Integral();
-  float Eta_data_weight=h_Eta_data->Integral();
-  float Eta_data_weight_1=h_Eta_data_1->Integral();
-  float Eta_data_weight_2=h_Eta_data_2->Integral();
-  float Eta_data_fat_weight=h_Eta_data_fat->Integral();
-  float Eta_data_fat_weight_1=h_Eta_data_fat_1->Integral();
-  float Eta_data_fat_weight_2=h_Eta_data_fat_2->Integral();
-  float Eta_mc_weight=h_Eta_mc->Integral();
-  float Eta_mc_weight_1=h_Eta_mc_1->Integral();
-  float Eta_mc_weight_2=h_Eta_mc_2->Integral();
-  float Eta_mc_fat_weight=h_Eta_mc_fat->Integral();
-  float Eta_mc_fat_weight_1=h_Eta_mc_fat_1->Integral();
-  float Eta_mc_fat_weight_2=h_Eta_mc_fat_2->Integral();
-  float DEta_data_weight=h_Eta_data->Integral();
-  float DEta_data_fat_weight=h_Eta_data_fat->Integral();
-  float DEta_mc_weight=h_Eta_mc->Integral();
-  float DEta_mc_fat_weight=h_Eta_mc_fat->Integral();
-  float Phi_data_weight=h_Phi_data->Integral();
-  float Phi_data_weight_1=h_Phi_data_1->Integral();
-  float Phi_data_weight_2=h_Phi_data_2->Integral();
-  float Phi_data_fat_weight=h_Phi_data_fat->Integral();
-  float Phi_data_fat_weight_1=h_Phi_data_fat_1->Integral();
-  float Phi_data_fat_weight_2=h_Phi_data_fat_2->Integral();
-  float Phi_mc_weight=h_Phi_mc->Integral();
-  float Phi_mc_weight_1=h_Phi_mc_1->Integral();
-  float Phi_mc_weight_2=h_Phi_mc_2->Integral();
-  float Phi_mc_fat_weight=h_Phi_mc_fat->Integral();
-  float Phi_mc_fat_weight_1=h_Phi_mc_fat_1->Integral();
-  float Phi_mc_fat_weight_2=h_Phi_mc_fat_2->Integral();
-  float n90hits_data_weight=h_n90hits_data->Integral();
-  float n90hits_mc_weight=h_n90hits_mc->Integral();
-  float fHPD_data_weight=h_fHPD_data->Integral();
-  float fHPD_mc_weight=h_fHPD_mc->Integral();
-  float corPt_data_weight=h_corPt_data->Integral();
-  float corPt_data_weight_1=h_corPt_data_1->Integral();
-  float corPt_data_weight_2=h_corPt_data_2->Integral();
-  float corPt_data_fat_weight=h_corPt_data_fat->Integral();
-  float corPt_data_fat_weight_1=h_corPt_data_fat_1->Integral();
-  float corPt_data_fat_weight_2=h_corPt_data_fat_2->Integral();
-  float corPt_mc_weight=h_corPt_mc->Integral();
-  float corPt_mc_weight_1=h_corPt_mc_1->Integral();
-  float corPt_mc_weight_2=h_corPt_mc_2->Integral();
-  float corPt_mc_fat_weight=h_corPt_mc_fat->Integral();
-  float corPt_mc_fat_weight_1=h_corPt_mc_fat_1->Integral();
-  float corPt_mc_fat_weight_2=h_corPt_mc_fat_2->Integral();
-  float nTrkVtx_data_weight=h_nTrkVtx_data->Integral();
-  float nTrkVtx_mc_weight=h_nTrkVtx_mc->Integral();
-  float nTrkCalo_data_weight=h_nTrkCalo_data->Integral();
-  float nTrkCalo_mc_weight=h_nTrkCalo_mc->Integral();
+  float DijetMass_data_weight=h_DijetMass_data->Integral()+1e-10;
+  float DijetMass_data_fat_weight=h_DijetMass_data_fat->Integral()+1e-10;
+  float DijetMass_mc_weight=h_DijetMass_mc->Integral()+1e-10;
+  float DijetMass_mc_fat_mu10_weight=h_DijetMass_mc_fat_mu10->Integral()+1e-10;
+  float DijetMass_mc_fat_mu20_weight=h_DijetMass_mc_fat_mu20->Integral()+1e-10;
+  float DijetMass_mc_fat_mu30_weight=h_DijetMass_mc_fat_mu30->Integral()+1e-10;
 
 
-  float fCh_data_weight = h_fCh_data_fat->Integral();
-  float fCh_mc_weight = h_fCh_mc_fat->Integral();
-  float fNh_data_weight = h_fNh_data_fat->Integral();
-  float fNh_mc_weight = h_fNh_mc_fat->Integral();
-  float fPh_data_weight = h_fPh_data_fat->Integral();
-  float fPh_mc_weight = h_fPh_mc_fat->Integral();
-  float fEl_data_weight = h_fEl_data_fat->Integral();
-  float fEl_mc_weight = h_fEl_mc_fat->Integral();
+  float DijetMass_data_fat_mu10_weight=h_DijetMass_data_fat_mu10->Integral()+1e-10;
+  float DijetMass_data_fat_mu20_weight=h_DijetMass_data_fat_mu20->Integral()+1e-10;
+  float DijetMass_data_fat_mu30_weight=h_DijetMass_data_fat_mu30->Integral()+1e-10;
+
+  float DijetMass_mc_fat_weight=h_DijetMass_mc_fat->Integral()+1e-10;
+  float DijetMass_nPVe1_data_weight=h_DijetMass_MI_nPVe1_data->Integral()+1e-10;
+  float DijetMass_nPVg1_data_weight=h_DijetMass_MI_nPVg1_data->Integral()+1e-10;
+  float DijetMass_nPVe1_mc_weight=h_DijetMass_MI_nPVe1_mc->Integral()+1e-10;
+  float DijetMass_nPVg1_mc_weight=h_DijetMass_MI_nPVg1_mc->Integral()+1e-10;
+  float MET_over_sumEt_data_weight=h_MET_over_sumEt_data->Integral()+1e-10;
+  float MET_over_sumEt_mc_weight=h_MET_over_sumEt_mc->Integral()+1e-10;
+  float EMF_data_weight=h_EMF_data->Integral()+1e-10;
+  float EMF_mc_weight=h_EMF_mc->Integral()+1e-10;
+  float DPhi_data_weight=h_DPhi_data->Integral()+1e-10;
+  float DPhi_data_fat_weight=h_DPhi_data_fat->Integral()+1e-10;
+  float DPhi_mc_weight=h_DPhi_mc->Integral()+1e-10;
+  float DPhi_mc_fat_weight=h_DPhi_mc_fat->Integral()+1e-10;
+  float Eta_data_weight=h_Eta_data->Integral()+1e-10;
+  float Eta_data_weight_1=h_Eta_data_1->Integral()+1e-10;
+  float Eta_data_weight_2=h_Eta_data_2->Integral()+1e-10;
+  float Eta_data_fat_weight=h_Eta_data_fat->Integral()+1e-10;
+  float Eta_data_fat_weight_1=h_Eta_data_fat_1->Integral()+1e-10;
+  float Eta_data_fat_weight_2=h_Eta_data_fat_2->Integral()+1e-10;
+  float Eta_mc_weight=h_Eta_mc->Integral()+1e-10;
+  float Eta_mc_weight_1=h_Eta_mc_1->Integral()+1e-10;
+  float Eta_mc_weight_2=h_Eta_mc_2->Integral()+1e-10;
+  float Eta_mc_fat_weight=h_Eta_mc_fat->Integral()+1e-10;
+  float Eta_mc_fat_weight_1=h_Eta_mc_fat_1->Integral()+1e-10;
+  float Eta_mc_fat_weight_2=h_Eta_mc_fat_2->Integral()+1e-10;
+  float DEta_data_weight=h_Eta_data->Integral()+1e-10;
+  float DEta_data_fat_weight=h_Eta_data_fat->Integral()+1e-10;
+  float DEta_mc_weight=h_Eta_mc->Integral()+1e-10;
+  float DEta_mc_fat_weight=h_Eta_mc_fat->Integral()+1e-10;
+  float Phi_data_weight=h_Phi_data->Integral()+1e-10;
+  float Phi_data_weight_1=h_Phi_data_1->Integral()+1e-10;
+  float Phi_data_weight_2=h_Phi_data_2->Integral()+1e-10;
+  float Phi_data_fat_weight=h_Phi_data_fat->Integral()+1e-10;
+  float Phi_data_fat_weight_1=h_Phi_data_fat_1->Integral()+1e-10;
+  float Phi_data_fat_weight_2=h_Phi_data_fat_2->Integral()+1e-10;
+  float Phi_mc_weight=h_Phi_mc->Integral()+1e-10;
+  float Phi_mc_weight_1=h_Phi_mc_1->Integral()+1e-10;
+  float Phi_mc_weight_2=h_Phi_mc_2->Integral()+1e-10;
+  float Phi_mc_fat_weight=h_Phi_mc_fat->Integral()+1e-10;
+  float Phi_mc_fat_weight_1=h_Phi_mc_fat_1->Integral()+1e-10;
+  float Phi_mc_fat_weight_2=h_Phi_mc_fat_2->Integral()+1e-10;
+  float n90hits_data_weight=h_n90hits_data->Integral()+1e-10;
+  float n90hits_mc_weight=h_n90hits_mc->Integral()+1e-10;
+
+  float nVtx_data_weight=h_nVtx_data->Integral()+1e-10;
+  float nVtx_mc_weight=h_nVtx_mc->Integral()+1e-10;
+
+
+  float fHPD_data_weight=h_fHPD_data->Integral()+1e-10;
+  float fHPD_mc_weight=h_fHPD_mc->Integral()+1e-10;
+  float corPt_data_weight=h_corPt_data->Integral()+1e-10;
+  float corPt_data_weight_1=h_corPt_data_1->Integral()+1e-10;
+  float corPt_data_weight_2=h_corPt_data_2->Integral()+1e-10;
+  float corPt_data_fat_weight=h_corPt_data_fat->Integral()+1e-10;
+  float corPt_data_fat_weight_1=h_corPt_data_fat_1->Integral()+1e-10;
+  float corPt_data_fat_weight_2=h_corPt_data_fat_2->Integral()+1e-10;
+  float corPt_mc_weight=h_corPt_mc->Integral()+1e-10;
+  float corPt_mc_weight_1=h_corPt_mc_1->Integral()+1e-10;
+  float corPt_mc_weight_2=h_corPt_mc_2->Integral()+1e-10;
+  float corPt_mc_fat_weight=h_corPt_mc_fat->Integral()+1e-10;
+  float corPt_mc_fat_weight_1=h_corPt_mc_fat_1->Integral()+1e-10;
+  float corPt_mc_fat_weight_2=h_corPt_mc_fat_2->Integral()+1e-10;
+  float nTrkVtx_data_weight=h_nTrkVtx_data->Integral()+1e-10;
+  float nTrkVtx_mc_weight=h_nTrkVtx_mc->Integral()+1e-10;
+  float nTrkCalo_data_weight=h_nTrkCalo_data->Integral()+1e-10;
+  float nTrkCalo_mc_weight=h_nTrkCalo_mc->Integral()+1e-10;
+
+
+  float fCh_data_weight = h_fCh_data_fat->Integral()+1e-10;
+  float fCh_mc_weight = h_fCh_mc_fat->Integral()+1e-10;
+  float fNh_data_weight = h_fNh_data_fat->Integral()+1e-10;
+  float fNh_mc_weight = h_fNh_mc_fat->Integral()+1e-10;
+  float fPh_data_weight = h_fPh_data_fat->Integral()+1e-10;
+  float fPh_mc_weight = h_fPh_mc_fat->Integral()+1e-10;
+  float fEl_data_weight = h_fEl_data_fat->Integral()+1e-10;
+  float fEl_mc_weight = h_fEl_mc_fat->Integral()+1e-10;
+  float fMu_data_weight = h_fMu_data_fat->Integral()+1e-10;
+  float fMu_mc_weight = h_fMu_mc_fat->Integral()+1e-10;
+
+  
+  float fDeta_fatlead_mc_fat_1_mc_weight = h_Deta_fatlead_mc_fat_1->Integral()+1e-10;
+  float fDeta_fatlead_mc_fat_2_mc_weight = h_Deta_fatlead_mc_fat_2->Integral()+1e-10;
+
+  float fDphi_fatlead_mc_fat_1_mc_weight = h_Dphi_fatlead_mc_fat_1->Integral()+1e-10;
+  float fDphi_fatlead_mc_fat_2_mc_weight = h_Dphi_fatlead_mc_fat_2->Integral()+1e-10;
+
+
+  float fNrad_1_fat_weight = h_Nrad_1_fat->Integral()+1e-10;
+  float fNrad_2_fat_weight = h_Nrad_2_fat->Integral()+1e-10;
+  //  float fDphi_fatlead_data_fat_weight = h_Dphi_fatlead_data_fat->Integral()+1e-10;
+  //  float fDeta_fatlead_data_fat_weight = h_Deta_fatlead_data_fat->Integral()+1e-10;
+  float fDpT_over_pT_data_fat_weight = h_DpT_over_pT_data_fat->Integral()+1e-10;
+  float fDpT_data_fat_weight = h_DpT_data_fat->Integral()+1e-10;
+
+  //  float fDphi_fatlead_data_fat_1_weight = h_Dphi_fatlead_data_fat_1->Integral()+1e-10;
+  //  float fDeta_fatlead_data_fat_1_weight = h_Deta_fatlead_data_fat_1->Integral()+1e-10;
+  float fDpT_over_pT_data_fat_1_weight = h_DpT_over_pT_data_fat_1->Integral()+1e-10;
+  float fDpT_data_fat_1_weight = h_DpT_data_fat_1->Integral()+1e-10;
+
+  // float fDphi_fatlead_data_fat_2_weight = h_Dphi_fatlead_data_fat_2->Integral()+1e-10;
+  //  float fDeta_fatlead_data_fat_2_weight = h_Deta_fatlead_data_fat_2->Integral()+1e-10;
+  float fDpT_over_pT_data_fat_2_weight = h_DpT_over_pT_data_fat_2->Integral()+1e-10;
+  float fDpT_data_fat_2_weight = h_DpT_data_fat_2->Integral()+1e-10;
+
+
+  float fNrad_1_fat_mc_weight = h_Nrad_1_fat_mc->Integral()+1e-10;
+  float fNrad_2_fat_mc_weight = h_Nrad_2_fat_mc->Integral()+1e-10;
+  //  float fDphi_fatlead_data_fat_mc_weight = h_Dphi_fatlead_data_fat->Integral()+1e-10;
+  //  float fDeta_fatlead_data_fat_mc_weight = h_Deta_fatlead_data_fat->Integral()+1e-10;
+  float fDpT_over_pT_data_fat_mc_weight = h_DpT_over_pT_data_fat_mc->Integral()+1e-10;
+  float fDpT_data_fat_mc_weight = h_DpT_data_fat_mc->Integral()+1e-10;
+
+  //  float fDphi_fatlead_data_fat_1_mc_weight = h_Dphi_fatlead_data_fat_1->Integral()+1e-10;
+  //  float fDeta_fatlead_data_fat_1_mc_weight = h_Deta_fatlead_data_fat_1->Integral()+1e-10;
+  float fDpT_over_pT_data_fat_1_mc_weight = h_DpT_over_pT_data_fat_mc_1->Integral()+1e-10;
+  float fDpT_data_fat_1_mc_weight = h_DpT_data_fat_mc_1->Integral()+1e-10;
+
+  //  float fDphi_fatlead_data_fat_2_mc_weight = h_Dphi_fatlead_data_fat_2->Integral()+1e-10;
+  //  float fDeta_fatlead_data_fat_2_mc_weight = h_Deta_fatlead_data_fat_2->Integral()+1e-10;
+  float fDpT_over_pT_data_fat_2_mc_weight = h_DpT_over_pT_data_fat_mc_2->Integral()+1e-10;
+  float fDpT_data_fat_2_mc_weight = h_DpT_data_fat_mc_2->Integral()+1e-10;
+
+  float fDpT_data_fat_mc_weight = h_DpT_data_fat_mc->Integral()+1e-10;
+       
+  float fDeta_fatlead_data_fat_1_data_weight = h_Deta_fatlead_data_fat_1->Integral()+1e-10;
+  float fDeta_fatlead_data_fat_2_data_weight = h_Deta_fatlead_data_fat_2->Integral()+1e-10;
+
+  float fDphi_fatlead_data_fat_1_data_weight = h_Dphi_fatlead_data_fat_1->Integral()+1e-10;
+  float fDphi_fatlead_data_fat_2_data_weight = h_Dphi_fatlead_data_fat_2->Integral()+1e-10;
 
 
   //  float JCFCalo_data_weight=h_JCFCalo_data->Integral();
@@ -1127,98 +629,62 @@ void ReadTree_new3()
 
   cout << "Weights of mass distri = " << DijetMass_data_weight << endl;
 
-  string data_info("CMS 2011 Data Fat PF ( 358 pb^{-1} )");
+  string data_info("CMS 2011 Data Fat PF ( 4.7 fb^{-1} )");
 
-
+  TFile *outf = new TFile("histogrmas_3500pbm1.root","RECREATE");
 
    std::cout << "test11" << std::endl;
 
-  // Dijet Mass distribution
-
-  c_DijetMass->cd(0);
-  h_DijetMass_data->SetTitle("");
-  h_DijetMass_data->SetLineWidth(3);
-  h_DijetMass_data->GetYaxis()->SetTitle("Events");
-  h_DijetMass_data->GetYaxis()->SetLabelSize(0.03);
-  h_DijetMass_data->GetXaxis()->SetTitle("DijetMass");
-  h_DijetMass_data->SetMarkerStyle(20);
-
-  h_DijetMass_mc->SetTitle("");
-  h_DijetMass_mc->SetLineWidth(3);
-  h_DijetMass_mc->SetLineColor(42);
-  h_DijetMass_mc->SetFillColor(42);
-  h_DijetMass_mc->GetYaxis()->SetTitle("Events");
-  h_DijetMass_mc->GetYaxis()->SetLabelSize(0.03);
-  h_DijetMass_mc->GetXaxis()->SetTitle("DijetMass");
-  h_DijetMass_mc->Scale(DijetMass_data_weight/DijetMass_mc_weight);
-
-  h_DijetMass_mc->Draw("");
-  h_DijetMass_data->Draw("sameEP");
-
-  l_DijetMass->SetFillColor(0);
-  l_DijetMass->AddEntry( h_DijetMass_data,"CMS 2011 Data Calo ( 201.348pb^{-1} )","p");
-  l_DijetMass->AddEntry( h_DijetMass_mc,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_DijetMass->Draw("same");
-
-  c_DijetMass->Update();
-  outf->Append(c_DijetMass);
 
   // Dijet Mass distribution (PF)
    std::cout << "test11_1" << std::endl;
   c_DijetMass_fat->cd(0);
+
+  gPad->SetTopMargin(0.07);
+
   h_DijetMass_data_fat->SetTitle("");
   h_DijetMass_data_fat->SetLineWidth(3);
-  h_DijetMass_data_fat->GetYaxis()->SetTitle("Events");
+  h_DijetMass_data_fat->GetYaxis()->SetTitle("# Events");
   h_DijetMass_data_fat->GetYaxis()->SetLabelSize(0.03);
-  h_DijetMass_data_fat->GetXaxis()->SetTitle("M_{12} Fat / GeV");
+  h_DijetMass_data_fat->GetXaxis()->SetTitle("M_{12} / GeV");
   h_DijetMass_data_fat->SetMarkerStyle(20);
 
-  h_DijetMass_mc_fat->SetTitle("");
+  double scaleFactor = DijetMass_data_fat_weight/DijetMass_mc_fat_weight * 1./dLumi;
+
+  cout << "Sacle Factor = " << scaleFactor << endl;
+
+  h_DijetMass_mc_fat->SetTitle("Fat dijet invariant mass");
   h_DijetMass_mc_fat->SetLineWidth(3);
   h_DijetMass_mc_fat->SetLineColor(42);
   h_DijetMass_mc_fat->SetFillColor(42);
-  h_DijetMass_mc_fat->GetYaxis()->SetTitle("Events");
+  h_DijetMass_mc_fat->GetYaxis()->SetTitle("# Events");
   h_DijetMass_mc_fat->GetYaxis()->SetLabelSize(0.03);
-  h_DijetMass_mc_fat->GetXaxis()->SetTitle("M_{12} Fat / GeV");
+  h_DijetMass_mc_fat->GetXaxis()->SetTitle("M ( GeV/c^{2} )");
   h_DijetMass_mc_fat->Scale(DijetMass_data_fat_weight/DijetMass_mc_fat_weight);
 
-  h_DijetMass_mc_fat->Draw("");
+  TH1D* PLOTTER = new TH1D("PLOTTER", "", 1, 0, 4000.);
+
+  PLOTTER->SetMaximum(h_DijetMass_mc_fat->GetMaximum()*1.1);
+
+  PLOTTER->Draw("");
+  h_DijetMass_mc_fat->Draw("SAME");
   h_DijetMass_data_fat->Draw("sameEP");
 
   l_DijetMass_fat->SetFillColor(0);
   l_DijetMass_fat->AddEntry( h_DijetMass_data_fat, data_info.c_str(),"p");
-  l_DijetMass_fat->AddEntry( h_DijetMass_mc_fat,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_DijetMass_fat->Draw("same");
+  l_DijetMass_fat->AddEntry( h_DijetMass_mc_fat, Form("QCD PYTHIA6 Z2, fScale = %.2f", scaleFactor),"f");
+  l_DijetMass_fat->DrawClone("same");
 
   c_DijetMass_fat->Update();
   outf->Append(c_DijetMass_fat);
 
 
-  // Dijet Mass distribution (log)
-
-  c_DijetMass_log->cd(0);
-
-  TH1F *h_DijetMass_data_log                    =(TH1F*)h_DijetMass_data->Clone();
-  TH1F *h_DijetMass_mc_log                      =(TH1F*)h_DijetMass_mc->Clone();
-
-  c_DijetMass_log->SetLogy();
-
-  h_DijetMass_mc_log->SetMinimum(0.2);
-
-  h_DijetMass_mc_log->Draw("");
-  h_DijetMass_data_log->Draw("sameEP");
-
-  l_DijetMass_log->SetFillColor(0);
-  l_DijetMass_log->AddEntry((TObject*)0,"2011 data","");
-  l_DijetMass_log->AddEntry( h_DijetMass_data_log,"CMS 2011 Data Calo ( 201.348pb^{-1} )","p");
-  l_DijetMass_log->AddEntry( h_DijetMass_mc_log,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_DijetMass_log->Draw("same");
-
-  c_DijetMass_log->Update();
-  outf->Append(c_DijetMass_log);
+ 
 
   c_DijetMass_fat_log->cd(0);
 
+
+  gPad->SetTopMargin(0.07);
   TH1F *h_DijetMass_data_fat_log                    =(TH1F*)h_DijetMass_data_fat->Clone();
   TH1F *h_DijetMass_mc_fat_log                      =(TH1F*)h_DijetMass_mc_fat->Clone();
 
@@ -1226,57 +692,290 @@ void ReadTree_new3()
 
   h_DijetMass_mc_fat_log->SetMinimum(0.2);
 
-  h_DijetMass_mc_fat_log->Draw("");
+
+  TH1D* PLOTTER = new TH1D("PLOTTER", "", 1, 500, 4000.);
+
+  PLOTTER->SetTitle("Fat dijet invariant mass; M ( GeV/c^{2} ); # Events");
+  PLOTTER->SetMaximum(h_DijetMass_mc_fat->GetMaximum()*2);
+  PLOTTER->SetMinimum(0.2);
+
+  PLOTTER->DrawClone("");
+  h_DijetMass_mc_fat_log->Draw("SAME");
   h_DijetMass_data_fat_log->Draw("sameEP");
 
   l_DijetMass_fat_log->SetFillColor(0);
-  l_DijetMass_fat_log->AddEntry((TObject*)0,"2011 data","");
+  ///  l_DijetMass_fat_log->AddEntry((TObject*)0,"2011 data","");
   l_DijetMass_fat_log->AddEntry( h_DijetMass_data_fat_log, data_info.c_str(),"p");
-  l_DijetMass_fat_log->AddEntry( h_DijetMass_mc_fat_log,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_DijetMass_fat_log->Draw("same");
+  l_DijetMass_fat_log->AddEntry( h_DijetMass_mc_fat_log, Form("QCD PYTHIA6 Z2, fScale = %.2f", scaleFactor),"f");
+  l_DijetMass_fat_log->DrawClone("same");
 
   c_DijetMass_fat_log->Update();
   outf->Append(c_DijetMass_fat_log);
 
-  c_DijetMass_ratio->cd(0);
-
-  //  TH1F h_DijetMass_mc_clone_for_ratio=h_DijetMass_mc->clone();
-
-  //  h_DijetMass_mc_clone_for_ratio->Sumw2();
-
-  h_DijetMass_ratio->Divide(h_DijetMass_data,h_DijetMass_mc,1.0,1.0,"b");
-
-  for(int ratio_check=1 ; ratio_check <= 83 ; ratio_check++) {
-    float ratio_data = h_DijetMass_data->GetBinContent(ratio_check);
-    float ratio_mc = h_DijetMass_mc->GetBinContent(ratio_check);
-    float ratio_data_over_mc = h_DijetMass_data->GetBinContent(ratio_check);
-    if (ratio_mc == 0 || ratio_data == 0) continue;
-    //    std::cout << "Data bin = " << ratio_check << ", bincontent = " << ratio_data << ", binerror = " << pow(ratio_data,0.5) << ", mc bin = " << ratio_check << ", bincontent = " << ratio_mc << ", binerror = " << pow(ratio_mc,0.5) << ", expected bin error = " << ratio_data/ratio_mc*pow(1/ratio_data+1/ratio_mc,0.5)<<std::endl;
-    //    std::cout << "bin = " << ratio_check << ", GetBinError = " << h_DijetMass_ratio->GetBinError(ratio_check) << std::endl;
-    h_DijetMass_ratio->SetBinError(ratio_check,ratio_data/ratio_mc*pow(pow(1/pow(ratio_data,0.5),2)+pow(1/pow(ratio_mc,0.5),2),0.5));
-    //    std::cout << "bin = " << ratio_check << ", GetBinError = " << h_DijetMass_ratio->GetBinError(ratio_check) << std::endl;
-  }
 
 
-  h_DijetMass_ratio->SetTitle("");
-  h_DijetMass_ratio->SetLineWidth(3);
-  h_DijetMass_ratio->GetYaxis()->SetTitle("Data/MC");
-  h_DijetMass_ratio->GetYaxis()->SetLabelSize(0.03);
-  h_DijetMass_ratio->GetXaxis()->SetTitle("M_{12} / GeV");
-  h_DijetMass_ratio->SetMarkerStyle(20);
-  h_DijetMass_ratio->SetMinimum(0.0);
 
-  h_DijetMass_ratio->Draw("EP");
 
-  TText *t_DijetMass_ratio_1 = pt_DijetMass_ratio->AddText("CMS 2011 Data ( 201.348pb^{-1} )");
 
-  pt_DijetMass_ratio->Draw("sames");
 
-  c_DijetMass_ratio->Update();
-  outf->Append(c_DijetMass_ratio);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  c_DijetMass_fat_mu10->cd(0);
+
+  gPad->SetTopMargin(0.07);
+
+
+  scaleFactor = DijetMass_data_fat_mu10_weight/DijetMass_mc_fat_mu10_weight * 1./dLumi;
+  cout << "Sacle Factor mu10 = " << scaleFactor << endl;
+
+
+  h_DijetMass_data_fat_mu10->SetTitle("");
+  h_DijetMass_data_fat_mu10->SetLineWidth(3);
+  h_DijetMass_data_fat_mu10->GetYaxis()->SetTitle("# Events");
+  h_DijetMass_data_fat_mu10->GetYaxis()->SetLabelSize(0.03);
+  h_DijetMass_data_fat_mu10->GetXaxis()->SetTitle("M_{12} / GeV");
+  h_DijetMass_data_fat_mu10->SetMarkerStyle(20);
+
+
+
+  h_DijetMass_mc_fat_mu10->SetTitle("Fat_Mu10 dijet invariant mass");
+  h_DijetMass_mc_fat_mu10->SetLineWidth(3);
+  h_DijetMass_mc_fat_mu10->SetLineColor(42);
+  h_DijetMass_mc_fat_mu10->SetFillColor(42);
+  h_DijetMass_mc_fat_mu10->GetYaxis()->SetTitle("# Events");
+  h_DijetMass_mc_fat_mu10->GetYaxis()->SetLabelSize(0.03);
+  h_DijetMass_mc_fat_mu10->GetXaxis()->SetTitle("M ( GeV/c^{2} )");
+  h_DijetMass_mc_fat_mu10->Scale(DijetMass_data_fat_mu10_weight/DijetMass_mc_fat_mu10_weight);
+
+  TH1D* PLOTTER = new TH1D("PLOTTER", "", 1, 0, 4000.);
+
+  PLOTTER->SetMaximum(h_DijetMass_mc_fat_mu10->GetMaximum()*1.1);
+
+  PLOTTER->Draw("");
+  h_DijetMass_mc_fat_mu10->Draw("SAME");
+  h_DijetMass_data_fat_mu10->Draw("sameEP");
+
+  l_DijetMass_fat->Clear();
+  l_DijetMass_fat->SetFillColor(0);
+  l_DijetMass_fat->AddEntry( h_DijetMass_data_fat, data_info.c_str(),"p");
+  l_DijetMass_fat->AddEntry( h_DijetMass_mc_fat, Form("QCD PYTHIA6 Z2, fScale = %.2f", scaleFactor),"f");
+  l_DijetMass_fat->DrawClone("same");
+
+  c_DijetMass_fat_mu10->Update();
+  outf->Append(c_DijetMass_fat_mu10);
+
+
+
+
+
+  c_DijetMass_fat_mu10_log->cd(0);
+
+
+  gPad->SetTopMargin(0.07);
+  TH1F *h_DijetMass_data_fat_mu10_log                    =(TH1F*)h_DijetMass_data_fat_mu10->Clone();
+  TH1F *h_DijetMass_mc_fat_mu10_log                      =(TH1F*)h_DijetMass_mc_fat_mu10->Clone();
+
+  c_DijetMass_fat_mu10_log->SetLogy();
+
+  h_DijetMass_mc_fat_mu10_log->SetMinimum(0.2);
+
+
+
+  TH1D* PLOTTER = new TH1D("PLOTTER", "", 1, 500, 4000.);
+
+  PLOTTER->SetTitle("Fat dijet invariant mass; M ( GeV/c^{2} ); # Events");
+  PLOTTER->SetMaximum(h_DijetMass_mc_fat->GetMaximum()*2);
+  PLOTTER->SetMinimum(0.2);
+
+  PLOTTER->DrawClone("");
+  h_DijetMass_mc_fat_mu10_log->Draw("SAME");
+  h_DijetMass_data_fat_mu10_log->Draw("sameEP");
+
+  l_DijetMass_fat_log->Clear();
+  l_DijetMass_fat_log->AddEntry( h_DijetMass_data_fat_log, data_info.c_str(),"p");
+  l_DijetMass_fat_log->AddEntry( h_DijetMass_mc_fat_log, Form("QCD PYTHIA6 Z2, fScale = %.2f", scaleFactor),"f");
+  l_DijetMass_fat_log->DrawClone("same");
+
+  c_DijetMass_fat_mu10_log->Update();
+  outf->Append(c_DijetMass_fat_mu10_log);
+
+
+
+
+
+
+
+
+  c_DijetMass_fat_mu20->cd(0);
+
+  gPad->SetTopMargin(0.07);
+
+  h_DijetMass_data_fat_mu20->SetTitle("");
+  h_DijetMass_data_fat_mu20->SetLineWidth(3);
+  h_DijetMass_data_fat_mu20->GetYaxis()->SetTitle("# Events");
+  h_DijetMass_data_fat_mu20->GetYaxis()->SetLabelSize(0.03);
+  h_DijetMass_data_fat_mu20->GetXaxis()->SetTitle("M_{12} / GeV");
+  h_DijetMass_data_fat_mu20->SetMarkerStyle(20);
+
+
+
+  h_DijetMass_mc_fat_mu20->SetTitle("Fat_Mu20 dijet invariant mass");
+  h_DijetMass_mc_fat_mu20->SetLineWidth(3);
+  h_DijetMass_mc_fat_mu20->SetLineColor(42);
+  h_DijetMass_mc_fat_mu20->SetFillColor(42);
+  h_DijetMass_mc_fat_mu20->GetYaxis()->SetTitle("# Events");
+  h_DijetMass_mc_fat_mu20->GetYaxis()->SetLabelSize(0.03);
+  h_DijetMass_mc_fat_mu20->GetXaxis()->SetTitle("M ( GeV/c^{2} )");
+  h_DijetMass_mc_fat_mu20->Scale(DijetMass_data_fat_mu20_weight/DijetMass_mc_fat_mu20_weight);
+
+  TH1D* PLOTTER = new TH1D("PLOTTER", "", 1, 0, 4000.);
+
+  PLOTTER->SetMaximum(h_DijetMass_mc_fat_mu20->GetMaximum()*1.1);
+
+  PLOTTER->Draw("");
+  h_DijetMass_mc_fat_mu20->Draw("SAME");
+  h_DijetMass_data_fat_mu20->Draw("sameEP");
+
+  l_DijetMass_fat->Draw("same");
+
+  c_DijetMass_fat_mu20->Update();
+  outf->Append(c_DijetMass_fat_mu20);
+
+
+
+
+
+  c_DijetMass_fat_mu20_log->cd(0);
+
+
+  gPad->SetTopMargin(0.07);
+  TH1F *h_DijetMass_data_fat_mu20_log                    =(TH1F*)h_DijetMass_data_fat_mu20->Clone();
+  TH1F *h_DijetMass_mc_fat_mu20_log                      =(TH1F*)h_DijetMass_mc_fat_mu20->Clone();
+
+  c_DijetMass_fat_mu20_log->SetLogy();
+
+  h_DijetMass_mc_fat_mu20_log->SetMinimum(0.2);
+
+
+
+  TH1D* PLOTTER = new TH1D("PLOTTER", "", 1, 500, 4000.);
+
+  PLOTTER->SetTitle("Fat dijet invariant mass; M ( GeV/c^{2} ); # Events");
+  PLOTTER->SetMaximum(h_DijetMass_mc_fat->GetMaximum()*2);
+  PLOTTER->SetMinimum(0.2);
+
+  PLOTTER->DrawClone("");
+  h_DijetMass_mc_fat_mu20_log->Draw("SAME");
+  h_DijetMass_data_fat_mu20_log->Draw("sameEP");
+
+  l_DijetMass_fat->Draw("same");
+
+  c_DijetMass_fat_mu20_log->Update();
+  outf->Append(c_DijetMass_fat_mu20_log);
+
+
+
+  c_DijetMass_fat_mu30->cd(0);
+
+  gPad->SetTopMargin(0.07);
+
+  h_DijetMass_data_fat_mu30->SetTitle("");
+  h_DijetMass_data_fat_mu30->SetLineWidth(3);
+  h_DijetMass_data_fat_mu30->GetYaxis()->SetTitle("# Events");
+  h_DijetMass_data_fat_mu30->GetYaxis()->SetLabelSize(0.03);
+  h_DijetMass_data_fat_mu30->GetXaxis()->SetTitle("M_{12} / GeV");
+  h_DijetMass_data_fat_mu30->SetMarkerStyle(20);
+
+
+
+  h_DijetMass_mc_fat_mu30->SetTitle("Fat_Mu30 dijet invariant mass");
+  h_DijetMass_mc_fat_mu30->SetLineWidth(3);
+  h_DijetMass_mc_fat_mu30->SetLineColor(42);
+  h_DijetMass_mc_fat_mu30->SetFillColor(42);
+  h_DijetMass_mc_fat_mu30->GetYaxis()->SetTitle("# Events");
+  h_DijetMass_mc_fat_mu30->GetYaxis()->SetLabelSize(0.03);
+  h_DijetMass_mc_fat_mu30->GetXaxis()->SetTitle("M ( GeV/c^{2} )");
+  h_DijetMass_mc_fat_mu30->Scale(DijetMass_data_fat_mu30_weight/DijetMass_mc_fat_mu30_weight);
+
+  TH1D* PLOTTER = new TH1D("PLOTTER", "", 1, 0, 4000.);
+
+  PLOTTER->SetMaximum(h_DijetMass_mc_fat_mu30->GetMaximum()*1.1);
+
+  PLOTTER->Draw("");
+  h_DijetMass_mc_fat_mu30->Draw("SAME");
+  h_DijetMass_data_fat_mu30->Draw("sameEP");
+
+  l_DijetMass_fat->Draw("same");
+
+  c_DijetMass_fat_mu30->Update();
+  outf->Append(c_DijetMass_fat_mu30);
+
+
+
+
+  c_DijetMass_fat_mu30_log->cd(0);
+
+
+  gPad->SetTopMargin(0.07);
+  TH1F *h_DijetMass_data_fat_mu30_log                    =(TH1F*)h_DijetMass_data_fat_mu30->Clone();
+  TH1F *h_DijetMass_mc_fat_mu30_log                      =(TH1F*)h_DijetMass_mc_fat_mu30->Clone();
+
+  c_DijetMass_fat_mu30_log->SetLogy();
+
+  h_DijetMass_mc_fat_mu30_log->SetMinimum(0.2);
+
+
+
+  TH1D* PLOTTER = new TH1D("PLOTTER", "", 1, 500, 4000.);
+
+  PLOTTER->SetTitle("Fat dijet invariant mass; M ( GeV/c^{2} ); # Events");
+  PLOTTER->SetMaximum(h_DijetMass_mc_fat->GetMaximum()*2);
+  PLOTTER->SetMinimum(0.2);
+
+  PLOTTER->DrawClone("");
+  h_DijetMass_mc_fat_mu30_log->Draw("SAME");
+  h_DijetMass_data_fat_mu30_log->Draw("sameEP");
+
+  l_DijetMass_fat_log->Draw("same");
+
+  c_DijetMass_fat_mu30_log->Update();
+  outf->Append(c_DijetMass_fat_mu30_log);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   c_DijetMass_ratio_fat->cd(0);
+
+  gPad->SetTopMargin(0.07);
+  gPad->SetRightMargin(0.05);
 
   //  TH1F h_DijetMass_mc_clone_for_ratio=h_DijetMass_mc->clone();
 
@@ -1300,13 +999,21 @@ void ReadTree_new3()
   h_DijetMass_ratio_fat->SetLineWidth(3);
   h_DijetMass_ratio_fat->GetYaxis()->SetTitle("Data/MC");
   h_DijetMass_ratio_fat->GetYaxis()->SetLabelSize(0.03);
-  h_DijetMass_ratio_fat->GetXaxis()->SetTitle("M_{12} Fat / GeV");
+  h_DijetMass_ratio_fat->GetXaxis()->SetTitle("M_{12} ( GeV^{2} )");
   h_DijetMass_ratio_fat->SetMarkerStyle(20);
   h_DijetMass_ratio_fat->SetMinimum(0.0);
 
-  h_DijetMass_ratio_fat->Draw("EP");
+  TH1D* PLOTTER = new TH1D("PLOTTER", "", 1, 500, 4000.);
 
-  TText *t_DijetMass_ratio_fat_1 = pt_DijetMass_ratio_fat->AddText(data_info.c_str());
+  PLOTTER->SetTitle("Data to MC ratio; M ( GeV/c^{2} ); Data/MC");
+  PLOTTER->SetMaximum(2.8);
+  PLOTTER->SetMinimum(0.0);
+
+  PLOTTER->DrawClone("");
+
+  h_DijetMass_ratio_fat->Draw("EPSAME");
+
+  //  TText *t_DijetMass_ratio_fat_1 = pt_DijetMass_ratio_fat->AddText(data_info.c_str());
 
   pt_DijetMass_ratio_fat->Draw("sames");
 
@@ -1326,7 +1033,7 @@ void ReadTree_new3()
   h_DijetMass_ratio_log->Draw("EP");
 
 
-  TText *t_DijetMass_ratio_log_1 = pt_DijetMass_ratio_log->AddText("CMS 2011 Data ( 201.348pb^{-1} )");
+  TText *t_DijetMass_ratio_log_1 = pt_DijetMass_ratio_log->AddText("CMS 2011 Data ( 4.7 fb^{-1} )");
 
   pt_DijetMass_ratio_log->Draw("sames");
 
@@ -1354,6 +1061,8 @@ void ReadTree_new3()
   std::cout << "test12" << std::endl;
   c_DijetMass_ratio_fat_log->Update();
   outf->Append(c_DijetMass_ratio_fat_log);
+
+
 
   // Dijet Mass Distribution (comparison b/w nPV=0 and nPV>1, Data vs MC)
 
@@ -1395,8 +1104,8 @@ void ReadTree_new3()
   h_DijetMass_MI_nPVe1_mc->Draw("same");
   h_DijetMass_MI_nPVg1_mc->Draw("same");
   l_DijetMass_MI->SetFillColor(0);
-  l_DijetMass_MI->AddEntry( h_DijetMass_MI_nPVe1_data,"CMS 2011 Data ( 201.348pb^{-1} ) with 1 primary vertex","p");
-  l_DijetMass_MI->AddEntry( h_DijetMass_MI_nPVg1_data,"CMS 2011 Data ( 201.348pb^{-1} ) with more than 1 primary vertex","p");
+  l_DijetMass_MI->AddEntry( h_DijetMass_MI_nPVe1_data,"CMS 2011 Data ( 4.7 fb^{-1} ) with 1 primary vertex","p");
+  l_DijetMass_MI->AddEntry( h_DijetMass_MI_nPVg1_data,"CMS 2011 Data ( 4.7 fb^{-1} ) with more than 1 primary vertex","p");
   l_DijetMass_MI->AddEntry( h_DijetMass_MI_nPVe1_mc,"QCD  PYTHIA6 Z2 + CMS Simulation with 1 primary vertex","f");
   l_DijetMass_MI->AddEntry( h_DijetMass_MI_nPVg1_mc,"QCD  PYTHIA6 Z2 + CMS Simulation with more than 1 primary vertex","f");
   l_DijetMass_MI->Draw("same");
@@ -1422,8 +1131,8 @@ void ReadTree_new3()
   h_DijetMass_MI_nPVe1_mc_log->Draw("same");
   h_DijetMass_MI_nPVg1_mc_log->Draw("same");
   l_DijetMass_MI_log->SetFillColor(0);
-  l_DijetMass_MI_log->AddEntry( h_DijetMass_MI_nPVe1_data_log,"CMS 2011 Data ( 201.348pb^{-1} ) with 1 primary vertex","p");
-  l_DijetMass_MI_log->AddEntry( h_DijetMass_MI_nPVg1_data_log,"CMS 2011 Data ( 201.348pb^{-1} ) with more than 1 primary vertex","p");
+  l_DijetMass_MI_log->AddEntry( h_DijetMass_MI_nPVe1_data_log,"CMS 2011 Data ( 4.7 fb^{-1} ) with 1 primary vertex","p");
+  l_DijetMass_MI_log->AddEntry( h_DijetMass_MI_nPVg1_data_log,"CMS 2011 Data ( 4.7 fb^{-1} ) with more than 1 primary vertex","p");
   l_DijetMass_MI_log->AddEntry( h_DijetMass_MI_nPVe1_mc_log,"QCD  PYTHIA6 Z2 + CMS Simulation with 1 primary vertex","f");
   l_DijetMass_MI_log->AddEntry( h_DijetMass_MI_nPVg1_mc_log,"QCD  PYTHIA6 Z2 + CMS Simulation with more than 1 primary vertex","f");
   l_DijetMass_MI_log->Draw("same");
@@ -1454,8 +1163,8 @@ void ReadTree_new3()
   h_DijetMass_normalized_MI_nPVe1_data->Draw("");
   h_DijetMass_normalized_MI_nPVg1_data->Draw("sameEP");
   l_DijetMass_normalized_MI->SetFillColor(0);
-  l_DijetMass_normalized_MI->AddEntry( h_DijetMass_normalized_MI_nPVe1_data,"CMS 2011 Data ( 201.348pb^{-1} ) with 1 primary vertex","f");
-  l_DijetMass_normalized_MI->AddEntry( h_DijetMass_normalized_MI_nPVg1_data,"CMS 2011 Data ( 201.348pb^{-1} ) with morethan 1 primary vertex","p");
+  l_DijetMass_normalized_MI->AddEntry( h_DijetMass_normalized_MI_nPVe1_data,"CMS 2011 Data ( 4.7 fb^{-1} ) with 1 primary vertex","f");
+  l_DijetMass_normalized_MI->AddEntry( h_DijetMass_normalized_MI_nPVg1_data,"CMS 2011 Data ( 4.7 fb^{-1} ) with morethan 1 primary vertex","p");
   l_DijetMass_normalized_MI->Draw("same");
   
   c_DijetMass_normalized_MI->Update();
@@ -1477,8 +1186,8 @@ void ReadTree_new3()
   h_DijetMass_normalized_MI_nPVe1_data_log->Draw("");
   h_DijetMass_normalized_MI_nPVg1_data_log->Draw("sameEP");
   l_DijetMass_normalized_MI_log->SetFillColor(0);
-  l_DijetMass_normalized_MI_log->AddEntry( h_DijetMass_normalized_MI_nPVe1_data_log,"CMS 2011 Data ( 201.348pb^{-1} ) with 1 primary vertex","f");
-  l_DijetMass_normalized_MI_log->AddEntry( h_DijetMass_normalized_MI_nPVg1_data_log,"CMS 2011 Data ( 201.348pb^{-1} ) with morethan 1 primary vertex","p");
+  l_DijetMass_normalized_MI_log->AddEntry( h_DijetMass_normalized_MI_nPVe1_data_log,"CMS 2011 Data ( 4.7 fb^{-1} ) with 1 primary vertex","f");
+  l_DijetMass_normalized_MI_log->AddEntry( h_DijetMass_normalized_MI_nPVg1_data_log,"CMS 2011 Data ( 4.7 fb^{-1} ) with morethan 1 primary vertex","p");
   l_DijetMass_normalized_MI_log->Draw("same");
 
   c_DijetMass_normalized_MI_log->Update();
@@ -1521,7 +1230,7 @@ void ReadTree_new3()
   pt_Eta_Phi_Scatter->SetBorderSize(0);
   pt_Eta_Phi_Scatter->SetFillColor(0);
 
-  TText *t_Eta_Phi_Scatter = pt_Eta_Phi_Scatter->AddText("CMS 2011 Data ( 201.348pb^{-1} )");
+  TText *t_Eta_Phi_Scatter = pt_Eta_Phi_Scatter->AddText("CMS 2011 Data ( 4.7 fb^{-1} )");
 
   pt_Eta_Phi_Scatter->Draw("sames");
 
@@ -1554,7 +1263,7 @@ void ReadTree_new3()
   pt_Eta_Phi_Scatter_1->SetBorderSize(0);
   pt_Eta_Phi_Scatter_1->SetFillColor(0);
 
-  TText *t_Eta_Phi_Scatter_1 = pt_Eta_Phi_Scatter_1->AddText("CMS 2011 Data ( 201.348pb^{-1} )");
+  TText *t_Eta_Phi_Scatter_1 = pt_Eta_Phi_Scatter_1->AddText("CMS 2011 Data ( 4.7 fb^{-1} )");
 
   pt_Eta_Phi_Scatter_1->Draw("sames");
 
@@ -1587,7 +1296,7 @@ void ReadTree_new3()
   pt_Eta_Phi_Scatter_2->SetBorderSize(0);
   pt_Eta_Phi_Scatter_2->SetFillColor(0);
 
-  TText *t_Eta_Phi_Scatter_2 = pt_Eta_Phi_Scatter_2->AddText("CMS 2011 Data ( 201.348pb^{-1} )");
+  TText *t_Eta_Phi_Scatter_2 = pt_Eta_Phi_Scatter_2->AddText("CMS 2011 Data ( 4.7 fb^{-1} )");
 
   pt_Eta_Phi_Scatter_2->Draw("sames");
 
@@ -1617,7 +1326,7 @@ void ReadTree_new3()
   h_MET_over_sumEt_data->Draw("sameEP");
 
   l_MET_over_sumEt->SetFillColor(0);
-  l_MET_over_sumEt->AddEntry(h_MET_over_sumEt_data,"CMS 2011 Data ( 201.348pb^{-1} )","p");
+  l_MET_over_sumEt->AddEntry(h_MET_over_sumEt_data,"CMS 2011 Data ( 4.7 fb^{-1} )","p");
   l_MET_over_sumEt->AddEntry(h_MET_over_sumEt_mc,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
   l_MET_over_sumEt->Draw("sames");
 
@@ -1641,55 +1350,76 @@ void ReadTree_new3()
   h_MET_over_sumEt_data_log->Draw("sameEP");
 
   l_MET_over_sumEt_log->SetFillColor(0);
-  l_MET_over_sumEt_log->AddEntry(h_MET_over_sumEt_data_log,"CMS 2011 Data ( 201.348pb^{-1} )","p");
+  l_MET_over_sumEt_log->AddEntry(h_MET_over_sumEt_data_log,"CMS 2011 Data ( 4.7 fb^{-1} )","p");
   l_MET_over_sumEt_log->AddEntry(h_MET_over_sumEt_mc_log,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
   l_MET_over_sumEt_log->Draw("sames");
 
   c_MET_over_sumEt_log->Update();
   outf->Append(c_MET_over_sumEt_log);
 
+
+
+
+  c_nVtx->cd(0);
+  gPad->SetTopMargin(0.07);
+  gPad->SetLeftMargin(0.15);
+  h_nVtx_mc->SetTitleOffset(1.2, "Y");
+
+  h_nVtx_data->SetTitle("Number of primary vertices");
+  h_nVtx_data->GetYaxis()->SetTitle("# events");
+  h_nVtx_data->GetYaxis()->SetLabelSize(0.03);
+  h_nVtx_data->GetXaxis()->SetTitle("n(Vtx)");
+  h_nVtx_data->SetMarkerStyle(20);
+  h_nVtx_mc->SetLineWidth(3);
+  h_nVtx_mc->SetTitle("Number of primary vertices");
+  h_nVtx_mc->GetYaxis()->SetTitle("# Jets");
+  h_nVtx_mc->GetYaxis()->SetLabelSize(0.03);
+  h_nVtx_mc->GetXaxis()->SetTitle("n(Vtx)");
+  h_nVtx_mc->SetFillColor(42);
+  h_nVtx_mc->SetLineColor(42);
+  h_nVtx_mc->Scale(nVtx_data_weight/nVtx_mc_weight);
+
+  double maximum = h_nVtx_mc->GetMaximum()*1.8;
+  if (maximum < h_nVtx_data->GetMaximum()) maximum = h_nVtx_data->GetMaximum()*1.2;
+  h_nVtx_mc->SetMaximum(maximum);
+
+  h_nVtx_mc->Draw("");
+  h_nVtx_data->Draw("sameEP");
+
+  l_nVtx->SetFillColor(0);
+  l_nVtx->AddEntry(h_nVtx_data,data_info.c_str(),"p");
+  l_nVtx->AddEntry(h_nVtx_mc,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
+  l_nVtx->Draw("sames");
+
+  cout << "Difference factor = " << nVtx_data_weight/nVtx_mc_weight/2200 << endl;
+
+  c_nVtx->Update();
+  outf->Append(c_nVtx);
+
+
+
+
+
+
+
   // EMF
-
-  c_EMF->cd(0);
-  h_EMF_data->SetTitle("");
-  h_EMF_data->GetYaxis()->SetTitle("Jets(two leading jets)");
-  h_EMF_data->GetYaxis()->SetLabelSize(0.03);
-  h_EMF_data->GetXaxis()->SetTitle("Jet EMF");
-  h_EMF_data->SetMarkerStyle(20);
-  h_EMF_mc->SetLineWidth(3);
-  h_EMF_mc->SetTitle("");
-  h_EMF_mc->GetYaxis()->SetTitle("Jets(two leading jets)");
-  h_EMF_mc->GetYaxis()->SetLabelSize(0.03);
-  h_EMF_mc->GetXaxis()->SetTitle("Jet EMF");
-  h_EMF_mc->SetFillColor(42);
-  h_EMF_mc->SetLineColor(42);
-  h_EMF_mc->Scale(EMF_data_weight/EMF_mc_weight);
-
-  h_EMF_mc->Draw("");
-  h_EMF_data->Draw("sameEP");
-
-  l_EMF->SetFillColor(0);
-  l_EMF->AddEntry(h_EMF_data,"CMS 2011 Data ( 201.348pb^{-1} )","p");
-  l_EMF->AddEntry(h_EMF_mc,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_EMF->Draw("sames");
-
-  c_EMF->Update();
-  outf->Append(c_EMF);
-
-
 
 
   c_fCh->cd(0);
-  h_fCh_data_fat->SetTitle("");
-  h_fCh_data_fat->GetYaxis()->SetTitle("PF Jets(two leading jets)");
+  gPad->SetTopMargin(0.07);
+  gPad->SetLeftMargin(0.15);
+  h_fCh_mc_fat->SetTitleOffset(1.2, "Y");
+
+  h_fCh_data_fat->SetTitle("Leading jets Charged Hadron fraction");
+  h_fCh_data_fat->GetYaxis()->SetTitle("# Jets");
   h_fCh_data_fat->GetYaxis()->SetLabelSize(0.03);
-  h_fCh_data_fat->GetXaxis()->SetTitle("PF Jet Ch frac");
+  h_fCh_data_fat->GetXaxis()->SetTitle("f_{ch}");
   h_fCh_data_fat->SetMarkerStyle(20);
   h_fCh_mc_fat->SetLineWidth(3);
-  h_fCh_mc_fat->SetTitle("");
-  h_fCh_mc_fat->GetYaxis()->SetTitle("PF Jets(two leading jets)");
+  h_fCh_mc_fat->SetTitle("Leading jets Charged Hadron fraction");
+  h_fCh_mc_fat->GetYaxis()->SetTitle("# Jets");
   h_fCh_mc_fat->GetYaxis()->SetLabelSize(0.03);
-  h_fCh_mc_fat->GetXaxis()->SetTitle("PF Jet Ch frac");
+  h_fCh_mc_fat->GetXaxis()->SetTitle("f_{ch}");
   h_fCh_mc_fat->SetFillColor(42);
   h_fCh_mc_fat->SetLineColor(42);
   h_fCh_mc_fat->Scale(fCh_data_weight/fCh_mc_weight);
@@ -1702,6 +1432,8 @@ void ReadTree_new3()
   l_fCh->AddEntry(h_fCh_mc_fat,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
   l_fCh->Draw("sames");
 
+  cout << "Difference factor = " << fCh_data_weight/fCh_mc_weight/3500 << endl;
+
   c_fCh->Update();
   outf->Append(c_fCh);
 
@@ -1709,19 +1441,25 @@ void ReadTree_new3()
 
 
   c_fNh->cd(0);
-  h_fNh_data_fat->SetTitle("");
-  h_fNh_data_fat->GetYaxis()->SetTitle("PF Jets(two leading jets)");
+ gPad->SetTopMargin(0.07);
+ gPad->SetLeftMargin(0.15);
+  h_fNh_mc_fat->SetTitleOffset(1.2, "Y");
+
+  h_fNh_data_fat->SetTitle("Leading jets Neutral Hadron fraction");
+  h_fNh_data_fat->GetYaxis()->SetTitle("# Jets");
   h_fNh_data_fat->GetYaxis()->SetLabelSize(0.03);
-  h_fNh_data_fat->GetXaxis()->SetTitle("PF Jet Nh frac");
+  h_fNh_data_fat->GetXaxis()->SetTitle("f_{nh}");
   h_fNh_data_fat->SetMarkerStyle(20);
   h_fNh_mc_fat->SetLineWidth(3);
-  h_fNh_mc_fat->SetTitle("");
-  h_fNh_mc_fat->GetYaxis()->SetTitle("PF Jets(two leading jets)");
+  h_fNh_mc_fat->SetTitle("Leading jets Neutral Hadron fraction");
+  h_fNh_mc_fat->GetYaxis()->SetTitle("# Jets");
   h_fNh_mc_fat->GetYaxis()->SetLabelSize(0.03);
-  h_fNh_mc_fat->GetXaxis()->SetTitle("PF Jet Nh frac");
+  h_fNh_mc_fat->GetXaxis()->SetTitle("f_{nh}");
   h_fNh_mc_fat->SetFillColor(42);
   h_fNh_mc_fat->SetLineColor(42);
   h_fNh_mc_fat->Scale(fNh_data_weight/fNh_mc_weight);
+
+  if (h_fNh_mc_fat->GetMaximum() < h_fNh_data_fat->GetMaximum() ) h_fNh_mc_fat->SetMaximum(h_fNh_data_fat->GetMaximum()*1.1);
 
   h_fNh_mc_fat->Draw("");
   h_fNh_data_fat->Draw("sameEP");
@@ -1736,16 +1474,20 @@ void ReadTree_new3()
 
 
   c_fPh->cd(0);
+ gPad->SetTopMargin(0.07);
+ gPad->SetLeftMargin(0.15);
+  h_fPh_mc_fat->SetTitleOffset(1.2, "Y");
+
   h_fPh_data_fat->SetTitle("");
-  h_fPh_data_fat->GetYaxis()->SetTitle("PF Jets(two leading jets)");
+  h_fPh_data_fat->GetYaxis()->SetTitle("# Jets");
   h_fPh_data_fat->GetYaxis()->SetLabelSize(0.03);
-  h_fPh_data_fat->GetXaxis()->SetTitle("PF Jet Ph frac");
+  h_fPh_data_fat->GetXaxis()->SetTitle("f_{#{gamma}}");
   h_fPh_data_fat->SetMarkerStyle(20);
   h_fPh_mc_fat->SetLineWidth(3);
-  h_fPh_mc_fat->SetTitle("");
-  h_fPh_mc_fat->GetYaxis()->SetTitle("PF Jets(two leading jets)");
+  h_fPh_mc_fat->SetTitle("Leading jets Photon fraction");
+  h_fPh_mc_fat->GetYaxis()->SetTitle("# Jets");
   h_fPh_mc_fat->GetYaxis()->SetLabelSize(0.03);
-  h_fPh_mc_fat->GetXaxis()->SetTitle("PF Jet Ph frac");
+  h_fPh_mc_fat->GetXaxis()->SetTitle("f_{#gamma}");
   h_fPh_mc_fat->SetFillColor(42);
   h_fPh_mc_fat->SetLineColor(42);
   h_fPh_mc_fat->Scale(fPh_data_weight/fPh_mc_weight);
@@ -1763,16 +1505,20 @@ void ReadTree_new3()
 
 
   c_fEl->cd(0);
+ gPad->SetTopMargin(0.07);
+ gPad->SetLeftMargin(0.15);
+  h_fEl_mc_fat->SetTitleOffset(1.2, "Y");
+
   h_fEl_data_fat->SetTitle("");
-  h_fEl_data_fat->GetYaxis()->SetTitle("PF Jets(two leading jets)");
+  h_fEl_data_fat->GetYaxis()->SetTitle("# Jets");
   h_fEl_data_fat->GetYaxis()->SetLabelSize(0.03);
-  h_fEl_data_fat->GetXaxis()->SetTitle("PF Jet El frac");
+  h_fEl_data_fat->GetXaxis()->SetTitle("f_{e}");
   h_fEl_data_fat->SetMarkerStyle(20);
   h_fEl_mc_fat->SetLineWidth(3);
-  h_fEl_mc_fat->SetTitle("");
-  h_fEl_mc_fat->GetYaxis()->SetTitle("PF Jets(two leading jets)");
+  h_fEl_mc_fat->SetTitle("Leading jets Electron fraction");
+  h_fEl_mc_fat->GetYaxis()->SetTitle("# Jets");
   h_fEl_mc_fat->GetYaxis()->SetLabelSize(0.03);
-  h_fEl_mc_fat->GetXaxis()->SetTitle("PF Jet El frac");
+  h_fEl_mc_fat->GetXaxis()->SetTitle("f_{e}");
   h_fEl_mc_fat->SetFillColor(42);
   h_fEl_mc_fat->SetLineColor(42);
   h_fEl_mc_fat->Scale(fEl_data_weight/fEl_mc_weight);
@@ -1785,15 +1531,49 @@ void ReadTree_new3()
   l_fEl->AddEntry(h_fEl_mc_fat,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
   l_fEl->Draw("sames");
 
+  c_fEl->SetLogy();
+
   c_fEl->Update();
   outf->Append(c_fEl);
 
 
 
 
+  c_fMu->cd(0);
+  gPad->SetTopMargin(0.07);
+  gPad->SetLeftMargin(0.15);
+  h_fMu_mc_fat->SetTitleOffset(1.2, "Y");
+
+  fMu_data_weight = h_fMu_data_fat->Integral(2, h_fMu_data_fat->GetNbinsX());
+  fMu_mc_weight = h_fMu_mc_fat->Integral(2, h_fMu_mc_fat->GetNbinsX());
 
 
+  h_fMu_data_fat->SetTitle("");
+  h_fMu_data_fat->GetYaxis()->SetTitle("# Jets");
+  h_fMu_data_fat->GetYaxis()->SetLabelSize(0.03);
+  h_fMu_data_fat->GetXaxis()->SetTitle("f_{e}");
+  h_fMu_data_fat->SetMarkerStyle(20);
+  h_fMu_mc_fat->SetLineWidth(3);
+  h_fMu_mc_fat->SetTitle("Leading jets muon fraction");
+  h_fMu_mc_fat->GetYaxis()->SetTitle("# Jets");
+  h_fMu_mc_fat->GetYaxis()->SetLabelSize(0.03);
+  h_fMu_mc_fat->GetXaxis()->SetTitle("f_{mu}");
+  h_fMu_mc_fat->SetFillColor(42);
+  h_fMu_mc_fat->SetLineColor(42);
+  h_fMu_mc_fat->Scale(fMu_data_weight/fMu_mc_weight);
 
+  h_fMu_mc_fat->Draw("");
+  h_fMu_data_fat->Draw("sameEP");
+
+  l_fMu->SetFillColor(0);
+  l_fMu->AddEntry(h_fMu_data_fat,data_info.c_str(),"p");
+  l_fMu->AddEntry(h_fMu_mc_fat,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
+  l_fMu->Draw("sames");
+
+  c_fMu->SetLogy();
+
+  c_fMu->Update();
+  outf->Append(c_fMu);
 
 
 
@@ -1819,7 +1599,7 @@ void ReadTree_new3()
   h_DPhi_data->Draw("sameEP");
 
   l_DPhi->SetFillColor(0);
-  l_DPhi->AddEntry(h_DPhi_data,"CMS 2011 Data Calo ( 201.348pb^{-1} )","p");
+  l_DPhi->AddEntry(h_DPhi_data,"CMS 2011 Data Calo ( 4.7 fb^{-1} )","p");
   l_DPhi->AddEntry(h_DPhi_mc,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
   l_DPhi->Draw("sames");
 
@@ -1838,12 +1618,12 @@ void ReadTree_new3()
   h_DPhi_data_fat->SetMarkerStyle(20);
 
   h_DPhi_mc_fat->SetLineWidth(3);
-  h_DPhi_mc_fat->SetTitle("");
+  h_DPhi_mc_fat->SetTitle("Azimuthal difference of the Fat jets");
   h_DPhi_mc_fat->SetFillColor(42);
   h_DPhi_mc_fat->SetLineColor(42);
-  h_DPhi_mc_fat->GetYaxis()->SetTitle("events");
+  h_DPhi_mc_fat->GetYaxis()->SetTitle("# Events");
   h_DPhi_mc_fat->GetYaxis()->SetLabelSize(0.03);
-  h_DPhi_mc_fat->GetXaxis()->SetTitle("Fat Jet #Delta #phi");
+  h_DPhi_mc_fat->GetXaxis()->SetTitle("#Delta #phi");
   h_DPhi_mc_fat->Scale(DPhi_data_fat_weight/DPhi_mc_fat_weight);
 
   h_DPhi_mc_fat->Draw("");
@@ -1872,7 +1652,7 @@ void ReadTree_new3()
   h_DPhi_data_log->Draw("sameEP");
 
   l_DPhi_log->SetFillColor(0);
-  l_DPhi_log->AddEntry(h_DPhi_data_log,"CMS 2011 Data Calo ( 201.348pb^{-1} )","p");
+  l_DPhi_log->AddEntry(h_DPhi_data_log,"CMS 2011 Data Calo ( 4.7 fb^{-1} )","p");
   l_DPhi_log->AddEntry(h_DPhi_mc_log,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
   l_DPhi_log->Draw("sames");
 
@@ -1882,6 +1662,9 @@ void ReadTree_new3()
   // DPhi (log) PF
 
   c_DPhi_fat_log->cd(0);
+
+  gPad->SetTopMargin(0.07);
+   gPad->SetLeftMargin(0.15);
 
   TH1F *h_DPhi_data_fat_log                         =(TH1F*)h_DPhi_data_fat->Clone();
   TH1F *h_DPhi_mc_fat_log                           =(TH1F*)h_DPhi_mc_fat->Clone();
@@ -1903,96 +1686,16 @@ void ReadTree_new3()
 
   // Eta distribution for two leading jets
 
-  c_Eta->cd(0);
-  h_Eta_data->SetTitle("");
-  h_Eta_data->GetYaxis()->SetTitle("Jets(two leading jets)");
-  h_Eta_data->GetYaxis()->SetLabelSize(0.03);
-  h_Eta_data->GetXaxis()->SetTitle("Jet #eta");
-  h_Eta_data->SetMarkerStyle(20);
-
-  h_Eta_mc->SetLineWidth(3);
-  h_Eta_mc->SetTitle("");
-  h_Eta_mc->SetFillColor(42);
-  h_Eta_mc->SetLineColor(42);
-  h_Eta_mc->GetYaxis()->SetTitle("Jets(two leading jets)");
-  h_Eta_mc->GetYaxis()->SetLabelSize(0.03);
-  h_Eta_mc->GetXaxis()->SetTitle("Jet #eta");
-  h_Eta_mc->Scale(Eta_data_weight/Eta_mc_weight);
-
-  h_Eta_mc->Draw("");
-  h_Eta_data->Draw("sameEP");
-
-  l_Eta->SetFillColor(0);
-  l_Eta->AddEntry(h_Eta_data,"CMS 2011 Data Calo ( 201.348pb^{-1} )","p");
-  l_Eta->AddEntry(h_Eta_mc,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_Eta->Draw("sames");
-
-  c_Eta->Update();
-  outf->Append(c_Eta);
-
-  // Eta distribution for first leading jets
-
-  c_Eta_1->cd(0);
-  h_Eta_data_1->SetTitle("");
-  h_Eta_data_1->GetYaxis()->SetTitle("first leading jets");
-  h_Eta_data_1->GetYaxis()->SetLabelSize(0.03);
-  h_Eta_data_1->GetXaxis()->SetTitle("Jet #eta");
-  h_Eta_data_1->SetMarkerStyle(20);
-
-  h_Eta_mc_1->SetLineWidth(3);
-  h_Eta_mc_1->SetTitle("");
-  h_Eta_mc_1->SetFillColor(42);
-  h_Eta_mc_1->SetLineColor(42);
-  h_Eta_mc_1->GetYaxis()->SetTitle("first leading jets");
-  h_Eta_mc_1->GetYaxis()->SetLabelSize(0.03);
-  h_Eta_mc_1->GetXaxis()->SetTitle("Jet #eta");
-  h_Eta_mc_1->Scale(Eta_data_weight_1/Eta_mc_weight_1);
-
-  h_Eta_mc_1->Draw("");
-  h_Eta_data_1->Draw("sameEP");
-
-  l_Eta_1->SetFillColor(0);
-  l_Eta_1->AddEntry(h_Eta_data_1,"CMS 2011 Data Calo ( 201.348pb^{-1} )","p");
-  l_Eta_1->AddEntry(h_Eta_mc_1,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_Eta_1->Draw("sames");
-
-  c_Eta_1->Update();
-  outf->Append(c_Eta_1);
-
-  // Eta distribution for second leading jets
-
-  c_Eta_2->cd(0);
-  h_Eta_data_2->SetTitle("");
-  h_Eta_data_2->GetYaxis()->SetTitle("second leading jets");
-  h_Eta_data_2->GetYaxis()->SetLabelSize(0.03);
-  h_Eta_data_2->GetXaxis()->SetTitle("Jet #eta");
-  h_Eta_data_2->SetMarkerStyle(20);
-
-  h_Eta_mc_2->SetLineWidth(3);
-  h_Eta_mc_2->SetTitle("");
-  h_Eta_mc_2->SetFillColor(42);
-  h_Eta_mc_2->SetLineColor(42);
-  h_Eta_mc_2->GetYaxis()->SetTitle("second leading jets");
-  h_Eta_mc_2->GetYaxis()->SetLabelSize(0.03);
-  h_Eta_mc_2->GetXaxis()->SetTitle("Jet #eta");
-  h_Eta_mc_2->Scale(Eta_data_weight_2/Eta_mc_weight_2);
-
-  h_Eta_mc_2->Draw("");
-  h_Eta_data_2->Draw("sameEP");
-
-  l_Eta_2->SetFillColor(0);
-  l_Eta_2->AddEntry(h_Eta_data_2,"CMS 2011 Data Calo ( 201.348pb^{-1} )","p");
-  l_Eta_2->AddEntry(h_Eta_mc_2,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_Eta_2->Draw("sames");
-
-  c_Eta_2->Update();
-  outf->Append(c_Eta_2);
 
 
 
   // Eta distribution for two leading jets PF
 
   c_Eta_fat->cd(0);
+
+  gPad->SetTopMargin(0.07);
+   gPad->SetLeftMargin(0.15);
+
   h_Eta_data_fat->SetTitle("");
   h_Eta_data_fat->GetYaxis()->SetTitle("Fat Jets(two leading jets)");
   h_Eta_data_fat->GetYaxis()->SetLabelSize(0.03);
@@ -2000,13 +1703,15 @@ void ReadTree_new3()
   h_Eta_data_fat->SetMarkerStyle(20);
 
   h_Eta_mc_fat->SetLineWidth(3);
-  h_Eta_mc_fat->SetTitle("");
+  h_Eta_mc_fat->SetTitle("Fat jets pseudorapidity");
   h_Eta_mc_fat->SetFillColor(42);
   h_Eta_mc_fat->SetLineColor(42);
-  h_Eta_mc_fat->GetYaxis()->SetTitle("Fat Jets(two leading jets)");
+  h_Eta_mc_fat->GetYaxis()->SetTitle("# Fat jets");
   h_Eta_mc_fat->GetYaxis()->SetLabelSize(0.03);
-  h_Eta_mc_fat->GetXaxis()->SetTitle("Fat Jet #eta");
+  h_Eta_mc_fat->GetXaxis()->SetTitle("#eta");
   h_Eta_mc_fat->Scale(Eta_data_fat_weight/Eta_mc_fat_weight);
+
+  h_Eta_mc_fat->SetTitleOffset(1.2, "Y");
 
   h_Eta_mc_fat->SetMaximum(h_Eta_mc_fat->GetMaximum()*1.35);
   h_Eta_mc_fat->Draw("");
@@ -2042,12 +1747,12 @@ void ReadTree_new3()
   h_Eta_data_fat_1->SetMarkerStyle(20);
 
   h_Eta_mc_fat_1->SetLineWidth(3);
-  h_Eta_mc_fat_1->SetTitle("");
+  h_Eta_mc_fat_1->SetTitle("Fat jets pseudorapidity");
   h_Eta_mc_fat_1->SetFillColor(42);
   h_Eta_mc_fat_1->SetLineColor(42);
-  h_Eta_mc_fat_1->GetYaxis()->SetTitle("first leading jets");
+  h_Eta_mc_fat_1->GetYaxis()->SetTitle("# Fat jets");
   h_Eta_mc_fat_1->GetYaxis()->SetLabelSize(0.03);
-  h_Eta_mc_fat_1->GetXaxis()->SetTitle("Fat Jet #eta");
+  h_Eta_mc_fat_1->GetXaxis()->SetTitle("#eta");
   h_Eta_mc_fat_1->Scale(Eta_data_fat_weight_1/Eta_mc_fat_weight_1);
 
   h_Eta_mc_fat_1->Draw("");
@@ -2091,51 +1796,28 @@ void ReadTree_new3()
   outf->Append(c_Eta_fat_2);
 
 
-  // Delta Eta b/w two leading jets
 
-  c_DEta->cd(0);
-  h_DEta_data->SetTitle("");
-  h_DEta_data->GetYaxis()->SetTitle("Events");
-  h_DEta_data->GetYaxis()->SetLabelSize(0.03);
-  h_DEta_data->GetXaxis()->SetTitle("Jet #Delta#eta");
-  h_DEta_data->SetMarkerStyle(20);
-
-  h_DEta_mc->SetLineWidth(3);
-  h_DEta_mc->SetTitle("");
-  h_DEta_mc->SetFillColor(42);
-  h_DEta_mc->SetLineColor(42);
-  h_DEta_mc->GetYaxis()->SetTitle("Events");
-  h_DEta_mc->GetYaxis()->SetLabelSize(0.03);
-  h_DEta_mc->GetXaxis()->SetTitle("Jet #Delta#eta");
-  h_DEta_mc->Scale(DEta_data_weight/DEta_mc_weight);
-
-  h_DEta_mc->Draw("");
-  h_DEta_data->Draw("sameEP");
-
-  l_DEta->SetFillColor(0);
-  l_DEta->AddEntry(h_DEta_data,"CMS 2011 Data Calo ( 201.348pb^{-1} )","p");
-  l_DEta->AddEntry(h_DEta_mc,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_DEta->Draw("sames");
-
-  c_DEta->Update();
-  outf->Append(c_DEta);
-
-  // Delta Eta b/w two leading jets PF
 
   c_DEta_fat->cd(0);
+
+  gPad->SetTopMargin(0.07);
+   gPad->SetLeftMargin(0.15);
+
   h_DEta_data_fat->SetTitle("");
-  h_DEta_data_fat->GetYaxis()->SetTitle("Events");
+  h_DEta_data_fat->GetYaxis()->SetTitle("# Events");
   h_DEta_data_fat->GetYaxis()->SetLabelSize(0.03);
   h_DEta_data_fat->GetXaxis()->SetTitle("Fat Jet #Delta#eta");
   h_DEta_data_fat->SetMarkerStyle(20);
 
   h_DEta_mc_fat->SetLineWidth(3);
-  h_DEta_mc_fat->SetTitle("");
+  h_DEta_mc_fat->SetTitle("Difference in pseudorapidity of the Fat jets");
+  h_DEta_mc_fat->SetTitleOffset(1.1, "Y");
+
   h_DEta_mc_fat->SetFillColor(42);
   h_DEta_mc_fat->SetLineColor(42);
-  h_DEta_mc_fat->GetYaxis()->SetTitle("Events");
+  h_DEta_mc_fat->GetYaxis()->SetTitle("# Events");
   h_DEta_mc_fat->GetYaxis()->SetLabelSize(0.03);
-  h_DEta_mc_fat->GetXaxis()->SetTitle("Fat Jet #Delta#eta");
+  h_DEta_mc_fat->GetXaxis()->SetTitle("#Delta#eta");
   h_DEta_mc_fat->Scale(DEta_data_fat_weight/DEta_mc_fat_weight);
 
   h_DEta_mc_fat->Draw("");
@@ -2149,239 +1831,14 @@ void ReadTree_new3()
   c_DEta_fat->Update();
   outf->Append(c_DEta_fat);
 
-  // phi distribution for two leading jets
-
-  c_Phi->cd(0);
-
-
-  float average = Phi_data_weight/18.0;
-
-  float Phi_value[18];
-  float Phi_sum(0.0);
-  float Phi_square_sum(0.0);
-  float rms(0.0);
-  std::cout << "test15" <<std::endl;
-  for (int i=1;i<=18;i++) {
-    Phi_value[i-1]=h_Phi_data->GetBinContent(i);
-    Phi_sum+=h_Phi_data->GetBinContent(i);
-    Phi_square_sum+=pow(h_Phi_data->GetBinContent(i)-average,2);
-  }
-  std::cout << "test16" << std::endl;
-
-
-  h_Phi_data->SetTitle("");
-  h_Phi_data->GetYaxis()->SetTitle("Jets(two leading jets)");
-  h_Phi_data->GetYaxis()->SetLabelSize(0.03);
-  h_Phi_data->GetXaxis()->SetTitle("Jet #phi");
-  h_Phi_data->SetMarkerStyle(20);
-
-  h_Phi_mc->SetLineWidth(3);
-  h_Phi_mc->SetTitle("");
-  h_Phi_mc->SetFillColor(42);
-  h_Phi_mc->SetLineColor(42);
-  h_Phi_mc->GetYaxis()->SetTitle("Jets(two leading jets)");
-  h_Phi_mc->GetYaxis()->SetLabelSize(0.03);
-  h_Phi_mc->GetXaxis()->SetTitle("Jet #phi");
-  h_Phi_mc->Scale(Phi_data_weight/Phi_mc_weight);
-  h_Phi_mc->SetMinimum(average*0.8);
-  h_Phi_mc->SetMaximum(average*1.2);
-
-  rms = sqrt(Phi_square_sum/18.0);
-
-  TGraph *g_phi = new TGraph(2);
-
-  g_phi->SetFillColor(1);
-  g_phi->SetLineColor(2);
-  g_phi->SetLineStyle(3);
-  g_phi->SetLineWidth(3);
-  g_phi->SetMarkerStyle(20);
-  g_phi->SetPoint(0,-3.2,average);
-  g_phi->SetPoint(1,3.2,average);
-
-  h_Phi_mc->Draw("");
-  h_Phi_data->Draw("sameEP");
-  g_phi->Draw("l");
-
-
-  pt_Phi->SetBorderSize(0);
-  pt_Phi->SetFillColor(0);
-
-  char s_average[100],s_rms[100],s_rms_percentage[100];
-
-  sprintf(s_average,"average = %f",average);
-  sprintf(s_rms,"rms = %f",rms);
-  sprintf(s_rms_percentage,"rms/average = %f",rms/average);
-
-  TText *t_phi_1 = pt_Phi->AddText(s_average);
-  TText *t_phi_2 = pt_Phi->AddText(s_rms);
-  TText *t_phi_3 = pt_Phi->AddText(s_rms_percentage);
-
-  pt_Phi->Draw("sames");
-
-  l_Phi->SetFillColor(0);
-  l_Phi->AddEntry(h_Phi_data,"CMS 2011 Data Calo ( 201.348pb^{-1} )","p");
-  l_Phi->AddEntry(h_Phi_mc,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_Phi->Draw("sames");
-
-  c_Phi->Update();
-  outf->Append(c_Phi);
-
-  // phi distribution for first leading jets
-
-  c_Phi_1->cd(0);
-
-
-  float average = Phi_data_weight_1/18.0;
-
-  float Phi_value[18];
-  float Phi_sum(0.0);
-  float Phi_square_sum(0.0);
-  float rms(0.0);
-
-  for (i=1;i<=18;i++) {
-    Phi_value[i-1]=h_Phi_data_1->GetBinContent(i);
-    Phi_sum+=h_Phi_data_1->GetBinContent(i);
-    Phi_square_sum+=pow(h_Phi_data_1->GetBinContent(i)-average,2);
-  }
-  h_Phi_data_1->SetTitle("");
-  h_Phi_data_1->GetYaxis()->SetTitle("first leading jets");
-  h_Phi_data_1->GetYaxis()->SetLabelSize(0.03);
-  h_Phi_data_1->GetXaxis()->SetTitle("Jet #phi");
-  h_Phi_data_1->SetMarkerStyle(20);
-
-  h_Phi_mc_1->SetLineWidth(3);
-  h_Phi_mc_1->SetTitle("");
-  h_Phi_mc_1->SetFillColor(42);
-  h_Phi_mc_1->SetLineColor(42);
-  h_Phi_mc_1->GetYaxis()->SetTitle("first leading jets");
-  h_Phi_mc_1->GetYaxis()->SetLabelSize(0.03);
-  h_Phi_mc_1->GetXaxis()->SetTitle("Jet #phi");
-  h_Phi_mc_1->Scale(Phi_data_weight_1/Phi_mc_weight_1);
-  h_Phi_mc_1->SetMinimum(average*0.8);
-  h_Phi_mc_1->SetMaximum(average*1.2);
-
-  rms = sqrt(Phi_square_sum/18.0);
-
-  TGraph *g_phi_1 = new TGraph(2);
-
-  g_phi_1->SetFillColor(1);
-  g_phi_1->SetLineColor(2);
-  g_phi_1->SetLineStyle(3);
-  g_phi_1->SetLineWidth(3);
-  g_phi_1->SetMarkerStyle(20);
-  g_phi_1->SetPoint(0,-3.2,average);
-  g_phi_1->SetPoint(1,3.2,average);
-
-  h_Phi_mc_1->Draw("");
-  h_Phi_data_1->Draw("sameEP");
-  g_phi_1->Draw("l");
-
-
-  pt_Phi_1->SetBorderSize(0);
-  pt_Phi_1->SetFillColor(0);
-
-  char s_average[100],s_rms[100],s_rms_percentage[100];
-
-  sprintf(s_average,"average = %f",average);
-  sprintf(s_rms,"rms = %f",rms);
-  sprintf(s_rms_percentage,"rms/average = %f",rms/average);
-
-  TText *t_phi_1 = pt_Phi_1->AddText(s_average);
-  TText *t_phi_2 = pt_Phi_1->AddText(s_rms);
-  TText *t_phi_3 = pt_Phi_1->AddText(s_rms_percentage);
-
-  pt_Phi_1->Draw("sames");
-
-  l_Phi_1->SetFillColor(0);
-  l_Phi_1->AddEntry(h_Phi_data_1,"CMS 2011 Data Calo ( 201.348pb^{-1} )","p");
-  l_Phi_1->AddEntry(h_Phi_mc_1,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_Phi_1->Draw("sames");
-
-  c_Phi_1->Update();
-  outf->Append(c_Phi_1);
-
-  // phi distribution for second leading jets
-
-  c_Phi_2->cd(0);
-
-
-  float average = Phi_data_weight_2/18.0;
-
-  float Phi_value[18];
-  float Phi_sum(0.0);
-  float Phi_square_sum(0.0);
-  float rms(0.0);
-
-  for (i=1;i<=18;i++) {
-    Phi_value[i-1]=h_Phi_data_2->GetBinContent(i);
-    Phi_sum+=h_Phi_data_2->GetBinContent(i);
-    Phi_square_sum+=pow(h_Phi_data_2->GetBinContent(i)-average,2);
-  }
-
-  h_Phi_data_2->SetTitle("");
-  h_Phi_data_2->GetYaxis()->SetTitle("second leading jets");
-  h_Phi_data_2->GetYaxis()->SetLabelSize(0.03);
-  h_Phi_data_2->GetXaxis()->SetTitle("Jet #phi");
-  h_Phi_data_2->SetMarkerStyle(20);
-
-  h_Phi_mc_2->SetLineWidth(3);
-  h_Phi_mc_2->SetTitle("");
-  h_Phi_mc_2->SetFillColor(42);
-  h_Phi_mc_2->SetLineColor(42);
-  h_Phi_mc_2->GetYaxis()->SetTitle("second leading jets");
-  h_Phi_mc_2->GetYaxis()->SetLabelSize(0.03);
-  h_Phi_mc_2->GetXaxis()->SetTitle("Jet #phi");
-  h_Phi_mc_2->Scale(Phi_data_weight_2/Phi_mc_weight_2);
-  h_Phi_mc_2->SetMinimum(average*0.8);
-  h_Phi_mc_2->SetMaximum(average*1.2);
-
-  rms = sqrt(Phi_square_sum/18.0);
-
-  TGraph *g_phi_2 = new TGraph(2);
-
-  g_phi_2->SetFillColor(1);
-  g_phi_2->SetLineColor(2);
-  g_phi_2->SetLineStyle(3);
-  g_phi_2->SetLineWidth(3);
-  g_phi_2->SetMarkerStyle(20);
-  g_phi_2->SetPoint(0,-3.2,average);
-  g_phi_2->SetPoint(1,3.2,average);
-
-  h_Phi_mc_2->Draw("");
-  h_Phi_data_2->Draw("sameEP");
-  g_phi_2->Draw("l");
-
-
-  pt_Phi_2->SetBorderSize(0);
-  pt_Phi_2->SetFillColor(0);
-
-  char s_average[100],s_rms[100],s_rms_percentage[100];
-
-  sprintf(s_average,"average = %f",average);
-  sprintf(s_rms,"rms = %f",rms);
-  sprintf(s_rms_percentage,"rms/average = %f",rms/average);
-
-  TText *t_phi_1 = pt_Phi_2->AddText(s_average);
-  TText *t_phi_2 = pt_Phi_2->AddText(s_rms);
-  TText *t_phi_3 = pt_Phi_2->AddText(s_rms_percentage);
-
-  pt_Phi_2->Draw("sames");
-
-  l_Phi_2->SetFillColor(0);
-  l_Phi_2->AddEntry(h_Phi_data_2,"CMS 2011 Data Calo( 201.348pb^{-1} )","p");
-  l_Phi_2->AddEntry(h_Phi_mc_2,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_Phi_2->Draw("sames");
-
-  c_Phi_2->Update();
-  outf->Append(c_Phi_2);
-
-
 
 
 
   // phi distribution for two leading jets PF
 
   c_Phi_fat->cd(0);
+  gPad->SetTopMargin(0.07);
+  gPad->SetLeftMargin(0.15);
 
 
   float average = Phi_data_fat_weight/18.0;
@@ -2397,19 +1854,19 @@ void ReadTree_new3()
     Phi_square_sum+=pow(h_Phi_data_fat->GetBinContent(i)-average,2);
   }
 
-  h_Phi_data_fat->SetTitle("");
-  h_Phi_data_fat->GetYaxis()->SetTitle("Fat Jets(two leading jets)");
+  h_Phi_data_fat->SetTitle("Fat jets azimuthal angle");
+  h_Phi_data_fat->GetYaxis()->SetTitle("# Jets");
   h_Phi_data_fat->GetYaxis()->SetLabelSize(0.03);
-  h_Phi_data_fat->GetXaxis()->SetTitle("Fat Jet #phi");
+  h_Phi_data_fat->GetXaxis()->SetTitle("#phi");
   h_Phi_data_fat->SetMarkerStyle(20);
 
   h_Phi_mc_fat->SetLineWidth(3);
-  h_Phi_mc_fat->SetTitle("");
+  h_Phi_mc_fat->SetTitle("Fat jets azimuthal angle");
   h_Phi_mc_fat->SetFillColor(42);
   h_Phi_mc_fat->SetLineColor(42);
-  h_Phi_mc_fat->GetYaxis()->SetTitle("Fat Jets(two leading jets)");
-  h_Phi_mc_fat->GetYaxis()->SetLabelSize(0.03);
-  h_Phi_mc_fat->GetXaxis()->SetTitle("Fat Jet #phi");
+  h_Phi_mc_fat->GetYaxis()->SetTitle("# Fat Jets");
+  h_Phi_mc_fat->GetYaxis()->SetLabelSize(0.028);
+  h_Phi_mc_fat->GetXaxis()->SetTitle("#phi");
   h_Phi_mc_fat->Scale(Phi_data_fat_weight/Phi_mc_fat_weight);
   h_Phi_mc_fat->SetMinimum(average*0.8);
   h_Phi_mc_fat->SetMaximum(average*1.2);
@@ -2440,15 +1897,15 @@ void ReadTree_new3()
   sprintf(s_rms,"rms = %f",rms);
   sprintf(s_rms_percentage,"rms/average = %f",rms/average);
 
-  TText *t_phi_fat_1 = pt_Phi_fat->AddText(s_average);
-  TText *t_phi_fat_2 = pt_Phi_fat->AddText(s_rms);
-  TText *t_phi_fat_3 = pt_Phi_fat->AddText(s_rms_percentage);
+  //  TText *t_phi_fat_1 = pt_Phi_fat->AddText(s_average);
+  //  TText *t_phi_fat_2 = pt_Phi_fat->AddText(s_rms);
+  //  TText *t_phi_fat_3 = pt_Phi_fat->AddText(s_rms_percentage);
 
   pt_Phi_fat->Draw("sames");
 
   l_Phi_fat->SetFillColor(0);
-  l_Phi_fat->AddEntry(h_Phi_data,data_info.c_str(),"p");
-  l_Phi_fat->AddEntry(h_Phi_mc,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
+  l_Phi_fat->AddEntry(h_Phi_data_fat,data_info.c_str(),"p");
+  l_Phi_fat->AddEntry(h_Phi_mc_fat,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
   l_Phi_fat->Draw("sames");
 
   c_Phi->Update();
@@ -2473,7 +1930,7 @@ void ReadTree_new3()
   }
   h_Phi_data_fat_1->SetTitle("");
   h_Phi_data_fat_1->GetYaxis()->SetTitle("first leading jets");
-  h_Phi_data_fat_1->GetYaxis()->SetLabelSize(0.03);
+  h_Phi_data_fat_1->GetYaxis()->SetLabelSize(0.028);
   h_Phi_data_fat_1->GetXaxis()->SetTitle("Fat Jet #phi");
   h_Phi_data_fat_1->SetMarkerStyle(20);
 
@@ -2482,7 +1939,7 @@ void ReadTree_new3()
   h_Phi_mc_fat_1->SetFillColor(42);
   h_Phi_mc_fat_1->SetLineColor(42);
   h_Phi_mc_fat_1->GetYaxis()->SetTitle("first leading jets");
-  h_Phi_mc_fat_1->GetYaxis()->SetLabelSize(0.03);
+  h_Phi_mc_fat_1->GetYaxis()->SetLabelSize(0.028);
   h_Phi_mc_fat_1->GetXaxis()->SetTitle("Fat Jet #phi");
   h_Phi_mc_fat_1->Scale(Phi_data_fat_weight_1/Phi_mc_fat_weight_1);
   h_Phi_mc_fat_1->SetMinimum(average*0.8);
@@ -2548,7 +2005,7 @@ void ReadTree_new3()
 
   h_Phi_data_fat_2->SetTitle("");
   h_Phi_data_fat_2->GetYaxis()->SetTitle("second leading jets");
-  h_Phi_data_fat_2->GetYaxis()->SetLabelSize(0.03);
+  h_Phi_data_fat_2->GetYaxis()->SetLabelSize(0.028);
   h_Phi_data_fat_2->GetXaxis()->SetTitle("Fat Jet #phi");
   h_Phi_data_fat_2->SetMarkerStyle(20);
 
@@ -2557,7 +2014,7 @@ void ReadTree_new3()
   h_Phi_mc_fat_2->SetFillColor(42);
   h_Phi_mc_fat_2->SetLineColor(42);
   h_Phi_mc_fat_2->GetYaxis()->SetTitle("second leading jets");
-  h_Phi_mc_fat_2->GetYaxis()->SetLabelSize(0.03);
+  h_Phi_mc_fat_2->GetYaxis()->SetLabelSize(0.028);
   h_Phi_mc_fat_2->GetXaxis()->SetTitle("Fat Jet #phi");
   h_Phi_mc_fat_2->Scale(Phi_data_fat_weight_2/Phi_mc_fat_weight_2);
   h_Phi_mc_fat_2->SetMinimum(average*0.8);
@@ -2589,9 +2046,9 @@ void ReadTree_new3()
   sprintf(s_rms,"rms = %f",rms);
   sprintf(s_rms_percentage,"rms/average = %f",rms/average);
 
-  TText *t_phi_fat_1 = pt_Phi_fat_2->AddText(s_average);
-  TText *t_phi_fat_2 = pt_Phi_fat_2->AddText(s_rms);
-  TText *t_phi_fat_3 = pt_Phi_fat_2->AddText(s_rms_percentage);
+  //  TText *t_phi_fat_1 = pt_Phi_fat_2->AddText(s_average);
+  // TText *t_phi_fat_2 = pt_Phi_fat_2->AddText(s_rms);
+  // TText *t_phi_fat_3 = pt_Phi_fat_2->AddText(s_rms_percentage);
 
   pt_Phi_fat_2->Draw("sames");
 
@@ -2609,130 +2066,28 @@ void ReadTree_new3()
 
 
 
-  // n90hits distribution for two jets
 
-  c_n90hits->cd(0);
-  h_n90hits_data->SetTitle("");
-  h_n90hits_data->GetYaxis()->SetTitle("Jets(two leading jets)");
-  h_n90hits_data->GetYaxis()->SetLabelSize(0.03);
-  h_n90hits_data->GetXaxis()->SetTitle("Jet n90hits");
-  h_n90hits_data->SetMarkerStyle(20);
-
-  h_n90hits_mc->SetLineWidth(3);
-  h_n90hits_mc->SetTitle("");
-  h_n90hits_mc->SetFillColor(42);
-  h_n90hits_mc->SetLineColor(42);
-  h_n90hits_mc->GetYaxis()->SetTitle("Jets(two leading jets)");
-  h_n90hits_mc->GetYaxis()->SetLabelSize(0.03);
-  h_n90hits_mc->GetXaxis()->SetTitle("Jet n90hits");
-  h_n90hits_mc->Scale(n90hits_data_weight/n90hits_mc_weight);
-
-  h_n90hits_mc->Draw("");
-  h_n90hits_data->Draw("sameEP");
-
-  l_n90hits->SetFillColor(0);
-  l_n90hits->AddEntry(h_n90hits_data,"CMS 2011 Data ( 201.348pb^{-1} )","p");
-  l_n90hits->AddEntry(h_n90hits_mc,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_n90hits->Draw("sames");
-
-  c_n90hits->Update();
-  outf->Append(c_n90hits);
-
-  c_n90hits_log->cd(0);
-
-  TH1F *h_n90hits_data_log                      =(TH1F*)h_n90hits_data->Clone();
-  TH1F *h_n90hits_mc_log                        =(TH1F*)h_n90hits_mc->Clone();
-
-  c_n90hits_log->SetLogy();
-
-  h_n90hits_mc_log->SetMinimum(0.5);
-
-  h_n90hits_mc_log->Draw("");
-  h_n90hits_data_log->Draw("sameEP");
-
-  l_n90hits_log->SetFillColor(0);
-  l_n90hits_log->AddEntry(h_n90hits_data_log,"CMS 2011 Data ( 201.348pb^{-1} )","p");
-  l_n90hits_log->AddEntry(h_n90hits_mc_log,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_n90hits_log->Draw("sames");
-
-  c_n90hits_log->Update();
-  outf->Append(c_n90hits_log);
-
-  // fHPD
-
-  c_fHPD->cd(0);
-  h_fHPD_data->SetTitle("");
-  h_fHPD_data->GetYaxis()->SetTitle("Jets(two leading jets)");
-  h_fHPD_data->GetYaxis()->SetLabelSize(0.03);
-  h_fHPD_data->GetXaxis()->SetTitle("Jet fHPD");
-  h_fHPD_data->SetMarkerStyle(20);
-
-  h_fHPD_mc->SetLineWidth(3);
-  h_fHPD_mc->SetTitle("");
-  h_fHPD_mc->SetFillColor(42);
-  h_fHPD_mc->SetLineColor(42);
-  h_fHPD_mc->GetYaxis()->SetTitle("Jets(two leading jets)");
-  h_fHPD_mc->GetYaxis()->SetLabelSize(0.03);
-  h_fHPD_mc->GetXaxis()->SetTitle("Jet fHPD");
-  h_fHPD_mc->Scale(fHPD_data_weight/fHPD_mc_weight);
-
-  h_fHPD_mc->Draw("");
-  h_fHPD_data->Draw("sameEP");
-
-  l_fHPD->SetFillColor(0);
-  l_fHPD->AddEntry(h_fHPD_data,"CMS 2011 Data ( 201.348pb^{-1} )","p");
-  l_fHPD->AddEntry(h_fHPD_mc,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_fHPD->Draw("sames");
-
-  c_fHPD->Update();
-  outf->Append(c_fHPD);
-
-  // corrected pt distribution for two leading jets
-
-  c_corPt->cd(0);
-  h_corPt_data->SetTitle("");
-  h_corPt_data->GetYaxis()->SetTitle("Jets(two leading jets)");
-  h_corPt_data->GetYaxis()->SetLabelSize(0.03);
-  h_corPt_data->GetXaxis()->SetTitle("Jet cor P_{T}");
-  h_corPt_data->SetMarkerStyle(20);
-
-  h_corPt_mc->SetLineWidth(3);
-  h_corPt_mc->SetTitle("");
-  h_corPt_mc->SetFillColor(42);
-  h_corPt_mc->SetLineColor(42);
-  h_corPt_mc->GetYaxis()->SetTitle("Jets(two leading jets)");
-  h_corPt_mc->GetYaxis()->SetLabelSize(0.03);
-  h_corPt_mc->GetXaxis()->SetTitle("Jet cor P_{T}");
-  h_corPt_mc->Scale(corPt_data_weight/corPt_mc_weight);
-
-  h_corPt_mc->Draw("");
-  h_corPt_data->Draw("sameEP");
-
-  l_corPt->SetFillColor(0);
-  l_corPt->AddEntry(h_corPt_data,"CMS 2011 Data Calo ( 201.348pb^{-1} )","p");
-  l_corPt->AddEntry(h_corPt_mc,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_corPt->Draw("sames");
-
-  c_corPt->Update();
-  outf->Append(c_corPt);
 
 
   // corrected pt distribution for two leading jets PF
 
   c_corPt_fat->cd(0);
+
+    gPad->SetTopMargin(0.07);
+
   h_corPt_data_fat->SetTitle("");
-  h_corPt_data_fat->GetYaxis()->SetTitle("Fat Jets(two leading jets)");
-  h_corPt_data_fat->GetYaxis()->SetLabelSize(0.03);
+  h_corPt_data_fat->GetYaxis()->SetTitle("# Fat Jets");
+  h_corPt_data_fat->GetYaxis()->SetLabelSize(0.028);
   h_corPt_data_fat->GetXaxis()->SetTitle("Fat Jet cor P_{T}");
   h_corPt_data_fat->SetMarkerStyle(20);
 
   h_corPt_mc_fat->SetLineWidth(3);
-  h_corPt_mc_fat->SetTitle("");
+  h_corPt_mc_fat->SetTitle("Leading jets transverse momentum");
   h_corPt_mc_fat->SetFillColor(42);
   h_corPt_mc_fat->SetLineColor(42);
-  h_corPt_mc_fat->GetYaxis()->SetTitle("Fat Jets(two leading jets)");
-  h_corPt_mc_fat->GetYaxis()->SetLabelSize(0.03);
-  h_corPt_mc_fat->GetXaxis()->SetTitle("Fat Jet cor P_{T}");
+  h_corPt_mc_fat->GetYaxis()->SetTitle("# Fat Jets");
+  h_corPt_mc_fat->GetYaxis()->SetLabelSize(0.028);
+  h_corPt_mc_fat->GetXaxis()->SetTitle("p_{T} (GeV/c)");
   h_corPt_mc_fat->Scale(corPt_data_fat_weight/corPt_mc_fat_weight);
 
   h_corPt_mc_fat->Draw("");
@@ -2748,31 +2103,11 @@ void ReadTree_new3()
 
   // corrected pt distribution for two leading jets (log)
 
-  c_corPt_log->cd(0);
-
-  TH1F *h_corPt_data_log                        =(TH1F*)h_corPt_data->Clone();
-  TH1F *h_corPt_mc_log                          =(TH1F*)h_corPt_mc->Clone();
-
-  c_corPt_log->SetLogy();
-
-  h_corPt_mc_log->SetMinimum(0.5);
-
-  h_corPt_mc_log->Draw("");
-  h_corPt_data_log->Draw("sameEP");
-
-  l_corPt_log->SetFillColor(0);
-  l_corPt_log->AddEntry((TObject*)0,"2011 data","");
-  l_corPt_log->AddEntry(h_corPt_data_log,"CMS 2011 Data Calo ( 201.348pb^{-1} )","p");
-  l_corPt_log->AddEntry(h_corPt_mc_log,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_corPt_log->Draw("sames");
-
-  c_corPt_log->Update();
-  outf->Append(c_corPt_log);
-
-  // corrected pt distribution for two leading jets (log) PF
 
   c_corPt_fat_log->cd(0);
 
+   gPad->SetTopMargin(0.07);
+  
   TH1F *h_corPt_data_fat_log                        =(TH1F*)h_corPt_data_fat->Clone();
   TH1F *h_corPt_mc_fat_log                          =(TH1F*)h_corPt_mc_fat->Clone();
 
@@ -2780,11 +2115,13 @@ void ReadTree_new3()
 
   h_corPt_mc_fat_log->SetMinimum(0.5);
 
+  gPad->SetRightMargin(0.05);
+
   h_corPt_mc_fat_log->Draw("");
   h_corPt_data_fat_log->Draw("sameEP");
 
   l_corPt_fat_log->SetFillColor(0);
-  l_corPt_fat_log->AddEntry((TObject*)0,"2011 data","");
+  //  l_corPt_fat_log->AddEntry((TObject*)0,"2011 data","");
   l_corPt_fat_log->AddEntry(h_corPt_data_fat_log,data_info.c_str(),"p");
   l_corPt_fat_log->AddEntry(h_corPt_mc_fat_log,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
   l_corPt_fat_log->Draw("sames");
@@ -2793,106 +2130,43 @@ void ReadTree_new3()
   outf->Append(c_corPt_fat_log);
 
 
-  // corrected pt distribution for first leading jets
-
-  c_corPt_1->cd(0);
-  h_corPt_data_1->SetTitle("");
-  h_corPt_data_1->GetYaxis()->SetTitle("first leading jets");
-  h_corPt_data_1->GetYaxis()->SetLabelSize(0.03);
-  h_corPt_data_1->GetXaxis()->SetTitle("Jet P_{T}");
-  h_corPt_data_1->SetMarkerStyle(20);
-
-  h_corPt_mc_1->SetLineWidth(3);
-  h_corPt_mc_1->SetTitle("");
-  h_corPt_mc_1->SetFillColor(42);
-  h_corPt_mc_1->SetLineColor(42);
-  h_corPt_mc_1->GetYaxis()->SetTitle("first leading jets");
-  h_corPt_mc_1->GetYaxis()->SetLabelSize(0.03);
-  h_corPt_mc_1->GetXaxis()->SetTitle("Jet P_{T}");
-  h_corPt_mc_1->Scale(corPt_data_weight_1/corPt_mc_weight_1);
-
-  h_corPt_mc_1->Draw("");
-  h_corPt_data_1->Draw("sameEP");
-
-  l_corPt_1->SetFillColor(0);
-  l_corPt_1->AddEntry(h_corPt_data_1,"CMS 2011 Data Calo ( 201.348pb^{-1} )","p");
-  l_corPt_1->AddEntry(h_corPt_mc_1,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_corPt_1->Draw("sames");
-
-  c_corPt_1->Update();
-  outf->Append(c_corPt_1);
-
-  // corrected pt distribution for first leading jets PF
-
-  c_corPt_fat_1->cd(0);
-  h_corPt_data_fat_1->SetTitle("");
-  h_corPt_data_fat_1->GetYaxis()->SetTitle("first leading jets");
-  h_corPt_data_fat_1->GetYaxis()->SetLabelSize(0.03);
-  h_corPt_data_fat_1->GetXaxis()->SetTitle("Fat Jet P_{T}");
-  h_corPt_data_fat_1->SetMarkerStyle(20);
-
-  h_corPt_mc_fat_1->SetLineWidth(3);
-  h_corPt_mc_fat_1->SetTitle("");
-  h_corPt_mc_fat_1->SetFillColor(42);
-  h_corPt_mc_fat_1->SetLineColor(42);
-  h_corPt_mc_fat_1->GetYaxis()->SetTitle("first leading jets");
-  h_corPt_mc_fat_1->GetYaxis()->SetLabelSize(0.03);
-  h_corPt_mc_fat_1->GetXaxis()->SetTitle("Fat Jet P_{T}");
-  h_corPt_mc_fat_1->Scale(corPt_data_fat_weight_1/corPt_mc_fat_weight_1);
-
-  h_corPt_mc_fat_1->Draw("");
-  h_corPt_data_fat_1->Draw("sameEP");
-
-  l_corPt_fat_1->SetFillColor(0);
-  l_corPt_fat_1->AddEntry(h_corPt_data_fat_1,data_info.c_str(),"p");
-  l_corPt_fat_1->AddEntry(h_corPt_mc_fat_1,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_corPt_fat_1->Draw("sames");
-
-  c_corPt_fat_1->Update();
-  outf->Append(c_corPt_fat_1);
-
-
-
-
-  // corrected pt distribution for first leading jets (log)
-
-  c_corPt_log_1->cd(0);
-
-  TH1F *h_corPt_data_log_1                        =(TH1F*)h_corPt_data_1->Clone();
-  TH1F *h_corPt_mc_log_1                          =(TH1F*)h_corPt_mc_1->Clone();
-
-  c_corPt_log_1->SetLogy();
-
-  h_corPt_mc_log_1->SetMinimum(0.5);
-
-  h_corPt_mc_log_1->Draw("");
-  h_corPt_data_log_1->Draw("sameEP");
-
-  l_corPt_log_1->SetFillColor(0);
-  l_corPt_log_1->AddEntry((TObject*)0,"2011 data","");
-  l_corPt_log_1->AddEntry(h_corPt_data_log_1,"CMS 2011 Data Calo ( 201.348pb^{-1} )","p");
-  l_corPt_log_1->AddEntry(h_corPt_mc_log_1,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_corPt_log_1->Draw("sames");
-
-  c_corPt_log_1->Update();
-  outf->Append(c_corPt_log_1);
-
-  // corrected pt distribution for first leading jets (log) PF
+ 
 
   c_corPt_fat_log_1->cd(0);
 
+   gPad->SetTopMargin(0.07);
+  
   TH1F *h_corPt_data_fat_log_1                        =(TH1F*)h_corPt_data_fat_1->Clone();
   TH1F *h_corPt_mc_fat_log_1                          =(TH1F*)h_corPt_mc_fat_1->Clone();
 
   c_corPt_fat_log_1->SetLogy();
+  h_corPt_mc_fat_log_1->Scale(corPt_data_fat_weight/corPt_mc_fat_weight);
+
 
   h_corPt_mc_fat_log_1->SetMinimum(0.5);
+
+  gPad->SetRightMargin(0.05);
+
+  h_corPt_data_fat_log_1->SetTitle("");
+  h_corPt_data_fat_log_1->GetYaxis()->SetTitle("# Events");
+  h_corPt_data_fat_log_1->GetYaxis()->SetLabelSize(0.028);
+  h_corPt_data_fat_log_1->GetXaxis()->SetTitle("Fat Jet cor P_{T,1}");
+  h_corPt_data_fat_log_1->SetMarkerStyle(20);
+
+  h_corPt_mc_fat_log_1->SetLineWidth(3);
+  h_corPt_mc_fat_log_1->SetTitle("First jets transverse momentum");
+  h_corPt_mc_fat_log_1->SetFillColor(42);
+  h_corPt_mc_fat_log_1->SetLineColor(42);
+  h_corPt_mc_fat_log_1->GetYaxis()->SetTitle("# Events");
+  h_corPt_mc_fat_log_1->GetYaxis()->SetLabelSize(0.028);
+  h_corPt_mc_fat_log_1->GetXaxis()->SetTitle("p_{T,1} (GeV/c)");
+
 
   h_corPt_mc_fat_log_1->Draw("");
   h_corPt_data_fat_log_1->Draw("sameEP");
 
   l_corPt_fat_log_1->SetFillColor(0);
-  l_corPt_fat_log_1->AddEntry((TObject*)0,"2011 data","");
+  //  l_corPt_fat_log_1->AddEntry((TObject*)0,"2011 data","");
   l_corPt_fat_log_1->AddEntry(h_corPt_data_fat_log_1,data_info.c_str(),"p");
   l_corPt_fat_log_1->AddEntry(h_corPt_mc_fat_log_1,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
   l_corPt_fat_log_1->Draw("sames");
@@ -2900,91 +2174,12 @@ void ReadTree_new3()
   c_corPt_fat_log_1->Update();
   outf->Append(c_corPt_fat_log_1);
 
-  // corrected pt distribution for second leading jets
 
-  c_corPt_2->cd(0);
-  h_corPt_data_2->SetTitle("");
-  h_corPt_data_2->GetYaxis()->SetTitle("second leading jets");
-  h_corPt_data_2->GetYaxis()->SetLabelSize(0.03);
-  h_corPt_data_2->GetXaxis()->SetTitle("Jet P_{T}");
-  h_corPt_data_2->SetMarkerStyle(20);
-
-  h_corPt_mc_2->SetLineWidth(3);
-  h_corPt_mc_2->SetTitle("");
-  h_corPt_mc_2->SetFillColor(42);
-  h_corPt_mc_2->SetLineColor(42);
-  h_corPt_mc_2->GetYaxis()->SetTitle("second leading jets");
-  h_corPt_mc_2->GetYaxis()->SetLabelSize(0.03);
-  h_corPt_mc_2->GetXaxis()->SetTitle("Jet P_{T}");
-  h_corPt_mc_2->Scale(corPt_data_weight_2/corPt_mc_weight_2);
-
-  h_corPt_mc_2->Draw("");
-  h_corPt_data_2->Draw("sameEP");
-
-  l_corPt_2->SetFillColor(0);
-  l_corPt_2->AddEntry(h_corPt_data_2,"CMS 2011 Data Calo ( 201.348pb^{-1} )","p");
-  l_corPt_2->AddEntry(h_corPt_mc_2,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_corPt_2->Draw("sames");
-
-  c_corPt_2->Update();
-  outf->Append(c_corPt_2);
-
-  // corrected pt distribution for second leading jets PF
-
-  c_corPt_fat_2->cd(0);
-  h_corPt_data_fat_2->SetTitle("");
-  h_corPt_data_fat_2->GetYaxis()->SetTitle("second leading jets");
-  h_corPt_data_fat_2->GetYaxis()->SetLabelSize(0.03);
-  h_corPt_data_fat_2->GetXaxis()->SetTitle("Fat Jet P_{T}");
-  h_corPt_data_fat_2->SetMarkerStyle(20);
-
-  h_corPt_mc_fat_2->SetLineWidth(3);
-  h_corPt_mc_fat_2->SetTitle("");
-  h_corPt_mc_fat_2->SetFillColor(42);
-  h_corPt_mc_fat_2->SetLineColor(42);
-  h_corPt_mc_fat_2->GetYaxis()->SetTitle("second leading jets");
-  h_corPt_mc_fat_2->GetYaxis()->SetLabelSize(0.03);
-  h_corPt_mc_fat_2->GetXaxis()->SetTitle("Fat Jet P_{T}");
-  h_corPt_mc_fat_2->Scale(corPt_data_fat_weight_2/corPt_mc_fat_weight_2);
-
-  h_corPt_mc_fat_2->Draw("");
-  h_corPt_data_fat_2->Draw("sameEP");
-
-  l_corPt_fat_2->SetFillColor(0);
-  l_corPt_fat_2->AddEntry(h_corPt_data_fat_2,data_info.c_str(),"p");
-  l_corPt_fat_2->AddEntry(h_corPt_mc_fat_2,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_corPt_fat_2->Draw("sames");
-
-  c_corPt_fat_2->Update();
-  outf->Append(c_corPt_fat_2);
-
-  // corrected pt distribution for second leading jets (log)
-
-  c_corPt_log_2->cd(0);
-
-  TH1F *h_corPt_data_log_2                        =(TH1F*)h_corPt_data_2->Clone();
-  TH1F *h_corPt_mc_log_2                          =(TH1F*)h_corPt_mc_2->Clone();
-
-  c_corPt_log_2->SetLogy();
-
-  h_corPt_mc_log_2->SetMinimum(0.5);
-
-  h_corPt_mc_log_2->Draw("");
-  h_corPt_data_log_2->Draw("sameEP");
-
-  l_corPt_log_2->SetFillColor(0);
-  l_corPt_log_2->AddEntry((TObject*)0,"2011 data","");
-  l_corPt_log_2->AddEntry(h_corPt_data_log_2,"CMS 2011 Data Calo ( 201.348pb^{-1} )","p");
-  l_corPt_log_2->AddEntry(h_corPt_mc_log_2,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
-  l_corPt_log_2->Draw("sames");
-
-  c_corPt_log_2->Update();
-  outf->Append(c_corPt_log_2);
-
-  // corrected pt distribution for second leading jets (log)
 
   c_corPt_fat_log_2->cd(0);
 
+   gPad->SetTopMargin(0.07);
+  
   TH1F *h_corPt_data_fat_log_2                        =(TH1F*)h_corPt_data_fat_2->Clone();
   TH1F *h_corPt_mc_fat_log_2                          =(TH1F*)h_corPt_mc_fat_2->Clone();
 
@@ -2992,11 +2187,30 @@ void ReadTree_new3()
 
   h_corPt_mc_fat_log_2->SetMinimum(0.5);
 
+  h_corPt_mc_fat_log_2->Scale(corPt_data_fat_weight/corPt_mc_fat_weight);
+
+  h_corPt_data_fat_log_2->SetTitle("");
+  h_corPt_data_fat_log_2->GetYaxis()->SetTitle("# Events");
+  h_corPt_data_fat_log_2->GetYaxis()->SetLabelSize(0.028);
+  h_corPt_data_fat_log_2->GetXaxis()->SetTitle("Fat Jet cor P_{T,2}");
+  h_corPt_data_fat_log_2->SetMarkerStyle(20);
+
+  h_corPt_mc_fat_log_2->SetLineWidth(3);
+  h_corPt_mc_fat_log_2->SetTitle("Second jets transverse momentum");
+  h_corPt_mc_fat_log_2->SetFillColor(42);
+  h_corPt_mc_fat_log_2->SetLineColor(42);
+  h_corPt_mc_fat_log_2->GetYaxis()->SetTitle("# Events");
+  h_corPt_mc_fat_log_2->GetYaxis()->SetLabelSize(0.028);
+  h_corPt_mc_fat_log_2->GetXaxis()->SetTitle("p_{T,2} (GeV/c)");
+
+
+  gPad->SetRightMargin(0.05);
+
   h_corPt_mc_fat_log_2->Draw("");
   h_corPt_data_fat_log_2->Draw("sameEP");
 
   l_corPt_fat_log_2->SetFillColor(0);
-  l_corPt_fat_log_2->AddEntry((TObject*)0,"2011 data","");
+  //  l_corPt_fat_log_2->AddEntry((TObject*)0,"2011 data","");
   l_corPt_fat_log_2->AddEntry(h_corPt_data_fat_log_2,data_info.c_str(),"p");
   l_corPt_fat_log_2->AddEntry(h_corPt_mc_fat_log_2,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
   l_corPt_fat_log_2->Draw("sames");
@@ -3004,12 +2218,15 @@ void ReadTree_new3()
   c_corPt_fat_log_2->Update();
   outf->Append(c_corPt_fat_log_2);
 
+
+
+
   // nTrkVtx distribution for two leading jets
 
   c_nTrkVtx->cd(0);
   h_nTrkVtx_data->SetTitle("");
   h_nTrkVtx_data->GetYaxis()->SetTitle("Jets(two leading jets)");
-  h_nTrkVtx_data->GetYaxis()->SetLabelSize(0.03);
+  h_nTrkVtx_data->GetYaxis()->SetLabelSize(0.028);
   h_nTrkVtx_data->GetXaxis()->SetTitle("nTrkVtx");
   h_nTrkVtx_data->SetMarkerStyle(20);
 
@@ -3018,7 +2235,7 @@ void ReadTree_new3()
   h_nTrkVtx_mc->SetFillColor(42);
   h_nTrkVtx_mc->SetLineColor(42);
   h_nTrkVtx_mc->GetYaxis()->SetTitle("Jets(two leading jets)");
-  h_nTrkVtx_mc->GetYaxis()->SetLabelSize(0.03);
+  h_nTrkVtx_mc->GetYaxis()->SetLabelSize(0.028);
   h_nTrkVtx_mc->GetXaxis()->SetTitle("nTrkVtx");
   h_nTrkVtx_mc->Scale(nTrkVtx_data_weight/nTrkVtx_mc_weight);
 
@@ -3026,7 +2243,7 @@ void ReadTree_new3()
   h_nTrkVtx_data->Draw("sameEP");
 
   l_nTrkVtx->SetFillColor(0);
-  l_nTrkVtx->AddEntry(h_nTrkVtx_data,"CMS 2011 Data ( 201.348pb^{-1} )","p");
+  l_nTrkVtx->AddEntry(h_nTrkVtx_data,"CMS 2011 Data ( 4.7 fb^{-1} )","p");
   l_nTrkVtx->AddEntry(h_nTrkVtx_mc,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
   l_nTrkVtx->Draw("sames");
 
@@ -3037,8 +2254,8 @@ void ReadTree_new3()
 
   c_nTrkCalo->cd(0);
   h_nTrkCalo_data->SetTitle("");
-  h_nTrkCalo_data->GetYaxis()->SetTitle("Jets(two leading jets)");
-  h_nTrkCalo_data->GetYaxis()->SetLabelSize(0.03);
+  h_nTrkCalo_data->GetYaxis()->SetTitle("# Events");
+  h_nTrkCalo_data->GetYaxis()->SetLabelSize(0.028);
   h_nTrkCalo_data->GetXaxis()->SetTitle("nTrkCalo");
   h_nTrkCalo_data->SetMarkerStyle(20);
 
@@ -3046,8 +2263,8 @@ void ReadTree_new3()
   h_nTrkCalo_mc->SetTitle("");
   h_nTrkCalo_mc->SetFillColor(42);
   h_nTrkCalo_mc->SetLineColor(42);
-  h_nTrkCalo_mc->GetYaxis()->SetTitle("Jets(two leading jets)");
-  h_nTrkCalo_mc->GetYaxis()->SetLabelSize(0.03);
+  h_nTrkCalo_mc->GetYaxis()->SetTitle("# Events");
+  h_nTrkCalo_mc->GetYaxis()->SetLabelSize(0.028);
   h_nTrkCalo_mc->GetXaxis()->SetTitle("nTrkCalo");
   h_nTrkCalo_mc->Scale(nTrkCalo_data_weight/nTrkCalo_mc_weight);
 
@@ -3055,12 +2272,314 @@ void ReadTree_new3()
   h_nTrkCalo_data->Draw("sameEP");
 
   l_nTrkCalo->SetFillColor(0);
-  l_nTrkCalo->AddEntry(h_nTrkCalo_data,"CMS 2011 Data ( 201.348pb^{-1} )","p");
+  l_nTrkCalo->AddEntry(h_nTrkCalo_data,"CMS 2011 Data ( 4.7 fb^{-1} )","p");
   l_nTrkCalo->AddEntry(h_nTrkCalo_mc,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
   l_nTrkCalo->Draw("sames");
 
   c_nTrkCalo->Update();
   outf->Append(c_nTrkCalo);
+
+
+
+  c_Nrad_1_fat->cd(0);
+  h_Nrad_1_fat->SetTitle("");
+  h_Nrad_1_fat->GetYaxis()->SetTitle("# Events");
+  h_Nrad_1_fat->GetYaxis()->SetLabelSize(0.028);
+  h_Nrad_1_fat->GetXaxis()->SetTitle("N of subjets in the Fat Jet1");
+  h_Nrad_1_fat->SetMarkerStyle(20);
+
+  h_Nrad_1_fat_mc->SetLineWidth(3);
+  h_Nrad_1_fat_mc->SetTitle("");
+  h_Nrad_1_fat_mc->SetFillColor(42);
+  h_Nrad_1_fat_mc->SetLineColor(42);
+  h_Nrad_1_fat_mc->GetYaxis()->SetTitle("# Events");
+  h_Nrad_1_fat_mc->GetYaxis()->SetLabelSize(0.028);
+  h_Nrad_1_fat_mc->GetXaxis()->SetTitle("N of subjets in the Fat Jet1");
+  h_Nrad_1_fat_mc->Scale(fNrad_1_fat_weight/fNrad_1_fat_mc_weight);
+
+  h_Nrad_1_fat_mc->SetMaximum(h_Nrad_1_fat_mc->GetMaximum()*1.2);
+
+  h_Nrad_1_fat_mc->Draw("");
+  h_Nrad_1_fat->Draw("sameEP");
+
+  l_Nrad_1_fat->SetFillColor(0);
+  l_Nrad_1_fat->AddEntry(h_Nrad_1_fat,"CMS 2011 Data ( 4.7 fb^{-1} )","p");
+  l_Nrad_1_fat->AddEntry(h_Nrad_1_fat_mc,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
+  l_Nrad_1_fat->Draw("sames");
+
+
+  //  c_Nrad_1_fat->SetLogy(1);
+
+  c_Nrad_1_fat->Update();
+  outf->Append(c_Nrad_1_fat);
+
+
+  c_Nrad_2_fat->cd(0);
+  h_Nrad_2_fat->SetTitle("");
+  h_Nrad_2_fat->GetYaxis()->SetTitle("# Events");
+  h_Nrad_2_fat->GetYaxis()->SetLabelSize(0.028);
+  h_Nrad_2_fat->GetXaxis()->SetTitle("N of subjets jets in the Fat Jet2");
+  h_Nrad_2_fat->SetMarkerStyle(20);
+
+  h_Nrad_2_fat_mc->SetLineWidth(3);
+  h_Nrad_2_fat_mc->SetTitle("");
+  h_Nrad_2_fat_mc->SetFillColor(42);
+  h_Nrad_2_fat_mc->SetLineColor(42);
+  h_Nrad_2_fat_mc->GetYaxis()->SetTitle("# Events");
+  h_Nrad_2_fat_mc->GetYaxis()->SetLabelSize(0.028);
+  h_Nrad_2_fat_mc->GetXaxis()->SetTitle("N of subjets jets in the Fat Jet2");
+  h_Nrad_2_fat_mc->Scale(fNrad_2_fat_weight/fNrad_2_fat_mc_weight);
+
+  h_Nrad_2_fat_mc->SetMaximum(h_Nrad_2_fat_mc->GetMaximum()*1.2);
+
+  h_Nrad_2_fat_mc->Draw("");
+  h_Nrad_2_fat->Draw("sameEP");
+
+  //  l_Nrad_1_fat->SetFillColor(0);
+  //  l_Nrad_1_fat->AddEntry(h_Nrad_2_fat,"CMS 2011 Data ( 4.7 fb^{-1} )","p");
+  //  l_Nrad_1_fat->AddEntry(h_Nrad_2_fat_mc,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
+  l_Nrad_1_fat->Draw("sames");
+
+
+  //  c_Nrad_2_fat->SetLogy(1);
+
+  c_Nrad_2_fat->Update();
+  outf->Append(c_Nrad_2_fat);
+
+
+
+ 
+
+
+  c_Deta_fatlead_fat_1->cd(0);
+  h_Deta_fatlead_data_fat_1->SetTitle("");
+  h_Deta_fatlead_data_fat_1->GetYaxis()->SetTitle("# Events");
+  h_Deta_fatlead_data_fat_1->GetYaxis()->SetLabelSize(0.028);
+  h_Deta_fatlead_data_fat_1->GetXaxis()->SetTitle("#Delta #eta = #eta_{1, fat} - #eta_{1, jet}");
+  h_Deta_fatlead_data_fat_1->SetMarkerStyle(20);
+
+  h_Deta_fatlead_mc_fat_1->SetLineWidth(3);
+  h_Deta_fatlead_mc_fat_1->SetTitle("");
+  h_Deta_fatlead_mc_fat_1->SetFillColor(42);
+  h_Deta_fatlead_mc_fat_1->SetLineColor(42);
+  h_Deta_fatlead_mc_fat_1->GetYaxis()->SetTitle("# Events");
+  h_Deta_fatlead_mc_fat_1->GetYaxis()->SetLabelSize(0.028);
+  h_Deta_fatlead_mc_fat_1->GetXaxis()->SetTitle("#Delta #eta = #eta_{1, fat} - #eta_{1, jet}");
+  h_Deta_fatlead_mc_fat_1->Scale(fDeta_fatlead_data_fat_1_data_weight/fDeta_fatlead_mc_fat_1_mc_weight);
+
+  h_Deta_fatlead_mc_fat_1->SetMaximum(h_Deta_fatlead_data_fat_1->GetMaximum()*2);
+  h_Deta_fatlead_mc_fat_1->SetMinimum(0.97);
+
+  h_Deta_fatlead_mc_fat_1 ->Draw("");
+  h_Deta_fatlead_data_fat_1->Draw("sameEP");
+
+  l_Deta_fatlead_fat_1->SetFillColor(0);
+  l_Deta_fatlead_fat_1->AddEntry(h_DpT_data_fat,"CMS 2011 Data ( 4.7 fb^{-1} )","p");
+  l_Deta_fatlead_fat_1->AddEntry(h_DpT_data_fat_mc,"QCD  PYTHIA6 Z2","f");
+  l_Deta_fatlead_fat_1->Draw("sames");
+
+  //  c_Nrad_1_fat->SetLogy(1);
+
+  c_Deta_fatlead_fat_1->Update();
+  outf->Append(c_Deta_fatlead_fat_1);
+
+
+
+
+
+  c_Deta_fatlead_fat_2->cd(0);
+  h_Deta_fatlead_data_fat_2->SetTitle("");
+  h_Deta_fatlead_data_fat_2->GetYaxis()->SetTitle("# Events");
+  h_Deta_fatlead_data_fat_2->GetYaxis()->SetLabelSize(0.028);
+  h_Deta_fatlead_data_fat_2->GetXaxis()->SetTitle("#Delta #eta = #eta_{2, fat} - #eta_{2, jet}");
+  h_Deta_fatlead_data_fat_2->SetMarkerStyle(20);
+
+  h_Deta_fatlead_mc_fat_2->SetLineWidth(3);
+  h_Deta_fatlead_mc_fat_2->SetTitle("");
+  h_Deta_fatlead_mc_fat_2->SetFillColor(42);
+  h_Deta_fatlead_mc_fat_2->SetLineColor(42);
+  h_Deta_fatlead_mc_fat_2->GetYaxis()->SetTitle("# Events");
+  h_Deta_fatlead_mc_fat_2->GetYaxis()->SetLabelSize(0.028);
+  h_Deta_fatlead_mc_fat_2->GetXaxis()->SetTitle("#Delta #eta = #eta_{2, fat} - #eta_{2, jet}");
+  h_Deta_fatlead_mc_fat_2->Scale(fDeta_fatlead_data_fat_2_data_weight/fDeta_fatlead_mc_fat_2_mc_weight);
+
+  h_Deta_fatlead_mc_fat_2->SetMaximum(h_Deta_fatlead_data_fat_2->GetMaximum()*2);
+  h_Deta_fatlead_mc_fat_1->SetMinimum(0.97);
+
+  h_Deta_fatlead_mc_fat_2 ->Draw("");
+  h_Deta_fatlead_data_fat_2->Draw("sameEP");
+
+  l_Deta_fatlead_fat_2->SetFillColor(0);
+  l_Deta_fatlead_fat_2->AddEntry(h_DpT_data_fat,"CMS 2011 Data ( 4.7 fb^{-1} )","p");
+  l_Deta_fatlead_fat_2->AddEntry(h_DpT_data_fat_mc,"QCD  PYTHIA6 Z2","f");
+  l_Deta_fatlead_fat_2->Draw("sames");
+
+  //  c_Nrad_2_fat->SetLogy(1);
+
+  c_Deta_fatlead_fat_2->Update();
+  outf->Append(c_Deta_fatlead_fat_2);
+
+
+
+
+  c_Dphi_fatlead_fat_1->cd(0);
+  h_Dphi_fatlead_data_fat_1->SetTitle("");
+  h_Dphi_fatlead_data_fat_1->GetYaxis()->SetTitle("# Events");
+  h_Dphi_fatlead_data_fat_1->GetYaxis()->SetLabelSize(0.028);
+  h_Dphi_fatlead_data_fat_1->GetXaxis()->SetTitle("#Delta #phi = #phi_{1, fat} - #phi_{1, jet}");
+  h_Dphi_fatlead_data_fat_1->SetMarkerStyle(20);
+
+  h_Dphi_fatlead_mc_fat_1->SetLineWidth(3);
+  h_Dphi_fatlead_mc_fat_1->SetTitle("");
+  h_Dphi_fatlead_mc_fat_1->SetFillColor(42);
+  h_Dphi_fatlead_mc_fat_1->SetLineColor(42);
+  h_Dphi_fatlead_mc_fat_1->GetYaxis()->SetTitle("# Events");
+  h_Dphi_fatlead_mc_fat_1->GetYaxis()->SetLabelSize(0.028);
+  h_Dphi_fatlead_mc_fat_1->GetXaxis()->SetTitle("#Delta #phi = #phi_{1, fat} - #phi_{1, jet}");
+  h_Dphi_fatlead_mc_fat_1->Scale(fDphi_fatlead_data_fat_1_data_weight/fDphi_fatlead_mc_fat_1_mc_weight);
+
+  h_Dphi_fatlead_mc_fat_1->SetMaximum(h_Dphi_fatlead_data_fat_1->GetMaximum()*2);
+  h_Dphi_fatlead_mc_fat_1->SetMinimum(0.97);
+
+  h_Dphi_fatlead_mc_fat_1 ->Draw("");
+  h_Dphi_fatlead_data_fat_1->Draw("sameEP");
+
+  l_Dphi_fatlead_fat_1->SetFillColor(0);
+  l_Dphi_fatlead_fat_1->AddEntry(h_DpT_data_fat,"CMS 2011 Data ( 4.7 fb^{-1} )","p");
+  l_Dphi_fatlead_fat_1->AddEntry(h_DpT_data_fat_mc,"QCD  PYTHIA6 Z2","f");
+  l_Dphi_fatlead_fat_1->Draw("sames");
+
+  //  c_Nrad_1_fat->SetLogy(1);
+
+  c_Dphi_fatlead_fat_1->Update();
+  outf->Append(c_Dphi_fatlead_fat_1);
+
+
+
+
+
+  c_Dphi_fatlead_fat_2->cd(0);
+  h_Dphi_fatlead_data_fat_2->SetTitle("");
+  h_Dphi_fatlead_data_fat_2->GetYaxis()->SetTitle("# Events");
+  h_Dphi_fatlead_data_fat_2->GetYaxis()->SetLabelSize(0.028);
+  h_Dphi_fatlead_data_fat_2->GetXaxis()->SetTitle("#Delta #phi = #phi_{2, fat} - #phi_{2, jet}");
+  h_Dphi_fatlead_data_fat_2->SetMarkerStyle(20);
+
+  h_Dphi_fatlead_mc_fat_2->SetLineWidth(3);
+  h_Dphi_fatlead_mc_fat_2->SetTitle("");
+  h_Dphi_fatlead_mc_fat_2->SetFillColor(42);
+  h_Dphi_fatlead_mc_fat_2->SetLineColor(42);
+  h_Dphi_fatlead_mc_fat_2->GetYaxis()->SetTitle("# Events");
+  h_Dphi_fatlead_mc_fat_2->GetYaxis()->SetLabelSize(0.028);
+  h_Dphi_fatlead_mc_fat_2->GetXaxis()->SetTitle("#Delta #phi = #phi_{2, fat} - #phi_{2, jet}");
+  h_Dphi_fatlead_mc_fat_2->Scale(fDphi_fatlead_data_fat_2_data_weight/fDphi_fatlead_mc_fat_2_mc_weight);
+
+  h_Dphi_fatlead_mc_fat_2->SetMaximum(h_Dphi_fatlead_data_fat_2->GetMaximum()*2);
+
+  h_Dphi_fatlead_mc_fat_2->SetMinimum(0.97);
+  h_Dphi_fatlead_mc_fat_2 ->Draw("");
+  h_Dphi_fatlead_data_fat_2->Draw("sameEP");
+
+  l_Dphi_fatlead_fat_2->SetFillColor(0);
+  l_Dphi_fatlead_fat_2->AddEntry(h_DpT_data_fat,"CMS 2011 Data ( 4.7 fb^{-1} )","p");
+  l_Dphi_fatlead_fat_2->AddEntry(h_DpT_data_fat_mc,"QCD  PYTHIA6 Z2","f");
+  l_Dphi_fatlead_fat_2->Draw("sames");
+
+  //  c_Nrad_2_fat->SetLogy(1);
+
+  c_Dphi_fatlead_fat_2->Update();
+  outf->Append(c_Dphi_fatlead_fat_2);
+
+
+
+
+
+
+
+
+  c_DpT_data_fat->cd(0);
+  h_DpT_data_fat->SetTitle("");
+  h_DpT_data_fat->GetYaxis()->SetTitle("Jets(two leading jets)");
+  h_DpT_data_fat->GetYaxis()->SetLabelSize(0.028);
+  h_DpT_data_fat->GetXaxis()->SetTitle("#Delta p_{T} = p_{T, fat} - p_{T, jet}");
+  h_DpT_data_fat->SetMarkerStyle(20);
+
+  h_DpT_data_fat_mc->SetLineWidth(3);
+  h_DpT_data_fat_mc->SetTitle("");
+  h_DpT_data_fat_mc->SetFillColor(42);
+  h_DpT_data_fat_mc->SetLineColor(42);
+  h_DpT_data_fat_mc->GetYaxis()->SetTitle("Jets(two leading jets)");
+  h_DpT_data_fat_mc->GetYaxis()->SetLabelSize(0.028);
+  h_DpT_data_fat_mc->GetXaxis()->SetTitle("#Delta p_{T} = p_{T, fat} - p_{T, jet}");
+  h_DpT_data_fat_mc->Scale(fDpT_data_fat_weight/fDpT_data_fat_mc_weight);
+
+  h_DpT_data_fat_mc->SetMaximum(h_DpT_data_fat_mc->GetMaximum()*1.2);
+
+  h_DpT_data_fat_mc->Draw("");
+  h_DpT_data_fat->Draw("sameEP");
+
+  l_DpT_data_fat->SetFillColor(0);
+  l_DpT_data_fat->AddEntry(h_DpT_data_fat,"CMS 2011 Data ( 4.7 fb^{-1} )","p");
+  l_DpT_data_fat->AddEntry(h_DpT_data_fat_mc,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
+  l_DpT_data_fat->Draw("sames");
+
+  //  c_Nrad_1_fat->SetLogy(1);
+
+  c_DpT_data_fat->Update();
+  outf->Append(c_DpT_data_fat);
+
+  c_DpT_over_pT_data_fat->cd(0);
+  h_DpT_over_pT_data_fat->SetTitle("");
+  h_DpT_over_pT_data_fat->GetYaxis()->SetTitle("Jets(two leading jets)");
+  h_DpT_over_pT_data_fat->GetYaxis()->SetLabelSize(0.028);
+  h_DpT_over_pT_data_fat->GetXaxis()->SetTitle("#Delta p_{T} = p_{T, fat} - p_{T, jet}/p_{T, fat}");
+  h_DpT_over_pT_data_fat->SetMarkerStyle(20);
+
+  h_DpT_over_pT_data_fat_mc->SetLineWidth(3);
+  h_DpT_over_pT_data_fat_mc->SetTitle("");
+  h_DpT_over_pT_data_fat_mc->SetFillColor(42);
+  h_DpT_over_pT_data_fat_mc->SetLineColor(42);
+  h_DpT_over_pT_data_fat_mc->GetYaxis()->SetTitle("Jets(two leading jets)");
+  h_DpT_over_pT_data_fat_mc->GetYaxis()->SetLabelSize(0.028);
+  h_DpT_over_pT_data_fat_mc->GetXaxis()->SetTitle("#Delta p_{T} = (p_{T, fat} - p_{T, jet})/p_{T, fat}");
+  h_DpT_over_pT_data_fat_mc->Scale(fDpT_over_pT_data_fat_weight/fDpT_over_pT_data_fat_mc_weight);
+
+  h_DpT_over_pT_data_fat_mc->SetMaximum(h_DpT_over_pT_data_fat_mc->GetMaximum()*1.2);
+
+  h_DpT_over_pT_data_fat_mc->Draw("");
+  h_DpT_over_pT_data_fat->Draw("sameEP");
+
+  //  l_DpT_data_fat->SetFillColor(0);
+  //  l_DpT_data_fat->AddEntry(h_DpT_over_pT_data_fat,"CMS 2011 Data ( 4.7 fb^{-1} )","p");
+  //  l_DpT_data_fat->AddEntry(h_DpT_over_pT_data_fat_mc,"QCD  PYTHIA6 Z2 + CMS Simulation","f");
+  l_DpT_data_fat->Draw("sames");
+
+
+  //  c_Nrad_1_fat->SetLogy(1);
+
+  c_DpT_over_pT_data_fat->Update();
+  outf->Append(c_DpT_over_pT_data_fat);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   outf->Append(h_DijetMass_data);
   outf->Append(h_DijetMass_data_fat);
@@ -3107,10 +2626,22 @@ void ReadTree_new3()
   outf->Append(h_corPt_mc_2);
   outf->Append(h_nTrkVtx_mc);
   outf->Append(h_nTrkCalo_mc);
+  outf->Append(h_nVtx_data);
 
+ outf->Append(h_nVtx_mc);
 
   c_DijetMass_fat->SaveAs("c_DijetMass_fat.png");
   c_DijetMass_fat_log->SaveAs("c_DijetMass_fat_log.png");
+
+  c_DijetMass_fat_mu10->SaveAs("c_DijetMass_fat_mu10.png");
+  c_DijetMass_fat_mu10_log->SaveAs("c_DijetMass_fat_mu10_log.png");
+
+
+  c_DijetMass_fat_mu20->SaveAs("c_DijetMass_fat_mu20.png");
+  c_DijetMass_fat_mu20_log->SaveAs("c_DijetMass_fat_mu20_log.png");
+
+  c_DijetMass_fat_mu30->SaveAs("c_DijetMass_fat_mu30.png");
+  c_DijetMass_fat_mu30_log->SaveAs("c_DijetMass_fat_mu30_log.png");
 
   c_DijetMass_ratio_fat->SaveAs("c_DijetMass_ratio_fat.png");
   c_DijetMass_ratio_fat_log->SaveAs("c_DijetMass_ratio_fat_log.png");
@@ -3140,6 +2671,78 @@ void ReadTree_new3()
   c_fPh->SaveAs("c_fPh_fat.png");
   c_fNh->SaveAs("c_fNh_fat.png");
   c_fEl->SaveAs("c_fEl_fat.png");
+  c_fMu->SaveAs("c_fMu_fat.png");
+
+  c_Nrad_1_fat->SaveAs("c_Nrad_1_fat.png");
+  c_Nrad_1_fat->SetLogy(1);
+  c_Nrad_1_fat->SaveAs("c_Nrad_1_fat_log.png");
+  c_Nrad_2_fat->SaveAs("c_Nrad_2_fat.png");
+  c_Nrad_2_fat->SetLogy(1);
+  c_Nrad_2_fat->SaveAs("c_Nrad_2_fat_log.png");
+
+
+  double integral1 = h_Nrad_1_fat_mc->Integral(2, h_Nrad_1_fat_mc->GetNbinsX());
+  double integral2 = h_Nrad_1_fat->Integral(2, h_Nrad_1_fat->GetNbinsX());
+  h_Nrad_1_fat_mc->Scale(integral2/integral1);
+  c_Nrad_1_fat->Update();
+  c_Nrad_1_fat->SaveAs("c_Nrad_1_fat_normToRad_log.png");
+  c_Nrad_1_fat->SetLogy(0);
+  c_Nrad_1_fat->Update();
+  c_Nrad_1_fat->SaveAs("c_Nrad_1_fat_normToRad.png");
+
+  double integral1 = h_Nrad_2_fat_mc->Integral(2, h_Nrad_2_fat_mc->GetNbinsX());
+  double integral2 = h_Nrad_2_fat->Integral(2, h_Nrad_2_fat->GetNbinsX());
+  h_Nrad_2_fat_mc->Scale(integral2/integral1);
+  c_Nrad_2_fat->Update();
+  c_Nrad_2_fat->SaveAs("c_Nrad_2_fat_normToRad_log.png");
+  c_Nrad_2_fat->SetLogy(0);
+  c_Nrad_2_fat->Update();
+  c_Nrad_2_fat->SaveAs("c_Nrad_2_fat_normToRad.png");
+
+
+
+  c_DpT_data_fat->SaveAs("c_DpT_data_fat.png");
+
+  c_DpT_data_fat->SetLogy(1);
+  c_DpT_data_fat->SaveAs("c_DpT_data_fat_log.png");
+
+  c_DpT_over_pT_data_fat->SaveAs("c_DpT_over_pT_data_fat.png");
+  c_DpT_over_pT_data_fat->SetLogy(1);
+  c_DpT_over_pT_data_fat->SaveAs("c_DpT_over_pT_data_fat_log.png");
+  double integral1 = h_DpT_over_pT_data_fat_mc->Integral(2, h_DpT_over_pT_data_fat_mc->GetNbinsX());
+  double integral2 = h_DpT_over_pT_data_fat->Integral(2, h_DpT_over_pT_data_fat->GetNbinsX());
+  h_DpT_over_pT_data_fat_mc->Scale(integral2/integral1);
+  c_DpT_over_pT_data_fat->Update();
+  c_DpT_over_pT_data_fat->SaveAs("c_DpT_over_pT_data_fat_normToRad_log.png");
+  c_DpT_over_pT_data_fat->SetLogy(0);
+  c_DpT_over_pT_data_fat->Update();
+  c_DpT_over_pT_data_fat->SaveAs("c_DpT_over_pT_data_fat_normToRad.png");
+
+  double integral1 = h_DpT_data_fat_mc->Integral(2, h_DpT_data_fat_mc->GetNbinsX());
+  double integral2 = h_DpT_data_fat->Integral(2, h_DpT_data_fat->GetNbinsX());
+  h_DpT_data_fat_mc->Scale(integral2/integral1);
+  c_DpT_data_fat->Update();
+  c_DpT_data_fat->SaveAs("c_DpT_data_fat_normToRad_log.png");
+  c_DpT_data_fat->SetLogy(0);
+  c_DpT_data_fat->Update();
+  c_DpT_data_fat->SaveAs("c_DpT_data_fat_normToRad.png");
+
+
+  c_Deta_fatlead_fat_1->SaveAs("c_Deta_fatlead_fat_1.png");
+  c_Deta_fatlead_fat_1->SetLogy(1);
+  c_Deta_fatlead_fat_1->SaveAs("c_Deta_fatlead_fat_1_log.png");
+  c_Deta_fatlead_fat_2->SaveAs("c_Deta_fatlead_fat_2.png");
+  c_Deta_fatlead_fat_2->SetLogy(1);
+  c_Deta_fatlead_fat_2->SaveAs("c_Deta_fatlead_fat_2_log.png");
+
+  c_nVtx->SaveAs("c_nVtx_fat.png");
+
+  c_Dphi_fatlead_fat_1->SaveAs("c_Dphi_fatlead_fat_1.png");
+  c_Dphi_fatlead_fat_1->SetLogy(1);
+  c_Dphi_fatlead_fat_1->SaveAs("c_Dphi_fatlead_fat_1_log.png");
+  c_Dphi_fatlead_fat_2->SaveAs("c_Dphi_fatlead_fat_2.png");
+  c_Dphi_fatlead_fat_2->SetLogy(1);
+  c_Dphi_fatlead_fat_2->SaveAs("c_Dphi_fatlead_fat_2_log.png");
 
   /*
   c_DijetMass->SaveAs("c_DijetMass.png");
@@ -3153,8 +2756,10 @@ void ReadTree_new3()
   c_Eta_Phi_Scatter->SaveAs("c_Eta_Phi_Scatter.png");
   c_Eta_Phi_Scatter_1->SaveAs("c_Eta_Phi_Scatter_1.png");
   c_Eta_Phi_Scatter_2->SaveAs("c_Eta_Phi_Scatter_2.png");
+  */
   c_MET_over_sumEt->SaveAs("c_MET_over_sumEt.png");
   c_MET_over_sumEt_log->SaveAs("c_MET_over_sumEt_log.png");
+  /*
   c_EMF->SaveAs("c_EMF.png");
   c_DPhi->SaveAs("c_DPhi.png");
   c_DPhi_log->SaveAs("c_DPhi_log.png");
@@ -3179,7 +2784,7 @@ void ReadTree_new3()
   c_fCh->SaveAs("c_fCh.png");
   c_fPh->SaveAs("c_fPh.png");
   c_fNh->SaveAs("c_fNh.png");
-  c_fEl->SaveAs("c_fEl.png");
+  c_fMu->SaveAs("c_fMu.png");
   */
   /*
 
@@ -3221,7 +2826,7 @@ void ReadTree_new3()
   c_fCh->SaveAs("c_fCh.eps");
   c_fPh->SaveAs("c_fPh.eps");
   c_fNh->SaveAs("c_fNh.eps");
-  c_fEl->SaveAs("c_fEl.eps");
+  c_fMu->SaveAs("c_fMu.eps");
   */
 
   //hPFCorMjj->Draw();
