@@ -1256,9 +1256,9 @@ int main(int argc, char* argv[])
                  	 fprintf(outTxtFile, "%%$p_{T}=%f $%% ", phys.leptons[ilep].pt());
                          fprintf(outTxtFile, "%%$\\eta=%f $%% ", phys.leptons[ilep].eta());
                          fprintf(outTxtFile, "%%$\\phi=%f $%% ", phys.leptons[ilep].phi());
-                         fprintf(outTxtFile, "%%$I_{neu}=%f $%%", phys.leptons[ilep].iso1);
-                         fprintf(outTxtFile, "%%$I_{ch}=%f $%%", phys.leptons[ilep].iso2);
-                         fprintf(outTxtFile, "%%$I_{pho}=%f $%%", phys.leptons[ilep].iso3);
+                         fprintf(outTxtFile, "%%$I_{neu}=%f $%%", phys.leptons[ilep].nhIso);
+                         fprintf(outTxtFile, "%%$I_{ch}=%f $%%", phys.leptons[ilep].chIso);
+                         fprintf(outTxtFile, "%%$I_{pho}=%f $%%", phys.leptons[ilep].gIso);
                          fprintf(outTxtFile, "<br/>\n");
                       }
 

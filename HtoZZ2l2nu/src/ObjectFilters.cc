@@ -123,10 +123,10 @@ vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> >
 	    }
 	  
 	  //isolation
-	  float puOffsetCorrection = rho*0.3*0.3*3.1415;
-	  if(doDeltaBetaCorrection) puOffsetCorrection = 0.5*muon->puChargedHadronIso();
-
-	  double relIso = getLeptonIso( muonPtr, mPt, puOffsetCorrection)[usePFIso ? PFREL_ISO : REL_ISO];
+	  std::vector<double> isoVals = getLeptonIso( muonPtr, mPt, rho );
+	  double relIso = isoVals[REL_ISO];
+	  if(rho>0)     relIso = isoVals[RELRHOCORR_ISO];
+	  if(usePFIso)  relIso = isoVals[ doDeltaBetaCorrection ? PFRELBETCORR_ISO : PFREL_ISO];
 	  if(relIso>maxRelIso) continue;
 	  
 	  //muon is selected
@@ -201,9 +201,10 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 	if( nTrackLostHits>maxTrackLostHits) continue;
 	
 	//isolation
-	float puOffsetCorrection = rho*0.3*0.3*3.1415;
-	if(doDeltaBetaCorrection) puOffsetCorrection = 0.5*ele->puChargedHadronIso();
-	double relIso = getLeptonIso( elePtr, ePt, puOffsetCorrection)[usePFIso ? PFREL_ISO : REL_ISO];
+	std::vector<double> isoVals = getLeptonIso( elePtr, ePt, rho);
+	double relIso = isoVals[REL_ISO];
+	if(rho>0)     relIso = isoVals[RELRHOCORR_ISO];
+	if(usePFIso)  relIso = isoVals[ doDeltaBetaCorrection ? PFRELBETCORR_ISO : PFREL_ISO];
 	if(relIso>maxRelIso) continue;
 	
 	//cross clean with overlapping muons
@@ -282,9 +283,9 @@ const reco::GenParticle *getLeptonGenMatch(reco::CandidatePtr &lepton)
 }
 
 //
-vector<double> getLeptonIso(reco::CandidatePtr &lepton,float minRelNorm, float puOffsetCorrection)
+vector<double> getLeptonIso(reco::CandidatePtr &lepton,float minRelNorm, float rho)
 {
-  vector<double> leptonIso(8,99999.);
+  vector<double> leptonIso(11,99999.);
   if(lepton.get()==0) return leptonIso;
 
   int id=fabs(getLeptonId(lepton));
@@ -311,9 +312,12 @@ vector<double> getLeptonIso(reco::CandidatePtr &lepton,float minRelNorm, float p
       leptonIso[HCAL_ISO]=l->hcalIso();
       leptonIso[TRACKER_ISO]=l->trackIso();
     }
+
+  leptonIso[REL_ISO]        = (leptonIso[ECAL_ISO]+leptonIso[HCAL_ISO]+leptonIso[TRACKER_ISO])/max(float(lepton->pt()),float(minRelNorm));
+  leptonIso[RELRHOCORR_ISO] = (max(leptonIso[ECAL_ISO]+leptonIso[HCAL_ISO]-0.3*0.3*3.1415*rho,0.)+leptonIso[TRACKER_ISO])/max(float(lepton->pt()),float(minRelNorm));
   
-  leptonIso[REL_ISO]=(max(leptonIso[ECAL_ISO]+leptonIso[HCAL_ISO]-puOffsetCorrection,0.)+leptonIso[TRACKER_ISO])/max(float(lepton->pt()),float(minRelNorm));
-  leptonIso[PFREL_ISO]=(max(leptonIso[N_ISO]+leptonIso[G_ISO]-puOffsetCorrection,0.)+leptonIso[C_ISO])/max(float(lepton->pt()),float(minRelNorm));
+  leptonIso[PFREL_ISO]        = (leptonIso[N_ISO]+leptonIso[G_ISO]+leptonIso[C_ISO])/max(float(lepton->pt()),float(minRelNorm));
+  leptonIso[PFRELBETCORR_ISO] = (max(leptonIso[N_ISO]+leptonIso[G_ISO]-0.5*leptonIso[CPU_ISO],0.)+leptonIso[C_ISO])/max(float(lepton->pt()),float(minRelNorm));
   
   return leptonIso;
 }

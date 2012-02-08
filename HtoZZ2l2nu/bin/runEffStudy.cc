@@ -160,9 +160,9 @@ int main(int argc, char* argv[])
 
       //z+met kinematics      
       PhysicsObject_Lepton l1 = phys.leptons[0].pt() > phys.leptons[1].pt() ? phys.leptons[0] : phys.leptons[1];
-      Float_t l1iso = l1.iso1+l1.iso2+l1.iso3; 
+      Float_t l1iso = l1.gIso+l1.chIso+l1.nhIso; 
       PhysicsObject_Lepton l2 = phys.leptons[0].pt() > phys.leptons[1].pt() ? phys.leptons[1] : phys.leptons[0];
-      Float_t l2iso = l2.iso1+l2.iso2+l2.iso3; 
+      Float_t l2iso = l2.gIso+l2.chIso+l2.nhIso; 
       LorentzVector zll = l1+l2;
       LorentzVector zvv = phys.met[0];
       Float_t dphill     = deltaPhi(l1.phi(),l2.phi());

@@ -60,6 +60,24 @@ private:
 
   void saveMCtruth(const edm::Event &event, const edm::EventSetup &iSetup );
 
+
+  inline int getLeptonIsoSummary(reco::CandidatePtr l ,std::vector<double> &leptoniso, bool isTight)
+  {
+    int id = fabs(getLeptonId(l));
+    
+    double maxRelIso = objConfig_[id==ELECTRON ? "Electrons" : "Muons"].getParameter<double>("maxRelIso");
+    if(!isTight) maxRelIso = objConfig_[id==ELECTRON ? "LooseElectrons" : "LooseMuons"].getParameter<double>("maxRelIso");
+    
+    int isoSummary(0);
+    isoSummary = (leptoniso[REL_ISO] < maxRelIso) 
+      | ((leptoniso[RELRHOCORR_ISO] < maxRelIso) << 1)
+      | ((leptoniso[PFREL_ISO] < maxRelIso) << 2)  
+      | ((leptoniso[PFRELBETCORR_ISO] < maxRelIso) << 3);
+
+    return isoSummary;
+  }
+
+
   inline int getLeptonPidSummary(reco::CandidatePtr l)
   {
     int idsummary(0);
@@ -340,10 +358,14 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.l1_id    = getLeptonId(dilepton[0]);
 	ev.l1_ptErr = getLeptonPtError(dilepton[0]); 
 	ev.l1_genid = (genLepton==0? 0 : genLepton->pdgId());
-	ev.l1_iso1  = leptoniso[G_ISO]; 
-	ev.l1_iso2  = leptoniso[N_ISO]; 
-	ev.l1_iso3  = leptoniso[C_ISO];
-	ev.l1_iso4  = leptoniso[CPU_ISO];
+	ev.l1_gIso  = leptoniso[G_ISO]; 
+	ev.l1_nhIso  = leptoniso[N_ISO]; 
+	ev.l1_chIso  = leptoniso[C_ISO];
+	ev.l1_puchIso = leptoniso[CPU_ISO];
+	ev.l1_ecalIso  = leptoniso[ECAL_ISO]; 
+	ev.l1_hcalIso  = leptoniso[HCAL_ISO]; 
+	ev.l1_trkIso  = leptoniso[TRACKER_ISO];
+	ev.l1_passIso = getLeptonIsoSummary(dilepton[0], leptoniso, true);
 	ev.l1_pid   = getLeptonPidSummary( dilepton[0]);
 
 	genLepton = getLeptonGenMatch(dilepton[1]);
@@ -355,10 +377,14 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.l2_id     = getLeptonId(dilepton[1]);
 	ev.l2_genid  = (genLepton==0? 0 : genLepton->pdgId());
 	ev.l2_ptErr  = getLeptonPtError(dilepton[1]);
-	ev.l2_iso1   = leptoniso[G_ISO]; 
-	ev.l2_iso2   = leptoniso[N_ISO]; 
-	ev.l2_iso3   = leptoniso[C_ISO];
-	ev.l2_iso4   = leptoniso[CPU_ISO];
+	ev.l2_gIso  = leptoniso[G_ISO]; 
+	ev.l2_nhIso  = leptoniso[N_ISO]; 
+	ev.l2_chIso  = leptoniso[C_ISO];
+	ev.l2_puchIso = leptoniso[CPU_ISO];
+	ev.l2_ecalIso  = leptoniso[ECAL_ISO]; 
+	ev.l2_hcalIso  = leptoniso[HCAL_ISO]; 
+	ev.l2_trkIso  = leptoniso[TRACKER_ISO];
+	ev.l2_passIso = getLeptonIsoSummary(dilepton[1], leptoniso, true);
 	ev.l2_pid    = getLeptonPidSummary( dilepton[1]);
       }
     
@@ -384,10 +410,14 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.ln_id[ev.ln]    = getLeptonId(*lit);
 	ev.ln_genid[ev.ln] = (genLepton==0? 0 : genLepton->pdgId());
 	ev.ln_ptErr[ev.ln] = getLeptonPtError(*lit);
-	ev.ln_iso1[ev.ln]  = leptoniso[G_ISO];
-	ev.ln_iso2[ev.ln]  = leptoniso[N_ISO];
-	ev.ln_iso3[ev.ln]  = leptoniso[C_ISO];
-	ev.ln_iso4[ev.ln]  = leptoniso[CPU_ISO];
+	ev.ln_gIso[ev.ln]     = leptoniso[G_ISO]; 
+	ev.ln_nhIso[ev.ln]    = leptoniso[N_ISO]; 
+	ev.ln_chIso[ev.ln]    = leptoniso[C_ISO];
+	ev.ln_puchIso[ev.ln]  = leptoniso[CPU_ISO];
+	ev.ln_ecalIso[ev.ln]  = leptoniso[ECAL_ISO]; 
+	ev.ln_hcalIso[ev.ln]  = leptoniso[HCAL_ISO]; 
+	ev.ln_trkIso[ev.ln]   = leptoniso[TRACKER_ISO];
+	ev.ln_passIso[ev.ln] = getLeptonIsoSummary(*lit, leptoniso, false);
 	ev.ln_pid[ev.ln]   = getLeptonPidSummary(*lit);
 	ev.ln++;
       }
