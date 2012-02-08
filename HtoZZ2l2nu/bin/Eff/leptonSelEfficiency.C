@@ -91,6 +91,7 @@ void leptonSelEfficiency(TString url)
 	  ptl[ilep][0]->Draw(ilep==0?"hist":"histsame");
 
 	}
+      c->SaveAs(ch[ich]+"pt.png");
       
       c = new TCanvas("effid"+ch[ich],"effid"+ch[ich],1200,600);
       c->SetWindowSize(1200,600);
@@ -132,6 +133,8 @@ void leptonSelEfficiency(TString url)
 	  pave->SetTextFont(42);
 	  pave->AddText(ilep==0 ? "leading lepton" : "sub-leading lepton");
 	  pave->Draw();
+
+	  c->SaveAs(ch[ich]+"eff.png");
 	}
     }
 
