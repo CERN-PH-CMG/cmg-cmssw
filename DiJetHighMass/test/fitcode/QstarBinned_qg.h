@@ -14,17 +14,19 @@ void Init(string resonance){
 
   //  qstarMass.clear();
   if (resonance.find("Q*") !=string::npos ) {
-    TArrayD* dv500 = new TArrayD(50, y500);
-    TArrayD* dv700 = new TArrayD(50, y700);
-    TArrayD* dv1200 = new TArrayD(50, y1200);
-    TArrayD* dv2000 = new TArrayD(50, y2000);
-    TArrayD* dv3500 = new TArrayD(50, y3500);
+    TArrayD* dv500 = new TArrayD(50, QstarToJJ_M_700_TuneD6T_ak5_fat);
+    TArrayD* dv700 = new TArrayD(50, QstarToJJ_M_700_TuneD6T_ak5_fat);
+    TArrayD* dv1200 = new TArrayD(50, QstarToJJ_M_1200_TuneD6T_ak5_fat);
+    TArrayD* dv2000 = new TArrayD(50, QstarToJJ_M_2000_TuneD6T_ak5_fat);
+    TArrayD* dv3500 = new TArrayD(50, QstarToJJ_M_3500_TuneD6T_ak5_fat);
+    TArrayD* dv4000 = new TArrayD(50, QstarToJJ_M_4000_TuneD6T_ak5_fat);
 
-    TArrayD* dv500_den = new TArrayD(50, y500);
-    TArrayD* dv700_den = new TArrayD(50, y700);
-    TArrayD* dv1200_den = new TArrayD(50, y1200);
-    TArrayD* dv2000_den = new TArrayD(50, y2000);
-    TArrayD* dv3500_den = new TArrayD(50, y3500);
+    TArrayD* dv500_den = new TArrayD(50, QstarToJJ_M_700_TuneD6T_ak5_fat);
+    TArrayD* dv700_den = new TArrayD(50, QstarToJJ_M_700_TuneD6T_ak5_fat);
+    TArrayD* dv1200_den = new TArrayD(50, QstarToJJ_M_1200_TuneD6T_ak5_fat);
+    TArrayD* dv2000_den = new TArrayD(50, QstarToJJ_M_2000_TuneD6T_ak5_fat);
+    TArrayD* dv3500_den = new TArrayD(50, QstarToJJ_M_3500_TuneD6T_ak5_fat);
+    TArrayD* dv4000_den = new TArrayD(50, QstarToJJ_M_4000_TuneD6T_ak5_fat);
 
 
   }  if (resonance.find("ZBBbar_pf") !=string::npos ) {
@@ -34,12 +36,14 @@ void Init(string resonance){
     TArrayD* dv1200 = new TArrayD(50, ZBBar_1200_withMuons_lowMassCut_ak5_lowMass_pf);
     TArrayD* dv2000 = new TArrayD(50, ZBBar_2000_withMuons_lowMassCut_ak5_lowMass_pf);
     TArrayD* dv3500 = new TArrayD(50, ZBBar_3500_withMuons_lowMassCut_ak5_lowMass_pf);
+    TArrayD* dv4000 = new TArrayD(50, ZBBar_3500_withMuons_lowMassCut_ak5_lowMass_pf);
 
     TArrayD* dv500_den = new TArrayD(50, ZBBar_500_withMuons_lowMassCut_ak5_lowMass_pf);
     TArrayD* dv700_den = new TArrayD(50, ZBBar_700_withMuons_lowMassCut_ak5_lowMass_pf);
     TArrayD* dv1200_den = new TArrayD(50, ZBBar_1200_withMuons_lowMassCut_ak5_lowMass_pf);
     TArrayD* dv2000_den = new TArrayD(50, ZBBar_2000_withMuons_lowMassCut_ak5_lowMass_pf);
     TArrayD* dv3500_den = new TArrayD(50, ZBBar_3500_withMuons_lowMassCut_ak5_lowMass_pf);
+    TArrayD* dv4000_den = new TArrayD(50, ZBBar_3500_withMuons_lowMassCut_ak5_lowMass_pf);
 
   }  if (resonance.find("ZBBbar_fat") !=string::npos ) {
 
@@ -48,12 +52,14 @@ void Init(string resonance){
     TArrayD* dv1200 = new TArrayD(50, ZBBar_1200_withMuons_lowMassCut_ak5_lowMass_fat);
     TArrayD* dv2000 = new TArrayD(50, ZBBar_2000_withMuons_lowMassCut_ak5_lowMass_fat);
     TArrayD* dv3500 = new TArrayD(50, ZBBar_3500_withMuons_lowMassCut_ak5_lowMass_fat);
+    TArrayD* dv4000 = new TArrayD(50, ZBBar_3500_withMuons_lowMassCut_ak5_lowMass_fat);
 
     TArrayD* dv500_den = new TArrayD(50, ZBBar_500_withMuons_lowMassCut_ak5_lowMass_fat);
     TArrayD* dv700_den = new TArrayD(50, ZBBar_700_withMuons_lowMassCut_ak5_lowMass_fat);
     TArrayD* dv1200_den = new TArrayD(50, ZBBar_1200_withMuons_lowMassCut_ak5_lowMass_fat);
     TArrayD* dv2000_den = new TArrayD(50, ZBBar_2000_withMuons_lowMassCut_ak5_lowMass_fat);
     TArrayD* dv3500_den = new TArrayD(50, ZBBar_3500_withMuons_lowMassCut_ak5_lowMass_fat);
+    TArrayD* dv4000_den = new TArrayD(50, ZBBar_3500_withMuons_lowMassCut_ak5_lowMass_fat);
 
   }  if (resonance.find("ZBBbar_mu10_fat") !=string::npos ) {
 
@@ -62,26 +68,30 @@ void Init(string resonance){
     TArrayD* dv1200 = new TArrayD(50, ZBBar_1200_withMuons_lowMassCut_ak5_lowMass_mu10_fat);
     TArrayD* dv2000 = new TArrayD(50, ZBBar_2000_withMuons_lowMassCut_ak5_lowMass_mu10_fat);
     TArrayD* dv3500 = new TArrayD(50, ZBBar_3500_withMuons_lowMassCut_ak5_lowMass_mu10_fat);
+    TArrayD* dv4000 = new TArrayD(50, ZBBar_3500_withMuons_lowMassCut_ak5_lowMass_mu10_fat);
 
     TArrayD* dv500_den = new TArrayD(50, ZBBar_500_withMuons_lowMassCut_ak5_lowMass_fat);
     TArrayD* dv700_den = new TArrayD(50, ZBBar_700_withMuons_lowMassCut_ak5_lowMass_fat);
     TArrayD* dv1200_den = new TArrayD(50, ZBBar_1200_withMuons_lowMassCut_ak5_lowMass_fat);
     TArrayD* dv2000_den = new TArrayD(50, ZBBar_2000_withMuons_lowMassCut_ak5_lowMass_fat);
     TArrayD* dv3500_den = new TArrayD(50, ZBBar_3500_withMuons_lowMassCut_ak5_lowMass_fat);
-
+    TArrayD* dv4000_den = new TArrayD(50, ZBBar_3500_withMuons_lowMassCut_ak5_lowMass_fat);
 
 
   }
 
   vy->Add((TObject*) dv500); 
-  vy->Add((TObject*) dv700); vy->Add((TObject*) dv1200); vy->Add((TObject*) dv2000); vy->Add((TObject*) dv3500);
+  vy->Add((TObject*) dv700); vy->Add((TObject*) dv1200); vy->Add((TObject*) dv2000); 
+  vy->Add((TObject*) dv3500); vy->Add((TObject*) dv4000);
+
 
   vy_den->Add((TObject*) dv500_den);
-  vy_den->Add((TObject*) dv700_den); vy_den->Add((TObject*) dv1200_den); vy_den->Add((TObject*) dv2000_den); vy_den->Add((TObject*) dv3500_den);
+  vy_den->Add((TObject*) dv700_den); vy_den->Add((TObject*) dv1200_den); vy_den->Add((TObject*) dv2000_den); 
+  vy_den->Add((TObject*) dv3500_den);   vy_den->Add((TObject*) dv4000_den); 
 
  
 
-  for (int bin = 0; bin < 5; bin++){
+  for (int bin = 0; bin < 6; bin++){
     double sum = 0;
     double sum_den = 0;
     for (int k = 0; k < 50; k++){
@@ -145,6 +155,8 @@ void Init(string resonance){
 
 double QstarBinnedProb(double mjj, double mass){  
 
+  double effic_analyse = 0;
+
   if(mjj<0.3*mass || mjj>1.3*mass) return 0;
   // Create a vector and fill it with variable x bins according to entered mass value
   for(int i=0;i<103; i++){
@@ -173,41 +185,53 @@ double QstarBinnedProb(double mjj, double mass){
   // Definition of histograms
   TH1F* h_new2 = new TH1F("h_new2","with variale bins2",s-1 , m); // Histogram for dijet mass distribution with variable mass bins
 
-  if(mass == mqstar[0]){ // If mass = 0.5 TeV
+  if(fabs(mass-mqstar[0]) < 1e-5){ // If mass = 0.5 TeV
     for(int k=0; k<n; k++){
       x[k] = bincenter[k];
       y[k] = ((TArrayD*) vy->At(0))->GetAt(k);
+      effic_analyse = effic[0];
     }
   }
 
-  if(mass == mqstar[1]){ // If mass = 0.7 TeV
+  if(fabs(mass-mqstar[1]) < 1e-5){ // If mass = 0.7 TeV
     for(int k=0; k<n; k++){
       x[k] = bincenter[k];
       y[k] =  ((TArrayD*) vy->At(1))->GetAt(k);
+      effic_analyse = effic[1];
     }
   }
 
-  if(mass == mqstar[2]){ // If mass = 1.2 TeV
+  if(fabs(mass-mqstar[2]) < 1e-5){ // If mass = 1.2 TeV
     for(int k=0; k<n; k++){
       x[k] = bincenter[k];
       y[k] =  ((TArrayD*) vy->At(2))->GetAt(k);
+      effic_analyse = effic[2];
     }
   }
 
-  if(mass == mqstar[3]){ // If mass = 2 TeV
+  if(fabs(mass-mqstar[3]) < 1e-5){ // If mass = 2 TeV
     for(int k=0; k<n; k++){
       x[k] = bincenter[k];
       y[k] =  ((TArrayD*) vy->At(3))->GetAt(k);
+      effic_analyse = effic[3];
     }
   }
 
-  if(mass == mqstar[4]){ // If mass = 3.5 TeV
+  if(fabs(mass-mqstar[4]) < 1e-5){ // If mass = 3.5 TeV
     for(int k=0; k<n; k++){
       x[k] = bincenter[k];
       y[k] =  ((TArrayD*) vy->At(4))->GetAt(k);
+      effic_analyse = effic[4];
     }
   }
-
+  
+  if(fabs(mass-mqstar[5]) < 1e-5){ // If mass = 3.5 TeV
+    for(int k=0; k<n; k++){
+      x[k] = bincenter[k];
+      y[k] =  ((TArrayD*) vy->At(5))->GetAt(k);
+      effic_analyse = effic[5];
+    }
+  }
 
   // Calculate and create new x distribution with fixed bins at entered mass value which is between 0.5 TeV and 0.7 TeV
   if((mass > mqstar[0] && mass < mqstar[1]) || mass < mqstar[0]){
@@ -267,7 +291,7 @@ double QstarBinnedProb(double mjj, double mass){
   }
 
   // Calculate and create new x distribution with fixed bins at entered mass value which is between 2 TeV and 3.5 TeV. 
-  if((mass > mqstar[3] && mass < mqstar[4]) || mass > mqstar[4]){
+  if((mass > mqstar[3] && mass < mqstar[4])){
        double Mjj1 = mqstar[3];
       double Mjj2 = mqstar[4];
       double Mq = mass;
@@ -285,6 +309,24 @@ double QstarBinnedProb(double mjj, double mass){
     effic_analyse = effic[3] +  (effic[4]- effic[3])*norm;
   }
 
+  // Calculate and create new x distribution with fixed bins at entered mass value which is between 3.5 TeV and 4 TeV. 
+  if((mass > mqstar[4] && mass < mqstar[5]) || mass > mqstar[5])){
+       double Mjj1 = mqstar[4];
+      double Mjj2 = mqstar[5];
+      double Mq = mass;
+      double norm = (Mq - Mjj1)/(Mjj2 - Mjj1);
+
+   for(int k=0; k<n; k++){
+      double bincont1 = ( (TArrayD*) vy->At(4))->GetAt(k);
+      double bincont2 = ( (TArrayD*) vy->At(5))->GetAt(k);
+
+      double eff = bincont2 - bincont1;
+      double neff = eff * norm;
+      double mqstar1 = bincont1 + neff;
+      y[k] = mqstar1;
+      x[k] = bincenter[k];}
+    effic_analyse = effic[4] +  (effic[5]- effic[4])*norm;
+  }
 
 
   // Interpolation tecnique is used to convert distribution in x to distribution in dijet mass with variable bins
