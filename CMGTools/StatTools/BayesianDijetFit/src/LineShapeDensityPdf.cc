@@ -13,6 +13,55 @@
 
 double mass;
 TObjArray* vy = new TObjArray(6);
+
+
+
+//================================= HLT Summer 11 D6T shape PFJets =======================================//
+
+
+double finalResults_QstarToJJ_M_700_qg_M_PFJet1PFJet2_shifted_2 [50] = { 99.0,  138.0,  163.0,  182.0,  245.0,  320.0,  332.0,  428.0,  487.0,  536.0,  610.0,  731.0,  805.0,  961.0,  1048.0,  1155.0,  1223.0,  1364.0,  1616.0,  1680.0,  1812.0,  1904.0,  1977.0,  1942.0,  2239.0,  2296.0,  2417.0,  2611.0,  2867.0,  3132.0,  3381.0,  3750.0,  3736.0,  3740.0,  3317.0,  2826.0,  2138.0,  1532.0,  1014.0,  723.0,  477.0,  378.0,  308.0,  253.0,  208.0,  195.0,  157.0,  149.0,  128.0,  103.0};
+double finalResults_QstarToJJ_M_1200_qg_M_PFJet1PFJet2_shifted_3 [50] = { 190.0,  190.0,  222.0,  257.0,  263.0,  347.0,  355.0,  411.0,  460.0,  584.0,  598.0,  664.0,  778.0,  907.0,  1058.0,  1137.0,  1234.0,  1378.0,  1498.0,  1664.0,  1765.0,  1854.0,  1902.0,  2048.0,  2074.0,  2264.0,  2390.0,  2614.0,  2920.0,  3102.0,  3536.0,  3946.0,  4291.0,  4172.0,  3601.0,  2853.0,  1904.0,  1233.0,  794.0,  489.0,  351.0,  264.0,  217.0,  182.0,  139.0,  109.0,  108.0,  96.0,  73.0,  84.0};
+double finalResults_QstarToJJ_M_2000_qg_M_PFJet1PFJet2_shifted_4 [50] = { 194.0,  207.0,  257.0,  262.0,  319.0,  328.0,  415.0,  449.0,  461.0,  546.0,  621.0,  754.0,  827.0,  947.0,  1048.0,  1160.0,  1293.0,  1421.0,  1526.0,  1717.0,  1810.0,  1785.0,  1971.0,  2041.0,  2165.0,  2230.0,  2296.0,  2572.0,  2860.0,  3152.0,  3440.0,  4019.0,  4514.0,  4449.0,  3744.0,  2784.0,  1734.0,  908.0,  554.0,  329.0,  201.0,  152.0,  114.0,  103.0,  60.0,  63.0,  52.0,  32.0,  46.0,  25.0};
+
+
+double finalResults_RSGravitonToJJ_M_700_gg_M_PFJet1PFJet2_shifted_2 [50] = { 135.0,  163.0,  230.0,  209.0,  226.0,  269.0,  320.0,  315.0,  379.0,  382.0,  406.0,  482.0,  491.0,  449.0,  482.0,  507.0,  523.0,  520.0,  520.0,  540.0,  513.0,  547.0,  549.0,  528.0,  607.0,  532.0,  572.0,  567.0,  620.0,  597.0,  598.0,  583.0,  603.0,  502.0,  438.0,  289.0,  237.0,  161.0,  97.0,  87.0,  96.0,  71.0,  70.0,  48.0,  52.0,  43.0,  43.0,  23.0,  42.0,  40.0};
+double finalResults_RSGravitonToJJ_M_1200_gg_M_PFJet1PFJet2_shifted_3 [50] = { 125.0,  169.0,  176.0,  174.0,  226.0,  231.0,  230.0,  256.0,  268.0,  316.0,  298.0,  289.0,  317.0,  315.0,  347.0,  341.0,  329.0,  366.0,  377.0,  362.0,  394.0,  380.0,  383.0,  403.0,  378.0,  405.0,  442.0,  411.0,  440.0,  457.0,  441.0,  478.0,  412.0,  398.0,  327.0,  185.0,  112.0,  77.0,  59.0,  35.0,  32.0,  24.0,  25.0,  25.0,  21.0,  16.0,  12.0,  9.0,  11.0,  12.0};
+double finalResults_RSGravitonToJJ_M_2000_gg_M_PFJet1PFJet2_shifted_4 [50] = { 91.0,  95.0,  99.0,  96.0,  99.0,  117.0,  115.0,  130.0,  141.0,  154.0,  141.0,  139.0,  168.0,  177.0,  162.0,  191.0,  205.0,  198.0,  217.0,  205.0,  201.0,  222.0,  189.0,  228.0,  206.0,  190.0,  218.0,  222.0,  250.0,  224.0,  237.0,  276.0,  264.0,  230.0,  190.0,  95.0,  63.0,  24.0,  15.0,  6.0,  8.0,  8.0,  6.0,  7.0,  0.0,  2.0,  2.0,  2.0,  1.0,  1.0};
+
+
+
+double finalResults_RSGravitonToJJ_M_700_qq_M_PFJet1PFJet2_shifted_2 [50] = { 14.0,  11.0,  11.0,  12.0,  15.0,  21.0,  34.0,  24.0,  32.0,  55.0,  52.0,  58.0,  64.0,  72.0,  75.0,  83.0,  98.0,  119.0,  114.0,  141.0,  157.0,  189.0,  208.0,  215.0,  242.0,  254.0,  267.0,  301.0,  326.0,  398.0,  498.0,  504.0,  608.0,  612.0,  585.0,  513.0,  368.0,  267.0,  145.0,  94.0,  55.0,  31.0,  23.0,  16.0,  16.0,  14.0,  5.0,  12.0,  10.0,  8.0};
+double finalResults_RSGravitonToJJ_M_1200_qq_M_PFJet1PFJet2_shifted_3 [50] = { 42.0,  44.0,  51.0,  42.0,  41.0,  48.0,  36.0,  81.0,  61.0,  69.0,  59.0,  90.0,  104.0,  111.0,  135.0,  183.0,  180.0,  204.0,  242.0,  238.0,  305.0,  346.0,  327.0,  329.0,  426.0,  442.0,  438.0,  533.0,  561.0,  669.0,  801.0,  969.0,  1167.0,  1260.0,  1191.0,  952.0,  636.0,  338.0,  193.0,  95.0,  46.0,  36.0,  36.0,  20.0,  13.0,  12.0,  14.0,  9.0,  6.0,  7.0};
+double finalResults_RSGravitonToJJ_M_2000_qq_M_PFJet1PFJet2_shifted_4 [50] = { 56.0,  64.0,  52.0,  58.0,  56.0,  65.0,  83.0,  70.0,  80.0,  96.0,  116.0,  133.0,  167.0,  175.0,  196.0,  234.0,  245.0,  292.0,  351.0,  388.0,  417.0,  458.0,  480.0,  554.0,  573.0,  631.0,  620.0,  782.0,  845.0,  1012.0,  1218.0,  1424.0,  1820.0,  1944.0,  1911.0,  1415.0,  831.0,  397.0,  188.0,  84.0,  50.0,  36.0,  14.0,  14.0,  11.0,  3.0,  8.0,  3.0,  6.0,  5.0};
+///
+
+
+
+
+//================================= HLT Summer 11 D6T shape PFFatJets =======================================//
+
+
+double finalResults_QstarToJJ_M_700_qg_M_FatPFJet1FatPFJet2_shifted_2 [50] = { 69.0,  86.0,  110.0,  120.0,  162.0,  204.0,  218.0,  279.0,  307.0,  340.0,  384.0,  442.0,  497.0,  564.0,  610.0,  745.0,  756.0,  776.0,  926.0,  982.0,  1097.0,  1172.0,  1180.0,  1299.0,  1442.0,  1554.0,  1705.0,  1988.0,  2385.0,  2876.0,  3421.0,  4092.0,  4628.0,  4736.0,  4694.0,  4067.0,  3205.0,  2504.0,  1758.0,  1358.0,  958.0,  805.0,  636.0,  537.0,  447.0,  417.0,  338.0,  290.0,  256.0,  217.0};
+double finalResults_QstarToJJ_M_1200_qg_M_FatPFJet1FatPFJet2_shifted_3 [50] = { 139.0,  150.0,  170.0,  186.0,  191.0,  223.0,  249.0,  296.0,  304.0,  358.0,  380.0,  399.0,  462.0,  545.0,  624.0,  687.0,  705.0,  786.0,  863.0,  971.0,  1014.0,  1108.0,  1160.0,  1243.0,  1271.0,  1455.0,  1651.0,  1871.0,  2160.0,  2573.0,  3403.0,  4228.0,  5150.0,  5619.0,  5332.0,  4578.0,  3437.0,  2344.0,  1635.0,  1119.0,  838.0,  617.0,  522.0,  402.0,  343.0,  297.0,  261.0,  222.0,  181.0,  156.0};
+double finalResults_QstarToJJ_M_2000_qg_M_FatPFJet1FatPFJet2_shifted_4 [50] = { 150.0,  169.0,  182.0,  199.0,  226.0,  250.0,  253.0,  283.0,  312.0,  315.0,  390.0,  459.0,  494.0,  592.0,  627.0,  664.0,  804.0,  769.0,  882.0,  964.0,  1057.0,  1065.0,  1122.0,  1211.0,  1397.0,  1504.0,  1598.0,  1804.0,  2184.0,  2591.0,  3224.0,  4138.0,  5467.0,  6138.0,  5987.0,  4808.0,  3350.0,  2097.0,  1341.0,  899.0,  622.0,  465.0,  355.0,  307.0,  223.0,  179.0,  165.0,  124.0,  97.0,  88.0};
+
+
+/// D6T summer11 fat-gg ptmin=30GeV  y500 just a copy of y700. Better to replace later
+double finalResults_RSGravitonToJJ_M_700_gg_M_FatPFJet1FatPFJet2_shifted_2 [50] = { 86.0,  101.0,  143.0,  152.0,  147.0,  178.0,  211.0,  239.0,  257.0,  287.0,  275.0,  304.0,  355.0,  289.0,  325.0,  342.0,  379.0,  400.0,  385.0,  385.0,  369.0,  420.0,  448.0,  424.0,  435.0,  486.0,  437.0,  504.0,  616.0,  695.0,  736.0,  806.0,  844.0,  779.0,  732.0,  577.0,  448.0,  338.0,  262.0,  203.0,  188.0,  152.0,  150.0,  134.0,  106.0,  101.0,  73.0,  63.0,  74.0,  57.0};
+double finalResults_RSGravitonToJJ_M_1200_gg_M_FatPFJet1FatPFJet2_shifted_3 [50] = { 102.0,  124.0,  138.0,  124.0,  150.0,  164.0,  177.0,  193.0,  196.0,  213.0,  192.0,  224.0,  241.0,  218.0,  233.0,  260.0,  221.0,  226.0,  256.0,  256.0,  271.0,  278.0,  284.0,  286.0,  297.0,  293.0,  326.0,  359.0,  396.0,  473.0,  506.0,  593.0,  679.0,  684.0,  581.0,  460.0,  353.0,  251.0,  174.0,  150.0,  117.0,  78.0,  82.0,  59.0,  64.0,  51.0,  37.0,  45.0,  34.0,  39.0};
+double finalResults_RSGravitonToJJ_M_2000_gg_M_FatPFJet1FatPFJet2_shifted_4 [50] = { 63.0,  60.0,  63.0,  85.0,  87.0,  90.0,  92.0,  84.0,  106.0,  107.0,  112.0,  106.0,  115.0,  114.0,  109.0,  116.0,  129.0,  138.0,  130.0,  135.0,  154.0,  133.0,  139.0,  169.0,  169.0,  151.0,  192.0,  157.0,  207.0,  215.0,  262.0,  330.0,  403.0,  461.0,  359.0,  307.0,  191.0,  114.0,  80.0,  59.0,  46.0,  50.0,  25.0,  28.0,  21.0,  13.0,  10.0,  15.0,  8.0,  13.0};
+
+
+
+/// D6T summer11 fat-gg ptmin=30GeV  y500 just a copy of y700. Better to replace later
+double finalResults_RSGravitonToJJ_M_700_qq_M_FatPFJet1FatPFJet2_shifted_2 [50] = { 10.0,  6.0,  8.0,  8.0,  6.0,  12.0,  28.0,  16.0,  30.0,  34.0,  32.0,  36.0,  54.0,  49.0,  37.0,  57.0,  57.0,  64.0,  73.0,  94.0,  77.0,  104.0,  121.0,  138.0,  171.0,  178.0,  189.0,  226.0,  272.0,  359.0,  465.0,  492.0,  684.0,  716.0,  717.0,  645.0,  472.0,  369.0,  242.0,  142.0,  133.0,  88.0,  59.0,  41.0,  40.0,  31.0,  29.0,  31.0,  19.0,  12.0};
+double finalResults_RSGravitonToJJ_M_1200_qq_M_FatPFJet1FatPFJet2_shifted_3 [50] = { 26.0,  31.0,  30.0,  45.0,  34.0,  47.0,  23.0,  59.0,  44.0,  54.0,  55.0,  64.0,  72.0,  78.0,  81.0,  100.0,  114.0,  125.0,  119.0,  155.0,  152.0,  203.0,  197.0,  212.0,  253.0,  265.0,  303.0,  361.0,  447.0,  564.0,  722.0,  932.0,  1267.0,  1493.0,  1524.0,  1290.0,  935.0,  595.0,  356.0,  205.0,  138.0,  102.0,  74.0,  63.0,  39.0,  43.0,  35.0,  32.0,  22.0,  19.0};
+double finalResults_RSGravitonToJJ_M_2000_qq_M_FatPFJet1FatPFJet2_shifted_4 [50] = { 54.0,  45.0,  38.0,  58.0,  53.0,  52.0,  64.0,  52.0,  60.0,  70.0,  81.0,  75.0,  120.0,  127.0,  112.0,  128.0,  164.0,  156.0,  202.0,  238.0,  236.0,  256.0,  284.0,  345.0,  389.0,  388.0,  419.0,  580.0,  612.0,  800.0,  1029.0,  1337.0,  1957.0,  2362.0,  2542.0,  2049.0,  1419.0,  755.0,  392.0,  214.0,  138.0,  102.0,  65.0,  42.0,  36.0,  23.0,  25.0,  12.0,  19.0,  11.0};
+
+
+
+
+
 //================================= new summer 11 D6T shape=======================================//
 
 
@@ -220,7 +269,7 @@ double bincenter[50]={
 
 std::vector<double> v;
 
-double mqstar[5] = {700., 1200., 2000., 3500., 4000.};
+double mqstar[6] = {500., 700., 1200., 2000., 3500., 4000.};
 
 const int nMassBins = 103;
 double massBoundaries[nMassBins+1] = {1, 3, 6, 10, 16, 23, 31, 40, 50, 61, 74, 88, 103, 119, 137, 156, 176, 197, 220, 244, 270, 296, 325,
@@ -280,6 +329,63 @@ void LineShapeDensity_pdf(double mass, int iResonance){
     dv3500 = new TArrayD(50, QstarToJJ_M_3500_TuneD6T_ak5_fat30);
     dv4000 = new TArrayD(50, QstarToJJ_M_4000_TuneD6T_ak5_fat30);
     break;
+  case 21: 
+    std::cout << "RSGraviton_HLT_ak5_GGtoGG_fat30" << std::endl;
+    dv500 = new TArrayD(50,  finalResults_RSGravitonToJJ_M_700_gg_M_FatPFJet1FatPFJet2_shifted_2);
+    dv700 = new TArrayD(50,  finalResults_RSGravitonToJJ_M_700_gg_M_FatPFJet1FatPFJet2_shifted_2);
+    dv1200 = new TArrayD(50, finalResults_RSGravitonToJJ_M_1200_gg_M_FatPFJet1FatPFJet2_shifted_3);
+    dv2000 = new TArrayD(50, finalResults_RSGravitonToJJ_M_2000_gg_M_FatPFJet1FatPFJet2_shifted_4);
+    dv3500 = new TArrayD(50, finalResults_RSGravitonToJJ_M_2000_gg_M_FatPFJet1FatPFJet2_shifted_4);
+    dv4000 = new TArrayD(50, finalResults_RSGravitonToJJ_M_2000_gg_M_FatPFJet1FatPFJet2_shifted_4);
+    break;
+  case 22:   
+    std::cout << "RSGraviton_HLT_ak5_QQtoQQ_fat30" << std::endl;
+    dv500 = new TArrayD(50,  finalResults_RSGravitonToJJ_M_700_qq_M_FatPFJet1FatPFJet2_shifted_2);
+    dv700 = new TArrayD(50,  finalResults_RSGravitonToJJ_M_700_qq_M_FatPFJet1FatPFJet2_shifted_2);
+    dv1200 = new TArrayD(50, finalResults_RSGravitonToJJ_M_1200_qq_M_FatPFJet1FatPFJet2_shifted_3);
+    dv2000 = new TArrayD(50, finalResults_RSGravitonToJJ_M_2000_qq_M_FatPFJet1FatPFJet2_shifted_4);
+    dv3500 = new TArrayD(50, finalResults_RSGravitonToJJ_M_2000_qq_M_FatPFJet1FatPFJet2_shifted_4);
+    dv4000 = new TArrayD(50, finalResults_RSGravitonToJJ_M_2000_qq_M_FatPFJet1FatPFJet2_shifted_4);
+    break;
+  case 23:   
+    std::cout << "Qstar_HLT_ak5_fat30" << std::endl; 
+    dv500 = new TArrayD(50,  finalResults_QstarToJJ_M_700_qg_M_FatPFJet1FatPFJet2_shifted_2);
+    dv700 = new TArrayD(50,  finalResults_QstarToJJ_M_700_qg_M_FatPFJet1FatPFJet2_shifted_2);
+    dv1200 = new TArrayD(50, finalResults_QstarToJJ_M_1200_qg_M_FatPFJet1FatPFJet2_shifted_3);
+    dv2000 = new TArrayD(50, finalResults_QstarToJJ_M_2000_qg_M_FatPFJet1FatPFJet2_shifted_4);
+    dv3500 = new TArrayD(50, finalResults_QstarToJJ_M_2000_qg_M_FatPFJet1FatPFJet2_shifted_4);
+    dv4000 = new TArrayD(50, finalResults_QstarToJJ_M_2000_qg_M_FatPFJet1FatPFJet2_shifted_4);
+    break;
+  case 121: 
+    std::cout << "RSGraviton_HLT_ak5_GGtoGG_pf" << std::endl;
+    dv500 = new TArrayD(50,  finalResults_RSGravitonToJJ_M_700_gg_M_PFJet1PFJet2_shifted_2);
+    dv700 = new TArrayD(50,  finalResults_RSGravitonToJJ_M_700_gg_M_PFJet1PFJet2_shifted_2);
+    dv1200 = new TArrayD(50, finalResults_RSGravitonToJJ_M_1200_gg_M_PFJet1PFJet2_shifted_3);
+    dv2000 = new TArrayD(50, finalResults_RSGravitonToJJ_M_2000_gg_M_PFJet1PFJet2_shifted_4);
+    dv3500 = new TArrayD(50, finalResults_RSGravitonToJJ_M_2000_gg_M_PFJet1PFJet2_shifted_4);
+    dv4000 = new TArrayD(50, finalResults_RSGravitonToJJ_M_2000_gg_M_PFJet1PFJet2_shifted_4);
+    break;
+  case 122:       
+    std::cout << "RSGraviton_HLT_ak5_QQtoQQ_pf" << std::endl;
+    // Not available so just copy and paste
+    dv500 = new TArrayD(50,  finalResults_RSGravitonToJJ_M_700_qq_M_PFJet1PFJet2_shifted_2);
+    dv700 = new TArrayD(50,  finalResults_RSGravitonToJJ_M_700_qq_M_PFJet1PFJet2_shifted_2);
+    dv1200 = new TArrayD(50, finalResults_RSGravitonToJJ_M_1200_qq_M_PFJet1PFJet2_shifted_3);
+    dv2000 = new TArrayD(50, finalResults_RSGravitonToJJ_M_2000_qq_M_PFJet1PFJet2_shifted_4);
+    // Not used in this fit so just add it
+    dv3500 = new TArrayD(50, finalResults_RSGravitonToJJ_M_2000_qq_M_PFJet1PFJet2_shifted_4);
+    dv4000 = new TArrayD(50, finalResults_RSGravitonToJJ_M_2000_qq_M_PFJet1PFJet2_shifted_4);
+    std::cout << "End of sample filling" << std::endl;
+    break;
+  case 123:   
+    std::cout << "Qstar_HLT_ak5_pf" << std::endl; 
+    dv500 = new TArrayD(50,  finalResults_QstarToJJ_M_700_qg_M_PFJet1PFJet2_shifted_2);
+    dv700 = new TArrayD(50,  finalResults_QstarToJJ_M_700_qg_M_PFJet1PFJet2_shifted_2);
+    dv1200 = new TArrayD(50, finalResults_QstarToJJ_M_1200_qg_M_PFJet1PFJet2_shifted_3);
+    dv2000 = new TArrayD(50, finalResults_QstarToJJ_M_2000_qg_M_PFJet1PFJet2_shifted_4);
+    dv3500 = new TArrayD(50, finalResults_QstarToJJ_M_2000_qg_M_PFJet1PFJet2_shifted_4);
+    dv4000 = new TArrayD(50, finalResults_QstarToJJ_M_2000_qg_M_PFJet1PFJet2_shifted_4);
+    break;
   default:
     std::cout << "Nothing would crash" << std::endl; 
     break;
@@ -295,8 +401,6 @@ void LineShapeDensity_pdf(double mass, int iResonance){
 
 
 void setArray (double mass){ 
-
-
 
   for (int bin = 0; bin < 6; bin++){
     double sum = 0;
@@ -350,36 +454,41 @@ void setArray (double mass){
 	// Definition of histograms
 	TH1F* h_new2 = new TH1F("h_new2","with variale bins2",s-1 , m); // Histogram for dijet mass distribution with variable mass bins
 	
-	if(TMath::Abs(mass - mqstar[0]) < 1e-5){ // If mass = 0.7 TeV
+	if(TMath::Abs(mass - mqstar[0]) < 1e-5){ // If mass = 0.5 TeV
 	  for(unsigned int k=0; k<n; k++){
 	    x[k] = bincenter[k];
 	    y[k] = ((TArrayD*) vy->At(1))->GetAt(k);}
 	}
 	
-	if(TMath::Abs(mass - mqstar[1]) < 1e-5){ // If mass = 1.2 TeV
+	if(TMath::Abs(mass - mqstar[1]) < 1e-5){ // If mass = 0.7 TeV
 	  for(unsigned int k=0; k<n; k++){
 	    x[k] = bincenter[k];
 	    y[k] = ((TArrayD*) vy->At(2))->GetAt(k);}
 	}
 	
-	if(TMath::Abs(mass - mqstar[2]) < 1e-5){ // If mass = 2 TeV
+	if(TMath::Abs(mass - mqstar[2]) < 1e-5){ // If mass = 1.2 TeV
 	  for(unsigned int k=0; k<n; k++){
 	    x[k] = bincenter[k];
 	    y[k] = ((TArrayD*) vy->At(3))->GetAt(k);}
 	}
 	
-	if(TMath::Abs(mass - mqstar[3]) < 1e-5){ // If mass = 3.5 TeV
+	if(TMath::Abs(mass - mqstar[3]) < 1e-5){ // If mass = 2.0 TeV
 	  for(unsigned int k=0; k<n; k++){
 	    x[k] = bincenter[k];
 	    y[k] = ((TArrayD*) vy->At(4))->GetAt(k);}
 	}
-	if(TMath::Abs(mass-mqstar[4]) < 1e-5){ // If mass = 4.0 TeV
+	if(TMath::Abs(mass-mqstar[4]) < 1e-5){ // If mass = 3.5 TeV
 	  for(unsigned int k=0; k<n; k++){
 	    x[k] = bincenter[k];
 	    y[k] = ((TArrayD*) vy->At(4))->GetAt(k);}
 	}	
+	if(TMath::Abs(mass-mqstar[5]) < 1e-5){ // If mass = 4.0 TeV
+	  for(unsigned int k=0; k<n; k++){
+	    x[k] = bincenter[k];
+	    y[k] = ((TArrayD*) vy->At(5))->GetAt(k);}
+	}
 	
-	// Calculate and create new x distribution with fixed bins at entered mass value which is between 0.7 TeV and 1.2 TeV. 
+	// Calculate and create new x distribution with fixed bins at entered mass value which is between 0.5 TeV and 0.7 TeV. 
 	if(mass > mqstar[0] && mass < mqstar[1]){
 	  for(unsigned int k=0; k<n; k++){
 	    double bincont1 = ((TArrayD*) vy->At(1))->GetAt(k);
@@ -395,7 +504,7 @@ void setArray (double mass){
 	    x[k] = bincenter[k];}
 	}
 	
-	// Calculate and create new x distribution with fixed bins at entered mass value which is between 1.2 TeV and 2 TeV. 
+	// Calculate and create new x distribution with fixed bins at entered mass value which is between 0.7 TeV and 1.2 TeV. 
 	if(mass > mqstar[1] && mass < mqstar[2]){
 	  for(unsigned int k=0; k<n; k++){
 	    double bincont1 = ((TArrayD*) vy->At(2))->GetAt(k);
@@ -411,7 +520,7 @@ void setArray (double mass){
 	    x[k] = bincenter[k];}
 	}
 	
-	// Calculate and create new x distribution with fixed bins at entered mass value which is between 2 TeV and 3.5 TeV. 
+	// Calculate and create new x distribution with fixed bins at entered mass value which is between 1.2 TeV and 2.0 TeV. 
 	if(mass > mqstar[2] && mass < mqstar[3]){
 	  for(unsigned int k=0; k<n; k++){
 	    double bincont1 = ((TArrayD*) vy->At(3))->GetAt(k);
@@ -426,8 +535,10 @@ void setArray (double mass){
 	    y[k] = mqstar1;
 	    x[k] = bincenter[k];}
 	}
-	
-	if((mass > mqstar[3] && mass < mqstar[4]) || mass > mqstar[4]){
+
+
+	// Calculate and create new x distribution with fixed bins at entered mass value which is between 2.0 TeV and 3.5 TeV. 
+	if((mass > mqstar[3] && mass < mqstar[4])){
 	  for(unsigned int k=0; k<n; k++){
 	    double bincont1 = ((TArrayD*) vy->At(3))->GetAt(k);
 	    double bincont2 = ((TArrayD*) vy->At(4))->GetAt(k);
@@ -441,7 +552,21 @@ void setArray (double mass){
 	    y[k] = mqstar1;
 	    x[k] = bincenter[k];}
 	}
-	
+	// Calculate and create new x distribution with fixed bins at entered mass value which is between 3.5 TeV
+	if((mass > mqstar[4] && mass < mqstar[5]) || mass > mqstar[5]){
+	  for(unsigned int k=0; k<n; k++){
+	    double bincont1 = ((TArrayD*) vy->At(4))->GetAt(k);
+	    double bincont2 = ((TArrayD*) vy->At(5))->GetAt(k);
+	    double Mjj1 = mqstar[4];
+	    double Mjj2 = mqstar[5];
+	    double Mq = mass;
+	    double norm = (Mq - Mjj1)/(Mjj2 - Mjj1);
+	    double eff = bincont2 - bincont1;
+	    double neff = eff * norm;
+	    double mqstar1 = bincont1 + neff;
+	    y[k] = mqstar1;
+	    x[k] = bincenter[k];}
+	}
 	// Interpolation tecnique is used to convert distribution in x to distribution in dijet mass with variable bins
 	ROOT::Math::Interpolator inter(n, ROOT::Math::Interpolation::kCSPLINE); // If CSPLINE is not valid, please use kCSPLINE
 	inter.SetData(n, x, y);

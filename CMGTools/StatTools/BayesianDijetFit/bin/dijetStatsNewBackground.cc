@@ -64,14 +64,8 @@ int main(int argc, char* argv[])
   // this is needed to setup the auto-compile for the workspace
   gSystem->SetIncludePath("-I$ROOFITSYS/include");
   // Declare magic numbers here
-//  double MININVMASS = 838.; // 189.469
-//  double MININVMASS = 693.; // HT-Calo-831/pb
-//  double MININVMASS = 788.; // Jet-Calo-831/pb
-//  double MININVMASS = 740.; // HT-PF-831/pb
-//  double MININVMASS = 838.; // Jet-PF-831/pb
-//  double MININVMASS = 838.; // HT-fat-1/fb
-  double MININVMASS = 890.; // HT-fat-4479/pb
 
+  double MININVMASS = 890.; // HT-fat-4479/pb
   double MAXINVMASS = 5000.;
 
 
@@ -83,9 +77,12 @@ int main(int argc, char* argv[])
 
 
 
+
+
 //  double LUMI = 1010.;
 
   double LUMI = 4677.;
+
   double LUMIERROR=0.06; // relative error on luminosity
   double JES=1.0;        // JES "value"
   double JER=1.0;        // JER "value"
@@ -124,9 +121,35 @@ int main(int argc, char* argv[])
   if (sResonance.find("RSGraviton_ak5_GGtoGG_fat30") != std::string::npos) iResonance = 11;
   else if (sResonance.find("RSGraviton_ak5_QQtoQQ_fat30") != std::string::npos) iResonance = 12;
   else if (sResonance.find("Qstar_ak5_fat30") != std::string::npos) iResonance = 13;
-                                  
-  cout << "cResonance = " << cResonance << "iResonance is = " << iResonance << endl;
-  cout << "Verbose = " << verbose_ << endl;
+  else if (sResonance.find("RSGraviton_HLT_ak5_GGtoGG_fat30") != std::string::npos) iResonance = 21;
+  else if (sResonance.find("RSGraviton_HLT_ak5_QQtoQQ_fat30") != std::string::npos) iResonance = 22;
+  else if (sResonance.find("Qstar_HLT_ak5_fat30") != std::string::npos) iResonance = 23;        
+                        
+  else if (sResonance.find("RSGraviton_HLT_ak5_GGtoGG_pf") != std::string::npos) iResonance = 121;
+  else if (sResonance.find("RSGraviton_HLT_ak5_QQtoQQ_pf") != std::string::npos) iResonance = 122;
+  else if (sResonance.find("Qstar_HLT_ak5_pf") != std::string::npos) iResonance = 123;   
+
+  if (iResonance > 20 && iResonance < 29)  {
+    DATASETFN="../data/PFDiFatJetMassList_DATA.txt";
+    LUMI = 117.6;
+    MININVMASS = 550.;
+    MAXINVMASS = 4000.;
+    JESERROR=0.032;   // relative error on JES
+    JERERROR=0.11;   // relative error on JER
+
+    
+  }
+
+  if (iResonance > 120 && iResonance < 129)  {
+    DATASETFN="../data/PFDiJetMassList_DATA.txt";
+    LUMI = 117.6;
+    MININVMASS = 550.;
+    MAXINVMASS = 4000.;
+    JESERROR=0.032;   // relative error on JES
+    JERERROR=0.11;   // relative error on JER
+  }
+     
+
 
   // setup label
   char label[100];
@@ -139,6 +162,10 @@ int main(int argc, char* argv[])
   ws->factory("invmass[0]");
   RooRealVar* invmass=ws->var("invmass");
   invmass->setRange(MININVMASS, MAXINVMASS);
+
+  cout << "cResonance = " << cResonance << " iResonance is = " << iResonance << endl;
+  cout << "MININVMASS = " << MININVMASS << " MAXINVMASS = " << MAXINVMASS << " Lumi = " << LUMI << endl;
+  cout << "Verbose = " << verbose_ << endl;
 
   // background
   ws->factory("EXPR::background('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*log(invmass/7000.0))', p1[7.460,-30,30], p2[5.882,-20,20], p3[0.106,-5,5],invmass)");
@@ -226,6 +253,7 @@ int main(int argc, char* argv[])
   // exclude window +20% -20% units in width
   double mininvmass=ws->var("invmass")->getMin();
   double maxinvmass=ws->var("invmass")->getMax();
+  cout << "mininvmass = " << mininvmass << " maxinvmass = " << maxinvmass << endl;
   ws->var("invmass")->setRange("FULL", mininvmass,maxinvmass);
   RooFitResult* fit;
   //if(doAggressiveBkgFit) {
