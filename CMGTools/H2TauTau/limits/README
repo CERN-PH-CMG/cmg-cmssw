@@ -1,16 +1,38 @@
 
-Instructions for limits computation
-(more infos on limits computation on https://twiki.cern.ch/twiki/bin/viewauth/CMS/%20SWGuideHiggsAnalysisCombinedLimit)
+***Quick running instructions:
+rm -f *.ps *.txt *.root *.log
+source createDataCards.sh
+source combineCards.sh
+source computeLimits.sh 
+root -b plotLimits.C\(0\)
+root -b plotLimits.C\(1\)
+root -b plotLimits.C\(2\)
+root -b plotLimits.C\(3\)
 
-To set up the environment:
+
+***For up to date info see the Twiki
+https://twiki.cern.ch/twiki/bin/viewauth/CMS/%20SWGuideHiggsAnalysisCombinedLimit)
+
+***Installation instructions:
 
 cd CMSSW_4_2_8/src 
 cmsenv
 cvs co  HiggsAnalysis/CombinedLimit
 scramv1 b
 
-The histosForLimit.C macro will create the datacard and the rootfile needed for the limit computation.
 
+***Notes macros:
+
+-histosForLimit.C macro will create the datacard and the rootfile for on particular category and higgs mass.
+-the "combine" command will compute the limit for one data card.
+-the above shell scripts combine the cards and compute all the limits
+-the plotLimits.C makes the plot as a function of mass
+
+***data cards for different categories/channels are combined like this:
+combineCards.py Name1=card1.txt Name2=card2.txt .... > card.txt 
+
+
+***Notes on the types of limit computations
 There are two ways to compute the limit:
 
 1) The asymptotic CLs method that allows to compute quickly an estimate of the observed and expected limits
@@ -40,7 +62,5 @@ b) To obtain expected limit: combine datacard.txt -M HybridNew --freq --testStat
 
 c) To obtain observed limit: combine datacard.txt -M HybridNew --freq --testStat LHC --grid=muTau_mH115.root
  
-Useful commands:
 
-If you have separate channels each with it's own datacard, it is possible to produce a combined datacard using the script combineCards.py:
-combineCards.py Name1=card1.txt Name2=card2.txt .... > card.txt 
+

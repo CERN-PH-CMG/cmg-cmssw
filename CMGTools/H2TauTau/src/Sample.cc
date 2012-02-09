@@ -44,6 +44,8 @@ Sample::Sample(const char * name, const char * path):
   outputpath_(path),
   histFile_(NULL),
   tree_(NULL),
+  ntpFile_(NULL),
+  ntpTree_(NULL),
   dataType_(""),
   color_(0),
   lcolor_(0),
@@ -72,6 +74,8 @@ Sample::~Sample(){
 
   for(std::vector<int*>::const_iterator c=countervalue_.begin(); c!=countervalue_.end(); ++c)
     delete *c;    
+
+  if(ntpFile_!=NULL)  delete ntpFile_;
   
 }
 
