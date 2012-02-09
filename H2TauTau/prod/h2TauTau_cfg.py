@@ -47,18 +47,18 @@ dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_STAR
 
 # creating the source
 from CMGTools.Production.datasetToSource import *
-#process.source = datasetToSource(
-#    dataset_user,
-#    dataset_name,
-#    'tree.*root')
+process.source = datasetToSource(
+    dataset_user,
+    dataset_name,
+    'tree.*root')
 
-process.source = cms.Source(
-    "PoolSource",
-    fileNames = cms.untracked.vstring(
-    '/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/tree_CMG_1.root'
-#    '/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/tree_CMG_1.root'
-    )
-    )
+## process.source = cms.Source(
+##     "PoolSource",
+##     fileNames = cms.untracked.vstring(
+##     '/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/tree_CMG_1.root'
+## #    '/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/tree_CMG_1.root'
+##     )
+##     )
 
 # process.source.fileNames = ['file:ttjets.root']
 
