@@ -2,6 +2,7 @@
 
  <class name="BaseAnalysis"/>
  <class name="TauMuAnalysis"/>
+ <class name="TauMuPlotter"/>
  <class name="Sample"/>
 
  <class name="TriggerEfficiency"/>

@@ -100,24 +100,7 @@ public:
   void setTruthEventType(unsigned int eventtype){truthEventType_=eventtype;}
 
 
-  bool scale(Float_t factor){
-
-//     if(!histFile_){//check the histograms exist
-//       histFile_=new TFile(outputpath_+"/"+GetName()+"_Sample_Histograms.root","read");
-//       if(histFile_->IsZombie()) return NULL;
-//       if(!histFile_->GetListOfKeys()) return NULL;
-//       if(histFile_->GetListOfKeys()->GetSize()==0) return NULL;
-//       //cout<<" opened file :"<<outputpath_+"/"+GetName()+"_Sample_Histograms.root"<<endl;
-//       gROOT->cd();
-//     }
-//     //scale all histograms
-//     TList* keys=histFile_->GetListOfKeys();
-//     if(!keys)return 0;
-//     TIterator* keyiter=keys->MakeIterator();
-//     for(TKey* histname=(TKey*)keyiter->Next(); histname; histname=(TKey*)keyiter->Next())
-//       ((TH1*)histFile_->Get(histname->GetName()))->Scale(factor);//(effCorrFactor_*lumi)/getLumi()
-//    cout<<"Scaled histos in "<<histFile_->GetName()<<" by "<<factor<<endl;
-    
+  bool scale(Float_t factor){  
     normFactor_*=factor;
 
     return 1;
@@ -174,6 +157,26 @@ public:
     return (TH1*)(histFile_->Get(TString(GetName())+"_"+name)) ;
   }
 
+  TH1F* getHistoNtpFile(TString name,Int_t nbins,Float_t xmin,Float_t xmax,TString selection=""){
+    if(!ntpTree_){
+      ntpFile_=new TFile(TString(GetTitle())+"/tauMuHistograms_"+GetName()+".root","read");
+      if(ntpFile_->IsZombie()) return NULL;
+      if(!ntpFile_->GetListOfKeys()) return NULL;
+      if(ntpFile_->GetListOfKeys()->GetSize()==0) return NULL;
+      gROOT->cd();
+      //ntpFile_->ls();
+
+      ntpTree_=(TTree*)ntpFile_->Get(TString("tauMuHistogramer")+GetName()+"/tree");
+
+      if(!ntpTree_)return 0;
+    }
+    
+    TH1F* h=new TH1F(TString("Sample")+GetName()+name,name,nbins,xmin,xmax);
+    h->Sumw2();
+    ntpTree_->Draw(TString("")+name+">>"+h->GetName(),selection);
+    return h;
+  }
+
   std::vector<std::vector<std::string> > * getTrigPaths(){return &trigPaths_;}
   unsigned int getFirstRun(){return firstrun_;}
   unsigned int getLastRun(){return lastrun_;}
@@ -206,6 +209,9 @@ private:
   TString outputpath_;
   TFile* histFile_;
   TTree* tree_;
+
+  TFile* ntpFile_;
+  TTree* ntpTree_;
 
   TString dataType_;
   std::string pileupWeight_;

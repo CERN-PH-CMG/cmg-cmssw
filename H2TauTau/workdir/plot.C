@@ -1,17 +1,12 @@
-void plotTauMu(){  
-  gROOT->ProcessLine(".L ./TauMuConfig.C");
+void plot(){  
+  gROOT->ProcessLine(".L ./tauMuConfig.C");
 
-  TauMuAnalysis*analysis=TauMuConfig("");
+  TauMuPlotter*analysis=tauMuConfig("");
   analysis->setQCDColor(kMagenta-10);
   analysis->setWJetsColor(kRed+2);
   analysis->setTTJetsColor(kBlue-8);
   analysis->setZMuMuColor(kRed);
   analysis->setZTauTauColor(kOrange-4);
-    
-  if(!analysis->init()){cout<<" could not init"<<endl;return 0;}
-  
-  analysis->printRawYields("diTauMassHisto");
-
 
   //can only do one plot at a time for now 
 //   Float_t c[4]={0,0,0,0};
@@ -30,9 +25,8 @@ void plotTauMu(){
 //   Float_t r[4]={-2.4,2.4,0,2200};
 //   analysis->plot("muEtaHisto",2," #eta_{#mu}","Events / 0.1",c,r);
 
-//   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,1.0,0,4000};
-//   analysis->plot("muIsoHisto_muiso",0,5," muon relIso(0.5)"," Events / 0.005",c,r);
+//  Float_t c[4]={.5,.75,.42,.81};
+//  analysis->plot("muiso",0,1,-1,100,0,1," muon relIso(0.5)"," Events / 0.005",c,1);
 
 //   Float_t c[4]={.5,.75,.42,.81};
 //   Float_t r[4]={0,100,0,4000};
@@ -41,59 +35,16 @@ void plotTauMu(){
 //   Float_t c[4]={.15,.35,.55,.80};
 //   Float_t r[4]={-2.4,2.4,0,2200};
 //   analysis->plot("tauEtaHisto",2," #eta_{#tau}","Events / 0.1",c,r);
-
-//   Float_t c[4]={.25,.45,.42,.81};
-//   Float_t r[4]={0.0,1.5,0,2600};
-//   analysis->plot("tauEoPHisto_taueop",1," #tau E_ecal/p   (GeV)","Events/0.01 ",c,r);
-
-//   Float_t c[4]={.25,.45,.42,.81};
-//   Float_t r[4]={.95,1.05,0,700};
-//   analysis->plot("tauEoP1Histo_taueop",5," #tau E_ecal/p   (GeV)","Events/0.05 ",c,r);
-
-//   Float_t c[4]={.25,.45,.42,.81};
-//   Float_t r[4]={0.0,1.5,0,1600};
-//   analysis->plot("tauHoPHisto_taueop",1," #tau E_hcal/p   (GeV)","Events/0.01 ",c,r);
-
-//   Float_t c[4]={.25,.45,.42,.81};
-//   Float_t r[4]={0.0,1.5,0,1000};
-//   analysis->plot("tauEHoPHisto_taueop",1," #tau (E_ecal + E_hcal)/p   (GeV)","Events/0.01 ",c,r);
-  
-//   Float_t c[4]={.15,.35,.55,.80};
-//   Float_t r[4]={-2.4,2.4,0,200};
-//   analysis->plot("tauEtaEoP1Histo",10," #eta_{#tau}","Events / 0.5",c,r);
-
-//   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,100,0,600};
-//   analysis->plot("tauPtEoP1Histo",20," #tau p_{T}   (GeV)","Events / 10 GeV",c,r);
-
-//   Float_t c[4]={.5,.75,.42,.81};
-//   analysis->plot("tauIsoHisto",2," tau isolation  ","",c,0);
-  
+ 
 //   Float_t c[4]={.5,.75,.42,.81};
 //   Float_t r[4]={0,150,0,8000};
 //   analysis->plot("metHisto",4," MET   (GeV)","Events / 4 GeV",c,r);
+    
+//  Float_t c[4]={.5,.75,.42,.81};
+//  analysis->plot("transversemass",1,0,-1,50,0,200,"m_{T}   (GeV)","Events / 4 GeV",c);
 
 //   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,150,0,5000};
-//   analysis->plot("metHisto_massT",4," MET   (GeV)","Events / 4 GeV",c,r);
-  
-//   Float_t c[4]={.5,.75,.48,.83};
-//   Float_t r[4]={-3.2,3.2,0,1600};
-//   analysis->plot("metphiHisto_massT",1," MET #phi ","",c,r);
-
-//    Float_t c[4]={.15,.45,.42,.81};
-//    Float_t r[4]={-140,40,0,6000};
-//    analysis->plot("pZetaHisto_pzeta",6,"P_{#zeta} - 1.5*P_{#zeta}^{vis}    (GeV)","Events / 6 GeV",c,r);
-  
-//   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,200,0,10000};
-//   analysis->plot("transverseMassHisto_massT",0,4,"m_{T}   (GeV)","Events / 4 GeV",c,r);
-
-//   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,300,0,9000};
-//   //   Float_t c[4]={.5,.75,.42,.81};
-//   //   Float_t r[4]={0,350,5,1e7};
-//   analysis->plot("diTauMassHisto",0,5,"m_{vis}   (GeV)","Events / 5 GeV",c,r,0);
+//   analysis->plot("ditaumass",1,1,-1,60,0,300,"m_{vis}   (GeV)","Events / 5 GeV",c,0);
 
 //   Float_t c[4]={.5,.75,.42,.81};
 //   Float_t r[4]={0,350,0,5000};
@@ -114,26 +65,15 @@ void plotTauMu(){
 //   analysis->plot("diJetMassHisto",50,"m_{jj} (GeV)","Events / 50 GeV",c,r,0);
 
 
-  //////////////SM0
-  Float_t c[4]={.5,.75,.42,.81};
-  Float_t r[4]={0,300,0,8000};
-  analysis->plot("diTauMassHisto_SM0",0,5,"m_{vis}   (GeV)","Events / 5 GeV",c,r,0);
-
+//    //////////////SM0
 //   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,300,0,5000};
-//   analysis->plot("diTauMassSVFitHisto_SM0",0,5,"m_{#tau#tau}   (GeV)","Events / 5 GeV",c,r,0);
-
+//   analysis->plot("ditaumass",1,1,0,60,0,300,"m_{vis}   (GeV)","Events / 5 GeV",c,0);
 
 //   ///////////////SM1
 
-//   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,1.0,0,1000};
-//   analysis->plot("muIsoHisto_muisoJet1",0,10," muon relIso(0.5)"," Events / 0.01",c,r);
-
-//   analysis->setSmearHistoRes(15.0);
-//   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,300,0,250};
-//   analysis->plot("diTauMassHisto_SM1",1,25,"m_{vis}   (GeV)","Events / 25 GeV",c,r,0);
+//    analysis->setSmearHistoRes(15.0);
+//    Float_t c[4]={.5,.75,.42,.81};
+//    analysis->plot("ditaumass",1,1,1,12,0,300,"m_{vis}   (GeV)","Events / 25 GeV",c);
 
 //   Float_t c[4]={.5,.75,.42,.81};
 //   Float_t r[4]={0,350,0,250};
@@ -141,15 +81,16 @@ void plotTauMu(){
 
 
   ///////////////SM2
-
-//   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,1.0,0,400};
-//   analysis->plot("muIsoHisto_muisoJet2",0,10," muon relIso(0.5)"," Events / 0.01",c,r);
-
 //   analysis->setSmearHistoRes(15.0);
 //   Float_t c[4]={.5,.75,.42,.81};
-//   Float_t r[4]={0,300,0,30};
-//   analysis->plot("diTauMassHisto_SM2",2,25,"m_{vis}   (GeV)","Events / 25 GeV",c,r,0);
+//   analysis->plot("ditaumass",1,1,2,12,0,300,"m_{vis}   (GeV)","Events / 25 GeV",c);
+
+//   Float_t c[4]={.5,.75,.42,.81};
+//   analysis->plot("taupt",1,1,2,10,0,100," #tau p_{T}   (GeV)","Events / 10 GeV",c);
+
+  Float_t c[4]={.5,.75,.42,.81};
+  analysis->plot("mupt",1,1,2,10,0,100," #mu p_{T}   (GeV)","Events / 10 GeV",c);
+
 
 //   Float_t c[4]={.5,.75,.42,.81};
 //   Float_t r[4]={0,350,0,30};
