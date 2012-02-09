@@ -10,5 +10,5 @@ deltaRJetMuons = cms.EDProducer(
                                     removeMatchedObject=cms.bool(True)
                                     )
                                 ),
-    verbose = cms.untracked.bool(True)
+    verbose = cms.untracked.bool(False)
     )
