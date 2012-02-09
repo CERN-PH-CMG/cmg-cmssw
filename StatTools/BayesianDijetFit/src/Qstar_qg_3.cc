@@ -36,18 +36,34 @@ Qstar_qg_3::Qstar_qg_3(const char *name, const char *title,
   mjj("mjj","Observable",this,_mjj),
   jes("jes","Jet Energy Scale",this,_jes),
   jer("jer","Jet Energy Resolution",this,_jer),
-  mass("mass","Resonance Mass",this,_mass)
+  mass("mass","Resonance Mass",this,_mass),
+  M_CUT(890.),
+  INIT_MASS(1000.)
 { 
 //  std::cout << "iResonance = " << iResonance << std::endl;
+
+
+  
+
+  int uR = TMath::Abs(iResonance.getVal());
+
+
+
+  if ( (uR > 20 && uR < 29) ||(uR > 120 && uR < 129)) M_CUT = 526.0;
+ 
+  if ( (uR > 20 && uR < 29) ||(uR > 120 && uR < 129)) INIT_MASS = 600.0;
+
+
+  cout << "M_CUT = " << M_CUT << " INIT_MASS = " << INIT_MASS << endl;
+
+  int bin_cut = TMath::Abs((M_CUT-SHAPE_BINS_MIN)/SHAPE_BINS_STEPS)+1;
+
 
   double m0[ N_MASS_POINTS ];
   for(int i=0; i<N_MASS_POINTS; i++) {
     m0[i]=INIT_MASS+i*MASS_STEPS;
   }
-  
-  int bin_cut = TMath::Abs((M_CUT-SHAPE_BINS_MIN)/SHAPE_BINS_STEPS)+1;
 
-  int uR = TMath::Abs(iResonance.getVal());
 
   string stitle("");
 
@@ -61,6 +77,23 @@ Qstar_qg_3::Qstar_qg_3(const char *name, const char *title,
      break;
   case 13:   
     stitle = string("Qstar_ak5_fat30"); 
+  case 21: 
+    stitle = string("RSGraviton_HLT_ak5_GGtoGG_fat30");
+     break;
+  case 22:   
+    stitle = string("RSGraviton_HLT_ak5_QQtoQQ_fat30");
+     break;
+  case 23:   
+    stitle = string("Qstar_HLT_ak5_fat30"); 
+     break;
+  case 121: 
+    stitle = string("RSGraviton_HLT_ak5_GGtoGG_pf");
+     break;
+  case 122:   
+    stitle = string("RSGraviton_HLT_ak5_QQtoQQ_pf");
+     break;
+  case 123:   
+    stitle = string("Qstar_HLT_ak5_pf"); 
      break;
   default:
     std::cout << "Nothing would crash" << std::endl; 
@@ -72,7 +105,7 @@ Qstar_qg_3::Qstar_qg_3(const char *name, const char *title,
 
   TFile * output = new TFile(sout.c_str(),"RECREATE");
 
-  TH1D* eff = new TH1D("Efficiency", "cur efficiency at 890 GeV", N_MASS_POINTS-1, INIT_MASS-MASS_STEPS/2, INIT_MASS+(N_MASS_POINTS-1)*MASS_STEPS-MASS_STEPS/2);
+  TH1D* eff = new TH1D("Efficiency", "cut efficiency", N_MASS_POINTS-1, INIT_MASS-MASS_STEPS/2, INIT_MASS+(N_MASS_POINTS-1)*MASS_STEPS-MASS_STEPS/2);
 
   for (int j = 0; j < N_MASS_POINTS; j++) {
     mass_points[j] = m0[j];
@@ -136,7 +169,9 @@ Qstar_qg_3::Qstar_qg_3(const Qstar_qg_3& other, const char* name) :
   mjj("mjj",this,other.mjj),
   jes("jes",this,other.jes),
   jer("jer",this,other.jer),
-  mass("mass",this,other.mass)
+  mass("mass",this,other.mass),
+  M_CUT(other.M_CUT),
+  INIT_MASS(other.INIT_MASS)
 { 
   // Er, we should have something in there too...
   for (int j = 0; j < N_MASS_POINTS; j++) {
@@ -148,6 +183,7 @@ Qstar_qg_3::Qstar_qg_3(const Qstar_qg_3& other, const char* name) :
 
 Int_t Qstar_qg_3::findHistFast( double m ) const
 {
+
   double val=(m-INIT_MASS)/MASS_STEPS+0.001;
   return static_cast<int>(val);
 }

@@ -18,12 +18,10 @@
 
 //--- Number of mass points = number of signal resonance shapes.
 #define N_MASS_POINTS 32
-#define INIT_MASS 1000.0
 #define MASS_STEPS 100.0
 #define N_SHAPE_BINS 880
 #define SHAPE_BINS_MIN 280.0
 #define SHAPE_BINS_STEPS 5
-#define M_CUT 890
 
 class Qstar_qg_3 : public RooAbsPdf {
 public:
@@ -61,6 +59,10 @@ private:
   Double_t mass_points[ N_MASS_POINTS ];
   TH1D* hist[ N_MASS_POINTS ];
   TH1D* hist_cdf[ N_MASS_POINTS ];
+
+  double M_CUT;
+  double INIT_MASS;
+
 
   ClassDef(Qstar_qg_3,1) // Your description goes here...
 };
