@@ -13,7 +13,7 @@ class TriggerAnalyzer( Analyzer ):
             'cmgTriggerObjectSel',
             'std::vector<cmg::TriggerObject>'
             )
-
+ 
     def beginLoop(self):
         super(TriggerAnalyzer,self).beginLoop()
         self.triggerList = TriggerList( self.cfg_comp.triggers )
@@ -22,9 +22,11 @@ class TriggerAnalyzer( Analyzer ):
     def process(self, iEvent, event):
         self.readCollections( iEvent )
         event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
+
+        run = iEvent.eventAuxiliary().id().run()
         
         self.counters.counter('Trigger').inc('All events')
-        if not self.triggerList.triggerPassed(event.triggerObject):
+        if not self.triggerList.triggerPassed(event.triggerObject, run):
             return False
         self.counters.counter('Trigger').inc('trigger passed ')
         return True
