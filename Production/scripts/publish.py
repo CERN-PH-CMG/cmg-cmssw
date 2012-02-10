@@ -129,6 +129,7 @@ If not entered, secure password prompt will appear.""",
         file = open(args[0], 'r')
         lines = file.readlines()
         for line in lines:
+            line = re.sub("\s+", " ", line)
             try:
                 fileown = None
                 dataset = line.split(" ")[0]
