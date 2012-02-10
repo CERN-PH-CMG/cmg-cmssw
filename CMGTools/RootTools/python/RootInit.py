@@ -1,9 +1,6 @@
 import os, sys
 
-filename = os.environ.get('PYTHONSTARTUP')
-if filename and os.path.isfile(filename):
-    exec(open(filename).read())
-
+import CMGTools.RootTools.StartUp 
 
 from ROOT import gROOT, TFile, TCanvas, gPad, TBrowser, TH2F, TH1F, TH1D , TProfile, TLegend
 from CMGTools.RootTools.RootTools import *

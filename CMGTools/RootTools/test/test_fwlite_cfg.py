@@ -5,7 +5,7 @@ This test will run the VertexAnalyzer, the TriggerAnalyzer, and the SimpleJetAna
 do the following:
 alias httMultiLoop='python -i $CMSSW_BASE/src/CMGTools/RootTools/python/fwlite/MultiLoop.py'
 
-import at least the sample
+import a few files from this sample
 /DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2
 in a 2011 subdirectory so that your root files are described by the following wildcard pattern:
 2011/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/tauMu*fullsel*.root
