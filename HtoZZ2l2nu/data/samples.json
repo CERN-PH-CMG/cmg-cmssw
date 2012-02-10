@@ -15,6 +15,21 @@
               }
           ]
 	},
+	{
+	 "tag":"W+jets",
+         "isdata":false,
+         "color":"809",
+	 "lcolor":1,
+         "data":[
+		{
+		 "dtag":"WJetsToLNu",
+                 "dset":"/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM",
+                 "aoddir":["/store/cmst3/group/cmgtools/CMG/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V2"],
+                 "patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_patWJetsToLNu_TuneZ2_7TeV-madgraph-tauola/"],
+                 "xsec":31314
+                }
+	 ]
+	},
 	 {
          "tag":"t#bar{t}",
          "isdata":false,
