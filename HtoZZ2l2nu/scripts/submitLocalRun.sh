@@ -85,7 +85,7 @@ case "$OUTDIR" in
     /store*)
     #copy to EOS
     cmsMkdir $OUTDIR
-    cmsStageOut $LOCALOUT $OUTDIR
+    cmsStage -f $LOCALOUT $OUTDIR
     rm $LOCALOUT
     echo "Result is available in castor @ ${OUTDIR}"
     ;;
