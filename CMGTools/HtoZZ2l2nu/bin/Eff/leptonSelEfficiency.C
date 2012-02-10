@@ -86,6 +86,7 @@ void leptonSelEfficiency(TString url)
 		  gr->BayesDivide(h,ptl[ilep][0]); 
 		  gr->SetTitle(idname);
 		  effl[ilep].push_back(gr); 
+		  gr->Fit("pol0","0Q+");
 		}
 	      else
 		{
@@ -96,10 +97,11 @@ void leptonSelEfficiency(TString url)
 		      TH2F *h2 = (TH2F *) fin->Get("localAnalysis/"+ch[ich]+"/"+ch[ich]+lid+isoHistos[iisoHisto]);
 		      if(h2==0) continue;
 
-		      TProfile *prof=h2->ProfileX(ch[ich]+lid+isoHistos[iisoHisto]+"_prof");
+		      TProfile *prof=h2->ProfileY(ch[ich]+lid+isoHistos[iisoHisto]+"_prof");
 		      prof->SetDirectory(0);
 		      prof->SetTitle(isoTitles[iisoHisto]);
 		      lIso[ilep].push_back(prof);
+		      prof->Fit("pol1","0Q+");
 		    }
 		}
 	    }
@@ -129,13 +131,13 @@ void leptonSelEfficiency(TString url)
 	      effl[ilep][i]->Draw(i==0?"ap":"p");
 	      effl[ilep][i]->GetXaxis()->SetTitle( ptl[ilep][i]->GetXaxis()->GetTitle() );
 	      effl[ilep][i]->GetYaxis()->SetTitle( "Efficiency" );
-	      effl[ilep][i]->Fit("pol0","Q+");
 	      leg->AddEntry(effl[ilep][i],effl[ilep][i]->GetTitle(),"p");
 
 	      TF1 *pol0 = (TF1 *)effl[ilep][i]->GetFunction("pol0");
 	      pol0->SetLineColor(kBlue);
 	      pol0->SetLineStyle(9);
 	      pol0->SetLineWidth(1);
+	      pol0->Draw("same");
 
 	      report << ilep << " \t " << effl[ilep][i]->GetTitle() << "\t" << pol0->GetParameter(0) << " +/- " << pol0->GetParError(0) << endl;
 	    }
@@ -171,10 +173,15 @@ void leptonSelEfficiency(TString url)
 	  for(size_t i=0; i<lIso[ilep].size(); i++)
 	    {
 	      lIso[ilep][i]->SetFillStyle(0);
-	      lIso[ilep][i]->SetMarkerStyle(markers[i]);
-	      lIso[ilep][i]->Draw(i==0?"ap":"p");
-	      lIso[ilep][i]->GetXaxis()->SetTitle( ptl[ilep][i]->GetXaxis()->GetTitle() );
+	      lIso[ilep][i]->SetMarkerStyle(markers[i]);   
+	      lIso[ilep][i]->Draw(i==0?"e1":"e1same");
+	      lIso[ilep][i]->GetXaxis()->SetTitle( "Pileup");
 	      lIso[ilep][i]->GetYaxis()->SetTitle( "<Isolation>" );
+	      TF1 *pol1 = (TF1 *)lIso[ilep][i]->GetFunction("pol1");
+	      pol1->SetLineColor(kBlue);
+	      pol1->SetLineStyle(9);
+	      pol1->SetLineWidth(1);
+	      pol1->Draw("same");
 	      leg->AddEntry(lIso[ilep][i],lIso[ilep][i]->GetTitle(),"p");
 	    }
 	  if(ilep==0)

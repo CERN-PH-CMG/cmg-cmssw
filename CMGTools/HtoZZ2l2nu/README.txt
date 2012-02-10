@@ -9,7 +9,7 @@ scramv1 b
 #
 # create pat-tuples
 #
-runOverSamples.py -j data/samples.json -p "-cfg=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_mc_cfg.py -castor=@patdir" -n 5 -s True -d aoddir
+runOverSamples.py -j data/samples.json -p "-cfg=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_mc_cfg.py -castor=patdir" -n 5 -s True -d aoddir
 
 #
 # create ntuples

@@ -199,7 +199,7 @@ int main(int argc, char* argv[])
       bool passZmass(fabs(zmass-91)<15);
       
       std::vector<int> idbits;
-      if(ev.cat==EE) { idbits.push_back(3); idbits.push_back(1);  idbits.push_back(7); idbits.push_back(10); }
+      if(ev.cat==EE) { idbits.push_back(3); idbits.push_back(1);  idbits.push_back(8); idbits.push_back(10); }
       else           { idbits.push_back(0); idbits.push_back(1);  idbits.push_back(2); idbits.push_back(3);  }
 
       //fill control histograms
