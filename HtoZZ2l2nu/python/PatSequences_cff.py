@@ -39,11 +39,15 @@ def addTriggerMatchingForLeptons(process, postfix='') :
 
     from PhysicsTools.PatAlgos.tools.coreTools import removeCleaning
     removeCleaning( process )
+    print "*************here***************"
     setattr( process, 'muTriggerMatch' + postfix, process.muTriggerMatchPF )
     setattr( process, 'eleTriggerMatch' + postfix, process.eleTriggerMatchPF )
+    print "*************here***************"
     switchOnTriggerMatching( process, triggerMatchers = [ 'muTriggerMatchPFlow','eleTriggerMatchPFlow' ], sequence = 'patPF2PATSequence' + postfix )
-    removeCleaningFromTriggerMatching( process, sequence = 'patPF2PATSequence' + postfix )
-
+    print "*************here***************"
+    removeCleaningFromTriggerMatching( process ) #, sequence = 'patPF2PATSequence' + postfix )
+    print "*************here***************"
+    
 ##
 ## adds pat sequence
 ##
