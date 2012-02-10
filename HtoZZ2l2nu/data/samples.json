@@ -10,7 +10,7 @@
                "dtag":"DYJetsToLL",
 	       "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM",
 	       "aoddir":["/store/cmst3/group/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V2/"],
-	       "patdir":["/store/cmst3/user/psilva/HZZ_12.02.05/H/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/"],
+	       "patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/"],
                "xsec":3048
               }
           ]
@@ -25,85 +25,225 @@
                 "dtag":"TTJets",
                 "dset":"/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM",
                 "aoddir":["/store/cmst3/group/cmgtools/CMG/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V3"],
-                "patdir":["/store/cmst3/user/psilva/HZZ_12.02.05/H/TTJets_TuneZ2_7TeV-madgraph-tauola/"],
+                "patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/TTJets_TuneZ2_7TeV-madgraph-tauola/"],
                 "xsec":165
                 }
           ]
         },
-        {
-        "tag":"H(130)#rightarrow ZZ",
-        "isdata":false,
-        "spimpose":true,
-        "color":"616",
-        "lwidth":2,
-        "fill":0,
-        "marker":1,
-        "data":[
-             {
-                "dtag":"GGtoH130toZZto2L2Nu",
-                "dset":"/GluGluToHToZZTo2L2Nu_M-130_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
-                "patdir":["/store/cmst3/user/psilva/HZZ_12.02.05/H/GluGluToHToZZTo2L2Nu_M-130_7TeV-powheg-pythia6"],
-                "xsec":14.12,
-                "br":[0.256,0.0403896]
-             },
-             {
-                "dtag":"VBFtoH130toZZto2L2Nu",
-                "dset":"/VBF_ToHToZZTo2L2NU_M-130_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
-                "patdir":["/store/cmst3/user/psilva/HZZ_12.02.05/H/VBF_ToHToZZTo2L2NU_M-130_7TeV-powheg-pythia6"],
-                "xsec":1.176,
-                "br":[0.256,0.0403896]
-             }
-        ]
-        },
-        {
-        "tag":"H(200)#rightarrow ZZ",
-        "isdata":false,
-        "spimpose":true,
-        "color":"800",
-        "lwidth":2,
-        "fill":0,
-        "marker":1,
-        "data":[
-             {
-                "dtag":"GGtoH200toZZto2L2Nu",
-		"dset":"/GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
-                "patdir":["/store/cmst3/user/psilva/HZZ_12.02.05/H/GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6"],
-                "xsec":5.27,
-                "br":[0.256,0.0403896]
-             },
-	     {	
+	{
+	"tag":"H(200)#rightarrow VV",
+	"isdata":false,
+	"spimpose":true,
+	"color":"800",
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"GGtoH200toZZto2L2Nu",
+		"dset":"/GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/querten/CMG/GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6"],
+		"xsec":5.27,
+		"br":[0.256,0.0403896]
+		},
+		{	
+		"dtag":"GGtoH200toWWto2L2Nu",
+		"dset":"/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/querten/CMG/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6"],
+		"xsec":5.27,
+		"br":[0.741,0.046656]
+		},
+		{	
 		"dtag":"VBFtoH200toZZto2L2Nu",
-		"dset":"/VBF_ToHToZZTo2L2NU_M-200_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
-		"patdir":["/store/cmst3/user/psilva/HZZ_12.02.05/H/VBF_ToHToZZTo2L2NU_M-200_7TeV-powheg-pythia6"],
+		"dset":"/VBF_ToHToZZTo2L2NU_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/querten/CMG/VBF_ToHToZZTo2L2NU_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-200_7TeV-powheg-pythia6"],
 		"xsec":0.6333,
-                "br":[0.256,0.0403896]
-	     }
-	]
+		"br":[0.256,0.0403896]
+		},
+		{	
+		"dtag":"VBFtoH200toWWto2L2Nu",
+		"dset":"/VBF_HToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/querten/CMG/VBF_HToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/VBF_HToWWTo2L2Nu_M-200_7TeV-powheg-pythia6"],
+		"xsec":0.6371,
+		"br":[0.741,0.046656]
+		}
+	   ]
 	},
-        {
-        "tag":"H(600)#rightarrow ZZ",
-        "isdata":false,
-        "spimpose":true,
-        "color":"807",
-        "lwidth":2,
-        "fill":0,
-        "marker":1,
-        "data":[
-             {
-                "dtag":"GGtoH600toZZto2L2Nu",
-		"dset":"/GluGluToHToZZTo2L2Nu_M-600_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
-                "patdir":["/store/cmst3/user/psilva/HZZ_12.02.05/H/GluGluToHToZZTo2L2Nu_M-600_7TeV-powheg-pythia6"],
-                "xsec":0.3267,
-                "br":[0.272,0.0403896]
-             },
-             {
-                "dtag":"VBFtoH600toZZto2L2Nu",
-                "dset":"/VBF_ToHToZZTo2L2NU_M-600_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
-                "patdir":["/store/cmst3/user/psilva/HZZ_12.02.05/H/VBF_ToHToZZTo2L2NU_M-600_7TeV-powheg-pythia6"],
-                "xsec":0.06529,
-                "br":[0.272,0.0403896]
-             }
-          ]
-        }
+	{
+	"tag":"H(300)#rightarrow VV",
+	"isdata":false,
+	"spimpose":true,
+	"color":"803",
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"GGtoH300toZZto2L2Nu",
+		"dset":"/GluGluToHToZZTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/querten/CMG/GluGluToHToZZTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-300_7TeV-powheg-pythia6"],
+		"xsec":2.422,
+		"br":[0.307,0.0403896]
+		},
+		{
+		"dtag":"GGtoH300toWWto2L2Nu",
+		"dset":"/GluGluToHToWWTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/querten/CMG/GluGluToHToWWTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-300_7TeV-powheg-pythia6"],
+		"xsec":2.422,
+		"br":[0.692,0.046656]
+		},
+		{
+		"dtag":"VBFtoH300toZZto2L2Nu",
+                "dset":"/VBF_ToHToZZTo2L2NU_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/querten/CMG/VBF_ToHToZZTo2L2NU_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-300_7TeV-powheg-pythia6"],
+		"xsec":0.301,
+		"br":[0.307,0.0403896]
+		},
+		{
+		"dtag":"VBFtoH300toWWto2L2Nu",
+                "dset":"/VBF_HToWWTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/querten/CMG/VBF_HToWWTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/VBF_HToWWTo2L2Nu_M-300_7TeV-powheg-pythia6"],
+		"xsec":0.298,
+		"br":[0.692,0.046656]
+		}
+	   ]
+	},
+	{
+	"tag":"H(400)#rightarrow VV",
+	"isdata":false,
+	"spimpose":true,
+	"color":"805",
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"GGtoH400toZZto2L2Nu",
+		"dset":"/GluGluToHToZZTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/querten/CMG/GluGluToHToZZTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-400_7TeV-powheg-pythia6"],
+		"xsec":2.03,
+		"br":[0.269,0.0403896]
+		},
+		{
+		"dtag":"GGtoH400toWWto2L2Nu",
+		"dset":"/GluGluToHToWWTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/querten/CMG/GluGluToHToWWTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-400_7TeV-powheg-pythia6"],
+		"xsec":2.03,
+		"br":[0.582,0.046656]
+		},
+		{
+		"dtag":"VBFtoH400toZZto2L2Nu",
+		"dset":" /VBF_ToHToZZTo2L2NU_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/querten/CMG/VBF_ToHToZZTo2L2NU_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-400_7TeV-powheg-pythia6"],
+		"xsec":0.1634,
+		"br":[0.269,0.0403896]
+		},
+		{
+		"dtag":"VBFtoH400toWWto2L2Nu",
+		"dset":" /VBF_HToWWTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/querten/CMG/VBF_HToWWTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/VBF_HToWWTo2L2Nu_M-400_7TeV-powheg-pythia6"],
+		"xsec":0.1610,
+		"br":[0.582,0.046656]
+		}
+	   ]
+	},
+	{
+	"tag":"H(500)#rightarrow VV",
+	"isdata":false,
+	"spimpose":true,
+	"color":"797",
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"GGtoH500toZZto2L2Nu",
+		"dset":"/GluGluToHToZZTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/querten/CMG/GluGluToHToZZTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-500_7TeV-powheg-pythia6"],
+		"xsec":0.865,
+		"br":[0.261,0.0403896]
+		},
+		{
+		"dtag":"GGtoH500toWWto2L2Nu",
+		"dset":"/GluGluToHToWWTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/querten/CMG/GluGluToHToWWTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-500_7TeV-powheg-pythia6"],
+		"xsec":0.865,
+		"br":[0.546,0.046656]
+		},
+		{
+		"dtag":"VBFtoH500toZZto2L2Nu",
+		"dset":" /VBF_ToHToZZTo2L2NU_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/querten/CMG/VBF_ToHToZZTo2L2NU_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-500_7TeV-powheg-pythia6"],
+		"xsec":0.0968,
+		"br":[0.261,0.0403896]
+		},
+		{
+		"dtag":"VBFtoH500toWWto2L2Nu",
+		"dset":" /VBF_HToWWTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/querten/CMG/VBF_HToWWTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/VBF_HToWWTo2L2Nu_M-500_7TeV-powheg-pythia6"],
+		"xsec":0.0946,
+		"br":[0.546,0.046656]
+		}
+	   ]
+	},
+	{
+	"tag":"H(600)#rightarrow VV",
+	"isdata":false,
+	"spimpose":true,
+	"color":"807",
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"GGtoH600toZZto2L2Nu",
+		"dset":"/GluGluToHToZZTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/querten/CMG/GluGluToHToZZTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-600_7TeV-powheg-pythia6"],
+		"xsec":0.3267,
+		"br":[0.272,0.0403896]
+		},
+		{
+		"dtag":"GGtoH600toWWto2L2Nu",
+		"dset":"/GluGluToHToWWTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/querten/CMG/GluGluToHToWWTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-600_7TeV-powheg-pythia6"],
+		"xsec":0.3267,
+		"br":[0.558,0.046656]
+		},
+		{
+		"dtag":"VBFtoH600toZZto2L2Nu",
+		"dset":"/VBF_ToHToZZTo2L2NU_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/querten/CMG/VBF_ToHToZZTo2L2NU_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-600_7TeV-powheg-pythia6"],
+		"xsec":0.06529,
+		"br":[0.272,0.0403896]
+		},
+		{
+		"dtag":"VBFtoH600toWWto2L2Nu",
+		"dset":" /VBF_HToWWTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/querten/CMG/VBF_HToWWTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_02_10_HZZ2l2v_pat/VBF_HToWWTo2L2Nu_M-600_7TeV-powheg-pythia6"],
+		"xsec":0.06529,
+		"br":[0.558,0.046656]
+		}
+	   ]
+	}
     ]	
 }
