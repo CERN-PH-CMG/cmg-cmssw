@@ -105,7 +105,7 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
   try{
 
     std::string objs[]={"Generator", "Trigger", "Vertices", "Photons",
-			"Electrons", "LooseElectrons", "Muons", "LooseMuons", "Dileptons", "Jets", "MET" };
+			"Electrons", "LooseElectrons", "Muons", "LooseMuons", "Dileptons", "Jets", "AssocJets", "MET" };
     for(size_t iobj=0; iobj<sizeof(objs)/sizeof(string); iobj++)
       objConfig_[ objs[iobj] ] = iConfig.getParameter<edm::ParameterSet>( objs[iobj] );
 
@@ -274,6 +274,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     summaryHandler_.resetStruct();
     ZZ2l2nuSummary_t &ev = summaryHandler_.getEvent();
 
+
     //pfmet
     Handle<View<Candidate> > hMET;
     event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("source"), hMET);
@@ -285,6 +286,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.event  = event.id().event();
     saveMCtruth(event, iSetup );    
     
+
     //
     // trigger
     //
@@ -331,6 +333,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     std::vector<CandidatePtr> selLooseMuons = getGoodMuons(hMu, *beamSpot, *rho, objConfig_["LooseMuons"]);
     std::vector<CandidatePtr> selMuons      = getGoodMuons(hMu, *beamSpot, *rho, objConfig_["Muons"]);
     
+
     //electron selection
     Handle<View<Candidate> > hEle;
     event.getByLabel(objConfig_["Electrons"].getParameter<edm::InputTag>("source"), hEle);
@@ -422,7 +425,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.ln++;
       }
 
-    
     //
     // PHOTON SELECTION
     //
@@ -486,13 +488,15 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //quit if no gamma or dilepton candidate
     if(ev.cat==UNKNOWN) return;
 
+
+
     //
     // JET SELECTION
     //
     Handle<View<Candidate> > hJet;
     event.getByLabel(objConfig_["Jets"].getParameter<edm::InputTag>("source"), hJet);
     ev.jn=0;
-    std::vector<CandidatePtr> selJets = getGoodJets(hJet, selLeptons, objConfig_["Jets"]);
+    std::vector<CandidatePtr> selJets = getGoodJets(hJet, selLeptons, objConfig_["Jets"]);    
     int nbcands(0);
     for (std::vector<CandidatePtr>::iterator jIt = selJets.begin(); jIt != selJets.end(); jIt++)
       {
@@ -517,27 +521,30 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 
     // JET SELECTION
     //
-    Handle<View<Candidate> > haJet;
+    Handle<std::vector<PFJet> > haJet;
     event.getByLabel(objConfig_["AssocJets"].getParameter<edm::InputTag>("source"), haJet);
     ev.ajn=0;
-    std::vector<CandidatePtr> selaJets = getGoodJets(haJet, selLeptons, objConfig_["AssocJets"]);
-    for (std::vector<CandidatePtr>::iterator jIt = selaJets.begin(); jIt != selaJets.end(); jIt++)
+//    std::vector<CandidatePtr> selaJets = getGoodJets(haJet, selLeptons, objConfig_["AssocJets"]);
+//    for (std::vector<CandidatePtr>::iterator jIt = selaJets.begin(); jIt != selaJets.end(); jIt++)
+    std::vector<PFJet> selaJets = *haJet.product();
+    for (std::vector<PFJet>::iterator jIt = selaJets.begin(); jIt != selaJets.end(); jIt++)
       {
-        const pat::Jet *jet = dynamic_cast<const pat::Jet *>(jIt->get());
-        ev.ajn_px[ev.jn] = jet->px();
-        ev.ajn_py[ev.jn] = jet->py(); 
-        ev.ajn_pz[ev.jn] = jet->pz(); 
-        ev.ajn_en[ev.jn] = jet->energy();
-        const reco::Candidate *genParton = jet->genParton();
-        ev.ajn_genid[ev.jn]       = genParton ? genParton->pdgId() : -9999;
-        ev.ajn_genflav[ev.jn]     = jet->partonFlavour();
-        ev.ajn_btag1[ev.jn]       = jet->bDiscriminator("trackCountingHighEffBJetTags");
-        ev.ajn_btag2[ev.jn]       = jet->bDiscriminator("combinedSecondaryVertexBJetTags");
-        ev.ajn_neutHadFrac[ev.jn] = jet->neutralHadronEnergyFraction();
-        ev.ajn_neutEmFrac[ev.jn]  = jet->neutralEmEnergyFraction();
-        ev.ajn_chHadFrac[ev.jn]   = jet->chargedHadronEnergyFraction();
+        const PFJet* jet = &(*jIt);
+        ev.ajn_px[ev.ajn] = jet->px();
+        ev.ajn_py[ev.ajn] = jet->py(); 
+        ev.ajn_pz[ev.ajn] = jet->pz(); 
+        ev.ajn_en[ev.ajn] = jet->energy();
+//        const reco::Candidate *genParton = jet->genParton();
+//        ev.ajn_genid[ev.ajn]       = genParton ? genParton->pdgId() : -9999;
+//        ev.ajn_genflav[ev.ajn]     = jet->partonFlavour();
+//        ev.ajn_btag1[ev.ajn]       = jet->bDiscriminator("trackCountingHighEffBJetTags");
+//        ev.ajn_btag2[ev.ajn]       = jet->bDiscriminator("combinedSecondaryVertexBJetTags");
+        ev.ajn_neutHadFrac[ev.ajn] = jet->neutralHadronEnergyFraction();
+        ev.ajn_neutEmFrac[ev.ajn]  = jet->neutralEmEnergyFraction();
+        ev.ajn_chHadFrac[ev.ajn]   = jet->chargedHadronEnergyFraction();
         ev.ajn++;
       }
+
 
     
 

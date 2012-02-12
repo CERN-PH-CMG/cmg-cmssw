@@ -63,7 +63,7 @@ if(runLoose) :
                                                                                   ),
                                         Dileptons = BaseDileptonSelection.clone(),
                                         Jets = BaseJetSelection.clone(),
-                                        AssocJets = BaseJetSelection.clone(source = cms.InputTag("ClusteredPFMetProducer", "JET")),
+                                        AssocJets = AssocJetSelection.clone(),
                                         MET = BaseMetSelection.clone()
                                         )
 
@@ -80,7 +80,7 @@ else:
                                         Electrons = BaseElectronsSelection.clone(),
                                         Dileptons = BaseDileptonSelection.clone(),
                                         Jets = BaseJetSelection.clone(),
-                                        AssocJets = BaseJetSelection.clone(source = cms.InputTag("ClusteredPFMetProducer", "JET")),
+                                        AssocJets = AssocJetSelection.clone(),
                                         MET = BaseMetSelection.clone()
                                         )
     
