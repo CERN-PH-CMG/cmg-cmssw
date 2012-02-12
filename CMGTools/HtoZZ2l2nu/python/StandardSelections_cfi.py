@@ -122,6 +122,18 @@ BaseJetSelection = cms.PSet( source = cms.InputTag("selectedPatJetsPFlow"),
                              minDeltaRtoLepton = cms.double(0.4)
                              )
 
+
+
+AssocJetSelection = cms.PSet( source = cms.InputTag("ClusteredPFMetProducer", "JET"),
+                             rho = cms.InputTag("kt6PFJetsPFlow:rho"),
+                             jetId = cms.PSet( version = cms.string("FIRSTDATA"), quality = cms.string("LOOSE") ),
+                             minPt = cms.double(15),
+                             maxEta = cms.double(5.0),
+                             minDeltaRtoLepton = cms.double(0.4)
+                             )
+
+
+
 # base values for the dilepton selection ------------------------------------------
 BaseDileptonSelection = cms.PSet( minDileptonMass = cms.double(0),
                                   maxDileptonMass = cms.double(7000),
