@@ -9,12 +9,12 @@ scramv1 b
 #
 # create pat-tuples
 #
-runOverSamples.py -j data/samples.json -p "-cfg=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_mc_cfg.py -castor=patdir" -n 5 -s True -d aoddir
+runOverSamples.py -j data/samples.json -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_mc_cfg.py -castor=patdir" -n 5 -s 2nd -d aoddir
 
 #
 # create ntuples
 #
-runOverSamples.py -j data/samples.json -p "-cfg=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/afs/cern.ch/user/p/psilva/scratch0/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/data" -d patdir -s 8nh -t G
+runOverSamples.py -j data/samples.json -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/ntuples" -d patdir -s 8nh
 
 #
 # run the analysis

@@ -514,7 +514,30 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	nbcands += (jet->pt()>30 && fabs(jet->eta())<2.4 && jet->bDiscriminator("trackCountingHighEffBJetTags")>2); 
       }
 
+
+    // JET SELECTION
+    //
+    Handle<View<Candidate> > haJet;
+    event.getByLabel(objConfig_["AssocJets"].getParameter<edm::InputTag>("source"), haJet);
     ev.ajn=0;
+    std::vector<CandidatePtr> selaJets = getGoodJets(haJet, selLeptons, objConfig_["AssocJets"]);
+    for (std::vector<CandidatePtr>::iterator jIt = selaJets.begin(); jIt != selaJets.end(); jIt++)
+      {
+        const pat::Jet *jet = dynamic_cast<const pat::Jet *>(jIt->get());
+        ev.ajn_px[ev.jn] = jet->px();
+        ev.ajn_py[ev.jn] = jet->py(); 
+        ev.ajn_pz[ev.jn] = jet->pz(); 
+        ev.ajn_en[ev.jn] = jet->energy();
+        const reco::Candidate *genParton = jet->genParton();
+        ev.ajn_genid[ev.jn]       = genParton ? genParton->pdgId() : -9999;
+        ev.ajn_genflav[ev.jn]     = jet->partonFlavour();
+        ev.ajn_btag1[ev.jn]       = jet->bDiscriminator("trackCountingHighEffBJetTags");
+        ev.ajn_btag2[ev.jn]       = jet->bDiscriminator("combinedSecondaryVertexBJetTags");
+        ev.ajn_neutHadFrac[ev.jn] = jet->neutralHadronEnergyFraction();
+        ev.ajn_neutEmFrac[ev.jn]  = jet->neutralEmEnergyFraction();
+        ev.ajn_chHadFrac[ev.jn]   = jet->chargedHadronEnergyFraction();
+        ev.ajn++;
+      }
 
     
 

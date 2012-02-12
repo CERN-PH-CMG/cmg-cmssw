@@ -63,8 +63,10 @@ if(runLoose) :
                                                                                   ),
                                         Dileptons = BaseDileptonSelection.clone(),
                                         Jets = BaseJetSelection.clone(),
+                                        AssocJets = BaseJetSelection.clone(source = cms.InputTag("ClusteredPFMetProducer", "JET")),
                                         MET = BaseMetSelection.clone()
                                         )
+
 else:
     process.evAnalyzer = cms.EDAnalyzer("DileptonPlusMETEventAnalyzer",
                                         dtag=cms.string('h2zz'),
@@ -78,6 +80,7 @@ else:
                                         Electrons = BaseElectronsSelection.clone(),
                                         Dileptons = BaseDileptonSelection.clone(),
                                         Jets = BaseJetSelection.clone(),
+                                        AssocJets = BaseJetSelection.clone(source = cms.InputTag("ClusteredPFMetProducer", "JET")),
                                         MET = BaseMetSelection.clone()
                                         )
     
