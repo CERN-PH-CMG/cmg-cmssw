@@ -83,11 +83,15 @@ def publish(dsName,fileown,comment,test,dbsApi,user,password, force):
     	
     	if publishController.cmgdbOnline():
     		print "\n-------CMGDB-------\n"
+    		cmgdbid = None
+    		status = 'Failed'
     		try:
     			if taskID is not None:
-    				publishController.cmgdbPublish(procds, dbsID, taskID, test)
+    				cmgdbid = publishController.cmgdbPublish(procds, dbsID, taskID, test)
+    				status = 'Success'
     			if parentTaskID is not None:
     				publishController.cmgdbPublish(procds, parentDbsID, parentTaskID, test)
+    			return {'Status':status, 'Savannah':taskID,'CMGDB ID':cmgdbid,'Dataset':procds['PathList'][0], 'EOS Dataset':dsName,'File Owner':fileown}
     		except ImportError:
     			print "cx_Oracle not properly installed"
     			return None
@@ -109,7 +113,7 @@ def publish(dsName,fileown,comment,test,dbsApi,user,password, force):
                 f.write(err.args[1])
             f.close()
             
-        return {'Status':'Failed','Savannah':savannah, 'Dataset':dsName, 'File Owner':fileown}
+        return {'Status':'Failed','Savannah':savannah, 'DBS Dataset':procds['PathList'][0], 'EOS Dataset':dsName, 'File Owner':fileown}
 
 
 
