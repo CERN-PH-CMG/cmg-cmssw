@@ -2,7 +2,7 @@ import copy
 import CMGTools.RootTools.fwlite.Config as cfg
 
 
-period = 'Period_2011A'
+period = 'Period_2011B'
 
 baseDir = '2011'
 filePattern = 'tauEle*fullsel*.root'
@@ -16,7 +16,7 @@ mc_jet_smear = 0.
 
 mc_vertexWeight = None
 mc_tauEffWeight = None
-mc_muEffWeight = None
+mc_eleEffWeight = None
 
 # For Fall11 need to use vertexWeightFall11 for WJets and DYJets and TTJets 
 # For Fall11 : trigger is applied in MC:
@@ -24,16 +24,16 @@ mc_muEffWeight = None
 
 if period == 'Period_2011A':
     mc_vertexWeight = 'vertexWeight2invfb'
-    mc_tauEffWeight = 'effTau2011A'
-    mc_muEffWeight = 'effMu2011A'
+    mc_tauEffWeight = 'effTau2011A_TauEle'
+    mc_eleEffWeight = 'effEle2011A'
 elif period == 'Period_2011B':
     mc_vertexWeight = 'vertexWeight2011B'
-    mc_tauEffWeight = 'effTau2011B'
-    mc_muEffWeight = 'effMu2011B'
+    mc_tauEffWeight = 'effTau2011B_TauEle'
+    mc_eleEffWeight = 'effEle2011B'
 elif period == 'Period_2011AB':
     mc_vertexWeight = 'vertexWeight2011AB'
-    mc_tauEffWeight = 'effTau2011AB'
-    mc_muEffWeight = 'effMu2011AB'
+    mc_tauEffWeight = 'effTau2011AB_TauEle'
+    mc_eleEffWeight = 'effEle2011AB'
 
 
 # global MC weighting factors
@@ -50,11 +50,12 @@ triggerAna = cfg.Analyzer(
 TauEleAna = cfg.Analyzer(
     'TauEleAnalyzer',
     pt1 = 20,
-    pt2 = 17,
+    pt2 = 20,
     iso1 = 999,
     iso2 = 0.1,
     eta1 = 999,
-    eta2 = 999,
+    # eta2 = 2.1,
+    eta2 = 1.4,
     m_min = 10,
     m_max = 99999,
     diLeptonCutString = 'cuts_baseline'
@@ -62,7 +63,7 @@ TauEleAna = cfg.Analyzer(
 
 electronWeighter = cfg.Analyzer(
     'LeptonWeighter_ele',
-    # effWeight = 0.72,
+    effWeight = mc_eleEffWeight,
     lepton = 'leg2',
     verbose = False
     )
@@ -154,7 +155,7 @@ embed_Run2011A_May10ReReco_v1 = cfg.EmbedComponent(
     files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_May10thRR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     triggers = mc_triggers,
     # tauEffWeight = mc_tauEffWeight,
-    # muEffWeight = mc_muEffWeight    
+    # eleEffWeight = mc_eleEffWeight    
     )
 
 embed_Run2011A_PromptReco_v4 = cfg.EmbedComponent(
@@ -162,7 +163,7 @@ embed_Run2011A_PromptReco_v4 = cfg.EmbedComponent(
     files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     triggers = mc_triggers,
     # tauEffWeight = mc_tauEffWeight,
-    # muEffWeight = mc_muEffWeight    
+    # eleEffWeight = mc_eleEffWeight    
     ) 
 
 embed_Run2011A_05Aug2011_v1 = cfg.EmbedComponent(
@@ -170,7 +171,7 @@ embed_Run2011A_05Aug2011_v1 = cfg.EmbedComponent(
     files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_Aug05thRR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     triggers = mc_triggers,
     # tauEffWeight = mc_tauEffWeight,
-    # muEffWeight = mc_muEffWeight    
+    # eleEffWeight = mc_eleEffWeight    
     ) 
 
 embed_Run2011A_03Oct2011_v1 = cfg.EmbedComponent(
@@ -178,7 +179,7 @@ embed_Run2011A_03Oct2011_v1 = cfg.EmbedComponent(
     files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     triggers = mc_triggers,
     # tauEffWeight = mc_tauEffWeight,
-    # muEffWeight = mc_muEffWeight    
+    # eleEffWeight = mc_eleEffWeight    
     ) 
 
 embed_Run2011B_PromptReco_v1 = cfg.EmbedComponent(
@@ -186,7 +187,7 @@ embed_Run2011B_PromptReco_v1 = cfg.EmbedComponent(
     files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     triggers = mc_triggers,
     # tauEffWeight = mc_tauEffWeight,
-    # muEffWeight = mc_muEffWeight    
+    # eleEffWeight = mc_eleEffWeight    
     ) 
 
 #########################################################################################
@@ -200,7 +201,7 @@ DYJets = cfg.MCComponent(
     triggers = mc_triggers,
     # vertexWeight = mc_vertexWeight,
     # tauEffWeight = mc_tauEffWeight,
-    # muEffWeight = mc_muEffWeight,    
+    # eleEffWeight = mc_eleEffWeight,    
     effCorrFactor = mc_effCorrFactor )
 
 WJets = cfg.MCComponent(
@@ -211,7 +212,7 @@ WJets = cfg.MCComponent(
     triggers = mc_triggers,
     # vertexWeight = mc_vertexWeight,
     # tauEffWeight = mc_tauEffWeight,
-    # muEffWeight = mc_muEffWeight,    
+    # eleEffWeight = mc_eleEffWeight,    
     effCorrFactor = mc_effCorrFactor )
 
 
@@ -223,7 +224,7 @@ TTJets = cfg.MCComponent(
     triggers = mc_triggers,
     # vertexWeight = mc_vertexWeight,
     # tauEffWeight = mc_tauEffWeight,
-    # muEffWeight = mc_muEffWeight,    
+    # eleEffWeight = mc_eleEffWeight,    
     effCorrFactor = mc_effCorrFactor )
 
 
@@ -264,15 +265,24 @@ selectedComponents =  copy.copy(MC)
 if period == 'Period_2011A':
     selectedComponents.extend( data_2011A )
     selectedComponents.extend( embed_2011A )    
+elif period == 'Period_2011B':
+    selectedComponents.extend( data_2011B )
+    selectedComponents.extend( embed_2011B )    
+elif period == 'Period_2011AB':
+    selectedComponents.extend( data_2011A )
+    selectedComponents.extend( data_2011B )
+    selectedComponents.extend( embed_2011A )    
+    selectedComponents.extend( embed_2011B )    
 
 
 # selectedComponents = MC
 
 # selectedComponents = data_2011A
 # selectedComponents.extend(data_2011B)
-
-# selectedComponents = [embed_Run2011A_PromptReco_v4]
 # selectedComponents  = [ data_Run2011B_PromptReco_v1  ]
+# selectedComponents = [ DYJets ]
+
+# selectedComponents = [embed_Run2011A_May10ReReco_v1]
 
 sequence = cfg.Sequence( [
     triggerAna,

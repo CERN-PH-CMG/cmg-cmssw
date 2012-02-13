@@ -1,19 +1,20 @@
 import copy
+import os 
 import CMGTools.RootTools.fwlite.Config as cfg
 
 
 period = 'Period_2011A'
 
 baseDir = '2011'
+H2TauTauPackage = '/'.join( [ os.environ['CMSSW_BASE'],
+                              'src/CMGTools/H2TauTau' ] ) 
 filePattern = 'tauMu*fullsel*.root'
 fixedMuWeight = False
 
 # mc_triggers = 'HLT_IsoMu12_v1'
 mc_triggers = []
-
 mc_jet_scale = 1.
 mc_jet_smear = 0.
-
 mc_vertexWeight = None
 mc_tauEffWeight = None
 mc_muEffWeight = None
@@ -44,17 +45,22 @@ elif period == 'Period_2011AB':
 mc_effCorrFactor = 1.
 
 
-ZMuMuAna = cfg.Analyzer(
-    'ZMuMuAnalyzer',
-    pt1 = 20,
-    pt2 = 20,
-    iso1 = 0.1,
-    iso2 = 0.1,
-    eta1 = 2,
-    eta2 = 2,
-    m_min = 0,
-    m_max = 200
-    )
+data_triggers_11A = [
+    'HLT_IsoMu12_LooseIsoPFTau10_v4',
+    'HLT_IsoMu15_LooseIsoPFTau15_v2',
+    'HLT_IsoMu15_LooseIsoPFTau15_v4',
+    'HLT_IsoMu15_LooseIsoPFTau15_v5',
+    'HLT_IsoMu15_LooseIsoPFTau15_v6',
+    'HLT_IsoMu15_LooseIsoPFTau15_v7',
+    'HLT_IsoMu15_LooseIsoPFTau15_v8',
+    'HLT_IsoMu15_LooseIsoPFTau15_v9'
+    ]
+data_triggers_11B = [
+    'HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1',
+    'HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v5',
+    'HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v6'
+    ]
+
 
 triggerAna = cfg.Analyzer(
     'TriggerAnalyzer'
@@ -121,40 +127,57 @@ data_Run2011A_May10ReReco_v1 = cfg.DataComponent(
     name = 'data_Run2011A_May10ReReco_v1',
     files ='{baseDir}/TauPlusX/Run2011A-May10ReReco-v1/AOD/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     intLumi = 168.597,
-    triggers = ['HLT_IsoMu12_LooseIsoPFTau10_v4'] )
+    # triggers = ['HLT_IsoMu12_LooseIsoPFTau10_v4']
+    triggers = data_triggers_11A,
+    json = '{H2TauTauPackage}/json/finalTauPlusXMay.txt'.format(H2TauTauPackage=H2TauTauPackage)
+    )
 
 
 data_Run2011A_PromptReco_v4 = cfg.DataComponent(
     name = 'data_Run2011A_PromptReco_v4',
     files ='{baseDir}/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     intLumi = 929.748,
-    triggers = ['HLT_IsoMu15_LooseIsoPFTau15_v[2,4,5,6]'],
+    # triggers = ['HLT_IsoMu15_LooseIsoPFTau15_v[2,4,5,6]'],
+    triggers = data_triggers_11A,
+    json = '{H2TauTauPackage}/json/finalTauPlusXv4.txt'.format(H2TauTauPackage=H2TauTauPackage)
     )
 
 data_Run2011A_05Aug2011_v1 = cfg.DataComponent(
     name = 'data_Run2011A_05Aug2011_v1',
     files ='{baseDir}/TauPlusX/Run2011A-05Aug2011-v1/AOD/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     intLumi = 373.349,
-    triggers = ['HLT_IsoMu15_LooseIsoPFTau15_v8'] )
+    #triggers = ['HLT_IsoMu15_LooseIsoPFTau15_v8']
+    triggers = data_triggers_11A,
+    json = '{H2TauTauPackage}/json/finalTauPlusXAug.txt'.format(H2TauTauPackage=H2TauTauPackage)
+    )
 
 data_Run2011A_PromptReco_v6 = cfg.DataComponent(
     name = 'data_Run2011A_PromptReco_v6',
     files ='{baseDir}/TauPlusX/Run2011A-PromptReco-v6/AOD/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     intLumi = 658.886,
-    triggers = ['HLT_IsoMu15_LooseIsoPFTau15_v[8,9]'] )
+    # triggers = ['HLT_IsoMu15_LooseIsoPFTau15_v[8,9]']
+    triggers = data_triggers_11A,
+    json = '{H2TauTauPackage}/json/finalTauPlusXv6.txt'.format(H2TauTauPackage=H2TauTauPackage)
+    )
 
 data_Run2011A_03Oct2011_v1 = cfg.DataComponent(
     name = 'data_Run2011A_03Oct2011_v1',
     files ='{baseDir}/TauPlusX/Run2011A-03Oct2011-v1/AOD/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     intLumi = 658.886,
-    triggers = ['HLT_IsoMu15_LooseIsoPFTau15_v[8,9]'] )
+    # triggers = ['HLT_IsoMu15_LooseIsoPFTau15_v[8,9]']
+    triggers = data_triggers_11A,
+    json = '{H2TauTauPackage}/json/finalTauPlusXv6.txt'.format(H2TauTauPackage=H2TauTauPackage)
+    )
 
 data_Run2011B_PromptReco_v1 = cfg.DataComponent(
     name = 'data_Run2011B_PromptReco_v1',
     files ='{baseDir}/TauPlusX/Run2011B-PromptReco-v1/AOD/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     intLumi = 2511.0,
-    triggers = ['HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v[1,5,6]',
-                'HLT_IsoMu15_LooseIsoPFTau15_v[9,10,11,12,13]'] )
+    # triggers = ['HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v[1,5,6]',
+    #            'HLT_IsoMu15_LooseIsoPFTau15_v[9,10,11,12,13]']
+    triggers = data_triggers_11B,
+    json = '{H2TauTauPackage}/json/finalTauPlusX11B.txt'.format(H2TauTauPackage=H2TauTauPackage)
+    )
 
 
 #########################################################################################
@@ -270,25 +293,43 @@ embed_2011B = [
     ]
 
 
-selectedComponents =  MC
+selectedComponents =  copy.copy(MC)
 if period == 'Period_2011A':
     selectedComponents.extend( data_2011A )
     selectedComponents.extend( embed_2011A )    
+elif period == 'Period_2011B':
+    selectedComponents.extend( data_2011B )
+    selectedComponents.extend( embed_2011B )    
+elif period == 'Period_2011AB':
+    selectedComponents.extend( data_2011A )
+    selectedComponents.extend( data_2011B )
+    selectedComponents.extend( embed_2011A )    
+    selectedComponents.extend( embed_2011B )    
 
 
-# selectedComponents = data_2011A
-# selectedComponents = [embed_Run2011A_PromptReco_v4]
-# selectedComponents  = data_2011A 
+# selectedComponents = [ embed_Run2011A_May10ReReco_v1 ] 
+
+selectedComponents = data_2011A
+# selectedComponents = [data_Run2011A_PromptReco_v4]
+# selectedComponents = [data_Run2011A_May10ReReco_v1]
+# selectedComponents  = [ data_Run2011B_PromptReco_v1  ]
+# selectedComponents = [DYJets]
+
+# selectedComponents = [embed_Run2011A_May10ReReco_v1]
+
+
 
 sequence = cfg.Sequence( [
     triggerAna,
-    vertexAna,
-    TauMuAna,
-    muonWeighter, 
-    tauWeighter, 
-    vbfAna,
-    eventSorter
-    ] )
+#    vertexAna,
+#    TauMuAna,
+#    muonWeighter, 
+#    tauWeighter, 
+#    vbfAna,
+#    eventSorter
+   ] )
+
+# sequence = sequence[:1]
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
