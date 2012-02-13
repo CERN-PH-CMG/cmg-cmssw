@@ -113,6 +113,7 @@ ClusteredPFMetProducer::ClusteredPFMetProducer(const edm::ParameterSet& iConfig)
 int ClusteredPFMetProducer::computeVertexAssociationFor(const reco::PFCandidateRef &candptr)
 {
   reco::TrackBaseRef trackBaseRef( candptr->trackRef() );
+  //if(!trackBaseRef.isNull() && !trackBaseRef.isAvailable())std::cout << "PFlow candidate = " << candptr->pdgId() << " pt = " << candptr->pt() << endl;
   return computeVertexAssociationFor(trackBaseRef);
 }
 
@@ -120,6 +121,7 @@ int ClusteredPFMetProducer::computeVertexAssociationFor(const reco::PFCandidateR
 int ClusteredPFMetProducer::computeVertexAssociationFor(const  edm::Ptr<reco::PFCandidate> &candptr)
 {
   reco::TrackBaseRef trackBaseRef( candptr->trackRef() );
+  //if(!trackBaseRef.isNull() && !trackBaseRef.isAvailable())std::cout << "PFlow candidate = " << candptr->pdgId() << " pt = " << candptr->pt() << endl;
   return computeVertexAssociationFor(trackBaseRef);
 }
 
@@ -129,7 +131,9 @@ int ClusteredPFMetProducer::computeVertexAssociationFor(const reco::TrackBaseRef
   int assocVtxRef(-1);
 
   //no association for neutrals
-  if(trackBaseRef.isNull()) return assocVtxRef;
+  if(trackBaseRef.isNull() || !trackBaseRef.isAvailable()){
+     return assocVtxRef;
+   }
 
   //check the vertices which use the track in the fit
   int nVerticesAss(0);
@@ -139,11 +143,13 @@ int ClusteredPFMetProducer::computeVertexAssociationFor(const reco::TrackBaseRef
     {
       const reco::VertexRef vtxref(vtxH_,jVtx);
       float vtxWeight(0);
+
       try{
         vtxWeight= vtxref->trackWeight(trackBaseRef);
       }catch(std::exception &e){
         //if not available then track was not used in vertex fit
       }
+
       float vtxDz( fabs( trackBaseRef->dz( vtxref->position()) ) );
 
       if(vtxWeight > bestweight || ( vtxWeight == bestweight && vtxDz < bestDz))
@@ -193,7 +199,7 @@ double ClusteredPFMetProducer::getJetRadius(const reco::PFJet& jet){
    for(double R=0.3;R<1.0;R+=0.1){
       if(jet.etInAnnulus(0, R)>=0.90)return R;
    }
-   return 0;
+   return 0.5;
 }
 
 
@@ -210,19 +216,20 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   const size_t nPFCands( pfCandsH_->size() );
   if( nPFCands == 0 ) throw cms::Exception("CorruptData") << "No particle flow candidates collection was found in the event\n";
 
+
   //loop over the pf candidates and:
   // - compute sums 
   // - associate pf candidates to vertices
   vertexAssociationMasks_.clear();
   vertexAssociationMasks_.resize(nPFCands,-1);
   
+
   for (size_t iPFCand=0; iPFCand<nPFCands; iPFCand++){
       reco::PFCandidateRef candRef(pfCandsH_,iPFCand);
       int assocVertexRef = computeVertexAssociationFor(candRef);
       if(assocVertexRef<0) continue;
       vertexAssociationMasks_[iPFCand] = assocVertexRef;
     }
- 
 
   //Nomenclature:  Pvtx=associated to the PrimaryVertex, Ovtx=associated to an other vertex than the PrimaryVertex, Nvtx:Not associated to the primary vertex
   //Nomenclature:  g=Global, All=No cuts, Fwd=Eta>2.4, Cen=Eta<2.4
@@ -243,8 +250,6 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   //#######################################################################
   // BUILD ALL COMPNENT VECTOR THAT WILL BE USED TO BUILD MET VECTOR LATER
   //#######################################################################
-
-
 
   std::map<int, std::vector<reco::PFJet> > vtxJets;
   std::map<int, std::vector<reco::PFJet> > vtxJetsPlusNeutral;
@@ -424,7 +429,6 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   *assocFwdBPtr = pf.addInfo(pfRecoCandsH,getMETData(met_assocFwdB, set_assocFwdB));
   iEvent.put(assocFwdBPtr,"assocWithFwdBeta");
 
-
   std::auto_ptr<std::vector<double> > globalPfMetSumsPtr(new std::vector<double> );
   globalPfMetSumsPtr->resize(12,0);
   (*globalPfMetSumsPtr)[0] = set_gAllCharged + set_gAllNeutral;
@@ -442,7 +446,6 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
       (*globalPfMetSumsPtr)[11] += set_PvtxNeutral[ivtx]; 
   }
   iEvent.put(globalPfMetSumsPtr,"globalPfMetSums");
-
 
   std::auto_ptr<std::vector< reco::PFJet> > jetCollWithUnAssocPtr(new std::vector< reco::PFJet> );
   for(unsigned int i=0;i<vtxJetsPlusNeutral[0].size();i++){jetCollWithUnAssocPtr->push_back(vtxJetsPlusNeutral[0][i]);}
