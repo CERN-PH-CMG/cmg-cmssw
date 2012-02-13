@@ -18,11 +18,12 @@ import sys, re
 
 
 class PublishController(object):
-    def __init__(self, username, password, dbsApi):
+    def __init__(self, username, password, dbsApi, force):
         self._dbsAPI = dbsApi
         self._cmgdbAPI=CmgdbApi()
         self._username = username
         self._password = password
+        self._force = force
     def cmgdbOnline(self):
     	if self._cmgdbAPI is not None: return True
     	else: return False
@@ -106,7 +107,7 @@ class PublishController(object):
     	details = procds['PathList'][0].lstrip("/").split("/")
     	
     	# Get file information
-        fileOps = FileOps(getCastor(procds['PathList'][0]), getDbsUser(procds['PathList'][0]))
+        fileOps = FileOps(getCastor(procds['PathList'][0]), getDbsUser(procds['PathList'][0]),self._force)
     	
     	
     	
@@ -127,7 +128,7 @@ class PublishController(object):
     def dbsPublish(self, procds):
     	
     	# Get file information
-        fileOps = FileOps(getCastor(procds['PathList'][0]), getDbsUser(procds['PathList'][0]))
+        fileOps = FileOps(getCastor(procds['PathList'][0]), getDbsUser(procds['PathList'][0]),self._force)
         
     	# Check if user has dataset files, and DO NOT allow publish if they do not
     	if len(fileOps.getRootFiles()) == 0:
@@ -186,7 +187,7 @@ class PublishController(object):
         
     def savannahPublish(self, procds, opts, comment):
     	# Get file information
-        fileOps = FileOps(getCastor(procds['PathList'][0]), getDbsUser(procds['PathList'][0]))
+        fileOps = FileOps(getCastor(procds['PathList'][0]), getDbsUser(procds['PathList'][0]),self._force)
     	# Check if user has dataset files, and DO NOT allow publish if they do not
     	if fileOps.getRootFiles() is None or len(fileOps.getRootFiles()) == 0:
     		taskID = findDSOnSav.getTaskID(procds['PathList'][0], opts['category_id'], self._username, self._password, False)
@@ -289,7 +290,7 @@ class PublishController(object):
     	if self._cmgdbAPI is None:
     		return None
     	# Get file information
-        fileOps = FileOps(getCastor(procds['PathList'][0]), getDbsUser(procds['PathList'][0]))
+        fileOps = FileOps(getCastor(procds['PathList'][0]), getDbsUser(procds['PathList'][0]),self._force)
     	tags = fileOps.getTags()
     	release = fileOps.getRelease()
     	
@@ -327,9 +328,9 @@ class PublishController(object):
     	tagIDs = []
     	setID = None
     	if tags:
-    		for package in tags:
-    			self._cmgdbAPI.addTag(package,tags[package])
-    			tagIDs.append(self._cmgdbAPI.getTagID(package, tags[package]))
+    		for row in tags:
+    			self._cmgdbAPI.addTag(row["package"],row["tag"])
+    			tagIDs.append(self._cmgdbAPI.getTagID(row["package"],row["tag"]))
     		setID = self._cmgdbAPI.addSet(tagIDs,release)
     	if setID is not None: self._cmgdbAPI.addTagSetID(setID, cmgdbID)
     	return cmgdbID

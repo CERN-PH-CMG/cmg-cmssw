@@ -13,18 +13,19 @@ from optparse import Values as CheckValues
 class FileOps(object):
 
     
-    def __init__(self, setName,user):
+    def __init__(self, setName,user, force):
 
         self._setName = setName.rstrip("/")
         self._user = user
         self._castor=None
         self._LFN=None
-        self._tags=dict()
+        self._tags=[]
         self._release = None
         self._groups = []
         self._integrity = None
         self._valid = False
         self._castorGroups = None
+        self._force = force
         if re.search('group',user):
             castor = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user.rstrip("_group"), "group"))+self._setName
         else:
@@ -43,14 +44,16 @@ class FileOps(object):
             self._castorTags()
             self._checkContiguity()
         # If logger is not present but directory exists
-        elif eostools.isDirectory(castor):
+        elif eostools.isDirectory(castor) and self._force:
             print "Directory is valid on EOS, but no logger file is present."
              
             self._castor = castor
             self._LFN = eostools.eosToLFN(castor)
             self._checkContiguity()
-            if getRootFile() is None: "Did you mean to use the group space?"
+            if self.getRootFiles() is None: raise NameError("No valid directory found for dataset did you mean to use the group space or perhaps a different user?: "+setName, setName)
             
+        elif eostools.isDirectory(castor):
+            raise NameError("Directory is valid on EOS, but no logger file is present.\nNo force requested, publish cancelled")
         # If neither then raise an exception
         else:
             if not re.search("group",user):raise NameError("No valid directory found for dataset did you mean to use the group space or perhaps a different user?: "+setName, setName)
@@ -141,7 +144,7 @@ class FileOps(object):
                     # get tag name
                     tag = m.group(1)
                     if tag is not "NoCVS" and tag is not "NoTag":
-                        self._tags[package]=tag
+                        self._tags.append({"package":package,"tag":tag})
         except: print "No tags found"
 	
 	# Method to check validity of root files, returns python dict
@@ -157,9 +160,12 @@ class FileOps(object):
         if re.search("SIM", tiers): self._MC = True
         
         if len(fileNames) is not 0:
-            
+            report = None
             integrity = PublishToFileSystem("IntegrityCheck")
-            report = integrity.get(self.getLFN())
+            try:
+                report = integrity.get(self.getLFN())
+            except Error as ex:
+                print ex
             # Build in some kind of wildcard
             if report is None and (self._user == 'cmgtools' or self._user == os.environ['USER']):
                 try:
