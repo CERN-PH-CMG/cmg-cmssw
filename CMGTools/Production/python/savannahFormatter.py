@@ -13,7 +13,7 @@ class SavannahFormatter(object):
         self._taskID=taskID
         self._opts = opts
         savOpts = self._savannahBrowser.getOpts()
-        self.dict = {"Status": None, "LFN Castor Directory": None,"CMSSW Release":None,"Castor Directory": None, "Parent Dataset": None, "Physics Group": None, "Date Created": None, "Created By": None, "Last Modified On": None, "Last Modified By":None,"No. Files":None}
+        self.dict = {"Status": None, "LFN EOS Directory": None,"CMSSW Release":None,"EOS Directory": None, "Parent Dataset": None, "Physics Group": None, "Date Created": None, "Created By": None, "Last Modified On": None, "Last Modified By":None,"No. Files":None}
         self.tags = ""
         self.userFields = ""
         self.files = ""
@@ -76,9 +76,9 @@ class SavannahFormatter(object):
                 detailString+="\n"
             self.files = "\n" +detailString
         if castor is not None:
-            self.dict["Castor Directory"]="\n\t"+castor
+            self.dict["EOS Directory"]="\n\t"+castor
         if lfn is not None:
-            self.dict["LFN Castor Directory"]="\n\t"+lfn
+            self.dict["LFN EOS Directory"]="\n\t"+lfn
         if release is not None:
         	self.dict["CMSSW Release"] = release
     
