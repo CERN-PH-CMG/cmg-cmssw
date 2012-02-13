@@ -27,21 +27,6 @@ dataset_pattern = 'tauMu_fullsel_tree.*root'
 process.setName_('LORTREE')
 
 
-## process.source = cms.Source(
-##     "PoolSource",
-##     fileNames = cms.untracked.vstring(
-## 'file:/afs/cern.ch/user/c/cbern/localscratch/Analysis/Susy/Work/Lorenzo/V2_5_0_Test_v3/Job_0/h2TauTau_fullsel_tree_CMG.root',
-## 'file:/afs/cern.ch/user/c/cbern/localscratch/Analysis/Susy/Work/Lorenzo/V2_5_0_Test_v3/Job_1/h2TauTau_fullsel_tree_CMG.root',
-## 'file:/afs/cern.ch/user/c/cbern/localscratch/Analysis/Susy/Work/Lorenzo/V2_5_0_Test_v3/Job_2/h2TauTau_fullsel_tree_CMG.root',
-## 'file:/afs/cern.ch/user/c/cbern/localscratch/Analysis/Susy/Work/Lorenzo/V2_5_0_Test_v3/Job_3/h2TauTau_fullsel_tree_CMG.root',
-## 'file:/afs/cern.ch/user/c/cbern/localscratch/Analysis/Susy/Work/Lorenzo/V2_5_0_Test_v3/Job_4/h2TauTau_fullsel_tree_CMG.root',
-## 'file:/afs/cern.ch/user/c/cbern/localscratch/Analysis/Susy/Work/Lorenzo/V2_5_0_Test_v3/Job_5/h2TauTau_fullsel_tree_CMG.root',
-## 'file:/afs/cern.ch/user/c/cbern/localscratch/Analysis/Susy/Work/Lorenzo/V2_5_0_Test_v3/Job_6/h2TauTau_fullsel_tree_CMG.root',
-## 'file:/afs/cern.ch/user/c/cbern/localscratch/Analysis/Susy/Work/Lorenzo/V2_5_0_Test_v3/Job_7/h2TauTau_fullsel_tree_CMG.root',
-
-##     )
-##     )
-
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
     dataset_user,
