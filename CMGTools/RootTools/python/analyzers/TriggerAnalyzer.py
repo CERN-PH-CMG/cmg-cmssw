@@ -1,7 +1,7 @@
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.statistics.Counter import Counter
-from CMGTools.RootTools.fwlite.TriggerList import TriggerList
+from CMGTools.RootTools.utils.TriggerList import TriggerList
 
 class TriggerAnalyzer( Analyzer ):
     '''Analyze vertices, add weight to MC events'''
@@ -26,10 +26,19 @@ class TriggerAnalyzer( Analyzer ):
         run = iEvent.eventAuxiliary().id().run()
         
         self.counters.counter('Trigger').inc('All events')
-        if not self.triggerList.triggerPassed(event.triggerObject, run):
+        if not self.triggerList.triggerPassed(event.triggerObject,
+                                              run, self.cfg_comp.isData):
             return False
         self.counters.counter('Trigger').inc('trigger passed ')
         return True
+
+    def write(self):
+        print 'writing TriggerAnalyzer'
+        self.triggerList.write( self.looperName )
+        if self.cfg_comp.isData:
+            self.triggerList.computeLumi( self.cfg_comp.json )
+        elif self.cfg_comp.isMC is False:
+            print 'cannot compute lumi, json is not present in component configuration.'
 
     def __str__(self):
         tmp = super(TriggerAnalyzer,self).__str__()

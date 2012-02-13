@@ -4,15 +4,16 @@ import re
 
 class Menus( list ):
     def __init__(self, fileName=None, datasets=None, nMenus=999999):
+        ''''''
         if fileName is not None:
             self.fileName = fileName
-            super(Menus, self).__init__( self.parseInputFile( fileName,
-                                                              datasets,
-                                                              nMenus ) )
+            super(Menus, self).__init__( self._parseInputFile( fileName,
+                                                               datasets,
+                                                               nMenus ) )
         else:
             super(Menus, self).__init__()
-        
-    def parseInputFile(self, fileName, datasets , nMenus=999999):
+
+    def _parseInputFile(self, fileName, datasets , nMenus=999999):
         dataFile = open( fileName )
         # [ (line.split()[0], line) for line in dataFile]
         # pprint.pprint( data[:100] )
@@ -49,6 +50,9 @@ class Menus( list ):
         return menus
         
     def findUnprescaledRange(self, pathName, datasetName):
+        '''Returns a tuple (runs, menus) containing the run range and the list of menus
+        for which pathName is unprescaled in datasetName.
+        '''
         runs = []
         unprescaledMenus = Menus()
         for menu in self:
@@ -59,7 +63,17 @@ class Menus( list ):
                 unprescaledMenus.append( menu )
         return (runs, unprescaledMenus)
 
+    def findMenusWithPath(self, path, datasetName):
+        '''Returns all menus for which path is used in datasetName.'''
+        menus = Menus()
+        for menu in self:
+            dataset = menu.datasets[ datasetName ]
+            if path in dataset.paths.keys():
+                menus.append( menu )
+        return menus
+            
     def findMenuWithRun(self, run):
+        '''Find the menu used for a given run.'''
         menus = Menus()
         for menu in self:
             if run in menu.runs:
@@ -71,11 +85,13 @@ class Menus( list ):
         return menus[0]
 
     def findUnprescaledPaths(self, run, datasetName):
+        '''For a given run, and a given dataset, returns all unprescaled paths.'''
         menu = self.findMenuWithRun(run)
         dataset = menu.datasets[ datasetName ]
         unprescaledPaths = [path for path in dataset.paths.values() if not path.isPrescaled() ]
         return unprescaledPaths
 
+        
         
 
 class Menu(object):
@@ -121,11 +137,18 @@ class HLTPath(object):
                 seedinfo.append( field )
         self.l1seed = ' '.join( seedinfo )
 
-    def isPrescaled(self):
+    def isPrescaledStrict(self):
+        '''A strict version of this function'''
         if self.prescales == [1]*len(self.prescales):
             return False
         else:
             return True
+
+    def isPrescaled(self):
+        for prescale in self.prescales:
+            if prescale != 1 and prescale !=0:
+                return True
+        return False
         
     def __str__(self):
         return '{hlt}, {l1}, {scales} {presc}'.format(
