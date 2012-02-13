@@ -65,7 +65,7 @@ def publish(dsName,fileown,comment,test,dbsApi,user,password, force):
     	parentDbsID = None
     	taskID = None
     	parentTaskID = None
-    	
+    	status = 'Failed'
     	publishController = PublishController(user, password, dbsApi, force)
     	if not publishController.loginValid():
     		print "User authentication failed, exiting\n\n"
@@ -80,22 +80,21 @@ def publish(dsName,fileown,comment,test,dbsApi,user,password, force):
     		publishController.dbsPublish(procds)
     	print "\n------Savanah------\n"
     	(taskID, parentTaskID) = publishController.savannahPublish(procds, opts, comment)
-    	
+    	if taskID is not None: status = 'Success'
     	if publishController.cmgdbOnline():
     		print "\n-------CMGDB-------\n"
     		cmgdbid = None
-    		status = 'Failed'
+    		
     		try:
     			if taskID is not None:
     				cmgdbid = publishController.cmgdbPublish(procds, dbsID, taskID, test)
-    				status = 'Success'
     			if parentTaskID is not None:
     				publishController.cmgdbPublish(procds, parentDbsID, parentTaskID, test)
-    			return {'Status':status, 'Savannah':taskID,'CMGDB ID':cmgdbid,'Dataset':procds['PathList'][0], 'EOS Dataset':dsName,'File Owner':fileown}
+    			
     		except ImportError:
     			print "cx_Oracle not properly installed"
     			return None
-
+    	return {'Status':status, 'Savannah':taskID,'CMGDB ID':cmgdbid,'Dataset':procds['PathList'][0], 'EOS Dataset':dsName,'File Owner':fileown}
     except ValueError as err:
         print err, '.\nDataset not published'
         return None
