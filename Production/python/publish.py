@@ -18,7 +18,7 @@ from CMGTools.Production.findDSOnSav import getTaskID
 
 
 
-def publish(dsName,fileown,comment,test,dbsApi,user,password):
+def publish(dsName,fileown,comment,test,dbsApi,user,password, force):
     
     # if len(dsName.lstrip(os.sep).rstrip(os.sep).split(os.sep)) == 3 and dsName.split(os.sep)[0].endswith("%"):
 #     	# Get list of samples
@@ -66,7 +66,7 @@ def publish(dsName,fileown,comment,test,dbsApi,user,password):
     	taskID = None
     	parentTaskID = None
     	
-    	publishController = PublishController(user, password, dbsApi)
+    	publishController = PublishController(user, password, dbsApi, force)
     	if not publishController.loginValid():
     		print "User authentication failed, exiting\n\n"
     		return None
@@ -97,16 +97,19 @@ def publish(dsName,fileown,comment,test,dbsApi,user,password):
         return None
     except NameError as err:
         print err.args[0]
+        savannah = None
         if len(err.args)>1:
             print "Logging dataset: "+err.args[1] 
             f = open("/afs/cern.ch/user/"+user[0]+"/"+user+"/public/obsoleteDatasets.txt","a")
+            
             if len(err.args)>2:
                 f.write(err.args[1]+" https://savannah.cern.ch/task/?"+str(err.args[2])+"\n")
+                savannah = "https://savannah.cern.ch/task/?"+str(err.args[2])
             else:
                 f.write(err.args[1])
             f.close()
             
-        return None
+        return {'Status':'Failed','Savannah':savannah, 'Dataset':dsName, 'File Owner':fileown}
 
 
 
