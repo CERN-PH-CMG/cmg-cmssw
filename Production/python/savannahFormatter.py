@@ -52,9 +52,9 @@ class SavannahFormatter(object):
         
         if tags is not None:    
             detailString = ""
-            for i in tags:
-                tag = tags[i]
-                package = i
+            for row in tags:
+                tag = row['tag']
+                package = row['package']
                 detailString +="_"+tag+"_ - "+package +"\n"
             if detailString is not "":
             	self.tags="\n"+detailString
