@@ -3,6 +3,7 @@ import FWCore.ParameterSet.Config as cms
 def getTauCuts( leg, channel='tauMu', skim=False):
 
     ptCut = 20.
+    # ptCut = 15.
     etaCut = 2.3
     muVeto = None
     eVeto = None
@@ -25,6 +26,7 @@ def getTauCuts( leg, channel='tauMu', skim=False):
         eVeto = eVeto
         )
     iso = cms.string('{leg}().tauID("byLooseCombinedIsolationDeltaBetaCorr")'.format(leg=leg) )
+    # iso = cms.string('{leg}().tauID("decayModeFinding")'.format(leg=leg) )
 
 
     if not skim:
