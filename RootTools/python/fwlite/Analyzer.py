@@ -1,6 +1,6 @@
 import logging 
 
-# from CMGTools.RootTools.fwlite.TriggerList import TriggerList
+
 from CMGTools.RootTools.statistics.Counter import Counters
 from CMGTools.RootTools.statistics.Average import Averages
 
@@ -28,7 +28,6 @@ class Analyzer(object):
         # this is the main logger corresponding to the looper.
         # each analyzer could also declare its own logger
         self.mainLogger = logging.getLogger( looperName )
-        #         self.triggerList = TriggerList( self.cfg_comp.triggers )
         self.beginLoopCalled = False
 
     def declareHandles(self):

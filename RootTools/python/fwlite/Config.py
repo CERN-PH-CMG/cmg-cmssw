@@ -81,10 +81,11 @@ class Component( CFG ):
 
 class DataComponent( Component ):
 
-    def __init__(self, name, files, intLumi, triggers):
+    def __init__(self, name, files, intLumi, triggers, json=None):
         super(DataComponent, self).__init__(name, files, triggers)
         self.isData = True 
         self.intLumi = intLumi
+        self.json = json
 
     def getWeight( self, intLumi = None):
         return Weight( genNEvents = -1,
