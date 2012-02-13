@@ -87,6 +87,12 @@ If not entered, secure password prompt will appear.""",
                       dest="dbs",
                       help="Use DBS",
                       default = False)
+    # If user wants to add their own comments
+    group.add_option("-f", "--force",
+                      action = "store_true",
+                      dest="force",
+                      help="force publish without logger",
+                      default = False)
     # If user wants to add multiple datasets from file
     group.add_option("-M", "--multi",
                       action = "store_true",
@@ -159,12 +165,12 @@ If not entered, secure password prompt will appear.""",
                 	comment = line.rstrip("'").split("'")[1]
                 elif len(line.split('"'))>1:
                 	comment = line.rstrip('"').split('"')[1]
-                publish(dataset,fileown,comment,options.test,dbsApi,options.username,password)
+                publish(dataset,fileown,comment,options.test,dbsApi,options.username,password,options.force)
             except Exception as err:
                 print err, "\nDataset not published"
     # For singular file input
     else:
         dataset = args[0]
         comment = options.commented
-        publish(dataset,options.fileown,comment,options.test,dbsApi,options.username,password)
+        publish(dataset,options.fileown,comment,options.test,dbsApi,options.username,password,options.force)
        
