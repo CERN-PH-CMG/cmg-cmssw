@@ -9,17 +9,17 @@ scramv1 b
 #
 # create pat-tuples
 #
-runOverSamples.py -j data/samples.json -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_mc_cfg.py -castor=patdir" -n 5 -s 2nd -d aoddir
+runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_mc_cfg.py -castor=patdir" -n 5 -s 2nd -d aoddir
 
 #
 # create ntuples
 #
-runOverSamples.py -j data/samples.json -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/ntuples" -d patdir -s 8nh
+runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/ntuples" -d patdir -s 8nh
 
 #
 # run the analysis
 #
-runLocalAnalysisOverSamples.py -e runOnEventSummary -j data/beauty-samples.json -o ~/scratch0/hzz/ -d /castor/cern.ch/cms/store/cmst3/user/querten/11_11_07_HtoZZ2l2nNTuples -c test/runAnalysis_cfg.py.templ -s 8nh 
+runLocalAnalysisOverSamples.py -e runOnEventSummary -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -o $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/results -d /store/cmst3/user/querten/12_02_10_HZZ2l2v_ntuples -c $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/runAnalysis_cfg.py.templ -s 8nh 
 
 
 
