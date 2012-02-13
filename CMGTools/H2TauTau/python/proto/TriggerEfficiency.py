@@ -32,21 +32,31 @@ if __name__ == '__main__':
                                 TGraph(npoints))
                      )
 
-    def fillGraphs( curves, mu=None):
+    eleCurves = dict( p2011A = (triggerEfficiency.effEle2011A,
+                               TGraph(npoints)),
+                     p2011B = (triggerEfficiency.effEle2011B,
+                               TGraph(npoints)),
+                     p2011AB = (triggerEfficiency.effEle2011AB,
+                                TGraph(npoints))
+                     )
+
+    def fillGraphs( curves, region=None):
         for np in range(0, npoints):
             pt = np / 10.
             for period, struct in curves.iteritems():
                 (fun, gr) = struct
-                if mu is None:
-                    gr.SetPoint( np, pt, fun( pt ) )
-                elif mu == 'Barrel':
+                if region is None:
+                    gr.SetPoint( np, pt, fun( pt, 0) )
+                elif region == 'Barrel':
                     gr.SetPoint( np, pt, fun( pt, 0 ) )
-                elif mu == 'Endcaps':
+                elif region == 'Endcaps':
                     gr.SetPoint( np, pt, fun( pt, 2 ) )
                     
 
     fillGraphs( tauCurves )
-    fillGraphs( muCurves, mu='Barrel' )
+    fillGraphs( muCurves, region='Barrel' )
+    fillGraphs( eleCurves, region='Endcaps' )
+
 
     def drawCurves( curves, name):
         first = True
@@ -63,6 +73,7 @@ if __name__ == '__main__':
     
     can1 = drawCurves( tauCurves, 'tau')
     can2 = drawCurves( muCurves, 'mu')
+    can3 = drawCurves( eleCurves, 'ele')
 
 
     def graphEta( curves, pt = 20):
