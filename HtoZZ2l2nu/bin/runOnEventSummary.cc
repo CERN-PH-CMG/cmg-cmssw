@@ -9,7 +9,7 @@
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
 #include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
-#include "CMGTools/HtoZZ2l2nu/interface/SelectionMonitor.h"
+#include "CMGTools/HtoZZ2l2nu/interface/SmartSelectionMonitor.h"
 #include "CMGTools/HtoZZ2l2nu/interface/TMVAUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/MacroUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
@@ -35,7 +35,7 @@
 using namespace std;
 int main(int argc, char* argv[])
 {
-  SelectionMonitor controlHistos; //plot storage
+  SmartSelectionMonitor controlHistos; //plot storage
 
   //start computers
   EventCategory eventClassifComp(true);
@@ -527,31 +527,6 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1F ("VBFiMass3rdlepton",";Inv. Mass", 100, 0.,2000) );
   controlHistos.addHistogram( new TH1F ("VBFcen30JetVeto3rdlepton",";Central 30 Jet Veto", 10, 0.,10) );
   controlHistos.addHistogram( new TH1F ("VBFNBJets303rdlepton", ";N BJets (pT>30);Events", 10,0,10) );
-
-  //replicate monitor for interesting categories
-  TString cats[]={"ee","mumu","all"};
-  TString* subCats=new TString[eventClassifComp.GetLabelSize()];
-  for(int i=0;i<eventClassifComp.GetLabelSize();i++) 
-    {
-      subCats[i] = eventClassifComp.GetRawLabel(i);
-    }
-  for(size_t icat=0;icat<sizeof(cats)/sizeof(TString); icat++)
-    {
-      for(int isubcat=0;isubcat<eventClassifComp.GetLabelSize(); isubcat++)
-	{
-	  TString ctf=cats[icat]+subCats[isubcat];
-	  controlHistos.initMonitorForStep(ctf);
-	}
-    }
-  
-  cout << "We have the following categories" << endl;
-  for(SelectionMonitor::StepMonitor_t::iterator it=controlHistos.getAllMonitors().begin(); 
-      it != controlHistos.getAllMonitors().end(); 
-      it++)
-    {
-      cout << it->first << endl;
-    }
-
 
   //open the file and get events tree
   ZZ2l2nuSummaryHandler evSummaryHandler;
@@ -1435,8 +1410,7 @@ int main(int argc, char* argv[])
 	}
       }
   }
-
-  
+ 
   //all done with the events file
   file->Close();
   
@@ -1455,23 +1429,9 @@ int main(int argc, char* argv[])
     Hoptim_cuts2_mindphi->Write();
     Hoptim_cuts2_mtmin  ->Write();
     Hoptim_cuts2_mtmax  ->Write();
-  SelectionMonitor::StepMonitor_t &mons=controlHistos.getAllMonitors();
-  std::map<TString, TDirectory *> outDirs;
-  outDirs["all"]=baseOutDir->mkdir("all");
-  outDirs["ee"]=baseOutDir->mkdir("ee");
-  //  outDirs["emu"]=baseOutDir->mkdir("emu");
-  outDirs["mumu"]=baseOutDir->mkdir("mumu");
-  for(SelectionMonitor::StepMonitor_t::iterator it =mons.begin(); it!= mons.end(); it++){
-      TString icat("all");
-      if(it->first.BeginsWith("ee")) icat="ee";
-      if(it->first.BeginsWith("emu")) continue;//icat="emu";
-      if(it->first.BeginsWith("mumu")) icat="mumu";
-      outDirs[icat]->cd();
-      for(SelectionMonitor::Monitor_t::iterator hit=it->second.begin(); hit!= it->second.end(); hit++){
-	  hit->second->Write();
-      }
-  }
-  ofile->Close();
+    baseOutDir->cd();
+    controlHistos.Write();
+    ofile->Close();
 
   if(outTxtFile)fclose(outTxtFile);
 }  
