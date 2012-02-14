@@ -247,6 +247,14 @@ class PublishController(object):
     			self.savannah.appendExtra({"Valid Duplicates":validDuplicates})
     		if 'BadJobs' in report:
     			self.savannah.appendExtra({"Bad Jobs":report['BadJobs']})
+    		if 'NumFilesBad' in report:
+    			self.savannah.appendExtra({"Number of Bad Files":report['NumFilesBad']})
+    		if 'FilesBad' in report:
+    			filesBad = []
+    			for i in report['FilesBad']:
+    				filesBad.append("* "+i)
+    			filesBad[0] = "\n"+filesBad[0]
+    			self.savannah.appendExtra({"Bad Files":filesBad})
     	#if fileOps.getLFNGroups() is not None:
     		#self.savannah.appendExtra(fileOps.getLFNGroups())
     		
