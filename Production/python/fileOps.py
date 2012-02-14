@@ -75,16 +75,16 @@ class FileOps(object):
   	# Return all root files in directory
     def getRootFiles(self):
         if self._castor is not None:				# If is file on Castor
-        	return eostools.matchingFiles(self._LFN, ".*root")
+        	return eostools.matchingFiles(self._LFN, ".*root$")
         else:										# If local
-            return glob.glob(self.getLFN()+'/'+'/.*.root')  
+            return glob.glob(self.getLFN()+'/'+'/.*.root$')  
   		
   	def getCastorRootFiles(self):
   	    if self._castor is not None:				# If is file on Castor
-  	        return eostools.matchingFiles(self._castor, ".*root")
+  	        return eostools.matchingFiles(self._castor, ".*root$")
   	    # If local
   	    else:
-  	        return glob.glob(self.getLFN()+'/'+'/.*.root')
+  	        return glob.glob(self.getLFN()+'/'+'/.*.root$')
   	    
     # Stage in the Logger.tgz file in a tmp file, load the showtags file and split it on newlines
     def _castorTags(self):
@@ -187,6 +187,18 @@ class FileOps(object):
                     self._valid = True
                 if 'BadJobs' in report:
                     integrityCheck['BadJobs'] = report['BadJobs']
+                if 'FilesBad' in report:
+                    integrityCheck['NumFilesBad'] = report['FilesBad']
+                if 'Files' in report:
+                    integrityCheck['FilesBad'] = []
+                    for i in report['Files']:
+                        if report['Files'][i][0] is False:
+                            integrityCheck['FilesBad'].append(i)
+                    if len(integrityCheck['FilesBad'])>0:
+                        if checkRootType(integrityCheck['FilesBad'][0]):
+                            integrityCheck['FilesBad'].sort(key=lambda x: int(x.split("_")[-3]))
+                        else:
+                            integrityCheck['FilesBad'].sort(key=lambda x: int(x.rstrip(".root").split("_")[-1]))
                 if 'FilesEntries' in report:
                     integrityCheck['FilesEntries'] = report['FilesEntries']
                 if 'PrimaryDatasetFraction' in report:
