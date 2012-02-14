@@ -253,7 +253,8 @@ class PublishController(object):
     			filesBad = []
     			for i in report['FilesBad']:
     				filesBad.append("* "+i)
-    			filesBad[0] = "\n"+filesBad[0]
+    			if len(filesBad)>0:
+    				filesBad[0] = "\n"+filesBad[0]
     			self.savannah.appendExtra({"Bad Files":filesBad})
     	#if fileOps.getLFNGroups() is not None:
     		#self.savannah.appendExtra(fileOps.getLFNGroups())
