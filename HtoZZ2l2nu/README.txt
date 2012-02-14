@@ -14,7 +14,12 @@ runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -p "-
 #
 # create ntuples
 #
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/ntuples" -d patdir -s 8nh
+runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/querten/12_02_10_HZZ2l2v_ntuples_split" -d patdir -s 8nh -n 10
+
+#
+# merge the ntuples
+#
+haddOverSamples.py -j data/samples.json -d /store/cmst3/user/querten/12_02_10_HZZ2l2v_ntuples_split/ -o /store/cmst3/user/querten/12_02_10_HZZ2l2v_ntuples/haddOverSamples.py -j data/samples.json -d /store/cmst3/user/querten/12_02_10_HZZ2l2v_ntuples_split/ -o /store/cmst3/user/querten/12_02_10_HZZ2l2v_ntuples/
 
 #
 # run the analysis
@@ -44,3 +49,4 @@ runLocalAnalysisOverSamples.py -e runOnEventSummary -j data/samples-with-dy-repl
 
 ## run the final plots
 runPlotter --iLumi 4616 --inDir ~/scratch0/gamma-data/ --outDir /tmp/psilva/ --json data/samples-with-dy-replacement.json --only zmass
+runPlotter --iLumi 4616 --inDir results/ --outDir results/plots/ --outFile plotter.root  --json ../data/samples.json --only zmass
