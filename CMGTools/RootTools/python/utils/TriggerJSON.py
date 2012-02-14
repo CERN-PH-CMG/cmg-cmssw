@@ -20,7 +20,8 @@ class TriggerJSON( dict ):
             dic = {}
             for item in js:
                 dic[ str(item) ] = lumranges
-            lines.append( '{path:30} {dic}'.format(path=path, dic=json.dumps(dic)) )
+            lines.append( '{path:30} {dic}'.format(path=path,
+                                                   dic=json.dumps( dic, sort_keys=True) ) )
         return '\n'.join(lines)
     
     def write(self, dirName ):
@@ -34,7 +35,7 @@ class TriggerJSON( dict ):
             fileName = dirName+'/'+path+'.json'
             self.files[path] = fileName
             out = open( fileName, 'w')
-            out.write( json.dumps(dic))
+            out.write( json.dumps(dic, sort_keys=True))
             out.write('\n')
             out.close()
             
