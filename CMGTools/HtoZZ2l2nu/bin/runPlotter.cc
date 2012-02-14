@@ -144,7 +144,8 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, st
 	      }
             delete File;
          }
-
+         if(!tmphist)continue;
+         
 	 bool isMC( !Process[i]["isdata"].toBool() && !Process[i]["isdatadriven"].toBool() );
 
 
