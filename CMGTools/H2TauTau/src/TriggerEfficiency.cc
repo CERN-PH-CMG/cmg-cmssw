@@ -1,6 +1,7 @@
 #include "CMGTools/H2TauTau/interface/TriggerEfficiency.h"
 
 
+
 double TriggerEfficiency::efficiency(double m, double m0, double sigma, double alpha,double n, double norm){
   if(m<1. || 1000.<m)return 0.;//safety check
 
