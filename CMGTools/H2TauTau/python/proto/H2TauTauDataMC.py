@@ -19,7 +19,8 @@ class H2TauTauDataMC( AnalysisDataMC ):
 
         histName  : histogram to be plotted
         directory : analysis directory containing subdirectories for each component
-        selComps : selected components (among the component subdirectories)
+        selComps : selected components (among the component subdirectories).
+                   this is a dictionary(component name:component object)
         filePattern : pattern to find a single root file in each component subdirectory
                       from which the histogram will be obtained.
         weights   : weight dictionary
@@ -40,6 +41,16 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.groupDataComponents( self.dataComponents, groupDataName)
         if embed: 
             self.setupEmbedding( self.dataComponents, embed )
+        else:
+            self.removeEmbeddedSamples()
+
+    def removeEmbeddedSamples(self):
+        for compname in self.selComps:
+            if compname.startswith('embed_'):
+                hist = self.Hist(compname)
+                hist.stack = False
+                hist.on = False
+                
 
     def setupEmbedding(self, dataComponents, doEmbedding ):
 
@@ -119,11 +130,13 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['data_Run2011A_PromptReco_v6'] = {'style':sRed, 'layer':-1100}
         self.histPref['data_Run2011A_03Oct2011_v1'] = {'style':sYellow, 'layer':-1105}
         self.histPref['data_Run2011A_05Aug2011_v1'] = {'style':sBlack, 'layer':-1150}
+        self.histPref['data_Run2011B_PromptReco_v1'] = {'style':sViolet, 'layer':-1200}
         self.histPref['embed_Run2011A_May10ReReco_v1'] = {'style':sViolet, 'layer':-1000}
         self.histPref['embed_Run2011A_PromptReco_v4'] = {'style':sBlue, 'layer':-1000}
         self.histPref['embed_Run2011A_PromptReco_v6'] = {'style':sRed, 'layer':-1100}
         self.histPref['embed_Run2011A_03Oct2011_v1'] = {'style':sYellow, 'layer':-1105}
         self.histPref['embed_Run2011A_05Aug2011_v1'] = {'style':sBlack, 'layer':-1150}
+        self.histPref['embed_Run2011B_PromptReco_v1'] = {'style':sViolet, 'layer':-1200}
         self.histPref['dMay10ReReco_v1'] = {'style':sGreen, 'layer':-1200}
         self.histPref['TTJets'] = {'style':sBlue, 'layer':1} 
         self.histPref['WJets'] = {'style':sRed, 'layer':2}  
