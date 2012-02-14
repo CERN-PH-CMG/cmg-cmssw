@@ -2,6 +2,7 @@
 
 import os
 import pprint
+import re
 
 from CMGTools.Production.castorBaseDir import castorBaseDir
 import CMGTools.Production.eostools as castortools
@@ -13,7 +14,7 @@ class BaseDataset( object ):
         self.name = name
         self.user = user
         self.pattern = pattern
-        self.buildListOfFiles()
+        self.buildListOfFiles( self.pattern )
         self.extractFileSizes()
         self.buildListOfBadFiles()
 
@@ -33,6 +34,7 @@ class BaseDataset( object ):
         print 'user        :  ' + self.user
 
     def printFiles(self, abspath=True, info=True):
+        # import pdb; pdb.set_trace()
         if self.files == None:
             self.buildListOfFiles(self.pattern)
         for file in self.files:
@@ -85,6 +87,33 @@ class CMSDataset( BaseDataset ):
             # print 'line',line
             self.files.append(line)
 
+
+
+class LocalDataset( BaseDataset ):
+
+    def __init__(self, name, basedir, pattern):
+        self.basedir = basedir 
+        super(LocalDataset, self).__init__( name, 'LOCAL', pattern)
+        
+    def buildListOfFiles(self, pattern='.*root'):
+        pat = re.compile( pattern )
+        sampleName = self.name.rstrip('/')
+        sampleDir = ''.join( [os.path.abspath(self.basedir), sampleName ] )
+        self.files = []
+        for file in sorted(os.listdir( sampleDir )):
+            if pat.match( file ) is not None:
+                self.files.append( '/'.join([sampleDir, file]) )
+                # print file
+##         dbs = 'dbs search --query="find file where dataset like %s"' % sampleName
+##         dbsOut = os.popen(dbs)
+##         self.files = []
+##         for line in dbsOut:
+##             if line.find('/store')==-1:
+##                 continue
+##             line = line.rstrip()
+##             # print 'line',line
+##             self.files.append(line)
+
         
 
 class Dataset( BaseDataset ):
@@ -92,12 +121,15 @@ class Dataset( BaseDataset ):
     def __init__(self, user, name, pattern='.*root'):
         self.lfnDir = castorBaseDir(user) + name
         self.castorDir = castortools.lfnToCastor( self.lfnDir )
-        super(Dataset, self).__init__(user, name, pattern)
-        self.buildListOfFiles( pattern )
-        self.extractFileSizes()
         self.maskExists = False
         self.report = None
-        self.buildListOfBadFiles()
+        # import pdb; pdb.set_trace()
+        super(Dataset, self).__init__(user, name, pattern)
+#        self.buildListOfFiles( pattern )
+#        self.extractFileSizes()
+#        self.maskExists = False
+#        self.report = None
+#        self.buildListOfBadFiles()
         
     def buildListOfFiles(self, pattern='.*root'):
         '''fills list of files, taking all root files matching the pattern in the castor dir'''
@@ -115,6 +147,7 @@ class Dataset( BaseDataset ):
         file_mask = castortools.matchingFiles(self.castorDir, '^%s_.*\.txt$' % mask)
         self.bad_files = {}
         self.good_files = []
+        # import pdb; pdb.set_trace()
         if file_mask:
             from CMGTools.Production.edmIntegrityCheck import PublishToFileSystem
             p = PublishToFileSystem(mask)

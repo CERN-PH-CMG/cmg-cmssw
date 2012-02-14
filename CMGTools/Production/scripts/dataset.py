@@ -10,8 +10,9 @@ if __name__ == '__main__':
     
     parser = OptionParser()
     parser.usage = "%prog [options] <dataset>\nPrints information on a sample."
-    parser.add_option("-p", "--pattern", dest="pattern", default='.*tree.*root',help='regexp pattern for root file printout')
-    parser.add_option("-u", "--user", dest="user", default=os.environ['USER'],help='user owning the dataset')
+    parser.add_option("-p", "--pattern", dest="pattern", default='tree.*root',help='regexp pattern for root file printout')
+    parser.add_option("-u", "--user", dest="user", default=os.environ['USER'],help='user owning the dataset.\nInstead of the username, give "LOCAL" to read datasets in a standard unix filesystem, and "CMS" to read official CMS datasets present at CERN.')
+    parser.add_option("-b", "--basedir", dest="basedir", default=os.environ['CMGLOCALBASEDIR'],help='in case -u LOCAL is specified, this option allows to specify the local base directory containing the dataset. default is CMGLOCALBASEDIR')
     parser.add_option("-a", "--abspath", dest="abspath",
                       action = 'store_true',
                       default=False,
@@ -38,6 +39,9 @@ if __name__ == '__main__':
     if user == 'CMS':
         data = CMSDataset( name )
         info = False
+    elif user == 'LOCAL':
+        data = LocalDataset( name, options.basedir, options.pattern)
+        info = False        
     else:
         data = Dataset( user, name, options.pattern)
     data.printInfo()
