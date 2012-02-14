@@ -137,13 +137,14 @@ If not entered, secure password prompt will appear.""",
         for line in lines:
             line = re.sub("\s+", " ", line)
             try:
-                fileown = None
-                dataset = line.split(" ")[0]
+                dataset = line.split(" ")[0].rstrip(" ")
+                fileown = options.fileown
                 if not re.search("---", dataset):
                 	if len(line.rstrip(" ").lstrip(" ").split(" ")) ==1:
-                		dataset = line.rstrip("\n")
+                		
+                		dataset = line.rstrip("\n").rstrip(" ")
                 		fileown = options.fileown
-                	if len(line.split(" ")) >1 and re.search("'",line) is None and re.search('"',line) is None:
+                	if len(line.rstrip(" ").lstrip(" ").split(" ")) >1 and re.search("'",line) is None and re.search('"',line) is None:
                 		fileown = line.split(" ")[1].rstrip("\n")
                 	elif re.search("'",line):
                 		preComment = line.split("'")[0]
@@ -165,6 +166,7 @@ If not entered, secure password prompt will appear.""",
                 	comment = line.rstrip("'").split("'")[1]
                 elif len(line.split('"'))>1:
                 	comment = line.rstrip('"').split('"')[1]
+                	
                 publish(dataset,fileown,comment,options.test,dbsApi,options.username,password,options.force)
             except Exception as err:
                 print err, "\nDataset not published"
@@ -173,4 +175,4 @@ If not entered, secure password prompt will appear.""",
         dataset = args[0]
         comment = options.commented
         publish(dataset,options.fileown,comment,options.test,dbsApi,options.username,password,options.force)
-       
+
