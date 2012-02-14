@@ -98,8 +98,7 @@ class SavannahFormatter(object):
         	if len(input) is 0:
         		return "\n"
         	for i in input:
-        		
-        		string += self._recursiveRead(string, i, tabs)+"\n"
+        		string += self._recursiveRead(string, i, tabs)
         	return string
         
         elif type(input) is not types.ListType and type(input) is not types.TupleType:
@@ -126,9 +125,9 @@ class SavannahFormatter(object):
         	if self.dict[i] is not None and len(self.dict[i])>0:
         		info +="*"+ i + "*: " + self.dict[i] +"\n"
         		info+="\n"
-        
-        if self.userFields != "": info += self.userFields+"\n\n"
         if self.tags != "": info += "*Tags*: "+self.tags + "\n\n"
+        if self.userFields != "": info += self.userFields+"\n\n"
+        
         if self.files != "": info += "*Root Files*: "+self.files + "\n\n"
         if self._taskID is None:
             self._savannahBrowser.addOption("details", info)
