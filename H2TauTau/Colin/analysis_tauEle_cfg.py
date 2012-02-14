@@ -1,19 +1,20 @@
 import copy
+import os 
 import CMGTools.RootTools.fwlite.Config as cfg
 
 
 period = 'Period_2011B'
 
 baseDir = '2011'
+H2TauTauPackage = '/'.join( [ os.environ['CMSSW_BASE'],
+                              'src/CMGTools/H2TauTau' ] ) 
 filePattern = 'tauEle*fullsel*.root'
 fixedMuWeight = False
 
 # mc_triggers = 'HLT_IsoMu12_v1'
 mc_triggers = []
-
 mc_jet_scale = 1.
 mc_jet_smear = 0.
-
 mc_vertexWeight = None
 mc_tauEffWeight = None
 mc_eleEffWeight = None
@@ -43,6 +44,26 @@ elif period == 'Period_2011AB':
 # mc_effCorrFactor = mc_lep_effCorrFactor * mc_tau_effCorrFactor 
 mc_effCorrFactor = 1.
 
+blah = 'CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT'
+data_triggers_11A = [
+    # the first 2 triggers correspond to runs before the good run list
+    # why do we get them??
+    # 'HLT_Ele15_{blah}_LooseIsoPFTau15_v1'.format(blah=blah), 
+    # 'HLT_Ele15_{blah}_LooseIsoPFTau15_v2'.format(blah=blah),  
+    'HLT_Ele15_{blah}_LooseIsoPFTau15_v4'.format(blah=blah),  
+    'HLT_Ele15_{blah}_LooseIsoPFTau20_v6'.format(blah=blah),  
+    'HLT_Ele15_{blah}_LooseIsoPFTau20_v8'.format(blah=blah),  
+    'HLT_Ele15_{blah}_LooseIsoPFTau20_v9'.format(blah=blah),  
+    'HLT_Ele15_{blah}_TightIsoPFTau20_v2'.format(blah=blah),
+    'HLT_Ele18_{blah}_MediumIsoPFTau20_v1'.format(blah=blah)
+    ]
+data_triggers_11B = [
+    'HLT_Ele18_{blah}_MediumIsoPFTau20_v1'.format(blah=blah), 
+    'HLT_Ele20_{blah}_MediumIsoPFTau20_v5'.format(blah=blah), 
+    'HLT_Ele20_{blah}_MediumIsoPFTau20_v6'.format(blah=blah)
+    ]
+
+
 triggerAna = cfg.Analyzer(
     'TriggerAnalyzer'
     )
@@ -54,8 +75,8 @@ TauEleAna = cfg.Analyzer(
     iso1 = 999,
     iso2 = 0.1,
     eta1 = 999,
-    # eta2 = 2.1,
-    eta2 = 1.4,
+    eta2 = 2.1,
+    # eta2 = 1.4,
     m_min = 10,
     m_max = 99999,
     diLeptonCutString = 'cuts_baseline'
@@ -109,43 +130,50 @@ data_Run2011A_May10ReReco_v1 = cfg.DataComponent(
     name = 'data_Run2011A_May10ReReco_v1',
     files ='{baseDir}/TauPlusX/Run2011A-May10ReReco-v1/AOD/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     intLumi = 168.597,
-    #TODO: quite a low efficiency...
-    triggers = ['HLT_Ele15_{blah}_LooseIsoPFTau15_v4'.format(blah=blah)] )
+    triggers = data_triggers_11A,
+    json = '{H2TauTauPackage}/json/finalTauPlusXMay.txt'.format(H2TauTauPackage=H2TauTauPackage)
+    )
 
 
 data_Run2011A_PromptReco_v4 = cfg.DataComponent(
     name = 'data_Run2011A_PromptReco_v4',
     files ='{baseDir}/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     intLumi = 929.748,
-    triggers = ['HLT_Ele15_{blah}_LooseIsoPFTau20_v[6,7,8,9]'.format(blah=blah)],
+    triggers = data_triggers_11A,
+    json = '{H2TauTauPackage}/json/finalTauPlusXv4.txt'.format(H2TauTauPackage=H2TauTauPackage)
     )
 
 data_Run2011A_05Aug2011_v1 = cfg.DataComponent(
     name = 'data_Run2011A_05Aug2011_v1',
     files ='{baseDir}/TauPlusX/Run2011A-05Aug2011-v1/AOD/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     intLumi = 373.349,
-    triggers = ['HLT_Ele15_{blah}_TightIsoPFTau20_v2'.format(blah=blah)] )
+    triggers = data_triggers_11A,
+    json = '{H2TauTauPackage}/json/finalTauPlusXAug.txt'.format(H2TauTauPackage=H2TauTauPackage)
+    )
 
 data_Run2011A_PromptReco_v6 = cfg.DataComponent(
     name = 'data_Run2011A_PromptReco_v6',
     files ='{baseDir}/TauPlusX/Run2011A-PromptReco-v6/AOD/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     intLumi = 658.886,
-    triggers = ['HLT_Ele15_{blah}_TightIsoPFTau20_v2'.format(blah=blah),
-                'HLT_Ele18_{blah}_MediumIsoPFTau20_v1'.format(blah=blah) ] )
+    triggers = data_triggers_11A,
+    json = '{H2TauTauPackage}/json/finalTauPlusXv6.txt'.format(H2TauTauPackage=H2TauTauPackage)
+    )
 
 data_Run2011A_03Oct2011_v1 = cfg.DataComponent(
     name = 'data_Run2011A_03Oct2011_v1',
     files ='{baseDir}/TauPlusX/Run2011A-03Oct2011-v1/AOD/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
-    intLumi = data_Run2011A_PromptReco_v6.intLumi,
-    triggers = data_Run2011A_PromptReco_v6.triggers )
+    intLumi = 658.886,
+    triggers = data_triggers_11A,
+    json = '{H2TauTauPackage}/json/finalTauPlusXv6.txt'.format(H2TauTauPackage=H2TauTauPackage)
+    )
 
 data_Run2011B_PromptReco_v1 = cfg.DataComponent(
     name = 'data_Run2011B_PromptReco_v1',
     files ='{baseDir}/TauPlusX/Run2011B-PromptReco-v1/AOD/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     intLumi = 2511.0,
-    triggers = [ 'HLT_Ele18_{blah}_MediumIsoPFTau20_v1'.format(blah=blah),
-                 'HLT_Ele20_{blah}_MediumIsoPFTau20_v5'.format(blah=blah),
-                 'HLT_Ele20_{blah}_MediumIsoPFTau20_v6'.format(blah=blah) ])
+    triggers = data_triggers_11B,
+    json = '{H2TauTauPackage}/json/finalTauPlusX11B.txt'.format(H2TauTauPackage=H2TauTauPackage)
+    )
 
 
 #########################################################################################
@@ -154,40 +182,30 @@ embed_Run2011A_May10ReReco_v1 = cfg.EmbedComponent(
     name = 'embed_Run2011A_May10ReReco_v1',
     files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_May10thRR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     triggers = mc_triggers,
-    # tauEffWeight = mc_tauEffWeight,
-    # eleEffWeight = mc_eleEffWeight    
     )
 
 embed_Run2011A_PromptReco_v4 = cfg.EmbedComponent(
     name = 'embed_Run2011A_PromptReco_v4',
     files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     triggers = mc_triggers,
-    # tauEffWeight = mc_tauEffWeight,
-    # eleEffWeight = mc_eleEffWeight    
     ) 
 
 embed_Run2011A_05Aug2011_v1 = cfg.EmbedComponent(
     name = 'embed_Run2011A_05Aug2011_v1',
     files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_Aug05thRR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     triggers = mc_triggers,
-    # tauEffWeight = mc_tauEffWeight,
-    # eleEffWeight = mc_eleEffWeight    
     ) 
 
 embed_Run2011A_03Oct2011_v1 = cfg.EmbedComponent(
     name = 'embed_Run2011A_03Oct2011_v1',
     files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     triggers = mc_triggers,
-    # tauEffWeight = mc_tauEffWeight,
-    # eleEffWeight = mc_eleEffWeight    
     ) 
 
 embed_Run2011B_PromptReco_v1 = cfg.EmbedComponent(
     name = 'embed_Run2011B_PromptReco_v1',
     files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     triggers = mc_triggers,
-    # tauEffWeight = mc_tauEffWeight,
-    # eleEffWeight = mc_eleEffWeight    
     ) 
 
 #########################################################################################
@@ -199,9 +217,6 @@ DYJets = cfg.MCComponent(
     xSection = 3048.,
     nGenEvents = 34915945,
     triggers = mc_triggers,
-    # vertexWeight = mc_vertexWeight,
-    # tauEffWeight = mc_tauEffWeight,
-    # eleEffWeight = mc_eleEffWeight,    
     effCorrFactor = mc_effCorrFactor )
 
 WJets = cfg.MCComponent(
@@ -210,9 +225,6 @@ WJets = cfg.MCComponent(
     xSection = 31314.,
     nGenEvents = 53227112,
     triggers = mc_triggers,
-    # vertexWeight = mc_vertexWeight,
-    # tauEffWeight = mc_tauEffWeight,
-    # eleEffWeight = mc_eleEffWeight,    
     effCorrFactor = mc_effCorrFactor )
 
 
@@ -222,9 +234,6 @@ TTJets = cfg.MCComponent(
     xSection = 165.8,
     nGenEvents = 3542770,
     triggers = mc_triggers,
-    # vertexWeight = mc_vertexWeight,
-    # tauEffWeight = mc_tauEffWeight,
-    # eleEffWeight = mc_eleEffWeight,    
     effCorrFactor = mc_effCorrFactor )
 
 
@@ -276,13 +285,13 @@ elif period == 'Period_2011AB':
 
 
 # selectedComponents = MC
-
-# selectedComponents = data_2011A
+# selectedComponents = data_2011B
 # selectedComponents.extend(data_2011B)
 # selectedComponents  = [ data_Run2011B_PromptReco_v1  ]
 # selectedComponents = [ DYJets ]
-
 # selectedComponents = [embed_Run2011A_May10ReReco_v1]
+
+# selectedComponents = [data_Run2011A_03Oct2011_v1]
 
 sequence = cfg.Sequence( [
     triggerAna,
