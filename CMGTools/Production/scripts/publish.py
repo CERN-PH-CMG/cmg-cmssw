@@ -137,25 +137,29 @@ If not entered, secure password prompt will appear.""",
         for line in lines:
             line = re.sub("\s+", " ", line)
             try:
+            	
                 dataset = line.split(" ")[0].rstrip(" ")
                 fileown = options.fileown
-                if not re.search("---", dataset):
-                	if len(line.rstrip(" ").lstrip(" ").split(" ")) ==1:
+                if re.search("%", line):
+            		fileown = split("%")[0].lstrip().rstrip()
+            		dataset = split("%")[1].split(" ")[0].lstrip().rstrip()
+                elif not re.search("---", dataset):
+                	if len(line.lstrip().rstrip().split(" ")) ==1:
                 		
-                		dataset = line.rstrip("\n").rstrip(" ")
+                		dataset = line.rstrip("\n").lstrip().rstrip()
                 		fileown = options.fileown
-                	if len(line.rstrip(" ").lstrip(" ").split(" ")) >1 and re.search("'",line) is None and re.search('"',line) is None:
-                		fileown = line.split(" ")[1].rstrip("\n")
+                	if len(line..lstrip().rstrip().split(" ")) >1 and re.search("'",line) is None and re.search('"',line) is None:
+                		fileown = line.split(" ")[1].rstrip("\n").lstrip().rstrip()
                 	elif re.search("'",line):
                 		preComment = line.split("'")[0]
-                		if len(preComment.rstrip(" ").split(" ")) == 2:
-                			fileown = preComment.rstrip(" ").split(" ")[1]
+                		if len(preComment.lstrip().rstrip().split(" ")) == 2:
+                			fileown = preComment.lstrip().rstrip().split(" ")[1]
                 		else:
                 			fileown = options.fileown
                 	elif re.search('"',line):
                 		preComment = line.split('"')[0]
-                		if len(preComment.rstrip(" ").split(" ")) == 2:
-                			fileown = preComment.rstrip(" ").split(" ")[1]
+                		if len(preComment.lstrip().rstrip().split(" ")) == 2:
+                			fileown = preComment.lstrip().rstrip().split(" ")[1]
                 		else:
                 			fileown = options.fileown
                 	else:
@@ -168,7 +172,7 @@ If not entered, secure password prompt will appear.""",
                 	comment = line.rstrip('"').split('"')[1]
                 	
                 publish(dataset,fileown,comment,options.test,dbsApi,options.username,password,options.force)
-            except Exception as err:
+            except NameError as err:
                 print err, "\nDataset not published"
     # For singular file input
     else:
