@@ -90,7 +90,8 @@ public:
         for(std::map<TString, TH1*>::iterator h =map->begin(); h!= map->end(); h++){
 	  if(!(h->second)){printf("histo = %30s %15s IS NULL",it->first.Data(), h->first.Data());continue;}
           //printf("histo = %30s tag = %15s Name = %s\n",it->first.Data(), h->first.Data(),  h->second->GetName());
-          h->second->Write();
+          if(h->first=="all"){h->second->Write(h->first+"_"+h->second->GetName());
+          }else{              h->second->Write();}
         }
      }
   
