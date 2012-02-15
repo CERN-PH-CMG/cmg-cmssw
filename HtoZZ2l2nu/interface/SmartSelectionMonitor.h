@@ -92,6 +92,12 @@ public:
   bool fill2DHisto(TString name, TString tag, double valx, double valy, double weight=1,bool useBinWidth=false);
   bool fillProfile(TString name, TString tag, double valx, double valy, double weight=1);
 
+  bool fillHisto  (TString name, std::vector<TString> tags, double val, double weight=1,bool useBinWidth=false);
+  bool fill2DHisto(TString name, std::vector<TString> tags, double valx, double valy, double weight=1,bool useBinWidth=false);
+  bool fillProfile(TString name, std::vector<TString> tags, double valx, double valy, double weight=1);
+
+
+
    //short inits the monitor plots for a new step
   void initMonitorForStep(TString tag);
   

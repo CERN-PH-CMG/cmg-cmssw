@@ -35,7 +35,7 @@
 using namespace std;
 int main(int argc, char* argv[])
 {
-  SmartSelectionMonitor controlHistos; //plot storage
+  SmartSelectionMonitor mon; //plot storage
 
   //start computers
   EventCategory eventClassifComp(true);
@@ -134,26 +134,26 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(6,"3^{rd}-lepton veto");
   h->GetXaxis()->SetBinLabel(7,"red-E_{T}^{miss}>medium");
   h->GetXaxis()->SetBinLabel(8,"red-E_{T}^{miss}>tight");
-  controlHistos.addHistogram( h );
+  mon.addHistogram( h );
 
   h=new TH1F ("eventCategory", ";Event Category;Events", 4,0,4);
   h->GetXaxis()->SetBinLabel(1,"=0 jets");
   h->GetXaxis()->SetBinLabel(2,"=1 jets");
   h->GetXaxis()->SetBinLabel(3,"#geq 2 jets");
   h->GetXaxis()->SetBinLabel(4,"VBF");
-  controlHistos.addHistogram( h );
+  mon.addHistogram( h );
 
   //vertex
-  controlHistos.addHistogram( new TH1F("nvtx",";Vertices;Events",25,0,25) );
-  controlHistos.addHistogram( new TH1F("nvtxPlus",";Vertices;Events",25,0,25) );
-  controlHistos.addHistogram( new TH1F("nvtxMinus",";Vertices;Events",25,0,25) );
+  mon.addHistogram( new TH1F("nvtx",";Vertices;Events",25,0,25) );
+  mon.addHistogram( new TH1F("nvtxPlus",";Vertices;Events",25,0,25) );
+  mon.addHistogram( new TH1F("nvtxMinus",";Vertices;Events",25,0,25) );
 
   //dilepton control 
-  controlHistos.addHistogram( new TH1F( "zeta", ";#eta^{ll};Events", 100,-5,5) );
-  controlHistos.addHistogram( new TH1F( "zpt", ";p_{T}^{ll};Events", 100,0,400) );
-  controlHistos.addHistogram( new TH1F("zrank",";Z hardness;Events",5,0,5) );
+  mon.addHistogram( new TH1F( "zeta", ";#eta^{ll};Events", 100,-5,5) );
+  mon.addHistogram( new TH1F( "zpt", ";p_{T}^{ll};Events", 100,0,400) );
+  mon.addHistogram( new TH1F("zrank",";Z hardness;Events",5,0,5) );
   h=(TH1F *) new TH1F( "zmass", ";M^{ll};Events", 100,91-31,91+31);
-  controlHistos.addHistogram( h );
+  mon.addHistogram( h );
   h=new TH1F ("zmassregionCtr", ";Selection region;Events", 18,0,18);
   h->GetXaxis()->SetBinLabel(1, "Z");
   h->GetXaxis()->SetBinLabel(2, "Z,b");
@@ -173,18 +173,18 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(16,"~Z,~b,=2l");
   h->GetXaxis()->SetBinLabel(17,"~Z,~b,=2l,medium");
   h->GetXaxis()->SetBinLabel(18,"~Z,~b,=2l,tight");
-  controlHistos.addHistogram( h );
+  mon.addHistogram( h );
 
-  controlHistos.addHistogram( new TH1F( "dphill", ";#Delta#phi(l^{(1)},l^{(2)});Events",100,-3.2,3.2) );
-  controlHistos.addHistogram( new TH1F( "drll",   ";#DeltaR(l^{(1)},l^{(2)}) / (0.1 rad);Events",20,0,6) );
-  controlHistos.addHistogram( new TH1F( "dphizleadl", ";#Delta#phi(l^{(1)},Z);Events / (0.1 rad)",15,0,1.5) );
-  controlHistos.addHistogram( new TH1F( "mindrlz", ";min #DeltaR(l,Z);Events",100,0,6) );
-  controlHistos.addHistogram( new TH1F( "maxdrlz", ";max #DeltaR(l,Z);Events",100,0,6) );
-  controlHistos.addHistogram( new TH1F( "ptsum", ";#Sigma p_{T}(l^{(i)});Events", 100,0,1000));
-  controlHistos.addHistogram( new TH1F( "mtsum", ";#Sigma M_{T}(l^{(i)},E_{T}^{miss});Events / 20 GeV/c^{2}", 50,0,1000) );
-  controlHistos.addHistogram( new TH1F( "mtl1", ";M_{T}(l^{(1)},E_{T}^{miss});Events", 100,0,1000) );
-  controlHistos.addHistogram( new TH1F( "mtl2", ";M_{T}(l^{(2)},E_{T}^{miss});Events", 100,0,1000) );
-  controlHistos.addHistogram( new TH1F( "mt"  , ";M_{T},E_{T}^{miss});Events", 100,0,1000) );
+  mon.addHistogram( new TH1F( "dphill", ";#Delta#phi(l^{(1)},l^{(2)});Events",100,-3.2,3.2) );
+  mon.addHistogram( new TH1F( "drll",   ";#DeltaR(l^{(1)},l^{(2)}) / (0.1 rad);Events",20,0,6) );
+  mon.addHistogram( new TH1F( "dphizleadl", ";#Delta#phi(l^{(1)},Z);Events / (0.1 rad)",15,0,1.5) );
+  mon.addHistogram( new TH1F( "mindrlz", ";min #DeltaR(l,Z);Events",100,0,6) );
+  mon.addHistogram( new TH1F( "maxdrlz", ";max #DeltaR(l,Z);Events",100,0,6) );
+  mon.addHistogram( new TH1F( "ptsum", ";#Sigma p_{T}(l^{(i)});Events", 100,0,1000));
+  mon.addHistogram( new TH1F( "mtsum", ";#Sigma M_{T}(l^{(i)},E_{T}^{miss});Events / 20 GeV/c^{2}", 50,0,1000) );
+  mon.addHistogram( new TH1F( "mtl1", ";M_{T}(l^{(1)},E_{T}^{miss});Events", 100,0,1000) );
+  mon.addHistogram( new TH1F( "mtl2", ";M_{T}(l^{(2)},E_{T}^{miss});Events", 100,0,1000) );
+  mon.addHistogram( new TH1F( "mt"  , ";M_{T},E_{T}^{miss});Events", 100,0,1000) );
 
 
   //object multiplicity
@@ -192,58 +192,61 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(1,"=2 leptons");
   h->GetXaxis()->SetBinLabel(2,"=3 leptons");
   h->GetXaxis()->SetBinLabel(3,"#geq 4 leptons");
-  controlHistos.addHistogram( h );
+  mon.addHistogram( h );
   
-  controlHistos.addHistogram(new TH1F("njets",";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5) );
-  controlHistos.addHistogram( new TH1F("njets3leptons",";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5) );
-  controlHistos.addHistogram( new TH2F ("njetsvspu", ";Pileup events;Jets;Events", 25,0,25,5,0,5) );  
-  controlHistos.addHistogram(  new TH2F ("njetsincvspu", ";Pileup events;Jets;Events", 25,0,25,5,0,5) );   
+  mon.addHistogram(new TH1F("njets",";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5) );
+  mon.addHistogram( new TH1F("njets3leptons",";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5) );
+  mon.addHistogram( new TH2F ("njetsvspu", ";Pileup events;Jets;Events", 25,0,25,5,0,5) );  
+  mon.addHistogram(  new TH2F ("njetsincvspu", ";Pileup events;Jets;Events", 25,0,25,5,0,5) );   
   for(size_t ibin=1; ibin<=5; ibin++){
       TString label("");
       if(ibin==5) label +="#geq";
       else        label +="=";
       label += (ibin-1);
-      controlHistos.getHisto("njets")->GetXaxis()->SetBinLabel(ibin,label);
-      controlHistos.getHisto("njets3leptons")->GetXaxis()->SetBinLabel(ibin,label);
-      controlHistos.getHisto("njetsvspu")->GetXaxis()->SetBinLabel(ibin,label);
-      controlHistos.getHisto("njetsincvspu")->GetXaxis()->SetBinLabel(ibin,label);
+      mon.getHisto("njets")->GetXaxis()->SetBinLabel(ibin,label);
+      mon.getHisto("njets3leptons")->GetXaxis()->SetBinLabel(ibin,label);
+      mon.getHisto("njetsvspu")->GetXaxis()->SetBinLabel(ibin,label);
+      mon.getHisto("njetsincvspu")->GetXaxis()->SetBinLabel(ibin,label);
   }
 
   h = new TH1F ("nbtags", ";b-tag multiplicity; Events", 3,0,3);  
   h->GetXaxis()->SetBinLabel(1,"0 b-tags");
   h->GetXaxis()->SetBinLabel(2,"1 b-tags");
   h->GetXaxis()->SetBinLabel(3,"#geq 2 b-tags");
-  controlHistos.addHistogram( h );
-  controlHistos.addHistogram( new TH1F ("nbtags3leptons", ";b-tag multiplicity; Events", 3,0,3) );
+  mon.addHistogram( h );
+  mon.addHistogram( new TH1F ("nbtags3leptons", ";b-tag multiplicity; Events", 3,0,3) );
 
   //used to optimize the b-veto
   h=new TH1F ("npassbveto", ";Pass b-tag veto; Events", 3,0,3);
   h->GetXaxis()->SetBinLabel(1,"TCHEL");
   h->GetXaxis()->SetBinLabel(2,"TCHE>2");
   h->GetXaxis()->SetBinLabel(3,"CSVL");
-  controlHistos.addHistogram( h );
+  mon.addHistogram( h );
+
+  mon.addHistogram( new TH1F ("vbftagvspu", ";#generated vertices", 25, 0,25) );                                                                                                                                                   
+  mon.addHistogram( new TH1F ("vbftotalvspu", ";#generated vertices", 25, 0,25) );                        
 
   //used for GenLevel
-  controlHistos.addHistogram( new TH1F( "genHiggsPt"  , ";gen Higgs p_{T};Events",100,0,200) );
-  controlHistos.addHistogram( new TH1F( "genHiggsMass", ";gen Higgs Mass ;Events",100,0,600) );
-  controlHistos.addHistogram( new TH1F( "genHiggsMassRaw", ";gen Higgs Mass Before VBF reweighting;Events",100,0,600) );
-  controlHistos.addHistogram( new TH1F( "genzllPt"  , ";gen Zll p_{T};Events",100,0,200) );
-  controlHistos.addHistogram( new TH1F( "genzvvPt"  , ";gen Zvv p_{T};Events",100,0,200) );
-  controlHistos.addHistogram( new TH1F( "genzwinHiggsPt"  , ";gen Higgs p_{T};Events",100,0,200) );
-  controlHistos.addHistogram( new TH1F( "genzwinHiggsMass", ";gen Higgs Mass ;Events",100,0,600) );
-  controlHistos.addHistogram( new TH1F( "genzwinHiggsMassRaw", ";gen Higgs Mass Before VBF reweighting;Events",100,0,600) );
-  controlHistos.addHistogram( new TH1F( "genzwinzllPt"  , ";gen Zll p_{T};Events",100,0,200) );
-  controlHistos.addHistogram( new TH1F( "genzwinzvvPt"  , ";gen Zvv p_{T};Events",100,0,200) );
+  mon.addHistogram( new TH1F( "genHiggsPt"  , ";gen Higgs p_{T};Events",100,0,200) );
+  mon.addHistogram( new TH1F( "genHiggsMass", ";gen Higgs Mass ;Events",100,0,600) );
+  mon.addHistogram( new TH1F( "genHiggsMassRaw", ";gen Higgs Mass Before VBF reweighting;Events",100,0,600) );
+  mon.addHistogram( new TH1F( "genzllPt"  , ";gen Zll p_{T};Events",100,0,200) );
+  mon.addHistogram( new TH1F( "genzvvPt"  , ";gen Zvv p_{T};Events",100,0,200) );
+  mon.addHistogram( new TH1F( "genzwinHiggsPt"  , ";gen Higgs p_{T};Events",100,0,200) );
+  mon.addHistogram( new TH1F( "genzwinHiggsMass", ";gen Higgs Mass ;Events",100,0,600) );
+  mon.addHistogram( new TH1F( "genzwinHiggsMassRaw", ";gen Higgs Mass Before VBF reweighting;Events",100,0,600) );
+  mon.addHistogram( new TH1F( "genzwinzllPt"  , ";gen Zll p_{T};Events",100,0,200) );
+  mon.addHistogram( new TH1F( "genzwinzvvPt"  , ";gen Zvv p_{T};Events",100,0,200) );
 
-  controlHistos.addHistogram( new TH1F( "CMzllP"  , ";CM Zll p};Events",100,0,200) );
-  controlHistos.addHistogram( new TH1F( "CMzvvP"  , ";CM Zvv p};Events",100,0,200) );
-  controlHistos.addHistogram( new TH1F( "CMDeltazP"  , ";CM Zll p - Zvv p;Events",200,-200,200) );
-  controlHistos.addHistogram( new TH1F( "CMiMass"  , ";CM Zll p - Zvv p;Events",100,0,600) );
+  mon.addHistogram( new TH1F( "CMzllP"  , ";CM Zll p};Events",100,0,200) );
+  mon.addHistogram( new TH1F( "CMzvvP"  , ";CM Zvv p};Events",100,0,200) );
+  mon.addHistogram( new TH1F( "CMDeltazP"  , ";CM Zll p - Zvv p;Events",200,-200,200) );
+  mon.addHistogram( new TH1F( "CMiMass"  , ";CM Zll p - Zvv p;Events",100,0,600) );
 
-  controlHistos.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",100,0,3.4) );
-  controlHistos.addHistogram( new TH1F( "minmtjmet", ";min M_{T}(jet,E_{T}^{miss}) [GeV/c^{2}];Events",100,0,250) );
-  controlHistos.addHistogram( new TH1F( "mindrjz", ";min #DeltaR(jet,Z);Events",100,0,6) );
-  controlHistos.addHistogram( new TH1F( "minmjz", ";min M(jet,Z) [GeV/c^{2}];Events",100,0,500) );
+  mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",100,0,3.4) );
+  mon.addHistogram( new TH1F( "minmtjmet", ";min M_{T}(jet,E_{T}^{miss}) [GeV/c^{2}];Events",100,0,250) );
+  mon.addHistogram( new TH1F( "mindrjz", ";min #DeltaR(jet,Z);Events",100,0,6) );
+  mon.addHistogram( new TH1F( "minmjz", ";min M(jet,Z) [GeV/c^{2}];Events",100,0,500) );
 
   //met control
   std::map<TString,TString> metTypes;
@@ -269,114 +272,112 @@ int main(int argc, char* argv[])
 
 
   metTypes["met"]                 = "E_{T}^{miss}";
-  //metTypes["centralMet"]          = "central-E_{T}^{miss}";
+  metTypes["centralMet"]          = "central-E_{T}^{miss}";
   metTypes["assocChargedMet"]     = "assoc-E_{T}^{miss}(charged)";
   metTypes["assocMet"]            = "assoc-E_{T}^{miss}";
-  // metTypes["assocCMet"]           = "assocC-E_{T}^{miss}";
-  //  metTypes["assocFwdCMet"]        = "assoc + clust Fwd E_{T}^{miss}";
-  //  metTypes["assocFwdMet"]         = "assoc + Fwd E_{T}^{miss}";
-  // metTypes["assocFwd2Met"]        = "assoc + Fwd2 E_{T}^{miss}";
+  metTypes["assocCMet"]           = "assocC-E_{T}^{miss}";
+  metTypes["assocFwdCMet"]        = "assoc + clust Fwd E_{T}^{miss}";
+  metTypes["assocFwdMet"]         = "assoc + Fwd E_{T}^{miss}";
+  metTypes["assocFwd2Met"]        = "assoc + Fwd2 E_{T}^{miss}";
   metTypes["clusteredMet"]        = "clustered-E_{T}^{miss}";
-  // metTypes["minAssocChargedMet"]  = "min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))";
-  // metTypes["minAssocMet"]         = "min(E_{T}^{miss},assoc-E_{T}^{miss})";
-  // metTypes["minClusteredMet"]     = "min(E_{T}^{miss},clustered-E_{T}^{miss})";
- //  metTypes["minTAssocMet"]       = "min(assoc-E_{T}^{miss}(charged),assoc-E_{T}^{miss})";
-//   metTypes["minTClusteredMet"]   = "min(assoc-E_{T}^{miss}(charged),clustered-E_{T}^{miss})";
-//   metTypes["minAClusteredMet"]    = "min(assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
-//   metTypes["min3Met"]             = "min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
-//   metTypes["min4Met"]             = "min(E_{T}^{miss},assoc-E_{T}^{miss}(charged),assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
+  metTypes["minAssocChargedMet"]  = "min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))";
+  metTypes["minAssocMet"]         = "min(E_{T}^{miss},assoc-E_{T}^{miss})";
+  metTypes["minClusteredMet"]     = "min(E_{T}^{miss},clustered-E_{T}^{miss})";
+  metTypes["minTAssocMet"]        = "min(assoc-E_{T}^{miss}(charged),assoc-E_{T}^{miss})";
+  metTypes["minTClusteredMet"]    = "min(assoc-E_{T}^{miss}(charged),clustered-E_{T}^{miss})";
+  metTypes["minAClusteredMet"]    = "min(assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
+  metTypes["min3Met"]             = "min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
+  metTypes["min4Met"]             = "min(E_{T}^{miss},assoc-E_{T}^{miss}(charged),assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
   metTypes["redMet"]              = "red(E_{T}^{miss},clustered-E_{T}^{miss})";
   metTypes["redMetD0"]            = "red-E_{T}^{miss}(D0)";
-//   metTypes["redAssocChargedMet"]  = "red(E_{T}^{miss},assoc-E_{T}^{miss}(charged))";
-//   metTypes["redAssocMet"]         = "red(E_{T}^{miss},assoc-E_{T}^{miss})";
-//   metTypes["redClusteredMet"]     = "red(E_{T}^{miss},clustered-E_{T}^{miss})";
-//   metTypes["redTAssocMet"]        = "red(assoc-E_{T}^{miss}(charged),assoc-E_{T}^{miss})";
-//   metTypes["redTClusteredMet"]    = "red(assoc-E_{T}^{miss}(charged),clustered-E_{T}^{miss})";
-//   metTypes["redAClusteredMet"]    = "red(assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
-//   metTypes["red3Met"]             = "red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
-//   metTypes["redminAssocMet"]      = "red(min(E_{T}^{miss},assoc-E_{T}^{miss}),clustered E_{T}^{miss})";
-//   metTypes["mincentralAssocMet"]         = "min(cental-E_{T}^{miss},assoc-E_{T}^{miss})";
+  metTypes["redAssocChargedMet"]  = "red(E_{T}^{miss},assoc-E_{T}^{miss}(charged))";
+  metTypes["redAssocMet"]         = "red(E_{T}^{miss},assoc-E_{T}^{miss})";
+  metTypes["redClusteredMet"]     = "red(E_{T}^{miss},clustered-E_{T}^{miss})";
+  metTypes["redTAssocMet"]        = "red(assoc-E_{T}^{miss}(charged),assoc-E_{T}^{miss})";
+  metTypes["redTClusteredMet"]    = "red(assoc-E_{T}^{miss}(charged),clustered-E_{T}^{miss})";
+  metTypes["redAClusteredMet"]    = "red(assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
+  metTypes["red3Met"]             = "red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})";
+  metTypes["redminAssocMet"]      = "red(min(E_{T}^{miss},assoc-E_{T}^{miss}),clustered E_{T}^{miss})";
+  metTypes["mincentralAssocMet"]  = "min(cental-E_{T}^{miss},assoc-E_{T}^{miss})";
 
 
   std::map<TString,LorentzVector> metTypeValues;
   for(std::map<TString,TString>::iterator it = metTypes.begin(); it!= metTypes.end(); it++){
       metTypeValues[it->first]=LorentzVector(0,0,0,0);
-      controlHistos.addHistogram( new TH1F( TString("met_") + it->first, ";"+it->second+";Events", 100,0,500) );
-      controlHistos.addHistogram( new TH1F( TString("metinc_") + it->first, ";"+it->second+";Events", 100,0,500) );
-      controlHistos.addHistogram( new TH1F( TString("metL_") + it->first, ";"+it->second+";Events", 100,-250,250) );
-      controlHistos.addHistogram( new TH1F( TString("metT_") + it->first, ";"+it->second+";Events", 100,-250,250) );
-      controlHistos.addHistogram( new TH1F( TString("metoverqt_") + it->first, ";"+it->second+";Events", 100,0,5) );
-      controlHistos.addHistogram( new TH1F( TString("metoverqtL_") + it->first, ";"+it->second+";Events", 100,-5,5) );
-      controlHistos.addHistogram( new TH1F( TString("metoverqtT_") + it->first, ";"+it->second+";Events", 100,-5,5) );
+      mon.addHistogram( new TH1F( TString("met_") + it->first, ";"+it->second+";Events", 100,0,500) );
+      mon.addHistogram( new TH1F( TString("metinc_") + it->first, ";"+it->second+";Events", 100,0,500) );
+      mon.addHistogram( new TH1F( TString("metL_") + it->first, ";"+it->second+";Events", 100,-250,250) );
+      mon.addHistogram( new TH1F( TString("metT_") + it->first, ";"+it->second+";Events", 100,-250,250) );
+      mon.addHistogram( new TH1F( TString("metoverqt_") + it->first, ";"+it->second+";Events", 100,0,5) );
+      mon.addHistogram( new TH1F( TString("metoverqtL_") + it->first, ";"+it->second+";Events", 100,-5,5) );
+      mon.addHistogram( new TH1F( TString("metoverqtT_") + it->first, ";"+it->second+";Events", 100,-5,5) );
 
-      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"vspu", ";Pileup events;"+it->second+";Events", 25,0,25,200,0,500) );
-//      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"phimetphijet", ";#phi "+it->second+";#phi jet", 10,0,3.15,10,0,3.15) );
-      controlHistos.addHistogram( new TH1F( TString("met_") + it->first+"mindphijmet", ";min #Delta#phi(jet,"+it->second+");Events",10,0,3.15) );
-//      controlHistos.addHistogram( new TH1F( TString("metL_") + it->first, ";Long: "+it->second+";Events", 160,-300,500) );
-//      controlHistos.addHistogram( new TH2F( TString("metL_") + it->first+"vspu", ";Pileup events;Long: "+it->second+";Events", 25,0,25,160,-300,500) );  
-//      controlHistos.addHistogram( new TH1F( TString("metT_") + it->first, ";Trans: "+it->second+";Events", 160,-300,500) );
-//      controlHistos.addHistogram( new TH2F( TString("metT_") + it->first+"vspu", ";Pileup events;Trans :"+it->second+";Events", 25,0,25,160,-300,500) );
-//      controlHistos.addHistogram( new TH2F( TString("metLT_") + it->first, ";Long: " +it->second+";Trans: " + it->second, 160,-300,500,160,-300,500) );
-//      controlHistos.addHistogram( new TH2F( TString("met_") + it->first + "zpt", ";" +it->second+"; z p_{T}", 40,0,200,40,0,200) );
-//      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "minzpt", ";min(z p_{T}, "  +it->second+");Events", 100,0,500) );
-//      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "geq080zpt", ";"+it->second+">0.8 z p_{T};Events", 100,0,500) );
-//      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"geq080zptvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
-      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "geq060zpt", ";"+it->second+">0.6 z p_{T};Events", 100,0,500) );
-      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"geq060zptvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
-//      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "geq040zpt", ";"+it->second+">0.4 z p_{T};Events", 100,0,500) );
-//      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"geq040zptvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+      mon.addHistogram( new TH2F( TString("met_") + it->first+"vspu", ";Pileup events;"+it->second+";Events", 25,0,25,200,0,500) );
+//      mon.addHistogram( new TH2F( TString("met_") + it->first+"phimetphijet", ";#phi "+it->second+";#phi jet", 10,0,3.15,10,0,3.15) );
+      mon.addHistogram( new TH1F( TString("met_") + it->first+"mindphijmet", ";min #Delta#phi(jet,"+it->second+");Events",10,0,3.15) );
+//      mon.addHistogram( new TH1F( TString("metL_") + it->first, ";Long: "+it->second+";Events", 160,-300,500) );
+//      mon.addHistogram( new TH2F( TString("metL_") + it->first+"vspu", ";Pileup events;Long: "+it->second+";Events", 25,0,25,160,-300,500) );  
+//      mon.addHistogram( new TH1F( TString("metT_") + it->first, ";Trans: "+it->second+";Events", 160,-300,500) );
+//      mon.addHistogram( new TH2F( TString("metT_") + it->first+"vspu", ";Pileup events;Trans :"+it->second+";Events", 25,0,25,160,-300,500) );
+//      mon.addHistogram( new TH2F( TString("metLT_") + it->first, ";Long: " +it->second+";Trans: " + it->second, 160,-300,500,160,-300,500) );
+//      mon.addHistogram( new TH2F( TString("met_") + it->first + "zpt", ";" +it->second+"; z p_{T}", 40,0,200,40,0,200) );
+//      mon.addHistogram( new TH1F( TString("met_") + it->first + "minzpt", ";min(z p_{T}, "  +it->second+");Events", 100,0,500) );
+//      mon.addHistogram( new TH1F( TString("met_") + it->first + "geq080zpt", ";"+it->second+">0.8 z p_{T};Events", 100,0,500) );
+//      mon.addHistogram( new TH2F( TString("met_") + it->first+"geq080zptvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+      mon.addHistogram( new TH1F( TString("met_") + it->first + "geq060zpt", ";"+it->second+">0.6 z p_{T};Events", 100,0,500) );
+      mon.addHistogram( new TH2F( TString("met_") + it->first+"geq060zptvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+//      mon.addHistogram( new TH1F( TString("met_") + it->first + "geq040zpt", ";"+it->second+">0.4 z p_{T};Events", 100,0,500) );
+//      mon.addHistogram( new TH2F( TString("met_") + it->first+"geq040zptvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
 
-//      controlHistos.addHistogram( new TH2F( TString("met_") + it->first + "pfmet", ";" +it->second+"; pfmet", 40,0,200,40,0,200) );
-//      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "leq120pfmet", ";"+it->second+"<1.2 pfmet;Events", 100,0,500) );
-//      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"leq120pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
-//      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "leq140pfmet", ";"+it->second+"<1.4 pfmet;Events", 100,0,500) );
-//      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"leq140pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
-//      controlHistos.addHistogram( new TH1F( TString("met_") + it->first + "leq160pfmet", ";"+it->second+"<1.6 z pfmet;Events", 100,0,500) );
-//      controlHistos.addHistogram( new TH2F( TString("met_") + it->first+"leq160pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+//      mon.addHistogram( new TH2F( TString("met_") + it->first + "pfmet", ";" +it->second+"; pfmet", 40,0,200,40,0,200) );
+//      mon.addHistogram( new TH1F( TString("met_") + it->first + "leq120pfmet", ";"+it->second+"<1.2 pfmet;Events", 100,0,500) );
+//      mon.addHistogram( new TH2F( TString("met_") + it->first+"leq120pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+//      mon.addHistogram( new TH1F( TString("met_") + it->first + "leq140pfmet", ";"+it->second+"<1.4 pfmet;Events", 100,0,500) );
+//      mon.addHistogram( new TH2F( TString("met_") + it->first+"leq140pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
+//      mon.addHistogram( new TH1F( TString("met_") + it->first + "leq160pfmet", ";"+it->second+"<1.6 z pfmet;Events", 100,0,500) );
+//      mon.addHistogram( new TH2F( TString("met_") + it->first+"leq160pfmetvspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
     }
-  controlHistos.addHistogram( new TH2F ("itpuvsootpu", ";In-Time Pileup; Out-of-time Pileup;Events", 30,0,30,30,0,30) );
-  controlHistos.addHistogram( new TH2F ("redMetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 50, -251.,249,50, -251.,249.) );
-  controlHistos.addHistogram( new TH1F( "redMetL", ";red-E_{T}^{miss,#parallel};Events", 100,-250,250) );
-  controlHistos.addHistogram( new TH1F( "redMetT", ";red-E_{T}^{miss,#perp};Events", 100,-250,250) );
-  controlHistos.addHistogram( new TH2F ("metvstkmet", ";E_{T}^{miss};assoc-E_{T}^{miss}(charged)", 50,0,500,50,0,500) );  
-  controlHistos.addHistogram( new TH2F ("metvsassoc", ";E_{T}^{miss};assoc-E_{T}^{miss}", 50,0,500,50,0,500) );  
-  controlHistos.addHistogram( new TH2F ("metvsclustered", ";E_{T}^{miss};clustered-E_{T}^{miss}", 50,0,500,50,0,500) );    
-  controlHistos.addHistogram( new TH2F ("metvscentralMet", ";E_{T}^{miss};central-E_{T}^{miss}", 50,0,500,50,0,500) );  
-  controlHistos.addHistogram( new TH2F ("centralMetvsassocMet", ";central-E_{T}^{miss};assoc-E_{T}^{miss}", 50,0,500,50,0,500) );
-
-
+  mon.addHistogram( new TH2F ("itpuvsootpu", ";In-Time Pileup; Out-of-time Pileup;Events", 30,0,30,30,0,30) );
+  mon.addHistogram( new TH2F ("redMetcomps", ";red-E_{T}^{miss,#parallel};red-E_{T}^{miss,#perp};Events", 50, -251.,249,50, -251.,249.) );
+  mon.addHistogram( new TH1F( "redMetL", ";red-E_{T}^{miss,#parallel};Events", 100,-250,250) );
+  mon.addHistogram( new TH1F( "redMetT", ";red-E_{T}^{miss,#perp};Events", 100,-250,250) );
+  mon.addHistogram( new TH2F ("metvstkmet", ";E_{T}^{miss};assoc-E_{T}^{miss}(charged)", 50,0,500,50,0,500) );  
+  mon.addHistogram( new TH2F ("metvsassoc", ";E_{T}^{miss};assoc-E_{T}^{miss}", 50,0,500,50,0,500) );  
+  mon.addHistogram( new TH2F ("metvsclustered", ";E_{T}^{miss};clustered-E_{T}^{miss}", 50,0,500,50,0,500) );    
+  mon.addHistogram( new TH2F ("metvscentralMet", ";E_{T}^{miss};central-E_{T}^{miss}", 50,0,500,50,0,500) );  
+  mon.addHistogram( new TH2F ("centralMetvsassocMet", ";central-E_{T}^{miss};assoc-E_{T}^{miss}", 50,0,500,50,0,500) );
 
   
-  controlHistos.addHistogram( new TH1F("sumEt",                    ";#Sigma E_{T} [GeV];Events", 100,0,2000) );
-  controlHistos.addHistogram( new TH1F("chSumEt",                    ";#Sigma E_{T}^{charged} [GeV];Events", 100,0,1000) );
-  controlHistos.addHistogram( new TH1F("neutSumEt",                    ";#Sigma E_{T}^{neutral} [GeV];Events", 100,0,1000) );
-  controlHistos.addHistogram( new TH1F("primVertexSumEt",          ";Primary Vertex : #Sigma E_{T} [GeV];Events", 100,0,1000) );
-  controlHistos.addHistogram( new TH1F("otherVertexSumEt",         ";Other Vertices : #Sigma_{vtx} #Sigma E_{T} [GeV];Events", 100,0,1000) );
-  controlHistos.addHistogram( new TH1F("chSumEtFrac",              ";#Sigma E_{T}^{charged}/#Sigma E_{T};Events", 100,0,1.) );
-  controlHistos.addHistogram( new TH1F("neutSumEtFrac",            ";#Sigma E_{T}^{neutral}/#Sigma E_{T};Events", 100,0,1.) );
+  mon.addHistogram( new TH1F("sumEt",                    ";#Sigma E_{T} [GeV];Events", 100,0,2000) );
+  mon.addHistogram( new TH1F("chSumEt",                    ";#Sigma E_{T}^{charged} [GeV];Events", 100,0,1000) );
+  mon.addHistogram( new TH1F("neutSumEt",                    ";#Sigma E_{T}^{neutral} [GeV];Events", 100,0,1000) );
+  mon.addHistogram( new TH1F("primVertexSumEt",          ";Primary Vertex : #Sigma E_{T} [GeV];Events", 100,0,1000) );
+  mon.addHistogram( new TH1F("otherVertexSumEt",         ";Other Vertices : #Sigma_{vtx} #Sigma E_{T} [GeV];Events", 100,0,1000) );
+  mon.addHistogram( new TH1F("chSumEtFrac",              ";#Sigma E_{T}^{charged}/#Sigma E_{T};Events", 100,0,1.) );
+  mon.addHistogram( new TH1F("neutSumEtFrac",            ";#Sigma E_{T}^{neutral}/#Sigma E_{T};Events", 100,0,1.) );
 
   TString ootConds[]={"LowOOTpu","MediumOOTpu","HighOOTpu","VeryHighOOTpu"};
   for(size_t i=0; i<sizeof(ootConds)/sizeof(TString); i++){
-      controlHistos.addHistogram( new TH1F("sumEt"+ootConds[i],           ";#Sigma E_{T} [GeV];Events", 100,0,2000) );
-      controlHistos.addHistogram( new TH1F("neutSumEtFrac"+ootConds[i],   ";#Sigma E_{T}^{neutral}/#Sigma E_{T};Events", 100,0,1.) );
+      mon.addHistogram( new TH1F("sumEt"+ootConds[i],           ";#Sigma E_{T} [GeV];Events", 100,0,2000) );
+      mon.addHistogram( new TH1F("neutSumEtFrac"+ootConds[i],   ";#Sigma E_{T}^{neutral}/#Sigma E_{T};Events", 100,0,1.) );
   }
 
-  controlHistos.addHistogram( new TH1F("centralSumEtFrac",         ";#Sigma E_{T}(|#eta|<2.4)/#Sigma E_{T};Events", 100,0,1.) );
-  controlHistos.addHistogram( new TH1F("centralChSumEtFrac",       ";#Sigma E_{T}^{charged}(|#eta|<2.4)/#Sigma E_{T};Events", 100,0,1.) );
-  controlHistos.addHistogram( new TH1F("centralNeutSumEtFrac",     ";#Sigma E_{T}^{neutral}(|#eta|<2.4)/#Sigma E_{T};Events", 100,0,1.) );
-  controlHistos.addHistogram( new TH1F("chPrimVertexSumEtFrac",    ";#Sigma E_{T}^{charged}(PV)/#Sigma E_{T};Events", 100,0,1.) );
-  controlHistos.addHistogram( new TH1F("neutPrimVertexSumEtFrac",  ";#Sigma E_{T}^{neutral}(PV)/#Sigma E_{T};Events", 100,0,1.) );
-  controlHistos.addHistogram( new TH1F("chOtherVertexSumEtFrac",   ";#Sigma_{oth.vtx} #Sigma E_{T}^{charged}/#Sigma E_{T};Events", 100,0,1.) );
-  controlHistos.addHistogram( new TH1F("neutOtherVertexSumEtFrac", ";#Sigma_{oth.vtx} #Sigma E_{T}^{neutral}/#Sigma E_{T};Events", 100,0,1.) );
+  mon.addHistogram( new TH1F("centralSumEtFrac",         ";#Sigma E_{T}(|#eta|<2.4)/#Sigma E_{T};Events", 100,0,1.) );
+  mon.addHistogram( new TH1F("centralChSumEtFrac",       ";#Sigma E_{T}^{charged}(|#eta|<2.4)/#Sigma E_{T};Events", 100,0,1.) );
+  mon.addHistogram( new TH1F("centralNeutSumEtFrac",     ";#Sigma E_{T}^{neutral}(|#eta|<2.4)/#Sigma E_{T};Events", 100,0,1.) );
+  mon.addHistogram( new TH1F("chPrimVertexSumEtFrac",    ";#Sigma E_{T}^{charged}(PV)/#Sigma E_{T};Events", 100,0,1.) );
+  mon.addHistogram( new TH1F("neutPrimVertexSumEtFrac",  ";#Sigma E_{T}^{neutral}(PV)/#Sigma E_{T};Events", 100,0,1.) );
+  mon.addHistogram( new TH1F("chOtherVertexSumEtFrac",   ";#Sigma_{oth.vtx} #Sigma E_{T}^{charged}/#Sigma E_{T};Events", 100,0,1.) );
+  mon.addHistogram( new TH1F("neutOtherVertexSumEtFrac", ";#Sigma_{oth.vtx} #Sigma E_{T}^{neutral}/#Sigma E_{T};Events", 100,0,1.) );
 
   //cut optimization plots
-  controlHistos.addHistogram( new TH1F ("cutOptMediumdphill", ";#delta #phi^{l,l};#red-E_{T}^{miss,#parallel};",25,0.,3.2) );
-  controlHistos.addHistogram( new TH2F ("cutOptMediumsummtvsredMetL", ";#Sigma M_{T};#red-E_{T}^{miss,#parallel};",50,0,2000,25, -251.,249) );
+  mon.addHistogram( new TH1F ("cutOptMediumdphill", ";#delta #phi^{l,l};#red-E_{T}^{miss,#parallel};",25,0.,3.2) );
+  mon.addHistogram( new TH2F ("cutOptMediumsummtvsredMetL", ";#Sigma M_{T};#red-E_{T}^{miss,#parallel};",50,0,2000,25, -251.,249) );
   
   //cut and count
-  controlHistos.addHistogram( new TH1F("btag0proj",   ";Events with 0 b-tags;Events", 1,0,1) );
-  controlHistos.addHistogram( new TH1F("btag0projup",   ";Events with 0 b-tags (+);Events", 1,0,1) );
-  controlHistos.addHistogram( new TH1F("btag0projdown",   ";Events with 0 b-tags (-);Events", 1,0,1) );
+  mon.addHistogram( new TH1F("btag0proj",   ";Events with 0 b-tags;Events", 1,0,1) );
+  mon.addHistogram( new TH1F("btag0projup",   ";Events with 0 b-tags (+);Events", 1,0,1) );
+  mon.addHistogram( new TH1F("btag0projdown",   ";Events with 0 b-tags (-);Events", 1,0,1) );
   std::vector<TString> varsToInclude;
   varsToInclude.push_back("");
   if(runSystematics){
@@ -403,7 +404,7 @@ int main(int argc, char* argv[])
     hmet->GetXaxis()->SetBinLabel(8,"m=600");
     hmet->GetXaxis()->SetBinLabel(9,"syst1");
     hmet->GetXaxis()->SetBinLabel(10,"syst2");
-    controlHistos.addHistogram( hmet );
+    mon.addHistogram( hmet );
 
     TH1 *hrmet = new TH1F (varsToInclude[ivar]+"finaleventflowrmet",";Category;Event count;",10,0,10);
     hrmet->GetXaxis()->SetBinLabel(1,"m=130");
@@ -416,7 +417,7 @@ int main(int argc, char* argv[])
     hrmet->GetXaxis()->SetBinLabel(8,"m=600");
     hrmet->GetXaxis()->SetBinLabel(9,"syst1");
     hrmet->GetXaxis()->SetBinLabel(10,"syst2");
-    controlHistos.addHistogram( hrmet );
+    mon.addHistogram( hrmet );
     
     TH1 *hvbf = new TH1F (varsToInclude[ivar]+"finaleventflowvbf",";Category;Event count;",10,0,10);
     hvbf->GetXaxis()->SetBinLabel(1,"MET>50");
@@ -429,7 +430,7 @@ int main(int argc, char* argv[])
     hvbf->GetXaxis()->SetBinLabel(8,"red-MET>65");
     hvbf->GetXaxis()->SetBinLabel(9,"syst1");
     hvbf->GetXaxis()->SetBinLabel(10,"syst2");
-    controlHistos.addHistogram( hvbf );
+    mon.addHistogram( hvbf );
   }
 
   //optimization
@@ -454,11 +455,11 @@ int main(int argc, char* argv[])
      }
   }
 
-  controlHistos.addHistogram ( new TH1F ("optim_eventflow1"  , ";cut index;yields" ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) );
-  TH1F* Hoptim_cuts1_met     =  new TH1F ("optim_cut1_met"    , ";cut index;met"    ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ;
-  TH1F* Hoptim_cuts1_mindphi =  new TH1F ("optim_cut1_mindphi", ";cut index;mindphi",optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ;
-  TH1F* Hoptim_cuts1_mtmin   =  new TH1F ("optim_cut1_mtmin"  , ";cut index;mtmin"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ;
-  TH1F* Hoptim_cuts1_mtmax   =  new TH1F ("optim_cut1_mtmax"  , ";cut index;mtmax"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ;
+  mon.addHistogram ( new TH1F ("optim_eventflow1"  , ";cut index;yields" ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) );
+  TH1F* Hoptim_cuts1_met     =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_met"    , ";cut index;met"    ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
+  TH1F* Hoptim_cuts1_mindphi =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mindphi", ";cut index;mindphi",optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
+  TH1F* Hoptim_cuts1_mtmin   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmin"  , ";cut index;mtmin"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
+  TH1F* Hoptim_cuts1_mtmax   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmax"  , ";cut index;mtmax"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
   for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
     Hoptim_cuts1_met    ->Fill(index, optim_Cuts1_met[index]);    
     Hoptim_cuts1_mindphi->Fill(index, optim_Cuts1_mindphi[index]);
@@ -485,11 +486,11 @@ int main(int argc, char* argv[])
      }
   }
 
-  controlHistos.addHistogram ( new TH1F ("optim_eventflow2"  , ";cut index;yields" ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) );
-  TH1F* Hoptim_cuts2_met     =  new TH1F ("optim_cut2_met"    , ";cut index;met"    ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ;
-  TH1F* Hoptim_cuts2_mindphi =  new TH1F ("optim_cut2_mindphi", ";cut index;mindphi",optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ;
-  TH1F* Hoptim_cuts2_mtmin   =  new TH1F ("optim_cut2_mtmin"  , ";cut index;mtmin"  ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ;
-  TH1F* Hoptim_cuts2_mtmax   =  new TH1F ("optim_cut2_mtmax"  , ";cut index;mtmax"  ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ;
+  mon.addHistogram ( new TH1F ("optim_eventflow2"  , ";cut index;yields" ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) );
+  TH1F* Hoptim_cuts2_met     =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_met"    , ";cut index;met"    ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
+  TH1F* Hoptim_cuts2_mindphi =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_mindphi", ";cut index;mindphi",optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
+  TH1F* Hoptim_cuts2_mtmin   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_mtmin"  , ";cut index;mtmin"  ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
+  TH1F* Hoptim_cuts2_mtmax   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_mtmax"  , ";cut index;mtmax"  ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
   for(unsigned int index=0;index<optim_Cuts2_met.size();index++){
     Hoptim_cuts2_met    ->Fill(index, optim_Cuts2_met[index]);
     Hoptim_cuts2_mindphi->Fill(index, optim_Cuts2_mindphi[index]);
@@ -497,8 +498,33 @@ int main(int argc, char* argv[])
     Hoptim_cuts2_mtmax  ->Fill(index, optim_Cuts2_mtmax[index]);
   }
 
+
+  std::vector<double> optim_Cuts3_pt;                                                                                                                                                                                                        
+  std::vector<double> optim_Cuts3_deta;                                                                                                                                                                                                      
+  std::vector<double> optim_Cuts3_imass;                                                                                                                                                                                                     
+  for(double pt=20;pt<50;pt+=5.0){                                                                                                                                                                                                           
+     for(double deta=2.0;deta<5.0;deta+=0.5){                                                                                                                                                                                                
+        for(double imass=200;imass<600;imass+=50){                                                                                                                                                                                           
+              optim_Cuts3_pt   .push_back(pt);                                                                                                                                                                                               
+              optim_Cuts3_deta .push_back(deta);                                                                                                                                                                                             
+              optim_Cuts3_imass.push_back(imass);                                                                                                                                                                                            
+        }                                                                                                                                                                                                                                    
+     }                                                                                                                                                                                                                                       
+  }               
+
+  mon.addHistogram ( new TH1F ("optim_eventflow3"  , ";cut index;yields" ,optim_Cuts3_pt.size(),0,optim_Cuts3_pt.size()) );                                                                                                        
+  TH1F* Hoptim_cuts3_pt     = (TH1F*) mon.addHistogram( new TH1F ("optim_cut3_pt"     , ";cut index;pt"     ,optim_Cuts3_pt.size(),0,optim_Cuts3_pt.size()) );
+  TH1F* Hoptim_cuts3_deta   = (TH1F*) mon.addHistogram(  new TH1F ("optim_cut3_deta",    ";cut index;deta"   ,optim_Cuts3_pt.size(),0,optim_Cuts3_pt.size()) );
+  TH1F* Hoptim_cuts3_imass  = (TH1F*) mon.addHistogram(  new TH1F ("optim_cut3_imass"  , ";cut index;imass"  ,optim_Cuts3_pt.size(),0,optim_Cuts3_pt.size()) ) ;
+  for(unsigned int index=0;index<optim_Cuts3_pt.size();index++){                                                                                                                                                                             
+    Hoptim_cuts3_pt    ->Fill(index, optim_Cuts3_pt   [index]);                                                                                                                                                                              
+    Hoptim_cuts3_deta  ->Fill(index, optim_Cuts3_deta [index]);                                                                                                                                                                              
+    Hoptim_cuts3_imass ->Fill(index, optim_Cuts3_imass[index]);                                                                                                                                                                              
+  }   
+
+
   //Renormalization
-  TH1F* Hcutflow     =  new TH1F ("cutflow"    , "cutflow"    ,5,0,5) ;
+  TH1F* Hcutflow     = (TH1F*) mon.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,5,0,5) ) ;
 
   
   //VBF
@@ -510,23 +536,25 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(5,"Central lepton");
   h->GetXaxis()->SetBinLabel(6,"Jet Veto");
   h->GetXaxis()->SetBinLabel(7,"BJet Veto");
-  controlHistos.addHistogram( h );
-  controlHistos.addHistogram( new TH1F ("VBFdEtaInc", ";#Delta#eta", 100, 0,10) );
-  controlHistos.addHistogram( new TH1F ("VBFiMassInc",";Inv. Mass", 100, 0.,2000) );
-  controlHistos.addHistogram( new TH1F ("VBFcenLeptonVetoInc",";Central Lepton Veto", 10, 0.,10) );
-  controlHistos.addHistogram( new TH1F ("VBFcen30JetVetoInc",";Central 30 Jet Veto", 10, 0.,10) );
-  controlHistos.addHistogram( new TH1F ("VBFNBJets30Inc", ";N BJets (pT>30);Events", 10,0,10) );
-  controlHistos.addHistogram( new TH1F ("VBFdEtaNM1C", ";#Delta#eta", 100, 0,10) );
-  controlHistos.addHistogram( new TH1F ("VBFiMassNM1C",";Inv. Mass", 100, 0.,2000) );
-  controlHistos.addHistogram( new TH1F ("VBFcenLeptonVetoNM1C",";Central Lepton Veto", 10, 0.,10) );
-  controlHistos.addHistogram( new TH1F ("VBFcen30JetVetoNM1C",";Central 30 Jet Veto", 10, 0.,10) );
-  controlHistos.addHistogram( new TH1F ("VBFNBJets30NM1C", ";N BJets (pT>30);Events", 10,0,10) );
-  controlHistos.addHistogram( new TH2F ("VBFdEtaiMassNM1C", ";#Delta#eta;Inv. Mass", 50, 0,10,50, 0.,2000) );
-  controlHistos.addHistogram( new TH2F ("VBFdEtaiMassNM1C2", ";#Delta#eta;Inv. Mass", 50, 0,10,50, 0.,2000) );
-  controlHistos.addHistogram( new TH1F ("VBFdEta3rdlepton", ";#Delta#eta", 100, 0,10) );
-  controlHistos.addHistogram( new TH1F ("VBFiMass3rdlepton",";Inv. Mass", 100, 0.,2000) );
-  controlHistos.addHistogram( new TH1F ("VBFcen30JetVeto3rdlepton",";Central 30 Jet Veto", 10, 0.,10) );
-  controlHistos.addHistogram( new TH1F ("VBFNBJets303rdlepton", ";N BJets (pT>30);Events", 10,0,10) );
+  mon.addHistogram( h );
+  mon.addHistogram( new TH1F ("VBFMinEta", ";VBFMinEta", 100, 0,10) );                                                                                                                                                             
+  mon.addHistogram( new TH1F ("VBFMaxEta", ";VBFMaxEta", 100, 0,10) );     
+  mon.addHistogram( new TH1F ("VBFdEtaInc", ";#Delta#eta", 100, 0,10) );
+  mon.addHistogram( new TH1F ("VBFiMassInc",";Inv. Mass", 100, 0.,2000) );
+  mon.addHistogram( new TH1F ("VBFcenLeptonVetoInc",";Central Lepton Veto", 10, 0.,10) );
+  mon.addHistogram( new TH1F ("VBFcen30JetVetoInc",";Central 30 Jet Veto", 10, 0.,10) );
+  mon.addHistogram( new TH1F ("VBFNBJets30Inc", ";N BJets (pT>30);Events", 10,0,10) );
+  mon.addHistogram( new TH1F ("VBFdEtaNM1C", ";#Delta#eta", 100, 0,10) );
+  mon.addHistogram( new TH1F ("VBFiMassNM1C",";Inv. Mass", 100, 0.,2000) );
+  mon.addHistogram( new TH1F ("VBFcenLeptonVetoNM1C",";Central Lepton Veto", 10, 0.,10) );
+  mon.addHistogram( new TH1F ("VBFcen30JetVetoNM1C",";Central 30 Jet Veto", 10, 0.,10) );
+  mon.addHistogram( new TH1F ("VBFNBJets30NM1C", ";N BJets (pT>30);Events", 10,0,10) );
+  mon.addHistogram( new TH2F ("VBFdEtaiMassNM1C", ";#Delta#eta;Inv. Mass", 50, 0,10,50, 0.,2000) );
+  mon.addHistogram( new TH2F ("VBFdEtaiMassNM1C2", ";#Delta#eta;Inv. Mass", 50, 0,10,50, 0.,2000) );
+  mon.addHistogram( new TH1F ("VBFdEta3rdlepton", ";#Delta#eta", 100, 0,10) );
+  mon.addHistogram( new TH1F ("VBFiMass3rdlepton",";Inv. Mass", 100, 0.,2000) );
+  mon.addHistogram( new TH1F ("VBFcen30JetVeto3rdlepton",";Central 30 Jet Veto", 10, 0.,10) );
+  mon.addHistogram( new TH1F ("VBFNBJets303rdlepton", ";N BJets (pT>30);Events", 10,0,10) );
 
   //open the file and get events tree
   ZZ2l2nuSummaryHandler evSummaryHandler;
@@ -577,15 +605,15 @@ int main(int argc, char* argv[])
       //OOT pu condition
       TString ootCond("");
       if(isMC){
-	  double sigma        = sqrt(double(2*ev.ngenITpu));
-	  double minCentralPu = -sigma;
-	  double maxCentralPu = sigma;
-	  double maxHighPu    = 2*sigma;
-	  double puDiff       = double(ev.ngenOOTpu-2*ev.ngenITpu);
-	  if(puDiff>=maxHighPu)         ootCond="VeryHighOOTpu";
-	  else if(puDiff>=maxCentralPu) ootCond="HighOOTpu";
-	  else if(puDiff>=minCentralPu) ootCond="MediumOOTpu";
-	  else                          ootCond="LowOOTpu";
+          double sigma        = sqrt(double(2*ev.ngenITpu));
+          double minCentralPu = -sigma;
+          double maxCentralPu = sigma;
+          double maxHighPu    = 2*sigma;
+          double puDiff       = double(ev.ngenOOTpu-2*ev.ngenITpu);
+          if(puDiff>=maxHighPu)         ootCond="VeryHighOOTpu";
+          else if(puDiff>=maxCentralPu) ootCond="HighOOTpu";
+          else if(puDiff>=minCentralPu) ootCond="MediumOOTpu";
+          else                          ootCond="LowOOTpu";
       }
 
       //pileup and Higgs pT weight
@@ -595,11 +623,11 @@ int main(int argc, char* argv[])
       double TotalWeight_minus = 1.0;
       if(isMC){
         //weight = LumiWeights.weight3D( ev.ngenOOTpum1, ev.ngenITpu, ev.ngenOOTpu );        
-	weight = LumiWeights.weight( ev.ngenITpu );
+        weight = LumiWeights.weight( ev.ngenITpu );
         TotalWeight_plus = PShiftUp.ShiftWeight( ev.ngenITpu );
         TotalWeight_minus = PShiftDown.ShiftWeight( ev.ngenITpu );
         if(isVBF)         weight *= weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );         
-        if(isGG)  	  weight *= ev.hptWeights[0];
+        if(isGG)            weight *= ev.hptWeights[0];
       }
 
       Hcutflow->Fill(1,1);
@@ -625,12 +653,12 @@ int main(int argc, char* argv[])
 
       bool isGammaEvent(false);
       if(gammaEvHandler)
-	{
-	  isGammaEvent=gammaEvHandler->isGood(phys);
-	  if(mctruthmode==22 && !isGammaEvent) continue;
-	  evcats.push_back("mumu");
-	  evcats.push_back("ee");
-	}
+        {
+          isGammaEvent=gammaEvHandler->isGood(phys);
+          if(mctruthmode==22 && !isGammaEvent) continue;
+          evcats.push_back("mumu");
+          evcats.push_back("ee");
+        }
 
       //MC truth
       LorentzVector genzll(0,0,0,0), genzvv(0,0,0,0), genhiggs(0,0,0,0);
@@ -651,23 +679,23 @@ int main(int argc, char* argv[])
       int nheavyjets(0), nlightsjets(0);
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++){
           if(fabs(phys.jets[ijet].eta())>2.4)fwdClusteredMetP4-=phys.jets[ijet];
-	  
-	  jetsP4.push_back( phys.jets[ijet] );
-	  njetsinc++;
-	  if(fabs(phys.jets[ijet].eta())<2.5){
-	      njets++;
-	      bool passTCHEL(phys.jets[ijet].btag1>1.7);
-	      bool passTCHE2(phys.jets[ijet].btag1>2.0);
-	      bool passCSVL(phys.jets[ijet].btag2>0.244);
-	      if(phys.jets[ijet].pt()>30){
-		nbtags          += passTCHE2;
-		nbtags_tchel    += passTCHEL;
-		nbtags_tche2    += passTCHE2;
-		nbtags_csvl     += passCSVL;
-		nheavyjets += (fabs(phys.jets[ijet].genid)==5);
-		nlightsjets += (fabs(phys.jets[ijet].genid)!=5);
+          
+          jetsP4.push_back( phys.jets[ijet] );
+          njetsinc++;
+          if(fabs(phys.jets[ijet].eta())<2.5){
+              njets++;
+              bool passTCHEL(phys.jets[ijet].btag1>1.7);
+              bool passTCHE2(phys.jets[ijet].btag1>2.0);
+              bool passCSVL(phys.jets[ijet].btag2>0.244);
+              if(phys.jets[ijet].pt()>30){
+                nbtags          += passTCHE2;
+                nbtags_tchel    += passTCHEL;
+                nbtags_tche2    += passTCHE2;
+                nbtags_csvl     += passCSVL;
+                nheavyjets += (fabs(phys.jets[ijet].genid)==5);
+                nlightsjets += (fabs(phys.jets[ijet].genid)!=5);
               }
-	  }
+          }
       }
       bcomp.compute(nheavyjets,nlightsjets);
       std::vector<btag::Weight_t> wgt = bcomp.getWeights();
@@ -723,6 +751,7 @@ int main(int argc, char* argv[])
       LorentzVector lep2     = isGammaEvent ? nullP4 : phys.leptons[1];
       LorentzVector rTMetP4  = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , zvv                , isGammaEvent);
       LorentzVector rAMetP4  = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocMetP4         , zvv                , isGammaEvent);
+      LorentzVector rACorMetP4  = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocCMetP4         , zvv                , isGammaEvent);                                                                             
       LorentzVector rCMetP4  = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, clusteredMetP4     , zvv                , isGammaEvent);
       LorentzVector rTAMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , assocMetP4         , isGammaEvent);
       LorentzVector rTCMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , clusteredMetP4     , isGammaEvent);
@@ -760,6 +789,7 @@ int main(int argc, char* argv[])
       metTypeValues["redMetD0"]              = redMetD0P4;
       metTypeValues["redAssocChargedMet"]  = rTMetP4;
       metTypeValues["redAssocMet"]         = rAMetP4;
+      metTypeValues["redAssocCMet"]         = rACorMetP4;                                                                                                                                                                                    
       metTypeValues["redClusteredMet"]     = rCMetP4;
       metTypeValues["redTAssocMet"]        = rTAMetP4;
       metTypeValues["redTClusteredMet"]    = rTCMetP4;
@@ -773,23 +803,23 @@ int main(int argc, char* argv[])
       int zrank(0);
       double mindphijmet(9999.), minmtjmet(9999.),mindrjz(9999.), minmjz(9999.);
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
-	{
-	  if(phys.jets[ijet].pt()>zpt) zrank++;
-	  //double dphijmet=fabs(deltaPhi(zvv.phi(),phys.jets[ijet].phi()));
-	  for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++)
-	    {
-	      double tmpdphijmet=fabs(deltaPhi(it->second.phi(),phys.jets[ijet].phi()));             
-	      if(metTypeValuesminJetdphi[it->first]>tmpdphijmet){metTypeValuesminJetdphi[it->first]=tmpdphijmet;  metTypeValuesminJetphi[it->first] = phys.jets[ijet].phi();}
-	    }
-	  
-	  double mtjmet=METUtils::transverseMass(phys.jets[ijet],zvv,false);
-	  if(mtjmet<minmtjmet) minmtjmet=mtjmet;
+        {
+          if(phys.jets[ijet].pt()>zpt) zrank++;
+          //double dphijmet=fabs(deltaPhi(zvv.phi(),phys.jets[ijet].phi()));
+          for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++)
+            {
+              double tmpdphijmet=fabs(deltaPhi(it->second.phi(),phys.jets[ijet].phi()));             
+              if(metTypeValuesminJetdphi[it->first]>tmpdphijmet){metTypeValuesminJetdphi[it->first]=tmpdphijmet;  metTypeValuesminJetphi[it->first] = phys.jets[ijet].phi();}
+            }
+          
+          double mtjmet=METUtils::transverseMass(phys.jets[ijet],zvv,false);
+          if(mtjmet<minmtjmet) minmtjmet=mtjmet;
 
-	  double drjz=deltaR(zll,phys.jets[ijet]);
-	  if(mindrjz>drjz) mindrjz=drjz;
-	  LorentzVector jz=phys.jets[ijet]+zll;
-	  double mjz=jz.mass();
-	  if(mjz<minmjz) minmjz=mjz;
+          double drjz=deltaR(zll,phys.jets[ijet]);
+          if(mindrjz>drjz) mindrjz=drjz;
+          LorentzVector jz=phys.jets[ijet]+zll;
+          double mjz=jz.mass();
+          if(mjz<minmjz) minmjz=mjz;
       }
 
       //sum ETs
@@ -811,37 +841,41 @@ int main(int argc, char* argv[])
       bool PassJetVeto  = false;
       bool PassLeptonIn = false;
 
+      double  VBFMinEta = 0;                                                                                                                                                                                                                 
+      double  VBFMaxEta = 0;       
       double  VBFdEta = -1;
       int     VBFCentral30Jets = 0;
       int     VBFCentralLeptons = 0;
       int     VBFNBJets=0;
       LorentzVector VBFSyst;
 
-      if(phys.jets.size()>=2 && phys.jets [0].pt()>30.0 && phys.jets [1].pt()>30.0){
-	  VBFSyst =  phys.jets[0] + phys.jets[1];
-	  VBFdEta = fabs(   phys.jets[0].eta() -    phys.jets[1].eta()); if(phys.jets[0].eta()* phys.jets[1].eta()>0)VBFdEta*=-1;
-	  int VBFCentral30Jets = 0;
-	  double MinEta, MaxEta;
-	  if(phys.jets[0].eta()<phys.jets[1].eta()){MinEta=phys.jets[0].eta(); MaxEta=phys.jets[1].eta();}else{MinEta=phys.jets[1].eta(); MaxEta=phys.jets[0].eta();}
-	  if(isGammaEvent){
-	      if(phys.leptons[0].eta()>MinEta && phys.leptons[0].eta()<MaxEta)VBFCentralLeptons++;  if(phys.leptons[1].eta()>MinEta && phys.leptons[1].eta()<MaxEta)VBFCentralLeptons++;
-	  }else{
-	      if(zll.eta()>MinEta && zll.eta()<MaxEta) VBFCentralLeptons=2;
-	  }
-	  for(size_t ijet=2; ijet<phys.jets.size(); ijet++){
-	      if(phys.jets[ijet].pt()<30)continue; 
-	      if(phys.jets[ijet].eta()>MinEta && phys.jets[ijet].eta()<MaxEta)VBFCentral30Jets++; 
-	      if(phys.jets[ijet].btag1>1.7) VBFNBJets++;
-	      //if(phys.jets[ijet].btag2>0.244)VBFNBJets++; 
-	  }
-	  
-	  Pass2Jet30   = true;
-	  PassdEtaCut  = (fabs(VBFdEta)>4.0);
-	  PassiMCut    = (VBFSyst.M()>500);
-	  PassLeptonIn = (VBFCentralLeptons==2);
-	  PassJetVeto  = (VBFCentral30Jets==0);
-	  PassBJetVeto = (VBFNBJets==0);
-	  isVBF        = (Pass2Jet30 && PassdEtaCut && PassiMCut && PassBJetVeto && PassJetVeto && PassLeptonIn);
+      if(phys.jets.size()>=2){
+          VBFSyst =  phys.jets[0] + phys.jets[1];
+          VBFdEta = fabs(   phys.jets[0].eta() -    phys.jets[1].eta()); if(phys.jets[0].eta()* phys.jets[1].eta()>0)VBFdEta*=-1;
+          int VBFCentral30Jets = 0;
+          double MinEta, MaxEta;
+          if(phys.jets[0].eta()<phys.jets[1].eta()){MinEta=phys.jets[0].eta(); MaxEta=phys.jets[1].eta();}else{MinEta=phys.jets[1].eta(); MaxEta=phys.jets[0].eta();}
+          if(isGammaEvent){
+              if(phys.leptons[0].eta()>MinEta && phys.leptons[0].eta()<MaxEta)VBFCentralLeptons++;  if(phys.leptons[1].eta()>MinEta && phys.leptons[1].eta()<MaxEta)VBFCentralLeptons++;
+          }else{
+              if(zll.eta()>MinEta && zll.eta()<MaxEta) VBFCentralLeptons=2;
+          }
+          for(size_t ijet=2; ijet<phys.jets.size(); ijet++){
+              if(phys.jets[ijet].pt()<30)continue; 
+              if(phys.jets[ijet].eta()>MinEta && phys.jets[ijet].eta()<MaxEta)VBFCentral30Jets++; 
+              if(phys.jets[ijet].btag1>1.7) VBFNBJets++;
+              //if(phys.jets[ijet].btag2>0.244)VBFNBJets++; 
+          }
+          
+          Pass2Jet30   = (phys.jets [0].pt()>30.0 && phys.jets [1].pt()>30.0);
+          PassdEtaCut  = (fabs(VBFdEta)>4.0);
+          PassiMCut    = (VBFSyst.M()>500);
+          PassLeptonIn = (VBFCentralLeptons==2);
+          PassJetVeto  = (VBFCentral30Jets==0);
+          PassBJetVeto = (VBFNBJets==0);
+          isVBF        = (Pass2Jet30 && PassdEtaCut && PassiMCut && PassBJetVeto && PassJetVeto && PassLeptonIn);
+
+          if(isVBF){VBFMinEta = std::min(fabs(phys.jets[0].eta()), fabs(phys.jets[1].eta()));  VBFMaxEta = std::max(fabs(phys.jets[0].eta()), fabs(phys.jets[1].eta()));}                                                                    
       }
      
       //
@@ -888,21 +922,21 @@ int main(int argc, char* argv[])
       std::vector<int> eventCategoryVars;
       std::vector<Float_t>  mtVars;
       if(runSystematics)
-	{
-	  jet::computeVariation(jetsP4,phys.met[0],jetVars, metVars, &stdPtResol,&stdEtaResol,&stdPhiResol,&jecUnc);
-	  for(size_t ivar=0; ivar<3; ivar++)
-	    {
-	      eventCategoryVars.push_back( eventClassifComp.Get(phys, &(jetVars[ivar])) );
-	      
-	      METUtils::stRedMET temp_redMetInfo;
-	      LorentzVector temp_redMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetVars[ivar], metVars[ivar], isGammaEvent, &temp_redMetInfo);
-	      //double temp_redMetL = temp_redMetInfo.redMET_l;
-	      redMetVars.push_back(temp_redMetP4);
-	      
-	      Float_t imt     = METUtils::transverseMass(zll,metVars[ivar],true);
-	      mtVars.push_back(imt);
-	    }
-	}
+        {
+          jet::computeVariation(jetsP4,phys.met[0],jetVars, metVars, &stdPtResol,&stdEtaResol,&stdPhiResol,&jecUnc);
+          for(size_t ivar=0; ivar<3; ivar++)
+            {
+              eventCategoryVars.push_back( eventClassifComp.Get(phys, &(jetVars[ivar])) );
+              
+              METUtils::stRedMET temp_redMetInfo;
+              LorentzVector temp_redMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetVars[ivar], metVars[ivar], isGammaEvent, &temp_redMetInfo);
+              //double temp_redMetL = temp_redMetInfo.redMET_l;
+              redMetVars.push_back(temp_redMetP4);
+              
+              Float_t imt     = METUtils::transverseMass(zll,metVars[ivar],true);
+              mtVars.push_back(imt);
+            }
+        }
             
       //      ROOT::Math::Boost cmboost(genhiggs.BoostToCM());
       //      LorentzVector cmzll(cmboost(zll));
@@ -914,501 +948,525 @@ int main(int argc, char* argv[])
       
       //fill control histograms
       std::vector<TString> catsToFill;
-      catsToFill.push_back("all");
       for(size_t ic=0; ic<evcats.size(); ic++) catsToFill.push_back(evcats[ic]);
       std::vector<TString> subCatsToFill;
       subCatsToFill.push_back("");
       subCatsToFill.push_back(subcat);
+
+      std::vector<TString> ctf;
+      ctf.push_back("all");
       for(size_t ic=0; ic<catsToFill.size(); ic++){
-	for(size_t isc=0; isc<subCatsToFill.size(); isc++){
-	      TString ctf=catsToFill[ic]+subCatsToFill[isc];  
-
-	      float iweight=weight;
-	      if(gammaEvHandler){
-		  TString dilCh=catsToFill[ic];
-		  if(dilCh=="all") dilCh="ll";
-		  iweight *= gammaEvHandler->getWeight(dilCh);
-              }	      
-
-              controlHistos.fillHisto("genHiggsPt"      ,ctf,    genhiggs.pt()   ,iweight);
-              controlHistos.fillHisto("genHiggsMass"    ,ctf,    genhiggs.mass() ,iweight);
-              controlHistos.fillHisto("genzllPt"        ,ctf,    genzll.pt()     ,iweight);
-              controlHistos.fillHisto("genzvvPt"        ,ctf,    genzvv.pt()     ,iweight);
-
-              if(passZmass){
-		controlHistos.fillHisto("genzwinHiggsPt"      ,ctf,    genhiggs.pt()   ,iweight);
-		controlHistos.fillHisto("genzwinHiggsMass"    ,ctf,    genhiggs.mass() ,iweight);
-		controlHistos.fillHisto("genzwinzllPt"        ,ctf,    genzll.pt()     ,iweight);
-		controlHistos.fillHisto("genzwinzvvPt"        ,ctf,    genzvv.pt()     ,iweight);
-              }
- 	      
-	      //event pre-selection
-	      if(!passZmass && !passSideBand && !passLooseKinematics)                            continue;
-	      
-	      //VBF control
-	      if(true                                                                                       )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    0                ,iweight);
-	      if(Pass2Jet30                                                                                 )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    1                ,iweight);
-	      if(PassdEtaCut                                                                                )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    2                ,iweight);
-	      if(PassdEtaCut && PassiMCut                                                                   )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    3                ,iweight);
-	      if(PassdEtaCut && PassiMCut && PassLeptonIn                                                   )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    4                ,iweight);
-	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                                    )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    5                ,iweight);
-	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto                    )controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    6                ,iweight);
-	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto && pass3dLeptonVeto)controlHistos.fillHisto("VBFNEventsInc"       ,ctf,    7                ,iweight);
-	      
-	      if(Pass2Jet30                                                              )controlHistos.fillHisto("VBFdEtaInc"          ,ctf,    fabs(VBFdEta)    ,iweight);
-	      if(PassdEtaCut                                                             )controlHistos.fillHisto("VBFiMassInc"         ,ctf,    VBFSyst.M()      ,iweight);
-	      if(PassdEtaCut && PassiMCut                                                )controlHistos.fillHisto("VBFcenLeptonVetoInc" ,ctf,    VBFCentralLeptons,iweight);
-	      if(PassdEtaCut && PassiMCut && PassLeptonIn                                )controlHistos.fillHisto("VBFcen30JetVetoInc"  ,ctf,    VBFCentral30Jets ,iweight);
-	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                 )controlHistos.fillHisto("VBFNBJets30Inc"      ,ctf,    VBFNBJets        ,iweight);
-	      
-	      if(               PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFdEtaNM1C"         ,ctf,    fabs(VBFdEta)    ,iweight);
-	      if(PassdEtaCut              && PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFiMassNM1C"        ,ctf,    VBFSyst.M()      ,iweight);
-	      if(PassdEtaCut && PassiMCut                 && PassJetVeto && PassBJetVeto )controlHistos.fillHisto("VBFcenLeptonVetoNM1C",ctf,    VBFCentralLeptons,iweight);
-	      if(Pass2Jet30                                              && PassBJetVeto && !pass3dLeptonVeto){
-		  controlHistos.fillHisto("VBFcen30JetVeto3rdlepton"  ,ctf,    VBFCentral30Jets ,iweight);
-		  controlHistos.fillHisto("VBFNBJets303rdlepton"      ,ctf,    VBFNBJets        ,iweight);
-		  controlHistos.fillHisto("VBFdEta3rdlepton"          ,ctf,    fabs(VBFdEta)    ,iweight);
-		  controlHistos.fillHisto("VBFiMass3rdlepton"         ,ctf,    VBFSyst.M()      ,iweight);
-              }
-	      
-	      if(PassdEtaCut && PassiMCut && PassLeptonIn                && PassBJetVeto )controlHistos.fillHisto("VBFcen30JetVetoNM1C" ,ctf,    VBFCentral30Jets ,iweight);
-	      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                 )controlHistos.fillHisto("VBFNBJets30NM1C"     ,ctf,    VBFNBJets        ,iweight);
-	      if(                            PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fill2DHisto("VBFdEtaiMassNM1C"  ,ctf,    fabs(VBFdEta), VBFSyst.M(), iweight);
-	      if(redMet>50 &&                PassLeptonIn && PassJetVeto && PassBJetVeto )controlHistos.fill2DHisto("VBFdEtaiMassNM1C2" ,ctf,    fabs(VBFdEta), VBFSyst.M(), iweight);
-	      
-	      //inclusive control
-	      controlHistos.fillHisto("eventflow",ctf,1,iweight);
-	      controlHistos.fillHisto("nvtx",ctf,ev.nvtx,iweight);
-	      controlHistos.fillHisto("nvtxPlus",ctf,ev.nvtx,iweight*TotalWeight_plus);
-	      controlHistos.fillHisto("nvtxMinus",ctf,ev.nvtx,iweight*TotalWeight_minus);
-	      
-	      //dilepton control plots
-	      controlHistos.fillHisto("zmass",ctf,zmass,iweight);
-	      for(std::vector<int>::iterator regIt = zmassRegionBins.begin(); regIt<zmassRegionBins.end(); regIt++) controlHistos.fillHisto("zmassregionCtr",ctf,*regIt,iweight);
-	      controlHistos.fillHisto("zeta",ctf,zeta,iweight);
-	      controlHistos.fillHisto("zpt",ctf,zpt,iweight);
-	      controlHistos.fillHisto("zrank",ctf,zrank,iweight);
-	      controlHistos.fill2DHisto("zptvszeta", ctf,zpt,zeta,iweight);
-	      controlHistos.fillHisto("dphill",ctf,dphill,iweight);
-	      controlHistos.fillHisto("mindrlz",ctf,mindrlz,iweight);
-	      controlHistos.fillHisto("maxdrlz",ctf,maxdrlz,iweight);
-	      controlHistos.fillHisto("ptsum",ctf,ptsum,iweight);
-	      controlHistos.fillHisto("mtl1",ctf,mtl1,iweight);
-	      controlHistos.fillHisto("mtl2",ctf,mtl2,iweight);
-              controlHistos.fillHisto("mt",ctf,mt,iweight);
-	      
-	      //Z window
-	      if(!passZmass)  continue;
-	      controlHistos.fillHisto("eventflow",ctf,2,iweight);
-	     
-	      //jet control
-	      controlHistos.fillHisto("njets",ctf,njets,iweight);
-	      controlHistos.fill2DHisto("njetsvspu",ctf,ev.ngenITpu,njets,iweight);
-	      controlHistos.fill2DHisto("njetsincvspu",ctf,ev.ngenITpu,njetsinc,iweight);
-	      controlHistos.fillHisto("nbtags",ctf, nbtags,iweight);
-	      controlHistos.fillHisto("npassbveto",ctf,0, (nbtags_tchel==0)*iweight);
-	      controlHistos.fillHisto("npassbveto",ctf,1, (nbtags_tche2==0)*iweight);
-	      controlHistos.fillHisto("npassbveto",ctf,2, (nbtags_csvl==0)*iweight);
-	      controlHistos.fillHisto("zmassctrl",ctf,passBveto+2*passMediumRedMet,iweight);
-
-	      
-	      controlHistos.fillHisto("btag0proj",ctf,0,iweight*p0btags);
-	      controlHistos.fillHisto("btag0projup",ctf,0,iweight*min(p0btags+p0btags_err,1.0));
-	      controlHistos.fillHisto("btag0projdown",ctf,0,iweight*max(p0btags-p0btags_err,0.0));
-
-	      if(!passBveto) continue;
-	      controlHistos.fillHisto("eventflow",ctf,3,iweight);
-
-
-              if(!passZpt) continue;
-              controlHistos.fillHisto("eventflow",ctf,4,iweight);
-
-	      //extra leptons
-	      controlHistos.fillHisto("nleptons",ctf,ev.ln,iweight);
-	      if(!pass3dLeptonVeto){
-		  controlHistos.fillHisto("njets3leptons",ctf,njets,iweight);
-		  controlHistos.fillHisto("nbtags3leptons",ctf,nbtags,iweight);
-		  continue;
-              }
-	      controlHistos.fillHisto("eventflow",ctf,5,iweight);
-	      
-
-              if(isMC && genhiggs.pt()>0){
-		  controlHistos.fillHisto("CMzllP"      ,ctf,    cmzll.pt()   ,iweight);
-		  controlHistos.fillHisto("CMzvvP"      ,ctf,    cmzvv.pt()   ,iweight);
-		  controlHistos.fillHisto("CMDeltazP"   ,ctf,    cmzll.pt()-cmzvv.pt()   ,iweight);
-		  controlHistos.fillHisto("CMiMass"     ,ctf,    METUtils::transverseMass(cmzll,cmzvv,true)   ,iweight);
-              }
-
-	      for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++){
-                  if(it->second.pt()>50 && metTypeValuesminJetdphi[it->first]<10){
-		      controlHistos.fillHisto(TString("met_") + it->first+"mindphijmet",ctf,metTypeValuesminJetdphi[it->first], iweight);
-		      // controlHistos.fill2DHisto(TString("met_") + it->first+"phimetphijet", ctf,it->second.phi(),metTypeValuesminJetphi[it->first],iweight);
-                  }
-		  
-
-		  TVector2 metPt(it->second.px(), it->second.py());
-		  TVector2 dileptonPt(zll.px(), zll.py());
-		  TVector2 dileptonLongi( dileptonPt.Unit() );
-		  TVector2 dileptonPerp( dileptonLongi.Rotate(TMath::Pi()/2) );
-		  controlHistos.fillHisto(TString("metinc_") + it->first, ctf, metPt*dileptonLongi, iweight);
-		  controlHistos.fillHisto(TString("metL_") + it->first, ctf, metPt*dileptonLongi, iweight);
-		  controlHistos.fillHisto(TString("metT_") + it->first, ctf, metPt*dileptonPerp, iweight);
-		  controlHistos.fillHisto(TString("metoverqt_") + it->first, ctf, it->second.pt()/zpt, iweight);
-		  controlHistos.fillHisto(TString("metoverqtL_") + it->first, ctf, metPt*dileptonLongi/zpt, iweight);
-		  controlHistos.fillHisto(TString("metoverqtT_") + it->first, ctf, metPt*dileptonPerp/zpt,iweight);
-
-
-                  if(mindphijmet<0.3)continue;
-		  controlHistos.fillHisto(TString("met_") + it->first, ctf,it->second.pt(),iweight);
-		  
-
-		  controlHistos.fill2DHisto(TString("met_") + it->first+"vspu", ctf,ev.ngenITpu,it->second.pt(),iweight);
-                  controlHistos.fill2DHisto(TString("met_") + it->first+"zpt", ctf,it->second.pt(),zpt,iweight);
-                  controlHistos.fillHisto(TString("met_") + it->first+"minzpt", ctf,std::min(it->second.pt(),zll.pt()),iweight);
-                  controlHistos.fillHisto(TString("met_") + it->first+"geq080zpt", ctf,it->second.pt()>=0.8*zll.pt() ? it->second.pt() : 0.0,iweight);
-                  controlHistos.fill2DHisto(TString("met_") + it->first+"geq080zptvspu", ctf,ev.ngenITpu, it->second.pt()>=0.8*zll.pt() ? it->second.pt() : 0.0,iweight);
-                  controlHistos.fillHisto(TString("met_") + it->first+"geq060zpt", ctf,it->second.pt()>=0.6*zll.pt() ? it->second.pt() : 0.0,iweight);
-                  controlHistos.fill2DHisto(TString("met_") + it->first+"geq060zptvspu", ctf,ev.ngenITpu,it->second.pt()>=0.6*zll.pt() ? it->second.pt() : 0.0,iweight);
-                  controlHistos.fillHisto(TString("met_") + it->first+"geq040zpt", ctf,it->second.pt()>=0.4*zll.pt() ? it->second.pt() : 0.0,iweight);
-                  controlHistos.fill2DHisto(TString("met_") + it->first+"geq040zptvspu", ctf,ev.ngenITpu,it->second.pt()>=0.4*zll.pt() ? it->second.pt() : 0.0,iweight);
-
-                  TVector2 zll2DLong  = TVector2(zll.px()/zll.pt(), zll.py()/zll.pt());
-                  TVector2 zll2DTrans = zll2DLong.Rotate(TMath::Pi()/2);
-                  //double LongMET  = zll2DLong .Px()*it->second.px() + zll2DLong .Py()*it->second.py();
-                  //double TransMET = zll2DTrans.Px()*it->second.px() + zll2DTrans.Py()*it->second.py();
-		  //controlHistos.fillHisto(TString("metL_") + it->first, ctf,LongMET,iweight);
-		  //controlHistos.fill2DHisto(TString("metL_") + it->first+"vspu", ctf,ev.ngenITpu,LongMET,iweight);
-		  //controlHistos.fillHisto(TString("metT_") + it->first, ctf,TransMET,iweight);
-		  //controlHistos.fill2DHisto(TString("metT_") + it->first+"vspu", ctf,ev.ngenITpu,TransMET,iweight);
-		  //controlHistos.fill2DHisto(TString("metLT_") + it->first, ctf,LongMET,TransMET,iweight);
-              }
-
-	      controlHistos.fill2DHisto("metvstkmet", ctf,met,assocChargedMet,iweight);
-	      controlHistos.fill2DHisto("metvsassoc", ctf,met,assocMetP4.pt(),iweight);
-              controlHistos.fill2DHisto("metvsclustered", ctf,met,clusteredMetP4.pt(),iweight);
-	      controlHistos.fill2DHisto("metvscentralMet", ctf,met,centralMet,iweight);
-	      controlHistos.fillHisto("redMetL", ctf,redMetL,iweight);
-	      controlHistos.fillHisto("redMetT", ctf,redMetT,iweight);
-	      controlHistos.fillHisto("redMetcomps", ctf,redMetL,redMetT,iweight);	
-
-	      if(sumEt>0){
-		  controlHistos.fillHisto("sumEt",                ctf,sumEt,iweight);
-		  controlHistos.fillHisto("chSumEt",              ctf,chSumEt,iweight);
-		  controlHistos.fillHisto("neutSumEt",            ctf,neutsumEt,iweight);
-		  controlHistos.fillHisto("primVertexSumEt",      ctf,ev.primVertexSumEt,iweight);
-		  controlHistos.fillHisto("otherVertexSumEt",     ctf,ev.otherVertexSumEt,iweight);
-
-		  if(isMC){
-		      controlHistos.fillHisto("sumEt"+ootCond,ctf,sumEt,iweight);
-		      controlHistos.fillHisto("neutSumEtFrac"+ootCond,ctf,neutsumEt/sumEt,iweight);
-		      controlHistos.fill2DHisto("itpuvsootpu",ctf,ev.ngenITpu,ev.ngenOOTpu,iweight);
-		  }
-		  controlHistos.fillHisto("chSumEtFrac",          ctf,chSumEt/sumEt,iweight);
-		  controlHistos.fillHisto("neutSumEtFrac",        ctf,neutsumEt/sumEt,iweight);
-		  controlHistos.fillHisto("centralSumEtFrac",     ctf,sumEtcentral/sumEt,iweight);
-		  controlHistos.fillHisto("centralChSumEtFrac",   ctf,chSumEtcentral/sumEt,iweight);
-		  controlHistos.fillHisto("centralNeutSumEtFrac", ctf,neutSumEtcentral/sumEt,iweight);
-		  controlHistos.fillHisto("chPrimVertexSumEtFrac",          ctf,ev.primVertexChSumEt/sumEt,iweight);
-		  controlHistos.fillHisto("neutPrimVertexSumEtFrac",        ctf,ev.primVertexNeutSumEt/sumEt,iweight);
-		  controlHistos.fillHisto("chOtherVertexSumEtFrac",          ctf,ev.otherVertexChSumEt/sumEt,iweight);
-		  controlHistos.fillHisto("neutOtherVertexSumEtFrac",        ctf,ev.otherVertexNeutSumEt/sumEt,iweight);		 
-              }
-	      
-	      controlHistos.fillHisto("mindphijmet",ctf,mindphijmet,iweight);
-	      controlHistos.fillHisto("minmtjmet",ctf,minmtjmet,iweight);
-	      controlHistos.fillHisto("mindrjz",ctf,mindrjz,iweight);
-	      controlHistos.fillHisto("minmjz",ctf,minmjz,iweight);
-	      
-	      
-	      //sample is selected
-	      if(passMediumRedMet){
-		  controlHistos.fillHisto("eventflow",ctf,6,iweight);
-		  controlHistos.fillHisto("eventCategory",ctf,eventCategory,iweight);
-		  controlHistos.fillHisto("cutOptMediumdphill",ctf,fabs(dphill));
-		  controlHistos.fill2DHisto("cutOptMediumsummtvsredMetL",ctf,mtsum,redMetL,iweight);
-		  
-		  if(passTightRedMet)    controlHistos.fillHisto("eventflow",ctf,7,iweight);
-              }
-	      
-
-	      //booking for optimization
-              for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
-		if(zvv.pt()>optim_Cuts1_met[index] && mindphijmet>optim_Cuts1_mindphi[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
-		  controlHistos.fillHisto("optim_eventflow1"          ,ctf,    index, weight);
-              }
-	      
-              for(unsigned int index=0;index<optim_Cuts2_met.size();index++){
-		if(redMet>optim_Cuts2_met[index] && mindphijmet>optim_Cuts2_mindphi[index] && mt>optim_Cuts2_mtmin[index] && mt<optim_Cuts2_mtmax[index])
-		  controlHistos.fillHisto("optim_eventflow2"          ,ctf,    index, weight);
-              }
-	      
-	      
-	      //
-	      // CUT & COUNT ANALYSIS
-	      //
-	      //final selection (cut and count analysis)
-	      if(zpt>25)
-		{
-		  bool pass130met( zvv.pt()>50 && mindphijmet>0.74 && mt>171 && mt<296);
-		  bool pass150met( zvv.pt()>50 && mindphijmet>0.7  && mt>193 && mt<284);
-		  bool pass170met( zvv.pt()>50 && mindphijmet>0.66 && mt>185 && mt<276);
-		  bool pass200met( zvv.pt()>50 && mindphijmet>0.6  && mt>220 && mt<270);
-		  bool pass300met( zvv.pt()>86 && mindphijmet>0.4  && mt>260 && mt<310);
-		  bool pass400met( zvv.pt()>118 && mindphijmet>0.2 && mt>340 && mt<440);
-		  bool pass500met( zvv.pt()>166 && mindphijmet>0.1 && mt>340 && mt<740); 
-		  bool pass600met( zvv.pt()>188 && mindphijmet>0.1 && mt>440 && mt<740);
-                  bool passSyst1met( zvv.pt()>50 && mindphijmet>0.05 && mt>150);
-                  bool passSyst2met( zvv.pt()>60 && mindphijmet>0.1  && mt>170);
-
-		  if(pass130met) controlHistos.fillHisto("finaleventflowmet",ctf,0,iweight);
-		  if(pass150met) controlHistos.fillHisto("finaleventflowmet",ctf,1,iweight);
-		  if(pass170met) controlHistos.fillHisto("finaleventflowmet",ctf,2,iweight);
-		  if(pass200met) controlHistos.fillHisto("finaleventflowmet",ctf,3,iweight);
-		  if(pass300met) controlHistos.fillHisto("finaleventflowmet",ctf,4,iweight);
-		  if(pass400met) controlHistos.fillHisto("finaleventflowmet",ctf,5,iweight);
-		  if(pass500met) controlHistos.fillHisto("finaleventflowmet",ctf,6,iweight);
-		  if(pass600met) controlHistos.fillHisto("finaleventflowmet",ctf,7,iweight);
-                  if(passSyst1met) controlHistos.fillHisto("finaleventflowmet",ctf,8,iweight);
-                  if(passSyst2met) controlHistos.fillHisto("finaleventflowmet",ctf,9,iweight);
-		  
-		  bool pass130rmet( rCMetP4.pt()>50  && mindphijmet>0.74 && mt>171 && mt<296);
-		  bool pass150rmet( rCMetP4.pt()>50  && mindphijmet>0.7  && mt>193 && mt<284);
-		  bool pass170rmet( rCMetP4.pt()>50  && mindphijmet>0.66 && mt>185 && mt<276);
-		  bool pass200rmet( rCMetP4.pt()>50  && mindphijmet>0.6  && mt>220 && mt<270);
-		  bool pass300rmet( rCMetP4.pt()>84  && mindphijmet>0.2  && mt>260 && mt<310);
-		  bool pass400rmet( rCMetP4.pt()>110 && mindphijmet>0.2  && mt>340 && mt<440);
-		  bool pass500rmet( rCMetP4.pt()>156 && mindphijmet>0.1  && mt>340 && mt<740); 
-		  bool pass600rmet( rCMetP4.pt()>156 && mindphijmet>0.1  && mt>440 && mt<790);
-                  bool passSyst1rmet( rCMetP4.pt()>50 && mindphijmet>0.05 && mt>150);
-                  bool passSyst2rmet( rCMetP4.pt()>60 && mindphijmet>0.1  && mt>170);
-		  if(pass130rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,0,iweight);
-		  if(pass150rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,1,iweight);
-		  if(pass170rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,2,iweight);
-		  if(pass200rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,3,iweight);
-		  if(pass300rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,4,iweight);
-		  if(pass400rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,5,iweight);
-		  if(pass500rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,6,iweight);
-		  if(pass600rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,7,iweight);		  
-                  if(passSyst1rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,8,iweight);
-                  if(passSyst2rmet) controlHistos.fillHisto("finaleventflowrmet",ctf,9,iweight);
-
-		  bool passvbf50met( zvv.pt() > 50);
-		  bool passvbf55met( zvv.pt() > 55);
-		  bool passvbf60met( zvv.pt() > 60);
-		  bool passvbf65met( zvv.pt() > 65);
-		  bool passvbf50rmet( rCMetP4.pt() > 50);
-		  bool passvbf55rmet( rCMetP4.pt() > 55);
-		  bool passvbf60rmet( rCMetP4.pt() > 60);
-		  bool passvbf65rmet( rCMetP4.pt() > 65);
-                  bool passvbfSyst1met( zvv.pt() > 40);
-                  bool passvbfSyst2met( rCMetP4.pt() > 40);
-
-		  if(passvbf50met) controlHistos.fillHisto("finaleventflowvbf",ctf,0,iweight);
-		  if(passvbf55met) controlHistos.fillHisto("finaleventflowvbf",ctf,1,iweight);
-		  if(passvbf60met) controlHistos.fillHisto("finaleventflowvbf",ctf,2,iweight);
-		  if(passvbf65met) controlHistos.fillHisto("finaleventflowvbf",ctf,3,iweight);
-		  if(passvbf50rmet) controlHistos.fillHisto("finaleventflowvbf",ctf,4,iweight);
-		  if(passvbf55rmet) controlHistos.fillHisto("finaleventflowvbf",ctf,5,iweight);
-		  if(passvbf60rmet) controlHistos.fillHisto("finaleventflowvbf",ctf,6,iweight);
-		  if(passvbf65rmet) controlHistos.fillHisto("finaleventflowvbf",ctf,7,iweight);		  
-                  if(passvbfSyst1met) controlHistos.fillHisto("finaleventflowvbf",ctf,8,iweight);
-                  if(passvbfSyst2met) controlHistos.fillHisto("finaleventflowvbf",ctf,9,iweight);
-
-
-                  if(isc==0 && outTxtFile && (passvbf50met || passvbf50rmet) && string(subcat.Data())=="vbf"){
-                      fprintf(outTxtFile, "<b>%s event</b> @ %s <br/>\n", subcat.Data(), url.Data());
-                      fprintf(outTxtFile, "%%$Run=%i$%% %%$Lumi=%i$%% %%$Event=%i$%% <br/>\n",  ev.run,  ev.lumi, ev.event);
-
-                       fprintf(outTxtFile, "%%$VBF  MET SELECTION: (>50)=%i (>55)=%i (>60)=%i (>65)=%i $%% <br/>\n", passvbf50met, passvbf55met, passvbf60met, passvbf65met );
-                       fprintf(outTxtFile, "%%$VBF RMET SELECTION: (>50)=%i (>55)=%i (>60)=%i (>65)=%i $%% <br/>\n", passvbf50rmet, passvbf55rmet, passvbf60rmet, passvbf65rmet );
-
-
-
-                      fprintf(outTxtFile, "<i>Leptons</i> <br/>\n");
-                      for(size_t ilep=0; ilep<2; ilep++){
-                         fprintf(outTxtFile, "%%$l_{%i} = %i $%% ", (int)ilep+1, phys.leptons[ilep].id);
-                 	 fprintf(outTxtFile, "%%$p_{T}=%f $%% ", phys.leptons[ilep].pt());
-                         fprintf(outTxtFile, "%%$\\eta=%f $%% ", phys.leptons[ilep].eta());
-                         fprintf(outTxtFile, "%%$\\phi=%f $%% ", phys.leptons[ilep].phi());
-                         fprintf(outTxtFile, "%%$I_{neu}=%f $%%", phys.leptons[ilep].nhIso);
-                         fprintf(outTxtFile, "%%$I_{ch}=%f $%%", phys.leptons[ilep].chIso);
-                         fprintf(outTxtFile, "%%$I_{pho}=%f $%%", phys.leptons[ilep].gIso);
-                         fprintf(outTxtFile, "<br/>\n");
-                      }
-
-                      fprintf(outTxtFile, "<i>Dilepton</i> <br/>\n");
-                      fprintf(outTxtFile, "%%$p_{T}^{ll}=%f $%% ", zll.pt());
-                      fprintf(outTxtFile, "%%$\\eta^{ll}=%f $%% ", zll.eta());
-                      fprintf(outTxtFile, "%%$\\phi^{ll}=%f $%% ", zll.phi());
-                      fprintf(outTxtFile, "%%$m^{ll}=%f $%% ", zll.mass());
-                      fprintf(outTxtFile, "%%$\\Delta R(l,l)=%f $%% ", drll);
-                      fprintf(outTxtFile, "%%$\\Delta phi(l,l)=%f $%% ", dphill);
-                      fprintf(outTxtFile, "<br/>\n");
-                
-                      fprintf(outTxtFile, "<i>Missing transverse energy</i> <br/>\n");
-                      fprintf(outTxtFile, "%%$E_{T}^{miss}=%f $%% %%$\\phi=%f$%% <br/>\n ", met, zvv.phi());
-                      fprintf(outTxtFile, "%%$red-E_{T}^{miss}=%f $%% %%$l=%f$%%  %%$t=%f$%% <br/>\n ", redMet, redMetL, redMetT);
-                
-                      fprintf(outTxtFile, "<i>Transverse mass</i> <br/>\n");
-                      fprintf(outTxtFile, "%%$\\sum M_{T}(l, E_{T}^{miss})=%f $%% %%$M_{T}(Z, E_{T}^{miss})=%f $%% <br/>\n ", mtl1+mtl2, mt);
-                
-                      fprintf(outTxtFile, "<i>Jet activity</i> <br/>\n");
-                      fprintf(outTxtFile, "%%$N^{p_{T}>15}_{jet}=%i $%% %%$\\rho=%f$%% <br/>\n ", ev.jn, ev.rho);
-                
-                      fprintf(outTxtFile, "------\n");
-                  }
-                
-
-
-
-
-
-
-
-
-		
-		  
-		  //systematic variations (computed per jet bin so fill only once) 		  
-		  if(runSystematics)
-		    {
-
-                      if(isc==0){
-			
-			//jet energy scale related variations
-			TString jetVarNames[]={"jer","jesup","jesdown"};
-			for(size_t ivar=0; ivar<3; ivar++)
-			  {
-			    TString isubcat    = eventClassifComp.GetLabel( eventCategoryVars[ivar] );
-			    for(size_t kSubCat=0; kSubCat<2; kSubCat++)
-			      {
-				if(kSubCat==1) isubcat="";
-
-				TString ictf= catsToFill[ic]+isubcat;
-			  
-				bool ipass130met( metVars[ivar].pt()>50  && mindphijmet>0.74 && mtVars[ivar]>171 && mtVars[ivar]<296);
-				bool ipass150met( metVars[ivar].pt()>50  && mindphijmet>0.7  && mtVars[ivar]>193 && mtVars[ivar]<284);
-				bool ipass170met( metVars[ivar].pt()>50  && mindphijmet>0.66 && mtVars[ivar]>185 && mtVars[ivar]<276);
-				bool ipass200met( metVars[ivar].pt()>50  && mindphijmet>0.6  && mtVars[ivar]>220 && mtVars[ivar]<270);
-				bool ipass300met( metVars[ivar].pt()>86  && mindphijmet>0.4  && mtVars[ivar]>260 && mtVars[ivar]<310);
-				bool ipass400met( metVars[ivar].pt()>118 && mindphijmet>0.2  && mtVars[ivar]>340 && mtVars[ivar]<440);
-				bool ipass500met( metVars[ivar].pt()>166 && mindphijmet>0.1  && mtVars[ivar]>340 && mtVars[ivar]<740); 
-				bool ipass600met( metVars[ivar].pt()>188 && mindphijmet>0.1  && mtVars[ivar]>440 && mtVars[ivar]<740);
-                                bool ipassSyst1met(  metVars[ivar].pt()>50 && mindphijmet>0.05 && mtVars[ivar]>150);
-                                bool ipassSyst2met(  metVars[ivar].pt()>60 && mindphijmet>0.1  && mtVars[ivar]>170);
-				if(ipass130met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,0,iweight);
-				if(ipass150met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,1,iweight);
-				if(ipass170met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,2,iweight);
-				if(ipass200met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,3,iweight);
-				if(ipass300met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,4,iweight);
-				if(ipass400met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,5,iweight);
-				if(ipass500met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,6,iweight);
-				if(ipass600met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,7,iweight);
-                                if(ipassSyst1met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,8,iweight);
-                                if(ipassSyst2met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ictf,9,iweight);		  
-			  
-				bool ipass130rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.74 && mtVars[ivar]>171 && mtVars[ivar]<296);
-				bool ipass150rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.7  && mtVars[ivar]>193 && mtVars[ivar]<284);
-				bool ipass170rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.66 && mtVars[ivar]>185 && mtVars[ivar]<276);
-				bool ipass200rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.6  && mtVars[ivar]>220 && mtVars[ivar]<270);
-				bool ipass300rmet( redMetVars[ivar].pt()>84  && mindphijmet>0.2  && mtVars[ivar]>260 && mtVars[ivar]<310);
-				bool ipass400rmet( redMetVars[ivar].pt()>110 && mindphijmet>0.2  && mtVars[ivar]>340 && mtVars[ivar]<440);
-				bool ipass500rmet( redMetVars[ivar].pt()>156 && mindphijmet>0.1  && mtVars[ivar]>340 && mtVars[ivar]<740); 
-				bool ipass600rmet( redMetVars[ivar].pt()>156 && mindphijmet>0.1  && mtVars[ivar]>440 && mtVars[ivar]<790);
-                                bool ipassSyst1rmet( redMetVars[ivar].pt()>50 && mindphijmet>0.05 && mtVars[ivar]>150);
-                                bool ipassSyst2rmet( redMetVars[ivar].pt()>60 && mindphijmet>0.1  && mtVars[ivar]>170);
-				if(ipass130rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,0,iweight);
-				if(ipass150rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,1,iweight);
-				if(ipass170rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,2,iweight);
-				if(ipass200rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,3,iweight);
-				if(ipass300rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,4,iweight);
-				if(ipass400rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,5,iweight);
-				if(ipass500rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,6,iweight);
-				if(ipass600rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,7,iweight);		  
-                                if(ipassSyst1rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,8,iweight);
-                                if(ipassSyst2rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ictf,9,iweight);
-		  			  
-				bool ipassvbf50met( metVars[ivar].pt() > 50);
-				bool ipassvbf55met( metVars[ivar].pt() > 55);
-				bool ipassvbf60met( metVars[ivar].pt() > 60);
-				bool ipassvbf65met( metVars[ivar].pt() > 65);
-				bool ipassvbf50rmet( redMetVars[ivar].pt() > 50);
-				bool ipassvbf55rmet( redMetVars[ivar].pt() > 55);
-				bool ipassvbf60rmet( redMetVars[ivar].pt() > 60);
-				bool ipassvbf65rmet( redMetVars[ivar].pt() > 65);
-                                bool ipassvbfSyst1met( metVars[ivar].pt() > 40);
-                                bool ipassvbfSyst2met( redMetVars[ivar].pt() > 40);
-				if(ipassvbf50met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,0,iweight);
-				if(ipassvbf55met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,1,iweight);
-				if(ipassvbf60met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,2,iweight);
-				if(ipassvbf65met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,3,iweight);
-				if(ipassvbf50rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,4,iweight);
-				if(ipassvbf55rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,5,iweight);
-				if(ipassvbf60rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,6,iweight);
-				if(ipassvbf65rmet) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,7,iweight);		  
-                                if(ipassvbfSyst1met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,8,iweight);
-                                if(ipassvbfSyst2met) controlHistos.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ictf,9,iweight);
-			      }
-			  }
-		      }
-		 
-		      //re-weighting variations (Higgs, pileup scenario)
-		      TString wgtVarNames[]={"hrenup","hrendown","hfactup","hfactdown","puup","pudown"};
-		      Float_t rwgtVars[]={ isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]   : iweight ,
-					   isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] : iweight ,
-					   isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]  : iweight ,
-					   isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]: iweight ,
-					   iweight*TotalWeight_plus,
-					   iweight*TotalWeight_minus};
-		      if(ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] <0.5)
-			cout << phys.genhiggs[0].pt() << " " << isGG 
-			     << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] 
-			     << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]
-			     << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]
-			     << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]
-			     << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown] << endl;
-		  
-		      for(size_t ivar=0; ivar<sizeof(wgtVarNames)/sizeof(TString); ivar++)
-			{
-			  //		      TString ictf= catsToFill[ic]+subcat;
-			  if(pass130met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,0,rwgtVars[ivar]);
-			  if(pass150met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,1,rwgtVars[ivar]);
-			  if(pass170met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,2,rwgtVars[ivar]);
-			  if(pass200met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,3,rwgtVars[ivar]);
-			  if(pass300met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,4,rwgtVars[ivar]);
-			  if(pass400met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,5,rwgtVars[ivar]);
-			  if(pass500met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,6,rwgtVars[ivar]);
-			  if(pass600met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,7,rwgtVars[ivar]);
-                          if(passSyst1met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,8,rwgtVars[ivar]);
-                          if(passSyst2met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,9,rwgtVars[ivar]);
-		      
-			  if(pass130rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,0,rwgtVars[ivar]);
-			  if(pass150rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,1,rwgtVars[ivar]);
-			  if(pass170rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,2,rwgtVars[ivar]);
-			  if(pass200rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,3,rwgtVars[ivar]);
-			  if(pass300rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,4,rwgtVars[ivar]);
-			  if(pass400rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,5,rwgtVars[ivar]);
-			  if(pass500rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,6,rwgtVars[ivar]);
-			  if(pass600rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,7,rwgtVars[ivar]);		  
-                          if(passSyst1rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,8,rwgtVars[ivar]);
-                          if(passSyst2rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,9,rwgtVars[ivar]);
-
-			  if(passvbf50met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,0,rwgtVars[ivar]);
-			  if(passvbf55met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,1,rwgtVars[ivar]);
-			  if(passvbf60met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,2,rwgtVars[ivar]);
-			  if(passvbf65met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,3,rwgtVars[ivar]);
-			  if(passvbf50rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,4,rwgtVars[ivar]);
-			  if(passvbf55rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,5,rwgtVars[ivar]);
-			  if(passvbf60rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,6,rwgtVars[ivar]);
-			  if(passvbf65rmet) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,7,rwgtVars[ivar]);		  
-                          if(passvbfSyst1met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,8,rwgtVars[ivar]);
-                          if(passvbfSyst2met) controlHistos.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,9,rwgtVars[ivar]);
-			}
-
-		    }
-		}
-	}
+        for(size_t isc=0; isc<subCatsToFill.size(); isc++){
+              ctf.push_back(catsToFill[ic]+subCatsToFill[isc]);  
+        }
       }
+
+
+      float iweight=weight;
+//FIXME
+//              if(gammaEvHandler){
+//                  TString dilCh=catsToFill[ic];
+//                  if(dilCh=="all") dilCh="ll";
+//                  iweight *= gammaEvHandler->getWeight(dilCh);
+//              }              
+
+      mon.fillHisto("genHiggsPt"      ,ctf,    genhiggs.pt()   ,iweight);
+      mon.fillHisto("genHiggsMass"    ,ctf,    genhiggs.mass() ,iweight);
+      mon.fillHisto("genzllPt"        ,ctf,    genzll.pt()     ,iweight);
+      mon.fillHisto("genzvvPt"        ,ctf,    genzvv.pt()     ,iweight);
+
+      if(passZmass){
+        mon.fillHisto("genzwinHiggsPt"      ,ctf,    genhiggs.pt()   ,iweight);
+        mon.fillHisto("genzwinHiggsMass"    ,ctf,    genhiggs.mass() ,iweight);
+        mon.fillHisto("genzwinzllPt"        ,ctf,    genzll.pt()     ,iweight);
+        mon.fillHisto("genzwinzvvPt"        ,ctf,    genzvv.pt()     ,iweight);
+      }
+       
+      //event pre-selection
+      if(!passZmass && !passSideBand && !passLooseKinematics)                            continue;
+      
+      //VBF control
+      if(true                                                                                       )mon.fillHisto("VBFNEventsInc"       ,ctf,    0                ,iweight);
+      if(Pass2Jet30                                                                                 )mon.fillHisto("VBFNEventsInc"       ,ctf,    1                ,iweight);
+      if(PassdEtaCut                                                                                )mon.fillHisto("VBFNEventsInc"       ,ctf,    2                ,iweight);
+      if(PassdEtaCut && PassiMCut                                                                   )mon.fillHisto("VBFNEventsInc"       ,ctf,    3                ,iweight);
+      if(PassdEtaCut && PassiMCut && PassLeptonIn                                                   )mon.fillHisto("VBFNEventsInc"       ,ctf,    4                ,iweight);
+      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                                    )mon.fillHisto("VBFNEventsInc"       ,ctf,    5                ,iweight);
+      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto                    )mon.fillHisto("VBFNEventsInc"       ,ctf,    6                ,iweight);
+      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto && pass3dLeptonVeto)mon.fillHisto("VBFNEventsInc"       ,ctf,    7                ,iweight);
+      if(isVBF && VBFMinEta<2.4)                                                                     mon.fillHisto("VBFNEventsInc"       ,ctf,    8                ,iweight);
+
+      if(isVBF)mon.fillHisto("vbftagvspu"      ,ctf,    ev.ngenITpu   ,iweight);
+      mon.fillHisto("vbftotalvspu"      ,ctf,    ev.ngenITpu   ,iweight);
+
+
+
+      
+      if(Pass2Jet30                                                              )mon.fillHisto("VBFdEtaInc"          ,ctf,    fabs(VBFdEta)    ,iweight);
+      if(PassdEtaCut                                                             )mon.fillHisto("VBFiMassInc"         ,ctf,    VBFSyst.M()      ,iweight);
+      if(PassdEtaCut && PassiMCut                                                )mon.fillHisto("VBFcenLeptonVetoInc" ,ctf,    VBFCentralLeptons,iweight);
+      if(PassdEtaCut && PassiMCut && PassLeptonIn                                )mon.fillHisto("VBFcen30JetVetoInc"  ,ctf,    VBFCentral30Jets ,iweight);
+      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                 )mon.fillHisto("VBFNBJets30Inc"      ,ctf,    VBFNBJets        ,iweight);
+      
+      if(               PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto )mon.fillHisto("VBFdEtaNM1C"         ,ctf,    fabs(VBFdEta)    ,iweight);
+      if(PassdEtaCut              && PassLeptonIn && PassJetVeto && PassBJetVeto )mon.fillHisto("VBFiMassNM1C"        ,ctf,    VBFSyst.M()      ,iweight);
+      if(PassdEtaCut && PassiMCut                 && PassJetVeto && PassBJetVeto )mon.fillHisto("VBFcenLeptonVetoNM1C",ctf,    VBFCentralLeptons,iweight);
+      if(Pass2Jet30                                              && PassBJetVeto && !pass3dLeptonVeto){
+          mon.fillHisto("VBFcen30JetVeto3rdlepton"  ,ctf,    VBFCentral30Jets ,iweight);
+          mon.fillHisto("VBFNBJets303rdlepton"      ,ctf,    VBFNBJets        ,iweight);
+          mon.fillHisto("VBFdEta3rdlepton"          ,ctf,    fabs(VBFdEta)    ,iweight);
+          mon.fillHisto("VBFiMass3rdlepton"         ,ctf,    VBFSyst.M()      ,iweight);
+      }
+      
+      if(PassdEtaCut && PassiMCut && PassLeptonIn                && PassBJetVeto )mon.fillHisto("VBFcen30JetVetoNM1C" ,ctf,    VBFCentral30Jets ,iweight);
+      if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                 )mon.fillHisto("VBFNBJets30NM1C"     ,ctf,    VBFNBJets        ,iweight);
+      if(                            PassLeptonIn && PassJetVeto && PassBJetVeto )mon.fill2DHisto("VBFdEtaiMassNM1C"  ,ctf,    fabs(VBFdEta), VBFSyst.M(), iweight);
+      if(redMet>50 &&                PassLeptonIn && PassJetVeto && PassBJetVeto )mon.fill2DHisto("VBFdEtaiMassNM1C2" ,ctf,    fabs(VBFdEta), VBFSyst.M(), iweight);
+
+      if(isVBF){
+         mon.fillHisto("VBFMinEta"  ,ctf,    VBFMinEta ,iweight);
+         mon.fillHisto("VBFMaxEta"  ,ctf,    VBFMaxEta ,iweight);
+      }
+      
+      //inclusive control
+      mon.fillHisto("eventflow",ctf,1,iweight);
+      mon.fillHisto("nvtx",ctf,ev.nvtx,iweight);
+      mon.fillHisto("nvtxPlus",ctf,ev.nvtx,iweight*TotalWeight_plus);
+      mon.fillHisto("nvtxMinus",ctf,ev.nvtx,iweight*TotalWeight_minus);
+      
+      //dilepton control plots
+      mon.fillHisto("zmass",ctf,zmass,iweight);
+      for(std::vector<int>::iterator regIt = zmassRegionBins.begin(); regIt<zmassRegionBins.end(); regIt++) mon.fillHisto("zmassregionCtr",ctf,*regIt,iweight);
+      mon.fillHisto("zeta",ctf,zeta,iweight);
+      mon.fillHisto("zpt",ctf,zpt,iweight);
+      mon.fillHisto("zrank",ctf,zrank,iweight);
+      mon.fill2DHisto("zptvszeta", ctf,zpt,zeta,iweight);
+      mon.fillHisto("dphill",ctf,dphill,iweight);
+      mon.fillHisto("mindrlz",ctf,mindrlz,iweight);
+      mon.fillHisto("maxdrlz",ctf,maxdrlz,iweight);
+      mon.fillHisto("ptsum",ctf,ptsum,iweight);
+      mon.fillHisto("mtl1",ctf,mtl1,iweight);
+      mon.fillHisto("mtl2",ctf,mtl2,iweight);
+      mon.fillHisto("mt",ctf,mt,iweight);
+      
+      //Z window
+      if(!passZmass)  continue;
+      mon.fillHisto("eventflow",ctf,2,iweight);
+     
+      //jet control
+      mon.fillHisto("njets",ctf,njets,iweight);
+      mon.fill2DHisto("njetsvspu",ctf,ev.ngenITpu,njets,iweight);
+      mon.fill2DHisto("njetsincvspu",ctf,ev.ngenITpu,njetsinc,iweight);
+      mon.fillHisto("nbtags",ctf, nbtags,iweight);
+      mon.fillHisto("npassbveto",ctf,0, (nbtags_tchel==0)*iweight);
+      mon.fillHisto("npassbveto",ctf,1, (nbtags_tche2==0)*iweight);
+      mon.fillHisto("npassbveto",ctf,2, (nbtags_csvl==0)*iweight);
+      mon.fillHisto("zmassctrl",ctf,passBveto+2*passMediumRedMet,iweight);
+
+      
+      mon.fillHisto("btag0proj",ctf,0,iweight*p0btags);
+      mon.fillHisto("btag0projup",ctf,0,iweight*min(p0btags+p0btags_err,1.0));
+      mon.fillHisto("btag0projdown",ctf,0,iweight*max(p0btags-p0btags_err,0.0));
+
+      if(!passBveto) continue;
+      mon.fillHisto("eventflow",ctf,3,iweight);
+
+
+      if(!passZpt) continue;
+      mon.fillHisto("eventflow",ctf,4,iweight);
+
+      //extra leptons
+      mon.fillHisto("nleptons",ctf,ev.ln,iweight);
+      if(!pass3dLeptonVeto){
+          mon.fillHisto("njets3leptons",ctf,njets,iweight);
+          mon.fillHisto("nbtags3leptons",ctf,nbtags,iweight);
+          continue;
+      }
+      mon.fillHisto("eventflow",ctf,5,iweight);
+      
+
+      if(isMC && genhiggs.pt()>0){
+          mon.fillHisto("CMzllP"      ,ctf,    cmzll.pt()   ,iweight);
+          mon.fillHisto("CMzvvP"      ,ctf,    cmzvv.pt()   ,iweight);
+          mon.fillHisto("CMDeltazP"   ,ctf,    cmzll.pt()-cmzvv.pt()   ,iweight);
+          mon.fillHisto("CMiMass"     ,ctf,    METUtils::transverseMass(cmzll,cmzvv,true)   ,iweight);
+      }
+
+      for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++){
+          if(it->second.pt()>50 && metTypeValuesminJetdphi[it->first]<10){
+              mon.fillHisto(TString("met_") + it->first+"mindphijmet",ctf,metTypeValuesminJetdphi[it->first], iweight);
+              // mon.fill2DHisto(TString("met_") + it->first+"phimetphijet", ctf,it->second.phi(),metTypeValuesminJetphi[it->first],iweight);
+          }
+          
+
+          TVector2 metPt(it->second.px(), it->second.py());
+          TVector2 dileptonPt(zll.px(), zll.py());
+          TVector2 dileptonLongi( dileptonPt.Unit() );
+          TVector2 dileptonPerp( dileptonLongi.Rotate(TMath::Pi()/2) );
+          mon.fillHisto(TString("metinc_") + it->first, ctf, metPt*dileptonLongi, iweight);
+          mon.fillHisto(TString("metL_") + it->first, ctf, metPt*dileptonLongi, iweight);
+          mon.fillHisto(TString("metT_") + it->first, ctf, metPt*dileptonPerp, iweight);
+          mon.fillHisto(TString("metoverqt_") + it->first, ctf, it->second.pt()/zpt, iweight);
+          mon.fillHisto(TString("metoverqtL_") + it->first, ctf, metPt*dileptonLongi/zpt, iweight);
+          mon.fillHisto(TString("metoverqtT_") + it->first, ctf, metPt*dileptonPerp/zpt,iweight);
+
+
+          if(mindphijmet<0.3)continue;
+          mon.fillHisto(TString("met_") + it->first, ctf,it->second.pt(),iweight);
+          
+
+          mon.fill2DHisto(TString("met_") + it->first+"vspu", ctf,ev.ngenITpu,it->second.pt(),iweight);
+          mon.fill2DHisto(TString("met_") + it->first+"zpt", ctf,it->second.pt(),zpt,iweight);
+          mon.fillHisto(TString("met_") + it->first+"minzpt", ctf,std::min(it->second.pt(),zll.pt()),iweight);
+          mon.fillHisto(TString("met_") + it->first+"geq080zpt", ctf,it->second.pt()>=0.8*zll.pt() ? it->second.pt() : 0.0,iweight);
+          mon.fill2DHisto(TString("met_") + it->first+"geq080zptvspu", ctf,ev.ngenITpu, it->second.pt()>=0.8*zll.pt() ? it->second.pt() : 0.0,iweight);
+          mon.fillHisto(TString("met_") + it->first+"geq060zpt", ctf,it->second.pt()>=0.6*zll.pt() ? it->second.pt() : 0.0,iweight);
+          mon.fill2DHisto(TString("met_") + it->first+"geq060zptvspu", ctf,ev.ngenITpu,it->second.pt()>=0.6*zll.pt() ? it->second.pt() : 0.0,iweight);
+          mon.fillHisto(TString("met_") + it->first+"geq040zpt", ctf,it->second.pt()>=0.4*zll.pt() ? it->second.pt() : 0.0,iweight);
+          mon.fill2DHisto(TString("met_") + it->first+"geq040zptvspu", ctf,ev.ngenITpu,it->second.pt()>=0.4*zll.pt() ? it->second.pt() : 0.0,iweight);
+
+          TVector2 zll2DLong  = TVector2(zll.px()/zll.pt(), zll.py()/zll.pt());
+          TVector2 zll2DTrans = zll2DLong.Rotate(TMath::Pi()/2);
+          //double LongMET  = zll2DLong .Px()*it->second.px() + zll2DLong .Py()*it->second.py();
+          //double TransMET = zll2DTrans.Px()*it->second.px() + zll2DTrans.Py()*it->second.py();
+          //mon.fillHisto(TString("metL_") + it->first, ctf,LongMET,iweight);
+          //mon.fill2DHisto(TString("metL_") + it->first+"vspu", ctf,ev.ngenITpu,LongMET,iweight);
+          //mon.fillHisto(TString("metT_") + it->first, ctf,TransMET,iweight);
+          //mon.fill2DHisto(TString("metT_") + it->first+"vspu", ctf,ev.ngenITpu,TransMET,iweight);
+          //mon.fill2DHisto(TString("metLT_") + it->first, ctf,LongMET,TransMET,iweight);
+      }
+
+      mon.fill2DHisto("metvstkmet", ctf,met,assocChargedMet,iweight);
+      mon.fill2DHisto("metvsassoc", ctf,met,assocMetP4.pt(),iweight);
+      mon.fill2DHisto("metvsclustered", ctf,met,clusteredMetP4.pt(),iweight);
+      mon.fill2DHisto("metvscentralMet", ctf,met,centralMet,iweight);
+      mon.fillHisto("redMetL", ctf,redMetL,iweight);
+      mon.fillHisto("redMetT", ctf,redMetT,iweight);
+      mon.fillHisto("redMetcomps", ctf,redMetL,redMetT,iweight);        
+
+      if(sumEt>0){
+          mon.fillHisto("sumEt",                ctf,sumEt,iweight);
+          mon.fillHisto("chSumEt",              ctf,chSumEt,iweight);
+          mon.fillHisto("neutSumEt",            ctf,neutsumEt,iweight);
+          mon.fillHisto("primVertexSumEt",      ctf,ev.primVertexSumEt,iweight);
+          mon.fillHisto("otherVertexSumEt",     ctf,ev.otherVertexSumEt,iweight);
+
+          if(isMC){
+              mon.fillHisto("sumEt"+ootCond,ctf,sumEt,iweight);
+              mon.fillHisto("neutSumEtFrac"+ootCond,ctf,neutsumEt/sumEt,iweight);
+              mon.fill2DHisto("itpuvsootpu",ctf,ev.ngenITpu,ev.ngenOOTpu,iweight);
+          }
+          mon.fillHisto("chSumEtFrac",          ctf,chSumEt/sumEt,iweight);
+          mon.fillHisto("neutSumEtFrac",        ctf,neutsumEt/sumEt,iweight);
+          mon.fillHisto("centralSumEtFrac",     ctf,sumEtcentral/sumEt,iweight);
+          mon.fillHisto("centralChSumEtFrac",   ctf,chSumEtcentral/sumEt,iweight);
+          mon.fillHisto("centralNeutSumEtFrac", ctf,neutSumEtcentral/sumEt,iweight);
+          mon.fillHisto("chPrimVertexSumEtFrac",          ctf,ev.primVertexChSumEt/sumEt,iweight);
+          mon.fillHisto("neutPrimVertexSumEtFrac",        ctf,ev.primVertexNeutSumEt/sumEt,iweight);
+          mon.fillHisto("chOtherVertexSumEtFrac",          ctf,ev.otherVertexChSumEt/sumEt,iweight);
+          mon.fillHisto("neutOtherVertexSumEtFrac",        ctf,ev.otherVertexNeutSumEt/sumEt,iweight);                 
+      }
+      
+      mon.fillHisto("mindphijmet",ctf,mindphijmet,iweight);
+      mon.fillHisto("minmtjmet",ctf,minmtjmet,iweight);
+      mon.fillHisto("mindrjz",ctf,mindrjz,iweight);
+      mon.fillHisto("minmjz",ctf,minmjz,iweight);
+      
+      
+      //sample is selected
+      if(passMediumRedMet){
+          mon.fillHisto("eventflow",ctf,6,iweight);
+          mon.fillHisto("eventCategory",ctf,eventCategory,iweight);
+          mon.fillHisto("cutOptMediumdphill",ctf,fabs(dphill));
+          mon.fill2DHisto("cutOptMediumsummtvsredMetL",ctf,mtsum,redMetL,iweight);
+          
+          if(passTightRedMet)    mon.fillHisto("eventflow",ctf,7,iweight);
+      }
+
+       
+
+      
+
+      //booking for optimization
+      for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
+        if(zvv.pt()>optim_Cuts1_met[index] && mindphijmet>optim_Cuts1_mindphi[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
+          mon.fillHisto("optim_eventflow1"          ,ctf,    index, weight);
+      }
+      
+      for(unsigned int index=0;index<optim_Cuts2_met.size();index++){
+        if(redMet>optim_Cuts2_met[index] && mindphijmet>optim_Cuts2_mindphi[index] && mt>optim_Cuts2_mtmin[index] && mt<optim_Cuts2_mtmax[index])
+          mon.fillHisto("optim_eventflow2"          ,ctf,    index, weight);
+      }
+     
+      for(unsigned int index=0;index<optim_Cuts3_pt.size();index++){
+         if(!PassLeptonIn || !PassJetVeto || !PassBJetVeto)continue;
+         if(zvv.pt()<50)continue;
+         if(phys.jets.size()<2 || phys.jets [0].pt()<optim_Cuts3_pt[index] || phys.jets [1].pt()<optim_Cuts3_pt[index])continue;
+         if(VBFdEta>optim_Cuts3_deta[index] && VBFSyst.M()>optim_Cuts3_imass[index])
+         mon.fillHisto("optim_eventflow3"          ,ctf,    index, weight);
+      }
+ 
+      
+      //
+      // CUT & COUNT ANALYSIS
+      //
+      //final selection (cut and count analysis)
+      if(zpt>25)
+        {
+          bool pass130met( zvv.pt()>50 && mindphijmet>0.74 && mt>171 && mt<296);
+          bool pass150met( zvv.pt()>50 && mindphijmet>0.7  && mt>193 && mt<284);
+          bool pass170met( zvv.pt()>50 && mindphijmet>0.66 && mt>185 && mt<276);
+          bool pass200met( zvv.pt()>50 && mindphijmet>0.6  && mt>220 && mt<270);
+          bool pass300met( zvv.pt()>86 && mindphijmet>0.4  && mt>260 && mt<310);
+          bool pass400met( zvv.pt()>118 && mindphijmet>0.2 && mt>340 && mt<440);
+          bool pass500met( zvv.pt()>166 && mindphijmet>0.1 && mt>340 && mt<740); 
+          bool pass600met( zvv.pt()>188 && mindphijmet>0.1 && mt>440 && mt<740);
+          bool passSyst1met( zvv.pt()>50 && mindphijmet>0.05 && mt>150);
+          bool passSyst2met( zvv.pt()>60 && mindphijmet>0.1  && mt>170);
+
+          if(pass130met) mon.fillHisto("finaleventflowmet",ctf,0,iweight);
+          if(pass150met) mon.fillHisto("finaleventflowmet",ctf,1,iweight);
+          if(pass170met) mon.fillHisto("finaleventflowmet",ctf,2,iweight);
+          if(pass200met) mon.fillHisto("finaleventflowmet",ctf,3,iweight);
+          if(pass300met) mon.fillHisto("finaleventflowmet",ctf,4,iweight);
+          if(pass400met) mon.fillHisto("finaleventflowmet",ctf,5,iweight);
+          if(pass500met) mon.fillHisto("finaleventflowmet",ctf,6,iweight);
+          if(pass600met) mon.fillHisto("finaleventflowmet",ctf,7,iweight);
+          if(passSyst1met) mon.fillHisto("finaleventflowmet",ctf,8,iweight);
+          if(passSyst2met) mon.fillHisto("finaleventflowmet",ctf,9,iweight);
+          
+          bool pass130rmet( rCMetP4.pt()>50  && mindphijmet>0.74 && mt>171 && mt<296);
+          bool pass150rmet( rCMetP4.pt()>50  && mindphijmet>0.7  && mt>193 && mt<284);
+          bool pass170rmet( rCMetP4.pt()>50  && mindphijmet>0.66 && mt>185 && mt<276);
+          bool pass200rmet( rCMetP4.pt()>50  && mindphijmet>0.6  && mt>220 && mt<270);
+          bool pass300rmet( rCMetP4.pt()>84  && mindphijmet>0.2  && mt>260 && mt<310);
+          bool pass400rmet( rCMetP4.pt()>110 && mindphijmet>0.2  && mt>340 && mt<440);
+          bool pass500rmet( rCMetP4.pt()>156 && mindphijmet>0.1  && mt>340 && mt<740); 
+          bool pass600rmet( rCMetP4.pt()>156 && mindphijmet>0.1  && mt>440 && mt<790);
+          bool passSyst1rmet( rCMetP4.pt()>50 && mindphijmet>0.05 && mt>150);
+          bool passSyst2rmet( rCMetP4.pt()>60 && mindphijmet>0.1  && mt>170);
+          if(pass130rmet) mon.fillHisto("finaleventflowrmet",ctf,0,iweight);
+          if(pass150rmet) mon.fillHisto("finaleventflowrmet",ctf,1,iweight);
+          if(pass170rmet) mon.fillHisto("finaleventflowrmet",ctf,2,iweight);
+          if(pass200rmet) mon.fillHisto("finaleventflowrmet",ctf,3,iweight);
+          if(pass300rmet) mon.fillHisto("finaleventflowrmet",ctf,4,iweight);
+          if(pass400rmet) mon.fillHisto("finaleventflowrmet",ctf,5,iweight);
+          if(pass500rmet) mon.fillHisto("finaleventflowrmet",ctf,6,iweight);
+          if(pass600rmet) mon.fillHisto("finaleventflowrmet",ctf,7,iweight);                  
+          if(passSyst1rmet) mon.fillHisto("finaleventflowrmet",ctf,8,iweight);
+          if(passSyst2rmet) mon.fillHisto("finaleventflowrmet",ctf,9,iweight);
+
+          bool passvbf50met( zvv.pt() > 50);
+          bool passvbf55met( zvv.pt() > 55);
+          bool passvbf60met( zvv.pt() > 60);
+          bool passvbf65met( zvv.pt() > 65);
+          bool passvbf50rmet( rCMetP4.pt() > 50);
+          bool passvbf55rmet( rCMetP4.pt() > 55);
+          bool passvbf60rmet( rCMetP4.pt() > 60);
+          bool passvbf65rmet( rCMetP4.pt() > 65);
+          bool passvbfSyst1met( zvv.pt() > 40);
+          bool passvbfSyst2met( rCMetP4.pt() > 40);
+
+          if(passvbf50met) mon.fillHisto("finaleventflowvbf",ctf,0,iweight);
+          if(passvbf55met) mon.fillHisto("finaleventflowvbf",ctf,1,iweight);
+          if(passvbf60met) mon.fillHisto("finaleventflowvbf",ctf,2,iweight);
+          if(passvbf65met) mon.fillHisto("finaleventflowvbf",ctf,3,iweight);
+          if(passvbf50rmet) mon.fillHisto("finaleventflowvbf",ctf,4,iweight);
+          if(passvbf55rmet) mon.fillHisto("finaleventflowvbf",ctf,5,iweight);
+          if(passvbf60rmet) mon.fillHisto("finaleventflowvbf",ctf,6,iweight);
+          if(passvbf65rmet) mon.fillHisto("finaleventflowvbf",ctf,7,iweight);                  
+          if(passvbfSyst1met) mon.fillHisto("finaleventflowvbf",ctf,8,iweight);
+          if(passvbfSyst2met) mon.fillHisto("finaleventflowvbf",ctf,9,iweight);
+
+
+          if(outTxtFile && (passvbf50met || passvbf50rmet) && string(subcat.Data())=="vbf"){
+              fprintf(outTxtFile, "<b>%s event</b> @ %s <br/>\n", subcat.Data(), url.Data());
+              fprintf(outTxtFile, "%%$Run=%i$%% %%$Lumi=%i$%% %%$Event=%i$%% <br/>\n",  ev.run,  ev.lumi, ev.event);
+
+               fprintf(outTxtFile, "%%$VBF  MET SELECTION: (>50)=%i (>55)=%i (>60)=%i (>65)=%i $%% <br/>\n", passvbf50met, passvbf55met, passvbf60met, passvbf65met );
+               fprintf(outTxtFile, "%%$VBF RMET SELECTION: (>50)=%i (>55)=%i (>60)=%i (>65)=%i $%% <br/>\n", passvbf50rmet, passvbf55rmet, passvbf60rmet, passvbf65rmet );
+
+
+
+              fprintf(outTxtFile, "<i>Leptons</i> <br/>\n");
+              for(size_t ilep=0; ilep<2; ilep++){
+                 fprintf(outTxtFile, "%%$l_{%i} = %i $%% ", (int)ilep+1, phys.leptons[ilep].id);
+                  fprintf(outTxtFile, "%%$p_{T}=%f $%% ", phys.leptons[ilep].pt());
+                 fprintf(outTxtFile, "%%$\\eta=%f $%% ", phys.leptons[ilep].eta());
+                 fprintf(outTxtFile, "%%$\\phi=%f $%% ", phys.leptons[ilep].phi());
+                 fprintf(outTxtFile, "%%$I_{neu}=%f $%%", phys.leptons[ilep].nhIso);
+                 fprintf(outTxtFile, "%%$I_{ch}=%f $%%", phys.leptons[ilep].chIso);
+                 fprintf(outTxtFile, "%%$I_{pho}=%f $%%", phys.leptons[ilep].gIso);
+                 fprintf(outTxtFile, "<br/>\n");
+              }
+
+              fprintf(outTxtFile, "<i>Dilepton</i> <br/>\n");
+              fprintf(outTxtFile, "%%$p_{T}^{ll}=%f $%% ", zll.pt());
+              fprintf(outTxtFile, "%%$\\eta^{ll}=%f $%% ", zll.eta());
+              fprintf(outTxtFile, "%%$\\phi^{ll}=%f $%% ", zll.phi());
+              fprintf(outTxtFile, "%%$m^{ll}=%f $%% ", zll.mass());
+              fprintf(outTxtFile, "%%$\\Delta R(l,l)=%f $%% ", drll);
+              fprintf(outTxtFile, "%%$\\Delta phi(l,l)=%f $%% ", dphill);
+              fprintf(outTxtFile, "<br/>\n");
+        
+              fprintf(outTxtFile, "<i>Missing transverse energy</i> <br/>\n");
+              fprintf(outTxtFile, "%%$E_{T}^{miss}=%f $%% %%$\\phi=%f$%% <br/>\n ", met, zvv.phi());
+              fprintf(outTxtFile, "%%$red-E_{T}^{miss}=%f $%% %%$l=%f$%%  %%$t=%f$%% <br/>\n ", redMet, redMetL, redMetT);
+        
+              fprintf(outTxtFile, "<i>Transverse mass</i> <br/>\n");
+              fprintf(outTxtFile, "%%$\\sum M_{T}(l, E_{T}^{miss})=%f $%% %%$M_{T}(Z, E_{T}^{miss})=%f $%% <br/>\n ", mtl1+mtl2, mt);
+        
+              fprintf(outTxtFile, "<i>Jet activity</i> <br/>\n");
+              fprintf(outTxtFile, "%%$N^{p_{T}>15}_{jet}=%i $%% %%$\\rho=%f$%% <br/>\n ", ev.jn, ev.rho);
+        
+              fprintf(outTxtFile, "------\n");
+          }
+        
+
+
+
+
+
+
+
+
+        
+          
+          //systematic variations (computed per jet bin so fill only once)                   
+          if(runSystematics)
+            {
+
+                //jet energy scale related variations
+                TString jetVarNames[]={"jer","jesup","jesdown"};
+                for(size_t ivar=0; ivar<3; ivar++)
+                  {
+                    TString isubcat    = eventClassifComp.GetLabel( eventCategoryVars[ivar] );
+                    for(size_t kSubCat=0; kSubCat<2; kSubCat++)
+                      {
+                        if(kSubCat==1) isubcat="";
+
+//                                TString ictf= catsToFill[ic]+isubcat;
+                  
+                        bool ipass130met( metVars[ivar].pt()>50  && mindphijmet>0.74 && mtVars[ivar]>171 && mtVars[ivar]<296);
+                        bool ipass150met( metVars[ivar].pt()>50  && mindphijmet>0.7  && mtVars[ivar]>193 && mtVars[ivar]<284);
+                        bool ipass170met( metVars[ivar].pt()>50  && mindphijmet>0.66 && mtVars[ivar]>185 && mtVars[ivar]<276);
+                        bool ipass200met( metVars[ivar].pt()>50  && mindphijmet>0.6  && mtVars[ivar]>220 && mtVars[ivar]<270);
+                        bool ipass300met( metVars[ivar].pt()>86  && mindphijmet>0.4  && mtVars[ivar]>260 && mtVars[ivar]<310);
+                        bool ipass400met( metVars[ivar].pt()>118 && mindphijmet>0.2  && mtVars[ivar]>340 && mtVars[ivar]<440);
+                        bool ipass500met( metVars[ivar].pt()>166 && mindphijmet>0.1  && mtVars[ivar]>340 && mtVars[ivar]<740); 
+                        bool ipass600met( metVars[ivar].pt()>188 && mindphijmet>0.1  && mtVars[ivar]>440 && mtVars[ivar]<740);
+                        bool ipassSyst1met(  metVars[ivar].pt()>50 && mindphijmet>0.05 && mtVars[ivar]>150);
+                        bool ipassSyst2met(  metVars[ivar].pt()>60 && mindphijmet>0.1  && mtVars[ivar]>170);
+                        if(ipass130met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ctf,0,iweight);
+                        if(ipass150met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ctf,1,iweight);
+                        if(ipass170met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ctf,2,iweight);
+                        if(ipass200met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ctf,3,iweight);
+                        if(ipass300met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ctf,4,iweight);
+                        if(ipass400met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ctf,5,iweight);
+                        if(ipass500met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ctf,6,iweight);
+                        if(ipass600met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ctf,7,iweight);
+                        if(ipassSyst1met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ctf,8,iweight);
+                        if(ipassSyst2met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",ctf,9,iweight);                  
+                  
+                        bool ipass130rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.74 && mtVars[ivar]>171 && mtVars[ivar]<296);
+                        bool ipass150rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.7  && mtVars[ivar]>193 && mtVars[ivar]<284);
+                        bool ipass170rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.66 && mtVars[ivar]>185 && mtVars[ivar]<276);
+                        bool ipass200rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.6  && mtVars[ivar]>220 && mtVars[ivar]<270);
+                        bool ipass300rmet( redMetVars[ivar].pt()>84  && mindphijmet>0.2  && mtVars[ivar]>260 && mtVars[ivar]<310);
+                        bool ipass400rmet( redMetVars[ivar].pt()>110 && mindphijmet>0.2  && mtVars[ivar]>340 && mtVars[ivar]<440);
+                        bool ipass500rmet( redMetVars[ivar].pt()>156 && mindphijmet>0.1  && mtVars[ivar]>340 && mtVars[ivar]<740); 
+                        bool ipass600rmet( redMetVars[ivar].pt()>156 && mindphijmet>0.1  && mtVars[ivar]>440 && mtVars[ivar]<790);
+                        bool ipassSyst1rmet( redMetVars[ivar].pt()>50 && mindphijmet>0.05 && mtVars[ivar]>150);
+                        bool ipassSyst2rmet( redMetVars[ivar].pt()>60 && mindphijmet>0.1  && mtVars[ivar]>170);
+                        if(ipass130rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ctf,0,iweight);
+                        if(ipass150rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ctf,1,iweight);
+                        if(ipass170rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ctf,2,iweight);
+                        if(ipass200rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ctf,3,iweight);
+                        if(ipass300rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ctf,4,iweight);
+                        if(ipass400rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ctf,5,iweight);
+                        if(ipass500rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ctf,6,iweight);
+                        if(ipass600rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ctf,7,iweight);                  
+                        if(ipassSyst1rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ctf,8,iweight);
+                        if(ipassSyst2rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",ctf,9,iweight);
+                                    
+                        bool ipassvbf50met( metVars[ivar].pt() > 50);
+                        bool ipassvbf55met( metVars[ivar].pt() > 55);
+                        bool ipassvbf60met( metVars[ivar].pt() > 60);
+                        bool ipassvbf65met( metVars[ivar].pt() > 65);
+                        bool ipassvbf50rmet( redMetVars[ivar].pt() > 50);
+                        bool ipassvbf55rmet( redMetVars[ivar].pt() > 55);
+                        bool ipassvbf60rmet( redMetVars[ivar].pt() > 60);
+                        bool ipassvbf65rmet( redMetVars[ivar].pt() > 65);
+                        bool ipassvbfSyst1met( metVars[ivar].pt() > 40);
+                        bool ipassvbfSyst2met( redMetVars[ivar].pt() > 40);
+                        if(ipassvbf50met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ctf,0,iweight);
+                        if(ipassvbf55met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ctf,1,iweight);
+                        if(ipassvbf60met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ctf,2,iweight);
+                        if(ipassvbf65met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ctf,3,iweight);
+                        if(ipassvbf50rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ctf,4,iweight);
+                        if(ipassvbf55rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ctf,5,iweight);
+                        if(ipassvbf60rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ctf,6,iweight);
+                        if(ipassvbf65rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ctf,7,iweight);                  
+                        if(ipassvbfSyst1met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ctf,8,iweight);
+                        if(ipassvbfSyst2met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",ctf,9,iweight);
+                      }
+                  }
+         
+              //re-weighting variations (Higgs, pileup scenario)
+              TString wgtVarNames[]={"hrenup","hrendown","hfactup","hfactdown","puup","pudown"};
+              Float_t rwgtVars[]={ isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]   : iweight ,
+                                   isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] : iweight ,
+                                   isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]  : iweight ,
+                                   isGG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]: iweight ,
+                                   iweight*TotalWeight_plus,
+                                   iweight*TotalWeight_minus};
+              if(ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] <0.5)
+                cout << phys.genhiggs[0].pt() << " " << isGG 
+                     << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] 
+                     << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]
+                     << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]
+                     << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]
+                     << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown] << endl;
+          
+              for(size_t ivar=0; ivar<sizeof(wgtVarNames)/sizeof(TString); ivar++)
+                {
+                  //                      TString ictf= catsToFill[ic]+subcat;
+                  if(pass130met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,0,rwgtVars[ivar]);
+                  if(pass150met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,1,rwgtVars[ivar]);
+                  if(pass170met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,2,rwgtVars[ivar]);
+                  if(pass200met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,3,rwgtVars[ivar]);
+                  if(pass300met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,4,rwgtVars[ivar]);
+                  if(pass400met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,5,rwgtVars[ivar]);
+                  if(pass500met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,6,rwgtVars[ivar]);
+                  if(pass600met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,7,rwgtVars[ivar]);
+                  if(passSyst1met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,8,rwgtVars[ivar]);
+                  if(passSyst2met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",ctf,9,rwgtVars[ivar]);
+              
+                  if(pass130rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,0,rwgtVars[ivar]);
+                  if(pass150rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,1,rwgtVars[ivar]);
+                  if(pass170rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,2,rwgtVars[ivar]);
+                  if(pass200rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,3,rwgtVars[ivar]);
+                  if(pass300rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,4,rwgtVars[ivar]);
+                  if(pass400rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,5,rwgtVars[ivar]);
+                  if(pass500rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,6,rwgtVars[ivar]);
+                  if(pass600rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,7,rwgtVars[ivar]);                  
+                  if(passSyst1rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,8,rwgtVars[ivar]);
+                  if(passSyst2rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",ctf,9,rwgtVars[ivar]);
+
+                  if(passvbf50met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,0,rwgtVars[ivar]);
+                  if(passvbf55met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,1,rwgtVars[ivar]);
+                  if(passvbf60met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,2,rwgtVars[ivar]);
+                  if(passvbf65met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,3,rwgtVars[ivar]);
+                  if(passvbf50rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,4,rwgtVars[ivar]);
+                  if(passvbf55rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,5,rwgtVars[ivar]);
+                  if(passvbf60rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,6,rwgtVars[ivar]);
+                  if(passvbf65rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,7,rwgtVars[ivar]);                  
+                  if(passvbfSyst1met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,8,rwgtVars[ivar]);
+                  if(passvbfSyst2met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",ctf,9,rwgtVars[ivar]);
+                }
+
+            }
+        }
   }
  
   //all done with the events file
@@ -1419,19 +1477,8 @@ int main(int argc, char* argv[])
   outUrl += gSystem->BaseName(url);
   //save all to the file
   TFile *ofile=TFile::Open(outUrl, "recreate");
-  TDirectory *baseOutDir=ofile->mkdir("localAnalysis");
-    Hcutflow            ->Write();
-    Hoptim_cuts1_met    ->Write();
-    Hoptim_cuts1_mindphi->Write();
-    Hoptim_cuts1_mtmin  ->Write();
-    Hoptim_cuts1_mtmax  ->Write();
-    Hoptim_cuts2_met    ->Write();
-    Hoptim_cuts2_mindphi->Write();
-    Hoptim_cuts2_mtmin  ->Write();
-    Hoptim_cuts2_mtmax  ->Write();
-    baseOutDir->cd();
-    controlHistos.Write();
-    ofile->Close();
+  mon.Write();
+  ofile->Close();
 
   if(outTxtFile)fclose(outTxtFile);
 }  
