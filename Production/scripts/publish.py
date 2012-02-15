@@ -138,11 +138,11 @@ If not entered, secure password prompt will appear.""",
             line = re.sub("\s+", " ", line)
             try:
             	
-                dataset = line.split(" ")[0].rstrip(" ")
+                dataset = line.split(" ")[0].lstrip().rstrip()
                 fileown = options.fileown
                 if re.search("%", line):
-            		fileown = split("%")[0].lstrip().rstrip()
-            		dataset = split("%")[1].split(" ")[0].lstrip().rstrip()
+            		fileown = line.split("%")[0].lstrip().rstrip()
+            		dataset = line.split("%")[1].split(" ")[0].lstrip().rstrip()
                 elif not re.search("---", dataset):
                 	if len(line.lstrip().rstrip().split(" ")) ==1:
                 		
