@@ -20,6 +20,14 @@
 
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
 
+#include <ext/hash_map>
+
+namespace __gnu_cxx{
+        template<> struct hash< TString >{ size_t operator()( const TString& x ) const{ return hash< const char* >()( x.Data() );  }  };
+}
+
+
+
 class SmartSelectionMonitor {
   
 public:
@@ -29,7 +37,9 @@ public:
 
 
   //types
-  typedef std::map<TString, std::map<TString, TH1*>* > Monitor_t;
+//  typedef std::map<TString, std::map<TString, TH1*>* > Monitor_t;
+  typedef __gnu_cxx::hash_map<TString, std::map<TString, TH1*>* > Monitor_t;
+
 
   //short getters
   inline Monitor_t &getAllMonitors() { return allMonitors_; }
