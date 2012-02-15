@@ -148,7 +148,7 @@ If not entered, secure password prompt will appear.""",
                 		
                 		dataset = line.rstrip("\n").lstrip().rstrip()
                 		fileown = options.fileown
-                	if len(line..lstrip().rstrip().split(" ")) >1 and re.search("'",line) is None and re.search('"',line) is None:
+                	if len(line.lstrip().rstrip().split(" ")) >1 and re.search("'",line) is None and re.search('"',line) is None:
                 		fileown = line.split(" ")[1].rstrip("\n").lstrip().rstrip()
                 	elif re.search("'",line):
                 		preComment = line.split("'")[0]
