@@ -23,7 +23,7 @@ gStyle.SetLegendBorderSize(0)
 
 prefix="plots_QQ_4677pbm1/limit"
 
-statl=[0,6]
+statl=[0]
 
 for statlevel in statl:
 
@@ -38,7 +38,7 @@ for statlevel in statl:
     twosigma_uppers=[]
 
         
-    masses =[1000., 1100., 1200., 1300., 1400., 1500., 1600., 1700., 1800., 1900., 2000., 2100., 2200., 2300., 2400., 2500., 2600., 2700., 2800., 2900., 3000., 3100., 3200., 3300., 3400., 3500., 3600., 3700., 3800., 3900., 4000.]
+    masses =[1000., 1100., 1200., 1300., 1400., 1500., 1600., 1700., 1800., 1900., 2000., 2100., 2200., 2300., 2400., 2500., 2600., 2700., 2800., 2900., 3000., 3100., 3200., 3300., 3400., 3500., 3600., 3700., 3800., 3900., 4000., 4100., 4200., 4300.]
 #    masses =[1800, 1800]
 
 
@@ -59,7 +59,8 @@ for statlevel in statl:
     for mass in masses:
         print "mass = ",mass
         print "start to look inside the fit output"
-        f_fit=file("out/res/masslimit_"+str(mass)+"_" + str(statlevel) + "_30_RSGraviton_ak5_QQtoQQ_fat30.txt")
+        os.system("tar -xvf out/res/masslimit_"+str(mass)+"_" + str(statlevel) + "_50_RSGraviton_ak5_QQtoQQ_fat30.txt.tar.gz")
+        f_fit=file("out/res/masslimit_"+str(mass)+"_" + str(statlevel) + "_50_RSGraviton_ak5_QQtoQQ_fat30.txt")
         print "we look inside the fit output"
         for line in f_fit.readlines():
             if "twosigma_lower" in line:
@@ -70,6 +71,8 @@ for statlevel in statl:
                 twosigma_uppers+=[float(line.split("=")[7])]               
 
         f_fit.close()
+        os.system("rm out/res/masslimit_"+str(mass)+"_" + str(statlevel) + "_50_RSGraviton_ak5_QQtoQQ_fat30.txt")
+        
 
     print "twosigma_lower",[(masses[i],twosigma_lowers[i]) for i in range(len(twosigma_lowers))]
     print "onesigma_lower",[(masses[i],onesigma_lowers[i]) for i in range(len(onesigma_lowers))]
@@ -140,14 +143,14 @@ for statlevel in statl:
 
 
     zprime = TH1F("zprime","",len(masses),masses[0]-(masses[1]-masses[0])/2.0,masses[-1]+(masses[-1]-masses[-2])/2.0)
-    for i in range(len(masses)-6):
+    for i in range(len(masses)-9):
         zprime.SetBinContent(i+1,zprime_newcut[i])
     zprime.SetLineColor(kMagenta)
     zprime.SetLineStyle(3)
     zprime.Draw("LSAME")
 
     wprime = TH1F("wprime","",len(masses),masses[0]-(masses[1]-masses[0])/2.0,masses[-1]+(masses[-1]-masses[-2])/2.0)
-    for i in range(len(masses)-6):
+    for i in range(len(masses)-9):
         wprime.SetBinContent(i+1,wprime_newcut[i])
     wprime.SetLineColor(kGreen)
     wprime.SetLineStyle(4)
@@ -159,10 +162,10 @@ for statlevel in statl:
 
     
     legend.Draw()
-    canvas.SaveAs(prefix + '_expectedlimit_'+str(statlevel)+'.root')
-    canvas.SaveAs(prefix + '_expectedlimit_'+str(statlevel)+'.pdf')
-    canvas.SaveAs(prefix + '_expectedlimit_'+str(statlevel)+'.eps')
-    fileRoot = TFile(prefix + '_expectedlimit_'+str(statlevel)+'.root', "RECREATE")
+    canvas.SaveAs(prefix + '_expectedlimit50_'+str(statlevel)+'.root')
+    canvas.SaveAs(prefix + '_expectedlimit50_'+str(statlevel)+'.pdf')
+    canvas.SaveAs(prefix + '_expectedlimit50_'+str(statlevel)+'.eps')
+    fileRoot = TFile(prefix + '_expectedlimit50_'+str(statlevel)+'.root', "RECREATE")
     axigluon.Write()
     zprime.Write()
     wprime.Write()
@@ -172,4 +175,4 @@ for statlevel in statl:
     honesigma_uppers.Write()
     htwosigma_uppers.Write()
     fileRoot.Close()
-    os.system("ghostview "+prefix + '_expectedlimit_'+str(statlevel)+'.eps&')
+    os.system("ghostview "+prefix + '_expectedlimit50_'+str(statlevel)+'.eps&')

@@ -38,8 +38,7 @@ for statlevel in statl:
     twosigma_uppers=[]
 
         
-    masses =[1000., 1100., 1200., 1300., 1400., 1500., 1600., 1700., 1800., 1900., 2000., 2100., 2200., 2300., 2400., 2500., 2600., 2700., 2800., 2900., 3000., 3100., 3200., 3300., 3400., 3500., 3600., 3700., 3800., 3900., 4000.]
-#    masses =[1800, 1800]
+    masses =[1000., 1100., 1200., 1300., 1400., 1500., 1600., 1700., 1800., 1900., 2000., 2100., 2200., 2300., 2400., 2500., 2600., 2700., 2800., 2900., 3000., 3100., 3200., 3300., 3400., 3500., 3600., 3700., 3800., 3900., 4000., 4100., 4200., 4300.]
 
 
     rsg_newcut=[0.1053E+01, 0.5905E+00, 0.3426E+00, 0.2044E+00, 0.1248E+00, 0.7770E-01, 0.4911E-01, 0.3145E-01, 0.2036E-01, 0.1330E-01, 0.8743E-02, 0.5781E-02, 0.3840E-02, 0.2559E-02, 0.1708E-02, 0.1142E-02, 0.7635E-03, 0.5101E-03, 0.3402E-03, 0.2264E-03, 0.1501E-03, 0.9913E-04, 0.6512E-04, 0.4253E-04, 0.2759E-04, 0.1775E-04]
@@ -50,7 +49,8 @@ for statlevel in statl:
     for mass in masses:
         print "mass = ",mass
         print "start to look inside the fit output"
-        f_fit=file("out/res/masslimit_"+str(mass)+"_" + str(statlevel) + "_30_RSGraviton_ak5_GGtoGG_fat30.txt")
+        os.system("tar -xvf out/res/masslimit_"+str(mass)+"_" + str(statlevel) + "_50_RSGraviton_ak5_GGtoGG_fat30.txt.tar.gz")
+        f_fit=file("out/res/masslimit_"+str(mass)+"_" + str(statlevel) + "_50_RSGraviton_ak5_GGtoGG_fat30.txt")
         print "we look inside the fit output"
         for line in f_fit.readlines():
             if "twosigma_lower" in line:
@@ -59,8 +59,10 @@ for statlevel in statl:
                 medians+=[float(line.split("=")[5].split(";")[0])]
                 onesigma_uppers+=[float(line.split("=")[6].split(";")[0])]               
                 twosigma_uppers+=[float(line.split("=")[7])]               
+                print float(line.split("=")[3].split(";")[0])
 
         f_fit.close()
+        os.system("rm out/res/masslimit_"+str(mass)+"_" + str(statlevel) + "_50_RSGraviton_ak5_GGtoGG_fat30.txt")
 
     print "twosigma_lower",[(masses[i],twosigma_lowers[i]) for i in range(len(twosigma_lowers))]
     print "onesigma_lower",[(masses[i],onesigma_lowers[i]) for i in range(len(onesigma_lowers))]
@@ -123,7 +125,7 @@ for statlevel in statl:
     htwosigma_lowers.Draw("SAME")
 
     rsgXsec = TH1F("rsgXsec","",len(masses),masses[0]-(masses[1]-masses[0])/2.0,masses[-1]+(masses[-1]-masses[-2])/2.0)
-    for i in range(len(masses)-5):
+    for i in range(len(masses)-9):
         rsgXsec.SetBinContent(i+1,rsg_newcut[i])
     rsgXsec.SetLineColor(kRed)
     rsgXsec.SetLineStyle(2)
@@ -134,10 +136,10 @@ for statlevel in statl:
 
     
     legend.Draw()
-    canvas.SaveAs(prefix + '_expectedlimit_'+str(statlevel)+'.root')
-    canvas.SaveAs(prefix + '_expectedlimit_'+str(statlevel)+'.pdf')
-    canvas.SaveAs(prefix + '_expectedlimit_'+str(statlevel)+'.eps')
-    fileRoot = TFile(prefix + '_expectedlimit_'+str(statlevel)+'.root', "RECREATE")
+    canvas.SaveAs(prefix + '_expectedlimit50_'+str(statlevel)+'.root')
+    canvas.SaveAs(prefix + '_expectedlimit50_'+str(statlevel)+'.pdf')
+    canvas.SaveAs(prefix + '_expectedlimit50_'+str(statlevel)+'.eps')
+    fileRoot = TFile(prefix + '_expectedlimit50_'+str(statlevel)+'.root', "RECREATE")
     rsgXsec.Write()
     htwosigma_lowers.Write()
     honesigma_lowers.Write()
@@ -145,4 +147,4 @@ for statlevel in statl:
     honesigma_uppers.Write()
     htwosigma_uppers.Write()
     fileRoot.Close()
-    os.system("ghostview "+prefix + '_expectedlimit_'+str(statlevel)+'.eps&')
+    os.system("ghostview "+prefix + '_expectedlimit50_'+str(statlevel)+'.eps&')
