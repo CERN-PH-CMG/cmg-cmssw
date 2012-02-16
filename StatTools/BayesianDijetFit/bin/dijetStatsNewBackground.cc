@@ -129,6 +129,15 @@ int main(int argc, char* argv[])
   else if (sResonance.find("RSGraviton_HLT_ak5_QQtoQQ_pf") != std::string::npos) iResonance = 122;
   else if (sResonance.find("Qstar_HLT_ak5_pf") != std::string::npos) iResonance = 123;   
 
+  else if (sResonance.find("QBH_ak5_fat") != std::string::npos) iResonance = 1001; 
+
+  else if (sResonance.find("Qstar_qW_ak5_fat") != std::string::npos) iResonance = 2001; 
+  else if (sResonance.find("Qstar_qZ_ak5_fat") != std::string::npos) iResonance = 2002; 
+  else if (sResonance.find("RSGraviton_WW_ak5_fat") != std::string::npos) iResonance = 2011; 
+  else if (sResonance.find("RSGraviton_WZ_ak5_fat") != std::string::npos) iResonance = 2012; 
+  else if (sResonance.find("RSGraviton_ZZ_ak5_fat") != std::string::npos) iResonance = 2013; 
+
+
   if (iResonance > 20 && iResonance < 29)  {
     DATASETFN="../data/PFDiFatJetMassList_DATA.txt";
     LUMI = 117.6;
@@ -294,9 +303,14 @@ int main(int argc, char* argv[])
   double p2ValInit=ws->var("p2")->getVal();
   double p3ValInit=ws->var("p3")->getVal();
 
+
   for(int PE=0; PE<=numPEs; PE++) {
     if(numPEs>0 && PE==0) continue; // skip the 0th entry if we are running PEs
 
+    system( "ps -v | grep RSS" );
+    system( "ps -v | grep dijetStats" );
+    
+//    RooDataHist* binnedData;
     // replace with pseudodata if we are doing more than zero PE's
     if(numPEs>0) {
       ws->var("nbkg")->setVal(nbkgValInit);
@@ -306,7 +320,7 @@ int main(int argc, char* argv[])
       binnedData=makeBinnedPseudoData(ws->pdf("background"), ws->var("nbkg")->getVal(), "binnedData", invmass, ndatabins, MININVMASS, MAXINVMASS);
       ws->import(*binnedData, kTRUE);
     }
-
+    
     // do the background+signal fit
     xs->setConstant(false);
     char pelabel[120];
@@ -409,11 +423,11 @@ int main(int argc, char* argv[])
     printVal(*ws->var("pb3"));
     printVal(*ws->var("pc1"));
     printVal(*ws->var("pc2"));
-    ws->writeToFile("ws.root");
+    if (verbose_) ws->writeToFile("ws.root");
     
     double lower=-1, upper=-1;
     //    int niters=1000;
-    int niters=30;
+    int niters=25;
     double alpha=0.05;
     double lstail=0.0;
     JPMCCalculator mcA(*binnedData, modelConfigA);
@@ -432,8 +446,10 @@ int main(int argc, char* argv[])
     double p1val=ws->var("p1")->getVal(); double p1err=ws->var("p1")->getError();
     double p2val=ws->var("p2")->getVal(); double p2err=ws->var("p2")->getError();
     double p3val=ws->var("p3")->getVal(); double p3err=ws->var("p3")->getError();
-    
+
+
     TH1D* histA=dynamic_cast<TH1D*>(mcA.GetPosteriorHist()->Clone("histA"));
+
     if(statlevel==1 || statlevel==5 || statlevel==6 || statlevel==7 || statlevel==9) {
       ws->var("p1")->setVal(std::max(0.0,p1val-p1err));
       ws->var("p2")->setVal(p2val+p2err);
@@ -453,11 +469,17 @@ int main(int argc, char* argv[])
       delete histAHi;
       delete histALo;
     }
-    TH1* hPosteriorHist=histA;
-    TCanvas* canvas = new TCanvas("mcPost","Posterior Distribution",500,500);
-    hPosteriorHist->Draw();
-    canvas->SaveAs(TString("MCpost")+pelabel+".gif");
     
+ 
+    TH1* hPosteriorHist=histA;
+
+    if (verbose_) {
+      TCanvas* canvas = new TCanvas("mcPost","Posterior Distribution",500,500);
+      hPosteriorHist->Draw();
+      canvas->SaveAs(TString("MCpost")+pelabel+".gif");
+      delete canvas;
+    }
+
     // Calculate the interval by hand
     double lowerCutOff = lstail*alpha;
     double upperCutOff = 1.-(1.-lstail)*alpha;
@@ -496,7 +518,13 @@ int main(int argc, char* argv[])
     
 
     t.Print();
+
+//    delete binnedData;
+//    mcA.Clear();
+   
+
   }
+
 
   double median_ = 0;
   std::pair<double, double> onesigma_;
