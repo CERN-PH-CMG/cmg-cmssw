@@ -3,6 +3,7 @@ from ROOT import TTree, TH1F, TH2F, TProfile, gDirectory
 from CMGTools.RootTools.statistics.Histograms import Histograms
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Tau,isTau
 
+    
 class LegHistograms(Histograms):
     def __init__(self, name, leg):
         self.leg = leg
@@ -19,14 +20,8 @@ class LegHistograms(Histograms):
         self.h_iso_nh = TH1F(name+'_h_iso_nh', ';nh iso', 50, 0, 20)
         self.h_iso_ph = TH1F(name+'_h_iso_ph', ';ph iso', 50, 0, 20)
 
-        self.h_eOverP = TH1F(name+'_h_eOverP', ';E / p', 150, 0, 1.5)
-        self.h_decMode = TH1F(name+'_h_decMode', ';decay mode', 16, -0.5, 15.5)
-
         super(LegHistograms, self).__init__(name)
         
-    def FillHistos(self, tree, cut='', nEvents=999999999):
-        print 'Filling histograms: ' + self.name
-        tree.Draw('tauMu.obj[0].%s().pt()>>%s' % (self.leg, self.h_pt.GetName()),cut,'goff',nEvents)
 
     def FillLeg(self, leg, weight ):
         dbetaFactor = 0.5
@@ -45,3 +40,39 @@ class LegHistograms(Histograms):
             self.h_decMode.Fill( tau.decayMode(), weight )
 
 
+
+class TauHistograms(LegHistograms):
+    def __init__(self, name, leg):
+
+        self.h_eOverP = TH1F(name+'_h_eOverP', ';E / p', 150, 0, 1.5)
+        self.h_decMode = TH1F(name+'_h_decMode', ';decay mode', 16, -0.5, 15.5)
+                
+        super(TauHistograms, self).__init__(name, leg)
+
+
+    def FillTau(self, tau, weight):
+        #if not isTau(tau):
+        #    raise ValueError()
+        # tau = Tau( tau ) #COLIN do I need that? 
+        self.h_eOverP.Fill( tau.calcEOverP(), weight )
+        self.h_decMode.Fill( tau.decayMode(), weight )
+        
+        super(TauHistograms, self).FillLeg(tau, weight)
+        
+
+
+class MuHistograms(LegHistograms):
+    def __init__(self, name, leg):
+        super(MuHistograms, self).__init__(name, leg)
+
+    def FillMu(self, mu, weight):
+        super(MuHistograms, self).FillLeg(mu, weight)
+
+
+
+class EleHistograms(LegHistograms):
+    def __init__(self, name, leg):
+        super(EleHistograms, self).__init__(name, leg)
+
+    def FillEle(self, ele, weight):
+        super(EleHistograms, self).FillLeg(ele, weight)

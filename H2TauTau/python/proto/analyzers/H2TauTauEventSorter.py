@@ -16,9 +16,13 @@ class H2TauTauEventSorter( Analyzer ):
         super(H2TauTauEventSorter,self).__init__(cfg_ana, cfg_comp, looperName)
         self.regions = H2TauTauRegions( self.cfg_ana )
         # dirName = '/'.join( [self.looperName, self.name] ) 
-        self.output = H2TauTauOutput(  looperName, self.regions  )
+        self.output = H2TauTauOutput(  looperName, self.regions,
+                                       self.cfg_ana.leg1,
+                                       self.cfg_ana.leg2 )
         if self.cfg_comp.name == 'DYJets':
-            self.outputFakes = H2TauTauOutput( looperName + '_Fakes', self.regions )
+            self.outputFakes = H2TauTauOutput( looperName + '_Fakes', self.regions,
+                                               self.cfg_ana.leg1,
+                                               self.cfg_ana.leg2 )
 
     def declareHandles(self):
         super(H2TauTauEventSorter, self).declareHandles()
