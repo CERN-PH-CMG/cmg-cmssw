@@ -3,7 +3,7 @@ import os
 import CMGTools.RootTools.fwlite.Config as cfg
 
 
-period = 'Period_2011B'
+period = 'Period_2011A'
 
 baseDir = '2011'
 H2TauTauPackage = '/'.join( [ os.environ['CMSSW_BASE'],
@@ -115,6 +115,8 @@ vbfAna = cfg.Analyzer(
 eventSorter = cfg.Analyzer(
     'H2TauTauEventSorter',
     # vertexWeight = mc_vertexWeight,
+    leg1 = 'tau',
+    leg2 = 'mu',
     MT_low = 40,
     MT_high = 60,
     Boosted_JetPt = 150,
@@ -283,8 +285,8 @@ elif period == 'Period_2011AB':
 
 # selectedComponents = [ embed_Run2011A_May10ReReco_v1 ] 
 
-selectedComponents = MC
-# selectedComponents = [data_Run2011A_PromptReco_v4]
+# selectedComponents = MC
+selectedComponents = [data_Run2011A_PromptReco_v4]
 # selectedComponents = [data_Run2011A_May10ReReco_v1]
 # selectedComponents  = [ data_Run2011B_PromptReco_v1  ]
 selectedComponents = [WJets]

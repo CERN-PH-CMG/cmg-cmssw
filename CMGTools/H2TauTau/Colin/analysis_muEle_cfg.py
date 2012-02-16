@@ -8,7 +8,7 @@ period = 'Period_2011A'
 baseDir = '2011'
 H2TauTauPackage = '/'.join( [ os.environ['CMSSW_BASE'],
                               'src/CMGTools/H2TauTau' ] ) 
-filePattern = 'tauEle*fullsel*.root'
+filePattern = 'muEle*fullsel*.root'
 fixedMuWeight = False
 
 # mc_triggers = 'HLT_IsoMu12_v1'
@@ -16,7 +16,7 @@ mc_triggers = []
 mc_jet_scale = 1.
 mc_jet_smear = 0.
 mc_vertexWeight = None
-mc_tauEffWeight = None
+mc_muEffWeight = None
 mc_eleEffWeight = None
 
 # For Fall11 need to use vertexWeightFall11 for WJets and DYJets and TTJets 
@@ -25,15 +25,15 @@ mc_eleEffWeight = None
 
 if period == 'Period_2011A':
     mc_vertexWeight = 'vertexWeight2invfb'
-    mc_tauEffWeight = 'effTau2011A_TauEle'
+    mc_muEffWeight = 'effMu2011A'
     mc_eleEffWeight = 'effEle2011A'
 elif period == 'Period_2011B':
     mc_vertexWeight = 'vertexWeight2011B'
-    mc_tauEffWeight = 'effTau2011B_TauEle'
+    mc_muEffWeight = 'effMu2011B'
     mc_eleEffWeight = 'effEle2011B'
 elif period == 'Period_2011AB':
     mc_vertexWeight = 'vertexWeight2011AB'
-    mc_tauEffWeight = 'effTau2011AB_TauEle'
+    mc_muEffWeight = 'effMu2011AB'
     mc_eleEffWeight = 'effEle2011AB'
 
 
@@ -68,8 +68,8 @@ triggerAna = cfg.Analyzer(
     'TriggerAnalyzer'
     )
 
-tauEleAna = cfg.Analyzer(
-    'TauEleAnalyzer',
+muEleAna = cfg.Analyzer(
+    'MuEleAnalyzer',
     pt1 = 20,
     pt2 = 20,
     iso1 = 999,
@@ -83,9 +83,9 @@ tauEleAna = cfg.Analyzer(
     )
 
 
-tauWeighter = cfg.Analyzer(
-    'LeptonWeighter_tau',
-    effWeight = mc_tauEffWeight,
+muWeighter = cfg.Analyzer(
+    'LeptonWeighter_mu',
+    effWeight = mc_muEffWeight,
     lepton = 'leg1',
     verbose = False
     )
@@ -117,7 +117,7 @@ vbfAna = cfg.Analyzer(
 
 eventSorter = cfg.Analyzer(
     'H2TauTauEventSorter',
-    leg1 = 'tau',
+    leg1 = 'mu',
     leg2 = 'ele',
     # vertexWeight = mc_vertexWeight,
     MT_low = 40,
@@ -216,7 +216,7 @@ embed_Run2011B_PromptReco_v1 = cfg.EmbedComponent(
 
 DYJets = cfg.MCComponent(
     name = 'DYJets',
-    files ='{baseDir}/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/AntiEle/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files ='{baseDir}/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     xSection = 3048.,
     nGenEvents = 34915945,
     triggers = mc_triggers,
@@ -224,7 +224,7 @@ DYJets = cfg.MCComponent(
 
 WJets = cfg.MCComponent(
     name = 'WJets',
-    files ='{baseDir}/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/AntiEle/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files ='{baseDir}/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     xSection = 31314.,
     nGenEvents = 53227112,
     triggers = mc_triggers,
@@ -233,7 +233,7 @@ WJets = cfg.MCComponent(
 
 TTJets = cfg.MCComponent(
     name = 'TTJets',
-    files ='{baseDir}/TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/AntiEle/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files ='{baseDir}/TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     xSection = 165.8,
     nGenEvents = 3542770,
     triggers = mc_triggers,
@@ -299,8 +299,8 @@ selectedComponents = [ DYJets ]
 sequence = cfg.Sequence( [
     triggerAna,
     vertexAna,
-    tauEleAna,
-    tauWeighter, 
+    muEleAna,
+    muWeighter, 
     eleWeighter, 
     vbfAna,
     eventSorter
