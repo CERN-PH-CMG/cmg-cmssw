@@ -27,9 +27,9 @@ statl=[0]
 
 #shapes=["RSGraviton_ak5_GGtoGG_fat30", "RSGraviton_ak5_QQtoQQ_fat30", "Qstar_ak5_fat30", "RSGraviton_HLT_ak5_GGtoGG_fat30", "RSGraviton_HLT_ak5_QQtoQQ_fat30", "Qstar_HLT_ak5_fat30", "RSGraviton_HLT_ak5_GGtoGG_pf", "RSGraviton_HLT_ak5_QQtoQQ_pf", "Qstar_HLT_ak5_pf"]
 
-#shapes=["Qstar_qW_ak5_fat", "Qstar_qZ_ak5_fat", "RSGraviton_WW_ak5_fat", "RSGraviton_WZ_ak5_fat", "RSGraviton_ZZ_ak5_fat"]
+shapes=["Qstar_qW_ak5_fat", "Qstar_qZ_ak5_fat", "RSGraviton_WW_ak5_fat", "RSGraviton_WZ_ak5_fat", "RSGraviton_ZZ_ak5_fat"]
 
-shapes=["Qstar_qZ_ak5_fat", "RSGraviton_WW_ak5_fat", "RSGraviton_WZ_ak5_fat", "RSGraviton_ZZ_ak5_fat"]
+#shapes=["Qstar_qZ_ak5_fat", "RSGraviton_WW_ak5_fat", "RSGraviton_WZ_ak5_fat", "RSGraviton_ZZ_ak5_fat"]
 
 
 for statlevel in statl:
