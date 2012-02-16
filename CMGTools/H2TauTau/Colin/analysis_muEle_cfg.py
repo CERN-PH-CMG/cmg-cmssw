@@ -44,23 +44,26 @@ elif period == 'Period_2011AB':
 # mc_effCorrFactor = mc_lep_effCorrFactor * mc_tau_effCorrFactor 
 mc_effCorrFactor = 1.
 
-blah = 'CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT'
 data_triggers_11A = [
-    # the first 2 triggers correspond to runs before the good run list
-    # why do we get them??
-    # 'HLT_Ele15_{blah}_LooseIsoPFTau15_v1'.format(blah=blah), 
-    # 'HLT_Ele15_{blah}_LooseIsoPFTau15_v2'.format(blah=blah),  
-    'HLT_Ele15_{blah}_LooseIsoPFTau15_v4'.format(blah=blah),  
-    'HLT_Ele15_{blah}_LooseIsoPFTau20_v6'.format(blah=blah),  
-    'HLT_Ele15_{blah}_LooseIsoPFTau20_v8'.format(blah=blah),  
-    'HLT_Ele15_{blah}_LooseIsoPFTau20_v9'.format(blah=blah),  
-    'HLT_Ele15_{blah}_TightIsoPFTau20_v2'.format(blah=blah),
-    'HLT_Ele18_{blah}_MediumIsoPFTau20_v1'.format(blah=blah)
+    'HLT_Mu8_Ele17_CaloIdL_v3', # May10ReReco
+    'HLT_Mu17_Ele8_CaloIdL_v3', # May10ReReco
+    'HLT_Mu8_Ele17_CaloIdL_v4', # v4
+    'HLT_Mu8_Ele17_CaloIdL_v5', # v4
+    'HLT_Mu8_Ele17_CaloIdL_v6', # v4
+    'HLT_Mu17_Ele8_CaloIdL_v4', # v4
+    'HLT_Mu17_Ele8_CaloIdL_v5', # v4
+    'HLT_Mu17_Ele8_CaloIdL_v6', # v4
+    'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v3', # Aug5 
+    'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v4', # Oct3
+    'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v3', # Aug5 
+    'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v4', # Oct3
     ]
+
 data_triggers_11B = [
-    'HLT_Ele18_{blah}_MediumIsoPFTau20_v1'.format(blah=blah), 
-    'HLT_Ele20_{blah}_MediumIsoPFTau20_v5'.format(blah=blah), 
-    'HLT_Ele20_{blah}_MediumIsoPFTau20_v6'.format(blah=blah)
+    'HLT_Mu8_Ele17_CaloIdL_v9',
+    'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v4',
+    'HLT_Mu17_Ele8_CaloIdL_v12',
+    'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v7'
     ]
 
 
@@ -70,12 +73,12 @@ triggerAna = cfg.Analyzer(
 
 muEleAna = cfg.Analyzer(
     'MuEleAnalyzer',
-    pt1 = 20,
+    pt1 = 10,
     pt2 = 20,
-    iso1 = 999,
+    iso1 = 0.1,
     iso2 = 0.1,
-    eta1 = 999,
-    eta2 = 2.1,
+    eta1 = 2.1,
+    eta2 = 2.3,
     # eta2 = 1.4,
     m_min = 10,
     m_max = 99999,
@@ -120,6 +123,8 @@ eventSorter = cfg.Analyzer(
     leg1 = 'mu',
     leg2 = 'ele',
     # vertexWeight = mc_vertexWeight,
+    pZeta_low = -40,
+    pZeta_high = -20,
     MT_low = 40,
     MT_high = 60,
     Boosted_JetPt = 150,
@@ -183,31 +188,31 @@ data_Run2011B_PromptReco_v1 = cfg.DataComponent(
 
 embed_Run2011A_May10ReReco_v1 = cfg.EmbedComponent(
     name = 'embed_Run2011A_May10ReReco_v1',
-    files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_May10thRR_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_May10thRR_v1_embedded_trans1_tau123_pttau1_18tau2_8_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     triggers = mc_triggers,
     )
 
 embed_Run2011A_PromptReco_v4 = cfg.EmbedComponent(
     name = 'embed_Run2011A_PromptReco_v4',
-    files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau123_pttau1_18tau2_8_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     triggers = mc_triggers,
     ) 
 
 embed_Run2011A_05Aug2011_v1 = cfg.EmbedComponent(
     name = 'embed_Run2011A_05Aug2011_v1',
-    files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_Aug05thRR_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_Aug05thRR_v1_embedded_trans1_tau123_pttau1_18tau2_8_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     triggers = mc_triggers,
     ) 
 
 embed_Run2011A_03Oct2011_v1 = cfg.EmbedComponent(
     name = 'embed_Run2011A_03Oct2011_v1',
-    files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011_v1_embedded_trans1_tau123_pttau1_18tau2_8_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     triggers = mc_triggers,
     ) 
 
 embed_Run2011B_PromptReco_v1 = cfg.EmbedComponent(
     name = 'embed_Run2011B_PromptReco_v1',
-    files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau115_ptelec1_17had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau123_pttau1_18tau2_8_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     triggers = mc_triggers,
     ) 
 
@@ -221,6 +226,7 @@ DYJets = cfg.MCComponent(
     nGenEvents = 34915945,
     triggers = mc_triggers,
     effCorrFactor = mc_effCorrFactor )
+
 
 WJets = cfg.MCComponent(
     name = 'WJets',
@@ -287,14 +293,14 @@ elif period == 'Period_2011AB':
     selectedComponents.extend( embed_2011B )    
 
 
-# selectedComponents = MC
-# selectedComponents = embed_2011B 
-# selectedComponents.extend(data_2011B)
+# selectedComponents = [DYJets]
+# selectedComponents = embed_2011A 
+# selectedComponents = data_2011A
 # selectedComponents  = [ data_Run2011B_PromptReco_v1  ]
-selectedComponents = [ DYJets ]
+# selectedComponents = [ DYJets ]
 # selectedComponents = [embed_Run2011A_May10ReReco_v1]
-
-# selectedComponents = [data_Run2011A_03Oct2011_v1]
+# selectedComponents = [ data_Run2011A_03Oct2011_v1 ]
+# selectedComponents = [embed_Run2011A_PromptReco_v4]
 
 sequence = cfg.Sequence( [
     triggerAna,
