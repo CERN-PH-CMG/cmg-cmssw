@@ -50,8 +50,13 @@ Qstar_qg_3::Qstar_qg_3(const char *name, const char *title,
 
 
   if ( (uR > 20 && uR < 29) ||(uR > 120 && uR < 129)) M_CUT = 526.0;
- 
   if ( (uR > 20 && uR < 29) ||(uR > 120 && uR < 129)) INIT_MASS = 600.0;
+
+  if ( uR > 1000 && uR < 2000 ) M_CUT = 890.0;
+  if ( uR > 1000 && uR < 2000 ) INIT_MASS = 3000.0;
+
+  if ( uR > 2000 && uR < 3000 ) M_CUT = 890.0;
+  if ( uR > 2000 && uR < 3000 ) INIT_MASS = 1000.0;
 
 
   cout << "M_CUT = " << M_CUT << " INIT_MASS = " << INIT_MASS << endl;
@@ -77,6 +82,7 @@ Qstar_qg_3::Qstar_qg_3(const char *name, const char *title,
      break;
   case 13:   
     stitle = string("Qstar_ak5_fat30"); 
+     break;
   case 21: 
     stitle = string("RSGraviton_HLT_ak5_GGtoGG_fat30");
      break;
@@ -95,6 +101,25 @@ Qstar_qg_3::Qstar_qg_3(const char *name, const char *title,
   case 123:   
     stitle = string("Qstar_HLT_ak5_pf"); 
      break;
+  case 1001:
+    stitle = string("QBH_ak5_fat"); 
+    break;
+  case 2001:
+    stitle = string("Qstar_qW_ak5_fat"); 
+    break;
+  case 2002:
+    stitle = string("Qstar_qZ_ak5_fat");
+    break;
+  case 2011:
+    stitle = string("RSGraviton_WW_ak5_fat");
+    break;
+  case 2012:
+    stitle = string("RSGraviton_WZ_ak5_fat");
+    break;
+  case 2013:
+    stitle = string("RSGraviton_ZZ_ak5_fat");
+    break;
+
   default:
     std::cout << "Nothing would crash" << std::endl; 
     break;
@@ -154,7 +179,7 @@ Qstar_qg_3::Qstar_qg_3(const char *name, const char *title,
 
   output->cd(); 
   eff->Write();
-
+  // output->Close();
  
 
   return;
