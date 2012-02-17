@@ -1103,8 +1103,9 @@ void DijetMass_chiyoung_2(){
    vFrame2->SetXTitle("Dijet Mass (GeV)");
    vFrame2->GetXaxis()->SetTitleSize(0.06);
    vFrame2->SetYTitle("Significance");
-   vFrame2->GetYaxis()->SetTitleSize(0.16);
+   vFrame2->GetYaxis()->SetTitleSize(0.12);
    vFrame2->GetYaxis()->SetLabelSize(0.10);
+   vFrame2->GetYaxis()->SetTitleOffset(0.50);
    vFrame2->GetXaxis()->SetTitleOffset(0.90);
    vFrame2->GetXaxis()->SetTitleSize(0.18);
    vFrame2->GetXaxis()->SetLabelSize(0.18);

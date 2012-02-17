@@ -48,8 +48,17 @@ Double_t fitQCD3( Double_t *m, Double_t *p)
 void DijetMass_chiyoung_lowMass(){
 
   // definition of color 
-  Init("Q*");
+  //  Init("Q*");
 
+  //string sReco("fat30");
+  string sReco("pf");
+
+  if ( sReco.find("pf") != string::npos ) Init("QQPF");
+  else Init("QQFat");
+
+
+  double mMin = 526.0;
+  // double mMin = 565.0;
 
 //  lumi = 1025.;
 //  lumi = 2509.0;
@@ -71,7 +80,8 @@ void DijetMass_chiyoung_lowMass(){
 
 
   // Histograms 
-  hDijetMass = (TH1F*) inputFile->Get("M_PFJet1PFJet2_VarBin;1");
+  if (sReco.find("pf") != string::npos)  hDijetMass = (TH1F*) inputFile->Get("M_PFJet1PFJet2_VarBin;1");
+  else  hDijetMass = (TH1F*) inputFile->Get("M_FatPFJet1FatPFJet2_VarBin;1");
   //  TH1F *hQCDMC = (TH1F*)inputFile->Get("fit_DijetMass_mc_wide");
   //  inputFileMC = TFile::Open("histograms_summer11_mc_ak5.root", "UPDATE");
   inputFileMC = TFile::Open("histograms_Fat30_summer11_mc_ak5.root", "UPDATE");
@@ -125,7 +135,9 @@ void DijetMass_chiyoung_lowMass(){
   pave_fit->AddText(" #sqrt{s} = 7 TeV");
   pave_fit->AddText("|#eta| < 2.5, |#Delta#eta| < 1.3");
   //  pave_fit->AddText("M_{jj} > 890 GeV");
-  pave_fit->AddText("PF Jets");
+  if (sReco.find("pf") != string::npos)   pave_fit->AddText("PF AK5 Jets");
+  else   pave_fit->AddText("Wide Jets");
+
   pave_fit->SetFillColor(0);
   pave_fit->SetLineColor(0);
   pave_fit->SetFillStyle(0);
@@ -142,9 +154,10 @@ void DijetMass_chiyoung_lowMass(){
   pave->AddText(Form("CMS  (%.3f fb^{-1})", lumi/1000.)); 
 //  pave->AddText("Coucou"); 
   pave->AddText(" #sqrt{s} = 7 TeV");
-  pave->AddText("M_{jj} > 526 GeV");
+  pave->AddText(Form("M_{jj} > %.1f GeV", mMin));
   pave->AddText("|#eta| < 2.5, |#Delta#eta| < 1.3");
-  pave->AddText("PF Jets");
+  if (sReco.find("pf") != string::npos)   pave->AddText("PF AK5 Jets");
+  else pave->AddText("Wide Jets");
   pave->SetFillColor(0);
   pave->SetLineColor(0);
   pave->SetFillStyle(0);
@@ -240,7 +253,7 @@ void DijetMass_chiyoung_lowMass(){
 
 
    // QCD Fit -- fit to qcd
-   TF1 *f_qcd = new TF1("fit_qcd",fitQCD,526.0,3000.0,4); 
+   TF1 *f_qcd = new TF1("fit_qcd",fitQCD,mMin,3000.0,4); 
    gStyle->SetOptFit(1111); 
    f_qcd->SetParameter(0,6.15613e+18);
    f_qcd->SetParameter(1,-3.75321e+00);
@@ -253,7 +266,7 @@ void DijetMass_chiyoung_lowMass(){
   cout << "Fit QCD Up" << endl << endl << endl;
 
    // QCD up Fit -- fit to JES plus
-   TF1 *f_qcd_up = new TF1("fit_qcd_up",fitQCD,526.0,3000.0,4); 
+   TF1 *f_qcd_up = new TF1("fit_qcd_up",fitQCD,mMin,3000.0,4); 
    gStyle->SetOptFit(1111); 
    f_qcd_up->SetParameter(0,1.47700e+19);
    f_qcd_up->SetParameter(1,-4.03984e+00);
@@ -264,7 +277,7 @@ void DijetMass_chiyoung_lowMass(){
    cout << "Fit QCD Do" << endl << endl << endl;
 
    // QCD down Fit -- fit to JES minus
-   TF1 *f_qcd_down = new TF1("fit_qcd_down",fitQCD,526.0,3000.0,4); 
+   TF1 *f_qcd_down = new TF1("fit_qcd_down",fitQCD,mMin,3000.0,4); 
    gStyle->SetOptFit(1111); 
    f_qcd_down->SetParameter(0,2.12985e+19);
    f_qcd_down->SetParameter(1,-4.63606e+00);
@@ -295,21 +308,21 @@ void DijetMass_chiyoung_lowMass(){
         vy[i]   = n / (dm*lumi); 
 
      
-	if (n<25 && mass>526 && mass<=2895)
+	if (n<25 && mass>565 && mass<=2895)
        	{
 		nl = n-0.5*TMath::ChisquareQuantile(a,2*n);
 		nh = 0.5*TMath::ChisquareQuantile(1-a,2*(n+1))-n;
 		veyl[i] = nl/(lumi*dm);
 		veyh[i] = nh/(lumi*dm);  
 	}
-	else if (n<25 && mass<=526 && mass>2895 && n>0)
+	else if (n<25 && mass<=565 && mass>2895 && n>0)
 	{
 		nl = n-0.5*TMath::ChisquareQuantile(a,2*n);
 		nh = 0.5*TMath::ChisquareQuantile(1-a,2*(n+1))-n;
 		veyl[i] = nl/(lumi*dm);
 		veyh[i] = nh/(lumi*dm);  
 	}
-	else if (n>=25 && mass >= 525)
+	else if (n>=25 && mass >= mMin)
 	{
 		veyl[i] = sqrt(n)/(lumi*dm);
 		veyh[i] = sqrt(n)/(lumi*dm);
@@ -331,7 +344,7 @@ void DijetMass_chiyoung_lowMass(){
     TGraphAsymmErrors *g2 = new TGraphAsymmErrors(i,vx,vy,vexl,vexh,veyl,veyh);
 
     // Fit to data    
-    TF1 *fit = new TF1("fit",fitQCD1,526.0,3000.0,4); // 4 Par. Fit
+    TF1 *fit = new TF1("fit",fitQCD1,mMin,3000.0,4); // 4 Par. Fit
     gStyle->SetOptFit(1111); 
     fit->SetParameter(0,1.73132e-05);
     fit->SetParameter(1,6.80678e+00);
@@ -339,10 +352,13 @@ void DijetMass_chiyoung_lowMass(){
     fit->SetParameter(3,1.93728e-01);
     fit->SetLineWidth(2);
     fit->SetLineColor(4);
-    g->Fit("fit","","",525.0,2895.0);	
+
+
+
+    g->Fit("fit","","",mMin,2895.0);	
     
     //Alternate Fits 4 parameter
-    TF1 *f_4par = new TF1("fit_4par",fitQCD,526.0,3000.0,4); // 4 Par. Fit
+    TF1 *f_4par = new TF1("fit_4par",fitQCD,mMin,3000.0,4); // 4 Par. Fit
     gStyle->SetOptFit(1111); 
     f_4par->SetParameter(0,3.08269e+16);
     f_4par->SetParameter(1,8.23385e+00);
@@ -354,7 +370,7 @@ void DijetMass_chiyoung_lowMass(){
 
 
     //Alternate Fits 3 parameter
-    TF1 *f_3par = new TF1("fit_3par",fitQCD2,526.0,2895.0,3); // 3 Par. Fit
+    TF1 *f_3par = new TF1("fit_3par",fitQCD2,mMin,2895.0,3); // 3 Par. Fit
     gStyle->SetOptFit(1111);
     f_3par->SetParameter(0,6.32475e+15);
     f_3par->SetParameter(1,9.89115e+00);
@@ -405,12 +421,12 @@ void DijetMass_chiyoung_lowMass(){
     g2->GetXaxis()->SetRangeUser(700,3000);
     g2->GetYaxis()->SetRangeUser(0.000001,200);
     g2->Draw("APZ");
-    g2->Fit("fit","","sames",526.0,2895.0);
+    g2->Fit("fit","","sames",mMin,2895.0);
 
     TString status_default= gMinuit->fCstatu.Data();
-    g2->Fit("fit_4par","+","sames",526.0,2895.0);
+    g2->Fit("fit_4par","+","sames",mMin,2895.0);
     TString status_4par= gMinuit->fCstatu.Data();
-    g2->Fit("fit_3par","+","sames",526.0,2895.0);
+    g2->Fit("fit_3par","+","sames",mMin,2895.0);
     TString status_3par= gMinuit->fCstatu.Data();
     TLegend *leg = new TLegend(0.18,0.78,0.38,0.92);
     leg->SetTextSize(0.03146853);
@@ -575,141 +591,141 @@ void DijetMass_chiyoung_lowMass(){
   // The end of comparison between data and PTYHIA QCD MC
    
    // Dijet Resonance Signals	
-   TH1F *h_qstar1 = (TH1F*)hDijetMass->Clone("h_qstar1");
-   TH1F *h_qstar2 = (TH1F*)hDijetMass->Clone("h_qstar2");
-   TH1F *h_string1 = (TH1F*)hDijetMass->Clone("h_string1");
-   TH1F *h_string2 = (TH1F*)hDijetMass->Clone("h_string2");
-   h_qstar1->Reset();
-   h_qstar2->Reset();
-   h_string1->Reset();
-   h_string2->Reset();
+   TH1F *h_diquark1 = (TH1F*)hDijetMass->Clone("h_diquark1");
+   TH1F *h_diquark2 = (TH1F*)hDijetMass->Clone("h_diquark2");
+   TH1F *h_wprime1 = (TH1F*)hDijetMass->Clone("h_wprime1");
+   TH1F *h_wprime2 = (TH1F*)hDijetMass->Clone("h_wprime2");
+   h_diquark1->Reset();
+   h_diquark2->Reset();
+   h_wprime1->Reset();
+   h_wprime2->Reset();
 
-   // Mass of excited quarks and strings
-   double qstar1 = 700;
-   double qstar2 = 1400;
-   double string1 = 700;
-   double string2 = 1400;
+   // Mass of excited quarks and wprimes
+   double diquark1 = 700;
+   double diquark2 = 1400;
+   double wprime1 = 700;
+   double wprime2 = 1400;
 
 
-   unsigned int qbin1 = (qstar1 / 100) -5;
-   unsigned int qbin2 = (qstar2 / 100) -5;
-   unsigned int sbin1 = (string1 / 100) -5;
-   unsigned int sbin2 = (string2 / 100) - 5;
+   unsigned int qbin1 = (diquark1 / 100) -5;
+   unsigned int qbin2 = (diquark2 / 100) -5;
+   unsigned int sbin1 = (wprime1 / 100) -5;
+   unsigned int sbin2 = (wprime2 / 100) - 5;
    
-   std::vector<double> v_string1, v_string1_mjj, v_string2, v_string2_mjj, v_qstar1, v_qstar1_mjj, v_qstar2, v_qstar2_mjj, v_string1_2, v_string2_2, v_qstar1_2, v_qstar2_2, v_qstar1_3, v_qstar2_3;
+   std::vector<double> v_wprime1, v_wprime1_mjj, v_wprime2, v_wprime2_mjj, v_diquark1, v_diquark1_mjj, v_diquark2, v_diquark2_mjj, v_wprime1_2, v_wprime2_2, v_diquark1_2, v_diquark2_2, v_diquark1_3, v_diquark2_3;
 
    for(int i=0;i<hDijetMass->GetNbinsX();i++)
     {
      double dm = hDijetMass->GetBinWidth(i+1);
      double mass = hDijetMass->GetBinCenter(i+1);
      double fitt = fit->Eval(mass,0,0);
-     if(mass>0.6*qstar1 && mass<1.26*qstar1){
-                v_qstar1.push_back(QstarBinnedProb(mass,qstar1) * qstar_newcut[qbin1] / dm);
-		v_qstar1_2.push_back(((QstarBinnedProb(mass,qstar1) * qstar_newcut[qbin1] / dm)+fitt)/fitt);
-		v_qstar1_3.push_back(((QstarBinnedProb(mass,qstar1) * qstar_newcut[qbin1] / dm))/fitt);
-		v_qstar1_mjj.push_back(mass);
+     if(mass>0.6*diquark1 && mass<1.26*diquark1){
+                v_diquark1.push_back(QstarBinnedProb(mass,diquark1) * diquark_newcut[qbin1] / dm);
+		v_diquark1_2.push_back(((QstarBinnedProb(mass,diquark1) * diquark_newcut[qbin1] / dm)+fitt)/fitt);
+		v_diquark1_3.push_back(((QstarBinnedProb(mass,diquark1) * diquark_newcut[qbin1] / dm))/fitt);
+		v_diquark1_mjj.push_back(mass);
 
 		}
 
-     if(mass>0.6*qstar2 && mass<1.28*qstar2){
-		v_qstar2.push_back(QstarBinnedProb(mass,qstar2) * qstar_newcut[qbin2] / dm);
-		v_qstar2_2.push_back(((QstarBinnedProb(mass,qstar2) * qstar_newcut[qbin2] / dm)+fitt)/fitt); 
-		v_qstar2_3.push_back(((QstarBinnedProb(mass,qstar2) * qstar_newcut[qbin2] / dm))/fitt); 
-		v_qstar2_mjj.push_back(mass);
+     if(mass>0.6*diquark2 && mass<1.28*diquark2){
+		v_diquark2.push_back(QstarBinnedProb(mass,diquark2) * diquark_newcut[qbin2] / dm);
+		v_diquark2_2.push_back(((QstarBinnedProb(mass,diquark2) * diquark_newcut[qbin2] / dm)+fitt)/fitt); 
+		v_diquark2_3.push_back(((QstarBinnedProb(mass,diquark2) * diquark_newcut[qbin2] / dm))/fitt); 
+		v_diquark2_mjj.push_back(mass);
 		}
 
-     if(mass>0.6*string1 && mass<1.26*string1){
- 		v_string1.push_back(QstarBinnedProb(mass,string1) * string_newcut[sbin1] / dm);
- 		v_string1_2.push_back(((QstarBinnedProb(mass,string1) * string_newcut[sbin1] / dm)+fitt)/fitt);
-		v_string1_mjj.push_back(mass);
+     if(mass>0.6*wprime1 && mass<1.26*wprime1){
+ 		v_wprime1.push_back(QstarBinnedProb(mass,wprime1) * wprime_newcut[sbin1] / dm);
+ 		v_wprime1_2.push_back(((QstarBinnedProb(mass,wprime1) * wprime_newcut[sbin1] / dm)+fitt)/fitt);
+		v_wprime1_mjj.push_back(mass);
 		}
 
-     if(mass>0.6*string2 && mass<1.28*string2){
-		v_string2.push_back(QstarBinnedProb(mass,string2) * string_newcut[sbin2] / dm);
-		v_string2_2.push_back(((QstarBinnedProb(mass,string2) * string_newcut[sbin2] / dm)+fitt)/fitt);
-		v_string2_mjj.push_back(mass);
+     if(mass>0.6*wprime2 && mass<1.28*wprime2){
+		v_wprime2.push_back(QstarBinnedProb(mass,wprime2) * wprime_newcut[sbin2] / dm);
+		v_wprime2_2.push_back(((QstarBinnedProb(mass,wprime2) * wprime_newcut[sbin2] / dm)+fitt)/fitt);
+		v_wprime2_mjj.push_back(mass);
 		}		
 	}
 
-   const unsigned size1 = v_qstar1.size();
+   const unsigned size1 = v_diquark1.size();
    double q1[size1], q1_2[size1], q1_3[size1], mass1[size1];
    for(int i=0; i<size1; i++){
-      q1[i] = v_qstar1[i];
-      q1_2[i] = v_qstar1_2[i];
-      q1_3[i] = v_qstar1_3[i];
-      mass1[i] = v_qstar1_mjj[i];
+      q1[i] = v_diquark1[i];
+      q1_2[i] = v_diquark1_2[i];
+      q1_3[i] = v_diquark1_3[i];
+      mass1[i] = v_diquark1_mjj[i];
     }
-   const unsigned size2 = v_qstar2.size();
+   const unsigned size2 = v_diquark2.size();
    std::cout << "size2 = " << size2 << std::endl;
    double q2[size2], q2_2[size2], q2_3[size2], mass2[size2];
    for(int i=0; i<size2; i++){
-      q2[i] = v_qstar2[i];
+      q2[i] = v_diquark2[i];
       std::cout << "q2[" << i << "] = " << q2[i] << std::endl;
-      q2_2[i] = v_qstar2_2[i];
-      q2_3[i] = v_qstar2_3[i];
-      mass2[i] = v_qstar2_mjj[i];
+      q2_2[i] = v_diquark2_2[i];
+      q2_3[i] = v_diquark2_3[i];
+      mass2[i] = v_diquark2_mjj[i];
       std::cout << "mass2[" << i << "] = " << mass2[i] << std::endl;
    }
-   const unsigned size3 = v_string1.size();
+   const unsigned size3 = v_wprime1.size();
    double s1[size3], s1_2[size3], mass3[size3];
    for(int i=0; i<size3; i++){
-      s1[i] = v_string1[i];
-      s1_2[i] = v_string1_2[i];
-      mass3[i] = v_string1_mjj[i];
+      s1[i] = v_wprime1[i];
+      s1_2[i] = v_wprime1_2[i];
+      mass3[i] = v_wprime1_mjj[i];
    }
-   const unsigned size4 = v_string2.size();
+   const unsigned size4 = v_wprime2.size();
    double s2[size4], s2_2[size4], mass4[size4];
    for(int i=0; i<size4; i++){
-      s2[i] = v_string2[i];
-      s2_2[i] = v_string2_2[i];
-      mass4[i] = v_string2_mjj[i];
+      s2[i] = v_wprime2[i];
+      s2_2[i] = v_wprime2_2[i];
+      mass4[i] = v_wprime2_mjj[i];
    }
 		
-   TGraph* gr_qstar1 = new TGraph(size1, mass1, q1);  
-   TGraph* gr_qstar2 = new TGraph(size2, mass2, q2);
-   TGraph* gr_string1 = new TGraph(size3, mass3, s1);
-   TGraph* gr_string2 = new TGraph(size4, mass4, s2);
+   TGraph* gr_diquark1 = new TGraph(size1, mass1, q1);  
+   TGraph* gr_diquark2 = new TGraph(size2, mass2, q2);
+   TGraph* gr_wprime1 = new TGraph(size3, mass3, s1);
+   TGraph* gr_wprime2 = new TGraph(size4, mass4, s2);
 	
-   TGraph* gr_qstar1_2 = new TGraph(size1, mass1, q1_2);  
-   TGraph* gr_qstar2_2 = new TGraph(size2, mass2, q2_2);
-   TGraph* gr_string1_2 = new TGraph(size3-1, mass3, s1_2);
-   TGraph* gr_string2_2 = new TGraph(size4-1, mass4, s2_2);
+   TGraph* gr_diquark1_2 = new TGraph(size1, mass1, q1_2);  
+   TGraph* gr_diquark2_2 = new TGraph(size2, mass2, q2_2);
+   TGraph* gr_wprime1_2 = new TGraph(size3-1, mass3, s1_2);
+   TGraph* gr_wprime2_2 = new TGraph(size4-1, mass4, s2_2);
 	
-   TGraph* gr_qstar1_3 = new TGraph(size1, mass1, q1_3);  
-   TGraph* gr_qstar2_3 = new TGraph(size2, mass2, q2_3);
+   TGraph* gr_diquark1_3 = new TGraph(size1, mass1, q1_3);  
+   TGraph* gr_diquark2_3 = new TGraph(size2, mass2, q2_3);
 
-   gr_string1->SetLineColor(ci_g);
-   gr_string1->SetLineStyle(7);
-   gr_string1->SetLineWidth(2);
-   gr_qstar1->SetLineColor(2);
-   gr_qstar1->SetLineStyle(5);
-   gr_qstar1->SetLineWidth(2);
-   gr_qstar2->SetLineColor(2);
-   gr_qstar2->SetLineStyle(5);
-   gr_qstar2->SetLineWidth(2);
-   gr_string2->SetLineColor(ci_g);
-   gr_string2->SetLineStyle(7);
-   gr_string2->SetLineWidth(2);
+   gr_wprime1->SetLineColor(ci_g);
+   gr_wprime1->SetLineStyle(7);
+   gr_wprime1->SetLineWidth(2);
+   gr_diquark1->SetLineColor(2);
+   gr_diquark1->SetLineStyle(5);
+   gr_diquark1->SetLineWidth(2);
+   gr_diquark2->SetLineColor(2);
+   gr_diquark2->SetLineStyle(5);
+   gr_diquark2->SetLineWidth(2);
+   gr_wprime2->SetLineColor(ci_g);
+   gr_wprime2->SetLineStyle(7);
+   gr_wprime2->SetLineWidth(2);
 
-   gr_string1_2->SetLineColor(ci_g);
-   gr_string1_2->SetLineStyle(7);
-   gr_string1_2->SetLineWidth(2);
-   gr_qstar1_2->SetLineColor(2);
-   gr_qstar1_2->SetLineStyle(5);
-   gr_qstar1_2->SetLineWidth(2);
-   gr_qstar2_2->SetLineColor(2);
-   gr_qstar2_2->SetLineStyle(5);
-   gr_qstar2_2->SetLineWidth(2);
-   gr_string2_2->SetLineColor(ci_g);
-   gr_string2_2->SetLineStyle(7);
-   gr_string2_2->SetLineWidth(2);
+   gr_wprime1_2->SetLineColor(ci_g);
+   gr_wprime1_2->SetLineStyle(7);
+   gr_wprime1_2->SetLineWidth(2);
+   gr_diquark1_2->SetLineColor(2);
+   gr_diquark1_2->SetLineStyle(5);
+   gr_diquark1_2->SetLineWidth(2);
+   gr_diquark2_2->SetLineColor(2);
+   gr_diquark2_2->SetLineStyle(5);
+   gr_diquark2_2->SetLineWidth(2);
+   gr_wprime2_2->SetLineColor(ci_g);
+   gr_wprime2_2->SetLineStyle(7);
+   gr_wprime2_2->SetLineWidth(2);
 
-   gr_qstar1_3->SetLineColor(2);
-   gr_qstar1_3->SetLineStyle(5);
-   gr_qstar1_3->SetLineWidth(2);
-   gr_qstar2_3->SetLineColor(2);
-   gr_qstar2_3->SetLineStyle(5);
-   gr_qstar2_3->SetLineWidth(2);
+   gr_diquark1_3->SetLineColor(2);
+   gr_diquark1_3->SetLineStyle(5);
+   gr_diquark1_3->SetLineWidth(2);
+   gr_diquark2_3->SetLineColor(2);
+   gr_diquark2_3->SetLineStyle(5);
+   gr_diquark2_3->SetLineWidth(2);
 
 
 
@@ -726,43 +742,43 @@ void DijetMass_chiyoung_lowMass(){
 
    g->Draw("PZ");
 
-   gr_qstar1->Draw("same");
-   gr_qstar2->Draw("same");
-   gr_string1->Draw("same");
-   gr_string2->Draw("same");
+   gr_diquark1->Draw("same");
+   //   gr_diquark2->Draw("same");
+   gr_wprime1->Draw("same");
+   //   gr_wprime2->Draw("same");
 
-   TPaveText *pt_c5_string1 = new TPaveText(0.35,0.7,0.50,0.8,"NDC");
-   pt_c5_string1->SetFillColor(0);
-   pt_c5_string1->SetFillStyle(0);
-   pt_c5_string1->SetBorderSize(0);
-   pt_c5_string1->SetTextColor(ci_g);
-   pt_c5_string1->AddText("S (0.7 TeV)");
+   TPaveText *pt_c5_wprime1 = new TPaveText(0.35,0.7,0.50,0.8,"NDC");
+   pt_c5_wprime1->SetFillColor(0);
+   pt_c5_wprime1->SetFillStyle(0);
+   pt_c5_wprime1->SetBorderSize(0);
+   pt_c5_wprime1->SetTextColor(ci_g);
+   pt_c5_wprime1->AddText("S (0.7 TeV)");
 
-   TPaveText *pt_c5_string2 = new TPaveText(0.65,0.45,0.8,0.55,"NDC");
-   pt_c5_string2->SetFillColor(0);
-   pt_c5_string2->SetFillStyle(0);
-   pt_c5_string2->SetBorderSize(0);
-   pt_c5_string2->SetTextColor(ci_g);
-   pt_c5_string2->AddText("S (1.0 TeV)");
+   TPaveText *pt_c5_wprime2 = new TPaveText(0.65,0.45,0.8,0.55,"NDC");
+   pt_c5_wprime2->SetFillColor(0);
+   pt_c5_wprime2->SetFillStyle(0);
+   pt_c5_wprime2->SetBorderSize(0);
+   pt_c5_wprime2->SetTextColor(ci_g);
+   pt_c5_wprime2->AddText("S (1.0 TeV)");
 
-   TPaveText *pt_c5_qstar1 = new TPaveText(0.18,0.35,0.33,0.45,"NDC");
-   pt_c5_qstar1->SetFillColor(0);
-   pt_c5_qstar1->SetFillStyle(0);
-   pt_c5_qstar1->SetBorderSize(0);
-   pt_c5_qstar1->SetTextColor(2);
-   pt_c5_qstar1->AddText("q* (0.7 TeV)");
+   TPaveText *pt_c5_diquark1 = new TPaveText(0.18,0.35,0.33,0.45,"NDC");
+   pt_c5_diquark1->SetFillColor(0);
+   pt_c5_diquark1->SetFillStyle(0);
+   pt_c5_diquark1->SetBorderSize(0);
+   pt_c5_diquark1->SetTextColor(2);
+   pt_c5_diquark1->AddText("q* (0.7 TeV)");
 
-   TPaveText *pt_c5_qstar2 = new TPaveText(0.32,0.25,0.47,0.35,"NDC");
-   pt_c5_qstar2->SetFillColor(0);
-   pt_c5_qstar2->SetFillStyle(0);
-   pt_c5_qstar2->SetBorderSize(0);
-   pt_c5_qstar2->SetTextColor(2);
-   pt_c5_qstar2->AddText("q* (2.3 TeV)");
+   TPaveText *pt_c5_diquark2 = new TPaveText(0.32,0.25,0.47,0.35,"NDC");
+   pt_c5_diquark2->SetFillColor(0);
+   pt_c5_diquark2->SetFillStyle(0);
+   pt_c5_diquark2->SetBorderSize(0);
+   pt_c5_diquark2->SetTextColor(2);
+   pt_c5_diquark2->AddText("q* (2.3 TeV)");
 
-   pt_c5_string1->Draw("sames");
-   pt_c5_string2->Draw("sames");
-   pt_c5_qstar1->Draw("sames");
-   pt_c5_qstar2->Draw("sames");
+   pt_c5_wprime1->Draw("sames");
+   //pt_c5_wprime2->Draw("sames");
+   pt_c5_diquark1->Draw("sames");
+   //   pt_c5_diquark2->Draw("sames");
 	
    TLegend *leg2 = new TLegend(0.22,0.78,0.45,0.93);
    leg2->SetTextSize(0.03146853);
@@ -771,8 +787,8 @@ void DijetMass_chiyoung_lowMass(){
    leg2->SetFillStyle(0);
    leg2->AddEntry(g,Form("CMS  (%.3f fb^{-1})", lumi),"PL");
    leg2->AddEntry(fit,"Fit","L");
-   leg2->AddEntry(gr_qstar1,"Excited Quark","L");
-   leg2->AddEntry(gr_string1,"String Resonance","L");
+   leg2->AddEntry(gr_diquark1,"Diquark","L");
+   leg2->AddEntry(gr_wprime1,"W'","L");
    leg2->Draw("same");
    pave_fit->Draw("same");
 
@@ -807,7 +823,7 @@ void DijetMass_chiyoung_lowMass(){
 	eyh_pulls[i] = veyh[i]/fit_default;
 	eyl_pulls[i] = veyl[i]/fit_default;
 				
-	if(m<=525 || m>2895){
+	if(m<=565 || m>2895){
 		pulls_3par[i] = -999;
 		pulls_4par[i] = -999;
 		pulls[i] = -999;
@@ -887,29 +903,29 @@ void DijetMass_chiyoung_lowMass(){
    hDiff->GetXaxis()->SetRangeUser(500.,3000.);
    hDiff->GetYaxis()->SetRangeUser(-1.5,3.);
    hDiff->Draw("APZ");
-   gr_qstar1_3->Draw("Lsame");
-   gr_qstar2_3->Draw("Lsame");
+   gr_diquark1_3->Draw("Lsame");
+   //  gr_diquark2_3->Draw("Lsame");
    l = new TLine(500, 0.0, 3000, 0.0);
    l->SetLineStyle(2);
    l->Draw("same");
    pave->Draw("same");
 
-   TPaveText *pt_c6_qstar1 = new TPaveText(0.20,0.3,0.35,0.4,"NDC");
-   pt_c6_qstar1->SetFillColor(0);
-   pt_c6_qstar1->SetTextColor(2);
-   pt_c6_qstar1->SetFillStyle(0);
-   pt_c6_qstar1->SetBorderSize(0);
-   pt_c6_qstar1->AddText("q* (0.7 TeV)");
+   TPaveText *pt_c6_diquark1 = new TPaveText(0.20,0.3,0.35,0.4,"NDC");
+   pt_c6_diquark1->SetFillColor(0);
+   pt_c6_diquark1->SetTextColor(2);
+   pt_c6_diquark1->SetFillStyle(0);
+   pt_c6_diquark1->SetBorderSize(0);
+   pt_c6_diquark1->AddText("q* (0.7 TeV)");
 
-   TPaveText *pt_c6_qstar2 = new TPaveText(0.40,0.3,0.55,0.4,"NDC");
-   pt_c6_qstar2->SetFillColor(0);
-   pt_c6_qstar2->SetTextColor(2);
-   pt_c6_qstar2->SetFillStyle(0);
-   pt_c6_qstar2->SetBorderSize(0);
-   pt_c6_qstar2->AddText("q* (1.0 TeV)");
+   TPaveText *pt_c6_diquark2 = new TPaveText(0.40,0.3,0.55,0.4,"NDC");
+   pt_c6_diquark2->SetFillColor(0);
+   pt_c6_diquark2->SetTextColor(2);
+   pt_c6_diquark2->SetFillStyle(0);
+   pt_c6_diquark2->SetBorderSize(0);
+   pt_c6_diquark2->AddText("q* (1.0 TeV)");
 
-   pt_c6_qstar1->Draw("sames");
-   pt_c6_qstar2->Draw("sames");
+   pt_c6_diquark1->Draw("sames");
+   //   pt_c6_diquark2->Draw("sames");
 
    c6->SaveAs("Plots_lowMass/DataMinusFitDividedByFit.png");
    c6->SaveAs("Plots_lowMass/DataMinusFitDividedByFit.eps");
@@ -970,26 +986,26 @@ void DijetMass_chiyoung_lowMass(){
    hratio->Draw("APZ");
    l->Draw("same");
 	
-   gr_qstar1_2->Draw("Lsame");
-   gr_qstar2_2->Draw("Lsame");
+   gr_diquark1_2->Draw("Lsame");
+   //  gr_diquark2_2->Draw("Lsame");
    
 
-   TPaveText *pt_c10_qstar1 = new TPaveText(0.2,0.5,0.35,0.6, "NDC");
-   pt_c10_qstar1->SetFillColor(0);
-   pt_c10_qstar1->SetTextColor(2);
-   pt_c10_qstar1->SetFillStyle(0);
-   pt_c10_qstar1->SetBorderSize(0);
-   pt_c10_qstar1->AddText("q* (0.7 TeV)");
+   TPaveText *pt_c10_diquark1 = new TPaveText(0.2,0.5,0.35,0.6, "NDC");
+   pt_c10_diquark1->SetFillColor(0);
+   pt_c10_diquark1->SetTextColor(2);
+   pt_c10_diquark1->SetFillStyle(0);
+   pt_c10_diquark1->SetBorderSize(0);
+   pt_c10_diquark1->AddText("q* (0.7 TeV)");
 
-   TPaveText *pt_c10_qstar2 = new TPaveText(0.5,0.5,0.65,0.6,"NDC");
-   pt_c10_qstar2->SetFillColor(0);
-   pt_c10_qstar2->SetTextColor(2);
-   pt_c10_qstar2->SetFillStyle(0);
-   pt_c10_qstar2->SetBorderSize(0);
-   pt_c10_qstar2->AddText("q* (1.0 TeV)");
+   TPaveText *pt_c10_diquark2 = new TPaveText(0.5,0.5,0.65,0.6,"NDC");
+   pt_c10_diquark2->SetFillColor(0);
+   pt_c10_diquark2->SetTextColor(2);
+   pt_c10_diquark2->SetFillStyle(0);
+   pt_c10_diquark2->SetBorderSize(0);
+   pt_c10_diquark2->AddText("q* (1.0 TeV)");
 
-   pt_c10_qstar1->Draw("sames");
-   pt_c10_qstar2->Draw("sames");
+   pt_c10_diquark1->Draw("sames");
+   //  pt_c10_diquark2->Draw("sames");
 
    pave->Draw("smaes");
 
@@ -1037,49 +1053,49 @@ void DijetMass_chiyoung_lowMass(){
    leg->AddEntry(fit,"Fit","L");
    leg->AddEntry(f_qcd,"QCD Pythia","L");
    leg->AddEntry(htmp,"JES Uncertainty","F");
-   leg->AddEntry(gr_qstar1,"Excited Quark","L");
-   leg->AddEntry(gr_string1,"String Resonance","L");
+   leg->AddEntry(gr_diquark1,"Diquark","L");
+   leg->AddEntry(gr_wprime1,"W'","L");
    leg->Draw("same");
 
    pave_fit->Draw("same");
 
-   gr_qstar1->Draw("same");
-   gr_qstar2->Draw("same");
-   gr_string1->Draw("same");
-   gr_string2->Draw("same");
+   gr_diquark1->Draw("same");
+   //   gr_diquark2->Draw("same");
+   gr_wprime1->Draw("same");
+   //   gr_wprime2->Draw("same");
 
-   TPaveText *pt_c11_string1 = new TPaveText(0.45,0.50,0.6,0.6,"NDC");
-   pt_c11_string1->SetFillColor(0);
-   pt_c11_string1->SetFillStyle(0);
-   pt_c11_string1->SetBorderSize(0);
-   pt_c11_string1->SetTextColor(TColor::GetColor("#006600"));
-   pt_c11_string1->AddText("S (0.7 TeV)");
+   TPaveText *pt_c11_wprime1 = new TPaveText(0.15,0.25,0.30,0.4,"NDC");
+   pt_c11_wprime1->SetFillColor(0);
+   pt_c11_wprime1->SetFillStyle(0);
+   pt_c11_wprime1->SetBorderSize(0);
+   pt_c11_wprime1->SetTextColor(TColor::GetColor("#006600"));
+   pt_c11_wprime1->AddText("W' (0.7 TeV)");
 
-   TPaveText *pt_c11_string2 = new TPaveText(0.60,0.45,0.75,0.55,"NDC");
-   pt_c11_string2->SetFillColor(0);
-   pt_c11_string2->SetFillStyle(0);
-   pt_c11_string2->SetBorderSize(0);
-   pt_c11_string2->SetTextColor(TColor::GetColor("#006600"));
-   pt_c11_string2->AddText("S (1.0 TeV)");
+   TPaveText *pt_c11_wprime2 = new TPaveText(0.60,0.45,0.75,0.55,"NDC");
+   pt_c11_wprime2->SetFillColor(0);
+   pt_c11_wprime2->SetFillStyle(0);
+   pt_c11_wprime2->SetBorderSize(0);
+   pt_c11_wprime2->SetTextColor(TColor::GetColor("#006600"));
+   pt_c11_wprime2->AddText("W' (1.0 TeV)");
 
-   TPaveText *pt_c11_qstar1 = new TPaveText(0.20,0.30,0.35,0.45,"NDC");
-   pt_c11_qstar1->SetFillColor(0);
-   pt_c11_qstar1->SetFillStyle(0);
-   pt_c11_qstar1->SetBorderSize(0);
-   pt_c11_qstar1->SetTextColor(2);
-   pt_c11_qstar1->AddText("q* (0.7 TeV)");
+   TPaveText *pt_c11_diquark1 = new TPaveText(0.26,0.40,0.45,0.53,"NDC");
+   pt_c11_diquark1->SetFillColor(0);
+   pt_c11_diquark1->SetFillStyle(0);
+   pt_c11_diquark1->SetBorderSize(0);
+   pt_c11_diquark1->SetTextColor(2);
+   pt_c11_diquark1->AddText("Diquark (0.7 TeV)");
 
-   TPaveText *pt_c11_qstar2 = new TPaveText(0.40,0.15,0.55,0.20,"NDC");
-   pt_c11_qstar2->SetFillColor(0);
-   pt_c11_qstar2->SetFillStyle(0);
-   pt_c11_qstar2->SetBorderSize(0);
-   pt_c11_qstar2->SetTextColor(2);
-   pt_c11_qstar2->AddText("q* (1.0 TeV)");
+   TPaveText *pt_c11_diquark2 = new TPaveText(0.40,0.15,0.55,0.20,"NDC");
+   pt_c11_diquark2->SetFillColor(0);
+   pt_c11_diquark2->SetFillStyle(0);
+   pt_c11_diquark2->SetBorderSize(0);
+   pt_c11_diquark2->SetTextColor(2);
+   pt_c11_diquark2->AddText("Diquark (1.0 TeV)");
 
-   pt_c11_string1->Draw("sames");
-   pt_c11_string2->Draw("sames");
-   pt_c11_qstar1->Draw("sames");
-   pt_c11_qstar2->Draw("sames");
+   pt_c11_wprime1->Draw("sames");
+   //   pt_c11_wprime2->Draw("sames");
+   pt_c11_diquark1->Draw("sames");
+   //   pt_c11_diquark2->Draw("sames");
    
    c11->cd(2);
    p11_2 = (TPad*)c11->GetPad(2);
@@ -1095,8 +1111,9 @@ void DijetMass_chiyoung_lowMass(){
    vFrame2->SetXTitle("Dijet Mass (GeV)");
    vFrame2->GetXaxis()->SetTitleSize(0.06);
    vFrame2->SetYTitle("Significance");
-   vFrame2->GetYaxis()->SetTitleSize(0.16);
+   vFrame2->GetYaxis()->SetTitleSize(0.12);
    vFrame2->GetYaxis()->SetLabelSize(0.10);
+   vFrame2->GetYaxis()->SetTitleOffset(0.50);
    vFrame2->GetXaxis()->SetTitleOffset(0.90);
    vFrame2->GetXaxis()->SetTitleSize(0.18);
    vFrame2->GetXaxis()->SetLabelSize(0.18);
