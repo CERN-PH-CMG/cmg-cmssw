@@ -63,7 +63,7 @@ def addPreselectionSequences(process) :
         process.primaryVertexFilter*
         process.goodVertexCounter*
         process.HBHENoiseFilter*
-        process.noHBHEnoiseCounter*
+        process.noHBHEnoiseCounter
         #process.CSCTightHaloFilter*
         #process.nobeamHaloCounter*
         #process.simpleDRfilter*
