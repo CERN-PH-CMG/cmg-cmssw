@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
   // Declare magic numbers here
 
   double MININVMASS = 890.; // HT-fat-4479/pb
-  double MAXINVMASS = 5000.;
+  double MAXINVMASS = 4509.;
 
 
   //  std::string DATASETFN="../data/massFat_data_HT_Run2011A_160404_167784_Fat30_ak5.txt";
@@ -92,13 +92,13 @@ int main(int argc, char* argv[])
   bool USELOGNORM=true;  // use lognormal or gaussian nuisance prior pdfs
   
   // histogram binning (for display only)
-  const int NBINS=50;
+  const int NBINS=54;
   Double_t BOUNDARIES[NBINS] = { 220, 244, 270, 296, 325, 354, 386, 419, 453,
 				 489, 526, 565, 606, 649, 693, 740, 788, 838,
 				 890, 944, 1000, 1058, 1118, 1181, 1246, 1313, 1383,
 				 1455, 1530, 1607, 1687, 1770, 1856, 1945, 2037, 2132,
 				 2231, 2332, 2438, 2546, 2659, 2775, 2895, 3019, 3147,
-	                         3279, 3416, 3558, 3704, 3854 };
+	                         3279, 3416, 3558, 3704, 3854, 4010, 4171, 4337, 4509};
   
   // start the timer
   TStopwatch t;
@@ -141,8 +141,8 @@ int main(int argc, char* argv[])
   if (iResonance > 20 && iResonance < 29)  {
     DATASETFN="../data/PFDiFatJetMassList_DATA.txt";
     LUMI = 117.6;
-    MININVMASS = 550.;
-    MAXINVMASS = 4000.;
+    MININVMASS = 526.;
+    MAXINVMASS = 3019.;
     JESERROR=0.032;   // relative error on JES
     JERERROR=0.11;   // relative error on JER
 
@@ -152,12 +152,30 @@ int main(int argc, char* argv[])
   if (iResonance > 120 && iResonance < 129)  {
     DATASETFN="../data/PFDiJetMassList_DATA.txt";
     LUMI = 117.6;
-    MININVMASS = 550.;
-    MAXINVMASS = 4000.;
+    MININVMASS = 526.;
+    MAXINVMASS = 3019.;
     JESERROR=0.032;   // relative error on JES
     JERERROR=0.11;   // relative error on JER
   }
      
+  if (iResonance > 1000 && iResonance < 1010)  {
+    MININVMASS = 890.;
+    MAXINVMASS = 5000.;
+  }
+
+
+  if (iResonance > 2000 && iResonance < 2010)  {
+    DATASETFN="../data/lumi46fb_dataMC_data_1JetMassTag.txt";
+    MININVMASS = 890.;
+    MAXINVMASS = 3279.;
+  }
+  if (iResonance > 2010 && iResonance < 2020)  {
+    DATASETFN="../data/lumi46fb_dataMC_data_2JetMassTag.txt";
+    MININVMASS = 890.;
+    MAXINVMASS = 2037.;
+  }
+
+
 
 
   // setup label
@@ -229,7 +247,7 @@ int main(int argc, char* argv[])
   // model
 //  ws->factory("SUM::modela(nsig*signal, nbkg[474872,270000,670000]*background)"); // background HT-calo
 //  ws->factory("SUM::modela(nsig*signal, nbkg[346573,140000,540000]*background)"); // background HT-PF
-  ws->factory("SUM::modela(nsig*signal, nbkg[319282,110000,5100000]*background)"); // background HT-fat
+  ws->factory("SUM::modela(nsig*signal, nbkg[319282,100,5100000]*background)"); // background HT-fat
 //  ws->factory("SUM::modela(nsig*signal, nbkg[250481,100000,400000]*background)"); // background Jet-calo
 //  ws->factory("SUM::modela(nsig*signal, nbkg[181374,0,300000]*background)"); // background Jet-PF
 //  ws->factory("SUM::modela(nsig*signal, nbkg[87242,0,200000]*background)"); // background Jet-fat
