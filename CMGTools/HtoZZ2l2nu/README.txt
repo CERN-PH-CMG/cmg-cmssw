@@ -19,7 +19,7 @@ runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -p "-
 #
 # merge the ntuples
 #
-haddOverSamples.py -j data/samples.json -d /store/cmst3/user/querten/12_02_10_HZZ2l2v_ntuples_split/ -o /store/cmst3/user/querten/12_02_10_HZZ2l2v_ntuples/haddOverSamples.py -j data/samples.json -d /store/cmst3/user/querten/12_02_10_HZZ2l2v_ntuples_split/ -o /store/cmst3/user/querten/12_02_10_HZZ2l2v_ntuples/
+haddOverSamples.py -j data/samples.json -d /store/cmst3/user/querten/12_02_10_HZZ2l2v_ntuples_split/ -o /store/cmst3/user/querten/12_02_10_HZZ2l2v_ntuples/
 
 #
 # run the analysis
