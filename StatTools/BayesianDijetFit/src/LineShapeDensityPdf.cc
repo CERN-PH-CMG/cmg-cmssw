@@ -538,12 +538,6 @@ void LineShapeDensity_pdf(double mass, int iResonance){
     vy->Add((TObject*) dv1000); vy->Add((TObject*) dv1500); vy->Add((TObject*) dv2000); vy->Add((TObject*) dv3000);
   }
 
-  setArray(mass);
-
-}
-
-
-void setArray (double mass){ 
 
   for (unsigned int bin = 0; bin < mqstar.size(); bin++){
     double sum = 0;
@@ -552,10 +546,17 @@ void setArray (double mass){
     }
     for (unsigned int k = 0; k < 50; k++){
       double val = ((TArrayD*) vy->At(bin))->GetAt(k);
-      ((TArrayD*) vy->At(bin))->AddAt(k, val/sum);
+      ((TArrayD*) vy->At(bin))->AddAt(val/sum, k);
     }
   }
 
+
+  setArray(mass);
+
+}
+
+
+void setArray (double mass){ 
 
   for(unsigned int ind=0;ind<nMassBins; ind++){
     double bin_width = -1;		 
