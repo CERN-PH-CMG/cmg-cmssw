@@ -39,8 +39,8 @@ process.out = cms.OutputModule("PoolOutputModule",
 from CMGTools.HtoZZ2l2nu.PreselectionSequences_cff import addPreselectionSequences,addLumifilter
 if(not runOnMC ):
     addPreselectionSequences(process)
-    #addLumifilter(process, lumilist )
-
+    addLumifilter(process,'/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_160404-180252_7TeV_ReRecoNov08_Collisions11_JSON.txt')
+        
 # trigger filter
 from CMGTools.HtoZZ2l2nu.TriggerSequences_cff import addTriggerSequence
 if(not runOnMC):
