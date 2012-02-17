@@ -63,6 +63,57 @@
                 }
           ]
         },
+	{
+	"tag":"Single top",
+        "isdata":false,
+        "color":"824",
+        "lcolor":1,
+        "marker":1,
+        "data":[
+	     {
+		"dtag":"SingleT_tW",
+	        "dset":"T_TuneZ2_tW-channel-DR_7TeV-powheg-tauola",
+		"aoddir":["/store/cmst3/group/cmgtools/CMG/T_TuneZ2_tW-channel_7TeV-powheg-tauola/Fall11-PU_S6-START44_V5-v1/AODSIM/V3"],
+                "patdir":["/store/cmst3/user/psilva/12_02_10_HZZ2l2v_pat/T_TuneZ2_tW-channel-DR_7TeV-powheg-tauola"],
+                "xsec":7.87
+             },
+	     {
+		"dtag":"SingleTbar_tW",
+	        "dset":"Tbar_TuneZ2_tW-channel-DR_7TeV-powheg-tauola",
+		"aoddir":["/store/cmst3/group/cmgtools/CMG/Tbar_TuneZ2_tW-channel_7TeV-powheg-tauola/Fall11-PU_S6-START44_V5-v1/AODSIM/V3"],
+                "patdir":["/store/cmst3/user/psilva/12_02_10_HZZ2l2v_pat/Tbar_TuneZ2_tW-channel-DR_7TeV-powheg-tauola"],
+                "xsec":7.87
+             },
+	     {
+		"dtag":"SingleT_s",
+	        "dset":"T_TuneZ2_s-channel-DR_7TeV-powheg-tauola",
+		"aoddir":["/store/cmst3/group/cmgtools/CMG/T_TuneZ2_s-channel_7TeV-powheg-tauola/Fall11-PU_S6-START44_V5-v1/AODSIM/V3"],
+                "patdir":["/store/cmst3/user/psilva/12_02_10_HZZ2l2v_pat/T_TuneZ2_s-channel-DR_7TeV-powheg-tauola"],
+                "xsec":3.19
+             },
+	     {
+		"dtag":"SingleTbar_s",
+	        "dset":"Tbar_TuneZ2_s-channel-DR_7TeV-powheg-tauola",
+		"aoddir":["/store/cmst3/group/cmgtools/CMG/Tbar_TuneZ2_s-channel_7TeV-powheg-tauola/Fall11-PU_S6-START44_V5-v1/AODSIM/V3"],
+                "patdir":["/store/cmst3/user/psilva/12_02_10_HZZ2l2v_pat/Tbar_TuneZ2_s-channel-DR_7TeV-powheg-tauola"],
+                "xsec":1.44
+             },
+	     {
+		"dtag":"SingleT_t",
+	        "dset":"T_TuneZ2_t-channel-DR_7TeV-powheg-tauola",
+		"aoddir":["/store/cmst3/group/cmgtools/CMG/T_TuneZ2_t-channel_7TeV-powheg-tauola/Fall11-PU_S6-START44_V5-v1/AODSIM/V3"],
+                "patdir":["/store/cmst3/user/psilva/12_02_10_HZZ2l2v_pat/T_TuneZ2_t-channel-DR_7TeV-powheg-tauola"],
+                "xsec":41.92
+             },
+	     {
+		"dtag":"SingleTbar_t",
+	        "dset":"Tbar_TuneZ2_t-channel-DR_7TeV-powheg-tauola",
+		"aoddir":["/store/cmst3/group/cmgtools/CMG/Tbar_TuneZ2_t-channel_7TeV-powheg-tauola/Fall11-PU_S6-START44_V5-v1/AODSIM/V3"],
+                "patdir":["/store/cmst3/user/psilva/12_02_10_HZZ2l2v_pat/Tbar_TuneZ2_t-channel-DR_7TeV-powheg-tauola"],
+                "xsec":22.65
+             }
+	  ]
+	},
         {
          "tag":"W+jets",
          "isdata":false,
@@ -307,6 +358,39 @@
 		"br":[0.558,0.046656]
 		}
 	   ]
+	},
+	{
+	   "tag":"data",
+	   "isdata":true,
+	   "color":1,
+           "fill":0,
+           "marker":20,
+           "data":[
+                {
+	         "dtag":"DoubleElectron2011A",
+		 "dset":"/DoubleElectron/Run2011A-HZZ-08Nov2011-v1/AOD",
+		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleElectron/Run2011A-HZZ-08Nov2011-v1/AOD/V3"],
+                 "patdir":["/store/cmst3/user/psilva/12_02_10_HZZ2l2v_pat/DoubleElectron2011A"]
+                },
+                {
+	         "dtag":"DoubleElectron2011B",
+		 "dset":"/DoubleElectron/Run2011B-HZZ-19Nov2011-v1/AOD",
+		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleElectron/Run2011B-HZZ-19Nov2011-v1/AOD/V3"],
+                 "patdir":["/store/cmst3/user/psilva/12_02_10_HZZ2l2v_pat/DoubleElectron2011B"]
+                },
+                {
+	         "dtag":"DoubleMu2011A",
+		 "dset":"/DoubleMu/Run2011A-HZZ-08Nov2011-v1/AOD",
+		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleMu/Run2011A-HZZ-08Nov2011-v1/AOD/V3"],
+                 "patdir":["/store/cmst3/user/psilva/12_02_10_HZZ2l2v_pat/DoubleMu2011A"]
+                },
+                {
+	         "dtag":"DoubleMu2011B",
+		 "dset":"/DoubleMu/Run2011B-HZZ-19Nov2011-v1/AOD",
+		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleMu/Run2011B-HZZ-19Nov2011-v1/AOD/V3"],
+                 "patdir":["/store/cmst3/user/psilva/12_02_10_HZZ2l2v_pat/DoubleMu2011B"]
+                }
+	    ]
 	}
     ]	
 }
