@@ -183,22 +183,12 @@ void DileptonPlusMETEventAnalyzer::saveMCtruth(const edm::Event &event, const ed
       if(genEventInfoProd->binningValues().size()>0) ev.pthat = genEventInfoProd->binningValues()[0];
     }
 
-  //Higgs pT reweighting (for Powheg gg->H)
+  //Higgs pT reweighting (for Powheg gg->H) - to be filled a posteriori
   ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]=1;
   ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]=1;
   ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]=1;
   ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]=1;
   ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]=1;
-  double mh = objConfig_["Generator"].getParameter<double>("weightForHiggsMass");
-  if(mh>0)
-    {
-      //FIXME: move this to stand-alone
-      //ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] = getWeightsFor(ZZ2l2nuSummary_t::hKfactor); 
-      //ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp] = getWeightsFor(ZZ2l2nuSummary_t::hKfactor_renUp); 
-      //ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown] = getWeightsFor(ZZ2l2nuSummary_t::hKfactor_renDown); 
-      //ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp] = getWeightsFor(ZZ2l2nuSummary_t::hKfactor_factUp); 
-      //ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown] = getWeightsFor(ZZ2l2nuSummary_t::hKfactor_factDown); 
-    }
 
   //generator level event
   Handle<View<Candidate> > hGen;

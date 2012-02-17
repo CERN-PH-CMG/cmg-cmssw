@@ -63,8 +63,7 @@ int main(int argc, char* argv[])
 
   bool isMC = runProcess.getParameter<bool>("isMC");
   int mctruthmode=runProcess.getParameter<int>("mctruthmode");
-
-
+  
   TString outTxtUrl= outUrl + "/" + gSystem->BaseName(url) + ".txt";
   FILE* outTxtFile = NULL;
   if(!isMC)outTxtFile = fopen(outTxtUrl.Data(), "w");
@@ -98,17 +97,28 @@ int main(int argc, char* argv[])
   if(runSystematics) { cout << "Systematics will be computed for this analysis" << endl; }
 
 
-
-
-
   //isMC_VBF sample ?
   double HiggsMass=0; string VBFString = ""; string GGString("");
   bool isMC_GG  = isMC && ( string(url.Data()).find("GG" )  != string::npos);
   bool isMC_VBF = isMC && ( string(url.Data()).find("VBF")  != string::npos);
+  std::vector<TGraph *> hWeightsGrVec;
   if(isMC_GG){
     size_t GGStringpos =  string(url.Data()).find("GG");
     string StringMass = string(url.Data()).substr(GGStringpos+5,3);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
     GGString = string(url.Data()).substr(GGStringpos);
+    TFile *fin=TFile::Open("~psilva/public/HtoZZ/HiggsQtWeights.root");
+    if(fin)
+      {
+	for(int ivar=0; ivar<5; ivar++){
+	  double ren=HiggsMass; if(ivar==ZZ2l2nuSummary_t::hKfactor_renDown)  ren/=2; if(ivar==ZZ2l2nuSummary_t::hKfactor_renUp)  ren *= 2;
+	  double fac=HiggsMass; if(ivar==ZZ2l2nuSummary_t::hKfactor_factDown) fac/=2; if(ivar==ZZ2l2nuSummary_t::hKfactor_factUp) fac *= 2;
+	  char buf[100]; sprintf(buf,"kfactors_mh%3.0f_ren%3.0f_fac%3.0f",HiggsMass,ren,fac);
+	  TGraph *gr= (TGraph *) fin->Get(buf);
+	  if(gr) hWeightsGrVec.push_back((TGraph *)gr->Clone());
+	}
+	fin->Close();
+	delete fin;
+      }
   }else if(isMC_VBF){
     size_t VBFStringpos =  string(url.Data()).find("VBF");
     string StringMass = string(url.Data()).substr(VBFStringpos+6,3);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
@@ -653,7 +663,10 @@ int main(int argc, char* argv[])
         TotalWeight_plus = PShiftUp.ShiftWeight( ev.ngenITpu );
         TotalWeight_minus = PShiftDown.ShiftWeight( ev.ngenITpu );
         if(isMC_VBF) weight *= weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );         
-        if(isMC_GG)  weight *= ev.hptWeights[0];
+        if(isMC_GG)  {
+	  for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
+	  weight *= ev.hptWeights[0];
+	}
       }
      
 
