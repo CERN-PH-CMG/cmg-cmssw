@@ -31,6 +31,7 @@
 #include "TH2F.h"
 #include "TProfile.h"
 #include "TEventList.h"
+#include "TROOT.h"
  
 using namespace std;
 
@@ -564,14 +565,14 @@ int main(int argc, char* argv[])
       TH1F* histo = (TH1F *) file->Get("evAnalyzer/h2zz/pileup");
       if(!histo)std::cout<<"pileup histogram is null!!!\n";
       for(int i=1;i<=histo->GetNbinsX();i++){mcPileupDistribution.push_back(histo->GetBinContent(i));}
+      delete histo;
   }
   while(mcPileupDistribution.size()<dataPileupDistribution.size())  mcPileupDistribution.push_back(0.0);
   while(mcPileupDistribution.size()>dataPileupDistribution.size())dataPileupDistribution.push_back(0.0);
-  printf("SIZE MC=%i  SIZE DATA=%i\n",(int)mcPileupDistribution.size(), (int)dataPileupDistribution.size());
+  gROOT->cd();  //THIS LINE IS NEEDED TO MAKE SURE THAT HISTOGRAM INTERNALLY PRODUCED IN LumiReWeighting ARE NOT DESTROYED WHEN CLOSING THE FILE
   edm::LumiReWeighting LumiWeights(mcPileupDistribution,dataPileupDistribution);
   reweight::PoissonMeanShifter PShiftUp(+0.6);
   reweight::PoissonMeanShifter PShiftDown(-0.6);
-
 
 
   //check PU normalized entries 
