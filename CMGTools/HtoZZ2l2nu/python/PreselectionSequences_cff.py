@@ -35,25 +35,25 @@ def addPreselectionSequences(process) :
 
     # beam halo filter
     # https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFilters
-    process.load('RecoMET.METAnalyzers.CSCHaloFilter_cfi')
+    #process.load('RecoMET.METAnalyzers.CSCHaloFilter_cfi')
 
     # ECAL dead cells filter
     # https://twiki.cern.ch/twiki/bin/view/CMS/SusyEcalMaskedCellSummary#Options_and_Recipes
-    process.load('JetMETAnalysis.simpleDRfilter.simpleDRfilter_cfi')
-    process.simpleDRfilter.debug = cms.untracked.bool(True)
+    #process.load('JetMETAnalysis.simpleDRfilter.simpleDRfilter_cfi')
+    #process.simpleDRfilter.debug = cms.untracked.bool(True)
     #fix me jet energy corrections and met 
-    process.simpleDRfilter.jetInputTag = cms.InputTag("ak5PFJetsL2L3")
-    process.simpleDRfilter.metInputTag = cms.InputTag("metJESCorAK5PFJet")
-    process.simpleDRfilter.doFilter = cms.untracked.bool(True) # to enable filter or not
-    process.simpleDRfilter.makeProfileRoot = True
+    #process.simpleDRfilter.jetInputTag = cms.InputTag("ak5PFJetsL2L3")
+    #process.simpleDRfilter.metInputTag = cms.InputTag("metJESCorAK5PFJet")
+    #process.simpleDRfilter.doFilter = cms.untracked.bool(True) # to enable filter or not
+    #process.simpleDRfilter.makeProfileRoot = True
 
     # filter counters
     process.preSelectionCounter = cms.EDProducer("EventCountProducer")
     process.noScrapCounter = process.preSelectionCounter.clone()
     process.goodVertexCounter = process.preSelectionCounter.clone()
     process.noHBHEnoiseCounter = process.preSelectionCounter.clone()
-    process.nobeamHaloCounter = process.preSelectionCounter.clone()
-    process.noEcalDeadChannelsCounter = process.preSelectionCounter.clone()
+    #process.nobeamHaloCounter = process.preSelectionCounter.clone()
+    #process.noEcalDeadChannelsCounter = process.preSelectionCounter.clone()
     
     # define a preselection path
     process.preselection = cms.Sequence(
@@ -64,10 +64,10 @@ def addPreselectionSequences(process) :
         process.goodVertexCounter*
         process.HBHENoiseFilter*
         process.noHBHEnoiseCounter*
-        process.CSCTightHaloFilter*
-        process.nobeamHaloCounter
-#       *process.simpleDRfilter
-#       *process.noEcalDeadChannelsCounter
+        #process.CSCTightHaloFilter*
+        #process.nobeamHaloCounter*
+        #process.simpleDRfilter*
+        #process.noEcalDeadChannelsCounter
         )
     
     print " *** Event preselection defined"
