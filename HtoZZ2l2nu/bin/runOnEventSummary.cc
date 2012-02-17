@@ -33,6 +33,9 @@
 #include "TEventList.h"
  
 using namespace std;
+
+
+
 int main(int argc, char* argv[])
 {
   SmartSelectionMonitor mon; //plot storage
@@ -57,11 +60,7 @@ int main(int argc, char* argv[])
   TString outUrl( outdir );
   gSystem->Exec("mkdir -p " + outUrl);
 
-
-
-
   bool isMC = runProcess.getParameter<bool>("isMC");
-  double xsec = runProcess.getParameter<double>("xsec");
   int mctruthmode=runProcess.getParameter<int>("mctruthmode");
 
 
@@ -76,14 +75,6 @@ int main(int argc, char* argv[])
      isMC=false;
      gammaEvHandler = new GammaEventHandler(runProcess);
   }
-
-  //pileup weighting
-  edm::LumiReWeighting LumiWeights(runProcess.getParameter<std::string>("mcpileup"), runProcess.getParameter<std::string>("datapileup"), "pileup","pileup");
-  //  std::string puWeightFile = runProcess.getParameter<std::string>("puWeightFile");
-  //  if(puWeightFile.size()==0)  LumiWeights.weight3D_init();
-  //  else                        LumiWeights.weight3D_init(puWeightFile);
-  reweight::PoissonMeanShifter PShiftUp(+0.6);
-  reweight::PoissonMeanShifter PShiftDown(-0.6);
 
   //tree info
   int evStart=runProcess.getParameter<int>("evStart");
@@ -544,6 +535,7 @@ int main(int argc, char* argv[])
       return -1;
   }
 
+
   //check run range to compute scale factor (if not all entries are used)
   const Int_t totalEntries= evSummaryHandler.getEntries();
   float rescaleFactor( evEnd>0 ?  float(totalEntries)/float(evEnd-evStart) : -1 );
@@ -562,6 +554,25 @@ int main(int argc, char* argv[])
       printf("cnorm = %f\n",cnorm);
   }
   Hcutflow->SetBinContent(1,cnorm);
+
+
+  //pileup weighting
+  std::vector<double> dataPileupDistributionDouble = runProcess.getParameter< std::vector<double> >("datapileup");
+  std::vector<float> dataPileupDistribution; for(unsigned int i=0;i<dataPileupDistributionDouble.size();i++){dataPileupDistribution.push_back(dataPileupDistributionDouble[i]);}
+  std::vector<float> mcPileupDistribution;
+  if(isMC){
+      TH1F* histo = (TH1F *) file->Get("evAnalyzer/h2zz/pileup");
+      if(!histo)std::cout<<"pileup histogram is null!!!\n";
+      for(int i=1;i<=histo->GetNbinsX();i++){mcPileupDistribution.push_back(histo->GetBinContent(i));}
+  }
+  while(mcPileupDistribution.size()<dataPileupDistribution.size())  mcPileupDistribution.push_back(0.0);
+  while(mcPileupDistribution.size()>dataPileupDistribution.size())dataPileupDistribution.push_back(0.0);
+  printf("SIZE MC=%i  SIZE DATA=%i\n",(int)mcPileupDistribution.size(), (int)dataPileupDistribution.size());
+  edm::LumiReWeighting LumiWeights(mcPileupDistribution,dataPileupDistribution);
+  reweight::PoissonMeanShifter PShiftUp(+0.6);
+  reweight::PoissonMeanShifter PShiftDown(-0.6);
+
+
 
   //check PU normalized entries 
   evSummaryHandler.getTree()->Draw(">>elist","normWeight==1");
@@ -637,7 +648,6 @@ int main(int argc, char* argv[])
       double TotalWeight_plus = 1.0;
       double TotalWeight_minus = 1.0;
       if(isMC){
-        //weight = LumiWeights.weight3D( ev.ngenOOTpum1, ev.ngenITpu, ev.ngenOOTpu );        
         weight = LumiWeights.weight( ev.ngenITpu );
         TotalWeight_plus = PShiftUp.ShiftWeight( ev.ngenITpu );
         TotalWeight_minus = PShiftDown.ShiftWeight( ev.ngenITpu );
