@@ -70,22 +70,20 @@ process.puWeightSequence = cms.Sequence(process.puWeights)
 #
 from CMGTools.HtoZZ2l2nu.StandardSelections_cfi import *
 process.evAnalyzer = cms.EDAnalyzer("DileptonPlusMETEventAnalyzer",
-                                                                        dtag=cms.string('h2zz'),
-                                                                        Trigger = BaseTriggerSelection.clone(),
-                                                                        Generator = BaseGeneratorSelection.clone(),
-                                                                        Vertices = BaseVertexSelection.clone(),
-                                                                        Photons = BasePhotonsSelection.clone(),
-                                                                        LooseMuons = BaseLooseMuonsSelection.clone(),
-                                                                        Muons = BaseMuonsSelection.clone(),
-                                                                        LooseElectrons = BaseLooseElectronsSelection.clone(),
-                                                                        Electrons = BaseElectronsSelection.clone(),
-                                                                        Dileptons = BaseDileptonSelection.clone(),
-                                                                        Jets = BaseJetSelection.clone(),
-                                                                        MET = BaseMetSelection.clone()
-                                                                        )
-
-from CMGTools.HtoZZ2l2nu.GeneratorLevelSequences_cff import parseHiggsMass
-process.evAnalyzer.Generator.weightForHiggsMass = cms.double( parseHiggsMass(castorDir) )
+                                    dtag=cms.string('h2zz'),
+                                    Trigger = BaseTriggerSelection.clone(),
+                                    Generator = BaseGeneratorSelection.clone(),
+                                    Vertices = BaseVertexSelection.clone(),
+                                    Photons = BasePhotonsSelection.clone(),
+                                    LooseMuons = BaseLooseMuonsSelection.clone(),
+                                    Muons = BaseMuonsSelection.clone(),
+                                    LooseElectrons = BaseLooseElectronsSelection.clone(),
+                                    Electrons = BaseElectronsSelection.clone(),
+                                    Dileptons = BaseDileptonSelection.clone(),
+                                    Jets = BaseJetSelection.clone(),
+                                    AssocJets = AssocJetSelection.clone(),
+                                    MET = BaseMetSelection.clone()
+                                    )
 
 process.analysis = cms.Sequence( process.ClusteredPFMetSequence*process.puWeightSequence*process.evAnalyzer )
 

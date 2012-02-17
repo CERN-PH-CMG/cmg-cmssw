@@ -26,8 +26,6 @@ BaseTriggerSelection.gammaTriggers = cms.vstring('HLT_Photon20_CaloIdVL_IsoL',
 # base values for the vertex selection ------------------------------------------
 BaseGeneratorSelection = cms.PSet( source = cms.InputTag("prunedGen"),
                                    filterId = cms.int32(25),
-                                   weightForHiggsMass = cms.double(-1),
-                                   urlForHiggsPtWeights = cms.string(''),
                                    genJets=cms.InputTag("ak5GenJets"),
                                    puReweight=cms.InputTag("puWeights:puWeight")
                                    )

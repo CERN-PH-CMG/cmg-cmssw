@@ -84,9 +84,6 @@ else:
                                         MET = BaseMetSelection.clone()
                                         )
     
-from CMGTools.HtoZZ2l2nu.GeneratorLevelSequences_cff import parseHiggsMass
-process.evAnalyzer.Generator.weightForHiggsMass = cms.double( parseHiggsMass(url=castorDir) )
-
 #the path to execute
 process.p = cms.Path(process.ClusteredPFMetSequence*process.puWeightSequence*process.evAnalyzer)
 
