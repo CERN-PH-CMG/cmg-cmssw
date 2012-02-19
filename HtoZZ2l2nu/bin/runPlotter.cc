@@ -41,7 +41,7 @@ string jsonFile = "../../data/beauty-samples.json";
 string outDir  = "Img/";
 string plotExt = ".png";
 string outFile = "plotter.root";
-string cutflowhisto = "cutflow";
+string cutflowhisto = "all_cutflow";
 
 std::map<string, double> PURescale_up;
 std::map<string, double> PURescale_down;
@@ -207,6 +207,7 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName); 
+            if(!tmptmphist){printf("Histo: %s not found for dataset: %s\n", HistoName.c_str(), (Samples[j])["dtag"].toString().c_str()); delete File;continue;}
             if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
             delete tmptmphist;
             delete File;
@@ -296,6 +297,7 @@ void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, 
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName); 
+            if(!tmptmphist){printf("Histo: %s not found for dataset: %s\n", HistoName.c_str(), (Samples[j])["dtag"].toString().c_str()); delete File;continue;}
             if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
             //if(Process[i]["isdata"].toBool())printf("%s --> %f*%f(%f)\n",(Samples[j])["dtag"].toString().c_str(), tmptmphist->Integral(),Weight, initialNumberOfEvents[(Samples[j])["dtag"].toString()]);
             delete tmptmphist;
@@ -392,6 +394,7 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName); 
+            if(!tmptmphist){printf("Histo: %s not found for dataset: %s\n", HistoName.c_str(), (Samples[j])["dtag"].toString().c_str()); delete File;continue;}
             if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
             //if(Process[i]["isdata"].toBool())printf("%s --> %f\n",(Samples[j])["dtag"].toString().c_str(), tmptmphist->Integral());
             delete tmptmphist;
@@ -484,6 +487,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName);
+	    if(!tmptmphist){printf("Histo: %s not found for dataset: %s\n", HistoName.c_str(), (Samples[j])["dtag"].toString().c_str()); delete File;continue;}
             if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
             //if(Process[i]["isdata"].toBool())printf("%s --> %f\n",(Samples[j])["dtag"].toString().c_str(), tmptmphist->Integral());
             delete tmptmphist;
@@ -671,6 +675,7 @@ void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName);
+            if(!tmptmphist){printf("Histo: %s not found for dataset: %s\n", HistoName.c_str(), (Samples[j])["dtag"].toString().c_str()); delete File;continue;}
             if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
             delete tmptmphist;
             delete File;
