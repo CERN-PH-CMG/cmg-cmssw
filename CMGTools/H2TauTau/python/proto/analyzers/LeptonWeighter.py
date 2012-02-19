@@ -16,13 +16,13 @@ class LeptonWeighter( Analyzer ):
         self.weightFactor = 1.
         self.trigEff = None
         if self.cfg_comp.isMC or self.cfg_comp.isEmbed:
-            if isinstance( self.cfg_ana.effWeight, float ):
-                self.weightFactor = self.cfg_ana.effWeight
-            else:
-                self.trigEff = TriggerEfficiency()
-                self.trigEff.lepEff = getattr( self.trigEff,
-                                               self.cfg_ana.effWeight )
-        
+            self.trigEff = TriggerEfficiency()
+            self.trigEff.lepEff = getattr( self.trigEff,
+                                           self.cfg_ana.effWeight )
+            if self.cfg_ana.effWeightMC:
+                self.trigEff.lepEffMC = getattr( self.trigEff,
+                                                 self.cfg_ana.effWeightMC )
+            
             
     def declareHandles(self):
         super(LeptonWeighter, self).declareHandles()
@@ -39,6 +39,8 @@ class LeptonWeighter( Analyzer ):
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
+        self.eff = 1
+        self.effMC = 1 
         self.weight = 1 
         if self.cfg_comp.isMC or self.cfg_comp.isEmbed:
             # if self.trigEff.tauEff is not None:
@@ -47,10 +49,23 @@ class LeptonWeighter( Analyzer ):
             self.weight *= self.weightFactor
             if self.trigEff is not None:
                 self.lepton = getattr( event, self.leptonName )
-                self.weight = self.trigEff.lepEff( self.lepton.pt(),
-                                                   self.lepton.eta() )
+                self.eff = self.trigEff.lepEff( self.lepton.pt(),
+                                                self.lepton.eta() )
+                self.weight = self.eff
+                if self.triggEff.lepEffMC is not None:
+                    self.effMC = self.trigEff.lepEffMC( self.lepton.pt(),
+                                                        self.lepton.eta() )
+                    self.weight /= self.effMC
+                    
+        varName = '_'.join([self.leptonName, 'eff'])
+        setattr( event, varName, self.eff )
+
+        varName = '_'.join([self.leptonName, 'effMC'])
+        setattr( event, varName, self.effMC )
+
         varName = '_'.join([self.leptonName, 'weight'])
         setattr( event, varName, self.weight )
+
         event.eventWeight *= self.weight
         self.averages['leptonWeight'].add( self.weight )
         if self.cfg_ana.verbose:
