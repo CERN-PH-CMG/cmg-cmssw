@@ -2,10 +2,12 @@ import os
 from CMGTools.Production.dataset import Dataset, CMSDataset, LocalDataset
 import FWCore.ParameterSet.Config as cms
 
-def createDataset( user, dataset, pattern, basedir=os.environ['CMGLOCALBASEDIR']):
+def createDataset( user, dataset, pattern, basedir=None):
     if user == 'CMS':
         data = CMSDataset( dataset )
     elif user == 'LOCAL':
+        if basedir is None:
+            basedir = os.environ['CMGLOCALBASEDIR']
         data = LocalDataset( dataset, basedir, pattern )
     else:
         data = Dataset( user, dataset, pattern )
