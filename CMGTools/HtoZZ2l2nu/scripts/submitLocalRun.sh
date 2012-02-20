@@ -66,7 +66,10 @@ then
     LOCALOUT="/tmp/${TAG}_${FFILE}_${STEP}.root"
 fi
 
+df -H
 cmsRun ${CFG} ${INPUTDIR} ${LOCALOUT} ${FFILE} ${STEP} 
+ls -lth ${LOCALOUT}
+df -H
 
 #move to OUTDIR directory if required
 if [ -z "$OUTDIR" ]
