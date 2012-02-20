@@ -3,7 +3,7 @@ import os
 import CMGTools.RootTools.fwlite.Config as cfg
 
 
-period = 'Period_2011A'
+period = 'Period_2011AB'
 
 baseDir = '2011'
 H2TauTauPackage = '/'.join( [ os.environ['CMSSW_BASE'],
@@ -76,6 +76,7 @@ tauEleAna = cfg.Analyzer(
     iso2 = 0.1,
     eta1 = 999,
     eta2 = 2.1,
+    cutString2 = 'cuts_vbtf80ID',
     # eta2 = 1.4,
     m_min = 10,
     m_max = 99999,
@@ -291,7 +292,7 @@ elif period == 'Period_2011AB':
 # selectedComponents = embed_2011B 
 # selectedComponents.extend(data_2011B)
 # selectedComponents  = [ data_Run2011B_PromptReco_v1  ]
-selectedComponents = [ DYJets ]
+# selectedComponents = [ DYJets ]
 # selectedComponents = [embed_Run2011A_May10ReReco_v1]
 
 # selectedComponents = [data_Run2011A_03Oct2011_v1]

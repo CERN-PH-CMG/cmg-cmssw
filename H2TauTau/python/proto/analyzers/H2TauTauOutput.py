@@ -4,7 +4,7 @@ from CMGTools.RootTools.fwlite.Output import Output
 
 def inclusiveRegionName(name):
     '''Inclusive region name (wrt to jet categories)'''
-    newName = name.split('_')[0:3]
+    newName = name.split('_')[0:2]
     newName.append('Inclusive')
     return '_'.join( newName )
 

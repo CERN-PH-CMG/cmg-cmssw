@@ -19,6 +19,7 @@ class LeptonWeighter( Analyzer ):
             self.trigEff = TriggerEfficiency()
             self.trigEff.lepEff = getattr( self.trigEff,
                                            self.cfg_ana.effWeight )
+            self.trigEff.lepEffMC = None
             if self.cfg_ana.effWeightMC:
                 self.trigEff.lepEffMC = getattr( self.trigEff,
                                                  self.cfg_ana.effWeightMC )
@@ -35,6 +36,8 @@ class LeptonWeighter( Analyzer ):
         super(LeptonWeighter,self).beginLoop()
         # self.counters.addCounter( self.name )
         self.averages.add('leptonWeight', Average('leptonWeight') )
+        self.averages.add('eff_data', Average('eff_data') )
+        self.averages.add('eff_MC', Average('eff_MC') )
 
 
     def process(self, iEvent, event):
@@ -52,7 +55,7 @@ class LeptonWeighter( Analyzer ):
                 self.eff = self.trigEff.lepEff( self.lepton.pt(),
                                                 self.lepton.eta() )
                 self.weight = self.eff
-                if self.triggEff.lepEffMC is not None:
+                if self.trigEff.lepEffMC is not None:
                     self.effMC = self.trigEff.lepEffMC( self.lepton.pt(),
                                                         self.lepton.eta() )
                     self.weight /= self.effMC
@@ -68,6 +71,8 @@ class LeptonWeighter( Analyzer ):
 
         event.eventWeight *= self.weight
         self.averages['leptonWeight'].add( self.weight )
+        self.averages['eff_data'].add( self.eff )
+        self.averages['eff_MC'].add( self.effMC )
         if self.cfg_ana.verbose:
             print ' '.join([self.name, self.leptonName, str(self.weight), str(self.lepton) ])
                 
