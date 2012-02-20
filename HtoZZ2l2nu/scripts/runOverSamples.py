@@ -58,6 +58,7 @@ def usage() :
     print ' '
     print 'runOverSamples.py [options]'
     print '  -s : submit or not to batch'
+    print '  -R : host requirement when submitting to LSG'
     print '  -j : json file containing the samples'
     print '  -d : sample input dir as described in the json'
     print '  -n : files to process per job'
@@ -69,7 +70,7 @@ def usage() :
 #parse the options 
 try:
      # retrive command line options
-     shortopts  = "s:j:d:n:p:t:h?"
+     shortopts  = "s:j:d:n:p:t:R:h?"
      opts, args = getopt.getopt( sys.argv[1:], shortopts )
 except getopt.GetoptError:
      # print help information and exit:
@@ -78,6 +79,7 @@ except getopt.GetoptError:
      sys.exit(1)
 
 subtoBatch=''
+requirementtoBatch=''
 samplesDB=''
 dirtag=''
 fperjob=-1
@@ -88,6 +90,7 @@ for o,a in opts:
         usage()
         sys.exit(0)
     elif o in('-s'): subtoBatch=a
+    elif o in('-R'): requirementtoBatch=a
     elif o in('-j'): samplesDB = a
     elif o in('-d'): dirtag = a
     elif o in('-t'): onlytag = a
@@ -156,6 +159,8 @@ for proc in procList :
                     print "**** Starting new job with the following parameters ****"
                     print localParams
                     if(len(subtoBatch)>0) :
+			if(len(requirementtoBatch)>0) : 
+				subtoBatch = subtoBatch + ' -R ' + requirementtoBatch
                         os.system('submit2batch.sh -q' + subtoBatch + ' ' + scriptFile + ' ' + localParams)                   
 			os.system('sleep ' + str(sleep) + 's')
                     else :
