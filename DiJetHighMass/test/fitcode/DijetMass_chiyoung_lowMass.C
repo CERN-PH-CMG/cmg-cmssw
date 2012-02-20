@@ -57,7 +57,10 @@ void DijetMass_chiyoung_lowMass(){
   else Init("QQFat");
 
 
+  double mMinFit = 10000.;
+
   double mMin = 526.0;
+
   // double mMin = 565.0;
 
 //  lumi = 1025.;
@@ -84,8 +87,20 @@ void DijetMass_chiyoung_lowMass(){
   else  hDijetMass = (TH1F*) inputFile->Get("M_FatPFJet1FatPFJet2_VarBin;1");
   //  TH1F *hQCDMC = (TH1F*)inputFile->Get("fit_DijetMass_mc_wide");
   //  inputFileMC = TFile::Open("histograms_summer11_mc_ak5.root", "UPDATE");
-  inputFileMC = TFile::Open("histograms_Fat30_summer11_mc_ak5.root", "UPDATE");
-  hQCD = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat;1");
+  if ( sReco.find("pf") != string::npos ) {
+    mMinFit = 944.;
+    inputFileMC = TFile::Open("../../data/histograms_summer11_mc_ak5.root", "UPDATE");
+    hQCD = (TH1F*)inputFileMC->Get("h_DijetMass_data_pf;1");
+    hJESplus_temp = (TH1F*)inputFileMC->Get("h_DijetMass_data_pf_up;1");
+    hJESminus_temp = (TH1F*)inputFileMC->Get("h_DijetMass_data_pf_do;1");
+  }
+  else {
+    mMinFit = 890.;
+    inputFileMC = TFile::Open("../../data/histograms_Fat30_summer11_mc_ak5.root", "UPDATE");
+    hQCD = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat;1");
+    hJESplus_temp = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat_up;1");
+    hJESminus_temp = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat_do;1");
+  }
   
   cout <<"Calc scale factor" << endl;
   scaleFactor = hDijetMass->Integral(37, hDijetMass->GetNbinsX()) / hQCD->Integral(37, hDijetMass->GetNbinsX()) / lumi;
@@ -98,8 +113,7 @@ void DijetMass_chiyoung_lowMass(){
   //  TH1F *hJESplus_temp = (TH1F*)inputFile->Get("fit_DijetMass_mc_up_wide");
   //  TH1F *hJESminus_temp = (TH1F*)inputFile->Get("fit_DijetMass_mc_down_wide");
   
-  hJESplus_temp = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat_up;1");
-  hJESminus_temp = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat_do;1");
+
 
   TH1F *hJESplus_temp2 =  (TH1F*)hJESplus_temp->Clone("hJESplus_temp2");
   hJESplus_temp2->Reset();
@@ -253,7 +267,7 @@ void DijetMass_chiyoung_lowMass(){
 
 
    // QCD Fit -- fit to qcd
-   TF1 *f_qcd = new TF1("fit_qcd",fitQCD,mMin,3000.0,4); 
+   TF1 *f_qcd = new TF1("fit_qcd",fitQCD,mMinFit,3000.0,4); 
    gStyle->SetOptFit(1111); 
    f_qcd->SetParameter(0,6.15613e+18);
    f_qcd->SetParameter(1,-3.75321e+00);
@@ -266,7 +280,7 @@ void DijetMass_chiyoung_lowMass(){
   cout << "Fit QCD Up" << endl << endl << endl;
 
    // QCD up Fit -- fit to JES plus
-   TF1 *f_qcd_up = new TF1("fit_qcd_up",fitQCD,mMin,3000.0,4); 
+   TF1 *f_qcd_up = new TF1("fit_qcd_up",fitQCD,mMinFit,3000.0,4); 
    gStyle->SetOptFit(1111); 
    f_qcd_up->SetParameter(0,1.47700e+19);
    f_qcd_up->SetParameter(1,-4.03984e+00);
@@ -277,7 +291,7 @@ void DijetMass_chiyoung_lowMass(){
    cout << "Fit QCD Do" << endl << endl << endl;
 
    // QCD down Fit -- fit to JES minus
-   TF1 *f_qcd_down = new TF1("fit_qcd_down",fitQCD,mMin,3000.0,4); 
+   TF1 *f_qcd_down = new TF1("fit_qcd_down",fitQCD,mMinFit,3000.0,4); 
    gStyle->SetOptFit(1111); 
    f_qcd_down->SetParameter(0,2.12985e+19);
    f_qcd_down->SetParameter(1,-4.63606e+00);
@@ -344,7 +358,7 @@ void DijetMass_chiyoung_lowMass(){
     TGraphAsymmErrors *g2 = new TGraphAsymmErrors(i,vx,vy,vexl,vexh,veyl,veyh);
 
     // Fit to data    
-    TF1 *fit = new TF1("fit",fitQCD1,mMin,3000.0,4); // 4 Par. Fit
+    TF1 *fit = new TF1("fit",fitQCD1,mMinFit,3000.0,4); // 4 Par. Fit
     gStyle->SetOptFit(1111); 
     fit->SetParameter(0,1.73132e-05);
     fit->SetParameter(1,6.80678e+00);
