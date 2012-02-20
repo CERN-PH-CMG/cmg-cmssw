@@ -28,9 +28,11 @@ void draw_highMass()
   TCanvas *c_xs_sys = new TCanvas("c_xs_sys","c_xs_sys",459,358,600,602);
   TCanvas *c_xs_all_fat = new TCanvas("c_xs_all_fat","c_xs_all_fat",459,358,600,602);
   TCanvas *c_xs_comparison_bw_stat_sys_fat = new TCanvas("c_xs_comparison_bw_stat_sys_fat","c_xs_comparison_bw_stat_sys_fat",459,358,600,602);
+  /*
   TCanvas *c_xs_gg_compare = new TCanvas("c_xs_gg_compare","c_xs_gg_compare",459,358,600,602);
   TCanvas *c_xs_qg_compare = new TCanvas("c_xs_qg_compare","c_xs_qg_compare",459,358,600,602);
   TCanvas *c_xs_qq_compare = new TCanvas("c_xs_qq_compare","c_xs_qq_compare",459,358,600,602);
+  */
   TCanvas *c_xs_comparison_bw_sys_theory_fat = new TCanvas("c_xs_comparison_bw_sys_theory_fat","c_xs_comparison_bw_sys_theory_fat",459,358,600,602);
 
   TCanvas *c_xs_qg_sys_E = new TCanvas("c_xs_qg_sys_E","c_xs_qg_sys_E",459,358,600,602);
@@ -152,11 +154,23 @@ void draw_highMass()
 0.644897, 0.445018, 0.304044, 0.212039, 0.143917, 0.099195, 0.066999, 0.0462355, 0.0313552, 0.021399, 
 0.0141453, 0.0095593, 0.0064255, 0.004227117035341108, 0.002830943528441785, 0.001830831111740912, 0.0012006226542702247, 0.0007818600156759468};//, 0.0004978553320724371, 0.0003197273428031069, 0.00020157675764867537, 0.00012686973888958498, 0.00008018201235487667};
 
-  double zprime[en] = {0.3427E+01, 0.1969E+01, 0.1172E+01, 0.7171E+00, 0.4486E+00, 0.2857E+00, 0.1845E+00, 0.1206E+00, 0.7961E-01, 0.5295E-01, 0.3545E-01, 0.2386E-01, 0.1611E-01, 0.1092E-01, 0.7413E-02, 0.5039E-02, 0.3426E-02, 0.2329E-02, 0.1580E-02, 0.1070E-02, 0.7231E-03, 0.4867E-03, 0.3261E-03, 0.2174E-03, 0.1440E-03, 0.9477E-04, 0.6190E-04, 0.4007E-04, 0.2570E-04, 0.1631E-04, 0.1024E-04, 0.6349E-05, 0.3889E-05};
+  double zprime[en] = {
+    0.3427E+01, 0.1969E+01, 0.1172E+01, 0.7171E+00, 0.4486E+00, 0.2857E+00, 0.1845E+00, 0.1206E+00, 0.7961E-01, 0.5295E-01, 
+    0.3545E-01, 0.2386E-01, 0.1611E-01, 0.1092E-01, 0.7413E-02, 0.5039E-02, 0.3426E-02, 0.2329E-02, 0.1580E-02, 0.1070E-02, 
+    0.7231E-03, 0.4867E-03, 0.3261E-03, 0.2174E-03, 0.1440E-03, 0.9477E-04, 0.6190E-04, 0.4007E-04, 0.2570E-04, 0.1631E-04, 
+    0.1024E-04, 0.6349E-05, 0.3889E-05};
 
-  double wprime[en] = {0.6263E+01, 0.3661E+01, 0.2212E+01, 0.1372E+01, 0.8673E+00, 0.5568E+00, 0.3616E+00, 0.2369E+00, 0.1562E+00, 0.1034E+00, 0.6872E-01, 0.4572E-01, 0.3043E-01, 0.2023E-01, 0.1342E-01, 0.8884E-02, 0.5859E-02, 0.3847E-02, 0.2513E-02, 0.1632E-02, 0.1053E-02, 0.6744E-03, 0.4287E-03, 0.2702E-03, 0.1688E-03, 0.1044E-03, 0.6403E-04, 0.3886E-04, 0.2335E-04, 0.1390E-04, 0.8199E-05, 0.4796E-05, 0.2787E-05};
+  double wprime[en] = {
+    0.6263E+01, 0.3661E+01, 0.2212E+01, 0.1372E+01, 0.8673E+00, 0.5568E+00, 0.3616E+00, 0.2369E+00, 0.1562E+00, 0.1034E+00,
+    0.6872E-01, 0.4572E-01, 0.3043E-01, 0.2023E-01, 0.1342E-01, 0.8884E-02, 0.5859E-02, 0.3847E-02, 0.2513E-02, 0.1632E-02, 
+    0.1053E-02, 0.6744E-03, 0.4287E-03, 0.2702E-03, 0.1688E-03, 0.1044E-03, 0.6403E-04, 0.3886E-04, 0.2335E-04, 0.1390E-04, 
+    0.8199E-05, 0.4796E-05, 0.2787E-05};
 
-  double rsgraviton[en] = {0.3852E+01, 0.1961E+01, 0.1053E+01, 0.5905E+00, 0.3426E+00, 0.2044E+00, 0.1248E+00, 0.7770E-01, 0.4911E-01, 0.3145E-01, 0.2036E-01, 0.1330E-01, 0.8743E-02, 0.5781E-02, 0.3840E-02, 0.2559E-02, 0.1708E-02, 0.1142E-02, 0.7635E-03, 0.5101E-03, 0.3402E-03, 0.2264E-03, 0.1501E-03, 0.9913E-04, 0.6512E-04, 0.4253E-04, 0.2759E-04, 0.1775E-04, 0.1133E-04, 0.7157E-05, 0.4475E-05, 0.2766E-05, 0.1689E-05};
+  double rsgraviton[en] = {
+    0.3852E+01, 0.1961E+01, 0.1053E+01, 0.5905E+00, 0.3426E+00, 0.2044E+00, 0.1248E+00, 0.7770E-01, 0.4911E-01, 0.3145E-01, 
+    0.2036E-01, 0.1330E-01, 0.8743E-02, 0.5781E-02, 0.3840E-02, 0.2559E-02, 0.1708E-02, 0.1142E-02, 0.7635E-03, 0.5101E-03, 
+    0.3402E-03, 0.2264E-03, 0.1501E-03, 0.9913E-04, 0.6512E-04, 0.4253E-04, 0.2759E-04, 0.1775E-04, 0.1133E-04, 0.7157E-05, 
+    0.4475E-05, 0.2766E-05, 0.1689E-05};
 
 
 
@@ -166,18 +180,18 @@ void draw_highMass()
   double x[nEBins] = {1000.0, 1100.0, 1200.0, 1300.0, 1400.0, 1500.0, 1600.0, 1700.0, 1800.0, 1900.0, 2000.0, 2100.0, 2200.0, 2300.0, 2400.0, 2500.0, 2600.0, 2700.0, 2800.0, 2900.0, 3000.0, 3100.0, 3200.0, 3300.0, 3400.0, 3500.0, 3600.0, 3700.0, 3800.0, 3900.0, 4000.0, 4100.0, 4200., 4300.};
 
 
- TFile* file_efficiencies_qq = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/Resonance_Shapes_RSGraviton_ak5_QQtoQQ_fat30.root", "READ");
- TFile* file_efficiencies_qg = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/Resonance_Shapes_Qstar_ak5_fat30.root", "READ");
- TFile* file_efficiencies_gg = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/Resonance_Shapes_RSGraviton_ak5_GGtoGG_fat30.root", "READ");
+ TFile* file_efficiencies_qq = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1_new/Resonance_Shapes_RSGraviton_ak5_QQtoQQ_fat30.root", "READ");
+ TFile* file_efficiencies_qg = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1_new/Resonance_Shapes_Qstar_ak5_fat30.root", "READ");
+ TFile* file_efficiencies_gg = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1_new/Resonance_Shapes_RSGraviton_ak5_GGtoGG_fat30.root", "READ");
 
  TH1F* limit_efficiencies_qq = file_efficiencies_qq->Get("Efficiency;1");
  TH1F* limit_efficiencies_qg = file_efficiencies_qg->Get("Efficiency;1");
  TH1F* limit_efficiencies_gg = file_efficiencies_gg->Get("Efficiency;1");
 
 
- TFile* file_qq0 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_RSGraviton_ak5_QQtoQQ_fat30_0.root", "READ");
- TFile* file_qg0 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_Qstar_ak5_fat30_0.root", "READ");
- TFile* file_gg0 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_RSGraviton_ak5_GGtoGG_fat30_0.root", "READ");
+ TFile* file_qq0 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1_new/limit_limit_RSGraviton_ak5_QQtoQQ_fat30_0.root", "READ");
+ TFile* file_qg0 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1_new/limit_limit_Qstar_ak5_fat30_0.root", "READ");
+ TFile* file_gg0 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1_new/limit_limit_RSGraviton_ak5_GGtoGG_fat30_0.root", "READ");
 
  
  TH1F* limit_qq0 = file_qq0->Get("limit;1");
@@ -214,10 +228,10 @@ void draw_highMass()
  
 
 
- TFile* file_qg_bg = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_Qstar_ak5_fat30_6.root", "READ");
- TFile* file_qg_lumi = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_Qstar_ak5_fat30_6.root", "READ");
- TFile* file_qg_JES = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_Qstar_ak5_fat30_6.root", "READ");
- TFile* file_qg_JER = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_Qstar_ak5_fat30_6.root", "READ");
+ TFile* file_qg_bg = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1_new/limit_limit_Qstar_ak5_fat30_1.root", "READ");
+ TFile* file_qg_lumi = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1_new/limit_limit_Qstar_ak5_fat30_2.root", "READ");
+ TFile* file_qg_JES = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1_new/limit_limit_Qstar_ak5_fat30_3.root", "READ");
+ TFile* file_qg_JER = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1_new/limit_limit_Qstar_ak5_fat30_4.root", "READ");
 
  
  TH1F* limit_qg_bg = file_qg_bg->Get("limit;1");
@@ -256,9 +270,9 @@ void draw_highMass()
 
  cout << "looking for All systematics" << endl;
   // fat-All_Fat sys.included
- TFile* file_qq6 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_RSGraviton_ak5_QQtoQQ_fat30_6.root", "READ");
- TFile* file_qg6 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_Qstar_ak5_fat30_6.root", "READ");
- TFile* file_gg6 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_RSGraviton_ak5_GGtoGG_fat30_6.root", "READ");
+ TFile* file_qq6 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1_new/limit_limit_RSGraviton_ak5_QQtoQQ_fat30_6.root", "READ");
+ TFile* file_qg6 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1_new/limit_limit_Qstar_ak5_fat30_6.root", "READ");
+ TFile* file_gg6 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1_new/limit_limit_RSGraviton_ak5_GGtoGG_fat30_6.root", "READ");
 
  
  TH1F* limit_qq6 = file_qq6->Get("limit;1");
@@ -291,9 +305,9 @@ void draw_highMass()
  file_gg6->Close(); 
 
 
- TFile* file_exp_qq6 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_expectedlimit50_RSGraviton_ak5_QQtoQQ_fat30_6.root", "READ");
- TFile* file_exp_qg6 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_expectedlimit50_Qstar_ak5_fat30_6.root", "READ");
- TFile* file_exp_gg6 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_expectedlimit50_RSGraviton_ak5_GGtoGG_fat30_6.root", "READ");
+ TFile* file_exp_qq6 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1_new/limit_expectedlimit50_RSGraviton_ak5_QQtoQQ_fat30_6.root", "READ");
+ TFile* file_exp_qg6 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1_new/limit_expectedlimit50_Qstar_ak5_fat30_6.root", "READ");
+ TFile* file_exp_gg6 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1_new/limit_expectedlimit50_RSGraviton_ak5_GGtoGG_fat30_6.root", "READ");
 
 
  TH1F* limit_qq_twosigma_lowers = file_exp_qq6->Get("htwosigma_lowers;1");
@@ -508,11 +522,11 @@ void draw_highMass()
 
   g_xs_qstar = new TGraph(en,mjj,qstar);
   g_xs_axigluon = new TGraph(en,mjj,axigluon);
-  g_xs_diquark = new TGraph(en,mjj,diquark);
+  g_xs_diquark = new TGraph(33,mjj,diquark);
   g_xs_string = new TGraph(en,mjj,string);
-  g_xs_zprime = new TGraph(9,mjj,zprime);
-  g_xs_wprime = new TGraph(11,mjj,wprime);
-  g_xs_rsgraviton = new TGraph(8,mjj,rsgraviton);
+  g_xs_zprime = new TGraph(14,mjj,zprime);
+  g_xs_wprime = new TGraph(15,mjj,wprime);
+  g_xs_rsgraviton = new TGraph(10,mjj,rsgraviton);
 
   // comparison b/w different Jet combinations.
 
@@ -805,7 +819,9 @@ void draw_highMass()
   g_xs_wprime->Draw("sameL");  
   g_xs_zprime->Draw("sameL");  
   g_xs_rsgraviton->Draw("sameL");  
-	
+
+
+  
   l_xs_qg->SetFillColor(0);
   l_xs_qg->SetFillStyle(0);
   l_xs_qg->SetHeader("qg-(Sys)-4.677 fb^{-1}");
@@ -832,7 +848,7 @@ void draw_highMass()
   c_xs_qg->SaveAs("Fit_Results/Exclusion_qg.eps");
 
   // c_xs_gg
-
+  
   c_xs_gg->cd(0);
   TH1F *vFrame = gPad->DrawFrame(minMass,0.01,maxMass,11.0);
   vFrame->SetTitle("");
@@ -906,7 +922,7 @@ void draw_highMass()
   c_xs_qq->Update();
   c_xs_qq->SaveAs("Fit_Results/Exclusion_qq.png");
   c_xs_qq->SaveAs("Fit_Results/Exclusion_qq.eps");
-
+  
   // c_xs_stat_fat
 
   c_xs_stat_fat->cd(0);
@@ -1254,7 +1270,7 @@ void draw_highMass()
   g_xs_diquark->Draw("sameL");
   g_xs_wprime->Draw("sameL");  
   g_xs_zprime->Draw("sameL");  
-  g_xs_rsgraviton->Draw("sameL");  
+  //  g_xs_rsgraviton->Draw("sameL");  
 
 
   //  TGaxis *TX_xs_qq_sys_E = new TGaxis(500.0,300.0,550.0,300.0,1000.0,4000.0,510,"");
@@ -1286,7 +1302,7 @@ void draw_highMass()
   l_xs_theory_qq->AddEntry(g_xs_diquark,"E_{6} Diquark","L");
   l_xs_theory_qq->AddEntry(g_xs_wprime,"W'","L");
   l_xs_theory_qq->AddEntry(g_xs_zprime,"Z'","L");
-  l_xs_theory_qq->AddEntry(g_xs_rsgraviton,"RS Graviton","L");
+  //  l_xs_theory_qq->AddEntry(g_xs_rsgraviton,"RS Graviton","L");
 
   l_xs_theory_qq->Draw("sames");
   
@@ -1332,7 +1348,7 @@ void draw_highMass()
 
   c_xs_comparison_bw_stat_sys_fat->SaveAs("Fit_Results/Exclusions_qg_SysErrorsDependance.png");
   c_xs_comparison_bw_stat_sys_fat->SaveAs("Fit_Results/Exclusions_qg_SysErrorsDependance.eps");
-
+  /*
   // c_xs_qg_compare
 
   c_xs_qg_compare->cd(0);
@@ -1398,7 +1414,7 @@ void draw_highMass()
   l_xs_qq_compare->Draw("sames");
 
   c_xs_qq_compare->Update();
-
+  */
   // c_xs_rsg
 
   c_xs_rsg->cd(0);
