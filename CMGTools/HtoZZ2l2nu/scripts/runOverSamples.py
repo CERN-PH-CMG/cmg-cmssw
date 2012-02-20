@@ -79,7 +79,7 @@ except getopt.GetoptError:
      sys.exit(1)
 
 subtoBatch=''
-requirementtoBatch=''
+requirementtoBatch='type==SLC5_64&&pool>30000'
 samplesDB=''
 dirtag=''
 fperjob=-1
@@ -90,7 +90,7 @@ for o,a in opts:
         usage()
         sys.exit(0)
     elif o in('-s'): subtoBatch=a
-    elif o in('-R'): requirementtoBatch=a
+    elif o in('-R'): requirementtoBatch=requirementtoBatch + '&&' + a
     elif o in('-j'): samplesDB = a
     elif o in('-d'): dirtag = a
     elif o in('-t'): onlytag = a
@@ -159,10 +159,9 @@ for proc in procList :
                     print "**** Starting new job with the following parameters ****"
                     print localParams
                     if(len(subtoBatch)>0) :
-			if(len(requirementtoBatch)>0) : 
-				subtoBatch = subtoBatch + ' -R ' + requirementtoBatch
-                        os.system('submit2batch.sh -q' + subtoBatch + ' ' + scriptFile + ' ' + localParams)                   
-			os.system('sleep ' + str(sleep) + 's')
+                        print('submit2batch.sh -q' + subtoBatch + ' -R"' + requirementtoBatch + '" -J' + d['dtag']+str(ijob) + ' ' + scriptFile + ' ' + localParams)
+                        os.system('submit2batch.sh -q' + subtoBatch + ' -R"' + requirementtoBatch + '" -J' + d['dtag']+str(ijob) + ' ' + scriptFile + ' ' + localParams)
+			#os.system('sleep ' + str(sleep) + 's')   ##THIS WAS NEEDED ONLY FOR FILE ON CASTOR
                     else :
                         os.system(scriptFile + ' '  + localParams)
 

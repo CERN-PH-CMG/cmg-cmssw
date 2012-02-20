@@ -13,4 +13,5 @@ eval `scram r -sh`
 cd $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu
 
 #run with the arguments passed
+echo $1 + $2
 $1 $2

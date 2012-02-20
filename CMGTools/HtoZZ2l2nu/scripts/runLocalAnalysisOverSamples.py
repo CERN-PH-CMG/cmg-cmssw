@@ -44,6 +44,7 @@ except getopt.GetoptError:
      sys.exit(1)
 
 subtoBatch=False
+requirementtoBatch='type==SLC5_64&&pool>30000'
 samplesDB=''
 theExecutable=''
 inputdir=''
@@ -126,7 +127,8 @@ for proc in procList :
             	if(not subtoBatch) :
                 	os.system(theExecutable + ' ' + cfgfile)
             	else :
-                	os.system('submit2batch.sh -q' + queue +' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
+			print('submit2batch.sh -q' + queue + ' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
+			os.system('submit2batch.sh -q' + queue + ' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
     
 #run plotter over results
 if(not subtoBatch) :

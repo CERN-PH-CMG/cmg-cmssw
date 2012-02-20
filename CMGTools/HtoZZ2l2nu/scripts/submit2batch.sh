@@ -8,23 +8,24 @@
 USER=`whoami`
 HOSTNAME=`hostname`
 HOSTINFO=`host ${HOSTNAME}`
-BASEDIR=`pwd`
+BASEDIR=`pwd`;
 
 #
 # PARSE CONFIGURATION PARAMETERS
 #
 for p in $*; 
     do
-    if [ "$p" != "${p/-q/}" ]; then QUEUE="${p/-q/}"; 
-    else if [ "$p" != "${p/.sh/}" ]; then SCRIPT="${p}"; 
+    if   [ "$p" != "${p/-q/}"  ]; then QUEUE="${p/-q/}"; 
+    elif [ "$p" != "${p/-R/}"  ]; then REQUIREMENT="${p/-R/}"; 
+    elif [ "$p" != "${p/-J/}"  ]; then JOBNAME="${p/-J/}";
+    elif [ "$p" != "${p/.sh/}" ]; then SCRIPT="${p}"; 
     else PARAMS="$PARAMS $p"
-    fi
     fi
 done
 
 if [[ -z $SCRIPT ]]; then
     echo "Must provide a script to configure+run your job (~*.sh)"
-    echo "SubmitJobToBatch.sh <-qQUEUE> [SCRIPT TO RUN] <SCRIPT PARAMETERS> "
+    echo "SubmitJobToBatch.sh <-qQUEUE> <-Rrequirements> <-Jjobname> [SCRIPT TO RUN] <SCRIPT PARAMETERS> "
     echo ""
     exit -1;
 else
@@ -59,7 +60,8 @@ fi
 # SUBMIT JOB
 #
 #echo "Submitting shell script: ${SCRIPT} with parameters: ${PARAMS} to queue $QUEUE"
-bsub -q $QUEUE -R "type==SLC5_64 && pool>30000" `echo ${SCRIPT} ${PARAMS}`
+echo "Submitting shell script: $bsub -q $QUEUE -R $REQUIREMENT -J $JOBNAME `echo ${SCRIPT} ${PARAMS}`"
+bsub -q $QUEUE -R "$REQUIREMENT" -J $JOBNAME `echo ${SCRIPT} ${PARAMS}`
 
 #
 # END
