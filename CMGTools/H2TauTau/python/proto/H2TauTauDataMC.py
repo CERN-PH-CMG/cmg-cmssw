@@ -363,14 +363,14 @@ if __name__ == '__main__':
     
     
     # get WJet scaling factor for same sign
-    mtSS = H2TauTauDataMC('tauMu/tauMu_h_mT', anaDir,
+    mtSS = H2TauTauDataMC('diTau/diTau_h_mT', anaDir,
                           selComps,
                           'HighMT_SS_%s.root' % options.box, weights,
                           options.embed )
     wJetScaleSS = wJetScale( mtSS, dataName)
     
     # get WJet scaling factor for opposite sign
-    mtOS = H2TauTauDataMC('tauMu/tauMu_h_mT', anaDir,
+    mtOS = H2TauTauDataMC('diTau/diTau_h_mT', anaDir,
                           selComps, 
                           'HighMT_OS_%s.root' % options.box, weights,
                           options.embed )

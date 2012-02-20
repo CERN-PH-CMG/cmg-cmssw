@@ -13,6 +13,12 @@ fixedMuWeight = False
 
 # mc_triggers = 'HLT_IsoMu12_v1'
 mc_triggers = []
+mc_triggers_fall11 = [
+    'HLT_IsoMu15_LooseIsoPFTau15_v9',
+    # 'HLT_IsoMu15_eta2p1_MediumIsoPFTau20_v1',
+    # 'HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1'
+    ]
+
 mc_jet_scale = 1.
 mc_jet_smear = 0.
 mc_vertexWeight = None
@@ -23,6 +29,8 @@ mc_muEffWeight = None
 # For Fall11 : trigger is applied in MC:
 #   "HLT_IsoMu15_LooseIsoPFTau15_v9"
 
+mc_tauEffWeight_mc = 'effLooseTau15MC'
+mc_muEffWeight_mc = 'effIsoMu15MC'
 if period == 'Period_2011A':
     mc_vertexWeight = 'vertexWeight2invfb'
     mc_tauEffWeight = 'effTau2011A'
@@ -83,6 +91,7 @@ TauMuAna = cfg.Analyzer(
 muonWeighter = cfg.Analyzer(
     'LeptonWeighter_mu',
     effWeight = mc_muEffWeight,
+    effWeightMC = mc_muEffWeight_mc,
     lepton = 'leg2',
     verbose = False
     )
@@ -90,6 +99,7 @@ muonWeighter = cfg.Analyzer(
 tauWeighter = cfg.Analyzer(
     'LeptonWeighter_tau',
     effWeight = mc_tauEffWeight,
+    effWeightMC = mc_tauEffWeight_mc,
     lepton = 'leg1',
     verbose = False
     )
@@ -215,15 +225,15 @@ DYJets = cfg.MCComponent(
     files ='{baseDir}/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     xSection = 3048.,
     nGenEvents = 34915945,
-    triggers = mc_triggers,
+    triggers = mc_triggers_fall11,
     effCorrFactor = mc_effCorrFactor )
 
 WJets = cfg.MCComponent(
     name = 'WJets',
-    files ='{baseDir}/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/Merge/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files ='{baseDir}/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V2/TAUTAU/PAT_CMG_V3_0_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     xSection = 31314.,
     nGenEvents = 53227112,
-    triggers = mc_triggers,
+    triggers = mc_triggers_fall11,
     effCorrFactor = mc_effCorrFactor )
 
 
@@ -232,7 +242,7 @@ TTJets = cfg.MCComponent(
     files ='{baseDir}/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     xSection = 165.8,
     nGenEvents = 3542770,
-    triggers = mc_triggers,
+    triggers = mc_triggers_fall11,
     effCorrFactor = mc_effCorrFactor )
 
 
@@ -286,10 +296,10 @@ elif period == 'Period_2011AB':
 # selectedComponents = [ embed_Run2011A_May10ReReco_v1 ] 
 
 # selectedComponents = MC
-selectedComponents = [data_Run2011A_PromptReco_v4]
+# selectedComponents = [data_Run2011A_PromptReco_v4]
 # selectedComponents = [data_Run2011A_May10ReReco_v1]
 # selectedComponents  = [ data_Run2011B_PromptReco_v1  ]
-selectedComponents = [WJets]
+selectedComponents = [TTJets]
 
 # selectedComponents = [embed_Run2011A_May10ReReco_v1]
 
@@ -301,8 +311,8 @@ sequence = cfg.Sequence( [
     TauMuAna,
     muonWeighter, 
     tauWeighter, 
-    vbfAna,
-    eventSorter
+#     vbfAna,
+#     eventSorter
    ] )
 
 # sequence = sequence[:1]
