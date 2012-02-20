@@ -112,9 +112,13 @@ class DiLeptonAnalyzer( Analyzer ):
         return selDiLeptons
 
 
-    def testLeg(self, leg, pt, eta, iso):
-        if leg.pt()>pt and \
-           abs(leg.eta())<eta and \
+    def testLeg(self, leg, pt, eta, iso, sel=None):
+        if sel is not None and \
+           not leg.getSelection(sel):
+            # a cut string has to be tested, and the leg does not pass
+            return False
+        if leg.pt() > pt and \
+           abs(leg.eta()) < eta and \
            leg.relIso( 0.5 ) < iso:
             return True
         else:
@@ -123,18 +127,26 @@ class DiLeptonAnalyzer( Analyzer ):
     
     def testLeg1(self, leg):
         '''Overload according to type, see e.g. TauMuAnalyzer.'''
+        sel = None
+        if hasattr(self.cfg_ana, 'cutString1'):
+            sel = self.cfg_ana.cutString1
         return self.testLeg( leg,
                              pt = self.cfg_ana.pt1,
                              eta = self.cfg_ana.eta1,
-                             iso = self.cfg_ana.iso1 )
+                             iso = self.cfg_ana.iso1,
+                             sel = sel )
 
 
     def testLeg2(self, leg):
         '''Overload according to type, see e.g. TauMuAnalyzer.'''
+        sel = None
+        if hasattr(self.cfg_ana, 'cutString2'):
+            sel = self.cfg_ana.cutString2
         return self.testLeg( leg,
                              pt = self.cfg_ana.pt2,
                              eta = self.cfg_ana.eta2,
-                             iso = self.cfg_ana.iso2 )
+                             iso = self.cfg_ana.iso2,
+                             sel = sel )
         
 
     def testMuon(self, muon):

@@ -22,7 +22,6 @@ class TriggerAnalyzer( Analyzer ):
     def process(self, iEvent, event):
         self.readCollections( iEvent )
         event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
-
         run = iEvent.eventAuxiliary().id().run()
         
         self.counters.counter('Trigger').inc('All events')

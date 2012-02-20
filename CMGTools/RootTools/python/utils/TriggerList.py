@@ -59,7 +59,7 @@ class TriggerList( object ):
         # if not triggerList or len(triggerList)==0:
         #    return False
         if len(triggerList)==0:
-            # no trigger specified, accepting all
+            # no trigger specified, accepting all events
             return True 
         passed = False
         firstTrigger = None
@@ -67,10 +67,8 @@ class TriggerList( object ):
             trigger.inc('a: tot   ')
             if triggerObject.getSelectionRegExp( trigger.name ):
                 prescaleFactor = triggerObject.getPrescale( trigger.name )
-                if usePrescaled or prescaleFactor == 1:
-                    ## if trigger.name == 'HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1':
-                    ##    print run, prescaleFactor
-                    ##    import pdb; pdb.set_trace()
+                if usePrescaled or prescaleFactor == 1 or not isData:
+                    # prescales are set to 0 in MC
                     trigger.inc('b: passed')
                     passed = True
                     if firstTrigger is None:
