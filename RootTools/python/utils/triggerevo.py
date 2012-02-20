@@ -63,6 +63,22 @@ class Menus( list ):
                 unprescaledMenus.append( menu )
         return (runs, unprescaledMenus)
 
+
+    def findRanges(self, pathRegexp, datasetName, usePrescaled=False):
+        pathranges = dict()
+        reg = re.compile(pathRegexp)
+        # import pdb; pdb.set_trace()
+        for menu in self:
+            dataset = menu.datasets[ datasetName ]
+            paths = dataset.paths
+            for pathName, path in dataset.paths.iteritems():
+                if not usePrescaled and path.isPrescaled():
+                    continue
+                if reg.match(pathName) is not None:
+                    pathranges.setdefault(pathName, set()).update( menu.runs )
+        return pathranges
+    
+        
     def findMenusWithPath(self, path, datasetName):
         '''Returns all menus for which path is used in datasetName.'''
         menus = Menus()
@@ -181,7 +197,7 @@ if __name__ == '__main__':
     import CMGTools.RootTools.StartUp 
 
     fileName = 'triggerEvolution_all.txt'
-    datasets = ['TauPlusX']
+    datasets = ['TauPlusX','MuEG']
     nMenus = 10000
 
     menus = Menus( fileName, datasets, nMenus )
