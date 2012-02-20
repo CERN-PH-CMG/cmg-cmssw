@@ -9,8 +9,8 @@ from CMGTools.Common.eventContent.runInfoAccounting_cff import *
 
 patObjects = cms.untracked.vstring(
     'drop patMuons_selectedPat*_*_*',
-    'keep patElectrons_selectedPat*_*_*',
     'drop patTaus_selectedPat*_*_*',
+    'keep patElectrons_selectedPat*_*_*',
     #COLIN : the following should be in traditional_cff
     'keep cmgPhotons_selectedPat*_*_*',
     'keep recoVertexs_offlinePrimaryVertices_*_*'

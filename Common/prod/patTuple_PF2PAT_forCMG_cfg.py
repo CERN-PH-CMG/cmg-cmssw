@@ -299,24 +299,15 @@ process.out.outputCommands = cms.untracked.vstring('drop *',
 process.out.outputCommands += patTriggerEventContent
 process.out.outputCommands += patTriggerStandAloneEventContent
 
-# add gen event content to the pat-tuple (e.g. status 3 GenParticles)
-from CMGTools.Common.eventContent.gen_cff import gen 
-process.out.outputCommands.extend( gen )
+from CMGTools.Common.eventContent.everything_cff import everything 
+process.out.outputCommands.extend( everything )
 
 # tuning the PAT event content to our needs
 from CMGTools.Common.eventContent.patEventContentCMG_cff import patEventContentCMG
 process.out.outputCommands.extend( patEventContentCMG )
 
-# event cleaning results
-from CMGTools.Common.eventContent.eventCleaning_cff import eventCleaning
-process.out.outputCommands.extend( eventCleaning )
-
-from CMGTools.Common.eventContent.runInfoAccounting_cff import runInfoAccounting
-process.out.outputCommands.extend( runInfoAccounting )
-
 # CMG ---
 
-from CMGTools.Common.eventContent.everything_cff import everything 
 
 process.outcmg = cms.OutputModule(
     "PoolOutputModule",
@@ -343,11 +334,3 @@ process.outpath += process.ria
 
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("histograms_CMG.root"))
-
-# process.Timing = cms.Service("Timing")
-
-# print process.dumpPython()
-
-
-# process.load('CMGTools.Common.miscProducers.cmgPatElectronProducer_cfi')
-# process.p += process.cmgPatElectronProducer
