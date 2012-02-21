@@ -27,8 +27,9 @@ statl=[0,1,2,3,4,6]
 
 #shapes=["RSGraviton_ak5_GGtoGG_fat30", "RSGraviton_ak5_QQtoQQ_fat30", "Qstar_ak5_fat30", "RSGraviton_HLT_ak5_GGtoGG_fat30", "RSGraviton_HLT_ak5_QQtoQQ_fat30", "Qstar_HLT_ak5_fat30", "RSGraviton_HLT_ak5_GGtoGG_pf", "RSGraviton_HLT_ak5_QQtoQQ_pf", "Qstar_HLT_ak5_pf"]
 
-shapes=["Qstar_qW_ak5_fat", "Qstar_qZ_ak5_fat", "RSGraviton_WW_ak5_fat", "RSGraviton_WZ_ak5_fat", "RSGraviton_ZZ_ak5_fat"]
-shapes=["QBH_ak5_fat"]
+shapes=["Qstar_qW_ak5_fat", "Qstar_qZ_ak5_fat"]
+shapes+=["RSGraviton_WW_ak5_fat", "RSGraviton_WZ_ak5_fat", "RSGraviton_ZZ_ak5_fat"]
+#shapes=["QBH_ak5_fat"]
 
 for statlevel in statl:
 
@@ -42,8 +43,10 @@ for statlevel in statl:
  
         if "_HLT_" in sShapes:
             masses =[600., 700., 800., 900., 1000., 1100., 1200., 1300., 1400., 1500., 1600., 1700., 1800., 1900., 2000.]
-        elif ("W" in sShapes) or ("Z" in sShapes):
-            masses = [1000., 1100., 1200., 1300., 1400., 1500., 1600., 1700., 1800., 1900., 2000., 2100., 2200., 2300., 2400., 2500., 2600., 2700., 2800., 2900., 3000.]
+        elif ("qW" in sShapes) or ("qZ" in sShapes):
+            masses = [1000., 1100., 1200., 1300., 1400., 1500., 1600., 1700., 1800., 1900., 2000., 2100., 2200., 2300., 2400., 2500., 2600., 2700., 2800., 2900., 3000., 3100., 3200., 3300.]
+        elif ("WW" in sShapes) or ("ZZ" in sShapes) or ("WZ" in sShapes):
+            masses = [1000., 1100., 1200., 1300., 1400., 1500., 1600., 1700., 1800., 1900., 2000., 2100.]
         elif ("QBH" in sShapes):
             masses = [3000., 3200., 3400., 3600., 3800., 4000., 4200., 4400., 4600., 4800., 5000.]
         else: 
