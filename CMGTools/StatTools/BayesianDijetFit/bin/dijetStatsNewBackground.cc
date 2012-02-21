@@ -168,11 +168,13 @@ int main(int argc, char* argv[])
     DATASETFN="../data/lumi46fb_dataMC_data_1JetMassTag.txt";
     MININVMASS = 890.;
     MAXINVMASS = 3279.;
+    LUMIERROR = sqrt(pow(LUMIERROR,2) + pow(0.05,2));
   }
   if (iResonance > 2010 && iResonance < 2020)  {
     DATASETFN="../data/lumi46fb_dataMC_data_2JetMassTag.txt";
     MININVMASS = 890.;
     MAXINVMASS = 2037.;
+    LUMIERROR = sqrt(pow(LUMIERROR,2) + pow(0.05,2) + pow(0.05,2));
   }
 
 
@@ -195,9 +197,15 @@ int main(int argc, char* argv[])
   cout << "Verbose = " << verbose_ << endl;
 
   // background
-  ws->factory("EXPR::background('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*log(invmass/7000.0))', p1[7.460,-30,30], p2[5.882,-20,20], p3[0.106,-5,5],invmass)");
-  ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[5.1,0,100],pb2[5.72,-100,100], pb3[-0.553,0,2],invmass)");
+  if (iResonance > 2010 && iResonance < 2020)  {
+   ws->factory("EXPR::background('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*0)', p1[12,-30,30], p2[2,-20,20], p3[0,0,0],invmass)");
+ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[5.1,0,100],pb2[5.72,-100,100], pb3[-0.553,0,2],invmass)");
+  ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,0)',pc1[7.8,-100,100],pc2[0,0,0],invmass)");
+ } else {
+   ws->factory("EXPR::background('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*log(invmass/7000.0))', p1[7.460,-30,30], p2[5.882,-20,20], p3[0.106,-5,5],invmass)");
+ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[5.1,0,100],pb2[5.72,-100,100], pb3[-0.553,0,2],invmass)");
   ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,pc2)',pc1[7.8,-100,100],pc2[5.4,-100,100],invmass)");
+  }
 
   // data
   int ndatabins=(MAXINVMASS-MININVMASS);
@@ -247,10 +255,11 @@ int main(int argc, char* argv[])
   // model
 //  ws->factory("SUM::modela(nsig*signal, nbkg[474872,270000,670000]*background)"); // background HT-calo
 //  ws->factory("SUM::modela(nsig*signal, nbkg[346573,140000,540000]*background)"); // background HT-PF
-  ws->factory("SUM::modela(nsig*signal, nbkg[319282,100,5100000]*background)"); // background HT-fat
+//  ws->factory("SUM::modela(nsig*signal, nbkg[319282,100,5100000]*background)"); // background HT-fat
 //  ws->factory("SUM::modela(nsig*signal, nbkg[250481,100000,400000]*background)"); // background Jet-calo
 //  ws->factory("SUM::modela(nsig*signal, nbkg[181374,0,300000]*background)"); // background Jet-PF
 //  ws->factory("SUM::modela(nsig*signal, nbkg[87242,0,200000]*background)"); // background Jet-fat
+  ws->factory("SUM::modela(nsig*signal, nbkg[1000,0,1E8]*background)");
   ws->factory("SUM::modelb(nsig*signal, nbkg*backgroundb)");
   ws->factory("SUM::modelc(nsig*signal, nbkg*backgroundc)");
   ws->defineSet("observables","invmass");
