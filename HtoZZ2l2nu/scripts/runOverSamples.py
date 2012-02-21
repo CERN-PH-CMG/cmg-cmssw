@@ -90,7 +90,7 @@ for o,a in opts:
         usage()
         sys.exit(0)
     elif o in('-s'): subtoBatch=a
-    elif o in('-R'): requirementtoBatch=requirementtoBatch + '&&' + a
+    elif o in('-R'): requirementtoBatch=requirementtoBatch + '&&' + a.replace("'","").replace('"','')
     elif o in('-j'): samplesDB = a
     elif o in('-d'): dirtag = a
     elif o in('-t'): onlytag = a
