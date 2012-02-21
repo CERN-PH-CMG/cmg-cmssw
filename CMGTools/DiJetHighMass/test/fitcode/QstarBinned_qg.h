@@ -78,20 +78,62 @@ void Init(string resonance){
     TArrayD* dv4000_den = new TArrayD(50, ZBBar_3500_withMuons_lowMassCut_ak5_lowMass_fat);
 
 
+  }  if (resonance.find("qW") !=string::npos ) {
+    dv750 = new TArrayD(50,  Qstar_qW_75TeV_ak5_fat);
+    dv1500 = new TArrayD(50,  Qstar_qW_15TeV_ak5_fat);
+    dv3000 = new TArrayD(50,  Qstar_qW_3TeV_ak5_fat);
+
+  }  if (resonance.find("qZ") !=string::npos ) {
+    dv750 = new TArrayD(50,  Qstar_qZ_75TeV_ak5_fat);
+    dv1500 = new TArrayD(50,  Qstar_qZ_15TeV_ak5_fat);
+    dv3000 = new TArrayD(50,  Qstar_qZ_3TeV_ak5_fat);
+
+  }  if (resonance.find("WW") !=string::npos ) {
+    dv1000 = new TArrayD(50,  RSGraviton_WW_1TeV_ak5_fat);
+    dv1500 = new TArrayD(50,  RSGraviton_WW_15TeV_ak5_fat);
+    dv2000 = new TArrayD(50,  RSGraviton_WW_2TeV_ak5_fat);
+    dv3000 = new TArrayD(50,  RSGraviton_WW_3TeV_ak5_fat);
+
+  }  if (resonance.find("ZZ") !=string::npos ) {
+    dv1000 = new TArrayD(50,  RSGraviton_WZ_1TeV_ak5_fat);
+    dv1500 = new TArrayD(50,  RSGraviton_WZ_15TeV_ak5_fat);
+    dv2000 = new TArrayD(50,  RSGraviton_WZ_2TeV_ak5_fat);
+    dv3000 = new TArrayD(50,  RSGraviton_WZ_3TeV_ak5_fat);
+
+  }  if (resonance.find("WZ") !=string::npos ) {
+    dv1000 = new TArrayD(50,  RSGraviton_ZZ_1TeV_ak5_fat);
+    dv1500 = new TArrayD(50,  RSGraviton_ZZ_15TeV_ak5_fat);
+    dv2000 = new TArrayD(50,  RSGraviton_ZZ_2TeV_ak5_fat);
+    dv3000 = new TArrayD(50,  RSGraviton_ZZ_3TeV_ak5_fat);
   }
 
+  if ((resonance.find("qW") !=string::npos )||
+      (resonance.find("qZ") !=string::npos )){
+    vy->Add((TObject*) dv750); vy->Add((TObject*) dv1500); vy->Add((TObject*) dv3000);
+    vy_den->Add((TObject*) dv750); vy_den->Add((TObject*) dv1500); vy_den->Add((TObject*) dv3000);
+    vy->Add((TObject*) dv3000); vy->Add((TObject*) dv3000); vy->Add((TObject*) dv3000);
+    vy_den->Add((TObject*) dv3000); vy_den->Add((TObject*) dv3000); vy_den->Add((TObject*) dv3000);
+  } else
+  if ((resonance.find("WW") !=string::npos )||
+      (resonance.find("ZZ") !=string::npos )||
+      (resonance.find("WZ") !=string::npos )){
+    vy->Add((TObject*) dv1000); vy->Add((TObject*) dv1500); vy->Add((TObject*) dv2000); vy->Add((TObject*) dv3000);
+    vy_den->Add((TObject*) dv1000); vy_den->Add((TObject*) dv1500); vy_den->Add((TObject*) dv2000); vy_den->Add((TObject*) dv3000);
+    vy->Add((TObject*) dv3000); vy->Add((TObject*) dv3000);
+    vy_den->Add((TObject*) dv3000); vy_den->Add((TObject*) dv3000);
+  } else
+  {
   vy->Add((TObject*) dv500); 
   vy->Add((TObject*) dv700); vy->Add((TObject*) dv1200); vy->Add((TObject*) dv2000); 
   vy->Add((TObject*) dv3500); vy->Add((TObject*) dv4000);
 
-
   vy_den->Add((TObject*) dv500_den);
   vy_den->Add((TObject*) dv700_den); vy_den->Add((TObject*) dv1200_den); vy_den->Add((TObject*) dv2000_den); 
   vy_den->Add((TObject*) dv3500_den);   vy_den->Add((TObject*) dv4000_den); 
-
+  }
  
 
-  for (int bin = 0; bin < 6; bin++){
+  for (int bin = 0; bin < vy.GetEntries(); bin++){
     double sum = 0;
     double sum_den = 0;
     for (int k = 0; k < 50; k++){
