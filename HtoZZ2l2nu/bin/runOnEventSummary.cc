@@ -597,6 +597,7 @@ int main(int argc, char* argv[])
   int treeStep = (evEnd-evStart)/50;if(treeStep==0)treeStep=1;
   for( int iev=evStart; iev<evEnd; iev++){
       if((iev-evStart)%treeStep==0){printf(".");fflush(stdout);}
+      //##############################################   EVENT LOOP STARTS   ##############################################
 
       //load the event content from tree
       evSummaryHandler.getEntry(iev);
@@ -694,17 +695,20 @@ int main(int argc, char* argv[])
 
 
       //##############################################
-      //########           GENERAL            ########
+      //########       GLOBAL VARIABLES       ########
       //##############################################
 
+      float iweight=weight;
+//FIXME
+//              if(gammaEvHandler){
+//                  TString dilCh=catsToFill[ic];
+//                  if(dilCh=="all") dilCh="ll";
+//                  iweight *= gammaEvHandler->getWeight(dilCh);
+//              }              
 
 
       LorentzVector zll = isGammaEvent ? gammaEvHandler->massiveGamma("ll") : phys.leptons[0]+phys.leptons[1];
       LorentzVector zvv  = phys.met[0];
-
-
-
-
 
 
       //count jets and b-tags
@@ -868,7 +872,220 @@ int main(int argc, char* argv[])
       
       mindphijmet = metTypeValuesminJetdphi["met"]; 
 
-      //vbf variables 
+      // boosts
+      LorentzVector transverseHiggs(genhiggs.px(),genhiggs.py(), 0,sqrt(pow(genhiggs.mass(),2)+pow(genhiggs.pt(),2)));
+      ROOT::Math::Boost cmboost(transverseHiggs.BoostToCM());
+      LorentzVector cmzll(cmboost(zll));
+      LorentzVector cmzvv(cmboost(zvv));
+      
+
+
+    
+      //##############################################
+      //########     GLOBAL SELECTION         ########
+      //##############################################
+
+      bool passLooseKinematics(zpt>20);
+      bool passZmass(fabs(zmass-91)<15);
+      bool passSideBand( !passZmass && fabs(zmass-91)<30 );
+
+      bool passZpt(zpt>25);
+
+      bool pass3dLeptonVeto(true); for(unsigned int i=2;i<phys.leptons.size();i++){if(phys.leptons[i].pt()>10)pass3dLeptonVeto=false;}
+      bool passBveto(nbtags==0);
+      bool passMediumRedMet(50);
+      bool passTightRedMet(84);//redMet>METUtils::getRedMETCut(eventCategory,METUtils::TIGHTWP));
+      
+      //bool passBaseCuts(passZmass && pass3dLeptonVeto && passBveto && passMediumRedMet);
+
+      //##############################################
+      //########         GENERAL PLOTS        ########
+      //##############################################
+
+      if(passZmass)                                                                 mon.fillHisto("zmassregionCtr",tags_full, 0,iweight);
+      if(passZmass    && !passBveto)                                                mon.fillHisto("zmassregionCtr",tags_full, 1,iweight);
+      if(passZmass    && !passBveto && pass3dLeptonVeto)                            mon.fillHisto("zmassregionCtr",tags_full, 2,iweight);
+      if(passZmass    && !passBveto && pass3dLeptonVeto && passMediumRedMet)        mon.fillHisto("zmassregionCtr",tags_full, 3,iweight);
+      if(passZmass    && !passBveto && pass3dLeptonVeto && passTightRedMet)         mon.fillHisto("zmassregionCtr",tags_full, 4,iweight);
+      if(passSideBand)                                                              mon.fillHisto("zmassregionCtr",tags_full, 5,iweight);
+      if(passSideBand && !passBveto)                                                mon.fillHisto("zmassregionCtr",tags_full, 6,iweight);
+      if(passSideBand && !passBveto && pass3dLeptonVeto)                            mon.fillHisto("zmassregionCtr",tags_full, 7,iweight);
+      if(passSideBand && !passBveto && pass3dLeptonVeto && passMediumRedMet)        mon.fillHisto("zmassregionCtr",tags_full, 8,iweight);
+      if(passSideBand && !passBveto && pass3dLeptonVeto && passTightRedMet)         mon.fillHisto("zmassregionCtr",tags_full, 9,iweight);
+      if(passZmass    && passBveto)                                                 mon.fillHisto("zmassregionCtr",tags_full,10,iweight);
+      if(passZmass    && passBveto && pass3dLeptonVeto)                             mon.fillHisto("zmassregionCtr",tags_full,11,iweight);
+      if(passZmass    && passBveto && pass3dLeptonVeto && passMediumRedMet)         mon.fillHisto("zmassregionCtr",tags_full,12,iweight);
+      if(passZmass    && passBveto && pass3dLeptonVeto && passTightRedMet)          mon.fillHisto("zmassregionCtr",tags_full,13,iweight);
+      if(passSideBand && passBveto)                                                 mon.fillHisto("zmassregionCtr",tags_full,14,iweight);
+      if(passSideBand && passBveto && pass3dLeptonVeto)                             mon.fillHisto("zmassregionCtr",tags_full,15,iweight);
+      if(passSideBand && passBveto && pass3dLeptonVeto && passMediumRedMet)         mon.fillHisto("zmassregionCtr",tags_full,16,iweight);
+      if(passSideBand && passBveto && pass3dLeptonVeto && passTightRedMet)          mon.fillHisto("zmassregionCtr",tags_full,17,iweight);
+
+      //dilepton control plots
+      mon.fillHisto  ("zmass"    ,tags_full,zmass   ,iweight);
+      mon.fillHisto  ("zeta"     ,tags_full,zeta    ,iweight);
+      mon.fillHisto  ("zpt"      ,tags_full,zpt     ,iweight);
+      mon.fillHisto  ("zrank"    ,tags_full,zrank   ,iweight);
+      mon.fill2DHisto("zptvszeta",tags_full,zpt,zeta,iweight);
+      mon.fillHisto  ("dphill"   ,tags_full,dphill  ,iweight);
+      mon.fillHisto  ("mindrlz"  ,tags_full,mindrlz ,iweight);
+      mon.fillHisto  ("maxdrlz"  ,tags_full,maxdrlz ,iweight);
+      mon.fillHisto  ("ptsum"    ,tags_full,ptsum   ,iweight);
+      mon.fillHisto  ("mtl1"     ,tags_full,mtl1    ,iweight);
+      mon.fillHisto  ("mtl2"     ,tags_full,mtl2    ,iweight);
+      mon.fillHisto  ("mt"       ,tags_full,mt      ,iweight);
+
+      if(passZmass){
+        mon.fillHisto("genzwinHiggsPt"      ,tags_full,    genhiggs.pt()   ,iweight);
+        mon.fillHisto("genzwinHiggsMass"    ,tags_full,    genhiggs.mass() ,iweight);
+        mon.fillHisto("genzwinzllPt"        ,tags_full,    genzll.pt()     ,iweight);
+        mon.fillHisto("genzwinzvvPt"        ,tags_full,    genzvv.pt()     ,iweight);
+      }
+
+
+      if(passZmass && passSideBand && passLooseKinematics){
+         mon.fillHisto("eventflow",tags_full,1,iweight);
+         mon.fillHisto("nvtx",tags_full,ev.nvtx,iweight);
+         mon.fillHisto("nvtxPlus",tags_full,ev.nvtx,iweight*TotalWeight_plus);
+         mon.fillHisto("nvtxMinus",tags_full,ev.nvtx,iweight*TotalWeight_minus);
+      }
+      
+      if(passZmass && passLooseKinematics){
+         mon.fillHisto("eventflow",tags_full,2,iweight);
+     
+      //jet control
+         mon.fillHisto("njets",tags_full,njets,iweight);
+         mon.fill2DHisto("njetsvspu",tags_full,ev.ngenITpu,njets,iweight);
+         mon.fill2DHisto("njetsincvspu",tags_full,ev.ngenITpu,njetsinc,iweight);
+         mon.fillHisto("nbtags",tags_full, nbtags,iweight);
+         mon.fillHisto("npassbveto",tags_full,0, (nbtags_tchel==0)*iweight);
+         mon.fillHisto("npassbveto",tags_full,1, (nbtags_tche2==0)*iweight);
+         mon.fillHisto("npassbveto",tags_full,2, (nbtags_csvl==0)*iweight);
+         mon.fillHisto("zmassctrl",tags_full,passBveto+2*passMediumRedMet,iweight);
+      
+         mon.fillHisto("btag0proj",tags_full,0,iweight*p0btags);
+         mon.fillHisto("btag0projup",tags_full,0,iweight*min(p0btags+p0btags_err,1.0));
+         mon.fillHisto("btag0projdown",tags_full,0,iweight*max(p0btags-p0btags_err,0.0));
+
+         if(passBveto){
+            mon.fillHisto("eventflow",tags_full,3,iweight);
+
+            if(passZpt){
+               mon.fillHisto("eventflow",tags_full,4,iweight);
+
+             //extra leptons
+               mon.fillHisto("nleptons",tags_full,ev.ln,iweight);
+               if(!pass3dLeptonVeto){
+                   mon.fillHisto("njets3leptons",tags_full,njets,iweight);
+                   mon.fillHisto("nbtags3leptons",tags_full,nbtags,iweight);
+               }
+
+               if(pass3dLeptonVeto){                 
+                  mon.fillHisto("eventflow",tags_full,5,iweight);
+      
+                  if(isMC && genhiggs.pt()>0){
+                      mon.fillHisto("CMzllP"      ,tags_full,    cmzll.pt()   ,iweight);
+                      mon.fillHisto("CMzvvP"      ,tags_full,    cmzvv.pt()   ,iweight);
+                      mon.fillHisto("CMDeltazP"   ,tags_full,    cmzll.pt()-cmzvv.pt()   ,iweight);
+                      mon.fillHisto("CMiMass"     ,tags_full,    METUtils::transverseMass(cmzll,cmzvv,true)   ,iweight);
+                  }
+
+                  for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++){
+                      if(it->second.pt()>50 && metTypeValuesminJetdphi[it->first]<10){
+                          mon.fillHisto(TString("met_") + it->first+"mindphijmet",tags_full,metTypeValuesminJetdphi[it->first], iweight);
+                       // mon.fill2DHisto(TString("met_") + it->first+"phimetphijet", tags_full,it->second.phi(),metTypeValuesminJetphi[it->first],iweight);
+                      }
+    
+                      TVector2 metPt(it->second.px(), it->second.py());
+                      TVector2 dileptonPt(zll.px(), zll.py());
+                      TVector2 dileptonLongi( dileptonPt.Unit() );
+                      TVector2 dileptonPerp( dileptonLongi.Rotate(TMath::Pi()/2) );
+                      mon.fillHisto(TString("metinc_") + it->first, tags_full, metPt*dileptonLongi, iweight);
+                      mon.fillHisto(TString("metL_") + it->first, tags_full, metPt*dileptonLongi, iweight);
+                      mon.fillHisto(TString("metT_") + it->first, tags_full, metPt*dileptonPerp, iweight);
+                      mon.fillHisto(TString("metoverqt_") + it->first, tags_full, it->second.pt()/zpt, iweight);
+                      mon.fillHisto(TString("metoverqtL_") + it->first, tags_full, metPt*dileptonLongi/zpt, iweight);
+                      mon.fillHisto(TString("metoverqtT_") + it->first, tags_full, metPt*dileptonPerp/zpt,iweight);
+
+                      if(mindphijmet<0.3)continue;
+                      mon.fillHisto(TString("met_") + it->first, tags_full,it->second.pt(),iweight);
+          
+
+                      mon.fill2DHisto(TString("met_") + it->first+"vspu", tags_full,ev.ngenITpu,it->second.pt(),iweight);
+                      mon.fill2DHisto(TString("met_") + it->first+"zpt", tags_full,it->second.pt(),zpt,iweight);
+                      mon.fillHisto(TString("met_") + it->first+"minzpt", tags_full,std::min(it->second.pt(),zll.pt()),iweight);
+                      mon.fillHisto(TString("met_") + it->first+"geq080zpt", tags_full,it->second.pt()>=0.8*zll.pt() ? it->second.pt() : 0.0,iweight);
+                      mon.fill2DHisto(TString("met_") + it->first+"geq080zptvspu", tags_full,ev.ngenITpu, it->second.pt()>=0.8*zll.pt() ? it->second.pt() : 0.0,iweight);
+                      mon.fillHisto(TString("met_") + it->first+"geq060zpt", tags_full,it->second.pt()>=0.6*zll.pt() ? it->second.pt() : 0.0,iweight);
+                      mon.fill2DHisto(TString("met_") + it->first+"geq060zptvspu", tags_full,ev.ngenITpu,it->second.pt()>=0.6*zll.pt() ? it->second.pt() : 0.0,iweight);
+                      mon.fillHisto(TString("met_") + it->first+"geq040zpt", tags_full,it->second.pt()>=0.4*zll.pt() ? it->second.pt() : 0.0,iweight);
+                      mon.fill2DHisto(TString("met_") + it->first+"geq040zptvspu", tags_full,ev.ngenITpu,it->second.pt()>=0.4*zll.pt() ? it->second.pt() : 0.0,iweight);
+
+                      TVector2 zll2DLong  = TVector2(zll.px()/zll.pt(), zll.py()/zll.pt());
+                      TVector2 zll2DTrans = zll2DLong.Rotate(TMath::Pi()/2);
+                      //double LongMET  = zll2DLong .Px()*it->second.px() + zll2DLong .Py()*it->second.py();
+                      //double TransMET = zll2DTrans.Px()*it->second.px() + zll2DTrans.Py()*it->second.py();
+                      //mon.fillHisto(TString("metL_") + it->first, tags_full,LongMET,iweight);
+                      //mon.fill2DHisto(TString("metL_") + it->first+"vspu", tags_full,ev.ngenITpu,LongMET,iweight);
+                      //mon.fillHisto(TString("metT_") + it->first, tags_full,TransMET,iweight);
+                      //mon.fill2DHisto(TString("metT_") + it->first+"vspu", tags_full,ev.ngenITpu,TransMET,iweight);
+                      //mon.fill2DHisto(TString("metLT_") + it->first, tags_full,LongMET,TransMET,iweight);
+                  }
+
+                  mon.fill2DHisto("metvstkmet", tags_full,met,assocChargedMet,iweight);
+                  mon.fill2DHisto("metvsassoc", tags_full,met,assocMetP4.pt(),iweight);
+                  mon.fill2DHisto("metvsclustered", tags_full,met,clusteredMetP4.pt(),iweight);
+                  mon.fill2DHisto("metvscentralMet", tags_full,met,centralMet,iweight);
+                  mon.fillHisto("redMetL", tags_full,redMetL,iweight);
+                  mon.fillHisto("redMetT", tags_full,redMetT,iweight);
+                  mon.fillHisto("redMetcomps", tags_full,redMetL,redMetT,iweight);        
+          
+                  if(sumEt>0){
+                      mon.fillHisto("sumEt",                tags_full,sumEt,iweight);
+                      mon.fillHisto("chSumEt",              tags_full,chSumEt,iweight);
+                      mon.fillHisto("neutSumEt",            tags_full,neutsumEt,iweight);
+                      mon.fillHisto("primVertexSumEt",      tags_full,ev.primVertexSumEt,iweight);
+                      mon.fillHisto("otherVertexSumEt",     tags_full,ev.otherVertexSumEt,iweight);
+          
+                      if(isMC){
+                          mon.fillHisto("sumEt"+ootCond,tags_full,sumEt,iweight);
+                          mon.fillHisto("neutSumEtFrac"+ootCond,tags_full,neutsumEt/sumEt,iweight);
+                          mon.fill2DHisto("itpuvsootpu",tags_full,ev.ngenITpu,ev.ngenOOTpu,iweight);
+                      }
+                      mon.fillHisto("chSumEtFrac",          tags_full,chSumEt/sumEt,iweight);
+                      mon.fillHisto("neutSumEtFrac",        tags_full,neutsumEt/sumEt,iweight);
+                      mon.fillHisto("centralSumEtFrac",     tags_full,sumEtcentral/sumEt,iweight);
+                      mon.fillHisto("centralChSumEtFrac",   tags_full,chSumEtcentral/sumEt,iweight);
+                      mon.fillHisto("centralNeutSumEtFrac", tags_full,neutSumEtcentral/sumEt,iweight);
+                      mon.fillHisto("chPrimVertexSumEtFrac",          tags_full,ev.primVertexChSumEt/sumEt,iweight);
+                      mon.fillHisto("neutPrimVertexSumEtFrac",        tags_full,ev.primVertexNeutSumEt/sumEt,iweight);
+                      mon.fillHisto("chOtherVertexSumEtFrac",          tags_full,ev.otherVertexChSumEt/sumEt,iweight);
+                      mon.fillHisto("neutOtherVertexSumEtFrac",        tags_full,ev.otherVertexNeutSumEt/sumEt,iweight);                 
+                  }
+                
+                  mon.fillHisto("mindphijmet",tags_full,mindphijmet,iweight);
+                  mon.fillHisto("minmtjmet",tags_full,minmtjmet,iweight);
+                  mon.fillHisto("mindrjz",tags_full,mindrjz,iweight);
+                  mon.fillHisto("minmjz",tags_full,minmjz,iweight);
+                
+                
+                  //sample is selected
+                  if(passMediumRedMet){
+                      mon.fillHisto("eventflow",tags_full,6,iweight);
+                      mon.fillHisto("eventSubCat",tags_full,eventSubCat,iweight);
+                      mon.fillHisto("cutOptMediumdphill",tags_full,fabs(dphill));
+                      mon.fill2DHisto("cutOptMediumsummtvsredMetL",tags_full,mtsum,redMetL,iweight);                    
+                      if(passTightRedMet)    mon.fillHisto("eventflow",tags_full,7,iweight);
+                  }
+               }
+            }
+         }
+      }
+
+      //##############################################
+      //########           VBF PLOTS          ########
+      //##############################################
+
       bool isVBF        = false;
       bool Pass2Jet30   = false;
       bool PassdEtaCut  = false;
@@ -913,95 +1130,7 @@ int main(int argc, char* argv[])
 
           if(isVBF){VBFMinEta = std::min(fabs(phys.jets[0].eta()), fabs(phys.jets[1].eta()));  VBFMaxEta = std::max(fabs(phys.jets[0].eta()), fabs(phys.jets[1].eta()));}                                                                    
       }
-     
-      //
-      // event pre-selection
-      //
-      bool passLooseKinematics(zpt>20);
-      bool passZmass(fabs(zmass-91)<15);
-      bool passSideBand( !passZmass && fabs(zmass-91)<30 );
 
-      bool passZpt(zpt>25);
-
-      bool pass3dLeptonVeto(true); for(unsigned int i=2;i<phys.leptons.size();i++){if(phys.leptons[i].pt()>10)pass3dLeptonVeto=false;}
-      bool passBveto(nbtags==0);
-      bool passMediumRedMet(50);
-      bool passTightRedMet(84);//redMet>METUtils::getRedMETCut(eventCategory,METUtils::TIGHTWP));
-      
-      bool passBaseCuts(passZmass && pass3dLeptonVeto && passBveto && passMediumRedMet);
-      std::vector<int> zmassRegionBins;
-      if(passZmass)                                                                 zmassRegionBins.push_back(0);
-      if(passZmass    && !passBveto)                                                zmassRegionBins.push_back(1);
-      if(passZmass    && !passBveto && pass3dLeptonVeto)                            zmassRegionBins.push_back(2);
-      if(passZmass    && !passBveto && pass3dLeptonVeto && passMediumRedMet)        zmassRegionBins.push_back(3);
-      if(passZmass    && !passBveto && pass3dLeptonVeto && passTightRedMet)         zmassRegionBins.push_back(4);
-      if(passSideBand)                                                              zmassRegionBins.push_back(5);
-      if(passSideBand && !passBveto)                                                zmassRegionBins.push_back(6);
-      if(passSideBand && !passBveto && pass3dLeptonVeto)                            zmassRegionBins.push_back(7);
-      if(passSideBand && !passBveto && pass3dLeptonVeto && passMediumRedMet)        zmassRegionBins.push_back(8);
-      if(passSideBand && !passBveto && pass3dLeptonVeto && passTightRedMet)         zmassRegionBins.push_back(9);
-      if(passZmass    && passBveto)                                                 zmassRegionBins.push_back(10);
-      if(passZmass    && passBveto && pass3dLeptonVeto)                             zmassRegionBins.push_back(11);
-      if(passZmass    && passBveto && pass3dLeptonVeto && passMediumRedMet)         zmassRegionBins.push_back(12);
-      if(passZmass    && passBveto && pass3dLeptonVeto && passTightRedMet)          zmassRegionBins.push_back(13);
-      if(passSideBand && passBveto)                                                 zmassRegionBins.push_back(14);
-      if(passSideBand && passBveto && pass3dLeptonVeto)                             zmassRegionBins.push_back(15);
-      if(passSideBand && passBveto && pass3dLeptonVeto && passMediumRedMet)         zmassRegionBins.push_back(16);
-      if(passSideBand && passBveto && pass3dLeptonVeto && passTightRedMet)          zmassRegionBins.push_back(17);
-
-
-      //
-      // compute systematic variations for JET/MET
-      //
-      LorentzVectorCollection metVars, redMetVars;
-      std::vector<LorentzVectorCollection> jetVars;
-      std::vector<int> eventCategoryVars;
-      std::vector<Float_t>  mtVars;
-      if(runSystematics)
-        {
-          jet::computeVariation(jetsP4,phys.met[0],jetVars, metVars, &stdPtResol,&stdEtaResol,&stdPhiResol,&jecUnc);
-          for(size_t ivar=0; ivar<3; ivar++)
-            {
-              eventCategoryVars.push_back( eventClassifComp.Get(phys, &(jetVars[ivar])) );
-              
-              METUtils::stRedMET temp_redMetInfo;
-              LorentzVector temp_redMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetVars[ivar], metVars[ivar], isGammaEvent, &temp_redMetInfo);
-              //double temp_redMetL = temp_redMetInfo.redMET_l;
-              redMetVars.push_back(temp_redMetP4);
-              
-              Float_t imt     = METUtils::transverseMass(zll,metVars[ivar],true);
-              mtVars.push_back(imt);
-            }
-        }
-            
-      //      ROOT::Math::Boost cmboost(genhiggs.BoostToCM());
-      //      LorentzVector cmzll(cmboost(zll));
-      //      LorentzVector cmzvv(cmboost(zvv));
-      LorentzVector transverseHiggs(genhiggs.px(),genhiggs.py(), 0,sqrt(pow(genhiggs.mass(),2)+pow(genhiggs.pt(),2)));
-      ROOT::Math::Boost cmboost(transverseHiggs.BoostToCM());
-      LorentzVector cmzll(cmboost(zll));
-      LorentzVector cmzvv(cmboost(zvv));
-      
-
-
-      float iweight=weight;
-//FIXME
-//              if(gammaEvHandler){
-//                  TString dilCh=catsToFill[ic];
-//                  if(dilCh=="all") dilCh="ll";
-//                  iweight *= gammaEvHandler->getWeight(dilCh);
-//              }              
-
-      if(passZmass){
-        mon.fillHisto("genzwinHiggsPt"      ,tags_full,    genhiggs.pt()   ,iweight);
-        mon.fillHisto("genzwinHiggsMass"    ,tags_full,    genhiggs.mass() ,iweight);
-        mon.fillHisto("genzwinzllPt"        ,tags_full,    genzll.pt()     ,iweight);
-        mon.fillHisto("genzwinzvvPt"        ,tags_full,    genzvv.pt()     ,iweight);
-      }
-       
-      //event pre-selection
-      if(!passZmass && !passSideBand && !passLooseKinematics)                            continue;
-      
       //VBF control
       if(true                                                                                       )mon.fillHisto("VBFNEventsInc"       ,tags_full,    0                ,iweight);
       if(Pass2Jet30                                                                                 )mon.fillHisto("VBFNEventsInc"       ,tags_full,    1                ,iweight);
@@ -1015,8 +1144,6 @@ int main(int argc, char* argv[])
 
       if(isVBF)mon.fillHisto("vbftagvspu"      ,tags_full,    ev.ngenITpu   ,iweight);
       mon.fillHisto("vbftotalvspu"      ,tags_full,    ev.ngenITpu   ,iweight);
-
-
 
       
       if(Pass2Jet30                                                              )mon.fillHisto("VBFdEtaInc"          ,tags_full,    fabs(VBFdEta)    ,iweight);
@@ -1044,271 +1171,211 @@ int main(int argc, char* argv[])
          mon.fillHisto("VBFMinEta"  ,tags_full,    VBFMinEta ,iweight);
          mon.fillHisto("VBFMaxEta"  ,tags_full,    VBFMaxEta ,iweight);
       }
-      
-      //inclusive control
-      mon.fillHisto("eventflow",tags_full,1,iweight);
-      mon.fillHisto("nvtx",tags_full,ev.nvtx,iweight);
-      mon.fillHisto("nvtxPlus",tags_full,ev.nvtx,iweight*TotalWeight_plus);
-      mon.fillHisto("nvtxMinus",tags_full,ev.nvtx,iweight*TotalWeight_minus);
-      
-      //dilepton control plots
-      mon.fillHisto("zmass",tags_full,zmass,iweight);
-      for(std::vector<int>::iterator regIt = zmassRegionBins.begin(); regIt<zmassRegionBins.end(); regIt++) mon.fillHisto("zmassregionCtr",tags_full,*regIt,iweight);
-      mon.fillHisto("zeta",tags_full,zeta,iweight);
-      mon.fillHisto("zpt",tags_full,zpt,iweight);
-      mon.fillHisto("zrank",tags_full,zrank,iweight);
-      mon.fill2DHisto("zptvszeta", tags_full,zpt,zeta,iweight);
-      mon.fillHisto("dphill",tags_full,dphill,iweight);
-      mon.fillHisto("mindrlz",tags_full,mindrlz,iweight);
-      mon.fillHisto("maxdrlz",tags_full,maxdrlz,iweight);
-      mon.fillHisto("ptsum",tags_full,ptsum,iweight);
-      mon.fillHisto("mtl1",tags_full,mtl1,iweight);
-      mon.fillHisto("mtl2",tags_full,mtl2,iweight);
-      mon.fillHisto("mt",tags_full,mt,iweight);
-      
-      //Z window
-      if(!passZmass)  continue;
-      mon.fillHisto("eventflow",tags_full,2,iweight);
-     
-      //jet control
-      mon.fillHisto("njets",tags_full,njets,iweight);
-      mon.fill2DHisto("njetsvspu",tags_full,ev.ngenITpu,njets,iweight);
-      mon.fill2DHisto("njetsincvspu",tags_full,ev.ngenITpu,njetsinc,iweight);
-      mon.fillHisto("nbtags",tags_full, nbtags,iweight);
-      mon.fillHisto("npassbveto",tags_full,0, (nbtags_tchel==0)*iweight);
-      mon.fillHisto("npassbveto",tags_full,1, (nbtags_tche2==0)*iweight);
-      mon.fillHisto("npassbveto",tags_full,2, (nbtags_csvl==0)*iweight);
-      mon.fillHisto("zmassctrl",tags_full,passBveto+2*passMediumRedMet,iweight);
-
-      
-      mon.fillHisto("btag0proj",tags_full,0,iweight*p0btags);
-      mon.fillHisto("btag0projup",tags_full,0,iweight*min(p0btags+p0btags_err,1.0));
-      mon.fillHisto("btag0projdown",tags_full,0,iweight*max(p0btags-p0btags_err,0.0));
-
-      if(!passBveto) continue;
-      mon.fillHisto("eventflow",tags_full,3,iweight);
 
 
-      if(!passZpt) continue;
-      mon.fillHisto("eventflow",tags_full,4,iweight);
-
-      //extra leptons
-      mon.fillHisto("nleptons",tags_full,ev.ln,iweight);
-      if(!pass3dLeptonVeto){
-          mon.fillHisto("njets3leptons",tags_full,njets,iweight);
-          mon.fillHisto("nbtags3leptons",tags_full,nbtags,iweight);
-          continue;
-      }
-      mon.fillHisto("eventflow",tags_full,5,iweight);
-      
-
-      if(isMC && genhiggs.pt()>0){
-          mon.fillHisto("CMzllP"      ,tags_full,    cmzll.pt()   ,iweight);
-          mon.fillHisto("CMzvvP"      ,tags_full,    cmzvv.pt()   ,iweight);
-          mon.fillHisto("CMDeltazP"   ,tags_full,    cmzll.pt()-cmzvv.pt()   ,iweight);
-          mon.fillHisto("CMiMass"     ,tags_full,    METUtils::transverseMass(cmzll,cmzvv,true)   ,iweight);
-      }
-
-      for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++){
-          if(it->second.pt()>50 && metTypeValuesminJetdphi[it->first]<10){
-              mon.fillHisto(TString("met_") + it->first+"mindphijmet",tags_full,metTypeValuesminJetdphi[it->first], iweight);
-              // mon.fill2DHisto(TString("met_") + it->first+"phimetphijet", tags_full,it->second.phi(),metTypeValuesminJetphi[it->first],iweight);
-          }
-          
-
-          TVector2 metPt(it->second.px(), it->second.py());
-          TVector2 dileptonPt(zll.px(), zll.py());
-          TVector2 dileptonLongi( dileptonPt.Unit() );
-          TVector2 dileptonPerp( dileptonLongi.Rotate(TMath::Pi()/2) );
-          mon.fillHisto(TString("metinc_") + it->first, tags_full, metPt*dileptonLongi, iweight);
-          mon.fillHisto(TString("metL_") + it->first, tags_full, metPt*dileptonLongi, iweight);
-          mon.fillHisto(TString("metT_") + it->first, tags_full, metPt*dileptonPerp, iweight);
-          mon.fillHisto(TString("metoverqt_") + it->first, tags_full, it->second.pt()/zpt, iweight);
-          mon.fillHisto(TString("metoverqtL_") + it->first, tags_full, metPt*dileptonLongi/zpt, iweight);
-          mon.fillHisto(TString("metoverqtT_") + it->first, tags_full, metPt*dileptonPerp/zpt,iweight);
-
-
-          if(mindphijmet<0.3)continue;
-          mon.fillHisto(TString("met_") + it->first, tags_full,it->second.pt(),iweight);
-          
-
-          mon.fill2DHisto(TString("met_") + it->first+"vspu", tags_full,ev.ngenITpu,it->second.pt(),iweight);
-          mon.fill2DHisto(TString("met_") + it->first+"zpt", tags_full,it->second.pt(),zpt,iweight);
-          mon.fillHisto(TString("met_") + it->first+"minzpt", tags_full,std::min(it->second.pt(),zll.pt()),iweight);
-          mon.fillHisto(TString("met_") + it->first+"geq080zpt", tags_full,it->second.pt()>=0.8*zll.pt() ? it->second.pt() : 0.0,iweight);
-          mon.fill2DHisto(TString("met_") + it->first+"geq080zptvspu", tags_full,ev.ngenITpu, it->second.pt()>=0.8*zll.pt() ? it->second.pt() : 0.0,iweight);
-          mon.fillHisto(TString("met_") + it->first+"geq060zpt", tags_full,it->second.pt()>=0.6*zll.pt() ? it->second.pt() : 0.0,iweight);
-          mon.fill2DHisto(TString("met_") + it->first+"geq060zptvspu", tags_full,ev.ngenITpu,it->second.pt()>=0.6*zll.pt() ? it->second.pt() : 0.0,iweight);
-          mon.fillHisto(TString("met_") + it->first+"geq040zpt", tags_full,it->second.pt()>=0.4*zll.pt() ? it->second.pt() : 0.0,iweight);
-          mon.fill2DHisto(TString("met_") + it->first+"geq040zptvspu", tags_full,ev.ngenITpu,it->second.pt()>=0.4*zll.pt() ? it->second.pt() : 0.0,iweight);
-
-          TVector2 zll2DLong  = TVector2(zll.px()/zll.pt(), zll.py()/zll.pt());
-          TVector2 zll2DTrans = zll2DLong.Rotate(TMath::Pi()/2);
-          //double LongMET  = zll2DLong .Px()*it->second.px() + zll2DLong .Py()*it->second.py();
-          //double TransMET = zll2DTrans.Px()*it->second.px() + zll2DTrans.Py()*it->second.py();
-          //mon.fillHisto(TString("metL_") + it->first, tags_full,LongMET,iweight);
-          //mon.fill2DHisto(TString("metL_") + it->first+"vspu", tags_full,ev.ngenITpu,LongMET,iweight);
-          //mon.fillHisto(TString("metT_") + it->first, tags_full,TransMET,iweight);
-          //mon.fill2DHisto(TString("metT_") + it->first+"vspu", tags_full,ev.ngenITpu,TransMET,iweight);
-          //mon.fill2DHisto(TString("metLT_") + it->first, tags_full,LongMET,TransMET,iweight);
-      }
-
-      mon.fill2DHisto("metvstkmet", tags_full,met,assocChargedMet,iweight);
-      mon.fill2DHisto("metvsassoc", tags_full,met,assocMetP4.pt(),iweight);
-      mon.fill2DHisto("metvsclustered", tags_full,met,clusteredMetP4.pt(),iweight);
-      mon.fill2DHisto("metvscentralMet", tags_full,met,centralMet,iweight);
-      mon.fillHisto("redMetL", tags_full,redMetL,iweight);
-      mon.fillHisto("redMetT", tags_full,redMetT,iweight);
-      mon.fillHisto("redMetcomps", tags_full,redMetL,redMetT,iweight);        
-
-      if(sumEt>0){
-          mon.fillHisto("sumEt",                tags_full,sumEt,iweight);
-          mon.fillHisto("chSumEt",              tags_full,chSumEt,iweight);
-          mon.fillHisto("neutSumEt",            tags_full,neutsumEt,iweight);
-          mon.fillHisto("primVertexSumEt",      tags_full,ev.primVertexSumEt,iweight);
-          mon.fillHisto("otherVertexSumEt",     tags_full,ev.otherVertexSumEt,iweight);
-
-          if(isMC){
-              mon.fillHisto("sumEt"+ootCond,tags_full,sumEt,iweight);
-              mon.fillHisto("neutSumEtFrac"+ootCond,tags_full,neutsumEt/sumEt,iweight);
-              mon.fill2DHisto("itpuvsootpu",tags_full,ev.ngenITpu,ev.ngenOOTpu,iweight);
-          }
-          mon.fillHisto("chSumEtFrac",          tags_full,chSumEt/sumEt,iweight);
-          mon.fillHisto("neutSumEtFrac",        tags_full,neutsumEt/sumEt,iweight);
-          mon.fillHisto("centralSumEtFrac",     tags_full,sumEtcentral/sumEt,iweight);
-          mon.fillHisto("centralChSumEtFrac",   tags_full,chSumEtcentral/sumEt,iweight);
-          mon.fillHisto("centralNeutSumEtFrac", tags_full,neutSumEtcentral/sumEt,iweight);
-          mon.fillHisto("chPrimVertexSumEtFrac",          tags_full,ev.primVertexChSumEt/sumEt,iweight);
-          mon.fillHisto("neutPrimVertexSumEtFrac",        tags_full,ev.primVertexNeutSumEt/sumEt,iweight);
-          mon.fillHisto("chOtherVertexSumEtFrac",          tags_full,ev.otherVertexChSumEt/sumEt,iweight);
-          mon.fillHisto("neutOtherVertexSumEtFrac",        tags_full,ev.otherVertexNeutSumEt/sumEt,iweight);                 
-      }
-      
-      mon.fillHisto("mindphijmet",tags_full,mindphijmet,iweight);
-      mon.fillHisto("minmtjmet",tags_full,minmtjmet,iweight);
-      mon.fillHisto("mindrjz",tags_full,mindrjz,iweight);
-      mon.fillHisto("minmjz",tags_full,minmjz,iweight);
-      
-      
-      //sample is selected
-      if(passMediumRedMet){
-          mon.fillHisto("eventflow",tags_full,6,iweight);
-          mon.fillHisto("eventSubCat",tags_full,eventSubCat,iweight);
-          mon.fillHisto("cutOptMediumdphill",tags_full,fabs(dphill));
-          mon.fill2DHisto("cutOptMediumsummtvsredMetL",tags_full,mtsum,redMetL,iweight);
-          
-          if(passTightRedMet)    mon.fillHisto("eventflow",tags_full,7,iweight);
-      }
-
-       
-
-      
-
-      //booking for optimization
-      for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
-        if(zvv.pt()>optim_Cuts1_met[index] && mindphijmet>optim_Cuts1_mindphi[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
-          mon.fillHisto("optim_eventflow1"          ,tags_full,    index, weight);
-      }
-      
-      for(unsigned int index=0;index<optim_Cuts2_met.size();index++){
-        if(redMet>optim_Cuts2_met[index] && mindphijmet>optim_Cuts2_mindphi[index] && mt>optim_Cuts2_mtmin[index] && mt<optim_Cuts2_mtmax[index])
-          mon.fillHisto("optim_eventflow2"          ,tags_full,    index, weight);
-      }
-     
-      for(unsigned int index=0;index<optim_Cuts3_pt.size();index++){
-         if(!PassLeptonIn || !PassJetVeto || !PassBJetVeto)continue;
-         if(zvv.pt()<50)continue;
-         if(phys.jets.size()<2 || phys.jets [0].pt()<optim_Cuts3_pt[index] || phys.jets [1].pt()<optim_Cuts3_pt[index])continue;
-         if(VBFdEta>optim_Cuts3_deta[index] && VBFSyst.M()>optim_Cuts3_imass[index])
-         mon.fillHisto("optim_eventflow3"          ,tags_full,    index, weight);
-      }
+      //##############################################
+      //######## CUT & COUNT FOR FINAL SEL.   ########
+      //##############################################
+      bool PassSelMet [] = {false, false, false, false, false, false, false, false, false, false};
+      bool PassSelRMet[] = {false, false, false, false, false, false, false, false, false, false};
+      bool PassSelVBF [] = {false, false, false, false, false, false, false, false, false, false};
  
-      
-      //
-      // CUT & COUNT ANALYSIS
-      //
-      //final selection (cut and count analysis)
-      if(zpt>25)
-        {
-          bool pass130met( zvv.pt()>50 && mindphijmet>0.74 && mt>171 && mt<296);
-          bool pass150met( zvv.pt()>50 && mindphijmet>0.7  && mt>193 && mt<284);
-          bool pass170met( zvv.pt()>50 && mindphijmet>0.66 && mt>185 && mt<276);
-          bool pass200met( zvv.pt()>50 && mindphijmet>0.6  && mt>220 && mt<270);
-          bool pass300met( zvv.pt()>86 && mindphijmet>0.4  && mt>260 && mt<310);
-          bool pass400met( zvv.pt()>118 && mindphijmet>0.2 && mt>340 && mt<440);
-          bool pass500met( zvv.pt()>166 && mindphijmet>0.1 && mt>340 && mt<740); 
-          bool pass600met( zvv.pt()>188 && mindphijmet>0.1 && mt>440 && mt<740);
-          bool passSyst1met( zvv.pt()>50 && mindphijmet>0.05 && mt>150);
-          bool passSyst2met( zvv.pt()>60 && mindphijmet>0.1  && mt>170);
+      if(passZmass && passLooseKinematics && passBveto && passZpt && pass3dLeptonVeto){
+         PassSelMet[0]  = (zvv.pt()> 50 && mindphijmet>0.74 && mt>171 && mt<296); if(PassSelMet[0])mon.fillHisto("finaleventflowmet",tags_full,0,iweight); //mH=130
+         PassSelMet[1]  = (zvv.pt()> 50 && mindphijmet>0.70 && mt>193 && mt<284); if(PassSelMet[1])mon.fillHisto("finaleventflowmet",tags_full,1,iweight); //mH=150
+         PassSelMet[2]  = (zvv.pt()> 50 && mindphijmet>0.66 && mt>185 && mt<276); if(PassSelMet[2])mon.fillHisto("finaleventflowmet",tags_full,2,iweight); //mH=170
+         PassSelMet[3]  = (zvv.pt()> 50 && mindphijmet>0.60 && mt>220 && mt<270); if(PassSelMet[3])mon.fillHisto("finaleventflowmet",tags_full,3,iweight); //mH=200
+         PassSelMet[4]  = (zvv.pt()> 86 && mindphijmet>0.40 && mt>260 && mt<310); if(PassSelMet[4])mon.fillHisto("finaleventflowmet",tags_full,4,iweight); //mH=300
+         PassSelMet[5]  = (zvv.pt()>118 && mindphijmet>0.20 && mt>340 && mt<440); if(PassSelMet[5])mon.fillHisto("finaleventflowmet",tags_full,5,iweight); //mH=400
+         PassSelMet[6]  = (zvv.pt()>166 && mindphijmet>0.10 && mt>340 && mt<740); if(PassSelMet[6])mon.fillHisto("finaleventflowmet",tags_full,6,iweight); //mH=500
+         PassSelMet[7]  = (zvv.pt()>188 && mindphijmet>0.10 && mt>440 && mt<740); if(PassSelMet[7])mon.fillHisto("finaleventflowmet",tags_full,7,iweight); //mH=600
+         PassSelMet[8]  = (zvv.pt()> 50 && mindphijmet>0.05 && mt>150          ); if(PassSelMet[8])mon.fillHisto("finaleventflowmet",tags_full,8,iweight); //syst1
+         PassSelMet[9]  = (zvv.pt()> 60 && mindphijmet>0.10 && mt>170          ); if(PassSelMet[9])mon.fillHisto("finaleventflowmet",tags_full,9,iweight); //syst2
+   
+         PassSelRMet[0] = (rCMetP4.pt()> 50 && mindphijmet>0.74 && mt>171 && mt<296); if(PassSelRMet[0])mon.fillHisto("finaleventflowrmet",tags_full,0,iweight); //mH=130
+         PassSelRMet[1] = (rCMetP4.pt()> 50 && mindphijmet>0.70 && mt>193 && mt<284); if(PassSelRMet[1])mon.fillHisto("finaleventflowrmet",tags_full,1,iweight); //mH=150
+         PassSelRMet[2] = (rCMetP4.pt()> 50 && mindphijmet>0.66 && mt>185 && mt<276); if(PassSelRMet[2])mon.fillHisto("finaleventflowrmet",tags_full,2,iweight); //mH=170
+         PassSelRMet[3] = (rCMetP4.pt()> 50 && mindphijmet>0.60 && mt>220 && mt<270); if(PassSelRMet[3])mon.fillHisto("finaleventflowrmet",tags_full,3,iweight); //mH=200
+         PassSelRMet[4] = (rCMetP4.pt()> 84 && mindphijmet>0.20 && mt>260 && mt<310); if(PassSelRMet[4])mon.fillHisto("finaleventflowrmet",tags_full,4,iweight); //mH=300
+         PassSelRMet[5] = (rCMetP4.pt()>110 && mindphijmet>0.20 && mt>340 && mt<440); if(PassSelRMet[5])mon.fillHisto("finaleventflowrmet",tags_full,5,iweight); //mH=400
+         PassSelRMet[6] = (rCMetP4.pt()>156 && mindphijmet>0.10 && mt>340 && mt<740); if(PassSelRMet[6])mon.fillHisto("finaleventflowrmet",tags_full,6,iweight); //mH=500
+         PassSelRMet[7] = (rCMetP4.pt()>156 && mindphijmet>0.10 && mt>440 && mt<790); if(PassSelRMet[7])mon.fillHisto("finaleventflowrmet",tags_full,7,iweight); //mH=600
+         PassSelRMet[8] = (rCMetP4.pt()> 50 && mindphijmet>0.05 && mt>150          ); if(PassSelRMet[8])mon.fillHisto("finaleventflowrmet",tags_full,8,iweight); //syst1
+         PassSelRMet[9] = (rCMetP4.pt()> 60 && mindphijmet>0.10 && mt>170          ); if(PassSelRMet[9])mon.fillHisto("finaleventflowrmet",tags_full,9,iweight); //syst2
 
-          if(pass130met) mon.fillHisto("finaleventflowmet",tags_full,0,iweight);
-          if(pass150met) mon.fillHisto("finaleventflowmet",tags_full,1,iweight);
-          if(pass170met) mon.fillHisto("finaleventflowmet",tags_full,2,iweight);
-          if(pass200met) mon.fillHisto("finaleventflowmet",tags_full,3,iweight);
-          if(pass300met) mon.fillHisto("finaleventflowmet",tags_full,4,iweight);
-          if(pass400met) mon.fillHisto("finaleventflowmet",tags_full,5,iweight);
-          if(pass500met) mon.fillHisto("finaleventflowmet",tags_full,6,iweight);
-          if(pass600met) mon.fillHisto("finaleventflowmet",tags_full,7,iweight);
-          if(passSyst1met) mon.fillHisto("finaleventflowmet",tags_full,8,iweight);
-          if(passSyst2met) mon.fillHisto("finaleventflowmet",tags_full,9,iweight);
+         PassSelVBF[0]  = (zvv    .pt()>50); if(PassSelVBF[0])mon.fillHisto("finaleventflowvbf",tags_full,0,iweight); //VBF met 50
+         PassSelVBF[1]  = (zvv    .pt()>55); if(PassSelVBF[1])mon.fillHisto("finaleventflowvbf",tags_full,1,iweight); //VBF met 55
+         PassSelVBF[2]  = (zvv    .pt()>60); if(PassSelVBF[2])mon.fillHisto("finaleventflowvbf",tags_full,2,iweight); //VBF met 60
+         PassSelVBF[3]  = (zvv    .pt()>65); if(PassSelVBF[3])mon.fillHisto("finaleventflowvbf",tags_full,3,iweight); //VBF met 65
+         PassSelVBF[4]  = (rCMetP4.pt()>50); if(PassSelVBF[4])mon.fillHisto("finaleventflowvbf",tags_full,4,iweight); //VBFrmet 50
+         PassSelVBF[5]  = (rCMetP4.pt()>55); if(PassSelVBF[5])mon.fillHisto("finaleventflowvbf",tags_full,5,iweight); //VBFrmet 55
+         PassSelVBF[6]  = (rCMetP4.pt()>60); if(PassSelVBF[6])mon.fillHisto("finaleventflowvbf",tags_full,6,iweight); //VBFrmet 60
+         PassSelVBF[7]  = (rCMetP4.pt()>65); if(PassSelVBF[7])mon.fillHisto("finaleventflowvbf",tags_full,7,iweight); //VBFrmet 65
+         PassSelVBF[8]  = (zvv    .pt()>40); if(PassSelVBF[8])mon.fillHisto("finaleventflowvbf",tags_full,8,iweight); //VBF met 40
+         PassSelVBF[9]  = (rCMetP4.pt()>40); if(PassSelVBF[9])mon.fillHisto("finaleventflowvbf",tags_full,9,iweight); //VBFrmet 40
+
+         //computation for systematics
+         LorentzVectorCollection metVars, redMetVars;
+         std::vector<LorentzVectorCollection> jetVars;
+         std::vector<int> eventCategoryVars;
+         std::vector<Float_t>  mtVars;
+         if(runSystematics){
+             jet::computeVariation(jetsP4,phys.met[0],jetVars, metVars, &stdPtResol,&stdEtaResol,&stdPhiResol,&jecUnc);
+             for(size_t ivar=0; ivar<3; ivar++){
+                eventCategoryVars.push_back( eventClassifComp.Get(phys, &(jetVars[ivar])) );
+              
+                 METUtils::stRedMET temp_redMetInfo;
+                 LorentzVector temp_redMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetVars[ivar], metVars[ivar], isGammaEvent, &temp_redMetInfo);
+                 redMetVars.push_back(temp_redMetP4);
+              
+                 Float_t imt     = METUtils::transverseMass(zll,metVars[ivar],true);
+                 mtVars.push_back(imt);
+               }
+           }                  
+
+
+           bool iPassSelMet[10];
+           bool iPassSelRMet[10];
+           bool iPassSelVBF[10];
+         
+           //jet energy scale related variations
+           TString jetVarNames[]={"jer","jesup","jesdown"};
+           for(size_t ivar=0; ivar<3; ivar++){
+              TString isubcat    = eventClassifComp.GetLabel( eventCategoryVars[ivar] );
+              std::vector<TString> itags_full;
+              itags_full.push_back(tag_cat + isubcat);
+
+              iPassSelMet[0]  = (zvv.pt()> 50 && mindphijmet>0.74 && mt>171 && mt<296); if(iPassSelMet[0])mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",itags_full,0,iweight); //mH=130
+              iPassSelMet[1]  = (zvv.pt()> 50 && mindphijmet>0.70 && mt>193 && mt<284); if(iPassSelMet[1])mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",itags_full,1,iweight); //mH=150
+              iPassSelMet[2]  = (zvv.pt()> 50 && mindphijmet>0.66 && mt>185 && mt<276); if(iPassSelMet[2])mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",itags_full,2,iweight); //mH=170
+              iPassSelMet[3]  = (zvv.pt()> 50 && mindphijmet>0.60 && mt>220 && mt<270); if(iPassSelMet[3])mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",itags_full,3,iweight); //mH=200
+              iPassSelMet[4]  = (zvv.pt()> 86 && mindphijmet>0.40 && mt>260 && mt<310); if(iPassSelMet[4])mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",itags_full,4,iweight); //mH=300
+              iPassSelMet[5]  = (zvv.pt()>118 && mindphijmet>0.20 && mt>340 && mt<440); if(iPassSelMet[5])mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",itags_full,5,iweight); //mH=400
+              iPassSelMet[6]  = (zvv.pt()>166 && mindphijmet>0.10 && mt>340 && mt<740); if(iPassSelMet[6])mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",itags_full,6,iweight); //mH=500
+              iPassSelMet[7]  = (zvv.pt()>188 && mindphijmet>0.10 && mt>440 && mt<740); if(iPassSelMet[7])mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",itags_full,7,iweight); //mH=600
+              iPassSelMet[8]  = (zvv.pt()> 50 && mindphijmet>0.05 && mt>150          ); if(iPassSelMet[8])mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",itags_full,8,iweight); //syst1
+              iPassSelMet[9]  = (zvv.pt()> 60 && mindphijmet>0.10 && mt>170          ); if(iPassSelMet[9])mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",itags_full,9,iweight); //syst2
+
+              iPassSelRMet[0] = (rCMetP4.pt()> 50 && mindphijmet>0.74 && mt>171 && mt<296); if(iPassSelRMet[0])mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",itags_full,0,iweight); //mH=130
+              iPassSelRMet[1] = (rCMetP4.pt()> 50 && mindphijmet>0.70 && mt>193 && mt<284); if(iPassSelRMet[1])mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",itags_full,1,iweight); //mH=150
+              iPassSelRMet[2] = (rCMetP4.pt()> 50 && mindphijmet>0.66 && mt>185 && mt<276); if(iPassSelRMet[2])mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",itags_full,2,iweight); //mH=170
+              iPassSelRMet[3] = (rCMetP4.pt()> 50 && mindphijmet>0.60 && mt>220 && mt<270); if(iPassSelRMet[3])mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",itags_full,3,iweight); //mH=200
+              iPassSelRMet[4] = (rCMetP4.pt()> 84 && mindphijmet>0.20 && mt>260 && mt<310); if(iPassSelRMet[4])mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",itags_full,4,iweight); //mH=300
+              iPassSelRMet[5] = (rCMetP4.pt()>110 && mindphijmet>0.20 && mt>340 && mt<440); if(iPassSelRMet[5])mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",itags_full,5,iweight); //mH=400
+              iPassSelRMet[6] = (rCMetP4.pt()>156 && mindphijmet>0.10 && mt>340 && mt<740); if(iPassSelRMet[6])mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",itags_full,6,iweight); //mH=500
+              iPassSelRMet[7] = (rCMetP4.pt()>156 && mindphijmet>0.10 && mt>440 && mt<790); if(iPassSelRMet[7])mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",itags_full,7,iweight); //mH=600
+              iPassSelRMet[8] = (rCMetP4.pt()> 50 && mindphijmet>0.05 && mt>150          ); if(iPassSelRMet[8])mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",itags_full,8,iweight); //syst1
+              iPassSelRMet[9] = (rCMetP4.pt()> 60 && mindphijmet>0.10 && mt>170          ); if(iPassSelRMet[9])mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",itags_full,9,iweight); //syst2
+
+              iPassSelVBF[0]  = (zvv    .pt()>50); if(iPassSelVBF[0])mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",itags_full,0,iweight); //VBF met 50
+              iPassSelVBF[1]  = (zvv    .pt()>55); if(iPassSelVBF[1])mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",itags_full,1,iweight); //VBF met 55
+              iPassSelVBF[2]  = (zvv    .pt()>60); if(iPassSelVBF[2])mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",itags_full,2,iweight); //VBF met 60
+              iPassSelVBF[3]  = (zvv    .pt()>65); if(iPassSelVBF[3])mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",itags_full,3,iweight); //VBF met 65
+              iPassSelVBF[4]  = (rCMetP4.pt()>50); if(iPassSelVBF[4])mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",itags_full,4,iweight); //VBFrmet 50
+              iPassSelVBF[5]  = (rCMetP4.pt()>55); if(iPassSelVBF[5])mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",itags_full,5,iweight); //VBFrmet 55
+              iPassSelVBF[6]  = (rCMetP4.pt()>60); if(iPassSelVBF[6])mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",itags_full,6,iweight); //VBFrmet 60
+              iPassSelVBF[7]  = (rCMetP4.pt()>65); if(iPassSelVBF[7])mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",itags_full,7,iweight); //VBFrmet 65
+              iPassSelVBF[8]  = (zvv    .pt()>40); if(iPassSelVBF[8])mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",itags_full,8,iweight); //VBF met 40
+              iPassSelVBF[9]  = (rCMetP4.pt()>40); if(iPassSelVBF[9])mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",itags_full,9,iweight); //VBFrmet 40
+           }
+         
+           //re-weighting variations (Higgs, pileup scenario)
+           TString wgtVarNames[]={"hrenup","hrendown","hfactup","hfactdown","puup","pudown"};
+           Float_t rwgtVars[]={ isMC_GG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]   : iweight ,
+                                isMC_GG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] : iweight ,
+                                isMC_GG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]  : iweight ,
+                                isMC_GG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]: iweight ,
+                                iweight*TotalWeight_plus,
+                                iweight*TotalWeight_minus};
+           if(ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] <0.5)
+              cout << " " << phys.genhiggs[0].pt() << " " << isMC_GG 
+                   << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] 
+                   << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]
+                   << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]
+                   << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]
+                   << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown] << endl;
           
-          bool pass130rmet( rCMetP4.pt()>50  && mindphijmet>0.74 && mt>171 && mt<296);
-          bool pass150rmet( rCMetP4.pt()>50  && mindphijmet>0.7  && mt>193 && mt<284);
-          bool pass170rmet( rCMetP4.pt()>50  && mindphijmet>0.66 && mt>185 && mt<276);
-          bool pass200rmet( rCMetP4.pt()>50  && mindphijmet>0.6  && mt>220 && mt<270);
-          bool pass300rmet( rCMetP4.pt()>84  && mindphijmet>0.2  && mt>260 && mt<310);
-          bool pass400rmet( rCMetP4.pt()>110 && mindphijmet>0.2  && mt>340 && mt<440);
-          bool pass500rmet( rCMetP4.pt()>156 && mindphijmet>0.1  && mt>340 && mt<740); 
-          bool pass600rmet( rCMetP4.pt()>156 && mindphijmet>0.1  && mt>440 && mt<790);
-          bool passSyst1rmet( rCMetP4.pt()>50 && mindphijmet>0.05 && mt>150);
-          bool passSyst2rmet( rCMetP4.pt()>60 && mindphijmet>0.1  && mt>170);
-          if(pass130rmet) mon.fillHisto("finaleventflowrmet",tags_full,0,iweight);
-          if(pass150rmet) mon.fillHisto("finaleventflowrmet",tags_full,1,iweight);
-          if(pass170rmet) mon.fillHisto("finaleventflowrmet",tags_full,2,iweight);
-          if(pass200rmet) mon.fillHisto("finaleventflowrmet",tags_full,3,iweight);
-          if(pass300rmet) mon.fillHisto("finaleventflowrmet",tags_full,4,iweight);
-          if(pass400rmet) mon.fillHisto("finaleventflowrmet",tags_full,5,iweight);
-          if(pass500rmet) mon.fillHisto("finaleventflowrmet",tags_full,6,iweight);
-          if(pass600rmet) mon.fillHisto("finaleventflowrmet",tags_full,7,iweight);                  
-          if(passSyst1rmet) mon.fillHisto("finaleventflowrmet",tags_full,8,iweight);
-          if(passSyst2rmet) mon.fillHisto("finaleventflowrmet",tags_full,9,iweight);
+           for(size_t ivar=0; ivar<sizeof(wgtVarNames)/sizeof(TString); ivar++){
+              std::vector<TString> itags_full;
+              itags_full.push_back(tag_cat + tag_subcat);
 
-          bool passvbf50met( zvv.pt() > 50);
-          bool passvbf55met( zvv.pt() > 55);
-          bool passvbf60met( zvv.pt() > 60);
-          bool passvbf65met( zvv.pt() > 65);
-          bool passvbf50rmet( rCMetP4.pt() > 50);
-          bool passvbf55rmet( rCMetP4.pt() > 55);
-          bool passvbf60rmet( rCMetP4.pt() > 60);
-          bool passvbf65rmet( rCMetP4.pt() > 65);
-          bool passvbfSyst1met( zvv.pt() > 40);
-          bool passvbfSyst2met( rCMetP4.pt() > 40);
+              if(PassSelMet[0]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",itags_full,0,rwgtVars[ivar]);
+              if(PassSelMet[1]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",itags_full,1,rwgtVars[ivar]);
+              if(PassSelMet[2]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",itags_full,2,rwgtVars[ivar]);
+              if(PassSelMet[3]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",itags_full,3,rwgtVars[ivar]);
+              if(PassSelMet[4]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",itags_full,4,rwgtVars[ivar]);
+              if(PassSelMet[5]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",itags_full,5,rwgtVars[ivar]);
+              if(PassSelMet[6]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",itags_full,6,rwgtVars[ivar]);
+              if(PassSelMet[7]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",itags_full,7,rwgtVars[ivar]);
+              if(PassSelMet[8]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",itags_full,8,rwgtVars[ivar]);
+              if(PassSelMet[9]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",itags_full,9,rwgtVars[ivar]);
+              
+              if(PassSelRMet[0]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",itags_full,0,rwgtVars[ivar]);
+              if(PassSelRMet[1]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",itags_full,1,rwgtVars[ivar]);
+              if(PassSelRMet[2]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",itags_full,2,rwgtVars[ivar]);
+              if(PassSelRMet[3]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",itags_full,3,rwgtVars[ivar]);
+              if(PassSelRMet[4]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",itags_full,4,rwgtVars[ivar]);
+              if(PassSelRMet[5]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",itags_full,5,rwgtVars[ivar]);
+              if(PassSelRMet[6]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",itags_full,6,rwgtVars[ivar]);
+              if(PassSelRMet[7]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",itags_full,7,rwgtVars[ivar]);                  
+              if(PassSelRMet[8]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",itags_full,8,rwgtVars[ivar]);
+              if(PassSelRMet[9]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",itags_full,9,rwgtVars[ivar]);
 
-          if(passvbf50met) mon.fillHisto("finaleventflowvbf",tags_full,0,iweight);
-          if(passvbf55met) mon.fillHisto("finaleventflowvbf",tags_full,1,iweight);
-          if(passvbf60met) mon.fillHisto("finaleventflowvbf",tags_full,2,iweight);
-          if(passvbf65met) mon.fillHisto("finaleventflowvbf",tags_full,3,iweight);
-          if(passvbf50rmet) mon.fillHisto("finaleventflowvbf",tags_full,4,iweight);
-          if(passvbf55rmet) mon.fillHisto("finaleventflowvbf",tags_full,5,iweight);
-          if(passvbf60rmet) mon.fillHisto("finaleventflowvbf",tags_full,6,iweight);
-          if(passvbf65rmet) mon.fillHisto("finaleventflowvbf",tags_full,7,iweight);                  
-          if(passvbfSyst1met) mon.fillHisto("finaleventflowvbf",tags_full,8,iweight);
-          if(passvbfSyst2met) mon.fillHisto("finaleventflowvbf",tags_full,9,iweight);
+              if(PassSelVBF[0]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",itags_full,0,rwgtVars[ivar]);
+              if(PassSelVBF[1]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",itags_full,1,rwgtVars[ivar]);
+              if(PassSelVBF[2]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",itags_full,2,rwgtVars[ivar]);
+              if(PassSelVBF[3]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",itags_full,3,rwgtVars[ivar]);
+              if(PassSelVBF[4]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",itags_full,4,rwgtVars[ivar]);
+              if(PassSelVBF[5]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",itags_full,5,rwgtVars[ivar]);
+              if(PassSelVBF[6]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",itags_full,6,rwgtVars[ivar]);
+              if(PassSelVBF[7]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",itags_full,7,rwgtVars[ivar]);                  
+              if(PassSelVBF[8]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",itags_full,8,rwgtVars[ivar]);
+              if(PassSelVBF[9]) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",itags_full,9,rwgtVars[ivar]);
+           }
+      }
+
+      //##############################################
+      //########     PLOTS FOR OPTIMIZATION   ########
+      //##############################################
+
+      if(passZmass && passLooseKinematics && passBveto && passZpt && pass3dLeptonVeto){
+         for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
+            if(zvv.pt()>optim_Cuts1_met[index] && mindphijmet>optim_Cuts1_mindphi[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
+            mon.fillHisto("optim_eventflow1"          ,tags_full,    index, weight);
+         }
+      
+         for(unsigned int index=0;index<optim_Cuts2_met.size();index++){
+            if(redMet>optim_Cuts2_met[index] && mindphijmet>optim_Cuts2_mindphi[index] && mt>optim_Cuts2_mtmin[index] && mt<optim_Cuts2_mtmax[index])
+            mon.fillHisto("optim_eventflow2"          ,tags_full,    index, weight);
+         }
+     
+         for(unsigned int index=0;index<optim_Cuts3_pt.size();index++){
+            if(!PassLeptonIn || !PassJetVeto || !PassBJetVeto)continue;
+            if(zvv.pt()<50)continue;
+            if(phys.jets.size()<2 || phys.jets [0].pt()<optim_Cuts3_pt[index] || phys.jets [1].pt()<optim_Cuts3_pt[index])continue;
+            if(VBFdEta>optim_Cuts3_deta[index] && VBFSyst.M()>optim_Cuts3_imass[index])
+            mon.fillHisto("optim_eventflow3"          ,tags_full,    index, weight);
+         }
+      }
 
 
-          if(outTxtFile && (passvbf50met || passvbf50rmet) && string(tag_subcat.Data())=="vbf"){
+
+      //##############################################
+      //########           EVENT LOGGING      ########
+      //##############################################
+
+      if(passZmass && passLooseKinematics && passBveto && passZpt && pass3dLeptonVeto){
+          if(outTxtFile && (PassSelVBF[0] || PassSelVBF[4]) && string(tag_subcat.Data())=="vbf"){
               fprintf(outTxtFile, "<b>%s event</b> @ %s <br/>\n", tag_subcat.Data(), url.Data());
               fprintf(outTxtFile, "%%$Run=%i$%% %%$Lumi=%i$%% %%$Event=%i$%% <br/>\n",  ev.run,  ev.lumi, ev.event);
 
-               fprintf(outTxtFile, "%%$VBF  MET SELECTION: (>50)=%i (>55)=%i (>60)=%i (>65)=%i $%% <br/>\n", passvbf50met, passvbf55met, passvbf60met, passvbf65met );
-               fprintf(outTxtFile, "%%$VBF RMET SELECTION: (>50)=%i (>55)=%i (>60)=%i (>65)=%i $%% <br/>\n", passvbf50rmet, passvbf55rmet, passvbf60rmet, passvbf65rmet );
-
-
+              fprintf(outTxtFile, "%%$VBF  MET SELECTION: (>50)=%i (>55)=%i (>60)=%i (>65)=%i $%% <br/>\n", PassSelVBF[0], PassSelVBF[1], PassSelVBF[2], PassSelVBF[3] );
+              fprintf(outTxtFile, "%%$VBF RMET SELECTION: (>50)=%i (>55)=%i (>60)=%i (>65)=%i $%% <br/>\n", PassSelVBF[4], PassSelVBF[5], PassSelVBF[6], PassSelVBF[7] );
 
               fprintf(outTxtFile, "<i>Leptons</i> <br/>\n");
               for(size_t ilep=0; ilep<2; ilep++){
                  fprintf(outTxtFile, "%%$l_{%i} = %i $%% ", (int)ilep+1, phys.leptons[ilep].id);
-                  fprintf(outTxtFile, "%%$p_{T}=%f $%% ", phys.leptons[ilep].pt());
+                 fprintf(outTxtFile, "%%$p_{T}=%f $%% ", phys.leptons[ilep].pt());
                  fprintf(outTxtFile, "%%$\\eta=%f $%% ", phys.leptons[ilep].eta());
                  fprintf(outTxtFile, "%%$\\phi=%f $%% ", phys.leptons[ilep].phi());
                  fprintf(outTxtFile, "%%$I_{neu}=%f $%%", phys.leptons[ilep].nhIso);
@@ -1338,152 +1405,10 @@ int main(int argc, char* argv[])
         
               fprintf(outTxtFile, "------\n");
           }
-        
+      }
 
 
-
-
-
-
-
-
-        
-          
-          //systematic variations (computed per jet bin so fill only once)                   
-          if(runSystematics)
-            {
-
-                //jet energy scale related variations
-                TString jetVarNames[]={"jer","jesup","jesdown"};
-                for(size_t ivar=0; ivar<3; ivar++)
-                  {
-                    TString isubcat    = eventClassifComp.GetLabel( eventCategoryVars[ivar] );
-                    for(size_t kSubCat=0; kSubCat<2; kSubCat++)
-                      {
-                        if(kSubCat==1) isubcat="";
-
-//                                TString itags_full= catsToFill[ic]+isubcat;
-                  
-                        bool ipass130met( metVars[ivar].pt()>50  && mindphijmet>0.74 && mtVars[ivar]>171 && mtVars[ivar]<296);
-                        bool ipass150met( metVars[ivar].pt()>50  && mindphijmet>0.7  && mtVars[ivar]>193 && mtVars[ivar]<284);
-                        bool ipass170met( metVars[ivar].pt()>50  && mindphijmet>0.66 && mtVars[ivar]>185 && mtVars[ivar]<276);
-                        bool ipass200met( metVars[ivar].pt()>50  && mindphijmet>0.6  && mtVars[ivar]>220 && mtVars[ivar]<270);
-                        bool ipass300met( metVars[ivar].pt()>86  && mindphijmet>0.4  && mtVars[ivar]>260 && mtVars[ivar]<310);
-                        bool ipass400met( metVars[ivar].pt()>118 && mindphijmet>0.2  && mtVars[ivar]>340 && mtVars[ivar]<440);
-                        bool ipass500met( metVars[ivar].pt()>166 && mindphijmet>0.1  && mtVars[ivar]>340 && mtVars[ivar]<740); 
-                        bool ipass600met( metVars[ivar].pt()>188 && mindphijmet>0.1  && mtVars[ivar]>440 && mtVars[ivar]<740);
-                        bool ipassSyst1met(  metVars[ivar].pt()>50 && mindphijmet>0.05 && mtVars[ivar]>150);
-                        bool ipassSyst2met(  metVars[ivar].pt()>60 && mindphijmet>0.1  && mtVars[ivar]>170);
-                        if(ipass130met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",tags_full,0,iweight);
-                        if(ipass150met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",tags_full,1,iweight);
-                        if(ipass170met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",tags_full,2,iweight);
-                        if(ipass200met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",tags_full,3,iweight);
-                        if(ipass300met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",tags_full,4,iweight);
-                        if(ipass400met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",tags_full,5,iweight);
-                        if(ipass500met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",tags_full,6,iweight);
-                        if(ipass600met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",tags_full,7,iweight);
-                        if(ipassSyst1met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",tags_full,8,iweight);
-                        if(ipassSyst2met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowmet",tags_full,9,iweight);                  
-                  
-                        bool ipass130rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.74 && mtVars[ivar]>171 && mtVars[ivar]<296);
-                        bool ipass150rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.7  && mtVars[ivar]>193 && mtVars[ivar]<284);
-                        bool ipass170rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.66 && mtVars[ivar]>185 && mtVars[ivar]<276);
-                        bool ipass200rmet( redMetVars[ivar].pt()>50  && mindphijmet>0.6  && mtVars[ivar]>220 && mtVars[ivar]<270);
-                        bool ipass300rmet( redMetVars[ivar].pt()>84  && mindphijmet>0.2  && mtVars[ivar]>260 && mtVars[ivar]<310);
-                        bool ipass400rmet( redMetVars[ivar].pt()>110 && mindphijmet>0.2  && mtVars[ivar]>340 && mtVars[ivar]<440);
-                        bool ipass500rmet( redMetVars[ivar].pt()>156 && mindphijmet>0.1  && mtVars[ivar]>340 && mtVars[ivar]<740); 
-                        bool ipass600rmet( redMetVars[ivar].pt()>156 && mindphijmet>0.1  && mtVars[ivar]>440 && mtVars[ivar]<790);
-                        bool ipassSyst1rmet( redMetVars[ivar].pt()>50 && mindphijmet>0.05 && mtVars[ivar]>150);
-                        bool ipassSyst2rmet( redMetVars[ivar].pt()>60 && mindphijmet>0.1  && mtVars[ivar]>170);
-                        if(ipass130rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",tags_full,0,iweight);
-                        if(ipass150rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",tags_full,1,iweight);
-                        if(ipass170rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",tags_full,2,iweight);
-                        if(ipass200rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",tags_full,3,iweight);
-                        if(ipass300rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",tags_full,4,iweight);
-                        if(ipass400rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",tags_full,5,iweight);
-                        if(ipass500rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",tags_full,6,iweight);
-                        if(ipass600rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",tags_full,7,iweight);                  
-                        if(ipassSyst1rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",tags_full,8,iweight);
-                        if(ipassSyst2rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowrmet",tags_full,9,iweight);
-                                    
-                        bool ipassvbf50met( metVars[ivar].pt() > 50);
-                        bool ipassvbf55met( metVars[ivar].pt() > 55);
-                        bool ipassvbf60met( metVars[ivar].pt() > 60);
-                        bool ipassvbf65met( metVars[ivar].pt() > 65);
-                        bool ipassvbf50rmet( redMetVars[ivar].pt() > 50);
-                        bool ipassvbf55rmet( redMetVars[ivar].pt() > 55);
-                        bool ipassvbf60rmet( redMetVars[ivar].pt() > 60);
-                        bool ipassvbf65rmet( redMetVars[ivar].pt() > 65);
-                        bool ipassvbfSyst1met( metVars[ivar].pt() > 40);
-                        bool ipassvbfSyst2met( redMetVars[ivar].pt() > 40);
-                        if(ipassvbf50met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",tags_full,0,iweight);
-                        if(ipassvbf55met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",tags_full,1,iweight);
-                        if(ipassvbf60met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",tags_full,2,iweight);
-                        if(ipassvbf65met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",tags_full,3,iweight);
-                        if(ipassvbf50rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",tags_full,4,iweight);
-                        if(ipassvbf55rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",tags_full,5,iweight);
-                        if(ipassvbf60rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",tags_full,6,iweight);
-                        if(ipassvbf65rmet) mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",tags_full,7,iweight);                  
-                        if(ipassvbfSyst1met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",tags_full,8,iweight);
-                        if(ipassvbfSyst2met) mon.fillHisto(jetVarNames[ivar]+"finaleventflowvbf",tags_full,9,iweight);
-                      }
-                  }
-         
-              //re-weighting variations (Higgs, pileup scenario)
-              TString wgtVarNames[]={"hrenup","hrendown","hfactup","hfactdown","puup","pudown"};
-              Float_t rwgtVars[]={ isMC_GG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]   : iweight ,
-                                   isMC_GG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] : iweight ,
-                                   isMC_GG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]  : iweight ,
-                                   isMC_GG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]: iweight ,
-                                   iweight*TotalWeight_plus,
-                                   iweight*TotalWeight_minus};
-              if(ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] <0.5)
-                cout << phys.genhiggs[0].pt() << " " << isMC_GG 
-                     << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] 
-                     << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renUp]
-                     << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]
-                     << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]
-                     << " " << ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown] << endl;
-          
-              for(size_t ivar=0; ivar<sizeof(wgtVarNames)/sizeof(TString); ivar++)
-                {
-                  //                      TString itags_full= catsToFill[ic]+subcat;
-                  if(pass130met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",tags_full,0,rwgtVars[ivar]);
-                  if(pass150met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",tags_full,1,rwgtVars[ivar]);
-                  if(pass170met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",tags_full,2,rwgtVars[ivar]);
-                  if(pass200met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",tags_full,3,rwgtVars[ivar]);
-                  if(pass300met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",tags_full,4,rwgtVars[ivar]);
-                  if(pass400met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",tags_full,5,rwgtVars[ivar]);
-                  if(pass500met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",tags_full,6,rwgtVars[ivar]);
-                  if(pass600met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",tags_full,7,rwgtVars[ivar]);
-                  if(passSyst1met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",tags_full,8,rwgtVars[ivar]);
-                  if(passSyst2met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowmet",tags_full,9,rwgtVars[ivar]);
-              
-                  if(pass130rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",tags_full,0,rwgtVars[ivar]);
-                  if(pass150rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",tags_full,1,rwgtVars[ivar]);
-                  if(pass170rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",tags_full,2,rwgtVars[ivar]);
-                  if(pass200rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",tags_full,3,rwgtVars[ivar]);
-                  if(pass300rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",tags_full,4,rwgtVars[ivar]);
-                  if(pass400rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",tags_full,5,rwgtVars[ivar]);
-                  if(pass500rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",tags_full,6,rwgtVars[ivar]);
-                  if(pass600rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",tags_full,7,rwgtVars[ivar]);                  
-                  if(passSyst1rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",tags_full,8,rwgtVars[ivar]);
-                  if(passSyst2rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowrmet",tags_full,9,rwgtVars[ivar]);
-
-                  if(passvbf50met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",tags_full,0,rwgtVars[ivar]);
-                  if(passvbf55met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",tags_full,1,rwgtVars[ivar]);
-                  if(passvbf60met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",tags_full,2,rwgtVars[ivar]);
-                  if(passvbf65met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",tags_full,3,rwgtVars[ivar]);
-                  if(passvbf50rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",tags_full,4,rwgtVars[ivar]);
-                  if(passvbf55rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",tags_full,5,rwgtVars[ivar]);
-                  if(passvbf60rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",tags_full,6,rwgtVars[ivar]);
-                  if(passvbf65rmet) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",tags_full,7,rwgtVars[ivar]);                  
-                  if(passvbfSyst1met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",tags_full,8,rwgtVars[ivar]);
-                  if(passvbfSyst2met) mon.fillHisto(wgtVarNames[ivar]+"finaleventflowvbf",tags_full,9,rwgtVars[ivar]);
-                }
-
-            }
-        }
+      //##############################################   EVENT LOOP ENDS   ##############################################
   }printf("\n"); 
   //all done with the events file
   file->Close();
