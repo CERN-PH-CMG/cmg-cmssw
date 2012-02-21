@@ -5,53 +5,6 @@ import json
 import getopt
 import commands
 
-#check castor directory for duplicates
-def checkCastorDirectory(outdir):
-    rfdir_cmd = "rfdir " + outdir
-    isEOS=False
-    if(outdir.find('/store/cmst3')==0) :
-        isEOS=True
-        splitOnString=','
-        rfdir_cmd='cmsLs ' + dir + ' | grep root | awk \'{print $5}\''
-    nOutFile = 0
-
-    outCastorDir_out = commands.getstatusoutput(rfdir_cmd)
-    jobNumbers = []
-    duplicatedJobs = []
-    origFiles=[]
-    duplicatedFiles=[]
-    if outCastorDir_out[0] == 0:
-        castorLines = outCastorDir_out[1].split("\n")
-        if len(castorLines) != 0:
-            for castorFileLine in castorLines:
-                fileName=castorFileLine
-                if "root" in castorFileLine:
-
-                    if(not isEOS) : fileName = castorFileLine.split()[8]
-
-                    jobNumber=-1
-                    try:
-                        fileBaseName=os.path.basename(fileName)
-                        jobNumber=int(fileBaseName.split("_")[1])
-                    except:
-                        continue
-
-                    if jobNumber in jobNumbers:
-                        if not jobNumber in duplicatedJobs:  duplicatedJobs.append(jobNumber)
-                        duplicatedFiles.append(fileName)
-                    else :
-                        jobNumbers.append(jobNumber)
-                        origFiles.append(fileName)
-                        nOutFile += 1
-                        
-    print '   - Found ' + str(len(duplicatedJobs)) + ' job id duplicates @ ' + outdir
-    print '   - Removing ' + str(len(duplicatedFiles)) + ' files'
-
-    for f in duplicatedFiles :
-        if(isEOS) : commands.getstatusoutput('cmsRm ' + f)
-        else : commands.getstatusoutput('rfrm ' +outdir + '/' + f)
-
-
 
 #print usage
 def usage() :
@@ -128,7 +81,6 @@ for proc in procList :
             idir=0
             for dir in alldirs:
                 idir=idir+1
-                #checkCastorDirectory(dir)
                 filenames=fillFromCastor(dir,0,-1,False)
                 nfiles=len(filenames)
 
