@@ -10,6 +10,7 @@ scramv1 b
 # create pat-tuples
 #
 runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_mc_cfg.py -castor=patdir" -n 5 -s 2nd -d aoddir
+runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_test.json -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_mc_cfg.py -castor=patdir" -n 5 -s 2nd -d aoddir -R "tmp>5000"
 runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_data_ee_cfg.py -castor=patdir" -n 1 -s 2nd -d aoddir -t DoubleEle
 runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_data_mumu_cfg.py -castor=patdir" -n 1 -s 2nd -d aoddir -t DoubleMu
 
