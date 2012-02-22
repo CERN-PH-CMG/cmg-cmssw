@@ -372,25 +372,25 @@
 	         "dtag":"DoubleElectron2011A",
 		 "dset":"/DoubleElectron/Run2011A-HZZ-08Nov2011-v1/AOD",
 		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleElectron/Run2011A-HZZ-08Nov2011-v1/AOD/V3"],
-                 "patdir":["/store/cmst3/user/querten/12_02_20_HZZ2l2v_pat/DoubleElectron2011A"]
+                 "patdir":["/store/cmst3/user/psilva/12_02_10_HZZ2l2v_pat/DoubleElectron2011A"]
                 },
                 {
 	         "dtag":"DoubleElectron2011B",
 		 "dset":"/DoubleElectron/Run2011B-HZZ-19Nov2011-v1/AOD",
 		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleElectron/Run2011B-HZZ-19Nov2011-v1/AOD/V3"],
-                 "patdir":["/store/cmst3/user/querten/12_02_20_HZZ2l2v_pat/DoubleElectron2011B"]
+                 "patdir":["/store/cmst3/user/psilva/12_02_10_HZZ2l2v_pat/DoubleElectron2011B"]
                 },
                 {
 	         "dtag":"DoubleMu2011A",
 		 "dset":"/DoubleMu/Run2011A-HZZ-08Nov2011-v1/AOD",
 		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleMu/Run2011A-HZZ-08Nov2011-v1/AOD/V3"],
-                 "patdir":["/store/cmst3/user/querten/12_02_20_HZZ2l2v_pat/DoubleMu2011A"]
+                 "patdir":["/store/cmst3/user/psilva/12_02_10_HZZ2l2v_pat/DoubleMu2011A"]
                 },
                 {
 	         "dtag":"DoubleMu2011B",
 		 "dset":"/DoubleMu/Run2011B-HZZ-19Nov2011-v1/AOD",
 		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleMu/Run2011B-HZZ-19Nov2011-v1/AOD/V3"],
-                 "patdir":["/store/cmst3/user/querten/12_02_20_HZZ2l2v_pat/DoubleMu2011B"]
+                 "patdir":["/store/cmst3/user/psilva/12_02_10_HZZ2l2v_pat/DoubleMu2011B"]
                 }
 	    ]
 	}

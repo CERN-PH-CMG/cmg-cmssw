@@ -60,6 +60,8 @@ fi
 # SUBMIT JOB
 #
 #echo "Submitting shell script: ${SCRIPT} with parameters: ${PARAMS} to queue $QUEUE"
+#<<<<<<< submit2batch.sh
+#bsub -q $QUEUE -R "type==SLC5_64 && pool>30000 && tmp>50000" `echo ${SCRIPT} ${PARAMS}`
 echo "Submitting shell script: $bsub -q $QUEUE -R $REQUIREMENT -J $JOBNAME `echo ${SCRIPT} ${PARAMS}`"
 bsub -q $QUEUE -R "$REQUIREMENT" -J $JOBNAME `echo ${SCRIPT} ${PARAMS}`
 
