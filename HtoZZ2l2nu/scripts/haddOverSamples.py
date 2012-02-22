@@ -102,24 +102,44 @@ for proc in procList :
 		print "no file found for sample: " + d['dtag']
 		continue
 
-#            haddCommand = 'hadd -f ' + outdir+d['dtag']+'.root '
-            haddCommand = 'hadd -f '
-	    if(isOutputOnEOS==True):	haddCommand += '/tmp/HADD_MERGE.root '
-	    else:			haddCommand += outdir+d['dtag']+'.root '
-            ifile=0
-            for f in allfiles:
-                ifile=ifile+1
-		if(f.startswith('/store')==True):
-			f= 'root://eoscms//eos/cms'+f
-		if(checkInputFile(f)==False):
-			print "missing file skipped " + f
-			continue
-                haddCommand += f + " "
+            split = 1
+            try:
+                split = d['split']
+            except:
+		split = 1
+
+            NFilesToMerge = len(allfiles)//split
+ 
+            startFile = 0
+	    endFile = 0	    
+            for s in range(0,split) :
+		    outputFile = d['dtag']
+		    if(split>1):
+			outputFile += "_" + str(s)
+                    outputFile += '.root '
+
+	            haddCommand = 'hadd -f '
+		    if(isOutputOnEOS==True):	haddCommand += '/tmp/' + outputFile
+		    else:			haddCommand += outdir+outputFile
+	            ifile=0
+		
+		    startFile = endFile
+		    endFile   = (s+1)*NFilesToMerge
+		    if(s==split-1): endFile = len(allfiles)
+	            for i in range(startFile,endFile):
+			f = allfiles[i]
+	                ifile=ifile+1
+			if(f.startswith('/store')==True):
+				f= 'root://eoscms//eos/cms'+f
+			if(checkInputFile(f)==False):
+				print "missing file skipped " + f
+				continue
+                	haddCommand += f + " "
 	
-            print haddCommand
-	    commands.getstatusoutput(haddCommand)
-	    if(isOutputOnEOS==True): 
-		print 'cmsStageOut -f /tmp/HADD_MERGE.root ' + outdir+d['dtag']+'.root '
-		commands.getstatusoutput('cmsStageOut -f /tmp/HADD_MERGE.root ' + outdir+d['dtag']+'.root ')
+	            print haddCommand
+		    commands.getstatusoutput(haddCommand)
+		    if(isOutputOnEOS==True): 
+			print 'cmsStageOut -f /tmp/'+outputFile + outdir+outputFile
+			commands.getstatusoutput('cmsStageOut -f /tmp/'+outputFile + outdir+outputFile)
 
 
