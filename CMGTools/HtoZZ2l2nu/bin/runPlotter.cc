@@ -165,8 +165,6 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, st
 
 
          if(!isMC)printf("is there a problem with %s ? cnorm = %f - PUC=%f\n",(Samples[j])["dtag"].toString().c_str(), cnorm, PUCentralnnorm );
-
-
  
          delete tmphist;
       }   
