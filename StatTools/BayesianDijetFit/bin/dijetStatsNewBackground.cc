@@ -274,6 +274,9 @@ ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invma
   if(statlevel==7) ws->factory("PROD::prior(xs_prior,sigMassDelta_prior)");
   if(statlevel==8) ws->factory("PROD::prior(xs_prior,lumi_prior,sigMassDelta_prior)");
   if(statlevel==9) ws->factory("PROD::prior(xs_prior,lumi_prior)");
+  if(statlevel==11) ws->factory("PROD::prior(xs_prior)");
+  if(statlevel==111) ws->factory("PROD::prior(xs_prior)");
+
   if(statlevel==0) ws->defineSet("nuisSet","");
   if(statlevel==1) ws->defineSet("nuisSet","");
   if(statlevel==2) ws->defineSet("nuisSet","lumi");
@@ -284,6 +287,8 @@ ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invma
   if(statlevel==7) ws->defineSet("nuisSet","sigMassDelta");
   if(statlevel==8) ws->defineSet("nuisSet","lumi,sigMassDelta");
   if(statlevel==9) ws->defineSet("nuisSet","lumi");
+  if(statlevel==11) ws->defineSet("nuisSet","");
+  if(statlevel==111) ws->defineSet("nuisSet","");
 
   // do a background-only fit first
   // exclude window +20% -20% units in width
@@ -384,7 +389,7 @@ ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invma
     }
 
     // set parameters for limit calculation
-    if(statlevel==1) {
+    if(statlevel==1 || statlevel==11 || statlevel==111) {
     } else if(statlevel==2) {
       ws->var("lumi")->setConstant(false);
     } else if(statlevel==3) {
@@ -477,24 +482,45 @@ ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invma
 
     TH1D* histA=dynamic_cast<TH1D*>(mcA.GetPosteriorHist()->Clone("histA"));
 
-    if(statlevel==1 || statlevel==5 || statlevel==6 || statlevel==7 || statlevel==9) {
-      ws->var("p1")->setVal(std::max(0.0,p1val-p1err));
-      ws->var("p2")->setVal(p2val+p2err);
-      ws->var("p3")->setVal(p3val+p3err);
-      TH1D* histAHi=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histAHi"));
-      ws->var("p1")->setVal(std::max(0.0,p1val+p1err));
-      ws->var("p2")->setVal(p2val-p2err);
-      ws->var("p3")->setVal(p3val-p3err);
-      TH1D* histALo=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histALo"));
+    if(statlevel==1 || statlevel==5 || statlevel==6 || statlevel==7 || statlevel==9 || statlevel==11 || statlevel==111) {
+
       //    TH1D* histB=dynamic_cast<TH1D*>(mcB.GetPosteriorHist()->Clone("histB"));
       //    TH1D* histC=dynamic_cast<TH1D*>(mcC.GetPosteriorHist()->Clone("histC"));
-      
-      histA->Add(histAHi);
-      histA->Add(histALo);
-      //    histA->Add(histB);
-      //    histA->Add(histC);
-      delete histAHi;
-      delete histALo;
+ 
+      if (statlevel==11){
+	TH1D* histB=dynamic_cast<TH1D*>(mcB.GetPosteriorHist()->Clone("histB"));
+	TH1D* histC=dynamic_cast<TH1D*>(mcC.GetPosteriorHist()->Clone("histC"));
+	histA->Add(histB);
+	histA->Add(histC);
+
+	delete histB;
+	delete histC;
+      }
+      if (statlevel==111){
+	TH1D* histB=dynamic_cast<TH1D*>(mcB.GetPosteriorHist()->Clone("histB"));
+	histA->Add(histB);
+
+	delete histB;
+
+      } else {
+
+	ws->var("p1")->setVal(std::max(0.0,p1val-p1err));
+	ws->var("p2")->setVal(p2val+p2err);
+	ws->var("p3")->setVal(p3val+p3err);
+	TH1D* histAHi=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histAHi"));
+	ws->var("p1")->setVal(std::max(0.0,p1val+p1err));
+	ws->var("p2")->setVal(p2val-p2err);
+	ws->var("p3")->setVal(p3val-p3err);
+	TH1D* histALo=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histALo"));
+
+	histA->Add(histAHi);
+	histA->Add(histALo);
+
+	delete histAHi;
+	delete histALo;
+
+      }
+ 
     }
     
  
