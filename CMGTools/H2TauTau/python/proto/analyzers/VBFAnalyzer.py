@@ -12,8 +12,8 @@ class VBFAnalyzer( Analyzer ):
     def declareHandles(self):
         super(VBFAnalyzer, self).declareHandles()
 
-        self.handles['jets'] = AutoHandle( 'cmgPFJetSel',
-                                           'std::vector<cmg::PFJet>' )
+        self.handles['jets'] = AutoHandle( 'cmgPFBaseJetSel',
+                                           'std::vector<cmg::BaseJet>' )
 
     def beginLoop(self):
         super(VBFAnalyzer,self).beginLoop()

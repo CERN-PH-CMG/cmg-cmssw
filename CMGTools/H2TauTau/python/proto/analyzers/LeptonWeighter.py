@@ -13,7 +13,7 @@ class LeptonWeighter( Analyzer ):
         self.leptonName = self.cfg_ana.lepton
         self.lepton = None
         self.weight = None
-        self.weightFactor = 1.
+        # self.weightFactor = 1.
         self.trigEff = None
         if self.cfg_comp.isMC or self.cfg_comp.isEmbed:
             self.trigEff = TriggerEfficiency()
@@ -49,7 +49,7 @@ class LeptonWeighter( Analyzer ):
             # if self.trigEff.tauEff is not None:
             #    event.tauEffWeight = self.trigEff.tauEff(event.tau.pt())
             #MUONS
-            self.weight *= self.weightFactor
+            # self.weight *= self.weightFactor
             if self.trigEff is not None:
                 self.lepton = getattr( event, self.leptonName )
                 self.eff = self.trigEff.lepEff( self.lepton.pt(),

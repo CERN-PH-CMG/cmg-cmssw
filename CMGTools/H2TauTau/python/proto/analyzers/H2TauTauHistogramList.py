@@ -42,10 +42,10 @@ class H2TauTauHistogramList( object ):
         self.vertex.FillVertices( event.vertices, weight )
         self.cleanJets.Fill( event.cleanJets, weight )
         self.jets.Fill( event.jets, weight )
-        if len( event.jets )>1:
-            self.jetsVBF.Fill( event.jets[:2], weight )
-        if len( event.jets )>0:
-            self.leadJet.Fill( [event.jets[0]], weight )
+        if len( event.cleanJets )>1:
+            self.jetsVBF.Fill( event.cleanJets[:2], weight )
+        if len( event.cleanJets )>0:
+            self.leadJet.Fill( [event.cleanJets[0]], weight )
         
 
     def createTauHistograms(self, legName): 
