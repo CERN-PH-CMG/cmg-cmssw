@@ -1,7 +1,7 @@
 import os
 import sys
 import imp
-import glob
+# import glob
 import logging
 import pprint 
 from DataFormats.FWLite import Events, Handle
@@ -11,7 +11,7 @@ from CMGTools.RootTools.fwlite.Event import Event
 class Looper(object):
     '''Creates a set of analyzers, and schedules the event processing.'''
 
-    def __init__( self, name, cfg_comp, sequence, nPrint=0):
+    def __init__( self, name, cfg_comp, sequence, nEvents=None, firstEvent=0, nPrint=0):
         '''Handles the processing of an event sample.
         An Analyzer is built for each Config.Analyzer present
         in sequence. The Looper can now be used to process an event,
@@ -34,13 +34,16 @@ class Looper(object):
         self.classes = {}
         #TODO: should be a diclist? 
         self.analyzers = map( self._buildAnalyzer, sequence )
+        self.nEvents = nEvents
+        self.firstEvent = firstEvent
         self.nPrint = nPrint 
         # initialize FWLite chain on input file:
         try:
-            self.events = Events( glob.glob( self.cfg_comp.files) )
+            self.events = Events( self.cfg_comp.files )
         except RuntimeError:
             print 'cannot find any file matching pattern', self.cfg_comp.files
             raise
+        
 
     def _prepareOutput(self, name):
         index = 0
@@ -89,23 +92,27 @@ class Looper(object):
                     pprint.pprint( sorted( sys.path )) 
         return obj
 
-    def loop(self, nEvents=None):
+    def loop(self):
         '''Loop on a given number of events.
 
         At the beginning of the loop, Analyzer.beginLoop is called for each Analyzer.
         At each event, self.process is called.
         At the end of the loop, Analyzer.endLoop is called.'''
+        nEvents = self.nEvents
+        firstEvent = self.firstEvent
         if nEvents is None:
             nEvents = self.events.size()
         else:
             nEvents = int(nEvents)
         eventSize = nEvents
-        print 'starting loop, to process', eventSize, 'events.'        
+        self.logger.warning('starting loop at event {firstEvent} to process {eventSize} events.'.format(firstEvent=firstEvent, eventSize=eventSize))
+        self.logger.warning( str( self.cfg_comp ) ) 
         for analyzer in self.analyzers:
-            analyzer.beginLoop() 
-        for iEv in range(0, eventSize):
-            if iEv == nEvents:
-                break
+            analyzer.beginLoop()
+        
+        for iEv in range(firstEvent, firstEvent+eventSize):
+            # if iEv == nEvents:
+            #     break
             if iEv%100 ==0:
                 print 'event', iEv
             self.process( iEv )

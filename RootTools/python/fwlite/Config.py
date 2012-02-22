@@ -1,3 +1,4 @@
+import glob
 from CMGTools.RootTools.fwlite.Weight import Weight
 
 
@@ -72,7 +73,7 @@ class Component( CFG ):
         if isinstance(triggers, basestring):
             triggers = [triggers]
         super( Component, self).__init__( name = name,
-                                          files = files,
+                                          files = sorted(glob.glob(files)),
                                           triggers = triggers)
         self.isMC = False
         self.isData = False
@@ -113,7 +114,7 @@ class EmbedComponent( Component ):
         
 class MCComponent( Component ):
     def __init__(self, name, files, triggers, xSection,
-                 nGenEvents,
+                 nGenEvents, 
                  # vertexWeight,tauEffWeight, muEffWeight,
                  effCorrFactor ):
         super( MCComponent, self).__init__( name = name,

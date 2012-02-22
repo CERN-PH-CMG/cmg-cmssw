@@ -3,6 +3,7 @@ import shutil
 import glob
 import sys
 import imp
+import copy
 from multiprocessing import Pool
 from pprint import pprint
 
@@ -12,20 +13,22 @@ from CMGTools.RootTools.fwlite.Looper import Looper
 # global, to be used interactively when only one component is processed.
 loop = None 
 
-def CallBack( result ):
+def callBack( result ):
     pass
     print 'production done:', str(result)
 
-def RunLoopAsync(comp, outDir, config, options):
-    loop = RunLoop( comp, outDir, config, options)
+def runLoopAsync(comp, outDir, config, options):
+    loop = runLoop( comp, outDir, config, options)
     return loop.name
 
-def RunLoop( comp, outDir, config, options):
+def runLoop( comp, outDir, config, options):
     fullName = '/'.join( [outDir, comp.name ] )
-    loop = Looper( fullName, comp, config.sequence, nPrint = 5)
+    loop = Looper( fullName, comp, config.sequence,
+                   options.nevents, 0, 
+                   nPrint = 5)
     print loop
     if options.iEvent is None:
-        loop.loop( options.nevents )
+        loop.loop()
         loop.write()
         print loop
     else:
@@ -34,18 +37,18 @@ def RunLoop( comp, outDir, config, options):
         loop.process( iEvent )
     return loop
 
-def TestComponentList( complist ):
-    badPattern = False
-    for pattern in complist.values():
-        nFiles = len( glob.glob(pattern) )
-        if not nFiles:
-            print 'no file match', pattern
-            badPattern = True
-    if badPattern:
-        raise ValueError('Check your component list')
+## def testComponentList( complist ):
+##     badPattern = False
+##     for pattern in complist.values():
+##         nFiles = len( glob.glob(pattern) )
+##         if not nFiles:
+##             print 'no file match', pattern
+##             badPattern = True
+##     if badPattern:
+##         raise ValueError('Check your component list')
 
 
-def CreateOutputDir(dir, components, force):
+def createOutputDir(dir, components, force):
     '''Creates the output dir, dealing with the case where dir exists.'''
     answer = None 
     try:
@@ -71,6 +74,24 @@ def CreateOutputDir(dir, components, force):
             else:
                 raise ValueError( ' '.join(['answer can not have this value!',
                                             answer]) )
+
+
+def split(comps):
+    def chunks(l, n):
+        return [l[i:i+n] for i in range(0, len(l), n)]
+    splitComps = []
+    for comp in comps:
+        if hasattr( comp, 'splitFactor') and comp.splitFactor>1:
+            chunkSize = len(comp.files) / comp.splitFactor
+            for ichunk, chunk in enumerate( chunks( comp.files, chunkSize)):
+                newComp = copy.deepcopy(comp)
+                newComp.files = chunk
+                newComp.name = '{name}_Chunk{index}'.format(name=newComp.name,
+                                                       index=ichunk)
+                splitComps.append( newComp )
+        else:
+            splitComps.append( comp )
+    return splitComps
 
 def main( options, args ):
     
@@ -99,11 +120,13 @@ def main( options, args ):
                                  'src/CMGTools/RootTools/python/analyzers'] ))
 
     selComps = cfg.config.components
+    selComps = split(selComps)
     for comp in selComps:
         print comp
+    # sys.exit(1)
     if len(selComps)>14:
         raise ValueError('too many threads: ' + len(selComps))
-    if not CreateOutputDir(outDir, selComps, options.force):
+    if not createOutputDir(outDir, selComps, options.force):
         print 'exiting'
         sys.exit(0)
     if len(selComps)>1:
@@ -111,15 +134,15 @@ def main( options, args ):
         pool = Pool(processes=len(selComps))
         for comp in selComps:
             print 'submitting', comp.name
-            pool.apply_async( RunLoopAsync, [comp, outDir, cfg.config, options],
-                              callback=CallBack)     
+            pool.apply_async( runLoopAsync, [comp, outDir, cfg.config, options],
+                              callback=callBack)     
         pool.close()
         pool.join()
     else:
         # when running only one loop, do not use multiprocessor module.
         # then, the exceptions are visible -> use only one sample for testing
         global loop
-        loop = RunLoop( comp, outDir, cfg.config, options )
+        loop = runLoop( comp, outDir, cfg.config, options )
 
 
 
