@@ -22,12 +22,12 @@ runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -p "-
 #
 # create ntuples
 #
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/querten/12_02_10_HZZ2l2v_ntuples_split" -d patdir -s 8nh -n 10
+runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/querten/12_02_20_HZZ2l2v_ntuples/split" -d patdir -s 8nh -n 10
 
 #
 # merge the ntuples
 #
-haddOverSamples.py -j data/samples.json -d /store/cmst3/user/querten/12_02_10_HZZ2l2v_ntuples_split/ -o /store/cmst3/user/querten/12_02_10_HZZ2l2v_ntuples/
+haddOverSamples.py -j data/samples.json -d /store/cmst3/user/querten/12_02_20_HZZ2l2v_ntuples/split/ -o /store/cmst3/user/querten/12_02_20_HZZ2l2v_ntuples/
 
 #
 # run the analysis
