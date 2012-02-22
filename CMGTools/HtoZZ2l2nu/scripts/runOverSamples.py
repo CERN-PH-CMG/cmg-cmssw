@@ -83,12 +83,15 @@ for proc in procList :
                 idir=idir+1
                 filenames=fillFromCastor(dir,0,-1,False)
                 nfiles=len(filenames)
+                for f in filenames :
+		        print('will use file: --> ' + f)
 
                 njobs=1
 		sleep=0;
                 if(fperjob>0) : 
-			njobs=nfiles/fperjob+1
-			sleep=2*fperjob/6;
+			njobs=nfiles//fperjob
+			if(nfiles%fperjob>0):njobs = njobs+1
+			sleep=2*fperjob/6
                 
                 #substitute some job parameters by json file parameters
                 newParams=''
@@ -115,5 +118,5 @@ for proc in procList :
                         os.system('submit2batch.sh -q' + subtoBatch + ' -R"' + requirementtoBatch + '" -J' + d['dtag']+str(ijob) + ' ' + scriptFile + ' ' + localParams)
 			#os.system('sleep ' + str(sleep) + 's')   ##THIS WAS NEEDED ONLY FOR FILE ON CASTOR
                     else :
+#			print(scriptFile + ' '  + localParams)
                         os.system(scriptFile + ' '  + localParams)
-
