@@ -32,7 +32,7 @@ import CMGTools.RootTools.fwlite.Config as cfg
 period = 'Period_2011A'
 
 baseDir = '2011'
-filePattern = 'tauMu*fullsel*.root'
+filePattern = 'tree*.root'
 
 # mc_triggers = 'HLT_IsoMu12_v1'
 mc_triggers = []
@@ -85,6 +85,12 @@ jetAna = cfg.Analyzer(
     ptCut = 0
     )
 
+
+effMuAna = cfg.Analyzer(
+    'EfficiencyAnalyzer',
+    # recsel = 'cuts_vbtfmuon'
+    genPdgId = 13
+    )
 
 vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
@@ -141,7 +147,7 @@ data_Run2011B_PromptReco_v1 = cfg.DataComponent(
 
 DYJets = cfg.MCComponent(
     name = 'DYJets',
-    files ='{baseDir}/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files ='{baseDir}/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_Chamonix12_START44_V10-v2/AODSIM/PAT_CMG_V3_0_0/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     xSection = 3048.,
     nGenEvents = 34915945,
     triggers = mc_triggers,
@@ -212,10 +218,10 @@ elif period == 'Period_2011AB':
 selectedComponents  = [DYJets] 
 
 sequence = cfg.Sequence( [
-    triggerAna,
-    vertexAna,
+    # triggerAna,
+    # vertexAna,
     # ZMuMuAna, 
-    jetAna
+    effMuAna
     ] )
 
 config = cfg.Config( components = selectedComponents,
