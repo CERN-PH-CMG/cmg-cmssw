@@ -5,6 +5,14 @@ import json
 import getopt
 import commands
 
+def checkInputFile(url):
+    if(url.startswith('/store')==True):
+       url= 'root://eoscms//eos/cms'+url
+    command_out = commands.getstatusoutput("root -l -b -q " + url)
+    if(command_out[1].find("Error")>=0 or command_out[1].find("Corrupted")>=0):return False
+    return True
+
+
 #check castor directory for duplicates
 def checkCastorDirectory(outdir):
     rfdir_cmd = "rfdir " + outdir
@@ -26,22 +34,27 @@ def checkCastorDirectory(outdir):
                 fileName=castorFileLine
                 if "root" in castorFileLine:
 
-                    if(not isEOS) : fileName = castorFileLine.split()[8]
+		    if(checkInputFile(fileName)==True):
 
-                    jobNumber=-1
-                    try:
-                        fileBaseName=os.path.basename(fileName)
-                        jobNumber=int(fileBaseName.split("_")[1])
-                    except:
-                        continue
+	                    if(not isEOS) : fileName = castorFileLine.split()[8]
 
-                    if jobNumber in jobNumbers:
-                        if not jobNumber in duplicatedJobs:  duplicatedJobs.append(jobNumber)
-                        duplicatedFiles.append(fileName)
-                    else :
-                        jobNumbers.append(jobNumber)
-                        origFiles.append(fileName)
-                        nOutFile += 1
+        	            jobNumber=-1
+                	    try:
+                        	fileBaseName=os.path.basename(fileName)
+	                        jobNumber=int(fileBaseName.split("_")[1])
+        	            except:
+                	        continue
+
+	                    if jobNumber in jobNumbers:
+        	                if not jobNumber in duplicatedJobs:  duplicatedJobs.append(jobNumber)
+                	        duplicatedFiles.append(fileName)
+	                    else :
+        	                jobNumbers.append(jobNumber)
+                	        origFiles.append(fileName)
+                        	nOutFile += 1
+		    else:
+			    print("   #corrupted file found : " + fileName)
+			    duplicatedFiles.append(fileName)
                         
     #print '   - Found ' + str(len(duplicatedJobs)) + ' job id duplicates @ ' + outdir
     #print '   - Removing ' + str(len(duplicatedFiles)) + ' files'
