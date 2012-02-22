@@ -39,20 +39,16 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-  SmartSelectionMonitor mon; //plot storage
+  //##############################################
+  //########    GLOBAL INITIALIZATION     ########
+  //##############################################
 
-  //start computers
-  EventCategory eventCategoryInst(true);
-
+  // check arguments
+  if(argc<2){ std::cout << "Usage : " << argv[0] << " parameters_cfg.py" << std::endl; exit(0); }
+  
   // load framework libraries
   gSystem->Load( "libFWCoreFWLite" );
   AutoLibraryLoader::enable();
-
-  // check arguments
-  if ( argc < 2 ) {
-    std::cout << "Usage : " << argv[0] << " parameters_cfg.py" << std::endl;
-    return 0;
-  }
 
   // configure the process
   const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
@@ -118,10 +114,15 @@ int main(int argc, char* argv[])
 	delete fin;
     }
   }else if(isMC_VBF){
-    size_t VBFStringpos =  string(url.Data()).find("VBF");
-    string StringMass = string(url.Data()).substr(VBFStringpos+6,3);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
-    VBFString = string(url.Data()).substr(VBFStringpos);
+     size_t VBFStringpos =  string(url.Data()).find("VBF");
+     string StringMass = string(url.Data()).substr(VBFStringpos+6,3);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
+     VBFString = string(url.Data()).substr(VBFStringpos);
   }
+
+  //##############################################
+  //########    INITIATING HISTOGRAMS     ########
+  //##############################################
+  SmartSelectionMonitor mon;
 
   //book the control histograms
   TH1F *h=new TH1F ("eventflow", ";Step;Events", 8,0,8);
@@ -422,6 +423,100 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F ("VBFcen30JetVeto3rdlepton",";Central 30 Jet Veto", 10, 0.,10) );
   mon.addHistogram( new TH1F ("VBFNBJets303rdlepton", ";N BJets (pT>30);Events", 10,0,10) );
 
+
+  //##############################################
+  //######## STUFF FOR CUTS OPTIMIZATION  ########
+  //##############################################
+
+   std::vector<double> optim_Cuts1_met;
+   std::vector<double> optim_Cuts1_mindphi;
+   std::vector<double> optim_Cuts1_mtmin;
+   std::vector<double> optim_Cuts1_mtmax;
+   for(double met=50;met<190;met+=2.0){
+      for(double mindphi=0.0;mindphi<0.80;mindphi+=0.10){
+         for(double mtmin=220;mtmin<460;mtmin+=20){
+            for(double mtmax=mtmin+50;mtmax<820;mtmax+=50){
+               if(mtmax>=820)mtmax=3000;
+               optim_Cuts1_met    .push_back(met);
+               optim_Cuts1_mindphi.push_back(mindphi);
+               optim_Cuts1_mtmin  .push_back(mtmin);
+               optim_Cuts1_mtmax  .push_back(mtmax);
+            }
+         }
+      }
+   }
+
+   mon.addHistogram ( new TH1F ("optim_eventflow1"  , ";cut index;yields" ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) );
+   TH1F* Hoptim_cuts1_met     =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_met"    , ";cut index;met"    ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
+   TH1F* Hoptim_cuts1_mindphi =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mindphi", ";cut index;mindphi",optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
+   TH1F* Hoptim_cuts1_mtmin   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmin"  , ";cut index;mtmin"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
+   TH1F* Hoptim_cuts1_mtmax   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmax"  , ";cut index;mtmax"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
+   for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
+      Hoptim_cuts1_met    ->Fill(index, optim_Cuts1_met[index]);    
+      Hoptim_cuts1_mindphi->Fill(index, optim_Cuts1_mindphi[index]);
+      Hoptim_cuts1_mtmin  ->Fill(index, optim_Cuts1_mtmin[index]);
+      Hoptim_cuts1_mtmax  ->Fill(index, optim_Cuts1_mtmax[index]);
+   }
+
+   std::vector<double> optim_Cuts2_met;
+   std::vector<double> optim_Cuts2_mindphi;
+   std::vector<double> optim_Cuts2_mtmin;
+   std::vector<double> optim_Cuts2_mtmax;
+   for(double met=50;met<190;met+=2.0){
+      for(double mindphi=0.0;mindphi<0.80;mindphi+=0.10){
+         for(double mtmin=220;mtmin<460;mtmin+=20){
+            for(double mtmax=mtmin+50;mtmax<820;mtmax+=50){
+               if(mtmax>=820)mtmax=3000;
+               optim_Cuts2_met    .push_back(met);
+               optim_Cuts2_mindphi.push_back(mindphi);
+               optim_Cuts2_mtmin  .push_back(mtmin);
+               optim_Cuts2_mtmax  .push_back(mtmax);
+            }
+         }
+      }
+   }
+
+   mon.addHistogram ( new TH1F ("optim_eventflow2"  , ";cut index;yields" ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) );
+   TH1F* Hoptim_cuts2_met     =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_met"    , ";cut index;met"    ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
+   TH1F* Hoptim_cuts2_mindphi =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_mindphi", ";cut index;mindphi",optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
+   TH1F* Hoptim_cuts2_mtmin   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_mtmin"  , ";cut index;mtmin"  ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
+   TH1F* Hoptim_cuts2_mtmax   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_mtmax"  , ";cut index;mtmax"  ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
+   for(unsigned int index=0;index<optim_Cuts2_met.size();index++){
+      Hoptim_cuts2_met    ->Fill(index, optim_Cuts2_met[index]);
+      Hoptim_cuts2_mindphi->Fill(index, optim_Cuts2_mindphi[index]);
+      Hoptim_cuts2_mtmin  ->Fill(index, optim_Cuts2_mtmin[index]);
+      Hoptim_cuts2_mtmax  ->Fill(index, optim_Cuts2_mtmax[index]);
+   }
+      
+   std::vector<double> optim_Cuts3_pt;                                                                                                                                                                                                        
+   std::vector<double> optim_Cuts3_deta;                                                                                                                                                                                                      
+   std::vector<double> optim_Cuts3_imass;                                                                                                                                                                                                     
+   for(double pt=20;pt<50;pt+=5.0){                                                                                                                                                                                                           
+      for(double deta=2.0;deta<5.0;deta+=0.5){                                                                                                                                                                                                
+         for(double imass=200;imass<600;imass+=50){                                                                                                                                                                                           
+            optim_Cuts3_pt   .push_back(pt);                                                                                                                                                                                               
+            optim_Cuts3_deta .push_back(deta);                                                                                                                                                                                             
+            optim_Cuts3_imass.push_back(imass);                                                                                                                                                                                            
+         }                                                                                                                                                                                                                                    
+      }                                                                                                                                                                                                                                       
+   }               
+
+   mon.addHistogram ( new TH1F ("optim_eventflow3"  , ";cut index;yields" ,optim_Cuts3_pt.size(),0,optim_Cuts3_pt.size()) );                                                                                                        
+   TH1F* Hoptim_cuts3_pt     = (TH1F*) mon.addHistogram( new TH1F ("optim_cut3_pt"     , ";cut index;pt"     ,optim_Cuts3_pt.size(),0,optim_Cuts3_pt.size()) );
+   TH1F* Hoptim_cuts3_deta   = (TH1F*) mon.addHistogram(  new TH1F ("optim_cut3_deta",    ";cut index;deta"   ,optim_Cuts3_pt.size(),0,optim_Cuts3_pt.size()) );
+   TH1F* Hoptim_cuts3_imass  = (TH1F*) mon.addHistogram(  new TH1F ("optim_cut3_imass"  , ";cut index;imass"  ,optim_Cuts3_pt.size(),0,optim_Cuts3_pt.size()) ) ;
+   for(unsigned int index=0;index<optim_Cuts3_pt.size();index++){                                                                                                                                                                             
+      Hoptim_cuts3_pt    ->Fill(index, optim_Cuts3_pt   [index]);                                                                                                                                                                              
+      Hoptim_cuts3_deta  ->Fill(index, optim_Cuts3_deta [index]);                                                                                                                                                                              
+      Hoptim_cuts3_imass ->Fill(index, optim_Cuts3_imass[index]);                                                                                                                                                                              
+   }
+
+
+  //##############################################
+  //######## GET READY FOR THE EVENT LOOP ########
+  //##############################################
+
+
   //open the file and get events tree
   ZZ2l2nuSummaryHandler evSummaryHandler;
   TFile *file = TFile::Open(url);
@@ -479,10 +574,13 @@ int main(int argc, char* argv[])
   //if(normEntries==0) cout << "[Warning] Normalized PU entries is 0, check if the PU normalization producer was properly run" << endl;
  
 
+  //event Categorizer
+  EventCategory eventCategoryInst(true);
 
 
-
-
+  //##############################################
+  //########           EVENT LOOP         ########
+  //##############################################
 
 
  
@@ -1204,118 +1302,23 @@ int main(int argc, char* argv[])
       //##############################################
 
       if(passZmass && passLooseKinematics && passBveto && passZpt && pass3dLeptonVeto){
-         static bool INIT_PLOT_OPTIM = true;
-
-         std::vector<double> optim_Cuts1_met;
-         std::vector<double> optim_Cuts1_mindphi;
-         std::vector<double> optim_Cuts1_mtmin;
-         std::vector<double> optim_Cuts1_mtmax;
-
-         if(INIT_PLOT_OPTIM){
-            for(double met=50;met<190;met+=2.0){
-               for(double mindphi=0.0;mindphi<0.80;mindphi+=0.10){
-                  for(double mtmin=220;mtmin<460;mtmin+=20){
-                     for(double mtmax=mtmin+50;mtmax<820;mtmax+=50){
-                        if(mtmax>=820)mtmax=3000;
-                        optim_Cuts1_met    .push_back(met);
-                        optim_Cuts1_mindphi.push_back(mindphi);
-                        optim_Cuts1_mtmin  .push_back(mtmin);
-                        optim_Cuts1_mtmax  .push_back(mtmax);
-                     }
-                  }
-               }
-            }
-
-            mon.addHistogram ( new TH1F ("optim_eventflow1"  , ";cut index;yields" ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) );
-            TH1F* Hoptim_cuts1_met     =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_met"    , ";cut index;met"    ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
-            TH1F* Hoptim_cuts1_mindphi =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mindphi", ";cut index;mindphi",optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
-            TH1F* Hoptim_cuts1_mtmin   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmin"  , ";cut index;mtmin"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
-            TH1F* Hoptim_cuts1_mtmax   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmax"  , ";cut index;mtmax"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
-            for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
-               Hoptim_cuts1_met    ->Fill(index, optim_Cuts1_met[index]);    
-               Hoptim_cuts1_mindphi->Fill(index, optim_Cuts1_mindphi[index]);
-               Hoptim_cuts1_mtmin  ->Fill(index, optim_Cuts1_mtmin[index]);
-               Hoptim_cuts1_mtmax  ->Fill(index, optim_Cuts1_mtmax[index]);
-            }
-         }      
-
          for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
             if(zvv.pt()>optim_Cuts1_met[index] && mindphijmet>optim_Cuts1_mindphi[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
             mon.fillHisto("optim_eventflow1"          ,tags_full,    index, weight);
          }
 
-         std::vector<double> optim_Cuts2_met;
-         std::vector<double> optim_Cuts2_mindphi;
-         std::vector<double> optim_Cuts2_mtmin;
-         std::vector<double> optim_Cuts2_mtmax;
-         if(INIT_PLOT_OPTIM){
-            for(double met=50;met<190;met+=2.0){
-               for(double mindphi=0.0;mindphi<0.80;mindphi+=0.10){
-                  for(double mtmin=220;mtmin<460;mtmin+=20){
-                     for(double mtmax=mtmin+50;mtmax<820;mtmax+=50){
-                        if(mtmax>=820)mtmax=3000;
-                        optim_Cuts2_met    .push_back(met);
-                        optim_Cuts2_mindphi.push_back(mindphi);
-                        optim_Cuts2_mtmin  .push_back(mtmin);
-                        optim_Cuts2_mtmax  .push_back(mtmax);
-                     }
-                  }
-               }
-            }
-
-            mon.addHistogram ( new TH1F ("optim_eventflow2"  , ";cut index;yields" ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) );
-            TH1F* Hoptim_cuts2_met     =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_met"    , ";cut index;met"    ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
-            TH1F* Hoptim_cuts2_mindphi =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_mindphi", ";cut index;mindphi",optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
-            TH1F* Hoptim_cuts2_mtmin   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_mtmin"  , ";cut index;mtmin"  ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
-            TH1F* Hoptim_cuts2_mtmax   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_mtmax"  , ";cut index;mtmax"  ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
-            for(unsigned int index=0;index<optim_Cuts2_met.size();index++){
-               Hoptim_cuts2_met    ->Fill(index, optim_Cuts2_met[index]);
-               Hoptim_cuts2_mindphi->Fill(index, optim_Cuts2_mindphi[index]);
-               Hoptim_cuts2_mtmin  ->Fill(index, optim_Cuts2_mtmin[index]);
-               Hoptim_cuts2_mtmax  ->Fill(index, optim_Cuts2_mtmax[index]);
-            }
-         }
-      
          for(unsigned int index=0;index<optim_Cuts2_met.size();index++){
             if(redMet>optim_Cuts2_met[index] && mindphijmet>optim_Cuts2_mindphi[index] && mt>optim_Cuts2_mtmin[index] && mt<optim_Cuts2_mtmax[index])
             mon.fillHisto("optim_eventflow2"          ,tags_full,    index, weight);
          }
 
-
-         std::vector<double> optim_Cuts3_pt;                                                                                                                                                                                                        
-         std::vector<double> optim_Cuts3_deta;                                                                                                                                                                                                      
-         std::vector<double> optim_Cuts3_imass;                                                                                                                                                                                                     
-         if(INIT_PLOT_OPTIM){
-            for(double pt=20;pt<50;pt+=5.0){                                                                                                                                                                                                           
-               for(double deta=2.0;deta<5.0;deta+=0.5){                                                                                                                                                                                                
-                  for(double imass=200;imass<600;imass+=50){                                                                                                                                                                                           
-                     optim_Cuts3_pt   .push_back(pt);                                                                                                                                                                                               
-                     optim_Cuts3_deta .push_back(deta);                                                                                                                                                                                             
-                     optim_Cuts3_imass.push_back(imass);                                                                                                                                                                                            
-                  }                                                                                                                                                                                                                                    
-               }                                                                                                                                                                                                                                       
-            }               
-
-            mon.addHistogram ( new TH1F ("optim_eventflow3"  , ";cut index;yields" ,optim_Cuts3_pt.size(),0,optim_Cuts3_pt.size()) );                                                                                                        
-            TH1F* Hoptim_cuts3_pt     = (TH1F*) mon.addHistogram( new TH1F ("optim_cut3_pt"     , ";cut index;pt"     ,optim_Cuts3_pt.size(),0,optim_Cuts3_pt.size()) );
-            TH1F* Hoptim_cuts3_deta   = (TH1F*) mon.addHistogram(  new TH1F ("optim_cut3_deta",    ";cut index;deta"   ,optim_Cuts3_pt.size(),0,optim_Cuts3_pt.size()) );
-            TH1F* Hoptim_cuts3_imass  = (TH1F*) mon.addHistogram(  new TH1F ("optim_cut3_imass"  , ";cut index;imass"  ,optim_Cuts3_pt.size(),0,optim_Cuts3_pt.size()) ) ;
-            for(unsigned int index=0;index<optim_Cuts3_pt.size();index++){                                                                                                                                                                             
-               Hoptim_cuts3_pt    ->Fill(index, optim_Cuts3_pt   [index]);                                                                                                                                                                              
-               Hoptim_cuts3_deta  ->Fill(index, optim_Cuts3_deta [index]);                                                                                                                                                                              
-               Hoptim_cuts3_imass ->Fill(index, optim_Cuts3_imass[index]);                                                                                                                                                                              
+	 if(PassLeptonIn && PassJetVeto && PassBJetVeto && zvv.pt()>=50){
+            for(unsigned int index=0;index<optim_Cuts3_pt.size();index++){
+               if(phys.jets.size()<2 || phys.jets [0].pt()<optim_Cuts3_pt[index] || phys.jets [1].pt()<optim_Cuts3_pt[index])continue;
+               if(VBFdEta>optim_Cuts3_deta[index] && VBFSyst.M()>optim_Cuts3_imass[index])
+               mon.fillHisto("optim_eventflow3"          ,tags_full,    index, weight);
             }
          }
-     
-         for(unsigned int index=0;index<optim_Cuts3_pt.size();index++){
-            if(!PassLeptonIn || !PassJetVeto || !PassBJetVeto)continue;
-            if(zvv.pt()<50)continue;
-            if(phys.jets.size()<2 || phys.jets [0].pt()<optim_Cuts3_pt[index] || phys.jets [1].pt()<optim_Cuts3_pt[index])continue;
-            if(VBFdEta>optim_Cuts3_deta[index] && VBFSyst.M()>optim_Cuts3_imass[index])
-            mon.fillHisto("optim_eventflow3"          ,tags_full,    index, weight);
-         }
-
-         if(INIT_PLOT_OPTIM)INIT_PLOT_OPTIM=false;
       }
 
 
@@ -1369,9 +1372,14 @@ int main(int argc, char* argv[])
 
       //##############################################   EVENT LOOP ENDS   ##############################################
   }printf("\n"); 
-  //all done with the events file
   file->Close();
-  
+ 
+
+  //##############################################
+  //########     SAVING HISTO TO FILE     ########
+  //##############################################
+
+ 
   //save control plots to file
   outUrl += "/";
   outUrl += gSystem->BaseName(url);
