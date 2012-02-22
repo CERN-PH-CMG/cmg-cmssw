@@ -108,6 +108,8 @@ for proc in procList :
             except:
 		split = 1
 
+            if(split>len(allfiles)):split = len(allfiles)
+
             NFilesToMerge = len(allfiles)//split
  
             startFile = 0
