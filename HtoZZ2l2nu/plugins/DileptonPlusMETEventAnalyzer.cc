@@ -139,6 +139,8 @@ void DileptonPlusMETEventAnalyzer::saveMCtruth(const edm::Event &event, const ed
   ev.puWeight = 1.0;
   if(event.isRealData())  return;
 
+
+
   //pileup
   edm::Handle<float> puWeightHandle;
   event.getByLabel(objConfig_["Generator"].getParameter<edm::InputTag>("puReweight"), puWeightHandle );
@@ -218,33 +220,31 @@ void DileptonPlusMETEventAnalyzer::saveMCtruth(const edm::Event &event, const ed
 	  ev.nmcparticles++;
 	}
     }
-  
+   
   //mc truth channel
   if(isHiggsEvent) ev.mccat=HIGGS;
   else             ev.mccat=assignPhysicsChannel(hGen);
 
+
   //add the generator level jets
-  int ngenjets(0);
   edm::Handle<edm::View<reco::Candidate> > genJetsH;
   event.getByLabel(objConfig_["Generator"].getParameter<edm::InputTag>("genJets"), genJetsH );
-  for(size_t ijet=0; ijet<genJetsH.product()->size(); ijet++)
-    {
+//  if(!genJetsH.isValid())return;
+  for(size_t ijet=0; ijet<genJetsH.product()->size(); ijet++){
       reco::CandidatePtr gjIt = genJetsH->ptrAt(ijet);
       if(gjIt->pt()<10) continue;
       
       //remove overlaps with leptons
       bool overlap(false);
-      for(int imcpart=0; imcpart<ev.nmcparticles; imcpart++)
-	{
+      for(int imcpart=0; imcpart<ev.nmcparticles; imcpart++){
 	  int id=fabs(ev.mc_id[imcpart]);
 	  if(id!=11 && id!=13 && id!=15) continue;
 	  LorentzVector p4(ev.mc_px[imcpart],ev.mc_py[imcpart],ev.mc_pz[imcpart],ev.mc_en[imcpart]);
 	  double dr = deltaR(p4,gjIt->p4());
 	  if(dr<0.4) overlap=true;
-	}
+      }
       if(overlap) continue;
       
-      ngenjets++;
       ev.mc_px[ev.nmcparticles]=gjIt->px();  
       ev.mc_py[ev.nmcparticles]=gjIt->py();  
       ev.mc_pz[ev.nmcparticles]=gjIt->pz(); 
@@ -258,12 +258,11 @@ void DileptonPlusMETEventAnalyzer::saveMCtruth(const edm::Event &event, const ed
 //
 void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::EventSetup &iSetup) 
 {
-
   try{
     //event summary to be filled
     summaryHandler_.resetStruct();
-    ZZ2l2nuSummary_t &ev = summaryHandler_.getEvent();
 
+    ZZ2l2nuSummary_t &ev = summaryHandler_.getEvent();
 
     //pfmet
     Handle<View<Candidate> > hMET;
@@ -276,7 +275,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.event  = event.id().event();
     saveMCtruth(event, iSetup );    
     
-
     //
     // trigger
     //
@@ -479,7 +477,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     if(ev.cat==UNKNOWN) return;
 
 
-
     //
     // JET SELECTION
     //
@@ -536,8 +533,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
       }
 
 
-    
-
     //
     // MET SELECTION
     //
@@ -550,10 +545,11 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //pseudo-mets
     std::vector<double> sumEts; 
     std::vector<LorentzVector>  clusteredMets;
+
     try{
-      
       edm::Handle< std::vector<double> > sumEtsH;
       event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("sumEtSources"),sumEtsH);
+
       if(sumEtsH.isValid())
 	{
 	  ev.sumEt = (*sumEtsH)[0];              ev.sumEtcentral = (*sumEtsH)[3];
@@ -562,7 +558,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	  ev.primVertexSumEt = (*sumEtsH)[6];    ev.primVertexChSumEt = (*sumEtsH)[7];    ev.primVertexNeutSumEt = (*sumEtsH)[8];
 	  ev.otherVertexSumEt = (*sumEtsH)[9];   ev.otherVertexChSumEt = (*sumEtsH)[10];  ev.otherVertexNeutSumEt = (*sumEtsH)[11];
 	}
-      
+
       for(size_t i=0; i<clusteredMetSources.size(); i++)
 	{
 	  edm::Handle< reco::PFMET > clustMetH;
@@ -586,13 +582,13 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	LorentzVector dilP4=dilepton[0]->p4()+dilepton[1]->p4();
 	if( fabs(dilP4.mass()-91)<15 ) ev.pass +=5000;
       }
-    
+
     // finish event summary
     summaryHandler_.fillTree();
-    
   }catch(std::exception &e){
     std::cout << "[DileptonPlusMETEventAnalyzer][analyze] failed with " << e.what() << std::endl;
   }
+
 
 }
 

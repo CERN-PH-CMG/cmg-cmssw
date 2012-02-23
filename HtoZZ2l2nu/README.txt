@@ -15,14 +15,14 @@ sh DUPLICATEDFILESFOUND
 #
 # create pat-tuples
 #
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_mc_cfg.py        -castor=patdir" -R "tmp>5000" -n 5 -s 2nd -d aoddir
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_data_ee_cfg.py   -castor=patdir" -R "tmp>5000" -n 1 -s 2nd -d aoddir -t DoubleEle
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_data_mumu_cfg.py -castor=patdir" -R "tmp>5000" -n 1 -s 2nd -d aoddir -t DoubleMu
+runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -R "tmp>5000" -n 5 -s 2nd -d aoddir -t MC_            -p "-castor=patdir -cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_mc_cfg.py"
+runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -R "tmp>5000" -n 5 -s 2nd -d aoddir -t Data_DoubleEle -p "-castor=patdir -cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_data_ee_cfg.py"
+runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -R "tmp>5000" -n 5 -s 2nd -d aoddir -t Data_DoubleMu  -p "-castor=patdir -cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_data_mumu_cfg.py"
 
 #
 # create ntuples
 #
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/querten/12_02_20_HZZ2l2v_ntuples/split" -d patdir -s 8nh -n 10
+runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -n 10 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/querten/12_02_20_HZZ2l2v_ntuples/split"
 
 #
 # merge the ntuples

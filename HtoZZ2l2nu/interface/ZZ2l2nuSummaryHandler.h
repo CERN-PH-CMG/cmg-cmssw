@@ -14,7 +14,8 @@
 
 #endif
 
-#define MAXPARTICLES 25
+#define MAXPARTICLES 50
+#define MAXMCPARTICLES 250
 struct ZZ2l2nuSummary_t
 {
   enum HiggsPtWeights{ hKfactor, hKfactor_renUp, hKfactor_renDown, hKfactor_factUp, hKfactor_factDown };
@@ -74,7 +75,7 @@ struct ZZ2l2nuSummary_t
   //gen level event
   Float_t h_px, h_py, h_pz, h_en;
   Int_t nmcparticles;
-  Float_t mc_px[MAXPARTICLES],mc_py[MAXPARTICLES],mc_pz[MAXPARTICLES],mc_en[MAXPARTICLES]; Int_t mc_id[MAXPARTICLES];
+  Float_t mc_px[MAXMCPARTICLES],mc_py[MAXMCPARTICLES],mc_pz[MAXMCPARTICLES],mc_en[MAXMCPARTICLES]; Int_t mc_id[MAXMCPARTICLES];
 };
 
 class ZZ2l2nuSummaryHandler{
