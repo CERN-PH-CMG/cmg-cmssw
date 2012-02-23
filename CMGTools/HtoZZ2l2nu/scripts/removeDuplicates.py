@@ -9,7 +9,7 @@ def checkInputFile(url):
     if(url.startswith('/store')==True):
        url= 'root://eoscms//eos/cms'+url
     command_out = commands.getstatusoutput("root -l -b -q " + url)
-    if(command_out[1].find("Error")>=0 or command_out[1].find("Corrupted")>=0):return False
+    if(command_out[1].find("Error")>=0 or command_out[1].find("probably not closed")>=0 or command_out[1].find("Corrupted")>=0):return False
     return True
 
 
