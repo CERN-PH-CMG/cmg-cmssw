@@ -3,67 +3,51 @@ import FWCore.ParameterSet.Config as cms
 ##
 ## dilepton filters
 ##
-def addDileptonFilters(process):
+def addDileptonFilters(process,postfix='PFlow'):
 
-    #di-muons
-    process.mumuPreselectionCounter = cms.EDProducer("EventCountProducer")
-    process.mumuSelectionCounter = process.mumuPreselectionCounter.clone()
-    process.mumuCandidates = cms.EDProducer("CandViewShallowCloneCombiner",
-                                            decay = cms.string('selectedPatMuonsPFlow selectedPatMuonsPFlow'),
-                                            cut = cms.string('mass>10 && daughter(0).pt > 20 && daughter(1).pt >20'),
-                                            checkCharge = cms.bool(False)
-                                            )
-    process.mumuCandidateCounter = cms.EDFilter("CandViewCountFilter", src = cms.InputTag("mumuCandidates"), minNumber = cms.uint32(1))
-    process.mumuCandidateSequence = cms.Sequence( process.mumuPreselectionCounter *
-                                                  process.mumuCandidates *
-                                                  process.mumuCandidateCounter *
-                                                  process.mumuSelectionCounter
-                                                  )
-
-    #di-electrons
-    process.eePreselectionCounter = process.mumuPreselectionCounter.clone()
-    process.eeSelectionCounter = process.mumuPreselectionCounter.clone()
-    process.eeCandidates = cms.EDProducer("CandViewShallowCloneCombiner",
-                                     decay = cms.string('selectedPatElectronsPFlow selectedPatElectronsPFlow'),
-                                     cut = cms.string('mass>10 && daughter(0).pt >20 && daughter(1).pt >20'),
-                                     checkCharge = cms.bool(False)
-                                     )
-    process.eeCandidateCounter = cms.EDFilter("CandViewCountFilter", src = cms.InputTag("eeCandidates"), minNumber = cms.uint32(1))
-    process.eeCandidateSequence = cms.Sequence( process.eePreselectionCounter *
-                                                process.eeCandidates *
-                                                process.eeCandidateCounter *
-                                                process.eeSelectionCounter
+    #leptons
+    process.llPreselectionCounter = cms.EDProducer("EventCountProducer")
+    process.llSelectionCounter = process.llPreselectionCounter.clone()
+    process.lCandidates = cms.EDFilter("CandViewRefSelector",
+                                       src = cms.InputTag("particleFlow"),
+                                       cut = cms.string("(abs(pdgId())==11 || abs(pdgId())==13) && pt>20")
+                                       )
+    process.lCandCounter = cms.EDFilter("CandViewCountFilter", src = cms.InputTag("lCandidates"), minNumber = cms.uint32(2))
+    process.llCandidates = cms.EDProducer("CandViewShallowCloneCombiner",
+                                          decay = cms.string('lCandidates lCandidates'),
+                                          cut = cms.string('mass>10'),
+                                          checkCharge = cms.bool(False)
+                                          )
+    process.llCandidateCounter = cms.EDFilter("CandViewCountFilter", src = cms.InputTag("llCandidates"), minNumber = cms.uint32(1))
+    process.llCandidateSequence = cms.Sequence( process.llPreselectionCounter *
+                                                process.lCandidates *
+                                                process.lCandCounter *
+                                                process.llCandidates *
+                                                process.llCandidateCounter *
+                                                process.llSelectionCounter
                                                 )
-
-    #electron-muon
-    process.emuPreselectionCounter = process.mumuPreselectionCounter.clone()
-    process.emuSelectionCounter = process.mumuPreselectionCounter.clone()
-    process.emuCandidates = cms.EDProducer("CandViewShallowCloneCombiner",
-                                           decay = cms.string('selectedPatElectronsPFlow selectedPatMuonsPFlow'),
-                                           cut = cms.string('mass>10 && daughter(0).pt >20 && daughter(1).pt >20'),
-                                           checkCharge = cms.bool(False)
-                                           )
-    process.emuCandidateCounter = cms.EDFilter("CandViewCountFilter", src = cms.InputTag("emuCandidates"), minNumber = cms.uint32(1))
-    process.emuCandidateSequence = cms.Sequence( process.emuPreselectionCounter*
-                                                 process.emuCandidates*
-                                                 process.emuCandidateCounter*
-                                                 process.emuSelectionCounter)
-
+    print " *** ll CandidateSequences is defined"
+    
+    
+    
     #photons
-    process.photonPreselectionCounter = process.mumuPreselectionCounter.clone()
-    process.photonSelectionCounter = process.mumuPreselectionCounter.clone()
-    process.selectedPatPhotons = cms.EDFilter("PATPhotonSelector",
-                                              src = cms.InputTag("patPhotons"),
-                                              cut = cms.string("et>20 && abs(eta)<2.4 && (abs(eta)<1.4442|| abs(eta)>1.566) && !hasPixelSeed && trkSumPtSolidConeDR04<5 && ecalRecHitSumEtConeDR04<10 && hcalTowerSumEtConeDR04<5")  
-                                              )
-    process.countPatPhotons = cms.EDFilter("PATCandViewCountFilter",
-                                           minNumber = cms.uint32(1),
-                                           maxNumber = cms.uint32(999999),
-                                           src = cms.InputTag("selectedPatPhotons")
-                                           )
-    process.photonCandidateSequence = cms.Sequence( process.photonPreselectionCounter*
-                                                    process.selectedPatPhotons*
-                                                    process.countPatPhotons*
-                                                    process.photonSelectionCounter )
+#    process.photonPreselectionCounter = process.llPreselectionCounter.clone()
+#    process.photonSelectionCounter = process.llPreselectionCounter.clone()
+#    process.photonCandidates = cms.EDFilter("GenericPFCandidateSelector",
+#                                            src = cms.InputTag("pfAllPhotonsPFlow"),
+#                                            cut = cms.string("et>20 && abs(eta)<2.4 && (abs(eta)<1.4442|| abs(eta)>1.566) && "
+#                                                             "photonRef.isNonnull && "
+#                                                             "photonRef.hasPixelSeed && "
+#                                                             "photonRef.trkSumPtSolidConeDR03<5 && photonRef.ecalRecHitSumEtConeDR03<10 && photonRef.hcalTowerSumEtConeDR03<5")  
+#                                            )
+#    process.countPhotons = cms.EDFilter("CandViewCountFilter",
+#                                        minNumber = cms.uint32(1),
+#                                        maxNumber = cms.uint32(999999),
+#                                        src = cms.InputTag("photonCandidates")
+#                                        )
+#    process.photonCandidateSequence = cms.Sequence( process.photonPreselectionCounter*
+#                                                    process.photonCandidates*
+#                                                    process.countPhotons*
+#                                                    process.photonSelectionCounter )
 
-    print " *** {mumu,ee,emu,photon}CandidateSquences created"
+#    process.photonPath = cms.Path(process.startCounter * process.photonCandidateSequence * process.patDefaultSequence )
