@@ -19,9 +19,6 @@ process.TFileService = cms.Service("TFileService", fileName = cms.string(outputF
 # our MET producer
 from CMGTools.HtoZZ2l2nu.ClusteredPFMetProducer_cfi import ClusteredPFMetProducer
 process.ClusteredPFMetProducer = ClusteredPFMetProducer.clone()
-process.ClusteredPFMetProducerPt5 = ClusteredPFMetProducer.clone( minJetPt = cms.double(5.0) )
-process.ClusteredPFMetProducerPt10 = ClusteredPFMetProducer.clone( minJetPt = cms.double(10.0) )
-process.ClusteredPFMetSequence = cms.Sequence(process.ClusteredPFMetProducer*process.ClusteredPFMetProducerPt5*process.ClusteredPFMetProducerPt10)
 
 #pileup normalization
 from CMGTools.HtoZZ2l2nu.PileupNormalizationProducer_cfi import puWeights
@@ -85,7 +82,7 @@ else:
                                         )
     
 #the path to execute
-process.p = cms.Path(process.ClusteredPFMetSequence*process.puWeightSequence*process.evAnalyzer)
+process.p = cms.Path(process.ClusteredPFMetProducer*process.puWeightSequence*process.evAnalyzer)
 
 
 # message logger
