@@ -147,10 +147,10 @@ BaseMetSelection = cms.PSet( source = cms.InputTag("patMETsPFlow"),
                                                            "ClusteredPFMetProducer:cleaned",              #4 
                                                            "ClusteredPFMetProducer:assocCharged",         #5 
                                                            "ClusteredPFMetProducer:assocWithFwd",         #6
-                                                           "ClusteredPFMetProducerPt5:assoc",             #7
-                                                           "ClusteredPFMetProducerPt5:assocWithFwd",      #8
-                                                           "ClusteredPFMetProducerPt10:assoc",            #9
-                                                           "ClusteredPFMetProducerPt10:assocWithFwd",     #10
+                                                           "ClusteredPFMetProducer:assoc",             #7  //to be replaced by something else
+                                                           "ClusteredPFMetProducer:assocWithFwd",      #8  //to be replaced by something else
+                                                           "ClusteredPFMetProducer:assoc",             #9  //to be replaced by something else
+                                                           "ClusteredPFMetProducer:assocWithFwd",      #10 //to be replaced by something else
                                                            "ClusteredPFMetProducer:assocBeta",            #11
                                                            "ClusteredPFMetProducer:assocWithFwdBeta"),    #12
                              pfCands = cms.InputTag("particleFlow"),
