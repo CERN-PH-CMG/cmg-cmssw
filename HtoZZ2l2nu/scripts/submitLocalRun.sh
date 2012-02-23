@@ -67,7 +67,14 @@ then
 fi
 
 df -H
-cmsRun ${CFG} ${INPUTDIR} ${LOCALOUT} ${FFILE} ${STEP} 
+cmsRun ${CFG} ${INPUTDIR} ${LOCALOUT} ${FFILE} ${STEP}
+
+#check the exit code of cmsRun and return if error
+if [ $? -ne 0 ]
+then
+    exit 1
+fi 
+
 ls -lth ${LOCALOUT}
 df -H
 

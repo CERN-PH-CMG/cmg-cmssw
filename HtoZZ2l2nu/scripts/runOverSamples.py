@@ -83,8 +83,6 @@ for proc in procList :
                 idir=idir+1
                 filenames=fillFromCastor(dir,0,-1,False)
                 nfiles=len(filenames)
-                for f in filenames :
-		        print('will use file: --> ' + f)
 
                 njobs=1
 		sleep=0;
