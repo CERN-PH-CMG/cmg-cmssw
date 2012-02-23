@@ -111,6 +111,7 @@ for proc in procList :
             if(split>len(allfiles)):split = len(allfiles)
 
             NFilesToMerge = len(allfiles)//split
+	    NFilesToMergeRemains = len(allfiles)%split
  
             startFile = 0
 	    endFile = 0	    
@@ -126,8 +127,11 @@ for proc in procList :
 	            ifile=0
 		
 		    startFile = endFile
-		    endFile   = (s+1)*NFilesToMerge
-		    if(s==split-1): endFile = len(allfiles)
+		    endFile   = endFile + NFilesToMerge
+		    if(NFilesToMergeRemains>0):
+		    	endFile+=1
+			NFilesToMergeRemains-=1
+
 	            for i in range(startFile,endFile):
 			f = allfiles[i]
 	                ifile=ifile+1
