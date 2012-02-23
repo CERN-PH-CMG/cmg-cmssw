@@ -46,13 +46,13 @@ from CMGTools.HtoZZ2l2nu.TriggerSequences_cff import addTriggerSequence
 if(not runOnMC):
     addTriggerSequence(process,trigFilter)
 
+# dilepton filter
+from CMGTools.HtoZZ2l2nu.DileptonFilterSequences_cff import addDileptonFilters
+addDileptonFilters(process)
+
 # pat sequences
 from CMGTools.HtoZZ2l2nu.PatSequences_cff import addPatSequence
 addPatSequence(process,runOnMC,True)
-
-# dilepton filters
-from CMGTools.HtoZZ2l2nu.DileptonFilterSequences_cff import addDileptonFilters
-addDileptonFilters(process)
 
 # event counters
 process.startCounter = cms.EDProducer("EventCountProducer")
@@ -60,31 +60,23 @@ process.endCounter = process.startCounter.clone()
 
 # define the paths
 if(runOnMC):
-    process.eePath = cms.Path(process.startCounter * process.patDefaultSequence * process.eeCandidateSequence )
-    process.mumuPath  = cms.Path(process.startCounter * process.patDefaultSequence * process.mumuCandidateSequence )
-    process.emuPath  = cms.Path(process.startCounter * process.patDefaultSequence * process.emuCandidateSequence )
-#    process.photonPath = cms.Path(process.startCounter * process.patDefaultSequence * process.photonCandidateSequence )
+    process.llPath = cms.Path(process.startCounter * process.llCandidateSequence * process.patDefaultSequence )
 else:
-    process.eePath = cms.Path(process.startCounter * process.preselection * process.trigSequence * process.patDefaultSequence * process.eeCandidateSequence )
-    process.mumuPath  = cms.Path(process.startCounter * process.preselection * process.trigSequence * process.patDefaultSequence * process.mumuCandidateSequence )
-    process.emuPath  = cms.Path(process.startCounter * process.preselection * process.trigSequence * process.patDefaultSequence * process.emuCandidateSequence )
-#    process.photonPath  = cms.Path(process.startCounter * process.preselection * process.trigSequence * process.patDefaultSequence * process.photonCandidateSequence )
+    process.llPath = cms.Path(process.startCounter * process.preselection * process.trigSequence * process.llCandidateSequence * process.patDefaultSequence )
 process.e = cms.EndPath( process.endCounter*process.out )
 
 # all done, schedule the execution
 if(runOnMC):
     from CMGTools.HtoZZ2l2nu.GeneratorLevelSequences_cff import addGeneratorLevelSequence
     addGeneratorLevelSequence(process)
-    #process.schedule = cms.Schedule( process.genLevelPath, process.eePath, process.mumuPath, process.emuPath, process.photonPath, process.e )
-    process.schedule = cms.Schedule( process.genLevelPath, process.eePath, process.mumuPath, process.emuPath, process.e )
+    process.schedule = cms.Schedule( process.genLevelPath, process.llPath, process.e )
 else :
-    #process.schedule = cms.Schedule( process.eePath, process.mumuPath, process.emuPath, process.photonPath, process.e )
-    process.schedule = cms.Schedule( process.eePath, process.mumuPath, process.emuPath, process.e )
+    process.schedule = cms.Schedule( process.llPath, process.e )
 
 # event output
 from CMGTools.HtoZZ2l2nu.OutputConfiguration_cff import configureOutput
 configureOutput(process)
-configureOutput(process,selPaths=['eePath', 'mumuPath', 'emuPath'])
+configureOutput(process,selPaths=['llPath'])
 process.out.fileName = cms.untracked.string(outFile)
 
 print "Scheduling the following modules"
