@@ -338,9 +338,9 @@ void DijetMass_chiyoung_2Vtag(){
     // Fit to data    
     TF1 *fit = new TF1("fit",fitQCD1,mMin,2100.0,3); // 3 Par. Fit
     gStyle->SetOptFit(1111); 
-    fit->SetParameter(0,1.73132e-05);
-    fit->SetParameter(1,6.80678e+00);
-    fit->SetParameter(2,6.33620e+00);
+    fit->SetParameter(0,1.73132e-04);
+    fit->SetParameter(1,18.80678e+00);
+    fit->SetParameter(2,3.33620e+00);
     fit->SetLineWidth(2);
     fit->SetLineColor(4);
 
@@ -736,10 +736,10 @@ void DijetMass_chiyoung_2Vtag(){
 
    g->Draw("PZ");
 
-   //gr_diquark1->Draw("same");
-   gr_diquark2->Draw("same");
-   //gr_wprime1->Draw("same");
-   //   gr_wprime2->Draw("same");
+   //gr_diquark1->Draw("csame");
+   gr_diquark2->Draw("csame");
+   //gr_wprime1->Draw("csame");
+   //   gr_wprime2->Draw("csame");
 
    TPaveText *pt_c5_wprime1 = new TPaveText(0.35,0.7,0.50,0.8,"NDC");
    pt_c5_wprime1->SetFillColor(0);
@@ -897,8 +897,8 @@ void DijetMass_chiyoung_2Vtag(){
    hDiff->GetXaxis()->SetRangeUser(890.,2100.);
    hDiff->GetYaxis()->SetRangeUser(-1.5,3.);
    hDiff->Draw("APZ");
-   //gr_diquark1_3->Draw("Lsame");
-   gr_diquark2_3->Draw("Lsame");
+   //gr_diquark1_3->Draw("csame");
+   gr_diquark2_3->Draw("csame");
    l = new TLine(890, 0.0, 2100, 0.0);
    l->SetLineStyle(2);
    l->Draw("same");
@@ -980,8 +980,8 @@ void DijetMass_chiyoung_2Vtag(){
    hratio->Draw("APZ");
    l->Draw("same");
 	
-   //gr_diquark1_2->Draw("Lsame");
-   gr_diquark2_2->Draw("Lsame");
+   //gr_diquark1_2->Draw("csame");
+   gr_diquark2_2->Draw("csame");
    
 
    TPaveText *pt_c10_diquark1 = new TPaveText(0.2,0.5,0.35,0.6, "NDC");
@@ -1053,10 +1053,10 @@ void DijetMass_chiyoung_2Vtag(){
 
    pave_fit->Draw("same");
 
-   //gr_diquark1->Draw("same");
-   gr_diquark2->Draw("same");
-   //gr_wprime1->Draw("same");
-   //   gr_wprime2->Draw("same");
+   //gr_diquark1->Draw("csame");
+   gr_diquark2->Draw("csame");
+   //gr_wprime1->Draw("csame");
+   //   gr_wprime2->Draw("csame");
 
    TPaveText *pt_c11_wprime1 = new TPaveText(0.15,0.25,0.30,0.4,"NDC");
    pt_c11_wprime1->SetFillColor(0);
