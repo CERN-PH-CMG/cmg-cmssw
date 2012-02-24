@@ -22,11 +22,14 @@ using namespace std;
 using namespace fastjet;
 
 
+bool pf2patFastJetAlgoWrapperJetPtOrdering (reco::PFJet i,reco::PFJet j) { return (i.pt()>j.pt()); }
+
 namespace pf2pat {
 
 
 class FastJetAlgoWrapper{
-       public:
+       public:          
+
 	  typedef std::vector< fastjet::PseudoJet > PseudoJetCollection;
 	  typedef PseudoJetCollection::const_iterator PJI;
 
@@ -185,6 +188,9 @@ const std::vector< reco::PFJet >& FastJetAlgoWrapper::fastJetToReco() {
   for(PJI i=output_.begin(); i!=output_.end(); ++i) {
     jetCollection_.push_back( makeJet( *i ) ); 
   }
+ 
+  //order the jet vector
+  std::sort(jetCollection_.begin(), jetCollection_.end(), pf2patFastJetAlgoWrapperJetPtOrdering); 
   return jetCollection_;
 }
 
