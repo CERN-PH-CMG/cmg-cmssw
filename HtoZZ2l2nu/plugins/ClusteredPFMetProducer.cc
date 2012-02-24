@@ -267,8 +267,9 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
       std::vector<reco::PFJet> inputSeedJetTemp;
       inputSeedJetTemp.insert(inputSeedJetTemp.end(), vtxJets[iVtx].begin(), vtxJets[iVtx].end());
       inputSeedJetTemp.insert(inputSeedJetTemp.end(), inputSeedJetForUnassocPart.begin(), inputSeedJetForUnassocPart.end() );
-      std::vector<reco::PFJet> vtxJetPlusNeutralTemp = jetProducer_.produce(inputSeedJetTemp, 2.);
-      for(unsigned int i=0;i<vtxJetPlusNeutralTemp.size();i++){if(vtxJetPlusNeutralTemp[i].chargedMultiplicity()>0)vtxJetsPlusNeutral[iVtx].push_back(vtxJetPlusNeutralTemp[i]);}
+      vtxJetsPlusNeutral[iVtx] = jetProducer_.produce(inputSeedJetTemp, 2.);
+//      std::vector<reco::PFJet> vtxJetPlusNeutralTemp = jetProducer_.produce(inputSeedJetTemp, 2.);
+//      for(unsigned int i=0;i<vtxJetPlusNeutralTemp.size();i++){if(vtxJetPlusNeutralTemp[i].chargedMultiplicity()>0)vtxJetsPlusNeutral[iVtx].push_back(vtxJetPlusNeutralTemp[i]);}
 
 //      printf("### Inputs:\n");
 //      for(unsigned int i=0;i<inputSeedJetAssociatedPartToiVtx.size();i++){printf("%3i --> Pt%4f Eta%+6.3f Phi%+6.3f NConstituent%3i\n", i, inputSeedJetAssociatedPartToiVtx[i].pt(), inputSeedJetAssociatedPartToiVtx[i].eta(), inputSeedJetAssociatedPartToiVtx[i].phi(),(int) inputSeedJetAssociatedPartToiVtx[i].getPFConstituents().size());}
@@ -323,6 +324,7 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
               if(vertexAssociationMasks_[iPFCand]<=-1)continue; //skip all unassociated charged particles
               //BetaCorrection --> Removing 50% of the energy of the charged inside the jets (assuming that there is twice more charged than neutral from PU inside this jet)
               for(unsigned int i=0;i<vtxJetsPlusNeutral[iVtx].size();i++){
+                 if(vtxJetsPlusNeutral[iVtx][i].chargedMultiplicity()<=0)continue;
                  met_OvtxCharged[iVtx] += candRef->p4();
                  set_OvtxCharged[iVtx] += candRef->pt();
 
@@ -341,6 +343,7 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
 
      //Now Loop on Jet collection in order to build MET vectors related to the neutral particles associated to that vertex
      for(unsigned int i=0;i<vtxJetsPlusNeutral[iVtx].size();i++){
+        if(vtxJetsPlusNeutral[iVtx][i].chargedMultiplicity()<=0)continue;
         for(unsigned int j=0;j<vtxJetsPlusNeutral[iVtx][i].getPFConstituents().size();j++){
            if(vtxJetsPlusNeutral[iVtx][i].getPFConstituents()[j]->charge()==0){
               //neutral constituent associated to this charged jet
