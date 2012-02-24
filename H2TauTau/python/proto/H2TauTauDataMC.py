@@ -152,8 +152,10 @@ class H2TauTauDataMC( AnalysisDataMC ):
         for root,dirs,files in os.walk(directory, followlinks=True):
             if root is directory:
                 continue
-            if os.path.basename(root) not in self.selComps:
-                print root,'is not selected'
+            compName = os.path.basename(root)
+            if compName not in self.selComps:
+                if not compName.find('_Chunk'):
+                    print root,'is not selected'
                 continue
             matchingFiles = [file for file in files if fnmatch(file, self.filePattern)]
             if len(matchingFiles)!=1:
