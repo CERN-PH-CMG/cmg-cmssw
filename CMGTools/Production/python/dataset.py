@@ -3,9 +3,11 @@
 import os
 import pprint
 import re
+import pickle
 
 from CMGTools.Production.castorBaseDir import castorBaseDir
 import CMGTools.Production.eostools as castortools
+
 
 
 class BaseDataset( object ):
@@ -17,7 +19,7 @@ class BaseDataset( object ):
         self.buildListOfFiles( self.pattern )
         self.extractFileSizes()
         self.buildListOfBadFiles()
-
+     
     def buildListOfFiles( self, pattern ):
         self.files = []
 
@@ -118,18 +120,18 @@ class LocalDataset( BaseDataset ):
 
 class Dataset( BaseDataset ):
     
-    def __init__(self, user, name, pattern='.*root'):
+    def __init__(self, name, user, pattern='.*root'):
         self.lfnDir = castorBaseDir(user) + name
         self.castorDir = castortools.lfnToCastor( self.lfnDir )
         self.maskExists = False
         self.report = None
         # import pdb; pdb.set_trace()
-        super(Dataset, self).__init__(user, name, pattern)
-#        self.buildListOfFiles( pattern )
-#        self.extractFileSizes()
-#        self.maskExists = False
-#        self.report = None
-#        self.buildListOfBadFiles()
+        super(Dataset, self).__init__(name, user, pattern)
+        #        self.buildListOfFiles( pattern )
+        #        self.extractFileSizes()
+        #        self.maskExists = False
+        #        self.report = None
+        #        self.buildListOfBadFiles()
         
     def buildListOfFiles(self, pattern='.*root'):
         '''fills list of files, taking all root files matching the pattern in the castor dir'''
@@ -185,3 +187,57 @@ class Dataset( BaseDataset ):
         print 'Castor path :  ' + self.castorDir
 
 
+def createDataset( user, dataset, pattern,  readcache=False, basedir=None):
+    
+    cachedir =  '/'.join( [os.environ['HOME'],'.cmgdataset'])
+    
+    def cacheFileName(data, user, pattern):
+        cf =  data.replace('/','_')
+        name = '{dir}/{user}%{name}%{pattern}.pck'.format(
+            dir = cachedir,
+            user = user,
+            name = cf,
+            pattern = pattern)
+        return name
+
+    def writeCache(dataset):
+        if not os.path.exists(cachedir):
+            os.mkdir(cachedir)
+        # import pdb; pdb.set_trace()
+        cachename = cacheFileName(dataset.name,
+                                  dataset.user,
+                                  dataset.pattern)
+        pckfile = open( cachename, 'w')
+        pickle.dump(dataset, pckfile)
+
+    def readCache(data, user, pattern):
+        print 'reading cache'
+        cachename = cacheFileName(data, user, pattern)
+        pckfile = open( cachename)
+        dataset = pickle.load(pckfile)      
+        return dataset
+
+    if readcache:
+        try:
+            data = readCache(dataset, user, pattern)
+        except IOError:
+            readcache = False
+    if not readcache:
+        if user == 'CMS':
+            data = CMSDataset( dataset )
+            info = False
+        elif user == 'LOCAL':
+            data = LocalDataset( dataset, basedir, pattern)
+            info = False        
+        else:
+            data = Dataset( dataset, user, pattern)
+        writeCache(data)
+##     if user == 'CMS':
+##         data = CMSDataset( dataset )
+##     elif user == 'LOCAL':
+##         if basedir is None:
+##             basedir = os.environ['CMGLOCALBASEDIR']
+##         data = LocalDataset( dataset, basedir, pattern )
+##     else:
+##         data = Dataset( user, dataset, pattern )
+    return data

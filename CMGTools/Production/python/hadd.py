@@ -1,8 +1,41 @@
 import os
 import pprint
+import pickle
+
+def haddPck(file, odir, idirs):
+    '''add pck files in directories idirs to a directory outdir.
+    All dirs in idirs must have the same subdirectory structure.
+    Each pickle file will be opened, and the corresponding objects added to a destination pickle in odir.
+    '''
+    sum = None
+    for dir in idirs:
+        fileName = file.replace( idirs[0], dir )
+        pckfile = open(fileName)
+        obj = pickle.load(pckfile)
+        if sum is None:
+            sum = obj
+        else:
+            try:
+                sum += obj
+            except TypeError:
+                # += not implemented, nevermind
+                pass
+                
+    oFileName = file.replace( idirs[0], odir )
+    pckfile = open(oFileName, 'w')
+    pickle.dump(sum, pckfile)
+    txtFileName = oFileName.replace('.pck','.txt')
+    txtFile = open(txtFileName, 'w')
+    txtFile.write( str(sum) )
+    txtFile.write( '\n' )
+    txtFile.close()
+    
 
 def hadd(file, odir, idirs):
-    if not file.endswith('.root'):
+    if file.endswith('.pck'):
+        haddPck( file, odir, idirs)
+        return
+    elif not file.endswith('.root'):
         return
     haddCmd = ['hadd']
     haddCmd.append( file.replace( idirs[0], odir ) )
@@ -19,6 +52,7 @@ def haddRec(odir, idirs):
     print 'to', odir 
 
     cmd = ' '.join( ['mkdir', odir])
+    # import pdb; pdb.set_trace()
     # os.system( cmd )
     try:
         os.mkdir( odir )
@@ -53,6 +87,9 @@ def haddChunks(idir):
                 continue
             # print prefix, num
             chunks.setdefault( prefix, list() ).append(filepath)
+    if len(chunks)==0:
+        print 'warning: no chunk found.'
+        return
     pprint.pprint(chunks)
     for comp, chunks in chunks.iteritems():
         odir = '/'.join( [idir, comp] )
