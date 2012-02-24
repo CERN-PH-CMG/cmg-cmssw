@@ -1,6 +1,8 @@
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.statistics.Average import Average
+from CMGTools.RootTools.statistics.Tree import Tree
+from ROOT import TFile
 
 from CMGTools.H2TauTau.proto.analyzers.Regions import H2TauTauRegions
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauOutput import H2TauTauOutput as H2TauTauOutput 
@@ -15,12 +17,28 @@ class H2TauTauEventSorter( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName):
         super(H2TauTauEventSorter,self).__init__(cfg_ana, cfg_comp, looperName)
         self.regions = H2TauTauRegions( self.cfg_ana )
-        # dirName = '/'.join( [self.looperName, self.name] ) 
-        self.output = H2TauTauOutput(  looperName, self.regions,
+        self.output = H2TauTauOutput(  self.dirName, self.regions,
                                        self.cfg_ana.leg1,
                                        self.cfg_ana.leg2 )
-        if self.cfg_comp.name == 'DYJets':
-            self.outputFakes = H2TauTauOutput( looperName + '_Fakes', self.regions,
+        self.treeFile = TFile('/'.join([self.dirName, 'tree.root']), 'recreate')
+        self.tree = Tree('tree','flat ntuple')
+        self.tree.addVar('float', 'vismass')
+        self.tree.addVar('float', 'svfitmass')
+        self.tree.addVar('float', 'l1_pt')
+        self.tree.addVar('float', 'l1_eta')
+        self.tree.addVar('float', 'l2_pt')
+        self.tree.addVar('float', 'l2_eta')
+        self.tree.addVar('float', 'j1_pt')
+        self.tree.addVar('float', 'j1_eta')
+        self.tree.addVar('float', 'j2_pt')
+        self.tree.addVar('float', 'j2_eta')
+        self.tree.book()
+        
+        self.fakes = False
+        if hasattr(self.cfg_comp, 'fakes') and \
+               self.cfg_comp.fakes is True :
+            self.fakes = True
+            self.outputFakes = H2TauTauOutput( looperName + '/Fakes', self.regions,
                                                self.cfg_ana.leg1,
                                                self.cfg_ana.leg2 )
 
@@ -53,7 +71,7 @@ class H2TauTauEventSorter( Analyzer ):
         self.averages['eventWeight'].add(event.eventWeight)
             
         matched = None
-        if self.cfg_comp.name == 'DYJets':
+        if self.fakes:
             genParticles = self.mchandles['genParticles'].product()
             event.genParticles = map( GenParticle, genParticles)
             leg1DeltaR, leg2DeltaR = event.diLepton.match( event.genParticles ) 
@@ -63,6 +81,19 @@ class H2TauTauEventSorter( Analyzer ):
             else:
                 matched = False
 
+        self.tree.s.vismass = event.diLepton.mass()
+        self.tree.s.svfitmass = event.diLepton.massSVFit()
+        self.tree.s.l1_pt = event.diLepton.leg1().pt()
+        self.tree.s.l1_eta = event.diLepton.leg1().eta()
+        self.tree.s.l2_pt = event.diLepton.leg2().pt()
+        self.tree.s.l2_eta = event.diLepton.leg2().eta()
+        if len(event.cleanJets) > 0:
+            self.tree.s.j1_pt = event.cleanJets[0].pt()
+            self.tree.s.j1_eta = event.cleanJets[0].eta()
+        if len(event.cleanJets) > 1:
+            self.tree.s.j2_pt = event.cleanJets[1].pt()
+            self.tree.s.j2_eta = event.cleanJets[1].eta()
+        self.tree.fill()
         
         regionName = self.regions.test( event )
         # print regionName
@@ -79,6 +110,9 @@ class H2TauTauEventSorter( Analyzer ):
 
     def write(self):
         '''Write all histograms to their root files'''
+        super(H2TauTauEventSorter, self).write()
         self.output.Write()
-        if self.cfg_comp.name == 'DYJets':
+        if self.fakes:
             self.outputFakes.Write()
+        self.treeFile.Write()
+        
