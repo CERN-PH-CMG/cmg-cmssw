@@ -4,6 +4,7 @@ from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.DiObject import DiObject
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton
+from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
 
 class DiLeptonAnalyzer( Analyzer ):
 
@@ -41,28 +42,48 @@ class DiLeptonAnalyzer( Analyzer ):
         if len(event.diLeptons) == 0:
             return False
         self.counters.counter('DiLepton').inc('> 0 di-lepton ')
+
+        # testing di-lepton itself
+        selDiLeptons = event.diLeptons
+        selDiLeptons = self.selectDiLeptons( selDiLeptons ) 
+        
         if not self.leptonAccept( event.leptons ):
             return False
         self.counters.counter('DiLepton').inc('lepton accept ')
 
         # testing leg1
-        selDiLeptons = [ diL for diL in event.diLeptons if \
+        selDiLeptons = [ diL for diL in selDiLeptons if \
                          self.testLeg1( diL.leg1() ) ]
         if len(selDiLeptons) == 0:
             return False
         else:
-            self.counters.counter('DiLepton').inc('leg 1 ok.')
+            self.counters.counter('DiLepton').inc('leg1 offline cuts passed')
 
         # testing leg2 
-        selDiLeptons = [ diL for diL in event.diLeptons if \
+        selDiLeptons = [ diL for diL in selDiLeptons if \
                          self.testLeg2( diL.leg2() ) ]
         if len(selDiLeptons) == 0:
             return False
         else:
-            self.counters.counter('DiLepton').inc('leg 2 ok.')
+            self.counters.counter('DiLepton').inc('leg2 offline cuts passed')
 
-        # testing di-lepton itself 
-        selDiLeptons = self.selectDiLeptons( selDiLeptons ) 
+        # trigger matching leg1
+        selDiLeptons = [diL for diL in selDiLeptons if \
+                        self.trigMatched(event, diL.leg1(), 'leg1')]
+        if len(selDiLeptons) == 0:
+            return False
+        else:
+            self.counters.counter('DiLepton').inc('leg1 trig matched')
+        
+        # trigger matching leg2
+        selDiLeptons = [diL for diL in selDiLeptons if \
+                        self.trigMatched(event, diL.leg2(), 'leg2')]
+        if len(selDiLeptons) == 0:
+            return False
+        else:
+            self.counters.counter('DiLepton').inc('leg2 trig matched')
+        
+
         if len(selDiLeptons)==0:
             return False
         elif len(selDiLeptons)==1:
@@ -148,7 +169,6 @@ class DiLeptonAnalyzer( Analyzer ):
                              iso = self.cfg_ana.iso2,
                              sel = sel )
         
-
     def testMuon(self, muon):
         '''Returns True if a muon passes a set of cuts.
         Can be used in testLeg1 and testLeg2, in child classes.'''
@@ -173,3 +193,19 @@ class DiLeptonAnalyzer( Analyzer ):
         '''Returns the best diLepton (the one with highest pt1 + pt2).'''
         return max( diLeptons, key=operator.methodcaller( 'sumPt' ) )
     
+
+    def trigMatched(self, event, leg, legName):
+        if not hasattr( self.cfg_ana, 'triggerMap'):
+            return True
+        path = event.hltPath
+        triggerObjects = event.triggerObjects
+        filters = self.cfg_ana.triggerMap[ path ]
+        filter = None
+        if legName == 'leg1':
+            filter = filters[0]
+        elif legName == 'leg2':
+            filter = filters[1]
+        else:
+            raise ValueError( 'legName should be leg1 or leg2, not {leg}'.format(
+                leg=legName )  )
+        return triggerMatched(leg, triggerObjects, path, filter, dR2Max=0.5)

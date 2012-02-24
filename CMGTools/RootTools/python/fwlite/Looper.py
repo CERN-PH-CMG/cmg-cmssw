@@ -152,18 +152,20 @@ class Looper(object):
     
 if __name__ == '__main__':
 
-
-    import imp
+    import pickle
     import sys
     import os
     
     
     cfgFileName = sys.argv[1]
-    file = open( cfgFileName, 'r' )
-    cfg = imp.load_source( 'cfg', cfgFileName, file)
-
+    pckfile = open( cfgFileName, 'r' )
+    config = pickle.load( pckfile )
     sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
                                  'src/CMGTools/H2TauTau/python/proto/analyzers'] ))
-    looper = Looper( 'New', cfg.selectedComponents[0], cfg.sequence, nPrint = 5)
-    looper.loop(200)
+    sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
+                                 'src/CMGTools/RootTools/python/analyzers'] ))
+    comp = config.components[0]
+    looper = Looper( 'Loop', comp,
+                     config.sequence, nPrint = 5)
+    looper.loop()
     looper.write()

@@ -1,3 +1,4 @@
+import os 
 import logging 
 
 
@@ -25,6 +26,9 @@ class Analyzer(object):
         self.cfg_ana = cfg_ana
         self.cfg_comp = cfg_comp
         self.looperName = looperName
+        self.dirName = '/'.join( [self.looperName, self.name] )
+        os.mkdir( self.dirName )
+
         # this is the main logger corresponding to the looper.
         # each analyzer could also declare its own logger
         self.mainLogger = logging.getLogger( looperName )
@@ -74,7 +78,9 @@ class Analyzer(object):
     def write(self):
         '''Called by Looper.write, for all analyzers.
         Just overload it if you have histograms to write.'''
-        print 'writing not implemented for', self.cfg_ana.name 
+        # print 'writing not implemented for', self.cfg_ana.name 
+        self.counters.write( self.dirName )
+        self.averages.write( self.dirName )
 
     def __str__(self):
         '''A multipurpose printout. Should do the job for most analyzers.'''

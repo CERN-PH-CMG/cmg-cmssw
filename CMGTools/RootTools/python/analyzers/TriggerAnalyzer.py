@@ -14,6 +14,11 @@ class TriggerAnalyzer( Analyzer ):
             'std::vector<cmg::TriggerObject>'
             )
  
+        self.handles['cmgTriggerObjectListSel'] =  AutoHandle(
+            'cmgTriggerObjectListSel',
+            'std::vector<cmg::TriggerObject>'
+            )
+ 
     def beginLoop(self):
         super(TriggerAnalyzer,self).beginLoop()
         self.triggerList = TriggerList( self.cfg_comp.triggers )
@@ -22,18 +27,22 @@ class TriggerAnalyzer( Analyzer ):
     def process(self, iEvent, event):
         self.readCollections( iEvent )
         event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
+        event.triggerObjects = self.handles['cmgTriggerObjectListSel'].product()
         run = iEvent.eventAuxiliary().id().run()
         
         self.counters.counter('Trigger').inc('All events')
-        if not self.triggerList.triggerPassed(event.triggerObject,
-                                              run, self.cfg_comp.isData):
+        passed, hltPath = self.triggerList.triggerPassed(event.triggerObject,
+                                                         run, self.cfg_comp.isData)
+        if not passed:
             return False
+        event.hltPath = hltPath 
         self.counters.counter('Trigger').inc('trigger passed ')
         return True
 
     def write(self):
         print 'writing TriggerAnalyzer'
-        self.triggerList.write( self.looperName )
+        super(TriggerAnalyzer, self).write()
+        self.triggerList.write( self.dirName )
         if self.cfg_comp.isData:
             self.triggerList.computeLumi( self.cfg_comp.json )
         elif self.cfg_comp.isMC is False:
