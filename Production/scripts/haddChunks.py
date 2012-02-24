@@ -5,6 +5,7 @@ from CMGTools.Production.hadd import haddChunks
 
 if __name__ == '__main__':
 
+    import os
     import sys
     from optparse import OptionParser
 
@@ -23,4 +24,16 @@ if __name__ == '__main__':
         print 'provide exactly one directory in argument.'
         sys.exit(1)
 
-    haddChunks(args[0])
+    dir = args[0]
+
+    haddChunks(dir)
+
+    # below, a hack for Colin's analysis. 
+    os.chdir( dir )
+    dy = 'DYJets'
+    if dy in os.listdir('.') and os.environ['USER']=='cbern':
+        fakes = '/'.join([dy,'Fakes'])
+        if os.path.exists( fakes ):
+            os.rename( fakes, '_'.join([dy,'Fakes']))
+        else:
+            print 'warning: DYJets/Fakes not found. Maybe you ran hadd already?'

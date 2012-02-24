@@ -103,7 +103,7 @@ castorBaseDir = castortools.lfnToCastor(cBaseDir.castorBaseDir( options.user ))
 
 for line in ifile.readlines():
     line = line.rstrip()
-    if line[0]!='/': continue 
+    if len(line)==0 or line[0]!='/': continue 
     if pattern.search( line ):
         sampleName = line
         try:

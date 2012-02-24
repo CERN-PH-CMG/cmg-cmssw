@@ -42,10 +42,13 @@ class BatchManager:
         self.parser_.add_option("-n", "--negate", action="store_true",
                                 dest="negate", default=False,
                                 help="create jobs, but does not submit the jobs.")
+        self.parser_.add_option("-b", "--batch", dest="batch",
+                                help="batch command. default is: 'bsub -q 8nh < batchScript.sh'. You can also use 'nohup < ./batchScript.sh &' to run locally.",
+                                default="bsub -q 8nh < .batchScript.sh")
 
         
     def ParseOptions(self):       
-        (self.options_,args) = self.parser_.parse_args()
+        (self.options_,self.args_) = self.parser_.parse_args()
         if self.options_.remoteCopy == None:
             self.remoteOutputDir_ = ""
         else:
@@ -75,14 +78,19 @@ class BatchManager:
                     # the user does not want to delete the root files                          
         self.remoteOutputFile_ = ""
         self.ManageOutputDir()
+        return (self.options_, self.args_)
 
         
-    def PrepareJobs(self, listOfValues ):
+    def PrepareJobs(self, listOfValues, listOfDirNames=None):
         print 'PREPARING JOBS ======== '
         self.listOfJobs_ = []
         print listOfValues
-        for value in listOfValues:
-            self.PrepareJob( value )
+        if listOfDirNames is None:
+            for value in listOfValues:
+                self.PrepareJob( value )
+        else:
+            for value, name in zip( listOfValues, listOfDirNames):
+                self.PrepareJob( value, name )
         print "list of jobs:"
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint( self.listOfJobs_)
@@ -118,13 +126,16 @@ class BatchManager:
         self.mkdir( self.outputDir_ )
  
 
-    def PrepareJob( self, value):
+    def PrepareJob( self, value, dirname=None):
         '''Prepare a job for a given value.
 
         calls PrepareJobUser, which should be overloaded by the user.
         '''
         print 'PrepareJob : %s' % value 
-        jobDir = '%s/Job_%s' % (self.outputDir_, value)
+        dname = dirname
+        if dname  is None:
+            dname = 'Job_{value}'.format( value=value )
+        jobDir = '/'.join( [self.outputDir_, dname])
         print '\t',jobDir 
         self.mkdir( jobDir )
         self.listOfJobs_.append( jobDir )
@@ -157,6 +168,7 @@ class BatchManager:
     def SubmitJob( self, jobDir ):
         '''Hook for job submission.'''
         print 'submitting (to be customized): ', jobDir  
+        os.system( self.options_.batch )
 
 
     def CheckBatchScript( self, batchScript ):
@@ -197,3 +209,29 @@ class BatchManager:
             print 'please remove or rename directory: ', dirname
             sys.exit(4)
        
+
+    def RunningMode(self, batch):
+        '''Returns "LXPLUS", "LOCAL" or None,
+        
+        "LXPLUS" : batch command is bsub, and logged on lxplus
+        "LOCAL" : batch command is nohup.
+        In all other cases, a CmsBatchException is raised
+        '''
+        
+        hostName = os.environ['HOSTNAME']
+        onLxplus =  hostName.startswith('lxplus')
+        batchCmd = batch.split()[0]
+        
+        if batchCmd == 'bsub':
+            if not onLxplus:
+                err = 'Cannot run %s on %s' % (batchCmd, hostName)
+                raise ValueError( err )
+            else:
+                print 'running on LSF : %s from %s' % (batchCmd, hostName)
+                return 'LXPLUS'
+        elif batchCmd == 'nohup' or batchCmd == './batchScript.sh':
+            print 'running locally : %s on %s' % (batchCmd, hostName)
+            return 'LOCAL'
+        else:
+            err = 'unknown batch command: X%sX' % batchCmd
+            raise ValueError( err )           

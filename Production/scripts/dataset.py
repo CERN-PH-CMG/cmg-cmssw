@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-from CMGTools.Production.dataset import * 
+import os
+from CMGTools.Production.dataset import createDataset
 
 if __name__ == '__main__':
 
@@ -25,6 +26,10 @@ if __name__ == '__main__':
                       action = 'store_true',
                       default=False,
                       help='Print edmIntegrityCheck report')
+    parser.add_option("-c", "--readcache", dest="readcache",
+                      action = 'store_true',
+                      default=False,
+                      help='Read from the cache.')
 
     (options,args) = parser.parse_args()
 
@@ -35,15 +40,11 @@ if __name__ == '__main__':
     user = options.user
     name = args[0]
     info = not options.noinfo
-    
-    if user == 'CMS':
-        data = CMSDataset( name )
-        info = False
-    elif user == 'LOCAL':
-        data = LocalDataset( name, options.basedir, options.pattern)
-        info = False        
-    else:
-        data = Dataset( user, name, options.pattern)
+
+    data = createDataset(user, name,
+                         options.pattern,
+                         options.readcache,
+                         options.basedir)
     data.printInfo()
     data.printFiles(abspath = options.abspath,
                     info = info)

@@ -146,33 +146,6 @@ class CmsBatchException( Exception):
 
 class MyBatchManager( BatchManager ):
    '''Batch manager specific to cmsRun processes.''' 
-         
-   def RunningMode(self, batch):
-      '''Returns "LXPLUS", "LOCAL" or None,
-      
-      "LXPLUS" : batch command is bsub, and logged on lxplus
-      "LOCAL" : batch command is nohup.
-      In all other cases, a CmsBatchException is raised
-      '''
-      
-      hostName = os.environ['HOSTNAME']
-      onLxplus =  hostName.startswith('lxplus')
-      batchCmd = batch.split()[0]
-      
-      if batchCmd == 'bsub':
-         if not onLxplus:
-            err = 'Cannot run %s on %s' % (batchCmd, hostName)
-            raise CmsBatchException( err )
-         else:
-            print 'running on LSF : %s from %s' % (batchCmd, hostName)
-            return 'LXPLUS'
-      elif batchCmd == 'nohup':
-         print 'running locally : %s on %s' % (batchCmd, hostName)
-         return 'LOCAL'
-      else:
-         err = 'unknown batch command: X%sX' % batchCmd
-         raise CmsBatchException( err )           
-
 
    def PrepareJobUser(self, jobDir, value ):
       '''Prepare one job. This function is called by the base class.'''
@@ -212,10 +185,7 @@ class MyBatchManager( BatchManager ):
       cfgFile.write('from base_cfg import *\n')
       cfgFile.write('process.source = ' + process.source.dumpPython() + '\n')
       cfgFile.close()
-      
-   def SubmitJob( self, jobDir ):
-      '''Submit a job.'''
-      os.system( self.options_.batch )
+
 
 batchManager = MyBatchManager()
 
