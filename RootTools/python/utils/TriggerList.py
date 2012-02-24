@@ -76,12 +76,13 @@ class TriggerList( object ):
                         self.triggerJSON.setdefault(trigger.name, set()).add( run )
                 # don't break, need to test all triggers in the list
                 # break
-        return passed
+        return passed, firstTrigger
 
 
     def write(self, dirName ):
         self.triggerJSON.write( dirName )
-        
+        map( lambda x: x.write(dirName), self.triggerList)
+
 
     def computeLumi(self, json):
         self.triggerJSON.computeLumi( json )

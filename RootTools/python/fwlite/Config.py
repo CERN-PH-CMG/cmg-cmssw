@@ -1,4 +1,3 @@
-import glob
 from CMGTools.RootTools.fwlite.Weight import Weight
 
 
@@ -73,7 +72,7 @@ class Component( CFG ):
         if isinstance(triggers, basestring):
             triggers = [triggers]
         super( Component, self).__init__( name = name,
-                                          files = sorted(glob.glob(files)),
+                                          files = files,
                                           triggers = triggers)
         self.isMC = False
         self.isData = False
