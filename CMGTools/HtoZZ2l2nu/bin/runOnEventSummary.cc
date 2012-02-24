@@ -228,9 +228,6 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(3,"CSVL");
   mon.addHistogram( h );
 
-  mon.addHistogram( new TH1F ("vbftagvspu", ";#generated vertices", 25, 0,25) );                                                                                                                                                   
-  mon.addHistogram( new TH1F ("vbftotalvspu", ";#generated vertices", 25, 0,25) );                        
-
   //used for GenLevel
   mon.addHistogram( new TH1F( "genHiggsPt"  , ";gen Higgs p_{T};Events",100,0,200) );
   mon.addHistogram( new TH1F( "genHiggsMass", ";gen Higgs Mass ;Events",100,0,600) );
@@ -403,6 +400,8 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(5,"Central lepton");
   h->GetXaxis()->SetBinLabel(6,"Jet Veto");
   h->GetXaxis()->SetBinLabel(7,"BJet Veto");
+  h->GetXaxis()->SetBinLabel(8,"");
+  h->GetXaxis()->SetBinLabel(9,"3rd Lepton Veto");
   mon.addHistogram( h );
   mon.addHistogram( new TH1F ("VBFMinEta", ";VBFMinEta", 100, 0,10) );                                                                                                                                                             
   mon.addHistogram( new TH1F ("VBFMaxEta", ";VBFMaxEta", 100, 0,10) );     
@@ -422,6 +421,60 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F ("VBFiMass3rdlepton",";Inv. Mass", 100, 0.,2000) );
   mon.addHistogram( new TH1F ("VBFcen30JetVeto3rdlepton",";Central 30 Jet Veto", 10, 0.,10) );
   mon.addHistogram( new TH1F ("VBFNBJets303rdlepton", ";N BJets (pT>30);Events", 10,0,10) );
+  mon.addHistogram( new TH1F ("VBFtagvspu", ";#generated vertices", 25, 0,25) );                                                                                                                                                   
+  mon.addHistogram( new TH1F ("VBFtotalvspu", ";#generated vertices", 25, 0,25) );                        
+
+
+
+  //VBFTK
+  h = new TH1F ("VBFTKNEventsInc", ";Selection cut;Events", 15,0,15);
+  h->GetXaxis()->SetBinLabel(1,"All");
+  h->GetXaxis()->SetBinLabel(2,"2Jets (30GeV)");
+  h->GetXaxis()->SetBinLabel(3,"dEta");
+  h->GetXaxis()->SetBinLabel(4,"inv. Mass");
+  h->GetXaxis()->SetBinLabel(5,"Central lepton");
+  h->GetXaxis()->SetBinLabel(6,"Jet Veto");
+  h->GetXaxis()->SetBinLabel(7,"BJet Veto");
+  h->GetXaxis()->SetBinLabel(8,"JetVtxAssoc");
+  h->GetXaxis()->SetBinLabel(9,"3rd Lepton Veto");
+  mon.addHistogram( h );
+  mon.addHistogram( new TH1F ("VBFTKMinEta", ";VBFMinEta", 100, 0,10) );
+  mon.addHistogram( new TH1F ("VBFTKMaxEta", ";VBFMaxEta", 100, 0,10) );  
+  mon.addHistogram( new TH1F ("VBFTKdEtaInc", ";#Delta#eta", 100, 0,10) );
+  mon.addHistogram( new TH1F ("VBFTKiMassInc",";Inv. Mass", 100, 0.,2000) );
+  mon.addHistogram( new TH1F ("VBFTKcenLeptonVetoInc",";Central Lepton Veto", 10, 0.,10) );
+  mon.addHistogram( new TH1F ("VBFTKcen30JetVetoInc",";Central 30 Jet Veto", 10, 0.,10) );
+  mon.addHistogram( new TH1F ("VBFTkNBJets30Inc", ";N BJets (pT>30);Events", 10,0,10) );
+  mon.addHistogram( new TH1F ("VBFTKNJetsAssoc30Inc", ";N BJets (pT>30);Events", 10,0,10) );
+  mon.addHistogram( new TH1F ("VBFTKdEtaNM1C", ";#Delta#eta", 100, 0,10) );
+  mon.addHistogram( new TH1F ("VBFTKiMassNM1C",";Inv. Mass", 100, 0.,2000) );
+  mon.addHistogram( new TH1F ("VBFTKcenLeptonVetoNM1C",";Central Lepton Veto", 10, 0.,10) );
+  mon.addHistogram( new TH1F ("VBFTKcen30JetVetoNM1C",";Central 30 Jet Veto", 10, 0.,10) );
+  mon.addHistogram( new TH1F ("VBFTkNBJets30NM1C", ";N BJets (pT>30);Events", 10,0,10) );
+  mon.addHistogram( new TH1F ("VBFTKNJetsAssoc30NM1C", ";N BJets (pT>30);Events", 10,0,10) ); 
+  mon.addHistogram( new TH2F ("VBFTKdEtaiMassNM1C", ";#Delta#eta;Inv. Mass", 50, 0,10,50, 0.,2000) );
+  mon.addHistogram( new TH2F ("VBFTKdEtaiMassNM1C2", ";#Delta#eta;Inv. Mass", 50, 0,10,50, 0.,2000) );
+  mon.addHistogram( new TH1F ("VBFTKdEta3rdlepton", ";#Delta#eta", 100, 0,10) );
+  mon.addHistogram( new TH1F ("VBFTKiMass3rdlepton",";Inv. Mass", 100, 0.,2000) ); 
+  mon.addHistogram( new TH1F ("VBFTKcen30JetVeto3rdlepton",";Central 30 Jet Veto", 10, 0.,10) );
+  mon.addHistogram( new TH1F ("VBFTKNBJets303rdlepton", ";N BJets (pT>30);Events", 10,0,10) );
+  mon.addHistogram( new TH1F ("VBFTKNJetsAssoc303rdlepton", ";N BJets (pT>30);Events", 10,0,10) );
+  mon.addHistogram( new TH1F ("VBFTKtagvspu", ";#generated vertices", 25, 0,25) );
+  mon.addHistogram( new TH1F ("VBFTKtotalvspu", ";#generated vertices", 25, 0,25) );
+
+
+  mon.addHistogram( new TH1F ("VBFTKNJets", ";VBFNJets", 20, 0,20) );
+  mon.addHistogram( new TH1F ("VBFTKNJets10", ";VBFNJets10", 20, 0,20) );
+  mon.addHistogram( new TH1F ("VBFTKNJets20", ";VBFNJets20", 20, 0,20) );
+  mon.addHistogram( new TH1F ("VBFTKNJets30", ";VBFNJets30", 20, 0,20) );
+  mon.addHistogram( new TH1F ("VBFTKJetEta", ";VBFJetEta", 100, 0,6) );
+  mon.addHistogram( new TH1F ("VBFTK1stJetPt",";VBFTK1stJetPt", 100, 0,100) );
+  mon.addHistogram( new TH1F ("VBFTK2ndJetPt",";VBFTK2ndJetPt", 100, 0,100) );
+
+  mon.addHistogram( new TH1F ("VBFTKDeltaR", ";DeltaR", 100, 0,3) );
+
+  mon.addHistogram( new TH2F ("VBFTKTaggedVsEta", ";Eta;Tagging", 20, 0,5, 100, 0, 1) );
+
 
 
   //##############################################
@@ -1047,12 +1100,12 @@ int main(int argc, char* argv[])
       //##############################################
 
       bool isVBF        = false;
-      bool Pass2Jet30   = false;
-      bool PassdEtaCut  = false;
-      bool PassiMCut    = false;
-      bool PassBJetVeto = false;
-      bool PassJetVeto  = false;
-      bool PassLeptonIn = false;
+      bool VBFPass2Jet30   = false;
+      bool VBFPassdEtaCut  = false;
+      bool VBFPassiMCut    = false;
+      bool VBFPassBJetVeto = false;
+      bool VBFPassJetVeto  = false;
+      bool VBFPassLeptonIn = false;
 
       double  VBFMinEta = 0;                                                                                                                                                                                                                 
       double  VBFMaxEta = 0;       
@@ -1080,56 +1133,183 @@ int main(int argc, char* argv[])
                  if(phys.jets[ijet].btag1>1.7) VBFNBJets++;
              }
           
-             Pass2Jet30   = (phys.jets [0].pt()>30.0 && phys.jets [1].pt()>30.0);
-             PassdEtaCut  = (fabs(VBFdEta)>4.0);
-             PassiMCut    = (VBFSyst.M()>500);
-             PassLeptonIn = (VBFCentralLeptons==2);
-             PassJetVeto  = (VBFCentral30Jets==0);
-             PassBJetVeto = (VBFNBJets==0);
-             isVBF        = (Pass2Jet30 && PassdEtaCut && PassiMCut && PassBJetVeto && PassJetVeto && PassLeptonIn);
+             VBFPass2Jet30   = (phys.jets [0].pt()>30.0 && phys.jets [1].pt()>30.0);
+             VBFPassdEtaCut  = VBFPass2Jet30 && (fabs(VBFdEta)>4.0);
+             VBFPassiMCut    = VBFPass2Jet30 && (VBFSyst.M()>500);
+             VBFPassLeptonIn = (VBFCentralLeptons==2);
+             VBFPassJetVeto  = (VBFCentral30Jets==0);
+             VBFPassBJetVeto = (VBFNBJets==0);
+             isVBF        = (VBFPass2Jet30 && VBFPassdEtaCut && VBFPassiMCut && VBFPassBJetVeto && VBFPassJetVeto && VBFPassLeptonIn);
              VBFMinEta = std::min(fabs(phys.jets[0].eta()), fabs(phys.jets[1].eta()));
              VBFMaxEta = std::max(fabs(phys.jets[0].eta()), fabs(phys.jets[1].eta()));
          }
 
          //VBF control
          if(true                                                                                        )mon.fillHisto("VBFNEventsInc"       ,tags_full,    0                ,iweight);
-         if(Pass2Jet30                                                                                  )mon.fillHisto("VBFNEventsInc"       ,tags_full,    1                ,iweight);
-         if(PassdEtaCut                                                                                 )mon.fillHisto("VBFNEventsInc"       ,tags_full,    2                ,iweight);
-         if(PassdEtaCut && PassiMCut                                                                    )mon.fillHisto("VBFNEventsInc"       ,tags_full,    3                ,iweight);
-         if(PassdEtaCut && PassiMCut && PassLeptonIn                                                    )mon.fillHisto("VBFNEventsInc"       ,tags_full,    4                ,iweight);
-         if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                                     )mon.fillHisto("VBFNEventsInc"       ,tags_full,    5                ,iweight);
-         if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto                     )mon.fillHisto("VBFNEventsInc"       ,tags_full,    6                ,iweight);
-         if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto && pass3dLeptonVeto )mon.fillHisto("VBFNEventsInc"       ,tags_full,    7                ,iweight);
-         if(isVBF && VBFMinEta<2.4                                                                      )mon.fillHisto("VBFNEventsInc"       ,tags_full,    8                ,iweight);
+         if(VBFPass2Jet30                                                                                  )mon.fillHisto("VBFNEventsInc"       ,tags_full,    1                ,iweight);
+         if(VBFPassdEtaCut                                                                                 )mon.fillHisto("VBFNEventsInc"       ,tags_full,    2                ,iweight);
+         if(VBFPassdEtaCut && VBFPassiMCut                                                                    )mon.fillHisto("VBFNEventsInc"       ,tags_full,    3                ,iweight);
+         if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn                                                    )mon.fillHisto("VBFNEventsInc"       ,tags_full,    4                ,iweight);
+         if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto                                     )mon.fillHisto("VBFNEventsInc"       ,tags_full,    5                ,iweight);
+         if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto                     )mon.fillHisto("VBFNEventsInc"       ,tags_full,    6                ,iweight);
+         if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto                     )mon.fillHisto("VBFNEventsInc"       ,tags_full,    7                ,iweight);
+         if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto && pass3dLeptonVeto )mon.fillHisto("VBFNEventsInc"       ,tags_full,    8                ,iweight);
 
-         if(Pass2Jet30                                                                                  )mon.fillHisto("VBFdEtaInc"          ,tags_full,    fabs(VBFdEta)    ,iweight);
-         if(PassdEtaCut                                                                                 )mon.fillHisto("VBFiMassInc"         ,tags_full,    VBFSyst.M()      ,iweight);
-         if(PassdEtaCut && PassiMCut                                                                    )mon.fillHisto("VBFcenLeptonVetoInc" ,tags_full,    VBFCentralLeptons,iweight);
-         if(PassdEtaCut && PassiMCut && PassLeptonIn                                                    )mon.fillHisto("VBFcen30JetVetoInc"  ,tags_full,    VBFCentral30Jets ,iweight);
-         if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                                     )mon.fillHisto("VBFNBJets30Inc"      ,tags_full,    VBFNBJets        ,iweight);
+         if(VBFPass2Jet30                                                                                  )mon.fillHisto("VBFdEtaInc"          ,tags_full,    fabs(VBFdEta)    ,iweight);
+         if(VBFPassdEtaCut                                                                                 )mon.fillHisto("VBFiMassInc"         ,tags_full,    VBFSyst.M()      ,iweight);
+         if(VBFPassdEtaCut && VBFPassiMCut                                                                    )mon.fillHisto("VBFcenLeptonVetoInc" ,tags_full,    VBFCentralLeptons,iweight);
+         if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn                                                    )mon.fillHisto("VBFcen30JetVetoInc"  ,tags_full,    VBFCentral30Jets ,iweight);
+         if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto                                     )mon.fillHisto("VBFNBJets30Inc"      ,tags_full,    VBFNBJets        ,iweight);
        
-         if(               PassiMCut && PassLeptonIn && PassJetVeto && PassBJetVeto                     )mon.fillHisto("VBFdEtaNM1C"         ,tags_full,    fabs(VBFdEta)    ,iweight);
-         if(PassdEtaCut              && PassLeptonIn && PassJetVeto && PassBJetVeto                     )mon.fillHisto("VBFiMassNM1C"        ,tags_full,    VBFSyst.M()      ,iweight);
-         if(PassdEtaCut && PassiMCut                 && PassJetVeto && PassBJetVeto                     )mon.fillHisto("VBFcenLeptonVetoNM1C",tags_full,    VBFCentralLeptons,iweight);
-         if(Pass2Jet30                                              && PassBJetVeto && !pass3dLeptonVeto){
+         if(               VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto                     )mon.fillHisto("VBFdEtaNM1C"         ,tags_full,    fabs(VBFdEta)    ,iweight);
+         if(VBFPassdEtaCut              && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto                     )mon.fillHisto("VBFiMassNM1C"        ,tags_full,    VBFSyst.M()      ,iweight);
+         if(VBFPassdEtaCut && VBFPassiMCut                 && VBFPassJetVeto && VBFPassBJetVeto                     )mon.fillHisto("VBFcenLeptonVetoNM1C",tags_full,    VBFCentralLeptons,iweight);
+         if(VBFPass2Jet30                                              && VBFPassBJetVeto && !pass3dLeptonVeto){
              mon.fillHisto("VBFcen30JetVeto3rdlepton"  ,tags_full,    VBFCentral30Jets ,iweight);
              mon.fillHisto("VBFNBJets303rdlepton"      ,tags_full,    VBFNBJets        ,iweight);
              mon.fillHisto("VBFdEta3rdlepton"          ,tags_full,    fabs(VBFdEta)    ,iweight);
              mon.fillHisto("VBFiMass3rdlepton"         ,tags_full,    VBFSyst.M()      ,iweight);
          }
       
-         if(PassdEtaCut && PassiMCut && PassLeptonIn                && PassBJetVeto )mon.fillHisto("VBFcen30JetVetoNM1C" ,tags_full,    VBFCentral30Jets ,iweight);
-         if(PassdEtaCut && PassiMCut && PassLeptonIn && PassJetVeto                 )mon.fillHisto("VBFNBJets30NM1C"     ,tags_full,    VBFNBJets        ,iweight);
-         if(                            PassLeptonIn && PassJetVeto && PassBJetVeto )mon.fill2DHisto("VBFdEtaiMassNM1C"  ,tags_full,    fabs(VBFdEta), VBFSyst.M(), iweight);
-         if(redMet>50 &&                PassLeptonIn && PassJetVeto && PassBJetVeto )mon.fill2DHisto("VBFdEtaiMassNM1C2" ,tags_full,    fabs(VBFdEta), VBFSyst.M(), iweight);
+         if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn                && VBFPassBJetVeto )mon.fillHisto("VBFcen30JetVetoNM1C" ,tags_full,    VBFCentral30Jets ,iweight);
+         if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto                 )mon.fillHisto("VBFNBJets30NM1C"     ,tags_full,    VBFNBJets        ,iweight);
+         if(                            VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto )mon.fill2DHisto("VBFdEtaiMassNM1C"  ,tags_full,    fabs(VBFdEta), VBFSyst.M(), iweight);
+         if(redMet>50 &&                VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto )mon.fill2DHisto("VBFdEtaiMassNM1C2" ,tags_full,    fabs(VBFdEta), VBFSyst.M(), iweight);
 
          if(isVBF){
             mon.fillHisto("VBFMinEta"  ,tags_full,    VBFMinEta ,iweight);
             mon.fillHisto("VBFMaxEta"  ,tags_full,    VBFMaxEta ,iweight);
-            mon.fillHisto("vbftagvspu"      ,tags_full,    ev.ngenITpu   ,iweight); 
+            mon.fillHisto("VBFtagvspu"      ,tags_full,    ev.ngenITpu   ,iweight); 
          }
-         mon.fillHisto("vbftotalvspu"      ,tags_full,    ev.ngenITpu   ,iweight);
+         mon.fillHisto("VBFtotalvspu"      ,tags_full,    ev.ngenITpu   ,iweight);
       }
+
+      //##############################################
+      //########         VBFTK PLOTS          ########
+      //##############################################
+
+      bool isVBFTK        = false;
+      bool VBFTKPass2Jet30   = false;
+      bool VBFTKPassdEtaCut  = false;
+      bool VBFTKPassiMCut    = false;
+      bool VBFTKPassBJetVeto = false;
+      bool VBFTKPassJetVeto  = false;
+      bool VBFTKPassLeptonIn = false;
+      bool VBFTKPassJetAssocVeto = false;
+
+      double  VBFTKMinEta = 0;                                                                                                                                                                                                                 
+      double  VBFTKMaxEta = 0;       
+      double  VBFTKdEta = -1;
+      int     VBFTKCentral30Jets = 0;
+      int     VBFTKCentralLeptons = 0;
+      int     VBFTKNBJets = 0;
+      int     VBFTKNJetsAssoc=0;
+      LorentzVector VBFTKSyst;
+
+      if(passZmass){
+          int VBFTKNJets10 = 0; for(size_t ijet=0; ijet<phys.ajets.size(); ijet++){if(phys.ajets[ijet].pt()>10)VBFTKNJets10++;}
+          int VBFTKNJets20 = 0; for(size_t ijet=0; ijet<phys.ajets.size(); ijet++){if(phys.ajets[ijet].pt()>20)VBFTKNJets20++;}
+          int VBFTKNJets30 = 0; for(size_t ijet=0; ijet<phys.ajets.size(); ijet++){if(phys.ajets[ijet].pt()>30)VBFTKNJets30++;}
+          mon.fillHisto("VBFTKNJets"    ,tags_full,    phys.ajets.size() ,iweight);
+          mon.fillHisto("VBFTKNJets10"  ,tags_full,    VBFTKNJets10 ,iweight);
+          mon.fillHisto("VBFTKNJets20"  ,tags_full,    VBFTKNJets20 ,iweight);
+          mon.fillHisto("VBFTKNJets30"  ,tags_full,    VBFTKNJets30 ,iweight);
+          for(size_t ijet=0; ijet<phys.ajets.size(); ijet++){if(phys.ajets[ijet].pt()>30)mon.fillHisto("VBFTKJetEta"  ,tags_full,   phys.ajets[ijet].eta(),iweight); }
+
+	 if(phys.ajets.size()>=2){
+                mon.fillHisto("VBFTK1stJetPt"    ,tags_full,    phys.ajets[0].pt() ,iweight);
+                mon.fillHisto("VBFTK2ndJetPt"    ,tags_full,    phys.ajets[1].pt() ,iweight);
+	 }
+      }
+
+
+      if(passZmass){
+         if(phys.jets.size()>=2){
+             VBFTKSyst =  phys.jets[0] + phys.jets[1];
+             VBFTKdEta = fabs(   phys.jets[0].eta() -    phys.jets[1].eta()); if(phys.jets[0].eta()* phys.jets[1].eta()>0)VBFTKdEta*=-1;
+             int VBFTKCentral30Jets = 0;
+             double MinEta, MaxEta;
+
+             if(phys.jets[0].eta()<phys.jets[1].eta()){MinEta=phys.jets[0].eta(); MaxEta=phys.jets[1].eta();}else{MinEta=phys.jets[1].eta(); MaxEta=phys.jets[0].eta();}
+             if(isGammaEvent){  if(phys.leptons[0].eta()>MinEta && phys.leptons[0].eta()<MaxEta)VBFTKCentralLeptons++;  if(phys.leptons[1].eta()>MinEta && phys.leptons[1].eta()<MaxEta)VBFTKCentralLeptons++;
+             }else{             if(zll.eta()>MinEta && zll.eta()<MaxEta) VBFTKCentralLeptons=2;
+             }
+
+
+             double DeltaR1 = 1E100; int AJet1Index = -1; for(unsigned int i=0;i<phys.ajets.size();i++){if(phys.ajets[i].pt()<10)continue; double R=deltaR(phys.jets[0], phys.ajets[i]); if(R<DeltaR1){DeltaR1=R; AJet1Index=i;}  }
+             double DeltaR2 = 1E100; int AJet2Index = -1; for(unsigned int i=0;i<phys.ajets.size();i++){if(phys.ajets[i].pt()<10)continue; double R=deltaR(phys.jets[1], phys.ajets[i]); if(R<DeltaR2){DeltaR2=R; AJet2Index=i;}  }
+             if(AJet1Index>=0)mon.fillHisto("VBFTKDeltaR"       ,tags_full,    DeltaR1                ,iweight);
+             if(AJet2Index>=0)mon.fillHisto("VBFTKDeltaR"       ,tags_full,    DeltaR2                ,iweight);
+
+             if(AJet1Index>=0 && DeltaR1<0.3 && phys.ajets[AJet1Index].chHadFrac>0.01)VBFTKNJetsAssoc++;
+             if(AJet2Index>=0 && DeltaR2<0.3 && phys.ajets[AJet2Index].chHadFrac>0.01)VBFTKNJetsAssoc++;
+
+             for(size_t ijet=2; ijet<phys.jets.size(); ijet++){
+                 if(phys.jets[ijet].pt()<30)continue; 
+                 if(phys.jets[ijet].eta()>MinEta && phys.jets[ijet].eta()<MaxEta)VBFTKCentral30Jets++; 
+                 if(phys.jets[ijet].btag1>1.7) VBFTKNBJets++;
+             }
+          
+             VBFTKPass2Jet30   = (phys.jets [0].pt()>30.0 && phys.jets [1].pt()>30.0);
+             VBFTKPassdEtaCut  = VBFTKPass2Jet30 && (fabs(VBFTKdEta)>4.0);
+             VBFTKPassiMCut    = VBFTKPass2Jet30 && (VBFTKSyst.M()>500);
+             VBFTKPassLeptonIn = (VBFTKCentralLeptons==2);
+             VBFTKPassJetVeto  = (VBFTKCentral30Jets==0);
+             VBFTKPassBJetVeto = (VBFTKNBJets==0);
+             VBFTKPassJetAssocVeto = (VBFTKNJetsAssoc>0);
+             isVBFTK        = (VBFTKPass2Jet30 && VBFTKPassdEtaCut && VBFTKPassiMCut && VBFTKPassBJetVeto && VBFTKPassJetVeto && VBFTKPassLeptonIn && VBFTKPassJetAssocVeto);
+             VBFTKMinEta = std::min(fabs(phys.jets[0].eta()), fabs(phys.jets[1].eta()));
+             VBFTKMaxEta = std::max(fabs(phys.jets[0].eta()), fabs(phys.jets[1].eta()));
+
+            if(AJet1Index>=0 && DeltaR1<0.3 && VBFTKPassdEtaCut && VBFTKPassiMCut && VBFTKPassLeptonIn && VBFTKPassJetVeto && VBFTKPassBJetVeto)mon.fill2DHisto("VBFTKTaggedVsEta", tags_full, fabs(phys.jets [0].eta()), phys.ajets[AJet1Index].chHadFrac); 
+            if(AJet2Index>=0 && DeltaR2<0.3 && VBFTKPassdEtaCut && VBFTKPassiMCut && VBFTKPassLeptonIn && VBFTKPassJetVeto && VBFTKPassBJetVeto)mon.fill2DHisto("VBFTKTaggedVsEta", tags_full, fabs(phys.jets [1].eta()), phys.ajets[AJet2Index].chHadFrac);
+         }
+
+         //VBFTK control
+         if(true                                                                                        )mon.fillHisto("VBFTKNEventsInc"       ,tags_full,    0                ,iweight);
+         if(VBFTKPass2Jet30                                                                                  )mon.fillHisto("VBFTKNEventsInc"       ,tags_full,    1                ,iweight);
+         if(VBFTKPassdEtaCut                                                                                 )mon.fillHisto("VBFTKNEventsInc"       ,tags_full,    2                ,iweight);
+         if(VBFTKPassdEtaCut && VBFTKPassiMCut                                                                    )mon.fillHisto("VBFTKNEventsInc"       ,tags_full,    3                ,iweight);
+         if(VBFTKPassdEtaCut && VBFTKPassiMCut && VBFTKPassLeptonIn                                                    )mon.fillHisto("VBFTKNEventsInc"       ,tags_full,    4                ,iweight);
+         if(VBFTKPassdEtaCut && VBFTKPassiMCut && VBFTKPassLeptonIn && VBFTKPassJetVeto                                     )mon.fillHisto("VBFTKNEventsInc"       ,tags_full,    5                ,iweight);
+         if(VBFTKPassdEtaCut && VBFTKPassiMCut && VBFTKPassLeptonIn && VBFTKPassJetVeto && VBFTKPassBJetVeto                     )mon.fillHisto("VBFTKNEventsInc"       ,tags_full,    6                ,iweight);
+         if(VBFTKPassdEtaCut && VBFTKPassiMCut && VBFTKPassLeptonIn && VBFTKPassJetVeto && VBFTKPassBJetVeto && VBFTKPassJetAssocVeto )mon.fillHisto("VBFTKNEventsInc"       ,tags_full,    7                ,iweight);
+         if(VBFTKPassdEtaCut && VBFTKPassiMCut && VBFTKPassLeptonIn && VBFTKPassJetVeto && VBFTKPassBJetVeto && VBFTKPassJetAssocVeto && pass3dLeptonVeto )mon.fillHisto("VBFTKNEventsInc"       ,tags_full,    8                ,iweight);
+
+         if(VBFTKPass2Jet30                                                                                  )mon.fillHisto("VBFTKdEtaInc"          ,tags_full,    fabs(VBFTKdEta)    ,iweight);
+         if(VBFTKPassdEtaCut                                                                                 )mon.fillHisto("VBFTKiMassInc"         ,tags_full,    VBFTKSyst.M()      ,iweight);
+         if(VBFTKPassdEtaCut && VBFTKPassiMCut                                                                    )mon.fillHisto("VBFTKcenLeptonVetoInc" ,tags_full,    VBFTKCentralLeptons,iweight);
+         if(VBFTKPassdEtaCut && VBFTKPassiMCut && VBFTKPassLeptonIn                                                    )mon.fillHisto("VBFTKcen30JetVetoInc"  ,tags_full,    VBFTKCentral30Jets ,iweight);
+         if(VBFTKPassdEtaCut && VBFTKPassiMCut && VBFTKPassLeptonIn && VBFTKPassJetVeto                                     )mon.fillHisto("VBFTKNBJets30Inc"      ,tags_full,    VBFTKNBJets        ,iweight);
+      
+
+         if(VBFTKPassdEtaCut && VBFTKPassiMCut && VBFTKPassLeptonIn && VBFTKPassJetVeto && VBFTKPassBJetVeto                     )mon.fillHisto("VBFTKNJetsAssoc30Inc"       ,tags_full,  VBFTKNJetsAssoc                  ,iweight);        
+ 
+         if(               VBFTKPassiMCut && VBFTKPassLeptonIn && VBFTKPassJetVeto && VBFTKPassBJetVeto                     )mon.fillHisto("VBFTKdEtaNM1C"         ,tags_full,    fabs(VBFTKdEta)    ,iweight);
+         if(VBFTKPassdEtaCut              && VBFTKPassLeptonIn && VBFTKPassJetVeto && VBFTKPassBJetVeto                     )mon.fillHisto("VBFTKiMassNM1C"        ,tags_full,    VBFTKSyst.M()      ,iweight);
+         if(VBFTKPassdEtaCut && VBFTKPassiMCut                 && VBFTKPassJetVeto && VBFTKPassBJetVeto                     )mon.fillHisto("VBFTKcenLeptonVetoNM1C",tags_full,    VBFTKCentralLeptons,iweight);
+         if(VBFTKPass2Jet30                                              && VBFTKPassBJetVeto && !pass3dLeptonVeto){
+             mon.fillHisto("VBFTKcen30JetVeto3rdlepton"  ,tags_full,    VBFTKCentral30Jets ,iweight);
+             mon.fillHisto("VBFTKNBJets303rdlepton"      ,tags_full,    VBFTKNBJets        ,iweight);
+             mon.fillHisto("VBFTKdEta3rdlepton"          ,tags_full,    fabs(VBFTKdEta)    ,iweight);
+             mon.fillHisto("VBFTKiMass3rdlepton"         ,tags_full,    VBFTKSyst.M()      ,iweight);
+         }
+      
+         if(VBFTKPassdEtaCut && VBFTKPassiMCut && VBFTKPassLeptonIn                && VBFTKPassBJetVeto )mon.fillHisto("VBFTKcen30JetVetoNM1C" ,tags_full,    VBFTKCentral30Jets ,iweight);
+         if(VBFTKPassdEtaCut && VBFTKPassiMCut && VBFTKPassLeptonIn && VBFTKPassJetVeto                 )mon.fillHisto("VBFTKNBJets30NM1C"     ,tags_full,    VBFTKNBJets        ,iweight);
+         if(                            VBFTKPassLeptonIn && VBFTKPassJetVeto && VBFTKPassBJetVeto )mon.fill2DHisto("VBFTKdEtaiMassNM1C"  ,tags_full,    fabs(VBFTKdEta), VBFTKSyst.M(), iweight);
+         if(redMet>50 &&                VBFTKPassLeptonIn && VBFTKPassJetVeto && VBFTKPassBJetVeto )mon.fill2DHisto("VBFTKdEtaiMassNM1C2" ,tags_full,    fabs(VBFTKdEta), VBFTKSyst.M(), iweight);
+
+         if(isVBFTK){
+            mon.fillHisto("VBFTKMinEta"  ,tags_full,    VBFTKMinEta ,iweight);
+            mon.fillHisto("VBFTKMaxEta"  ,tags_full,    VBFTKMaxEta ,iweight);
+            mon.fillHisto("VBFTKtagvspu"      ,tags_full,    ev.ngenITpu   ,iweight); 
+         }
+         mon.fillHisto("VBFTKtotalvspu"      ,tags_full,    ev.ngenITpu   ,iweight);
+      }
+
+
+
 
 
       //##############################################
@@ -1312,7 +1492,7 @@ int main(int argc, char* argv[])
             mon.fillHisto("optim_eventflow2"          ,tags_full,    index, weight);
          }
 
-	 if(PassLeptonIn && PassJetVeto && PassBJetVeto && zvv.pt()>=50){
+	 if(VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto && zvv.pt()>=50){
             for(unsigned int index=0;index<optim_Cuts3_pt.size();index++){
                if(phys.jets.size()<2 || phys.jets [0].pt()<optim_Cuts3_pt[index] || phys.jets [1].pt()<optim_Cuts3_pt[index])continue;
                if(VBFdEta>optim_Cuts3_deta[index] && VBFSyst.M()>optim_Cuts3_imass[index])

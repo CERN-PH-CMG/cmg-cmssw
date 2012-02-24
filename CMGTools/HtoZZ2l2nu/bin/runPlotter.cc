@@ -59,15 +59,15 @@ TObject* GetObjectFromPath(TDirectory* File, std::string Path, bool GetACopy=fal
 //      if(TMP!=NULL)return GetObjectFromPath(TMP,endPart,GetACopy);
       if(TMP!=NULL){
          TObject* TMP2 =  GetObjectFromPath(TMP,endPart,GetACopy);
-         if(!TMP2)printf("BUG: %s\n",Path.c_str());
+//         if(!TMP2)printf("BUG: %s\n",Path.c_str());
          return TMP2;
       }
 
-      printf("BUG: %s\n",Path.c_str());
+//      printf("BUG: %s\n",Path.c_str());
       return NULL;
    }else{
       TObject* TMP = File->Get(Path.c_str());
-      if(!TMP)printf("BUG: %s\n",Path.c_str());
+//      if(!TMP)printf("BUG: %s\n",Path.c_str());
 
       if(GetACopy){
          return TMP->Clone();
@@ -205,7 +205,7 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName); 
-            if(!tmptmphist){printf("Histo: %s not found for dataset: %s\n", HistoName.c_str(), (Samples[j])["dtag"].toString().c_str()); delete File;continue;}
+            if(!tmptmphist){delete File;continue;}
             if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
             delete tmptmphist;
             delete File;
@@ -295,7 +295,7 @@ void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, 
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName); 
-            if(!tmptmphist){printf("Histo: %s not found for dataset: %s\n", HistoName.c_str(), (Samples[j])["dtag"].toString().c_str()); delete File;continue;}
+            if(!tmptmphist){delete File;continue;}
             if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
             //if(Process[i]["isdata"].toBool())printf("%s --> %f*%f(%f)\n",(Samples[j])["dtag"].toString().c_str(), tmptmphist->Integral(),Weight, initialNumberOfEvents[(Samples[j])["dtag"].toString()]);
             delete tmptmphist;
@@ -392,7 +392,7 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName); 
-            if(!tmptmphist){printf("Histo: %s not found for dataset: %s\n", HistoName.c_str(), (Samples[j])["dtag"].toString().c_str()); delete File;continue;}
+            if(!tmptmphist){delete File;continue;}
             if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
             //if(Process[i]["isdata"].toBool())printf("%s --> %f\n",(Samples[j])["dtag"].toString().c_str(), tmptmphist->Integral());
             delete tmptmphist;
@@ -485,7 +485,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName);
-	    if(!tmptmphist){printf("Histo: %s not found for dataset: %s\n", HistoName.c_str(), (Samples[j])["dtag"].toString().c_str()); delete File;continue;}
+	    if(!tmptmphist){delete File;continue;}
             if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
             //if(Process[i]["isdata"].toBool())printf("%s --> %f\n",(Samples[j])["dtag"].toString().c_str(), tmptmphist->Integral());
             delete tmptmphist;
@@ -673,7 +673,7 @@ void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName);
-            if(!tmptmphist){printf("Histo: %s not found for dataset: %s\n", HistoName.c_str(), (Samples[j])["dtag"].toString().c_str()); delete File;continue;}
+            if(!tmptmphist){delete File;continue;}
             if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
             delete tmptmphist;
             delete File;
