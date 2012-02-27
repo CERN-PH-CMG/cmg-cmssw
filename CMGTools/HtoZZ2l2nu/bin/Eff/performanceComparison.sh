@@ -15,10 +15,6 @@ root -l -b << EOF
   gSystem->Load("libDataFormatsParticleFlowCandidate.so");
   gSystem->Load("libDataFormatsMath.so");
   gSystem->Load("libCMGToolsHtoZZ2l2nu.so");
-  .x performanceComparison.C+("ImgDY/H200/", "mumu","H(200)","Z-#gamma^{*}+jets#rightarrow ll", "../../test/plotterDY.root");
-  .x performanceComparison.C+("ImgDY/H300/", "mumu","H(300)","Z-#gamma^{*}+jets#rightarrow ll", "../../test/plotterDY.root");
-//  .x performanceComparison.C+("ImgDY/H500/", "mumu","H(500)","Z-#gamma^{*}+jets#rightarrow ll", "../../test/plotterDY.root");
-//  .x performanceComparison.C+("ImgSM/H200/", "mumu","H(200)","ZZ|WW|WZ|Single top|t#bar{t}|W+jets|Z-#gamma^{*}+jets#rightarrow ll", "../../test/plotter.root");
-//  .x performanceComparison.C+("ImgSM/H300/", "mumu","H(300)","ZZ|WW|WZ|Single top|t#bar{t}|W+jets|Z-#gamma^{*}+jets#rightarrow ll", "../../test/plotter.root");
-//  .x performanceComparison.C+("ImgSM/H500/", "mumu","H(500)","ZZ|WW|WZ|Single top|t#bar{t}|W+jets|Z-#gamma^{*}+jets#rightarrow ll", "../../test/plotter.root");
+  .x performanceComparison.C+("ImgDY/H200/", "mumu","H(200)","Z-#gamma^{*}+jets#rightarrow ll", "../../test/plotter.root");
+  .x performanceComparison.C+("ImgDY/H300/", "mumu","H(300)","Z-#gamma^{*}+jets#rightarrow ll", "../../test/plotter.root");
 EOF                                   
