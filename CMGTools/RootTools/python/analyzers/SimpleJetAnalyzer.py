@@ -330,6 +330,10 @@ class SimpleJetAnalyzer (Analyzer) :
 
         # histograms for the resolution of matched jets
         self.matchedCleanJetHistosResolution = ResolutionJetHistograms ('MatchedCleanJetsResolution', 50, 5)
+        self.matchedCleanJetHistosResolution_barrel = ResolutionJetHistograms ('MatchedCleanJetsResolution_barrel', 50, 5)
+        self.matchedCleanJetHistosResolution_endtk = ResolutionJetHistograms ('MatchedCleanJetsResolution_endtk', 50, 5)
+        self.matchedCleanJetHistosResolution_endNOtk = ResolutionJetHistograms ('MatchedCleanJetsResolution_endNOtk', 50, 5)
+        self.matchedCleanJetHistosResolution_fwd = ResolutionJetHistograms ('MatchedCleanJetsResolution_fwd', 50, 5)
 
         self.h_nvtx = TH1F ("h_nvtx", "" ,50, 0, 50) ; 
 
@@ -416,12 +420,16 @@ class SimpleJetAnalyzer (Analyzer) :
             self.matchedCleanJetHistosSuperList[event.vertexBin][index].fillJet (jet)
             if abs (jet.gen.eta ()) < 1.4 :
                 self.matchedCleanJetHistosSuperList_barrel[event.vertexBin][index].fillJet (jet)
+                self.matchedCleanJetHistosResolution_barrel.fillJet (jet, len (event.vertices))
             elif 1.6 < abs (jet.gen.eta ()) < 2.5 :    
                 self.matchedCleanJetHistosSuperList_endtk[event.vertexBin][index].fillJet (jet)
+                self.matchedCleanJetHistosResolution_endtk.fillJet (jet, len (event.vertices))
             elif 2.6 < abs (jet.gen.eta ()) < 2.9 :    
                 self.matchedCleanJetHistosSuperList_endNOtk[event.vertexBin][index].fillJet (jet)
+                self.matchedCleanJetHistosResolution_endNOtk.fillJet (jet, len (event.vertices))
             elif 3.1 < abs (jet.gen.eta ()) :    
                 self.matchedCleanJetHistosSuperList_fwd[event.vertexBin][index].fillJet (jet)
+                self.matchedCleanJetHistosResolution_fwd.fillJet (jet, len (event.vertices))
         
         self.unmatchedCleanJetHistos.fillEvent (event.unmatchedCleanJets)
 
@@ -487,6 +495,18 @@ class SimpleJetAnalyzer (Analyzer) :
 
         self.matchedCleanJetHistosResolution.summary ()
         self.matchedCleanJetHistosResolution.Write (self.file)
+        
+        self.matchedCleanJetHistosResolution_barrel.summary ()
+        self.matchedCleanJetHistosResolution_barrel.Write (self.file)
+        
+        self.matchedCleanJetHistosResolution_endtk.summary ()
+        self.matchedCleanJetHistosResolution_endtk.Write (self.file)
+        
+        self.matchedCleanJetHistosResolution_endNOtk.summary ()
+        self.matchedCleanJetHistosResolution_endNOtk.Write (self.file)
+        
+        self.matchedCleanJetHistosResolution_fwd.summary ()
+        self.matchedCleanJetHistosResolution_fwd.Write (self.file)
         
         self.file.cd ()
         self.h_nvtx.Write ()
