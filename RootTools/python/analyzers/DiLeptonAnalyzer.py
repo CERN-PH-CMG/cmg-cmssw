@@ -19,6 +19,18 @@ class DiLeptonAnalyzer( Analyzer ):
     def beginLoop(self):
         super(DiLeptonAnalyzer,self).beginLoop()
         self.counters.addCounter('DiLepton')
+        count = self.counters.counter('DiLepton')
+        count.register('all events')
+        count.register('> 0 di-lepton')
+        count.register('di-lepton cut string ok')
+        count.register('lepton accept')
+        count.register('leg1 offline cuts passed')
+        count.register('leg2 offline cuts passed')
+        count.register('leg1 trig matched')
+        count.register('leg2 trig matched')
+        count.register('exactly 1 di-lepton')
+        count.register('{min:3.1f} < m < {max:3.1f}'.format( min = self.cfg_ana.m_min,
+                                                             max = self.cfg_ana.m_max ))
         
     def process(self, iEvent, event):
         # access di-object collection
@@ -34,14 +46,14 @@ class DiLeptonAnalyzer( Analyzer ):
         event.diLeptons = map( self.__class__.DiObjectClass, self.handles['diLeptons'].product() )
         event.leptons = map( self.__class__.LeptonClass, self.handles['leptons'].product() ) 
 
-        self.counters.counter('DiLepton').inc('all events ')
+        self.counters.counter('DiLepton').inc('all events')
         # if not self.triggerList.triggerPassed(event.triggerObject):
         #    return False
         # self.counters.counter('DiLepton').inc('trigger passed ')
             
         if len(event.diLeptons) == 0:
             return False
-        self.counters.counter('DiLepton').inc('> 0 di-lepton ')
+        self.counters.counter('DiLepton').inc('> 0 di-lepton')
 
         # testing di-lepton itself
         selDiLeptons = event.diLeptons
@@ -49,7 +61,7 @@ class DiLeptonAnalyzer( Analyzer ):
         
         if not self.leptonAccept( event.leptons ):
             return False
-        self.counters.counter('DiLepton').inc('lepton accept ')
+        self.counters.counter('DiLepton').inc('lepton accept')
 
         # testing leg1
         selDiLeptons = [ diL for diL in selDiLeptons if \
@@ -67,21 +79,22 @@ class DiLeptonAnalyzer( Analyzer ):
         else:
             self.counters.counter('DiLepton').inc('leg2 offline cuts passed')
 
-        # trigger matching leg1
-        selDiLeptons = [diL for diL in selDiLeptons if \
-                        self.trigMatched(event, diL.leg1(), 'leg1')]
-        if len(selDiLeptons) == 0:
-            return False
-        else:
-            self.counters.counter('DiLepton').inc('leg1 trig matched')
-        
-        # trigger matching leg2
-        selDiLeptons = [diL for diL in selDiLeptons if \
-                        self.trigMatched(event, diL.leg2(), 'leg2')]
-        if len(selDiLeptons) == 0:
-            return False
-        else:
-            self.counters.counter('DiLepton').inc('leg2 trig matched')
+        if len(self.cfg_comp.triggers)>0:
+            # trigger matching leg1
+            selDiLeptons = [diL for diL in selDiLeptons if \
+                            self.trigMatched(event, diL.leg1(), 'leg1')]
+            if len(selDiLeptons) == 0:
+                return False
+            else:
+                self.counters.counter('DiLepton').inc('leg1 trig matched')
+
+            # trigger matching leg2
+            selDiLeptons = [diL for diL in selDiLeptons if \
+                            self.trigMatched(event, diL.leg2(), 'leg2')]
+            if len(selDiLeptons) == 0:
+                return False
+            else:
+                self.counters.counter('DiLepton').inc('leg2 trig matched')
         
 
         if len(selDiLeptons)==0:
@@ -97,7 +110,7 @@ class DiLeptonAnalyzer( Analyzer ):
         if self.cfg_ana.m_min < mass and mass < self.cfg_ana.m_max:
             self.counters.counter('DiLepton').inc(
                 '{min:3.1f} < m < {max:3.1f}'.format( min = self.cfg_ana.m_min,
-                                                          max = self.cfg_ana.m_max )
+                                                      max = self.cfg_ana.m_max )
                 )
         else:
             return False
@@ -127,9 +140,7 @@ class DiLeptonAnalyzer( Analyzer ):
         selDiLeptons = [ diL for diL in diLeptons if \
                          diL.getSelection(cutString) ]
         if len(selDiLeptons) > 0:
-            self.counters.counter('DiLepton').inc( 'di-lepton {cut} ok'.format(
-                cut=cutString
-                ) )
+            self.counters.counter('DiLepton').inc( 'di-lepton cut string ok')
         return selDiLeptons
 
 
