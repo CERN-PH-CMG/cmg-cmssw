@@ -37,6 +37,7 @@ def usage() :
     print '  -d : sample input dir as described in the json'
     print ' - t : process only this tag'
     print '  -o : output directory'
+    print '  -c : check input file validity'
 
     print ' '
     exit(-1)
@@ -44,7 +45,7 @@ def usage() :
 #parse the options 
 try:
      # retrive command line options
-     shortopts  = "j:d:t:o:"
+     shortopts  = "j:d:t:o:c:"
      opts, args = getopt.getopt( sys.argv[1:], shortopts )
 except getopt.GetoptError:
      # print help information and exit:
@@ -59,6 +60,7 @@ outdir='.'
 fperjob=-1
 params=''
 onlytag='all'
+checkFile='True'
 for o,a in opts:
     if o in("-?", "-h"):
         usage()
@@ -67,6 +69,7 @@ for o,a in opts:
     elif o in('-j'): samplesDB = a
     elif o in('-d'): dirtag = a
     elif o in('-t'): onlytag = a
+    elif o in('-c'): checkFile = a
 
 
 jsonFile = open(samplesDB,'r')
@@ -137,7 +140,7 @@ for proc in procList :
 	                ifile=ifile+1
 			if(f.startswith('/store')==True):
 				f= 'root://eoscms//eos/cms'+f
-			if(checkInputFile(f)==False):
+			if(checkFile=='True' and checkInputFile(f)==False):
 				print "missing file skipped " + f
 				continue
                 	haddCommand += f + " "

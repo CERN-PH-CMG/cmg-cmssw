@@ -290,11 +290,12 @@ void performanceSummary(string OutDir, string evcat, string signal, string backg
 
    double PUdata[] = {1.344651e+07,   5.90653e+07,   1.409027e+08,   2.413012e+08,   3.337449e+08,   3.98711e+08,   4.301064e+08,   4.32283e+08,   4.138202e+08,   3.82846e+08,   3.451637e+08,   3.043438e+08,   2.62555e+08,   2.213308e+08,   1.819826e+08,   1.456898e+08,   1.134134e+08,   8.577886e+07,   6.301239e+07,   4.495959e+07,   3.116904e+07,   2.100786e+07,   1.377588e+07,   8796407,   5474418,   3323776,   1970638,   1142040,   647538.6,   359547.2,   195673.2,   104459.9,   54745.15,   28185.57,   28005.55,   0.008};
 
+   double PUReweightAvr05[36];  GetWeights( 5 ,PUdata,PUReweightAvr05, 36);
    double PUReweightAvr15[36];  GetWeights(15 ,PUdata,PUReweightAvr15, 36);
    double PUReweightAvr25[36];  GetWeights(25 ,PUdata,PUReweightAvr25, 36);
 
-   double* PUScenaraio[] = {PUReweightAvr15, PUReweightAvr25};
-   string  PUName[] = {"<PU> = 15", "<PU> = 25"};
+   double* PUScenaraio[] = {PUReweightAvr05, PUReweightAvr15, PUReweightAvr25};
+   string  PUName[] = {"<PU> = 5", "<PU> = 15", "<PU> = 25"};
 
    int ntouse = names.size();
 
@@ -330,11 +331,17 @@ void performanceSummary(string OutDir, string evcat, string signal, string backg
         printf("S = %f\n",DY.S);
 
 
-        graphS  ->SetPoint(i, i, DY.S);     graphS  ->SetPointError(i, 0.0, 0.0); //DY.SError);
-        graphDY ->SetPoint(i, i, DY.B);     graphDY ->SetPointError(i, 0.0, 0.0); //DY.BError);
-        graphSDY->SetPoint(i, i, DY.SB);    graphSDY->SetPointError(i, 0.0, 0.0); //DY.SBError);
-        graphB  ->SetPoint(i, i, B .B);     graphB  ->SetPointError(i, 0.0, 0.0); //B .BError);
-        graphSB ->SetPoint(i, i, B .SB);    graphSB ->SetPointError(i, 0.0, 0.0); //B .SBError);
+//        graphS  ->SetPoint(i, i, DY.S);     graphS  ->SetPointError(i, 0.0, 0.0); //DY.SError);
+//        graphDY ->SetPoint(i, i, DY.B);     graphDY ->SetPointError(i, 0.0, 0.0); //DY.BError);
+//        graphSDY->SetPoint(i, i, DY.SB);    graphSDY->SetPointError(i, 0.0, 0.0); //DY.SBError);
+//        graphB  ->SetPoint(i, i, B .B);     graphB  ->SetPointError(i, 0.0, 0.0); //B .BError);
+//        graphSB ->SetPoint(i, i, B .SB);    graphSB ->SetPointError(i, 0.0, 0.0); //B .SBError);
+
+        graphS  ->SetPoint(i, i, DY.S);     graphS  ->SetPointError(i, 0.0, DY.SError);
+        graphDY ->SetPoint(i, i, DY.B);     graphDY ->SetPointError(i, 0.0, DY.BError);
+        graphSDY->SetPoint(i, i, DY.SB);    graphSDY->SetPointError(i, 0.0, DY.SBError);
+        graphB  ->SetPoint(i, i, B .B);     graphB  ->SetPointError(i, 0.0, B .BError);
+        graphSB ->SetPoint(i, i, B .SB);    graphSB ->SetPointError(i, 0.0, B .SBError);
         DY.SHist->SetName((PUName[pS] + DY.SHist->GetName()).c_str() );
         DY.BHist->SetName((PUName[pS] + DY.BHist->GetName()).c_str() );
         SHists[pS*ntouse + i] = (TH1D*) DY.SHist;
@@ -421,7 +428,7 @@ std::cout << "TESTE\n";
      BHists[0*ntouse + i]->SetAxisRange(0, 150, "X");
      BHists[0*ntouse + i]->SetLineColor(colors[0]); BHists[0*ntouse + i]->SetLineWidth(2); BHists[0*ntouse + i]->SetMarkerColor(colors[0]); BHists[0*ntouse + i]->SetMarkerStyle(markers[0]);   BHists[0*ntouse + i]->Draw("HIST");     
      BHists[1*ntouse + i]->SetLineColor(colors[1]); BHists[1*ntouse + i]->SetLineWidth(2); BHists[1*ntouse + i]->SetMarkerColor(colors[1]); BHists[1*ntouse + i]->SetMarkerStyle(markers[1]);   BHists[1*ntouse + i]->Draw("HIST same");
-//     BHists[2*ntouse + i]->SetLineColor(colors[2]); BHists[2*ntouse + i]->SetLineWidth(2); BHists[2*ntouse + i]->SetMarkerColor(colors[1]); BHists[2*ntouse + i]->SetMarkerStyle(markers[2]);   BHists[2*ntouse + i]->Draw("HIST same");
+     BHists[2*ntouse + i]->SetLineColor(colors[2]); BHists[2*ntouse + i]->SetLineWidth(2); BHists[2*ntouse + i]->SetMarkerColor(colors[1]); BHists[2*ntouse + i]->SetMarkerStyle(markers[2]);   BHists[2*ntouse + i]->Draw("HIST same");
      leg->Draw("same");
      TLine* l1 = new TLine(Cuts[0*ntouse + i], 0, Cuts[0*ntouse + i], BHists[0*ntouse + i]->GetMaximum());
      l1->SetLineWidth(3);  l1->SetLineColor(1);
@@ -441,7 +448,7 @@ std::cout << "TESTF\n";
      SHists[0*ntouse + i]->SetAxisRange(0, 250, "X");
      SHists[0*ntouse + i]->SetLineColor(colors[0]); SHists[0*ntouse + i]->SetLineWidth(2); SHists[0*ntouse + i]->SetMarkerColor(colors[0]); SHists[0*ntouse + i]->SetMarkerStyle(markers[0]);   SHists[0*ntouse + i]->Draw("HIST");     
      SHists[1*ntouse + i]->SetLineColor(colors[1]); SHists[1*ntouse + i]->SetLineWidth(2); SHists[1*ntouse + i]->SetMarkerColor(colors[1]); SHists[1*ntouse + i]->SetMarkerStyle(markers[1]);   SHists[1*ntouse + i]->Draw("HIST same");
-//     SHists[2*ntouse + i]->SetLineColor(colors[2]); SHists[2*ntouse + i]->SetLineWidth(2); SHists[2*ntouse + i]->SetMarkerColor(colors[2]); SHists[2*ntouse + i]->SetMarkerStyle(markers[2]);   SHists[2*ntouse + i]->Draw("HIST same");
+     SHists[2*ntouse + i]->SetLineColor(colors[2]); SHists[2*ntouse + i]->SetLineWidth(2); SHists[2*ntouse + i]->SetMarkerColor(colors[2]); SHists[2*ntouse + i]->SetMarkerStyle(markers[2]);   SHists[2*ntouse + i]->Draw("HIST same");
      leg->Draw("same");
      TLine* l2 = new TLine(Cuts[0*ntouse + i], 0, Cuts[0*ntouse + i], SHists[0*ntouse + i]->GetMaximum());
      l2->SetLineWidth(3);  l2->SetLineColor(1);
