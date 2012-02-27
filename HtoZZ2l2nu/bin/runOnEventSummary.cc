@@ -201,8 +201,8 @@ int main(int argc, char* argv[])
   
   mon.addHistogram( new TH1F("njets"        ,";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5) );
   mon.addHistogram( new TH1F("njets3leptons",";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5) );
-  mon.addHistogram( new TH2F("njetsvspu"    ,";Pileup events;Jets;Events", 25,0,25,5,0,5) );  
-  mon.addHistogram( new TH2F("njetsincvspu" ,";Pileup events;Jets;Events", 25,0,25,5,0,5) );   
+  mon.addHistogram( new TH2F("njetsvspu"    ,";Pileup events;Jets;Events", 35,0,35,5,0,5) );  
+  mon.addHistogram( new TH2F("njetsincvspu" ,";Pileup events;Jets;Events", 35,0,35,5,0,5) );   
   for(size_t ibin=1; ibin<=5; ibin++){
       TString label("");
       if(ibin==5) label +="#geq";
@@ -258,10 +258,13 @@ int main(int argc, char* argv[])
   metTypes["assocMet"]            = "assoc-E_{T}^{miss}";
   metTypes["assocCMet"]           = "assocC-E_{T}^{miss}";
   metTypes["assocFwdMet"]         = "assoc + Fwd E_{T}^{miss}";
-  metTypes["assocFwdCMet"]        = "assoc + clust Fwd E_{T}^{miss}";
+  metTypes["assocFwdCMet"]        = "assocC + Fwd E_{T}^{miss}";
   metTypes["clusteredMet"]        = "clustered-E_{T}^{miss}";
   metTypes["minAssocChargedMet"]  = "min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))";
   metTypes["minAssocMet"]         = "min(E_{T}^{miss},assoc-E_{T}^{miss})";
+  metTypes["minAssocCMet"]        = "min(E_{T}^{miss},assocC-E_{T}^{miss})";
+  metTypes["minAssocFwdMet"]      = "min(E_{T}^{miss},assocFwd-E_{T}^{miss})";
+  metTypes["minAssocFwdCMet"]     = "min(E_{T}^{miss},assocFwdC-E_{T}^{miss})";
   metTypes["minClusteredMet"]     = "min(E_{T}^{miss},clustered-E_{T}^{miss})";
   metTypes["minTAssocMet"]        = "min(assoc-E_{T}^{miss}(charged),assoc-E_{T}^{miss})";
   metTypes["minTClusteredMet"]    = "min(assoc-E_{T}^{miss}(charged),clustered-E_{T}^{miss})";
@@ -272,6 +275,9 @@ int main(int argc, char* argv[])
   metTypes["redMetD0"]            = "red-E_{T}^{miss}(D0)";
   metTypes["redAssocChargedMet"]  = "red(E_{T}^{miss},assoc-E_{T}^{miss}(charged))";
   metTypes["redAssocMet"]         = "red(E_{T}^{miss},assoc-E_{T}^{miss})";
+  metTypes["redAssocCMet"]        = "red(E_{T}^{miss},assocC-E_{T}^{miss})";
+  metTypes["redAssocFwdMet"]      = "red(E_{T}^{miss},assocFwd-E_{T}^{miss})";
+  metTypes["redAssocFwdCMet"]     = "red(E_{T}^{miss},assocFwdC-E_{T}^{miss})";
   metTypes["redClusteredMet"]     = "red(E_{T}^{miss},clustered-E_{T}^{miss})";
   metTypes["redTAssocMet"]        = "red(assoc-E_{T}^{miss}(charged),assoc-E_{T}^{miss})";
   metTypes["redTClusteredMet"]    = "red(assoc-E_{T}^{miss}(charged),clustered-E_{T}^{miss})";
@@ -291,7 +297,7 @@ int main(int argc, char* argv[])
       mon.addHistogram( new TH1F( TString("met_") + it->first + "_overqt"     , ";"+it->second+";Events", 100,0,5) );
       mon.addHistogram( new TH1F( TString("met_") + it->first + "_overqtL"    , ";"+it->second+";Events", 100,-5,5) );
       mon.addHistogram( new TH1F( TString("met_") + it->first + "_overqtT"    , ";"+it->second+";Events", 100,-5,5) );
-      mon.addHistogram( new TH2F( TString("met_") + it->first + "_vspu"       , ";Pileup events;"+it->second+";Events", 25,0,25,200,0,500) );
+      mon.addHistogram( new TH2F( TString("met_") + it->first + "_vspu"       , ";Pileup events;"+it->second+";Events", 35,0,35,200,0,500) );
       mon.addHistogram( new TH1F( TString("met_") + it->first + "_mindphijmet", ";min #Delta#phi(jet,"+it->second+");Events",10,0,3.15) );
   }
 
@@ -421,8 +427,8 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F ("VBFiMass3rdlepton",";Inv. Mass", 100, 0.,2000) );
   mon.addHistogram( new TH1F ("VBFcen30JetVeto3rdlepton",";Central 30 Jet Veto", 10, 0.,10) );
   mon.addHistogram( new TH1F ("VBFNBJets303rdlepton", ";N BJets (pT>30);Events", 10,0,10) );
-  mon.addHistogram( new TH1F ("VBFtagvspu", ";#generated vertices", 25, 0,25) );                                                                                                                                                   
-  mon.addHistogram( new TH1F ("VBFtotalvspu", ";#generated vertices", 25, 0,25) );                        
+  mon.addHistogram( new TH1F ("VBFtagvspu", ";#generated vertices", 35, 0,35) );
+  mon.addHistogram( new TH1F ("VBFtotalvspu", ";#generated vertices", 35, 0,35) );                        
 
 
 
@@ -459,8 +465,8 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F ("VBFTKcen30JetVeto3rdlepton",";Central 30 Jet Veto", 10, 0.,10) );
   mon.addHistogram( new TH1F ("VBFTKNBJets303rdlepton", ";N BJets (pT>30);Events", 10,0,10) );
   mon.addHistogram( new TH1F ("VBFTKNJetsAssoc303rdlepton", ";N BJets (pT>30);Events", 10,0,10) );
-  mon.addHistogram( new TH1F ("VBFTKtagvspu", ";#generated vertices", 25, 0,25) );
-  mon.addHistogram( new TH1F ("VBFTKtotalvspu", ";#generated vertices", 25, 0,25) );
+  mon.addHistogram( new TH1F ("VBFTKtagvspu", ";#generated vertices", 35, 0,35) );
+  mon.addHistogram( new TH1F ("VBFTKtotalvspu", ";#generated vertices", 35, 0,35) );
 
 
   mon.addHistogram( new TH1F ("VBFTKNJets", ";VBFNJets", 20, 0,20) );
@@ -828,6 +834,8 @@ int main(int argc, char* argv[])
       LorentzVector rTMetP4    = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , zvv                , isGammaEvent);
       LorentzVector rAMetP4    = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocMetP4         , zvv                , isGammaEvent);
       LorentzVector rACorMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocCMetP4         , zvv                , isGammaEvent);                                                                             
+      LorentzVector rAFwdMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocFwdMetP4         , zvv                , isGammaEvent);
+      LorentzVector rAFwdCorMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocFwdCMetP4         , zvv                , isGammaEvent);
       LorentzVector rCMetP4    = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, clusteredMetP4     , zvv                , isGammaEvent);
       LorentzVector rTAMetP4   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , assocMetP4         , isGammaEvent);
       LorentzVector rTCMetP4   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , clusteredMetP4     , isGammaEvent);
@@ -850,6 +858,9 @@ int main(int argc, char* argv[])
       metTypeValues["clusteredMet"]        = clusteredMetP4;
       metTypeValues["minAssocChargedMet"]  = min(zvv,assocChargedMetP4);
       metTypeValues["minAssocMet"]         = min(zvv,assocMetP4);
+      metTypeValues["minAssocCMet"]        = min(zvv,assocCMetP4);
+      metTypeValues["minAssocFwdMet"]      = min(zvv,assocFwdMetP4);
+      metTypeValues["minAssocFwdCMet"]     = min(zvv,assocFwdCMetP4);
       metTypeValues["minClusteredMet"]     = min(zvv,clusteredMetP4);
       metTypeValues["minTAssocMet"]        = min(assocChargedMetP4,assocMetP4);
       metTypeValues["minTClusteredMet"]    = min(assocChargedMetP4,clusteredMetP4);
@@ -860,7 +871,9 @@ int main(int argc, char* argv[])
       metTypeValues["redMetD0"]            = redMetD0P4;
       metTypeValues["redAssocChargedMet"]  = rTMetP4;
       metTypeValues["redAssocMet"]         = rAMetP4;
-      metTypeValues["redAssocCMet"]         = rACorMetP4;                                                                                                                                                                                    
+      metTypeValues["redAssocCMet"]        = rACorMetP4;
+      metTypeValues["redAssocFwdMet"]      = rAFwdMetP4;
+      metTypeValues["redAssocFwdCMet"]     = rAFwdCorMetP4; 
       metTypeValues["redClusteredMet"]     = rCMetP4;
       metTypeValues["redTAssocMet"]        = rTAMetP4;
       metTypeValues["redTClusteredMet"]    = rTCMetP4;
@@ -1506,8 +1519,8 @@ int main(int argc, char* argv[])
       //########           EVENT LOGGING      ########
       //##############################################
 
-      if(passZmass && passLooseKinematics && passBveto && passZpt && pass3dLeptonVeto){
-          if(outTxtFile && (PassSelVBF[0] || PassSelVBF[4]) && string(tag_subcat.Data())=="vbf"){
+      if((passZmass && passLooseKinematics && passBveto && passZpt && pass3dLeptonVeto) ){
+          if(outTxtFile && ( ((PassSelVBF[0] || PassSelVBF[4]) && string(tag_subcat.Data())=="vbf") || metTypeValues["assocFwdCMet"].pt()>250 ) ){
               fprintf(outTxtFile, "<b>%s event</b> @ %s <br/>\n", tag_subcat.Data(), url.Data());
               fprintf(outTxtFile, "%%$Run=%i$%% %%$Lumi=%i$%% %%$Event=%i$%% <br/>\n",  ev.run,  ev.lumi, ev.event);
 

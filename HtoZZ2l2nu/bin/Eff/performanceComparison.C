@@ -20,16 +20,19 @@ int styles[]  = {1,  2,        9,        9,     1,     1,      1,    1,    2};
 int markers[] = {20, 24,       21,       25,    22,    24,     20,   24,   25};
 
 
-void GetWeights(double NewPU, double OldPU, double* array){
-   double newWeights[25];   
-
+void GetWeights(double NewPU, double* OldPU, double* array, double N){
    double Integral = 0.0;
-   for(int i=0;i<25;i++){
-      newWeights[i] = std::min(TMath::PoissonI(i, NewPU) / TMath::PoissonI(i, OldPU), 25.0);
+   for(int i=0;i<N;i++){Integral+=OldPU[i];}
+   for(int i=0;i<N;i++){OldPU[i] =OldPU[i]/Integral;}
+
+   Integral = 0.0;
+   for(int i=0;i<N;i++){
+      array[i] = std::min(TMath::PoissonI(i, NewPU) / OldPU[i] , 1000.0);
       Integral+=array[i];
+      printf("%3i - %6.5f --> %6.5f  (ratio=%6.5f)\n",i,OldPU[i],array[i],array[i]/OldPU[i]);
    }printf("Integral = %f\n",Integral);
 
-//      printf("%3i - %6.3f --> %6.3f  (ratio=%6.2f)\n",i,array[i],newWeights[i],array[i]/newWeights[i]);
+//   for(int i=0;i<N;i++){array[i] = array[i]/Integral;}
 }
 
 
@@ -164,20 +167,20 @@ stArray  makeArray(string evcat, string name, string title, string signal, strin
       evcat += "_met";
 
       TH2D *signalProc= NULL;
-      signalProc = (TH2D*) GetObjectFromPath(f, signal    +"#rightarrow VV" + "/"+evcat+"_"+name+"vspu", true);    
+      signalProc = (TH2D*) GetObjectFromPath(f, signal    +"#rightarrow VV" + "/"+evcat+"_"+name+"_vspu", true);    
       std::vector<TH2D*> bckgProcVector;
       TH2D* bckgProc = NULL;
       char* BckgSamples = new char [background.size()+1];  strcpy (BckgSamples, background.c_str());
       char* BckgSubSample = strtok (BckgSamples,"|");
       bckgProcVector.clear();
       while (BckgSubSample != NULL){
-         TH2D* tmpHisto = (TH2D*)GetObjectFromPath(f, string(BckgSubSample)+"/"+evcat+"_"+name+"vspu", true);
+         TH2D* tmpHisto = (TH2D*)GetObjectFromPath(f, string(BckgSubSample)+"/"+evcat+"_"+name+"_vspu", true);
          tmpHisto->SetName((string(BckgSubSample) + tmpHisto->GetName()).c_str());
 
          if(GJ && string(BckgSubSample)==string("Z-#gamma^{*}+jets#rightarrow ll")){
             //std::cout << "Use Gamma+Jet\n";
             double ExpDY = tmpHisto->Integral();delete tmpHisto;
-            tmpHisto = (TH2D*) GetObjectFromPath(GJ, "gammasum_"+name+"vspu", true);
+            tmpHisto = (TH2D*) GetObjectFromPath(GJ, "gammasum_"+name+"_vspu", true);
             //printf("Integral = %f vs %f --> ",ExpDY,tmpHisto->Integral());
             tmpHisto->Scale(ExpDY/tmpHisto->Integral());
             //printf("%f\n",tmpHisto->Integral());
@@ -194,6 +197,7 @@ stArray  makeArray(string evcat, string name, string title, string signal, strin
       int nxbins=bckgProc->GetXaxis()->GetNbins();
 
       TH1*signalProj = ((TH2 *)signalProc)->ProjectionY((string("sig_py") + signal + pbuffer).c_str(),1,nxbins);
+      printf("Integral : %f\n",signalProj->Integral());
       fixExtremities(signalProj,true,true);
       TH1*bckgProj   = ((TH2 *)bckgProc)->ProjectionY((string("bckg_py")+ background + pbuffer).c_str(),1,nxbins);
       fixExtremities(bckgProj,true,true);
@@ -214,7 +218,8 @@ stArray  makeArray(string evcat, string name, string title, string signal, strin
              TH1* tmpsignalProj = ((TH2 *)signalProc)->ProjectionY("tmp_sig_py",p,p);
              signalProjPU->Add(tmpsignalProj,PUReweightAvr[p-1]);
          }
-//       signalProjPU->Scale(signalProj->Integral()/signalProjPU->Integral());
+         //make sure that the inegral is unchanged
+         signalProjPU->Scale(signalProj->Integral()/signalProjPU->Integral());
          fixExtremities(signalProjPU,true,true);
 
 
@@ -240,6 +245,9 @@ stArray  makeArray(string evcat, string name, string title, string signal, strin
 
       TGraphAsymmErrors *gr = getEfficiencyCurve(signalProjPU, bckgProjPU, name.find("metL")!=std::string::npos );
       gr->SetName((name+"_eff").c_str());
+
+      printf("Seff = %f & Integral=%f  --> %f\n",SeffCut,signalProjPU->Integral(),SeffCut*signalProjPU->Integral());
+
 
       double S = SeffCut*signalProjPU->Integral();
       double SError; signalProjPU->IntegralAndError(signalProjPU->GetXaxis()->FindBin(Cut), signalProjPU->GetXaxis()->GetNbins(), SError);
@@ -280,26 +288,13 @@ void performanceSummary(string OutDir, string evcat, string signal, string backg
    int styles[]  = {1,  9,        2,        9,        9,     1,     1,      1,    1,    2};
    int markers[] = {20, 22,       21,       25,    22,    24,     20,   24,   25};
 
+   double PUdata[] = {1.344651e+07,   5.90653e+07,   1.409027e+08,   2.413012e+08,   3.337449e+08,   3.98711e+08,   4.301064e+08,   4.32283e+08,   4.138202e+08,   3.82846e+08,   3.451637e+08,   3.043438e+08,   2.62555e+08,   2.213308e+08,   1.819826e+08,   1.456898e+08,   1.134134e+08,   8.577886e+07,   6.301239e+07,   4.495959e+07,   3.116904e+07,   2.100786e+07,   1.377588e+07,   8796407,   5474418,   3323776,   1970638,   1142040,   647538.6,   359547.2,   195673.2,   104459.9,   54745.15,   28185.57,   28005.55,   0.008};
 
-   double PUReweightAvr02[] = {13.6966,12.3621,4.88648,1.91332,0.723482,0.25842,0.0902911,0.0294196,0.00933525,0.00278426,0.000785822,0.00021111,5.19039e-05,1.21975e-05,2.69609e-06,5.59881e-07,1.11159e-07,2.14596e-08,3.86702e-09,6.61371e-10,1.14148e-10,1.86341e-11,3.14171e-12,4.83165e-13,4.43481e-14};
-   double PUReweightAvr6 [] = {1.0, 1.0, 1.0, 1.0, 1.0,1.0, 1.0, 1.0, 1.0, 1.0,1.0, 1.0, 1.0, 1.0, 1.0,1.0, 1.0, 1.0, 1.0, 1.0,1.0, 1.0, 1.0, 1.0, 1.0};
+   double PUReweightAvr15[36];  GetWeights(15 ,PUdata,PUReweightAvr15, 36);
+   double PUReweightAvr25[36];  GetWeights(25 ,PUdata,PUReweightAvr25, 36);
 
-   double PUReweightAvr10[] = {0.00459492,0.0207362,0.0409827,0.0802348,0.151695,0.27092,0.473292,0.771065,1.22335,1.82433,2.57448,3.45815,4.25113,4.99512,5.52051,5.73206,5.69024,5.49257,4.94881,4.23194,3.65202,2.98087,2.51287,1.93228,0.886787};
-   double PUReweightAvr14[] = {0.0005,0.000534372,0.00147858,0.00405261,0.0107268,0.0268206,0.0655972,0.149615,0.332324,0.693815,1.37074,2.57775,4.43637,7.29789,11.2917,16.4141,22.8122,30.8276,38.8859,46.5543,56.2447,64.2716,75.8534,81.6587,52.4662};
-
-//   GetWeights(6 ,6.158,PUReweightAvr6);
-//   GetWeights(10,6.158,PUReweightAvr10);
-//   GetWeights(14,6.158,PUReweightAvr14);
-
-
-//   double* PUScenaraio[] = {PUReweightAvr6,PUReweightAvr10, PUReweightAvr14};
-//   double* PUScenaraio[] = {NULL};//,PUReweightAvr02}; 
-//    string  PUName[] = {"<PU> = 6", "<PU> = 10", "<PU> = 14"};
-
-
-
-   double* PUScenaraio[] = {PUReweightAvr6, PUReweightAvr14};
-   string  PUName[] = {"<PU> = 6", "<PU> = 14"};
+   double* PUScenaraio[] = {PUReweightAvr15, PUReweightAvr25};
+   string  PUName[] = {"<PU> = 15", "<PU> = 25"};
 
    int ntouse = names.size();
 
@@ -320,7 +315,7 @@ void performanceSummary(string OutDir, string evcat, string signal, string backg
   double* Cuts   = new double[(sizeof(PUScenaraio)/sizeof(double)) * ntouse];
 
 
-  for(int pS=0;pS<sizeof(PUScenaraio)/sizeof(double);pS++){
+  for(unsigned int pS=0;pS<sizeof(PUScenaraio)/sizeof(double);pS++){
      TGraphErrors* graphS   = new TGraphErrors(ntouse);  graphS  ->SetLineColor(colors[pS]); graphS  ->SetMarkerColor(colors[pS]); graphS  ->SetMarkerStyle(markers[pS]);
      TGraphErrors* graphDY  = new TGraphErrors(ntouse);  graphDY ->SetLineColor(colors[pS]); graphDY ->SetMarkerColor(colors[pS]); graphDY ->SetMarkerStyle(markers[pS]);
      TGraphErrors* graphSDY = new TGraphErrors(ntouse);  graphSDY->SetLineColor(colors[pS]); graphSDY->SetMarkerColor(colors[pS]); graphSDY->SetMarkerStyle(markers[pS]);
@@ -332,6 +327,8 @@ void performanceSummary(string OutDir, string evcat, string signal, string backg
           stArray B  = makeArray(evcat, names[i], titles[i].Data(), signal, "ZZ|WW|WZ|Single top|t#bar{t}|W+jets|Z-#gamma^{*}+jets#rightarrow ll", f, PUScenaraio[pS], g);
           stArray DY = makeArray(evcat, names[i], titles[i].Data(), signal, background, f, PUScenaraio[pS], g);
         printf("$%35s$ & $\\geq$%iGeV & $%6.2E\\pm%6.2E$ & $%6.2f\\pm%6.2f$ & $%6.2f\\pm%6.2f$ & $%6.2f\\pm%6.2f$ & $%6.2f\\pm%6.2f$ & $%6.2f\\pm%6.2f$ \\\\ \n",DY.Title.c_str(), (int)DY.Cut, DY.SEff, DY.SEffError, DY.S, DY.SError, DY.B, DY.BError,  DY.SB, DY.SBError, B.B, B.BError,  B.SB, B.SBError );
+        printf("S = %f\n",DY.S);
+
 
         graphS  ->SetPoint(i, i, DY.S);     graphS  ->SetPointError(i, 0.0, 0.0); //DY.SError);
         graphDY ->SetPoint(i, i, DY.B);     graphDY ->SetPointError(i, 0.0, 0.0); //DY.BError);
@@ -467,9 +464,9 @@ std::cout << "TESTH\n";
 
 void performancePU(string OutDir, string evcat, string signal, string background,  string fname, const std::vector<string>& names, const std::vector<TString>& titles)
 {
-   int colors[]  = {1,  kGreen-3, kGreen+3, kBlue, kBlue, kRed+3, kRed, kRed, kOrange, kOrange};
-   int styles[]  = {1,  2,        9,        9,     1,     1,      1,    1,    2,       1};
-   int markers[] = {20, 24,       21,       25,    22,    24,     20,   24,   25,      21};
+   int colors[]  = {1,  kGreen-3, kGreen+3, kBlue, kBlue, kRed+3, kRed, kRed, kOrange, kOrange, kOrange};
+   int styles[]  = {1,  2,        9,        9,     1,     1,      1,    1,    2,       1,     1};
+   int markers[] = {20, 24,       21,       25,    22,    24,     20,   24,   25,      21,    20};
 
   int ntouse = names.size();
   TString meanFitFunc("pol3");
@@ -481,10 +478,10 @@ void performancePU(string OutDir, string evcat, string signal, string background
   std::vector<TGraphAsymmErrors *> incEffGrList;
   std::vector< std::vector<TGraphAsymmErrors *> > effGrList; 
   std::vector<std::pair<int,int> > effBins;
-  effBins.push_back(std::pair<int,int>(1,3));
-  effBins.push_back(std::pair<int,int>(4,6));  
-  effBins.push_back(std::pair<int,int>(7,10));
-  effBins.push_back(std::pair<int,int>(10,25));
+  effBins.push_back(std::pair<int,int>(1,5));
+  effBins.push_back(std::pair<int,int>(6,10));  
+  effBins.push_back(std::pair<int,int>(11,15));
+  effBins.push_back(std::pair<int,int>(15,30));
 
   evcat += "_met";
   FILE* pFile = fopen((OutDir + "Eff.txt").c_str(),"w");
@@ -495,17 +492,17 @@ void performancePU(string OutDir, string evcat, string signal, string background
       TString idxStr("");
       idxStr += i;
 
-      std::cout <<  (string(signal)    +"#rightarrow VV" + "/"+evcat+"_"+name+"vspu" ) << endl;
+      std::cout <<  (string(signal)    +"#rightarrow VV" + "/"+evcat+"_"+name+"_vspu" ) << endl;
 
-      TH2D *signalProc= (TH2D*) GetObjectFromPath(f, signal    +"#rightarrow VV" + "/"+evcat+"_"+name+"vspu", true);    
+      TH2D *signalProc= (TH2D*) GetObjectFromPath(f, signal    +"#rightarrow VV" + "/"+evcat+"_"+name+"_vspu", true);    
       TH2D *bckgProc=NULL;
       char* BckgSamples = new char [background.size()+1];  strcpy (BckgSamples, background.c_str());
       char* BckgSubSample = strtok (BckgSamples,"|");
       while (BckgSubSample != NULL){
-///         if(!bckgProc){bckgProc =    (TH2D*)GetObjectFromPath(g, "gammasum_"+name+"vspu", true);
-//         }else{        bckgProc->Add((TH2D*)GetObjectFromPath(g, "gammasum_"+name+"vspu", true));}
-         if(!bckgProc){bckgProc =    (TH2D*)GetObjectFromPath(f, string(BckgSubSample)+"/"+evcat+"_"+name+"vspu", true);
-         }else{        bckgProc->Add((TH2D*)GetObjectFromPath(f, string(BckgSubSample)+"/"+evcat+"_"+name+"vspu", true));}
+///         if(!bckgProc){bckgProc =    (TH2D*)GetObjectFromPath(g, "gammasum_"+name+"_vspu", true);
+//         }else{        bckgProc->Add((TH2D*)GetObjectFromPath(g, "gammasum_"+name+"_vspu", true));}
+         if(!bckgProc){bckgProc =    (TH2D*)GetObjectFromPath(f, string(BckgSubSample)+"/"+evcat+"_"+name+"_vspu", true);
+         }else{        bckgProc->Add((TH2D*)GetObjectFromPath(f, string(BckgSubSample)+"/"+evcat+"_"+name+"_vspu", true));}
          BckgSubSample = strtok (NULL, "|");
       }
 
@@ -514,8 +511,8 @@ void performancePU(string OutDir, string evcat, string signal, string background
       char* AllBckgSamples = new char [150];  strcpy (AllBckgSamples,"ZZ|WW|WZ|Single top|t#bar{t}|W+jets|Z-#gamma^{*}+jets#rightarrow ll");
       char* AllBckgSubSample = strtok (AllBckgSamples,"|");
       while (AllBckgSubSample != NULL){
-         if(!AllbckgProc){AllbckgProc =    (TH2D*)GetObjectFromPath(f, string(AllBckgSubSample)+"/"+evcat+"_"+name+"vspu", true);
-         }else{           AllbckgProc->Add((TH2D*)GetObjectFromPath(f, string(AllBckgSubSample)+"/"+evcat+"_"+name+"vspu", true));}
+         if(!AllbckgProc){AllbckgProc =    (TH2D*)GetObjectFromPath(f, string(AllBckgSubSample)+"/"+evcat+"_"+name+"_vspu", true);
+         }else{           AllbckgProc->Add((TH2D*)GetObjectFromPath(f, string(AllBckgSubSample)+"/"+evcat+"_"+name+"_vspu", true));}
          AllBckgSubSample = strtok (NULL, "|");
       }
 
@@ -616,7 +613,7 @@ void performancePU(string OutDir, string evcat, string signal, string background
   for(size_t ip=0; ip<bckgMeanList.size(); ip++)    bckgMeanList[ip]->Draw(ip==0 ? "ap" : "p" );
   bckgMeanList[0]->GetXaxis()->SetTitle("Pileup");
   bckgMeanList[0]->GetYaxis()->SetTitle("Average");
-  bckgMeanList[0]->SetMaximum(30);
+  bckgMeanList[0]->SetMaximum(50);
   bckgMeanList[0]->SetMinimum(0);
   TLegend *leg=p->BuildLegend(0.20, 0.60, 0.60, 0.90);
   formatForCmsPublic(p,leg,"CMS simulation, Z#rightarrow ll",ntouse);
@@ -625,7 +622,7 @@ void performancePU(string OutDir, string evcat, string signal, string background
   for(size_t ip=0; ip<bckgRMSList.size(); ip++)    bckgRMSList[ip]->Draw(ip==0 ? "ap" : "p" );
   bckgRMSList[0]->GetXaxis()->SetTitle("Pileup");
   bckgRMSList[0]->GetYaxis()->SetTitle("RMS");
-  bckgRMSList[0]->SetMaximum(15);
+  bckgRMSList[0]->SetMaximum(25);
   bckgRMSList[0]->SetMinimum(0);
 
   TString legTit="CMS simulation "+TString(signal.c_str());
@@ -784,47 +781,7 @@ void performanceComparison(string OutDir="Img", string evcat="mumu", string sign
   gStyle->SetPadLeftMargin  (0.15);
   system((string("mkdir -p ") + OutDir).c_str());
 
-  
-  // TString names[]={"metvspu",       "minMetvspu",                       "minClusteredMetvspu",     "unclusteredMetvspu",     "superMinMetvspu"};
-//   TString titles[]={"E_{T}^{miss}", "min assoc. E_{T}^{miss}(charged)", "min assoc. E_{T}^{miss}", "min clean E_{T}^{miss}", "minimized E_{T}^{miss}"};
-  
-//  string names[]  ={"met_metvspu",      "met_assocMetvspu",       "met_cleanMetvspu", "met_minAssocChargedMetvspu", "met_minAssocMetvspu", "met_minCleanMetvspu", "met_superMinMetvspu", "met_redMetvspu", "met_redAssocMetvspu"};
-//  TString titles[] ={"E_{T}^{miss}", "assoc-E_{T}^{miss}", "clean E_{T}^{miss}", "min{E_{T}^{miss},assoc E_{T}^{miss} (charged)}", "min{E_{T}^miss,assoc-E_{T}^{miss})", "min{E_{T}^{miss},clean-E_{T}^{miss}}", "min{E_{T}^{miss},assoc-E_{T}^{miss},clean-E_{T}^{miss},central-E_{T}^{miss}}", "red-E_{T}^{miss}", "red{E_{T}^miss,assoc-E_{T}^{miss})"};
-
-//    string names[]  ={"metL_metvspu",      "metL_assocMetvspu",       "metL_cleanMetvspu", "metL_minAssocChargedMetvspu", "metL_minAssocMetvspu", "metL_minCleanMetvspu", "metL_superMinMetvspu", "met_redMetvspu"};
-//    string names[]  ={"met_metgeq060zptvspu",      "met_assocMetgeq060zptvspu",       "met_cleanMetgeq060zptvspu", "met_minAssocChargedMetgeq060zptvspu", "met_minAssocMetgeq060zptvspu", "met_minCleanMetgeq060zptvspu", "met_superMinMetgeq060zptvspu", "met_redMetgeq060zptvspu"};
-//  TString titles[] ={"E_{T}^{miss}", "assoc-E_{T}^{miss}", "clean E_{T}^{miss}", "min{E_{T}^{miss},assoc E_{T}^{miss} (charged)}", "min{E_{T}^miss,assoc-E_{T}^{miss})", "min{E_{T}^{miss},clean-E_{T}^{miss}}", "min{E_{T}^{miss},assoc-E_{T}^{miss},clean-E_{T}^{miss},central-E_{T}^{miss}}", "red-E_{T}^{miss}"};
-
-
-//    string names[]  ={"met_minAssocMetvspu", "met_minAssocMetgeq40zptvspu", "met_minAssocMetgeq060zptvspu", "met_minAssocMetgeq080zptvspu" };
-//  TString titles[] ={"min{E_{T}^miss,assoc-E_{T}^{miss})", "min{E_{T}^miss,assoc-E_{T}^{miss}) (> 0.4 zpT)", "min{E_{T}^miss,assoc-E_{T}^{miss}) (> 0.6 zpT)", "min{E_{T}^miss,assoc-E_{T}^{miss}) (> 0.8 zpT)" };
-
-//    string names[]  ={"met_minAssocMetvspu", "met_assocMetleq120pfmetvspu", "met_assocMetleq140pfmetvspu", "met_assocMetleq160pfmetvspu" };
-//  TString titles[] ={"min{E_{T}^miss,assoc-E_{T}^{miss})", "E_{T}^miss if assoc-E_{T}^{miss} < 1.2 E_{T}^miss", "E_{T}^miss if assoc-E_{T}^{miss} < 1.4 E_{T}^miss", "E_{T}^miss if assoc-E_{T}^{miss} < 1.6 E_{T}^miss" };
-
-//    string names[]  ={"met_redMetvspu", "met_redMetgeq40zptvspu", "met_redMetgeq060zptvspu", "met_redMetgeq080zptvspu" };
-//  TString titles[] ={"red-E_{T}^{miss}", "red-E_{T}^{miss} (> 0.4 zpT)", "red-E_{T}^{miss} (> 0.6 zpT)", "red-E_{T}^{miss} (> 0.8 zpT)" };
-
-//     string names[]={"met_assocMetvspu",  "met_assocMet5vspu", "met_assocMet10vspu",   "met_assocFwdMetvspu", "met_assocFwdMet5vspu", "met_assocFwdMet10vspu"         };
-//   TString titles[]={"assoc-E_{T}^{miss}  [PT>2]", "assoc-E_{T}^{miss}  [PT>5]", "assoc-E_{T}^{miss}  [PT>10]", "assoc-E_{T}^{miss} + Fwd  [PT>2]", "assoc-E_{T}^{miss} + Fwd  [PT>5]", "assoc-E_{T}^{miss} + Fwd  [PT>10]"};
-
-//     string names[]={"met_assocMetvspu",  "met_assocMet5vspu", "met_assocMet10vspu"};
-//   TString titles[]={"assoc-E_{T}^{miss}  [PT>2]", "assoc-E_{T}^{miss}  [PT>5]", "assoc-E_{T}^{miss}  [PT>10]", "assoc-E_{T}^{miss}"};
-
-//     string names[]={"met_assocFwdMetvspu", "met_assocFwdMet5vspu", "met_assocFwdMet10vspu"         };
-//   TString titles[]={"assoc-E_{T}^{miss} + Fwd  [PT>2]", "assoc-E_{T}^{miss} + Fwd  [PT>5]", "assoc-E_{T}^{miss} + Fwd  [PT>10]"};
-
-
-//     string names[]={"met_metvspu",       "met_centralMetvspu",       "met_assocChargedMetvspu",          "met_assocMetvspu",       "met_assocFwdMetvspu"         };
-//   TString titles[]={"E_{T}^{miss}", "central-E_{T}^{miss}", "assoc E_{T}^{miss} (charged)", "assoc-E_{T}^{miss}", "assoc-E_{T}^{miss} + Fwd"};
-
-//     string names[]={"met_metvspu",       "met_minAssocChargedMetvspu"      , "met_minAssocMetvspu",    "met_redMetvspu"                              , "met_redMinAssocMetvspu", "met_minclusteredMetvspu" , "met_minclusteredAssocMetvspu"        };
-//   TString titles[]={"E_{T}^{miss}",      "min assoc-E_{T}^{miss} (charged)", "min assoc-E_{T}^{miss}", "red [ E_{T}^{miss} , clustered E_{T}^{miss}]", "red [ min assoc-E_{T}^{miss} , clustered E_{T}^{miss}]" };
-//   TString titles[]={"E_{T}^{miss}",      "min~assoc-E_{T}^{miss} (charged)", "min~assoc-E_{T}^{miss}", "red~[ E_{T}^{miss} , clustered~E_{T}^{miss}]", "red [ min~assoc-E_{T}^{miss},clust~E_{T}^{miss}]", "min~clust-E_{T}^{miss}", "min(clust-E_{T}^{miss},assoc E_{T}^{miss})" };
-
-
   std::vector<string> names;   std::vector<TString> titles;
-
 /*
   names.clear();                             titles.clear();
   names.push_back("met"                 );   titles.push_back("E_{T}^{miss}");
@@ -878,50 +835,27 @@ void performanceComparison(string OutDir="Img", string evcat="mumu", string sign
 
   names.clear();                             titles.clear();
   names.push_back("met"                 );   titles.push_back("E_{T}^{miss}");
-  names.push_back("minAssocChargedMet"  );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))");
-  names.push_back("minAssocMet"         );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss})");
-  names.push_back("minClusteredMet"     );   titles.push_back("min(E_{T}^{miss},clustered-E_{T}^{miss})");
-  names.push_back("min3Met"             );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
-  names.push_back("redAssocMet"         );   titles.push_back("red(E_{T}^{miss},assoc-E_{T}^{miss})");
-  names.push_back("redClusteredMet"     );   titles.push_back("red(E_{T}^{miss},clustered-E_{T}^{miss})");
-  names.push_back("red3Met"             );   titles.push_back("red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
-//  names.push_back("centralMet"           );   titles.push_back("central E_{T}^{miss}");
-//  names.push_back("assocMet"            );   titles.push_back("assoc-E_{T}^{miss}");
-//  names.push_back("assocCMet"            );   titles.push_back("assoc-E_{T}^{miss} + #delta#beta");
-//  names.push_back("minAssocMet"         );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss})");
-//  names.push_back("mincentralAssocMet"    );   titles.push_back("min(cental-E_{T}^{miss},assoc-E_{T}^{miss})");
-  performancePU(OutDir, evcat, signal, background,  fname, names, titles);
-  performanceSummary(OutDir, evcat, signal, background,  fname, names, titles);
-//  performanceSummary(OutDir+"eq0j", evcat+"eq0jets" , signal, background,  fname, names, titles);
-//  performanceSummary(OutDir+"eq1j", evcat+"eq1jets" , signal, background,  fname, names, titles);
-//  performanceSummary(OutDir+"eq2j", evcat+"geq2jets", signal, background,  fname, names, titles);
-
-
-
-/*
-  names.clear();                             titles.clear();
-  names.push_back("met"                 );   titles.push_back("E_{T}^{miss}");
-//  names.push_back("minAssocChargedMet"  );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))");
-//  names.push_back("minAssocMet"         );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss})");
-//  names.push_back("minClusteredMet"     );   titles.push_back("min(E_{T}^{miss},clustered-E_{T}^{miss})");
-//  names.push_back("min3Met"             );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
-//  names.push_back("redAssocMet"         );   titles.push_back("red(E_{T}^{miss},assoc-E_{T}^{miss})");
-//  names.push_back("redClusteredMet"     );   titles.push_back("red(E_{T}^{miss},clustered-E_{T}^{miss})");
-//  names.push_back("red3Met"             );   titles.push_back("red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
-  performancePU(OutDir, evcat, signal, background,  fname, names, titles);
-//  performanceSummary(OutDir + "GJData_", evcat, signal, background,  fname, names, titles);
-*/
-
-
-/*
-  names.clear();                             titles.clear();
-  names.push_back("met"                 );   titles.push_back("E_{T}^{miss}");
+  names.push_back("centralMet"          );   titles.push_back("central E_{T}^{miss}");
+  names.push_back("clusteredMet"        );   titles.push_back("clustered-E_{T}^{miss}");
   names.push_back("assocChargedMet"     );   titles.push_back("assoc-E_{T}^{miss}(charged)");
   names.push_back("assocMet"            );   titles.push_back("assoc-E_{T}^{miss}");
-  names.push_back("assocFwdCMet"        );   titles.push_back("assoc + ClusteredForward -E_{T}^{miss}");
-  names.push_back("clusteredMet"        );   titles.push_back("clustered-E_{T}^{miss}");
-  performancePU(OutDir+"Test", evcat, signal, background,  fname, names, titles);
-*/
+  names.push_back("assocCMet"           );   titles.push_back("assoc-E_{T}^{miss} + #delta#beta");
+  names.push_back("assocFwdMet"         );   titles.push_back("assocFwd-E_{T}^{miss}" );
+  names.push_back("assocFwdCMet"        );   titles.push_back("assoFwdc-E_{T}^{miss} + #delta#beta");
+  performancePU(OutDir+"Simple_", evcat, signal, background,  fname, names, titles);
+
+
+  names.clear();                             titles.clear();
+  names.push_back("met"                 );   titles.push_back("E_{T}^{miss}");
+  names.push_back("minAssocChargedMet"  );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))");
+  names.push_back("minAssocFwdMet"      );   titles.push_back("min(E_{T}^{miss},assocFwd-E_{T}^{miss})");
+  names.push_back("minClusteredMet"     );   titles.push_back("min(E_{T}^{miss},clustered-E_{T}^{miss})");
+  names.push_back("min3Met"             );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
+  names.push_back("redAssocFwdMet"      );   titles.push_back("red(E_{T}^{miss},assocFwd-E_{T}^{miss})");
+  names.push_back("redClusteredMet"     );   titles.push_back("red(E_{T}^{miss},clustered-E_{T}^{miss})");
+  names.push_back("red3Met"             );   titles.push_back("red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
+  performancePU(OutDir+"Combined_", evcat, signal, background,  fname, names, titles);
+  performanceSummary(OutDir, evcat, signal, background,  fname, names, titles);
 
 
   return;
