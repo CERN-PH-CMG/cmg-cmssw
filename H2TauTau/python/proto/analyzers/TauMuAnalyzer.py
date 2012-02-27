@@ -38,6 +38,8 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         if tau.decayMode() == 0 and \
                tau.calcEOverP() < 0.2: #reject muons faking taus in 2011B
             return False
+        elif tau.tauID("byLooseCombinedIsolationDeltaBetaCorr")==False:
+            return False
         else:
             return True
 

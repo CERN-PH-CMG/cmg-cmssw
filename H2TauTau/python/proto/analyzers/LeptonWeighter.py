@@ -34,7 +34,6 @@ class LeptonWeighter( Analyzer ):
     def beginLoop(self):
         print self, self.__class__
         super(LeptonWeighter,self).beginLoop()
-        # self.counters.addCounter( self.name )
         self.averages.add('leptonWeight', Average('leptonWeight') )
         self.averages.add('eff_data', Average('eff_data') )
         self.averages.add('eff_MC', Average('eff_MC') )
