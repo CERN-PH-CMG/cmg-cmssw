@@ -23,6 +23,9 @@ class TriggerAnalyzer( Analyzer ):
         super(TriggerAnalyzer,self).beginLoop()
         self.triggerList = TriggerList( self.cfg_comp.triggers )
         self.counters.addCounter('Trigger')
+        self.counters.counter('Trigger').register('All events')
+        self.counters.counter('Trigger').register('trigger passed')
+        
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
@@ -31,12 +34,12 @@ class TriggerAnalyzer( Analyzer ):
         run = iEvent.eventAuxiliary().id().run()
         
         self.counters.counter('Trigger').inc('All events')
-        passed, hltPath = self.triggerList.triggerPassed(event.triggerObject,
-                                                         run, self.cfg_comp.isData)
+        # import pdb; pdb.set_trace()
+        passed, hltPath = self.triggerList.triggerPassed(event.triggerObject, run, self.cfg_comp.isData)
         if not passed:
             return False
         event.hltPath = hltPath 
-        self.counters.counter('Trigger').inc('trigger passed ')
+        self.counters.counter('Trigger').inc('trigger passed')
         return True
 
     def write(self):
