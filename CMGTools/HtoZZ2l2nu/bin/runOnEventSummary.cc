@@ -1046,10 +1046,9 @@ int main(int argc, char* argv[])
                       mon.fillHisto(TString("met_") + it->first + "_overqtL", tags_full, metPt*dileptonLongi/zpt, iweight);
                       mon.fillHisto(TString("met_") + it->first + "_overqtT", tags_full, metPt*dileptonPerp/zpt,iweight);
 
-                      if(mindphijmet<0.3)continue;
+                      if(mindphijmet<0.5)continue;
                       mon.fillHisto(TString("met_") + it->first, tags_full,it->second.pt(),iweight);
           
-
                       mon.fill2DHisto(TString("met_") + it->first+"_vspu", tags_full,ev.ngenITpu,it->second.pt(),iweight);
                       mon.fill2DHisto(TString("met_") + it->first+"zpt", tags_full,it->second.pt(),zpt,iweight);
                       mon.fillHisto(TString("met_") + it->first+"minzpt", tags_full,std::min(it->second.pt(),zll.pt()),iweight);
