@@ -18,6 +18,13 @@ class VBFAnalyzer( Analyzer ):
     def beginLoop(self):
         super(VBFAnalyzer,self).beginLoop()
         self.counters.addCounter('VBF')
+        count = self.counters.counter('VBF')
+        count.register('all events')
+        count.register('at least 2 good jets')
+        count.register('at least 2 clean jets')
+        count.register('M_jj > {cut:3.1f}'.format(cut=self.cfg_ana.Mjj))
+        count.register('delta Eta > {cut:3.1f}'.format(cut=self.cfg_ana.deltaEta) )
+        count.register('no central jets')
         
     def process(self, iEvent, event):
         self.readCollections( iEvent )

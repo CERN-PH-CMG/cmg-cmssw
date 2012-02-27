@@ -54,6 +54,8 @@ class H2TauTauEventSorter( Analyzer ):
     def beginLoop(self):
         super(H2TauTauEventSorter,self).beginLoop()
         self.counters.addCounter('Sorter')
+        self.counters.counter('Sorter').register('All events')
+        self.counters.counter('Sorter').register('Matched = None or True')
         self.averages.add('generatorWeight', Average('generatorWeight') )
         self.averages.add('eventWeight', Average('eventWeight') )
 
