@@ -14,6 +14,9 @@ class TriggerList( object ):
         Internally, each trigger in the list will be kept as a Counter, which allows to count how many
         events have been tested against, and have passed each trigger.'''
         self.triggerList = map( Trigger, triggerList )
+        for trig in self.triggerList:
+            trig.register('events tested')
+            trig.register('events passed')
         fileName = '/'.join( [os.environ['CMSSW_BASE'],
                               'src/CMGTools/RootTools/python/utils/triggerEvolution_all.txt'])
         datasets = ['TauPlusX']
@@ -60,16 +63,16 @@ class TriggerList( object ):
         #    return False
         if len(triggerList)==0:
             # no trigger specified, accepting all events
-            return True 
+            return True, None
         passed = False
         firstTrigger = None
         for trigger in triggerList:
-            trigger.inc('a: tot   ')
+            trigger.inc('events tested')
             if triggerObject.getSelectionRegExp( trigger.name ):
                 prescaleFactor = triggerObject.getPrescale( trigger.name )
                 if usePrescaled or prescaleFactor == 1 or not isData:
                     # prescales are set to 0 in MC
-                    trigger.inc('b: passed')
+                    trigger.inc('events passed')
                     passed = True
                     if firstTrigger is None:
                         firstTrigger = trigger.name
