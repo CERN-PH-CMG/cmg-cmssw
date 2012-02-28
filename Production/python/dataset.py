@@ -211,10 +211,10 @@ def createDataset( user, dataset, pattern,  readcache=False, basedir=None):
         pickle.dump(dataset, pckfile)
 
     def readCache(data, user, pattern):
-        print 'reading cache'
         cachename = cacheFileName(data, user, pattern)
         pckfile = open( cachename)
         dataset = pickle.load(pckfile)      
+        print 'reading cache'
         return dataset
 
     if readcache:
