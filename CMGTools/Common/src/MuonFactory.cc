@@ -1,6 +1,6 @@
 #include "CMGTools/Common/interface/MuonFactory.h"
 
-cmg::MuonFactory::event_ptr cmg::MuonFactory::create(const edm::Event& iEvent, const edm::EventSetup& iSetup) const{
+cmg::MuonFactory::event_ptr cmg::MuonFactory::create(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 	
   edm::Handle<pat::MuonCollection> muonCands;
   cmg::MuonFactory::event_ptr result(new cmg::MuonFactory::collection);

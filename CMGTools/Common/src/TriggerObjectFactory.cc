@@ -12,7 +12,7 @@
 #include <map>
 #include <set>
 
-cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm::Event& iEvent, const edm::EventSetup& iSetup) const{
+cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
     const std::string isRealDataString("isRealData");
     const bool isRealData = iEvent.isRealData();
