@@ -334,3 +334,6 @@ process.outpath += process.ria
 
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("histograms_CMG.root"))
+
+# Make the embedded track available for electrons
+process.patElectronsAK5.embedTrack = True
