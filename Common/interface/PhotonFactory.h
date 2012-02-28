@@ -14,7 +14,7 @@ namespace cmg {
     PhotonFactory(const edm::ParameterSet& ps):
       photonLabel_(ps.getParameter<edm::InputTag>("inputCollection"))
       {}
-    virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
+    virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
 /*     virtual void set(const pat::PhotonPtr& input, cmg::Photon* const output) const; */
 
   private:

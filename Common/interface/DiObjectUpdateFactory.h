@@ -18,7 +18,7 @@ namespace cmg{
 
     //need to override from Factory to insert "typename"
     typedef typename cmg::Factory< T >::event_ptr event_ptr;
-    virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
+    virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
     
   private:
 
@@ -31,7 +31,7 @@ namespace cmg{
 
 
 template< typename T >
-typename cmg::DiObjectUpdateFactory<T>::event_ptr cmg::DiObjectUpdateFactory<T>::create(const edm::Event& iEvent, const edm::EventSetup&) const{
+typename cmg::DiObjectUpdateFactory<T>::event_ptr cmg::DiObjectUpdateFactory<T>::create(const edm::Event& iEvent, const edm::EventSetup&){
     
   typedef std::vector< T > collection;
   typedef edm::View<reco::LeafCandidate> met_collection;

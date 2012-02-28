@@ -24,7 +24,7 @@ class BaseMETModificationFactory : public Factory<cmg::BaseMET>{
       ptThreshold_(ps.getParameter<double>("ptThreshold")),
       operator_(ps.getParameter<std::string>("operator")){
     }
-    virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
+    virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
 
   private:
     const edm::InputTag inputLabel_;

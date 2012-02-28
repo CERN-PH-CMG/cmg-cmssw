@@ -32,7 +32,7 @@ class DiObjectFactory : public cmg::Factory< cmg::DiObject<T,U> >, public cmg::S
 
         //need to override from Factory to insert "typename"
         typedef typename cmg::Factory<typename cmg::DiObject<T,U> >::event_ptr event_ptr;
-        virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
+        virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
         
         ///Set alphaT etc
         virtual void set(const std::pair<T,U>& pair, cmg::DiObject<T,U>* const obj) const;
@@ -72,7 +72,7 @@ cmg::DiObject<T,T> make(const T& l1, const T& l2){
 }
 
 template< typename T, typename U >
-typename cmg::DiObjectFactory<T,U>::event_ptr cmg::DiObjectFactory<T,U>::create(const edm::Event& iEvent, const edm::EventSetup&) const{
+typename cmg::DiObjectFactory<T,U>::event_ptr cmg::DiObjectFactory<T,U>::create(const edm::Event& iEvent, const edm::EventSetup&){
     
     typedef typename std::vector<typename cmg::DiObject<T,U> > collection;
     typedef typename std::set<typename cmg::DiObject<T,U> > set;

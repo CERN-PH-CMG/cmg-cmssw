@@ -23,7 +23,7 @@ namespace cmg {
     BaseJetFactory(const edm::ParameterSet& ps);
     virtual ~BaseJetFactory();
 
-    virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
+    virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
     virtual void set(const pat::JetPtr& input, cmg::BaseJet* const output) const;
 
   private:

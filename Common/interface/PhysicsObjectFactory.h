@@ -24,7 +24,7 @@ class PhysicsObjectFactory : public cmg::Factory<cmg::PhysicsObjectWithPtr<PATPt
         }
         typedef typename cmg::Factory<cmg::PhysicsObjectWithPtr<PATPtr> >::event_ptr event_ptr;
         
-        virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
+        virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
         
     private:
         const edm::InputTag inputLabel_;
@@ -33,7 +33,7 @@ class PhysicsObjectFactory : public cmg::Factory<cmg::PhysicsObjectWithPtr<PATPt
 }
 
 template <class PATPtr>
-typename cmg::PhysicsObjectFactory<PATPtr>::event_ptr cmg::PhysicsObjectFactory<PATPtr>::create(const edm::Event& iEvent, const edm::EventSetup&) const{
+typename cmg::PhysicsObjectFactory<PATPtr>::event_ptr cmg::PhysicsObjectFactory<PATPtr>::create(const edm::Event& iEvent, const edm::EventSetup&){
     
   edm::Handle< edm::View<typename PATPtr::value_type> > cands;
   typedef typename std::vector<typename cmg::PhysicsObjectWithPtr<PATPtr> > collection;

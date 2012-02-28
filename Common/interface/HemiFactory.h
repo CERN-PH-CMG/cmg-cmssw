@@ -39,7 +39,7 @@ namespace cmg {
         
     typedef cmg::Factory<cmg::Hemisphere>::event_ptr event_ptr;
     virtual event_ptr create(const edm::Event&,
-                             const edm::EventSetup&) const;
+                             const edm::EventSetup&);
     void set(std::vector<edm::Ptr<reco::Candidate> > const& input,
              cmg::Hemisphere& object) const;
 

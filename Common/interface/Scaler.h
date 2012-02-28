@@ -19,7 +19,7 @@ namespace cmg {
     Scaler(const edm::ParameterSet& ps);
     virtual ~Scaler() {};
     typedef typename cmg::Factory<T>::event_ptr event_ptr;
-    virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
+    virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
 
   private:
     const edm::InputTag candLabel_;
@@ -42,7 +42,7 @@ cmg::Scaler<T>::Scaler(const edm::ParameterSet& ps):
 
 template <class T>
 typename cmg::Scaler<T>::event_ptr cmg::Scaler<T>::create(const edm::Event& iEvent,
-                                                                const edm::EventSetup&) const
+                                                                const edm::EventSetup&)
 {
   typedef typename std::vector<T> collection;
   edm::Handle<collection> candCands;
