@@ -1,5 +1,5 @@
-[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_newDiTaus_03Feb12'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_cmginpat_20Feb12'),
+[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'patrick_mvaDaniele_Feb28'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'patrick_mvaDaniele_Feb28'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_regcounters_27Feb12'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_pybatch_24Feb12'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_regcounters_27Feb12'),
