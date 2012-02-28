@@ -25,42 +25,47 @@ class Electron;
 class ElectronFactory;
 
 class Electron : public cmg::Lepton<pat::ElectronPtr>{
-public:
-	
-	Electron(){
-	}
-	Electron(const value& e):
-        cmg::Lepton<value>::Lepton(e),
-        mva_(UnSet(float)),
-        sigmaIetaIeta_(UnSet(Double_t)),
-        deltaPhiSuperClusterTrackAtVtx_(UnSet(Double_t)),
-        deltaEtaSuperClusterTrackAtVtx_(UnSet(Double_t)),
-        hadronicOverEm_(UnSet(Double_t)),
-        numberOfHits_(UnSet(Double_t)),
-        convDist_(UnSet(Double_t)),
-        convDcot_(UnSet(Double_t)),
-        isEcalDriven_(UnSet(cmg::TriBool)){
-		}
-	virtual ~Electron(){
-	}
-	
+ public:
+  
+  Electron(){}
+
+  Electron(const value& e):
+    cmg::Lepton<value>::Lepton(e),
+    mva_(UnSet(float)),
+    mvaDaniele_(UnSet(float)),
+    sigmaIetaIeta_(UnSet(Double_t)),
+    deltaPhiSuperClusterTrackAtVtx_(UnSet(Double_t)),
+    deltaEtaSuperClusterTrackAtVtx_(UnSet(Double_t)),
+    hadronicOverEm_(UnSet(Double_t)),
+    numberOfHits_(UnSet(Double_t)),
+    convDist_(UnSet(Double_t)),
+    convDcot_(UnSet(Double_t)),
+    isEcalDriven_(UnSet(cmg::TriBool)){
+  }
+
+    virtual ~Electron(){
+    }
+    
     float mva() const{
-        return mva_;
+      return mva_;
+    }
+    float mvaDaniele() const { 
+      return mvaDaniele_;
     }
     Double_t sigmaIetaIeta() const{
-        return sigmaIetaIeta_;
+      return sigmaIetaIeta_;
     }
     Double_t deltaPhiSuperClusterTrackAtVtx() const{
-        return deltaPhiSuperClusterTrackAtVtx_;
+      return deltaPhiSuperClusterTrackAtVtx_;
     }
     Double_t deltaEtaSuperClusterTrackAtVtx() const{
-        return deltaEtaSuperClusterTrackAtVtx_;
+      return deltaEtaSuperClusterTrackAtVtx_;
     }
     Double_t hadronicOverEm() const{
-        return hadronicOverEm_;
+      return hadronicOverEm_;
     }
     Double_t numberOfHits() const{
-        return numberOfHits_;
+      return numberOfHits_;
     }
     Double_t convDist() const{
         return convDist_;   
@@ -85,7 +90,10 @@ public:
     
 private:
     
+    // That's the PF mva
     float mva_;
+    // That's Daniele's mva
+    float mvaDaniele_;
     // variables needed for WP selections
     Double_t sigmaIetaIeta_;
     Double_t deltaPhiSuperClusterTrackAtVtx_;
