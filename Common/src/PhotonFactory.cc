@@ -2,7 +2,7 @@
 
 cmg::PhotonFactory::event_ptr
 cmg::PhotonFactory::create(const edm::Event& iEvent,
-                           const edm::EventSetup&) const
+                           const edm::EventSetup&)
 {
   edm::Handle<pat::PhotonCollection> cands;
 

@@ -86,7 +86,7 @@ bool next_combination(BidirectionalIterator first,
 
 cmg::HemisphereFactory::event_ptr
 cmg::HemisphereFactory::create(const edm::Event& iEvent,
-                               const edm::EventSetup& iSetup) const
+                               const edm::EventSetup& iSetup)
 {
   typedef std::vector<cmg::Hemisphere> collection;
   cmg::HemisphereFactory::event_ptr result(new collection);

@@ -1,7 +1,7 @@
 #include "CMGTools/Common/interface/FatJetFactory.h"
 #include "AnalysisDataFormats/CMGTools/interface/BaseJet.h"
 
-cmg::FatJetFactory::event_ptr cmg::FatJetFactory::create(const edm::Event& iEvent, const edm::EventSetup&) const
+cmg::FatJetFactory::event_ptr cmg::FatJetFactory::create(const edm::Event& iEvent, const edm::EventSetup&)
 {
 
   typedef std::vector<cmg::FatJet> collection;

@@ -2,7 +2,7 @@
 #include "PhysicsTools/JetMCUtils/interface/JetMCTag.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
-cmg::TauFactory::event_ptr cmg::TauFactory::create(const edm::Event& iEvent, const edm::EventSetup& iSetup) const{
+cmg::TauFactory::event_ptr cmg::TauFactory::create(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 	
   edm::Handle<pat::TauCollection> tauCands;
   cmg::TauFactory::event_ptr result(new cmg::TauFactory::collection);

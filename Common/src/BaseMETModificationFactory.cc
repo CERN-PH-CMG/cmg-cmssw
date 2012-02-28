@@ -1,7 +1,7 @@
 #include "CMGTools/Common/interface/BaseMETModificationFactory.h"
 
 ///Recalculate the MET using any collection of candidates
-cmg::BaseMETModificationFactory::event_ptr cmg::BaseMETModificationFactory::create(const edm::Event& iEvent, const edm::EventSetup&) const{
+cmg::BaseMETModificationFactory::event_ptr cmg::BaseMETModificationFactory::create(const edm::Event& iEvent, const edm::EventSetup&){
   // here read a view 
   typedef edm::View<cmg::BaseMET> MetView;
   

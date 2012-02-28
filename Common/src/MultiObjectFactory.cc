@@ -6,7 +6,7 @@
 
 cmg::MultiObjectFactory::event_ptr
 cmg::MultiObjectFactory::create(edm::Event const& iEvent,
-                                edm::EventSetup const& iSetup) const
+                                edm::EventSetup const& iSetup)
 {
   typedef std::vector<cmg::MultiObject> collection;
   cmg::MultiObjectFactory::event_ptr result(new collection);

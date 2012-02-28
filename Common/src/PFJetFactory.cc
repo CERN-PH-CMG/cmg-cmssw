@@ -5,7 +5,7 @@
 using namespace std;
 
 cmg::PFJetFactory::event_ptr cmg::PFJetFactory::create(const edm::Event& iEvent, 
-						       const edm::EventSetup&) const{
+						       const edm::EventSetup&){
 	
   edm::Handle<pat::JetCollection> jetCands;
   

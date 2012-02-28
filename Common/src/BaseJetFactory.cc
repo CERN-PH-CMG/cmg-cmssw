@@ -38,7 +38,7 @@ cmg::BaseJetFactory::~BaseJetFactory()
 }
 
 cmg::BaseJetFactory::event_ptr cmg::BaseJetFactory::create(const edm::Event& iEvent,
-                                                           const edm::EventSetup&) const
+                                                           const edm::EventSetup&)
 {
 
   edm::Handle<pat::JetCollection> jetCands;

@@ -1,10 +1,15 @@
 #include "CMGTools/Common/interface/ElectronFactory.h"
 
-cmg::ElectronFactory::event_ptr cmg::ElectronFactory::create(const edm::Event& iEvent, const edm::EventSetup& iSetup) const{
+cmg::ElectronFactory::event_ptr cmg::ElectronFactory::create(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 	
   edm::Handle<pat::ElectronCollection> electronCands;
   cmg::ElectronFactory::event_ptr result(new cmg::ElectronFactory::collection);
   iEvent.getByLabel(electronLabel_,electronCands);
+
+  // Get primary vertices 
+  edm::Handle< std::vector<reco::Vertex> > primaryVertices;
+  bool found = iEvent.getByLabel(primaryVertexLabel_, primaryVertices);
+  int nVertices = found ? primaryVertices->size() : 0;
 
   unsigned index = 0;
   for(pat::ElectronCollection::const_iterator e = electronCands->begin();
@@ -18,16 +23,18 @@ cmg::ElectronFactory::event_ptr cmg::ElectronFactory::create(const edm::Event& i
     leptonFactory_.set(electronPtr->gsfTrack(),&elec,iEvent,iSetup);
     
     //now the electron like ones
-    set(electronPtr,&elec);
+    set(electronPtr,&elec,nVertices);
    		
     result->push_back(elec);
   }
   return result;
 }
 
-void cmg::ElectronFactory::set(const pat::ElectronPtr& input, cmg::Electron* const output) const{
+void cmg::ElectronFactory::set(const pat::ElectronPtr& input, cmg::Electron* const output, int nVertices){
 
     output->mva_ = input->mva();
+    output->mvaDaniele_ = mvaEstimator_.mva(*input,nVertices);
+    //output->mvaDaniele_ = -1.;
     
     //see http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/PhysicsTools/SelectorUtils/interface/SimpleCutBasedElectronIDSelectionFunctor.h?view=markup    
     output->sigmaIetaIeta_ = input->sigmaIetaIeta();
