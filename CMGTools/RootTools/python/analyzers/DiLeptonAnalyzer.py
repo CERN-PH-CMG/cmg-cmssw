@@ -25,8 +25,8 @@ class DiLeptonAnalyzer( Analyzer ):
         count.register('di-lepton cut string ok')
         count.register('lepton accept')
         count.register('leg1 offline cuts passed')
-        count.register('leg2 offline cuts passed')
         count.register('leg1 trig matched')
+        count.register('leg2 offline cuts passed')
         count.register('leg2 trig matched')
         count.register('exactly 1 di-lepton')
         count.register('{min:3.1f} < m < {max:3.1f}'.format( min = self.cfg_ana.m_min,
@@ -71,13 +71,6 @@ class DiLeptonAnalyzer( Analyzer ):
         else:
             self.counters.counter('DiLepton').inc('leg1 offline cuts passed')
 
-        # testing leg2 
-        selDiLeptons = [ diL for diL in selDiLeptons if \
-                         self.testLeg2( diL.leg2() ) ]
-        if len(selDiLeptons) == 0:
-            return False
-        else:
-            self.counters.counter('DiLepton').inc('leg2 offline cuts passed')
 
         if len(self.cfg_comp.triggers)>0:
             # trigger matching leg1
@@ -88,6 +81,15 @@ class DiLeptonAnalyzer( Analyzer ):
             else:
                 self.counters.counter('DiLepton').inc('leg1 trig matched')
 
+        # testing leg2 
+        selDiLeptons = [ diL for diL in selDiLeptons if \
+                         self.testLeg2( diL.leg2() ) ]
+        if len(selDiLeptons) == 0:
+            return False
+        else:
+            self.counters.counter('DiLepton').inc('leg2 offline cuts passed')
+
+        if len(self.cfg_comp.triggers)>0:
             # trigger matching leg2
             selDiLeptons = [diL for diL in selDiLeptons if \
                             self.trigMatched(event, diL.leg2(), 'leg2')]
@@ -219,4 +221,5 @@ class DiLeptonAnalyzer( Analyzer ):
         else:
             raise ValueError( 'legName should be leg1 or leg2, not {leg}'.format(
                 leg=legName )  )
-        return triggerMatched(leg, triggerObjects, path, filter, dR2Max=0.5)
+        # the dR2Max value is 0.3^2
+        return triggerMatched(leg, triggerObjects, path, filter, dR2Max=0.089999)

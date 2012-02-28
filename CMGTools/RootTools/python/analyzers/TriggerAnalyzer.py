@@ -35,7 +35,9 @@ class TriggerAnalyzer( Analyzer ):
         
         self.counters.counter('Trigger').inc('All events')
         # import pdb; pdb.set_trace()
-        passed, hltPath = self.triggerList.triggerPassed(event.triggerObject, run, self.cfg_comp.isData)
+        passed, hltPath = self.triggerList.triggerPassed(event.triggerObject,
+                                                         run, self.cfg_comp.isData,
+                                                         usePrescaled = False)
         if not passed:
             return False
         event.hltPath = hltPath 
