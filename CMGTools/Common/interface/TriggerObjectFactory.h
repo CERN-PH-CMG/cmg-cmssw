@@ -23,7 +23,7 @@ class TriggerObjectFactory : public Factory<cmg::TriggerObject>{
 	    saveAllHLTPathsInObjs_(ps.getUntrackedParameter<bool>("saveAllHLTPathsInObjs",false)),
             tagTriggerEvent_( "hltTriggerSummaryAOD" ){
         }
-        virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
+        virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
         
         static std::string getProcessName(edm::Run&, const std::string&);
         virtual bool beginRun(edm::Run&, edm::EventSetup const&);

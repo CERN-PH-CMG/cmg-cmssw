@@ -23,7 +23,7 @@ class BaseMETFactory : public Factory<cmg::BaseMET>{
       ptThreshold_(ps.getParameter<double>("ptThreshold"))
       {
     }
-    virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
+    virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
     ///utility method for met calculation
     static void calcET(const reco::Candidate& cand, double* ex, double* ey, double* et);
     
@@ -34,7 +34,7 @@ class BaseMETFactory : public Factory<cmg::BaseMET>{
 
 ///Include a template specialization so that we can also convert the pat::MET - in this case ptThreshold is ignored 
 template <>
-BaseMETFactory<pat::MET>::event_ptr BaseMETFactory<pat::MET>::create(const edm::Event& iEvent, const edm::EventSetup&) const{
+BaseMETFactory<pat::MET>::event_ptr BaseMETFactory<pat::MET>::create(const edm::Event& iEvent, const edm::EventSetup&){
   // here read a view 
   typedef edm::View<pat::MET> ViewType; 
   edm::Handle< ViewType > inputs;
@@ -77,7 +77,7 @@ void cmg::BaseMETFactory<T>::calcET(const reco::Candidate& cand, double* ex, dou
 
 ///Recalculate the MET using any collection of candidates
 template <class T>
-typename cmg::BaseMETFactory<T>::event_ptr cmg::BaseMETFactory<T>::create(const edm::Event& iEvent, const edm::EventSetup&) const{
+typename cmg::BaseMETFactory<T>::event_ptr cmg::BaseMETFactory<T>::create(const edm::Event& iEvent, const edm::EventSetup&){
   // here read a view 
   typedef typename edm::View<T> ViewType; 
   edm::Handle< ViewType > inputs;

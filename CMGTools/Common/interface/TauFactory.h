@@ -24,7 +24,7 @@ namespace cmg{
       tauLabel_(ps.getParameter<edm::InputTag>("inputCollection")),
       leptonFactory_(ps.getParameter<edm::ParameterSet>("leptonFactory")){
     }
-    virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
+    virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
     virtual void set(const pat::TauPtr& input,  cmg::Tau*  const output, const edm::Event&, const edm::EventSetup&) const;
         
 

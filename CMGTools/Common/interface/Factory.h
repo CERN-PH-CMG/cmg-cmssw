@@ -33,7 +33,7 @@ class Factory {
   }
 
   /// access events and create a collection of object_type
-  virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const = 0;
+  virtual event_ptr create(const edm::Event&, const edm::EventSetup&) = 0;
   
   //hooks for the factory for lumi, run, etc
   virtual bool beginRun(edm::Run&, edm::EventSetup const&){

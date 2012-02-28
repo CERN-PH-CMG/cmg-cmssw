@@ -27,7 +27,7 @@ namespace cmg {
 
       typedef cmg::Factory<cmg::MultiObject>::event_ptr event_ptr;
       virtual event_ptr create(edm::Event const& iEvent,
-                               edm::EventSetup const& iSetup) const;
+                               edm::EventSetup const& iSetup);
 
       void set(std::vector<edm::Ptr<reco::Candidate> > const& input,
                cmg::MultiObject& object) const;

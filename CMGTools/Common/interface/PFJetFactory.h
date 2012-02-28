@@ -20,7 +20,7 @@ class PFJetFactory : public Factory<cmg::PFJet>{
       baseJetFactory_(ps.getParameter<edm::ParameterSet>("baseJetFactory")), 
       useConstituents_(ps.getParameter<bool>("useConstituents")) {}
 
-    virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
+      virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
     
   private:
     const edm::InputTag jetLabel_;

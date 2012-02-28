@@ -35,7 +35,7 @@ namespace cmg {
 
       // Need to override from Factory to insert "typename".
       typedef cmg::Factory< cmg::FatJet >::event_ptr event_ptr;
-      virtual event_ptr create(const edm::Event&, const edm::EventSetup&) const;
+      virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
 
       void set(std::vector<edm::Ptr<reco::Candidate> > const& input,
                cmg::FatJet& object) const;
