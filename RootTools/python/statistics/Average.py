@@ -45,7 +45,7 @@ class Average(object):
         ave, err = self.average()
         tmp = None
         if ave is not None:
-            tmp = 'Average {name:<15}: {average:5.2f} +- {err:5.2f}'
+            tmp = 'Average {name:<15}: {average: 8.4f} +- {err:5.2f}'
             tmp = tmp.format( name = self.name,
                               average = ave,
                               err = err)
