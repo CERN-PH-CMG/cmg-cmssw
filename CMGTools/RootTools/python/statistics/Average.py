@@ -8,38 +8,33 @@ class Average(object):
     def __init__(self, name):
         self.name = name
         self.sumw = 0
-        self.value = 0
-        self.values = []
+        self.sumwx = 0
+        self.sumwx2 = 0
+        # self.values = []
         
     def add(self, value, weight=1.0):
-        self.value += value * weight
         self.sumw += weight
-        self.values.append( (value, weight) )        
+        self.sumwx += weight * value
+        self.sumwx2 += weight * value * value
+        # self.values.append( (value, weight) )        
 
-    def variance(self, ave):
-        sumw = 0
-        sumw2 = 0
-        wsum = 0
-        for x, w in self.values:
-            delta = x - ave 
-            wsum += w * delta * delta
-            sumw += w
-            sumw2 += w*w
-        variance = wsum * sumw / (sumw*sumw - sumw2)
-        return variance 
+    def variance(self):
+        return self.sumwx2 / self.sumw - \
+               self.sumwx * self.sumwx / (self.sumw*self.sumw)
     
     def average( self ):
         ave = None
         err = None 
         if self.sumw:
-            ave = self.value / self.sumw
-            err = math.sqrt( self.variance( ave )) /  math.sqrt( self.sumw ) 
+            ave = self.sumwx / self.sumw
+            err = math.sqrt( self.variance() ) / math.sqrt( self.sumw ) 
         return ave, err
 
     def __add__(self, other):
         '''Add two averages (+).'''
-        self.value += other.value
         self.sumw += other.sumw
+        self.sumwx += other.sumwx
+        self.sumwx2 += other.sumwx2
         return self
 
     def __iadd__(self, other):
@@ -94,6 +89,7 @@ if __name__ == '__main__':
     c = Average('TestAve')
     c.add( 1, 1 )
     c.add( 3, 2 )
+    print c.variance()
 
     c2 = Average('TestAve2')
     # c2.add(10,1)
@@ -107,7 +103,7 @@ if __name__ == '__main__':
     import random
 
     c3 = Average('Gauss')
-    for i in range(0,100):
+    for i in range(0,1000):
         c3.add( random.gauss( 5, 1 ) ) 
     print c3
     # print math.sqrt( c3.variance(c3.average()[0]) )
