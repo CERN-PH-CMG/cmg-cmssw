@@ -1,0 +1,13 @@
+<use   name="DataFormats/ParticleFlowCandidate"/>
+<use   name="DataFormats/PatCandidates"/>
+<use   name="DataFormats/JetReco"/>
+<use   name="root"/>
+<use   name="rootcore"/>
+<use   name="rootinteractive"/>
+<use   name="rootrflx"/>
+<use   name="FWCore/Framework"/>
+<use   name="FWCore/ParameterSet"/>
+<use   name="FWCore/Sources"/>
+<use   name="boost"/>
+<export>
+</export>
