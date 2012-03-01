@@ -230,9 +230,9 @@ cmsBatch.py 1 testCMGTools_cfg.py -b 'bsub -q 8nm < ./batchScript.sh'
 batchManager.parser_.add_option("-p", "--program", dest="prog",
                                 help="program to run on your cfg file",
                                 default="cmsRun")
-batchManager.parser_.add_option("-b", "--batch", dest="batch",
-                                help="batch command. default is: 'bsub -q 8nh < batchScript.sh'. You can also use 'nohup < ./batchScript.sh &' to run locally.",
-                                default="bsub -q 8nh < .batchScript.sh")
+## batchManager.parser_.add_option("-b", "--batch", dest="batch",
+##                                 help="batch command. default is: 'bsub -q 8nh < batchScript.sh'. You can also use 'nohup < ./batchScript.sh &' to run locally.",
+##                                 default="bsub -q 8nh < .batchScript.sh")
 batchManager.parser_.add_option("-c", "--command-args", dest="cmdargs",
                                 help="command line arguments for the job",
                                 default=None)
