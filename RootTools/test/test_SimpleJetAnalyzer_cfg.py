@@ -66,7 +66,11 @@ elif period == 'Period_2011AB':
 
 jetAna = cfg.Analyzer(
     'SimpleJetAnalyzer',
-    ptCut = 8
+    ptCut = 8,
+    ## use pat::Jets
+    ## jetCollection = ('selectedPatJetsAK5','std::vector<pat::Jet>'),
+    ## or cmg::Jets
+    jetCollection = ('cmgPFJetSel','std::vector<cmg::PFJet>')
     )
 
 
