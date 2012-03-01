@@ -7,7 +7,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 pickRelVal = False
 
 # turn on when running on MC
-runOnMC = True
+runOnMC = False
 
 # AK5 sequence with no cleaning is the default
 # the other sequences can be turned off with the following flags.
@@ -65,12 +65,12 @@ process.source = datasetToSource(
     # to test MC:
     # 'cbern',
     # '/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2',
-    'CMS',
-    '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_Chamonix12_START44_V10-v2/AODSIM',
+    # 'CMS',
+    # '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_Chamonix12_START44_V10-v2/AODSIM',
     # to test Data:
-    # 'cmgtools',
-    # '/DoubleElectron/Run2011A-HZZ-PromptSkim-v6/AOD/V2', 
-    '.*root'
+    'cmgtools',
+    '/DoubleElectron/Run2011A-HZZ-PromptSkim-v6/AOD/V2', 
+    # '.*root'
     ) 
 
 if pickRelVal:
@@ -120,6 +120,9 @@ jetAlgoAK5="AK5"
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgoAK5, runOnMC=runOnMC, postfix=postfixAK5,
           jetCorrections=('AK5PFchs', jetCorrections))
 
+# removing stupid useless stuff from our muons:
+getattr(process,"patMuons"+postfixAK5).embedCaloMETMuonCorrs = False 
+getattr(process,"patMuons"+postfixAK5).embedTcMETMuonCorrs = False 
 
 if doJetPileUpCorrection:
     from CommonTools.ParticleFlow.Tools.enablePileUpCorrection import enablePileUpCorrection
@@ -148,14 +151,21 @@ getattr(process,"pfNoJet"+postfixAK5).enable = True
 getattr(process,"pfIsolatedMuons"+postfixAK5).isolationCut = 999999
 getattr(process,"pfIsolatedElectrons"+postfixAK5).isolationCut = 999999
 
-# adding vbtf and cic electron IDs
-from CMGTools.Common.PAT.addPATElectronID_cff import addPATElectronID
-addPATElectronID( process, postfixAK5 , runOnMC )
-
 # insert the PFMET sifnificance calculation
 from CMGTools.Common.PAT.addMETSignificance_cff import addMETSig
 addMETSig( process, postfixAK5 )
 
+# adding "standard muons and electons"
+# (made from all reco muons, and all gsf electrons, respectively)
+from CMGTools.Common.PAT.addStdLeptons import addStdMuons
+from CMGTools.Common.PAT.addStdLeptons import addStdElectrons
+stdMuonSeq = addStdMuons( process, postfixAK5, 'StdLep', 'pt()>5', runOnMC )
+stdElectronSeq = addStdElectrons( process, postfixAK5, 'StdLep', 'pt()>5', runOnMC )
+
+# adding vbtf and cic electron IDs to both electron collections
+from CMGTools.Common.PAT.addPATElectronID_cff import addPATElectronID
+addPATElectronID( process, 'patDefaultSequence', postfixAK5)
+addPATElectronID( process, 'stdElectronSequence', postfixAK5+'StdLep')
 
 # ---------------- Sequence AK5LC, lepton x-cleaning ---------------
 
@@ -240,8 +250,14 @@ process.p = cms.Path( process.patTriggerDefaultSequence )
 
 process.p += getattr(process,"patPF2PATSequence"+postfixAK5)
 
+process.stdLeptonSequence = cms.Sequence(
+    stdMuonSeq +
+    stdElectronSeq 
+    )
+process.p += process.stdLeptonSequence
+
 if runAK5LC:
-    process.p += getattr(process,"patPF2PATSequence"+postfixAK5LC) 
+    process.p += getattr(process,"patPF2PATSequence"+postfixAK5LC)
 
 if runAK7:
     process.p += getattr(process,"patPF2PATSequence"+postfixAK7) 
@@ -279,6 +295,13 @@ if runCMG:
     tuneCMGSequences(process, postpostfix='CMG')
 
     process.p += process.analysisSequence
+
+    from CMGTools.Common.PAT.addStdLeptons import addCmgMuons, addCmgElectrons
+    process.cmgStdLeptonSequence = cms.Sequence(
+        addCmgMuons( process, 'StdLep', 'selectedPatMuonsAK5StdLep'  ) +
+        addCmgElectrons( process, 'StdLep', 'selectedPatElectronsAK5StdLep'  ) 
+        )
+    process.cmgObjectSequence += process.cmgStdLeptonSequence
 
     if runAK5LC:
         process.p += process.analysisSequenceAK5LCCMG

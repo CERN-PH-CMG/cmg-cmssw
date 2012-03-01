@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def addPATElectronID( process, postfix, runOnMC):
+def addPATElectronID( process, sequenceName, postfix ):
     """
     Adds electron ID working points to PAT electrons
     """
@@ -11,15 +11,26 @@ def addPATElectronID( process, postfix, runOnMC):
 
     process.load('CMGTools.Common.PAT.patElectronID_cff')
 
-    if runOnMC :
-        getattr(process, "makePatElectrons" + postfix).replace(
-            getattr(process, "electronMatch" + postfix),
-            process.patElectronIDSequence  + getattr(process, "electronMatch" + postfix) 
+##     getattr(process, "makePatElectrons" + postfix).replace(
+##             getattr(process, "patElectrons" + postfix),
+##             process.patElectronIDSequence  + getattr(process, "patElectrons" + postfix) 
+##             )
+    
+    getattr(process, sequenceName + postfix).replace(
+            getattr(process, "patElectrons" + postfix),
+            process.patElectronIDSequence  + getattr(process, "patElectrons" + postfix) 
             )
+    
 
-    else :
-        getattr(process, "patPF2PATSequence" + postfix ).replace(
-            getattr(process, "patDefaultSequence" + postfix),
-            process.patElectronIDSequence +  getattr(process, "patDefaultSequence" + postfix)
-            )
+##     if runOnMC :
+##         getattr(process, "makePatElectrons" + postfix).replace(
+##             getattr(process, "electronMatch" + postfix),
+##             process.patElectronIDSequence  + getattr(process, "electronMatch" + postfix) 
+##             )
+
+##     else :
+##         getattr(process, "patPF2PATSequence" + postfix ).replace(
+##             getattr(process, "patDefaultSequence" + postfix),
+##             process.patElectronIDSequence +  getattr(process, "patDefaultSequence" + postfix)
+##             )
 
