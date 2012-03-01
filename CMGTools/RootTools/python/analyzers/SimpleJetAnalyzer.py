@@ -308,6 +308,10 @@ class SimpleJetAnalyzer (Analyzer) :
         self.jetHistos = JetHistograms ('Jets')
         self.cleanJetHistos = JetHistograms ('CleanJets')
         self.matchedCleanJetHistos = JetHistograms ('MatchedCleanJets')
+        self.matchedCleanJetHistos_barrel = JetHistograms ('MatchedCleanJets_barrel')
+        self.matchedCleanJetHistos_endtk = JetHistograms ('MatchedCleanJets_endtk')
+        self.matchedCleanJetHistos_endNOtk = JetHistograms ('MatchedCleanJets_endNOtk')
+        self.matchedCleanJetHistos_fwd = JetHistograms ('MatchedCleanJets_fwd')
         self.LPtmatchedCleanJetHistos = JetHistograms ('LPtMatchedCleanJets') # low pt (< 40 GeV)
         self.HPtmatchedCleanJetHistos = JetHistograms ('HPtMatchedCleanJets') # high pt (> 40 GeV)
         self.matchedCleanJetHistosList = [JetHistograms ('MatchedCleanJets_'+ str (i)) for i in range (10)]
@@ -329,11 +333,11 @@ class SimpleJetAnalyzer (Analyzer) :
         self.unmatchedCleanJetHistosComponentsList = [FractionJetHistograms ('UnmatchedCleanJetsCompontents_'+str (i)) for i in range (10)]
 
         # histograms for the resolution of matched jets
-        self.matchedCleanJetHistosResolution = ResolutionJetHistograms ('MatchedCleanJetsResolution', 50, 5)
-        self.matchedCleanJetHistosResolution_barrel = ResolutionJetHistograms ('MatchedCleanJetsResolution_barrel', 50, 5)
-        self.matchedCleanJetHistosResolution_endtk = ResolutionJetHistograms ('MatchedCleanJetsResolution_endtk', 50, 5)
-        self.matchedCleanJetHistosResolution_endNOtk = ResolutionJetHistograms ('MatchedCleanJetsResolution_endNOtk', 50, 5)
-        self.matchedCleanJetHistosResolution_fwd = ResolutionJetHistograms ('MatchedCleanJetsResolution_fwd', 50, 5)
+        self.matchedCleanJetHistosResolution = ResolutionJetHistograms ('MatchedCleanJetsResolution', 50, 1)
+        self.matchedCleanJetHistosResolution_barrel = ResolutionJetHistograms ('MatchedCleanJetsResolution_barrel', 50, 1)
+        self.matchedCleanJetHistosResolution_endtk = ResolutionJetHistograms ('MatchedCleanJetsResolution_endtk', 50, 1)
+        self.matchedCleanJetHistosResolution_endNOtk = ResolutionJetHistograms ('MatchedCleanJetsResolution_endNOtk', 50, 1)
+        self.matchedCleanJetHistosResolution_fwd = ResolutionJetHistograms ('MatchedCleanJetsResolution_fwd', 50, 1)
 
         self.h_nvtx = TH1F ("h_nvtx", "" ,50, 0, 50) ; 
 
@@ -421,15 +425,19 @@ class SimpleJetAnalyzer (Analyzer) :
             if abs (jet.gen.eta ()) < 1.4 :
                 self.matchedCleanJetHistosSuperList_barrel[event.vertexBin][index].fillJet (jet)
                 self.matchedCleanJetHistosResolution_barrel.fillJet (jet, len (event.vertices))
+                self.matchedCleanJetHistos_barrel.fillJet (jet)
             elif 1.6 < abs (jet.gen.eta ()) < 2.5 :    
                 self.matchedCleanJetHistosSuperList_endtk[event.vertexBin][index].fillJet (jet)
                 self.matchedCleanJetHistosResolution_endtk.fillJet (jet, len (event.vertices))
+                self.matchedCleanJetHistos_endtk.fillJet (jet)
             elif 2.6 < abs (jet.gen.eta ()) < 2.9 :    
                 self.matchedCleanJetHistosSuperList_endNOtk[event.vertexBin][index].fillJet (jet)
                 self.matchedCleanJetHistosResolution_endNOtk.fillJet (jet, len (event.vertices))
+                self.matchedCleanJetHistos_endNOtk.fillJet (jet)
             elif 3.1 < abs (jet.gen.eta ()) :    
                 self.matchedCleanJetHistosSuperList_fwd[event.vertexBin][index].fillJet (jet)
                 self.matchedCleanJetHistosResolution_fwd.fillJet (jet, len (event.vertices))
+                self.matchedCleanJetHistos_fwd.fillJet (jet)
         
         self.unmatchedCleanJetHistos.fillEvent (event.unmatchedCleanJets)
 
@@ -453,6 +461,11 @@ class SimpleJetAnalyzer (Analyzer) :
         self.jetHistos.Write (self.file)
         self.cleanJetHistos.Write (self.file)
         self.matchedCleanJetHistos.Write (self.file)
+        self.matchedCleanJetHistos_barrel.Write (self.file)
+        self.matchedCleanJetHistos_endtk.Write (self.file)
+        self.matchedCleanJetHistos_endNOtk.Write (self.file)
+        self.matchedCleanJetHistos_fwd.Write (self.file)
+        
         self.LPtmatchedCleanJetHistos.Write (self.file)
         self.HPtmatchedCleanJetHistos.Write (self.file)
         for i in range (10) : self.matchedCleanJetHistosList[i].Write (self.file)
