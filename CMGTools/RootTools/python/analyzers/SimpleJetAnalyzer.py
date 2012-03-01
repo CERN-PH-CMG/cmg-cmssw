@@ -24,12 +24,12 @@ from CMGTools.RootTools.statistics.Average import Average
 from CMGTools.RootTools.statistics.Histograms import Histograms
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle,Jet, GenJet
 from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection, matchObjectCollection2, deltaR2
+from CMGTools.RootTools.utils.PileupJetHistograms import PileupJetHistograms
+## from CMGTools.RootTools.RootTools import loadLibs
 
 from ROOT import TH1F, TH2F, TFile, THStack, TF1, TGraphErrors
 
-
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-
 
 class ResolutionJetHistograms (Histograms) :
     ''' energy resolution as a function of the jet eta for different number of vertexes'''
@@ -152,9 +152,11 @@ class FractionJetHistograms (Histograms) :
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
 
     def fillJet (self, jet) :
-        for i in range (1, 8) :
-            self.histos[i].Fill (jet.eta (), jet.component (i).fraction ())
-
+        try:
+            for i in range (1, 8) :
+                self.histos[i].Fill (jet.eta (), jet.component (i).fraction ())
+        except:
+            pass
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
 
     def fillEvent (self, jets) :
@@ -248,9 +250,11 @@ class JetHistograms (Histograms):
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
 
     def fillFrac (self, jet) :
-        for i in range (1, 8) :
-            self.h_frac_com.Fill (i, jet.component (i).fraction ())
-
+        try:
+            for i in range (1, 8) :
+                self.h_frac_com.Fill (i, jet.component (i).fraction ())
+        except:
+            pass
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
 
     def fillEvent (self, jets) :
@@ -278,13 +282,15 @@ class JetHistograms (Histograms):
 
 class SimpleJetAnalyzer (Analyzer) :
     '''A simple jet analyzer for Pietro.'''
+    ### def __init__(self,cfg_ana, cfg_comp, looperName):
+    ###     loadLibs()
+    ###     super (SimpleJetAnalyzer, self).__init__(cfg_ana, cfg_comp, looperName)
 
     def declareHandles (self) :
         super (SimpleJetAnalyzer, self).declareHandles ()
         self.handles['jets'] =  AutoHandle (
-            'cmgPFJetSel',
-            'std::vector<cmg::PFJet>'
-           )
+            *self.cfg_ana.jetCollection
+            )
         self.mchandles['leptons2'] =  AutoHandle (
             'genLeptonsStatus2',
             'std::vector<reco::GenParticle>'
@@ -339,7 +345,16 @@ class SimpleJetAnalyzer (Analyzer) :
         self.matchedCleanJetHistosResolution_endNOtk = ResolutionJetHistograms ('MatchedCleanJetsResolution_endNOtk', 50, 1)
         self.matchedCleanJetHistosResolution_fwd = ResolutionJetHistograms ('MatchedCleanJetsResolution_fwd', 50, 1)
 
-        self.h_nvtx = TH1F ("h_nvtx", "" ,50, 0, 50) ; 
+        # histograms for pileup jet identification variables
+        self.vtxBins   = (0,5,10,15,20,30) ## (0,2,4,6,10,15,20,30,35)
+        self.ptBins    = (20,30,50,100) ## (20,30,40,50,100)
+        self.etaBins   = (0,1.4,1.5,2.9)
+        self.puEtaLables = ["_barrel","_endtk","_endNOtk","_fwd"]
+        self.matchedCleanHistosId = PileupJetHistograms("MatchedCleanHistosId",self.vtxBins,self.ptBins,self.etaBins,etalabels=self.puEtaLables)
+        self.unmatchedCleanHistosId = PileupJetHistograms("UnmatchedCleanHistosId",self.vtxBins,self.ptBins,self.etaBins,etalabels=self.puEtaLables)
+ 
+        self.h_nvtx = TH1F ("h_nvtx", "" ,50, 0, 50)
+        
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
 
@@ -357,7 +372,8 @@ class SimpleJetAnalyzer (Analyzer) :
         # get the jets in the jets variable
         jets = self.handles['jets'].product ()
         # filter jets with some selections
-        event.jets = [ Jet (jet) for jet in jets if (abs (jet.eta ()) < jetEtaCut)]
+        ## event.jets = [ Jet (jet) for jet in jets if (abs (jet.eta ()) < jetEtaCut)]
+        event.jets = [ jet for jet in jets if (abs (jet.eta ()) < jetEtaCut)]
         self.jetHistos.fillEvent (event.jets)
         
         # get status 2 leptons
@@ -448,6 +464,9 @@ class SimpleJetAnalyzer (Analyzer) :
         self.unmatchedCleanJetHistosComponentsList[event.vertexBin].fillEvent (event.unmatchedCleanJets)
         self.matchedCleanJetHistosResolution.fillEvent (event.matchedCleanJets, len (event.vertices))
 
+        self.matchedCleanHistosId.fillEvent(event.matchedCleanJets,event.vertices)
+        self.unmatchedCleanHistosId.fillEvent(event.unmatchedCleanJets,event.vertices)
+        
         # check that the same gen jet is not matched to more than one reco
 #        for jet1 in event.cleanJets:
 #            for jet2 in event.cleanJets:
@@ -458,6 +477,8 @@ class SimpleJetAnalyzer (Analyzer) :
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
 
     def write (self):
+        from ROOT import gROOT
+        gROOT.SetBatch(True)
         self.jetHistos.Write (self.file)
         self.cleanJetHistos.Write (self.file)
         self.matchedCleanJetHistos.Write (self.file)
@@ -520,7 +541,12 @@ class SimpleJetAnalyzer (Analyzer) :
         
         self.matchedCleanJetHistosResolution_fwd.summary ()
         self.matchedCleanJetHistosResolution_fwd.Write (self.file)
+
+        self.matchedCleanHistosId.Write(self.file)
+        self.unmatchedCleanHistosId.Write(self.file)
         
         self.file.cd ()
         self.h_nvtx.Write ()
+        
+        self.file.Close()
         
