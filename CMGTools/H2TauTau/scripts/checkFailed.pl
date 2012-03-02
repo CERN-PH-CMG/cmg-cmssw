@@ -50,20 +50,22 @@ foreach $job (@executefiles){
 
 		if( $exitword[0] eq "cms::Exception" and $execemption==0){
 		    $success=0;
-		    $exitcode="${exitcode} cms::Exception";
+		    $exitcode="${exitcode} , cms::Exception";
 		    $execemption=1;
 		}	
-
 		if( $exitworkd[0] eq "Problem" and $exitworkd[1] eq "with" and $exitworkd[0] eq "configuration" and $exitworkd[0] eq "file"){
 		    $success=0;
-		    $exitcode="${exitcode} configuration";
+		    $exitcode="${exitcode} , configuration";
 		}
-
 		if( $exitword[0] eq "----" and 	$exitword[1] eq "ProductNotFound"){
 		    $success=0;
-		    $exitcode="${exitcode} ProductNotFound";
+		    $exitcode="${exitcode} , ProductNotFound";
 		}
-		
+		if( $exitword[0] eq "std::bad_alloc" and $exitword[1] eq "exception"){
+		    $success=0;
+		    $exitcode="${exitcode} , std::bad_alloc";
+		}	
+
 
 		############look for bad collections
 		if($exitword[0] eq "RootInputFileSequence::initFile():" and $exitword[1] eq "Input" and $exitword[2] eq "file"

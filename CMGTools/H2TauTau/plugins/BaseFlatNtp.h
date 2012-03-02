@@ -64,6 +64,11 @@ protected:
   int lumiblock_;
   int eventid_;
 
+  int nvtx_;
+  float vtxx_;
+  float vtxy_;
+  float vtxz_;
+
   
   edm::Handle< std::vector<reco::GenParticle> > genParticles_;
   void printMCGen(edm::Handle< std::vector<reco::GenParticle> > & genList);

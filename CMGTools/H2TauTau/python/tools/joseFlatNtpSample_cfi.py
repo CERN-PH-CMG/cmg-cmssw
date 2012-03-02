@@ -20,4 +20,5 @@ tauMuFlatNtp = cms.EDAnalyzer(
     diTauTag =  cms.InputTag(""),
     sampleGenEventType =   cms.int32( 0 ),
     sampleTruthEventType =  cms.int32( 0 ),
+    randsigma = cms.double(0.),
     )

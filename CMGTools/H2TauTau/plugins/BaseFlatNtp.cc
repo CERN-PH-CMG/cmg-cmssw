@@ -45,14 +45,17 @@ void BaseFlatNtp::beginJob(){
 
 
   file_ = new edm::Service<TFileService>();
+  //tree_->Branch("",&,"/I");
 
   tree_ = (*file_)->make<TTree>("tree","tree");
   tree_->Branch("eventweight",&eventweight_,"eventweight/F");
   tree_->Branch("runnumber",&runnumber_,"runnumber/I");
   tree_->Branch("lumiblock",&lumiblock_,"lumiblock/I");
   tree_->Branch("eventid",&eventid_,"eventid/I");
-  //tree_->Branch("",&,"/I");
-
+  tree_->Branch("nvtx",&nvtx_,"nvtx/I");//
+  tree_->Branch("vtxx",&vtxx_,"vtxx/F");
+  tree_->Branch("vtxy",&vtxy_,"vtxy/F");
+  tree_->Branch("vtxz",&vtxz_,"vtxz/F");
 }
 
 
@@ -75,6 +78,7 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
 
   iEvent.getByLabel(edm::InputTag("offlinePrimaryVertices"), vertices_);
 
+
   ///fill trigger flag
   trigpass_=0;
   edm::Handle< std::vector<cmg::TriggerObject> > trig;
@@ -84,9 +88,10 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
     //cout<<path->label()<<" "<<path->instance()<<" "<<path->process()<<endl;
     //trig->begin()->printSelections(cout);
     if(trig->begin()->hasSelection((*path)->label()))
-      if(trig->begin()->getSelection((*path)->label())){
-	trigpass_=1;
-      }
+      if(trig->begin()->getSelection((*path)->label()))
+	if(trig->begin()->getPrescale((*path)->label())==1 || dataType_.compare("MC")==0){
+	  trigpass_=1;
+	}
   }
   //cout<<firstRun_<<" "<<lastRun_<<" "<<runnumber_<<" "<<trigpass_<<endl;
 
@@ -116,8 +121,15 @@ bool BaseFlatNtp::applySelections(){
 }
 
 bool BaseFlatNtp::fill(){
+
   lumiblock_=iEvent_->luminosityBlock();
   eventid_=iEvent_->id().event();
+
+  nvtx_=vertices_->size();
+  vtxx_=vertices_->begin()->x();
+  vtxy_=vertices_->begin()->y();
+  vtxz_=vertices_->begin()->z();
+
 
   return 1;
 }
