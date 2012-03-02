@@ -1,3 +1,5 @@
+#!/bin/env python
+
 import sys
 import os
 import re
@@ -13,21 +15,28 @@ def jobDir( allJobsDir, job ):
     return '{all}/Job_{job}'.format(all=allJobsDir,
                                     job=job)
 
-def lsfReport( stdoutgz ):
+def lsfReport( stdoutgz, unzip=False):
     sep_line = '-'*70
     print
     print sep_line
     print stdoutgz
-    print 
-    stdout = gzip.open(stdoutgz)
+    print
+    stdout = None
+    if unzip:
+        stdout = gzip.open(stdoutgz)
+    else:
+        stdout = open(stdoutgz)
     for line in stdout.readlines()[-50:]:
         line = line.rstrip('\n')
         print line
 
 def jobReport( allJobsDir, job ):
-    jobDir = jobDir( allJobsDir, job )
-    for root, dirs, files in os.walk(jobDir):
+    jdir = jobDir( allJobsDir, job )
+    for root, dirs, files in os.walk(jdir):
         stdout = 'STDOUT.gz'
+        if stdout in files:
+            lsfReport('/'.join( [root, stdout] ), True)
+        stdout = 'STDOUT'       
         if stdout in files:
             lsfReport('/'.join( [root, stdout] ))
 
@@ -61,6 +70,10 @@ if __name__ == '__main__':
     parser.add_option("-b", "--batch", dest="batch",
                       help="batch command. default is: 'bsub -q 8nh < batchScript.sh'. You can also use 'nohup < ./batchScript.sh &' to run locally.",
                       default="bsub -q 8nh < ./batchScript.sh")
+    parser.add_option("-c", "--readcache", dest="readcache",
+                      action = 'store_true',
+                      default=False,
+                      help='Read from the cache.')
     
     (options,args) = parser.parse_args()
 
@@ -74,7 +87,7 @@ if __name__ == '__main__':
     user = options.user
     pattern = options.pattern
 
-    data = createDataset(user, dataset, pattern, True)
+    data = createDataset(user, dataset, pattern, options.readcache)
 
     files = data.listOfGoodFiles()
     # print files
