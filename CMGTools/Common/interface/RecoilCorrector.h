@@ -6,7 +6,6 @@
 #include <vector>
 #include <sstream>
 #include <string>
-
 #include "TFile.h"
 #include "TTree.h"
 #include "TCanvas.h"
@@ -31,8 +30,6 @@
 // where leptonPt, leptonPhi are dilepton kinematics for z->ll and single lepton kinematics for w->lnu
 //
 
-
-//COLIN: should not do that in a header file. tolerated in .cc files
 using namespace std;
 
 class RecoilCorrector
@@ -41,14 +38,13 @@ class RecoilCorrector
 public:
   RecoilCorrector(string iNameZDat, int iSeed=0xDEADBEEF);
   RecoilCorrector(string iNameZDat1, string iPrefix, int iSeed=0xDEADBEEF);
-  void CorrectAll(double &met, double &metphi, double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double &iU1,double &iU2,double iFluc,int njet=0);
+  void CorrectAll(double &met, double &metphi, double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double &iU1,double &iU2,double iFluc,double iScale=0,int njet=0);
   void Correct(double &pfmet, double &pfmetphi, double &trkmet, double &trkmetphi, 
-	       double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double iFluc    ,int njet=0);
-  void CorrectType1(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,double iFluc,int njet=0);
-  void CorrectType2(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,double iFluc,int njet=0);
+	       double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double iFluc    ,double iScale=0,int njet=0);
+  void CorrectType1(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,double iFluc,double iScale=0,int njet=0);
+  void CorrectType2(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,double iFluc,double iScale=0,int njet=0);
   void CorrectU1U2(double &pfu1, double &pfu2, double &trku1, double &trku2, 
-		   double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double iFluc,int njet=0);
-  //COLIN should pass a const std::string&
+		   double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double iFluc,double iScale=0,int njet=0);
   void addDataFile(std::string iNameDat);
   void addMCFile  (std::string iNameMC);
 protected:
@@ -88,7 +84,7 @@ protected:
 		       TF1 *iU2S1ZFit, 
 		       TF1 *iU2S2ZFit, 
 		       TF1 *iU1U2Corr, 
-		       double &iU1,double &iU2,double iFluc=0);
+		       double &iU1,double &iU2,double iFluc=0,double iScale=0);
 
   void metDistribution(double &iPFMet,double &iPFMPhi,double &iTKMet,double &iTKMPhi,
 		       double iGenPt,double iGenPhi,
@@ -103,14 +99,14 @@ protected:
 		       TF1 *iPFU1U2Corr, TF1 *iTKU1U2Corr,
 		       TF1 *iPFTKU1Corr, TF1 *iPFTKU2Corr,
 		       TF1 *iPFTKU1MCorr,TF1 *iPFTKU2MCorr,
-		       double &iU1,double &iU2,double iFluc=0);
+		       double &iU1,double &iU2,double iFluc=0,double iScale=0);
 
   void metDistributionType1(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
 			    double iLepPt,double iLepPhi,TRandom1 *iRand,
 			    TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
 			    TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit, 
 			    TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
-			    double &iU1,double &iU2,double iFluc=0);
+			    double &iU1,double &iU2,double iFluc=0,double iScale=0);
 
   void metDistributionType2(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
 			    double iLepPt,double iLepPhi,
@@ -123,7 +119,7 @@ protected:
 			    TF1 *iU2S1ZDatFit, TF1 *iU2S1ZMCFit,	   
 			    TF1 *iU2S2ZDatFit, TF1 *iU2S2ZMCFit,	   
 			    TF1 *iU1U2ZDatCorr,TF1 *iU1U2ZMCCorr,
-			    double &iU1, double &iU2,double iFluc);
+			    double &iU1, double &iU2,double iFluc=0,double iScale=0);
   double diGausPVal    (double iVal, double iFrac,double iSimga1,double iSigma2);
   double diGausPInverse(double iPVal,double iFrac,double iSigma1,double iSigma2);
   double calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2);
