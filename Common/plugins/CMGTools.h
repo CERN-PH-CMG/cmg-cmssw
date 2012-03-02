@@ -33,6 +33,7 @@
 
 #include "CMGTools/Common/interface/TauFactory.h"
 #include "CMGTools/Common/interface/Scaler.h"
+#include "CMGTools/Common/interface/ObjectSmear.h"
 #include "CMGTools/Common/interface/BaseJetFactory.h"
 #include "CMGTools/Common/interface/BaseMETFactory.h"
 #include "CMGTools/Common/interface/BaseMETModificationFactory.h"
@@ -90,6 +91,15 @@ typedef PhysicsObjectProducer<cmg::BaseJetFactory> BaseJetPOProducer;
 typedef PhysicsObjectProducer<cmg::Scaler<cmg::BaseJet> > BaseJetPOScaler;
 typedef PhysicsObjectProducer<cmg::Scaler<cmg::PFJet> > PFJetPOScaler;
 typedef PhysicsObjectProducer<cmg::Scaler<cmg::Tau> > TauPOScaler;
+typedef PhysicsObjectProducer<cmg::Scaler<cmg::Muon> > MuonPOScaler;
+typedef PhysicsObjectProducer<cmg::Scaler<cmg::Electron> > ElectronPOScaler;
+typedef PhysicsObjectProducer<cmg::Scaler<cmg::BaseMET> > BaseMETPOScaler;
+typedef PhysicsObjectProducer<cmg::ObjectSmear<cmg::BaseJet> > BaseJetPOObjectSmear;
+typedef PhysicsObjectProducer<cmg::ObjectSmear<cmg::PFJet> > PFJetPOObjectSmear;
+typedef PhysicsObjectProducer<cmg::ObjectSmear<cmg::Tau> > TauPOObjectSmear;
+typedef PhysicsObjectProducer<cmg::ObjectSmear<cmg::Muon> > MuonPOObjectSmear;
+typedef PhysicsObjectProducer<cmg::ObjectSmear<cmg::Electron> > ElectronPOObjectSmear;
+typedef PhysicsObjectProducer<cmg::ObjectSmear<cmg::BaseMET> > BaseMETPOObjectSmear;
 typedef PhysicsObjectProducer<cmg::PFJetFactory> PFJetPOProducer;
 typedef PhysicsObjectProducer<cmg::BaseMETFactory<> > BaseMETPOProducer;
 typedef PhysicsObjectProducer<cmg::BaseMETModificationFactory> BaseMETModifier;

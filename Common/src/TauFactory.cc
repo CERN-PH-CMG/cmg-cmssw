@@ -94,33 +94,6 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
     output->genJetp4_ = input->genJet()->p4();
     output->genJetCharge_ = input->genJet()->charge();
     output->genJetDecayMode_ = JetMCTagUtils::genTauDecayMode((const reco::CompositePtrCandidate)*(input->genJet()));
-
-    //find the 4-momentum of the generated tau
-    std::vector<const reco::GenParticle *> jetparticles = input->genJet()->getGenConstituents();
-    for(unsigned i=0;i<jetparticles.size();i++){
-      const reco::GenParticle* part=jetparticles.at(i);
-
-      ///check three generations up 
-      if(part->mother()){
-	if(abs(part->mother()->pdgId())==15){
-	  output->genTaup4_ = part->mother()->p4(); break;
-	}
-	
-	if(part->mother()->mother()){
-	  if(abs(part->mother()->mother()->pdgId())==15 ){
-	    output->genTaup4_ = part->mother()->mother()->p4(); break;
-	  }
-	  
-	  if(part->mother()->mother()->mother()){
-	    if(abs(part->mother()->mother()->mother()->pdgId())==15 ){
-	      output->genTaup4_ = part->mother()->mother()->mother()->p4(); break;
-	    }
-	  }
-	  
-	}
-      }
-
-    }
   }    
  
 
