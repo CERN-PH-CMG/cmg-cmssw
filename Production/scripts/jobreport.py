@@ -55,7 +55,10 @@ if __name__ == '__main__':
     parser = OptionParser()
     parser.usage = """
     %prog [options] <dataset> <jobs_dir>
-    prints the list of bad jobs. 
+    
+    Prints the list of bad jobs.
+    Using the options, you can get a log of what happened during each bad job,
+    and you can resubmit these jobs.
     """
     parser.add_option("-r", "--report", dest="report",
                       action = 'store_true',
