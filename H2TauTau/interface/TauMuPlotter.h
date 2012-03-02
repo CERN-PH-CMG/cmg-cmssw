@@ -33,10 +33,13 @@ public:
   TauMuPlotter(const char * name);
   virtual ~TauMuPlotter();
   
+
+
+  //Divide methods to avoid confusion in the categories
+  //General Methods 
   void setOutputPath(TString path){outputpath_=path;}
   void addSample(Sample* sample){samples_.push_back(sample);}   
   void setSMCat(Int_t cat){SMcat_=cat;}
-
   void setQCDOStoSSRatio(Float_t ratio){QCDOStoSSRatio_=ratio;}
   void setQCDColor(Int_t color){QCDColor_=color;}
   void setWJetsColor(Int_t color){WJetsColor_=color;}
@@ -45,53 +48,66 @@ public:
   void setZTauTauColor(Int_t color){ZTauTauColor_=color;}
   void setSignalColor(Int_t color){SignalColor_=color;}
 
-  Float_t getQCDOStoSSRatio(){return QCDOStoSSRatio_;}
+  bool printRawYields(TString selection="");
+  bool scaleSamplesLumi();
 
-  bool scaleHistos();//contains logic for scaling samples before making plots
+  ///basic methods which can be used by all categories
   TH1F* getTotalDataSS();//sum of SS Data samples 
   TH1F* getTotalData();
   TH1F* getTotalEmbeddedSS();
   TH1F* getTotalEmbedded();
-  TH1F* getTotalMC();//sum of all MCs contributing to the background (only lumi reweighted)
-  TH1F* getTotalMCSS();//sum of SS MC's used in the QCD extraction (may exclude additional MC samples declared)
+  TH1F* getTotalMC();//sum of all OS MCs 
+  TH1F* getTotalMCSS();//sum of all SS MC's 
   TH1F* getSample(TString samplename);//can be used to get histo for any MC or Data sample
   TH1F* getSampleSS(TString samplename);//can be used to get histo for any MC or Data sample
-  TH1F* getQCD();
   TH1F* getDiBoson();
+  TH1F* getDiBosonSS();
   TH1F* getZToTauTau();//Z-->tau tau (either from MC or Embedded)
   TH1F* getZToTauTauSS();
-  TH1F* getWJets();//WJets from MC and corrected using the high MT sideband
-  TH1F* getWJetsSS();
-  TH1F* getTotalBackground();//sum of backgrounds determined from MC and data
-  TH1F* getTotalBackgroundSS();//sum of backgrounds execpt for the QCD
+
+ 
+  //Inclusive/SM0 methods
+  bool correctSamplesInc();
+  TH1F* getWJetsInc();
+  TH1F* getWJetsIncSS();
+  TH1F* getQCDInc();//uses the same sign samples
+  TH1F* getTotalBackgroundIncSS();//sum of SS backgrounds execpt for the QCD
+  //TH1F* getTotalBackgroundInc();//sum of all OS backgrounds 
+  bool plotInc(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);//OS distributions
+  bool plotIncSS(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);//SS distributions
 
 
-  bool printRawYields();
-  Float_t getWJetsSignalToSBFraction();
-  Float_t getWJetsScaleFactor();
-  Float_t getWJetsOSCorrFactor(){if(SMcat_<=0)return WJetsOSSideCorr_; else return 1.;}
-  Float_t getWJetsSSCorrFactor(){if(SMcat_<=0)return WJetsSSSideCorr_; else return 1.;}
-  Float_t getQCDScaleFactor();
+  //Boosted/VBF methods
+  bool correctSamplesSM();
+  //TH1F* getQCDMuIsoSM();//from muon isolation side-band
+  TH1F* getWJetsSM();
+  TH1F* getWJetsSMSS();
+  TString qcdTauIsoRatio_;//formula for the ratio
+  TH1F* getQCDTauIsoSM();//from anti-isolated taus
+  TH1F* getQCDTauIsoSMSS();//from anti-isolated taus
+  TH1F* getTotalMCSM();//sum of OS backgrounds execpt for the QCD
+  TH1F* getTotalMCSMSS();//sum of SS backgrounds execpt for the QCD
+  bool plotSM(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax,  TString extrasel="", TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);
+  bool plotSMSS(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="", TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);
+ 
 
-  //bool plotDistribution(TString histoname, Int_t rebin, TString xlabel, TString ylabel, Float_t* legendcoords, Float_t* axesrange, bool log=0);
-  bool plot(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);
+  ////Methods unrelated to the main plots
 
-  //QCD for SM1/SM2 categories
-  TH1F* getQCDSS();
-  TH1F* getQCDSide();
-  //  TH1F* getQCDFullSide();
-   
+  //tau fake rate
+  void plotTauFakeRate(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, Int_t njets=-1,Float_t ymax=0.2,Bool_t log=0);
 
+
+  //utilities
+  void setSmearHistoRes(float res){smearHistoRes_=res;}
+  float smearHistoRes_;
+  TH1F* smearHisto(TH1F* h);
+
+  //clean up
   void deleteSamples(){
     for(std::vector<Sample*>::const_iterator s=samples_.begin();s!=samples_.end();s++)
       delete *s;
     samples_.clear();
   }  
-
-  void setSmearHistoRes(float res){smearHistoRes_=res;}
-  float smearHistoRes_;
-  TH1F* smearHisto(TH1F* h);
-
 
 protected:
  
@@ -102,8 +118,13 @@ private:
   std::vector<Sample*> samples_;   
   Float_t QCDOStoSSRatio_;
   Float_t QCDMuIsoSideRatio_;
+  Float_t QCDOSTauIsoSideRatio_;
+  Float_t QCDSSTauIsoSideRatio_;
   Float_t WJetsOSSideCorr_;
   Float_t WJetsSSSideCorr_;
+  Float_t WJetsSMOSSideCorr_;
+  Float_t WJetsSMSSSideCorr_;
+
 
   TString plotvar_;
   Int_t nbins_;
@@ -113,6 +134,7 @@ private:
   Int_t Isocat_;
   Int_t MTcat_;
   Int_t SMcat_;
+  TString extrasel_;
 
   //
   Int_t QCDColor_;

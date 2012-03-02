@@ -12,6 +12,8 @@
 #include "CMGTools/H2TauTau/interface/SelectionEfficiency.h"
 #include "CMGTools/H2TauTau/interface/TauRate.h"
 
+#include <TRandom2.h>
+
 
 class TauMuFlatNtp : public BaseFlatNtp {
 
@@ -35,6 +37,7 @@ protected:
   std::vector<cmg::TauMu> diTauSelList_;
   const cmg::TauMu * diTauSel_;
   std::vector<cmg::PFJet> pfJetListLC_;
+  std::vector<cmg::PFJet> pfJetListLepLC_;
 
   TriggerEfficiency triggerEff_;
   float triggerEffWeight_;
@@ -43,27 +46,46 @@ protected:
 
   float embeddedGenWeight_;//for tau embedded samples
 
+  int   nditau_;//number of candidates before best candidate selection
   float ditaumass_;
-  int ditaucharge_;
+  int   ditaucharge_;
   float ditaueta_;
   float ditaupt_;
   float svfitmass_;
 
   float taupt_;
   float taueta_;
+  float tauphi_;
   int   tautruth_;
   float tauehop_;
   float taueop_;
   int   taudecaymode_;
   float taudz_;
   float taudxy_;
+  float taux_;
+  float tauy_;
+  float tauz_;
+  int   tauantie_;//"againstElectronLoose" , "againstElectronMedium" ,"againstElectronTight" ,
+  int   tauantimu_;//"againstMuonLoose"   , "againstMuonTight"  ,
+  int   tauisodisc_;//"byVLooseCombinedIsolationDeltaBetaCorr",    "byLooseCombinedIsolationDeltaBetaCorr",    "byMediumCombinedIsolationDeltaBetaCorr",    "byTightCombinedIsolationDeltaBetaCorr"; not using this sequence: "byLooseIsolation"  ,    "byMediumIsolation" ,    "byTightIsolation"  ,    "byVLooseIsolation"  ,    "decayModeFinding"  ,
+  float tauiso_;
+  int   taujetmatch_;//0= no match, 1 lead jet, 2=subleading jet //check which jet list is being used !
+  float taujetpt_;
+  float taujeteta_;
 
   float mupt_;
   float mueta_;
+  float muphi_;
   float muiso_;
   float mudz_;
   float mudxy_;
+  float mux_;
+  float muy_;
+  float muz_;
 
+  float pftransversemass_;
+  float pfmetpt_;
+  float pfmetphi_;
   float transversemass_;
   float metpt_;
   float metphi_;
@@ -74,6 +96,9 @@ protected:
   float diJetMass_;
   float diJetDeltaEta_;
   float diJetEta1Eta2_;
+
+  float muLCleadJetPt_;//jets where only the muon has been removed
+  float muLCleadJetEta_;
 
   int categoryCh_;//
   int categoryMT_;//
@@ -96,8 +121,13 @@ private:
   edm::Handle< std::vector<cmg::Muon> > diLeptonVetoList_;
 
   void fillPFJetListLC(const cmg::TauMu * cand);
+  void fillPFJetListLepLC(const cmg::TauMu * cand);
   bool vetoDiLepton();
   int truthMatchTau();
+
+  TRandom2 randEngine_; 
+  double randsigma_;
+  
 
   int counterall_;
   int counterev_;
@@ -105,7 +135,9 @@ private:
   int counterveto_;
   int countereop_;
   int countertaumatch_;
+  int countermuiso_;
   int countermumatch_;
+  int countertauiso_;
   int counterditau_;
   int countertruth_;
   int counter_;
