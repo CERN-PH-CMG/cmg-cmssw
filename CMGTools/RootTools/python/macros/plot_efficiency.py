@@ -1,3 +1,4 @@
+#!/bin/env python
 
 import sys
 import copy
@@ -22,21 +23,21 @@ class Efficiency(object):
         sname = file.GetName()
         sname = sname.replace('EfficiencyAnalyzer/EfficiencyAnalyzer.root', '')
         self.desc = ', '.join([sname, region, legend])
-        rebin = int(rebin)
-        def load( dir, hists):
+        def load( dir, hists, rebin):
             for key in dir.GetListOfKeys():
                 keyname = key.GetName()
                 histname = keyname.split('_')[-1]
                 hist = dir.Get( keyname )
                 if rebin is not None:
+                    rebin = int(rebin)
                     hist.Rebin( rebin )
                 hist.Sumw2()
                 hists[histname] = hist
 
         self.hists_num = {}
-        load(self.dir_num, self.hists_num)
+        load(self.dir_num, self.hists_num, rebin)
         self.hists_denom = {}
-        load(self.dir_denom, self.hists_denom)
+        load(self.dir_denom, self.hists_denom, rebin)
         self.hists_eff = {}
         for histName, num in self.hists_num.iteritems():
             denom = self.hists_denom[histName]
@@ -44,7 +45,7 @@ class Efficiency(object):
             eff = num.Clone( '_'.join([histName,'eff']) )
             #printHist(num)
             #printHist(denom)
-            eff.Divide(num, denom)
+            eff.Divide(num, denom,1,1,'b')
             self.hists_eff[histName] = eff
         self.support = {}
 

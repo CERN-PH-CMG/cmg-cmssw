@@ -19,19 +19,38 @@ filePattern = 'tree*.root'
 def idMuon(muon):
     return muon.getSelection('cuts_vbtfmuon')
 
-def isoMuon(muon):
-    return muon.relIso(0.5)<0.1
+def isoLepton(lepton):
+    return lepton.relIso(0.5)<0.1
     
+def passLepton(lepton):
+    return True
 
 effMuAna = cfg.Analyzer(
     'EfficiencyAnalyzer',
     # recsel = 'cuts_vbtfmuon',
-    recselFun = isoMuon,
-    refselFun = idMuon,
-    instance = 'cmgMuonSel',
+    recselFun = idMuon,
+    # refselFun = idMuon,
+    instance = 'cmgMuonSelStdLep',
     type = 'std::vector<cmg::Muon>',
     genPdgId = 13
     )
+
+
+def idElectron(electron):
+    return electron.getSelection('cuts_vbtf80ID')
+
+
+effEleAna = cfg.Analyzer(
+    'EfficiencyAnalyzer',
+    # recsel = 'cuts_vbtfmuon',
+    recselFun = isoLepton,
+    refselFun = idElectron,
+    instance = 'cmgElectronSel',
+    type = 'std::vector<cmg::Electron>',
+    genPdgId = 11
+    )
+
+
 
 
 
@@ -40,7 +59,8 @@ effMuAna = cfg.Analyzer(
 
 DYJetsFall11 = cfg.MCComponent(
     name = 'DYJetsFall11',
-    files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V2/PAT_CMG_V2_5_0', 'cmgtools', 'tree.*root')[:10],
+    files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V3/TestMVAs', 'cmgtools_group','tree.*root')[:10],
+    # files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V2/PAT_CMG_V2_5_0', 'cmgtools', 'tree.*root')[:10],
     xSection = 3048.,
     nGenEvents = 34915945,
     triggers = [],
@@ -49,7 +69,8 @@ DYJetsFall11 = cfg.MCComponent(
 
 DYJetsChamonix = cfg.MCComponent(
     name = 'DYJetsChamonix',
-    files = createDataset('LOCAL','/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_Chamonix12_START44_V10-v2/AODSIM/PAT_CMG_V3_0_0', '.*root', True).listOfGoodFiles(),
+    files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_Chamonix12_START44_V10-v2/AODSIM/PAT_CMG_V3_0_0/TestMVAs', 'cmgtools', 'tree.*root')[:10],
+    # files = createDataset('LOCAL','/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_Chamonix12_START44_V10-v2/AODSIM/PAT_CMG_V3_0_0', '.*root', True).listOfGoodFiles(),
     xSection = 3048.,
     nGenEvents = 34915945,
     triggers = [],
@@ -70,7 +91,7 @@ QCDMu = cfg.MCComponent(
 
 
 
-selectedComponents  = [DYJetsFall11, DYJetsChamonix] 
+selectedComponents  = [DYJetsChamonix] 
 
 DYJetsChamonix.splitFactor = 5
 DYJetsFall11.splitFactor = 5
@@ -85,7 +106,8 @@ if test:
 
 
 sequence = cfg.Sequence( [
-    effMuAna
+    effMuAna,
+    # effEleAna
     ] )
 
 config = cfg.Config( components = selectedComponents,
