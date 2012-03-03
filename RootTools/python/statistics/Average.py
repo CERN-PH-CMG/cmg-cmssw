@@ -4,7 +4,6 @@ import pickle
 from CMGTools.RootTools.utils.diclist import diclist
 
 class Average(object):
-    '''Need to implement error and RMS'''
     def __init__(self, name):
         self.name = name
         self.sumw = 0

@@ -186,7 +186,7 @@ class EfficiencyAnalyzer( Analyzer ):
         if refselFun is not None:
             event.refsel = [ PhysicsObject(obj) for obj in event.rec if refselFun(obj)]
         else:
-            event.refsel = event.rec
+            event.refsel = event.gen
 
         recselFun = None
         if hasattr( self.cfg_ana, 'recselFun'):
@@ -213,8 +213,7 @@ class EfficiencyAnalyzer( Analyzer ):
         if self.cfg_comp.name.find('Chamonix')!=-1:
             weight = ootPUReweighter.getWeight( event.pusi[1].nPU(), event.pusi[2].nPU())
         
-        for space in self.phaseSpaces:
-            
+        for space in self.phaseSpaces:        
             space.denomHistos.fillParticles( event.genmatchedRef, event, weight)
             space.numHistos.fillParticles( event.genmatched, event, weight)
             # space.counter.inc('passed')
