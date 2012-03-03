@@ -373,7 +373,7 @@ class SimpleJetAnalyzer (Analyzer) :
         jets = self.handles['jets'].product ()
         # filter jets with some selections
         ## event.jets = [ Jet (jet) for jet in jets if (abs (jet.eta ()) < jetEtaCut)]
-        event.jets = [ jet for jet in jets if (abs (jet.eta ()) < jetEtaCut)]
+        event.jets = [ jet for jet in jets if ( abs(jet.eta()) < jetEtaCut and jet.pt()>self.cfg_ana.ptCut ) ]
         self.jetHistos.fillEvent (event.jets)
         
         # get status 2 leptons
@@ -383,7 +383,7 @@ class SimpleJetAnalyzer (Analyzer) :
         # get genJets
         event.genJets = map (GenJet, self.mchandles['genJets'].product ())
         # filter genjets as for reco jets
-        event.selGenJets = [GenJet (jet) for jet in event.genJets if (jet.pt ()>self.cfg_ana.ptCut)]
+        event.selGenJets = [GenJet (jet) for jet in event.genJets if (jet.pt ()>self.cfg_ana.ptCut*.5)]
         # event.selGenJets = event.genJets
         
         # first stats plots
