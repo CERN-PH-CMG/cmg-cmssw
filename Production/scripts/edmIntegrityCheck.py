@@ -11,7 +11,7 @@ if __name__ == '__main__':
     
     usage = """usage: %prog [options] /Sample/Name/On/Castor
 
-e.g.: %prog -u wreece -p -w PFAOD_*.root /MultiJet/Run2011A-05Aug2011-v1/AOD/V2
+e.g.: %prog -u wreece -p -w 'PFAOD_*.root' /MultiJet/Run2011A-05Aug2011-v1/AOD/V2
     """
     das = Das.DASOptionParser(usage=usage)
     group = OptionGroup(das.parser,'edmIntegrityCheck Options','Options related to checking files on CASTOR')
