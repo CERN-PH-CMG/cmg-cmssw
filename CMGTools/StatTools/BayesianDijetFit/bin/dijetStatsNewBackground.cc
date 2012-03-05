@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
 
 
 
-//  double LUMI = 1010.;
+  //  double LUMI = 1010.;
 
   double LUMI = 4677.;
 
@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
   double JERERROR=0.1;   // relative error on JER
   double NSIGCUTOFF=3.0; // number of +/- "sigma" to cutoff integration of nuisance parameters
   bool USELOGNORM=true;  // use lognormal or gaussian nuisance prior pdfs
-  
+
   // histogram binning (for display only)
   const int NBINS=54;
   Double_t BOUNDARIES[NBINS] = { 220, 244, 270, 296, 325, 354, 386, 419, 453,
@@ -121,6 +121,8 @@ int main(int argc, char* argv[])
   bool verbose_ = argc>=6 ? atoi(argv[5]) : 1;
   std::string sResonance(cResonance);
   int iResonance = 0;
+
+  if (statlevel > 999) USELOGNORM=false;
 
   if (sResonance.find("RSGraviton_ak5_GGtoGG_fat30") != std::string::npos) iResonance = 11;
   else if (sResonance.find("RSGraviton_ak5_QQtoQQ_fat30") != std::string::npos) iResonance = 12;
@@ -203,13 +205,13 @@ int main(int argc, char* argv[])
 
   // background
   if (iResonance > 2010 && iResonance < 2020)  {
-   ws->factory("EXPR::background('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*0)', p1[12,-30,30], p2[2,-20,20], p3[0,0,0],invmass)");
-ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[5.1,0,100],pb2[5.72,-100,100], pb3[-0.553,0,2],invmass)");
-  ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,0)',pc1[7.8,-100,100],pc2[0,0,0],invmass)");
- } else {
-   ws->factory("EXPR::background('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*log(invmass/7000.0))', p1[7.460,-30,30], p2[5.882,-20,20], p3[0.106,-5,5],invmass)");
-ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[5.1,0,100],pb2[5.72,-100,100], pb3[-0.553,0,2],invmass)");
-  ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,pc2)',pc1[7.8,-100,100],pc2[5.4,-100,100],invmass)");
+    ws->factory("EXPR::background('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*0)', p1[12,-30,30], p2[2,-20,20], p3[0,0,0],invmass)");
+    ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[5.1,0,100],pb2[5.72,-100,100], pb3[-0.0547,-1,1],invmass)");
+    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,0)',pc1[7.8,-100,100],pc2[0,0,0],invmass)");
+  } else {
+    ws->factory("EXPR::background('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*log(invmass/7000.0))', p1[7.460,-30,30], p2[5.882,-20,20], p3[0.106,-5,5],invmass)");
+    ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[5.1,0,100],pb2[5.72,-100,100], pb3[-0.0547,-1,1],invmass)");
+    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,pc2)',pc1[7.8,-100,100],pc2[5.4,-100,100],invmass)");
   }
 
   // data
@@ -258,22 +260,22 @@ ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invma
   ws->factory("Qstar_qg_3::signal(invmass, sigMassDelta, sigWidthDelta, sigMass, iResonance)");
 
   // model
-//  ws->factory("SUM::modela(nsig*signal, nbkg[474872,270000,670000]*background)"); // background HT-calo
-//  ws->factory("SUM::modela(nsig*signal, nbkg[346573,140000,540000]*background)"); // background HT-PF
-//  ws->factory("SUM::modela(nsig*signal, nbkg[319282,100,5100000]*background)"); // background HT-fat
-//  ws->factory("SUM::modela(nsig*signal, nbkg[250481,100000,400000]*background)"); // background Jet-calo
-//  ws->factory("SUM::modela(nsig*signal, nbkg[181374,0,300000]*background)"); // background Jet-PF
-//  ws->factory("SUM::modela(nsig*signal, nbkg[87242,0,200000]*background)"); // background Jet-fat
+  //  ws->factory("SUM::modela(nsig*signal, nbkg[474872,270000,670000]*background)"); // background HT-calo
+  //  ws->factory("SUM::modela(nsig*signal, nbkg[346573,140000,540000]*background)"); // background HT-PF
+  //  ws->factory("SUM::modela(nsig*signal, nbkg[319282,100,5100000]*background)"); // background HT-fat
+  //  ws->factory("SUM::modela(nsig*signal, nbkg[250481,100000,400000]*background)"); // background Jet-calo
+  //  ws->factory("SUM::modela(nsig*signal, nbkg[181374,0,300000]*background)"); // background Jet-PF
+  //  ws->factory("SUM::modela(nsig*signal, nbkg[87242,0,200000]*background)"); // background Jet-fat
   ws->factory("SUM::modela(nsig*signal, nbkg[1000,0,1E8]*background)");
-  ws->factory("SUM::modelb(nsig*signal, nbkg*backgroundb)");
-  ws->factory("SUM::modelc(nsig*signal, nbkg*backgroundc)");
+  ws->factory("SUM::modelb(nsig*signal, nbkg[1000,0,1E8]*backgroundb)");
+  ws->factory("SUM::modelc(nsig*signal, nbkg[1000,0,1E8]*backgroundc)");
   ws->defineSet("observables","invmass");
   ws->defineSet("POI","xs");
   if(statlevel==0) ws->factory("PROD::prior(xs_prior)");
   if(statlevel==1) ws->factory("PROD::prior(xs_prior)");
-  if(statlevel==2) ws->factory("PROD::prior(xs_prior,lumi_prior)");
-  if(statlevel==3) ws->factory("PROD::prior(xs_prior,sigMassDelta_prior)");
-  if(statlevel==4) ws->factory("PROD::prior(xs_prior,sigWidthDelta_prior)");
+  if(statlevel==2 || statlevel==1002) ws->factory("PROD::prior(xs_prior,lumi_prior)");
+  if(statlevel==3 || statlevel==1003) ws->factory("PROD::prior(xs_prior,sigMassDelta_prior)");
+  if(statlevel==4 || statlevel==1004) ws->factory("PROD::prior(xs_prior,sigWidthDelta_prior)");
   if(statlevel==5) ws->factory("PROD::prior(xs_prior,lumi_prior,sigMassDelta_prior)");
   if(statlevel==6) ws->factory("PROD::prior(xs_prior,lumi_prior,sigMassDelta_prior,sigWidthDelta_prior)");
   if(statlevel==7) ws->factory("PROD::prior(xs_prior,sigMassDelta_prior)");
@@ -287,9 +289,9 @@ ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invma
 
   if(statlevel==0) ws->defineSet("nuisSet","");
   if(statlevel==1) ws->defineSet("nuisSet","");
-  if(statlevel==2) ws->defineSet("nuisSet","lumi");
-  if(statlevel==3) ws->defineSet("nuisSet","sigMassDelta");
-  if(statlevel==4) ws->defineSet("nuisSet","sigWidthDelta");
+  if(statlevel==2 || statlevel==1002) ws->defineSet("nuisSet","lumi");
+  if(statlevel==3 || statlevel==1003) ws->defineSet("nuisSet","sigMassDelta");
+  if(statlevel==4 || statlevel==1004) ws->defineSet("nuisSet","sigWidthDelta");
   if(statlevel==5) ws->defineSet("nuisSet","lumi,sigMassDelta");
   if(statlevel==6) ws->defineSet("nuisSet","lumi,sigMassDelta,sigWidthDelta");
   if(statlevel==7) ws->defineSet("nuisSet","sigMassDelta");
@@ -319,11 +321,12 @@ ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invma
   //  //  fit=doFit(std::string("bfitc")+label, ws->pdf("modelc"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "SB1,SB2");
   //  ws->var("invmass")->removeRange("SB1");
   //  ws->var("invmass")->removeRange("SB2");
-  //} else {
+  //}
+  
   fita=doFit(std::string("bfita")+label, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
   fit=doFit(std::string("bfitb")+label, ws->pdf("modelb"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
   fit=doFit(std::string("bfitc")+label, ws->pdf("modelc"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
-  //}
+  
 
   // integrate over model to get xs estimate as input to the B+S fit
   double pdfIntegral=ws->var("nbkg")->getVal()*calcPDF1DIntegral(ws->pdf("modela"), invmass, signalMass*0.9, signalMass*1.1);
@@ -354,7 +357,7 @@ ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invma
     system( "ps -v | grep RSS" );
     system( "ps -v | grep dijetStats" );
     
-//    RooDataHist* binnedData;
+    //    RooDataHist* binnedData;
     // replace with pseudodata if we are doing more than zero PE's
     if(numPEs>0) {
       ws->var("nbkg")->setVal(nbkgValInit);
@@ -382,12 +385,8 @@ ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invma
       ws->var("nbkg")->setConstant(true);
       
       fit=doFit(std::string("bsfita")+pelabel, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
-      //    fit=doFit(std::string("bsfitb")+pelabel, ws->pdf("modelb"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL");
-      //    fit=doFit(std::string("bsfitc")+pelabel, ws->pdf("modelc"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL");
     } else {
       fit=doFit(std::string("bsfita")+pelabel, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
-      //    fit=doFit(std::string("bsfitb")+pelabel, ws->pdf("modelb"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL");
-      //    fit=doFit(std::string("bsfitc")+pelabel, ws->pdf("modelc"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL");
 
       ws->var("p1")->setConstant(true);
       ws->var("p2")->setConstant(true);
@@ -404,9 +403,9 @@ ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invma
     if(statlevel==1 || statlevel==11 || statlevel==111 || statlevel==112 || statlevel==113 || statlevel==114) {
     } else if(statlevel==2) {
       ws->var("lumi")->setConstant(false);
-    } else if(statlevel==3) {
+    } else if(statlevel==3 || statlevel==1003) {
       ws->var("sigMassDelta")->setConstant(false);
-    } else if(statlevel==4) {
+    } else if(statlevel==4 || statlevel==1004) {
       ws->var("sigWidthDelta")->setConstant(false);
     } else if(statlevel==5) {
       ws->var("lumi")->setConstant(false);
@@ -496,54 +495,53 @@ ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invma
 
     if(statlevel==1 || statlevel==5 || statlevel==6 || statlevel==7 || statlevel==9 || statlevel==11 || statlevel==111 || statlevel==112 || statlevel==113 || statlevel==114) {
 
-      //    TH1D* histB=dynamic_cast<TH1D*>(mcB.GetPosteriorHist()->Clone("histB"));
-      //    TH1D* histC=dynamic_cast<TH1D*>(mcC.GetPosteriorHist()->Clone("histC"));
+      TH1D* histB=dynamic_cast<TH1D*>(mcB.GetPosteriorHist()->Clone("histB"));
+      TH1D* histC=dynamic_cast<TH1D*>(mcC.GetPosteriorHist()->Clone("histC"));
+
  
-    Int_t nPar= fita->floatParsFinal().getSize();
-    // calculate the elements of the upper-triangular matrix L that gives Lt*L = C
-    // where Lt is the transpose of L (the "square-root method")
-    TMatrix L(nPar,nPar);
-    for(Int_t iPar= 0; iPar < nPar; iPar++) {
-      // calculate the diagonal term first
-      L(iPar,iPar)= fita->covarianceMatrix()(iPar,iPar);
-      for(Int_t k= 0; k < iPar; k++) {
-	Double_t tmp= L(k,iPar);
-	L(iPar,iPar)-= tmp*tmp;
-      }
-      L(iPar,iPar)= sqrt(L(iPar,iPar));
-      // then the off-diagonal terms
-      for(Int_t jPar= iPar+1; jPar < nPar; jPar++) {
-	L(iPar,jPar)= fita->covarianceMatrix()(iPar,jPar);
+      Int_t nPar= fita->floatParsFinal().getSize();
+      // calculate the elements of the upper-triangular matrix L that gives Lt*L = C
+      // where Lt is the transpose of L (the "square-root method")
+      TMatrix L(nPar,nPar);
+      for(Int_t iPar= 0; iPar < nPar; iPar++) {
+	// calculate the diagonal term first
+	L(iPar,iPar)= fita->covarianceMatrix()(iPar,iPar);
 	for(Int_t k= 0; k < iPar; k++) {
-	  L(iPar,jPar)-= L(k,iPar)*L(k,jPar);
+	  Double_t tmp= L(k,iPar);
+	  L(iPar,iPar)-= tmp*tmp;
 	}
-	L(iPar,jPar)/= L(iPar,iPar);
-      }
-    }
-    // remember Lt
-    TMatrix* _Lt= new TMatrix(TMatrix::kTransposed,L);
-
-    TVectorD eigenValues(4);
-    TMatrixD eigenVectors=fita->covarianceMatrix().EigenVectors(eigenValues);
-    
-    std::cout << "Fit Parameters" << std::endl;
-    printVal(*ws->var("nbkg"));
-    printVal(*ws->var("p1"));
-    printVal(*ws->var("p2"));
-    printVal(*ws->var("p3"));
-
-    std::cout << "EigenVectors" << std::endl;
-    for(Int_t k= 0; k < nPar; k++) {
-         std::cout << k << ": ";
-         for(Int_t l= 0; l < nPar; l++) {
-          std::cout << eigenVectors[k][l] << " ";
+	L(iPar,iPar)= sqrt(L(iPar,iPar));
+	// then the off-diagonal terms
+	for(Int_t jPar= iPar+1; jPar < nPar; jPar++) {
+	  L(iPar,jPar)= fita->covarianceMatrix()(iPar,jPar);
+	  for(Int_t k= 0; k < iPar; k++) {
+	    L(iPar,jPar)-= L(k,iPar)*L(k,jPar);
 	  }
-          std::cout << std::endl;
-    }
+	  L(iPar,jPar)/= L(iPar,iPar);
+	}
+      }
+      // remember Lt
+      TMatrix* _Lt= new TMatrix(TMatrix::kTransposed,L);
+
+      TVectorD eigenValues(4);
+      TMatrixD eigenVectors=fita->covarianceMatrix().EigenVectors(eigenValues);
+    
+      std::cout << "Fit Parameters" << std::endl;
+      printVal(*ws->var("nbkg"));
+      printVal(*ws->var("p1"));
+      printVal(*ws->var("p2"));
+      printVal(*ws->var("p3"));
+
+      std::cout << "EigenVectors" << std::endl;
+      for(Int_t k= 0; k < nPar; k++) {
+	std::cout << k << ": ";
+	for(Int_t l= 0; l < nPar; l++) {
+	  std::cout << eigenVectors[k][l] << " ";
+	}
+	std::cout << std::endl;
+      }
  
       if (statlevel==11){
-	TH1D* histB=dynamic_cast<TH1D*>(mcB.GetPosteriorHist()->Clone("histB"));
-	TH1D* histC=dynamic_cast<TH1D*>(mcC.GetPosteriorHist()->Clone("histC"));
 	histA->Add(histB);
 	histA->Add(histC);
 
@@ -558,87 +556,86 @@ ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invma
 
       } else if (statlevel==112){
 
-  TVector g(nPar);
-  for(Int_t v=1; v<nPar;v++)
-  {
-        for(Int_t k= 0; k < nPar; k++) g(k)=eigenVectors[v][k];
-        // multiply this vector by Lt to introduce the appropriate correlations
-        g*= (*_Lt);
-	ws->var("p1")->setVal(p1val+g(1));
-	ws->var("p2")->setVal(p2val+g(2));
-	ws->var("p3")->setVal(p3val+g(3));
-	TH1D* histAHi=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histAHi"));
-	histA->Add(histAHi);
-	delete histAHi;
-        for(Int_t k= 0; k < nPar; k++) g(k)=-eigenVectors[v][k];
-        // multiply tLos vector by Lt to introduce the appropriate correlations
-        g*= (*_Lt);
-	ws->var("p1")->setVal(p1val+g(1));
-	ws->var("p2")->setVal(p2val+g(2));
-	ws->var("p3")->setVal(p3val+g(3));
-	TH1D* histALo=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histALo"));
-	histA->Add(histALo);
-	delete histALo;
-   }
+	TVector g(nPar);
+	for(Int_t v=1; v<nPar;v++){
+	  for(Int_t k= 0; k < nPar; k++) g(k)=eigenVectors[v][k];
+	  // multiply this vector by Lt to introduce the appropriate correlations
+	  g*= (*_Lt);
+	  ws->var("p1")->setVal(p1val+g(1));
+	  ws->var("p2")->setVal(p2val+g(2));
+	  ws->var("p3")->setVal(p3val+g(3));
+	  TH1D* histAHi=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histAHi"));
+	  histA->Add(histAHi);
+	  delete histAHi;
+	  for(Int_t k= 0; k < nPar; k++) g(k)=-eigenVectors[v][k];
+	  // multiply tLos vector by Lt to introduce the appropriate correlations
+	  g*= (*_Lt);
+	  ws->var("p1")->setVal(p1val+g(1));
+	  ws->var("p2")->setVal(p2val+g(2));
+	  ws->var("p3")->setVal(p3val+g(3));
+	  TH1D* histALo=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histALo"));
+	  histA->Add(histALo);
+	  delete histALo;
+	}
 
       } else if (statlevel==113){
 
-  TVector g(nPar);
-  for(Int_t k= 0; k < nPar; k++) g(k)= 0;
-  g(2)=1;
-  // multiply this vector by Lt to introduce the appropriate correlations
-  g*= (*_Lt);
+	TVector g(nPar);
+	for(Int_t k= 0; k < nPar; k++) g(k)= 0;
+	g(2)=1;
+	// multiply this vector by Lt to introduce the appropriate correlations
+	g*= (*_Lt);
 	ws->var("p1")->setVal(p1val+g(1));
 	ws->var("p2")->setVal(p2val+g(2));
 	ws->var("p3")->setVal(p3val+g(3));
-  printVal(*ws->var("p1"));
-  printVal(*ws->var("p2"));
-  printVal(*ws->var("p3"));
+	printVal(*ws->var("p1"));
+	printVal(*ws->var("p2"));
+	printVal(*ws->var("p3"));
 	TH1D* histAHi=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histAHi"));
 	histA->Add(histAHi);
 	delete histAHi;
 
-  for(Int_t k= 0; k < nPar; k++) g(k)= 0;
-  g(2)=-1;
-  // multiply this vector by Lt to introduce the appropriate correlations
-  g*= (*_Lt);
+	for(Int_t k= 0; k < nPar; k++) g(k)= 0;
+	g(2)=-1;
+	// multiply this vector by Lt to introduce the appropriate correlations
+	g*= (*_Lt);
 	ws->var("p1")->setVal(p1val+g(1));
 	ws->var("p2")->setVal(p2val+g(2));
 	ws->var("p3")->setVal(p3val+g(3));
-  printVal(*ws->var("p1"));
-  printVal(*ws->var("p2"));
-  printVal(*ws->var("p3"));
+	printVal(*ws->var("p1"));
+	printVal(*ws->var("p2"));
+	printVal(*ws->var("p3"));
 	TH1D* histALo=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histALo"));
 	histA->Add(histALo);
 	delete histALo;
 
       } else if (statlevel==114){
 
-  TVector g(nPar);
-  for(Int_t k= 0; k < nPar; k++) g(k)= 0;
-  g(3)=1;
-  // multiply this vector by Lt to introduce the appropriate correlations
-  g*= (*_Lt);
+	TVector g(nPar);
+	for(Int_t k= 0; k < nPar; k++) g(k)= 0;
+	g(3)=1;
+	// multiply this vector by Lt to introduce the appropriate correlations
+	g*= (*_Lt);
 	ws->var("p1")->setVal(p1val+g(1));
 	ws->var("p2")->setVal(p2val+g(2));
 	ws->var("p3")->setVal(p3val+g(3));
-  printVal(*ws->var("p1"));
-  printVal(*ws->var("p2"));
-  printVal(*ws->var("p3"));
+	printVal(*ws->var("p1"));
+	printVal(*ws->var("p2"));
+	printVal(*ws->var("p3"));
 	TH1D* histAHi=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histAHi"));
 	histA->Add(histAHi);
 	delete histAHi;
 
-  for(Int_t k= 0; k < nPar; k++) g(k)= 0;
-  g(3)=-1;
-  // multiply this vector by Lt to introduce the appropriate correlations
-  g*= (*_Lt);
+	for(Int_t k= 0; k < nPar; k++) g(k)= 0;
+	g(3)=-1;
+	// multiply this vector by Lt to introduce the appropriate correlations
+	g*= (*_Lt);
 	ws->var("p1")->setVal(p1val+g(1));
 	ws->var("p2")->setVal(p2val+g(2));
 	ws->var("p3")->setVal(p3val+g(3));
-  printVal(*ws->var("p1"));
-  printVal(*ws->var("p2"));
-  printVal(*ws->var("p3"));
+	printVal(*ws->var("p1"));
+	printVal(*ws->var("p2"));
+	printVal(*ws->var("p3"));
 	TH1D* histALo=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histALo"));
 	histA->Add(histALo);
 	delete histALo;
@@ -713,8 +710,8 @@ ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invma
 
     t.Print();
 
-//    delete binnedData;
-//    mcA.Clear();
+    //    delete binnedData;
+    //    mcA.Clear();
    
 
   }
