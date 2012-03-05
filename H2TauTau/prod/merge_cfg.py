@@ -6,10 +6,12 @@ process = cms.Process("COPY")
 
 
 from CMGTools.Production.datasetToSource import *
-process.source = datasetToSource(
-    'cbern',
-    '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_3_0/H2TAUTAU',
-    '.*tree.*root') 
+#process.source = datasetToSource(
+#    'benitezj',
+#    '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb11',
+#    'tauMu_fullsel.*root') 
+process.source = cms.Source("PoolSource",
+                            fileNames = cms.untracked.vstring() )
 
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
@@ -24,7 +26,7 @@ process.out = cms.OutputModule(
     outputCommands =  cms.untracked.vstring(
     'keep *',
     ),
-    fileName = cms.untracked.string('merge.root'),
+    fileName = cms.untracked.string('tauMu_fullsel_tree.root'),
     )
 
 process.endpath = cms.EndPath(
