@@ -60,14 +60,14 @@ CMGPATElectronProducer::CMGPATElectronProducer(const edm::ParameterSet & iConfig
 
 {
   
-//   fMVA_.Initialize("BDTG method",
-// 		   d0LowPt_, 
-// 		   d1LowPt_,
-// 		   d2LowPt_,
-// 		   d0HighPt_, 
-// 		   d1HighPt_,
-// 		   d2HighPt_,
-//                    ElectronIDMVA::kNoIPInfo);
+  fMVA_.Initialize("BDTG method",
+		   d0LowPt_, 
+		   d1LowPt_,
+		   d2LowPt_,
+		   d0HighPt_, 
+		   d1HighPt_,
+		   d2HighPt_,
+                   ElectronIDMVA::kNoIPInfo);
 
   produces<CollectionType>();
 }
@@ -90,10 +90,11 @@ void CMGPATElectronProducer::produce(edm::Event & iEvent, const edm::EventSetup 
   for (IC icand = objectsH->begin(); icand != objectsH->end(); ++icand) {
     const ObjectType& object = *icand;
     pOut->push_back( object );
-//     double mva = fMVA_.MVAValue(&object,  ecalTools);
-    cout<<object.superCluster()->energy()<<endl;
-    cout<<object.superCluster()->seed()->energy()<<endl;
-    double mva = 7.;
+    double mva = fMVA_.MVAValue(&object,  ecalTools);
+    // cout<<object.superCluster()->energy()<<endl;
+    // cout<<object.superCluster()->seed()->energy()<<endl;
+    // double mva = 7.;
+    // cout<<"mva "<<mva<<endl;
     pOut->back().addUserFloat("ElectronMVA_MIT", mva);
   }
 

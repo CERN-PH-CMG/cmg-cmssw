@@ -4,10 +4,10 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 ### MASTER FLAGS  ######################################################################
 
 # turn this on if you want to pick a relval in input (see below)
-pickRelVal = False
+## pickRelVal = False
 
 # turn on when running on MC
-runOnMC = False
+runOnMC = True
 
 # AK5 sequence with no cleaning is the default
 # the other sequences can be turned off with the following flags.
@@ -60,30 +60,34 @@ print sep_line
 
 ### SOURCE DEFINITION  ################################################################
 
+# print 'generate source'
+
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
     # to test MC:
-    # 'cbern',
-    # '/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2',
-    # 'CMS',
-    # '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_Chamonix12_START44_V10-v2/AODSIM',
+    # 'cmgtools',
+    # '/TauPlusX/Run2011A-May10ReReco-v1/AOD/V3',
+    'cmgtools_group',
+    '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V3',
     # to test Data:
-    'cmgtools',
-    '/DoubleElectron/Run2011A-HZZ-PromptSkim-v6/AOD/V2', 
+    # 'cmgtools',
+    # '/DoubleElectron/Run2011A-HZZ-PromptSkim-v6/AOD/V2', 
     # '.*root'
     ) 
 
-if pickRelVal:
-    process.source = cms.Source(
-        "PoolSource",
-        fileNames = cms.untracked.vstring(
-        pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_3_0_pre2'
-                              , relVal        = 'RelValZmumuJets_Pt_20_300PU1'
-                              , globalTag     = 'MC_42_V9_PU_E7TeV_AVE_2_BX2808'
-                              , numberOfFiles = -1
-                              )
-        )
-        )
+# print 'done'
+
+## if pickRelVal:
+##     process.source = cms.Source(
+##         "PoolSource",
+##         fileNames = cms.untracked.vstring(
+##         pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_3_0_pre2'
+##                               , relVal        = 'RelValZmumuJets_Pt_20_300PU1'
+##                               , globalTag     = 'MC_42_V9_PU_E7TeV_AVE_2_BX2808'
+##                               , numberOfFiles = -1
+##                               )
+##         )
+##         )
 
 # process.source.fileNames = ['file:AOD_TTJets_all.root']
 
@@ -93,7 +97,10 @@ process.source.fileNames = process.source.fileNames[:10]
 print 'PF2PAT+PAT+CMG for files:'
 print process.source.fileNames
 
+# sys.exit(1)
+
 ### DEFINITION OF THE PF2PAT+PAT SEQUENCES #############################################
+
 
 
 # load the PAT config
@@ -155,6 +162,7 @@ getattr(process,"pfIsolatedElectrons"+postfixAK5).isolationCut = 999999
 from CMGTools.Common.PAT.addMETSignificance_cff import addMETSig
 addMETSig( process, postfixAK5 )
 
+
 # adding "standard muons and electons"
 # (made from all reco muons, and all gsf electrons, respectively)
 from CMGTools.Common.PAT.addStdLeptons import addStdMuons
@@ -166,6 +174,17 @@ stdElectronSeq = addStdElectrons( process, postfixAK5, 'StdLep', 'pt()>5', runOn
 from CMGTools.Common.PAT.addPATElectronID_cff import addPATElectronID
 addPATElectronID( process, 'patDefaultSequence', postfixAK5)
 addPATElectronID( process, 'stdElectronSequence', postfixAK5+'StdLep')
+
+## from CMGTools.Common.miscProducers.cmgPatElectronProducer_cfi import cmgPatElectronProducer
+## process.preSelectedPatElectronsAK5 = process.selectedPatElectronsAK5.clone()
+## process.selectedPatElectronsAK5 = cmgPatElectronProducer.clone(src='preSelectedPatElectronsAK5')
+## process.patDefaultSequenceAK5.replace( process.selectedPatElectronsAK5,
+##                                        process.preSelectedPatElectronsAK5 +
+##                                        process.selectedPatElectronsAK5)
+
+from CMGTools.Common.PAT.addMITElectronID import addMITElectronID
+addMITElectronID( process, 'selectedPatElectrons', 'patDefaultSequence', postfixAK5)
+addMITElectronID( process, 'selectedPatElectrons', 'stdElectronSequence', postfixAK5+'StdLep')
 
 # ---------------- Sequence AK5LC, lepton x-cleaning ---------------
 
@@ -339,6 +358,8 @@ process.outcmg = cms.OutputModule(
     outputCommands = everything,
     dropMetaData = cms.untracked.string('PRIOR')
     )
+process.outcmg.outputCommands.extend( ['keep patMuons_selectedPatMuonsAK5*_*_*',
+                                       'keep patElectrons_selectedPatElectronAK5*_*_*'] )
 
 if runCMG:
     process.outpath += process.outcmg
