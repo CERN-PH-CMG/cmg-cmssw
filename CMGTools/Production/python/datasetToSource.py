@@ -5,6 +5,7 @@ import FWCore.ParameterSet.Config as cms
 
 def datasetToSource( user, dataset, pattern='.*root', readCache=False):
 
+    # print user, dataset, pattern
     data = createDataset(user, dataset, pattern, readCache)
     
     source = cms.Source(
