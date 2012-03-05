@@ -39,8 +39,13 @@ cmgObjects = {
     'basejets':'cmgBaseJets_cmgPFBaseJetSel__',
     'met':'cmgBaseMETs_cmgPFMET__',
     'eles':'cmgElectrons_cmgElectronSel__',
+    'dieles':'cmgElectroncmgElectroncmgDiObjects_cmgDiElectronSel__',
+    'stdeles':'cmgElectrons_cmgElectronSelStdLep__',
+    'stddieles':'cmgElectroncmgElectroncmgDiObjects_cmgDiElectronSelStdLep__',
     'mus':'cmgMuons_cmgMuonSel__',
-    'diMus':'cmgMuoncmgMuoncmgDiObjects_cmgDiMuonSel__',
+    'dimus':'cmgMuoncmgMuoncmgDiObjects_cmgDiMuonSel__',
+    'stdmus':'cmgMuons_cmgMuonSelStdLep__',
+    'stddimus':'cmgMuoncmgMuoncmgDiObjects_cmgDiMuonSelStdLep__',
     'Nvertices':'int_vertexSize__',
     'Nmus':'int_muonSelSize__'
     }
