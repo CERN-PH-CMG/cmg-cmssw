@@ -284,8 +284,6 @@ int main(int argc, char* argv[])
   if(statlevel==11) ws->factory("PROD::prior(xs_prior)");
   if(statlevel==111) ws->factory("PROD::prior(xs_prior)");
   if(statlevel==112) ws->factory("PROD::prior(xs_prior)");
-  if(statlevel==113) ws->factory("PROD::prior(xs_prior)");
-  if(statlevel==114) ws->factory("PROD::prior(xs_prior)");
 
   if(statlevel==0) ws->defineSet("nuisSet","");
   if(statlevel==1) ws->defineSet("nuisSet","");
@@ -300,8 +298,6 @@ int main(int argc, char* argv[])
   if(statlevel==11) ws->defineSet("nuisSet","");
   if(statlevel==111) ws->defineSet("nuisSet","");
   if(statlevel==112) ws->defineSet("nuisSet","");
-  if(statlevel==113) ws->defineSet("nuisSet","");
-  if(statlevel==114) ws->defineSet("nuisSet","");
 
   // do a background-only fit first
   // exclude window +20% -20% units in width
@@ -400,7 +396,7 @@ int main(int argc, char* argv[])
     }
 
     // set parameters for limit calculation
-    if(statlevel==1 || statlevel==11 || statlevel==111 || statlevel==112 || statlevel==113 || statlevel==114) {
+    if(statlevel==1 || statlevel==11 || statlevel==111 || statlevel==112) {
     } else if(statlevel==2) {
       ws->var("lumi")->setConstant(false);
     } else if(statlevel==3 || statlevel==1003) {
@@ -493,54 +489,11 @@ int main(int argc, char* argv[])
 
     TH1D* histA=dynamic_cast<TH1D*>(mcA.GetPosteriorHist()->Clone("histA"));
 
-    if(statlevel==1 || statlevel==5 || statlevel==6 || statlevel==7 || statlevel==9 || statlevel==11 || statlevel==111 || statlevel==112 || statlevel==113 || statlevel==114) {
+    if(statlevel==1 || statlevel==5 || statlevel==6 || statlevel==7 || statlevel==9 || statlevel==11 || statlevel==111 || statlevel==112) {
 
       TH1D* histB=dynamic_cast<TH1D*>(mcB.GetPosteriorHist()->Clone("histB"));
       TH1D* histC=dynamic_cast<TH1D*>(mcC.GetPosteriorHist()->Clone("histC"));
 
- 
-      Int_t nPar= fita->floatParsFinal().getSize();
-      // calculate the elements of the upper-triangular matrix L that gives Lt*L = C
-      // where Lt is the transpose of L (the "square-root method")
-      TMatrix L(nPar,nPar);
-      for(Int_t iPar= 0; iPar < nPar; iPar++) {
-	// calculate the diagonal term first
-	L(iPar,iPar)= fita->covarianceMatrix()(iPar,iPar);
-	for(Int_t k= 0; k < iPar; k++) {
-	  Double_t tmp= L(k,iPar);
-	  L(iPar,iPar)-= tmp*tmp;
-	}
-	L(iPar,iPar)= sqrt(L(iPar,iPar));
-	// then the off-diagonal terms
-	for(Int_t jPar= iPar+1; jPar < nPar; jPar++) {
-	  L(iPar,jPar)= fita->covarianceMatrix()(iPar,jPar);
-	  for(Int_t k= 0; k < iPar; k++) {
-	    L(iPar,jPar)-= L(k,iPar)*L(k,jPar);
-	  }
-	  L(iPar,jPar)/= L(iPar,iPar);
-	}
-      }
-      // remember Lt
-      TMatrix* _Lt= new TMatrix(TMatrix::kTransposed,L);
-
-      TVectorD eigenValues(4);
-      TMatrixD eigenVectors=fita->covarianceMatrix().EigenVectors(eigenValues);
-    
-      std::cout << "Fit Parameters" << std::endl;
-      printVal(*ws->var("nbkg"));
-      printVal(*ws->var("p1"));
-      printVal(*ws->var("p2"));
-      printVal(*ws->var("p3"));
-
-      std::cout << "EigenVectors" << std::endl;
-      for(Int_t k= 0; k < nPar; k++) {
-	std::cout << k << ": ";
-	for(Int_t l= 0; l < nPar; l++) {
-	  std::cout << eigenVectors[k][l] << " ";
-	}
-	std::cout << std::endl;
-      }
- 
       if (statlevel==11){
 	histA->Add(histB);
 	histA->Add(histC);
@@ -553,9 +506,42 @@ int main(int argc, char* argv[])
 	histA->Add(histB);
 
 	delete histB;
-
       } else if (statlevel==112){
-
+        // Code taken from TFitResult.RandomizePars
+        Int_t nPar= fita->floatParsFinal().getSize();
+        // calculate the elements of the upper-triangular matrix L that gives Lt*L = C
+        // where Lt is the transpose of L (the "square-root method")
+        TMatrix L(nPar,nPar);
+        for(Int_t iPar= 0; iPar < nPar; iPar++) {
+     	  // calculate the diagonal term first
+     	  L(iPar,iPar)= fita->covarianceMatrix()(iPar,iPar);
+     	  for(Int_t k= 0; k < iPar; k++) {
+     	    Double_t tmp= L(k,iPar);
+     	    L(iPar,iPar)-= tmp*tmp;
+     	  }
+     	  L(iPar,iPar)= sqrt(L(iPar,iPar));
+     	  // then the off-diagonal terms
+     	  for(Int_t jPar= iPar+1; jPar < nPar; jPar++) {
+     	    L(iPar,jPar)= fita->covarianceMatrix()(iPar,jPar);
+     	    for(Int_t k= 0; k < iPar; k++) {
+     	      L(iPar,jPar)-= L(k,iPar)*L(k,jPar);
+     	    }
+     	    L(iPar,jPar)/= L(iPar,iPar);
+     	  }
+        }
+        // remember Lt
+        TMatrix* _Lt= new TMatrix(TMatrix::kTransposed,L);
+        TVectorD eigenValues(4);
+        TMatrixD eigenVectors=fita->covarianceMatrix().EigenVectors(eigenValues);
+        std::cout << "EigenVectors" << std::endl;
+        for(Int_t k= 0; k < nPar; k++) {
+     	  std::cout << k << ": ";
+     	  for(Int_t l= 0; l < nPar; l++) {
+     	    std::cout << eigenVectors[k][l] << " ";
+     	  }
+     	  std::cout << std::endl;
+        }
+ 
 	TVector g(nPar);
 	for(Int_t v=1; v<nPar;v++){
 	  for(Int_t k= 0; k < nPar; k++) g(k)=eigenVectors[v][k];
@@ -577,71 +563,7 @@ int main(int argc, char* argv[])
 	  histA->Add(histALo);
 	  delete histALo;
 	}
-
-      } else if (statlevel==113){
-
-	TVector g(nPar);
-	for(Int_t k= 0; k < nPar; k++) g(k)= 0;
-	g(2)=1;
-	// multiply this vector by Lt to introduce the appropriate correlations
-	g*= (*_Lt);
-	ws->var("p1")->setVal(p1val+g(1));
-	ws->var("p2")->setVal(p2val+g(2));
-	ws->var("p3")->setVal(p3val+g(3));
-	printVal(*ws->var("p1"));
-	printVal(*ws->var("p2"));
-	printVal(*ws->var("p3"));
-	TH1D* histAHi=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histAHi"));
-	histA->Add(histAHi);
-	delete histAHi;
-
-	for(Int_t k= 0; k < nPar; k++) g(k)= 0;
-	g(2)=-1;
-	// multiply this vector by Lt to introduce the appropriate correlations
-	g*= (*_Lt);
-	ws->var("p1")->setVal(p1val+g(1));
-	ws->var("p2")->setVal(p2val+g(2));
-	ws->var("p3")->setVal(p3val+g(3));
-	printVal(*ws->var("p1"));
-	printVal(*ws->var("p2"));
-	printVal(*ws->var("p3"));
-	TH1D* histALo=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histALo"));
-	histA->Add(histALo);
-	delete histALo;
-
-      } else if (statlevel==114){
-
-	TVector g(nPar);
-	for(Int_t k= 0; k < nPar; k++) g(k)= 0;
-	g(3)=1;
-	// multiply this vector by Lt to introduce the appropriate correlations
-	g*= (*_Lt);
-	ws->var("p1")->setVal(p1val+g(1));
-	ws->var("p2")->setVal(p2val+g(2));
-	ws->var("p3")->setVal(p3val+g(3));
-	printVal(*ws->var("p1"));
-	printVal(*ws->var("p2"));
-	printVal(*ws->var("p3"));
-	TH1D* histAHi=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histAHi"));
-	histA->Add(histAHi);
-	delete histAHi;
-
-	for(Int_t k= 0; k < nPar; k++) g(k)= 0;
-	g(3)=-1;
-	// multiply this vector by Lt to introduce the appropriate correlations
-	g*= (*_Lt);
-	ws->var("p1")->setVal(p1val+g(1));
-	ws->var("p2")->setVal(p2val+g(2));
-	ws->var("p3")->setVal(p3val+g(3));
-	printVal(*ws->var("p1"));
-	printVal(*ws->var("p2"));
-	printVal(*ws->var("p3"));
-	TH1D* histALo=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histALo"));
-	histA->Add(histALo);
-	delete histALo;
-
       } else {
-
 	ws->var("p1")->setVal(std::max(0.0,p1val-p1err));
 	ws->var("p2")->setVal(p2val+p2err);
 	ws->var("p3")->setVal(p3val+p3err);
@@ -656,7 +578,6 @@ int main(int argc, char* argv[])
 
 	delete histAHi;
 	delete histALo;
-
       }
  
     }
