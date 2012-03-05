@@ -8,6 +8,8 @@ import os
 import re
 import pprint
 import shutil
+import subprocess
+import time
 
 def setCAFPath():
     """Hack to get the CAF scripts on the PYTHONPATH"""
@@ -17,6 +19,26 @@ def setCAFPath():
 setCAFPath()
 import cmsIO
 
+def runCommandWithTimeout(command, timeout=600):
+    
+    from CMGTools.Production.timeout import timed_out,TimedOutExc
+
+    @timed_out(timeout)
+    def runCommand(cmd):
+        myCommand = subprocess.Popen( cmd,
+                                      stdout=subprocess.PIPE,
+                                      stderr=subprocess.PIPE )
+        ( out, err ) = myCommand.communicate()
+        if myCommand.returncode != 0:
+            print >> sys.stderr, "Command (%s) failed with return code: %d" % ( cmd, myCommand.returncode )
+            print >> sys.stderr, err
+
+        return out,err,myCommand.returncode
+
+    try:
+        return runCommand(command)
+    except TimedOutExc, e:
+        raise Exception("The command '%s' exceeded the allowed timeout (%d seconds) and was terminated." % (command, timeout))
 
 def runXRDCommand(path, cmd, *args):
     """Run an xrd command.
@@ -29,9 +51,7 @@ def runXRDCommand(path, cmd, *args):
     
     command = ['xrd', tokens[1], cmd, tokens[2]]
     command.extend(args)
-    runner = cmsIO.cmsFileManip()
-    # print ' '.join(command)
-    return runner.runCommand(command)
+    return runCommandWithTimeout(command)
 
 def runEOSCommand(path, cmd, *args):
     """Run an eos command.
@@ -48,8 +68,7 @@ def runEOSCommand(path, cmd, *args):
     command = ['/afs/cern.ch/project/eos/installation/0.1.0-22d/bin/eos.select', cmd]
     command.extend(args)
     command.append(tokens[2])
-    runner = cmsIO.cmsFileManip()
-    return runner.runCommand(command)
+    return runCommandWithTimeout(command)
 
 
 def isLFN( path ):
@@ -316,8 +335,7 @@ def listFiles(path, rec = False, full_info = False):
 
 def which(cmd):
     command = ['which', cmd]
-    runner = cmsIO.cmsFileManip()
-    out, _, _ = runner.runCommand(command)
+    out, _, _ = runCommandWithTimeout(command)
     
     lines = [line for line in out.split('\n') if line]
     if len(lines) == 1:
