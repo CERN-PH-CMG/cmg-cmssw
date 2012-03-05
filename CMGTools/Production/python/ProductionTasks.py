@@ -54,7 +54,7 @@ ProductionTasks.py -u cbern -w 'PFAOD*.root' -c -N 1 -q 8nh -t PAT_CMG_V2_2_0 --
 
 It is often useful to store the sample names in a file, in which case you could instead do:
 
-ProductionTasks.py -w PFAOD*.root -c -N 1 -q 8nh -t PAT_CMG_V2_2_0 --output_wildcard [!h]*.root --cfg patTuple_PF2PAT_forCMG_cfg.py `cat samples_mc.txt`
+ProductionTasks.py -w 'PFAOD*.root' -c -N 1 -q 8nh -t PAT_CMG_V2_2_0 --output_wildcard '[!h]*.root' --cfg patTuple_PF2PAT_forCMG_cfg.py `cat samples_mc.txt`
 
 An example file might contain:
 
