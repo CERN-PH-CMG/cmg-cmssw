@@ -200,9 +200,15 @@ ls: /store: No such file or directory
 
 False
     """
-    lfn = eosToLFN(path)
-    entity = cmsIO.cmsFile( os.path.dirname(lfn), tfcProt )
-    return lfn in entity.ls(lfn)
+    stout, stderr, ret = runEOSCommand( path, 'ls')
+    if ret == 0:
+        return True
+    else:
+        return False
+    # lfn = eosToLFN(path)
+    # entity = cmsIO.cmsFile( os.path.dirname(lfn), tfcProt )
+    # return lfn in entity.ls(lfn)
+    # ret = os.system()
 #also define an alias for backwards compatibility
 
 isCastorFile = isEOSFile
