@@ -1,22 +1,3 @@
-# there is 2, 4, 6 leptons, how comes there's so many sometimes? what is the frequency? make a plot
-# the lepton-jet matching is always verified, ok to clean w/ gen leptons (for each lep there's almost always a jet closeby)
-#    - nb almost, there's always some grass
-#         - check this with lepton multiplicity... no, the grass remains
-#        - check this with lepton flavour
-# matching gen-reco
-#    - test the DR... there's cases with big values, let's try and remove them if dR2 > 0.3
-#        - removes the low mass peaks in the resolution plot
-#        - how many times does this happen? 1314 / 8520 survive the selection... very few!
-#        - where does this happen?
-#    - the new univoque matcher implemented, I have some python failures
-#        - fixed with Colin
-#    - why the spikes around 2.5 do not have an associated gen jet?
-#        - check this with the new matcher: at most not
-#        - look at the distribution of gen jets 
-
-# - I can have a look at jet conponents
-# - remove taus
-
 
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
@@ -157,6 +138,7 @@ class FractionJetHistograms (Histograms) :
                 self.histos[i].Fill (jet.eta (), jet.component (i).fraction ())
         except:
             pass
+            
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
 
     def fillEvent (self, jets) :
@@ -196,7 +178,6 @@ class FractionJetHistograms (Histograms) :
             self.histos[i].Write ()
             self.mean[i-1].Write ()
         dir.cd ()
-        # FIXME will the THStack be saved?      
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
@@ -318,25 +299,15 @@ class SimpleJetAnalyzer (Analyzer) :
         self.matchedCleanJetHistos_endtk = JetHistograms ('MatchedCleanJets_endtk')
         self.matchedCleanJetHistos_endNOtk = JetHistograms ('MatchedCleanJets_endNOtk')
         self.matchedCleanJetHistos_fwd = JetHistograms ('MatchedCleanJets_fwd')
-        self.LPtmatchedCleanJetHistos = JetHistograms ('LPtMatchedCleanJets') # low pt (< 40 GeV)
-        self.HPtmatchedCleanJetHistos = JetHistograms ('HPtMatchedCleanJets') # high pt (> 40 GeV)
-        self.matchedCleanJetHistosList = [JetHistograms ('MatchedCleanJets_'+ str (i)) for i in range (10)]
-        self.LPtmatchedCleanJetHistosList = [JetHistograms ('LPtMatchedCleanJets_'+ str (i)) for i in range (10)]
-        self.HPtmatchedCleanJetHistosList = [JetHistograms ('HPtMatchedCleanJets_'+ str (i)) for i in range (10)]
+        self.LPtmatchedCleanJetHistos = JetHistograms ('LPtMatchedCleanJets') 
+        self.HPtmatchedCleanJetHistos = JetHistograms ('HPtMatchedCleanJets')
         self.unmatchedCleanJetHistos = JetHistograms ('UnmatchedCleanJets')
-
-        self.matchedCleanJetHistosSuperList         = tuple (tuple (JetHistograms ('MatchedCleanJets_%d_%d' % (j,i)) for i in range (10)) for j in range (10))
-        self.matchedCleanJetHistosSuperList_barrel  = tuple (tuple (JetHistograms ('MatchedCleanJets_barrel_%d_%d' % (j,i)) for i in range (10)) for j in range (10))
-        self.matchedCleanJetHistosSuperList_endtk   = tuple (tuple (JetHistograms ('MatchedCleanJets_endtk_%d_%d' % (j,i)) for i in range (10)) for j in range (10))
-        self.matchedCleanJetHistosSuperList_endNOtk = tuple (tuple (JetHistograms ('MatchedCleanJets_endNOtk_%d_%d' % (j,i)) for i in range (10)) for j in range (10))
-        self.matchedCleanJetHistosSuperList_fwd     = tuple (tuple (JetHistograms ('MatchedCleanJets_fwd_%d_%d' % (j,i)) for i in range (10)) for j in range (10))
+        self.LPtUnmatchedCleanJetHistos = JetHistograms ('LPtUnmatchedCleanJets') 
+        self.HPtUnmatchedCleanJetHistos = JetHistograms ('HPtUnmatchedCleanJets')
 
         # histograms of the components fraction
         self.matchedCleanJetHistosComponents = FractionJetHistograms ('MatchedCleanJetsCompontents')
-        self.matchedCleanJetHistosComponentsList = [FractionJetHistograms ('MatchedCleanJetsCompontents_'+str (i)) for i in range (10)]
-
         self.unmatchedCleanJetHistosComponents = FractionJetHistograms ('UnmatchedCleanJetsCompontents')
-        self.unmatchedCleanJetHistosComponentsList = [FractionJetHistograms ('UnmatchedCleanJetsCompontents_'+str (i)) for i in range (10)]
 
         # histograms for the resolution of matched jets
         self.matchedCleanJetHistosResolution = ResolutionJetHistograms ('MatchedCleanJetsResolution', 50, 1)
@@ -354,7 +325,7 @@ class SimpleJetAnalyzer (Analyzer) :
         self.unmatchedCleanHistosId = PileupJetHistograms("UnmatchedCleanHistosId",self.vtxBins,self.ptBins,self.etaBins,etalabels=self.puEtaLables)
  
         self.h_nvtx = TH1F ("h_nvtx", "" ,50, 0, 50)
-        
+        self.h_genjetspt = TH1F ("h_genjetspt", "" ,500, 0, 500) ; 
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
 
@@ -367,12 +338,11 @@ class SimpleJetAnalyzer (Analyzer) :
         # get the vertexes
         event.vertices = self.handles['vertices'].product ()
         self.h_nvtx.Fill (len (event.vertices))
-        event.vertexBin = int (len (event.vertices)) / 5
+        event.vertexBin = int (len (event.vertices))
         
         # get the jets in the jets variable
         jets = self.handles['jets'].product ()
         # filter jets with some selections
-        ## event.jets = [ Jet (jet) for jet in jets if (abs (jet.eta ()) < jetEtaCut)]
         event.jets = [ jet for jet in jets if ( abs(jet.eta()) < jetEtaCut and jet.pt()>self.cfg_ana.ptCut ) ]
         self.jetHistos.fillEvent (event.jets)
         
@@ -396,23 +366,10 @@ class SimpleJetAnalyzer (Analyzer) :
         # in case I want to filter out taus
         # 11, 13, 15 : e, u, T
 #        event.genOneLepton = [GenParticle (part) for part in event.genLeptons if abs (part.pdgId ()) == 15]
-        
-        # almost debugging: check that each gen lepton has a jet nearby
-        for lep in event.genLeptons :
-            deltaR2Min = float ('+inf')
-            bm = None
-            for jet in event.jets:
-                dR2 = deltaR2 (lep.eta (), lep.phi (), jet.eta (), jet.phi ())
-                if dR2 < deltaR2Min :
-                    deltaR2Min = dR2
-            self.jetHistos.fillEleMatch (deltaR2Min)
-        
         # remove leptons from jets if closer than 0.2
         event.cleanJets = cleanObjectCollection (event.jets, event.genLeptons, 0.2)
 
-#       event.matchedCleanJets = matchObjectCollection (event.cleanJets, event.selGenJets, 0.3)
-        event.matchingCleanJets = matchObjectCollection2 (event.cleanJets, event.selGenJets, 0.3)
-#       print 'matched jets num: ' + repr (len (event.matchingCleanJets))
+        event.matchingCleanJets = matchObjectCollection2 (event.cleanJets, event.selGenJets, 0.25)
             
         # assign to each jet its gen match (easy life :))
         for jet in event.cleanJets :
@@ -422,56 +379,45 @@ class SimpleJetAnalyzer (Analyzer) :
         self.cleanJetHistos.fillEvent (event.cleanJets)
         
         event.matchedCleanJets = [jet for jet in event.matchingCleanJets if jet.gen != None]
-        event.LPtmatchedCleanJets = [jet for jet in event.matchingCleanJets if jet.gen != None and jet.pt () <= 40]
-        event.HPtmatchedCleanJets = [jet for jet in event.matchingCleanJets if jet.gen != None and jet.pt () > 40]
+        event.LPtmatchedCleanJets = [jet for jet in event.matchingCleanJets if jet.gen != None and jet.pt () <= 30]
+        event.HPtmatchedCleanJets = [jet for jet in event.matchingCleanJets if jet.gen != None and jet.pt () > 30]
 
-        event.unmatchedCleanJets = [jet for jet in event.matchingCleanJets if jet.gen == None]
-        
         self.matchedCleanJetHistos.fillEvent (event.matchedCleanJets)
         self.LPtmatchedCleanJetHistos.fillEvent (event.LPtmatchedCleanJets)
         self.HPtmatchedCleanJetHistos.fillEvent (event.HPtmatchedCleanJets)
-        self.matchedCleanJetHistosList[event.vertexBin].fillEvent (event.matchedCleanJets)
-        self.LPtmatchedCleanJetHistosList[event.vertexBin].fillEvent (event.LPtmatchedCleanJets)
-        self.HPtmatchedCleanJetHistosList[event.vertexBin].fillEvent (event.HPtmatchedCleanJets)
 
+        event.unmatchedCleanJets = [jet for jet in event.matchingCleanJets if jet.gen == None]
+        event.LPtunmatchedCleanJets = [jet for jet in event.matchingCleanJets if jet.gen == None and jet.pt () <= 30]
+        event.HPtunmatchedCleanJets = [jet for jet in event.matchingCleanJets if jet.gen == None and jet.pt () > 30]
+        
+        self.unmatchedCleanJetHistos.fillEvent (event.unmatchedCleanJets)
+        self.LPtUnmatchedCleanJetHistos.fillEvent (event.LPtunmatchedCleanJets)
+        self.HPtUnmatchedCleanJetHistos.fillEvent (event.HPtunmatchedCleanJets)
+        
+        self.matchedCleanJetHistosComponents.fillEvent (event.matchedCleanJets)
+        
+        self.unmatchedCleanJetHistosComponents.fillEvent (event.unmatchedCleanJets)
+        
+        self.matchedCleanJetHistosResolution.fillEvent (event.matchedCleanJets, len (event.vertices))
+        
         for jet in event.matchedCleanJets :
             index = int (jet.pt ()) / 20 
             if (index) > 9 : continue
-            self.matchedCleanJetHistosSuperList[event.vertexBin][index].fillJet (jet)
             if abs (jet.gen.eta ()) < 1.4 :
-                self.matchedCleanJetHistosSuperList_barrel[event.vertexBin][index].fillJet (jet)
                 self.matchedCleanJetHistosResolution_barrel.fillJet (jet, len (event.vertices))
                 self.matchedCleanJetHistos_barrel.fillJet (jet)
             elif 1.6 < abs (jet.gen.eta ()) < 2.5 :    
-                self.matchedCleanJetHistosSuperList_endtk[event.vertexBin][index].fillJet (jet)
                 self.matchedCleanJetHistosResolution_endtk.fillJet (jet, len (event.vertices))
                 self.matchedCleanJetHistos_endtk.fillJet (jet)
             elif 2.6 < abs (jet.gen.eta ()) < 2.9 :    
-                self.matchedCleanJetHistosSuperList_endNOtk[event.vertexBin][index].fillJet (jet)
                 self.matchedCleanJetHistosResolution_endNOtk.fillJet (jet, len (event.vertices))
                 self.matchedCleanJetHistos_endNOtk.fillJet (jet)
             elif 3.1 < abs (jet.gen.eta ()) :    
-                self.matchedCleanJetHistosSuperList_fwd[event.vertexBin][index].fillJet (jet)
                 self.matchedCleanJetHistosResolution_fwd.fillJet (jet, len (event.vertices))
                 self.matchedCleanJetHistos_fwd.fillJet (jet)
         
-        self.unmatchedCleanJetHistos.fillEvent (event.unmatchedCleanJets)
-
-        self.matchedCleanJetHistosComponents.fillEvent (event.matchedCleanJets)
-        self.matchedCleanJetHistosComponentsList[event.vertexBin].fillEvent (event.matchedCleanJets)
-        
-        self.unmatchedCleanJetHistosComponents.fillEvent (event.unmatchedCleanJets)
-        self.unmatchedCleanJetHistosComponentsList[event.vertexBin].fillEvent (event.unmatchedCleanJets)
-        self.matchedCleanJetHistosResolution.fillEvent (event.matchedCleanJets, len (event.vertices))
-
         self.matchedCleanHistosId.fillEvent(event.matchedCleanJets,event.vertices)
         self.unmatchedCleanHistosId.fillEvent(event.unmatchedCleanJets,event.vertices)
-        
-        # check that the same gen jet is not matched to more than one reco
-#        for jet1 in event.cleanJets:
-#            for jet2 in event.cleanJets:
-#                if jet1.gen == jet2.gen and jet1.gen != None and jet1 != jet2:
-#                    print 'same matched ' + repr (jet1.gen.pt ())
         
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
@@ -489,43 +435,15 @@ class SimpleJetAnalyzer (Analyzer) :
         
         self.LPtmatchedCleanJetHistos.Write (self.file)
         self.HPtmatchedCleanJetHistos.Write (self.file)
-        for i in range (10) : self.matchedCleanJetHistosList[i].Write (self.file)
-        for i in range (10) : self.LPtmatchedCleanJetHistosList[i].Write (self.file)
-        for i in range (10) : self.HPtmatchedCleanJetHistosList[i].Write (self.file)
-
-        for line in self.matchedCleanJetHistosSuperList :
-            for cell in line :
-                cell.Write (self.file)
-
-        for line in self.matchedCleanJetHistosSuperList_barrel :
-            for cell in line :
-                cell.Write (self.file)
-
-        for line in self.matchedCleanJetHistosSuperList_endtk :
-            for cell in line :
-                cell.Write (self.file)
-
-        for line in self.matchedCleanJetHistosSuperList_endNOtk :
-            for cell in line :
-                cell.Write (self.file)
-
-        for line in self.matchedCleanJetHistosSuperList_fwd :
-            for cell in line :
-                cell.Write (self.file)
-
+        self.LPtUnmatchedCleanJetHistos.Write (self.file)
+        self.HPtUnmatchedCleanJetHistos.Write (self.file)
 
         self.unmatchedCleanJetHistos.Write (self.file)
 
         self.matchedCleanJetHistosComponents.summary ()
         self.matchedCleanJetHistosComponents.Write (self.file)
-        for i in range (10) :
-            self.matchedCleanJetHistosComponentsList[i].summary ()
-            self.matchedCleanJetHistosComponentsList[i].Write (self.file)
         self.unmatchedCleanJetHistosComponents.summary ()
         self.unmatchedCleanJetHistosComponents.Write (self.file)
-        for i in range (10) :
-            self.unmatchedCleanJetHistosComponentsList[i].summary ()
-            self.unmatchedCleanJetHistosComponentsList[i].Write (self.file)
 
         self.matchedCleanJetHistosResolution.summary ()
         self.matchedCleanJetHistosResolution.Write (self.file)
