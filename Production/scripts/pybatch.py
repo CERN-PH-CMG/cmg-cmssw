@@ -4,6 +4,7 @@ import sys
 import imp
 import copy
 import os
+import shutil
 import pickle
 import math
 from CMGTools.Production.batchmanager import BatchManager
@@ -91,10 +92,12 @@ class MyBatchManager( BatchManager ):
        scriptFile.close()
        os.system('chmod +x %s' % scriptFileName)
        
+       shutil.copyfile(cfgFileName, jobDir+'/pycfg.py')
        jobConfig = copy.deepcopy(config)
        jobConfig.components = [ components[value] ]
        cfgFile = open(jobDir+'/config.pck','w')
        pickle.dump( jobConfig, cfgFile )
+       # pickle.dump( cfo, cfgFile )
        cfgFile.close()
 
       

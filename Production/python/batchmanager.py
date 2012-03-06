@@ -44,7 +44,7 @@ class BatchManager:
                                 help="create jobs, but does not submit the jobs.")
         self.parser_.add_option("-b", "--batch", dest="batch",
                                 help="batch command. default is: 'bsub -q 8nh < batchScript.sh'. You can also use 'nohup < ./batchScript.sh &' to run locally.",
-                                default="bsub -q 8nh < .batchScript.sh")
+                                default="bsub -q 8nh < ./batchScript.sh")
 
         
     def ParseOptions(self):       
