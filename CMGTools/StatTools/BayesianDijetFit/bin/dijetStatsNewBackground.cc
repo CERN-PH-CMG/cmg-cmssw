@@ -282,8 +282,8 @@ int main(int argc, char* argv[])
   if(statlevel==8) ws->factory("PROD::prior(xs_prior,lumi_prior,sigMassDelta_prior)");
   if(statlevel==9) ws->factory("PROD::prior(xs_prior,lumi_prior)");
   if(statlevel==11) ws->factory("PROD::prior(xs_prior)");
-  if(statlevel==111) ws->factory("PROD::prior(xs_prior)");
-  if(statlevel==112) ws->factory("PROD::prior(xs_prior)");
+  if(statlevel==12) ws->factory("PROD::prior(xs_prior)");
+  if(statlevel>=100) ws->factory("PROD::prior(xs_prior)");
 
   if(statlevel==0) ws->defineSet("nuisSet","");
   if(statlevel==1) ws->defineSet("nuisSet","");
@@ -296,8 +296,8 @@ int main(int argc, char* argv[])
   if(statlevel==8) ws->defineSet("nuisSet","lumi,sigMassDelta");
   if(statlevel==9) ws->defineSet("nuisSet","lumi");
   if(statlevel==11) ws->defineSet("nuisSet","");
-  if(statlevel==111) ws->defineSet("nuisSet","");
-  if(statlevel==112) ws->defineSet("nuisSet","");
+  if(statlevel==12) ws->defineSet("nuisSet","");
+  if(statlevel>=100) ws->defineSet("nuisSet","");
 
   // do a background-only fit first
   // exclude window +20% -20% units in width
@@ -396,7 +396,7 @@ int main(int argc, char* argv[])
     }
 
     // set parameters for limit calculation
-    if(statlevel==1 || statlevel==11 || statlevel==111 || statlevel==112) {
+    if(statlevel==1 || statlevel==11 || statlevel==12 || statlevel>=100) {
     } else if(statlevel==2) {
       ws->var("lumi")->setConstant(false);
     } else if(statlevel==3 || statlevel==1003) {
@@ -482,31 +482,31 @@ int main(int argc, char* argv[])
     mcC.SetConfidenceLevel(1-alpha);
     mcC.SetLeftSideTailFraction(lstail);
     
-    double p1val=ws->var("p1")->getVal(); double p1err=ws->var("p1")->getError();
-    double p2val=ws->var("p2")->getVal(); double p2err=ws->var("p2")->getError();
-    double p3val=ws->var("p3")->getVal(); double p3err=ws->var("p3")->getError();
+    double p1val=ws->var("p1")->getVal(); //double p1err=ws->var("p1")->getError();
+    double p2val=ws->var("p2")->getVal(); //double p2err=ws->var("p2")->getError();
+    double p3val=ws->var("p3")->getVal(); //double p3err=ws->var("p3")->getError();
 
 
     TH1D* histA=dynamic_cast<TH1D*>(mcA.GetPosteriorHist()->Clone("histA"));
 
-    if(statlevel==1 || statlevel==5 || statlevel==6 || statlevel==7 || statlevel==9 || statlevel==11 || statlevel==111 || statlevel==112) {
-
-      TH1D* histB=dynamic_cast<TH1D*>(mcB.GetPosteriorHist()->Clone("histB"));
-      TH1D* histC=dynamic_cast<TH1D*>(mcC.GetPosteriorHist()->Clone("histC"));
+    if(statlevel==1 || statlevel==5 || statlevel==6 || statlevel==7 || statlevel==9 || statlevel==11 || statlevel==12 || statlevel>=100) {
 
       if (statlevel==11){
+        TH1D* histB=dynamic_cast<TH1D*>(mcB.GetPosteriorHist()->Clone("histB"));
+        TH1D* histC=dynamic_cast<TH1D*>(mcC.GetPosteriorHist()->Clone("histC"));
 	histA->Add(histB);
 	histA->Add(histC);
-
 	delete histB;
 	delete histC;
       }
-      else if (statlevel==111){
+      
+      else if (statlevel==12){
 	TH1D* histB=dynamic_cast<TH1D*>(mcB.GetPosteriorHist()->Clone("histB"));
 	histA->Add(histB);
-
 	delete histB;
-      } else if (statlevel==112){
+      }
+      
+      else {
         // Code taken from TFitResult.RandomizePars
         Int_t nPar= fita->floatParsFinal().getSize();
         // calculate the elements of the upper-triangular matrix L that gives Lt*L = C
@@ -542,8 +542,10 @@ int main(int argc, char* argv[])
      	  std::cout << std::endl;
         }
  
-	TVector g(nPar);
-	for(Int_t v=1; v<nPar;v++){
+        if (statlevel<100) {
+         histA->Scale(3); // 3 times the central value plus up/down variations along 3 axes
+         TVector g(nPar);
+	 for(Int_t v=1; v<nPar;v++){
 	  for(Int_t k= 0; k < nPar; k++) g(k)=eigenVectors[v][k];
 	  // multiply this vector by Lt to introduce the appropriate correlations
 	  g*= (*_Lt);
@@ -562,8 +564,29 @@ int main(int argc, char* argv[])
 	  TH1D* histALo=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histALo"));
 	  histA->Add(histALo);
 	  delete histALo;
+	 }
 	}
-      } else {
+	
+	else if (statlevel>=100) {
+          TVector g(nPar);
+	  if ((statlevel>=100) && (statlevel<=102)) {
+            for(Int_t k= 0; k < nPar; k++) g(k)=eigenVectors[statlevel-99][k];
+	  } else if ((statlevel>=103) && (statlevel<=105)) {
+            for(Int_t k= 0; k < nPar; k++) g(k)=-eigenVectors[statlevel-102][k];
+	  }
+          // multiply this vector by Lt to introduce the appropriate correlations
+          g*= (*_Lt);
+          ws->var("p1")->setVal(p1val+g(1));
+          ws->var("p2")->setVal(p2val+g(2));
+          ws->var("p3")->setVal(p3val+g(3));
+	  TH1D* histAHi=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histAHi"));
+	  delete histA;
+	  histA=histAHi;
+	}
+      
+      }
+      /* Old default with only leading eigenvector
+      {
 	ws->var("p1")->setVal(std::max(0.0,p1val-p1err));
 	ws->var("p2")->setVal(p2val+p2err);
 	ws->var("p3")->setVal(p3val+p3err);
@@ -579,6 +602,7 @@ int main(int argc, char* argv[])
 	delete histAHi;
 	delete histALo;
       }
+      */
  
     }
     
