@@ -156,14 +156,16 @@ if __name__ == '__main__':
     import sys
     import os
     
-    
-    cfgFileName = sys.argv[1]
-    pckfile = open( cfgFileName, 'r' )
-    config = pickle.load( pckfile )
+    print 'current working directory:', os.getcwd()
     sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
                                  'src/CMGTools/H2TauTau/python/proto/analyzers'] ))
     sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
                                  'src/CMGTools/RootTools/python/analyzers'] ))
+    sys.path.append( '.' )
+    
+    cfgFileName = sys.argv[1]
+    pckfile = open( cfgFileName, 'r' )
+    config = pickle.load( pckfile )
     comp = config.components[0]
     looper = Looper( 'Loop', comp,
                      config.sequence, nPrint = 5)

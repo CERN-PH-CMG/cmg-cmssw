@@ -60,9 +60,11 @@ class OOTPileUpReweighting(object):
 
 
 
+base = '/'.join([os.environ['CMSSW_BASE'],'/src/CMGTools/RootTools/data/Reweight'])
+
 ootPUReweighter = OOTPileUpReweighting(
-    'Reweight/DYJetsChamonix/EfficiencyAnalyzer/EfficiencyAnalyzer.root',
-    'Reweight/DYJetsFall11/EfficiencyAnalyzer/EfficiencyAnalyzer.root',    
+    '/'.join([base, 'DYJetsChamonix/EfficiencyAnalyzer/EfficiencyAnalyzer.root']),
+    '/'.join([base, 'DYJetsFall11/EfficiencyAnalyzer/EfficiencyAnalyzer.root']),    
     )
 
 
