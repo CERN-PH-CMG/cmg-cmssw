@@ -1,3 +1,5 @@
+import copy
+
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.statistics.Average import Average
@@ -71,6 +73,8 @@ class EfficiencyHistograms( Histograms ):
     Efficiency plotter
     '''
     def __init__(self, name, space):
+##         self.h_mitmva = TH1F(name + '_h_mitmva', ';MIT MVA;Efficiency', 100, -2, 2)
+##         self.h_danmva = TH1F(name + '_h_danmva', ';MIT MVA;Efficiency', 100, -2, 2)
         self.h_pt = TH1F(name + '_h_pt', ';p_{T} (GeV);Efficiency', 50, 0, 200)
         self.h_eta = TH1F(name + '_h_eta', ';#eta;Efficiency', 50, -6, 6)
         self.h_phi = TH1F(name + '_h_phi', ';#phi (rad);Efficiency', 50, -6.3, 6.3)
@@ -103,6 +107,9 @@ class EfficiencyHistograms( Histograms ):
                 self.h_eta.Fill( eta, weight)
         if self.space.etaPass(eta) and \
            self.ptPass(pt):
+##             if abs(particle.pdgId()) == 11:
+##                 self.h_mitmva.Fill( particle.mvaMIT(), weight)
+##                 self.h_danmva.Fill( particle.mvaDaniele(), weight)
             self.h_phi.Fill( particle.phi(), weight)
             self.h_pv.Fill( len(event.vertices), weight)
             self.h_pu.Fill( event.pusi[1].nPU(), weight)
@@ -128,6 +135,10 @@ class EfficiencyAnalyzer( Analyzer ):
             instance,
             type 
             )
+##         self.handles['other'] =  AutoHandle(
+##             'cmgElectronSel',
+##             'std::vector<cmg::Electron>'
+##             )
 
         self.handles['vertices'] =  AutoHandle(
             'offlinePrimaryVertices',
@@ -154,9 +165,9 @@ class EfficiencyAnalyzer( Analyzer ):
         print self.cfg_ana
         self.phaseSpaces = None
         if self.cfg_ana.genPdgId==13:
-            self.phaseSpaces = muonPhaseSpaces
+            self.phaseSpaces = copy.deepcopy(muonPhaseSpaces)
         elif self.cfg_ana.genPdgId==11:
-            self.phaseSpaces = electronPhaseSpaces
+            self.phaseSpaces = copy.deepcopy(electronPhaseSpaces)
 
         for space in self.phaseSpaces:
             space.denomHistos = EfficiencyHistograms('_'.join([space.name,
@@ -166,6 +177,9 @@ class EfficiencyAnalyzer( Analyzer ):
                                                              'Num']),
                                                    space)
             space.counter = Counter( space.name )
+        self.counters.addCounter(self.name)
+        self.counters.counter(self.name).register('All particles')
+        self.counters.counter(self.name).register('Passing particles')
             
         # self.denomHistos = EfficiencyHistograms('Denom')
         # self.numHistos = EfficiencyHistograms('Num')
@@ -177,6 +191,8 @@ class EfficiencyAnalyzer( Analyzer ):
 
         event.pusi = map( PileUpSummaryInfo, self.mchandles['pusi'].product() )  
         event.rec = self.handles['rec'].product()
+        
+##         event.other = self.handles['other'].product()
         event.gen = self.mchandles['gen'].product()
         event.vertices = self.handles['vertices'].product()
 
@@ -217,7 +233,9 @@ class EfficiencyAnalyzer( Analyzer ):
             space.denomHistos.fillParticles( event.genmatchedRef, event, weight)
             space.numHistos.fillParticles( event.genmatched, event, weight)
             # space.counter.inc('passed')
-        
+
+        self.counters.counter( self.name ).inc( 'All particles', len(event.genmatchedRef) )
+        self.counters.counter( self.name ).inc( 'Passing particles', len(event.genmatched) )
         
     def write(self):
         for space in self.phaseSpaces:

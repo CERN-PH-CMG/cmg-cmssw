@@ -48,13 +48,15 @@ class Efficiency(object):
             eff.Divide(num, denom,1,1,'b')
             self.hists_eff[histName] = eff
         self.support = {}
+        self.xtitle = None
+        self.ytitle = None
 
     def formatHistos(self, style):
         map( style.formatHisto, self.hists_eff.values() )
         map( style.formatHisto, self.hists_num.values() )
         map( style.formatHisto, self.hists_denom.values() )
 
-    def draw(self,name, ymin=0, ymax=1.1, same=False):
+    def draw(self, name, ymin=0, ymax=1.1, same=False):
         if not same:
             h = self.hists_num[name]
             sup = TH2F( name, '',
@@ -65,8 +67,14 @@ class Efficiency(object):
             self.support[name] = sup
             sup.SetStats(0)
             sup.SetTitle( h.GetTitle() )
-            sup.SetXTitle( h.GetXaxis().GetTitle() )
-            sup.SetYTitle( h.GetYaxis().GetTitle() )
+            if self.xtitle is None:
+                sup.SetXTitle( h.GetXaxis().GetTitle() )
+            else:
+                sup.SetXTitle( self.xtitle )
+            if self.ytitle is None:
+                sup.SetYTitle( h.GetYaxis().GetTitle() )
+            else:
+                sup.SetYTitle( self.ytitle )
             sup.Draw()
         self.hists_eff[name].Draw('Psame')
 
@@ -97,7 +105,7 @@ keeper = []
 
 def setup( fileName, index ):
     print 'setup', fileName
-    ffileName = '/'.join( [fileName, 'EfficiencyAnalyzer/EfficiencyAnalyzer.root'] )
+    ffileName = '/'.join( [fileName, 'EfficiencyAnalyzer.root'] )
     file = TFile( ffileName)
     eff = Efficiency( region, file, '', options.rebin)
     eff.formatHistos( styles[index] )
