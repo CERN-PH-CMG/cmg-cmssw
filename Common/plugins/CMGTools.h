@@ -37,6 +37,7 @@
 #include "CMGTools/Common/interface/BaseJetFactory.h"
 #include "CMGTools/Common/interface/BaseMETFactory.h"
 #include "CMGTools/Common/interface/BaseMETModificationFactory.h"
+#include "CMGTools/Common/interface/METScaler.h"
 #include "CMGTools/Common/plugins/PhysicsObjectProducer.h"
 #include "CMGTools/Common/interface/TriggerObjectFactory.h"
 
@@ -104,6 +105,7 @@ typedef PhysicsObjectProducer<cmg::PFJetFactory> PFJetPOProducer;
 typedef PhysicsObjectProducer<cmg::BaseMETFactory<> > BaseMETPOProducer;
 typedef PhysicsObjectProducer<cmg::BaseMETModificationFactory> BaseMETModifier;
 typedef PhysicsObjectProducer<cmg::BaseMETFactory<pat::MET> > PATMETPOProducer;
+typedef PhysicsObjectProducer<cmg::METScaler> METPOScaler;
 typedef PhysicsObjectProducer<cmg::PFCandidateFactory> PFCandidatePOProducer;
 typedef PhysicsObjectProducer<cmg::GenParticleFactory> GenParticlePOProducer;
 typedef PhysicsObjectProducer<cmg::GenJetFactory> GenJetPOProducer;
