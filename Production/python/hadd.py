@@ -33,7 +33,10 @@ def haddPck(file, odir, idirs):
 
 def hadd(file, odir, idirs):
     if file.endswith('.pck'):
-        haddPck( file, odir, idirs)
+        try:
+            haddPck( file, odir, idirs)
+        except ImportError:
+            pass
         return
     elif not file.endswith('.root'):
         return
