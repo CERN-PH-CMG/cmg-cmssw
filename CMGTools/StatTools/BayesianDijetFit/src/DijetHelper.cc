@@ -56,6 +56,12 @@ RooDataHist* DijetHelper::makeBinnedData(std::string filename, std::string objec
     if(!is.good()) break;
     hist->Fill(temp);
   }
+  string sout("Data_Shapes.root");
+
+
+  TFile * output = new TFile(sout.c_str(),"RECREATE");
+  hist->Write();
+  output->Close();
 
   // create a new binned data object
   RooDataHist *binnedData = new RooDataHist(objectname.c_str(),"binned data", RooArgSet(*var), Import(*hist, kFALSE));
