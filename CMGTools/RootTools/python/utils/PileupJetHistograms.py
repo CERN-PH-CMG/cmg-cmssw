@@ -53,6 +53,13 @@ class PileupJetHistograms(Histograms) :
     ## protoypes for histogram booking 
     prototypes={
         
+	"mva"        : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,-1.,1.),
+        
+	"jetPt"      : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s","GeV/c",300,0,150),
+	"jetEta"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",101,-5.05,5.05,),
+	"jetPhi"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",33,-3.21,3.21),
+        "jetM"       : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s","GeV/c^{c}",100,0,50),
+
     	"nCharged"   : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,0,50),
 	"nNeutrals"  : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,0,50),
 	"nParticles" : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,0,50),
@@ -93,7 +100,8 @@ class PileupJetHistograms(Histograms) :
         }
 
     # --------------------------------------------------------------------------------------
-    def __init__(self,name,vtxbins=None,ptbins=None,etabins=None,vtxlabels=None,ptlabels=None,etalabels=None):
+    def __init__(self,name,vtxbins=None,ptbins=None,etabins=None,vtxlabels=None,ptlabels=None,etalabels=None,reweight=None,
+                 jetIdMva=None):
         """
         """
         from ROOT import PileupJetIdentifier
@@ -102,6 +110,7 @@ class PileupJetHistograms(Histograms) :
         self.vtxbins = vtxbins
         self.ptbins = ptbins
         self.etabins = etabins
+        self.reweight = reweight
         
         if self.vtxbins and not vtxlabels:
             self.vtxlabels = [ "_vtx%s" % l for l in  mkBinLabels(self.vtxbins) ]
@@ -126,7 +135,15 @@ class PileupJetHistograms(Histograms) :
 
         ## book histograms and keep track of what needs to be filled
         self.fillers = []
-        self.identifier = PileupJetIdentifier()
+        if jetIdMva:
+            print jetIdMva
+            self.identifier = PileupJetIdentifier(*jetIdMva)
+            self.jetIdMva = jetIdMva
+            self.runMva = True
+        else:
+            self.identifier = PileupJetIdentifier()
+            self.jetIdMva = ()
+            self.runMva = True
         for name,proto in self.prototypes.iteritems():
             self.fillers.append( (self.bookHistos(name,proto), name) )
 
@@ -176,20 +193,24 @@ class PileupJetHistograms(Histograms) :
 
         if ptbin < 0 or etabin < 0 or vtxbin < 0:
             return
+
+        w = 1.
+        if self.reweight:
+            xbin = findBin(self.reweight[1],getattr(jet,self.reweight[0])())
+            w = self.reweight[2][xbin]
         
         try:
-            id = jet.puIdentifier
+            puid = jet.puIdentifier
         except:
-            id = self.identifier
+            puid = self.identifier
             try:
-                id.computeIdVariables(jet.sourcePtr().get(),0)
+                puid.computeIdVariables(jet.sourcePtr().get(),0,self.runMva)
             except:
-                id.computeIdVariablesFromPat(jet,0)
-                ## print id.dumpVariables()
-        ## print jet.pt(), ptbin, jet.eta(), etabin, nvtx, vtxbin
+                puid.computeIdVariables(jet,0,self.runMva)
+            jet.puIdentifier = PileupJetIdentifier(puid)
+            
         for t,m in self.fillers:
-            ## print t[vtxbin][ptbin][etabin]
-            t[vtxbin][ptbin][etabin].Fill( id.__getattribute__(m)() )
+            t[vtxbin][ptbin][etabin].Fill( getattr(puid,m)(), w )
             
     # --------------------------------------------------------------------------------------
     def fillEvent(self,event,vertices):
