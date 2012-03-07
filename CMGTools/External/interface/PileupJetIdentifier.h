@@ -27,12 +27,19 @@ namespace pat { class Jet; }
 
 class PileupJetIdentifier {
 public:
-	PileupJetIdentifier();
+	PileupJetIdentifier(const PileupJetIdentifier &p);
+	PileupJetIdentifier(const std::string & tmvaWeight="", const std::string & tmvaMethod="", Float_t impactParTkThreshod_=1.);
 	~PileupJetIdentifier(); 
 	
-	void computeIdVariables(const reco::Jet * jet, const reco::Vertex *);
-	void computeIdVariablesFromPat(const pat::Jet * jet, const reco::Vertex *);
+	void computeIdVariables(const reco::Jet * jet, const reco::Vertex *, bool calculateMva=false);
 	
+	DECLARE_VARIABLE(mva      ,Float_t);
+	
+	DECLARE_VARIABLE(jetEta   ,Float_t);
+	DECLARE_VARIABLE(jetPt    ,Float_t);
+	DECLARE_VARIABLE(jetPhi   ,Float_t);
+	DECLARE_VARIABLE(jetM     ,Float_t);
+
 	DECLARE_VARIABLE(nCharged   ,Float_t);
 	DECLARE_VARIABLE(nNeutrals,Float_t);
 
@@ -72,9 +79,22 @@ public:
 	
 	std::string dumpVariables() const;
 
+protected:
+	typedef std::map<std::string,std::pair<Float_t *,Float_t> > variables_list_t;
+
 private:
+	TMVA::Reader * reader_;
+	std::string    tmvaWeights_, tmvaMethod_; 
+	std::vector<std::string>  tmvaVariables_;
+	std::map<std::string,std::string>  tmvaNames_;
+	
+	void bookReader();
+	
 	void resetVariables();
-	std::map<std::string,Float_t *> variables_;
+	void initVariables();
+	
+	variables_list_t variables_;
+	
 	Float_t impactParTkThreshod_;
 };
 
