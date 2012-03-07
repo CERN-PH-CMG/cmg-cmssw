@@ -3,7 +3,7 @@
 import sys
 import copy
 from CMGTools.RootTools.RootInit import *
-from CMGTools.RootTools.Style import sBlack, sBlue
+from CMGTools.RootTools.Style import sBlack, sBlue, styleSet
 
 from ROOT import TGraphAsymmErrors
 
@@ -22,7 +22,7 @@ class Efficiency(object):
         # self.eff.Divide(self.denom)
         sname = file.GetName()
         sname = sname.replace('EfficiencyAnalyzer/EfficiencyAnalyzer.root', '')
-        self.desc = ', '.join([sname, region, legend])
+        self.desc = ','.join( [legend, region])
         def load( dir, hists, rebin):
             for key in dir.GetListOfKeys():
                 keyname = key.GetName()
@@ -98,8 +98,31 @@ region = args[0]
 var = args[1]
 files = args[2:]
 
-styles = [ sBlue, sBlack ]
-sBlack.markerStyle = 25
+
+
+def setMVAStyle():
+    mitStyles = map(copy.deepcopy, [sBlack]*3)
+    danStyles = map(copy.deepcopy, [sBlue]*3)
+    def setMarkStyle(styles, start):
+        for style, mark in zip(styles, range(start,start+3)):
+            style.markerStyle = mark
+    setMarkStyle(mitStyles, 20)
+    setMarkStyle(danStyles, 24)
+    styles = mitStyles
+    styles.extend(danStyles)
+    return styles
+
+## def setMVAEffs( effs ):
+##     pattern = re.compile('Analyzer_(.*)/.*') 
+##     for eff in effs:
+##         m = pattern.match( eff.desc )
+##         if m is not None:
+##             eff.desc = m.group(1)
+
+
+# styles = setMVAStyle()
+styles = [sBlue, sBlackSquares]
+styles[1].markerStyle = 25
 
 keeper = []
 
@@ -107,8 +130,15 @@ def setup( fileName, index ):
     print 'setup', fileName
     ffileName = '/'.join( [fileName, 'EfficiencyAnalyzer.root'] )
     file = TFile( ffileName)
-    eff = Efficiency( region, file, '', options.rebin)
+    legend = ''
+    pattern = re.compile('.*Analyzer_(.*)$')
+    m = pattern.match( fileName )
+    if m is not None:
+        legend = m.group(1)
+        print legend
+    eff = Efficiency( region, file, legend, options.rebin)
     eff.formatHistos( styles[index] )
+    eff.ytitle='Efficiency'
     keeper.extend( [file] )
     return eff
 
@@ -116,10 +146,21 @@ effs = []
 for index, file in enumerate(files):
     effs.append( setup( file, index ) )
 
+legX1 = 0.58
+legY1 = 0.70
+legX2 = 0.95
+legY2 = 0.95
+
+legend = None
+
     
 def draw(name, ymin=0, ymax=1.1):
     same = False
-    legend = TLegend(0.6, 0.15, 0.89, 0.35)
+    global legend
+    if legend is None:
+        legend = TLegend(legX1, legY1, legX2, legY2)
+    else:
+        legend.Clear()
     keeper.append( legend )
     for eff in effs:
         eff.draw( name, ymin, ymax, same)
@@ -127,6 +168,8 @@ def draw(name, ymin=0, ymax=1.1):
             same = True
         legend.AddEntry(eff.hists_eff[name], eff.desc, 'lp' )
     legend.Draw('same')
+
+draw('pu', 0.5, 1.05)
 
 def drawNum(name, norm=True ):
     same = ''
@@ -143,5 +186,6 @@ def drawNum(name, norm=True ):
     legend.Draw('same')
         
     
-
 draw(var)
+
+

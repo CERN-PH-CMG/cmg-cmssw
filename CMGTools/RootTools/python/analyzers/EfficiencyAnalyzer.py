@@ -1,4 +1,5 @@
 import copy
+import fnmatch
 
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
@@ -8,6 +9,7 @@ from CMGTools.RootTools.statistics.Histograms import Histograms
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import PhysicsObject, GenParticle
 from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection
 from CMGTools.RootTools.utils.OOTPileUpReweighting import ootPUReweighter
+from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
 
 from ROOT import TH1F, TH2F, TFile
 
@@ -78,8 +80,8 @@ class EfficiencyHistograms( Histograms ):
         self.h_pt = TH1F(name + '_h_pt', ';p_{T} (GeV);Efficiency', 50, 0, 200)
         self.h_eta = TH1F(name + '_h_eta', ';#eta;Efficiency', 50, -6, 6)
         self.h_phi = TH1F(name + '_h_phi', ';#phi (rad);Efficiency', 50, -6.3, 6.3)
-        self.h_pv = TH1F(name + '_h_pv', ';# rec vertices', 40, 0, 40)
-        self.h_pu = TH1F(name + '_h_pu', ';# PU interactions', 40, 0, 40)
+        self.h_pv = TH1F(name + '_h_pv', ';# rec vertices;Efficiency', 40, 0, 40)
+        self.h_pu = TH1F(name + '_h_pu', ';# PU interactions;Efficiency', 40, 0, 40)
         self.h_pup_VS_pu = TH2F(name + '_h_pup_VS_pu',
                                 ';# PU interactions;# PU interactions in next bunch',
                                 50, 0, 50, 50, 0, 100)
@@ -87,7 +89,7 @@ class EfficiencyHistograms( Histograms ):
         super( EfficiencyHistograms, self).__init__(name)
  
     def ptPass(self, pt):
-        ptMin = 10.
+        ptMin = 20.
         return pt>ptMin  
 
     def fillParticle(self, particle, event, weight):
@@ -145,7 +147,14 @@ class EfficiencyAnalyzer( Analyzer ):
             'std::vector<reco::Vertex>'
             )
 
-        geninstance = 'genLeptonsStatus1'
+##         geninstance = 'genLeptonsStatus1'
+##         gentype = 'std::vector<reco::GenParticle>'
+##         self.mchandles['gen'] =  AutoHandle(
+##             geninstance,
+##             gentype 
+##             )
+
+        geninstance = 'genParticlesStatus3'
         gentype = 'std::vector<reco::GenParticle>'
         self.mchandles['gen'] =  AutoHandle(
             geninstance,
@@ -168,6 +177,9 @@ class EfficiencyAnalyzer( Analyzer ):
             self.phaseSpaces = copy.deepcopy(muonPhaseSpaces)
         elif self.cfg_ana.genPdgId==11:
             self.phaseSpaces = copy.deepcopy(electronPhaseSpaces)
+        else:
+            self.phaseSpaces = copy.deepcopy(electronPhaseSpaces)
+            
 
         for space in self.phaseSpaces:
             space.denomHistos = EfficiencyHistograms('_'.join([space.name,
@@ -189,13 +201,14 @@ class EfficiencyAnalyzer( Analyzer ):
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
-        event.pusi = map( PileUpSummaryInfo, self.mchandles['pusi'].product() )  
-        event.rec = self.handles['rec'].product()
-        
-##         event.other = self.handles['other'].product()
-        event.gen = self.mchandles['gen'].product()
+        event.pusi = map( PileUpSummaryInfo, self.mchandles['pusi'].product() )
         event.vertices = self.handles['vertices'].product()
+        
+        event.rec = self.handles['rec'].product()
+        event.gen = self.mchandles['gen'].product()
 
+        # if refselFun is given, this function is applied to select reconstructed objects
+        # to be used as a reference
         refselFun = None
         if hasattr( self.cfg_ana, 'refselFun'):
             refselFun = self.cfg_ana.refselFun
@@ -204,6 +217,9 @@ class EfficiencyAnalyzer( Analyzer ):
         else:
             event.refsel = event.gen
 
+
+        # if recselfun is given, this function is applied to select reconstructed objects
+        # for which we want to measure the efficiency w/r to the reference
         recselFun = None
         if hasattr( self.cfg_ana, 'recselFun'):
             recselFun = self.cfg_ana.recselFun
@@ -212,9 +228,17 @@ class EfficiencyAnalyzer( Analyzer ):
         else:
             event.recsel = event.rec
 
+        # selecting gen objects
         genpdgid = self.cfg_ana.genPdgId
-        event.gensel = [ GenParticle(obj) for obj in event.gen if abs(obj.pdgId())==genpdgid]
+        event.gensel = []
+        for obj in event.gen:
+            if abs(obj.pdgId())!=genpdgid: continue
+            if not self.trigMatched( obj, event): continue
+            event.gensel.append( obj )
 
+        if len(event.gensel ) == 0:
+            return False
+            
         # gen objects matched to a reference lepton
         pairs = matchObjectCollection( event.gensel, event.refsel, 0.1)
         event.genmatchedRef = [ gen for gen,rec in pairs.iteritems() if rec is not None]
@@ -224,7 +248,7 @@ class EfficiencyAnalyzer( Analyzer ):
         pairs = matchObjectCollection( event.genmatchedRef, event.recsel, 0.1)
         event.genmatched = [ gen for gen,rec in pairs.iteritems() if rec is not None]
 
-        # reweightign OOTPU in chamonix samples to the OOTPU observed in Fall11 samples
+        # reweighting OOTPU in chamonix samples to the OOTPU observed in Fall11 samples
         weight = 1
         if self.cfg_comp.name.find('Chamonix')!=-1:
             weight = ootPUReweighter.getWeight( event.pusi[1].nPU(), event.pusi[2].nPU())
@@ -241,3 +265,16 @@ class EfficiencyAnalyzer( Analyzer ):
         for space in self.phaseSpaces:
             space.denomHistos.Write( self.file )
             space.numHistos.Write( self.file )
+
+    def trigMatched(self, particle, event):
+        if not hasattr( self.cfg_ana, 'triggerMap'):
+            return True
+        # import pdb; pdb.set_trace()
+        path = event.hltPath
+        triggerObjects = event.triggerObjects
+        theFilter = None
+        for entry,filter in self.cfg_ana.triggerMap.iteritems():
+            if fnmatch.fnmatch( path, entry ):
+                theFilter = filter
+                break
+        return triggerMatched(particle, triggerObjects, path, theFilter, dR2Max=0.089999)
