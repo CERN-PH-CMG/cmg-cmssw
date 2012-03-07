@@ -29,6 +29,10 @@ namespace cmg {
 
     friend class PhotonFactory;
 
+    virtual bool isPhoton() const {
+      return true;
+    }
+
   private:
 
   };

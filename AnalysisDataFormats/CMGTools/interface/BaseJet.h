@@ -52,6 +52,10 @@ namespace cmg {
     friend class BaseJetFactory;
     template <class> friend class JetEnergyCorrector;
 
+    virtual bool isJet() const {
+      return true;
+    }
+
   private:
  
     /// b tagging discriminators
