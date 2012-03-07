@@ -7,52 +7,125 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
-#define INIT_VARIABLE(NAME,VAL)  \
-	NAME ## _ = VAL; \
-	variables_[ # NAME ] = & NAME ## _;
+// ------------------------------------------------------------------------------------------
+const Float_t large_val = std::numeric_limits<Float_t>::max();
 
 // ------------------------------------------------------------------------------------------
-PileupJetIdentifier::PileupJetIdentifier() 
+PileupJetIdentifier::PileupJetIdentifier(const std::string & tmvaWeights, 
+					 const std::string & tmvaMethod, 
+					 Float_t impactParTkThreshod
+	) 
 {
-	impactParTkThreshod_ = 1.;
+	impactParTkThreshod_ = impactParTkThreshod;
+	tmvaWeights_         = tmvaWeights;
+	tmvaMethod_          = tmvaMethod;
 	
-	INIT_VARIABLE(nCharged   ,0.);
-	INIT_VARIABLE(nNeutrals,0.);
+	reader_              = 0;
 
-	INIT_VARIABLE(chgEMfrac  ,0.);
-	INIT_VARIABLE(neuEMfrac  ,0.);
-	INIT_VARIABLE(chgHadrfrac,0.);
-	INIT_VARIABLE(neuHadrfrac,0.);
+	initVariables();
+}
+
+// ------------------------------------------------------------------------------------------
+PileupJetIdentifier::PileupJetIdentifier(const PileupJetIdentifier &p)
+{
+	impactParTkThreshod_ = p.impactParTkThreshod_;
+	tmvaWeights_         = p.tmvaWeights_;
+	tmvaMethod_          = p.tmvaMethod_;
+	tmvaVariables_       = p.tmvaVariables_;
 	
-	INIT_VARIABLE(d0         ,0.);   
-	INIT_VARIABLE(dZ         ,0.);  
-	INIT_VARIABLE(nParticles ,0.);  
+	reader_              = 0;
 
-	INIT_VARIABLE(leadPt     ,0.);  
-	INIT_VARIABLE(leadEta    ,0.);  
-	INIT_VARIABLE(leadPhi    ,0.);  
-	INIT_VARIABLE(secondPt   ,0.);  
-	INIT_VARIABLE(secondEta  ,0.);  
-	INIT_VARIABLE(secondPhi  ,0.);  
-	INIT_VARIABLE(leadNeutPt ,0.);  
-	INIT_VARIABLE(leadNeutEta,0.);  
-	INIT_VARIABLE(leadNeutPhi,0.);  
-	INIT_VARIABLE(leadEmPt   ,0.);  
-	INIT_VARIABLE(leadEmEta  ,0.);  
-	INIT_VARIABLE(leadEmPhi  ,0.);  
-	INIT_VARIABLE(leadChPt   ,0.);  
-	INIT_VARIABLE(leadChEta  ,0.);  
-	INIT_VARIABLE(leadChPhi  ,0.);  
-	INIT_VARIABLE(leadFrac   ,0.);  
+	initVariables();
+	for(variables_list_t::const_iterator it=variables_.begin(); 
+	    it!=variables_.end(); ++it ) {
+		*it->second.first = *p.variables_.find( it->first )->second.first;
+	}
+}
 
-	INIT_VARIABLE(dRLeadCent ,0.);  
-	INIT_VARIABLE(dRLead2nd  ,0.);  
-	INIT_VARIABLE(dRMean     ,0.);  
-	INIT_VARIABLE(dRMeanNeut ,0.);  
-	INIT_VARIABLE(dRMeanEm   ,0.);  
-	INIT_VARIABLE(dRMeanCh   ,0.);  
+// ------------------------------------------------------------------------------------------
+#define INIT_VARIABLE(NAME,TMVANAME,VAL)	\
+	NAME ## _ = VAL; \
+	variables_[ # NAME   ] = std::make_pair(& NAME ## _, VAL); \
+	tmvaNames_[ TMVANAME ] = # NAME ;			 \
+
+// ------------------------------------------------------------------------------------------
+void PileupJetIdentifier::initVariables()
+{
+  	INIT_VARIABLE(mva        , "", -100.);
+	INIT_VARIABLE(jetPt      , "jspt_1", 0.);
+	INIT_VARIABLE(jetEta     , "jseta_1", large_val);
+	INIT_VARIABLE(jetPhi     , "jsphi_1", large_val);
+	INIT_VARIABLE(jetM       , "jm_1", 0.);
+
+	INIT_VARIABLE(nCharged   , "", 0.);
+	INIT_VARIABLE(nNeutrals  , "", 0.);
 	
-	INIT_VARIABLE(ptD,0.);
+	INIT_VARIABLE(chgEMfrac  , "", 0.);
+	INIT_VARIABLE(neuEMfrac  , "", 0.);
+	INIT_VARIABLE(chgHadrfrac, "", 0.);
+	INIT_VARIABLE(neuHadrfrac, "", 0.);
+	
+	INIT_VARIABLE(d0         , "jd0_1"    , large_val);   
+	INIT_VARIABLE(dZ         , "jdZ_1"    , large_val);  
+	INIT_VARIABLE(nParticles , "npart_1"  , 0.);  
+	
+	INIT_VARIABLE(leadPt     , "lpt_1"    , 0.);  
+	INIT_VARIABLE(leadEta    , "leta_1"   , large_val);  
+	INIT_VARIABLE(leadPhi    , "lphi_1"   , large_val);  
+	INIT_VARIABLE(secondPt   , "spt_1"    , 0.);  
+	INIT_VARIABLE(secondEta  , "seta_1"   , large_val);  
+	INIT_VARIABLE(secondPhi  , "sphi_1"   , large_val);  
+	INIT_VARIABLE(leadNeutPt , "lnept_1"    , 0.);  
+	INIT_VARIABLE(leadNeutEta, "lneeta_1"   , large_val);  
+	INIT_VARIABLE(leadNeutPhi, "lnephi_1"   , large_val);  
+	INIT_VARIABLE(leadEmPt   , "lempt_1"  , 0.);  
+	INIT_VARIABLE(leadEmEta  , "lemeta_1" , large_val);  
+	INIT_VARIABLE(leadEmPhi  , "lemphi_1" , large_val);  
+	INIT_VARIABLE(leadChPt   , "lchpt_1"  , 0.);  
+	INIT_VARIABLE(leadChEta  , "lcheta_1" , large_val);  
+	INIT_VARIABLE(leadChPhi  , "lchphi_1" , large_val);  
+	INIT_VARIABLE(leadFrac   , "lLfr_1"   , 0.);  
+	
+	INIT_VARIABLE(dRLeadCent , "drlc_1"   , 0.);  
+	INIT_VARIABLE(dRLead2nd  , "drls_1"   , 0.);  
+	INIT_VARIABLE(dRMean     , "drm_1"    , 0.);  
+	INIT_VARIABLE(dRMeanNeut , "drmne_1"  , 0.);  
+	INIT_VARIABLE(dRMeanEm   , "drem_1"   , 0.);  
+	INIT_VARIABLE(dRMeanCh   , "drch_1"   , 0.);  
+	
+	INIT_VARIABLE(ptD        , "", 0.);
+	
+	if( tmvaVariables_.empty() ) {
+		tmvaVariables_.push_back( "jspt_1"  );
+		tmvaVariables_.push_back( "jseta_1" );
+		tmvaVariables_.push_back( "jsphi_1" );
+		tmvaVariables_.push_back( "jd0_1"   );
+		tmvaVariables_.push_back( "jdZ_1"   );
+		tmvaVariables_.push_back( "jm_1"    );
+		tmvaVariables_.push_back( "npart_1" );
+		tmvaVariables_.push_back( "lpt_1"   );
+		tmvaVariables_.push_back( "leta_1"  );
+		tmvaVariables_.push_back( "lphi_1"  );
+		tmvaVariables_.push_back( "spt_1"   );
+		tmvaVariables_.push_back( "seta_1"  );
+		tmvaVariables_.push_back( "sphi_1"  );
+		tmvaVariables_.push_back( "lnept_1" );
+		tmvaVariables_.push_back( "lneeta_1");
+		tmvaVariables_.push_back( "lnephi_1");
+		tmvaVariables_.push_back( "lempt_1" );
+		tmvaVariables_.push_back( "lemeta_1");
+		tmvaVariables_.push_back( "lemphi_1");
+		tmvaVariables_.push_back( "lchpt_1" );
+		// tmvaVariables_.push_back( "lcheta_1"); FIXME missing in weights file
+		tmvaVariables_.push_back( "lchphi_1");
+		tmvaVariables_.push_back( "lLfr_1"  );
+		tmvaVariables_.push_back( "drlc_1"  );
+		tmvaVariables_.push_back( "drls_1"  );
+		tmvaVariables_.push_back( "drm_1"   );
+		tmvaVariables_.push_back( "drmne_1" );
+		tmvaVariables_.push_back( "drem_1"  );
+		tmvaVariables_.push_back( "drch_1"  );
+	}
 }
 
 #undef INIT_VARIABLE
@@ -61,15 +134,20 @@ PileupJetIdentifier::PileupJetIdentifier()
 // ------------------------------------------------------------------------------------------
 PileupJetIdentifier::~PileupJetIdentifier() 
 {
+	if( reader_ ) {
+		delete reader_;
+	}
 }
 
 // ------------------------------------------------------------------------------------------
 std::string PileupJetIdentifier::dumpVariables() const
 {
 	std::stringstream out;
-	for(std::map<std::string, Float_t * >::const_iterator it=variables_.begin(); 
+	for(variables_list_t::const_iterator it=variables_.begin(); 
 	    it!=variables_.end(); ++it ) {
-		out <<  std::setw(15) << it->first << std::setw(3) << "=" << std::setw(5) << *it->second << std::endl;
+		out << std::setw(15) << it->first << std::setw(3) << "=" 
+		    << std::setw(5) << *it->second.first 
+		    << " (" << std::setw(5) << it->second.second << ")" << std::endl;
 	}
 	return out.str();
 }
@@ -77,9 +155,9 @@ std::string PileupJetIdentifier::dumpVariables() const
 // ------------------------------------------------------------------------------------------
 void PileupJetIdentifier::resetVariables()
 {
-	for(std::map<std::string, Float_t * >::iterator it=variables_.begin(); 
+	for(variables_list_t::iterator it=variables_.begin(); 
 	    it!=variables_.end(); ++it ) {
-		*it->second = 0.;
+		*it->second.first = it->second.second;
 	}
 }
 
@@ -93,13 +171,18 @@ void setPtEtaPhi(const reco::Candidate & p, float & pt, float & eta, float &phi 
 
 
 // ------------------------------------------------------------------------------------------
-void PileupJetIdentifier::computeIdVariablesFromPat(const pat::Jet * jet, const reco::Vertex * vtx) 
+void PileupJetIdentifier::bookReader()
 {
-	computeIdVariables((reco::Jet *)jet, vtx);
+	reader_ = new TMVA::Reader("!Color:!Silent");
+	assert( ! tmvaMethod_.empty() && !  tmvaWeights_.empty() );
+	for(std::vector<std::string>::iterator it=tmvaVariables_.begin(); it!=tmvaVariables_.end(); ++it) {
+		reader_->AddVariable( *it, variables_[ tmvaNames_[*it] ].first );
+	}
+	reader_->BookMVA(tmvaMethod_.c_str(), tmvaWeights_.c_str());
 }
 
 // ------------------------------------------------------------------------------------------
-void PileupJetIdentifier::computeIdVariables(const reco::Jet * jet, const reco::Vertex * vtx) 
+void PileupJetIdentifier::computeIdVariables(const reco::Jet * jet, const reco::Vertex * vtx, bool calculateMva) 
 {
 	static int printWarning = 10; 
 	typedef std::vector <reco::PFCandidatePtr> constituents_type;
@@ -118,10 +201,19 @@ void PileupJetIdentifier::computeIdVariables(const reco::Jet * jet, const reco::
 	reco::TrackRef impactTrack;
 	float jetPt = jet->pt(); // FIXME: corrected pt?
 	
+	setPtEtaPhi(*jet,jetPt_,jetEta_,jetPhi_);
+	jetM_ = jet->mass(); 
+	
 	for(constituents_iterator it=constituents.begin(); it!=constituents.end(); ++it) {
 		reco::PFCandidatePtr & icand = *it;
-		float candDr = reco::deltaR(**it,*jet);
 		float candPt = icand->pt();
+		if ( candPt <= 0. ) {
+			// if( printWarning-- > 0) { 
+			std::cerr << "WARNING: candidate with 0 pt" << std::endl; 
+			//}
+			continue;
+		}
+		float candDr = reco::deltaR(**it,*jet);
 		float candPtDr = candPt * candDr;
 		
 		// all particles
@@ -166,11 +258,10 @@ void PileupJetIdentifier::computeIdVariables(const reco::Jet * jet, const reco::
 	if( impactTrack.isNonnull() && impactTrack.isAvailable() ) {
 		d0_ = -impactTrack->dxy(vtx->position());
 		dZ_ = impactTrack->dz(vtx->position());
-	} else if(printWarning) {
-		std::cerr << "WARNING : did not find any valid track reference attached to the jet " << std::endl;
-		d0_ = 99999.;
-		dZ_ = 99999.;
-		--printWarning;
+	} else {
+		if(printWarning-- > 0) { std::cerr << "WARNING : did not find any valid track reference attached to the jet " << std::endl; }
+		//// d0_ = 99999.;
+		//// dZ_ = 99999.;
 	}
 	nParticles_ = constituents.size(); 
 
@@ -191,5 +282,10 @@ void PileupJetIdentifier::computeIdVariables(const reco::Jet * jet, const reco::
 	dRMeanCh_   /= jetPt;
 	
 	ptD_ = sqrt( ptD_ / (jetPt*jetPt) );
+	
+	if( calculateMva ) {
+		if( ! reader_ ) { bookReader(); }
+		mva_ = reader_->EvaluateMVA( tmvaMethod_.c_str() );
+	}
 }
 

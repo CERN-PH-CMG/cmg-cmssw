@@ -2,6 +2,7 @@
 <use   name="DataFormats/PatCandidates"/>
 <use   name="DataFormats/JetReco"/>
 <use   name="root"/>
+<use   name="roottmva"/>
 <use   name="rootcore"/>
 <use   name="rootinteractive"/>
 <use   name="rootrflx"/>
