@@ -37,7 +37,7 @@ Qstar_qg_3::Qstar_qg_3(const char *name, const char *title,
   jes("jes","Jet Energy Scale",this,_jes),
   jer("jer","Jet Energy Resolution",this,_jer),
   mass("mass","Resonance Mass",this,_mass),
-  M_CUT(890.),
+  M_CUT(890.0),
   INIT_MASS(1000.)
 { 
 //  std::cout << "iResonance = " << iResonance << std::endl;
@@ -150,6 +150,7 @@ Qstar_qg_3::Qstar_qg_3(const char *name, const char *title,
     for(int i=1; i<=N_SHAPE_BINS; i++) {
       double mss = hist[j]->GetBinCenter(i);
       double prob = FastQstarBinnedProb(mss);
+      //      if (mss < 900 && mss > 880) cout << "mss = " << mss << " i = " << i << " prob = " << prob << endl; 
       hist[j]->SetBinContent(i, prob);
     }
     for(int i=1; i<=N_SHAPE_BINS; i++) {
@@ -166,7 +167,7 @@ Qstar_qg_3::Qstar_qg_3(const char *name, const char *title,
       hist_cdf[j]->SetBinContent(i, prev+curr);
     }
 
-    cout <<"bin_cut is = " << bin_cut << " min val at this bin is " << hist_cdf[j]->GetBinLowEdge(bin_cut) << " at mass " << resmass << " the efficiency is " << 1-hist_cdf[j]->GetBinContent(bin_cut) << endl;
+    cout <<"bin_cut is = " << bin_cut << " min val at this bin is " << hist_cdf[j]->GetBinLowEdge(bin_cut) << " bin width is " << hist_cdf[j]->GetBinWidth(bin_cut) << " at mass " << resmass << " the efficiency is " << 1-hist_cdf[j]->GetBinContent(bin_cut) << endl;
 
     eff->SetBinContent(j+1, 1-hist_cdf[j]->GetBinContent(bin_cut));
 
@@ -230,7 +231,14 @@ Double_t Qstar_qg_3::interpolate(Double_t mass, Double_t* histarray) const
   }
   if(binlo<0) return histarray[0];
   if(binhi>=N_SHAPE_BINS) return histarray[N_SHAPE_BINS-1];
-  return histarray[binlo]*(1-frac)+histarray[binhi]*frac;
+
+  /*  
+  if (mass < 900.) cout << "mass = " << mass << " density = " << histarray[binlo+1]*(1-frac)+histarray[binhi+1]*frac 
+			 << " binlo = " << binlo << " binhi = " << binhi << " frac = "<< frac 
+			 << " histarray[binlo] = " << histarray[binlo+1] << " histarray[binhi] = " << histarray[binhi+1] << endl;
+  */
+
+  return histarray[binlo+1]*(1-frac)+histarray[binhi+1]*frac;
 }
 
 Double_t Qstar_qg_3::evaluate() const 
