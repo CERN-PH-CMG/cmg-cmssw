@@ -12,11 +12,10 @@
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/JetReco/interface/PFJetCollection.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "TMVA/Tools.h"
 #include "TMVA/Reader.h"
-
-namespace pat { class Jet; }
 
 #define DECLARE_VARIABLE(NAME,TYPE)		\
 	private: \
@@ -24,14 +23,16 @@ namespace pat { class Jet; }
 	public: \
 	const TYPE & NAME() const { return NAME ## _; }
 
-
+// ----------------------------------------------------------------------------------------------------
 class PileupJetIdentifier {
 public:
+	PileupJetIdentifier(edm::ParameterSet & ps); 
+	PileupJetIdentifier(const std::string & tmvaWeight="", const std::string & tmvaMethod="", 
+			    Float_t impactParTkThreshod_=1.);
 	PileupJetIdentifier(const PileupJetIdentifier &p);
-	PileupJetIdentifier(const std::string & tmvaWeight="", const std::string & tmvaMethod="", Float_t impactParTkThreshod_=1.);
 	~PileupJetIdentifier(); 
 	
-	void computeIdVariables(const reco::Jet * jet, const reco::Vertex *, bool calculateMva=false);
+	void computeIdVariables(const reco::Jet * jet, float jec, const reco::Vertex *, bool calculateMva=false);
 	
 	DECLARE_VARIABLE(mva      ,Float_t);
 	

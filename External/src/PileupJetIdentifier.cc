@@ -6,9 +6,22 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "FWCore/ParameterSet/interface/FileInPath.h"
 
 // ------------------------------------------------------------------------------------------
 const Float_t large_val = std::numeric_limits<Float_t>::max();
+
+// ------------------------------------------------------------------------------------------
+PileupJetIdentifier::PileupJetIdentifier(edm::ParameterSet & ps) 
+{
+	impactParTkThreshod_ = ps.getUntrackedParameter<double>("impactParTkThreshod",1.);
+	tmvaWeights_         = edm::FileInPath(ps.getUntrackedParameter<std::string>("tmvaWeights","CMGTools/External/data/mva_JetID.weights.xml")).fullPath();
+	tmvaMethod_          = ps.getUntrackedParameter<std::string>("tmvaMethod","JetID");
+	
+	reader_              = 0;
+
+	initVariables();
+}
 
 // ------------------------------------------------------------------------------------------
 PileupJetIdentifier::PileupJetIdentifier(const std::string & tmvaWeights, 
@@ -65,8 +78,8 @@ void PileupJetIdentifier::initVariables()
 	INIT_VARIABLE(chgHadrfrac, "", 0.);
 	INIT_VARIABLE(neuHadrfrac, "", 0.);
 	
-	INIT_VARIABLE(d0         , "jd0_1"    , large_val);   
-	INIT_VARIABLE(dZ         , "jdZ_1"    , large_val);  
+	INIT_VARIABLE(d0         , "jd0_1"    , -1000.);   
+	INIT_VARIABLE(dZ         , "jdZ_1"    , -1000.);  
 	INIT_VARIABLE(nParticles , "npart_1"  , 0.);  
 	
 	INIT_VARIABLE(leadPt     , "lpt_1"    , 0.);  
@@ -182,7 +195,7 @@ void PileupJetIdentifier::bookReader()
 }
 
 // ------------------------------------------------------------------------------------------
-void PileupJetIdentifier::computeIdVariables(const reco::Jet * jet, const reco::Vertex * vtx, bool calculateMva) 
+void PileupJetIdentifier::computeIdVariables(const reco::Jet * jet, float jec, const reco::Vertex * vtx, bool calculateMva) 
 {
 	static int printWarning = 10; 
 	typedef std::vector <reco::PFCandidatePtr> constituents_type;
@@ -195,22 +208,23 @@ void PileupJetIdentifier::computeIdVariables(const reco::Jet * jet, const reco::
 	const pat::Jet * patjet = dynamic_cast<const pat::Jet *>(jet);
 	const reco::PFJet * pfjet = dynamic_cast<const reco::PFJet *>(jet);
 	assert( patjet != 0 || pfjet != 0 );
+	if( patjet != 0 && jec == 0. ) { // if this is a pat jet and no jec has been passed take the jec from the object
+		jec = patjet->jecFactor(1); // FIXME double-check 
+	}
 
 	constituents_type constituents = pfjet ? pfjet->getPFConstituents() : patjet->getPFConstituents();
-	reco::PFCandidatePtr lLead, lSecond, lLeadNeut, lLeadEm, lLeadCh;
+	reco::PFCandidatePtr lLead=*constituents.rbegin(), lSecond=*constituents.rbegin(),
+		lLeadNeut=*constituents.rbegin(), lLeadEm=*constituents.rbegin(), lLeadCh=*constituents.rbegin();
 	reco::TrackRef impactTrack;
-	float jetPt = jet->pt(); // FIXME: corrected pt?
-	
-	setPtEtaPhi(*jet,jetPt_,jetEta_,jetPhi_);
+	float jetPt = jet->pt() / jec; // use uncorrected pt for shape variables
+	setPtEtaPhi(*jet,jetPt_,jetEta_,jetPhi_); // use corrected pt for jet kinematics
 	jetM_ = jet->mass(); 
 	
 	for(constituents_iterator it=constituents.begin(); it!=constituents.end(); ++it) {
 		reco::PFCandidatePtr & icand = *it;
 		float candPt = icand->pt();
 		if ( candPt <= 0. ) {
-			// if( printWarning-- > 0) { 
 			std::cerr << "WARNING: candidate with 0 pt" << std::endl; 
-			//}
 			continue;
 		}
 		float candDr = reco::deltaR(**it,*jet);
