@@ -15,9 +15,28 @@
 
 using namespace std;
 
+void GetWeights(double NewPU, double* OldPU, double* array, double N);
+
 int colors[]  = {1,  kRed,     kGreen+3, kBlue, kBlue, kRed+3, kRed, kRed, kOrange};
 int styles[]  = {1,  2,        9,        9,     1,     1,      1,    1,    2};
 int markers[] = {20, 24,       21,       25,    22,    24,     20,   24,   25};
+
+
+double PUdata[] = {1.344651e+07,   5.90653e+07,   1.409027e+08,   2.413012e+08,   3.337449e+08,   3.98711e+08,   4.301064e+08,   4.32283e+08,   4.138202e+08,   3.82846e+08,   3.451637e+08,   3.043438e+08,   2.62555e+08,   2.213308e+08,   1.819826e+08,   1.456898e+08,   1.134134e+08,   8.577886e+07,   6.301239e+07,   4.495959e+07,   3.116904e+07,   2.100786e+07,   1.377588e+07,   8796407,   5474418,   3323776,   1970638,   1142040,   647538.6,   359547.2,   195673.2,   104459.9,   54745.15,   28185.57,   28005.55,   0.008};
+
+double PUReweightAvr05[36];
+double PUReweightAvr15[36];
+double PUReweightAvr25[36];
+
+double* PUScenaraio[] = {PUReweightAvr05, PUReweightAvr15, PUReweightAvr25};
+string  PUName[] = {"<PU> = 5", "<PU> = 15", "<PU> = 25"};
+
+void initPU(){
+    GetWeights( 5 ,PUdata,PUReweightAvr05, 36);
+    GetWeights(15 ,PUdata,PUReweightAvr15, 36);
+    GetWeights(25 ,PUdata,PUReweightAvr25, 36);
+}
+
 
 
 void GetWeights(double NewPU, double* OldPU, double* array, double N){
@@ -34,7 +53,6 @@ void GetWeights(double NewPU, double* OldPU, double* array, double N){
 
 //   for(int i=0;i<N;i++){array[i] = array[i]/Integral;}
 }
-
 
 
 TObject* GetObjectFromPath(TDirectory* File, std::string Path, bool GetACopy=false)
@@ -56,6 +74,19 @@ TObject* GetObjectFromPath(TDirectory* File, std::string Path, bool GetACopy=fal
    if(GetACopy){ toReturn = toReturn->Clone();  }
    return toReturn;
 }
+
+
+TH1* PUReweightAndProjection(TH2* input, TString newName, double* weights, int nxbins ){
+      TH1* output = input->ProjectionY(newName,0,0);
+      output->Reset();
+      for(int i=1;i<=nxbins;i++){
+          output->Add(input->ProjectionY("",i,i), weights[i]);
+      }      
+      output->Scale(input->Integral()/output->Integral());
+      return output;
+}
+
+
 
 
 double GetEfficiency(TH1 *hist, double Cut){
@@ -236,6 +267,8 @@ stArray  makeArray(string evcat, string name, string title, string signal, strin
             delete bckgProjPUtmp;
             delete bckgProcVector[b];
          }
+         //make sure that the inegral is unchanged
+         bckgProjPU->Scale(bckgProj->Integral()/bckgProjPU->Integral());
          fixExtremities(bckgProjPU  ,true,true);
          SeffCut = GetEfficiency(signalProjPU,Cut);
       }else{
@@ -285,17 +318,9 @@ stArray  makeArray(string evcat, string name, string title, string signal, strin
 
 void performanceSummary(string OutDir, string evcat, string signal, string background,  string fname, const std::vector<string>& names, const std::vector<TString>& titles){
    int colors[]  = {4,  kGreen+3, kRed,     kGreen+3, kBlue, kBlue, kRed+3, kRed, kRed, kOrange};
-   int styles[]  = {1,  9,        2,        9,        9,     1,     1,      1,    1,    2};
+   //int styles[]  = {1,  9,        2,        9,        9,     1,     1,      1,    1,    2};
    int markers[] = {20, 22,       21,       25,    22,    24,     20,   24,   25};
 
-   double PUdata[] = {1.344651e+07,   5.90653e+07,   1.409027e+08,   2.413012e+08,   3.337449e+08,   3.98711e+08,   4.301064e+08,   4.32283e+08,   4.138202e+08,   3.82846e+08,   3.451637e+08,   3.043438e+08,   2.62555e+08,   2.213308e+08,   1.819826e+08,   1.456898e+08,   1.134134e+08,   8.577886e+07,   6.301239e+07,   4.495959e+07,   3.116904e+07,   2.100786e+07,   1.377588e+07,   8796407,   5474418,   3323776,   1970638,   1142040,   647538.6,   359547.2,   195673.2,   104459.9,   54745.15,   28185.57,   28005.55,   0.008};
-
-   double PUReweightAvr05[36];  GetWeights( 5 ,PUdata,PUReweightAvr05, 36);
-   double PUReweightAvr15[36];  GetWeights(15 ,PUdata,PUReweightAvr15, 36);
-   double PUReweightAvr25[36];  GetWeights(25 ,PUdata,PUReweightAvr25, 36);
-
-   double* PUScenaraio[] = {PUReweightAvr05, PUReweightAvr15, PUReweightAvr25};
-   string  PUName[] = {"<PU> = 5", "<PU> = 15", "<PU> = 25"};
 
    int ntouse = names.size();
 
@@ -483,6 +508,7 @@ void performancePU(string OutDir, string evcat, string signal, string background
   TFile *g=NULL;//TFile::Open("gammaTemplates_data.root");
   std::vector<TGraphAsymmErrors*> bckgMeanList, bckgRMSList;
   std::vector<TGraphAsymmErrors *> incEffGrList;
+  std::vector<TGraphAsymmErrors *> incEffGrList25pu;
   std::vector< std::vector<TGraphAsymmErrors *> > effGrList; 
   std::vector<std::pair<int,int> > effBins;
   effBins.push_back(std::pair<int,int>(1,5));
@@ -525,10 +551,11 @@ void performancePU(string OutDir, string evcat, string signal, string background
 
       //inclusive efficiency
       int nxbins=bckgProc->GetXaxis()->GetNbins();
-      TH1*signalProj = ((TH2 *)signalProc)->ProjectionY("sig_py",1,nxbins);
+      TH1* signalProj = ((TH2 *)signalProc)->ProjectionY("sig_py",1,nxbins);
+      printf("SignalIntegral = XXX = %f\n",signalProj->Integral());
 //      TH1*signalProj = ((TH2 *)signalProc)->ProjectionY("sig_py",1,11);
       fixExtremities(signalProj,true,true);
-      TH1*bckgProj   = ((TH2 *)bckgProc)->ProjectionY("bckg_py",1,nxbins);
+      TH1* bckgProj   = ((TH2 *)bckgProc)->ProjectionY("bckg_py",1,nxbins);
 //      TH1*bckgProj   = ((TH2 *)bckgProc)->ProjectionY("bckg_py",1,11);
       fixExtremities(bckgProj,true,true);
 
@@ -544,6 +571,30 @@ void performancePU(string OutDir, string evcat, string signal, string background
       incEffGrList.push_back(gr);
       delete signalProj; delete bckgProj;
      
+
+      //inclusive efficiency
+      nxbins=bckgProc->GetXaxis()->GetNbins();
+      signalProj = PUReweightAndProjection(((TH2 *)signalProc), "sig_py",PUReweightAvr25, nxbins);
+      printf("SignalIntegral = XXX = %f",signalProj->Integral());
+      fixExtremities(signalProj,true,true);
+      printf(" = %f\n",signalProj->Integral());
+      bckgProj   = PUReweightAndProjection(((TH2 *)bckgProc),"bckg_py",PUReweightAvr25,nxbins);
+      fixExtremities(bckgProj,true,true);
+
+      gr = getEfficiencyCurve(signalProj, bckgProj, names[i].find("metL")!=std::string::npos );
+      gr->SetName((names[i]+"_eff").c_str());
+      gr->SetTitle(titles[i]);
+      gr->SetLineColor(colors[i]);
+      gr->SetLineStyle(styles[i]);
+      gr->SetFillStyle(0);
+      gr->SetMarkerColor(colors[i]);
+      gr->SetMarkerStyle(markers[i]);
+      gr->SetLineWidth(2);
+      incEffGrList25pu.push_back(gr);
+      delete signalProj; delete bckgProj;
+
+
+
 
       //efficiency per bins
       std::vector<TGraphAsymmErrors *> ieffGrList;
@@ -666,6 +717,45 @@ void performancePU(string OutDir, string evcat, string signal, string background
   effC->SaveAs( (OutDir + "effC.png").c_str());
   delete effC;
 
+
+
+
+
+
+
+
+
+  //inclusive efficiency
+  TCanvas *effC25pu =  new TCanvas("effC", "Inclusive efficiency", 800,800);//getNewCanvas("effC","Inclusive efficiency",false);
+//  effC->SetWindowSize(1000,1000);
+  effC25pu->cd();
+  effC25pu->SetLogy();
+  incEffGrList25pu[0]->Draw("Apl");
+  incEffGrList25pu[0]->GetXaxis()->SetTitle("#varepsilon(signal) with <pu>=25");
+  incEffGrList25pu[0]->GetYaxis()->SetTitle("#varepsilon(background) with <pu>=25");
+  incEffGrList25pu[0]->SetMinimum(1E-5);
+  incEffGrList25pu[0]->SetMaximum(1.01);
+
+
+  TGraph *effFrame25pu= new TGraph();;
+  effFrame25pu->SetPoint(0,1e-5,1e-5);
+  effFrame25pu->SetPoint(1,1e-5,1.01);
+  effFrame25pu->SetPoint(2,1.01,1.01);
+  effFrame25pu->SetPoint(3,1.01,1e-5);
+  effFrame25pu->SetMarkerStyle(1);
+//  effFrame->Draw("ap");
+  effFrame25pu->GetXaxis()->SetTitle("#varepsilon(signal) with <pu>=25");
+  effFrame25pu->GetYaxis()->SetTitle("#varepsilon(background) with <pu>=25");
+
+  for(size_t ip=1; ip<incEffGrList25pu.size(); ip++)   incEffGrList25pu[ip]->Draw("pl");
+  leg=effC25pu->BuildLegend(0.20, 0.60, 0.60, 0.90);
+  formatForCmsPublic(effC25pu,leg,legTit,ntouse);
+  effC25pu->SaveAs( (OutDir + "effC25pu.png").c_str());
+  delete effC25pu;
+
+
+
+
   //efficiency degradation  
   effC = new TCanvas("effpuC", "Differential efficiency", 800,800);//getNewCanvas("effpuC","Differential efficiency",false);
   effC->Divide(effBins.size()/2,2);
@@ -787,6 +877,9 @@ void performanceComparison(string OutDir="Img", string evcat="mumu", string sign
   gStyle->SetPadRightMargin (0.05);
   gStyle->SetPadLeftMargin  (0.15);
   system((string("mkdir -p ") + OutDir).c_str());
+
+  initPU();
+
 
   std::vector<string> names;   std::vector<TString> titles;
 /*
