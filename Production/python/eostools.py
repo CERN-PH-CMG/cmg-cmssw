@@ -331,11 +331,15 @@ def ls(path, rec = False):
     """Provides a simple list of the specified directory, works on EOS and locally"""
     return [eosToLFN(t) for t in listFiles(path, rec)]
 
-def ls_EOS(path):
+def ls_EOS(path, rec = False):
     """Provides a simple list of the specified directory, works on EOS only, but is faster than the xrd version"""
-    stdout, _, ret = runEOSCommand(path,'ls')
-    lfn = eosToLFN(path)
-    return [os.path.join(lfn,line) for line in stdout.split('\n') if line]
+    if rec:
+        stdout, _, ret = runEOSCommand(path,'find','-f')
+        return [eosToLFN(line) for line in stdout.split('\n') if line]
+    else:
+        stdout, _, ret = runEOSCommand(path,'ls')
+        lfn = eosToLFN(path)
+        return [os.path.join(lfn,line) for line in stdout.split('\n') if line]
 
 def rm(path, rec=False):
     """rm, works on EOS and locally.
@@ -517,4 +521,5 @@ def cmsStage( absDestDir, files, force):
         print ' '.join(command)
         runner = cmsIO.cmsFileManip()
         runner.runCommand(command)
+
 
