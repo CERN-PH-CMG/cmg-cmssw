@@ -181,17 +181,10 @@ ls: /store: No such file or directory
 
 False
     """
-    stout, stderr, ret = runEOSCommand( path, 'ls')
-    if ret == 0:
-        return True
-    else:
-        return False
-    # lfn = eosToLFN(path)
-    # entity = cmsIO.cmsFile( os.path.dirname(lfn), tfcProt )
-    # return lfn in entity.ls(lfn)
-    # ret = os.system()
-#also define an alias for backwards compatibility
+    _, _, ret = runEOSCommand( path, 'ls')
+    return ret == 0
 
+#also define an alias for backwards compatibility
 isCastorFile = isEOSFile
 
 
@@ -338,6 +331,11 @@ def ls(path, rec = False):
     """Provides a simple list of the specified directory, works on EOS and locally"""
     return [eosToLFN(t) for t in listFiles(path, rec)]
 
+def ls_EOS(path):
+    """Provides a simple list of the specified directory, works on EOS only, but is faster than the xrd version"""
+    stdout, _, ret = runEOSCommand(path,'ls')
+    lfn = eosToLFN(path)
+    return [os.path.join(lfn,line) for line in stdout.split('\n') if line]
 
 def rm(path, rec=False):
     """rm, works on EOS and locally.
@@ -499,7 +497,7 @@ def matchingFiles( path, regexp):
 
     # print path, regexp
     pattern = re.compile( regexp )
-    files = ls(path)
+    files = ls_EOS(path)
     # print files
     return [f for f in files if pattern.match(os.path.basename(f)) is not None]
     
@@ -519,3 +517,4 @@ def cmsStage( absDestDir, files, force):
         print ' '.join(command)
         runner = cmsIO.cmsFileManip()
         runner.runCommand(command)
+
