@@ -1,8 +1,10 @@
 import FWCore.ParameterSet.Config as cms
 
+#adds lots of event wise cleaning filters and enables them
 boolToIntFilter = cms.EDFilter(
     "BoolToIntProducer",
-    src = cms.InputTag('dummy')
+    src = cms.InputTag('dummy'),
+    filter = cms.untracked.bool(True)
 )
 
 ecalDeadCellTPfilter = boolToIntFilter.clone(src = cms.InputTag('ecalDeadCellTPfilter'))
@@ -30,15 +32,3 @@ boolToIntSequence = cms.Sequence(
                     scrapingFilter+
                     trackingFailureFilter
                          )
-
-#Branch 4 of Events tree: bool_ecalDeadCellTPfilter__PAT. Total size = 63782
-#Branch 5 of Events tree: bool_HBHENoiseFilterResultProducer2010_HBHENoiseFilterResult_PAT. Total size = 64904
-#Branch 6 of Events tree: bool_HBHENoiseFilterResultProducer2011IsoDefault_HBHENoiseFilterResult_PAT. Total size = 65234
-#Branch 7 of Events tree: bool_HBHENoiseFilterResultProducer2011NonIsoRecommended_HBHENoiseFilterResult_PAT. Total size = 65465
-#Branch 8 of Events tree: bool_eeNoiseFilter_Result_PAT. Total size = 63749
-#Branch 9 of Events tree: bool_goodPrimaryVertexFilter_Result_PAT. Total size = 64079
-#Branch 10 of Events tree: bool_greedyMuonsTagging_Result_PAT. Total size = 63914
-#Branch 11 of Events tree: bool_inconsistentMuonsTagging_Result_PAT. Total size = 64112
-#Branch 12 of Events tree: bool_recovRecHitFilter_Result_PAT. Total size = 63881
-#Branch 13 of Events tree: bool_scrapingFilter_Result_PAT. Total size = 63782
-#Branch 14 of Events tree: bool_trackingFailureFilter_Result_PAT. Total size = 64013

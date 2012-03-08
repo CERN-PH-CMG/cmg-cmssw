@@ -1,78 +1,42 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.Susy.common.susy_cff import *
 from CMGTools.Susy.MultiJet.multijet_cff import *
-from CMGTools.Susy.RA1.RA1_cff import *
-from CMGTools.Susy.RA2.RA2_cff import *
 from CMGTools.Susy.Razor.razor_cff import *
 from CMGTools.Susy.RazorMultiJet.razorMultijet_cff import *
-from CMGTools.Susy.LP.LP_cff import *
-from CMGTools.Susy.LeptonicStop.leptonicstop_cff import *
 from CMGTools.Common.countingSequences_cff import *
 
+#full selection with trigger
 multijetPath = cms.Path(
-    susySequence +
-    multijetSkimSequence
-    )
-
-multijetTriggerPath = cms.Path(
-    susySequence +
-    multijetTriggerSkimSequence
-    )
-
-leptonicStopPath = cms.Path(
-    susySequence +
-    leptonicStopSkimSequence
-    )
-
-leptonicStopTriggerPath = cms.Path(
-    susySequence +
-    leptonicStopTriggerSkimSequence
-    )
-
-RA1Path = cms.Path(
-    susySequence *
-    RA1SkimSequence
-    )
-
-RA2Path = cms.Path(
-    susySequence +
-    RA2SkimSequence
-    )
-
-razorPath = cms.Path(
-    susySequence +
-    razorSkimSequence
-    )
-
-razorTriggerPath = cms.Path(
-    susySequence +
-    razorTriggerSkimSequence
-    )
-
-razorEleMuPath = cms.Path(
-    susySequence +
-    razorEleMuSequence
-    )
-
-razorMJPath = cms.Path(
-    susySequence +
     razorMJSkimSequence
     )
 
-razorMJTriggerPath = cms.Path(
-    susySequence +
-    razorMJTriggerSkimSequence
+#full selection, but no trigger
+multijetPathNoTrigger = cms.Path(
+    razorMJSkimSequence6jLeptonVeto
     )
 
-razorMJL1TriggerPath = cms.Path(
-    susySequence +
-    razorMJL1TriggerSkimSequence
+#full selection, with trigger and only 5 jets
+multijetPathMultijetTrigger = cms.Path(
+    razorMJSkimSequenceMultiJetTrigger
     )
 
-LPPath = cms.Path(
-    susySequence +
-    LPSkimSequence
+#full selection, with Razor trigger
+multijetPathRazorTrigger = cms.Path(
+    razorMJSkimSequenceRazorTrigger
     )
 
+#full selection, with HT trigger
+multijetPathHTTrigger = cms.Path(
+    razorMJSkimSequenceHTTrigger
+    )
+
+#full selection, with L1 passthrough and only 5 jets
+multijetPathL1Passthrough = cms.Path(
+    razorMJSkimSequenceL1Passthrough
+    )
+
+#full selection, with L1 passthrough and only 5 jets
+multijetPathL1Seed = cms.Path(
+    razorMJSkimSequenceL1Seed
+    )
 
