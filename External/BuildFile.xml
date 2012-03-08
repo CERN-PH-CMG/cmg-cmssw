@@ -11,4 +11,5 @@
 <use   name="FWCore/Sources"/>
 <use   name="boost"/>
 <export>
+  <lib   name="1"/>
 </export>
