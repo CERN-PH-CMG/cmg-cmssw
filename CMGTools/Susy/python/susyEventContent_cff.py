@@ -11,7 +11,7 @@ from CMGTools.Susy.LP.LPEventContent_cff import *
 from CMGTools.Susy.common.eventContent_cff import eventContent as commonEventContent
 
 susyEventContent = everything
-susyEventContent += multijetEventContent
+#susyEventContent += multijetEventContent
 #susyEventContent += RA1EventContent
 #susyEventContent += RA2EventContent
 #susyEventContent += razorEventContent
