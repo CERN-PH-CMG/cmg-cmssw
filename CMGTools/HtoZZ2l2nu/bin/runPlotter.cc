@@ -154,7 +154,7 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, st
          double PUUpnorm       =  1; if(tmphist->GetBinContent(5)>0)PUUpnorm       = tmphist->GetBinContent(3) / tmphist->GetBinContent(5);
          PURescale_down[(Samples[j])["dtag"].toString()] = PUDownnorm;
          PURescale_up  [(Samples[j])["dtag"].toString()] = PUUpnorm;
-         if(isMC)printf("PU Renormalization %25s Shift Down --> %6.2f  Central = %6.2f  Up Down --> %6.2f\n",(Samples[j])["dtag"].toString().c_str(),PUDownnorm, PUCentralnnorm, PUUpnorm);	
+         //if(isMC)printf("PU Renormalization %25s Shift Down --> %6.2f  Central = %6.2f  Up Down --> %6.2f\n",(Samples[j])["dtag"].toString().c_str(),PUDownnorm, PUCentralnnorm, PUUpnorm);	
 
          double cnorm = 1.0;
          if(tmphist)cnorm = tmphist->GetBinContent(1);
@@ -163,9 +163,6 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, st
          if(!isMC)PUCentralnnorm = 1;
          initialNumberOfEvents[(Samples[j])["dtag"].toString()] = cnorm / PUCentralnnorm;
 
-
-         if(!isMC)printf("is there a problem with %s ? cnorm = %f - PUC=%f\n",(Samples[j])["dtag"].toString().c_str(), cnorm, PUCentralnnorm );
- 
          delete tmphist;
       }   
    }
