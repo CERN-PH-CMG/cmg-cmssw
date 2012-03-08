@@ -86,6 +86,13 @@ def replacePostfix(sequencable, old_postfix, new_postfix):
     sequencable.visit(v)
     return sequencable
 
+def dropAllOutputs(process):
+    """Look into a process and turn off every output module found"""
+    for d in dir(process):
+        out = getattr(process,d)
+        if isinstance(out,cms.OutputModule) and hasattr(out,'outputCommands') and out.type_() == 'PoolOutputModule':
+            out.outputCommands = cms.untracked.vstring('drop *')
+
 if __name__ == '__main__':
     from PhysicsTools.PatAlgos.patTemplate_cfg import *
     
@@ -129,4 +136,5 @@ if __name__ == '__main__':
     print 'After:',process.cmgElectron.cfg.inputCollection
 
 
-            
+    dropAllOutputs(process)
+    print process.out.outputCommands
