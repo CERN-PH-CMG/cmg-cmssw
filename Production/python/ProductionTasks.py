@@ -410,7 +410,7 @@ class RunTestEvents(Task):
         config = file(full).readlines()
         source = os.path.join(jobdir,'test_cfg.py')
         output = file(source,'w')
-        toInsert = ['\nprocess.out.outputCommands = cms.untracked.vstring("drop *")\n',
+        toInsert = ['\n',
                     'process.maxEvents.input = cms.untracked.int32(5)\n',
                     'if hasattr(process,"source"): process.source.fileNames = process.source.fileNames[:1]\n'
                     ]
