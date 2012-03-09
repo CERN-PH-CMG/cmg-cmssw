@@ -8,7 +8,7 @@ sep_line = '-'*70
 process = cms.Process("H2TAUTAU")
 
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -20,20 +20,7 @@ numberOfFilesToProcess = 5
 debugEventContent = False
 
 dataset_user = 'cmgtools' 
-#dataset_name = '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0'
-# dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0'
-# dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_5_0'
-#dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_5_0'
-dataset_name = '/TauPlusX/Run2011A-May10ReReco-v1/AOD/V2/PAT_CMG_V2_5_0'
-#dataset_name = '/TauPlusX/Run2011A-03Oct2011-v1/AOD/V2/PAT_CMG_V2_5_0'
-#dataset_name = '/TauPlusX/Run2011A-05Aug2011-v1/AOD/V2/PAT_CMG_V2_5_0'
-#dataset_name = '/TauPlusX/Run2011B-PromptReco-v1/AOD/V2/PAT_CMG_V2_5_0'
-#dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011A_May10thRR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0'
-#dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0'
-#dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011A_Aug05thRR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0'
-#dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0'
-# dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0'
-
+dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V3/PAT_CMG_TestMVAs'
 
 
 ##########
@@ -50,7 +37,8 @@ from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
     dataset_user,
     dataset_name,
-    'tree.*root')
+    'tree.*root',
+    True)
 
 ## process.source = cms.Source(
 ##     "PoolSource",
@@ -108,12 +96,12 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.schedule = cms.Schedule(
     # this path corresponds to the basic preselection:
-    process.tauMuPreSelPath,
+    # process.tauMuPreSelPath,
     # and this one to the full baseline selection
     process.tauMuFullSelPath,    
-    process.tauElePreSelPath,
+    # process.tauElePreSelPath,
     process.tauEleFullSelPath,    
-    process.muElePreSelPath,
+    # process.muElePreSelPath,
     process.muEleFullSelPath,    
     process.diTauPreSelPath,
     process.diTauFullSelPath,    
@@ -148,7 +136,10 @@ justn = 30
 # process.cmgTauScaler.cfg.nSigma = -1
 
 from CMGTools.H2TauTau.tools.setupOutput import *
-addTauMuOutput( process, debugEventContent )
-addTauEleOutput( process, debugEventContent )
-addMuEleOutput( process, debugEventContent )
-addDiTauOutput( process, debugEventContent )
+addTauMuOutput( process, debugEventContent, addPreSel=False)
+addTauEleOutput( process, debugEventContent, addPreSel=False)
+addMuEleOutput( process, debugEventContent, addPreSel=False)
+addDiTauOutput( process, debugEventContent, addPreSel=False)
+
+# to relax mu ID:
+# process.cmgTauMu.cuts.baseline.muLeg.id = cms.PSet()
