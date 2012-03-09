@@ -88,12 +88,20 @@ parser.usage = '%prog <region> <var> <dir1> [dir2 ..]'
 parser.add_option("-r", "--rebin",
                   dest="rebin",
                   default=None,help='rebin factor for your histograms')
+parser.add_option("-m", "--min",
+                  dest="ymin",
+                  default=0.0,help='y min')
+parser.add_option("-M", "--max",
+                  dest="ymax",
+                  default=1.1,help='y max')
 
 options, args = parser.parse_args()
 if len(args)<3:
     print 'provide at least 3 arguments'
     sys.exit(1)
 
+options.ymin = float(options.ymin)
+options.ymax = float(options.ymax)
 region = args[0]
 var = args[1]
 files = args[2:]
@@ -146,15 +154,17 @@ effs = []
 for index, file in enumerate(files):
     effs.append( setup( file, index ) )
 
-legX1 = 0.58
-legY1 = 0.70
-legX2 = 0.95
-legY2 = 0.95
+legDX = 0.25
+legDY = 0.20
+legX1 = 0.65
+legY1 = 0.15
+legX2 = legX1 + legDX
+legY2 = legY1 + legDY
 
 legend = None
 
     
-def draw(name, ymin=0, ymax=1.1):
+def draw(name, ymin=options.ymin, ymax=options.ymax):
     same = False
     global legend
     if legend is None:
@@ -169,17 +179,18 @@ def draw(name, ymin=0, ymax=1.1):
         legend.AddEntry(eff.hists_eff[name], eff.desc, 'lp' )
     legend.Draw('same')
 
-draw('pu', 0.5, 1.05)
+# draw('pu', 0.5, 1.05)
 
-def drawNum(name, norm=True ):
-    same = ''
+def drawHist(name, nord='num', norm=False, same=''):
+    same = same
     legend = TLegend(0.6, 0.15, 0.89, 0.35)
     keeper.append( legend )
     for eff in effs:
+        hists = getattr( eff, '_'.join(['hists',nord]))
         if norm:
-            eff.hists_num[name].DrawNormalized( same )
+            hists[name].DrawNormalized( same )
         else:
-            eff.hists_num[name].Draw( same )
+            hists[name].Draw( same )
         if same=='':
             same = 'same'
         legend.AddEntry(eff.hists_eff[name], eff.desc, 'lp' )
