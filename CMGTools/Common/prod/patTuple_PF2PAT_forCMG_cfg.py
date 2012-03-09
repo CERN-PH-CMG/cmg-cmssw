@@ -8,25 +8,16 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 # turn on when running on MC
 runOnMC = True
+runCMG = True
 
 # AK5 sequence with no cleaning is the default
 # the other sequences can be turned off with the following flags.
-#JOSE: no need to run these guys for what you are up to
 runAK5LC = False 
 runAK7 = False
 
-#COLIN: will need to include the event filters in tagging mode
-
-#COLIN : reactivate HPS when bugs corrected
 hpsTaus = True
-
-#COLIN: the following leads to rare segmentation faults
-doJetPileUpCorrection = True
-
-#patTaus can now be saved even when running the CMG sequence.
 doEmbedPFCandidatesInTaus = True
-
-runCMG = True
+doJetPileUpCorrection = True
 
 
 #add the L2L3Residual corrections only for data
@@ -75,23 +66,7 @@ process.source = datasetToSource(
     # '.*root'
     ) 
 
-# print 'done'
-
-## if pickRelVal:
-##     process.source = cms.Source(
-##         "PoolSource",
-##         fileNames = cms.untracked.vstring(
-##         pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_3_0_pre2'
-##                               , relVal        = 'RelValZmumuJets_Pt_20_300PU1'
-##                               , globalTag     = 'MC_42_V9_PU_E7TeV_AVE_2_BX2808'
-##                               , numberOfFiles = -1
-##                               )
-##         )
-##         )
-
-# process.source.fileNames = ['file:AOD_TTJets_all.root']
-
-# print "WARNING!!!!!!!!!!!!!!!! remove the following line (see .cfg) before running on the batch!"
+# ProductionTasks.py will override this change
 process.source.fileNames = process.source.fileNames[:10]
 
 print 'PF2PAT+PAT+CMG for files:'
@@ -175,13 +150,7 @@ from CMGTools.Common.PAT.addPATElectronID_cff import addPATElectronID
 addPATElectronID( process, 'patDefaultSequence', postfixAK5)
 addPATElectronID( process, 'stdElectronSequence', postfixAK5+'StdLep')
 
-## from CMGTools.Common.miscProducers.cmgPatElectronProducer_cfi import cmgPatElectronProducer
-## process.preSelectedPatElectronsAK5 = process.selectedPatElectronsAK5.clone()
-## process.selectedPatElectronsAK5 = cmgPatElectronProducer.clone(src='preSelectedPatElectronsAK5')
-## process.patDefaultSequenceAK5.replace( process.selectedPatElectronsAK5,
-##                                        process.preSelectedPatElectronsAK5 +
-##                                        process.selectedPatElectronsAK5)
-
+# adding MIT electron id
 from CMGTools.Common.PAT.addMITElectronID import addMITElectronID
 addMITElectronID( process, 'selectedPatElectrons', 'patDefaultSequence', postfixAK5)
 addMITElectronID( process, 'selectedPatElectrons', 'stdElectronSequence', postfixAK5+'StdLep')
@@ -364,20 +333,19 @@ process.outcmg.outputCommands.extend( ['keep patMuons_selectedPatMuonsAK5*_*_*',
 if runCMG:
     process.outpath += process.outcmg
 
-process.load("CMGTools.Common.runInfoAccounting_cff")
-process.ria = cms.Sequence(
-    process.runInfoAccountingDataSequence
-    )
-if runOnMC:
-    process.ria = cms.Sequence(
-        process.runInfoAccountingSequence
-    )
-
-process.outpath += process.ria
+# process.load("CMGTools.Common.runInfoAccounting_cff")
+# process.ria = cms.Sequence(
+#    process.runInfoAccountingDataSequence
+#    )
+# if runOnMC:
+#   process.ria = cms.Sequence(
+#        process.runInfoAccountingSequence
+#    )
+# process.outpath += process.ria
     
 
-process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("histograms_CMG.root"))
+#process.TFileService = cms.Service("TFileService",
+#                                   fileName = cms.string("histograms_CMG.root")# )
 
-# Make the embedded track available for electrons
+#Patrick: Make the embedded track available for electrons (curing a bug in PAT)
 process.patElectronsAK5.embedTrack = True

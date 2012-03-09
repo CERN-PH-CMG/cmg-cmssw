@@ -32,7 +32,7 @@ analysisSequence = cms.Sequence(
     # skimming (counting the selected CMG objects)
     skimSequence +
     # summary of cuts for all objects, after skimming
-    cutSummarySequence +
+    cutSummarySequence 
     # histograms for all objects, after skimming
-    histogramSequence 
+    # histogramSequence 
     )
