@@ -9,7 +9,7 @@ from CMGTools.RootTools.statistics.Histograms import Histograms
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import PhysicsObject, GenParticle
 from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection
 from CMGTools.RootTools.utils.OOTPileUpReweighting import ootPUReweighter
-from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
+from CMGTools.RootTools.utils.TriggerMatching import triggerMatched, selTriggerObjects
 
 from ROOT import TH1F, TH2F, TFile
 
@@ -89,7 +89,7 @@ class EfficiencyHistograms( Histograms ):
         super( EfficiencyHistograms, self).__init__(name)
  
     def ptPass(self, pt):
-        ptMin = 20.
+        ptMin = 17.
         return pt>ptMin  
 
     def fillParticle(self, particle, event, weight):
@@ -147,15 +147,8 @@ class EfficiencyAnalyzer( Analyzer ):
             'std::vector<reco::Vertex>'
             )
 
-##         geninstance = 'genLeptonsStatus1'
-##         gentype = 'std::vector<reco::GenParticle>'
-##         self.mchandles['gen'] =  AutoHandle(
-##             geninstance,
-##             gentype 
-##             )
-
-        geninstance = 'genParticlesStatus3'
-        gentype = 'std::vector<reco::GenParticle>'
+        geninstance = self.cfg_ana.instance_gen
+        gentype = self.cfg_ana.type_gen
         self.mchandles['gen'] =  AutoHandle(
             geninstance,
             gentype 
@@ -224,24 +217,35 @@ class EfficiencyAnalyzer( Analyzer ):
         if hasattr( self.cfg_ana, 'recselFun'):
             recselFun = self.cfg_ana.recselFun
         if recselFun is not None:
-            event.recsel = [ PhysicsObject(obj) for obj in event.rec if recselFun(obj)]
+            if recselFun == 'trigObjs':
+                event.recsel = selTriggerObjects( event.triggerObjects,
+                                                  event.hltPath,
+                                                  self.filterForPath( event.hltPath ))
+            else:
+                event.recsel = [ PhysicsObject(obj) for obj in event.rec if recselFun(obj)]
         else:
             event.recsel = event.rec
+
 
         # selecting gen objects
         genpdgid = self.cfg_ana.genPdgId
         event.gensel = []
         for obj in event.gen:
+            # print obj.pdgId()
             if abs(obj.pdgId())!=genpdgid: continue
-            if not self.trigMatched( obj, event): continue
+            if self.cfg_ana.genTrigMatch and \
+               not self.trigMatched( obj, event): continue
             event.gensel.append( obj )
 
         if len(event.gensel ) == 0:
             return False
             
         # gen objects matched to a reference lepton
-        pairs = matchObjectCollection( event.gensel, event.refsel, 0.1)
-        event.genmatchedRef = [ gen for gen,rec in pairs.iteritems() if rec is not None]
+        # DON'T NEED THIS MATCHING IF NO REFSEL
+        event.genmatchedRef = event.gen
+        if event.refsel is not None:
+            pairs = matchObjectCollection( event.gensel, event.refsel, 0.1)
+            event.genmatchedRef = [ gen for gen,ref in pairs.iteritems() if ref is not None]
 
         # and gen objects wich are in addition matched to a
         # selected lepton
@@ -272,9 +276,15 @@ class EfficiencyAnalyzer( Analyzer ):
         # import pdb; pdb.set_trace()
         path = event.hltPath
         triggerObjects = event.triggerObjects
+        theFilter = self.filterForPath( path )
+        return triggerMatched(particle, triggerObjects, path, theFilter, dR2Max=0.089999)
+
+    def filterForPath(self, path):
         theFilter = None
         for entry,filter in self.cfg_ana.triggerMap.iteritems():
             if fnmatch.fnmatch( path, entry ):
                 theFilter = filter
                 break
-        return triggerMatched(particle, triggerObjects, path, theFilter, dR2Max=0.089999)
+        return filter
+        
+        

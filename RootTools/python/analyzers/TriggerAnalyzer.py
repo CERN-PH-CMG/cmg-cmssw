@@ -2,6 +2,8 @@ from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.statistics.Counter import Counter
 from CMGTools.RootTools.utils.TriggerList import TriggerList
+from CMGTools.RootTools.utils.TriggerMatching import selTriggerObjects
+
 
 class TriggerAnalyzer( Analyzer ):
     '''Analyze vertices, add weight to MC events'''
@@ -30,7 +32,6 @@ class TriggerAnalyzer( Analyzer ):
     def process(self, iEvent, event):
         self.readCollections( iEvent )
         event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
-        event.triggerObjects = self.handles['cmgTriggerObjectListSel'].product()
         run = iEvent.eventAuxiliary().id().run()
         
         self.counters.counter('Trigger').inc('All events')
@@ -41,6 +42,9 @@ class TriggerAnalyzer( Analyzer ):
         if not passed:
             return False
         event.hltPath = hltPath 
+        trigObjs = self.handles['cmgTriggerObjectListSel'].product()
+        # selecting the trigger objects used in this path
+        event.triggerObjects = selTriggerObjects( trigObjs, hltPath )
         self.counters.counter('Trigger').inc('trigger passed')
         return True
 
