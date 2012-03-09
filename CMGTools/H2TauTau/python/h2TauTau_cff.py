@@ -48,3 +48,20 @@ muEleFullSelPath = cms.Path(
     objectSequence + 
     muEleFullSelSkimSequence     
     )
+
+
+# tau-tau ---
+
+# preselection
+diTauPreSelPath = cms.Path(
+    objectSequence + 
+    diTauPreSelSkimSequence 
+    )
+
+# full selection
+diTauFullSelPath = cms.Path(
+    objectSequence + 
+    diTauFullSelSkimSequence     
+    )
+
+

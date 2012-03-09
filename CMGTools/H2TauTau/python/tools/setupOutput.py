@@ -4,7 +4,7 @@ import FWCore.ParameterSet.Config as cms
 
 def addOutput( process, type12, debugEventContent=False, addPreSel=True):
 
-    allowedTypes = ['tauMu', 'tauEle', 'muEle']
+    allowedTypes = ['tauMu', 'tauEle', 'muEle', 'diTau']
     if type12 not in allowedTypes:
         raise ValueError( type12 + ' not in allowed types: ', allowedTypes )
 
@@ -22,6 +22,8 @@ def addOutput( process, type12, debugEventContent=False, addPreSel=True):
     from CMGTools.H2TauTau.eventContent.tauEle_cff import tauEleDebug as tauEleDebugEventContent
     from CMGTools.H2TauTau.eventContent.muEle_cff import muEle as muEleEventContent
     from CMGTools.H2TauTau.eventContent.muEle_cff import muEleDebug as muEleDebugEventContent
+    from CMGTools.H2TauTau.eventContent.diTau_cff import diTau as diTauEventContent
+    from CMGTools.H2TauTau.eventContent.diTau_cff import diTauDebug as diTauDebugEventContent
 
     eventContent = None
     debugEventContent = None
@@ -34,6 +36,9 @@ def addOutput( process, type12, debugEventContent=False, addPreSel=True):
     elif type12=='muEle':
         eventContent = muEleEventContent
         debugEventContent = muEleDebugEventContent
+    elif type12=='diTau':
+        eventContent = diTauEventContent
+        debugEventContent = diTauDebugEventContent
         
     
     out = cms.OutputModule(
@@ -83,4 +88,7 @@ def addTauEleOutput( process, debugEventContent=False, addPreSel=True ):
  
 def addMuEleOutput( process, debugEventContent=False, addPreSel=True ):
     addOutput(process,'muEle', debugEventContent, addPreSel )
+ 
+def addDiTauOutput( process, debugEventContent=False, addPreSel=True ):
+    addOutput(process,'diTau', debugEventContent, addPreSel )
  

@@ -5,3 +5,4 @@
 typedef DiTauWithSVFitProducer< cmg::TauMu > TauMuWithSVFitProducer;
 typedef DiTauWithSVFitProducer< cmg::TauEle > TauEleWithSVFitProducer;
 typedef DiTauWithSVFitProducer< cmg::MuEle > MuEleWithSVFitProducer;
+typedef DiTauWithSVFitProducer< cmg::DiTau > TauTauWithSVFitProducer;

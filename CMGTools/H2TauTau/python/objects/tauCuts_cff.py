@@ -13,6 +13,9 @@ def getTauCuts( leg, channel='tauMu', skim=False):
     elif channel == 'tauEle':
         muVeto = cms.string('{leg}().tauID("againstMuonLoose")'.format(leg=leg))
         eVeto = cms.string('{leg}().tauID("againstElectronMVA")'.format(leg=leg))
+    elif channel == 'diTau':
+        muVeto = cms.string('{leg}().tauID("againstMuonLoose")'.format(leg=leg))
+        eVeto = cms.string('{leg}().tauID("againstElectronLoose")'.format(leg=leg))
     else:
         raise ValueError('bad channel specification:'+channel)
 
