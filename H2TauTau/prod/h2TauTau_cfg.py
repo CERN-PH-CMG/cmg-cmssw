@@ -115,6 +115,8 @@ process.schedule = cms.Schedule(
     process.tauEleFullSelPath,    
     process.muElePreSelPath,
     process.muEleFullSelPath,    
+    process.diTauPreSelPath,
+    process.diTauFullSelPath,    
     process.outpath
     )
 
@@ -149,3 +151,4 @@ from CMGTools.H2TauTau.tools.setupOutput import *
 addTauMuOutput( process, debugEventContent )
 addTauEleOutput( process, debugEventContent )
 addMuEleOutput( process, debugEventContent )
+addDiTauOutput( process, debugEventContent )
