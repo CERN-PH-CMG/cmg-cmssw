@@ -23,9 +23,10 @@ def runLoopAsync(comp, outDir, config, options):
 
 def runLoop( comp, outDir, config, options):
     fullName = '/'.join( [outDir, comp.name ] )
+    # import pdb; pdb.set_trace()
     loop = Looper( fullName, comp, config.sequence,
                    options.nevents, 0, 
-                   nPrint = 5)
+                   nPrint = options.nprint)
     print loop
     if options.iEvent is None:
         loop.loop()
@@ -36,16 +37,6 @@ def runLoop( comp, outDir, config, options):
         iEvent = int(options.iEvent)
         loop.process( iEvent )
     return loop
-
-## def testComponentList( complist ):
-##     badPattern = False
-##     for pattern in complist.values():
-##         nFiles = len( glob.glob(pattern) )
-##         if not nFiles:
-##             print 'no file match', pattern
-##             badPattern = True
-##     if badPattern:
-##         raise ValueError('Check your component list')
 
 
 def createOutputDir(dir, components, force):
@@ -160,6 +151,10 @@ if __name__ == '__main__':
                       dest="nevents", 
                       help="number of events to process",
                       default=None)
+    parser.add_option("-p", "--nprint", 
+                      dest="nprint", 
+                      help="number of events to print at the beginning",
+                      default=5)
     parser.add_option("-i", "--iEvent", 
                       dest="iEvent", 
                       help="jump to a given event. ignored in multiprocessing.",

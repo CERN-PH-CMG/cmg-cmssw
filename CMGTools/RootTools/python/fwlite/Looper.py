@@ -36,7 +36,7 @@ class Looper(object):
         self.analyzers = map( self._buildAnalyzer, sequence )
         self.nEvents = nEvents
         self.firstEvent = firstEvent
-        self.nPrint = nPrint 
+        self.nPrint = int(nPrint)
         # initialize FWLite chain on input file:
         try:
             self.events = Events( self.cfg_comp.files )
