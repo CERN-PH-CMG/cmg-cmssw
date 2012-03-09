@@ -55,6 +55,7 @@ class H2TauTauEventSorter( Analyzer ):
         super(H2TauTauEventSorter,self).beginLoop()
         self.counters.addCounter('Sorter')
         self.counters.counter('Sorter').register('All events')
+        self.counters.counter('Sorter').register('tau iso')
         self.counters.counter('Sorter').register('Matched = None or True')
         self.averages.add('generatorWeight', Average('generatorWeight') )
         self.averages.add('eventWeight', Average('eventWeight') )
@@ -100,6 +101,13 @@ class H2TauTauEventSorter( Analyzer ):
         regionName = self.regions.test( event )
         # print regionName
         self.counters.counter('Sorter').inc('All events')
+
+#        if event.diLepton.leg1().tauID('byLooseCombinedIsolationDeltaBetaCorr') is True:
+#            self.counters.counter('Sorter').inc('tau iso')
+#        else:
+#            print event.diLepton.leg1().tauID('byLooseCombinedIsolationDeltaBetaCorr')
+            
+        
         if matched is None or matched is True:
             self.output.Fill( event, regionName )
             self.counters.counter('Sorter').inc('Matched = None or True')
