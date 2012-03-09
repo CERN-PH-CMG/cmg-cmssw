@@ -16,7 +16,8 @@ jetId = [
 
 gen = [
     'keep LHEEventProduct_*_*_*',
-    'keep *_dumpPdfWeights_*_*'
+    'keep *_dumpPdfWeights_*_*',
+    'keep *_simpleGenInfo_*_*'
     ]
 
 reco = [

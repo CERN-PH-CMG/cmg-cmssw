@@ -21,8 +21,11 @@ razorMJPFJetSel30Count6j = cmgCandCount.clone( src = 'razorMJPFJetSel30', minNum
 razorMJPFJetSel80Count = cmgCandCount.clone( src = 'razorMJPFJetSel80', minNumber = 2 )
 
 # id the jets
-#used to veto event - the number of jets that fail loose jet ID
-razorMJPFJetSelID = cmgPFJetSel.clone( src = 'razorMJPFJetSel30', cut = '(!getSelection("cuts_looseJetId"))' )
+#used to veto event - the number of jets that fail loose jet ID, or have a high electron or muon fraction
+razorMJPFJetSelID = cmgPFJetSel.clone( src = 'razorMJPFJetSel30', cut = '(!getSelection("cuts_looseJetId")) ||'\
+                                           '(component(2).fraction() > 0.90 && abs(eta()) < 2.4) ||'\
+                                           '(component(3).fraction() > 0.90 && abs(eta()) < 2.4)'
+                                       )
 razorMJPFJetIDCount = cmgCandCount.clone( src = 'razorMJPFJetSelID', minNumber = 1 ) #filter inverted below
 
 #make the JES scaled jets while we're at it

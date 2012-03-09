@@ -9,5 +9,6 @@ razorMJjetEventContent += cms.untracked.vstring(
                                            'drop cmgPFJets_razorMJPFJetSelID_*_*',
                                            'drop cmgPFJets_razorMJPFJetSel80_*_*',
                                            'drop cmgTriggerObjects_razorMJ*TriggerSel_*_*',
-                                           'drop cmgHemispheres_razorMJHemiHadBox*_*_*'
+                                           'drop cmgHemispheres_razorMJHemiHadBox*_*_*',
+                                           'drop recoCandidatesOwned_razorMJDiHemi*_*_*'
                                            )
