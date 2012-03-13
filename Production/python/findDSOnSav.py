@@ -90,7 +90,9 @@ def getTaskID(name, category, username, password, isParent):
                 else: return checkedLinks[0]
             except:
                 return None
-    else: print "Login failed"
+    else: 
+        print "Login failed"
+        raise
     return None
     
 def validLogin(username, password):
