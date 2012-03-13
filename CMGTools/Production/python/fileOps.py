@@ -9,11 +9,11 @@ import CMGTools.Production.castorBaseDir as castorBaseDir
 from CMGTools.Production.edmIntegrityCheck import PublishToFileSystem
 from CMGTools.Production.edmIntegrityCheck import IntegrityCheck
 from optparse import Values as CheckValues
-
+	        
 class FileOps(object):
 
     
-    def __init__(self, setName,user, force):
+    def __init__(self, setName,user, force, checkGroups):
 
         self._setName = setName.rstrip("/")
         self._user = user
@@ -30,35 +30,61 @@ class FileOps(object):
             castor = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user.rstrip("_group"), "group"))+self._setName
         else:
             castor = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user))+self._setName
-
+        try:
+            
+            self.checkDirectory(castor)
+        except (NameError, ValueError) as ex:
+            print ex.args[0] + "\n"
+            if not re.search('group',user) and checkGroups:
+                try:
+                    print "Testing group directory\n"                    
+                    castorgroup = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user.rstrip("_group"), "group"))+self._setName
+                    
+                    self.checkDirectory(castorgroup)
+                    self._user += "_group"
+                except:
+                    raise
+            else:
+                raise
+                
+        
+	        
+    def checkDirectory(self, castor):
+        
         # Check if local first (obviously)
-        if os.path.isdir(setName) and user == os.environ['USER']:
-            print "File is on local machine: " + local
-            self._LFN = setName.lstrip("/")
-            self._localTags()
+#         if os.path.isdir(self._setName) and self._user == os.environ['USER']:
+#             print "File is on local machine"
+#             self._LFN = self._setName.lstrip("/")
+#             self._localTags()
         # Check if on castor next
-        elif eostools.fileExists(castor+"/Logger.tgz"):
-            print "File is directory on EOS"
+        if eostools.isDirectory(castor) and len(eostools.matchingFiles(eostools.eosToLFN(castor), "Logger.tgz$"))==1:
             self._castor =  castor
             self._LFN = eostools.eosToLFN(castor)
             self._castorTags()
             self._checkContiguity()
+            print "File is directory on EOS"
         # If logger is not present but directory exists
         elif eostools.isDirectory(castor) and self._force:
-            print "Directory is valid on EOS, but no logger file is present."
-             
             self._castor = castor
             self._LFN = eostools.eosToLFN(castor)
             self._checkContiguity()
-            if self.getRootFiles() is None: raise NameError("No valid directory found for dataset did you mean to use the group space or perhaps a different user?: "+setName, setName)
+            roots = self.getRootFiles() 
+            
+            if roots is None or len(roots) == 0:
+                print "Directory: ",castor," is valid on EOS, but no logger file or dataset is present."
+                raise NameError("No valid directory found for dataset did you mean to use the group space or perhaps a different user?: "+self._setName, self._setName)
+            else:
+                print "Directory: ",castor," is valid on EOS, no logger file is present but dataset files exist."
             
         elif eostools.isDirectory(castor):
             raise NameError("Directory is valid on EOS, but no logger file is present.\nNo force requested, publish cancelled")
         # If neither then raise an exception
         else:
-            if not re.search("group",user):raise NameError("No valid directory found for dataset did you mean to use the group space or perhaps a different user?: "+setName, setName)
-            else: raise NameError('No valid directory found for dataset: '+setName, setName)    
+            if not re.search("group",self._user):raise NameError("Directory not found check input details?")
+            else: raise NameError('No valid directory found for dataset: '+self._setName, self._setName)    
             return None
+    def getUser(self):
+        return self._user
     
     def getIntegrity(self):
         return self._integrity
@@ -71,20 +97,12 @@ class FileOps(object):
         return self._tags
         
         
-
   	# Return all root files in directory
     def getRootFiles(self):
         if self._castor is not None:				# If is file on Castor
         	return eostools.matchingFiles(self._LFN, ".*root$")
         else:										# If local
             return glob.glob(self.getLFN()+'/'+'/.*.root$')  
-  		
-  	def getCastorRootFiles(self):
-  	    if self._castor is not None:				# If is file on Castor
-  	        return eostools.matchingFiles(self._castor, ".*root$")
-  	    # If local
-  	    else:
-  	        return glob.glob(self.getLFN()+'/'+'/.*.root$')
   	    
     # Stage in the Logger.tgz file in a tmp file, load the showtags file and split it on newlines
     def _castorTags(self):
@@ -96,15 +114,14 @@ class FileOps(object):
         tar.close()
         f.close()
         self._findTags(lines)
-        #print self._tags
         
-    def _localTags(self):
-        print self.getLFN()
-        try:
-    	    lines = open(self.getLFN()+"/Logger/logger_showtags.txt")
-    	    self._findTags(lines)
-    	except:
-    	    print "No Logger file present"
+    # def _localTags(self):
+#         print self.getLFN()
+#         try:
+#     	    lines = open(self.getLFN()+"/Logger/logger_showtags.txt")
+#     	    self._findTags(lines)
+#     	except:
+#     	    print "No Logger file present"
         
     # Return castor directory name
     def getCastor(self):
@@ -164,12 +181,12 @@ class FileOps(object):
             integrity = PublishToFileSystem("IntegrityCheck")
             try:
                 report = integrity.get(self.getLFN())
-            except Error as ex:
+            except Exception as ex:
                 print ex
             # Build in some kind of wildcard
             if report is None and (self._user == 'cmgtools' or self._user == os.environ['USER']):
                 try:
-                    checkopts = CheckValues(defaults = {'verbose': 0, 'idx': 0, 'format': 'json', 'user': self._user, 'printout': True, 'host': 'https://cmsweb.cern.ch', 'limit': 10, 'resursive': False, 'wildcard': '*', 'device': 'cmst3', 'query': False, 'name': None})
+                    checkopts = CheckValues(defaults = {'verbose': 0, 'idx': 0, 'format': 'json', 'user': self._user, 'printout': True, 'host': 'https://cmsweb.cern.ch', 'limit': 10, 'resursive': False, 'wildcard': '[!histo]*.root', 'device': 'cmst3', 'query': False, 'name': None})
                     check = IntegrityCheck(self._setName, checkopts)
                     check.test()
                     check.report()
@@ -179,6 +196,7 @@ class FileOps(object):
                 except Exception as error:
                     print "Integrity check failed."
                     print error.args[0]
+                    
             if report is None:
                 "Integrity Check Failed - No results will be published"
             else:
@@ -208,35 +226,39 @@ class FileOps(object):
                 if 'ValidDuplicates' in report:
                     integrityCheck['ValidDuplicates'] = report['ValidDuplicates']
                 self._integrity = integrityCheck
-        
         # Loop while there are still filenames that do not belong to a file group
         while len(fileNames)>0:
             # Set filename for this pass as the current first element of the filename array
-            filename = fileNames[0]
-
+            filePart = fileNames[0].split("/")[-1].split("_")[0]
             # Create a new array to hold the names of the group
             fileGroup = []
 
             # Check for same group
             for listItem in fileNames:
-            	if isSameGroup(listItem, filename):
+            	if listItem.split("/")[-1].split("_")[0] == filePart:
                     fileGroup.append(listItem)
                     
             # Remove the filenames that have been grouped, from the original filenames array,
             # so they do not get processed twice
             for item in fileGroup:
                 fileNames.remove(item)
-
             # Add the new fileGroup to the array of fileGroups
             fileGroups.append(fileGroup)
-            
         # Add information to class attributes
         for group in fileGroups:
         	checkedGroup = self._checkGroup(group)
+        	
         	if checkedGroup['valid']==False:
         		self._valid=False
+        	
         	self._groups.append(checkedGroup)
         self._integrity = integrityCheck
+        
+        # if 'PrimaryDatasetFraction' in integrityCheck and len(fileGroups)>1:
+#             integrityCheck['PrimaryDatasetFraction'] = integrityCheck['PrimaryDatasetFraction']/2.0
+#         if 'FilesEntries' in integrityCheck and len(fileGroups)>1 :
+#             integrityCheck['FilesEntries'] = integrityCheck['FilesEntries']/2.0
+
         self._castorGroups = self._groups
         if self._groups is not None:
             for group in self._castorGroups:
@@ -246,7 +268,7 @@ class FileOps(object):
                 for file in group['duplicateFiles']:
                     file = self.getLFN() + file.split("/")[-1]
                 
-                if self._integrity is not None:
+                if self._integrity is not None and 'ValidDuplicates' in self._integrity:
                     for file in group['duplicateFiles']:
                         for valid in self._integrity['ValidDuplicates']:
                             if file == valid:
@@ -265,9 +287,8 @@ class FileOps(object):
     # Check if group is valid and return python dictionary with details
     def _checkGroup(self, group):
         
-            
-
         groupInfo = self._makeGroupInfo(group)
+        
         if groupInfo['qFiles']>1:
             count = groupInfo['bottom']
             if groupInfo['bottom'] > 1: count = 1
@@ -289,7 +310,6 @@ class FileOps(object):
                         for duplicateFile in groupInfo['files']:
                             if str(i) == duplicateFile.split("_")[-3]:
                                 groupInfo['duplicateFiles'].append(duplicateFile)
-                        
             else:
                 for i in range(count, groupInfo['top']+1):
                     if i not in groupInfo['fileNums']:
@@ -325,6 +345,7 @@ class FileOps(object):
                 arr = group[0].split("_")
                 arr[-1] = "XXX.root"
                 group.sort(key=lambda x: int(x.split("_")[-3]))
+                
                 numbers.sort()
                 arr[-3] = "["+str(numbers[0])+"-" + str(numbers[-1])+"]"
                 groupName = "_".join(arr)
@@ -334,6 +355,7 @@ class FileOps(object):
                     num = element.rstrip(".root").split("_")[-1]
                     numbers.append(int(num))
                     # Create name for normal type in format name_[a-n].root
+                
                 group.sort(key=lambda x: int(x.rstrip(".root").split("_")[-1]))
                 numbers.sort()
                 groupName = group[0].rstrip(group[0].split("_")[-1]) +"["+str(numbers[0])+"-"+ str(numbers[-1])+"].root"
@@ -342,17 +364,19 @@ class FileOps(object):
         
         return newGroup
         
+    
+        
 ###### 4 HELPER METHODS #####      
 def checkRootType(name):
-    num = re.compile("^\d+$")
-    suffix = name.rstrip(".root").split("_")
-    if num.match(suffix[-2]) and num.match(suffix[-3]) or num.match(suffix[-1]) is None:
+    crab = re.compile(".*_\d+_\d+_\w+$")
+    if crab.match(name.rstrip(".root")):
         return True
     else: return False
 
 # Turns a grid name into a name that is easy to compare. (helper method)
 def reformatGridName(name):
-    return name.split("_"+name.split("_")[-3]+ "_"+name.split("_")[-2]+"_"+name.split("_")[-1])[0]
+    a = re.sub("_\d+_\w+$", "",name.rstrip(".root"))
+    return a
 
 # Returns true if the item is not from the grid
 def checkIfUnique(name):
@@ -362,15 +386,6 @@ def checkIfUnique(name):
         return False
     else: return True
 
-# Match files
-def isSameGroup(fileA, fileB):
-    if checkRootType(fileA) == checkRootType(fileB):	# Check files are same type e.g. grid job
-        if checkRootType(fileA): 	# Test if files from grid
-            if reformatGridName(fileA)==reformatGridName(fileB): 	# Check for grid files
-            	return True
-        else:
-            if fileA.rstrip("_[1234567890]*\.root")==fileB.rstrip("_[1234567890]*\.root"): 	# Check for non grid files
-            	return True
-    return False
+
     	
 ##############################
