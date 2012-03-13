@@ -70,10 +70,10 @@ class ResolutionJetHistograms (Histograms) :
         min = histo.GetMean () - 1.5 * k * histo.GetRMS () # FIXME 1.5 is maybe useless?
         max = histo.GetMean () + 1.5 * k * histo.GetRMS () # FIXME 1.5 is maybe useless?
         self.func = TF1 ('gauss','gaus', 0, 2) #FIXME do I want "self" here? the variable is local...
-        histo.Fit (self.func, '', '', min, max)
+        histo.Fit (self.func, 'Q', '', min, max)
         min = self.func.GetParameter (1) - k * self.func.GetParameter (2)
         max = self.func.GetParameter (1) + k * self.func.GetParameter (2)
-        histo.Fit (self.func, '+', '', min, max)
+        histo.Fit (self.func, '+Q', '', min, max)
         return [self.func.GetParameter (1), self.func.GetParameter (2), self.func.GetParError (1), self.func.GetParError (2)] #FIXME would it be better to return a tuple?
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
@@ -383,8 +383,10 @@ class SimpleJetAnalyzer (Analyzer) :
         # get genJets
         event.genJets = map (GenJet, self.mchandles['genJets'].product ())
         # filter genjets as for reco jets
-        event.selGenJets = [GenJet (jet) for jet in event.genJets if (jet.pt ()>self.cfg_ana.ptCut*.5)]
-        # event.selGenJets = event.genJets
+        # event.selGenJets = [GenJet (jet) for jet in event.genJets if (jet.pt ()>self.cfg_ana.ptCut*.5)]
+        event.selGenJets = event.genJets
+        for jet in event.selGenJets : 
+            self.h_genjetspt.Fill (jet.pt ())
         
         # first stats plots
         # print 'genLeptons : ' + repr (len (event.genLeptons)) + ' | genJets : ' + repr (len (event.genJets)) + ' | recoJets : ' + repr (len (event.jets))
@@ -515,6 +517,7 @@ class SimpleJetAnalyzer (Analyzer) :
         
         self.file.cd ()
         self.h_nvtx.Write ()
+        self.h_genjetspt.Write ()
         
         self.file.Close()
         
