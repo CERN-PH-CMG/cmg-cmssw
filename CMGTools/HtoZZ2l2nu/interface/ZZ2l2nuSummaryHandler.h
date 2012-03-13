@@ -29,7 +29,7 @@ struct ZZ2l2nuSummary_t
   //gen level 
   Int_t nvtx, ngenITpu,ngenOOTpu,ngenOOTpum1;
   Float_t puWeight, hptWeights[5];
-  Float_t rho;
+  Float_t rho,rho25;
   Float_t pthat,genWeight, qscale, x1,x2;
   Int_t id1,id2;
   Int_t pass;
@@ -69,6 +69,7 @@ struct ZZ2l2nuSummary_t
   //gamma candidate
   Int_t gn;
   Float_t g_px[MAXPARTICLES], g_py[MAXPARTICLES]  , g_pz[MAXPARTICLES]  , g_en[MAXPARTICLES], g_iso1[MAXPARTICLES], g_iso2[MAXPARTICLES], g_iso3[MAXPARTICLES], g_sihih[MAXPARTICLES], g_r9[MAXPARTICLES], g_hoe[MAXPARTICLES];
+  Float_t g_mva[MAXPARTICLES], g_mvaNeut[MAXPARTICLES];
   Bool_t g_conv[MAXPARTICLES];
   Float_t g_conv_px[MAXPARTICLES],g_conv_py[MAXPARTICLES],g_conv_pz[MAXPARTICLES],g_conv_en[MAXPARTICLES];
   

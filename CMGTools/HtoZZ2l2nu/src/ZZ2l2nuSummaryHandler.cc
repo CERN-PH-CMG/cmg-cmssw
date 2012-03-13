@@ -26,6 +26,7 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   //vertices and average energy density
   t_->Branch("nvtx",       &evSummary_.nvtx,       "nvtx/I");
   t_->Branch("rho",        &evSummary_.rho,        "rho/F");
+  t_->Branch("rho25",        &evSummary_.rho25,        "rho25/F");
 
   //generator level info
   t_->Branch("ngenITpu",   &evSummary_.ngenITpu,   "ngenITpu/I");
@@ -163,6 +164,8 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("g_iso3",    evSummary_.g_iso3,      "g_iso3[gn]/F");
   t_->Branch("g_sihih",   evSummary_.g_sihih,     "g_sihih[gn]/F");
   t_->Branch("g_r9",      evSummary_.g_r9,        "g_r9[gn]/F");
+  t_->Branch("g_mva",      evSummary_.g_mva,        "g_mva[gn]/F");
+  t_->Branch("g_mvaNeut",      evSummary_.g_mvaNeut,        "g_mvaNeut[gn]/F");
   t_->Branch("g_conv",    evSummary_.g_conv,      "g_conv[gn]/O");
   t_->Branch("g_conv_px", evSummary_.g_conv_px,   "g_conv_px[gn]/F");
   t_->Branch("g_conv_py", evSummary_.g_conv_py,   "g_conv_py[gn]/F");
@@ -206,6 +209,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   //vertices and average energy density
   t_->GetBranch("nvtx")->SetAddress(&evSummary_.nvtx);
   t_->GetBranch("rho")->SetAddress( &evSummary_.rho );
+  if(t_->GetBranch("rho25")) t_->GetBranch("rho25")->SetAddress( &evSummary_.rho25 );
 
   //generator level info
   t_->GetBranch("puweight")->SetAddress(&evSummary_.puWeight);
@@ -341,6 +345,8 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("g_iso3")->SetAddress(evSummary_.g_iso3);
   t_->GetBranch("g_sihih")->SetAddress(evSummary_.g_sihih);
   t_->GetBranch("g_r9")->SetAddress(evSummary_.g_r9);
+  if(t_->GetBranch("g_mva"))     t_->GetBranch("g_mva")->SetAddress(evSummary_.g_mva);
+  if(t_->GetBranch("g_mvaNeut")) t_->GetBranch("g_mvaNeut")->SetAddress(evSummary_.g_mvaNeut);
   t_->GetBranch("g_conv")->SetAddress( evSummary_.g_conv );
   t_->GetBranch("g_conv_px")->SetAddress( evSummary_.g_conv_px );
   t_->GetBranch("g_conv_py")->SetAddress( evSummary_.g_conv_py );

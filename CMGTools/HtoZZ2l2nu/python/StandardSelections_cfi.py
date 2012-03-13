@@ -2,26 +2,27 @@ import FWCore.ParameterSet.Config as cms
 
 # base values for trigger event
 BaseTriggerSelection = cms.PSet( source = cms.InputTag("TriggerResults::HLT"),
-                                 triggerPaths = cms.vstring(),
-                                 triggerObjects = cms.VInputTag("eleTriggerMatchPFlow","muTriggerMatchPFlow")
+                                 triggerPaths = cms.PSet( gamma=cms.vstring('HLT_Photon20_CaloIdVL_IsoL',
+                                                                            'HLT_Photon30_CaloIdVL_IsoL',
+                                                                            'HLT_Photon50_CaloIdVL_IsoL',
+                                                                            'HLT_Photon75_CaloIdVL_IsoL',
+                                                                            'HLT_Photon90_CaloIdVL_IsoL',
+                                                                            'HLT_Photon125', 
+                                                                            'HLT_Photon135',
+                                                                            'HLT_Photon200'),
+                                                          ee=cms.vstring('HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL',
+                                                                         'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL'),
+                                                          mumu=cms.vstring('HLT_DoubleMu7',
+                                                                           'HLT_Mu13_Mu8'),
+                                                          emu=cms.vstring('HLT_Mu17_Ele8_CaloIdL',
+                                                                          'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL',
+                                                                          'HLT_Mu8_Ele17_CaloIdL',
+                                                                          'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL'),
+                                                          singleMu=cms.vstring('HLT_IsoMu17',
+                                                                               'HLT_IsoMu24',
+                                                                               'HLT_IsoMu30_eta2p1',
+                                                                               'HLT_IsoMu34_eta2p1'))
                                  )
-from CMGTools.HtoZZ2l2nu.TriggerSequences_cff import getTriggerPaths
-doubleEle, doubleMu, muEG, singleEle, singleMu, mcTrigs = getTriggerPaths()
-BaseTriggerSelection.triggerPaths.extend(doubleEle)
-BaseTriggerSelection.triggerPaths.extend(doubleMu)
-BaseTriggerSelection.triggerPaths.extend(muEG)
-#BaseTriggerSelection.triggerPaths.extend(singleEle)
-BaseTriggerSelection.triggerPaths.extend(singleMu)
-BaseTriggerSelection.triggerPaths.extend(mcTrigs)
-BaseTriggerSelection.gammaTriggers = cms.vstring('HLT_Photon20_CaloIdVL_IsoL',
-                                                 'HLT_Photon30_CaloIdVL_IsoL',
-                                                 'HLT_Photon50_CaloIdVL_IsoL',
-                                                 'HLT_Photon75_CaloIdVL_IsoL',
-                                                 'HLT_Photon90_CaloIdVL_IsoL',
-                                                 'HLT_Photon125',
-                                                 'HLT_Photon135',
-                                                 'HLT_Photon200'
-                                                 )
 
 # base values for the vertex selection ------------------------------------------
 BaseGeneratorSelection = cms.PSet( source = cms.InputTag("prunedGen"),
@@ -64,25 +65,23 @@ BaseLooseMuonsSelection = BaseMuonsSelection.clone( minPt = cms.double(5),
                                                     )
 
 # base values for photon selection ----------------------------------------------
-BasePhotonsSelection = cms.PSet( source = cms.InputTag("selectedPatPhotons"),
-                                 conversionSource = cms.InputTag("allConversions"),
+BasePhotonsSelection = cms.PSet( source = cms.InputTag("photons"),
+                                 rho25 = cms.InputTag("kt6PFJets25:rho"),
                                  ebrechits = cms.InputTag("reducedEcalRecHitsEB"),
                                  eerechits = cms.InputTag("reducedEcalRecHitsEE"),
-                                 minEt = cms.double(0), 
+                                 minEt = cms.double(5), 
                                  maxEta = cms.double(2.5),
                                  maxHoE = cms.double(0.05),
                                  minSipipEB = cms.double(0.001),
                                  minSihihEB = cms.double(0.001),
                                  maxSihihEB = cms.double(0.011),
                                  maxSihihEE = cms.double(0.03),
-                                 minR9 = cms.double(-1),
                                  trkIsoCoeffsEB = cms.vdouble(2.0,  0.001,  0.0167),
                                  trkIsoCoeffsEE = cms.vdouble(2.0,  0.001,  0.0032),
                                  ecalIsoCoeffsEB = cms.vdouble(4.2, 0.006,  0.183),
                                  ecalIsoCoeffsEE = cms.vdouble(4.2, 0.006,  0.090),
                                  hcalIsoCoeffsEB = cms.vdouble(2.2, 0.0025, 0.062),
-                                 hcalIsoCoeffsEE = cms.vdouble(2.2, 0.025,  0.180),
-                                 requireNoElectron = cms.bool(True)
+                                 hcalIsoCoeffsEE = cms.vdouble(2.2, 0.025,  0.180)
                                  )
 
 # base values for electron selection ----------------------------------------------
