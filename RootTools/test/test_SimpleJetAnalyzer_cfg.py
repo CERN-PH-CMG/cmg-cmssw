@@ -70,7 +70,12 @@ jetAna = cfg.Analyzer(
     ## use pat::Jets
     ## jetCollection = ('selectedPatJetsAK5','std::vector<pat::Jet>'),
     ## or cmg::Jets
-    jetCollection = ('cmgPFJetSel','std::vector<cmg::PFJet>')
+    jetCollection = ('cmgPFJetSel','std::vector<cmg::PFJet>'),
+    doJetIdHisto    = False,
+    applyPFLooseId  = False, 
+    jetIdMva = ( 0, "%s/src/CMGTools/External/data/mva_JetID.weights.xml" % os.getenv("CMSSW_BASE"), "JetID" ),
+    genJetsCollection =  ('prunedGen','std::vector<reco::GenParticle>'),
+    useGenLeptons = False,
     )
 
 
