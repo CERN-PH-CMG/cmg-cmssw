@@ -119,11 +119,11 @@ def addPatSequence(process, runOnMC, addPhotons=True) :
     applyPostfix( process, 'isoValElectronWithNeutral', postfix ).deposits[0].deltaR = 0.3
     applyPostfix( process, 'isoValElectronWithPhotons', postfix ).deposits[0].deltaR = 0.3
     applyPostfix(process,"pfIsolatedElectrons",postfix).isolationCut = cms.double(9999.)
-    
-    process.load("ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff")
-    process.load("RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_DataTuning_cfi")
-    process.load("RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_cfi")
 
+    ####################################################
+    # ELECTRON IDs                                     #
+    ####################################################       
+    process.load("ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff")
     process.HEEPId = cms.EDProducer("HEEPIdValueMapProducer",
                                     eleLabel = cms.InputTag("gsfElectrons"),
                                     barrelCuts = cms.PSet(heepBarrelCuts),
@@ -132,22 +132,11 @@ def addPatSequence(process, runOnMC, addPhotons=True) :
     process.HEEPId.barrelCuts.minEt = 5. #reset min et cut to 5 GeV
     process.HEEPId.endcapCuts.minEt = 5. #reset min et cut to 5 GeV 
     
-    
     process.electronIDSequence = cms.Sequence(
         process.HEEPId +
-        process.simpleEleIdSequence +
-        process.eidVeryLoose +
-        process.eidLoose +
-        process.eidMedium +
-        process.eidTight +
-        process.eidSuperTight+
-        process.eidVeryLooseMC +
-        process.eidLooseMC +
-        process.eidMediumMC +
-        process.eidTightMC +
-        process.eidSuperTightMC
-        )
+        process.simpleEleIdSequence )
 
+    #electrons
     applyPostfix( process, 'patElectrons', postfix ).electronIDSources = cms.PSet(
         eidHEEP = cms.InputTag("HEEPId"),
         eidVBTF95 = cms.InputTag("simpleEleId95relIso"),
@@ -155,17 +144,7 @@ def addPatSequence(process, runOnMC, addPhotons=True) :
         eidVBTF85 = cms.InputTag("simpleEleId85relIso"),
         eidVBTF80 = cms.InputTag("simpleEleId80relIso"),
         eidVBTF70 = cms.InputTag("simpleEleId70relIso"),
-        eidVBTF60 = cms.InputTag("simpleEleId60relIso"),
-        eidVeryLoose = cms.InputTag("eidVeryLoose"),
-        eidLoose = cms.InputTag("eidLoose"),
-        eidMedium = cms.InputTag("eidMedium"),
-        eidTight = cms.InputTag("eidTight"),
-        eidSuperTight = cms.InputTag("eidSuperTight"),
-        eidVeryLooseMC = cms.InputTag("eidVeryLooseMC"),
-        eidLooseMC = cms.InputTag("eidLooseMC"),
-        eidMediumMC = cms.InputTag("eidMediumMC"),
-        eidTightMC = cms.InputTag("eidTightMC"),
-        eidSuperTightMC = cms.InputTag("eidSuperTightMC")       
+        eidVBTF60 = cms.InputTag("simpleEleId60relIso")
         )
 
     #add secondary vertex mass to jets
@@ -175,21 +154,61 @@ def addPatSequence(process, runOnMC, addPhotons=True) :
 
    
     #add trigger match
-    addTriggerMatchingForLeptons(process,postfix=postfix)
+    #addTriggerMatchingForLeptons(process,postfix=postfix)
 
+    #################################################
+    # CUSTOM PAT                                    #
+    #################################################
+    process.load("PhysicsTools.PatAlgos.producersLayer1.photonProducer_cff")
+    process.load("PhysicsTools.PatAlgos.selectionLayer1.photonSelector_cfi")
+    process.load("PhysicsTools.PatAlgos.producersLayer1.electronProducer_cff")
+    process.load("PhysicsTools.PatAlgos.selectionLayer1.electronSelector_cfi")
+    process.patElectrons.electronIDSources = process.patElectronsPFlow.electronIDSources
+    process.load("PhysicsTools.PatAlgos.producersLayer1.muonProducer_cff")
+    process.load("PhysicsTools.PatAlgos.selectionLayer1.muonSelector_cfi")
+    applyPostfix( process, 'patMuons', '' ).embedCaloMETMuonCorrs=cms.bool(False)
+    applyPostfix( process, 'patMuons', '' ).embedTcMETMuonCorrs=cms.bool(False)
+    #    process.load('RecoJets.Configuration.RecoPFJets_cff')
+    #    process.load("PhysicsTools.PatAlgos.producersLayer1.jetProducer_cff")
+    #    process.load("PhysicsTools.PatAlgos.selectionLayer1.jetSelector_cfi")
+    #    switchJetCollection(process,cms.InputTag('ak5PFJets'), doJTA=True,doBTagging=True, jetCorrLabel=('AK5PF',jecLevels), doType1MET=False, genJetCollection=cms.InputTag('ak5GenJets'),doJetID = True)
+    process.customPat = cms.Sequence(process.patPhotons * process.selectedPatPhotons *
+                                     process.patElectrons * process.selectedPatElectrons *
+                                     process.patMuons * process.selectedPatMuons *
+                                     process.patJetCorrections * process.patJets * process.selectedPatJets
+                                     )
+    switchJetCollection(process,cms.InputTag('ak5PFJets'),
+                        doJTA        = False,
+                        doBTagging   = False,
+                        jetCorrLabel = ('AK5PF', jecLevels),
+                        doType1MET   = False,
+                        genJetCollection=cms.InputTag("ak5GenJets"),
+                        doJetID      = True
+                        )
+    if(runOnMC) : removeMCMatchingPF2PAT(process)
+    print process.patJets.jetSource
+    print process.patJetsPFlow.jetSource
+    
     #create the path
-    process.patDefaultSequence = cms.Sequence(
+    process.patSequence = cms.Sequence(
+        process.recoPFJets*
         process.kt6PFJets25*
         process.electronIDSequence*
-        getattr(process,"patPF2PATSequence"+postfix)
+        getattr(process,"patPF2PATSequence"+postfix)*
+        process.customPat
         )
-    
+
 
     #some fixes for photons
     #getattr(process,'patDefaultSequence').remove( getattr(process,'photonMatch'+postfix) )
     #applyPostfix( process, 'patPhotons', postfix ).addGenMatch = cms.bool(False)
     #removeMCMatching(process,names=['Photons'],postfix=postfix)
-    getattr(process,'patDefaultSequence').remove( getattr(process,'photonMatch'+postfix) )
+
+    removeCleaning( process ) 
+    getattr(process,'patSequence').remove( getattr(process,'photonMatch'+postfix) )
+    removeSpecificPATObjects( process, names=['Taus'] )
+    removeSpecificPATObjects( process, names=['Taus'], postfix=postfix ) 
+
 
     print " *** PAT path has been defined"
     

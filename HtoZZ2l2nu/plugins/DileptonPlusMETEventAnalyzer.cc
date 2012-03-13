@@ -276,17 +276,26 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     saveMCtruth(event, iSetup );    
     
     //
-    // trigger
+    // trigger (require at least for data)
     //
     edm::Handle<edm::TriggerResults> triggerBitsH;
     edm::InputTag trigSource = objConfig_["Trigger"].getParameter<edm::InputTag>("source");
     event.getByLabel( trigSource, triggerBitsH);
     const edm::TriggerNames &triggerNames = event.triggerNames( *triggerBitsH );
-    std::vector<std::string> triggerPaths = objConfig_["Trigger"].getParameter<std::vector<std::string> >("triggerPaths");
-    ev.hasTrigger = checkIfTriggerFired( triggerBitsH, triggerNames, triggerPaths ); 
-    std::vector<std::string> gammaTriggers=objConfig_["Trigger"].getParameter< std::vector<std::string> >("gammaTriggers");
-    std::pair<std::string,double> photonTrig = getHighestPhotonTrigThreshold( triggerBitsH, triggerNames , gammaTriggers );
-    
+    std::vector<std::string> triggerPaths=objConfig_["Trigger"].getParameterSet("triggerPaths").getParameterNames();
+    std::map<std::string,bool> triggerBits; 
+    std::pair<std::string,double> photonTrig;
+    ev.hasTrigger=false;
+    for(size_t it=0; it<triggerPaths.size(); it++)
+      {
+	std::vector<std::string> itriggers=objConfig_["Trigger"].getParameterSet("triggerPaths").getParameter<std::vector<std::string> >( triggerPaths[it] );
+	triggerBits[ triggerPaths[it] ] = checkIfTriggerFired( triggerBitsH, triggerNames,itriggers, event.isRealData() );
+	ev.hasTrigger |= triggerBits[ triggerPaths[it] ];
+	if(triggerPaths[it]!="gamma") continue;
+	photonTrig = getHighestPhotonTrigThreshold( triggerBitsH, triggerNames , itriggers);
+      }
+    if(event.isRealData() && !ev.hasTrigger) return;
+	    
     //
     // vertex and beam spot
     //
@@ -307,9 +316,11 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.vtx_en = primVertex->p4().energy();
     
     // average energy density
-    edm::Handle< double > rho;
+    edm::Handle< double > rho, rho25;
     event.getByLabel( objConfig_["Jets"].getParameter<edm::InputTag>("rho"),rho);
+    event.getByLabel( objConfig_["Photons"].getParameter<edm::InputTag>("rho25"),rho25);
     ev.rho = *rho;
+    ev.rho25 = *rho25;
 
     //
     // LEPTON SELECTION
@@ -423,53 +434,33 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     EcalClusterLazyTools lazyTool(event,iSetup,
                                   objConfig_["Photons"].getParameter<edm::InputTag>("ebrechits"),
                                   objConfig_["Photons"].getParameter<edm::InputTag>("eerechits"));
-    edm::Handle<std::vector<reco::Conversion> > hConversions;
-    event.getByLabel(objConfig_["Photons"].getParameter<edm::InputTag>("conversionSource"), hConversions);
-    edm::Handle< std::vector<int> >  pvAssocCandidates;
-    event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("pvAssocCandidatesSource"),pvAssocCandidates);
-    edm::Handle<reco::PFCandidateCollection> pfCandsH;
-    event.getByLabel(objConfig_["MET"].getParameter<edm::InputTag>("pfCands"), pfCandsH);
-
     ev.gn=0;
-    std::vector<CandidatePtr> selPhotons=getGoodPhotons(hPhoton,lazyTool,ebrechits,hEle,hConversions,*rho,objConfig_["Photons"]);
+    std::vector<CandidatePtr> selPhotons=getGoodPhotons(hPhoton,lazyTool,ebrechits,*rho25,objConfig_["Photons"]);
     for(std::vector<CandidatePtr>::iterator phoIt = selPhotons.begin(); phoIt != selPhotons.end(); phoIt++)
       {
-	const reco::Photon *pho= dynamic_cast<const reco::Photon *>( phoIt->get() );
+	const reco::Photon *pho = dynamic_cast<const reco::Photon *>(phoIt->get());
  	ev.g_px[ev.gn]    = pho->px();
 	ev.g_py[ev.gn]    = pho->py();
 	ev.g_pz[ev.gn]    = pho->pz();
 	ev.g_en[ev.gn]    = pho->energy();
-	ev.g_r9[ev.gn]    = pho->r9();   
 	ev.g_hoe[ev.gn]   = pho->hadronicOverEm();  
 	ev.g_sihih[ev.gn] = pho->sigmaIetaIeta();
 	ev.g_iso1[ev.gn]  = pho->trkSumPtSolidConeDR04();
 	ev.g_iso2[ev.gn]  = pho->ecalRecHitSumEtConeDR04();
 	ev.g_iso3[ev.gn]  = pho->hcalTowerSumEtConeDR04();
+	
+	ev.g_r9[ev.gn]    = pho->r9();
 
-	//check if it has been matched to the PV bt the clustered MET producer
-	double minDR=9999.;
-	const reco::PFCandidate *match=0;
-	if(pvAssocCandidates.isValid()  && pfCandsH.isValid())
-	  {
-	    for(std::vector<int>::const_iterator pfIt = pvAssocCandidates->begin();  pfIt != pvAssocCandidates->end(); pfIt++)
-	      {
-		reco::PFCandidateRef candRef(pfCandsH,*pfIt);
-		if(candRef->charge()!=0) continue;
-		double dr=deltaR(candRef->eta(),candRef->phi(),pho->eta(),pho->phi());
-		if(dr>minDR) continue;
-		minDR=dr;
-		match=candRef.get();
-	      }
-	  }
-	bool matchFound(minDR<0.05);
-	ev.g_conv[ev.gn] = matchFound;
-	ev.g_conv_px[ev.gn] = matchFound? match->px() :0;
-	ev.g_conv_py[ev.gn] = matchFound? match->py():0;
-	ev.g_conv_pz[ev.gn] = matchFound? match->pz():0;
-	ev.g_conv_en[ev.gn] = matchFound? match->energy():0;
+	ev.g_conv[ev.gn] = false;
+	LorentzVector convP4(0,0,0,0);
+	/*
+	  ev.g_conv_px[ev.gn] = convP4.px();
+	  ev.g_conv_py[ev.gn] = convP4.py();
+	  ev.g_conv_pz[ev.gn] = convP4.pz();
+	  ev.g_conv_en[ev.gn] = convP4.energy();
+	*/
 	ev.gn++;
       }
-
     if(ev.cat==UNKNOWN && selPhotons.size()) ev.cat=GAMMA+1000*photonTrig.second;
 
 
@@ -646,13 +637,8 @@ int DileptonPlusMETEventAnalyzer::getElectronPidSummary(const pat::Electron *ele
     | ( (int(ele->electronID("eidVBTF85")) & 0x1) << 2)
     | ( (int(ele->electronID("eidVBTF90")) & 0x1) << 3)
     | ( (int(ele->electronID("eidVBTF95")) & 0x1) << 4)
-    | ( (int(ele->electronID("eidVeryLooseMC")) & 0x1) << 5)
-    | ( (int(ele->electronID("eidLooseMC")) & 0x1) << 6)
-    | ( (int(ele->electronID("eidMediumMC")) & 0x1) << 7)
-    | ( (int(ele->electronID("eidTightMC")) & 0x1) << 8)
-    | ( (int(ele->electronID("eidSuperTightMC")) & 0x1) << 9)
-    | (hasHEEPid << 10)
-    | ( isEcalDriven << 11);
+    | (hasHEEPid << 5)
+    | ( isEcalDriven << 10);
  
   return summary;
 }

@@ -29,10 +29,7 @@ process.load("PhysicsTools.PatAlgos.patSequences_cff")
 ## Output Module Configuration (expects a path 'p')
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string('patTuple.root'),
-                               # save only events passing the full path
                                SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
-                               # save PAT Layer 1 output; you need a '*' to
-                               # unpack the list of commands 'patEventContent'
                                outputCommands = cms.untracked.vstring('keep *'))
 
 # preselection filters
@@ -41,18 +38,14 @@ if(not runOnMC ):
     addPreselectionSequences(process)
     addLumifilter(process,'/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_160404-180252_7TeV_ReRecoNov08_Collisions11_JSON.txt')
         
-# trigger filter
-from CMGTools.HtoZZ2l2nu.TriggerSequences_cff import addTriggerSequence
-if(not runOnMC):
-    addTriggerSequence(process,trigFilter)
-
 # dilepton filter
-from CMGTools.HtoZZ2l2nu.DileptonFilterSequences_cff import addDileptonFilters
+from CMGTools.HtoZZ2l2nu.DileptonFilterSequences_cff import addDileptonFilters, addPhotonFilters
 addDileptonFilters(process)
+addPhotonFilters(process)
 
 # pat sequences
 from CMGTools.HtoZZ2l2nu.PatSequences_cff import addPatSequence
-addPatSequence(process,runOnMC,True)
+addPatSequence(process,runOnMC)
 
 # event counters
 process.startCounter = cms.EDProducer("EventCountProducer")
@@ -60,23 +53,25 @@ process.endCounter = process.startCounter.clone()
 
 # define the paths
 if(runOnMC):
-    process.llPath = cms.Path(process.startCounter * process.llCandidateSequence * process.patDefaultSequence )
+    process.llPath = cms.Path(process.startCounter * process.llCandidateSequence * process.patSequence )
+    process.photonPath = cms.Path(process.startCounter * process.photonCandidateSequence * process.patSequence )
 else:
-    process.llPath = cms.Path(process.startCounter * process.preselection * process.trigSequence * process.llCandidateSequence * process.patDefaultSequence )
+    process.llPath = cms.Path(process.startCounter * process.preselection * process.llCandidateSequence * process.patSequence )
+    process.photonPath = cms.Path(process.startCounter * process.preselection * process.photonCandidateSequence * process.patSequence )
 process.e = cms.EndPath( process.endCounter*process.out )
 
 # all done, schedule the execution
 if(runOnMC):
     from CMGTools.HtoZZ2l2nu.GeneratorLevelSequences_cff import addGeneratorLevelSequence
     addGeneratorLevelSequence(process)
-    process.schedule = cms.Schedule( process.genLevelPath, process.llPath, process.e )
+    process.schedule = cms.Schedule( process.genLevelPath, process.llPath, process.photonPath, process.e )
 else :
-    process.schedule = cms.Schedule( process.llPath, process.e )
+    process.schedule = cms.Schedule( process.llPath, process.photonPath, process.e )
 
 # event output
 from CMGTools.HtoZZ2l2nu.OutputConfiguration_cff import configureOutput
 configureOutput(process)
-configureOutput(process,selPaths=['llPath'])
+configureOutput(process,selPaths=['llPath','photonPath'])
 process.out.fileName = cms.untracked.string(outFile)
 
 print "Scheduling the following modules"

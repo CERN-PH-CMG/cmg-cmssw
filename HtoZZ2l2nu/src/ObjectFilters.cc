@@ -493,8 +493,6 @@ double computeVtxAssocFracForJet(const pat::Jet *jet, const reco::Vertex *vtx)
 vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hPhoton,
 				    EcalClusterLazyTools &lazyTool,
 				    edm::Handle<EcalRecHitCollection> ebrechits,
-				    edm::Handle<edm::View<reco::Candidate> > &hEle,
-				    edm::Handle<vector<reco::Conversion> > &hConversions,
 				    double rho,
 				    const edm::ParameterSet &iConfig)
 {
@@ -506,11 +504,11 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
     double minEt = iConfig.getParameter<double>("minEt");
     double maxEta = iConfig.getParameter<double>("maxEta");
 
-    double minSipipEb=iConfig.getParameter<double>("minSipipEB"); 
+    double minSipipEB=iConfig.getParameter<double>("minSipipEB"); 
     double minSihihEB=iConfig.getParameter<double>("minSihihEB");
     double maxSihihEB=iConfig.getParameter<double>("maxSihihEB");
     double maxSihihEE=iConfig.getParameter<double>("maxSihihEE");
-    double minR9= iConfig.getParameter<double>("minR9");
+
     double maxHoE=iConfig.getParameter<double>("maxHoE");
     std::vector<double> trkIsoCoeffsEB = iConfig.getParameter< std::vector<double> >("trkIsoCoeffsEB");
     std::vector<double> trkIsoCoeffsEE = iConfig.getParameter< std::vector<double> >("trkIsoCoeffsEE");
@@ -518,151 +516,84 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
     std::vector<double> ecalIsoCoeffsEE = iConfig.getParameter< std::vector<double> >("ecalIsoCoeffsEE");
     std::vector<double> hcalIsoCoeffsEB = iConfig.getParameter< std::vector<double> >("hcalIsoCoeffsEB");
     std::vector<double> hcalIsoCoeffsEE = iConfig.getParameter< std::vector<double> >("hcalIsoCoeffsEE");
-    bool requireNoElectron= iConfig.getParameter<bool>("requireNoElectron");
 
     //iterate over the photons
     for(size_t iPhoton=0; iPhoton< hPhoton.product()->size(); ++iPhoton)
       {
-	reco::CandidatePtr photonPtr = hPhoton->ptrAt(iPhoton);
-	const pat::Photon *photon = dynamic_cast<const pat::Photon *>( photonPtr.get() );
-	
-	//kinematics
-	float et = photon->et();
-	float eta = photon->eta(); 
+	//get PF photon candidates
+	const reco::Photon *pho = dynamic_cast<const reco::Photon *>( hPhoton->ptrAt(iPhoton).get() );
+	if(pho==0) continue;
+		
+	//apply fiducial cuts on photon
+	float eta=pho->eta();
+	float et=pho->energy()/cosh(eta);
 	bool fallsInCrackRegion( fabs(eta)>1.4442 && fabs(eta)<1.566 );
-	bool isGood( et>minEt && fabs(eta)<maxEta && !fallsInCrackRegion);
-
-	//id
-	float sihih = photon->sigmaIetaIeta();
-	float sipip(999999.);
-	float hoe = photon->hadronicOverEm();
-	bool hasId(hoe<maxHoE);
-	hasId &= (photon->r9()>minR9);
-	if(photon->isEB())
+	bool isGood( et>minEt && fabs(eta)<maxEta);
+	if(fallsInCrackRegion || !isGood) continue;
+	
+	//shower shape
+	float hoe = pho->hadronicOverEm();
+	float sihih = pho->sigmaIetaIeta();
+	bool hasGoodShowerShape(hoe<maxHoE);
+	if(pho->isEB())
 	  {
-	      hasId &= (sihih<maxSihihEB);
-	      hasId &= (sihih>minSihihEB);
+	    hasGoodShowerShape &= (sihih<maxSihihEB);
+	    hasGoodShowerShape &= (sihih>minSihihEB);
 	  }
 	else
 	  {
-	    hasId &= (sihih<maxSihihEE);
+	    hasGoodShowerShape &= (sihih<maxSihihEE);
 	  }
-	
-	//these require the photon core to be stored
+
+	//these require the photon core
 	bool hasPixelSeed(false);
 	try{
-	  
-	  reco::SuperClusterRef scphoton = photon->superCluster();
-	  eta = scphoton->eta();
-	  hasPixelSeed = photon->hasPixelSeed();
-	 
-	  if(photon->isEB())
-	    {
-	      const reco::CaloClusterPtr  seed_clu = scphoton->seed();
-	      vector<float> cov = lazyTool.localCovariances(*seed_clu);
-	      sipip = cov[2];
+	  reco::SuperClusterRef scref = pho->superCluster();
+	  const reco::CaloClusterPtr  seed_clu = scref->seed();
+	  vector<float> cov = lazyTool.localCovariances(*seed_clu);
+	  float sipip = cov[2];
+	  if(pho->isEB())
+	    hasGoodShowerShape &= (sipip>minSipipEB);
+	  cout << sipip << endl;
 
-	      bool hasOutofTime(false);
-	      DetId id=scphoton->seed()->hitsAndFractions()[0].first;
-      	      EcalRecHitCollection::const_iterator seedcry_rh = ebrechits->find( id );
-	      if( seedcry_rh != ebrechits->end() ) hasOutofTime = seedcry_rh->checkFlag(EcalRecHit::kOutOfTime);
-
-	      hasId &= (!hasOutofTime);
-	      hasId &= (sipip>minSipipEb);
-	    }
-	  
-	}catch(exception &e){
-	  //cout << "Photon core is missing (assuming photon eta and no pixel seed)" << endl;
+	  //pixel seed veto
+	  hasPixelSeed=pho->hasPixelSeed();	
+	  cout << hasPixelSeed << endl;
+	}catch(std::exception &e){
+	  //cout << pho->isEB() << " " << pho->isEE() << " " << pho->isStandardPhoton() << " " << pho->isPFlowPhoton() << endl;
+	  //cout << e.what() << endl;
 	}
-	
-
-	//check if photon is prompt and uncoverted
-	bool isPrompt( !hasPixelSeed );
-	int tType(0);
-	const reco::Conversion *phoConvMatch = matchPhotonToConversion( photon, hConversions );
-	if(phoConvMatch) { isPrompt=false; tType=11*11; }
-	float minDr(99999.);
-	if(hEle.isValid() && requireNoElectron)
-	  {
-	    for(edm::View<reco::Candidate>::const_iterator eit = hEle->begin(); eit != hEle->end(); eit++)
-	      {
-		float dr =deltaR(eit->eta(),eit->phi(),photon->eta(),photon->phi());
-		if(dr>minDr) continue;
-		minDr=dr;
-		tType=11;
-	      }
-	  }
-	if(minDr<0.05) isPrompt=false; 
+	if(!hasGoodShowerShape || hasPixelSeed) continue;
 
 	//isolation
-	float trk_a(trkIsoCoeffsEB[0]),   trk_b(trkIsoCoeffsEB[1]),   trk_c(trkIsoCoeffsEB[2]);
-	float ecal_a(hcalIsoCoeffsEB[0]), ecal_b(ecalIsoCoeffsEB[1]), ecal_c(ecalIsoCoeffsEB[2]);
-	float hcal_a(hcalIsoCoeffsEB[0]), hcal_b(hcalIsoCoeffsEB[1]), hcal_c(hcalIsoCoeffsEB[2]);
-	if(!photon->isEB())
+	float maxTrkIso(9999.), maxECALIso(99999.), maxHCALIso(99999.);
+	if(pho->isEB())
 	  {
-	    trk_a=trkIsoCoeffsEB[0];   trk_b=trkIsoCoeffsEB[1];   trk_c=trkIsoCoeffsEB[2];
-	    ecal_a=hcalIsoCoeffsEB[0]; ecal_b=ecalIsoCoeffsEB[1]; ecal_c=ecalIsoCoeffsEB[2];
-	    hcal_a=hcalIsoCoeffsEB[0]; hcal_b=hcalIsoCoeffsEB[1]; hcal_c=hcalIsoCoeffsEB[2];
+	    maxTrkIso  = trkIsoCoeffsEB[0]  + trkIsoCoeffsEB[1]*et  + trkIsoCoeffsEB[2]*rho;
+	    maxECALIso = ecalIsoCoeffsEB[0] + ecalIsoCoeffsEB[1]*et + ecalIsoCoeffsEB[2]*rho;
+	    maxHCALIso = hcalIsoCoeffsEB[0] + hcalIsoCoeffsEB[1]*et + hcalIsoCoeffsEB[2]*rho;
 	  }
-	bool isTrkIso(photon->trkSumPtHollowConeDR04()< trk_a+trk_b*et+trk_c*rho);
-	bool isEcalIso(photon->ecalRecHitSumEtConeDR04()< ecal_a+ecal_b*et+ecal_c*rho);
-	bool isHcalIso(photon->hcalTowerSumEtConeDR04()< hcal_a+hcal_b*et+hcal_c*rho);
+	else
+	  {
+	    maxTrkIso  = trkIsoCoeffsEE[0]  + trkIsoCoeffsEE[1]*et  + trkIsoCoeffsEE[2]*rho;
+	    maxECALIso = ecalIsoCoeffsEE[0] + ecalIsoCoeffsEE[1]*et + ecalIsoCoeffsEE[2]*rho;
+	    maxHCALIso = hcalIsoCoeffsEE[0] + hcalIsoCoeffsEE[1]*et + hcalIsoCoeffsEE[2]*rho;
+	  }
+	bool isTrkIso(pho->trkSumPtHollowConeDR04()< maxTrkIso);
+	bool isEcalIso(pho->ecalRecHitSumEtConeDR04()< maxECALIso);
+	bool isHcalIso(pho->hcalTowerSumEtConeDR04()< maxHCALIso);
 	bool isIso(isTrkIso && isEcalIso && isHcalIso);
+	if(!isIso) continue;
 	
-	//final photon selection
-	if(!isGood || !isPrompt || !hasId || !isIso) continue;
-	selPhotons.push_back( photonPtr );
+	//save this photon
+	selPhotons.push_back( hPhoton->ptrAt(iPhoton) );
       }
   }catch(exception &e){
     cout << "[photon] failed with " << e.what() << endl;
   }
-
+  
   return selPhotons;
 }
-
-
-//
-const reco::Conversion *matchPhotonToConversion(const pat::Photon *pho, edm::Handle<vector<reco::Conversion> > &hConversions)
-{
-  const reco::Conversion *matchConv=0;
-  if(pho==0 || !hConversions.isValid()) return matchConv;
-  if(hConversions->size()==0) return matchConv;
-  
-  //photon kinematics
-  double phoEta = pho->superCluster()->eta();
-  double phoPhi = pho->superCluster()->phi();
-  
-  //find closest conversion in phase space
-  float dEtaMin(9999.), dPhiMin(9999.);   
-  for(vector<reco::Conversion>::const_iterator it = hConversions->begin(); it != hConversions->end(); it++)
-    {
-      LorentzVector pairMom( it->refittedPair4Momentum().Px(),
-			     it->refittedPair4Momentum().Py(),
-			     it->refittedPair4Momentum().Pz(),
-			     it->refittedPair4Momentum().E() );
-      if (pairMom.pt() < 1 ) continue;    
-      
-      const reco::Vertex &convVtx = it->conversionVertex();	
-      if(!convVtx.isValid()) continue;
-      
-      double convEta = pairMom.eta();
-      double dEta = convEta-phoEta;
-      
-      double convPhi = pairMom.phi();
-      double dPhi = deltaPhi(convPhi,phoPhi);
-      
-      if ( fabs(dEta) > dEtaMin || fabs(dPhi) > dPhiMin ) continue; 
-      dEtaMin=  fabs(dEta);
-      dPhiMin=  fabs(dPhi);
-      matchConv = &(*it);
-    }
-  
-  //reset if too far away 
-  if ( dEtaMin > 0.1 || dPhiMin > 0.1 ) matchConv=0;
-  
-  return matchConv;
-}
-
 
 
 //                            //
@@ -828,7 +759,7 @@ pair<string,double> getHighestPhotonTrigThreshold(edm::Handle<edm::TriggerResult
   
 
 //
-bool checkIfTriggerFired(edm::Handle<edm::TriggerResults> &allTriggerBits, const edm::TriggerNames &triggerNames, std::vector<std::string> &triggerPaths)
+bool checkIfTriggerFired(edm::Handle<edm::TriggerResults> &allTriggerBits, const edm::TriggerNames &triggerNames, std::vector<std::string> &triggerPaths, bool isData)
 {
   for (size_t itrig = 0; itrig != allTriggerBits->size(); ++itrig)
     {
@@ -836,8 +767,12 @@ bool checkIfTriggerFired(edm::Handle<edm::TriggerResults> &allTriggerBits, const
       if( !allTriggerBits->wasrun(itrig) ) continue;
       if( allTriggerBits->error(itrig) ) continue;
       if( !allTriggerBits->accept(itrig) ) continue;
-      if( find(triggerPaths.begin(), triggerPaths.end(), trigName) == triggerPaths.end() ) continue;
-      return true;
+      for(size_t ip=0; ip<triggerPaths.size(); ip++)
+	if(trigName.find(triggerPaths[ip] + (isData?"_v":""))!= std::string::npos)
+	  {
+	    //cout << trigName << endl;
+	    return true;
+	  }
     }
   return false;
 }

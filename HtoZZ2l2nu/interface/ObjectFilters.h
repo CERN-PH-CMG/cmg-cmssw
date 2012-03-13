@@ -90,11 +90,7 @@ const reco::GenParticle *getLeptonGenMatch(reco::CandidatePtr &lepton);
 // cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/Vgamma2011PhotonID
 std::vector<reco::CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hPhoton, 
 					       EcalClusterLazyTools &lazyTool, edm::Handle<EcalRecHitCollection> ebrechits,
-					       edm::Handle<edm::View<reco::Candidate> > &hEle,
-					       edm::Handle<std::vector<reco::Conversion> > &hConversions,
 					       double rho, const edm::ParameterSet &iConfig);
-const reco::Conversion *matchPhotonToConversion(const pat::Photon *pho, edm::Handle<std::vector<reco::Conversion> > &hConversions);
-
 
 
 ///                            ///   
@@ -116,7 +112,7 @@ const reco::Candidate *getGeneratorFinalStateFor(const reco::Candidate *p);
 // TRIGGER UTILITILES //
 //                    //
 std::pair<std::string,double> getHighestPhotonTrigThreshold(edm::Handle<edm::TriggerResults> &triggerBitsH, const edm::TriggerNames &triggerNames,  std::vector<std::string> &gammaTriggers);
-bool checkIfTriggerFired(edm::Handle<edm::TriggerResults> &allTriggerBis, const edm::TriggerNames &triggerNames, std::vector<std::string> &trigList); 
+bool checkIfTriggerFired(edm::Handle<edm::TriggerResults> &allTriggerBis, const edm::TriggerNames &triggerNames, std::vector<std::string> &trigList, bool isData); 
 
 
 #endif
