@@ -1,6 +1,6 @@
 from CMGTools.RootTools.statistics.Histograms import Histograms
 import CMGTools.External.External
-from ROOT import TH1F, TH2F, TFile, THStack, TF1, TGraphErrors, TPrincipal, TObjString, TObject, PileupJetIdentifier
+from ROOT import TH1F, TH2F, TFile, THStack, TF1, TGraphErrors, TPrincipal, TObjString, TObject, PileupJetIdAlgo
 
 from bisect import bisect
 
@@ -191,11 +191,11 @@ class PileupJetHistograms(Histograms) :
         self.fillers = []
         if jetIdMva:
             print jetIdMva
-            self.identifier = PileupJetIdentifier(*jetIdMva)
+            self.identifier = PileupJetIdAlgo(*jetIdMva)
             self.jetIdMva = jetIdMva
             self.runMva = True
         else:
-            self.identifier = PileupJetIdentifier()
+            self.identifier = PileupJetIdAlgo()
             self.jetIdMva = ()
             self.runMva = True
         
@@ -278,12 +278,13 @@ class PileupJetHistograms(Histograms) :
         try:
             puid = jet.puIdentifier
         except:
-            puid = self.identifier
+            puidalgo = self.identifier
             try:
-                puid.computeIdVariables(jet.sourcePtr().get(),0.,vertexes[0],self.runMva)
+                jet.puIdentifier = puidalgo.computeIdVariables(jet.sourcePtr().get(),0.,vertexes[0],self.runMva)
             except:
-                puid.computeIdVariables(jet,0.,vertexes[0],self.runMva)
-            jet.puIdentifier = PileupJetIdentifier(puid)
+                jet.puIdentifier = puidalgo.computeIdVariables(jet,0.,vertexes[0],self.runMva)
+            puid = jet.puIdentifier
+            ### jet.puIdentifier = PileupJetIdentifier(puid)
         
         ### a = array('d')
         for t,m in self.fillers:
