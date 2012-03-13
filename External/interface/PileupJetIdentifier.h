@@ -6,16 +6,11 @@
 // Author: P. Musella, P. Harris
 //--------------------------------------------------------------------------------------------------
 
+#include <string>
+#include <map>
+
 #ifndef PileupJetIdentifier_h
 #define PileupJetIdentifier_h
-
-#include "DataFormats/JetReco/interface/Jet.h"
-#include "DataFormats/JetReco/interface/PFJetCollection.h"
-#include "DataFormats/VertexReco/interface/VertexFwd.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-
-#include "TMVA/Tools.h"
-#include "TMVA/Reader.h"
 
 #define DECLARE_VARIABLE(NAME,TYPE)		\
 	private: \
@@ -26,127 +21,130 @@
 // ----------------------------------------------------------------------------------------------------
 class PileupJetIdentifier {
 public:
-	PileupJetIdentifier(const std::string & tmvaWeight="", const std::string & tmvaMethod="", 
-			    Float_t impactParTkThreshod_=1.);
-	// PileupJetIdentifier(edm::ParameterSet & ps); 
+	friend class PileupJetIdAlgo;
+
+	PileupJetIdentifier();
+	// PileupJetIdentifier(const std::string & tmvaWeight="", const std::string & tmvaMethod="", 
+	// 		    float impactParTkThreshod_=1.);
+	// // PileupJetIdentifier(edm::ParameterSet & ps); 
 	PileupJetIdentifier(const PileupJetIdentifier &p);
 	~PileupJetIdentifier(); 
 	
-	void computeIdVariables(const reco::Jet * jet, float jec, const reco::Vertex *, bool calculateMva=false);
+	// void computeIdVariables(const reco::Jet * jet, float jec, const reco::Vertex *, bool calculateMva=false);
 	
-	DECLARE_VARIABLE(mva      ,Float_t);
+	DECLARE_VARIABLE(mva      ,float);
 	
-	DECLARE_VARIABLE(jetEta   ,Float_t);
-	DECLARE_VARIABLE(jetPt    ,Float_t);
-	DECLARE_VARIABLE(jetPhi   ,Float_t);
-	DECLARE_VARIABLE(jetM     ,Float_t);
+	DECLARE_VARIABLE(jetEta   ,float);
+	DECLARE_VARIABLE(jetPt    ,float);
+	DECLARE_VARIABLE(jetPhi   ,float);
+	DECLARE_VARIABLE(jetM     ,float);
 
-	DECLARE_VARIABLE(nCharged   ,Float_t);
-	DECLARE_VARIABLE(nNeutrals,Float_t);
+	DECLARE_VARIABLE(nCharged   ,float);
+	DECLARE_VARIABLE(nNeutrals,float);
 
-	DECLARE_VARIABLE(chgEMfrac  ,Float_t);
-	DECLARE_VARIABLE(neuEMfrac  ,Float_t);
-	DECLARE_VARIABLE(chgHadrfrac,Float_t);
-	DECLARE_VARIABLE(neuHadrfrac,Float_t);
+	DECLARE_VARIABLE(chgEMfrac  ,float);
+	DECLARE_VARIABLE(neuEMfrac  ,float);
+	DECLARE_VARIABLE(chgHadrfrac,float);
+	DECLARE_VARIABLE(neuHadrfrac,float);
 	
-	DECLARE_VARIABLE(d0         ,Float_t);   
-	DECLARE_VARIABLE(dZ         ,Float_t);  
-	DECLARE_VARIABLE(nParticles ,Float_t);  
-	DECLARE_VARIABLE(leadPt     ,Float_t);  
-	DECLARE_VARIABLE(leadEta    ,Float_t);  
-	DECLARE_VARIABLE(leadPhi    ,Float_t);  
-	DECLARE_VARIABLE(secondPt   ,Float_t);  
-	DECLARE_VARIABLE(secondEta  ,Float_t);  
-	DECLARE_VARIABLE(secondPhi  ,Float_t);  
-	DECLARE_VARIABLE(leadNeutPt ,Float_t);  
-	DECLARE_VARIABLE(leadNeutEta,Float_t);  
-	DECLARE_VARIABLE(leadNeutPhi,Float_t);  
-	DECLARE_VARIABLE(leadEmPt   ,Float_t);  
-	DECLARE_VARIABLE(leadEmEta  ,Float_t);  
-	DECLARE_VARIABLE(leadEmPhi  ,Float_t);  
-	DECLARE_VARIABLE(leadChPt   ,Float_t);  
-	DECLARE_VARIABLE(leadChEta  ,Float_t);  
-	DECLARE_VARIABLE(leadChPhi  ,Float_t);  
+	DECLARE_VARIABLE(d0         ,float);   
+	DECLARE_VARIABLE(dZ         ,float);  
+	DECLARE_VARIABLE(nParticles ,float);  
+	DECLARE_VARIABLE(leadPt     ,float);  
+	DECLARE_VARIABLE(leadEta    ,float);  
+	DECLARE_VARIABLE(leadPhi    ,float);  
+	DECLARE_VARIABLE(secondPt   ,float);  
+	DECLARE_VARIABLE(secondEta  ,float);  
+	DECLARE_VARIABLE(secondPhi  ,float);  
+	DECLARE_VARIABLE(leadNeutPt ,float);  
+	DECLARE_VARIABLE(leadNeutEta,float);  
+	DECLARE_VARIABLE(leadNeutPhi,float);  
+	DECLARE_VARIABLE(leadEmPt   ,float);  
+	DECLARE_VARIABLE(leadEmEta  ,float);  
+	DECLARE_VARIABLE(leadEmPhi  ,float);  
+	DECLARE_VARIABLE(leadChPt   ,float);  
+	DECLARE_VARIABLE(leadChEta  ,float);  
+	DECLARE_VARIABLE(leadChPhi  ,float);  
 
-	DECLARE_VARIABLE(dRLeadCent ,Float_t);  
-	DECLARE_VARIABLE(dRLead2nd  ,Float_t);  
-	DECLARE_VARIABLE(dRMean     ,Float_t);  
-	DECLARE_VARIABLE(dRMeanNeut ,Float_t);  
-	DECLARE_VARIABLE(dRMeanEm   ,Float_t);  
-	DECLARE_VARIABLE(dRMeanCh   ,Float_t);  
+	DECLARE_VARIABLE(dRLeadCent ,float);  
+	DECLARE_VARIABLE(dRLead2nd  ,float);  
+	DECLARE_VARIABLE(dRMean     ,float);  
+	DECLARE_VARIABLE(dRMeanNeut ,float);  
+	DECLARE_VARIABLE(dRMeanEm   ,float);  
+	DECLARE_VARIABLE(dRMeanCh   ,float);  
 
-	DECLARE_VARIABLE(ptD,Float_t);
+	DECLARE_VARIABLE(ptD,float);
 
-	DECLARE_VARIABLE(leadFrac    ,Float_t);  
-	DECLARE_VARIABLE(secondFrac  ,Float_t);  
-	DECLARE_VARIABLE(thirdFrac   ,Float_t);  
-	DECLARE_VARIABLE(fourthFrac  ,Float_t);  
+	DECLARE_VARIABLE(leadFrac    ,float);  
+	DECLARE_VARIABLE(secondFrac  ,float);  
+	DECLARE_VARIABLE(thirdFrac   ,float);  
+	DECLARE_VARIABLE(fourthFrac  ,float);  
 
-	DECLARE_VARIABLE(leadChFrac    ,Float_t);  
-	DECLARE_VARIABLE(secondChFrac  ,Float_t);  
-	DECLARE_VARIABLE(thirdChFrac   ,Float_t);  
-	DECLARE_VARIABLE(fourthChFrac  ,Float_t);  
+	DECLARE_VARIABLE(leadChFrac    ,float);  
+	DECLARE_VARIABLE(secondChFrac  ,float);  
+	DECLARE_VARIABLE(thirdChFrac   ,float);  
+	DECLARE_VARIABLE(fourthChFrac  ,float);  
 
-	DECLARE_VARIABLE(leadNeutFrac    ,Float_t);  
-	DECLARE_VARIABLE(secondNeutFrac  ,Float_t);  
-	DECLARE_VARIABLE(thirdNeutFrac   ,Float_t);  
-	DECLARE_VARIABLE(fourthNeutFrac  ,Float_t);  
+	DECLARE_VARIABLE(leadNeutFrac    ,float);  
+	DECLARE_VARIABLE(secondNeutFrac  ,float);  
+	DECLARE_VARIABLE(thirdNeutFrac   ,float);  
+	DECLARE_VARIABLE(fourthNeutFrac  ,float);  
 
-	DECLARE_VARIABLE(leadEmFrac    ,Float_t);  
-	DECLARE_VARIABLE(secondEmFrac  ,Float_t);  
-	DECLARE_VARIABLE(thirdEmFrac   ,Float_t);  
-	DECLARE_VARIABLE(fourthEmFrac  ,Float_t);  
+	DECLARE_VARIABLE(leadEmFrac    ,float);  
+	DECLARE_VARIABLE(secondEmFrac  ,float);  
+	DECLARE_VARIABLE(thirdEmFrac   ,float);  
+	DECLARE_VARIABLE(fourthEmFrac  ,float);  
 
-	DECLARE_VARIABLE(jetW  ,Float_t);  
-	DECLARE_VARIABLE(etaW  ,Float_t);  
-	DECLARE_VARIABLE(phiW  ,Float_t);  
+	DECLARE_VARIABLE(jetW  ,float);  
+	DECLARE_VARIABLE(etaW  ,float);  
+	DECLARE_VARIABLE(phiW  ,float);  
 
-	DECLARE_VARIABLE(majW  ,Float_t);  
-	DECLARE_VARIABLE(minW  ,Float_t);  
+	DECLARE_VARIABLE(majW  ,float);  
+	DECLARE_VARIABLE(minW  ,float);  
 
-	DECLARE_VARIABLE(frac01    ,Float_t);  
-	DECLARE_VARIABLE(frac02    ,Float_t);  
-	DECLARE_VARIABLE(frac03    ,Float_t);  
-	DECLARE_VARIABLE(frac04    ,Float_t);  
-	DECLARE_VARIABLE(frac05   ,Float_t);  
+	DECLARE_VARIABLE(frac01    ,float);  
+	DECLARE_VARIABLE(frac02    ,float);  
+	DECLARE_VARIABLE(frac03    ,float);  
+	DECLARE_VARIABLE(frac04    ,float);  
+	DECLARE_VARIABLE(frac05   ,float);  
 	
-	DECLARE_VARIABLE(chFrac01    ,Float_t);  
-	DECLARE_VARIABLE(chFrac02    ,Float_t);  
-	DECLARE_VARIABLE(chFrac03    ,Float_t);  
-	DECLARE_VARIABLE(chFrac04    ,Float_t);  
-	DECLARE_VARIABLE(chFrac05   ,Float_t);  
+	DECLARE_VARIABLE(chFrac01    ,float);  
+	DECLARE_VARIABLE(chFrac02    ,float);  
+	DECLARE_VARIABLE(chFrac03    ,float);  
+	DECLARE_VARIABLE(chFrac04    ,float);  
+	DECLARE_VARIABLE(chFrac05   ,float);  
 
-	DECLARE_VARIABLE(neutFrac01    ,Float_t);  
-	DECLARE_VARIABLE(neutFrac02    ,Float_t);  
-	DECLARE_VARIABLE(neutFrac03    ,Float_t);  
-	DECLARE_VARIABLE(neutFrac04    ,Float_t);  
-	DECLARE_VARIABLE(neutFrac05   ,Float_t);  
+	DECLARE_VARIABLE(neutFrac01    ,float);  
+	DECLARE_VARIABLE(neutFrac02    ,float);  
+	DECLARE_VARIABLE(neutFrac03    ,float);  
+	DECLARE_VARIABLE(neutFrac04    ,float);  
+	DECLARE_VARIABLE(neutFrac05   ,float);  
 
-	DECLARE_VARIABLE(emFrac01    ,Float_t);  
-	DECLARE_VARIABLE(emFrac02    ,Float_t);  
-	DECLARE_VARIABLE(emFrac03    ,Float_t);  
-	DECLARE_VARIABLE(emFrac04    ,Float_t);  
-	DECLARE_VARIABLE(emFrac05   ,Float_t);  
+	DECLARE_VARIABLE(emFrac01    ,float);  
+	DECLARE_VARIABLE(emFrac02    ,float);  
+	DECLARE_VARIABLE(emFrac03    ,float);  
+	DECLARE_VARIABLE(emFrac04    ,float);  
+	DECLARE_VARIABLE(emFrac05   ,float);  
 	
 	std::string dumpVariables() const;
 
 protected:
-	typedef std::map<std::string,std::pair<Float_t *,Float_t> > variables_list_t;
+	typedef std::map<std::string,std::pair<float *,float> > variables_list_t;
 
 private:
-	TMVA::Reader * reader_;
-	std::string    tmvaWeights_, tmvaMethod_; 
-	std::vector<std::string>  tmvaVariables_;
-	std::map<std::string,std::string>  tmvaNames_;
+	//// TMVA::Reader * reader_;
+	//// std::string    tmvaWeights_, tmvaMethod_; 
+	//// std::vector<std::string>  tmvaVariables_;
+	//// std::map<std::string,std::string>  tmvaNames_;
 	
-	void bookReader();
+	///// void bookReader();
 	
 	void resetVariables();
 	void initVariables();
 	
 	variables_list_t variables_;
 	
-	Float_t impactParTkThreshod_;
+	//// float impactParTkThreshod_;
 };
 
 #undef DECLARE_VARIABLE
