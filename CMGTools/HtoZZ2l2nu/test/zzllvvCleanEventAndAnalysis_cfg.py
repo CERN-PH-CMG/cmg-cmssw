@@ -31,7 +31,7 @@ process.puWeightSequence = cms.Sequence(process.puWeights)
 # configure the analyzer (cf. base values are in the StandardSelections_cfi)
 #
 from CMGTools.HtoZZ2l2nu.StandardSelections_cfi import *
-runLoose=True
+runLoose=False
 if(runLoose) :
     process.evAnalyzer = cms.EDAnalyzer("DileptonPlusMETEventAnalyzer",
                                         dtag=cms.string('h2zz'),
