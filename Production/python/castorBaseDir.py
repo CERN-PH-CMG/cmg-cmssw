@@ -20,7 +20,7 @@ def castorBaseDir( user=os.environ['USER'], area = None):
         user, area = getUserAndArea(user)
     
     d = '/store/cmst3/%s/%s/CMG' % (area,user)
-    exists = castortools.fileExists( castortools.lfnToCastor(d) )
+    exists = castortools.isDirectory( castortools.lfnToCastor(d) )
     if exists:
         return d
     else:
