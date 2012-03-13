@@ -26,9 +26,9 @@
 // ----------------------------------------------------------------------------------------------------
 class PileupJetIdentifier {
 public:
-	PileupJetIdentifier(edm::ParameterSet & ps); 
 	PileupJetIdentifier(const std::string & tmvaWeight="", const std::string & tmvaMethod="", 
 			    Float_t impactParTkThreshod_=1.);
+	// PileupJetIdentifier(edm::ParameterSet & ps); 
 	PileupJetIdentifier(const PileupJetIdentifier &p);
 	~PileupJetIdentifier(); 
 	
@@ -67,7 +67,6 @@ public:
 	DECLARE_VARIABLE(leadChPt   ,Float_t);  
 	DECLARE_VARIABLE(leadChEta  ,Float_t);  
 	DECLARE_VARIABLE(leadChPhi  ,Float_t);  
-	DECLARE_VARIABLE(leadFrac   ,Float_t);  
 
 	DECLARE_VARIABLE(dRLeadCent ,Float_t);  
 	DECLARE_VARIABLE(dRLead2nd  ,Float_t);  
@@ -77,6 +76,57 @@ public:
 	DECLARE_VARIABLE(dRMeanCh   ,Float_t);  
 
 	DECLARE_VARIABLE(ptD,Float_t);
+
+	DECLARE_VARIABLE(leadFrac    ,Float_t);  
+	DECLARE_VARIABLE(secondFrac  ,Float_t);  
+	DECLARE_VARIABLE(thirdFrac   ,Float_t);  
+	DECLARE_VARIABLE(fourthFrac  ,Float_t);  
+
+	DECLARE_VARIABLE(leadChFrac    ,Float_t);  
+	DECLARE_VARIABLE(secondChFrac  ,Float_t);  
+	DECLARE_VARIABLE(thirdChFrac   ,Float_t);  
+	DECLARE_VARIABLE(fourthChFrac  ,Float_t);  
+
+	DECLARE_VARIABLE(leadNeutFrac    ,Float_t);  
+	DECLARE_VARIABLE(secondNeutFrac  ,Float_t);  
+	DECLARE_VARIABLE(thirdNeutFrac   ,Float_t);  
+	DECLARE_VARIABLE(fourthNeutFrac  ,Float_t);  
+
+	DECLARE_VARIABLE(leadEmFrac    ,Float_t);  
+	DECLARE_VARIABLE(secondEmFrac  ,Float_t);  
+	DECLARE_VARIABLE(thirdEmFrac   ,Float_t);  
+	DECLARE_VARIABLE(fourthEmFrac  ,Float_t);  
+
+	DECLARE_VARIABLE(jetW  ,Float_t);  
+	DECLARE_VARIABLE(etaW  ,Float_t);  
+	DECLARE_VARIABLE(phiW  ,Float_t);  
+
+	DECLARE_VARIABLE(majW  ,Float_t);  
+	DECLARE_VARIABLE(minW  ,Float_t);  
+
+	DECLARE_VARIABLE(frac01    ,Float_t);  
+	DECLARE_VARIABLE(frac02    ,Float_t);  
+	DECLARE_VARIABLE(frac03    ,Float_t);  
+	DECLARE_VARIABLE(frac04    ,Float_t);  
+	DECLARE_VARIABLE(frac05   ,Float_t);  
+	
+	DECLARE_VARIABLE(chFrac01    ,Float_t);  
+	DECLARE_VARIABLE(chFrac02    ,Float_t);  
+	DECLARE_VARIABLE(chFrac03    ,Float_t);  
+	DECLARE_VARIABLE(chFrac04    ,Float_t);  
+	DECLARE_VARIABLE(chFrac05   ,Float_t);  
+
+	DECLARE_VARIABLE(neutFrac01    ,Float_t);  
+	DECLARE_VARIABLE(neutFrac02    ,Float_t);  
+	DECLARE_VARIABLE(neutFrac03    ,Float_t);  
+	DECLARE_VARIABLE(neutFrac04    ,Float_t);  
+	DECLARE_VARIABLE(neutFrac05   ,Float_t);  
+
+	DECLARE_VARIABLE(emFrac01    ,Float_t);  
+	DECLARE_VARIABLE(emFrac02    ,Float_t);  
+	DECLARE_VARIABLE(emFrac03    ,Float_t);  
+	DECLARE_VARIABLE(emFrac04    ,Float_t);  
+	DECLARE_VARIABLE(emFrac05   ,Float_t);  
 	
 	std::string dumpVariables() const;
 

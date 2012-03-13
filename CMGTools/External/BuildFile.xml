@@ -6,6 +6,7 @@
 <use   name="rootcore"/>
 <use   name="rootinteractive"/>
 <use   name="rootrflx"/>
+<use   name="roothistmatrix"/>
 <use   name="FWCore/Framework"/>
 <use   name="FWCore/ParameterSet"/>
 <use   name="FWCore/Sources"/>
