@@ -29,7 +29,8 @@ razorMJPFJetSelID = cmgPFJetSel.clone( src = 'razorMJPFJetSel30', cut = '(!getSe
 razorMJPFJetIDCount = cmgCandCount.clone( src = 'razorMJPFJetSelID', minNumber = 1 ) #filter inverted below
 
 #make the JES scaled jets while we're at it
-from CMGTools.Common.factories.cmgPFJetScaler_cfi import cmgPFJetUp, cmgPFJetDown, cmgMetUp, cmgMetDown
+from CMGTools.Common.factories.cmgPFJetScaler_cfi import cmgPFJetUp, cmgPFJetDown
+from CMGTools.Common.factories.cmgPFMETScaler_cfi import cmgMETUp, cmgMETDown
 
 razorPFJetsUp = cmgPFJetUp.clone()
 razorPFJetsUp.cfg.inputCollection = "cmgPFJetSel"
@@ -40,8 +41,8 @@ razorMJPFJetSel30Up = cmgPFJetSel.clone( src = 'razorPFJetsUp', cut = 'pt()>30 &
 razorMJPFJetSel30Down = cmgPFJetSel.clone( src = 'razorPFJetsDown', cut = 'pt()>30 && abs(eta)<3.0' )
 
 #Do the MET scaling here also
-razorMJMetUp = cmgMetUp.clone()
-razorMJMetDown = cmgMetDown.clone()
+razorMJMetUp = cmgMETUp.clone()
+razorMJMetDown = cmgMETDown.clone()
 
 ############### Trigger
 #make a skim on the HLT - should match all multi triggers
