@@ -297,15 +297,18 @@ class SimpleJetAnalyzer (Analyzer) :
         super (SimpleJetAnalyzer,self).beginLoop ()
         self.file = TFile ('/'.join ([self.looperName, 'testJets.root']),
                            'recreate')
-        from ROOT import PFJetIDSelectionFunctor 
-        self.isPFLooseFunc = PFJetIDSelectionFunctor(0,PFJetIDSelectionFunctor.LOOSE)
-        ## Workaround: for some reason PyROOT does not bind nor PFJetIDSelectionFunctor(Jet)PFJetIDSelectionFunctor.getBitsTemplates 
-        from ROOT import pat        
-        self.isPFLooseFunc.bits = pat.strbitset()
-        for i in "CHF","NHF","CEF","NEF","NCH","nConstituents": self.isPFLooseFunc.bits.push_back(i) 
-        ## /Workaround
-        self.isPFLoose = lambda x : self.isPFLooseFunc(x,self.isPFLooseFunc.bits)
-        
+        if self.cfg_ana.applyPFLooseId:
+            from ROOT import PFJetIDSelectionFunctor 
+            self.isPFLooseFunc = PFJetIDSelectionFunctor(0,PFJetIDSelectionFunctor.LOOSE)
+            ## Workaround: for some reason PyROOT does not bind nor PFJetIDSelectionFunctor(Jet)PFJetIDSelectionFunctor.getBitsTemplates 
+            from ROOT import pat        
+            self.isPFLooseFunc.bits = pat.strbitset()
+            for i in "CHF","NHF","CEF","NEF","NCH","nConstituents": self.isPFLooseFunc.bits.push_back(i) 
+            ## /Workaround
+            self.isPFLoose = lambda x : self.isPFLooseFunc(x,self.isPFLooseFunc.bits)
+        else:
+            self.isPFLoose = lambda x : True
+
         # general histograms
         self.jetHistos = JetHistograms ('Jets')
         self.cleanJetHistos = JetHistograms ('CleanJets')
@@ -331,26 +334,25 @@ class SimpleJetAnalyzer (Analyzer) :
         self.matchedCleanJetHistosResolution_endNOtk = ResolutionJetHistograms ('MatchedCleanJetsResolution_endNOtk', 50, 1)
         self.matchedCleanJetHistosResolution_fwd = ResolutionJetHistograms ('MatchedCleanJetsResolution_fwd', 50, 1)
 
-        # histograms for pileup jet identification variables
-        self.vtxBins   = (0,5,10,15,20,30) ## (0,2,4,6,10,15,20,30,35)
-        self.ptBins    = (20,30,50) ## (20,30,40,50,100)
-        self.etaBins   = (0,1.4,2.5,3.0)
-        self.puEtaLables = ["_barrel","_endtk","_endNOtk","_fwd"]
-        reweight_f = TF1("f","pol2(0)+expo(3)")
-        reweight_f.SetParameters(0.1955298,-0.003830591,1.944794e-05,4.649755,-0.1722024)
-        self.reweight = ("pt", reweight_f)
-        self.reweiMatchedCleanHistosId = PileupJetHistograms("ReweiMatchedCleanHistosId",self.vtxBins,self.ptBins,self.etaBins,etalabels=self.puEtaLables,reweight=self.reweight,
-                                                             jetIdMva=self.cfg_ana.jetIdMva)
-        self.gluCleanHistosId = PileupJetHistograms("GluonMatchedCleanHistosId",self.vtxBins,self.ptBins,self.etaBins,etalabels=self.puEtaLables,reweight=self.reweight,
-                                                             jetIdMva=self.cfg_ana.jetIdMva)
-        self.quarkCleanHistosId = PileupJetHistograms("QuarkMatchedCleanHistosId",self.vtxBins,self.ptBins,self.etaBins,etalabels=self.puEtaLables,reweight=self.reweight,
-                                                             jetIdMva=self.cfg_ana.jetIdMva)
-
-        ### self.matchedCleanHistosId = PileupJetHistograms("MatchedCleanHistosId",self.vtxBins,self.ptBins,self.etaBins,etalabels=self.puEtaLables,
-        ###                                                 jetIdMva=self.cfg_ana.jetIdMva)
-        self.unmatchedCleanHistosId = PileupJetHistograms("UnmatchedCleanHistosId",self.vtxBins,self.ptBins,self.etaBins,etalabels=self.puEtaLables,
+        if self.cfg_ana.doJetIdHisto:
+            # histograms for pileup jet identification variables
+            self.vtxBins   = (0,5,10,15,20,30) ## (0,2,4,6,10,15,20,30,35)
+            self.ptBins    = (20,30,50) ## (20,30,40,50,100)
+            self.etaBins   = (0,1.4,2.5,3.0)
+            self.puEtaLables = ["_barrel","_endtk","_endNOtk","_fwd"]
+            reweight_f = TF1("f","pol2(0)+expo(3)")
+            reweight_f.SetParameters(0.1955298,-0.003830591,1.944794e-05,4.649755,-0.1722024)
+            self.reweight = ("pt", reweight_f)
+            self.doJetIdHisto = True
+            self.gluCleanHistosId = PileupJetHistograms("GluonMatchedCleanHistosId",self.vtxBins,self.ptBins,self.etaBins,etalabels=self.puEtaLables,reweight=self.reweight,
+                                                        jetIdMva=self.cfg_ana.jetIdMva)
+            self.quarkCleanHistosId = PileupJetHistograms("QuarkMatchedCleanHistosId",self.vtxBins,self.ptBins,self.etaBins,etalabels=self.puEtaLables,reweight=self.reweight,
                                                           jetIdMva=self.cfg_ana.jetIdMva)
-        
+            self.reweiMatchedCleanHistosId = PileupJetHistograms("ReweiMatchedCleanHistosId",self.vtxBins,self.ptBins,self.etaBins,etalabels=self.puEtaLables,reweight=self.reweight,
+                                                                 jetIdMva=self.cfg_ana.jetIdMva)
+            self.unmatchedCleanHistosId = PileupJetHistograms("UnmatchedCleanHistosId",self.vtxBins,self.ptBins,self.etaBins,etalabels=self.puEtaLables,
+                                                              jetIdMva=self.cfg_ana.jetIdMva)
+            
         self.h_nvtx = TH1F ("h_nvtx", "" ,50, 0, 50)
         self.h_genjetspt = TH1F ("h_genjetspt", "" ,500, 0, 500) ; 
 
@@ -455,12 +457,13 @@ class SimpleJetAnalyzer (Analyzer) :
             elif 3.1 < abs (jet.gen.eta ()) :    
                 self.matchedCleanJetHistosResolution_fwd.fillJet (jet, len (event.vertices))
                 self.matchedCleanJetHistos_fwd.fillJet (jet)
-        
-        self.gluCleanHistosId.fillEvent(event.cleanGluJets,event.vertices)
-        self.quarkCleanHistosId.fillEvent(event.cleanQuarkJets,event.vertices)
-        ### self.matchedCleanHistosId.fillEvent(event.matchedCleanJets,event.vertices)
-        self.reweiMatchedCleanHistosId.fillEvent(event.matchedCleanJets,event.vertices)
-        self.unmatchedCleanHistosId.fillEvent(event.unmatchedCleanJets,event.vertices)
+
+        if self.doJetIdHisto:
+            self.gluCleanHistosId.fillEvent(event.cleanGluJets,event.vertices)
+            self.quarkCleanHistosId.fillEvent(event.cleanQuarkJets,event.vertices)
+            ### self.matchedCleanHistosId.fillEvent(event.matchedCleanJets,event.vertices)
+            self.reweiMatchedCleanHistosId.fillEvent(event.matchedCleanJets,event.vertices)
+            self.unmatchedCleanHistosId.fillEvent(event.unmatchedCleanJets,event.vertices)
         
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
@@ -503,17 +506,18 @@ class SimpleJetAnalyzer (Analyzer) :
         self.matchedCleanJetHistosResolution_fwd.summary ()
         self.matchedCleanJetHistosResolution_fwd.Write (self.file)
 
-        self.gluCleanHistosId.summary()
-        self.gluCleanHistosId.Write(self.file)
-
-        self.quarkCleanHistosId.summary()
-        self.quarkCleanHistosId.Write(self.file)
+        if self.doJetIdHisto:
+            self.gluCleanHistosId.summary()
+            self.gluCleanHistosId.Write(self.file)
+            
+            self.quarkCleanHistosId.summary()
+            self.quarkCleanHistosId.Write(self.file)
+            
+            self.reweiMatchedCleanHistosId.summary()
+            self.reweiMatchedCleanHistosId.Write(self.file)
         
-        self.reweiMatchedCleanHistosId.summary()
-        self.reweiMatchedCleanHistosId.Write(self.file)
-        
-        ### self.matchedCleanHistosId.Write(self.file)
-        self.unmatchedCleanHistosId.Write(self.file)
+            ### self.matchedCleanHistosId.Write(self.file)
+            self.unmatchedCleanHistosId.Write(self.file)
         
         self.file.cd ()
         self.h_nvtx.Write ()
