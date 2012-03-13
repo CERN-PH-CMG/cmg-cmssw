@@ -1,3 +1,4 @@
 <lcgdict>
   <class name="PileupJetIdentifier"/>
+  <class name="PileupJetIdAlgo"/>
 </lcgdict>
