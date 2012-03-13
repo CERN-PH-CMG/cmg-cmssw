@@ -27,6 +27,8 @@ process.puWeights      = puWeights.clone( data = cms.string('/afs/cern.ch/user/p
                                           )
 process.puWeightSequence = cms.Sequence(process.puWeights)
 
+process.phoIdProducer = cms.EDProducer('PhoIDProd') 
+
 #
 # configure the analyzer (cf. base values are in the StandardSelections_cfi)
 #
@@ -82,7 +84,7 @@ else:
                                         )
     
 #the path to execute
-process.p = cms.Path(process.ClusteredPFMetProducer*process.puWeightSequence*process.evAnalyzer)
+process.p = cms.Path(process.phoIdProducer*process.ClusteredPFMetProducer*process.puWeightSequence*process.evAnalyzer)
 
 
 # message logger
