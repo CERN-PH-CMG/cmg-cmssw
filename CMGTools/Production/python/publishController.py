@@ -91,44 +91,12 @@ class PublishController(object):
     			except:
     				print "Please add desired dataset"
     				return None	
-        
-    def publish(self, procds, comment, opts):
-    	# Initialise values for later use
-    	test = False
-    	dbsID = None
-    	parentDbsID = None
-    	cmgdbID = None
-    	
-    	# If item is test
-    	if 'category_id' in opts:
-    		if opts['category_id'] == '101': test = True
-
-    	# Run checks before wasting proccessing
-    	details = procds['PathList'][0].lstrip("/").split("/")
-    	
-    	# Get file information
-        fileOps = FileOps(getCastor(procds['PathList'][0]), getDbsUser(procds['PathList'][0]),self._force)
-    	
-    	
-    	
-    	# Check if user has dataset files, and DO NOT allow publish if they do not
-    	if len(fileOps.getRootFiles()) == 0:
-        	raise NameError("No dataset files found on EOS, exiting")
-        	return None
-
-    	
-    	# Also publish on dbs HERE
-    	self.dbsPublish(procds)
-    	
-    	self.cmgdbPublish(procds)
-    	
-    	self.savannahPublish(procds, opts, comment)
-    	
             
     def dbsPublish(self, procds):
     	
     	# Get file information
         fileOps = FileOps(getCastor(procds['PathList'][0]), getDbsUser(procds['PathList'][0]),self._force)
+        
         
     	# Check if user has dataset files, and DO NOT allow publish if they do not
     	if len(fileOps.getRootFiles()) == 0:
@@ -185,9 +153,7 @@ class PublishController(object):
         	print "Primary dataset does not exist"
         	return None
         
-    def savannahPublish(self, procds, opts, comment):
-    	# Get file information
-        fileOps = FileOps(getCastor(procds['PathList'][0]), getDbsUser(procds['PathList'][0]),self._force)
+    def savannahPublish(self, procds, opts, comment, fileOps):
     	# Check if user has dataset files, and DO NOT allow publish if they do not
     	if fileOps.getRootFiles() is None or len(fileOps.getRootFiles()) == 0:
     		taskID = findDSOnSav.getTaskID(procds['PathList'][0], opts['category_id'], self._username, self._password, False)
@@ -267,8 +233,10 @@ class PublishController(object):
     		return None
     	elif newTask is taskID:
         	print "Comment added to Savannah"
+        	print "URL: https://savannah.cern.ch/task/?"+newTask
         else:
     		print "Dataset published to Savannah"
+    		print "URL: https://savannah.cern.ch/task/?"+newTask
     	
     	return newTask, parentTaskID
     	
@@ -295,53 +263,83 @@ class PublishController(object):
         else: return None, None
     
     
-    def cmgdbPublish(self, procds, dbsID, taskID, test):
+    def cmgdbPublish(self, procds, dbsID, taskID, test, fileOps):
     	if self._cmgdbAPI is None:
     		return None
     	# Get file information
-        fileOps = FileOps(getCastor(procds['PathList'][0]), getDbsUser(procds['PathList'][0]),self._force)
     	tags = fileOps.getTags()
     	release = fileOps.getRelease()
-    	
-    	if taskID is None and dbsID is None:
-    		raise NameError("No dataset found, nothing added to CMGDB")
-    		return None
-    		
+    	taghash = []
+    	for i in tags:
+    		a=hash((i['package'],i['tag']))
+    		taghash.append(a)
+    	taghash.sort()
+    	endhash = hash(tuple(taghash))
+    	    		
     	# See if cmgdb already has record of ds with sav
-    	cmgdbID = self._cmgdbAPI.getDatasetIDWithTaskID(taskID, test)
-    	
-    	# if no entry found, test (or non-test) set should be checked too
-    	
-    	if cmgdbID is None:
-    		categoryID = '101'
-    		if test:
-    			categoryID = '103'	
-    		altTaskID = findDSOnSav.getTaskID(procds['PathList'][0], categoryID, self._username, self._password, False)
-    		cmgdbID = self._cmgdbAPI.getDatasetIDWithTaskID(altTaskID, (not test))
-    		
+    	cmgdbID = self._cmgdbAPI.getDatasetIDWithName(procds['PathList'][0])
     			
-    	
-    	# If not see if dbs record exists
+    	# If not add dataset
     	if cmgdbID is None:
-    		cmgdbID = self._cmgdbAPI.getDatasetIDWithDbsID(dbsID)
+    		parentID = None
+    		if len(procds['PathList'][0].split("---")[0].split("--"))>2:
+    			parents = self._cmgdbAPI.getParentsWithName(procds['PathList'][0])
+    			if len(parents) == 0:
+    				raise NameError("Dataset Should have Parent and does not, please publish parent first")
+    			elif len(parents) == 1:
+    				parentID = parents[0][1]
+    			else:
+    				parentID = self.getOption(parents)[1]
+    				
+    		cmgdbID = self._cmgdbAPI.addDataset(procds['PathList'][0],getCastor(procds['PathList'][0]),fileOps.getLFN(), getDbsUser(procds['PathList'][0]),parentID)
     	
-    	# Add entry if nothing found
-    	if cmgdbID is None:
-    		cmgdbID = self._cmgdbAPI.addDataset(procds['PathList'][0], getDbsUser(procds['PathList'][0]))
+    	if fileOps is not None:
+    		self._cmgdbAPI.clearDatasetBadFiles(procds['PathList'][0],cmgdbID)
+    		self._cmgdbAPI.clearDatasetDuplicateFiles(procds['PathList'][0],cmgdbID)
+    		self._cmgdbAPI.clearDatasetMissingFiles(procds['PathList'][0],cmgdbID)
+    		self._cmgdbAPI.clearDatasetBadJobs(procds['PathList'][0],cmgdbID)
+    		
+    		
+    		for i in fileOps.getLFNGroups():
+    			if 'missingFiles' in i:
+    				for i in i['missingFiles']:
+    					self._cmgdbAPI.addMissingFile(procds['PathList'][0],cmgdbID,i.split('/')[-1])
+    		integrity = fileOps.getIntegrity()
+    		
+    		if integrity is not None:
+    			if 'BadJobs' in integrity:
+    				for i in integrity['BadJobs']:
+    					self._cmgdbAPI.addBadJob(procds['PathList'][0],cmgdbID,i)
+    			if 'FilesBad' in integrity:
+    				for i in integrity['FilesBad']:
+    					i= i.split('/')[-1]
+    					self._cmgdbAPI.addBadFile(procds['PathList'][0],cmgdbID,i)
+    			if 'PrimaryDatasetFraction' in integrity:
+    				self._cmgdbAPI.addPrimaryDatasetFraction(cmgdbID, integrity['PrimaryDatasetFraction'])
+    			if 'FilesEntries' in integrity:
+    				self._cmgdbAPI.addFileEntries(cmgdbID,integrity['FilesEntries'])
     	
-    	self._cmgdbAPI.addDbsID(cmgdbID, dbsID)
     	self._cmgdbAPI.addTaskID(cmgdbID, taskID, test)
+    	
+    	
     	
     	# Add tags to CMGDB
     	if tags is None or len(tags) is 0: return None
     	tagIDs = []
-    	setID = None
-    	if tags:
-    		for row in tags:
-    			self._cmgdbAPI.addTag(row["package"],row["tag"])
-    			tagIDs.append(self._cmgdbAPI.getTagID(row["package"],row["tag"]))
-    		setID = self._cmgdbAPI.addSet(tagIDs,release)
-    	if setID is not None: self._cmgdbAPI.addTagSetID(setID, cmgdbID)
+    	
+    	tagSetID = self._cmgdbAPI.getTagSetID(endhash)
+    	if tagSetID is None:
+    		if tags:
+    			tagIDs
+    			for row in tags:
+    				tagID = self._cmgdbAPI.addTag(row["package"],row["tag"])
+    				if tagID is not None: tagIDs.append(tagID)
+    			
+    			tagSetID = self._cmgdbAPI.addTagSet(release,endhash)
+    			for tagID in tagIDs:
+    				self._cmgdbAPI.addTagToSet(tagID,tagSetID)
+    			    	
+    	if tagSetID is not None: self._cmgdbAPI.addTagSetID(tagSetID, cmgdbID)
     	return cmgdbID
             
          
