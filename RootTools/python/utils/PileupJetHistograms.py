@@ -1,6 +1,6 @@
 from CMGTools.RootTools.statistics.Histograms import Histograms
 import CMGTools.External.External
-from ROOT import TH1F, TH2F, TFile, THStack, TF1, TGraphErrors, PileupJetIdentifier
+from ROOT import TH1F, TH2F, TFile, THStack, TF1, TGraphErrors, TPrincipal, TObjString, TObject, PileupJetIdentifier
 
 from bisect import bisect
 
@@ -76,18 +76,37 @@ class PileupJetHistograms(Histograms) :
 	"leadEta"    : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",101,-5.05,5.05,),
 	"leadPhi"    : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",33,-3.21,3.21),
 	"secondPt"   : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s""GeV/c",70,0,35),
-	"secondEta"  : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",101,-5.05,5.05,),      
-	"secondPhi"  : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",33,-3.21,3.21),
+	### "secondEta"  : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",101,-5.05,5.05,),      
+	### "secondPhi"  : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",33,-3.21,3.21),
 	"leadNeutPt" : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s","GeV/c",70,0,35),
-	"leadNeutEta": ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",101,-5.05,5.05,),      
-	"leadNeutPhi": ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",33,-3.21,3.21),
+	### "leadNeutEta": ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",101,-5.05,5.05,),      
+	### "leadNeutPhi": ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",33,-3.21,3.21),
 	"leadEmPt"   : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s","GeV/c",70,0,35),
-	"leadEmEta"  : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",101,-5.05,5.05,),
-	"leadEmPhi"  : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",33,-3.21,3.21),
+	### "leadEmEta"  : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",101,-5.05,5.05,),
+	### "leadEmPhi"  : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",33,-3.21,3.21),
 	"leadChPt"   : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s","GeV/c",70,0,35),
-	"leadChEta"  : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",101,-5.05,5.05,),
-	"leadChPhi"  : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",33,-3.21,3.21),
-	"leadFrac"   : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	### "leadChEta"  : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",101,-5.05,5.05,),
+	### "leadChPhi"  : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",33,-3.21,3.21),
+
+	"leadFrac"       : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"secondFrac"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"thirdFrac"      : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"fourthFrac"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+
+	"leadChFrac"       : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"secondChFrac"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"thirdChFrac"      : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"fourthChFrac"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+        
+	"leadNeutFrac"       : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"secondNeutFrac"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"thirdNeutFrac"      : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"fourthNeutFrac"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+
+	"leadEmFrac"       : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"secondEmFrac"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"thirdEmFrac"      : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"fourthEmFrac"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
 
 	"dRLeadCent" :("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,0,0.5),
 	"dRLead2nd"  :("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,0,0.5),
@@ -95,7 +114,36 @@ class PileupJetHistograms(Histograms) :
 	"dRMeanNeut" :("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,0,0.5),
 	"dRMeanEm"   :("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,0,0.5),
 	"dRMeanCh"   :("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,0,0.5),
+
+	"etaW"   :("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,0,0.5),
+	"phiW"   :("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,0,0.5),
+	"majW"   :("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,0,0.5),
+	"minW"   :("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,0,0.5),
+
+	"frac01"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"frac02"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"frac03"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"frac04"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"frac05"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+
+	"chFrac01"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"chFrac02"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"chFrac03"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"chFrac04"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"chFrac05"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
 	
+	"neutFrac01"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"neutFrac02"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"neutFrac03"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"neutFrac04"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"neutFrac05"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+
+	"emFrac01"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"emFrac02"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"emFrac03"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"emFrac04"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+	"emFrac05"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
+
 	"ptD"        :("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",100,0,1.),
         }
 
@@ -112,6 +160,12 @@ class PileupJetHistograms(Histograms) :
         self.etabins = etabins
         self.reweight = reweight
         
+        if self.reweight:
+            if len(self.reweight) == 2:
+                self.do_reweight = getattr(self.reweight[1],"Eval")
+            else:
+                self.do_reweight = lambda x : self.reweight[2][findBin(self.reweight[1],x)]
+
         if self.vtxbins and not vtxlabels:
             self.vtxlabels = [ "_vtx%s" % l for l in  mkBinLabels(self.vtxbins) ]
         elif vtxlabels:
@@ -144,11 +198,32 @@ class PileupJetHistograms(Histograms) :
             self.identifier = PileupJetIdentifier()
             self.jetIdMva = ()
             self.runMva = True
+        
+        vNames = ""
         for name,proto in self.prototypes.iteritems():
             self.fillers.append( (self.bookHistos(name,proto), name) )
+            if name != "mva":
+                vNames += ":%s" % name
 
+        ### ## book covariance matrixes
+        ### self.principals = tuple( tuple( tuple( ("principal_%s%s%s%s" % (self.name,eta,vtx,pt), TPrincipal(len(self.prototypes)-1, "") ) 
+        ###                                        for eta in self.etalabels ) for pt in self.ptlabels ) for vtx in self.vtxlabels)
         ## call the Histograms constructor to get everything registered 
         super (PileupJetHistograms,self).__init__ (self.name)
+        
+        ### ## add covariance matrixes to list of objects to write
+        ### for a in self.principals:
+        ###     for b in a:
+        ###         for name,principal in b:
+        ###             principal.SetName(name)
+        ###             self.hists.append(principal)
+        ### 
+        ### ## hack to override Write method for TObjString
+        ### self.vNames = TObjString(vNames)
+        ### self.vNames.name = "vNames"
+        ### self.vNames.Write = lambda : TObject.Write(self.vNames,"vNames")
+        ### self.hists.append(self.vNames)
+
         
     # --------------------------------------------------------------------------------------
     def bookHistos(self,hname,proto):
@@ -168,6 +243,7 @@ class PileupJetHistograms(Histograms) :
                     for eta in self.etalabels ) for pt in self.ptlabels ) for vtx in self.vtxlabels) 
         ## self.__setattr__("list_%s" % hname) = t
         self.addHistos(t)
+        
         return t
 
     # --------------------------------------------------------------------------------------
@@ -184,36 +260,50 @@ class PileupJetHistograms(Histograms) :
             for h in histos: self.addHisto(h)
 
     # --------------------------------------------------------------------------------------
-    def fillJet(self,jet,nvtx=0):
+    def fillJet(self,jet,vertexes):
+        from array import array
         ptbin = 0
         etabin = 0
         if self.ptbins:  ptbin  = findBin(self.ptbins,jet.pt())
         if self.etabins: etabin = findBin(self.etabins,abs(jet.eta()))
-        if self.vtxbins: vtxbin = findBin(self.vtxbins,nvtx)
+        if self.vtxbins: vtxbin = findBin(self.vtxbins,len(vertexes))
 
         if ptbin < 0 or etabin < 0 or vtxbin < 0:
             return
 
         w = 1.
         if self.reweight:
-            xbin = findBin(self.reweight[1],getattr(jet,self.reweight[0])())
-            w = self.reweight[2][xbin]
+            w = self.do_reweight(getattr(jet,self.reweight[0])())
         
         try:
             puid = jet.puIdentifier
         except:
             puid = self.identifier
             try:
-                puid.computeIdVariables(jet.sourcePtr().get(),0,self.runMva)
+                puid.computeIdVariables(jet.sourcePtr().get(),0.,vertexes[0],self.runMva)
             except:
-                puid.computeIdVariables(jet,0,self.runMva)
+                puid.computeIdVariables(jet,0.,vertexes[0],self.runMva)
             jet.puIdentifier = PileupJetIdentifier(puid)
-            
+        
+        ### a = array('d')
         for t,m in self.fillers:
-            t[vtxbin][ptbin][etabin].Fill( getattr(puid,m)(), w )
-            
+            v = getattr(puid,m)()
+            ### if m != "mva":
+            ###     a.append(v)
+            t[vtxbin][ptbin][etabin].Fill( v, w )
+        ### self.principals[vtxbin][ptbin][etabin][1].AddRow(a)
+
+    # --------------------------------------------------------------------------------------
+    def summary(self):
+        ### for a in self.principals:
+        ###     for b in a:
+        ###         for name,principal in b:
+        ###             print principal.GetName()
+        ###             principal.Print("MSE")
+        ###             principal.GetCovarianceMatrix().Print("MSE")
+        pass
+        
     # --------------------------------------------------------------------------------------
     def fillEvent(self,event,vertices):
-        nvtx = len (vertices)
         for jet in event:
-            self.fillJet(jet,nvtx)
+            self.fillJet(jet,vertices)
