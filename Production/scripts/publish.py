@@ -3,13 +3,12 @@
 ## @ CERN, Meyrin
 ## September 27th 2011
 
-import os, getpass, sys, re
+import os, getpass, sys, re, optparse
 from CMGTools.Production.castorToDbsFormatter import CastorToDbsFormatter
 from CMGTools.Production.publishController import PublishController
 from DBSAPI.dbsProcessedDataset import DbsProcessedDataset
 from DBSAPI.dbsPrimaryDataset import DbsPrimaryDataset
 from datetime import *
-from DBSAPI.dbsOptions import DbsOptionParser
 from CMGTools.Production.findDSOnSav import validLogin
 from DBSAPI.dbsApi import DbsApi
 from DBSAPI.dbsApiException import *
@@ -20,30 +19,19 @@ from optparse import *
 
 
 if __name__ == '__main__':
-    optManager  = DbsOptionParser()
-    parser = optManager.parser
+    parser = optparse.OptionParser()
     
     parser.usage = """
 %prog [options] <sampleName>
 
-Use this script to publish dataset details to DBS, CmgDB, and savannah.
+Use this script to publish dataset details to CmgDB and savannah.
 Example:
 publish.py -F cbern /VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0_Test_v2
 """
     
-    group = OptionGroup(parser, "Publish Options", """These options affect Savannah and CMGDB""")
-    genGroup = OptionGroup(parser, "Generic Options", """These options apply to both DBS and the Publish tools""")
-    dbsGroup = OptionGroup(parser, "DBS Options", """These options are for use with DBS.
-    If not using DBS, these options have no effect.""")
-    for i in parser._get_all_options():
-    	opt_string = i.get_opt_string()
-    	parser.remove_option(opt_string)
-    	if opt_string == "--help" or opt_string == "--quiet" or opt_string == "--verbose":
-    		genGroup.add_option(i)
-    	elif opt_string == "--username" or opt_string == "--password":
-    		pass
-    	else:
-    		dbsGroup.add_option(i)
+    group = OptionGroup(parser, "Publish Options", """These options affect the way you publish to Savannah and CMGDB""")
+    genGroup = OptionGroup(parser, "Login Options", """These options apply to your login credentials""")
+    
     	
     
     # If user is not specified default is current user
@@ -81,17 +69,18 @@ If not entered, secure password prompt will appear.""",
                       dest="commented",
                       help="Take comment as an argument",
                       default = None)
-    # If user wants to add their own comments
-    group.add_option("-D", "--dbs",
-                      action = "store_true",
-                      dest="dbs",
-                      help="Use DBS",
-                      default = False)
+
     # If user wants to add their own comments
     group.add_option("-f", "--force",
                       action = "store_true",
                       dest="force",
                       help="force publish without logger",
+                      default = False)
+    # If user wants to add their own comments
+    group.add_option("-G", "--groups",
+                      action = "store_true",
+                      dest="checkGroups",
+                      help="check the related group accounts on EOS",
                       default = False)
     # If user wants to add multiple datasets from file
     group.add_option("-M", "--multi",
@@ -106,10 +95,9 @@ If not entered, secure password prompt will appear.""",
 							Single or double speech marks are accepted""",
                       default = False)
     parser.add_option_group(genGroup)
-    parser.add_option_group(dbsGroup)
     parser.add_option_group(group)
     
-    (options, args) = optManager.getOpt()
+    (options, args) = parser.parse_args()
     options.url="http://cmsphys05.cern.ch:8081/cms_dbs_prod_local_01/servlet/DBSServlet"
     
     # Allow no more than one argument
@@ -124,10 +112,6 @@ If not entered, secure password prompt will appear.""",
     	print "Authentication Failed, exiting\n\n"
     	sys.exit(1)
     
-    
-    if options.dbs:
-    	dbsApi = DbsApi(options.__dict__)
-    else: dbsApi = None
     
     
     # For multiple file input
@@ -170,13 +154,12 @@ If not entered, secure password prompt will appear.""",
                 	comment = line.rstrip("'").split("'")[1]
                 elif len(line.split('"'))>1:
                 	comment = line.rstrip('"').split('"')[1]
-                	
-                publish(dataset,fileown,comment,options.test,dbsApi,options.username,password,options.force)
+                publish(dataset,fileown,comment,options.test,None,options.username,password,options.force, options.checkGroups)
             except NameError as err:
-                print err, "\nDataset not published"
+                print err.args, "\nDataset not published"
     # For singular file input
     else:
         dataset = args[0]
         comment = options.commented
-        publish(dataset,options.fileown,comment,options.test,dbsApi,options.username,password,options.force)
+        publish(dataset,options.fileown,comment,options.test,None,options.username,password,options.force,options.checkGroups)
 
