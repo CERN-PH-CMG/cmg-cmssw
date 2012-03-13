@@ -448,9 +448,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.g_iso1[ev.gn]  = pho->trkSumPtSolidConeDR04();
 	ev.g_iso2[ev.gn]  = pho->ecalRecHitSumEtConeDR04();
 	ev.g_iso3[ev.gn]  = pho->hcalTowerSumEtConeDR04();
-	
 	ev.g_r9[ev.gn]    = pho->r9();
-
 	ev.g_conv[ev.gn] = false;
 	LorentzVector convP4(0,0,0,0);
 	/*

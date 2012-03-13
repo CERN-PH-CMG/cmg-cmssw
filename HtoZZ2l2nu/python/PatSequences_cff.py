@@ -161,6 +161,8 @@ def addPatSequence(process, runOnMC, addPhotons=True) :
     #################################################
     process.load("PhysicsTools.PatAlgos.producersLayer1.photonProducer_cff")
     process.load("PhysicsTools.PatAlgos.selectionLayer1.photonSelector_cfi")
+    #process.phoCiC4Id = cms.EDProducer('PhoIDProd') 
+    #process.patPhotons.userData.userFloats.src = cms.VInputTag('phoCiC4Id:PhoIDCiC4Level')
     process.load("PhysicsTools.PatAlgos.producersLayer1.electronProducer_cff")
     process.load("PhysicsTools.PatAlgos.selectionLayer1.electronSelector_cfi")
     process.patElectrons.electronIDSources = process.patElectronsPFlow.electronIDSources
@@ -172,7 +174,8 @@ def addPatSequence(process, runOnMC, addPhotons=True) :
     #    process.load("PhysicsTools.PatAlgos.producersLayer1.jetProducer_cff")
     #    process.load("PhysicsTools.PatAlgos.selectionLayer1.jetSelector_cfi")
     #    switchJetCollection(process,cms.InputTag('ak5PFJets'), doJTA=True,doBTagging=True, jetCorrLabel=('AK5PF',jecLevels), doType1MET=False, genJetCollection=cms.InputTag('ak5GenJets'),doJetID = True)
-    process.customPat = cms.Sequence(process.patPhotons * process.selectedPatPhotons *
+    process.customPat = cms.Sequence(#process.phoCiC4Id *
+                                     process.patPhotons * process.selectedPatPhotons *
                                      process.patElectrons * process.selectedPatElectrons *
                                      process.patMuons * process.selectedPatMuons *
                                      process.patJetCorrections * process.patJets * process.selectedPatJets
