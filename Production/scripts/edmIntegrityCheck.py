@@ -22,6 +22,7 @@ e.g.: %prog -u wreece -p -w 'PFAOD_*.root' /MultiJet/Run2011A-05Aug2011-v1/AOD/V
     group.add_option("-r", "--recursive", dest="resursive", default=False, action='store_true',help='Walk the mass storage device recursively')
     group.add_option("-u", "--user", dest="user", default=os.getlogin(),help='The username to use when looking at mass storage devices')
     group.add_option("-w", "--wildcard", dest="wildcard", default=None,help='A UNIX style wildcard to specify which files to check')
+    group.add_option("--update", dest="update", default=False, action='store_true',help='Only update the status of corrupted files')
     das.parser.add_option_group(group)    
     (opts, datasets) = das.get_opt()
 
@@ -40,10 +41,15 @@ e.g.: %prog -u wreece -p -w 'PFAOD_*.root' /MultiJet/Run2011A-05Aug2011-v1/AOD/V
             d = tokens[1]
         
         check = IntegrityCheck(d,op)
-        check.test()
+        pub = PublishToFileSystem(check)
+
+        previous = None
+        if op.update:
+            previous = pub.get(check.directory)
+
+        check.test(previous = previous)
         if op.printout:
             check.report()
         report = check.structured()
-        pub = PublishToFileSystem(check)
         pub.publish(report)
 

@@ -170,7 +170,7 @@ class IntegrityCheck(object):
                 bad_jobs.add(i)
         return good_duplicates, sorted(list(bad_jobs)), sum_dup
     
-    def test(self):
+    def test(self, previous = None):
         if not castortools.fileExists(self.directory):
             raise Exception("The top level directory '%s' for this dataset does not exist" % self.directory)
 
@@ -178,6 +178,12 @@ class IntegrityCheck(object):
 
         test_results = {}
 
+        #support updating to speed things up
+        prev_results = {}
+        if previous is not None:
+            for name, status in previous['Files'].iteritems():
+                prev_results[name] = status
+        
         filesToTest = self.sortByBaseDir(self.listRootFiles(self.directory))
         for dir, filelist in filesToTest.iteritems():
             filemask = {}
@@ -188,9 +194,18 @@ class IntegrityCheck(object):
             count = 0
             for ff in filtered:
                 fname = os.path.join(dir, ff)
-                if self.options.printout:
-                    print '[%i/%i]\t Checking %s...' % (count, len(filtered),fname),
-                OK, num = self.testFile(castortools.castorToLFN(fname))
+                lfn = castortools.castorToLFN(fname)
+                
+                #try to update from the previous result if available 
+                if lfn in prev_results and prev_results[lfn][0]:
+                    if self.options.printout:
+                        print '[%i/%i]\t Skipping %s...' % (count, len(filtered),fname),
+                    OK, num = prev_results[lfn]
+                else:
+                    if self.options.printout:
+                        print '[%i/%i]\t Checking %s...' % (count, len(filtered),fname),
+                    OK, num = self.testFile(lfn)
+
                 filemask[ff] = (OK,num)
                 if self.options.printout:
                     print (OK, num)
