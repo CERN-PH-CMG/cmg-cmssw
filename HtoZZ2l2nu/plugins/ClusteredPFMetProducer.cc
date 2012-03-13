@@ -142,19 +142,20 @@ int ClusteredPFMetProducer::computeVertexAssociationFor(const reco::TrackBaseRef
   for(size_t jVtx=0; jVtx<nVtx; jVtx++)
     {
       const reco::VertexRef vtxref(vtxH_,jVtx);
-      float vtxWeight(0);
+//      float vtxWeight(0);
 
-      try{
-        vtxWeight= vtxref->trackWeight(trackBaseRef);
-      }catch(std::exception &e){
-        //if not available then track was not used in vertex fit
-      }
+//      try{
+//        vtxWeight= vtxref->trackWeight(trackBaseRef);
+//      }catch(std::exception &e){
+//        //if not available then track was not used in vertex fit
+//      }
 
       float vtxDz( fabs( trackBaseRef->dz( vtxref->position()) ) );
 
-      if(vtxWeight > bestweight || ( vtxWeight == bestweight && vtxDz < bestDz))
+//      if(vtxWeight > bestweight || ( vtxWeight == bestweight && vtxDz < bestDz))
+        if(vtxDz < bestDz)
         {
-          bestweight=vtxWeight;
+//          bestweight=vtxWeight;
           bestDz=vtxDz;
           assocVtxRef=jVtx;
           nVerticesAss++;
