@@ -65,15 +65,19 @@ def createOutputDir(dir, components, force):
             else:
                 raise ValueError( ' '.join(['answer can not have this value!',
                                             answer]) )
-
+            
+def chunks(l, n):
+    return [l[i:i+n] for i in range(0, len(l), n)]
 
 def split(comps):
-    def chunks(l, n):
-        return [l[i:i+n] for i in range(0, len(l), n)]
+    # import pdb; pdb.set_trace()
     splitComps = []
     for comp in comps:
         if hasattr( comp, 'splitFactor') and comp.splitFactor>1:
             chunkSize = len(comp.files) / comp.splitFactor
+            if len(comp.files) % comp.splitFactor:
+                chunkSize += 1 
+            # print 'chunk size',chunkSize, len(comp.files), comp.splitFactor 
             for ichunk, chunk in enumerate( chunks( comp.files, chunkSize)):
                 newComp = copy.deepcopy(comp)
                 newComp.files = chunk
@@ -83,6 +87,24 @@ def split(comps):
         else:
             splitComps.append( comp )
     return splitComps
+
+
+## def split(comps):
+##     def chunks(l, n):
+##         return [l[i:i+n] for i in range(0, len(l), n)]
+##     splitComps = []
+##     for comp in comps:
+##         if hasattr( comp, 'splitFactor') and comp.splitFactor>1:
+##             chunkSize = len(comp.files) / comp.splitFactor
+##             for ichunk, chunk in enumerate( chunks( comp.files, chunkSize)):
+##                 newComp = copy.deepcopy(comp)
+##                 newComp.files = chunk
+##                 newComp.name = '{name}_Chunk{index}'.format(name=newComp.name,
+##                                                        index=ichunk)
+##                 splitComps.append( newComp )
+##         else:
+##             splitComps.append( comp )
+##     return splitComps
 
 def main( options, args ):
     
@@ -116,7 +138,7 @@ def main( options, args ):
         print comp
     # sys.exit(1)
     if len(selComps)>14:
-        raise ValueError('too many threads: ' + len(selComps))
+        raise ValueError('too many threads: {tnum}'.format(tnum=len(selComps)))
     if not createOutputDir(outDir, selComps, options.force):
         print 'exiting'
         sys.exit(0)
