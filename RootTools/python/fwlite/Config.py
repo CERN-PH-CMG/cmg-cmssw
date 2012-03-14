@@ -1,5 +1,5 @@
 from CMGTools.RootTools.fwlite.Weight import Weight
-
+import glob
 
 class CFG(object):
     '''Base configuration class. The attributes are used to store parameters of any type'''
@@ -68,12 +68,14 @@ class Component( CFG ):
     See the child classes:
     DataComponent, MCComponent, EmbedComponent
     for more information.'''
-    def __init__(self, name, files, triggers=None):
+    def __init__(self, name, files, triggers=None, **kwargs):
         if isinstance(triggers, basestring):
             triggers = [triggers]
+        if type(files) == str:
+            files = sorted(glob.glob(files))
         super( Component, self).__init__( name = name,
                                           files = files,
-                                          triggers = triggers)
+                                          triggers = triggers, **kwargs)
         self.isMC = False
         self.isData = False
         self.isEmbed = False 
@@ -115,10 +117,10 @@ class MCComponent( Component ):
     def __init__(self, name, files, triggers, xSection,
                  nGenEvents, 
                  # vertexWeight,tauEffWeight, muEffWeight,
-                 effCorrFactor ):
+                 effCorrFactor, **kwargs ):
         super( MCComponent, self).__init__( name = name,
                                             files = files,
-                                            triggers = triggers )
+                                            triggers = triggers, **kwargs )
         self.xSection = xSection
         self.nGenEvents = nGenEvents
         # self.vertexWeight = vertexWeight
