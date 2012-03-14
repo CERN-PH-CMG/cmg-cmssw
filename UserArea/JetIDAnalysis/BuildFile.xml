@@ -1,9 +1,12 @@
 <use name="FWCore/Framework"/>
 <use name="FWCore/PluginManager"/>
 <use name="FWCore/ParameterSet"/>
+
+<use name="CMGTools/External"/>
+
 <use name="PhysicsTools/UtilAlgos"/>
+
 <use name="DataFormats/PatCandidates"/>
-<use   name="CMGTools/External"/>
-<export>
-  <lib   name="1"/>
-</export>
+<use name="DataFormats/EgammaCandidates"/>
+
+<flags EDM_PLUGIN="1"/>
