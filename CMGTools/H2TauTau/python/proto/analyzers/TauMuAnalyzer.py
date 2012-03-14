@@ -43,6 +43,8 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         else:
             return True
 
+#    def testMuon(self, muon):
+#        return muon.getSelection('cuts_vbtfmuon')
 
     def leptonAccept(self, leptons):
         return muonAccept( leptons )

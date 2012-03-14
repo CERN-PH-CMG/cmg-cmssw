@@ -10,6 +10,18 @@ from CMGTools.H2TauTau.proto.analyzers.H2TauTauOutput import inclusiveRegionName
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauOutput import wholeMTRegionName
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle 
 
+
+import os, errno
+
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc: # Python >2.5
+        if exc.errno == errno.EEXIST:
+            pass
+        else: raise
+
+
 class H2TauTauEventSorter( Analyzer ):
     '''Analyze the event content, and fills histograms for the signal
     and control regions.'''
@@ -38,7 +50,11 @@ class H2TauTauEventSorter( Analyzer ):
         if hasattr(self.cfg_comp, 'fakes') and \
                self.cfg_comp.fakes is True :
             self.fakes = True
-            self.outputFakes = H2TauTauOutput( looperName + '/Fakes', self.regions,
+            # fakedir = self.dirName.replace('DYJets', 'DYJets_Fakes')
+            fakedir = '/'.join([self.looperName, 'Fakes', self.name])
+            mkdir_p(fakedir)
+            self.outputFakes = H2TauTauOutput( fakedir,
+                                               self.regions,
                                                self.cfg_ana.leg1,
                                                self.cfg_ana.leg2 )
 

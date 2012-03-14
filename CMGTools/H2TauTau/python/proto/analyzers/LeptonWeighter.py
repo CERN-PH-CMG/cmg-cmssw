@@ -20,7 +20,7 @@ class LeptonWeighter( Analyzer ):
             self.trigEff.lepEff = getattr( self.trigEff,
                                            self.cfg_ana.effWeight )
             self.trigEff.lepEffMC = None
-            if self.cfg_ana.effWeightMC:
+            if hasattr( self.cfg_ana, 'effWeightMC'):
                 self.trigEff.lepEffMC = getattr( self.trigEff,
                                                  self.cfg_ana.effWeightMC )
             

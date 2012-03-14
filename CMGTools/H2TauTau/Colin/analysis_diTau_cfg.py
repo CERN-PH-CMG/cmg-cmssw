@@ -1,8 +1,3 @@
-#TODO NO TRIGGER MAPPING YET!
-#NO MC TRIGGER SELECTION YET!
-#NEED TO TRY MIT MVA
-#GET EMBEDDED SAMPLES
-
 import copy
 import os 
 import CMGTools.RootTools.fwlite.Config as cfg
@@ -19,40 +14,45 @@ def getFiles(dataset, user, pattern):
 
 period = 'Period_2011A'
 
-baseDir = '2011'
 pat = 'PAT_CMG_TestMVAs'
-htt = 'H2TAUTAU_TestMVAs_Mar09'
-filePattern = 'muEle.*fullsel.*root'
-
-
+htt = 'H2TAUTAU_TestMVAs_Mar12'
 H2TauTauPackage = '/'.join( [ os.environ['CMSSW_BASE'],
                               'src/CMGTools/H2TauTau' ] ) 
-
-
+filePattern = 'diTau.*fullsel.*root'
+fixedMuWeight = False
 
 # mc_triggers = 'HLT_IsoMu12_v1'
 mc_triggers = []
 mc_triggers_fall11 = [
+    # 'HLT_IsoMu15_LooseIsoPFTau15_v9',
+    # 'HLT_IsoMu15_eta2p1_MediumIsoPFTau20_v1',
+    # 'HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1'
     ]
 
 mc_jet_scale = 1.
 mc_jet_smear = 0.
 mc_vertexWeight = None
 mc_tauEffWeight = None
-mc_eleEffWeight = None
+mc_muEffWeight = None
 
+# For Fall11 need to use vertexWeightFall11 for WJets and DYJets and TTJets 
+# For Fall11 : trigger is applied in MC:
+#   "HLT_IsoMu15_LooseIsoPFTau15_v9"
+
+mc_tauEffWeight_mc = 'effLooseTau15MC'
+mc_muEffWeight_mc = 'effIsoMu15MC'
 if period == 'Period_2011A':
-    mc_vertexWeight = 'vertexWeight2invfb'
+    mc_vertexWeight = 'vertexWeightFall112invfb'
+    mc_tauEffWeight = 'effTau2011A'
     mc_muEffWeight = 'effMu2011A'
-    mc_eleEffWeight = 'effEle2011A'
 elif period == 'Period_2011B':
-    mc_vertexWeight = 'vertexWeight2011B'
+    mc_vertexWeight = 'vertexWeightFall112011B'
+    mc_tauEffWeight = 'effTau2011B'
     mc_muEffWeight = 'effMu2011B'
-    mc_eleEffWeight = 'effEle2011B'
 elif period == 'Period_2011AB':
-    mc_vertexWeight = 'vertexWeight2011AB'
+    mc_vertexWeight = 'vertexWeightFall112011AB'
+    mc_tauEffWeight = 'effTau2011AB'
     mc_muEffWeight = 'effMu2011AB'
-    mc_eleEffWeight = 'effEle2011AB'
 
 
 # global MC weighting factors
@@ -62,57 +62,56 @@ elif period == 'Period_2011AB':
 # mc_effCorrFactor = mc_lep_effCorrFactor * mc_tau_effCorrFactor 
 mc_effCorrFactor = 1.
 
+
 data_triggers_11A = [
-    'HLT_Mu8_Ele17_CaloIdL_v3', # May10ReReco
-    'HLT_Mu17_Ele8_CaloIdL_v3', # May10ReReco
-    'HLT_Mu8_Ele17_CaloIdL_v4', # v4
-    'HLT_Mu8_Ele17_CaloIdL_v5', # v4
-    'HLT_Mu8_Ele17_CaloIdL_v6', # v4
-    'HLT_Mu17_Ele8_CaloIdL_v4', # v4
-    'HLT_Mu17_Ele8_CaloIdL_v5', # v4
-    'HLT_Mu17_Ele8_CaloIdL_v6', # v4
-    'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v3', # Aug5 
-    'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v4', # Oct3
-    'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v3', # Aug5 
-    'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v4', # Oct3
+    'HLT_IsoMu12_LooseIsoPFTau10_v4',
+    'HLT_IsoMu15_LooseIsoPFTau15_v2',
+    'HLT_IsoMu15_LooseIsoPFTau15_v4',
+    'HLT_IsoMu15_LooseIsoPFTau15_v5',
+    'HLT_IsoMu15_LooseIsoPFTau15_v6',
+    'HLT_IsoMu15_LooseIsoPFTau15_v7',
+    'HLT_IsoMu15_LooseIsoPFTau15_v8',
+    'HLT_IsoMu15_LooseIsoPFTau15_v9'
+    ]
+data_triggers_11B = [
+    'HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1',
+    'HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v5',
+    'HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v6'
     ]
 
-data_triggers_11B = [
-    'HLT_Mu8_Ele17_CaloIdL_v9',
-    'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v4',
-    'HLT_Mu17_Ele8_CaloIdL_v12',
-    'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v7'
-    ]
 
 triggerAna = cfg.Analyzer(
     'TriggerAnalyzer'
     )
 
-muEleAna = cfg.Analyzer(
-    'MuEleAnalyzer',
-    pt1 = 10,
+
+TauTauAna = cfg.Analyzer(
+    'TauTauAnalyzer',
+    pt1 = 20,
     pt2 = 20,
-    iso1 = 0.1,
-    iso2 = 0.1,
-    eta1 = 2.1,
-    eta2 = 2.3,
-    # eta2 = 1.4,
+    iso1 = 999,
+    iso2 = 999,
+    eta1 = 999,
+    eta2 = 999,
     m_min = 10,
     m_max = 99999,
-    diLeptonCutString = 'cuts_baseline'
+    diLeptonCutString = 'cuts_baseline',
+    triggerMap = pathsAndFilters
     )
 
-muWeighter = cfg.Analyzer(
+muonWeighter = cfg.Analyzer(
     'LeptonWeighter_mu',
     effWeight = mc_muEffWeight,
-    lepton = 'leg1',
+    effWeightMC = mc_muEffWeight_mc,
+    lepton = 'leg2',
     verbose = False
     )
 
-eleWeighter = cfg.Analyzer(
-    'LeptonWeighter_ele',
-    effWeight = mc_eleEffWeight,
-    lepton = 'leg2',
+tauWeighter = cfg.Analyzer(
+    'LeptonWeighter_tau',
+    effWeight = mc_tauEffWeight,
+    effWeightMC = mc_tauEffWeight_mc,
+    lepton = 'leg1',
     verbose = False
     )
 
@@ -123,8 +122,11 @@ vertexAna = cfg.Analyzer(
     )
 
 # defined for vbfAna and eventSorter
-vbfKwargs = dict( Mjj = 400,
-                  deltaEta = 4.0    
+## vbfKwargs = dict( Mjj = 400,
+##                   deltaEta = 4.0    
+##                   )
+vbfKwargs = dict( Mjj = 0,
+                  deltaEta = 0    
                   )
 
 vbfAna = cfg.Analyzer(
@@ -136,9 +138,9 @@ vbfAna = cfg.Analyzer(
 
 eventSorter = cfg.Analyzer(
     'H2TauTauEventSorter',
-    leg1 = 'mu',
-    leg2 = 'ele',
     # vertexWeight = mc_vertexWeight,
+    leg1 = 'tau_1',
+    leg2 = 'tau_2',
     MT_low = 40,
     MT_high = 60,
     Boosted_JetPt = 150,
@@ -154,7 +156,6 @@ data_Run2011A_May10ReReco_v1 = cfg.DataComponent(
     triggers = data_triggers_11A,
     json = '{H2TauTauPackage}/json/finalTauPlusXMay.txt'.format(H2TauTauPackage=H2TauTauPackage)
     )
-
 
 data_Run2011A_PromptReco_v4 = cfg.DataComponent(
     name = 'data_Run2011A_PromptReco_v4',
@@ -191,6 +192,7 @@ data_Run2011B_PromptReco_v1 = cfg.DataComponent(
 
 #########################################################################################
 
+#########################################################################################
 
 DYJets = cfg.MCComponent(
     name = 'DYJets',
@@ -205,9 +207,9 @@ DYJets = cfg.MCComponent(
 WJets = cfg.MCComponent(
     name = 'WJets',
     # files = getFiles('/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V3/{pat}/{htt}/Merge_TauMu'.format(pat=pat, htt=htt), 'cbern', filePattern),
-    files = getFiles('/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V3/TAUTAU/{pat}/{htt}'.format(pat=pat, htt=htt), 'cbern', filePattern),
+    files = getFiles('/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V3/PAT_CMG_TestMVAs_f0/{htt}'.format(pat=pat, htt=htt), 'cbern', filePattern),
     xSection = 31314.,
-    nGenEvents = 81345381, # this number is probably slightly overestimated (3/1000 missing files, not taken into account)
+    nGenEvents = 16257108, # this number is probably slightly overestimated (3/1000 missing files, not taken into account)
     triggers = mc_triggers_fall11,
     effCorrFactor = mc_effCorrFactor )
 
@@ -226,6 +228,8 @@ TTJets = cfg.MCComponent(
 
 
 MC = [DYJets, WJets, TTJets]
+# MC.extend( Higgs )
+
 for mc in MC:
     # could handle the weights in the same way
     mc.jetScale = mc_jet_scale
@@ -239,6 +243,7 @@ data_2011A = [
     data_Run2011A_03Oct2011_v1,
     # data_Run2011A_PromptReco_v6, # equivalent to 03Oct, if I remember correctly
     ]
+
 data_2011B = [
     data_Run2011B_PromptReco_v1
     ]
@@ -254,35 +259,47 @@ elif period == 'Period_2011AB':
     selectedComponents.extend( data_2011A )
     selectedComponents.extend( data_2011B )
 
+selectedComponents = MC
+
+
 sequence = cfg.Sequence( [
     triggerAna,
-    vertexAna,
-    muEleAna,
-    muWeighter, 
-    eleWeighter, 
+    TauTauAna,
     vbfAna,
+    vertexAna,
+    muonWeighter, 
+    tauWeighter, 
     eventSorter
    ] )
 
 
+# sequence = sequence[:1]
+
 DYJets.fakes = True
-DYJets.splitFactor = 5
-TTJets.splitFactor = 8
+DYJets.splitFactor = 20
+WJets.splitFactor = 2
 data_Run2011B_PromptReco_v1.splitFactor = 2
 data_Run2011A_PromptReco_v4.splitFactor = 2 
 
+if htt =='H2TAUTAU_Feb11TauIso':
+    for comp in selectedComponents:
+        if comp.name.find('Higgs')==-1:
+            comp.splitFactor = 20
+
+
 test = 0
 if test==1:
-    comp = DYJets
+    comp = TTJets
     selectedComponents = [comp]
     comp.splitFactor = 1
-    comp.files = comp.files[:2]
+    # comp.files = comp.files[:2]
     # TTJets.files = TTJets.files[:1]
 elif test==2:
     for comp in selectedComponents:
-     comp.splitFactor = 1
-     comp.files = comp.files[:2]
+        comp.splitFactor = 1
+        comp.files = comp.files[:1]
 
-
+    
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
+

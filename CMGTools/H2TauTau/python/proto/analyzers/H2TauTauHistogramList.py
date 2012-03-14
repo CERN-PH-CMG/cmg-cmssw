@@ -48,27 +48,49 @@ class H2TauTauHistogramList( object ):
             self.leadJet.Fill( [event.cleanJets[0]], weight )
         
 
-    def createTauHistograms(self, legName): 
-        self.tau = TauHistograms( 'tau',legName)
-        self.tau0 = TauHistograms( 'tau0',legName)
-        self.tau1 = TauHistograms( 'tau1',legName)
-        self.tau10 = TauHistograms( 'tau10',legName)
-        
-        self.hists.append( self.tau )
-        self.hists.append( self.tau0 )
-        self.hists.append( self.tau1 )
-        self.hists.append( self.tau10 )
+    def createTauHistograms(self, legName):
+        if legName != 'tau_2':
+            self.tau = TauHistograms( 'tau',legName)
+            self.tau0 = TauHistograms( 'tau0',legName)
+            self.tau1 = TauHistograms( 'tau1',legName)
+            self.tau10 = TauHistograms( 'tau10',legName)
+            self.hists.append( self.tau )
+            self.hists.append( self.tau0 )
+            self.hists.append( self.tau1 )
+            self.hists.append( self.tau10 )
+        else:
+            self.tau2 = TauHistograms( 'tau',legName)
+            self.tau2_0 = TauHistograms( 'tau0',legName)
+            self.tau2_1 = TauHistograms( 'tau1',legName)
+            self.tau2_10 = TauHistograms( 'tau10',legName)
+            self.hists.append( self.tau2 )
+            self.hists.append( self.tau2_0 )
+            self.hists.append( self.tau2_1 )
+            self.hists.append( self.tau2_10 )
+            
 
 
-    def fillTauHistograms(self, tau, weight):
+    def fillTauHistograms(self, tau, weight, leg='leg1'):
         dec = tau.decayMode()
-        self.tau.FillTau( tau, weight )
+        # import pdb; pdb.set_trace()
+
+        htau = self.tau
+        htau0 = self.tau0
+        htau1 = self.tau1
+        htau10 = self.tau10
+        if leg == 'leg2':
+            htau = self.tau2
+            htau0 = self.tau2_0
+            htau1 = self.tau2_1
+            htau10 = self.tau2_10
+            
+        htau.FillTau( tau, weight )
         if dec == 0:
-            self.tau0.FillTau( tau, weight )
+            htau0.FillTau( tau, weight )
         elif dec == 1:
-            self.tau1.FillTau( tau, weight )
+            htau1.FillTau( tau, weight )
         elif dec == 10:
-            self.tau10.FillTau( tau, weight )
+            htau10.FillTau( tau, weight )
 
 
     def createMuHistograms(self, legName):
@@ -105,7 +127,7 @@ class H2TauTauHistogramList( object ):
 #COLIN this design looks a bit like C++. Could I do something more clever in python?
 
 class TauMuHistogramList(H2TauTauHistogramList):
-    def __init__(self, name ):
+    def __init__(self, name, leg1Name, leg2Name ):
         super(TauMuHistogramList, self).__init__(name)
         self.createGenericHistograms()
         self.createTauHistograms('leg1')
@@ -119,7 +141,7 @@ class TauMuHistogramList(H2TauTauHistogramList):
         
         
 class TauEleHistogramList(H2TauTauHistogramList):
-    def __init__(self, name ):
+    def __init__(self, name, leg1Name, leg2Name ):
         super(TauEleHistogramList, self).__init__(name)
         self.createGenericHistograms()
         self.createTauHistograms('leg1')
@@ -133,7 +155,7 @@ class TauEleHistogramList(H2TauTauHistogramList):
 
 
 class MuEleHistogramList(H2TauTauHistogramList):
-    def __init__(self, name ):
+    def __init__(self, name, leg1Name, leg2Name ):
         super(MuEleHistogramList, self).__init__(name)
         self.createGenericHistograms()
         self.createMuHistograms('leg1')
@@ -144,6 +166,19 @@ class MuEleHistogramList(H2TauTauHistogramList):
         self.fillMuHistograms( event.diLepton.leg1(), weight )
         self.fillEleHistograms( event.diLepton.leg2(), weight )
         
+        
+class TauTauHistogramList(H2TauTauHistogramList):
+    def __init__(self, name, leg1Name, leg2Name):
+        super(TauTauHistogramList, self).__init__(name)
+        self.createGenericHistograms()
+        # import pdb; pdb.set_trace()
+        self.createTauHistograms(leg1Name)
+        self.createTauHistograms(leg2Name)
+
+    def Fill(self, event, weight):
+        self.fillGenericHistograms( event, weight )
+        self.fillTauHistograms( event.diLepton.leg1(), weight )
+        self.fillTauHistograms( event.diLepton.leg2(), weight, 'leg2')
         
         
     
