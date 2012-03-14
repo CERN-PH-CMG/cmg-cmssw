@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id$
+// $Id: JetAnalyzer.h,v 1.1 2012/03/14 11:03:32 malberti Exp $
 //
 //
 
@@ -35,7 +35,7 @@
 
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
-#include "CMGTools/External/interface/PileupJetIdentifier.h"
+#include "PileupJetIdNtupleAlgo.h"
 
 
 // ROOT includes
@@ -47,53 +47,53 @@
 
 class JetAnalyzer : public edm::EDAnalyzer 
 {
-   public:
-      explicit JetAnalyzer(const edm::ParameterSet&);
-      ~JetAnalyzer();
+public:
+  explicit JetAnalyzer(const edm::ParameterSet&);
+  ~JetAnalyzer();
 
-   private:
-      virtual void beginJob() ;
-      virtual void analyze(const edm::Event&, const edm::EventSetup&);
-      virtual void endJob() ;
-      void ResetTreeVariables();
-      bool matchingToGenJet( const pat::Jet jet, edm::View<reco::GenJet> genJets );
+private:
+  virtual void beginJob() ;
+  virtual void analyze(const edm::Event&, const edm::EventSetup&);
+  virtual void endJob() ;
+  void ResetTreeVariables();
+  bool matchingToGenJet( const pat::Jet jet, edm::View<reco::GenJet> genJets );
   void DiMuonSelection(edm::View<pat::Muon> muons, int goodMuon1, int goodMuon2, bool isZcandidate);
 
-      // ----------member data ---------------------------
+  // ----------member data ---------------------------
 
-      // PU jet identifier 
-      PileupJetIdentifier *puIdentifier;
+  // PU jet identifier 
+  PileupJetIdNtupleAlgo *puIdAlgo_;
       
-      /// input tag for jets, etc...
+  /// input tag for jets, etc...
   edm::InputTag PVTag_;    
   edm::InputTag JetTag_;
   edm::InputTag GenJetTag_;
   edm::InputTag MuonTag_; 
 
-      bool dataFlag_;
-      bool computeTMVA_;
+  bool dataFlag_;
+  bool computeTMVA_;
 
   double impactParTkThreshold_;
   std::string tmvaWeights_;
   std::string tmvaMethod_;
 
 
-      /// output tree variables
-      TTree *tree ;
+  /// output tree variables
+  TTree *tree ;
  
-      // tree var
-      int nvtx ;
-      float jetPt, jetEta, jetPhi, jetM;
-      float nCharged, nNeutrals, chgEMfrac, neuEMfrac, chgHadrfrac, neuHadrfrac, nParticles;
-      float leadPt, leadEta, secondPt, secondEta, leadNeutPt, leadNeutEta, leadEmPt, leadEmEta, leadChPt, leadChEta;
-      float dRLeadCent, dRLead2nd, dRMean, dRMeanNeut, dRMeanEm, dRMeanCh, ptD;
-
-      float leadFrac, leadChFrac, leadNeutFrac;
-      float majW, minW; 
+  // tree var
+  int nvtx ;
+  //// float jetPt, jetEta, jetPhi, jetM;
+  //// float nCharged, nNeutrals, chgEMfrac, neuEMfrac, chgHadrfrac, neuHadrfrac, nParticles;
+  //// float leadPt, leadEta, secondPt, secondEta, leadNeutPt, leadNeutEta, leadEmPt, leadEmEta, leadChPt, leadChEta;
+  //// float dRLeadCent, dRLead2nd, dRMean, dRMeanNeut, dRMeanEm, dRMeanCh, ptD;
+  //// 
+  //// float leadFrac, leadChFrac, leadNeutFrac;
+  //// float majW, minW; 
       
-      float isMatched;
-      float jetFlavour;
-      float mva;
+  bool isMatched;
+  int  jetFlavour;
+  ////  float mva;
 
    
 };

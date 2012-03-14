@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id$
+// $Id: JetAnalyzer.cc,v 1.1 2012/03/14 11:03:16 malberti Exp $
 //
 //
 
@@ -39,110 +39,24 @@ JetAnalyzer::JetAnalyzer(const edm::ParameterSet& iConfig)
 
   dataFlag_  = iConfig.getUntrackedParameter<bool>("dataFlag");
 
-  impactParTkThreshold_ = iConfig.getUntrackedParameter<double>("impactParTkThreshold");
-  tmvaWeights_          = iConfig.getUntrackedParameter<std::string>("tmvaWeights");
-  tmvaMethod_           = iConfig.getUntrackedParameter<std::string>("tmvaMethod");
-  computeTMVA_          = iConfig.getUntrackedParameter<bool>("computeTMVA");
-	
-  
   //--- PU jet identifier 
-  puIdentifier = new PileupJetIdentifier(tmvaWeights_.c_str(),tmvaMethod_.c_str(), impactParTkThreshold_);
-
+  puIdAlgo_ = new PileupJetIdNtupleAlgo(iConfig);
+  
   edm::Service<TFileService> fs ;
   tree =        fs -> make <TTree>("tree","tree"); 
 
+  puIdAlgo_->bookBranches(tree);
   tree -> Branch ("nvtx",&nvtx, "nvtx/I");
-  tree -> Branch ("jetPt",&jetPt, "jetPt/F");
-  tree -> Branch ("jetEta",&jetEta, "jetEta/F");
-  tree -> Branch ("jetPhi",&jetPhi, "jetPhi/F");
-  tree -> Branch ("jetM",&jetM, "jetM/F");
-
-  tree -> Branch ("nCharged",&nCharged, "nCharged/F");
-  tree -> Branch ("nNeutrals",&nNeutrals, "nNeutrals/F");
-  tree -> Branch ("chgEMfrac",&chgEMfrac, "chgEMfrac/F");
-  tree -> Branch ("neuEMfrac",&neuEMfrac, "neuEMfrac/F");
-  tree -> Branch ("chgHadrfrac",&chgHadrfrac, "chgHadrfrac/F");
-  tree -> Branch ("neuHadrfrac",&neuHadrfrac, "neuHadrfrac/F");
-  tree -> Branch ("nParticles",&nParticles, "nParticles/F");
-
-  tree -> Branch ("leadPt",&leadPt, "leadPt/F");
-  tree -> Branch ("leadEta",&leadEta, "leadEta/F");
-  tree -> Branch ("secondPt",&secondPt, "secondPt/F");
-  tree -> Branch ("secondEta",&secondEta, "secondEta/F");
-  tree -> Branch ("leadNeutPt",&leadNeutPt, "leadNeutPt/F");
-  tree -> Branch ("leadNeutEta",&leadNeutEta, "leadNeutEta/F");
-  tree -> Branch ("leadEmPt",&leadEmPt, "leadEmPt/F");
-  tree -> Branch ("leadEmEta",&leadEmEta, "leadEmEta/F");
-  tree -> Branch ("leadChPt",&leadChPt, "leadChPt/F");
-  tree -> Branch ("leadChEta",&leadChEta, "leadChEta/F");
-  
-  tree -> Branch ("dRLeadCent",&dRLeadCent, "dRLeadCent/F");
-  tree -> Branch ("dRLead2nd",&dRLead2nd, "dRLead2nd/F");
-  tree -> Branch ("dRMean",&dRMean, "dRMean/F");
-  tree -> Branch ("dRMeanNeut",&dRMeanNeut, "dRMeanNeut/F");
-  tree -> Branch ("dRMeanEm",&dRMeanEm, "dRMeanEm/F");
-  tree -> Branch ("dRMeanCh",&dRMeanCh, "dRMeanCh/F");
-
-  tree -> Branch ("ptD",&ptD, "ptD/F");
-  
-
-  tree -> Branch ("leadFrac",&leadFrac, "leadFrac/F");
-  tree -> Branch ("leadChFrac",&leadChFrac, "leadChFrac/F");
-  tree -> Branch ("leadNeutFrac",&leadNeutFrac, "leadNeutFrac/F");
-  tree -> Branch ("majW",&majW, "majW/F");
-  tree -> Branch ("minW",&minW, "minW/F");
-  
-  tree -> Branch ("isMatched", &isMatched, "isMatched/F");
-  tree -> Branch ("jetFlavour",&jetFlavour, "jetFlavour/F");
-
-  tree -> Branch ("mva",&mva,"mva/F");
+  tree -> Branch ("isMatched", &isMatched, "isMatched/O");
+  tree -> Branch ("jetFlavour",&jetFlavour, "jetFlavour/I");
 
  }
 
 void JetAnalyzer::ResetTreeVariables()
 {
-
   nvtx   = -999;
-  jetPt  = -999;
-  jetEta = -999;
-  jetPhi = -999;
-  jetM   = -999;
-
-  nCharged = -999;
-  nNeutrals= -999; 
-  chgEMfrac= -999; 
-  neuEMfrac= -999; 
-  chgHadrfrac= -999; 
-  neuHadrfrac= -999; 
-  nParticles =-999;
-  leadPt= -999; 
-  leadEta= -999; 
-  secondPt= -999; 
-  secondEta= -999; 
-  leadNeutPt= -999; 
-  leadNeutEta= -999; 
-  leadEmPt= -999; 
-  leadEmEta= -999; 
-  leadChPt= -999; 
-  leadChEta=-999;
-  dRLeadCent= -999; 
-  dRLead2nd= -999; 
-  dRMean= -999; 
-  dRMeanNeut= -999; 
-  dRMeanEm= -999; 
-  dRMeanCh= -999; 
-  ptD=-999;
-
-  leadFrac = -999; 
-  leadChFrac = -999; 
-  leadNeutFrac = -999;
-  majW = -999; 
-  minW = -999;
-
-  isMatched = -999;
+  isMatched  = false;
   jetFlavour = -999;
-  mva = -999;
-
 }
 
 
@@ -195,6 +109,8 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   // *** Loop over jets 
   for ( unsigned int i=0; i<jets.size(); ++i ) {
     
+    ResetTreeVariables();
+
     const pat::Jet patjet = jets.at(i);
   
     //-- remove muons from jets 
@@ -205,62 +121,23 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
 
     //-- pu jet identifier
-    puIdentifier->computeIdVariables(&patjet, 0, &vtx, computeTMVA_);
-    
-    ResetTreeVariables();
+    PileupJetIdentifier puIdentifier = puIdAlgo_->computeIdVariables(&patjet, 0, &vtx, computeTMVA_);
 
-    // --- jet variables
-    jetPt  = puIdentifier->jetPt();
-    jetEta = puIdentifier->jetEta();
-    jetPhi = puIdentifier->jetPhi();
-
-    
-    nCharged    = puIdentifier->nCharged();
-    nNeutrals   = puIdentifier->nNeutrals();
-    chgEMfrac   = puIdentifier->chgEMfrac();
-    neuEMfrac   = puIdentifier->neuEMfrac();
-    chgHadrfrac = puIdentifier->chgHadrfrac(); 
-    neuHadrfrac = puIdentifier->neuHadrfrac(); 
-    nParticles  = puIdentifier->nParticles();
-    leadPt      = puIdentifier->leadPt(); 
-    leadEta     = puIdentifier->leadEta(); 
-    secondPt    = puIdentifier->secondPt(); 
-    secondEta   = puIdentifier->secondEta(); 
-    leadNeutPt  = puIdentifier->leadNeutPt(); 
-    leadNeutEta = puIdentifier->leadNeutEta(); 
-    leadEmPt    = puIdentifier->leadEmPt(); 
-    leadEmEta   = puIdentifier->leadEmEta(); 
-    leadChPt    = puIdentifier->leadChPt(); 
-    leadChEta   = puIdentifier->leadChEta(); 
-    dRLeadCent  = puIdentifier->dRLeadCent(); 
-    dRLead2nd   = puIdentifier->dRLead2nd(); 
-    dRMean      = puIdentifier->dRMean(); 
-    dRMeanNeut  = puIdentifier->dRMeanNeut(); 
-    dRMeanEm    = puIdentifier->dRMeanEm(); 
-    dRMeanCh    = puIdentifier->dRMeanCh(); 
-    ptD         = puIdentifier->ptD();
-    leadFrac    = puIdentifier->leadFrac();
-    leadChFrac  = puIdentifier->leadChFrac();
-    leadNeutFrac= puIdentifier->leadNeutFrac();
-    majW        = puIdentifier->majW();
-    minW        = puIdentifier->minW();
-    mva         = puIdentifier->mva();
-
+    // --- fill jet variables
+    puIdAlgo_->fillJet(puIdentifier,i,0);
     if ( !dataFlag_ ){
       jetFlavour  = patjet.partonFlavour();
       if ( matchingToGenJet(patjet, genJets) ) isMatched = 1;
     }
     else {
       jetFlavour  = -999;
-      isMatched   = -999;
+      isMatched   = false;
     }
     
     nvtx = vertexHandle->size();
-        
+    
+    tree->Fill();
   }
-
-
-  tree->Fill();
 
  }
 
@@ -328,14 +205,8 @@ JetAnalyzer::beginJob()
 void 
 JetAnalyzer::endJob() 
 {
-
-  
   //tree->Write();
-
-  
 }
-
-
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(JetAnalyzer);
