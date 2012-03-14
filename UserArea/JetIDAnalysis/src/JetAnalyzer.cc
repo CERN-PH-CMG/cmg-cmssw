@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.cc,v 1.2 2012/03/14 12:05:22 musella Exp $
+// $Id: JetAnalyzer.cc,v 1.3 2012/03/14 19:00:07 malberti Exp $
 //
 //
 
@@ -101,8 +101,8 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::View<reco::GenJet> genJets = *genJetHandle;
 
 
-  int goodMuon1, goodMuon2;
-  bool isZ;
+  int goodMuon1=-1, goodMuon2=-1;
+  bool isZ=false;
   DiMuonSelection(muons, goodMuon1, goodMuon2, isZ);
 
 
