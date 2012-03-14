@@ -757,20 +757,23 @@ pair<string,double> getHighestPhotonTrigThreshold(edm::Handle<edm::TriggerResult
   
 
 //
-bool checkIfTriggerFired(edm::Handle<edm::TriggerResults> &allTriggerBits, const edm::TriggerNames &triggerNames, std::vector<std::string> &triggerPaths, bool isData)
+bool checkIfTriggerFired(edm::Handle<edm::TriggerResults> &allTriggerBits, const edm::TriggerNames &triggerNames, std::vector<std::string> &triggerPaths)
 {
   for (size_t itrig = 0; itrig != allTriggerBits->size(); ++itrig)
     {
       std::string trigName = triggerNames.triggerName(itrig);
       if( !allTriggerBits->wasrun(itrig) ) continue;
+      // if(trigName.find("Photon") != std::string::npos) cout << trigName << endl;
       if( allTriggerBits->error(itrig) ) continue;
       if( !allTriggerBits->accept(itrig) ) continue;
       for(size_t ip=0; ip<triggerPaths.size(); ip++)
-	if(trigName.find(triggerPaths[ip] + (isData?"_v":""))!= std::string::npos)
-	  {
-	    //cout << trigName << endl;
-	    return true;
-	  }
+	{
+	  if(trigName.find(triggerPaths[ip])!= std::string::npos)
+	    {
+	      //cout << trigName << endl;
+	      return true;
+	    }
+	}
     }
   return false;
 }

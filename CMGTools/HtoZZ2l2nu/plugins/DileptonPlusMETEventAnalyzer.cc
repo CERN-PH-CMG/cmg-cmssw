@@ -289,12 +289,11 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     for(size_t it=0; it<triggerPaths.size(); it++)
       {
 	std::vector<std::string> itriggers=objConfig_["Trigger"].getParameterSet("triggerPaths").getParameter<std::vector<std::string> >( triggerPaths[it] );
-	triggerBits[ triggerPaths[it] ] = checkIfTriggerFired( triggerBitsH, triggerNames,itriggers, event.isRealData() );
+	triggerBits[ triggerPaths[it] ] = checkIfTriggerFired( triggerBitsH, triggerNames,itriggers);
 	ev.hasTrigger |= triggerBits[ triggerPaths[it] ];
 	if(triggerPaths[it]!="gamma") continue;
 	photonTrig = getHighestPhotonTrigThreshold( triggerBitsH, triggerNames , itriggers);
       }
-    if(event.isRealData() && !ev.hasTrigger) return;
 	    
     //
     // vertex and beam spot
@@ -352,9 +351,13 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     if(dilepton.size()==2)
       {
 	//require trigger for each event category
-	if(ev.cat==EE   && triggerBits["ee"]!=true)   return;
-	if(ev.cat==MUMU && triggerBits["mumu"]!=true) return;
-	if(ev.cat==EMU  && triggerBits["emu"]!=true)  return;
+	if(event.isRealData())
+	  {
+	    if(ev.cat==EE   && triggerBits["ee"]!=true)   return;
+	    if(ev.cat==MUMU && triggerBits["mumu"]!=true) return;
+	    if(ev.cat==EMU  && triggerBits["emu"]!=true)  return;
+	  }
+	ev.hasTrigger=true;
 
 	const reco::GenParticle *genLepton = getLeptonGenMatch(dilepton[0]);
 	std::vector<double> leptoniso      = getLeptonIso(dilepton[0]);
@@ -464,11 +467,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	*/
 	ev.gn++;
       }
-    if(ev.cat==UNKNOWN && selPhotons.size() && triggerBits["gamma"]==true)
-      {
-	ev.cat=GAMMA+1000*photonTrig.second;
-	cout << photonTrig.second;
-      }
+    if(ev.cat==UNKNOWN && selPhotons.size() && triggerBits["gamma"]==true) ev.cat=GAMMA+1000*photonTrig.second;
 
     //quit if no gamma or dilepton candidate
     if(ev.cat==UNKNOWN) return;
