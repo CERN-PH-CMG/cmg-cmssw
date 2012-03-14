@@ -554,11 +554,9 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
 	  float sipip = cov[2];
 	  if(pho->isEB())
 	    hasGoodShowerShape &= (sipip>minSipipEB);
-	  cout << sipip << endl;
 
 	  //pixel seed veto
 	  hasPixelSeed=pho->hasPixelSeed();	
-	  cout << hasPixelSeed << endl;
 	}catch(std::exception &e){
 	  //cout << pho->isEB() << " " << pho->isEE() << " " << pho->isStandardPhoton() << " " << pho->isPFlowPhoton() << endl;
 	  //cout << e.what() << endl;

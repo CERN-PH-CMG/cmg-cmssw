@@ -351,6 +351,11 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 
     if(dilepton.size()==2)
       {
+	//require trigger for each event category
+	if(ev.cat==EE   && triggerBits["ee"]!=true)   return;
+	if(ev.cat==MUMU && triggerBits["mumu"]!=true) return;
+	if(ev.cat==EMU  && triggerBits["emu"]!=true)  return;
+
 	const reco::GenParticle *genLepton = getLeptonGenMatch(dilepton[0]);
 	std::vector<double> leptoniso      = getLeptonIso(dilepton[0]);
 	ev.l1_px    = dilepton[0]->px(); 
@@ -459,8 +464,11 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	*/
 	ev.gn++;
       }
-    if(ev.cat==UNKNOWN && selPhotons.size()) ev.cat=GAMMA+1000*photonTrig.second;
-
+    if(ev.cat==UNKNOWN && selPhotons.size() && triggerBits["gamma"]==true)
+      {
+	ev.cat=GAMMA+1000*photonTrig.second;
+	cout << photonTrig.second;
+      }
 
     //quit if no gamma or dilepton candidate
     if(ev.cat==UNKNOWN) return;
