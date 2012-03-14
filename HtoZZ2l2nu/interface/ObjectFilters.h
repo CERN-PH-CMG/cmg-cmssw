@@ -112,7 +112,7 @@ const reco::Candidate *getGeneratorFinalStateFor(const reco::Candidate *p);
 // TRIGGER UTILITILES //
 //                    //
 std::pair<std::string,double> getHighestPhotonTrigThreshold(edm::Handle<edm::TriggerResults> &triggerBitsH, const edm::TriggerNames &triggerNames,  std::vector<std::string> &gammaTriggers);
-bool checkIfTriggerFired(edm::Handle<edm::TriggerResults> &allTriggerBis, const edm::TriggerNames &triggerNames, std::vector<std::string> &trigList, bool isData); 
+bool checkIfTriggerFired(edm::Handle<edm::TriggerResults> &allTriggerBis, const edm::TriggerNames &triggerNames, std::vector<std::string> &trigList); 
 
 
 #endif
