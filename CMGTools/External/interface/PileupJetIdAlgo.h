@@ -36,7 +36,7 @@ public:
 protected:
 	void setup(); 
 	void bookReader();	
-	const PileupJetIdentifier::variables_list_t getVariables() const { return internalId_.variables_; };
+	const PileupJetIdentifier::variables_list_t & getVariables() const { return internalId_.variables_; };
 	
 	PileupJetIdentifier internalId_;
 
