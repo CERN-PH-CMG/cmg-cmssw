@@ -128,7 +128,6 @@ public:
 	
 	std::string dumpVariables() const;
 
-protected:
 	typedef std::map<std::string,std::pair<float *,float> > variables_list_t;
 
 private:
