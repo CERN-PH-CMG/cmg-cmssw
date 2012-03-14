@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.cc,v 1.1 2012/03/14 11:03:16 malberti Exp $
+// $Id: JetAnalyzer.cc,v 1.2 2012/03/14 12:05:22 musella Exp $
 //
 //
 
@@ -151,17 +151,26 @@ void JetAnalyzer::DiMuonSelection(edm::View<pat::Muon> muons, int goodMuon1, int
   goodMuon2 = -1 ;
 
   std::vector<int> goodMuonIndex;
-  int nLooseMuons  = 0;
+  int nGoodMuons  = 0;
 
   //---preselect muons
   for ( unsigned int imu=0; imu<muons.size(); ++imu ) {
+    
+    // require tracker + global muon
     if (muons.at(imu).isTrackerMuon()==0 || muons.at(imu).isGlobalMuon()==0) continue;
-    // FIXME : add  isolation requirement
+    
+    // isolation requirement (PF isolation deltaBeta corrected)-- FIXME : check if working point (cut at 0.1) is OK
+    float neutralHadronIso = muons.at(imu).neutralHadronIso();
+    float chargedHadronIso = muons.at(imu).chargedHadronIso();
+    float photonIso        = muons.at(imu).photonIso();
+    float puChargedHadronIso = muons.at(imu).puChargedHadronIso();
+    float combRelIso = ( chargedHadronIso + std::max(neutralHadronIso + photonIso - 0.5 * puChargedHadronIso, 0.) ) / muons.at(imu).pt();
+    if ( combRelIso > 0.1 ) continue;
     goodMuonIndex.push_back(imu);
-    nLooseMuons++;
+    nGoodMuons++;
   }
 
-  if (nLooseMuons > 1){
+  if (nGoodMuons > 1){
     for ( unsigned int i = 0; i < goodMuonIndex.size(); ++i ) {
       for ( unsigned int j = i+1; j < goodMuonIndex.size(); ++j ) {
 	float invmass = (muons.at(i).pfP4()+muons.at(j).pfP4()).mass();
