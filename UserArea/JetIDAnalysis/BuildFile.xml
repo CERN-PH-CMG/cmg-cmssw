@@ -1,3 +1,8 @@
+<use name="FWCore/Framework"/>
+<use name="FWCore/PluginManager"/>
+<use name="FWCore/ParameterSet"/>
+<use name="PhysicsTools/UtilAlgos"/>
+<use name="DataFormats/PatCandidates"/>
 <use   name="CMGTools/External"/>
 <export>
   <lib   name="1"/>
