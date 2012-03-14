@@ -5,12 +5,11 @@ import os
 process = cms.Process("PFAOD")
 
 
-process.source = cms.Source(
-    "PoolSource",
-    fileNames = cms.untracked.vstring(
-    '/store/data/Run2011B/HT/AOD/PromptReco-v1/000/175/834/E0B1CFCC-B8DB-E011-9062-BCAEC518FF7C.root'
-    )
-    )
+from CMGTools.Production.datasetToSource import *
+process.source = datasetToSource(
+    'CMS',
+    '/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER',
+    '.*root')
 
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
