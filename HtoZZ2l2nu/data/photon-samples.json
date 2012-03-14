@@ -1,22 +1,5 @@
 {
     "proc":[
-   {
-         "tag":"Z/#gamma^{*}+jets#rightarrow ll",
-         "spimpose":true,
-         "isdata":false,
-         "color":"kRed",
-	 "lwidth":2,
-         "fill":0,
-	 "mctruthmode":2,
-         "data":[
-              {
-               "dtag":"DYJetsToLL",
-               "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
-               "patdir":["/store/cmst3/user/querten/11_07_25_HtoZZ2l2n/DYToLL/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
-               "xsec":3048
-              }
-          ]
-        },
 	{
          "tag":"Di-photon",
          "isdata":false,
@@ -27,68 +10,29 @@
               {
                "dtag":"DiPhotonBorn_Pt_25to250",
                "dset":"DiPhotonBorn_Pt-25To250_7TeV-pythia6",
-               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/DiPhotonBorn_Pt-25To250_7TeV-pythia6"],
+               "patdir":["/store/cmst3/user/psilva/Data4/G/DiPhotonBorn_Pt-25To250_7TeV-pythia6"],
                "xsec":22.37
               },
               {
                "dtag":"DiPhotonBorn_Pt_250",
                "dset":"DiPhotonBorn_Pt-250_7TeV-pythia6",
-               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/DiPhotonBorn_Pt-250_7TeV-pythia6"],
+               "patdir":["/store/cmst3/user/psilva/Data4/G/DiPhotonBorn_Pt-250_7TeV-pythia6"],
                "xsec":0.008072
               },
               {
                "dtag":"DiPhotonBox_Pt_25to250",
                "dset":"DiPhotonBox_Pt-25To250_7TeV-pythia6",
-               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/DiPhotonBox_Pt-25To250_7TeV-pythia6"],
+               "patdir":["/store/cmst3/user/psilva/Data4/G/DiPhotonBox_Pt-25To250_7TeV-pythia6"],
                "xsec":12.37
               },
               {
                "dtag":"DiPhotonBox_Pt_250",
                "dset":"DiPhotonBox_Pt-250_7TeV-pythia6",
-               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/DiPhotonBox_Pt-250_7TeV-pythia6"],
+               "patdir":["/store/cmst3/user/psilva/Data4/G/DiPhotonBox_Pt-250_7TeV-pythia6"],
                "xsec":0.000208
               }
          ]
         },
-	{
-	"tag":"QCD",
-        "isdata":false,
-	"color":"kYellow",
-	"lcolor":1,
-        "mctruthmode":22,
-	"data":[
-	     {	
-		"dtag":"QCDPt20to30",
-		"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6"],
-		"xsec":2502660
-	     },
-	     {	
-		"dtag":"QCDPt30to80",
-		"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6"],
-		"xsec":3625840
-	     },
-	     {	
-		"dtag":"QCDPt80to170",
-		"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/QCD_Pt-80to170_EMEnriched_TuneZ2_7TeV-pythia6"],
-		"xsec":142813.8
-	     },
-	     {	
-		"dtag":"QCDPt170to300",
-		"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/QCD_Pt-170to300_TuneZ2_7TeV_pythia6"],
-		"xsec":24300.0
-	     },
-	     {	
-		"dtag":"QCDPt300to470",
-		"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/QCD_Pt-300to470_TuneZ2_7TeV_pythia6"],
-		"xsec":1170.0
-	     },
-	     {	
-		"dtag":"QCDPt470to600",
-		"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/QCD_Pt-470to600_TuneZ2_7TeV_pythia6"],
-		"xsec":70.2
-	     }
-	  ]
-    	},
 	{
 	"tag":"#gamma+jets",
         "isdata":false,
@@ -97,104 +41,52 @@
 	"mctruthmode":22,
 	"data":[
 	     {	
+		"dtag":"G_Pt-0to15_TuneZ2_7TeV_pythia6",
+		"patdir":["/store/cmst3/user/psilva/Data4/G/G_Pt-0to15_TuneZ2_7TeV_pythia6"],
+		"xsec":84200000
+	     },
+	     {	
 		"dtag":"G_Pt-15to30_TuneZ2_7TeV_pythia6",
-		"patdir":["/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-15to30_TuneZ2_7TeV_pythia6"],
+		"patdir":["/store/cmst3/user/psilva/Data4/G/G_Pt-15to30_TuneZ2_7TeV_pythia6"],
 		"xsec":172000
 	     },
 	     {	
 		"dtag":"G_Pt-30to50_TuneZ2_7TeV_pythia6",
-		"patdir":["/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-30to50_TuneZ2_7TeV_pythia6"],
+		"patdir":["/store/cmst3/user/psilva/Data4/G/G_Pt-30to50_TuneZ2_7TeV_pythia6"],
 		"xsec":16700
 	     },
 	     {	
 		"dtag":"G_Pt-50to80_TuneZ2_7TeV_pythia6",
-		"patdir":["/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-50to80_TuneZ2_7TeV_pythia6"],
+		"patdir":["/store/cmst3/user/psilva/Data4/G/G_Pt-50to80_TuneZ2_7TeV_pythia6"],
 		"xsec":2720
 	     },
 	     {	
 		"dtag":"G_Pt-80to120_TuneZ2_7TeV_pythia6",
-		"patdir":["/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-80to120_TuneZ2_7TeV_pythia6"],
+		"patdir":["/store/cmst3/user/psilva/Data4/G/G_Pt-80to120_TuneZ2_7TeV_pythia6"],
 		"xsec":447
 	     },
 	     {	
 		"dtag":"G_Pt-120to170_TuneZ2_7TeV_pythia6",
-		"patdir":["/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-120to170_TuneZ2_7TeV_pythia6"],
+		"patdir":["/store/cmst3/user/psilva/Data4/G/G_Pt-120to170_TuneZ2_7TeV_pythia6"],
 		"xsec":84.2
 	     },
 	     {	
 		"dtag":"G_Pt-170to300_TuneZ2_7TeV_pythia6",
-		"patdir":["/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-170to300_TuneZ2_7TeV_pythia6"],
+		"patdir":["/store/cmst3/user/psilva/Data4/G/G_Pt-170to300_TuneZ2_7TeV_pythia6"],
 		"xsec":22.6
 	     },
 	     {	
 		"dtag":"G_Pt-300to470_TuneZ2_7TeV_pythia6",
-		"patdir":["/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-300to470_TuneZ2_7TeV_pythia6"],
+		"patdir":["/store/cmst3/user/psilva/Data4/G/G_Pt-300to470_TuneZ2_7TeV_pythia6"],
 		"xsec":1.49
 	     },
 	     {	
 		"dtag":"G_Pt-470to800_TuneZ2_7TeV_pythia6",
-		"patdir":["/store/cmst3/user/psilva/HZZ_11.12.03/G/G_Pt-470to800_TuneZ2_7TeV_pythia6"],
+		"patdir":["/store/cmst3/user/psilva/Data4/G/G_Pt-470to800_TuneZ2_7TeV_pythia6"],
 		"xsec":0.132
 	     }
 	  ]
     	},
-	{
-         "tag":"Z+#gamma#rightarrow l^{+}l^{-}#gamma",
-         "isdata":false,
-         "color":"831",
-         "lcolor":1,
-	 "mctruthmode":22,
-         "data":[
-              {
-               "dtag":"ZGToTauTau",
-               "dset":"ZGToTauTauG_TuneZ2_7TeV-madgraph",
-               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/ZGToTauTauG_TuneZ2_7TeV-madgraph"],
-               "xsec":30.79,
-	       "br":[1.39]	
-              },
-              {
-               "dtag":"ZGToEE",
-               "dset":"ZGToEEG_TuneZ2_7TeV-madgraph",
-               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/ZGToEEG_TuneZ2_7TeV-madgraph"],
-               "xsec":34.16,
-	       "br":[1.39]	
-              },
-              {
-               "dtag":"ZGToMuMu",
-               "dset":"ZGToMuMuG_TuneZ2_7TeV-madgraph",
-               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/ZGToMuMuG_TuneZ2_7TeV-madgraph"],
-               "xsec":33.58,
-	       "br":[1.39]
-              }
-	  ]
-	},
-	{
-	 "tag":"W+#gamma",
-         "isdata":false,
-         "color":"596",
-         "lcolor":1,
-         "mctruthmode":22,
-	 "data":[
-              {
-               "dtag":"WGToENuG",
-               "dset":"WGToENuG_TuneZ2_7TeV-madgraph",
-               "patdir":["/store/cmst3/user/psilva//HZZ_11.10.03/G/WGToENuG_TuneZ2_7TeV-madgraph"],
-               "xsec":114.7
-              },
-	      {
-		"dtag":"WGToMuNuG",
-		"dset":"WGToMuNuG_TuneZ2_7TeV-madgraph",
-               	"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/G/WGToMuNuG_TuneZ2_7TeV-madgraph"],
-               	"xsec":114.6
-	       },
-	      {
-		"dtag":"WGToTauNuG",
-		"dset":"WGToTauNuG_TuneZ2_7TeV-madgraph",
-               	"patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/G/WGToTauNuG_TuneZ2_7TeV-madgraph"],
-               	"xsec":104.6
-	       }
-	   ]
-	},
 	{
 	 "tag":"W+jets",
          "isdata":false,
@@ -204,8 +96,8 @@
          "data":[
 		{
 		 "dtag":"WJetsToLNu",
-                 "dset":"/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
-                 "patdir":["/store/cmst3/user/psilva/HZZ_11.10.03/WJetsToLNu/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola"],
+                 "dset":"WJetsToLNu_TuneZ2_7TeV-madgraph-tauola",
+                 "patdir":["/store/cmst3/user/psilva/Data4/G/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola"],
                  "xsec":31314
                 }
 	 ]
@@ -233,30 +125,15 @@
 	"fill":0,
         "mctruthmode":22,
 	"data":[
-	       {
-                  "dtag":"PhotonMay10th",
-                  "dset":"/Photon/Run2011A-PromptReco-v4/AOD",
-                  "patdir":["/store/cmst3/user/psilva/Data/Photon/Photon-May10th"]
+                {
+                  "dtag":"Photon2011A",
+                  "dset":"",
+                  "patdir":[""]
 		},
                 {
-                  "dtag":"PhotonPromptRecov4",
-                  "dset":"/Photon/Run2011A-PromptReco-v4/AOD",
-                  "patdir":["/store/cmst3/user/psilva/Data/Photon/Photon-PromptReco-v4"]
-		},
-                {
-                  "dtag":"Photon05Aug2011",
-                  "dset":"/Photon/Run2011A-05Aug2011-v1/AOD",
-                  "patdir":["/store/cmst3/user/psilva/Data/Photon/Photon-05Aug2011"]
-		},
-                {
-                  "dtag":"Photon_PromptReco_v6",
-                  "dset":"/Photon/Run2011A-PromptReco-v6/AOD",
-                  "patdir":["/store/cmst3/user/psilva/Data/Photon/Photon-PromptReco-v6"]
-		},
-                {
-                  "dtag":"Photon-2011B-PromptReco",
-                  "dset":"/Photon/Run2011B-PromptReco-v1/AOD",
-		  "patdir":["/store/cmst3/user/psilva/Data/Photon/Photon-2011B-PromptReco"]
+                  "dtag":"Photon2011B",
+                  "dset":"",
+                  "patdir":[""]
 		}
 	   ]
 	}

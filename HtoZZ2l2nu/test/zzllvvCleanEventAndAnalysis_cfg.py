@@ -31,58 +31,24 @@ process.puWeightSequence = cms.Sequence(process.puWeights)
 # configure the analyzer (cf. base values are in the StandardSelections_cfi)
 #
 from CMGTools.HtoZZ2l2nu.StandardSelections_cfi import *
-runLoose=False
-if(runLoose) :
-    process.evAnalyzer = cms.EDAnalyzer("DileptonPlusMETEventAnalyzer",
-                                        dtag=cms.string('h2zz'),
-                                        Trigger = BaseTriggerSelection.clone(),
-                                        Generator = BaseGeneratorSelection.clone(),
-                                        Vertices = BaseVertexSelection.clone(),
-                                        Photons = BasePhotonsSelection.clone(),
-                                        LooseMuons = BaseLooseMuonsSelection.clone( id = cms.string(''),
-                                                                                    requireGlobal = cms.bool(False),
-                                                                                    requireTracker = cms.bool(True),
-                                                                                    maxRelIso = cms.double(999999.),
-                                                                                    usePFIso = cms.bool(True)
-                                                                                    ),
-                                        Muons = BaseMuonsSelection.clone( requireGlobal = cms.bool(False),
-                                                                          requireTracker = cms.bool(True),
-                                                                          maxRelIso = cms.double(999999.),
-                                                                          usePFIso = cms.bool(True)
-                                                                          ),
-                                        LooseElectrons = BaseLooseElectronsSelection.clone( id = cms.string(""),
-                                                                                            maxRelIso=cms.double(99999.),
-                                                                                            usePFIso = cms.bool(True)
-                                                                                            ),
-                                        Electrons = BaseElectronsSelection.clone( id = cms.string(''),
-                                                                                  maxRelIso=cms.double(999999.),
-                                                                                  usePFIso = cms.bool(True)
-                                                                                  ),
-                                        Dileptons = BaseDileptonSelection.clone(),
-                                        Jets = BaseJetSelection.clone(),
-                                        AssocJets = AssocJetSelection.clone(),
-                                        MET = BaseMetSelection.clone()
-                                        )
+process.evAnalyzer = cms.EDAnalyzer("DileptonPlusMETEventAnalyzer",
+                                    dtag=cms.string('h2zz'),
+                                    Trigger = BaseTriggerSelection.clone(),
+                                    Generator = BaseGeneratorSelection.clone(),
+                                    Vertices = BaseVertexSelection.clone(),
+                                    Photons = BasePhotonsSelection.clone(),
+                                    LooseMuons = BaseLooseMuonsSelection.clone(),
+                                    Muons = BaseMuonsSelection.clone(),
+                                    LooseElectrons = BaseLooseElectronsSelection.clone(),
+                                    Electrons = BaseElectronsSelection.clone(),
+                                    Dileptons = BaseDileptonSelection.clone(),
+                                    Jets = BaseJetSelection.clone(),
+                                    AssocJets = AssocJetSelection.clone(),
+                                    MET = BaseMetSelection.clone()
+                                    )
 
-else:
-    process.evAnalyzer = cms.EDAnalyzer("DileptonPlusMETEventAnalyzer",
-                                        dtag=cms.string('h2zz'),
-                                        Trigger = BaseTriggerSelection.clone(),
-                                        Generator = BaseGeneratorSelection.clone(),
-                                        Vertices = BaseVertexSelection.clone(),
-                                        Photons = BasePhotonsSelection.clone(),
-                                        LooseMuons = BaseLooseMuonsSelection.clone(),
-                                        Muons = BaseMuonsSelection.clone(),
-                                        LooseElectrons = BaseLooseElectronsSelection.clone(),
-                                        Electrons = BaseElectronsSelection.clone(),
-                                        Dileptons = BaseDileptonSelection.clone(),
-                                        Jets = BaseJetSelection.clone(),
-                                        AssocJets = AssocJetSelection.clone(),
-                                        MET = BaseMetSelection.clone()
-                                        )
-    
 #the path to execute
-process.p = cms.Path(process.phoIdProducer*process.ClusteredPFMetProducer*process.puWeightSequence*process.evAnalyzer)
+process.p = cms.Path(process.ClusteredPFMetProducer*process.puWeightSequence*process.evAnalyzer)
 
 
 # message logger
