@@ -12,8 +12,8 @@ class VertexAnalyzer( Analyzer ):
             'std::vector<reco::Vertex>'
             )
         if self.cfg_comp.isMC: 
-            self.handles['vertexWeight'] = AutoHandle( self.cfg_ana.vertexWeight,
-                                                       'double' )
+            self.mchandles['vertexWeight'] = AutoHandle( self.cfg_ana.vertexWeight,
+                                                         'double' )
 
     def beginLoop(self):
         super(VertexAnalyzer,self).beginLoop()
@@ -25,7 +25,7 @@ class VertexAnalyzer( Analyzer ):
         event.vertices = self.handles['vertices'].product()
         event.vertexWeight = 1
         if self.cfg_comp.isMC:
-            event.vertexWeight = self.handles['vertexWeight'].product()[0]
+            event.vertexWeight = self.mchandles['vertexWeight'].product()[0]
             event.eventWeight *= event.vertexWeight
         self.averages['vertexWeight'].add( event.vertexWeight )
         if self.verbose:

@@ -41,10 +41,13 @@ class TriggerAnalyzer( Analyzer ):
                                                          usePrescaled = False)
         if not passed:
             return False
+        # import pdb; pdb.set_trace()
         event.hltPath = hltPath 
-        trigObjs = self.handles['cmgTriggerObjectListSel'].product()
-        # selecting the trigger objects used in this path
-        event.triggerObjects = selTriggerObjects( trigObjs, hltPath )
+        if hltPath is not None:
+            trigObjs = self.handles['cmgTriggerObjectListSel'].product()
+            # selecting the trigger objects used in this path
+            event.triggerObjects = selTriggerObjects( trigObjs, hltPath )
+            
         self.counters.counter('Trigger').inc('trigger passed')
         return True
 

@@ -92,16 +92,9 @@ class AnalysisDataMC( DataMCPlot ):
 
         Styles and weights are applied to each histogram.
         See AnalysisDataMC._GetFileNames().'''
-        # layer = 0
-        # COLIN files can't be deepcopied?
-        # self.files = []
         fileNames = self._GetFileNames(directory)
-        # print 'reading files:'
         for layer, compInfo in enumerate( sorted(fileNames) ):
-            # COLIN files can't be deepcopied?
-            # self.files.append(TFile(fileName))
             compName, fileName = compInfo
-            # print 'ReadHistograms', compName, fileName
             file = TFile(fileName)
             hist = copy.deepcopy(file.Get(self.histName))
             if hist == None:
@@ -109,17 +102,9 @@ class AnalysisDataMC( DataMCPlot ):
                                            'does not exist in file', fileName]))
             hist.SetStats(0)
             hist.Sumw2()
-            # componentName = self._ComponentName(compName)
             componentName = compName
-            # print '\t', componentName, fileName
             legendLine = componentName
             self.AddHistogram( componentName, hist, layer, legendLine)
-            # pref = self._GetHistPref( componentName )
-            # layer = pref['layer']
-            # if componentName.lower().find('data')>-1:
-            #     print '\t\tremoving from stack', hist
-            #     self.Hist(componentName).stack = False
-            # self.Hist(componentName).SetStyle( pref['style'] )
         self._ApplyWeights()
         self._ApplyPrefs()
 

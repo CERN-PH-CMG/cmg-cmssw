@@ -75,9 +75,8 @@ class EfficiencyHistograms( Histograms ):
     Efficiency plotter
     '''
     def __init__(self, name, space):
-##         self.h_mitmva = TH1F(name + '_h_mitmva', ';MIT MVA;Efficiency', 100, -2, 2)
-##         self.h_danmva = TH1F(name + '_h_danmva', ';MIT MVA;Efficiency', 100, -2, 2)
-        self.h_pt = TH1F(name + '_h_pt', ';p_{T} (GeV);Efficiency', 50, 0, 200)
+        self.h_pt = TH1F(name + '_h_pt', ';p_{T} (GeV);Efficiency', 100, 0, 100)
+        self.h_p = TH1F(name + '_h_p', ';p (GeV);Efficiency', 100, 0, 100)
         self.h_eta = TH1F(name + '_h_eta', ';#eta;Efficiency', 50, -6, 6)
         self.h_phi = TH1F(name + '_h_phi', ';#phi (rad);Efficiency', 50, -6.3, 6.3)
         self.h_pv = TH1F(name + '_h_pv', ';# rec vertices;Efficiency', 40, 0, 40)
@@ -89,7 +88,7 @@ class EfficiencyHistograms( Histograms ):
         super( EfficiencyHistograms, self).__init__(name)
  
     def ptPass(self, pt):
-        ptMin = 17.
+        ptMin = 10.
         return pt>ptMin  
 
     def fillParticle(self, particle, event, weight):
@@ -108,14 +107,13 @@ class EfficiencyHistograms( Histograms ):
         if self.ptPass(pt):
                 self.h_eta.Fill( eta, weight)
         if self.space.etaPass(eta) and \
-           self.ptPass(pt):
-##             if abs(particle.pdgId()) == 11:
-##                 self.h_mitmva.Fill( particle.mvaMIT(), weight)
-##                 self.h_danmva.Fill( particle.mvaDaniele(), weight)
+               self.ptPass(pt):
             self.h_phi.Fill( particle.phi(), weight)
+            self.h_p.Fill( particle.p(), weight)
             self.h_pv.Fill( len(event.vertices), weight)
             self.h_pu.Fill( event.pusi[1].nPU(), weight)
             self.h_pup_VS_pu.Fill( event.pusi[1].nPU(), event.pusi[2].nPU(), weight)
+
             
     def fillParticles(self, particles, event, weight):
         for particle in particles:

@@ -24,15 +24,15 @@ class Output( object ):
         name = self.name
         while True:
             try:
-                # print 'mkdir', self.name
+                if os.path.isdir( self.name ) and options.lower()=='w':
+                    return
+                print 'mkdir', self.name
                 os.mkdir( name )
                 break
             except OSError:
-                if options=='':
-                    index += 1
-                    name = '%s_%d' % (self.name, index)
-                elif options.lower()=='w':
-                    break
+                # should handle the exception in a better way!!!!
+                index += 1
+                name = '%s_%d' % (self.name, index)
         self.name = name
 
     def Write(self):
