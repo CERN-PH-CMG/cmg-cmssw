@@ -1,5 +1,5 @@
 import os 
-from CMGTools.H2TauTau.proto.analyzers.H2TauTauHistogramList import TauMuHistogramList, TauEleHistogramList, MuEleHistogramList
+from CMGTools.H2TauTau.proto.analyzers.H2TauTauHistogramList import TauMuHistogramList, TauEleHistogramList, MuEleHistogramList, TauTauHistogramList
 from CMGTools.RootTools.fwlite.Output import Output
 
 def inclusiveRegionName(name):
@@ -26,26 +26,32 @@ class H2TauTauOutput(Output):
         # leg1Name = 'tau'
         # leg2Name = 'mu'
         classObject = None
-        if leg1Name == 'tau' and leg2Name == 'mu':
+        l1Name = leg1Name.split('_')[0]
+        l2Name = leg2Name.split('_')[0]
+        
+        if l1Name == 'tau' and l2Name == 'mu':
             ClassObject = TauMuHistogramList
-        elif leg1Name == 'tau' and leg2Name == 'ele':
+        elif l1Name == 'tau' and l2Name == 'ele':
             ClassObject = TauEleHistogramList
-        elif leg1Name == 'mu' and leg2Name == 'ele':
+        elif l1Name == 'mu' and l2Name == 'ele':
             ClassObject = MuEleHistogramList
+        elif l1Name == 'tau' and l2Name == 'tau':
+            ClassObject = TauTauHistogramList
+        
             
         inclusiveRegions = set()
         for regionName in regions.regionNames():
-            self.histoLists[ regionName ] = ClassObject( '/'.join([self.name, regionName])) 
+            self.histoLists[ regionName ] = ClassObject( '/'.join([self.name, regionName]), leg1Name, leg2Name ) 
             incRegName = inclusiveRegionName( regionName )
             inclusiveRegions.add( incRegName )
         for regionName in inclusiveRegions:
-            self.histoLists[ regionName ] = ClassObject( '/'.join([self.name, regionName ])) 
+            self.histoLists[ regionName ] = ClassObject( '/'.join([self.name, regionName ]), leg1Name, leg2Name ) 
         wholeMTRegions = set()
         for regionName in self.histoLists.keys():
             wholeMTRegName = wholeMTRegionName( regionName )
             wholeMTRegions.add( wholeMTRegName )
         for regionName in wholeMTRegions:
-            self.histoLists[ regionName ] = ClassObject( '/'.join([self.name, regionName ])) 
+            self.histoLists[ regionName ] = ClassObject( '/'.join([self.name, regionName ]), leg1Name, leg2Name ) 
        
             
     def Fill(self, event, regionName ):

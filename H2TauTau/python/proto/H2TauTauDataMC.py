@@ -81,6 +81,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         # dyYield = dyHist.Yield()
         # print '2', dyYield
         if doEmbedding:
+            print 'embedding is used'
             embedYield = self.Hist(newName).Yield()
             self.Hist(newName).Scale( dyYield / embedYield ) 
             self._ApplyPrefs()
@@ -144,30 +145,29 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['DYJets (emb)'] = {'style':sYellow, 'layer':3}
         self.histPref['DYJets_Fakes'] = {'style':sBlack, 'layer':2.5}
 
-
     def _GetFileNames(self, directory):
-        '''Overloading a function from the base classes.
-        Tells this class how to find the root files in the analysis directory'''
         fileNames = []
+        filePattern = self.filePattern
         for root,dirs,files in os.walk(directory, followlinks=True):
-            if root is directory:
+            if not root.endswith('H2TauTauEventSorter'):
+                # print 'not event sorter'
                 continue
-            compName = os.path.basename(root)
-            if compName not in self.selComps:
-                if not compName.find('_Chunk'):
-                    print root,'is not selected'
-                continue
-            matchingFiles = [file for file in files if fnmatch(file, self.filePattern)]
+            sp = root.split('/')
+            if len(sp)>1:
+                motherDir = root.split('/')[-2]
+                if root.find('_Chunk')!=-1:
+                    continue
+            matchingFiles = [file for file in files if fnmatch(file, filePattern)]
             if len(matchingFiles)!=1:
-                raise ValueError('files matching %s in %s: %s. Need to match only 1 file.'
-                                 % (self.filePattern,
+                raise ValueError('files matching %s in %s: %s. Need to match exactly 1 file.'
+                                 % (filePattern,
                                     root,
                                     matchingFiles))
             else:
                 compName = root.split('/')[1]
                 fileNames.append( (compName, '/'.join([root, matchingFiles[0]])))
-        # print fileNames
         return fileNames
+
 
     def _ComponentName(self, name):
         # print name 
@@ -182,10 +182,9 @@ class H2TauTauDataMC( AnalysisDataMC ):
 
 
 def prepareComponents(dir, config):
-
     # list of components from configuration file
+    # import pdb; pdb.set_trace()
     selComps = dict( [ (comp.name, comp) for comp in config.components ])
-
     dySplit = False
     if 'DYJets_Fakes' in os.listdir( dir ):
         dySplit = True
@@ -251,6 +250,7 @@ def getQCD( plotSS, plotOS, dataName ):
         qcd.Add(dyJetsFakes, -1)
     except:
         print 'cannot find DYJets_Fakes'
+        print plotSS
         pass
 
     qcd.Add(plotSSWithQCD.Hist('TTJets'), -1)

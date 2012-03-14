@@ -10,7 +10,7 @@ diTauCuts = cms.PSet(
          tau2Leg = getTauCuts('leg2','diTau').clone(),
          ),
     # this cut is kept out of the baseline for now, until it is studied.
-    caloMuVeto = cms.string('leg1().eOverP()>0.2'),
+    # caloMuVeto = cms.string('leg1().eOverP()>0.2'),
     skimming = cms.PSet(
          mass = cms.string('mass()>10'),
          tau1LegSkimCuts = getTauCuts('leg1', 'diTau', skim=True).clone(),

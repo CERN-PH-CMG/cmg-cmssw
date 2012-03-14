@@ -57,26 +57,48 @@ class H2TauTauMC( AnalysisDataMC ):
         self.histPref['DYJets_Fakes'] = {'style':sBlack, 'layer':2.5}
 
 
+##     def _GetFileNames(self, directory):
+##         '''Overloading a function from the base classes.
+##         Tells this class how to find the root files in the analysis directory'''
+##         fileNames = []
+##         for root,dirs,files in os.walk(directory, followlinks=True):
+##             if root is directory:
+##                 continue
+##             if os.path.basename(root) not in self.selComps:
+##                 print root,'is not selected'
+##                 continue
+##             matchingFiles = [file for file in files if fnmatch(file, self.filePattern)]
+##             if len(matchingFiles)!=1:
+##                 raise ValueError('files matching %s in %s: %s. Need to match only 1 file.'
+##                                  % (self.filePattern,
+##                                     root,
+##                                     matchingFiles))
+##             else:
+##                 compName = root.split('/')[1]
+##                 fileNames.append( (compName, '/'.join([root, matchingFiles[0]])))
+##         # print fileNames
+##         return fileNames
     def _GetFileNames(self, directory):
-        '''Overloading a function from the base classes.
-        Tells this class how to find the root files in the analysis directory'''
         fileNames = []
+        filePattern = self.filePattern
         for root,dirs,files in os.walk(directory, followlinks=True):
-            if root is directory:
+            if not root.endswith('H2TauTauEventSorter'):
+                # print 'not event sorter'
                 continue
-            if os.path.basename(root) not in self.selComps:
-                print root,'is not selected'
-                continue
-            matchingFiles = [file for file in files if fnmatch(file, self.filePattern)]
+            sp = root.split('/')
+            if len(sp)>1:
+                motherDir = root.split('/')[-2]
+                if root.find('_Chunk')!=-1:
+                    continue
+            matchingFiles = [file for file in files if fnmatch(file, filePattern)]
             if len(matchingFiles)!=1:
-                raise ValueError('files matching %s in %s: %s. Need to match only 1 file.'
-                                 % (self.filePattern,
+                raise ValueError('files matching %s in %s: %s. Need to match exactly 1 file.'
+                                 % (filePattern,
                                     root,
                                     matchingFiles))
             else:
                 compName = root.split('/')[1]
                 fileNames.append( (compName, '/'.join([root, matchingFiles[0]])))
-        # print fileNames
         return fileNames
 
     def _ComponentName(self, name):
@@ -176,8 +198,7 @@ if __name__ == '__main__':
     cfg = imp.load_source( 'cfg', cfgFileName, file)
 
     selComps, weights = prepareComponents(anaDir, cfg.config)
-    
-    
+    print selComps
 
     canvases = []
     plots = {}

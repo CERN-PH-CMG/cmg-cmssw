@@ -32,8 +32,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
 ##     def testTau(self, tau):
 ##         '''Returns True if a tau passes a set of cuts.
-##         Can be used in testLeg1 and testLeg2, in child classes.
-        
+##         Can be used in testLeg1 and testLeg2, in child classes.     
 ##         WARNING: the electron filter should be used only in the electron channel.'''
 ##         if tau.decayMode() == 0 and \
 ##                tau.calcEOverP() < 0.2: #reject electrons faking taus in 2011B
@@ -41,6 +40,34 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 ##         else:
 ##             return True
 
+    def testElectronMITMVA(self, leg):
+        eta = abs( leg.eta() )
+        lmva = -99999
+        if   eta<1: lmva = 0.945
+        elif eta<1.5: lmva = 0.942
+        elif eta<2.5: lmva = 0.878
+        else:
+            # out of acceptance, electron is rejected
+            return False
+        # in acceptance
+        return leg.mvaMIT() > lmva
 
+    def testElectronDaniele(self, leg):
+        eta = abs( leg.eta() )
+        lmva = -99999
+        # import pdb; pdb.set_trace()
+        if   eta<1: lmva = 0.0013
+        elif eta<1.5: lmva = 0.0425
+        elif eta<2.5: lmva = 0.0225
+        else:
+            # out of acceptance, electron is rejected
+            return False
+        # in acceptance
+        return leg.mvaDaniele() > lmva
+        
+    def testElectron(self, leg):
+        # return self.testElectronDaniele(leg)
+        return leg.getSelection('cuts_vbtf80ID')
+        
     def leptonAccept(self, leptons):
         return electronAccept( leptons )

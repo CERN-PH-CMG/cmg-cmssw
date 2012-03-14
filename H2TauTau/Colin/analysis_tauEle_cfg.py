@@ -1,28 +1,53 @@
+#TODO NO TRIGGER MAPPING YET! 
+#NO MC TRIGGER SELECTION YET! should now be ok
+#NEED TO TRY MIT MVA
+#GET EMBEDDED SAMPLES
+
 import copy
 import os 
 import CMGTools.RootTools.fwlite.Config as cfg
+from CMGTools.H2TauTau.triggerMap import pathsAndFilters
+
+def getFiles(dataset, user, pattern):
+    from CMGTools.Production.datasetToSource import datasetToSource
+    # print 'getting files for', dataset,user,pattern
+    ds = datasetToSource( user, dataset, pattern, True )
+    files = ds.fileNames
+    return ['root://eoscms//eos/cms%s' % f for f in files]
 
 
-period = 'Period_2011AB'
+
+period = 'Period_2011B'
 
 baseDir = '2011'
+# aod = 'V3'
+# pat = 'PAT_CMG_TestMVAs'
+# htt = 'H2TAUTAU_TestMVAs_Mar09'
+aod = 'V2'
+pat = 'PAT_CMG_V2_5_0'
+htt = 'H2TAUTAU_Feb2'
+filePattern = 'tauEle.*fullsel.*root'
+
+
 H2TauTauPackage = '/'.join( [ os.environ['CMSSW_BASE'],
                               'src/CMGTools/H2TauTau' ] ) 
-filePattern = 'tauEle*fullsel*.root'
-fixedMuWeight = False
+
+
 
 # mc_triggers = 'HLT_IsoMu12_v1'
 mc_triggers = []
+mc_triggers_fall11 = [
+    'HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1'
+    ]
+
 mc_jet_scale = 1.
 mc_jet_smear = 0.
 mc_vertexWeight = None
 mc_tauEffWeight = None
 mc_eleEffWeight = None
 
-# For Fall11 need to use vertexWeightFall11 for WJets and DYJets and TTJets 
-# For Fall11 : trigger is applied in MC:
-#   "HLT_IsoMu15_LooseIsoPFTau15_v9"
-
+mc_tauEffWeight_mc = 'effMediumIsoTau20'
+mc_eleEffWeight_mc = 'effEle18MC'
 if period == 'Period_2011A':
     mc_vertexWeight = 'vertexWeight2invfb'
     mc_tauEffWeight = 'effTau2011A_TauEle'
@@ -76,7 +101,7 @@ tauEleAna = cfg.Analyzer(
     iso2 = 0.1,
     eta1 = 999,
     eta2 = 2.1,
-    cutString2 = 'cuts_vbtf80ID',
+    # cutString2 = 'cuts_vbtf80ID',
     # eta2 = 1.4,
     m_min = 10,
     m_max = 99999,
@@ -87,6 +112,7 @@ tauEleAna = cfg.Analyzer(
 tauWeighter = cfg.Analyzer(
     'LeptonWeighter_tau',
     effWeight = mc_tauEffWeight,
+    # effWeightMC = mc_tauEffWeight_mc,
     lepton = 'leg1',
     verbose = False
     )
@@ -94,6 +120,7 @@ tauWeighter = cfg.Analyzer(
 eleWeighter = cfg.Analyzer(
     'LeptonWeighter_ele',
     effWeight = mc_eleEffWeight,
+    # effWeightMC = mc_eleEffWeight_mc,
     lepton = 'leg2',
     verbose = False
     )
@@ -129,10 +156,9 @@ eventSorter = cfg.Analyzer(
 
 #########################################################################################
 
-blah='CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT'
 data_Run2011A_May10ReReco_v1 = cfg.DataComponent(
     name = 'data_Run2011A_May10ReReco_v1',
-    files ='{baseDir}/TauPlusX/Run2011A-May10ReReco-v1/AOD/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files = getFiles('/TauPlusX/Run2011A-May10ReReco-v1/AOD/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), 'cbern', filePattern),
     intLumi = 168.597,
     triggers = data_triggers_11A,
     json = '{H2TauTauPackage}/json/finalTauPlusXMay.txt'.format(H2TauTauPackage=H2TauTauPackage)
@@ -141,7 +167,7 @@ data_Run2011A_May10ReReco_v1 = cfg.DataComponent(
 
 data_Run2011A_PromptReco_v4 = cfg.DataComponent(
     name = 'data_Run2011A_PromptReco_v4',
-    files ='{baseDir}/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files = getFiles('/TauPlusX/Run2011A-PromptReco-v4/AOD/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), 'cbern', filePattern),
     intLumi = 929.748,
     triggers = data_triggers_11A,
     json = '{H2TauTauPackage}/json/finalTauPlusXv4.txt'.format(H2TauTauPackage=H2TauTauPackage)
@@ -149,31 +175,23 @@ data_Run2011A_PromptReco_v4 = cfg.DataComponent(
 
 data_Run2011A_05Aug2011_v1 = cfg.DataComponent(
     name = 'data_Run2011A_05Aug2011_v1',
-    files ='{baseDir}/TauPlusX/Run2011A-05Aug2011-v1/AOD/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files = getFiles('/TauPlusX/Run2011A-05Aug2011-v1/AOD/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), 'cbern', filePattern),
     intLumi = 373.349,
     triggers = data_triggers_11A,
-    json = '{H2TauTauPackage}/json/finalTauPlusXAug.txt'.format(H2TauTauPackage=H2TauTauPackage)
-    )
-
-data_Run2011A_PromptReco_v6 = cfg.DataComponent(
-    name = 'data_Run2011A_PromptReco_v6',
-    files ='{baseDir}/TauPlusX/Run2011A-PromptReco-v6/AOD/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
-    intLumi = 658.886,
-    triggers = data_triggers_11A,
-    json = '{H2TauTauPackage}/json/finalTauPlusXv6.txt'.format(H2TauTauPackage=H2TauTauPackage)
+    json = '{H2TauTauPackage}/json/finalTauPlusXAug5.txt'.format(H2TauTauPackage=H2TauTauPackage)
     )
 
 data_Run2011A_03Oct2011_v1 = cfg.DataComponent(
     name = 'data_Run2011A_03Oct2011_v1',
-    files ='{baseDir}/TauPlusX/Run2011A-03Oct2011-v1/AOD/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files = getFiles('/TauPlusX/Run2011A-03Oct2011-v1/AOD/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), 'cbern', filePattern),
     intLumi = 658.886,
     triggers = data_triggers_11A,
-    json = '{H2TauTauPackage}/json/finalTauPlusXv6.txt'.format(H2TauTauPackage=H2TauTauPackage)
+    json = '{H2TauTauPackage}/json/finalTauPlusXOct3.txt'.format(H2TauTauPackage=H2TauTauPackage)
     )
 
 data_Run2011B_PromptReco_v1 = cfg.DataComponent(
     name = 'data_Run2011B_PromptReco_v1',
-    files ='{baseDir}/TauPlusX/Run2011B-PromptReco-v1/AOD/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files = getFiles('/TauPlusX/Run2011B-PromptReco-v1/AOD/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), 'cbern', filePattern),
     intLumi = 2511.0,
     triggers = data_triggers_11B,
     json = '{H2TauTauPackage}/json/finalTauPlusX11B.txt'.format(H2TauTauPackage=H2TauTauPackage)
@@ -182,63 +200,104 @@ data_Run2011B_PromptReco_v1 = cfg.DataComponent(
 
 #########################################################################################
 
+
+DYJets = None
+WJets = None
+TTJets = None
+
+if aod=='V3':
+    DYJets = cfg.MCComponent(
+        name = 'DYJets',
+        files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), 'cbern', filePattern),
+        xSection = 3048.,
+        nGenEvents = 36209629,
+        #     nGenEvents = 28086242,    
+        triggers = mc_triggers_fall11,
+        effCorrFactor = mc_effCorrFactor)
+
+
+    WJets = cfg.MCComponent(
+        name = 'WJets',
+        # files = getFiles('/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}/Merge_TauMu'.format(aod=aod, pat=pat, htt=htt), 'cbern', filePattern),
+        files = getFiles('/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/TAUTAU/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), 'cbern', filePattern),
+        xSection = 31314.,
+        nGenEvents = 81345381, # this number is probably slightly overestimated (3/1000 missing files, not taken into account)
+        triggers = mc_triggers_fall11,
+        effCorrFactor = mc_effCorrFactor )
+
+
+    TTJets = cfg.MCComponent(
+        name = 'TTJets',
+        files = getFiles('/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), 'cbern', filePattern),
+        xSection = 165.8,
+        nGenEvents = 3701947,
+        triggers = mc_triggers_fall11,
+        effCorrFactor = mc_effCorrFactor )
+
+if aod == 'V2':
+    DYJets = cfg.MCComponent(
+        name = 'DYJets',
+        files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/AntiEle', 'cbern', filePattern),
+        xSection = 3048.,
+        nGenEvents = 34915945,
+        triggers = mc_triggers,
+        effCorrFactor = mc_effCorrFactor )
+
+    WJets = cfg.MCComponent(
+        name = 'WJets',
+        files = getFiles('/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/AntiEle', 'cbern', filePattern),
+        # files ='{baseDir}/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/AntiEle/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+        xSection = 31314.,
+        nGenEvents = 53227112,
+        triggers = mc_triggers,
+        effCorrFactor = mc_effCorrFactor )
+
+
+    TTJets = cfg.MCComponent(
+        name = 'TTJets',
+        files = getFiles('/TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/AntiEle', 'cbern', filePattern),
+        # files ='{baseDir}/TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/AntiEle/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+        xSection = 165.8,
+        nGenEvents = 3542770,
+        triggers = mc_triggers,
+        effCorrFactor = mc_effCorrFactor )
+
+
 embed_Run2011A_May10ReReco_v1 = cfg.EmbedComponent(
     name = 'embed_Run2011A_May10ReReco_v1',
-    files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_May10thRR_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files = getFiles('/DoubleMu/StoreResults-DoubleMu_2011A_May10thRR_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2', 'cbern', filePattern),
+    # files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_May10thRR_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     triggers = mc_triggers,
     )
 
 embed_Run2011A_PromptReco_v4 = cfg.EmbedComponent(
     name = 'embed_Run2011A_PromptReco_v4',
-    files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files = getFiles('/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2', 'cbern', filePattern),
+    # files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     triggers = mc_triggers,
     ) 
 
 embed_Run2011A_05Aug2011_v1 = cfg.EmbedComponent(
     name = 'embed_Run2011A_05Aug2011_v1',
-    files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_Aug05thRR_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files = getFiles('/DoubleMu/StoreResults-DoubleMu_2011A_Aug05thRR_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2', 'cbern', filePattern),
+    # files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_Aug05thRR_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     triggers = mc_triggers,
     ) 
 
 embed_Run2011A_03Oct2011_v1 = cfg.EmbedComponent(
     name = 'embed_Run2011A_03Oct2011_v1',
-    files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files = getFiles('/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2', 'cbern', filePattern),
+    # files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     triggers = mc_triggers,
     ) 
 
 embed_Run2011B_PromptReco_v1 = cfg.EmbedComponent(
     name = 'embed_Run2011B_PromptReco_v1',
-    files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau115_ptelec1_17had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
+    files = getFiles('/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau115_ptelec1_17had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2', 'cbern', filePattern),
+    # files = '{baseDir}/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau115_ptelec1_17had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
     triggers = mc_triggers,
     ) 
 
-#########################################################################################
-
-
-DYJets = cfg.MCComponent(
-    name = 'DYJets',
-    files ='{baseDir}/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/AntiEle/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
-    xSection = 3048.,
-    nGenEvents = 34915945,
-    triggers = mc_triggers,
-    effCorrFactor = mc_effCorrFactor )
-
-WJets = cfg.MCComponent(
-    name = 'WJets',
-    files ='{baseDir}/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/AntiEle/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
-    xSection = 31314.,
-    nGenEvents = 53227112,
-    triggers = mc_triggers,
-    effCorrFactor = mc_effCorrFactor )
-
-
-TTJets = cfg.MCComponent(
-    name = 'TTJets',
-    files ='{baseDir}/TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/H2TAUTAU_Feb2/AntiEle/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
-    xSection = 165.8,
-    nGenEvents = 3542770,
-    triggers = mc_triggers,
-    effCorrFactor = mc_effCorrFactor )
 
 
 
@@ -260,14 +319,15 @@ data_2011A = [
     data_Run2011A_03Oct2011_v1,
     # data_Run2011A_PromptReco_v6, # equivalent to 03Oct, if I remember correctly
     ]
+data_2011B = [
+    data_Run2011B_PromptReco_v1
+    ]
+
 embed_2011A = [
     embed_Run2011A_May10ReReco_v1,
     embed_Run2011A_PromptReco_v4,
     embed_Run2011A_05Aug2011_v1,
     embed_Run2011A_03Oct2011_v1,
-    ]
-data_2011B = [
-    data_Run2011B_PromptReco_v1
     ]
 embed_2011B = [
     embed_Run2011B_PromptReco_v1
@@ -287,16 +347,6 @@ elif period == 'Period_2011AB':
     selectedComponents.extend( embed_2011A )    
     selectedComponents.extend( embed_2011B )    
 
-
-# selectedComponents = MC
-# selectedComponents = embed_2011B 
-# selectedComponents.extend(data_2011B)
-# selectedComponents  = [ data_Run2011B_PromptReco_v1  ]
-# selectedComponents = [ DYJets ]
-# selectedComponents = [embed_Run2011A_May10ReReco_v1]
-
-# selectedComponents = [data_Run2011A_03Oct2011_v1]
-
 sequence = cfg.Sequence( [
     triggerAna,
     vertexAna,
@@ -307,7 +357,34 @@ sequence = cfg.Sequence( [
     eventSorter
    ] )
 
-# sequence = sequence[:1]
+DYJets.fakes = True
+TTJets.splitFactor = 2 
+DYJets.splitFactor = 8
+WJets.splitFactor = 3
+data_Run2011B_PromptReco_v1.splitFactor = 8
+data_Run2011A_PromptReco_v4.splitFactor = 2 
+
+embed_Run2011A_May10ReReco_v1.splitFactor = 2
+embed_Run2011A_PromptReco_v4.splitFactor = 4
+embed_Run2011A_05Aug2011_v1.splitFactor = 2
+embed_Run2011A_03Oct2011_v1.splitFactor = 2
+embed_Run2011B_PromptReco_v1.splitFactor = 8
+
+# selectedComponents = embed_2011A
+# selectedComponents.extend( embed_2011B )
+
+test = 0
+if test==1:
+    comp = DYJets
+    selectedComponents = [comp]
+    comp.splitFactor = 1
+    comp.files = comp.files[:2]
+    # TTJets.files = TTJets.files[:1]
+elif test==2:
+    for comp in selectedComponents:
+     comp.splitFactor = 1
+     comp.files = comp.files[:2]
+
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )

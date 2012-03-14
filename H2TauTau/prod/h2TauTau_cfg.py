@@ -19,8 +19,8 @@ numberOfFilesToProcess = 5
 
 debugEventContent = False
 
-dataset_user = 'cmgtools' 
-dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V3/PAT_CMG_TestMVAs'
+dataset_user = 'cbern' 
+dataset_name = '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V3/PAT_CMG_TestMVAs_f0'
 
 
 ##########
@@ -103,7 +103,7 @@ process.schedule = cms.Schedule(
     process.tauEleFullSelPath,    
     # process.muElePreSelPath,
     process.muEleFullSelPath,    
-    process.diTauPreSelPath,
+    # process.diTauPreSelPath,
     process.diTauFullSelPath,    
     process.outpath
     )
@@ -141,5 +141,15 @@ addTauEleOutput( process, debugEventContent, addPreSel=False)
 addMuEleOutput( process, debugEventContent, addPreSel=False)
 addDiTauOutput( process, debugEventContent, addPreSel=False)
 
+
+# use standard leptons - could also clone the sequence.
+process.cmgTauMu.cfg.leg2Collection = 'cmgMuonSelStdLep'
 # to relax mu ID:
-# process.cmgTauMu.cuts.baseline.muLeg.id = cms.PSet()
+process.cmgTauMu.cuts.baseline.muLeg.id = cms.PSet()
+
+process.cmgTauEle.cfg.leg2Collection = 'cmgElectronSelStdLep'
+
+process.cmgMuEle.cfg.leg1Collection = 'cmgMuonSelStdLep'
+process.cmgMuEle.cfg.leg2Collection = 'cmgElectronSelStdLep'
+process.cmgMuEle.cuts.baseline.muLeg.id = cms.PSet()
+
