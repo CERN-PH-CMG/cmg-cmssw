@@ -70,9 +70,8 @@ class FileOps(object):
             self._checkContiguity()
             roots = self.getRootFiles() 
             
-            if roots is None or len(roots) == 0:
-                print "Directory: ",castor," is valid on EOS, but no logger file or dataset is present."
-                raise NameError("No valid directory found for dataset did you mean to use the group space or perhaps a different user?: "+self._setName, self._setName)
+            if roots is None or len(roots) == 0: 
+                raise NameError("Directory: ",castor," is valid on EOS, but no logger file or dataset is present.")
             else:
                 print "Directory: ",castor," is valid on EOS, no logger file is present but dataset files exist."
             
