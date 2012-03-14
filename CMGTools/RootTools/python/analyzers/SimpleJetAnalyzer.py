@@ -334,6 +334,7 @@ class SimpleJetAnalyzer (Analyzer) :
         self.matchedCleanJetHistosResolution_endNOtk = ResolutionJetHistograms ('MatchedCleanJetsResolution_endNOtk', 50, 1)
         self.matchedCleanJetHistosResolution_fwd = ResolutionJetHistograms ('MatchedCleanJetsResolution_fwd', 50, 1)
 
+        self.doJetIdHisto = False
         if self.cfg_ana.doJetIdHisto:
             # histograms for pileup jet identification variables
             self.vtxBins   = (0,5,10,15,20,30) ## (0,2,4,6,10,15,20,30,35)
