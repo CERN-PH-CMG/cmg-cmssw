@@ -589,7 +589,7 @@ int main(int argc, char* argv[])
       delete histo;
   }
   while(mcPileupDistribution.size()<dataPileupDistribution.size())  mcPileupDistribution.push_back(0.0);
-  while(mcPileupDistribution.size()>dataPileupDistribution.size())dataPileupDistribution.push_back(0.0);
+  while(mcPileupDistribution.size()>dataPileupDistribution.size())  dataPileupDistribution.push_back(0.0);
   gROOT->cd();  //THIS LINE IS NEEDED TO MAKE SURE THAT HISTOGRAM INTERNALLY PRODUCED IN LumiReWeighting ARE NOT DESTROYED WHEN CLOSING THE FILE
   edm::LumiReWeighting LumiWeights(mcPileupDistribution,dataPileupDistribution);
   reweight::PoissonMeanShifter PShiftUp(+0.6);
