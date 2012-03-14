@@ -11,7 +11,7 @@
 #include "TMatrixDSymEigen.h"
 
 // ------------------------------------------------------------------------------------------
-PileupJetIdAlgo::PileupJetIdAlgo(edm::ParameterSet & ps) 
+PileupJetIdAlgo::PileupJetIdAlgo(const edm::ParameterSet & ps) 
 {
 	impactParTkThreshod_ = ps.getUntrackedParameter<double>("impactParTkThreshod",1.);
 	tmvaWeights_         = edm::FileInPath(ps.getUntrackedParameter<std::string>("tmvaWeights","CMGTools/External/data/mva_JetID.weights.xml")).fullPath();
@@ -43,7 +43,6 @@ PileupJetIdAlgo::PileupJetIdAlgo(int version,
 	
 	setup();
 }
-
 
 // ------------------------------------------------------------------------------------------
 void PileupJetIdAlgo::setup()
