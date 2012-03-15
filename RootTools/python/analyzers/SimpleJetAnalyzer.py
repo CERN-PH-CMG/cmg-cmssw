@@ -444,8 +444,6 @@ class SimpleJetAnalyzer (Analyzer) :
         self.matchedCleanJetHistosResolution.fillEvent (event.matchedCleanJets, len (event.vertices))
         
         for jet in event.matchedCleanJets :
-            index = int (jet.pt ()) / 20 
-            if (index) > 9 : continue
             if abs (jet.gen.eta ()) < 1.4 :
                 self.matchedCleanJetHistosResolution_barrel.fillJet (jet, len (event.vertices))
                 self.matchedCleanJetHistos_barrel.fillJet (jet)
