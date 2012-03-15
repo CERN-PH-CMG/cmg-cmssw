@@ -1,8 +1,5 @@
 import FWCore.ParameterSet.Config as cms
 
-
-#from CMG.JetIDAnalysis.phoidprod_cfi import *
-
 process = cms.Process("PHOTONTAG")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
