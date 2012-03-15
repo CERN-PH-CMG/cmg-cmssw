@@ -50,6 +50,7 @@ struct ZZ2l2nuSummary_t
   Float_t jn_px[MAXPARTICLES],    jn_py[MAXPARTICLES],      jn_pz[MAXPARTICLES],          jn_en[MAXPARTICLES];
   Float_t jn_btag1[MAXPARTICLES], jn_btag2[MAXPARTICLES],   jn_neutHadFrac[MAXPARTICLES], jn_neutEmFrac[MAXPARTICLES], jn_chHadFrac[MAXPARTICLES], jn_pid[MAXPARTICLES];  
   Int_t   jn_genid[MAXPARTICLES], jn_genflav[MAXPARTICLES];
+  Float_t jn_genpt[MAXPARTICLES];
 
   Int_t ajn;
   Float_t ajn_px[MAXPARTICLES],    ajn_py[MAXPARTICLES],    ajn_pz[MAXPARTICLES],          ajn_en[MAXPARTICLES]; 

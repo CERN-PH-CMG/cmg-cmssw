@@ -496,8 +496,9 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.jn_neutHadFrac[ev.jn] = jet->neutralHadronEnergyFraction();
 	ev.jn_neutEmFrac[ev.jn]  = jet->neutralEmEnergyFraction();
 	ev.jn_chHadFrac[ev.jn]   = jet->chargedHadronEnergyFraction();
+	const reco::GenJet *gJet=jet->genJet();
+	ev.jn_genpt[ev.jn]=gJet ? gJet->pt() : 0;
 	ev.jn++;
-
 	nbcands += (jet->pt()>30 && fabs(jet->eta())<2.4 && jet->bDiscriminator("trackCountingHighEffBJetTags")>2); 
       }
 
