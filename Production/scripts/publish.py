@@ -98,7 +98,6 @@ If not entered, secure password prompt will appear.""",
     parser.add_option_group(group)
     
     (options, args) = parser.parse_args()
-    options.url="http://cmsphys05.cern.ch:8081/cms_dbs_prod_local_01/servlet/DBSServlet"
     
     # Allow no more than one argument
     if len(args)!=1:
