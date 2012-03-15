@@ -151,32 +151,17 @@ def addPatSequence(process, runOnMC, addPhotons=True) :
     applyPostfix( process, 'patJets', postfix ).tagInfoSources = cms.VInputTag( cms.InputTag("secondaryVertexTagInfosAOD"+postfix) )
     applyPostfix( process, 'patJets', postfix ).userData.userFunctions = cms.vstring( "? hasTagInfo('secondaryVertex') && tagInfoSecondaryVertex('secondaryVertex').nVertices() > 0 ? tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : -999")
     applyPostfix( process, 'patJets', postfix ).userData.userFunctionLabels = cms.vstring('secvtxMass')
-    #applyPostfix( process, 'patJets', postfix ).embedPFCandidates=False
-   
-    #add trigger match
-    #addTriggerMatchingForLeptons(process,postfix=postfix)
+
+    removeSpecificPATObjects( process, names=['Taus'], postfix=postfix )
+    removeSpecificPATObjects( process, names=['Taus'])
 
     #################################################
     # CUSTOM PAT                                    #
     #################################################
     process.load("PhysicsTools.PatAlgos.patSequences_cff")
-    #process.load("PhysicsTools.PatAlgos.producersLayer1.photonProducer_cff")
-    #process.load("PhysicsTools.PatAlgos.selectionLayer1.photonSelector_cfi")
-    #process.load("PhysicsTools.PatAlgos.producersLayer1.electronProducer_cff")
-    #process.load("PhysicsTools.PatAlgos.selectionLayer1.electronSelector_cfi")
     process.patElectrons.electronIDSources = process.patElectronsPFlow.electronIDSources
-    #process.load("PhysicsTools.PatAlgos.producersLayer1.muonProducer_cff")
-    #process.load("PhysicsTools.PatAlgos.selectionLayer1.muonSelector_cfi")
     applyPostfix( process, 'patMuons', '' ).embedCaloMETMuonCorrs=cms.bool(False)
     applyPostfix( process, 'patMuons', '' ).embedTcMETMuonCorrs=cms.bool(False)
-    #process.load("PhysicsTools.PatAlgos.producersLayer1.jetProducer_cff")
-    #process.load("PhysicsTools.PatAlgos.selectionLayer1.jetSelector_cfi")
-    #process.customPat = cms.Sequence(process.makePatPhotons * process.selectedPatPhotons *
-    #                                 process.makePatElectrons * process.selectedPatElectrons *
-    #                                 process.makePatMuons* process.selectedPatMuons *
-    #                                 process.makePatJets * process.selectedPatJets
-    #                                 )
-    #getattr(process,'customPat').remove( getattr(process,'patJetCharge') )
     switchJetCollection(process,
                         cms.InputTag('ak5PFJets'),
                         jetIdLabel = 'AK5',
@@ -189,7 +174,6 @@ def addPatSequence(process, runOnMC, addPhotons=True) :
                         postfix=''
                         )
     process.patJets.embedPFCandidates = False
-    #if(runOnMC) :removeMCMatching(process,names=['Photons'])
      
     #create the path
     process.patSequence = cms.Sequence(
@@ -200,17 +184,11 @@ def addPatSequence(process, runOnMC, addPhotons=True) :
         process.patDefaultSequence
         )
 
-
-    #some fixes for photons
-    #getattr(process,'patDefaultSequence').remove( getattr(process,'photonMatch'+postfix) )
-    #applyPostfix( process, 'patPhotons', postfix ).addGenMatch = cms.bool(False)
-    #removeMCMatching(process,names=['Photons'],postfix=postfix)
-
     removeCleaning( process ) 
     getattr(process,'patSequence').remove( getattr(process,'photonMatch'+postfix) )
     removeSpecificPATObjects( process, names=['Taus','METs'] )
-    removeSpecificPATObjects( process, names=['Taus'], postfix=postfix ) 
-
+    if(not runOnMC) : removeMCMatching(process, names=['Electrons','Muons','Photons','Jets'])
+    
 
     print " *** PAT path has been defined"
     
