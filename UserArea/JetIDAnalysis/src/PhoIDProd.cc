@@ -13,7 +13,7 @@
 //
 // Original Author:  Andre Tinoco Mendes,40 2-A12,+41227676147,
 //         Created:  Tue Mar 13 16:03:44 CET 2012
-// $Id: PhoIDProd.cc,v 1.2 2012/03/15 01:15:15 adavidzh Exp $
+// $Id: PhoIDProd.cc,v 1.3 2012/03/15 01:27:11 adavidzh Exp $
 //
 //
 
@@ -158,7 +158,7 @@ PhoIDProd::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 // ------------ method returns the largest CiC4 Photon ID that the photon passes ----------------
 PhoIDProd::IDLevel_t PhoIDProd::getCiC4IDLevel(edm::Event& iEvent, const reco::Photon& photon){
-  Int_t vertexIdx = 0;
+  //Int_t vertexIdx = 0;
   int IDLevel = 0;//cicPhotonId->photonCutLevel4cat(photon, vertexIdx);
   std::cerr << "Photon CiC4IDLevel: " << IDLevel << std::endl;
   return IDLevel;
