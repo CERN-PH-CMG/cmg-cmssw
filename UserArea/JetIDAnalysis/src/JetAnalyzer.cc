@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.cc,v 1.3 2012/03/14 19:00:07 malberti Exp $
+// $Id: JetAnalyzer.cc,v 1.4 2012/03/14 21:01:00 adavidzh Exp $
 //
 //
 
@@ -124,7 +124,7 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     PileupJetIdentifier puIdentifier = puIdAlgo_->computeIdVariables(&patjet, 0, &vtx, computeTMVA_);
 
     // --- fill jet variables
-    puIdAlgo_->fillJet(puIdentifier,i,0);
+    puIdAlgo_->setIJetIEvent(i,0);
     if ( !dataFlag_ ){
       jetFlavour  = patjet.partonFlavour();
       if ( matchingToGenJet(patjet, genJets) ) isMatched = 1;

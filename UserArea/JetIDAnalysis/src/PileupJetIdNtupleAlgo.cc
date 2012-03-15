@@ -22,8 +22,8 @@ void PileupJetIdNtupleAlgo::bookBranches(TTree * tree,const std::string & prefix
 		std::string vname = prefix+ivar->first+postfix;
 		tree->Branch( vname.c_str(), ivar->second.first, (vname+"/F").c_str()  );
 	}
-	tree->Branch( (prefix+"ijet"+postfix).c_str(),    &ijet_,   (prefix+"ijet/F"+postfix).c_str()   );
-	tree->Branch( (prefix+"ievent"+postfix).c_str(), &ievent_,  (prefix+"ievent/F"+postfix).c_str() );
+	tree->Branch( (prefix+"ijet"+postfix).c_str(),    &ijet_,   (prefix+"ijet/I"+postfix).c_str()   );
+	tree->Branch( (prefix+"ievent"+postfix).c_str(), &ievent_,  (prefix+"ievent/I"+postfix).c_str() );
 }
 
 // --------------------------------------------------------------------------------
@@ -38,6 +38,13 @@ void PileupJetIdNtupleAlgo::fillJet(const PileupJetIdentifier & id, int ijet, in
 void PileupJetIdNtupleAlgo::fillJet(const reco::Jet * jet, float jec, const reco::Vertex * vtx, int ijet, int ievent, bool runMva)
 {
 	computeIdVariables(jet,jec,vtx,runMva);
+	ijet_   = ijet;
+	ievent_ = ievent;
+}
+
+// --------------------------------------------------------------------------------
+void PileupJetIdNtupleAlgo::setIJetIEvent(int ijet, int ievent)
+{
 	ijet_   = ijet;
 	ievent_ = ievent;
 }
