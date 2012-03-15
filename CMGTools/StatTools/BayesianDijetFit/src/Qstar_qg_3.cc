@@ -244,7 +244,10 @@ Double_t Qstar_qg_3::interpolate(Double_t mass, Double_t* histarray) const
 Double_t Qstar_qg_3::evaluate() const 
 { 
   Int_t j = findHistFast( mass );
-  return interpolate(jes*(jer*(mjj-mass)+mass), hist[j]->GetArray());
+  Double_t* array = hist[j]->GetArray();
+  return interpolate(jes*(jer*(mjj-mass)+mass), array);
+
+
 }
 
 
