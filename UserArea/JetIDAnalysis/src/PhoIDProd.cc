@@ -13,7 +13,7 @@
 //
 // Original Author:  Andre Tinoco Mendes,40 2-A12,+41227676147,
 //         Created:  Tue Mar 13 16:03:44 CET 2012
-// $Id: PhoIDProd.cc,v 1.1 2012/03/14 15:09:35 adavidzh Exp $
+// $Id: PhoIDProd.cc,v 1.2 2012/03/15 01:15:15 adavidzh Exp $
 //
 //
 
@@ -36,6 +36,7 @@
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
 
 #include "HiggsAnalysis/HiggsTo2photons/interface/CiCPhotonID.h"
+// Very ugly hack around the fact that HiggsTo2photons code is not a library, only plugins
 #include "HiggsAnalysis/HiggsTo2photons/src/CiCPhotonID.cc"
 
 //
@@ -63,6 +64,8 @@ class PhoIDProd : public edm::EDProducer {
   typedef edm::ValueMap<IDLevel_t> MapIDLevel_t;
 
   IDLevel_t getCiC4IDLevel(edm::Event&, const reco::Photon&);
+  IDLevel_t getCiC4IDLevel(edm::Event&, reco::PhotonRef&);
+
       // ----------member data ---------------------------
   CiCPhotonID *cicPhotonId;
 
@@ -133,9 +136,14 @@ PhoIDProd::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByLabel("photons", photons);
 
    vector<IDLevel_t> cic4Levels;
-   for(PhotonCollection::const_iterator photon = photons->begin();
-       photon != photons->end(); ++photon) {
-     IDLevel_t cic4Level = getCiC4IDLevel(iEvent, *photon);
+//    for(PhotonCollection::const_iterator photon = photons->begin();
+//        photon != photons->end(); ++photon) {
+//      IDLevel_t cic4Level = getCiC4IDLevel(iEvent, *photon);
+//      cic4Levels.push_back(cic4Level);
+//    }
+   for(unsigned int iPho = 0; iPho < photons->size(); ++iPho) {
+     reco::PhotonRef phoRef(photons, iPho);  
+     IDLevel_t cic4Level = getCiC4IDLevel(iEvent, phoRef);
      cic4Levels.push_back(cic4Level);
    }
 
@@ -150,12 +158,16 @@ PhoIDProd::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 // ------------ method returns the largest CiC4 Photon ID that the photon passes ----------------
 PhoIDProd::IDLevel_t PhoIDProd::getCiC4IDLevel(edm::Event& iEvent, const reco::Photon& photon){
-
   Int_t vertexIdx = 0;
   int IDLevel = 0;//cicPhotonId->photonCutLevel4cat(photon, vertexIdx);
   std::cerr << "Photon CiC4IDLevel: " << IDLevel << std::endl;
   return IDLevel;
-
+}
+PhoIDProd::IDLevel_t PhoIDProd::getCiC4IDLevel(edm::Event& iEvent, reco::PhotonRef& photon){
+  Int_t vertexIdx = 0;
+  int IDLevel = cicPhotonId->photonCutLevel4cat(photon, vertexIdx);
+  std::cerr << "Photon CiC4IDLevel: " << IDLevel << std::endl;
+  return IDLevel;
 }
  
 // ------------ method called once each job just before starting event loop  ------------
