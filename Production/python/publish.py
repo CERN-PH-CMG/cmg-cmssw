@@ -9,10 +9,6 @@ from CMGTools.Production.publishController import PublishController
 from DBSAPI.dbsProcessedDataset import DbsProcessedDataset
 from DBSAPI.dbsPrimaryDataset import DbsPrimaryDataset
 from datetime import *
-from DBSAPI.dbsOptions import DbsOptionParser
-from DBSAPI.dbsApi import DbsApi
-from DBSAPI.dbsApiException import *
-from DBSAPI.dbsException import *
 from CMGTools.Production.nameOps import *
 from CMGTools.Production.findDSOnSav import getTaskID
 from CMGTools.Production.fileOps import FileOps
@@ -20,18 +16,6 @@ from CMGTools.Production.fileOps import FileOps
 
 def publish(dsName,fileown,comment,test,dbsApi,user,password, force, checkGroups):
     
-    # if len(dsName.lstrip(os.sep).rstrip(os.sep).split(os.sep)) == 3 and dsName.split(os.sep)[0].endswith("%"):
-#     	# Get list of samples
-#     	user = dsName.split(os.sep)[0].rstrip('%')
-#     	dataSets = '/afs/cern.ch/user/{first}/{user}/public/DataSets.txt'.format(
-#     	first = user[0], # first letter of the username
-#     	user = user
-#     	)
-#     	
-#     	ifile=open(dataSets,'r')
-#     	dsPattern = dsNames.lstrip(dsNames.split(os.sep)[0])
-#     	pattern = re.compile( dsPattern )
-    	
     if re.search("---",dsName):
         fileown = getDbsUser(dsName)
         dsName2 = getCastor(dsName)
@@ -53,7 +37,6 @@ def publish(dsName,fileown,comment,test,dbsApi,user,password, force, checkGroups
     formatter = CastorToDbsFormatter(dsName,fileown)
     procds =formatter.getDataset()
     try:
-    #if True:
         # Store full dataset name
     
         opts = dict()
@@ -65,7 +48,6 @@ def publish(dsName,fileown,comment,test,dbsApi,user,password, force, checkGroups
             raise OSError("Restarting connection to EOS, due to timeout\n")
         completed = False
         fileOps = None
-        
         while True:
             signal.signal(signal.SIGALRM, timeout_handler) 
             signal.alarm(60) # triger alarm in 3 seconds
@@ -74,6 +56,8 @@ def publish(dsName,fileown,comment,test,dbsApi,user,password, force, checkGroups
                 fileOps = None
                 fileOps = FileOps(dsName, fileown ,force, checkGroups)
                 break
+            except KeyboardInterrupt:
+                raise
             except OSError as io:
                 print io.args[0]
                 signal.alarm(0)
@@ -100,13 +84,16 @@ def publish(dsName,fileown,comment,test,dbsApi,user,password, force, checkGroups
     	parentTaskID = None
     	loginClear = False
     	status = 'Failed'
-    	publishController = PublishController(user, password, dbsApi, force)
+    	publishController = PublishController(user, password, force)
     	try:
     	    loginClear = publishController.loginValid()
     	except KeyboardInterrupt:
     	    raise
     	except:
-    	    loginClear = publishController.loginValid()
+    	    try:
+    	        loginClear = publishController.loginValid()
+    	    except KeyboardInterrupt:
+    	        raise
     	if loginClear is False:
     		print "User authentication failed, exiting\n\n"
     		return None
@@ -114,13 +101,10 @@ def publish(dsName,fileown,comment,test,dbsApi,user,password, force, checkGroups
     	print "\n------DataSet------\n"
     	print "CMGDB name:",getDbsWithUser(dsName, fileOps.getUser())
         print "EOS name:  ",dsName
-    	if procds['ParentList'][0].endswith("---*") and dbsApi is not None:
-    		procds['ParentList'][0] = publishController.chooseParent(procds['ParentList'][0], opts['category_id'])
-    	if dbsApi is not None:
-    		print "\n--------DBS--------\n"
-    		publishController.dbsPublish(procds)
+    	
     	print "\n------Savanah------\n"
     	(taskID, parentTaskID) = publishController.savannahPublish(procds, opts, comment, fileOps)
+    	
     	try:
     	    if taskID is None: taskID = getTaskID(procds['PathList'][0], opts['category_id'], user, password, False)
     	except:
@@ -129,22 +113,17 @@ def publish(dsName,fileown,comment,test,dbsApi,user,password, force, checkGroups
     	if taskID is not None: status = 'Success'
     	if publishController.cmgdbOnline():
     		print "\n-------CMGDB-------\n"
-    		cmgdbid = None
-    		if True:
-    		#try:
-    			cmgdbid = publishController.cmgdbPublish(procds, dbsID, taskID, test, fileOps)
-    			if parentTaskID is not None:
-    				publishController.cmgdbPublish(procds, int(parentDbsID), int(parentTaskID), test)
+    		cmgdbid = publishController.cmgdbPublish(procds, taskID, test, fileOps)
+    		if parentTaskID is not None:
+    			publishController.cmgdbPublish(procds, int(parentDbsID), int(parentTaskID), test)
     			
-    		#except ImportError:
-    			#print "cx_Oracle not properly installed"
-    			#return None
     	return {'Status':status, 'Savannah':taskID,'CMGDB ID':cmgdbid,'DBS Dataset':procds['PathList'][0], 'EOS Dataset':dsName,'File Owner':fileown}
+    except KeyboardInterrupt:
+        raise
     except ValueError as err:
         print err.args, '.\nDataset not published'
         return None
     except NameError as err:
-    #else:
         print err.args[0]
         savannah = None
             
