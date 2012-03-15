@@ -9,4 +9,6 @@
 <use name="DataFormats/PatCandidates"/>
 <use name="DataFormats/EgammaCandidates"/>
 
+<!--use name="HiggsAnalysis/HiggsTo2photons"/-->
+
 <flags EDM_PLUGIN="1"/>
