@@ -11,16 +11,25 @@ from ROOT import TFile
 def checkCastorDirectory(dir, FilePrefix):
     if(dir.endswith('/')!=True):
        dir+='/'
-    rfdir_cmd = "rfdir " + dir
-    isEOS=False
     if(dir.find('/store/cmst3')==0) :
         isEOS=True
-        splitOnString=','
         rfdir_cmd='cmsLs ' + dir + ' | grep root | awk \'{print $5}\''
-    rfdir_cmd = rfdir_cmd + '| grep ' + dir+FilePrefix+"_"
-#    print rfdir_cmd + "########"
-    outCastorDir_out = commands.getstatusoutput(rfdir_cmd)
-    return outCastorDir_out[1].split('\n')
+    	rfdir_cmd = rfdir_cmd + '| grep ' + dir+FilePrefix+"_"
+#       print rfdir_cmd + "########"
+        outCastorDir_out = commands.getstatusoutput(rfdir_cmd)
+        return outCastorDir_out[1].split('\n')
+    else:
+        isEOS=False
+        rfdir_cmd = "rfdir " + dir + ' | grep root | awk \'{print $9}\''
+        rfdir_cmd = rfdir_cmd + '| grep ' + FilePrefix+"_"
+#       print rfdir_cmd + "########"
+        outCastorDir_out = commands.getstatusoutput(rfdir_cmd)
+        split = outCastorDir_out[1].split('\n')
+	for s in range(0,len(split)):
+		split[s] = 'rfio:'+dir+'/'+split[s]
+	return split
+
+	
 
 #check rootFile exist and can be read
 def checkInputFile(url):
