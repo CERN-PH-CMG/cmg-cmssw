@@ -60,6 +60,7 @@ void draw_2Vtag()
   TLegend *l_xs_sys =  new TLegend(0.1694631,0.1585366,0.4479866,0.3362369,NULL,"brNDC");
   TLegend *l_xs_all_fat =  new TLegend(0.1694631,0.1585366,0.5419463,0.4808362,NULL,"brNDC");
   TLegend *l_xs_comparison_bw_stat_sys_fat =  new TLegend(0.1694631,0.1585366,0.4479866,0.3362369,NULL,"brNDC");
+  TLegend *l_xs_comparison_bw_stat_sys_fat2 =  new TLegend(0.4694631,0.1585366,0.7479866,0.3362369,NULL,"brNDC");
   TLegend *l_xs_WZ_compare =  new TLegend(0.1694631,0.1585366,0.4479866,0.3362369,NULL,"brNDC");
   TLegend *l_xs_WW_compare =  new TLegend(0.1694631,0.1585366,0.4479866,0.3362369,NULL,"brNDC");
   TLegend *l_xs_ZZ_compare =  new TLegend(0.1694631,0.1585366,0.4479866,0.3362369,NULL,"brNDC");
@@ -868,8 +869,8 @@ void draw_2Vtag()
   g_xs_comparison_bw_stat_bg_fat->SetMarkerStyle(24);
   g_xs_comparison_bw_stat_bg_fat->SetMarkerColor(2);
 
-  g_xs_comparison_bw_stat_bg2_fat->SetLineColor(8);
-  g_xs_comparison_bw_stat_bg2_fat->SetLineStyle(1);
+  g_xs_comparison_bw_stat_bg2_fat->SetLineColor(9);
+  g_xs_comparison_bw_stat_bg2_fat->SetLineStyle(2);
   g_xs_comparison_bw_stat_bg2_fat->SetLineWidth(3);
   g_xs_comparison_bw_stat_bg2_fat->SetMarkerStyle(24);
   g_xs_comparison_bw_stat_bg2_fat->SetMarkerColor(8);
@@ -1187,7 +1188,7 @@ void draw_2Vtag()
   l_xs_stat_fat->Draw("sames");
   l_xs_theory->Draw("sames");
 
-  p_xs_stat_fat->AddText("CMS (4.7 fb^{-1})"); 
+  p_xs_stat_fat->AddText("CMS Preliminary (4.7 fb^{-1})"); 
   p_xs_stat_fat->AddText(" #sqrt{s} = 7 TeV");
   p_xs_stat_fat->AddText("|#eta| < 2.5, |#Delta#eta| < 1.3");
   p_xs_stat_fat->SetFillColor(0);
@@ -1242,7 +1243,7 @@ void draw_2Vtag()
   l_xs_sys->Draw("sames");
   l_xs_theory->Draw("sames");
 
-  p_xs_sys->AddText("CMS (4.7 fb^{-1})"); 
+  p_xs_sys->AddText("CMS Preliminary (4.7 fb^{-1})"); 
   p_xs_sys->AddText(" #sqrt{s} = 7 TeV");
   p_xs_sys->AddText("|#eta| < 2.5, |#Delta#eta| < 1.3");
   p_xs_sys->SetFillColor(0);
@@ -1287,7 +1288,7 @@ void draw_2Vtag()
   */
   l_xs_all_fat->SetFillColor(0);
   l_xs_all_fat->SetFillStyle(0);
-  l_xs_all_fat->SetHeader("CMS (4.7 fb^{-1})");
+  l_xs_all_fat->SetHeader("CMS Preliminary (4.7 fb^{-1})");
   //  l_xs_all_fat->SetHeader("CMS Preliminary");
   //  l_xs_all_fat->AddEntry((TObject*)0,"4.7 fb^{-1}","")
   l_xs_all_fat->AddEntry(g_xs_HT_fat_WZ_1010,"WZ 95% CL (stat.only)","pL");
@@ -1339,7 +1340,7 @@ void draw_2Vtag()
 
   l_xs_comparison_bw_sys_theory_fat->SetFillColor(0);
   l_xs_comparison_bw_sys_theory_fat->SetFillStyle(0);
-  l_xs_comparison_bw_sys_theory_fat->SetHeader("CMS (4.7 fb^{-1})");
+  l_xs_comparison_bw_sys_theory_fat->SetHeader("CMS Preliminary (4.7 fb^{-1})");
   //  l_xs_comparison_bw_sys_theory_fat->SetHeader("CMS Preliminary");
   //  l_xs_comparison_bw_sys_theory_fat->AddEntry((TObject*)0,"4.7 fb^{-1}","")
   //l_xs_comparison_bw_sys_theory_fat->AddEntry(g_xs_string_over_WW_fat,"String Resonance","L");
@@ -1429,13 +1430,13 @@ void draw_2Vtag()
   p_xs_WW_sys_E->SetFillColor(0);
   p_xs_WW_sys_E->SetFillStyle(0);
   p_xs_WW_sys_E->SetBorderSize(0);
-  p_xs_WW_sys_E->AddText("CMS (4.7 fb^{-1})");
+  p_xs_WW_sys_E->AddText("CMS Preliminary (4.7 fb^{-1})");
   p_xs_WW_sys_E->AddText("#sqrt{s} = 7 TeV");
   p_xs_WW_sys_E->Draw("sames");
 	
   l_xs_WW_sys_E->SetFillColor(0);
   l_xs_WW_sys_E->SetFillStyle(0);
-//  l_xs_WW_sys_E->SetHeader("CMS (4.7 fb^{-1})");
+//  l_xs_WW_sys_E->SetHeader("CMS Preliminary (4.7 fb^{-1})");
   //  l_xs_WW_sys_E->SetHeader("CMS Preliminary");
   //  l_xs_WW_sys_E->AddEntry((TObject*)0,"4.7 fb^{-1}","")
   l_xs_WW_sys_E->AddEntry(g_xs_HT_fat_WW_1010_sys,"Observed 95% CL Upper Limit","pL");
@@ -1508,13 +1509,13 @@ void draw_2Vtag()
   p_xs_ZZ_sys_E->SetFillColor(0);
   p_xs_ZZ_sys_E->SetFillStyle(0);
   p_xs_ZZ_sys_E->SetBorderSize(0);
-  p_xs_ZZ_sys_E->AddText("CMS (4.7 fb^{-1})");
+  p_xs_ZZ_sys_E->AddText("CMS Preliminary (4.7 fb^{-1})");
   p_xs_ZZ_sys_E->AddText("#sqrt{s} = 7 TeV");
   p_xs_ZZ_sys_E->Draw("sames");
 
   l_xs_ZZ_sys_E->SetFillColor(0);
   l_xs_ZZ_sys_E->SetFillStyle(0);
-  //  l_xs_ZZ_sys_E->SetHeader("CMS (4.7 fb^{-1})");
+  //  l_xs_ZZ_sys_E->SetHeader("CMS Preliminary (4.7 fb^{-1})");
   //  l_xs_ZZ_sys_E->SetHeader("CMS Preliminary");
   //  l_xs_ZZ_sys_E->AddEntry((TObject*)0,"4.7 fb^{-1}","")
   l_xs_ZZ_sys_E->AddEntry(g_xs_HT_fat_ZZ_1010_sys,"Observed 95% CL Upper Limit","pL");
@@ -1592,13 +1593,13 @@ void draw_2Vtag()
   p_xs_WZ_sys_E->SetFillColor(0);
   p_xs_WZ_sys_E->SetFillStyle(0);
   p_xs_WZ_sys_E->SetBorderSize(0);
-  p_xs_WZ_sys_E->AddText("CMS (4.7 fb^{-1})");
+  p_xs_WZ_sys_E->AddText("CMS Preliminary (4.7 fb^{-1})");
   p_xs_WZ_sys_E->AddText("#sqrt{s} = 7 TeV");
   p_xs_WZ_sys_E->Draw("sames");
 
   l_xs_WZ_sys_E->SetFillColor(0);
   l_xs_WZ_sys_E->SetFillStyle(0);
-  //  l_xs_WZ_sys_E->SetHeader("CMS (4.7 fb^{-1})");
+  //  l_xs_WZ_sys_E->SetHeader("CMS Preliminary (4.7 fb^{-1})");
   //  l_xs_WZ_sys_E->SetHeader("CMS Preliminary");
   //  l_xs_WZ_sys_E->AddEntry((TObject*)0,"4.7 fb^{-1}","")
   l_xs_WZ_sys_E->AddEntry(g_xs_HT_fat_WZ_1010_sys,"Observed 95% CL Upper Limit","pL");
@@ -1655,20 +1656,24 @@ void draw_2Vtag()
 	
   l_xs_comparison_bw_stat_sys_fat->SetFillColor(0);
   l_xs_comparison_bw_stat_sys_fat->SetFillStyle(0);
-  l_xs_comparison_bw_stat_sys_fat->SetHeader("CMS (4.7 fb^{-1})");
+  l_xs_comparison_bw_stat_sys_fat->SetHeader("CMS Preliminary (4.7 fb^{-1})");
   //  l_xs_comparison_bw_stat_sys_fat->SetHeader("CMS Preliminary");
   //  l_xs_comparison_bw_stat_sys_fat->AddEntry((TObject*)0,"4.7 fb^{-1}","")
   l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_sys_fat, "all sys / stat","pL");
   l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_bg_fat,"bg #pm e1e2 / stat","pL");
-  l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_bg2_fat,"bg AB / stat","pL");
-  l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_bg3_fat,"bg +e1 / stat","pL");
-  l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_bg4_fat,"bg +e2 / stat","pL");
-  l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_bg6_fat,"bg -e1 / stat","pL");
-  l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_bg7_fat,"bg -e2 / stat","pL");
-  l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_lumi_fat,"Lumi / stat","pL");
+  l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_lumi_fat,"Lumi #oplus W/Z-tag eff / stat","pL");
   l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_JES_fat,"JES / stat","pL");
   l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_JER_fat,"JER / stat","pL");
   l_xs_comparison_bw_stat_sys_fat->Draw("sames");
+
+  l_xs_comparison_bw_stat_sys_fat2->SetFillColor(0);
+  l_xs_comparison_bw_stat_sys_fat2->SetFillStyle(0);
+  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg2_fat,"bg AB / stat","pL");
+  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg3_fat,"bg +e1 / stat","pL");
+  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg4_fat,"bg +e2 / stat","pL");
+  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg6_fat,"bg -e1 / stat","pL");
+  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg7_fat,"bg -e2 / stat","pL");
+  l_xs_comparison_bw_stat_sys_fat2->Draw("sames");
 
   c_xs_comparison_bw_stat_sys_fat->Update();
 
