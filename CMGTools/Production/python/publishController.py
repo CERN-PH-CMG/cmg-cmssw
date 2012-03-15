@@ -18,8 +18,7 @@ import sys, re
 
 
 class PublishController(object):
-    def __init__(self, username, password, dbsApi, force):
-        self._dbsAPI = dbsApi
+    def __init__(self, username, password, force):
         self._cmgdbAPI=CmgdbApi()
         self._username = username
         self._password = password
@@ -30,152 +29,17 @@ class PublishController(object):
     def loginValid(self):
     	return findDSOnSav.validLogin(self._username, self._password)
         
-    def chooseParent(parentName, category):
-    	if self._dbsAPI is not None:
-    		parent = parentName.lstrip("/").split("/")
-    		parentDatasets = self._dbsAPI.listProcessedDatasets(parent[0],parent[2],parent[1])
-    		if len(parentDatasets) == 0:
-    			print "No parent found, please add before preceding"
-    			return None
-    		elif len(parentDatasets) == 1:
-    			print "One dataset found: " + parentDatasets[0]['PathList'][0]
-    			answer = raw_input("Use this Dataset?(y/n)")
-    			while answer is not "y" or answer is not "n":
-    				if answer is "y":
-    					return parentDatasets[0]['PathList'][0]
-    				elif answer is "n":
-    					print "Please add desired dataset"
-    					return None
-    				else:
-    					answer = raw_input("Use this Dataset?(y/n)")
-    		else:
-    			print "Several potential parents found, please choose:"
-    			sets = []
-    			for set in parentDatasets:
-    				sets.append(set['PathList'][0])
-    			sets.append("None of above")
-    			index = self._getOption(sets)
-    			try:
-    				return parentDatasets[int(index)]
-    			except:
-    				print "Please add desired dataset"
-    				return None
-    	else:
-    		print "Searching savannah for parents"
-    		
-    		parentDatasets = findDSOnSav.getTaskID(getCastor(procds['PathList'][0]), category, self._username, self._password, True)
-    		if parentDatasets is None or len(parentDatasets) is 0:
-    			print "No parent found, please add before proceeding"
-    			return None
-    		elif len(parentDatasets) is 1:
-    			print "One dataset found: " + getNameWithID(parentDatasets[0])
-    			answer = raw_input("Use this Dataset?(y/n)")
-    			while answer is not "y" or answer is not "n":
-    				if answer is "y":
-    					return getNameWithID(parentDatasets[0])
-    				elif answer is "n":
-    					print "Please add desired dataset"
-    					return None
-    				else:
-    					answer = raw_input("Use this Dataset?(y/n)")
-    		else:
-    			print "Several potential parents found, please choose:"
-    			sets = []
-    			for set in parentDatasets:
-    				sets.append(getNameWithID(set))
-    			sets.append("None of above")
-    			index = self._getOption(sets)
-    			del(sets[-1])
-    			try:
-    				return sets[int(index)]
-    			except:
-    				print "Please add desired dataset"
-    				return None	
-            
-    def dbsPublish(self, procds):
-    	
-    	# Get file information
-        fileOps = FileOps(getCastor(procds['PathList'][0]), getDbsUser(procds['PathList'][0]),self._force)
-        
-        
-    	# Check if user has dataset files, and DO NOT allow publish if they do not
-    	if len(fileOps.getRootFiles()) == 0:
-        	raise NameError("No dataset files found on EOS, exiting")
-        	return None
-    	# Check dbsAPI is valid
-    	if self._dbsAPI is None:
-    		print "DBS not connected"
-    		return None
-    	details = procds["PathList"][0].lstrip("/").split("/")
-    	# Check that primary dataset exists
-        if not self._dbsAPI.listPrimaryDatasets(details[0]):
-        	self._dbsAPI.insertPrimaryDataset(DbsPrimaryDataset(Name=details[0],Type="test"))
-        	
-        if self._dbsAPI.listPrimaryDatasets(details[0]):
-        	parent = None
-        	if len(procds["ParentList"]) > 0:
-        		parent = procds["ParentList"][0].lstrip("/").split("/")
-        	if parent is not None:
-        		parentDatasets = self._dbsAPI.listProcessedDatasets(parent[0],parent[2],parent[1])
-        		# If only one possible parent exists, use it as parent
-        		if len(parentDatasets) == 1:
-        			procds["ParentList"][0] = parentDatasets[0]['PathList'][0]
-        		if len(parentDatasets) == 0:
-        			#if the parent is 
-        			if not re.search("---",parent[1]):
-        				self.dbsPublish(CastorToDbsFormatter(procds["ParentList"][0]).getDataset(), None)
-        			else:
-        				print "Parent dataset missing, please add parent before proceeding"
-        				return None
-        		else:
-        			"Please use specific parent name, not REGEX"
-        			return None
-        			
-                	
-        	# Check if dataset already exists
-        	dbsOutput = self._dbsAPI.listProcessedDatasets(details[0],details[2],details[1])
-        	  	
-        	# Check if self._procds doesn't exist
-        	if len(dbsOutput) == 0:
-        		print "Adding Dataset to DBS"
-        		
-        		# Add Dataset
-        		self._dbsAPI.insertProcessedDataset(procds)
-        		block = DbsFileBlock (Name=procds['PathList'][0]+"#1")
-        		# Add the corresponding file block
-        		self._dbsAPI.insertBlock(procds['PathList'][0], block)
-    		else:
-    			print "Dataset already on DBS"
-    			
-    		return self._getDbsIDs(procds['PathList'][0])
-    		
-        else:
-        	print "Primary dataset does not exist"
-        	return None
-        
+     
     def savannahPublish(self, procds, opts, comment, fileOps):
-    	# Check if user has dataset files, and DO NOT allow publish if they do not
-    	if fileOps.getRootFiles() is None or len(fileOps.getRootFiles()) == 0:
-    		taskID = findDSOnSav.getTaskID(procds['PathList'][0], opts['category_id'], self._username, self._password, False)
-    		ds = procds['PathList'][0]
-    		if taskID is None:
-    			taskID = findDSOnSav.getTaskID(getCastor(procds['PathList'][0]), opts['category_id'], self._username, self._password, False)
-    			ds = getCastor(procds['PathList'][0])
-    		#For old datasets
-    		if taskID is None:
-    			taskID = findDSOnSav.getTaskID(getCastor(procds['PathList'][0]), '100', self._username, self._password, False)
-    			ds = getCastor(procds['PathList'][0])
-        	raise NameError("No dataset found on EOS, exiting",ds, taskID)
-        	return None
-        
-        
     	test = False
     	# If item is test
     	if 'category_id' in opts:
     		if opts['category_id'] == '101': test = True
-
-    	
-    	taskID = findDSOnSav.getTaskID(procds['PathList'][0], opts['category_id'], self._username, self._password, False)
+		try:
+			taskID = findDSOnSav.getTaskID(procds['PathList'][0], opts['category_id'], self._username, self._password, False)
+		except KeyboardInterrupt:
+			raise
+    		
     	parentTaskID = findDSOnSav.getTaskID(procds['ParentList'][0], opts['category_id'], self._username, self._password, True)
     	
     	if parentTaskID is not None and len(parentTaskID) > 0:
@@ -240,30 +104,8 @@ class PublishController(object):
     	
     	return newTask, parentTaskID
     	
-		
-    def _getDbsIDs(self, path):
-    	if dbsAPI is not None:	
-    		dbsID = None
-    		parentID = None
-    		# Get ID from DBS
-    		dbsID = int(self._dbsAPI.executeQuery(query="find procds.id where dataset="+path, type='exe').split("results>")[1].split("procds.id>")[1].rstrip("</"))
-        	# Get stored Parent name
-        	parentName = self._dbsAPI.executeQuery(query="find procds.parent where dataset="+path, type='exe').split("results>")[1].split("procds.parent>")[1].rstrip("</")
-        	
-        	# Get parents ID
-        	print parentName
-        	# Create name
-        	if len(parentName) > 0:
-        		parts = path.lstrip("/").split("/")
-        		parts[1] = parentName
-        		parentName = "/" + "/".join(parts)
-        		parentID = int(self._dbsAPI.executeQuery(query="find procds.id where dataset="+parentName, type='exe').split("results>")[1].split("procds.id>")[1].rstrip("</"))
-        		
-        	return dbsID, parentID
-        else: return None, None
-    
-    
-    def cmgdbPublish(self, procds, dbsID, taskID, test, fileOps):
+
+    def cmgdbPublish(self, procds, taskID, test, fileOps):
     	if self._cmgdbAPI is None:
     		return None
     	# Get file information
