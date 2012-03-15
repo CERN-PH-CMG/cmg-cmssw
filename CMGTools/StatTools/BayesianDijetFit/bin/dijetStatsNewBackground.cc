@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
 
   double LUMI = 4677.;
 
-  double LUMIERROR=0.06; // relative error on luminosity
+  double LUMIERROR=0.045; // relative error on luminosity
   double JES=1.0;        // JES "value"
   double JER=1.0;        // JER "value"
   double JESERROR=0.022;   // relative error on JES
@@ -175,13 +175,13 @@ int main(int argc, char* argv[])
     DATASETFN="../data/lumi46fb_dataMC_data_1JetMassTag.txt";
     MININVMASS = 890.;
     MAXINVMASS = 3279.;
-    LUMIERROR = sqrt(pow(LUMIERROR,2) + pow(0.05,2));
+    LUMIERROR = sqrt(pow(LUMIERROR,2) + pow(0.13,2));
   }
   if (iResonance > 2010 && iResonance < 2020)  {
     DATASETFN="../data/lumi46fb_dataMC_data_2JetMassTag.txt";
     MININVMASS = 890.;
     MAXINVMASS = 2037.;
-    LUMIERROR = sqrt(pow(LUMIERROR,2) + pow(0.05,2) + pow(0.05,2));
+    LUMIERROR = sqrt(pow(LUMIERROR,2) + pow(0.13,2) + pow(0.13,2));
   }
 
 
