@@ -22,13 +22,14 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
   
   for(Int_t i=0;i<ev.jn;i++){
     phys.jets.push_back(PhysicsObject_Jet(LorentzVector(ev.jn_px[i],ev.jn_py[i],ev.jn_pz[i],ev.jn_en[i]), ev.jn_genid[i], ev.jn_btag1[i], ev.jn_btag2[i], ev.jn_neutHadFrac[i], ev.jn_neutEmFrac[i], ev.jn_chHadFrac[i], ev.jn_pid[i]));
+    phys.jets[i].setGenPt(ev.jn_genpt[i]);
   }
 
   for(Int_t i=0;i<ev.ajn;i++){
     phys.ajets.push_back(PhysicsObject_Jet(LorentzVector(ev.ajn_px[i],ev.ajn_py[i],ev.ajn_pz[i],ev.ajn_en[i]), ev.ajn_genid[i], ev.ajn_btag1[i], ev.ajn_btag2[i], ev.ajn_neutHadFrac[i], ev.ajn_neutEmFrac[i], ev.ajn_chHadFrac[i], ev.ajn_pid[i]));
   }
-//  //order the jet vector
-//  std::sort(phys.ajets.begin(), phys.ajets.end(), JetPtOrdering);
+  //  //order the jet vector
+  //  std::sort(phys.ajets.begin(), phys.ajets.end(), JetPtOrdering);
   
   for(Int_t i=0; i<ev.nmet; i++){
     phys.met.push_back(  LorentzVector( ev.met_pt[i]*cos(ev.met_phi[i]), ev.met_pt[i]*sin(ev.met_phi[i]), 0, ev.met_pt[i]) );

@@ -111,6 +111,7 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("jn_neutEmFrac",   evSummary_.jn_neutEmFrac,   "jn_neutEmFrac[jn]/F");
   t_->Branch("jn_chHadFrac",   evSummary_.jn_chHadFrac,    "jn_chHadFrac[jn]/F");
   t_->Branch("jn_pid",   evSummary_.jn_pid,    "jn_pid[jn]/F");
+  t_->Branch("jn_genpt",   evSummary_.jn_genpt,    "jn_genpt[jn]/F");
 
   //selected associated jets 
   t_->Branch("ajn",         &evSummary_.ajn,         "ajn/I");
@@ -126,7 +127,6 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("ajn_neutEmFrac",   evSummary_.ajn_neutEmFrac,   "ajn_neutEmFrac[ajn]/F");
   t_->Branch("ajn_chHadFrac",   evSummary_.ajn_chHadFrac,    "ajn_chHadFrac[ajn]/F");
   t_->Branch("ajn_pid",   evSummary_.ajn_pid,    "ajn_pid[ajn]/F");
-  
 
   //primary vertex
   t_->Branch("vtx_px",    &evSummary_.vtx_px,      "vtx_px/F");
@@ -293,6 +293,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("jn_neutEmFrac") ->SetAddress(evSummary_.jn_neutEmFrac);
   t_->GetBranch("jn_chHadFrac") ->SetAddress(evSummary_.jn_chHadFrac);
   t_->GetBranch("jn_pid") ->SetAddress(evSummary_.jn_pid);
+  if(t_->GetBranch("jn_genpt")) t_->GetBranch("jn_genpt")->SetAddress(evSummary_.jn_genpt);
 
   //selected jets
   t_->GetBranch("ajn")        ->SetAddress( &evSummary_.ajn);

@@ -53,10 +53,14 @@ class PhysicsObject_Lepton : public LorentzVector
 class PhysicsObject_Jet : public LorentzVector
 {
 public :
-     PhysicsObject_Jet(LorentzVector vec, Int_t genid_=0, Float_t btag1_=0, Float_t btag2_=0, Float_t neutHadFrac_=0, Float_t neutEmFrac_=0, Float_t chHadFrac_=0, Int_t pid_=0):
-    LorentzVector(vec), genid(genid_), btag1(btag1_), btag2(btag2_), neutHadFrac(neutHadFrac_), neutEmFrac(neutEmFrac_), chHadFrac(chHadFrac_), pid(pid_) {}
+  PhysicsObject_Jet(LorentzVector vec, Int_t genid_=0, Float_t btag1_=0, Float_t btag2_=0, Float_t neutHadFrac_=0, Float_t neutEmFrac_=0, Float_t chHadFrac_=0, Int_t pid_=0):
+    LorentzVector(vec), genid(genid_), btag1(btag1_), btag2(btag2_), neutHadFrac(neutHadFrac_), neutEmFrac(neutEmFrac_), chHadFrac(chHadFrac_), pid(pid_) 
+    {
+      genPt=0;
+    }
+    void setGenPt(float val) { genPt=val; }
     Int_t genid;
-    Float_t btag1, btag2, neutHadFrac, neutEmFrac, chHadFrac;
+    Float_t btag1, btag2, neutHadFrac, neutEmFrac, chHadFrac, genPt;
     Int_t pid;
 };
 bool JetPtOrdering (PhysicsObject_Jet i,PhysicsObject_Jet j);

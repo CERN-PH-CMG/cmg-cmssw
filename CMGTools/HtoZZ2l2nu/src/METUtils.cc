@@ -1,15 +1,16 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2011/11/07 08:48:53 $
- *  $Revision: 1.2 $
- *  \author G. Cerminara & D. Trocino
+ *  $Date: 2011/11/07 09:08:17 $
+ *  $Revision: 1.3 $
+ *  \author G. Cerminara & D. Trocino & P. Silva & L. Quertenmont
  */
 
 #include "CMGTools/HtoZZ2l2nu/interface/METUtils.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "TVector2.h"
 #include "TMath.h"
+#include "TRandom.h"
 
 using namespace std;
 
@@ -294,4 +295,27 @@ LorentzVector redMET(RedMetType Type, const LorentzVector& theLepton1, double si
 
 
 
+  //
+  LorentzVector smearedJet(const LorentzVector &origJet)
+  {
+    //smearing factors are described in https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
+    double eta=fabs(origJet.eta());
+    double ptSF(1.0), ptSF_err(0.05);
+    if(eta<0.5)                  { ptSF=1.052; ptSF_err=sqrt(pow(0.012,2)+pow(0.5*(0.062+0.061),2)); }
+    else if(eta>=0.5 && eta<1.1) { ptSF=1.057; ptSF_err=sqrt(pow(0.012,2)+pow(0.5*(0.056+0.066),2)); }
+    else if(eta>=1.1 && eta<1.7) { ptSF=1.096; ptSF_err=sqrt(pow(0.017,2)+pow(0.5*(0.063+0.062),2)); }
+    else if(eta>=1.7 && eta<2.3) { ptSF=1.134; ptSF_err=sqrt(pow(0.035,2)+pow(0.5*(0.087+0.085),2)); }
+    else if(eta>=2.3 && eta<5.0) { ptSF=1.288; ptSF_err=sqrt(pow(0.127,2)+pow(0.5*(0.155+0.153),2)); }
+    
+    //re-scale the pT components and recompute the jet energy
+    double rndPtSF=gRandom->Gaus(ptSF,ptSF_err);
+    double px(origJet.px()*rndPtSF), py(origJet.py()*rndPtSF), pz(origJet.pz()), mass(origJet.mass());
+    double en = sqrt(mass*mass+px*px+py*py+pz*pz);
+
+    //return new kinematics
+    return LorentzVector(px,py,pz,en);
+  }
+
 }
+
+

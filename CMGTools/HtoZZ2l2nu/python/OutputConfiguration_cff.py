@@ -39,6 +39,7 @@ def configureOutput(process,selPaths=['llPath', 'photonPath'],outFile='/tmp/patT
                 'keep recoPFCandidates_particleFlow_*_*']               # particle flow
     outputCmds.extend( patEventContentNoCleaning )
     outputCmds.extend( patTriggerEventContent )
+    #outputCmds.extend( ['drop *_selectedPatJets*_pfCandidates_*'] )
     process.out.outputCommands = outputCmds
 
 

@@ -59,8 +59,6 @@ int main(int argc, char* argv[])
   TString outdir=runProcess.getParameter<std::string>("outdir");
   bool isMC = runProcess.getParameter<bool>("isMC");
   int mctruthmode = runProcess.getParameter<int>("mctruthmode");
-  int evStart=runProcess.getParameter<int>("evStart");
-  int evEnd=runProcess.getParameter<int>("evEnd");
   TString dirname = runProcess.getParameter<std::string>("dirName");
   std::vector<double> dataPileupDistributionDouble = runProcess.getParameter< std::vector<double> >("datapileup");
   
@@ -125,16 +123,14 @@ int main(int argc, char* argv[])
 	  for(std::map<TString,TString>::iterator it = metTypes.begin(); it!= metTypes.end(); it++)
 	    {
 	      metTypeValues[it->first]=LorentzVector(0,0,0,0);
-	      //controlHistos.addHistogram( new TH1F( subcat+TString("met_") + it->first, ";"+it->second+";Events", 100,0,500) );
 	      controlHistos.addHistogram( new TH1F( subcat+TString("met_") + it->first, ";"+it->second+";Events", nMetBins,metAxis) );
 	      controlHistos.addHistogram( new TH1F( subcat+TString("met_") + it->first+TString("L"), ";"+it->second+"_{L}/q_{T};Events", 50,0,2) );
-	      //controlHistos.addHistogram( new TH1F( subcat+TString("met_") + it->first+TString("T"), ";"+it->second+"_{T}/q_{T};Events", 50,0,2) );
-	      //controlHistos.addHistogram( new TH2F( subcat+TString("met_") + it->first+"vspu", ";Pileup events;"+it->second+";Events", 25,0,25,100,0,500) );
 	      controlHistos.addHistogram( new TH2F( subcat+TString("met_") + it->first+"vsht", ";H_{T};"+it->second+";Events", 25,0,250,25,0,250) );
 	    }
 	  
 	}
     }
+  TH1F* Hcutflow     = (TH1F*) controlHistos.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,3,0,3) ) ;
 
   //open the file and get events tree
   TFile *file = TFile::Open(url);
@@ -146,16 +142,11 @@ int main(int argc, char* argv[])
       file->Close();
       return -1;
     }
-  
-  
-  //MC normalization (to 1/pb)
-  TH1F* Hcutflow     = (TH1F*) controlHistos.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,3,0,3) ) ;
   if(isMC)
     {
       TH1F *cutflowH = (TH1F *) file->Get("evAnalyzer/h2zz/cutflow");
       Hcutflow->SetBinContent(1,cutflowH ? cutflowH->GetBinContent(1):1.0);
     }
-
    
    //pileup reweighting
    std::vector<float> dataPileupDistribution; for(unsigned int i=0;i<dataPileupDistributionDouble.size();i++){dataPileupDistribution.push_back(dataPileupDistributionDouble[i]);}
@@ -171,11 +162,10 @@ int main(int argc, char* argv[])
    gROOT->cd();  //THIS LINE IS NEEDED TO MAKE SURE THAT HISTOGRAM INTERNALLY PRODUCED IN LumiReWeighting ARE NOT DESTROYED WHEN CLOSING THE FILE 
    edm::LumiReWeighting LumiWeights(mcPileupDistribution,dataPileupDistribution);
    
-
-
   //run the analysis
   std::set<int> trigList;
-  for( int iev=evStart; iev<evEnd; iev++)
+  int evStart(0),evEnd(evSummaryHandler.getEntries());
+  for( int iev=0; iev<evEnd; iev++)
     {
       if(iev%1000==0) printf("\r [ %d/100 ] ",int(100*float(iev-evStart)/float(evEnd)));
       evSummaryHandler.getEntry(iev);
@@ -188,7 +178,7 @@ int main(int argc, char* argv[])
       if(mctruthmode==22 && !isGammaEvent) continue;
       if(mctruthmode==1 && isGammaEvent) continue;
       if(!isGammaEvent && ev.cat != EE && ev.cat !=MUMU) continue;
-
+      
       float weight = 1.0;
       if(isMC && !isGammaEvent)	{ weight = LumiWeights.weight( ev.ngenITpu ); }
 
@@ -221,25 +211,23 @@ int main(int argc, char* argv[])
 	  dilCats.push_back("ll");
 	  triggerThr=gammaEvHandler.findTriggerCategoryFor( gamma.pt() );
 	}
-      
+
       //minimum threshold
-      if(gamma.pt()<55) continue;
+      if(gamma.pt()<25) continue;
       
       TString phoCat("photon");
       phoCat += triggerThr;
 
       //select jets
-      int njets=eventClassifComp.GetVBFJetCount();//CentralJetCount();
+      int njets=eventClassifComp.GetVBFJetCount();
       int nincjets(0), nbjets(0);
       std::vector<LorentzVector> jetsp4,smearjetsp4;
       LorentzVector jetSmearDiff(0,0,0,0);
       float ht(0.),htsmear(0.);
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
 	{
-
 	  bool passTCHEL(phys.jets[ijet].btag1>2);
 	  double dr=deltaR(phys.jets[ijet],gamma);
-	  LorentzVector jv=phys.jets[ijet]+gamma;
 	  if(dr<0.1) continue;
 
 	  //jet counting
@@ -431,6 +419,9 @@ int main(int argc, char* argv[])
 	    }
 	}    
     }
+
+  //all done with the events file
+  file->Close();
   
   for(std::set<int>::iterator it = trigList.begin();
       it != trigList.end();
@@ -445,12 +436,9 @@ int main(int argc, char* argv[])
   outUrl += "/";
   outUrl += gSystem->BaseName(url);
   TFile *ofile=TFile::Open(outUrl, "recreate");
-  ofile->cd();
   controlHistos.Write();
   ofile->Close();
 
-  //all done with the events file
-  file->Close();
 }  
 
 

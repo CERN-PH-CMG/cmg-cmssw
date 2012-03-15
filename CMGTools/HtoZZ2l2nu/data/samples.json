@@ -153,8 +153,9 @@
 	       "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM",
 	       "aoddir":["/store/cmst3/group/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V3/"],
 	       "patdir":["/store/cmst3/user/querten/12_02_20_HZZ2l2v_pat/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/"],
-               "split":3,
-                "xsec":3048
+	       "patdirv2":["/store/cmst3/user/psilva/Data4/G/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
+	       "split":3,
+               "xsec":3048
               }
           ]
 	},

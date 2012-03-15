@@ -78,8 +78,8 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys)
   if( phys.gammas.size()==0 ) return isGoodEvent_;
   LorentzVector gamma=phys.gammas[0];
   if(gamma.pt()<20) return isGoodEvent_;
-  if(fabs(gamma.eta())>1.4442) return isGoodEvent_;
-  
+  //if(fabs(gamma.eta())>1.4442) return isGoodEvent_;
+
   //gamma can't be softer than the trigger 
   //fix-me use trigger matching next time
   for(size_t icat=0; icat<gammaCats_.size()-1; icat++)
