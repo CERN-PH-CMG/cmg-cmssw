@@ -131,6 +131,7 @@ for proc in procList :
 			os.system('submit2batch.sh -q' + queue + ' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
     
 #run plotter over results
-if(not subtoBatch) :
-    os.system('mkdir -p ' + outdir + '/plots')
-    os.system('runPlotterOverSamples.py -j ' + samplesDB + ' -l ' + str(lumi) + ' -i ' + outdir + ' -o ' + outdir + '/plots -d localAnalysis')
+#if(not subtoBatch) :
+#    os.system('mkdir -p ' + outdir + '/plots')
+#    #os.system('runPlotterOverSamples.py -j ' + samplesDB + ' -l ' + str(lumi) + ' -i ' + outdir + ' -o ' + outdir + '/plots -d localAnalysis')
+#    os.system('runPlotter --json ' + samplesDB + ' --iLumi ' + str(lumi) + ' --inDir ' + outdir + ' --outDir ' + outdir + '/plots')

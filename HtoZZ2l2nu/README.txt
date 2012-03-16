@@ -40,10 +40,17 @@ runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -n  1
 runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -n  1 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/querten/12_03_13_HZZ2l2v_ntuples/split" -t MC_VBF
 runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -n  1 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/querten/12_03_13_HZZ2l2v_ntuples/split" -t Data
 
+runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/photon-samples.json -n  1 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/psilva/12_03_15_HZZ2l2v_ntuples/split"
+
 #
 # merge the ntuples
 #
+<<<<<<< README.txt
+haddOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -d /store/cmst3/user/querten/12_03_01_HZZ2l2v_ntuples/split/ -o /store/cmst3/user/querten/12_03_01_HZZ2l2v_ntuples/
+haddOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/photon-samples.json -d /store/cmst3/user/psilva/12_03_15_HZZ2l2v_ntuples/split -o /store/cmst3/user/psilva/12_03_15_HZZ2l2v_ntuples
+=======
 haddOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -d /store/cmst3/user/querten/12_03_13_HZZ2l2v_ntuples/split/ -o /store/cmst3/user/querten/12_03_13_HZZ2l2v_ntuples/
+>>>>>>> 1.29
 
 #
 # run the analysis
@@ -57,7 +64,12 @@ runLocalAnalysisOverSamples.py -e runOnEventSummary -j $CMSSW_BASE/src/CMGTools/
 #
 
 ## generate unweigthed distributions
+<<<<<<< README.txt
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples.json -d /store/cmst3/user/psilva/12_03_14_HZZ2l2v_ntuples -o ~/scratch0/gamma/  -c test/runAnalysis_cfg.py.templ -s 8nh
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples.json -d /store/cmst3/user/psilva/12_03_15_HZZ2l2v_ntuples -o ~/scratch0/gamma/  -c test/runAnalysis_cfg.py.templ -s 8nh
+=======
 runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples.json -d /castor/cern.ch/cms//store/cmst3/user/psilva/HZZ_11.11.24 -o ~/scratch0/gamma/  -c test/runAnalysis_cfg.py.templ -s 8nh
+>>>>>>> 1.29
 
 ## generate plotter.root
 runPlotter --iLumi 4616 --inDir ~/scratch0/gamma/ --outDir /tmp/psilva/ --json data/photon-samples.json
