@@ -5,5 +5,6 @@
  <bin name="runMVAStudy" file="runMVAStudy.cc"></bin>
  <bin name="runPlotter" file="runPlotter.cc"></bin>
  <bin name="runEffStudy" file="runEffStudy.cc"></bin>
+ <bin name="runVBF" file="runVBF.cc"></bin>
 </environment>
 <Flags CXXFLAGS="-g"/>

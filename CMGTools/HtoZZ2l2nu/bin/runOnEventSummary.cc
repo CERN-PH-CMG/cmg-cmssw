@@ -406,8 +406,14 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(10,"jet-vtx = 1");
   h->GetXaxis()->SetBinLabel(11,"jet-vtx = 2");
   mon.addHistogram( h );
+
+
   mon.addHistogram( new TH1F ("VBFMinEta", ";VBFMinEta", 100, 0,10) );                                                                                                                                                             
   mon.addHistogram( new TH1F ("VBFMaxEta", ";VBFMaxEta", 100, 0,10) );     
+  mon.addHistogram( new TH2F ("VBFMinEtavspu", ";VBFMinEtavspu",35, 0, 35, 100, 0,10) );
+  mon.addHistogram( new TH2F ("VBFMaxEtavspu", ";VBFMaxEtavspu",35, 0, 35, 100, 0,10) );
+  mon.addHistogram( new TH2F ("VBFThirdJetPtvspu", ";VBFThirdJetPtvspu",35, 0, 35, 100, 0,30) );
+  mon.addHistogram( new TH2F ("VBFThirdJetEtavspu", ";VBFThirdJetEtavspu",35, 0, 35, 100, 0,10) );
   mon.addHistogram( new TH1F ("VBFdEtaInc", ";#Delta#eta", 100, 0,10) );
   mon.addHistogram( new TH1F ("VBFiMassInc",";Inv. Mass", 100, 0.,2000) );
   mon.addHistogram( new TH1F ("VBFcenLeptonVetoInc",";Central Lepton Veto", 10, 0.,10) );
@@ -424,13 +430,25 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F ("VBFiMass3rdlepton",";Inv. Mass", 100, 0.,2000) );
   mon.addHistogram( new TH1F ("VBFcen30JetVeto3rdlepton",";Central 30 Jet Veto", 10, 0.,10) );
   mon.addHistogram( new TH1F ("VBFNBJets303rdlepton", ";N BJets (pT>30);Events", 10,0,10) );
+  mon.addHistogram( new TH1F ("VBFtagvspu_noveto", ";#generated vertices", 35, 0,35) );
   mon.addHistogram( new TH1F ("VBFtagvspu", ";#generated vertices", 35, 0,35) );
   mon.addHistogram( new TH1F ("VBFtagtk1vspu", ";#generated vertices", 35, 0,35) );
   mon.addHistogram( new TH1F ("VBFtagtk2vspu", ";#generated vertices", 35, 0,35) );
-  mon.addHistogram( new TH1F ("VBFtagvspu_noveto", ";#generated vertices", 35, 0,35) );
-  mon.addHistogram( new TH1F ("VBFtagtk1vspu_noveto", ";#generated vertices", 35, 0,35) );
-  mon.addHistogram( new TH1F ("VBFtagtk2vspu_noveto", ";#generated vertices", 35, 0,35) );
+  mon.addHistogram( new TH1F ("VBFtag3rd20vspu", ";#generated vertices", 35, 0,35) );
+  mon.addHistogram( new TH1F ("VBFtag3rd25vspu", ";#generated vertices", 35, 0,35) );
+  mon.addHistogram( new TH1F ("VBFtagvspu_noveto_cen", ";#generated vertices", 35, 0,35) );
+  mon.addHistogram( new TH1F ("VBFtagvspu_cen", ";#generated vertices", 35, 0,35) ); 
+  mon.addHistogram( new TH1F ("VBFtagtk1vspu_cen", ";#generated vertices", 35, 0,35) );
+  mon.addHistogram( new TH1F ("VBFtagtk2vspu_cen", ";#generated vertices", 35, 0,35) );
+  mon.addHistogram( new TH1F ("VBFtag3rd20vspu_cen", ";#generated vertices", 35, 0,35) );
+  mon.addHistogram( new TH1F ("VBFtagvspu_fwd", ";#generated vertices", 35, 0,35) ); 
+  mon.addHistogram( new TH1F ("VBFtagtk1vspu_fwd", ";#generated vertices", 35, 0,35) );
+  mon.addHistogram( new TH1F ("VBFtagtk2vspu_fwd", ";#generated vertices", 35, 0,35) );
+
   mon.addHistogram( new TH1F ("VBFtotalvspu", ";#generated vertices", 35, 0,35) );                        
+  mon.addHistogram( new TH1F ("VBFtotalvspu_cen", ";#generated vertices", 35, 0,35) );
+  mon.addHistogram( new TH1F ("VBFtotalvspu_fwd", ";#generated vertices", 35, 0,35) );
+
   mon.addHistogram( new TH2F ("VBFdEtavspu", ";#generated vertices;#Delta #eta", 35, 0,35,  60, -6,6) );
   mon.addHistogram( new TH2F ("VBFdEtatkvspu", ";#generated vertices;#Delta #eta", 35, 0,35,  60, -6,6) );
   mon.addHistogram( new TH2F ("VBFchargedF1vspu", ";#generated vertices;charged fraction", 35, 0,35,  100, 0,1) );
@@ -450,6 +468,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F ("VBFNJets30tk", ";VBFNJets30tk", 20, 0,20) );
   mon.addHistogram( new TH2F ("VBFNJets30tkvspu", ";VBFNJets30tkvspu", 35, 0,35, 40, 0,40) );
   mon.addHistogram( new TH2F ("VBFTaggedVsEta", ";Eta;Tagging", 20, 0,5, 100, 0, 1) );
+
 
 
 
@@ -589,7 +608,7 @@ int main(int argc, char* argv[])
       delete histo;
   }
   while(mcPileupDistribution.size()<dataPileupDistribution.size())  mcPileupDistribution.push_back(0.0);
-  while(mcPileupDistribution.size()>dataPileupDistribution.size())  dataPileupDistribution.push_back(0.0);
+  while(mcPileupDistribution.size()>dataPileupDistribution.size())dataPileupDistribution.push_back(0.0);
   gROOT->cd();  //THIS LINE IS NEEDED TO MAKE SURE THAT HISTOGRAM INTERNALLY PRODUCED IN LumiReWeighting ARE NOT DESTROYED WHEN CLOSING THE FILE
   edm::LumiReWeighting LumiWeights(mcPileupDistribution,dataPileupDistribution);
   reweight::PoissonMeanShifter PShiftUp(+0.6);
@@ -1104,8 +1123,8 @@ int main(int argc, char* argv[])
       LorentzVector VBFSyst;
 
       if(passZmass){
-          int VBFNJets15 = 0; int VBFNJets15tk = 0; for(size_t ijet=0; ijet<phys.jets.size(); ijet++){if(phys.jets[ijet].pt()>15){VBFNJets15++; if(phys.jets[ijet].chHadFrac>0.15)VBFNJets15tk++;} }
-          int VBFNJets30 = 0; int VBFNJets30tk = 0; for(size_t ijet=0; ijet<phys.jets.size(); ijet++){if(phys.jets[ijet].pt()>30){VBFNJets30++; if(phys.jets[ijet].chHadFrac>0.15)VBFNJets30tk++;} }
+          int VBFNJets15 = 0; int VBFNJets15tk = 0; for(size_t ijet=0; ijet<phys.jets.size(); ijet++){if(phys.jets[ijet].pt()>15){VBFNJets15++; if(phys.jets[ijet].chHadFrac>0.25)VBFNJets15tk++;} }
+          int VBFNJets30 = 0; int VBFNJets30tk = 0; for(size_t ijet=0; ijet<phys.jets.size(); ijet++){if(phys.jets[ijet].pt()>30){VBFNJets30++; if(phys.jets[ijet].chHadFrac>0.25)VBFNJets30tk++;} }
           mon.fillHisto("VBFNJets15"  ,tags_full,    VBFNJets15 ,iweight);
           mon.fill2DHisto("VBFNJets15vspu"  ,tags_full,    ev.ngenITpu,  VBFNJets15 ,1);
           mon.fillHisto("VBFNJets30"  ,tags_full,    VBFNJets30 ,iweight);
@@ -1132,17 +1151,17 @@ int main(int argc, char* argv[])
              }else{             if(zll.eta()>MinEta && zll.eta()<MaxEta) VBFCentralLeptons=2;
              }
 
-
-             if(phys.jets[0].chHadFrac>0.15)VBFNJetsAssoc++;
-             if(phys.jets[1].chHadFrac>0.15)VBFNJetsAssoc++;
+             VBFNJetsAssoc=0;
+             if(phys.jets[0].chHadFrac>0.25)VBFNJetsAssoc++;
+             if(phys.jets[1].chHadFrac>0.25)VBFNJetsAssoc++;
 
              for(size_t ijet=2; ijet<phys.jets.size(); ijet++){
                  if(phys.jets[ijet].pt()<15)continue;
                  if(phys.jets[ijet].eta()>MinEta && phys.jets[ijet].eta()<MaxEta)VBFCentral15Jets++;
-                 if(phys.jets[ijet].eta()>MinEta && phys.jets[ijet].eta()<MaxEta && phys.jets[ijet].chHadFrac>0.15)VBFCentral15Jetstk++;
+                 if(phys.jets[ijet].eta()>MinEta && phys.jets[ijet].eta()<MaxEta && phys.jets[ijet].chHadFrac>0.25)VBFCentral15Jetstk++;
                  if(phys.jets[ijet].pt()<30)continue; 
                  if(phys.jets[ijet].eta()>MinEta && phys.jets[ijet].eta()<MaxEta)VBFCentral30Jets++; 
-                 if(phys.jets[ijet].eta()>MinEta && phys.jets[ijet].eta()<MaxEta && phys.jets[ijet].chHadFrac>0.15)VBFCentral30Jetstk++;
+                 if(phys.jets[ijet].eta()>MinEta && phys.jets[ijet].eta()<MaxEta && phys.jets[ijet].chHadFrac>0.25)VBFCentral30Jetstk++;
                  if(phys.jets[ijet].btag1>1.7) VBFNBJets++;
              }
           
@@ -1203,18 +1222,57 @@ int main(int argc, char* argv[])
          if(redMet>50 &&                VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto )mon.fill2DHisto("VBFdEtaiMassNM1C2" ,tags_full,    fabs(VBFdEta), VBFSyst.M(), iweight);
 
          mon.fillHisto("VBFtotalvspu"      ,tags_full,    ev.ngenITpu   ,1);
+         if(fabs(VBFMinEta)<2.4){
+            mon.fillHisto("VBFtotalvspu_cen"      ,tags_full,    ev.ngenITpu   ,1);
+         }else{
+            mon.fillHisto("VBFtotalvspu_fwd"      ,tags_full,    ev.ngenITpu   ,1);
+         }
+
+
+
+	 if(VBFPass2Jet30 && VBFPassdEtaCut && VBFPassiMCut){
+            mon.fillHisto("VBFtagvspu_noveto"      ,tags_full,    ev.ngenITpu   ,1);
+
+            if(fabs(VBFMinEta)<2.4){
+               mon.fillHisto("VBFtagvspu_noveto_cen"      ,tags_full,    ev.ngenITpu   ,1);
+            }else{
+               mon.fillHisto("VBFtagvspu_noveto_fwd"      ,tags_full,    ev.ngenITpu   ,1);
+            } 
+
+         }
+
          if(isVBF){
             mon.fillHisto("VBFMinEta"  ,tags_full,    VBFMinEta ,iweight);
             mon.fillHisto("VBFMaxEta"  ,tags_full,    VBFMaxEta ,iweight);
+
+            mon.fill2DHisto("VBFMinEtavspu"  ,tags_full, ev.ngenITpu,   VBFMinEta ,1);
+            mon.fill2DHisto("VBFMaxEtavspu"  ,tags_full, ev.ngenITpu,   VBFMaxEta ,1);
+
+            if(phys.jets.size()>2){
+               mon.fill2DHisto("VBFThirdJetPtvspu"  ,tags_full, ev.ngenITpu, phys.jets[2].pt()   ,1);
+               if(phys.jets[2].pt()>20){
+               mon.fill2DHisto("VBFThirdJetEtavspu"  ,tags_full, ev.ngenITpu, fabs(phys.jets[2].eta())   ,1);
+               }
+            }
+
             mon.fillHisto("VBFtagvspu"      ,tags_full,    ev.ngenITpu   ,1); 
             if(VBFNJetsAssoc>=1)mon.fillHisto("VBFtagtk1vspu"      ,tags_full,    ev.ngenITpu   ,1);
             if(VBFNJetsAssoc>=2)mon.fillHisto("VBFtagtk2vspu"      ,tags_full,    ev.ngenITpu   ,1);
+
+            if(fabs(VBFMinEta)<2.4){
+               mon.fillHisto("VBFtagvspu_cen"      ,tags_full,    ev.ngenITpu   ,1);
+               if(VBFNJetsAssoc>=1)mon.fillHisto("VBFtagtk1vspu_cen"      ,tags_full,    ev.ngenITpu   ,1);
+               if(VBFNJetsAssoc>=2)mon.fillHisto("VBFtagtk2vspu_cen"      ,tags_full,    ev.ngenITpu   ,1);
+            }else{
+               mon.fillHisto("VBFtagvspu_fwd"      ,tags_full,    ev.ngenITpu   ,1);
+               if(VBFNJetsAssoc>=1)mon.fillHisto("VBFtagtk1vspu_fwd"      ,tags_full,    ev.ngenITpu   ,1);
+               if(VBFNJetsAssoc>=2)mon.fillHisto("VBFtagtk2vspu_fwd"      ,tags_full,    ev.ngenITpu   ,1);
+            }
+
+            if(phys.jets.size()<=2 || phys.jets[2].pt()<=20)mon.fillHisto("VBFtag3rd20vspu"      ,tags_full,    ev.ngenITpu   ,1);
+            if(phys.jets.size()<=2 || phys.jets[2].pt()<=25)mon.fillHisto("VBFtag3rd25vspu"      ,tags_full,    ev.ngenITpu   ,1);
          }
-	 if(VBFPass2Jet30 && VBFPassdEtaCut && VBFPassiMCut){
-            mon.fillHisto("VBFtagvspu_noveto"      ,tags_full,    ev.ngenITpu   ,1);
-            if(VBFNJetsAssoc>=1)mon.fillHisto("VBFtagtk1vspu_noveto"      ,tags_full,    ev.ngenITpu   ,1);
-            if(VBFNJetsAssoc>=2)mon.fillHisto("VBFtagtk2vspu_noveto"      ,tags_full,    ev.ngenITpu   ,1);
-         }
+
 
          if(VBFPass2Jet30 && VBFPassiMCut)mon.fill2DHisto("VBFdEtavspu", tags_full, ev.ngenITpu, VBFdEta, 1);
          if(VBFPass2Jet30 && VBFPassiMCut && VBFNJetsAssoc>=1)mon.fill2DHisto("VBFdEtatkvspu", tags_full, ev.ngenITpu, VBFdEta, 1);
