@@ -198,8 +198,8 @@ int main(int argc, char* argv[])
 	  hoe        = phys.gammas[0].hoe;
 	  gamma      = gammaEvHandler.massiveGamma("ll");
 	  triggerThr = gammaEvHandler.triggerThr();
-	  if(r9>0.94 && sietaieta<0.0106 && sietaieta>0.) passTightGammaId=true;
-	  //if(sietaieta>0.) passTightGammaId=true;
+	  //if(r9>0.94 && sietaieta<0.0106 && sietaieta>0.) passTightGammaId=true;
+	  if(sietaieta>0.) passTightGammaId=true;
 	}
       else
 	{
@@ -213,7 +213,9 @@ int main(int argc, char* argv[])
 	}
 
       //minimum threshold
-      if(gamma.pt()<25) continue;
+      //if(gamma.pt()<25) continue;
+      if(gamma.pt()<55 || fabs(gamma.eta())>1.4442) continue;
+
       
       TString phoCat("photon");
       phoCat += triggerThr;

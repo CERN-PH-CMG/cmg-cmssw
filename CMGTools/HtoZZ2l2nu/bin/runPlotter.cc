@@ -346,7 +346,7 @@ void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, 
       while(SavePath.find(")")!=std::string::npos)SavePath.replace(SavePath.find(")"),1,"");
       while(SavePath.find("^")!=std::string::npos)SavePath.replace(SavePath.find("^"),1,"");
       while(SavePath.find("/")!=std::string::npos)SavePath.replace(SavePath.find("/"),1,"-");
-      SavePath = outDir + SavePath;
+      if(outDir.size()) SavePath = outDir +"/"+ SavePath;
       system(string(("rm -f ") + SavePath).c_str());
       c1->SaveAs(SavePath.c_str());
       delete c1;
@@ -443,7 +443,7 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    while(SavePath.find(")")!=std::string::npos)SavePath.replace(SavePath.find(")"),1,"");
    while(SavePath.find("^")!=std::string::npos)SavePath.replace(SavePath.find("^"),1,"");
    while(SavePath.find("/")!=std::string::npos)SavePath.replace(SavePath.find("/"),1,"-");
-   SavePath = outDir + SavePath;
+   if(outDir.size()) SavePath = outDir +"/"+ SavePath; 
    system(string(("rm -f ") + SavePath).c_str());
    c1->SaveAs(SavePath.c_str());
    for(unsigned int d=0;d<ObjectToDelete.size();d++){delete ObjectToDelete[d];}ObjectToDelete.clear();
@@ -630,7 +630,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    while(SavePath.find(")")!=std::string::npos)SavePath.replace(SavePath.find(")"),1,"");
    while(SavePath.find("^")!=std::string::npos)SavePath.replace(SavePath.find("^"),1,"");
    while(SavePath.find("/")!=std::string::npos)SavePath.replace(SavePath.find("/"),1,"-");
-   SavePath = outDir + SavePath;
+   if(outDir.size()) SavePath = outDir +"/"+ SavePath;
    system(string(("rm -f ") + SavePath).c_str());
    c1->SaveAs(SavePath.c_str());
    delete c1;
