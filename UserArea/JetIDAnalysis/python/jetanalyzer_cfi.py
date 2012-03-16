@@ -10,7 +10,7 @@ jetanalyzer = cms.EDAnalyzer('JetAnalyzer',
  dataFlag   = cms.untracked.bool(False),
  computeTMVA= cms.untracked.bool(True),
  impactParTkThreshold = cms.untracked.double(0.) ,
- tmvaWeights = cms.untracked.string("/data/malberti/CMGTools/CMSSW_4_4_3/src/CMGTools/External/data/mva_JetID.weights.xml"),
+ tmvaWeights = cms.untracked.string("CMGTools/External/data/mva_JetID.weights.xml"),
  tmvaMethod  = cms.untracked.string("JetID")                  
                              
                              
