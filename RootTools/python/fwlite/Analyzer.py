@@ -58,14 +58,15 @@ class Analyzer(object):
         '''Automatically called by Looper, for all analyzers.
         each analyzer in the sequence will be passed the same event instance.
         each analyzer can access, modify, and store event information, of any type.'''
-        print self.cfg_ana.name 
+        print self.cfg_ana.name
+        self.readCollections( iEvent )
 
     def readCollections(self, iEvent ):
         '''You must call this function at the beginning of the process
         function of your child analyzer.'''
-        if not self.beginLoopCalled:
-            # necessary in case the user calls process to go straight to a given event, before looping
-            self.beginLoop()
+        # if not self.beginLoopCalled:
+        #    # necessary in case the user calls process to go straight to a given event, before looping
+        #    self.beginLoop()
         for str,handle in self.handles.iteritems():
             handle.Load( iEvent )
         if self.cfg_comp.isMC:

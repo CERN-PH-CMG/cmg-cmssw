@@ -116,6 +116,7 @@ class DiLeptonAnalyzer( Analyzer ):
                 )
         else:
             return False
+
         return True
 
 
@@ -125,7 +126,6 @@ class DiLeptonAnalyzer( Analyzer ):
             'cmgTriggerObjectSel',
             'std::vector<cmg::TriggerObject>'
             )
-
     
     def leptonAccept(self, leptons):
         '''Should implement a default version running on event.leptons.'''
