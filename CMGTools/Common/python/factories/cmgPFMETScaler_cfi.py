@@ -23,7 +23,7 @@ cmgMETDown = cms.EDFilter(
 
 cmgPFMETType1Corrected = cms.EDFilter(
     "METPOScaler",
-    cfg = baseMETScaler.clone(doType1Correction = True),
+    cfg = baseMETScaler.clone(doType1Correction = True, jetLabel = "cmgPFJetType1MET"),
     cuts = cms.PSet(
     )
 )
