@@ -101,6 +101,7 @@ namespace cmg{
     Daughters getDaughters(const bool include_this = false) const;
     	
     virtual Float_t uncOnFourVectorScale() const {return 0;}
+    virtual Float_t rawFactor() const {return 1.;}
     
   protected:
     ///Used to copy selections
