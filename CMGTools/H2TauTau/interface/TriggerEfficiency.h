@@ -213,6 +213,11 @@ public:
     return efficiency(pt, 18.8476, 0.528963, 0.16717, 3.65814, 0.749759);
   }
 
+  double effMediumIsoTau20MC(double pt, double eta){
+    if(fabs(eta)<1.479) efficiency(pt, 19.468, 0.0615381, 0.0349325, 1.59349, 0.860096);
+    return efficiency(pt, 19.3862, 0.247148, 0.123187, 2.87108,	0.790894);
+  }
+
 
   //****************
   //parameters taken from AN-11-390 v8
