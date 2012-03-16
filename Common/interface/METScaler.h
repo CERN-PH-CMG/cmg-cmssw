@@ -3,8 +3,8 @@
 
 #include <iomanip>
 
+#include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
 #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
-#include "AnalysisDataFormats/CMGTools/interface/BaseJet.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
@@ -24,6 +24,7 @@ namespace cmg {
     const edm::InputTag jetLabel_;
     const edm::InputTag metLabel_;
     const double jecUncDirection_;
+    const bool doType1_;
 
   };
 

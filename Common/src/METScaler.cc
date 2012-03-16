@@ -6,12 +6,13 @@
 cmg::METScaler::METScaler(const edm::ParameterSet& ps):
   jetLabel_(ps.getParameter<edm::InputTag>("jetLabel")),
   metLabel_(ps.getParameter<edm::InputTag>("metLabel")),
-  jecUncDirection_(ps.getParameter<double>("jecUncDirection")){
+  jecUncDirection_(ps.getParameter<double>("jecUncDirection")),
+  doType1_(ps.getParameter<bool>("doType1Correction")){
 }
 
 cmg::METScaler::event_ptr cmg::METScaler::create(const edm::Event& iEvent, const edm::EventSetup&){
 
-  typedef edm::View<cmg::BaseJet> jet_view;
+  typedef edm::View<cmg::AbstractPhysicsObject> jet_view;
   edm::Handle<jet_view> jetH;
   iEvent.getByLabel(jetLabel_,jetH);
 
@@ -28,11 +29,17 @@ cmg::METScaler::event_ptr cmg::METScaler::create(const edm::Event& iEvent, const
   //loop over the jets and adjust the MET to compensate
   TVector3 met_i;
   for(jet_view::const_iterator it = jetH->begin(); it != jetH->end(); ++it){
-    const float unc = it->uncOnFourVectorScale();
-    //adjust the vector by the pt scale from the JEC
-    met_i.SetPtEtaPhi(fabs(unc),0.0,it->phi());
-    //do we add or substract (caution!)
-    met_i *= jecUncDirection_;
+    //scale the MET by the JES uncertainty, either plus or minus
+    if(!doType1_){
+      const float unc = it->uncOnFourVectorScale();
+      //adjust the vector by the pt scale from the JEC
+      met_i.SetPtEtaPhi(fabs(unc),0.0,it->phi());
+      //do we add or substract (caution!)
+      met_i *= jecUncDirection_;
+    }else{
+      //or scale the MET by the raw factor
+      met_i.SetPtEtaPhi(it->rawFactor(),0.0,it->phi());
+    }
     scaled += met_i;
   }
   met.SetPx(scaled.Px());
