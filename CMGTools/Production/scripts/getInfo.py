@@ -13,7 +13,6 @@ os.system("source /afs/cern.ch/cms/slc5_amd64_gcc434/external/py2-cx-oracle/5.1/
 import CMGTools.Production.cx_Oracle as cx_Oracle
 
 if __name__ == '__main__':
-
     parser = optparse.OptionParser()
 
     parser.usage = """
@@ -110,10 +109,25 @@ Here are some example queries explained:
 Usage: 
 -----
 %prog -s <query>
+%prog -a <args>
 -----
 
-Alias commands will be added soon for the more common tasks.
-Please experiment and email Peter Meckiffe with your suggestions for alias
+Suggestions for more useful alias' are always welcome
+Please experiment and email Peter Meckiffe with your suggestions for alias'
+Currently the list is as follows:
+getTags <cmgdb_name>
+getDatasetsAtDate <DD-MM-YYYY>
+getDatasetsAtDateWithUser <DD-MM-YYYY> <fileowner>
+getDatasetsWithUser <fileowner>
+getMissingFiles <cmgdb_name>
+getDuplicateFiles <cmgdb_name>
+getBadJobs <cmgdb_name>
+getBadFiles <cmgdb_name>
+getDatasetInfo <cmgdb_name>
+
+e.g.
+getInfo.py -a getTags /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6_START44_V9B-v1--V3---cmgtools_group/AODSIM
+
 """
     
     parser.add_option("-s", "--sql",
@@ -121,34 +135,66 @@ Please experiment and email Peter Meckiffe with your suggestions for alias
                       dest="sql",
                       help="Enter a raw sql query for cmgdb"
                       )
+    parser.add_option("-a", "--alias",
+                      action = "store",
+                      dest="alias",
+                      help="Enter query alias"
+                      )
 
     (options, args) = parser.parse_args()
     # Allow no more than one argument
     noOptions = False
-    if options.sql is None:
+    if options.sql is None and options.alias is None:
         parser.print_help()
         sys.exit(1)
-    if len(args)!=1:
+    if len(args)<1:
         parser.print_help()
         sys.exit(1)
+        
+    conn = cx_Oracle.connect("cmgbookkeepingtest/Cmguser1@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=oradev11.cern.ch)(PORT=10121))(ENABLE=BROKEN)(CONNECT_DATA= (SID=DEVDB11)))")
+    cur = conn.cursor()
+    colnames = ""
+    aliasDict = {"getTags":"SELECT distinct(tags.tag_id), tags.tag, tags.package_name from tags INNER JOIN tags_in_sets ON tags.tag_id = tags_in_sets.tag_id JOIN dataset_details ON dataset_details.tagset_id = tags_in_sets.tagset_id WHERE dataset_details.cmgdb_name = 'ARG1' ORDER BY tags.tag_id",
+                 "getDatasetsAtDate":"SELECT distinct(dataset_id), cmgdb_name FROM dataset_details WHERE trunc(date_recorded) = TO_TIMESTAMP('ARG1','DD-MM-YYYY') ORDER BY dataset_id",
+                 "getDatasetsAtDateWithUser":"SELECT distinct(dataset_id), cmgdb_name FROM dataset_details WHERE trunc(date_recorded) = TO_TIMESTAMP('ARG1','DD-MM-YYYY') and nice_username = 'ARG2' ORDER BY dataset_id",
+                 "getDatasetsWithUser":"SELECT distinct(dataset_id), cmgdb_name FROM dataset_details WHERE nice_username = 'ARG1' ORDER BY dataset_id",
+                 "getMissingFiles":"SELECT distinct(missing_files.missing_file) FROM missing_files INNER JOIN dataset_details ON dataset_details.dataset_id = missing_files.dataset_id WHERE dataset_details.cmgdb_name = 'ARG1'",
+                 "getDuplicateFiles":"SELECT distinct(duplicate_files.duplicate_file) FROM duplicate_files INNER JOIN dataset_details ON dataset_details.dataset_id = duplicate_files.dataset_id WHERE dataset_details.cmgdb_name = 'ARG1'",
+                 "getBadJobs":"SELECT distinct(bad_jobs.bad_job) FROM bad_jobs INNER JOIN dataset_details ON dataset_details.dataset_id = bad_jobs.bad_job WHERE dataset_details.cmgdb_name = 'ARG1'",
+                 "getBadFiles":"SELECT distinct(bad_files.bad_file) FROM bad_files INNER JOIN dataset_details ON dataset_details.dataset_id = bad_files.dataset_id WHERE dataset_details.cmgdb_name = 'ARG1'",
+                 "getDatasetInfo":"SELECT path_name, lfn, nice_username, dataset_entries, dataset_fraction, date_recorded FROM dataset_details WHERE cmgdb_name = 'ARG1'"}
     if options.sql:
         query = args[0]
         select = re.compile('select', re.IGNORECASE)
         if not select.search(query):
             print "getDataset.py is for search uses only (SELECT queries). To publish, please use the publish.py script"
             sys.exit(1)
-        conn = cx_Oracle.connect("cmgbookkeepingtest/Cmguser1@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=oradev11.cern.ch)(PORT=10121))(ENABLE=BROKEN)(CONNECT_DATA= (SID=DEVDB11)))")
-        cur = conn.cursor()
-        cur.execute(query)
-        colnames = ""
-        for column in cur.description:
-            colnames += column[0] + "\t"
-        print colnames
-        for row in cur:
-            string = ""
-            for column in row:
-                string += str(column) + " ||\t"
-            string = string.rstrip(" ||\t")
-            print string
+        
+    elif options.alias:
+        if options.alias in aliasDict:
+            if len(args) != len(aliasDict[options.alias].split("ARG"))-1:
+                print "Please use the correct amount of arguments %d are required in this alias" % (len(aliasDict[options.alias].split("ARG"))-1)
+                sys.exit(1)
+            query = re.sub("ARG1",args[0],aliasDict[options.alias])
+            if re.search("ARG2",aliasDict[options.alias]) and len(args)>1:
+            
+                query = re.sub("ARG2",args[1],query)
+        else:
+            print "Alias %s was not found current alias' are:" % options.alias
+            for i in aliasDict:
+                print i
+            sys.exit(1)
+    
+    cur.execute(query)  
+    for column in cur.description:
+        colnames += column[0] + "\t"
+    print colnames
+    for row in cur:
+        string = ""
+        for column in row:
+            string += str(column) + " ||\t"
+        string = string.rstrip(" ||\t")
+        print string
+    
     
  
