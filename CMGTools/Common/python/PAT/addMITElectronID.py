@@ -18,7 +18,9 @@ def addMITElectronID( process, patModuleName, seq, postfix ):
     '''
     ga = getattrGenerator( process, postfix )
     
-    oldModule=ga('selectedPatElectrons')
+    newSeq = cms.Sequence()
+    setattr(process, patModuleName+postfix+"WithMITID", newSeq)
+    ga( seq ).replace(ga(patModuleName), newSeq)
 
     # clones patModuleNamepostfix into prepatModuleNamepostfix
     # this module is the new pat electron selector
@@ -33,8 +35,5 @@ def addMITElectronID( process, patModuleName, seq, postfix ):
     #    electron, except that this new electron contains the MIT ID. 
     setattr( process, ''.join([patModuleName, postfix]),
              cmgPatElectronProducer.clone(src=premodname) )
-    
-    ga( seq ).replace(
-        oldModule,
-        ga('preselectedPatElectrons') + ga('selectedPatElectrons')
-        )
+	     
+    newSeq += ga('pre'+patModuleName) + ga(patModuleName)
