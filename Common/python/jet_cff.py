@@ -41,11 +41,15 @@ cmgPFJetSel.cut = ptCut
 cmgPFBaseJetSel.cut = ptCut
 cmgCaloBaseJetSel.cut = ptCut
 
+# Jets for Type 1 MET corrections
+cmgPFJetType1MET = cmgPFJetSel.clone(src = 'cmgPFJet',cut='pt() >= 10 && abs(eta()) < 4.7')
+
 from CMGTools.Common.jetId_cff import *
 
 pfJetSequence = cms.Sequence(
     cmgPFJet +
     cmgPFJetSel +
+    cmgPFJetType1MET +
     jetIdSequence + 
     cmgPFJetLead +
     cmgPFBaseJet +
