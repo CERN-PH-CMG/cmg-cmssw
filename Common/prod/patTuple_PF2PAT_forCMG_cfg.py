@@ -8,11 +8,12 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 # turn on when running on MC
 runOnMC = True
+
 runCMG = True
 
-# AK5 sequence with no cleaning is the default
+# AK5 sequence with pileup substraction is the default
 # the other sequences can be turned off with the following flags.
-runAK5LC = False 
+runAK5NoPUSub = True 
 runAK7 = False
 
 hpsTaus = True
@@ -39,7 +40,7 @@ sep_line = "-" * 50
 print sep_line
 print 'running the following PF2PAT+PAT sequences:'
 print '\tAK5'
-if runAK5LC: print '\tAK5LC'
+if runAK5NoPUSub: print '\tAK5NoPUSub'
 if runAK7: print '\tAK7'
 print 'embedding in taus: ', doEmbedPFCandidatesInTaus
 print 'HPS taus         : ', hpsTaus
@@ -87,6 +88,15 @@ process.out.fileName = cms.untracked.string('patTuple_PF2PAT.root')
 # not possible to run PF2PAT+PAT and standart PAT at the same time
 from PhysicsTools.PatAlgos.tools.pfTools import *
 
+# ---------------- rho calculation for JEC ----------------------
+
+from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
+process.kt6PFJets = kt4PFJets.clone(
+    rParams = cms.double(0.6),
+    doAreaFastjet = cms.bool(True),
+    doRhoFastjet = cms.bool(True),
+)
+
 # ---------------- Sequence AK5 ----------------------
 
 
@@ -126,6 +136,9 @@ if hpsTaus:
 from CMGTools.Common.PAT.removePhotonMatching import removePhotonMatching
 removePhotonMatching( process, postfixAK5 )
 
+# use non pileup substracted rho as in the Jan2012 JEC set
+getattr(process,"patJetCorrFactors"+postfixAK5).rho = cms.InputTag("kt6PFJets","rho")
+
 getattr(process,"pfNoMuon"+postfixAK5).enable = False 
 getattr(process,"pfNoElectron"+postfixAK5).enable = False 
 getattr(process,"pfNoTau"+postfixAK5).enable = False 
@@ -142,7 +155,7 @@ addMETSig( process, postfixAK5 )
 # (made from all reco muons, and all gsf electrons, respectively)
 from CMGTools.Common.PAT.addStdLeptons import addStdMuons
 from CMGTools.Common.PAT.addStdLeptons import addStdElectrons
-stdMuonSeq = addStdMuons( process, postfixAK5, 'StdLep', 'pt()>5', runOnMC )
+stdMuonSeq = addStdMuons( process, postfixAK5, 'StdLep', 'pt()>3', runOnMC )
 stdElectronSeq = addStdElectrons( process, postfixAK5, 'StdLep', 'pt()>5', runOnMC )
 
 # adding vbtf and cic electron IDs to both electron collections
@@ -155,34 +168,24 @@ from CMGTools.Common.PAT.addMITElectronID import addMITElectronID
 addMITElectronID( process, 'selectedPatElectrons', 'patDefaultSequence', postfixAK5)
 addMITElectronID( process, 'selectedPatElectrons', 'stdElectronSequence', postfixAK5+'StdLep')
 
-# ---------------- Sequence AK5LC, lepton x-cleaning ---------------
+# ---------------- Sequence AK5NoPUSub, pfNoPileUp switched off ---------------
 
 # PF2PAT+PAT sequence 2:
-# lepton cleaning, AK5PFJets. This sequence is a clone of the AK5 sequence defined previously.
-# just modifying the x-cleaning parameters, and the isolation cut for x-cleaning
+# pfNoPileUp switched off, AK5PFJets. This sequence is a clone of the AK5 sequence defined previously.
 
-if runAK5LC:
-    print 'cloning AK5 sequence to prepare AK5LC sequence...'
+if runAK5NoPUSub:
+    print 'cloning AK5 sequence to prepare AK5NoPUSub sequence...',
+
+    postfixNoPUSub = 'NoPUSub'
+    postfixAK5NoPUSub = postfixAK5+postfixNoPUSub
 
     from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
-    postfixLC = 'LC'
-    # just cloning the first sequence, and enabling lepton cleaning 
-    cloneProcessingSnippet(process, getattr(process, 'patPF2PATSequence'+postfixAK5), postfixLC)
+    cloneProcessingSnippet(process, getattr(process, 'patPF2PATSequence'+postfixAK5), postfixNoPUSub)
 
-    postfixAK5LC = postfixAK5+postfixLC
-    getattr(process,"pfNoMuon"+postfixAK5LC).enable = True
-    getattr(process,"pfNoElectron"+postfixAK5LC).enable = True 
-    getattr(process,"pfIsolatedMuons"+postfixAK5LC).isolationCut = 0.2
-    getattr(process,"pfIsolatedElectrons"+postfixAK5LC).isolationCut = 0.2
+    getattr(process,"pfNoPileUp"+postfixAK5NoPUSub).enable = False
+    getattr(process,"patJetCorrFactors"+postfixAK5NoPUSub).payload = "AK5PF"
+    print 'Done'
 
-    #COLIN : need to add the VBTF e and mu id
-
-    # configure MET significance
-    getattr(process,"PFMETSignificance"+postfixAK5LC).inputPATElectrons = cms.InputTag('patElectrons'+postfixAK5LC)   
-    getattr(process,"PFMETSignificance"+postfixAK5LC).inputPATMuons = cms.InputTag('patMuons'+postfixAK5LC)
-
-
-    print 'cloning AK5 sequence to prepare AK5LC sequence...Done'
 
 # ---------------- Sequence AK7, no lepton x-cleaning ---------------
 
@@ -205,6 +208,9 @@ if runAK7:
     # if hpsTaus:
     #    adaptPFTaus(process,"hpsPFTau",postfix=postfixAK7)
 
+    # use non pileup substracted rho as in the Jan2012 JEC set
+    getattr(process,"patJetCorrFactors"+postfixAK7).rho = cms.InputTag("kt6PFJets","rho")
+    
     # no top projection: 
     getattr(process,"pfNoMuon"+postfixAK7).enable = False 
     getattr(process,"pfNoElectron"+postfixAK7).enable = False 
@@ -212,11 +218,6 @@ if runAK7:
     getattr(process,"pfNoJet"+postfixAK7).enable = True
 
     removePhotonMatching( process, postfixAK7 )
-
-# addPATElectronID( process, postfixAK7 , runOnMC )
-
-# addMETSig(process,postfixAK7)
-
 
 # ---------------- Common stuff ---------------
 
@@ -233,6 +234,7 @@ process.patTrigger.processName = cms.string('*')
 
 process.p = cms.Path( process.patTriggerDefaultSequence )
 
+process.p += process.kt6PFJets
 
 # PF2PAT+PAT ---
 
@@ -244,8 +246,8 @@ process.stdLeptonSequence = cms.Sequence(
     )
 process.p += process.stdLeptonSequence
 
-if runAK5LC:
-    process.p += getattr(process,"patPF2PATSequence"+postfixAK5LC)
+if runAK5NoPUSub:
+    process.p += getattr(process,"patPF2PATSequence"+postfixAK5NoPUSub)
 
 if runAK7:
     process.p += getattr(process,"patPF2PATSequence"+postfixAK7) 
@@ -273,12 +275,6 @@ if runCMG:
 
     from CMGTools.Common.Tools.visitorUtils import replacePostfix
     
-    cloneProcessingSnippet(process, getattr(process, 'analysisSequence'), 'AK5LCCMG')
-    replacePostfix(getattr(process,"analysisSequenceAK5LCCMG"),'AK5','AK5LC') 
-    
-    cloneProcessingSnippet(process, getattr(process, 'analysisSequence'), 'AK7CMG')
-    replacePostfix(getattr(process,"analysisSequenceAK7CMG"),'AK5','AK7') 
-    
     from CMGTools.Common.Tools.tuneCMGSequences import * 
     tuneCMGSequences(process, postpostfix='CMG')
 
@@ -291,10 +287,14 @@ if runCMG:
         )
     process.cmgObjectSequence += process.cmgStdLeptonSequence
 
-    if runAK5LC:
-        process.p += process.analysisSequenceAK5LCCMG
-        
+    if runAK5NoPUSub:
+        cloneProcessingSnippet(process, getattr(process, 'analysisSequence'), 'AK5NoPUSubCMG')
+        replacePostfix(getattr(process,"analysisSequenceAK5NoPUSubCMG"),'AK5','AK5NoPUSub') 
+        process.p += process.analysisSequenceAK5NoPUSubCMG
+
     if runAK7:
+        cloneProcessingSnippet(process, getattr(process, 'analysisSequence'), 'AK7CMG')
+        replacePostfix(getattr(process,"analysisSequenceAK7CMG"),'AK7','AK7') 
         process.p += process.analysisSequenceAK7CMG
 
 ### OUTPUT DEFINITION #############################################
