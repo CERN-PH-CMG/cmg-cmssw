@@ -17,6 +17,8 @@ def addMITElectronID( process, patModuleName, seq, postfix ):
     seq is the sequence in which the manipulation is going to take place
     '''
     ga = getattrGenerator( process, postfix )
+    
+    oldModule=ga('selectedPatElectrons')
 
     # clones patModuleNamepostfix into prepatModuleNamepostfix
     # this module is the new pat electron selector
@@ -33,6 +35,6 @@ def addMITElectronID( process, patModuleName, seq, postfix ):
              cmgPatElectronProducer.clone(src=premodname) )
     
     ga( seq ).replace(
-        ga('selectedPatElectrons'),
+        oldModule,
         ga('preselectedPatElectrons') + ga('selectedPatElectrons')
         )
