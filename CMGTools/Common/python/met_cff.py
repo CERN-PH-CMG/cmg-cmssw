@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 from CMGTools.Common.factories.cmgBaseCandMET_cfi import cmgBaseCandMET
 from CMGTools.Common.factories.cmgBaseMET_cfi import cmgBaseMET
+from CMGTools.Common.factories.cmgPFMETScaler_cfi import cmgPFMETType1Corrected
 from CMGTools.Common.skims.cmgCandSel_cfi import cmgCandSel
 
 #PFMET from pat::MET
@@ -38,8 +39,9 @@ cmgMHTCaloJet30.cfg.ptThreshold = 30.0
 
 
 pfSimpleMetSequence = cms.Sequence(
-    cmgPFMET +                             
-    cmgPFMETSel
+    cmgPFMET *                             
+    cmgPFMETSel*
+    cmgPFMETType1Corrected
     )
 
 pfMetSequence = cms.Sequence(
