@@ -1,7 +1,7 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_mitid_05Mar12'),
   ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_nohisto_09Mar12'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_tree1_16Mar12'),
-  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'will_09Mar12'),
+  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'pmeckiff15mar2012'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_trees_16Mar12'),
   ('CMGTools/ZmumuJetsTutorial', 'UserCode/CMG/CMGTools/ZmumuJetsTutorial', 'jhegeman_V2401_16Jan12'),
   ('JetMETAnalysis/ecalDeadCellTools', 'JetMETAnalysis/ecalDeadCellTools', 'Colin_TaggingMode_June30'),
