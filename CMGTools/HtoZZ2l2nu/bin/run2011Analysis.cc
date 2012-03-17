@@ -128,7 +128,8 @@ int main(int argc, char* argv[])
   //##############################################
 
   int NmH=19;
-  double* mH = new double[NmH]; double* cutMet = new double[NmH]; double* cutMTMin= new double[NmH]; double* cutMTMax = new double[NmH];
+  double* mH = new double[NmH]; double*  cutMet = new double[NmH]; double*  cutMTMin= new double[NmH]; double*  cutMTMax = new double[NmH];
+                                double* scutMet = new double[NmH]; double* scutMTMin= new double[NmH]; double* scutMTMax = new double[NmH];
   mH[ 0] = 200;  cutMet[ 0] =  56;  cutMTMin[ 0] = 198;  cutMTMax[ 0] = 187;
   mH[ 1] = 225;  cutMet[ 1] =  63;  cutMTMin[ 1] = 213;  cutMTMax[ 1] = 223;
   mH[ 2] = 250;  cutMet[ 2] =  70;  cutMTMin[ 2] = 229;  cutMTMax[ 2] = 258;
@@ -204,10 +205,11 @@ int main(int argc, char* argv[])
 
   for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
       TH1 *cacH = (TH1F *) mon.addHistogram( new TH1F (varNames[ivar]+"_finaleventflow",";Category;Event count;",NmH+1,0,NmH+1) );
-      for(unsigned int ImH=0;ImH<NmH;ImH++){
-         cacH->GetXaxis()->SetBinLabel(1,TString("mH=")+mHtxt[ImH]);}
+      for(int ImH=0;ImH<NmH;ImH++){
+         cacH->GetXaxis()->SetBinLabel(1,TString("mH=")+mHtxt[ImH]);
          mon.addHistogram( new TH1F (varNames[ivar]+"_finalmt"+mHtxt[ImH],";M_{T} [GeV/c^{2}];Events;",100,0,1000) );
-    } 
+      }
+  } 
 
   //##############################################
   //######## STUFF FOR CUTS OPTIMIZATION  ########
@@ -470,17 +472,14 @@ int main(int argc, char* argv[])
              //SHAPE ANALYSIS
               if(zvv.pt()>scutMet[ImH] && mt>scutMTMin[ImH] && mt<scutMTMax[ImH])mon.fillHisto(varNames[ivar]+"_finalmt"+mHtxt[ImH],tags_full,mt,iweight);
           }
-      }
 
-      //##############################################
-      //########     PLOTS FOR OPTIMIZATION   ########
-      //##############################################
-
-      if(passZmass && passLooseKinematics && passBveto && passZpt && pass3dLeptonVeto && mindphijmet>0.5){
-         for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
-            if(metP4.pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
-            mon.fillHisto("optim_eventflow1"          ,tags_full,    index, weight);
-         }
+           //Fill histogram for posterior optimization
+	  if(ivar==0){
+             for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
+                 if(zvv.pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
+                 mon.fillHisto("optim_eventflow1"          ,tags_full,    index, weight);
+             }
+          }
       }
 
       //##############################################   EVENT LOOP ENDS   ##############################################
