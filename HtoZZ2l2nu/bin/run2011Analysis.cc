@@ -388,7 +388,7 @@ int main(int argc, char* argv[])
       zvvs.insert(zvvs.begin(),phys.met[0]);
       jets.insert(jets.begin(),jetsP4);
       std::vector<Float_t>  mts;
-      for(size_t ivar=0; ivar<runSystematics?3:1; ivar++){
+      for(size_t ivar=0; ivar<(runSystematics?3:1); ivar++){
           Float_t imt     = METUtils::transverseMass(zll,zvvs[ivar],true);
           mts.push_back(imt);
       }
