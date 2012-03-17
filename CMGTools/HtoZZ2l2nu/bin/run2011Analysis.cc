@@ -107,22 +107,70 @@ int main(int argc, char* argv[])
     GGString = string(url.Data()).substr(GGStringpos);
     TFile *fin=TFile::Open("~psilva/public/HtoZZ/HiggsQtWeights.root");
     if(fin){
-	for(int ivar=0; ivar<5; ivar++){
-	  double ren=HiggsMass; if(ivar==ZZ2l2nuSummary_t::hKfactor_renDown)  ren/=2; if(ivar==ZZ2l2nuSummary_t::hKfactor_renUp)  ren *= 2;
-	  double fac=HiggsMass; if(ivar==ZZ2l2nuSummary_t::hKfactor_factDown) fac/=2; if(ivar==ZZ2l2nuSummary_t::hKfactor_factUp) fac *= 2;
-	  char buf[100]; sprintf(buf,"kfactors_mh%3.0f_ren%3.0f_fac%3.0f",HiggsMass,ren,fac);
-	  TGraph *gr= (TGraph *) fin->Get(buf);
-	  if(gr) hWeightsGrVec.push_back((TGraph *)gr->Clone());
-	}
-	fin->Close();
-	delete fin;
+        for(int ivar=0; ivar<5; ivar++){
+          double ren=HiggsMass; if(ivar==ZZ2l2nuSummary_t::hKfactor_renDown)  ren/=2; if(ivar==ZZ2l2nuSummary_t::hKfactor_renUp)  ren *= 2;
+          double fac=HiggsMass; if(ivar==ZZ2l2nuSummary_t::hKfactor_factDown) fac/=2; if(ivar==ZZ2l2nuSummary_t::hKfactor_factUp) fac *= 2;
+          char buf[100]; sprintf(buf,"kfactors_mh%3.0f_ren%3.0f_fac%3.0f",HiggsMass,ren,fac);
+          TGraph *gr= (TGraph *) fin->Get(buf);
+          if(gr) hWeightsGrVec.push_back((TGraph *)gr->Clone());
+        }
+        fin->Close();
+        delete fin;
     }
   }else if(isMC_VBF){
     size_t VBFStringpos =  string(url.Data()).find("VBF");
     string StringMass = string(url.Data()).substr(VBFStringpos+6,3);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
     VBFString = string(url.Data()).substr(VBFStringpos);
   }
-  
+ 
+  //##############################################
+  //########    CUTS AND MASS POINTS      ########
+  //##############################################
+
+  int NmH=19;
+  double* mH = new double[NmH]; double* cutMet = new double[NmH]; double* cutMTMin= new double[NmH]; double* cutMTMax = new double[NmH];
+  mH[ 0] = 200;  cutMet[ 0] =  56;  cutMTMin[ 0] = 198;  cutMTMax[ 0] = 187;
+  mH[ 1] = 225;  cutMet[ 1] =  63;  cutMTMin[ 1] = 213;  cutMTMax[ 1] = 223;
+  mH[ 2] = 250;  cutMet[ 2] =  70;  cutMTMin[ 2] = 229;  cutMTMax[ 2] = 258;
+  mH[ 3] = 275;  cutMet[ 3] =  77;  cutMTMin[ 3] = 245;  cutMTMax[ 3] = 293;
+  mH[ 4] = 300;  cutMet[ 4] =  84;  cutMTMin[ 4] = 260;  cutMTMax[ 4] = 328;
+  mH[ 5] = 325;  cutMet[ 5] =  91;  cutMTMin[ 5] = 276;  cutMTMax[ 5] = 364;
+  mH[ 6] = 350;  cutMet[ 6] =  98;  cutMTMin[ 6] = 292;  cutMTMax[ 6] = 399;
+  mH[ 7] = 375;  cutMet[ 7] = 105;  cutMTMin[ 7] = 308;  cutMTMax[ 7] = 434;
+  mH[ 8] = 400;  cutMet[ 8] = 112;  cutMTMin[ 8] = 323;  cutMTMax[ 8] = 470;
+  mH[ 9] = 425;  cutMet[ 9] = 119;  cutMTMin[ 9] = 339;  cutMTMax[ 9] = 505;
+  mH[10] = 450;  cutMet[10] = 126;  cutMTMin[10] = 355;  cutMTMax[10] = 540;
+  mH[11] = 475;  cutMet[11] = 133;  cutMTMin[11] = 370;  cutMTMax[11] = 576;
+  mH[12] = 500;  cutMet[12] = 140;  cutMTMin[12] = 386;  cutMTMax[12] = 611;
+  mH[13] = 525;  cutMet[13] = 147;  cutMTMin[13] = 402;  cutMTMax[13] = 646;
+  mH[14] = 550;  cutMet[14] = 154;  cutMTMin[14] = 417;  cutMTMax[14] = 682;
+  mH[15] = 575;  cutMet[15] = 161;  cutMTMin[15] = 433;  cutMTMax[15] = 717;
+  mH[16] = 600;  cutMet[16] = 168;  cutMTMin[16] = 449;  cutMTMax[16] = 752;
+  mH[17] = 625;  cutMet[17] = 175;  cutMTMin[17] = 464;  cutMTMax[17] = 788;
+  mH[18] = 650;  cutMet[18] = 182;  cutMTMin[18] = 480;  cutMTMax[18] = 823;
+
+  mH[ 0] = 200; scutMet[ 0] =  70; scutMTMin[ 0] = 180; scutMTMax[ 0] = 300;
+  mH[ 1] = 225; scutMet[ 1] =  70; scutMTMin[ 1] = 180; scutMTMax[ 1] = 300;
+  mH[ 2] = 250; scutMet[ 2] =  70; scutMTMin[ 2] = 180; scutMTMax[ 2] = 300;
+  mH[ 3] = 275; scutMet[ 3] =  70; scutMTMin[ 3] = 180; scutMTMax[ 3] = 300;
+  mH[ 4] = 300; scutMet[ 4] =  80; scutMTMin[ 4] = 250; scutMTMax[ 4] = 350;
+  mH[ 5] = 325; scutMet[ 5] =  80; scutMTMin[ 5] = 250; scutMTMax[ 5] = 350;
+  mH[ 6] = 350; scutMet[ 6] =  80; scutMTMin[ 6] = 250; scutMTMax[ 6] = 400;
+  mH[ 7] = 375; scutMet[ 7] =  80; scutMTMin[ 7] = 250; scutMTMax[ 7] = 400;
+  mH[ 8] = 400; scutMet[ 8] =  80; scutMTMin[ 8] = 250; scutMTMax[ 8] = 450;
+  mH[ 9] = 425; scutMet[ 9] =  80; scutMTMin[ 9] = 250; scutMTMax[ 9] = 450;
+  mH[10] = 450; scutMet[10] =  80; scutMTMin[10] = 250; scutMTMax[10] = 450;
+  mH[11] = 475; scutMet[11] =  80; scutMTMin[11] = 250; scutMTMax[11] = 450;
+  mH[12] = 500; scutMet[12] =  80; scutMTMin[12] = 250; scutMTMax[12] = 600;
+  mH[13] = 525; scutMet[13] =  80; scutMTMin[13] = 250; scutMTMax[13] = 600;
+  mH[14] = 550; scutMet[14] =  80; scutMTMin[14] = 250; scutMTMax[14] = 600;
+  mH[15] = 575; scutMet[15] =  80; scutMTMin[15] = 250; scutMTMax[15] = 600;
+  mH[16] = 600; scutMet[16] =  80; scutMTMin[16] = 250; scutMTMax[16] = 750;
+  mH[17] = 625; scutMet[17] =  80; scutMTMin[17] = 250; scutMTMax[17] = 750;
+  mH[18] = 650; scutMet[18] =  80; scutMTMin[18] = 250; scutMTMax[18] = 750;
+ 
+  char** mHtxt = new char*[NmH]; for(int ImH=0;ImH<NmH;ImH++){mHtxt[ImH] = new char[255]; sprintf(mHtxt[ImH],"%3.0f",mH[ImH]); }
+
   //##############################################
   //########    INITIATING HISTOGRAMS     ########
   //##############################################
@@ -154,26 +202,11 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "met"  , ";E_{T}^{miss};Events", 100,0,1000) );
   mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 100,0,1000) );
 
-  for(size_t ivar=0; ivar<nvarsToInclude; ivar++)
-    {
-      TH1 *cacH = (TH1F *) mon.addHistogram( new TH1F (varNames[ivar]+"finaleventflow",";Category;Event count;",9,0,9) );
-      cacH->GetXaxis()->SetBinLabel(1,"m=250");
-      cacH->GetXaxis()->SetBinLabel(2,"m=300");
-      cacH->GetXaxis()->SetBinLabel(3,"m=350");
-      cacH->GetXaxis()->SetBinLabel(4,"m=400");
-      cacH->GetXaxis()->SetBinLabel(5,"m=450");
-      cacH->GetXaxis()->SetBinLabel(6,"m=500");
-      cacH->GetXaxis()->SetBinLabel(7,"m=550");
-      cacH->GetXaxis()->SetBinLabel(8,"m=600");
-    
-      mon.addHistogram( new TH1F (varNames[ivar]+"finalmt250",";M_{T} [GeV/c^{2}];Events;",100,0,1000) );
-      mon.addHistogram( new TH1F (varNames[ivar]+"finalmt300",";M_{T} [GeV/c^{2}];Events;",100,0,1000) );
-      mon.addHistogram( new TH1F (varNames[ivar]+"finalmt350",";M_{T} [GeV/c^{2}];Events;",100,0,1000) );
-      mon.addHistogram( new TH1F (varNames[ivar]+"finalmt400",";M_{T} [GeV/c^{2}];Events;",100,0,1000) );
-      mon.addHistogram( new TH1F (varNames[ivar]+"finalmt450",";M_{T} [GeV/c^{2}];Events;",100,0,1000) );
-      mon.addHistogram( new TH1F (varNames[ivar]+"finalmt500",";M_{T} [GeV/c^{2}];Events;",100,0,1000) );
-      mon.addHistogram( new TH1F (varNames[ivar]+"finalmt550",";M_{T} [GeV/c^{2}];Events;",100,0,1000) );
-      mon.addHistogram( new TH1F (varNames[ivar]+"finalmt600",";M_{T} [GeV/c^{2}];Events;",100,0,1000) );
+  for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
+      TH1 *cacH = (TH1F *) mon.addHistogram( new TH1F (varNames[ivar]+"_finaleventflow",";Category;Event count;",NmH+1,0,NmH+1) );
+      for(unsigned int ImH=0;ImH<NmH;ImH++){
+         cacH->GetXaxis()->SetBinLabel(1,TString("mH=")+mHtxt[ImH]);}
+         mon.addHistogram( new TH1F (varNames[ivar]+"_finalmt"+mHtxt[ImH],";M_{T} [GeV/c^{2}];Events;",100,0,1000) );
     } 
 
   //##############################################
@@ -278,8 +311,7 @@ int main(int argc, char* argv[])
   printf("Progressing Bar     :0%%       20%%       40%%       60%%       80%%       100%%\n");
   printf("Scanning the ntuple :");
   int treeStep = (evEnd-evStart)/50;if(treeStep==0)treeStep=1;
-  for( int iev=evStart; iev<evEnd; iev++)  
-    {
+  for( int iev=evStart; iev<evEnd; iev++){
       if((iev-evStart)%treeStep==0){printf(".");fflush(stdout);}
 
       //##############################################   EVENT LOOP STARTS   ##############################################
@@ -295,23 +327,21 @@ int main(int argc, char* argv[])
 
       //categorize events
       TString tag_cat;
-      switch(ev.cat)
-	{
-	case EMU : tag_cat = "emu";   break;
-	case MUMU: tag_cat = "mumu";  break;
-	case EE  : tag_cat = "ee";    break;
-	default  : continue;
-	}
+      switch(ev.cat){
+        case EMU : tag_cat = "emu";   break;
+        case MUMU: tag_cat = "mumu";  break;
+        case EE  : tag_cat = "ee";    break;
+        default  : continue;
+      }
       if(isMC && mctruthmode==1 && ev.mccat!=DY_EE && ev.mccat!=DY_MUMU)  continue;
       if(isMC && mctruthmode==2 && ev.mccat!=DY_TAUTAU) continue;
 
       bool isGammaEvent = false;
-      if(gammaEvHandler)
-	{
+      if(gammaEvHandler){
           isGammaEvent=gammaEvHandler->isGood(phys);
           if(mctruthmode==22 && !isGammaEvent) continue;
           tag_cat = "gamma";
-	}
+      }
      
       int eventSubCat  = eventCategoryInst.Get(phys);
       TString tag_subcat = eventCategoryInst.GetLabel(eventSubCat);
@@ -340,9 +370,9 @@ int main(int argc, char* argv[])
         TotalWeight_minus = PShiftDown.ShiftWeight( ev.ngenITpu );
         if(isMC_VBF) weight *= weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );         
         if(isMC_GG)  {
-	  for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
-	  weight *= ev.hptWeights[0];
-	}
+          for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
+          weight *= ev.hptWeights[0];
+        }
       }
       Hcutflow->Fill(1,1);
       Hcutflow->Fill(2,weight);
@@ -356,142 +386,108 @@ int main(int argc, char* argv[])
       zvvs.insert(zvvs.begin(),phys.met[0]);
       jets.insert(jets.begin(),jetsP4);
       std::vector<Float_t>  mts;
-      for(size_t ivar=0; ivar<runSystematics?3:1; ivar++)
-	{
-	  Float_t imt     = METUtils::transverseMass(zll,zvvs[ivar],true);
-	  mts.push_back(imt);
-	}
+      for(size_t ivar=0; ivar<runSystematics?3:1; ivar++){
+          Float_t imt     = METUtils::transverseMass(zll,zvvs[ivar],true);
+          mts.push_back(imt);
+      }
       
       //run the variations
-      for(size_t ivar=0; ivar<nvarsToInclude; ivar++)
-	{
-	  float iweight = weight;                                  //nominal
-	  if(ivar==4)            iweight *=TotalWeight_plus;        //pu up
-	  if(ivar==5)            iweight *=TotalWeight_minus;       //pu down
-	  if(ivar>=6 && isMC_GG) iweight *=ev.hptWeights[ivar-5];   //ren/fact scales
+      for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
+          float iweight = weight;                                  //nominal
+          if(ivar==4)            iweight *=TotalWeight_plus;        //pu up
+          if(ivar==5)            iweight *=TotalWeight_minus;       //pu down
+          if(ivar>=6 && isMC_GG) iweight *=ev.hptWeights[ivar-5];   //ren/fact scales
 
-	  Float_t zmass=zll.mass();
-	  Float_t zpt=zll.pt();
-	  Float_t zeta=zll.eta();
-	  LorentzVectorCollection &origJetsP4=jets[ivar>2?0:ivar];	    
-	  LorentzVector zvv  = zvvs[ivar>2?0:ivar];
-	  Float_t mt         = mts[ivar>2?0:ivar];
-	  int njets(0),nbtags(0);
-	  Float_t mindphijmet(9999.);
-	  Float_t btagcut(2.0); if(ivar==10) btagcut=2.1; else btagcut=1.9;
-	  for(size_t ijet=0; ijet<origJetsP4.size(); ijet++)
-	    {
-	      Float_t idphijmet=fabs(deltaPhi(zvv.phi(),origJetsP4[ijet].phi()));
-	      if(idphijmet<mindphijmet) mindphijmet=idphijmet;
-	      if(origJetsP4[ijet].pt()>30) 
-		{
-		  njets++;
-		  nbtags += (phys.jets[ijet].btag1>btagcut);
-		}
-	    }
+          Float_t zmass=zll.mass();
+          Float_t zpt=zll.pt();
+          Float_t zeta=zll.eta();
+          LorentzVectorCollection &origJetsP4=jets[ivar>2?0:ivar];            
+          LorentzVector zvv  = zvvs[ivar>2?0:ivar];
+          Float_t mt         = mts[ivar>2?0:ivar];
+          int njets(0),nbtags(0);
+          Float_t mindphijmet(9999.);
+          Float_t btagcut(2.0); if(ivar==10) btagcut=2.1; else btagcut=1.9;
+          for(size_t ijet=0; ijet<origJetsP4.size(); ijet++){
+              Float_t idphijmet=fabs(deltaPhi(zvv.phi(),origJetsP4[ijet].phi()));
+              if(idphijmet<mindphijmet) mindphijmet=idphijmet;
+              if(origJetsP4[ijet].pt()>30){
+                  njets++;
+                  nbtags += (phys.jets[ijet].btag1>btagcut);
+              }
+          }
     
-	  //##############################################
-	  //########     PRESELECTION             ########
-	  //##############################################
-	  bool passZmass(fabs(zmass-91)<15);
-	  bool passDphijmet(mindphijmet>0.5); 
-	  bool passZpt(zpt>55);
-	  bool pass3dLeptonVeto(true); for(unsigned int i=2;i<phys.leptons.size();i++){if(phys.leptons[i].pt()>10)pass3dLeptonVeto=false;}
-	  bool passBveto(nbtags==0);
-	  bool passPreselection(passZmass && passZpt && pass3dLeptonVeto && passBveto && passDphijmet);
-	  
-	  //###############################################
-	  //#### SELECTION FOR CUT AND COUNT ANALYSIS #####
-	  //###############################################
-	  bool passCaCM250(passPreselection && zvv.pt()>70 && mt>222 && mt<272);
-	  bool passCaCM300(passPreselection && zvv.pt()>79 && mt>264 && mt<331);
-	  bool passCaCM350(passPreselection && zvv.pt()>95 && mt>298 && mt<393);
-	  bool passCaCM400(passPreselection && zvv.pt()>115 && mt>327 && mt<460);
-	  bool passCaCM450(passPreselection && zvv.pt()>134 && mt>354 && mt<531);
-	  bool passCaCM500(passPreselection && zvv.pt()>150 && mt>382 && mt<605);
-	  bool passCaCM550(passPreselection && zvv.pt()>159 && mt>413 && mt<684);
-	  bool passCaCM600(passPreselection && zvv.pt()>160 && mt>452 && mt<767);
-	  	  
-	  //###############################################
-	  //##### SELECTION FOR SHAPE BASED ANALYSIS ######
-	  //###############################################
-	  bool passShapeM250( passPreselection && zvv.pt()>70 && mt>180 && mt<300); 
-	  bool passShapeM300( passPreselection && zvv.pt()>80 && mt>250 && mt<350); 
-	  bool passShapeM350( passPreselection && zvv.pt()>80 && mt>250 && mt<400); 
-	  bool passShapeM400( passPreselection && zvv.pt()>80 && mt>250 && mt<450); 
-	  bool passShapeM450( passShapeM400);
-	  bool passShapeM500( passPreselection && zvv.pt()>80 && mt>250 && mt<600); 
-	  bool passShapeM550( passShapeM500);
-	  bool passShapeM600( passPreselection && zvv.pt()>80 && mt>250 && mt<750); 
-	  
-	  //##############################################  
-	  //########         GENERAL PLOTS        ########                                                                                                                  
-	  //##############################################  
-	  if(ivar==0)
-	    {
-	      //N-1 PLOTS FOR PRESELECTION
-	      mon.fillHisto  ("eventflow",tags_full,0,iweight);
-	      mon.fillHisto  ("zmass"    ,tags_full,zmass,iweight);
-	      if(passZmass)
-		{
-		  mon.fillHisto("eventflow",tags_full,1,iweight);
-		  mon.fillHisto  ("zeta"     ,tags_full,zeta   ,iweight);
-		  mon.fillHisto  ("zpt"      ,tags_full,zpt     ,iweight);
-		  mon.fillHisto  ("nvtx"     ,tags_full,ev.nvtx,iweight);
-		  if(passZpt)
-		    {
-		      mon.fillHisto("eventflow",tags_full,2,iweight);
-		      
-		      if(pass3dLeptonVeto )
-			{
-			  mon.fillHisto("eventflow",tags_full,3,iweight);
-			  mon.fillHisto("nbtags",tags_full, nbtags,iweight);
-		  
-			  if(passBveto)
-			    {
-			      mon.fillHisto("eventflow",tags_full,4,iweight);
-			      mon.fillHisto("njets",tags_full,njets,iweight);
-			      mon.fillHisto("mindphijmet",tags_full,mindphijmet,iweight);
-			      if(passDphijmet)
-				{
-				  mon.fillHisto  ("eventflow",tags_full,5,iweight);
-				  mon.fillHisto("met",tags_full,zvv.pt(),iweight);
-				  mon.fillHisto("mt",tags_full,zvv.pt(),iweight);
-				}
-			    }
-			}
-		    }
-		}
-	    }
-	  if(!passPreselection) continue;
-	  	  
-	  //CUT AND COUNT ANALYSIS
-	  if(passCaCM250) mon.fillHisto("finaleventflow",tags_full,0,iweight); 
-	  if(passCaCM300) mon.fillHisto("finaleventflow",tags_full,1,iweight); 
-	  if(passCaCM350) mon.fillHisto("finaleventflow",tags_full,2,iweight); 
-	  if(passCaCM400) mon.fillHisto("finaleventflow",tags_full,3,iweight); 
-	  if(passCaCM450) mon.fillHisto("finaleventflow",tags_full,4,iweight); 
-	  if(passCaCM500) mon.fillHisto("finaleventflow",tags_full,5,iweight); 
-	  if(passCaCM550) mon.fillHisto("finaleventflow",tags_full,6,iweight); 
-	  if(passCaCM600) mon.fillHisto("finaleventflow",tags_full,7,iweight); 
-     
-	  //SHAPE ANALYSIS
-	  if(passShapeM250) mon.fillHisto(varNames[ivar]+"finalmt250",tags_full,mt,iweight);
-	  if(passShapeM300) mon.fillHisto(varNames[ivar]+"finalmt300",tags_full,mt,iweight);
-	  if(passShapeM350) mon.fillHisto(varNames[ivar]+"finalmt350",tags_full,mt,iweight);
-	  if(passShapeM400) mon.fillHisto(varNames[ivar]+"finalmt400",tags_full,mt,iweight);
-	  if(passShapeM450) mon.fillHisto(varNames[ivar]+"finalmt450",tags_full,mt,iweight);
-	  if(passShapeM500) mon.fillHisto(varNames[ivar]+"finalmt500",tags_full,mt,iweight);
-	  if(passShapeM550) mon.fillHisto(varNames[ivar]+"finalmt550",tags_full,mt,iweight);
-	  if(passShapeM600) mon.fillHisto(varNames[ivar]+"finalmt600",tags_full,mt,iweight);
-	}
+          //##############################################
+          //########     PRESELECTION             ########
+          //##############################################
+          bool passZmass(fabs(zmass-91)<15);
+          bool passDphijmet(mindphijmet>0.5); 
+          bool passZpt(zpt>55);
+          bool pass3dLeptonVeto(true); for(unsigned int i=2;i<phys.leptons.size();i++){if(phys.leptons[i].pt()>10)pass3dLeptonVeto=false;}
+          bool passBveto(nbtags==0);
+          bool passPreselection(passZmass && passZpt && pass3dLeptonVeto && passBveto && passDphijmet);
+          
+          //##############################################  
+          //########         GENERAL PLOTS        ########                                                                                                                  
+          //##############################################  
+          if(ivar==0){
+              //N-1 PLOTS FOR PRESELECTION
+              mon.fillHisto  ("eventflow",tags_full,0,iweight);
+              mon.fillHisto  ("zmass"    ,tags_full,zmass,iweight);
+
+              if(passZmass){
+                  mon.fillHisto("eventflow",tags_full,1,iweight);
+                  mon.fillHisto  ("zeta"     ,tags_full,zeta   ,iweight);
+                  mon.fillHisto  ("zpt"      ,tags_full,zpt     ,iweight);
+                  mon.fillHisto  ("nvtx"     ,tags_full,ev.nvtx,iweight);
+
+                  if(passZpt){
+                      mon.fillHisto("eventflow",tags_full,2,iweight);
+                      
+                      if(pass3dLeptonVeto){
+                          mon.fillHisto("eventflow",tags_full,3,iweight);
+                          mon.fillHisto("nbtags",tags_full, nbtags,iweight);
+                  
+                          if(passBveto){
+                              mon.fillHisto("eventflow",tags_full,4,iweight);
+                              mon.fillHisto("njets",tags_full,njets,iweight);
+                              mon.fillHisto("mindphijmet",tags_full,mindphijmet,iweight);
+
+                              if(passDphijmet){
+                                  mon.fillHisto  ("eventflow",tags_full,5,iweight);
+                                  mon.fillHisto("met",tags_full,zvv.pt(),iweight);
+                                  mon.fillHisto("mt",tags_full,zvv.pt(),iweight);
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+          if(!passPreselection) continue;
+                    
+          for(int ImH=0;ImH<NmH;ImH++){
+              //CUT AND COUNT ANALYSIS
+              if(zvv.pt()>cutMet[ImH] && mt>cutMTMin[ImH] && mt<cutMTMax[ImH])mon.fillHisto("finaleventflow",tags_full,ImH,iweight);
+             //SHAPE ANALYSIS
+              if(zvv.pt()>scutMet[ImH] && mt>scutMTMin[ImH] && mt<scutMTMax[ImH])mon.fillHisto(varNames[ivar]+"_finalmt"+mHtxt[ImH],tags_full,mt,iweight);
+          }
+      }
+
+      //##############################################
+      //########     PLOTS FOR OPTIMIZATION   ########
+      //##############################################
+
+      if(passZmass && passLooseKinematics && passBveto && passZpt && pass3dLeptonVeto && mindphijmet>0.5){
+         for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
+            if(metP4.pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
+            mon.fillHisto("optim_eventflow1"          ,tags_full,    index, weight);
+         }
+      }
 
       //##############################################   EVENT LOOP ENDS   ##############################################
-    }
+  }
   
   printf("\n"); 
   file->Close();
- 
 
   //##############################################
   //########     SAVING HISTO TO FILE     ########
