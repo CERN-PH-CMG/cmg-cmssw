@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
 
   //systematics
   bool runSystematics                        = runProcess.getParameter<bool>("runSystematics");
-  TString varNames[]={"","jesup","jesdown","jer","puup","pudown","renup","rendown","factup","factdown","btagup","btagdown"};
+  TString varNames[]={"","_jesup","_jesdown","_jer","_puup","_pudown","_renup","_rendown","_factup","_factdown","_btagup","_btagdown"};
   size_t nvarsToInclude(1);
   if(runSystematics) 
     { 
@@ -204,10 +204,10 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 100,0,1000) );
 
   for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
-      TH1 *cacH = (TH1F *) mon.addHistogram( new TH1F (varNames[ivar]+"_finaleventflow",";Category;Event count;",NmH+1,0,NmH+1) );
+      TH1 *cacH = (TH1F *) mon.addHistogram( new TH1F (TString("finaleventflow")+varNames[ivar],";Category;Event count;",NmH+1,0,NmH+1) );
       for(int ImH=0;ImH<NmH;ImH++){
          cacH->GetXaxis()->SetBinLabel(1,TString("mH=")+mHtxt[ImH]);
-         mon.addHistogram( new TH1F (varNames[ivar]+"_finalmt"+mHtxt[ImH],";M_{T} [GeV/c^{2}];Events;",100,0,1000) );
+         mon.addHistogram( new TH1F (TString("finalmt")+mHtxt[ImH]+varNames[ivar],";M_{T} [GeV/c^{2}];Events;",100,0,1000) );
       }
   } 
 
@@ -349,17 +349,10 @@ int main(int argc, char* argv[])
       TString tag_subcat = eventCategoryInst.GetLabel(eventSubCat);
 
       //prepare the tag's vectors for histo filling
-      std::vector<TString> tags_all;
-      tags_all.push_back("all");
-
-      std::vector<TString> tags_cat;
-      tags_cat.push_back("all");
-      tags_cat.push_back(tag_cat);
-
       std::vector<TString> tags_full;
       tags_full.push_back("all");
       tags_full.push_back(tag_cat);
-      tags_full.push_back(tag_cat + tag_subcat);
+      //tags_full.push_back(tag_cat + tag_subcat);
 
       //pileup and Higgs pT weight
       //float weight=ev.puWeight;
@@ -470,7 +463,7 @@ int main(int argc, char* argv[])
               //CUT AND COUNT ANALYSIS
               if(zvv.pt()>cutMet[ImH] && mt>cutMTMin[ImH] && mt<cutMTMax[ImH])mon.fillHisto("finaleventflow",tags_full,ImH,iweight);
              //SHAPE ANALYSIS
-              if(zvv.pt()>scutMet[ImH] && mt>scutMTMin[ImH] && mt<scutMTMax[ImH])mon.fillHisto(varNames[ivar]+"_finalmt"+mHtxt[ImH],tags_full,mt,iweight);
+              if(zvv.pt()>scutMet[ImH] && mt>scutMTMin[ImH] && mt<scutMTMax[ImH])mon.fillHisto(TString("finalmt")+mHtxt[ImH]+varNames[ivar],tags_full,mt,iweight);
           }
 
            //Fill histogram for posterior optimization
