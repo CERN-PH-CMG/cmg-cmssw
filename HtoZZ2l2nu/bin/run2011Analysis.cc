@@ -461,7 +461,7 @@ int main(int argc, char* argv[])
                     
           for(int ImH=0;ImH<NmH;ImH++){
               //CUT AND COUNT ANALYSIS
-              if(zvv.pt()>cutMet[ImH] && mt>cutMTMin[ImH] && mt<cutMTMax[ImH])mon.fillHisto("finaleventflow",tags_full,ImH,iweight);
+              if(zvv.pt()>cutMet[ImH] && mt>cutMTMin[ImH] && mt<cutMTMax[ImH])mon.fillHisto(TString("finaleventflow")+varNames[ivar],tags_full,ImH,iweight);
              //SHAPE ANALYSIS
               if(zvv.pt()>scutMet[ImH] && mt>scutMTMin[ImH] && mt<scutMTMax[ImH])mon.fillHisto(TString("finalmt")+mHtxt[ImH]+varNames[ivar],tags_full,mt,iweight);
           }
