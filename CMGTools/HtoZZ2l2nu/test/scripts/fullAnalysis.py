@@ -30,9 +30,9 @@ def waitUntilJobDone(JobList):
 			time.sleep(30)
 
 
-command_out = commands.getstatusoutput("runLocalAnalysisOverSamples.py -e run2011Analysis -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -o $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/results -d /store/cmst3/user/querten/12_03_01_HZZ2l2v_ntuples -c $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/runAnalysis_cfg.py.templ -p \"@useMVA=False @saveSummaryTree=True @runSystematics=True\" -s 8nh")
+command_out = commands.getstatusoutput("runLocalAnalysisOverSamples.py -e run2011Analysis -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -o $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/results -d /store/cmst3/user/querten/12_03_13_HZZ2l2v_ntuples -c $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/runAnalysis_cfg.py.templ -p \"@useMVA=False @saveSummaryTree=True @runSystematics=True\" -s 8nh")
 JobList = getListOfJobIds(command_out[1])
 #JobList = []
 waitUntilJobDone(JobList)
-os.system("runPlotter --iLumi 5035 --inDir results/ --outDir $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/results/plots/ --outFile $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root  --json $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samplesNoHWW.json")
+os.system("runPlotter --iLumi 5035 --inDir results/ --outDir $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/results/plots2011/ --outFile $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root  --json $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samplesNoHWW.json")
 os.system('echo "run2011Analysis done" | mail -s "UNIXMAIL: run2011Analysis done" loic.quertenmont@gmail.com')

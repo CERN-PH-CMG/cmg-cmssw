@@ -154,7 +154,7 @@
 	       "aoddir":["/store/cmst3/group/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V3/"],
 	       "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/"],
 	       "patdirv2":["/store/cmst3/user/psilva/Data4/G/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
-               "split":3,
+               "split":10,
                 "xsec":3048
               }
           ]
@@ -427,6 +427,20 @@
 		 "dset":"/DoubleMu/Run2011B-HZZ-19Nov2011-v1/AOD",
 		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleMu/Run2011B-HZZ-19Nov2011-v1/AOD/V3"],
                  "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/DoubleMu2011B"],
+                 "split":2
+                },
+                {
+                 "dtag":"Data_MuEG2011A",
+                 "dset":"/MuEG/Run2011A-HZZ-08Nov2011-v3/AOD",
+                 "aoddir":[""],
+                 "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/Data_MuEG2011A"],
+                 "split":2
+                },
+                {
+                 "dtag":"Data_MuEG2011B",
+                 "dset":"/MuEG/Run2011B-HZZ-19Nov2011-v3/AOD",
+                 "aoddir":[""],
+                 "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/Data_MuEG2011B"],
                  "split":2
                 }
 	    ]

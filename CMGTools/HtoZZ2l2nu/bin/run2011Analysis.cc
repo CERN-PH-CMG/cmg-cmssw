@@ -206,7 +206,7 @@ int main(int argc, char* argv[])
   for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
       TH1 *cacH = (TH1F *) mon.addHistogram( new TH1F (TString("finaleventflow")+varNames[ivar],";Category;Event count;",NmH+1,0,NmH+1) );
       for(int ImH=0;ImH<NmH;ImH++){
-         cacH->GetXaxis()->SetBinLabel(1,TString("mH=")+mHtxt[ImH]);
+         cacH->GetXaxis()->SetBinLabel(ImH+1,TString("mH=")+mHtxt[ImH]);
          mon.addHistogram( new TH1F (TString("finalmt")+mHtxt[ImH]+varNames[ivar],";M_{T} [GeV/c^{2}];Events;",100,0,1000) );
       }
   } 

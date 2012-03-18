@@ -45,7 +45,7 @@ runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/photon-samples.jso
 #
 # merge the ntuples
 #
-haddOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -d /store/cmst3/user/querten/12_03_01_HZZ2l2v_ntuples/split/ -o /store/cmst3/user/querten/12_03_01_HZZ2l2v_ntuples/
+haddOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -d /store/cmst3/user/querten/12_03_13_HZZ2l2v_ntuples/split/ -o /store/cmst3/user/querten/12_03_13_HZZ2l2v_ntuples/
 haddOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/photon-samples.json -d /store/cmst3/user/psilva/12_03_15_HZZ2l2v_ntuples/split -o /store/cmst3/user/psilva/12_03_15_HZZ2l2v_ntuples
 
 #
