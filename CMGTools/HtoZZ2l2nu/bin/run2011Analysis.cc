@@ -201,7 +201,9 @@ int main(int argc, char* argv[])
   }
   mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",100,0,3.4) );
   mon.addHistogram( new TH1F( "met"  , ";E_{T}^{miss};Events", 100,0,1000) );
+  mon.addHistogram( new TH1F( "metaftersmear"  , ";E_{T}^{miss} after smear;Events", 100,0,1000) );
   mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 100,0,1000) );
+  mon.addHistogram( new TH1F( "mtaftersmear"  , ";M_{T} after smear;Events", 100,0,1000) );
 
   for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
       TH1 *cacH = (TH1F *) mon.addHistogram( new TH1F (TString("finaleventflow")+varNames[ivar],";Category;Event count;",NmH+1,0,NmH+1) );
@@ -288,10 +290,14 @@ int main(int argc, char* argv[])
   while(mcPileupDistribution.size()<dataPileupDistribution.size())  mcPileupDistribution.push_back(0.0);
   while(mcPileupDistribution.size()>dataPileupDistribution.size())dataPileupDistribution.push_back(0.0);
   gROOT->cd();  //THIS LINE IS NEEDED TO MAKE SURE THAT HISTOGRAM INTERNALLY PRODUCED IN LumiReWeighting ARE NOT DESTROYED WHEN CLOSING THE FILE
-  edm::LumiReWeighting LumiWeights(mcPileupDistribution,dataPileupDistribution);
-  reweight::PoissonMeanShifter PShiftUp(+0.6);
-  reweight::PoissonMeanShifter PShiftDown(-0.6);
-
+  edm::LumiReWeighting *LumiWeights=0;
+  reweight::PoissonMeanShifter *PShiftUp=0, *PShiftDown=0;
+  if(isMC)
+    {
+      LumiWeights= new edm::LumiReWeighting(mcPileupDistribution,dataPileupDistribution);
+      PShiftUp = new reweight::PoissonMeanShifter(+0.6);
+      PShiftDown = new reweight::PoissonMeanShifter(-0.6);
+    }
 
   //check PU normalized entries 
   //evSummaryHandler.getTree()->Draw(">>elist","normWeight==1");
@@ -324,8 +330,12 @@ int main(int argc, char* argv[])
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
       //LorentzVector zll  = isGammaEvent ? gammaEvHandler->massiveGamma("ll") : phys.leptons[0]+phys.leptons[1];
       LorentzVector zll  = phys.leptons[0]+phys.leptons[1];
-      LorentzVectorCollection jetsP4;
-      for(size_t ijet=0; ijet<phys.jets.size(); ijet++) jetsP4.push_back( phys.jets[ijet] );
+      LorentzVectorCollection jetsP4, smearJetsP4;
+      for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
+	{
+	  jetsP4.push_back( phys.jets[ijet] );
+	  smearJetsP4.push_back( isMC ? METUtils::smearedJet(phys.jets[ijet]):phys.jets[ijet]);
+	}
 
       //categorize events
       TString tag_cat;
@@ -360,9 +370,9 @@ int main(int argc, char* argv[])
       double TotalWeight_plus = 1.0;
       double TotalWeight_minus = 1.0;
       if(isMC){
-        weight = LumiWeights.weight( ev.ngenITpu );
-        TotalWeight_plus = PShiftUp.ShiftWeight( ev.ngenITpu );
-        TotalWeight_minus = PShiftDown.ShiftWeight( ev.ngenITpu );
+        weight = LumiWeights->weight( ev.ngenITpu );
+        TotalWeight_plus = PShiftUp->ShiftWeight( ev.ngenITpu );
+        TotalWeight_minus = PShiftDown->ShiftWeight( ev.ngenITpu );
         if(isMC_VBF) weight *= weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );         
         if(isMC_GG)  {
           for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
@@ -424,8 +434,9 @@ int main(int argc, char* argv[])
           //##############################################  
           //########         GENERAL PLOTS        ########                                                                                                                  
           //##############################################  
+
+	  //N-1 PLOTS FOR PRESELECTION
           if(ivar==0){
-              //N-1 PLOTS FOR PRESELECTION
               mon.fillHisto  ("eventflow",tags_full,0,iweight);
               mon.fillHisto  ("zmass"    ,tags_full,zmass,iweight);
 
@@ -450,20 +461,25 @@ int main(int argc, char* argv[])
                               if(passDphijmet){
                                   mon.fillHisto  ("eventflow",tags_full,5,iweight);
                                   mon.fillHisto("met",tags_full,zvv.pt(),iweight);
-                                  mon.fillHisto("mt",tags_full,zvv.pt(),iweight);
-                              }
+                                  mon.fillHisto("mt",tags_full,mt,iweight);
+				  LorentzVector metafterSmear(zvv);
+				  for(size_t ijet=0; ijet<jetsP4.size(); ijet++) metafterSmear -= (smearJetsP4[ijet]-jetsP4[ijet]);
+                                  mon.fillHisto("metaftersmear",tags_full,metafterSmear.pt(),iweight);
+				  Float_t mtafterSmear = METUtils::transverseMass(zll,metafterSmear,true);
+                                  mon.fillHisto("mtaftersmear",tags_full,mtafterSmear,iweight);
+			      }
                           }
                       }
                   }
               }
           }
           if(!passPreselection) continue;
-                    
+          
           for(int ImH=0;ImH<NmH;ImH++){
               //CUT AND COUNT ANALYSIS
-              if(zvv.pt()>cutMet[ImH] && mt>cutMTMin[ImH] && mt<cutMTMax[ImH])mon.fillHisto(TString("finaleventflow")+varNames[ivar],tags_full,ImH,iweight);
+              if(zvv.pt()>cutMet[ImH] && mt>cutMTMin[ImH] && mt<cutMTMax[ImH])    mon.fillHisto(TString("finaleventflow")+varNames[ivar],tags_full,ImH,iweight);
              //SHAPE ANALYSIS
-              if(zvv.pt()>scutMet[ImH] && mt>scutMTMin[ImH] && mt<scutMTMax[ImH])mon.fillHisto(TString("finalmt")+mHtxt[ImH]+varNames[ivar],tags_full,mt,iweight);
+              if(zvv.pt()>scutMet[ImH] && mt>scutMTMin[ImH] && mt<scutMTMax[ImH]) mon.fillHisto(TString("finalmt")+mHtxt[ImH]+varNames[ivar],tags_full,mt,iweight);
           }
 
            //Fill histogram for posterior optimization
