@@ -30,7 +30,7 @@
                 "aoddir":["/store/cmst3/group/cmgtools/CMG/ZZ_TuneZ2_7TeV_pythia6_tauola/Fall11-PU_S6-START44_V5-v1/AODSIM/V3"],
                 "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/ZZ_TuneZ2_7TeV_pythia6_tauola/"],
                 "split":2,
-                "xsec":0.1927
+                "xsec":4.287
              }
 	]
 	},
