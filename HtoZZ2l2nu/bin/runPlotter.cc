@@ -536,9 +536,8 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
          if(!mc){mc = (TH1D*)hist->Clone("mc");}else{mc->Add(hist);}
        }else{
 	if(Process[i]["isdata"].toBool()){
-	  if(!data)
-	    {
-	      data = (TH1D*)hist->Clone("RatioHistogram");
+	  if(!data){
+	      data = hist; 
 	      legA->AddEntry(hist, Process[i]["tag"].c_str(), "P");
 	    }
 	  else data->Add(hist);
@@ -560,16 +559,14 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
      ObjectToDelete.push_back(stack);
      canvasIsFilled=true;
    }
-   if(data)
-     {
-       data->Draw(!canvasIsFilled ? "E1" : "E1 same");
+   if(data){
+       data->Draw(canvasIsFilled ? "E1 same" : "E1");
        canvasIsFilled=true;
-     }
-   for(size_t ip=0; ip<spimpose.size(); ip++)
-     {
-       spimpose[ip]->Draw(!canvasIsFilled ? "hist": "hist same");
-       if(!canvasIsFilled)canvasIsFilled=true;
-     }
+   }
+   for(size_t ip=0; ip<spimpose.size(); ip++){
+       spimpose[ip]->Draw(canvasIsFilled ? "hist same": "hist");
+       canvasIsFilled=true;
+   }
 
 
    TPaveText* T = new TPaveText(0.40,0.995,0.85,0.945, "NDC");
@@ -600,6 +597,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    t2->SetTopMargin(0);
    t2->SetBottomMargin(0.5);
    float yscale = (1.0-0.2)/(0.18-0);
+   data = (TH1D*)data->Clone("RatioHistogram");
    data->Divide(mc);
    data->GetYaxis()->SetTitle("Obs/Ref");
    data->GetXaxis()->SetTitle("");
