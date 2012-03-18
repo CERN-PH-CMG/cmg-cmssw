@@ -187,7 +187,7 @@ int main(int argc, char* argv[])
 
   mon.addHistogram( new TH1F( "zeta", ";#eta^{ll};Events", 100,-5,5) );
   mon.addHistogram( new TH1F( "zpt", ";p_{T}^{ll};Events", 100,0,400) );
-  mon.addHistogram( new TH1F( "zmass", ";M^{ll};Events", 100,91-31,91+31) );
+  mon.addHistogram( new TH1F( "zmass", ";M^{ll};Events", 100,0,200) );
   mon.addHistogram( new TH1F("nvtx",";Vertices;Events",25,0,25) ); 
   mon.addHistogram( new TH1F("njets"        ,";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5) );
   mon.addHistogram( new TH1F ("nbtags", ";b-tag multiplicity; Events", 5,0,5) );  
@@ -411,7 +411,7 @@ int main(int argc, char* argv[])
           Float_t mt         = mts[ivar>2?0:ivar];
           int njets(0),nbtags(0);
           Float_t mindphijmet(9999.);
-          Float_t btagcut(2.0); if(ivar==10) btagcut=2.1; else btagcut=1.9;
+          Float_t btagcut(2.0); if(ivar==10) btagcut=2.03; else if(ivar==11) btagcut=1.97;
           for(size_t ijet=0; ijet<origJetsP4.size(); ijet++){
               Float_t idphijmet=fabs(deltaPhi(zvv.phi(),origJetsP4[ijet].phi()));
               if(idphijmet<mindphijmet) mindphijmet=idphijmet;
