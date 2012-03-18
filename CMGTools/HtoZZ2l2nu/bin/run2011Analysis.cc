@@ -177,18 +177,19 @@ int main(int argc, char* argv[])
   //##############################################
   SmartSelectionMonitor mon;
   TH1F* Hcutflow  = (TH1F*) mon.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,5,0,5) ) ;
-  TH1F *h=(TH1F*) mon.addHistogram( new TH1F ("eventflow", ";Step;Events", 6,0,6) );
+  TH1F *h=(TH1F*) mon.addHistogram( new TH1F ("eventflow", ";Step;Events", 7,0,7) );
   h->GetXaxis()->SetBinLabel(1,"Preselected");
   h->GetXaxis()->SetBinLabel(2,"|M-M_{Z}|<15");
   h->GetXaxis()->SetBinLabel(3,"Z_{pT}>25");
   h->GetXaxis()->SetBinLabel(4,"3^{rd}-lepton veto");
   h->GetXaxis()->SetBinLabel(5,"b-veto");
   h->GetXaxis()->SetBinLabel(6,"#delta #phi(jet,E_{T}^{miss})");
+  h->GetXaxis()->SetBinLabel(7,"E_{T}^{miss}>80");
 
-  mon.addHistogram( new TH1F( "zeta", ";#eta^{ll};Events", 100,-5,5) );
-  mon.addHistogram( new TH1F( "zpt", ";p_{T}^{ll};Events", 100,0,400) );
+  mon.addHistogram( new TH1F( "zeta", ";#eta^{ll};Events", 50,-10,10) );
+  mon.addHistogram( new TH1F( "zpt", ";p_{T}^{ll};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "zmass", ";M^{ll};Events", 100,0,200) );
-  mon.addHistogram( new TH1F("nvtx",";Vertices;Events",25,0,25) ); 
+  mon.addHistogram( new TH1F("nvtx",";Vertices;Events",50,0,50) ); 
   mon.addHistogram( new TH1F("njets"        ,";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5) );
   mon.addHistogram( new TH1F ("nbtags", ";b-tag multiplicity; Events", 5,0,5) );  
   for(size_t ibin=1; ibin<=5; ibin++){
@@ -199,17 +200,17 @@ int main(int argc, char* argv[])
     mon.getHisto("njets")->GetXaxis()->SetBinLabel(ibin,label);
     mon.getHisto("nbtags")->GetXaxis()->SetBinLabel(ibin,label);
   }
-  mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",100,0,3.4) );
-  mon.addHistogram( new TH1F( "met"  , ";E_{T}^{miss};Events", 100,0,1000) );
-  mon.addHistogram( new TH1F( "metaftersmear"  , ";E_{T}^{miss} after smear;Events", 100,0,1000) );
-  mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 100,0,1000) );
-  mon.addHistogram( new TH1F( "mtaftersmear"  , ";M_{T} after smear;Events", 100,0,1000) );
+  mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
+  mon.addHistogram( new TH1F( "met"  , ";E_{T}^{miss};Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "metaftersmear"  , ";E_{T}^{miss} after smear;Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 80,150,950) );
+  mon.addHistogram( new TH1F( "mtaftersmear"  , ";M_{T} after smear;Events", 80,150,950) );
 
   for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
       TH1 *cacH = (TH1F *) mon.addHistogram( new TH1F (TString("finaleventflow")+varNames[ivar],";Category;Event count;",NmH+1,0,NmH+1) );
       for(int ImH=0;ImH<NmH;ImH++){
          cacH->GetXaxis()->SetBinLabel(ImH+1,TString("mH=")+mHtxt[ImH]);
-         mon.addHistogram( new TH1F (TString("finalmt")+mHtxt[ImH]+varNames[ivar],";M_{T} [GeV/c^{2}];Events;",100,0,1000) );
+         mon.addHistogram( new TH1F (TString("finalmt")+mHtxt[ImH]+varNames[ivar],";M_{T} [GeV/c^{2}];Events;",80,150,950) );
       }
   } 
 
@@ -429,6 +430,7 @@ int main(int argc, char* argv[])
           bool passZpt(zpt>55);
           bool pass3dLeptonVeto(true); for(unsigned int i=2;i<phys.leptons.size();i++){if(phys.leptons[i].pt()>10)pass3dLeptonVeto=false;}
           bool passBveto(nbtags==0);
+	  bool passBaseMet(zvv.pt()>70);
           bool passPreselection(passZmass && passZpt && pass3dLeptonVeto && passBveto && passDphijmet);
           
           //##############################################  
@@ -467,6 +469,11 @@ int main(int argc, char* argv[])
                                   mon.fillHisto("metaftersmear",tags_full,metafterSmear.pt(),iweight);
 				  Float_t mtafterSmear = METUtils::transverseMass(zll,metafterSmear,true);
                                   mon.fillHisto("mtaftersmear",tags_full,mtafterSmear,iweight);
+				  
+				  if(passBaseMet){
+				    mon.fillHisto  ("eventflow",tags_full,6,iweight);
+				  }
+
 			      }
                           }
                       }
