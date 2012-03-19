@@ -27,7 +27,7 @@ public:
 	// PileupJetIdentifier(const std::string & tmvaWeight="", const std::string & tmvaMethod="", 
 	// 		    float impactParTkThreshod_=1.);
 	// // PileupJetIdentifier(edm::ParameterSet & ps); 
-	PileupJetIdentifier(const PileupJetIdentifier &p);
+	/// PileupJetIdentifier(const PileupJetIdentifier &p);
 	~PileupJetIdentifier(); 
 	
 	// void computeIdVariables(const reco::Jet * jet, float jec, const reco::Vertex *, bool calculateMva=false);
@@ -126,9 +126,9 @@ public:
 	DECLARE_VARIABLE(emFrac04    ,float);  
 	DECLARE_VARIABLE(emFrac05   ,float);  
 	
-	std::string dumpVariables() const;
-
-	typedef std::map<std::string,std::pair<float *,float> > variables_list_t;
+	//// std::string dumpVariables() const;
+	//// 
+	//// typedef std::map<std::string,std::pair<float *,float> > variables_list_t;
 
 private:
 	//// TMVA::Reader * reader_;
@@ -138,10 +138,10 @@ private:
 	
 	///// void bookReader();
 	
-	void resetVariables();
-	void initVariables();
-	
-	variables_list_t variables_;
+	//// void resetVariables();
+	//// void initVariables();
+	//// 
+	//// variables_list_t variables_;
 	
 	//// float impactParTkThreshod_;
 };
