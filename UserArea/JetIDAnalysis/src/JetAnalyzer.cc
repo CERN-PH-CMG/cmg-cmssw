@@ -13,13 +13,15 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.cc,v 1.6 2012/03/19 11:30:13 musella Exp $
+// $Id: JetAnalyzer.cc,v 1.7 2012/03/19 15:56:38 malberti Exp $
 //
 //
 
 
 // system include files
 #include "CMG/JetIDAnalysis/interface/JetAnalyzer.h"
+
+
 // 
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "DataFormats/Math/interface/deltaR.h"
@@ -43,6 +45,11 @@ JetAnalyzer::JetAnalyzer(const edm::ParameterSet& iConfig)
   puIdAlgo_ = new PileupJetIdNtupleAlgo(iConfig);
   computeTMVA_ = iConfig.getUntrackedParameter<bool>("computeTMVA");
   
+  //-- loose jet ID
+  pfjetIdLoose_  = iConfig.getParameter<edm::ParameterSet>("pfjetIdLoose") ;
+
+  
+  //-- output tree
   edm::Service<TFileService> fs ;
   tree =        fs -> make <TTree>("tree","tree"); 
 
@@ -55,6 +62,7 @@ JetAnalyzer::JetAnalyzer(const edm::ParameterSet& iConfig)
   tree -> Branch ("PUoot_late_n",&PUoot_late_n, "PUoot_late_n/I");
   tree -> Branch ("PUoot_late_nTrue",&PUoot_late_nTrue, "PUoot_late_nTrue/F");
   tree -> Branch ("nvtx",&nvtx, "nvtx/I");
+  tree -> Branch ("jetLooseID", &jetLooseID, "jetLooseID/O");
   tree -> Branch ("isMatched", &isMatched, "isMatched/O");
   tree -> Branch ("jetFlavour",&jetFlavour, "jetFlavour/I");
   tree -> Branch ("jetGenPt",&jetGenPt, "jetGenPt/F");
@@ -73,6 +81,7 @@ void JetAnalyzer::ResetTreeVariables()
   PUoot_late_nTrue = -999;
  
   nvtx       = -999;
+  jetLooseID = false;
   isMatched  = false;
   jetFlavour = -999;
   jetGenPt   = -999;
@@ -150,6 +159,11 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
     }
 
+    //-- loose jet ID 
+    //PFJetIDSelectionFunctor jetIDLoose( PFJetIDSelectionFunctor::FIRSTDATA, PFJetIDSelectionFunctor::LOOSE );
+    pat::strbitset ret = pfjetIdLoose_.getBitTemplate(); // ? a cosa serve ?
+    jetLooseID = pfjetIdLoose_(patjet, ret);
+
 
     //-- pu jet identifier
     PileupJetIdentifier puIdentifier = puIdAlgo_->computeIdVariables(&patjet, 0, &vtx, computeTMVA_);
@@ -222,6 +236,7 @@ JetAnalyzer::FillMCPileUpInfo(const edm::Event& iEvent, const edm::EventSetup& i
 void JetAnalyzer::DiMuonSelection(edm::View<pat::Muon> muons, int& goodMuon1, int& goodMuon2, bool& isZcandidate)
 {
 
+  float ZMASS = 91.188;
   float minDeltaM = 9999;
 
   goodMuon1 = -1 ;
@@ -252,11 +267,13 @@ void JetAnalyzer::DiMuonSelection(edm::View<pat::Muon> muons, int& goodMuon1, in
   if (nGoodMuons > 1){
     for ( unsigned int i = 0; i < goodMuonIndex.size(); ++i ) {
       for ( unsigned int j = i+1; j < goodMuonIndex.size(); ++j ) {
-	float invmass = (muons.at(i).p4()+muons.at(j).p4()).mass();
-	if ( fabs(invmass-91.188) < 30 && fabs(invmass-91.188) < minDeltaM ) {
-	  goodMuon1 = i;
-	  goodMuon2 = j;
-	  minDeltaM = fabs(invmass-91.188);
+	int ii =  goodMuonIndex.at(i);
+	int jj =  goodMuonIndex.at(j);
+	float invmass = (muons.at(ii).p4()+muons.at(jj).p4()).mass();
+	if ( fabs(invmass-ZMASS) < 30 && fabs(invmass-ZMASS) < minDeltaM ) {
+	  goodMuon1 = ii;
+	  goodMuon2 = jj;
+	  minDeltaM = fabs(invmass-ZMASS);
 	}
       }
     }

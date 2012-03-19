@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.h,v 1.2 2012/03/14 12:05:21 musella Exp $
+// $Id: JetAnalyzer.h,v 1.3 2012/03/19 15:57:17 malberti Exp $
 //
 //
 
@@ -36,6 +36,7 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h" 
+#include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 
 #include "PileupJetIdNtupleAlgo.h"
 
@@ -88,6 +89,7 @@ private:
   int PUit_NumInteractions            ;
   float PUit_TrueNumInteractions        ;
 
+  PFJetIDSelectionFunctor  pfjetIdLoose_;
 
   /// output tree variables
   TTree *tree ;
@@ -111,6 +113,8 @@ private:
   //// float leadFrac, leadChFrac, leadNeutFrac;
   //// float majW, minW; 
       
+
+  bool jetLooseID;
   bool isMatched;
   int  jetFlavour;
   float jetGenPt;

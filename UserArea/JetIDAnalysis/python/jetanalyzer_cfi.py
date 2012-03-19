@@ -1,5 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
+from PhysicsTools.SelectorUtils.pfJetIDSelector_cfi import pfJetIDSelector
+
 jetanalyzer = cms.EDAnalyzer('JetAnalyzer',
 
  ## Loic's PATtuples 
@@ -12,9 +14,11 @@ jetanalyzer = cms.EDAnalyzer('JetAnalyzer',
  computeTMVA = cms.untracked.bool(True),
  impactParTkThreshold = cms.untracked.double(0.) ,
  tmvaWeights = cms.untracked.string("CMGTools/External/data/mva_JetID.weights.xml"),
- tmvaMethod  = cms.untracked.string("JetID")                  
-                             
-                             
+ tmvaMethod  = cms.untracked.string("JetID"),                 
+
+ # loose jets
+ pfjetIdLoose = pfJetIDSelector.clone(),                           
+                              
  #PFtoPAT ntuple (Colin)
  #JetTag     = cms.InputTag("selectedPatJetsAK5",""),                        
  #GenJetTag  = cms.InputTag("selectedPatJetsAK5","genJets"),
