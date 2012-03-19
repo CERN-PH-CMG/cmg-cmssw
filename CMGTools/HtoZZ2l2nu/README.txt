@@ -6,8 +6,7 @@ scramv1 project CMSSW CMSSW_4_4_4
 cd CMSSW_4_4_4/src/
 cvs co -p UserCode/CMG/CMGTools/HtoZZ2l2nu/TAGS.txt | sh
 scramv1 b
-cd UserCode/mschen/Lands
-make
+
 
 
 #
