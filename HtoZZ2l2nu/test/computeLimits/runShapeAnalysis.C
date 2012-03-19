@@ -17,9 +17,6 @@
 #include "TStyle.h"
 #include "TObjArray.h"
 
-#include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
-#include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
-
 #include<iostream>
 #include<fstream>
 #include<map>
@@ -62,8 +59,6 @@ std::vector<TString> buildDataCard(Int_t mass, TString histo="finalmt", TString 
 //
 void runShapeAnalysis(Int_t mass, TString histo, TString url)
 {
-  setStyle();
-
   //prepare the output directory
   TString outDir("H"); outDir += mass;
   TString mkdirCmd("mkdir -p "); mkdirCmd+=outDir;
