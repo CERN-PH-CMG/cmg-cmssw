@@ -1,6 +1,7 @@
 cvs co -r V12-03-14 -d CMGTools/HtoZZ2l2nu  UserCode/CMG/CMGTools/HtoZZ2l2nu
 addpkg                                      PhysicsTools/PatAlgos
 cvs co -r V08-03-17                         PhysicsTools/Utilities
+cvs co -r t3-04-13                          UserCode/mschen/LandS
 cvs co -r V00-07-01 -d SHarper/HEEPAnalyzer UserCode/SHarper/HEEPAnalyzer 
 #patch the file
 sed -i 's/<int>/<float>/g' SHarper/HEEPAnalyzer/plugins/HEEPIdValueMapProducer.cc
