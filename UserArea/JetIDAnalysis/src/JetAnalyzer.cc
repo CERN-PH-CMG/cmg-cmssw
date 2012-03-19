@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.cc,v 1.4 2012/03/14 21:01:00 adavidzh Exp $
+// $Id: JetAnalyzer.cc,v 1.5 2012/03/15 11:04:55 musella Exp $
 //
 //
 
@@ -41,6 +41,7 @@ JetAnalyzer::JetAnalyzer(const edm::ParameterSet& iConfig)
 
   //--- PU jet identifier 
   puIdAlgo_ = new PileupJetIdNtupleAlgo(iConfig);
+  computeTMVA_ = iConfig.getUntrackedParameter<bool>("computeTMVA");
   
   edm::Service<TFileService> fs ;
   tree =        fs -> make <TTree>("tree","tree"); 
