@@ -245,7 +245,7 @@ void DijetMass_chiyoung_2Vtag(){
 
 
    // QCD Fit -- fit to qcd
-   TF1 *f_qcd = new TF1("fit_qcd",fitQCD,mMin,2100.0,3); 
+   TF1 *f_qcd = new TF1("fit_qcd",fitQCD,mMin,2050.0,3); 
    gStyle->SetOptFit(1111); 
    f_qcd->SetParameter(0,6.15613e+18);
    f_qcd->SetParameter(1,-3.75321e+00);
@@ -258,7 +258,7 @@ void DijetMass_chiyoung_2Vtag(){
   cout << "Fit QCD Up" << endl << endl << endl;
 
    // QCD up Fit -- fit to JES plus
-   TF1 *f_qcd_up = new TF1("fit_qcd_up",fitQCD,mMin,2100.0,3); 
+   TF1 *f_qcd_up = new TF1("fit_qcd_up",fitQCD,mMin,2050.0,3); 
    gStyle->SetOptFit(1111); 
    f_qcd_up->SetParameter(0,1.47700e+19);
    f_qcd_up->SetParameter(1,-4.03984e+00);
@@ -269,7 +269,7 @@ void DijetMass_chiyoung_2Vtag(){
    cout << "Fit QCD Do" << endl << endl << endl;
 
    // QCD down Fit -- fit to JES minus
-   TF1 *f_qcd_down = new TF1("fit_qcd_down",fitQCD,mMin,2100.0,3); 
+   TF1 *f_qcd_down = new TF1("fit_qcd_down",fitQCD,mMin,2050.0,3); 
    gStyle->SetOptFit(1111); 
    f_qcd_down->SetParameter(0,2.12985e+19);
    f_qcd_down->SetParameter(1,-4.63606e+00);
@@ -300,14 +300,14 @@ void DijetMass_chiyoung_2Vtag(){
         vy[i]   = n / (dm*lumi); 
 
      
-	if (n<25 && mass>565 && mass<=2100)
+	if (n<25 && mass>565 && mass<=2050)
        	{
 		nl = n-0.5*TMath::ChisquareQuantile(a,2*n);
 		nh = 0.5*TMath::ChisquareQuantile(1-a,2*(n+1))-n;
 		veyl[i] = nl/(lumi*dm);
 		veyh[i] = nh/(lumi*dm);  
 	}
-	else if (n<25 && mass>2100 && n>0)
+	else if (n<25 && mass>2050 && n>0)
 	{
 		nl = n-0.5*TMath::ChisquareQuantile(a,2*n);
 		nh = 0.5*TMath::ChisquareQuantile(1-a,2*(n+1))-n;
@@ -336,7 +336,7 @@ void DijetMass_chiyoung_2Vtag(){
     TGraphAsymmErrors *g2 = new TGraphAsymmErrors(i,vx,vy,vexl,vexh,veyl,veyh);
 
     // Fit to data    
-    TF1 *fit = new TF1("fit",fitQCD1,mMin,2100.0,3); // 3 Par. Fit
+    TF1 *fit = new TF1("fit",fitQCD1,mMin,2050.0,3); // 3 Par. Fit
     gStyle->SetOptFit(1111); 
     fit->SetParameter(0,1.73132e-04);
     fit->SetParameter(1,18.80678e+00);
@@ -344,10 +344,10 @@ void DijetMass_chiyoung_2Vtag(){
     fit->SetLineWidth(2);
     fit->SetLineColor(4);
 
-    g->Fit("fit","","",mMin,2100.0);	
+    g->Fit("fit","","",mMin,2050.0);	
     
     //Alternate Fits 3 Parameter
-    TF1 *f_4par = new TF1("fit_4par",fitQCD,mMin,2100.0,4); // 4 Par. Fit
+    TF1 *f_4par = new TF1("fit_4par",fitQCD,mMin,2050.0,4); // 4 Par. Fit
     gStyle->SetOptFit(1111); 
     f_4par->SetParameter(0,1.73132e-05);
     f_4par->SetParameter(1,1.10678e+01);
@@ -357,10 +357,10 @@ void DijetMass_chiyoung_2Vtag(){
     f_4par->SetLineWidth(2);
     f_4par->SetLineColor(TColor::GetColor("#009900"));
 
-    //g->Fit("fit_4par","N","",mMin,2100.0);	
+    //g->Fit("fit_4par","N","",mMin,2050.0);	
 
     //Alternate Fits 2 Parameter
-    TF1 *f_2par = new TF1("fit_2par",fitQCD2,mMin,2100.0,2); // 2 Par. Fit
+    TF1 *f_2par = new TF1("fit_2par",fitQCD2,mMin,2050.0,2); // 2 Par. Fit
     gStyle->SetOptFit(1111);
     f_2par->SetParameter(0,1.73132e-05);
     f_2par->SetParameter(1,6.80678e+00);
@@ -368,7 +368,7 @@ void DijetMass_chiyoung_2Vtag(){
     f_2par->SetLineColor(2);
     f_2par->SetLineStyle(2);
 
-    //g->Fit("fit_2par","N","",mMin,2100.0);	
+    //g->Fit("fit_2par","N","",mMin,2050.0);	
 
     //Dijet Mass Cross Section with Fit	
     TCanvas* c1 = new TCanvas("c1","DijetMass Cross Section with Fit");
@@ -380,7 +380,7 @@ void DijetMass_chiyoung_2Vtag(){
     g->SetMarkerStyle(20);
     g->GetXaxis()->SetTitle("Dijet Mass (GeV)");
     g->GetYaxis()->SetTitle("d#sigma/dm (pb/GeV)");
-    g->GetXaxis()->SetRangeUser(890,2100.0);
+    g->GetXaxis()->SetRangeUser(890,2050.0);
     g->GetYaxis()->SetRangeUser(0.0000003,0.02);
     g->Draw("APZ");
 
@@ -409,15 +409,15 @@ void DijetMass_chiyoung_2Vtag(){
     g2->SetTitle("");
     g2->GetXaxis()->SetTitle("Dijet Mass (GeV)");
     g2->GetYaxis()->SetTitle("d#sigma/dm (pb/GeV)");
-    g2->GetXaxis()->SetRangeUser(890,2100);
+    g2->GetXaxis()->SetRangeUser(890,2050);
     g2->GetYaxis()->SetRangeUser(0.0000003,0.02);
     g2->Draw("APZ");
-    g2->Fit("fit","","sames",mMin,2100.0);
+    g2->Fit("fit","","sames",mMin,2050.0);
 
     TString status_default= gMinuit->fCstatu.Data();
-    g2->Fit("fit_4par","+","sames",mMin,2100.0);
+    g2->Fit("fit_4par","+","sames",mMin,2050.0);
     TString status_3par= gMinuit->fCstatu.Data();
-    g2->Fit("fit_2par","+","sames",mMin,2100.0);
+    g2->Fit("fit_2par","+","sames",mMin,2050.0);
     TString status_2par= gMinuit->fCstatu.Data();
     TLegend *leg = new TLegend(0.18,0.78,0.38,0.92);
     leg->SetTextSize(0.03146853);
@@ -464,7 +464,7 @@ void DijetMass_chiyoung_2Vtag(){
     hJESminus->SetLineColor(5);
     hJESminus->SetLineWidth(0);
     //    hJESminus->SetLineColor(5);
-    htmp->GetXaxis()->SetRangeUser(890,2100);
+    htmp->GetXaxis()->SetRangeUser(890,2050);
     htmp->SetFillColor(5);
     htmp->SetLineColor(1);
     htmp->SetLineWidth(1); 
@@ -478,7 +478,7 @@ void DijetMass_chiyoung_2Vtag(){
     TCanvas *c3 = new TCanvas("c3","DijetMass cross section with Fit and QCD MC");
     c3->SetLogy();
     h->Draw("C");
-    h->GetXaxis()->SetRangeUser(890,2100);
+    h->GetXaxis()->SetRangeUser(890,2050);
     h->GetXaxis()->SetTitle("Dijet Mass (GeV)");
     h->GetXaxis()->SetTitleSize(0.06);
     h->GetYaxis()->SetTitle("d#sigma/dm (pb/GeV)");
@@ -550,7 +550,7 @@ void DijetMass_chiyoung_2Vtag(){
  
    h2->Draw("C");  
    h2->SetTitle("");
-   h2->GetXaxis()->SetRangeUser(890.,2100.);
+   h2->GetXaxis()->SetRangeUser(890.,2050.);
    h2->GetYaxis()->SetRangeUser(0.,3.);
    h2->GetXaxis()->SetTitle("Dijet Mass (GeV)");
    h2->GetXaxis()->SetTitleSize(0.06);
@@ -559,7 +559,7 @@ void DijetMass_chiyoung_2Vtag(){
    
    //   htmp2->Draw("same");
    gratio->Draw("PSAME");
-   TLine *l = new TLine(890, 1., 2100., 1.);
+   TLine *l = new TLine(890, 1., 2050., 1.);
    l->Draw("same");
 
    TLegend *leg = new TLegend(0.18,0.32,0.40,0.47);
@@ -728,7 +728,7 @@ void DijetMass_chiyoung_2Vtag(){
    TCanvas *c5 = new TCanvas("c5","Dijet mass cross section with the signals");
    c5->SetLogy();
 
-   TH1F *vFrame = gPad->DrawFrame(890.,0.0000003,2100.0,0.02);
+   TH1F *vFrame = gPad->DrawFrame(890.,0.0000003,2050.0,0.02);
    vFrame->SetTitle("");
    vFrame->SetXTitle("Dijet Mass (GeV)");
    vFrame->GetXaxis()->SetTitleSize(0.06);
@@ -817,7 +817,7 @@ void DijetMass_chiyoung_2Vtag(){
 	eyh_pulls[i] = veyh[i]/fit_default;
 	eyl_pulls[i] = veyl[i]/fit_default;
 				
-	if(m<=565 || m>2100){
+	if(m<=565 || m>2050){
 		pulls_2par[i] = -999;
 		pulls_3par[i] = -999;
 		pulls[i] = -999;
@@ -894,12 +894,12 @@ void DijetMass_chiyoung_2Vtag(){
    hDiff->SetTitle("");
    hDiff->GetXaxis()->SetTitle("Dijet Mass (GeV)");
    hDiff->GetYaxis()->SetTitle("(Data-Fit)/Fit");
-   hDiff->GetXaxis()->SetRangeUser(890.,2100.);
+   hDiff->GetXaxis()->SetRangeUser(890.,2050.);
    hDiff->GetYaxis()->SetRangeUser(-1.5,3.);
    hDiff->Draw("APZ");
    //gr_diquark1_3->Draw("csame");
    gr_diquark2_3->Draw("csame");
-   l = new TLine(890, 0.0, 2100, 0.0);
+   l = new TLine(890, 0.0, 2050, 0.0);
    l->SetLineStyle(2);
    l->Draw("same");
    pave->Draw("same");
@@ -928,7 +928,7 @@ void DijetMass_chiyoung_2Vtag(){
    TCanvas* c7 = new TCanvas("c7","(Data-Fit)/Error");
    hPulls->GetXaxis()->SetTitle("Dijet Mass (GeV)");
    hPulls->GetYaxis()->SetTitle("(Data-Fit)/Error");
-   hPulls->GetXaxis()->SetRangeUser(890.,2100.);
+   hPulls->GetXaxis()->SetRangeUser(890.,2050.);
    hPulls->GetYaxis()->SetRangeUser(-3.9,3.9);
    hPulls->SetLineWidth(1);
    hPulls->Draw("ep");
@@ -975,7 +975,7 @@ void DijetMass_chiyoung_2Vtag(){
    hratio->GetXaxis()->SetTitleSize(0.06);
    hratio->GetYaxis()->SetTitle("Data/Fit");
    hratio->SetMarkerStyle(20);
-   hratio->GetXaxis()->SetRangeUser(890.,2100.);
+   hratio->GetXaxis()->SetRangeUser(890.,2050.);
    hratio->GetYaxis()->SetRangeUser(0.5,6.);
    hratio->Draw("APZ");
    l->Draw("same");
@@ -1018,7 +1018,7 @@ void DijetMass_chiyoung_2Vtag(){
    p11_1->SetRightMargin(0.05);
    p11_1->SetTopMargin(0.05);
    
-   TH1F *vFrame = p11_1->DrawFrame(890.,0.0000003,2100.0,0.02);
+   TH1F *vFrame = p11_1->DrawFrame(890.,0.0000003,2050.0,0.02);
    vFrame->SetTitle("");
    vFrame->SetXTitle("Dijet Mass (GeV)");
    vFrame->GetXaxis()->SetTitleSize(0.06);
@@ -1028,7 +1028,7 @@ void DijetMass_chiyoung_2Vtag(){
 
    //h->Draw("SAMEC");
 
-   //   h->GetXaxis()->SetRangeUser(890.,2100.);
+   //   h->GetXaxis()->SetRangeUser(890.,2050.);
    //   h->GetYaxis()->SetRangeUser(0.0001,50.);
    // h->GetXaxis()->SetTitle("Dijet Mass (GeV)");
    //  h->GetXaxis()->SetTitleSize(0.06);
@@ -1100,7 +1100,7 @@ void DijetMass_chiyoung_2Vtag(){
    c11_2->SetTickx(50);
 
 
-   TH1F *vFrame2 = p11_2->DrawFrame(890., -3.31, 2100.0, 3.31);
+   TH1F *vFrame2 = p11_2->DrawFrame(890., -3.31, 2050.0, 3.31);
    vFrame2->SetTitle("");
    vFrame2->SetXTitle("Dijet Mass (GeV)");
    vFrame2->GetXaxis()->SetTitleSize(0.06);
@@ -1119,7 +1119,7 @@ void DijetMass_chiyoung_2Vtag(){
 
    hPulls_add->Draw("SAMEHIST");
 
-   TLine *line = new TLine(890.,0,2100,0);
+   TLine *line = new TLine(890.,0,2050,0);
    line->Draw("");
    
    c11->SaveAs("Plots_2Vtag/DefaultFitAndPull.png");
