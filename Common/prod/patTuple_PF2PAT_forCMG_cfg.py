@@ -7,7 +7,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 ## pickRelVal = False
 
 # turn on when running on MC
-runOnMC = True
+runOnMC = False
 
 runCMG = True
 
@@ -59,11 +59,11 @@ process.source = datasetToSource(
     # to test MC:
     # 'cmgtools',
     # '/TauPlusX/Run2011A-May10ReReco-v1/AOD/V3',
-    'cmgtools_group',
-    '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V3',
+    # 'cmgtools_group',
+    # '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V3',
     # to test Data:
-    # 'cmgtools',
-    # '/DoubleElectron/Run2011A-HZZ-PromptSkim-v6/AOD/V2', 
+    'cmgtools_group',
+    '/DoubleMu/Run2011A-05Aug2011-v1/AOD/V3', 
     # '.*root'
     ) 
 
@@ -174,7 +174,7 @@ addMITElectronID( process, 'selectedPatElectrons', 'stdElectronSequence', postfi
 # pfNoPileUp switched off, AK5PFJets. This sequence is a clone of the AK5 sequence defined previously.
 
 if runAK5NoPUSub:
-    print 'cloning AK5 sequence to prepare AK5NoPUSub sequence...',
+    print 'Preparing AK5NoPUSub sequence...',
 
     postfixNoPUSub = 'NoPUSub'
     postfixAK5NoPUSub = postfixAK5+postfixNoPUSub
@@ -327,8 +327,8 @@ process.outcmg = cms.OutputModule(
     outputCommands = everything,
     dropMetaData = cms.untracked.string('PRIOR')
     )
-process.outcmg.outputCommands.extend( ['keep patMuons_selectedPatMuonsAK5*_*_*',
-                                       'keep patElectrons_selectedPatElectronAK5*_*_*'] )
+# process.outcmg.outputCommands.extend( ['keep patMuons_selectedPatMuonsAK5*_*_*',
+#                                        'keep patElectrons_selectedPatElectronAK5*_*_*'] )
 
 if runCMG:
     process.outpath += process.outcmg

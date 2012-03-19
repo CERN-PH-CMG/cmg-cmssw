@@ -7,11 +7,15 @@ patEventContentCMG = cms.untracked.vstring(
     'keep *_selectedPatTausAK5*_*_*',
     'drop *_selectedPatMuonsAK7_*_*',
     'drop *_selectedPatElectronsAK7_*_*',
+    'drop *_selectedPatMuonsAK5NoPUSub_*_*',
+    'drop *_selectedPatElectronsAK5NoPUSub_*_*',
     'drop CaloTowers_*_*_*',
     'drop patMETs_*_*_*',
     'keep patMETs_patMETsAK5_*_*',
     'drop patPFParticles_*_*_*',
     'keep recoVertexs_*_*_*',
+    'keep recoPFCandidates_particleFlow_*_*',
+    'keep recoGenParticles_*_*_*',
     'keep recoBeamSpot_*_*_*',
     'keep L1GlobalTriggerObjectMapRecord_*_*_*',
     'keep L1GlobalTriggerReadoutRecord_gtDigis_*_*',
@@ -24,5 +28,6 @@ patEventContentCMG = cms.untracked.vstring(
     # this guys is already present in the AK5 sequence
     'drop recoVertexs_goodOfflinePrimaryVerticesLC_*_*',
     'keep *_PFMETSignificance*_*_*',
-    'keep double_kt6PFJets*_rho_*'
+    'keep double_kt6PFJets*_rho_*',
     )
+
