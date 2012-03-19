@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.h,v 1.1 2012/03/14 11:03:32 malberti Exp $
+// $Id: JetAnalyzer.h,v 1.2 2012/03/14 12:05:21 musella Exp $
 //
 //
 
@@ -35,6 +35,8 @@
 
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h" 
+
 #include "PileupJetIdNtupleAlgo.h"
 
 
@@ -56,8 +58,9 @@ private:
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
   void ResetTreeVariables();
-  bool matchingToGenJet( const pat::Jet jet, edm::View<reco::GenJet> genJets );
-  void DiMuonSelection(edm::View<pat::Muon> muons, int goodMuon1, int goodMuon2, bool isZcandidate);
+  void FillMCPileUpInfo(const edm::Event&, const edm::EventSetup&);
+  bool matchingToGenJet( const pat::Jet jet, edm::View<reco::GenJet> genJets , float& genPt, float& genDr);
+  void DiMuonSelection(edm::View<pat::Muon> muons, int& goodMuon1, int& goodMuon2, bool& isZcandidate);
 
   // ----------member data ---------------------------
 
@@ -65,6 +68,7 @@ private:
   PileupJetIdNtupleAlgo *puIdAlgo_;
       
   /// input tag for jets, etc...
+  edm::InputTag MCPileupTag_;    
   edm::InputTag PVTag_;    
   edm::InputTag JetTag_;
   edm::InputTag GenJetTag_;
@@ -77,12 +81,28 @@ private:
   std::string tmvaWeights_;
   std::string tmvaMethod_;
 
+  int PUoot_early_NumInteractions     ;
+  float PUoot_early_TrueNumInteractions ;
+  int PUoot_late_NumInteractions      ;
+  float PUoot_late_TrueNumInteractions  ;
+  int PUit_NumInteractions            ;
+  float PUit_TrueNumInteractions        ;
+
 
   /// output tree variables
   TTree *tree ;
- 
+  
   // tree var
+  
+  int PUit_n ;
+  float PUit_nTrue ;
+  int PUoot_early_n ;
+  float PUoot_early_nTrue ;
+  int PUoot_late_n ;
+  float PUoot_late_nTrue ;
+
   int nvtx ;
+
   //// float jetPt, jetEta, jetPhi, jetM;
   //// float nCharged, nNeutrals, chgEMfrac, neuEMfrac, chgHadrfrac, neuHadrfrac, nParticles;
   //// float leadPt, leadEta, secondPt, secondEta, leadNeutPt, leadNeutEta, leadEmPt, leadEmEta, leadChPt, leadChEta;
@@ -93,6 +113,10 @@ private:
       
   bool isMatched;
   int  jetFlavour;
+  float jetGenPt;
+  float jetGenDr;
+  int njets;
+
   ////  float mva;
 
    
