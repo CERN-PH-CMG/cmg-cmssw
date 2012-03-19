@@ -1,0 +1,13 @@
+DATASETPATH    = /store/cmst3/user/psilva/Data4/G/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola
+
+CFGTEMPLATE    = jetanalyzerTEMPLATE_cfg.py
+
+JOBDIR         = DYJetsToLL
+
+OUTPUTDIR      = /store/cmst3/user/malberti/JETID_NTUPLES/19_03_2012/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/
+
+OUTPUTFILENAME = JetAnalysisTree
+
+JOBMODULO      = 10
+
+QUEUE          = 8nh
