@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2011/11/07 09:08:17 $
- *  $Revision: 1.3 $
+ *  $Date: 2012/03/15 09:35:59 $
+ *  $Revision: 1.4 $
  *  \author G. Cerminara & D. Trocino & P. Silva & L. Quertenmont
  */
 
@@ -301,11 +301,10 @@ LorentzVector redMET(RedMetType Type, const LorentzVector& theLepton1, double si
     //smearing factors are described in https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
     double eta=fabs(origJet.eta());
     double ptSF(1.0), ptSF_err(0.05);
-    if(eta<0.5)                  { ptSF=1.052; ptSF_err=sqrt(pow(0.012,2)+pow(0.5*(0.062+0.061),2)); }
-    else if(eta>=0.5 && eta<1.1) { ptSF=1.057; ptSF_err=sqrt(pow(0.012,2)+pow(0.5*(0.056+0.066),2)); }
-    else if(eta>=1.1 && eta<1.7) { ptSF=1.096; ptSF_err=sqrt(pow(0.017,2)+pow(0.5*(0.063+0.062),2)); }
-    else if(eta>=1.7 && eta<2.3) { ptSF=1.134; ptSF_err=sqrt(pow(0.035,2)+pow(0.5*(0.087+0.085),2)); }
-    else if(eta>=2.3 && eta<5.0) { ptSF=1.288; ptSF_err=sqrt(pow(0.127,2)+pow(0.5*(0.155+0.153),2)); }
+    if(eta<0.5)                  { ptSF=1.066; ptSF_err=sqrt(pow(0.007,2)+pow(0.5*(0.07+0.072),2)); }
+    else if(eta>=0.5 && eta<1.7) { ptSF=1.191; ptSF_err=sqrt(pow(0.019,2)+pow(0.5*(0.06+0.062),2)); }
+    else if(eta>=1.7 && eta<2.3) { ptSF=1.096; ptSF_err=sqrt(pow(0.030,2)+pow(0.5*(0.08+0.085),2)); }
+    else if(eta>=2.3 && eta<5.0) { ptSF=1.166; ptSF_err=sqrt(pow(0.050,2)+pow(0.5*(0.19+0.199),2)); }
     
     //re-scale the pT components and recompute the jet energy
     double rndPtSF=gRandom->Gaus(ptSF,ptSF_err);

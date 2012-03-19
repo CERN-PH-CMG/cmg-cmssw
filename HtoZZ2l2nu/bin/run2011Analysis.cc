@@ -407,7 +407,7 @@ int main(int argc, char* argv[])
           Float_t zmass=zll.mass();
           Float_t zpt=zll.pt();
           Float_t zeta=zll.eta();
-          LorentzVectorCollection &origJetsP4=jets[ivar>2?0:ivar];            
+          LorentzVectorCollection &origJetsP4=jets[ivar>3?0:ivar];            
           LorentzVector zvv  = zvvs[ivar>2?0:ivar];
           Float_t mt         = mts[ivar>2?0:ivar];
           int njets(0),nbtags(0);

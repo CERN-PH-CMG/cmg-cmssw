@@ -2,7 +2,6 @@ import FWCore.ParameterSet.Config as cms
 from PhysicsTools.PatAlgos.tools.pfTools import *
 from PhysicsTools.PatAlgos.tools.trigTools import *
 from RecoJets.Configuration.RecoPFJets_cff import kt6PFJets
-from CommonTools.ParticleFlow.Tools.enablePileUpCorrection import enablePileUpCorrection
 from PhysicsTools.PatAlgos.tools.trackTools import *
 from PhysicsTools.PatAlgos.tools.metTools import *
 from SHarper.HEEPAnalyzer.HEEPSelectionCuts_cfi import *
@@ -39,14 +38,10 @@ def addTriggerMatchingForLeptons(process, postfix='') :
 
     from PhysicsTools.PatAlgos.tools.coreTools import removeCleaning
     removeCleaning( process )
-    print "*************here***************"
     setattr( process, 'muTriggerMatch' + postfix, process.muTriggerMatchPF )
     setattr( process, 'eleTriggerMatch' + postfix, process.eleTriggerMatchPF )
-    print "*************here***************"
     switchOnTriggerMatching( process, triggerMatchers = [ 'muTriggerMatchPFlow','eleTriggerMatchPFlow' ], sequence = 'patPF2PATSequence' + postfix )
-    print "*************here***************"
     removeCleaningFromTriggerMatching( process ) #, sequence = 'patPF2PATSequence' + postfix )
-    print "*************here***************"
     
 ##
 ## adds pat sequence
@@ -80,7 +75,16 @@ def addPatSequence(process, runOnMC, addPhotons=True) :
               jetCorrections=(jecSetPF, jecLevels),
               typeIMetCorrections=True
               )
-    enablePileUpCorrection( process, postfix=postfix )
+
+    #compute rho and prepend to the jet clustering sequence in PF2PAT
+    from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
+    process.kt6PFJets = kt4PFJets.clone( rParam = cms.double(0.6),
+                                         doAreaFastjet = cms.bool(True),
+                                         doRhoFastjet = cms.bool(True)
+                                         )
+    getattr(process,'patJetCorrFactors'+postfix).rho = cms.InputTag("kt6PFJets", "rho")
+    getattr(process,"patPF2PATSequence"+postfix).replace( getattr(process,"pfNoElectron"+postfix), getattr(process,"pfNoElectron"+postfix)*process.kt6PFJets )
+
           
     #configure top projections
     getattr(process,"pfNoPileUp"+postfix).enable = True
