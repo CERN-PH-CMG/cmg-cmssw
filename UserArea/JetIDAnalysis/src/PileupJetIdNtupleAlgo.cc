@@ -17,7 +17,7 @@ PileupJetIdNtupleAlgo::PileupJetIdNtupleAlgo(const edm::ParameterSet & ps) :
 // --------------------------------------------------------------------------------
 void PileupJetIdNtupleAlgo::bookBranches(TTree * tree,const std::string & prefix, const std::string & postfix)
 {
-	PileupJetIdentifier::variables_list_t::const_iterator ivar;
+	variables_list_t::const_iterator ivar;
 	for(ivar=getVariables().begin(); ivar!=getVariables().end(); ++ivar) {
 		std::string vname = prefix+ivar->first+postfix;
 		tree->Branch( vname.c_str(), ivar->second.first, (vname+"/F").c_str()  );
