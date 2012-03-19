@@ -232,7 +232,8 @@ int main(int argc, char* argv[])
       }
    }
 
-   mon.addHistogram ( new TH1F ("optim_eventflow1"  , ";cut index;yields" ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) );
+   mon.addHistogram( new TH1F ("optim_eventflow1"  , ";cut index;yields" ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) );
+   mon.addHistogram( new TH2F ("optim_MT1",";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 80,150,950) );
    TH1F* Hoptim_cuts1_met     =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_met"    , ";cut index;met"    ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
    TH1F* Hoptim_cuts1_mtmin   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmin"  , ";cut index;mtmin"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
    TH1F* Hoptim_cuts1_mtmax   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmax"  , ";cut index;mtmax"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
@@ -492,8 +493,10 @@ int main(int argc, char* argv[])
            //Fill histogram for posterior optimization
 	  if(ivar==0){
              for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
-                 if(zvv.pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
-                 mon.fillHisto("optim_eventflow1"          ,tags_full,    index, weight);
+                 if(zvv.pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index]){
+                    mon.fillHisto("optim_eventflow1"          ,tags_full,    index, weight);
+                    mon.fillHisto(TString("optim_MT1"),tags_full,index, mt,iweight);
+                 }
              }
           }
       }
