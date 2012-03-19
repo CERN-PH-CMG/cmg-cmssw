@@ -72,21 +72,22 @@ wrapper to read the configuration from comand line
 args: castor_directory output_file first_file step
 """
 def configureFromCommandLine() :
-    castorDir='/castor/cern.ch/cms/store/cmst3/user/cbern/CMG/TT_TuneZ2_7TeV-pythia6-tauola/Summer11-PU_S3_START42_V11-v2/AODSIM'
+    castorDir='/store/cmst3/group/cmgtools/CMG/WWJetsTo2L2Nu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6-START44_V5-v1/AODSIM/V3'
     outputFile='output.root'
     ffile=0
     step=-1
-
-    if(len(sys.argv)>2 ):
-        if(sys.argv[2].find('/')>=0 or sys.argv[2].find('.root')>0) :
-            castorDir=sys.argv[2]
-            if(len(sys.argv)>3 ):
-                if(sys.argv[3].find('.root')>0):  outputFile=sys.argv[3]
-                if(len(sys.argv)>4 ):
-                    if(sys.argv[4].isdigit()) : ffile=int(sys.argv[4])
-                    if(len(sys.argv)>5 ):
-                        if(sys.argv[5].isdigit()) : step=int(sys.argv[5])
-
+    try:
+        if(len(sys.argv)>2 ):
+            if(sys.argv[2].find('/')>=0 or sys.argv[2].find('.root')>0) :
+                castorDir=sys.argv[2]
+                if(len(sys.argv)>3 ):
+                    if(sys.argv[3].find('.root')>0):  outputFile=sys.argv[3]
+                    if(len(sys.argv)>4 ):
+                        if(sys.argv[4].isdigit()) : ffile=int(sys.argv[4])
+                        if(len(sys.argv)>5 ):
+                            if(sys.argv[5].isdigit()) : step=int(sys.argv[5])
+    except:
+        print '[localPatTuples_cff.py] Could not configure from command line, will return default values'
     return castorDir, outputFile, fillFromCastor(castorDir,ffile,step)
 
                              
