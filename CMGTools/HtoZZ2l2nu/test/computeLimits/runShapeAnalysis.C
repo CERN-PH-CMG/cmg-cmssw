@@ -58,10 +58,9 @@ struct DataCardInputs
 
 DataCardInputs convertHistosForLimits(Int_t mass,TString histo="finalmt",TString url="plotter.root",TString outDir="./");
 std::vector<TString> buildDataCard(Int_t mass, TString histo="finalmt", TString url="plotter.root",TString outDir="./");
-void fitRvsCLsFromShape(Int_t mass, TString histo="finalmt", TString url="plotter.root");
 
 //
-void fitRvsCLsFromShape(Int_t mass, TString histo, TString url)
+void runShapeAnalysis(Int_t mass, TString histo, TString url)
 {
   setStyle();
 
