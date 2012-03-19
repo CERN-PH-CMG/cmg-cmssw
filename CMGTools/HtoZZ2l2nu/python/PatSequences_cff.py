@@ -22,6 +22,7 @@ def addTriggerMatchingForLeptons(process, postfix='') :
                                                resolveAmbiguities    = cms.bool( False ),
                                                resolveByMatchQuality = cms.bool( False )
                                                )
+    process.muTriggerMatch = process.muTriggerMatchPF.clone(src     = cms.InputTag( "selectedPatMuons"))
     
     process.eleTriggerMatchPF = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                 src     = cms.InputTag( "selectedPatElectrons"+postfix ),
@@ -35,12 +36,15 @@ def addTriggerMatchingForLeptons(process, postfix='') :
                                                 resolveAmbiguities    = cms.bool( False ),
                                                 resolveByMatchQuality = cms.bool( False )
                                                 )
+    process.eleTriggerMatch = process.eleTriggerMatchPF.clone(src     = cms.InputTag( "selectedPatElectrons") )
 
     from PhysicsTools.PatAlgos.tools.coreTools import removeCleaning
     removeCleaning( process )
     setattr( process, 'muTriggerMatch' + postfix, process.muTriggerMatchPF )
     setattr( process, 'eleTriggerMatch' + postfix, process.eleTriggerMatchPF )
-    switchOnTriggerMatching( process, triggerMatchers = [ 'muTriggerMatchPFlow','eleTriggerMatchPFlow' ], sequence = 'patPF2PATSequence' + postfix )
+    setattr( process, 'muTriggerMatch', process.muTriggerMatch )
+    setattr( process, 'eleTriggerMatch', process.eleTriggerMatch )
+    switchOnTriggerMatching( process, triggerMatchers = [ 'muTriggerMatch','eleTriggerMatch','muTriggerMatchPFlow','eleTriggerMatchPFlow' ], sequence = 'patDefaultSequence' )
     removeCleaningFromTriggerMatching( process ) #, sequence = 'patPF2PATSequence' + postfix )
     
 ##
@@ -187,6 +191,9 @@ def addPatSequence(process, runOnMC, addPhotons=True) :
         getattr(process,"patPF2PATSequence"+postfix)*
         process.patDefaultSequence
         )
+
+    #add the trigger matching modules
+    addTriggerMatchingForLeptons(process, postfix=postfix)
 
     removeCleaning( process ) 
     getattr(process,'patSequence').remove( getattr(process,'photonMatch'+postfix) )
