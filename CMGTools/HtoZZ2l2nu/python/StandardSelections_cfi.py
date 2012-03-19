@@ -41,7 +41,7 @@ BaseVertexSelection = cms.PSet( source = cms.InputTag("offlinePrimaryVertices"),
                                 )
 
 # base values for muon selection ----------------------------------------------
-BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuons"), #PFlow"),
+BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlow"), #PFlow"),
                                minPt = cms.double(20),
                                maxEta = cms.double(2.4),
                                requireGlobal = cms.bool(True),
@@ -85,7 +85,7 @@ BasePhotonsSelection = cms.PSet( source = cms.InputTag("photons"),
                                  )
 
 # base values for electron selection ----------------------------------------------
-BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectrons"), #PFlow"),
+BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectronsPFlow"), #PFlow"),
                                    minPt = cms.double(20),
                                    minSuperClusterEt = cms.double(17),
                                    maxEta = cms.double(2.5),

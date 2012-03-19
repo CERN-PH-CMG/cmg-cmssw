@@ -27,15 +27,17 @@
 #include<vector>
 #include<set>
 
-//#include "../test/fitRvsCLs.C"
+TString landsExe("$CMSSW_BASE/src/UserCode/mschen/LandS/test/lands.exe");
 
 #define RUNBAYESIAN(INURL,OUTURL)\
-  TString cmd=TString("~/scratch0/LandS/test/lands.exe -M Bayesian -d ") + INURL + TString( " --doExpectation 1 -t 100 > ") + OUTURL + TString(" &"); \
+  gSystem->ExpandPathName(landsExe); \
+  TString cmd=TString(landsExe + " -M Bayesian -d ") + INURL + TString( " --doExpectation 1 -t 10000 > ") + OUTURL + TString(" &"); \
   cout << "Launching : " << cmd << endl;\
   gSystem->Exec(cmd);
 
 #define RUNASYMPTOTIC(INURL,OUTURL)\
-  TString cmd=TString("~/scratch0/LandS/test/lands.exe -d ") + INURL + TString(" -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 500 --nToysForCLb 100 --seed 1234 -rMax 15 -rMin 0.1 > ") + logUrl + TString(" &"); \
+  gSystem->ExpandPathName(landsExe); \
+  TString cmd=TString(landsExe + " -d ") + INURL + TString(" -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 1000 --nToysForCLb 500 --seed 1234 -rMax 15 -rMin 0.1 > ") + logUrl + TString(" &"); \
   cout << "Launching : " << cmd << endl;				\
   gSystem->Exec(cmd);
 
@@ -67,18 +69,37 @@ void fitRvsCLsFromShape(Int_t mass, TString histo, TString url)
   TString outDir("H"); outDir += mass;
   TString mkdirCmd("mkdir -p "); mkdirCmd+=outDir;
   gSystem->Exec(mkdirCmd.Data());
+  mkdirCmd += "/combined";
+  gSystem->Exec(mkdirCmd);
 
   //build the datacard for this mass point
   std::vector<TString> dcUrls = buildDataCard(mass,histo,url,outDir);
+ 
+  //run limits in the exclusive channels
   for(size_t i=0; i<dcUrls.size(); i++) 
     {
       TString logUrl(dcUrls[i]); logUrl.ReplaceAll(".dat",".log");
       RUNASYMPTOTIC(dcUrls[i],logUrl);
     }
+ 
+  //run the combined limits 
+  //need to create a new directory with the exclusive datacards and link the root file with the histos
+  for(size_t i=0; i<dcUrls.size(); i++) 
+    {
+      TString cpCmd("cp ");
+      cpCmd += dcUrls[i];
+      TString newDCUrl(dcUrls[i]); newDCUrl.ReplaceAll(outDir,outDir+"/combined/");
+      cpCmd += " " + newDCUrl;
+      gSystem->Exec(cpCmd);
+    }
 
-  //run limits
-  TString logUrl(outDir+"/Shapes_"); logUrl += mass; logUrl += ".log";
-  RUNASYMPTOTIC(outDir+"/*.dat",logUrl);
+  TString lnCmd("ln -sf ");  
+  lnCmd += outDir;  lnCmd += "/Shapes_"; lnCmd += mass; lnCmd += ".root ";
+  lnCmd += outDir;  lnCmd += "/combined/Shapes_"; lnCmd += mass; lnCmd += ".root ";
+  gSystem->Exec(lnCmd);
+
+  TString logUrl(outDir+"/combined/Shapes_"); logUrl += mass; logUrl += ".log";
+  RUNASYMPTOTIC(outDir+"/combined/*.dat",logUrl);
 }
 
 
