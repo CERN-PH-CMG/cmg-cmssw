@@ -92,8 +92,8 @@ struct DataCardInputs
   std::map<TString, std::map<RateKey_t,Double_t> > systs;
 };
 
-DataCardInputs convertHistosForLimits(Int_t mass,TString histo="finalmt",TString url="plotter.root",TString outDir="./", Int_t index=-1);
-std::vector<TString> buildDataCard(Int_t mass, TString histo="finalmt", TString url="plotter.root",TString outDir="./", Int_t index=-1);
+DataCardInputs convertHistosForLimits(Int_t mass,TString histo="finalmt",TString url="plotter.root",TString outDir="./", bool shape=true, Int_t index=-1);
+std::vector<TString> buildDataCard(Int_t mass, TString histo="finalmt", TString url="plotter.root",TString outDir="./", bool shape=true, Int_t index=-1);
 
 
 int main(int argc, char* argv[])
@@ -104,13 +104,15 @@ int main(int argc, char* argv[])
    sscanf(argv[1],"%i", &mass);
    histo = TString(argv[2]);
    url = TString(argv[3]);
-   if(argc>=5)sscanf(argv[4],"%i", &index);
+   int isShape = 1;
+   if(argc>=5)sscanf(argv[4],"%i", &isShape);
+   bool shape = (isShape==1);
+   if(argc>=6)sscanf(argv[5],"%i", &index);
    printf("runLandS with following arguments: %i - %s - %s - %i\n",mass, histo.Data(), url.Data(), index);
-
-
 
   //prepare the output directory
   TString outDir("H"); outDir += mass;
+  if(shape){outDir+=TString("_shape");}else{outDir+=TString("_count");}
   if(index>=0){outDir+=TString("_");outDir+=index;}
   TString mkdirCmd("mkdir -p "); mkdirCmd+=outDir;
   gSystem->Exec(mkdirCmd.Data());
@@ -121,7 +123,7 @@ int main(int argc, char* argv[])
    }
 
   //build the datacard for this mass point
-  std::vector<TString> dcUrls = buildDataCard(mass,histo,url,outDir, index);
+  std::vector<TString> dcUrls = buildDataCard(mass,histo,url,outDir, shape, index);
 
   if(index<0){
      //run limits in the exclusive channels
@@ -164,13 +166,13 @@ int main(int argc, char* argv[])
 
 
 //
-std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TString outDir, Int_t index)
+std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TString outDir, bool shape, Int_t index)
 {
   std::vector<TString> dcUrls;
   
 
   //get the datacard inputs 
-  DataCardInputs dci = convertHistosForLimits(mass,histo,url,outDir, index);
+  DataCardInputs dci = convertHistosForLimits(mass,histo,url,outDir, shape, index);
 
   //build the datacard separately for each channel
   for(size_t i=1; i<=dci.ch.size(); i++) 
@@ -281,7 +283,7 @@ if(index<0){
 }
 
 //
-DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TString outDir, Int_t index)
+DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TString outDir, bool shape, Int_t index)
 {
   DataCardInputs dci;
 
@@ -331,7 +333,6 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 	//prune for channels and mass of interest
 	TObjArray *tkns=hname.Tokenize("_");	
 	TString ch(tkns->At(0)->GetName());      if(ch!="ee" && ch!="mumu") continue;
-        printf("Histo %s is considered\n", hname.Data()); 
 
 	TString massel(tkns->At(1)->GetName());	 if(index<0 && !massel.Contains(massStr)) continue;
 
@@ -348,6 +349,11 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
         }else{
            TH2* tmp = (TH2*) pdir->Get(hname);
            hshape = (TH1*) tmp->ProjectionY("_py", index,index);     
+        }
+
+
+        if(!shape){
+           hshape = hshape->Rebin(hshape->GetXaxis()->GetNbins(), TString(hshape->GetName())+"_Rebin"); 
         }
 
 	if(hshape->Integral()<=0) continue;
@@ -421,6 +427,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 	    if(grdown) grdown->SetPoint(grdown->GetN(), x, diffDown );
 	  }
          }
+
 
 	//add to datacard
         allCh.insert(ch);
@@ -518,3 +525,5 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   dci.procs.resize(allProcs.size());  std::copy(allProcs.begin(), allProcs.end(),dci.procs.begin());
   return dci;
 }
+
+
