@@ -21,7 +21,7 @@ namespace cmg
 {
 
 #define NCMGTAUIDS 20
-#define NCMGTAUUSERDATA 50
+
 
   //forward def needed
   class Tau;
@@ -54,6 +54,7 @@ namespace cmg
       isolationPFNeutralHadrCandsPtSum_( UnSet(double) ),
       isolationPFGammaCandsEtSum_( UnSet(double) ),
       decayMode_(UnSet(int)),
+      jetRefp4_(math::XYZTLorentzVector(0.,0.,0.,0.)),
       genJetp4_(math::XYZTLorentzVector(0.,0.,0.,0.)),
       genJetCharge_(0),
       genJetDecayMode_(""),
@@ -62,11 +63,7 @@ namespace cmg
       
       for(int i=0;i<NCMGTAUIDS;i++)	
 	tauID_[i]="";
-      
-      for(int i=0;i<NCMGTAUUSERDATA;i++){
-	userData_[i]=0.0;
-	userDataName_[i]="";
-      }
+ 
       
     }
 
@@ -104,16 +101,8 @@ namespace cmg
       return tauID( std::string(idname) );
     }
 
-    //user data
-    float userData(const std::string& dataname) const {
-      for(int i=0;i<NCMGTAUUSERDATA;i++)
-	if(dataname==userDataName_[i])return userData_[i];
-      std::cout<<"cmg::Tau userData : "<<dataname<<" not found. Available are : ";
-      for(int i=0;i<NCMGTAUUSERDATA;i++)
-	std::cout<<userData_[i]<<", ";
-      std::cout<<std::endl;
-      return 0.0;
-    }
+    //info about the original PFJet
+    math::XYZTLorentzVector jetRefp4() const {return jetRefp4_;}
 
     //generator info filled when the candidate is truth-matched
     math::XYZTLorentzVector genJetp4() const {return genJetp4_;}
@@ -146,26 +135,9 @@ namespace cmg
     int decayMode_;
     std::string tauID_[NCMGTAUIDS];
 
+    
+    math::XYZTLorentzVector jetRefp4_;
 
-    float userData_[NCMGTAUUSERDATA];
-    std::string userDataName_[NCMGTAUUSERDATA];
-    bool addUserData(const std::string& name,float value){
-      for(int i=0;i<NCMGTAUUSERDATA;i++)
-	if(userDataName_[i]==name){
-	  std::cout<<"cmg::Tau::addUserData  "<<name<<" already exists"<<std::endl;
-	  return 0;
-	}      
-      for(int i=0;i<NCMGTAUUSERDATA;i++)
-	if(userDataName_[i]==""){
-	  userDataName_[i]=name;
-	  userData_[i]=value;
-	  return 1;
-	}
-      std::cout<<"cmg::Tau::addUserData unable to save user data: "<<name<<std::endl;
-      return 0;
-    }
-    
-    
     math::XYZTLorentzVector genJetp4_;
     int genJetCharge_;
     std::string genJetDecayMode_;
