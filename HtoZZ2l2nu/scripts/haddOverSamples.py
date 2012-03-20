@@ -12,14 +12,12 @@ def checkCastorDirectory(dir, FilePrefix):
     if(dir.endswith('/')!=True):
        dir+='/'
     if(dir.find('/store/cmst3')==0) :
-        isEOS=True
         rfdir_cmd='cmsLs ' + dir + ' | grep root | awk \'{print $5}\''
     	rfdir_cmd = rfdir_cmd + '| grep ' + dir+FilePrefix+"_"
 #       print rfdir_cmd + "########"
         outCastorDir_out = commands.getstatusoutput(rfdir_cmd)
         return outCastorDir_out[1].split('\n')
-    else:
-        isEOS=False
+    elif(dir.find('/castor/')>=0):
         rfdir_cmd = "rfdir " + dir + ' | grep root | awk \'{print $9}\''
         rfdir_cmd = rfdir_cmd + '| grep ' + FilePrefix+"_"
 #       print rfdir_cmd + "########"
@@ -28,6 +26,15 @@ def checkCastorDirectory(dir, FilePrefix):
 	for s in range(0,len(split)):
 		split[s] = 'rfio:'+dir+'/'+split[s]
 	return split
+    else :
+        ls_cmd = 'ls ' + dir + ' | grep ' + FilePrefix + '_'
+        dir_out = commands.getstatusoutput(ls_cmd)
+        split = dir_out[1].split('\n')
+        for s in range(0,len(split)):
+            split[s] = dir+'/'+split[s]
+        return split
+                                
+    
 
 	
 
