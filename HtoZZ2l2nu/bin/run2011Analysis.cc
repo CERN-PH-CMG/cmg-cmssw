@@ -224,7 +224,7 @@ int main(int argc, char* argv[])
    for(double met=50;met<190;met+=2.0){
          for(double mtmin=220;mtmin<460;mtmin+=20){
             for(double mtmax=mtmin+50;mtmax<820;mtmax+=50){
-               if(mtmax>=820)mtmax=3000;
+               if(mtmax>=770)mtmax=3000;
                optim_Cuts1_met    .push_back(met);
                optim_Cuts1_mtmin  .push_back(mtmin);
                optim_Cuts1_mtmax  .push_back(mtmax);
