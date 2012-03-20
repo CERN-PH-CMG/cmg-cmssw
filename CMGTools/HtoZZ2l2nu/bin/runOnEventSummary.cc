@@ -101,7 +101,8 @@ int main(int argc, char* argv[])
     size_t GGStringpos =  string(url.Data()).find("GG");
     string StringMass = string(url.Data()).substr(GGStringpos+5,3);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
     GGString = string(url.Data()).substr(GGStringpos);
-    TFile *fin=TFile::Open("~psilva/public/HtoZZ/HiggsQtWeights.root");
+    TString hqtWeightsFileURL = runProcess.getParameter<std::string>("hqtWeightsFile"); gSystem->ExpandPathName(hqtWeightsFileURL);
+    TFile *fin=TFile::Open(hqtWeightsFileURL);
     if(fin){
 	for(int ivar=0; ivar<5; ivar++){
 	  double ren=HiggsMass; if(ivar==ZZ2l2nuSummary_t::hKfactor_renDown)  ren/=2; if(ivar==ZZ2l2nuSummary_t::hKfactor_renUp)  ren *= 2;

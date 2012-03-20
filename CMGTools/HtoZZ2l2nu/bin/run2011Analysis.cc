@@ -105,8 +105,10 @@ int main(int argc, char* argv[])
     size_t GGStringpos =  string(url.Data()).find("GG");
     string StringMass = string(url.Data()).substr(GGStringpos+5,3);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
     GGString = string(url.Data()).substr(GGStringpos);
-    TFile *fin=TFile::Open("~psilva/public/HtoZZ/HiggsQtWeights.root");
+    TString hqtWeightsFileURL = runProcess.getParameter<std::string>("hqtWeightsFile"); gSystem->ExpandPathName(hqtWeightsFileURL);
+    TFile *fin=TFile::Open(hqtWeightsFileURL);
     if(fin){
+      cout << "HpT weights (and uncertainties) will be applied from: " << hqtWeightsFileURL << endl;
         for(int ivar=0; ivar<5; ivar++){
           double ren=HiggsMass; if(ivar==ZZ2l2nuSummary_t::hKfactor_renDown)  ren/=2; if(ivar==ZZ2l2nuSummary_t::hKfactor_renUp)  ren *= 2;
           double fac=HiggsMass; if(ivar==ZZ2l2nuSummary_t::hKfactor_factDown) fac/=2; if(ivar==ZZ2l2nuSummary_t::hKfactor_factUp) fac *= 2;
@@ -200,6 +202,7 @@ int main(int argc, char* argv[])
     mon.getHisto("njets")->GetXaxis()->SetBinLabel(ibin,label);
     mon.getHisto("nbtags")->GetXaxis()->SetBinLabel(ibin,label);
   }
+  mon.addHistogram( new TH1F ("btagvetosel", ";b-tag discriminator; Events", 6,0,6) );  
   mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1F( "met"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "metaftersmear"  , ";E_{T}^{miss} after smear;Events", 50,0,500) );
@@ -331,6 +334,11 @@ int main(int argc, char* argv[])
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
       //LorentzVector zll  = isGammaEvent ? gammaEvHandler->massiveGamma("ll") : phys.leptons[0]+phys.leptons[1];
+
+      //require TMLastStationLoose for muons in the dilepton
+      if(fabs(phys.leptons[0].id)==13 && ((phys.leptons[0].pid >> 1) & 0x1)==false)continue;
+      if(fabs(phys.leptons[1].id)==13 && ((phys.leptons[1].pid >> 1) & 0x1)==false)continue;
+
       LorentzVector zll  = phys.leptons[0]+phys.leptons[1];
       LorentzVectorCollection jetsP4, smearJetsP4;
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
@@ -411,6 +419,7 @@ int main(int argc, char* argv[])
           LorentzVectorCollection &origJetsP4=jets[ivar>3?0:ivar];            
           LorentzVector zvv  = zvvs[ivar>2?0:ivar];
           Float_t mt         = mts[ivar>2?0:ivar];
+	  int nBtaggedVsDisc[6]={0,0,0,0,0,0};
           int njets(0),nbtags(0);
           Float_t mindphijmet(9999.);
           Float_t btagcut(2.0); if(ivar==10) btagcut=2.03; else if(ivar==11) btagcut=1.97;
@@ -420,6 +429,12 @@ int main(int argc, char* argv[])
               if(origJetsP4[ijet].pt()>30){
                   njets++;
                   nbtags += (phys.jets[ijet].btag1>btagcut);
+		  nBtaggedVsDisc[0] +=(phys.jets[ijet].btag1>1.7);
+		  nBtaggedVsDisc[1] +=(phys.jets[ijet].btag1>2.0);
+		  nBtaggedVsDisc[2] +=(phys.jets[ijet].btag1>3.3);
+		  nBtaggedVsDisc[3] +=(phys.jets[ijet].btag2>0.244);
+		  nBtaggedVsDisc[4] +=(phys.jets[ijet].btag2>0.679);
+		  nBtaggedVsDisc[5] +=(phys.jets[ijet].btag2>0.898);
               }
           }
     
@@ -455,7 +470,12 @@ int main(int argc, char* argv[])
                       if(pass3dLeptonVeto){
                           mon.fillHisto("eventflow",tags_full,3,iweight);
                           mon.fillHisto("nbtags",tags_full, nbtags,iweight);
-                  
+			  for(int ibtag=0; ibtag<6; ibtag++)
+			    {
+			      if(nBtaggedVsDisc[ibtag]==0)
+				mon.fillHisto("btagvetosel",tags_full,ibtag,iweight);
+			    }
+
                           if(passBveto){
                               mon.fillHisto("eventflow",tags_full,4,iweight);
                               mon.fillHisto("njets",tags_full,njets,iweight);

@@ -41,7 +41,7 @@ BaseVertexSelection = cms.PSet( source = cms.InputTag("offlinePrimaryVertices"),
                                 )
 
 # base values for muon selection ----------------------------------------------
-BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlow"), #PFlow"),
+BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuons"), #PFlow"),
                                minPt = cms.double(20),
                                maxEta = cms.double(2.4),
                                requireGlobal = cms.bool(True),
@@ -50,7 +50,7 @@ BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlow"), #
                                minValidTrackerHits = cms.int32(11),
                                minValidMuonHits=cms.int32(1),
                                maxDistToBeamSpot=cms.double(0.02),
-                               id = cms.string("GlobalMuonPromptTight"),#TMLastStationAngTight"),
+                               id = cms.string("TMLastStationLoose"), #""),
                                maxRelIso = cms.double(0.15),
                                usePFIso = cms.bool(False),
                                doDeltaBetaCorrection = cms.bool(False)
@@ -85,7 +85,7 @@ BasePhotonsSelection = cms.PSet( source = cms.InputTag("photons"),
                                  )
 
 # base values for electron selection ----------------------------------------------
-BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectronsPFlow"), #PFlow"),
+BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectrons"), #PFlow"),
                                    minPt = cms.double(20),
                                    minSuperClusterEt = cms.double(17),
                                    maxEta = cms.double(2.5),
