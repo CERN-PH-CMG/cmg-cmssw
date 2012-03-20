@@ -19,6 +19,11 @@ class Style:
         else:
             self.fillColor = fillColor
         self.fillStyle = fillStyle
+
+    def formatHistoAxis( self, hist ):
+        hist.GetXaxis().SetTitleSize(0.05)
+        hist.GetYaxis().SetTitleSize(0.05)
+        hist.GetYaxis().SetTitleOffset(1.5)        
         
     def formatHisto( self, hist, title=None):
         hist.SetMarkerStyle( self.markerStyle )
@@ -28,9 +33,7 @@ class Style:
         hist.SetLineWidth( self.lineWidth )
         hist.SetFillColor( self.fillColor )
         hist.SetFillStyle( self.fillStyle )
-        hist.GetXaxis().SetTitleSize(0.05)
-        hist.GetYaxis().SetTitleSize(0.05)
-        hist.GetYaxis().SetTitleOffset(1.5)
+        self.formatHistoAxis( hist )
         if title!=None:
             hist.SetTitle( title )
         return hist
