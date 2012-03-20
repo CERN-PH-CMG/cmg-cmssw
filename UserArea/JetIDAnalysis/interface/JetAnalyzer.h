@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.h,v 1.3 2012/03/19 15:57:17 malberti Exp $
+// $Id: JetAnalyzer.h,v 1.4 2012/03/19 17:17:41 malberti Exp $
 //
 //
 
@@ -81,6 +81,8 @@ private:
   double impactParTkThreshold_;
   std::string tmvaWeights_;
   std::string tmvaMethod_;
+
+  double jetPtThreshold_;
 
   int PUoot_early_NumInteractions     ;
   float PUoot_early_TrueNumInteractions ;

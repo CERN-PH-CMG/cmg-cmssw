@@ -18,6 +18,9 @@ jetanalyzer = cms.EDAnalyzer('JetAnalyzer',
 
  # loose jets
  pfjetIdLoose = pfJetIDSelector.clone(),                           
+
+ # jet pt threshold
+ jetPtThreshold = cms.untracked.double(20.)                          
                               
  #PFtoPAT ntuple (Colin)
  #JetTag     = cms.InputTag("selectedPatJetsAK5",""),                        

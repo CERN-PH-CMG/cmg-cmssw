@@ -48,6 +48,8 @@ JetAnalyzer::JetAnalyzer(const edm::ParameterSet& iConfig)
   //-- loose jet ID
   pfjetIdLoose_  = iConfig.getParameter<edm::ParameterSet>("pfjetIdLoose") ;
 
+  //-- jet pt threshold : only jets above this thr are saved in the tree
+  jetPtThreshold_ = iConfig.getUntrackedParameter<double>("jetPtThreshold");
   
   //-- output tree
   edm::Service<TFileService> fs ;
@@ -132,16 +134,38 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   // *** GEN JETS
   edm::Handle<edm::View<reco::GenJet> > genJetHandle;
-  iEvent.getByLabel(GenJetTag_, genJetHandle);
-  edm::View<reco::GenJet> genJets = *genJetHandle;
-
+  edm::View<reco::GenJet> genJets;
+  if ( !dataFlag_ ){
+    iEvent.getByLabel(GenJetTag_, genJetHandle);
+    genJets = *genJetHandle;
+  }
 
   int goodMuon1=-1, goodMuon2=-1;
   bool isZ=false;
   DiMuonSelection(muons, goodMuon1, goodMuon2, isZ);
 
   int numberOfJets = 0;
+   
+  // *** Loop over jets : to count the number of jets
+  for ( unsigned int i=0; i<jets.size(); ++i ) {
+  
+    const pat::Jet patjet = jets.at(i);
+    
+    if ( patjet.pt() <  jetPtThreshold_ )  continue;
  
+    //-- remove muons from jets 
+    if (isZ) {
+      float dr1 = deltaR( muons.at(goodMuon1).eta(),  muons.at(goodMuon1).phi(),  patjet.eta(),  patjet.phi());
+      float dr2 = deltaR( muons.at(goodMuon2).eta(),  muons.at(goodMuon2).phi(),  patjet.eta(),  patjet.phi());
+      //std::cout << i << " " << dr1 << " " << dr2 << std::endl; 
+      if (dr1<0.5 || dr2<0.5) {
+	continue;
+      }
+    }
+    numberOfJets++;
+  }
+
+
   // *** Loop over jets 
   for ( unsigned int i=0; i<jets.size(); ++i ) {
     
@@ -149,6 +173,8 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     const pat::Jet patjet = jets.at(i);
     
+    if ( patjet.pt() <  jetPtThreshold_ )  continue;
+ 
     //-- remove muons from jets 
     if (isZ) {
       float dr1 = deltaR( muons.at(goodMuon1).eta(),  muons.at(goodMuon1).phi(),  patjet.eta(),  patjet.phi());
@@ -160,7 +186,6 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
 
     //-- loose jet ID 
-    //PFJetIDSelectionFunctor jetIDLoose( PFJetIDSelectionFunctor::FIRSTDATA, PFJetIDSelectionFunctor::LOOSE );
     pat::strbitset ret = pfjetIdLoose_.getBitTemplate(); // ? a cosa serve ?
     jetLooseID = pfjetIdLoose_(patjet, ret);
 
@@ -179,17 +204,16 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       isMatched   = false;
     }
 
-    njets = jetHandle -> size();
-    nvtx  = vertexHandle->size();
+    //njets             = jetHandle -> size();
+    njets             = numberOfJets;
+    nvtx              = vertexHandle->size();
     PUit_n            = PUit_NumInteractions;
     PUit_nTrue        = PUit_TrueNumInteractions;
     PUoot_early_n     = PUoot_early_NumInteractions;
     PUoot_early_nTrue = PUoot_early_TrueNumInteractions;
     PUoot_late_n      = PUoot_late_NumInteractions;
     PUoot_late_nTrue  = PUoot_late_TrueNumInteractions;
-    
-    
-    
+        
     tree->Fill();
   
   }
