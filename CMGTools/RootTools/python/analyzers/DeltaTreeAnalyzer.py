@@ -29,12 +29,12 @@ class DeltaTreeAnalyzer( TreeAnalyzer ):
             var('{pName}Iso'.format(pName=pName))
             # var('{pName}Iso'.format(pName=pName))
 
+        particleVars('gen')
         particleVars('col1')
         particleVars('col2')
-        particleVars('gen1')
-        particleVars('col1G')
-        particleVars('gen2')
-        particleVars('col2G')
+        # particleVars('col1G')
+        # particleVars('gen2')
+        # particleVars('col2G')
         self.tree.book()
 
     def process(self, iEvent, event):
@@ -52,23 +52,42 @@ class DeltaTreeAnalyzer( TreeAnalyzer ):
             if hasattr( particle, 'relIso'):
                 fill('{pName}Iso'.format(pName=pName), particle.relIso(0.5) )
 
+        
+        assert( len(event.pairsG1) == len(event.pairsG2) )
+        
+        for (gen, col1), (gen, col2) in zip( event.pairsG1.iteritems(), event.pairsG2.iteritems()):
+            fParticleVars('gen', gen)
+            if col1 is None: col1 = dummyParticle
+            if col2 is None: col2 = dummyParticle
+            fParticleVars('col1', col1)
+            fParticleVars('col2', col2)
+            # one entry per gen particle 
+            self.tree.fill()
 
-        for p1, p2 in event.pairs.iteritems():
-            fParticleVars('col1', p1)
-            if p2 is None: p2 = dummyParticle
-            fParticleVars('col2', p2)
+        return True 
 
-        for gen, col1 in event.pairsG1.iteritems():
-            if col1 is None: col1 = dummyParticle 
-            fParticleVars('gen1', gen)
-            fParticleVars('col1G', col1)
+        # we get a -1000 when a dummy particle is put in a matching
+        #   no matching found, probably because no particle found in other collection
 
-        for gen, col2 in event.pairsG2.iteritems():
-            if col2 is None: col2 = dummyParticle 
-            fParticleVars('gen2', gen)
-            fParticleVars('col2G', col2)
+        # gen eta = -99 means that the tree initialized itself to -99
+        #   probably: no gen muon found? 
+
+##         for p1, p2 in event.pairs.iteritems():
+##             fParticleVars('col1', p1)
+##             if p2 is None: p2 = dummyParticle
+##             fParticleVars('col2', p2)
+
+##         for gen, col1 in event.pairsG1.iteritems():
+##             if col1 is None: col1 = dummyParticle 
+##             fParticleVars('gen1', gen)
+##             fParticleVars('col1G', col1)
+
+##         for gen, col2 in event.pairsG2.iteritems():
+##             if col2 is None: col2 = dummyParticle 
+##             fParticleVars('gen2', gen)
+##             fParticleVars('col2G', col2)
 
             
-        if len(event.col1)>0:
-            self.tree.fill()
+##         if len(event.col1)>0:
+##             self.tree.fill()
                 
