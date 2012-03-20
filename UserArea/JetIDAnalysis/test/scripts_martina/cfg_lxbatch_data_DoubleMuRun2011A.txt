@@ -1,0 +1,13 @@
+DATASETPATH    = /store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/DoubleMu2011A
+
+CFGTEMPLATE    = jetanalyzerTEMPLATE_data_cfg.py
+
+JOBDIR         = DoubleMu2011A
+
+OUTPUTDIR      = /store/cmst3/user/malberti/JETID_NTUPLES/20_03_2012/DoubleMu2011A/
+
+OUTPUTFILENAME = JetAnalysisTree
+
+JOBMODULO      = 10
+
+QUEUE          = 8nh
