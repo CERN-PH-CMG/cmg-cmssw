@@ -63,7 +63,13 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
 							     cand.p4().phi(),  cand.p4().mass() ) );
   }
   
-  
+  //info about the original PFJet
+  if(input->isPFTau()){
+    if(input->pfJetRef().isNonnull())
+      output->jetRefp4_=input->pfJetRef()->p4();			 
+  }
+
+
   //general variables 
   output->particleIso_ = input->particleIso();
   output->isolationPFChargedHadrCandsPtSum_ = input->isolationPFChargedHadrCandsPtSum();
