@@ -32,7 +32,7 @@ void Plot::AddHistogram(TH1* histo, const StyleAndOpt& styleAndOpt ) {
   cout<<"Plot: AddHistogram : name="<<histo->GetName()<<" , title="<<histo->GetTitle()<<endl;
   
   string name = StripOffExtension( string( histo->GetName() )  );
-  histograms_[ name ] = make_pair< TH1*, StyleAndOpt >(histo, styleAndOpt ) ;
+  histograms_[ name ] = make_pair(histo, styleAndOpt ) ;
 }
 
 

@@ -9,13 +9,13 @@ using namespace std;
 
 void Samples::AddTree( TTree* tree, const char* role ) {
 
-  trees_.insert( make_pair<string, TTree*>(role, tree) );
+  trees_.insert( make_pair(role, tree) );
 }
 
 
 void Samples::AddDataSet( DataSet* dataSet, const char* role ) {
 
-  dataSets_.insert(  make_pair<string, DataSet*>(role, dataSet ) );
+  dataSets_.insert(  make_pair(role, dataSet ) );
 }
 
 
@@ -106,7 +106,7 @@ void Samples::Draw( const char* var, const char* cut, float fracStat, bool stack
   else {
     currentPlot = new Plot( id.c_str() );
     currentPlot->SetLegendCorners( lxmin_, lymin_, lxmax_, lymax_ );
-    plots_.insert( make_pair<string, Plot*>(id, currentPlot ) );
+    plots_.insert( make_pair(id, currentPlot ) );
   }
 
   string svar = StripHistInfo( var ); 
@@ -198,7 +198,7 @@ void Samples::DrawHist( const char* histName, bool stack ) {
   else {
     currentPlot = new Plot( id.c_str() );
     currentPlot->SetLegendCorners( lxmin_, lymin_, lxmax_, lymax_ );
-    plots_.insert( make_pair<string, Plot*>(id, currentPlot ) );
+    plots_.insert( make_pair(id, currentPlot ) );
   }
 
   //   string svar = StripHistInfo( var ); 
