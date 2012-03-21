@@ -14,7 +14,7 @@ from CMGTools.Production.findDSOnSav import getTaskID
 from CMGTools.Production.fileOps import FileOps
 
 
-def publish(dsName,fileown,comment,test,dbsApi,user,password, force, checkGroups):
+def publish(dsName,fileown,comment,test,dbsApi,user,password, force, checkGroups, savannah):
     
     if re.search("---",dsName):
         fileown = getDbsUser(dsName)
@@ -103,19 +103,23 @@ def publish(dsName,fileown,comment,test,dbsApi,user,password, force, checkGroups
         print "EOS name:  ",dsName
     	
     	print "\n------Savanah------\n"
-    	(taskID, parentTaskID) = publishController.savannahPublish(procds, opts, comment, fileOps)
     	
     	try:
     	    if taskID is None: taskID = getTaskID(procds['PathList'][0], opts['category_id'], user, password, False)
     	except:
     	    taskID = getTaskID(procds['PathList'][0], opts['category_id'], user, password, False)
-    	parentTaskID = None
+    	
+    	if savannah or taskID == None:
+    	    
+    	    (taskID, parentTaskID) = publishController.savannahPublish(procds, opts, comment, fileOps)
+    	else:
+    	    print "NO SAVANNAH PUBLISH REQUIRED"
+    	
+   
     	if taskID is not None: status = 'Success'
     	if publishController.cmgdbOnline():
     		print "\n-------CMGDB-------\n"
     		cmgdbid = publishController.cmgdbPublish(procds, taskID, test, fileOps)
-    		if parentTaskID is not None:
-    			publishController.cmgdbPublish(procds, int(parentDbsID), int(parentTaskID), test)
     			
     	return {'Status':status, 'Savannah':taskID,'CMGDB ID':cmgdbid,'DBS Dataset':procds['PathList'][0], 'EOS Dataset':dsName,'File Owner':fileown}
     except KeyboardInterrupt:

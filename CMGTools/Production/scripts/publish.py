@@ -63,6 +63,11 @@ If not entered, secure password prompt will appear.""",
                       dest="test",
                       help="Flag task as a test",
                       default=False )
+    group.add_option("--ns", "--nosavannah",
+                      action = "store_false",
+                      dest="savannah",
+                      help="Do not publish to savannah",
+                      default=True )
     # If user wants to add their own comments
     group.add_option("-C", "--comment",
                       action = "store",
@@ -153,12 +158,12 @@ If not entered, secure password prompt will appear.""",
                 	comment = line.rstrip("'").split("'")[1]
                 elif len(line.split('"'))>1:
                 	comment = line.rstrip('"').split('"')[1]
-                publish(dataset,fileown,comment,options.test,None,options.username,password,options.force, options.checkGroups)
+                publish(dataset,fileown,comment,options.test,None,options.username,password,options.force, options.checkGroups, options.savannah)
             except NameError as err:
                 print err.args, "\nDataset not published"
     # For singular file input
     else:
         dataset = args[0]
         comment = options.commented
-        publish(dataset,options.fileown,comment,options.test,None,options.username,password,options.force,options.checkGroups)
+        publish(dataset,options.fileown,comment,options.test,None,options.username,password,options.force,options.checkGroups, options.savannah)
 
