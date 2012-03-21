@@ -354,6 +354,16 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 
         if(!shape){
            hshape = hshape->Rebin(hshape->GetXaxis()->GetNbins(), TString(hshape->GetName())+"_Rebin"); 
+
+           //make sure to also count the underflow and overflow
+           double bin  = hshape->GetBinContent(0) + hshape->GetBinContent(1) + hshape->GetBinContent(2);
+           double bine = sqrt(hshape->GetBinError(0)*hshape->GetBinError(0) + hshape->GetBinError(1)*hshape->GetBinError(1) + hshape->GetBinError(2)*hshape->GetBinError(2));
+           hshape->SetBinContent(0,0);
+           hshape->SetBinError  (0,0);
+           hshape->SetBinContent(1,bin);
+           hshape->SetBinError  (1,bine);
+           hshape->SetBinContent(2,0);
+           hshape->SetBinError  (2,0);
         }
 
 	if(hshape->Integral()<=0) continue;

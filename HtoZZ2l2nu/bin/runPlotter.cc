@@ -548,6 +548,8 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
       }
    }
 
+   std::cout<<HistoName<< endl;
+
    bool canvasIsFilled(false);
    if(stack && stack->GetStack()->GetEntriesFast()>0){
      stack->Draw("");
