@@ -115,6 +115,8 @@ getBadFiles <cmgdb_name>
     SELECT distinct(bad_files.bad_file) FROM bad_files INNER JOIN dataset_details ON dataset_details.dataset_id = bad_files.dataset_id WHERE dataset_details.cmgdb_name = 'ARG1'
 getDatasetInfo <cmgdb_name>
     SELECT path_name, lfn, nice_username, dataset_entries, dataset_fraction, date_recorded FROM dataset_details WHERE cmgdb_name = 'ARG1'
+getDatasetsMadeWithSameTagset <cmgdb_name>
+    SELECT distinct(dataset_id), tagset_id, cmgdb_name FROM dataset_details WHERE tagset_id in (SELECT tagset_id FROM dataset_details WHERE cmgdb_name = 'ARG1')
     
 e.g.
 getInfo.py -a getTags /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6_START44_V9B-v1--V3---cmgtools_group/AODSIM
@@ -153,7 +155,8 @@ getInfo.py -a getTags /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6
                  "getDuplicateFiles":"SELECT distinct(duplicate_files.duplicate_file) FROM duplicate_files INNER JOIN dataset_details ON dataset_details.dataset_id = duplicate_files.dataset_id WHERE dataset_details.cmgdb_name = 'ARG1'",
                  "getBadJobs":"SELECT distinct(bad_jobs.bad_job) FROM bad_jobs INNER JOIN dataset_details ON dataset_details.dataset_id = bad_jobs.bad_job WHERE dataset_details.cmgdb_name = 'ARG1'",
                  "getBadFiles":"SELECT distinct(bad_files.bad_file) FROM bad_files INNER JOIN dataset_details ON dataset_details.dataset_id = bad_files.dataset_id WHERE dataset_details.cmgdb_name = 'ARG1'",
-                 "getDatasetInfo":"SELECT path_name, lfn, nice_username, dataset_entries, dataset_fraction, date_recorded FROM dataset_details WHERE cmgdb_name = 'ARG1'"}
+                 "getDatasetInfo":"SELECT path_name, lfn, nice_username, dataset_entries, dataset_fraction, date_recorded FROM dataset_details WHERE cmgdb_name = 'ARG1'",
+                 "getDatasetsMadeWithSameTagset":"SELECT distinct(dataset_id), tagset_id, cmgdb_name FROM dataset_details WHERE tagset_id in (SELECT tagset_id FROM dataset_details WHERE cmgdb_name = 'ARG1')"}
     if options.sql:
         query = args[0]
         select = re.compile('select', re.IGNORECASE)
