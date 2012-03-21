@@ -18,13 +18,20 @@ class FourLeptonTreeProducer( TreeAnalyzer ):
             var('{pName}Charge'.format(pName=pName))
             # var('{pName}Iso'.format(pName=pName))
             
-        particleVars('l1')
-        particleVars('l2')
-        particleVars('l3')
-        particleVars('l4')
+        particleVars('L1')
+        particleVars('L2')
+        particleVars('L3')
+        particleVars('L4')
         
         particleVars('Z1')
-        # particleVars('Z2')
+        particleVars('Z1L1')
+        particleVars('Z1L2')
+        
+        particleVars('Z2')
+        particleVars('Z2L1')
+        particleVars('Z2L2')
+        
+        particleVars('H')
         
         self.tree.book()
 
@@ -44,13 +51,19 @@ class FourLeptonTreeProducer( TreeAnalyzer ):
            
             
         fParticleVars('Z1', event.zBoson1 )
+        fParticleVars('Z1L1', event.zBoson1.leg1 )
+        fParticleVars('Z1L2', event.zBoson1.leg2 )
 
-        #if hasattr( event, 'zBoson2'): 
-        #    fParticleVars('Z2', event.zBoson2 )
- 
-        #fParticleVars('l1', event.l1 )
-        #fParticleVars('l2', event.l2 )
-        #fParticleVars('l3', event.l3 )
-        #fParticleVars('l4', event.l4 )
+        if hasattr( event, 'zBoson2'): 
+            fParticleVars('Z2', event.zBoson2 )
+            fParticleVars('Z2L1', event.zBoson2.leg1 )
+            fParticleVars('Z2L2', event.zBoson2.leg2 )
+
+        if hasattr( event, 'higgsCand' ):
+            fParticleVars('H', event.higgsCand )
+            fParticleVars('L1', event.theLeptons_ptSorted[0])
+            fParticleVars('L2', event.theLeptons_ptSorted[1])
+            fParticleVars('L3', event.theLeptons_ptSorted[2])
+            fParticleVars('L4', event.theLeptons_ptSorted[3])
  
         self.tree.fill()
