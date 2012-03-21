@@ -31,6 +31,10 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 from CMG.JetIDAnalysis.minBiasSource_cfg import FileNames as FullMinBiasFileNames
 process.mix.input.fileNames = FullMinBiasFileNames
+import random
+random.seed(process.RandomNumberGeneratorService.generator.initialSeed.value())
+random.shuffle(process.mix.input.fileNames)
+
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(25)
@@ -45,7 +49,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.1 $'),
+    version = cms.untracked.string('$Revision: 1.2 $'),
     annotation = cms.untracked.string('SingleQuarkGun_cfi.py nevts:25'),
     name = cms.untracked.string('PyReleaseValidation')
 )
