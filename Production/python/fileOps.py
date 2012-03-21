@@ -180,8 +180,8 @@ class FileOps(object):
             integrity = PublishToFileSystem("IntegrityCheck")
             try:
                 report = integrity.get(self.getLFN())
-            except Exception as ex:
-                print ex
+            except Exception:
+                raise
             # Build in some kind of wildcard
             if report is None and (self._user == 'cmgtools' or self._user == os.environ['USER']):
                 try:
@@ -192,9 +192,9 @@ class FileOps(object):
                     report = check.structured()
                     pub = PublishToFileSystem(check)
                     pub.publish(report)
-                except Exception as error:
+                except ZeroDivisionError as error:
                     print "Integrity check failed."
-                    print error.args[0]
+                    print "This is usually because the dataset is not found on DAS"
                     
             if report is None:
                 "Integrity Check Failed - No results will be published"
