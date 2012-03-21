@@ -65,7 +65,13 @@ process.source = datasetToSource(
     'cmgtools_group',
     '/DoubleMu/Run2011A-05Aug2011-v1/AOD/V3', 
     # '.*root'
-    ) 
+    )
+
+## for testing in 5X
+## process.source.fileNames = cms.untracked.vstring(
+##     '/store/relval/CMSSW_5_1_2/RelValQCD_FlatPt_15_3000/GEN-SIM-RECO/START50_V15A-v1/0240/B830CB12-1861-E111-B1BD-001A92811728.root'
+##    # '/store/relval/CMSSW_5_1_2/DoubleMu/RECO/GR_R_50_V12_RelVal_zMu2011B-v1/0237/182F7808-BD60-E111-943C-001A92810AEA.root'
+##     )
 
 # ProductionTasks.py will override this change
 process.source.fileNames = process.source.fileNames[:10]
@@ -125,7 +131,10 @@ from CMGTools.Common.PAT.tauTools import *
 if doEmbedPFCandidatesInTaus:
     embedPFCandidatesInTaus( process, postfix=postfixAK5, enable=True )
 if hpsTaus:
-    adaptPFTaus(process,"hpsPFTau",postfix=postfixAK5)
+    #Lucie : HPS is the default in 52X & V08-08-11-03, see PhysicsTools/PatAlgos/python/Tools/pfTools.py. Following line not needed (crash) in 5X.
+    import os
+    if os.environ['CMSSW_VERSION'] < "CMSSW_5_0":
+        adaptPFTaus(process,"hpsPFTau",postfix=postfixAK5) 
     #  note that the following disables the tau cleaning in patJets
     adaptSelectedPFJetForHPSTau(process,jetSelection="pt()>15.0",postfix=postfixAK5)
     # currently (Sept 27,2011) there are three sets of tau isolation discriminators better to choose in CMG tuples.
