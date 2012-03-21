@@ -23,7 +23,7 @@ vertexAna = cfg.Analyzer(
     verbose = False
     )
 
-muMuEleEleAna = cfg.Analyzer(
+muEleAna = cfg.Analyzer(
     'MuEleFourLeptonAnalyzer',
     pt1 = 5.,
     eta1 = 2.4,
@@ -34,8 +34,15 @@ muMuEleEleAna = cfg.Analyzer(
     z1_m = 60,
     z1_pt1 = 20,
     z1_pt2 = 10,
-    nLeptonsMin = 2
+    z2_m = 12,
+    z2_pt1 = 0,
+    z2_pt2 = 0,
+    h_m = 100,
+    nLeptonsMin = 4
     )
+
+muMuAna = copy.deepcopy( muEleAna )
+muMuAna.name = 'MuMuFourLeptonAnalyzer'
 
 treeProducer = cfg.Analyzer(
      'FourLeptonTreeProducer'
@@ -43,9 +50,9 @@ treeProducer = cfg.Analyzer(
 
 ####################################################################################
 
-# from CMGTools.HToZZTo4Leptons.samples.phedex_march20 import * 
+from CMGTools.HToZZTo4Leptons.samples.samples_march21 import * 
 
-from CMGTools.H2TauTau.proto.samples.tauMu_march12 import DYJets
+# from CMGTools.H2TauTau.proto.samples.tauMu_march12 import DYJets
 
 ####################################################################################
 
@@ -53,14 +60,16 @@ from CMGTools.H2TauTau.proto.samples.tauMu_march12 import DYJets
 sequence = cfg.Sequence( [
     triggerAna,
     vertexAna,
-    muMuEleEleAna,
+    # muEleAna,
+    muMuAna,
     treeProducer
    ] )
-DYJets.files = DYJets.files[:5]
-DYJets.triggers = []
+# DYJets.files = DYJets.files[:5]
+# DYJets.triggers = []
 
-# selectedComponents = [Hig120GluGlu]
-selectedComponents = [DYJets]
+Hig120GluGlu.splitFactor = 8
+selectedComponents = [Hig120GluGlu]
+# selectedComponents = [DYJets]
     
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
