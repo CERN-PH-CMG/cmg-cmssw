@@ -163,6 +163,8 @@ if __name__ == '__main__':
                                  'src/CMGTools/H2TauTau/python/proto/analyzers'] ))
     sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
                                  'src/CMGTools/RootTools/python/analyzers'] ))
+    sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
+                                 'src/CMGTools/HToZZTo4Leptons/python/analyzers'] ))
     sys.path.append( '.' )
     
     cfgFileName = sys.argv[1]

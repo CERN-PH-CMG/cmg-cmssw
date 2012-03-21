@@ -1,5 +1,6 @@
 from CMGTools.RootTools.PyRoot import *
 
+import copy
 import sys
 from optparse import OptionParser
 
@@ -65,3 +66,60 @@ def plot1D(nEv, zoom=-1):
     tree.GetHistogram().SetTitle(';|#Deltap_{T}(std-gen)| - |#Deltap_{T}(PF-gen)| (GeV/c)')
     formatPad(gPad)
     gPad.SetLogz()
+
+
+keeper = []
+
+def plotVsGen(nEv, select=1, xmax = 100):
+    # dPt = 'dPt1'
+    # if select == 2:
+    #     dPt = 'dPt2'
+    h1 = TH1F('h1','',200, -xmax, xmax)
+    h2 = TH1F('h2','',200, -xmax, xmax)
+    
+    tree.Project('h1', 'dPt1', 'match2 && col2Sel && match1' , '', nEv)
+    sBlue.formatHisto( h1)
+    h1.SetStats(0)
+    h1.SetFillStyle(0)
+    h1.SetNdivisions(5)
+    h1.SetTitle(';#Deltap_{T} (rec-gen) (GeV/c)')
+
+    tree.Project('h2', 'dPt2', 'match2 && col2Sel && match1' , '', nEv)
+    sBlack.formatHisto( h2 )
+    h2.SetFillStyle(0)
+    h2.SetStats(1)
+    h2.SetNdivisions(5)
+    h2.SetTitle(';#Deltap_{T} (rec-gen) (GeV/c)')
+
+    
+    h1.SetStats(0)
+    h2.SetStats(0)
+
+    legend = TLegend(0.6,0.7,0.89,0.89) 
+    
+    if select==1:
+        h1.Draw()
+        legend.AddEntry( h1, 'PF muon', 'l') 
+        name = 'PF' 
+    elif select==2:
+        h2.Draw()
+        legend.AddEntry( h2, 'tight muon', 'l') 
+        gPad.SaveAs('ptrecMgen_tight.png')
+        name = 'Tight'
+    else:
+        h1.Draw()
+        h2.Draw('same')
+        legend.AddEntry( h1, 'PF muon') 
+        legend.AddEntry( h2, 'tight muon')
+        name = 'Both'
+    legend.Draw('same')
+
+    keeper.append(h1)
+    keeper.append(h2)
+    keeper.append(legend)
+    
+    formatPad(gPad)
+    gPad.SetLogy()
+
+    gPad.SaveAs('ptrecMgen_{name}.png'.format( name=name ))
+
