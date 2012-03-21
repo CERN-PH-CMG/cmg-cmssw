@@ -116,20 +116,15 @@ BaseJetSelection = cms.PSet( source = cms.InputTag("selectedPatJetsPFlow"),
                              jetId = cms.PSet( version = cms.string("FIRSTDATA"), quality = cms.string("LOOSE") ),
                              minPt = cms.double(15),
                              maxEta = cms.double(5.0),
-                             minDeltaRtoLepton = cms.double(0.4)
+                             minDeltaRtoLepton = cms.double(0.4),
+                             puJetId = cms.PSet( impactParTkThreshold = cms.untracked.double(0.) ,
+                                                 tmvaWeights   = cms.untracked.string("CMGTools/External/data/mva_JetID.weights.xml"),
+                                                 tmvaMethod    = cms.untracked.string("JetID"),   
+                                                 tmvaVariables = cms.untracked.vstring(),
+                                                 version       = cms.untracked.int32(0)
+                                                 )
                              )
-
-
-
-AssocJetSelection = cms.PSet( source = cms.InputTag("ClusteredPFMetProducer", "JET"),
-                             rho = cms.InputTag("kt6PFJetsPFlow:rho"),
-                             jetId = cms.PSet( version = cms.string("FIRSTDATA"), quality = cms.string("LOOSE") ),
-                             minPt = cms.double(15),
-                             maxEta = cms.double(5.0),
-                             minDeltaRtoLepton = cms.double(0.4)
-                             )
-
-
+AssocJetSelection = BaseJetSelection.clone(source = cms.InputTag("selectedPatJets") ) #source = cms.InputTag("ClusteredPFMetProducer", "JET"),
 
 # base values for the dilepton selection ------------------------------------------
 BaseDileptonSelection = cms.PSet( minDileptonMass = cms.double(0),

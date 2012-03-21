@@ -50,12 +50,13 @@ struct ZZ2l2nuSummary_t
   Float_t jn_px[MAXPARTICLES],    jn_py[MAXPARTICLES],      jn_pz[MAXPARTICLES],          jn_en[MAXPARTICLES];
   Float_t jn_btag1[MAXPARTICLES], jn_btag2[MAXPARTICLES],   jn_neutHadFrac[MAXPARTICLES], jn_neutEmFrac[MAXPARTICLES], jn_chHadFrac[MAXPARTICLES], jn_pid[MAXPARTICLES];  
   Int_t   jn_genid[MAXPARTICLES], jn_genflav[MAXPARTICLES];
-  Float_t jn_genpt[MAXPARTICLES];
+  Float_t jn_genpt[MAXPARTICLES], jn_pumva[MAXPARTICLES];
 
   Int_t ajn;
   Float_t ajn_px[MAXPARTICLES],    ajn_py[MAXPARTICLES],    ajn_pz[MAXPARTICLES],          ajn_en[MAXPARTICLES]; 
   Float_t ajn_btag1[MAXPARTICLES], ajn_btag2[MAXPARTICLES], ajn_neutHadFrac[MAXPARTICLES], ajn_neutEmFrac[MAXPARTICLES], ajn_chHadFrac[MAXPARTICLES], ajn_pid[MAXPARTICLES];  
   Int_t   ajn_genid[MAXPARTICLES], ajn_genflav[MAXPARTICLES];
+  Float_t ajn_genpt[MAXPARTICLES], ajn_pumva[MAXPARTICLES];
 
   //primary vertex
   Float_t vtx_px  ,vtx_py  ,vtx_pz  ,vtx_en;

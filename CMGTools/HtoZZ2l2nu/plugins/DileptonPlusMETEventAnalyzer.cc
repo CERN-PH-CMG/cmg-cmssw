@@ -44,6 +44,8 @@
 
 #include "SHarper/HEEPAnalyzer/interface/HEEPCutCodes.h"
 
+#include "CMGTools/External/interface/PileupJetIdAlgo.h"
+
 using namespace std;
 using namespace edm;
 using namespace reco;
@@ -93,6 +95,7 @@ private:
   ZZ2l2nuSummaryHandler summaryHandler_;
   TSelectionMonitor controlHistos_;
   EventCategory eventClassifComp_;
+  PileupJetIdAlgo puJetIdAlgo_;
 
 };
 
@@ -100,7 +103,8 @@ using namespace std;
 
 //
 DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterSet &iConfig)
-  : controlHistos_( iConfig.getParameter<std::string>("dtag") )
+  : controlHistos_( iConfig.getParameter<std::string>("dtag") ),
+    puJetIdAlgo_(iConfig.getParameter<edm::ParameterSet>("Jets").getParameter<edm::ParameterSet>("puJetId"))
 {
   try{
 
@@ -123,6 +127,7 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
 
     controlHistos_.addHistogram("pileup", ";Pileup; Events",50,-0.5,49.5);
     controlHistos_.addHistogram("pileuptrue", ";True pileup; Events",50,-0.5,49.5);
+   
   }
   catch(std::exception &e){
     cout << e.what() << endl;
@@ -484,6 +489,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     for (std::vector<CandidatePtr>::iterator jIt = selJets.begin(); jIt != selJets.end(); jIt++)
       {
 	const pat::Jet *jet = dynamic_cast<const pat::Jet *>(jIt->get());
+
 	ev.jn_px[ev.jn] = jet->px();  
 	ev.jn_py[ev.jn] = jet->py(); 
 	ev.jn_pz[ev.jn] = jet->pz(); 
@@ -498,6 +504,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.jn_chHadFrac[ev.jn]   = jet->chargedHadronEnergyFraction();
 	const reco::GenJet *gJet=jet->genJet();
 	ev.jn_genpt[ev.jn]=gJet ? gJet->pt() : 0;
+	PileupJetIdentifier puIdentifier = puJetIdAlgo_.computeIdVariables(dynamic_cast<const reco::Jet*>(jet), 0, primVertex.get(), true);
+	ev.jn_pumva[ev.jn]=puIdentifier.mva();
 	ev.jn++;
 	nbcands += (jet->pt()>30 && fabs(jet->eta())<2.4 && jet->bDiscriminator("trackCountingHighEffBJetTags")>2); 
       }
@@ -505,31 +513,37 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 
     // JET SELECTION
     //
-    Handle<std::vector<PFJet> > haJet;
-    event.getByLabel(objConfig_["AssocJets"].getParameter<edm::InputTag>("source"), haJet);
     ev.ajn=0;
-//    std::vector<CandidatePtr> selaJets = getGoodJets(haJet, selLeptons, objConfig_["AssocJets"]);
-//    for (std::vector<CandidatePtr>::iterator jIt = selaJets.begin(); jIt != selaJets.end(); jIt++)
-    std::vector<PFJet> selaJets = *haJet.product();
-    for (std::vector<PFJet>::iterator jIt = selaJets.begin(); jIt != selaJets.end(); jIt++)
-      {
-        const PFJet* jet = &(*jIt);
+    //Handle<std::vector<PFJet> > haJet;
+    //std::vector<PFJet> selaJets = *haJet.product();
+    //for (std::vector<PFJet>::iterator jIt = selaJets.begin(); jIt != selaJets.end(); jIt++)
+    //{
+    //const PFJet* jet = &(*jIt);  
+    Handle<View<Candidate> > haJet;
+    event.getByLabel(objConfig_["AssocJets"].getParameter<edm::InputTag>("source"), haJet);
+    std::vector<CandidatePtr> selaJets = getGoodJets(haJet, selLeptons, objConfig_["AssocJets"]);
+    for (std::vector<CandidatePtr>::iterator jIt = selaJets.begin(); jIt != selaJets.end(); jIt++)
+      {  
+	const pat::Jet *jet = dynamic_cast<const pat::Jet *>(jIt->get());
         ev.ajn_px[ev.ajn] = jet->px();
         ev.ajn_py[ev.ajn] = jet->py(); 
         ev.ajn_pz[ev.ajn] = jet->pz(); 
         ev.ajn_en[ev.ajn] = jet->energy();
-//        const reco::Candidate *genParton = jet->genParton();
-//        ev.ajn_genid[ev.ajn]       = genParton ? genParton->pdgId() : -9999;
-//        ev.ajn_genflav[ev.ajn]     = jet->partonFlavour();
-//        ev.ajn_btag1[ev.ajn]       = jet->bDiscriminator("trackCountingHighEffBJetTags");
-//        ev.ajn_btag2[ev.ajn]       = jet->bDiscriminator("combinedSecondaryVertexBJetTags");
+        const reco::Candidate *genParton = jet->genParton();
+        ev.ajn_genid[ev.ajn]       = genParton ? genParton->pdgId() : -9999;
+        ev.ajn_genflav[ev.ajn]     = jet->partonFlavour();
+        ev.ajn_btag1[ev.ajn]       = jet->bDiscriminator("trackCountingHighEffBJetTags");
+        ev.ajn_btag2[ev.ajn]       = jet->bDiscriminator("combinedSecondaryVertexBJetTags");
         ev.ajn_neutHadFrac[ev.ajn] = jet->neutralHadronEnergyFraction();
         ev.ajn_neutEmFrac[ev.ajn]  = jet->neutralEmEnergyFraction();
         ev.ajn_chHadFrac[ev.ajn]   = jet->chargedHadronEnergyFraction();
-        ev.ajn++;
+        const reco::GenJet *gJet   = jet->genJet();
+        ev.ajn_genpt[ev.ajn]       = gJet ? gJet->pt() : 0;
+        PileupJetIdentifier puIdentifier = puJetIdAlgo_.computeIdVariables(dynamic_cast<const reco::Jet*>(jet), 0, primVertex.get(), true);
+        ev.ajn_pumva[ev.jn]=puIdentifier.mva();
+	ev.ajn++;
       }
-
-
+     
     //
     // MET SELECTION
     //
