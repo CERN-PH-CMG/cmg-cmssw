@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
   //##############################################
   //########    CUTS AND MASS POINTS      ########
   //##############################################
-
+/*
   int NmH=19;
   double* mH = new double[NmH]; double*  cutMet = new double[NmH]; double*  cutMTMin= new double[NmH]; double*  cutMTMax = new double[NmH];
                                 double* scutMet = new double[NmH]; double* scutMTMin= new double[NmH]; double* scutMTMax = new double[NmH];
@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
   mH[18] = 650; scutMet[18] =  80; scutMTMin[18] = 250; scutMTMax[18] = 750;
  
   char** mHtxt = new char*[NmH]; for(int ImH=0;ImH<NmH;ImH++){mHtxt[ImH] = new char[255]; sprintf(mHtxt[ImH],"%3.0f",mH[ImH]); }
-
+*/
   //##############################################
   //########    INITIATING HISTOGRAMS     ########
   //##############################################
@@ -217,14 +217,6 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 80,150,950) );
   mon.addHistogram( new TH1F( "mtaftersmear"  , ";M_{T} after smear;Events", 80,150,950) );
 
-  for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
-      TH1 *cacH = (TH1F *) mon.addHistogram( new TH1F (TString("finaleventflow")+varNames[ivar],";Category;Event count;",NmH+1,0,NmH+1) );
-      for(int ImH=0;ImH<NmH;ImH++){
-         cacH->GetXaxis()->SetBinLabel(ImH+1,TString("mH=")+mHtxt[ImH]);
-         mon.addHistogram( new TH1F (TString("finalmt")+mHtxt[ImH]+varNames[ivar],";M_{T} [GeV/c^{2}];Events;",80,150,950) );
-      }
-  } 
-
   //##############################################
   //######## STUFF FOR CUTS OPTIMIZATION  ########
   //##############################################
@@ -248,8 +240,6 @@ int main(int argc, char* argv[])
       }
    }
 
-   mon.addHistogram( new TH1F ("optim_eventflow1"  , ";cut index;yields" ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) );
-   mon.addHistogram( new TH2F ("optim_MT1",";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 80,150,950) );
    TH1F* Hoptim_cuts1_met     =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_met"    , ";cut index;met"    ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
    TH1F* Hoptim_cuts1_mtmin   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmin"  , ";cut index;mtmin"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
    TH1F* Hoptim_cuts1_mtmax   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmax"  , ";cut index;mtmax"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
@@ -258,6 +248,11 @@ int main(int argc, char* argv[])
       Hoptim_cuts1_mtmin  ->Fill(index, optim_Cuts1_mtmin[index]);
       Hoptim_cuts1_mtmax  ->Fill(index, optim_Cuts1_mtmax[index]);
    }
+
+   for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
+      mon.addHistogram( new TH2F (TString("mt_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 80,150,950) );
+   } 
+
 
   //##############################################
   //######## GET READY FOR THE EVENT LOOP ########
@@ -523,21 +518,11 @@ int main(int argc, char* argv[])
 
           }
           if(!passPreselection) continue;
-          
-          for(int ImH=0;ImH<NmH;ImH++){
-              //CUT AND COUNT ANALYSIS
-              if(zvv.pt()>cutMet[ImH] && mt>cutMTMin[ImH] && mt<cutMTMax[ImH])    mon.fillHisto(TString("finaleventflow")+varNames[ivar],tags_full,ImH,iweight);
-             //SHAPE ANALYSIS
-              if(zvv.pt()>scutMet[ImH] && mt>scutMTMin[ImH] && mt<scutMTMax[ImH]) mon.fillHisto(TString("finalmt")+mHtxt[ImH]+varNames[ivar],tags_full,mt,iweight);
-          }
 
            //Fill histogram for posterior optimization
-	  if(ivar==0){
-             for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
-                 if(zvv.pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index]){
-                    mon.fillHisto("optim_eventflow1"          ,tags_full,    index, weight);
-                    mon.fillHisto(TString("optim_MT1"),tags_full,index, mt,iweight);
-                 }
+          for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
+             if(zvv.pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index]){
+                mon.fillHisto(TString("mt_shapes")+varNames[ivar],tags_full,index, mt,iweight);
              }
           }
       }
