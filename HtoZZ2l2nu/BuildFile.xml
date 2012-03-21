@@ -12,6 +12,7 @@
 <use name="RecoEcal/EgammaCoreTools"/>
 <use name="PhysicsTools/UtilAlgos"/>
 <use name="PhysicsTools/Utilities"/>
+<use name="CMGTools/External"/>
 <use name="roottmva"/>
 <use name="roofit"/>
 <use name="fastjet"/>
