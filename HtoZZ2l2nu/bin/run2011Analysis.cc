@@ -188,6 +188,14 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(6,"#delta #phi(jet,E_{T}^{miss})");
   h->GetXaxis()->SetBinLabel(7,"E_{T}^{miss}>80");
 
+  h=(TH1F*) mon.addHistogram( new TH1F ("eventflow_ctrl", ";Step;Events", 4,0,4) );
+  h->GetXaxis()->SetBinLabel(1,"zmass&btag");
+  h->GetXaxis()->SetBinLabel(2,"!zmassbtag");
+  h->GetXaxis()->SetBinLabel(3,"zmass&!btag");
+  h->GetXaxis()->SetBinLabel(4,"!zmass&!btag");
+
+
+
   mon.addHistogram( new TH1F( "zeta", ";#eta^{ll};Events", 50,-10,10) );
   mon.addHistogram( new TH1F( "zpt", ";p_{T}^{ll};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "zmass", ";M^{ll};Events", 100,0,200) );
@@ -224,10 +232,15 @@ int main(int argc, char* argv[])
    std::vector<double> optim_Cuts1_met;
    std::vector<double> optim_Cuts1_mtmin;
    std::vector<double> optim_Cuts1_mtmax;
-   for(double met=50;met<190;met+=2.0){
-         for(double mtmin=220;mtmin<460;mtmin+=20){
-            for(double mtmax=mtmin+50;mtmax<820;mtmax+=50){
-               if(mtmax>=770)mtmax=3000;
+   for(double met=50;met<200;met+=5.0){
+	 if(met>100 && int(met)%10!=0)continue;
+         if(met>140 && int(met)%20!=0)continue;
+         for(double mtmin=200;mtmin<500;mtmin+=25){
+	    if(mtmin>350 && int(mtmin)%50!=0)continue;
+            for(double mtmax=mtmin+100;mtmax<mtmin+350;mtmax+=25){
+               if(mtmax>=mtmin+325)mtmax=3000;
+	       if(mtmin>350 && int(mtmax)%50!=0)continue;
+               if(mtmax-mtmin>200 && int(mtmax)%50!=0)continue;
                optim_Cuts1_met    .push_back(met);
                optim_Cuts1_mtmin  .push_back(mtmin);
                optim_Cuts1_mtmax  .push_back(mtmax);
@@ -500,6 +513,14 @@ int main(int argc, char* argv[])
                       }
                   }
               }
+
+              if((fabs(zmass-91)<30) & passZpt & pass3dLeptonVeto & passDphijmet & (zvv.pt()>50) ){
+		if( passZmass &  passBveto)mon.fillHisto  ("eventflow_ctrl",tags_full,0,iweight);
+                if(!passZmass &  passBveto)mon.fillHisto  ("eventflow_ctrl",tags_full,1,iweight);
+                if( passZmass & !passBveto)mon.fillHisto  ("eventflow_ctrl",tags_full,2,iweight);
+                if(!passZmass & !passBveto)mon.fillHisto  ("eventflow_ctrl",tags_full,3,iweight);
+              }
+
           }
           if(!passPreselection) continue;
           
