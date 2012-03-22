@@ -23,7 +23,7 @@ Table Structure:
         -cmgdb_name
         -path_name
         -lfn
-        -nice_username
+        -file_owner
         -dataset_fraction
         -dataset_entries
         -date_recorded
@@ -60,18 +60,18 @@ Here are some example queries explained:
     - You will have to first make sure that you use the distinct() method to prevent repetitions
     - Once you have specified the information you want, you will then need to perform a join with the tags_in_sets table on tag_id
     - From the product of this join you then want to join with the dataset_details table, this time on tagset_id
-    - You then specify the WHERE clause as where nice_username = 'cmgtools and the date...
+    - You then specify the WHERE clause as where file_owner = 'cmgtools and the date...
     - To give the results of the entire day, you must do two things,
     -- First, use the trunc() method to truncate the timestamp to the desired length
     -- Then, use the to_timestamp() method in order to change the date you want to a timestamp
 
-        "SELECT distinct(tags.tag_id), tags.tag, tags.package_name FROM tags INNER JOIN tags_in_sets ON tags_in_sets.tag_id = tags.tag_id JOIN dataset_details ON dataset_details.tagset_id = tags_in_sets.tagset_id WHERE dataset_details.nice_username = 'cmgtools' AND trunc(dataset_details.date_recorded) = to_timestamp('07-03-2012','DD-MM-YYYY') ORDER BY tags.tag_id"
+        "SELECT distinct(tags.tag_id), tags.tag, tags.package_name FROM tags INNER JOIN tags_in_sets ON tags_in_sets.tag_id = tags.tag_id JOIN dataset_details ON dataset_details.tagset_id = tags_in_sets.tagset_id WHERE dataset_details.file_owner = 'cmgtools' AND trunc(dataset_details.date_recorded) = to_timestamp('07-03-2012','DD-MM-YYYY') ORDER BY tags.tag_id"
     
     If you want to get a list of dataset names from the same time period, again from cmgtools,
     - You would first select the details you want to see, e.g dataset_fraction
     - Then you would use the same WHERE clause as in the previous example
         
-        "SELECT dataset_id, path_name, date_recorded, dataset_fraction FROM dataset_details WHERE trunc(date_recorded) = to_timestamp('07-03-2012','DD-MM-YYYY') AND nice_username = 'cmgtools' ORDER BY dataset_id"
+        "SELECT dataset_id, path_name, date_recorded, dataset_fraction FROM dataset_details WHERE trunc(date_recorded) = to_timestamp('07-03-2012','DD-MM-YYYY') AND file_owner = 'cmgtools' ORDER BY dataset_id"
         
     If you want a list of datasets that used a certain tag
     - First specify the fields you want to select, in this case dataset id and name
@@ -102,9 +102,9 @@ getTags <cmgdb_name>
 getDatasetsAtDate <DD-MM-YYYY>
     SELECT distinct(dataset_id), cmgdb_name FROM dataset_details WHERE trunc(date_recorded) = TO_TIMESTAMP('ARG1','DD-MM-YYYY') ORDER BY dataset_id
 getDatasetsAtDateWithUser <DD-MM-YYYY> <fileowner>
-    SELECT distinct(dataset_id), cmgdb_name FROM dataset_details WHERE trunc(date_recorded) = TO_TIMESTAMP('ARG1','DD-MM-YYYY') and nice_username = 'ARG2' ORDER BY dataset_id
-getDatasetsWithUser <fileowner>
-    SELECT distinct(dataset_id), cmgdb_name FROM dataset_details WHERE nice_username = 'ARG1' ORDER BY dataset_id
+    SELECT distinct(dataset_id), cmgdb_name FROM dataset_details WHERE trunc(date_recorded) = TO_TIMESTAMP('ARG1','DD-MM-YYYY') and file_owner = 'ARG2' ORDER BY dataset_id
+getDatasetsWithOwner <fileowner>
+    SELECT distinct(dataset_id), cmgdb_name FROM dataset_details WHERE file_owner = 'ARG1' ORDER BY dataset_id
 getMissingFiles <cmgdb_name>
     SELECT distinct(missing_files.missing_file) FROM missing_files INNER JOIN dataset_details ON dataset_details.dataset_id = missing_files.dataset_id WHERE dataset_details.cmgdb_name = 'ARG1'
 getDuplicateFiles <cmgdb_name>
@@ -114,7 +114,7 @@ getBadJobs <cmgdb_name>
 getBadFiles <cmgdb_name>
     SELECT distinct(bad_files.bad_file) FROM bad_files INNER JOIN dataset_details ON dataset_details.dataset_id = bad_files.dataset_id WHERE dataset_details.cmgdb_name = 'ARG1'
 getDatasetInfo <cmgdb_name>
-    SELECT path_name, lfn, nice_username, dataset_entries, dataset_fraction, date_recorded FROM dataset_details WHERE cmgdb_name = 'ARG1'
+    SELECT path_name, lfn, file_owner, dataset_entries, dataset_fraction, date_recorded FROM dataset_details WHERE cmgdb_name = 'ARG1'
 getDatasetsMadeWithSameTagset <cmgdb_name>
     SELECT distinct(dataset_id), tagset_id, cmgdb_name FROM dataset_details WHERE tagset_id in (SELECT tagset_id FROM dataset_details WHERE cmgdb_name = 'ARG1')
     
@@ -149,13 +149,13 @@ getInfo.py -a getTags /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6
     colnames = ""
     aliasDict = {"getTags":"SELECT distinct(tags.tag_id), tags.tag, tags.package_name from tags INNER JOIN tags_in_sets ON tags.tag_id = tags_in_sets.tag_id JOIN dataset_details ON dataset_details.tagset_id = tags_in_sets.tagset_id WHERE dataset_details.cmgdb_name = 'ARG1' ORDER BY tags.tag_id",
                  "getDatasetsAtDate":"SELECT distinct(dataset_id), cmgdb_name FROM dataset_details WHERE trunc(date_recorded) = TO_TIMESTAMP('ARG1','DD-MM-YYYY') ORDER BY dataset_id",
-                 "getDatasetsAtDateWithUser":"SELECT distinct(dataset_id), cmgdb_name FROM dataset_details WHERE trunc(date_recorded) = TO_TIMESTAMP('ARG1','DD-MM-YYYY') and nice_username = 'ARG2' ORDER BY dataset_id",
-                 "getDatasetsWithUser":"SELECT distinct(dataset_id), cmgdb_name FROM dataset_details WHERE nice_username = 'ARG1' ORDER BY dataset_id",
+                 "getDatasetsAtDateWithUser":"SELECT distinct(dataset_id), cmgdb_name FROM dataset_details WHERE trunc(date_recorded) = TO_TIMESTAMP('ARG1','DD-MM-YYYY') and file_owner = 'ARG2' ORDER BY dataset_id",
+                 "getDatasetsWithOwner":"SELECT distinct(dataset_id), cmgdb_name FROM dataset_details WHERE file_owner = 'ARG1' ORDER BY dataset_id",
                  "getMissingFiles":"SELECT distinct(missing_files.missing_file) FROM missing_files INNER JOIN dataset_details ON dataset_details.dataset_id = missing_files.dataset_id WHERE dataset_details.cmgdb_name = 'ARG1'",
                  "getDuplicateFiles":"SELECT distinct(duplicate_files.duplicate_file) FROM duplicate_files INNER JOIN dataset_details ON dataset_details.dataset_id = duplicate_files.dataset_id WHERE dataset_details.cmgdb_name = 'ARG1'",
                  "getBadJobs":"SELECT distinct(bad_jobs.bad_job) FROM bad_jobs INNER JOIN dataset_details ON dataset_details.dataset_id = bad_jobs.bad_job WHERE dataset_details.cmgdb_name = 'ARG1'",
                  "getBadFiles":"SELECT distinct(bad_files.bad_file) FROM bad_files INNER JOIN dataset_details ON dataset_details.dataset_id = bad_files.dataset_id WHERE dataset_details.cmgdb_name = 'ARG1'",
-                 "getDatasetInfo":"SELECT path_name, lfn, nice_username, dataset_entries, dataset_fraction, date_recorded FROM dataset_details WHERE cmgdb_name = 'ARG1'",
+                 "getDatasetInfo":"SELECT path_name, lfn, file_owner, dataset_entries, dataset_fraction, date_recorded FROM dataset_details WHERE cmgdb_name = 'ARG1'",
                  "getDatasetsMadeWithSameTagset":"SELECT distinct(dataset_id), tagset_id, cmgdb_name FROM dataset_details WHERE tagset_id in (SELECT tagset_id FROM dataset_details WHERE cmgdb_name = 'ARG1')"}
     if options.sql:
         query = args[0]
