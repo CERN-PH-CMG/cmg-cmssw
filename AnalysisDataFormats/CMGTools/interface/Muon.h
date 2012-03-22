@@ -35,7 +35,8 @@ class Muon;
 	   trackerHits_(UnSet(int)),
 	   globalNormChi2_(UnSet(double)),
 	   muonHits_(UnSet(int)),
-	   nMatches_(UnSet(int)){
+	   nMatches_(UnSet(int)),
+	   trackerLayersWithMeasurement_(UnSet(int)){
       }
       virtual ~Muon(){
 	  }
@@ -65,6 +66,9 @@ class Muon;
      Int_t numberOfMatches() const{
        return nMatches_;
      }
+     Int_t trackerLayersWithMeasurement() const{
+       return trackerLayersWithMeasurement_;
+     }
      // from Candidate 
      virtual bool isMuon() const {
        return true;
@@ -90,6 +94,7 @@ class Muon;
      Double_t globalNormChi2_;
      Int_t muonHits_;
      Int_t nMatches_;
+     Int_t trackerLayersWithMeasurement_;
      //eta...
 
  };
