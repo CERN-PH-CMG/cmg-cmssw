@@ -33,12 +33,13 @@ cmg::METScaler::event_ptr cmg::METScaler::create(const edm::Event& iEvent, const
     if(!doType1_){
       const float unc = it->uncOnFourVectorScale();
       //adjust the vector by the pt scale from the JEC
-      met_i.SetPtEtaPhi(fabs(unc),0.0,it->phi());
-      //do we add or substract (caution!)
-      met_i *= jecUncDirection_;
+      //std::cout << "Jet (JES): " << it->pt() << ", " << it->eta() << ", " << (1 + (jecUncDirection_*fabs(unc)) ) << std::endl;
+      met_i.SetPtEtaPhi((it->pt()*(1 + fabs(unc) )) - it->pt(), 0.0, it->phi());
+      met_i *= -jecUncDirection_;
     }else{
+      //std::cout << "Jet (rawFactor): " << it->pt() << ", " << it->eta() << ", " << it->rawFactor() << std::endl;
       //or scale the MET by the raw factor
-      met_i.SetPtEtaPhi(it->rawFactor(),0.0,it->phi());
+      met_i.SetPtEtaPhi(it->pt() - (it->pt()*it->rawFactor()), 0.0, it->phi());
     }
     scaled += met_i;
   }
@@ -46,6 +47,7 @@ cmg::METScaler::event_ptr cmg::METScaler::create(const edm::Event& iEvent, const
   met.SetPy(scaled.Py());
   met.SetPz(scaled.Pz());
 
+  //std::cout << "METScaler: " << jecUncDirection_ << "," << doType1_ << std::endl;
   //std::cout << "Original: " << modified.px() << "," << modified.py() << "," << modified.pt() << std::endl;
   cmg::METScaler::event_ptr result(new collection);
   modified.setP4(met);
