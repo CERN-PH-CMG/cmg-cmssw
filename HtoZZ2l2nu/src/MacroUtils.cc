@@ -43,14 +43,16 @@ namespace jet
     metsVar.clear();
 
     int vars[]={JES_UP, JES_DOWN, JER};
+    //    std::vector<double> cen,eta,up,down;
     for(size_t ivar=0; ivar<sizeof(vars)/sizeof(int); ivar++)
       {
 	LorentzVectorCollection newJets;
-	LorentzVector newMet(0,0,0,0),jetDiff(0,0,0,0);
+	LorentzVector newMet(0,0,0,0),jetDiff(0,0,0,0),jetSum(0,0,0,0);
 	for(size_t ijet=0; ijet<jets.size(); ijet++)
 	  {
 	    if(ivar==JER)
 	      {
+		//		eta.push_back(jets[ijet].eta()); cen.push_back(jets[ijet].pt()); jetSum += jets[ijet];
 		double ptScaleRes = (ptResol->resolutionEtaPt(jets[ijet].eta(),jets[ijet].pt())->GetRandom()-1.0);
 		//double etaRes = etaResol->resolutionEtaPt(jets[ijet].eta(),jets[ijet].pt())->GetRandom();
 		//double phiRes = phiResol->resolutionEtaPt(jets[ijet].eta(),jets[ijet].pt())->GetRandom();
@@ -69,10 +71,14 @@ namespace jet
 		double varSign=(ivar==JES_UP ? 1.0 : -1.0 );
 		jecUnc->setJetEta(jets[ijet].eta());                                                                                                                                                                                  
 		jecUnc->setJetPt(jets[ijet].pt());                                                                                                                                                                                    
-		double jetScale = 1.0 + varSign*jecUnc->getUncertainty(true);  
+		double jetScale = 1.0 + varSign*fabs(jecUnc->getUncertainty(true));  
 		LorentzVector newJet = jetScale*jets[ijet];
 		newJets.push_back(newJet);
-		jetDiff += (newJet-jets[ijet]);
+		LorentzVector ijetDiff=(newJet-jets[ijet]);
+		jetDiff += ijetDiff;
+		// 		if(ivar==JES_UP) up.push_back(newJet.pt());
+		// 		if(ivar==JES_DOWN) down.push_back(newJet.pt());
+		jetSum += newJet;
 	      } 
 	  }
 
@@ -80,7 +86,15 @@ namespace jet
 	newMet = -jetDiff +met;
 	jetsVar.push_back(newJets);
 	metsVar.push_back(newMet);
-     }
-  }
+	// 	if(ivar==JES_UP)        { up.push_back(jetSum.pt()); up.push_back(newMet.pt());}
+	// 	else if(ivar==JES_DOWN) { down.push_back(jetSum.pt()); down.push_back(newMet.pt());}
+	// 	else                    { cen.push_back(jetSum.pt()); cen.push_back(met.pt()); eta.push_back(0); eta.push_back(0); }
+      }
+    
+    //     for(size_t i=0; i<cen.size(); i++)
+    //       {
+    // 	std::cout << cen[i] << " " << eta[i] << "\t" << up[i]-cen[i] << "\t" << down[i]-cen[i] << std::endl;
+    //      }
+}
 
 }
