@@ -37,6 +37,11 @@ void cmg::MuonFactory::set(const pat::MuonPtr& input, cmg::Muon* const output, c
         output->globalNormChi2_ = combinedMuon->normalizedChi2();
         output->muonHits_ = combinedMuon->hitPattern().numberOfValidMuonHits();   
     }
+    //we need the tracker track for this
+    reco::TrackRef track = input->track();
+    if(track.isNonnull() && track.isAvailable()){
+      output->trackerLayersWithMeasurement_ = track->hitPattern().trackerLayersWithMeasurement();
+    }
 }
 
 reco::TrackRef cmg::MuonFactory::getTrack(const pat::MuonPtr& input) const{

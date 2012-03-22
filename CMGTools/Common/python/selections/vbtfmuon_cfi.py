@@ -4,7 +4,9 @@ import FWCore.ParameterSet.Config as cms
 vbtfmuon = cms.PSet(
     isGlobal = cms.string('isGlobal()'),
     isTracker = cms.string('isTracker()'),
-    numberOfValidTrackerHits = cms.string('numberOfValidTrackerHits() > 10'),
+    #Updated for 2012 with new cut from the Muon POG
+    #numberOfValidTrackerHits = cms.string('numberOfValidTrackerHits() > 10'),
+    trackerLayersWithMeasurement = cms.string('trackerLayersWithMeasurement() > 8'),
     numberOfValidPixelHits = cms.string('numberOfValidPixelHits() > 0'),
     numberOfValidMuonHits = cms.string('numberOfValidMuonHits() > 0'),
     numberOfMatches = cms.string('numberOfMatches() > 1'),
