@@ -92,8 +92,8 @@ struct DataCardInputs
   std::map<TString, std::map<RateKey_t,Double_t> > systs;
 };
 
-DataCardInputs convertHistosForLimits(Int_t mass,TString histo="finalmt",TString url="plotter.root",TString outDir="./", bool shape=true, Int_t index=-1);
-std::vector<TString> buildDataCard(Int_t mass, TString histo="finalmt", TString url="plotter.root",TString outDir="./", bool shape=true, Int_t index=-1);
+DataCardInputs convertHistosForLimits(Int_t mass,TString histo="finalmt",TString url="plotter.root",TString outDir="./", bool runSystematics=true, bool shape=true, Int_t index=-1);
+std::vector<TString> buildDataCard(Int_t mass, TString histo="finalmt", TString url="plotter.root",TString outDir="./", bool runSystematics=true, bool shape=true, Int_t index=-1);
 
 
 int main(int argc, char* argv[])
@@ -104,10 +104,13 @@ int main(int argc, char* argv[])
    sscanf(argv[1],"%i", &mass);
    histo = TString(argv[2]);
    url = TString(argv[3]);
+   int runSystematicsTmp = 1;
+   if(argc>=5)sscanf(argv[4],"%i", &runSystematicsTmp);
+   bool runSystematics = (runSystematicsTmp==1);
    int isShape = 1;
-   if(argc>=5)sscanf(argv[4],"%i", &isShape);
+   if(argc>=5)sscanf(argv[5],"%i", &isShape);
    bool shape = (isShape==1);
-   if(argc>=6)sscanf(argv[5],"%i", &index);
+   if(argc>=6)sscanf(argv[6],"%i", &index);
    printf("runLandS with following arguments: %i - %s - %s - %i\n",mass, histo.Data(), url.Data(), index);
 
   //prepare the output directory
@@ -117,15 +120,15 @@ int main(int argc, char* argv[])
   TString mkdirCmd("mkdir -p "); mkdirCmd+=outDir;
   gSystem->Exec(mkdirCmd.Data());
 
-  if(index<0){
+  if(runSystematics){
      mkdirCmd += "/combined";
      gSystem->Exec(mkdirCmd);
    }
 
   //build the datacard for this mass point
-  std::vector<TString> dcUrls = buildDataCard(mass,histo,url,outDir, shape, index);
+  std::vector<TString> dcUrls = buildDataCard(mass,histo,url,outDir, runSystematics, shape, index);
 
-  if(index<0){
+  if(runSystematics){
      //run limits in the exclusive channels
      for(size_t i=0; i<dcUrls.size(); i++)
      {
@@ -166,13 +169,13 @@ int main(int argc, char* argv[])
 
 
 //
-std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TString outDir, bool shape, Int_t index)
+std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TString outDir, bool runSystematics, bool shape, Int_t index)
 {
   std::vector<TString> dcUrls;
   
 
   //get the datacard inputs 
-  DataCardInputs dci = convertHistosForLimits(mass,histo,url,outDir, shape, index);
+  DataCardInputs dci = convertHistosForLimits(mass,histo,url,outDir, runSystematics, shape, index);
 
   //build the datacard separately for each channel
   for(size_t i=1; i<=dci.ch.size(); i++) 
@@ -228,7 +231,7 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
 	}
       dcF << endl;
 
-if(index<0){
+if(runSystematics){
       
       //systematics
       dcF << "-------------------------------" << endl;
@@ -283,7 +286,7 @@ if(index<0){
 }
 
 //
-DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TString outDir, bool shape, Int_t index)
+DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TString outDir, bool runSystematics, bool shape, Int_t index)
 {
   DataCardInputs dci;
 
@@ -324,6 +327,8 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
     TObject *h=0;
     std::map<TString, TH1 *>hcentral;
     std::map<TString, TObjArray> grvarup, grvardown;
+
+    int count = histo.CountChar('_');
     while((h=hnext()))
       {
 	//prune for histo of interest
@@ -332,25 +337,20 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 
 	//prune for channels and mass of interest
 	TObjArray *tkns=hname.Tokenize("_");	
+
 	TString ch(tkns->At(0)->GetName());      if(ch!="ee" && ch!="mumu") continue;
 
-	TString massel(tkns->At(1)->GetName());	 if(index<0 && !massel.Contains(massStr)) continue;
+//	TString massel(tkns->At(1)->GetName());	 if(index<0 && !massel.Contains(massStr)) continue;
 
 	TString syst="";
-	if(tkns->GetEntriesFast()>2) syst="_"+TString(tkns->At(2)->GetName());
+	if(tkns->GetEntriesFast()>2+count) syst="_"+TString(tkns->At(2+count)->GetName());
 	syst.ReplaceAll("down","Down");
 	syst.ReplaceAll("up","Up");
 	if(syst.Contains("btag")) continue;
 
 	//save histo as $CHANNEL/$PROCESS_$SYSTEMATIC
-        TH1 *hshape = NULL;
-        if(index<0){
-   	   hshape = (TH1 *)pdir->Get(hname); 	
-        }else{
-           TH2* tmp = (TH2*) pdir->Get(hname);
-           hshape = (TH1*) tmp->ProjectionY("_py", index,index);     
-        }
-
+        TH2* tmp = (TH2*) pdir->Get(hname);
+        TH1* hshape = (TH1*) tmp->ProjectionY("_py", index,index);     
 
         if(!shape){
            hshape = hshape->Rebin(hshape->GetXaxis()->GetNbins(), TString(hshape->GetName())+"_Rebin"); 
@@ -370,21 +370,20 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 	hshape->SetDirectory(0);
 	fout->cd(ch);
 
-	if(index>=0 || syst=="")
+        if(syst=="")
 	  {
-            syst="";
 	    //central shape (for data call it data_obs)
 	    hshape->SetName(proc); 
 	    if(proc=="data")  hshape->SetName("data_obs");
 	    hshape->Write();
 	  }
-	else if(proc!="data" && (syst.Contains("Up") || syst.Contains("Down")))
+	else if(runSystematics && proc!="data" && (syst.Contains("Up") || syst.Contains("Down")))
 	  {
 	    //write variation to file
 	    hshape->SetName(proc+syst);
 	    hshape->Write();
 	  }
-	else
+	else if(runSystematics)
 	  {
 	    //for one sided systematics the down variation mirrors the difference bin by bin
 	    hshape->SetName(proc+syst);
@@ -399,7 +398,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 
         TString systName(syst); 
 
-	if(index<0){
+	if(runSystematics){
 	//compute variations to illustrate
 	systName.ReplaceAll("Up",""); systName.ReplaceAll("Down","");  systName.ReplaceAll("_","");
 	bool doUp(syst.Contains("Up")),doDown(syst.Contains("Down"));
@@ -436,21 +435,22 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 	    if(grup) grup->SetPoint(grup->GetN(), x, diffUp );
 	    if(grdown) grdown->SetPoint(grdown->GetN(), x, diffDown );
 	  }
-         }
-
+      }
 
 	//add to datacard
         allCh.insert(ch);
-	if(syst!="") allSysts.insert(systName);
-	if(proc!="data" && syst!="" && hshape->Integral()>0)
+	if(runSystematics && syst!="") allSysts.insert(systName);
+	if(runSystematics && proc!="data" && syst!="" && hshape->Integral()>0)
 	  {
 	    TH1 *temp=(TH1 *) hshape->Clone();
 	    temp->Add(hcentral[ch],-1);
 	    if(temp->Integral()!=0) dci.systs[systName][RateKey_t(proc,ch)]=1.0;
 	    delete temp;
+
 	  }
 	else if(proc!="data" && syst=="") dci.rates[RateKey_t(proc,ch)]=hshape->Integral();
 	else if(proc=="data" && syst=="") dci.obs[RateKey_t("obs",ch)]=hshape->Integral();
+
       }
 
     //show results for this process
