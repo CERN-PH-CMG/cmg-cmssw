@@ -111,7 +111,7 @@ class CmgdbApi(object):
 
 
     # Adds a set to the database
-    def addDataset(self, dsName,eos,lfn, user, parentID):
+    def addDataset(self, dsName,eos,lfn, fileOwner, parentID, username):
         
         try:
             datasetID = self.getDatasetIDWithName(dsName)
@@ -120,8 +120,8 @@ class CmgdbApi(object):
                 return datasetID
             # Insert information into database
             datasetID = self.cur.execute("select dataset_id_seq.NEXTVAL from dual").fetchone()[0]
-            if parentID is None:self.cur.execute("INSERT INTO dataset_details(dataset_id,parent_dataset_id,cmgdb_name,path_name,lfn,date_recorded,last_commented,nice_username) values(%d,NULL,'%s','%s','%s',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,'%s')" % (datasetID,dsName,eos,lfn,user))
-            else: self.cur.execute("INSERT INTO dataset_details(dataset_id,parent_dataset_id,cmgdb_name,path_name,lfn,date_recorded,last_commented,nice_username) values(%d,%d,'%s','%s','%s',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,'%s')" % (datasetID,parentID,dsName,eos,lfn,user))
+            if parentID is None:self.cur.execute("INSERT INTO dataset_details(dataset_id,parent_dataset_id,cmgdb_name,path_name,lfn,date_recorded,last_commented,file_owner,published_by) values(%d,NULL,'%s','%s','%s',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,'%s','%s')" % (datasetID,dsName,eos,lfn,fileOwner, username))
+            else: self.cur.execute("INSERT INTO dataset_details(dataset_id,parent_dataset_id,cmgdb_name,path_name,lfn,date_recorded,last_commented,file_owner,published_by) values(%d,%d,'%s','%s','%s',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,'%s','%s')" % (datasetID,parentID,dsName,eos,lfn,fileOwner, username))
             self.conn.commit()
             return datasetID
         except cx_Oracle.IntegrityError:
