@@ -120,7 +120,9 @@ usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgoAK5, runOnMC=runOnMC, postfix=p
 
 # removing stupid useless stuff from our muons:
 getattr(process,"patMuons"+postfixAK5).embedCaloMETMuonCorrs = False 
-getattr(process,"patMuons"+postfixAK5).embedTcMETMuonCorrs = False 
+getattr(process,"patMuons"+postfixAK5).embedTcMETMuonCorrs = False
+#but embed the tracker track for cutting on 
+getattr(process,"patMuons"+postfixAK5).embedTrack = True
 
 if doJetPileUpCorrection:
     from CommonTools.ParticleFlow.Tools.enablePileUpCorrection import enablePileUpCorrection
