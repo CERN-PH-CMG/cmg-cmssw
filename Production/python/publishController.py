@@ -132,8 +132,8 @@ class PublishController(object):
     				parentID = parents[0][1]
     			else:
     				parentID = self.getOption(parents)[1]
-    				
-    		cmgdbID = self._cmgdbAPI.addDataset(procds['PathList'][0],getCastor(procds['PathList'][0]),fileOps.getLFN(), getDbsUser(procds['PathList'][0]),parentID)
+    		
+    		cmgdbID = self._cmgdbAPI.addDataset(procds['PathList'][0],getCastor(procds['PathList'][0]),fileOps.getLFN(), getDbsUser(procds['PathList'][0]),parentID, self._username)
     	
     	if fileOps is not None:
     		self._cmgdbAPI.clearDatasetBadFiles(procds['PathList'][0],cmgdbID)
@@ -146,6 +146,7 @@ class PublishController(object):
     			if 'missingFiles' in i:
     				for i in i['missingFiles']:
     					self._cmgdbAPI.addMissingFile(procds['PathList'][0],cmgdbID,i.split('/')[-1])
+    		
     		integrity = fileOps.getIntegrity()
     		
     		if integrity is not None:
