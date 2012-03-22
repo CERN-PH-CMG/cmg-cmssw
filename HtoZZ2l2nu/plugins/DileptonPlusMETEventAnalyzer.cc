@@ -358,12 +358,12 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	//require trigger for each event category
 	if(event.isRealData())
 	  {
-	    if(ev.cat==EE   && triggerBits["ee"]!=true)   return;
-	    if(ev.cat==MUMU && triggerBits["mumu"]!=true) return;
-	    if(ev.cat==EMU  && triggerBits["emu"]!=true)  return;
+	    if(ev.cat==EE   && triggerBits["ee"]==false)    return;
+	    if(ev.cat==MUMU && triggerBits["mumu"]==false) return;
+	    if(ev.cat==EMU  && (triggerBits["emu"]==false || triggerBits["ee"]==true || triggerBits["mumu"]==true))  return;
 	  }
 	ev.hasTrigger=true;
-
+	
 	const reco::GenParticle *genLepton = getLeptonGenMatch(dilepton[0]);
 	std::vector<double> leptoniso      = getLeptonIso(dilepton[0]);
 	ev.l1_px    = dilepton[0]->px(); 
