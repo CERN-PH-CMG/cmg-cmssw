@@ -57,10 +57,12 @@ public :
     LorentzVector(vec), genid(genid_), btag1(btag1_), btag2(btag2_), neutHadFrac(neutHadFrac_), neutEmFrac(neutEmFrac_), chHadFrac(chHadFrac_), pid(pid_) 
     {
       genPt=0;
+      pumva=-9999.;
     }
     void setGenPt(float val) { genPt=val; }
+    void setPUmva(float val) { pumva=val; }
     Int_t genid;
-    Float_t btag1, btag2, neutHadFrac, neutEmFrac, chHadFrac, genPt;
+    Float_t btag1, btag2, neutHadFrac, neutEmFrac, chHadFrac, genPt,pumva;
     Int_t pid;
 };
 bool JetPtOrdering (PhysicsObject_Jet i,PhysicsObject_Jet j);

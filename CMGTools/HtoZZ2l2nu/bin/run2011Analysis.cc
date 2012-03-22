@@ -195,7 +195,6 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(4,"!zmass&!btag");
 
 
-
   mon.addHistogram( new TH1F( "zeta", ";#eta^{ll};Events", 50,-10,10) );
   mon.addHistogram( new TH1F( "zpt", ";p_{T}^{ll};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "zmass", ";M^{ll};Events", 100,0,200) );
@@ -212,10 +211,15 @@ int main(int argc, char* argv[])
   }
   mon.addHistogram( new TH1F ("btagvetosel", ";b-tag discriminator; Events", 6,0,6) );  
   mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
-  mon.addHistogram( new TH1F( "met"  , ";E_{T}^{miss};Events", 50,0,500) );
-  mon.addHistogram( new TH1F( "metaftersmear"  , ";E_{T}^{miss} after smear;Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_met"  , ";E_{T}^{miss};Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_metaftersmear"  , ";E_{T}^{miss} after smear;Events", 50,0,500) );
   mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 80,150,950) );
   mon.addHistogram( new TH1F( "mtaftersmear"  , ";M_{T} after smear;Events", 80,150,950) );
+  mon.addHistogram( new TH1F( "jetidcen",";Jet MVA (|#eta|<2.5);Jets",50,-2,2) );
+  mon.addHistogram( new TH1F( "jetidtr",";Jet MVA (2.5<|#eta|<3.0);Jets",50,-2,2) );
+  mon.addHistogram( new TH1F( "jetidfwd",";Jet MVA (|#eta|>3.0);Jets",50,-2,2) );
+  mon.addHistogram( new TH2F ("met_redClusteredMetvsJetId",";red(E_{T}^{miss},clustered E_{T}^{miss}) [GeV];Jet MVA",100,0,500,10,0.,1.0 ) );
+  mon.addHistogram( new TH1F( "met_redClusteredMet"  , ";red(E_{T}^{miss},clustered E_{T}^{miss});Events", 50,0,500) );
 
   //##############################################
   //######## STUFF FOR CUTS OPTIMIZATION  ########
@@ -347,7 +351,9 @@ int main(int argc, char* argv[])
       if(fabs(phys.leptons[0].id)==13 && ((phys.leptons[0].pid >> 1) & 0x1)==false)continue;
       if(fabs(phys.leptons[1].id)==13 && ((phys.leptons[1].pid >> 1) & 0x1)==false)continue;
 
-      LorentzVector zll  = phys.leptons[0]+phys.leptons[1];
+      LorentzVector lep1=phys.leptons[0];
+      LorentzVector lep2=phys.leptons[1];
+      LorentzVector zll=lep1+lep2;
       LorentzVectorCollection jetsP4, smearJetsP4;
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
 	{
@@ -491,18 +497,39 @@ int main(int argc, char* argv[])
 
                               if(passDphijmet){
                                   mon.fillHisto  ("eventflow",tags_full,5,iweight);
-                                  mon.fillHisto("met",tags_full,zvv.pt(),iweight);
+                                  mon.fillHisto("met_met",tags_full,zvv.pt(),iweight);
                                   mon.fillHisto("mt",tags_full,mt,iweight);
-				  LorentzVector metafterSmear(zvv);
-				  for(size_t ijet=0; ijet<jetsP4.size(); ijet++) metafterSmear -= (smearJetsP4[ijet]-jetsP4[ijet]);
-                                  mon.fillHisto("metaftersmear",tags_full,metafterSmear.pt(),iweight);
+				  LorentzVector clusteredMetP4(0,0,0,0),metafterSmear(zvv);
+				  for(size_t ijet=0; ijet<jetsP4.size(); ijet++) 
+				    {
+				      metafterSmear -= (smearJetsP4[ijet]-jetsP4[ijet]);
+				      clusteredMetP4 -= jetsP4[ijet];
+				      TString jetReg("cen");
+				      if(fabs(jetsP4[ijet].eta()>3.0))      jetReg="fwd";
+				      else if(fabs(jetsP4[ijet].eta()>2.5)) jetReg="tr";
+				      mon.fillHisto("jetid"+jetReg,tags_full,phys.jets[ijet].pumva,iweight);
+				    }
+				  mon.fillHisto("met_metaftersmear",tags_full,metafterSmear.pt(),iweight);
 				  Float_t mtafterSmear = METUtils::transverseMass(zll,metafterSmear,true);
                                   mon.fillHisto("mtaftersmear",tags_full,mtafterSmear,iweight);
-				  
+				  mon.fillHisto("met_redClusteredMet",tags_full,METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED,lep1,0,lep2,0,clusteredMetP4,zvv,false).pt(),iweight);
+
+				  //control red-METfor different jet id
+				  for(float_t imva=0; imva<1.0; imva+=0.1)
+				    {
+				      LorentzVector iClusteredMetP4(0,0,0,0);
+				      for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
+					{
+					  if(phys.jets[ijet].pumva<imva) continue;
+					  iClusteredMetP4 -= phys.jets[ijet];
+					}
+				      LorentzVector rCMetP4    = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED,lep1,0,lep2,0,iClusteredMetP4,zvv,false);
+				      mon.fillHisto("met_redClusteredMetvsJetId",tags_full,imva,rCMetP4.pt(),iweight);
+				    }
+
 				  if(passBaseMet){
 				    mon.fillHisto  ("eventflow",tags_full,6,iweight);
 				  }
-
 			      }
                           }
                       }

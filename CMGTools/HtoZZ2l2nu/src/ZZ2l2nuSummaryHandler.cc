@@ -91,7 +91,6 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("ln_ecalIso",    evSummary_.ln_ecalIso,     "ln_ecalIso[ln]/F");
   t_->Branch("ln_hcalIso",    evSummary_.ln_hcalIso,     "ln_hcalIso[ln]/F");
   t_->Branch("ln_trkIso",    evSummary_.ln_trkIso,     "ln_trkIso[ln]/F");
-  t_->Branch("ln_gIso",    evSummary_.ln_gIso,     "ln_gIso[ln]/F");
   t_->Branch("ln_gIso",    evSummary_.ln_gIso,    "l_gIso[ln]/F");
   t_->Branch("ln_chIso",    evSummary_.ln_chIso,    "l_chIso[ln]/F");
   t_->Branch("ln_puchIso",   evSummary_.ln_puchIso,    "l_puchIso[ln]/F");
