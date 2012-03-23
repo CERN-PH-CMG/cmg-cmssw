@@ -460,8 +460,9 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    t1->cd();
    t1->SetLogy(true);
 
-   TLegend* legA  = new TLegend(0.51,0.93,0.67,0.75, "NDC");
-   TLegend* legB  = new TLegend(0.67,0.93,0.83,0.75, "NDC");
+   TLegend* legA  = new TLegend(0.845,0.2,0.99,0.99, "NDC"); 
+   //   TLegend* legA  = new TLegend(0.51,0.93,0.67,0.75, "NDC"); 
+   // TLegend* legB  = new TLegend(0.67,0.93,0.83,0.75, "NDC");
    THStack* stack = new THStack("MC","MC");
    TH1*     mc   = NULL;
    std::vector<TH1 *> spimpose;
@@ -531,24 +532,22 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
       if((!Process[i].isTag("spimpose") || !Process[i]["spimpose"].toBool()) && !Process[i]["isdata"].toBool()){
          //Add to Stack
          stack->Add(hist, "HIST");               
-         legA->AddEntry(hist, Process[i]["tag"].c_str(), "F");
-	 
+         legA->AddEntry(hist, Process[i]["tag"].c_str(), "F");	 
          if(!mc){mc = (TH1D*)hist->Clone("mc");}else{mc->Add(hist);}
        }else{
 	if(Process[i]["isdata"].toBool()){
 	  if(!data){
 	      data = hist; 
-	      legA->AddEntry(hist, Process[i]["tag"].c_str(), "P");
+	      legA->AddEntry(hist, Process[i]["tag"].c_str(), "P"); 
 	    }
 	  else data->Add(hist);
 	}else{
-	  legB->AddEntry(hist, Process[i]["tag"].c_str(), "L");
+	  //legB->AddEntry(hist, Process[i]["tag"].c_str(), "L");
+	  legA->AddEntry(hist, Process[i]["tag"].c_str(), "L");
 	  spimpose.push_back(hist);
 	}
       }
    }
-
-   std::cout<<HistoName<< endl;
 
    bool canvasIsFilled(false);
    if(stack && stack->GetStack()->GetEntriesFast()>0){
@@ -570,23 +569,23 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
        canvasIsFilled=true;
    }
 
-
-   TPaveText* T = new TPaveText(0.40,0.995,0.85,0.945, "NDC");
+   TPaveText* T = new TPaveText(0.1,0.995,0.84,0.95, "NDC");
    T->SetFillColor(0);
    T->SetFillStyle(0);  T->SetLineColor(0);
-   T->SetTextAlign(32);
-   char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #int L=%.1f fb^{-1}", iLumi/1000);
+   T->SetTextAlign(22);
+   char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", iLumi/1000);
    T->AddText(Buffer);
    T->Draw("same");
 
+   
    legA->SetFillColor(0); legA->SetFillStyle(0); legA->SetLineColor(0);
    legA->SetHeader("");
    legA->Draw("same");
    legA->SetTextFont(42);
-   legB->SetFillColor(0); legB->SetFillStyle(0); legB->SetLineColor(0);
-   legB->SetHeader("");
-   legB->Draw("same");
-   legB->SetTextFont(42);
+//    legB->SetFillColor(0); legB->SetFillStyle(0); legB->SetLineColor(0);
+//    legB->SetHeader("");
+//    legB->Draw("same");
+//   legB->SetTextFont(42);
 
 
    if(data && mc){
@@ -636,7 +635,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    delete c1;
    for(unsigned int d=0;d<ObjectToDelete.size();d++){delete ObjectToDelete[d];}ObjectToDelete.clear();
    delete legA;
-   delete legB;
+   //   delete legB;
    delete T;
 }
 
