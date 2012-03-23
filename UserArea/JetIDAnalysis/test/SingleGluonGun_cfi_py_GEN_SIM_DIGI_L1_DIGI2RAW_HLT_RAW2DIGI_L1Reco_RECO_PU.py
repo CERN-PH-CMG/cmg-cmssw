@@ -49,7 +49,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.2 $'),
+    version = cms.untracked.string('$Revision: 1.3 $'),
     annotation = cms.untracked.string('SingleQuarkGun_cfi.py nevts:25'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -69,6 +69,90 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
     )
 )
 
+PFAOD = ['drop recoCaloTau*_*_*_*',
+	'drop recoPFTau*_*_*_*',
+	'drop recoCaloJet*_*_*_*',
+	'drop recoPFJet*_*_*_*',
+	'drop recoJPTJets_*_*_*',
+	'drop recoTrackJets_*_*_*',
+	'drop recoJetIDedmValueMap_*_*_*',
+	'drop recoConversions_*_*_*',
+	'drop recoJetedmRefToBaseProdTofloatsAssociationVector_*_*_*',
+	'drop recoPreshowerClusters_*_*_*',
+	'drop recoMETs_*_*_*',
+	'drop recoPFMETs_*_*_*',
+	'drop recoCaloMETs_*_*_*',
+	# caloMET can always be useful for understanding fake MET
+	'keep recoCaloMETs_corMetGlobalMuons_*_*',
+	'drop *_genMetCalo_*_*',
+	'drop *_genMetCaloAndNonPrompt_*_*',
+	'drop *_tevMuons_*_*',
+	'drop *_generalV0Candidates_*_*',
+	'drop *_*TracksFromConversions_*_*',
+	'drop recoPhoton*_*_*_*',
+	'drop *_muIsoDeposit*_*_*',
+	'drop recoMuonMETCorrectionDataedmValueMap_*_*_*',
+	'drop *_*JetTracksAssociator*_*_*',
+	'drop *_*JetExtender_*_*',
+	'drop recoSoftLeptonTagInfos_*_*_*',
+	'drop *_impactParameterTagInfos_*_*',
+	'drop *_towerMaker_*_*',
+	'drop *_sisCone*_*_*',
+	'drop *_PhotonIDProd_*_*',
+	'drop recoHFEMClusterShapes_*_*_*',
+	'drop recoCaloClustersToOnereco*_*_*_*',
+	'drop EcalRecHitsSorted_*_*_*',
+	# the next 2 are needed for fake MET event cleaning (RA2 filters)
+	'keep EcalRecHitsSorted_reducedEcalRecHitsEB_*_*',
+	'keep EcalRecHitsSorted_reducedEcalRecHitsEE_*_*',
+	# 'keep EcalTriggerPrimitiveDigisSorted_ecalTPSkim_*_*',
+	'drop recoCaloClusters_*_*_*',
+	# needed somewhere in PAT. and could be useful in the future.
+	#        'drop *_softPFElectrons_*_*',
+	'drop *_particleFlow_electrons_*',
+	'drop recoPreshowerClusterShapes_*_*_*',
+	# needed in PAT by allLayer1Electrons - dunno why:
+	#        'drop *_gsfElectronCores_*_*',
+	'drop *_hfRecoEcalCandidate_*_*',
+	'drop recoSuperClusters_*_*_*',
+	'keep *_pfElectronTranslator_*_*',
+	'keep recoSuperClusters_corrected*_*_*',
+	'keep *_TriggerResults_*_*',
+	'keep *_hltTriggerSummaryAOD_*_*',
+	'keep *_lumiProducer_*_*'
+	]
+PFAOD.extend( [ 'drop *Castor*_*_*_*',
+		'keep recoCaloClusters_hybridSuperClusters_hybridBarrelBasicClusters_*',
+		'keep recoCaloClusters_multi5x5BasicClusters_multi5x5EndcapBasicClusters_*',
+		'keep recoCaloClusters_hybridSuperClusters_uncleanOnlyHybridBarrelBasicClusters_*',
+		'keep recoSuperClusters_hybridSuperClusters_uncleanOnlyHybridSuperClusters_*',
+		'keep recoCaloClusters_pfPhotonTranslator_pfphot_*',
+		'keep recoTracks_tevMuons_default_*',
+		'keep recoTracks_tevMuons_dyt_*',
+		'keep recoTracks_tevMuons_firstHit_*',
+		'keep recoTracks_tevMuons_picky_*',
+		'keep recoTrackExtras_tevMuons_default_*',
+		'keep recoTrackExtras_tevMuons_dyt_*',
+		'keep recoTrackExtras_tevMuons_firstHit_*',
+		'keep recoTrackExtras_tevMuons_picky_*',
+		'keep recoTracksToOnerecoTracksAssociation_tevMuons_default_*',
+		'keep recoTracksToOnerecoTracksAssociation_tevMuons_dyt_*',
+		'keep recoTracksToOnerecoTracksAssociation_tevMuons_firstHit_*',
+		'keep recoTracksToOnerecoTracksAssociation_tevMuons_picky_*',
+		'keep *_ak7CaloJets_*_*',
+		'keep recoPhotonCores_photonCore__*',
+		'keep recoPhotons_pfPhotonTranslator_pfphot_*',
+		'keep recoPhotons_photons__*',
+		'keep booledmValueMap_PhotonIDProd_PhotonCutBasedIDLoose_*',
+		'keep booledmValueMap_PhotonIDProd_PhotonCutBasedIDLooseEM_*',
+		'keep booledmValueMap_PhotonIDProd_PhotonCutBasedIDTight_*',
+		'keep recoPreshowerClusters_pfPhotonTranslator_pfphot_*',
+		'keep recoSuperClusters_pfPhotonTranslator_pfphot_*',
+		]
+	      )
+process.AODSIMoutput.outputCommands.extend(PFAOD)
+
+
 # Additional output definition
 
 # Other statements
@@ -77,7 +161,7 @@ process.GlobalTag.globaltag = 'START44_V10::All'
 process.generator = cms.EDProducer("Pythia6PtGun",
     PGunParameters = cms.PSet(
         MinPhi = cms.double(-3.14159265359),
-        MinPt = cms.double(15.0),
+        MinPt = cms.double(5.0),
         ParticleID = cms.vint32(21),
         MaxEta = cms.double(5),
         MaxPhi = cms.double(3.14159265359),
