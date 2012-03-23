@@ -17,119 +17,6 @@ process.load('Configuration.StandardSequences.GeometryDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.Generator_cff')
 process.load('IOMC.EventVertexGenerators.VtxSmearedRealistic7TeV2011Collision_cfi')
-
-# Output definition
-
-process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
-					eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
-					outputCommands = process.AODSIMEventContent.outputCommands,
-					fileName = cms.untracked.string('SingleQuarkGun_cfi_py_GEN_SIM_DIGI_L1_DIGI2RAW_HLT_RAW2DIGI_L1Reco_RECO_PU.root'),
-					dataset = cms.untracked.PSet(   filterName = cms.untracked.string(''),
-									dataTier = cms.untracked.string('AODSIM')
-									),
-					SelectEvents = cms.untracked.PSet(  SelectEvents = cms.vstring('generation_step')
-									    )
-					)
-
-# Additional output definition
-
-
-
-###########################
-process.load("PhysicsTools.PatAlgos.patSequences_cff")
-from PhysicsTools.PatAlgos.tools.pfTools import *
-from RecoJets.Configuration.RecoPFJets_cff import kt6PFJets
-from PhysicsTools.PatAlgos.tools.trackTools import *
-from PhysicsTools.PatAlgos.tools.metTools import *
-#PF2PAT
-postfix = "PFlow"
-
-process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
-
-#jet energy corrections
-# cf. https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetEnCor2011V2
-# cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
-jetAlgo='AK5'
-jecSetPF = jetAlgo+'PFchs'
-jecLevels=['L1FastJet','L2Relative','L3Absolute']
-
-#rho computed up to 2.5
-#process.load('RecoJets.Configuration.RecoPFJets_cff')
-#process.kt6PFJets25 = process.kt6PFJets.clone( doRhoFastjet = True )
-#process.kt6PFJets25.Rho_EtaMax = cms.double(2.5)
-
-#start PF2PAT
-print "calling pf2pat"
-usePF2PAT(process,
-	  runPF2PAT=True,
-	  jetAlgo=jetAlgo,
-	  runOnMC=True,
-	  postfix=postfix,
-	  jetCorrections=(jecSetPF, jecLevels),
-	  pvCollection=cms.InputTag('offlinePrimaryVertices'),
-	  typeIMetCorrections=True,
-	  outputModules=['AODSIMoutput']
-	  )
-print "***** passed here******"
-#compute rho and prepend to the jet clustering sequence in PF2PAT
-#from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
-#process.kt6PFJets = kt4PFJets.clone( rParam = cms.double(0.6),
-#				     doAreaFastjet = cms.bool(True),
-#				     doRhoFastjet = cms.bool(True)
-#				     )
-getattr(process,'patJetCorrFactors'+postfix).rho = cms.InputTag("kt6PFJets", "rho")
-getattr(process,"patPF2PATSequence"+postfix).replace( getattr(process,"pfNoElectron"+postfix), getattr(process,"pfNoElectron"+postfix)*process.kt6PFJets )
-
-
-#configure top projections
-getattr(process,"pfNoPileUp"+postfix).enable = True
-getattr(process,"pfNoMuon"+postfix).enable = True
-getattr(process,"pfNoMuon"+postfix).verbose = False
-getattr(process,"pfNoElectron"+postfix).enable = True
-getattr(process,"pfNoTau"+postfix).enable = False
-getattr(process,"pfNoJet"+postfix).enable = False
-applyPostfix(process,"pfIsolatedMuons",postfix).isolationCut = cms.double(9999.)
-applyPostfix(process,"pfIsolatedElectrons",postfix).isolationCut = cms.double(9999.)
-
-removeSpecificPATObjects( process, names=['Taus'], postfix=postfix, outputModules=['AODSIMoutput'] )
-removeSpecificPATObjects( process, names=['Taus'], outputModules=['AODSIMoutput'])
-
-#################################################
-# CUSTOM PAT                                    #
-#################################################
-applyPostfix( process, 'patMuons', '' ).embedCaloMETMuonCorrs=cms.bool(False)
-applyPostfix( process, 'patMuons', '' ).embedTcMETMuonCorrs=cms.bool(False)
-switchJetCollection(process,
-		    cms.InputTag('ak5PFJets'),
-		    jetIdLabel = 'AK5',
-		    doJTA        = True,
-		    doBTagging   = True,
-		    jetCorrLabel = ('AK5PF', jecLevels),
-		    doType1MET   = False,
-		    genJetCollection=cms.InputTag("ak5GenJets"),
-		    doJetID      = True,
-		    postfix='',
-		    outputModules=['AODSIMoutput']
-		    )
-process.patJets.embedPFCandidates = False
-     
-print 1
-removeCleaning( process,outputModules=['AODSIMoutput'])
-print 2
-getattr(process,'patPF2PATSequence'+postfix).remove( getattr(process,'photonMatch'+postfix) )
-print 3
-removeSpecificPATObjects( process, names=['Taus','METs'],outputModules=['AODSIMoutput'] )
-print " *** PAT path has been defined"
-
-process.patPath = cms.Path(#process.recoPFJets*
-			  getattr(process,"patPF2PATSequence"+postfix)*
-			  process.patDefaultSequence)
-############################
-
-#from CMG.JetIDAnalysis.minBiasSource_cfg import FileNames as FullMinBiasFileNames
-#process.mix.input.fileNames = FullMinBiasFileNames
-
-
 process.load('GeneratorInterface.Core.genFilterSummary_cff')
 process.load('Configuration.StandardSequences.SimIdeal_cff')
 process.load('Configuration.StandardSequences.Digi_cff')
@@ -142,15 +29,12 @@ process.load('Configuration.StandardSequences.Reconstruction_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
-<<<<<<< SingleQuarkGun_cfi_py_GEN_SIM_DIGI_L1_DIGI2RAW_HLT_RAW2DIGI_L1Reco_RECO_PU.py
-
-=======
 from CMG.JetIDAnalysis.minBiasSource_cfg import FileNames as FullMinBiasFileNames
 process.mix.input.fileNames = FullMinBiasFileNames
-#process.mix.input.fileNames = cms.untracked.vstring('/store/relval/CMSSW_4_4_2_patch7/RelValMinBias/GEN-SIM-DIGI-RAW-HLTDEBUG/START44_V9_special_111126-v1/0072/269DF920-8118-E111-945D-003048FFD76E.root',
-#						    '/store/relval/CMSSW_4_4_2_patch7/RelValMinBias/GEN-SIM-DIGI-RAW-HLTDEBUG/START44_V9_special_111126-v1/0072/2E28D79F-8218-E111-9E38-003048679084.root',
-#						    '/store/relval/CMSSW_4_4_2_patch7/RelValMinBias/GEN-SIM-DIGI-RAW-HLTDEBUG/START44_V9_special_111126-v1/0072/5C4758B3-C818-E111-92FC-003048678FFA.root',
-#						    '/store/relval/CMSSW_4_4_2_patch7/RelValMinBias/GEN-SIM-DIGI-RAW-HLTDEBUG/START44_V9_special_111126-v1/0071/4466B2D8-6518-E111-A761-0026189438FD.root')
+process.mix.input.fileNames = cms.untracked.vstring('/store/relval/CMSSW_4_4_2_patch7/RelValMinBias/GEN-SIM-DIGI-RAW-HLTDEBUG/START44_V9_special_111126-v1/0072/269DF920-8118-E111-945D-003048FFD76E.root',
+						    '/store/relval/CMSSW_4_4_2_patch7/RelValMinBias/GEN-SIM-DIGI-RAW-HLTDEBUG/START44_V9_special_111126-v1/0072/2E28D79F-8218-E111-9E38-003048679084.root',
+						    '/store/relval/CMSSW_4_4_2_patch7/RelValMinBias/GEN-SIM-DIGI-RAW-HLTDEBUG/START44_V9_special_111126-v1/0072/5C4758B3-C818-E111-92FC-003048678FFA.root',
+						    '/store/relval/CMSSW_4_4_2_patch7/RelValMinBias/GEN-SIM-DIGI-RAW-HLTDEBUG/START44_V9_special_111126-v1/0071/4466B2D8-6518-E111-A761-0026189438FD.root')
 #print "Hey: random seed is", process.RandomNumberGeneratorService.generator.initialSeed
 import random
 random.seed(process.RandomNumberGeneratorService.generator.initialSeed.value())
@@ -158,7 +42,6 @@ random.shuffle(process.mix.input.fileNames)
 flist=open('list_of_pu.txt','w+')
 print >> flist, process.mix.input.fileNames
 flist.close()
->>>>>>> 1.3
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(25)
@@ -172,19 +55,112 @@ process.options = cms.untracked.PSet(
 )
 
 # Production Info
-<<<<<<< SingleQuarkGun_cfi_py_GEN_SIM_DIGI_L1_DIGI2RAW_HLT_RAW2DIGI_L1Reco_RECO_PU.py
-process.configurationMetadata = cms.untracked.PSet( version = cms.untracked.string('$Revision: 1.2 $'),
-						    annotation = cms.untracked.string('SingleQuarkGun_cfi.py nevts:25'),
-						    name = cms.untracked.string('PyReleaseValidation')
-						    )
-=======
 process.configurationMetadata = cms.untracked.PSet(
     version = cms.untracked.string('$Revision: 1.3 $'),
     annotation = cms.untracked.string('SingleQuarkGun_cfi.py nevts:25'),
     name = cms.untracked.string('PyReleaseValidation')
 )
->>>>>>> 1.3
 
+# Output definition
+
+process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
+    eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
+    outputCommands = process.AODSIMEventContent.outputCommands,
+    fileName = cms.untracked.string('SingleQuarkGun_cfi_py_GEN_SIM_DIGI_L1_DIGI2RAW_HLT_RAW2DIGI_L1Reco_RECO_PU.root'),
+    dataset = cms.untracked.PSet(
+        filterName = cms.untracked.string(''),
+        dataTier = cms.untracked.string('AODSIM')
+    ),
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('generation_step')
+    )
+)
+
+PFAOD = ['drop recoCaloTau*_*_*_*',
+	'drop recoPFTau*_*_*_*',
+	'drop recoCaloJet*_*_*_*',
+	'drop recoPFJet*_*_*_*',
+	'drop recoJPTJets_*_*_*',
+	'drop recoTrackJets_*_*_*',
+	'drop recoJetIDedmValueMap_*_*_*',
+	'drop recoConversions_*_*_*',
+	'drop recoJetedmRefToBaseProdTofloatsAssociationVector_*_*_*',
+	'drop recoPreshowerClusters_*_*_*',
+	'drop recoMETs_*_*_*',
+	'drop recoPFMETs_*_*_*',
+	'drop recoCaloMETs_*_*_*',
+	# caloMET can always be useful for understanding fake MET
+	'keep recoCaloMETs_corMetGlobalMuons_*_*',
+	'drop *_genMetCalo_*_*',
+	'drop *_genMetCaloAndNonPrompt_*_*',
+	'drop *_tevMuons_*_*',
+	'drop *_generalV0Candidates_*_*',
+	'drop *_*TracksFromConversions_*_*',
+	'drop recoPhoton*_*_*_*',
+	'drop *_muIsoDeposit*_*_*',
+	'drop recoMuonMETCorrectionDataedmValueMap_*_*_*',
+	'drop *_*JetTracksAssociator*_*_*',
+	'drop *_*JetExtender_*_*',
+	'drop recoSoftLeptonTagInfos_*_*_*',
+	'drop *_impactParameterTagInfos_*_*',
+	'drop *_towerMaker_*_*',
+	'drop *_sisCone*_*_*',
+	'drop *_PhotonIDProd_*_*',
+	'drop recoHFEMClusterShapes_*_*_*',
+	'drop recoCaloClustersToOnereco*_*_*_*',
+	'drop EcalRecHitsSorted_*_*_*',
+	# the next 2 are needed for fake MET event cleaning (RA2 filters)
+	'keep EcalRecHitsSorted_reducedEcalRecHitsEB_*_*',
+	'keep EcalRecHitsSorted_reducedEcalRecHitsEE_*_*',
+	# 'keep EcalTriggerPrimitiveDigisSorted_ecalTPSkim_*_*',
+	'drop recoCaloClusters_*_*_*',
+	# needed somewhere in PAT. and could be useful in the future.
+	#        'drop *_softPFElectrons_*_*',
+	'drop *_particleFlow_electrons_*',
+	'drop recoPreshowerClusterShapes_*_*_*',
+	# needed in PAT by allLayer1Electrons - dunno why:
+	#        'drop *_gsfElectronCores_*_*',
+	'drop *_hfRecoEcalCandidate_*_*',
+	'drop recoSuperClusters_*_*_*',
+	'keep *_pfElectronTranslator_*_*',
+	'keep recoSuperClusters_corrected*_*_*',
+	'keep *_TriggerResults_*_*',
+	'keep *_hltTriggerSummaryAOD_*_*',
+	'keep *_lumiProducer_*_*'
+	]
+PFAOD.extend( [ 'drop *Castor*_*_*_*',
+		'keep recoCaloClusters_hybridSuperClusters_hybridBarrelBasicClusters_*',
+		'keep recoCaloClusters_multi5x5BasicClusters_multi5x5EndcapBasicClusters_*',
+		'keep recoCaloClusters_hybridSuperClusters_uncleanOnlyHybridBarrelBasicClusters_*',
+		'keep recoSuperClusters_hybridSuperClusters_uncleanOnlyHybridSuperClusters_*',
+		'keep recoCaloClusters_pfPhotonTranslator_pfphot_*',
+		'keep recoTracks_tevMuons_default_*',
+		'keep recoTracks_tevMuons_dyt_*',
+		'keep recoTracks_tevMuons_firstHit_*',
+		'keep recoTracks_tevMuons_picky_*',
+		'keep recoTrackExtras_tevMuons_default_*',
+		'keep recoTrackExtras_tevMuons_dyt_*',
+		'keep recoTrackExtras_tevMuons_firstHit_*',
+		'keep recoTrackExtras_tevMuons_picky_*',
+		'keep recoTracksToOnerecoTracksAssociation_tevMuons_default_*',
+		'keep recoTracksToOnerecoTracksAssociation_tevMuons_dyt_*',
+		'keep recoTracksToOnerecoTracksAssociation_tevMuons_firstHit_*',
+		'keep recoTracksToOnerecoTracksAssociation_tevMuons_picky_*',
+		'keep *_ak7CaloJets_*_*',
+		'keep recoPhotonCores_photonCore__*',
+		'keep recoPhotons_pfPhotonTranslator_pfphot_*',
+		'keep recoPhotons_photons__*',
+		'keep booledmValueMap_PhotonIDProd_PhotonCutBasedIDLoose_*',
+		'keep booledmValueMap_PhotonIDProd_PhotonCutBasedIDLooseEM_*',
+		'keep booledmValueMap_PhotonIDProd_PhotonCutBasedIDTight_*',
+		'keep recoPreshowerClusters_pfPhotonTranslator_pfphot_*',
+		'keep recoSuperClusters_pfPhotonTranslator_pfphot_*',
+		]
+	      )
+process.AODSIMoutput.outputCommands.extend(PFAOD)
+
+
+# Additional output definition
 
 # Other statements
 process.GlobalTag.globaltag = 'START44_V10::All'
@@ -192,7 +168,7 @@ process.GlobalTag.globaltag = 'START44_V10::All'
 process.generator = cms.EDProducer("Pythia6PtGun",
     PGunParameters = cms.PSet(
         MinPhi = cms.double(-3.14159265359),
-        MinPt = cms.double(15.0),
+        MinPt = cms.double(5.0),
         ParticleID = cms.vint32(1),
         MaxEta = cms.double(5),
         MaxPhi = cms.double(3.14159265359),
@@ -246,7 +222,7 @@ process.AODSIMoutput_step = cms.EndPath(process.AODSIMoutput)
 # Schedule definition
 process.schedule = cms.Schedule(process.generation_step,process.genfiltersummary_step,process.simulation_step,process.digitisation_step,process.L1simulation_step,process.digi2raw_step)
 process.schedule.extend(process.HLTSchedule)
-process.schedule.extend([process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.patPath,process.endjob_step,process.AODSIMoutput_step])
+process.schedule.extend([process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.endjob_step,process.AODSIMoutput_step])
 # filter all path with the production filter sequence
 for path in process.paths:
 	getattr(process,path)._seq = process.generator * getattr(process,path)._seq 
