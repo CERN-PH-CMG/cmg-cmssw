@@ -31,10 +31,10 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 from CMG.JetIDAnalysis.minBiasSource_cfg import FileNames as FullMinBiasFileNames
 process.mix.input.fileNames = FullMinBiasFileNames
-process.mix.input.fileNames = cms.untracked.vstring('/store/relval/CMSSW_4_4_2_patch7/RelValMinBias/GEN-SIM-DIGI-RAW-HLTDEBUG/START44_V9_special_111126-v1/0072/269DF920-8118-E111-945D-003048FFD76E.root',
-						    '/store/relval/CMSSW_4_4_2_patch7/RelValMinBias/GEN-SIM-DIGI-RAW-HLTDEBUG/START44_V9_special_111126-v1/0072/2E28D79F-8218-E111-9E38-003048679084.root',
-						    '/store/relval/CMSSW_4_4_2_patch7/RelValMinBias/GEN-SIM-DIGI-RAW-HLTDEBUG/START44_V9_special_111126-v1/0072/5C4758B3-C818-E111-92FC-003048678FFA.root',
-						    '/store/relval/CMSSW_4_4_2_patch7/RelValMinBias/GEN-SIM-DIGI-RAW-HLTDEBUG/START44_V9_special_111126-v1/0071/4466B2D8-6518-E111-A761-0026189438FD.root')
+#process.mix.input.fileNames = cms.untracked.vstring('/store/relval/CMSSW_4_4_2_patch7/RelValMinBias/GEN-SIM-DIGI-RAW-HLTDEBUG/START44_V9_special_111126-v1/0072/269DF920-8118-E111-945D-003048FFD76E.root',
+#						    '/store/relval/CMSSW_4_4_2_patch7/RelValMinBias/GEN-SIM-DIGI-RAW-HLTDEBUG/START44_V9_special_111126-v1/0072/2E28D79F-8218-E111-9E38-003048679084.root',
+#						    '/store/relval/CMSSW_4_4_2_patch7/RelValMinBias/GEN-SIM-DIGI-RAW-HLTDEBUG/START44_V9_special_111126-v1/0072/5C4758B3-C818-E111-92FC-003048678FFA.root',
+#						    '/store/relval/CMSSW_4_4_2_patch7/RelValMinBias/GEN-SIM-DIGI-RAW-HLTDEBUG/START44_V9_special_111126-v1/0071/4466B2D8-6518-E111-A761-0026189438FD.root')
 #print "Hey: random seed is", process.RandomNumberGeneratorService.generator.initialSeed
 import random
 random.seed(process.RandomNumberGeneratorService.generator.initialSeed.value())
@@ -56,7 +56,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.3 $'),
+    version = cms.untracked.string('$Revision: 1.5 $'),
     annotation = cms.untracked.string('SingleQuarkGun_cfi.py nevts:25'),
     name = cms.untracked.string('PyReleaseValidation')
 )
