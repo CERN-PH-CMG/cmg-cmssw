@@ -120,3 +120,43 @@ V3.extend(
     'keep recoSuperClusters_pfPhotonTranslator_pfphot_*',
     ]
     )
+
+
+V4 = copy.copy( bare )
+V4.extend(
+    [
+    'drop *Castor*_*_*_*',
+    'keep recoCaloClusters_hybridSuperClusters_hybridBarrelBasicClusters_*',
+    'keep recoCaloClusters_multi5x5BasicClusters_multi5x5EndcapBasicClusters_*',
+    'keep recoCaloClusters_hybridSuperClusters_uncleanOnlyHybridBarrelBasicClusters_*',
+    'keep recoSuperClusters_hybridSuperClusters_uncleanOnlyHybridSuperClusters_*',
+    'keep recoCaloClusters_pfPhotonTranslator_pfphot_*',
+    'keep recoTracks_tevMuons_default_*',
+    'keep recoTracks_tevMuons_dyt_*',
+    'keep recoTracks_tevMuons_firstHit_*',
+    'keep recoTracks_tevMuons_picky_*',
+    'keep recoTrackExtras_tevMuons_default_*',
+    'keep recoTrackExtras_tevMuons_dyt_*',
+    'keep recoTrackExtras_tevMuons_firstHit_*',
+    'keep recoTrackExtras_tevMuons_picky_*',
+    'keep recoTracksToOnerecoTracksAssociation_tevMuons_default_*',
+    'keep recoTracksToOnerecoTracksAssociation_tevMuons_dyt_*',
+    'keep recoTracksToOnerecoTracksAssociation_tevMuons_firstHit_*',
+    'keep recoTracksToOnerecoTracksAssociation_tevMuons_picky_*',
+    'keep *_ak7CaloJets_*_*',
+    'keep recoPhotonCores_photonCore__*',
+    'keep recoPhotons_pfPhotonTranslator_pfphot_*',
+    'keep recoPhotons_photons__*',
+    'keep booledmValueMap_PhotonIDProd_PhotonCutBasedIDLoose_*',
+    'keep booledmValueMap_PhotonIDProd_PhotonCutBasedIDLooseEM_*',
+    'keep booledmValueMap_PhotonIDProd_PhotonCutBasedIDTight_*',
+    'keep recoPreshowerClusters_pfPhotonTranslator_pfphot_*',
+    'keep recoSuperClusters_pfPhotonTranslator_pfphot_*',    
+    'keep recoIsoDepositedmValueMap_muIsoDepositCalByAssociatorTowers_ecal_*',
+    'keep recoIsoDepositedmValueMap_muIsoDepositCalByAssociatorTowers_hcal_*',
+    'keep recoIsoDepositedmValueMap_muIsoDepositCalByAssociatorTowers_ho_*',
+    'keep recoIsoDepositedmValueMap_muIsoDepositJets__*',
+    'keep recoIsoDepositedmValueMap_muIsoDepositTk__*',
+    'keep EcalRecHitsSorted_reducedEcalRecHitsES__*',
+    ]
+    )
