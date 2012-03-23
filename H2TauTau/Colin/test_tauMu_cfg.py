@@ -134,18 +134,20 @@ sequence = cfg.Sequence( [
 
 
 DYJets.fakes = True
-DYJets.splitFactor = 5
-WJets.splitFactor = 3
+DYJets.splitFactor = 8
+WJets.splitFactor = 2
+TTJets.splitFactor = 2 
 data_Run2011B_PromptReco_v1.splitFactor = 8
 data_Run2011A_PromptReco_v4.splitFactor = 2 
+data_Run2011A_03Oct2011_v1.splitFactor = 2
+data_Run2011A_May10ReReco_v1.splitFactor = 2
 
-
-test = 1
+test = 0
 if test==1:
     comp = DYJets
     selectedComponents = [comp]
     comp.splitFactor = 1
-    comp.files = comp.files[:2]
+    comp.files = comp.files[:10]
     # TTJets.files = TTJets.files[:1]
 elif test==2:
     for comp in selectedComponents:
