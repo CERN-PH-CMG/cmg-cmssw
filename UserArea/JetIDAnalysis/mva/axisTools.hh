@@ -6,26 +6,6 @@ std::vector<double>      fXMin;
 std::vector<double>      fXMax;
 
 void loadfMap() {
-  fMap.push_back("metcov00"); fNBins.push_back(25);  fXMin.push_back(0);    fXMax.push_back(250);   fXAxis.push_back("cov_{00}  (GeV/c^{2})"); fYAxis.push_back("Events/10 GeV/c^{2}");
-  fMap.push_back("metcov10"); fNBins.push_back(25);  fXMin.push_back(0);    fXMax.push_back(250);   fXAxis.push_back("cov_{10}  (GeV/c^{2})"); fYAxis.push_back("Events/10 GeV/c^{2}");
-  fMap.push_back("metcov01"); fNBins.push_back(25);  fXMin.push_back(0);    fXMax.push_back(250);   fXAxis.push_back("cov_{01}  (GeV/c^{2})"); fYAxis.push_back("Events/10 GeV/c^{2}");
-  fMap.push_back("metcov11"); fNBins.push_back(25);  fXMin.push_back(0);    fXMax.push_back(23350); fXAxis.push_back("cov_{11}  (GeV/c^{2})"); fYAxis.push_back("Events/10 GeV/c^{2}");
-  fMap.push_back("sumet");    fNBins.push_back(100); fXMin.push_back(0);   fXMax.push_back(2000);  fXAxis.push_back("#Sigma E_{T}  (GeV/c)"); fYAxis.push_back("Events/20 GeV/c^{2}");
-  fMap.push_back("sumet-pt_1-pt_2");       fNBins.push_back(100); fXMin.push_back(0);   fXMax.push_back(2000);  fXAxis.push_back("#Sigma E_{T}  (GeV/c)"); fYAxis.push_back("Events/20 GeV/c^{2}");
-  fMap.push_back("chsumet-pt_1-pt_2");     fNBins.push_back(100); fXMin.push_back(0);   fXMax.push_back(2000);  fXAxis.push_back("#Sigma E_{T}  (GeV/c)"); fYAxis.push_back("Events/20 GeV/c^{2}");
-  fMap.push_back("nopusumet-pt_1-pt_2");   fNBins.push_back(100); fXMin.push_back(0);   fXMax.push_back(2000);  fXAxis.push_back("#Sigma E_{T}  (GeV/c)"); fYAxis.push_back("Events/20 GeV/c^{2}");
-  fMap.push_back("rho");      fNBins.push_back(250); fXMin.push_back(0);   fXMax.push_back(75);    fXAxis.push_back("#rho  (GeV)");           fYAxis.push_back("Events/GeV");
-  fMap.push_back("TMath::Min(abs(tkmet-pt1_l),abs(met-pt1_l))");      fNBins.push_back(50); fXMin.push_back(0);   fXMax.push_back(50); fXAxis.push_back("#Delta #slash{E_{T}} (true-reco)  (GeV/c)"); fYAxis.push_back("Events GeV/c^{2}");
-  fMap.push_back("TMath::Min(abs(nopumet-pt1_l),abs(met-pt1_l))");      fNBins.push_back(50); fXMin.push_back(0);   fXMax.push_back(50); fXAxis.push_back("#Delta #slash{E_{T}} (true-reco)  (GeV/c)"); fYAxis.push_back("Events GeV/c^{2}");
-  fMap.push_back("TMath::Min(abs(tkmet-pt1_l),TMath::Min(abs(nopumet-pt1_l),abs(met-pt1_l)))");      fNBins.push_back(50); fXMin.push_back(0);   fXMax.push_back(50); fXAxis.push_back("#Delta #slash{E_{T}} (true-reco)  (GeV/c)"); fYAxis.push_back("Events GeV/c^{2}");
-  fMap.push_back("abs(met-pt1_l)");      fNBins.push_back(50); fXMin.push_back(0);   fXMax.push_back(50); fXAxis.push_back("|#Delta #slash{E_{T}}| (true-reco)  (GeV/c)"); fYAxis.push_back("Events GeV/c^{2}");
-  fMap.push_back("met-pt1_l");      fNBins.push_back(100); fXMin.push_back(-50);   fXMax.push_back(50); fXAxis.push_back("#Delta #slash{E_{T}} (true-reco)  (GeV/c)"); fYAxis.push_back("Events GeV/c^{2}");
-  fMap.push_back("tkmet-pt1_l");      fNBins.push_back(100); fXMin.push_back(-50);   fXMax.push_back(50); fXAxis.push_back("#slash{E_{T}}  (GeV/c)"); fYAxis.push_back("Events GeV/c^{2}");
-  fMap.push_back("nopumet-pt1_l");      fNBins.push_back(100); fXMin.push_back(-50);   fXMax.push_back(50); fXAxis.push_back("#slash{E_{T}}  (GeV/c)"); fYAxis.push_back("Events GeV/c^{2}");
-  fMap.push_back("TMath::Min(tkmet,met)");      fNBins.push_back(50); fXMin.push_back(0);   fXMax.push_back(150); fXAxis.push_back("#slash{E_{T}}  (GeV/c)"); fYAxis.push_back("Events GeV/c^{2}");
-  fMap.push_back("TMath::Min(nopumet,met)");      fNBins.push_back(50); fXMin.push_back(0);   fXMax.push_back(150); fXAxis.push_back("#slash{E_{T}}  (GeV/c)"); fYAxis.push_back("Events GeV/c^{2}");
-  fMap.push_back("TMath::Min(TMath::Min(nopumet,met),tkmet)");      fNBins.push_back(50); fXMin.push_back(0);   fXMax.push_back(150); fXAxis.push_back("#slash{E_{T}}  (GeV/c)"); fYAxis.push_back("Events GeV/c^{2}");
-
   fMap.push_back("met");         fNBins.push_back(50); fXMin.push_back(0);   fXMax.push_back(75); fXAxis.push_back("#slash{E_{T}}  (GeV)"); fYAxis.push_back("Events/10 GeV");
   fMap.push_back("tkmet");       fNBins.push_back(50); fXMin.push_back(0);   fXMax.push_back(75); fXAxis.push_back("#slash{E_{T}}  (GeV/c)"); fYAxis.push_back("Events GeV/c^{2}");
   fMap.push_back("nopumet");     fNBins.push_back(50); fXMin.push_back(0);   fXMax.push_back(75); fXAxis.push_back("#slash{E_{T}}  (GeV/c)"); fYAxis.push_back("Events/10 GeV");
@@ -53,6 +33,7 @@ void loadfMap() {
   fMap.push_back("jarea_1");      fNBins.push_back(40); fXMin.push_back(0.6);   fXMax.push_back(1.2);   fXAxis.push_back("jet area");                    fYAxis.push_back("Events/0.02");
   fMap.push_back("jbeta_1");      fNBins.push_back(40); fXMin.push_back(0);   fXMax.push_back(1);   fXAxis.push_back("jet #beta");                    fYAxis.push_back("Events/0.02");
   fMap.push_back("u_mva");      fNBins.push_back(20); fXMin.push_back(0);   fXMax.push_back(3);   fXAxis.push_back("MET Scale corrections");                    fYAxis.push_back("Events/0.05");
+  fMap.push_back("jmva");        fNBins.push_back(50); fXMin.push_back(-1);   fXMax.push_back(1);   fXAxis.push_back("leading jet mva");                    fYAxis.push_back("Events/0.05");
   fMap.push_back("jmva_1");      fNBins.push_back(50); fXMin.push_back(-1);   fXMax.push_back(1);   fXAxis.push_back("leading jet mva");                    fYAxis.push_back("Events/0.05");
   fMap.push_back("JetID");      fNBins.push_back(40); fXMin.push_back(-1);   fXMax.push_back(1);   fXAxis.push_back("leading jet mva");                    fYAxis.push_back("Events/0.05");
   fMap.push_back("jmva_2");      fNBins.push_back(40); fXMin.push_back(-1);   fXMax.push_back(1);   fXAxis.push_back("mva");                    fYAxis.push_back("Events/0.05");
@@ -81,7 +62,7 @@ void loadfMap() {
   fMap.push_back("jpt1");     fNBins.push_back(80); fXMin.push_back(0);    fXMax.push_back(200);  fXAxis.push_back("p_{T} leading Jet (GeV/c)");       fYAxis.push_back("Events/10 GeV/c");
   fMap.push_back("jsptraw_1");     fNBins.push_back(90); fXMin.push_back(10);    fXMax.push_back(100);  fXAxis.push_back("p_{T} leading Jet (GeV/c)");       fYAxis.push_back("Events/10 GeV/c");
   fMap.push_back("(jspt_1*(abs(jseta_1) > 2.5)+jsptraw_1*(abs(jseta_1) < 2.5))");     fNBins.push_back(20); fXMin.push_back(0);    fXMax.push_back(100);  fXAxis.push_back("p_{T} leading Jet (GeV/c)");       fYAxis.push_back("Events/10 GeV/c");
-  fMap.push_back("jspt_1");     fNBins.push_back(90); fXMin.push_back(10);    fXMax.push_back(100);  fXAxis.push_back("p_{T} leading Jet (GeV/c)");       fYAxis.push_back("Events/10 GeV/c");
+  fMap.push_back("jetPt");     fNBins.push_back(90); fXMin.push_back(10);    fXMax.push_back(100);  fXAxis.push_back("p_{T} leading Jet (GeV/c)");       fYAxis.push_back("Events/10 GeV/c");
   fMap.push_back("lchpt_1");     fNBins.push_back(20); fXMin.push_back(0);    fXMax.push_back(200);  fXAxis.push_back("p_{T} leading charged cand (GeV/c)");       fYAxis.push_back("Events/10 GeV/c");
  fMap.push_back("jspt_2");     fNBins.push_back(80); fXMin.push_back(0);    fXMax.push_back(200);  fXAxis.push_back("p_{T} leading Jet (GeV/c)");       fYAxis.push_back("Events/10 GeV/c");
   fMap.push_back("mt_2");     fNBins.push_back(30); fXMin.push_back(0);    fXMax.push_back(150); fXAxis.push_back("m^{#tau}_{T} (GeV/c^{2})"); fYAxis.push_back("Events/5 GeV/c^{2}");
@@ -94,7 +75,7 @@ void loadfMap() {
   fMap.push_back("jceta");    fNBins.push_back(11); fXMin.push_back(-5.); fXMax.push_back(5.); fXAxis.push_back("#eta^{J}");     fYAxis.push_back("Events/0.3");
   fMap.push_back("nopumeteta");    fNBins.push_back(31); fXMin.push_back(-5.); fXMax.push_back(5.); fXAxis.push_back("#eta^{J}");     fYAxis.push_back("Events/0.3");
   fMap.push_back("jeta1");    fNBins.push_back(31); fXMin.push_back(-5.); fXMax.push_back(5.); fXAxis.push_back("#eta^{J}");     fYAxis.push_back("Events/0.3");
-  fMap.push_back("jseta_1");    fNBins.push_back(31); fXMin.push_back(-5.); fXMax.push_back(5.); fXAxis.push_back("#eta^{J}");     fYAxis.push_back("Events/0.3");
+  fMap.push_back("jetEta");    fNBins.push_back(31); fXMin.push_back(-5.); fXMax.push_back(5.); fXAxis.push_back("#eta^{J}");     fYAxis.push_back("Events/0.3");
   fMap.push_back("leta_1");      fNBins.push_back(31); fXMin.push_back(-5.); fXMax.push_back(5.); fXAxis.push_back("#eta leading cand");        fYAxis.push_back("Events/0.3");
   fMap.push_back("lemeta_1");    fNBins.push_back(31); fXMin.push_back(-5.); fXMax.push_back(5.); fXAxis.push_back("#eta leading em cand");        fYAxis.push_back("Events/0.3");
   fMap.push_back("lcheta_1");    fNBins.push_back(31); fXMin.push_back(-5.); fXMax.push_back(5.); fXAxis.push_back("#eta leading charged cand");   fYAxis.push_back("Events/0.3");

@@ -31,28 +31,24 @@ void mvaPU(std::string iId="chs_rw_1cat",std::string iCut="(jspt_1 > 10)") {
   int lTauId = 2;
   std::stringstream lNameId=""; //lNameId << "Flat_" << lTauId << "_";
   const int lN = 3;
-  //std::string lName = "../../Jets/"+lNameId.str();
-  std::string lName = "../../Jets/"+lNameId.str();
-  std::string lName1 = "../JetMVA_MCCHS/"+lNameId.str();
+  std::string lName = "../../scratch/"+lNameId.str();
   TTree **lTree = new TTree*[lN]; TH1F**lH = new TH1F*[lN]; 
   fString = new std::string[lN]; fWeights = new std::string[lN]; fColor = new int[lN];
   lTree[0]  = load(lName+"r11-dimu_" +iId+".root");         fString[0] = "Data";       fColor[0] = kRed;
   lTree[1]  = load(lName+"f11-zjets_"+iId+".root");         fString[1] = "No Pileup";  fColor[1] = kBlue;
   lTree[2]  = load(lName+"f11-zjets_"+iId+".root");         fString[2] = "Pileup";     fColor[2] = kGreen;
 
-  for(int i0 = 0; i0 < lN; i0++) fWeights[i0]  = iCut;//"(jspt_1 > 20  && abs(jseta_1) < 12.5 && abs(jseta_1) > 2.94 && npv > -10)";
-  //for(int i0 = 0; i0 < lN; i0++) fWeights[i0] += "*(((jmva_1 > -0.5 && abs(jseta_1) < 2.5) || (jmva_1 > -0.9 && abs(jseta_1) > 2.5 && abs(jseta_1) < 3.0) || (jmva_1 > -0.7 && abs(jseta_1) > 3.0)))";
+  for(int i0 = 0; i0 < lN; i0++) fWeights[i0]  = iCut;
   fWeights[0] += "";
-  //fWeights[1] += " *(classID == 1 )";
-  //fWeights[2] += " *(classID == 0 )";
-  fWeights[1] += "*(genfrac_1 > 0.4  )*PUWeight";
-  fWeights[2] += "*(genfrac_1 < 0.4  )*PUWeight";
-  std::string lVar =  "jmva_1";
+  fWeights[1] += "*(jetPt  > 10  &&   abs(jetGenDr) < 0.25  && jetGenPt > 8.)";
+  fWeights[2] += "*(!(jetPt  > 10  && abs(jetGenDr) < 0.25  && jetGenPt > 8.))";
+
+  std::string lVar =  "jmva";
   TCanvas *lC0 = new TCanvas("A","A",600,600);
   cout << "=====> Cat "<< iCut << endl;
   for(int i0 = 0; i0 < lN; i0++)  {
     //if(i0 > 0) lVar = "JetID";
-    if(i0 > 0) lVar = "jmva_1";
+    if(i0 > 0) lVar = "jmva";
     lH[i0] = draw(lVar,lTree[i0],i0,"");
   }
   cout << "====> Data Total : " << lH[1]->Integral() << endl;
@@ -80,7 +76,8 @@ void mvaPU(std::string iId="chs_rw_1cat",std::string iCut="(jspt_1 > 10)") {
     lH[i0]->SetMarkerStyle(kFullCircle);  lH[i0]->SetLineWidth(3);
     lH[i0]->SetMarkerColor(fColor[i0]);
     lH[i0]->Draw("hist sames");
-    cout << "===> " << i0 << " -- "<< lH[i0]->Integral() << endl;
+    cout << " ====> " << lH[i0]  << endl;
+    //cout << "===> " << i0 << " -- "<< lH[i0]->Integral() << endl;
   }
   lTotal->SetLineStyle(kDashed); lTotal->SetLineWidth(2); lTotal->SetLineColor(kRed);
   lTotal->Draw("hist sames");
@@ -88,7 +85,7 @@ void mvaPU(std::string iId="chs_rw_1cat",std::string iCut="(jspt_1 > 10)") {
   lC0->SaveAs((std::string("MVA")+iId+std::string(".png")).c_str());
   
   TH1F**lEta = new TH1F*[lN];   
-  std::string lVar =  "jseta_1";
+  std::string lVar =  "jetEta";
   TCanvas *lC0 = new TCanvas("B","B",600,600);
   for(int i0 = 0; i0 < lN; i0++)  {
     lEta[i0] = draw(lVar,lTree[i0],i0,"");
@@ -111,7 +108,7 @@ void mvaPU(std::string iId="chs_rw_1cat",std::string iCut="(jspt_1 > 10)") {
   lC0->SaveAs((std::string("Eta")+iId+std::string(".png")).c_str());
 
   TH1F**lPt = new TH1F*[lN];   
-  std::string lVar =  "jspt_1" ;//(jspt_1*(abs(jseta_1) > 2.5)+jsptraw_1*(abs(jseta_1) < 2.5))";
+  std::string lVar =  "jetPt" ;//(jspt_1*(abs(jseta_1) > 2.5)+jsptraw_1*(abs(jseta_1) < 2.5))";
   TCanvas *lC0 = new TCanvas("C","C",600,600);
   for(int i0 = 0; i0 < lN; i0++)  {
     //if(i0 > 0) lVar =  "(jspt_1*(abs(jseta_1) > 2.5)+jsptraw_1*(abs(jseta_1) < 2.5))";

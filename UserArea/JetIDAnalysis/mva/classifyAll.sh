@@ -1,8 +1,8 @@
 #!/bin/bash
 
-jettype=chs
+#jettype=chs
 config=classify.conf
-name=mva_all_${type}.html
+name=mva_all.html
 
 echo "<html>"                                                                                              >  $name
 echo "<head><title> MVA Plots</title></head>"                                >> $name
@@ -14,26 +14,34 @@ for dataset in `cat $config | grep -v ^# | tr -s ' ' | sed "s@\s\s@ @g" | awk '{
   line=`grep -v ^# $config | grep $dataset `
   ds=`      echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $1}'`
   id=`      echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $2}'`
-  kinflag=` echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $3}'`
-  ipflag=`  echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $4}'`
-  nparf=`   echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $5}'`
-  drflag=`  echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $6}'`
-  ptflag=`  echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $7}'`
-  rest=`    echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $8}'`
-### input               id	kinflag	ipflag 	nparf	drflag	ptflag	rest 
-  root -b -q classify.C+\(\"$id\"\,$kinflag\,$ipflag\,$nparf\,$drflag\,$ptflag\,$rest\)
-  root -b -q apply.C+\(\"../Jets/${ds}.root\",\"$id\"\,$kinflag\,$ipflag\,$nparf\,$drflag\,$ptflag\,$rest\)
-  mv Output.root ../Jets/${ds}_${id}.root
+  jettype=` echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $3}'`
+  mvatype=` echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $4}'`
+  ipflag=`  echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $5}'`
+  kinflag=` echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $6}'`
+  ipflag=`  echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $7}'`
+  nparf=`   echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $8}'`
+  drflag=`  echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $9}'`
+  ptflag=`  echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $10}'`
+  order=`   echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $11}'`
+  ptdflag=` echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $12}'`
+  frac=`    echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $13}'`
+  momtype=` echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $14}'`
+  rings=`   echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $15}'`
+  rest=`    echo    $line           | tr -s ' '  | sed "s@\s\s@ @g" | awk '{print $16}'`
+  
+  root -b -q classify.C+\(\"$id\"\,$jettype\,$mvatype\,$ipflag\,$kinflag\,$ipflag\,$nparf\,$drflag\,$ptflag\,$order\,$ptdflag\,$frac\,$momtype\,$rings\,$rest\)
+  root -b -q apply.C+\(\"../scratch/${ds}.root\"\,\"$id\"\,$jettype\,$mvatype\,$ipflag\,$kinflag\,$ipflag\,$nparf\,$drflag\,$ptflag\,$order\,$ptdflag\,$frac\,$momtype\,$rings\,$rest\)
+  mv Output.root ../scratch/${ds}_${id}.root
   mc=`echo $ds | sed "s@f11-zjets@r11-dimu@g" | sed "s@_rw@@g"`
-  root -b -q apply.C+\(\"../Jets/${mc}.root\",\"$id\"\,$kinflag\,$ipflag\,$nparf\,$drflag\,$ptflag\,$rest\)
-  mv Output.root ../Jets/${mc}_rw_${id}.root
+  root -b -q apply.C+\(\"../scratch/${mc}.root\"\,\"$id\"\,$jettype\,$mvatype\,$ipflag\,$kinflag\,$ipflag\,$nparf\,$drflag\,$ptflag\,$order\,$ptdflag\,$frac\,$momtype\,$rings\,$rest\)
+  mv Output.root ../scratch/${mc}_${id}.root
   ./mvaPlot.sh $id $jettype
   echo "<tr> " >> $name
   echo "<td> " >> $name
-  echo "<a href=\""${jettype}"_rw_"$id"/mva_"$jettype"_rw_"$id"_"$jettype".html\">   MVA for the following id: "$id" </a> <br> "                          >> $name
-  echo "</td><td> "                                                                                                                           >> $name
-  echo "<a href=\"weights_"$jettype"/TMVAClassificationCategory_JetID_"$id".weights.xml\">   Weight file for the following : "$id" </a> <br> "   >> $name
-  echo "</td></tr> " >> $name
+  echo "<a href=\""${jettype}"_rw_"$id"/mva_"$jettype"_rw_"$id"_"$jettype".html\">   MVA for the following id: "$id" </a> <br> "              >> $name
+  echo "</td><td> "                                                                                                                            >> $name
+  echo "<a href=\"weights_"$jettype"/TMVAClassificationCategory_JetID_"$id".weights.xml\">   Weight file for the following : "$id" </a> <br> " >> $name
+  echo "</td></tr> "                                                                                                                           >> $name
 done
-echo "</html>"                                                                                                                                >> $name
+echo "</html>"                                                                                                                                 >> $name
 

@@ -6,9 +6,12 @@ int  fYId             = 0;
 
 TTree * load(std::string iName) { 
   TFile *lFile = new TFile(iName.c_str());
+  TString lJetTree = "pfjetanalyzer/tree";
   TTree *lTree  = (TTree*) lFile->FindObjectAny("Events");
   if(lTree == 0) lTree = (TTree*) lFile->FindObjectAny("Flat"); 
   if(lTree == 0) lTree = (TTree*) lFile->FindObjectAny("TestTree"); 
+  if(lTree == 0) lTree = (TTree*) lFile->FindObjectAny("tree"); 
+  if(lTree == 0) lTree = (TTree*) lFile->Get(lJetTree);
   return lTree;
 }
 void scale(TH1F** iH,double iInt,const int iN) {
@@ -90,46 +93,6 @@ void draw(TH1F** iH,const int iN,std::string iName,std::string iFName,int iHiggs
   drawDifference(iH[iN-1],iH[0]);//,iH[6],iH[7]);
   //lC0->SaveAs((iFName+".png").c_str());
 }
-TH1F* draw(TTree *iTree,int iId,int iType,TH1F *iH,std::string iVar,std::string iCut,std::string iSId) { 
-  std::stringstream lName;   
-  if(iH == 0 ) { 
-    lName   << iSId <<  "Met"  << iId ; 
-    if(iType > -1) lName << "SS"; 
-    if(iType == -2) lName << "mt"; 
-    if(iType == -3) lName << "ssmt";
-    if(iType == -4) lName << "ssw";
-  } else { 
-    lName << iH->GetName();
-  }
-  std::stringstream lVar;    std::stringstream lSSVar; 
-  std::string lProjMet = iVar;
-  lVar   << lProjMet << ">>" << lName.str();
-  lSSVar << lProjMet << ">>+" << lName.str();
-  //std::string lCut     = "((abs(eta_2) < 1.47 || abs(eta_2) > 1.566) && pt_1 > 10 && pt_2 > 10 && abs(eta_1) < 2.5 && abs(eta_2) < 2.3  && mt_1 < 4000 && pzeta < 200  && m_2 > -0.105)*"+fWeights[iId]+iCut;
-  //std::string lSSCut   = "((abs(eta_2) < 1.47 || abs(eta_2) > 1.566) && pt_1 > 10 && pt_2 > 10 && abs(eta_1) < 2.5 && abs(eta_2) < 2.3  && mt_1 < 4000 && pzeta < 200  && m_2 > -0.105)*"+fWeights[iId]+iCut;
-  //std::string lMTCut   = "((abs(eta_2) < 1.47 || abs(eta_2) > 1.566) && pt_1 > 10 && pt_2 > 10 && abs(eta_1) < 2.5 && abs(eta_2) < 2.3  && mt_1 > 70 &&                  m_2 > -0.105)*"+fWeights[iId]+iCut;
-  std::string lMtCut = "400"; if(iVar != "mt_1")  lMtCut = "40";
-  std::string lPZCut = "200"; if(iVar != "pzeta") lPZCut = "2500";//00";//25
-  std::string lCut     = "(pt_1 > 10 && pt_2 > 10 && abs(eta_1) < 2.1 && abs(eta_2) < 2.3  && mt_1 < "+lMtCut+" && pzeta < "+lPZCut+"  )*"+fWeights[iId]+iCut;
-  std::string lSSCut   = "(pt_1 > 10 && pt_2 > 10 && abs(eta_1) < 2.1 && abs(eta_2) < 2.3  && mt_1 < "+lMtCut+" && pzeta < "+lPZCut+"  )*"+fWeights[iId]+iCut;
-  std::string lMTCut   = "(pt_1 > 10 && pt_2 > 10 && abs(eta_1) < 2.1 && abs(eta_2) < 2.3  && mt_1 > 70                   )*"+fWeights[iId]+iCut;
-  TH1F *lMet = iH;
-  if(iH == 0) { 
-    lMet = new TH1F(lName.str().c_str(),lName.str().c_str(),getNBins(lProjMet),getXMin(lProjMet),getXMax(lProjMet)); 
-    if(iId != 6 && iId != 7) lMet->SetFillColor(fColor[iId]);
-    if(iId == 6 || iId == 7) lMet->SetLineColor(fColor[iId]);
-    lMet->SetLineWidth(1);
-    lMet->GetXaxis()->SetTitle(getXAxis(lProjMet));//"m_{T} (GeV/c^{2})");//m_{sv}[GeV/c^{2}]");
-    lMet->GetYaxis()->SetTitle(getYAxis(lProjMet));//"Events/5 GeV");
-    lMet->Sumw2();
-  }
-  if(iType == -3) iTree->Draw(lSSVar.str()  .c_str()     ,(lMTCut  +"*(q_1*q_2 > 0)").c_str());
-  if(iType == -2) iTree->Draw(lSSVar.str()  .c_str()     ,(lMTCut  +"*(q_1*q_2 < 0)").c_str());
-  if(iType == -1) iTree->Draw(lVar.str()    .c_str()     ,(lCut    +"*(q_1*q_2 < 0)").c_str());
-  if(iType >  -1) iTree->Draw(lSSVar.str()  .c_str()     ,(lSSCut  +"*(q_1*q_2 > 0)").c_str());
-  if(iType == -1) cout << " ===> " << iId << " --> " << lCut << endl;
-  return lMet;
-}
 TLegend * legend(int iN,TH1** iH) {
   TLegend *lL = new TLegend(0.20,0.7,0.35,0.9); lL->SetFillColor(0); lL->SetBorderSize(0);
   for(int i0 = 1; i0 < iN; i0++) {
@@ -149,8 +112,8 @@ TH1F* draw(std::string iVar,TTree *iTree,int iId,std::string iCut,TH1F *iH = 0,s
   if(iH == 0) lMet = new TH1F(lName.str().c_str(),lName.str().c_str(),getNBins(iVar),getXMin(iVar),getXMax(iVar));
   lMet->SetLineColor(fColor[iId]);
   lMet->SetLineWidth(1);
-  lMet->GetXaxis()->SetTitle(getXAxis(iVar));//"m_{T} (GeV/c^{2})");//m_{sv}[GeV/c^{2}]");                                                                                                                         
-  lMet->GetYaxis()->SetTitle(getYAxis(iVar));//"Events/5 GeV");                                                                                                                                                    
+  lMet->GetXaxis()->SetTitle(getXAxis(iVar));//"m_{T} (GeV/c^{2})");//m_{sv}[GeV/c^{2}]");                                                                                                                  
+  lMet->GetYaxis()->SetTitle(getYAxis(iVar));//"Events/5 GeV");                                                                                                                                                
   iTree->Draw(lVar.str()  .c_str()     ,(lCut    ).c_str());
   lMet->SetMarkerStyle(kFullCircle);
   lMet->SetLineWidth(2);
@@ -184,8 +147,8 @@ TH1F* drawRaw(std::string iVar,TTree *iTree,int iId,std::string iCut,TH1F *iH = 
   if(iH == 0) lMet = new TH1F(lName.str().c_str(),lName.str().c_str(),getNBins(iVar),getXMin(iVar),getXMax(iVar));
   lMet->SetLineColor(fColor[iId]);
   lMet->SetLineWidth(1);
-  lMet->GetXaxis()->SetTitle(getXAxis(iVar));//"m_{T} (GeV/c^{2})");//m_{sv}[GeV/c^{2}]");                                                                                                                         
-  lMet->GetYaxis()->SetTitle(getYAxis(iVar));//"Events/5 GeV");                                                                                                                                                    
+  lMet->GetXaxis()->SetTitle(getXAxis(iVar));//"m_{T} (GeV/c^{2})");//m_{sv}[GeV/c^{2}]");                                                                                                                   
+  lMet->GetYaxis()->SetTitle(getYAxis(iVar));//"Events/5 GeV");                                                                                                                                              
   iTree->Draw(lVar.str()  .c_str()     ,(lCut    ).c_str());
   return lMet;
 }

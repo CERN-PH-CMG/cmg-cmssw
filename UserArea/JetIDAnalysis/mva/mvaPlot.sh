@@ -1,7 +1,7 @@
 #!/bin/bash
 idtype=$1
 Type=$2
-Id=${Type}_rw_${idtype}
+Id=${idtype}
 name=mva_${Id}_${Type}.html
 mkdir $Id
 cd $Id
@@ -20,9 +20,9 @@ echo "<tr>"                                                                  >> 
 echo "<td> <u> PT > 0   and |eta| < 2.5 </u>   </td>"                        >> $name
 echo "<tr>"                                                                  >> $name
 end=eta25_pt0
-root -b -q mvaPU.C\(\"$Id\"\,\"\(jspt\_1\>0\&\&abs\(jseta_1\)\<2\.5\)\"\)
-root -b -q plotJets_roc.C\(\"$Id\"\,false\,\"\(jspt_1\>0\&\&abs\(jseta_1\)\<2\.5\)\"\)
-root -b -q plotJets_roc.C\(\"$Id\"\,true\,\"\(jspt_1\>0\&\&abs\(jseta_1\)\<2\.5\)\"\)
+root -b -q mvaPU.C\(\"$Id\"\,\"\(jetPt\>0\&\&abs\(jetEta\)\<2\.5\)\"\)
+root -b -q plotJets_roc.C\(\"$Id\"\,false\,\"\(jetPt\>0\&\&abs\(jetEta\)\<2\.5\)\"\)
+root -b -q plotJets_roc.C\(\"$Id\"\,true\,\"\(jetPt\>0\&\&abs\(jetEta\)\<2\.5\)\"\)
 mv MVA${Id}.png  MVA${Id}_${end}.png
 mv Eta${Id}.png  Eta${Id}_${end}.png
 mv Pt${Id}.png   Pt${Id}_${end}.png
@@ -38,9 +38,9 @@ echo "<tr>"                                                                   >>
 echo "<td> <u> PT > 20   and |eta| < 2.5 </u>   </td>"                        >> $name
 echo "<tr>"                                                                   >> $name
 end=eta25_pt20
-root -b -q mvaPU.C\(\"$Id\"\,\"\(jspt_1\>20\&\&abs\(jseta_1\)\<2\.5\)\"\)
-root -b -q plotJets_roc.C\(\"$Id\"\,false\,\"\(jspt_1\>20\&\&abs\(jseta_1\)\<2\.5\)\"\)
-root -b -q plotJets_roc.C\(\"$Id\"\,true\,\"\(jspt_1\>20\&\&abs\(jseta_1\)\<2\.5\)\"\)
+root -b -q mvaPU.C\(\"$Id\"\,\"\(jetPt\>20\&\&abs\(jetEta\)\<2\.5\)\"\)
+root -b -q plotJets_roc.C\(\"$Id\"\,false\,\"\(jetPt\>20\&\&abs\(jetEta\)\<2\.5\)\"\)
+root -b -q plotJets_roc.C\(\"$Id\"\,true\,\"\(jetPt\>20\&\&abs\(jetEta\)\<2\.5\)\"\)
 mv MVA${Id}.png  MVA${Id}_${end}.png
 mv Eta${Id}.png  Eta${Id}_${end}.png
 mv Pt${Id}.png   Pt${Id}_${end}.png
@@ -56,9 +56,9 @@ echo "<tr>"                                                                   >>
 echo "<td> <u> PT > 30   and |eta| < 2.5 </u>   </td>"                        >> $name
 echo "<tr>"                                                                   >> $name
 end=eta25_pt30
-root -b -q mvaPU.C\(\"$Id\"\,\"\(jspt_1\>30\&\&abs\(jseta_1\)\<2\.5\)\"\)
-root -b -q plotJets_roc.C\(\"$Id\"\,false\,\"\(jspt_1\>30\&\&abs\(jseta_1\)\<2\.5\)\"\)
-root -b -q plotJets_roc.C\(\"$Id\"\,true\,\"\(jspt_1\>30\&\&abs\(jseta_1\)\<2\.5\)\"\)
+root -b -q mvaPU.C\(\"$Id\"\,\"\(jetPt\>30\&\&abs\(jetEta\)\<2\.5\)\"\)
+root -b -q plotJets_roc.C\(\"$Id\"\,false\,\"\(jetPt\>30\&\&abs\(jetEta\)\<2\.5\)\"\)
+root -b -q plotJets_roc.C\(\"$Id\"\,true\,\"\(jetPt\>30\&\&abs\(jetEta\)\<2\.5\)\"\)
 mv MVA${Id}.png  MVA${Id}_${end}.png
 mv Eta${Id}.png  Eta${Id}_${end}.png
 mv Pt${Id}.png   Pt${Id}_${end}.png
@@ -74,9 +74,9 @@ echo "<tr>"                                                                  >> 
 echo "<td> <u> PT > 0   and 2.5 < |eta| < 2.9 </u>   </td>"                  >> $name
 echo "<tr>"                                                                  >> $name
 end=eta25_29_pt0
-root -b -q mvaPU.C\(\"$Id\"\,\"\(jspt_1\>0\&\&abs\(jseta_1\)\>2\.5\&\&abs\(jseta_1\)\<2\.9\)\"\)
-root -b -q plotJets_roc.C\(\"$Id\"\,false\,\"\(jspt_1\>0\&\&abs\(jseta_1\)\>2\.5\&\&abs\(jseta_1\)\<2\.9\)\"\)
-root -b -q plotJets_roc.C\(\"$Id\"\,true\,\"\(jspt_1\>0\&\&abs\(jseta_1\)\>2\.5\&\&abs\(jseta_1\)\<2\.9\)\"\)
+root -b -q mvaPU.C\(\"$Id\"\,\"\(jetPt\>0\&\&abs\(jetEta\)\>2\.5\&\&abs\(jetEta\)\<2\.9\)\"\)
+root -b -q plotJets_roc.C\(\"$Id\"\,false\,\"\(jetPt\>0\&\&abs\(jetEta\)\>2\.5\&\&abs\(jetEta\)\<2\.9\)\"\)
+root -b -q plotJets_roc.C\(\"$Id\"\,true\,\"\(jetPt\>0\&\&abs\(jetEta\)\>2\.5\&\&abs\(jetEta\)\<2\.9\)\"\)
 mv MVA${Id}.png  MVA${Id}_${end}.png
 mv Eta${Id}.png  Eta${Id}_${end}.png
 mv Pt${Id}.png   Pt${Id}_${end}.png
@@ -92,9 +92,9 @@ echo "<tr>"                                                                   >>
 echo "<td> <u> PT > 20   and 2.5 < |eta| < 2.9 </u>   </td>"                  >> $name
 echo "<tr>"                                                                   >> $name
 end=eta25_29_pt20
-root -b -q mvaPU.C\(\"$Id\"\,\"\(jspt_1\>20\&\&abs\(jseta_1\)\>2\.5\&\&abs\(jseta_1\)\<2\.9\)\"\)
-root -b -q plotJets_roc.C\(\"$Id\"\,false\,\"\(jspt_1\>20\&\&abs\(jseta_1\)\>2\.5\&\&abs\(jseta_1\)\<2\.9\)\"\)
-root -b -q plotJets_roc.C\(\"$Id\"\,true\,\"\(jspt_1\>20\&\&abs\(jseta_1\)\>2\.5\&\&abs\(jseta_1\)\<2\.9\)\"\)
+root -b -q mvaPU.C\(\"$Id\"\,\"\(jetPt\>20\&\&abs\(jetEta\)\>2\.5\&\&abs\(jetEta\)\<2\.9\)\"\)
+root -b -q plotJets_roc.C\(\"$Id\"\,false\,\"\(jetPt\>20\&\&abs\(jetEta\)\>2\.5\&\&abs\(jetEta\)\<2\.9\)\"\)
+root -b -q plotJets_roc.C\(\"$Id\"\,true\,\"\(jetPt\>20\&\&abs\(jetEta\)\>2\.5\&\&abs\(jetEta\)\<2\.9\)\"\)
 mv MVA${Id}.png  MVA${Id}_${end}.png
 mv Eta${Id}.png  Eta${Id}_${end}.png
 mv Pt${Id}.png   Pt${Id}_${end}.png
@@ -110,9 +110,9 @@ echo "<tr>"                                                                   >>
 echo "<td> <u> PT > 30   and 2.5 < |eta| < 2.9 </u>   </td>"                  >> $name
 echo "<tr>"                                                                   >> $name
 end=eta25_29_pt30
-root -b -q mvaPU.C\(\"$Id\"\,\"\(jspt_1\>30\&\&abs\(jseta_1\)\>2\.5\&\&abs\(jseta_1\)\<2\.9\)\"\)
-root -b -q plotJets_roc.C\(\"$Id\"\,false\,\"\(jspt_1\>30\&\&abs\(jseta_1\)\>2\.5\&\&abs\(jseta_1\)\<2\.9\)\"\)
-root -b -q plotJets_roc.C\(\"$Id\"\,true\,\"\(jspt_1\>30\&\&abs\(jseta_1\)\>2\.5\&\&abs\(jseta_1\)\<2\.9\)\"\)
+root -b -q mvaPU.C\(\"$Id\"\,\"\(jetPt\>30\&\&abs\(jetEta\)\>2\.5\&\&abs\(jetEta\)\<2\.9\)\"\)
+root -b -q plotJets_roc.C\(\"$Id\"\,false\,\"\(jetPt\>30\&\&abs\(jetEta\)\>2\.5\&\&abs\(jetEta\)\<2\.9\)\"\)
+root -b -q plotJets_roc.C\(\"$Id\"\,true\,\"\(jetPt\>30\&\&abs\(jetEta\)\>2\.5\&\&abs\(jetEta\)\<2\.9\)\"\)
 mv MVA${Id}.png  MVA${Id}_${end}.png
 mv Eta${Id}.png  Eta${Id}_${end}.png
 mv Pt${Id}.png   Pt${Id}_${end}.png
@@ -128,9 +128,9 @@ echo "<tr>"                                                                  >> 
 echo "<td> <u> PT > 0    and 2.9 < |eta|      </u>   </td>"                  >> $name
 echo "<tr>"                                                                  >> $name
 end=eta29_pt0
-root -b -q mvaPU.C\(\"$Id\"\,\"\(jspt_1\>0\&\&abs\(jseta_1\)\>2\.9\&\&abs\(jseta_1\)\<12\.9\)\"\)
-root -b -q plotJets_roc.C\(\"$Id\"\,false\,\"\(jspt_1\>0\&\&abs\(jseta_1\)\>2\.9\&\&abs\(jseta_1\)\<12\.9\)\"\)
-root -b -q plotJets_roc.C\(\"$Id\"\,true\,\"\(jspt_1\>0\&\&abs\(jseta_1\)\>2\.9\&\&abs\(jseta_1\)\<12\.9\)\"\)
+root -b -q mvaPU.C\(\"$Id\"\,\"\(jetPt\>0\&\&abs\(jetEta\)\>2\.9\&\&abs\(jetEta\)\<12\.9\)\"\)
+root -b -q plotJets_roc.C\(\"$Id\"\,false\,\"\(jetPt\>0\&\&abs\(jetEta\)\>2\.9\&\&abs\(jetEta\)\<12\.9\)\"\)
+root -b -q plotJets_roc.C\(\"$Id\"\,true\,\"\(jetPt\>0\&\&abs\(jetEta\)\>2\.9\&\&abs\(jetEta\)\<12\.9\)\"\)
 mv MVA${Id}.png  MVA${Id}_${end}.png
 mv Eta${Id}.png  Eta${Id}_${end}.png
 mv Pt${Id}.png   Pt${Id}_${end}.png
@@ -146,9 +146,9 @@ echo "<tr>"                                                                  >> 
 echo "<td> <u> PT > 20   and 2.9 < |eta|      </u>   </td>"                  >> $name
 echo "<tr>"                                                                  >> $name
 end=eta29_pt20
-root -b -q mvaPU.C\(\"$Id\"\,\"\(jspt_1\>20\&\&abs\(jseta_1\)\>2\.9\&\&abs\(jseta_1\)\<12\.9\)\"\)
-root -b -q plotJets_roc.C\(\"$Id\"\,false\,\"\(jspt_1\>20\&\&abs\(jseta_1\)\>2\.9\&\&abs\(jseta_1\)\<12\.9\)\"\)
-root -b -q plotJets_roc.C\(\"$Id\"\,true\,\"\(jspt_1\>20\&\&abs\(jseta_1\)\>2\.9\&\&abs\(jseta_1\)\<12\.9\)\"\)
+root -b -q mvaPU.C\(\"$Id\"\,\"\(jetPt\>20\&\&abs\(jetEta\)\>2\.9\&\&abs\(jetEta\)\<12\.9\)\"\)
+root -b -q plotJets_roc.C\(\"$Id\"\,false\,\"\(jetPt\>20\&\&abs\(jetEta\)\>2\.9\&\&abs\(jetEta\)\<12\.9\)\"\)
+root -b -q plotJets_roc.C\(\"$Id\"\,true\,\"\(jetPt\>20\&\&abs\(jetEta\)\>2\.9\&\&abs\(jetEta\)\<12\.9\)\"\)
 mv MVA${Id}.png  MVA${Id}_${end}.png
 mv Eta${Id}.png  Eta${Id}_${end}.png
 mv Pt${Id}.png   Pt${Id}_${end}.png
@@ -164,9 +164,9 @@ echo "<tr>"                                                                  >> 
 echo "<td> <u> PT > 30   and 2.9 < |eta|      </u>   </td>"                  >> $name
 echo "<tr>"                                                                  >> $name
 end=eta29_pt30
-root -b -q mvaPU.C\(\"$Id\"\,\"\(jspt_1\>30\&\&abs\(jseta_1\)\>2\.9\&\&abs\(jseta_1\)\<12\.9\)\"\)
-root -b -q plotJets_roc.C\(\"$Id\"\,false\,\"\(jspt_1\>30\&\&abs\(jseta_1\)\>2\.9\&\&abs\(jseta_1\)\<12\.9\)\"\)
-root -b -q plotJets_roc.C\(\"$Id\"\,true\,\"\(jspt_1\>30\&\&abs\(jseta_1\)\>2\.9\&\&abs\(jseta_1\)\<12\.9\)\"\)
+root -b -q mvaPU.C\(\"$Id\"\,\"\(jetPt\>30\&\&abs\(jetEta\)\>2\.9\&\&abs\(jetEta\)\<12\.9\)\"\)
+root -b -q plotJets_roc.C\(\"$Id\"\,false\,\"\(jetPt\>30\&\&abs\(jetEta\)\>2\.9\&\&abs\(jetEta\)\<12\.9\)\"\)
+root -b -q plotJets_roc.C\(\"$Id\"\,true\,\"\(jetPt\>30\&\&abs\(jetEta\)\>2\.9\&\&abs\(jetEta\)\<12\.9\)\"\)
 mv MVA${Id}.png  MVA${Id}_${end}.png
 mv Eta${Id}.png  Eta${Id}_${end}.png
 mv Pt${Id}.png   Pt${Id}_${end}.png
