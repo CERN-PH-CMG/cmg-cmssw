@@ -1,3 +1,5 @@
+#!/bin/env python
+
 import json
 import pprint
 import operator
@@ -60,9 +62,11 @@ if __name__ == '__main__':
 
     myDatasets = []
 
+    totSize = 0
     for dataset in datasets:
         name = dataset['name']
         size = teraByte(dataset['bytes'])
+        totSize += size
         myds = DataSet( name, size ) 
         myDatasets.append( myds )
         # print myds
@@ -75,3 +79,5 @@ if __name__ == '__main__':
     print 'by size'
     for ds in sorted(myDatasets, key=operator.attrgetter('size') ):
         print ds
+    print
+    print 'TOTAL:', totSize, ' TB'
