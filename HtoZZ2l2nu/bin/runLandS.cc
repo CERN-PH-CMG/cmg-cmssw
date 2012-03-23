@@ -129,13 +129,6 @@ int main(int argc, char* argv[])
   std::vector<TString> dcUrls = buildDataCard(mass,histo,url,outDir, runSystematics, shape, index);
 
   if(runSystematics){
-     //run limits in the exclusive channels
-     for(size_t i=0; i<dcUrls.size(); i++)
-     {
-        TString logUrl(dcUrls[i]); logUrl.ReplaceAll(".dat",".log");
-        RUNASYMPTOTIC(dcUrls[i],logUrl);
-     }
-
      //run the combined limits 
      //need to create a new directory with the exclusive datacards and link the root file with the histos
      for(size_t i=0; i<dcUrls.size(); i++)
@@ -154,6 +147,14 @@ int main(int argc, char* argv[])
 
      TString logUrl(outDir+"/combined/Shapes_"); logUrl += mass; logUrl += ".log";
      RUNASYMPTOTIC(outDir+"/combined/*.dat",logUrl);
+
+
+     //run limits in the exclusive channels
+     for(size_t i=0; i<dcUrls.size(); i++)
+     {
+        TString logUrl(dcUrls[i]); logUrl.ReplaceAll(".dat",".log");
+//        RUNASYMPTOTIC(dcUrls[i],logUrl);
+     }
   }else{
      //run the combined limits 
      //need to create a new directory with the exclusive datacards and link the root file with the histos
@@ -308,8 +309,19 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
     //format process name
     TString procTitle(p->GetName());
     TString proc(procTitle);
-    if(proc.Contains("H(") && !proc.Contains(massStr)) continue;
-    if(proc.Contains("H")) proc="signal";
+    printf("Proc=%s & mass = %i\n", proc.Data(), mass);
+
+    if(proc.Contains("H(")){
+            if(mass<300 && !proc.Contains("H(200)")) continue;
+       else if(mass<400 && !proc.Contains("H(300)")) continue;
+       else if(mass<500 && !proc.Contains("H(400)")) continue;
+       else if(mass<600 && !proc.Contains("H(500)")) continue;
+       else if(mass<1000&& !proc.Contains("H(600)")) continue;
+    }
+
+
+//    if(proc.Contains("H(") && !proc.Contains(massStr)) continue;
+    if(proc.Contains("H")){ proc="signal"; printf("Signal\n");}
     proc.ReplaceAll("#bar{t}","tbar");
     proc.ReplaceAll("Z-#gamma^{*}+jets#rightarrow ll","dy");
     proc.ReplaceAll("(","");    proc.ReplaceAll(")","");    proc.ReplaceAll("+","");    proc.ReplaceAll(" ","");
@@ -318,7 +330,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
     //    if(proc!="data" && proc!="zz" && proc!="wz" && proc!="signal") continue;
     //    if(proc=="data" && proc!="ww" && proc!="wz" && proc!="zz" && proc!="signal") continue;
     //if(proc=="dy" || proc=="ttbar" || proc=="singletop") continue;
-    if(proc=="dy") continue;
+//    if(proc=="dy") continue;
     if(proc!="data") allProcs.insert(proc);
 
     //get histos for process
@@ -444,7 +456,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 	  {
 	    TH1 *temp=(TH1 *) hshape->Clone();
 	    temp->Add(hcentral[ch],-1);
-	    if(temp->Integral()!=0) dci.systs[systName][RateKey_t(proc,ch)]=1.0;
+//	    if(temp->Integral()!=0) dci.systs[systName][RateKey_t(proc,ch)]=1.0;
 	    delete temp;
 
 	  }
