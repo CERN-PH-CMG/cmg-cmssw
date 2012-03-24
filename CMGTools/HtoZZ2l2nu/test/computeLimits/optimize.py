@@ -9,9 +9,9 @@ from ROOT import TFile, TH1, TGraph, TCanvas, TF1
 
 def findCutIndex(cut1, hcut1, cut2, hcut2, cut3, hcut3):
    for i in range(1, hcut1.GetXaxis().GetNbins()):
-      if(hcut1.GetBinContent(i)<cut1):continue;
-      if(hcut2.GetBinContent(i)<cut2):continue;
-      if(hcut3.GetBinContent(i)<cut3):continue;
+      if(hcut1.GetBinContent(i)<cut1-1):continue;
+      if(hcut2.GetBinContent(i)<cut2-5):continue;
+      if(hcut3.GetBinContent(i)<cut3-5):continue;
       return i;   
    return hcut1.GetXaxis().GetNbins();
   
@@ -21,8 +21,9 @@ def findCutIndex(cut1, hcut1, cut2, hcut2, cut3, hcut3):
 if (len(sys.argv) < 1):
 	print 'please give in argument the running mode'
 	print '1: for phase1 --> submit landS jobs for all selection point'
-        print '2: for phase2 --> check the logs to find the optimal selection point'
+        print '2: for phase2 --> check the logs to find the optimal selection point --> you can then look at the optimal points yourself and make your choice --> edit phase3 of optimize.py with your optimal points'
         print '3: for phase3 --> after you have written by hand the best signal point for your signal key points, run the full limit plot including systematics'
+	print '4: for phase4 --> once all the final limit jobs have been run, use this phase to build the brezilian plot'
 	sys.exit(0)
 
 shapeBased = '1'
@@ -71,6 +72,7 @@ if( sys.argv[1] == '1' ):
 	FILE.close()
 
 elif(sys.argv[1] == '2' ):
+	print("All selection point will be scanned... it may take several minutes\n")
 	fileName = "OPTIM_"
 	if(shapeBased=='1'):    fileName+='SHAPE'
 	else:			fileName+='COUNT' 	
@@ -94,35 +96,73 @@ elif(sys.argv[1] == '2' ):
 
 
 elif(sys.argv[1] == '3' ):
-   Gmet = ROOT.TGraph(8);
-   Gmet.SetPoint(0, 250,  70);
-   Gmet.SetPoint(1, 300,  79);
-   Gmet.SetPoint(2, 350,  95);
-   Gmet.SetPoint(3, 400, 115);
-   Gmet.SetPoint(4, 450, 134);
-   Gmet.SetPoint(5, 500, 150);
-   Gmet.SetPoint(6, 550, 150);
-   Gmet.SetPoint(7, 600, 161);
 
-   Gtmin = ROOT.TGraph(8);
-   Gtmin.SetPoint(0, 250, 222);
-   Gtmin.SetPoint(1, 300, 264);
-   Gtmin.SetPoint(2, 350, 298);
-   Gtmin.SetPoint(3, 400, 327);
-   Gtmin.SetPoint(4, 450, 354);
-   Gtmin.SetPoint(5, 500, 382);
-   Gtmin.SetPoint(6, 550, 413);
-   Gtmin.SetPoint(7, 600, 452);
-  
-   Gtmax = ROOT.TGraph(8);
-   Gtmax.SetPoint(0, 250, 272);
-   Gtmax.SetPoint(1, 300, 331);
-   Gtmax.SetPoint(2, 350, 393);
-   Gtmax.SetPoint(3, 400, 460);
-   Gtmax.SetPoint(4, 450, 531);
-   Gtmax.SetPoint(5, 500, 605);
-   Gtmax.SetPoint(6, 550, 684);
-   Gtmax.SetPoint(7, 600, 767);
+
+   Gmet  = ROOT.TGraph(5);
+   Gtmin = ROOT.TGraph(5);
+   Gtmax = ROOT.TGraph(5);
+
+   
+   if(shapeBased=='1'): 
+        Gmet .SetPoint(0, 200,  55);
+        Gtmin.SetPoint(0, 200, 225);
+        Gtmax.SetPoint(0, 200,3000);
+        Gmet .SetPoint(1, 300,  55);
+        Gtmin.SetPoint(1, 300, 225);
+        Gtmax.SetPoint(1, 300,3000);
+        Gmet .SetPoint(2, 400,  55);
+        Gtmin.SetPoint(2, 400, 225);
+        Gtmax.SetPoint(2, 400,3000);
+        Gmet .SetPoint(3, 500,  55);
+        Gtmin.SetPoint(3, 500, 225);
+        Gtmax.SetPoint(3, 500,3000);
+        Gmet .SetPoint(4, 600,  55);
+        Gtmin.SetPoint(4, 600, 225);
+        Gtmax.SetPoint(4, 600,3000);
+
+   else:                  
+	Gmet .SetPoint(0, 200,  55);
+        Gtmin.SetPoint(0, 200, 225);
+        Gtmax.SetPoint(0, 200, 325);
+        Gmet .SetPoint(1, 300,  55);
+        Gtmin.SetPoint(1, 300, 225);
+        Gtmax.SetPoint(1, 300, 325);
+        Gmet .SetPoint(2, 400,  55);
+        Gtmin.SetPoint(2, 400, 225);
+        Gtmax.SetPoint(2, 400, 325);
+        Gmet .SetPoint(3, 500,  55);
+        Gtmin.SetPoint(3, 500, 225);
+        Gtmax.SetPoint(3, 500, 325);
+        Gmet .SetPoint(4, 600,  55);
+        Gtmin.SetPoint(4, 600, 225);
+        Gtmax.SetPoint(4, 600, 325);
+
+#	   Gmet .SetPoint(0, 250,  70);
+#          Gtmin.SetPoint(0, 250, 222);
+#          Gtmax.SetPoint(0, 250, 272);
+#	   Gmet .SetPoint(1, 300,  79);
+#          Gtmin.SetPoint(1, 300, 264);
+#          Gtmax.SetPoint(1, 300, 331);
+#	   Gmet .SetPoint(2, 350,  95);
+#          Gtmin.SetPoint(2, 350, 298);
+#          Gtmax.SetPoint(2, 350, 393);
+#	   Gmet .SetPoint(3, 400, 115);
+#          Gtmin.SetPoint(3, 400, 327);
+#          Gtmax.SetPoint(3, 400, 460);
+#	   Gmet .SetPoint(4, 450, 134);
+#          Gtmin.SetPoint(4, 450, 354);
+#          Gtmax.SetPoint(4, 450, 531);
+#	   Gmet .SetPoint(5, 500, 150);
+#          Gtmin.SetPoint(5, 500, 382);
+#          Gtmax.SetPoint(5, 500, 605);
+#	   Gmet .SetPoint(6, 550, 150);
+#	   Gtmin.SetPoint(6, 550, 413);
+#  	   Gtmax.SetPoint(6, 550, 684);
+#	   Gmet .SetPoint(7, 600, 161);
+#	   Gtmin.SetPoint(7, 600, 452);
+# 	   Gtmax.SetPoint(7, 600, 767);
+
+
 
    c1 = ROOT.TCanvas("c1", "c1",900,300);
    c1.Divide(3);
@@ -167,6 +207,7 @@ elif(sys.argv[1] == '3' ):
 	else:			    sys.exit(0);
 	
    print 'YES'
+   list = open(OUT+'list.txt',"w")
    for m in SUBMASS:
         index = findCutIndex(Fmet.Eval(m), cuts1, Ftmin.Eval(m), cuts2,  Ftmax.Eval(m), cuts3);
         SCRIPT = open(OUT+'script_mass_'+str(m)+'.sh',"w")
@@ -176,9 +217,22 @@ elif(sys.argv[1] == '3' ):
 	SCRIPT.writelines("runLandS " + str(m) + " mt_shapes " + " $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root " + " 0 " + shapeBased + " " + str(index) + ";\n")
 	SCRIPT.close()
 	os.system("bsub -q 8nh 'sh " + OUT+"script_mass_"+str(m)+".sh'")
-#	os.system("runLandS " + str(m) + " mt_shapes " + " $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root " + " 1 " + shapeBased + " " + str(index) ); 
 
+	if(shapeBased=='1'):   list.writelines('H'+str(m)+'_shape_'+str(index)+'\n'); 
+	else:                  list.writelines('H'+str(m)+'_count_'+str(index)+'\n');
+   list.close();
 
+elif(sys.argv[1] == '4' ):
+   list = open(OUT+'list.txt',"r")
+   files = ""
+   for m in SUBMASS:   
+	line = list.readline().split()[0]
+	line+="/*m2lnQ.root"
+	print line
+	files += " " + commands.getstatusoutput("ls " + line)[1];
+   list.close();
+   os.system("root -l -b -q plotLimit.C++'(\""+files+"\")'") 
+   os.system("rm *.gif");
 
 else:
 	print "unknown running mode"

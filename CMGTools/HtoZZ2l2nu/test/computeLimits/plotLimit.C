@@ -93,7 +93,7 @@ TCutG* GetErrorBand(string name, int N, double* Mass, double* Low, double* High)
 
 
 
-void plotLimit(){
+void plotLimit(TString inputs=""){
   gStyle->SetCanvasBorderMode(0);
   gStyle->SetCanvasColor(kWhite);
   gStyle->SetFrameBorderMode(0);
@@ -149,6 +149,9 @@ void plotLimit(){
    gStyle->SetNdivisions(505);
 
    std::vector<string> files;
+   TObjArray* array=inputs.Tokenize(" ");
+   for(int i=0;i<array->GetEntriesFast();i++){files.push_back(array->At(i)->GetName());}
+/*
    files.push_back("H225_shape_213/Shapes_225_ee.dat_Hybrid_m2lnQ.root");
    files.push_back("H250_shape_357/Shapes_250_ee.dat_Hybrid_m2lnQ.root");
    files.push_back("H275_shape_425/Shapes_275_ee.dat_Hybrid_m2lnQ.root");
@@ -161,6 +164,7 @@ void plotLimit(){
    files.push_back("H450_shape_942/Shapes_450_ee.dat_Hybrid_m2lnQ.root");
    files.push_back("H475_shape_1011/Shapes_475_ee.dat_Hybrid_m2lnQ.root");
    files.push_back("H500_shape_1080/Shapes_500_ee.dat_Hybrid_m2lnQ.root");
+*/
    int N = files.size();
 
    double* ObsLimit   = new double[N];
