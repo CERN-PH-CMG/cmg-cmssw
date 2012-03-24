@@ -73,7 +73,7 @@ TString landsExe("$CMSSW_BASE/src/UserCode/mschen/LandS/test/lands.exe");
 
 #define RUNASYMPTOTIC(INURL,OUTURL)\
   gSystem->ExpandPathName(landsExe); \
-  TString cmd=TString(landsExe + " -d ") + INURL + TString(" -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 10000 --nToysForCLb 5000 --seed 1234 -rMax 30 -rMin 0.1 > ") + logUrl + TString(" "); \
+  TString cmd=TString(landsExe + " -d ") + INURL + TString(" -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 10000 --nToysForCLb 5000 --seed 1234 -rMax 50 -rMin 0.1 > ") + logUrl + TString(" "); \
   cout << "Launching : " << cmd << endl;				\
   gSystem->Exec(cmd);
 
