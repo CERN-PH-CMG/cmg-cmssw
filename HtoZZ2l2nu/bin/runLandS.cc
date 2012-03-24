@@ -73,7 +73,7 @@ TString landsExe("$CMSSW_BASE/src/UserCode/mschen/LandS/test/lands.exe");
 
 #define RUNASYMPTOTIC(INURL,OUTURL)\
   gSystem->ExpandPathName(landsExe); \
-  TString cmd=TString(landsExe + " -d ") + INURL + TString(" -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 10000 --nToysForCLb 5000 --seed 1234 -rMax 15 -rMin 0.1 > ") + logUrl + TString(" "); \
+  TString cmd=TString(landsExe + " -d ") + INURL + TString(" -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 10000 --nToysForCLb 5000 --seed 1234 -rMax 30 -rMin 0.1 > ") + logUrl + TString(" "); \
   cout << "Launching : " << cmd << endl;				\
   gSystem->Exec(cmd);
 
@@ -312,16 +312,16 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
     printf("Proc=%s & mass = %i\n", proc.Data(), mass);
 
     if(proc.Contains("H(")){
-            if(mass<300 && !proc.Contains("H(200)")) continue;
-       else if(mass<400 && !proc.Contains("H(300)")) continue;
-       else if(mass<500 && !proc.Contains("H(400)")) continue;
-       else if(mass<600 && !proc.Contains("H(500)")) continue;
-       else if(mass<1000&& !proc.Contains("H(600)")) continue;
+            if(             mass<300 && !proc.Contains("H(200)")) continue;
+       else if(mass>=300 && mass<400 && !proc.Contains("H(300)")) continue;
+       else if(mass>=400 && mass<500 && !proc.Contains("H(400)")) continue;
+       else if(mass>=500 && mass<600 && !proc.Contains("H(500)")) continue;
+       else if(mass>=600 && mass<1000&& !proc.Contains("H(600)")) continue;
     }
 
 
 //    if(proc.Contains("H(") && !proc.Contains(massStr)) continue;
-    if(proc.Contains("H")){ proc="signal"; printf("Signal\n");}
+    if(proc.Contains("H")){ proc="asignal"; printf("Signal\n");}
     proc.ReplaceAll("#bar{t}","tbar");
     proc.ReplaceAll("Z-#gamma^{*}+jets#rightarrow ll","dy");
     proc.ReplaceAll("(","");    proc.ReplaceAll(")","");    proc.ReplaceAll("+","");    proc.ReplaceAll(" ","");
