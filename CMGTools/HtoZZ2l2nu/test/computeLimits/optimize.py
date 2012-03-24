@@ -229,7 +229,9 @@ elif(sys.argv[1] == '4' ):
 	line = list.readline().split()[0]
 	line+="/*m2lnQ.root"
 	print line
-	files += " " + commands.getstatusoutput("ls " + line)[1];
+	out = commands.getstatusoutput("ls " + line)[1] 
+	if(out.find("No such file or directory")>=0):continue
+	files += " " + out;
    list.close();
    os.system("root -l -b -q plotLimit.C++'(\""+files+"\")'") 
    os.system("rm *.gif");
