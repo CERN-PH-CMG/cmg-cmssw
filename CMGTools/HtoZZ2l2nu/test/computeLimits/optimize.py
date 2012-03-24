@@ -104,38 +104,38 @@ elif(sys.argv[1] == '3' ):
 
    
    if(shapeBased=='1'): 
-        Gmet .SetPoint(0, 200,  55);
-        Gtmin.SetPoint(0, 200, 225);
+        Gmet .SetPoint(0, 200,  50);
+        Gtmin.SetPoint(0, 200, 275);
         Gtmax.SetPoint(0, 200,3000);
-        Gmet .SetPoint(1, 300,  55);
-        Gtmin.SetPoint(1, 300, 225);
+        Gmet .SetPoint(1, 300,  80);
+        Gtmin.SetPoint(1, 300, 200);
         Gtmax.SetPoint(1, 300,3000);
-        Gmet .SetPoint(2, 400,  55);
-        Gtmin.SetPoint(2, 400, 225);
+        Gmet .SetPoint(2, 400,  80);
+        Gtmin.SetPoint(2, 400, 200);
         Gtmax.SetPoint(2, 400,3000);
-        Gmet .SetPoint(3, 500,  55);
-        Gtmin.SetPoint(3, 500, 225);
+        Gmet .SetPoint(3, 500,  95);
+        Gtmin.SetPoint(3, 500, 200);
         Gtmax.SetPoint(3, 500,3000);
-        Gmet .SetPoint(4, 600,  55);
-        Gtmin.SetPoint(4, 600, 225);
+        Gmet .SetPoint(4, 600,  95);
+        Gtmin.SetPoint(4, 600, 200);
         Gtmax.SetPoint(4, 600,3000);
 
    else:                  
-	Gmet .SetPoint(0, 200,  55);
-        Gtmin.SetPoint(0, 200, 225);
-        Gtmax.SetPoint(0, 200, 325);
-        Gmet .SetPoint(1, 300,  55);
-        Gtmin.SetPoint(1, 300, 225);
-        Gtmax.SetPoint(1, 300, 325);
-        Gmet .SetPoint(2, 400,  55);
-        Gtmin.SetPoint(2, 400, 225);
-        Gtmax.SetPoint(2, 400, 325);
-        Gmet .SetPoint(3, 500,  55);
-        Gtmin.SetPoint(3, 500, 225);
-        Gtmax.SetPoint(3, 500, 325);
-        Gmet .SetPoint(4, 600,  55);
-        Gtmin.SetPoint(4, 600, 225);
-        Gtmax.SetPoint(4, 600, 325);
+	Gmet .SetPoint(0, 200,  50);
+        Gtmin.SetPoint(0, 200, 250);
+        Gtmax.SetPoint(0, 200, 375);
+        Gmet .SetPoint(1, 300,  80);
+        Gtmin.SetPoint(1, 300, 275);
+        Gtmax.SetPoint(1, 300, 350);
+        Gmet .SetPoint(2, 400, 130);
+        Gtmin.SetPoint(2, 400, 325);
+        Gtmax.SetPoint(2, 400, 450);
+        Gmet .SetPoint(3, 500, 160);
+        Gtmin.SetPoint(3, 500, 400);
+        Gtmax.SetPoint(3, 500, 700);
+        Gmet .SetPoint(4, 600, 180);
+        Gtmin.SetPoint(4, 600, 400);
+        Gtmax.SetPoint(4, 600, 800);
 
 #	   Gmet .SetPoint(0, 250,  70);
 #          Gtmin.SetPoint(0, 250, 222);
@@ -169,36 +169,36 @@ elif(sys.argv[1] == '3' ):
    c1.cd(1);
    Gmet.SetMarkerStyle(20);
    Gmet.SetTitle("MET");
-   Gmet.Draw("AP");
+   Gmet.Draw("APC");
    Gmet.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
    Gmet.GetYaxis().SetTitle("met cut");
-   Fmet  = ROOT.TF1("Fmet", "pol1");
-   Gmet.Fit("Fmet");
+#   Fmet  = ROOT.TF1("Fmet", "pol1");
+#   Gmet.Fit("Fmet");
 
    c1.cd(2);
    Gtmin.SetMarkerStyle(20);
    Gtmin.SetTitle("MT min");
-   Gtmin.Draw("AP");
+   Gtmin.Draw("APC");
    Gtmin.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
    Gtmin.GetYaxis().SetTitle("mt_{min} cut");
-   Ftmin  = ROOT.TF1("Ftmin", "pol1");
-   Gtmin.Fit("Ftmin");
+#   Ftmin  = ROOT.TF1("Ftmin", "pol1");
+#   Gtmin.Fit("Ftmin");
 
    c1.cd(3);
    Gtmax.SetMarkerStyle(20);
    Gtmax.SetTitle("MT max");
-   Gtmax.Draw("AP");
+   Gtmax.Draw("APC");
    Gtmax.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
    Gtmax.GetYaxis().SetTitle("mt_{max} cut");
-   Ftmax  = ROOT.TF1("Ftmax", "pol1");
-   Gtmax.Fit("Ftmax");
+#   Ftmax  = ROOT.TF1("Ftmax", "pol1");
+#   Gtmax.Fit("Ftmax");
    c1.cd(0);
    c1.Update();
 
 
    for m in SUBMASS:
-      	index = findCutIndex(Fmet.Eval(m), cuts1, Ftmin.Eval(m), cuts2,  Ftmax.Eval(m), cuts3);
-	print("best mH="+str(m).rjust(3)+ " met>"+str(int(Fmet.Eval(m))).rjust(5) + " " + str(int(Ftmin.Eval(m))).rjust(5) + "<mt<"+str(int(Ftmax.Eval(m))).rjust(5) ) 
+      	index = findCutIndex(Gmet.Eval(m,0,"S"), cuts1, Gtmin.Eval(m,0,"S"), cuts2,  Gtmax.Eval(m,0,"S"), cuts3);
+	print("best mH="+str(m).rjust(3)+ " met>"+str(int(Gmet.Eval(m,0,"S"))).rjust(5) + " " + str(int(Gtmin.Eval(m,0,"S"))).rjust(5) + "<mt<"+str(int(Gtmax.Eval(m,0,"S"))).rjust(5) ) 
       	print("used mH="+str(m).rjust(3)+ " met>"+str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + "<mt<"+str(cuts3.GetBinContent(index)).rjust(5) )
 
    while True:
@@ -209,7 +209,7 @@ elif(sys.argv[1] == '3' ):
    print 'YES'
    list = open(OUT+'list.txt',"w")
    for m in SUBMASS:
-        index = findCutIndex(Fmet.Eval(m), cuts1, Ftmin.Eval(m), cuts2,  Ftmax.Eval(m), cuts3);
+        index = findCutIndex(Gmet.Eval(m,0,"S"), cuts1, Gtmin.Eval(m,0,"S"), cuts2,  Gtmax.Eval(m,0,"S"), cuts3);
         SCRIPT = open(OUT+'script_mass_'+str(m)+'.sh',"w")
 	SCRIPT.writelines('cd ' + CWD + ';\n')
         SCRIPT.writelines("export SCRAM_ARCH=slc5_amd64_gcc434;\n")
