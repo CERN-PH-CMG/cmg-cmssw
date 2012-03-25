@@ -11,6 +11,15 @@ runOnMC = False
 
 runCMG = True
 
+# choose which kind of scale correction/MC smearing should be applied for electrons. Options are:
+if runOnMC :
+    gsfEleCorrDataset = "Fall11"
+#    gsfEleCorrDataset = "Summer11"
+else :
+    gsfEleCorrDataset = "Jan16ReReco" 
+#    gsfEleCorrDataset = "ReReco" 
+#    gsfEleCorrDataset = "Prompt" 
+
 # AK5 sequence with pileup substraction is the default
 # the other sequences can be turned off with the following flags.
 runAK5NoPUSub = True 
@@ -30,7 +39,7 @@ else:#Data
 # process.load("CommonTools.ParticleFlow.Sources.source_ZtoMus_DBS_cfi")
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(20) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
 from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
@@ -63,7 +72,8 @@ process.source = datasetToSource(
     # '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V3',
     # to test Data:
     'cmgtools_group',
-    '/DoubleMu/Run2011A-05Aug2011-v1/AOD/V3', 
+    #'/DoubleMu/Run2011A-05Aug2011-v1/AOD/V3',
+    '/GluGluToHToZZTo4L_M-500_7TeV-powheg-pythia6/Fall11-PU_S6-START42_V14B-v1/AODSIM/V4',
     # '.*root'
     )
 
@@ -103,6 +113,9 @@ process.kt6PFJets = kt4PFJets.clone(
     doRhoFastjet = cms.bool(True),
 )
 
+#compute rho correction for lepton isolation
+process.kt6PFJetsForIso = process.kt6PFJets.clone( Rho_EtaMax = cms.double(2.5), Ghost_EtaMax = cms.double(2.5) )
+
 # ---------------- Sequence AK5 ----------------------
 
 
@@ -123,6 +136,17 @@ getattr(process,"patMuons"+postfixAK5).embedCaloMETMuonCorrs = False
 getattr(process,"patMuons"+postfixAK5).embedTcMETMuonCorrs = False
 #but embed the tracker track for cutting on 
 getattr(process,"patMuons"+postfixAK5).embedTrack = True
+
+# removing default cuts on muons 
+getattr(process,"pfMuonsFromVertexAK5").dzCut = 99
+getattr(process,"pfMuonsFromVertexAK5").d0Cut = 99
+getattr(process,"pfSelectedMuonsAK5").cut="pt()>3"
+
+# removing default cuts on electrons 
+getattr(process,"pfElectronsFromVertexAK5").dzCut = 99
+getattr(process,"pfElectronsFromVertexAK5").d0Cut = 99
+getattr(process,"pfSelectedElectronsAK5").cut="pt()>5"
+
 
 if doJetPileUpCorrection:
     from CommonTools.ParticleFlow.Tools.enablePileUpCorrection import enablePileUpCorrection
@@ -178,6 +202,18 @@ addPATElectronID( process, 'stdElectronSequence', postfixAK5+'StdLep')
 from CMGTools.Common.PAT.addMITElectronID import addMITElectronID
 addMITElectronID( process, 'selectedPatElectrons', 'patDefaultSequence', postfixAK5)
 addMITElectronID( process, 'selectedPatElectrons', 'stdElectronSequence', postfixAK5+'StdLep')
+
+
+# # adding custom detector based iso deposit ---> !!! this works only on V4 event content !!!
+# from RecoLocalCalo.EcalRecAlgos.EcalSeverityLevelESProducer_cfi import *
+# from CMGTools.Common.PAT.addLeptCustomIsoDeposit_cff import addMuonCustomIsoDeposit
+# from CMGTools.Common.PAT.addLeptCustomIsoDeposit_cff import addElectronCustomIsoDeposit
+# addMuonCustomIsoDeposit( process, 'patDefaultSequence', postfixAK5)
+# addMuonCustomIsoDeposit( process, 'stdElectronSequence', postfixAK5+'StdLep')
+ 
+# addElectronCustomIsoDeposit( process, 'patDefaultSequence', postfixAK5)
+# addElectronCustomIsoDeposit( process, 'stdElectronSequence', postfixAK5+'StdLep')
+
 
 # ---------------- Sequence AK5NoPUSub, pfNoPileUp switched off ---------------
 
@@ -240,12 +276,15 @@ process.patTrigger.processName = cms.string('*')
 
 ### PATH DEFINITION #############################################
 
+# counters that can be used at analysis level to know the processed events
+process.prePathCounter = cms.EDProducer("EventCountProducer")
+process.postPathCounter = cms.EDProducer("EventCountProducer")
 
 # trigger information (no selection)
 
-process.p = cms.Path( process.patTriggerDefaultSequence )
-
+process.p = cms.Path( process.prePathCounter + process.patTriggerDefaultSequence )
 process.p += process.kt6PFJets
+process.p += process.kt6PFJetsForIso
 
 # PF2PAT+PAT ---
 
@@ -256,6 +295,7 @@ process.stdLeptonSequence = cms.Sequence(
     stdElectronSeq 
     )
 process.p += process.stdLeptonSequence
+
 
 if runAK5NoPUSub:
     process.p += getattr(process,"patPF2PATSequence"+postfixAK5NoPUSub)
@@ -274,6 +314,7 @@ process.p += process.eventCleaningSequence
 if runOnMC:
     process.p += process.genSequence 
 
+process.p += getattr(process,"postPathCounter") 
  
 # CMG ---
 
@@ -328,6 +369,9 @@ process.out.outputCommands.extend( everything )
 from CMGTools.Common.eventContent.patEventContentCMG_cff import patEventContentCMG
 process.out.outputCommands.extend( patEventContentCMG )
 
+# add counters to the pat-tuple
+process.out.outputCommands.extend(['keep edmMergeableCounter_*_*_*'])
+
 # CMG ---
 
 
@@ -338,8 +382,9 @@ process.outcmg = cms.OutputModule(
     outputCommands = everything,
     dropMetaData = cms.untracked.string('PRIOR')
     )
-# process.outcmg.outputCommands.extend( ['keep patMuons_selectedPatMuonsAK5*_*_*',
-#                                        'keep patElectrons_selectedPatElectronAK5*_*_*'] )
+process.outcmg.outputCommands.extend( ['keep patMuons_selectedPatMuonsAK5*_*_*',
+                                       'keep patElectrons_selectedPatElectronAK5*_*_*',
+                                       'keep edmMergeableCounter_*_*_*'] )
 
 if runCMG:
     process.outpath += process.outcmg
@@ -360,3 +405,61 @@ if runCMG:
 
 #Patrick: Make the embedded track available for electrons (curing a bug in PAT)
 process.patElectronsAK5.embedTrack = True
+
+ 
+# electron energy-scale corrections (from Claude C., Paramatti & al.)
+print sep_line
+print "Replacing gsfElectrons with calibratedGsfElectrons..."
+for modulename in process.p.moduleNames():
+    module = getattr(process, modulename)
+    ml = dir(module)
+    for attr in ml:
+        v = getattr(module,attr)
+        if (isinstance(v, cms.InputTag) and v == cms.InputTag("gsfElectrons")):
+            setattr(module,attr,"calibratedGsfElectrons")
+            #print "Setting ",
+            #print module,
+            #print ".", 
+            #print attr,
+            #print " = ", 
+            #print getattr(module,attr)
+process.load("EgammaCalibratedGsfElectrons.CalibratedElectronProducers.calibratedGsfElectrons_cfi")
+process.calibratedGsfElectrons.isMC = cms.bool(runOnMC)
+process.calibratedGsfElectrons.updateEnergyError = cms.bool(True)
+
+process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
+
+    # Include a PSet for each module label that needs a
+    # random engine.  The name is the module label.
+    # You must supply a seed or seeds.
+    # Optionally an engine type can be specified
+    #t1 = cms.PSet(
+    #    initialSeed = cms.untracked.uint32(81)
+    #),
+    calibratedGsfElectrons = cms.PSet(
+        initialSeed = cms.untracked.uint32(1),
+        engineName = cms.untracked.string('TRandom3')
+    ),
+)
+
+if gsfEleCorrDataset == "NOT_PROVIDED" :
+    if isMC:
+        process.calibratedGsfElectrons.inputDataset = cms.string("Fall11")
+    else:
+        process.calibratedGsfElectrons.inputDataset = cms.string("Jan16ReReco")
+else :
+    process.calibratedGsfElectrons.inputDataset = cms.string(gsfEleCorrDataset)
+
+print "Setting process.calibratedGsfElectrons.inputDataset=",
+print process.calibratedGsfElectrons.inputDataset
+
+
+process.p.replace(process.goodOfflinePrimaryVertices,
+                  process.goodOfflinePrimaryVertices+
+                  process.calibratedGsfElectrons
+                  )
+
+
+
+
+
