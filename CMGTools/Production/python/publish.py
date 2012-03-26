@@ -48,20 +48,10 @@ def publish(dsName,fileown,comment,test,dbsApi,user,password, force, checkGroups
             raise OSError("Restarting connection to EOS, due to timeout\n")
         completed = False
         fileOps = None
-        while True:
-            signal.signal(signal.SIGALRM, timeout_handler) 
-            signal.alarm(60) # triger alarm in 3 seconds
-        
-            try:
-                fileOps = None
-                fileOps = FileOps(dsName, fileown ,force, checkGroups)
-                break
-            except KeyboardInterrupt:
-                raise
-            except OSError as io:
-                print io.args[0]
-                signal.alarm(0)
-        signal.alarm(0)
+        try:
+            fileOps = FileOps(dsName, fileown ,force, checkGroups)    
+        except KeyboardInterrupt:
+            raise
                 
                 
         formatter = CastorToDbsFormatter(dsName,fileOps.getUser())
