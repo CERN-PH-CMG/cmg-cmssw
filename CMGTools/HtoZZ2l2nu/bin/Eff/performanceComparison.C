@@ -17,10 +17,9 @@ using namespace std;
 
 void GetWeights(double NewPU, double* OldPU, double* array, double N);
 
-int colors[]  = {1,  kRed,     kGreen+3, kBlue, kBlue, kRed+3, kRed, kRed, kOrange};
-int styles[]  = {1,  2,        9,        9,     1,     1,      1,    1,    2};
-int markers[] = {20, 24,       21,       25,    22,    24,     20,   24,   25};
-
+int colors[]  = {1,  kGreen-3, kGreen+3, kBlue, kBlue, kRed+3, kRed, kRed, kOrange, kOrange, kOrange};
+int styles[]  = {1,  2,        9,        9,     1,     1,      1,    1,    2,       1,     1};
+int markers[] = {20, 24,       21,       25,    22,    24,     20,   24,   25,      21,    20};
 
 double PUdata[] = {1.344651e+07,   5.90653e+07,   1.409027e+08,   2.413012e+08,   3.337449e+08,   3.98711e+08,   4.301064e+08,   4.32283e+08,   4.138202e+08,   3.82846e+08,   3.451637e+08,   3.043438e+08,   2.62555e+08,   2.213308e+08,   1.819826e+08,   1.456898e+08,   1.134134e+08,   8.577886e+07,   6.301239e+07,   4.495959e+07,   3.116904e+07,   2.100786e+07,   1.377588e+07,   8796407,   5474418,   3323776,   1970638,   1142040,   647538.6,   359547.2,   195673.2,   104459.9,   54745.15,   28185.57,   28005.55,   0.008};
 
@@ -317,9 +316,9 @@ stArray  makeArray(string evcat, string name, string title, string signal, strin
 
 
 void performanceSummary(string OutDir, string evcat, string signal, string background,  string fname, const std::vector<string>& names, const std::vector<TString>& titles){
-   int colors[]  = {4,  kGreen+3, kRed,     kGreen+3, kBlue, kBlue, kRed+3, kRed, kRed, kOrange};
+  //   int colors[]  = {4,  kGreen+3, kRed,     kGreen+3, kBlue, kBlue, kRed+3, kRed, kRed, kOrange};
    //int styles[]  = {1,  9,        2,        9,        9,     1,     1,      1,    1,    2};
-   int markers[] = {20, 22,       21,       25,    22,    24,     20,   24,   25};
+  // int markers[] = {20, 22,       21,       25,    22,    24,     20,   24,   25};
 
 
    int ntouse = names.size();
@@ -446,8 +445,8 @@ std::cout << "TESTD\n";
   leg->SetY2NDC(0.98);
 
   for(int i=0; i<ntouse; i++){
-std::cout << "TESTE\n";
-     TCanvas* c1 = new TCanvas("c1","c1", 800, 800);
+    std::cout << "TESTE\n";
+    TCanvas* c1 = new TCanvas("c1","c1", 800, 800);
      BHists[0*ntouse + i]->SetMaximum(10*BHists[0*ntouse + i]->GetMaximum());
      BHists[0*ntouse + i]->SetMinimum(1E-2);
      BHists[0*ntouse + i]->SetAxisRange(0, 150, "X");
@@ -492,7 +491,91 @@ std::cout << "TESTH\n";
   delete f;
 }
 
+//
+void performanceJetId(string OutDir, string evcat, string signal, string background, string fname)
+{
+  
+  TFile *f=TFile::Open(fname.c_str());
+  evcat += "_met";
+  
+  //met efficiency
+  TH1D *pfMetSignal= (TH1D*) GetObjectFromPath(f, signal    +"#rightarrow VV" + "/"+evcat+"_met", true);    
+  TH1D *pfMetBckg= (TH1D*) GetObjectFromPath(f, background + "/"+evcat+"_met", true);    
+  TGraphAsymmErrors *metEff = getEfficiencyCurve(pfMetSignal,pfMetBckg);
+  metEff->SetFillStyle(0); metEff->SetLineColor(1); metEff->SetTitle("E_{T}^{miss}");
 
+  //redmet efficiency
+  TH1D *redMetSignal= (TH1D*) GetObjectFromPath(f, signal    +"#rightarrow VV" + "/"+evcat+"_redClusteredMet", true);    
+  TH1D *redMetBckg= (TH1D*) GetObjectFromPath(f, background + "/"+evcat+"_redClusteredMet", true);    
+  TGraphAsymmErrors *redMetEff = getEfficiencyCurve(redMetSignal,redMetBckg);
+  redMetEff->SetFillStyle(0); redMetEff->SetMarkerColor(kRed); redMetEff->SetLineColor(kRed); redMetEff->SetTitle("red(E_{T}^{miss},clustered E_{T}^{miss})");
+
+  //exclusive efficiency
+  std::vector<TGraphAsymmErrors *> excEffGrList; 
+  TH2D *redMetSignalvsJetId= (TH2D*) GetObjectFromPath(f, signal    +"#rightarrow VV" + "/"+evcat+"_redClusteredMetvsJetId", true);    
+  TH2D *redMetBckgvsJetId= (TH2D*) GetObjectFromPath(f, background + "/"+evcat+"_redClusteredMetvsJetId", true);    
+  int nybins=redMetBckgvsJetId->GetYaxis()->GetNbins();
+  for(int ybin=1; ybin<=nybins; ybin+=2)
+  {
+    TH1* signalProj = ((TH2 *)redMetSignalvsJetId)->ProjectionX("sig_py",ybin,ybin);    fixExtremities(signalProj,true,true);
+    TH1* bckgProj   = ((TH2 *)redMetBckgvsJetId)->ProjectionX("bckg_py",ybin,ybin);    fixExtremities(bckgProj,true,true);
+    
+    TGraphAsymmErrors *gr = getEfficiencyCurve(signalProj, bckgProj);
+    TString name("jetidbin"); name+=ybin;
+    gr->SetName(name);
+    char buf[200];   sprintf(buf,"mva>%3.2lf",redMetSignalvsJetId->GetYaxis()->GetBinLowEdge(ybin));
+    gr->SetTitle(buf);
+    gr->SetLineColor((ybin+1)/2);
+    gr->SetFillStyle(0);
+    gr->SetMarkerColor((ybin+1)/2);
+    excEffGrList.push_back(gr);
+    delete signalProj; delete bckgProj;
+  }
+  f->Close();
+
+  //show results
+  setStyle();
+  TGraph *frame=new TGraph; frame->SetPoint(0,0.05,1e-5); frame->SetPoint(1,1,1);
+
+  TCanvas *effC = new TCanvas("effC", "Jet Id", 1600,800);
+  effC->Divide(2,1);  
+
+  TPad *p=(TPad *)effC->cd(1);
+  p->SetLogx();
+  p->SetLogy();
+  TLegend *leg=new TLegend(0.2,0.75,0.6,0.9); 
+  frame->Draw("ap");
+  metEff->Draw("lp");
+  redMetEff->Draw("lp");
+  metEff->GetXaxis()->SetTitle("Signal efficiency");
+  metEff->GetYaxis()->SetTitle("Background efficiency");
+  leg->AddEntry(metEff,metEff->GetTitle(),"lp");
+  leg->AddEntry(redMetEff,redMetEff->GetTitle(),"lp");
+  leg->Draw();
+  formatForCmsPublic(p,leg,"CMS simulation, Z#rightarrow ll",2);
+
+  p=(TPad *)effC->cd(2);
+  p->SetLogx();
+  p->SetLogy(); 
+  leg = new TLegend(0.2,0.6,0.4,0.9); 
+  frame->Draw("ap");
+  for(size_t i=0; i<excEffGrList.size(); i++) 
+    {
+      excEffGrList[i]->Draw("l");
+      leg->AddEntry(excEffGrList[i],excEffGrList[i]->GetTitle(),"l");
+    }
+  excEffGrList[0]->GetXaxis()->SetTitle("Signal efficiency");
+  excEffGrList[0]->GetYaxis()->SetTitle("Background efficiency");
+  redMetEff->Draw("lp");
+  leg->AddEntry(redMetEff,redMetEff->GetTitle(),"lp");
+  leg->Draw();
+  formatForCmsPublic(p,leg,"",excEffGrList.size());
+  
+  effC->Modified();
+  effC->Update();
+  effC->SaveAs("PerformanceJetId.png");
+  effC->SaveAs("PerformanceJetId.C");
+}
 
 void performancePU(string OutDir, string evcat, string signal, string background,  string fname, const std::vector<string>& names, const std::vector<TString>& titles)
 {
@@ -943,7 +1026,6 @@ void performanceComparison(string OutDir="Img", string evcat="mumu", string sign
   names.push_back("assocFwdMet"         );   titles.push_back("assocFwd-E_{T}^{miss}" );
   names.push_back("assocFwdCMet"        );   titles.push_back("assoFwdc-E_{T}^{miss} + #delta#beta");
   performancePU(OutDir+"Simple_", evcat, signal, background,  fname, names, titles);
-
 
   names.clear();                             titles.clear();
   names.push_back("met"                 );   titles.push_back("E_{T}^{miss}");
