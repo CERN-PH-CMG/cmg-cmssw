@@ -23,7 +23,6 @@ else :
 # AK5 sequence with pileup substraction is the default
 # the other sequences can be turned off with the following flags.
 runAK5NoPUSub = True 
-runAK7 = False
 
 hpsTaus = True
 doEmbedPFCandidatesInTaus = True
@@ -39,7 +38,7 @@ else:#Data
 # process.load("CommonTools.ParticleFlow.Sources.source_ZtoMus_DBS_cfi")
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(20) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2000) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
 from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
@@ -50,7 +49,6 @@ print sep_line
 print 'running the following PF2PAT+PAT sequences:'
 print '\tAK5'
 if runAK5NoPUSub: print '\tAK5NoPUSub'
-if runAK7: print '\tAK7'
 print 'embedding in taus: ', doEmbedPFCandidatesInTaus
 print 'HPS taus         : ', hpsTaus
 print 'produce CMG tuple: ', runCMG
@@ -234,38 +232,6 @@ if runAK5NoPUSub:
     print 'Done'
 
 
-# ---------------- Sequence AK7, no lepton x-cleaning ---------------
-
-# PF2PAT+PAT sequence 3
-# no lepton cleaning, AK7PFJets
-
-if runAK7: 
-    postfixAK7 = "AK7"
-    jetAlgoAK7="AK7"
-
-    #COLIN : argh! AK7PFchs does not seem to exist yet...
-    # Maxime should maybe contact the JEC group if he wants them 
-    usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgoAK7, runOnMC=runOnMC, postfix=postfixAK7,
-              jetCorrections=('AK7PF', jetCorrections))
-
-    # if doJetPileUpCorrection:
-    #    enablePileUpCorrection( process, postfix=postfixAK7)
-
-    # no need for taus in AK7 sequence. could remove the whole tau sequence to gain time?
-    # if hpsTaus:
-    #    adaptPFTaus(process,"hpsPFTau",postfix=postfixAK7)
-
-    # use non pileup substracted rho as in the Jan2012 JEC set
-    getattr(process,"patJetCorrFactors"+postfixAK7).rho = cms.InputTag("kt6PFJets","rho")
-    
-    # no top projection: 
-    getattr(process,"pfNoMuon"+postfixAK7).enable = False 
-    getattr(process,"pfNoElectron"+postfixAK7).enable = False 
-    getattr(process,"pfNoTau"+postfixAK7).enable = False 
-    getattr(process,"pfNoJet"+postfixAK7).enable = True
-
-    removePhotonMatching( process, postfixAK7 )
-
 # ---------------- Common stuff ---------------
 
 process.load('CMGTools.Common.gen_cff')
@@ -300,8 +266,6 @@ process.p += process.stdLeptonSequence
 if runAK5NoPUSub:
     process.p += getattr(process,"patPF2PATSequence"+postfixAK5NoPUSub)
 
-if runAK7:
-    process.p += getattr(process,"patPF2PATSequence"+postfixAK7) 
 
 # event cleaning (in tagging mode, no event rejected)
 
@@ -344,10 +308,6 @@ if runCMG:
         replacePostfix(getattr(process,"analysisSequenceAK5NoPUSubCMG"),'AK5','AK5NoPUSub') 
         process.p += process.analysisSequenceAK5NoPUSubCMG
 
-    if runAK7:
-        cloneProcessingSnippet(process, getattr(process, 'analysisSequence'), 'AK7CMG')
-        replacePostfix(getattr(process,"analysisSequenceAK7CMG"),'AK7','AK7') 
-        process.p += process.analysisSequenceAK7CMG
 
 ### OUTPUT DEFINITION #############################################
 
@@ -382,29 +342,17 @@ process.outcmg = cms.OutputModule(
     outputCommands = everything,
     dropMetaData = cms.untracked.string('PRIOR')
     )
-process.outcmg.outputCommands.extend( ['keep patMuons_selectedPatMuonsAK5*_*_*',
-                                       'keep patElectrons_selectedPatElectronAK5*_*_*',
+process.outcmg.outputCommands.extend( [ # 'keep patMuons_selectedPatMuonsAK5*_*_*',
+                                        # 'keep patElectrons_selectedPatElectronAK5*_*_*',
                                        'keep edmMergeableCounter_*_*_*'] )
 
 if runCMG:
     process.outpath += process.outcmg
 
-# process.load("CMGTools.Common.runInfoAccounting_cff")
-# process.ria = cms.Sequence(
-#    process.runInfoAccountingDataSequence
-#    )
-# if runOnMC:
-#   process.ria = cms.Sequence(
-#        process.runInfoAccountingSequence
-#    )
-# process.outpath += process.ria
-    
-
-#process.TFileService = cms.Service("TFileService",
-#                                   fileName = cms.string("histograms_CMG.root")# )
 
 #Patrick: Make the embedded track available for electrons (curing a bug in PAT)
 process.patElectronsAK5.embedTrack = True
+process.patElectronsAK5StdLep.embedTrack = True
 
  
 # electron energy-scale corrections (from Claude C., Paramatti & al.)
@@ -454,10 +402,10 @@ print "Setting process.calibratedGsfElectrons.inputDataset=",
 print process.calibratedGsfElectrons.inputDataset
 
 
-process.p.replace(process.goodOfflinePrimaryVertices,
-                  process.goodOfflinePrimaryVertices+
-                  process.calibratedGsfElectrons
-                  )
+process.PF2PATAK5.replace(process.goodOfflinePrimaryVertices,
+                          process.goodOfflinePrimaryVertices+
+                          process.calibratedGsfElectrons
+                          )
 
 
 
