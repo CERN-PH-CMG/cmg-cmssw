@@ -177,7 +177,7 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 	const reco::PFJet * pfjet = dynamic_cast<const reco::PFJet *>(jet);
 	assert( patjet != 0 || pfjet != 0 );
 	if( patjet != 0 && jec == 0. ) { // if this is a pat jet and no jec has been passed take the jec from the object
-		jec = patjet->jecFactor(1); // FIXME double-check 
+	  jec = patjet->pt()/patjet->correctedJet(0).pt();
 	}
 	constituents_type constituents = pfjet ? pfjet->getPFConstituents() : patjet->getPFConstituents();
 	
