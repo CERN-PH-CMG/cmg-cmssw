@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2012/03/19 08:23:36 $
- *  $Revision: 1.5 $
+ *  $Date: 2012/03/22 11:33:40 $
+ *  $Revision: 1.6 $
  *  \author G. Cerminara & D. Trocino & P. Silva & L. Quertenmont
  */
 
@@ -281,7 +281,7 @@ LorentzVector redMET(RedMetType Type, const LorentzVector& theLepton1, double si
 
 
   double transverseMass(LorentzVector &visible, LorentzVector &invisible, bool assumeSameMass){
-      if(assumeSameMass){
+    if(assumeSameMass){
           LorentzVector sum=visible+invisible;
           double tMass = TMath::Power(TMath::Sqrt(TMath::Power(visible.pt(),2)+pow(visible.mass(),2))+TMath::Sqrt(TMath::Power(invisible.pt(),2)+pow(visible.mass(),2)),2);
           tMass-=TMath::Power(sum.pt(),2);
@@ -307,7 +307,7 @@ LorentzVector redMET(RedMetType Type, const LorentzVector& theLepton1, double si
     else if(eta>=2.3 && eta<5.0) { ptSF=1.166; ptSF_err=sqrt(pow(0.050,2)+pow(0.5*(0.19+0.199),2)); }
     
     //re-scale the pT components and recompute the jet energy
-    double rndPtSF=gRandom->Gaus(ptSF,2*ptSF_err);
+    double rndPtSF=gRandom->Gaus(ptSF,ptSF_err/2);
     double px(origJet.px()*rndPtSF), py(origJet.py()*rndPtSF), pz(origJet.pz()), mass(origJet.mass());
     double en = sqrt(mass*mass+px*px+py*py+pz*pz);
 

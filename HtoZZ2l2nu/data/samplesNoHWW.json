@@ -1,7 +1,7 @@
 {
     "proc":[
 	{
-        "tag":"WW#rightarrow 2l2#nu",
+        "tag":"WW#rightarrow l#nu",
         "isdata":false,
         "color":"592",
         "lcolor":1,
@@ -125,7 +125,7 @@
 	  ]
 	},
         {
-         "tag":"W+jets",
+         "tag":"W#rightarrow l#nu",
          "isdata":false,
          "color":"809",
          "lcolor":1,
