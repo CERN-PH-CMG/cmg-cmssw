@@ -65,5 +65,7 @@ class DuplicatesChecker{
         }
 };
 
+//
+std::string toLatexRounded(double value, double error);
 
 #endif

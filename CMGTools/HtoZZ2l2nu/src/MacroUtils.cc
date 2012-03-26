@@ -9,6 +9,29 @@ LorentzVector min(const LorentzVector& a, const LorentzVector& b){
 }
 
 
+std::string toLatexRounded(double value, double error)
+{
+  using namespace std;
+  if(value==0.0 && error==0.0)return string("");
+  
+  double power = floor(log10(value));
+  if(power<=-3)     {power=power+3;
+  }else if(power>=2){power=power-2;
+  }else             {power=0;}       
+  
+   value = value / pow(10,power);
+   error = error / pow(10,power);
+   int ValueFloating = 1+std::max(-1*log10(error),0.0);
+   int ErrorFloating = ValueFloating;
+   
+   char tmpchar[255];
+   if(power!=0){
+     sprintf(tmpchar,"$(%.*f\\pm%.*f)\\times 10^{%g}$",ValueFloating,value,ErrorFloating,error,power);
+   }else{
+     sprintf(tmpchar,"$%.*f\\pm%.*f$",ValueFloating,value,ErrorFloating,error);
+   }
+   return string(tmpchar);
+}
 
 
 double weightVBF(std::string SampleName, double m_gen, double mass){

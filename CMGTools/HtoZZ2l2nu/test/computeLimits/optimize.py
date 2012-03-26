@@ -31,9 +31,9 @@ if(len(sys.argv) > 2):
 	shapeBased = sys.argv[2]
 
 file = ROOT.TFile('../plotter2011.root')
-cuts1   = file.Get('WW/optim_cut1_met')
-cuts2   = file.Get('WW/optim_cut1_mtmin')
-cuts3   = file.Get('WW/optim_cut1_mtmax')
+cuts1   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_met')
+cuts2   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_mtmin')
+cuts3   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_mtmax')
 
 CWD = os.getcwd()
 OUT = CWD+'/JOBS/'
@@ -43,7 +43,8 @@ else:		        OUT+='COUNT/'
 os.system('mkdir -p ' + OUT)
 
 MASS = [200,300,400,500,600]
-SUBMASS = [200, 225, 250, 275, 300, 325, 350, 375, 400, 425, 450, 475, 500, 525, 550, 575, 600, 625, 650];
+#SUBMASS = [200, 225, 250, 275, 300, 325, 350, 375, 400, 425, 450, 475, 500, 525, 550, 575, 600, 625, 650];
+SUBMASS = [200,300,400,500,600]
 
 
 
@@ -121,47 +122,64 @@ elif(sys.argv[1] == '3' ):
         Gtmax.SetPoint(4, 600,3000);
 
    else:                  
-	Gmet .SetPoint(0, 200,  50);
-        Gtmin.SetPoint(0, 200, 250);
-        Gtmax.SetPoint(0, 200, 375);
-        Gmet .SetPoint(1, 300,  80);
-        Gtmin.SetPoint(1, 300, 275);
+	#Gmet .SetPoint(0, 200,  50);
+        #Gtmin.SetPoint(0, 200, 250);
+        #Gtmax.SetPoint(0, 200, 375);
+        #Gmet .SetPoint(1, 300,  80);
+        #Gtmin.SetPoint(1, 300, 275);
+        #Gtmax.SetPoint(1, 300, 350);
+        #Gmet .SetPoint(2, 400, 130);
+        #Gtmin.SetPoint(2, 400, 325);
+        #Gtmax.SetPoint(2, 400, 450);
+        #Gmet .SetPoint(3, 500, 160);
+        #Gtmin.SetPoint(3, 500, 400);
+        #Gtmax.SetPoint(3, 500, 700);
+        #Gmet .SetPoint(4, 600, 180);
+        #Gtmin.SetPoint(4, 600, 400);
+        #Gtmax.SetPoint(4, 600, 800);
+
+        #pedro 25/03/2012
+        Gmet .SetPoint(0, 200,  60);
+        Gtmin.SetPoint(0, 200, 200);
+        Gtmax.SetPoint(0, 200, 300);
+        Gmet .SetPoint(1, 300,  85);
+        Gtmin.SetPoint(1, 300, 250);
         Gtmax.SetPoint(1, 300, 350);
         Gmet .SetPoint(2, 400, 130);
         Gtmin.SetPoint(2, 400, 325);
         Gtmax.SetPoint(2, 400, 450);
-        Gmet .SetPoint(3, 500, 160);
+        Gmet .SetPoint(3, 500, 120);
         Gtmin.SetPoint(3, 500, 400);
-        Gtmax.SetPoint(3, 500, 700);
+        Gtmax.SetPoint(3, 500, 650);
         Gmet .SetPoint(4, 600, 180);
         Gtmin.SetPoint(4, 600, 400);
-        Gtmax.SetPoint(4, 600, 800);
+        Gtmax.SetPoint(4, 600, 3000);
 
-#	   Gmet .SetPoint(0, 250,  70);
-#          Gtmin.SetPoint(0, 250, 222);
-#          Gtmax.SetPoint(0, 250, 272);
-#	   Gmet .SetPoint(1, 300,  79);
-#          Gtmin.SetPoint(1, 300, 264);
-#          Gtmax.SetPoint(1, 300, 331);
-#	   Gmet .SetPoint(2, 350,  95);
-#          Gtmin.SetPoint(2, 350, 298);
-#          Gtmax.SetPoint(2, 350, 393);
-#	   Gmet .SetPoint(3, 400, 115);
-#          Gtmin.SetPoint(3, 400, 327);
-#          Gtmax.SetPoint(3, 400, 460);
-#	   Gmet .SetPoint(4, 450, 134);
-#          Gtmin.SetPoint(4, 450, 354);
-#          Gtmax.SetPoint(4, 450, 531);
-#	   Gmet .SetPoint(5, 500, 150);
-#          Gtmin.SetPoint(5, 500, 382);
-#          Gtmax.SetPoint(5, 500, 605);
-#	   Gmet .SetPoint(6, 550, 150);
-#	   Gtmin.SetPoint(6, 550, 413);
-#  	   Gtmax.SetPoint(6, 550, 684);
-#	   Gmet .SetPoint(7, 600, 161);
-#	   Gtmin.SetPoint(7, 600, 452);
-# 	   Gtmax.SetPoint(7, 600, 767);
-
+        #	   Gmet .SetPoint(0, 250,  70);
+        #          Gtmin.SetPoint(0, 250, 222);
+        #          Gtmax.SetPoint(0, 250, 272);
+        #	   Gmet .SetPoint(1, 300,  79);
+        #          Gtmin.SetPoint(1, 300, 264);
+        #          Gtmax.SetPoint(1, 300, 331);
+        #	   Gmet .SetPoint(2, 350,  95);
+        #          Gtmin.SetPoint(2, 350, 298);
+        #          Gtmax.SetPoint(2, 350, 393);
+        #	   Gmet .SetPoint(3, 400, 115);
+        #          Gtmin.SetPoint(3, 400, 327);
+        #          Gtmax.SetPoint(3, 400, 460);
+        #	   Gmet .SetPoint(4, 450, 134);
+        #          Gtmin.SetPoint(4, 450, 354);
+        #          Gtmax.SetPoint(4, 450, 531);
+        #	   Gmet .SetPoint(5, 500, 150);
+        #          Gtmin.SetPoint(5, 500, 382);
+        #          Gtmax.SetPoint(5, 500, 605);
+        #	   Gmet .SetPoint(6, 550, 150);
+        #	   Gtmin.SetPoint(6, 550, 413);
+        #  	   Gtmax.SetPoint(6, 550, 684);
+        #	   Gmet .SetPoint(7, 600, 161);
+        #	   Gtmin.SetPoint(7, 600, 452);
+        # 	   Gtmax.SetPoint(7, 600, 767);
+        
 
 
    c1 = ROOT.TCanvas("c1", "c1",900,300);
@@ -214,7 +232,7 @@ elif(sys.argv[1] == '3' ):
 	SCRIPT.writelines('cd ' + CWD + ';\n')
         SCRIPT.writelines("export SCRAM_ARCH=slc5_amd64_gcc434;\n")
 	SCRIPT.writelines("eval `scram r -sh`;\n")
-	SCRIPT.writelines("runLandS " + str(m) + " mt_shapes " + " $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root " + " 0 " + shapeBased + " " + str(index) + ";\n")
+	SCRIPT.writelines("runLandS " + str(m) + " mt_shapes " + " $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root " + " 1 " + shapeBased + " " + str(index) + ";\n")
 	SCRIPT.close()
 	os.system("bsub -q 8nh 'sh " + OUT+"script_mass_"+str(m)+".sh'")
 

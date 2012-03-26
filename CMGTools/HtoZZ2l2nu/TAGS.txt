@@ -1,4 +1,4 @@
-cvs co -r V12-03-14 -d CMGTools/HtoZZ2l2nu  UserCode/CMG/CMGTools/HtoZZ2l2nu
+cvs co -r V12-03-26 -d CMGTools/HtoZZ2l2nu  UserCode/CMG/CMGTools/HtoZZ2l2nu
 cvs co              -d CMGTools/External    UserCode/CMG/CMGTools/External
 addpkg                                      PhysicsTools/PatAlgos
 cvs co -r V08-03-17                         PhysicsTools/Utilities
