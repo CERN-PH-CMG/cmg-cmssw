@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.h,v 1.4 2012/03/19 17:17:41 malberti Exp $
+// $Id: JetAnalyzer.h,v 1.5 2012/03/20 17:21:57 malberti Exp $
 //
 //
 
@@ -76,7 +76,7 @@ private:
   edm::InputTag MuonTag_; 
 
   bool dataFlag_;
-  bool computeTMVA_;
+  bool computeTMVA_, requireZ_;
 
   double impactParTkThreshold_;
   std::string tmvaWeights_;

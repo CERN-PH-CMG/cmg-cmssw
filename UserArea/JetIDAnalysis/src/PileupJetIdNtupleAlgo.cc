@@ -35,9 +35,10 @@ void PileupJetIdNtupleAlgo::fillJet(const PileupJetIdentifier & id, int ijet, in
 }
 
 // --------------------------------------------------------------------------------
-void PileupJetIdNtupleAlgo::fillJet(const reco::Jet * jet, float jec, const reco::Vertex * vtx, int ijet, int ievent, bool runMva)
+void PileupJetIdNtupleAlgo::fillJet(const reco::Jet * jet, float jec, const reco::Vertex * vtx, const reco::VertexCollection & vtxs,  
+				    int ijet, int ievent, bool runMva)
 {
-	computeIdVariables(jet,jec,vtx,runMva);
+	computeIdVariables(jet,jec,vtx,vtxs,runMva);
 	ijet_   = ijet;
 	ievent_ = ievent;
 }

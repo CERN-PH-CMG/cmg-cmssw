@@ -25,7 +25,7 @@ then:
 print loop.event
 """
 
-import copy, os, fnmatch, sys
+import copy, os, fnmatch, sys, copy
 import CMGTools.RootTools.fwlite.Config as cfg
 import CMGTools.Production.eostools  as eostools 
 import CMG.JetIDAnalysis.JetIDAnalysis
@@ -40,10 +40,13 @@ def getListOfFiles(expr, baseDir, filePattern):
 period = 'Period_2011B'
 
 ## baseDir = './'
+## splitFactor = None
+## baseDir = '/data1/musella'
+## /store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola 
+## baseDir = '/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat'
+baseDir = '/store/cmst3/user/psilva/Data4/G'
+### splitFactor = 200
 splitFactor = None
-baseDir = '/data1/musella'
-## baseDir = '/store/cmst3/user/querten'
-## splitFactor = 100
 ## filePattern = 'tree_CMG_*.root'
 ## filePattern = 'pat*.root'
 filePattern = '*.root'
@@ -76,21 +79,31 @@ elif period == 'Period_2011AB':
     mc_tauEffWeight = 'effTau2011AB'
     mc_muEffWeight = 'effMu2011AB'
 
-jetAna = cfg.Analyzer(
-    'JetIDAnalyzer',
-    ptCut = 20,
-    ## use pat::Jets
-    ## jetCollection = ('selectedPatJetsAK5','std::vector<pat::Jet>'),
-    jetCollection = ('selectedPatJetsPFlow','std::vector<pat::Jet>'),
-    ## or cmg::Jets
-    ## jetCollection = ('cmgPFJetSel','std::vector<cmg::PFJet>'),
-    doJetIdHisto    = True,
-    applyPFLooseId  = True, 
-    jetIdMva = ( 0, "%s/src/CMGTools/External/data/mva_JetID.weights.xml" % os.getenv("CMSSW_BASE"), "JetID" ),
-    genJetsCollection =  ("ak5GenJets","vector<reco::GenJet>"),
-    useGenLeptons = False,
-)
+### jetAna = cfg.Analyzer(
+###     'JetIDAnalyzer',
+###     ptCut = 20,
+###     ## use pat::Jets
+###     ## jetCollection = ('selectedPatJetsAK5','std::vector<pat::Jet>'),
+###     jetCollection = ('selectedPatJets','std::vector<pat::Jet>'),
+###     ## jetCollection = ('selectedPatJetsPFlow','std::vector<pat::Jet>'),
+###     ## or cmg::Jets
+###     ## jetCollection = ('cmgPFJetSel','std::vector<cmg::PFJet>'),
+###     doJetIdHisto    = False,
+###     dumpTree        = False,
+###     applyPFLooseId  = True, 
+###     jetIdMva = ( 0, "%s/src/CMGTools/External/data/mva_JetID.weights.xml" % os.getenv("CMSSW_BASE"), "JetID" ),
+###     ## genJetsCollection =  ("ak5GenJets","vector<reco::GenJet>"),
+###     genJetsCollection =  (("selectedPatJets","genJets"),"vector<reco::GenJet>"),
+###     ## genJetsCollection =  (("selectedPatJetsPFlow","genJets"),"vector<reco::GenJet>"),
+###     useGenLeptons = False,
+### )
 
+### sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
+###                                  'python/CMG/JetIDAnalysis/analyzers'] ))
+jetAna = copy.deepcopy(CMG.JetIDAnalysis.JetIDAnalysis.jetAna)
+jetAna.doJetIdHisto = False
+jetAna.dumpTree = True
+ 
 ## print jetAna
 
 #########################################################################################
@@ -99,7 +112,11 @@ jetAna = cfg.Analyzer(
 DYJets = cfg.MCComponent(
     name = 'DYJets',
     ## files ='{baseDir}/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_Chamonix12_START44_V10-v2/AODSIM/PAT_CMG_V3_0_0/{filePattern}'.format(baseDir=baseDir, filePattern=filePattern),
-    files = getListOfFiles('{baseDir}/12_02_20_HZZ2l2v_pat/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/{filePattern}',baseDir=baseDir, filePattern=filePattern),
+    ## files = getListOfFiles('{baseDir}/12_02_20_HZZ2l2v_pat/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/{filePattern}',baseDir=baseDir, filePattern=filePattern),
+    ## files = getListOfFiles('{baseDir}/12_03_13_HZZ2l2v_pat/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/{filePattern}',baseDir=baseDir, filePattern=filePattern)[:10], 
+    ### files = '/data1/musella/output.root',
+    ## files = '/afs/cern.ch/user/p/psilva/public/vbf500.root',
+    files = getListOfFiles('{baseDir}/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/{filePattern}',baseDir=baseDir, filePattern=filePattern)[:10],
     xSection = 3048.,
     nGenEvents = 34915945,
     triggers = mc_triggers,

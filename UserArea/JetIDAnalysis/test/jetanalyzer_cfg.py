@@ -2,7 +2,15 @@ import FWCore.ParameterSet.Config as cms
 
 
 from PhysicsTools.PatAlgos.selectionLayer1.muonCountFilter_cfi import *
+import copy, os, fnmatch, sys, copy
+import CMGTools.Production.eostools  as eostools 
 
+
+def getListOfFiles(expr, baseDir, filePattern):
+    if baseDir.startswith("/store"):
+        return [ "root://eoscms/%s" % f for f in eostools.listFiles( expr.format( baseDir=baseDir, filePattern="" ) ) if fnmatch.fnmatch(f,filePattern) ]
+    else:
+        return expr.format( baseDir=baseDir, filePattern=filePattern ) 
 
 process = cms.Process("analysis")
 
@@ -11,10 +19,14 @@ process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
+baseDir = '/store/cmst3/user/psilva/Data4/G'
+filePattern = '*.root'
 
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
     fileNames = cms.untracked.vstring(
+    getListOfFiles('{baseDir}/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/{filePattern}',baseDir=baseDir, filePattern=filePattern)[:10],
+ 
 #       'file:/data1/malberti/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_Chamonix12_START44_V10-v2/AODSIM/PAT_CMG_V3_0_0/patTuple_PF2PAT_999.root'
 #       'file:/data1/malberti/MC_DYJetsToLL_97_1.root'
         'file:/tmp/malberti/MC_DYJetsToLL_9_1.root',

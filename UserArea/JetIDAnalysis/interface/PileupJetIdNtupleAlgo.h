@@ -16,7 +16,7 @@ public:
 	void bookBranches(TTree *,const std::string & prefix="", const std::string & postfix="");
 	
 	void fillJet(const PileupJetIdentifier & id, int ijet, int ievent);
-	void fillJet(const reco::Jet * jet, float jec, const reco::Vertex *, int ijet, int ievent, bool runMva=false);
+	void fillJet(const reco::Jet * jet, float jec, const reco::Vertex *, const reco::VertexCollection & vtxs, int ijet, int ievent, bool runMva=false);
 
 	void setIJetIEvent(int ijet, int ievent);
 private:

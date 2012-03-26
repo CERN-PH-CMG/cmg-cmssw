@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.cc,v 1.7 2012/03/19 15:56:38 malberti Exp $
+// $Id: JetAnalyzer.cc,v 1.9 2012/03/20 17:21:38 malberti Exp $
 //
 //
 
@@ -44,6 +44,8 @@ JetAnalyzer::JetAnalyzer(const edm::ParameterSet& iConfig)
   //--- PU jet identifier 
   puIdAlgo_ = new PileupJetIdNtupleAlgo(iConfig);
   computeTMVA_ = iConfig.getUntrackedParameter<bool>("computeTMVA");
+  
+  requireZ_ = iConfig.getUntrackedParameter<bool>("requireZ",true);
   
   //-- loose jet ID
   pfjetIdLoose_  = iConfig.getParameter<edm::ParameterSet>("pfjetIdLoose") ;
@@ -143,7 +145,8 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   int goodMuon1=-1, goodMuon2=-1;
   bool isZ=false;
   DiMuonSelection(muons, goodMuon1, goodMuon2, isZ);
-
+  if( ! isZ && requireZ_ ) { return; }
+  
   int numberOfJets = 0;
    
   // *** Loop over jets : to count the number of jets
@@ -191,7 +194,7 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
     //-- pu jet identifier
-    PileupJetIdentifier puIdentifier = puIdAlgo_->computeIdVariables(&patjet, 0, &vtx, computeTMVA_);
+    PileupJetIdentifier puIdentifier = puIdAlgo_->computeIdVariables(&patjet, 0, &vtx, vertexCollection, computeTMVA_);
 
     // --- fill jet variables
     puIdAlgo_->setIJetIEvent(i,0);
