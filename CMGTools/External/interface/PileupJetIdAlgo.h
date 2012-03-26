@@ -32,7 +32,8 @@ public:
 	~PileupJetIdAlgo(); 
 	
 	PileupJetIdentifier computeIdVariables(const reco::Jet * jet, 
-					       float jec, const reco::Vertex *, bool calculateMva=false);
+					       float jec, const reco::Vertex *, const reco::VertexCollection &,
+					       bool calculateMva=false);
 	std::string dumpVariables() const;
 
 	typedef std::map<std::string,std::pair<float *,float> > variables_list_t;

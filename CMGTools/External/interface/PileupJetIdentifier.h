@@ -125,6 +125,9 @@ public:
 	DECLARE_VARIABLE(emFrac03    ,float);  
 	DECLARE_VARIABLE(emFrac04    ,float);  
 	DECLARE_VARIABLE(emFrac05   ,float);  
+
+	DECLARE_VARIABLE(beta       ,float);  
+	DECLARE_VARIABLE(betaStar   ,float);  
 	
 	//// std::string dumpVariables() const;
 	//// 
