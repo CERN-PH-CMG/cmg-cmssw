@@ -65,7 +65,7 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
   
   //info about the original PFJet
   if(input->isPFTau()){
-    if(input->pfJetRef().isNonnull())
+    if(input->pfJetRef().isAvailable())
       output->jetRefp4_=input->pfJetRef()->p4();			 
   }
 
