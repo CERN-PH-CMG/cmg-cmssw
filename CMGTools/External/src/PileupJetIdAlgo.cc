@@ -230,24 +230,6 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 			internalId_.dRMeanEm_ += candPtDr;
 			fracEm.push_back(candPtFrac);
 			if( icone < ncones ) { *coneEmFracs[icone] += candPt; }
-			
-			// beta and betastar		
-			if(  icand->trackRef().isNonnull() ) {
-				float tkpt = icand->trackRef()->pt(); 
-				for(reco::VertexCollection::const_iterator  vi=allvtx.begin(); vi!=allvtx.end(); ++vi ) {
-					const reco::Vertex & iv = *vi;
-					float dZ = fabs(impactTrack->dz(iv.position()));
-					if( dZ < 0.2 ) {
-						if( (iv.position() - vtx->position()).r() < 0.02 ) {
-							internalId_.beta_ += tkpt;
-						} else {
-							internalId_.betaStar_ += tkpt;
-						}
-					}
-					sumTkPt += tkpt;
-				}
-			}
-
 		}
 		// Charged hadrons
 		if( icand->particleId() == reco::PFCandidate::h ) {
@@ -255,6 +237,27 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 			internalId_.dRMeanCh_  += candPtDr;
 			fracCh.push_back(candPtFrac);
 			if( icone < ncones ) { *coneChFracs[icone] += candPt; }
+			
+			// beta and betastar		
+			if(  icand->trackRef().isNonnull() && icand->trackRef().isAvailable() ) {
+				try { 
+					float tkpt = icand->trackRef()->pt(); 
+					sumTkPt += tkpt;
+					for(reco::VertexCollection::const_iterator  vi=allvtx.begin(); vi!=allvtx.end(); ++vi ) {
+						const reco::Vertex & iv = *vi;
+						float dZ = fabs(icand->trackRef()->dz(iv.position()));
+						if( dZ < 0.2 ) {
+							if( (iv.position() - vtx->position()).r() < 0.02 ) {
+								internalId_.beta_ += tkpt;
+							} else {
+								internalId_.betaStar_ += tkpt;
+							}
+						}
+					}
+				} catch (cms::Exception &e) {
+					if(printWarning-- > 0) { std::cerr << e << std::endl; }
+				}
+			}
 		}
 		//// if( impactTrack.isNull() && icand->trackRef().isNonnull() && candPt > impactParTkThreshod_ ) {
 		//// 	impactTrack = icand->trackRef();
