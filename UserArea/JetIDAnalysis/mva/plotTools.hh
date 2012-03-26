@@ -10,8 +10,8 @@ TTree * load(std::string iName) {
   TTree *lTree  = (TTree*) lFile->FindObjectAny("Events");
   if(lTree == 0) lTree = (TTree*) lFile->FindObjectAny("Flat"); 
   if(lTree == 0) lTree = (TTree*) lFile->FindObjectAny("TestTree"); 
-  if(lTree == 0) lTree = (TTree*) lFile->FindObjectAny("tree"); 
   if(lTree == 0) lTree = (TTree*) lFile->Get(lJetTree);
+  if(lTree == 0) lTree = (TTree*) lFile->FindObjectAny("tree"); 
   return lTree;
 }
 void scale(TH1F** iH,double iInt,const int iN) {

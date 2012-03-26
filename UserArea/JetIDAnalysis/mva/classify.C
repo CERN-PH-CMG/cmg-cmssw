@@ -38,7 +38,7 @@ void classify(std::string iId="",
   //PU correlation => nvtx data/MC agree better
   //factory->AddVariable( "rho"      , 'F' );        allUsedVars += "rho"   ;
   if(iPUType   >  0)    {factory->AddVariable( "nvtx"      , 'F' ); allUsedVars += "nvtx";       }
-  
+
   //Jet pT+eta
   if(iKinType   > 0)    {factory->AddVariable( "jetPt"     , 'F' ); allUsedVars += ":jetPt"     ;}
   if(iKinType   > 1)    {factory->AddVariable( "jetEta"    , 'F' ); allUsedVars += ":jetEta"    ;}
@@ -46,6 +46,8 @@ void classify(std::string iId="",
   //Impact parameter 
   if(iIPType    > 0)    {factory->AddVariable( "dZ"        , 'F' ); allUsedVars += ":dZ"        ;}
   if(iIPType    > 1)    {factory->AddVariable( "d0"        , 'F' ); allUsedVars += ":d0"        ;}
+  if(iIPType    > 2)    {factory->AddVariable( "beta"      , 'F' ); allUsedVars += ":beta"      ;}
+  if(iIPType    > 3)    {factory->AddVariable( "betaStar"  , 'F' ); allUsedVars += ":betaStar"  ;}
   //Number of particles
   if(iNParType  > 0)    {factory->AddVariable( "nParticles", 'F' ); allUsedVars += ":nParticles";}
   if(iNParType  > 1)    {factory->AddVariable( "nCharged"  , 'F' ); allUsedVars += ":nParticles";} //Not Yet tried
@@ -102,7 +104,7 @@ void classify(std::string iId="",
   
   //ptD ==> have not tested this
   if(iPtDType   > 0)  {factory->AddVariable( "ptD"            , 'F' ); allUsedVars += ":ptD"           ;}
-  
+
   //Fraction Variables ===> have not tested this
   if(iFracType  > 0)  {factory->AddVariable( "chgEMfrac"      , 'F' ); allUsedVars += ":chgEMfrac"     ;}
   if(iFracType  > 0)  {factory->AddVariable( "chgHadrfrac"    , 'F' ); allUsedVars += ":chgHadrfrac"   ;}
