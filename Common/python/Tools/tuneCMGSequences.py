@@ -38,10 +38,8 @@ def removeObject( process, object, postfix ):
 
 
 def tuneCMGSequences(process, postpostfix=''):
-    removeObject( process, 'tau', 'AK7'+postpostfix)
-    removeObject( process, 'muon', 'AK7'+postpostfix)
-    removeObject( process, 'electron', 'AK7'+postpostfix)
-    removeObject( process, 'met', 'AK7'+postpostfix)
-    removeObject( process, 'met', 'AK5LC'+postpostfix)
-    removeObject( process, 'trigger', 'AK5LC'+postpostfix)
-    removeObject( process, 'trigger', 'AK7'+postpostfix)
+    # removeObject( process, 'tau', 'AK5NoPUSub'+postpostfix)
+    removeObject( process, 'muon', 'AK5NoPUSub'+postpostfix)
+    removeObject( process, 'electron', 'AK5NoPUSub'+postpostfix)
+    removeObject( process, 'met', 'AK5NoPUSub'+postpostfix)
+    removeObject( process, 'trigger', 'AK5NoPUSub'+postpostfix)
