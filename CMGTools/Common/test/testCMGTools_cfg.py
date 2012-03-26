@@ -1,6 +1,5 @@
-from PhysicsTools.PatAlgos.patTemplate_cfg import *
+
 import FWCore.ParameterSet.Config as cms
-from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
 
 sep_line = "-" * 50
 print
@@ -8,9 +7,7 @@ print sep_line
 print "CMGTools main test"
 print sep_line
 
-
-
-process.setName_('ANA')
+process = cms.Process('ANA')
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(2000)
@@ -27,10 +24,8 @@ runOnMC = True
 
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
-    'cmgtools',
-    '/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_4_0',
-    # '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_4_0',
-    #     '/TauPlusX/Run2011A-May10ReReco-v1/AOD/V2/PAT_CMG_V2_4_0',
+    'cmgtools_group',
+    '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V3/TestMVAs',
     'patTuple_PF2PAT.*root'
     ) 
 
@@ -39,15 +34,26 @@ nFiles = 10
 print 'WARNING: RESTRICTING INPUT TO THE FIRST', nFiles, 'FILES'
 process.source.fileNames = process.source.fileNames[:nFiles] 
 
+process.source = cms.Source(
+    "PoolSource",
+    fileNames = cms.untracked.vstring( 'file:../prod/patTuple_PF2PAT.root' )
+    ) 
+
 print process.source.fileNames
 
 # output module for EDM event (ntuple)
-process.out.fileName = cms.untracked.string('tree_testCMGTools.root')
+process.out = cms.OutputModule(
+    "PoolOutputModule",
+    fileName = cms.untracked.string('tree_testCMGTools.root'),
+    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
+    outputCommands = cms.untracked.vstring( 'drop *')
+    )
 from CMGTools.Common.eventContent.everything_cff import everything 
-process.out.outputCommands = cms.untracked.vstring( 'drop *',
-                                                    'keep *_*IdTight*_*_*',
-                                                    )
-process.out.outputCommands.extend( everything ) 
+process.out.outputCommands.extend( everything )
+process.out.outputCommands.append( 'drop cmg*_*_*_PAT' )
+process.out.outputCommands.append( 'keep cmgMETSignificance_*_*_PAT' )
+process.out.outputCommands.append( 'keep cmgBaseMETs_cmgPFMETType1Corrected*_*_PAT' )
+
 process.out.dropMetaData = cms.untracked.string('PRIOR')
 
 #output file for histograms etc
@@ -57,40 +63,36 @@ process.TFileService = cms.Service("TFileService",
 # default analysis sequence    
 process.load('CMGTools.Common.analysis_cff')
 
-# now, we're going to tune the default analysis sequence to our needs
-# by modifying the parameters of the modules present in this sequence. 
+# adding no PU Sub sequence
+from CMGTools.Common.Tools.visitorUtils import replacePostfix
+from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
+cloneProcessingSnippet(process, getattr(process, 'analysisSequence'), 'AK5NoPUSubCMG')
+replacePostfix(getattr(process,"analysisSequenceAK5NoPUSubCMG"),'AK5','AK5NoPUSub') 
 
-# removing the taus, as PFCandidate embedding does not work, hence an exception in the cmg Tau factory - not needed anymore
+# but we need only the jets and taus:
+from CMGTools.Common.Tools.tuneCMGSequences import * 
+tuneCMGSequences(process, postpostfix='CMG')
 
-from CMGTools.Common.Tools.tuneCMGSequences import removeObject
-removeObject( process, 'tau', '') 
+# adding the standard leptons: 
+from CMGTools.Common.PAT.addStdLeptons import addCmgMuons, addCmgElectrons
+process.cmgStdLeptonSequence = cms.Sequence(
+    addCmgMuons( process, 'StdLep', 'selectedPatMuonsAK5StdLep'  ) +
+    addCmgElectrons( process, 'StdLep', 'selectedPatElectronsAK5StdLep'  ) 
+    )
+process.cmgObjectSequence += process.cmgStdLeptonSequence
 
-# Select events with 2 jet ...  
-# process.cmgPFJetCount.minNumber = 2
-# with pT > 50.
-# process.cmgPFJetSel.cut = "pt()>50"
-# and MET larger than 50
-# process.cmgPFMETSel.cut = "pt()>50"
-
-# note: we're reading ttbar events
-
-# process.load('CMGTools.Common.factories.genJetFactory_cfi')
-
-# from CMGTools.Common.skims.cmgPOSel_cfi import cmgPOSel
-# process.cmgPOSelJets = cmgPOSel.clone( src='genJet', cut='pt>50') 
 
 process.p = cms.Path(
-    process.analysisSequence
-)
+    process.analysisSequence +
+    process.analysisSequenceAK5NoPUSubCMG
+    )
 
-if runOnMC:
-    process.load("CMGTools.Common.gen_cff")
-    process.p += process.genJetsSequence
-    process.load("CMGTools.Common.runInfoAccounting_cff")
-    process.outpath += process.runInfoAccountingSequence
+process.outpath = cms.EndPath(process.out)
 
 
-
+from Configuration.AlCa.autoCond import autoCond
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
 process.GlobalTag.globaltag = cms.string(getGlobalTag(runOnMC))
 
 process.schedule = cms.Schedule(
@@ -98,6 +100,7 @@ process.schedule = cms.Schedule(
     process.outpath
     )
 
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) ) 
 
