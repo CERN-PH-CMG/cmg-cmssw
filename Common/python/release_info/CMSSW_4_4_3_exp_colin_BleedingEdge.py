@@ -2,7 +2,7 @@
   ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_cmgONpat_26Mar12'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_19Mar12'),
   ('CMGTools/HToZZTo4Leptons', 'UserCode/CMG/CMGTools/HToZZTo4Leptons', 'cbern_hzz_21Mar12'),
-  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'botta_V4_23march2012'),
+  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'pmeckiff26mar2012'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_hzz_21Mar12'),
   ('CMGTools/ZmumuJetsTutorial', 'UserCode/CMG/CMGTools/ZmumuJetsTutorial', 'jhegeman_V2401_16Jan12'),
   ( 'EgammaCalibratedGsfElectrons/CalibratedElectronAlgos',
