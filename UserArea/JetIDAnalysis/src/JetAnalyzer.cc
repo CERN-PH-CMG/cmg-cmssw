@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.cc,v 1.9 2012/03/20 17:21:38 malberti Exp $
+// $Id: JetAnalyzer.cc,v 1.10 2012/03/26 09:11:18 musella Exp $
 //
 //
 
@@ -344,5 +344,3 @@ JetAnalyzer::endJob()
   //tree->Write();
 }
 
-//define this as a plug-in
-DEFINE_FWK_MODULE(JetAnalyzer);
