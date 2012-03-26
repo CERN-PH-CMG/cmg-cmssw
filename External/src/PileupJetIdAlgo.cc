@@ -161,7 +161,9 @@ void PileupJetIdAlgo::bookReader()
 }
 
 // ------------------------------------------------------------------------------------------
-PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, float jec, const reco::Vertex * vtx, bool calculateMva) 
+PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, float jec, const reco::Vertex * vtx,
+							const reco::VertexCollection & allvtx,
+							bool calculateMva) 
 {
 	static int printWarning = 10; 
 	typedef std::vector <reco::PFCandidatePtr> constituents_type;
@@ -191,7 +193,7 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 	
 	reco::TrackRef impactTrack;
 	float jetPt = jet->pt() / jec; // use uncorrected pt for shape variables
-	float sumPt = 0., sumPt2 = 0.;
+	float sumPt = 0., sumPt2 = 0., sumTkPt = 0.;
 	setPtEtaPhi(*jet,internalId_.jetPt_,internalId_.jetEta_,internalId_.jetPhi_); // use corrected pt for jet kinematics
 	internalId_.jetM_ = jet->mass(); 
 	
@@ -228,6 +230,24 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 			internalId_.dRMeanEm_ += candPtDr;
 			fracEm.push_back(candPtFrac);
 			if( icone < ncones ) { *coneEmFracs[icone] += candPt; }
+			
+			// beta and betastar		
+			if(  icand->trackRef().isNonnull() ) {
+				float tkpt = icand->trackRef()->pt(); 
+				for(reco::VertexCollection::const_iterator  vi=allvtx.begin(); vi!=allvtx.end(); ++vi ) {
+					const reco::Vertex & iv = *vi;
+					float dZ = fabs(impactTrack->dz(iv.position()));
+					if( dZ < 0.2 ) {
+						if( (iv.position() - vtx->position()).r() < 0.02 ) {
+							internalId_.beta_ += tkpt;
+						} else {
+							internalId_.betaStar_ += tkpt;
+						}
+					}
+					sumTkPt += tkpt;
+				}
+			}
+
 		}
 		// Charged hadrons
 		if( icand->particleId() == reco::PFCandidate::h ) {
@@ -249,6 +269,7 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 		internalId_.ptD_ += candPt*candPt;
 		sumPt += candPt;
 		sumPt2 += candPt*candPt;
+		
 	}
 	assert( lLead.isNonnull() );
 	
@@ -319,6 +340,12 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 	}
 	
 	internalId_.ptD_ = sqrt( internalId_.ptD_ ) / sumPt;
+	if( sumTkPt != 0. ) {
+		internalId_.beta_     /= sumTkPt;
+		internalId_.betaStar_ /= sumTkPt;
+	} else {
+		assert( internalId_.beta_ == 0. && internalId_.betaStar_ == 0. );
+	}
 	
 	if( calculateMva ) {
 		if( ! reader_ ) { bookReader(); }
@@ -453,6 +480,9 @@ void PileupJetIdAlgo::initVariables()
 	INIT_VARIABLE(emFrac03    ,"" ,0.);  
 	INIT_VARIABLE(emFrac04    ,"" ,0.);  
 	INIT_VARIABLE(emFrac05   ,"" ,0.);  
+
+	INIT_VARIABLE(beta   ,"" ,0.);  
+	INIT_VARIABLE(betaStar   ,"" ,0.);  
 	
 }
 
