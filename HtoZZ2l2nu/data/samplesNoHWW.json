@@ -1,7 +1,7 @@
 {
     "proc":[
 	{
-        "tag":"WW",
+        "tag":"WW#rightarrow 2l2#nu",
         "isdata":false,
         "color":"592",
         "lcolor":1,
@@ -13,8 +13,7 @@
                 "aoddir":["/store/cmst3/group/cmgtools/CMG/WWJetsTo2L2Nu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6-START44_V5-v1/AODSIM/V3"],
                 "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/WWJetsTo2L2Nu_TuneZ2_7TeV-madgraph-tauola/"],
                 "split":1,
-                "xsec":43,
-                "br":[0.10497]
+                "xsec":4.78
              }
 	]
 	},
@@ -31,12 +30,12 @@
                 "aoddir":["/store/cmst3/group/cmgtools/CMG/ZZ_TuneZ2_7TeV_pythia6_tauola/Fall11-PU_S6-START44_V5-v1/AODSIM/V3"],
                 "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/ZZ_TuneZ2_7TeV_pythia6_tauola/"],
                 "split":2,
-                "xsec":5.9
+                "xsec":4.287
              }
 	]
 	},
         {
-        "tag":"WZ",
+        "tag":"WZ#rightarrow 3l#nu",
         "isdata":false,
         "color":"596",
         "lcolor":1,
@@ -48,8 +47,7 @@
                 "aoddir":["/store/cmst3/group/cmgtools/CMG/WZJetsTo3LNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6-START44_V5-v1/AODSIM/V3"],
                 "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/WZJetsTo3LNu_TuneZ2_7TeV-madgraph-tauola/"],
                 "split":2,
-                "xsec":18.2,
-                "br":[0.0327]
+                "xsec":0.856
              }
            ]
         },
@@ -143,10 +141,25 @@
          ]
         },
 	{
-	 "tag":"Z/#gamma^{*}+jets#rightarrow ll",
+	 "tag":"Z#rightarrow #tau#tau",
+         "isdata":false,
+         "color":"834",
+	 "lcolor":1,
+	 "mctruthmode":2,
+         "data":[
+	      {
+               "dtag":"MC_DYJetsToTauTau",
+               "split":10,
+                "xsec":3048
+              }
+          ]
+	},
+	{
+	 "tag":"Z#rightarrow ll",
          "isdata":false,
          "color":"831",
 	 "lcolor":1,
+	 "mctruthmode":1,
          "data":[
 	      {
                "dtag":"MC_DYJetsToLL",

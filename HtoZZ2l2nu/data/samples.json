@@ -1,7 +1,7 @@
 {
     "proc":[
 	{
-        "tag":"WW",
+        "tag":"WW#rightarrow 2l2#nu",
         "isdata":false,
         "color":"592",
         "lcolor":1,
@@ -35,7 +35,7 @@
 	]
 	},
         {
-        "tag":"WZ",
+        "tag":"WZ#rightarrow 3l#nu",
         "isdata":false,
         "color":"596",
         "lcolor":1,
@@ -125,7 +125,7 @@
 	  ]
 	},
         {
-         "tag":"W+jets",
+         "tag":"W#rightarrow l#nu",
          "isdata":false,
          "color":"809",
          "lcolor":1,
@@ -141,10 +141,25 @@
          ]
         },
 	{
-	 "tag":"Z/#gamma^{*}+jets#rightarrow ll",
+	 "tag":"Z#rightarrow #tau#tau",
+         "isdata":false,
+         "color":"834",
+	 "lcolor":1,
+	 "mctruthmode":2,
+         "data":[
+	      {
+               "dtag":"MC_DYJetsToTauTau",
+               "split":10,
+                "xsec":3048
+              }
+          ]
+	},
+	{
+	 "tag":"Z#rightarrow ll",
          "isdata":false,
          "color":"831",
 	 "lcolor":1,
+	 "mctruthmode":1,
          "data":[
 	      {
                "dtag":"MC_DYJetsToLL",

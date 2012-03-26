@@ -188,18 +188,11 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(6,"#delta #phi(jet,E_{T}^{miss})");
   h->GetXaxis()->SetBinLabel(7,"E_{T}^{miss}>80");
 
-  h=(TH1F*) mon.addHistogram( new TH1F ("eventflow_ctrl", ";Step;Events", 4,0,4) );
-  h->GetXaxis()->SetBinLabel(1,"zmass&btag");
-  h->GetXaxis()->SetBinLabel(2,"!zmassbtag");
-  h->GetXaxis()->SetBinLabel(3,"zmass&!btag");
-  h->GetXaxis()->SetBinLabel(4,"!zmass&!btag");
-
-
   mon.addHistogram( new TH1F( "zeta", ";#eta^{ll};Events", 50,-10,10) );
   mon.addHistogram( new TH1F( "zpt", ";p_{T}^{ll};Events", 50,0,500) );
-  mon.addHistogram( new TH1F( "zmass", ";M^{ll};Events", 100,0,200) );
+  mon.addHistogram( new TH1F( "zmass", ";M^{ll};Events", 100,40,250) );
   mon.addHistogram( new TH1F("nvtx",";Vertices;Events",50,0,50) ); 
-  mon.addHistogram( new TH1F("njets"        ,";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5) );
+  mon.addHistogram( new TH1F("njets"        ,";Jet multiplicity (p_{T}>30 GeV/c);Events",5,0,5) );
   mon.addHistogram( new TH1F ("nbtags", ";b-tag multiplicity; Events", 5,0,5) );  
   for(size_t ibin=1; ibin<=5; ibin++){
     TString label("");
@@ -212,14 +205,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F ("btagvetosel", ";b-tag discriminator; Events", 6,0,6) );  
   mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1F( "met_met"  , ";E_{T}^{miss};Events", 50,0,500) );
-  mon.addHistogram( new TH1F( "met_metaftersmear"  , ";E_{T}^{miss} after smear;Events", 50,0,500) );
-  mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 80,150,950) );
-  mon.addHistogram( new TH1F( "mtaftersmear"  , ";M_{T} after smear;Events", 80,150,950) );
-  mon.addHistogram( new TH1F( "jetidcen",";Jet MVA (|#eta|<2.5);Jets",50,-2,2) );
-  mon.addHistogram( new TH1F( "jetidtr",";Jet MVA (2.5<|#eta|<3.0);Jets",50,-2,2) );
-  mon.addHistogram( new TH1F( "jetidfwd",";Jet MVA (|#eta|>3.0);Jets",50,-2,2) );
-  mon.addHistogram( new TH2F ("met_redClusteredMetvsJetId",";red(E_{T}^{miss},clustered E_{T}^{miss}) [GeV];Jet MVA",100,0,500,10,0.,1.0 ) );
-  mon.addHistogram( new TH1F( "met_redClusteredMet"  , ";red(E_{T}^{miss},clustered E_{T}^{miss});Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 100,0,1000) );
 
   //##############################################
   //######## STUFF FOR CUTS OPTIMIZATION  ########
@@ -253,9 +239,18 @@ int main(int argc, char* argv[])
       Hoptim_cuts1_mtmax  ->Fill(index, optim_Cuts1_mtmax[index]);
    }
 
-   for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
-      mon.addHistogram( new TH2F (TString("mt_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 80,150,950) );
-   } 
+   for(size_t ivar=0; ivar<nvarsToInclude; ivar++)
+     {
+       mon.addHistogram( new TH2F (TString("mt_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 80,150,950) );
+       mon.addHistogram( new TH2F (TString("mt3")+varNames[ivar],";cut index;M_{T}^{3rd lepton} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 50,0,250) );
+       TH2F *h=(TH2F *) mon.addHistogram( new TH2F ("nonresbckg_ctrl"+varNames[ivar],";cut index;Selection region;Events",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(),6,0,6) );
+       h->GetYaxis()->SetBinLabel(1,"M_{in}^{ll}/=0 b-tags");
+       h->GetYaxis()->SetBinLabel(2,"M_{out}^{ll}/=0 b-tags");
+       h->GetYaxis()->SetBinLabel(3,"M_{out+}^{ll}/=0 b-tags");
+       h->GetYaxis()->SetBinLabel(4,"M_{in}^{ll}/#geq 1 b-tag");
+       h->GetYaxis()->SetBinLabel(5,"M_{out}^{ll}/#geq 1 b-tag");
+       h->GetYaxis()->SetBinLabel(6,"M_{out+}^{ll}/#geq 1 b-tag");
+     } 
 
 
   //##############################################
@@ -345,12 +340,8 @@ int main(int argc, char* argv[])
       evSummaryHandler.getEntry(iev);
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
+
       //LorentzVector zll  = isGammaEvent ? gammaEvHandler->massiveGamma("ll") : phys.leptons[0]+phys.leptons[1];
-
-      //require TMLastStationLoose for muons in the dilepton
-      if(fabs(phys.leptons[0].id)==13 && ((phys.leptons[0].pid >> 1) & 0x1)==false)continue;
-      if(fabs(phys.leptons[1].id)==13 && ((phys.leptons[1].pid >> 1) & 0x1)==false)continue;
-
       LorentzVector lep1=phys.leptons[0];
       LorentzVector lep2=phys.leptons[1];
       LorentzVector zll=lep1+lep2;
@@ -386,6 +377,7 @@ int main(int argc, char* argv[])
       std::vector<TString> tags_full;
       tags_full.push_back("all");
       tags_full.push_back(tag_cat);
+      if(tag_subcat=="vbf") tags_full.push_back(tag_cat+"_"+tag_subcat);
       //tags_full.push_back(tag_cat + tag_subcat);
 
       //pileup and Higgs pT weight
@@ -415,10 +407,14 @@ int main(int argc, char* argv[])
       zvvs.insert(zvvs.begin(),phys.met[0]);
       jets.insert(jets.begin(),jetsP4);
       std::vector<Float_t>  mts;
-      for(size_t ivar=0; ivar<(runSystematics?3:1); ivar++){
-          Float_t imt     = METUtils::transverseMass(zll,zvvs[ivar],true);
+      std::vector<Float_t> mt3s;
+      for(size_t ivar=0; ivar<(runSystematics?3:1); ivar++)
+	{
+	  Float_t imt     = METUtils::transverseMass(zll,zvvs[ivar],true);
           mts.push_back(imt);
-      }
+	  Float_t imt3(phys.leptons.size()>2 ? METUtils::transverseMass(phys.leptons[2],zvvs[ivar],false) : 0. );
+	  mt3s.push_back(imt3);
+	}
       
       //run the variations
       for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
@@ -433,6 +429,7 @@ int main(int argc, char* argv[])
           LorentzVectorCollection &origJetsP4=jets[ivar>3?0:ivar];            
           LorentzVector zvv  = zvvs[ivar>2?0:ivar];
           Float_t mt         = mts[ivar>2?0:ivar];
+	  Float_t mt3        = mt3s[ivar>2?0:ivar]; 
 	  int nBtaggedVsDisc[6]={0,0,0,0,0,0};
           int njets(0),nbtags(0);
           Float_t mindphijmet(9999.);
@@ -455,14 +452,17 @@ int main(int argc, char* argv[])
           //##############################################
           //########     PRESELECTION             ########
           //##############################################
+	  if(zmass<40) continue; // this is required by the HZZ skim anyhow
           bool passZmass(fabs(zmass-91)<15);
+	  bool isZsideBand( (zmass>40 && zmass<70) || (zmass>110 && zmass<200));
+	  bool isZsideBandPlus( (zmass>110 && zmass<200));
           bool passDphijmet(mindphijmet>0.5); 
           bool passZpt(zpt>55);
-          bool pass3dLeptonVeto(true); for(unsigned int i=2;i<phys.leptons.size();i++){if(phys.leptons[i].pt()>10)pass3dLeptonVeto=false;}
+          bool pass3dLeptonVeto(true); int nExtraLep(0); for(unsigned int i=2;i<phys.leptons.size();i++) { if(phys.leptons[i].pt()>10){ nExtraLep++; pass3dLeptonVeto=false;} }
           bool passBveto(nbtags==0);
 	  bool passBaseMet(zvv.pt()>70);
-          bool passPreselection(passZmass && passZpt && pass3dLeptonVeto && passBveto && passDphijmet);
-          
+     
+    
           //##############################################  
           //########         GENERAL PLOTS        ########                                                                                                                  
           //##############################################  
@@ -499,34 +499,7 @@ int main(int argc, char* argv[])
                                   mon.fillHisto  ("eventflow",tags_full,5,iweight);
                                   mon.fillHisto("met_met",tags_full,zvv.pt(),iweight);
                                   mon.fillHisto("mt",tags_full,mt,iweight);
-				  LorentzVector clusteredMetP4(0,0,0,0),metafterSmear(zvv);
-				  for(size_t ijet=0; ijet<jetsP4.size(); ijet++) 
-				    {
-				      metafterSmear -= (smearJetsP4[ijet]-jetsP4[ijet]);
-				      clusteredMetP4 -= jetsP4[ijet];
-				      TString jetReg("cen");
-				      if(fabs(jetsP4[ijet].eta()>3.0))      jetReg="fwd";
-				      else if(fabs(jetsP4[ijet].eta()>2.5)) jetReg="tr";
-				      mon.fillHisto("jetid"+jetReg,tags_full,phys.jets[ijet].pumva,iweight);
-				    }
-				  mon.fillHisto("met_metaftersmear",tags_full,metafterSmear.pt(),iweight);
-				  Float_t mtafterSmear = METUtils::transverseMass(zll,metafterSmear,true);
-                                  mon.fillHisto("mtaftersmear",tags_full,mtafterSmear,iweight);
-				  mon.fillHisto("met_redClusteredMet",tags_full,METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED,lep1,0,lep2,0,clusteredMetP4,zvv,false).pt(),iweight);
-
-				  //control red-METfor different jet id
-				  for(float_t imva=0; imva<1.0; imva+=0.1)
-				    {
-				      LorentzVector iClusteredMetP4(0,0,0,0);
-				      for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
-					{
-					  if(phys.jets[ijet].pumva<imva) continue;
-					  iClusteredMetP4 -= phys.jets[ijet];
-					}
-				      LorentzVector rCMetP4    = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED,lep1,0,lep2,0,iClusteredMetP4,zvv,false);
-				      mon.fillHisto("met_redClusteredMetvsJetId",tags_full,imva,rCMetP4.pt(),iweight);
-				    }
-
+				  
 				  if(passBaseMet){
 				    mon.fillHisto  ("eventflow",tags_full,6,iweight);
 				  }
@@ -535,25 +508,28 @@ int main(int argc, char* argv[])
                       }
                   }
               }
-
-              if((fabs(zmass-91)<30) & passZpt & pass3dLeptonVeto & passDphijmet & (zvv.pt()>50) ){
-		if( passZmass &  passBveto)mon.fillHisto  ("eventflow_ctrl",tags_full,0,iweight);
-                if(!passZmass &  passBveto)mon.fillHisto  ("eventflow_ctrl",tags_full,1,iweight);
-                if( passZmass & !passBveto)mon.fillHisto  ("eventflow_ctrl",tags_full,2,iweight);
-                if(!passZmass & !passBveto)mon.fillHisto  ("eventflow_ctrl",tags_full,3,iweight);
-              }
-
           }
-          if(!passPreselection) continue;
 
-           //Fill histogram for posterior optimization
+	  
+	  //Fill histogram for posterior optimization, or for control regions
+          bool passPreselection             (passZmass && passZpt && pass3dLeptonVeto && passDphijmet && passBveto);
+	  bool passPreselectionMbvetoMzmass (             passZpt && pass3dLeptonVeto && passDphijmet             );          
+	  bool passPreselectionM3dlep       (passZmass && passZpt                     && passDphijmet && passBveto);
           for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
-             if(zvv.pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index]){
-                mon.fillHisto(TString("mt_shapes")+varNames[ivar],tags_full,index, mt,iweight);
-             }
+	    if(zvv.pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
+	      {
+		if(passPreselection                                        )          mon.fillHisto(TString("mt_shapes")+varNames[ivar],tags_full,index, mt,iweight);
+		if(passPreselectionM3dlep       && !pass3dLeptonVeto && nExtraLep==1) mon.fillHisto(TString("mt3")+varNames[ivar],tags_full,index, mt3,iweight);
+		if(passPreselectionMbvetoMzmass && passZmass         && passBveto)    mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,0,iweight);
+		if(passPreselectionMbvetoMzmass && isZsideBand       && passBveto)    mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,1,iweight);
+		if(passPreselectionMbvetoMzmass && isZsideBandPlus   && passBveto)    mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,2,iweight);
+		if(passPreselectionMbvetoMzmass && passZmass         && !passBveto)   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,3,iweight);
+		if(passPreselectionMbvetoMzmass && isZsideBand       && !passBveto)   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,4,iweight);
+		if(passPreselectionMbvetoMzmass && isZsideBandPlus   && !passBveto)   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,5,iweight);
+	     }
           }
       }
-
+      
       //##############################################   EVENT LOOP ENDS   ##############################################
   }
   
