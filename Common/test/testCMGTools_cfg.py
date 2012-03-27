@@ -23,10 +23,14 @@ runOnMC = True
 
 
 from CMGTools.Production.datasetToSource import *
-process.source = datasetToSource(
-    'cmgtools_group',
-    '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V3/TestMVAs',
-    'patTuple_PF2PAT.*root'
+# process.source = datasetToSource(
+#    'cmgtools_group',
+#    '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V3/TestMVAs',
+#    'patTuple_PF2PAT.*root'
+#    ) 
+process.source = cms.Source(
+    "PoolSource",
+    fileNames = cms.untracked.vstring( 'file:../prod/patTuple_PF2PAT.root' )
     ) 
 
 # reading the first 10 files:
@@ -34,10 +38,6 @@ nFiles = 10
 print 'WARNING: RESTRICTING INPUT TO THE FIRST', nFiles, 'FILES'
 process.source.fileNames = process.source.fileNames[:nFiles] 
 
-process.source = cms.Source(
-    "PoolSource",
-    fileNames = cms.untracked.vstring( 'file:../prod/patTuple_PF2PAT.root' )
-    ) 
 
 print process.source.fileNames
 
