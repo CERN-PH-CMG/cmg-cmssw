@@ -16,7 +16,9 @@ class FourLeptonTreeProducer( TreeAnalyzer ):
             var('{pName}Eta'.format(pName=pName))
             var('{pName}Phi'.format(pName=pName))
             var('{pName}Charge'.format(pName=pName))
-            # var('{pName}Iso'.format(pName=pName))
+            var('{pName}PdgId'.format(pName=pName))
+            var('{pName}SIP3D'.format(pName=pName))
+            var('{pName}Iso'.format(pName=pName))
             
         particleVars('L1')
         particleVars('L2')
@@ -47,7 +49,9 @@ class FourLeptonTreeProducer( TreeAnalyzer ):
             fill('{pName}Eta'.format(pName=pName), particle.eta() )
             fill('{pName}Phi'.format(pName=pName), particle.phi() )
             fill('{pName}Charge'.format(pName=pName), particle.charge() )
-            # fill('{pName}Iso'.format(pName=pName), particle.relIso(0.5) )
+            fill('{pName}PdgId'.format(pName=pName), particle.pdgId() )
+            fill('{pName}SIP3D'.format(pName=pName), particle.sip3D() )
+            fill('{pName}Iso'.format(pName=pName), particle.relIso(0.5) )
            
             
         fParticleVars('Z1', event.zBoson1 )

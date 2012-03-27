@@ -27,11 +27,13 @@ muEleAna = cfg.Analyzer(
     'MuEleFourLeptonAnalyzer',
     pt1 = 5.,
     eta1 = 2.4,
-    iso1 = 999,
+    iso1 = 0.7,
+    sip1 = 4,
     pt2 = 7.,
     eta2 = 2.5,
-    iso2 = 999,
-    z1_m = 60,
+    iso2 = 0.7,
+    sip2 = 4, 
+    z1_m = (50,120),
     z1_pt1 = 20,
     z1_pt2 = 10,
     z2_m = 12,
@@ -41,8 +43,31 @@ muEleAna = cfg.Analyzer(
     nLeptonsMin = 4
     )
 
-muMuAna = copy.deepcopy( muEleAna )
-muMuAna.name = 'MuMuFourLeptonAnalyzer'
+muMuAna = cfg.Analyzer(
+    'MuMuFourLeptonAnalyzer',
+    pt1 = 5.,
+    eta1 = 2.4,
+    iso1 = 0.7,
+    sip1 = 4,
+    # 
+    pt2 = 5,
+    eta2 = 2.4,
+    iso2 = 0.7,
+    sip2 = 4, 
+    #
+    z1_m = (50,120),
+    z1_pt1 = 20,
+    z1_pt2 = 10,
+    #
+    z2_m = 12,
+    z2_pt1 = 0,
+    z2_pt2 = 0,
+    # 
+    h_m = 100,
+    pair_iso = 0.35, 
+    nLeptonsMin = 2
+    )
+
 
 treeProducer = cfg.Analyzer(
      'FourLeptonTreeProducer'
@@ -64,10 +89,11 @@ sequence = cfg.Sequence( [
     muMuAna,
     treeProducer
    ] )
-# DYJets.files = DYJets.files[:5]
+
+# Hig120GluGlu.files = Hig120GluGlu.files[:1]
 # DYJets.triggers = []
 
-Hig120GluGlu.splitFactor = 8
+Hig120GluGlu.splitFactor = 1
 selectedComponents = [Hig120GluGlu]
 # selectedComponents = [DYJets]
     

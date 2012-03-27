@@ -7,7 +7,6 @@ from ROOT import TLorentzVector
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-# from CMGTools.RootTools.physicsobjects.DiObject import DiObject
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton
 from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
 
@@ -26,7 +25,19 @@ class DiObject( TLorentzVector ):
         '''Trick to preserve the interface in use in CMSSW.'''
         if name.lower() == 'mass':
             name = 'M'
-        return getattr( super(DiObject, self), name.capitalize() )
+        # changing the first letter of the function name to upper case. 
+        capName = ''.join( [name[0].capitalize(), name[1:]] ) 
+        # return getattr( super(DiObject, self), capName )
+        return getattr( self, capName )
+
+    def PdgId(self):
+        return 23
+
+    def Sip3D(self):
+        return -1
+
+    def RelIso(self, dBetaCor):
+        return self.leg1.relIso( dBetaCor ) + self.leg2.relIso(dBetaCor )
         
     def charge(self):
         return self.leg1.charge() + self.leg2.charge()
@@ -61,19 +72,24 @@ class FourLeptonAnalyzer( Analyzer ):
 
         self.counters.counter('FourLepton').inc('all events')
 
+        # creating a Lepton for each lepton in the first input collection
         event.leptons1 = map( self.__class__.LeptonClass1,
                               self.handles['leptons1'].product() )
         nL = len(event.leptons1)
         if self.__class__.LeptonClass2 != self.__class__.LeptonClass1:
+            # .. and in the second input collection, if it is different
+            # from the first one
             event.leptons2 = map( self.__class__.LeptonClass2,
                                   self.handles['leptons2'].product() )
             nL += len(event.leptons2)
 
+        # first preselection, just to speed up the process
         if nL < self.cfg_ana.nLeptonsMin:
             return False
 
         self.counters.counter('FourLepton').inc('enough leptons')        
 
+        # loose lepton selection
         event.selLeptons1 = filter( self.testLepton1,
                                     event.leptons1 )
         event.allSelLeptons = copy.copy( event.selLeptons1 )        
@@ -115,10 +131,13 @@ class FourLeptonAnalyzer( Analyzer ):
             return False
         self.counters.counter('FourLepton').inc('Z2 found')
 
-        
+        # putting together all selected lepton pairs:
+        # Z1
+        # selected Z2s
         event.allLeptonPairs = copy.copy( event.selZBosons2 )
         event.allLeptonPairs.append( event.zBoson1 ) 
 
+        # looking for 2-Z combinations
         event.fourLeptons = self.findPairs( event.allLeptonPairs )
         event.selFourLeptons = filter( self.testFourLepton, event.fourLeptons)
         if len( event.selFourLeptons )==0:
@@ -130,6 +149,7 @@ class FourLeptonAnalyzer( Analyzer ):
         if event.zBoson2 == event.zBoson1:
             event.zBoson2 = event.higgsCand.leg2
 
+        # leptons organized by the Z they belong to
         event.theLeptons = [
             event.zBoson1.leg1,
             event.zBoson1.leg2,
@@ -137,6 +157,7 @@ class FourLeptonAnalyzer( Analyzer ):
             event.zBoson2.leg2
             ]
 
+        # leptons sorted by decreasing pT 
         event.theLeptons_ptSorted = sorted( event.theLeptons,
                                             key = lambda x: 1/x.pt() )
         
@@ -178,29 +199,40 @@ class FourLeptonAnalyzer( Analyzer ):
         '''
         return fourLepton.M()>self.cfg_ana.h_m
 
+    def testLeptonPairIso(self, lep1, lep2, max):
+        '''Combined isolation for a lepton pair.'''
+        dBetaCor = 0.5
+        return lep1.relIso(dBetaCor) + lep2.relIso(dBetaCor) < max
     
     def testZ1(self, zCand):
-        return zCand.M() > self.cfg_ana.z1_m and \
+        '''Still missing the SIP3d cut'''
+        return zCand.M() > self.cfg_ana.z1_m[0] and \
+               zCand.M() < self.cfg_ana.z1_m[1] and \
                zCand.leg1.pt() > self.cfg_ana.z1_pt1 and \
                zCand.leg2.pt() > self.cfg_ana.z1_pt2 and \
-               zCand.charge() == 0
+               abs(zCand.leg1.pdgId()) == abs(zCand.leg2.pdgId()) and \
+               self.testLeptonPairIso( zCand.leg1, zCand.leg2, self.cfg_ana.pair_iso ) and \
+               zCand.charge() == 0 
 
 
     def testZ2(self, zCand):
         return zCand.M() > self.cfg_ana.z2_m and \
                zCand.leg1.pt() > self.cfg_ana.z2_pt1 and \
                zCand.leg2.pt() > self.cfg_ana.z2_pt2 and \
+               abs(zCand.leg1.pdgId()) == abs(zCand.leg2.pdgId()) and \
                zCand.charge() == 0
 
 
-    def testLepton(self, lepton, pt, eta, iso, sel=None):
+    def testLepton(self, lepton, pt, eta, iso, sip, sel=None):
         if sel is not None and \
            not lepton.getSelection(sel):
             # a cut string has to be tested, and the lepton does not pass
             return False
+        # patLepton = lepton.sourcePtr()
         if lepton.pt() > pt and \
            abs(lepton.eta()) < eta and \
-           lepton.relIso( 0.5 ) < iso:
+           lepton.relIso( 0.5 ) < iso and \
+           lepton.sip3D() < sip:
             return True
         else:
             return False
@@ -215,6 +247,7 @@ class FourLeptonAnalyzer( Analyzer ):
                                 pt = self.cfg_ana.pt1,
                                 eta = self.cfg_ana.eta1,
                                 iso = self.cfg_ana.iso1,
+                                sip = self.cfg_ana.sip1,
                                 sel = sel )
 
 
@@ -227,6 +260,7 @@ class FourLeptonAnalyzer( Analyzer ):
                                 pt = self.cfg_ana.pt2,
                                 eta = self.cfg_ana.eta2,
                                 iso = self.cfg_ana.iso2,
+                                sip = self.cfg_ana.sip2,
                                 sel = sel )
 
 
@@ -234,11 +268,13 @@ class FourLeptonAnalyzer( Analyzer ):
     def testMuon(self, muon):
         '''Returns True if a muon passes a set of cuts.
         Can be used in testLepton1 and testLepton2, in child classes.'''
+        # this is the id of the HZZ baseline:
+        return muon.getSelection('cuts_vbtfmuon_numberOfValidTrackerHits')
         # return muon.getSelection('cuts_vbtfmuon')
-        return True
+        # return True
     
     def testElectron(self, electron):
         '''Returns True if an electron passes a set of cuts.
         Can be used in testLepton1 and testLepton2, in child classes.'''
-        return True
+        return electron.getSelection('cuts_tightID')
 
