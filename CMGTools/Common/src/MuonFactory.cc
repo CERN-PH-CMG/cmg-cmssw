@@ -30,6 +30,9 @@ void cmg::MuonFactory::set(const pat::MuonPtr& input, cmg::Muon* const output, c
     output->muonID_ = cmg::toTriBool(input->muonID(muonIDType_));
     output->nMatches_ = input->numberOfMatches();
 
+    output->dB3D_ = input->dB( pat::Muon::PV3D );
+    output->edB3D_ = input->edB( pat::Muon::PV3D );
+
     reco::TrackRef combinedMuon = getTrack(input);
     if(combinedMuon.isNonnull() && combinedMuon.isAvailable()){
         output->pixelHits_ = combinedMuon->hitPattern().numberOfValidPixelHits();

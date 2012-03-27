@@ -33,22 +33,24 @@ cmg::ElectronFactory::event_ptr cmg::ElectronFactory::create(const edm::Event& i
 
 void cmg::ElectronFactory::set(const pat::ElectronPtr& input, cmg::Electron* const output, int nVertices){
 
-    output->mva_ = input->mva();
-    output->mvaDaniele_ = mvaEstimator_.mva(*input,nVertices);
-    output->mvaMIT_ = input->userFloat("ElectronMVA_MIT");
+  output->dB3D_ = input->dB( pat::Electron::PV3D );
+  output->edB3D_ = input->edB( pat::Electron::PV3D );
+  
+  output->mva_ = input->mva();
+  output->mvaDaniele_ = mvaEstimator_.mva(*input,nVertices);
+  output->mvaMIT_ = input->userFloat("ElectronMVA_MIT");
     
-    //see http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/PhysicsTools/SelectorUtils/interface/SimpleCutBasedElectronIDSelectionFunctor.h?view=markup    
-    output->sigmaIetaIeta_ = input->sigmaIetaIeta();
-    output->deltaPhiSuperClusterTrackAtVtx_ = input->deltaPhiSuperClusterTrackAtVtx();
-    output->deltaEtaSuperClusterTrackAtVtx_ = input->deltaEtaSuperClusterTrackAtVtx();
-    output->hadronicOverEm_ = input->hadronicOverEm();
-    if(input->gsfTrack().isNonnull() && input->gsfTrack().isAvailable()){
-        output->numberOfHits_  = input->gsfTrack()->trackerExpectedHitsInner().numberOfHits();
-    }
-    output->convDist_ = input->convDist();
-    output->convDcot_ = input->convDcot();
-    if(input->core().isNonnull() && input->core().isAvailable()){
-        output->isEcalDriven_ = cmg::toTriBool(input->ecalDriven());
-    }
-    
+  //see http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/PhysicsTools/SelectorUtils/interface/SimpleCutBasedElectronIDSelectionFunctor.h?view=markup    
+  output->sigmaIetaIeta_ = input->sigmaIetaIeta();
+  output->deltaPhiSuperClusterTrackAtVtx_ = input->deltaPhiSuperClusterTrackAtVtx();
+  output->deltaEtaSuperClusterTrackAtVtx_ = input->deltaEtaSuperClusterTrackAtVtx();
+  output->hadronicOverEm_ = input->hadronicOverEm();
+  if(input->gsfTrack().isNonnull() && input->gsfTrack().isAvailable()){
+    output->numberOfHits_  = input->gsfTrack()->trackerExpectedHitsInner().numberOfHits();
+  }
+  output->convDist_ = input->convDist();
+  output->convDcot_ = input->convDcot();
+  if(input->core().isNonnull() && input->core().isAvailable()){
+    output->isEcalDriven_ = cmg::toTriBool(input->ecalDriven());
+  }  
 }
