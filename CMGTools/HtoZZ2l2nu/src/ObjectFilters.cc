@@ -61,7 +61,10 @@ float getVertexMomentumFlux(const reco::Vertex *vtx, float minWeight)
 ///                            ///   
 
 //
-vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> > &hMu, const reco::BeamSpot &theBeamSpot, const double& rho, const edm::ParameterSet &iConfig)
+vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> > &hMu, 
+					const reco::VertexRef &primVertex,
+					const double& rho, 
+					const edm::ParameterSet &iConfig)
 {
     vector<reco::CandidatePtr> selMuons;
     
@@ -69,15 +72,20 @@ vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> >
       //config parameters
       double minPt = iConfig.getParameter<double>("minPt");
       double maxEta = iConfig.getParameter<double>("maxEta");
+      bool requireGlobal = iConfig.getParameter<bool>("requireGlobal"); 
+      bool requireTracker = iConfig.getParameter<bool>("requireTracker"); 
+      int minValidMuonHits = iConfig.getParameter<int>("minValidMuonHits");
+      int minMatchingMuonStations = iConfig.getParameter<int>("minMatchingMuonStations");
+      int minValidTrackerHits = iConfig.getParameter<int>("minValidTrackerHits");
+      int minPixelHits = iConfig.getParameter<int>("minPixelHits");
+      double maxTrackChi2 = iConfig.getParameter<double>("maxTrackChi2");
+      double maxRelPtUncertainty = iConfig.getParameter<double>("maxRelPtUncertainty");
+      double maxD0 = iConfig.getParameter<double>("maxD0");
+      double maxDZ = iConfig.getParameter<double>("maxDz");
       string id = iConfig.getParameter<string>("id");
       double maxRelIso = iConfig.getParameter<double>("maxRelIso");
-      double maxTrackChi2 = iConfig.getParameter<double>("maxTrackChi2");
-      int minValidTrackerHits = iConfig.getParameter<int>("minValidTrackerHits");
-      int minValidMuonHits = iConfig.getParameter<int>("minValidMuonHits");
-      double maxDistToBeamSpot = iConfig.getParameter<double>("maxDistToBeamSpot");
+      bool applySoftMuonIsolationVeto = iConfig.getParameter<bool>("applySoftMuonIsolationVeto");
       bool usePFIso = iConfig.getParameter<bool>("usePFIso");
-      bool requireTracker = iConfig.getParameter<bool>("requireTracker"); 
-      bool requireGlobal = iConfig.getParameter<bool>("requireGlobal"); 
       bool doDeltaBetaCorrection = iConfig.getParameter<bool>("doDeltaBetaCorrection");
 
       //iterate over the muons
@@ -85,36 +93,46 @@ vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> >
 	{
 	  reco::CandidatePtr muonPtr = hMu->ptrAt(iMuon);
 	  const pat::Muon *muon = dynamic_cast<const pat::Muon *>( muonPtr.get() );
+	  
+	  //kinematics
+	  double mPt = muon->pt();
+	  double mEta = muon->eta();
+	  if( mPt<minPt || fabs(mEta)>maxEta) continue; 
 
 	  //muon type
 	  bool isTracker = muon->isTrackerMuon();
 	  if(requireTracker && !isTracker)  continue;
 	  bool isGlobal = muon->isGlobalMuon();
 	  if(requireGlobal && !isGlobal) continue;
-
-	  //kinematics
-	  double mPt = muon->pt();
-	  double mEta = muon->eta();
-	  if( mPt<minPt || fabs(mEta)>maxEta) continue; 
-
-	  //beam spot compatibility
+	  
+	  //primary vertex compatibility (requires tracker)
 	  if(requireTracker)
 	    {
-	      double d0=muon->innerTrack()->dxy(theBeamSpot.position());
-	      if(fabs(d0)>maxDistToBeamSpot) continue;
-	    }
+	      double d0=fabs(muon->innerTrack()->dxy(primVertex->position())); //muon->dB(pat::Muon::PV2D);
+	      float dZ = fabs(muon->innerTrack()->dz(primVertex->position()));
+	      if(fabs(d0)>maxD0 || fabs(dZ)>maxDZ) continue;
 
+	      double sigmaPt=muon->innerTrack()->ptError();
+	      if(fabs(sigmaPt/mPt)>maxRelPtUncertainty) continue;
+	    }
+	  
 	  //global track selection	  
 	  if(requireGlobal)
 	    {
 	      double chi2 = muon->globalTrack()->normalizedChi2();	  
-	      // int nValidPixelHits = muon->globalTrack()->hitPattern().numberOfValidPixelHits();
+	      int nValidPixelHits = muon->globalTrack()->hitPattern().numberOfValidPixelHits();
 	      int nValidTrackerHits = muon->globalTrack()->hitPattern().numberOfValidTrackerHits();
 	      int nValidMuonHits = muon->globalTrack()->hitPattern().numberOfValidMuonHits();
-	      // int nMatches = muon->numberOfMatches();
-	      if(chi2>maxTrackChi2 || nValidTrackerHits < minValidTrackerHits || nValidMuonHits<minValidMuonHits) continue;
+	      int nMatches = muon->numberOfMatches();
+	      if(chi2>maxTrackChi2
+		 || nValidPixelHits<minPixelHits
+		 || nValidTrackerHits<minValidTrackerHits 
+		 || nValidMuonHits<minValidMuonHits
+		 || nMatches<minMatchingMuonStations) continue;
 	    }
-	  
+      
+
+
 	  //id 
 	  if(!id.empty())
 	    {
@@ -127,8 +145,9 @@ vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> >
 	  double relIso = isoVals[REL_ISO];
 	  if(rho>0)     relIso = isoVals[RELRHOCORR_ISO];
 	  if(usePFIso)  relIso = isoVals[ doDeltaBetaCorrection ? PFRELBETCORR_ISO : PFREL_ISO];
-	  if(relIso>maxRelIso) continue;
-	  
+	  if(applySoftMuonIsolationVeto && mPt>20 && relIso<0.1) continue;
+	  else if(relIso>maxRelIso) continue;
+
 	  //muon is selected
 	  selMuons.push_back(muonPtr);
 	}
@@ -142,14 +161,18 @@ vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> >
 
 
 //
-vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &hEle, edm::Handle<edm::View<reco::Candidate> > &hMu, const reco::BeamSpot &theBeamSpot, const double& rho, const edm::ParameterSet &iConfig)
+vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &hEle, 
+				      edm::Handle<edm::View<reco::Candidate> > &hMu, 
+				      const reco::VertexRef &primVertex,
+				      const double& rho, 
+				      const edm::ParameterSet &iConfig)
 {
   vector<CandidatePtr> selElectrons;
 
   try{
     //config parameters                                                                                                                                                 
     double minPt = iConfig.getParameter<double>("minPt");
-    double minSuperClusterEt = iConfig.getParameter<double>("minSuperClusterEt");
+    
     double maxEta = iConfig.getParameter<double>("maxEta");
     bool applyConversionVeto = iConfig.getParameter<bool>("applyConversionVeto");
     bool vetoTransitionElectrons = iConfig.getParameter<bool>("vetoTransitionElectrons");
@@ -157,7 +180,9 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
     string id = iConfig.getParameter<string>("id");
     double maxRelIso = iConfig.getParameter<double>("maxRelIso");
     double minDeltaRtoMuons = iConfig.getParameter<double>("minDeltaRtoMuons");
-    double maxDistToBeamSpot = iConfig.getParameter<double>("maxDistToBeamSpot");
+    double maxD0 = iConfig.getParameter<double>("maxD0");
+    double maxDZ = iConfig.getParameter<double>("maxDz");
+    std::vector<double> maxHoE = iConfig.getParameter<std::vector<double> >("maxHoE");
     bool usePFIso = iConfig.getParameter<bool>("usePFIso");
     bool doDeltaBetaCorrection = iConfig.getParameter<bool>("doDeltaBetaCorrection");
     
@@ -166,15 +191,8 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
       {
 	reco::CandidatePtr elePtr = hEle->ptrAt(iElec);
 	const pat::Electron *ele = dynamic_cast<const pat::Electron *>( elePtr.get() );
-	//  bool isEcalDriven(true);
-	// 	  try{
-	// 	    isEcalDriven = ele->ecalDrivenSeed();
-	// 	  }catch(exception &e){
-	// 	    //it may happen that GsfElectronCore is not stored (rely on the skim)
-	// 	  }
-	//if(!isEcalDriven) continue;
 
-	int eid=5;  //assume eid+conversion rejection
+	int eid=5;  //assume eid+conversion rejection if it hasn't been stored 
 	if( !id.empty() ) eid = (int) ele->electronID(id);
 
 	//kinematics
@@ -184,21 +202,30 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 	double eEta = ele->eta();
 	double scEta= ele->superCluster()->eta();
 
-	if(ePt<minPt || fabs(eEta)>maxEta || eSuperClusterEt<minSuperClusterEt) continue; 
+	if(ePt<minPt || fabs(eEta)>maxEta) continue; 
 	if(vetoTransitionElectrons && fabs(scEta)>1.4442 && fabs(scEta)<1.566) continue;
 	
 	//conversion veto (from track and info on electron id - 2nd bit)
 	const reco::GsfTrackRef & eTrack = ele->gsfTrack();
-	double d0=eTrack->dxy(theBeamSpot.position());
+	double d0=fabs(eTrack->dxy(primVertex->position())); 
+	float dZ = fabs(eTrack->dz(primVertex->position()));
 	int nTrackLostHits=eTrack->trackerExpectedHitsInner().numberOfLostHits();
 	bool hasId =(eid & 0x1);
+	bool passHoE(true);
+	try {
+	  double hoe = ele->hadronicOverEm();
+	  if(ele->isEB() && hoe>maxHoE[0]) passHoE=false;
+	  if(!ele->isEB() && hoe>maxHoE[1]) passHoE=false;
+	}catch(std::exception &e){
+	}
 	bool hasConversionTag = !((eid>>2) & 0x1);	 
 
 	//electron id + conversion veto
-	if(fabs(d0)>maxDistToBeamSpot) continue;
-	if( !hasId ) continue;
+	if(fabs(d0)>maxD0 || fabs(dZ)>maxDZ) continue;
+	if(!hasId) continue;
+	if(!passHoE) continue;
 	if(applyConversionVeto && hasConversionTag) continue;
-	if( nTrackLostHits>maxTrackLostHits) continue;
+	if(nTrackLostHits>maxTrackLostHits) continue;
 	
 	//isolation
 	std::vector<double> isoVals = getLeptonIso( elePtr, ePt, rho);
@@ -488,6 +515,53 @@ double computeVtxAssocFracForJet(const pat::Jet *jet, const reco::Vertex *vtx)
 //                               //
 //  PHOTON UTILITIES             //
 //                               //
+
+int getPhotonTrackVeto(const reco::Photon *pho,
+		       edm::Handle<std::vector<reco::Track> > &ctfTracks, 
+		       edm::Handle<std::vector<reco::Track> > &gsfTracks,
+		       edm::Handle<edm::View<reco::Candidate> > &ele)
+{
+  int trackVetoClassif(0);
+  if(pho==0) return trackVetoClassif;
+
+  //veto against any ctf track
+  if(ctfTracks.isValid())
+    {
+      for(std::vector<reco::Track>::const_iterator tIt = ctfTracks->begin(); tIt != ctfTracks->end(); tIt++)
+	{
+	  double dR=deltaR(pho->eta(),pho->phi(),tIt->eta(),tIt->phi());
+	  if(dR>0.1) continue;
+	  trackVetoClassif |= 0x1;
+	  break;
+	}
+    }
+
+  //veto against a gsf track 
+  if(gsfTracks.isValid())
+    {
+      for(std::vector<reco::Track>::const_iterator tIt = gsfTracks->begin(); tIt != gsfTracks->end(); tIt++)
+	{
+	  double dR=deltaR(pho->eta(),pho->phi(),tIt->eta(),tIt->phi());
+	  if(dR>0.1) continue;
+	  trackVetoClassif |= 0x2;
+	  break;
+	}
+    }
+
+  //veto against an electron
+  if(ele.isValid())
+    {
+      for(edm::View<reco::Candidate>::const_iterator eIt = ele->begin(); eIt != ele->end(); eIt++)
+	{
+	  double dR=deltaR(pho->eta(),pho->phi(),eIt->eta(),eIt->phi());
+	  if(dR>0.1) continue;
+	  trackVetoClassif |= 0x4;
+	  break;
+	}
+    }
+  
+  return trackVetoClassif;
+}
 
 //
 vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hPhoton,

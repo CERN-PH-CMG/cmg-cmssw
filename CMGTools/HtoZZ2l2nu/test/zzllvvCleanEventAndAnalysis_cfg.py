@@ -22,8 +22,8 @@ process.ClusteredPFMetProducer = ClusteredPFMetProducer.clone()
 
 #pileup normalization
 from CMGTools.HtoZZ2l2nu.PileupNormalizationProducer_cfi import puWeights
-process.puWeights      = puWeights.clone( data = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/NewPileup2011AplusB.root'),
-                                          mc   = cms.string('/afs/cern.ch/user/p/psilva/public/Pileup/Summer11Observed.root')
+process.puWeights      = puWeights.clone( data = cms.string('$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/NewPileup2011AplusB.root'),
+                                          mc   = cms.string('$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/Summer11Observed.root')
                                           )
 process.puWeightSequence = cms.Sequence(process.puWeights)
 
@@ -37,6 +37,7 @@ process.evAnalyzer = cms.EDAnalyzer("DileptonPlusMETEventAnalyzer",
                                     Generator = BaseGeneratorSelection.clone(),
                                     Vertices = BaseVertexSelection.clone(),
                                     Photons = BasePhotonsSelection.clone(),
+                                    SoftMuons = BaseSoftMuonsSelection.clone(),
                                     LooseMuons = BaseLooseMuonsSelection.clone(),
                                     Muons = BaseMuonsSelection.clone(),
                                     LooseElectrons = BaseLooseElectronsSelection.clone(),

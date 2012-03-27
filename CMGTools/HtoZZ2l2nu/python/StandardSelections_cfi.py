@@ -46,23 +46,39 @@ BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuons"), #PFlow
                                maxEta = cms.double(2.4),
                                requireGlobal = cms.bool(True),
                                requireTracker = cms.bool(True),
-                               maxTrackChi2 = cms.double(10),
-                               minValidTrackerHits = cms.int32(11),
                                minValidMuonHits=cms.int32(1),
-                               maxDistToBeamSpot=cms.double(0.02),
-                               id = cms.string("TMLastStationLoose"), #""),
+                               minMatchingMuonStations = cms.int32(2),
+                               minValidTrackerHits = cms.int32(11),
+                               minPixelHits = cms.int32(1),
+                               maxTrackChi2 = cms.double(10),
+                               maxRelPtUncertainty = cms.double(0.1),
+                               maxD0=cms.double(0.02),
+                               maxDz=cms.double(0.1),
+                               id = cms.string(""),
                                maxRelIso = cms.double(0.15),
+                               applySoftMuonIsolationVeto=cms.bool(False),
                                usePFIso = cms.bool(False),
                                doDeltaBetaCorrection = cms.bool(False)
                                )
 
 # base values for loose muon selection ----------------------------------------------
-BaseLooseMuonsSelection = BaseMuonsSelection.clone( minPt = cms.double(5),
+BaseLooseMuonsSelection = BaseMuonsSelection.clone( minPt = cms.double(10) )
+BaseSoftMuonsSelection  = BaseMuonsSelection.clone( minPt = cms.double(3),
+                                                    requireGlobal = cms.bool(False),
+                                                    minValidMuonHits=cms.int32(0),
+                                                    minMatchingMuonStations = cms.int32(0),
+                                                    minValidTrackerHits = cms.int32(11),
+                                                    minPixelHits = cms.int32(0),
                                                     maxTrackChi2 = cms.double(9999.),
-                                                    id = cms.string("TrackerMuonArbitrated"),                               
-                                                    maxRelIso = cms.double(0.5),
-                                                    minValidMuonHits=cms.int32(0)
-                                                    )
+                                                    maxRelPtUncertainty = cms.double(9999.),
+                                                    maxD0=cms.double(0.2),
+                                                    maxDz=cms.double(0.2),
+                                                    id = cms.string("TMLastStationAngTight"),
+                                                    maxRelIso = cms.double(999999.),
+                                                    applySoftMuonIsolationVeto=cms.bool(True),
+                                                    usePFIso = cms.bool(False),
+                                                    doDeltaBetaCorrection = cms.bool(False) )
+                                                    
 
 # base values for photon selection ----------------------------------------------
 BasePhotonsSelection = cms.PSet( source = cms.InputTag("photons"),
@@ -81,40 +97,36 @@ BasePhotonsSelection = cms.PSet( source = cms.InputTag("photons"),
                                  ecalIsoCoeffsEB = cms.vdouble(4.2, 0.006,  0.183),
                                  ecalIsoCoeffsEE = cms.vdouble(4.2, 0.006,  0.090),
                                  hcalIsoCoeffsEB = cms.vdouble(2.2, 0.0025, 0.062),
-                                 hcalIsoCoeffsEE = cms.vdouble(2.2, 0.025,  0.180)
+                                 hcalIsoCoeffsEE = cms.vdouble(2.2, 0.025,  0.180),
+                                 trackSource = cms.InputTag("generalTracks"),
+                                 gsfTrackSource = cms.InputTag("gsfElectronTracks")
                                  )
 
 # base values for electron selection ----------------------------------------------
 BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectrons"), #PFlow"),
                                    minPt = cms.double(20),
-                                   minSuperClusterEt = cms.double(17),
                                    maxEta = cms.double(2.5),
                                    vetoTransitionElectrons = cms.bool(True),
                                    applyConversionVeto = cms.bool(True),
-                                   maxDistToBeamSpot=cms.double(0.04),
+                                   maxD0=cms.double(0.02),
+                                   maxDz=cms.double(0.1),
                                    maxTrackLostHits = cms.int32(1),
-                                   id = cms.string("eidVBTF85"),
-                                   maxRelIso = cms.double(0.15),
+                                   id = cms.string("eidVBTF80"),
+                                   maxHoE = cms.vdouble(0.04,0.1),
+                                   maxRelIso = cms.double(0.1),
                                    minDeltaRtoMuons = cms.double(0.1),
                                    usePFIso = cms.bool(False),
                                    doDeltaBetaCorrection = cms.bool(False)
                                    )
 
 # base values for electron selection ----------------------------------------------
-BaseLooseElectronsSelection = BaseElectronsSelection.clone( minPt = cms.double(5),
-                                                            minSuperClusterEt = cms.double(5),
-                                                            vetoTransitionElectrons = cms.bool(False),
-                                                            maxTrackLostHits = cms.int32(2),
-                                                            id = cms.string("eidVBTF95"),
-                                                            maxRelIso = cms.double(0.5),
-                                                            minDeltaRtoMuons = cms.double(0.1)
-                                                            )
+BaseLooseElectronsSelection = BaseElectronsSelection.clone(minPt = cms.double(10))
 
 #my base values for jet selection -------------------------------------------------
 BaseJetSelection = cms.PSet( source = cms.InputTag("selectedPatJetsPFlow"),
                              rho = cms.InputTag("kt6PFJetsPFlow:rho"),
                              jetId = cms.PSet( version = cms.string("FIRSTDATA"), quality = cms.string("LOOSE") ),
-                             minPt = cms.double(15),
+                             minPt = cms.double(10),
                              maxEta = cms.double(5.0),
                              minDeltaRtoLepton = cms.double(0.4),
                              puJetId = cms.PSet( impactParTkThreshold = cms.untracked.double(0.) ,

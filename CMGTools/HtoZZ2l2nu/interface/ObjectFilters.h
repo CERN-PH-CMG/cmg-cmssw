@@ -74,8 +74,8 @@ reco::VertexRef getClosestVertexTo(const T *trk, std::vector<reco::VertexRef> &s
 ///                            ///   
 /// LEPTON SELECTION UTILITIES ///
 ///                            ///   
-std::vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> > &hMu, const reco::BeamSpot &theBeamSpot, const double& rho, const edm::ParameterSet &iConfig);
-std::vector<reco::CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &hEle,  edm::Handle<edm::View<reco::Candidate> > &hMu, const reco::BeamSpot &theBeamSpot, const double& rho, const edm::ParameterSet &iConfig);
+std::vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> > &hMu, const reco::VertexRef &primVertex, const double& rho, const edm::ParameterSet &iConfig);
+std::vector<reco::CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &hEle,  edm::Handle<edm::View<reco::Candidate> > &hMu, const reco::VertexRef &primVertex, const double& rho, const edm::ParameterSet &iConfig);
 std::vector<reco::CandidatePtr> getDileptonCandidate(std::vector<reco::CandidatePtr> &selLeptons,  const edm::ParameterSet &iConfig,  const edm::EventSetup &iSetup);
 int getLeptonId(reco::CandidatePtr &lepton);
 int getDileptonId(std::vector<reco::CandidatePtr> &dilepton);
@@ -89,9 +89,13 @@ const reco::GenParticle *getLeptonGenMatch(reco::CandidatePtr &lepton);
 ///                            ///   
 // cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/Vgamma2011PhotonID
 std::vector<reco::CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hPhoton, 
-					       EcalClusterLazyTools &lazyTool, edm::Handle<EcalRecHitCollection> ebrechits,
+					       EcalClusterLazyTools &lazyTool, 
+					       edm::Handle<EcalRecHitCollection> ebrechits,
 					       double rho, const edm::ParameterSet &iConfig);
-
+int getPhotonTrackVeto(const reco::Photon *pho,
+		       edm::Handle<std::vector<reco::Track> > &ctfTracks, 
+		       edm::Handle<std::vector<reco::Track> > &gsfTracks,
+		       edm::Handle<edm::View<reco::Candidate> > &ele);
 
 ///                            ///   
 /// JET SELECTION UTILITIES    ///

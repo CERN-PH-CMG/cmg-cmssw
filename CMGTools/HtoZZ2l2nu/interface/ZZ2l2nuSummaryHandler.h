@@ -51,6 +51,7 @@ struct ZZ2l2nuSummary_t
   Float_t jn_btag1[MAXPARTICLES], jn_btag2[MAXPARTICLES],   jn_neutHadFrac[MAXPARTICLES], jn_neutEmFrac[MAXPARTICLES], jn_chHadFrac[MAXPARTICLES], jn_pid[MAXPARTICLES];  
   Int_t   jn_genid[MAXPARTICLES], jn_genflav[MAXPARTICLES];
   Float_t jn_genpt[MAXPARTICLES], jn_pumva[MAXPARTICLES];
+  Float_t htvec_px, htvec_py, htvec_pz, htvec_en;
 
   Int_t ajn;
   Float_t ajn_px[MAXPARTICLES],    ajn_py[MAXPARTICLES],    ajn_pz[MAXPARTICLES],          ajn_en[MAXPARTICLES]; 
@@ -73,6 +74,7 @@ struct ZZ2l2nuSummary_t
   Float_t g_px[MAXPARTICLES], g_py[MAXPARTICLES]  , g_pz[MAXPARTICLES]  , g_en[MAXPARTICLES], g_iso1[MAXPARTICLES], g_iso2[MAXPARTICLES], g_iso3[MAXPARTICLES], g_sihih[MAXPARTICLES], g_r9[MAXPARTICLES], g_hoe[MAXPARTICLES];
   Float_t g_mva[MAXPARTICLES], g_mvaNeut[MAXPARTICLES];
   Bool_t g_conv[MAXPARTICLES];
+  Int_t g_trkVeto[MAXPARTICLES];
   Float_t g_conv_px[MAXPARTICLES],g_conv_py[MAXPARTICLES],g_conv_pz[MAXPARTICLES],g_conv_en[MAXPARTICLES];
   
   //gen level event

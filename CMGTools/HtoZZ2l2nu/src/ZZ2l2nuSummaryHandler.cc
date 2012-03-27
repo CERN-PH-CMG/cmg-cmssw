@@ -112,6 +112,10 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("jn_pid",   evSummary_.jn_pid,    "jn_pid[jn]/F");
   t_->Branch("jn_genpt",   evSummary_.jn_genpt,    "jn_genpt[jn]/F");
   t_->Branch("jn_pumva",   evSummary_.jn_pumva,    "jn_pumva[jn]/F");
+  t_->Branch("htvec_px",   &evSummary_.htvec_px, "htvec_px/F");
+  t_->Branch("htvec_py",   &evSummary_.htvec_py, "htvec_py/F");
+  t_->Branch("htvec_pz",   &evSummary_.htvec_pz, "htvec_pz/F");
+  t_->Branch("htvec_en",   &evSummary_.htvec_en, "htvec_en/F");
 
   //selected associated jets 
   t_->Branch("ajn",         &evSummary_.ajn,         "ajn/I");
@@ -167,6 +171,7 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("g_r9",      evSummary_.g_r9,        "g_r9[gn]/F");
   t_->Branch("g_mva",      evSummary_.g_mva,        "g_mva[gn]/F");
   t_->Branch("g_mvaNeut",      evSummary_.g_mvaNeut,        "g_mvaNeut[gn]/F");
+  t_->Branch("g_trkVeto",  evSummary_.g_trkVeto, "g_trkVeto[gn]/F");
   t_->Branch("g_conv",    evSummary_.g_conv,      "g_conv[gn]/O");
   t_->Branch("g_conv_px", evSummary_.g_conv_px,   "g_conv_px[gn]/F");
   t_->Branch("g_conv_py", evSummary_.g_conv_py,   "g_conv_py[gn]/F");
@@ -296,6 +301,10 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("jn_pid") ->SetAddress(evSummary_.jn_pid);
   if(t_->GetBranch("jn_genpt")) t_->GetBranch("jn_genpt")->SetAddress(evSummary_.jn_genpt);
   if(t_->GetBranch("jn_pumva")) t_->GetBranch("jn_pumva")->SetAddress(evSummary_.jn_pumva);
+  if(t_->GetBranch("htvec_px")) t_->GetBranch("htvec_px")->SetAddress(&evSummary_.htvec_px);
+  if(t_->GetBranch("htvec_py")) t_->GetBranch("htvec_py")->SetAddress(&evSummary_.htvec_py);
+  if(t_->GetBranch("htvec_pz")) t_->GetBranch("htvec_pz")->SetAddress(&evSummary_.htvec_pz);
+  if(t_->GetBranch("htvec_en")) t_->GetBranch("htvec_en")->SetAddress(&evSummary_.htvec_en);
 
   //selected jets
   t_->GetBranch("ajn")        ->SetAddress( &evSummary_.ajn);
@@ -351,6 +360,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("g_r9")->SetAddress(evSummary_.g_r9);
   if(t_->GetBranch("g_mva"))     t_->GetBranch("g_mva")->SetAddress(evSummary_.g_mva);
   if(t_->GetBranch("g_mvaNeut")) t_->GetBranch("g_mvaNeut")->SetAddress(evSummary_.g_mvaNeut);
+  if(t_->GetBranch("g_trkVeto")) t_->GetBranch("g_trkVeto")->SetAddress(evSummary_.g_trkVeto);
   t_->GetBranch("g_conv")->SetAddress( evSummary_.g_conv );
   t_->GetBranch("g_conv_px")->SetAddress( evSummary_.g_conv_px );
   t_->GetBranch("g_conv_py")->SetAddress( evSummary_.g_conv_py );
