@@ -158,12 +158,13 @@ If not entered, secure password prompt will appear.""",
                 	comment = line.rstrip("'").split("'")[1]
                 elif len(line.split('"'))>1:
                 	comment = line.rstrip('"').split('"')[1]
+                dataset.rstrip("/")
                 publish(dataset,fileown,comment,options.test,None,options.username,password,options.force, options.checkGroups, options.savannah)
             except NameError as err:
                 print err.args, "\nDataset not published"
     # For singular file input
     else:
-        dataset = args[0]
+        dataset = args[0].rstrip("/")
         comment = options.commented
         publish(dataset,options.fileown,comment,options.test,None,options.username,password,options.force,options.checkGroups, options.savannah)
 
