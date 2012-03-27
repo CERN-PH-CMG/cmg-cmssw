@@ -52,6 +52,8 @@ void apply(std::string iName="../Jets/f11-zjets_chs.root",std::string iId="",
   //Impact parameter 
   float dZ         = 0; if(iIPType    > 0)    {reader->AddVariable( "dZ"        , &dZ)        ;}
   float d0         = 0; if(iIPType    > 1)    {reader->AddVariable( "d0"        , &d0)        ;}
+  float beta       = 0; if(iIPType    > 2)    {reader->AddVariable( "beta"      , &beta)      ;}
+  float betaStar   = 0; if(iIPType    > 3)    {reader->AddVariable( "betaStar"  , &betaStar)  ;}
   //Number of particles
   float nParticles = 0; if(iNParType  > 0)    {reader->AddVariable( "nParticles", &nParticles);}
   float nCharged   = 0; if(iNParType  > 1)    {reader->AddVariable( "nCharged"  , &nCharged  );} //Not Yet tried
@@ -149,8 +151,11 @@ void apply(std::string iName="../Jets/f11-zjets_chs.root",std::string iId="",
 
    TString lJetTree = "pfjetanalyzer/tree";
    if(iJetType == 1) lJetTree = "chspfjetanalyzer/tree";      
+   lJetTree = "tree";
    TFile *lFile = new TFile(iName.c_str());
    TTree *lTree = (TTree*) lFile->Get(lJetTree);
+   int id = 0;
+   lTree->SetBranchAddress( "id"      , &id);
    //Kinematics
    lTree->SetBranchAddress( "jetPt"   , &jetPt);
    lTree->SetBranchAddress( "jetEta"  , &jetEta);
@@ -159,6 +164,8 @@ void apply(std::string iName="../Jets/f11-zjets_chs.root",std::string iId="",
    //Impact parameter 
    lTree->SetBranchAddress( "dZ"        , &dZ)        ;
    lTree->SetBranchAddress( "d0"        , &d0)        ;
+   lTree->SetBranchAddress( "beta"      , &beta)      ;
+   lTree->SetBranchAddress( "betaStar"  , &betaStar)  ;
    //Number of particles
    lTree->SetBranchAddress( "nParticles", &nParticles);
    lTree->SetBranchAddress( "nCharged"  , &nCharged  ); //Not Yet tried
@@ -260,6 +267,7 @@ void apply(std::string iName="../Jets/f11-zjets_chs.root",std::string iId="",
    for (Long64_t i0=0; i0<lNEvents;i0++) {
      if (i0 % 10000 == 0) std::cout << "--- ... Processing event: " << double(i0)/double(lNEvents) << std::endl;
       lTree->GetEntry(i0);
+      if(id % 2 == 1) continue;
       leadPt     /=jetPt;
       secondPt   /=jetPt;
       leadNeutPt /=jetPt;

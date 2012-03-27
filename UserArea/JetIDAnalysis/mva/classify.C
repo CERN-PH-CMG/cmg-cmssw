@@ -34,6 +34,7 @@ void classify(std::string iId="",
 					      "!V:!Silent:Color:DrawProgressBar:Transformations=I;D;P;G,D" );
   if(iKinType   == 0)    {factory->AddSpectator( "jetPt"   , 'F' ); }
   if(iKinType   == 0)    {factory->AddSpectator( "jetEta"  , 'F' ); }
+  if(iKinType   == 0)    {factory->AddSpectator( "jetPhi"  , 'F' ); }
   
   //PU correlation => nvtx data/MC agree better
   //factory->AddVariable( "rho"      , 'F' );        allUsedVars += "rho"   ;
@@ -59,6 +60,7 @@ void classify(std::string iId="",
   if(iDRType    > 0)    {factory->AddVariable( "dRMeanNeut", 'F' ); allUsedVars += ":dRMeanNeut";}
   if(iDRType    > 0)    {factory->AddVariable( "dRMeanEm"  , 'F' ); allUsedVars += ":dRMeanEm"  ;}
   if(iDRType    > 0)    {factory->AddVariable( "dRMeanCh"  , 'F' ); allUsedVars += ":dRMeanCh"  ;}
+  if(iDRType    > 1)    {factory->AddVariable( "dR2Mean"   , 'F' ); allUsedVars += ":dR2Mean"   ;}
   //Pt Ratios
   if(iPtRType   > 0 ) {factory->AddVariable( "leadChPt/jetPt"  , 'F' ); allUsedVars += ":leadChPt/jetPt"  ;}
   if(iPtRType   > 0 ) {factory->AddVariable( "secondPt/jetPt"  , 'F' ); allUsedVars += ":secondPt/jetPt"  ;}
@@ -142,9 +144,10 @@ void classify(std::string iId="",
   
   TString lJetTree = "pfjetanalyzer/tree";
   if(iJetType == 1) lJetTree = "chspfjetanalyzer/tree";
-  TString lSName       = "../scratch/JetAnalysisTree_merged.root";  TFile *lSInput = TFile::Open(lSName);
+  lJetTree = "tree";
+  TString lSName       = "../scratch/f11-zjets_rw.root";  TFile *lSInput = TFile::Open(lSName);
   TTree   *lSignal     = (TTree*)lSInput    ->Get(lJetTree);
-  TString lBName       = "../scratch/JetAnalysisTree_merged.root";  TFile *lBInput = TFile::Open(lBName);
+  TString lBName       = "../scratch/f11-zjets_rw.root";  TFile *lBInput = TFile::Open(lBName);
   TTree   *lBackground = (TTree*)lBInput    ->Get(lJetTree);
   
   Double_t lSWeight = 1.0;
@@ -152,13 +155,15 @@ void classify(std::string iId="",
   
   factory->AddSignalTree    ( lSignal,     lSWeight );
   factory->AddBackgroundTree( lBackground, lBWeight );
-  TCut lSCut = "jetPt  > 10  && abs(jetGenDr) < 0.25  && jetGenPt > 8.";
-  TCut lBCut = "jetPt  > 10  && abs(jetGenDr) > 0.25  ";                  //Ignore amorphous area in between
+  TCut lSCut = "jetPt  > 20  && (id % 2) == 1 && jetLooseID != 0 && abs(jetGenDr) < 0.25  && jetGenPt > 8.";
+  TCut lBCut = "jetPt  > 20  && (id % 2) == 1 && jetLooseID != 0 && abs(jetGenDr) > 0.25  ";                  //Ignore amorphous area in between
   
-  //factory->SetWeightExpression("RhoWeight/PtWeight"); Missing pT and npv reweighting
-  factory->PrepareTrainingAndTestTree( lSCut, lBCut,
-				       "nTrain_Signal=0:nTrain_Background=0:SplitMode=Random:NormMode=NumEvents:!V" );
-  
+  std::stringstream lSS;
+  //lSS << "nTrain_Signal="<<lSignal->GetEntries(lSCut)-1 << ":nTrain_Background="<< lBackground->GetEntries(lBCut)-1 << ":SplitMode=Block:NormMode=NumEvents:!V";
+  lSS << "nTrain_Signal="<< int(0)  << ":nTrain_Background="<< int(0) << ":SplitMode=Random:NormMode=NumEvents:!V";
+  factory->SetWeightExpression("RhoWeight*PtWeight"); //Missing pT and npv reweighting
+  factory->PrepareTrainingAndTestTree( lSCut, lBCut,lSS.str().c_str());
+    
   // Categories
   TCut    lTKCut = "abs(jetEta) < 2.5";
   TCut    lHECut = "abs(jetEta) > 2.5 && abs(jetEta) < 2.9 ";

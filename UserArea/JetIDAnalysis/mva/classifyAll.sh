@@ -32,7 +32,7 @@ for dataset in `cat $config | grep -v ^# | tr -s ' ' | sed "s@\s\s@ @g" | awk '{
   root -b -q classify.C+\(\"$id\"\,$jettype\,$mvatype\,$ipflag\,$kinflag\,$ipflag\,$nparf\,$drflag\,$ptflag\,$order\,$ptdflag\,$frac\,$momtype\,$rings\,$rest\)
   root -b -q apply.C+\(\"../scratch/${ds}.root\"\,\"$id\"\,$jettype\,$mvatype\,$ipflag\,$kinflag\,$ipflag\,$nparf\,$drflag\,$ptflag\,$order\,$ptdflag\,$frac\,$momtype\,$rings\,$rest\)
   mv Output.root ../scratch/${ds}_${id}.root
-  mc=`echo $ds | sed "s@f11-zjets@r11-dimu@g" | sed "s@_rw@@g"`
+  mc=`echo $ds | sed "s@f11-zjets@r11-dimu@g" `
   root -b -q apply.C+\(\"../scratch/${mc}.root\"\,\"$id\"\,$jettype\,$mvatype\,$ipflag\,$kinflag\,$ipflag\,$nparf\,$drflag\,$ptflag\,$order\,$ptdflag\,$frac\,$momtype\,$rings\,$rest\)
   mv Output.root ../scratch/${mc}_${id}.root
   ./mvaPlot.sh $id $jettype

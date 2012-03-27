@@ -1,7 +1,7 @@
 #!/bin/bash
 idtype=$1
 Type=$2
-Id=${idtype}
+Id=rw_${idtype}
 name=mva_${Id}_${Type}.html
 mkdir $Id
 cd $Id

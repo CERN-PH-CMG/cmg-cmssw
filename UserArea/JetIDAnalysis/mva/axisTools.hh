@@ -19,6 +19,7 @@ void loadfMap() {
   fMap.push_back("dRLeadCent");  fNBins.push_back(30); fXMin.push_back(-0);    fXMax.push_back(0.5);  fXAxis.push_back("<#Delta R lead to Jet>");      fYAxis.push_back("Events");
   fMap.push_back("dRLead2nd");   fNBins.push_back(30); fXMin.push_back(-0);    fXMax.push_back(0.5);  fXAxis.push_back("<#Delta R lead to 2nd>");      fYAxis.push_back("Events");
   fMap.push_back("dRMean");      fNBins.push_back(30); fXMin.push_back(-0);    fXMax.push_back(0.5);  fXAxis.push_back("<#Delta R>");                  fYAxis.push_back("Events");
+  fMap.push_back("dR2Mean");      fNBins.push_back(30); fXMin.push_back(-0);    fXMax.push_back(0.5);  fXAxis.push_back("<#Delta R>");                  fYAxis.push_back("Events");
   fMap.push_back("dRMeanNeut");  fNBins.push_back(30); fXMin.push_back(-0);    fXMax.push_back(0.5);  fXAxis.push_back("<#Delta R neutral>");          fYAxis.push_back("Events");
   fMap.push_back("dRMeanEm");    fNBins.push_back(30); fXMin.push_back(-0);    fXMax.push_back(0.5);  fXAxis.push_back("<#Delta R em>");               fYAxis.push_back("Events");
   fMap.push_back("dRMeanCh");    fNBins.push_back(30); fXMin.push_back(-0);    fXMax.push_back(0.5);  fXAxis.push_back("<#Delta R charge>");           fYAxis.push_back("Events");
