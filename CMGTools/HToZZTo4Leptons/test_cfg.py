@@ -43,6 +43,8 @@ muEleAna = cfg.Analyzer(
     nLeptonsMin = 4
     )
 
+
+
 muMuAna = cfg.Analyzer(
     'MuMuFourLeptonAnalyzer',
     pt1 = 5.,
@@ -52,6 +54,31 @@ muMuAna = cfg.Analyzer(
     # 
     pt2 = 5,
     eta2 = 2.4,
+    iso2 = 0.7,
+    sip2 = 4, 
+    #
+    z1_m = (50,120),
+    z1_pt1 = 20,
+    z1_pt2 = 10,
+    #
+    z2_m = 12,
+    z2_pt1 = 0,
+    z2_pt2 = 0,
+    # 
+    h_m = 100,
+    pair_iso = 0.35, 
+    nLeptonsMin = 2
+    )
+
+eleEleAna = cfg.Analyzer(
+    'EleEleFourLeptonAnalyzer',
+    pt1 = 7.,
+    eta1 = 2.5,
+    iso1 = 0.7,
+    sip1 = 4,
+    # 
+    pt2 = 7,
+    eta2 = 2.5,
     iso2 = 0.7,
     sip2 = 4, 
     #
@@ -86,7 +113,8 @@ sequence = cfg.Sequence( [
     triggerAna,
     vertexAna,
     # muEleAna,
-    muMuAna,
+    # muMuAna,
+    eleEleAna,
     treeProducer
    ] )
 
