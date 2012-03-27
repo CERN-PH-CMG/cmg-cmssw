@@ -34,8 +34,7 @@ cmg::ElectronFactory::event_ptr cmg::ElectronFactory::create(const edm::Event& i
 void cmg::ElectronFactory::set(const pat::ElectronPtr& input, cmg::Electron* const output, int nVertices){
 
     output->mva_ = input->mva();
-    //COLIN : does not work in testCMGTools_cfg.py -> commenting out.
-    // output->mvaDaniele_ = mvaEstimator_.mva(*input,nVertices);
+    output->mvaDaniele_ = mvaEstimator_.mva(*input,nVertices);
     output->mvaMIT_ = input->userFloat("ElectronMVA_MIT");
     
     //see http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/PhysicsTools/SelectorUtils/interface/SimpleCutBasedElectronIDSelectionFunctor.h?view=markup    
