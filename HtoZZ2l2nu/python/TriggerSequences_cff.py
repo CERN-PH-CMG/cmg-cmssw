@@ -67,7 +67,18 @@ def getTriggerPaths() :
                 'HLT_Mu13_Mu8_v8',
                 'HLT_Mu13_Mu8_v9',
                 'HLT_Mu13_Mu8_v10',
-                'HLT_Mu13_Mu8_v11'
+                'HLT_Mu13_Mu8_v11',
+                'HLT_Mu17_Mu8_v1'
+                'HLT_Mu17_Mu8_v2'
+                'HLT_Mu17_Mu8_v3'
+                'HLT_Mu17_Mu8_v4',
+                'HLT_Mu17_Mu8_v5',
+                'HLT_Mu17_Mu8_v6',
+                'HLT_Mu17_Mu8_v7',
+                'HLT_Mu17_TkMu8_v1',
+                'HLT_Mu17_TkMu8_v2',
+                'HLT_Mu17_TkMu8_v3',
+                'HLT_Mu17_TkMu8_v4'
                 ]
     muEG = ['HLT_Mu17_Ele8_CaloIdL_v1',  #start run 160404
             'HLT_Mu17_Ele8_CaloIdL_v2',
