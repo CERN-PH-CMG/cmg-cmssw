@@ -71,7 +71,7 @@ process.source = datasetToSource(
     # to test Data:
     'cmgtools_group',
     #'/DoubleMu/Run2011A-05Aug2011-v1/AOD/V3',
-    '/GluGluToHToZZTo4L_M-500_7TeV-powheg-pythia6/Fall11-PU_S6-START42_V14B-v1/AODSIM/V4',
+    '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V4'
     # '.*root'
     )
 
@@ -203,14 +203,13 @@ addMITElectronID( process, 'selectedPatElectrons', 'stdElectronSequence', postfi
 
 
 # # adding custom detector based iso deposit ---> !!! this works only on V4 event content !!!
-# from RecoLocalCalo.EcalRecAlgos.EcalSeverityLevelESProducer_cfi import *
-# from CMGTools.Common.PAT.addLeptCustomIsoDeposit_cff import addMuonCustomIsoDeposit
-# from CMGTools.Common.PAT.addLeptCustomIsoDeposit_cff import addElectronCustomIsoDeposit
-# addMuonCustomIsoDeposit( process, 'patDefaultSequence', postfixAK5)
-# addMuonCustomIsoDeposit( process, 'stdElectronSequence', postfixAK5+'StdLep')
- 
-# addElectronCustomIsoDeposit( process, 'patDefaultSequence', postfixAK5)
-# addElectronCustomIsoDeposit( process, 'stdElectronSequence', postfixAK5+'StdLep')
+from RecoLocalCalo.EcalRecAlgos.EcalSeverityLevelESProducer_cfi import *
+from CMGTools.Common.PAT.addLeptCustomIsoDeposit_cff import addMuonCustomIsoDeposit
+from CMGTools.Common.PAT.addLeptCustomIsoDeposit_cff import addElectronCustomIsoDeposit
+addMuonCustomIsoDeposit( process, 'patDefaultSequence', postfixAK5)
+addMuonCustomIsoDeposit( process, 'stdElectronSequence', postfixAK5+'StdLep')
+addElectronCustomIsoDeposit( process, 'patDefaultSequence', postfixAK5)
+addElectronCustomIsoDeposit( process, 'stdElectronSequence', postfixAK5+'StdLep')
 
 
 # ---------------- Sequence AK5NoPUSub, pfNoPileUp switched off ---------------
