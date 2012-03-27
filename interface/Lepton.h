@@ -102,6 +102,13 @@ class Lepton : public cmg::PhysicsObjectWithPtr< LeptonType >{
   
   friend class cmg::LeptonSettingTool<LeptonType>;
 	
+ protected:
+  /// 3d impact parameter 
+  float dB3D_;
+
+  /// error on 3d impact parameter
+  float edB3D_;
+
  private:
   ///COLIN: why a charge_ datamember here? should already be in a base class
   int charge_;
@@ -123,7 +130,10 @@ class Lepton : public cmg::PhysicsObjectWithPtr< LeptonType >{
 
   /// longitudinal impact parameter
   float dz_;
+
+
 };
+
 
 }
 
