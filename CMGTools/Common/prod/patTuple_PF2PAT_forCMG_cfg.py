@@ -22,7 +22,7 @@ else :
 
 # AK5 sequence with pileup substraction is the default
 # the other sequences can be turned off with the following flags.
-runAK5NoPUSub = True 
+runAK5NoPUSub = True
 
 hpsTaus = True
 doEmbedPFCandidatesInTaus = True
@@ -46,7 +46,7 @@ process.GlobalTag.globaltag = cms.string(getGlobalTag(runOnMC))
 
 sep_line = "-" * 50
 print sep_line
-print 'running the following PF2PAT+PAT sequences:'
+print 'running the following PFBRECO+PAT sequences:'
 print '\tAK5'
 if runAK5NoPUSub: print '\tAK5NoPUSub'
 print 'embedding in taus: ', doEmbedPFCandidatesInTaus
@@ -84,12 +84,12 @@ process.source = datasetToSource(
 # ProductionTasks.py will override this change
 process.source.fileNames = process.source.fileNames[:10]
 
-print 'PF2PAT+PAT+CMG for files:'
+print 'PFBRECO+PAT+CMG for files:'
 print process.source.fileNames
 
 # sys.exit(1)
 
-### DEFINITION OF THE PF2PAT+PAT SEQUENCES #############################################
+### DEFINITION OF THE PFBRECO+PAT SEQUENCES #############################################
 
 
 
@@ -97,9 +97,9 @@ print process.source.fileNames
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 process.out.fileName = cms.untracked.string('patTuple_PF2PAT.root')
 
-# Configure PAT to use PF2PAT instead of AOD sources
+# Configure PAT to use PFBRECO instead of AOD sources
 # this function will modify the PAT sequences. It is currently 
-# not possible to run PF2PAT+PAT and standart PAT at the same time
+# not possible to run PFBRECO+PAT and standart PAT at the same time
 from PhysicsTools.PatAlgos.tools.pfTools import *
 
 # ---------------- rho calculation for JEC ----------------------
@@ -119,13 +119,13 @@ process.kt6PFJetsForIso = process.kt6PFJets.clone( Rho_EtaMax = cms.double(2.5),
 
 process.eIdSequence = cms.Sequence()
 
-# PF2PAT+PAT sequence 1:
+# PFBRECO+PAT sequence 1:
 # no lepton cleaning, AK5PFJets
 
 postfixAK5 = "AK5"
 jetAlgoAK5="AK5"
 
-#COLIN : we will need to add the L2L3Residual when they become available! also check the other calls to the usePF2PAT function. 
+#COLIN : we will need to add the L2L3Residual when they become available! also check the other calls to the usePFBRECO function. 
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgoAK5, runOnMC=runOnMC, postfix=postfixAK5,
           jetCorrections=('AK5PFchs', jetCorrections))
 
@@ -214,7 +214,7 @@ addElectronCustomIsoDeposit( process, 'stdElectronSequence', postfixAK5+'StdLep'
 
 # ---------------- Sequence AK5NoPUSub, pfNoPileUp switched off ---------------
 
-# PF2PAT+PAT sequence 2:
+# PFBRECO+PAT sequence 2:
 # pfNoPileUp switched off, AK5PFJets. This sequence is a clone of the AK5 sequence defined previously.
 
 if runAK5NoPUSub:
@@ -251,7 +251,7 @@ process.p = cms.Path( process.prePathCounter + process.patTriggerDefaultSequence
 process.p += process.kt6PFJets
 process.p += process.kt6PFJetsForIso
 
-# PF2PAT+PAT ---
+# PFBRECO+PAT ---
 
 process.p += getattr(process,"patPF2PATSequence"+postfixAK5)
 
@@ -310,9 +310,9 @@ if runCMG:
 
 ### OUTPUT DEFINITION #############################################
 
-# PF2PAT+PAT ---
+# PFBRECO+PAT ---
 
-# Add PF2PAT output to the created file
+# Add PFBRECO output to the created file
 from PhysicsTools.PatAlgos.patEventContent_cff import patEventContentNoCleaning, patTriggerEventContent, patTriggerStandAloneEventContent
 process.out.outputCommands = cms.untracked.vstring('drop *',
                                                    *patEventContentNoCleaning
@@ -401,10 +401,10 @@ print "Setting process.calibratedGsfElectrons.inputDataset=",
 print process.calibratedGsfElectrons.inputDataset
 
 
-process.PF2PATAK5.replace(process.goodOfflinePrimaryVertices,
-                          process.goodOfflinePrimaryVertices+
-                          process.calibratedGsfElectrons
-                          )
+process.PFBRECOAK5.replace(process.goodOfflinePrimaryVertices,
+                           process.goodOfflinePrimaryVertices+
+                           process.calibratedGsfElectrons
+                           )
 
 
 
