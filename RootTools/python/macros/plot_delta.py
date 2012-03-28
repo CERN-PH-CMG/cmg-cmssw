@@ -51,7 +51,7 @@ def plot2D(nEv, zoom=True):
     tree.Draw('col2Pt-genPt : col1Pt - genPt', zoomCut + ' && match2 && col2Sel && match1', 'col', nEv)
     sBlack.formatHistoAxis( tree.GetHistogram() )
     tree.GetHistogram().SetStats(1)
-    tree.GetHistogram().SetTitle(';#Deltap_{T}(PF-gen) (GeV/c);#Deltap_{T}(std-gen) (GeV/c)')
+    # tree.GetHistogram().SetTitle(';#Deltap_{T}(PF-gen) (GeV/c);#Deltap_{T}(std-gen) (GeV/c)')
     formatPad(gPad)
     gPad.SetLogz()
 
@@ -104,7 +104,6 @@ def plotVsGen(nEv, select=1, xmax = 100):
     elif select==2:
         h2.Draw()
         legend.AddEntry( h2, 'tight muon', 'l') 
-        gPad.SaveAs('ptrecMgen_tight.png')
         name = 'Tight'
     else:
         h1.Draw()

@@ -32,7 +32,9 @@ class GenJet( PhysicsObject):
     pass
 
 class Lepton( PhysicsObject):
-    pass
+    def sip3D(self):
+        patLepton = self.physObj.sourcePtr()
+        return abs( patLepton.dB(2) ) / patLepton.edB(2) 
 
 class Muon( Lepton ):
     pass
@@ -42,6 +44,14 @@ class Electron( Lepton ):
 
 class GenParticle( PhysicsObject):
     pass
+
+class GenLepton( GenParticle ):
+    def sip3D(self):
+        '''Just to make generic code work on GenParticles'''
+        return 0
+    def relIso(self, dummy):
+        '''Just to make generic code work on GenParticles'''
+        return 0
 
     
 class Tau( Lepton ):
