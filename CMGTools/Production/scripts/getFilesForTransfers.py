@@ -60,7 +60,7 @@ fileowner%dataset
             castor2 = eostools.lfnToEOS(castorBaseDir.castorBaseDir(fileown.strip("_group")))+dataset
         else:
             castor = eostools.lfnToEOS(castorBaseDir.castorBaseDir(fileown))+dataset
-            castor2 = eostools.lfnToEOS(castorBaseDir.castorBaseDir(fileown))+dataset
+            castor2 = eostools.lfnToEOS(castorBaseDir.castorBaseDir(fileown+"_group"))+dataset
         LFN = eostools.eosToLFN(castor)
         LFN2 = eostools.eosToLFN(castor2)
 
