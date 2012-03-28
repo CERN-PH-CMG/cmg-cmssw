@@ -28,7 +28,10 @@ if __name__ == '__main__':
     parser.usage = """
 %prog [options] <filename>
 filename should be a .txt file with the names or samples you want transferred
-use script to get LFN of all files needed for transfer
+use script to get LFN of all files needed for transfer.
+
+Each line should be in the form:
+fileowner%dataset
 """
     
     
