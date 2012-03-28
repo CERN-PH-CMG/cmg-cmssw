@@ -1,5 +1,6 @@
 
 import copy, datetime, inspect, fnmatch, os, re, subprocess, sys, tempfile, time
+import errno
 
 import CMGTools.Production.eostools as castortools
 import CMGTools.Production.Das as Das
@@ -7,6 +8,14 @@ import CMGTools.Production.Das as Das
 from CMGTools.Production.dataset import Dataset
 from CMGTools.Production.datasetToSource import createDataset
 from CMGTools.Production.castorBaseDir import castorBaseDir
+
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc: # Python >2.5
+        if exc.errno == errno.EEXIST:
+            pass
+        else: raise
 
 class Task(object):
     """Base class for Task API"""
@@ -296,11 +305,12 @@ class CreateJobDirectory(Task):
         if self.options.output is not None:
             output = self.options.output
         else:
-            output = '%s_%s' % (self.dataset.replace('/','.'),datetime.datetime.now().strftime("%s"))
-            if output.startswith('.'):
-                output = output[1:]
+            # output = '%s_%s' % (self.dataset.replace('/','.'),datetime.datetime.now().strftime("%s"))
+            # if output.startswith('.'):
+            output = '%s_%s' % (self.dataset,datetime.datetime.now().strftime("%s"))
+            output = output.lstrip('/')
         if not os.path.exists(output):
-            os.mkdir(output)
+            mkdir_p(output)
         return {'JobDir':output,'PWD':os.getcwd()}
 
 class SourceCFG(Task):
