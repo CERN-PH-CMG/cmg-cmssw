@@ -523,7 +523,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.jn_chHadFrac[ev.jn]   = jet->chargedHadronEnergyFraction();
 	const reco::GenJet *gJet=jet->genJet();
 	ev.jn_genpt[ev.jn]=gJet ? gJet->pt() : 0;
-	PileupJetIdentifier puIdentifier = puJetIdAlgo_.computeIdVariables(dynamic_cast<const reco::Jet*>(jet), 0, primVertex.get(), true);
+	PileupJetIdentifier puIdentifier = puJetIdAlgo_.computeIdVariables(dynamic_cast<const reco::Jet*>(jet), 0, primVertex.get(), *hVtx.product(), true);
 	ev.jn_pumva[ev.jn]=puIdentifier.mva();
 	ev.jn++;
 	nbcands += (jet->pt()>30 && fabs(jet->eta())<2.4 && jet->bDiscriminator("trackCountingHighEffBJetTags")>2); 
@@ -562,7 +562,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
         ev.ajn_chHadFrac[ev.ajn]   = jet->chargedHadronEnergyFraction();
         const reco::GenJet *gJet   = jet->genJet();
         ev.ajn_genpt[ev.ajn]       = gJet ? gJet->pt() : 0;
-        PileupJetIdentifier puIdentifier = puJetIdAlgo_.computeIdVariables(dynamic_cast<const reco::Jet*>(jet), 0, primVertex.get(), true);
+        PileupJetIdentifier puIdentifier = puJetIdAlgo_.computeIdVariables(dynamic_cast<const reco::Jet*>(jet), 0, primVertex.get(), *hVtx.product(), true);
         ev.ajn_pumva[ev.jn]=puIdentifier.mva();
 	ev.ajn++;
       }
