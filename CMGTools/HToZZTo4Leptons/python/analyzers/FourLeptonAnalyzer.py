@@ -5,6 +5,7 @@ import copy
 from ROOT import TLorentzVector
 
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
+from CMGTools.RootTools.fwlite.Event import Event
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton
@@ -13,13 +14,13 @@ from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
 
 class DiObject( TLorentzVector ):
     '''Class used for Zs, and also for Higgs candidates'''
-    def __init__(self, lepton1, lepton2):
-        lv1 = TLorentzVector( lepton1.px(), lepton1.py(), lepton1.pz(), lepton1.energy() )
-        lv2 = TLorentzVector( lepton2.px(), lepton2.py(), lepton2.pz(), lepton2.energy() )
+    def __init__(self, leg1, leg2):
+        lv1 = TLorentzVector( leg1.px(), leg1.py(), leg1.pz(), leg1.energy() )
+        lv2 = TLorentzVector( leg2.px(), leg2.py(), leg2.pz(), leg2.energy() )
         lv1 += lv2 
         super( DiObject, self).__init__( lv1 )
-        self.leg1 = lepton1
-        self.leg2 = lepton2
+        self.leg1 = leg1
+        self.leg2 = leg2
 
     def __getattr__(self, name):
         '''Trick to preserve the interface in use in CMSSW.'''
@@ -31,12 +32,15 @@ class DiObject( TLorentzVector ):
         return getattr( self, capName )
 
     def PdgId(self):
+        '''Dummy, needed to fill the tree'''
         return 23
 
     def Sip3D(self):
+        '''Dummy, needed to fill the tree'''
         return -1
 
     def RelIso(self, dBetaCor):
+        '''Sum of the relative isolation (dbeta corrected) of the 2 legs'''
         return self.leg1.relIso( dBetaCor ) + self.leg2.relIso(dBetaCor )
         
     def charge(self):
@@ -70,45 +74,60 @@ class FourLeptonAnalyzer( Analyzer ):
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
+        # creating a "sub-event" for this analyzer
+        myEvent = Event(event.iEv)
+        setattr(event, self.name, myEvent)
+        event = myEvent
+        
         self.counters.counter('FourLepton').inc('all events')
+        event.step = 0
 
         # creating a Lepton for each lepton in the first input collection
         event.leptons1 = map( self.__class__.LeptonClass1,
                               self.handles['leptons1'].product() )
-        nL = len(event.leptons1)
-        if self.__class__.LeptonClass2 != self.__class__.LeptonClass1:
-            # .. and in the second input collection, if it is different
-            # from the first one
-            event.leptons2 = map( self.__class__.LeptonClass2,
-                                  self.handles['leptons2'].product() )
-            nL += len(event.leptons2)
+        # nL = len(event.leptons1)
 
+        # if self.__class__.LeptonClass2 != self.__class__.LeptonClass1:
+        # .. and in the second input collection, if it is different
+        # from the first one
+        event.leptons2 = map( self.__class__.LeptonClass2,
+                              self.handles['leptons2'].product() )
+        # nL += len(event.leptons2)
+
+        event.allLeptons = set( event.leptons1 )
+        event.allLeptons.update( event.leptons2 )
+
+        nL = len( event.allLeptons )
         # first preselection, just to speed up the process
         if nL < self.cfg_ana.nLeptonsMin:
-            return False
-
-        self.counters.counter('FourLepton').inc('enough leptons')        
-
+            return self.cfg_ana.keep
+        else:
+            self.counters.counter('FourLepton').inc('enough leptons')        
+            event.step += 1
+            
         # loose lepton selection
         event.selLeptons1 = filter( self.testLepton1,
                                     event.leptons1 )
-        event.allSelLeptons = copy.copy( event.selLeptons1 )        
-        if self.__class__.LeptonClass2 != self.__class__.LeptonClass1:
-            event.selLeptons2 = filter( self.testLepton2,
-                                        event.leptons2 )
-            event.allSelLeptons.extend( event.selLeptons2 ) 
+        event.selLeptons2 = filter( self.testLepton2,
+                                    event.leptons2 )
+        
+        event.allSelLeptons = set( event.selLeptons1 )
+        event.allSelLeptons.update( event.selLeptons2 )
 
         nL = len( event.allSelLeptons )
         if nL < self.cfg_ana.nLeptonsMin:
-            return False
-
-        self.counters.counter('FourLepton').inc('enough good leptons')
+            return self.cfg_ana.keep
+        else:
+            self.counters.counter('FourLepton').inc('enough good leptons')
+            event.step += 1
 
         event.leptonPairs = self.findPairs( event.allSelLeptons )
         event.selZBosons1 = filter( self.testZ1, event.leptonPairs )
         if len(event.selZBosons1)<1:
-            return False
-        self.counters.counter('FourLepton').inc('Z1 found')
+            return self.cfg_ana.keep
+        else:
+            self.counters.counter('FourLepton').inc('Z1 found')
+            event.step += 1
         
         event.zBoson1 = self.bestZBoson( event.selZBosons1 )
         
@@ -117,19 +136,24 @@ class FourLeptonAnalyzer( Analyzer ):
         event.leptonsAfterZ1.remove( event.zBoson1.leg2 )
 
         if len(event.leptonsAfterZ1)==0:
-            return False
-
-        self.counters.counter('FourLepton').inc('3rd lepton present')
+            return self.cfg_ana.keep
+        else:
+            self.counters.counter('FourLepton').inc('3rd lepton present')
+            event.step += 1
         
         event.leptonPairs2 = self.findPairs( event.leptonsAfterZ1 )
         if len(event.leptonPairs2)==0:
-            return False
-        self.counters.counter('FourLepton').inc('2nd lepton pair')
+            return self.cfg_ana.keep
+        else:
+            self.counters.counter('FourLepton').inc('2nd lepton pair')
+            event.step += 1
         
         event.selZBosons2 = filter( self.testZ2, event.leptonPairs2 )
         if len(event.selZBosons2)==0:
-            return False
-        self.counters.counter('FourLepton').inc('Z2 found')
+            return self.cfg_ana.keep
+        else:
+            self.counters.counter('FourLepton').inc('Z2 found')
+            event.step += 1
 
         # putting together all selected lepton pairs:
         # Z1
@@ -141,8 +165,10 @@ class FourLeptonAnalyzer( Analyzer ):
         event.fourLeptons = self.findPairs( event.allLeptonPairs )
         event.selFourLeptons = filter( self.testFourLepton, event.fourLeptons)
         if len( event.selFourLeptons )==0:
-            return False 
-        self.counters.counter('FourLepton').inc('4-lepton selected')
+            return self.cfg_ana.keep 
+        else:
+            self.counters.counter('FourLepton').inc('4-lepton selected')
+            event.step += 1
         
         event.higgsCand = self.bestFourLepton( event.selFourLeptons ) 
         event.zBoson2 = event.higgsCand.leg1
@@ -162,6 +188,7 @@ class FourLeptonAnalyzer( Analyzer ):
                                             key = lambda x: 1/x.pt() )
         
         self.counters.counter('FourLepton').inc('passing')
+        event.step += 1
 
         return True
 

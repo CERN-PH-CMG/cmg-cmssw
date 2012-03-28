@@ -20,7 +20,7 @@ class MuMuFourLeptonAnalyzer( FourLeptonAnalyzer ):
             'std::vector<cmg::Muon>'
             )
         
-        self.mchandles['genParticles'] = AutoHandle( 'genParticlesStatus3',
+        self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
                                                      'std::vector<reco::GenParticle>' )
 
 

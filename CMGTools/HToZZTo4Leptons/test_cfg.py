@@ -23,24 +23,32 @@ vertexAna = cfg.Analyzer(
     verbose = False
     )
 
+
 muEleAna = cfg.Analyzer(
     'MuEleFourLeptonAnalyzer',
     pt1 = 5.,
     eta1 = 2.4,
     iso1 = 0.7,
     sip1 = 4,
-    pt2 = 7.,
+    # 
+    pt2 = 7,
     eta2 = 2.5,
     iso2 = 0.7,
     sip2 = 4, 
+    #
     z1_m = (50,120),
     z1_pt1 = 20,
     z1_pt2 = 10,
+    #
     z2_m = 12,
     z2_pt1 = 0,
     z2_pt2 = 0,
+    # 
     h_m = 100,
-    nLeptonsMin = 4
+    pair_iso = 0.35, 
+    nLeptonsMin = 2,
+    #
+    keep = True,
     )
 
 
@@ -95,27 +103,69 @@ eleEleAna = cfg.Analyzer(
     nLeptonsMin = 2
     )
 
+genMuEleAna = cfg.Analyzer(
+    'GenGenFourLeptonAnalyzer',
+    pt1 = 5.,
+    eta1 = 2.4,
+    iso1 = 0.7,
+    sip1 = 4,
+    # 
+    pt2 = 7,
+    eta2 = 2.5,
+    iso2 = 0.7,
+    sip2 = 4, 
+    #
+    z1_m = (50,120),
+    z1_pt1 = 20,
+    z1_pt2 = 10,
+    #
+    z2_m = 12,
+    z2_pt1 = 0,
+    z2_pt2 = 0,
+    # 
+    h_m = 100,
+    pair_iso = 0.35, 
+    nLeptonsMin = 2,
+    #
+    keep = True,
+    )
 
-treeProducer = cfg.Analyzer(
-     'FourLeptonTreeProducer'
+
+treeProducerGen = cfg.Analyzer(
+     'FourLeptonTreeProducer_gen',
+     anaName = 'GenGenFourLeptonAnalyzer'
      )
+
+treeProducerRec = cfg.Analyzer(
+     'FourLeptonTreeProducer_rec',
+     anaName = 'MuEleFourLeptonAnalyzer'
+     )
+
+
+
 
 ####################################################################################
 
-from CMGTools.HToZZTo4Leptons.samples.samples_march21 import * 
+from CMGTools.HToZZTo4Leptons.samples.samples_march28_cris import * 
 
 # from CMGTools.H2TauTau.proto.samples.tauMu_march12 import DYJets
 
 ####################################################################################
 
+stopper = cfg.Analyzer(
+    'Stopper'
+    )
 
 sequence = cfg.Sequence( [
     triggerAna,
     vertexAna,
-    # muEleAna,
+    genMuEleAna,
+    muEleAna,
+    # stopper
     # muMuAna,
-    eleEleAna,
-    treeProducer
+    # eleEleAna,
+    treeProducerGen,
+    treeProducerRec
    ] )
 
 # Hig120GluGlu.files = Hig120GluGlu.files[:1]

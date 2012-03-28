@@ -34,6 +34,8 @@ class FourLeptonTreeProducer( TreeAnalyzer ):
         particleVars('Z2L2')
         
         particleVars('H')
+
+        var('step')
         
         self.tree.book()
 
@@ -53,10 +55,15 @@ class FourLeptonTreeProducer( TreeAnalyzer ):
             fill('{pName}SIP3D'.format(pName=pName), particle.sip3D() )
             fill('{pName}Iso'.format(pName=pName), particle.relIso(0.5) )
            
-            
-        fParticleVars('Z1', event.zBoson1 )
-        fParticleVars('Z1L1', event.zBoson1.leg1 )
-        fParticleVars('Z1L2', event.zBoson1.leg2 )
+
+        event = getattr( event, self.cfg_ana.anaName )
+
+        fill('step', event.step )
+
+        if hasattr( event, 'zBoson2'): 
+            fParticleVars('Z1', event.zBoson1 )
+            fParticleVars('Z1L1', event.zBoson1.leg1 )
+            fParticleVars('Z1L2', event.zBoson1.leg2 )
 
         if hasattr( event, 'zBoson2'): 
             fParticleVars('Z2', event.zBoson2 )
