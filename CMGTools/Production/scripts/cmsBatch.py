@@ -86,7 +86,7 @@ echo
 env
 ulimit -v 3000000
 echo 'copying job dir to worker'
-cd $LS_SUBCWD
+cd $CMSSW_BASE/src
 eval `scramv1 ru -sh`
 cd -
 cp -rf $LS_SUBCWD .
