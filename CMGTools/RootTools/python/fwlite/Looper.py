@@ -110,20 +110,23 @@ class Looper(object):
         for analyzer in self.analyzers:
             analyzer.beginLoop()
         
-        for iEv in range(firstEvent, firstEvent+eventSize):
-            # if iEv == nEvents:
-            #     break
-            if iEv%100 ==0:
-                print 'event', iEv
-            self.process( iEv )
-            if iEv<self.nPrint:
-                print self.event
+        try:
+            for iEv in range(firstEvent, firstEvent+eventSize):
+                # if iEv == nEvents:
+                #     break
+                if iEv%100 ==0:
+                    print 'event', iEv
+                self.process( iEv )
+                if iEv<self.nPrint:
+                    print self.event
+        except UserWarning:
+            print 'Stopped loop following a UserWarning exception'
         for analyzer in self.analyzers:
             analyzer.endLoop()
         self.logger.warning('')
         self.logger.warning( self.cfg_comp )
         self.logger.warning('')
-        self.logger.warning( 'number of events processed: {nEv}'.format(nEv=eventSize) )
+        self.logger.warning( 'number of events processed: {nEv}'.format(nEv=iEv+1) )
 
     def process(self, iEv ):
         '''Run event processing for all analyzers in the sequence.
