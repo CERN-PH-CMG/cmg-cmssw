@@ -8,18 +8,17 @@ import ROOT
 from ROOT import TFile
 
 #get input file List
-def checkCastorDirectory(dir, FilePrefix):
-    if(dir.endswith('/')!=True):
-       dir+='/'
+def checkCastorDirectory(dir, FilePrefix=''):
+    if(dir.endswith('/')!=True):     dir+='/'
     if(dir.find('/store/cmst3')==0) :
         rfdir_cmd='cmsLs ' + dir + ' | grep root | awk \'{print $5}\''
-    	rfdir_cmd = rfdir_cmd + '| grep ' + dir+FilePrefix+"_"
+        if(len(FilePrefix)>0) : rfdir_cmd = rfdir_cmd + '| grep ' + dir+FilePrefix+"_"
 #       print rfdir_cmd + "########"
         outCastorDir_out = commands.getstatusoutput(rfdir_cmd)
         return outCastorDir_out[1].split('\n')
     elif(dir.find('/castor/')>=0):
         rfdir_cmd = "rfdir " + dir + ' | grep root | awk \'{print $9}\''
-        rfdir_cmd = rfdir_cmd + '| grep ' + FilePrefix+"_"
+        if(len(FilePrefix)>0) :  rfdir_cmd = rfdir_cmd + '| grep ' + FilePrefix+"_"
 #       print rfdir_cmd + "########"
         outCastorDir_out = commands.getstatusoutput(rfdir_cmd)
         split = outCastorDir_out[1].split('\n')
@@ -27,7 +26,8 @@ def checkCastorDirectory(dir, FilePrefix):
 		split[s] = 'rfio:'+dir+'/'+split[s]
 	return split
     else :
-        ls_cmd = 'ls ' + dir + ' | grep ' + FilePrefix + '_'
+        if(len(FilePrefix)>0) : ls_cmd = 'ls ' + dir + ' | grep ' + FilePrefix + '_'
+        else : ls_cmd = 'ls ' + dir
         dir_out = commands.getstatusoutput(ls_cmd)
         split = dir_out[1].split('\n')
         for s in range(0,len(split)):
@@ -54,14 +54,14 @@ def usage() :
     print ' - t : process only this tag'
     print '  -o : output directory'
     print '  -c : check input file validity'
-
+    print '  -m : 0 = assume inputs in the same dir (default); 1 = inputs in sub-dirs;' 
     print ' '
     exit(-1)
 
 #parse the options 
 try:
      # retrive command line options
-     shortopts  = "j:d:t:o:c:"
+     shortopts  = "j:d:t:o:c:m:"
      opts, args = getopt.getopt( sys.argv[1:], shortopts )
 except getopt.GetoptError:
      # print help information and exit:
@@ -77,6 +77,7 @@ fperjob=-1
 params=''
 onlytag='all'
 checkFile='True'
+mode=0
 for o,a in opts:
     if o in("-?", "-h"):
         usage()
@@ -86,6 +87,7 @@ for o,a in opts:
     elif o in('-d'): dirtag = a
     elif o in('-t'): onlytag = a
     elif o in('-c'): checkFile = a
+    elif o in('-m'): mode = int(a)
 
 
 jsonFile = open(samplesDB,'r')
@@ -116,7 +118,8 @@ for proc in procList :
                 if(itag.find(onlytag)<0) : continue
 
             print "-------------------------"
-            allfiles = checkCastorDirectory(dirtag, d['dtag'] )
+            if(mode==0) : allfiles = checkCastorDirectory(dirtag, d['dtag'] )
+            else        : allfiles = checkCastorDirectory(dirtag+'/'+ d['dtag'])
             if(len(allfiles)==0) : 
 		print "no file found for sample: " + d['dtag']
 		continue

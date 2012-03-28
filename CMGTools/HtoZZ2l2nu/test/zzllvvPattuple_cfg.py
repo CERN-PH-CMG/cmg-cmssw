@@ -55,6 +55,7 @@ process.endCounter = process.startCounter.clone()
 if(runOnMC):
     process.llPath = cms.Path(process.startCounter * process.llCandidateSequence * process.patSequence )
     process.photonPath = cms.Path(process.startCounter * process.photonCandidateSequence * process.patSequence )
+    process.patOnlyPath = cms.Path(process.startCounter * process.patSequence )
 else:
     process.llPath = cms.Path(process.startCounter * process.preselection * process.llCandidateSequence * process.patSequence )
     process.photonPath = cms.Path(process.startCounter * process.preselection * process.photonCandidateSequence * process.patSequence )
@@ -64,14 +65,17 @@ process.e = cms.EndPath( process.endCounter*process.out )
 if(runOnMC):
     from CMGTools.HtoZZ2l2nu.GeneratorLevelSequences_cff import addGeneratorLevelSequence
     addGeneratorLevelSequence(process)
-    process.schedule = cms.Schedule( process.genLevelPath, process.llPath, process.photonPath, process.e )
+    if(runStd) : process.schedule = cms.Schedule( process.genLevelPath, process.llPath, process.photonPath, process.e )
+    else : process.schedule = cms.Schedule( process.genLevelPath, process.patOnlyPath, process.e )
 else :
-    process.schedule = cms.Schedule( process.llPath, process.photonPath, process.e )
+    if(runStd) : process.schedule = cms.Schedule( process.llPath, process.photonPath, process.e )
+    else : process.schedule = cms.Schedule( process.genLevelPath, process.patOnlyPath, process.e )
 
 # event output
 from CMGTools.HtoZZ2l2nu.OutputConfiguration_cff import configureOutput
 configureOutput(process)
-configureOutput(process,selPaths=['llPath','photonPath'])
+if(runStd) : configureOutput(process,selPaths=['llPath','photonPath'])
+else :      configureOutput(process,selPaths=['patOnlyPath'])
 process.out.fileName = cms.untracked.string(outFile)
 
 print "Scheduling the following modules"
