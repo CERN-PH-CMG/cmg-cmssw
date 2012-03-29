@@ -23,68 +23,69 @@ def addCmgElectrons( process, postfix, inputTag ):
     return ganew( 'electronSequence' )
 
 
-def addStdMuons( process, postfix, newpostfix, cut, runOnMC):
 
-    fullpostfix = postfix+newpostfix
-    ga = getattrGenerator( process, postfix )
-    ganew = getattrGenerator( process, fullpostfix )
+## def addStdMuons( process, postfix, newpostfix, cut, runOnMC):
 
-    muonSeq = cms.Sequence(
-        ga( 'pfMuonIsolationSequence' ) +
-        ga( 'makePatMuons' )  +
-        ga( 'selectedPatMuons' )
-        # +
-        # addCmgMuons( process, newpostfix, 'selectedPatMuons'+fullpostfix )
-        )
-    setattr( process, 'stdMuonSequence'+postfix, muonSeq)
+##     fullpostfix = postfix+newpostfix
+##     ga = getattrGenerator( process, postfix )
+##     ganew = getattrGenerator( process, fullpostfix )
+
+##     muonSeq = cms.Sequence(
+##         ga( 'pfMuonIsolationSequence' ) +
+##         ga( 'makePatMuons' )  +
+##         ga( 'selectedPatMuons' )
+##         # +
+##         # addCmgMuons( process, newpostfix, 'selectedPatMuons'+fullpostfix )
+##         )
+##     setattr( process, 'stdMuonSequence'+postfix, muonSeq)
     
-    muonSource = 'muons'
-    cloneProcessingSnippet(process, ga('stdMuonSequence'), newpostfix)
+##     muonSource = 'muons'
+##     cloneProcessingSnippet(process, ga('stdMuonSequence'), newpostfix)
     
-    ganew("muPFIsoDepositCharged").src = muonSource
-    ganew("muPFIsoDepositChargedAll").src = muonSource
-    ganew("muPFIsoDepositNeutral").src = muonSource
-    ganew("muPFIsoDepositGamma").src = muonSource
-    ganew("muPFIsoDepositPU").src = muonSource
-    ganew("patMuons").useParticleFlow = False
-    ganew("selectedPatMuons").cut = cut
-    if runOnMC:
-        ganew("muonMatch").src = muonSource
-    else:
-        ganew('makePatMuons').remove( ganew("muonMatch") )
+##     ganew("muPFIsoDepositCharged").src = muonSource
+##     ganew("muPFIsoDepositChargedAll").src = muonSource
+##     ganew("muPFIsoDepositNeutral").src = muonSource
+##     ganew("muPFIsoDepositGamma").src = muonSource
+##     ganew("muPFIsoDepositPU").src = muonSource
+##     ganew("patMuons").useParticleFlow = False
+##     ganew("selectedPatMuons").cut = cut
+##     if runOnMC:
+##         ganew("muonMatch").src = muonSource
+##     else:
+##         ganew('makePatMuons').remove( ganew("muonMatch") )
 
-    return ganew( 'stdMuonSequence' )
+##     return ganew( 'stdMuonSequence' )
 
-
-
-
-def addStdElectrons(process, postfix, newpostfix, cut, runOnMC):
-
-    fullpostfix = postfix+newpostfix
-    ga = getattrGenerator( process, postfix )
-    ganew = getattrGenerator( process, fullpostfix )
     
-    electronSeq = cms.Sequence(
-        ga('pfElectronIsolationSequence') + 
-        ga('makePatElectrons') + 
-        ga('selectedPatElectrons')
-        )
-    setattr( process, 'stdElectronSequence'+postfix, electronSeq)
 
-    electronSource = 'gsfElectrons'
-    cloneProcessingSnippet(process, ga('stdElectronSequence'), newpostfix)
+
+## def addStdElectrons(process, postfix, newpostfix, cut, runOnMC):
+
+##     fullpostfix = postfix+newpostfix
+##     ga = getattrGenerator( process, postfix )
+##     ganew = getattrGenerator( process, fullpostfix )
+    
+##     electronSeq = cms.Sequence(
+##         ga('pfElectronIsolationSequence') + 
+##         ga('makePatElectrons') + 
+##         ga('selectedPatElectrons')
+##         )
+##     setattr( process, 'stdElectronSequence'+postfix, electronSeq)
+
+##     electronSource = 'gsfElectrons'
+##     cloneProcessingSnippet(process, ga('stdElectronSequence'), newpostfix)
         
-    ganew("elPFIsoDepositCharged").src = electronSource
-    ganew("elPFIsoDepositChargedAll").src = electronSource
-    ganew("elPFIsoDepositNeutral").src = electronSource
-    ganew("elPFIsoDepositGamma").src = electronSource
-    ganew("elPFIsoDepositPU").src = electronSource
-    ganew("patElectrons").useParticleFlow = False
-    ganew("selectedPatElectrons").cut = cut
-    if runOnMC:
-        ganew("electronMatch").src = electronSource
-    else:
-        ganew('makePatElectrons').remove( ganew("electronMatch") )
+##     ganew("elPFIsoDepositCharged").src = electronSource
+##     ganew("elPFIsoDepositChargedAll").src = electronSource
+##     ganew("elPFIsoDepositNeutral").src = electronSource
+##     ganew("elPFIsoDepositGamma").src = electronSource
+##     ganew("elPFIsoDepositPU").src = electronSource
+##     ganew("patElectrons").useParticleFlow = False
+##     ganew("selectedPatElectrons").cut = cut
+##     if runOnMC:
+##         ganew("electronMatch").src = electronSource
+##     else:
+##         ganew('makePatElectrons').remove( ganew("electronMatch") )
 
-    return ganew('stdElectronSequence')
+##     return ganew('stdElectronSequence')
 

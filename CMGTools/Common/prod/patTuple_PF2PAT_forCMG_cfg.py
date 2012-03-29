@@ -175,23 +175,40 @@ getattr(process,"pfIsolatedElectrons"+postfixAK5).isolationCut = 999999
 from CMGTools.Common.PAT.addMETSignificance_cff import addMETSig
 addMETSig( process, postfixAK5 )
 
+# %%%%%%%%%%%%%%%%%%%%%%%%%
 
 # adding "standard muons and electons"
 # (made from all reco muons, and all gsf electrons, respectively)
-from CMGTools.Common.PAT.addStdLeptons import addStdMuons
-from CMGTools.Common.PAT.addStdLeptons import addStdElectrons
-stdMuonSeq = addStdMuons( process, postfixAK5, 'StdLep', 'pt()>3', runOnMC )
-stdElectronSeq = addStdElectrons( process, postfixAK5, 'StdLep', 'pt()>5', runOnMC )
+process.patMuons.embedTcMETMuonCorrs = False
+process.patMuons.embedCaloMETMuonCorrs = False
+process.patMuons.embedTrack = True
+process.patElectrons.pfElectronSource = 'particleFlow'
+process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons', 'PFIso')
+process.muIsoSequence = setupPFMuonIso(process, 'muons', 'PFIso')
+adaptPFIsoMuons( process, applyPostfix(process,"patMuons",""), 'PFIso')
+adaptPFIsoElectrons( process, applyPostfix(process,"patElectrons",""), 'PFIso')
+process.stdMuonSeq = cms.Sequence(
+    process.pfParticleSelectionSequence +
+    process.muIsoSequence +
+    process.makePatMuons +
+    process.selectedPatMuons
+    )
+process.stdElectronSeq = cms.Sequence(
+    process.pfParticleSelectionSequence +
+    process.eleIsoSequence +
+    process.makePatElectrons +
+    process.selectedPatElectrons
+    )
 
 # adding vbtf and cic electron IDs to both electron collections
 from CMGTools.Common.PAT.addPATElectronID_cff import addPATElectronID
 addPATElectronID( process, 'patDefaultSequence', postfixAK5)
-addPATElectronID( process, 'stdElectronSequence', postfixAK5+'StdLep')
+addPATElectronID( process, 'stdElectronSequence', '')
 
 # adding MIT electron id
 from CMGTools.Common.PAT.addMITElectronID import addMITElectronID
 addMITElectronID( process, 'selectedPatElectrons', 'patDefaultSequence', postfixAK5)
-addMITElectronID( process, 'selectedPatElectrons', 'stdElectronSequence', postfixAK5+'StdLep')
+addMITElectronID( process, 'selectedPatElectrons', 'stdElectronSeq', '')
 
 
 # # adding custom detector based iso deposit ---> !!! this works only on V4 event content !!!
@@ -199,9 +216,9 @@ from RecoLocalCalo.EcalRecAlgos.EcalSeverityLevelESProducer_cfi import *
 from CMGTools.Common.PAT.addLeptCustomIsoDeposit_cff import addMuonCustomIsoDeposit
 from CMGTools.Common.PAT.addLeptCustomIsoDeposit_cff import addElectronCustomIsoDeposit
 addMuonCustomIsoDeposit( process, 'patDefaultSequence', postfixAK5)
-addMuonCustomIsoDeposit( process, 'stdElectronSequence', postfixAK5+'StdLep')
+addMuonCustomIsoDeposit( process, 'stdMuonSeq', '')
 addElectronCustomIsoDeposit( process, 'patDefaultSequence', postfixAK5)
-addElectronCustomIsoDeposit( process, 'stdElectronSequence', postfixAK5+'StdLep')
+addElectronCustomIsoDeposit( process, 'stdElectronSeq', '')
 
 
 # ---------------- Sequence AK5NoPUSub, pfNoPileUp switched off ---------------
@@ -248,8 +265,8 @@ process.p += process.kt6PFJetsForIso
 process.p += getattr(process,"patPF2PATSequence"+postfixAK5)
 
 process.stdLeptonSequence = cms.Sequence(
-    stdMuonSeq +
-    stdElectronSeq 
+    process.stdMuonSeq +
+    process.stdElectronSeq 
     )
 process.p += process.stdLeptonSequence
 
@@ -289,8 +306,8 @@ if runCMG:
 
     from CMGTools.Common.PAT.addStdLeptons import addCmgMuons, addCmgElectrons
     process.cmgStdLeptonSequence = cms.Sequence(
-        addCmgMuons( process, 'StdLep', 'selectedPatMuonsAK5StdLep'  ) +
-        addCmgElectrons( process, 'StdLep', 'selectedPatElectronsAK5StdLep'  ) 
+        addCmgMuons( process, 'StdLep', 'selectedPatMuons'  ) +
+        addCmgElectrons( process, 'StdLep', 'selectedPatElectrons'  ) 
         )
     process.cmgObjectSequence += process.cmgStdLeptonSequence
 
@@ -343,7 +360,7 @@ if runCMG:
 
 #Patrick: Make the embedded track available for electrons (curing a bug in PAT)
 process.patElectronsAK5.embedTrack = True
-process.patElectronsAK5StdLep.embedTrack = True
+process.patElectrons.embedTrack = True
 
 
 
