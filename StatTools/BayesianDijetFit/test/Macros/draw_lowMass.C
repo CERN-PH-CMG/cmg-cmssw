@@ -1527,3 +1527,343 @@ void draw_lowMass()
 
 
 }
+s_E_d2->GetXaxis()->SetRangeUser(minMass,maxMass);
+  h_xs_qq_sys_E->SetTitle("");
+  h_xs_HT_fat_qq_1010_sys_E_d2->SetTitleSize(0.2);
+  h_xs_HT_fat_qq_1010_sys_E_d2->GetXaxis()->SetTitleSize(0.06);
+
+
+  h_xs_qq_sys_E->Draw("C");
+  
+  h_xs_qq_sys_E->GetXaxis()->SetTitle("qq Resonance Mass (GeV)");
+  h_xs_qq_sys_E->GetYaxis()->SetTitle("Cross Section #times #it{B} #times #it{A} (pb)");
+ 
+  g_xs_HT_fat_qq_1010_sys_E_m->Draw("sameC");
+  g_xs_HT_fat_qq_1010_sys->Draw("samePL");
+
+  //  g_xs_string->Draw("samePL");  
+  //  g_xs_qstar->Draw("sameL");
+  g_xs_axigluon->Draw("sameL");
+  g_xs_diquark->Draw("sameL");
+  g_xs_wprime->Draw("sameL");  
+  g_xs_zprime->Draw("sameL");  
+  //  g_xs_rsgraviton->Draw("sameL");  
+
+
+  //  TGaxis *TX_xs_qq_sys_E = new TGaxis(500.0,300.0,550.0,300.0,1000.0,4000.0,510,"");
+  //  TX_xs_qq_sys_E->Draw();
+	
+  p_xs_qq_sys_E->SetFillColor(0);
+  p_xs_qq_sys_E->SetFillStyle(0);
+  p_xs_qq_sys_E->SetBorderSize(0);
+
+
+  p_xs_qq_sys_E->AddText("CMS (0.118 fb^{-1})");
+  p_xs_qq_sys_E->AddText("#sqrt{s} = 7 TeV");
+
+  if (sReco.find("fat30") != string::npos)
+    p_xs_qq_sys_E->AddText("Wide jets");
+  else 
+    p_xs_qq_sys_E->AddText("PF AK5 jets");
+
+
+  p_xs_qq_sys_E->Draw("sames");
+
+  l_xs_qq_sys_E->SetFillColor(0);
+  l_xs_qq_sys_E->SetFillStyle(0);
+  //  l_xs_qq_sys_E->SetHeader("CMS (0.118 fb^{-1})");
+  //  l_xs_qq_sys_E->SetHeader("CMS Preliminary");
+  //  l_xs_qq_sys_E->AddEntry((TObject*)0,"0.118 fb^{-1}","")
+  l_xs_qq_sys_E->AddEntry(g_xs_HT_fat_qq_1010_sys,"Observed 95% CL Upper Limit","pL");
+  //  l_xs_qq_sys_E->AddEntry(h_xs_HT_fat_qq_1010_sys_E_d2,"-2 #sigma","pL");
+  //  l_xs_qq_sys_E->AddEntry(h_xs_HT_fat_qq_1010_sys_E_d1,"-1 #sigma","pL");
+  l_xs_qq_sys_E->AddEntry(g_xs_HT_fat_qq_1010_sys_E_m,"Expected 95% CL Upper Limit","pL");
+  l_xs_qq_sys_E->AddEntry(h_xs_HT_fat_qq_1010_sys_E_u1,"Expected Limit #pm 1#sigma","F");
+  l_xs_qq_sys_E->AddEntry(h_xs_HT_fat_qq_1010_sys_E_u2,"Expected Limit #pm 2#sigma","F");
+  l_xs_qq_sys_E->Draw("sames");
+  l_xs_theory_qq->SetFillColor(0);
+  l_xs_theory_qq->SetFillStyle(0);
+  l_xs_theory_qq->AddEntry(g_xs_axigluon,"Axigluon/Coloron","L");
+  l_xs_theory_qq->AddEntry(g_xs_axigluon,"(NLO) arXiv:1111.7261v2","");
+  l_xs_theory_qq->AddEntry(g_xs_diquark,"E_{6} Diquark","L");
+  l_xs_theory_qq->AddEntry(g_xs_wprime,"W'","L");
+  l_xs_theory_qq->AddEntry(g_xs_zprime,"Z'","L");
+  //  l_xs_theory_qq->AddEntry(g_xs_rsgraviton,"RS Graviton","L");
+
+  l_xs_theory_qq->Draw("sames");
+  
+  c_xs_qq_sys_E->Update();
+
+  string sOut_png = sRep + "/Exclusions_qq_withExpected_lowMass_"+sReco+".png";
+  string sOut_eps = sRep + "/Exclusions_qq_withExpected_lowMass_"+sReco+".eps";
+
+  c_xs_qq_sys_E->SaveAs(sOut_png.c_str());
+  c_xs_qq_sys_E->SaveAs(sOut_eps.c_str());
+
+  // c_xs_comparison_bw_stat_sys_fat
+
+  c_xs_comparison_bw_stat_sys_fat->cd(0);
+  TH1F *vFrame = gPad->DrawFrame(minMass,0.01,maxMass,maxXsec);
+  vFrame->SetTitle("");
+  vFrame->SetTitleSize(0.2);
+  vFrame->SetXTitle("Resonance mass (GeV)");
+  vFrame->GetXaxis()->SetTitleSize(0.06);
+  vFrame->SetYTitle("(sys.included 95% CL #sigma) / (stat.only 95% CL #sigma)");
+  vFrame->GetYaxis()->SetTitleSize(0.04);
+  vFrame->GetYaxis()->SetTitleOffset(1.60);
+  vFrame->SetMinimum(0.7);
+  vFrame->SetMaximum(1.3);
+  // vFrame->SetLogy();
+
+  g_xs_comparison_bw_stat_bg_fat->Draw("PL");;
+  //  g_xs_comparison_bw_stat_bg_alternative_fat->Draw("samePL");;
+  g_xs_comparison_bw_stat_lumi_fat->Draw("samePL");
+  g_xs_comparison_bw_stat_JES_fat->Draw("samePL");
+  g_xs_comparison_bw_stat_JER_fat->Draw("samePL");
+  g_xs_comparison_bw_stat_sys_fat->Draw("samePL");
+	
+  l_xs_comparison_bw_stat_sys_fat->SetFillColor(0);
+  l_xs_comparison_bw_stat_sys_fat->SetFillStyle(0);
+
+  l_xs_comparison_bw_stat_sys_fat->SetHeader("CMS (0.118 fb^{-1}): PF AK5 jets");
+
+  if (sReco.find("fat30") != string::npos)
+    l_xs_comparison_bw_stat_sys_fat->SetHeader("CMS (0.118 fb^{-1}): Wide jets");
+
+  //  l_xs_comparison_bw_stat_sys_fat->SetHeader("CMS Preliminary");
+  //  l_xs_comparison_bw_stat_sys_fat->AddEntry((TObject*)0,"0.118 fb^{-1}","")
+  l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_sys_fat, "all sys / stat","pL");
+  l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_bg_fat,"background / stat","pL");
+  //  l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_bg_alternative_fat,"background alt./ stat","pL");
+  l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_lumi_fat,"Lumi / stat","pL");
+  l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_JES_fat,"JES / stat","pL");
+  l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_JER_fat,"JER / stat","pL");
+  l_xs_comparison_bw_stat_sys_fat->Draw("sames");
+
+  c_xs_comparison_bw_stat_sys_fat->Update();
+
+
+  string sOut_png = sRep + "/Exclusions_qg_SysErrorsDependance_lowMass_"+sReco+".png";
+  string sOut_eps = sRep + "/Exclusions_qg_SysErrorsDependance_lowMass_"+sReco+".eps";
+
+  c_xs_comparison_bw_stat_sys_fat->SaveAs(sOut_png.c_str());
+  c_xs_comparison_bw_stat_sys_fat->SaveAs(sOut_eps.c_str());
+
+
+
+
+
+  c_xs_comparison_bw_stat_sys_fat_norm->cd(0);
+  TH1F *vFrame = gPad->DrawFrame(minMass,0.01,maxMass,maxXsec);
+  vFrame->SetTitle("");
+  vFrame->SetTitleSize(0.2);
+  vFrame->SetXTitle("Resonance mass (GeV)");
+  vFrame->GetXaxis()->SetTitleSize(0.06);
+  vFrame->SetYTitle("(sys.included 95% CL #sigma) / (stat.only 95% CL #sigma)");
+  vFrame->GetYaxis()->SetTitleSize(0.04);
+  vFrame->GetYaxis()->SetTitleOffset(1.60);
+  vFrame->SetMinimum(0.7);
+  vFrame->SetMaximum(1.3);
+  // vFrame->SetLogy();
+
+  g_xs_comparison_bw_stat_lumi_fat->Draw("samePL");
+  g_xs_comparison_bw_stat_JES_fat->Draw("samePL");
+  g_xs_comparison_bw_stat_JER_fat->Draw("samePL");
+  g_xs_comparison_bw_stat_lumi_fat_norm->Draw("samePL");
+  g_xs_comparison_bw_stat_JES_fat_norm->Draw("samePL");
+  g_xs_comparison_bw_stat_JER_fat_norm->Draw("samePL");
+	
+  l_xs_comparison_bw_stat_sys_fat_norm->SetFillColor(0);
+  l_xs_comparison_bw_stat_sys_fat_norm->SetFillStyle(0);
+
+  l_xs_comparison_bw_stat_sys_fat_norm->SetHeader("CMS (0.118 fb^{-1}): PF AK5 jets");
+
+  if (sReco.find("fat30") != string::npos)
+    l_xs_comparison_bw_stat_sys_fat_norm->SetHeader("CMS (0.118 fb^{-1}): Wide jets");
+
+
+  l_xs_comparison_bw_stat_sys_fat_norm->AddEntry(g_xs_comparison_bw_stat_lumi_fat,"Lumi / stat","pL");
+  l_xs_comparison_bw_stat_sys_fat_norm->AddEntry(g_xs_comparison_bw_stat_JES_fat,"JES / stat","pL");
+  l_xs_comparison_bw_stat_sys_fat_norm->AddEntry(g_xs_comparison_bw_stat_JER_fat,"JER / stat","pL");
+ l_xs_comparison_bw_stat_sys_fat_norm->AddEntry(g_xs_comparison_bw_stat_lumi_fat_norm,"Lumi Normal / stat","pL");
+  l_xs_comparison_bw_stat_sys_fat_norm->AddEntry(g_xs_comparison_bw_stat_JES_fat_norm,"JES Normal / stat","pL");
+  l_xs_comparison_bw_stat_sys_fat_norm->AddEntry(g_xs_comparison_bw_stat_JER_fat_norm,"JER Normal / stat","pL");
+
+  l_xs_comparison_bw_stat_sys_fat_norm->Draw("sames");
+
+  c_xs_comparison_bw_stat_sys_fat_norm->Update();
+
+
+  string sOut_png = sRep + "/Exclusions_qg_SysErrorsDependance_priorDependance_lowMass_"+sReco+".png";
+  string sOut_eps = sRep + "/Exclusions_qg_SysErrorsDependance_priorDependance_lowMass_"+sReco+".eps";
+
+  c_xs_comparison_bw_stat_sys_fat_norm->SaveAs(sOut_png.c_str());
+  c_xs_comparison_bw_stat_sys_fat_norm->SaveAs(sOut_eps.c_str());
+
+
+
+
+  c_xs_comparison_bw_stat_sys_fat_noFirstGeVBin->cd(0);
+  TH1F *vFrame = gPad->DrawFrame(minMass,0.01,maxMass,11.);
+  vFrame->SetTitle("");
+  vFrame->SetTitleSize(0.2);
+  vFrame->SetXTitle("Resonance mass (GeV)");
+  vFrame->GetXaxis()->SetTitleSize(0.06);
+  vFrame->SetYTitle("(noFirstGeVBin 95% CL #sigma) / (all bins 95% CL #sigma)");
+  vFrame->GetYaxis()->SetTitleSize(0.04);
+  vFrame->GetYaxis()->SetTitleOffset(1.60);
+  vFrame->SetMinimum(0.5);
+  vFrame->SetMaximum(2.7);
+  // vFrame->SetLogy();
+
+  g_xs_HT_fat_qq_compare_noFirstGeVBin->Draw("samePL");
+  g_xs_HT_fat_qg_compare_noFirstGeVBin->Draw("samePL");
+  g_xs_HT_fat_gg_compare_noFirstGeVBin->Draw("samePL");
+
+  l_xs_comparison_bw_stat_sys_fat_noFirstGeVBin->SetFillColor(0);
+  l_xs_comparison_bw_stat_sys_fat_noFirstGeVBin->SetFillStyle(0);
+
+    l_xs_comparison_bw_stat_sys_fat_norm->SetHeader("CMS (0.118 fb^{-1}): PF AK5 jets");
+
+  if (sReco.find("fat30") != string::npos)
+    l_xs_comparison_bw_stat_sys_fat_norm->SetHeader("CMS (0.118 fb^{-1}): Wide jets");
+
+
+
+  l_xs_comparison_bw_stat_sys_fat_noFirstGeVBin->AddEntry(g_xs_HT_fat_qq_compare_noFirstGeVBin,"qq","pL");
+  l_xs_comparison_bw_stat_sys_fat_noFirstGeVBin->AddEntry(g_xs_HT_fat_qg_compare_noFirstGeVBin,"qg","pL");
+  l_xs_comparison_bw_stat_sys_fat_noFirstGeVBin->AddEntry(g_xs_HT_fat_gg_compare_noFirstGeVBin,"gg","pL");
+
+  l_xs_comparison_bw_stat_sys_fat_noFirstGeVBin->Draw("sames");
+
+  c_xs_comparison_bw_stat_sys_fat_noFirstGeVBin->Update();
+
+
+  string sOut_png = "Fit_Results/Exclusions_qg_SysErrorsDependance_noFirstGeVBin_lowMass_"+sReco+".png";
+  string sOut_eps = "Fit_Results/Exclusions_qg_SysErrorsDependance_noFirstGeVBin_lowMass_"+sReco+".eps";
+
+  c_xs_comparison_bw_stat_sys_fat_noFirstGeVBin->SaveAs(sOut_png.c_str());
+  c_xs_comparison_bw_stat_sys_fat_noFirstGeVBin->SaveAs(sOut_eps.c_str());
+
+
+
+
+
+
+  // c_xs_qg_compare
+  /*
+  c_xs_qg_compare->cd(0);
+  TH1F *vFrame = gPad->DrawFrame(minMass,0.01,maxMass,maxXsec);
+  vFrame->SetTitle("");
+  vFrame->SetTitleSize(0.2);
+  vFrame->SetXTitle("Resonance mass (GeV)");
+  vFrame->GetXaxis()->SetTitleSize(0.06);
+  vFrame->SetYTitle("(each type) / (HT-calo)");
+  // vFrame->SetLogy();
+
+  g_xs_HT_fat_qg_compare->Draw("PL");
+
+  l_xs_qg_compare->SetFillColor(0);
+  l_xs_qg_compare->SetFillStyle(0);
+  l_xs_qg_compare->SetHeader("qg-(Stat.Only)-0.118 fb^{-1}");
+  l_xs_qg_compare->AddEntry(g_xs_HT_fat_qg_compare,"HT-fat","pL");
+
+  l_xs_qg_compare->Draw("sames");
+
+  c_xs_qg_compare->Update();
+
+  // c_xs_gg_compare
+  
+  c_xs_gg_compare->cd(0);
+  TH1F *vFrame = gPad->DrawFrame(minMass,0.01,maxMass,maxXsec);
+  vFrame->SetTitle("");
+  vFrame->SetTitleSize(0.2);
+  vFrame->SetXTitle("Resonance mass (GeV)");
+  vFrame->GetXaxis()->SetTitleSize(0.06);
+  vFrame->SetYTitle("(each type) / (HT-calo)");
+  // vFrame->SetLogy();
+
+  g_xs_HT_fat_gg_compare->Draw("PL");
+
+  l_xs_gg_compare->SetFillColor(0);
+  l_xs_gg_compare->SetFillStyle(0);
+  l_xs_gg_compare->SetHeader("gg-(Stat.Only)-0.118 fb^{-1}");
+  l_xs_gg_compare->AddEntry(g_xs_HT_fat_gg_compare,"HT-fat","pL");
+
+  l_xs_gg_compare->Draw("sames");
+
+  c_xs_gg_compare->Update();
+
+  // c_xs_qq_compare
+
+  c_xs_qq_compare->cd(0);
+  TH1F *vFrame = gPad->DrawFrame(minMass,0.01,maxMass,maxXsec);
+  vFrame->SetTitle("");
+  vFrame->SetTitleSize(0.2);
+  vFrame->SetXTitle("Resonance mass (GeV)");
+  vFrame->GetXaxis()->SetTitleSize(0.06);
+  vFrame->SetYTitle("(each type) / (HT-calo)");
+  // vFrame->SetLogy();
+
+  g_xs_HT_fat_qq_compare->Draw("PL");
+
+  l_xs_qq_compare->SetFillColor(0);
+  l_xs_qq_compare->SetFillStyle(0);
+  l_xs_qq_compare->SetHeader("qq-(Stat.Only)-0.118 fb^{-1}");
+  l_xs_qq_compare->AddEntry(g_xs_HT_fat_qq_compare,"HT-fat","pL");
+
+  l_xs_qq_compare->Draw("sames");
+
+  c_xs_qq_compare->Update();
+  */
+  // c_xs_rsg
+
+  c_xs_rsg->cd(0);
+  TH1F *vFrame = gPad->DrawFrame(minMass,minXsec, 2050.0, 25.);
+  vFrame->SetTitle("");
+  vFrame->SetTitleSize(0.2);
+  vFrame->SetXTitle("Resonance Mass (GeV)");
+  vFrame->GetXaxis()->SetTitleFont(42);
+  vFrame->GetXaxis()->SetTitleSize(0.06);
+  vFrame->SetYTitle("Cross Section #times #it{B} #times #it{A} (pb)");
+  // vFrame->SetLogy();
+
+  g_xs_RSG_for_limit_fat->Draw("PL");
+  g_xs_HT_fat_gg_1010_sys->Draw("samePL");
+  g_xs_HT_fat_qq_1010_sys->Draw("samePL");
+  //  g_xs_string->Draw("sameL");  
+  //  g_xs_qstar->Draw("sameL");
+  //  g_xs_axigluon->Draw("sameL");
+  //  g_xs_diquark->Draw("sameL");
+  //  g_xs_wprime->Draw("sameL");  
+  //  g_xs_zprime->Draw("sameL");  
+  g_xs_rsgraviton->Draw("sameL");  
+	
+  l_xs_rsg->SetFillColor(0);
+  l_xs_rsg->SetFillStyle(0);
+  l_xs_rsg->Clear();
+  //  l_xs_rsg->SetHeader("CMS Preliminary");
+  //  l_xs_rsg->AddEntry((TObject*)0,"0.118 fb^{-1}","");
+  l_xs_rsg->SetHeader("95% CL Upper Limit: AK5 PF jets");
+  if (sReco.find("fat30") != string::npos)
+    l_xs_rsg->SetHeader("95% CL Upper Limit: Wide jets");
+
+
+  l_xs_rsg->AddEntry(g_xs_HT_fat_qq_1010_sys,"HT-fat qq","pL");
+  l_xs_rsg->AddEntry(g_xs_HT_fat_gg_1010_sys,"HT-fat gg","pL");
+  l_xs_rsg->AddEntry(g_xs_RSG_for_limit_fat,"HT-fat w1*qq+w2*gg","pL");
+  l_xs_rsg->AddEntry(g_xs_rsgraviton,"cross section for RSG","pL");
+
+  l_xs_rsg->Draw("sames");
+  //  l_xs_theory->Draw("sames");
+
+  c_xs_rsg->Update();
+
+  string sOut_png = sRep + "/Exclusions_ggqq_Graviton_lowMass_"+sReco+".png";
+  string sOut_eps = sRep + "/Exclusions_ggqq_Graviton_lowMass_"+sReco+".eps";
+
+  c_xs_rsg->SaveAs(sOut_png.c_str());
+  c_xs_rsg->SaveAs(sOut_eps.c_str());
+
+
+}
