@@ -2,8 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 patEventContentCMG = cms.untracked.vstring(
     # all the commented lines are needed at CMG-tuple step if we do a simple cloning of the sequences. Need to see if we can gain time / disk space later by organizing the CMG sequences properly
-    'keep *_selectedPatMuonsAK5*_*_*',
-    'keep *_selectedPatElectronsAK5*_*_*',
+    'keep *_selectedPatMuons*_*_*',
+    'keep *_selectedPatElectrons*_*_*',
     'keep *_selectedPatTausAK5*_*_*',
     'drop *_selectedPatMuonsAK7_*_*',
     'drop *_selectedPatElectronsAK7_*_*',
