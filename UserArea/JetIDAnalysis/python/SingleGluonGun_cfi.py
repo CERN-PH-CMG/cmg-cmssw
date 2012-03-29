@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-from Configuration.Generator.PythiaUEZ2starSettings_cfi import pythiaUESettingsBlock
+from Configuration.Generator.PythiaUEZ2starSettings_cfi import pythiaUESettingsBlock as Z2starSettings
 
 generator = cms.EDProducer("Pythia6PtYDistGun",
                            maxEventsToPrint = cms.untracked.int32(5),
@@ -20,7 +20,7 @@ generator = cms.EDProducer("Pythia6PtYDistGun",
                            Verbosity = cms.untracked.int32(0),
                            psethack = cms.string('single gluon pt 3-300'),
                            firstRun = cms.untracked.uint32(1),
-                           PythiaParameters = cms.PSet(  pythiaUESettings = pythiaUESettingsBlock
+                           PythiaParameters = cms.PSet(  pythiaUESettings = Z2starSettings.pythiaUESettings,
                                                          parameterSets = cms.vstring('pythiaUESettings')
                                                          )
                            )

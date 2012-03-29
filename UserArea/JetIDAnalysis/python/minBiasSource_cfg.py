@@ -2979,6 +2979,3 @@ readFiles.extend( [
        '/store/mc/Summer12/MinBias_TuneZ2star_8TeV-pythia6/GEN-SIM/START50_V13-v3/0002/FEF2F4CC-0E6A-E111-96F6-0030487F1C57.root' ] );
 
 
-secFiles.extend( [
-               ] )
-

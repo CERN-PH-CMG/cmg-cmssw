@@ -7,7 +7,7 @@ generator = cms.EDProducer("Pythia6PtYDistGun",
                            pythiaHepMCVerbosity = cms.untracked.bool(True),
                            pythiaPylistVerbosity = cms.untracked.int32(1),
                            PGunParameters = cms.PSet(  ParticleID = cms.vint32(1),
-                                                       kinematicsFile = cms.FileInPath('CMG/JetIDAnalysis/data/ptgun.root'),
+                                                       kinematicsFile = cms.FileInPath('/data/psilva/CMSSW_5_2_0/src/CMG/JetIDAnalysis/data/ptgun.root'),
                                                        PtBinning = cms.int32(100000),
                                                        YBinning = cms.int32(500),
                                                        MinPt = cms.double(3.0),
@@ -20,7 +20,7 @@ generator = cms.EDProducer("Pythia6PtYDistGun",
                            Verbosity = cms.untracked.int32(0),
                            psethack = cms.string('single quark pt 3-300'),
                            firstRun = cms.untracked.uint32(1),
-                           PythiaParameters = cms.PSet(  pythiaUESettings = pythiaUESettingsBlock
+                           PythiaParameters = cms.PSet(  pythiaUESettings = pythiaUESettingsBlock,
                                                          parameterSets = cms.vstring('pythiaUESettings')
                                                          )
                            )
