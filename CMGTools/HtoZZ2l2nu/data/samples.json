@@ -186,7 +186,7 @@
 		"dset":"/GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":5.27,
 		"br":[0.256,0.0403896]
 		},
@@ -195,7 +195,7 @@
 		"dset":"/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":5.27,
 		"br":[0.741,0.046656]
 		},
@@ -204,7 +204,7 @@
 		"dset":"/VBF_ToHToZZTo2L2NU_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_ToHToZZTo2L2NU_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-200_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.6333,
 		"br":[0.256,0.0403896]
 		},
@@ -213,7 +213,7 @@
 		"dset":"/VBF_HToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_HToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_HToWWTo2L2Nu_M-200_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.6371,
 		"br":[0.741,0.046656]
 		}
@@ -280,7 +280,7 @@
 		"dset":"/GluGluToHToZZTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-300_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":2.422,
 		"br":[0.307,0.0403896]
 		},
@@ -289,7 +289,7 @@
 		"dset":"/GluGluToHToWWTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-300_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":2.422,
 		"br":[0.692,0.046656]
 		},
@@ -298,7 +298,7 @@
                 "dset":"/VBF_ToHToZZTo2L2NU_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_ToHToZZTo2L2NU_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-300_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.301,
 		"br":[0.307,0.0403896]
 		},
@@ -307,7 +307,7 @@
                 "dset":"/VBF_HToWWTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_HToWWTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_HToWWTo2L2Nu_M-300_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.298,
 		"br":[0.692,0.046656]
 		}
@@ -374,7 +374,7 @@
 		"dset":"/GluGluToHToZZTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-400_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":2.03,
 		"br":[0.269,0.0403896]
 		},
@@ -383,7 +383,7 @@
 		"dset":"/GluGluToHToWWTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-400_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":2.03,
 		"br":[0.582,0.046656]
 		},
@@ -392,7 +392,7 @@
 		"dset":" /VBF_ToHToZZTo2L2NU_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_ToHToZZTo2L2NU_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-400_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.1634,
 		"br":[0.269,0.0403896]
 		},
@@ -401,7 +401,7 @@
 		"dset":" /VBF_HToWWTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_HToWWTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_HToWWTo2L2Nu_M-400_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.1610,
 		"br":[0.582,0.046656]
 		}
@@ -468,7 +468,7 @@
 		"dset":"/GluGluToHToZZTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-500_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.865,
 		"br":[0.261,0.0403896]
 		},
@@ -477,7 +477,7 @@
 		"dset":"/GluGluToHToWWTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-500_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.865,
 		"br":[0.546,0.046656]
 		},
@@ -486,7 +486,7 @@
 		"dset":" /VBF_ToHToZZTo2L2NU_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_ToHToZZTo2L2NU_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-500_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.0968,
 		"br":[0.261,0.0403896]
 		},
@@ -495,7 +495,7 @@
 		"dset":" /VBF_HToWWTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_HToWWTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_HToWWTo2L2Nu_M-500_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.0946,
 		"br":[0.546,0.046656]
 		}
@@ -562,7 +562,7 @@
 		"dset":"/GluGluToHToZZTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-600_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.3267,
 		"br":[0.272,0.0403896]
 		},
@@ -571,7 +571,7 @@
 		"dset":"/GluGluToHToWWTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-600_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.3267,
 		"br":[0.558,0.046656]
 		},
@@ -580,7 +580,7 @@
 		"dset":"/VBF_ToHToZZTo2L2NU_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_ToHToZZTo2L2NU_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-600_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.06529,
 		"br":[0.272,0.0403896]
 		},
@@ -589,7 +589,7 @@
 		"dset":" /VBF_HToWWTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_HToWWTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_HToWWTo2L2Nu_M-600_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.06529,
 		"br":[0.558,0.046656]
 		}
