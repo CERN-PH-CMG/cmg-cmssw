@@ -7,7 +7,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 ## pickRelVal = False
 
 # turn on when running on MC
-runOnMC = True
+runOnMC = False
 
 runCMG = True
 
@@ -62,7 +62,8 @@ process.source = datasetToSource(
     # to test Data:
     'cmgtools_group',
     #'/DoubleMu/Run2011A-05Aug2011-v1/AOD/V3',
-    '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V4'
+    '/DoubleElectron/Run2011B-16Jan2012-v1/AOD/V4',
+    # '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V4'
     #'/GluGluToHToZZTo4L_M-120_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V4'
     # '.*root'
     )
@@ -199,6 +200,11 @@ process.stdElectronSeq = cms.Sequence(
     process.makePatElectrons +
     process.selectedPatElectrons
     )
+if not runOnMC:
+    process.stdMuonSeq.remove( process.muonMatch )
+    process.stdElectronSeq.remove( process.electronMatch )
+    process.patMuons.embedGenMatch = False
+    process.patElectrons.embedGenMatch = False
 
 # adding vbtf and cic electron IDs to both electron collections
 from CMGTools.Common.PAT.addPATElectronID_cff import addPATElectronID
