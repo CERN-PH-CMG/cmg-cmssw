@@ -29,6 +29,7 @@ process.load('Configuration.StandardSequences.Reconstruction_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
+
 from CMG.JetIDAnalysis.minBiasSource_cfg import FileNames as FullMinBiasFileNames
 process.mix.input.fileNames = FullMinBiasFileNames
 #process.mix.input.fileNames = cms.untracked.vstring('/store/relval/CMSSW_4_4_2_patch7/RelValMinBias/GEN-SIM-DIGI-RAW-HLTDEBUG/START44_V9_special_111126-v1/0072/269DF920-8118-E111-945D-003048FFD76E.root',
@@ -38,10 +39,12 @@ process.mix.input.fileNames = FullMinBiasFileNames
 #print "Hey: random seed is", process.RandomNumberGeneratorService.generator.initialSeed
 import random
 random.seed(process.RandomNumberGeneratorService.generator.initialSeed.value())
+for i in xrange(0,1000) : random.random()
 random.shuffle(process.mix.input.fileNames)
-flist=open('list_of_pu.txt','w+')
-print >> flist, process.mix.input.fileNames
-flist.close()
+
+process.mix.input.nbPileupEvents.probFunctionVariable = cms.vint32(range(50))
+process.mix.input.nbPileupEvents.probValue = cms.vdouble(1.17547e-05,0.000117547,0.000587733,0.00195911,0.00489777,0.00979555,0.0163259,0.0233227,0.0291534,0.0323927,0.0323927,0.0323927,0.0323927,0.0323927,0.0323927,0.0323927,0.0323927,0.0323927,0.0323927,0.0323927,0.0323927,0.0323927,0.0323927,0.0323927,0.0323927,0.0323927,0.0323927,0.0323927,0.0323927,0.0323927,0.0323927,0.0313478,0.0293885,0.0267168,0.0235737,0.020206,0.0168383,0.0136527,0.0107785,0.00829112,0.00621834,0.00455001,0.00325,0.00226744,0.00154598,0.00103066,0.000672167,0.000429043,0.000268152,0.000164175)
+
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(25)
@@ -56,7 +59,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.5 $'),
+    version = cms.untracked.string('$Revision: 1.6 $'),
     annotation = cms.untracked.string('SingleQuarkGun_cfi.py nevts:25'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -165,45 +168,49 @@ process.AODSIMoutput.outputCommands.extend(PFAOD)
 # Other statements
 process.GlobalTag.globaltag = 'START44_V10::All'
 
-process.generator = cms.EDProducer("Pythia6PtGun",
-    PGunParameters = cms.PSet(
-        MinPhi = cms.double(-3.14159265359),
-        MinPt = cms.double(5.0),
-        ParticleID = cms.vint32(1),
-        MaxEta = cms.double(5),
-        MaxPhi = cms.double(3.14159265359),
-        MinEta = cms.double(-5),
-        AddAntiParticle = cms.bool(False),
-        MaxPt = cms.double(300)
-    ),
-    Verbosity = cms.untracked.int32(0),
-    psethack = cms.string('single quark pt 15-300'),
-    firstRun = cms.untracked.uint32(1),
-    PythiaParameters = cms.PSet(
-        pythiaUESettings = cms.vstring('MSTU(21)=1     ! Check on possible errors during program execution', 
-            'MSTJ(22)=2     ! Decay those unstable particles', 
-            'PARJ(71)=10 .  ! for which ctau  10 mm', 
-            'MSTP(33)=0     ! no K factors in hard cross sections', 
-            'MSTP(2)=1      ! which order running alphaS', 
-            'MSTP(51)=10042 ! structure function chosen (external PDF CTEQ6L1)', 
-            'MSTP(52)=2     ! work with LHAPDF', 
-            'PARP(82)=1.832 ! pt cutoff for multiparton interactions', 
-            'PARP(89)=1800. ! sqrts for which PARP82 is set', 
-            'PARP(90)=0.275 ! Multiple interactions: rescaling power', 
-            'MSTP(95)=6     ! CR (color reconnection parameters)', 
-            'PARP(77)=1.016 ! CR', 
-            'PARP(78)=0.538 ! CR', 
-            'PARP(80)=0.1   ! Prob. colored parton from BBR', 
-            'PARP(83)=0.356 ! Multiple interactions: matter distribution parameter', 
-            'PARP(84)=0.651 ! Multiple interactions: matter distribution parameter', 
-            'PARP(62)=1.025 ! ISR cutoff', 
-            'MSTP(91)=1     ! Gaussian primordial kT', 
-            'PARP(93)=10.0  ! primordial kT-max', 
-            'MSTP(81)=21    ! multiple parton interactions 1 is Pythia default', 
-            'MSTP(82)=4     ! Defines the multi-parton model'),
-        parameterSets = cms.vstring('pythiaUESettings')
-    )
-)
+process.generator = cms.EDProducer("Pythia6PtYDistGun",
+				   maxEventsToPrint = cms.untracked.int32(5),
+				   pythiaHepMCVerbosity = cms.untracked.bool(True),
+				   pythiaPylistVerbosity = cms.untracked.int32(1),
+				   PGunParameters = cms.PSet(  ParticleID = cms.vint32(1),
+							       kinematicsFile = cms.FileInPath('CMG/JetIDAnalysis/data/ptgun.root'),
+							       PtBinning = cms.int32(100000),
+							       YBinning = cms.int32(500),
+							       MinPt = cms.double(5.0),
+							       MaxPt = cms.double(300.0),
+							       MinY = cms.double(-5.0),
+							       MaxY = cms.double(5.0),
+							       MinPhi = cms.double(-3.14159265359),
+							       MaxPhi = cms.double(3.14159265359),
+							       ),
+				   Verbosity = cms.untracked.int32(0),
+				   psethack = cms.string('single quark pt 15-300'),
+				   firstRun = cms.untracked.uint32(1),
+				   PythiaParameters = cms.PSet(  pythiaUESettings = cms.vstring('MSTU(21)=1     ! Check on possible errors during program execution', 
+												'MSTJ(22)=2     ! Decay those unstable particles', 
+												'PARJ(71)=10 .  ! for which ctau  10 mm', 
+												'MSTP(33)=0     ! no K factors in hard cross sections', 
+												'MSTP(2)=1      ! which order running alphaS', 
+												'MSTP(51)=10042 ! structure function chosen (external PDF CTEQ6L1)', 
+												'MSTP(52)=2     ! work with LHAPDF', 
+												'PARP(82)=1.832 ! pt cutoff for multiparton interactions', 
+												'PARP(89)=1800. ! sqrts for which PARP82 is set', 
+												'PARP(90)=0.275 ! Multiple interactions: rescaling power', 
+												'MSTP(95)=6     ! CR (color reconnection parameters)', 
+												'PARP(77)=1.016 ! CR', 
+												'PARP(78)=0.538 ! CR', 
+												'PARP(80)=0.1   ! Prob. colored parton from BBR', 
+												'PARP(83)=0.356 ! Multiple interactions: matter distribution parameter', 
+												'PARP(84)=0.651 ! Multiple interactions: matter distribution parameter', 
+												'PARP(62)=1.025 ! ISR cutoff', 
+												'MSTP(91)=1     ! Gaussian primordial kT', 
+												'PARP(93)=10.0  ! primordial kT-max', 
+												'MSTP(81)=21    ! multiple parton interactions 1 is Pythia default', 
+												'MSTP(82)=4     ! Defines the multi-parton model'),
+								 parameterSets = cms.vstring('pythiaUESettings')
+								 )
+				   )
+				   
 
 
 # Path and EndPath definitions
