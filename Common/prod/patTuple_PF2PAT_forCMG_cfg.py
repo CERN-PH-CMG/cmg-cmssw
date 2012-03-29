@@ -410,7 +410,7 @@ process.PFBRECOAK5.replace(process.goodOfflinePrimaryVertices,
                            process.calibratedGsfElectrons
                            )
 
-
-
-
-
+process.selectedPatMuonsAK5.cut = 'pt()>3'
+process.preselectedPatElectronsAK5.cut = 'pt()>5'
+process.selectedPatMuons.cut = 'pt()>3'
+process.preselectedPatElectrons.cut = 'pt()>5'
