@@ -177,7 +177,7 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 	const reco::PFJet * pfjet = dynamic_cast<const reco::PFJet *>(jet);
 	assert( patjet != 0 || pfjet != 0 );
 	if( patjet != 0 && jec == 0. ) { // if this is a pat jet and no jec has been passed take the jec from the object
-	  jec = patjet->pt()/patjet->correctedJet(0).pt();
+		jec = patjet->pt()/patjet->correctedJet(0).pt();
 	}
 	constituents_type constituents = pfjet ? pfjet->getPFConstituents() : patjet->getPFConstituents();
 	
@@ -215,6 +215,7 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 			lSecond = icand;
 		}
 		internalId_.dRMean_     += candPtDr;
+		internalId_.dR2Mean_     += candPtDr*candPtDr;
 		frac.push_back(candPtFrac);
 		if( icone < ncones ) { *coneFracs[icone] += candPt; }
 		// neutrals
@@ -334,6 +335,7 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 	internalId_.dRMeanNeut_ /= jetPt;
 	internalId_.dRMeanEm_   /= jetPt;
 	internalId_.dRMeanCh_   /= jetPt;
+	internalId_.dR2Mean_    /= sumPt2;
 
 	for(size_t ic=0; ic<ncones; ++ic){
 		*coneFracs[ic]     /= jetPt;
@@ -431,6 +433,8 @@ void PileupJetIdAlgo::initVariables()
 	INIT_VARIABLE(dRMeanNeut , "drmne_1"  , 0.);  
 	INIT_VARIABLE(dRMeanEm   , "drem_1"   , 0.);  
 	INIT_VARIABLE(dRMeanCh   , "drch_1"   , 0.);  
+
+	INIT_VARIABLE(dR2Mean    , ""         , 0.);  
 	
 	INIT_VARIABLE(ptD        , "", 0.);
 

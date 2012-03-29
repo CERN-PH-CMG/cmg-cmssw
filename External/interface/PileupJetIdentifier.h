@@ -68,6 +68,7 @@ public:
 
 	DECLARE_VARIABLE(dRLeadCent ,float);  
 	DECLARE_VARIABLE(dRLead2nd  ,float);  
+	DECLARE_VARIABLE(dR2Mean    ,float);  
 	DECLARE_VARIABLE(dRMean     ,float);  
 	DECLARE_VARIABLE(dRMeanNeut ,float);  
 	DECLARE_VARIABLE(dRMeanEm   ,float);  
