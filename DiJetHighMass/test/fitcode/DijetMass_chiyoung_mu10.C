@@ -51,7 +51,7 @@ void DijetMass_chiyoung_mu10(){
   Init("ZBBbar_mu10_fat");
 
 
-  lumi = 4663.0;
+  lumi = 4667.0;
   
   // lumi = 3500.0;
 
@@ -65,13 +65,13 @@ void DijetMass_chiyoung_mu10(){
   
   // Input Files  
   //  TFile *inputFile = TFile::Open("histograms_1p010fbm1.root", "READ");
-  inputFile = new TFile("histograms_data_HT_Run2010_2011_136033_180252_4663pbm1_ak5.root", "READ");
+  inputFile = new TFile("../../data/histograms_data_HT_Run2011AB_160404_180252_Fat30_ak5_4677pbm1.root", "READ");
   //  inputFile = TFile::Open("histograms_data_HT_340fb_Fat_ak5.root", "UPDATE");
   // Histograms 
-  hDijetMass = (TH1F*) inputFile->Get("h_DijetMass_data_fat_mu10;1");
+  hDijetMass = (TH1F*) inputFile->Get("h_DijetMass_data_fat_mu30;1");
   //  TH1F *hQCDMC = (TH1F*)inputFile->Get("fit_DijetMass_mc_wide");
-  inputFileMC = new TFile("histograms_summer11_mc_ak5.root", "UPDATE");
-  hQCD = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat_mu10;1");
+  inputFileMC = new TFile("../../data/histograms_summer11_mc_ak5.root", "UPDATE");
+  hQCD = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat_mu30;1");
   
   cout <<"Calc scale factor" << endl;
   scaleFactor = hDijetMass->Integral(36, hDijetMass->GetNbinsX()) / hQCD->Integral(36, hDijetMass->GetNbinsX()) / lumi;
@@ -84,8 +84,8 @@ void DijetMass_chiyoung_mu10(){
   //  TH1F *hJESplus_temp = (TH1F*)inputFile->Get("fit_DijetMass_mc_up_wide");
   //  TH1F *hJESminus_temp = (TH1F*)inputFile->Get("fit_DijetMass_mc_down_wide");
   
-  hJESplus_temp = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat_mu10_up;1");
-  hJESminus_temp = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat_mu10_do;1");
+  hJESplus_temp = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat_mu30_up;1");
+  hJESminus_temp = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat_mu30_do;1");
 
   TH1F *hJESplus_temp2 =  (TH1F*)hJESplus_temp->Clone("hJESplus_temp2");
   hJESplus_temp2->Reset();
@@ -384,8 +384,8 @@ void DijetMass_chiyoung_mu10(){
   leg->AddEntry(fit,"Fit","L");
   leg->Draw("same");
   pave_fit->Draw("same");
-  c1->SaveAs("Plots_mu10/DijetMassCrossSectionWithFit.png");
-  c1->SaveAs("Plots_mu10/DijetMassCrossSectionWithFit.eps");
+  c1->SaveAs("Plots_mu30/DijetMassCrossSectionWithFit.png");
+  c1->SaveAs("Plots_mu30/DijetMassCrossSectionWithFit.eps");
 
 
   //Dijet Mass cross section with all considered fits	
@@ -458,8 +458,8 @@ void DijetMass_chiyoung_mu10(){
   htmp->SetLineColor(1);
   htmp->SetLineWidth(1); 
   htmp->SetLineColor(5);
-  c2->SaveAs("Plots_mu10/DijetMassCrossSectionWithAllFit.png");
-  c2->SaveAs("Plots_mu10/DijetMassCrossSectionWithAllFit.eps");
+  c2->SaveAs("Plots_mu30/DijetMassCrossSectionWithAllFit.png");
+  c2->SaveAs("Plots_mu30/DijetMassCrossSectionWithAllFit.eps");
 
 
   //DijetMass cross section with Fit and QCD MC 
@@ -529,8 +529,8 @@ void DijetMass_chiyoung_mu10(){
   hJESplus2->SetLineColor(5);
   hJESminus2->SetFillColor(10);
   hJESminus2->SetLineColor(5);
-  c3->SaveAs("Plots_mu10/DijetMassCrossSectionWithFitAndQCDMC.png");
-  c3->SaveAs("Plots_mu10/DijetMassCrossSectionWithFitAndQCDMC.eps");
+  c3->SaveAs("Plots_mu30/DijetMassCrossSectionWithFitAndQCDMC.png");
+  c3->SaveAs("Plots_mu30/DijetMassCrossSectionWithFitAndQCDMC.eps");
 
   // Data ovet PTYHIA QCD MC	
   TCanvas *c4 = new TCanvas("Ratio","Data/PYTHIA");
@@ -689,8 +689,8 @@ void DijetMass_chiyoung_mu10(){
   gr_zprime2_3->SetLineColor(2);
   gr_zprime2_3->SetLineStyle(5);
   gr_zprime2_3->SetLineWidth(2);
-  c4->SaveAs("Plots_mu10/RatioDataPYTHIA.png");
-  c4->SaveAs("Plots_mu10/RatioDataPYTHIA.eps");
+  c4->SaveAs("Plots_mu30/RatioDataPYTHIA.png");
+  c4->SaveAs("Plots_mu30/RatioDataPYTHIA.eps");
 
 
 
@@ -839,8 +839,8 @@ void DijetMass_chiyoung_mu10(){
   hratio->SetMarkerStyle(20);
   hratio->SetMarkerColor(1);
   hratio->SetLineColor(1);	
-  c5->SaveAs("Plots_mu10/DijetMassCrossSectionWithSignal.png");
-  c5->SaveAs("Plots_mu10/DijetMassCrossSectionWithSignal.eps");
+  c5->SaveAs("Plots_mu30/DijetMassCrossSectionWithSignal.png");
+  c5->SaveAs("Plots_mu30/DijetMassCrossSectionWithSignal.eps");
 
 
   TCanvas* c6 = new TCanvas("c6","(Data-Fit)/Fit");
@@ -874,8 +874,8 @@ void DijetMass_chiyoung_mu10(){
   pt_c6_zprime1->Draw("sames");
   pt_c6_zprime2->Draw("sames");
 
-  c6->SaveAs("Plots_mu10/DataMinusFitDividedByFit.png");
-  c6->SaveAs("Plots_mu10/DataMinusFitDividedByFit.eps");
+  c6->SaveAs("Plots_mu30/DataMinusFitDividedByFit.png");
+  c6->SaveAs("Plots_mu30/DataMinusFitDividedByFit.eps");
 
 
   TCanvas* c7 = new TCanvas("c7","(Data-Fit)/Error");
@@ -887,8 +887,8 @@ void DijetMass_chiyoung_mu10(){
   hPulls->Draw("ep");
   l->Draw("same");  
 	
-  c7->SaveAs("Plots_mu10/DataMinusFitDividedByError.png");
-  c7->SaveAs("Plots_mu10/DataMinusFitDividedByError.eps");
+  c7->SaveAs("Plots_mu30/DataMinusFitDividedByError.png");
+  c7->SaveAs("Plots_mu30/DataMinusFitDividedByError.eps");
 
   TCanvas* c8 = new TCanvas("c8","(Data-Fit)/Fit for the All Fits");
   hDiff->Draw("APZ");
@@ -901,8 +901,8 @@ void DijetMass_chiyoung_mu10(){
   leg->AddEntry(hPulls_4par,"Alternate Fit A (4 Par.)","PL");
   leg->AddEntry(hPulls_3par,"Alternate Fit B (3 Par.)","PL");
   leg->Draw("same");
-  c8->SaveAs("Plots_mu10/DataMinusFitDividedByFitForAllFits.png");
-  c8->SaveAs("Plots_mu10/DataMinusFitDividedByFitForAllFits.eps");
+  c8->SaveAs("Plots_mu30/DataMinusFitDividedByFitForAllFits.png");
+  c8->SaveAs("Plots_mu30/DataMinusFitDividedByFitForAllFits.eps");
 
 
   TCanvas* c9 = new TCanvas("c9","(Data-Fit)/Error the All Fits");
@@ -917,8 +917,8 @@ void DijetMass_chiyoung_mu10(){
   leg->AddEntry(hPulls_3par,"Alternate Fit B (3 Par.)","PL");
   leg->Draw("same");
 
-  c9->SaveAs("Plots_mu10/DataMinusFitDividedByErrorForAllFits.png");
-  c9->SaveAs("Plots_mu10/DataMinusFitDividedByErrorForAllFits.eps");	
+  c9->SaveAs("Plots_mu30/DataMinusFitDividedByErrorForAllFits.png");
+  c9->SaveAs("Plots_mu30/DataMinusFitDividedByErrorForAllFits.eps");	
 
 
   TCanvas* c10 = new TCanvas("c10","Data/Fit with the All signal");
@@ -956,8 +956,8 @@ void DijetMass_chiyoung_mu10(){
 
   pave->Draw("smaes");
 
-  c10->SaveAs("Plots_mu10/DataMinusFitWithAllSignal.png");
-  c10->SaveAs("Plots_mu10/DataMinusFitWithAllSignal.eps");
+  c10->SaveAs("Plots_mu30/DataMinusFitWithAllSignal.png");
+  c10->SaveAs("Plots_mu30/DataMinusFitWithAllSignal.eps");
 
 
 
@@ -1057,8 +1057,8 @@ void DijetMass_chiyoung_mu10(){
    TLine *line = new TLine(700.,0,3600,0);
    line->Draw("");
 
-  c11->SaveAs("Plots_mu10/DefaultFitAndPull.png");
-  c11->SaveAs("Plots_mu10/DefaultFitAndPull.eps");
+  c11->SaveAs("Plots_mu30/DefaultFitAndPull.png");
+  c11->SaveAs("Plots_mu30/DefaultFitAndPull.eps");
 
    
 
