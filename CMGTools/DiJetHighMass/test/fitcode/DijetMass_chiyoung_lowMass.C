@@ -50,8 +50,8 @@ void DijetMass_chiyoung_lowMass(){
   // definition of color 
   //  Init("Q*");
 
-  //string sReco("fat30");
-  string sReco("pf");
+  string sReco("fat30");
+  // string sReco("pf");
 
   if ( sReco.find("pf") != string::npos ) Init("QQPF");
   else Init("QQFat");
@@ -61,12 +61,12 @@ void DijetMass_chiyoung_lowMass(){
 
   double mMin = 526.0;
 
-  // double mMin = 565.0;
+  //double mMin = 565.0;
 
 //  lumi = 1025.;
 //  lumi = 2509.0;
   //  lumi = 2168.0;
-  lumi = 117.6;
+  lumi = 129.0;
 
 
   Int_t ci_g, ci_b;   // for color index setting
@@ -356,6 +356,7 @@ void DijetMass_chiyoung_lowMass(){
 
     TGraphAsymmErrors *g = new TGraphAsymmErrors(i,vx,vy,vexl,vexh,veyl,veyh);
     TGraphAsymmErrors *g2 = new TGraphAsymmErrors(i,vx,vy,vexl,vexh,veyl,veyh);
+    TGraphAsymmErrors *gFinal = new TGraphAsymmErrors(i,vx,vy,vexl,vexh,veyl,veyh);
 
     // Fit to data    
     TF1 *fit = new TF1("fit",fitQCD1,mMinFit,3000.0,4); // 4 Par. Fit
@@ -1027,6 +1028,11 @@ void DijetMass_chiyoung_lowMass(){
    c10->SaveAs("Plots_lowMass/DataMinusFitWithAllSignal.eps");
 
 
+
+
+
+
+
    TCanvas* c11 = new TCanvas("c11","default fit and pull");
 
    c11->Divide(1,2,0,0,0);
@@ -1144,6 +1150,158 @@ void DijetMass_chiyoung_lowMass(){
    
    c11->SaveAs("Plots_lowMass/DefaultFitAndPull.png");
    c11->SaveAs("Plots_lowMass/DefaultFitAndPull.eps");
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   TCanvas* c12 = new TCanvas("c12","default fit and pull");
+
+   c12->Divide(1,2,0,0,0);
+   c12->cd(1);
+   
+   p12_1 = (TPad*)c12->GetPad(1);
+   p12_1->SetPad(0.01,0.22,0.99,0.98);
+   p12_1->SetLogy();
+   p12_1->SetRightMargin(0.05);
+   p12_1->SetTopMargin(0.05);
+   
+   TH1F *vFrame = p12_1->DrawFrame(500.0,0.000001,3000.0,200.0);
+   vFrame->SetTitle("");
+   vFrame->SetXTitle("Dijet Mass (GeV)");
+   vFrame->GetXaxis()->SetTitleSize(0.06);
+   vFrame->SetYTitle("d#sigma/dm (pb/GeV)");
+
+   h->SetTitle("");
+
+   h->Draw("SAMEC");
+
+   //   h->GetXaxis()->SetRangeUser(500.,3000.);
+   //   h->GetYaxis()->SetRangeUser(0.00001,50.);
+   // h->GetXaxis()->SetTitle("Dijet Mass (GeV)");
+   //  h->GetXaxis()->SetTitleSize(0.06);
+   //  h->GetYaxis()->SetTitle("d#sigma/dm (pb/GeV)");
+
+
+   f_qcd->Draw("same");
+
+    TF1 *fitFinal = new TF1("fitFinal",fitQCD1,mMinFit,3000.0,4); // 4 Par. Fit
+    gStyle->SetOptFit(0000); 
+    fitFinal->SetParameter(0,1.73132e-05);
+    fitFinal->SetParameter(1,6.80678e+00);
+    fitFinal->SetParameter(2,6.33620e+00);
+    fitFinal->SetParameter(3,1.93728e-01);
+    fitFinal->SetLineWidth(2);
+    fitFinal->SetLineColor(4);
+
+    gFinal->Fit("fitFinal","","",mMin,2895.0);
+    gFinal->Draw("sameP");
+
+
+   TLegend *leg = new TLegend(0.60,0.60,0.85,0.93);
+   leg->SetTextSize(0.03146853);
+   leg->SetLineColor(1);
+   leg->SetLineStyle(1);
+   leg->SetLineWidth(1);
+   leg->SetFillColor(0);
+   leg->AddEntry(g,Form("CMS  (%.3f fb^{-1})", lumi/1000.),"PL"); 
+   leg->AddEntry(fit,"Fit","L");
+   leg->AddEntry(f_qcd,"QCD Pythia","L");
+   leg->AddEntry(htmp,"JES Uncertainty","F");
+   leg->AddEntry(gr_diquark1,"Diquark","L");
+   leg->AddEntry(gr_wprime1,"W'","L");
+   leg->Draw("same");
+
+   pave_fit->Draw("same");
+
+   gr_diquark1->Draw("same");
+   //   gr_diquark2->Draw("same");
+   gr_wprime1->Draw("same");
+   //   gr_wprime2->Draw("same");
+
+   TPaveText *pt_c12_wprime1 = new TPaveText(0.15,0.25,0.30,0.4,"NDC");
+   pt_c12_wprime1->SetFillColor(0);
+   pt_c12_wprime1->SetFillStyle(0);
+   pt_c12_wprime1->SetBorderSize(0);
+   pt_c12_wprime1->SetTextColor(TColor::GetColor("#006600"));
+   pt_c12_wprime1->AddText("W' (0.7 TeV)");
+
+   TPaveText *pt_c12_wprime2 = new TPaveText(0.60,0.45,0.75,0.55,"NDC");
+   pt_c12_wprime2->SetFillColor(0);
+   pt_c12_wprime2->SetFillStyle(0);
+   pt_c12_wprime2->SetBorderSize(0);
+   pt_c12_wprime2->SetTextColor(TColor::GetColor("#006600"));
+   pt_c12_wprime2->AddText("W' (1.0 TeV)");
+
+   TPaveText *pt_c12_diquark1 = new TPaveText(0.26,0.40,0.45,0.53,"NDC");
+   pt_c12_diquark1->SetFillColor(0);
+   pt_c12_diquark1->SetFillStyle(0);
+   pt_c12_diquark1->SetBorderSize(0);
+   pt_c12_diquark1->SetTextColor(2);
+   pt_c12_diquark1->AddText("Diquark (0.7 TeV)");
+
+   TPaveText *pt_c12_diquark2 = new TPaveText(0.40,0.15,0.55,0.20,"NDC");
+   pt_c12_diquark2->SetFillColor(0);
+   pt_c12_diquark2->SetFillStyle(0);
+   pt_c12_diquark2->SetBorderSize(0);
+   pt_c12_diquark2->SetTextColor(2);
+   pt_c12_diquark2->AddText("Diquark (1.0 TeV)");
+
+   pt_c12_wprime1->Draw("sames");
+   //   pt_c12_wprime2->Draw("sames");
+   pt_c12_diquark1->Draw("sames");
+   //   pt_c12_diquark2->Draw("sames");
+   
+   c12->cd(2);
+   p12_2 = (TPad*)c12->GetPad(2);
+   p12_2->SetPad(0.01,0.02,0.99,0.24);
+   p12_2->SetBottomMargin(0.35);
+   p12_2->SetRightMargin(0.05);
+   p12_2->SetGridx();
+   c12_2->SetTickx(50);
+
+
+   TH1F *vFrame2 = p12_2->DrawFrame(500.0, -3.31, 3000.0, 3.31);
+   vFrame2->SetTitle("");
+   vFrame2->SetXTitle("Dijet Mass (GeV)");
+   vFrame2->GetXaxis()->SetTitleSize(0.06);
+   vFrame2->SetYTitle("Significance");
+   vFrame2->GetYaxis()->SetTitleSize(0.12);
+   vFrame2->GetYaxis()->SetLabelSize(0.10);
+   vFrame2->GetYaxis()->SetTitleOffset(0.50);
+   vFrame2->GetXaxis()->SetTitleOffset(0.90);
+   vFrame2->GetXaxis()->SetTitleSize(0.18);
+   vFrame2->GetXaxis()->SetLabelSize(0.18);
+
+
+    hPulls_add->SetLineWidth(0);
+   hPulls_add->SetFillColor(2);
+   hPulls_add->SetLineColor(2);
+
+   hPulls_add->Draw("SAMEHIST");
+
+   TLine *line = new TLine(500.,0,3000,0);
+   line->Draw("");
+   
+   c12->SaveAs("Plots_lowMass/DefaultFitAndPull.png");
+   c12->SaveAs("Plots_lowMass/DefaultFitAndPull.eps");
+
+
+
+
+
+
 
    
 
