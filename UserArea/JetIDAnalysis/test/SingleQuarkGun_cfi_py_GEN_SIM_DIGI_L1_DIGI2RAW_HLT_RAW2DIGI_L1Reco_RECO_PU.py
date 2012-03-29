@@ -59,7 +59,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.6 $'),
+    version = cms.untracked.string('$Revision: 1.7 $'),
     annotation = cms.untracked.string('SingleQuarkGun_cfi.py nevts:25'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -176,7 +176,7 @@ process.generator = cms.EDProducer("Pythia6PtYDistGun",
 							       kinematicsFile = cms.FileInPath('CMG/JetIDAnalysis/data/ptgun.root'),
 							       PtBinning = cms.int32(100000),
 							       YBinning = cms.int32(500),
-							       MinPt = cms.double(5.0),
+							       MinPt = cms.double(3.0),
 							       MaxPt = cms.double(300.0),
 							       MinY = cms.double(-5.0),
 							       MaxY = cms.double(5.0),
