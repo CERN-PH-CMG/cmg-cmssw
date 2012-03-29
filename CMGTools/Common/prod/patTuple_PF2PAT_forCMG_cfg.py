@@ -7,18 +7,9 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 ## pickRelVal = False
 
 # turn on when running on MC
-runOnMC = False
+runOnMC = True
 
 runCMG = True
-
-# choose which kind of scale correction/MC smearing should be applied for electrons. Options are:
-if runOnMC :
-    gsfEleCorrDataset = "Fall11"
-#    gsfEleCorrDataset = "Summer11"
-else :
-    gsfEleCorrDataset = "Jan16ReReco" 
-#    gsfEleCorrDataset = "ReReco" 
-#    gsfEleCorrDataset = "Prompt" 
 
 # AK5 sequence with pileup substraction is the default
 # the other sequences can be turned off with the following flags.
@@ -72,6 +63,7 @@ process.source = datasetToSource(
     'cmgtools_group',
     #'/DoubleMu/Run2011A-05Aug2011-v1/AOD/V3',
     '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V4'
+    #'/GluGluToHToZZTo4L_M-120_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V4'
     # '.*root'
     )
 
@@ -353,8 +345,9 @@ if runCMG:
 process.patElectronsAK5.embedTrack = True
 process.patElectronsAK5StdLep.embedTrack = True
 
- 
-# electron energy-scale corrections (from Claude C., Paramatti & al.)
+
+
+#electron energy-scale corrections (from Claude C., Paramatti & al.)
 print sep_line
 print "Replacing gsfElectrons with calibratedGsfElectrons..."
 for modulename in process.p.moduleNames():
@@ -389,17 +382,11 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
     ),
 )
 
-if gsfEleCorrDataset == "NOT_PROVIDED" :
-    if isMC:
-        process.calibratedGsfElectrons.inputDataset = cms.string("Fall11")
-    else:
-        process.calibratedGsfElectrons.inputDataset = cms.string("Jan16ReReco")
-else :
-    process.calibratedGsfElectrons.inputDataset = cms.string(gsfEleCorrDataset)
+from CMGTools.Common.Tools.setupEleEnergyCorrections import setupEleEnergyCorrections
+setupEleEnergyCorrections(process)
 
 print "Setting process.calibratedGsfElectrons.inputDataset=",
 print process.calibratedGsfElectrons.inputDataset
-
 
 process.PFBRECOAK5.replace(process.goodOfflinePrimaryVertices,
                            process.goodOfflinePrimaryVertices+
