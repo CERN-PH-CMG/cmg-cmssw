@@ -54,6 +54,7 @@ protected:
 	TMVA::Reader * reader_;
 	std::string    tmvaWeights_, tmvaMethod_; 
 	std::vector<std::string>  tmvaVariables_;
+	std::vector<std::string>  tmvaSpectators_;
 	std::map<std::string,std::string>  tmvaNames_;
 	
 	Int_t version_;

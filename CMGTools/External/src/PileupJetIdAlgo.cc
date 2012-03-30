@@ -20,6 +20,7 @@ PileupJetIdAlgo::PileupJetIdAlgo(const edm::ParameterSet & ps)
 	tmvaWeights_         = edm::FileInPath(ps.getUntrackedParameter<std::string>("tmvaWeights","CMGTools/External/data/mva_JetID.weights.xml")).fullPath();
 	tmvaMethod_          = ps.getUntrackedParameter<std::string>("tmvaMethod","JetID");
 	tmvaVariables_       = ps.getUntrackedParameter<std::vector<std::string> >("tmvaVariables",std::vector<std::string>());
+	tmvaSpectators_      = ps.getUntrackedParameter<std::vector<std::string> >("tmvaSpectators",std::vector<std::string>());
 	version_             = ps.getUntrackedParameter<int>("version",PHILv0);
  
 	reader_              = 0;
@@ -51,7 +52,7 @@ PileupJetIdAlgo::PileupJetIdAlgo(int version,
 void PileupJetIdAlgo::setup()
 {
 	initVariables();
-	
+
 	if( version_ == PHILv0 ) {
 		tmvaVariables_.clear();
 		tmvaVariables_.push_back( "jspt_1"  );
@@ -157,6 +158,12 @@ void PileupJetIdAlgo::bookReader()
 		}
 		reader_->AddVariable( *it, variables_[ tmvaNames_[*it] ].first );
 	}
+	for(std::vector<std::string>::iterator it=tmvaSpectators_.begin(); it!=tmvaSpectators_.end(); ++it) {
+		if(  tmvaNames_[*it].empty() ) { 
+			tmvaNames_[*it] = *it;
+		}
+		reader_->AddSpectator( *it, variables_[ tmvaNames_[*it] ].first );
+	}
 	reader_->BookMVA(tmvaMethod_.c_str(), tmvaWeights_.c_str());
 }
 
@@ -196,6 +203,7 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 	float sumPt = 0., sumPt2 = 0., sumTkPt = 0.;
 	setPtEtaPhi(*jet,internalId_.jetPt_,internalId_.jetEta_,internalId_.jetPhi_); // use corrected pt for jet kinematics
 	internalId_.jetM_ = jet->mass(); 
+	internalId_.nvtx_ = allvtx.size();
 	
 	for(constituents_iterator it=constituents.begin(); it!=constituents.end(); ++it) {
 		reco::PFCandidatePtr & icand = *it;
@@ -353,7 +361,7 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 	}
 	
 	if( calculateMva ) {
-		if( ! reader_ ) { bookReader(); }
+		if( ! reader_ ) { bookReader(); std::cerr << "Reader booked" << std::endl; }
 		internalId_.mva_ = reader_->EvaluateMVA( tmvaMethod_.c_str() );
 	}
 	
@@ -490,6 +498,8 @@ void PileupJetIdAlgo::initVariables()
 
 	INIT_VARIABLE(beta   ,"" ,0.);  
 	INIT_VARIABLE(betaStar   ,"" ,0.);  
+
+	INIT_VARIABLE(nvtx   ,"" ,0.);  
 	
 }
 
