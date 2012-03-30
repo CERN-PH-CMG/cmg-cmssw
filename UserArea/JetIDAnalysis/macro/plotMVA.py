@@ -20,7 +20,7 @@ def main(infile,outdir,label,variables=""):
     hth.navbar().cell( HtmlTag("a") ).firstChild().txt("..").set("href","../?C=M;O=D")
     hth.navbar().cell( HtmlTag("a") ).firstChild().txt("kinematics").set("href","./")
 
-    vtxlabels = [ "_vtx%s" % l for l in  mkBinLabels((1,10,20),addOFlow=True) ]
+    vtxlabels = [ "_vtx%s" % l for l in  mkBinLabels((1,10,20),addOFlow=False) ]
     ptbins = (10,20,30)
     ptlabels  = [ "_pt%s" % l for l in mkBinLabels((10,20,30),addOFlow=True) ]
     helper_inputs = [ { 
@@ -30,7 +30,7 @@ def main(infile,outdir,label,variables=""):
         "cat": vtx,  "label":"u,d,s %s < N_{vtx} < %s"   % tuple(vtx.replace("_vtx","").split("_")), "nostack" : 1 } for vtx in vtxlabels ]
     
     ih = plot_jet_id(infile,hth,
-                     variables_to_plot = [ ("dRMean","dR2Mean","jetW","nParticles"),
+                     variables_to_plot = [ ("dRMean","jetW","nParticles"), ## "dR2Mean",
                                            (v for v in variables.split(':') if v != "" and v != "dRMean" and v != "dR2Mean" ),
                                            ("Fisher_%s" % label,"BDT_%s" % label)
                                            ],

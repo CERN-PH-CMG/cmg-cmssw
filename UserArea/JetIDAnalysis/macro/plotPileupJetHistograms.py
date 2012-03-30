@@ -160,7 +160,7 @@ def plot_jet_id(infile,hth,
             ## each tuple in the list corresponds to a plot
             ##  ( list_of_histograms, MC draw option, data draw option, canvas style, legend constructor arguments, y-scale adjustment, canvas name )
             page_template += [
-                (["%s_%s" % (pt,var)], "histo", "pe", canvstyle,  (0.5,0.6,0.8,0.9),   0.5, "" ) 
+                (["%s_%s" % (pt,var)], "histo", "pe", canvstyle,  (0.5,0.6,0.8,0.9),   0.7, "" ) 
                 for var in variabs 
                 ]
             ## an empty tuple breaks the line
