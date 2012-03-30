@@ -129,6 +129,8 @@ public:
 
 	DECLARE_VARIABLE(beta       ,float);  
 	DECLARE_VARIABLE(betaStar   ,float);  
+
+	DECLARE_VARIABLE(nvtx   ,float);  
 	
 	//// std::string dumpVariables() const;
 	//// 
