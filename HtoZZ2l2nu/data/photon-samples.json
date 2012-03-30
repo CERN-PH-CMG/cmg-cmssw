@@ -3,14 +3,16 @@
 	{
          "tag":"Z/#gamma^{*}+jets#rightarrow ll",
          "isdata":false,
+         "spimpose":true,
          "color":"831",
          "lcolor":1,
+ 	 "mctruthmode":2,
          "data":[
               {
                "dtag":"MC_DYJetsToLL",
                "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM",
                "patdir":["/store/cmst3/user/psilva/Data4/G/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
-               "split":3,
+               "split":10,
                "xsec":3048
               }
           ]
@@ -58,47 +60,56 @@
 	     {	
 		"dtag":"G_Pt-0to15_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-0to15_TuneZ2_7TeV_pythia6"],
-		"xsec":84200000
+		"xsec":84200000,
+		"split":2
 	     },
 	     {	
 		"dtag":"G_Pt-15to30_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-15to30_TuneZ2_7TeV_pythia6"],
-		"xsec":172000
+		"xsec":172000,
+		"split":2
 	     },
 	     {	
 		"dtag":"G_Pt-30to50_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-30to50_TuneZ2_7TeV_pythia6"],
-		"xsec":16700
+		"xsec":16700,
+		"split":2
 	     },
 	     {	
 		"dtag":"G_Pt-50to80_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-50to80_TuneZ2_7TeV_pythia6"],
-		"xsec":2720
+		"xsec":2720,
+		"split":2
 	     },
 	     {	
 		"dtag":"G_Pt-80to120_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-80to120_TuneZ2_7TeV_pythia6"],
-		"xsec":447
+		"xsec":447,
+		"split":2
 	     },
 	     {	
 		"dtag":"G_Pt-120to170_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-120to170_TuneZ2_7TeV_pythia6"],
-		"xsec":84.2
+		"xsec":84.2,
+		"split":2
 	     },
 	     {	
 		"dtag":"G_Pt-170to300_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-170to300_TuneZ2_7TeV_pythia6"],
-		"xsec":22.6
+		"xsec":22.6,
+		"split":2
 	     },
 	     {	
 		"dtag":"G_Pt-300to470_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-300to470_TuneZ2_7TeV_pythia6"],
-		"xsec":1.49
+		"xsec":1.49,
+		"split":2
 	     },
 	     {	
 		"dtag":"G_Pt-470to800_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-470to800_TuneZ2_7TeV_pythia6"],
-		"xsec":0.132
+		"xsec":0.132,
+		"split":2
 	     }
 	  ]
     	},
@@ -126,17 +137,18 @@
 	  ]
     	},
 	{
-	 "tag":"W+jets",
+	 "tag":"W#rightarrow l#nu",
          "isdata":false,
          "color":"809",
 	 "lcolor":1,
 	 "mctruthmode":22,
          "data":[
 		{
-		 "dtag":"WJetsToLNu",
-                 "dset":"WJetsToLNu_TuneZ2_7TeV-madgraph-tauola",
+		 "dtag":"MC_WJetsToLNu",
+                 "dset":"/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM",
                  "patdir":["/store/cmst3/user/psilva/v444/MC/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola"],
-                 "xsec":31314
+                 "xsec":31314,
+ 		 "split":1
                 }
 	 ]
 	},
@@ -166,12 +178,14 @@
                 {
                   "dtag":"Photon2011A",
                   "dset":"",
-                  "patdir":[""]
+                  "patdir":[""],
+		  "split":2
 		},
                 {
                   "dtag":"Photon2011B",
                   "dset":"",
-                  "patdir":[""]
+                  "patdir":[""],
+ 		  "split":2
 		}
 	   ]
 	}

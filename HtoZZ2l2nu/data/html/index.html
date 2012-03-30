@@ -73,7 +73,7 @@
     $.each(plotsSel, function(iplot,iplotval) {
     var baseplotname=icatval+isubcatval+'_'+iplotval;
     var title = icatval + " - " + isubcatval + " - " + iplotval
-    baseplotname=baseplotname.replace('all','');
+    baseplotname=baseplotname.replace('all_','');
     var plotname=baseplotname;
     if(theBaseUrl.length>0) plotname = theBaseUrl + '/' + baseplotname;
     $('#'+iplotval).append('<td><div class="title" align="center"><b>'+title+'</b>: <a href="'+plotname+'.C">ROOT macro</a> / <a href="'+plotname+'.tex">TeX file</a></div><div class="image"><img width="500" src="'+plotname+'.png"/></div></td>');

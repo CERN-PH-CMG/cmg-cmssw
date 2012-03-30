@@ -1,7 +1,7 @@
 {
     "proc":[
 	{
-        "tag":"WW#rightarrow l#nu",
+        "tag":"WW#rightarrow 2l2#nu",
         "isdata":false,
         "color":"592",
         "lcolor":1,
@@ -482,7 +482,6 @@
                  "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/Data_MuEG2011B"],
                  "split":2
                 }
-
 	    ]
 	}
     ]	
