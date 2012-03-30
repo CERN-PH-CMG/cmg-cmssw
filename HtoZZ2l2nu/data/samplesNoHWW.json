@@ -173,7 +173,7 @@
           ]
 	},
 	{
-	"tag":"H(200)#rightarrow ZZ",
+	"tag":"H(200)#rightarrow VV",
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",
@@ -186,7 +186,7 @@
 		"dset":"/GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":5.27,
 		"br":[0.256,0.0403896]
 		},
@@ -195,14 +195,43 @@
 		"dset":"/VBF_ToHToZZTo2L2NU_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_ToHToZZTo2L2NU_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-200_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.6333,
 		"br":[0.256,0.0403896]
 		}
 	   ]
 	},
 	{
-	"tag":"H(300)#rightarrow ZZ",
+	"tag":"H(250)#rightarrow VV",
+	"isdata":false,
+	"spimpose":true,
+	"color":"800",
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC_GGtoH250toZZto2L2Nu",
+		"dset":"/GluGluToHToZZTo2L2Nu_M-250_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-250_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-250_7TeV-powheg-pythia6"],
+		"split":2,
+                "xsec":3.31,
+		"br":[0.297,0.0403896]
+		},
+		{	
+		"dtag":"MC_VBFtoH250toZZto2L2Nu",
+		"dset":"/VBF_ToHToZZTo2L2NU_M-250_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_ToHToZZTo2L2NU_M-250_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-250_7TeV-powheg-pythia6"],
+		"split":2,
+                "xsec":0.4304,
+		"br":[0.297,0.0403896]
+		}
+	   ]
+	},
+	{
+	"tag":"H(300)#rightarrow VV",
 	"isdata":false,
 	"spimpose":true,
 	"color":"803",
@@ -215,7 +244,7 @@
 		"dset":"/GluGluToHToZZTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-300_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":2.422,
 		"br":[0.307,0.0403896]
 		},
@@ -224,14 +253,43 @@
                 "dset":"/VBF_ToHToZZTo2L2NU_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_ToHToZZTo2L2NU_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-300_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.301,
 		"br":[0.307,0.0403896]
 		}
 	   ]
 	},
 	{
-	"tag":"H(400)#rightarrow ZZ",
+	"tag":"H(350)#rightarrow VV",
+	"isdata":false,
+	"spimpose":true,
+	"color":"800",
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC_GGtoH350toZZto2L2Nu",
+		"dset":"/GluGluToHToZZTo2L2Nu_M-350_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-350_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-350_7TeV-powheg-pythia6"],
+		"split":2,
+                "xsec":2.31,
+		"br":[0.307,0.0403896]
+		},
+		{	
+		"dtag":"MC_VBFtoH350toZZto2L2Nu",
+		"dset":"/VBF_ToHToZZTo2L2NU_M-350_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_ToHToZZTo2L2NU_M-350_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-350_7TeV-powheg-pythia6"],
+		"split":2,
+                "xsec":0.2132,
+		"br":[0.307,0.0403896]
+		}
+	   ]
+	},
+	{
+	"tag":"H(400)#rightarrow VV",
 	"isdata":false,
 	"spimpose":true,
 	"color":"805",
@@ -244,7 +302,7 @@
 		"dset":"/GluGluToHToZZTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-400_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":2.03,
 		"br":[0.269,0.0403896]
 		},
@@ -253,14 +311,43 @@
 		"dset":" /VBF_ToHToZZTo2L2NU_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_ToHToZZTo2L2NU_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-400_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.1634,
 		"br":[0.269,0.0403896]
 		}
 	   ]
 	},
 	{
-	"tag":"H(500)#rightarrow ZZ",
+	"tag":"H(450)#rightarrow VV",
+	"isdata":false,
+	"spimpose":true,
+	"color":"800",
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC_GGtoH450toZZto2L2Nu",
+		"dset":"/GluGluToHToZZTo2L2Nu_M-450_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-450_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-450_7TeV-powheg-pythia6"],
+		"split":2,
+                "xsec":1.24,
+		"br":[0.259,0.0403896]
+		},
+		{	
+		"dtag":"MC_VBFtoH450toZZto2L2Nu",
+		"dset":"/VBF_ToHToZZTo2L2NU_M-450_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_ToHToZZTo2L2NU_M-450_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-450_7TeV-powheg-pythia6"],
+		"split":2,
+                "xsec":0.12,
+		"br":[0.259,0.0403896]
+		}
+	   ]
+	},
+	{
+	"tag":"H(500)#rightarrow VV",
 	"isdata":false,
 	"spimpose":true,
 	"color":"797",
@@ -273,7 +360,7 @@
 		"dset":"/GluGluToHToZZTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-500_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.865,
 		"br":[0.261,0.0403896]
 		},
@@ -282,14 +369,43 @@
 		"dset":" /VBF_ToHToZZTo2L2NU_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_ToHToZZTo2L2NU_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-500_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.0968,
 		"br":[0.261,0.0403896]
 		}
 	   ]
 	},
 	{
-	"tag":"H(600)#rightarrow ZZ",
+	"tag":"H(550)#rightarrow VV",
+	"isdata":false,
+	"spimpose":true,
+	"color":"800",
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC_GGtoH550toZZto2L2Nu",
+		"dset":"/GluGluToHToZZTo2L2Nu_M-550_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-550_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-550_7TeV-powheg-pythia6"],
+		"split":2,
+                "xsec":0.48,
+		"br":[0.267,0.0403896]
+		},
+		{	
+		"dtag":"MC_VBFtoH550toZZto2L2Nu",
+		"dset":"/VBF_ToHToZZTo2L2NU_M-550_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_ToHToZZTo2L2NU_M-550_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-550_7TeV-powheg-pythia6"],
+		"split":2,
+                "xsec":0.07,
+		"br":[0.267,0.0403896]
+		}
+	   ]
+	},
+	{
+	"tag":"H(600)#rightarrow VV",
 	"isdata":false,
 	"spimpose":true,
 	"color":"807",
@@ -302,7 +418,7 @@
 		"dset":"/GluGluToHToZZTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-600_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.3267,
 		"br":[0.272,0.0403896]
 		},
@@ -311,7 +427,7 @@
 		"dset":"/VBF_ToHToZZTo2L2NU_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_ToHToZZTo2L2NU_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-600_7TeV-powheg-pythia6"],
-		"split":3,
+		"split":2,
                 "xsec":0.06529,
 		"br":[0.272,0.0403896]
 		}
