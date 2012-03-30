@@ -178,6 +178,9 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
   //get the datacard inputs 
   DataCardInputs dci = convertHistosForLimits(mass,histo,url,outDir, runSystematics, shape, index);
 
+
+
+
   //build the datacard separately for each channel
   for(size_t i=1; i<=dci.ch.size(); i++) 
     {
@@ -378,7 +381,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
            hshape->SetBinError  (2,0);
         }
 
-	if(hshape->Integral()<=0) continue;
+//	if(hshape->Integral()<=0) continue;
 	hshape->SetDirectory(0);
 	fout->cd(ch);
 
@@ -452,11 +455,12 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 	//add to datacard
         allCh.insert(ch);
 	if(runSystematics && syst!="") allSysts.insert(systName);
-	if(runSystematics && proc!="data" && syst!="" && hshape->Integral()>0)
+//	if(runSystematics && proc!="data" && syst!="" && hshape->Integral()>0)
+      if(runSystematics && proc!="data" && syst!="")
 	  {
 	    TH1 *temp=(TH1 *) hshape->Clone();
 	    temp->Add(hcentral[ch],-1);
-//	    if(temp->Integral()!=0) dci.systs[systName][RateKey_t(proc,ch)]=1.0;
+	    if(temp->Integral()!=0) dci.systs[systName][RateKey_t(proc,ch)]=1.0;
 	    delete temp;
 
 	  }
@@ -545,6 +549,30 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 
   dci.ch.resize(allCh.size());        std::copy(allCh.begin(), allCh.end(),dci.ch.begin());
   dci.procs.resize(allProcs.size());  std::copy(allProcs.begin(), allProcs.end(),dci.procs.begin());
+
+
+
+// DEBUGGING
+//  printf("-----------------------\n");
+//  printf("shapesFile=%s\n",dci.shapesFile.Data());
+//  for(unsigned int i=0;i<dci.ch.size();i++){printf("%s - ",dci.ch[i].Data());}printf("\n");
+//  for(unsigned int i=0;i<dci.procs.size();i++){printf("%s - ",dci.procs[i].Data());}printf("\n");
+//  for(std::map<TString, std::map<RateKey_t,Double_t> >::iterator iter = dci.systs.begin();   iter != dci.systs.end(); ++iter ){
+//       printf("%s : ", iter->first.Data());
+//       for(std::map<RateKey_t, Double_t>::iterator it = iter->second.begin();   it != iter->second.end(); ++it ){
+//                 printf("%s_%s (%f) ", it->first.first.Data(), it->first.second.Data(), it->second);
+//       }
+//       printf("\n");
+//  }
+//  printf("-----------------------\n");
+
+
+
+
+
+
+
+
   return dci;
 }
 
