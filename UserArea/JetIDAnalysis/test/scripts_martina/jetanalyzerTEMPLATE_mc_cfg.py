@@ -28,13 +28,15 @@ process.MuonsFilter = countPatMuons.clone(
 )
 
 #jet analyzer 
+from CMGTools.External.puJetIDAlgo_cff import dRdRProfMultBetaFull
 from CMG.JetIDAnalysis.jetanalyzer_cfi import *
 
 
 # PF jet collection
 process.pfjetanalyzer = jetanalyzer.clone(
     JetTag   = cms.InputTag("selectedPatJets",""),            
-    dataFlag = cms.untracked.bool(False)
+    dataFlag = cms.untracked.bool(False),
+    puJetIDAlgo = dRdRProfMultBetaFull
 )
 
 # CHS jet collection

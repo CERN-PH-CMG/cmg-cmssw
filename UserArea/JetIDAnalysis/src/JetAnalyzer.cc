@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.cc,v 1.10 2012/03/26 09:11:18 musella Exp $
+// $Id: JetAnalyzer.cc,v 1.11 2012/03/26 13:37:10 musella Exp $
 //
 //
 
@@ -42,7 +42,7 @@ JetAnalyzer::JetAnalyzer(const edm::ParameterSet& iConfig)
   dataFlag_    = iConfig.getUntrackedParameter<bool>("dataFlag");
 
   //--- PU jet identifier 
-  puIdAlgo_ = new PileupJetIdNtupleAlgo(iConfig);
+  puIdAlgo_ = new PileupJetIdNtupleAlgo(iConfig.getParameter<edm::ParameterSet>("puJetIDAlgo"));
   computeTMVA_ = iConfig.getUntrackedParameter<bool>("computeTMVA");
   
   requireZ_ = iConfig.getUntrackedParameter<bool>("requireZ",true);
@@ -65,7 +65,7 @@ JetAnalyzer::JetAnalyzer(const edm::ParameterSet& iConfig)
   tree -> Branch ("PUoot_early_nTrue",&PUoot_early_nTrue, "PUoot_early_nTrue/F");
   tree -> Branch ("PUoot_late_n",&PUoot_late_n, "PUoot_late_n/I");
   tree -> Branch ("PUoot_late_nTrue",&PUoot_late_nTrue, "PUoot_late_nTrue/F");
-  tree -> Branch ("nvtx",&nvtx, "nvtx/I");
+  /// tree -> Branch ("nvtx",&nvtx, "nvtx/I"); comes from jetId algo
   tree -> Branch ("jetLooseID", &jetLooseID, "jetLooseID/O");
   tree -> Branch ("isMatched", &isMatched, "isMatched/O");
   tree -> Branch ("jetFlavour",&jetFlavour, "jetFlavour/I");
@@ -170,6 +170,7 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
   // *** Loop over jets 
+  int ijet = 0;
   for ( unsigned int i=0; i<jets.size(); ++i ) {
     
     ResetTreeVariables();
@@ -191,13 +192,14 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     //-- loose jet ID 
     pat::strbitset ret = pfjetIdLoose_.getBitTemplate(); // ? a cosa serve ?
     jetLooseID = pfjetIdLoose_(patjet, ret);
-
+    if( ! jetLooseID ) { continue; }
+    ++ijet;
 
     //-- pu jet identifier
     PileupJetIdentifier puIdentifier = puIdAlgo_->computeIdVariables(&patjet, 0, &vtx, vertexCollection, computeTMVA_);
 
     // --- fill jet variables
-    puIdAlgo_->setIJetIEvent(i,0);
+    puIdAlgo_->setIJetIEvent(ijet,iEvent.id().event());
     if ( !dataFlag_ ){
       jetFlavour  = patjet.partonFlavour();
       if ( matchingToGenJet(patjet, genJets, jetGenPt, jetGenDr) ) isMatched = 1;

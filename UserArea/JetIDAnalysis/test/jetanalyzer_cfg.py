@@ -29,7 +29,7 @@ process.source = cms.Source("PoolSource",
  
 #       'file:/data1/malberti/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_Chamonix12_START44_V10-v2/AODSIM/PAT_CMG_V3_0_0/patTuple_PF2PAT_999.root'
 #       'file:/data1/malberti/MC_DYJetsToLL_97_1.root'
-        'file:/tmp/malberti/MC_DYJetsToLL_9_1.root',
+##        'file:/tmp/malberti/MC_DYJetsToLL_9_1.root',
 #        'root://eoscms//eos/cms/store/cmst3/user/querten/12_02_20_HZZ2l2v_pat/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/MC_DYJetsToLL_97_1.root',
 #        'root://eoscms//eos/cms/store/cmst3/user/querten/12_02_20_HZZ2l2v_pat/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/MC_DYJetsToLL_98_1.root'
        ),
@@ -45,10 +45,12 @@ process.MuonsFilter = countPatMuons.clone(
     minNumber = cms.uint32(2)
 )
 
+from CMGTools.External.puJetIDAlgo_cff import dRdRProfMultBetaFull
 from CMG.JetIDAnalysis.jetanalyzer_cfi import *
 
 process.pfjetanalyzer = jetanalyzer.clone(
-    JetTag      = cms.InputTag("selectedPatJets",""),            
+    JetTag      = cms.InputTag("selectedPatJets",""),
+    puJetIDAlgo = dRdRProfMultBetaFull
 )
 
 process.chspfjetanalyzer = jetanalyzer.clone(

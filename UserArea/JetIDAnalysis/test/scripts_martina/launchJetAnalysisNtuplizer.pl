@@ -140,6 +140,9 @@ for($jobIt = 1; $jobIt <= $jobNumber; ++$jobIt)
 # copy files to CMS T3?
 ######################    
   
+  $command = "cmsMkdir ".$OUTPUTDIR; 
+  system ("echo ".$command." >> ".$tempBjob) ;
+
   $command = "cmsStage ./".$OUTPUTFILENAME."_".$jobIt.".root ".$OUTPUTDIR; 
   system ("echo ".$command." >> ".$tempBjob) ;
   
