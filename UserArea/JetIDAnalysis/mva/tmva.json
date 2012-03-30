@@ -1,10 +1,10 @@
 { 
-  "spectators" : [ "dRMean", "dR2Mean", "etaW", "phiW", "minW", "majW", "jetW", "ptD", "nvtx", "jetPt", "jetEta", "frac01", "frac02", "frac03", "frac04", "frac05", "beta", "betaStar", "dZ", "d0", "leadFrac", "secondFrac", "thirdFrac", "fourthFrac", "dRLeadCent", "dRLead2nd", "nParticles"  ],
+  "spectators" : [ "dRMean", "etaW", "phiW", "minW", "majW", "jetW", "ptD", "nvtx", "jetPt", "jetEta", "frac01", "frac02", "frac03", "frac04", "frac05", "beta", "betaStar", "dZ", "d0", "leadFrac", "secondFrac", "thirdFrac", "fourthFrac", "dRLeadCent", "dRLead2nd", "nParticles"  ],
   "methods"    : [ "BDT", "Fisher" ],
   "categories" : [ 
 		[ "abs(jetEta) < 2.5",                      "TK", "" ],  
-		[ "abs(jetEta) > 2.5 && abs(jetEta) < 3.0", "HE", "" ],  
-		[ "abs(jetEta) > 3.0",                      "HF", "" ]
+		[ "abs(jetEta) > 2.5 && abs(jetEta) < 3.0", "HE", "betaStar:beta:d0:dZ" ],  
+		[ "abs(jetEta) > 3.0",                      "HF", "betaStar:beta:d0:dZ" ]
                  ],
   "subcategories" : [ 
 	[  
@@ -21,6 +21,6 @@
 
   "sigwei"   : "0.162649 -0.00364556*jetPt +3.26647e-05*jetPt*jetPt + 12.3761*exp(-0.0955385*jetPt)",
   "bkgwei"   : "1.",
-  "sigcut"  : "nvtx>1. && jetPt>= 10. &&  isMatched  && abs(jetGenDr) < 0.3  && jetGenPt > 10. && abs(jetFlavour) <=3 && abs(jetFlavour) !=0",
-  "bkgcut"  : "nvtx>1. && jetPt>= 10. && ( !isMatched || ( abs(jetGenDr) > 0.3 && abs(jetGenPt) < 10.) )"
+  "sigcut"  : "nvtx>1. && jetPt>= 10. &&  isMatched  && abs(jetGenDr) < 0.3  && jetPt/jetGenPt > 0.7 && abs(jetFlavour) <=3 && abs(jetFlavour) !=0",
+  "bkgcut"  : "nvtx>1. && jetPt>= 10. && ( !isMatched || ( abs(jetGenDr) > 0.3 && jetPt/jetGenPt < 0.7 ) )"
 }

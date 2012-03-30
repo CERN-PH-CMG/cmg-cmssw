@@ -53,8 +53,15 @@ def main(o,args):
             subcategories = map( lambda x : ( TCut(x[0][0])*TCut(x[1][0]), "%s_%s" % (x[0][1],x[1][1]) ), itertools.product(subcategories,sc) )
         
     for cut,name,vars in o.categories:
-        if vars == "":
-            vars = allvars
+        myvars = allvars
+        if vars != "":
+            for v in vars.split(":"):
+                myvars = myvars.replace(v,"").replace("::",":")
+            myvars = myvars.rstrip(":")
+            
+        vars = str(myvars)
+        print vars
+        
         if len(subcategories) > 0:
             for subcut,subname in subcategories:
                 if subname == "":
@@ -120,7 +127,7 @@ def main(o,args):
             print "booking sub-category classifier : %s %s %s" % ( cut, name, vars )
             cats.AddMethod(cut,
                            vars,TMVA.Types.kBDT,"%s_%s" % (mname,name),
-                           "!H:!V:CreateMVAPdfs:BoostType=Grad:UseBaggedGrad"
+                           "!H:!V:!CreateMVAPdfs:BoostType=Grad:UseBaggedGrad"
                            ":GradBaggingFraction=0.6:SeparationType=GiniIndex:nCuts=20:NNodesMax=5"
                            )
             
