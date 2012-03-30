@@ -57,23 +57,12 @@ void TrackMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   float sumet = 0.0;
   
   for(int index = 0; index < (int)collection->size(); index++) {
-
     const PFCandidateRef pflowCandRef = collection->refAt(index).castTo<PFCandidateRef>();
-
     if(primaryVertex->size()==0) continue;
-    
-    float theDz = 999;
-    if(pflowCandRef->trackRef().isNonnull()) 
-      theDz = fabs(pflowCandRef->trackRef()->dz(vtx.position()));
-    else if(pflowCandRef->gsfTrackRef().isNonnull())
-      theDz = fabs(pflowCandRef->gsfTrackRef()->dz(vtx.position()));
-    else if(pflowCandRef->muonRef().isNonnull() && pflowCandRef->muonRef()->innerTrack().isNonnull())
-      theDz = fabs(pflowCandRef->muonRef()->innerTrack()->dz(vtx.position()));
-
-    if( (fabs(theDz)< iDZCut) ) {
-      totalP4 += pflowCandRef->p4();
-      sumet += pflowCandRef->pt();
-    }
+    double pDZ  = utils.pfCandDz(pflowCandRef,vtx);
+    if(pDZ > fDZCut) continue;
+    totalP4 += pflowCandRef->p4();
+    sumet   += pflowCandRef->pt();
   }
 
   reco::Candidate::LorentzVector invertedP4(-totalP4);

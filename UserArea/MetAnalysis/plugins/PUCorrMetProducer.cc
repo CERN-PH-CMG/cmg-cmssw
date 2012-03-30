@@ -30,9 +30,10 @@ using namespace edm;
 using namespace std;
 using namespace reco;
 
-NoPUMetProducer::NoPUMetProducer(const edm::ParameterSet& iConfig) {
+PUCorrMetProducer::PUCorrMetProducer(const edm::ParameterSet& iConfig) {
   
   produces<reco::PFMETCollection>();
+  MetUtilities utils(iConfig);
 
   TString path(getenv("CMSSW_BASE"));
   path += "/src/CMG/MetAnalysis/data/";  
@@ -44,7 +45,7 @@ NoPUMetProducer::NoPUMetProducer(const edm::ParameterSet& iConfig) {
   fJetCorrector = new FactorizedJetCorrector(correctionParameters);     
 }
 
-NoPUMetProducer::~NoPUMetProducer() { 
+PUCorrMetProducer::~PUCorrMetProducer() { 
    delete fJetCorrector;          // fixme
 }
 
@@ -54,9 +55,7 @@ void NoPUMetProducer::endJob() { }
 
 void NoPUMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
-  MetUtilities utils;
-
-  // PF candidates
+   // PF candidates
   edm::Handle< edm::View<reco::Candidate> > PFcandCollHandle;
   try { iEvent.getByLabel("particleFlow", PFcandCollHandle); }
   catch ( cms::Exception& ex ) { edm::LogWarning("NoPUMetProducer") << "Can't get candidate collection: particleFlow"; }
