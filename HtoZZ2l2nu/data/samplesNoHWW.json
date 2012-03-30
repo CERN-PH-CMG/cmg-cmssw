@@ -173,7 +173,7 @@
           ]
 	},
 	{
-	"tag":"H(200)#rightarrow VV",
+	"tag":"H(200)#rightarrow ZZ",
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",
@@ -202,7 +202,7 @@
 	   ]
 	},
 	{
-	"tag":"H(250)#rightarrow VV",
+	"tag":"H(250)#rightarrow ZZ",
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",
@@ -231,7 +231,7 @@
 	   ]
 	},
 	{
-	"tag":"H(300)#rightarrow VV",
+	"tag":"H(300)#rightarrow ZZ",
 	"isdata":false,
 	"spimpose":true,
 	"color":"803",
@@ -260,7 +260,7 @@
 	   ]
 	},
 	{
-	"tag":"H(350)#rightarrow VV",
+	"tag":"H(350)#rightarrow ZZ",
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",
@@ -289,7 +289,7 @@
 	   ]
 	},
 	{
-	"tag":"H(400)#rightarrow VV",
+	"tag":"H(400)#rightarrow ZZ",
 	"isdata":false,
 	"spimpose":true,
 	"color":"805",
@@ -318,7 +318,7 @@
 	   ]
 	},
 	{
-	"tag":"H(450)#rightarrow VV",
+	"tag":"H(450)#rightarrow ZZ",
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",
@@ -347,7 +347,7 @@
 	   ]
 	},
 	{
-	"tag":"H(500)#rightarrow VV",
+	"tag":"H(500)#rightarrow ZZ",
 	"isdata":false,
 	"spimpose":true,
 	"color":"797",
@@ -376,7 +376,7 @@
 	   ]
 	},
 	{
-	"tag":"H(550)#rightarrow VV",
+	"tag":"H(550)#rightarrow ZZ",
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",
@@ -405,7 +405,7 @@
 	   ]
 	},
 	{
-	"tag":"H(600)#rightarrow VV",
+	"tag":"H(600)#rightarrow ZZ",
 	"isdata":false,
 	"spimpose":true,
 	"color":"807",
