@@ -82,19 +82,23 @@ void estimateNonResonantBackground(std::vector<TString> &selCh,TString ctrlCh,co
 void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch, std::vector<TString>& systs, std::vector<TH1*>& hshapes,  bool runSystematics, bool shape, Int_t index);
 DataCardInputs convertHistosForLimits(Int_t mass,TString histo="finalmt",TString url="plotter.root",TString Json="", TString outDir="./", bool runSystematics=true, bool shape=true, Int_t index=-1);
 std::vector<TString> buildDataCard(Int_t mass, TString histo="finalmt", TString url="plotter.root",TString Json="", TString outDir="./", bool runSystematics=true, bool shape=true, Int_t index=-1);
+void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t> &allShapes, TString mainHisto, TString sideBandHisto);
 
-
+bool subNRB = false;
+bool MCclosureTest = false;
 
 void printHelp()
 {
   printf("Options\n");
-  printf("--in     --> input file with from plotter\n");
-  printf("--json   --> json file with the sample descriptor\n");
-  printf("--histo  --> name of histogram to be used\n");
-  printf("--index  --> index of selection to be used (Xbin in histogram to be used)\n");
-  printf("--m      --> higgs mass to be considered\n");
-  printf("--syst   --> use this flag if you want to run systematics, default is no systematics\n");
-  printf("--shape  --> use this flag if you want to run shapeBased analysis, default is cut&count\n");
+  printf("--in      --> input file with from plotter\n");
+  printf("--json    --> json file with the sample descriptor\n");
+  printf("--histo   --> name of histogram to be used\n");
+  printf("--index   --> index of selection to be used (Xbin in histogram to be used)\n");
+  printf("--m       --> higgs mass to be considered\n");
+  printf("--syst    --> use this flag if you want to run systematics, default is no systematics\n");
+  printf("--shape   --> use this flag if you want to run shapeBased analysis, default is cut&count\n");
+  printf("--subNRB  --> use this flag if you want to subtract non-resonant-backgounds\n");
+  printf("--closure --> use this flag if you want to perform a MC closure test (use only MC simulation)\n");
 }
 
 //
@@ -121,6 +125,8 @@ int main(int argc, char* argv[])
     if(arg.find("--help")  !=string::npos) { printHelp(); return -1;} 
     else if(arg.find("--syst")  !=string::npos) { runSystematics=true; printf("syst = True\n");}
     else if(arg.find("--shape") !=string::npos) { shape=true; printf("shapeBased = True\n");}
+    else if(arg.find("--subNRB")!=string::npos) { subNRB=true; printf("subNRB = True\n");}
+    else if(arg.find("--closure")!=string::npos) { MCclosureTest=true; printf("MCclosureTest = True\n");}
     else if(arg.find("--index") !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&index); i++; printf("index = %i\n", index);}
     else if(arg.find("--in")    !=string::npos && i+1<argc)  { inFileUrl = argv[i+1];  i++;  printf("in = %s\n", inFileUrl.Data()); }
     else if(arg.find("--json")  !=string::npos && i+1<argc)  { jsonFile  = argv[i+1];  i++;  printf("json = %s\n", jsonFile.Data()); }
@@ -169,6 +175,10 @@ int main(int argc, char* argv[])
   }
 
 }
+
+
+
+
 
 //
 void getCutFlowFromShape(std::vector<TString> ch, const map<TString, Shape_t> &allShapes, TString shName)
@@ -466,6 +476,11 @@ Shape_t getShapeFromFile(TString ch, TString shapeName, int cutBin, TString infU
       else     { shape.totalBckg->Add(shape.bckg[i]); }
     }
 
+  if(MCclosureTest){
+     shape.data->Reset();
+     shape.data->Add(shape.totalBckg, 1);
+  }
+
   //all done
   return shape;
 }
@@ -711,6 +726,8 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   //non-resonant background estimation
   //estimateNonResonantBackground(selCh,"emu",allShapes,"nonresbckg_ctrl");
 
+  //remove the non-resonant background from data
+  if(subNRB)doBackgroundSubtraction(selCh,"emu",allShapes,histo,"nonresbckg_ctrl");
 
   //prepare the output
   dci.shapesFile="Shapes_"+massStr+".root";
@@ -894,5 +911,55 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch
         }
    }
 }
+
+void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t>& allShapes, TString mainHisto, TString sideBandHisto)
+{
+     for(size_t i=0;i<selCh.size();i++){
+        Shape_t& shapeCtrl_SB = allShapes.find(ctrlCh+sideBandHisto)->second;
+        TH1* hCtrl_SB=shapeCtrl_SB.data;
+        Shape_t& shapeCtrl_SI = allShapes.find(ctrlCh+mainHisto)->second;
+        TH1* hCtrl_SI=shapeCtrl_SI.data;
+        Shape_t& shapeChan_SB = allShapes.find(selCh[i]+sideBandHisto)->second;
+        TH1* hChan_SB=shapeChan_SB.data;
+        Shape_t& shapeChan_SI = allShapes.find(selCh[i]+mainHisto)->second;
+        TH1* hChan_SI=shapeChan_SI.data;
+
+	printf("Channel = %s\n", selCh[i].Data());
+        printf("Bin %f %f %f %f %f %f\n", hCtrl_SB->GetBinContent(1), hCtrl_SB->GetBinContent(2), hCtrl_SB->GetBinContent(3), hCtrl_SB->GetBinContent(4), hCtrl_SB->GetBinContent(5), hCtrl_SB->GetBinContent(6) );
+        printf("Bin %f %f %f %f %f %f\n", hChan_SB->GetBinContent(1), hChan_SB->GetBinContent(2), hChan_SB->GetBinContent(3), hChan_SB->GetBinContent(4), hChan_SB->GetBinContent(5), hChan_SB->GetBinContent(6) );
+        double alpha     = hChan_SB->GetBinContent(5) / hCtrl_SB->GetBinContent(5);
+        double alpha_err = ( fabs( hChan_SB->GetBinContent(5) * hCtrl_SB->GetBinError(5) ) + fabs(hChan_SB->GetBinError(5) * hCtrl_SB->GetBinContent(5) )  ) / pow(hCtrl_SB->GetBinContent(5), 2);        
+        printf("alpha %s=%f+-%f\n", selCh[i].Data(),alpha, alpha_err);
+
+        //add 100% syst uncertainty on alpha
+        alpha_err = sqrt(1+alpha_err*alpha_err);
+
+        printf("Integral = %f --> ", hCtrl_SI->Integral());
+        for(int b=0;b<=hCtrl_SI->GetXaxis()->GetNbins()+1;b++){
+	   double val = hCtrl_SI->GetBinContent(b);
+           double err = hCtrl_SI->GetBinError(b);
+           val = val*alpha;
+           err = err*alpha + val*alpha_err;
+           hCtrl_SI->SetBinContent(b, val );
+           hCtrl_SI->SetBinError  (b, err );
+        }
+        hChan_SI->Add(hCtrl_SI,-1);
+        printf("%f\n", hCtrl_SI->Integral());
+
+
+        //Clean background collection
+        size_t nbckg=shapeChan_SI.bckg.size();
+        for(size_t ibckg=0; ibckg<nbckg; ibckg++){
+           TString proc(shapeChan_SI.bckg[ibckg]->GetTitle());
+	   if(proc.Contains("t#bar{t}") || proc.Contains("Single top") ){
+              shapeChan_SI.totalBckg->Add(shapeChan_SI.bckg[ibckg], -1);
+	      shapeChan_SI.bckg.erase(shapeChan_SI.bckg.begin()+ibckg);  ibckg--;
+           }
+        }
+     }
+
+}
+
+
 
 
