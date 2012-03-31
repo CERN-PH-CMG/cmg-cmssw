@@ -442,6 +442,7 @@ Shape_t getShapeFromFile(TString ch, TString shapeName, int cutBin, TString infU
          if(hshape2D){
             histoName.ReplaceAll(ch,ch+"_proj"+procCtr);
    	    hshape   = hshape2D->ProjectionY(histoName,cutBin,cutBin);
+            if(hshape->Integral()<=0){hshape->Reset(); hshape->SetBinContent(1, 1E-10);}
 	    hshape->SetDirectory(0);
 	    hshape->SetTitle(proc);
 	    fixExtremities(hshape,true,true);
@@ -892,11 +893,13 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch
          hshape->SetName(proc+syst);
          hshape->Write(proc+syst+"Up");
          TH1 *hmirrorshape=(TH1 *)hshape->Clone(proc+syst+"Down");
-         for(int ibin=1; ibin<=hmirrorshape->GetXaxis()->GetNbins(); ibin++)
-            hmirrorshape->SetBinContent(ibin,-hmirrorshape->GetBinContent(ibin));
+         for(int ibin=1; ibin<=hmirrorshape->GetXaxis()->GetNbins(); ibin++){
+            double bin = 2*hshapes[0]->GetBinContent(ibin)-hmirrorshape->GetBinContent(ibin);
+            if(bin<0)bin=0;
+            hmirrorshape->SetBinContent(ibin,bin);
+         }
          hmirrorshape->Write(proc+syst+"Down");
        }
-
 
        if(runSystematics && syst!=""){
           TString systName(syst); 
@@ -906,7 +909,7 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch
           temp->Add(hshapes[0],-1);
         if(temp->Integral()!=0)dci.systs[systName][RateKey_t(proc,ch)]=1.0;
           delete temp;
-        }else if(proc!="data" && syst==""){dci.rates[RateKey_t(proc,ch)]=hshape->Integral();
+        }else if(proc!="data" && syst==""){if(hshape->Integral()>1E-9)dci.rates[RateKey_t(proc,ch)]=hshape->Integral();
         }else if(proc=="data" && syst==""){dci.obs[RateKey_t("obs",ch)]=hshape->Integral();
         }
    }
