@@ -5,7 +5,7 @@ import os,sys
 #import getopt
 import commands
 import ROOT
-from ROOT import TFile, TH1, TGraph, TCanvas, TF1
+from ROOT import TFile, TGraph, TCanvas, TF1, TH1
 
 def findCutIndex(cut1, hcut1, cut2, hcut2, cut3, hcut3):
    for i in range(1, hcut1.GetXaxis().GetNbins()):
@@ -31,27 +31,28 @@ if(len(sys.argv) > 2):
 	shapeBased = sys.argv[2]
 
 file = ROOT.TFile('../plotter2011.root')
-cuts1   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_met')
-cuts2   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_mtmin')
-cuts3   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_mtmax')
+cuts1   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_met') 
+cuts2   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_mtmin') 
+cuts3   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_mtmax') 
 
 CWD = os.getcwd()
 OUT = CWD+'/JOBS/'
-if(shapeBased=='1'):	OUT+='SHAPE/'
-else:		        OUT+='COUNT/'	
+if(shapeBased=='--shape'): OUT+='SHAPE/'
+else:		           OUT+='COUNT/'	
 
 os.system('mkdir -p ' + OUT)
 
-MASS = [200,300,400,500,600]
+#MASS = [200,300,400,500,600]
+MASS = [200,250, 300,350, 400,450, 500,550, 600]
 #SUBMASS = [200, 225, 250, 275, 300, 325, 350, 375, 400, 425, 450, 475, 500, 525, 550, 575, 600, 625, 650];
-SUBMASS = [200,300,400,500,600]
+SUBMASS = [200,250, 300,350, 400,450, 500,550, 600]
 
 
 
 if( sys.argv[1] == '1' ):
 	FILE = open("LIST.txt","w")
-	for i in range(1,cuts1.GetXaxis().GetNbins()):
-		if(shapeBased=='1' and cuts3.GetBinContent(i)<780):continue
+	for i in range(1,cuts1.GetNbinsX()):
+		if(shapeBased=='--shape' and cuts3.GetBinContent(i)<780):continue
 		FILE.writelines("index="+str(i).rjust(5) + " --> met>" + str(cuts1.GetBinContent(i)).rjust(5) + " " + str(cuts2.GetBinContent(i)).rjust(5) + "<mt<"+str(cuts3.GetBinContent(i)).rjust(5) + "\n")
 
                 SCRIPT = open(OUT+'script_'+str(i)+'.sh',"w")
@@ -60,11 +61,11 @@ if( sys.argv[1] == '1' ):
                 SCRIPT.writelines("export SCRAM_ARCH=slc5_amd64_gcc434;\n")
                 SCRIPT.writelines('echo "TESTC";\n')
 		SCRIPT.writelines("eval `scram r -sh`;\n")
-		SCRIPT.writelines('cd /tmp/;')
+		SCRIPT.writelines('cd /tmp/;\n')
 		for m in MASS:
-			SCRIPT.writelines("runLandS "+str(m)+" mt_shapes $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root 0 "+shapeBased+" "+str(i)+";\n")
-			if(shapeBased=='1'):       SCRIPT.writelines('cat H' +str(m)+'_shape_'+str(i)+'/*.log &> ' +OUT+str(m)+'_'+str(i)+'.log;\n')
-			else:                      SCRIPT.writelines('cat H' +str(m)+'_count_'+str(i)+'/*.log &> ' +OUT+str(m)+'_'+str(i)+'.log;\n')
+		        SCRIPT.writelines("runLandS --m " + str(m) + " --histo mt_shapes " + " --in $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root " + shapeBased + " --index " + str(i) + " --json $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samplesNoHWW.json;\n")
+			if(shapeBased=='--shape'): SCRIPT.writelines('cat H' +str(m)+'_shape_'+str(i)+'/combined/*.log &> ' +OUT+str(m)+'_'+str(i)+'.log;\n')
+			else:                      SCRIPT.writelines('cat H' +str(m)+'_count_'+str(i)+'/combined/*.log &> ' +OUT+str(m)+'_'+str(i)+'.log;\n')
 		SCRIPT.close()
       	        print("bsub -q 8nh -J optim"+str(i)+" 'sh " + OUT+"script_"+str(i)+".sh &> "+OUT+"script_"+str(i)+".log'")
 		os.system("bsub -q 8nh 'sh " + OUT+"script_"+str(i)+".sh &> "+OUT+"script_"+str(i)+".log'")
@@ -75,11 +76,10 @@ if( sys.argv[1] == '1' ):
 elif(sys.argv[1] == '2' ):
 	print("All selection point will be scanned... it may take several minutes\n")
 	fileName = "OPTIM_"
-	if(shapeBased=='1'):    fileName+='SHAPE'
-	else:			fileName+='COUNT' 	
+	if(shapeBased=='--shape'): fileName+='SHAPE'
+	else:		  	   fileName+='COUNT' 	
         FILE = open(fileName+".txt","w")
 	for m in MASS:
-	        FILE.writelines("mH="+str(m)+":\n")
         	FILE.writelines("------------------------------------------------------------------------------------\n")
 		BestLimit = []
 		fileList = commands.getstatusoutput("ls " + OUT + str(m)+"_*.log")[1].split();
@@ -88,7 +88,7 @@ elif(sys.argv[1] == '2' ):
 			if(len(exp)<=0):continue
 			median = exp.split()[6]
 			index = int(f[f.rfind("_")+1:f.rfind(".log")])
-			BestLimit.append( str(median).rjust(8) + " " + str(index).rjust(5) + " " + str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + " " + str(cuts3.GetBinContent(index)).rjust(5))
+			BestLimit.append("mH="+str(m)+ " --> " + str(median).rjust(8) + " " + str(index).rjust(5) + " " + str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + " " + str(cuts3.GetBinContent(index)).rjust(5))
 		BestLimit.sort()
 		for s in BestLimit:
 			FILE.writelines(s+"\n")
@@ -99,88 +99,24 @@ elif(sys.argv[1] == '2' ):
 elif(sys.argv[1] == '3' ):
 
 
-   Gmet  = ROOT.TGraph(5);
-   Gtmin = ROOT.TGraph(5);
-   Gtmax = ROOT.TGraph(5);
+   Gmet  = ROOT.TGraph(len(SUBMASS));
+   Gtmin = ROOT.TGraph(len(SUBMASS));
+   Gtmax = ROOT.TGraph(len(SUBMASS));
 
-   
-   if(shapeBased=='1'): 
-        Gmet .SetPoint(0, 200,  50);
-        Gtmin.SetPoint(0, 200, 275);
-        Gtmax.SetPoint(0, 200,3000);
-        Gmet .SetPoint(1, 300,  80);
-        Gtmin.SetPoint(1, 300, 200);
-        Gtmax.SetPoint(1, 300,3000);
-        Gmet .SetPoint(2, 400,  80);
-        Gtmin.SetPoint(2, 400, 200);
-        Gtmax.SetPoint(2, 400,3000);
-        Gmet .SetPoint(3, 500,  95);
-        Gtmin.SetPoint(3, 500, 200);
-        Gtmax.SetPoint(3, 500,3000);
-        Gmet .SetPoint(4, 600,  95);
-        Gtmin.SetPoint(4, 600, 200);
-        Gtmax.SetPoint(4, 600,3000);
+   fileName = "OPTIM_"
+   if(shapeBased=='--shape'): fileName+='SHAPE'
+   else:                      fileName+='COUNT'
+   fileName+=".txt"
 
-   else:                  
-	#Gmet .SetPoint(0, 200,  50);
-        #Gtmin.SetPoint(0, 200, 250);
-        #Gtmax.SetPoint(0, 200, 375);
-        #Gmet .SetPoint(1, 300,  80);
-        #Gtmin.SetPoint(1, 300, 275);
-        #Gtmax.SetPoint(1, 300, 350);
-        #Gmet .SetPoint(2, 400, 130);
-        #Gtmin.SetPoint(2, 400, 325);
-        #Gtmax.SetPoint(2, 400, 450);
-        #Gmet .SetPoint(3, 500, 160);
-        #Gtmin.SetPoint(3, 500, 400);
-        #Gtmax.SetPoint(3, 500, 700);
-        #Gmet .SetPoint(4, 600, 180);
-        #Gtmin.SetPoint(4, 600, 400);
-        #Gtmax.SetPoint(4, 600, 800);
-
-        #pedro 25/03/2012
-        Gmet .SetPoint(0, 200,  60);
-        Gtmin.SetPoint(0, 200, 200);
-        Gtmax.SetPoint(0, 200, 300);
-        Gmet .SetPoint(1, 300,  85);
-        Gtmin.SetPoint(1, 300, 250);
-        Gtmax.SetPoint(1, 300, 350);
-        Gmet .SetPoint(2, 400, 130);
-        Gtmin.SetPoint(2, 400, 325);
-        Gtmax.SetPoint(2, 400, 450);
-        Gmet .SetPoint(3, 500, 120);
-        Gtmin.SetPoint(3, 500, 400);
-        Gtmax.SetPoint(3, 500, 650);
-        Gmet .SetPoint(4, 600, 180);
-        Gtmin.SetPoint(4, 600, 400);
-        Gtmax.SetPoint(4, 600, 3000);
-
-        #	   Gmet .SetPoint(0, 250,  70);
-        #          Gtmin.SetPoint(0, 250, 222);
-        #          Gtmax.SetPoint(0, 250, 272);
-        #	   Gmet .SetPoint(1, 300,  79);
-        #          Gtmin.SetPoint(1, 300, 264);
-        #          Gtmax.SetPoint(1, 300, 331);
-        #	   Gmet .SetPoint(2, 350,  95);
-        #          Gtmin.SetPoint(2, 350, 298);
-        #          Gtmax.SetPoint(2, 350, 393);
-        #	   Gmet .SetPoint(3, 400, 115);
-        #          Gtmin.SetPoint(3, 400, 327);
-        #          Gtmax.SetPoint(3, 400, 460);
-        #	   Gmet .SetPoint(4, 450, 134);
-        #          Gtmin.SetPoint(4, 450, 354);
-        #          Gtmax.SetPoint(4, 450, 531);
-        #	   Gmet .SetPoint(5, 500, 150);
-        #          Gtmin.SetPoint(5, 500, 382);
-        #          Gtmax.SetPoint(5, 500, 605);
-        #	   Gmet .SetPoint(6, 550, 150);
-        #	   Gtmin.SetPoint(6, 550, 413);
-        #  	   Gtmax.SetPoint(6, 550, 684);
-        #	   Gmet .SetPoint(7, 600, 161);
-        #	   Gtmin.SetPoint(7, 600, 452);
-        # 	   Gtmax.SetPoint(7, 600, 767);
-        
-
+   mi=0
+   for m in MASS:
+	#replace 'str(1)' by an other number if you don't want to use the BEST cut
+        cut_line = commands.getstatusoutput("cat " + fileName + " | grep 'mH="+str(m)+"'")[1].split('\n');
+	print cut_line[0].split()[4] +" " + cut_line[0].split()[5] + " "+ cut_line[0].split()[6]
+        Gmet .SetPoint(mi, m, float(cut_line[0].split()[4]));
+        Gtmin.SetPoint(mi, m, float(cut_line[0].split()[5]));
+        Gtmax.SetPoint(mi, m, float(cut_line[0].split()[6]));
+	mi+=1
 
    c1 = ROOT.TCanvas("c1", "c1",900,300);
    c1.Divide(3);
@@ -232,12 +168,12 @@ elif(sys.argv[1] == '3' ):
 	SCRIPT.writelines('cd ' + CWD + ';\n')
         SCRIPT.writelines("export SCRAM_ARCH=slc5_amd64_gcc434;\n")
 	SCRIPT.writelines("eval `scram r -sh`;\n")
-	SCRIPT.writelines("runLandS " + str(m) + " mt_shapes " + " $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root " + " 1 " + shapeBased + " " + str(index) + ";\n")
+	SCRIPT.writelines("runLandS --m " + str(m) + " --histo mt_shapes " + " --in $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root " + "--syst " + shapeBased + " --index " + str(index) + " --json $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samplesNoHWW.json;\n")
 	SCRIPT.close()
 	os.system("bsub -q 8nh 'sh " + OUT+"script_mass_"+str(m)+".sh'")
 
-	if(shapeBased=='1'):   list.writelines('H'+str(m)+'_shape_'+str(index)+'\n'); 
-	else:                  list.writelines('H'+str(m)+'_count_'+str(index)+'\n');
+	if(shapeBased=='--shape'):   list.writelines('H'+str(m)+'_shape_'+str(index)+'\n'); 
+	else:                        list.writelines('H'+str(m)+'_count_'+str(index)+'\n');
    list.close();
 
 elif(sys.argv[1] == '4' ):
