@@ -1,32 +1,12 @@
-/*
-  gSystem->Load("libCMGToolsHtoZZ2l2nu.so");
-  .L runShapeAnalysis.C+
-*/
-
-
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 #include "Math/GenVector/Boost.h"
 
-#include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
-#include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
-#include "CMGTools/HtoZZ2l2nu/interface/METUtils.h"
-#include "CMGTools/HtoZZ2l2nu/interface/GammaEventHandler.h"
+#include "CMGTools/HtoZZ2l2nu/src/tdrstyle.C"
+#include "CMGTools/HtoZZ2l2nu/src/JSONWrapper.cc"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
-#include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
-#include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
-#include "CMGTools/HtoZZ2l2nu/interface/SmartSelectionMonitor.h"
-#include "CMGTools/HtoZZ2l2nu/interface/TMVAUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/MacroUtils.h"
-#include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
-
-#include "CondFormats/JetMETObjects/interface/JetResolution.h"
-#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
-
-#include "FWCore/FWLite/interface/AutoLibraryLoader.h"
-#include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
+#include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
 
 #include "TSystem.h"
 #include "TFile.h"
@@ -35,12 +15,7 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TProfile.h"
-#include "TEventList.h"
 #include "TROOT.h"
-
-#include "TFile.h"
-#include "TH1D.h"
-#include "TH2D.h"
 #include "TString.h"
 #include "TList.h"
 #include "TGraph.h"
@@ -48,10 +23,8 @@
 #include "TPad.h"
 #include "TLegend.h"
 #include "TPaveText.h"
-#include "TROOT.h"
-#include "TSystem.h"
-#include "TStyle.h"
 #include "TObjArray.h"
+#include "THStack.h"
 
 #include<iostream>
 #include<fstream>
@@ -62,9 +35,7 @@
 
 using namespace std;
 
-
 TString landsExe("$CMSSW_BASE/src/UserCode/mschen/LandS/test/lands.exe");
-
 #define RUNBAYESIAN(INURL,OUTURL)\
   gSystem->ExpandPathName(landsExe); \
   TString cmd=TString(landsExe + " -M Bayesian -d ") + INURL + TString( " --doExpectation 1 -t 10000 > ") + OUTURL + TString(" "); \
@@ -78,10 +49,17 @@ TString landsExe("$CMSSW_BASE/src/UserCode/mschen/LandS/test/lands.exe");
   gSystem->Exec(cmd);
 
 
-using namespace std;
+//wrapper for a projected shape for a given set of cuts
+struct Shape_t
+{
+  TH1* data, *totalBckg;
+  std::vector<TH1 *> bckg, signal;
+  //the key corresponds to the proc name
+  //the key is the name of the variation: e.g. jesup, jesdown, etc.
+  std::map<TString,std::vector<std::pair<TString, TH1*> > > bckgVars, signalVars;
+};
 
 typedef std::pair<TString,TString> RateKey_t;
-
 struct DataCardInputs
 {
   TString shapesFile;
@@ -92,93 +70,503 @@ struct DataCardInputs
   std::map<TString, std::map<RateKey_t,Double_t> > systs;
 };
 
-DataCardInputs convertHistosForLimits(Int_t mass,TString histo="finalmt",TString url="plotter.root",TString outDir="./", bool runSystematics=true, bool shape=true, Int_t index=-1);
-std::vector<TString> buildDataCard(Int_t mass, TString histo="finalmt", TString url="plotter.root",TString outDir="./", bool runSystematics=true, bool shape=true, Int_t index=-1);
+
+void printHelp();
+int findBinFor(Float_t minMet, Float_t minMt, Float_t maxMt, TString infURL);
+Shape_t getShapeFromFile(TString ch, TString shapeName, int cutBin, TString infURL,JSONWrapper::Object &Root);
+void showShape(const Shape_t &shape, TString SaveName);
+void getCutFlowFromShape(std::vector<TString> ch, const map<TString, Shape_t> &allShapes, TString shName);
+void estimateNonResonantBackground(std::vector<TString> &selCh,TString ctrlCh,const map<TString, Shape_t> &allShapes, TString shape);
 
 
+void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch, std::vector<TString>& systs, std::vector<TH1*>& hshapes,  bool runSystematics, bool shape, Int_t index);
+DataCardInputs convertHistosForLimits(Int_t mass,TString histo="finalmt",TString url="plotter.root",TString Json="", TString outDir="./", bool runSystematics=true, bool shape=true, Int_t index=-1);
+std::vector<TString> buildDataCard(Int_t mass, TString histo="finalmt", TString url="plotter.root",TString Json="", TString outDir="./", bool runSystematics=true, bool shape=true, Int_t index=-1);
+
+
+
+void printHelp()
+{
+  printf("Options\n");
+  printf("--in     --> input file with from plotter\n");
+  printf("--json   --> json file with the sample descriptor\n");
+  printf("--histo  --> name of histogram to be used\n");
+  printf("--index  --> index of selection to be used (Xbin in histogram to be used)\n");
+  printf("--m      --> higgs mass to be considered\n");
+  printf("--syst   --> use this flag if you want to run systematics, default is no systematics\n");
+  printf("--shape  --> use this flag if you want to run shapeBased analysis, default is cut&count\n");
+}
+
+//
 int main(int argc, char* argv[])
 {
-   if(argc<4){printf("not enough arguments\n"); exit(0);}
+  setTDRStyle();
+  gStyle->SetPadTopMargin   (0.06);
+  gStyle->SetPadBottomMargin(0.12);
+  gStyle->SetPadRightMargin (0.16);
+  gStyle->SetPadLeftMargin  (0.14);
+  gStyle->SetTitleSize(0.04, "XYZ");
+  gStyle->SetTitleXOffset(1.1);
+  gStyle->SetTitleYOffset(1.45);
+  gStyle->SetPalette(1);
+  gStyle->SetNdivisions(505);
+  gStyle->SetOptStat(0);  
+  gStyle->SetOptFit(0);
 
-   int mass; TString histo; TString url; int index=-1;
-   sscanf(argv[1],"%i", &mass);
-   histo = TString(argv[2]);
-   url = TString(argv[3]);
-   int runSystematicsTmp = 1;
-   if(argc>=5)sscanf(argv[4],"%i", &runSystematicsTmp);
-   bool runSystematics = (runSystematicsTmp==1);
-   int isShape = 1;
-   if(argc>=5)sscanf(argv[5],"%i", &isShape);
-   bool shape = (isShape==1);
-   if(argc>=6)sscanf(argv[6],"%i", &index);
-   printf("runLandS with following arguments: %i - %s - %s - %i\n",mass, histo.Data(), url.Data(), index);
+  //get input arguments
+  TString inFileUrl(""),jsonFile(""), histo("");
+  int mass=-1; int index = -1; bool runSystematics = false; bool shape = false;
+  for(int i=1;i<argc;i++){
+    string arg(argv[i]);
+    if(arg.find("--help")  !=string::npos) { printHelp(); return -1;} 
+    else if(arg.find("--syst")  !=string::npos) { runSystematics=true; printf("syst = True\n");}
+    else if(arg.find("--shape") !=string::npos) { shape=true; printf("shapeBased = True\n");}
+    else if(arg.find("--index") !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&index); i++; printf("index = %i\n", index);}
+    else if(arg.find("--in")    !=string::npos && i+1<argc)  { inFileUrl = argv[i+1];  i++;  printf("in = %s\n", inFileUrl.Data()); }
+    else if(arg.find("--json")  !=string::npos && i+1<argc)  { jsonFile  = argv[i+1];  i++;  printf("json = %s\n", jsonFile.Data()); }
+    else if(arg.find("--histo") !=string::npos && i+1<argc)  { histo     = argv[i+1];  i++;  printf("histo = %s\n", histo.Data()); }
+    else if(arg.find("--m")     !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&mass ); i++; printf("mass = %i\n", mass);}
+  }
+  if(jsonFile.IsNull() || inFileUrl.IsNull() || histo.IsNull() || index == -1 || mass==-1) { printHelp(); return -1; }
+
 
   //prepare the output directory
   TString outDir("H"); outDir += mass;
   if(shape){outDir+=TString("_shape");}else{outDir+=TString("_count");}
-  if(index>=0){outDir+=TString("_");outDir+=index;}
+  outDir+=TString("_");outDir+=index;
   TString mkdirCmd("mkdir -p "); mkdirCmd+=outDir;
   gSystem->Exec(mkdirCmd.Data());
-
-  if(runSystematics){
-     mkdirCmd += "/combined";
-     gSystem->Exec(mkdirCmd);
-   }
+  mkdirCmd += "/combined";
+  gSystem->Exec(mkdirCmd);
 
   //build the datacard for this mass point
-  std::vector<TString> dcUrls = buildDataCard(mass,histo,url,outDir, runSystematics, shape, index);
+  std::vector<TString> dcUrls = buildDataCard(mass,histo,inFileUrl, jsonFile, outDir, runSystematics, shape, index);
 
-  if(runSystematics){
-     //run the combined limits 
-     //need to create a new directory with the exclusive datacards and link the root file with the histos
-     for(size_t i=0; i<dcUrls.size(); i++)
-     {
+  //run the combined limits 
+  //need to create a new directory with the exclusive datacards and link the root file with the histos
+  for(size_t i=0; i<dcUrls.size(); i++){
         TString cpCmd("cp ");
         cpCmd += dcUrls[i];
         TString newDCUrl(dcUrls[i]); newDCUrl.ReplaceAll(outDir,outDir+"/combined/");
         cpCmd += " " + newDCUrl;
         gSystem->Exec(cpCmd);
-     }
-
-     TString lnCmd("ln -sf ");
-     lnCmd += outDir;  lnCmd += "/Shapes_"; lnCmd += mass; lnCmd += ".root ";
-     lnCmd += outDir;  lnCmd += "/combined/Shapes_"; lnCmd += mass; lnCmd += ".root ";
-     gSystem->Exec(lnCmd);
-
-     TString logUrl(outDir+"/combined/Shapes_"); logUrl += mass; logUrl += ".log";
-     RUNASYMPTOTIC(outDir+"/combined/*.dat",logUrl);
-
-
-     //run limits in the exclusive channels
-     for(size_t i=0; i<dcUrls.size(); i++)
-     {
-        TString logUrl(dcUrls[i]); logUrl.ReplaceAll(".dat",".log");
-//        RUNASYMPTOTIC(dcUrls[i],logUrl);
-     }
-  }else{
-     //run the combined limits 
-     //need to create a new directory with the exclusive datacards and link the root file with the histos
-     TString cards = "";
-     for(size_t i=0; i<dcUrls.size(); i++){
-        cards+=dcUrls[i]+" ";
-     }
-     TString logUrl(outDir+"/Shapes_"); logUrl += mass; logUrl += ".log";
-     RUNASYMPTOTIC(cards,logUrl);
   }
+
+  TString lnCmd("ln -sf ");
+  lnCmd += outDir;  lnCmd += "/Shapes_"; lnCmd += mass; lnCmd += ".root ";
+  lnCmd += outDir;  lnCmd += "/combined/Shapes_"; lnCmd += mass; lnCmd += ".root ";
+  gSystem->Exec(lnCmd);
+
+  TString logUrl(outDir+"/combined/Shapes_"); logUrl += mass; logUrl += ".log";
+  RUNASYMPTOTIC(outDir+"/combined/*.dat",logUrl);
+
+  if(runSystematics){
+     //run limits in the exclusive channels
+     for(size_t i=0; i<dcUrls.size(); i++){
+        TString logUrl(dcUrls[i]); logUrl.ReplaceAll(".dat",".log");
+//      RUNASYMPTOTIC(dcUrls[i],logUrl);
+     }
+  }
+
+}
+
+//
+void getCutFlowFromShape(std::vector<TString> ch, const map<TString, Shape_t> &allShapes, TString shName)
+{
+  fstream cutflow("CutFlow.tex",ios::out | ios::trunc);
+
+  //table header
+  const size_t nch=ch.size();
+  cutflow <<"\\begin{table}[htp]" << endl
+       << "\\begin{center}" << endl
+       << "\\caption{Event yields expected for background and signal processes and observed in data.}" << endl
+       <<"\\label{tab:table}" << endl;
+  TString colfmt = "l";  for(size_t ich=0; ich<nch; ich++) colfmt += "c";
+  TString colname("");
+  for(size_t ich=0; ich<nch; ich++) {
+    TString icol(ch[ich]); 
+    icol.ReplaceAll("mu","\\mu"); icol.ReplaceAll("_"," ");
+    colname = colname + "& " + icol;
+  }
+  cutflow << "\\begin{tabular}{" << colfmt << "} \\hline\\hline" << endl
+       << "Process " << colname << " \\\\ \\hline" << flush;
+
+  //backgrounds
+  size_t nbckg=allShapes.find(ch[0]+shName)->second.bckg.size();
+  for(size_t ibckg=0; ibckg<nbckg; ibckg++)
+    {
+      TH1 *h=allShapes.find(ch[0]+shName)->second.bckg[ibckg];
+      TString procTitle(h->GetTitle()); procTitle.ReplaceAll("#","\\");
+      cutflow << endl << procTitle << " ";
+      for(size_t ich=0; ich<nch; ich++)
+	{
+	  h=allShapes.find(ch[ich]+shName)->second.bckg[ibckg];
+	  Double_t valerr;
+	  Double_t val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+	  cutflow << " & " << toLatexRounded(val,valerr);
+	}
+      cutflow << "\\\\";
+    }
+  cutflow << "\\hline" << flush;
+  
+  //total bckg
+  cutflow << endl << "SM ";
+  for(size_t ich=0; ich<nch; ich++)
+    {
+      TH1 *h=allShapes.find(ch[ich]+shName)->second.totalBckg;
+      Double_t valerr;
+      Double_t val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+      cutflow << " & " << toLatexRounded(val,valerr);
+    }
+  cutflow << "\\\\\\hline" << flush;
+
+  //signal
+  size_t nsig=allShapes.find(ch[0]+shName)->second.signal.size();
+  for(size_t isig=0; isig<nsig; isig++)
+    {
+      TH1 *h=allShapes.find(ch[0]+shName)->second.signal[isig];
+      TString procTitle(h->GetTitle()); procTitle.ReplaceAll("#","\\");
+      cutflow << endl << procTitle << " ";
+      for(size_t ich=0; ich<nch; ich++)
+        {
+          h=allShapes.find(ch[ich]+shName)->second.signal[isig];
+          Double_t valerr;
+          Double_t val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+          cutflow << " & " << toLatexRounded(val,valerr);
+        }
+      cutflow << "\\\\";
+    }
+  cutflow << "\\hline" << flush;
+
+  //data
+  cutflow << endl << "data ";
+  for(size_t ich=0; ich<nch; ich++)
+    {
+      TH1 *h=allShapes.find(ch[ich]+shName)->second.data;
+      cutflow << " & " << int(h->Integral());
+    }
+  cutflow << "\\\\\\hline" << flush;
+
+  // end table
+  cutflow << "\\hline" << endl
+       << "\\end{tabular}" << endl
+       << "\\end{center}" << endl
+       << "\\end{table}" << endl;
+
+  cutflow.close();
+}
+
+
+//
+void estimateNonResonantBackground(std::vector<TString> &selCh,TString ctrlCh,const map<TString, Shape_t> &allShapes, TString shape)
+{
+
+  fstream cutflow("CutFlow.tex",ios::out | ios::app);
+
+  //table header
+  const size_t nch=selCh.size();
+  cutflow << endl << endl
+	  <<"\\begin{table}[htp]" << endl
+	  << "\\begin{center}" << endl
+	  << "\\caption{Non resonant background estimation.}" << endl
+	  <<"\\label{tab:table}" << endl;
+  TString colfmt = "l";  for(size_t ich=0; ich<nch; ich++) colfmt += "c";
+  TString colname("");
+  for(size_t ich=0; ich<nch; ich++) {
+    TString icol(selCh[ich]); 
+    icol.ReplaceAll("mu","\\mu"); icol.ReplaceAll("_"," ");
+    colname = colname + "& " + icol;
+  }
+  cutflow << "\\begin{tabular}{" << colfmt << "} \\hline\\hline" << endl
+	  << "  " << colname << " \\\\ \\hline" << endl;
+
+  //compute estimate
+  string alphamcRow("\\alpha_{MC}");
+  string nnrmcRow("N_{nr}^{MC}");
+  string nnrexpRow("N_{nr}^{expected}");
+  string alphaRow("\\alpha");
+  string nnrRow("N_{nr}");
+  for(size_t i=0; i<selCh.size(); i++)
+    {
+      TString key(selCh[i]+shape);
+
+      //MC closure test
+      TH1 *hch         = allShapes.find(key)->second.totalBckg;
+      TH1 *hctrl       = allShapes.find(ctrlCh+shape)->second.totalBckg;
+      Float_t ch       = hch->GetBinContent(5);     Float_t ch_err      = hch->GetBinError(5);
+      Float_t ctrl     = hctrl->GetBinContent(5);   Float_t ctrl_err    = hctrl->GetBinError(5);
+      Float_t ctrlSig  = hctrl->GetBinContent(1);   Float_t ctrlSig_err = hctrl->GetBinError(1);
+      if(ctrl)
+	{
+	  Float_t alpha(ch/ctrl), alpha_err( sqrt(pow(ch*ctrl_err,2)+pow(ch_err*ctrl,2))/pow(ctrl,2) );
+	  alphamcRow += " & " + toLatexRounded(alpha,alpha_err); 
+
+	  Float_t nnr(alpha*ctrlSig) , nnr_err( sqrt(pow(ch*ctrlSig*ctrl_err,2)+pow(ch_err*ctrlSig*ctrl,2)+pow(ch*ctrlSig_err*ctrl,2) )/pow(ctrl,2) );
+	  nnrmcRow += " & " + toLatexRounded(nnr,nnr_err);
+	}
+      else
+	{
+	  alphamcRow += " & - ";
+	  nnrmcRow   += " & - ";
+	}
+      Float_t nnrexp(0),nnrexp_err(0);
+      for(size_t ibckg=0; ibckg<allShapes.find(key)->second.bckg.size(); ibckg++)
+	{
+	  TH1 *hmc=allShapes.find(key)->second.bckg[ibckg];
+	  TString procTit(hmc->GetTitle());
+	  if(!procTit.Contains("WW") && !procTit.Contains("t#bar{t}") && !procTit.Contains("Single top") && !procTit.Contains("#tau#tau")) continue;
+	  nnrexp += hmc->GetBinContent(1);  nnrexp_err += pow(hmc->GetBinError(1),2);
+	}
+      nnrexp_err = sqrt(nnrexp_err);
+      nnrexpRow += " & " + toLatexRounded(nnrexp,nnrexp_err);
+
+      //data estimate
+      hch         = allShapes.find(key)->second.data;
+      hctrl       = allShapes.find(ctrlCh+shape)->second.data;
+      ch       = hch->GetBinContent(5);     ch_err      = hch->GetBinError(5);
+      ctrl     = hctrl->GetBinContent(5);   ctrl_err    = hctrl->GetBinError(5);
+      ctrlSig  = hctrl->GetBinContent(1);   ctrlSig_err = hctrl->GetBinError(1);
+      if(ctrl)
+	{
+	  Float_t alpha(ch/ctrl), alpha_err( sqrt(pow(ch*ctrl_err,2)+pow(ch_err*ctrl,2))/pow(ctrl,2) );
+	  alphaRow += " & " + toLatexRounded(alpha,alpha_err); 
+
+	  Float_t nnr(alpha*ctrlSig) , nnr_err( sqrt(pow(ch*ctrlSig*ctrl_err,2)+pow(ch_err*ctrlSig*ctrl,2)+pow(ch*ctrlSig_err*ctrl,2) )/pow(ctrl,2) );
+	  nnrRow += " & " + toLatexRounded(nnr,nnr_err);
+	}
+      else
+	{
+	  alphaRow += " & - ";
+	  nnrRow   += " & - ";
+	}
+    }	  
+  cutflow << alphamcRow << " \\\\" << endl
+	  << nnrmcRow << " \\\\" << endl
+	  << nnrexpRow << "\\\\\\hline" << endl
+	  << alphaRow  << " \\\\" << endl
+	  << nnrRow << "\\\\\\hline" << endl;
+
+  // end table
+  cutflow << "\\hline\\hline" << endl
+       << "\\end{tabular}" << endl
+       << "\\end{center}" << endl
+       << "\\end{table}" << endl;
+
+} 
+
+//
+
+//
+int findBinFor(Float_t minMet, Float_t minMt, Float_t maxMt,TString infURL)
+{ 
+  int reqBin(0);
+
+  //find the bin from the histos defining the cuts
+  //take them from the first sub-directory in the plots file
+  TFile *inF = TFile::Open(infURL);
+  if( inF->IsZombie() ){ cout << "Invalid file name : " << infURL << endl; return reqBin; }
+  TIter pnext(inF->GetListOfKeys());
+  TDirectoryFile *pdir= (TDirectoryFile *)pnext();
+  if(pdir==0) {inF->Close(); return reqBin; }
+  TString dirName(pdir->GetName());
+  TH1 *hcutsmet   = (TH1 *)inF->Get(dirName+"/optim_cut1_met");
+  TH1 *hcutsmtmin = (TH1 *)inF->Get(dirName+"/optim_cut1_mtmin");
+  TH1 *hcutsmtmax = (TH1 *)inF->Get(dirName+"/optim_cut1_mtmax");
+  for(int ibin=1; ibin<=hcutsmet->GetXaxis()->GetNbins(); ibin++)
+    {
+      Float_t metcut   = hcutsmet->GetBinContent(ibin);
+      Float_t mtmincut = hcutsmtmin->GetBinContent(ibin);
+      Float_t mtmaxcut = hcutsmtmax->GetBinContent(ibin);
+      if(metcut!= minMet || mtmincut!=minMt || mtmaxcut!=maxMt) continue;
+      reqBin=ibin;
+      break;
+    }
+  inF->Close();
+
+  //done
+  return reqBin;
 }
 
 
 
 //
-std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TString outDir, bool runSystematics, bool shape, Int_t index)
+Shape_t getShapeFromFile(TString ch, TString shapeName, int cutBin, TString infURL, JSONWrapper::Object &Root)
+{
+  Shape_t shape; shape.totalBckg=0;
+
+  TFile *inF = TFile::Open(infURL);
+  if( inF->IsZombie() ){ cout << "Invalid file name : " << infURL << endl; return shape; }
+
+  //iterate over the processes required
+  std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
+  for(unsigned int i=0;i<Process.size();i++)
+    {
+      TString procCtr(""); procCtr+=i;
+      TString proc=(Process[i])["tag"].toString();
+      TDirectory *pdir = (TDirectory *)inF->Get(proc);         
+      if(pdir==0){ printf("Skip Proc=%s because its directory is missing in root file\n", proc.Data()); continue;}
+
+      bool isData(Process[i]["isdata"].toBool());
+      bool isSignal(Process[i]["spimpose"].toBool());
+      int color(1);       if(Process[i].isTag("color" ) ) color  = (int)Process[i]["color" ].toDouble();
+      int lcolor(color);  if(Process[i].isTag("lcolor") ) lcolor = (int)Process[i]["lcolor"].toDouble();
+      int mcolor(color);  if(Process[i].isTag("mcolor") ) mcolor = (int)Process[i]["mcolor"].toDouble();
+      int fcolor(color);  if(Process[i].isTag("fcolor") ) fcolor = (int)Process[i]["fcolor"].toDouble();
+      int lwidth(1);      if(Process[i].isTag("lwidth") ) lwidth = (int)Process[i]["lwidth"].toDouble();
+      int fill(1001);     if(Process[i].isTag("fill"  ) ) fill   = (int)Process[i]["fill"  ].toDouble();
+      int marker(20);     if(Process[i].isTag("marker") ) marker = (int)Process[i]["marker"].toDouble();
+  
+      TH1* syst = (TH1*)pdir->Get("optim_systs");
+      for(int ivar = 1; ivar<=syst->GetNbinsX();ivar++){
+	 TH1D* hshape   = NULL;
+
+	 TString varName = syst->GetXaxis()->GetBinLabel(ivar);
+         TString histoName = ch+"_"+shapeName+varName ;
+         TH2* hshape2D = (TH2*)pdir->Get(histoName );
+         if(!hshape2D){
+            //replace by empty histogram
+            hshape2D = (TH2*)pdir->Get(shapeName+varName);
+            if(hshape2D)hshape2D->Reset();
+         }
+
+         if(hshape2D){
+            histoName.ReplaceAll(ch,ch+"_proj"+procCtr);
+   	    hshape   = hshape2D->ProjectionY(histoName,cutBin,cutBin);
+	    hshape->SetDirectory(0);
+	    hshape->SetTitle(proc);
+	    fixExtremities(hshape,true,true);
+	    hshape->SetFillColor(color); hshape->SetLineColor(lcolor); hshape->SetMarkerColor(mcolor);
+	    hshape->SetFillStyle(fill);  hshape->SetLineWidth(lwidth); hshape->SetMarkerStyle(marker);
+         }else{		
+            printf("Histo does not exist: %s\n", histoName.Data());
+            continue;
+         }
+	
+	 //save in structure
+	 if(isData){
+	    if(varName=="")  shape.data=hshape;
+	    else continue;
+	 }else if(isSignal){
+	    if(varName=="")  shape.signal.push_back(hshape);
+	    else             shape.signalVars[proc].push_back( std::pair<TString,TH1*>(varName,hshape) );
+	 }else{
+	    if(varName=="")  shape.bckg.push_back(hshape);
+	    else             shape.bckgVars[proc].push_back( std::pair<TString,TH1*>(varName,hshape) );
+	    //printf("histoName = B %i -- %i  -- %s - %s --> %s\n", i, int(varName==""), proc.Data(), histoName.Data(), hshape->GetTitle());
+	 }
+      }
+    }
+
+  inF->Close();
+
+  //compute the total
+  for(size_t i=0; i<shape.bckg.size(); i++)
+    {
+      if(i==0) { shape.totalBckg = (TH1 *)shape.bckg[i]->Clone(ch+"_"+shapeName+"_total"); shape.totalBckg->SetDirectory(0); }
+      else     { shape.totalBckg->Add(shape.bckg[i]); }
+    }
+
+  //all done
+  return shape;
+}
+
+//
+void showShape(const Shape_t &shape,TString SaveName)
+{
+  TCanvas* c1 = new TCanvas("c1","c1",800,800);
+  c1->SetWindowSize(800,800);
+  c1->cd();
+
+  TPad* t1 = new TPad("t1","t1", 0.0, 0.20, 1.0, 1.0);  t1->Draw();  t1->cd();
+  TLegend* legA  = new TLegend(0.845,0.2,0.99,0.99, "NDC");
+
+  bool canvasIsFilled(false);
+  THStack *stack=0;
+  TH1 *mc=0;
+  if(shape.bckg.size())
+    {
+      mc=(TH1 *)shape.totalBckg->Clone("mc");
+      stack = new THStack("stack","stack"); 
+      for(size_t i=0; i<shape.bckg.size(); i++) 
+	{
+	  if(shape.bckg[i]->Integral()<=0) continue;
+	  stack->Add(shape.bckg[i],"HIST");
+	  legA->AddEntry(shape.bckg[i],shape.bckg[i]->GetTitle(),"F");
+	}
+      stack->Draw();
+      stack->GetXaxis()->SetTitle(mc->GetXaxis()->GetTitle());
+      stack->GetYaxis()->SetTitle(mc->GetYaxis()->GetTitle());
+      stack->SetMinimum(mc->GetMinimum());
+      stack->SetMaximum(1.1*mc->GetMaximum());
+      canvasIsFilled=true;
+    }
+  if(shape.data)
+    {
+      shape.data->Draw(canvasIsFilled ? "E1same" : "E1");
+      legA->AddEntry(shape.data,shape.data->GetTitle(),"P");
+      canvasIsFilled=true;
+    }
+  for(size_t ip=0; ip<shape.signal.size(); ip++)
+    {
+      shape.signal[ip]->Draw(canvasIsFilled ? "histsame" : "hist");
+      legA->AddEntry(shape.signal[ip],shape.signal[ip]->GetTitle(),"L");
+      canvasIsFilled=true;
+    }
+  TPaveText* T = new TPaveText(0.1,0.995,0.84,0.95, "NDC");
+  T->SetFillColor(0);  T->SetFillStyle(0);  T->SetLineColor(0); T->SetBorderSize(0);  T->SetTextAlign(22);
+  T->AddText("CMS preliminary");  T->Draw();
+  
+  legA->SetFillColor(0); legA->SetFillStyle(0); legA->SetLineColor(0);  legA->SetBorderSize(); legA->SetHeader("");
+  legA->Draw("same");    legA->SetTextFont(42);
+
+
+  TH1 *ratio=0; 
+  if(shape.data && mc)
+    {
+      c1->cd();
+      TPad* t2 = new TPad("t2","t2", 0.0, 0.0, 1.0, 0.2);     t2->Draw();
+      t2->cd();
+      t2->SetGridy(true);
+      t2->SetTopMargin(0);   t2->SetBottomMargin(0.5);
+      float yscale = (1.0-0.2)/(0.18-0);
+      TH1 *ratio = (TH1*)shape.data->Clone("RatioHistogram");
+      ratio->SetDirectory(0);
+      ratio->Divide(mc);
+      ratio->GetYaxis()->SetTitle("Obs/Ref");
+      ratio->GetXaxis()->SetTitle("");
+      ratio->SetMinimum(0);
+      ratio->SetMaximum(2.2);
+      ratio->GetXaxis()->SetTitleOffset(1.3);
+      ratio->GetXaxis()->SetLabelSize(0.033*yscale);
+      ratio->GetXaxis()->SetTitleSize(0.036*yscale);
+      ratio->GetXaxis()->SetTickLength(0.03*yscale);
+      ratio->GetYaxis()->SetTitleOffset(0.3);
+      ratio->GetYaxis()->SetNdivisions(5);
+      ratio->GetYaxis()->SetLabelSize(0.033*yscale);
+      ratio->GetYaxis()->SetTitleSize(0.036*yscale);
+      ratio->Draw("E1");
+    }
+
+  c1->cd();
+  c1->Modified();
+  c1->Update();
+  c1->SaveAs(SaveName+".png");
+  c1->SaveAs(SaveName+".C");
+  delete c1;
+  if(mc)    delete mc;
+  if(stack) delete stack;
+  if(ratio) delete ratio;
+}
+
+
+//
+std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TString Json, TString outDir, bool runSystematics, bool shape, Int_t index)
 {
   std::vector<TString> dcUrls;
   
 
   //get the datacard inputs 
-  DataCardInputs dci = convertHistosForLimits(mass,histo,url,outDir, runSystematics, shape, index);
-
-
+  DataCardInputs dci = convertHistosForLimits(mass,histo,url,Json, outDir, runSystematics, shape, index);
 
 
   //build the datacard separately for each channel
@@ -289,291 +677,222 @@ if(runSystematics){
   return dcUrls;
 }
 
+
 //
-DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TString outDir, bool runSystematics, bool shape, Int_t index)
+DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TString Json, TString outDir, bool runSystematics, bool shape, Int_t index)
 {
   DataCardInputs dci;
+ 
+  //init the json wrapper
+  JSONWrapper::Object Root(Json.Data(), true);
 
+  //init globalVariables
   TString massStr(""); massStr += mass;
+  std::set<TString> allCh,allProcs;
+  
+  //get the shapes for each channel
+  map<TString, Shape_t> allShapes;
+  TString ch[]={"mumu","ee","emu"};
+  const size_t nch=sizeof(ch)/sizeof(TString);
+  TString sh[]={"nonresbckg_ctrl", histo};
+  const size_t nsh=sizeof(sh)/sizeof(TString);
+  for(size_t i=0; i<nch; i++){
+      for(size_t j=0; j<nsh; j++){
+	  allShapes[ch[i]+sh[j]]=getShapeFromFile(ch[i],sh[j],index,url,Root);
+      }
+  }
+
+  //define vector for search
+  std::vector<TString> selCh; selCh.push_back("ee"); selCh.push_back("mumu");
+
+  //print event yields from the mt shapes
+  //getCutFlowFromShape(selCh,allShapes,histo);
+
+  //non-resonant background estimation
+  //estimateNonResonantBackground(selCh,"emu",allShapes,"nonresbckg_ctrl");
+
 
   //prepare the output
   dci.shapesFile="Shapes_"+massStr+".root";
   TFile *fout=TFile::Open(outDir + "/" + dci.shapesFile,"recreate");
-  fout->mkdir("ee");
-  fout->mkdir("mumu");
 
-  //get histos from input file
-  std::set<TString> allCh,allProcs,allSysts;
-  TFile *fin=TFile::Open(url);
-  TIter pnext(fin->GetListOfKeys());
-  TObject *p=0;
-  while((p=pnext())){
+  //loop on channel/proc/systematics
+  for(size_t ich=0; ich<selCh.size(); ich++){
+     fout->mkdir(ch[ich]);
+     fout->cd(ch[ich]);
+     allCh.insert(ch[ich]);
+     Shape_t shapeSt = allShapes.find(selCh[ich]+histo)->second;
 
-    //format process name
-    TString procTitle(p->GetName());
-    TString proc(procTitle);
-    printf("Proc=%s & mass = %i\n", proc.Data(), mass);
+     //backgrounds
+     size_t nbckg=allShapes.find(ch[ich]+histo)->second.bckg.size();
+     for(size_t ibckg=0; ibckg<nbckg; ibckg++){
+	TH1* h=shapeSt.bckg[ibckg];
+	std::vector<std::pair<TString, TH1*> > vars = shapeSt.bckgVars[h->GetTitle()];
 
-    if(proc.Contains("H(")){
-            if(             mass<300 && !proc.Contains("H(200)")) continue;
-       else if(mass>=300 && mass<400 && !proc.Contains("H(300)")) continue;
-       else if(mass>=400 && mass<500 && !proc.Contains("H(400)")) continue;
-       else if(mass>=500 && mass<600 && !proc.Contains("H(500)")) continue;
-       else if(mass>=600 && mass<1000&& !proc.Contains("H(600)")) continue;
-    }
-
-
-//    if(proc.Contains("H(") && !proc.Contains(massStr)) continue;
-    if(proc.Contains("H")){ proc="asignal"; printf("Signal\n");}
-    proc.ReplaceAll("#bar{t}","tbar");
-    proc.ReplaceAll("Z-#gamma^{*}+jets#rightarrow ll","dy");
-    proc.ReplaceAll("(","");    proc.ReplaceAll(")","");    proc.ReplaceAll("+","");    proc.ReplaceAll(" ","");
-    proc.ToLower();
-    //if(proc!="data" && proc!="zz" && proc!="ww" && proc!="signal") continue;
-    //    if(proc!="data" && proc!="zz" && proc!="wz" && proc!="signal") continue;
-    //    if(proc=="data" && proc!="ww" && proc!="wz" && proc!="zz" && proc!="signal") continue;
-    //if(proc=="dy" || proc=="ttbar" || proc=="singletop") continue;
-//    if(proc=="dy") continue;
-    if(proc!="data") allProcs.insert(proc);
-
-    //get histos for process
-    TDirectory *pdir = (TDirectory *)fin->Get(p->GetName());
-    TIter hnext( pdir->GetListOfKeys() );
-    TObject *h=0;
-    std::map<TString, TH1 *>hcentral;
-    std::map<TString, TObjArray> grvarup, grvardown;
-
-    int count = histo.CountChar('_');
-    while((h=hnext()))
-      {
-	//prune for histo of interest
-	TString hname(h->GetName());
-	if(!hname.Contains(histo) || !hname.Contains("_")) continue;
-
-	//prune for channels and mass of interest
-	TObjArray *tkns=hname.Tokenize("_");	
-
-	TString ch(tkns->At(0)->GetName());      if(ch!="ee" && ch!="mumu") continue;
-
-//	TString massel(tkns->At(1)->GetName());	 if(index<0 && !massel.Contains(massStr)) continue;
-
-	TString syst="";
-	if(tkns->GetEntriesFast()>2+count) syst="_"+TString(tkns->At(2+count)->GetName());
-	syst.ReplaceAll("down","Down");
-	syst.ReplaceAll("up","Up");
-	if(syst.Contains("btag")) continue;
-
-	//save histo as $CHANNEL/$PROCESS_$SYSTEMATIC
-        TH2* tmp = (TH2*) pdir->Get(hname);
-        TH1* hshape = (TH1*) tmp->ProjectionY("_py", index,index);     
-
-        if(!shape){
-           hshape = hshape->Rebin(hshape->GetXaxis()->GetNbins(), TString(hshape->GetName())+"_Rebin"); 
-
-           //make sure to also count the underflow and overflow
-           double bin  = hshape->GetBinContent(0) + hshape->GetBinContent(1) + hshape->GetBinContent(2);
-           double bine = sqrt(hshape->GetBinError(0)*hshape->GetBinError(0) + hshape->GetBinError(1)*hshape->GetBinError(1) + hshape->GetBinError(2)*hshape->GetBinError(2));
-           hshape->SetBinContent(0,0);
-           hshape->SetBinError  (0,0);
-           hshape->SetBinContent(1,bin);
-           hshape->SetBinError  (1,bine);
-           hshape->SetBinContent(2,0);
-           hshape->SetBinError  (2,0);
+        std::vector<TString> systs;        
+	std::vector<TH1*>    hshapes;
+	systs.push_back("");
+        hshapes.push_back(shapeSt.bckg[ibckg]);
+	for(size_t v=0;v<vars.size();v++){
+           systs.push_back(vars[v].first);
+           hshapes.push_back(vars[v].second);
         }
 
-//	if(hshape->Integral()<=0) continue;
-	hshape->SetDirectory(0);
-	fout->cd(ch);
+        TString proc(h->GetTitle());
+        convertHistosForLimits_core(dci, proc, ch[ich], systs, hshapes, runSystematics, shape, index);
+        allProcs.insert(proc);
+     }
 
-        if(syst=="")
-	  {
-	    //central shape (for data call it data_obs)
-	    hshape->SetName(proc); 
-	    if(proc=="data")  hshape->SetName("data_obs");
-	    hshape->Write();
-	  }
-	else if(runSystematics && proc!="data" && (syst.Contains("Up") || syst.Contains("Down")))
-	  {
-	    //write variation to file
-	    hshape->SetName(proc+syst);
-	    hshape->Write();
-	  }
-	else if(runSystematics)
-	  {
-	    //for one sided systematics the down variation mirrors the difference bin by bin
-	    hshape->SetName(proc+syst);
-	    hshape->Write(proc+syst+"Up");
-	    TH1 *hmirrorshape=(TH1 *)hshape->Clone(proc+syst+"Down");
-	    hmirrorshape->Add(hcentral[ch],-1);
-	    for(int ibin=1; ibin<=hmirrorshape->GetXaxis()->GetNbins(); ibin++)
-	      hmirrorshape->SetBinContent(ibin,-hmirrorshape->GetBinContent(ibin));
-	    hmirrorshape->Add(hcentral[ch],1);
-	    hmirrorshape->Write(proc+syst+"Down");
-	  }
 
-        TString systName(syst); 
+     //signals
+     size_t nsignal=allShapes.find(ch[ich]+histo)->second.signal.size();
+     for(size_t isignal=0; isignal<nsignal; isignal++){
+	TH1* h=shapeSt.signal[isignal];
+	std::vector<std::pair<TString, TH1*> > vars = shapeSt.signalVars[h->GetTitle()];
 
-	if(runSystematics){
-	//compute variations to illustrate
-	systName.ReplaceAll("Up",""); systName.ReplaceAll("Down","");  systName.ReplaceAll("_","");
-	bool doUp(syst.Contains("Up")),doDown(syst.Contains("Down"));
-	if(syst=="") { doUp=true; doDown=true; systName="stat"; hcentral[ch]=hshape;}
-	else if(!syst.Contains("Up") && !syst.Contains("Down")) { doUp=true; doDown=true; }
-	TGraph *grup=0, *grdown=0;
-	if(doUp)   {
-	  //	  int ic=grvarup[ch].GetEntriesFast()?kRed+grvarup[ch].GetEntriesFast():1;
-	  int ic=grvarup[ch].GetEntriesFast()+1;
-	  grup = new TGraph;        grup->SetTitle(systName);  grup->SetName(ch+systName+"up"); 
-	  grup->SetFillStyle(0);    grup->SetLineWidth(2);  grup->SetLineColor(ic);   grvarup[ch].Add(grup); 
-	}
-	if(doDown) {
-	  //  int ic=grvardown[ch].GetEntriesFast()?kBlue+grvardown[ch].GetEntriesFast():1;
-	  int ic=grvardown[ch].GetEntriesFast()+1;
-	  grdown = new TGraph;      grdown->SetTitle(systName); grdown->SetName(ch+systName+"down"); 
-	  grdown->SetFillStyle(0);  grdown->SetLineWidth(2); grdown->SetLineColor(ic); grvardown[ch].Add(grdown);  
-	}	
-	for(int ibin=1; ibin<= hcentral[ch]->GetXaxis()->GetNbins(); ibin++)
-	  {
-	    Double_t x = hcentral[ch]->GetXaxis()->GetBinCenter(ibin);
-	    Double_t y = hcentral[ch]->GetBinContent(ibin);
-	    Double_t diffUp = (hshape->GetBinContent(ibin)-y);
-	    Double_t diffDown = (hshape->GetBinContent(ibin)-y);
-	    if(syst=="") { diffUp = hcentral[ch]->GetBinError(ibin); diffDown=-diffUp; }
-	    else if(!syst.Contains("Up") && !syst.Contains("Down")) 
-	      {
-		diffUp = 0.5*fabs(hshape->GetBinContent(ibin)-y);
-		diffDown =-diffDown; 
-	      }
-	    if(y==0) continue;
-	    diffUp = diffUp*100./y;
-	    diffDown = diffDown*100./y;
-	    if(grup) grup->SetPoint(grup->GetN(), x, diffUp );
-	    if(grdown) grdown->SetPoint(grdown->GetN(), x, diffDown );
-	  }
-      }
+        std::vector<TString> systs;        
+	std::vector<TH1*>    hshapes;
+	systs.push_back("");
+        hshapes.push_back(shapeSt.signal[isignal]);
+	for(size_t v=0;v<vars.size();v++){
+           systs.push_back(vars[v].first);
+           hshapes.push_back(vars[v].second);
+        }
 
-	//add to datacard
-        allCh.insert(ch);
-	if(runSystematics && syst!="") allSysts.insert(systName);
-//	if(runSystematics && proc!="data" && syst!="" && hshape->Integral()>0)
-      if(runSystematics && proc!="data" && syst!="")
-	  {
-	    TH1 *temp=(TH1 *) hshape->Clone();
-	    temp->Add(hcentral[ch],-1);
-	    if(temp->Integral()!=0) dci.systs[systName][RateKey_t(proc,ch)]=1.0;
-	    delete temp;
+        TString proc(h->GetTitle());
+	if(!proc.Contains(massStr))continue;
+	proc = "asignal";
+        convertHistosForLimits_core(dci, proc, ch[ich], systs, hshapes, runSystematics, shape, index);
+        allProcs.insert(proc);
+     }
 
-	  }
-	else if(proc!="data" && syst=="") dci.rates[RateKey_t(proc,ch)]=hshape->Integral();
-	else if(proc=="data" && syst=="") dci.obs[RateKey_t("obs",ch)]=hshape->Integral();
 
-      }
+     //data
+     TH1* h=shapeSt.data;
+//     TH1* h=shapeSt.totalBckg;
+     std::vector<TString> systs;
+     std::vector<TH1*>    hshapes;
+     systs.push_back("");
+     hshapes.push_back(h);
+     TString proc(h->GetTitle());
+     convertHistosForLimits_core(dci, proc, ch[ich], systs, hshapes, runSystematics, shape, index);
 
-    //show results for this process
-    TCanvas *c = new TCanvas("c"+proc,"c"+proc);
-    c->SetWindowSize(600,600);
-    c->Divide(2,3);
-    int icol(0);
-    for(std::map<TString,TH1*>::iterator it = hcentral.begin(); it!= hcentral.end(); it++,icol++)
-      {
-	TString ch=it->first;
-	TH1 *ihcentral=it->second;
-
-	TPad *ipad=(TPad *)c->cd(icol+1);
-	ipad->SetPad(0+icol*0.5,0.6,0.5+icol*0.5,1.0);
-	ipad->SetBottomMargin(0);
-	ihcentral->Draw("hist");
-	ihcentral->SetFillColor(kGray);
-	ihcentral->SetFillStyle(1001);
-	ihcentral->GetYaxis()->SetTitleSize(0.1);
-	ihcentral->GetYaxis()->SetTitleOffset(0.33);
-	if(icol==0)
-	  {
-	    TPaveText *pave=new TPaveText(0.3,0.91,0.7,0.99,"brNDC");
-	    pave->SetBorderSize(0);
-	    pave->SetFillStyle(0);
-	    pave->AddText(procTitle);
-	    pave->Draw();
-	  }
-	TPaveText *pave=new TPaveText(0.7,0.75,0.9,0.9,"brNDC");
-	pave->SetBorderSize(0);
-	pave->SetFillStyle(0);
-	TString chtitle(ch + " events"); chtitle.ReplaceAll("mu","#mu");
-	pave->AddText(chtitle)->SetTextFont(42);
-	pave->Draw();
-
-	ipad=(TPad *)c->cd(icol+3);    
-	ipad->SetPad(0+icol*0.5,0.3,0.5+icol*0.5,0.6);
-	ipad->SetTopMargin(0);
-	ipad->SetBottomMargin(0);
-	TLegend *leg=0;
-	if(icol==0)   { leg=new TLegend(0.3,0.2,0.7,0.4); leg->SetBorderSize(0); leg->SetFillStyle(0); leg->SetNColumns(3); leg->SetTextFont(42); }
-	for(Int_t i=0; i<grvarup[ch].GetEntriesFast(); i++) {
-	  TGraph *igr=(TGraph *)grvarup[ch].At(i);
-	  igr->Draw(i==0?"al":"l");
-	  if(leg) leg->AddEntry(igr,igr->GetTitle(),"l");
-	  if(i) continue;
-	  igr->GetXaxis()->SetTitle(ihcentral->GetXaxis()->GetTitle());
-	  igr->GetYaxis()->SetRangeUser(-100,100);
-	  igr->GetYaxis()->SetTitle("#Delta + %");
-	  igr->GetYaxis()->SetTitleSize(0.1);
-	  igr->GetYaxis()->SetTitleOffset(0.33);
-	  ihcentral->GetXaxis()->SetRangeUser(igr->GetXaxis()->GetXmin(),igr->GetXaxis()->GetXmax());
-	}
-	if(leg) leg->Draw();
-
-	ipad=(TPad *)c->cd(icol+5);
-	ipad->SetPad(0+icol*0.5,0.,0.5+icol*0.5,0.3);
-	ipad->SetTopMargin(0);
-	ipad->SetBottomMargin(0.15);
-	for(Int_t i=0; i<grvardown[ch].GetEntriesFast(); i++){ 
-	  TGraph *igr=(TGraph *)grvardown[ch].At(i);
-	  igr->Draw(i==0?"al":"l");
-	  if(i) continue;
-	  igr->GetXaxis()->SetTitle(ihcentral->GetXaxis()->GetTitle());
-	  igr->GetYaxis()->SetRangeUser(-100,100);
-	  igr->GetYaxis()->SetTitle("#Delta - %");
-	  igr->GetXaxis()->SetTitleSize(0.1);
-	  igr->GetXaxis()->SetTitleOffset(0.6);
-	  igr->GetYaxis()->SetTitleSize(0.1);
-	  igr->GetYaxis()->SetTitleOffset(0.45);
-	}
-      }
-    fout->cd();
-    c->Write();
+     //return to parent dir
+     fout->cd("..");     
   }
-
-  //all done
-  fin->Close();
-  fout->Close();
-
   dci.ch.resize(allCh.size());        std::copy(allCh.begin(), allCh.end(),dci.ch.begin());
   dci.procs.resize(allProcs.size());  std::copy(allProcs.begin(), allProcs.end(),dci.procs.begin());
 
-
-
+/*
 // DEBUGGING
-//  printf("-----------------------\n");
-//  printf("shapesFile=%s\n",dci.shapesFile.Data());
-//  for(unsigned int i=0;i<dci.ch.size();i++){printf("%s - ",dci.ch[i].Data());}printf("\n");
-//  for(unsigned int i=0;i<dci.procs.size();i++){printf("%s - ",dci.procs[i].Data());}printf("\n");
-//  for(std::map<TString, std::map<RateKey_t,Double_t> >::iterator iter = dci.systs.begin();   iter != dci.systs.end(); ++iter ){
-//       printf("%s : ", iter->first.Data());
-//       for(std::map<RateKey_t, Double_t>::iterator it = iter->second.begin();   it != iter->second.end(); ++it ){
-//                 printf("%s_%s (%f) ", it->first.first.Data(), it->first.second.Data(), it->second);
-//       }
-//       printf("\n");
-//  }
-//  printf("-----------------------\n");
+  printf("-----------------------\n");
+  printf("shapesFile=%s\n",dci.shapesFile.Data());
+  for(unsigned int i=0;i<dci.ch.size();i++){printf("%s - ",dci.ch[i].Data());}printf("\n");
+  for(unsigned int i=0;i<dci.procs.size();i++){printf("%s - ",dci.procs[i].Data());}printf("\n");
+  for(std::map<TString, std::map<RateKey_t,Double_t> >::iterator iter = dci.systs.begin();   iter != dci.systs.end(); ++iter ){
+       printf("%s : ", iter->first.Data());
+       for(std::map<RateKey_t, Double_t>::iterator it = iter->second.begin();   it != iter->second.end(); ++it ){
+                 printf("%s_%s (%f) ", it->first.first.Data(), it->first.second.Data(), it->second);
+       }
+       printf("\n");
+  }
+  printf("-----------------------\n");
+*/
+
+/*
+  //################# START BACKGROUND SUBTRACTION CODE
+
+    TH1* proj_em = ((TH2*)fin->Get(TString("data/emu_" ) + "nonresbckg_ctrl" ))->ProjectionY("_py", index,index);
+    TH1* proj_mm = ((TH2*)fin->Get(TString("data/mumu_") + "nonresbckg_ctrl" ))->ProjectionY("_py", index,index);
+    TH1* proj_ee = ((TH2*)fin->Get(TString("data/ee_"  ) + "nonresbckg_ctrl" ))->ProjectionY("_py", index,index);
+
+    printf("Bin %f %f %f %f %f %f\n", proj_em->GetBinContent(1), proj_em->GetBinContent(2), proj_em->GetBinContent(3), proj_em->GetBinContent(4), proj_em->GetBinContent(5), proj_em->GetBinContent(6) );
+    printf("Bin %f %f %f %f %f %f\n", proj_ee->GetBinContent(1), proj_ee->GetBinContent(2), proj_ee->GetBinContent(3), proj_ee->GetBinContent(4), proj_ee->GetBinContent(5), proj_ee->GetBinContent(6) );
+    printf("Bin %f %f %f %f %f %f\n", proj_mm->GetBinContent(1), proj_mm->GetBinContent(2), proj_mm->GetBinContent(3), proj_mm->GetBinContent(4), proj_mm->GetBinContent(5), proj_mm->GetBinContent(6) );
+    double alpha_e     = proj_ee->GetBinContent(5) / proj_em->GetBinContent(5);
+    double alpha_e_err = ( fabs( proj_ee->GetBinContent(5) * proj_em->GetBinError(5) ) + fabs(proj_ee->GetBinError(5) * proj_em->GetBinContent(5) )  ) / pow(proj_em->GetBinContent(5), 2);
+
+    double alpha_m     = proj_mm->GetBinContent(5) / proj_em->GetBinContent(5);
+    double alpha_m_err = ( fabs( proj_mm->GetBinContent(5) * proj_em->GetBinError(5) ) + fabs(proj_mm->GetBinError(5) * proj_em->GetBinContent(5) )  ) / pow(proj_em->GetBinContent(5), 2);
+
+    printf("alpha e=%f+-%f mu=%f+-%f\n", alpha_e, alpha_e_err, alpha_m, alpha_m_err);
 
 
 
 
 
+  //################# END   BACKGROUND SUBTRACTION CODE
+
+*/
 
 
+  //all done
+  fout->Close();
 
   return dci;
+}
+
+
+
+void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch, std::vector<TString>& systs, std::vector<TH1*>& hshapes,  bool runSystematics, bool shape, Int_t index){
+   proc.ReplaceAll("#bar{t}","tbar");
+   proc.ReplaceAll("Z-#gamma^{*}+jets#rightarrow ll","dy");
+   proc.ReplaceAll("(","");    proc.ReplaceAll(")","");    proc.ReplaceAll("+","");    proc.ReplaceAll(" ","");
+   proc.ToLower();
+
+   for(unsigned int i=0;i<systs.size();i++){
+       TString syst   = systs[i];
+       TH1*    hshape = hshapes[i];
+       hshape->SetDirectory(0);
+
+       //Do Renaming and cleaning
+       syst.ReplaceAll("down","Down");
+       syst.ReplaceAll("up","Up");
+       if(syst.Contains("btag")) continue;
+
+       //If cut&count keep only 1 bin in the histo
+       if(!shape){
+          hshape = hshape->Rebin(hshape->GetXaxis()->GetNbins(), TString(hshape->GetName())+"_Rebin"); 
+          //make sure to also count the underflow and overflow
+          double bin  = hshape->GetBinContent(0) + hshape->GetBinContent(1) + hshape->GetBinContent(2);
+          double bine = sqrt(hshape->GetBinError(0)*hshape->GetBinError(0) + hshape->GetBinError(1)*hshape->GetBinError(1) + hshape->GetBinError(2)*hshape->GetBinError(2));
+          hshape->SetBinContent(0,0);              hshape->SetBinError  (0,0);
+          hshape->SetBinContent(1,bin);            hshape->SetBinError  (1,bine);
+          hshape->SetBinContent(2,0);              hshape->SetBinError  (2,0);
+       }
+
+       if(syst==""){
+         //central shape (for data call it data_obs)
+         hshape->SetName(proc); 
+         if(proc=="data")  hshape->SetName("data_obs");
+         hshape->Write();
+       }else if(runSystematics && proc!="data" && (syst.Contains("Up") || syst.Contains("Down"))){
+         //write variation to file
+         hshape->SetName(proc+syst);
+         hshape->Write();
+       }else if(runSystematics){
+         //for one sided systematics the down variation mirrors the difference bin by bin
+         hshape->SetName(proc+syst);
+         hshape->Write(proc+syst+"Up");
+         TH1 *hmirrorshape=(TH1 *)hshape->Clone(proc+syst+"Down");
+         for(int ibin=1; ibin<=hmirrorshape->GetXaxis()->GetNbins(); ibin++)
+            hmirrorshape->SetBinContent(ibin,-hmirrorshape->GetBinContent(ibin));
+         hmirrorshape->Write(proc+syst+"Down");
+       }
+
+
+       if(runSystematics && syst!=""){
+          TString systName(syst); 
+          systName.ReplaceAll("Up",""); systName.ReplaceAll("Down","");  systName.ReplaceAll("_","");
+
+          TH1 *temp=(TH1*) hshape->Clone();
+          temp->Add(hshapes[0],-1);
+        if(temp->Integral()!=0)dci.systs[systName][RateKey_t(proc,ch)]=1.0;
+          delete temp;
+        }else if(proc!="data" && syst==""){dci.rates[RateKey_t(proc,ch)]=hshape->Integral();
+        }else if(proc=="data" && syst==""){dci.obs[RateKey_t("obs",ch)]=hshape->Integral();
+        }
+   }
 }
 
 
