@@ -655,9 +655,16 @@ int main(int argc, char* argv[])
          default  : tag_cat = "??";    break;
 
       }
-      if(isMC && mctruthmode==1 && ev.mccat!=DY_EE && ev.mccat!=DY_MUMU)  continue;
-      if(isMC && mctruthmode==2 && ev.mccat!=DY_TAUTAU) continue;
-
+      if(isMC && mctruthmode==1)
+        {
+          if(getGenProcess(ev.mccat)!=Z_CH) continue;
+          if(getNgenLeptons(ev.mccat,ELECTRON)<2 && getNgenLeptons(ev.mccat,MUON)<2) continue;
+        }
+      if(isMC && mctruthmode==2)
+        {
+          if(getGenProcess(ev.mccat)!=Z_CH) continue;
+          if(getNgenLeptons(ev.mccat,TAU)<2) continue;
+        }
       bool isGammaEvent = false;
       if(gammaEvHandler){
           isGammaEvent=gammaEvHandler->isGood(phys);
@@ -777,9 +784,11 @@ int main(int argc, char* argv[])
       int njets(0),njetsinc(0);
       int nbtags(0), nbtags_tchel(0),   nbtags_tche2(0),  nbtags_csvl(0);
       LorentzVectorCollection jetsP4;
+      std::vector<double> genJetsPt;
       int nheavyjets(0), nlightsjets(0);
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++){
           jetsP4.push_back( phys.jets[ijet] );
+	  genJetsPt.push_back( phys.jets[ijet].genPt );
           njetsinc++;
           if(fabs(phys.jets[ijet].eta())<2.5){
               njets++;
@@ -1339,7 +1348,7 @@ int main(int argc, char* argv[])
          std::vector<int> eventCategoryVars;
          std::vector<Float_t>  mtVars;
          if(runSystematics){
-              jet::computeVariation(jetsP4,phys.met[0],jetVars, metVars, &stdPtResol,&stdEtaResol,&stdPhiResol,&jecUnc);
+	   METUtils::computeVariation(jetsP4,genJetsPt,phys.met[0],jetVars, metVars,&jecUnc);
               for(size_t ivar=0; ivar<3; ivar++){
                 eventCategoryVars.push_back( eventCategoryInst.Get(phys, &(jetVars[ivar])) );
               

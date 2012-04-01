@@ -7,27 +7,13 @@
 
 #include "Math/LorentzVector.h"
 #include "DataFormats/Math/interface/deltaR.h"
-#include "CondFormats/JetMETObjects/interface/JetResolution.h"
-#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 typedef std::vector<LorentzVector> LorentzVectorCollection;
 
 
-
 LorentzVector min(const LorentzVector& a, const LorentzVector& b);
 double weightVBF(std::string SampleName, double m_gen, double mass);
-
-
-namespace jet
-{
-    enum UncertaintyVariations { JES_UP, JES_DOWN, JER };
-    void computeVariation(LorentzVectorCollection &jets, LorentzVector &met,  std::vector<LorentzVectorCollection>& jetsVar, LorentzVectorCollection& metsVar, JetResolution* ptResol, JetResolution* etaResol, JetResolution* phiResol, JetCorrectionUncertainty* jecUnc);
-}
-
-
-
-
 
 
 // CODE FOR DUPLICATE EVENTS CHECKING

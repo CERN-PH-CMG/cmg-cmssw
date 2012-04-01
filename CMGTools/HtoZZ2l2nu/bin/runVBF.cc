@@ -304,8 +304,16 @@ int main(int argc, char* argv[])
 
       }
 
-      if(isMC && mctruthmode==1 && ev.mccat!=DY_EE && ev.mccat!=DY_MUMU)  continue;
-      if(isMC && mctruthmode==2 && ev.mccat!=DY_TAUTAU) continue;
+      if(isMC && mctruthmode==1)
+        {
+          if(getGenProcess(ev.mccat)!=Z_CH) continue;
+          if(getNgenLeptons(ev.mccat,ELECTRON)<2 && getNgenLeptons(ev.mccat,MUON)<2) continue;
+        }
+      if(isMC && mctruthmode==2)
+        {
+          if(getGenProcess(ev.mccat)!=Z_CH) continue;
+          if(getNgenLeptons(ev.mccat,TAU)<2) continue;
+        }
 
       bool isGammaEvent = false;
       if(gammaEvHandler){

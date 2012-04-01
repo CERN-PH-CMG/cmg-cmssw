@@ -59,17 +59,20 @@ runLocalAnalysisOverSamples.py -e runOnEventSummary -j $CMSSW_BASE/src/CMGTools/
 runLocalAnalysisOverSamples.py -e run2011Analysis -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -o $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/results-syst -d /store/cmst3/user/querten/12_03_13_HZZ2l2v_ntuples -c $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/runAnalysis_cfg.py.templ -p "@runSystematics=True" -s 8nh 
 
 #std leptons
-runLocalAnalysisOverSamples.py -e run2011Analysis -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -o $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/results -d /store/cmst3/user/psilva/12_03_21_HZZ2l2v_ntuples/ -c $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/runAnalysis_cfg.py.templ -p "@runSystematics=True" -s 8nh 
+runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples.json -o test/results -d /store/cmst3/user/psilva/12_03_30_HZZ2l2v_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=True" -s 8nh 
 
-
+runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samplesNoHWW.json -d /store/cmst3/user/psilva/12_03_31_HZZ2l2v_ntuples -o test/results -c test/runAnalysis_cfg.py.templ
 
 #
 # z+jets replacement
 #
 
+#add the files for the ntuples
+haddOverSamples.py -j data/photon-samples.json -d /store/cmst3/user/psilva/12_03_27_HZZ2l2v_ntuples -o /store/cmst3/user/psilva/grid_12_03_27_HZZ2l2v_ntuples -m 1 -t G_
+
 ## generate unweigthed distributions
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples.json -d /store/cmst3/user/psilva/12_03_14_HZZ2l2v_ntuples -o ~/scratch0/gamma/  -c test/runAnalysis_cfg.py.templ -s 8nh
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples.json -d /store/cmst3/user/psilva/12_03_15_HZZ2l2v_ntuples -o ~/scratch0/gamma/  -c test/runAnalysis_cfg.py.templ -s 8nh
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples.json -d /store/cmst3/user/psilva/grid_12_03_27_HZZ2l2v_ntuples -o ~/scratch0/gamma/  -c test/runAnalysis_cfg.py.templ -s 8nh
+
 
 ## generate plotter.root
 runPlotter --iLumi 4616 --inDir ~/scratch0/gamma/ --outDir /tmp/psilva/ --json data/photon-samples.json

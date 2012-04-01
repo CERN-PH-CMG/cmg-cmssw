@@ -21,13 +21,13 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
   }
   
   for(Int_t i=0;i<ev.jn;i++){
-    phys.jets.push_back(PhysicsObject_Jet(LorentzVector(ev.jn_px[i],ev.jn_py[i],ev.jn_pz[i],ev.jn_en[i]), ev.jn_genid[i], ev.jn_btag1[i], ev.jn_btag2[i], ev.jn_neutHadFrac[i], ev.jn_neutEmFrac[i], ev.jn_chHadFrac[i], ev.jn_pid[i]));
+    phys.jets.push_back(PhysicsObject_Jet(LorentzVector(ev.jn_px[i],ev.jn_py[i],ev.jn_pz[i],ev.jn_en[i]), ev.jn_genid[i], ev.jn_btag1[i], ev.jn_btag2[i], ev.jn_neutHadFrac[i], ev.jn_neutEmFrac[i], ev.jn_chHadFrac[i], ev.jn_tightId[i]));
     phys.jets[i].setGenPt(ev.jn_genpt[i]);
     phys.jets[i].setPUmva(ev.jn_pumva[i]);
   }
 
   for(Int_t i=0;i<ev.ajn;i++){
-    phys.ajets.push_back(PhysicsObject_Jet(LorentzVector(ev.ajn_px[i],ev.ajn_py[i],ev.ajn_pz[i],ev.ajn_en[i]), ev.ajn_genid[i], ev.ajn_btag1[i], ev.ajn_btag2[i], ev.ajn_neutHadFrac[i], ev.ajn_neutEmFrac[i], ev.ajn_chHadFrac[i], ev.ajn_pid[i]));
+    phys.ajets.push_back(PhysicsObject_Jet(LorentzVector(ev.ajn_px[i],ev.ajn_py[i],ev.ajn_pz[i],ev.ajn_en[i]), ev.ajn_genid[i], ev.ajn_btag1[i], ev.ajn_btag2[i], ev.ajn_neutHadFrac[i], ev.ajn_neutEmFrac[i], ev.ajn_chHadFrac[i], ev.ajn_tightId[i]));
     phys.ajets[i].setGenPt(ev.ajn_genpt[i]);
     phys.ajets[i].setPUmva(ev.ajn_pumva[i]);
   }
@@ -44,6 +44,7 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
 			       ev.g_iso1[ipart], ev.g_iso2[ipart], ev.g_iso3[ipart], 
 			       ev.g_sihih[ipart], ev.g_r9[ipart], ev.g_hoe[ipart]);
     igamma.setConversionInfo(ev.g_conv[ipart],LorentzVector(ev.g_conv_px[ipart],ev.g_conv_py[ipart],ev.g_conv_pz[ipart],ev.g_conv_en[ipart]));
+    igamma.setTrackVeto(ev.g_trkVeto[ipart]);
     phys.gammas.push_back( igamma );
   }
 
@@ -77,3 +78,58 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
 }
 
 
+//
+int getNgenLeptons(int mcChannelCode, int pdgId)
+{
+  int shift(0);
+  if(pdgId==ELECTRON) shift=12;
+  if(pdgId==MUON) shift=16;
+  if(pdgId==TAU) shift=20;
+  if(pdgId==12 || pdgId==14 || pdgId==16) shift=4;
+  return ((mcChannelCode>>shift)&0xf);
+}
+
+//
+int getGenProcess(int mcChannelCode)
+{
+  return ((mcChannelCode>>8)&0xf);
+}
+
+//
+bool isDYToLL(int mcChannelCode)
+{
+  if(getGenProcess(mcChannelCode)!=Z_CH) return false;
+  if(getNgenLeptons(mcChannelCode,ELECTRON)<2 && getNgenLeptons(mcChannelCode,MUON)<2) return false;
+  return true;
+}
+
+//
+bool isDYToTauTau(int mcChannelCode)
+{
+  if(getGenProcess(mcChannelCode)!=Z_CH) return false;
+  if(getNgenLeptons(mcChannelCode,TAU)<2) return false;
+  return true;
+}
+
+//
+bool isWW(int mcChannelCode)
+{
+  if(getGenProcess(mcChannelCode)!=WW_CH) return false;
+  return true;
+}
+
+//
+bool isW(int mcChannelCode)
+{
+  if(getGenProcess(mcChannelCode)!=W_CH) return false;
+  return true;
+}
+
+//
+bool isZZ2l2nu(int mcChannelCode)
+{
+  if(getGenProcess(mcChannelCode)!= ZZ_CH) return false;
+  if(getNgenLeptons(mcChannelCode,ELECTRON)<2 && getNgenLeptons(mcChannelCode,MUON)<2) return false;
+  if(getNgenLeptons(mcChannelCode,12)<2) return false;
+  return true;
+}

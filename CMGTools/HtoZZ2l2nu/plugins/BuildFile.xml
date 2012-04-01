@@ -24,6 +24,7 @@
   <use name="DataFormats/METReco"/>
   <use name="RecoMET/METAlgorithms"/>
   <use name="RecoJets/JetProducers"/>
+  <use name="RecoEgamma/EgammaTools"/>
   <use name="root"/>
   <use name="roottmva"/>
   <use name="rootrflx"/>

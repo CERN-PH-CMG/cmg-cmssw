@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2012/03/26 13:43:46 $
- *  $Revision: 1.7 $
+ *  $Date: 2012/04/01 09:21:10 $
+ *  $Revision: 1.8 $
  *  \author G. Cerminara & D. Trocino & P. Silva & L. Quertenmont
  */
 
@@ -297,25 +297,84 @@ LorentzVector redMET(RedMetType Type, const LorentzVector& theLepton1, double si
 
 
   //
-  LorentzVector smearedJet(const LorentzVector &origJet)
+  LorentzVector smearedJet(const LorentzVector &origJet, double genJetPt, int mode)
   {
+    if(genJetPt<=0) return origJet;
+
     //smearing factors are described in https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
     double eta=fabs(origJet.eta());
-    double ptSF(1.0), ptSF_err(0.05);
-    if(eta<0.5)                  { ptSF=1.066; ptSF_err=sqrt(pow(0.007,2)+pow(0.5*(0.07+0.072),2)); }
+    double ptSF(1.0), ptSF_err(0.06);
+    if(eta<0.5) { ptSF=1.066; ptSF_err=sqrt(pow(0.007,2)+pow(0.5*(0.07+0.072),2)); }
     else if(eta>=0.5 && eta<1.7) { ptSF=1.191; ptSF_err=sqrt(pow(0.019,2)+pow(0.5*(0.06+0.062),2)); }
     else if(eta>=1.7 && eta<2.3) { ptSF=1.096; ptSF_err=sqrt(pow(0.030,2)+pow(0.5*(0.08+0.085),2)); }
     else if(eta>=2.3 && eta<5.0) { ptSF=1.166; ptSF_err=sqrt(pow(0.050,2)+pow(0.5*(0.19+0.199),2)); }
-    
-    //re-scale the pT components and recompute the jet energy
-    double rndPtSF=gRandom->Gaus(ptSF,ptSF_err/2);
-    double px(origJet.px()*rndPtSF), py(origJet.py()*rndPtSF), pz(origJet.pz()), mass(origJet.mass());
-    double en = sqrt(mass*mass+px*px+py*py+pz*pz);
 
+  //   if(eta<0.5)                  { ptSF=1.052;  ptSF_err=sqrt(pow(0.012,2)+pow(0.5*(0.062+0.061),2)); }
+    //     else if(eta>=0.5 && eta<1.1) { ptSF=1.057;  ptSF_err=sqrt(pow(0.012,2)+pow(0.5*(0.056+0.055),2)); }
+    //     else if(eta>=1.1 && eta<1.7) { ptSF=1.1096; ptSF_err=sqrt(pow(0.017,2)+pow(0.5*(0.063+0.062),2)); }
+    //     else if(eta>=1.7 && eta<2.3) { ptSF=1.134;  ptSF_err=sqrt(pow(0.035,2)+pow(0.5*(0.087+0.085),2)); }
+    //     else if(eta>=2.3 && eta<5.0) { ptSF=1.288;  ptSF_err=sqrt(pow(0.127,2)+pow(0.5*(0.155+0.153),2)); }
+    if(mode==1) ptSF += ptSF_err;
+    if(mode==2) ptSF -= ptSF_err;
+    //ptSF=max(0.,(genJetPt+ptSF*(origJet.pt()-genJetPt)))/origJet.pt();                      //deterministic version
+    ptSF=max(0.,(genJetPt+gRandom->Gaus(ptSF,ptSF_err)*(origJet.pt()-genJetPt)))/origJet.pt();  //deterministic version
+    if(ptSF<=0) return origJet;
+    
+    double px(origJet.px()*ptSF), py(origJet.py()*ptSF), pz(origJet.pz()), mass(origJet.mass());
+    double en = sqrt(mass*mass+px*px+py*py+pz*pz);
+    
     //return new kinematics
     return LorentzVector(px,py,pz,en);
   }
 
+  //
+  void computeVariation(LorentzVectorCollection& jets, std::vector<double> &genjetsPt, LorentzVector& met,   
+			std::vector<LorentzVectorCollection>& jetsVar, LorentzVectorCollection& metsVar,
+			JetCorrectionUncertainty *jecUnc)
+  {
+    jetsVar.clear();
+    metsVar.clear();
+
+    int vars[]={JER, JER_UP, JER_DOWN, JES_UP, JES_DOWN};
+    for(size_t ivar=0; ivar<sizeof(vars)/sizeof(int); ivar++)
+      {
+	LorentzVectorCollection newJets;
+	LorentzVector newMet(met),jetDiff(0,0,0,0);
+	int mode(0); if(ivar==JER_UP) mode=1; if(ivar==JER_DOWN) mode=2;
+	for(size_t ijet=0; ijet<jets.size(); ijet++)
+	  {
+	    LorentzVector iSmearJet=METUtils::smearedJet(jets[ijet],genjetsPt[ijet],mode);
+	    if(ivar==JER || ivar==JER_UP || ivar==JER_DOWN)
+	      {
+		newJets.push_back(iSmearJet);
+		jetDiff += (iSmearJet-jets[ijet]);
+	      }
+	    else if(ivar==JES_UP || ivar==JES_DOWN)
+	      {
+		double varSign=(ivar==JES_UP ? 1.0 : -1.0 );
+		double jetScale(1.0);
+		try{
+		  jecUnc->setJetEta(jets[ijet].eta());
+		  jecUnc->setJetPt(jets[ijet].pt());
+		  jetScale = 1.0 + varSign*fabs(jecUnc->getUncertainty(true));  
+		}
+		catch(std::exception &e){
+		  //cout << e.what() << ijet << " " << iSmearJet.pt() << " " << jets[ijet].pt() << " : " << genjetsPt[ijet] << endl;
+		}
+		LorentzVector newJet = jetScale*iSmearJet;
+		newJets.push_back(newJet);
+		LorentzVector ijetDiff=(newJet-iSmearJet);
+		jetDiff += ijetDiff;
+	      } 
+	  }
+	
+	//finish computation of the variation
+	jetsVar.push_back(newJets);
+	newMet -= jetDiff; metsVar.push_back(newMet);
+      }
+  }
+
+  //
   LorentzVector SmearJetFormGen(LorentzVectorCollection& jetsP4, LorentzVector& met, std::vector<double> GenJet, std::vector<LorentzVector>& jetsJer)
   {
      jetsJer.clear();
@@ -355,7 +414,7 @@ LorentzVector redMET(RedMetType Type, const LorentzVector& theLepton1, double si
 
   // pfjet resolutions. taken from AN-2010-371
   double ErrEt( double Et, double Eta) {
-  
+    
    double InvPerr2;
   
    double N, S, C, m;
@@ -395,5 +454,5 @@ LorentzVector redMET(RedMetType Type, const LorentzVector& theLepton1, double si
    InvPerr2 =  (N * fabs(N) ) + (S * S) * pow(Et, m+1.) + (C * C) * Et * Et ;
    return sqrt(InvPerr2)/Et;
   }
-
+  
 }

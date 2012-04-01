@@ -137,7 +137,8 @@ int ClusteredPFMetProducer::computeVertexAssociationFor(const reco::TrackBaseRef
 
   //check the vertices which use the track in the fit
   int nVerticesAss(0);
-  float bestweight(0),bestDz(9999.);
+  //float bestweight(0);
+  float bestDz(9999.);
   const size_t nVtx(vtxH_->size());
   for(size_t jVtx=0; jVtx<nVtx; jVtx++)
     {

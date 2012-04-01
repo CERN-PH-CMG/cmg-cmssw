@@ -2,8 +2,8 @@
  * Wrapper for common operations on a gamma event
  * Get weights/mass shapes from file
  * Analyze event and assign trigger categories, weights and massive candidates
- * $Date: 2011/11/17 11:25:10 $
- * $Revision: 1.2 $
+ * $Date: 2011/11/24 11:22:57 $
+ * $Revision: 1.3 $
  * \author Pedro Silva
  */
 
@@ -17,7 +17,6 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
-#include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
 
 class GammaEventHandler
 {
@@ -27,7 +26,10 @@ class GammaEventHandler
   
   GammaEventHandler(const edm::ParameterSet &runProcess);
 
-  bool isGood(PhysicsEvent_t &phys);
+  //to be called event by event
+  bool isGood(PhysicsEvent_t &phys, TString evCategoryLabel="");
+
+  //getters
   bool isGood() { return isGoodEvent_; }
   int triggerThr() { return triggerThr_; }
   TString eventCategory() { return photonCategory_; }
@@ -39,7 +41,24 @@ class GammaEventHandler
   int category(size_t icat) {  return (gammaCats_.size() > icat ? gammaCats_[icat] : 0 ); }
   std::vector<int> categories() { return gammaCats_; }
   int weightMode() { return weightMode_; }
-  int findTriggerCategoryFor(float pt);
+
+  void printSummary()
+  {
+    //std::cout << "Event is " << (isGoodEvent_ ? "ok" : "not ok") << std::endl;
+    if(!isGoodEvent_) return;
+    std::cout << "Trigger thr: " << triggerThr_ << " pT(gamma)=" << massiveGamma_.begin()->second.pt() << "(" << photonCategory_ << ")" << std::endl;
+  }
+
+  inline int findTriggerCategoryFor(float pt)
+  {
+    for(size_t itrigCat=0; itrigCat<nCategories()-1; itrigCat++)
+      {
+	if(pt<category(itrigCat)) return -1;
+	if(pt>category(itrigCat+1)) return category(itrigCat+1);
+	else return category(itrigCat);
+      }
+    return -1;
+  }
 
   ~GammaEventHandler();
   
@@ -48,6 +67,7 @@ class GammaEventHandler
   int weightMode_;
 
   std::vector<int> gammaCats_;
+  std::vector<double> gammaTriggerRenWeights_;
 
   TFile *fwgt_;
   std::map<TString,TH1 *> wgtsH_;
@@ -58,8 +78,6 @@ class GammaEventHandler
   TString photonCategory_;
   std::map<TString,LorentzVector> massiveGamma_;
   std::map<TString,float> evWeights_;
-  
-  EventCategory eventClassifComp_;
 };
 
 #endif

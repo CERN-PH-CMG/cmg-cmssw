@@ -4,8 +4,8 @@
 /** \class METUtils
  *  No description available.
  *
- *  $Date: 2012/03/15 09:35:58 $
- *  $Revision: 1.4 $
+ *  $Date: 2012/04/01 09:28:28 $
+ *  $Revision: 1.5 $
  *  \author G. Cerminara & D. Trocino & P. Silva & L. Quertenmont & L. Pernie
  */
 
@@ -16,6 +16,9 @@
 
 #include "Math/LorentzVector.h"
 #include "TVector2.h"
+
+#include "CondFormats/JetMETObjects/interface/JetResolution.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 
 #include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
 
@@ -122,7 +125,13 @@ namespace METUtils{
   LorentzVector projectedMET(const LorentzVector& lepton1, const LorentzVector& lepton2, const LorentzVector& met, stRedMET* out=NULL);
   double transverseMass(LorentzVector &visible, LorentzVector &invisible, bool assumeSameMass=false);
 
-  LorentzVector smearedJet(const LorentzVector &origJet);
+  LorentzVector smearedJet(const LorentzVector &origJet, double genJetPt, int mode=0);
+
+  enum UncertaintyVariations { JER, JER_UP, JER_DOWN, JES_UP, JES_DOWN};
+  void computeVariation(LorentzVectorCollection& jets, std::vector<double> &genjetsPt, LorentzVector& met,
+                        std::vector<LorentzVectorCollection>& jetsVar, LorentzVectorCollection& metsVar,
+			JetCorrectionUncertainty *jecUnc);
+
   LorentzVector SmearJetFormGen(LorentzVectorCollection& jets, LorentzVector& met, std::vector<double> GenJet, std::vector<LorentzVector>& jetsJer);
   double ErrEt( double Et, double Eta);
 }

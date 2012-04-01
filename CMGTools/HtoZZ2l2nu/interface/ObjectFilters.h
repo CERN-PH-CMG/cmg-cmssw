@@ -33,8 +33,8 @@
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 typedef std::vector<LorentzVector> LorentzVectorCollection;
 
-enum PhysicsChannels  { NOTDIL, DIL_OTHER, DY_MUMU, DY_EE, DY_TAUTAU, HIGGS };
-enum PhysicsObjects   { MET=0,JET=1,ELECTRON=11, MUON=13,PHOTON=22};
+enum PhysicsChannels  { SINGLETOP_CH, TTBAR_CH, W_CH, WW_CH, Z_CH, ZZ_CH, WZ_CH, SIGNAL_CH };
+enum PhysicsObjects   { MET=0,JET=1,TOP=6,ELECTRON=11, MUON=13, TAU=15, GLUON=21, PHOTON=22, Z=23, W=24};
 enum DileptonChannels { UNKNOWN=0,MUMU=1,EE=2,EMU=3,ETAU=4,MUTAU=5, GAMMA=22};
 enum IsolType         { ECAL_ISO=0, HCAL_ISO, TRACKER_ISO, REL_ISO, RELRHOCORR_ISO, N_ISO, C_ISO, CPU_ISO, G_ISO, PFREL_ISO, PFRELBETCORR_ISO};
 
@@ -88,14 +88,14 @@ const reco::GenParticle *getLeptonGenMatch(reco::CandidatePtr &lepton);
 /// PHOTON SELECTION UTILITIES ///
 ///                            ///   
 // cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/Vgamma2011PhotonID
-std::vector<reco::CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hPhoton, 
-					       EcalClusterLazyTools &lazyTool, 
-					       edm::Handle<EcalRecHitCollection> ebrechits,
-					       double rho, const edm::ParameterSet &iConfig);
-int getPhotonTrackVeto(const reco::Photon *pho,
-		       edm::Handle<std::vector<reco::Track> > &ctfTracks, 
-		       edm::Handle<std::vector<reco::Track> > &gsfTracks,
-		       edm::Handle<edm::View<reco::Candidate> > &ele);
+std::vector<reco::CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hPhoton,
+					       EcalClusterLazyTools &lazyTool,
+					       edm::Handle<reco::GsfElectronCollection> &hEle,
+					       edm::Handle<reco::ConversionCollection> &hConversions,
+					       edm::Handle<reco::BeamSpot> &beamSpot,
+					       double rho,
+					       const edm::ParameterSet &iConfig);
+bool getPhotonTrackVeto(const reco::Photon *pho,edm::Handle<std::vector<reco::Track> > &ctfTracks);
 
 ///                            ///   
 /// JET SELECTION UTILITIES    ///
@@ -107,10 +107,7 @@ double computeVtxAssocFracForJet(const pat::Jet *jet, const reco::Vertex *vtx);
 ///                           ///
 /// GENERATOR LEVEL UTILITIES ///
 ///                           ///
-int assignPhysicsChannel(edm::Handle<edm::View<reco::Candidate> > &genParticles);
-std::vector<const reco::Candidate *> getGeneratorEvent(edm::Handle<edm::View<reco::Candidate> > &hGen, const edm::ParameterSet &iConfig);
-const reco::Candidate *getGeneratorFinalStateFor(const reco::Candidate *p);
-
+std::pair<int,std::vector<const reco::Candidate *> > assignPhysicsChannel(edm::Handle<edm::View<reco::Candidate> > &genParticles,const edm::ParameterSet &iConfig);
 
 //                    //
 // TRIGGER UTILITILES //

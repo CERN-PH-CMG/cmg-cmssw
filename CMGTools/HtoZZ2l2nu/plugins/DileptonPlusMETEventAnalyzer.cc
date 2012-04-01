@@ -26,10 +26,14 @@
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
+#include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
+#include "RecoEgamma/EgammaTools/interface/EGEnergyCorrector.h"
+
 #include "TH1.h"
 #include "TH2.h"
 #include "TFile.h"
 #include "TString.h"
+#include "TSystem.h"
 
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
@@ -60,6 +64,7 @@ public:
   
 private:
 
+  int setLeptonPidSummary(reco::CandidatePtr l,const reco::VertexRef &primVertex,EcalClusterLazyTools &lazyTool,const edm::EventSetup &iSetup);
   void saveMCtruth(const edm::Event &event, const edm::EventSetup &iSetup );
 
 
@@ -78,16 +83,6 @@ private:
 
     return isoSummary;
   }
-
-
-  inline int getLeptonPidSummary(reco::CandidatePtr l)
-  {
-    int idsummary(0);
-    int lid = fabs(getLeptonId(l));
-    if(lid==MUON) idsummary=getMuonPidSummary( dynamic_cast<const pat::Muon *>(l.get()) );
-    else          idsummary=getElectronPidSummary( dynamic_cast<const pat::Electron *>(l.get()) );
-    return idsummary;
-  }
   int getMuonPidSummary(const pat::Muon *mu);
   int getElectronPidSummary(const pat::Electron *ele);
 
@@ -96,6 +91,10 @@ private:
   TSelectionMonitor controlHistos_;
   EventCategory eventClassifComp_;
   PileupJetIdAlgo puJetIdAlgo_;
+  edm::Handle<reco::VertexCollection> hVtx_;
+
+  //regression corrector for electrons/photons
+  EGEnergyCorrector phocorr_,ecorr_;
 
 };
 
@@ -127,7 +126,6 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
 
     controlHistos_.addHistogram("pileup", ";Pileup; Events",50,-0.5,49.5);
     controlHistos_.addHistogram("pileuptrue", ";True pileup; Events",50,-0.5,49.5);
-   
   }
   catch(std::exception &e){
     cout << e.what() << endl;
@@ -172,7 +170,6 @@ void DileptonPlusMETEventAnalyzer::saveMCtruth(const edm::Event &event, const ed
   controlHistos_.fillHisto("pileup","all",ev.ngenITpu);
   controlHistos_.fillHisto("pileuptrue","all",truePU);
 
-
   //retrieve pdf info
   edm::Handle<GenEventInfoProduct> genEventInfoProd;
   event.getByType( genEventInfoProd );
@@ -200,16 +197,15 @@ void DileptonPlusMETEventAnalyzer::saveMCtruth(const edm::Event &event, const ed
   //generator level event
   Handle<View<Candidate> > hGen;
   event.getByLabel(objConfig_["Generator"].getParameter<edm::InputTag>("source"), hGen);
-  std::vector<const reco::Candidate *> genEvent = getGeneratorEvent(hGen,objConfig_["Generator"]);
+  std::pair<int,std::vector<const reco::Candidate *> > genEvent = assignPhysicsChannel(hGen,objConfig_["Generator"]);
   ev.nmcparticles = 0;
-  bool isHiggsEvent(false);
-  for(size_t i=0; i<genEvent.size(); i++)
+  ev.mccat=genEvent.first;
+  for(size_t i=0; i<genEvent.second.size(); i++)
     {
-      const reco::Candidate *genpart = genEvent[i];
+      const reco::Candidate *genpart = genEvent.second[i];
       
-      if(fabs(genpart->pdgId())==25) 
+      if(fabs(genpart->pdgId())==25 || fabs(genpart->pdgId())==39) 
 	{
-	  isHiggsEvent=true;
 	  ev.h_px=genpart->px();
 	  ev.h_py=genpart->py();
 	  ev.h_pz=genpart->pz();
@@ -226,28 +222,24 @@ void DileptonPlusMETEventAnalyzer::saveMCtruth(const edm::Event &event, const ed
 	}
     }
    
-  //mc truth channel
-  if(isHiggsEvent) ev.mccat=HIGGS;
-  else             ev.mccat=assignPhysicsChannel(hGen);
-
-
   //add the generator level jets
   edm::Handle<edm::View<reco::Candidate> > genJetsH;
   event.getByLabel(objConfig_["Generator"].getParameter<edm::InputTag>("genJets"), genJetsH );
-//  if(!genJetsH.isValid())return;
-  for(size_t ijet=0; ijet<genJetsH.product()->size(); ijet++){
+  for(size_t ijet=0; ijet<genJetsH.product()->size(); ijet++)
+    {
       reco::CandidatePtr gjIt = genJetsH->ptrAt(ijet);
       if(gjIt->pt()<10) continue;
       
       //remove overlaps with leptons
       bool overlap(false);
-      for(int imcpart=0; imcpart<ev.nmcparticles; imcpart++){
+      for(int imcpart=0; imcpart<ev.nmcparticles; imcpart++)
+	{
 	  int id=fabs(ev.mc_id[imcpart]);
 	  if(id!=11 && id!=13 && id!=15) continue;
 	  LorentzVector p4(ev.mc_px[imcpart],ev.mc_py[imcpart],ev.mc_pz[imcpart],ev.mc_en[imcpart]);
 	  double dr = deltaR(p4,gjIt->p4());
 	  if(dr<0.4) overlap=true;
-      }
+	}
       if(overlap) continue;
       
       ev.mc_px[ev.nmcparticles]=gjIt->px();  
@@ -305,9 +297,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //
     edm::Handle<reco::BeamSpot> beamSpot;
     event.getByLabel( objConfig_["Vertices"].getParameter<edm::InputTag>("beamSpot"), beamSpot);
-    Handle<reco::VertexCollection> hVtx;
-    event.getByLabel(objConfig_["Vertices"].getParameter<edm::InputTag>("source"), hVtx);
-    std::vector<reco::VertexRef> selVertices = getGoodVertices(hVtx,objConfig_["Vertices"]);
+    event.getByLabel(objConfig_["Vertices"].getParameter<edm::InputTag>("source"), hVtx_);
+    std::vector<reco::VertexRef> selVertices = getGoodVertices(hVtx_,objConfig_["Vertices"]);
 
     //quit if no good vertex
     if(selVertices.size()==0) return;
@@ -340,6 +331,13 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //electron selection
     Handle<View<Candidate> > hEle;
     event.getByLabel(objConfig_["Electrons"].getParameter<edm::InputTag>("source"), hEle);
+    EcalClusterLazyTools lazyTool(event,iSetup,objConfig_["Photons"].getParameter<edm::InputTag>("ebrechits"),objConfig_["Photons"].getParameter<edm::InputTag>("eerechits"));
+    if(!ecorr_.IsInitialized())
+      {
+	TString path(objConfig_["Electrons"].getParameter<std::string>("scCorrector"));
+	gSystem->ExpandPathName(path);
+	ecorr_.Initialize(iSetup,path.Data());
+      }
     std::vector<CandidatePtr> selLooseElectrons = getGoodElectrons(hEle, hMu, primVertex, *rho, objConfig_["LooseElectrons"]);
     std::vector<CandidatePtr> selElectrons      = getGoodElectrons(hEle, hMu, primVertex, *rho, objConfig_["Electrons"]);
 
@@ -393,7 +391,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.l1_hcalIso  = leptoniso[HCAL_ISO]; 
 	ev.l1_trkIso  = leptoniso[TRACKER_ISO];
 	ev.l1_passIso = getLeptonIsoSummary(dilepton[0], leptoniso, true);
-	ev.l1_pid   = getLeptonPidSummary( dilepton[0]);
+	ev.l1_pid = setLeptonPidSummary( dilepton[0], primVertex, lazyTool, iSetup);
 
 	genLepton = getLeptonGenMatch(dilepton[1]);
 	leptoniso = getLeptonIso(dilepton[1]);
@@ -412,7 +410,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.l2_hcalIso  = leptoniso[HCAL_ISO]; 
 	ev.l2_trkIso  = leptoniso[TRACKER_ISO];
 	ev.l2_passIso = getLeptonIsoSummary(dilepton[1], leptoniso, true);
-	ev.l2_pid    = getLeptonPidSummary( dilepton[1]);
+	ev.l2_pid = setLeptonPidSummary( dilepton[1], primVertex, lazyTool, iSetup);
       }
     
     ev.ln=0;
@@ -445,7 +443,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.ln_hcalIso[ev.ln]  = leptoniso[HCAL_ISO]; 
 	ev.ln_trkIso[ev.ln]   = leptoniso[TRACKER_ISO];
 	ev.ln_passIso[ev.ln] = getLeptonIsoSummary(*lit, leptoniso, false);
-	ev.ln_pid[ev.ln]   = getLeptonPidSummary(*lit);
+	ev.ln_pid[ev.ln] = setLeptonPidSummary(*lit, primVertex, lazyTool, iSetup);
 	ev.ln++;
       }
 
@@ -453,19 +451,21 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     // PHOTON SELECTION
     //
     edm::Handle<edm::View<reco::Candidate> > hPhoton;
+    if(!phocorr_.IsInitialized())
+      {
+	TString path(objConfig_["Photons"].getParameter<std::string>("scCorrector"));
+	gSystem->ExpandPathName(path);
+	phocorr_.Initialize(iSetup,path.Data());
+      }
     event.getByLabel( objConfig_["Photons"].getParameter<edm::InputTag>("source"), hPhoton );
-    edm::Handle<EcalRecHitCollection> ebrechits;
-    event.getByLabel( objConfig_["Photons"].getParameter<edm::InputTag>("ebrechits"), ebrechits );
-    EcalClusterLazyTools lazyTool(event,iSetup,
-                                  objConfig_["Photons"].getParameter<edm::InputTag>("ebrechits"),
-                                  objConfig_["Photons"].getParameter<edm::InputTag>("eerechits"));
-
     edm::Handle<std::vector<reco::Track> > hTracks;
     try{ event.getByLabel( objConfig_["Photons"].getParameter<edm::InputTag>("trackSource"), hTracks ); } catch(std::exception &e){}
-    edm::Handle<std::vector<reco::Track> > hGsfTracks;
-    try{ event.getByLabel( objConfig_["Photons"].getParameter<edm::InputTag>("gsfTrackSource"), hGsfTracks ); } catch(std::exception &e){}
+    edm::Handle<reco::GsfElectronCollection> hGsfEle;
+    try{ event.getByLabel(objConfig_["Photons"].getParameter<edm::InputTag>("gsfElectrons"),hGsfEle); }  catch(std::exception &e){}
+    edm::Handle<reco::ConversionCollection> hConversions;
+    try{ event.getByLabel(objConfig_["Photons"].getParameter<std::string>("conversions"), hConversions); }  catch(std::exception &e){}
     ev.gn=0;
-    std::vector<CandidatePtr> selPhotons=getGoodPhotons(hPhoton,lazyTool,ebrechits,*rho25,objConfig_["Photons"]);
+    std::vector<CandidatePtr> selPhotons=getGoodPhotons(hPhoton,lazyTool,hGsfEle,hConversions,beamSpot,*rho25,objConfig_["Photons"]);
     for(std::vector<CandidatePtr>::iterator phoIt = selPhotons.begin(); phoIt != selPhotons.end(); phoIt++)
       {
 	const reco::Photon *pho = dynamic_cast<const reco::Photon *>(phoIt->get());
@@ -479,15 +479,28 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.g_iso2[ev.gn]  = pho->ecalRecHitSumEtConeDR04();
 	ev.g_iso3[ev.gn]  = pho->hcalTowerSumEtConeDR04();
 	ev.g_r9[ev.gn]    = pho->r9();
+	std::pair<double,double> cor(pho->energy(),1);
+	try{ cor = phocorr_.CorrectedEnergyWithErrorV2(*pho,*hVtx_,lazyTool,iSetup); } catch (std::exception &e){ }
+	ev.g_corren[ev.gn] = cor.first;
+	ev.g_correnerr[ev.gn] = cor.second;
 	ev.g_conv[ev.gn] = false;
-	ev.g_trkVeto[ev.gn] = getPhotonTrackVeto(pho,hTracks,hGsfTracks,hEle);
+	ev.g_trkVeto[ev.gn] = getPhotonTrackVeto(pho,hTracks);
 	LorentzVector convP4(0,0,0,0);
-	/*
-	  ev.g_conv_px[ev.gn] = convP4.px();
-	  ev.g_conv_py[ev.gn] = convP4.py();
-	  ev.g_conv_pz[ev.gn] = convP4.pz();
-	  ev.g_conv_en[ev.gn] = convP4.energy();
-	*/
+	
+	//check for matched conversions
+	if(hConversions.isValid())
+	  {
+	    reco::ConversionRef conv = ConversionTools::matchedConversion(*pho->superCluster(),hConversions,beamSpot->position());
+	    if(!conv.isNull())
+	      {
+		ev.g_conv_px[ev.gn] = conv->refittedPair4Momentum().px();
+		ev.g_conv_py[ev.gn] = conv->refittedPair4Momentum().py();
+		ev.g_conv_pz[ev.gn] = conv->refittedPair4Momentum().pz();
+		ev.g_conv_en[ev.gn] = conv->refittedPair4Momentum().energy();
+		bool isVtxConstrained( fabs(primVertex->position().z()-conv->conversionVertex().position().z()) < 0.1 );
+		ev.g_conv_invtx[ev.gn] = isVtxConstrained;
+	      }
+	  }
 	ev.gn++;
       }
     if(ev.cat==UNKNOWN && selPhotons.size() && triggerBits["gamma"]==true) ev.cat=GAMMA+1000*photonTrig.second;
@@ -505,6 +518,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     std::vector<CandidatePtr> selJets = getGoodJets(hJet, selLeptons, objConfig_["Jets"]);    
     int nbcands(0);
     LorentzVector jetSum(0,0,0,0);
+    PFJetIDSelectionFunctor jetIdSelector(PFJetIDSelectionFunctor::FIRSTDATA,PFJetIDSelectionFunctor::TIGHT);
+    pat::strbitset hasId = jetIdSelector.getBitTemplate();
     for (std::vector<CandidatePtr>::iterator jIt = selJets.begin(); jIt != selJets.end(); jIt++)
       {
 	const pat::Jet *jet = dynamic_cast<const pat::Jet *>(jIt->get());
@@ -523,8 +538,9 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.jn_chHadFrac[ev.jn]   = jet->chargedHadronEnergyFraction();
 	const reco::GenJet *gJet=jet->genJet();
 	ev.jn_genpt[ev.jn]=gJet ? gJet->pt() : 0;
-	PileupJetIdentifier puIdentifier = puJetIdAlgo_.computeIdVariables(dynamic_cast<const reco::Jet*>(jet), 0, primVertex.get(), *hVtx.product(), true);
+	PileupJetIdentifier puIdentifier = puJetIdAlgo_.computeIdVariables(dynamic_cast<const reco::Jet*>(jet), 0, primVertex.get(), *hVtx_.product(), true);
 	ev.jn_pumva[ev.jn]=puIdentifier.mva();
+	hasId.set(false); ev.jn_tightId[ev.jn] = jetIdSelector(*jet,hasId);
 	ev.jn++;
 	nbcands += (jet->pt()>30 && fabs(jet->eta())<2.4 && jet->bDiscriminator("trackCountingHighEffBJetTags")>2); 
       }
@@ -532,7 +548,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.htvec_py = jetSum.py();
     ev.htvec_pz = jetSum.pz();
     ev.htvec_en = jetSum.energy();
-
 
     // JET SELECTION
     //
@@ -562,8 +577,9 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
         ev.ajn_chHadFrac[ev.ajn]   = jet->chargedHadronEnergyFraction();
         const reco::GenJet *gJet   = jet->genJet();
         ev.ajn_genpt[ev.ajn]       = gJet ? gJet->pt() : 0;
-        PileupJetIdentifier puIdentifier = puJetIdAlgo_.computeIdVariables(dynamic_cast<const reco::Jet*>(jet), 0, primVertex.get(), *hVtx.product(), true);
+        PileupJetIdentifier puIdentifier = puJetIdAlgo_.computeIdVariables(dynamic_cast<const reco::Jet*>(jet), 0, primVertex.get(), *hVtx_.product(), true);
         ev.ajn_pumva[ev.jn]=puIdentifier.mva();
+	hasId.set(false); ev.jn_tightId[ev.jn] = jetIdSelector(*jet,hasId);
 	ev.ajn++;
       }
 
@@ -685,6 +701,64 @@ int DileptonPlusMETEventAnalyzer::getElectronPidSummary(const pat::Electron *ele
  
   return summary;
 }
+
+//
+int DileptonPlusMETEventAnalyzer::setLeptonPidSummary(reco::CandidatePtr l,
+						      const reco::VertexRef &primVertex,
+						      EcalClusterLazyTools &lazyTool,
+						      const edm::EventSetup &iSetup)
+{
+  int iidx(0);
+  ZZ2l2nuSummary_t &ev = summaryHandler_.getEvent();
+  int lid = fabs(getLeptonId(l));
+  if(lid==MUON) 
+    {
+      const pat::Muon *mu=dynamic_cast<const pat::Muon *>(l.get());
+      ev.mn_idbits[ev.mn]  = getMuonPidSummary( mu );
+      ev.mn_chi2[ev.mn]    = mu->isGlobalMuon() ? mu->globalTrack()->normalizedChi2() : 0;
+      ev.mn_pixHits[ev.mn] = mu->isGlobalMuon() ? mu->globalTrack()->hitPattern().numberOfValidPixelHits() : 0;
+      ev.mn_trkHits[ev.mn] = mu->isGlobalMuon() ? mu->globalTrack()->hitPattern().numberOfValidTrackerHits() : 0;
+      ev.mn_muHits[ev.mn]  = mu->isGlobalMuon() ? mu->globalTrack()->hitPattern().numberOfValidMuonHits() : 0;
+      ev.mn_nMatches[ev.mn] = mu->numberOfMatches();
+      ev.mn_d0[ev.mn] = fabs(mu->innerTrack()->dxy(primVertex->position()));
+      ev.mn_dZ[ev.mn] = fabs(mu->innerTrack()->dz(primVertex->position()));
+      iidx=ev.mn;
+      ev.mn++;
+    }
+  else
+    {
+      const pat::Electron *ele=dynamic_cast<const pat::Electron *>(l.get());
+      ev.en_idbits[ev.en] = getElectronPidSummary( ele );
+      ev.en_hoe[ev.en]    = ele->hadronicOverEm();
+      ev.en_dphiin[ev.en] = ele->deltaPhiSuperClusterTrackAtVtx();
+      ev.en_detain[ev.en] = ele->deltaEtaSuperClusterTrackAtVtx();
+      ev.en_sihih[ev.en]  = ele->sigmaIetaIeta();
+      std::pair<double,double> cor (ele->energy(),0);
+      try{ cor = ecorr_.CorrectedEnergyWithErrorV2(*ele,*hVtx_,lazyTool,iSetup); } catch(std::exception &e){}
+      ev.en_corren[ev.en] = cor.first;
+      ev.en_correnerr[ev.en] = cor.second;
+
+      reco::SuperClusterRef sc = ele->superCluster();
+      ev.en_sce[ev.en] = sc->energy();
+      ev.en_sceta[ev.en] = sc->eta();
+      ev.en_scphi[ev.en] = sc->phi();
+      ev.en_e2x5max[ev.en] = ele->e2x5Max();
+      ev.en_e1x5[ev.en]=ele->e1x5();
+      ev.en_e5x5[ev.en]=ele->e5x5();
+      ev.en_h2te[ev.en]=ele->dr03HcalDepth2TowerSumEt();
+      ev.en_h2tebc[ev.en]=ele->dr03HcalDepth2TowerSumEtBc();
+      const reco::GsfTrackRef & eTrack = ele->gsfTrack();
+      ev.en_gsfpt[ev.en]=eTrack->pt();
+      ev.en_gsfeta[ev.en]=eTrack->eta();
+      ev.en_gsfphi[ev.en]=eTrack->phi();
+      ev.en_d0[ev.en]=fabs(eTrack->dxy(primVertex->position()));
+      ev.en_dZ[ev.en]=fabs(eTrack->dz(primVertex->position())); 
+      iidx=ev.en;
+      ev.en++;
+    }
+  return iidx;
+}
+
 
 //
 int DileptonPlusMETEventAnalyzer::getMuonPidSummary(const pat::Muon *mu)
