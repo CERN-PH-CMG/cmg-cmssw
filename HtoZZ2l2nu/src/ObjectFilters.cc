@@ -1,4 +1,5 @@
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
+#include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
 #include "TObjArray.h"
 #include "TObjString.h"
 
@@ -172,17 +173,18 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
   try{
     //config parameters                                                                                                                                                 
     double minPt = iConfig.getParameter<double>("minPt");
-    
     double maxEta = iConfig.getParameter<double>("maxEta");
-    bool applyConversionVeto = iConfig.getParameter<bool>("applyConversionVeto");
-    bool vetoTransitionElectrons = iConfig.getParameter<bool>("vetoTransitionElectrons");
-    int maxTrackLostHits = iConfig.getParameter<int>("maxTrackLostHits");
-    string id = iConfig.getParameter<string>("id");
-    double maxRelIso = iConfig.getParameter<double>("maxRelIso");
+    bool vetoTransitionElectrons     = iConfig.getParameter<bool>("vetoTransitionElectrons");
+    std::vector<double> maxSihih     = iConfig.getParameter<std::vector<double> >("maxSihih");
+    std::vector<double> maxDetaTrack = iConfig.getParameter<std::vector<double> >("maxDetaTrack");
+    std::vector<double> maxDphiTrack = iConfig.getParameter<std::vector<double> >("maxDphiTrack");
+    std::vector<double> maxHoE       = iConfig.getParameter<std::vector<double> >("maxHoE");
+    std::vector<double> maxD0        = iConfig.getParameter<std::vector<double> >("maxD0");
+    std::vector<double> maxDZ        = iConfig.getParameter<std::vector<double> >("maxDz");
+    std::vector<int> maxTrackLostHits = iConfig.getParameter<std::vector<int> >("maxTrackLostHits");
+    string applyConversionVetoFrom   = iConfig.getParameter<string>("applyConversionVetoFrom");
+    double maxRelIso    = iConfig.getParameter<double>("maxRelIso");
     double minDeltaRtoMuons = iConfig.getParameter<double>("minDeltaRtoMuons");
-    double maxD0 = iConfig.getParameter<double>("maxD0");
-    double maxDZ = iConfig.getParameter<double>("maxDz");
-    std::vector<double> maxHoE = iConfig.getParameter<std::vector<double> >("maxHoE");
     bool usePFIso = iConfig.getParameter<bool>("usePFIso");
     bool doDeltaBetaCorrection = iConfig.getParameter<bool>("doDeltaBetaCorrection");
     
@@ -191,41 +193,42 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
       {
 	reco::CandidatePtr elePtr = hEle->ptrAt(iElec);
 	const pat::Electron *ele = dynamic_cast<const pat::Electron *>( elePtr.get() );
-
-	int eid=5;  //assume eid+conversion rejection if it hasn't been stored 
-	if( !id.empty() ) eid = (int) ele->electronID(id);
-
+	
 	//kinematics
 	double ePt = ele->pt();
 	reco::SuperClusterRef sc = ele->superCluster();
-	double eSuperClusterEt  = sc->energy()/cosh(sc->eta());
+	//double eSuperClusterEt  = sc->energy()/cosh(sc->eta());
 	double eEta = ele->eta();
 	double scEta= ele->superCluster()->eta();
 
 	if(ePt<minPt || fabs(eEta)>maxEta) continue; 
 	if(vetoTransitionElectrons && fabs(scEta)>1.4442 && fabs(scEta)<1.566) continue;
-	
-	//conversion veto (from track and info on electron id - 2nd bit)
+
+	//electron id (apply on the fly simple cut based)
+	bool isEE(ele->isEE());
+	double hoe       = ele->hadronicOverEm();
+	double dPhiTrack = ele->deltaPhiSuperClusterTrackAtVtx();
+	double dEtaTrack = ele->deltaEtaSuperClusterTrackAtVtx();
+	double sihih     = ele->sigmaIetaIeta();
+	bool hasId( hoe<maxHoE[isEE] && sihih<maxSihih[isEE] && dPhiTrack<maxDphiTrack[isEE] && dEtaTrack<maxDetaTrack[isEE]);
+	if(!hasId) continue;
+
+	//vertex compatibility
 	const reco::GsfTrackRef & eTrack = ele->gsfTrack();
 	double d0=fabs(eTrack->dxy(primVertex->position())); 
 	float dZ = fabs(eTrack->dz(primVertex->position()));
+	bool isVertexCompatible(d0<maxD0[isEE] && dZ<maxDZ[isEE]);
+	if(!isVertexCompatible) continue;
+	
+	//conversion veto
 	int nTrackLostHits=eTrack->trackerExpectedHitsInner().numberOfLostHits();
-	bool hasId =(eid & 0x1);
-	bool passHoE(true);
-	try {
-	  double hoe = ele->hadronicOverEm();
-	  if(ele->isEB() && hoe>maxHoE[0]) passHoE=false;
-	  if(!ele->isEB() && hoe>maxHoE[1]) passHoE=false;
-	}catch(std::exception &e){
-	}
-	bool hasConversionTag = !((eid>>2) & 0x1);	 
-
-	//electron id + conversion veto
-	if(fabs(d0)>maxD0 || fabs(dZ)>maxDZ) continue;
-	if(!hasId) continue;
-	if(!passHoE) continue;
-	if(applyConversionVeto && hasConversionTag) continue;
-	if(nTrackLostHits>maxTrackLostHits) continue;
+	bool hasConversionTag(nTrackLostHits>maxTrackLostHits[isEE]);
+	if( !applyConversionVetoFrom.empty() )
+	  {
+	    int eid = (int) ele->electronID(applyConversionVetoFrom);
+	    hasConversionTag = !((eid>>2) & 0x1);	 
+	  }
+	if(hasConversionTag) continue;
 	
 	//isolation
 	std::vector<double> isoVals = getLeptonIso( elePtr, ePt, rho);
@@ -516,57 +519,33 @@ double computeVtxAssocFracForJet(const pat::Jet *jet, const reco::Vertex *vtx)
 //  PHOTON UTILITIES             //
 //                               //
 
-int getPhotonTrackVeto(const reco::Photon *pho,
-		       edm::Handle<std::vector<reco::Track> > &ctfTracks, 
-		       edm::Handle<std::vector<reco::Track> > &gsfTracks,
-		       edm::Handle<edm::View<reco::Candidate> > &ele)
+bool getPhotonTrackVeto(const reco::Photon *pho, edm::Handle<std::vector<reco::Track> > &ctfTracks)
 {
-  int trackVetoClassif(0);
-  if(pho==0) return trackVetoClassif;
+  if(pho==0) return false;
 
   //veto against any ctf track
-  if(ctfTracks.isValid())
-    {
-      for(std::vector<reco::Track>::const_iterator tIt = ctfTracks->begin(); tIt != ctfTracks->end(); tIt++)
-	{
-	  double dR=deltaR(pho->eta(),pho->phi(),tIt->eta(),tIt->phi());
-	  if(dR>0.1) continue;
-	  trackVetoClassif |= 0x1;
-	  break;
-	}
-    }
+  try{
+    if(ctfTracks.isValid())
+      {
+	for(std::vector<reco::Track>::const_iterator tIt = ctfTracks->begin(); tIt != ctfTracks->end(); tIt++)
+	  {
+	    double dR=deltaR(pho->eta(),pho->phi(),tIt->eta(),tIt->phi());
+	    if(dR>0.1) continue;
+	    return true;
+	    break;
+	  }
+      }
+  }catch(std::exception &e){ }
 
-  //veto against a gsf track 
-  if(gsfTracks.isValid())
-    {
-      for(std::vector<reco::Track>::const_iterator tIt = gsfTracks->begin(); tIt != gsfTracks->end(); tIt++)
-	{
-	  double dR=deltaR(pho->eta(),pho->phi(),tIt->eta(),tIt->phi());
-	  if(dR>0.1) continue;
-	  trackVetoClassif |= 0x2;
-	  break;
-	}
-    }
-
-  //veto against an electron
-  if(ele.isValid())
-    {
-      for(edm::View<reco::Candidate>::const_iterator eIt = ele->begin(); eIt != ele->end(); eIt++)
-	{
-	  double dR=deltaR(pho->eta(),pho->phi(),eIt->eta(),eIt->phi());
-	  if(dR>0.1) continue;
-	  trackVetoClassif |= 0x4;
-	  break;
-	}
-    }
-  
-  return trackVetoClassif;
+  return false;
 }
 
 //
 vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hPhoton,
 				    EcalClusterLazyTools &lazyTool,
-				    edm::Handle<EcalRecHitCollection> ebrechits,
+				    edm::Handle<reco::GsfElectronCollection> &hEle,
+				    edm::Handle<reco::ConversionCollection> &hConversions,
+				    edm::Handle<reco::BeamSpot> &beamSpot,
 				    double rho,
 				    const edm::ParameterSet &iConfig)
 {
@@ -621,21 +600,26 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
 
 	//these require the photon core
 	bool hasPixelSeed(false);
+	bool hasElectronVeto(false);
 	try{
 	  reco::SuperClusterRef scref = pho->superCluster();
 	  const reco::CaloClusterPtr  seed_clu = scref->seed();
 	  vector<float> cov = lazyTool.localCovariances(*seed_clu);
-	  float sipip = cov[2];
-	  if(pho->isEB())
-	    hasGoodShowerShape &= (sipip>minSipipEB);
+	  float sipip = sqrt(cov[2]);
+	  if(pho->isEB()) hasGoodShowerShape &= (sipip>minSipipEB);
 
 	  //pixel seed veto
 	  hasPixelSeed=pho->hasPixelSeed();	
+
+	  if(hEle.isValid() && hConversions.isValid())
+	    hasElectronVeto = ConversionTools::hasMatchedPromptElectron(scref, hEle, hConversions, beamSpot->position());
+	  
 	}catch(std::exception &e){
-	  //cout << pho->isEB() << " " << pho->isEE() << " " << pho->isStandardPhoton() << " " << pho->isPFlowPhoton() << endl;
-	  //cout << e.what() << endl;
+	  //	  cout << pho->isEB() << " " << pho->isEE() << " " << pho->isStandardPhoton() << " " << pho->isPFlowPhoton() << endl;
+	  // cout << e.what() << endl;
 	}
-	if(!hasGoodShowerShape || hasPixelSeed) continue;
+
+	if(!hasGoodShowerShape || hasPixelSeed || hasElectronVeto) continue;
 
 	//isolation
 	float maxTrkIso(9999.), maxECALIso(99999.), maxHCALIso(99999.);
@@ -673,56 +657,6 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
 //                            //
 
 //
-vector<const reco::Candidate *> getGeneratorEvent(edm::Handle<edm::View<reco::Candidate> > &hGen, const edm::ParameterSet &iConfig)
-{
-  vector<const reco::Candidate *> particles;
-  
-  try
-    {
-      int filterId = iConfig.getParameter<int>("filterId");
-      //check the mothers and daugthers
-      for(size_t igen=0; igen<hGen.product()->size(); igen++)
-	{
-	  const reco::Candidate *genPtr = hGen->ptrAt(igen).get();
-	  if(genPtr->status()!=3) continue;
-	  int pdgid=genPtr->pdgId();
-	  if(fabs(pdgid)!= filterId) continue;
-	  particles.push_back( genPtr );
-
-	  //check mothers
-	  for(size_t imother=0; imother<genPtr->numberOfMothers(); imother++)
-	    {
-	      const reco::Candidate *mother = genPtr->mother(imother);
-	      if(mother->pdgId()==pdgid) continue;
-	      particles.push_back(mother);
-	    }
-	  
-	  //check daughters
-	  for(size_t idau=0; idau<genPtr->numberOfDaughters(); idau++)
-	    {
-	      const reco::Candidate *daughter = genPtr->daughter(idau);
-	      if(daughter->pdgId()==pdgid) continue;
-	      particles.push_back(daughter);
-	      
-	      //check the final states
-	      for(size_t igrandau =0; igrandau<daughter->numberOfDaughters(); igrandau++)
-		{
-		  const reco::Candidate *granddaughter = daughter->daughter(igrandau);
-		  if( daughter->pdgId()==granddaughter->pdgId() ) continue;
-		  particles.push_back(granddaughter);
-		}
-	    }
-
-	}
-    }catch(exception &e){
-    cout << "[generator] failed with : " << e.what() << endl;
-  }
-
-  return particles;
-}
-
-
-//
 const reco::Candidate *getGeneratorFinalStateFor(const reco::Candidate *p)
 {
   if(p==0) return 0;
@@ -749,36 +683,68 @@ const reco::Candidate *getGeneratorFinalStateFor(const reco::Candidate *p)
 
 
 //
-int assignPhysicsChannel(edm::Handle<edm::View<reco::Candidate> > &genParticles)
+std::pair<int,vector<const reco::Candidate *> > assignPhysicsChannel(edm::Handle<edm::View<reco::Candidate> > &genParticles,const edm::ParameterSet &iConfig)
 {
-  int dyChannel=NOTDIL;
-  
-  //iterate over the collection and store Z/gamma->ll decays
+  int filterId = iConfig.getParameter<int>("filterId");
+  vector<const reco::Candidate *> genTree;
+
+  //iterate over the collection and store leptonic decays from Z/g*, W or t->W
+  bool isSignal(false);
+  int nZgs(0), nWs(0), nTops(0);
+  int nElecs(0), nMuons(0), nTaus(0), nNeutrinos(0);
   for(size_t i = 0; i < genParticles->size(); ++ i)
     {
       const reco::GenParticle & p = dynamic_cast<const reco::GenParticle &>( (*genParticles)[i] );
       if( p.status()!=3) continue;
+      int id_p   = abs(p.pdgId());         
+
+      if(id_p== filterId) { genTree.push_back(&p); isSignal=true; continue; }
       
-      int id_p   = p.pdgId();   
-      
-      //select Z/gamma
-      if(abs(id_p) == 23 || abs(id_p)!=22)
+      //select Z/g* or W
+      bool isZg(id_p == Z || abs(id_p)==GAMMA); nZgs+=isZg;
+      bool isW(id_p == W);                      nWs+=isW;
+      bool isTop(id_p == TOP);                  nTops+=isTop;
+      if(!isZg && !isW) continue;
+      genTree.push_back( &p );
+     
+      //check leptonic decays of Z/g* or W
+      for(size_t b = 0; b < p.numberOfDaughters(); ++ b)
 	{
-  	  int nElecs(0), nMuons(0), nTaus(0);
-	  for(size_t b = 0; b < p.numberOfDaughters(); ++ b)
-	    {
-	      int id_d = abs (p.daughter(b)->pdgId());
-	      if(id_d == 11) nElecs++; 
-	      if(id_d == 13) nMuons++; 
-	      if(id_d == 15) nTaus++;  
-	    }
-	  if(nElecs>1)      dyChannel=DY_EE;
-	  else if(nMuons>1) dyChannel=DY_MUMU;
-	  else if(nTaus>1)  dyChannel=DY_TAUTAU;
+	  const reco::Candidate *p_d = p.daughter(b);
+	  int id_d = abs (p_d->pdgId());
+	  if(id_d==id_p) continue;
+	  if(id_d == ELECTRON) { nElecs++; genTree.push_back(p_d); }
+	  if(id_d == MUON) { nMuons++; genTree.push_back(p_d); }
+	  if(id_d == TAU) { nTaus++;  genTree.push_back(p_d); } 
+	  if(id_d==12 || id_d==14 || id_d==16) { nNeutrinos++; genTree.push_back(p_d); }
 	}
     }
-  
-  return dyChannel;
+
+  //MC truth 
+  int mcChannel((nElecs+nMuons+nTaus) & 0xf);
+  mcChannel += ((nNeutrinos & 0xf) << 4);
+  mcChannel += ((nElecs & 0xf) << 12);
+  mcChannel += ((nMuons & 0xf) << 16);
+  mcChannel += ((nTaus & 0xf) << 20);
+  if(isSignal)      mcChannel |= (SIGNAL_CH << 8);
+  else if(nTops==1) mcChannel |= (SINGLETOP_CH << 8);
+  else if(nTops>1)  mcChannel |= (TTBAR_CH << 8);
+  else if(nZgs==0)
+    {
+      if(nWs==1)    mcChannel |= (W_CH << 8);
+      else if(nWs>1)     mcChannel |= (WW_CH << 8);
+    }
+  else if(nZgs>0)
+    {
+      if(nWs==0) 
+	{
+	  if(nZgs==1) mcChannel |= (Z_CH << 8);
+	  else if(nZgs>1)  mcChannel |= (ZZ_CH << 8);
+	}
+      else if(nWs==1 && nZgs==1) mcChannel |= (WZ_CH << 8);
+    }
+
+  return std::pair<int,vector<const reco::Candidate *> >(mcChannel,genTree);
 }
 
 

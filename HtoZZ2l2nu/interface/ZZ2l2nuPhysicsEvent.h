@@ -50,6 +50,7 @@ class PhysicsObject_Lepton : public LorentzVector
     Int_t passIso, pid;
 };
 
+
 class PhysicsObject_Jet : public LorentzVector
 {
 public :
@@ -75,12 +76,22 @@ public :
     LorentzVector(vec), iso1(iso1_), iso2(iso2_), iso3(iso3_), sihih(sihih_), r9(r9_), hoe(hoe_) 
     { 
       setConversionInfo(false,LorentzVector(0,0,0,0));
+      hasCtfTrkVeto=false;
+      hasGsfTrkVeto=false;
+      hasElectronVeto=false;
     }
     inline void setConversionInfo(bool isConv_, LorentzVector convP4_)
     {
       isConv=isConv_;
       convP4=convP4_;
     }
+    inline void setTrackVeto(int trkVeto)
+      {
+	hasCtfTrkVeto   = (trkVeto & 0x1);
+	hasGsfTrkVeto   = ((trkVeto>>1) & 0x1);
+	hasElectronVeto = ((trkVeto>>2) & 0x1);
+      }
+    Bool_t hasCtfTrkVeto,hasGsfTrkVeto,hasElectronVeto;
     Bool_t isConv;
     LorentzVector convP4;
     Float_t iso1, iso2, iso3, sihih, r9, hoe;
@@ -108,5 +119,13 @@ struct PhysicsEvent_t
 
 //
 PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev);
+
+int getNgenLeptons(int mcChannelCode, int pdgId);
+int getGenProcess(int mcChannelCode);
+bool isDYToLL(int mcChannelCode);
+bool isDYToTauTau(int mcChannelCode);
+bool isZZ2l2nu(int mcChannelCode);
+bool isW(int mcChannelCode);
+bool isWW(int mcChannelCode);
 
 #endif

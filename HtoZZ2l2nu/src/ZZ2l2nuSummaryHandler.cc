@@ -96,6 +96,38 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("ln_puchIso",   evSummary_.ln_puchIso,    "l_puchIso[ln]/F");
   t_->Branch("ln_nhIso",    evSummary_.ln_nhIso,    "l_nhIso[ln]/F");
 
+  //lepton id fields
+  t_->Branch("en", &evSummary_.en,"en/I");
+  t_->Branch("en_idbits", evSummary_.en_idbits,"en_idbits[en]/I");
+  t_->Branch("en_hoe",evSummary_.en_hoe ,"en_hoe[en]/F");
+  t_->Branch("en_dphiin",evSummary_.en_dphiin ,"en_dphiin[en]/F");
+  t_->Branch("en_detain",evSummary_.en_detain ,"en_detain[en]/F");
+  t_->Branch("en_sihih",evSummary_.en_sihih ,"en_sihih[en]/F");
+  t_->Branch("en_corren",evSummary_.en_corren ,"en_corren[en]/F");
+  t_->Branch("en_correnerr",evSummary_.en_correnerr ,"en_correnerr[en]/F");
+  t_->Branch("en_sce",evSummary_.en_sce ,"en_sce[en]/F");
+  t_->Branch("en_sceta",evSummary_.en_sceta ,"en_sceta[en]/F");
+  t_->Branch("en_scphi",evSummary_.en_scphi ,"en_scphi[en]/F");
+  t_->Branch("en_e2x5max",evSummary_.en_e2x5max ,"en_e2x5max[en]/F");
+  t_->Branch("en_e1x5",evSummary_.en_e1x5 ,"en_e1x5[en]/F");
+  t_->Branch("en_e5x5",evSummary_.en_e5x5 ,"en_e5x5[en]/F");
+  t_->Branch("en_h2te",evSummary_.en_h2te ,"en_h2te[en]/F");
+  t_->Branch("en_h2tebc",evSummary_.en_h2tebc ,"en_h2tebc[en]/F");
+  t_->Branch("en_d0",evSummary_.en_d0 ,"en_d0[en]/F");
+  t_->Branch("en_dZ",evSummary_.en_dZ ,"en_dZ[en]/F");
+  t_->Branch("en_gsfpt",evSummary_.en_gsfpt ,"en_gsfpt[en]/F");
+  t_->Branch("en_gsfeta",evSummary_.en_gsfeta ,"en_gsfeta[en]/F");
+  t_->Branch("en_gsfphi",evSummary_.en_gsfphi ,"en_gsfphi[en]/F");
+  t_->Branch("mn", &evSummary_.mn,"mn/I");
+  t_->Branch("mn_idbits", evSummary_.mn_idbits,"mn_idbits[mn]/I");
+  t_->Branch("mn_chi2", evSummary_.mn_chi2 ,"mn_chi2[mn]/F");
+  t_->Branch("mn_pixHits",evSummary_.mn_pixHits ,"mn_pixHits[mn]/F");
+  t_->Branch("mn_trkHits",evSummary_.mn_trkHits ,"mn_trkHits[mn]/F");
+  t_->Branch("mn_muHits",evSummary_.mn_muHits ,"mn_muHits[mn]/F");
+  t_->Branch("mn_nMatches",evSummary_.mn_nMatches ,"mn_nMatches[mn]/F");
+  t_->Branch("mn_d0",evSummary_.mn_d0 ,"mn_d0[mn]/F");
+  t_->Branch("mn_dZ",evSummary_.mn_dZ ,"mn_dZ[mn]/F");
+
   //selected jets
   t_->Branch("jn",         &evSummary_.jn,         "jn/I");
   t_->Branch("jn_px",      evSummary_.jn_px,       "jn_px[jn]/F");
@@ -109,9 +141,9 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("jn_neutHadFrac",  evSummary_.jn_neutHadFrac,  "jn_neutHadFrac[jn]/F");
   t_->Branch("jn_neutEmFrac",   evSummary_.jn_neutEmFrac,   "jn_neutEmFrac[jn]/F");
   t_->Branch("jn_chHadFrac",   evSummary_.jn_chHadFrac,    "jn_chHadFrac[jn]/F");
-  t_->Branch("jn_pid",   evSummary_.jn_pid,    "jn_pid[jn]/F");
   t_->Branch("jn_genpt",   evSummary_.jn_genpt,    "jn_genpt[jn]/F");
   t_->Branch("jn_pumva",   evSummary_.jn_pumva,    "jn_pumva[jn]/F");
+  t_->Branch("jn_tightId",   evSummary_.jn_tightId,    "jn_tightId[jn]/O");
   t_->Branch("htvec_px",   &evSummary_.htvec_px, "htvec_px/F");
   t_->Branch("htvec_py",   &evSummary_.htvec_py, "htvec_py/F");
   t_->Branch("htvec_pz",   &evSummary_.htvec_pz, "htvec_pz/F");
@@ -130,8 +162,8 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("ajn_neutHadFrac",  evSummary_.ajn_neutHadFrac,  "ajn_neutHadFrac[ajn]/F");
   t_->Branch("ajn_neutEmFrac",   evSummary_.ajn_neutEmFrac,   "ajn_neutEmFrac[ajn]/F");
   t_->Branch("ajn_chHadFrac",   evSummary_.ajn_chHadFrac,    "ajn_chHadFrac[ajn]/F");
-  t_->Branch("ajn_pid",   evSummary_.ajn_pid,    "ajn_pid[ajn]/F");
   t_->Branch("ajn_pumva",   evSummary_.ajn_pumva,    "ajn_pumva[jn]/F");
+  t_->Branch("ajn_tightId",   evSummary_.ajn_tightId,    "ajn_tightId[jn]/O");
 
   //primary vertex
   t_->Branch("vtx_px",    &evSummary_.vtx_px,      "vtx_px/F");
@@ -171,12 +203,15 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("g_r9",      evSummary_.g_r9,        "g_r9[gn]/F");
   t_->Branch("g_mva",      evSummary_.g_mva,        "g_mva[gn]/F");
   t_->Branch("g_mvaNeut",      evSummary_.g_mvaNeut,        "g_mvaNeut[gn]/F");
-  t_->Branch("g_trkVeto",  evSummary_.g_trkVeto, "g_trkVeto[gn]/F");
+  t_->Branch("g_corren",      evSummary_.g_corren,        "g_corren[gn]/F");
+  t_->Branch("g_correnerr",      evSummary_.g_correnerr,        "g_correnerr[gn]/F");
+  t_->Branch("g_trkVeto",  evSummary_.g_trkVeto, "g_trkVeto[gn]/O");
   t_->Branch("g_conv",    evSummary_.g_conv,      "g_conv[gn]/O");
   t_->Branch("g_conv_px", evSummary_.g_conv_px,   "g_conv_px[gn]/F");
   t_->Branch("g_conv_py", evSummary_.g_conv_py,   "g_conv_py[gn]/F");
   t_->Branch("g_conv_pz", evSummary_.g_conv_pz,   "g_conv_pz[gn]/F");
   t_->Branch("g_conv_en", evSummary_.g_conv_en,   "g_conv_en[gn]/F");
+  t_->Branch("g_conv_invtx", evSummary_.g_conv_invtx,   "g_conv_en[gn]/O");
 
   //Higgs Info
   t_->Branch("h_px",      &evSummary_.h_px,        "h_px/F");
@@ -284,7 +319,38 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("ln_chIso")   ->SetAddress( &evSummary_.ln_chIso);
   t_->GetBranch("ln_puchIso")   ->SetAddress( &evSummary_.ln_puchIso);
   t_->GetBranch("ln_nhIso")   ->SetAddress( &evSummary_.ln_nhIso);
-  
+
+  if(t_->GetBranch("en"))           t_->GetBranch("en")->SetAddress(&evSummary_.en);
+  if(t_->GetBranch("en_idbits"))    t_->GetBranch("en_idbits")->SetAddress(evSummary_.en_idbits);
+  if(t_->GetBranch("en_hoe"))       t_->GetBranch("en_hoe")->SetAddress(evSummary_.en_hoe);
+  if(t_->GetBranch("en_dphiin"))    t_->GetBranch("en_dphiin")->SetAddress(evSummary_.en_dphiin);
+  if(t_->GetBranch("en_detain"))    t_->GetBranch("en_detain")->SetAddress(evSummary_.en_detain);
+  if(t_->GetBranch("en_sihih"))     t_->GetBranch("en_sihih")->SetAddress(evSummary_.en_sihih);
+  if(t_->GetBranch("en_corren"))    t_->GetBranch("en_corren")->SetAddress(evSummary_.en_corren);
+  if(t_->GetBranch("en_correnerr")) t_->GetBranch("en_correnerr")->SetAddress(evSummary_.en_correnerr);
+  if(t_->GetBranch("en_sce"))       t_->GetBranch("en_sce")->SetAddress(evSummary_.en_sce);
+  if(t_->GetBranch("en_sceta"))     t_->GetBranch("en_sceta")->SetAddress(evSummary_.en_sceta);
+  if(t_->GetBranch("en_scphi"))     t_->GetBranch("en_scphi")->SetAddress(evSummary_.en_scphi);
+  if(t_->GetBranch("en_e2x5max"))   t_->GetBranch("en_e2x5max")->SetAddress(evSummary_.en_e2x5max);
+  if(t_->GetBranch("en_e1x5"))      t_->GetBranch("en_e1x5")->SetAddress(evSummary_.en_e1x5);
+  if(t_->GetBranch("en_e5x5"))      t_->GetBranch("en_e5x5")->SetAddress(evSummary_.en_e5x5);
+  if(t_->GetBranch("en_h2te"))      t_->GetBranch("en_h2te")->SetAddress(evSummary_.en_h2te);
+  if(t_->GetBranch("en_h2tebc"))    t_->GetBranch("en_h2tebc")->SetAddress(evSummary_.en_h2tebc);
+  if(t_->GetBranch("en_d0"))        t_->GetBranch("en_d0")->SetAddress(evSummary_.en_d0);
+  if(t_->GetBranch("en_dZ"))        t_->GetBranch("en_dZ")->SetAddress(evSummary_.en_dZ);
+  if(t_->GetBranch("en_gsfpt"))     t_->GetBranch("en_gsfpt")->SetAddress(evSummary_.en_gsfpt);
+  if(t_->GetBranch("en_gsfeta"))    t_->GetBranch("en_gsfeta")->SetAddress(evSummary_.en_gsfeta);
+  if(t_->GetBranch("en_gsfphi"))    t_->GetBranch("en_gsfphi")->SetAddress(evSummary_.en_gsfphi);
+  if(t_->GetBranch("mn"))           t_->GetBranch("mn")->SetAddress(&evSummary_.mn);
+  if(t_->GetBranch("mn_idbits"))    t_->GetBranch("mn_idbits")->SetAddress(evSummary_.mn_idbits);
+  if(t_->GetBranch("mn_chi2"))      t_->GetBranch("mn_chi2")->SetAddress(evSummary_.mn_chi2);
+  if(t_->GetBranch("mn_pixHits"))   t_->GetBranch("mn_pixHits")->SetAddress(evSummary_.mn_pixHits);
+  if(t_->GetBranch("mn_trkHits"))   t_->GetBranch("mn_trkHits")->SetAddress(evSummary_.mn_trkHits);
+  if(t_->GetBranch("mn_muHits"))    t_->GetBranch("mn_muHits")->SetAddress(evSummary_.mn_muHits);
+  if(t_->GetBranch("mn_nMatches"))  t_->GetBranch("mn_nMatches")->SetAddress(evSummary_.mn_nMatches);
+  if(t_->GetBranch("mn_d0"))        t_->GetBranch("mn_d0")->SetAddress(evSummary_.mn_d0);
+  if(t_->GetBranch("mn_dZ"))        t_->GetBranch("mn_dZ")->SetAddress(evSummary_.mn_dZ);
+
   //selected jets
   t_->GetBranch("jn")        ->SetAddress( &evSummary_.jn);
   t_->GetBranch("jn_px")     ->SetAddress(evSummary_.jn_px);
@@ -298,15 +364,16 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("jn_neutHadFrac") ->SetAddress(evSummary_.jn_neutHadFrac);
   t_->GetBranch("jn_neutEmFrac") ->SetAddress(evSummary_.jn_neutEmFrac);
   t_->GetBranch("jn_chHadFrac") ->SetAddress(evSummary_.jn_chHadFrac);
-  t_->GetBranch("jn_pid") ->SetAddress(evSummary_.jn_pid);
   if(t_->GetBranch("jn_genpt")) t_->GetBranch("jn_genpt")->SetAddress(evSummary_.jn_genpt);
   if(t_->GetBranch("jn_pumva")) t_->GetBranch("jn_pumva")->SetAddress(evSummary_.jn_pumva);
+  if(t_->GetBranch("jn_tightId"))   t_->GetBranch("jn_tightId")->SetAddress(evSummary_.jn_tightId);
+  
   if(t_->GetBranch("htvec_px")) t_->GetBranch("htvec_px")->SetAddress(&evSummary_.htvec_px);
   if(t_->GetBranch("htvec_py")) t_->GetBranch("htvec_py")->SetAddress(&evSummary_.htvec_py);
   if(t_->GetBranch("htvec_pz")) t_->GetBranch("htvec_pz")->SetAddress(&evSummary_.htvec_pz);
   if(t_->GetBranch("htvec_en")) t_->GetBranch("htvec_en")->SetAddress(&evSummary_.htvec_en);
 
-  //selected jets
+
   t_->GetBranch("ajn")        ->SetAddress( &evSummary_.ajn);
   t_->GetBranch("ajn_px")     ->SetAddress(evSummary_.ajn_px);
   t_->GetBranch("ajn_py")     ->SetAddress(evSummary_.ajn_py);
@@ -319,9 +386,9 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("ajn_neutHadFrac") ->SetAddress(evSummary_.ajn_neutHadFrac);
   t_->GetBranch("ajn_neutEmFrac") ->SetAddress(evSummary_.ajn_neutEmFrac);
   t_->GetBranch("ajn_chHadFrac") ->SetAddress(evSummary_.ajn_chHadFrac);
-  t_->GetBranch("ajn_pid") ->SetAddress(evSummary_.ajn_pid);
   if(t_->GetBranch("ajn_genpt")) t_->GetBranch("ajn_genpt")->SetAddress(evSummary_.ajn_genpt);
   if(t_->GetBranch("ajn_pumva")) t_->GetBranch("ajn_pumva")->SetAddress(evSummary_.ajn_pumva);
+  if(t_->GetBranch("ajn_tightId"))   t_->GetBranch("ajn_tightId")->SetAddress(evSummary_.jn_tightId);
   
   //primary vertex
   t_->GetBranch("vtx_px")   ->SetAddress( &evSummary_.vtx_px);
@@ -360,12 +427,15 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t)
   t_->GetBranch("g_r9")->SetAddress(evSummary_.g_r9);
   if(t_->GetBranch("g_mva"))     t_->GetBranch("g_mva")->SetAddress(evSummary_.g_mva);
   if(t_->GetBranch("g_mvaNeut")) t_->GetBranch("g_mvaNeut")->SetAddress(evSummary_.g_mvaNeut);
+  if(t_->GetBranch("g_corren"))     t_->GetBranch("g_corren")->SetAddress(evSummary_.g_corren);
+  if(t_->GetBranch("g_correnerr"))  t_->GetBranch("g_correnerr")->SetAddress(evSummary_.g_correnerr);
   if(t_->GetBranch("g_trkVeto")) t_->GetBranch("g_trkVeto")->SetAddress(evSummary_.g_trkVeto);
   t_->GetBranch("g_conv")->SetAddress( evSummary_.g_conv );
   t_->GetBranch("g_conv_px")->SetAddress( evSummary_.g_conv_px );
   t_->GetBranch("g_conv_py")->SetAddress( evSummary_.g_conv_py );
   t_->GetBranch("g_conv_pz")->SetAddress( evSummary_.g_conv_pz );
   t_->GetBranch("g_conv_en")->SetAddress( evSummary_.g_conv_en );
+  if(t_->GetBranch("g_conv_invtx")) t_->GetBranch("g_conv_invtx")->SetAddress( evSummary_.g_conv_invtx );
 
   //Higgs Info
   t_->GetBranch("h_px")     ->SetAddress( &evSummary_.h_px);
@@ -391,8 +461,8 @@ void ZZ2l2nuSummaryHandler::resetStruct()
   evSummary_.run=0;    evSummary_.lumi=0;   evSummary_.event=0;  evSummary_.cat=0;
   evSummary_.l1_px=0;  evSummary_.l1_py=0;  evSummary_.l1_pz=0;  evSummary_.l1_en=0;
   evSummary_.l2_px=0;  evSummary_.l2_py=0;  evSummary_.l2_pz=0;  evSummary_.l2_en=0;
-  evSummary_.ln=0;
-  evSummary_.jn=0;   evSummary_.ajn=0;
+  evSummary_.ln=0;     evSummary_.mn=0;     evSummary_.en=0;
+  evSummary_.jn=0;     evSummary_.ajn=0;
   evSummary_.gn=0;
   evSummary_.nmet=0;
 }

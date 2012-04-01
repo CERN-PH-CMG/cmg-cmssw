@@ -45,19 +45,31 @@ struct ZZ2l2nuSummary_t
   Float_t ln_ecalIso[MAXPARTICLES], ln_hcalIso[MAXPARTICLES], ln_trkIso[MAXPARTICLES], ln_gIso[MAXPARTICLES],  ln_chIso[MAXPARTICLES], ln_puchIso[MAXPARTICLES], ln_nhIso[MAXPARTICLES]; 
   Int_t ln_id[MAXPARTICLES], ln_genid[MAXPARTICLES], ln_pid[MAXPARTICLES], ln_passIso[MAXPARTICLES];
 
+  //lepton id variables
+  Int_t mn,en;
+  Int_t en_idbits[MAXPARTICLES], mn_idbits[MAXPARTICLES];
+  Float_t en_hoe[MAXPARTICLES],en_dphiin[MAXPARTICLES],en_detain[MAXPARTICLES],en_sihih[MAXPARTICLES],en_corren[MAXPARTICLES],en_correnerr[MAXPARTICLES];
+  Float_t en_sce[MAXPARTICLES],en_sceta[MAXPARTICLES],en_scphi[MAXPARTICLES],en_e2x5max[MAXPARTICLES],en_e1x5[MAXPARTICLES],en_e5x5[MAXPARTICLES];
+  Float_t en_h2te[MAXPARTICLES],en_h2tebc[MAXPARTICLES];
+  Float_t en_d0[MAXPARTICLES], en_dZ[MAXPARTICLES],en_gsfpt[MAXPARTICLES],en_gsfeta[MAXPARTICLES],en_gsfphi[MAXPARTICLES];
+  Float_t mn_chi2[MAXPARTICLES],mn_pixHits[MAXPARTICLES],mn_trkHits[MAXPARTICLES],mn_muHits[MAXPARTICLES],mn_nMatches[MAXPARTICLES],mn_d0[MAXPARTICLES],mn_dZ[MAXPARTICLES]; 
+
   //jets
   Int_t jn;
   Float_t jn_px[MAXPARTICLES],    jn_py[MAXPARTICLES],      jn_pz[MAXPARTICLES],          jn_en[MAXPARTICLES];
-  Float_t jn_btag1[MAXPARTICLES], jn_btag2[MAXPARTICLES],   jn_neutHadFrac[MAXPARTICLES], jn_neutEmFrac[MAXPARTICLES], jn_chHadFrac[MAXPARTICLES], jn_pid[MAXPARTICLES];  
+  Float_t jn_btag1[MAXPARTICLES], jn_btag2[MAXPARTICLES],   jn_neutHadFrac[MAXPARTICLES], jn_neutEmFrac[MAXPARTICLES], jn_chHadFrac[MAXPARTICLES];
   Int_t   jn_genid[MAXPARTICLES], jn_genflav[MAXPARTICLES];
   Float_t jn_genpt[MAXPARTICLES], jn_pumva[MAXPARTICLES];
+  Bool_t jn_tightId[MAXPARTICLES];
+
   Float_t htvec_px, htvec_py, htvec_pz, htvec_en;
 
   Int_t ajn;
   Float_t ajn_px[MAXPARTICLES],    ajn_py[MAXPARTICLES],    ajn_pz[MAXPARTICLES],          ajn_en[MAXPARTICLES]; 
-  Float_t ajn_btag1[MAXPARTICLES], ajn_btag2[MAXPARTICLES], ajn_neutHadFrac[MAXPARTICLES], ajn_neutEmFrac[MAXPARTICLES], ajn_chHadFrac[MAXPARTICLES], ajn_pid[MAXPARTICLES];  
+  Float_t ajn_btag1[MAXPARTICLES], ajn_btag2[MAXPARTICLES], ajn_neutHadFrac[MAXPARTICLES], ajn_neutEmFrac[MAXPARTICLES], ajn_chHadFrac[MAXPARTICLES];
   Int_t   ajn_genid[MAXPARTICLES], ajn_genflav[MAXPARTICLES];
   Float_t ajn_genpt[MAXPARTICLES], ajn_pumva[MAXPARTICLES];
+  Bool_t ajn_tightId[MAXPARTICLES];
 
   //primary vertex
   Float_t vtx_px  ,vtx_py  ,vtx_pz  ,vtx_en;
@@ -73,8 +85,9 @@ struct ZZ2l2nuSummary_t
   Int_t gn;
   Float_t g_px[MAXPARTICLES], g_py[MAXPARTICLES]  , g_pz[MAXPARTICLES]  , g_en[MAXPARTICLES], g_iso1[MAXPARTICLES], g_iso2[MAXPARTICLES], g_iso3[MAXPARTICLES], g_sihih[MAXPARTICLES], g_r9[MAXPARTICLES], g_hoe[MAXPARTICLES];
   Float_t g_mva[MAXPARTICLES], g_mvaNeut[MAXPARTICLES];
-  Bool_t g_conv[MAXPARTICLES];
-  Int_t g_trkVeto[MAXPARTICLES];
+  Float_t g_corren[MAXPARTICLES], g_correnerr[MAXPARTICLES];
+  Bool_t g_conv[MAXPARTICLES],g_conv_invtx[MAXPARTICLES];
+  Bool_t g_trkVeto[MAXPARTICLES];
   Float_t g_conv_px[MAXPARTICLES],g_conv_py[MAXPARTICLES],g_conv_pz[MAXPARTICLES],g_conv_en[MAXPARTICLES];
   
   //gen level event
@@ -111,7 +124,7 @@ class ZZ2l2nuSummaryHandler{
   TTree *getTree() { return t_; }
 
   void resetStruct();
-
+    
  private:
 
   //the tree
