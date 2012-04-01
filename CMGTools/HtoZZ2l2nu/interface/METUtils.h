@@ -4,9 +4,9 @@
 /** \class METUtils
  *  No description available.
  *
- *  $Date: 2011/11/07 09:08:48 $
- *  $Revision: 1.3 $
- *  \author G. Cerminara & D. Trocino & P. Silva & L. Quertenmont
+ *  $Date: 2012/03/15 09:35:58 $
+ *  $Revision: 1.4 $
+ *  \author G. Cerminara & D. Trocino & P. Silva & L. Quertenmont & L. Pernie
  */
 
 #include <utility>
@@ -123,7 +123,8 @@ namespace METUtils{
   double transverseMass(LorentzVector &visible, LorentzVector &invisible, bool assumeSameMass=false);
 
   LorentzVector smearedJet(const LorentzVector &origJet);
-
+  LorentzVector SmearJetFormGen(LorentzVectorCollection& jets, LorentzVector& met, std::vector<double> GenJet, std::vector<LorentzVector>& jetsJer);
+  double ErrEt( double Et, double Eta);
 }
 #endif
 
