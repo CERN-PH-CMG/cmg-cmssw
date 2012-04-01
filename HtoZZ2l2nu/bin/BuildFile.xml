@@ -1,9 +1,13 @@
 <use name="CMGTools/HtoZZ2l2nu"/>
 <environment>
+ <bin name="Cross_ZZ" file="Cross_ZZ.cc"></bin>
+ <bin name="EffMet_ZZ" file="EffMet_ZZ.cc"></bin>
  <bin name="runOnEventSummary" file="runOnEventSummary.cc"></bin>
+ <bin name="runOnEventSummary_ZZ" file="runOnEventSummary_ZZ.cc"></bin>
  <bin name="runGammaPlusJetsMETtemplates" file="runGammaPlusJetsMETtemplates.cc"></bin>
  <bin name="runMVAStudy" file="runMVAStudy.cc"></bin>
  <bin name="runPlotter" file="runPlotter.cc"></bin>
+ <bin name="runPlotter_ZZ" file="runPlotter_ZZ.cc"></bin>
  <bin name="runEffStudy" file="runEffStudy.cc"></bin>
  <bin name="runVBF" file="runVBF.cc"></bin>
  <bin name="run2011Analysis" file="run2011Analysis.cc"></bin>
