@@ -47,8 +47,6 @@ MASS = [200,250, 300,350, 400,450, 500,550, 600]
 #SUBMASS = [200, 225, 250, 275, 300, 325, 350, 375, 400, 425, 450, 475, 500, 525, 550, 575, 600, 625, 650];
 SUBMASS = [200,250, 300,350, 400,450, 500,550, 600]
 
-
-
 if( sys.argv[1] == '1' ):
 	FILE = open("LIST.txt","w")
 	for i in range(1,cuts1.GetNbinsX()):
@@ -69,8 +67,6 @@ if( sys.argv[1] == '1' ):
 		SCRIPT.close()
       	        print("bsub -q 8nh -J optim"+str(i)+" 'sh " + OUT+"script_"+str(i)+".sh &> "+OUT+"script_"+str(i)+".log'")
 		os.system("bsub -q 8nh 'sh " + OUT+"script_"+str(i)+".sh &> "+OUT+"script_"+str(i)+".log'")
-
-
 	FILE.close()
 
 elif(sys.argv[1] == '2' ):
@@ -82,12 +78,12 @@ elif(sys.argv[1] == '2' ):
 	for m in MASS:
         	FILE.writelines("------------------------------------------------------------------------------------\n")
 		BestLimit = []
-		fileList = commands.getstatusoutput("ls " + OUT + str(m)+"_*.log")[1].split();
+		fileList = commands.getstatusoutput("ls " + OUT + str(m)+"_*.log")[1].split();		
 		for f in fileList:
 			exp = commands.getstatusoutput("cat " + f + " | grep BANDS")[1];
 			if(len(exp)<=0):continue
 			median = exp.split()[6]
-			index = int(f[f.rfind("_")+1:f.rfind(".log")])
+			index = 1#int(f[f.rfind("_")+1:f.rfind(".log")])
 			BestLimit.append("mH="+str(m)+ " --> " + str(median).rjust(8) + " " + str(index).rjust(5) + " " + str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + " " + str(cuts3.GetBinContent(index)).rjust(5))
 		BestLimit.sort()
 		for s in BestLimit:
@@ -181,7 +177,7 @@ elif(sys.argv[1] == '4' ):
    files = ""
    for m in SUBMASS:   
 	line = list.readline().split()[0]
-	line+="/*m2lnQ.root"
+	line+="/combined/*m2lnQ.root"
 	print line
 	out = commands.getstatusoutput("ls " + line)[1] 
 	if(out.find("No such file or directory")>=0):continue

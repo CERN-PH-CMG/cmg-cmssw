@@ -898,6 +898,7 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch
             if(bin<0)bin=0;
             hmirrorshape->SetBinContent(ibin,bin);
          }
+	 if(hmirrorshape->Integral()<=0)hmirrorshape->SetBinContent(1, 1E-10);
          hmirrorshape->Write(proc+syst+"Down");
        }
 
