@@ -83,7 +83,7 @@ elif(sys.argv[1] == '2' ):
 			exp = commands.getstatusoutput("cat " + f + " | grep BANDS")[1];
 			if(len(exp)<=0):continue
 			median = exp.split()[6]
-			index = 1#int(f[f.rfind("_")+1:f.rfind(".log")])
+			index = int(f[f.rfind("_")+1:f.rfind(".log")])
 			BestLimit.append("mH="+str(m)+ " --> " + str(median).rjust(8) + " " + str(index).rjust(5) + " " + str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + " " + str(cuts3.GetBinContent(index)).rjust(5))
 		BestLimit.sort()
 		for s in BestLimit:
