@@ -3,15 +3,44 @@
 #include <cmath>
 #include <algorithm>
 
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
+#include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
+#include "DataFormats/GsfTrackReco/interface/GsfTrackFwd.h"
+#include <DataFormats/MuonReco/interface/Muon.h>
+
 #include "CMG/MetAnalysis/interface/MetUtilities.h"
 
-MetUtilities::MetUtilities(const edm::ParameterSet &iConfig) {
+MetUtilities::MetUtilities(const edm::ParameterSet &iConfig, bool isData) {
+
+  // data or MC
+  fData = isData;
+
+  // jet id
   fPUJetIdAlgo = new PileupJetIdNtupleAlgo(iConfig);
+  
+  // jet corrector
+  TString path(getenv("CMSSW_BASE"));
+  path += "/src/CMG/MetAnalysis/data/";  
+  std::vector<JetCorrectorParameters> correctionParameters;
+  correctionParameters.push_back(JetCorrectorParameters((path+"GR_R_42_V23_AK5PF_L1FastJet.txt").Data()));
+  correctionParameters.push_back(JetCorrectorParameters((path+"GR_R_42_V23_AK5PF_L2Relative.txt").Data()));
+  correctionParameters.push_back(JetCorrectorParameters((path+"GR_R_42_V23_AK5PF_L3Absolute.txt").Data()));
+  if(fData) correctionParameters.push_back(JetCorrectorParameters((path+"GR_R_42_V23_AK5PF_L2L3Residual.txt").Data()));
+  fJetCorrector = new FactorizedJetCorrector(correctionParameters);
 }
 
-MetUtilities::~MetUtilities() {}
+MetUtilities::~MetUtilities() {
+  
+  delete fPUJetIdAlgo;
+  delete fJetCorrector;
+}
 
 bool MetUtilities::filter(const PFJet *iJet,Double_t iPhi1,Double_t iEta1,Double_t iPhi2,Double_t iEta2) { 
+
   double pDEta1 = iJet->eta() - iEta1;
   double pDPhi1 = fabs(iJet->phi() - iPhi1); if(pDPhi1 > 2.*TMath::Pi()-pDPhi1) pDPhi1 = 2.*TMath::Pi()-pDPhi1;
   double pDR1   = sqrt(pDEta1*pDEta1 + pDPhi1*pDPhi1);
@@ -22,11 +51,14 @@ bool MetUtilities::filter(const PFJet *iJet,Double_t iPhi1,Double_t iEta1,Double
   if(pDR2 < 0.5) return false;
   return true;
 }
-double MetUtilities::correctedJetPt(const PFJet *iJet,double iRho) { 
+
+//double MetUtilities::correctedJetPt(const PFJet *iJet,double iRho) { 
+float MetUtilities::correctedJetPt(const PFJet *iJet,double iRho) { 
+  
   fJetCorrector->setJetEta(iJet->eta());
   fJetCorrector->setJetPt (iJet->pt());
   fJetCorrector->setJetPhi(iJet->phi());
-  fJetCorrector->setJetE  (rawMom.E());
+  fJetCorrector->setJetE  (iJet->energy());   // rawMom.E()); chiara
   fJetCorrector->setRho   (iRho);
   fJetCorrector->setJetA  (iJet->jetArea());
   fJetCorrector->setJetEMF(-99.0);     
@@ -35,6 +67,7 @@ double MetUtilities::correctedJetPt(const PFJet *iJet,double iRho) {
 }
 
 bool MetUtilities::passPFLooseId(const PFJet *iJet) { 
+
   if(iJet->energy()== 0)       return false;
   if(iJet->neutralHadronEnergy()/iJet->energy() > 0.99)   return false;
   if(iJet->neutralEmEnergy()/iJet->energy()     > 0.99)   return false;
@@ -44,35 +77,39 @@ bool MetUtilities::passPFLooseId(const PFJet *iJet) {
   if(iJet->chargedMultiplicity()            < 1      && fabs(iJet->eta()) < 2.4 ) return false;
   return true;
 }
-void MetUtilities::addNeut(const PFJet *iJet,Candidate::LorentzVector &iVec, Double_t &iSumEt, 
-                           FactorizedJetCorrector *iJetCorrector,double iRho,
-                           int iSign) { 
+
+void MetUtilities::addNeut(const PFJet *iJet, Candidate::LorentzVector &iVec, Double_t &iSumEt, double iRho, int iSign) { 
+  
   TLorentzVector lVec(0,0,0,0);
-  double lPt = correctedJetPt(iJet,iJetCorrector,iRho);                       // chiara
-  lPt *= (iJet->neutralEmEnergy()/iJet->energy() + iJet->neutralHadronEnergy()/iJet->energy());   // chiara
-  lVec.SetPtEtaPhiE(lPt,iJet->eta(),iJet->etaPhi(),iJet->mass());
+  double lPt = correctedJetPt(iJet,iRho);                       
+  lPt *= (iJet->neutralEmEnergy()/iJet->energy() + iJet->neutralHadronEnergy()/iJet->energy());   
+  lVec.SetPtEtaPhiE(lPt,iJet->eta(),iJet->phi(),iJet->mass());
   if(iSign > 0) iVec -= lVec;
   if(iSign < 0) iVec += lVec;
   iSumEt += lPt;
 }
 
-float MetUtilies::pfCandDz(const PFCandidateRef iPFCandRef,const Vertex iPV) { 
-    float lDz = 999;
-    if(iPFCandRef->trackRef().isNonnull()) 
-      lDz = fabs(iPFCandRef->trackRef()->dz(iPV.position()));
-    else if(pflowCandRef->gsfTrackRef().isNonnull())
-      lDz = fabs(iPFCandRef->gsfTrackRef()->dz(iPV.position()));
-    else if(iPFCandRef->muonRef().isNonnull() && iPFCandRef->muonRef()->innerTrack().isNonnull())
-      lDz = fabs(iPFCandRef->muonRef()->innerTrack()->dz(iPV.position()));
-    return lDz;
+float MetUtilities::pfCandDz(const PFCandidateRef iPFCandRef, const Vertex iPV) { 
+
+  float lDz = 999;
+  if(iPFCandRef->trackRef().isNonnull()) 
+    lDz = fabs(iPFCandRef->trackRef()->dz(iPV.position()));
+  else if(iPFCandRef->gsfTrackRef().isNonnull())
+    lDz = fabs(iPFCandRef->gsfTrackRef()->dz(iPV.position()));
+  else if(iPFCandRef->muonRef().isNonnull() && iPFCandRef->muonRef()->innerTrack().isNonnull())
+    lDz = fabs(iPFCandRef->muonRef()->innerTrack()->dz(iPV.position()));
+  return lDz;
 }
-float MetUtilities::passJetId(const PFJet *iJet,const Vertex iPV,FactorizedJetCorrector *iJetCorrector,const reco::VertexCollection &iAllvtx,double iRho) { 
-  //Ref Pasquale stuff
-  double lJec = correctedJetPt(iJet,iRho)/iJet->Pt();
-  PileupJetIdentifier lPUJetId =  fPUJetIdAlgo->computeIdVariables(iJet,lJec,&iPV,iAllVtx,true);
-  if(!passLooseId(iJet)                          return false;
-  if(fabs(lPUJetId.dZ) < 0.2)                    return true;
-  if(fabs(jet->eta())  < 3.0 && lPUJetId.mva > -0.8) return true;
-  if(fabs(jet->eta())  > 3.0 && lPUJetId.mva > -0.5) return true;
+
+float MetUtilities::passJetId(const PFJet *iJet, const Vertex iPV, const reco::VertexCollection &iAllvtx, double iRho) { 
+
+  // Ref Pasquale stuff
+  double lJec = correctedJetPt(iJet,iRho)/iJet->pt();
+  ///// float lJec = correctedJetPt(iJet,iRho)/iJet->pt();        //chiara
+  PileupJetIdentifier lPUJetId =  fPUJetIdAlgo->computeIdVariables(iJet,lJec,&iPV,iAllvtx,true);
+  if(!passPFLooseId(iJet))                            return false;
+  if(fabs(lPUJetId.dZ) < 0.2)                         return true;
+  if(fabs(iJet->eta())  < 3.0 && lPUJetId.mva > -0.8) return true;
+  if(fabs(iJet->eta())  > 3.0 && lPUJetId.mva > -0.5) return true;
   return false;
 }
