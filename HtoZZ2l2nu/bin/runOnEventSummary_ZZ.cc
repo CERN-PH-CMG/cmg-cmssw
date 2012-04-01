@@ -523,10 +523,10 @@ int main(int argc, char* argv[])
          case MUMU: tag_cat = "mumu";  break;
          case EE  : tag_cat = "ee";    break;
          default  : tag_cat = "??";    break;
-
       }
-      if(isMC && mctruthmode==1 && ev.mccat!=DY_EE && ev.mccat!=DY_MUMU)  continue;
-      if(isMC && mctruthmode==2 && ev.mccat!=DY_TAUTAU) continue;
+
+      if(isMC && mctruthmode==1 && !isDYToLL(ev.mccat) ) continue;
+      if(isMC && mctruthmode==2 && !isDYToTauTau(ev.mccat) ) continue;
 
       bool isGammaEvent = false;
       if(gammaEvHandler){
@@ -722,10 +722,14 @@ int main(int argc, char* argv[])
      // float neutsumEt        = ev.neutsumEjmett;
     
       //Prepare Variation JES
+      vector<double> GenJet;
+      for(int ijet=0; ijet<ev.jn; ijet++){
+          GenJet.push_back(ev.jn_genpt[ijet]);
+      }
       LorentzVectorCollection zvvs;
       std::vector<LorentzVectorCollection> Jets;
       //cout<<runSystematics<<endl;
-      if(/*runSystematics*/ true) jet::computeVariation(jetsP4,redMetP4, Jets, zvvs, &stdPtResol,&stdEtaResol,&stdPhiResol,&jecUnc);
+      if(/*runSystematics*/ true) METUtils::computeVariation(jetsP4,GenJet, metP4, Jets, zvvs, &jecUnc);
 
       zvvs.insert(zvvs.begin(),phys.met[0]);
       Jets.insert(Jets.begin(),jetsP4);
@@ -739,12 +743,7 @@ int main(int argc, char* argv[])
       mon.fillHisto("Sys_NewMet_Jesp", tags_cat, zvvs[1].pt()+redMetP4.pt(), iweight);
       mon.fillHisto("Sys_NewMet_Jesm", tags_cat, zvvs[2].pt()+redMetP4.pt(), iweight);
       }
-
-      //JER with association
-      vector<double> GenJet;
-      for(int ijet=0; ijet<ev.jn; ijet++){
-          GenJet.push_back(ev.jn_genpt[ijet]);
-      }
+      
       LorentzVector newMetJer;
       std::vector<LorentzVector> jetsJer;
       if(/*runSystematics*/ true) newMetJer = METUtils::SmearJetFormGen(jetsP4, redMetP4, GenJet, jetsJer);
