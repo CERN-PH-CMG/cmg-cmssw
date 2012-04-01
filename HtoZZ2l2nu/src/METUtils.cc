@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2012/03/22 11:33:40 $
- *  $Revision: 1.6 $
+ *  $Date: 2012/03/26 13:43:46 $
+ *  $Revision: 1.7 $
  *  \author G. Cerminara & D. Trocino & P. Silva & L. Quertenmont
  */
 
@@ -10,6 +10,7 @@
 #include "DataFormats/Math/interface/deltaR.h"
 #include "TVector2.h"
 #include "TMath.h"
+#include "TLorentzVector.h"
 #include "TRandom.h"
 
 using namespace std;
@@ -315,6 +316,84 @@ LorentzVector redMET(RedMetType Type, const LorentzVector& theLepton1, double si
     return LorentzVector(px,py,pz,en);
   }
 
+  LorentzVector SmearJetFormGen(LorentzVectorCollection& jetsP4, LorentzVector& met, std::vector<double> GenJet, std::vector<LorentzVector>& jetsJer)
+  {
+     jetsJer.clear();
+     LorentzVector jetDiff;
+     LorentzVector newMetJer;
+     TRandom *gen_ = new TRandom();
+     for(int unsigned ijet=0; ijet<jetsP4.size(); ijet++){
+       float shift = 999.;
+       float smear = -999.;
+       // value from https://cms.web.cern.ch/org/jets-and-missing-et-pog
+       if (fabs(jetsP4[ijet].eta())<=1.1)                                 smear = 1.066;
+       if (fabs(jetsP4[ijet].eta())<=1.7 && fabs(jetsP4[ijet].eta())>1.1) smear = 1.191;
+       if (fabs(jetsP4[ijet].eta())<=2.3 && fabs(jetsP4[ijet].eta())>1.7) smear = 1.096;
+       if (fabs(jetsP4[ijet].eta())>2.3)                                  smear = 1.166;
+
+       if( GenJet[ijet]!=0. )          shift = (smear-1.) * (jetsP4[ijet].pt() - GenJet[ijet] )/jetsP4[ijet].pt();
+       else {
+         double expres = ErrEt(jetsP4[ijet].pt(),jetsP4[ijet].eta());
+         double relsmear = expres * sqrt(smear*smear-1.);
+         shift = gen_->Gaus(0.,relsmear);
+       }
+       float ptSmeared  = jetsP4[ijet].pt();
+       float eneSmeared = jetsP4[ijet].e();
+       if( shift>-1 && shift < 2) {
+         ptSmeared  *= (1 + shift);
+         eneSmeared *= (1 + shift);
+       }
+       TLorentzVector newJet1; newJet1.SetPtEtaPhiE(ptSmeared,jetsP4[ijet].eta(),jetsP4[ijet].phi(),eneSmeared);
+       LorentzVector newJet(newJet1.Px(),newJet1.Py(),newJet1.Pz(),newJet1.E());
+       jetDiff += ( newJet -jetsP4[ijet]);
+       jetsJer.push_back(newJet);
+     }
+     //finish computation of the variation
+     newMetJer = -jetDiff + met;
+     return newMetJer;
+  }
+
+  // pfjet resolutions. taken from AN-2010-371
+  double ErrEt( double Et, double Eta) {
+  
+   double InvPerr2;
+  
+   double N, S, C, m;
+   if(fabs(Eta) < 0.5 ) {
+     N = 3.96859;
+     S = 0.18348;
+     C = 0.;
+     m = 0.62627;
+   } else if( fabs(Eta) < 1. ) {
+     N = 3.55226;
+     S = 0.24026;
+     C = 0.;
+     m = 0.52571;
+   } else if( fabs(Eta) < 1.5 ) {
+     N = 4.54826;
+     S = 0.22652;
+     C = 0.;
+     m = 0.58963;
+   } else if( fabs(Eta) < 2. ) {
+     N = 4.62622;
+     S = 0.23664;
+     C = 0.;
+     m = 0.48738;
+   } else if( fabs(Eta) < 3. ) {
+     N = 2.53324;
+     S = 0.34306;
+     C = 0.;
+     m = 0.28662;
+   } else if( fabs(Eta) < 5. ) {
+     N = 2.95397;
+     S = 0.11619;
+     C = 0.;
+     m = 0.96086;
+   }
+   // this is the absolute resolution (squared), not sigma(pt)/pt
+   // so have to multiply by pt^2, thats why m+1 instead of m-1
+   InvPerr2 =  (N * fabs(N) ) + (S * S) * pow(Et, m+1.) + (C * C) * Et * Et ;
+   return sqrt(InvPerr2)/Et;
+  }
+
 }
-
-
