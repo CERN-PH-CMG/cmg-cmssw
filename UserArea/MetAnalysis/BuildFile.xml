@@ -1,0 +1,12 @@
+<use   name="FWCore/Framework"/>
+<use   name="FWCore/ParameterSet"/>
+<use   name="FWCore/Utilities"/>
+<use   name="FWCore/PluginManager"/>
+<use   name="root"/>
+<use   name="rootcore"/>
+<use   name="DataFormats/JetReco"/>
+<use   name="DataFormats/METReco"/>
+<use   name="CMG/JetIDAnalysis"/>
+<export>
+  <lib   name="1"/>
+</export>

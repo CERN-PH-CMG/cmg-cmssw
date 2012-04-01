@@ -1,0 +1,5 @@
+<use   name="CMG/MetAnalysis"/>
+<use   name="RecoMET/METAlgorithms"/>
+<library   file="*.cc" name="CMGMetAnalysisPlugins">
+  <flags   EDM_PLUGIN="1"/>
+</library>
