@@ -1,7 +1,6 @@
 <use name="CMGTools/HtoZZ2l2nu"/>
 <environment>
  <bin name="Cross_ZZ" file="Cross_ZZ.cc"></bin>
-<!-- <bin name="EffMet_ZZ" file="EffMet_ZZ.cc"></bin> -->
  <bin name="runOnEventSummary" file="runOnEventSummary.cc"></bin>
  <bin name="runOnEventSummary_ZZ" file="runOnEventSummary_ZZ.cc"></bin>
  <bin name="runGammaPlusJetsMETtemplates" file="runGammaPlusJetsMETtemplates.cc"></bin>
