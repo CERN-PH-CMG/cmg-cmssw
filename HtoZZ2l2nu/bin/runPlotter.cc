@@ -280,6 +280,8 @@ void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, 
    std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
    std::vector<TObject*> ObjectToDelete;
    for(unsigned int i=0;i<Process.size();i++){
+      if(Process[i]["isinvisible"].toBool())continue;
+
       TCanvas* c1 = new TCanvas("c1","c1",500,500);
       c1->SetLogz(true);
 
@@ -318,7 +320,7 @@ void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, 
       }   
       if(!hist)continue;
 
-      if(string(hist->GetXaxis()->GetTitle())=="cut index")return;
+      if(string(hist->GetXaxis()->GetTitle())=="cut index"){delete c1; return;}
 
       SaveName = hist->GetName();
       ObjectToDelete.push_back(hist);
@@ -370,14 +372,21 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    T->AddText(Buffer);
 
    std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
+   int NSampleToDraw = 0;
+   for(unsigned int i=0;i<Process.size();i++){
+      if(Process[i]["isinvisible"].toBool())continue;
+      NSampleToDraw++;
+   }
    int CanvasX = 4;
-   int CanvasY = ceil(Process.size()/CanvasX);
+   int CanvasY = ceil(NSampleToDraw/CanvasX);
    TCanvas* c1 = new TCanvas("c1","c1",1000,1000);
    c1->Divide(CanvasX,CanvasY,0,0);
 
 
    std::vector<TObject*> ObjectToDelete;
    for(unsigned int i=0;i<Process.size();i++){
+      if(Process[i]["isinvisible"].toBool())continue;
+
       TVirtualPad* pad = c1->cd(i+1);
       pad->SetLogz(true);
       pad->SetTopMargin(0.0); pad->SetBottomMargin(0.10);  pad->SetRightMargin(0.20);
@@ -416,7 +425,7 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
          delete tmphist;
       }   
       if(!hist)continue;
-      if(string(hist->GetXaxis()->GetTitle())=="cut index")return;
+      if(string(hist->GetXaxis()->GetTitle())=="cut index"){delete c1; return;}
 
       SaveName = hist->GetName();
       ObjectToDelete.push_back(hist);
@@ -476,6 +485,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
    std::string SaveName = "";
    std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
    for(unsigned int i=0;i<Process.size();i++){
+      if(Process[i]["isinvisible"].toBool())continue;
       TH1* hist = NULL;
       std::vector<JSONWrapper::Object> Samples = (Process[i])["data"].daughters();
       for(unsigned int j=0;j<Samples.size();j++){
@@ -512,7 +522,8 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
          delete tmphist;
       }   
       if(!hist)continue;
-      if(string(hist->GetXaxis()->GetTitle())=="cut index")return;
+      if(string(hist->GetXaxis()->GetTitle())=="cut index"){delete c1; return;}
+
 
       SaveName = hist->GetName();
       if(Process[i].isTag("color" ) )hist->SetLineColor  ((int)Process[i][ "color"].toDouble()); else hist->SetLineColor  (1);
@@ -522,6 +533,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
       if(Process[i].isTag("mcolor") )hist->SetMarkerColor((int)Process[i]["mcolor"].toDouble()); 
       if(Process[i].isTag("fcolor") )hist->SetFillColor  ((int)Process[i]["fcolor"].toDouble()); 
       if(Process[i].isTag("lwidth") )hist->SetLineWidth  ((int)Process[i]["lwidth"].toDouble());// else hist->SetLineWidth  (1);
+      if(Process[i].isTag("lstyle") )hist->SetLineStyle  ((int)Process[i]["lstyle"].toDouble());// else hist->SetLinStyle  (1);
       if(Process[i].isTag("fill"  ) )hist->SetFillColor  ((int)Process[i]["fill"  ].toDouble());
       if(Process[i].isTag("marker") )hist->SetMarkerStyle((int)Process[i]["marker"].toDouble());// else hist->SetMarkerStyle(1);
 
