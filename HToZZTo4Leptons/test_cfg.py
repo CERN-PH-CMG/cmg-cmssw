@@ -136,7 +136,7 @@ from CMGTools.HToZZTo4Leptons.samples.samples_V4_0_0 import *
 
 # selectedComponents = mc_zz
 # selectedComponents.append( Hig120GluGlu )
-selectedComponents = [Hig120GluGlu]
+selectedComponents = Fall11
 
 for comp in selectedComponents:
     comp.splitFactor = 10
