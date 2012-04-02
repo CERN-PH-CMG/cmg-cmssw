@@ -25,25 +25,54 @@ class PhysicsObject(object):
                            eta = self.eta(),
                            phi = self.phi() )
 
+
 class Jet( PhysicsObject):
     pass
 
+
 class GenJet( PhysicsObject):
     pass
+
 
 class Lepton( PhysicsObject):
     def sip3D(self):
         patLepton = self.physObj.sourcePtr()
         return abs( patLepton.dB(2) ) / patLepton.edB(2) 
 
+
 class Muon( Lepton ):
+    
+    def detIso( self, rho ):
+        '''Rho corrected detector-based isolation, for the H->ZZ->4l baseline analysis'''
+        patMuon = self.sourcePtr() 
+        isoEcal = patMuon.ecalIso()
+        isoHcal = patMuon.hcalIso()
+        isoTk   = patMuon.userIsolation( 7 )
+        isoEcal, isoHcal = self.rhoCorrMu(rho, isoEcal, isoHcal)
+        return (isoEcal + isoHcal + isoTk)/patMuon.pt()
+
+    def rhoCorrMu(self, rho, ecalIso, hcalIso):
+        '''rho correction for the ecal and hcal iso. returns the corrected pair'''
+        AreaEcal = [0.074, 0.045] # barrel/endcap 
+        AreaHcal = [0.022 , 0.030] # barrel/endcap
+        ifid = 1 
+        if abs( self.eta() ) < 1.479:
+            ifid = 0 # selecting barrel settings
+        ecalIso = ecalIso - AreaEcal[ifid] * rho
+        hcalIso = hcalIso - AreaHcal[ifid] * rho
+        return ecalIso, hcalIso
+
+        
+class Electron( Lepton ):
+    '''FIXME: add detector based isolation'''
     pass
 
-class Electron( Lepton ):
-    pass
 
 class GenParticle( PhysicsObject):
-    pass
+    def __str__(self):
+        base = super(GenParticle, self).__str__()
+        theStr = '{base}, status = {status:>2}'.format(base=base, status=self.status())
+        return theStr
 
 class GenLepton( GenParticle ):
     def sip3D(self):
