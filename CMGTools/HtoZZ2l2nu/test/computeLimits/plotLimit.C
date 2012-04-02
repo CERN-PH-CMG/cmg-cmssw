@@ -189,7 +189,7 @@ void plotLimit(TString inputs=""){
          MassAxis[i]   = mass;
          ObsLimit[i]   = limits.Obs;
 
-         if(int(MassAxis[i])%100==0){
+         if(int(MassAxis[i])%50==0){
             MassAxisExp[NExp]= mass;
             ExpLimitm2[NExp] = limits.Exp_minus2s;
             ExpLimitm1[NExp] = limits.Exp_minus1s;
@@ -207,7 +207,7 @@ void plotLimit(TString inputs=""){
    TCutG* TGExpLimit1S = GetErrorBand("1S", NExp, MassAxisExp, ExpLimitm1, ExpLimitp1);  
    TCutG* TGExpLimit2S = GetErrorBand("2S", NExp, MassAxisExp, ExpLimitm2, ExpLimitp2);  TGExpLimit2S->SetFillColor(5);
   
-   printf("Obs Limits for Model are: ");for(int i=0;i<N;i++){if(int(MassAxis[i])%100!=0)continue; printf("%f ",ObsLimit[i]);}printf("\n");
+   printf("Obs Limits for Model are: ");for(int i=0;i<N;i++){if(int(MassAxis[i])%50!=0)continue; printf("%f ",ObsLimit[i]);}printf("\n");
    printf("Exp Limits for Model are: ");for(int i=0;i<NExp;i++){printf("%f+-%f ",ExpLimit[i], (ExpLimitp1[i]-ExpLimitm1[i]))/2.0;}printf("\n");
 
    TGExpLimit->SetLineColor(2);  TGExpLimit->SetLineStyle(1);
