@@ -97,11 +97,13 @@ class CheckDatasetExists(Task):
         Task.__init__(self,'CheckDatasetExists', dataset, user, options)
     def run(self, input):
         pattern = fnmatch.translate(self.options.wildcard)
-        data = createDataset(self.user, self.dataset, pattern)
+        run_range = (self.options.min_run, self.options.max_run)
+        data = createDataset(self.user, self.dataset, pattern, run_range = run_range)
         if( len(data.listOfGoodFiles()) == 0 ):
-            raise Exception('no good root file in dataset %s | %s | %s ' % (self.user,
+            raise Exception('no good root file in dataset %s | %s | %s | %s' % (self.user,
                                                                             self.dataset,
-                                                                            self.options.wildcard ))        
+                                                                            self.options.wildcard,
+                                                                            run_range))        
         return {'Dataset':self.dataset}
 
 class BaseDataset(Task):
@@ -317,12 +319,16 @@ class SourceCFG(Task):
     """Generate a source CFG using 'sourceFileList.py' by listing the CASTOR directory specified. Applies the file wildcard, '--wildcard'"""
     def __init__(self, dataset, user, options):
         Task.__init__(self,'SourceCFG', dataset, user, options)    
+    def addOption(self, parser):
+        parser.add_option("--min-run", dest="min_run", default=-1, type=int, help='When querying DBS, require runs >= than this run')
+        parser.add_option("--max-run", dest="max_run", default=-1, type=int, help='When querying DBS, require runs <= than this run')
     def run(self, input):
 
         jobdir = input['CreateJobDirectory']['JobDir']
         pattern = fnmatch.translate(self.options.wildcard)
-
-        data = createDataset(self.user, self.dataset, pattern)
+        
+        run_range = (self.options.min_run, self.options.max_run)
+        data = createDataset(self.user, self.dataset, pattern, run_range = run_range)
         good_files = data.listOfGoodFiles()
         bad_files = [fname for fname in data.listOfFiles() if not fname in good_files]
         
