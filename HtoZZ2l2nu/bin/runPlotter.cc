@@ -318,6 +318,8 @@ void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, 
       }   
       if(!hist)continue;
 
+      if(string(hist->GetXaxis()->GetTitle())=="cut index")return;
+
       SaveName = hist->GetName();
       ObjectToDelete.push_back(hist);
       hist->SetTitle("");
@@ -414,6 +416,7 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
          delete tmphist;
       }   
       if(!hist)continue;
+      if(string(hist->GetXaxis()->GetTitle())=="cut index")return;
 
       SaveName = hist->GetName();
       ObjectToDelete.push_back(hist);
@@ -509,6 +512,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
          delete tmphist;
       }   
       if(!hist)continue;
+      if(string(hist->GetXaxis()->GetTitle())=="cut index")return;
 
       SaveName = hist->GetName();
       if(Process[i].isTag("color" ) )hist->SetLineColor  ((int)Process[i][ "color"].toDouble()); else hist->SetLineColor  (1);
