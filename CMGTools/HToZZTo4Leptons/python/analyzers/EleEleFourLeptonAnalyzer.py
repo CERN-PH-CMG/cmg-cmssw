@@ -11,12 +11,12 @@ class EleEleFourLeptonAnalyzer( FourLeptonAnalyzer ):
         super(EleEleFourLeptonAnalyzer, self).declareHandles()
 
         self.handles['leptons1'] = AutoHandle(
-            'cmgElectronSel',
+            'cmgElectronSelStdLep',
             'std::vector<cmg::Electron>'
             )
 
         self.handles['leptons2'] = AutoHandle(
-            'cmgElectronSel',
+            'cmgElectronSelStdLep',
             'std::vector<cmg::Electron>'
             )
         

@@ -3,6 +3,7 @@ from CMGTools.RootTools.analyzers.TreeAnalyzer import TreeAnalyzer
 class FourLeptonTreeProducer( TreeAnalyzer ):
     '''Tree producer for the H->ZZ->4 lepton analysis.
 
+    FIXME: A SINGLE TREE FOR ALL ANALYZERS
     Some of the functions in this class should be made available to everybody.'''
     
     def declareVariables(self):
@@ -36,6 +37,7 @@ class FourLeptonTreeProducer( TreeAnalyzer ):
         particleVars('H')
 
         var('step')
+        var('skim')
         
         self.tree.book()
 
@@ -56,25 +58,28 @@ class FourLeptonTreeProducer( TreeAnalyzer ):
             fill('{pName}Iso'.format(pName=pName), particle.relIso(0.5) )
            
 
-        event = getattr( event, self.cfg_ana.anaName )
+        subevent = getattr( event, self.cfg_ana.anaName )
 
-        fill('step', event.step )
+        fill('step', subevent.step )
 
-        if hasattr( event, 'zBoson2'): 
-            fParticleVars('Z1', event.zBoson1 )
-            fParticleVars('Z1L1', event.zBoson1.leg1 )
-            fParticleVars('Z1L2', event.zBoson1.leg2 )
+        if hasattr( event, 'skim' ):
+            fill('skim', event.skim )
+            
+        if hasattr( subevent, 'zBoson1'): 
+            fParticleVars('Z1', subevent.zBoson1 )
+            fParticleVars('Z1L1', subevent.zBoson1.leg1 )
+            fParticleVars('Z1L2', subevent.zBoson1.leg2 )
 
-        if hasattr( event, 'zBoson2'): 
-            fParticleVars('Z2', event.zBoson2 )
-            fParticleVars('Z2L1', event.zBoson2.leg1 )
-            fParticleVars('Z2L2', event.zBoson2.leg2 )
+        if hasattr( subevent, 'zBoson2'): 
+            fParticleVars('Z2', subevent.zBoson2 )
+            fParticleVars('Z2L1', subevent.zBoson2.leg1 )
+            fParticleVars('Z2L2', subevent.zBoson2.leg2 )
 
-        if hasattr( event, 'higgsCand' ):
-            fParticleVars('H', event.higgsCand )
-            fParticleVars('L1', event.theLeptons_ptSorted[0])
-            fParticleVars('L2', event.theLeptons_ptSorted[1])
-            fParticleVars('L3', event.theLeptons_ptSorted[2])
-            fParticleVars('L4', event.theLeptons_ptSorted[3])
+        if hasattr( subevent, 'higgsCand' ):
+            fParticleVars('H', subevent.higgsCand )
+            fParticleVars('L1', subevent.theLeptons_ptSorted[0])
+            fParticleVars('L2', subevent.theLeptons_ptSorted[1])
+            fParticleVars('L3', subevent.theLeptons_ptSorted[2])
+            fParticleVars('L4', subevent.theLeptons_ptSorted[3])
  
         self.tree.fill()

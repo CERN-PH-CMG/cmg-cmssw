@@ -11,12 +11,12 @@ class MuEleFourLeptonAnalyzer( FourLeptonAnalyzer ):
         super(MuEleFourLeptonAnalyzer, self).declareHandles()
 
         self.handles['leptons1'] = AutoHandle(
-            'cmgMuonSel',
+            'cmgMuonSelStdLep',
             'std::vector<cmg::Muon>'
             )
 
         self.handles['leptons2'] = AutoHandle(
-            'cmgElectronSel',
+            'cmgElectronSelStdLep',
             'std::vector<cmg::Electron>'
             )
         
