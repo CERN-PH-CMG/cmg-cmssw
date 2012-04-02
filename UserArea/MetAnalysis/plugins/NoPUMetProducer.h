@@ -11,6 +11,8 @@
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/JetReco/interface/PFJet.h"
 
+#include "CMG/MetAnalysis/interface/MetUtilities.h"
+
 using namespace reco;
 
 class NoPUMetProducer : public edm::EDProducer {
@@ -26,8 +28,12 @@ class NoPUMetProducer : public edm::EDProducer {
 	edm::InputTag PFcandCollTag;
 	edm::InputTag uncorPFJetCollectionTag;
 	edm::InputTag srcVertices_;
-        double iDZCut;
-	double iPhi1,iEta1,iPhi2,iEta2; 
+
+	double iDZCut_;
+	double jetPtThreshold_;
+	bool isData_;
+
+	MetUtilities *utils;
 
 	FactorizedJetCorrector* iJetCorrector;
 };

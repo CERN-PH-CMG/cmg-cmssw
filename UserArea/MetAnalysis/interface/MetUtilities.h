@@ -23,23 +23,21 @@ public:
 
   bool passPFLooseId(const PFJet *iJet);
 
-  // double correctedJetPt(const PFJet *iJet,double iRho);
-  float correctedJetPt(const PFJet *iJet,double iRho);      // chiara
+  float correctedJetPt(const PFJet *iJet,double iRho);      
 
-  void addNeut(const PFJet *iJet, Candidate::LorentzVector &iVec, Double_t &iSumEt, double iRho, int iSign);
+  void addNeut(const PFJet *iuncorrJet, const PFJet *icorrJet, Candidate::LorentzVector *iVec, Float_t *iSumEt, double iRho, int iSign);
 
-  float passJetId(const PFJet *iJet, const Vertex iPV, const reco::VertexCollection &iAllvtx, double iRho);
+  float passJetId(const PFJet *iuncorrJet, const PFJet *icorrJet, const Vertex iPV, const reco::VertexCollection &iAllvtx, double iRho);
 
   float pfCandDz(const PFCandidateRef iPFCandRef, const Vertex iPV);
 
 protected:
-
-  bool fData;
   
   // PU jet identifier 
   PileupJetIdNtupleAlgo *fPUJetIdAlgo;
 
   // jet corrections
+  bool fData;
   FactorizedJetCorrector *fJetCorrector;
 };
 

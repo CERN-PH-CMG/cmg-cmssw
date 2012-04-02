@@ -6,6 +6,7 @@
 <use   name="rootcore"/>
 <use   name="DataFormats/JetReco"/>
 <use   name="DataFormats/METReco"/>
+<use   name="CondFormats/JetMETObjects"/>
 <use   name="CMG/JetIDAnalysis"/>
 <export>
   <lib   name="1"/>
