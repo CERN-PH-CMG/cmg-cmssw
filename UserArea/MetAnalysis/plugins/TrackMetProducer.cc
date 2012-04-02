@@ -21,22 +21,30 @@
 
 #include "CMG/MetAnalysis/plugins/TrackMetProducer.h"
 
+using namespace edm;
+using namespace std;
+using namespace reco;
+
 TrackMetProducer::TrackMetProducer(const edm::ParameterSet& iConfig) {
   
   produces<reco::PFMETCollection>();
+
+  isData_ = iConfig.getParameter<bool>("isData");
+  utils = new MetUtilities(iConfig.getParameter<edm::ParameterSet>("puJetIDAlgo"),isData_); 
+
+  iDZCut_ = iConfig.getParameter<double>("iDZCut");
 }
 
-TrackMetProducer::~TrackMetProducer() { }
+TrackMetProducer::~TrackMetProducer() { 
+
+  delete utils;
+}
 
 void TrackMetProducer::beginJob() { }
 
 void TrackMetProducer::endJob() { } 
 
 void TrackMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
-
-  using namespace edm;
-  using namespace std;
-  using namespace reco;
 
   // PF candidates 
   edm::Handle< edm::View<reco::Candidate> > collectionHandle;
@@ -53,14 +61,16 @@ void TrackMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   reco::Vertex vtx;
   if (primaryVertex->size()>0) vtx = *vMax;
 
+  // -------------------------------------------------------
+
   reco::Candidate::LorentzVector totalP4(0,0,0,0);
   float sumet = 0.0;
   
   for(int index = 0; index < (int)collection->size(); index++) {
     const PFCandidateRef pflowCandRef = collection->refAt(index).castTo<PFCandidateRef>();
     if(primaryVertex->size()==0) continue;
-    double pDZ  = utils.pfCandDz(pflowCandRef,vtx);
-    if(pDZ > fDZCut) continue;
+    double pDZ  = utils->pfCandDz(pflowCandRef,vtx);
+    if(pDZ > iDZCut_) continue;
     totalP4 += pflowCandRef->p4();
     sumet   += pflowCandRef->pt();
   }

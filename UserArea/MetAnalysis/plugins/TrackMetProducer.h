@@ -12,6 +12,8 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 
+#include "CMG/MetAnalysis/interface/MetUtilities.h"
+
 class TrackMetProducer : public edm::EDProducer {
     public:
         explicit TrackMetProducer(const edm::ParameterSet&);
@@ -24,5 +26,8 @@ class TrackMetProducer : public edm::EDProducer {
 
 	edm::InputTag collectionTag; 
 	edm::InputTag vtxcollectionTag;
-        double iDZCut;
+
+	MetUtilities *utils;
+        double iDZCut_;
+	bool isData_;
 };
