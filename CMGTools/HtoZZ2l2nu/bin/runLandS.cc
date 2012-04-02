@@ -44,7 +44,7 @@ TString landsExe("$CMSSW_BASE/src/UserCode/mschen/LandS/test/lands.exe");
 
 #define RUNASYMPTOTIC(INURL,OUTURL)\
   gSystem->ExpandPathName(landsExe); \
-  TString cmd=TString(landsExe + " -d ") + INURL + TString(" -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 40000 --nToysForCLb 20000 --seed 1234 -rMax 50 -rMin 0.1 > ") + logUrl + TString(" "); \
+  TString cmd=TString(landsExe + " -d ") + INURL + TString(" -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 10000 --nToysForCLb 5000 --seed 1234 -rMax 50 -rMin 0.1 > ") + logUrl + TString(" "); \
   cout << "Launching : " << cmd << endl;				\
   gSystem->Exec(cmd);
 
@@ -84,8 +84,12 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo="finalmt",TString
 std::vector<TString> buildDataCard(Int_t mass, TString histo="finalmt", TString url="plotter.root",TString Json="", TString outDir="./", bool runSystematics=true, bool shape=true, Int_t index=-1);
 void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t> &allShapes, TString mainHisto, TString sideBandHisto);
 
-bool subNRB = false;
+bool subNRB2011 = false;
+bool subNRB2012 = false;
 bool MCclosureTest = false;
+
+bool mergeWWandZZ = true;
+bool skipWW = false;
 
 void printHelp()
 {
@@ -125,7 +129,8 @@ int main(int argc, char* argv[])
     if(arg.find("--help")  !=string::npos) { printHelp(); return -1;} 
     else if(arg.find("--syst")  !=string::npos) { runSystematics=true; printf("syst = True\n");}
     else if(arg.find("--shape") !=string::npos) { shape=true; printf("shapeBased = True\n");}
-    else if(arg.find("--subNRB")!=string::npos) { subNRB=true; printf("subNRB = True\n");}
+    else if(arg.find("--subNRB")!=string::npos) { subNRB2011=true; skipWW=true; printf("subNRB2011 = True\n");}
+    else if(arg.find("--subNRB12")!=string::npos) { subNRB2012=true; printf("subNRB2012 = True\n");}
     else if(arg.find("--closure")!=string::npos) { MCclosureTest=true; printf("MCclosureTest = True\n");}
     else if(arg.find("--index") !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&index); i++; printf("index = %i\n", index);}
     else if(arg.find("--in")    !=string::npos && i+1<argc)  { inFileUrl = argv[i+1];  i++;  printf("in = %s\n", inFileUrl.Data()); }
@@ -458,8 +463,26 @@ Shape_t getShapeFromFile(TString ch, TString shapeName, int cutBin, TString infU
 	    if(varName=="")  shape.data=hshape;
 	    else continue;
 	 }else if(isSignal){
-	    if(varName=="")  shape.signal.push_back(hshape);
-	    else             shape.signalVars[proc].push_back( std::pair<TString,TH1*>(varName,hshape) );
+
+            if(skipWW && string(proc.Data()).find("WW")!=string::npos )continue;
+            if(!skipWW && mergeWWandZZ){proc.ReplaceAll("WW","VV"); proc.ReplaceAll("ZZ","VV");}
+
+            if(varName==""){
+               int procIndex = -1;
+               for(unsigned int i=0;i<shape.signal.size();i++){ if(string(proc.Data())==shape.signal[i]->GetTitle() ){procIndex=i;break;}  }
+               if(procIndex>=0) shape.signal[procIndex]->Add(hshape);
+               else             {hshape->SetTitle(proc);shape.signal.push_back(hshape);}
+            }else{
+               std::map<TString,std::vector<std::pair<TString, TH1*> > >::iterator it = shape.signalVars.find(proc);
+                
+               bool newVar = false;
+               if(it!=shape.signalVars.end()){
+                  for(unsigned int i=0;i<it->second.size();i++){ if( string(it->second[i].first.Data()) == varName ){it->second[i].second->Add(hshape); newVar=true;break;}  }
+               }
+               if(newVar){
+                  shape.signalVars[proc].push_back( std::pair<TString,TH1*>(varName,hshape) );
+               }
+            }
 	 }else{
 	    if(varName=="")  shape.bckg.push_back(hshape);
 	    else             shape.bckgVars[proc].push_back( std::pair<TString,TH1*>(varName,hshape) );
@@ -722,13 +745,13 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   std::vector<TString> selCh; selCh.push_back("ee"); selCh.push_back("mumu");
 
   //print event yields from the mt shapes
-  //getCutFlowFromShape(selCh,allShapes,histo);
+  getCutFlowFromShape(selCh,allShapes,histo);
 
   //non-resonant background estimation
   //estimateNonResonantBackground(selCh,"emu",allShapes,"nonresbckg_ctrl");
 
   //remove the non-resonant background from data
-  if(subNRB)doBackgroundSubtraction(selCh,"emu",allShapes,histo,"nonresbckg_ctrl");
+  if(subNRB2011 || subNRB2012)doBackgroundSubtraction(selCh,"emu",allShapes,histo,"nonresbckg_ctrl");
 
   //prepare the output
   dci.shapesFile="Shapes_"+massStr+".root";
@@ -894,9 +917,9 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch
          hshape->Write(proc+syst+"Up");
          TH1 *hmirrorshape=(TH1 *)hshape->Clone(proc+syst+"Down");
          for(int ibin=1; ibin<=hmirrorshape->GetXaxis()->GetNbins(); ibin++){
-            double bin = hmirrorshape->GetBinContent(ibin);
-//            double bin = 2*hshapes[0]->GetBinContent(ibin)-hmirrorshape->GetBinContent(ibin);
-//            if(bin<0)bin=0;
+//            double bin = hmirrorshape->GetBinContent(ibin);
+            double bin = 2*hshapes[0]->GetBinContent(ibin)-hmirrorshape->GetBinContent(ibin);
+            if(bin<0)bin=0;
             hmirrorshape->SetBinContent(ibin,bin);
          }
 	 if(hmirrorshape->Integral()<=0)hmirrorshape->SetBinContent(1, 1E-10);
@@ -940,17 +963,32 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
         alpha_err = sqrt(1+alpha_err*alpha_err);
 
         printf("Integral = %f --> ", hChan_SI->Integral());
-        for(int b=0;b<=hCtrl_SI->GetXaxis()->GetNbins()+1;b++){
-	   double val = hCtrl_SI->GetBinContent(b);
-           double err = hCtrl_SI->GetBinError(b);
-           val = val*alpha;
-           err = err*alpha + val*alpha_err;
-           hCtrl_SI->SetBinContent(b, val );
-           hCtrl_SI->SetBinError  (b, err );
-        }
-        hChan_SI->Add(hCtrl_SI,-1);
-        for(int b=0;b<=hChan_SI->GetXaxis()->GetNbins()+1;b++){
-           if(hChan_SI->GetBinContent(b)<0)hChan_SI->SetBinContent(b,0.0);
+        if(subNRB2011){
+           for(int b=0;b<=hCtrl_SI->GetXaxis()->GetNbins()+1;b++){
+  	      double val = hCtrl_SI->GetBinContent(b);
+              double err = hCtrl_SI->GetBinError(b);
+              val = val*alpha;
+              err = err*alpha + val*alpha_err;
+              hCtrl_SI->SetBinContent(b, val );
+              hCtrl_SI->SetBinError  (b, err );
+           }
+           hChan_SI->Add(hCtrl_SI,-1);
+           for(int b=0;b<=hChan_SI->GetXaxis()->GetNbins()+1;b++){
+              if(hChan_SI->GetBinContent(b)<0)hChan_SI->SetBinContent(b,0.0);
+           }
+        }else if(subNRB2012){
+           for(int b=0;b<=hCtrl_SB->GetXaxis()->GetNbins()+1;b++){
+              double val = hCtrl_SB->GetBinContent(b);
+              double err = hCtrl_SB->GetBinError(b);
+              val = val*alpha;
+              err = err*alpha + val*alpha_err;
+              hCtrl_SB->SetBinContent(b, val );
+              hCtrl_SB->SetBinError  (b, err );
+           }
+           hChan_SI->Add(hCtrl_SB,-1);
+           for(int b=0;b<=hChan_SI->GetXaxis()->GetNbins()+1;b++){
+              if(hChan_SI->GetBinContent(b)<0)hChan_SI->SetBinContent(b,0.0);
+           }
         }
         printf("%f\n", hChan_SI->Integral());
 
@@ -959,7 +997,8 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
         size_t nbckg=shapeChan_SI.bckg.size();
         for(size_t ibckg=0; ibckg<nbckg; ibckg++){
            TString proc(shapeChan_SI.bckg[ibckg]->GetTitle());
-	   if(proc.Contains("t#bar{t}") || proc.Contains("Single top") ){
+	   if((subNRB2011 && (proc.Contains("t#bar{t}") || proc.Contains("Single top") || proc.Contains("WW") || proc.Contains("Z#rightarrow #tau#tau")) ) ||
+              (subNRB2012 && (proc.Contains("t#bar{t}") || proc.Contains("Single top") ) ) ){
               shapeChan_SI.totalBckg->Add(shapeChan_SI.bckg[ibckg], -1);
 	      shapeChan_SI.bckg.erase(shapeChan_SI.bckg.begin()+ibckg);  ibckg--;
            }
