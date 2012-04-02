@@ -89,7 +89,7 @@ bool subNRB2012 = false;
 bool MCclosureTest = false;
 
 bool mergeWWandZZ = true;
-bool skipWW = false;
+bool skipWW = true;
 
 void printHelp()
 {
@@ -130,7 +130,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--syst")  !=string::npos) { runSystematics=true; printf("syst = True\n");}
     else if(arg.find("--shape") !=string::npos) { shape=true; printf("shapeBased = True\n");}
     else if(arg.find("--subNRB")!=string::npos) { subNRB2011=true; skipWW=true; printf("subNRB2011 = True\n");}
-    else if(arg.find("--subNRB12")!=string::npos) { subNRB2012=true; printf("subNRB2012 = True\n");}
+    else if(arg.find("--subNRB12")!=string::npos) { subNRB2012=true; skipWW=false; printf("subNRB2012 = True\n");}
     else if(arg.find("--closure")!=string::npos) { MCclosureTest=true; printf("MCclosureTest = True\n");}
     else if(arg.find("--index") !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&index); i++; printf("index = %i\n", index);}
     else if(arg.find("--in")    !=string::npos && i+1<argc)  { inFileUrl = argv[i+1];  i++;  printf("in = %s\n", inFileUrl.Data()); }
