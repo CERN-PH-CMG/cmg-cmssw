@@ -59,12 +59,14 @@ void novosibirskFunct();
 double min_array(double *A, int n);
 double min(double x, double y);
 
+void FindMinAndVar(double *Chi2, double *sigma1 );
+
 string jsonFile = "../data/samples.json";
 string cutflowhisto = "all_cutflow";
 std::map<string, double> PURescale_up;
 std::map<string, double> PURescale_down;
 std::map<string, double> initialNumberOfEvents;
-std::map<string, double> FinalWeight;
+//std::map<string, double> FinalWeight;
 std::map<string, bool>   FileExist;
 
 TObject* GetObjectFromPath(TDirectory* File, std::string Path, bool GetACopy=false)
@@ -173,7 +175,7 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, st
    }
 }
 
-enum Dataset { WW=0, ZZ, WZ, TT, Stt,WJ, DY };
+enum Dataset { WW=0, ZZ, WZ, TT, WJ, DY, tw, tbw, ts, tbs, tt, tbt, EE, MuMu, EMU };
 int main(int argc, char* argv[]){
 
    TCanvas* myc1 = new TCanvas("myc1", "CMS", 600, 600);
@@ -228,6 +230,7 @@ int main(int argc, char* argv[]){
      system("hadd -f ../test/results/Data_DoubleMu.root ../test/results/Data_DoubleMu*_*.root");
      system("hadd -f ../test/results/Data_MuEG.root ../test/results/Data_MuEG2011*_*.root");
      }
+/*
      string DataEE_root = "Data_DoubleElectron.root";
      string DataMuMu_root = "Data_DoubleMu.root";
      string DataEMu_root = "Data_MuEG.root";
@@ -248,72 +251,80 @@ int main(int argc, char* argv[]){
      string Path_DY = inDir + DY_root;                 TFile* File_DY        =  TFile::Open( Path_DY.c_str() );
      string Path_TT = inDir + TT_root;                 TFile* File_TT        =  TFile::Open( Path_TT.c_str() );
      string Path_WJ = inDir + WJ_root;                 TFile* File_WJ        =  TFile::Open( Path_WJ.c_str() );
-
+*/
 	//Get Weight
    std::vector<TString> pathFile;
    std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
-   TFile **File = new TFile*[Process.size()];
-   int app=0, app2=0; bool upped =false;
+   const int NInput = 15;
+   TFile **File = new TFile*[NInput];
+   double iWeight[NInput]={0.};
+   string pathtmp;
+   int TfileCount=0,TfileCount2=0;
    for(unsigned int i=0;i<Process.size();i++){
       std::vector<JSONWrapper::Object> Samples = (Process[i])["data"].daughters();
-      app=0;  upped = false;
       for(unsigned int j=0;j<Samples.size();j++){
          double Weight = 1.0;
          if(!Process[i]["isdata"].toBool() && !Process[i]["isdatadriven"].toBool() )Weight*= iLumi;
-         if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
+         if( Samples[j].isTag("xsec")  )  Weight*= Samples[j]["xsec"].toDouble();
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
          Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
-         FinalWeight[(Samples[j])["dtag"].toString()] = Weight;
-         app=j;
-         }/*
-      if( !Process[i]["isdata"].toBool() ){
-        if( Samples.size() ==1 ){
-        pathFile.push_back( inDir + (Samples[app])["dtag"].toString() + ".root" );
-        File[app2] = TFile::Open( pathFile[app2].Data() );
-        }
-      else{for(unsigned int j=0;j<Samples.size();j++){
-      pathFile.push_back( inDir + (Samples[j])["dtag"].toString() + ".root" );
-      File[app2] = TFile::Open( pathFile[app2].Data() );
-      app2++; upped = true;
-      }}
+         //FinalWeight[(Samples[j])["dtag"].toString()] = Weight;
+         if( !Process[i]["isdata"].toBool() && Samples.size()==1  ){
+              pathtmp = inDir + (Samples[j])["dtag"].toString() + ".root";
+              File[TfileCount] = TFile::Open( pathtmp.c_str() );
+              iWeight[TfileCount] = Weight;
+              cout<<TfileCount<<":  "<< pathtmp.c_str()<<endl;
+              TfileCount++;
+         }
       }
-    if(!upped) app2++;*/
+   }
+   for(unsigned int i=0;i<Process.size();i++){
+    std::vector<JSONWrapper::Object> Samples = (Process[i])["data"].daughters();
+    for(unsigned int j=0;j<Samples.size();j++){
+      if( !Process[i]["isdata"].toBool() && Samples.size() > 1){
+      double Weight = 1.0;
+      if(!Process[i]["isdata"].toBool() && !Process[i]["isdatadriven"].toBool() )Weight*= iLumi;
+      if( Samples[j].isTag("xsec")  )  Weight*= Samples[j]["xsec"].toDouble();
+      std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
+      Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()]; 
+         pathtmp = inDir + (Samples[j])["dtag"].toString() + ".root";
+         File[TfileCount+TfileCount2] = TFile::Open( pathtmp.c_str()  );
+         iWeight[TfileCount+TfileCount2] = Weight;
+         cout<<TfileCount+TfileCount2<<":  "<< pathtmp.c_str()<<endl;
+         TfileCount2++;
+      }
     }
-    //for(unsigned int j=0; j<pathFile.size(); j++) cout<< pathFile[j]<<endl;
-   //pathFile.push_back(inDir + "Data_DoubleElectron.root");
-   //TString Mu = inDir + "Data_DoubleMu.root";
-   //TString EMu = inDir + "Data_MuEG.root";
-   //File[Process.size()] = TFile::Open( pathFile[Process.size()].Data() );
-   //File[Process.size()+2] = TFile::Open( Mu.Data() );
-   //File[Process.size()+3] = TFile::Open( EMu.Data() );
-   
+   }
+   File[TfileCount+TfileCount2] = TFile::Open( "../test/results/Data_DoubleElectron.root" );
+   iWeight[TfileCount+TfileCount2] = 1.;
+   File[TfileCount+TfileCount2+1] = TFile::Open( "../test/results/Data_DoubleMu.root" );
+   iWeight[TfileCount+TfileCount2+1] = 1.;
+   File[TfileCount+TfileCount2+2] = TFile::Open( "../test/results/Data_MuEG.root" );
+   iWeight[TfileCount+TfileCount2+2] = 1.;
+/*
      double DYWeight = FinalWeight["MC_DYJetsToLL"];
      double ZZWeight = FinalWeight["MC_ZZ"];
      double WWWeight = FinalWeight["MC_WW"];
      double WZWeight = FinalWeight["MC_WZ"];
      double WJWeight = FinalWeight["MC_WJetsToLNu"];
-     double TTWeight = FinalWeight["MC_TTJets"];
+     double TTWeight = FinalWeight["MC_TTJets"];*/
 
      std::vector<NameAndType> histlist;
      GetListOfObject(Root,inDir,histlist);
-   //for(unsigned int i=0;i<histlist.size();i++){
-   //cout<<histlist[i].Name<<endl;
-   //}
 
 if( SistDy == 1 ){
   string emu_1nvtx = "emu_Sys_MetEff_RedMet_1nvtx";
   string emu_2nvtx = "emu_Sys_MetEff_RedMet_2nvtx";
   string emu_3nvtx = "emu_Sys_MetEff_RedMet_3nvtx";
   string emu_4nvtx = "emu_Sys_MetEff_RedMet_Maxnvtx";
-
-  TH1F *h_TT_1nvtx = ( (TH1F*)File_TT->Get( emu_1nvtx.c_str() )); //h_TT_1nvtx->Sumw2();
-  TH1F *h_DataEmu_1nvtx = ( (TH1F*)File_DataEMu->Get( emu_1nvtx.c_str() ));
-  TH1F *h_TT_2nvtx = ( (TH1F*)File_TT->Get( emu_2nvtx.c_str() )); //h_TT_2nvtx->Sumw2();
-  TH1F *h_DataEmu_2nvtx = ( (TH1F*)File_DataEMu->Get( emu_2nvtx.c_str() ));
-  TH1F *h_TT_3nvtx = ( (TH1F*)File_TT->Get( emu_3nvtx.c_str() )); //h_TT_3nvtx->Sumw2();
-  TH1F *h_DataEmu_3nvtx = ( (TH1F*)File_DataEMu->Get( emu_3nvtx.c_str() ));
-  TH1F *h_TT_4nvtx = ( (TH1F*)File_TT->Get( emu_4nvtx.c_str() )); //h_TT_4nvtx->Sumw2();
-  TH1F *h_DataEmu_4nvtx = ( (TH1F*)File_DataEMu->Get( emu_4nvtx.c_str() ));
+  TH1F *h_TT_1nvtx = ( (TH1F*)File[TT]->Get( emu_1nvtx.c_str() )); //h_TT_1nvtx->Sumw2();
+  TH1F *h_DataEmu_1nvtx = ( (TH1F*)File[EMU]->Get( emu_1nvtx.c_str() ));
+  TH1F *h_TT_2nvtx = ( (TH1F*)File[TT]->Get( emu_2nvtx.c_str() ));
+  TH1F *h_DataEmu_2nvtx = ( (TH1F*)File[EMU]->Get( emu_2nvtx.c_str() ));
+  TH1F *h_TT_3nvtx = ( (TH1F*)File[TT]->Get( emu_3nvtx.c_str() ));
+  TH1F *h_DataEmu_3nvtx = ( (TH1F*)File[EMU]->Get( emu_3nvtx.c_str() ));
+  TH1F *h_TT_4nvtx = ( (TH1F*)File[TT]->Get( emu_4nvtx.c_str() ));
+  TH1F *h_DataEmu_4nvtx = ( (TH1F*)File[EMU]->Get( emu_4nvtx.c_str() ));
 
   //singleGaus();
   h_TT_1nvtx->Scale(h_DataEmu_1nvtx->Integral()/h_TT_1nvtx->Integral());
@@ -370,29 +381,9 @@ if( SistDy == 1 ){
     myc1->cd();
     h_Fsigma_1nvtx->Draw("ACP");
     output = outDir+ "Sigma_1vtx.png";
-    myc1->SaveAs(output.c_str()); 
-    double Minimun=100.;
-    int split=0;
-    double ChiCentral[99] = {100.}; for(int i=0;i<99;i++) ChiCentral[i] = Chi2[i+1];
-    for(int i=0;i<100;i++){
-    if (Chi2[i] == min_array(ChiCentral,99)) {Minimun = sigma1[i]; split = i;}
-    }
-    cout<<"MIN 1: "<<Minimun<<endl;
-    const int Spl = split; cout<<"Split"<<split<<endl;
-    double FirstPart[100]={100}, SecondPart[100]={100};
-    double FindOne[100]={100}, FindTwo[100]={100};
-    for(int i=0;i<Spl;i++){ if(i==0){ FirstPart[i]=100;} else FirstPart[i]= Chi2[i]; cout<<"FirstPart"<<FirstPart[i]<<endl;}
-    for(int i=0;i<100-Spl;i++){ SecondPart[i]= Chi2[i+Spl]; cout<<"SecondPart"<<SecondPart[i]<<endl;}
-    double MySigOnChi = Minimun+1.;
-    for(int i=0;i<Spl;i++) FindOne[i] = fabs(FirstPart[i]-MySigOnChi);
-    for(int i=0;i<100-Spl;i++) FindTwo[i] = fabs(SecondPart[i]-MySigOnChi);
-    double MinA = min_array(FindOne,100), MinB = min_array(FindTwo,100);
-    cout<<MinA<<" MIN- "<<MinB<<endl;
-    double sigma1a=-1.;
-    for(int i=0;i<100;i++){
-    if (FindOne[i] == MinA) sigma1a= sigma1[i];
-    }
-    cout<<" RealMin "<<sigma1a<<endl;
+    myc1->SaveAs(output.c_str());
+
+    FindMinAndVar(Chi2, sigma1 );
   //2vtx
   h_TT_2nvtx->Scale(h_DataEmu_2nvtx->Integral()/h_TT_2nvtx->Integral());
   myc1->cd();
@@ -427,9 +418,7 @@ if( SistDy == 1 ){
     h_Fsigma_2nvtx->Draw("ACP");
     output = outDir+ "Sigma_2vtx.png";
     myc1->SaveAs(output.c_str());
-    for(int i=0;i<99;i++) ChiCentral[i] = Chi2[i+1];
-    for(int i=0;i<100;i++){ if (Chi2[i] ==  min_array(ChiCentral,99)) Minimun = sigma1[i];}
-    cout<<"MIN 2: "<<Minimun<<endl;
+    FindMinAndVar(Chi2, sigma1 );
 
   //3vtx
   h_TT_3nvtx->Scale(h_DataEmu_3nvtx->Integral()/h_TT_3nvtx->Integral());
@@ -465,9 +454,7 @@ if( SistDy == 1 ){
     h_Fsigma_3nvtx->Draw("ACP");
     output = outDir+ "Sigma_3vtx.png";
     myc1->SaveAs(output.c_str());
-    for(int i=0;i<99;i++) ChiCentral[i] = Chi2[i+1];
-    for(int i=0;i<100;i++){ if (Chi2[i] ==  min_array(ChiCentral,99)) Minimun = sigma1[i];}
-    cout<<"MIN 3: "<<Minimun<<endl;
+    FindMinAndVar(Chi2, sigma1 );
 
   //4vtx
   h_TT_4nvtx->Scale(h_DataEmu_4nvtx->Integral()/h_TT_4nvtx->Integral());
@@ -503,13 +490,18 @@ if( SistDy == 1 ){
     h_Fsigma_4nvtx->Draw("ACP");
     output = outDir+ "Sigma_4vtx.png";
     myc1->SaveAs(output.c_str());
-    for(int i=0;i<99;i++) ChiCentral[i] = Chi2[i+1];
-    for(int i=0;i<100;i++){ if (Chi2[i] ==  min_array(ChiCentral,99)) Minimun = sigma1[i];}
-    cout<<"MIN 4: "<<Minimun<<endl;
+    FindMinAndVar(Chi2, sigma1 );
   
   cout<<endl;
-  cout<<"New Efficiency (ee): "<<( (TH1F*)File_ZZ->Get("ee_Effic_MetSmear"))->GetBinContent(1)/( (TH1F*)File_ZZ->Get("ee_Effic_tot"))->GetBinContent(1)<<endl;
-  cout<<"New Efficiency (mumu): "<<( (TH1F*)File_ZZ->Get("mumu_Effic_MetSmear"))->GetBinContent(1)/( (TH1F*)File_ZZ->Get("mumu_Effic_tot"))->GetBinContent(1)<<endl;
+  cout<<"Efficiency (ee): "<<((TH1F*)File[ZZ]->Get( "ee_Effic" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "ee_Effic_tot" ))->GetBinContent(1)<<endl;
+  cout<<"Efficiency (mumu): "<<((TH1F*)File[ZZ]->Get( "mumu_Effic" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "mumu_Effic_tot" ))->GetBinContent(1)<<endl;
+  cout<<"New Efficiency (ee): "<<( (TH1F*)File[ZZ]->Get("ee_Effic_MetSmear"))->GetBinContent(1)/( (TH1F*)File[ZZ]->Get("ee_Effic_tot"))->GetBinContent(1)<<endl;
+  cout<<"New Efficiency (mumu): "<<( (TH1F*)File[ZZ]->Get("mumu_Effic_MetSmear"))->GetBinContent(1)/( (TH1F*)File[ZZ]->Get("mumu_Effic_tot"))->GetBinContent(1)<<endl;
+  cout<<"New Efficiency minus (ee): "<<( (TH1F*)File[ZZ]->Get("ee_Effic_MetSmearm"))->GetBinContent(1)/( (TH1F*)File[ZZ]->Get("ee_Effic_tot"))->GetBinContent(1)<<endl;
+  cout<<"New Efficiency minus (mumu): "<<( (TH1F*)File[ZZ]->Get("mumu_Effic_MetSmearm"))->GetBinContent(1)/( (TH1F*)File[ZZ]->Get("mumu_Effic_tot"))->GetBinContent(1)<<endl;
+  cout<<"New Efficiency plus (ee): "<<( (TH1F*)File[ZZ]->Get("ee_Effic_MetSmearp"))->GetBinContent(1)/( (TH1F*)File[ZZ]->Get("ee_Effic_tot"))->GetBinContent(1)<<endl;
+  cout<<"New Efficiency plus (mumu): "<<( (TH1F*)File[ZZ]->Get("mumu_Effic_MetSmearp"))->GetBinContent(1)/( (TH1F*)File[ZZ]->Get("mumu_Effic_tot"))->GetBinContent(1)<<endl;
+
 }
 
 if( CrossSec == 1 ){
@@ -518,312 +510,166 @@ if( CrossSec == 1 ){
 
      string NEvFin_ee   = "ee_ZZ_eventflow";
      string NEvFin_mumu = "mumu_ZZ_eventflow";
-     //TH1F **FinalEntry = new TH1F*[Process.size()];
-     //for(unsigned int i=0; i<Process.size(); i++){ FinalEntry[i] = new TH1F(); FinalEntry[i] = ((TH1F*)File[i]->Get(NEvFin_ee.c_str()));}
-     TH1F *h_ZZ_Nev_ee   = ( (TH1F*)File_ZZ->Get( NEvFin_ee.c_str() ));
-     TH1F *h_ZZ_Nev_mumu = ( (TH1F*)File_ZZ->Get( NEvFin_mumu.c_str() ));
-     TH1F *h_WW_Nev_ee   = ( (TH1F*)File_WW->Get( NEvFin_ee.c_str() ));
-     TH1F *h_WW_Nev_mumu = ( (TH1F*)File_WW->Get( NEvFin_mumu.c_str() ));
-     TH1F *h_WZ_Nev_ee   = ( (TH1F*)File_WZ->Get( NEvFin_ee.c_str() ));
-     TH1F *h_WZ_Nev_mumu = ( (TH1F*)File_WZ->Get( NEvFin_mumu.c_str() ));
-     TH1F *h_DY_Nev_ee   = ( (TH1F*)File_DY->Get( NEvFin_ee.c_str() ));
-     TH1F *h_DY_Nev_mumu = ( (TH1F*)File_DY->Get( NEvFin_mumu.c_str() ));
-     TH1F *h_TT_Nev_ee   = ( (TH1F*)File_TT->Get( NEvFin_ee.c_str() ));
-     TH1F *h_TT_Nev_mumu = ( (TH1F*)File_TT->Get( NEvFin_mumu.c_str() ));
-     TH1F *h_WJ_Nev_ee   = ( (TH1F*)File_WJ->Get( NEvFin_ee.c_str() ));
-     TH1F *h_WJ_Nev_mumu = ( (TH1F*)File_WJ->Get( NEvFin_mumu.c_str() ));
-     TH1F *h_Data_Nev_ee   = ( (TH1F*)File_DataEE->Get( NEvFin_ee.c_str() ));
-     TH1F *h_Data_Nev_mumu = ( (TH1F*)File_DataMuMu->Get( NEvFin_mumu.c_str() ));
+     double Nevent_ee[NInput];
+     for(int i=0; i<NInput; i++){  Nevent_ee[i] = ((TH1F*)File[i]->Get( NEvFin_ee.c_str() ))->GetBinContent(9)*iWeight[i]; }
+     double Nevent_mumu[NInput];
+     for(int i=0; i<NInput; i++){  Nevent_mumu[i] = ((TH1F*)File[i]->Get( NEvFin_mumu.c_str() ))->GetBinContent(9)*iWeight[i]; }
 
-     double ZZ_Nev_ee = h_ZZ_Nev_ee->GetBinContent(9)*ZZWeight;
-     double WW_Nev_ee = h_WW_Nev_ee->GetBinContent(9)*WWWeight;
-     double WZ_Nev_ee = h_WZ_Nev_ee->GetBinContent(9)*WZWeight;
-     double DY_Nev_ee = h_DY_Nev_ee->GetBinContent(9)*DYWeight;
-     double TT_Nev_ee = h_TT_Nev_ee->GetBinContent(9)*TTWeight;
-     double WJ_Nev_ee = h_WJ_Nev_ee->GetBinContent(9)*WJWeight;
-     double Data_Nev_ee = h_Data_Nev_ee->GetBinContent(9);
-     double ZZ_Nev_mumu = h_ZZ_Nev_mumu->GetBinContent(9)*ZZWeight;
-     double WW_Nev_mumu = h_WW_Nev_mumu->GetBinContent(9)*WWWeight;
-     double WZ_Nev_mumu = h_WZ_Nev_mumu->GetBinContent(9)*WZWeight;
-     double DY_Nev_mumu = h_DY_Nev_mumu->GetBinContent(9)*DYWeight;
-     double TT_Nev_mumu = h_TT_Nev_mumu->GetBinContent(9)*TTWeight;
-     double WJ_Nev_mumu = h_WJ_Nev_mumu->GetBinContent(9)*WJWeight;
-     double Data_Nev_mumu = h_Data_Nev_mumu->GetBinContent(9);
-
-     double Nbkg_ee = WW_Nev_ee + WZ_Nev_ee + DY_Nev_ee + TT_Nev_ee + WJ_Nev_ee;
-     double EffZZ_ee = ((TH1F*)File_ZZ->Get( "ee_Effic" ))->GetBinContent(1)/((TH1F*)File_ZZ->Get( "ee_Effic_tot" ))->GetBinContent(1);
-     double CrossSection_ee = (Data_Nev_ee - Nbkg_ee)/(iLumi*EffZZ_ee);
-     double Error_ee = ( sqrt(Data_Nev_ee + Nbkg_ee))/(iLumi*EffZZ_ee);
+     double Nbkg_ee = Nevent_ee[WW] + Nevent_ee[WZ] + Nevent_ee[DY] + Nevent_ee[TT] + Nevent_ee[WJ];
+     double EffZZ_ee = ((TH1F*)File[ZZ]->Get( "ee_Effic" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "ee_Effic_tot" ))->GetBinContent(1);
+     double CrossSection_ee = (Nevent_ee[EE] - Nbkg_ee)/(iLumi*EffZZ_ee);
+     double Error_ee = ( sqrt(Nevent_ee[EE] + Nbkg_ee))/(iLumi*EffZZ_ee);
      cout<<endl; cout<<"Cross Section: Sigma x B.r.(pp-ZZ-eevv):  "<<CrossSection_ee<< " /pm " << Error_ee <<endl;
-     cout<<"Fondi (ee):  WW:"<< WW_Nev_ee<<"  WZ:"<< WZ_Nev_ee<<"  DY:"<< DY_Nev_ee<<"  TT:"<< TT_Nev_ee<<"  WJ:"<< WJ_Nev_ee<<"  Tot:"<<Nbkg_ee<<endl;
-     cout<<"Effic (ee):"<<EffZZ_ee<<endl;
 
-     double Nbkg_mumu = WW_Nev_mumu+WZ_Nev_mumu+DY_Nev_mumu+TT_Nev_mumu+WJ_Nev_mumu;
-     double EffZZ_mumu = ((TH1F*)File_ZZ->Get( "mumu_Effic" ))->GetBinContent(1)/((TH1F*)File_ZZ->Get( "mumu_Effic_tot" ))->GetBinContent(1);
-     double CrossSection_mumu = (Data_Nev_mumu - Nbkg_mumu)/(iLumi*EffZZ_mumu);
-     double Error_mumu = ( sqrt(Data_Nev_mumu + Nbkg_mumu))/(iLumi*EffZZ_mumu);
+     double Nbkg_mumu = Nevent_mumu[WW]+Nevent_mumu[WZ]+Nevent_mumu[DY]+Nevent_mumu[TT]+Nevent_mumu[WJ];
+     double EffZZ_mumu = ((TH1F*)File[ZZ]->Get( "mumu_Effic" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "mumu_Effic_tot" ))->GetBinContent(1);
+     double CrossSection_mumu = (Nevent_mumu[MuMu] - Nbkg_mumu)/(iLumi*EffZZ_mumu);
+     double Error_mumu = ( sqrt(Nevent_mumu[MuMu] + Nbkg_mumu))/(iLumi*EffZZ_mumu);
      cout<<endl; cout<<"Cross Section: Sigma x B.r.(pp-ZZ-mumuvv):  "<<CrossSection_mumu<< " /pm " << Error_mumu <<endl;
-     cout<<"Fondi (mumu):  WW:"<< WW_Nev_mumu<<"  WZ:"<< WZ_Nev_mumu<<"  DY:"<< DY_Nev_mumu<<"  TT:"<< TT_Nev_mumu<<"  WJ:"<< WJ_Nev_mumu<<"  Tot:"<<Nbkg_mumu<<endl;
-     cout<<"Effic (mumu):"<<EffZZ_mumu<<endl;
 
      //Syst on Met (Jer)
-     double EffZZJer_ee = ((TH1F*)File_ZZ->Get( "ee_EfficJer" ))->GetBinContent(1)/((TH1F*)File_ZZ->Get( "ee_Effic_tot" ))->GetBinContent(1);
-     double JerCrossSection_ee = (Data_Nev_ee - Nbkg_ee)/(iLumi*EffZZJer_ee);
+     double EffZZJer_ee = ((TH1F*)File[ZZ]->Get( "ee_EfficJer" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "ee_Effic_tot" ))->GetBinContent(1);
+     double JerCrossSection_ee = (Nevent_ee[EE] - Nbkg_ee)/(iLumi*EffZZJer_ee);
      cout<< "Syst on Met ee (Eff:"<<EffZZJer_ee<<") (Jer): "<< (JerCrossSection_ee-CrossSection_ee)*100/CrossSection_ee<<"%"<<endl;
-     double EffZZJer_mumu = ((TH1F*)File_ZZ->Get( "mumu_EfficJer" ))->GetBinContent(1)/((TH1F*)File_ZZ->Get( "mumu_Effic_tot" ))->GetBinContent(1);
-     double JerCrossSection_mumu = (Data_Nev_mumu - Nbkg_mumu)/(iLumi*EffZZJer_mumu);
+     double EffZZJer_mumu = ((TH1F*)File[ZZ]->Get( "mumu_EfficJer" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "mumu_Effic_tot" ))->GetBinContent(1);
+     double JerCrossSection_mumu = (Nevent_mumu[MuMu] - Nbkg_mumu)/(iLumi*EffZZJer_mumu);
      cout<< "Syst on Met mumu  (Eff:"<<EffZZJer_mumu<<")  (Jer): "<< (JerCrossSection_mumu-CrossSection_mumu)*100./CrossSection_mumu<<"%"<<endl;
 
      //Syst on Met (Jesm)
-     double EffZZJes_ee = ((TH1F*)File_ZZ->Get( "ee_EfficJesm" ))->GetBinContent(1)/((TH1F*)File_ZZ->Get( "ee_Effic_tot" ))->GetBinContent(1);
-     double JesCrossSection_ee = (Data_Nev_ee - Nbkg_ee)/(iLumi*EffZZJes_ee);
+     double EffZZJes_ee = ((TH1F*)File[ZZ]->Get( "ee_EfficJesm" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "ee_Effic_tot" ))->GetBinContent(1);
+     double JesCrossSection_ee = (Nevent_ee[EE] - Nbkg_ee)/(iLumi*EffZZJes_ee);
      cout<< "Syst on Met (ee) (Eff:"<<EffZZJes_ee<<") (Jes m): "<< (JesCrossSection_ee-CrossSection_ee)*100/CrossSection_ee<<"%"<<endl;
-     double EffZZJes_mumu = ((TH1F*)File_ZZ->Get( "mumu_EfficJesm" ))->GetBinContent(1)/((TH1F*)File_ZZ->Get( "mumu_Effic_tot" ))->GetBinContent(1);
-     double JesCrossSection_mumu = (Data_Nev_mumu - Nbkg_mumu)/(iLumi*EffZZJes_mumu);
+     double EffZZJes_mumu = ((TH1F*)File[ZZ]->Get( "mumu_EfficJesm" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "mumu_Effic_tot" ))->GetBinContent(1);
+     double JesCrossSection_mumu = (Nevent_mumu[MuMu] - Nbkg_mumu)/(iLumi*EffZZJes_mumu);
      cout<< "Syst on Met (mumu)  (Eff:"<<EffZZJes_mumu<<")  (Jes m): "<< (JesCrossSection_mumu-CrossSection_mumu)*100./CrossSection_mumu<<"%"<<endl;
      //Syst on Met (Jesp)
-     EffZZJes_ee = ((TH1F*)File_ZZ->Get( "ee_EfficJesp" ))->GetBinContent(1)/((TH1F*)File_ZZ->Get( "ee_Effic_tot" ))->GetBinContent(1);
-     JesCrossSection_ee = (Data_Nev_ee - Nbkg_ee)/(iLumi*EffZZJes_ee);
+     EffZZJes_ee = ((TH1F*)File[ZZ]->Get( "ee_EfficJesp" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "ee_Effic_tot" ))->GetBinContent(1);
+     JesCrossSection_ee = (Nevent_ee[EE] - Nbkg_ee)/(iLumi*EffZZJes_ee);
      cout<< "Syst on Met (ee) (Eff:"<<EffZZJes_ee<<") (Jer p): "<< (JesCrossSection_ee-CrossSection_ee)*100/CrossSection_ee<<"%"<<endl;
-     EffZZJes_mumu = ((TH1F*)File_ZZ->Get( "mumu_EfficJesp" ))->GetBinContent(1)/((TH1F*)File_ZZ->Get( "mumu_Effic_tot" ))->GetBinContent(1);
-     JesCrossSection_mumu = (Data_Nev_mumu - Nbkg_mumu)/(iLumi*EffZZJes_mumu);
+     EffZZJes_mumu = ((TH1F*)File[ZZ]->Get( "mumu_EfficJesp" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "mumu_Effic_tot" ))->GetBinContent(1);
+     JesCrossSection_mumu = (Nevent_mumu[MuMu] - Nbkg_mumu)/(iLumi*EffZZJes_mumu);
      cout<< "Syst on Met (mumu)  (Eff:"<<EffZZJes_mumu<<")  (Jer p): "<< (JesCrossSection_mumu-CrossSection_mumu)*100./CrossSection_mumu<<"%"<<endl;
 
      //Syst on PU
      //PUm
      string pu_NEvFin_ee   = "ee_eventflow_minus";
      string pu_NEvFin_mumu = "mumu_eventflow_minus";
-     TH1F *pu_h_ZZ_Nev_ee   = ( (TH1F*)File_ZZ->Get( pu_NEvFin_ee.c_str() ));
-     TH1F *pu_h_ZZ_Nev_mumu = ( (TH1F*)File_ZZ->Get( pu_NEvFin_mumu.c_str() ));
-     TH1F *pu_h_WW_Nev_ee   = ( (TH1F*)File_WW->Get( pu_NEvFin_ee.c_str() ));
-     TH1F *pu_h_WW_Nev_mumu = ( (TH1F*)File_WW->Get( pu_NEvFin_mumu.c_str() ));
-     TH1F *pu_h_WZ_Nev_ee   = ( (TH1F*)File_WZ->Get( pu_NEvFin_ee.c_str() ));
-     TH1F *pu_h_WZ_Nev_mumu = ( (TH1F*)File_WZ->Get( pu_NEvFin_mumu.c_str() ));
-     TH1F *pu_h_DY_Nev_ee   = ( (TH1F*)File_DY->Get( pu_NEvFin_ee.c_str() ));
-     TH1F *pu_h_DY_Nev_mumu = ( (TH1F*)File_DY->Get( pu_NEvFin_mumu.c_str() ));
-     TH1F *pu_h_TT_Nev_ee   = ( (TH1F*)File_TT->Get( pu_NEvFin_ee.c_str() ));
-     TH1F *pu_h_TT_Nev_mumu = ( (TH1F*)File_TT->Get( pu_NEvFin_mumu.c_str() ));
-     TH1F *pu_h_WJ_Nev_ee   = ( (TH1F*)File_WJ->Get( pu_NEvFin_ee.c_str() ));
-     TH1F *pu_h_WJ_Nev_mumu = ( (TH1F*)File_WJ->Get( pu_NEvFin_mumu.c_str() ));
-     TH1F *pu_h_Data_Nev_ee     = ( (TH1F*)File_DataEE->Get( pu_NEvFin_ee.c_str() ));
-     TH1F *pu_h_Data_Nev_mumu   = ( (TH1F*)File_DataMuMu->Get( pu_NEvFin_mumu.c_str() ));
-
-     double pu_ZZ_Nev_ee = pu_h_ZZ_Nev_ee->GetBinContent(9)*ZZWeight;
-     double pu_WW_Nev_ee = pu_h_WW_Nev_ee->GetBinContent(9)*WWWeight;
-     double pu_WZ_Nev_ee = pu_h_WZ_Nev_ee->GetBinContent(9)*WZWeight;
-     double pu_DY_Nev_ee = pu_h_DY_Nev_ee->GetBinContent(9)*DYWeight;
-     double pu_TT_Nev_ee = pu_h_TT_Nev_ee->GetBinContent(9)*TTWeight;
-     double pu_WJ_Nev_ee = pu_h_WJ_Nev_ee->GetBinContent(9)*WJWeight;
-     double pu_Data_Nev_ee = pu_h_Data_Nev_ee->GetBinContent(9);
-     double pu_ZZ_Nev_mumu = pu_h_ZZ_Nev_mumu->GetBinContent(9)*ZZWeight;
-     double pu_WW_Nev_mumu = pu_h_WW_Nev_mumu->GetBinContent(9)*WWWeight;
-     double pu_WZ_Nev_mumu = pu_h_WZ_Nev_mumu->GetBinContent(9)*WZWeight;
-     double pu_DY_Nev_mumu = pu_h_DY_Nev_mumu->GetBinContent(9)*DYWeight;
-     double pu_TT_Nev_mumu = pu_h_TT_Nev_mumu->GetBinContent(9)*TTWeight;
-     double pu_WJ_Nev_mumu = pu_h_WJ_Nev_mumu->GetBinContent(9)*WJWeight;
-     double pu_Data_Nev_mumu = pu_h_Data_Nev_mumu->GetBinContent(9);
-
+     double NeventPUm_ee[NInput];
+     for(int i=0; i<NInput; i++){  NeventPUm_ee[i] = ((TH1F*)File[i]->Get( NEvFin_ee.c_str() ))->GetBinContent(9)*iWeight[i]; }
+     double NeventPUm_mumu[NInput];
+     for(int i=0; i<NInput; i++){  NeventPUm_mumu[i] = ((TH1F*)File[i]->Get( NEvFin_mumu.c_str() ))->GetBinContent(9)*iWeight[i]; }
+ 
      double pu_CrossSection_ee = 0.;
-     double pu_Nbkg_ee = pu_WW_Nev_ee + pu_WZ_Nev_ee + pu_DY_Nev_ee + pu_TT_Nev_ee + pu_WJ_Nev_ee;
-     double pu_EffZZ_ee = ((TH1F*)File_ZZ->Get( "ee_EfficPUm" ))->GetBinContent(1)/((TH1F*)File_ZZ->Get( "ee_EfficPUm_tot" ))->GetBinContent(1);
-     pu_CrossSection_ee = (pu_Data_Nev_ee - Nbkg_ee)/(iLumi*pu_EffZZ_ee);
+     double pu_Nbkg_ee = NeventPUm_ee[WW] + NeventPUm_ee[WZ] + NeventPUm_ee[DY] + NeventPUm_ee[TT] + NeventPUm_ee[WJ];
+     double pu_EffZZ_ee = ((TH1F*)File[ZZ]->Get( "ee_EfficPUm" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "ee_EfficPUm_tot" ))->GetBinContent(1);
+     pu_CrossSection_ee = (NeventPUm_ee[EE] - Nbkg_ee)/(iLumi*pu_EffZZ_ee);
      cout<< "Syst on PUm ee (Cross:"<<pu_CrossSection_ee<<"): "<< (pu_CrossSection_ee-CrossSection_ee)*100/CrossSection_ee<<"%"<<endl;
-     cout<<"Fondi (ee):  WW:"<< pu_WW_Nev_ee<<"  WZ:"<< pu_WZ_Nev_ee<<"  DY:"<< pu_DY_Nev_ee<<"  TT:"<< pu_TT_Nev_ee<<"  WJ:"<< pu_WJ_Nev_ee<<"  Tot:"<<pu_Nbkg_ee<<endl;
-     cout<<"Effic (ee):"<<pu_EffZZ_ee<<endl;
 
      double pu_CrossSection_mumu = 0.;
-     double pu_Nbkg_mumu = pu_WW_Nev_mumu + pu_WZ_Nev_mumu + pu_DY_Nev_mumu + pu_TT_Nev_mumu + pu_WJ_Nev_mumu;
-     double pu_EffZZ_mumu = ((TH1F*)File_ZZ->Get( "mumu_EfficPUm" ))->GetBinContent(1)/((TH1F*)File_ZZ->Get( "mumu_EfficPUm_tot" ))->GetBinContent(1);
-     pu_CrossSection_mumu = (pu_Data_Nev_mumu - Nbkg_mumu)/(iLumi*pu_EffZZ_mumu);
+     double pu_Nbkg_mumu = NeventPUm_mumu[WW] + NeventPUm_mumu[WZ] + NeventPUm_mumu[DY] + NeventPUm_mumu[TT] + NeventPUm_mumu[WJ];
+     double pu_EffZZ_mumu = ((TH1F*)File[ZZ]->Get( "mumu_EfficPUm" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "mumu_EfficPUm_tot" ))->GetBinContent(1);
+     pu_CrossSection_mumu = (NeventPUm_mumu[MuMu] - Nbkg_mumu)/(iLumi*pu_EffZZ_mumu);
      cout<< "Syst on PUm mumu ("<<pu_CrossSection_mumu<<"): "<< (pu_CrossSection_mumu-CrossSection_mumu)*100/CrossSection_mumu<<"%"<<endl;
-     cout<<"Fondi (mumu):  WW:"<< pu_WW_Nev_mumu<<"  WZ:"<< pu_WZ_Nev_mumu<<"  DY:"<< pu_DY_Nev_mumu<<"  TT:"<< pu_TT_Nev_mumu<<"  WJ:"<< pu_WJ_Nev_mumu<<"  Tot:"<<pu_Nbkg_mumu<<endl;
-     cout<<"Effic (mumu):"<<pu_EffZZ_mumu<<endl;
 
      //PUp
-     pu_NEvFin_ee   = "ee_eventflow_plus";
-     pu_NEvFin_mumu = "mumu_eventflow_plus";
-     pu_h_ZZ_Nev_ee   = ( (TH1F*)File_ZZ->Get( pu_NEvFin_ee.c_str() ));
-     pu_h_ZZ_Nev_mumu = ( (TH1F*)File_ZZ->Get( pu_NEvFin_mumu.c_str() ));
-     pu_h_WW_Nev_ee   = ( (TH1F*)File_WW->Get( pu_NEvFin_ee.c_str() ));
-     pu_h_WW_Nev_mumu = ( (TH1F*)File_WW->Get( pu_NEvFin_mumu.c_str() ));
-     pu_h_WZ_Nev_ee   = ( (TH1F*)File_WZ->Get( pu_NEvFin_ee.c_str() ));
-     pu_h_WZ_Nev_mumu = ( (TH1F*)File_WZ->Get( pu_NEvFin_mumu.c_str() ));
-     pu_h_DY_Nev_ee   = ( (TH1F*)File_DY->Get( pu_NEvFin_ee.c_str() ));
-     pu_h_DY_Nev_mumu = ( (TH1F*)File_DY->Get( pu_NEvFin_mumu.c_str() ));
-     pu_h_TT_Nev_ee   = ( (TH1F*)File_TT->Get( pu_NEvFin_ee.c_str() ));
-     pu_h_TT_Nev_mumu = ( (TH1F*)File_TT->Get( pu_NEvFin_mumu.c_str() ));
-     pu_h_WJ_Nev_ee   = ( (TH1F*)File_WJ->Get( pu_NEvFin_ee.c_str() ));
-     pu_h_WJ_Nev_mumu = ( (TH1F*)File_WJ->Get( pu_NEvFin_mumu.c_str() ));
-     pu_h_Data_Nev_ee     = ( (TH1F*)File_DataEE->Get( pu_NEvFin_ee.c_str() ));
-     pu_h_Data_Nev_mumu   = ( (TH1F*)File_DataMuMu->Get( pu_NEvFin_mumu.c_str() ));
-
-     pu_ZZ_Nev_ee = pu_h_ZZ_Nev_ee->GetBinContent(9)*ZZWeight;
-     pu_WW_Nev_ee = pu_h_WW_Nev_ee->GetBinContent(9)*WWWeight;
-     pu_WZ_Nev_ee = pu_h_WZ_Nev_ee->GetBinContent(9)*WZWeight;
-     pu_DY_Nev_ee = pu_h_DY_Nev_ee->GetBinContent(9)*DYWeight;
-     pu_TT_Nev_ee = pu_h_TT_Nev_ee->GetBinContent(9)*TTWeight;
-     pu_WJ_Nev_ee = pu_h_WJ_Nev_ee->GetBinContent(9)*WJWeight;
-     pu_Data_Nev_ee = pu_h_Data_Nev_ee->GetBinContent(9);
-     pu_ZZ_Nev_mumu = pu_h_ZZ_Nev_mumu->GetBinContent(9)*ZZWeight;
-     pu_WW_Nev_mumu = pu_h_WW_Nev_mumu->GetBinContent(9)*WWWeight;
-     pu_WZ_Nev_mumu = pu_h_WZ_Nev_mumu->GetBinContent(9)*WZWeight;
-     pu_DY_Nev_mumu = pu_h_DY_Nev_mumu->GetBinContent(9)*DYWeight;
-     pu_TT_Nev_mumu = pu_h_TT_Nev_mumu->GetBinContent(9)*TTWeight;
-     pu_WJ_Nev_mumu = pu_h_WJ_Nev_mumu->GetBinContent(9)*WJWeight;
-     pu_Data_Nev_mumu = pu_h_Data_Nev_mumu->GetBinContent(9);
+     pu_NEvFin_ee   = "ee_eventflow_minus";
+     pu_NEvFin_mumu = "mumu_eventflow_minus";
+     double NeventPUp_ee[NInput];
+     for(int i=0; i<NInput; i++){  NeventPUp_ee[i] = ((TH1F*)File[i]->Get( NEvFin_ee.c_str() ))->GetBinContent(9)*iWeight[i]; }
+     double NeventPUp_mumu[NInput];
+     for(int i=0; i<NInput; i++){  NeventPUp_mumu[i] = ((TH1F*)File[i]->Get( NEvFin_mumu.c_str() ))->GetBinContent(9)*iWeight[i]; }
 
      pu_CrossSection_ee = 0., pu_EffZZ_ee =0.;
-     pu_Nbkg_ee = pu_WW_Nev_ee + pu_WZ_Nev_ee + pu_DY_Nev_ee + pu_TT_Nev_ee + pu_WJ_Nev_ee;
-     pu_EffZZ_ee = ((TH1F*)File_ZZ->Get( "ee_EfficPUp" ))->GetBinContent(1)/((TH1F*)File_ZZ->Get( "ee_EfficPUp_tot" ))->GetBinContent(1);
-     pu_CrossSection_ee = (pu_Data_Nev_ee - Nbkg_ee)/(iLumi*pu_EffZZ_ee);
+     pu_Nbkg_ee = NeventPUp_ee[WW] + NeventPUp_ee[WZ] + NeventPUp_ee[DY] + NeventPUp_ee[TT] + NeventPUp_ee[WJ];
+     pu_EffZZ_ee = ((TH1F*)File[ZZ]->Get( "ee_EfficPUp" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "ee_EfficPUp_tot" ))->GetBinContent(1);
+     pu_CrossSection_ee = (NeventPUp_ee[EE] - Nbkg_ee)/(iLumi*pu_EffZZ_ee);
      cout<< "Syst on PUp ee ("<<pu_CrossSection_ee<<"): "<< (pu_CrossSection_ee-CrossSection_ee)*100/CrossSection_ee<<"%"<<endl;
-     cout<<"Fondi (ee):  WW:"<< pu_WW_Nev_ee<<"  WZ:"<< pu_WZ_Nev_ee<<"  DY:"<< pu_DY_Nev_ee<<"  TT:"<< pu_TT_Nev_ee<<"  WJ:"<< pu_WJ_Nev_ee<<"  Tot:"<<pu_Nbkg_ee<<endl;
-     cout<<"Effic (ee):"<<pu_EffZZ_ee<<endl;
 
      pu_CrossSection_mumu = 0.; pu_EffZZ_mumu =0.;
-     pu_Nbkg_mumu = pu_WW_Nev_mumu + pu_WZ_Nev_mumu + pu_DY_Nev_mumu + pu_TT_Nev_mumu + pu_WJ_Nev_mumu;
-     pu_EffZZ_mumu = ((TH1F*)File_ZZ->Get( "mumu_EfficPUp" ))->GetBinContent(1)/((TH1F*)File_ZZ->Get( "mumu_EfficPUp_tot" ))->GetBinContent(1);
-     pu_CrossSection_mumu = (pu_Data_Nev_mumu - Nbkg_mumu)/(iLumi*pu_EffZZ_mumu);
+     pu_Nbkg_mumu = NeventPUp_mumu[WW] + NeventPUp_mumu[WZ] + NeventPUp_mumu[DY] + NeventPUp_mumu[TT] + NeventPUp_mumu[WJ];
+     pu_EffZZ_mumu = ((TH1F*)File[ZZ]->Get( "mumu_EfficPUp" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "mumu_EfficPUp_tot" ))->GetBinContent(1);
+     pu_CrossSection_mumu = (NeventPUp_mumu[MuMu] - Nbkg_mumu)/(iLumi*pu_EffZZ_mumu);
      cout<< "Syst on PUp mumu ("<<pu_CrossSection_mumu<<"): "<< (pu_CrossSection_mumu-CrossSection_mumu)*100/CrossSection_mumu<<"%"<<endl;
-     cout<<"Fondi (mumu):  WW:"<< pu_WW_Nev_mumu<<"  WZ:"<< pu_WZ_Nev_mumu<<"  DY:"<< pu_DY_Nev_mumu<<"  TT:"<< pu_TT_Nev_mumu<<"  WJ:"<< pu_WJ_Nev_mumu<<"  Tot:"<<pu_Nbkg_mumu<<endl;
-     cout<<"Effic (mumu):"<<pu_EffZZ_mumu<<endl;
 
      //Pt Bin 1
      NEvFin_ee   = "ee_ZZ_eventflow_ptBin";
      NEvFin_mumu = "mumu_ZZ_eventflow_ptBin";
-     h_ZZ_Nev_ee   = ( (TH1F*)File_ZZ->Get( NEvFin_ee.c_str() ));
-     h_ZZ_Nev_mumu = ( (TH1F*)File_ZZ->Get( NEvFin_mumu.c_str() ));
-     h_WW_Nev_ee   = ( (TH1F*)File_WW->Get( NEvFin_ee.c_str() ));
-     h_WW_Nev_mumu = ( (TH1F*)File_WW->Get( NEvFin_mumu.c_str() ));
-     h_WZ_Nev_ee   = ( (TH1F*)File_WZ->Get( NEvFin_ee.c_str() ));
-     h_WZ_Nev_mumu = ( (TH1F*)File_WZ->Get( NEvFin_mumu.c_str() ));
-     h_DY_Nev_ee   = ( (TH1F*)File_DY->Get( NEvFin_ee.c_str() ));
-     h_DY_Nev_mumu = ( (TH1F*)File_DY->Get( NEvFin_mumu.c_str() ));
-     h_TT_Nev_ee   = ( (TH1F*)File_TT->Get( NEvFin_ee.c_str() ));
-     h_TT_Nev_mumu = ( (TH1F*)File_TT->Get( NEvFin_mumu.c_str() ));
-     h_WJ_Nev_ee   = ( (TH1F*)File_WJ->Get( NEvFin_ee.c_str() ));
-     h_WJ_Nev_mumu = ( (TH1F*)File_WJ->Get( NEvFin_mumu.c_str() ));
-     h_Data_Nev_ee     = ( (TH1F*)File_DataEE->Get( NEvFin_ee.c_str() ));
-     h_Data_Nev_mumu   = ( (TH1F*)File_DataMuMu->Get( NEvFin_mumu.c_str() ));
-
-     ZZ_Nev_ee = h_ZZ_Nev_ee->GetBinContent(1)*ZZWeight;
-     WW_Nev_ee = h_WW_Nev_ee->GetBinContent(1)*WWWeight;
-     WZ_Nev_ee = h_WZ_Nev_ee->GetBinContent(1)*WZWeight;
-     DY_Nev_ee = h_DY_Nev_ee->GetBinContent(1)*DYWeight;
-     TT_Nev_ee = h_TT_Nev_ee->GetBinContent(1)*TTWeight;
-     //WJ_Nev_ee = h_WJ_Nev_ee->GetBinContent(1)*WJWeight;
-     //cout<<WJ_Nev_ee<<endl;
-     Data_Nev_ee = h_Data_Nev_ee->GetBinContent(1);
-     ZZ_Nev_mumu = h_ZZ_Nev_mumu->GetBinContent(1)*ZZWeight;
-     WW_Nev_mumu = h_WW_Nev_mumu->GetBinContent(1)*WWWeight;
-     WZ_Nev_mumu = h_WZ_Nev_mumu->GetBinContent(1)*WZWeight;
-     DY_Nev_mumu = h_DY_Nev_mumu->GetBinContent(1)*DYWeight;
-     TT_Nev_mumu = h_TT_Nev_mumu->GetBinContent(1)*TTWeight;
-     //WJ_Nev_mumu = h_WJ_Nev_mumu->GetBinContent(1)*WJWeight;
-     Data_Nev_mumu = h_Data_Nev_mumu->GetBinContent(1);
+     double NeventPt1_ee[NInput];
+     for(int i=0; i<NInput; i++){ if(i!=WJ && i!=EMU && i!=MuMu && !(i>=6 && i<=11) ) NeventPt1_ee[i] = ((TH1F*)File[i]->Get( NEvFin_ee.c_str() ))->GetBinContent(1)*iWeight[i]; }
+     double NeventPt1_mumu[NInput];
+     for(int i=0; i<NInput; i++){ if(i!=WJ && i!=EMU && i!=EE && !(i>=6 && i<=11) ) NeventPt1_mumu[i] = ((TH1F*)File[i]->Get( NEvFin_mumu.c_str() ))->GetBinContent(1)*iWeight[i]; }
 
      CrossSection_ee = 0. ;
-     Nbkg_ee = WW_Nev_ee + WZ_Nev_ee + DY_Nev_ee + TT_Nev_ee /*+ WJ_Nev_ee*/;
-     EffZZ_ee = ((TH1F*)File_ZZ->Get( "ee_Effic_ptBin1" ))->GetBinContent(1)/((TH1F*)File_ZZ->Get( "ee_Effic_tot" ))->GetBinContent(1);
-     CrossSection_ee = (Data_Nev_ee - Nbkg_ee)/(iLumi*EffZZ_ee);
-     Error_ee = ( sqrt(Data_Nev_ee + Nbkg_ee))/(iLumi*EffZZ_ee);
+     Nbkg_ee = NeventPt1_ee[WW] + NeventPt1_ee[WZ] + NeventPt1_ee[DY] + NeventPt1_ee[TT]; //+ WJ_Nev_ee;
+     EffZZ_ee = ((TH1F*)File[ZZ]->Get( "ee_Effic_ptBin1" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "ee_Effic_tot" ))->GetBinContent(1);
+     CrossSection_ee = (NeventPt1_ee[EE] - Nbkg_ee)/(iLumi*EffZZ_ee);
+     Error_ee = ( sqrt(NeventPt1_ee[EE] + Nbkg_ee))/(iLumi*EffZZ_ee);
      cout<<endl; cout<<"Cross Section (70>Pt>90): Sigma x B.r.(pp-ZZ-eevv):  "<<CrossSection_ee<< " /pm " << Error_ee <<endl;
 
      CrossSection_mumu = 0. ;
-     Nbkg_mumu = WW_Nev_mumu + WZ_Nev_mumu + DY_Nev_mumu + TT_Nev_mumu /*+WJ_Nev_mumu*/;
-     EffZZ_mumu = ((TH1F*)File_ZZ->Get( "mumu_Effic_ptBin1" ))->GetBinContent(1)/((TH1F*)File_ZZ->Get( "mumu_Effic_tot" ))->GetBinContent(1);
-     CrossSection_mumu = (Data_Nev_mumu - Nbkg_mumu)/(iLumi*EffZZ_mumu);
-     Error_mumu = ( sqrt(Data_Nev_mumu + Nbkg_mumu))/(iLumi*EffZZ_mumu);
+     Nbkg_mumu = NeventPt1_mumu[WW] + NeventPt1_mumu[WZ] + NeventPt1_mumu[DY] + NeventPt1_mumu[TT]; // +WJ_Nev_mumu;
+     EffZZ_mumu = ((TH1F*)File[ZZ]->Get( "mumu_Effic_ptBin1" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "mumu_Effic_tot" ))->GetBinContent(1);
+     CrossSection_mumu = (NeventPt1_mumu[MuMu] - Nbkg_mumu)/(iLumi*EffZZ_mumu);
+     Error_mumu = ( sqrt(NeventPt1_mumu[MuMu] + Nbkg_mumu))/(iLumi*EffZZ_mumu);
      cout<<endl; cout<<"Cross Section (70>Pt>90): Sigma x B.r.(pp-ZZ-mumuvv):  "<<CrossSection_mumu<< " /pm " << Error_mumu <<endl;
      //Pt Bin2
-     ZZ_Nev_ee = h_ZZ_Nev_ee->GetBinContent(2)*ZZWeight;
-     WW_Nev_ee = h_WW_Nev_ee->GetBinContent(2)*WWWeight;
-     WZ_Nev_ee = h_WZ_Nev_ee->GetBinContent(2)*WZWeight;
-     DY_Nev_ee = h_DY_Nev_ee->GetBinContent(2)*DYWeight;
-     TT_Nev_ee = h_TT_Nev_ee->GetBinContent(2)*TTWeight;
-     //WJ_Nev_ee = h_WJ_Nev_ee->GetBinContent(2)*WJWeight;
-     Data_Nev_ee = h_Data_Nev_ee->GetBinContent(2);
-     ZZ_Nev_mumu = h_ZZ_Nev_mumu->GetBinContent(2)*ZZWeight;
-     WW_Nev_mumu = h_WW_Nev_mumu->GetBinContent(2)*WWWeight;
-     WZ_Nev_mumu = h_WZ_Nev_mumu->GetBinContent(2)*WZWeight;
-     DY_Nev_mumu = h_DY_Nev_mumu->GetBinContent(2)*DYWeight;
-     TT_Nev_mumu = h_TT_Nev_mumu->GetBinContent(2)*TTWeight;
-     //WJ_Nev_mumu = h_WJ_Nev_mumu->GetBinContent(2)*WJWeight;
-     Data_Nev_mumu = h_Data_Nev_mumu->GetBinContent(2);
+     double NeventPt2_ee[NInput];
+     for(int i=0; i<NInput; i++){ if(i!=WJ && i!=EMU && i!=MuMu && !(i>=6 && i<=11) ) NeventPt2_ee[i] = ((TH1F*)File[i]->Get( NEvFin_ee.c_str() ))->GetBinContent(2)*iWeight[i]; }
+     double NeventPt2_mumu[NInput];
+     for(int i=0; i<NInput; i++){ if(i!=WJ && i!=EMU && i!=EE && !(i>=6 && i<=11) ) NeventPt2_mumu[i] = ((TH1F*)File[i]->Get( NEvFin_mumu.c_str() ))->GetBinContent(2)*iWeight[i]; }
 
      CrossSection_ee = 0. ;
-     Nbkg_ee = WW_Nev_ee + WZ_Nev_ee + DY_Nev_ee + TT_Nev_ee  /*+WJ_Nev_ee*/;
-     EffZZ_ee = ((TH1F*)File_ZZ->Get( "ee_Effic_ptBin2" ))->GetBinContent(1)/((TH1F*)File_ZZ->Get( "ee_Effic_tot" ))->GetBinContent(1);
-     CrossSection_ee = (Data_Nev_ee - Nbkg_ee)/(iLumi*EffZZ_ee);
-     Error_ee = ( sqrt(Data_Nev_ee + Nbkg_ee))/(iLumi*EffZZ_ee);
+     Nbkg_ee = NeventPt2_ee[WW] + NeventPt2_ee[WZ] + NeventPt2_ee[DY] + NeventPt2_ee[TT]; //+ WJ_Nev_ee;
+     EffZZ_ee = ((TH1F*)File[ZZ]->Get( "ee_Effic_ptBin2" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "ee_Effic_tot" ))->GetBinContent(1);
+     CrossSection_ee = (NeventPt2_ee[EE] - Nbkg_ee)/(iLumi*EffZZ_ee);
+     Error_ee = ( sqrt(NeventPt2_ee[EE] + Nbkg_ee))/(iLumi*EffZZ_ee);
      cout<<endl; cout<<"Cross Section (90>Pt>110): Sigma x B.r.(pp-ZZ-eevv):  "<<CrossSection_ee<< " /pm " << Error_ee <<endl;
 
      CrossSection_mumu = 0. ;
-     Nbkg_mumu = WW_Nev_mumu + WZ_Nev_mumu + DY_Nev_mumu + TT_Nev_mumu /*+WJ_Nev_mumu*/;
-     EffZZ_mumu = ((TH1F*)File_ZZ->Get( "mumu_Effic_ptBin2" ))->GetBinContent(1)/((TH1F*)File_ZZ->Get( "mumu_Effic_tot" ))->GetBinContent(1);
-     CrossSection_mumu = (Data_Nev_mumu - Nbkg_mumu)/(iLumi*EffZZ_mumu);
-     Error_mumu = ( sqrt(Data_Nev_mumu + Nbkg_mumu))/(iLumi*EffZZ_mumu);
+     Nbkg_mumu = NeventPt2_mumu[WW] + NeventPt2_mumu[WZ] + NeventPt2_mumu[DY] + NeventPt2_mumu[TT]; // +WJ_Nev_mumu;
+     EffZZ_mumu = ((TH1F*)File[ZZ]->Get( "mumu_Effic_ptBin2" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "mumu_Effic_tot" ))->GetBinContent(1);
+     CrossSection_mumu = (NeventPt2_mumu[MuMu] - Nbkg_mumu)/(iLumi*EffZZ_mumu);
+     Error_mumu = ( sqrt(NeventPt2_mumu[MuMu] + Nbkg_mumu))/(iLumi*EffZZ_mumu);
      cout<<endl; cout<<"Cross Section (90>Pt>110): Sigma x B.r.(pp-ZZ-mumuvv):  "<<CrossSection_mumu<< " /pm " << Error_mumu <<endl;
      //Pt Bin 3
-     ZZ_Nev_ee = h_ZZ_Nev_ee->GetBinContent(3)*ZZWeight;
-     WW_Nev_ee = h_WW_Nev_ee->GetBinContent(3)*WWWeight;
-     WZ_Nev_ee = h_WZ_Nev_ee->GetBinContent(3)*WZWeight;
-     DY_Nev_ee = h_DY_Nev_ee->GetBinContent(3)*DYWeight;
-     TT_Nev_ee = h_TT_Nev_ee->GetBinContent(3)*TTWeight;
-     //WJ_Nev_ee = h_WJ_Nev_ee->GetBinContent(3)*WJWeight;
-     Data_Nev_ee = h_Data_Nev_ee->GetBinContent(3);
-     ZZ_Nev_mumu = h_ZZ_Nev_mumu->GetBinContent(3)*ZZWeight;
-     WW_Nev_mumu = h_WW_Nev_mumu->GetBinContent(3)*WWWeight;
-     WZ_Nev_mumu = h_WZ_Nev_mumu->GetBinContent(3)*WZWeight;
-     DY_Nev_mumu = h_DY_Nev_mumu->GetBinContent(3)*DYWeight;
-     TT_Nev_mumu = h_TT_Nev_mumu->GetBinContent(3)*TTWeight;
-     //WJ_Nev_mumu = h_WJ_Nev_mumu->GetBinContent(3)*WJWeight;
-     Data_Nev_mumu = h_Data_Nev_mumu->GetBinContent(3);
+     double NeventPt3_ee[NInput];
+     for(int i=0; i<NInput; i++){ if(i!=WJ && i!=EMU && i!=MuMu && !(i>=6 && i<=11) ) NeventPt3_ee[i] = ((TH1F*)File[i]->Get( NEvFin_ee.c_str() ))->GetBinContent(3)*iWeight[i]; }
+     double NeventPt3_mumu[NInput];
+     for(int i=0; i<NInput; i++){ if(i!=WJ && i!=EMU && i!=EE && !(i>=6 && i<=11) ) NeventPt3_mumu[i] = ((TH1F*)File[i]->Get( NEvFin_mumu.c_str() ))->GetBinContent(3)*iWeight[i]; }
 
      CrossSection_ee = 0. ;
-     Nbkg_ee = WW_Nev_ee + WZ_Nev_ee + DY_Nev_ee + TT_Nev_ee /*+WJ_Nev_ee*/;
-     EffZZ_ee = ((TH1F*)File_ZZ->Get( "ee_Effic_ptBin3" ))->GetBinContent(1)/((TH1F*)File_ZZ->Get( "ee_Effic_tot" ))->GetBinContent(1);
-     CrossSection_ee = (Data_Nev_ee - Nbkg_ee)/(iLumi*EffZZ_ee);
-     Error_ee = ( sqrt(Data_Nev_ee + Nbkg_ee))/(iLumi*EffZZ_ee);
+     Nbkg_ee = NeventPt3_ee[WW] + NeventPt3_ee[WZ] + NeventPt3_ee[DY] + NeventPt3_ee[TT]; //+ WJ_Nev_ee;
+     EffZZ_ee = ((TH1F*)File[ZZ]->Get( "ee_Effic_ptBin3" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "ee_Effic_tot" ))->GetBinContent(1);
+     CrossSection_ee = (NeventPt3_ee[EE] - Nbkg_ee)/(iLumi*EffZZ_ee);
+     Error_ee = ( sqrt(NeventPt3_ee[EE] + Nbkg_ee))/(iLumi*EffZZ_ee);
      cout<<endl; cout<<"Cross Section (110>Pt>140): Sigma x B.r.(pp-ZZ-eevv):  "<<CrossSection_ee<< " /pm " << Error_ee <<endl;
 
      CrossSection_mumu = 0. ;
-     Nbkg_mumu = WW_Nev_mumu + WZ_Nev_mumu + DY_Nev_mumu + TT_Nev_mumu /*+WJ_Nev_mumu*/;
-     EffZZ_mumu = ((TH1F*)File_ZZ->Get( "mumu_Effic_ptBin3" ))->GetBinContent(1)/((TH1F*)File_ZZ->Get( "mumu_Effic_tot" ))->GetBinContent(1);
-     CrossSection_mumu = (Data_Nev_mumu - Nbkg_mumu)/(iLumi*EffZZ_mumu);
-     Error_mumu = ( sqrt(Data_Nev_mumu + Nbkg_mumu))/(iLumi*EffZZ_mumu);
+     Nbkg_mumu = NeventPt3_mumu[WW] + NeventPt3_mumu[WZ] + NeventPt3_mumu[DY] + NeventPt3_mumu[TT]; // +WJ_Nev_mumu;
+     EffZZ_mumu = ((TH1F*)File[ZZ]->Get( "mumu_Effic_ptBin3" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "mumu_Effic_tot" ))->GetBinContent(1);
+     CrossSection_mumu = (NeventPt3_mumu[MuMu] - Nbkg_mumu)/(iLumi*EffZZ_mumu);
+     Error_mumu = ( sqrt(NeventPt3_mumu[MuMu] + Nbkg_mumu))/(iLumi*EffZZ_mumu);
      cout<<endl; cout<<"Cross Section (110>Pt>140): Sigma x B.r.(pp-ZZ-mumuvv):  "<<CrossSection_mumu<< " /pm " << Error_mumu <<endl;
- 
+
      //Pt Bin 4
-     ZZ_Nev_ee = h_ZZ_Nev_ee->GetBinContent(4)*ZZWeight;
-     WW_Nev_ee = h_WW_Nev_ee->GetBinContent(4)*WWWeight;
-     WZ_Nev_ee = h_WZ_Nev_ee->GetBinContent(4)*WZWeight;
-     DY_Nev_ee = h_DY_Nev_ee->GetBinContent(4)*DYWeight;
-     TT_Nev_ee = h_TT_Nev_ee->GetBinContent(4)*TTWeight;
-     //WJ_Nev_ee = h_WJ_Nev_ee->GetBinContent(4)*WJWeight;
-     Data_Nev_ee = h_Data_Nev_ee->GetBinContent(4);
-     ZZ_Nev_mumu = h_ZZ_Nev_mumu->GetBinContent(4)*ZZWeight;
-     WW_Nev_mumu = h_WW_Nev_mumu->GetBinContent(4)*WWWeight;
-     WZ_Nev_mumu = h_WZ_Nev_mumu->GetBinContent(4)*WZWeight;
-     DY_Nev_mumu = h_DY_Nev_mumu->GetBinContent(4)*DYWeight;
-     TT_Nev_mumu = h_TT_Nev_mumu->GetBinContent(4)*TTWeight;
-     //WJ_Nev_mumu = h_WJ_Nev_mumu->GetBinContent(4)*WJWeight;
-     Data_Nev_mumu = h_Data_Nev_mumu->GetBinContent(4);
+     double NeventPt4_ee[NInput];
+     for(int i=0; i<NInput; i++){ if(i!=WJ && i!=EMU && i!=MuMu && !(i>=6 && i<=11) ) NeventPt4_ee[i] = ((TH1F*)File[i]->Get( NEvFin_ee.c_str() ))->GetBinContent(4)*iWeight[i]; }
+     double NeventPt4_mumu[NInput];
+     for(int i=0; i<NInput; i++){ if(i!=WJ && i!=EMU && i!=EE && !(i>=6 && i<=11) ) NeventPt4_mumu[i] = ((TH1F*)File[i]->Get( NEvFin_mumu.c_str() ))->GetBinContent(4)*iWeight[i]; }
 
      CrossSection_ee = 0. ;
-     Nbkg_ee = WW_Nev_ee + WZ_Nev_ee + DY_Nev_ee + TT_Nev_ee /*+WJ_Nev_ee*/;
-     EffZZ_ee = ((TH1F*)File_ZZ->Get( "ee_Effic_ptBin4" ))->GetBinContent(1)/((TH1F*)File_ZZ->Get( "ee_Effic_tot" ))->GetBinContent(1);
-     CrossSection_ee = (Data_Nev_ee - Nbkg_ee)/(iLumi*EffZZ_ee);
-     Error_ee = ( sqrt(Data_Nev_ee + Nbkg_ee))/(iLumi*EffZZ_ee);
-     cout<<endl; cout<<"Cross Section (Pt>140): Sigma x B.r.(pp-ZZ-eevv):  "<<CrossSection_ee<< " /pm " << Error_ee <<endl;;
+     Nbkg_ee = NeventPt4_ee[WW] + NeventPt4_ee[WZ] + NeventPt4_ee[DY] + NeventPt4_ee[TT]; //+ WJ_Nev_ee;
+     EffZZ_ee = ((TH1F*)File[ZZ]->Get( "ee_Effic_ptBin4" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "ee_Effic_tot" ))->GetBinContent(1);
+     CrossSection_ee = (NeventPt4_ee[EE] - Nbkg_ee)/(iLumi*EffZZ_ee);
+     Error_ee = ( sqrt(NeventPt4_ee[EE] + Nbkg_ee))/(iLumi*EffZZ_ee);
+     cout<<endl; cout<<"Cross Section (Pt>140): Sigma x B.r.(pp-ZZ-eevv):  "<<CrossSection_ee<< " /pm " << Error_ee <<endl;
 
      CrossSection_mumu = 0. ;
-     Nbkg_mumu = WW_Nev_mumu + WZ_Nev_mumu + DY_Nev_mumu + TT_Nev_mumu /*+WJ_Nev_mumu*/;
-     EffZZ_mumu = ((TH1F*)File_ZZ->Get( "mumu_Effic_ptBin4" ))->GetBinContent(1)/((TH1F*)File_ZZ->Get( "mumu_Effic_tot" ))->GetBinContent(1);
-     CrossSection_mumu = (Data_Nev_mumu - Nbkg_mumu)/(iLumi*EffZZ_mumu);
-     Error_mumu = ( sqrt(Data_Nev_mumu + Nbkg_mumu))/(iLumi*EffZZ_mumu);
-     cout<<endl; cout<<"Cross Section (Pt>140): Sigma x B.r.(pp-ZZ-mumuvv):  "<<CrossSection_mumu<< " /pm " << Error_mumu <<endl; cout<<endl;
-
+     Nbkg_mumu = NeventPt4_mumu[WW] + NeventPt4_mumu[WZ] + NeventPt4_mumu[DY] + NeventPt4_mumu[TT]; // +WJ_Nev_mumu;
+     EffZZ_mumu = ((TH1F*)File[ZZ]->Get( "mumu_Effic_ptBin4" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "mumu_Effic_tot" ))->GetBinContent(1);
+     CrossSection_mumu = (NeventPt4_mumu[MuMu] - Nbkg_mumu)/(iLumi*EffZZ_mumu);
+     Error_mumu = ( sqrt(NeventPt4_mumu[MuMu] + Nbkg_mumu))/(iLumi*EffZZ_mumu);
+     cout<<endl; cout<<"Cross Section (Pt>140): Sigma x B.r.(pp-ZZ-mumuvv):  "<<CrossSection_mumu<< " /pm " << Error_mumu <<endl;
 }
 
 if( WZ_Estim == 1 ){
@@ -919,4 +765,29 @@ else      return min(A[0],min_array(A+1, n-1));
 double min (double x, double y) {
 if(x<=y)  return x;
 else      return y;
+}
+
+void FindMinAndVar(double *Chi2, double *sigma1 ){
+
+int split=0;
+double ChiCentral[99] = {100.}; for(int i=0;i<99;i++) ChiCentral[i] = Chi2[i+1];
+for(int i=0;i<100;i++){
+ if (Chi2[i] == min_array(ChiCentral,99)) {split = i;}
+}
+cout<<"MIN Sig: "<<sigma1[split]<<endl;
+cout<<"MIN Chi: "<<Chi2[split]<<endl;
+
+double FirstPart[100];  for(int i=0;i<100;i++) FirstPart[i]=100.;
+double SecondPart[100]; for(int i=0;i<100;i++) SecondPart[i]=100.;
+double FindOne[100];    for(int i=0;i<100;i++) FindOne[i]=100.;
+double FindTwo[100];    for(int i=0;i<100;i++) FindTwo[i]=100.;
+double MySigOnChi = Chi2[split]+1.;
+
+for(int i=0;i<split;i++){ if(i==0){ FirstPart[i]=100.;} else{FirstPart[i]= fabs(Chi2[i]-MySigOnChi);} }
+for(int i=0;i<99-split;i++){ SecondPart[i]= fabs(Chi2[i+1+split]-MySigOnChi); }
+double MinA = min_array(FirstPart,100), MinB = min_array(SecondPart,100);
+double sigma1a=-1., sigma1b=-1.;
+for(int i=0;i<100;i++){    if (FirstPart[i] == MinA) sigma1a= sigma1[i];    }    cout<<" RealMin A "<<sigma1a<<endl;
+for(int i=0;i<100;i++){    if (SecondPart[i] == MinB) sigma1b= sigma1[i+1+split];    }    cout<<" RealMin B "<<sigma1b<<endl;
+
 }
