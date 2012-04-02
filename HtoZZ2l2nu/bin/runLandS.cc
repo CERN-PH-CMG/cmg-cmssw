@@ -44,7 +44,7 @@ TString landsExe("$CMSSW_BASE/src/UserCode/mschen/LandS/test/lands.exe");
 
 #define RUNASYMPTOTIC(INURL,OUTURL)\
   gSystem->ExpandPathName(landsExe); \
-  TString cmd=TString(landsExe + " -d ") + INURL + TString(" -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 10000 --nToysForCLb 5000 --seed 1234 -rMax 50 -rMin 0.1 > ") + logUrl + TString(" "); \
+  TString cmd=TString(landsExe + " -d ") + INURL + TString(" -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 40000 --nToysForCLb 20000 --seed 1234 -rMax 50 -rMin 0.1 > ") + logUrl + TString(" "); \
   cout << "Launching : " << cmd << endl;				\
   gSystem->Exec(cmd);
 
@@ -894,8 +894,9 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch
          hshape->Write(proc+syst+"Up");
          TH1 *hmirrorshape=(TH1 *)hshape->Clone(proc+syst+"Down");
          for(int ibin=1; ibin<=hmirrorshape->GetXaxis()->GetNbins(); ibin++){
-            double bin = 2*hshapes[0]->GetBinContent(ibin)-hmirrorshape->GetBinContent(ibin);
-            if(bin<0)bin=0;
+            double bin = hmirrorshape->GetBinContent(ibin);
+//            double bin = 2*hshapes[0]->GetBinContent(ibin)-hmirrorshape->GetBinContent(ibin);
+//            if(bin<0)bin=0;
             hmirrorshape->SetBinContent(ibin,bin);
          }
 	 if(hmirrorshape->Integral()<=0)hmirrorshape->SetBinContent(1, 1E-10);
@@ -938,7 +939,7 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
         //add 100% syst uncertainty on alpha
         alpha_err = sqrt(1+alpha_err*alpha_err);
 
-        printf("Integral = %f --> ", hCtrl_SI->Integral());
+        printf("Integral = %f --> ", hChan_SI->Integral());
         for(int b=0;b<=hCtrl_SI->GetXaxis()->GetNbins()+1;b++){
 	   double val = hCtrl_SI->GetBinContent(b);
            double err = hCtrl_SI->GetBinError(b);
@@ -948,7 +949,10 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
            hCtrl_SI->SetBinError  (b, err );
         }
         hChan_SI->Add(hCtrl_SI,-1);
-        printf("%f\n", hCtrl_SI->Integral());
+        for(int b=0;b<=hChan_SI->GetXaxis()->GetNbins()+1;b++){
+           if(hChan_SI->GetBinContent(b)<0)hChan_SI->SetBinContent(b,0.0);
+        }
+        printf("%f\n", hChan_SI->Integral());
 
 
         //Clean background collection
