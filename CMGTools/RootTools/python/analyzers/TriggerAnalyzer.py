@@ -26,7 +26,7 @@ class TriggerAnalyzer( Analyzer ):
         self.triggerList = TriggerList( self.cfg_comp.triggers )
         self.counters.addCounter('Trigger')
         self.counters.counter('Trigger').register('All events')
-        self.counters.counter('Trigger').register('trigger passed')
+        self.counters.counter('Trigger').register('HLT')
         
 
     def process(self, iEvent, event):
@@ -48,7 +48,7 @@ class TriggerAnalyzer( Analyzer ):
             # selecting the trigger objects used in this path
             event.triggerObjects = selTriggerObjects( trigObjs, hltPath )
             
-        self.counters.counter('Trigger').inc('trigger passed')
+        self.counters.counter('Trigger').inc('HLT')
         return True
 
     def write(self):
