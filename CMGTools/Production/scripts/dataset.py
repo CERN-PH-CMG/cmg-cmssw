@@ -30,6 +30,8 @@ if __name__ == '__main__':
                       action = 'store_true',
                       default=False,
                       help='Read from the cache.')
+    parser.add_option("--min-run", dest="min_run", default=-1, type=int, help='When querying DBS, require runs >= than this run')
+    parser.add_option("--max-run", dest="max_run", default=-1, type=int, help='When querying DBS, require runs <= than this run')
 
     (options,args) = parser.parse_args()
 
@@ -41,10 +43,12 @@ if __name__ == '__main__':
     name = args[0]
     info = not options.noinfo
 
+    run_range = (options.min_run,options.max_run)
     data = createDataset(user, name,
                          options.pattern,
                          options.readcache,
-                         options.basedir)
+                         options.basedir,
+                         run_range=run_range)
     data.printInfo()
     data.printFiles(abspath = options.abspath,
                     info = info)

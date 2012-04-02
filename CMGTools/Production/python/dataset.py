@@ -12,10 +12,11 @@ import CMGTools.Production.eostools as castortools
 
 class BaseDataset( object ):
     
-    def __init__(self, name, user, pattern='.*root'):
+    def __init__(self, name, user, pattern='.*root', run_range = None):
         self.name = name
         self.user = user
         self.pattern = pattern
+        self.run_range = run_range
         self.buildListOfFiles( self.pattern )
         self.extractFileSizes()
         self.buildListOfBadFiles()
@@ -74,12 +75,19 @@ class BaseDataset( object ):
 
 class CMSDataset( BaseDataset ):
 
-    def __init__(self, name):
-        super(CMSDataset, self).__init__( name, 'CMS')
-        
+    def __init__(self, name, run_range = None):
+        super(CMSDataset, self).__init__( name, 'CMS', run_range=run_range)
+
     def buildListOfFiles(self, pattern='.*root'):
         sampleName = self.name.rstrip('/')
-        dbs = 'dbs search --query="find file where dataset like %s"' % sampleName
+        query = sampleName
+        if self.run_range is not None:
+            if self.run_range[0] > 0:
+                query = "%s and run >= %i" % (query,self.run_range[0])
+            if self.run_range[1] > 0:
+                query = "%s and run <= %i" % (query,self.run_range[1])
+        dbs = 'dbs search --query="find file where dataset like %s"' % query
+        #print 'dbs\t: %s' % dbs
         dbsOut = os.popen(dbs)
         self.files = []
         for line in dbsOut:
@@ -187,7 +195,7 @@ class Dataset( BaseDataset ):
         print 'Castor path :  ' + self.castorDir
 
 
-def createDataset( user, dataset, pattern,  readcache=False, basedir=None):
+def createDataset( user, dataset, pattern,  readcache=False, basedir=None, run_range = None):
     
     cachedir =  '/'.join( [os.environ['HOME'],'.cmgdataset'])
     
@@ -224,7 +232,7 @@ def createDataset( user, dataset, pattern,  readcache=False, basedir=None):
             readcache = False
     if not readcache:
         if user == 'CMS':
-            data = CMSDataset( dataset )
+            data = CMSDataset( dataset , run_range = run_range)
             info = False
         elif user == 'LOCAL':
             data = LocalDataset( dataset, basedir, pattern)
