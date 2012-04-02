@@ -9,17 +9,7 @@ class GenGenFourLeptonAnalyzer( FourLeptonAnalyzer ):
 
     def declareHandles(self):
         super(GenGenFourLeptonAnalyzer, self).declareHandles()
-
-        self.handles['leptons1'] = AutoHandle(
-            'genParticlesPruned',
-            'std::vector<reco::GenParticle>'
-            )
-
-        self.handles['leptons2'] = AutoHandle(
-            'genParticlesPruned',
-            'std::vector<reco::GenParticle>'
-            )
-        
+       
         self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
                                                      'std::vector<reco::GenParticle>' )
 
@@ -28,13 +18,21 @@ class GenGenFourLeptonAnalyzer( FourLeptonAnalyzer ):
         result = super(GenGenFourLeptonAnalyzer, self).process(iEvent, event)
         return result
 
-        
+
+    def buildLeptonList(self, event):
+        event.leptons1 = []
+        event.leptons2 = []
+        for ptc in self.mchandles['genParticles'].product():
+            if abs(ptc.pdgId()) == self.cfg_ana.pdgId1:
+                event.leptons1.append( GenLepton(ptc) )
+            elif  abs(ptc.pdgId()) == self.cfg_ana.pdgId2:
+                event.leptons2.append( GenLepton(ptc) )
+
+                    
     def testLepton1(self, leg):
-        return abs(leg.pdgId())==13 and \
-               super( GenGenFourLeptonAnalyzer, self).testLepton1( leg )
+        return super( GenGenFourLeptonAnalyzer, self).testLepton1( leg )
 
 
     def testLepton2(self, leg):
-        return abs(leg.pdgId())==11 and \
-               super( GenGenFourLeptonAnalyzer, self).testLepton2( leg )
+        return super( GenGenFourLeptonAnalyzer, self).testLepton2( leg )
 

@@ -11,66 +11,46 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton
 from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
 
-
-class DiObject( TLorentzVector ):
-    '''Class used for Zs, and also for Higgs candidates'''
-    def __init__(self, leg1, leg2):
-        lv1 = TLorentzVector( leg1.px(), leg1.py(), leg1.pz(), leg1.energy() )
-        lv2 = TLorentzVector( leg2.px(), leg2.py(), leg2.pz(), leg2.energy() )
-        lv1 += lv2 
-        super( DiObject, self).__init__( lv1 )
-        self.leg1 = leg1
-        self.leg2 = leg2
-
-    def __getattr__(self, name):
-        '''Trick to preserve the interface in use in CMSSW.'''
-        if name.lower() == 'mass':
-            name = 'M'
-        # changing the first letter of the function name to upper case. 
-        capName = ''.join( [name[0].capitalize(), name[1:]] ) 
-        # return getattr( super(DiObject, self), capName )
-        return getattr( self, capName )
-
-    def PdgId(self):
-        '''Dummy, needed to fill the tree'''
-        return 23
-
-    def Sip3D(self):
-        '''Dummy, needed to fill the tree'''
-        return -1
-
-    def RelIso(self, dBetaCor):
-        '''Sum of the relative isolation (dbeta corrected) of the 2 legs'''
-        return self.leg1.relIso( dBetaCor ) + self.leg2.relIso(dBetaCor )
-        
-    def charge(self):
-        return self.leg1.charge() + self.leg2.charge()
-        
-    def __str__(self):
-        return ', '.join( ['DiObject:', str(self.leg1), str(self.leg2)] )
-
+from CMGTools.HToZZTo4Leptons.analyzers.DiObject import DiObject
         
 class FourLeptonAnalyzer( Analyzer ):
 
     LeptonClass1 = Lepton 
     LeptonClass2 = Lepton
 
+    def declareHandles(self):
+        super(FourLeptonAnalyzer, self).declareHandles()
+
+        self.handles['rho'] = AutoHandle( ('kt6PFJetsForIso', 'rho'),
+                                          'double')
 
     def beginLoop(self):
         super(FourLeptonAnalyzer,self).beginLoop()
         self.counters.addCounter('FourLepton')
         count = self.counters.counter('FourLepton')
         count.register('all events')
-        count.register('enough leptons')
-        count.register('enough good leptons')
+        # count.register('>={nL} leptons'.format(nL=self.cfg_ana.nLeptonsMin))
+        # count.register('>={nL} good leptons'.format(nL=self.cfg_ana.nLeptonsMin))
         count.register('Z1 found')
-        count.register('3rd lepton present')
-        count.register('2nd lepton pair')
-        count.register('Z2 found')
-        count.register('4-lepton selected')
+        count.register('Z1+l')
+        # count.register('2nd lepton pair')
+        count.register('Z2 found (Presel)')
+        count.register('Iso')
+        count.register('SIP')
+        # count.register('4-lepton selected')
         count.register('passing')
-
         
+
+    def buildLeptonList(self, event):
+        event.leptons1 = map( self.__class__.LeptonClass1,
+                              self.handles['leptons1'].product() )
+        if self.__class__.LeptonClass1 != self.__class__.LeptonClass2: 
+            event.leptons2 = map( self.__class__.LeptonClass2,
+                                  self.handles['leptons2'].product() )
+        else:
+            event.leptons2 = event.leptons1
+
+       
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
@@ -82,27 +62,16 @@ class FourLeptonAnalyzer( Analyzer ):
         self.counters.counter('FourLepton').inc('all events')
         event.step = 0
 
-        # creating a Lepton for each lepton in the first input collection
-        event.leptons1 = map( self.__class__.LeptonClass1,
-                              self.handles['leptons1'].product() )
-        # nL = len(event.leptons1)
-
-        # if self.__class__.LeptonClass2 != self.__class__.LeptonClass1:
-        # .. and in the second input collection, if it is different
-        # from the first one
-        event.leptons2 = map( self.__class__.LeptonClass2,
-                              self.handles['leptons2'].product() )
-        # nL += len(event.leptons2)
-
+        self.buildLeptonList( event )   
         event.allLeptons = set( event.leptons1 )
         event.allLeptons.update( event.leptons2 )
-
+    
         nL = len( event.allLeptons )
         # first preselection, just to speed up the process
         if nL < self.cfg_ana.nLeptonsMin:
             return self.cfg_ana.keep
         else:
-            self.counters.counter('FourLepton').inc('enough leptons')        
+            # self.counters.counter('FourLepton').inc('>={nL} leptons'.format(nL=self.cfg_ana.nLeptonsMin))        
             event.step += 1
             
         # loose lepton selection
@@ -118,7 +87,7 @@ class FourLeptonAnalyzer( Analyzer ):
         if nL < self.cfg_ana.nLeptonsMin:
             return self.cfg_ana.keep
         else:
-            self.counters.counter('FourLepton').inc('enough good leptons')
+            # self.counters.counter('FourLepton').inc('>={nL} good leptons'.format(nL=self.cfg_ana.nLeptonsMin))
             event.step += 1
 
         event.leptonPairs = self.findPairs( event.allSelLeptons )
@@ -129,7 +98,7 @@ class FourLeptonAnalyzer( Analyzer ):
             self.counters.counter('FourLepton').inc('Z1 found')
             event.step += 1
         
-        event.zBoson1 = self.bestZBoson( event.selZBosons1 )
+        event.zBoson1 = self.bestZBoson1( event.selZBosons1 )
         
         event.leptonsAfterZ1 = copy.copy(event.allSelLeptons)
         event.leptonsAfterZ1.remove( event.zBoson1.leg1 ) 
@@ -138,44 +107,29 @@ class FourLeptonAnalyzer( Analyzer ):
         if len(event.leptonsAfterZ1)==0:
             return self.cfg_ana.keep
         else:
-            self.counters.counter('FourLepton').inc('3rd lepton present')
+            self.counters.counter('FourLepton').inc('Z1+l')
             event.step += 1
         
         event.leptonPairs2 = self.findPairs( event.leptonsAfterZ1 )
         if len(event.leptonPairs2)==0:
             return self.cfg_ana.keep
         else:
-            self.counters.counter('FourLepton').inc('2nd lepton pair')
+            # self.counters.counter('FourLepton').inc('2nd lepton pair')
             event.step += 1
         
         event.selZBosons2 = filter( self.testZ2, event.leptonPairs2 )
         if len(event.selZBosons2)==0:
             return self.cfg_ana.keep
         else:
-            self.counters.counter('FourLepton').inc('Z2 found')
+            self.counters.counter('FourLepton').inc('Z2 found (Presel)')
             event.step += 1
 
-        # putting together all selected lepton pairs:
-        # Z1
-        # selected Z2s
-        event.allLeptonPairs = copy.copy( event.selZBosons2 )
-        event.allLeptonPairs.append( event.zBoson1 ) 
+        event.zBoson2 = self.bestZBoson2( event.selZBosons2 )
 
-        # looking for 2-Z combinations
-        event.fourLeptons = self.findPairs( event.allLeptonPairs )
-        event.selFourLeptons = filter( self.testFourLepton, event.fourLeptons)
-        if len( event.selFourLeptons )==0:
-            return self.cfg_ana.keep 
-        else:
-            self.counters.counter('FourLepton').inc('4-lepton selected')
-            event.step += 1
-        
-        event.higgsCand = self.bestFourLepton( event.selFourLeptons ) 
-        event.zBoson2 = event.higgsCand.leg1
-        if event.zBoson2 == event.zBoson1:
-            event.zBoson2 = event.higgsCand.leg2
+        event.higgsCand = DiObject( event.zBoson1, event.zBoson2 )
 
-        # leptons organized by the Z they belong to
+        #FIXME: need to apply isolation cut and SIP cut
+
         event.theLeptons = [
             event.zBoson1.leg1,
             event.zBoson1.leg2,
@@ -186,23 +140,32 @@ class FourLeptonAnalyzer( Analyzer ):
         # leptons sorted by decreasing pT 
         event.theLeptons_ptSorted = sorted( event.theLeptons,
                                             key = lambda x: 1/x.pt() )
+
+
+        for l1, l2 in itertools.combinations( event.theLeptons, 2 ):
+            event.leptonPairIso = self.testLeptonPairIso(l1, l2, self.cfg_ana.pair_iso)
+            if not event.leptonPairIso:
+                return self.cfg_ana.keep
+        self.counters.counter('FourLepton').inc('Iso')
+
+
+        event.theLeptonsSIP = filter( lambda x: x.sip3D()<self.cfg_ana.h_sip,
+                                      event.theLeptons)
+        if len(event.theLeptonsSIP)<4:
+            return self.cfg_ana.keep
+        self.counters.counter('FourLepton').inc('SIP')
         
         self.counters.counter('FourLepton').inc('passing')
         event.step += 1
 
         return True
+ 
+    def bestZBoson2(self, zBosons):
+        '''To be implemented!'''
+        best = max(zBosons, key=lambda x: x.leg1.pt() + x.leg2.pt() )        
+        return best
 
-
-    def bestFourLepton( self, fourLeptons ):
-        if len( fourLeptons ) == 0:
-            return None
-        elif len( fourLeptons ) == 1:
-            return fourLeptons[0]
-        else:
-            return max( fourLeptons, key = lambda x: x.leg1.pt() + x.leg2.pt() )
-            
-
-    def bestZBoson(self, zBosons):
+    def bestZBoson1(self, zBosons):
         if len( zBosons ) == 0:
             return None
         elif len( zBosons ) == 1:
@@ -224,15 +187,53 @@ class FourLeptonAnalyzer( Analyzer ):
         '''Need to overload this function for the 4e and 4mu analyzers:
         see pas p3, point 4
         '''
-        return fourLepton.M()>self.cfg_ana.h_m
+        if fourLepton.M()<self.cfg_ana.h_m:
+            return False
+
+        
+        assert( abs( fourLepton.leg1.leg1.pdgId() ) == \
+                abs( fourLepton.leg1.leg2.pdgId() ) ) 
+
+        assert( abs( fourLepton.leg2.leg1.pdgId() ) == \
+                abs( fourLepton.leg2.leg2.pdgId() ) ) 
+
+        if abs( fourLepton.leg1.leg1.pdgId() ) != \
+           abs( fourLepton.leg2.leg1.pdgId() ):
+            # 2e 2mu we're all set
+            return True
+
+        
+        # check that at least 3 of the 4 combinations of 2 leptons
+        # have a mass larger than self.cfg_ana.pair_mass
+        leptons = [fourLepton.leg1.leg1,
+                   fourLepton.leg1.leg2,
+                   fourLepton.leg2.leg1,
+                   fourLepton.leg2.leg2]
+        nLowMass = 0
+        nPairs = 0
+        for l1, l2 in itertools.combinations(leptons, 2):
+            if l1.charge()+l2.charge()!=0:
+                continue
+            if abs(l1.pdgId()) != abs(l2.pdgId()):
+                continue
+            # considering only the pairs of SF OS leptons (possible Zs)
+            nPairs += 1
+            pair = DiObject( l1, l2 )
+            if pair.M()<self.cfg_ana.pair_mass:
+                nLowMass += 1
+        if nPairs!=4:
+            raise ValueError('number of pairs should be equal to 4!')
+        if nLowMass>1:
+            return False
+        
+        return True
 
     def testLeptonPairIso(self, lep1, lep2, max):
         '''Combined isolation for a lepton pair.'''
-        dBetaCor = 0.5
-        return lep1.relIso(dBetaCor) + lep2.relIso(dBetaCor) < max
+        return self.leptonIso(lep1) + self.leptonIso(lep2) < max
     
     def testZ1(self, zCand):
-        '''Still missing the SIP3d cut'''
+        '''Still missing the SIP3D cut'''
         return zCand.M() > self.cfg_ana.z1_m[0] and \
                zCand.M() < self.cfg_ana.z1_m[1] and \
                zCand.leg1.pt() > self.cfg_ana.z1_pt1 and \
@@ -258,7 +259,7 @@ class FourLeptonAnalyzer( Analyzer ):
         # patLepton = lepton.sourcePtr()
         if lepton.pt() > pt and \
            abs(lepton.eta()) < eta and \
-           lepton.relIso( 0.5 ) < iso and \
+           self.leptonIso( lepton ) < iso and \
            lepton.sip3D() < sip:
             return True
         else:
@@ -289,19 +290,47 @@ class FourLeptonAnalyzer( Analyzer ):
                                 iso = self.cfg_ana.iso2,
                                 sip = self.cfg_ana.sip2,
                                 sel = sel )
-
-
     
     def testMuon(self, muon):
         '''Returns True if a muon passes a set of cuts.
         Can be used in testLepton1 and testLepton2, in child classes.'''
         # this is the id of the HZZ baseline:
-        return muon.getSelection('cuts_vbtfmuon_numberOfValidTrackerHits')
-        # return muon.getSelection('cuts_vbtfmuon')
+        return muon.numberOfValidTrackerHits() > 10
         # return True
+        
     
     def testElectron(self, electron):
         '''Returns True if an electron passes a set of cuts.
         Can be used in testLepton1 and testLepton2, in child classes.'''
         return electron.getSelection('cuts_tightID')
+
+
+    def leptonIso( self, lepton ):
+        # delta beta corrected isolation 
+        # return lepton.relIso(0.5)
+        # if abs(lepton.pdgId()) == 13:
+        rho = self.handles['rho'].product()[0]
+        return lepton.detIso( rho )
+
+
+##     def muDetIso(self, patMuon):
+##         ''' from http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/Torino/ZZAnalysis/AnalysisStep/plugins/ZZ4lAnalyzer.cc?revision=1.287&view=markup
+##         '''
+##         isoEcal = patMuon.ecalIso()
+##         isoHcal = patMuon.hcalIso()
+##         isoTk   = patMuon.userIsolation( 7 )
+##         isoEcal, isoHcal = self.rhoCorrMu(patMuon.eta(),isoEcal, isoHcal)
+##         return (isoEcal + isoHcal + isoTk)/patMuon.pt()
+
+
+##     def rhoCorrMu(self, eta, ecalIso, hcalIso):
+##         AreaEcal = [0.074, 0.045] # barrel/endcap 
+##         AreaHcal = [0.022 , 0.030] # barrel/endcap
+##         ifid = 1 
+##         if abs( eta ) < 1.479:
+##             ifid = 0 # selecting barrel settings
+##         rho = self.handles['rho'].product()[0]
+##         ecalIso = ecalIso - AreaEcal[ifid] * rho
+##         hcalIso = hcalIso - AreaHcal[ifid] * rho
+##         return ecalIso, hcalIso
 
