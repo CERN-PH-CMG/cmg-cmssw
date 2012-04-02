@@ -745,7 +745,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   std::vector<TString> selCh; selCh.push_back("ee"); selCh.push_back("mumu");
 
   //print event yields from the mt shapes
-  getCutFlowFromShape(selCh,allShapes,histo);
+  //getCutFlowFromShape(selCh,allShapes,histo);
 
   //non-resonant background estimation
   //estimateNonResonantBackground(selCh,"emu",allShapes,"nonresbckg_ctrl");
