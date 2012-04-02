@@ -196,7 +196,6 @@ int main(int argc, char* argv[])
     mon.getHisto("nbtags")->GetXaxis()->SetBinLabel(ibin,label);
   }
   mon.addHistogram( new TH1F("btagvetosel", ";b-tag discriminator; Events", 6,0,6) );  
-  mon.addHistogram( new TH1F("btagvetosel", ";b-tag discriminator; Events", 6,0,6) );  
   mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1F( "met_met"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_rawmet"  , ";E_{T}^{miss} (raw);Events", 50,0,500) );
@@ -403,7 +402,7 @@ int main(int argc, char* argv[])
 	}
       TVector2 zllT(zll.px(), zll.py());
       TVector2 zllLongi( zllT.Unit() );
-      TVector2 zllPerp( zllT.Rotate(TMath::Pi()/2) );
+      TVector2 zllPerp( zllLongi.Rotate(TMath::Pi()/2) );
 
       //analyze JET/MET
       LorentzVectorCollection jetsP4;
