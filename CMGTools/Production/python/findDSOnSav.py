@@ -44,8 +44,11 @@ def getTaskID(name, category, username, password, isParent):
             name = re.sub("---\*","---.*", name)
         br.form['words']=newName
         br.submit()
+    except KeyboardInterrupt:
+        raise
     except:
         skip =True
+        
     if skip is False:
         # Try to access form (if you can, there was only 1 result)
         try:
@@ -64,7 +67,8 @@ def getTaskID(name, category, username, password, isParent):
                     	    task = i.split("#")[1]
                     	    if isParent: return [task.split(",")[0],]
                     	    else: return task.split(",")[0]
-                
+        except KeyboardInterrupt:
+            raise
         # If exception is thrown, a list of results was returned and we must navigate to the correct one
         except:
             links = None
@@ -120,5 +124,7 @@ def validLogin(username, password):
                              print "Client was unable to login, please check login details."
                     else: 
                     	return True
+                except KeyboardInterrupt:
+                    raise
                 except:
                 	return False
