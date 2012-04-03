@@ -181,8 +181,10 @@ void plotLimit(TString inputs=""){
 
    int NExp = 0;
    for(int i=0;i<N;i++){
-      string massStr = files[i].substr(1,3);
+     size_t hpos=files[i].find("H");
+     string massStr = files[i].substr(hpos+1,hpos+3);
       int mass; sscanf(massStr.c_str(),"%d",&mass);
+      cout << "*****" << mass << endl;
       Limit limits = GetLimit(files[i],string("Higgs")+massStr.c_str());
 
          fprintf(pFileSum, "Mass=%s --> Limits are %lf %lf %lf %lf %lf %lf %lf\n",massStr.c_str(), limits.Obs,limits.Exp_minus2s, limits.Exp_minus1s, limits.Exp_Mean, limits.Exp_plus1s, limits.Exp_plus2s, limits.Exp_Median);
