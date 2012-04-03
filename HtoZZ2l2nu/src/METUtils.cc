@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2012/04/01 09:21:10 $
- *  $Revision: 1.8 $
+ *  $Date: 2012/04/01 19:51:30 $
+ *  $Revision: 1.9 $
  *  \author G. Cerminara & D. Trocino & P. Silva & L. Quertenmont
  */
 
@@ -294,6 +294,19 @@ LorentzVector redMET(RedMetType Type, const LorentzVector& theLepton1, double si
       return -1;
   }
 
+  //
+  LorentzVector correctForPhiAsymmetry(LorentzVector &met,float sumEt,bool isMC, bool isRunA)
+  {
+    //cf. https://indico.cern.ch/getFile.py/access?contribId=1&resId=0&materialId=slides&confId=174318
+    double cx0( isMC ? (isRunA ? -0.09389  : -0.1070    ) : (isRunA ? -0.3365   : -0.3265) );
+    double cx1( isMC ? (isRunA ? 0.0001815 : 0.00009587 ) : (isRunA ? 0.004801  : 0.005162) );
+    double cy0( isMC ? (isRunA ? 0.1571    : 0.01517    ) : (isRunA ? 0.2578    : -0.1956) );
+    double cy1( isMC ? (isRunA ? -0.003710 : -0.003357  ) : (isRunA ? -0.006124 : -0.006299) );
+
+    double px=met.px()-(cx0+cx1*sumEt);
+    double py=met.py()-(cy0+cy1*sumEt);
+    return LorentzVector(px,py,0,sqrt(px*px+py*py));
+  }
 
 
   //
