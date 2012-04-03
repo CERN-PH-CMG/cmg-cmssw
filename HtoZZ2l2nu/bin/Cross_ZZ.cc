@@ -29,7 +29,6 @@
 #include <RooNovosibirsk.h>
 #include <RooPlot.h>
 #include <RooDataSet.h>
-//#include "../bin/UserCode/lpernie/src/CommonTools/DrawLPBase.h"
 #include <TROOT.h>
 #include <TStyle.h>
 
