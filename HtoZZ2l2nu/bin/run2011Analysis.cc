@@ -116,56 +116,7 @@ int main(int argc, char* argv[])
     string StringMass = string(url.Data()).substr(VBFStringpos+6,3);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
     VBFString = string(url.Data()).substr(VBFStringpos);
   }
- 
-  //##############################################
-  //########    CUTS AND MASS POINTS      ########
-  //##############################################
-/*
-  int NmH=19;
-  double* mH = new double[NmH]; double*  cutMet = new double[NmH]; double*  cutMTMin= new double[NmH]; double*  cutMTMax = new double[NmH];
-                                double* scutMet = new double[NmH]; double* scutMTMin= new double[NmH]; double* scutMTMax = new double[NmH];
-  mH[ 0] = 200;  cutMet[ 0] =  56;  cutMTMin[ 0] = 198;  cutMTMax[ 0] = 187;
-  mH[ 1] = 225;  cutMet[ 1] =  63;  cutMTMin[ 1] = 213;  cutMTMax[ 1] = 223;
-  mH[ 2] = 250;  cutMet[ 2] =  70;  cutMTMin[ 2] = 229;  cutMTMax[ 2] = 258;
-  mH[ 3] = 275;  cutMet[ 3] =  77;  cutMTMin[ 3] = 245;  cutMTMax[ 3] = 293;
-  mH[ 4] = 300;  cutMet[ 4] =  84;  cutMTMin[ 4] = 260;  cutMTMax[ 4] = 328;
-  mH[ 5] = 325;  cutMet[ 5] =  91;  cutMTMin[ 5] = 276;  cutMTMax[ 5] = 364;
-  mH[ 6] = 350;  cutMet[ 6] =  98;  cutMTMin[ 6] = 292;  cutMTMax[ 6] = 399;
-  mH[ 7] = 375;  cutMet[ 7] = 105;  cutMTMin[ 7] = 308;  cutMTMax[ 7] = 434;
-  mH[ 8] = 400;  cutMet[ 8] = 112;  cutMTMin[ 8] = 323;  cutMTMax[ 8] = 470;
-  mH[ 9] = 425;  cutMet[ 9] = 119;  cutMTMin[ 9] = 339;  cutMTMax[ 9] = 505;
-  mH[10] = 450;  cutMet[10] = 126;  cutMTMin[10] = 355;  cutMTMax[10] = 540;
-  mH[11] = 475;  cutMet[11] = 133;  cutMTMin[11] = 370;  cutMTMax[11] = 576;
-  mH[12] = 500;  cutMet[12] = 140;  cutMTMin[12] = 386;  cutMTMax[12] = 611;
-  mH[13] = 525;  cutMet[13] = 147;  cutMTMin[13] = 402;  cutMTMax[13] = 646;
-  mH[14] = 550;  cutMet[14] = 154;  cutMTMin[14] = 417;  cutMTMax[14] = 682;
-  mH[15] = 575;  cutMet[15] = 161;  cutMTMin[15] = 433;  cutMTMax[15] = 717;
-  mH[16] = 600;  cutMet[16] = 168;  cutMTMin[16] = 449;  cutMTMax[16] = 752;
-  mH[17] = 625;  cutMet[17] = 175;  cutMTMin[17] = 464;  cutMTMax[17] = 788;
-  mH[18] = 650;  cutMet[18] = 182;  cutMTMin[18] = 480;  cutMTMax[18] = 823;
 
-  mH[ 0] = 200; scutMet[ 0] =  70; scutMTMin[ 0] = 180; scutMTMax[ 0] = 300;
-  mH[ 1] = 225; scutMet[ 1] =  70; scutMTMin[ 1] = 180; scutMTMax[ 1] = 300;
-  mH[ 2] = 250; scutMet[ 2] =  70; scutMTMin[ 2] = 180; scutMTMax[ 2] = 300;
-  mH[ 3] = 275; scutMet[ 3] =  70; scutMTMin[ 3] = 180; scutMTMax[ 3] = 300;
-  mH[ 4] = 300; scutMet[ 4] =  80; scutMTMin[ 4] = 250; scutMTMax[ 4] = 350;
-  mH[ 5] = 325; scutMet[ 5] =  80; scutMTMin[ 5] = 250; scutMTMax[ 5] = 350;
-  mH[ 6] = 350; scutMet[ 6] =  80; scutMTMin[ 6] = 250; scutMTMax[ 6] = 400;
-  mH[ 7] = 375; scutMet[ 7] =  80; scutMTMin[ 7] = 250; scutMTMax[ 7] = 400;
-  mH[ 8] = 400; scutMet[ 8] =  80; scutMTMin[ 8] = 250; scutMTMax[ 8] = 450;
-  mH[ 9] = 425; scutMet[ 9] =  80; scutMTMin[ 9] = 250; scutMTMax[ 9] = 450;
-  mH[10] = 450; scutMet[10] =  80; scutMTMin[10] = 250; scutMTMax[10] = 450;
-  mH[11] = 475; scutMet[11] =  80; scutMTMin[11] = 250; scutMTMax[11] = 450;
-  mH[12] = 500; scutMet[12] =  80; scutMTMin[12] = 250; scutMTMax[12] = 600;
-  mH[13] = 525; scutMet[13] =  80; scutMTMin[13] = 250; scutMTMax[13] = 600;
-  mH[14] = 550; scutMet[14] =  80; scutMTMin[14] = 250; scutMTMax[14] = 600;
-  mH[15] = 575; scutMet[15] =  80; scutMTMin[15] = 250; scutMTMax[15] = 600;
-  mH[16] = 600; scutMet[16] =  80; scutMTMin[16] = 250; scutMTMax[16] = 750;
-  mH[17] = 625; scutMet[17] =  80; scutMTMin[17] = 250; scutMTMax[17] = 750;
-  mH[18] = 650; scutMet[18] =  80; scutMTMin[18] = 250; scutMTMax[18] = 750;
- 
-  char** mHtxt = new char*[NmH]; for(int ImH=0;ImH<NmH;ImH++){mHtxt[ImH] = new char[255]; sprintf(mHtxt[ImH],"%3.0f",mH[ImH]); }
-*/
   //##############################################
   //########    INITIATING HISTOGRAMS     ########
   //##############################################
@@ -229,6 +180,23 @@ int main(int argc, char* argv[])
             }
       }
    }
+  //add last year cut
+  optim_Cuts1_met.push_back( 70); optim_Cuts1_mtmin.push_back(229); optim_Cuts1_mtmax.push_back(258);
+  optim_Cuts1_met.push_back( 77); optim_Cuts1_mtmin.push_back(245); optim_Cuts1_mtmax.push_back(293);
+  optim_Cuts1_met.push_back( 84); optim_Cuts1_mtmin.push_back(260); optim_Cuts1_mtmax.push_back(328);
+  optim_Cuts1_met.push_back( 91); optim_Cuts1_mtmin.push_back(276); optim_Cuts1_mtmax.push_back(364);
+  optim_Cuts1_met.push_back( 98); optim_Cuts1_mtmin.push_back(292); optim_Cuts1_mtmax.push_back(399);
+  optim_Cuts1_met.push_back(105); optim_Cuts1_mtmin.push_back(308); optim_Cuts1_mtmax.push_back(434);
+  optim_Cuts1_met.push_back(112); optim_Cuts1_mtmin.push_back(323); optim_Cuts1_mtmax.push_back(470);
+  optim_Cuts1_met.push_back(119); optim_Cuts1_mtmin.push_back(339); optim_Cuts1_mtmax.push_back(505);
+  optim_Cuts1_met.push_back(126); optim_Cuts1_mtmin.push_back(355); optim_Cuts1_mtmax.push_back(540);
+  optim_Cuts1_met.push_back(133); optim_Cuts1_mtmin.push_back(370); optim_Cuts1_mtmax.push_back(576);
+  optim_Cuts1_met.push_back(140); optim_Cuts1_mtmin.push_back(386); optim_Cuts1_mtmax.push_back(611);
+  optim_Cuts1_met.push_back(147); optim_Cuts1_mtmin.push_back(402); optim_Cuts1_mtmax.push_back(646);
+  optim_Cuts1_met.push_back(154); optim_Cuts1_mtmin.push_back(417); optim_Cuts1_mtmax.push_back(682);
+  optim_Cuts1_met.push_back(161); optim_Cuts1_mtmin.push_back(433); optim_Cuts1_mtmax.push_back(717);
+  optim_Cuts1_met.push_back(168); optim_Cuts1_mtmin.push_back(449); optim_Cuts1_mtmax.push_back(752);
+
 
    TH1F* Hoptim_cuts1_met     =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_met"    , ";cut index;met"    ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
    TH1F* Hoptim_cuts1_mtmin   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmin"  , ";cut index;mtmin"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
