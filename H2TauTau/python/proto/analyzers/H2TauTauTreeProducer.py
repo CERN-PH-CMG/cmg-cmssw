@@ -15,7 +15,7 @@ class H2TauTauTreeProducer( TreeAnalyzer ):
             var('{pName}Eta'.format(pName=pName))
             var('{pName}Phi'.format(pName=pName))
             var('{pName}Charge'.format(pName=pName))
-            # var('{pName}Iso'.format(pName=pName))
+            var('{pName}Iso'.format(pName=pName))
             
         var('visMass')
         var('svfitMass')
@@ -55,7 +55,8 @@ class H2TauTauTreeProducer( TreeAnalyzer ):
             fill('{pName}Eta'.format(pName=pName), particle.eta() )
             fill('{pName}Phi'.format(pName=pName), particle.phi() )
             fill('{pName}Charge'.format(pName=pName), particle.charge() )
-            # fill('{pName}Iso'.format(pName=pName), particle.relIso(0.5) )
+            if hasattr( particle, 'relIso' ):
+                fill('{pName}Iso'.format(pName=pName), particle.relIso(0.5) )
            
         fill('visMass', event.diLepton.mass())
         fill('svfitMass', event.diLepton.massSVFit())
