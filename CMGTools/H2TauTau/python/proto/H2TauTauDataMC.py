@@ -64,7 +64,8 @@ class H2TauTauDataMC( AnalysisDataMC ):
         legendLine = compName
         self.AddHistogram( componentName, hist, layer, legendLine)
         if comp.isData:
-            self.Hist(componentName).stack = False        
+            self.Hist(componentName).stack = False
+        self.Hist(componentName).tree = tree
 
     def _ReadHistograms(self, directory):
         '''Build histograms for all components.'''
