@@ -125,7 +125,7 @@ If not entered, secure password prompt will appear.""",
         for line in lines:
             line = re.sub("\s+", " ", line)
             try:
-            	
+            	print "\n------------------------NEW DATASET-----------------------"
                 dataset = line.split(" ")[0].lstrip().rstrip()
                 fileown = options.fileown
                 if re.search("%", line):
@@ -160,6 +160,7 @@ If not entered, secure password prompt will appear.""",
                 	comment = line.rstrip('"').split('"')[1]
                 dataset.rstrip("/")
                 publish(dataset,fileown,comment,options.test,None,options.username,password,options.force, options.checkGroups, options.savannah)
+                
             except NameError as err:
                 print err.args, "\nDataset not published"
     # For singular file input
