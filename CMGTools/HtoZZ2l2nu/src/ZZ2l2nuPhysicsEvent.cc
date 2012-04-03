@@ -77,6 +77,33 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
   return phys;
 }
 
+//
+std::pair<int,int> getWZdecayMode(ZZ2l2nuSummary_t &ev)
+{
+  int zdecay(0),wdecay(0);
+  for(Int_t ipart=0; ipart<ev.nmcparticles; ipart++)
+    {
+      if(ev.mc_id[ipart]==23 || ev.mc_id[ipart]==24)
+	{
+	  for(Int_t jpart=ipart+1; jpart<ev.nmcparticles;jpart++)
+	    {
+	      if(ev.mc_id[ipart]==Z && abs(ev.mc_id[jpart])==ELECTRON) { zdecay=ELECTRON; break;}
+	      if(ev.mc_id[ipart]==Z && abs(ev.mc_id[jpart])==MUON)     { zdecay=MUON; break; }
+	      if(ev.mc_id[ipart]==Z && abs(ev.mc_id[jpart])==TAU)      { zdecay=TAU;  break; }
+	      if(ev.mc_id[ipart]==W && abs(ev.mc_id[jpart])==ELECTRON) { wdecay=ELECTRON; break; }
+	      if(ev.mc_id[ipart]==W && abs(ev.mc_id[jpart])==MUON)     { wdecay=MUON; break; }
+	      if(ev.mc_id[ipart]==W && abs(ev.mc_id[jpart])==TAU)      { wdecay=TAU; break; }
+	    }
+	}
+    }
+//   if(wdecay==0)
+//     {
+//       for(Int_t ipart=0; ipart<ev.nmcparticles; ipart++)
+// 	cout << fabs(ev.mc_id[ipart]) << " ";
+//       cout << endl;
+//     }
+  return std::pair<int,int>(wdecay,zdecay);
+}
 
 //
 int getNgenLeptons(int mcChannelCode, int pdgId)
@@ -129,7 +156,7 @@ bool isW(int mcChannelCode)
 bool isZZ2l2nu(int mcChannelCode)
 {
   if(getGenProcess(mcChannelCode)!= ZZ_CH) return false;
-  if(getNgenLeptons(mcChannelCode,ELECTRON)<2 && getNgenLeptons(mcChannelCode,MUON)<2) return false;
+  if(getNgenLeptons(mcChannelCode,ELECTRON)<2 && getNgenLeptons(mcChannelCode,MUON)<2 && getNgenLeptons(mcChannelCode,TAU)<2) return false;
   if(getNgenLeptons(mcChannelCode,12)<2) return false;
   return true;
 }

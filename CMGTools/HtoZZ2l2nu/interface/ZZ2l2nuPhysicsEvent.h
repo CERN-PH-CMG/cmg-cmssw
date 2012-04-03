@@ -119,7 +119,7 @@ struct PhysicsEvent_t
 
 //
 PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev);
-
+std::pair<int,int> getWZdecayMode(ZZ2l2nuSummary_t &ev);
 int getNgenLeptons(int mcChannelCode, int pdgId);
 int getGenProcess(int mcChannelCode);
 bool isDYToLL(int mcChannelCode);
