@@ -64,14 +64,27 @@ int main(int argc, char* argv[])
   GammaEventHandler gammaEvHandler(runProcess);  
 
   //book histograms
-  SmartSelectionMonitor controlHistos;
-  controlHistos.addHistogram( new TH1F ("nvtx", ";Vertices;Events", 30,0,30) );
-  controlHistos.addHistogram( new TH1D ("qt", ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", 200,0,600) );
-  controlHistos.addHistogram( new TH1D ("eta", ";#eta;Events", 50,0,2.6) );  
-  controlHistos.addHistogram( new TH1F ("hoe", ";H/E;Events", 100,0.,0.1) );
-  controlHistos.addHistogram( new TH1F ("r9", ";R9;Events", 100,0.8,1) );
-  controlHistos.addHistogram( new TH1F ("sietaieta", ";#sigma i#eta i#eta;Events", 100,0,0.03) );
-  controlHistos.addHistogram( new TH1F ("trkveto", ";Track veto;Events", 2,0,2) );
+  SmartSelectionMonitor mon;
+  mon.addHistogram( new TH1D ("qt", ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", 200,0,600) );
+  mon.addHistogram( new TH1D ("eta", ";#eta;Events", 50,0,2.6) );  
+  mon.addHistogram( new TH1F("njets"        ,";Jet multiplicity (p_{T}>30 GeV/c);Events",5,0,5) );
+  mon.addHistogram( new TH1F("nsoftjets"        ,";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5) );
+  mon.addHistogram( new TH1F ("nbtags", ";b-tag multiplicity; Events", 5,0,5) );
+  for(size_t ibin=1; ibin<=5; ibin++){
+    TString label("");
+    if(ibin==5) label +="#geq";
+    else        label +="=";
+    label += (ibin-1);
+    mon.getHisto("njets")->GetXaxis()->SetBinLabel(ibin,label);
+    mon.getHisto("nbtags")->GetXaxis()->SetBinLabel(ibin,label);
+  }
+  mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
+  mon.addHistogram( new TH1F ("nvtx", ";Vertices;Events", 30,0,30) );
+  mon.addHistogram( new TH1F ("hoe", ";H/E;Events", 100,0.,0.1) );
+  mon.addHistogram( new TH1F ("r9", ";R9;Events", 100,0.8,1) );
+  mon.addHistogram( new TH1F ("sietaieta", ";#sigma i#eta i#eta;Events", 100,0,0.03) );
+  mon.addHistogram( new TH1F ("trkveto", ";Track veto;Events", 2,0,2) );
+  mon.addHistogram( new TH1F ( "met_rawmet"  , ";E_{T}^{miss} (raw);Events", 50,0,500) );
 
 
 
@@ -95,11 +108,11 @@ int main(int argc, char* argv[])
   //	  if(triggerThr==0) 
   //{
   
-  //  controlHistos.addHistogram( new TH2D (subcat+"qtvseta", ";p_{T}^{#gamma} [GeV/c];#eta;Events / (2.5 GeV/c)", 200,0,600,50,0,2.6) );
-  // controlHistos.addHistogram( new TH2D (subcat+"qtvsnvtx", ";p_{T}^{#gamma} [GeV/c];Vertices;Events", 200,0,600,30,0,30) );
-  //    controlHistos.addHistogram( new TH1D (subcat+"zmass",";M^{ll};Events", 100,91-31,91+31) );
-  //   controlHistos.addHistogram( new TH1D (subcat+"finaleventflowmet",";Category;Event count;",8,0,8) );
-  //   controlHistos.addHistogram( new TH1D (subcat+"finaleventflowrmet",";Category;Event count;",8,0,8) );
+  //  mon.addHistogram( new TH2D (subcat+"qtvseta", ";p_{T}^{#gamma} [GeV/c];#eta;Events / (2.5 GeV/c)", 200,0,600,50,0,2.6) );
+  // mon.addHistogram( new TH2D (subcat+"qtvsnvtx", ";p_{T}^{#gamma} [GeV/c];Vertices;Events", 200,0,600,30,0,30) );
+  //    mon.addHistogram( new TH1D (subcat+"zmass",";M^{ll};Events", 100,91-31,91+31) );
+  //   mon.addHistogram( new TH1D (subcat+"finaleventflowmet",";Category;Event count;",8,0,8) );
+  //   mon.addHistogram( new TH1D (subcat+"finaleventflowrmet",";Category;Event count;",8,0,8) );
   //    }
   //else
   //{
@@ -107,28 +120,28 @@ int main(int argc, char* argv[])
   //}
   //  photonSubcats.push_back(subcat);
     
-  //   controlHistos.addHistogram( new TH1D (subcat+"ptjets", ";p_{T}^{jet} [GeV/c];Jets", 50,0,250) );
-  //       controlHistos.addHistogram( new TH1D (subcat+"ptclosejet", ";p_{T}(closest jet) [GeV/c];Events", 50,0,250) );
-  //       controlHistos.addHistogram( new TH1D (subcat+"ht", ";H_{T} [GeV];Events", 100,0,500) );
-  //       controlHistos.addHistogram( new TH1D (subcat+"htSmear", ";H_{T} [GeV] - after smear;Events", 100,0,500) );
-  //       controlHistos.addHistogram( new TH1D (subcat+"mt", ";M_{T} [GeV];Events", 100,0,1000) );
-  //       controlHistos.addHistogram( new TH1F (subcat+"njets", ";Jets;Events", 6,0,6) );
-  //       controlHistos.addHistogram( new TH1F (subcat+"nbtags", ";b-tag multiplcity;Events", 5,0,5) );
-  //       controlHistos.addHistogram( new TH1F (subcat+"mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events", 14,0,3.5) );
-  //       controlHistos.addHistogram( new TH1F (subcat+"mindphijmet50", ";min #Delta#phi(jet,E_{T}^{miss});Events", 14,0,3.5) );
-  //       controlHistos.addHistogram( new TH1F (subcat+"mindphijmet70", ";min #Delta#phi(jet,E_{T}^{miss});Events", 14,0,3.5) );
-  //       controlHistos.addHistogram( new TH1F (subcat+"dphivmet", ";#Delta#phi(boson,E_{T}^{miss});Events", 14,0,3.5) );
+  //   mon.addHistogram( new TH1D (subcat+"ptjets", ";p_{T}^{jet} [GeV/c];Jets", 50,0,250) );
+  //       mon.addHistogram( new TH1D (subcat+"ptclosejet", ";p_{T}(closest jet) [GeV/c];Events", 50,0,250) );
+  //       mon.addHistogram( new TH1D (subcat+"ht", ";H_{T} [GeV];Events", 100,0,500) );
+  //       mon.addHistogram( new TH1D (subcat+"htSmear", ";H_{T} [GeV] - after smear;Events", 100,0,500) );
+  //       mon.addHistogram( new TH1D (subcat+"mt", ";M_{T} [GeV];Events", 100,0,1000) );
+  //       mon.addHistogram( new TH1F (subcat+"njets", ";Jets;Events", 6,0,6) );
+  //       mon.addHistogram( new TH1F (subcat+"nbtags", ";b-tag multiplcity;Events", 5,0,5) );
+  //       mon.addHistogram( new TH1F (subcat+"mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events", 14,0,3.5) );
+  //       mon.addHistogram( new TH1F (subcat+"mindphijmet50", ";min #Delta#phi(jet,E_{T}^{miss});Events", 14,0,3.5) );
+  //       mon.addHistogram( new TH1F (subcat+"mindphijmet70", ";min #Delta#phi(jet,E_{T}^{miss});Events", 14,0,3.5) );
+  //       mon.addHistogram( new TH1F (subcat+"dphivmet", ";#Delta#phi(boson,E_{T}^{miss});Events", 14,0,3.5) );
   //       double metAxis[]={0,10,20,30,40,50,60,70,80,90,100,120,140,160,180,200,250,300,400,500};
   //       int nMetBins=sizeof(metAxis)/sizeof(double)-1;
   //       for(std::map<TString,TString>::iterator it = metTypes.begin(); it!= metTypes.end(); it++)
   // 	{
   // 	  metTypeValues[it->first]=LorentzVector(0,0,0,0);
-  // 	  controlHistos.addHistogram( new TH1F( subcat+TString("met_") + it->first, ";"+it->second+";Events", nMetBins,metAxis) );
-  // 	  controlHistos.addHistogram( new TH1F( subcat+TString("met_") + it->first+TString("L"), ";"+it->second+"_{L}/q_{T};Events", 50,0,2) );
-  // 	  controlHistos.addHistogram( new TH2F( subcat+TString("met_") + it->first+"vsht", ";H_{T};"+it->second+";Events", 25,0,250,25,0,250) );
+  // 	  mon.addHistogram( new TH1F( subcat+TString("met_") + it->first, ";"+it->second+";Events", nMetBins,metAxis) );
+  // 	  mon.addHistogram( new TH1F( subcat+TString("met_") + it->first+TString("L"), ";"+it->second+"_{L}/q_{T};Events", 50,0,2) );
+  // 	  mon.addHistogram( new TH2F( subcat+TString("met_") + it->first+"vsht", ";H_{T};"+it->second+";Events", 25,0,250,25,0,250) );
   // 	}
   //  }
-  TH1F* Hcutflow     = (TH1F*) controlHistos.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,3,0,3) ) ;
+  TH1F* Hcutflow     = (TH1F*) mon.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,3,0,3) ) ;
 
   //open the file and get events tree
   TFile *file = TFile::Open(url);
@@ -216,39 +229,72 @@ int main(int argc, char* argv[])
 	  if(triggerThr<0) continue;
 	}
       
+      //jet/MET
+      LorentzVector metP4(phys.met[0]);
+      int nbtags(0),njets30(0),njets15(0);
+      double mindphijmet(9999.);
+      std::vector<LorentzVector> jetsP4;
+      std::vector<float> genJetPt;
+      for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
+        {
+	  LorentzVector ijetP4=phys.jets[ijet];
+	  if(ijetP4.pt()<15 || fabs(ijetP4.eta())>5) continue;
+	  if(isGammaEvent && deltaR(ijetP4,gamma)<0.4) continue;
+	  njets15++;
+	  genJetPt.push_back(phys.jets[ijet].genPt);
+	  double idphijmet=fabs(deltaPhi(metP4.phi(),ijetP4.phi()));
+	  mindphijmet=min(idphijmet,mindphijmet);
+	  if(ijetP4.pt()>30)
+	    {
+	      if(fabs(ijetP4.eta())<2.5) nbtags += (phys.jets[ijet].btag1>2.0);
+	      njets30++;
+	    }
+	}
+      
       //event weight
       float weight = 1.0;
-      // if(isMC) { weight = LumiWeights.weight( ev.ngenITpu ); }
+      if(isMC)                  { weight = LumiWeights.weight( ev.ngenITpu ); }
       if(!isMC && isGammaEvent) { weight = gammaEvHandler.getTriggerPrescaleWeight(); }
       Hcutflow->Fill(1,1);
       Hcutflow->Fill(2,weight);
       
       //select event
-      bool passKinematics(gamma.pt()>25);
-      //bool passKinematics(gamma.pt()<55 || fabs(gamma.eta())>1.4442);
-      bool passLeptonVeto(ev.ln==0);
+      bool passKinematics  (gamma.pt()>55);// && fabs(gamma.eta())<1.4442);
+      bool passLeptonVeto  (ev.ln==0);
+      bool passBveto       (nbtags==0);
+      bool passMinDphiJmet (mindphijmet>0.5);
       
-      if(!passKinematics) continue;
-      if(!passLeptonVeto) continue;
-
-     
       //control plots
       std::map<TString, float> qtWeights = gammaEvHandler.getWeights();
       for(size_t idc=0; idc<dilCats.size(); idc++)
 	{
 	  TString ctf=dilCats[idc];
 	  float iweight=weight;
+	  
+	  mon.fillHisto("qt",ctf, gamma.pt(),iweight);
+	  mon.fillHisto("eta",ctf, fabs(gamma.eta()),iweight);
+	  if(!passKinematics) continue;
+	  if(!passLeptonVeto) continue;
+
+	  mon.fillHisto("nbtags",ctf, nbtags,iweight);
+	  if(!passBveto) continue;
+	  
+	  mon.fillHisto("njets",ctf, njets30,iweight);
+	  mon.fillHisto("nsoftjets",ctf, njets15,iweight);
+	  mon.fillHisto("mindphijmet",ctf, mindphijmet,iweight);
+	  if(!passMinDphiJmet) continue;
+
 	  if(isGammaEvent)  
 	    {
 	      iweight*=qtWeights[dilCats[idc]];
-	      controlHistos.fillHisto("r9",ctf, r9,iweight);
-	      controlHistos.fillHisto("sietaieta",ctf, sietaieta,iweight);
-	      controlHistos.fillHisto("hoe",ctf, hoe,iweight);
-	      controlHistos.fillHisto("trkveto",ctf, hasTrkVeto,iweight);
+	      mon.fillHisto("r9",ctf, r9,iweight);
+	      mon.fillHisto("sietaieta",ctf, sietaieta,iweight);
+	      mon.fillHisto("hoe",ctf, hoe,iweight);
+	      mon.fillHisto("trkveto",ctf, hasTrkVeto,iweight);
 	    }
-	  controlHistos.fillHisto("nvtx",ctf, ev.nvtx,iweight);
-	  controlHistos.fillHisto("qt",ctf, gamma.pt(),iweight);
-	  controlHistos.fillHisto("eta",ctf, fabs(gamma.eta()),iweight);
+
+	  mon.fillHisto("nvtx",ctf, ev.nvtx,iweight);
+	  mon.fillHisto("met_rawmet",ctf, phys.met[0].pt(),iweight);
 	}
       
 
@@ -348,33 +394,33 @@ int main(int argc, char* argv[])
 	  if(isGammaEvent)  iweight*=qtWeights[dilCats[idc]];
 	  if(iweight>10) continue;
 	  
-	  controlHistos.fillHisto(pre+"r9",ctf, r9,iweight);
-	  controlHistos.fillHisto(pre+"sietaieta",ctf, sietaieta,iweight);
-	  controlHistos.fillHisto(pre+"hoe",ctf, hoe,iweight);
+	  mon.fillHisto(pre+"r9",ctf, r9,iweight);
+	  mon.fillHisto(pre+"sietaieta",ctf, sietaieta,iweight);
+	  mon.fillHisto(pre+"hoe",ctf, hoe,iweight);
 	  
 	  if(!passTightGammaId) continue;
 	  
-	  controlHistos.fillHisto(pre+"nbtags",ctf, nbjets,iweight);
+	  mon.fillHisto(pre+"nbtags",ctf, nbjets,iweight);
 	  if(nbjets) continue;
 	  
-	  //if(ic==0 && isc==0)  controlHistos.fillHisto(dilCats[idc]+"zmass",ctf,gamma.mass(),iweight);
+	  //if(ic==0 && isc==0)  mon.fillHisto(dilCats[idc]+"zmass",ctf,gamma.mass(),iweight);
 	  
-	  controlHistos.fillHisto(pre+"nvtx",ctf, ev.nvtx,iweight);
-	  controlHistos.fillHisto(pre+"qt",ctf, gamma.pt(),iweight);
-	  controlHistos.fillHisto(pre+"eta",ctf, fabs(gamma.eta()),iweight);
+	  mon.fillHisto(pre+"nvtx",ctf, ev.nvtx,iweight);
+	  mon.fillHisto(pre+"qt",ctf, gamma.pt(),iweight);
+	  mon.fillHisto(pre+"eta",ctf, fabs(gamma.eta()),iweight);
 	  
-	  controlHistos.fillHisto(pre+"njets",ctf, njets,iweight);
-	  controlHistos.fill2DHisto(pre+"qtvseta",ctf, gamma.pt(), fabs(gamma.eta()),iweight);
-	  controlHistos.fill2DHisto(pre+"qtvsnvtx",ctf, gamma.pt(),ev.nvtx,iweight);
-	  controlHistos.fillHisto(pre+"ht",ctf, ht,iweight);
-	  controlHistos.fillHisto(pre+"htSmear",ctf, htsmear,iweight);
-	  controlHistos.fillHisto(pre+"mt",ctf, mt,iweight);
-	  controlHistos.fillHisto(pre+"mindphijmet",ctf, fabs(mindphijmet),iweight);
-	  controlHistos.fillHisto(pre+"ptclosejet",ctf, ptclosejet,iweight);
-	  controlHistos.fillHisto(pre+"dphivmet",ctf, fabs(dphivmet),iweight);
+	  mon.fillHisto(pre+"njets",ctf, njets,iweight);
+	  mon.fill2DHisto(pre+"qtvseta",ctf, gamma.pt(), fabs(gamma.eta()),iweight);
+	  mon.fill2DHisto(pre+"qtvsnvtx",ctf, gamma.pt(),ev.nvtx,iweight);
+	  mon.fillHisto(pre+"ht",ctf, ht,iweight);
+	  mon.fillHisto(pre+"htSmear",ctf, htsmear,iweight);
+	  mon.fillHisto(pre+"mt",ctf, mt,iweight);
+	  mon.fillHisto(pre+"mindphijmet",ctf, fabs(mindphijmet),iweight);
+	  mon.fillHisto(pre+"ptclosejet",ctf, ptclosejet,iweight);
+	  mon.fillHisto(pre+"dphivmet",ctf, fabs(dphivmet),iweight);
 		  
 	  for(std::vector<LorentzVector>::iterator jit= jetsp4.begin(); jit!=jetsp4.end(); jit++)
-	    controlHistos.fillHisto(pre+"ptjets",ctf, jit->pt(),iweight);
+	    mon.fillHisto(pre+"ptjets",ctf, jit->pt(),iweight);
 		  
 	  for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++)
 	    {
@@ -385,11 +431,11 @@ int main(int argc, char* argv[])
 	      TVector2 met2d(theMetP4.px(),theMetP4.py());
 	      double metL = fabs(met2d*longi);
 	      double metT = fabs(met2d*perp);
-	      controlHistos.fillHisto(   pre+TString("met_") + it->first,        ctf, theMetP4.pt(), iweight,true);
-	      controlHistos.fillHisto(   pre+TString("met_") + it->first+TString("L"),        ctf, metL/gamma.pt(), iweight,true);
-	      controlHistos.fillHisto(   pre+TString("met_") + it->first+TString("T"),        ctf, metT/gamma.pt(), iweight,true);
-	      controlHistos.fill2DHisto( pre+TString("met_") + it->first+"vsht", ctf, ht,     it->second.pt(),  iweight);
-	      //		      controlHistos.fill2DHisto( pre+TString("met_") + it->first+"vspu", ctf, ev.ngenITpu,     it->second.pt(),  iweight);
+	      mon.fillHisto(   pre+TString("met_") + it->first,        ctf, theMetP4.pt(), iweight,true);
+	      mon.fillHisto(   pre+TString("met_") + it->first+TString("L"),        ctf, metL/gamma.pt(), iweight,true);
+	      mon.fillHisto(   pre+TString("met_") + it->first+TString("T"),        ctf, metT/gamma.pt(), iweight,true);
+	      mon.fill2DHisto( pre+TString("met_") + it->first+"vsht", ctf, ht,     it->second.pt(),  iweight);
+	      //		      mon.fill2DHisto( pre+TString("met_") + it->first+"vspu", ctf, ev.ngenITpu,     it->second.pt(),  iweight);
 	    }
 	    }
     }
@@ -414,7 +460,7 @@ int main(int argc, char* argv[])
   outUrl += "/";
   outUrl += gSystem->BaseName(url);
   TFile *ofile=TFile::Open(outUrl, "recreate");
-  controlHistos.Write();
+  mon.Write();
   ofile->Close();
 
 }  

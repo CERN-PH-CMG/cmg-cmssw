@@ -79,14 +79,13 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys, TString evCategoryLabel)
   if(triggerThr_==0) return isGoodEvent_;
 
   //check which category this event belongs to (use the trigger)
-  size_t eventTriggerCat(0);
+  int eventTriggerCat(-1);
   for(size_t icat=0; icat<gammaCats_.size()-1; icat++)
     {
-      if(triggerThr_<gammaCats_[icat])    return isGoodEvent_;
-      if(triggerThr_>=gammaCats_[icat+1]) eventTriggerCat=icat+1; 
-      else                                eventTriggerCat=icat;   
-      break;
+      if(triggerThr_<gammaCats_[icat])    break;
+      eventTriggerCat=icat;   
     }
+  if(eventTriggerCat<0) return isGoodEvent_;
   triggerPrescaleWeight_ = gammaTriggerRenWeights_[eventTriggerCat];
 
   //require one gamma only in the event within the trigger which has fired

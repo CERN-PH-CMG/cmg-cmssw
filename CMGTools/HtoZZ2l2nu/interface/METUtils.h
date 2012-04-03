@@ -4,8 +4,8 @@
 /** \class METUtils
  *  No description available.
  *
- *  $Date: 2012/04/01 09:28:28 $
- *  $Revision: 1.5 $
+ *  $Date: 2012/04/01 19:51:29 $
+ *  $Revision: 1.6 $
  *  \author G. Cerminara & D. Trocino & P. Silva & L. Quertenmont & L. Pernie
  */
 
@@ -124,6 +124,8 @@ namespace METUtils{
   double getRedMETCut(int eventCategory, int workingpoint=MEDIUMWP);
   LorentzVector projectedMET(const LorentzVector& lepton1, const LorentzVector& lepton2, const LorentzVector& met, stRedMET* out=NULL);
   double transverseMass(LorentzVector &visible, LorentzVector &invisible, bool assumeSameMass=false);
+
+  LorentzVector correctForPhiAsymmetry(LorentzVector &met,float sumEt,bool isMC, bool isRunA);
 
   LorentzVector smearedJet(const LorentzVector &origJet, double genJetPt, int mode=0);
 
