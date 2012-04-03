@@ -2,16 +2,14 @@
 ## Author: Peter Meckiffe
 ## @ CERN, Meyrin
 ## November 2nd 2011
-
-import os, getpass, sys, re, optparse
-from datetime import *
-from CMGTools.Production.fileOps import FileOps
-from CMGTools.Production.nameOps import *
+# This script serves to query the CMGDB database
+import os, sys, re, optparse
 os.system("source /afs/cern.ch/cms/slc5_amd64_gcc434/external/oracle/11.2.0.1.0p2/etc/profile.d/init.sh")
 os.system("source /afs/cern.ch/cms/slc5_amd64_gcc434/external/python/2.6.4-cms16/etc/profile.d/init.sh")
 os.system("source /afs/cern.ch/cms/slc5_amd64_gcc434/external/py2-cx-oracle/5.1/etc/profile.d/init.sh") 
 import CMGTools.Production.cx_Oracle as cx_Oracle
 
+# Make sure is being used as a script
 if __name__ == '__main__':
     parser = optparse.OptionParser()
 
@@ -20,10 +18,11 @@ Table Structure:
     dataset_details
         -dataset_id
         -parent_dataset_id
-        -cmgdb_name
+        -path_name
         -path_name
         -lfn
         -file_owner
+        -published_by
         -dataset_fraction
         -dataset_entries
         -date_recorded
@@ -86,7 +85,7 @@ Here are some example queries explained:
     - Then join on dataset id
     - Then specify which dataset
         
-        "SELECT missing_files.missing_file from missing_files INNER JOIN dataset_details on dataset_details.dataset_id = missing_files.dataset_id WHERE cmgdb_name = '/QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6_START44_V9B-v1--V3---cmgtools_group/AODSIM'"
+        "SELECT missing_files.missing_file from missing_files INNER JOIN dataset_details on dataset_details.dataset_id = missing_files.dataset_id WHERE path_name = '/QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6_START44_V9B-v1--V3---cmgtools_group/AODSIM'"
 
 Usage: 
 -----
@@ -97,29 +96,29 @@ Usage:
 Suggestions for more useful alias' are always welcome
 Please experiment and email Peter Meckiffe with your suggestions for alias'
 Currently the list is as follows:
-getTags <cmgdb_name>
-    SELECT distinct(tags.tag_id), tags.tag, tags.package_name from tags INNER JOIN tags_in_sets ON tags.tag_id = tags_in_sets.tag_id JOIN dataset_details ON dataset_details.tagset_id = tags_in_sets.tagset_id WHERE dataset_details.cmgdb_name = 'ARG1' ORDER BY tags.tag_id
+getTags <path_name>
+    SELECT distinct(tags.tag_id), tags.tag, tags.package_name from tags INNER JOIN tags_in_sets ON tags.tag_id = tags_in_sets.tag_id JOIN dataset_details ON dataset_details.tagset_id = tags_in_sets.tagset_id WHERE dataset_details.path_name = 'ARG1' ORDER BY tags.tag_id
 getDatasetsAtDate <DD-MM-YYYY>
-    SELECT distinct(dataset_id), cmgdb_name FROM dataset_details WHERE trunc(date_recorded) = TO_TIMESTAMP('ARG1','DD-MM-YYYY') ORDER BY dataset_id
+    SELECT distinct(dataset_id), path_name FROM dataset_details WHERE trunc(date_recorded) = TO_TIMESTAMP('ARG1','DD-MM-YYYY') ORDER BY dataset_id
 getDatasetsAtDateWithUser <DD-MM-YYYY> <fileowner>
-    SELECT distinct(dataset_id), cmgdb_name FROM dataset_details WHERE trunc(date_recorded) = TO_TIMESTAMP('ARG1','DD-MM-YYYY') and file_owner = 'ARG2' ORDER BY dataset_id
+    SELECT distinct(dataset_id), path_name FROM dataset_details WHERE trunc(date_recorded) = TO_TIMESTAMP('ARG1','DD-MM-YYYY') and file_owner = 'ARG2' ORDER BY dataset_id
 getDatasetsWithOwner <fileowner>
-    SELECT distinct(dataset_id), cmgdb_name FROM dataset_details WHERE file_owner = 'ARG1' ORDER BY dataset_id
-getMissingFiles <cmgdb_name>
-    SELECT distinct(missing_files.missing_file) FROM missing_files INNER JOIN dataset_details ON dataset_details.dataset_id = missing_files.dataset_id WHERE dataset_details.cmgdb_name = 'ARG1'
-getDuplicateFiles <cmgdb_name>
-    SELECT distinct(duplicate_files.duplicate_file) FROM duplicate_files INNER JOIN dataset_details ON dataset_details.dataset_id = duplicate_files.dataset_id WHERE dataset_details.cmgdb_name = 'ARG1'
-getBadJobs <cmgdb_name>
-    SELECT distinct(bad_jobs.bad_job) FROM bad_jobs INNER JOIN dataset_details ON dataset_details.dataset_id = bad_jobs.bad_job WHERE dataset_details.cmgdb_name = 'ARG1'
-getBadFiles <cmgdb_name>
-    SELECT distinct(bad_files.bad_file) FROM bad_files INNER JOIN dataset_details ON dataset_details.dataset_id = bad_files.dataset_id WHERE dataset_details.cmgdb_name = 'ARG1'
-getDatasetInfo <cmgdb_name>
-    SELECT path_name, lfn, file_owner, dataset_entries, dataset_fraction, date_recorded FROM dataset_details WHERE cmgdb_name = 'ARG1'
-getDatasetsMadeWithSameTagset <cmgdb_name>
-    SELECT distinct(dataset_id), tagset_id, cmgdb_name FROM dataset_details WHERE tagset_id in (SELECT tagset_id FROM dataset_details WHERE cmgdb_name = 'ARG1')
+    SELECT distinct(dataset_id), path_name FROM dataset_details WHERE file_owner = 'ARG1' ORDER BY dataset_id
+getMissingFiles <path_name>
+    SELECT distinct(missing_files.missing_file) FROM missing_files INNER JOIN dataset_details ON dataset_details.dataset_id = missing_files.dataset_id WHERE dataset_details.path_name = 'ARG1'
+getDuplicateFiles <path_name>
+    SELECT distinct(duplicate_files.duplicate_file) FROM duplicate_files INNER JOIN dataset_details ON dataset_details.dataset_id = duplicate_files.dataset_id WHERE dataset_details.path_name = 'ARG1'
+getBadJobs <path_name>
+    SELECT distinct(bad_jobs.bad_job) FROM bad_jobs INNER JOIN dataset_details ON dataset_details.dataset_id = bad_jobs.bad_job WHERE dataset_details.path_name = 'ARG1'
+getBadFiles <path_name>
+    SELECT distinct(bad_files.bad_file) FROM bad_files INNER JOIN dataset_details ON dataset_details.dataset_id = bad_files.dataset_id WHERE dataset_details.path_name = 'ARG1'
+getDatasetInfo <path_name>
+    SELECT path_name, lfn, file_owner, dataset_entries, dataset_fraction, date_recorded FROM dataset_details WHERE path_name = 'ARG1'
+getDatasetsMadeWithSameTagset <path_name>
+    SELECT distinct(dataset_id), tagset_id, path_name FROM dataset_details WHERE tagset_id in (SELECT tagset_id FROM dataset_details WHERE path_name = 'ARG1')
     
 e.g.
-getInfo.py -a getTags /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6_START44_V9B-v1--V3---cmgtools_group/AODSIM
+getInfo.py -a getTags /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3
 
 """
     
@@ -135,54 +134,76 @@ getInfo.py -a getTags /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6
                       )
 
     (options, args) = parser.parse_args()
-    # Allow no more than one argument
-    noOptions = False
+    
+    # If there are no options selected exit.
     if options.sql is None and options.alias is None:
         parser.print_help()
         sys.exit(1)
+    # Allow no less than one argument
     if len(args)<1:
         parser.print_help()
         sys.exit(1)
         
-    conn = cx_Oracle.connect("cmgbookkeepingtest/Cmguser1@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=oradev11.cern.ch)(PORT=10121))(ENABLE=BROKEN)(CONNECT_DATA= (SID=DEVDB11)))")
+    # Connect to database
+    conn = cx_Oracle.connect("cms_cmgdb_r/Chocolate100@(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = int9r1-v.cern.ch)(PORT = 10121)) (ADDRESS = (PROTOCOL = TCP)(HOST = int9r2-v.cern.ch)(PORT = 10121)) (LOAD_BALANCE = yes) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = int9r_lb.cern.ch) (FAILOVER_MODE = (TYPE = SELECT)(METHOD = BASIC)(RETRIES = 200)(DELAY = 15))))")
+    
     cur = conn.cursor()
+    cur.execute("ALTER SESSION SET CURRENT_SCHEMA=CMS_CMGDB")
+    # Names of columns for results init
     colnames = ""
-    aliasDict = {"getTags":"SELECT distinct(tags.tag_id), tags.tag, tags.package_name from tags INNER JOIN tags_in_sets ON tags.tag_id = tags_in_sets.tag_id JOIN dataset_details ON dataset_details.tagset_id = tags_in_sets.tagset_id WHERE dataset_details.cmgdb_name = 'ARG1' ORDER BY tags.tag_id",
-                 "getDatasetsAtDate":"SELECT distinct(dataset_id), cmgdb_name FROM dataset_details WHERE trunc(date_recorded) = TO_TIMESTAMP('ARG1','DD-MM-YYYY') ORDER BY dataset_id",
-                 "getDatasetsAtDateWithUser":"SELECT distinct(dataset_id), cmgdb_name FROM dataset_details WHERE trunc(date_recorded) = TO_TIMESTAMP('ARG1','DD-MM-YYYY') and file_owner = 'ARG2' ORDER BY dataset_id",
-                 "getDatasetsWithOwner":"SELECT distinct(dataset_id), cmgdb_name FROM dataset_details WHERE file_owner = 'ARG1' ORDER BY dataset_id",
-                 "getMissingFiles":"SELECT distinct(missing_files.missing_file) FROM missing_files INNER JOIN dataset_details ON dataset_details.dataset_id = missing_files.dataset_id WHERE dataset_details.cmgdb_name = 'ARG1'",
-                 "getDuplicateFiles":"SELECT distinct(duplicate_files.duplicate_file) FROM duplicate_files INNER JOIN dataset_details ON dataset_details.dataset_id = duplicate_files.dataset_id WHERE dataset_details.cmgdb_name = 'ARG1'",
-                 "getBadJobs":"SELECT distinct(bad_jobs.bad_job) FROM bad_jobs INNER JOIN dataset_details ON dataset_details.dataset_id = bad_jobs.bad_job WHERE dataset_details.cmgdb_name = 'ARG1'",
-                 "getBadFiles":"SELECT distinct(bad_files.bad_file) FROM bad_files INNER JOIN dataset_details ON dataset_details.dataset_id = bad_files.dataset_id WHERE dataset_details.cmgdb_name = 'ARG1'",
-                 "getDatasetInfo":"SELECT path_name, lfn, file_owner, dataset_entries, dataset_fraction, date_recorded FROM dataset_details WHERE cmgdb_name = 'ARG1'",
-                 "getDatasetsMadeWithSameTagset":"SELECT distinct(dataset_id), tagset_id, cmgdb_name FROM dataset_details WHERE tagset_id in (SELECT tagset_id FROM dataset_details WHERE cmgdb_name = 'ARG1')"}
+    # Dict of query alias'
+    aliasDict = {"getTags":"SELECT distinct(tags.tag_id), tags.tag, tags.package_name from tags INNER JOIN tags_in_sets ON tags.tag_id = tags_in_sets.tag_id JOIN dataset_details ON dataset_details.tagset_id = tags_in_sets.tagset_id WHERE dataset_details.path_name = 'ARG1' ORDER BY tags.tag_id",
+                 "getDatasetsAtDate":"SELECT distinct(dataset_id), path_name FROM dataset_details WHERE trunc(date_recorded) = TO_TIMESTAMP('ARG1','DD-MM-YYYY') ORDER BY dataset_id",
+                 "getDatasetsAtDateWithOwner":"SELECT distinct(dataset_id), path_name FROM dataset_details WHERE trunc(date_recorded) = TO_TIMESTAMP('ARG1','DD-MM-YYYY') and file_owner = 'ARG2' ORDER BY dataset_id",
+                 "getDatasetsWithOwner":"SELECT distinct(dataset_id), path_name FROM dataset_details WHERE file_owner = 'ARG1' ORDER BY dataset_id",
+                 "getMissingFiles":"SELECT distinct(missing_files.missing_file) FROM missing_files INNER JOIN dataset_details ON dataset_details.dataset_id = missing_files.dataset_id WHERE dataset_details.path_name = 'ARG1'",
+                 "getDuplicateFiles":"SELECT distinct(duplicate_files.duplicate_file) FROM duplicate_files INNER JOIN dataset_details ON dataset_details.dataset_id = duplicate_files.dataset_id WHERE dataset_details.path_name = 'ARG1'",
+                 "getBadJobs":"SELECT distinct(bad_jobs.bad_job) FROM bad_jobs INNER JOIN dataset_details ON dataset_details.dataset_id = bad_jobs.bad_job WHERE dataset_details.path_name = 'ARG1'",
+                 "getBadFiles":"SELECT distinct(bad_files.bad_file) FROM bad_files INNER JOIN dataset_details ON dataset_details.dataset_id = bad_files.dataset_id WHERE dataset_details.path_name = 'ARG1'",
+                 "getDatasetInfo":"SELECT path_name, lfn, file_owner, dataset_entries, dataset_fraction, date_recorded FROM dataset_details WHERE path_name = 'ARG1'",
+                 "getDatasetsMadeWithSameTagset":"SELECT distinct(dataset_id), tagset_id, path_name FROM dataset_details WHERE tagset_id in (SELECT tagset_id FROM dataset_details WHERE path_name = 'ARG1')"}
+    
+    # If its an SQL query, take 1st arg as query from command line
     if options.sql:
         query = args[0]
+        
+        # Check that only SELECT statements are being used
+        ## TOTO: Make sure this is specified in the Oracle account
         select = re.compile('select', re.IGNORECASE)
         if not select.search(query):
             print "getDataset.py is for search uses only (SELECT queries). To publish, please use the publish.py script"
             sys.exit(1)
-        
+    # If an alias is specified    
     elif options.alias:
+        # Check the alias is valid
         if options.alias in aliasDict:
+            # Check the user has entered the correct number of arguments
             if len(args) != len(aliasDict[options.alias].split("ARG"))-1:
                 print "Please use the correct amount of arguments %d are required in this alias" % (len(aliasDict[options.alias].split("ARG"))-1)
                 sys.exit(1)
-            query = re.sub("ARG1",args[0],aliasDict[options.alias])
-            if re.search("ARG2",aliasDict[options.alias]) and len(args)>1:
             
+            # Sub Argument 1 into the query string
+            query = re.sub("ARG1",args[0],aliasDict[options.alias])
+            # Sub Argument 2
+            if re.search("ARG2",aliasDict[options.alias]) and len(args)>1:
                 query = re.sub("ARG2",args[1],query)
+        
+        # Alias was invalid
         else:
             print "Alias %s was not found current alias' are:" % options.alias
             for i in aliasDict:
                 print i
             sys.exit(1)
     
+    # Execute the Query
     cur.execute(query)  
+    
+    # Print out the column names
     for column in cur.description:
         colnames += column[0] + "\t"
     print colnames
+    
+    # Print out the results
     for row in cur:
         string = ""
         for column in row:
