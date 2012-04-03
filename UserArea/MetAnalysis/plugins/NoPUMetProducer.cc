@@ -132,7 +132,7 @@ void NoPUMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       if(  pUncorrPFJet->jetArea() == pCorrPFJet->jetArea() ) {      // to match corrected and uncorrected jets
 	if(  fabs(pUncorrPFJet->eta() - pCorrPFJet->eta())<0.01 ) {  // to match corrected and uncorrected jets
 
-	  if( pCorrPFJet->pt()< jetPtThreshold_ ) continue;  // fixme: threshodld to be defined (using 15 - corrected - for now)
+	  if( pCorrPFJet->pt()< jetPtThreshold_ ) continue;  
 
 	  // cout << "index = " << index << ", index2 = " << index2 << endl; 
 	  // cout << "jets comparison: uncorr area = " << pUncorrPFJet->jetArea() << ", corr area = " << pCorrPFJet->jetArea()  
@@ -143,7 +143,7 @@ void NoPUMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  
 	  // if(!utils->filter(pCorrPFJet, iPhi1, iEta1, iPhi2, iEta2)) continue;       // fixme: should we do this cleaning?
 	  
-	  utils->addNeut(pUncorrPFJet, pCorrPFJet, PinvertedP4, Psumet, *hRho, 1);   // fixme: what iSign should be? I guess 1 here....
+	  utils->addNeut(pUncorrPFJet, pCorrPFJet, PinvertedP4, Psumet, *hRho, 1);   
 	  
 	  break;
 	}
