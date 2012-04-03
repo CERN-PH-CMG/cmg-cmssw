@@ -1,60 +1,11 @@
 {
     "proc":[
 	{
-         "tag":"Z/#gamma^{*}+jets#rightarrow ll",
-         "isdata":false,
-         "spimpose":true,
-         "color":"831",
-         "lcolor":1,
- 	 "mctruthmode":2,
-         "data":[
-              {
-               "dtag":"MC_DYJetsToLL",
-               "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM",
-               "patdir":["/store/cmst3/user/psilva/Data4/G/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola"],
-               "split":10,
-               "xsec":3048
-              }
-          ]
-	},
-	{
-         "tag":"Di-photon",
-         "isdata":false,
-         "color":"kYellow-2",
-         "lcolor":1,
-	 "mctruthmode":22,
-         "data":[
-              {
-               "dtag":"DiPhotonBorn_Pt_25to250",
-               "dset":"DiPhotonBorn_Pt-25To250_7TeV-pythia6",
-               "patdir":["/store/cmst3/user/psilva/v444/MC/DiPhotonBorn_Pt-25To250_7TeV-pythia6"],
-               "xsec":22.37
-              },
-              {
-               "dtag":"DiPhotonBorn_Pt_250",
-               "dset":"DiPhotonBorn_Pt-250_7TeV-pythia6",
-               "patdir":["/store/cmst3/user/psilva/v444/MC/DiPhotonBorn_Pt-250_7TeV-pythia6"],
-               "xsec":0.008072
-              },
-              {
-               "dtag":"DiPhotonBox_Pt_25to250",
-               "dset":"DiPhotonBox_Pt-25To250_7TeV-pythia6",
-               "patdir":["/store/cmst3/user/psilva/v444/MC/DiPhotonBox_Pt-25To250_7TeV-pythia6"],
-               "xsec":12.37
-              },
-              {
-               "dtag":"DiPhotonBox_Pt_250",
-               "dset":"DiPhotonBox_Pt-250_7TeV-pythia6",
-               "patdir":["/store/cmst3/user/psilva/v444/MC/DiPhotonBox_Pt-250_7TeV-pythia6"],
-               "xsec":0.000208
-              }
-         ]
-        },
-	{
 	"tag":"#gamma+jets",
         "isdata":false,
 	"color":"kOrange",
 	"lcolor":1,
+        "marker":1,
 	"mctruthmode":22,
 	"data":[
 	     {	
@@ -141,7 +92,7 @@
          "isdata":false,
          "color":"809",
 	 "lcolor":1,
-	 "mctruthmode":22,
+ 	 "mctruthmode":22,
          "data":[
 		{
 		 "dtag":"MC_WJetsToLNu",

@@ -61,18 +61,18 @@ int main(int argc, char* argv[])
   
   TRandom2 rndGen;
   EventCategory eventClassifComp;
-  TString categories[]={"eq0softjets","eq0jets","eq1jets","geq2jets","vbf"};
   GammaEventHandler gammaEvHandler(runProcess);  
 
   //book histograms
   SmartSelectionMonitor controlHistos;
+  controlHistos.addHistogram( new TH1F ("nvtx", ";Vertices;Events", 30,0,30) );
   controlHistos.addHistogram( new TH1D ("qt", ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", 200,0,600) );
   controlHistos.addHistogram( new TH1D ("eta", ";#eta;Events", 50,0,2.6) );  
   controlHistos.addHistogram( new TH1F ("hoe", ";H/E;Events", 100,0.,0.1) );
   controlHistos.addHistogram( new TH1F ("r9", ";R9;Events", 100,0.8,1) );
   controlHistos.addHistogram( new TH1F ("sietaieta", ";#sigma i#eta i#eta;Events", 100,0,0.03) );
-  controlHistos.addHistogram( new TH1F ("nvtx", ";Vertices;Events", 30,0,30) );
-  controlHistos.addHistogram( new TH1F ("trkveto", ";Track veto;Events", 3,0,3) );
+  controlHistos.addHistogram( new TH1F ("trkveto", ";Track veto;Events", 2,0,2) );
+
 
 
   std::map<TString,LorentzVector> metTypeValues;
@@ -140,11 +140,14 @@ int main(int argc, char* argv[])
       file->Close();
       return -1;
     }
+  float cnorm=1.0;
   if(isMC)
     {
-      TH1F *cutflowH = (TH1F *) file->Get("evAnalyzer/h2zz/cutflow");
-      Hcutflow->SetBinContent(1,cutflowH ? cutflowH->GetBinContent(1):1.0);
+      TH1F* cutflowH = (TH1F *) file->Get("evAnalyzer/h2zz/cutflow");
+      if(cutflowH) cnorm=cutflowH->GetBinContent(1);
+      printf("cnorm = %f\n",cnorm);
     }
+  Hcutflow->SetBinContent(1,cnorm);
   
   //pileup reweighting
   std::vector<double> dataPileupDistributionDouble = runProcess.getParameter< std::vector<double> >("datapileup");
@@ -160,7 +163,7 @@ int main(int argc, char* argv[])
     }
   else mcPileupDistribution=dataPileupDistribution;
   while(mcPileupDistribution.size()<dataPileupDistribution.size())  mcPileupDistribution.push_back(0.0);
-  while(mcPileupDistribution.size()>dataPileupDistribution.size())dataPileupDistribution.push_back(0.0);
+  while(mcPileupDistribution.size()>dataPileupDistribution.size())  dataPileupDistribution.push_back(0.0);
   gROOT->cd();  //THIS LINE IS NEEDED TO MAKE SURE THAT HISTOGRAM INTERNALLY PRODUCED IN LumiReWeighting ARE NOT DESTROYED WHEN CLOSING THE FILE
   edm::LumiReWeighting LumiWeights(mcPileupDistribution,dataPileupDistribution);
    
@@ -183,28 +186,24 @@ int main(int argc, char* argv[])
       if(mctruthmode==22 && !isGammaEvent) continue;
       if(mctruthmode==1  && isGammaEvent) continue;
       if(!isGammaEvent && ev.cat != EE && ev.cat !=MUMU) continue;
-      float weight = 1.0;
-      if(isMC && !isGammaEvent)	{ weight = LumiWeights.weight( ev.ngenITpu ); }
 
       //event categories
       std::vector<TString> dilCats;
       LorentzVector gamma(0,0,0,0);
       int triggerThr(0);
       float r9(0),sietaieta(0),hoe(0);
-      bool hasCtfTrkVeto(false), hasGsfTrkVeto(false), hasElectronVeto(false);
+      bool hasTrkVeto(false);
       if(isGammaEvent)
 	{
 	  dilCats.push_back("ee");
 	  dilCats.push_back("mumu");
 	  dilCats.push_back("ll");
-	  r9         = phys.gammas[0].r9*(isMC ? 1.005 : 1.0); 
-	  sietaieta  = phys.gammas[0].sihih;
-	  hoe        = phys.gammas[0].hoe;
-	  hasCtfTrkVeto    = phys.gammas[0].hasCtfTrkVeto;
-	  hasGsfTrkVeto    = phys.gammas[0].hasGsfTrkVeto;
-	  hasElectronVeto    = phys.gammas[0].hasElectronVeto;
-	  gamma      = gammaEvHandler.massiveGamma("ll");
-	  triggerThr = gammaEvHandler.triggerThr();
+	  r9               = phys.gammas[0].r9*(isMC ? 1.005 : 1.0); 
+	  sietaieta        = phys.gammas[0].sihih;
+	  hoe              = phys.gammas[0].hoe;
+	  hasTrkVeto       = phys.gammas[0].hasCtfTrkVeto;
+	  gamma            = gammaEvHandler.massiveGamma("ll");
+	  triggerThr       = gammaEvHandler.triggerThr();
 	}
       else
 	{
@@ -216,16 +215,45 @@ int main(int argc, char* argv[])
 	  triggerThr=gammaEvHandler.findTriggerCategoryFor( gamma.pt() );
 	  if(triggerThr<0) continue;
 	}
-
-      //minimum threshold
-      cout << gamma.pt() << " " << fabs(gamma.eta()) << " " << ev.ln << endl;
-      if(gamma.pt()<55) continue;
-      //if(gamma.pt()<55 || fabs(gamma.eta())>1.4442) continue;
-
-      //lepton veto
-      if(ev.ln>0) continue;
       
-      cout << gamma.pt() << triggerThr << " "  << " " << r9 << " " << hoe <<" " << hasCtfTrkVeto << " " << hasGsfTrkVeto <<" " << hasElectronVeto << endl;
+      //event weight
+      float weight = 1.0;
+      // if(isMC) { weight = LumiWeights.weight( ev.ngenITpu ); }
+      if(!isMC && isGammaEvent) { weight = gammaEvHandler.getTriggerPrescaleWeight(); }
+      Hcutflow->Fill(1,1);
+      Hcutflow->Fill(2,weight);
+      
+      //select event
+      bool passKinematics(gamma.pt()>25);
+      //bool passKinematics(gamma.pt()<55 || fabs(gamma.eta())>1.4442);
+      bool passLeptonVeto(ev.ln==0);
+      
+      if(!passKinematics) continue;
+      if(!passLeptonVeto) continue;
+
+     
+      //control plots
+      std::map<TString, float> qtWeights = gammaEvHandler.getWeights();
+      for(size_t idc=0; idc<dilCats.size(); idc++)
+	{
+	  TString ctf=dilCats[idc];
+	  float iweight=weight;
+	  if(isGammaEvent)  
+	    {
+	      iweight*=qtWeights[dilCats[idc]];
+	      controlHistos.fillHisto("r9",ctf, r9,iweight);
+	      controlHistos.fillHisto("sietaieta",ctf, sietaieta,iweight);
+	      controlHistos.fillHisto("hoe",ctf, hoe,iweight);
+	      controlHistos.fillHisto("trkveto",ctf, hasTrkVeto,iweight);
+	    }
+	  controlHistos.fillHisto("nvtx",ctf, ev.nvtx,iweight);
+	  controlHistos.fillHisto("qt",ctf, gamma.pt(),iweight);
+	  controlHistos.fillHisto("eta",ctf, fabs(gamma.eta()),iweight);
+	}
+      
+
+
+
       /*
 
       //select jets
@@ -301,12 +329,9 @@ int main(int argc, char* argv[])
     
 
       //reweight to reproduce pt weight in a gamma sample
-      std::map<TString, float> qtWeights = gammaEvHandler.getWeights();
       
       //fill control histograms
-      Hcutflow->Fill(1,1);
-      Hcutflow->Fill(2,weight);
-    //   if(nincjets==0) subcat="eq0softjets";
+      //   if(nincjets==0) subcat="eq0softjets";
 //       TString cats[]={"all",subcat};
 //       TString subcats[]={"",phoCat};
 //       for(size_t ic=0; ic<sizeof(cats)/sizeof(TString); ic++)

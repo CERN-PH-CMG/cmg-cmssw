@@ -71,7 +71,7 @@ runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samplesNoHWW.json -d /
 haddOverSamples.py -j data/photon-samples.json -d /store/cmst3/user/psilva/12_03_27_HZZ2l2v_ntuples -o /store/cmst3/user/psilva/grid_12_03_27_HZZ2l2v_ntuples -m 1 -t G_
 
 ## generate unweigthed distributions
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples.json -d /store/cmst3/user/psilva/grid_12_03_27_HZZ2l2v_ntuples -o ~/scratch0/gamma/  -c test/runAnalysis_cfg.py.templ -s 8nh
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples.json -d /store/cmst3/user/psilva/12_03_30_HZZ2l2v_ntuples -o ~/work/gamma/  -c test/runAnalysis_cfg.py.templ -s 8nh
 
 
 ## generate plotter.root

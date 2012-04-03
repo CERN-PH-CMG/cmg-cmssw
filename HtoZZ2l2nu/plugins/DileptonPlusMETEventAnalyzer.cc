@@ -538,7 +538,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.jn_chHadFrac[ev.jn]   = jet->chargedHadronEnergyFraction();
 	const reco::GenJet *gJet=jet->genJet();
 	ev.jn_genpt[ev.jn]=gJet ? gJet->pt() : 0;
-	PileupJetIdentifier puIdentifier = puJetIdAlgo_.computeIdVariables(dynamic_cast<const reco::Jet*>(jet), 0, primVertex.get(), *hVtx_.product(), true);
+	PileupJetIdentifier puIdentifier = puJetIdAlgo_.computeIdVariables(dynamic_cast<const reco::Jet*>(jet), 0., primVertex.get(), *hVtx_.product(), true);
 	ev.jn_pumva[ev.jn]=puIdentifier.mva();
 	hasId.set(false); ev.jn_tightId[ev.jn] = jetIdSelector(*jet,hasId);
 	ev.jn++;
