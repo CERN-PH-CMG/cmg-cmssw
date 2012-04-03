@@ -273,8 +273,8 @@ class SimpleJetAnalyzer (Analyzer) :
             *self.cfg_ana.jetCollection
             )
         if self.cfg_ana.useGenLeptons: 
-            self.mchandles['leptons2'] =  AutoHandle (
-                'genLeptonsStatus2',
+            self.mchandles['genParticlesPruned'] =  AutoHandle (
+                'genParticlesPruned',
                 'std::vector<reco::GenParticle>'
                 )
         else:
@@ -377,17 +377,18 @@ class SimpleJetAnalyzer (Analyzer) :
         self.jetHistos.fillEvent (event.jets)
         
         # get status 2 leptons
-        if 'leptons2' in self.mchandles:
-            event.genLeptons = map (GenParticle, self.mchandles['leptons2'].product ())
+        if 'genParticlesPruned' in self.mchandles:
+            event.genLeptons = [ lep for lep in self.mchandles['genParticlesPruned'].product() if lep.status() == 2 and (abs(lep.pdgId()) == 11 or abs(lep.pdgId()) == 13 or abs(lep.pdgId()) == 15) ]  
         else:
             event.genLeptons = [ lep for lep in self.mchandles['genParticles'].product() if lep.status() == 3 and (abs(lep.pdgId()) == 11 or abs(lep.pdgId()) == 13 or abs(lep.pdgId()) == 15) ]  
+# @ Pasquale: why level 3 and not level 2?
 #        event.selGenLeptons = [GenParticle (lep) for lep in event.genLeptons if (lep.pt ()>self.cfg_ana.ptCut and abs (lep.eta ()) < jetEtaCut)]
         
         # get genJets
         event.genJets = map (GenJet, self.mchandles['genJets'].product ())
         # filter genjets as for reco jets
-        # event.selGenJets = [GenJet (jet) for jet in event.genJets if (jet.pt ()>self.cfg_ana.ptCut*.5)]
-        event.selGenJets = event.genJets
+        event.selGenJets = [GenJet (jet) for jet in event.genJets if (jet.pt ()>self.cfg_ana.genPtCut)]
+        # event.selGenJets = event.genJets
         for jet in event.selGenJets : 
             self.h_genjetspt.Fill (jet.pt ())
         
