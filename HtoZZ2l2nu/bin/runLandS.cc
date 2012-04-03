@@ -83,7 +83,6 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch
 DataCardInputs convertHistosForLimits(Int_t mass,TString histo="finalmt",TString url="plotter.root",TString Json="", TString outDir="./", bool runSystematics=true, bool shape=true, Int_t index=-1);
 std::vector<TString> buildDataCard(Int_t mass, TString histo="finalmt", TString url="plotter.root",TString Json="", TString outDir="./", bool runSystematics=true, bool shape=true, Int_t index=-1);
 void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t> &allShapes, TString mainHisto, TString sideBandHisto);
-void addStatErrorAsSystematic(map<TString, Shape_t>& allShapes);
 
 bool subNRB2011 = false;
 bool subNRB2012 = false;
@@ -663,9 +662,7 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
 	  dcF << dci.rates[RateKey_t(dci.procs[j-1],dci.ch[i-1])] << " ";
 	}
       dcF << endl;
-
 if(runSystematics){
-      
       //systematics
       dcF << "-------------------------------" << endl;
       dcF << "Lumi\t lnN\t ";
@@ -691,11 +688,14 @@ if(runSystematics){
 	  dcF << 1.03 << "  ";
 	}
       dcF << endl;
+}
       
       //systematics with shape description
       for(std::map<TString, std::map<RateKey_t,Double_t> >::iterator it=dci.systs.begin(); it!=dci.systs.end(); it++)
 	{
-	  dcF << it->first << "\t shapeN2\t";
+          if(!runSystematics && string(it->first.Data())!="stat" )continue;
+
+          dcF << it->first << "\t shapeN2\t";
 	  for(size_t j=1; j<=dci.procs.size(); j++)
 	    {
 	      if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
@@ -707,7 +707,6 @@ if(runSystematics){
 	    }
 	  dcF << endl;
 	}
-}
   
       dcF.close();
       cout << "Data card for " << dci.shapesFile << " and " << dci.ch[i-1] << " channel @ " << dcName << endl;
@@ -751,9 +750,6 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 
   //remove the non-resonant background from data
   if(subNRB2011 || subNRB2012)doBackgroundSubtraction(selCh,"emu",allShapes,histo,"nonresbckg_ctrl");
-
-  //convert statistical error into a variation histogram
-//  addStatErrorAsSystematic(allShapes);
 
   //print event yields from the mt shapes
   //getCutFlowFromShape(selCh,allShapes,histo);
@@ -920,12 +916,12 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch
             TH1* statup=(TH1 *)hshape->Clone(proc+"_stat"+"Up");
             TH1* statdown=(TH1 *)hshape->Clone(proc+"_stat"+"Down");
             for(int ibin=1; ibin<=statup->GetXaxis()->GetNbins(); ibin++){
-               statup  ->SetBinContent(ibin,statup  ->GetBinContent(ibin)+statup  ->GetBinError(ibin));
-               statdown->SetBinContent(ibin,statdown->GetBinContent(ibin)-statdown->GetBinError(ibin));
+               statup  ->SetBinContent(ibin,statup  ->GetBinContent(ibin) + 3*statup  ->GetBinError(ibin));
+               statdown->SetBinContent(ibin,statdown->GetBinContent(ibin) - 3*statdown->GetBinError(ibin));
             }
             statup  ->Write(proc+"_stat"+"Up");
             statdown->Write(proc+"_stat"+"Down");
-            dci.systs["stat"][RateKey_t(proc,ch)]=1.0;
+            dci.systs["stat"][RateKey_t(proc,ch)]=0.333;
          }
 
        }else if(runSystematics && proc!="data" && (syst.Contains("Up") || syst.Contains("Down"))){
@@ -1022,40 +1018,6 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
 
 
 
-
-
-void addStatErrorAsSystematic(map<TString, Shape_t>& allShapes)
-{
-   for(map<TString, Shape_t>::iterator it = allShapes.begin();it!=allShapes.end();it++){
-      Shape_t& shape = it->second;
-      for(unsigned int i=0;i<shape.bckg.size();i++){
-         TString proc(shape.bckg[i]->GetTitle());
-         TH1* StatUp   = (TH1*)shape.bckg[i]->Clone(proc+"StatUp");
-         TH1* StatDown = (TH1*)shape.bckg[i]->Clone(proc+"StatDown");
-         for(int b=0;b<=StatUp->GetXaxis()->GetNbins()+1;b++){
-            StatUp  ->SetBinContent(b,StatUp  ->GetBinContent(b)+StatUp  ->GetBinError(b));
-            StatDown->SetBinContent(b,StatDown->GetBinContent(b)+StatDown->GetBinError(b));
-         }
-         shape.bckgVars[proc].push_back( std::pair<TString,TH1*>("StatUp"  ,StatUp  )  );
-         shape.bckgVars[proc].push_back( std::pair<TString,TH1*>("StatDown",StatDown)  );        
-      }
-
-
-      for(unsigned int i=0;i<shape.signal.size();i++){
-         TString proc(shape.signal[i]->GetTitle());
-         TH1* StatUp   = (TH1*)shape.signal[i]->Clone(proc+"StatUp");
-         TH1* StatDown = (TH1*)shape.signal[i]->Clone(proc+"StatDown");
-         for(int b=0;b<=StatUp->GetXaxis()->GetNbins()+1;b++){
-            StatUp  ->SetBinContent(b,StatUp  ->GetBinContent(b)+StatUp  ->GetBinError(b));
-            StatDown->SetBinContent(b,StatDown->GetBinContent(b)-StatDown->GetBinError(b));
-         }
-         shape.signalVars[proc].push_back( std::pair<TString,TH1*>("StatUp"  ,StatUp  )  );
-         shape.signalVars[proc].push_back( std::pair<TString,TH1*>("StatDown",StatDown)  );
-      }
-
-   }
-
-}
 
 
 
