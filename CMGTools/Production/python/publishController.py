@@ -161,6 +161,9 @@ class PublishController(object):
     				self._cmgdbAPI.addPrimaryDatasetFraction(cmgdbID, integrity['PrimaryDatasetFraction'])
     			if 'FilesEntries' in integrity:
     				self._cmgdbAPI.addFileEntries(cmgdbID,integrity['FilesEntries'])
+    		dsSize = fileOps.getDatasetSize()
+    		if dsSize is not None:
+    			self._cmgdbAPI.addDatasetSize(cmgdbID, dsSize)
     	
     	self._cmgdbAPI.addTaskID(cmgdbID, taskID, test)
     	
@@ -206,5 +209,3 @@ class PublishController(object):
     				if i['missingFiles'] == []: del i['missingFiles']
     	return groups
           
-    def __del__(self):
-        self._cmgdbAPI.close()
