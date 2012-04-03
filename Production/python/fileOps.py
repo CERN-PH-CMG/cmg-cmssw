@@ -50,12 +50,6 @@ class FileOps(object):
         
 	        
     def checkDirectory(self, castor):
-        
-        # Check if local first (obviously)
-#         if os.path.isdir(self._setName) and self._user == os.environ['USER']:
-#             print "File is on local machine"
-#             self._LFN = self._setName.lstrip("/")
-#             self._localTags()
         # Check if on castor next
         if eostools.isDirectory(castor) and len(eostools.matchingFiles(eostools.eosToLFN(castor), "Logger.tgz$"))==1:
             self._castor =  castor
@@ -80,7 +74,7 @@ class FileOps(object):
         # If neither then raise an exception
         else:
             if not re.search("group",self._user):raise NameError("Directory not found check input details?")
-            else: raise NameError('No valid directory found for dataset: '+self._setName, self._setName)    
+            else: raise NameError('No valid directory found for dataset: '+self._setName)    
             return None
     def getUser(self):
         return self._user
@@ -105,23 +99,19 @@ class FileOps(object):
   	    
     # Stage in the Logger.tgz file in a tmp file, load the showtags file and split it on newlines
     def _castorTags(self):
+        # Create temporary file to get logger info
         f = tempfile.NamedTemporaryFile()
+        # Stage logger file to temp file and extract
         os.system("cmsStage -f "+self.getLFN() + "/Logger.tgz "+f.name)
         tar =tarfile.open(fileobj=f)
         file=tar.extractfile("Logger/logger_showtags.txt")
         lines = file.read().split("\n")
         tar.close()
         f.close()
+        
+        # Convert the tags in showtags to a Dict() object using findTags method
         self._findTags(lines)
-        
-    # def _localTags(self):
-#         print self.getLFN()
-#         try:
-#     	    lines = open(self.getLFN()+"/Logger/logger_showtags.txt")
-#     	    self._findTags(lines)
-#     	except:
-#     	    print "No Logger file present"
-        
+ 
     # Return castor directory name
     def getCastor(self):
         return self._castor
@@ -146,6 +136,7 @@ class FileOps(object):
     # Get tags
     def _findTags(self, showtags):
         try:
+            # Get the release from the first line of showtags
             self._release = showtags[0].split(":")[1].lstrip().rstrip()
             # Creates regexp to test incoming lines from 'showtags'
             tagPattern = re.compile('^\s*(\S+)\s+(\S+)\s*$')
@@ -162,7 +153,27 @@ class FileOps(object):
                     if tag is not "NoCVS" and tag is not "NoTag":
                         self._tags.append({"package":package,"tag":tag})
         except: print "No tags found"
-	
+    
+    def getDatasetSize(self):
+	    output = None
+	    commandOut = eostools.runEOSCommand(self._castor,"find","--size")[0]
+	    files = commandOut.split("\npath=")
+	    if re.search("PAT_CMG", self._setName.split("/")[-1]):
+	        output = 0
+	        for file in files:
+	            if re.search('PAT_CMG',file):
+	                if re.search(".root",file):
+	                    output += float(float(file.split('size=')[1].split("\n")[0])/1024/1024/1024/1024)
+	    elif re.search("V", self._setName.split("/")[-1]):
+	        output = 0
+	        for file in files:
+	            if re.search('PFAOD',file):
+	                if re.search(".root",file):
+	                    output += float(float(file.split('size=')[1].split("\n")[0])/1024/1024/1024/1024)
+	                    
+	    if output is not None: print "Dataset size =",output,"TB"
+	    return output
+
 	# Method to check validity of root files, returns python dict
     def _checkContiguity(self):
         #GET ALL ROOT NAMES
@@ -175,14 +186,16 @@ class FileOps(object):
         self._MC = False
         if re.search("SIM", tiers): self._MC = True
         
+        # If dataset is present, perform integrity check
         if len(fileNames) is not 0:
             report = None
+            # Check if integrity check report is there. If yes, get it.
             integrity = PublishToFileSystem("IntegrityCheck")
             try:
                 report = integrity.get(self.getLFN())
             except Exception:
                 raise
-            # Build in some kind of wildcard
+            # If report is none then do integrity check
             if report is None and (self._user == 'cmgtools' or self._user == os.environ['USER']):
                 try:
                     checkopts = CheckValues(defaults = {'verbose': 0, 'idx': 0, 'format': 'json', 'user': self._user, 'printout': True, 'host': 'https://cmsweb.cern.ch', 'limit': 10, 'resursive': False, 'wildcard': '[!histo]*.root', 'device': 'cmst3', 'query': False, 'name': None})
@@ -192,14 +205,19 @@ class FileOps(object):
                     report = check.structured()
                     pub = PublishToFileSystem(check)
                     pub.publish(report)
+                # Zero division error occurs when dataset isn't found on dbs
+                # @WILL I think this is due to a bug in your script, 
+                # but this catches the error
                 except ZeroDivisionError as error:
                     print "Integrity check failed."
                     print "This is usually because the dataset is not found on DAS"
                     
+            # If report is still none, do nothing
             if report is None:
                 "Integrity Check Failed - No results will be published"
+            
+            # Otherwise, format results into machine readable format
             else:
-                
                 if report['Status'] == "VALID":
                     self._valid = True
                 if 'BadJobs' in report:
@@ -243,20 +261,19 @@ class FileOps(object):
                 fileNames.remove(item)
             # Add the new fileGroup to the array of fileGroups
             fileGroups.append(fileGroup)
-        # Add information to class attributes
+        
+        # Check validity
         for group in fileGroups:
         	checkedGroup = self._checkGroup(group)
-        	
+        	# Set valid variable
         	if checkedGroup['valid']==False:
         		self._valid=False
-        	
+        	# Append file group to list
         	self._groups.append(checkedGroup)
+        
+        # 
         self._integrity = integrityCheck
         
-        # if 'PrimaryDatasetFraction' in integrityCheck and len(fileGroups)>1:
-#             integrityCheck['PrimaryDatasetFraction'] = integrityCheck['PrimaryDatasetFraction']/2.0
-#         if 'FilesEntries' in integrityCheck and len(fileGroups)>1 :
-#             integrityCheck['FilesEntries'] = integrityCheck['FilesEntries']/2.0
 
         self._castorGroups = self._groups
         if self._groups is not None:
