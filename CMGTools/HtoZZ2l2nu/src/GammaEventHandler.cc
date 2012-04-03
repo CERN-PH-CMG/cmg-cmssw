@@ -71,7 +71,8 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys, TString evCategoryLabel)
   photonCategory_="";
   massiveGamma_.clear();
   evWeights_.clear();
-  
+  triggerPrescaleWeight_=1;
+
   //check if it is a gamma event
   if( phys.cat<22) return isGoodEvent_;
   triggerThr_ = (phys.cat-22)/1000;
@@ -86,6 +87,7 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys, TString evCategoryLabel)
       else                                eventTriggerCat=icat;   
       break;
     }
+  triggerPrescaleWeight_ = gammaTriggerRenWeights_[eventTriggerCat];
 
   //require one gamma only in the event within the trigger which has fired
   if( phys.gammas.size()==0 ) return isGoodEvent_;
@@ -109,7 +111,7 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys, TString evCategoryLabel)
 	}
       massiveGamma_[dilCategories[idilcat]]=LorentzVector(gamma.px(),gamma.py(),gamma.pz(),sqrt(pow(mass,2)+pow(gamma.energy(),2)));
       
-      float weight(gammaTriggerRenWeights_[eventTriggerCat]);
+      float weight(1.0);
       evWeights_[dilCategories[idilcat]]=weight;
       TString wgtKey=dilCategories[idilcat]; if(evCategoryLabel!="") wgtKey=evCategoryLabel+"_"+wgtKey;
       if( wgtsH_.find(wgtKey) == wgtsH_.end())  continue;

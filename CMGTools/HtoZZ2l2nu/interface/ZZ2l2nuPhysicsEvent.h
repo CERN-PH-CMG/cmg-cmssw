@@ -75,26 +75,30 @@ public :
   PhysicsObject_Gamma(LorentzVector vec, Float_t ptErr_=0, Float_t iso1_=0, Float_t iso2_=0, Float_t iso3_=0, Float_t sihih_=0, Float_t r9_=0, Float_t hoe_=0):
     LorentzVector(vec), iso1(iso1_), iso2(iso2_), iso3(iso3_), sihih(sihih_), r9(r9_), hoe(hoe_) 
     { 
-      setConversionInfo(false,LorentzVector(0,0,0,0));
+      setConversionInfo(false,false,LorentzVector(0,0,0,0));
       hasCtfTrkVeto=false;
-      hasGsfTrkVeto=false;
-      hasElectronVeto=false;
+      scEnSF=1.0; scEnSFerr=0;
     }
-    inline void setConversionInfo(bool isConv_, LorentzVector convP4_)
+    inline void setSCcorrections(float scEnCorrected,float scEnCorrectedError)
+      {
+	scEnSF    = scEnCorrected/this->energy();
+	scEnSFerr = scEnCorrectedError/this->energy();
+      }
+    inline void setConversionInfo(bool isConv_, bool convMatchesPrimVertex_, LorentzVector convP4_)
     {
       isConv=isConv_;
+      convMatchesPrimVertex=convMatchesPrimVertex_;
       convP4=convP4_;
     }
-    inline void setTrackVeto(int trkVeto)
+    inline void setTrackVeto(bool trkVeto)
       {
-	hasCtfTrkVeto   = (trkVeto & 0x1);
-	hasGsfTrkVeto   = ((trkVeto>>1) & 0x1);
-	hasElectronVeto = ((trkVeto>>2) & 0x1);
+	hasCtfTrkVeto=trkVeto;
       }
-    Bool_t hasCtfTrkVeto,hasGsfTrkVeto,hasElectronVeto;
-    Bool_t isConv;
+    Bool_t hasCtfTrkVeto;
+    Bool_t isConv,convMatchesPrimVertex;
     LorentzVector convP4;
     Float_t iso1, iso2, iso3, sihih, r9, hoe;
+    Float_t scEnSF,scEnSFerr;
 };
 
 typedef std::vector<PhysicsObject>        PhysicsObjectCollection;

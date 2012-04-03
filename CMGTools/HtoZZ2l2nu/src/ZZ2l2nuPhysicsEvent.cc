@@ -43,8 +43,9 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
 			       0., 
 			       ev.g_iso1[ipart], ev.g_iso2[ipart], ev.g_iso3[ipart], 
 			       ev.g_sihih[ipart], ev.g_r9[ipart], ev.g_hoe[ipart]);
-    igamma.setConversionInfo(ev.g_conv[ipart],LorentzVector(ev.g_conv_px[ipart],ev.g_conv_py[ipart],ev.g_conv_pz[ipart],ev.g_conv_en[ipart]));
+    igamma.setConversionInfo(ev.g_conv[ipart],ev.g_conv_invtx[ipart],LorentzVector(ev.g_conv_px[ipart],ev.g_conv_py[ipart],ev.g_conv_pz[ipart],ev.g_conv_en[ipart]));
     igamma.setTrackVeto(ev.g_trkVeto[ipart]);
+    igamma.setSCcorrections(ev.g_corren[ipart],ev.g_correnerr[ipart]);
     phys.gammas.push_back( igamma );
   }
 

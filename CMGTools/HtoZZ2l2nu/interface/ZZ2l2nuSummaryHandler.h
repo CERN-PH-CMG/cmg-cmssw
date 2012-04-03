@@ -81,7 +81,7 @@ struct ZZ2l2nuSummary_t
   Float_t chsumEt,   chsumEtcentral,   primVertexChSumEt,   otherVertexChSumEt;
   Float_t neutsumEt, neutsumEtcentral, primVertexNeutSumEt, otherVertexNeutSumEt;
 
-  //gamma candidate
+  //gamma candidate (iso1=ecalIso, iso2=hcalIso, iso3=trkIso - have to modify these names in the future)
   Int_t gn;
   Float_t g_px[MAXPARTICLES], g_py[MAXPARTICLES]  , g_pz[MAXPARTICLES]  , g_en[MAXPARTICLES], g_iso1[MAXPARTICLES], g_iso2[MAXPARTICLES], g_iso3[MAXPARTICLES], g_sihih[MAXPARTICLES], g_r9[MAXPARTICLES], g_hoe[MAXPARTICLES];
   Float_t g_mva[MAXPARTICLES], g_mvaNeut[MAXPARTICLES];
