@@ -23,6 +23,7 @@ e.g.: %prog -u wreece -p -w 'PFAOD_*.root' /MultiJet/Run2011A-05Aug2011-v1/AOD/V
     group.add_option("-u", "--user", dest="user", default=os.getlogin(),help='The username to use when looking at mass storage devices')
     group.add_option("-w", "--wildcard", dest="wildcard", default=None,help='A UNIX style wildcard to specify which files to check')
     group.add_option("--update", dest="update", default=False, action='store_true',help='Only update the status of corrupted files')
+    group.add_option("-t","--timeout", dest="timeout", default=-1, type=int, help='Set a timeout on the edmFileUtil calls')
     das.parser.add_option_group(group)    
     (opts, datasets) = das.get_opt()
 
@@ -47,7 +48,7 @@ e.g.: %prog -u wreece -p -w 'PFAOD_*.root' /MultiJet/Run2011A-05Aug2011-v1/AOD/V
         if op.update:
             previous = pub.get(check.directory)
 
-        check.test(previous = previous)
+        check.test(previous = previous, timeout = op.timeout)
         if op.printout:
             check.report()
         report = check.structured()

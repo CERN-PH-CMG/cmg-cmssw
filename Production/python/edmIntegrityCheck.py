@@ -7,6 +7,7 @@ import datetime, fnmatch, json, os, shutil, sys, tempfile
 import subprocess
 
 import CMGTools.Production.eostools as castortools
+from CMGTools.Production.timeout import timed_out, TimedOutExc
 from CMGTools.Production.castorBaseDir import castorBaseDir
 
 class PublishToFileSystem(object):
@@ -170,7 +171,7 @@ class IntegrityCheck(object):
                 bad_jobs.add(i)
         return good_duplicates, sorted(list(bad_jobs)), sum_dup
     
-    def test(self, previous = None):
+    def test(self, previous = None, timeout = -1):
         if not castortools.fileExists(self.directory):
             raise Exception("The top level directory '%s' for this dataset does not exist" % self.directory)
 
@@ -204,7 +205,7 @@ class IntegrityCheck(object):
                 else:
                     if self.options.printout:
                         print '[%i/%i]\t Checking %s...' % (count, len(filtered),fname),
-                    OK, num = self.testFile(lfn)
+                    OK, num = self.testFileTimeOut(lfn, timeout)
 
                 filemask[ff] = (OK,num)
                 if self.options.printout:
@@ -326,6 +327,20 @@ class IntegrityCheck(object):
         for error in ["Fatal Root Error","Could not open file","Not a valid collection"]:
             if error in stdout: return (False,-1)
         return (True,self.getParseNumberOfEvents(stdout))
+    
+    def testFileTimeOut(self,lfn, timeout):
+        @timed_out(timeout)
+        def tf(lfn):
+            try:
+                return self.testFile(lfn)
+            except TimedOutExc, e:
+                print >> sys.stderr, "ERROR:\tedmFileUtil timed out for lfn '%s' (%d)" % (lfn,timeout)
+                return (False,-1)
+        if timeout > 0:
+            return tf(lfn)
+        else:
+            return self.testFile(lfn)
+
 
 
 if __name__ == '__main__':
