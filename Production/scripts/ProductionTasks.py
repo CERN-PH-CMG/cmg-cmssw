@@ -78,6 +78,24 @@ if __name__ == '__main__':
             t = tokens[-1]
         return sample, t
     
+    def addRunRange(t, min_range, max_range):
+        """Automatically decorate the tier name with the run range if its set"""
+
+        result = t
+        decorate = (min_range > 0 or max_range > 0)
+        if decorate:
+            start = 'start'
+            end = 'end'
+            if min_range > 0:
+                start = str(min_range)
+            if max_range > 0:
+                end = str(max_range)
+            if t:
+                result = "%s_runrange_%s-%s" % (t,start,end)
+            else:
+                result = "runrange_%s-%s" % (start,end)
+        return result
+    
     #these tasks are quick and are done in the main thread (fail early...)
     simple_tasks = [CheckDatasetExists(dataset,user,options),FindOnCastor(dataset,user,options),sav]
     for d in op.dataset:
@@ -85,6 +103,7 @@ if __name__ == '__main__':
             t.options = copy.deepcopy(op.options)
             t.dataset, t.user = splitUser(d,op.user)
             t.dataset, t.options.tier = splitTier(t.dataset, t.options.tier)
+            t.options.tier = addRunRange(t.options.tier, t.options.min_run, t.options.max_run)
             t.run({})
     
     def callback(result):
@@ -108,7 +127,8 @@ if __name__ == '__main__':
             t.options = copy.deepcopy(op_parse.options)
             t.dataset, t.user = splitUser(dataset,op_parse.user)
             t.dataset, t.options.tier = splitTier(t.dataset, t.options.tier)
-            
+            t.options.tier = addRunRange(t.options.tier, t.options.min_run, t.options.max_run)
+
             log(output,'%s: [%s] %s:' % (dataset,time.asctime(),t.getname()))
             if t.__doc__:
                 log(output,'%s: %s' % (dataset,t.__doc__) )
