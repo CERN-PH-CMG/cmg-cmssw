@@ -12,11 +12,13 @@ class MuMuFourLeptonAnalyzer( FourLeptonAnalyzer ):
 
         self.handles['leptons1'] = AutoHandle(
             'cmgMuonSelStdLep',
+            # 'cmgMuonSel',
             'std::vector<cmg::Muon>'
             )
 
         self.handles['leptons2'] = AutoHandle(
             'cmgMuonSelStdLep',
+            # 'cmgMuonSel',
             'std::vector<cmg::Muon>'
             )
         

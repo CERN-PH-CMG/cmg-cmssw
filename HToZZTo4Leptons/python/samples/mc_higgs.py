@@ -10,6 +10,7 @@ Hig120GluGlu = cfg.MCComponent(
     xSection = 0.003213106 * 0.863920605, 
     nGenEvents = 1, # dummy 
     triggers = [],
+    intLumi = 1000,
     effCorrFactor = 1 )
 
 
