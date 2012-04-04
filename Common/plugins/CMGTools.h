@@ -333,7 +333,7 @@ typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::TauMu> >
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::MuEle> > CmgMuEleSelector;
 
 
-typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<reco::GenParticle> > GenParticleSelector;
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<reco::GenParticle> > CmgGenParticleSelector;
 
 
 typedef CollectionSizeProducer< std::vector<reco::Vertex> > VertexSizeProducer;
