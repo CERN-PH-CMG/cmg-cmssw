@@ -30,6 +30,8 @@
 #include "../src/tdrstyle.C"
 #include "../src/JSONWrapper.cc"
 
+int cutIndex=-1;
+string cutIndexStr="";
 double iLumi = 2007;
 bool do2D  = true;
 bool do1D  = true;
@@ -50,12 +52,16 @@ std::map<string, double> PURescale_down;
 std::map<string, double> initialNumberOfEvents;
 std::map<string, bool>   FileExist;
 
-typedef std::pair<std::string,bool> NameAndType;
-// struct NameAndType{
-//   std::string Name;
-//   bool isTH1; 
-//   NameAndType(std::string Name_,  bool isTH1_){Name = Name_; isTH1 = isTH1_;}
-// };
+//typedef std::pair<std::string,bool> NameAndType;
+struct NameAndType{
+   std::string name;
+   bool type; 
+   bool cutIndex;
+   NameAndType(std::string name_,  bool type_, bool cutIndex_){name = name_; type = type_; cutIndex = cutIndex_;}
+
+   bool operator==(const NameAndType& a){ return a.name == name;}
+   bool operator< (const NameAndType& a){ return a.name < name;}
+ };
 
 
 
@@ -125,7 +131,12 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::list<N
       if(tmp->InheritsFrom("TDirectory")){
          GetListOfObject(Root,RootDir,histlist,(TDirectory*)tmp,parentPath+ list->At(i)->GetName()+"/" );
       }else if(tmp->InheritsFrom("TH1")){
-	histlist.push_back(NameAndType(parentPath+list->At(i)->GetName(), !(tmp->InheritsFrom("TH2") || tmp->InheritsFrom("TH3")) ) );
+        bool isTH1 = !(tmp->InheritsFrom("TH2") || tmp->InheritsFrom("TH3"));
+        bool hasIndex = string(((TH1*)tmp)->GetXaxis()->GetTitle()) =="cut index";
+        if(!hasIndex && cutIndex>=0){ continue;} //only consider plot with cutindex
+        if(hasIndex && (cutIndex<0 || isTH1)){ continue;}
+        if(hasIndex && !isTH1){isTH1=true;}
+	histlist.push_back(NameAndType(parentPath+list->At(i)->GetName(), isTH1, hasIndex ) );
       }
 
    }
@@ -135,7 +146,7 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::list<N
 
 }
 
-void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, std::string HistoName){
+void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, NameAndType HistoProperties){
    std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
    for(unsigned int i=0;i<Process.size();i++){
       std::vector<JSONWrapper::Object> Samples = (Process[i])["data"].daughters();
@@ -150,7 +161,7 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, st
             string FileName = RootDir + (Samples[j])["dtag"].toString() + segmentExt;
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) ){FileExist[FileName]=false; continue; }else{FileExist[FileName]=true;}
-            TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName); 
+            TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoProperties.name); 
 	    if(tmptmphist)
 	      {
 		if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
@@ -184,7 +195,7 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, st
 
 
 
-void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, std::string HistoName, TFile* OutputFile){
+void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, NameAndType HistoProperties, TFile* OutputFile){
    std::vector<TObject*> ObjectToDelete;
 
    std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
@@ -198,12 +209,12 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
          Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
 
-         if(HistoName.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
-         if(HistoName.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
 
 
 
-         if(HistoName.find("optim_cut")!=string::npos){Weight=1.0;}
+         if(HistoProperties.name.find("optim_cut")!=string::npos){Weight=1.0;}
 
          int split = 1;
          if(Samples[j].isTag("split"))split = Samples[j]["split"].toInt();
@@ -215,7 +226,7 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
             if(!FileExist[FileName])continue;
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
-            TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName); 
+            TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoProperties.name); 
             if(!tmptmphist){delete File;continue;}
             if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
             delete tmptmphist;
@@ -267,7 +278,7 @@ void fixExtremities(TH1* h,bool addOverflow, bool addUnderflow)
 }
 
 
-void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, std::string HistoName){
+void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, NameAndType HistoProperties){
    std::string SaveName = "";
 
    TPaveText* T = new TPaveText(0.40,0.995,0.85,0.945, "NDC");
@@ -294,8 +305,8 @@ void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, 
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
          Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
 
-         if(HistoName.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
-         if(HistoName.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
 
          int split = 1;
          if(Samples[j].isTag("split"))split = Samples[j]["split"].toInt();
@@ -307,7 +318,7 @@ void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, 
             if(!FileExist[FileName])continue;
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
-            TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName); 
+            TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoProperties.name); 
             if(!tmptmphist){delete File;continue;}
             if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
             //if(Process[i]["isdata"].toBool())printf("%s --> %f*%f(%f)\n",(Samples[j])["dtag"].toString().c_str(), tmptmphist->Integral(),Weight, initialNumberOfEvents[(Samples[j])["dtag"].toString()]);
@@ -319,8 +330,6 @@ void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, 
          delete tmphist;
       }   
       if(!hist)continue;
-
-      if(string(hist->GetXaxis()->GetTitle())=="cut index"){delete c1; return;}
 
       SaveName = hist->GetName();
       ObjectToDelete.push_back(hist);
@@ -361,7 +370,7 @@ void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, 
 }
 
 
-void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string HistoName){
+void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType HistoProperties){
    std::string SaveName = "";
 
    TPaveText* T = new TPaveText(0.40,0.995,0.85,0.945, "NDC");
@@ -400,8 +409,8 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
          Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
 
-         if(HistoName.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
-         if(HistoName.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
 
          int split = 1;
          if(Samples[j].isTag("split"))split = Samples[j]["split"].toInt();
@@ -413,7 +422,7 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
             if(!FileExist[FileName])continue;
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
-            TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName); 
+            TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoProperties.name); 
             if(!tmptmphist){delete File;continue;}
             if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
             //if(Process[i]["isdata"].toBool())printf("%s --> %f\n",(Samples[j])["dtag"].toString().c_str(), tmptmphist->Integral());
@@ -425,7 +434,6 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
          delete tmphist;
       }   
       if(!hist)continue;
-      if(string(hist->GetXaxis()->GetTitle())=="cut index"){delete c1; return;}
 
       SaveName = hist->GetName();
       ObjectToDelete.push_back(hist);
@@ -464,7 +472,7 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
 }
 
 
-void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string HistoName){
+void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType HistoProperties){
 
    TCanvas* c1 = new TCanvas("c1","c1",800,800);
    TPad* t1 = new TPad("t1","t1", 0.0, 0.20, 1.0, 1.0);
@@ -495,10 +503,10 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
          Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
 
-         if(HistoName.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
-         if(HistoName.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
 
-         if(HistoName.find("optim_cut")!=string::npos){Weight=1.0;}
+         if(HistoProperties.name.find("optim_cut")!=string::npos){Weight=1.0;}
 
          int split = 1; 
          if(Samples[j].isTag("split"))split = Samples[j]["split"].toInt();
@@ -510,7 +518,13 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
             if(!FileExist[FileName])continue;
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
-            TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName);
+            TH1* tmptmphist = NULL; 
+            if(HistoProperties.cutIndex && cutIndex>=0){
+               TH2* tmp2D = (TH2*) GetObjectFromPath(File,HistoProperties.name);
+               if(tmp2D){tmptmphist = tmp2D->ProjectionY((string(tmp2D->GetName())+cutIndexStr).c_str(),cutIndex,cutIndex); delete tmp2D;}
+            }else{
+               tmptmphist = (TH1*) GetObjectFromPath(File,HistoProperties.name);
+            }
 	    if(!tmptmphist){delete File;continue;}
             if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
             //if(Process[i]["isdata"].toBool())printf("%s --> %f\n",(Samples[j])["dtag"].toString().c_str(), tmptmphist->Integral());
@@ -522,8 +536,6 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, std::string
          delete tmphist;
       }   
       if(!hist)continue;
-      if(string(hist->GetXaxis()->GetTitle())=="cut index"){delete c1; return;}
-
 
       SaveName = hist->GetName();
       if(Process[i].isTag("color" ) )hist->SetLineColor  ((int)Process[i][ "color"].toDouble()); else hist->SetLineColor  (1);
@@ -679,7 +691,7 @@ std::string toLatexRounded(double value, double error){
 
 
 
-void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, std::string HistoName){
+void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, NameAndType HistoProperties){
    FILE* pFile = NULL;
 
    std::vector<TObject*> ObjectToDelete;
@@ -699,8 +711,8 @@ void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
          Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
 
-         if(HistoName.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
-         if(HistoName.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
 
 
          int split = 1;
@@ -713,7 +725,13 @@ void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, std::string Hi
             if(!FileExist[FileName])continue;
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
-            TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoName);
+            TH1* tmptmphist = NULL;
+            if(HistoProperties.cutIndex && cutIndex>=0){
+               TH2* tmp2D = (TH2*) GetObjectFromPath(File,HistoProperties.name);
+               if(tmp2D){tmptmphist = tmp2D->ProjectionY("_py",cutIndex,cutIndex); delete tmp2D;}
+            }else{
+               tmptmphist = (TH1*) GetObjectFromPath(File,HistoProperties.name);
+            }
             if(!tmptmphist){delete File;continue;}
             if(!tmphist){gROOT->cd(); tmphist = (TH1*)tmptmphist->Clone(tmptmphist->GetName());}else{tmphist->Add(tmptmphist);}
             delete tmptmphist;
@@ -821,6 +839,8 @@ int main(int argc, char* argv[]){
         printf("--outFile --> path of the output summary .root file\n");
         printf("--json    --> containing list of process (and associated style) to process to process\n");
         printf("--only    --> processing only the objects containing the following argument in their name\n");
+        printf("--index   --> will do the projection on that index for histos of type cutIndex\n");
+
 
         printf("--no1D   --> Skip processing of 1D objects\n");
         printf("--no2D   --> Skip processing of 2D objects\n");
@@ -842,6 +862,7 @@ int main(int argc, char* argv[]){
      if(arg.find("--outFile")!=string::npos && i+1<argc){ outFile  = argv[i+1];  i++; printf("output file = %s\n", outFile.c_str()); }
      if(arg.find("--json"   )!=string::npos && i+1<argc){ jsonFile = argv[i+1];  i++;  }
      if(arg.find("--only"   )!=string::npos && i+1<argc){ objectSearchKey = argv[i+1]; i++;    }
+     if(arg.find("--index"  )!=string::npos && i+1<argc){ sscanf(argv[i+1],"%i",&cutIndex); i++;  printf("index = %i\n", cutIndex);  }
 
      if(arg.find("--no2D"  )!=string::npos){ do2D = false;    }
      if(arg.find("--no1D"  )!=string::npos){ do1D = false;    }
@@ -854,8 +875,13 @@ int main(int argc, char* argv[]){
    } 
    system( (string("mkdir -p ") + outDir).c_str());
 
+   char buf[255];
+   sprintf(buf, "_Index%i", cutIndex);
+   cutIndexStr = buf;
+
+
    JSONWrapper::Object Root(jsonFile, true);
-   GetInitialNumberOfEvents(Root,inDir,cutflowhisto);  //Used to get the rescale factor based on the total number of events geenrated
+   GetInitialNumberOfEvents(Root,inDir,NameAndType(cutflowhisto,true, false));  //Used to get the rescale factor based on the total number of events geenrated
 
    std::list<NameAndType> histlist;
    GetListOfObject(Root,inDir,histlist);
@@ -872,14 +898,14 @@ int main(int argc, char* argv[]){
    for(std::list<NameAndType>::iterator it= histlist.begin(); it!= histlist.end(); it++,ictr++)
      {
        if(ictr%TreeStep==0){printf(".");fflush(stdout);}
-       if(objectSearchKey != "" && it->first.find(objectSearchKey)==std::string::npos)continue;
-       system(("echo \"" + it->first + "\" >> /tmp/histlist.csv").c_str());
-       if(doTex && it->first.find("eventflow")!=std::string::npos && it->first.find("optim_eventflow")==std::string::npos){    ConvertToTex(Root,inDir,it->first);     }
-       if(doPlot && do2D  && !it->second){                      if(!splitCanvas){Draw2DHistogram(Root,inDir,it->first);  }else{Draw2DHistogramSplitCanvas(Root,inDir,it->first);}}
-       if(doPlot && do1D  &   it->second){                                       Draw1DHistogram(Root,inDir,it->first);  }
+       if(objectSearchKey != "" && it->name.find(objectSearchKey)==std::string::npos)continue;
+       system(("echo \"" + it->name + "\" >> /tmp/histlist.csv").c_str());
+       if(doTex && it->name.find("eventflow")!=std::string::npos && it->name.find("optim_eventflow")==std::string::npos){    ConvertToTex(Root,inDir,*it);     }
+       if(doPlot && do2D  && !it->type){                      if(!splitCanvas){Draw2DHistogram(Root,inDir,*it);  }else{Draw2DHistogramSplitCanvas(Root,inDir,*it);}}
+       if(doPlot && do1D  &   it->type){                                       Draw1DHistogram(Root,inDir,*it);  }
       
-       if(StoreInFile && do2D  && !it->second){                                  SavingToFile(Root,inDir,it->first, OutputFile); }
-       if(StoreInFile && do1D  &&  it->second){                                  SavingToFile(Root,inDir,it->first, OutputFile); }
+       if(StoreInFile && do2D  && !it->type){                                  SavingToFile(Root,inDir,*it, OutputFile); }
+       if(StoreInFile && do1D  &&  it->type){                                  SavingToFile(Root,inDir,*it, OutputFile); }
    }printf("\n");
    if(StoreInFile) OutputFile->Close();
    
