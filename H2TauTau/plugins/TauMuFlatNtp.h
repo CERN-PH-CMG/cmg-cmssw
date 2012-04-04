@@ -36,8 +36,9 @@ protected:
   edm::Handle< std::vector<cmg::TauMu> > diTauList_;
   std::vector<cmg::TauMu> diTauSelList_;
   const cmg::TauMu * diTauSel_;
-  std::vector<cmg::PFJet> pfJetListLC_;
-  std::vector<cmg::PFJet> pfJetListLepLC_;
+  std::vector<const cmg::PFJet * > pfJetList_;
+  std::vector<const cmg::PFJet * > pfJetListLC_;
+  std::vector<const cmg::PFJet * > pfJetListLepLC_;
 
   TriggerEfficiency triggerEff_;
   float triggerEffWeight_;
@@ -69,7 +70,6 @@ protected:
   int   tauantimu_;//"againstMuonLoose"   , "againstMuonTight"  ,
   int   tauisodisc_;//"byVLooseCombinedIsolationDeltaBetaCorr",    "byLooseCombinedIsolationDeltaBetaCorr",    "byMediumCombinedIsolationDeltaBetaCorr",    "byTightCombinedIsolationDeltaBetaCorr"; not using this sequence: "byLooseIsolation"  ,    "byMediumIsolation" ,    "byTightIsolation"  ,    "byVLooseIsolation"  ,    "decayModeFinding"  ,
   float tauiso_;
-  int   taujetmatch_;//0= no match, 1 lead jet, 2=subleading jet //check which jet list is being used !
   float taujetpt_;
   float taujeteta_;
 
@@ -82,6 +82,9 @@ protected:
   float mux_;
   float muy_;
   float muz_;
+  int   mujetmatch_;//0= no match, 1 lead jet, 2=subleading jet //check which jet list is being used !
+  float mujetpt_;
+  float mujeteta_;
 
   float pftransversemass_;
   float pfmetpt_;

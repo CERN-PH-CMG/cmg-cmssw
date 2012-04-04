@@ -84,7 +84,7 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
   edm::Handle< std::vector<cmg::TriggerObject> > trig;
   iEvent.getByLabel(edm::InputTag("cmgTriggerObjectSel","","PAT"),trig);
   if(trigPaths_.size()==0)trigpass_=1;//no trigger requirement
-  for(std::vector<edm::InputTag *>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){
+  for(std::vector<edm::InputTag *>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){//cmg ObjetSel
     //cout<<path->label()<<" "<<path->instance()<<" "<<path->process()<<endl;
     //trig->begin()->printSelections(cout);
     if(trig->begin()->hasSelection((*path)->label()))
@@ -136,9 +136,9 @@ bool BaseFlatNtp::fill(){
 
 
 bool BaseFlatNtp::trigObjMatch(float eta, float phi, std::string path, std::string filter){
-  for(std::vector<cmg::TriggerObject>::const_iterator obj=trigObjs_->begin(); obj!=trigObjs_->end(); obj++){
-    if(obj->hasSelection(path.c_str())
-       &&obj->hasSelection(filter.c_str())
+  for(std::vector<cmg::TriggerObject>::const_iterator obj=trigObjs_->begin(); obj!=trigObjs_->end(); obj++){//cmg ObjectListSel
+    if(obj->hasSelection(path.c_str())//HLT path name
+       &&obj->hasSelection(filter.c_str())//last filter
        &&reco::deltaR(eta,phi,obj->eta(),obj->phi())<0.3)
       return 1;      
   }

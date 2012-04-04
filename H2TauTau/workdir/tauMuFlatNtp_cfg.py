@@ -8,35 +8,34 @@ process.maxLuminosityBlocks = cms.untracked.PSet(input = cms.untracked.int32(-1)
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 evReportFreq = 100
 
-
-###Load into the process all samples
-from CMGTools.H2TauTau.tools.joseFlatNtpSample_cff import *
-loadFlatNtpSamples(process)
-
-##sample to process
-#sampleAlias = 'TauPlusXMay'
-sampleAlias = os.environ['SAMPLENAME']
+#######Define the sample to process
+sampleName = os.environ['SAMPLENAME']
 sampleJobIdx = int(os.environ['SAMPLEJOBIDX'])
-tauMuFlatNtp = getattr(process,"tauMuFlatNtp"+sampleAlias)
+process.load('CMGTools.H2TauTau.tools.joseFlatNtpSample_cfi')
+from CMGTools.H2TauTau.tools.joseFlatNtpSample_cff import *
+configureFlatNtpSample(process.flatNtp,sampleName)
 
-#dataset_user = 'benitezj'
+
+dataset_user = 'benitezj'
 #sampleTag = "/PAT_CMG_V2_4_1/H2TAUTAU_Oct26"
 #sampleTag = "/PAT_CMG_V2_4_1/H2TAUTAU_Jan26TauIso"
 #inputfiles = 'h2TauTau_fullsel_tree_CMG_.*root'
 
-
-dataset_user = 'benitezj'
 #sampleTag = "/PAT_CMG_V2_5_0/H2TAUTAU_Feb11"
-sampleTag = "/PAT_CMG_V2_5_0/H2TAUTAU_Feb11TauIso"
+#sampleTag = "/PAT_CMG_V2_5_0/H2TAUTAU_Feb11TauIso"
+
+#######QCD samples(consistent with H2TAUTAU_Feb11TauIso) ##These samples had Tau Iso applied
+#sampleTag = "/PAT_CMG_V2_5_0/H2TAUTAU_Mar21" ##following sample had the macthingCone cut removed
+#sampleTag = "/PAT_CMG_443_Mar21/H2TAUTAU_QCD_Mar23" 
+
+#sampleTag = "/PAT_CMG_V2_5_0/H2TAUTAU_Mar27"
+sampleTag = "/PAT_CMG_443_Mar21/H2TAUTAU_Mar27"
+
 inputfiles = "tauMu_fullsel_tree_CMG_.*root"
 
 
-########
-sampleName = tauMuFlatNtp.path.value()
-dataset_name = sampleName + sampleTag
-
-##For processing on the batch sample gets split into many jobs
-##this defines the files to be processed for a particular job
+#########################
+dataset_name = process.flatNtp.path.value() + sampleTag
 firstfile = sampleJobIdx * 10 
 lastfile = (sampleJobIdx + 1 )*10
 
@@ -55,9 +54,9 @@ print process.source.fileNames
 
 
 ##
-process.analysis = cms.Path(tauMuFlatNtp) 
+process.analysis = cms.Path(process.flatNtp) 
 process.schedule = cms.Schedule(process.analysis)
-process.TFileService = cms.Service("TFileService", fileName = cms.string("tauMuFlatNtp.root"))
+process.TFileService = cms.Service("TFileService", fileName = cms.string("flatNtp.root"))
 
 
 #####################################################

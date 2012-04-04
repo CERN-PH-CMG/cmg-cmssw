@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-tauMuFlatNtp = cms.EDAnalyzer(
+flatNtp = cms.EDAnalyzer(
     "TauMuFlatNtp",
     path = cms.untracked.string(""),
     firstRun =  cms.int32( 0 ),
