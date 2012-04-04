@@ -78,24 +78,42 @@ public:
 
 
   //Boosted/VBF methods
-  bool correctSamplesSM();
-  //TH1F* getQCDMuIsoSM();//from muon isolation side-band
+  TH1F* getQCDMuIsoSM();//from muon isolation side-band
   TH1F* getWJetsSM();
   TH1F* getWJetsSMSS();
+  TH1F* getQCDMike();
+  TString qcdTauIsoRatioMuNonIso_;//formula for the ratio
+  TString qcdMuIsoRatioTauNonIso_;//formula for the ratio
   TString qcdTauIsoRatio_;//formula for the ratio
+  TString qcdMuIsoRatio_;//formula for the ratio
   TH1F* getQCDTauIsoSM();//from anti-isolated taus
   TH1F* getQCDTauIsoSMSS();//from anti-isolated taus
+  TH1F* getQCDIsoSM();//from anti-isolated taus or anti iso muons
+  TH1F* getQCDIsoSMSS();//from anti-isolated taus or anti iso muons  
+  TString wjetsTauIsoRatio_;//formula for the ratio for W+jets 
+  TH1F* getWJetsTauIsoSM();//from anti-isolated taus
+  TH1F* getWJetsTauIsoSMSS();//from anti-isolated taus
   TH1F* getTotalMCSM();//sum of OS backgrounds execpt for the QCD
   TH1F* getTotalMCSMSS();//sum of SS backgrounds execpt for the QCD
   bool plotSM(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax,  TString extrasel="", TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);
   bool plotSMSS(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="", TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);
- 
+
+
 
   ////Methods unrelated to the main plots
-
   //tau fake rate
-  void plotTauFakeRate(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, Int_t njets=-1,Float_t ymax=0.2,Bool_t log=0);
+  void plotIsoFakeRate(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",TString IsoSel="(tauisodisc>=2)",Float_t ymax=50,Bool_t log=1);//
+  void plotTauFakeRateWJets(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",Float_t ymax=50,Bool_t log=1);
 
+  /////////////2D methods for 2D FakeRate computation///Be careful may not be defined same as above
+  TH2F* getTotalDataSS2D();//sum of SS Data samples 
+  TH2F* getSampleSS2D(TString samplename);//can be used to get histo for any MC or Data sample
+  TH2F* getWJetsIncSS2D();
+  TH2F* getTotalBackgroundIncSS2D();//sum of SS backgrounds execpt for the QCD
+
+
+
+  
 
   //utilities
   void setSmearHistoRes(float res){smearHistoRes_=res;}
@@ -122,20 +140,23 @@ private:
   Float_t QCDSSTauIsoSideRatio_;
   Float_t WJetsOSSideCorr_;
   Float_t WJetsSSSideCorr_;
-  Float_t WJetsSMOSSideCorr_;
-  Float_t WJetsSMSSSideCorr_;
 
-
-  TString plotvar_;
-  Int_t nbins_;
-  Float_t xmin_;
-  Float_t xmax_;
-  TString selection_;
+  //selections used for each plot made inside this class
   Int_t Isocat_;
   Int_t MTcat_;
   Int_t SMcat_;
   TString extrasel_;
 
+  TString plotvar_;
+  Int_t nbins_;
+  Float_t xmin_;
+  Float_t xmax_;
+  
+  TString plotvar2_;
+  Int_t nbins2_;
+  Float_t xmin2_;
+  Float_t xmax2_;
+  
   //
   Int_t QCDColor_;
   Int_t WJetsColor_;
@@ -144,6 +165,10 @@ private:
   Int_t ZTauTauColor_;
   Int_t SignalColor_;
 
+
+
+  ///
+  void fixFileTag(TString * filetag);
 
   ClassDef(TauMuPlotter, 1);
 };

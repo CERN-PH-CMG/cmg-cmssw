@@ -18,6 +18,7 @@ using namespace std;
 #include <TFile.h>
 #include <TString.h>
 #include <TH1.h>
+#include <TH2.h>
 #include <TList.h>
 #include <TIterator.h>
 #include <TKey.h>
@@ -36,7 +37,7 @@ public:
   void setOutputPath(TString path){outputpath_=path;}
   void setCrossection(float crossection){crossection_=crossection;} //in pb
   void setSampleLumi(float lumi){lumi_=lumi;}
-  void setSampleGenEvents(int Ngen){genEvents_=Ngen;}
+  void setSampleGenEvents(float Ngen){genEvents_=Ngen;}
   void setColor(Int_t color){color_=color;}
   void setLineColor(Int_t color){lcolor_=color;}
   void setLineStyle(Int_t lstyle){lstyle_=lstyle;}
@@ -58,9 +59,17 @@ public:
   Int_t getColor(){return color_;}
   Int_t getLineColor(){return lcolor_;}
   Int_t getLineStyle(){return lstyle_;}
+  Int_t getTreeEntries(){
+    if(!ntpChain_) 
+      if(!openNtpFile()) return 0;
+    return ntpChain_->GetEntries();
+  }
 
 
-  TH1F* getHistoNtpFile(TString var,Int_t nbins,Float_t xmin,Float_t xmax,TString selection="");
+  TH1F* getHistoNtpFile(TString xvar,Int_t xnbins,Float_t xmin,Float_t xmax,TString selection="");
+  
+  TH2F* getHistoNtpFile(TString xvar,Int_t xnbins,Float_t xmin,Float_t xmax,TString yvar,Int_t ynbins,Float_t ymin,Float_t ymax,TString selection="");
+
 
 protected:
 
@@ -69,7 +78,7 @@ private:
 
   float crossection_;
   float lumi_;//for Data
-  int genEvents_;//for MC
+  float genEvents_;//for MC
 
   TString outputpath_;
 
@@ -81,6 +90,9 @@ private:
   Int_t lstyle_;
   float normFactor_;
   bool init_;
+
+  
+  bool openNtpFile();
 
 
   ClassDef(Sample, 1);

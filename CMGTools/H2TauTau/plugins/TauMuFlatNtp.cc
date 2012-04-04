@@ -56,10 +56,8 @@ void TauMuFlatNtp::beginJob(){
   tree_->Branch("taux",&taux_,"taux/F");
   tree_->Branch("tauy",&tauy_,"tauy/F");
   tree_->Branch("tauz",&tauz_,"tauz/F");
-
   tree_->Branch("taujetpt",&taujetpt_,"taujetpt/F");
   tree_->Branch("taujeteta",&taujeteta_,"taujeteta/F");
-  tree_->Branch("taujetmatch",&taujetmatch_,"taujetmatch/I");
 
   tree_->Branch("mupt",&mupt_,"mupt/F");
   tree_->Branch("mueta",&mueta_,"mueta/F");
@@ -70,6 +68,8 @@ void TauMuFlatNtp::beginJob(){
   tree_->Branch("mux",&mux_,"mux/F");
   tree_->Branch("muy",&muy_,"muy/F");
   tree_->Branch("muz",&muz_,"muz/F");
+  tree_->Branch("mujetpt",&mujetpt_,"mujetpt/F");
+  tree_->Branch("mujeteta",&mujeteta_,"mujeteta/F");
 
   tree_->Branch("pfmetpt",&pfmetpt_,"pfmetpt/F");
   tree_->Branch("pfmetphi",&pfmetphi_,"pfmetphi/F");
@@ -245,18 +245,31 @@ bool TauMuFlatNtp::applySelections(){
   if(diTauSelList_.size()>0)countermumatch_++;
 
 
-  //apply the isolation cut on the taus
+//   //apply the isolation cut on the taus
+//   tmpditaulist=diTauSelList_;
+//   diTauSelList_.clear();
+//   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+//     //if(diTauSel_->leg1().tauID("byVLooseCombinedIsolationDeltaBetaCorr")<0.5)
+//     if(cand->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr") < 0.5) continue;
+//     //if(diTauSel_->leg1().tauID("byMediumCombinedIsolationDeltaBetaCorr")<0.5)
+//     //if(diTauSel_->leg1().tauID("byTightCombinedIsolationDeltaBetaCorr")<0.5)
+//     diTauSelList_.push_back(*cand);
+//   }
+
+
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+    if(cand->leg2().relIso(0.5)>0.1) continue;   
     //if(diTauSel_->leg1().tauID("byVLooseCombinedIsolationDeltaBetaCorr")<0.5)
     if(cand->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr") < 0.5) continue;
     //if(diTauSel_->leg1().tauID("byMediumCombinedIsolationDeltaBetaCorr")<0.5)
     //if(diTauSel_->leg1().tauID("byTightCombinedIsolationDeltaBetaCorr")<0.5)
     diTauSelList_.push_back(*cand);
   }
+
   if(diTauSelList_.size()>0)countertauiso_++;
-  
+
   categoryIso_=1;//category gets set to "signal" by default
   nditau_=diTauSelList_.size();
   if(diTauSelList_.size()==0){//no isolated taus were found, see if there are any anti-isolated ones
@@ -264,7 +277,7 @@ bool TauMuFlatNtp::applySelections(){
     for(std::vector<cmg::TauMu>::const_iterator cand = tmpditaulist.begin(); cand != tmpditaulist.end(); ++cand)
       diTauSelList_.push_back(*cand);
   }
-  if(diTauSelList_.size()==0) return 0;
+  if(diTauSelList_.size()==0) return 0;//there was no event in the signal or sideband
   counterditau_++;
   
   //choose the best candidate
@@ -392,22 +405,53 @@ bool TauMuFlatNtp::fill(){
   svfitmass_=diTauSel_->massSVFit();
 
 
+  ///get the jets //need the jets here because of randomization of mT
+  edm::Handle< std::vector<cmg::PFJet> > fulljetlist;
+  iEvent_->getByLabel(edm::InputTag("cmgPFJetSel"),fulljetlist);
+
+  //find the jet matching to the mu
+  mujetpt_=0.;
+  mujeteta_=0.;
+  for(std::vector<cmg::PFJet>::const_iterator jet=fulljetlist->begin(); jet!=fulljetlist->end(); ++jet){
+    if(reco::deltaR(jet->eta(),jet->phi(),diTauSel_->leg2().eta(),diTauSel_->leg2().phi())<0.3){
+      mujetpt_=jet->pt();
+      mujeteta_=jet->eta();
+    }
+  }
+
+  //find the jet matching to the tau
+  taujetpt_=0.;
+  taujeteta_=0.;
+  for(std::vector<cmg::PFJet>::const_iterator jet=fulljetlist->begin(); jet!=fulljetlist->end(); ++jet){
+    if(reco::deltaR(jet->eta(),jet->phi(),diTauSel_->leg1().eta(),diTauSel_->leg1().phi())<0.3){
+      taujetpt_=jet->pt();
+      taujeteta_=jet->eta();
+    }
+  }
+  
+  //apply pt and eta cuts on jets
+  pfJetList_.clear();
+  for(std::vector<cmg::PFJet>::const_iterator jet=fulljetlist->begin(); jet!=fulljetlist->end(); ++jet){
+    //Do we need to apply Jet energy corrections here ????
+    if(jet->pt()<30.0)continue;  
+    if(fabs(jet->eta())>4.5)continue;        
+    pfJetList_.push_back(&(*jet));
+  }
+
   //lepton clean the jet list
   fillPFJetListLC(diTauSel_);
   njet_=pfJetListLC_.size();
   
-  pfmetpt_=diTauSel_->met().pt();//keep the unsmeared met
+  //smeared met and keep also the unsmeared one
+  pfmetpt_=diTauSel_->met().pt();
   pfmetphi_=diTauSel_->met().phi();
   pftransversemass_=diTauSel_->mTLeg2();
-
   metpt_=diTauSel_->met().pt()*( (randsigma_>0. && njet_>0  ) ? randEngine_.Gaus(1.,randsigma_) : 1.);
   metphi_=diTauSel_->met().phi();
   transversemass_=sqrt(2*mupt_*metpt_*(1-cos(muphi_-metphi_)));
   
 
-
-
-  ///define categories
+  ///define control samples
   categoryCh_=0;
   if(fabs(ditaucharge_)==0.)categoryCh_=1;
   if(fabs(ditaucharge_)==2.)categoryCh_=2;
@@ -423,73 +467,55 @@ bool TauMuFlatNtp::fill(){
 //   if(0.3 < muiso_ &&  muiso_ <= 0.5) categoryIso_=3;
 //   if( muiso_ > 0.5) categoryIso_=4;
 
-
  
   //jet quantities independent of SM category
   if(pfJetListLC_.size()>=1){
-    leadJetPt_=pfJetListLC_.begin()->pt();
-    leadJetEta_=pfJetListLC_.begin()->eta();
+    leadJetPt_=pfJetListLC_[0]->pt();
+    leadJetEta_=pfJetListLC_[0]->eta();
   }
   if(pfJetListLC_.size()>=2){
-    diJetMass_=(pfJetListLC_[0].p4()+pfJetListLC_[1].p4()).mass();
-    diJetDeltaEta_=pfJetListLC_[0].eta() - pfJetListLC_[1].eta();
-    diJetEta1Eta2_=pfJetListLC_[0].eta()*pfJetListLC_[1].eta();
+    diJetMass_=(pfJetListLC_[0]->p4()+pfJetListLC_[1]->p4()).mass();
+    diJetDeltaEta_=pfJetListLC_[0]->eta() - pfJetListLC_[1]->eta();
+    diJetEta1Eta2_=(pfJetListLC_[0]->eta())*(pfJetListLC_[1]->eta());
   }
-
 
   //Jets where only the muon has been removed
   fillPFJetListLepLC(diTauSel_);
   if(pfJetListLepLC_.size()>=1){
-    muLCleadJetPt_=pfJetListLepLC_.begin()->pt();
-    muLCleadJetEta_=pfJetListLepLC_.begin()->eta();
+    muLCleadJetPt_=pfJetListLepLC_[0]->pt();
+    muLCleadJetEta_=pfJetListLepLC_[0]->eta();
   }
-  //find the jet matching to the tau
-  taujetmatch_=0;
-  taujetpt_=0.;
-  taujeteta_=0.;
-  int jetindex=-1;
-  int idxcounter=0;
-  for(std::vector<cmg::PFJet>::const_iterator jet=pfJetListLepLC_.begin(); jet!=pfJetListLepLC_.end(); ++jet){
-    if(reco::deltaR(jet->eta(),jet->phi(),diTauSel_->leg1().eta(),diTauSel_->leg1().phi())<0.3)
-      jetindex=idxcounter;
-    idxcounter++;
-  }
-  if(jetindex>=0){
-    taujetmatch_=jetindex+1;//1=lead jet, 2=sublead jet ...  //jet list is pt ordered
-    taujetpt_=(pfJetListLepLC_[jetindex]).pt();
-    taujeteta_=(pfJetListLepLC_[jetindex]).eta();
-  }
+
   
-
-
-
-  //Define SM event category:
+  //////////////////////
+  ////SM event categories
+  //////////////////////
   categorySM_=-1;
   if(pfJetListLC_.size()>=2){//VBF: two leading jets must have  m>400, |eta1-eta2| < 4 and no other jet high pt in between    
-    if((pfJetListLC_[0].p4()+pfJetListLC_[1].p4()).mass() > 400.0 
-       && fabs(pfJetListLC_[0].eta() - pfJetListLC_[1].eta()) > 4.0 
-       && pfJetListLC_[0].eta()*pfJetListLC_[1].eta() < 0.0
+    if((pfJetListLC_[0]->p4()+pfJetListLC_[1]->p4()).mass() > 400.0 
+       && fabs(pfJetListLC_[0]->eta() - pfJetListLC_[1]->eta()) > 4.0 
+       && pfJetListLC_[0]->eta()*pfJetListLC_[1]->eta() < 0.0
        ){
       bool pass=1;
       if(pfJetListLC_.size()>2){// check there is no additional central jet
-	for(std::vector<cmg::PFJet>::const_iterator jet3=pfJetListLC_.begin(); jet3!=pfJetListLC_.end(); ++jet3){
-	  if(pfJetListLC_[0].eta()<pfJetListLC_[1].eta()) 
-	    if(pfJetListLC_[0].eta()<jet3->eta()&&jet3->eta()<pfJetListLC_[1].eta()) pass=0;
-	  if(pfJetListLC_[0].eta()>pfJetListLC_[1].eta()) 
-	    if(pfJetListLC_[1].eta()<jet3->eta()&&jet3->eta()<pfJetListLC_[0].eta()) pass=0;
+	for(std::vector<const cmg::PFJet *>::const_iterator jet3=pfJetListLC_.begin(); jet3!=pfJetListLC_.end(); ++jet3){
+	  if(pfJetListLC_[0]->eta()<pfJetListLC_[1]->eta()) 
+	    if(pfJetListLC_[0]->eta()<(*jet3)->eta()&&(*jet3)->eta()<pfJetListLC_[1]->eta()) pass=0;
+	  if(pfJetListLC_[0]->eta()>pfJetListLC_[1]->eta()) 
+	    if(pfJetListLC_[1]->eta()<(*jet3)->eta()&&(*jet3)->eta()<pfJetListLC_[0]->eta()) pass=0;
 	}
       }
       if(pass) categorySM_=2;
     }
   }
   if(categorySM_!=2 && pfJetListLC_.size()>=1){//Boosted: 1 jet with pt>150 and no other jets
-    if(pfJetListLC_.begin()->pt()>=150.0)
+    if(pfJetListLC_[0]->pt()>=150.0)
       categorySM_=1;
   }
 
   if(categorySM_!=2 && categorySM_!=1 && pfJetListLC_.size()<=1){//SM0
     if(pfJetListLC_.size()==1){
-      if(pfJetListLC_.begin()->pt()<150.0)
+      if(pfJetListLC_[0]->pt()<150.0)
 	categorySM_=0;
     }else categorySM_=0;
   }
@@ -510,37 +536,34 @@ void TauMuFlatNtp::fillPFJetListLC(const cmg::TauMu * cand){
 
   pfJetListLC_.clear();
 
-  edm::Handle< std::vector<cmg::PFJet> > jetlist;
-  iEvent_->getByLabel(edm::InputTag("cmgPFJetSel"),jetlist);
-  std::vector<cmg::PFJet> cleanjetlist;
-  for(std::vector<cmg::PFJet>::const_iterator jet=jetlist->begin(); jet!=jetlist->end(); ++jet){
-    if(jet->pt()<30.0)continue;  
-    if(fabs(jet->eta())>4.5)continue;        
-    if(reco::deltaR(jet->eta(),jet->phi(),cand->leg1().eta(),cand->leg1().phi())<0.5) continue;     
-    if(reco::deltaR(jet->eta(),jet->phi(),cand->leg2().eta(),cand->leg2().phi())<0.5) continue;   
-    cleanjetlist.push_back(*jet);
+  //std::vector<cmg::PFJet> cleanjetlist;
+  for(std::vector<const cmg::PFJet *>::const_iterator jet=pfJetList_.begin(); jet!=pfJetList_.end(); ++jet){
+    if(reco::deltaR((*jet)->eta(),(*jet)->phi(),cand->leg1().eta(),cand->leg1().phi())<0.3) continue;     
+    if(reco::deltaR((*jet)->eta(),(*jet)->phi(),cand->leg2().eta(),cand->leg2().phi())<0.3) continue;   
+    //cleanjetlist.push_back(*jet);
+    pfJetListLC_.push_back(*jet);
   }
  
-  //order by pt
-  const cmg::PFJet * lastjet=NULL;
-  for(std::vector<cmg::PFJet>::const_iterator jet1=cleanjetlist.begin(); jet1!=cleanjetlist.end(); ++jet1){
-    const cmg::PFJet * highjet=NULL;
-    for(std::vector<cmg::PFJet>::const_iterator jet2=cleanjetlist.begin(); jet2!=cleanjetlist.end(); ++jet2){
-      if(lastjet){
-	if(jet2->pt()<lastjet->pt()){
-	  if(highjet){
-	    if(jet2->pt()>highjet->pt())highjet=&(*jet2);
-	  }else highjet=&(*jet2);
-	}
-      }else{
-	if(highjet){
-	  if(jet2->pt()>highjet->pt())highjet=&(*jet2);
-	}else highjet=&(*jet2);
-      }    
-    }  
-    pfJetListLC_.push_back(*highjet);
-    lastjet=highjet;
-  }
+//   //order by pt
+//   const cmg::PFJet * lastjet=NULL;
+//   for(std::vector<cmg::PFJet>::const_iterator jet1=cleanjetlist.begin(); jet1!=cleanjetlist.end(); ++jet1){
+//     const cmg::PFJet * highjet=NULL;
+//     for(std::vector<cmg::PFJet>::const_iterator jet2=cleanjetlist.begin(); jet2!=cleanjetlist.end(); ++jet2){
+//       if(lastjet){
+// 	if(jet2->pt()<lastjet->pt()){
+// 	  if(highjet){
+// 	    if(jet2->pt()>highjet->pt())highjet=&(*jet2);
+// 	  }else highjet=&(*jet2);
+// 	}
+//       }else{
+// 	if(highjet){
+// 	  if(jet2->pt()>highjet->pt())highjet=&(*jet2);
+// 	}else highjet=&(*jet2);
+//       }    
+//     }  
+//     pfJetListLC_.push_back(*highjet);
+//     lastjet=highjet;
+//   }
   
 }
 
@@ -549,36 +572,33 @@ void TauMuFlatNtp::fillPFJetListLepLC(const cmg::TauMu * cand){
 
   pfJetListLepLC_.clear();
 
-  edm::Handle< std::vector<cmg::PFJet> > jetlist;
-  iEvent_->getByLabel(edm::InputTag("cmgPFJetSel"),jetlist);
-  std::vector<cmg::PFJet> cleanjetlist;
-  for(std::vector<cmg::PFJet>::const_iterator jet=jetlist->begin(); jet!=jetlist->end(); ++jet){
-    if(jet->pt()<15.0)continue;  
-    if(fabs(jet->eta())>4.5)continue;        
-    if(reco::deltaR(jet->eta(),jet->phi(),cand->leg2().eta(),cand->leg2().phi())<0.5) continue;   
-    cleanjetlist.push_back(*jet);
+  //std::vector<cmg::PFJet> cleanjetlist;
+  for(std::vector<const cmg::PFJet *>::const_iterator jet=pfJetList_.begin(); jet!=pfJetList_.end(); ++jet){
+    if(reco::deltaR((*jet)->eta(),(*jet)->phi(),cand->leg2().eta(),cand->leg2().phi())<0.3) continue;   
+    //cleanjetlist.push_back(*jet);
+    pfJetListLepLC_.push_back(*jet);
   }
  
-  //order by pt
-  const cmg::PFJet * lastjet=NULL;
-  for(std::vector<cmg::PFJet>::const_iterator jet1=cleanjetlist.begin(); jet1!=cleanjetlist.end(); ++jet1){
-    const cmg::PFJet * highjet=NULL;
-    for(std::vector<cmg::PFJet>::const_iterator jet2=cleanjetlist.begin(); jet2!=cleanjetlist.end(); ++jet2){
-      if(lastjet){
-	if(jet2->pt()<lastjet->pt()){
-	  if(highjet){
-	    if(jet2->pt()>highjet->pt())highjet=&(*jet2);
-	  }else highjet=&(*jet2);
-	}
-      }else{
-	if(highjet){
-	  if(jet2->pt()>highjet->pt())highjet=&(*jet2);
-	}else highjet=&(*jet2);
-      }    
-    }  
-    pfJetListLepLC_.push_back(*highjet);
-    lastjet=highjet;
-  }
+//   //order by pt
+//   const cmg::PFJet * lastjet=NULL;
+//   for(std::vector<cmg::PFJet>::const_iterator jet1=cleanjetlist.begin(); jet1!=cleanjetlist.end(); ++jet1){
+//     const cmg::PFJet * highjet=NULL;
+//     for(std::vector<cmg::PFJet>::const_iterator jet2=cleanjetlist.begin(); jet2!=cleanjetlist.end(); ++jet2){
+//       if(lastjet){
+// 	if(jet2->pt()<lastjet->pt()){
+// 	  if(highjet){
+// 	    if(jet2->pt()>highjet->pt())highjet=&(*jet2);
+// 	  }else highjet=&(*jet2);
+// 	}
+//       }else{
+// 	if(highjet){
+// 	  if(jet2->pt()>highjet->pt())highjet=&(*jet2);
+// 	}else highjet=&(*jet2);
+//       }    
+//     }  
+//     pfJetListLepLC_.push_back(*highjet);
+//     lastjet=highjet;
+//   }
   
 }
 
