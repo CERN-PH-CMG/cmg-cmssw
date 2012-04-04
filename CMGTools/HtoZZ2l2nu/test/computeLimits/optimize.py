@@ -10,10 +10,10 @@ from ROOT import TFile, TGraph, TCanvas, TF1, TH1
 #default values
 shapeBased='1'
 shapeName='mt_shapes'
-inUrl='../plotter2011.root'
+inUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root'
 CWD=os.getcwd()
 phase=-1
-jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samplesNoHWW.json'
+jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json'
 CMSSW_BASE=os.environ.get('CMSSW_BASE')
  
 def help() :
@@ -166,10 +166,10 @@ elif(phase == 3 ):
    print '#              #'
    print '# FINAL LIMITS #'
    print '#              #'
-   npts=len(SUBMASS)
-   Gmet  = ROOT.TH1F('Gmet','min E_{T}^{miss}; m_{H} (GeV/c^{2}); min E_{T}^{miss}',npts,0,npts); GmetGr  = ROOT.TGraph(npts);
-   Gtmin = ROOT.TH1F('Gmin','min E_{T}^{miss}; m_{H} (GeV/c^{2}); min E_{T}^{miss}',npts,0,npts); GtminGr = ROOT.TGraph(npts);
-   Gtmax = ROOT.TH1F('Gmax','max E_{T}^{miss}; m_{H} (GeV/c^{2}); max E_{T}^{miss}',npts,0,npts); GtmaxGr = ROOT.TGraph(npts);
+   Gmet  = ROOT.TGraph(len(SUBMASS));
+   Gtmin = ROOT.TGraph(len(SUBMASS));
+   Gtmax = ROOT.TGraph(len(SUBMASS));
+
  
    fileName = OUT+"/OPTIM_"
    if(shapeBased=='1'):
@@ -182,7 +182,7 @@ elif(phase == 3 ):
    for m in MASS:
 
       #if you want to display more than 3 options edit -m3 field
-      cut_lines=commands.getstatusoutput("cat " + fileName + " | grep 'mH="+str(m)+"' -m3")[1].split('\n')
+      cut_lines=commands.getstatusoutput("cat " + fileName + " | grep 'mH="+str(m)+"' -m5")[1].split('\n')
       print 'mH='+str(m)+'\tOption \tR \tmin MET\tMT range' 
       ictr=1
       for c in cut_lines:
@@ -195,53 +195,46 @@ elif(phase == 3 ):
       metCut=float(cut_lines[opt].split()[4])
       mtMinCut=float(cut_lines[opt].split()[5])
       mtMaxCut=float(cut_lines[opt].split()[6])
-      Gmet .SetBinContent(mi+1, metCut);   Gmet.GetXaxis().SetBinLabel(mi+1,str(m));  GmetGr.SetPoint(mi,m,metCut)
-      Gtmin.SetBinContent(mi+1, mtMinCut); Gtmin.GetXaxis().SetBinLabel(mi+1,str(m)); GtminGr.SetPoint(mi,m,mtMinCut)
-      Gtmax.SetBinContent(mi+1, mtMaxCut); Gtmax.GetXaxis().SetBinLabel(mi+1,str(m)); GtmaxGr.SetPoint(mi,m,mtMaxCut)
+      Gmet .SetPoint(mi, m, metCut);
+      Gtmin.SetPoint(mi, m, mtMinCut);
+      Gtmax.SetPoint(mi, m, mtMaxCut);
       mi+=1
 
    #display cuts chosen
-   c1 = ROOT.TCanvas("c1", "c1",500,500);
+   c1 = ROOT.TCanvas("c1", "c1",900,300);
    ROOT.gROOT.SetStyle('Plain')
    ROOT.gStyle.SetOptStat(False);
-      
-   Gtmin.SetMarkerStyle(21);
-   Gtmin.SetMarkerColor(1);
-   Gtmin.SetLineColor(1);
-   Gtmin.SetLineStyle(1);
-   Gtmin.Draw("hist");
-   Gtmax.SetMarkerStyle(21);
-   Gtmax.SetMarkerColor(1);
-   Gtmax.SetLineColor(1);
-   Gtmax.SetLineStyle(9);
-   Gtmax.Draw("histsame");
-   Gtmin.GetYaxis().SetRangeUser(0.95*Gtmin.GetMinimum(),1.05*Gtmax.GetMaximum())
-   c1.Modified()
-   c1.Update()
-   
-   Gmet.SetMarkerStyle(20);
-   Gmet.SetMarkerColor(2);
-   Gmet.SetLineColor(2);
-   rightmax = 1.1*Gmet.GetMaximum();
-   scale = ROOT.gPad.GetUymax()/rightmax;
-   Gmet.Scale(scale);
-   Gmet.Draw("histsame")
-   
-   axis =ROOT.TGaxis(ROOT.gPad.GetUxmax(),ROOT.gPad.GetUymin(),ROOT.gPad.GetUxmax(), ROOT.gPad.GetUymax(),0,rightmax,510,'+L');
-   axis.SetTitle(Gmet.GetYaxis().GetTitle())
-   axis.SetLineColor(2);
-   axis.SetLabelColor(2);
-   axis.Draw();
 
-   c1.Modified()
+   c1 = ROOT.TCanvas("c1", "c1",900,300);
+   c1.Divide(3);
+   c1.cd(1);
+   Gmet.SetMarkerStyle(20);
+   Gmet.SetTitle("MET");
+   Gmet.Draw("APC");
+   Gmet.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
+   Gmet.GetYaxis().SetTitle("met cut");
+
+   c1.cd(2);
+   Gtmin.SetMarkerStyle(20);
+   Gtmin.SetTitle("MT min");
+   Gtmin.Draw("APC");
+   Gtmin.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
+   Gtmin.GetYaxis().SetTitle("mt_{min} cut");
+
+   c1.cd(3);
+   Gtmax.SetMarkerStyle(20);
+   Gtmax.SetTitle("MT max");
+   Gtmax.Draw("APC");
+   Gtmax.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
+   Gtmax.GetYaxis().SetTitle("mt_{max} cut");
+   c1.cd(0);
    c1.Update();
    c1.SaveAs("OptimizedCuts.png")
-   
 
    #run limits for the cuts chosen (for intermediate masses use spline interpolation)
    for m in SUBMASS:
-      	index = findCutIndex(GmetGr.Eval(m,0,"S"), cuts1, GtminGr.Eval(m,0,"S"), cuts2,  GtmaxGr.Eval(m,0,"S"), cuts3);
-	#print("best mH="+str(m).rjust(3)+ " met>"+str(int(GmetGr.Eval(m,0,"S"))).rjust(5) + " " + str(int(GtminGr.Eval(m,0,"S"))).rjust(5) + "<mt<"+str(int(GtmaxGr.Eval(m,0,"S"))).rjust(5) ) 
+      	index = findCutIndex(Gmet.Eval(m,0,"S"), cuts1, Gtmin.Eval(m,0,"S"), cuts2,  Gtmax.Eval(m,0,"S"), cuts3);
+	#print("best mH="+str(m).rjust(3)+ " met>"+str(int(Gmet.Eval(m,0,"S"))).rjust(5) + " " + str(int(Gtmin.Eval(m,0,"S"))).rjust(5) + "<mt<"+str(int(Gtmax.Eval(m,0,"S"))).rjust(5) ) 
       	print("mH="+str(m).rjust(3)+ " met>"+str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + "<mt<"+str(cuts3.GetBinContent(index)).rjust(5) )
 
    while True:
@@ -252,12 +245,12 @@ elif(phase == 3 ):
    print 'YES'
    list = open(OUT+'list.txt',"w")
    for m in SUBMASS:
-        index = findCutIndex(GmetGr.Eval(m,0,"S"), cuts1, GtminGr.Eval(m,0,"S"), cuts2,  GtmaxGr.Eval(m,0,"S"), cuts3);
+        index = findCutIndex(Gmet.Eval(m,0,"S"), cuts1, Gtmin.Eval(m,0,"S"), cuts2,  Gtmax.Eval(m,0,"S"), cuts3);
         SCRIPT = open(OUT+'/script_mass_'+str(m)+'.sh',"w")
-        SCRIPT.writelines('cd ' + CMSSW_BASE + '/src;\n')
+        SCRIPT.writelines('cd ' + CMSSW_BASE + ';\n')
         SCRIPT.writelines("export SCRAM_ARCH=slc5_amd64_gcc434;\n")
-	SCRIPT.writelines("eval `scram r -sh`;\n")
-        SCRIPT.writelines('cd ' + OUT + ';\n')
+        SCRIPT.writelines("eval `scram r -sh`;\n")
+        SCRIPT.writelines('cd ' + CWD + ';\n')
         shapeBasedOpt=''
         if(shapeBased=='1') : shapeBasedOpt='--shape'
 	SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " --syst " + shapeBasedOpt + " --index " + str(index) + " --json " + jsonUrl + ";\n")
@@ -278,7 +271,8 @@ elif(phase == 4 ):
    list = open(OUT+'/list.txt',"r")
    files = ""
    for m in SUBMASS:   
-	line = OUT+'/'+list.readline().split()[0]+'/combined/*m2lnQ.root'
+	#line = CWD+'/'+list.readline().split()[0]+'/combined/*m2lnQ.root'
+        line = list.readline().split()[0]+'/combined/*m2lnQ.root'
 	print line
 	out = commands.getstatusoutput("ls " + line)[1] 
 	if(out.find("No such file or directory")>=0):continue

@@ -181,10 +181,8 @@ void plotLimit(TString inputs=""){
 
    int NExp = 0;
    for(int i=0;i<N;i++){
-     size_t hpos=files[i].find("H");
-     string massStr = files[i].substr(hpos+1,hpos+3);
+      string massStr = files[i].substr(1,3);
       int mass; sscanf(massStr.c_str(),"%d",&mass);
-      cout << "*****" << mass << endl;
       Limit limits = GetLimit(files[i],string("Higgs")+massStr.c_str());
 
          fprintf(pFileSum, "Mass=%s --> Limits are %lf %lf %lf %lf %lf %lf %lf\n",massStr.c_str(), limits.Obs,limits.Exp_minus2s, limits.Exp_minus1s, limits.Exp_Mean, limits.Exp_plus1s, limits.Exp_plus2s, limits.Exp_Median);
@@ -217,7 +215,7 @@ void plotLimit(TString inputs=""){
 
    TCanvas* c1 = new TCanvas("c1", "c1",600,600);
    TMultiGraph* MG = new TMultiGraph();
-   MG->Add(TGObsLimit       ,"CP");
+//   MG->Add(TGObsLimit       ,"CP");
    MG->Add(TGExpLimit       ,"C");
    MG->Draw("AXIS");
    MG->SetTitle("");
@@ -248,7 +246,7 @@ void plotLimit(TString inputs=""){
    LEG->SetHeader("");
    LEG->SetFillColor(0);
    LEG->SetBorderSize(0);
-   LEG->AddEntry(TGObsLimit  , "Observed"  ,"P");
+//   LEG->AddEntry(TGObsLimit  , "Observed"  ,"P");
    LEG->AddEntry(TGExpLimit  , "Expected"  ,"L");
    LEG->Draw();
    c1->SetGridx(true);
