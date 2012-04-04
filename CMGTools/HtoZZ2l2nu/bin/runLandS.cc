@@ -202,7 +202,7 @@ void getCutFlowFromShape(std::vector<TString> ch, const map<TString, Shape_t> &a
   for(size_t ich=0; ich<nch; ich++) {
     TString icol(ch[ich]); 
     icol.ReplaceAll("mu","\\mu"); icol.ReplaceAll("_"," ");
-    colname = colname + "& " + icol;
+    colname = colname + "& " + "$" + icol + "$";
   }
   cutflow << "\\begin{tabular}{" << colfmt << "} \\hline\\hline" << endl
        << "Process " << colname << " \\\\ \\hline" << flush;
@@ -213,7 +213,7 @@ void getCutFlowFromShape(std::vector<TString> ch, const map<TString, Shape_t> &a
     {
       TH1 *h=allShapes.find(ch[0]+shName)->second.bckg[ibckg];
       TString procTitle(h->GetTitle()); procTitle.ReplaceAll("#","\\");
-      cutflow << endl << procTitle << " ";
+      cutflow << endl << "$" << procTitle << "$" << " ";
       for(size_t ich=0; ich<nch; ich++)
 	{
 	  h=allShapes.find(ch[ich]+shName)->second.bckg[ibckg];
@@ -226,7 +226,7 @@ void getCutFlowFromShape(std::vector<TString> ch, const map<TString, Shape_t> &a
   cutflow << "\\hline" << flush;
   
   //total bckg
-  cutflow << endl << "SM ";
+  cutflow << endl << "$SM$ ";
   for(size_t ich=0; ich<nch; ich++)
     {
       TH1 *h=allShapes.find(ch[ich]+shName)->second.totalBckg;
@@ -242,7 +242,7 @@ void getCutFlowFromShape(std::vector<TString> ch, const map<TString, Shape_t> &a
     {
       TH1 *h=allShapes.find(ch[0]+shName)->second.signal[isig];
       TString procTitle(h->GetTitle()); procTitle.ReplaceAll("#","\\");
-      cutflow << endl << procTitle << " ";
+      cutflow << endl << "$" << procTitle << "$" << " ";
       for(size_t ich=0; ich<nch; ich++)
         {
           h=allShapes.find(ch[ich]+shName)->second.signal[isig];
@@ -255,7 +255,7 @@ void getCutFlowFromShape(std::vector<TString> ch, const map<TString, Shape_t> &a
   cutflow << "\\hline" << flush;
 
   //data
-  cutflow << endl << "data ";
+  cutflow << endl << "$data$ ";
   for(size_t ich=0; ich<nch; ich++)
     {
       TH1 *h=allShapes.find(ch[ich]+shName)->second.data;
@@ -752,7 +752,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   if(subNRB2011 || subNRB2012)doBackgroundSubtraction(selCh,"emu",allShapes,histo,"nonresbckg_ctrl");
 
   //print event yields from the mt shapes
-  //getCutFlowFromShape(selCh,allShapes,histo);
+  getCutFlowFromShape(selCh,allShapes,histo);
 
   //prepare the output
   dci.shapesFile="Shapes_"+massStr+".root";
@@ -825,21 +825,21 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   dci.ch.resize(allCh.size());        std::copy(allCh.begin(), allCh.end(),dci.ch.begin());
   dci.procs.resize(allProcs.size());  std::copy(allProcs.begin(), allProcs.end(),dci.procs.begin());
 
-/*
+
 // DEBUGGING
-  printf("-----------------------\n");
-  printf("shapesFile=%s\n",dci.shapesFile.Data());
-  for(unsigned int i=0;i<dci.ch.size();i++){printf("%s - ",dci.ch[i].Data());}printf("\n");
-  for(unsigned int i=0;i<dci.procs.size();i++){printf("%s - ",dci.procs[i].Data());}printf("\n");
-  for(std::map<TString, std::map<RateKey_t,Double_t> >::iterator iter = dci.systs.begin();   iter != dci.systs.end(); ++iter ){
-       printf("%s : ", iter->first.Data());
-       for(std::map<RateKey_t, Double_t>::iterator it = iter->second.begin();   it != iter->second.end(); ++it ){
-                 printf("%s_%s (%f) ", it->first.first.Data(), it->first.second.Data(), it->second);
-       }
-       printf("\n");
-  }
-  printf("-----------------------\n");
-*/
+//  printf("-----------------------\n");
+//  printf("shapesFile=%s\n",dci.shapesFile.Data());
+//  for(unsigned int i=0;i<dci.ch.size();i++){printf("%s - ",dci.ch[i].Data());}printf("\n");
+//  for(unsigned int i=0;i<dci.procs.size();i++){printf("%s - ",dci.procs[i].Data());}printf("\n");
+//  for(std::map<TString, std::map<RateKey_t,Double_t> >::iterator iter = dci.systs.begin();   iter != dci.systs.end(); ++iter ){
+//       printf("%s : ", iter->first.Data());
+//       for(std::map<RateKey_t, Double_t>::iterator it = iter->second.begin();   it != iter->second.end(); ++it ){
+//                 printf("%s_%s (%f) ", it->first.first.Data(), it->first.second.Data(), it->second);
+//       }
+//       printf("\n");
+//  }
+//  printf("-----------------------\n");
+
 
 /*
   //################# START BACKGROUND SUBTRACTION CODE
@@ -951,6 +951,7 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch
           temp->Add(hshapes[0],-1);
         if(temp->Integral()!=0)dci.systs[systName][RateKey_t(proc,ch)]=1.0;
           delete temp;
+        }else if(proc=="asignal" && syst==""){dci.rates[RateKey_t(proc,ch)]=hshape->Integral();
         }else if(proc!="data" && syst==""){if(hshape->Integral()>1E-9)dci.rates[RateKey_t(proc,ch)]=hshape->Integral();
         }else if(proc=="data" && syst==""){dci.obs[RateKey_t("obs",ch)]=hshape->Integral();
         }
@@ -987,7 +988,9 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
 
         TH1* NonResonant = NULL;
         if(subNRB2011){         NonResonant = (TH1*)hCtrl_SI->Clone("NonResonant");
-        }else if(subNRB2012){   NonResonant = (TH1*)hCtrl_SB->Clone("NonResonant");
+        }else if(subNRB2012){  
+                                Shape_t& shapeChan_BTag = allShapes.find(selCh[i]+mainHisto+"BTagSB")->second;                                
+                                NonResonant = (TH1*)shapeChan_BTag.data->Clone("NonResonant");
         }else{                  return;
         }
 
@@ -1000,7 +1003,11 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
            NonResonant->SetBinContent(b, val );
             NonResonant->SetBinError  (b, err );
         }
-        shapeChan_SI.bckg.push_back(NonResonant);           
+        shapeChan_SI.bckg.push_back(NonResonant);
+        shapeChan_SI.totalBckg->Add(NonResonant, 1);
+
+        printf("NBins = %i %i  %i\n",shapeChan_SI.totalBckg->GetNbinsX(), shapeChan_SI.bckg[0]->GetNbinsX(), NonResonant->GetNbinsX());
+
 
         //Clean background collection
         size_t nbckg=shapeChan_SI.bckg.size();
