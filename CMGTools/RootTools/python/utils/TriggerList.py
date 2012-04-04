@@ -98,13 +98,15 @@ class TriggerList( object ):
         trigWithLowestPrescale = None
         for name in object.getSelectionNames():
             if pattern.match( name ):
+                if object.getSelection( name ) is False:
+                    return None, -1
                 prescale = object.getPrescale( name )
                 if prescale == 1:
                     return name, prescale
                 elif prescale < maxPrescale:
                     maxPrescale = prescale
                     trigWithLowestPrescale = name
-        return name, trigWithLowestPrescale
+        return trigWithLowestPrescale, maxPrescale
 
                     
     def write(self, dirName ):
