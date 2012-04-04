@@ -47,6 +47,7 @@ class Counter(diclist):
     def write(self, dirname):
         '''Dump the counter to a pickle file and to a text file in dirname.'''
         pckfname = '{d}/{f}.pck'.format(d=dirname, f=self.name)
+        pckfname = pckfname.replace('*','STAR')
         pckfile = open( pckfname, 'w' )
         pickle.dump(self, pckfile)
         txtfile = open( pckfname.replace('.pck', '.txt'), 'w')
