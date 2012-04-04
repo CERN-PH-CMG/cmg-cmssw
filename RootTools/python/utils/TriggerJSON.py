@@ -32,6 +32,7 @@ class TriggerJSON( dict ):
             dic = {}
             for item in js:
                 dic[ str(item) ] = lumranges
+            path = path.replace('*','STAR')
             fileName = dirName+'/'+path+'.json'
             self.files[path] = fileName
             out = open( fileName, 'w')
