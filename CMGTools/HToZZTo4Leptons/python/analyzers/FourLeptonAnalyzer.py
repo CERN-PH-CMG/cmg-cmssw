@@ -295,6 +295,7 @@ class FourLeptonAnalyzer( Analyzer ):
         '''Returns True if a muon passes a set of cuts.
         Can be used in testLepton1 and testLepton2, in child classes.'''
         # this is the id of the HZZ baseline:
+        # print muon.sourcePtr().track().pt()
         return muon.numberOfValidTrackerHits() > 10
         # return True
         

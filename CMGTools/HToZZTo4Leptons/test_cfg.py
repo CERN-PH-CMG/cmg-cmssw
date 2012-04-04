@@ -2,6 +2,8 @@ import copy
 import os 
 import CMGTools.RootTools.fwlite.Config as cfg
 
+# FIXME trigger emulation! 
+
 period = 'Period_2011AB'
 channel = 'mu_mu'
 
@@ -49,6 +51,7 @@ skimSequence = [
     eleEleZSkim,
     skimmer
     ]
+
 
 triggerAna = cfg.Analyzer(
     'TriggerAnalyzer'
@@ -133,19 +136,28 @@ from CMGTools.HToZZTo4Leptons.samples.samples_V4_0_0 import *
 ####################################################################################
 
 
+jsonFilter = cfg.Analyzer(
+    'JSONAnalyzer',
+    json = json 
+    )
 
-# selectedComponents = mc_zz
+# selectedComponents = Fall11
 # selectedComponents.append( Hig120GluGlu )
-selectedComponents = Fall11
+selectedComponents = data_DoubleMu_2011
+selectedComponents.extend( Fall11 )
 
 for comp in selectedComponents:
     comp.splitFactor = 10
 DYJets.splitFactor = 300
+for comp in data_DoubleMu_2011:
+    comp.splitFactor = 100
     
 theAna = None
 if channel == 'mu_mu':
     theGenSel = muMuGenSel
     theAna = muMuAna
+    for data in data_DoubleMu_2011:
+        data.triggers = triggers_2011_mu_mu
     for mc in Fall11:
         mc.triggers = triggers_fall11_mu_mu
 elif channel == 'mu_ele':
@@ -170,17 +182,23 @@ sequence = cfg.Sequence([
     # eleEleZSkim,
     # muEleZSkim, 
     # skimmer,
+    jsonFilter, 
     triggerAna,
-    vertexAna,
-    theAna,
-    createTreeProducer( theAna )
+    #vertexAna,
+    #theAna,
+    #createTreeProducer( theAna )
     ])
 
-test = True
+test = False
 if test:
+    # triggerAna.verbose = 1
+    # triggerAna.usePrescaled = True
+    dataset = data_DoubleMu_Run2011A_16Jan2012
+    # dataset = Hig120GluGlu
     # Hig120GluGlu.files = getFiles('/GluGluToHToZZTo4L_M-120_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V4/PAT_CMG_Test_444', 'botta', 'patTuple.*root')
-    selectedComponents = [Hig120GluGlu]
-    Hig120GluGlu.splitFactor = 1
+    selectedComponents = [dataset]
+    dataset.splitFactor = 1
+    dataset.files = dataset.files[:10]
 #    sequence = cfg.Sequence(
 #        [
 #        muMuGenSelector
