@@ -39,6 +39,7 @@ bool doTex = true;
 bool StoreInFile = true;
 bool doPlot = true;
 bool splitCanvas = false;
+bool onlyCutIndex = false;
 string objectSearchKey = "";
 string inDir   = "OUTNew/";
 string jsonFile = "../../data/beauty-samples.json";
@@ -133,8 +134,6 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::list<N
       }else if(tmp->InheritsFrom("TH1")){
         bool isTH1 = !(tmp->InheritsFrom("TH2") || tmp->InheritsFrom("TH3"));
         bool hasIndex = string(((TH1*)tmp)->GetXaxis()->GetTitle()) =="cut index";
-        if(!hasIndex && cutIndex>=0){ continue;} //only consider plot with cutindex
-        if(hasIndex && (cutIndex<0 || isTH1)){ continue;}
         if(hasIndex && !isTH1){isTH1=true;}
 	histlist.push_back(NameAndType(parentPath+list->At(i)->GetName(), isTH1, hasIndex ) );
       }
@@ -279,6 +278,8 @@ void fixExtremities(TH1* h,bool addOverflow, bool addUnderflow)
 
 
 void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, NameAndType HistoProperties){
+   if(HistoProperties.cutIndex && cutIndex<0)return;
+
    std::string SaveName = "";
 
    TPaveText* T = new TPaveText(0.40,0.995,0.85,0.945, "NDC");
@@ -371,6 +372,8 @@ void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, 
 
 
 void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType HistoProperties){
+   if(HistoProperties.cutIndex && cutIndex<0)return;
+
    std::string SaveName = "";
 
    TPaveText* T = new TPaveText(0.40,0.995,0.85,0.945, "NDC");
@@ -473,6 +476,7 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
 
 
 void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType HistoProperties){
+   if(HistoProperties.cutIndex && cutIndex<0)return;
 
    TCanvas* c1 = new TCanvas("c1","c1",800,800);
    TPad* t1 = new TPad("t1","t1", 0.0, 0.20, 1.0, 1.0);
@@ -522,7 +526,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
             if(HistoProperties.cutIndex && cutIndex>=0){
                TH2* tmp2D = (TH2*) GetObjectFromPath(File,HistoProperties.name);
                if(tmp2D){tmptmphist = tmp2D->ProjectionY((string(tmp2D->GetName())+cutIndexStr).c_str(),cutIndex,cutIndex); delete tmp2D;}
-            }else{
+            }else if(!HistoProperties.cutIndex){
                tmptmphist = (TH1*) GetObjectFromPath(File,HistoProperties.name);
             }
 	    if(!tmptmphist){delete File;continue;}
@@ -692,6 +696,8 @@ std::string toLatexRounded(double value, double error){
 
 
 void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, NameAndType HistoProperties){
+   if(HistoProperties.cutIndex && cutIndex<0)return;
+
    FILE* pFile = NULL;
 
    std::vector<TObject*> ObjectToDelete;
@@ -729,7 +735,7 @@ void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, NameAndType Hi
             if(HistoProperties.cutIndex && cutIndex>=0){
                TH2* tmp2D = (TH2*) GetObjectFromPath(File,HistoProperties.name);
                if(tmp2D){tmptmphist = tmp2D->ProjectionY("_py",cutIndex,cutIndex); delete tmp2D;}
-            }else{
+            }else if(!HistoProperties.cutIndex){
                tmptmphist = (TH1*) GetObjectFromPath(File,HistoProperties.name);
             }
             if(!tmptmphist){delete File;continue;}
@@ -862,7 +868,7 @@ int main(int argc, char* argv[]){
      if(arg.find("--outFile")!=string::npos && i+1<argc){ outFile  = argv[i+1];  i++; printf("output file = %s\n", outFile.c_str()); }
      if(arg.find("--json"   )!=string::npos && i+1<argc){ jsonFile = argv[i+1];  i++;  }
      if(arg.find("--only"   )!=string::npos && i+1<argc){ objectSearchKey = argv[i+1]; i++;    }
-     if(arg.find("--index"  )!=string::npos && i+1<argc){ sscanf(argv[i+1],"%i",&cutIndex); i++;  printf("index = %i\n", cutIndex);  }
+     if(arg.find("--index"  )!=string::npos && i+1<argc){ sscanf(argv[i+1],"%i",&cutIndex); i++; onlyCutIndex=(cutIndex>=0); printf("index = %i\n", cutIndex);  }
 
      if(arg.find("--no2D"  )!=string::npos){ do2D = false;    }
      if(arg.find("--no1D"  )!=string::npos){ do1D = false;    }

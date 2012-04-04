@@ -455,7 +455,7 @@ Shape_t getShapeFromFile(TString ch, TString shapeName, int cutBin, TString infU
 	    hshape->SetFillColor(color); hshape->SetLineColor(lcolor); hshape->SetMarkerColor(mcolor);
 	    hshape->SetFillStyle(fill);  hshape->SetLineWidth(lwidth); hshape->SetMarkerStyle(marker);
          }else{		
-            printf("Histo does not exist: %s\n", histoName.Data());
+            if(ivar==1)printf("Histo does not exist: %s\n", histoName.Data());
             continue;
          }
 	
@@ -734,7 +734,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   map<TString, Shape_t> allShapes;
   TString ch[]={"mumu","ee","emu"};
   const size_t nch=sizeof(ch)/sizeof(TString);
-  TString sh[]={"nonresbckg_ctrl", histo};
+  TString sh[]={"nonresbckg_ctrl", histo, histo+"BTagSB"};
   const size_t nsh=sizeof(sh)/sizeof(TString);
   for(size_t i=0; i<nch; i++){
       for(size_t j=0; j<nsh; j++){
