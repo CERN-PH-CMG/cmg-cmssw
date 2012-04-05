@@ -2,8 +2,8 @@
  * Wrapper for common operations on a gamma event
  * Get weights/mass shapes from file
  * Analyze event and assign trigger categories, weights and massive candidates
- * $Date: 2012/04/01 19:51:29 $
- * $Revision: 1.4 $
+ * $Date: 2012/04/03 11:41:18 $
+ * $Revision: 1.5 $
  * \author Pedro Silva
  */
 
@@ -27,7 +27,7 @@ class GammaEventHandler
   GammaEventHandler(const edm::ParameterSet &runProcess);
 
   //to be called event by event
-  bool isGood(PhysicsEvent_t &phys, TString evCategoryLabel="");
+  bool isGood(PhysicsEvent_t &phys);
 
   //getters
   bool isGood() { return isGoodEvent_; }
@@ -37,7 +37,7 @@ class GammaEventHandler
   std::map<TString,LorentzVector> getMassiveGamma() { return massiveGamma_; }
   float getWeight(TString channel) { return evWeights_[channel]; }
   float getTriggerPrescaleWeight() { return triggerPrescaleWeight_;}
-  std::map<TString,float> getWeights() { return evWeights_; }
+  std::map<TString,float> getWeights(PhysicsEvent_t &phys, TString evCategoryLabel="");
   size_t nCategories() { return gammaCats_.size(); }
   int category(size_t icat) {  return (gammaCats_.size() > icat ? gammaCats_[icat] : 0 ); }
   std::vector<int> categories() { return gammaCats_; }
@@ -53,11 +53,10 @@ class GammaEventHandler
   inline int findTriggerCategoryFor(float pt)
   {
     for(size_t itrigCat=0; itrigCat<nCategories()-1; itrigCat++)
-      {
-	if(pt<category(itrigCat)) return -1;
-	if(pt>category(itrigCat+1)) return category(itrigCat+1);
-	else return category(itrigCat);
-      }
+      if(pt>category(itrigCat) && pt<category(itrigCat+1)) 
+	return itrigCat;
+    
+    if(pt>category(nCategories()-1)) return nCategories()-1;
     return -1;
   }
   

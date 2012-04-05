@@ -65,11 +65,9 @@ int main(int argc, char* argv[])
 
   //book histograms
   SmartSelectionMonitor mon;
-  mon.addHistogram( new TH1D ("qt", ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", 200,0,600) );
-  mon.addHistogram( new TH1D ("eta", ";#eta;Events", 50,0,2.6) );  
-  mon.addHistogram( new TH1F("njets"        ,";Jet multiplicity (p_{T}>30 GeV/c);Events",5,0,5) );
-  mon.addHistogram( new TH1F("nsoftjets"        ,";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5) );
-  mon.addHistogram( new TH1F ("nbtags", ";b-tag multiplicity; Events", 5,0,5) );
+  mon.addHistogram( new TH1F ("njets",     ";Jet multiplicity (p_{T}>30 GeV/c);Events",5,0,5) );
+  mon.addHistogram( new TH1F ("nsoftjets", ";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5) );
+  mon.addHistogram( new TH1F ("nbtags",    ";b-tag multiplicity; Events", 5,0,5) );
   for(size_t ibin=1; ibin<=5; ibin++){
     TString label("");
     if(ibin==5) label +="#geq";
@@ -79,68 +77,23 @@ int main(int argc, char* argv[])
     mon.getHisto("nbtags")->GetXaxis()->SetBinLabel(ibin,label);
   }
   mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
-  mon.addHistogram( new TH1F ("nvtx", ";Vertices;Events", 30,0,30) );
   mon.addHistogram( new TH1F ("hoe", ";H/E;Events", 100,0.,0.1) );
   mon.addHistogram( new TH1F ("r9", ";R9;Events", 100,0.8,1) );
   mon.addHistogram( new TH1F ("sietaieta", ";#sigma i#eta i#eta;Events", 100,0,0.03) );
   mon.addHistogram( new TH1F ("trkveto", ";Track veto;Events", 2,0,2) );
-  mon.addHistogram( new TH1F ( "met_rawmet"  , ";E_{T}^{miss} (raw);Events", 50,0,500) );
 
-
-
-  std::map<TString,LorentzVector> metTypeValues;
-  std::map<TString,TString> metTypes;
-  metTypes["met"                 ]="E_{T}^{miss}";
-  metTypes["metSmear"            ]="E_{T}^{miss} - after smear";
-  metTypes["redClusteredMet"     ]="red(E_{T}^{miss},clustered-E_{T}^{miss})";
-  metTypes["redClusteredMetSmear"]="red(E_{T}^{miss},clustered-E_{T}^{miss}) - after smear";
-  
-  //  std::vector<TString> photonSubcats;
-  // std::vector<TString> dilCats;
-  //dilCats.push_back("ee");
-  // dilCats.push_back("mumu");
-  //  for(size_t icat=0; icat<gammaEvHandler.nCategories(); icat++)
-  //  {
-  //  for(size_t idilcat=0; idilcat<dilCats.size(); idilcat++)
-  //  {
-  //  int triggerThr=gammaEvHandler.category(icat);
-  //TString subcat=dilCats[idilcat];
-  //	  if(triggerThr==0) 
-  //{
-  
-  //  mon.addHistogram( new TH2D (subcat+"qtvseta", ";p_{T}^{#gamma} [GeV/c];#eta;Events / (2.5 GeV/c)", 200,0,600,50,0,2.6) );
-  // mon.addHistogram( new TH2D (subcat+"qtvsnvtx", ";p_{T}^{#gamma} [GeV/c];Vertices;Events", 200,0,600,30,0,30) );
-  //    mon.addHistogram( new TH1D (subcat+"zmass",";M^{ll};Events", 100,91-31,91+31) );
-  //   mon.addHistogram( new TH1D (subcat+"finaleventflowmet",";Category;Event count;",8,0,8) );
-  //   mon.addHistogram( new TH1D (subcat+"finaleventflowrmet",";Category;Event count;",8,0,8) );
-  //    }
-  //else
-  //{
-  //subcat ="photon"; subcat+=triggerThr; subcat += dilCats[idilcat];
-  //}
-  //  photonSubcats.push_back(subcat);
-    
-  //   mon.addHistogram( new TH1D (subcat+"ptjets", ";p_{T}^{jet} [GeV/c];Jets", 50,0,250) );
-  //       mon.addHistogram( new TH1D (subcat+"ptclosejet", ";p_{T}(closest jet) [GeV/c];Events", 50,0,250) );
-  //       mon.addHistogram( new TH1D (subcat+"ht", ";H_{T} [GeV];Events", 100,0,500) );
-  //       mon.addHistogram( new TH1D (subcat+"htSmear", ";H_{T} [GeV] - after smear;Events", 100,0,500) );
-  //       mon.addHistogram( new TH1D (subcat+"mt", ";M_{T} [GeV];Events", 100,0,1000) );
-  //       mon.addHistogram( new TH1F (subcat+"njets", ";Jets;Events", 6,0,6) );
-  //       mon.addHistogram( new TH1F (subcat+"nbtags", ";b-tag multiplcity;Events", 5,0,5) );
-  //       mon.addHistogram( new TH1F (subcat+"mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events", 14,0,3.5) );
-  //       mon.addHistogram( new TH1F (subcat+"mindphijmet50", ";min #Delta#phi(jet,E_{T}^{miss});Events", 14,0,3.5) );
-  //       mon.addHistogram( new TH1F (subcat+"mindphijmet70", ";min #Delta#phi(jet,E_{T}^{miss});Events", 14,0,3.5) );
-  //       mon.addHistogram( new TH1F (subcat+"dphivmet", ";#Delta#phi(boson,E_{T}^{miss});Events", 14,0,3.5) );
-  //       double metAxis[]={0,10,20,30,40,50,60,70,80,90,100,120,140,160,180,200,250,300,400,500};
-  //       int nMetBins=sizeof(metAxis)/sizeof(double)-1;
-  //       for(std::map<TString,TString>::iterator it = metTypes.begin(); it!= metTypes.end(); it++)
-  // 	{
-  // 	  metTypeValues[it->first]=LorentzVector(0,0,0,0);
-  // 	  mon.addHistogram( new TH1F( subcat+TString("met_") + it->first, ";"+it->second+";Events", nMetBins,metAxis) );
-  // 	  mon.addHistogram( new TH1F( subcat+TString("met_") + it->first+TString("L"), ";"+it->second+"_{L}/q_{T};Events", 50,0,2) );
-  // 	  mon.addHistogram( new TH2F( subcat+TString("met_") + it->first+"vsht", ";H_{T};"+it->second+";Events", 25,0,250,25,0,250) );
-  // 	}
-  //  }
+  TString subCats[]={"eq0jets","eq1jets","eq2jets","geq3jets"};
+  const size_t nSubCats=sizeof(subCats)/sizeof(TString);
+  for(size_t isc=0; isc<nSubCats; isc++)
+    {
+      TString postfix(subCats[isc]);
+      mon.addHistogram( new TH1D ("qt_"+postfix,        ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", 100,0,500) );
+      mon.addHistogram( new TH1D ("eta_"+postfix,       ";#eta;Events", 50,0,2.6) );  
+      mon.addHistogram( new TH1F ("nvtx_"+postfix, ";Vertices;Events", 30,0,30) );  
+      mon.addHistogram( new TH1F( "mt_"+postfix  , ";M_{T};Events", 100,0,1000) );
+      mon.addHistogram( new TH1F ("met_rawmet_"+postfix  , ";E_{T}^{miss} (raw);Events", 50,0,500) );
+      mon.addHistogram( new TH1F( "zmass_"+postfix, ";M^{ll};Events", 15,76,106) );
+    }
   TH1F* Hcutflow     = (TH1F*) mon.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,3,0,3) ) ;
 
   //open the file and get events tree
@@ -161,6 +114,8 @@ int main(int argc, char* argv[])
       printf("cnorm = %f\n",cnorm);
     }
   Hcutflow->SetBinContent(1,cnorm);
+
+  DuplicatesChecker duplicatesChecker;
   
   //pileup reweighting
   std::vector<double> dataPileupDistributionDouble = runProcess.getParameter< std::vector<double> >("datapileup");
@@ -191,9 +146,14 @@ int main(int argc, char* argv[])
       //interpret event
       ZZ2l2nuSummary_t &ev = evSummaryHandler.getEvent();
       PhysicsEvent_t phys  = getPhysicsEventFrom(ev);
-      int eventCategory    = eventClassifComp.Get(phys);
-      TString subcat       = eventClassifComp.GetLabel(eventCategory);
       bool isGammaEvent    = gammaEvHandler.isGood(phys);
+
+      if(duplicatesChecker.isDuplicate(ev.run,ev.lumi, ev.event))
+	{
+	  printf("event %i-%i-%i is duplicated\n", ev.run, ev.lumi, ev.event);
+	  //NumberOfDuplicated++;
+	  continue;
+	}
 
       //check which event type is required to use (dilepton/or photon)
       if(mctruthmode==22 && !isGammaEvent) continue;
@@ -215,7 +175,7 @@ int main(int argc, char* argv[])
 	  sietaieta        = phys.gammas[0].sihih;
 	  hoe              = phys.gammas[0].hoe;
 	  hasTrkVeto       = phys.gammas[0].hasCtfTrkVeto;
-	  gamma            = gammaEvHandler.massiveGamma("ll");
+	  gamma            = phys.gammas[0];
 	  triggerThr       = gammaEvHandler.triggerThr();
 	}
       else
@@ -250,31 +210,43 @@ int main(int argc, char* argv[])
 	      njets30++;
 	    }
 	}
+      TString subcat("eq"); subcat+=njets30; subcat+= "jets";
+      if(njets30>=3) subcat="geq3jets";
       
       //event weight
       float weight = 1.0;
       if(isMC)                  { weight = LumiWeights.weight( ev.ngenITpu ); }
-      if(!isMC && isGammaEvent) { weight = gammaEvHandler.getTriggerPrescaleWeight(); }
+      //if(!isMC && isGammaEvent) { weight = gammaEvHandler.getTriggerPrescaleWeight(); }
       Hcutflow->Fill(1,1);
       Hcutflow->Fill(2,weight);
       
       //select event
-      bool passKinematics  (gamma.pt()>55);// && fabs(gamma.eta())<1.4442);
-      bool passLeptonVeto  (ev.ln==0);
-      bool passBveto       (nbtags==0);
-      bool passMinDphiJmet (mindphijmet>0.5);
+      bool passMultiplicityVetoes (isGammaEvent ? (phys.leptons.size()==0 && phys.gammas.size()==1) : (ev.ln==0) );
+      bool passKinematics         (gamma.pt()>55);
+      bool passEB                 (!isGammaEvent || fabs(gamma.eta())<1.4442);
+      bool passBveto              (nbtags==0);
+      bool passMinDphiJmet        (mindphijmet>0.5);
       
       //control plots
-      std::map<TString, float> qtWeights = gammaEvHandler.getWeights();
+      std::map<TString, float> qtWeights;
+      if(isGammaEvent) qtWeights = gammaEvHandler.getWeights(phys,subcat);
       for(size_t idc=0; idc<dilCats.size(); idc++)
 	{
+	  LorentzVector iboson(isGammaEvent ? gammaEvHandler.massiveGamma(dilCats[idc]) : gamma);
+	  float zmass=iboson.mass();
+	  Float_t rawMt( METUtils::transverseMass(iboson,metP4,true) );
+	  
 	  TString ctf=dilCats[idc];
 	  float iweight=weight;
-	  
-	  mon.fillHisto("qt",ctf, gamma.pt(),iweight);
-	  mon.fillHisto("eta",ctf, fabs(gamma.eta()),iweight);
+	  if(isGammaEvent) iweight*=qtWeights[dilCats[idc]];
+	  if(!passMultiplicityVetoes) continue;
+	  if(!passEB) continue;
 	  if(!passKinematics) continue;
-	  if(!passLeptonVeto) continue;
+
+	  mon.fillHisto("eta_"+subcat,ctf, fabs(gamma.eta()),iweight);
+	  mon.fillHisto("qt_"+subcat,ctf, gamma.pt(),iweight);
+	  mon.fillHisto("nvtx_"+subcat,ctf, ev.nvtx,iweight);
+	  mon.fillHisto("zmass_"+subcat,ctf, zmass,iweight);
 
 	  mon.fillHisto("nbtags",ctf, nbtags,iweight);
 	  if(!passBveto) continue;
@@ -283,166 +255,17 @@ int main(int argc, char* argv[])
 	  mon.fillHisto("nsoftjets",ctf, njets15,iweight);
 	  mon.fillHisto("mindphijmet",ctf, mindphijmet,iweight);
 	  if(!passMinDphiJmet) continue;
-
 	  if(isGammaEvent)  
 	    {
-	      iweight*=qtWeights[dilCats[idc]];
 	      mon.fillHisto("r9",ctf, r9,iweight);
 	      mon.fillHisto("sietaieta",ctf, sietaieta,iweight);
 	      mon.fillHisto("hoe",ctf, hoe,iweight);
 	      mon.fillHisto("trkveto",ctf, hasTrkVeto,iweight);
 	    }
-
-	  mon.fillHisto("nvtx",ctf, ev.nvtx,iweight);
-	  mon.fillHisto("met_rawmet",ctf, phys.met[0].pt(),iweight);
+	  mon.fillHisto("met_rawmet_"+subcat,ctf, metP4.pt(),iweight);
+	  mon.fillHisto("mt_"+subcat,ctf, rawMt,iweight);
 	}
-      
-
-
-
-      /*
-
-      //select jets
-      int njets=eventClassifComp.GetVBFJetCount();
-      int nincjets(0), nbjets(0);
-      std::vector<LorentzVector> jetsp4,smearjetsp4;
-      LorentzVector jetSmearDiff(0,0,0,0);
-      float ht(0.),htsmear(0.);
-      for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
-	{
-	  double dr=deltaR(phys.jets[ijet],gamma);
-	  if(dr<0.1) continue;
-
-	  bool passTCHEL(phys.jets[ijet].btag1>2);
-
-	  //jet counting
-	  nincjets   += (phys.jets[ijet].pt()>15 && fabs(phys.jets[ijet].eta())<5.0);
-	  nbjets     += passTCHEL*(phys.jets[ijet].pt()>30 && fabs(phys.jets[ijet].eta())<2.5);
-	  
-	  //kinematics
-	  LorentzVector ijetP4(phys.jets[ijet]);                                 	  ht += ijetP4.pt();
-	  LorentzVector ismearJetP4( isMC ? METUtils::smearedJet(ijetP4) : ijetP4 );      htsmear += ismearJetP4.pt();
-	  jetSmearDiff+=(ismearJetP4-ijetP4);
-	  jetsp4.push_back( ijetP4  );
-	  smearjetsp4.push_back( ismearJetP4 );
-	}
-
-
-      //met variables
-      LorentzVector metP4=phys.met[0];
-      LorentzVector assocChargedMetP4=phys.met[1];
-      LorentzVector assocMetP4=phys.met[3];
-      LorentzVector clusteredMetP4 = -1*gamma;       for(unsigned int i=0;i<jetsp4.size();i++)      { clusteredMetP4 -= jetsp4[i]; }
-      LorentzVector smearClusteredMetP4 = -1*gamma;  for(unsigned int i=0;i<smearjetsp4.size();i++) { smearClusteredMetP4 -= smearjetsp4[i]; }
-      if(isGammaEvent)
-	{
-	  assocChargedMetP4 -= gamma;
-	  if(!phys.gammas[0].isConv) assocMetP4 -= gamma;
-	}
-      METUtils::stRedMET redMetInfo;
-      LorentzVector nullP4   = LorentzVector(0,0,0,0);
-      LorentzVector lep1     = gamma;
-      LorentzVector lep2     = nullP4;
-      LorentzVector rCMetP4  = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, clusteredMetP4      , metP4                  , true);
-      LorentzVector rSCMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, smearClusteredMetP4 , metP4 -jetSmearDiff    , true);
-      metTypeValues["met"]                 = metP4;
-      metTypeValues["metSmear"]            = metP4 - jetSmearDiff;
-      metTypeValues["assocChargedMet"]     = assocChargedMetP4;
-      metTypeValues["assocMet"]            = assocMetP4;
-      metTypeValues["redClusteredMet"]     = rCMetP4;
-      metTypeValues["redClusteredMetSmear"]= rSCMetP4;
-      
-      
-      //more kinematics
-      double dphivmet(deltaPhi(metP4.phi(),gamma.phi()));
-
-      double mindphijmet(9999.),ptclosejet(0.),etaclosejet(0.);
-      LorentzVector leadJet(0,0,0,0), jetSyst;
-      for(size_t ijet=0; ijet<jetsp4.size(); ijet++)
-        {
-	  if(jetsp4[ijet].pt()>leadJet.pt()) leadJet=jetsp4[ijet];
-	  jetSyst += jetsp4[ijet];
-	  
-	  if(jetsp4[ijet].pt()<15 || fabs(jetsp4[ijet].eta())>5)continue;
-	  double dphijmet=fabs(deltaPhi(metP4.phi(),jetsp4[ijet].phi()));
-	  mindphijmet = min(mindphijmet,dphijmet);
-	  ptclosejet=jetsp4[ijet].pt();
-	  etaclosejet=jetsp4[ijet].eta();
-	}
-
-      Float_t mt = METUtils::transverseMass(gamma,metP4,true);
-
-    
-
-      //reweight to reproduce pt weight in a gamma sample
-      
-      //fill control histograms
-      //   if(nincjets==0) subcat="eq0softjets";
-//       TString cats[]={"all",subcat};
-//       TString subcats[]={"",phoCat};
-//       for(size_t ic=0; ic<sizeof(cats)/sizeof(TString); ic++)
-// 	{
-      TString ctf="all";
-// 	  TString ctf=cats[ic];
-// 	  for(size_t isc=0; isc<sizeof(subcats)/sizeof(TString); isc++)
-// 	    {
-      for(size_t idc=0; idc<dilCats.size(); idc++)
-	{
-	  //TString pre= subcats[isc]+dilCats[idc];
-	  TString pre=dilCats[idc];
-	  float iweight=weight;
-	  if(isGammaEvent)  iweight*=qtWeights[dilCats[idc]];
-	  if(iweight>10) continue;
-	  
-	  mon.fillHisto(pre+"r9",ctf, r9,iweight);
-	  mon.fillHisto(pre+"sietaieta",ctf, sietaieta,iweight);
-	  mon.fillHisto(pre+"hoe",ctf, hoe,iweight);
-	  
-	  if(!passTightGammaId) continue;
-	  
-	  mon.fillHisto(pre+"nbtags",ctf, nbjets,iweight);
-	  if(nbjets) continue;
-	  
-	  //if(ic==0 && isc==0)  mon.fillHisto(dilCats[idc]+"zmass",ctf,gamma.mass(),iweight);
-	  
-	  mon.fillHisto(pre+"nvtx",ctf, ev.nvtx,iweight);
-	  mon.fillHisto(pre+"qt",ctf, gamma.pt(),iweight);
-	  mon.fillHisto(pre+"eta",ctf, fabs(gamma.eta()),iweight);
-	  
-	  mon.fillHisto(pre+"njets",ctf, njets,iweight);
-	  mon.fill2DHisto(pre+"qtvseta",ctf, gamma.pt(), fabs(gamma.eta()),iweight);
-	  mon.fill2DHisto(pre+"qtvsnvtx",ctf, gamma.pt(),ev.nvtx,iweight);
-	  mon.fillHisto(pre+"ht",ctf, ht,iweight);
-	  mon.fillHisto(pre+"htSmear",ctf, htsmear,iweight);
-	  mon.fillHisto(pre+"mt",ctf, mt,iweight);
-	  mon.fillHisto(pre+"mindphijmet",ctf, fabs(mindphijmet),iweight);
-	  mon.fillHisto(pre+"ptclosejet",ctf, ptclosejet,iweight);
-	  mon.fillHisto(pre+"dphivmet",ctf, fabs(dphivmet),iweight);
-		  
-	  for(std::vector<LorentzVector>::iterator jit= jetsp4.begin(); jit!=jetsp4.end(); jit++)
-	    mon.fillHisto(pre+"ptjets",ctf, jit->pt(),iweight);
-		  
-	  for(std::map<TString,LorentzVector>::iterator it = metTypeValues.begin(); it!= metTypeValues.end(); it++)
-	    {
-	      LorentzVector theMetP4=it->second;
-	      TVector2 longi(gamma.px(),gamma.py());
-	      longi = longi.Unit();
-	      TVector2 perp = longi.Rotate(TMath::Pi()/2);
-	      TVector2 met2d(theMetP4.px(),theMetP4.py());
-	      double metL = fabs(met2d*longi);
-	      double metT = fabs(met2d*perp);
-	      mon.fillHisto(   pre+TString("met_") + it->first,        ctf, theMetP4.pt(), iweight,true);
-	      mon.fillHisto(   pre+TString("met_") + it->first+TString("L"),        ctf, metL/gamma.pt(), iweight,true);
-	      mon.fillHisto(   pre+TString("met_") + it->first+TString("T"),        ctf, metT/gamma.pt(), iweight,true);
-	      mon.fill2DHisto( pre+TString("met_") + it->first+"vsht", ctf, ht,     it->second.pt(),  iweight);
-	      //		      mon.fill2DHisto( pre+TString("met_") + it->first+"vspu", ctf, ev.ngenITpu,     it->second.pt(),  iweight);
-	    }
-	    }
     }
-      */
-    }
-  //}    
-  //   }
 
   //all done with the events file
   file->Close();

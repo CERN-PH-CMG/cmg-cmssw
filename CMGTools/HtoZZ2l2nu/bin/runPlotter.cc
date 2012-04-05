@@ -1,4 +1,3 @@
-
 #include <string>
 #include <vector>
 #include <iostream>
@@ -490,6 +489,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
    THStack* stack = new THStack("MC","MC");
    TH1*     mc   = NULL;
    std::vector<TH1 *> spimpose;
+   std::vector<TString> spimposeOpts;
    TH1*     data = NULL;
    std::vector<TObject*> ObjectToDelete;
 
@@ -563,26 +563,30 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
 
       if((!Process[i].isTag("spimpose") || !Process[i]["spimpose"].toBool()) && !Process[i]["isdata"].toBool()){
          //Add to Stack
-         stack->Add(hist, "HIST");               
+	stack->Add(hist, "HIST");               
          legA->AddEntry(hist, Process[i]["tag"].c_str(), "F");	 
          if(!mc){mc = (TH1D*)hist->Clone("mc");}else{mc->Add(hist);}
-       }else{
+      }
+      else if(Process[i].isTag("spimpose") && Process[i]["spimpose"].toBool())
+	{
+	  //legB->AddEntry(hist, Process[i]["tag"].c_str(), "L");
+	  legA->AddEntry(hist, Process[i]["tag"].c_str(), Process[i]["isdata"].toBool() ? "L" : "P" );
+	  spimposeOpts.push_back( Process[i]["isdata"].toBool() ? "e1" : "hist" );
+	  spimpose.push_back(hist);
+	}
+      else{
 	if(Process[i]["isdata"].toBool()){
 	  if(!data){
-	      data = hist; 
-	      legA->AddEntry(hist, Process[i]["tag"].c_str(), "P"); 
-	    }
+	    data = hist; 
+	    legA->AddEntry(hist, Process[i]["tag"].c_str(), "P"); 
+	  }
 	  else data->Add(hist);
-	}else{
-	  //legB->AddEntry(hist, Process[i]["tag"].c_str(), "L");
-	  legA->AddEntry(hist, Process[i]["tag"].c_str(), "L");
-	  spimpose.push_back(hist);
 	}
       }
    }
 
    bool canvasIsFilled(false);
-   if(stack && stack->GetStack()->GetEntriesFast()>0){
+   if(stack && stack->GetStack() && stack->GetStack()->GetEntriesFast()>0){
      stack->Draw("");
      TH1 *hist=(TH1*)stack->GetStack()->At(0);
      stack->GetXaxis()->SetTitle(hist->GetXaxis()->GetTitle());
@@ -597,8 +601,9 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
        canvasIsFilled=true;
    }
    for(size_t ip=0; ip<spimpose.size(); ip++){
-       spimpose[ip]->Draw(canvasIsFilled ? "hist same": "hist");
-       canvasIsFilled=true;
+     TString opt=spimposeOpts[ip];
+     spimpose[ip]->Draw(opt + (canvasIsFilled ? "same": "") );
+     canvasIsFilled=true;
    }
 
    TPaveText* T = new TPaveText(0.1,0.995,0.84,0.95, "NDC");
@@ -894,6 +899,7 @@ int main(int argc, char* argv[]){
    histlist.sort();
    histlist.unique();
 
+
    TFile* OutputFile = NULL;
    if(StoreInFile) OutputFile = new TFile(outFile.c_str(),"RECREATE");
    printf("Progressing Bar              :0%%       20%%       40%%       60%%       80%%       100%%\n");
@@ -906,16 +912,15 @@ int main(int argc, char* argv[]){
        if(ictr%TreeStep==0){printf(".");fflush(stdout);}
        if(objectSearchKey != "" && it->name.find(objectSearchKey)==std::string::npos)continue;
        system(("echo \"" + it->name + "\" >> /tmp/histlist.csv").c_str());
-       if(doTex && it->name.find("eventflow")!=std::string::npos && it->name.find("optim_eventflow")==std::string::npos){    ConvertToTex(Root,inDir,*it);     }
-       if(doPlot && do2D  && !it->type){                      if(!splitCanvas){Draw2DHistogram(Root,inDir,*it);  }else{Draw2DHistogramSplitCanvas(Root,inDir,*it);}}
-       if(doPlot && do1D  &   it->type){                                       Draw1DHistogram(Root,inDir,*it);  }
+       if(doTex && it->name.find("eventflow")!=std::string::npos && it->name.find("optim_eventflow")==std::string::npos){    ConvertToTex(Root,inDir,*it); }
+       if(doPlot && do2D  && !it->type){                      if(!splitCanvas){Draw2DHistogram(Root,inDir,*it); }else{Draw2DHistogramSplitCanvas(Root,inDir,*it);}}
+       if(doPlot && do1D  &&  it->type){                                       Draw1DHistogram(Root,inDir,*it); }
       
        if(StoreInFile && do2D  && !it->type){                                  SavingToFile(Root,inDir,*it, OutputFile); }
        if(StoreInFile && do1D  &&  it->type){                                  SavingToFile(Root,inDir,*it, OutputFile); }
-   }printf("\n");
+     }printf("\n");
    if(StoreInFile) OutputFile->Close();
    
-
    system(("python ${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/html/generateJSONplotterFromList.py -i /tmp/histlist.csv -o "+outDir+"/plotter.json").c_str());
    system("rm /tmp/histlist.csv");
    system(("cp ${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/html/index.html " + outDir).c_str());

@@ -1,6 +1,65 @@
 {
     "proc":[
 	{
+	   "tag":"data (ll)",
+	   "isdata":true,
+	   "color":"2",
+	   "lcolor":2,
+           "fill":0,
+           "marker":24,
+	   "mctruthmode":1,
+	   "spimpose":true,
+           "data":[
+                {
+	         "dtag":"Data_DoubleElectron2011A",
+		 "dset":"/DoubleElectron/Run2011A-HZZ-08Nov2011-v1/AOD",
+		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleElectron/Run2011A-HZZ-08Nov2011-v1/AOD/V3"],
+                 "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/DoubleElectron2011A"],
+                 "split":2
+                },
+                {
+	         "dtag":"Data_DoubleElectron2011B",
+		 "dset":"/DoubleElectron/Run2011B-HZZ-19Nov2011-v1/AOD",
+		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleElectron/Run2011B-HZZ-19Nov2011-v1/AOD/V3"],
+                 "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/DoubleElectron2011B"],
+                 "split":2
+                },
+                {
+	         "dtag":"Data_DoubleMu2011A",
+		 "dset":"/DoubleMu/Run2011A-HZZ-08Nov2011-v1/AOD",
+		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleMu/Run2011A-HZZ-08Nov2011-v1/AOD/V3"],
+                 "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/DoubleMu2011A"],
+                 "split":2
+                },
+                {
+	         "dtag":"Data_DoubleMu2011B",
+		 "dset":"/DoubleMu/Run2011B-HZZ-19Nov2011-v1/AOD",
+		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleMu/Run2011B-HZZ-19Nov2011-v1/AOD/V3"],
+                 "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/DoubleMu2011B"],
+                 "split":2
+                }
+	    ]
+	},	
+	{
+	 "tag":"Z#rightarrow ll",
+         "isdata":false,
+ 	 "color":"2",
+	 "lcolor":2,
+	 "fill":0,
+	 "mctruthmode":1,
+	 "spimpose":true,
+         "data":[
+	      {
+               "dtag":"MC_DYJetsToLL",
+	       "dset":"/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM",
+	       "aoddir":["/store/cmst3/group/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V3/"],
+	       "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/"],
+               "split":10,
+                "xsec":3048
+              }
+          ]
+	},
+	{
          "tag":"Z+#gamma#rightarrow#nu#nu#gamma",
          "isdata":false,
          "color":"8",
@@ -118,7 +177,7 @@
 	  ]
     	},
 	{
-	"tag":"data",
+	"tag":"data (#gamma)",
         "isdata":true,
 	"color":"1",
 	"lcolor":1,

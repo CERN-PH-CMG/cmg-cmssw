@@ -1,107 +1,66 @@
-
 {
     "proc":[
 	{
-	 "tag":"|M_{ll}-91|<15 GeV/c^{2}",
-         "isdata":true,
-         "color":"831",
-	 "lcolor":1,
-         "data":[
+	   "tag":"ll+jets",
+	   "isdata":true,
+	   "color":"2",
+	   "lcolor":2,
+           "fill":0,
+           "marker":24,
+	   "mctruthmode":1,
+	   "spimpose":true,
+           "data":[
                 {
-                  "dtag":"DoubleMuMay10ReReco",
-                  "dset":"/DoubleMu/Run2011A-May10ReReco-v1/AOD",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/cerminar/zzllvv_42X_v1/DoubleMu-May10ReReco"]
-		},
+	         "dtag":"Data_DoubleElectron2011A",
+		 "dset":"/DoubleElectron/Run2011A-HZZ-08Nov2011-v1/AOD",
+		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleElectron/Run2011A-HZZ-08Nov2011-v1/AOD/V3"],
+                 "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/DoubleElectron2011A"],
+                 "split":2
+                },
                 {
-                  "dtag":"DoubleElectronMay10ReReco",
-                  "dset":"/DoubleElectron/Run2011A-May10ReReco-v1/AOD",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/cerminar/zzllvv_42X_v1_fix/DoubleElectron-May10ReReco"]
-		},
+	         "dtag":"Data_DoubleElectron2011B",
+		 "dset":"/DoubleElectron/Run2011B-HZZ-19Nov2011-v1/AOD",
+		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleElectron/Run2011B-HZZ-19Nov2011-v1/AOD/V3"],
+                 "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/DoubleElectron2011B"],
+                 "split":2
+                },
                 {
-                  "dtag":"DoubleMuPromptRecov4",
-                  "dset":"/DoubleMu/Run2011A-PromptReco-v4/AOD",
-                  "patdir":["/castor/cern.ch//cms/store/cmst3/user/psilva/Data2/DoubleMuon/DoubleMu-PromptReco-v4"]
-		},
+	         "dtag":"Data_DoubleMu2011A",
+		 "dset":"/DoubleMu/Run2011A-HZZ-08Nov2011-v1/AOD",
+		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleMu/Run2011A-HZZ-08Nov2011-v1/AOD/V3"],
+                 "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/DoubleMu2011A"],
+                 "split":2
+                },
                 {
-                  "dtag":"DoubleElectronPromptRecov4",
-                  "dset":"/DoubleElectron/Run2011A-PromptReco-v4/AOD",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data2/DoubleElectron/DoubleElectron-PromptReco-v4"]
-		},
-                {
-                  "dtag":"DoubleMu05AugReReco",
-                  "dset":"/DoubleMu/Run2011A-05Aug2011-v1/AOD",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/DoubleMuon/DoubleMu-05Aug2011"]
-		},
-                {
-                  "dtag":"DoubleElectron05AugReReco",
-                  "dset":"/DoubleElectron/Run2011A-05Aug2011-v1/AOD",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/DoubleElectron/DoubleElectron-05Aug2011"]
-		},
-                {
-                  "dtag":"DoubleMuPromptRecov6_172620_173244",
-                  "dset":"/DoubleMu/Run2011A-PromptReco-v6/AOD",
-                  "patdir":["/castor/cern.ch//cms/store/cmst3/user/psilva/Data/DoubleMuon/DoubleMu-PromptReco-v6-172620-173244"]
-		},
-                {
-                  "dtag":"DoubleMuPromptRecov6_173380_173692",
-                  "dset":"/DoubleMu/Run2011A-PromptReco-v6/AOD",
-                  "patdir":["/castor/cern.ch//cms/store/cmst3/user/psilva/Data/DoubleMuon/DoubleMu-PromptReco-v6-173380_173692"]
-		},
-                {
-                  "dtag":"DoubleElectronPromptRecov6",
-                  "dset":"/DoubleElectron/Run2011A-PromptReco-v6/AOD",
-                  "patdir":["/store/cmst3/user/psilva/Data/DoubleElectron/DoubleElectron-PromptReco-v6"]
-		},
-                {
-                  "dtag":"DoubleMuPromptReco_2011B",
-                  "dset":"/DoubleMu/Run2011B-PromptReco-v1/AOD",
-                  "patdir":["/store/cmst3/user/psilva/Data/DoubleMuon/DoubleMu-2011B-PromptReco"]
-		},
-		{
-                  "dtag":"DoubleElectronPromptReco_2011B",
-                  "dset":"/DoubleElectron/Run2011B-PromptReco-v6/AOD",
-                  "patdir":["/store/cmst3/user/psilva/Data/DoubleElectron/DoubleElectron-2011B-PromptReco"]
+	         "dtag":"Data_DoubleMu2011B",
+		 "dset":"/DoubleMu/Run2011B-HZZ-19Nov2011-v1/AOD",
+		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleMu/Run2011B-HZZ-19Nov2011-v1/AOD/V3"],
+                 "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/DoubleMu2011B"],
+                 "split":2
                 }
-          ]
-	},
+	    ]
+	},	
 	{
 	"tag":"#gamma+jets",
         "isdata":true,
 	"color":"1",
 	"lcolor":1,
 	"fill":0,
+        "mctruthmode":22,
 	"data":[
-	       {
-                  "dtag":"PhotonMay10th",
-                  "dset":"/Photon/Run2011A-PromptReco-v4/AOD",
-                  "patdir":["/castor/cern.ch//cms/store/cmst3/user/psilva/Data/Photon/Photon-May10th"]
+                {
+                  "dtag":"Photon2011A",
+                  "dset":"",
+                  "patdir":[""],
+		  "split":2
 		},
                 {
-                  "dtag":"PhotonPromptRecov4",
-                  "dset":"/Photon/Run2011A-PromptReco-v4/AOD",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/Photon/Photon-PromptReco-v4"]
-		},
-                {
-                  "dtag":"Photon05Aug2011",
-                  "dset":"/Photon/Run2011A-05Aug2011-v1/AOD",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/Photon/Photon-05Aug2011"]
-		},
-                {
-                  "dtag":"Photon_PromptReco_v6_172620_173244",
-                  "dset":"/Photon/Run2011A-PromptReco-v6/AOD",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/Photon/Photon-PromptReco-v6-172620-173244"]
-		},
-                {
-                  "dtag":"Photon_PromptReco_v6_173380_173692",
-                  "dset":"/Photon/Run2011A-PromptReco-v6/AOD",
-                  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/Photon/Photon-PromptReco-v6-173380_173692"]
-		},
-                {
-                  "dtag":"Photon-2011B-PromptReco-175832-179431",
-                  "dset":"/Photon/Run2011B-PromptReco-v1/AOD",
-		  "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/Data/Photon/Photon-2011B-PromptReco-175832-179431"]
+                  "dtag":"Photon2011B",
+                  "dset":"",
+                  "patdir":[""],
+ 		  "split":2
 		}
-	  ]
-    	}
+	   ]
+	}
     ]	
 }

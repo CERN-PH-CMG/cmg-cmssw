@@ -25,8 +25,10 @@ runProcess = cms.PSet(
     etaResolFileName = cms.string("${CMSSW_RELEASE_BASE}/src/CondFormats/JetMETObjects/data/Spring10_EtaResolution_AK5PF.txt"),
     jesUncFileName = cms.string("${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/GR_R_42_V23_AK5PFchs_Uncertainty.txt"),
     datapileup = datapileup_pixelbased,
-    gammaCategories        = cms.vint32 (20,      30,      50,      75,     90,       125,  135,   999999),
-    gammaTriggerRenWeights = cms.vdouble(638.010, 152.633, 14.622,  2.029,  0.345,   1.011, 0.237, 0.   ), 
+    #gammaCategories        = cms.vint32 (20,      30,      50,      75,     90,       125,  135,   999999),
+    #gammaTriggerRenWeights = cms.vdouble(638.010, 152.633, 14.622,  2.029,  0.345,   1.011, 0.237, 0.   ), 
+    gammaCategories        = cms.vint32 (20,      30,      50,      75,      90,      135,      999999),
+    gammaTriggerRenWeights = cms.vdouble(28.883,  13.570,  1,       0.18185, 0.00803, 0.005702, 0.),
     useMVA = cms.bool(@useMVA),	
     tmvaInput = simpleDiscriminator
     )
