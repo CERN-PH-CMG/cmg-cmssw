@@ -103,7 +103,7 @@ class CmgdbApi(object):
             if tagID!= None:
                 return tagID
             tagID = self.selectCur.execute("select cms_cmgdb.tag_id_seq.NEXTVAL from dual").fetchone()[0]
-            self.insertCur.execute("INSERT INTO tags(tag_id, package_name, tag) values(:tagID , :package, :tag)",{"tagID":tagID,"package":package,"tag":tag})
+            self.insertCur.execute("INSERT INTO cms_cmgdb.tags(tag_id, package_name, tag) values(:tagID , :package, :tag)",{"tagID":tagID,"package":package,"tag":tag})
             self.insertConn.commit()
             return tagID
         except cx_Oracle.IntegrityError:
@@ -129,6 +129,17 @@ class CmgdbApi(object):
         except cx_Oracle.IntegrityError:
             # If set is already in the database then print error message and ignore
             print "Dataset %s is already present on the system\n" % dsName
+        
+    # Adds a set to the database
+    def closeDataset(self, dsName):
+        
+        try:
+            # Insert information into database
+            datasetID = self.insertCur.execute("update cms_cmgdb.dataset_details set dataset_open='N' where cmgdb_name = %s" % dsName)
+            self.insertConn.commit()
+        except cx_Oracle.IntegrityError:
+            # If set is already in the database then print error message and ignore
+            print "Dataset %s failed to be closed\n" % dsName
         
     
 
@@ -197,7 +208,7 @@ class CmgdbApi(object):
         # Insert information into database
         if test == True: taskType = "test_task_id"
         try:
-            return self.selectCur.execute("SELECT dataset_id from dataset_details where %s=%d" % (taskType, int(taskID))).fetchone()[0]
+            return self.selectCur.execute("SELECT dataset_id from cms_cmgdb.dataset_details where %s=%d" % (taskType, int(taskID))).fetchone()[0]
         except: 
             print "Datset is new in CMGDB"
             return None
