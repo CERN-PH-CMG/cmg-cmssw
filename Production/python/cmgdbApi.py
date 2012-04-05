@@ -133,13 +133,13 @@ class CmgdbApi(object):
     # Adds a set to the database
     def closeDataset(self, dsName):
         
-        try:
+        #try:
             # Insert information into database
-            datasetID = self.insertCur.execute("update cms_cmgdb.dataset_details set dataset_open='N' where cmgdb_name = %s" % dsName)
+            datasetID = self.insertCur.execute("update cms_cmgdb.dataset_details set dataset_is_open='N' where cmgdb_name = '%s'" % dsName)
             self.insertConn.commit()
-        except cx_Oracle.IntegrityError:
+        #except cx_Oracle.IntegrityError:
             # If set is already in the database then print error message and ignore
-            print "Dataset %s failed to be closed\n" % dsName
+            #print "Dataset %s failed to be closed\n" % dsName
         
     
 
