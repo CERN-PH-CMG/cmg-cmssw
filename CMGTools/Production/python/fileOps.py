@@ -163,13 +163,13 @@ class FileOps(object):
 	        for file in files:
 	            if re.search('PAT_CMG',file):
 	                if re.search(".root",file):
-	                    output += float(float(file.split('size=')[1].split("\n")[0])/1024/1024/1024/1024)
+	                    output += float(float(file.split('size=')[1].split("\n")[0])/1000/1000/1000/1000)
 	    elif re.search("V", self._setName.split("/")[-1]):
 	        output = 0
 	        for file in files:
 	            if re.search('PFAOD',file):
 	                if re.search(".root",file):
-	                    output += float(float(file.split('size=')[1].split("\n")[0])/1024/1024/1024/1024)
+	                    output += float(float(file.split('size=')[1].split("\n")[0])/1000/1000/1000/1000)
 	                    
 	    if output is not None: print "Dataset size =",output,"TB"
 	    return output
