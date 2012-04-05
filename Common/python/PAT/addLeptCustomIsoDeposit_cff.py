@@ -1,11 +1,19 @@
 import FWCore.ParameterSet.Config as cms
 
 electronUserIsolation  = cms.PSet(
-    user = cms.VInputTag(
-        cms.InputTag("eleIsoFromDepsTkOptimized5"),
-        cms.InputTag("eleIsoFromDepsTkOptimized7"),
-    )
+    user = cms.VPSet(
+    cms.PSet( src = cms.InputTag("eleIsoFromDepsTkOptimized5") ),
+    cms.PSet( src = cms.InputTag("eleIsoFromDepsTkOptimized7") ),
+    )         
 )
+
+# For this to work, we need to fix PATElectronProducer.cc
+# electronUserIsolation  = cms.PSet(
+#     user = cms.VInputTag(
+#         cms.InputTag("eleIsoFromDepsTkOptimized5"),
+#         cms.InputTag("eleIsoFromDepsTkOptimized7"),
+#     )
+# )
 
 muonUserIsolation  = cms.PSet(
     user = cms.VInputTag(
@@ -18,9 +26,15 @@ def addElectronCustomIsoDeposit( process, sequenceName, postfix ):
     Adds custom isoDeposit to the PAT electron
     """
 
-    isoValues = getattr(process, "patElectrons" + postfix).isolationValues
-    if not isoValues.hasParameter('user') : isoValues.user = electronUserIsolation.user
-    else : isoValues.user += electronUserIsolation.user
+    userIso = getattr(process, "patElectrons" + postfix).userIsolation
+    if not userIso.hasParameter('user') : userIso.user = electronUserIsolation.user
+    else : userIso.user += electronUserIsolation.user
+
+# See comment above
+#     isoValues = getattr(process, "patElectrons" + postfix).isolationValues
+#     if not isoValues.hasParameter('user') : isoValues.user = electronUserIsolation.user
+#     else : isoValues.user += electronUserIsolation.user
+
 #    print userIso ###
 
     userIsoD = getattr(process, "patElectrons" + postfix).isoDeposits
