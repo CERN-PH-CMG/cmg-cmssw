@@ -122,4 +122,12 @@ class SavannahBrowser(object):
         	if self.taskID is not None:
         		print "Task URL: https://savannah.cern.ch/task/?" + str(self.taskID)
         	return self.taskID
+    def closeTask(self):
+    	if self.newDS:
+    		print "Cannot close un-open task"
+    		return None
+    	else:
+    		
+    		self._br.form["status_id"] = ['3']
+    		self._br.submit()
         
