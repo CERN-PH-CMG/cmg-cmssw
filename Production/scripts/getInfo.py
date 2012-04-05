@@ -29,6 +29,8 @@ Table Structure:
         -last_commented
         -task_id
         -tagset_id
+        -dataset_size_in_tb
+        -dataset_is_open
     tag_sets
         -tagset_id
         -release
@@ -196,7 +198,10 @@ getInfo.py -a getTags /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6
             sys.exit(1)
     
     # Execute the Query
-    cur.execute(query)  
+    try:
+        cur.execute(query)  
+    except:
+        raise
     
     # Print out the column names
     for column in cur.description:
