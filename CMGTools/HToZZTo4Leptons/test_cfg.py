@@ -64,16 +64,21 @@ vertexAna = cfg.Analyzer(
     verbose = False
     )
 
+looseIso = 0.7
+# looseIso = 999
+pairIso = 0.35
+# pairIso = 999
+
 muMuAna = cfg.Analyzer(
     'MuMuFourLeptonAnalyzer',
     pt1 = 5.,
     eta1 = 2.4,
-    iso1 = 0.7,
+    iso1 = looseIso,
     sip1 = 4,
     # 
     pt2 = 5,
     eta2 = 2.4,
-    iso2 = 0.7,
+    iso2 = looseIso,
     sip2 = 4, 
     #
     z1_m = (50,120),
@@ -86,11 +91,14 @@ muMuAna = cfg.Analyzer(
     # 
     h_m = 100.,
     h_sip = 4.,
-    pair_iso = 0.35,
+    pair_iso = pairIso,
     pair_mass = 12.,
     nLeptonsMin = 2.,
     #
     keep = True,
+    #
+    PF = False,
+    PFIso = True
     )
 
 
@@ -98,20 +106,23 @@ muEleAna = copy.deepcopy( muMuAna)
 muEleAna.name = 'MuEleFourLeptonAnalyzer'
 muEleAna.pt2 = 7,
 muEleAna.eta2 = 2.5,
-muEleAna.iso2 = 0.7,
+muEleAna.iso2 = looseIso,
 # muEleAna.sip2 = 4,     
 
 eleEleAna = copy.deepcopy( muEleAna )
 eleEleAna.name = 'EleEleFourLeptonAnalyzer'
 eleEleAna.pt1 = 7,
 eleEleAna.eta1 = 2.5,
-eleEleAna.iso1 = 0.7,
+eleEleAna.iso1 = looseIso,
 # eleEleAna.sip1 = 4,     
 
 
 genMuMuAna = copy.deepcopy(muMuAna)
 genMuMuAna.pdgId1 = 13
 genMuMuAna.pdgId2 = 13
+genMuMuAna.pt1 = 0
+genMuMuAna.pt2 = 0
+
 
 genMuEleAna = copy.deepcopy(muEleAna)
 genMuEleAna.pdgId1 = 13
@@ -138,13 +149,13 @@ from CMGTools.HToZZTo4Leptons.samples.samples_V4_0_0 import *
 
 jsonFilter = cfg.Analyzer(
     'JSONAnalyzer',
-    json = json 
+    json = json,
     )
 
 # selectedComponents = Fall11
-# selectedComponents.append( Hig120GluGlu )
-selectedComponents = data_DoubleMu_2011
-selectedComponents.extend( Fall11 )
+selectedComponents = copy.copy(mc_zz)
+selectedComponents.append( Hig120GluGlu )
+# selectedComponents.extend( Fall11 )
 
 for comp in selectedComponents:
     comp.splitFactor = 10
@@ -178,23 +189,29 @@ stopper = cfg.Analyzer(
 
 sequence = cfg.Sequence([
     # theGenSel, # FIXME not for data
-    # muMuZSkim,
-    # eleEleZSkim,
-    # muEleZSkim, 
-    # skimmer,
+    #muMuZSkim,
+    #eleEleZSkim,
+    #muEleZSkim, 
+    #skimmer,
     jsonFilter, 
-    triggerAna,
-    #vertexAna,
-    #theAna,
-    #createTreeProducer( theAna )
+    # triggerAna,
+    vertexAna,
+    theAna,
+    createTreeProducer( theAna )
+    # genMuMuAna,
+    # createTreeProducer( genMuMuAna )
     ])
+
+
+# selectedComponents = [ZZTo4mu]
 
 test = False
 if test:
     # triggerAna.verbose = 1
     # triggerAna.usePrescaled = True
-    dataset = data_DoubleMu_Run2011A_16Jan2012
+    # dataset = data_DoubleMu_Run2011B_16Jan2012
     # dataset = Hig120GluGlu
+    dataset = ZZTo4mu
     # Hig120GluGlu.files = getFiles('/GluGluToHToZZTo4L_M-120_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V4/PAT_CMG_Test_444', 'botta', 'patTuple.*root')
     selectedComponents = [dataset]
     dataset.splitFactor = 1
