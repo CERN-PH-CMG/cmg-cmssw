@@ -15,7 +15,7 @@ def prepareComponents(dir, config):
 NBINS = 100
 XMIN  = 100
 XMAX  = 600
-
+YMIN  = 0.001
 
 def savePlot(name):
     if gPad is None:
@@ -53,10 +53,22 @@ if __name__ == '__main__':
                       dest="box", 
                       help="box. Default is Inclusive",
                       default='Inclusive')
-    parser.add_option("-M", "--mtregion", 
-                      dest="mtregion", 
-                      help="mT region. Default is LowMT",
-                      default='LowMT')
+    parser.add_option("-X", "--xmax", 
+                      dest="xmax", 
+                      help="xmax",
+                      default=XMAX)
+    parser.add_option("-x", "--xmin", 
+                      dest="xmin", 
+                      help="xmin",
+                      default=XMIN)
+    parser.add_option("-Y", "--ymax", 
+                      dest="ymax", 
+                      help="ymax",
+                      default=None)
+    parser.add_option("-y", "--ymin", 
+                      dest="ymin", 
+                      help="ymin",
+                      default=YMIN)
     parser.add_option("-H", "--hist", 
                       dest="hist", 
                       help="histogram",
@@ -90,11 +102,18 @@ if __name__ == '__main__':
     cfg = imp.load_source( 'cfg', cfgFileName, file)
 
     selComps, weights = prepareComponents(anaDir, cfg.config)
+        
     
     # get WJet scaling factor for same sign
-    z1Mass = HToZZDataMC(options.hist, anaDir, selComps, weights,
-                         NBINS, XMIN, XMAX,
+    nbins = NBINS
+    xmin = float( options.xmin )
+    xmax = float( options.xmax )
+    plot = HToZZDataMC(options.hist, anaDir, selComps, weights,
+                         nbins,xmin,xmax,
                          cut = options.cut, weight=weight)
 
-    z1Mass.DrawStack('HIST',ymin=0.001)
-    gPad.SetLogy()
+    ymax = None
+    if options.ymax is not None:
+        ymax = float(options.ymax)
+    plot.DrawStack('HIST',ymin=float(options.ymin), ymax=ymax)
+    # gPad.SetLogy()

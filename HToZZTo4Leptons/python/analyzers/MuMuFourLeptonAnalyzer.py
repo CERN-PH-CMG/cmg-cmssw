@@ -10,15 +10,17 @@ class MuMuFourLeptonAnalyzer( FourLeptonAnalyzer ):
     def declareHandles(self):
         super(MuMuFourLeptonAnalyzer, self).declareHandles()
 
+        muons = 'cmgMuonSelStdLep'
+        if self.cfg_ana.PF is True:
+            muons = 'cmgMuonSel'
+            
         self.handles['leptons1'] = AutoHandle(
-            'cmgMuonSelStdLep',
-            # 'cmgMuonSel',
+            muons, 
             'std::vector<cmg::Muon>'
             )
 
         self.handles['leptons2'] = AutoHandle(
-            'cmgMuonSelStdLep',
-            # 'cmgMuonSel',
+            muons,
             'std::vector<cmg::Muon>'
             )
         

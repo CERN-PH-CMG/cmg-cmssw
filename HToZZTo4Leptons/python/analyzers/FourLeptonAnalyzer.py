@@ -158,6 +158,8 @@ class FourLeptonAnalyzer( Analyzer ):
         self.counters.counter('FourLepton').inc('passing')
         event.step += 1
 
+        # import pdb; pdb.set_trace()
+        
         return True
  
     def bestZBoson2(self, zBosons):
@@ -252,6 +254,7 @@ class FourLeptonAnalyzer( Analyzer ):
 
 
     def testLepton(self, lepton, pt, eta, iso, sip, sel=None):
+        #FIXME: I should use charged hadron iso as a loose iso!
         if sel is not None and \
            not lepton.getSelection(sel):
             # a cut string has to be tested, and the lepton does not pass
@@ -296,7 +299,10 @@ class FourLeptonAnalyzer( Analyzer ):
         Can be used in testLepton1 and testLepton2, in child classes.'''
         # this is the id of the HZZ baseline:
         # print muon.sourcePtr().track().pt()
-        return muon.numberOfValidTrackerHits() > 10
+        if self.cfg_ana.PF:
+            return True
+        else:
+            return muon.numberOfValidTrackerHits() > 10
         # return True
         
     
@@ -310,8 +316,11 @@ class FourLeptonAnalyzer( Analyzer ):
         # delta beta corrected isolation 
         # return lepton.relIso(0.5)
         # if abs(lepton.pdgId()) == 13:
-        rho = self.handles['rho'].product()[0]
-        return lepton.detIso( rho )
+        if self.cfg_ana.PFIso is True:
+            return lepton.relIso( 0.5 )
+        else:
+            rho = self.handles['rho'].product()[0]
+            return lepton.detIso( rho )
 
 
 ##     def muDetIso(self, patMuon):

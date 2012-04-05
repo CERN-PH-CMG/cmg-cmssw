@@ -31,6 +31,9 @@ class JSONAnalyzer( Analyzer ):
     def process(self, iEvent, event):
         self.readCollections( iEvent )
         self.count.inc('All events')
+
+        if self.cfg_comp.isMC:
+            return True
         run = iEvent.eventAuxiliary().id().run()
         lumi = iEvent.eventAuxiliary().id().luminosityBlock()
         # print run, lumi
