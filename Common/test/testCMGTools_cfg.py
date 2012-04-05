@@ -18,7 +18,7 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
     )
 
 
-runOnMC = True
+runOnMC = False
 
 
 
@@ -30,7 +30,7 @@ from CMGTools.Production.datasetToSource import *
 #    ) 
 process.source = cms.Source(
     "PoolSource",
-    fileNames = cms.untracked.vstring( 'file:../prod/patTuple_PF2PAT.root' )
+    fileNames = cms.untracked.vstring( 'file:../prod/patTuple_data.root' )
     ) 
 
 # reading the first 10 files:
@@ -76,8 +76,8 @@ tuneCMGSequences(process, postpostfix='CMG')
 # adding the standard leptons: 
 from CMGTools.Common.PAT.addStdLeptons import addCmgMuons, addCmgElectrons
 process.cmgStdLeptonSequence = cms.Sequence(
-    addCmgMuons( process, 'StdLep', 'selectedPatMuonsAK5StdLep'  ) +
-    addCmgElectrons( process, 'StdLep', 'selectedPatElectronsAK5StdLep'  ) 
+    addCmgMuons( process, 'StdLep', 'selectedPatMuons'  ) +
+    addCmgElectrons( process, 'StdLep', 'selectedPatElectrons'  ) 
     )
 process.cmgObjectSequence += process.cmgStdLeptonSequence
 

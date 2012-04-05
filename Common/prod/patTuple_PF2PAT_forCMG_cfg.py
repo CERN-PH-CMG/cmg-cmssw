@@ -54,18 +54,10 @@ print sep_line
 
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
-    # to test MC:
     # 'cmgtools',
-    # '/TauPlusX/Run2011A-May10ReReco-v1/AOD/V3',
-    # 'cmgtools_group',
-    # '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V3',
-    # to test Data:
+    # '/DoubleElectron/Run2011A-16Jan2012-v1/AOD/V4',
     'cmgtools_group',
-    #'/DoubleMu/Run2011A-05Aug2011-v1/AOD/V3',
-    #'/DoubleElectron/Run2011B-16Jan2012-v1/AOD/V4',
     '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V4'
-    #'/GluGluToHToZZTo4L_M-120_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V4'
-    # '.*root'
     )
 
 ## for testing in 5X
@@ -201,6 +193,7 @@ process.stdElectronSeq = cms.Sequence(
     process.makePatElectrons +
     process.selectedPatElectrons
     )
+
 if not runOnMC:
     process.stdMuonSeq.remove( process.muonMatch )
     process.stdElectronSeq.remove( process.electronMatch )
