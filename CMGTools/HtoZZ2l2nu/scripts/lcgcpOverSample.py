@@ -59,12 +59,14 @@ for proc in procList :
                 if(itag.find(onlytag)<0) : continue
 
             split = 1
-            try:       split = d['split']
-            except:    split = 1
+            try:	  split = d['split']
+            except:  	  split = 1
 
             for s in range(0,split) :
-		if(inputdir.find('/store/cmst3')==0) : command = 'lcg-cp --verbose -D srmv2 "srm://srm-eoscms.cern.ch:8443/srm/v2/server?SFN=/eos/cms/' + inputdir + '/' + d['dtag']+'_'+str(s)+'.root" ' + '"file:'+ outdir+'/' + d['dtag']+'_'+str(s)+'.root"'
-		else                                 : command = 'lcg-cp --verbose -D srmv2 "srm://srm-cms.cern.ch:8443/srm/managerv2?SFN=' + inputdir + '/' + d['dtag']+'_'+str(s)+'.root" ' + '"file:'+ outdir+'/' + d['dtag']+'_'+str(s)+'.root"'
+		splitLine = '_'+str(s);
+		if(split==1):splitLine='';
+		if(inputdir.find('/store/cmst3')==0) : command = 'lcg-cp --verbose -D srmv2 "srm://srm-eoscms.cern.ch:8443/srm/v2/server?SFN=/eos/cms/' + inputdir + '/' + d['dtag']+splitLine+'.root" ' + '"file:'+ outdir+'/' + d['dtag']+'_'+str(s)+'.root"'
+		else                                 : command = 'lcg-cp --verbose -D srmv2 "srm://srm-cms.cern.ch:8443/srm/managerv2?SFN=' + inputdir + '/' + d['dtag']+splitLine+'.root" ' + '"file:'+ outdir+'/' + d['dtag']+'_'+str(s)+'.root"'
 		print command 
 	        os.system(command)
 
