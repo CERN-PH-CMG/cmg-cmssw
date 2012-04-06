@@ -215,7 +215,7 @@ void plotLimit(TString inputs=""){
 
    TCanvas* c1 = new TCanvas("c1", "c1",600,600);
    TMultiGraph* MG = new TMultiGraph();
-//   MG->Add(TGObsLimit       ,"CP");
+   MG->Add(TGObsLimit       ,"CP");
    MG->Add(TGExpLimit       ,"C");
    MG->Draw("AXIS");
    MG->SetTitle("");
@@ -246,7 +246,7 @@ void plotLimit(TString inputs=""){
    LEG->SetHeader("");
    LEG->SetFillColor(0);
    LEG->SetBorderSize(0);
-//   LEG->AddEntry(TGObsLimit  , "Observed"  ,"P");
+   LEG->AddEntry(TGObsLimit  , "Observed"  ,"P");
    LEG->AddEntry(TGExpLimit  , "Expected"  ,"L");
    LEG->Draw();
    c1->SetGridx(true);
