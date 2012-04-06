@@ -106,10 +106,12 @@ public:
 
   //takes care of filling an histogram
   bool fillHisto(TString name, TString tag, double val, double weight=1,bool useBinWidth=false);
+  bool fill1DHisto(TString name, TString tag, double val, double weight=1,bool useBinWidth=false){return fillHisto(name,tag,val,weight,useBinWidth);}
   bool fill2DHisto(TString name, TString tag, double valx, double valy, double weight=1,bool useBinWidth=false);
   bool fillProfile(TString name, TString tag, double valx, double valy, double weight=1);
 
   bool fillHisto  (TString name, std::vector<TString> tags, double val, double weight=1,bool useBinWidth=false);
+  bool fill1DHisto(TString name, std::vector<TString> tags, double val, double weight=1,bool useBinWidth=false){return fillHisto(name,tags,val,weight,useBinWidth);}
   bool fill2DHisto(TString name, std::vector<TString> tags, double valx, double valy, double weight=1,bool useBinWidth=false);
   bool fillProfile(TString name, std::vector<TString> tags, double valx, double valy, double weight=1);
 
