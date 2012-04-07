@@ -4,8 +4,8 @@
 /** \class EventCategory
  *  No description available.
  *
- *  $Date: 2011/11/02 15:32:02 $
- *  $Revision: 1.4 $
+ *  $Date: 2011/11/16 15:48:11 $
+ *  $Revision: 1.5 $
  *  \author L. Quertenmont P. Silva
  */
 
@@ -18,18 +18,19 @@
 
 class EventCategory {
 public:
-  bool VBFBinningOnly;
+  int mode;
+  int NStates;
   TString* ZZ2l2nuCategoryLabel;
   enum CategoryType { EQ0JETS, EQ1JETS, GEQ2JETS, VBF };
   
   
   /// Constructor
-  EventCategory(bool VBFBinningOnly_=false);
+  EventCategory(int mode=0);
   
   /// Destructor
   virtual ~EventCategory();
 
-  int GetLabelSize(){return VBFBinningOnly ? 3 : 5;}
+  int GetLabelSize(){return NStates;}
 
   int Get(const PhysicsEvent_t& phys,LorentzVectorCollection *variedJetsP4=0);
   TString GetLabel(int CategoryType);
