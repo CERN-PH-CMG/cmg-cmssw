@@ -284,7 +284,11 @@ int main(int argc, char* argv[])
     }
 
   //event Categorizer
-  EventCategory eventCategoryInst(true);
+//  EventCategory eventCategoryInst(0); //inclusive analysis
+  EventCategory eventCategoryInst(1); //jet binning
+//  EventCategory eventCategoryInst(2); //vbf binning
+//  EventCategory eventCategoryInst(3); //jet+vbf binning
+
 
 
   //##############################################
@@ -335,8 +339,8 @@ int main(int argc, char* argv[])
       std::vector<TString> tags_full;
       tags_full.push_back("all");
       tags_full.push_back(tag_cat);
-      if(tag_subcat=="vbf") tags_full.push_back(tag_cat+"_"+tag_subcat);
-      //tags_full.push_back(tag_cat + tag_subcat);
+//      if(tag_subcat=="vbf") tags_full.push_back(tag_cat+"_"+tag_subcat);
+      if(tag_subcat!="")tags_full.push_back(tag_cat + tag_subcat);
 
       //pileup and Higgs pT weight
       //float weight=ev.puWeight;
@@ -375,10 +379,10 @@ int main(int argc, char* argv[])
       //analyze JET/MET
       LorentzVectorCollection jetsP4;
       std::vector<double> genJetsPt;
-      for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
+      for(size_t ijet=0; ijet<phys.ajets.size(); ijet++)
 	{
-	  jetsP4.push_back( phys.jets[ijet] );
-	  genJetsPt.push_back( phys.jets[ijet].genPt);
+	  jetsP4.push_back( phys.ajets[ijet] );
+	  genJetsPt.push_back( phys.ajets[ijet].genPt);
 	}
       //base raw METs
       LorentzVector rawZvv(phys.met[0]);
@@ -433,13 +437,13 @@ int main(int argc, char* argv[])
 	  if(idphijmet<mindphijmet) mindphijmet=idphijmet;
 	  if(origJetsP4[ijet].pt()>30){
 	    njets++;
-	    nbtags += (phys.jets[ijet].btag1>btagcut);
-	    nBtaggedVsDisc[0] +=(phys.jets[ijet].btag1>1.7);
-	    nBtaggedVsDisc[1] +=(phys.jets[ijet].btag1>2.0);
-	    nBtaggedVsDisc[2] +=(phys.jets[ijet].btag1>3.3);
-	    nBtaggedVsDisc[3] +=(phys.jets[ijet].btag2>0.244);
-	    nBtaggedVsDisc[4] +=(phys.jets[ijet].btag2>0.679);
-	    nBtaggedVsDisc[5] +=(phys.jets[ijet].btag2>0.898);
+	    nbtags += (phys.ajets[ijet].btag1>btagcut);
+	    nBtaggedVsDisc[0] +=(phys.ajets[ijet].btag1>1.7);
+	    nBtaggedVsDisc[1] +=(phys.ajets[ijet].btag1>2.0);
+	    nBtaggedVsDisc[2] +=(phys.ajets[ijet].btag1>3.3);
+	    nBtaggedVsDisc[3] +=(phys.ajets[ijet].btag2>0.244);
+	    nBtaggedVsDisc[4] +=(phys.ajets[ijet].btag2>0.679);
+	    nBtaggedVsDisc[5] +=(phys.ajets[ijet].btag2>0.898);
 	  }
 	}
 	

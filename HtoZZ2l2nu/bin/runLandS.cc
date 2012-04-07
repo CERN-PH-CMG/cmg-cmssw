@@ -90,6 +90,7 @@ bool MCclosureTest = false;
 
 bool mergeWWandZZ = true;
 bool skipWW = true;
+std::vector<TString> AnalysisBins;
 
 void printHelp()
 {
@@ -104,6 +105,7 @@ void printHelp()
   printf("--subNRB  --> use this flag if you want to subtract non-resonant-backgounds similarly to what was done in 2011 (will also remove H->WW)\n");
   printf("--subNRB12--> use this flag if you want to subtract non-resonant-backgounds using a new technique that keep H->WW\n");
   printf("--closure --> use this flag if you want to perform a MC closure test (use only MC simulation)\n");
+  printf("--bins    --> list of bins to be used (they must be comma separated without space)\n");
 }
 
 //
@@ -138,8 +140,10 @@ int main(int argc, char* argv[])
     else if(arg.find("--json")    !=string::npos && i+1<argc)  { jsonFile  = argv[i+1];  i++;  printf("json = %s\n", jsonFile.Data()); }
     else if(arg.find("--histo")   !=string::npos && i+1<argc)  { histo     = argv[i+1];  i++;  printf("histo = %s\n", histo.Data()); }
     else if(arg.find("--m")       !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&mass ); i++; printf("mass = %i\n", mass);}
+    else if(arg.find("--bins")    !=string::npos && i+1<argc)  { char* pch = strtok(argv[i+1],",");printf("bins are : ");while (pch!=NULL){printf(" %s ",pch); AnalysisBins.push_back(pch);  pch = strtok(NULL,",");}printf("\n"); i++; }
   }
   if(jsonFile.IsNull() || inFileUrl.IsNull() || histo.IsNull() || index == -1 || mass==-1) { printHelp(); return -1; }
+  if(AnalysisBins.size()==0)AnalysisBins.push_back("");
 
 
   //prepare the output directory
@@ -737,13 +741,16 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   TString sh[]={"nonresbckg_ctrl", histo, histo+"BTagSB"};
   const size_t nsh=sizeof(sh)/sizeof(TString);
   for(size_t i=0; i<nch; i++){
-      for(size_t j=0; j<nsh; j++){
-	  allShapes[ch[i]+sh[j]]=getShapeFromFile(ch[i],sh[j],index,url,Root);
-      }
+     for(size_t b=0; b<AnalysisBins.size(); b++){
+        for(size_t j=0; j<nsh; j++){
+	     allShapes[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(ch[i]+AnalysisBins[b],sh[j],index,url,Root);
+        }
+     }
   }
 
   //define vector for search
-  std::vector<TString> selCh; selCh.push_back("ee"); selCh.push_back("mumu");
+  std::vector<TString> selCh;
+  selCh.push_back("ee"); selCh.push_back("mumu");
 
   //non-resonant background estimation
   //estimateNonResonantBackground(selCh,"emu",allShapes,"nonresbckg_ctrl");
@@ -752,7 +759,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   if(subNRB2011 || subNRB2012)doBackgroundSubtraction(selCh,"emu",allShapes,histo,"nonresbckg_ctrl");
 
   //print event yields from the mt shapes
-  getCutFlowFromShape(selCh,allShapes,histo);
+  //getCutFlowFromShape(selCh,allShapes,histo);
 
   //prepare the output
   dci.shapesFile="Shapes_"+massStr+".root";
@@ -760,13 +767,15 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 
   //loop on channel/proc/systematics
   for(size_t ich=0; ich<selCh.size(); ich++){
-     fout->mkdir(ch[ich]);
-     fout->cd(ch[ich]);
-     allCh.insert(ch[ich]);
-     Shape_t shapeSt = allShapes.find(selCh[ich]+histo)->second;
+  for(size_t b=0; b<AnalysisBins.size(); b++){
+     TString chbin = selCh[ich]+AnalysisBins[b];
+     fout->mkdir(chbin);
+     fout->cd(chbin);
+     allCh.insert(chbin);
+     Shape_t shapeSt = allShapes.find(chbin+histo)->second;
 
      //backgrounds
-     size_t nbckg=allShapes.find(ch[ich]+histo)->second.bckg.size();
+     size_t nbckg=allShapes.find(chbin+histo)->second.bckg.size();
      for(size_t ibckg=0; ibckg<nbckg; ibckg++){
 	TH1* h=shapeSt.bckg[ibckg];
 	std::vector<std::pair<TString, TH1*> > vars = shapeSt.bckgVars[h->GetTitle()];
@@ -781,13 +790,13 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
         }
 
         TString proc(h->GetTitle());
-        convertHistosForLimits_core(dci, proc, ch[ich], systs, hshapes, runSystematics, shape, index);
+        convertHistosForLimits_core(dci, proc, chbin, systs, hshapes, runSystematics, shape, index);
         allProcs.insert(proc);
      }
 
 
      //signals
-     size_t nsignal=allShapes.find(ch[ich]+histo)->second.signal.size();
+     size_t nsignal=allShapes.find(chbin+histo)->second.signal.size();
      for(size_t isignal=0; isignal<nsignal; isignal++){
 	TH1* h=shapeSt.signal[isignal];
 	std::vector<std::pair<TString, TH1*> > vars = shapeSt.signalVars[h->GetTitle()];
@@ -804,24 +813,23 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
         TString proc(h->GetTitle());
 	if(!proc.Contains(massStr))continue;
 	proc = "asignal";
-        convertHistosForLimits_core(dci, proc, ch[ich], systs, hshapes, runSystematics, shape, index);
+        convertHistosForLimits_core(dci, proc, chbin, systs, hshapes, runSystematics, shape, index);
         allProcs.insert(proc);
      }
 
 
      //data
      TH1* h=shapeSt.data;
-//     TH1* h=shapeSt.totalBckg;
      std::vector<TString> systs;
      std::vector<TH1*>    hshapes;
      systs.push_back("");
      hshapes.push_back(h);
      TString proc(h->GetTitle());
-     convertHistosForLimits_core(dci, proc, ch[ich], systs, hshapes, runSystematics, shape, index);
+     convertHistosForLimits_core(dci, proc, chbin, systs, hshapes, runSystematics, shape, index);
 
      //return to parent dir
      fout->cd("..");     
-  }
+  }}
   dci.ch.resize(allCh.size());        std::copy(allCh.begin(), allCh.end(),dci.ch.begin());
   dci.procs.resize(allProcs.size());  std::copy(allProcs.begin(), allProcs.end(),dci.procs.begin());
 
@@ -960,14 +968,15 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch
 
 void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t>& allShapes, TString mainHisto, TString sideBandHisto)
 {
+     for(size_t b=0; b<AnalysisBins.size(); b++){     
      for(size_t i=0;i<selCh.size();i++){
-        Shape_t& shapeCtrl_SB = allShapes.find(ctrlCh+sideBandHisto)->second;
+        Shape_t& shapeCtrl_SB = allShapes.find(ctrlCh+AnalysisBins[b]+sideBandHisto)->second;
         TH1* hCtrl_SB=shapeCtrl_SB.data;
-        Shape_t& shapeCtrl_SI = allShapes.find(ctrlCh+mainHisto)->second;
+        Shape_t& shapeCtrl_SI = allShapes.find(ctrlCh+AnalysisBins[b]+mainHisto)->second;
         TH1* hCtrl_SI=shapeCtrl_SI.data;
-        Shape_t& shapeChan_SB = allShapes.find(selCh[i]+sideBandHisto)->second;
+        Shape_t& shapeChan_SB = allShapes.find(selCh[i]+AnalysisBins[b]+sideBandHisto)->second;
         TH1* hChan_SB=shapeChan_SB.data;
-        Shape_t& shapeChan_SI = allShapes.find(selCh[i]+mainHisto)->second;
+        Shape_t& shapeChan_SI = allShapes.find(selCh[i]+AnalysisBins[b]+mainHisto)->second;
 //        TH1* hChan_SI=shapeChan_SI.data;
 
 	printf("Channel = %s\n", selCh[i].Data());
@@ -975,13 +984,13 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
         printf("Bin %f %f %f %f %f %f\n", hChan_SB->GetBinContent(1), hChan_SB->GetBinContent(2), hChan_SB->GetBinContent(3), hChan_SB->GetBinContent(4), hChan_SB->GetBinContent(5), hChan_SB->GetBinContent(6) );
         double alpha     = hChan_SB->GetBinContent(5) / hCtrl_SB->GetBinContent(5);
         double alpha_err = ( fabs( hChan_SB->GetBinContent(5) * hCtrl_SB->GetBinError(5) ) + fabs(hChan_SB->GetBinError(5) * hCtrl_SB->GetBinContent(5) )  ) / pow(hCtrl_SB->GetBinContent(5), 2);        
-        printf("alpha %s=%f+-%f\n", selCh[i].Data(),alpha, alpha_err);
+        printf("alpha %s=%f+-%f\n", (selCh[i]+AnalysisBins[b]).Data(),alpha, alpha_err);
 
 
 	printf("force alpha to the computed value in lowest bin\n");
-	if(string(selCh[i].Data())=="ee"  ){alpha = 0.339286; alpha_err=0.043549;}
-        if(string(selCh[i].Data())=="mumu"){alpha = 0.529018; alpha_err=0.059357;}
-        printf("alpha %s=%f+-%f\n", selCh[i].Data(),alpha, alpha_err);
+        if(selCh[i].First("ee"  )!=kNPOS){alpha = 0.339286; alpha_err=0.043549;}
+        if(selCh[i].First("mumu")!=kNPOS){alpha = 0.529018; alpha_err=0.059357;}
+        printf("alpha %s=%f+-%f\n", (selCh[i]+AnalysisBins[b]).Data(),alpha, alpha_err);
 
         //add 100% syst uncertainty on alpha
         alpha_err = sqrt(1+alpha_err*alpha_err);
@@ -1019,7 +1028,7 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
 	      shapeChan_SI.bckg.erase(shapeChan_SI.bckg.begin()+ibckg);  ibckg--;
            }
         }
-     }
+     }}
 
 }
 
