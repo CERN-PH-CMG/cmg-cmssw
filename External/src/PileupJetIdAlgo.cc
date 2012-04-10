@@ -34,10 +34,10 @@ PileupJetIdAlgo::PileupJetIdAlgo(const edm::ParameterSet & ps)
 	  std::vector<double> pt1020 = jetConfig.getParameter<std::vector<double> >(("Pt1020_"+lCutType).c_str());
 	  std::vector<double> pt2030 = jetConfig.getParameter<std::vector<double> >(("Pt2030_"+lCutType).c_str());
 	  std::vector<double> pt3050 = jetConfig.getParameter<std::vector<double> >(("Pt3050_"+lCutType).c_str());
-	  for(int i1 = 0; i0 < 4; i0++) mvacut_[i0][0][i1] = pt010 [i1];
-	  for(int i1 = 0; i0 < 4; i0++) mvacut_[i0][1][i1] = pt1020[i1];
-	  for(int i1 = 0; i0 < 4; i0++) mvacut_[i0][2][i1] = pt2030[i1];
-	  for(int i1 = 0; i0 < 4; i0++) mvacut_[i0][3][i1] = pt3050[i1];
+	  for(int i1 = 0; i1 < 4; i1++) mvacut_[i0][0][i1] = pt010 [i1];
+	  for(int i1 = 0; i1 < 4; i1++) mvacut_[i0][1][i1] = pt1020[i1];
+	  for(int i1 = 0; i1 < 4; i1++) mvacut_[i0][2][i1] = pt2030[i1];
+	  for(int i1 = 0; i1 < 4; i1++) mvacut_[i0][3][i1] = pt3050[i1];
 	}
 	setup();
 }
@@ -400,8 +400,8 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 	
 	if( calculateMva ) {
 	        if( ! reader_ ) { bookReader(); std::cerr << "Reader booked" << std::endl; }
-		if(fabs(jet->eta()) < 5.0) internalId_.mva_ = reader_->EvaluateMVA( tmvaMethod_.c_str() );
-		
+		if(fabs(jet->eta()) <  5.0) internalId_.mva_ = reader_->EvaluateMVA( tmvaMethod_.c_str() );
+		if(fabs(jet->eta()) >= 5.0) internalId_.mva_ = -2.;
 		int ptId = 0; 
 		if(jet->pt() > 10 && jet->pt() < 20) ptId = 1;
 		if(jet->pt() > 20 && jet->pt() < 30) ptId = 2;
