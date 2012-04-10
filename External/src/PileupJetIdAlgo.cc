@@ -24,7 +24,21 @@ PileupJetIdAlgo::PileupJetIdAlgo(const edm::ParameterSet & ps)
 	version_             = ps.getUntrackedParameter<int>("version",PHILv0);
  
 	reader_              = 0;
-	
+
+	edm::ParameterSet jetConfig = ps.getParameter<edm::ParameterSet>("JetIdParams");
+	for(int i0 = 0; i0 < 3; i0++) { 
+	  std::string lCutType                            = "Tight";
+	  if(i0 == PileupJetIdentifier::kMedium) lCutType = "Medium";
+	  if(i0 == PileupJetIdentifier::kLoose)  lCutType = "Loose";
+	  std::vector<double> pt010  = jetConfig.getParameter<std::vector<double> >(("Pt010_" +lCutType).c_str());
+	  std::vector<double> pt1020 = jetConfig.getParameter<std::vector<double> >(("Pt1020_"+lCutType).c_str());
+	  std::vector<double> pt2030 = jetConfig.getParameter<std::vector<double> >(("Pt2030_"+lCutType).c_str());
+	  std::vector<double> pt3050 = jetConfig.getParameter<std::vector<double> >(("Pt3050_"+lCutType).c_str());
+	  for(int i1 = 0; i0 < 4; i0++) mvacut_[i0][0][i1] = pt010 [i1];
+	  for(int i1 = 0; i0 < 4; i0++) mvacut_[i0][1][i1] = pt1020[i1];
+	  for(int i1 = 0; i0 < 4; i0++) mvacut_[i0][2][i1] = pt2030[i1];
+	  for(int i1 = 0; i0 < 4; i0++) mvacut_[i0][3][i1] = pt3050[i1];
+	}
 	setup();
 }
 
@@ -200,7 +214,7 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 	
 	reco::TrackRef impactTrack;
 	float jetPt = jet->pt() / jec; // use uncorrected pt for shape variables
-	float sumPt = 0., sumPt2 = 0., sumTkPt = 0.;
+	float sumPt = 0., sumPt2 = 0., sumTkPt = 0.,sumPtCh=0,sumPtNe = 0;
 	setPtEtaPhi(*jet,internalId_.jetPt_,internalId_.jetEta_,internalId_.jetPhi_); // use corrected pt for jet kinematics
 	internalId_.jetM_ = jet->mass(); 
 	internalId_.nvtx_ = allvtx.size();
@@ -222,8 +236,10 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 		} else if( (lSecond.isNull() || candPt > lSecond->pt()) && (candPt < lLead->pt()) ) {
 			lSecond = icand;
 		}
+
 		internalId_.dRMean_     += candPtDr;
-		internalId_.dR2Mean_     += candPtDr*candPtDr;
+		internalId_.dR2Mean_    += candPtDr*candPtDr;
+
 		frac.push_back(candPtFrac);
 		if( icone < ncones ) { *coneFracs[icone] += candPt; }
 		// neutrals
@@ -232,6 +248,8 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 			internalId_.dRMeanNeut_ += candPtDr;
 			fracNeut.push_back(candPtFrac);
 			if( icone < ncones ) { *coneNeutFracs[icone] += candPt; }
+			internalId_.ptDNe_    += candPt*candPt;
+			sumPtNe               += candPt;
 		}
 		// EM candidated
 		if( icand->particleId() == reco::PFCandidate::gamma ) {
@@ -239,30 +257,34 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 			internalId_.dRMeanEm_ += candPtDr;
 			fracEm.push_back(candPtFrac);
 			if( icone < ncones ) { *coneEmFracs[icone] += candPt; }
+			internalId_.ptDNe_    += candPt*candPt;
+			sumPtNe               += candPt;
 		}
 		// Charged hadrons
-		if( icand->particleId() == reco::PFCandidate::h ) {
-			if (lLeadCh.isNull() || candPt > lLeadCh->pt()) { lLeadCh = icand; }
-			internalId_.dRMeanCh_  += candPtDr;
-			fracCh.push_back(candPtFrac);
-			if( icone < ncones ) { *coneChFracs[icone] += candPt; }
-			
-			// beta and betastar		
-			if(  icand->trackRef().isNonnull() && icand->trackRef().isAvailable() ) {
-				try { 
-					float tkpt = icand->trackRef()->pt(); 
+		//if( icand->particleId() == reco::PFCandidate::h ) {
+		if( icand->trackRef().isNonnull()) { 
+		  if (lLeadCh.isNull() || candPt > lLeadCh->pt()) { lLeadCh = icand; }
+		  internalId_.dRMeanCh_  += candPtDr;
+		  internalId_.ptDCh_     += candPt*candPt;
+		  fracCh.push_back(candPtFrac);
+		  if( icone < ncones ) { *coneChFracs[icone] += candPt; }
+		  sumPtCh                += candPt;
+		  // beta and betastar		
+		  if(  icand->trackRef().isNonnull() && icand->trackRef().isAvailable() ) {
+		    try { 
+		      float tkpt = icand->trackRef()->pt(); 
 					sumTkPt += tkpt;
-					for(reco::VertexCollection::const_iterator  vi=allvtx.begin(); vi!=allvtx.end(); ++vi ) {
-						const reco::Vertex & iv = *vi;
-						float dZ = fabs(icand->trackRef()->dz(iv.position()));
-						if( dZ < 0.2 ) {
-							if( (iv.position() - vtx->position()).r() < 0.02 ) {
-								internalId_.beta_ += tkpt;
-							} else {
-								internalId_.betaStar_ += tkpt;
-							}
-						}
+					//for(reco::VertexCollection::const_iterator  vi=allvtx.begin(); vi!=allvtx.end(); ++vi ) {
+					//	const reco::Vertex & iv = *vi;
+					float dZ = fabs(icand->trackRef()->dz(vtx->position()));
+					if( dZ < 0.2 ) {
+					//if( (iv.position() - vtx->position()).r() < 0.02 ) {
+					  internalId_.beta_ += tkpt;
+					} else {
+					  internalId_.betaStar_ += tkpt;
 					}
+					//	}
+					//}
 				} catch (cms::Exception &e) {
 					if(printWarning-- > 0) { std::cerr << e << std::endl; }
 				}
@@ -340,6 +362,7 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 	internalId_.dRLeadCent_ = reco::deltaR(*jet,*lLead);
 	if( lSecond.isNonnull() ) { internalId_.dRLead2nd_  = reco::deltaR(*jet,*lSecond); }
 	internalId_.dRMean_     /= jetPt;
+	internalId_.dR2Mean_    /= jetPt;
 	internalId_.dRMeanNeut_ /= jetPt;
 	internalId_.dRMeanEm_   /= jetPt;
 	internalId_.dRMeanCh_   /= jetPt;
@@ -351,8 +374,23 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 		*coneNeutFracs[ic] /= jetPt;
 		*coneChFracs[ic]   /= jetPt;
 	}
+	//http://jets.physics.harvard.edu/qvg/
+	double ptMean = sumPt/internalId_.nParticles_;
+	double ptRMS  = 0;
+	for(unsigned int i0 = 0; i0 < frac.size(); i0++) {ptRMS+=(frac[i0]-ptMean)*(frac[i0]-ptMean);}
+	ptRMS/=internalId_.nParticles_;
+	ptRMS=sqrt(ptRMS);
 	
-	internalId_.ptD_ = sqrt( internalId_.ptD_ ) / sumPt;
+	internalId_.ptMean_  = ptMean;
+	internalId_.ptRMS_   = ptRMS/jetPt;
+	internalId_.pt2A_    = sqrt( internalId_.ptD_     /internalId_.nParticles_)/jetPt;
+	internalId_.ptD_     = sqrt( internalId_.ptD_)    / sumPt;
+	internalId_.ptDCh_   = sqrt( internalId_.ptDCh_)  / sumPtCh;
+	internalId_.ptDNe_   = sqrt( internalId_.ptDNe_)  / sumPtNe;
+	internalId_.sumPt_   = sumPt;
+	internalId_.sumChPt_ = sumPtCh;
+	internalId_.sumNePt_ = sumPtNe;
+
 	if( sumTkPt != 0. ) {
 		internalId_.beta_     /= sumTkPt;
 		internalId_.betaStar_ /= sumTkPt;
@@ -361,10 +399,26 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 	}
 	
 	if( calculateMva ) {
-		if( ! reader_ ) { bookReader(); std::cerr << "Reader booked" << std::endl; }
-		internalId_.mva_ = reader_->EvaluateMVA( tmvaMethod_.c_str() );
+	        if( ! reader_ ) { bookReader(); std::cerr << "Reader booked" << std::endl; }
+		if(fabs(jet->eta()) < 5.0) internalId_.mva_ = reader_->EvaluateMVA( tmvaMethod_.c_str() );
+		
+		int ptId = 0; 
+		if(jet->pt() > 10 && jet->pt() < 20) ptId = 1;
+		if(jet->pt() > 20 && jet->pt() < 30) ptId = 2;
+		if(jet->pt() > 30                  ) ptId = 3;
+		
+		int etaId = 0;
+		if(fabs(jet->eta()) > 2.5  && fabs(jet->eta()) < 2.75) etaId = 1; 
+		if(fabs(jet->eta()) > 2.75 && fabs(jet->eta()) < 3.0 ) etaId = 2; 
+		if(fabs(jet->eta()) > 3.0  && fabs(jet->eta()) < 5.0 ) etaId = 3; 
+		
+		if(internalId_.mva_  > mvacut_[PileupJetIdentifier::kTight ][ptId][etaId]) internalId_.idFlag_ += 1 << PileupJetIdentifier::kTight;
+		if(internalId_.mva_  > mvacut_[PileupJetIdentifier::kMedium][ptId][etaId]) internalId_.idFlag_ += 1 << PileupJetIdentifier::kMedium;
+		if(internalId_.mva_  > mvacut_[PileupJetIdentifier::kLoose ][ptId][etaId]) internalId_.idFlag_ += 1 << PileupJetIdentifier::kLoose;
 	}
 	
+       
+
 	return PileupJetIdentifier(internalId_);
 }
 
@@ -400,6 +454,7 @@ void PileupJetIdAlgo::resetVariables()
 // ------------------------------------------------------------------------------------------
 void PileupJetIdAlgo::initVariables()
 {
+  	INIT_VARIABLE(idFlag     , "",    0.);
   	INIT_VARIABLE(mva        , "", -100.);
 	INIT_VARIABLE(jetPt      , "jspt_1", 0.);
 	INIT_VARIABLE(jetEta     , "jseta_1", large_val);
@@ -438,6 +493,7 @@ void PileupJetIdAlgo::initVariables()
 	INIT_VARIABLE(dRLeadCent , "drlc_1"   , 0.);  
 	INIT_VARIABLE(dRLead2nd  , "drls_1"   , 0.);  
 	INIT_VARIABLE(dRMean     , "drm_1"    , 0.);  
+	INIT_VARIABLE(dR2Mean    , ""         , 0.);  
 	INIT_VARIABLE(dRMeanNeut , "drmne_1"  , 0.);  
 	INIT_VARIABLE(dRMeanEm   , "drem_1"   , 0.);  
 	INIT_VARIABLE(dRMeanCh   , "drch_1"   , 0.);  
@@ -445,6 +501,14 @@ void PileupJetIdAlgo::initVariables()
 	INIT_VARIABLE(dR2Mean    , ""         , 0.);  
 	
 	INIT_VARIABLE(ptD        , "", 0.);
+	INIT_VARIABLE(ptMean     , "", 0.);
+	INIT_VARIABLE(ptRMS      , "", 0.);
+	INIT_VARIABLE(pt2A       , "", 0.);
+	INIT_VARIABLE(ptDCh      , "", 0.);
+	INIT_VARIABLE(ptDNe      , "", 0.);
+	INIT_VARIABLE(sumPt      , "", 0.);
+	INIT_VARIABLE(sumChPt    , "", 0.);
+	INIT_VARIABLE(sumNePt    , "", 0.);
 
 	INIT_VARIABLE(secondFrac  ,"" ,0.);  
 	INIT_VARIABLE(thirdFrac   ,"" ,0.);  

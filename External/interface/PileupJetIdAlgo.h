@@ -57,8 +57,9 @@ protected:
 	std::vector<std::string>  tmvaSpectators_;
 	std::map<std::string,std::string>  tmvaNames_;
 	
-	Int_t version_;
+	Int_t   version_;
 	Float_t impactParTkThreshod_;
+	Float_t mvacut_[3][4][4]; //Keep the array fixed
 
 };
 
