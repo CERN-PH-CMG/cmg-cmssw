@@ -1,5 +1,5 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_sip_27Mar12'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'B52X'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'B52X_eleCrashFound'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'pmeckiff3apr2012'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_05Apr12'),
   ('CommonTools/ParticleFlow', 'CommonTools/ParticleFlow', 'V00-03-07-01'),
