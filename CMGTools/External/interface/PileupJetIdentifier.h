@@ -29,9 +29,15 @@ public:
 	// // PileupJetIdentifier(edm::ParameterSet & ps); 
 	/// PileupJetIdentifier(const PileupJetIdentifier &p);
 	~PileupJetIdentifier(); 
-	
+
+	enum Id {
+	  kTight  = 0,
+	  kMedium = 1,
+	  kLoose  = 2
+	};
+
 	// void computeIdVariables(const reco::Jet * jet, float jec, const reco::Vertex *, bool calculateMva=false);
-	
+	DECLARE_VARIABLE(idFlag   ,float); //Unfortunately has to be 
 	DECLARE_VARIABLE(mva      ,float);
 	
 	DECLARE_VARIABLE(jetEta   ,float);
@@ -74,7 +80,15 @@ public:
 	DECLARE_VARIABLE(dRMeanEm   ,float);  
 	DECLARE_VARIABLE(dRMeanCh   ,float);  
 
-	DECLARE_VARIABLE(ptD,float);
+	DECLARE_VARIABLE(ptD        ,float);
+	DECLARE_VARIABLE(ptMean     ,float);
+	DECLARE_VARIABLE(ptRMS      ,float);
+	DECLARE_VARIABLE(pt2A       ,float);
+	DECLARE_VARIABLE(ptDCh      ,float);
+	DECLARE_VARIABLE(ptDNe      ,float);
+	DECLARE_VARIABLE(sumPt      ,float);
+	DECLARE_VARIABLE(sumChPt    ,float);
+	DECLARE_VARIABLE(sumNePt    ,float);
 
 	DECLARE_VARIABLE(leadFrac    ,float);  
 	DECLARE_VARIABLE(secondFrac  ,float);  
