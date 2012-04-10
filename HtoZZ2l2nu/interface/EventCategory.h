@@ -4,8 +4,8 @@
 /** \class EventCategory
  *  No description available.
  *
- *  $Date: 2011/11/16 15:48:11 $
- *  $Revision: 1.5 $
+ *  $Date: 2012/04/07 13:19:56 $
+ *  $Revision: 1.6 $
  *  \author L. Quertenmont P. Silva
  */
 
@@ -37,11 +37,11 @@ public:
   TString GetLabel(const PhysicsEvent_t& phys);
 
   int GetCentralJetCount() { return NJetsCentral; }
-  int GetVBFJetCount() { return NJetsVBF; }
+  int GetVBFJetCount() { return NJets; }
   TString GetRawLabel(int i){return ZZ2l2nuCategoryLabel[i];}
 
  private :
-  int NJetsCentral,NJetsVBF;
+  int NJetsCentral,NJets;
 
 };
 #endif

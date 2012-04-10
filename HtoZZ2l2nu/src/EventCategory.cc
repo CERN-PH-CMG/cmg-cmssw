@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2012/02/07 15:51:08 $
- *  $Revision: 1.9 $
+ *  $Date: 2012/04/07 13:19:56 $
+ *  $Revision: 1.10 $
  *  \author L. Quertenmont
  */
 
@@ -46,7 +46,7 @@ int EventCategory::Get(const PhysicsEvent_t& phys, LorentzVectorCollection* vari
   bool isGamma(phys.cat>3);
   
   NJetsCentral  = 0;
-  NJetsVBF = 0;
+  NJets = 0;
   PhysicsObjectJetCollection jets = phys.ajets;
 
  
@@ -68,46 +68,20 @@ int EventCategory::Get(const PhysicsEvent_t& phys, LorentzVectorCollection* vari
 //    }
       
       if(jpt<=30)continue;
-      NJetsVBF++;
+      NJets++;
       if(fabs(jeta)<=2.5){NJetsCentral++;}
   }
 
-
-  switch(mode){
-     case 1:{
-        if(NJetsVBF>=2) return GEQ2JETS;
-        if(NJetsVBF==1) return EQ1JETS;
-        return EQ0JETS;
-     }break;
-/*
-     case 2:{
-
-     }break;
-
-     case 3:{
-
-     }break;
-*/
-     case 0:
-     default:{
-        return EQ0JETS;      
-     }break;
-  }
-
-
-
-  
-/*
   bool isVBF = false;
-  if(NJetsVBF>=2){
+  if(NJets>=2){
       LorentzVector VBFSyst = jets[0] + jets[1];
       double j1eta=jets[0].eta() ;
       double j2eta=jets[1].eta();
-      if(variedJetsP4!=0){
-	  VBFSyst=(*variedJetsP4)[0]+(*variedJetsP4)[1];
-	  j1eta=(*variedJetsP4)[0].eta();
-	  j2eta=(*variedJetsP4)[1].eta();
-      }
+//      if(variedJetsP4!=0){
+//	  VBFSyst=(*variedJetsP4)[0]+(*variedJetsP4)[1];
+//	  j1eta=(*variedJetsP4)[0].eta();
+//	  j2eta=(*variedJetsP4)[1].eta();
+//      }
       double dEta = fabs(j1eta-j2eta);
       
       int NCentralJet = 0;  int NCentralLepton = 0;  int NBJets = 0;
@@ -123,28 +97,41 @@ int EventCategory::Get(const PhysicsEvent_t& phys, LorentzVectorCollection* vari
 	    }
 	    if(jpt<30)continue; 
 	    if(jeta>MinEta && jeta<MaxEta) NCentralJet++;  
-	    if(jets[ijet].btag1>1.7) NBJets++;              //TCHEL
-	    //if(jets[ijet].btag2>0.244) NBJets++;          //CSVL
+	    if(jets[ijet].btag1>2.0) NBJets++;
       }
       
-      if(!isGamma)
-	{
+      if(!isGamma){
 	  if(phys.leptons[0].eta()>MinEta && phys.leptons[0].eta()<MaxEta)NCentralLepton++;
 	  if(phys.leptons[1].eta()>MinEta && phys.leptons[1].eta()<MaxEta)NCentralLepton++;
-	}
-      else
-	{
+      }else{
 	  if(phys.gammas[0].eta()>MinEta && phys.gammas[0].eta()<MaxEta)NCentralLepton=2;
-	}
-      isVBF = (dEta>3.5) && (VBFSyst.M()>450) && (NCentralJet==0) && (NBJets==0) && (NCentralLepton==2);
-      //       isVBF = (dEta>4.0) && (VBFSyst.M()>600) && (NCentralJet==0) && (NBJets==0) && (NCentralLepton==2);
+      }
+      isVBF = (dEta>4.0) && (VBFSyst.M()>500) && (NCentralJet==0) && (NBJets==0) && (NCentralLepton==2);
     }
 
-  if(isVBF)       return VBF;
-  if(NJetsVBF>=2) return GEQ2JETS;
-  if(NJetsVBF==1) return EQ1JETS;
-  return EQ0JETS;
-*/
+
+
+  switch(mode){
+     case 1:{
+        if(NJets>=2) return 2;
+        if(NJets==1) return 1;
+        return 0;
+     }break;
+     case 2:{
+	if(isVBF)return 1;
+	return 0;
+     }break;
+     case 3:{
+        if(isVBF)return 3;
+        if(NJets>=2) return 2;
+        if(NJets==1) return 1;
+        return 0;
+     }break;
+     case 0:
+     default:{
+        return 0;      
+     }break;
+  }
 }
 
 //
