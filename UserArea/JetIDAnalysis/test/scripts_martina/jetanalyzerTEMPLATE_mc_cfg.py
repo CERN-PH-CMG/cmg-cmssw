@@ -28,15 +28,17 @@ process.MuonsFilter = countPatMuons.clone(
 )
 
 #jet analyzer 
+from CMGTools.External.JetIdParams_cfi import *
 from CMGTools.External.puJetIDAlgo_cff import dRdRProfMultBetaFull
+from CMGTools.External.puJetIDAlgo_cff import PhilV1
 from CMG.JetIDAnalysis.jetanalyzer_cfi import *
-
 
 # PF jet collection
 process.pfjetanalyzer = jetanalyzer.clone(
     JetTag   = cms.InputTag("selectedPatJets",""),            
     dataFlag = cms.untracked.bool(False),
-    puJetIDAlgo = dRdRProfMultBetaFull
+    #puJetIDAlgo = dRdRProfMultBetaFull
+    puJetIDAlgo = PhilV1
 )
 
 # CHS jet collection
@@ -51,4 +53,4 @@ process.TFileService = cms.Service("TFileService",
 )
 
 process.ana = cms.Sequence(process.pfjetanalyzer+process.chspfjetanalyzer)
-process.p = cms.Path(process.MuonsFilter*process.ana)
+process.p = cms.Path(process.ana)
