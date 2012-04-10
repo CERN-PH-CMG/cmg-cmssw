@@ -285,9 +285,9 @@ int main(int argc, char* argv[])
 
   //event Categorizer
 //  EventCategory eventCategoryInst(0); //inclusive analysis
-  EventCategory eventCategoryInst(1); //jet binning
+//  EventCategory eventCategoryInst(1); //jet binning
 //  EventCategory eventCategoryInst(2); //vbf binning
-//  EventCategory eventCategoryInst(3); //jet+vbf binning
+  EventCategory eventCategoryInst(3); //jet+vbf binning
 
 
 
@@ -341,6 +341,8 @@ int main(int argc, char* argv[])
       tags_full.push_back(tag_cat);
 //      if(tag_subcat=="vbf") tags_full.push_back(tag_cat+"_"+tag_subcat);
       if(tag_subcat!="")tags_full.push_back(tag_cat + tag_subcat);
+      if(tag_subcat=="geq2jets" || tag_subcat=="vbf")tags_full.push_back(tag_cat + "geq2jetsInc");
+      if(tag_subcat!="vbf")tags_full.push_back(tag_cat + "novbf");
 
       //pileup and Higgs pT weight
       //float weight=ev.puWeight;

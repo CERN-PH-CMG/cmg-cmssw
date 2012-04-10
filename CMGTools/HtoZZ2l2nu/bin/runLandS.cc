@@ -106,6 +106,7 @@ void printHelp()
   printf("--subNRB12--> use this flag if you want to subtract non-resonant-backgounds using a new technique that keep H->WW\n");
   printf("--closure --> use this flag if you want to perform a MC closure test (use only MC simulation)\n");
   printf("--bins    --> list of bins to be used (they must be comma separated without space)\n");
+  printf("--HWW     --> use this flag to consider HWW signal)\n");
 }
 
 //
@@ -134,6 +135,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--shape")   !=string::npos) { shape=true; printf("shapeBased = True\n");}
     else if(arg.find("--subNRB12")!=string::npos) { subNRB2012=true; skipWW=false; printf("subNRB2012 = True\n");}
     else if(arg.find("--subNRB")  !=string::npos) { subNRB2011=true; skipWW=true; printf("subNRB2011 = True\n");}
+    else if(arg.find("--HWW")     !=string::npos) { skipWW=false; printf("HWW = True\n");}
     else if(arg.find("--closure") !=string::npos) { MCclosureTest=true; printf("MCclosureTest = True\n");}
     else if(arg.find("--index")   !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&index); i++; printf("index = %i\n", index);}
     else if(arg.find("--in")      !=string::npos && i+1<argc)  { inFileUrl = argv[i+1];  i++;  printf("in = %s\n", inFileUrl.Data()); }
