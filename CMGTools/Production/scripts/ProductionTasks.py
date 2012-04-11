@@ -28,7 +28,7 @@ if __name__ == '__main__':
              FindOnCastor(dataset,user,options),
              CheckForMask(dataset,user,options),
              CheckForWrite(dataset,user,options),
-             BaseDataset(dataset,user,options),
+             # BaseDataset(dataset,user,options),
              GenerateMask(dataset,user,options),
              CreateJobDirectory(dataset,user,options),             
              SourceCFG(dataset,user,options),
