@@ -137,6 +137,7 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::list<N
 	histlist.push_back(NameAndType(parentPath+list->At(i)->GetName(), isTH1, hasIndex ) );
       }
 
+      delete tmp;
    }
    
 
@@ -242,6 +243,7 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, NameAndType Hi
       if(!subdir || subdir==OutputFile) subdir = OutputFile->mkdir(dirName.c_str());
       subdir->cd();
       hist->Write();
+      delete hist;
    }
 }
 
