@@ -1,0 +1,10 @@
+<bin   name="MakeJetIDPlots" file="MakeJetIDPlots.cpp">
+  <use   name="root"/>
+  <use   name="rootmath"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use name="PhysicsTools/Utilities"/>
+  <use   name="CMG/JetIDAnalysis"/>
+  <use   name="CMGTools/External"/>
+  <flags   LCGDICT_ARGS="--deep"/>
+</bin>
