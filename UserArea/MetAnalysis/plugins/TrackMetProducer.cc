@@ -28,7 +28,7 @@ using namespace reco;
 TrackMetProducer::TrackMetProducer(const edm::ParameterSet& iConfig) {
   produces<reco::PFMETCollection>();
   isData_         = iConfig.getParameter<bool>("isData");
-  utils_          = new MetUtilities(iConfig.getParameter<edm::ParameterSet>("puJetIDAlgo"),isData_);      
+  utils_          = new MetUtilities(iConfig.getParameter<edm::ParameterSet>("puJetIDAlgo"));      
   dZCut_          = iConfig.getParameter<double>("dZCut");
 }
 
@@ -62,12 +62,12 @@ void TrackMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   float sumet = 0.0;
   
   for(int index = 0; index < (int)collection->size(); index++) {
-    const PFCandidateRef pflowCandRef = collection->refAt(index).castTo<PFCandidateRef>();
+    const PFCandidate* pflowCand  = dynamic_cast< const PFCandidate * >(&(collection->at(index)));
     if(primaryVertex->size()==0) continue;
-    double pDZ  = utils_->pfCandDz(pflowCandRef,vtx);
+    double pDZ  = utils_->pfCandDz(pflowCand,&vtx);
     if(pDZ > dZCut_) continue;
-    totalP4 -= pflowCandRef->p4();
-    sumet   += pflowCandRef->pt();
+    totalP4 -= pflowCand->p4();
+    sumet   += pflowCand->pt();
   }
   
   CommonMETData output;
@@ -76,7 +76,7 @@ void TrackMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   output.mez = totalP4.pz();
   output.met = totalP4.pt();
   output.sumet = sumet;
-  output.phi = atan2(invertedP4.py(),invertedP4.px());
+  output.phi = atan2(totalP4.py(),totalP4.px());
 
   PFSpecificAlgo pf;
   std::auto_ptr<reco::PFMETCollection> pfmetcoll;

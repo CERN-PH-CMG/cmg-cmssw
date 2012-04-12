@@ -93,12 +93,12 @@ void NoPUMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   //Track MET
   for(int index = 0; index < (int)PFcandColl->size(); index++) {
-    const PFCandidateRef pflowCandRef = PFcandColl->refAt(index).castTo<PFCandidateRef>();
+    const PFCandidate* pflowCand  = dynamic_cast< const PFCandidate * >(&(PFcandColl->at(index)));
     if(primaryVertex->size()==0) continue;
-    double pDZ  = utils_->pfCandDz(pflowCandRef,pv);
+    double pDZ  = utils_->pfCandDz(pflowCand,&pv);
     if(pDZ > dZCut_) continue;   
-    totalP4 -= pflowCandRef->p4();
-    sumet   += pflowCandRef->pt();
+    totalP4 -= pflowCand->p4();
+    sumet   += pflowCand->pt();
   }
 
   // Neutrals from the Jets

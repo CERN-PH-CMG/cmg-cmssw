@@ -9,9 +9,13 @@
 #ifndef MVAMet_H
 #define MVAMet_H
 
+#include <utility>
+#include <vector>
 #include <TString.h>
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
+#include "DataFormats/Math/interface/Vector.h"
+#include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/JetReco/interface/PFJetCollection.h"
 #include "DataFormats/METReco/interface/PFMETFwd.h"
 #include "DataFormats/METReco/interface/PFMET.h"
@@ -23,72 +27,82 @@
 using namespace reco;
 
 class MVAMet {
-  public:
-    MVAMet();
-    ~MVAMet();
+ public:
+  typedef math::XYZTLorentzVector LorentzVector;
+  typedef math::XYZVector         Vector;
 
-    enum MVAType {
-      kBaseline = 0
-    };
-
-    void    Initialize(const edm::ParameterSet &iConfig, 
-		       TString iU1Weights    ="$CMSSW_BASE/src/MitPhysics/data/gbrmet.root",
-		       TString iPhiWeights   ="$CMSSW_BASE/src/MitPhysics/data/gbrmetphi.root",
-		       MVAMet::MVAType  iType=kBaseline);
-        
-    Bool_t   IsInitialized() const { return fIsInitialized; }
-    Double_t evaluatePhi();
-    Double_t evaluateU1();
-    Double_t MVAValue(  bool iPhi,
-			Float_t iPFSumEt, 
-			Float_t iU      ,
-			Float_t iUPhi   ,
-			Float_t iTKSumEt,
-			Float_t iTKU    ,
-			Float_t iTKUPhi ,
-			Float_t iNPSumEt,
-			Float_t iNPU    ,
-			Float_t iNPUPhi ,
-			Float_t iPUSumEt,
-			Float_t iPUMet  ,
-			Float_t iPUMetPhi,
-			Float_t iPCSumEt,
-			Float_t iPCU    ,
-			Float_t iPCUPhi ,
-			Float_t iJSPt1  ,
-			Float_t iJSEta1 ,
-			Float_t iJSPhi1 ,
-			Float_t iJSPt2  ,
-			Float_t iJSEta2 ,
-			Float_t iJSPhi2 ,
-			Float_t iNJet   ,
+  MVAMet(double iDZCut=0.1);
+  ~MVAMet();
+  
+  enum MVAType {
+    kBaseline = 0
+  };
+  
+  void    Initialize(const edm::ParameterSet &iConfig, 
+		     TString iU1Weights    ="$CMSSW_BASE/src/MitPhysics/data/gbrmet.root",
+		     TString iPhiWeights   ="$CMSSW_BASE/src/MitPhysics/data/gbrmetphi.root",
+		     MVAMet::MVAType  iType=kBaseline);
+  
+  Bool_t   IsInitialized() const { return fIsInitialized; }
+  Double_t evaluatePhi();
+  Double_t evaluateU1();
+  Double_t MVAValue(  bool iPhi,
+		      Float_t iPFSumEt, 
+		      Float_t iU      ,
+		      Float_t iUPhi   ,
+		      Float_t iTKSumEt,
+		      Float_t iTKU    ,
+		      Float_t iTKUPhi ,
+		      Float_t iNPSumEt,
+		      Float_t iNPU    ,
+		      Float_t iNPUPhi ,
+		      Float_t iPUSumEt,
+		      Float_t iPUMet  ,
+		      Float_t iPUMetPhi,
+		      Float_t iPCSumEt,
+		      Float_t iPCU    ,
+		      Float_t iPCUPhi ,
+		      Float_t iJSPt1  ,
+		      Float_t iJSEta1 ,
+		      Float_t iJSPhi1 ,
+		      Float_t iJSPt2  ,
+		      Float_t iJSEta2 ,
+		      Float_t iJSPhi2 ,
+		      Float_t iNJet   ,
 			Float_t iNAllJet,
-			Float_t iNPV    );
+		      Float_t iNPV    );
+  
+  PFMET GetMet(double iPtVis,double iPhiVis,double iSumEtVis,
+	       const PFMET             *iPFMet,
+	       const PFMET             *iTKMet,
+	       const PFMET             *iNPMet,
+	       const PFMET             *iPUMet,
+	       const PFMET             *iPCMet,
+	       const PFJetCollection   *iJets ,
+	       int                      iNPV  ,
+	       bool                     iPhi  ,
+	       bool                     iPrintDebug=false);
+  
+  //Interms of the two candidates ===> previous conditions do not apply
+  PFMET GetMet(double iPt1,double iPhi1,double iEta1,
+	       double iPt2,double iPhi2,double iEta2,
+	       const PFMET             *iPFMet  ,
+	       const PFMET             *iTKMet,
+	       const PFMET             *iNPMet,
+	       const PFMET             *iPUMet,
+	       const PFMET             *iPCMet,
+	       const PFJetCollection   *iJets ,
+	       int                      iNPV  ,
+	       bool                     iPhi      =false,
+	       bool                     printDebug=false);
+  
+  std::pair<LorentzVector,double>  GetMet(std::vector<LorentzVector>                     iVis,
+					  std::vector<std::pair<LorentzVector,double> >  iJets,
+					  std::vector<std::pair<LorentzVector,double> >  iCands,
+					  std::vector<Vector>                            iVertices,
+					  bool iPrintDebug=false);
     
-    PFMET GetMet(double iPtVis,double iPhiVis,double iSumEtVis,
-		 const PFMET             *iPFMet,
-		 const PFMET             *iTKMet,
-		 const PFMET             *iNPMet,
-		 const PFMET             *iPUMet,
-		 const PFMET             *iPCMet,
-		 const PFJetCollection   *iJets ,
-		 int                      iNPV  ,
-		 bool                     iPhi  ,
-		 bool                     iPrintDebug=false);
     
-    //Interms of the two candidates ===> previous conditions do not apply
-    PFMET GetMet(double iPt1,double iPhi1,double iEta1,
-		 double iPt2,double iPhi2,double iEta2,
-		 const PFMET             *iPFMet  ,
-		 const PFMET             *iTKMet,
-		 const PFMET             *iNPMet,
-		 const PFMET             *iPUMet,
-		 const PFMET             *iPCMet,
-		 const PFJetCollection   *iJets ,
-		 int                      iNPV  ,
-		 bool                     iPhi      =false,
-		 bool                     printDebug=false);
- 
     
     MetUtilities *fUtils;
     
@@ -97,7 +111,7 @@ class MVAMet {
     TString      fU1MethodName;
     Bool_t       fIsInitialized;
     MVAType      fType;
-    
+    double  fDZCut  ;
     Float_t fU      ;
     Float_t fUPhi   ;
     Float_t fTKSumEt;

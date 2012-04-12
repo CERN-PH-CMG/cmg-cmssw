@@ -31,7 +31,7 @@ using namespace reco;
 PUMetProducer::PUMetProducer(const edm::ParameterSet& iConfig) {
   produces<reco::PFMETCollection>();
   isData_         = iConfig.getParameter<bool>("isData");
-  utils           = new MetUtilities(iConfig.getParameter<edm::ParameterSet>("puJetIDAlgo"),isData_);      
+  utils           = new MetUtilities(iConfig.getParameter<edm::ParameterSet>("puJetIDAlgo"));      
   dZCut_          = iConfig.getParameter<double>("dZCut");
   jetPtThreshold_ = iConfig.getParameter<double>("jetPtThreshold");
 }
@@ -88,16 +88,16 @@ void PUMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   // Now the Met basics
   Candidate::LorentzVector totalP4(0,0,0,0);
-  float sumet = 0.0;
+  double sumet = 0.0;
   
   // Track MET with reverted dZ cut
   for(int index = 0; index < (int)PFcandColl->size(); index++) {
-    const PFCandidateRef pflowCandRef = PFcandColl->refAt(index).castTo<PFCandidateRef>();
+    const PFCandidate* pflowCand  = dynamic_cast< const PFCandidate * >(&(PFcandColl->at(index)));
     if(primaryVertex->size()==0) continue;
-    double pDZ  = utils->pfCandDz(pflowCandRef,vtx);
+    double pDZ  = utils->pfCandDz(pflowCand,&vtx);
     if(pDZ < dZCut_) continue;   
-    totalP4 -= pflowCandRef->p4();
-    sumet   += pflowCandRef->pt();
+    totalP4 -= pflowCand->p4();
+    sumet   += pflowCand->pt();
   }
   // Neutrals from the Jets - with reverted jetID cut
   for(int index = 0; index < (int)uncorrPFJetColl->size(); index++) {      // uncorrected jets collection
@@ -110,10 +110,9 @@ void PUMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       
       if(  pUncorrPFJet->jetArea() == pCorrPFJet->jetArea() ) {      // to match corrected and uncorrected jets
 	if(  fabs(pUncorrPFJet->eta() - pCorrPFJet->eta())<0.01 ) {  // to match corrected and uncorrected jets
-	  
 	  if( pCorrPFJet->pt()< jetPtThreshold_ ) continue;  
-	  if( utils->passJetId(pUncorrPFJet, pCorrPFJet, vtx, *primaryVertex, *hRho) ) continue;
-	  utils->addNeut(pUncorrPFJet, pCorrPFJet, PinvertedP4, Psumet, *hRho, 1);   
+	  if(utils->passJetId(pCorrPFJet,pUncorrPFJet,vtx,*primaryVertex)) continue;
+	  utils->addNeut(pCorrPFJet,&totalP4,&sumet,1);             
 	  break;
 	}
       }

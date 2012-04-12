@@ -6,10 +6,11 @@
 using namespace reco;
 
 //--------------------------------------------------------------------------------------------------
-MVAMet::MVAMet() :
+MVAMet::MVAMet(double iDZCut) :
   fPhiMethodName("PhiCorrection"),
   fU1MethodName ("U1Correction"),
   fIsInitialized(kFALSE),
+  fDZCut  (iDZCut),
   fU      (0),
   fUPhi   (0),
   fTKSumEt(0),
@@ -423,94 +424,71 @@ PFMET MVAMet::GetMet(	double iPt1,double iPhi1,double iEta1,
   Candidate::LorentzVector lMetVec(lUVec.Px(),lUVec.Py(),lUVec.Pz(),lUVec.E());
   return PFMET(iPFMet->getSpecific(),lSumEt,lMetVec,iPFMet->vertex());
 }
-std::pair<Vector,double>  MVAMet::GetMet(std::vector<LorentzVector>                     iVis,
-					 std::vector<std::pair<LorentzVector,double> >  iJets,
-					 std::vector<std::pair<LorentzVector,double> >  iCands,
-					 std::vector<Vector>                            iVertices) { 
+std::pair<MVAMet::LorentzVector,double>  MVAMet::GetMet(std::vector<LorentzVector>                     iVis,
+							std::vector<std::pair<LorentzVector,double> >  iJets,
+							std::vector<std::pair<LorentzVector,double> >  iCands,
+							std::vector<Vector>                            iVertices,
+							bool iPrintDebug) { 
   
-  LorentzVector lVis(0,0,0,0); 
-  for(int i0 = 0; i0 < iVis.size(); i0++) lVis      += iVis[i0];
-  for(int i0 = 0; i0 < iVis.size(); i0++) lVisSumEt += iVis[i0].Pt();
+  LorentzVector lVis(0,0,0,0); double lVisSumEt = 0;
+  for(int i0 = 0; i0 < int(iVis.size()); i0++) lVis      += iVis[i0];
+  for(int i0 = 0; i0 < int(iVis.size()); i0++) lVisSumEt += iVis[i0].Pt();
 
   Float_t lPtVis    = lVis.Pt();
   Float_t lPhiVis   = lVis.Phi();
-
-  PFMET lPFRec = fUtils->recoil   (iPFMet,iPt1,iPhi1,iEta1,iPt2,iPhi2,iEta2);
-  PFMET lTKRec = fUtils->recoil   (iTKMet,iPt1,iPhi1,iEta1,iPt2,iPhi2,iEta2);
-  PFMET lNPRec = fUtils->recoil   (iNPMet,iPt1,iPhi1,iEta1,iPt2,iPhi2,iEta2,iJets);
-  PFMET lPCRec = fUtils->recoil   (iPCMet,iPt1,iPhi1,iEta1,iPt2,iPhi2,iEta2,iJets);
-  PFMET lPUMet = fUtils->clean    (iPUMet,     iPhi1,iEta1,     iPhi2,iEta2,iJets);
-
-  Double_t lPt0 = 0; const PFJet *lLead = 0; 
-  Double_t lPt1 = 0; const PFJet *l2nd  = 0; 
-  int lNAllJet  = 0;
-  int lNJet     = 0;
-  for(unsigned int i0 = 0; i0 < iJets->size(); i0++) {
-    const PFJet     *pJet   = &(iJets->at(i0));
-    double pDEta1 = pJet->eta() - iEta1;
-    double pDPhi1 = fabs(pJet->phi() - iPhi1); if(pDPhi1 > 2.*TMath::Pi()-pDPhi1) pDPhi1 = 2.*TMath::Pi()-pDPhi1;
-    double pDR1   = sqrt(pDEta1*pDEta1 + pDPhi1*pDPhi1);
-    if(pDR1 < 0.5) continue;
-    double pDEta2 = pJet->eta() - iEta2;
-    double pDPhi2 = fabs(pJet->phi() - iPhi2); if(pDPhi2 > 2.*TMath::Pi()-pDPhi2) pDPhi2 = 2.*TMath::Pi()-pDPhi2;
-    double pDR2   = sqrt(pDEta2*pDEta2 + pDPhi2*pDPhi2);
-    if(pDR2 < 0.5) continue;  
-    if(!fUtils->passPFLooseId(pJet)) continue;
-    lNAllJet++;
-    Double_t pPt = pJet->pt();
-    if(pPt  > 30.)  lNJet++;
-    if(lPt0 < pPt) {lPt0 = pPt; lLead = pJet; continue;}    
-    if(lPt1 < pPt) {lPt1 = pPt; l2nd  = pJet; continue;}
-  }
+  fUtils->cleanJets(iVis,iJets);
+  std::pair<LorentzVector,double> lPFRec  = fUtils->PFRecoil  (lVisSumEt,lVis,iCands,      fDZCut);
+  std::pair<LorentzVector,double> lTKRec  = fUtils->TKRecoil  (lVisSumEt,lVis,iCands,      fDZCut);
+  std::pair<LorentzVector,double> lNPRec  = fUtils->NoPURecoil(lVisSumEt,lVis,iCands,iJets,fDZCut);
+  std::pair<LorentzVector,double> lPCRec  = fUtils->PUCRecoil (lVisSumEt,lVis,iCands,iJets,fDZCut);
+  std::pair<LorentzVector,double> lPUMet  = fUtils->PUMet     (               iCands,iJets,fDZCut);
   
-  fU       = lPFRec.pt();
-  fUPhi    = lPFRec.phi();
-  fTKSumEt = lTKRec.sumEt()/lPFRec.sumEt();
-  fTKU     = lTKRec.pt();
-  fTKUPhi  = lTKRec.phi();
-  fNPSumEt = lNPRec.sumEt()/lPFRec.sumEt();
-  fNPU     = lNPRec.pt();
-  fNPUPhi  = lNPRec.phi();
-  fPUSumEt = lPUMet.sumEt()/lPFRec.sumEt();
-  fPUMet   = lPUMet.pt();
-  fPUMetPhi= lPUMet.phi();
-  fPCSumEt = lPCRec.sumEt()/lPFRec.sumEt();
-  fPCU     = lPCRec.pt()    ;
-  fPCUPhi  = lPCRec.phi()   ;
-  fJSPt1   = lPt0; 
+  int lNJets           = fUtils->NJets(iJets,30);
+  int lNAllJet         = int(iJets.size());
+  LorentzVector *lLead = fUtils->leadPt(iJets,true); 
+  LorentzVector *l2nd  = fUtils->leadPt(iJets,false); 
+    
+  fU       = lPFRec.first.rho();
+  fUPhi    = lPFRec.first.phi();
+  fTKSumEt = lTKRec.second/lPFRec.second;
+  fTKU     = lTKRec.first.rho();
+  fTKUPhi  = lTKRec.first.phi();
+  fNPSumEt = lNPRec.second/lPFRec.second;
+  fNPU     = lNPRec.first.rho();
+  fNPUPhi  = lNPRec.first.phi();
+  fPUSumEt = lPUMet.second/lPFRec.second;
+  fPUMet   = lPUMet.first.rho();
+  fPUMetPhi= lPUMet.first.phi();
+  fPCSumEt = lPCRec.second/lPFRec.second;
+  fPCU     = lPCRec.first.rho() ;
+  fPCUPhi  = lPCRec.first.phi();
+  fJSPt1   = lLead->pt();
   fJSEta1  = 0; if(lLead != 0) fJSEta1 = lLead->eta();
   fJSPhi1  = 0; if(lLead != 0) fJSPhi1 = lLead->phi();
-  fJSPt2   = lPt1; 
+  fJSPt2   = l2nd ->pt();
   fJSEta2  = 0; if(l2nd  != 0) fJSEta2 = l2nd ->eta();
   fJSPhi2  = 0; if(l2nd  != 0) fJSPhi2 = l2nd ->phi();
-  fNJet    = lNJet   ;
+  fNJet    = lNJets  ;
   fNAllJet = lNAllJet;
-  fNPV     = iNPV    ;
+  fNPV     = iVertices.size();
 
   Float_t lMVA = evaluatePhi();
   
-  if(!iPhi) fUPhiMVA = fUPhi + lMVA; 
-  fTKSumEt  /= lPFRec.sumEt();
-  fNPSumEt  /= lPFRec.sumEt();
-  fPUSumEt  /= lPFRec.sumEt();
-  fPCSumEt  /= lPFRec.sumEt();
-  if(!iPhi) lMVA     = evaluateU1();
+  fUPhiMVA  = fUPhi + lMVA; 
+  fTKSumEt  /= lPFRec.second;
+  fNPSumEt  /= lPFRec.second;
+  fPUSumEt  /= lPFRec.second;
+  fPCSumEt  /= lPFRec.second;
+  lMVA      = evaluateU1();
 
   TLorentzVector lUVec (0,0,0,0);   lUVec .SetPtEtaPhiM(fU*lMVA,0,fUPhiMVA,0);
   TLorentzVector lVVec (0,0,0,0);   lVVec .SetPtEtaPhiM(lPtVis ,0,lPhiVis ,0);
   if(lMVA < 0) lUVec .RotateZ(TMath::Pi());                                                   
   lUVec      -= lVVec;
   double lSumEt = 0; //===> This is where we add the significance regression
-  
-  //CommonMETData lOutMet;
-  //lOutMet.mex   =  lUVec.Px();
-  //lOutMet.mey   =  lUVec.Py();
-  //lOutMet.mez   =  0;
-  //lOutMet.met   =  lUVec.Pt();
-  //lOutMet.phi   =  lUVec.Phi();
-  //lOutMet.sumet = 0; 
 
-  if (printDebug == kTRUE) {
+  LorentzVector  lMetVec (0,0,0,0);   lMetVec.SetCoordinates(lUVec.Px(),lUVec.Py(),lUVec.Pz(),lUVec.E());
+  if (iPrintDebug == kTRUE) {
     std::cout << "Debug Jet MVA: "
 	      <<  fU        << " : "
 	      <<  fUPhi     << " : "
@@ -538,6 +516,6 @@ std::pair<Vector,double>  MVAMet::GetMet(std::vector<LorentzVector>             
               << " === : === "
               << std::endl;
   }
-  Candidate::LorentzVector lMetVec(lUVec.Px(),lUVec.Py(),lUVec.Pz(),lUVec.E());
-  return PFMET(iPFMet->getSpecific(),lSumEt,lMetVec,iPFMet->vertex());
+  std::pair<LorentzVector,double> lMet(lMetVec,lSumEt);
+  return lMet;
 }

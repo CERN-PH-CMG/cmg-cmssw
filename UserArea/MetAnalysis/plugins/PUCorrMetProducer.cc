@@ -22,7 +22,7 @@
 
 #include "FWCore/Utilities/interface/Exception.h"
 
-#include "CMG/MetAnalysis/plugins/NoPUMetProducer.h"
+#include "CMG/MetAnalysis/plugins/PUCorrMetProducer.h"
 #include "CMG/MetAnalysis/interface/MetUtilities.h"
 
 
@@ -32,7 +32,7 @@ using namespace reco;
 
 PUCorrMetProducer::PUCorrMetProducer(const edm::ParameterSet& iConfig) {
   produces<reco::PFMETCollection>();
-  utils_          = new MetUtilities(iConfig.getParameter<edm::ParameterSet>("puJetIDAlgo"),isData_);      
+  utils_          = new MetUtilities(iConfig.getParameter<edm::ParameterSet>("puJetIDAlgo"));      
   dZCut_          = iConfig.getParameter<double>("dZCut");
   jetPtThreshold_ = iConfig.getParameter<double>("jetPtThreshold");
 }
@@ -87,7 +87,7 @@ void PUCorrMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   
   //Rho
   edm::Handle<double> hRho;
-  event.getByLabel("kt6PFJetsForRhoComputationVoronoi",hRho);
+  try{ iEvent.getByLabel("kt6PFJetsForRhoComputationVoronoi",hRho); }
   catch(cms::Exception& ex ) {edm::LogWarning("NoPUMetProducer") << "Can't get candidate collection: rho"; }
 
   //Fisrt the PV
@@ -97,28 +97,27 @@ void PUCorrMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
   //Now the Met basics
   Candidate::LorentzVector totalP4(0,0,0,0);
-  float sumet = 0.0;
+  double sumet = 0.0;
   
   //Track MET
   for(int index = 0; index < (int)PFcandColl->size(); index++) {
-    const PFCandidateRef pflowCandRef = PFcandColl->refAt(index).castTo<PFCandidateRef>();
+    const PFCandidate* pflowCand = dynamic_cast< const PFCandidate * >( &(PFcandColl->at(index)));
     if(primaryVertex->size()==0) continue;
-    double pDZ  = utils.pfCandDz(pflowCandRef,pv);
-    if(pDZ > fDZCut) continue;
-    totalP4 -= pflowCandRef->p4();
-    sumet   += pflowCandRef->pt();
+    double pDZ  = utils_->pfCandDz(pflowCand,&pv);
+    if(pDZ > dZCut_) continue;
+    totalP4 -= pflowCand->p4();
+    sumet   += pflowCand->pt();
   }
   //Neutral PF Candidates
   for(int index = 0; index < (int)PFcandColl->size(); index++) {
     const PFCandidateRef pflowCandRef = PFcandColl->refAt(index).castTo<PFCandidateRef>();
-    if(iPFCandRef->trackRef().isNonnull() || iPFCandRef->gsfTrackRef().isNonnull() || (iPFCandRef->muonRef().isNonnull() && iPFCandRef->muonRef()->innerTrack().isNonnull())) continue;
+    if(pflowCandRef->trackRef().isNonnull() || pflowCandRef->gsfTrackRef().isNonnull() || (pflowCandRef->muonRef().isNonnull() && pflowCandRef->muonRef()->innerTrack().isNonnull())) continue;
     totalP4 -= pflowCandRef->p4();
     sumet   += pflowCandRef->pt();
   }
   //Remove Neutrals from the PU Jets
   for(int index = 0; index < (int)uncorPFJetColl->size(); index++) {
-    const Candidate *cand   = &(uncorPFJetColl->at(index));
-    const Candidate *uncorrCand   = &(uncorrPFJetColl->at(index));
+    const Candidate *uncorrCand   = &(uncorPFJetColl->at(index));
     const PFJet     *pUncorrPFJet = dynamic_cast< const PFJet * > ( &(*uncorrCand) );    
     for(int index2 = 0; index2 < (int)corrPFJetColl->size(); index2++) {   // corrected jets collection
       const Candidate *corrCand   = &(corrPFJetColl->at(index2));
@@ -126,8 +125,9 @@ void PUCorrMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       if(  pUncorrPFJet->jetArea() == pCorrPFJet->jetArea() ) {      // to match corrected and uncorrected jets
 	if(  fabs(pUncorrPFJet->eta() - pCorrPFJet->eta())<0.01 ) {  // to match corrected and uncorrected jets
 	  if( pCorrPFJet->pt()< jetPtThreshold_ ) continue;  
-	  if(utils.passJetId(pPFJet     ,pv,*hRho)) continue;
-	  addNeut(pPFJet,totalP4,sumet,fJetCorrector,*hRho,-1);             
+	  //double lJec = pCorrPFJet->pt()/pUncorrPFJet->pt();
+	  if(utils_->passJetId(pCorrPFJet,pUncorrPFJet,pv,*primaryVertex)) continue;
+	  utils_->addNeut(pCorrPFJet,&totalP4,&sumet,-1);             
 	  break;
 	}
       }
@@ -140,7 +140,7 @@ void PUCorrMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   output.mez = totalP4.pz();
   output.met = totalP4.pt();
   output.sumet = sumet;
-  output.phi = atan2(invertedP4.py(),invertedP4.px());
+  output.phi = atan2(totalP4.py(),totalP4.px());
   
   PFSpecificAlgo pf;
   std::auto_ptr<reco::PFMETCollection> pfmetcoll;

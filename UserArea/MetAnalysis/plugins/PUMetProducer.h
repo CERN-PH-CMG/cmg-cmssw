@@ -29,7 +29,7 @@ class PUMetProducer : public edm::EDProducer {
 	edm::InputTag uncorPFJetCollectionTag;
 	edm::InputTag srcVertices_;
 
-	double iDZCut_;
+	double dZCut_;
 	double jetPtThreshold_;
 	bool isData_;
 
