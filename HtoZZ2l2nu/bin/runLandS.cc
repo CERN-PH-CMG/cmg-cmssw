@@ -72,8 +72,8 @@ struct DataCardInputs
 
 
 void printHelp();
-int findBinFor(Float_t minMet, Float_t minMt, Float_t maxMt, TString infURL);
-Shape_t getShapeFromFile(TString ch, TString shapeName, int cutBin, TString infURL,JSONWrapper::Object &Root);
+int findBinFor(TFile* inF, Float_t minMet, Float_t minMt, Float_t maxMt);
+Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin,JSONWrapper::Object &Root);
 void showShape(const Shape_t &shape, TString SaveName);
 void getCutFlowFromShape(std::vector<TString> ch, const map<TString, Shape_t> &allShapes, TString shName);
 void estimateNonResonantBackground(std::vector<TString> &selCh,TString ctrlCh,const map<TString, Shape_t> &allShapes, TString shape);
@@ -379,14 +379,12 @@ void estimateNonResonantBackground(std::vector<TString> &selCh,TString ctrlCh,co
 //
 
 //
-int findBinFor(Float_t minMet, Float_t minMt, Float_t maxMt,TString infURL)
+int findBinFor(TFile* inF, Float_t minMet, Float_t minMt, Float_t maxMt)
 { 
   int reqBin(0);
 
   //find the bin from the histos defining the cuts
   //take them from the first sub-directory in the plots file
-  TFile *inF = TFile::Open(infURL);
-  if( inF->IsZombie() ){ cout << "Invalid file name : " << infURL << endl; return reqBin; }
   TIter pnext(inF->GetListOfKeys());
   TDirectoryFile *pdir= (TDirectoryFile *)pnext();
   if(pdir==0) {inF->Close(); return reqBin; }
@@ -403,7 +401,6 @@ int findBinFor(Float_t minMet, Float_t minMt, Float_t maxMt,TString infURL)
       reqBin=ibin;
       break;
     }
-  inF->Close();
 
   //done
   return reqBin;
@@ -412,12 +409,9 @@ int findBinFor(Float_t minMet, Float_t minMt, Float_t maxMt,TString infURL)
 
 
 //
-Shape_t getShapeFromFile(TString ch, TString shapeName, int cutBin, TString infURL, JSONWrapper::Object &Root)
+Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, JSONWrapper::Object &Root)
 {
   Shape_t shape; shape.totalBckg=0;
-
-  TFile *inF = TFile::Open(infURL);
-  if( inF->IsZombie() ){ cout << "Invalid file name : " << infURL << endl; return shape; }
 
   //iterate over the processes required
   std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
@@ -497,8 +491,6 @@ Shape_t getShapeFromFile(TString ch, TString shapeName, int cutBin, TString infU
 	 }
       }
     }
-
-  inF->Close();
 
   //compute the total
   for(size_t i=0; i<shape.bckg.size(); i++)
@@ -735,6 +727,11 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   //init globalVariables
   TString massStr(""); massStr += mass;
   std::set<TString> allCh,allProcs;
+
+  //open input file
+  TFile* inF = TFile::Open(url);
+  if( !inF || inF->IsZombie() ){ cout << "Invalid file name : " << url << endl; return dci; }
+
   
   //get the shapes for each channel
   map<TString, Shape_t> allShapes;
@@ -745,10 +742,14 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   for(size_t i=0; i<nch; i++){
      for(size_t b=0; b<AnalysisBins.size(); b++){
         for(size_t j=0; j<nsh; j++){
-	     allShapes[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(ch[i]+AnalysisBins[b],sh[j],index,url,Root);
+	     allShapes[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],index,Root);
         }
      }
   }
+
+  //all done with input file
+  inF->Close();
+
 
   //define vector for search
   std::vector<TString> selCh;
