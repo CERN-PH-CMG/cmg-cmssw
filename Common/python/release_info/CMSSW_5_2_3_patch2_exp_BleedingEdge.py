@@ -1,7 +1,9 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_sip_27Mar12'),
   ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_nomitid_11Apr12'),
+  ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_B52X_12Apr12'),
+  ('CMGTools/HToZZTo4Leptons', 'UserCode/CMG/CMGTools/HToZZTo4Leptons', 'cbern_12Apr12'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_dasoff_11Apr12'),
-  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_05Apr12'),
+  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_12Apr12'),
   ('CommonTools/ParticleFlow', 'CommonTools/ParticleFlow', 'V00-03-07-01'),
   ( 'EgammaCalibratedGsfElectrons/CalibratedElectronAlgos',
     'UserCode/ClaudeCharlot/EgammaCalibratedGsfElectrons/CalibratedElectronAlgos',
@@ -15,5 +17,4 @@
   ('PhysicsTools/Utilities', 'PhysicsTools/Utilities', 'V08-03-16'),
   ('RecoParticleFlow/PFProducer', 'RecoParticleFlow/PFProducer', 'V15-01-05'),
   ('RecoParticleFlow/PostProcessing', 'UserCode/RecoParticleFlow/PostProcessing', 'Colin_June23'),
-  ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseNov14'),
-  ]
+  ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseNov14')]
