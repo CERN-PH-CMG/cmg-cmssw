@@ -30,9 +30,13 @@ class GenGenFourLeptonAnalyzer( FourLeptonAnalyzer ):
 
                     
     def testLepton1(self, leg):
+        if leg.status()!=1:
+            return False
         return super( GenGenFourLeptonAnalyzer, self).testLepton1( leg )
 
 
     def testLepton2(self, leg):
+        if leg.status()!=1:
+            return False
         return super( GenGenFourLeptonAnalyzer, self).testLepton2( leg )
 

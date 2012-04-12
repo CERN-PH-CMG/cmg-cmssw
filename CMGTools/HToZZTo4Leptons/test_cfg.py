@@ -93,11 +93,11 @@ muMuAna = cfg.Analyzer(
     h_sip = 4.,
     pair_iso = pairIso,
     pair_mass = 12.,
-    nLeptonsMin = 2.,
+    nLeptonsMin = 0.,
     #
     keep = True,
     #
-    PF = False,
+    PF = True,
     PFIso = True
     )
 
@@ -118,10 +118,16 @@ eleEleAna.iso1 = looseIso,
 
 
 genMuMuAna = copy.deepcopy(muMuAna)
+genMuMuAna.name = 'GenGenFourLeptonAnalyzer_MuMu'
 genMuMuAna.pdgId1 = 13
 genMuMuAna.pdgId2 = 13
 genMuMuAna.pt1 = 0
 genMuMuAna.pt2 = 0
+genMuMuAna.eta1 = 999
+genMuMuAna.eta2 = 999
+genMuMuAna.z1_m = (0, 999)
+genMuMuAna.z1_pt1 = 0
+genMuMuAna.z1_pt2 = 0
 
 
 genMuEleAna = copy.deepcopy(muEleAna)
@@ -193,25 +199,26 @@ sequence = cfg.Sequence([
     #eleEleZSkim,
     #muEleZSkim, 
     #skimmer,
-    jsonFilter, 
+    # jsonFilter, 
     # triggerAna,
-    vertexAna,
+    # vertexAna,
+    muMuGenSel, 
+    genMuMuAna,
     theAna,
-    createTreeProducer( theAna )
-    # genMuMuAna,
-    # createTreeProducer( genMuMuAna )
+    createTreeProducer( theAna ),
+    createTreeProducer( genMuMuAna )
     ])
 
 
-# selectedComponents = [ZZTo4mu]
+selectedComponents = [Hig120GluGlu]
 
 test = False
 if test:
     # triggerAna.verbose = 1
     # triggerAna.usePrescaled = True
     # dataset = data_DoubleMu_Run2011B_16Jan2012
-    # dataset = Hig120GluGlu
-    dataset = ZZTo4mu
+    dataset = Hig120GluGlu
+    # dataset = ZZTo4mu
     # Hig120GluGlu.files = getFiles('/GluGluToHToZZTo4L_M-120_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V4/PAT_CMG_Test_444', 'botta', 'patTuple.*root')
     selectedComponents = [dataset]
     dataset.splitFactor = 1

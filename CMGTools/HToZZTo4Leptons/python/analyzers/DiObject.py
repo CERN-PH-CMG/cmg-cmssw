@@ -3,6 +3,8 @@ from ROOT import TLorentzVector
 class DiObject( TLorentzVector ):
     '''Class used for Zs, and also for Higgs candidates'''
     def __init__(self, leg1, leg2):
+        if leg2.pt() > leg1.pt():
+            leg2, leg1 = leg1, leg2
         lv1 = TLorentzVector( leg1.px(), leg1.py(), leg1.pz(), leg1.energy() )
         lv2 = TLorentzVector( leg2.px(), leg2.py(), leg2.pz(), leg2.energy() )
         lv1 += lv2 
