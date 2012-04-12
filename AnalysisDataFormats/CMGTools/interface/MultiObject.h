@@ -24,7 +24,8 @@ namespace cmg {
 
     MultiObject(std::vector<SrcPtr> sourcePtrs) :
       sourcePtrs_(sourcePtrs),
-      deltaPhiStar_(cmg::unsetD)
+      deltaPhiStar_(cmg::unsetD),
+      ht_(cmg::unsetD)
       {
         Charge qSum = 0;
         LorentzVector p4Sum(0., 0., 0., 0.);
@@ -68,12 +69,20 @@ namespace cmg {
       return deltaPhiStar_;
     }
 
+    //this is the sum of the pts of the objects forming the MultiObject
+    Double_t const ht() const{
+      return ht_;
+    }
+
   private:
     std::vector<SrcPtr> sourcePtrs_;
 
     // The delta-phi^star variable as defined in formula 5 (p. 10) of
     // CMS AN-2010/242.
     Double_t deltaPhiStar_;
+
+    //sum of pt of the sourcePtrs
+    Double_t ht_;
 
     friend class cmg::MultiObjectFactory;
     friend class cmg::MultiObjectSettingTool;
