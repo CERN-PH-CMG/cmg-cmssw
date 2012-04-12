@@ -15,6 +15,7 @@ CWD=os.getcwd()
 phase=-1
 jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json'
 CMSSW_BASE=os.environ.get('CMSSW_BASE')
+LandSArg=''
  
 def help() :
    print '\n\033[92m optimize.py \033[0m \n'
@@ -99,6 +100,8 @@ if( phase == 1 ):
    print '# RUN LIMITS FOR ALL POSSIBLE CUTS #'
    print '#                                  #'
 
+   commandToRun = []
+
    FILE = open(OUT+"/LIST.txt","w")
    for i in range(1,cuts1.GetNbinsX()):
       if(shapeBased=='1' and cuts3.GetBinContent(i)<780):continue
@@ -114,16 +117,22 @@ if( phase == 1 ):
       for m in MASS:
          shapeBasedOpt=''
          if(shapeBased=='1') : shapeBasedOpt='--shape'
-         SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName  + " --in " + inUrl + " " + shapeBasedOpt + " --index " + str(i) + " --json " + jsonUrl +";\n")
+         SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName  + " --in " + inUrl + " " + shapeBasedOpt + " --index " + str(i) + " --json " + jsonUrl +" " + LandSArg + " ;\n")
          if(shapeBased=='1'):
-            SCRIPT.writelines('cat H' +str(m)+'_shape_'+str(i)+'/combined/*.log &> ' +OUT+str(m)+'_'+str(i)+'.log;\n')
+            SCRIPT.writelines('cat H' +str(m)+'_shape_'+str(i)+'/combined/*.log | grep BAND &> ' +OUT+str(m)+'_'+str(i)+'.log;\n')
          else:
-            SCRIPT.writelines('cat H' +str(m)+'_count_'+str(i)+'/combined/*.log &> ' +OUT+str(m)+'_'+str(i)+'.log;\n')
+            SCRIPT.writelines('cat H' +str(m)+'_count_'+str(i)+'/combined/*.log | grep BAND &> ' +OUT+str(m)+'_'+str(i)+'.log;\n')
       SCRIPT.close()
-      print("bsub -q 8nh -J optim"+str(i)+" 'sh " + OUT+"script_"+str(i)+".sh &> "+OUT+"script_"+str(i)+".log'")
-      os.system("bsub -q 8nh 'sh " + OUT+"script_"+str(i)+".sh &> "+OUT+"script_"+str(i)+".log'")
+      commandToRun.append("bsub -q 8nh -J optim"+str(i)+" 'sh " + OUT+"script_"+str(i)+".sh &> "+OUT+"script_"+str(i)+".log'")
+#      print("bsub -q 8nh -J optim"+str(i)+" 'sh " + OUT+"script_"+str(i)+".sh &> "+OUT+"script_"+str(i)+".log'")
+#      os.system("bsub -q 8nh 'sh " + OUT+"script_"+str(i)+".sh &> "+OUT+"script_"+str(i)+".log'")
 
    FILE.close()
+
+   for c in commandToRun:
+      print(c)
+      os.system(c);
+
       
 ######################################################################
 elif(phase == 2):
@@ -253,7 +262,7 @@ elif(phase == 3 ):
         SCRIPT.writelines('cd ' + CWD + ';\n')
         shapeBasedOpt=''
         if(shapeBased=='1') : shapeBasedOpt='--shape'
-	SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " --syst " + shapeBasedOpt + " --index " + str(index) + " --json " + jsonUrl + ";\n")
+	SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " --syst " + shapeBasedOpt + " --index " + str(index) + " --json " + jsonUrl + " " + LandSArg + " ;\n")
 	SCRIPT.close()
 	os.system("bsub -q 8nh 'sh " + OUT+"script_mass_"+str(m)+".sh'")
 	if(shapeBased=='1'):   list.writelines('H'+str(m)+'_shape_'+str(index)+'\n'); 
