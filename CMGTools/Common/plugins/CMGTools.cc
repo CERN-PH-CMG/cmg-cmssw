@@ -34,7 +34,7 @@ DEFINE_FWK_MODULE(RecoilCorrectedMETProducerDiTau);
 DEFINE_FWK_MODULE(ElectronPOProducer);
 DEFINE_FWK_MODULE(MuonPOProducer);
 DEFINE_FWK_MODULE(TauPOProducer);
-DEFINE_FWK_MODULE(QuadMuonPOProducer);
+//DEFINE_FWK_MODULE(QuadMuonPOProducer);
 DEFINE_FWK_MODULE(BaseJetPOProducer);
 DEFINE_FWK_MODULE(BaseJetPOScaler);
 DEFINE_FWK_MODULE(PFJetPOScaler);
@@ -58,6 +58,14 @@ DEFINE_FWK_MODULE(PATMETPOProducer);
 DEFINE_FWK_MODULE(TriggerObjectPOProducer);
 DEFINE_FWK_MODULE(PFJetHistogramsAnalyzer);
 DEFINE_FWK_MODULE(TriggerResultHistogramsAnalyzer);
+
+DEFINE_FWK_MODULE(QuadMuonPOProducer);
+DEFINE_FWK_MODULE(DiMuonDiElectronPOProducer);
+DEFINE_FWK_MODULE(QuadElectronPOProducer);
+DEFINE_FWK_MODULE(CmgQuadMuonSelector);
+DEFINE_FWK_MODULE(CmgDiMuonDiElectronSelector);
+DEFINE_FWK_MODULE(CmgQuadElectronSelector);
+
 
 DEFINE_FWK_MODULE(GenericBaseMETHistograms);
 DEFINE_FWK_MODULE(GenericPOHistograms);

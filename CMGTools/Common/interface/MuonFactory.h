@@ -45,6 +45,7 @@ class MuonFactory : public Factory<cmg::Muon>, public SettingTool<pat::MuonPtr,c
         }
         
         reco::TrackRef getTrack(const pat::MuonPtr& input) const;
+        reco::TrackRef getTrackerTrack(const pat::MuonPtr& input) const;
 
 		const edm::InputTag muonLabel_;
         const track_type type_;
