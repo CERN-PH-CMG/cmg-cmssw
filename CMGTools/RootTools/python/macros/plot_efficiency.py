@@ -97,7 +97,7 @@ parser.add_option("-M", "--max",
 
 options, args = parser.parse_args()
 if len(args)<3:
-    print 'provide at least 3 arguments'
+    print 'provide at least 3 arguments: <region> <var> <input files>'
     sys.exit(1)
 
 options.ymin = float(options.ymin)
