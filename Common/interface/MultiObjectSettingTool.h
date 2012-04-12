@@ -18,7 +18,11 @@ namespace cmg {
   private:
     double deltaPhiStar(std::vector<edm::Ptr<reco::Candidate> > const&
                         input) const;
+
+    double ht(std::vector<edm::Ptr<reco::Candidate> > const&
+                        input) const;
   };
+
 } // namespace cmg
 
 //--------------------------------------------------------------------
