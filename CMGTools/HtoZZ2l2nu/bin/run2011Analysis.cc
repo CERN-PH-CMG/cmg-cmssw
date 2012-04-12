@@ -165,9 +165,9 @@ int main(int argc, char* argv[])
    std::vector<double> optim_Cuts1_met;
    std::vector<double> optim_Cuts1_mtmin;
    std::vector<double> optim_Cuts1_mtmax;
-   for(double met=50;met<200;met+=5.0){
-	 if(met>100 && int(met)%10!=0)continue;
-         if(met>140 && int(met)%20!=0)continue;
+   for(double met=65;met<160;met+=5.0){
+	 if(met>90 && int(met)%10!=0)continue;
+         if(met>120 && int(met)%20!=0)continue;
          for(double mtmin_=150;mtmin_<500;mtmin_+=25){
             double mtmin = mtmin_;
             if(mtmin<=150)mtmin=0;
