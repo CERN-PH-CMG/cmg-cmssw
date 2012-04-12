@@ -565,14 +565,14 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
 
       if((!Process[i].isTag("spimpose") || !Process[i]["spimpose"].toBool()) && !Process[i]["isdata"].toBool()){
          //Add to Stack
-	stack->Add(hist, "HIST");               
+	 stack->Add(hist, "HIST");               
          legA->AddEntry(hist, Process[i]["tag"].c_str(), "F");	 
          if(!mc){mc = (TH1D*)hist->Clone("mc");}else{mc->Add(hist);}
       }
       else if(Process[i].isTag("spimpose") && Process[i]["spimpose"].toBool())
 	{
 	  //legB->AddEntry(hist, Process[i]["tag"].c_str(), "L");
-	  legA->AddEntry(hist, Process[i]["tag"].c_str(), Process[i]["isdata"].toBool() ? "L" : "P" );
+	  legA->AddEntry(hist, Process[i]["tag"].c_str(), Process[i]["isdata"].toBool() ? "P" : "L" );
 	  spimposeOpts.push_back( Process[i]["isdata"].toBool() ? "e1" : "hist" );
 	  spimpose.push_back(hist);
 	}
