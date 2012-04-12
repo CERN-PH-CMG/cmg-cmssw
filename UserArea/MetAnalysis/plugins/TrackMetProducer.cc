@@ -26,18 +26,14 @@ using namespace std;
 using namespace reco;
 
 TrackMetProducer::TrackMetProducer(const edm::ParameterSet& iConfig) {
-  
   produces<reco::PFMETCollection>();
-
-  isData_ = iConfig.getParameter<bool>("isData");
-  utils = new MetUtilities(iConfig.getParameter<edm::ParameterSet>("puJetIDAlgo"),isData_); 
-
-  iDZCut_ = iConfig.getParameter<double>("iDZCut");
+  isData_         = iConfig.getParameter<bool>("isData");
+  utils_          = new MetUtilities(iConfig.getParameter<edm::ParameterSet>("puJetIDAlgo"),isData_);      
+  dZCut_          = iConfig.getParameter<double>("dZCut");
 }
 
 TrackMetProducer::~TrackMetProducer() { 
-
-  delete utils;
+  delete utils_;
 }
 
 void TrackMetProducer::beginJob() { }
@@ -45,7 +41,6 @@ void TrackMetProducer::beginJob() { }
 void TrackMetProducer::endJob() { } 
 
 void TrackMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
-
   // PF candidates 
   edm::Handle< edm::View<reco::Candidate> > collectionHandle;
   try { iEvent.getByLabel("particleFlow", collectionHandle); }
@@ -69,19 +64,17 @@ void TrackMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   for(int index = 0; index < (int)collection->size(); index++) {
     const PFCandidateRef pflowCandRef = collection->refAt(index).castTo<PFCandidateRef>();
     if(primaryVertex->size()==0) continue;
-    double pDZ  = utils->pfCandDz(pflowCandRef,vtx);
-    if(pDZ > iDZCut_) continue;
-    totalP4 += pflowCandRef->p4();
+    double pDZ  = utils_->pfCandDz(pflowCandRef,vtx);
+    if(pDZ > dZCut_) continue;
+    totalP4 -= pflowCandRef->p4();
     sumet   += pflowCandRef->pt();
   }
-
-  reco::Candidate::LorentzVector invertedP4(-totalP4);
-
+  
   CommonMETData output;
-  output.mex = invertedP4.px();
-  output.mey = invertedP4.py();
-  output.mez = invertedP4.pz();
-  output.met = invertedP4.pt();
+  output.mex = totalP4.px();
+  output.mey = totalP4.py();
+  output.mez = totalP4.pz();
+  output.met = totalP4.pt();
   output.sumet = sumet;
   output.phi = atan2(invertedP4.py(),invertedP4.px());
 

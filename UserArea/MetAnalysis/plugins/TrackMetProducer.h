@@ -27,7 +27,7 @@ class TrackMetProducer : public edm::EDProducer {
 	edm::InputTag collectionTag; 
 	edm::InputTag vtxcollectionTag;
 
-	MetUtilities *utils;
-        double iDZCut_;
-	bool isData_;
+	MetUtilities *utils_;
+        double        dZCut_;
+	bool          isData_;
 };

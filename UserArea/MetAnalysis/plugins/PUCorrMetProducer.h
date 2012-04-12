@@ -15,10 +15,10 @@
 
 using namespace reco;
 
-class NoPUMetProducer : public edm::EDProducer {
+class PUCorrMetProducer : public edm::EDProducer {
     public:
-        explicit NoPUMetProducer(const edm::ParameterSet&);
-        ~NoPUMetProducer();
+        explicit PUCorrMetProducer(const edm::ParameterSet&);
+        ~PUCorrMetProducer();
 
     private:
         virtual void beginJob() ;

@@ -1,24 +1,22 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/JetReco/interface/PFJet.h"
 
-#include "CMG/MetAnalysis/interface/MetUtilities.h"
+#include "CMG/MetAnalysis/interface/MVAMet.h"
 
 using namespace reco;
 
-class NoPUMetProducer : public edm::EDProducer {
+class MVAMetProducerExample : public edm::EDProducer {
     public:
-        explicit NoPUMetProducer(const edm::ParameterSet&);
-        ~NoPUMetProducer();
+        explicit MVAMetProducerExample(const edm::ParameterSet&);
+        ~MVAMetProducerExample();
 
     private:
         virtual void beginJob() ;
@@ -29,9 +27,6 @@ class NoPUMetProducer : public edm::EDProducer {
 	edm::InputTag uncorPFJetCollectionTag;
 	edm::InputTag srcVertices_;
 
-	double        dZCut_;
-	double        jetPtThreshold_;
 	bool          isData_;
-	MetUtilities *utils_;
-	//FactorizedJetCorrector* iJetCorrector;
+	MVAMet        *mvaMET_;
 };

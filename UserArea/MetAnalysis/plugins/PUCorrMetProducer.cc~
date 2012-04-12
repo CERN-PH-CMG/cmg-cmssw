@@ -31,31 +31,29 @@ using namespace std;
 using namespace reco;
 
 PUCorrMetProducer::PUCorrMetProducer(const edm::ParameterSet& iConfig) {
+  
   produces<reco::PFMETCollection>();
-  utils_          = new MetUtilities(iConfig.getParameter<edm::ParameterSet>("puJetIDAlgo"),isData_);      
-  dZCut_          = iConfig.getParameter<double>("dZCut");
-  jetPtThreshold_ = iConfig.getParameter<double>("jetPtThreshold");
+  MetUtilities utils(iConfig);
+
+  TString path(getenv("CMSSW_BASE"));
+  path += "/src/CMG/MetAnalysis/data/";  
+  std::vector<JetCorrectorParameters> correctionParameters;
+  correctionParameters.push_back(JetCorrectorParameters((path+"GR_R_42_V23_AK5PF_L1FastJet.txt").Data()));
+  correctionParameters.push_back(JetCorrectorParameters((path+"GR_R_42_V23_AK5PF_L2Relative.txt").Data()));
+  correctionParameters.push_back(JetCorrectorParameters((path+"GR_R_42_V23_AK5PF_L3Absolute.txt").Data()));
+  if(fData) correctionParameters.push_back(JetCorrectorParameters((path+"GR_R_42_V23_AK5PF_L2L3Residual.txt").Data()));
+  fJetCorrector = new FactorizedJetCorrector(correctionParameters);     
 }
-// MetUtilities utils(iConfig);
-//  TString path(getenv("CMSSW_BASE"));
-//  path += "/src/CMG/MetAnalysis/data/";  
-//  std::vector<JetCorrectorParameters> correctionParameters;
-//  correctionParameters.push_back(JetCorrectorParameters((path+"GR_R_42_V23_AK5PF_L1FastJet.txt").Data()));
-//  correctionParameters.push_back(JetCorrectorParameters((path+"GR_R_42_V23_AK5PF_L2Relative.txt").Data()));
-//  correctionParameters.push_back(JetCorrectorParameters((path+"GR_R_42_V23_AK5PF_L3Absolute.txt").Data()));
-//  if(fData) correctionParameters.push_back(JetCorrectorParameters((path+"GR_R_42_V23_AK5PF_L2L3Residual.txt").Data()));
-//  fJetCorrector = new FactorizedJetCorrector(correctionParameters);     
-//}
 
 PUCorrMetProducer::~PUCorrMetProducer() { 
-  delete utils_;
+   delete fJetCorrector;          // fixme
 }
 
-void PUCorrMetProducer::beginJob() { }
+void NoPUMetProducer::beginJob() { }
 
-void PUCorrMetProducer::endJob() { } 
+void NoPUMetProducer::endJob() { } 
 
-void PUCorrMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
+void NoPUMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
    // PF candidates
   edm::Handle< edm::View<reco::Candidate> > PFcandCollHandle;
@@ -68,17 +66,6 @@ void PUCorrMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   try { iEvent.getByLabel("ak5PFJets",uncorPFJetCollectionHandle); }
   catch ( cms::Exception& ex ) { edm::LogWarning("NoPUMetProducer") << "Can't get candidate collection: ak5PFJets"; }
   const edm::View<reco::Candidate> *uncorPFJetColl = uncorPFJetCollectionHandle.product();
-
-  // fully corrected PF jets
-  edm::Handle< edm::View<reco::Candidate> > corrPFJetCollectionHandle;
-  if(isData_) { 
-    try { iEvent.getByLabel("ak5PFJetsL1FastL2L3Residual",corrPFJetCollectionHandle); } 
-    catch ( cms::Exception& ex ) { edm::LogWarning("NoPUMetProducer") << "Can't get candidate collection for: ak5PFJetsL1FastL2L3Residual"; }
-  } else { 
-    try { iEvent.getByLabel("ak5PFJetsL1FastL2L3",corrPFJetCollectionHandle); } 
-    catch ( cms::Exception& ex ) { edm::LogWarning("NoPUMetProducer") << "Can't get candidate collection for: ak5PFJetsL1FastL2L3"; }
-  }
-  const edm::View<reco::Candidate> *corrPFJetColl = corrPFJetCollectionHandle.product();
   
   // vertices                                                                                                             
   edm::Handle<reco::VertexCollection> primaryVertex;
@@ -105,40 +92,30 @@ void PUCorrMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     if(primaryVertex->size()==0) continue;
     double pDZ  = utils.pfCandDz(pflowCandRef,pv);
     if(pDZ > fDZCut) continue;
-    totalP4 -= pflowCandRef->p4();
+    totalP4 += pflowCandRef->p4();
     sumet   += pflowCandRef->pt();
   }
-  //Neutral PF Candidates
+  
   for(int index = 0; index < (int)PFcandColl->size(); index++) {
     const PFCandidateRef pflowCandRef = PFcandColl->refAt(index).castTo<PFCandidateRef>();
+    if(primaryVertex->size()==0) continue;
     if(iPFCandRef->trackRef().isNonnull() || iPFCandRef->gsfTrackRef().isNonnull() || (iPFCandRef->muonRef().isNonnull() && iPFCandRef->muonRef()->innerTrack().isNonnull())) continue;
-    totalP4 -= pflowCandRef->p4();
+    totalP4 += pflowCandRef->p4();
     sumet   += pflowCandRef->pt();
   }
   //Remove Neutrals from the PU Jets
   for(int index = 0; index < (int)uncorPFJetColl->size(); index++) {
     const Candidate *cand   = &(uncorPFJetColl->at(index));
-    const Candidate *uncorrCand   = &(uncorrPFJetColl->at(index));
-    const PFJet     *pUncorrPFJet = dynamic_cast< const PFJet * > ( &(*uncorrCand) );    
-    for(int index2 = 0; index2 < (int)corrPFJetColl->size(); index2++) {   // corrected jets collection
-      const Candidate *corrCand   = &(corrPFJetColl->at(index2));
-      const PFJet     *pCorrPFJet = dynamic_cast< const PFJet * > ( &(*corrCand) );    
-      if(  pUncorrPFJet->jetArea() == pCorrPFJet->jetArea() ) {      // to match corrected and uncorrected jets
-	if(  fabs(pUncorrPFJet->eta() - pCorrPFJet->eta())<0.01 ) {  // to match corrected and uncorrected jets
-	  if( pCorrPFJet->pt()< jetPtThreshold_ ) continue;  
-	  if(utils.passJetId(pPFJet     ,pv,*hRho)) continue;
-	  addNeut(pPFJet,totalP4,sumet,fJetCorrector,*hRho,-1);             
-	  break;
-	}
-      }
-    }
+    const PFJet     *pPFJet = dynamic_cast< const PFJet * > ( &(*cand) );    
+    if(utils.passJetId(pPFJet     ,pv  ,fJetCorrector,*hRho)) continue;
+    addNeut(pPFJet,totalP4,sumet,fJetCorrector,*hRho,-1);             
   }
-  
+
   CommonMETData output;
-  output.mex = totalP4.px();
-  output.mey = totalP4.py();
-  output.mez = totalP4.pz();
-  output.met = totalP4.pt();
+  output.mex = invertedP4.px();
+  output.mey = invertedP4.py();
+  output.mez = invertedP4.pz();
+  output.met = invertedP4.pt();
   output.sumet = sumet;
   output.phi = atan2(invertedP4.py(),invertedP4.px());
   

@@ -29,20 +29,15 @@ using namespace std;
 using namespace reco;
 
 NoPUMetProducer::NoPUMetProducer(const edm::ParameterSet& iConfig) {
-  
   produces<reco::PFMETCollection>();
-
-  isData_ = iConfig.getParameter<bool>("isData");
-  utils = new MetUtilities(iConfig.getParameter<edm::ParameterSet>("puJetIDAlgo"),isData_);      
-
-  iDZCut_ = iConfig.getParameter<double>("iDZCut");
-
+  isData_         = iConfig.getParameter<bool>("isData");
+  utils_          = new MetUtilities(iConfig.getParameter<edm::ParameterSet>("puJetIDAlgo"));      
+  dZCut_          = iConfig.getParameter<double>("dZCut");
   jetPtThreshold_ = iConfig.getParameter<double>("jetPtThreshold");
 }
 
 NoPUMetProducer::~NoPUMetProducer() { 
-
-  delete utils;
+  delete utils_;
 }
 
 void NoPUMetProducer::beginJob() { }
@@ -94,57 +89,30 @@ void NoPUMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   //Now the Met basics
   Candidate::LorentzVector totalP4(0,0,0,0);
-  float sumet = 0.0;
-  
+  double sumet = 0.;
+
   //Track MET
   for(int index = 0; index < (int)PFcandColl->size(); index++) {
     const PFCandidateRef pflowCandRef = PFcandColl->refAt(index).castTo<PFCandidateRef>();
     if(primaryVertex->size()==0) continue;
-    double pDZ  = utils->pfCandDz(pflowCandRef,pv);
-    if(pDZ > iDZCut_) continue;   
-    totalP4 += pflowCandRef->p4();
+    double pDZ  = utils_->pfCandDz(pflowCandRef,pv);
+    if(pDZ > dZCut_) continue;   
+    totalP4 -= pflowCandRef->p4();
     sumet   += pflowCandRef->pt();
   }
-
-  // cout << "total p4:"<< endl;
-  // cout << totalP4.x() << " " << totalP4.y() << " " << totalP4.z() << endl;
-
-  reco::Candidate::LorentzVector invertedP4(-totalP4);
-  reco::Candidate::LorentzVector *PinvertedP4;
-  PinvertedP4 = &invertedP4;
-
-  // cout << "invertedP4:" << endl;
-  // cout << invertedP4.x() << " " << invertedP4.y() << " " << invertedP4.z() << endl;
-
-  float * Psumet;
-  Psumet = &sumet;
-  // cout << "sumet = " << sumet << endl;
 
   // Neutrals from the Jets
   for(int index = 0; index < (int)uncorrPFJetColl->size(); index++) {      // uncorrecte jets collection
     const Candidate *uncorrCand   = &(uncorrPFJetColl->at(index));
     const PFJet     *pUncorrPFJet = dynamic_cast< const PFJet * > ( &(*uncorrCand) );    
-
     for(int index2 = 0; index2 < (int)corrPFJetColl->size(); index2++) {   // corrected jets collection
       const Candidate *corrCand   = &(corrPFJetColl->at(index2));
       const PFJet     *pCorrPFJet = dynamic_cast< const PFJet * > ( &(*corrCand) );    
-      
       if(  pUncorrPFJet->jetArea() == pCorrPFJet->jetArea() ) {      // to match corrected and uncorrected jets
 	if(  fabs(pUncorrPFJet->eta() - pCorrPFJet->eta())<0.01 ) {  // to match corrected and uncorrected jets
-
 	  if( pCorrPFJet->pt()< jetPtThreshold_ ) continue;  
-
-	  // cout << "index = " << index << ", index2 = " << index2 << endl; 
-	  // cout << "jets comparison: uncorr area = " << pUncorrPFJet->jetArea() << ", corr area = " << pCorrPFJet->jetArea()  
-	  //     << ", uncorr eta = " << pUncorrPFJet->eta() << ", corr eta = " << pCorrPFJet->eta()  
-	  //     << ", uncorr phi = " << pUncorrPFJet->phi() << ", corr phi = " << pCorrPFJet->phi()  
-	  //     << ", uncorr pt = " << pUncorrPFJet->pt() << ", corr = " << pCorrPFJet->pt() << endl;
-	  if(!utils->passJetId(pUncorrPFJet, pCorrPFJet, pv, *primaryVertex, *hRho)) continue;
-	  
-	  // if(!utils->filter(pCorrPFJet, iPhi1, iEta1, iPhi2, iEta2)) continue;       // fixme: should we do this cleaning?
-	  
-	  utils->addNeut(pUncorrPFJet, pCorrPFJet, PinvertedP4, Psumet, *hRho, 1);   
-	  
+	  if(!utils_->passJetId(pUncorrPFJet, pCorrPFJet, pv, *primaryVertex)) continue;
+	  utils_->addNeut(pUncorrPFJet, pCorrPFJet, &totalP4, &sumet, 1);   
 	  break;
 	}
       }
@@ -152,12 +120,12 @@ void NoPUMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
 
   CommonMETData output;
-  output.mex = invertedP4.px();
-  output.mey = invertedP4.py();
-  output.mez = invertedP4.pz();
-  output.met = invertedP4.pt();
+  output.mex = totalP4.px();
+  output.mey = totalP4.py();
+  output.mez = totalP4.pz();
+  output.met = totalP4.pt();
   output.sumet = sumet;
-  output.phi = atan2(invertedP4.py(),invertedP4.px());
+  output.phi = atan2(totalP4.py(),totalP4.px());
   
   PFSpecificAlgo pf;
   std::auto_ptr<reco::PFMETCollection> pfmetcoll;

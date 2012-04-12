@@ -4,6 +4,7 @@
 <use   name="FWCore/PluginManager"/>
 <use   name="root"/>
 <use   name="rootcore"/>
+<use   name="roottmva"/>
 <use   name="DataFormats/JetReco"/>
 <use   name="DataFormats/METReco"/>
 <use   name="CondFormats/JetMETObjects"/>
