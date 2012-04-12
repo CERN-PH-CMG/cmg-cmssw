@@ -128,7 +128,7 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("mn_d0",evSummary_.mn_d0 ,"mn_d0[mn]/F");
   t_->Branch("mn_dZ",evSummary_.mn_dZ ,"mn_dZ[mn]/F");
 
-  //selected jets
+  //selected CHS jets
   t_->Branch("jn",         &evSummary_.jn,         "jn/I");
   t_->Branch("jn_px",      evSummary_.jn_px,       "jn_px[jn]/F");
   t_->Branch("jn_py",      evSummary_.jn_py,       "jn_py[jn]/F");
@@ -144,12 +144,8 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("jn_genpt",   evSummary_.jn_genpt,    "jn_genpt[jn]/F");
   t_->Branch("jn_pumva",   evSummary_.jn_pumva,    "jn_pumva[jn]/F");
   t_->Branch("jn_tightId",   evSummary_.jn_tightId,    "jn_tightId[jn]/O");
-  t_->Branch("htvec_px",   &evSummary_.htvec_px, "htvec_px/F");
-  t_->Branch("htvec_py",   &evSummary_.htvec_py, "htvec_py/F");
-  t_->Branch("htvec_pz",   &evSummary_.htvec_pz, "htvec_pz/F");
-  t_->Branch("htvec_en",   &evSummary_.htvec_en, "htvec_en/F");
 
-  //selected associated jets 
+  //selected PF jets 
   t_->Branch("ajn",         &evSummary_.ajn,         "ajn/I");
   t_->Branch("ajn_px",      evSummary_.ajn_px,       "ajn_px[ajn]/F");
   t_->Branch("ajn_py",      evSummary_.ajn_py,       "ajn_py[ajn]/F");
@@ -162,8 +158,16 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("ajn_neutHadFrac",  evSummary_.ajn_neutHadFrac,  "ajn_neutHadFrac[ajn]/F");
   t_->Branch("ajn_neutEmFrac",   evSummary_.ajn_neutEmFrac,   "ajn_neutEmFrac[ajn]/F");
   t_->Branch("ajn_chHadFrac",   evSummary_.ajn_chHadFrac,    "ajn_chHadFrac[ajn]/F");
+  t_->Branch("ajn_genpt",   evSummary_.ajn_genpt,    "ajn_genpt[jn]/F");
   t_->Branch("ajn_pumva",   evSummary_.ajn_pumva,    "ajn_pumva[jn]/F");
   t_->Branch("ajn_tightId",   evSummary_.ajn_tightId,    "ajn_tightId[jn]/O");
+
+  //higgs
+  t_->Branch("htvec_px",   &evSummary_.htvec_px, "htvec_px/F");
+  t_->Branch("htvec_py",   &evSummary_.htvec_py, "htvec_py/F");
+  t_->Branch("htvec_pz",   &evSummary_.htvec_pz, "htvec_pz/F");
+  t_->Branch("htvec_en",   &evSummary_.htvec_en, "htvec_en/F");
+
 
   //primary vertex
   t_->Branch("vtx_px",    &evSummary_.vtx_px,      "vtx_px/F");
@@ -465,6 +469,7 @@ void ZZ2l2nuSummaryHandler::resetStruct()
   evSummary_.jn=0;     evSummary_.ajn=0;
   evSummary_.gn=0;
   evSummary_.nmet=0;
+  evSummary_.ajn_genpt = 0;
 }
 
 //

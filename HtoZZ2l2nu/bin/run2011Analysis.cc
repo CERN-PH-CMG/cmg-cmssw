@@ -150,13 +150,13 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",20,0,4) );
   mon.addHistogram( new TH1F( "wzdecaymode", ";W decay mode (gen level);Events",20,0,20) );
   mon.addHistogram( new TH1F( "met_met"  , ";E_{T}^{miss};Events", 50,0,500) );
-  mon.addHistogram( new TH1F( "met_rawmet"  , ";E_{T}^{miss} (raw);Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_metRaw"  , ";E_{T}^{miss} (raw);Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMet"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMetL"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - longi.;Events", 50,-250,250) );
   mon.addHistogram( new TH1F( "met_redMetT"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - perp.;Events", 50,-250,250) );
-  mon.addHistogram( new TH1F( "met_rawRedMet"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) (raw);Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_redMetRaw"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) (raw);Events", 50,0,500) );
   mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 100,0,1000) );
-  mon.addHistogram( new TH1F( "rawmt"  , ";M_{T} (raw);Events", 100,0,1000) );
+  mon.addHistogram( new TH1F( "mtRaw"  , ";M_{T} (raw);Events", 100,0,1000) );
 
   //##############################################
   //######## STUFF FOR CUTS OPTIMIZATION  ########
@@ -168,10 +168,13 @@ int main(int argc, char* argv[])
    for(double met=50;met<200;met+=5.0){
 	 if(met>100 && int(met)%10!=0)continue;
          if(met>140 && int(met)%20!=0)continue;
-         for(double mtmin=200;mtmin<500;mtmin+=25){
+         for(double mtmin_=150;mtmin_<500;mtmin_+=25){
+            double mtmin = mtmin_;
+            if(mtmin<=150)mtmin=0;
 	    if(mtmin>350 && int(mtmin)%50!=0)continue;
             for(double mtmax=mtmin+100;mtmax<mtmin+350;mtmax+=25){
                if(mtmax>=mtmin+325)mtmax=3000;
+               if(mtmin==0 && mtmax!=3000)continue;
 	       if(mtmin>350 && int(mtmax)%50!=0)continue;
                if(mtmax-mtmin>200 && int(mtmax)%50!=0)continue;
                optim_Cuts1_met    .push_back(met);
@@ -387,17 +390,17 @@ int main(int argc, char* argv[])
 	  genJetsPt.push_back( phys.ajets[ijet].genPt);
 	}
       //base raw METs
-      LorentzVector rawZvv(phys.met[0]);
+      LorentzVector zvvRaw(phys.met[0]);
       LorentzVector rawClusteredMet(zll);            rawClusteredMet *= -1;
       for(size_t ijet=0; ijet<jetsP4.size(); ijet++) rawClusteredMet -= jetsP4[ijet];
-      LorentzVector rawRedMet(METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, rawClusteredMet, rawZvv,false));
-      Float_t rawMt( METUtils::transverseMass(zll,rawZvv,true) );
+      LorentzVector redMetRaw(METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, rawClusteredMet, zvvRaw,false));
+      Float_t mtRaw( METUtils::transverseMass(zll,zvvRaw,true) );
       
       //prepare variations (first variation is the baseline, corrected for JER) 
       LorentzVectorCollection zvvs,redMets;
       std::vector<Float_t>  mts,mt3s,redMetLs,redMetTs;
       std::vector<LorentzVectorCollection> jets;
-      METUtils::computeVariation(jetsP4, genJetsPt, rawZvv, jets, zvvs, &jecUnc);
+      METUtils::computeVariation(jetsP4, genJetsPt, zvvRaw, jets, zvvs, &jecUnc);
       for(size_t ivars=0; ivars<zvvs.size(); ivars++)
 	{
 	  LorentzVector clusteredMetP4(zll); clusteredMetP4 *= -1;
@@ -500,13 +503,13 @@ int main(int argc, char* argv[])
 		  if(passDphijmet){
 		    mon.fillHisto("eventflow",tags_full,5,iweight);
 		    mon.fillHisto("met_met",tags_full,zvv.pt(),iweight);
-		    mon.fillHisto("met_rawmet",tags_full,rawZvv.pt(),iweight);
+		    mon.fillHisto("met_metRaw",tags_full,zvvRaw.pt(),iweight);
 		    mon.fillHisto("met_redMet",tags_full,redMet.pt(),iweight);
 		    mon.fillHisto("met_redMetL",tags_full,redMetT,iweight);
 		    mon.fillHisto("met_redMetT",tags_full,redMetL,iweight);
-		    mon.fillHisto("met_rawRedMet",tags_full,rawRedMet.pt(),iweight);
+		    mon.fillHisto("met_redMetRaw",tags_full,redMetRaw.pt(),iweight);
 		    mon.fillHisto("mt",tags_full,mt,iweight);
-		    mon.fillHisto("rawmt",tags_full,rawMt,iweight);
+		    mon.fillHisto("mtRaw",tags_full,mtRaw,iweight);
 				  
 		    if(passBaseMet){
 		      mon.fillHisto  ("eventflow",tags_full,6,iweight);
