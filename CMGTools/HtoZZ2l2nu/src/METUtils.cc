@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2012/04/01 19:51:30 $
- *  $Revision: 1.9 $
+ *  $Date: 2012/04/03 19:56:04 $
+ *  $Revision: 1.10 $
  *  \author G. Cerminara & D. Trocino & P. Silva & L. Quertenmont
  */
 
@@ -384,6 +384,16 @@ LorentzVector redMET(RedMetType Type, const LorentzVector& theLepton1, double si
 	//finish computation of the variation
 	jetsVar.push_back(newJets);
 	newMet -= jetDiff; metsVar.push_back(newMet);
+
+	//SOME DEBUGING PRINTOUT... CAN BE SAFELY REMOVED
+        if(ivar==JER && newMet.pt()>2000){
+           printf("%f - %f - %f : ",newMet.pt(), met.pt(), jetDiff.pt());
+           for(size_t ijet=0; ijet<jets.size(); ijet++){
+              LorentzVector iSmearJet=METUtils::smearedJet(jets[ijet],genjetsPt[ijet],mode);
+              printf("Jet%i %f(%f)>%f  ", (int)ijet, jets[ijet].pt(), genjetsPt[ijet], iSmearJet.pt());
+           }printf("\n");
+        }
+
       }
   }
 
