@@ -79,7 +79,7 @@ void getCutFlowFromShape(std::vector<TString> ch, const map<TString, Shape_t> &a
 void estimateNonResonantBackground(std::vector<TString> &selCh,TString ctrlCh,const map<TString, Shape_t> &allShapes, TString shape);
 
 
-void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch, std::vector<TString>& systs, std::vector<TH1*>& hshapes,  bool runSystematics, bool shape, Int_t index);
+void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch, std::vector<TString>& systs, std::vector<TH1*>& hshapes,  bool runSystematics, bool shape);
 DataCardInputs convertHistosForLimits(Int_t mass,TString histo="finalmt",TString url="plotter.root",TString Json="", TString outDir="./", bool runSystematics=true, bool shape=true, Int_t index=-1);
 std::vector<TString> buildDataCard(Int_t mass, TString histo="finalmt", TString url="plotter.root",TString Json="", TString outDir="./", bool runSystematics=true, bool shape=true, Int_t index=-1);
 void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t> &allShapes, TString mainHisto, TString sideBandHisto);
@@ -92,21 +92,24 @@ bool mergeWWandZZ = true;
 bool skipWW = true;
 std::vector<TString> AnalysisBins;
 
+int indexvbf = -1;
+
 void printHelp()
 {
   printf("Options\n");
-  printf("--in      --> input file with from plotter\n");
-  printf("--json    --> json file with the sample descriptor\n");
-  printf("--histo   --> name of histogram to be used\n");
-  printf("--index   --> index of selection to be used (Xbin in histogram to be used)\n");
-  printf("--m       --> higgs mass to be considered\n");
-  printf("--syst    --> use this flag if you want to run systematics, default is no systematics\n");
-  printf("--shape   --> use this flag if you want to run shapeBased analysis, default is cut&count\n");
-  printf("--subNRB  --> use this flag if you want to subtract non-resonant-backgounds similarly to what was done in 2011 (will also remove H->WW)\n");
-  printf("--subNRB12--> use this flag if you want to subtract non-resonant-backgounds using a new technique that keep H->WW\n");
-  printf("--closure --> use this flag if you want to perform a MC closure test (use only MC simulation)\n");
-  printf("--bins    --> list of bins to be used (they must be comma separated without space)\n");
-  printf("--HWW     --> use this flag to consider HWW signal)\n");
+  printf("--in       --> input file with from plotter\n");
+  printf("--json     --> json file with the sample descriptor\n");
+  printf("--histo    --> name of histogram to be used\n");
+  printf("--index    --> index of selection to be used (Xbin in histogram to be used)\n");
+  printf("--indexvbf --> index of selection to be used for the vbf bin (if unspecified same as --index)\n");
+  printf("--m        --> higgs mass to be considered\n");
+  printf("--syst     --> use this flag if you want to run systematics, default is no systematics\n");
+  printf("--shape    --> use this flag if you want to run shapeBased analysis, default is cut&count\n");
+  printf("--subNRB   --> use this flag if you want to subtract non-resonant-backgounds similarly to what was done in 2011 (will also remove H->WW)\n");
+  printf("--subNRB12 --> use this flag if you want to subtract non-resonant-backgounds using a new technique that keep H->WW\n");
+  printf("--closure  --> use this flag if you want to perform a MC closure test (use only MC simulation)\n");
+  printf("--bins     --> list of bins to be used (they must be comma separated without space)\n");
+  printf("--HWW      --> use this flag to consider HWW signal)\n");
 }
 
 //
@@ -137,6 +140,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--subNRB")  !=string::npos) { subNRB2011=true; skipWW=true; printf("subNRB2011 = True\n");}
     else if(arg.find("--HWW")     !=string::npos) { skipWW=false; printf("HWW = True\n");}
     else if(arg.find("--closure") !=string::npos) { MCclosureTest=true; printf("MCclosureTest = True\n");}
+    else if(arg.find("--indexvbf")!=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&indexvbf); i++; printf("indexVBF = %i\n", indexvbf);}
     else if(arg.find("--index")   !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&index); i++; printf("index = %i\n", index);}
     else if(arg.find("--in")      !=string::npos && i+1<argc)  { inFileUrl = argv[i+1];  i++;  printf("in = %s\n", inFileUrl.Data()); }
     else if(arg.find("--json")    !=string::npos && i+1<argc)  { jsonFile  = argv[i+1];  i++;  printf("json = %s\n", jsonFile.Data()); }
@@ -448,7 +452,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
          if(hshape2D){
             histoName.ReplaceAll(ch,ch+"_proj"+procCtr);
    	    hshape   = hshape2D->ProjectionY(histoName,cutBin,cutBin);
-            if(hshape->Integral()<=0){hshape->Reset(); hshape->SetBinContent(1, 1E-10);}
+            if(hshape->Integral()<=0 && !isData){hshape->Reset(); hshape->SetBinContent(1, 1E-10);}
 	    hshape->SetDirectory(0);
 	    hshape->SetTitle(proc);
 	    fixExtremities(hshape,true,true);
@@ -741,8 +745,10 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   const size_t nsh=sizeof(sh)/sizeof(TString);
   for(size_t i=0; i<nch; i++){
      for(size_t b=0; b<AnalysisBins.size(); b++){
+       int index_ = index;
+       if(indexvbf>=0 && AnalysisBins[b] =="vbf"){printf("use vbf index(%i) for bin %s\n", indexvbf, AnalysisBins[b].Data()); index_ = indexvbf;}
         for(size_t j=0; j<nsh; j++){
-	     allShapes[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],index,Root);
+	     allShapes[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],index_,Root);
         }
      }
   }
@@ -793,7 +799,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
         }
 
         TString proc(h->GetTitle());
-        convertHistosForLimits_core(dci, proc, chbin, systs, hshapes, runSystematics, shape, index);
+        convertHistosForLimits_core(dci, proc, chbin, systs, hshapes, runSystematics, shape);
         allProcs.insert(proc);
      }
 
@@ -816,7 +822,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
         TString proc(h->GetTitle());
 	if(!proc.Contains(massStr))continue;
 	proc = "asignal";
-        convertHistosForLimits_core(dci, proc, chbin, systs, hshapes, runSystematics, shape, index);
+        convertHistosForLimits_core(dci, proc, chbin, systs, hshapes, runSystematics, shape);
         allProcs.insert(proc);
      }
 
@@ -828,7 +834,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
      systs.push_back("");
      hshapes.push_back(h);
      TString proc(h->GetTitle());
-     convertHistosForLimits_core(dci, proc, chbin, systs, hshapes, runSystematics, shape, index);
+     convertHistosForLimits_core(dci, proc, chbin, systs, hshapes, runSystematics, shape);
 
      //return to parent dir
      fout->cd("..");     
@@ -887,7 +893,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 
 
 
-void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch, std::vector<TString>& systs, std::vector<TH1*>& hshapes,  bool runSystematics, bool shape, Int_t index){
+void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch, std::vector<TString>& systs, std::vector<TH1*>& hshapes,  bool runSystematics, bool shape){
    proc.ReplaceAll("#bar{t}","tbar");
    proc.ReplaceAll("Z-#gamma^{*}+jets#rightarrow ll","dy");
    proc.ReplaceAll("(","");    proc.ReplaceAll(")","");    proc.ReplaceAll("+","");    proc.ReplaceAll(" ","");
@@ -963,7 +969,8 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch
         if(temp->Integral()!=0)dci.systs[systName][RateKey_t(proc,ch)]=1.0;
           delete temp;
         }else if(proc=="asignal" && syst==""){dci.rates[RateKey_t(proc,ch)]=hshape->Integral();
-        }else if(proc!="data" && syst==""){if(hshape->Integral()>1E-9)dci.rates[RateKey_t(proc,ch)]=hshape->Integral();
+//        }else if(proc!="data" && syst==""){if(hshape->Integral()>1E-9)dci.rates[RateKey_t(proc,ch)]=hshape->Integral();
+        }else if(proc!="data" && syst==""){dci.rates[RateKey_t(proc,ch)]= hshape->Integral()>1E-9 ? hshape->Integral() : 0.0;
         }else if(proc=="data" && syst==""){dci.obs[RateKey_t("obs",ch)]=hshape->Integral();
         }
    }
