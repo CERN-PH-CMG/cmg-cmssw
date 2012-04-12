@@ -11,30 +11,12 @@ def getFiles(dataset, user, pattern):
     return ['root://eoscms//eos/cms%s' % f for f in files]
 
 
-## import re
 
-## def getCleanPatFiles(dataset, user):
-##     trees = getFiles(dataset, user, 'tree.*root')
-##     pats = getFiles(dataset, user, 'pat.*root')
-##     pattern = re.compile('.*_(\d+)\.root') 
-##     def num( file ):
-##         m = pattern.match(file)
-##         if m is not None:
-##             return int( m.group(1) )
-##     treenums = map(num, trees)
-##     cleanpats = []
-##     for patfile in pats:
-##         n = num(patfile)
-##         if n in treenums:
-##             cleanpats.append(patfile)
-##     return cleanpats
-
-
-## import pprint
-
-## pprint.pprint(getCleanPatFiles( '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_Chamonix12_START44_V10-v2/AODSIM/PAT_CMG_V3_0_0', 'cmgtools'))
-
-
+def baselineIdMuon(muon):
+    return muon.numberOfValidTrackerHits() > 10 and abs(muon.dz())<0.5
+    
+def baselineIdIsoMuon(muon):
+    return baselineIdMuon(muon) and isoLepton(muon)
     
 def idMuon(muon):
     return muon.getSelection('cuts_vbtfmuon') and abs(muon.dz())<0.5
@@ -55,7 +37,7 @@ trigMap = { 'HLT_IsoMu15_v5':'hltSingleMuIsoL3IsoFiltered15',
 effMuAnaStd = cfg.Analyzer(
     'EfficiencyAnalyzer_std',
     # recselFun = 'trigObjs',
-    recselFun = idIsoMuon,
+    recselFun = baselineIdIsoMuon,
     # recselFun = isoLepton,
     # refselFun = idMuon,
     # triggerMap = trigMap, 
@@ -183,15 +165,16 @@ dummyAna = cfg.Analyzer(
 
 selectedComponents  = [QCDMuH20Pt15, DYJets] 
 
-splitFactor = 5 
-DYJets.splitFactor = splitFactor
-QCDMuH20Pt15.splitFactor = splitFactor
-QCDMuH15to20Pt5.splitFactor = splitFactor
-Hig105.splitFactor = splitFactor
+DYJets.splitFactor = 5
+QCDMuH20Pt15.splitFactor = 25
+
+DYJets.files = DYJets.files[:10]
+QCDMuH20Pt15.files = QCDMuH20Pt15.files[:50]
 
 test = False
+
 if test:
-    sam = QCDMuPt5bin15to20
+    sam = QCDMuH20Pt15
     sam.files = sam.files[:1]
     selectedComponents = [sam]
     sam.splitFactor = 1
