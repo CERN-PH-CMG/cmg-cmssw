@@ -106,6 +106,17 @@
   <class name="std::vector<cmg::QuadMuon>"/>
   <class name="edm::Wrapper<cmg::QuadMuon>"/>
   <class name="edm::Wrapper<std::vector<cmg::QuadMuon> >"/>
+
+  <class name="cmg::QuadElectron"/>
+  <class name="std::vector<cmg::QuadElectron>"/>
+  <class name="edm::Wrapper<cmg::QuadElectron>"/>
+  <class name="edm::Wrapper<std::vector<cmg::QuadElectron> >"/>
+
+  <class name="cmg::DiMuonDiElectron"/>
+  <class name="std::vector<cmg::DiMuonDiElectron>"/>
+  <class name="edm::Wrapper<cmg::DiMuonDiElectron>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiMuonDiElectron> >"/>
+
  
   <class name="cmg::BaseMET"/>
   <class name="std::vector<cmg::BaseMET>"/>

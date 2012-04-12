@@ -29,3 +29,23 @@ int cmg::TriggerObject::getPrescale(const std::string& name) const{
     const int index = getIndex(name);
     return (index != -1) ? prescales_.at(index) : UnSet(int);
 }
+
+
+bool cmg::TriggerObject::getDecisionWithMaxPrescaleRegExp(const TRegexp& re,const int prescale ) const{
+     bool result = false;
+     const cmg::AbstractPhysicsObject::Strings names = getSelectionNames();
+     for(cmg::AbstractPhysicsObject::Strings::const_iterator s = names.begin(); s != names.end(); ++s){
+       const TString t(s->c_str());
+       if(t.Index(re) >= 0 )
+	 if(getSelection(*s))
+	   if(getPrescale(*s)<=prescale) {
+	     result = true;
+	   }
+     }
+
+     return result;
+ }
+
+
+
+
