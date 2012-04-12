@@ -62,9 +62,9 @@ def addMuonCustomIsoDeposit( process, sequenceName, postfix ):
 #    print userIso ###
 
     userIsoD = getattr(process, "patMuons" + postfix).isoDeposits
-    userIsoD.tracker = cms.InputTag("muIsoDepositTk")
-    userIsoD.ecal    = cms.InputTag("muIsoDepositCalByAssociatorTowers","ecal")
-    userIsoD.hcal    = cms.InputTag("muIsoDepositCalByAssociatorTowers","hcal")
+    userIsoD.tracker = cms.InputTag("muons","muIsoDepositTk")
+    userIsoD.ecal    = cms.InputTag("muons","ecal")
+    userIsoD.hcal    = cms.InputTag("muons","hcal")
 ## Example of adding user iso
 #     if not userIsoD.hasParameter('user') : userIsoD.user = muonIsoDeposits.user
 #     else : userIsoD.user += muonIsoDeposits.user
