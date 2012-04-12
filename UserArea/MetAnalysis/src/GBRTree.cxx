@@ -6,6 +6,7 @@ using namespace std;
 #include "TMVA/DecisionTreeNode.h"
 #include "TMVA/DecisionTree.h"
 
+ClassImp(GBRTree)
 
 //_______________________________________________________________________
 GBRTree::GBRTree() : 

@@ -9,6 +9,7 @@
 <use   name="DataFormats/METReco"/>
 <use   name="CondFormats/JetMETObjects"/>
 <use   name="CMG/JetIDAnalysis"/>
+<use   name="rootrflx"/>
 <export>
   <lib   name="1"/>
 </export>

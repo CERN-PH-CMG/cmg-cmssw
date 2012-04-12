@@ -29,8 +29,8 @@ MVAMetProducerFromScratch::MVAMetProducerFromScratch(const edm::ParameterSet& iC
   fUtils          = new MetUtilities(iConfig.getParameter<edm::ParameterSet>("puJetIDAlgo"));
   fMVAMet         = new MVAMet();
   fMVAMet         ->Initialize(iConfig,
-			       TString((getenv("CMSSW_BASE")+string("/src/MitPhysics/data/gbrmet.root"))),
-			       TString((getenv("CMSSW_BASE")+string("/src/MitPhysics/data/gbrmetphi.root")))
+			       TString((getenv("CMSSW_BASE")+string("/src/CMG/MetAnalysis/data/gbrmet.root"))),
+			       TString((getenv("CMSSW_BASE")+string("/src/CMG/MetAnalysis/data/gbrmetphi.root")))
 			       );
 
 }

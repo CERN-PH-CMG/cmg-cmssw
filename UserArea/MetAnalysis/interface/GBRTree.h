@@ -61,6 +61,7 @@
         Float_t *fResponses;//[fNTerminalNodes]
 
         
+    ClassDef(GBRTree,1) // Node for the Decision Tree 
   };
 
 //_______________________________________________________________________

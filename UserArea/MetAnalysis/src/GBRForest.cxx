@@ -7,6 +7,9 @@
 #include "TMVA/MethodBDT.h"
 
 
+ClassImp(GBRForest)
+
+
 //_______________________________________________________________________
 GBRForest::GBRForest() : 
   fInitialResponse(0.)

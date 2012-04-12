@@ -41,6 +41,7 @@
       Double_t             fInitialResponse;
       std::vector<GBRTree*> fTrees;
     
+    ClassDef(GBRForest,1) // Node for the Decision Tree 
   };
 
 //_______________________________________________________________________
