@@ -1,6 +1,5 @@
 <lcgdict>
 
- <class name="TauMuPlotter"/>
  <class name="Sample"/>
 
  <class name="TriggerEfficiency"/>
