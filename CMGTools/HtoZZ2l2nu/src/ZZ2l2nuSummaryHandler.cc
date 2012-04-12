@@ -469,7 +469,6 @@ void ZZ2l2nuSummaryHandler::resetStruct()
   evSummary_.jn=0;     evSummary_.ajn=0;
   evSummary_.gn=0;
   evSummary_.nmet=0;
-  evSummary_.ajn_genpt = 0;
 }
 
 //
