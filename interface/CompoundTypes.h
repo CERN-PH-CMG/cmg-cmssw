@@ -5,6 +5,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/BaseJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
 #include "AnalysisDataFormats/CMGTools/interface/DiObject.h"
+#include "AnalysisDataFormats/CMGTools/interface/DiObjectPair.h"
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 #include "AnalysisDataFormats/CMGTools/interface/Tau.h"
@@ -36,7 +37,13 @@ namespace cmg {
   typedef cmg::DiObject<cmg::Tau,cmg::BaseMET> WTauNu;
 
   // Mainly for testing rather than Higgs discovery!
-  typedef cmg::DiObject<cmg::DiMuon,cmg::DiMuon> QuadMuon;
+  //  typedef cmg::DiObject<cmg::DiMuon,cmg::DiMuon> QuadMuon;
+
+  //Four Lepton Types (by Michalis)
+  typedef cmg::DiObjectPair<cmg::Muon, cmg::Muon,cmg::Muon,cmg::Muon > QuadMuon;
+  typedef cmg::DiObjectPair<cmg::Muon, cmg::Muon,cmg::Electron,cmg::Electron > DiMuonDiElectron;
+  typedef cmg::DiObjectPair<cmg::Electron, cmg::Electron,cmg::Electron,cmg::Electron > QuadElectron;
+
 
 }
 

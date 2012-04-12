@@ -99,6 +99,16 @@ class Lepton : public cmg::PhysicsObjectWithPtr< LeptonType >{
   float dz() const{
     return dz_;
   }
+
+
+  /// 3d impact parameter and error
+  float dB3D() const{
+    return dB3D_;
+  }
+  float edB3D() const{
+    return edB3D_;
+  }
+
   
   friend class cmg::LeptonSettingTool<LeptonType>;
 	

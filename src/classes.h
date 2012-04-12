@@ -125,10 +125,23 @@ namespace {
     cmg::PFJetComponent  jetComp_;
     std::vector< cmg::PFJetComponent > vJetComps_;
 
+
+
     cmg::QuadMuon qm_;
     std::vector<cmg::QuadMuon> qmv;
     edm::Wrapper<cmg::QuadMuon> eqm;
     edm::Wrapper<std::vector<cmg::QuadMuon> > eqmv;
+
+    cmg::QuadElectron qe_;
+    std::vector<cmg::QuadElectron> qev;
+    edm::Wrapper<cmg::QuadElectron> eqe;
+    edm::Wrapper<std::vector<cmg::QuadElectron> > eqev;
+
+    cmg::DiMuonDiElectron qme_;
+    std::vector<cmg::DiMuonDiElectron> qmev;
+    edm::Wrapper<cmg::DiMuonDiElectron> eqme;
+    edm::Wrapper<std::vector<cmg::DiMuonDiElectron> > eqmev;
+
 
     cmg::BaseMET met_;
     std::vector<cmg::BaseMET> metv_;

@@ -35,6 +35,12 @@ class TriggerObject : public PhysicsObjectWithPtr<pat::TriggerObjectPtr>, public
     int getPrescale(const char* s) const{
         return getPrescale(std::string(s));
     }
+
+     bool getDecisionWithMaxPrescaleRegExp(const TRegexp&,const  int ) const; 
+     bool getDecisionWithMaxPrescaleRegExp(const std::string s,const  int prescale ) const { 
+       return getDecisionWithMaxPrescaleRegExp(TRegexp(s),prescale ); 
+     } 
+
     int getMinimumPrescale() const{
         return minPrescale_;  
     }
