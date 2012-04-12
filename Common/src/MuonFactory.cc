@@ -22,7 +22,7 @@ void cmg::MuonFactory::set(const pat::MuonPtr& input, cmg::Muon* const output, c
         
     //set the generic quantities first
     leptonFactory_.set(input,output,iEvent,iSetup);
-    leptonFactory_.set(getTrack(input),output,iEvent,iSetup);
+    leptonFactory_.set(getTrackerTrack(input),output,iEvent,iSetup);
 
     //now the muon like ones
     output->isGlobal_ = cmg::toTriBool(input->isGlobalMuon());
@@ -35,11 +35,19 @@ void cmg::MuonFactory::set(const pat::MuonPtr& input, cmg::Muon* const output, c
 
     reco::TrackRef combinedMuon = getTrack(input);
     if(combinedMuon.isNonnull() && combinedMuon.isAvailable()){
-        output->pixelHits_ = combinedMuon->hitPattern().numberOfValidPixelHits();
-        output->trackerHits_ = combinedMuon->hitPattern().numberOfValidTrackerHits();
+      //        output->pixelHits_ = combinedMuon->hitPattern().numberOfValidPixelHits();
+      //   output->trackerHits_ = combinedMuon->hitPattern().numberOfValidTrackerHits();
         output->globalNormChi2_ = combinedMuon->normalizedChi2();
         output->muonHits_ = combinedMuon->hitPattern().numberOfValidMuonHits();   
     }
+    //Michalis : The pixel and tracker hits should come from the inner track
+    //Always!
+    reco::TrackRef innerMuon = getTrackerTrack(input);
+    if(innerMuon.isNonnull() && innerMuon.isAvailable()){
+        output->pixelHits_ = innerMuon->hitPattern().numberOfValidPixelHits();
+        output->trackerHits_ = innerMuon->hitPattern().numberOfValidTrackerHits();
+    }
+
     //we need the tracker track for this
     reco::TrackRef track = input->track();
     if(track.isNonnull() && track.isAvailable()){
@@ -57,6 +65,23 @@ reco::TrackRef cmg::MuonFactory::getTrack(const pat::MuonPtr& input) const{
      default:
         combinedMuon = input->globalTrack();
         break;
+     case Inner:
+        combinedMuon = input->innerTrack();
+        break;
+     case Track:
+        combinedMuon = input->track();
+        break;
+    }
+    return combinedMuon;  
+}
+
+reco::TrackRef cmg::MuonFactory::getTrackerTrack(const pat::MuonPtr& input) const{
+    
+    //get the track related quantities
+    reco::TrackRef combinedMuon;
+    switch (type_){
+     case Global:
+     case Other:
      case Inner:
         combinedMuon = input->innerTrack();
         break;

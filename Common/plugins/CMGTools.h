@@ -129,6 +129,14 @@ typedef RecoilCorrectedMETProducer<cmg::MuEle> RecoilCorrectedMETProducerMuEle;
 typedef RecoilCorrectedMETProducer<cmg::DiTau> RecoilCorrectedMETProducerDiTau; 
 
 
+//Michalis : Four lepton Types and helpfull gen types
+typedef PhysicsObjectProducer<cmg::QuadMuonFactory> QuadMuonPOProducer;
+typedef PhysicsObjectProducer<cmg::DiMuonDiElectronFactory> DiMuonDiElectronPOProducer;
+typedef PhysicsObjectProducer<cmg::QuadElectronFactory> QuadElectronPOProducer;
+
+//
+
+
 // histogrammers 
 
 typedef cmg::HistogramAnalyzer<cmg::JetHistograms> PFJetHistogramsAnalyzer;
@@ -334,6 +342,11 @@ typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::MuEle> >
 
 
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<reco::GenParticle> > CmgGenParticleSelector;
+
+
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::QuadMuon> > CmgQuadMuonSelector;
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiMuonDiElectron> > CmgDiMuonDiElectronSelector;
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::QuadElectron> > CmgQuadElectronSelector;
 
 
 typedef CollectionSizeProducer< std::vector<reco::Vertex> > VertexSizeProducer;
