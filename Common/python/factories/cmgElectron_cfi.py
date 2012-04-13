@@ -2,14 +2,12 @@ import FWCore.ParameterSet.Config as cms
 
 import os
 
-basePath = os.environ['CMSSW_BASE'] + '/src/CMGTools/Common/data/'
-
 from CMGTools.Common.factories.cmgLepton_cfi import leptonFactory
 electronFactory = cms.PSet(
        inputCollection = cms.InputTag("selectedPatElectronsAK5"),
        primaryVertexCollection = cms.InputTag("offlinePrimaryVerticesWithBS"),
        leptonFactory = leptonFactory.clone(),
-       electronMVAFile = cms.string(basePath + "TMVA_BDTSimpleCat.weights.xml")
+       electronMVAFile = cms.FileInPath("CMGTools/Common/data/TMVA_BDTSimpleCat.weights.xml")
        )
 
 from CMGTools.Common.selections.vbtfelectron_cfi import *

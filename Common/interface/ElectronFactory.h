@@ -28,7 +28,7 @@ class ElectronFactory : public Factory<cmg::Electron>, public SettingTool<pat::E
       electronLabel_(ps.getParameter<edm::InputTag>("inputCollection")),
       primaryVertexLabel_(ps.getParameter<edm::InputTag>("primaryVertexCollection")),
       leptonFactory_(ps.getParameter<edm::ParameterSet>("leptonFactory")),
-      mvaEstimator_(ps.getParameter<std::string>("electronMVAFile"))
+      mvaEstimator_(ps.getParameter<edm::FileInPath>("electronMVAFile").fullPath())
       {};
       
       virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
