@@ -158,5 +158,7 @@ V4.extend(
     'keep recoIsoDepositedmValueMap_muIsoDepositJets__*',
     'keep recoIsoDepositedmValueMap_muIsoDepositTk__*',
     'keep EcalRecHitsSorted_reducedEcalRecHitsES__*',
+    #just for embedded samples
+    'keep *_tmfTracks_*_*'
     ]
     )
