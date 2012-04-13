@@ -45,6 +45,19 @@ class DiMuon( DiObject ):
                     self.sumPt() )
         return '\n'.join( [header] )
 
+class DiElectron( DiObject ):
+
+    def __init__(self, diobject):
+        super(DiElectron, self).__init__(diobject)
+        self.mu1 = Electron( diobject.leg1() )
+        self.mu2 = Electron( diobject.leg2() )
+
+    def __str__(self):
+        header = 'DiElectron: mvis=%3.2f, sumpT=%3.2f' \
+                 % (self.diobject.mass(),
+                    self.sumPt() )
+        return '\n'.join( [header] )
+
 
 class DiTau( DiObject ):
     def __init__(self, diobject):
