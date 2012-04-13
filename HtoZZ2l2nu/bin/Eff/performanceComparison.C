@@ -67,10 +67,9 @@ TObject* GetObjectFromPath(TDirectory* File, std::string Path, bool GetACopy=fal
    }else{
       toReturn = File->Get(Path.c_str());
    }
-
    if(!toReturn)printf("BUG: %s\n",Path.c_str());
 
-   if(GetACopy){ toReturn = toReturn->Clone();  }
+   if(GetACopy && toReturn){ toReturn = toReturn->Clone();  }
    return toReturn;
 }
 
@@ -197,7 +196,8 @@ stArray  makeArray(string evcat, string name, string title, string signal, strin
       evcat += "_met";
 
       TH2D *signalProc= NULL;
-      signalProc = (TH2D*) GetObjectFromPath(f, signal    +"#rightarrow VV" + "/"+evcat+"_"+name+"_vspu", true);    
+      //      signalProc = (TH2D*) GetObjectFromPath(f, signal    +"#rightarrow VV" + "/"+evcat+"_"+name+"_vspu", true);    
+      signalProc = (TH2D*) GetObjectFromPath(f, signal    +"#rightarrow ZZ" + "/"+evcat+"_"+name+"_vspu", true);    
       std::vector<TH2D*> bckgProcVector;
       TH2D* bckgProc = NULL;
       char* BckgSamples = new char [background.size()+1];  strcpy (BckgSamples, background.c_str());
@@ -207,7 +207,8 @@ stArray  makeArray(string evcat, string name, string title, string signal, strin
          TH2D* tmpHisto = (TH2D*)GetObjectFromPath(f, string(BckgSubSample)+"/"+evcat+"_"+name+"_vspu", true);
          tmpHisto->SetName((string(BckgSubSample) + tmpHisto->GetName()).c_str());
 
-         if(GJ && string(BckgSubSample)==string("Z-#gamma^{*}+jets#rightarrow ll")){
+	 //         if(GJ && string(BckgSubSample)==string("Z-#gamma^{*}+jets#rightarrow ll")){
+         if(GJ && string(BckgSubSample)==string("Z#rightarrow ll")){
             //std::cout << "Use Gamma+Jet\n";
             double ExpDY = tmpHisto->Integral();delete tmpHisto;
             tmpHisto = (TH2D*) GetObjectFromPath(GJ, "gammasum_"+name+"_vspu", true);
@@ -228,6 +229,7 @@ stArray  makeArray(string evcat, string name, string title, string signal, strin
 
       TH1*signalProj = ((TH2 *)signalProc)->ProjectionY((string("sig_py") + signal + pbuffer).c_str(),1,nxbins);
       printf("Integral : %f\n",signalProj->Integral());
+      const float signalNorm=signalProj->Integral();
       fixExtremities(signalProj,true,true);
       TH1*bckgProj   = ((TH2 *)bckgProc)->ProjectionY((string("bckg_py")+ background + pbuffer).c_str(),1,nxbins);
       fixExtremities(bckgProj,true,true);
@@ -236,10 +238,11 @@ stArray  makeArray(string evcat, string name, string title, string signal, strin
       double SeffCut = 1.0;
       if(signal=="H(150)") SeffCut = 0.200;
       if(signal=="H(200)") SeffCut = 0.204;
+      if(signal=="H(250)") SeffCut = 0.600;
       if(signal=="H(300)") SeffCut = 0.633;
       if(signal=="H(500)") SeffCut = 0.714;
       double Cut = cutGraph->Eval(SeffCut);
-
+      cout << "************** Cut=" << Cut << endl;
       TH1* signalProjPU;
       TH1* bckgProjPU;
       if(PUReweightAvr){
@@ -249,8 +252,9 @@ stArray  makeArray(string evcat, string name, string title, string signal, strin
              signalProjPU->Add(tmpsignalProj,PUReweightAvr[p-1]);
          }
          //make sure that the inegral is unchanged
-         signalProjPU->Scale(signalProj->Integral()/signalProjPU->Integral());
-         fixExtremities(signalProjPU,true,true);
+	 //         signalProjPU->Scale(signalProj->Integral()/signalProjPU->Integral());
+         signalProjPU->Scale(signalNorm/signalProjPU->Integral());
+	 fixExtremities(signalProjPU,true,true);
 
 
          bckgProjPU   = (TH1*)bckgProj  ->Clone((string("bckgProjPU") + background + pbuffer).c_str());   bckgProjPU->Reset();
@@ -267,8 +271,9 @@ stArray  makeArray(string evcat, string name, string title, string signal, strin
             delete bckgProcVector[b];
          }
          //make sure that the inegral is unchanged
-         bckgProjPU->Scale(bckgProj->Integral()/bckgProjPU->Integral());
+	 bckgProjPU->Scale(bckgProj->Integral()/bckgProjPU->Integral());
          fixExtremities(bckgProjPU  ,true,true);
+
          SeffCut = GetEfficiency(signalProjPU,Cut);
       }else{
         signalProjPU = signalProj;
@@ -281,7 +286,7 @@ stArray  makeArray(string evcat, string name, string title, string signal, strin
       printf("Seff = %f & Integral=%f  --> %f\n",SeffCut,signalProjPU->Integral(),SeffCut*signalProjPU->Integral());
 
 
-      double S = SeffCut*signalProjPU->Integral();
+      double S = signalNorm; //SeffCut*signalProjPU->Integral();
       double SError; signalProjPU->IntegralAndError(signalProjPU->GetXaxis()->FindBin(Cut), signalProjPU->GetXaxis()->GetNbins(), SError);
       double SIntegral = signalProjPU->Integral();
       SError = std::min(S, SError);
@@ -316,9 +321,9 @@ stArray  makeArray(string evcat, string name, string title, string signal, strin
 
 
 void performanceSummary(string OutDir, string evcat, string signal, string background,  string fname, const std::vector<string>& names, const std::vector<TString>& titles){
-  //   int colors[]  = {4,  kGreen+3, kRed,     kGreen+3, kBlue, kBlue, kRed+3, kRed, kRed, kOrange};
-   //int styles[]  = {1,  9,        2,        9,        9,     1,     1,      1,    1,    2};
-  // int markers[] = {20, 22,       21,       25,    22,    24,     20,   24,   25};
+  int colors[]  = {4,  kGreen+3, kRed,     kGreen+3, kBlue, kBlue, kRed+3, kRed, kRed, kOrange};
+  int styles[]  = {1,  9,        2,        9,        9,     1,     1,      1,    1,    2};
+  int markers[] = {20, 22,       21,       25,    22,    24,     20,   24,   25};
 
 
    int ntouse = names.size();
@@ -349,7 +354,9 @@ void performanceSummary(string OutDir, string evcat, string signal, string backg
 
      printf("####################### PU SCENARIO %i  #######################\n",pS);
      for(int i=0; i<ntouse; i++){
-          stArray B  = makeArray(evcat, names[i], titles[i].Data(), signal, "ZZ|WW|WZ|Single top|t#bar{t}|W+jets|Z-#gamma^{*}+jets#rightarrow ll", f, PUScenaraio[pS], g);
+       //          stArray B  = makeArray(evcat, names[i], titles[i].Data(), signal, "ZZ|WW|WZ|Single top|t#bar{t}|W+jets|Z-#gamma^{*}+jets#rightarrow ll", f, PUScenaraio[pS], g);
+       //          stArray B  = makeArray(evcat, names[i], titles[i].Data(), signal, "ZZ|WW#rightarrow 2l2#nu|WZ#rightarrow 3l#nu|Single top|t#bar{t}|W#rightarrow l#nu|Z#rightarrow ll|", f, PUScenaraio[pS], g);
+          stArray B  = makeArray(evcat, names[i], titles[i].Data(), signal, "ZZ|WW#rightarrow 2l2#nu|WZ#rightarrow 3l#nu|Single top|t#bar{t}|Z#rightarrow ll", f, PUScenaraio[pS], g);
           stArray DY = makeArray(evcat, names[i], titles[i].Data(), signal, background, f, PUScenaraio[pS], g);
         printf("$%35s$ & $\\geq$%iGeV & $%6.2E\\pm%6.2E$ & $%6.2f\\pm%6.2f$ & $%6.2f\\pm%6.2f$ & $%6.2f\\pm%6.2f$ & $%6.2f\\pm%6.2f$ & $%6.2f\\pm%6.2f$ \\\\ \n",DY.Title.c_str(), (int)DY.Cut, DY.SEff, DY.SEffError, DY.S, DY.SError, DY.B, DY.BError,  DY.SB, DY.SBError, B.B, B.BError,  B.SB, B.SBError );
         printf("S = %f\n",DY.S);
@@ -499,20 +506,23 @@ void performanceJetId(string OutDir, string evcat, string signal, string backgro
   evcat += "_met";
   
   //met efficiency
-  TH1D *pfMetSignal= (TH1D*) GetObjectFromPath(f, signal    +"#rightarrow VV" + "/"+evcat+"_met", true);    
+  //  TH1D *pfMetSignal= (TH1D*) GetObjectFromPath(f, signal    +"#rightarrow VV" + "/"+evcat+"_met", true);    
+  TH1D *pfMetSignal= (TH1D*) GetObjectFromPath(f, signal    +"#rightarrow ZZ" + "/"+evcat+"_met", true);    
   TH1D *pfMetBckg= (TH1D*) GetObjectFromPath(f, background + "/"+evcat+"_met", true);    
   TGraphAsymmErrors *metEff = getEfficiencyCurve(pfMetSignal,pfMetBckg);
   metEff->SetFillStyle(0); metEff->SetLineColor(1); metEff->SetTitle("E_{T}^{miss}");
 
   //redmet efficiency
-  TH1D *redMetSignal= (TH1D*) GetObjectFromPath(f, signal    +"#rightarrow VV" + "/"+evcat+"_redClusteredMet", true);    
+  //  TH1D *redMetSignal= (TH1D*) GetObjectFromPath(f, signal    +"#rightarrow VV" + "/"+evcat+"_redClusteredMet", true);    
+  TH1D *redMetSignal= (TH1D*) GetObjectFromPath(f, signal    +"#rightarrow ZZ" + "/"+evcat+"_redClusteredMet", true);    
   TH1D *redMetBckg= (TH1D*) GetObjectFromPath(f, background + "/"+evcat+"_redClusteredMet", true);    
   TGraphAsymmErrors *redMetEff = getEfficiencyCurve(redMetSignal,redMetBckg);
   redMetEff->SetFillStyle(0); redMetEff->SetMarkerColor(kRed); redMetEff->SetLineColor(kRed); redMetEff->SetTitle("red(E_{T}^{miss},clustered E_{T}^{miss})");
 
   //exclusive efficiency
   std::vector<TGraphAsymmErrors *> excEffGrList; 
-  TH2D *redMetSignalvsJetId= (TH2D*) GetObjectFromPath(f, signal    +"#rightarrow VV" + "/"+evcat+"_redClusteredMetvsJetId", true);    
+  //  TH2D *redMetSignalvsJetId= (TH2D*) GetObjectFromPath(f, signal    +"#rightarrow VV" + "/"+evcat+"_redClusteredMetvsJetId", true);    
+  TH2D *redMetSignalvsJetId= (TH2D*) GetObjectFromPath(f, signal    +"#rightarrow ZZ" + "/"+evcat+"_redClusteredMetvsJetId", true);    
   TH2D *redMetBckgvsJetId= (TH2D*) GetObjectFromPath(f, background + "/"+evcat+"_redClusteredMetvsJetId", true);    
   int nybins=redMetBckgvsJetId->GetYaxis()->GetNbins();
   for(int ybin=1; ybin<=nybins; ybin+=2)
@@ -608,27 +618,34 @@ void performancePU(string OutDir, string evcat, string signal, string background
       TString idxStr("");
       idxStr += i;
 
-      std::cout <<  (string(signal)    +"#rightarrow VV" + "/"+evcat+"_"+name+"_vspu" ) << endl;
+      //      std::cout <<  (string(signal)    +"#rightarrow VV" + "/"+evcat+"_"+name+"_vspu" ) << endl;
+      std::cout <<  (string(signal)    +"#rightarrow ZZ" + "/"+evcat+"_"+name+"_vspu" ) << endl;
 
-      TH2D *signalProc= (TH2D*) GetObjectFromPath(f, signal    +"#rightarrow VV" + "/"+evcat+"_"+name+"_vspu", true);    
-      TH2D *bckgProc=NULL;
+      //TH2D *signalProc= (TH2D*) GetObjectFromPath(f, signal    +"#rightarrow VV" + "/"+evcat+"_"+name+"_vspu", true);    
+      TH2F *signalProc= (TH2F*) GetObjectFromPath(f, signal    +"#rightarrow ZZ" + "/"+evcat+"_"+name+"_vspu", true);    
+      TH2F *bckgProc=NULL;
       char* BckgSamples = new char [background.size()+1];  strcpy (BckgSamples, background.c_str());
       char* BckgSubSample = strtok (BckgSamples,"|");
       while (BckgSubSample != NULL){
 ///         if(!bckgProc){bckgProc =    (TH2D*)GetObjectFromPath(g, "gammasum_"+name+"_vspu", true);
 //         }else{        bckgProc->Add((TH2D*)GetObjectFromPath(g, "gammasum_"+name+"_vspu", true));}
-         if(!bckgProc){bckgProc =    (TH2D*)GetObjectFromPath(f, string(BckgSubSample)+"/"+evcat+"_"+name+"_vspu", true);
-         }else{        bckgProc->Add((TH2D*)GetObjectFromPath(f, string(BckgSubSample)+"/"+evcat+"_"+name+"_vspu", true));}
+         if(!bckgProc){bckgProc =    (TH2F*)GetObjectFromPath(f, string(BckgSubSample)+"/"+evcat+"_"+name+"_vspu", true);
+         }else{   
+	   TH2F *ibckg=(TH2F*)GetObjectFromPath(f, string(BckgSubSample)+"/"+evcat+"_"+name+"_vspu", false);
+	   bckgProc->Add(ibckg);
+	 }
          BckgSubSample = strtok (NULL, "|");
       }
 
 
-      TH2D *AllbckgProc=NULL;
-      char* AllBckgSamples = new char [150];  strcpy (AllBckgSamples,"ZZ|WW|WZ|Single top|t#bar{t}|W+jets|Z-#gamma^{*}+jets#rightarrow ll");
+      TH2F *AllbckgProc=NULL;
+      //char* AllBckgSamples = new char [150];  strcpy (AllBckgSamples,"ZZ|WW|WZ|Single top|t#bar{t}|W+jets|Z-#gamma^{*}+jets#rightarrow ll");
+      //      char* AllBckgSamples = new char [150];  strcpy (AllBckgSamples,"ZZ|WW#rightarrow 2l2#nu|WZ#rightarrow 3l#nu|Single top|t#bar{t}|W#rightarrow l#nu|Z#rightarrow ll");
+      char* AllBckgSamples = new char [150];  strcpy (AllBckgSamples,"ZZ|WW#rightarrow 2l2#nu|WZ#rightarrow 3l#nu|Single top|t#bar{t}|Z#rightarrow ll");
       char* AllBckgSubSample = strtok (AllBckgSamples,"|");
       while (AllBckgSubSample != NULL){
-         if(!AllbckgProc){AllbckgProc =    (TH2D*)GetObjectFromPath(f, string(AllBckgSubSample)+"/"+evcat+"_"+name+"_vspu", true);
-         }else{           AllbckgProc->Add((TH2D*)GetObjectFromPath(f, string(AllBckgSubSample)+"/"+evcat+"_"+name+"_vspu", true));}
+         if(!AllbckgProc){AllbckgProc =    (TH2F*)GetObjectFromPath(f, string(AllBckgSubSample)+"/"+evcat+"_"+name+"_vspu", true);
+         }else{           AllbckgProc->Add((TH2F*)GetObjectFromPath(f, string(AllBckgSubSample)+"/"+evcat+"_"+name+"_vspu", true));}
          AllBckgSubSample = strtok (NULL, "|");
       }
 
@@ -951,7 +968,8 @@ void performancePU(string OutDir, string evcat, string signal, string background
 
 
 //
-void performanceComparison(string OutDir="Img", string evcat="mumu", string signal="H(200)", string background="Z-#gamma^{*}+jets#rightarrow ll",  string fname="../../test/plotter.root")
+//void performanceComparison(string OutDir="Img", string evcat="mumu", string signal="H(200)", string background="Z-#gamma^{*}+jets#rightarrow ll",  string fname="../../test/plotter.root")
+void performanceComparison(string OutDir="Img", string evcat="mumu", string signal="H(200)", string background="Z#rightarrow ll",  string fname="../../test/plotter.root")
 {
   setStyle();
   gStyle->SetOptFit(0);
@@ -1015,7 +1033,7 @@ void performanceComparison(string OutDir="Img", string evcat="mumu", string sign
   names.push_back("redminAssocMet"      );   titles.push_back("red(min(E_{T}^{miss},assoc-E_{T}^{miss}),clustered E_{T}^{miss})");
   performancePU(OutDir+"red_", evcat, signal, background,  fname, names, titles);
 */
-
+/*
   names.clear();                             titles.clear();
   names.push_back("met"                 );   titles.push_back("E_{T}^{miss}");
   names.push_back("centralMet"          );   titles.push_back("central E_{T}^{miss}");
@@ -1026,16 +1044,17 @@ void performanceComparison(string OutDir="Img", string evcat="mumu", string sign
   names.push_back("assocFwdMet"         );   titles.push_back("assocFwd-E_{T}^{miss}" );
   names.push_back("assocFwdCMet"        );   titles.push_back("assoFwdc-E_{T}^{miss} + #delta#beta");
   performancePU(OutDir+"Simple_", evcat, signal, background,  fname, names, titles);
-
+*/
   names.clear();                             titles.clear();
   names.push_back("met"                 );   titles.push_back("E_{T}^{miss}");
-  names.push_back("minAssocChargedMet"  );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))");
-  names.push_back("minAssocFwdMet"      );   titles.push_back("min(E_{T}^{miss},assocFwd-E_{T}^{miss})");
-  names.push_back("minClusteredMet"     );   titles.push_back("min(E_{T}^{miss},clustered-E_{T}^{miss})");
+//   names.push_back("minAssocChargedMet"  );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))");
+//   names.push_back("minAssocFwdMet"      );   titles.push_back("min(E_{T}^{miss},assocFwd-E_{T}^{miss})");
+//   names.push_back("minClusteredMet"     );   titles.push_back("min(E_{T}^{miss},clustered-E_{T}^{miss})");
   names.push_back("min3Met"             );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
-  names.push_back("redAssocFwdMet"      );   titles.push_back("red(E_{T}^{miss},assocFwd-E_{T}^{miss})");
-  names.push_back("redClusteredMet"     );   titles.push_back("red(E_{T}^{miss},clustered-E_{T}^{miss})");
-  names.push_back("red3Met"             );   titles.push_back("red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
+//   names.push_back("redAssocFwdMet"      );   titles.push_back("red(E_{T}^{miss},assocFwd-E_{T}^{miss})");
+//  names.push_back("redClusteredMet"     );   titles.push_back("red(E_{T}^{miss},clustered-E_{T}^{miss})");
+  names.push_back("redMet"     );   titles.push_back("red(E_{T}^{miss},clustered-E_{T}^{miss})");
+//   names.push_back("red3Met"             );   titles.push_back("red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
   performancePU(OutDir+"Combined_", evcat, signal, background,  fname, names, titles);
   performanceSummary(OutDir, evcat, signal, background,  fname, names, titles);
 

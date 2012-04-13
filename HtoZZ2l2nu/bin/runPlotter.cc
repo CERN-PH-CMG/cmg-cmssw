@@ -907,13 +907,14 @@ int main(int argc, char* argv[]){
    printf("Progressing Bar              :0%%       20%%       40%%       60%%       80%%       100%%\n");
    printf("                             :");
    int TreeStep = histlist.size()/50;if(TreeStep==0)TreeStep=1;
-   system("echo \"\" > /tmp/histlist.csv");
+   string csvFile(outDir +"/histlist.csv");
+   system(("echo \"\" > " + csvFile).c_str());
    int ictr(0);
    for(std::list<NameAndType>::iterator it= histlist.begin(); it!= histlist.end(); it++,ictr++)
      {
        if(ictr%TreeStep==0){printf(".");fflush(stdout);}
        if(objectSearchKey != "" && it->name.find(objectSearchKey)==std::string::npos)continue;
-       system(("echo \"" + it->name + "\" >> /tmp/histlist.csv").c_str());
+       system(("echo \"" + it->name + "\" >> " + csvFile).c_str());
        if(doTex && it->name.find("eventflow")!=std::string::npos && it->name.find("optim_eventflow")==std::string::npos){    ConvertToTex(Root,inDir,*it); }
        if(doPlot && do2D  && !it->type){                      if(!splitCanvas){Draw2DHistogram(Root,inDir,*it); }else{Draw2DHistogramSplitCanvas(Root,inDir,*it);}}
        if(doPlot && do1D  &&  it->type){                                       Draw1DHistogram(Root,inDir,*it); }
@@ -923,8 +924,8 @@ int main(int argc, char* argv[]){
      }printf("\n");
    if(StoreInFile) OutputFile->Close();
    
-   system(("python ${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/html/generateJSONplotterFromList.py -i /tmp/histlist.csv -o "+outDir+"/plotter.json").c_str());
-   system("rm /tmp/histlist.csv");
+   system(("python ${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/html/generateJSONplotterFromList.py -i " + csvFile + " -o "+outDir+"/plotter.json").c_str());
+   system(("rm " + csvFile).c_str());
    system(("cp ${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/html/index.html " + outDir).c_str());
    printf("You can browse the results using %s/index.html\n",outDir.c_str());
 }

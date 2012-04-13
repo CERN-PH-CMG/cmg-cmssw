@@ -70,22 +70,21 @@ runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samplesNoHWW.json -d /
 #add the files for the ntuples
 haddOverSamples.py -j data/photon-samples.json -d /store/cmst3/user/psilva/12_03_27_HZZ2l2v_ntuples -o /store/cmst3/user/psilva/grid_12_03_27_HZZ2l2v_ntuples -m 1 -t G_
 
+
 ## generate unweigthed distributions
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples.json -d /store/cmst3/user/psilva/12_03_31_HZZ2l2v_ntuples -o ~/work/gamma/  -c test/runAnalysis_cfg.py.templ -s 8nh
 
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples.json -d /store/cmst3/user/psilva/12_04_09_HZZ2l2v_ntuples -o ~/work/gamma/  -c test/runAnalysis_cfg.py.templ -s 8nh
 
-## generate plotter.root
-runPlotter --iLumi 4616 --inDir ~/scratch0/gamma/ --outDir /tmp/psilva/ --json data/photon-samples.json
+runPlotter --iLumi 4616 --inDir ~/work/gamma/ --outDir ~/work/gamma/plots --json data/photon-samples.json
 
 ## use bin/G/getGammaTemplates.C to generate the weights for the sampe
 
-## run again with weights
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples.json -d /castor/cern.ch/cms//store/cmst3/user/psilva/HZZ_11.11.24 -o ~/scratch0/gamma/  -c test/runAnalysis_cfg.py.templ -s 8nh -c test/runAnalysis_cfg.py.templ -p "@weightsFile=/afs/cern.ch/user/p/psilva/public/GammaWeights/mc_gammaqtvsnvtxweight.root"
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples.json -d /store/cmst3/user/psilva/12_04_09_HZZ2l2v_ntuples -o ~/work/gamma/  -c test/runAnalysis_cfg.py.templ -s 8nh -p "@weightsFile=data/gammaqtweights.root"
 
 
 ## run the replacement
-runLocalAnalysisOverSamples.py -e runOnEventSummary -j data/samples-with-dy-replacement.json -o ~/scratch0/gamma-data/ -p "@weightsFile=/afs/cern.ch/user/p/psilva/public/GammaWeights/data_gammaptvsetaweight.root" -d /castor/cern.ch/cms/store/cmst3/user/querten/11_10_19_HtoZZ2l2nNTuples/ -c test/runAnalysis_cfg.py.templ -s True
+#runLocalAnalysisOverSamples.py -e runOnEventSummary -j data/samples-with-dy-replacement.json -o ~/scratch0/gamma-data/ -p "@weightsFile=/afs/cern.ch/user/p/psilva/public/GammaWeights/data_gammaptvsetaweight.root" -d /castor/cern.ch/cms/store/cmst3/user/querten/11_10_19_HtoZZ2l2nNTuples/ -c test/runAnalysis_cfg.py.templ -s True
 
 ## run the final plots
-runPlotter --iLumi 5035 --inDir ~/scratch0/gamma-data/ --outDir /tmp/psilva/ --json data/samples-with-dy-replacement.json --only zmass
-runPlotter --iLumi 5035 --inDir results/ --outDir results/plots/ --outFile plotter.root  --json ../data/samples.json --only zmass
+#runPlotter --iLumi 5035 --inDir ~/scratch0/gamma-data/ --outDir /tmp/psilva/ --json data/samples-with-dy-replacement.json --only zmass
+#runPlotter --iLumi 5035 --inDir results/ --outDir results/plots/ --outFile plotter.root  --json ../data/samples.json --only zmass

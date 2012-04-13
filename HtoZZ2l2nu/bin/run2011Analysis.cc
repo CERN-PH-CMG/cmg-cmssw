@@ -150,10 +150,14 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",20,0,4) );
   mon.addHistogram( new TH1F( "wzdecaymode", ";W decay mode (gen level);Events",20,0,20) );
   mon.addHistogram( new TH1F( "met_met"  , ";E_{T}^{miss};Events", 50,0,500) );
+  mon.addHistogram( new TH2F( "met_met_vspu", ";Pileup events; E_{T}^{miss};Events", 35,0,35,200,0,500) );
+  mon.addHistogram( new TH1F( "met_min3Met"  , ";min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
+  mon.addHistogram( new TH2F( "met_min3Met_vspu", ";Pileup events; min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss});Events", 35,0,35,200,0,500) );
   mon.addHistogram( new TH1F( "met_metRaw"  , ";E_{T}^{miss} (raw);Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMet"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMetL"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - longi.;Events", 50,-250,250) );
   mon.addHistogram( new TH1F( "met_redMetT"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - perp.;Events", 50,-250,250) );
+  mon.addHistogram( new TH2F( "met_redMet_vspu", ";Pileup events; red(E_{T}^{miss},clustered-E_{T}^{miss};Events", 35,0,35,200,0,500) );
   mon.addHistogram( new TH1F( "met_redMetRaw"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) (raw);Events", 50,0,500) );
   mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 100,0,1000) );
   mon.addHistogram( new TH1F( "mtRaw"  , ";M_{T} (raw);Events", 100,0,1000) );
@@ -390,6 +394,7 @@ int main(int argc, char* argv[])
 	  genJetsPt.push_back( phys.ajets[ijet].genPt);
 	}
       //base raw METs
+      LorentzVector assocMetP4(phys.met[1]);
       LorentzVector zvvRaw(phys.met[0]);
       LorentzVector rawClusteredMet(zll);            rawClusteredMet *= -1;
       for(size_t ijet=0; ijet<jetsP4.size(); ijet++) rawClusteredMet -= jetsP4[ijet];
@@ -397,7 +402,7 @@ int main(int argc, char* argv[])
       Float_t mtRaw( METUtils::transverseMass(zll,zvvRaw,true) );
       
       //prepare variations (first variation is the baseline, corrected for JER) 
-      LorentzVectorCollection zvvs,redMets;
+      LorentzVectorCollection zvvs,redMets, min3Mets;
       std::vector<Float_t>  mts,mt3s,redMetLs,redMetTs;
       std::vector<LorentzVectorCollection> jets;
       METUtils::computeVariation(jetsP4, genJetsPt, zvvRaw, jets, zvvs, &jecUnc);
@@ -411,6 +416,7 @@ int main(int argc, char* argv[])
 	  redMetTs.push_back( redMetOut.redMET_t );
 	  mts.push_back(METUtils::transverseMass(zll,zvvs[ivars],true));
 	  mt3s.push_back(phys.leptons.size()>2 ? METUtils::transverseMass(phys.leptons[2],zvvs[ivars],false) : 0. );
+	  min3Mets.push_back( min(zvvs[ivars], min(assocMetP4,clusteredMetP4)) );
 	}
       
       //
@@ -428,6 +434,7 @@ int main(int argc, char* argv[])
 	Float_t zeta=zll.eta();
 	LorentzVectorCollection &origJetsP4=jets[ivar>4?0:ivar];            
 	LorentzVector zvv    = zvvs[ivar>4?0:ivar];
+	LorentzVector min3Met = min3Mets[ivar>4?0:ivar];
 	LorentzVector redMet = redMets[ivar>4?0:ivar];
 	Float_t redMetL      = redMetLs[ivar>4?0:ivar];
 	Float_t redMetT      = redMetTs[ivar>4?0:ivar];
@@ -465,6 +472,11 @@ int main(int argc, char* argv[])
 	bool passBveto(nbtags==0);
 	bool passBaseMet(zvv.pt()>70);
      
+
+// 	LorentzVector genRes(0,0,0,0);
+// 	for(size_t igl=0;igl<phys.genleptons.size(); igl++) genRes+= phys.genleptons[igl];
+// 	genRes += phys.genmet[0];
+// 	cout << genRes.mass() << " " << genRes.px() << " " << genRes.py() << " " << genRes.pz() << endl;
     
 	//##############################################  
 	//########         GENERAL PLOTS        ########                                                                                                                  
@@ -503,8 +515,12 @@ int main(int argc, char* argv[])
 		  if(passDphijmet){
 		    mon.fillHisto("eventflow",tags_full,5,iweight);
 		    mon.fillHisto("met_met",tags_full,zvv.pt(),iweight);
+		    mon.fillHisto("met_min3Met",tags_full,min3Met.pt(),iweight);
+		    mon.fillHisto("met_met_vspu",tags_full,ev.ngenITpu,zvv.pt(),iweight);
 		    mon.fillHisto("met_metRaw",tags_full,zvvRaw.pt(),iweight);
 		    mon.fillHisto("met_redMet",tags_full,redMet.pt(),iweight);
+		    mon.fillHisto("met_redMet_vspu",tags_full,ev.ngenITpu,redMet.pt(),iweight);
+		    mon.fillHisto("met_min3Met_vspu",tags_full,ev.ngenITpu,min3Met.pt(),iweight);
 		    mon.fillHisto("met_redMetL",tags_full,redMetT,iweight);
 		    mon.fillHisto("met_redMetT",tags_full,redMetL,iweight);
 		    mon.fillHisto("met_redMetRaw",tags_full,redMetRaw.pt(),iweight);
