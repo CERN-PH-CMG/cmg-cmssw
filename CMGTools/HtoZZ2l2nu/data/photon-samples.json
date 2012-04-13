@@ -1,6 +1,37 @@
 {
     "proc":[
 	{
+	"tag":"H(300)#rightarrow ZZ",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"803",
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"mctruthmode":1,
+	"data":[
+		{
+		"dtag":"MC_GGtoH300toZZto2L2Nu",
+		"dset":"/GluGluToHToZZTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-300_7TeV-powheg-pythia6"],
+		"split":2,
+                "xsec":2.422,
+		"br":[0.307,0.0403896]
+		},
+		{
+		"dtag":"MC_VBFtoH300toZZto2L2Nu",
+                "dset":"/VBF_ToHToZZTo2L2NU_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_ToHToZZTo2L2NU_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-300_7TeV-powheg-pythia6"],
+		"split":2,
+                "xsec":0.301,
+		"br":[0.307,0.0403896]
+		}
+	   ]
+	},
+	{
 	   "tag":"data (ll)",
 	   "isdata":true,
 	   "color":"2",
@@ -60,19 +91,58 @@
           ]
 	},
 	{
-         "tag":"Z+#gamma#rightarrow#nu#nu#gamma",
+         "tag":"Z#gamma#rightarrow#nu#nu#gamma",
          "isdata":false,
          "color":"8",
          "lcolor":1,
 	 "mctruthmode":22,
 	 "data":[
               {
-               "dtag":"ZGToNuNu",
+               "dtag":"MC_ZGToNuNu",
                "dset":"ZGToNuNuG_TuneZ2_7TeV-madgraph",
                "patdir":["/store/cmst3/user/psilva/v444/MC/ZGToNuNuG_TuneZ2_7TeV-madgraph"],
                "xsec":3.426
+              },
+              {
+               "dtag":"MC_ZJetsToNuNu_50to100",
+               "dset":"",
+               "xsec":309.5
+              },
+              {
+               "dtag":"MC_ZJetsToNuNu_100to200",
+               "dset":"",
+               "xsec":125.2
+              },
+              {
+               "dtag":"MC_ZJetsToNuNu_200toInf",
+               "dset":"",
+               "xsec":32.92
               }
-	  ]
+          ]
+        },
+	{
+	 "tag":"W#gamma#rightarrowl#nu#gamma",
+         "isdata":false,
+	 "color":"596",
+         "lcolor":1,
+         "mctruthmode":22,
+	 "data":[
+		{
+		 "dtag":"MC_WGToENuG",
+                 "xsec":114.7,
+ 		 "split":1
+                },
+		{
+		 "dtag":"MC_WGToMuNuG",
+                 "xsec":114.6,
+ 		 "split":1
+                },
+		{
+		 "dtag":"MC_WGToTauNuG",
+                 "xsec":104.6,
+ 		 "split":1
+                }
+	 ]
 	},
 	{
 	 "tag":"W#rightarrow l#nu",
@@ -82,7 +152,7 @@
  	 "mctruthmode":22,
          "data":[
 		{
-		 "dtag":"MC_WJetsToLNuWithG",
+		 "dtag":"MC_WJetsToLNu",
                  "dset":"/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM",
                  "patdir":["/store/cmst3/user/psilva/v444/MC/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola"],
                  "xsec":31314,
@@ -97,19 +167,31 @@
 	"lcolor":1,
 	"data":[
 	     {	
-		"dtag":"QCDPt20to30",
-		"patdir":["/store/cmst3/user/psilva/v444/MC/QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6"],
+		"dtag":"MC_QCDPt20to30",
 		"xsec":2502660
 	     },
 	     {	
-		"dtag":"QCDPt30to80",
-		"patdir":["/store/cmst3/user/psilva/v444/MC/QCD_Pt-30to80_EMEnriched_TuneZ2_7TeV-pythia6"],
+		"dtag":"MC_QCDPt30to80",
 		"xsec":3625840
 	     },
 	     {	
-		"dtag":"QCDPt80to170",
-		"patdir":["/store/cmst3/user/psilva/v444/MC/QCD_Pt-80to170_EMEnriched_TuneZ2_7TeV-pythia6"],
+		"dtag":"MC_QCDPt80to170",
 		"xsec":142813.8
+	     },
+	     {	
+		"dtag":"MC_QCDPt170to250",
+		"xsec":22140.0,
+		"br":[0.1474]
+	     },
+	     {	
+		"dtag":"MC_QCDPt250to350",
+		"xsec":2900.0,
+		"br":[0.1269]
+	     },
+	     {	
+		"dtag":"MC_QCDPt350toInf",
+		"xsec":520.0,
+		"br":[0.1058]
 	     }
 	  ]
     	},
@@ -121,57 +203,66 @@
  	"mctruthmode":22,
 	"data":[
 	     {	
-		"dtag":"G_Pt-0to15_TuneZ2_7TeV_pythia6",
+		"dtag":"MC_G_Pt-0to15_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-0to15_TuneZ2_7TeV_pythia6"],
 		"xsec":84200000,
+		"br":[1.3],
 		"split":2
 	     },
 	     {	
-		"dtag":"G_Pt-15to30_TuneZ2_7TeV_pythia6",
+		"dtag":"MC_G_Pt-15to30_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-15to30_TuneZ2_7TeV_pythia6"],
 		"xsec":172000,
+		"br":[1.3],
 		"split":2
 	     },
 	     {	
-		"dtag":"G_Pt-30to50_TuneZ2_7TeV_pythia6",
+		"dtag":"MC_G_Pt-30to50_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-30to50_TuneZ2_7TeV_pythia6"],
 		"xsec":16700,
+		"br":[1.3],
 		"split":2
 	     },
 	     {	
-		"dtag":"G_Pt-50to80_TuneZ2_7TeV_pythia6",
+		"dtag":"MC_G_Pt-50to80_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-50to80_TuneZ2_7TeV_pythia6"],
 		"xsec":2720,
+		"br":[1.3],
 		"split":2
 	     },
 	     {	
-		"dtag":"G_Pt-80to120_TuneZ2_7TeV_pythia6",
+		"dtag":"MC_G_Pt-80to120_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-80to120_TuneZ2_7TeV_pythia6"],
 		"xsec":447,
+		"br":[1.3],
 		"split":2
 	     },
 	     {	
-		"dtag":"G_Pt-120to170_TuneZ2_7TeV_pythia6",
+		"dtag":"MC_G_Pt-120to170_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-120to170_TuneZ2_7TeV_pythia6"],
 		"xsec":84.2,
+		"br":[1.3],
 		"split":2
 	     },
 	     {	
-		"dtag":"G_Pt-170to300_TuneZ2_7TeV_pythia6",
+		"dtag":"MC_G_Pt-170to300_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-170to300_TuneZ2_7TeV_pythia6"],
 		"xsec":22.6,
+		"br":[1.3],
 		"split":2
 	     },
 	     {	
-		"dtag":"G_Pt-300to470_TuneZ2_7TeV_pythia6",
+		"dtag":"MC_G_Pt-300to470_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-300to470_TuneZ2_7TeV_pythia6"],
 		"xsec":1.49,
+		"br":[1.3],
 		"split":2
 	     },
 	     {	
-		"dtag":"G_Pt-470to800_TuneZ2_7TeV_pythia6",
+		"dtag":"MC_G_Pt-470to800_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-470to800_TuneZ2_7TeV_pythia6"],
 		"xsec":0.132,
+		"br":[1.3],
 		"split":2
 	     }
 	  ]
@@ -185,13 +276,13 @@
         "mctruthmode":22,
 	"data":[
                 {
-                  "dtag":"Photon2011A",
+                  "dtag":"Data_Photon2011A",
                   "dset":"",
                   "patdir":[""],
 		  "split":2
 		},
                 {
-                  "dtag":"Photon2011B",
+                  "dtag":"Data_Photon2011B",
                   "dset":"",
                   "patdir":[""],
  		  "split":2

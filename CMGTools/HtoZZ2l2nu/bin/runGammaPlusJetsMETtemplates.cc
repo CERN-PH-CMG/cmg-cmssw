@@ -29,6 +29,8 @@
 #include "TProfile.h"
 #include "TRandom2.h"
 
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
+
 using namespace std;
 
 LorentzVector min(const LorentzVector& a, const LorentzVector& b)
@@ -58,7 +60,9 @@ int main(int argc, char* argv[])
   bool isMC = runProcess.getParameter<bool>("isMC");
   int mctruthmode = runProcess.getParameter<int>("mctruthmode");
   TString dirname = runProcess.getParameter<std::string>("dirName");
-  
+  TString uncFile =  runProcess.getParameter<std::string>("jesUncFileName"); gSystem->ExpandPathName(uncFile);
+  JetCorrectionUncertainty jecUnc(uncFile.Data());
+
   TRandom2 rndGen;
   EventCategory eventClassifComp;
   GammaEventHandler gammaEvHandler(runProcess);  
@@ -76,23 +80,33 @@ int main(int argc, char* argv[])
     mon.getHisto("njets")->GetXaxis()->SetBinLabel(ibin,label);
     mon.getHisto("nbtags")->GetXaxis()->SetBinLabel(ibin,label);
   }
-  mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
-  mon.addHistogram( new TH1F ("hoe", ";H/E;Events", 100,0.,0.1) );
-  mon.addHistogram( new TH1F ("r9", ";R9;Events", 100,0.8,1) );
-  mon.addHistogram( new TH1F ("sietaieta", ";#sigma i#eta i#eta;Events", 100,0,0.03) );
-  mon.addHistogram( new TH1F ("trkveto", ";Track veto;Events", 2,0,2) );
-
-  TString subCats[]={"eq0jets","eq1jets","eq2jets","geq3jets"};
+  
+  TString subCats[]={"eq0softjets","eq0hardjets","eq0jets","eq1jets","eq2jets","geq3jets",""};
   const size_t nSubCats=sizeof(subCats)/sizeof(TString);
   for(size_t isc=0; isc<nSubCats; isc++)
     {
       TString postfix(subCats[isc]);
-      mon.addHistogram( new TH1D ("qt_"+postfix,        ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", 100,0,500) );
-      mon.addHistogram( new TH1D ("eta_"+postfix,       ";#eta;Events", 50,0,2.6) );  
-      mon.addHistogram( new TH1F ("nvtx_"+postfix, ";Vertices;Events", 30,0,30) );  
+      mon.addHistogram( new TH1F ("r9_"+postfix, ";R9;Events", 100,0.8,1) );
+      mon.addHistogram( new TH1F ("sietaieta_"+postfix, ";#sigma i#eta i#eta;Events", 100,0,0.03) );
+      mon.addHistogram( new TH1F( "mindphijmet_"+postfix, ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
+      mon.addHistogram( new TH1F ("trkveto_"+postfix, ";Track veto;Events", 2,0,2) );
+     
+      mon.addHistogram( new TH1D( "qt_"+postfix,        ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", 100,0,500) );
+      mon.addHistogram( new TH1D( "metoverqt_"+postfix, ";E_{T}^{miss}/p_{T}^{#gamma} [GeV/c];Events", 100,0,3) );
+      mon.addHistogram( new TH1D( "eta_"+postfix,       ";#eta;Events", 50,0,2.6) );  
+      mon.addHistogram( new TH1F( "nvtx_"+postfix, ";Vertices;Events", 30,0,30) );  
       mon.addHistogram( new TH1F( "mt_"+postfix  , ";M_{T};Events", 100,0,1000) );
-      mon.addHistogram( new TH1F ("met_rawmet_"+postfix  , ";E_{T}^{miss} (raw);Events", 50,0,500) );
+      mon.addHistogram( new TH1F( "met_rawmet_"+postfix  , ";E_{T}^{miss} (raw);Events", 50,0,500) );
+      mon.addHistogram( new TH1F( "met_met_"+postfix  , ";E_{T}^{miss};Events", 50,0,500) );
+      mon.addHistogram( new TH1F( "met_rawRedMet_"+postfix  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) (raw);Events", 50,0,500) );
+      mon.addHistogram( new TH1F( "met_min3Met_"+postfix  , ";min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
+      mon.addHistogram( new TH1F( "met_redMet_"+postfix  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
+      mon.addHistogram( new TH1F( "met_redMetL_"+postfix  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - longi.;Events", 50,-250,250) );
+      mon.addHistogram( new TH1F( "met_redMetT_"+postfix  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - perp.;Events", 50,-250,250) );
       mon.addHistogram( new TH1F( "zmass_"+postfix, ";M^{ll};Events", 15,76,106) );
+      mon.addHistogram( new TH2F( TString("met_met_") + postfix + "_vspu"       , ";Vertices;E_{T}^{miss};Events", 50,0,50,50,0,500) );
+      mon.addHistogram( new TH2F( TString("met_min3Met_") + postfix + "_vspu"       , ";Vertices;min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,50,50,0,500) );
+      mon.addHistogram( new TH2F( TString("met_redMet_") + postfix + "_vspu"       , ";Vertices;red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,50,50,0,500) );
     }
   TH1F* Hcutflow     = (TH1F*) mon.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,3,0,3) ) ;
 
@@ -164,19 +178,19 @@ int main(int argc, char* argv[])
       std::vector<TString> dilCats;
       LorentzVector gamma(0,0,0,0);
       int triggerThr(0);
-      float r9(0),sietaieta(0),hoe(0);
-      bool hasTrkVeto(false);
+      float r9(0),sietaieta(0);
+      bool hasTrkVeto(false),isConv(false);
       if(isGammaEvent)
 	{
 	  dilCats.push_back("ee");
 	  dilCats.push_back("mumu");
 	  dilCats.push_back("ll");
-	  r9               = phys.gammas[0].r9*(isMC ? 1.005 : 1.0); 
+	  r9               = phys.gammas[0].r9*(isMC ? 1.005 : 1.0);
 	  sietaieta        = phys.gammas[0].sihih;
-	  hoe              = phys.gammas[0].hoe;
 	  hasTrkVeto       = phys.gammas[0].hasCtfTrkVeto;
 	  gamma            = phys.gammas[0];
 	  triggerThr       = gammaEvHandler.triggerThr();
+	  isConv=(phys.gammas[0].isConv);
 	}
       else
 	{
@@ -194,14 +208,18 @@ int main(int argc, char* argv[])
       int nbtags(0),njets30(0),njets15(0);
       double mindphijmet(9999.);
       std::vector<LorentzVector> jetsP4;
-      std::vector<float> genJetPt;
+      std::vector<double> genJetsPt;
+      LorentzVector rawClusteredMet(gamma); 
+      rawClusteredMet *= -1;
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
         {
 	  LorentzVector ijetP4=phys.jets[ijet];
 	  if(ijetP4.pt()<15 || fabs(ijetP4.eta())>5) continue;
 	  if(isGammaEvent && deltaR(ijetP4,gamma)<0.4) continue;
 	  njets15++;
-	  genJetPt.push_back(phys.jets[ijet].genPt);
+	  jetsP4.push_back(ijetP4);
+	  genJetsPt.push_back(phys.jets[ijet].genPt);
+	  rawClusteredMet -= ijetP4;
 	  double idphijmet=fabs(deltaPhi(metP4.phi(),ijetP4.phi()));
 	  mindphijmet=min(idphijmet,mindphijmet);
 	  if(ijetP4.pt()>30)
@@ -212,7 +230,28 @@ int main(int argc, char* argv[])
 	}
       TString subcat("eq"); subcat+=njets30; subcat+= "jets";
       if(njets30>=3) subcat="geq3jets";
-      
+
+
+      //
+      LorentzVector nullP4(0,0,0,0);
+      LorentzVector rawZvv(phys.met[0]);
+      LorentzVector assocMetP4        = phys.met[1];
+      LorentzVector rawRedMet(METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, gamma, 0, nullP4, 0, rawClusteredMet, rawZvv,true));
+      LorentzVectorCollection zvvs,redMets,min3Mets;
+      std::vector<Float_t>  redMetLs,redMetTs;
+      std::vector<LorentzVectorCollection> jets;
+      METUtils::computeVariation(jetsP4, genJetsPt, rawZvv, jets, zvvs, &jecUnc);
+      for(size_t ivars=0; ivars<zvvs.size(); ivars++)
+	{
+          LorentzVector clusteredMetP4(gamma); clusteredMetP4 *= -1;
+          for(size_t ijet=0; ijet<jets[ivars].size(); ijet++) clusteredMetP4 -= jets[ivars][ijet];
+	  METUtils::stRedMET redMetOut;
+	  redMets.push_back( METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, gamma, 0, nullP4, 0, clusteredMetP4, zvvs[ivars],true,&redMetOut) );
+          redMetLs.push_back( redMetOut.redMET_l );
+          redMetTs.push_back( redMetOut.redMET_t );
+	  min3Mets.push_back( min(zvvs[ivars], min(assocMetP4,clusteredMetP4)) );
+	}
+
       //event weight
       float weight = 1.0;
       if(isMC)                  { weight = LumiWeights.weight( ev.ngenITpu ); }
@@ -221,9 +260,10 @@ int main(int argc, char* argv[])
       Hcutflow->Fill(2,weight);
       
       //select event
-      bool passMultiplicityVetoes (isGammaEvent ? (phys.leptons.size()==0 && phys.gammas.size()==1) : (ev.ln==0) );
+      bool passMultiplicityVetoes (isGammaEvent ? (phys.leptons.size()==0 && ev.ln==0 && phys.gammas.size()==1) : (ev.ln==0) );
       bool passKinematics         (gamma.pt()>55);
       bool passEB                 (!isGammaEvent || fabs(gamma.eta())<1.4442);
+      bool passR9                 (!isGammaEvent || r9<1.0);
       bool passBveto              (nbtags==0);
       bool passMinDphiJmet        (mindphijmet>0.5);
       
@@ -234,13 +274,14 @@ int main(int argc, char* argv[])
 	{
 	  LorentzVector iboson(isGammaEvent ? gammaEvHandler.massiveGamma(dilCats[idc]) : gamma);
 	  float zmass=iboson.mass();
-	  Float_t rawMt( METUtils::transverseMass(iboson,metP4,true) );
-	  
+	  //Float_t rawMt( METUtils::transverseMass(iboson,metP4,true) );
+	  Float_t mt( METUtils::transverseMass(iboson,zvvs[0],true) );
+
 	  TString ctf=dilCats[idc];
 	  float iweight=weight;
 	  if(isGammaEvent) iweight*=qtWeights[dilCats[idc]];
 	  if(!passMultiplicityVetoes) continue;
-	  if(!passEB) continue;
+	  if(!passEB || !passR9 || isConv) continue;
 	  if(!passKinematics) continue;
 
 	  mon.fillHisto("eta_"+subcat,ctf, fabs(gamma.eta()),iweight);
@@ -253,17 +294,44 @@ int main(int argc, char* argv[])
 	  
 	  mon.fillHisto("njets",ctf, njets30,iweight);
 	  mon.fillHisto("nsoftjets",ctf, njets15,iweight);
-	  mon.fillHisto("mindphijmet",ctf, mindphijmet,iweight);
-	  if(!passMinDphiJmet) continue;
-	  if(isGammaEvent)  
-	    {
-	      mon.fillHisto("r9",ctf, r9,iweight);
-	      mon.fillHisto("sietaieta",ctf, sietaieta,iweight);
-	      mon.fillHisto("hoe",ctf, hoe,iweight);
-	      mon.fillHisto("trkveto",ctf, hasTrkVeto,iweight);
+
+	  std::vector<TString> subCatsToFill;
+	  subCatsToFill.push_back(subcat);
+	  subCatsToFill.push_back("");
+	  if(njets30==0) subCatsToFill.push_back(njets15==0 ? "eq0softjets" : "eq0hardjets");
+	  for(size_t isc=0; isc<subCatsToFill.size(); isc++)
+	    {	 
+	      if(isGammaEvent)  
+		{
+		  mon.fillHisto("r9_"+subCatsToFill[isc],ctf, r9,iweight);
+		  mon.fillHisto("sietaieta_"+subCatsToFill[isc],ctf, sietaieta,iweight);
+		  mon.fillHisto("trkveto_"+subCatsToFill[isc],ctf, hasTrkVeto,iweight);
+		}
+
+	      if(hasTrkVeto) continue;
+	      if(zvvs[0].pt()>70) mon.fillHisto("mindphijmet_"+subCatsToFill[isc],ctf, mindphijmet,iweight);	      
+	      if(passMinDphiJmet) continue;
+	      mon.fillHisto("met_rawmet_"+subCatsToFill[isc],ctf, rawZvv.pt(),iweight);
+	      mon.fillHisto("metoverqt_"+subCatsToFill[isc],ctf, zvvs[0].pt()/gamma.pt(),iweight);
+	      mon.fillHisto("met_met_"+subCatsToFill[isc],ctf, zvvs[0].pt(),iweight);
+	      mon.fillHisto("met_met_"+subCatsToFill[isc]+"_vspu",ctf, ev.nvtx,zvvs[0].pt(),iweight);
+	      mon.fillHisto("met_min3Met_"+subCatsToFill[isc],ctf, min3Mets[0].pt(),iweight);
+	      mon.fillHisto("met_min3Met_"+subCatsToFill[isc]+"_vspu",ctf, ev.nvtx,min3Mets[0].pt(),iweight);
+	      mon.fillHisto("met_rawRedMet_"+subCatsToFill[isc],ctf, rawRedMet.pt(),iweight);
+	      mon.fillHisto("met_redMet_"+subCatsToFill[isc],ctf, redMets[0].pt(),iweight);
+	      mon.fillHisto("met_redMet_"+subCatsToFill[isc]+"_vspu",ctf, ev.nvtx,redMets[0].pt(),iweight);
+	      mon.fillHisto("met_redMetT_"+subCatsToFill[isc],ctf, redMetLs[0],iweight);
+	      mon.fillHisto("met_redMetL_"+subCatsToFill[isc],ctf, redMetTs[0],iweight);
+	      mon.fillHisto("mt_"+subCatsToFill[isc],ctf,mt,iweight);
 	    }
-	  mon.fillHisto("met_rawmet_"+subcat,ctf, metP4.pt(),iweight);
-	  mon.fillHisto("mt_"+subcat,ctf, rawMt,iweight);
+	  
+	  // 	  if(njets30<1 && metP4.pt()>100)
+	  // 	    cout << isGammaEvent << " " << passMultiplicityVetoes << " " << mctruthmode << " "
+	  // 		 << " g=(" << gamma.pt() << "," << gamma.eta() << ") "
+	  // 		 << " MET=" << metP4.pt() << " Ng=" << ev.gn << " Nj=" << ev.jn 
+	  // 		 << " Nl=" << ev.ln << " Nl=" << phys.leptons.size()
+	  // 	        // << " l1=" << phys.leptons[0].pt() << " l2=" << phys.leptons[1].pt() 
+	  // 		 << endl;
 	}
     }
 
