@@ -75,7 +75,7 @@ void printHelp();
 int findBinFor(TFile* inF, Float_t minMet, Float_t minMt, Float_t maxMt);
 Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin,JSONWrapper::Object &Root);
 void showShape(const Shape_t &shape, TString SaveName);
-void getCutFlowFromShape(std::vector<TString> ch, const map<TString, Shape_t> &allShapes, TString shName);
+void getCutFlowFromShape(TString dirurl, std::vector<TString> ch, const map<TString, Shape_t> &allShapes, TString shName);
 void estimateNonResonantBackground(std::vector<TString> &selCh,TString ctrlCh,const map<TString, Shape_t> &allShapes, TString shape);
 
 
@@ -197,9 +197,9 @@ int main(int argc, char* argv[])
 
 
 //
-void getCutFlowFromShape(std::vector<TString> ch, const map<TString, Shape_t> &allShapes, TString shName)
+void getCutFlowFromShape(TString dirurl, std::vector<TString> ch, const map<TString, Shape_t> &allShapes, TString shName)
 {
-  fstream cutflow("CutFlow.tex",ios::out | ios::trunc);
+  fstream cutflow(dirurl+"/CutFlow.tex",ios::out | ios::trunc);
 
   //table header
   const size_t nch=ch.size();
@@ -207,72 +207,73 @@ void getCutFlowFromShape(std::vector<TString> ch, const map<TString, Shape_t> &a
        << "\\begin{center}" << endl
        << "\\caption{Event yields expected for background and signal processes and observed in data.}" << endl
        <<"\\label{tab:table}" << endl;
-  TString colfmt = "l";  for(size_t ich=0; ich<nch; ich++) colfmt += "c";
+  TString colfmt = "l";  for(size_t b=0; b<AnalysisBins.size(); b++) for(size_t ich=0; ich<nch; ich++) colfmt += "c";
   TString colname("");
+
+  for(size_t b=0; b<AnalysisBins.size(); b++){
   for(size_t ich=0; ich<nch; ich++) {
-    TString icol(ch[ich]); 
+    TString icol(AnalysisBins[b]+"-"+ch[ich]); 
     icol.ReplaceAll("mu","\\mu"); icol.ReplaceAll("_"," ");
     colname = colname + "& " + "$" + icol + "$";
-  }
+  }}
   cutflow << "\\begin{tabular}{" << colfmt << "} \\hline\\hline" << endl
        << "Process " << colname << " \\\\ \\hline" << flush;
 
   //backgrounds
-  size_t nbckg=allShapes.find(ch[0]+shName)->second.bckg.size();
-  for(size_t ibckg=0; ibckg<nbckg; ibckg++)
-    {
-      TH1 *h=allShapes.find(ch[0]+shName)->second.bckg[ibckg];
+  size_t nbckg=allShapes.find(ch[0]+AnalysisBins[0]+shName)->second.bckg.size();
+  for(size_t ibckg=0; ibckg<nbckg; ibckg++){
+      TH1 *h=allShapes.find(ch[0]+AnalysisBins[0]+shName)->second.bckg[ibckg];
       TString procTitle(h->GetTitle()); procTitle.ReplaceAll("#","\\");
       cutflow << endl << "$" << procTitle << "$" << " ";
-      for(size_t ich=0; ich<nch; ich++)
-	{
-	  h=allShapes.find(ch[ich]+shName)->second.bckg[ibckg];
+      for(size_t b=0; b<AnalysisBins.size(); b++){
+      for(size_t ich=0; ich<nch; ich++){
+	  h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.bckg[ibckg];
 	  Double_t valerr;
 	  Double_t val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+          if(val<1E-9){val=0.0; valerr=0.0;}
 	  cutflow << " & " << toLatexRounded(val,valerr);
-	}
+	}}
       cutflow << "\\\\";
     }
   cutflow << "\\hline" << flush;
   
   //total bckg
   cutflow << endl << "$SM$ ";
-  for(size_t ich=0; ich<nch; ich++)
-    {
-      TH1 *h=allShapes.find(ch[ich]+shName)->second.totalBckg;
+  for(size_t b=0; b<AnalysisBins.size(); b++){
+  for(size_t ich=0; ich<nch; ich++){
+      TH1 *h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.totalBckg;
       Double_t valerr;
       Double_t val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+      if(val<1E-9){val=0.0; valerr=0.0;}
       cutflow << " & " << toLatexRounded(val,valerr);
-    }
+  }}
   cutflow << "\\\\\\hline" << flush;
 
   //signal
-  size_t nsig=allShapes.find(ch[0]+shName)->second.signal.size();
-  for(size_t isig=0; isig<nsig; isig++)
-    {
-      TH1 *h=allShapes.find(ch[0]+shName)->second.signal[isig];
+  size_t nsig=allShapes.find(ch[0]+AnalysisBins[0]+shName)->second.signal.size();
+  for(size_t isig=0; isig<nsig; isig++){
+      TH1 *h=allShapes.find(ch[0]+AnalysisBins[0]+shName)->second.signal[isig];
       TString procTitle(h->GetTitle()); procTitle.ReplaceAll("#","\\");
       cutflow << endl << "$" << procTitle << "$" << " ";
-      for(size_t ich=0; ich<nch; ich++)
-        {
-          h=allShapes.find(ch[ich]+shName)->second.signal[isig];
+      for(size_t b=0; b<AnalysisBins.size(); b++){
+      for(size_t ich=0; ich<nch; ich++){
+          h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.signal[isig];
           Double_t valerr;
           Double_t val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+          if(val<1E-9){val=0.0; valerr=0.0;}
           cutflow << " & " << toLatexRounded(val,valerr);
-        }
+        }}
       cutflow << "\\\\";
     }
   cutflow << "\\hline" << flush;
-
   //data
   cutflow << endl << "$data$ ";
-  for(size_t ich=0; ich<nch; ich++)
-    {
-      TH1 *h=allShapes.find(ch[ich]+shName)->second.data;
+  for(size_t b=0; b<AnalysisBins.size(); b++){
+  for(size_t ich=0; ich<nch; ich++){
+      TH1 *h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.data;
       cutflow << " & " << int(h->Integral());
-    }
+    }}
   cutflow << "\\\\\\hline" << flush;
-
   // end table
   cutflow << "\\hline" << endl
        << "\\end{tabular}" << endl
@@ -768,7 +769,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   if(subNRB2011 || subNRB2012)doBackgroundSubtraction(selCh,"emu",allShapes,histo,"nonresbckg_ctrl");
 
   //print event yields from the mt shapes
-  //getCutFlowFromShape(selCh,allShapes,histo);
+  if(runSystematics)getCutFlowFromShape(outDir, selCh,allShapes,histo);
 
   //prepare the output
   dci.shapesFile="Shapes_"+massStr+".root";
