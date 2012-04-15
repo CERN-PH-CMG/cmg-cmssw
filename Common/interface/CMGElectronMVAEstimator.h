@@ -6,11 +6,11 @@
 #include "TMVA/Reader.h"
 #include<string>
 
-class ElectronMVAEstimator {
+class CMGElectronMVAEstimator {
  public:
-  ElectronMVAEstimator();
-  ElectronMVAEstimator(std::string fileName);
-  ~ElectronMVAEstimator() {;}
+  CMGElectronMVAEstimator();
+  CMGElectronMVAEstimator(std::string fileName);
+  ~CMGElectronMVAEstimator() {;}
   double mva(const reco::GsfElectron& myElectron, int nvertices=0);
 
  private:

@@ -14,5 +14,8 @@ electronIDs = cms.PSet(
     eidMedium = cms.InputTag("eidMedium"), 
     eidTight = cms.InputTag("eidTight"),
     eidSuperTight = cms.InputTag("eidSuperTight"), 
+    #MVA
+    mvaTrigV0 = cms.InputTag("mvaTrigV0"),
+    mvaNonTrigV0 = cms.InputTag("mvaNonTrigV0"),
   )
 

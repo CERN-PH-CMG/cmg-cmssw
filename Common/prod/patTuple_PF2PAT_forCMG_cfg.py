@@ -13,7 +13,7 @@ runCMG = True
 
 # AK5 sequence with pileup substraction is the default
 # the other sequences can be turned off with the following flags.
-runAK5NoPUSub = True
+runAK5NoPUSub = False 
 
 hpsTaus = True
 doEmbedPFCandidatesInTaus = True
@@ -27,7 +27,7 @@ else:#Data
     jetCorrections=['L1FastJet','L2Relative','L3Absolute','L2L3Residual']
 
 # process.load("CommonTools.ParticleFlow.Sources.source_ZtoMus_DBS_cfi")
-process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
+process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2000) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
@@ -53,12 +53,15 @@ print sep_line
 # print 'generate source'
 
 from CMGTools.Production.datasetToSource import *
+# process.source.fileNames = ['/store/relval/CMSSW_5_2_0/RelValProdTTbar/AODSIM/START52_V4A-v1/0250/68FCD498-F969-E111-9366-002618943949.root']
+
 process.source = datasetToSource(
-    # 'cmgtools',
-    # '/DoubleElectron/Run2011A-16Jan2012-v1/AOD/V4',
     'cmgtools_group',
-    '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V4'
+    '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM/V4'
+    # 'CMS',
+    # '/DoubleElectron/Run2012A-PromptReco-v1/AOD'
     )
+
 
 ## for testing in 5X
 ## process.source.fileNames = cms.untracked.vstring(
@@ -114,6 +117,19 @@ jetAlgoAK5="AK5"
 #COLIN : we will need to add the L2L3Residual when they become available! also check the other calls to the usePFBRECO function. 
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgoAK5, runOnMC=runOnMC, postfix=postfixAK5,
           jetCorrections=('AK5PFchs', jetCorrections))
+
+def removeUseless( modName ):
+    getattr(process,"patDefaultSequence"+postfixAK5).remove(
+        getattr(process, modName+postfixAK5)
+        )
+
+removeUseless( "produceCaloMETCorrections" )
+removeUseless( "pfCandsNotInJet" )
+removeUseless( "pfJetMETcorr" )
+removeUseless( "pfCandMETcorr" )
+removeUseless( "pfchsMETcorr" )
+removeUseless( "pfType1CorrectedMet" )
+removeUseless( "pfType1p2CorrectedMet" )
 
 # removing stupid useless stuff from our muons:
 getattr(process,"patMuons"+postfixAK5).embedCaloMETMuonCorrs = False 
@@ -207,17 +223,25 @@ addPATElectronID( process, 'stdElectronSequence', '')
 
 # adding MIT electron id
 from CMGTools.Common.PAT.addMITElectronID import addMITElectronID
-addMITElectronID( process, 'selectedPatElectrons', 'patDefaultSequence', postfixAK5)
-addMITElectronID( process, 'selectedPatElectrons', 'stdElectronSeq', '')
+#COLIN removing MIT MVA, can't run in 52
+# addMITElectronID( process, 'selectedPatElectrons', 'patDefaultSequence', postfixAK5)
+# addMITElectronID( process, 'selectedPatElectrons', 'stdElectronSeq', '')
 
 
 # # adding custom detector based iso deposit ---> !!! this works only on V4 event content !!!
 from RecoLocalCalo.EcalRecAlgos.EcalSeverityLevelESProducer_cfi import *
 from CMGTools.Common.PAT.addLeptCustomIsoDeposit_cff import addMuonCustomIsoDeposit
 from CMGTools.Common.PAT.addLeptCustomIsoDeposit_cff import addElectronCustomIsoDeposit
+
+# COLIN REMOVED CANNOT RUN
+# uncomment -> segv 
 addMuonCustomIsoDeposit( process, 'patDefaultSequence', postfixAK5)
+# uncomment -> segv
+# track deposit alone -> segv
+# ecal and hcal deposits alone -> segv
 addMuonCustomIsoDeposit( process, 'stdMuonSeq', '')
 addElectronCustomIsoDeposit( process, 'patDefaultSequence', postfixAK5)
+# did not try to uncomment the following, as std electrons can't be made (bad refcore problem)
 addElectronCustomIsoDeposit( process, 'stdElectronSeq', '')
 
 
@@ -265,9 +289,10 @@ process.p += process.kt6PFJetsForIso
 process.p += getattr(process,"patPF2PATSequence"+postfixAK5)
 
 process.stdLeptonSequence = cms.Sequence(
-    process.stdMuonSeq +
-    process.stdElectronSeq 
+    process.stdMuonSeq
+    + process.stdElectronSeq 
     )
+#COLIN REMOVED CANNOT RUN
 process.p += process.stdLeptonSequence
 
 
@@ -306,9 +331,10 @@ if runCMG:
 
     from CMGTools.Common.PAT.addStdLeptons import addCmgMuons, addCmgElectrons
     process.cmgStdLeptonSequence = cms.Sequence(
-        addCmgMuons( process, 'StdLep', 'selectedPatMuons'  ) +
-        addCmgElectrons( process, 'StdLep', 'selectedPatElectrons'  ) 
+        addCmgMuons( process, 'StdLep', 'selectedPatMuons'  )
+        + addCmgElectrons( process, 'StdLep', 'selectedPatElectrons'  ) 
         )
+    #COLIN REMOVED CANNOT RUN
     process.cmgObjectSequence += process.cmgStdLeptonSequence
 
     if runAK5NoPUSub:
@@ -363,54 +389,58 @@ process.patElectronsAK5.embedTrack = True
 process.patElectrons.embedTrack = True
 
 
+# COLIN : commenting the calibration out (leads to a value map crash in patElectrons )
 
-#electron energy-scale corrections (from Claude C., Paramatti & al.)
-print sep_line
-print "Replacing gsfElectrons with calibratedGsfElectrons..."
-for modulename in process.p.moduleNames():
-    module = getattr(process, modulename)
-    ml = dir(module)
-    for attr in ml:
-        v = getattr(module,attr)
-        if (isinstance(v, cms.InputTag) and v == cms.InputTag("gsfElectrons")):
-            setattr(module,attr,"calibratedGsfElectrons")
-            #print "Setting ",
-            #print module,
-            #print ".", 
-            #print attr,
-            #print " = ", 
-            #print getattr(module,attr)
-process.load("EgammaCalibratedGsfElectrons.CalibratedElectronProducers.calibratedGsfElectrons_cfi")
-process.calibratedGsfElectrons.isMC = cms.bool(runOnMC)
-process.calibratedGsfElectrons.updateEnergyError = cms.bool(True)
+## #electron energy-scale corrections (from Claude C., Paramatti & al.)
+## print sep_line
+## print "Replacing gsfElectrons with calibratedGsfElectrons..."
+## for modulename in process.p.moduleNames():
+##     module = getattr(process, modulename)
+##     ml = dir(module)
+##     for attr in ml:
+##         v = getattr(module,attr)
+##         if (isinstance(v, cms.InputTag) and v == cms.InputTag("gsfElectrons")):
+##             setattr(module,attr,"calibratedGsfElectrons")
+##             #print "Setting ",
+##             #print module,
+##             #print ".", 
+##             #print attr,
+##             #print " = ", 
+##             #print getattr(module,attr)
+## process.load("EgammaCalibratedGsfElectrons.CalibratedElectronProducers.calibratedGsfElectrons_cfi")
+## process.calibratedGsfElectrons.isMC = cms.bool(runOnMC)
+## process.calibratedGsfElectrons.updateEnergyError = cms.bool(True)
 
-process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
+## process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
 
-    # Include a PSet for each module label that needs a
-    # random engine.  The name is the module label.
-    # You must supply a seed or seeds.
-    # Optionally an engine type can be specified
-    #t1 = cms.PSet(
-    #    initialSeed = cms.untracked.uint32(81)
-    #),
-    calibratedGsfElectrons = cms.PSet(
-        initialSeed = cms.untracked.uint32(1),
-        engineName = cms.untracked.string('TRandom3')
-    ),
-)
+##     # Include a PSet for each module label that needs a
+##     # random engine.  The name is the module label.
+##     # You must supply a seed or seeds.
+##     # Optionally an engine type can be specified
+##     #t1 = cms.PSet(
+##     #    initialSeed = cms.untracked.uint32(81)
+##     #),
+##     calibratedGsfElectrons = cms.PSet(
+##         initialSeed = cms.untracked.uint32(1),
+##         engineName = cms.untracked.string('TRandom3')
+##     ),
+## )
 
-from CMGTools.Common.Tools.setupEleEnergyCorrections import setupEleEnergyCorrections
-setupEleEnergyCorrections(process)
+## from CMGTools.Common.Tools.setupEleEnergyCorrections import setupEleEnergyCorrections
+## setupEleEnergyCorrections(process)
 
-print "Setting process.calibratedGsfElectrons.inputDataset=",
-print process.calibratedGsfElectrons.inputDataset
+## print "Setting process.calibratedGsfElectrons.inputDataset=",
+## print process.calibratedGsfElectrons.inputDataset
 
-process.PFBRECOAK5.replace(process.goodOfflinePrimaryVertices,
-                           process.goodOfflinePrimaryVertices+
-                           process.calibratedGsfElectrons
-                           )
+## process.PFBRECOAK5.replace(process.goodOfflinePrimaryVertices,
+##                            process.goodOfflinePrimaryVertices+
+##                            process.calibratedGsfElectrons
+##                            )
 
+#COLIN removing MIT ID, can't run in 52
 process.selectedPatMuonsAK5.cut = 'pt()>3'
-process.preselectedPatElectronsAK5.cut = 'pt()>5'
+process.selectedPatElectronsAK5.cut = 'pt()>5'
+# process.preselectedPatElectronsAK5.cut = 'pt()>5'
 process.selectedPatMuons.cut = 'pt()>3'
-process.preselectedPatElectrons.cut = 'pt()>5'
+process.selectedPatElectrons.cut = 'pt()>5'
+# process.preselectedPatElectrons.cut = 'pt()>5'
