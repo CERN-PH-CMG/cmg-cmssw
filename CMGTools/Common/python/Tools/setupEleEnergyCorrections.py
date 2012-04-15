@@ -1,6 +1,6 @@
 
 def setupEleEnergyCorrections( process ):
-
+    #FIXME: shouldn't we look for the global tag? 
     print 'setting up electron energy collections:'
 
     fileName = process.source.fileNames[0]
@@ -15,7 +15,8 @@ def setupEleEnergyCorrections( process ):
             return False
         
     # choose which kind of scale correction/MC smearing should be applied for electrons. Options are:
-    if lookup (fileName,'Fall11'):    
+    if lookup (fileName,'Fall11') or lookup(fileName, 'START52'):
+        #FIXME what should we use for 52 samples?
         process.calibratedGsfElectrons.inputDataset = "Fall11"
     elif lookup(fileName, 'Summer11' ):
         process.calibratedGsfElectrons.inputDataset = "Summer11"

@@ -1,19 +1,19 @@
-#include "CMGTools/Common/interface/ElectronMVAEstimator.h"
+#include "CMGTools/Common/interface/CMGElectronMVAEstimator.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
 #include "DataFormats/GsfTrackReco/interface/GsfTrackFwd.h"
 
-ElectronMVAEstimator::ElectronMVAEstimator(){
+CMGElectronMVAEstimator::CMGElectronMVAEstimator(){
   init(std::string("TMVA_BDTSimpleCat.weights.xml"));
 }
 
-ElectronMVAEstimator::ElectronMVAEstimator(std::string fileName){
+CMGElectronMVAEstimator::CMGElectronMVAEstimator(std::string fileName){
   init(fileName);
 }
 
 
-void ElectronMVAEstimator::init(std::string fileName) {
+void CMGElectronMVAEstimator::init(std::string fileName) {
   tmvaReader_ = new TMVA::Reader("!Color:Silent");
   tmvaReader_->AddVariable("fbrem",&fbrem);
   tmvaReader_->AddVariable("detain", &detain);
@@ -43,7 +43,7 @@ void ElectronMVAEstimator::init(std::string fileName) {
 
 
 
-double ElectronMVAEstimator::mva(const reco::GsfElectron& myElectron, int nvertices )  {
+double CMGElectronMVAEstimator::mva(const reco::GsfElectron& myElectron, int nvertices )  {
   fbrem = myElectron.fbrem();
   detain = myElectron.deltaEtaSuperClusterTrackAtVtx();
   dphiin = myElectron.deltaPhiSuperClusterTrackAtVtx();
@@ -110,7 +110,7 @@ double ElectronMVAEstimator::mva(const reco::GsfElectron& myElectron, int nverti
 }
 
 
-void ElectronMVAEstimator::bindVariables() {
+void CMGElectronMVAEstimator::bindVariables() {
   if(fbrem < -1.)
     fbrem = -1.;  
   

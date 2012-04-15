@@ -12,7 +12,7 @@
 #include "CMGTools/Common/interface/Factory.h"
 #include "CMGTools/Common/interface/SettingTool.h"
 #include "CMGTools/Common/interface/LeptonSettingTool.h"
-#include "CMGTools/Common/interface/ElectronMVAEstimator.h"
+#include "CMGTools/Common/interface/CMGElectronMVAEstimator.h"
 
 #include <iostream>
 #include <memory>
@@ -38,7 +38,7 @@ class ElectronFactory : public Factory<cmg::Electron>, public SettingTool<pat::E
       const edm::InputTag electronLabel_;
       const edm::InputTag primaryVertexLabel_;
       LeptonSettingTool<pat::ElectronPtr> leptonFactory_;
-      ElectronMVAEstimator mvaEstimator_;
+      CMGElectronMVAEstimator mvaEstimator_;
   };
 
 }

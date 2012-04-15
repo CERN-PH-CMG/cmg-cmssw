@@ -37,6 +37,8 @@ void cmg::ElectronFactory::set(const pat::ElectronPtr& input, cmg::Electron* con
   output->edB3D_ = input->edB( pat::Electron::PV3D );
   
   output->mva_ = input->mva();
+  output->mvaTrigV0_ = input->electronID("mvaTrigV0");
+  output->mvaNonTrigV0_ = input->electronID("mvaNonTrigV0");
   output->mvaDaniele_ = mvaEstimator_.mva(*input,nVertices);
   output->mvaMIT_ = input->userFloat("ElectronMVA_MIT");
     
