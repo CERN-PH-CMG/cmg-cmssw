@@ -32,6 +32,8 @@ class Electron : public cmg::Lepton<pat::ElectronPtr>{
   Electron(const value& e):
     cmg::Lepton<value>::Lepton(e),
     mva_(UnSet(float)),
+    mvaTrigV0_(UnSet(float)),
+    mvaNonTrigV0_(UnSet(float)),
     mvaDaniele_(UnSet(float)),
     mvaMIT_(UnSet(float)),
     sigmaIetaIeta_(UnSet(Double_t)),
@@ -49,6 +51,12 @@ class Electron : public cmg::Lepton<pat::ElectronPtr>{
     
     float mva() const{
       return mva_;
+    }
+    float mvaTrigV0() const{
+      return mvaTrigV0_;
+    }
+    float mvaNonTrigV0() const{
+      return mvaNonTrigV0_;
     }
     float mvaDaniele() const { 
       return mvaDaniele_;
@@ -96,6 +104,10 @@ private:
     
     // That's the PF mva
     float mva_;
+    // That's new mva for trigger object
+    float mvaTrigV0_;
+    // That's new mva for non-trigger object
+    float mvaNonTrigV0_;
     // That's Daniele's mva
     float mvaDaniele_;
     // And MIT's mva:
