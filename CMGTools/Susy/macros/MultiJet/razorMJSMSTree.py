@@ -8,6 +8,9 @@ from CMGTools.RootTools import RootFile
 import numpy as n
 from ROOT import std
 
+def decoratePoint(point):
+    return '%i_%i' % point
+
 def getFiles(datasets, user, pattern):
     
     from CMGTools.Production.datasetToSource import datasetToSource
@@ -44,23 +47,46 @@ if __name__ == '__main__':
                   VarParsing.multiplicity.singleton, # singleton or list
                   VarParsing.varType.int,          # string, int, or float
                   "The maximum number of files to read")
+    options.register ('index',
+                  -1, # default value
+                  VarParsing.multiplicity.singleton, # singleton or list
+                  VarParsing.varType.int,          # string, int, or float
+                  "The file index to run on")
+
     
     options.parseArguments()
     if True:
         names = [f for f in options.datasetName.split('/') if f]
-        name = '%s-%s-%s-SMS-NoSkim.root' % (names[0],names[1],names[-1])
+        if options.index == -1:
+            name = '%s-%s-%s.root' % (names[0],names[1],names[-1])
+        else:
+            name = '%s-%s-%s_%d.root' % (names[0],names[1],names[-1],options.index)
         options.outputFile = os.path.join(options.outputDirectory,name)
-        
+    pickleFile = options.outputFile.replace('.root','.pkl')
+
     files = getFiles(
                       [options.datasetName],
                       'wreece',
                       'susy_tree_CMG_[0-9]+.root'
 
                      )
-    if options.maxFiles > 0:
+    print 'The number of files to run on is: %d' % len(files)
+    if options.index > -1:
+        chunks = []
+        chunk = []
+        for f in files:
+            if len(chunk) <= options.maxFiles:
+                chunk.append(f)
+            if len(chunk) == options.maxFiles:
+                chunks.append(chunk)
+                chunk = []
+        print 'Created %d chunks of length %s' % (len(chunks),options.maxFiles)
+        options.inputFiles = chunks[options.index]
+    elif options.maxFiles > 0:
         options.inputFiles = files[0:options.maxFiles]
     else:
         options.inputFiles = files
+    print options.inputFiles
 
     rt.gROOT.ProcessLine("""
 struct Variables{\
@@ -84,15 +110,17 @@ struct Info{\
     Int_t lumi;\
     Int_t nJet;\
     Int_t nBJet;\
+    Int_t nBJetLoose;\
     Int_t nMuonLoose;\
     Int_t nElectronLoose;\
     Int_t nTauLoose;\
     Int_t nVertex;\
+    Int_t genInfo;\
 };""")
     
     from ROOT import Variables, Info
 
-    output = rt.TFile.Open(options.outputFile,"recreate")
+    output = rt.TFile.Open(options.outputFile,"recreate",'SMS',9)
     output.cd()
     tree = rt.TTree('RMRTree','Multijet events')
     def setAddress(obj, flag):
@@ -138,6 +166,7 @@ struct Info{\
 
     count = 0
 
+    #for storing the counts of each model point
     bins = {}
 
     # loop over events
@@ -154,33 +183,27 @@ struct Info{\
             masses = map(float,parameters.split('_')[-2:])
             vars.mStop = masses[0]
             vars.mLSP = masses[1]
+        
+        #store how many of each model we see
+        point = (vars.mStop,vars.mLSP)
+        if bins.has_key(point):
+            bins[point] = bins[point] + 1
+        else:
+            bins[point] = 1
 
-            #keep track of how many points are in each model
-            point = (vars.mStop,vars.mLSP)
-            if bins.has_key(point):
-                bins[point] = bins[point]+1
-            else:
-                bins[point] = 1
+        #this is the trigger hack, where I cut on the trigger objects
+        event.getByLabel(('emulate2011Trigger'),filterH)
+        triggerEMFilter = filterH.product()[0]
+        if not triggerEMFilter: continue
 
         event.getByLabel(('TriggerResults','','MJSkim'),pathTriggerH)
         pathTrigger = pathTriggerH.product()
 
         #start by vetoing events that didn't pass the MultiJet path
         pathTriggerNames = event.object().triggerNames(pathTrigger)
-        path = pathTrigger.wasrun(pathTriggerNames.triggerIndex('razorMJPath')) and \
-               pathTrigger.accept(pathTriggerNames.triggerIndex('razorMJPath'))
-        #event must pass the full selection
+        path = pathTrigger.wasrun(pathTriggerNames.triggerIndex('multijetPathNoTrigger')) and \
+               pathTrigger.accept(pathTriggerNames.triggerIndex('multijetPathNoTrigger'))
         if not path: continue
-
-        event.getByLabel(('cmgTriggerObjectSel'),triggerH)
-        hlt = triggerH.product()[0]
-
-        quadTriggerFilter = hlt.getSelectionRegExp("^HLT_QuadJet[0-9]+.*_v[0-9]+$")
-        sixTriggerFilter = hlt.getSelectionRegExp("^HLT_SixJet[0-9]+.*_v[0-9]+$")
-        eightTriggerFilter = hlt.getSelectionRegExp("^HLT_EightJet[0-9]+.*_v[0-9]+$")
-        triggerFilter = quadTriggerFilter or sixTriggerFilter or eightTriggerFilter
-        #event must have fired the trigger
-        if not triggerFilter: continue
 
         info.event = event.object().id().event()
         info.lumi = event.object().id().luminosityBlock()
@@ -188,13 +211,12 @@ struct Info{\
         
         CTEQ66_W.clear()
         MRST2006NNLO_W.clear()
-        BTAG_TrackCount.clear()
         
         event.getByLabel(('razorMJPFJetSel30'),jetSel30H)
-        if not jetSel30H.isValid(): continue
         jets = jetSel30H.product()
         info.nJet = len(jets)
-        
+        if info.nJet < 6: continue
+
         event.getByLabel(('razorMJDiHemiHadBox'),hemiHadH)
         if len(hemiHadH.product()):
             hemi = hemiHadH.product()[0]
@@ -217,36 +239,23 @@ struct Info{\
             hemi = hemiHadH.product()[0]
             vars.RSQ_JES_DOWN = hemi.Rsq()
             vars.MR_JES_DOWN = hemi.mR()
-
-        event.getByLabel(('cmgElectronSel'),electronH)
-        event.getByLabel(('cmgMuonSel'),muonH)
-        event.getByLabel(('cmgTauSel'),tauH)
-        event.getByLabel(('vertexSize'),countH)
-
-        electrons = electronH.product()
-        muons = muonH.product()
-        taus = tauH.product()
-
-        #count leptons
-        ele_sel_loose = [e for e in electrons if e.pt() >= 10 and abs(e.eta()) < 2.5 and (abs(e.eta()) < 1.442 or abs(e.eta()) > 1.556) and e.getSelection("cuts_vbtf95ID")]
-        ele_sel_tight = [e for e in ele_sel_loose if e.pt() >= 20 and e.getSelection("cuts_vbtf80ID") and abs(e.dxy()) < 0.02 and e.relIso() < 0.2]
-        info.nElectronLoose = len(ele_sel_loose)
-        nElectronTight = len(ele_sel_tight)
-
-        mu_sel_loose = [m for m in muons if m.pt() >= 10 and abs(m.eta()) < 2.4 and m.getSelection("cuts_vbtfmuon_isGlobal") and m.getSelection("cuts_vbtfmuon_numberOfValidTrackerHits")]
-        mu_sel_tight = [m for m in mu_sel_loose if m.pt() >= 15 and abs(m.eta()) < 2.1 and m.getSelection("cuts_vbtfmuon") and m.relIso(0.5) < 0.15]
-        info.nMuonLoose = len(mu_sel_loose)
-        nMuonTight = len(mu_sel_tight)
+            
+        #loose lepton ID
+        event.getByLabel(('razorMJElectronLoose'),electronH)
+        event.getByLabel(('razorMJMuonLoose'),muonH)
+        event.getByLabel(('razorMJTauLoose'),tauH)
+        #
+        info.nElectronLoose = len(electronH.product())
+        info.nMuonLoose = len(muonH.product())
+        info.nTauLoose = len(tauH.product())
         
-        tau_sel_loose = [t for t in taus if t.pt() >= 15 and abs(t.tauID("byLooseCombinedIsolationDeltaBetaCorr") - 1.0) < 1e-3]
-        tau_sel_tight = [t for t in tau_sel_loose if abs(t.tauID("byMediumCombinedIsolationDeltaBetaCorr") - 1.0) < 1e-3]
-        info.nTauLoose = len(tau_sel_loose)
-        nTauTight = len(tau_sel_tight)
+        #for PU weights
+        event.getByLabel(('vertexSize'),countH)
         info.nVertex = countH.product()[0]
 
-        nLepton = nElectronTight + nMuonTight + nTauTight
-        #veto events with a tight lepton
-        if nLepton > 0: continue
+        #for the tau scaling
+        event.getByLabel(('simpleGenInfo'),filterH)
+        info.genInfo = filterH.product()[0]
 
         #dump the B-tags
         tche = sorted([(j.btag(0),j) for j in jets if abs(j.eta()) <= 2.4 and j.btag(0) >= 3.3])
@@ -254,7 +263,6 @@ struct Info{\
             vars.maxTCHE = tche[-1][1].btag(0)
             vars.maxTCHE_PT = tche[-1][1].pt()
             vars.maxTCHE_ETA = tche[-1][1].eta()
-            
         info.nBJet = len(tche)
         if info.nBJet > 1:
             BTAG_TrackCount.push_back(tche[-1][1].btag(0))
@@ -265,6 +273,8 @@ struct Info{\
         else:
             BTAG_TrackCount.push_back(-1)
             BTAG_TrackCount.push_back(-1)
+        tcheLoose = sorted([(j.pt(),j) for j in jets if abs(j.eta()) <= 2.4 and j.btag(0) >= 1.7])
+        info.nBJetLoose = len(tcheLoose)
 
         #dump the PDF weights
         event.getByLabel(('dumpPdfWeights','cteq66'),pdfH)
@@ -280,8 +290,9 @@ struct Info{\
                 tree.AutoSave()
         count += 1
         tree.Fill()
-        #if count > 2000: break
 
+        #if count > 2000: break
+        
     output.cd()    
     tree.Write()
     output.Close()
@@ -290,6 +301,3 @@ struct Info{\
     print bins
     pickle.dump(bins,sample_counts)
     sample_counts.close()
-    
-
-    
