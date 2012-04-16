@@ -21,8 +21,8 @@ class ResolutionJetHistograms (Histograms) :
         self.histosEta = []
         self.histosPt = []
         for i in range (self.listLen) : 
-            self.histosEta.append (TH2F (name + '_h_dpt_eta_' + str (i), '', 24, -6, 6, 100, -2, 2))
-            self.histosPt.append (TH2F (name + '_h_dpt_pt_' + str (i), '', 10, 0, 200, 100, -2, 2))
+            self.histosEta.append (TH2F (name + '_h_dpt_eta_' + str (i), '', 24, -6, 6, 100, -2, 5))
+            self.histosPt.append (TH2F (name + '_h_dpt_pt_' + str (i), '', 10, 0, 200, 100, -2, 5))
         super (ResolutionJetHistograms, self).__init__ (name)
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
@@ -189,16 +189,16 @@ class JetHistograms (Histograms):
         self.h_pt = TH1F (name + '_h_pt', '', 100, 0, 200)
         self.h_genpt = TH1F (name + '_h_genpt', '', 100, 0, 200)
         self.h_geneta = TH1F (name + '_h_geneta', '', 240, -6, 6)
-        self.h_dpt = TH1F (name + '_h_dpt', '', 100, -2, 2)
+        self.h_dpt = TH1F (name + '_h_dpt', '', 100, -2, 5)
         self.h_eta = TH1F (name + '_h_eta', '', 240, -6, 6)
         self.h_comp = TH1F (name + '_h_comp', '', 10, 0, 10)
         self.h_deltaEleMatch = TH1F (name + '_h_deltaEleMatch', '', 1000, 0, 6)
         self.h_deltaJetMatch = TH1F (name + '_h_deltaJetMatch', '', 1000, 0, 6)
         self.h_numGen_numReco = TH2F (name + '_h_numGen_numReco', '', 20, 0, 20, 20, 0, 20)
-        self.h_dpt_pt = TH2F (name + '_h_dpt_pt', '', 100, 0, 200, 100, -2, 2)
-        self.h_dpt_eta = TH2F (name + '_h_dpt_eta', '', 240, -6, 6, 100, -2, 2)
+        self.h_dpt_pt = TH2F (name + '_h_dpt_pt', '', 100, 0, 200, 100, -2, 5)
+        self.h_dpt_eta = TH2F (name + '_h_dpt_eta', '', 240, -6, 6, 100, -2, 5)
         self.h_phi_eta = TH2F (name + '_h_phi_eta', '', 240, -6, 6, 360, -3.14, 3.14)
-        self.h_dpt_dR2 = TH2F (name + '_h_dpt_dR2', '', 100, 0, 6, 100, -2, 2)
+        self.h_dpt_dR2 = TH2F (name + '_h_dpt_dR2', '', 100, 0, 6, 100, -2, 5)
         self.h_ptr_ptg = TH2F (name + '_h_ptr_ptg', '', 100, 0, 200, 100, 0, 200)
         self.h_dR2_ptr = TH2F (name + '_h_dR2_ptr', '', 100, 0, 200, 100, 0, 6)
         self.h_dR2_eta = TH2F (name + '_h_dR2_eta', '', 240, -6, 6, 100, 0, 6)
