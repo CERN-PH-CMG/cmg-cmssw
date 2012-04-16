@@ -70,28 +70,31 @@ def plot_kin(infile,hth):
 
 ## --------------------------------------------------------------------------------------------------------------------------------------------
 def plot_jet_id(infile,hth, 
-                variables_to_plot=[("nvtx",),
-                                   ("jetPt","jetEta","jetPhi"),
-                                   ("nParticles","nCharged", "nNeutrals"),
-                                   ("leadFrac","secondFrac","thirdFrac","fourthFrac"),
-                                   ("leadChFrac","secondChFrac","thirdChFrac","fourthChFrac"),
-                                   ("leadNeutFrac","secondNeutFrac","thirdNeutFrac","fourthNeutFrac"),
-                                   ("leadEmFrac","secondEmFrac","thirdEmFrac","fourthEmFrac"),
-                                   ("etaW","phiW",## "jetW",
-                                    "majW","minW"),
-                                   ("dRMean","dRLeadCent","dRLead2nd"),
-                                   ("dRMeanNeut","dRMeanEm","dRMeanCh"),
-                                   ("frac01","frac02","frac03","frac04","frac05"),
-                                   ("chFrac01","chFrac02","chFrac03","chFrac04","chFrac05"),
-                                   ("neutFrac01","neutFrac02","neutFrac03","neutFrac04","neutFrac05"),
-                                   ("emFrac01","emFrac02","emFrac03","emFrac04","emFrac05"),
-                                   ("ptD",),
-                                   ("d0","dZ"),
+                variables_to_plot=[("nvtx","mva"),
+                                   ("jetPt","jetEta"),##,"jetPhi"),
+                                   ### ("nParticles","nCharged", "nNeutrals"),
+                                   ### ("leadFrac","secondFrac","thirdFrac","fourthFrac"),
+                                   ### ("leadChFrac","secondChFrac","thirdChFrac","fourthChFrac"),
+                                   ### ("leadNeutFrac","secondNeutFrac","thirdNeutFrac","fourthNeutFrac"),
+                                   ### ("leadEmFrac","secondEmFrac","thirdEmFrac","fourthEmFrac"),
+                                   ### ("etaW","phiW",## "jetW",
+                                   ###  "majW","minW"),
+                                   ("dRMean","dR2Mean","beta","betaStar"),
+                                   ### ("dRMean","dRLeadCent","dRLead2nd"),
+                                   ### ("dRMeanNeut","dRMeanEm","dRMeanCh"),
+                                   ### ("frac01","frac02","frac03","frac04","frac05"),
+                                   ### ("chFrac01","chFrac02","chFrac03","chFrac04","chFrac05"),
+                                   ### ("neutFrac01","neutFrac02","neutFrac03","neutFrac04","neutFrac05"),
+                                   ### ("emFrac01","emFrac02","emFrac03","emFrac04","emFrac05"),
+                                   ### ("ptD",),
+                                   ### ("d0","dZ"),
                                    ],
                 helper_inputs =    [],
-                vtxlabels = [ "_vtx%s" % l for l in  mkBinLabels((15,20,30),addOFlow=True) ],
+                vtxlabels = [ "_vtx%s" % l for l in  mkBinLabels((1,10,20),addOFlow=False) ],
+                ## vtxlabels = [ "_vtx%s" % l for l in  mkBinLabels((15,20,30),addOFlow=False) ],
                 ptbins = [],
-                etalables = ["central","endNOtk","fwd"]
+                etalables = ["TK","HEin","HEout","HF"],
+                ### etalables = ["central","endNOtk","fwd"]
                 ):
     from array import array
     from ROOT import setStyle, HtmlHelper, HtmlTag, HtmlTable, HtmlPlot, TF1
@@ -106,7 +109,8 @@ def plot_jet_id(infile,hth,
             "file":infile, "dir":"GluonMatchedCleanHistosId",   "id":"GluonMatchedCleanHistosId",
             "cat": vtx,  "label":"glu %s < N_{vtx} < %s"   % tuple(vtx.replace("_vtx","").split("_")), "nostack" : 1 } for vtx in vtxlabels ]    
     if len(ptbins) == 0:
-        ptbins = (20,30,50)
+        ## ptbins = (20,30,50)
+        ptbins = (10,20,25,30,40,50)
     ptlabels  = [ "_pt%s" % l for l in mkBinLabels(ptbins,addOFlow=True) ]
         
     ## instantiate plot helper
@@ -114,11 +118,11 @@ def plot_jet_id(infile,hth,
         helper_inputs
         ) 
     helper.defaultStyles = [
-        [ (setcolors,ROOT.kRed-4+2*i),   ("SetFillStyle",0), ("SetLineWidth",2), ("SetMarkerStyle",ROOT.kOpenTriangleUp)  ]  for i in range(len(vtxlabels))
+        [ (setcolors,ROOT.kRed-2+2*i),   ("SetFillStyle",0), ("SetLineWidth",2), ("SetMarkerStyle",ROOT.kOpenTriangleUp)  ]  for i in range(len(vtxlabels))
         ]  + [
-        [ (setcolors,ROOT.kBlue-4+2*i),   ("SetFillStyle",0), ("SetLineWidth",2), ("SetMarkerStyle",ROOT.kOpenTriangleUp)  ]  for i in range(len(vtxlabels)) 
+        [ (setcolors,ROOT.kBlue-2+2*i),   ("SetFillStyle",0), ("SetLineWidth",2), ("SetMarkerStyle",ROOT.kOpenTriangleUp)  ]  for i in range(len(vtxlabels)) 
         ]  + [
-        [ (setcolors,ROOT.kMagenta-4+2*i),   ("SetFillStyle",0), ("SetLineWidth",2), ("SetMarkerStyle",ROOT.kOpenTriangleUp)  ]  for i in range(len(vtxlabels)) 
+        [ (setcolors,ROOT.kMagenta-2+2*i),   ("SetFillStyle",0), ("SetLineWidth",2), ("SetMarkerStyle",ROOT.kOpenTriangleUp)  ]  for i in range(len(vtxlabels)) 
         ] 
 
     canvstyle = []
@@ -178,7 +182,7 @@ def plot_jet_id(infile,hth,
     ## compute the ROC curves
     rochelper = PlotHelper([])
     rochelper.defaultStyles = [
-        [ (setcolors,ROOT.kBlue-8+2*i),   ("SetFillStyle",0), ("SetLineWidth",2), ("SetMarkerStyle",ROOT.kFullCircle+i)  ]  for i in range(len(vtxlabels))
+        [ (setcolors,ROOT.kBlue-8+4*i),   ("SetFillStyle",0), ("SetLineWidth",2), ("SetMarkerStyle",ROOT.kFullCircle+i)  ]  for i in range(len(vtxlabels))
         ]
     rochelper.optsMap["nostackl"] = "l"
     
@@ -246,9 +250,32 @@ def plot_jet_id(infile,hth,
             
         plot_page(roc_plots,roc_tab,rochelper,None,[rochelper.nodisc],plots_per_row=5)## ,html_plot_options=(False,"",True,True,False))
         plot_page(rocint_plots,rocint_tab,rochelper,None,[rochelper.nodisc_int],plots_per_row=5)
-        
+
+    rochelper.variables_to_plot = variables_to_plot
+    rochelper.vtxlabels = vtxlabels
+    rochelper.etalables = etalables
+    rochelper.ptlabels = ptlabels
  
     return helper,rochelper
+
+def save_rocs(rochelper, outdir):
+    from ROOT import TFile
+    ## save the ROCs
+    print rochelper.histos
+    fout = TFile.Open("%s/roc.root" % outdir,"recreate")
+    for variabs in rochelper.variables_to_plot:
+        for var in variabs:
+            fout.mkdir(var)
+            fout.cd(var)
+            for vtx in rochelper.vtxlabels:
+                lab = "%s < N_{vtx} < %s" % tuple(vtx.replace("_vtx","").split("_"))
+                for eta in rochelper.etalables:
+                    for pt in rochelper.ptlabels:
+                        hname =  "%s%s_%s" % (eta,pt,var)
+                        rochelper.histos[lab][hname].SetTitle("%s_%s%s%s" % (var,eta,pt,vtx))
+                        rochelper.histos[lab][hname].Write("%s%s%s"%(eta,vtx,pt))
+    fout.Close()
+
 
 ## --------------------------------------------------------------------------------------------------------------------------------------------
 def main(infile,outdir):
@@ -264,10 +291,11 @@ def main(infile,outdir):
 
     kh = plot_kin(infile,hth)
 
-    ih = plot_jet_id(infile,hth)
+    ih,rh = plot_jet_id(infile,hth)
     
     ## done: create images and html 
     hth.dump()
+    save_rocs(rh,outdir)
     
     ###  reweightX = [ kh.reweight.GetBinLowEdge(i) for  i in range(1,kh.reweight.GetNbinsX())]
     ###  reweightY = [ kh.reweight.GetBinContent(i) for  i in range(1,kh.reweight.GetNbinsX())]

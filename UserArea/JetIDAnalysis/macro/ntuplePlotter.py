@@ -24,7 +24,7 @@ def main(options,args):
             "nParticles" : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,0,50),
  
             "dRMean"     :("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,0,0.5),
-            ## "dR2Mean"     :("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,0,0.5),
+            "dR2Mean"     :("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,0,0.25),
             
             "etaW"   :("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,0,0.5),
             "phiW"   :("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,0,0.5),
@@ -41,6 +41,8 @@ def main(options,args):
         if options.tmva:
             for mva in options.mvas.split(","):
                 PileupJetHistograms.prototypes[mva] = ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,-1.,1.)
+        elif options.customPrototypes:
+            PileupJetHistograms.prototypes["mva"] = ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,-1.,1.)
 
     
     ## cuts and binning
@@ -48,15 +50,22 @@ def main(options,args):
     genPtCut = 0.
     genDrAntiCut = 0.2
     
-    vtxBins   = (0,10,15,20,30)
-    ptBins    = (20,30,50)
-    if options.tmva:
-            vtxBins   = (1,10,20)
-            ptBins    = (0,10,20,30)
+    vtxBins   = (1,10,20)
+    ## ptBins    = (0,10,20,30)
+    ptBins    = (0,10,20,25,30,40,50)
+    #### vtxBins   = (0,10,15,20,30)
+    #### ptBins    = (20,30,50)
+    #### if options.tmva:
+    ####     vtxBins   = (1,10,20)
+    ####     ## ptBins    = (0,10,20,30)
+    ####     ptBins    = (0,10,20,25,30,40,50)
     vtxBinLabels = mkBinLabels(vtxBins)
-    etaBins   = (0,2.5,3.0)
-    
-    puEtaLables = ["_central","_endNOtk","_fwd"]
+
+    etaBins   = (0,2.5,2.75,3.0)
+    puEtaLables = ["_TK","_HEin","_HEout","_HF"]
+
+    ### etaBins   = (0,2.5,3.0)
+    ### puEtaLables = ["_central","_endNOtk","_fwd"]
     
     reweight_f = TF1("f","pol2(0)+expo(3)")
     reweight_f.SetParameters(0.1955298,-0.003830591,1.944794e-05,4.649755,-0.1722024)
@@ -103,10 +112,12 @@ def main(options,args):
         ## TMVA training/test tree
         if options.tmva:
             if tr.classID == 0:
-                tr.weight = tr.sigwei
+                ## tr.weight = tr.sigwei
+                tr.weight = 1.
                 sig.fillRootTuple(tr)
             else:
-                tr.weight = tr.bkgwei
+                tr.weight = 1.
+                ## tr.weight = tr.bkgwei
                 bkg.fillRootTuple(tr)
                 
         ## Original ntuples
@@ -117,7 +128,8 @@ def main(options,args):
             if options.forceFlavour != 0:
                 tr.jetFlavour = options.forceFlavour
             
-            tr.weight = reweight[1](getattr(tr,reweight[0]))
+            ## tr.weight = reweight[1](getattr(tr,reweight[0]))
+            tr.weight = 1.
             
             if tr.isMatched and tr.jetGenPt > genPtCut and tr.jetGenDr < genDrCut:
                 reweiMatchedCleanHistosId.fillRootTuple(tr)
