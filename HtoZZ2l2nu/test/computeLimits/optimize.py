@@ -191,7 +191,7 @@ elif(phase == 3 ):
    for m in MASS:
 
       #if you want to display more than 3 options edit -m3 field
-      cut_lines=commands.getstatusoutput("cat " + fileName + " | grep 'mH="+str(m)+"' -m5")[1].split('\n')
+      cut_lines=commands.getstatusoutput("cat " + fileName + " | grep 'mH="+str(m)+"' -m10")[1].split('\n')
       print 'mH='+str(m)+'\tOption \tR \tmin MET\tMT range' 
       ictr=1
       for c in cut_lines:

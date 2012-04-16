@@ -60,7 +60,7 @@ public :
       genPt=0;
       pumva=-9999.;
     }
-    void setGenPt(float val) { genPt=val; }
+    void setGenPt(float val) { if(val<0 || val>1000) genPt=0; else genPt=val; }
     void setPUmva(float val) { pumva=val; }
     Int_t genid;
     Float_t btag1, btag2, neutHadFrac, neutEmFrac, chHadFrac, genPt,pumva;

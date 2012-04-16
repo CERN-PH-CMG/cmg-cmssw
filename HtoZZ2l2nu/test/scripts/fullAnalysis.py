@@ -30,7 +30,7 @@ def waitUntilJobDone(JobList):
                         time.sleep(30)
 
 
-command_out = commands.getstatusoutput("runLocalAnalysisOverSamples.py -e run2011Analysis -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -o $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/results -d  /store/cmst3/user/psilva/12_03_31_HZZ2l2v_ntuples -c $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/runAnalysis_cfg.py.templ -p \"@useMVA=False @saveSummaryTree=True @runSystematics=True\" -s 8nh")
+command_out = commands.getstatusoutput("runLocalAnalysisOverSamples.py -e run2011Analysis -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -o $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/results -d  /store/cmst3/user/querten/12_04_14_HZZ2l2v_ntuples -c $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/runAnalysis_cfg.py.templ -p \"@useMVA=False @saveSummaryTree=True @runSystematics=True\" -s 8nh")
 JobList = getListOfJobIds(command_out[1])
 #JobList = []
 waitUntilJobDone(JobList)
