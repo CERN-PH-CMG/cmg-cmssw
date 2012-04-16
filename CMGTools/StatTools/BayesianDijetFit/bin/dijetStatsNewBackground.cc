@@ -63,6 +63,7 @@ int main(int argc, char* argv[])
 {
   bool doAggressiveBkgFit=true;
 
+
   vector<double> upper_limits;
 
   // this is needed to setup the auto-compile for the workspace
@@ -85,9 +86,12 @@ int main(int argc, char* argv[])
 
   //  double LUMI = 1010.;
 
-  double LUMI = 4677.;
+  //  double LUMI = 4677.;
+  double LUMI = 4974.;
 
-  double LUMIERROR=0.045; // relative error on luminosity
+  //  double LUMIERROR=0.045; // relative error on luminosity
+  double LUMIERROR=0.022; // relative error on luminosity
+
   double JES=1.0;        // JES "value"
   double JER=1.0;        // JER "value"
   double JESERROR=0.022;   // relative error on JES
@@ -122,7 +126,9 @@ int main(int argc, char* argv[])
   std::string sResonance(cResonance);
   int iResonance = 0;
 
-  if (statlevel > 999) USELOGNORM=false;
+  if (statlevel > 999 && statlevel < 1999) USELOGNORM=false;
+  if (statlevel == 2000 || statlevel == 2100) doAggressiveBkgFit=false;
+
 
   if (sResonance.find("RSGraviton_ak5_GGtoGG_fat30") != std::string::npos) iResonance = 11;
   else if (sResonance.find("RSGraviton_ak5_QQtoQQ_fat30") != std::string::npos) iResonance = 12;
@@ -147,7 +153,8 @@ int main(int argc, char* argv[])
 
   if (iResonance > 20 && iResonance < 29)  {
     DATASETFN="../data/PFDiFatJetMassList_DATA.txt";
-    LUMI = 117.6;
+    //    LUMI = 117.6;
+    LUMI = 130.0;
     MININVMASS = 526.;
     MAXINVMASS = 3019.;
     JESERROR=0.032;   // relative error on JES
@@ -271,7 +278,7 @@ int main(int argc, char* argv[])
   ws->factory("SUM::modelc(nsig*signal, nbkg[1000,0,1E8]*backgroundc)");
   ws->defineSet("observables","invmass");
   ws->defineSet("POI","xs");
-  if(statlevel==0) ws->factory("PROD::prior(xs_prior)");
+  if(statlevel==0 || statlevel== 2000 || statlevel == 2100) ws->factory("PROD::prior(xs_prior)");
   if(statlevel==1) ws->factory("PROD::prior(xs_prior)");
   if(statlevel==2 || statlevel==1002) ws->factory("PROD::prior(xs_prior,lumi_prior)");
   if(statlevel==3 || statlevel==1003) ws->factory("PROD::prior(xs_prior,sigMassDelta_prior)");
@@ -283,9 +290,9 @@ int main(int argc, char* argv[])
   if(statlevel==9) ws->factory("PROD::prior(xs_prior,lumi_prior)");
   if(statlevel==11) ws->factory("PROD::prior(xs_prior)");
   if(statlevel==12) ws->factory("PROD::prior(xs_prior)");
-  if(statlevel>=100) ws->factory("PROD::prior(xs_prior)");
+  if(statlevel>=100 && statlevel < 1000) ws->factory("PROD::prior(xs_prior)");
 
-  if(statlevel==0) ws->defineSet("nuisSet","");
+  if(statlevel==0 || statlevel== 2000 || statlevel == 2100) ws->defineSet("nuisSet","");
   if(statlevel==1) ws->defineSet("nuisSet","");
   if(statlevel==2 || statlevel==1002) ws->defineSet("nuisSet","lumi");
   if(statlevel==3 || statlevel==1003) ws->defineSet("nuisSet","sigMassDelta");
@@ -297,7 +304,7 @@ int main(int argc, char* argv[])
   if(statlevel==9) ws->defineSet("nuisSet","lumi");
   if(statlevel==11) ws->defineSet("nuisSet","");
   if(statlevel==12) ws->defineSet("nuisSet","");
-  if(statlevel>=100) ws->defineSet("nuisSet","");
+  if(statlevel>=100 && statlevel < 1000) ws->defineSet("nuisSet","");
 
   // do a background-only fit first
   // exclude window +20% -20% units in width
@@ -307,17 +314,7 @@ int main(int argc, char* argv[])
   ws->var("invmass")->setRange("FULL", mininvmass,maxinvmass);
   RooFitResult* fita;
   RooFitResult* fit;
-  //if(doAggressiveBkgFit) {
-  //  double minexclude = std::max(mininvmass, ws->var("sigMass")->getVal()*0.8);
-  //  double maxexclude = std::min(maxinvmass, ws->var("sigMass")->getVal()*1.1);
-  //  ws->var("invmass")->setRange("SB1", mininvmass, minexclude);
-  //  ws->var("invmass")->setRange("SB2", maxexclude, maxinvmass);
-  //  fit=doFit(std::string("bfita")+label, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "SB1,SB2");
-  //  //  fit=doFit(std::string("bfitb")+label, ws->pdf("modelb"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "SB1,SB2");
-  //  //  fit=doFit(std::string("bfitc")+label, ws->pdf("modelc"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "SB1,SB2");
-  //  ws->var("invmass")->removeRange("SB1");
-  //  ws->var("invmass")->removeRange("SB2");
-  //}
+
   
   fita=doFit(std::string("bfita")+label, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
   fit=doFit(std::string("bfitb")+label, ws->pdf("modelb"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
@@ -382,22 +379,59 @@ int main(int argc, char* argv[])
       
       fit=doFit(std::string("bsfita")+pelabel, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
     } else {
-      fit=doFit(std::string("bsfita")+pelabel, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
 
-      ws->var("p1")->setConstant(true);
-      ws->var("p2")->setConstant(true);
-      ws->var("p3")->setConstant(true);
-      ws->var("pb1")->setConstant(true);
-      ws->var("pb2")->setConstant(true);
-      ws->var("pb3")->setConstant(true);
-      ws->var("pc1")->setConstant(true);
-      ws->var("pc2")->setConstant(true);
-      ws->var("nbkg")->setConstant(true);
+      if (statlevel == 2000){
+
+	fit=doFit(std::string("bsfita")+pelabel, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
+	
+	ws->var("p1")->setConstant(true);
+	ws->var("p2")->setConstant(true);
+	ws->var("p3")->setConstant(true);
+	ws->var("pb1")->setConstant(true);
+	ws->var("pb2")->setConstant(true);
+	ws->var("pb3")->setConstant(true);
+	ws->var("pc1")->setConstant(true);
+	ws->var("pc2")->setConstant(true);
+	ws->var("nbkg")->setConstant(true);
+
+      } else if (statlevel == 2100) {
+
+	double minexclude = std::max(mininvmass, ws->var("sigMass")->getVal()*0.8);
+	double maxexclude = std::min(maxinvmass, ws->var("sigMass")->getVal()*1.1);
+	ws->var("invmass")->setRange("SB1", mininvmass, minexclude);
+	if (maxexclude <  maxinvmass){
+	  ws->var("invmass")->setRange("SB2", maxexclude, maxinvmass);
+	  fit=doFit(std::string("bfita")+label, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "SB1,SB2");
+	  ws->var("invmass")->removeRange("SB2");
+	} else {
+	  fit=doFit(std::string("bfita")+label, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "SB1");
+	}
+
+
+	ws->var("invmass")->removeRange("SB1");
+
+
+	ws->var("p1")->setConstant(true);
+	ws->var("p2")->setConstant(true);
+	ws->var("p3")->setConstant(true);
+	ws->var("pb1")->setConstant(true);
+	ws->var("pb2")->setConstant(true);
+	ws->var("pb3")->setConstant(true);
+	ws->var("pc1")->setConstant(true);
+	ws->var("pc2")->setConstant(true);
+	ws->var("nbkg")->setConstant(true);
+
+
+      }
+
+      
+      
+
     }
 
     // set parameters for limit calculation
-    if(statlevel==1 || statlevel==11 || statlevel==12 || statlevel>=100) {
-    } else if(statlevel==2) {
+    if(statlevel==1 || statlevel==11 || statlevel==12 || (statlevel>=100 && statlevel < 1000)) {
+    } else if(statlevel==2 || statlevel==1002) {
       ws->var("lumi")->setConstant(false);
     } else if(statlevel==3 || statlevel==1003) {
       ws->var("sigMassDelta")->setConstant(false);
@@ -466,7 +500,8 @@ int main(int argc, char* argv[])
     
     double lower=-1, upper=-1;
     //    int niters=1000;
-    int niters=25;
+    //    int niters=200;
+    int niters=30;
     double alpha=0.05;
     double lstail=0.0;
     JPMCCalculator mcA(*binnedData, modelConfigA);
@@ -489,7 +524,7 @@ int main(int argc, char* argv[])
 
     TH1D* histA=dynamic_cast<TH1D*>(mcA.GetPosteriorHist()->Clone("histA"));
 
-    if(statlevel==1 || statlevel==5 || statlevel==6 || statlevel==7 || statlevel==9 || statlevel==11 || statlevel==12 || statlevel>=100) {
+    if(statlevel==1 || statlevel==5 || statlevel==6 || statlevel==7 || statlevel==9 || statlevel==11 || statlevel==12 || (statlevel>=100 &&  statlevel<1000)) {
 
       if (statlevel==11){
         TH1D* histB=dynamic_cast<TH1D*>(mcB.GetPosteriorHist()->Clone("histB"));
@@ -567,7 +602,7 @@ int main(int argc, char* argv[])
 	 }
 	}
 	
-	else if (statlevel>=100) {
+	else if (statlevel>=100 && statlevel < 1000) {
           TVector g(nPar);
 	  if ((statlevel>=100) && (statlevel<=102)) {
             for(Int_t k= 0; k < nPar; k++) g(k)=eigenVectors[statlevel-99][k];
