@@ -5,11 +5,7 @@
 	[ "jetPt >= 10. && jetPt<20. ","pt10"],
 	[ "jetPt >= 20. && jetPt<30. ","pt20"],
 	[ "jetPt >= 30.              ","pt30"]
-        ],
-	[  
-	[ "nvtx>1. && nvtx<10.  ","lowpu"],
-	[ "nvtx>=10. && nvtx<20.","midpu"],
-	[ "nvtx>=20. ","highpu"]
-        ]            
+        ]
+
         ]
 }

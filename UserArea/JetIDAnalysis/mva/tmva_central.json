@@ -1,0 +1,10 @@
+{ 
+  "methods"    : [ "BDT", "Fisher" ],
+
+
+  "categories" : [ 
+		 [ "abs(jetEta) < 2.5",                        "TK",    "" ],  
+		 [ "abs(jetEta) > 2.5 && abs(jetEta)  < 2.75", "HEin",  "" ]  
+                 ],
+
+}

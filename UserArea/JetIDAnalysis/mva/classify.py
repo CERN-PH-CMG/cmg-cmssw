@@ -7,10 +7,13 @@ import fnmatch, glob, os, sys, json, itertools
 
 from CMG.JetIDAnalysis.ntupletools import mkChain, getListOfFiles
 
-def getTMVASettings(cfg,dest):
-    settings = json.load(open(cfg))
-    for k,v in settings.iteritems():
-        setattr(dest,k,v)
+def getTMVASettings(cfgs,dest):
+    for cfg in cfgs.split(","):
+        cf = open(cfg)
+        settings = json.load(cf)
+        for k,v in settings.iteritems():
+            setattr(dest,k,v)
+        cf.close()
 
 # Main routine
 def main(o,args):
@@ -108,6 +111,17 @@ def main(o,args):
     
     # --------------------------------------------------------------------------------------------------
     # Fisher discriminant (same as LD)
+    if "FisherD" in o.methods:
+        mname =  "FisherD%s" % o.label
+        fcats = factory.BookMethod( TMVA.Types.kCategory, mname )
+        
+        for cut,name,vars in categories:        
+            print "booking sub-category classifier : %s %s %s" % ( cut, name, vars )
+            fcats.AddMethod(cut,
+                            vars,TMVA.Types.kFisher,"%s_%s" % (mname,name),
+                            "!H:!V:Fisher:!CreateMVAPdfs:VarTransform=D"
+                            )
+
     if "Fisher" in o.methods:
         mname =  "Fisher%s" % o.label
         fcats = factory.BookMethod( TMVA.Types.kCategory, mname )
@@ -116,7 +130,29 @@ def main(o,args):
             print "booking sub-category classifier : %s %s %s" % ( cut, name, vars )
             fcats.AddMethod(cut,
                             vars,TMVA.Types.kFisher,"%s_%s" % (mname,name),
-                            "!H:!V:Fisher:!CreateMVAPdfs:VarTransform=D"
+                            "!H:!V:Fisher:!CreateMVAPdfs"
+                            )
+
+    if "Likelihood" in o.methods:
+        mname =  "Likelihood%s" % o.label
+        fcats = factory.BookMethod( TMVA.Types.kCategory, mname )
+        
+        for cut,name,vars in categories:        
+            print "booking sub-category classifier : %s %s %s" % ( cut, name, vars )
+            fcats.AddMethod(cut,
+                            vars,TMVA.Types.kLikelihood,"%s_%s" % (mname,name),
+                            "!H:!V:!CreateMVAPdfs:!TransformOutput:PDFInterpol=KDE:KDEtype=Gauss:KDEiter=Adaptive:KDEFineFactor=0.3:KDEborder=None:NAvEvtPerBin=150"
+                            )
+
+    if "LikelihoodD" in o.methods:
+        mname =  "LikelihoodD%s" % o.label
+        fcats = factory.BookMethod( TMVA.Types.kCategory, mname )
+        
+        for cut,name,vars in categories:        
+            print "booking sub-category classifier : %s %s %s" % ( cut, name, vars )
+            fcats.AddMethod(cut,
+                            vars,TMVA.Types.kLikelihood,"%s_%s" % (mname,name),
+                            "!H:!V:!CreateMVAPdfs:!TransformOutput:VarTransform=D:PDFInterpol=KDE:KDEtype=Gauss:KDEiter=Adaptive:KDEFineFactor=0.3:KDEborder=None:NAvEvtPerBin=150"
                             )
 
     if "BDT" in o.methods:
@@ -191,5 +227,5 @@ if __name__ == "__main__":
 
     (options, args) = parser.parse_args()
     getTMVASettings(options.tmvaSettings, options)
-
+        
     main(options, args)

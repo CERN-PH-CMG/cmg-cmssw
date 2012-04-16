@@ -1,5 +1,5 @@
 { 
-  "methods"    : [ "BDT" ],
+  "methods"    : [ "FisherD", "LikelihoodD" ],
   "subcategories" : [ 
 	[  
 	[ "jetPt >= 10. && jetPt<20. ","pt10"],
