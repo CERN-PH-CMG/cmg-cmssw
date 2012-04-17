@@ -6,6 +6,7 @@ basePtVtxCat = cms.PSet(
  tmvaWeights = cms.untracked.string("CMGTools/External/data/TMVAClassification_BDT_basePtVtxCat.weights.xml"),
  tmvaMethod  = cms.untracked.string("BDT_basePtVtxCat"),
  version = cms.untracked.int32(-1),
+ JetIdParams = JetIdParams,
  tmvaVariables = cms.untracked.vstring(
     "dRMean",
     "frac01",
