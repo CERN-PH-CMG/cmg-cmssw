@@ -5,8 +5,15 @@
 #include <iomanip>
 #include <limits>
 
-//// // ------------------------------------------------------------------------------------------
-//// const float large_val = std::numeric_limits<float>::max();
+// ------------------------------------------------------------------------------------------
+StoredPileupJetIdentifier::StoredPileupJetIdentifier() 
+{
+}
+
+// ------------------------------------------------------------------------------------------
+StoredPileupJetIdentifier::~StoredPileupJetIdentifier() 
+{
+}
 
 // ------------------------------------------------------------------------------------------
 PileupJetIdentifier::PileupJetIdentifier() 

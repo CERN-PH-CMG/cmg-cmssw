@@ -21,3 +21,25 @@ JetIdParams = cms.PSet(
     Pt2030_Loose   = cms.vdouble( 0. , 0. , 0.2,0.6),
     Pt3050_Loose   = cms.vdouble( 0. , 0. , 0.6,0.2)
 )
+
+EmptyJetIdParams = cms.PSet(
+    #4 Eta Categories  0-2.5 2.5-2.75 2.75-3.0 3.0-5.0
+
+    #Tight Id
+    Pt010_Tight    = cms.vdouble(0.,0.,0.,0.),
+    Pt1020_Tight   = cms.vdouble(0.,0.,0.,0.),
+    Pt2030_Tight   = cms.vdouble(0.,0.,0.,0.),
+    Pt3050_Tight   = cms.vdouble(0.,0.,0.,0.),
+
+    #Medium Id
+    Pt010_Medium   = cms.vdouble(0.,0.,0.,0.),
+    Pt1020_Medium  = cms.vdouble(0.,0.,0.,0.),
+    Pt2030_Medium  = cms.vdouble(0.,0.,0.,0.),
+    Pt3050_Medium  = cms.vdouble(0.,0.,0.,0.),
+
+    #Loose Id
+    Pt010_Loose    = cms.vdouble(0.,0.,0.,0.),
+    Pt1020_Loose   = cms.vdouble(0.,0.,0.,0.),
+    Pt2030_Loose   = cms.vdouble(0.,0.,0.,0.),
+    Pt3050_Loose   = cms.vdouble(0.,0.,0.,0.)
+)

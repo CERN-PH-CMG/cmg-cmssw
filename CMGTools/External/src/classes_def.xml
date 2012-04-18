@@ -1,4 +1,6 @@
 <lcgdict>
+  <class name="StoredPileupJetIdentifier"/>
+  <class name="edm::ValueMap<StoredPileupJetIdentifier>"/>
   <class name="PileupJetIdentifier"/>
   <class name="PileupJetIdAlgo"/>
 </lcgdict>

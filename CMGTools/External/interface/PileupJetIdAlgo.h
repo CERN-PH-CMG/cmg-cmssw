@@ -34,6 +34,11 @@ public:
 	PileupJetIdentifier computeIdVariables(const reco::Jet * jet, 
 					       float jec, const reco::Vertex *, const reco::VertexCollection &,
 					       bool calculateMva=false);
+	
+	void set(const PileupJetIdentifier &);
+	PileupJetIdentifier computeMva();
+	const std::string method() const { return tmvaMethod_; }
+	
 	std::string dumpVariables() const;
 
 	typedef std::map<std::string,std::pair<float *,float> > variables_list_t;
@@ -41,6 +46,7 @@ public:
 protected:
 
 	void setup(); 
+	void runMva(); 
 	void bookReader();	
 	void resetVariables();
 	void initVariables();
