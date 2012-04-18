@@ -98,7 +98,6 @@ struct Variables{\
     Double_t RSQ_JES_DOWN;\
     Double_t maxTCHE;\
     Double_t maxTCHE_PT;\
-    Double_t maxTCHE_ETA;\
     Double_t mStop;\
     Double_t mLSP;\
 };""")
@@ -111,9 +110,6 @@ struct Info{\
     Int_t nJet;\
     Int_t nBJet;\
     Int_t nBJetLoose;\
-    Int_t nMuonLoose;\
-    Int_t nElectronLoose;\
-    Int_t nTauLoose;\
     Int_t nVertex;\
     Int_t genInfo;\
 };""")
@@ -172,6 +168,10 @@ struct Info{\
     # loop over events
     for event in events:
 
+        CTEQ66_W.clear()
+        MRST2006NNLO_W.clear()
+        BTAG_TrackCount.clear()
+
         #get the LHE product info
         event.getByLabel(('source'),lheH)
         lhe = lheH.product()
@@ -191,11 +191,6 @@ struct Info{\
         else:
             bins[point] = 1
 
-        #this is the trigger hack, where I cut on the trigger objects
-        event.getByLabel(('emulate2011Trigger'),filterH)
-        triggerEMFilter = filterH.product()[0]
-        if not triggerEMFilter: continue
-
         event.getByLabel(('TriggerResults','','MJSkim'),pathTriggerH)
         pathTrigger = pathTriggerH.product()
 
@@ -205,13 +200,15 @@ struct Info{\
                pathTrigger.accept(pathTriggerNames.triggerIndex('multijetPathNoTrigger'))
         if not path: continue
 
+        #this is the trigger hack, where I cut on the trigger objects
+        event.getByLabel(('emulate2011Trigger'),filterH)
+        triggerEMFilter = filterH.product()[0]
+        if not triggerEMFilter: continue
+
         info.event = event.object().id().event()
         info.lumi = event.object().id().luminosityBlock()
         info.run = event.object().id().run()
-        
-        CTEQ66_W.clear()
-        MRST2006NNLO_W.clear()
-        
+                
         event.getByLabel(('razorMJPFJetSel30'),jetSel30H)
         jets = jetSel30H.product()
         info.nJet = len(jets)
@@ -240,15 +237,6 @@ struct Info{\
             vars.RSQ_JES_DOWN = hemi.Rsq()
             vars.MR_JES_DOWN = hemi.mR()
             
-        #loose lepton ID
-        event.getByLabel(('razorMJElectronLoose'),electronH)
-        event.getByLabel(('razorMJMuonLoose'),muonH)
-        event.getByLabel(('razorMJTauLoose'),tauH)
-        #
-        info.nElectronLoose = len(electronH.product())
-        info.nMuonLoose = len(muonH.product())
-        info.nTauLoose = len(tauH.product())
-        
         #for PU weights
         event.getByLabel(('vertexSize'),countH)
         info.nVertex = countH.product()[0]
@@ -262,7 +250,6 @@ struct Info{\
         if tche:
             vars.maxTCHE = tche[-1][1].btag(0)
             vars.maxTCHE_PT = tche[-1][1].pt()
-            vars.maxTCHE_ETA = tche[-1][1].eta()
         info.nBJet = len(tche)
         if info.nBJet > 1:
             BTAG_TrackCount.push_back(tche[-1][1].btag(0))
@@ -275,7 +262,7 @@ struct Info{\
             BTAG_TrackCount.push_back(-1)
         tcheLoose = sorted([(j.pt(),j) for j in jets if abs(j.eta()) <= 2.4 and j.btag(0) >= 1.7])
         info.nBJetLoose = len(tcheLoose)
-
+        
         #dump the PDF weights
         event.getByLabel(('dumpPdfWeights','cteq66'),pdfH)
         for w in pdfH.product():
@@ -286,8 +273,8 @@ struct Info{\
 
         if (count % 1000) == 0:
             print count,'run/lumi/event',info.run,info.lumi,info.event
-            if (count % 100000) == 0:
-                tree.AutoSave()
+            #if (count % 100000) == 0:
+            #    tree.AutoSave()
         count += 1
         tree.Fill()
 
