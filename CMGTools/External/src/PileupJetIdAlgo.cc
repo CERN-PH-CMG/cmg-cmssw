@@ -289,9 +289,6 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 		    }
 		  }
 		}
-		//// if( impactTrack.isNull() && icand->trackRef().isNonnull() && candPt > impactParTkThreshod_ ) {
-		//// 	impactTrack = icand->trackRef();
-		//// }
 		if( lTrail.isNull() || candPt < lTrail->pt() ) {
 			lTrail = icand; 
 		}
@@ -326,8 +323,6 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 		internalId_.dZ_ = fabs(impactTrack->dz(vtx->position()));
 	} else {
 		if(printWarning-- > 0) { std::cerr << "WARNING : did not find any valid track reference attached to the jet " << std::endl; }
-		//// d0_ = 99999.;
-		//// dZ_ = 99999.;
 	}
 	internalId_.nParticles_ = constituents.size(); 
 
@@ -361,7 +356,6 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 	internalId_.dRLeadCent_ = reco::deltaR(*jet,*lLead);
 	if( lSecond.isNonnull() ) { internalId_.dRLead2nd_  = reco::deltaR(*jet,*lSecond); }
 	internalId_.dRMean_     /= jetPt;
-	internalId_.dR2Mean_    /= jetPt;
 	internalId_.dRMeanNeut_ /= jetPt;
 	internalId_.dRMeanEm_   /= jetPt;
 	internalId_.dRMeanCh_   /= jetPt;
