@@ -6,6 +6,7 @@
 #include "CMGTools/TauTest/interface/TestTrig.h"
 #include "CMGTools/TauTest/interface/TestGenParticles.h"
 #include "CMGTools/TauTest/interface/TauEfficiencyPlot.h"
+#include "CMGTools/TauTest/interface/TauEfficiency.h"
 
 namespace {
   struct CMGTools_TauTest {
@@ -17,6 +18,7 @@ namespace {
     TestTrig testtrig;
     TestGenParticles testgenparticles;
     TauEfficiencyPlot taueffplot;
+    TauEfficiency taueff;
     
   };  
 }
