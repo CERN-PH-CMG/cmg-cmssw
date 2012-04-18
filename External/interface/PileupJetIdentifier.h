@@ -19,15 +19,43 @@
 	const TYPE & NAME() const { return NAME ## _; }
 
 // ----------------------------------------------------------------------------------------------------
-class PileupJetIdentifier {
+class StoredPileupJetIdentifier {
+public:
+	friend class PileupJetIdAlgo;
+
+	StoredPileupJetIdentifier();
+	~StoredPileupJetIdentifier(); 
+	
+	DECLARE_VARIABLE(jetEta   ,float);
+	DECLARE_VARIABLE(jetPt    ,float);
+
+	DECLARE_VARIABLE(nCharged   ,float);
+	DECLARE_VARIABLE(nNeutrals,float);
+
+	DECLARE_VARIABLE(dZ         ,float);  
+	DECLARE_VARIABLE(nParticles ,float);  
+
+	DECLARE_VARIABLE(dR2Mean    ,float);  /// a.k.a RMS
+	DECLARE_VARIABLE(dRMean     ,float);  
+
+	DECLARE_VARIABLE(frac01    ,float);  
+	DECLARE_VARIABLE(frac02    ,float);  
+	DECLARE_VARIABLE(frac03    ,float);  
+	DECLARE_VARIABLE(frac04    ,float);  
+	DECLARE_VARIABLE(frac05   ,float);  
+	
+	DECLARE_VARIABLE(beta       ,float);  
+	DECLARE_VARIABLE(betaStar   ,float);  
+
+	DECLARE_VARIABLE(nvtx   ,float);  
+};
+
+// ----------------------------------------------------------------------------------------------------
+class PileupJetIdentifier : public StoredPileupJetIdentifier {
 public:
 	friend class PileupJetIdAlgo;
 
 	PileupJetIdentifier();
-	// PileupJetIdentifier(const std::string & tmvaWeight="", const std::string & tmvaMethod="", 
-	// 		    float impactParTkThreshod_=1.);
-	// // PileupJetIdentifier(edm::ParameterSet & ps); 
-	/// PileupJetIdentifier(const PileupJetIdentifier &p);
 	~PileupJetIdentifier(); 
 
 	enum Id {
@@ -36,17 +64,12 @@ public:
 	  kLoose  = 2
 	};
 
-	// void computeIdVariables(const reco::Jet * jet, float jec, const reco::Vertex *, bool calculateMva=false);
 	DECLARE_VARIABLE(idFlag   ,float); //Unfortunately has to be 
 	DECLARE_VARIABLE(mva      ,float);
 	
-	DECLARE_VARIABLE(jetEta   ,float);
-	DECLARE_VARIABLE(jetPt    ,float);
+
 	DECLARE_VARIABLE(jetPhi   ,float);
 	DECLARE_VARIABLE(jetM     ,float);
-
-	DECLARE_VARIABLE(nCharged   ,float);
-	DECLARE_VARIABLE(nNeutrals,float);
 
 	DECLARE_VARIABLE(chgEMfrac  ,float);
 	DECLARE_VARIABLE(neuEMfrac  ,float);
@@ -54,8 +77,6 @@ public:
 	DECLARE_VARIABLE(neuHadrfrac,float);
 	
 	DECLARE_VARIABLE(d0         ,float);   
-	DECLARE_VARIABLE(dZ         ,float);  
-	DECLARE_VARIABLE(nParticles ,float);  
 	DECLARE_VARIABLE(leadPt     ,float);  
 	DECLARE_VARIABLE(leadEta    ,float);  
 	DECLARE_VARIABLE(leadPhi    ,float);  
@@ -74,8 +95,6 @@ public:
 
 	DECLARE_VARIABLE(dRLeadCent ,float);  
 	DECLARE_VARIABLE(dRLead2nd  ,float);  
-	DECLARE_VARIABLE(dR2Mean    ,float);  
-	DECLARE_VARIABLE(dRMean     ,float);  
 	DECLARE_VARIABLE(dRMeanNeut ,float);  
 	DECLARE_VARIABLE(dRMeanEm   ,float);  
 	DECLARE_VARIABLE(dRMeanCh   ,float);  
@@ -117,12 +136,6 @@ public:
 	DECLARE_VARIABLE(majW  ,float);  
 	DECLARE_VARIABLE(minW  ,float);  
 
-	DECLARE_VARIABLE(frac01    ,float);  
-	DECLARE_VARIABLE(frac02    ,float);  
-	DECLARE_VARIABLE(frac03    ,float);  
-	DECLARE_VARIABLE(frac04    ,float);  
-	DECLARE_VARIABLE(frac05   ,float);  
-	
 	DECLARE_VARIABLE(chFrac01    ,float);  
 	DECLARE_VARIABLE(chFrac02    ,float);  
 	DECLARE_VARIABLE(chFrac03    ,float);  
@@ -141,29 +154,9 @@ public:
 	DECLARE_VARIABLE(emFrac04    ,float);  
 	DECLARE_VARIABLE(emFrac05   ,float);  
 
-	DECLARE_VARIABLE(beta       ,float);  
-	DECLARE_VARIABLE(betaStar   ,float);  
+	DECLARE_VARIABLE(betaClassic   ,float);  
+	DECLARE_VARIABLE(betaStarClassic   ,float);  
 
-	DECLARE_VARIABLE(nvtx   ,float);  
-	
-	//// std::string dumpVariables() const;
-	//// 
-	//// typedef std::map<std::string,std::pair<float *,float> > variables_list_t;
-
-private:
-	//// TMVA::Reader * reader_;
-	//// std::string    tmvaWeights_, tmvaMethod_; 
-	//// std::vector<std::string>  tmvaVariables_;
-	//// std::map<std::string,std::string>  tmvaNames_;
-	
-	///// void bookReader();
-	
-	//// void resetVariables();
-	//// void initVariables();
-	//// 
-	//// variables_list_t variables_;
-	
-	//// float impactParTkThreshod_;
 };
 
 #undef DECLARE_VARIABLE

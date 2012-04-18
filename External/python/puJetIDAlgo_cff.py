@@ -6,7 +6,6 @@ basePtVtxCat = cms.PSet(
  tmvaWeights = cms.untracked.string("CMGTools/External/data/TMVAClassification_BDT_basePtVtxCat.weights.xml"),
  tmvaMethod  = cms.untracked.string("BDT_basePtVtxCat"),
  version = cms.untracked.int32(-1),
- JetIdParams = JetIdParams,
  tmvaVariables = cms.untracked.vstring(
     "dRMean",
     "frac01",
@@ -24,7 +23,8 @@ basePtVtxCat = cms.PSet(
     "nvtx",
     "jetPt",
     "jetEta",
-    )
+    ),
+ JetIdParams = EmptyJetIdParams
  )
 
 baseNoVtxCat = cms.PSet( 
@@ -49,7 +49,8 @@ baseNoVtxCat = cms.PSet(
  tmvaSpectators = cms.untracked.vstring(
     "jetPt",
     "jetEta",
-    )
+    ),
+ JetIdParams = EmptyJetIdParams
  )
 
 PhilV0 = cms.PSet( 
@@ -57,6 +58,7 @@ PhilV0 = cms.PSet(
  tmvaWeights = cms.untracked.string("CMGTools/External/data/mva_JetID.weights.xml"),
  tmvaMethod  = cms.untracked.string("JetID"),
  version = cms.untracked.int32(0),
+ JetIdParams = EmptyJetIdParams
 )
 
 PhilV1 = cms.PSet(
