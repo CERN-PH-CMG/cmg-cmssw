@@ -1,12 +1,12 @@
 import FWCore.ParameterSet.Config as cms
 from CMGTools.External.JetIdParams_cfi import *
 
-PuJetIdOptBDT = cms.PSet( 
- impactParTkThreshold = cms.untracked.double(1.) ,
- tmvaWeights = cms.untracked.string("CMGTools/External/data/TMVAClassification_PuJetIdOptBDT.weights.xml"),
- tmvaMethod  = cms.untracked.string("PuJetIdOptBDT"),
- version = cms.untracked.int32(-1),
- tmvaVariables = cms.untracked.vstring(
+PuJetIdOptMVA = cms.PSet(
+ impactParTkThreshold = cms.double(1.) ,
+ tmvaWeights = cms.string("CMGTools/External/data/TMVAClassification_PuJetIdOptMVA.weights.xml"),
+ tmvaMethod  = cms.string("PuJetIdOptMVA"),
+ version = cms.int32(-1),
+ tmvaVariables = cms.vstring(
     "frac01",
     "frac02",
     "frac03",
@@ -19,53 +19,52 @@ PuJetIdOptBDT = cms.PSet(
     "dZ",
     "nCharged",
     ),
- tmvaSpectators = cms.untracked.vstring(
+ tmvaSpectators = cms.vstring(
     "jetPt",
     "jetEta",
     ),
- JetIdParams = PuJetIdOptBDT_wp
+ JetIdParams = PuJetIdOptMVA_wp,
+ label = cms.string("full")
  )
 
-PuJetIdMinBDT = cms.PSet( 
- impactParTkThreshold = cms.untracked.double(1.) ,
- tmvaWeights = cms.untracked.string("CMGTools/External/data/TMVAClassification_PuJetIdMinBDT.weights.xml"),
- tmvaMethod  = cms.untracked.string("PuJetIdMinBDT"),
- version = cms.untracked.int32(-1),
- tmvaVariables = cms.untracked.vstring(
+PuJetIdMinMVA = cms.PSet( 
+ impactParTkThreshold = cms.double(1.) ,
+ tmvaWeights = cms.string("CMGTools/External/data/TMVAClassification_PuJetIdMinMVA.weights.xml"),
+ tmvaMethod  = cms.string("PuJetIdMinMVA"),
+ version = cms.int32(-1),
+ tmvaVariables = cms.vstring(
     "frac01",
     "frac02",
     "frac03",
     "frac04",
     "frac05",
-    "nNeutrals",
     "beta",
     "betaStar",
-    "dZ",
-    "nCharged",
     ),
- tmvaSpectators = cms.untracked.vstring(
+ tmvaSpectators = cms.vstring(
     "nvtx",
     "jetPt",
     "jetEta",
     ),
- JetIdParams = PuJetIdMinBDT_wp
+ JetIdParams = PuJetIdMinMVA_wp,
+ label = cms.string("simple")
  )
 
 
 PhilV0 = cms.PSet( 
- impactParTkThreshold = cms.untracked.double(1.) ,
- tmvaWeights = cms.untracked.string("CMGTools/External/data/mva_JetID.weights.xml"),
- tmvaMethod  = cms.untracked.string("JetID"),
- version = cms.untracked.int32(0),
+ impactParTkThreshold = cms.double(1.) ,
+ tmvaWeights = cms.string("CMGTools/External/data/mva_JetID.weights.xml"),
+ tmvaMethod  = cms.string("JetID"),
+ version = cms.int32(0),
  JetIdParams = EmptyJetIdParams
 )
 
 PhilV1 = cms.PSet(
- impactParTkThreshold = cms.untracked.double(1.) ,
- tmvaWeights = cms.untracked.string("CMGTools/External/data/mva_JetID_v1.weights.xml"),
- tmvaMethod  = cms.untracked.string("JetID"),
- version = cms.untracked.int32(-1),
- tmvaVariables = cms.untracked.vstring(
+ impactParTkThreshold = cms.double(1.) ,
+ tmvaWeights = cms.string("CMGTools/External/data/mva_JetID_v1.weights.xml"),
+ tmvaMethod  = cms.string("JetID"),
+ version = cms.int32(-1),
+ tmvaVariables = cms.vstring(
     "nvtx",
     "jetPt",
     "jetEta",
@@ -83,6 +82,8 @@ PhilV1 = cms.PSet(
     "frac04",
     "frac05",
     ),
-   JetIdParams = JetIdParams
+ tmvaSpectators = cms.vstring(),
+ JetIdParams = JetIdParams,
+ label = cms.string("philv1")
  )
 

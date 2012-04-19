@@ -16,12 +16,12 @@ const float large_val = std::numeric_limits<float>::max();
 // ------------------------------------------------------------------------------------------
 PileupJetIdAlgo::PileupJetIdAlgo(const edm::ParameterSet & ps) 
 {
-	impactParTkThreshod_ = ps.getUntrackedParameter<double>("impactParTkThreshod",1.);
-	tmvaWeights_         = edm::FileInPath(ps.getUntrackedParameter<std::string>("tmvaWeights","CMGTools/External/data/mva_JetID.weights.xml")).fullPath();
-	tmvaMethod_          = ps.getUntrackedParameter<std::string>("tmvaMethod","JetID");
-	tmvaVariables_       = ps.getUntrackedParameter<std::vector<std::string> >("tmvaVariables",std::vector<std::string>());
-	tmvaSpectators_      = ps.getUntrackedParameter<std::vector<std::string> >("tmvaSpectators",std::vector<std::string>());
-	version_             = ps.getUntrackedParameter<int>("version",PHILv0);
+	impactParTkThreshod_ = 1.;/// ps.getParameter<double>("impactParTkThreshod");
+	tmvaWeights_         = edm::FileInPath(ps.getParameter<std::string>("tmvaWeights")).fullPath();
+	tmvaMethod_          = ps.getParameter<std::string>("tmvaMethod");
+	tmvaVariables_       = ps.getParameter<std::vector<std::string> >("tmvaVariables");
+	tmvaSpectators_      = ps.getParameter<std::vector<std::string> >("tmvaSpectators");
+	version_             = ps.getParameter<int>("version");
  
 	reader_              = 0;
 
@@ -464,6 +464,7 @@ std::string PileupJetIdAlgo::dumpVariables() const
 // ------------------------------------------------------------------------------------------
 void PileupJetIdAlgo::resetVariables()
 {
+	internalId_.idFlag_ = 0;
 	for(variables_list_t::iterator it=variables_.begin(); 
 	    it!=variables_.end(); ++it ) {
 		*it->second.first = it->second.second;
@@ -478,7 +479,7 @@ void PileupJetIdAlgo::resetVariables()
 // ------------------------------------------------------------------------------------------
 void PileupJetIdAlgo::initVariables()
 {
-  	INIT_VARIABLE(idFlag     , "",    0.);
+	internalId_.idFlag_ = 0;
   	INIT_VARIABLE(mva        , "", -100.);
 	INIT_VARIABLE(jetPt      , "jspt_1", 0.);
 	INIT_VARIABLE(jetEta     , "jseta_1", large_val);
