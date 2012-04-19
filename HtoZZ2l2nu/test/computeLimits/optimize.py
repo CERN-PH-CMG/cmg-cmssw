@@ -117,7 +117,7 @@ if( phase == 1 ):
       for m in MASS:
          shapeBasedOpt=''
          if(shapeBased=='1') : shapeBasedOpt='--shape'
-         SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName  + " --in " + inUrl + " " + shapeBasedOpt + " --index " + str(i) + " --json " + jsonUrl +" " + LandSArg + " ;\n")
+         SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName  + " --in " + inUrl + " " + shapeBasedOpt + " --index " + str(i) + " --json " + jsonUrl +" --fast " + LandSArg + " ;\n")
          if(shapeBased=='1'):
             SCRIPT.writelines('cat H' +str(m)+'_shape_'+str(i)+'/combined/*.log | grep BAND &> ' +OUT+str(m)+'_'+str(i)+'.log;\n')
          else:
@@ -264,7 +264,8 @@ elif(phase == 3 ):
         if(shapeBased=='1') : shapeBasedOpt='--shape'
 	SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " --syst " + shapeBasedOpt + " --index " + str(index) + " --json " + jsonUrl + " " + LandSArg + " ;\n")
 	SCRIPT.close()
-	os.system("bsub -q 8nh 'sh " + OUT+"script_mass_"+str(m)+".sh'")
+#	os.system("bsub -q 8nh 'sh " + OUT+"script_mass_"+str(m)+".sh'")
+        os.system("bsub -q 2nd 'sh " + OUT+"script_mass_"+str(m)+".sh'")
 	if(shapeBased=='1'):   list.writelines('H'+str(m)+'_shape_'+str(index)+'\n'); 
 	else:                  list.writelines('H'+str(m)+'_count_'+str(index)+'\n');
    list.close();
