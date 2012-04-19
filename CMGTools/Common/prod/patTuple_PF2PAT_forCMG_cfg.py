@@ -105,20 +105,18 @@ from PhysicsTools.PatAlgos.tools.pfTools import *
 
 # ---------------- rho calculation for JEC ----------------------
 
-# make kt6PFjets if not available in PFAOD
-if runOnV4:
-    from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
+from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
 
-    process.kt6PFJets = kt4PFJets.clone(
-        rParam = cms.double(0.6),
-        doAreaFastjet = cms.bool(True),
-        doRhoFastjet = cms.bool(True),
-    )
+process.kt6PFJets = kt4PFJets.clone(
+    rParam = cms.double(0.6),
+    doAreaFastjet = cms.bool(True),
+    doRhoFastjet = cms.bool(True),
+)
 
-    #compute rho correction for lepton isolation
-    process.kt6PFJetsCHS = process.kt6PFJets.clone( src = cms.InputTag("pfNoElectronAK5") )
-    process.kt6PFJetsForIso = process.kt6PFJets.clone( Rho_EtaMax = cms.double(2.5), Ghost_EtaMax = cms.double(2.5) )
-    process.kt6PFJetsCHSForIso = process.kt6PFJets.clone( Rho_EtaMax = cms.double(2.5), Ghost_EtaMax = cms.double(2.5),
+#compute rho correction for lepton isolation
+process.kt6PFJetsCHS = process.kt6PFJets.clone( src = cms.InputTag("pfNoElectronAK5") )
+process.kt6PFJetsForIso = process.kt6PFJets.clone( Rho_EtaMax = cms.double(2.5), Ghost_EtaMax = cms.double(2.5) )
+process.kt6PFJetsCHSForIso = process.kt6PFJets.clone( Rho_EtaMax = cms.double(2.5), Ghost_EtaMax = cms.double(2.5),
          src = cms.InputTag("pfNoElectronAK5") )
 
 # ---------------- Sequence AK5 ----------------------
@@ -265,8 +263,8 @@ addElectronCustomIsoDeposit( process, 'stdElectronSeq', '')
 # ---------------- Jet substructure sequence ---------------
 
 if runJetSubstructure:
-    from CMGTools.Common.PAT.jetTools import *
-    addJetSubstructureSequence(process)
+    from CMGTools.Common.PAT.addJetSubstructure_cff import *
+    addJetSubstructureSequence( process , jetCorrections , runOnMC )
 
 # ---------------- Sequence AK5NoPUSub, pfNoPileUp switched off ---------------
 
