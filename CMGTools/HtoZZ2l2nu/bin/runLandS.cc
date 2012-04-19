@@ -48,6 +48,14 @@ TString landsExe("$CMSSW_BASE/src/UserCode/mschen/LandS/test/lands.exe");
   cout << "Launching : " << cmd << endl;				\
   gSystem->Exec(cmd);
 
+#define RUNASYMPTOTIC_FAST(INURL,OUTURL)\
+  gSystem->ExpandPathName(landsExe); \
+  TString cmd=TString(landsExe + " -d ") + INURL + TString(" -M Hybrid --ExpectationHints Asymptotic > ") + logUrl + TString(" "); \
+  cout << "Launching : " << cmd << endl;                                \
+  gSystem->Exec(cmd);
+
+
+
 
 //wrapper for a projected shape for a given set of cuts
 struct Shape_t
@@ -91,6 +99,8 @@ bool MCclosureTest = false;
 bool mergeWWandZZ = true;
 bool skipWW = true;
 std::vector<TString> AnalysisBins;
+bool fast = false;
+
 
 int indexvbf = -1;
 
@@ -110,6 +120,7 @@ void printHelp()
   printf("--closure  --> use this flag if you want to perform a MC closure test (use only MC simulation)\n");
   printf("--bins     --> list of bins to be used (they must be comma separated without space)\n");
   printf("--HWW      --> use this flag to consider HWW signal)\n");
+  printf("--fast     --> use this flag to only do assymptotic prediction (very fast but inaccurate))\n");
 }
 
 //
@@ -147,6 +158,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--histo")   !=string::npos && i+1<argc)  { histo     = argv[i+1];  i++;  printf("histo = %s\n", histo.Data()); }
     else if(arg.find("--m")       !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&mass ); i++; printf("mass = %i\n", mass);}
     else if(arg.find("--bins")    !=string::npos && i+1<argc)  { char* pch = strtok(argv[i+1],",");printf("bins are : ");while (pch!=NULL){printf(" %s ",pch); AnalysisBins.push_back(pch);  pch = strtok(NULL,",");}printf("\n"); i++; }
+    else if(arg.find("--fast")    !=string::npos) { fast=true; printf("fast = True\n");}
   }
   if(jsonFile.IsNull() || inFileUrl.IsNull() || histo.IsNull() || index == -1 || mass==-1) { printHelp(); return -1; }
   if(AnalysisBins.size()==0)AnalysisBins.push_back("");
@@ -180,7 +192,9 @@ int main(int argc, char* argv[])
   gSystem->Exec(lnCmd);
 
   TString logUrl(outDir+"/combined/Shapes_"); logUrl += mass; logUrl += ".log";
-  RUNASYMPTOTIC(outDir+"/combined/*.dat",logUrl);
+  if(fast){  RUNASYMPTOTIC_FAST(outDir+"/combined/*.dat",logUrl);
+  }else{     RUNASYMPTOTIC     (outDir+"/combined/*.dat",logUrl);
+  }
 
   if(runSystematics){
      //run limits in the exclusive channels
@@ -697,6 +711,9 @@ if(runSystematics){
       for(std::map<TString, std::map<RateKey_t,Double_t> >::iterator it=dci.systs.begin(); it!=dci.systs.end(); it++)
 	{
           if(!runSystematics && string(it->first.Data())!="stat" )continue;
+
+          //temporary placed there to speed up computation
+          //if(shape && string(it->first.Data())!="stat" )continue;
 
           dcF << it->first << "\t shapeN2\t";
 	  for(size_t j=1; j<=dci.procs.size(); j++)
