@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 from PhysicsTools.SelectorUtils.pfJetIDSelector_cfi import pfJetIDSelector
-from CMGTools.External.puJetIDAlgo_cff import PhilV1
+from CMGTools.External.puJetIDAlgo_cff import PuJetIdOptMVA
 
 jetanalyzer = cms.EDAnalyzer('JetAnalyzer',
 
@@ -14,13 +14,14 @@ jetanalyzer = cms.EDAnalyzer('JetAnalyzer',
  dataFlag    = cms.untracked.bool(False),
  computeTMVA = cms.untracked.bool(True),
                              
- puJetIDAlgo = PhilV1,
+ puJetIDAlgo = PuJetIdOptMVA,
 
  # loose jets
  pfjetIdLoose = pfJetIDSelector.clone(),                           
 
  # jet pt threshold
- jetPtThreshold = cms.untracked.double(0.)                          
+## jetPtThreshold = cms.untracked.double(0.)                          
+ jetPtThreshold = cms.untracked.double(10.)                          
                               
  #PFtoPAT ntuple (Colin)
  #JetTag     = cms.InputTag("selectedPatJetsAK5",""),                        
