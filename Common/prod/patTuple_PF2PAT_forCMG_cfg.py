@@ -13,12 +13,21 @@ runCMG = True
 
 # AK5 sequence with pileup substraction is the default
 # the other sequences can be turned off with the following flags.
-runAK5NoPUSub = False 
+runAK5NoPUSub = True
+runOnV4 = True
 
 hpsTaus = True
 doEmbedPFCandidatesInTaus = True
 doJetPileUpCorrection = True
 
+# for jet substructure you need extra tags in 4XX and 52X:
+# for 4XX:
+# scram setup $CMS_PATH/slc5_amd64_gcc434/external/fastjet-toolfile/1.0-cms7/etc/scram.d/fastjet.xml
+# addpkg RecoJets/JetAlgorithms V04-04-00
+# addpkg RecoJets/JetProducers V05-10-02
+# for 52X:
+# addpkg RecoJets/JetProducers V05-10-02
+runJetSubstructure = False
 
 #add the L2L3Residual corrections only for data
 if runOnMC:#MC
@@ -44,6 +53,8 @@ print 'embedding in taus: ', doEmbedPFCandidatesInTaus
 print 'HPS taus         : ', hpsTaus
 print 'produce CMG tuple: ', runCMG
 print 'run on MC        : ', runOnMC
+print 'run on V4        : ', runOnV4
+print 'run jet substructure : ', runJetSubstructure
 print sep_line
 print 'Global tag       : ', process.GlobalTag.globaltag
 print sep_line
@@ -57,6 +68,8 @@ from CMGTools.Production.datasetToSource import *
 
 process.source = datasetToSource(
     'cmgtools_group',
+    #'/Tau/Run2011A-May10ReReco-v1/AOD/V4',
+    #'/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V4'
     '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM/V4'
     # 'CMS',
     # '/DoubleElectron/Run2012A-PromptReco-v1/AOD'
@@ -92,16 +105,21 @@ from PhysicsTools.PatAlgos.tools.pfTools import *
 
 # ---------------- rho calculation for JEC ----------------------
 
-from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
+# make kt6PFjets if not available in PFAOD
+if runOnV4:
+    from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
 
-process.kt6PFJets = kt4PFJets.clone(
-    rParam = cms.double(0.6),
-    doAreaFastjet = cms.bool(True),
-    doRhoFastjet = cms.bool(True),
-)
+    process.kt6PFJets = kt4PFJets.clone(
+        rParam = cms.double(0.6),
+        doAreaFastjet = cms.bool(True),
+        doRhoFastjet = cms.bool(True),
+    )
 
-#compute rho correction for lepton isolation
-process.kt6PFJetsForIso = process.kt6PFJets.clone( Rho_EtaMax = cms.double(2.5), Ghost_EtaMax = cms.double(2.5) )
+    #compute rho correction for lepton isolation
+    process.kt6PFJetsCHS = process.kt6PFJets.clone( src = cms.InputTag("pfNoElectronAK5") )
+    process.kt6PFJetsForIso = process.kt6PFJets.clone( Rho_EtaMax = cms.double(2.5), Ghost_EtaMax = cms.double(2.5) )
+    process.kt6PFJetsCHSForIso = process.kt6PFJets.clone( Rho_EtaMax = cms.double(2.5), Ghost_EtaMax = cms.double(2.5),
+         src = cms.InputTag("pfNoElectronAK5") )
 
 # ---------------- Sequence AK5 ----------------------
 
@@ -151,6 +169,8 @@ getattr(process,"pfSelectedElectronsAK5").cut="pt()>5"
 if doJetPileUpCorrection:
     from CommonTools.ParticleFlow.Tools.enablePileUpCorrection import enablePileUpCorrection
     enablePileUpCorrection( process, postfix=postfixAK5)
+    # avoid double calculation of rho
+    getattr(process,"patDefaultSequence"+postfixAK5).remove(getattr(process,"kt6PFJets"+postfixAK5))
 
 #configure the taus
 from CMGTools.Common.PAT.tauTools import *
@@ -170,9 +190,6 @@ if hpsTaus:
 # curing a weird bug in PAT..
 from CMGTools.Common.PAT.removePhotonMatching import removePhotonMatching
 removePhotonMatching( process, postfixAK5 )
-
-# use non pileup substracted rho as in the Jan2012 JEC set
-getattr(process,"patJetCorrFactors"+postfixAK5).rho = cms.InputTag("kt6PFJets","rho")
 
 getattr(process,"pfNoMuon"+postfixAK5).enable = False 
 getattr(process,"pfNoElectron"+postfixAK5).enable = False 
@@ -245,6 +262,12 @@ addElectronCustomIsoDeposit( process, 'patDefaultSequence', postfixAK5)
 addElectronCustomIsoDeposit( process, 'stdElectronSeq', '')
 
 
+# ---------------- Jet substructure sequence ---------------
+
+if runJetSubstructure:
+    from CMGTools.Common.PAT.jetTools import *
+    addJetSubstructureSequence(process)
+
 # ---------------- Sequence AK5NoPUSub, pfNoPileUp switched off ---------------
 
 # PFBRECO+PAT sequence 2:
@@ -261,8 +284,35 @@ if runAK5NoPUSub:
 
     getattr(process,"pfNoPileUp"+postfixAK5NoPUSub).enable = False
     getattr(process,"patJetCorrFactors"+postfixAK5NoPUSub).payload = "AK5PF"
+    
+    # disable embedding of genjets in PAT jets to avoid duplication of the genjet collection
+    if runOnMC:
+        process.patJetsAK5.embedGenJetMatch=False
+        process.patJetsAK5NoPUSub.embedGenJetMatch=False
+        process.patJetGenJetMatchAK5NoPUSub.matched=cms.InputTag("ak5GenJetsNoNu")
+        getattr(process,"patDefaultSequence"+postfixAK5NoPUSub).remove(getattr(process,"genForPF2PATSequence"+postfixNoPUSub))
+    # disable embedding of PFparticles in PAT jets to avoid duplication of the PFparticles collection
+    process.pfJetsAK5NoPUSub.src=cms.InputTag("particleFlow")
+    process.pfNoJetAK5NoPUSub.bottomCollection=cms.InputTag("particleFlow")
+    process.pfTauPFJets08RegionAK5NoPUSub.pfSrc=cms.InputTag("particleFlow")
+    process.pfTauTagInfoProducerAK5NoPUSub.PFCandidateProducer=cms.InputTag("particleFlow")
+    process.pfTausBaseAK5NoPUSub.builders[0].pfCandSrc=cms.InputTag("particleFlow")
+    process.patJetsAK5.embedPFCandidates=False
+    process.patJetsAK5NoPUSub.embedPFCandidates=False
+    # do not rereconstruct standard ak5PFJets if available in PFAOD
+    if not runOnV4:
+        process.PFBRECOAK5NoPUSub.remove(process.pfJetSequenceAK5NoPUSub)
+        process.patJetsAK5NoPUSub.src = cms.InputTag("ak5PFJets")
+        process.patJetCorrFactorsAK5NoPUSub.src = cms.InputTag("ak5PFJets")
+	process.patJetChargeAK5NoPUSub.src = cms.InputTag("ak5PFJets")
+	process.jetTracksAssociatorAtVertexAK5NoPUSub.jets = cms.InputTag("ak5PFJets")
+	if runOnMC:
+            process.softMuonTagInfosAODAK5NoPUSub.jets = cms.InputTag("ak5PFJets")
+            process.patJetGenJetMatchAK5NoPUSub.src = cms.InputTag("ak5PFJets")
+            process.patJetPartonMatchAK5NoPUSub.src = cms.InputTag("ak5PFJets")
+            process.patJetPartonAssociationAK5NoPUSub.jets = cms.InputTag("ak5PFJets")
+    
     print 'Done'
-
 
 # ---------------- Common stuff ---------------
 
@@ -281,12 +331,17 @@ process.postPathCounter = cms.EDProducer("EventCountProducer")
 # trigger information (no selection)
 
 process.p = cms.Path( process.prePathCounter + process.patTriggerDefaultSequence )
-process.p += process.kt6PFJets
-process.p += process.kt6PFJetsForIso
+# make kt6PFjets if not available in PFAOD
+if runOnV4:
+    process.p += process.kt6PFJets
 
 # PFBRECO+PAT ---
 
 process.p += getattr(process,"patPF2PATSequence"+postfixAK5)
+
+process.p += process.kt6PFJetsCHS
+process.p += process.kt6PFJetsForIso
+process.p += process.kt6PFJetsCHSForIso
 
 process.stdLeptonSequence = cms.Sequence(
     process.stdMuonSeq
@@ -295,6 +350,8 @@ process.stdLeptonSequence = cms.Sequence(
 #COLIN REMOVED CANNOT RUN
 process.p += process.stdLeptonSequence
 
+if runJetSubstructure:
+    process.p += process.jetSubstructureSequence
 
 if runAK5NoPUSub:
     process.p += getattr(process,"patPF2PATSequence"+postfixAK5NoPUSub)
@@ -366,8 +423,28 @@ process.out.outputCommands.extend( patEventContentCMG )
 # add counters to the pat-tuple
 process.out.outputCommands.extend(['keep edmMergeableCounter_*_*_*'])
 
-# CMG ---
+if runJetSubstructure:
+    # keep collections needed for jet substructure studies
+    process.out.outputCommands.extend(['drop recoGenParticles_genParticlesPruned_*_*'])
+    process.out.outputCommands.extend(['keep recoPFJets_ak5PrunedPFlow_SubJets_*'])
+    process.out.outputCommands.extend(['keep patJets_selectedPatJetsAK5PrunedPF_*_*'])
+    # save only one genjet collection instead of the two embedded in pat jets
+    process.out.outputCommands.extend(['drop recoGenJets_selectedPatJetsAK5PrunedPF_genJets_*'])
+    # save only one PFparticles collection instead of the two embedded in pat jets
+    process.out.outputCommands.extend(['drop recoPFCandidates_selectedPatJetsAK5PrunedPF_pfCandidates_*'])
 
+if runAK5NoPUSub:
+    # save only one genjet collection instead of the two embedded in pat jets
+    process.out.outputCommands.extend(['drop recoGenJets_selectedPatJetsAK5_genJets_*'])
+    process.out.outputCommands.extend(['drop recoGenJets_selectedPatJetsAK5NoPUSub_genJets_*'])
+    process.out.outputCommands.extend(['keep recoGenJets_ak5GenJetsNoNu_*_*'])
+    # save only one PFparticles collection instead of the two embedded in pat jets
+    process.out.outputCommands.extend(['drop recoPFCandidates_selectedPatJetsAK5_pfCandidates_*'])
+    process.out.outputCommands.extend(['drop recoPFCandidates_selectedPatJetsAK5NoPUSub_pfCandidates_*'])
+    process.out.outputCommands.extend(['keep recoPFCandidates_pfNoElectronAK5_*_*'])
+
+
+# CMG ---
 
 process.outcmg = cms.OutputModule(
     "PoolOutputModule",
