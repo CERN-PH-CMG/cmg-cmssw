@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Pasquale Musella,40 2-A12,+41227671706,
 //         Created:  Wed Apr 18 15:48:47 CEST 2012
-// $Id$
+// $Id: PileupJetIdProducer.cc,v 1.1 2012/04/18 15:17:02 musella Exp $
 //
 //
 
@@ -54,21 +54,26 @@ private:
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 
 	edm::InputTag jets_, vertexes_;
-	std::vector<PileupJetIdAlgo *> algos_;
+	bool runMvas_;
+	std::vector<std::pair<std::string, PileupJetIdAlgo *> > algos_;
 };
 
+// ------------------------------------------------------------------------------------------
 PileupJetIdProducer::PileupJetIdProducer(const edm::ParameterSet& iConfig)
 {
+	runMvas_ = iConfig.getParameter<bool>("runMvas");
 	jets_ = iConfig.getParameter<edm::InputTag>("jets");
 	vertexes_ = iConfig.getParameter<edm::InputTag>("vertexes");
 	std::vector<edm::ParameterSet> algos = iConfig.getParameter<std::vector<edm::ParameterSet> >("algos");
 	
 	produces<edm::ValueMap<StoredPileupJetIdentifier> > ("");
 	for(std::vector<edm::ParameterSet>::iterator it=algos.begin(); it!=algos.end(); ++it) {
-		std::string mvaMethod = it->getUntrackedParameter<std::string>("tmvaMethod");
-		algos_.push_back( new PileupJetIdAlgo(*it) );
-		produces<edm::ValueMap<float> > (mvaMethod+"_mva");
-		produces<edm::ValueMap<float> > (mvaMethod+"_id"); // FIXME make it something smarter
+		std::string label = it->getParameter<std::string>("label");
+		algos_.push_back( std::make_pair(label,new PileupJetIdAlgo(*it)) );
+		if( runMvas_ ) {
+			produces<edm::ValueMap<float> > (label+"Discriminant");
+			produces<edm::ValueMap<int> > (label+"Id");
+		}
 	}
 }
 
@@ -97,42 +102,47 @@ PileupJetIdProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	vector<StoredPileupJetIdentifier> ids; 
 	map<string, vector<float> > mvas;
-	map<string, vector<float> > idflags;
+	map<string, vector<int> > idflags;
 
 	for ( unsigned int i=0; i<jets.size(); ++i ) {
-		vector<PileupJetIdAlgo *>::iterator ialgo = algos_.begin();
+		vector<pair<string,PileupJetIdAlgo *> >::iterator algoi = algos_.begin();
+		PileupJetIdAlgo * ialgo = algoi->second;
 		const pat::Jet & patjet = jets.at(i);
  
-		PileupJetIdentifier puIdentifier = (*ialgo)->computeIdVariables(&patjet, 0., &vtx, vertexes, true);
-		ids.push_back( puIdentifier );
-		mvas[(*ialgo)->method()].push_back( puIdentifier.mva() );
-		idflags[(*ialgo)->method()].push_back( puIdentifier.idFlag() );
-		for( ++ialgo; ialgo!=algos_.end(); ++ialgo) {
-			(*ialgo)->set(puIdentifier);
-			PileupJetIdentifier id = (*ialgo)->computeMva();
-			mvas[(*ialgo)->method()].push_back( id.mva() );
-			idflags[(*ialgo)->method()].push_back( id.idFlag() );
+		PileupJetIdentifier puIdentifier = ialgo->computeIdVariables(&patjet, 0., &vtx, vertexes, runMvas_);
+		if( runMvas_ ) {
+			ids.push_back( puIdentifier );
+			mvas[algoi->first].push_back( puIdentifier.mva() );
+			idflags[algoi->first].push_back( puIdentifier.idFlag() );
+			for( ++algoi; algoi!=algos_.end(); ++algoi) {
+				ialgo = algoi->second;
+				ialgo->set(puIdentifier);
+				PileupJetIdentifier id = ialgo->computeMva();
+				mvas[algoi->first].push_back( id.mva() );
+				idflags[algoi->first].push_back( id.idFlag() );
+			}
 		}
 	}
 	
-	auto_ptr<ValueMap<StoredPileupJetIdentifier> > idsout;
+	for(vector<pair<string,PileupJetIdAlgo *> >::iterator ialgo = algos_.begin(); ialgo!=algos_.end(); ++ialgo) {
+		vector<float> & mva = mvas[ialgo->first];
+		auto_ptr<ValueMap<float> > mvaout(new ValueMap<float>());
+		ValueMap<float>::Filler mvafiller(*mvaout);
+		mvafiller.insert(jetHandle,mva.begin(),mva.end());
+		iEvent.put(mvaout,ialgo->first+"Discriminant");
+
+		vector<int> & idflag = idflags[ialgo->first];
+		auto_ptr<ValueMap<int> > idflagout(new ValueMap<int>());
+		ValueMap<int>::Filler idflagfiller(*idflagout);
+		idflagfiller.insert(jetHandle,idflag.begin(),idflag.end());
+		iEvent.put(idflagout,ialgo->first+"Id");
+
+	}
+	
+	auto_ptr<ValueMap<StoredPileupJetIdentifier> > idsout(new ValueMap<StoredPileupJetIdentifier>());
 	ValueMap<StoredPileupJetIdentifier>::Filler idsfiller(*idsout);
 	idsfiller.insert(jetHandle,ids.begin(),ids.end());
 	iEvent.put(idsout);
-	
-	for(vector<PileupJetIdAlgo *>::iterator ialgo = algos_.begin(); ialgo!=algos_.end(); ++ialgo) {
-		vector<float> & mva = mvas[(*ialgo)->method()];
-		auto_ptr<ValueMap<float> > mvaout;
-		ValueMap<float>::Filler mvafiller(*mvaout);
-		mvafiller.insert(jetHandle,mva.begin(),mva.end());
-		iEvent.put(mvaout,(*ialgo)->method()+"_mva");
-		
-		vector<float> & idflag = idflags[(*ialgo)->method()];
-		auto_ptr<ValueMap<float> > idflagout;
-		ValueMap<float>::Filler idflagfiller(*idflagout);
-		idflagfiller.insert(jetHandle,idflag.begin(),idflag.end());
-		iEvent.put(idflagout,(*ialgo)->method()+"_id");
-	}
 }
 
 // ------------------------------------------------------------------------------------------

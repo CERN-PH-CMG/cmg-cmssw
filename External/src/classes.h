@@ -5,6 +5,8 @@
 
 namespace {
   namespace {
+	  std::vector<StoredPileupJetIdentifier> vec;
 	  edm::ValueMap<StoredPileupJetIdentifier> vmap;
+	  edm::Wrapper<edm::ValueMap<StoredPileupJetIdentifier> > vmapw;
   }
 }

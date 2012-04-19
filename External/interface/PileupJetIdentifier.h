@@ -64,7 +64,7 @@ public:
 	  kLoose  = 2
 	};
 
-	DECLARE_VARIABLE(idFlag   ,float); //Unfortunately has to be 
+	DECLARE_VARIABLE(idFlag   ,int); //Unfortunately has to be 
 	DECLARE_VARIABLE(mva      ,float);
 	
 
