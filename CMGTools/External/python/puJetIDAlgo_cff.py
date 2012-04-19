@@ -1,18 +1,18 @@
 import FWCore.ParameterSet.Config as cms
 from CMGTools.External.JetIdParams_cfi import *
 
-basePtVtxCat = cms.PSet( 
+PuJetIdOptBDT = cms.PSet( 
  impactParTkThreshold = cms.untracked.double(1.) ,
- tmvaWeights = cms.untracked.string("CMGTools/External/data/TMVAClassification_BDT_basePtVtxCat.weights.xml"),
- tmvaMethod  = cms.untracked.string("BDT_basePtVtxCat"),
+ tmvaWeights = cms.untracked.string("CMGTools/External/data/TMVAClassification_PuJetIdOptBDT.weights.xml"),
+ tmvaMethod  = cms.untracked.string("PuJetIdOptBDT"),
  version = cms.untracked.int32(-1),
  tmvaVariables = cms.untracked.vstring(
-    "dRMean",
     "frac01",
     "frac02",
     "frac03",
     "frac04",
     "frac05",
+    "nvtx",
     "nNeutrals",
     "beta",
     "betaStar",
@@ -20,38 +20,37 @@ basePtVtxCat = cms.PSet(
     "nCharged",
     ),
  tmvaSpectators = cms.untracked.vstring(
-    "nvtx",
     "jetPt",
     "jetEta",
     ),
- JetIdParams = EmptyJetIdParams
+ JetIdParams = PuJetIdOptBDT_wp
  )
 
-baseNoVtxCat = cms.PSet( 
+PuJetIdMinBDT = cms.PSet( 
  impactParTkThreshold = cms.untracked.double(1.) ,
- tmvaWeights = cms.untracked.string("CMGTools/External/data/TMVAClassification_BDT_baseNoVtxCat.weights.xml"),
- tmvaMethod  = cms.untracked.string("BDT_baseNoVtxCat"),
+ tmvaWeights = cms.untracked.string("CMGTools/External/data/TMVAClassification_PuJetIdMinBDT.weights.xml"),
+ tmvaMethod  = cms.untracked.string("PuJetIdMinBDT"),
  version = cms.untracked.int32(-1),
  tmvaVariables = cms.untracked.vstring(
-    "dRMean",
     "frac01",
     "frac02",
     "frac03",
     "frac04",
     "frac05",
     "nNeutrals",
-    "nvtx",
     "beta",
     "betaStar",
     "dZ",
     "nCharged",
     ),
  tmvaSpectators = cms.untracked.vstring(
+    "nvtx",
     "jetPt",
     "jetEta",
     ),
- JetIdParams = EmptyJetIdParams
+ JetIdParams = PuJetIdMinBDT_wp
  )
+
 
 PhilV0 = cms.PSet( 
  impactParTkThreshold = cms.untracked.double(1.) ,
