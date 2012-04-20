@@ -24,6 +24,14 @@ if __name__ == '__main__':
                                  TGraph(npoints))
                       )
     
+    tauCurves2 = dict( tau20 = (triggerEfficiency.effIsoTau20,
+                                 TGraph(npoints)),
+                      tau25 = (triggerEfficiency.effIsoTau25,
+                                 TGraph(npoints)),
+                      tau35 = (triggerEfficiency.effIsoTau35,
+                                 TGraph(npoints)),
+                      )
+    
     muCurves = dict( p2011A = (triggerEfficiency.effMu2011A,
                                TGraph(npoints)),
                      p2011B = (triggerEfficiency.effMu2011B,
@@ -54,6 +62,7 @@ if __name__ == '__main__':
                     
 
     fillGraphs( tauCurves )
+    fillGraphs( tauCurves2 )
     fillGraphs( muCurves, region='Barrel' )
     fillGraphs( eleCurves, region='Endcaps' )
 
@@ -72,6 +81,7 @@ if __name__ == '__main__':
 
     
     can1 = drawCurves( tauCurves, 'tau')
+    can1b = drawCurves( tauCurves2, 'tau2')
     can2 = drawCurves( muCurves, 'mu')
     can3 = drawCurves( eleCurves, 'ele')
 
