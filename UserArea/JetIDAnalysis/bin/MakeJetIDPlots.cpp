@@ -115,7 +115,7 @@ int main(int argc, char** argv)
   //--- NVTX reweighting
   float ww[100];
   std::string filemc   = outputRootFileName_+".root";
-  std::string filedata = "histos_DoubleMu2011_""_"+etaRange_+"_pt"+argv[5]+"to"+argv[6]+".root";
+  std::string filedata = "histos_DoubleMu2011_pfjets"+etaRange_+"_pt"+argv[5]+"to"+argv[6]+".root";
 
   std::cout<< "file name mc: " << filemc << std::endl;
   std::cout<< "file name data: " << filedata << std::endl;
