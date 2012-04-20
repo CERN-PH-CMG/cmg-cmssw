@@ -7,12 +7,15 @@ from lip.Tools.roctools import *
 
 from plotPileupJetHistograms import plot_jet_id, mkBinLabels
 ## from CMGTools.RootTools.utils.PileupJetHistograms import mkBinLabels
+import os
 
 ## --------------------------------------------------------------------------------------------------------------------------------------------
 def main(indir,input,outdir):
 
     ## initialize ROOT style and set-up the html helper
     setStyle()
+    if not os.path.isdir(outdir):
+        os.mkdir(outdir)
     hth = HtmlHelper(outdir)
     hth.header().addobj( HtmlTag("link") ).set("rel","stylesheet").set("type","text/css").set("href","../res/style.css")  
     hth.header().addobj( HtmlTag("script") ).set("language","javascript").set("type","text/javascript").set("src","../../res/jquery.js").txt(" ")
@@ -27,13 +30,14 @@ def main(indir,input,outdir):
         "cat":vtx,   "label": "%s" % (lab), "nostack" : 1 } for vtx in vtxlabels[-1:] for file,var,lab in inputs ] )
     
     helper.defaultStyles = [
-        [ (setcolors,ROOT.kBlack),  ("SetMarkerStyle",ROOT.kFullCircle),       ], 
-        [ (setcolors,ROOT.kRed+1),  ("SetMarkerStyle",ROOT.kFullTriangleDown), ], 
+        [ (setcolors,ROOT.kRed),  ("SetMarkerStyle",ROOT.kFullCircle),       ], 
+        [ (setcolors,ROOT.kBlack),  ("SetMarkerStyle",ROOT.kFullTriangleDown), ], 
         [ (setcolors,ROOT.kMagenta),  ("SetMarkerStyle",ROOT.kOpenDiamond),      ], 
-        [ (setcolors,ROOT.kOrange), ("SetMarkerStyle",ROOT.kOpenTriangleUp),   ], 
-        [ (setcolors,ROOT.kBlue),   ("SetMarkerStyle",ROOT.kOpenCircle),       ], 
         [ (setcolors,ROOT.kGreen),  ("SetMarkerStyle",ROOT.kFullStar),         ], 
-        [ (setcolors,ROOT.kBlack),  ("SetMarkerStyle",ROOT.kOpenStar),         ], 
+        [ (setcolors,ROOT.kBlue), ("SetMarkerStyle",ROOT.kOpenTriangleUp),   ], 
+        [ (setcolors,ROOT.kOrange),   ("SetMarkerStyle",ROOT.kOpenCircle),       ], 
+        [ (setcolors,ROOT.kOrange-4),  ("SetMarkerStyle",ROOT.kOpenStar),         ], 
+        [ (setcolors,ROOT.kOrange+2),  ("SetMarkerStyle",ROOT.kOpenStar),         ], 
         ]
 
     histos_to_read = [ ("%s%s%s" % (eta,"%(cat)s",pt), [], "%s%s" % (eta,pt))  for eta in etalables for pt in ptlabels ]
@@ -60,6 +64,8 @@ def main(indir,input,outdir):
     
     ## done: create images and html 
     hth.dump()
+
+    print outdir
     
 ## --------------------------------------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":

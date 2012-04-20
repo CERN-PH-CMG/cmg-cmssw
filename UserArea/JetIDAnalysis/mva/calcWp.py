@@ -52,8 +52,8 @@ def main(options, args):
         h_bkg =  gDirectory.Get("h_bkg_%s" % name)
 
         print "Gatting quantiles ", name
-        sig_qvals = [0.1,0.2,0.2,0.5,0.6,0.1]
-        bkg_qvals = [0.4,0.7,0.6,0.8,0.9,0.9]
+        sig_qvals = [0.1,0.2,0.2,0.5,0.6 ,0.05]
+        bkg_qvals = [0.4,0.7,0.6,0.8,0.9 ,0.95]
         quants[name] = getQuantilesGraphs(h_sig,sig_qvals), getQuantilesGraphs(h_bkg,bkg_qvals)
 
         for i in range(len(sig_qvals)):

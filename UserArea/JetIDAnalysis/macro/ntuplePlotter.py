@@ -19,8 +19,8 @@ def main(options,args):
             "d0"         : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s","cm",100,0,2),
             "dZ"         : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s","cm",100,0,10),
             
-            "beta"         : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s","",100,0,1.),
-            "betaStar"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s","",100,0,1.),
+            "beta"         : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s","",200,0,1.),
+            "betaStar"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s","",200,0,1.),
             "nParticles" : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,0,50),
  
             "dRMean"     :("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,0,0.5),

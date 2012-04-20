@@ -28,9 +28,7 @@ process.MuonsFilter = countPatMuons.clone(
 )
 
 #jet analyzer 
-from CMGTools.External.JetIdParams_cfi import *
-from CMGTools.External.puJetIDAlgo_cff import dRdRProfMultBetaFull
-from CMGTools.External.puJetIDAlgo_cff import PhilV1
+from CMGTools.External.puJetIDAlgo_cff import PuJetIdOptBDT, PuJetIdMinBDT, PhilV1 
 from CMG.JetIDAnalysis.jetanalyzer_cfi import *
 
 
@@ -38,7 +36,21 @@ from CMG.JetIDAnalysis.jetanalyzer_cfi import *
 process.pfjetanalyzer = jetanalyzer.clone(
     JetTag   = cms.InputTag("selectedPatJets",""),            
     dataFlag = cms.untracked.bool(True),
-    #puJetIDAlgo = dRdRProfMultBetaFull
+    puJetIDAlgo = PuJetIdOptBDT
+)
+
+# PF jet collection
+process.pfjetanalyzer_minimal = jetanalyzer.clone(
+    JetTag   = cms.InputTag("selectedPatJets",""),            
+    dataFlag = cms.untracked.bool(True),
+    puJetIDAlgo = PuJetIdMinBDT
+)
+
+
+# PF jet collection
+process.pfjetanalyzer_philv1 = jetanalyzer.clone(
+    JetTag   = cms.InputTag("selectedPatJets",""),            
+    dataFlag = cms.untracked.bool(True),
     puJetIDAlgo = PhilV1
 )
 
@@ -53,5 +65,6 @@ process.TFileService = cms.Service("TFileService",
     closeFileFast = cms.untracked.bool(True)
 )
 
-process.ana = cms.Sequence(process.pfjetanalyzer+process.chspfjetanalyzer)
+process.ana = cms.Sequence(process.pfjetanalyzer+process.pfjetanalyzer_minimal+process.pfjetanalyzer_philv1+process.chspfjetanalyzer)
+#### process.ana = cms.Sequence(process.pfjetanalyzer+process.chspfjetanalyzer)
 process.p = cms.Path(process.MuonsFilter*process.ana)

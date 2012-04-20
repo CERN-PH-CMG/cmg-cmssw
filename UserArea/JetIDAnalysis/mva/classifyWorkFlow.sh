@@ -16,9 +16,10 @@ mvas=BDT_$label
 [[ -n $4 ]] && mvas=$4
 
 ## inputDir=/store/cmst3/user/musella/JETID_NTUPLES/27_03_2012/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/
-inputDir=/store/cmst3/user/malberti/JETID_NTUPLES/29_03_2012/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/
-outputDir=/store/cmst3/user/musella/JETID_MVA_v4
-webDir=~/www/higgs/jetid_optimization_v4
+## inputDir=/store/cmst3/user/malberti/JETID_NTUPLES/29_03_2012/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/
+inputDir=/store/cmst3/user/musella/JETID_NTUPLES/18_04_2012/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/
+outputDir=/store/cmst3/user/musella/JETID_MVA_v5
+webDir=~/www/higgs/jetid_optimization_v5
 
 classify=$mydir/classify.py
 ntuplePlotter=$mydir/../macro/ntuplePlotter.py
@@ -39,5 +40,5 @@ $ntuplePlotter -i $outputDir -f tmva_$label.root -o histograms_$label.root -T -c
 cmsStage -f histograms_$label.root $outputDir
 
 mkdir $webDir
-$plotMVA $(cmsPfn $outputDir/histograms_$label.root) $webDir/$label $label $variables $mvas
+$plotMVA $(cmsPfn $outputDir/histograms_$label.root) $webDir/$label $label "" $mvas
 

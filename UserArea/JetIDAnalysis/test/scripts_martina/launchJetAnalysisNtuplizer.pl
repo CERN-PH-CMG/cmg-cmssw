@@ -143,7 +143,7 @@ for($jobIt = 1; $jobIt <= $jobNumber; ++$jobIt)
   $command = "cmsMkdir ".$OUTPUTDIR; 
   system ("echo ".$command." >> ".$tempBjob) ;
 
-  $command = "cmsStage ./".$OUTPUTFILENAME."_".$jobIt.".root ".$OUTPUTDIR; 
+  $command = "cmsStage -f ./".$OUTPUTFILENAME."_".$jobIt.".root ".$OUTPUTDIR; 
   system ("echo ".$command." >> ".$tempBjob) ;
   
 ############

@@ -1,5 +1,5 @@
 { 
-  "spectators" : [ "dRMean", "etaW", "phiW", "minW", "majW", "jetW", "ptD", "nvtx", "jetPt", "jetEta", "frac01", "frac02", "frac03", "frac04", "frac05", "beta", "betaStar", "dZ", "d0", "leadFrac", "secondFrac", "thirdFrac", "fourthFrac", "dRLeadCent", "dRLead2nd", "nParticles", "nNeutrals", "nCharged" ],
+  "spectators" : [ "dRMean", "dR2Mean", "etaW", "phiW", "minW", "majW", "jetW", "ptD", "nvtx", "jetPt", "jetEta", "frac01", "frac02", "frac03", "frac04", "frac05", "beta", "betaStar", "dZ", "d0", "leadFrac", "secondFrac", "thirdFrac", "fourthFrac", "dRLeadCent", "dRLead2nd", "nParticles", "nNeutrals", "nCharged" ],
 
 
   "categories" : [ 

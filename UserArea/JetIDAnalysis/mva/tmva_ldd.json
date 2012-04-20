@@ -1,5 +1,5 @@
 { 
-  "methods"    : [ "FisherD", "LikelihoodD" ],
+  "methods"    : [ "FisherD" ],
   "subcategories" : [ 
 	[  
 	[ "jetPt >= 10. && jetPt<20. ","pt10"],
