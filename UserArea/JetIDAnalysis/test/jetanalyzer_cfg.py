@@ -46,6 +46,14 @@ from CMG.JetIDAnalysis.jetanalyzer_cfi import *
 process.pfjetanalyzer = jetanalyzer.clone(
     JetTag      = cms.InputTag("selectedPatJets",""),            
     dataFlag = cms.untracked.bool(False),
+    MvaTags = cms.untracked.VInputTag(cms.InputTag("puJetMva","simpleDiscriminant"),
+                                      cms.InputTag("puJetMva","fullDiscriminant"),
+                                      cms.InputTag("puJetMva","philv1Discriminant"),
+                                      ),
+    IdTags = cms.untracked.VInputTag( cms.InputTag("puJetMva","simpleId"),
+                                      cms.InputTag("puJetMva","fullId"),
+                                      cms.InputTag("puJetMva","philv1Id"),
+                                      ),
 )
 
 process.chspfjetanalyzer = jetanalyzer.clone(

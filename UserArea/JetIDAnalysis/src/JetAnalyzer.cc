@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.cc,v 1.12 2012/03/30 20:35:04 musella Exp $
+// $Id: JetAnalyzer.cc,v 1.13 2012/04/20 11:31:35 musella Exp $
 //
 //
 
@@ -61,13 +61,13 @@ JetAnalyzer::JetAnalyzer(const edm::ParameterSet& iConfig)
   tree =        fs -> make <TTree>("tree","tree"); 
 
   puIdAlgo_->bookBranches(tree);
-  for(std::vector<edm::InputTag>::iterator it=MvaTags_.begin(); it!=MvaTags_.end(); ++it) {
-	  mvas_.push_back(-2.);
-	  tree -> Branch (it->instance().c_str(),&mvas_.back(), (it->instance()+"/F").c_str());
+  mvas_.resize(MvaTags_.size(),-2.);
+  for(size_t itag=0; itag<MvaTags_.size(); ++itag) {
+	  tree->Branch(MvaTags_[itag].instance().c_str(),&mvas_[itag], (MvaTags_[itag].instance()+"/F").c_str());
   }
-  for(std::vector<edm::InputTag>::iterator it=IdTags_.begin(); it!=IdTags_.end(); ++it) {
-	  ids_.push_back(0);
-	  tree -> Branch (it->instance().c_str(),&ids_.back(), (it->instance()+"/I").c_str());
+  ids_.resize(IdTags_.size(),0);
+  for(size_t itag=0; itag<IdTags_.size(); ++itag) {
+	  tree->Branch(IdTags_[itag].instance().c_str(),&ids_[itag], (IdTags_[itag].instance()+"/F").c_str());
   }
   
   tree -> Branch ("PUit_n",&PUit_n, "PUit_n/I");
