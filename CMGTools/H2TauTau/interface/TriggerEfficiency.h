@@ -273,6 +273,41 @@ public:
   }
 
 
+  //****************
+  //first trigger turn-ons for the di-tau trigger from Simone
+  //*****************
+  
+
+  double effIsoTau20(double pt, double eta){
+    double p0 = 0.886928;
+    double p1 = 28.1136;
+    double p2 = 1.04502;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);;
+  }
+
+  double effIsoTau25(double pt, double eta){
+    double p0 = 0.894481;
+    double p1 = 32.7471;
+    double p2 = 0.915929;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);;
+  }
+
+  double effIsoTau35(double pt, double eta){
+    double p0 = 0.930435;
+    double p1 = 43.3497;
+    double p2 = 1.03643;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);;
+  }
+
+  double effTau1fb(double pt, double eta){
+    float tau20w = 200.;
+    float tau25w = 139.;
+    float tau35w = 790.;
+    return ( tau20w * effIsoTau20(pt,eta) + 
+	     tau25w * effIsoTau25(pt,eta) + 
+	     tau35w * effIsoTau35(pt,eta) ) / ( tau20w + tau25w + tau35w);
+  }
+  
 
 private:
 
