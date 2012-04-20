@@ -7,14 +7,14 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 ## pickRelVal = False
 
 # turn on when running on MC
-runOnMC = True
+runOnMC = False
 
 runCMG = True
 
 # AK5 sequence with pileup substraction is the default
 # the other sequences can be turned off with the following flags.
 runAK5NoPUSub = True
-runOnV4 = True
+runOnV4 = False
 
 hpsTaus = True
 doEmbedPFCandidatesInTaus = True
@@ -63,24 +63,26 @@ print sep_line
 
 # print 'generate source'
 
-from CMGTools.Production.datasetToSource import *
-# process.source.fileNames = ['/store/relval/CMSSW_5_2_0/RelValProdTTbar/AODSIM/START52_V4A-v1/0250/68FCD498-F969-E111-9366-002618943949.root']
-
-process.source = datasetToSource(
-    'cmgtools_group',
-    #'/Tau/Run2011A-May10ReReco-v1/AOD/V4',
-    #'/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V4'
-    '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM/V4'
-    # 'CMS',
-    # '/DoubleElectron/Run2012A-PromptReco-v1/AOD'
-    )
+#from CMGTools.Production.datasetToSource import *
+#process.source = datasetToSource(
+#    'cmgtools_group',
+#    #'/Tau/Run2011A-May10ReReco-v1/AOD/V4',
+#    #'/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V4'
+#    #'/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM/V4'
+#    # 'CMS',
+#    # '/DoubleElectron/Run2012A-PromptReco-v1/AOD'
+#    )
 
 
 ## for testing in 5X
-## process.source.fileNames = cms.untracked.vstring(
-##     '/store/relval/CMSSW_5_1_2/RelValQCD_FlatPt_15_3000/GEN-SIM-RECO/START50_V15A-v1/0240/B830CB12-1861-E111-B1BD-001A92811728.root'
-##    # '/store/relval/CMSSW_5_1_2/DoubleMu/RECO/GR_R_50_V12_RelVal_zMu2011B-v1/0237/182F7808-BD60-E111-943C-001A92810AEA.root'
-##     )
+process.source = cms.Source("PoolSource",
+      fileNames = cms.untracked.vstring([
+     '/store/data/Run2012A/HT/RECO/PromptReco-v1/000/191/578/54BFD65B-B08A-E111-8D3D-BCAEC5364C93.root'
+#    '/store/relval/CMSSW_5_2_0/RelValProdTTbar/AODSIM/START52_V4A-v1/0250/68FCD498-F969-E111-9366-002618943949.root'
+#    '/store/relval/CMSSW_5_1_2/RelValQCD_FlatPt_15_3000/GEN-SIM-RECO/START50_V15A-v1/0240/B830CB12-1861-E111-B1BD-001A92811728.root'
+#    '/store/relval/CMSSW_5_1_2/DoubleMu/RECO/GR_R_50_V12_RelVal_zMu2011B-v1/0237/182F7808-BD60-E111-943C-001A92810AEA.root'
+     ])
+)
 
 # ProductionTasks.py will override this change
 process.source.fileNames = process.source.fileNames[:10]
@@ -169,6 +171,7 @@ if doJetPileUpCorrection:
     enablePileUpCorrection( process, postfix=postfixAK5)
     # avoid double calculation of rho
     getattr(process,"patDefaultSequence"+postfixAK5).remove(getattr(process,"kt6PFJets"+postfixAK5))
+    getattr(process,"patJetCorrFactors"+postfixAK5).rho = cms.InputTag("kt6PFJets", "rho")
 
 #configure the taus
 from CMGTools.Common.PAT.tauTools import *
@@ -182,7 +185,8 @@ if hpsTaus:
     #  note that the following disables the tau cleaning in patJets
     adaptSelectedPFJetForHPSTau(process,jetSelection="pt()>15.0",postfix=postfixAK5)
     # currently (Sept 27,2011) there are three sets of tau isolation discriminators better to choose in CMG tuples.
-    removeHPSTauIsolation(process,postfix=postfixAK5)
+    if os.environ['CMSSW_VERSION'] < "CMSSW_5_0":
+        removeHPSTauIsolation(process,postfix=postfixAK5)
 
    
 # curing a weird bug in PAT..
@@ -300,12 +304,14 @@ if runAK5NoPUSub:
     # do not rereconstruct standard ak5PFJets if available in PFAOD
     if not runOnV4:
         process.PFBRECOAK5NoPUSub.remove(process.pfJetSequenceAK5NoPUSub)
-        process.patJetsAK5NoPUSub.src = cms.InputTag("ak5PFJets")
+        process.patJetsAK5NoPUSub.jetSource = cms.InputTag("ak5PFJets")
         process.patJetCorrFactorsAK5NoPUSub.src = cms.InputTag("ak5PFJets")
-	process.patJetChargeAK5NoPUSub.src = cms.InputTag("ak5PFJets")
 	process.jetTracksAssociatorAtVertexAK5NoPUSub.jets = cms.InputTag("ak5PFJets")
+	process.pfJetsForHPSTauAK5NoPUSub.src = cms.InputTag("ak5PFJets")
+	process.pfMETAK5NoPUSub.jets = cms.InputTag("ak5PFJets")
+	process.softMuonTagInfosAODAK5NoPUSub.jets = cms.InputTag("ak5PFJets")
+	process.PFMETSignificanceAK5NoPUSub.inputPFJets = cms.InputTag("ak5PFJets")
 	if runOnMC:
-            process.softMuonTagInfosAODAK5NoPUSub.jets = cms.InputTag("ak5PFJets")
             process.patJetGenJetMatchAK5NoPUSub.src = cms.InputTag("ak5PFJets")
             process.patJetPartonMatchAK5NoPUSub.src = cms.InputTag("ak5PFJets")
             process.patJetPartonAssociationAK5NoPUSub.jets = cms.InputTag("ak5PFJets")
