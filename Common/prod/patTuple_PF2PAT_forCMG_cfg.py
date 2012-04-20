@@ -7,7 +7,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 ## pickRelVal = False
 
 # turn on when running on MC
-runOnMC = False
+runOnMC = True
 
 runCMG = True
 
@@ -16,8 +16,7 @@ runCMG = True
 runAK5NoPUSub = True
 runOnV4 = False
 
-hpsTaus = True
-doEmbedPFCandidatesInTaus = True
+
 doJetPileUpCorrection = True
 
 # for jet substructure you need extra tags in 4XX and 52X:
@@ -38,7 +37,7 @@ else:#Data
 # process.load("CommonTools.ParticleFlow.Sources.source_ZtoMus_DBS_cfi")
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(500) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
 from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
@@ -49,8 +48,6 @@ print sep_line
 print 'running the following PFBRECO+PAT sequences:'
 print '\tAK5'
 if runAK5NoPUSub: print '\tAK5NoPUSub'
-print 'embedding in taus: ', doEmbedPFCandidatesInTaus
-print 'HPS taus         : ', hpsTaus
 print 'produce CMG tuple: ', runCMG
 print 'run on MC        : ', runOnMC
 print 'run on V4        : ', runOnV4
@@ -77,8 +74,8 @@ print sep_line
 ## for testing in 5X
 process.source = cms.Source("PoolSource",
       fileNames = cms.untracked.vstring([
-     '/store/data/Run2012A/HT/RECO/PromptReco-v1/000/191/578/54BFD65B-B08A-E111-8D3D-BCAEC5364C93.root'
-#    '/store/relval/CMSSW_5_2_0/RelValProdTTbar/AODSIM/START52_V4A-v1/0250/68FCD498-F969-E111-9366-002618943949.root'
+#   '/store/data/Run2012A/HT/RECO/PromptReco-v1/000/191/578/54BFD65B-B08A-E111-8D3D-BCAEC5364C93.root'
+    '/store/relval/CMSSW_5_2_0/RelValProdTTbar/AODSIM/START52_V4A-v1/0250/68FCD498-F969-E111-9366-002618943949.root'
 #    '/store/relval/CMSSW_5_1_2/RelValQCD_FlatPt_15_3000/GEN-SIM-RECO/START50_V15A-v1/0240/B830CB12-1861-E111-B1BD-001A92811728.root'
 #    '/store/relval/CMSSW_5_1_2/DoubleMu/RECO/GR_R_50_V12_RelVal_zMu2011B-v1/0237/182F7808-BD60-E111-943C-001A92810AEA.root'
      ])
@@ -174,19 +171,19 @@ if doJetPileUpCorrection:
     getattr(process,"patJetCorrFactors"+postfixAK5).rho = cms.InputTag("kt6PFJets", "rho")
 
 #configure the taus
+print "*************reconfiguring the taus*********"
 from CMGTools.Common.PAT.tauTools import *
-if doEmbedPFCandidatesInTaus:
-    embedPFCandidatesInTaus( process, postfix=postfixAK5, enable=True )
-if hpsTaus:
-    #Lucie : HPS is the default in 52X & V08-08-11-03, see PhysicsTools/PatAlgos/python/Tools/pfTools.py. Following line not needed (crash) in 5X.
-    import os
-    if os.environ['CMSSW_VERSION'] < "CMSSW_5_0":
-        adaptPFTaus(process,"hpsPFTau",postfix=postfixAK5) 
-    #  note that the following disables the tau cleaning in patJets
-    adaptSelectedPFJetForHPSTau(process,jetSelection="pt()>15.0",postfix=postfixAK5)
-    # currently (Sept 27,2011) there are three sets of tau isolation discriminators better to choose in CMG tuples.
-    if os.environ['CMSSW_VERSION'] < "CMSSW_5_0":
-        removeHPSTauIsolation(process,postfix=postfixAK5)
+#  note that the following disables the tau cleaning in patJets, tau id dies at |eta| >3.0  
+adaptSelectedPFJetForHPSTau(process,jetSelection="pt()>15.0 && abs(eta())<3.0",postfix=postfixAK5)
+# non-isolated taus are currently needed for Higgs-> tau tau
+removeHPSTauIsolation(process,postfix=postfixAK5)
+# apply pT cut on the reconstructed taus to save cpu and patTuple size (cut must be consistent with above cut on Jets)
+applyPostfix(process,"pfTausBaseDiscriminationByDecayModeFinding",postfixAK5).minTauPt = 15.0
+# in 5_2 tau input collection to PAT was switched to unselected taus so PAT sequence consumes too much cpu and patTuple blows up 
+switchInputTausToPAT(process,postfix=postfixAK5)
+# embed just the tracks (PF candidates are saved in the patTuple)
+embedTracksInTaus(process,postfix=postfixAK5,enable=True)
+embedPFCandidatesInTaus(process,postfix=postfixAK5,enable=False)
 
    
 # curing a weird bug in PAT..

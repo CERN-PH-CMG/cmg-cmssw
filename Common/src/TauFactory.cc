@@ -24,6 +24,15 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
   leptonFactory_.set(input,output,iEvent,iSetup);
 
   //track related
+  reco::TrackRef chHadrtrk=input->leadTrack();
+  if(chHadrtrk.isNonnull()){
+    output->leadChargedHadrVertex_ = chHadrtrk->referencePoint();
+    
+    //this method sets dxy and dz for the cmgTau
+    //will not work unless tracks are saved in the patTuple because there is isAvailable() check inside
+    leptonFactory_.set(chHadrtrk,output,iEvent,iSetup);    
+  }
+
   reco::PFCandidateRef leadChargedHadrCand=input->leadPFChargedHadrCand();
   if(leadChargedHadrCand.isNonnull()){
     const reco::PFCandidate& cand = *(input->leadPFChargedHadrCand().get());
@@ -37,16 +46,9 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
     output->leadChargedHadrHcalEnergy_    = leadChargedHadrCand->hcalEnergy();
     output->leadChargedHadrEcalEnergy_    = leadChargedHadrCand->ecalEnergy();
     output->leadChargedHadrMvaEPi_ = leadChargedHadrCand->mva_e_pi();
-
-    reco::TrackRef chHadrtrk=leadChargedHadrCand->trackRef();
-    if(chHadrtrk.isAvailable()){
-      output->leadChargedHadrVertex_ = chHadrtrk->referencePoint();
-
-      //this method sets dxy and dz
-      leptonFactory_.set(chHadrtrk,output,iEvent,iSetup);
-
-    }
   }
+
+
 
   //neutral related
   reco::PFCandidateRef leadNeutralCand=input->leadPFNeutralCand();
