@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Pasquale Musella,40 2-A12,+41227671706,
 //         Created:  Wed Apr 18 15:48:47 CEST 2012
-// $Id: PileupJetIdProducer.cc,v 1.1 2012/04/18 15:17:02 musella Exp $
+// $Id: PileupJetIdProducer.cc,v 1.2 2012/04/19 22:54:44 musella Exp $
 //
 //
 
@@ -24,7 +24,8 @@ Implementation:
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
-#include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/JetReco/interface/Jet.h"
+// #include "DataFormats/PatCandidates/interface/Jet.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -53,8 +54,8 @@ private:
 	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 
-	edm::InputTag jets_, vertexes_;
-	bool runMvas_;
+	edm::InputTag jets_, vertexes_, jetids_;
+	bool runMvas_, produceJetIds_;
 	std::vector<std::pair<std::string, PileupJetIdAlgo *> > algos_;
 };
 
@@ -62,11 +63,17 @@ private:
 PileupJetIdProducer::PileupJetIdProducer(const edm::ParameterSet& iConfig)
 {
 	runMvas_ = iConfig.getParameter<bool>("runMvas");
+	produceJetIds_ = iConfig.getParameter<bool>("produceJetIds");
 	jets_ = iConfig.getParameter<edm::InputTag>("jets");
 	vertexes_ = iConfig.getParameter<edm::InputTag>("vertexes");
+	jetids_  = iConfig.getParameter<edm::InputTag>("jetids");
 	std::vector<edm::ParameterSet> algos = iConfig.getParameter<std::vector<edm::ParameterSet> >("algos");
 	
-	produces<edm::ValueMap<StoredPileupJetIdentifier> > ("");
+	if( ! runMvas_ ) assert( algos.size() == 1 );
+	
+	if( produceJetIds_ ) {
+		produces<edm::ValueMap<StoredPileupJetIdentifier> > ("");
+	}
 	for(std::vector<edm::ParameterSet>::iterator it=algos.begin(); it!=algos.end(); ++it) {
 		std::string label = it->getParameter<std::string>("label");
 		algos_.push_back( std::make_pair(label,new PileupJetIdAlgo(*it)) );
@@ -91,15 +98,21 @@ PileupJetIdProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 	using namespace edm;
 	using namespace std;
-	Handle<View<pat::Jet> > jetHandle;
+	using namespace reco;
+	Handle<View<Jet> > jetHandle;
 	iEvent.getByLabel(jets_,jetHandle);
-	const View<pat::Jet> & jets = *jetHandle;
+	const View<Jet> & jets = *jetHandle;
 	
-	Handle<reco::VertexCollection> vertexHandle;
+	Handle<VertexCollection> vertexHandle;
 	iEvent.getByLabel(vertexes_, vertexHandle);
-	const reco::VertexCollection & vertexes = *(vertexHandle.product());
-	const reco::Vertex & vtx  = *(vertexes.begin());;
+	const VertexCollection & vertexes = *(vertexHandle.product());
+	const Vertex & vtx  = *(vertexes.begin());;
 
+	Handle<ValueMap<StoredPileupJetIdentifier> > vmap;
+	if( ! produceJetIds_ ) {
+		iEvent.getByLabel(jetids_, vmap);
+	}
+		
 	vector<StoredPileupJetIdentifier> ids; 
 	map<string, vector<float> > mvas;
 	map<string, vector<int> > idflags;
@@ -107,11 +120,18 @@ PileupJetIdProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	for ( unsigned int i=0; i<jets.size(); ++i ) {
 		vector<pair<string,PileupJetIdAlgo *> >::iterator algoi = algos_.begin();
 		PileupJetIdAlgo * ialgo = algoi->second;
-		const pat::Jet & patjet = jets.at(i);
+		const Jet & jet = jets.at(i);
  
-		PileupJetIdentifier puIdentifier = ialgo->computeIdVariables(&patjet, 0., &vtx, vertexes, runMvas_);
-		if( runMvas_ ) {
+		PileupJetIdentifier puIdentifier;
+		if( produceJetIds_ ) {
+			puIdentifier = ialgo->computeIdVariables(&jet, 0., &vtx, vertexes, runMvas_); // FIXME energy (un-)corrections for plain reco::Jets
 			ids.push_back( puIdentifier );
+		} else {
+			puIdentifier = (*vmap)[jets.refAt(i)];  // FIXME energy (un-)corrections for plain reco::Jets
+			ialgo->set(puIdentifier); 
+			puIdentifier = ialgo->computeMva();
+		}
+		if( runMvas_ ) {
 			mvas[algoi->first].push_back( puIdentifier.mva() );
 			idflags[algoi->first].push_back( puIdentifier.idFlag() );
 			for( ++algoi; algoi!=algos_.end(); ++algoi) {
@@ -124,25 +144,32 @@ PileupJetIdProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		}
 	}
 	
-	for(vector<pair<string,PileupJetIdAlgo *> >::iterator ialgo = algos_.begin(); ialgo!=algos_.end(); ++ialgo) {
-		vector<float> & mva = mvas[ialgo->first];
-		auto_ptr<ValueMap<float> > mvaout(new ValueMap<float>());
-		ValueMap<float>::Filler mvafiller(*mvaout);
-		mvafiller.insert(jetHandle,mva.begin(),mva.end());
-		iEvent.put(mvaout,ialgo->first+"Discriminant");
-
-		vector<int> & idflag = idflags[ialgo->first];
-		auto_ptr<ValueMap<int> > idflagout(new ValueMap<int>());
-		ValueMap<int>::Filler idflagfiller(*idflagout);
-		idflagfiller.insert(jetHandle,idflag.begin(),idflag.end());
-		iEvent.put(idflagout,ialgo->first+"Id");
-
+	if( runMvas_ ) {
+		for(vector<pair<string,PileupJetIdAlgo *> >::iterator ialgo = algos_.begin(); ialgo!=algos_.end(); ++ialgo) {
+			vector<float> & mva = mvas[ialgo->first];
+			auto_ptr<ValueMap<float> > mvaout(new ValueMap<float>());
+			ValueMap<float>::Filler mvafiller(*mvaout);
+			mvafiller.insert(jetHandle,mva.begin(),mva.end());
+			mvafiller.fill();
+			iEvent.put(mvaout,ialgo->first+"Discriminant");
+			
+			vector<int> & idflag = idflags[ialgo->first];
+			auto_ptr<ValueMap<int> > idflagout(new ValueMap<int>());
+			ValueMap<int>::Filler idflagfiller(*idflagout);
+			idflagfiller.insert(jetHandle,idflag.begin(),idflag.end());
+			idflagfiller.fill();
+			iEvent.put(idflagout,ialgo->first+"Id");
+		}
 	}
 	
-	auto_ptr<ValueMap<StoredPileupJetIdentifier> > idsout(new ValueMap<StoredPileupJetIdentifier>());
-	ValueMap<StoredPileupJetIdentifier>::Filler idsfiller(*idsout);
-	idsfiller.insert(jetHandle,ids.begin(),ids.end());
-	iEvent.put(idsout);
+	if( produceJetIds_ ) {
+		assert( jetHandle->size() == ids.size() );
+		auto_ptr<ValueMap<StoredPileupJetIdentifier> > idsout(new ValueMap<StoredPileupJetIdentifier>());
+		ValueMap<StoredPileupJetIdentifier>::Filler idsfiller(*idsout);
+		idsfiller.insert(jetHandle,ids.begin(),ids.end());
+		idsfiller.fill();
+		iEvent.put(idsout);
+	}
 }
 
 // ------------------------------------------------------------------------------------------
