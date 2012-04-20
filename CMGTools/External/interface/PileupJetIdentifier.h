@@ -16,7 +16,8 @@
 	private: \
 	TYPE NAME ## _;			\
 	public: \
-	const TYPE & NAME() const { return NAME ## _; }
+	const TYPE & NAME() const { return NAME ## _; } \
+	void NAME(const TYPE val) { NAME ## _ = val; } 
 
 // ----------------------------------------------------------------------------------------------------
 class StoredPileupJetIdentifier {
@@ -57,6 +58,8 @@ public:
 
 	PileupJetIdentifier();
 	~PileupJetIdentifier(); 
+
+	PileupJetIdentifier & operator= (const StoredPileupJetIdentifier & lhs) { ((StoredPileupJetIdentifier &)(*this)) = lhs; return *this;}
 
 	enum Id {
 	  kTight  = 0,
@@ -158,6 +161,7 @@ public:
 	DECLARE_VARIABLE(betaStarClassic   ,float);  
 
 };
+
 
 #undef DECLARE_VARIABLE
 
