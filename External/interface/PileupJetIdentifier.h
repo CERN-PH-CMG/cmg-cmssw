@@ -47,7 +47,9 @@ public:
 	
 	DECLARE_VARIABLE(beta       ,float);  
 	DECLARE_VARIABLE(betaStar   ,float);  
-
+	DECLARE_VARIABLE(betaClassic   ,float);  
+	DECLARE_VARIABLE(betaStarClassic   ,float);  
+	
 	DECLARE_VARIABLE(nvtx   ,float);  
 };
 
@@ -69,7 +71,6 @@ public:
 
 	DECLARE_VARIABLE(idFlag   ,int); //Unfortunately has to be 
 	DECLARE_VARIABLE(mva      ,float);
-	
 
 	DECLARE_VARIABLE(jetPhi   ,float);
 	DECLARE_VARIABLE(jetM     ,float);
@@ -156,9 +157,6 @@ public:
 	DECLARE_VARIABLE(emFrac03    ,float);  
 	DECLARE_VARIABLE(emFrac04    ,float);  
 	DECLARE_VARIABLE(emFrac05   ,float);  
-
-	DECLARE_VARIABLE(betaClassic   ,float);  
-	DECLARE_VARIABLE(betaStarClassic   ,float);  
 
 };
 
