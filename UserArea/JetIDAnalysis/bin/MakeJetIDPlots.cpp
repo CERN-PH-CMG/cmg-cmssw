@@ -1,3 +1,5 @@
+
+
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
@@ -6,7 +8,6 @@
 
 
 #include "CMG/JetIDAnalysis/interface/JetTree.h"
-//#include "JetTree.h"
 
 #include "TROOT.h"
 #include "TStyle.h"
@@ -40,10 +41,8 @@ int main(int argc, char** argv)
 
   // "Input"
   edm::ParameterSet Input =  parameterSet -> getParameter<edm::ParameterSet>("Input");
-  //std::string inputFile_   = Input.getParameter<std::string>("inputFile");
   std::vector<std::string> inputFile_   = Input.getParameter<std::vector<std::string> >("inputFile");
   std::string inputTree_   = Input.getParameter<std::string>("inputTree");
-  
 
   // "Output"
   edm::ParameterSet Output =  parameterSet -> getParameter<edm::ParameterSet>("Output");
@@ -69,34 +68,79 @@ int main(int argc, char** argv)
   bool doPtReweighting    = false;
 
 
-  // sovrascrivo parametri
+  std::string inputJet_   ; 
+  std::string etaRange_   ;
+ 
+  // -- overwrite config params , if needed 
   if (argc>2){
     inputTree_         = argv[2];
     outputRootFileName_= argv[3];
-    minJetEta_         = atof(argv[4]);
-    maxJetEta_         = atof(argv[5]);
-    doNvtxReweighting  = atoi(argv[6]);
-    doPtReweighting    = atoi(argv[7]);
+    etaRange_          = argv[4];  
+    minJetPt_          = atof(argv[5]);
+    maxJetPt_          = atof(argv[6]);
+    outputRootFileName_+="_"+etaRange_+"_pt"+argv[5]+"to"+argv[6];
+ 
+    if (etaRange_=="TK") {
+      minJetEta_=0;
+      maxJetEta_=2.5;
+    }
+
+    if (etaRange_=="HEin") {
+      minJetEta_=2.5;
+      maxJetEta_=2.75;
+    }
+
+    if (etaRange_=="HEout") {
+      minJetEta_=2.75;
+      maxJetEta_=3.0;
+    }
+
+    if (etaRange_=="HF") {
+      minJetEta_=3.0;
+      maxJetEta_=5.0;
+    }
+
+  }
+  if (argc>7 ){
+    doNvtxReweighting  = atoi(argv[7]);
+  }
+  if (argc>8 ){
+    doPtReweighting    = atoi(argv[8]);
   }
 
-
-  //--- PU reweighting
-  
+   //--- PU reweighting
   edm::LumiReWeighting lumiWeights_ = edm::LumiReWeighting( mcPuFile_.c_str(), dataPuFile_.c_str(), mcPuHisto_.c_str(), dataPuHisto_.c_str());
 
-  // --- extra nvtx reweighting (only for eta 2.5-3.0)
-  // chs jets
-  //float ww[100] = {0, 1.86049, 1.70071, 1.54589, 1.79313, 1.50478, 1.37599, 1.26355, 1.21899, 1.07252, 1.02538, 0.921636, 0.783585, 0.679954, 0.649458, 0.602413, 0.549415, 0.543168, 0.483202, 0.386065, 0.423564, 0.379772, 0.370446, 0.377839, 0.266673, 0.213822, 0.180453, 0.306296, 0.286049, 0.604004, 0.234239, 0.332158, 0, 1.89519, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, };
-  // pf jets
-  //float ww[100] = {0, 1.63964, 1.38813, 1.30727, 1.5837, 1.30579, 1.17773, 1.06028, 1.01892, 0.949447, 0.927912, 0.833002, 0.748031, 0.600979, 0.658368, 0.606242, 0.498478, 0.568562, 0.500201, 0.393562, 0.39887, 0.410772, 0.28228, 0.404247, 0.416014, 0.130775, 0, 0, 0, 0.335538, 1.96554, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, };
-  // pf jets , pt < 10
-  float ww[100] = {0, 2.20729, 1.48068, 1.36434, 1.53437, 1.31349, 1.10803, 1.06031, 1.01319, 0.925037, 0.846872, 0.77446, 0.678325, 0.571857, 0.616133, 0.557755, 0.45334, 0.567786, 0.450526, 0.452259, 0.383283, 0.351014, 0.225243, 0.436313, 0.678615, 0.185208, 0, 0.658516, 0.501758, 0.873588, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  
+
+  //--- NVTX reweighting
+  float ww[100];
+  std::string filemc   = outputRootFileName_+".root";
+  std::string filedata = "histos_DoubleMu2011_""_"+etaRange_+"_pt"+argv[5]+"to"+argv[6]+".root";
+
+  std::cout<< "file name mc: " << filemc << std::endl;
+  std::cout<< "file name data: " << filedata << std::endl;
+
+  if (doNvtxReweighting){
+    TFile *fmc = TFile::Open( (outputRootFilePath_+filemc).c_str() );
+    TFile *fda = TFile::Open( (outputRootFilePath_+filemc).c_str() );
+    TH1F *hmc = (TH1F*)fmc->Get("hNvtx");
+    TH1F *hda = (TH1F*)fda->Get("hNvtx");
+    hda->Divide(hda, hmc, 1./hda->GetSumOfWeights(),1./hmc->GetSumOfWeights() );
+    for (int ibin = 1; ibin < hmc->GetNbinsX()+1; ibin++){
+      ww[ibin] = hda->GetBinContent(ibin);
+    }
+    outputRootFileName_=outputRootFileName_+"_reweightedNvtx";
+  }
+
+  outputRootFileName_+=".root";
+
+  std::cout<< "Output file name: " << outputRootFileName_ << std::endl;
+
+
   // --- open tree
   std::cout << "Reading tree..." << std::endl;
   std::string treeName = inputTree_+"/tree" ;
   TChain* chain = new TChain(treeName.c_str());
-  //chain->Add(inputFile_.c_str());
   for (unsigned int ifile = 0; ifile < inputFile_.size(); ifile++ ){
     chain->Add(inputFile_.at(ifile).c_str());
   }
@@ -478,7 +522,9 @@ int main(int argc, char** argv)
   // save the histograms
  
   std::cout << "Saving histograms on file ..." << std::endl;
-  
+   
+ 
+
   TFile* outputRootFile = new TFile((outputRootFilePath_+outputRootFileName_).c_str(), "RECREATE");
   outputRootFile -> cd();
 
