@@ -15,7 +15,7 @@ def getListOfFiles(expr, baseDir, filePattern):
 process = cms.Process("analysis")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1)
+process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
@@ -25,7 +25,9 @@ filePattern = '*.root'
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
     fileNames = cms.untracked.vstring(
-        'file:/tmp/pharris/test.root'
+    getListOfFiles('{baseDir}/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/{filePattern}',baseDir="/store/cmst3/user/psilva/Data4/G", filePattern="*.root")[:10]
+    
+    ## 'file:/tmp/pharris/test.root'
        ),
     skipEvents = cms.untracked.uint32(0)                        
 )
@@ -39,14 +41,11 @@ process.source = cms.Source("PoolSource",
 #    minNumber = cms.uint32(0)
 #)
 
-from CMGTools.External.JetIdParams_cfi import *
-from CMGTools.External.puJetIDAlgo_cff import dRdRProfMultBetaFull
 from CMG.JetIDAnalysis.jetanalyzer_cfi import *
 
 process.pfjetanalyzer = jetanalyzer.clone(
     JetTag      = cms.InputTag("selectedPatJets",""),            
     dataFlag = cms.untracked.bool(False),
-    puJetIDAlgo = PhilV1
 )
 
 process.chspfjetanalyzer = jetanalyzer.clone(
@@ -59,6 +58,13 @@ process.TFileService = cms.Service("TFileService",
                                    closeFileFast = cms.untracked.bool(True)
 )
 
-process.ana = cms.Sequence(process.pfjetanalyzer+process.chspfjetanalyzer)
-process.p = cms.Path(process.ana)
+process.load("CMGTools.External.pujetidsequence_cff")
 
+process.ana = cms.Sequence(process.pfjetanalyzer+process.chspfjetanalyzer)
+process.p = cms.Path(process.puJetIdSqeuence*process.ana)
+
+process.out = cms.OutputModule("PoolOutputModule",
+                               fileName = cms.untracked.string('patTuple.root'),
+                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
+                               outputCommands = cms.untracked.vstring('keep *'))
+process.e = cms.EndPath( process.out )
