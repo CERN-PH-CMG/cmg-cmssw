@@ -18,7 +18,7 @@ filePattern = '*.root'
 process.Input = cms.PSet(
     inputFile = cms.vstring(
     getListOfFiles('{baseDir}/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/{filePattern}',baseDir=baseDir, filePattern=filePattern)[:10]),
-    inputTree = cms.string("chspfjetanalyzer"),
+    inputTree = cms.string("pfjetanalyzer"),
 )
 
 process.Output = cms.PSet(

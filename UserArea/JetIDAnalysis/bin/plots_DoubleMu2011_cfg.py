@@ -13,7 +13,6 @@ def getListOfFiles(expr, baseDir, filePattern):
 
 process = cms.Process("MakeJetPlots")
 
-#baseDir = '/store/cmst3/user/musella/JETID_NTUPLES/30_03_2012/'
 baseDir = '/store/cmst3/user/malberti/JETID_NTUPLES/10_04_2012/'
 filePattern = '*.root'
 
@@ -28,12 +27,12 @@ process.Input = cms.PSet(
     inputFile = cms.vstring(
     list1
     ),
-    inputTree = cms.string("chspfjetanalyzer"),
+    inputTree = cms.string("pfjetanalyzer"),
 )
 
 process.Output = cms.PSet(
     outputRootFilePath = cms.string("../test/scripts_martina/rootfiles/"),
-    outputRootFileName = cms.string("histos_DoubleMu2011_chspfjets_central.root")
+    outputRootFileName = cms.string("histos_DoubleMu2011_pfjets.root")
     )
 
 process.Options = cms.PSet(
@@ -47,10 +46,5 @@ process.Options = cms.PSet(
     minJetPt   = cms.double(10.),
     maxJetPt   = cms.double(500.),
     minJetEta  = cms.double(0.0),
-    maxJetEta  = cms.double(2.5),
-
-    impactParTkThreshold = cms.double(0.) ,
-    tmvaWeights = cms.untracked.string("CMGTools/External/data/mva_JetID.weights.xml"),
-    tmvaMethod  = cms.untracked.string("JetID"),                 
-
+    maxJetEta  = cms.double(5.0),
 )
