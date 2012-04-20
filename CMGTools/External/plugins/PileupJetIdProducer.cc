@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Pasquale Musella,40 2-A12,+41227671706,
 //         Created:  Wed Apr 18 15:48:47 CEST 2012
-// $Id: PileupJetIdProducer.cc,v 1.2 2012/04/19 22:54:44 musella Exp $
+// $Id: PileupJetIdProducer.cc,v 1.3 2012/04/20 08:30:39 musella Exp $
 //
 //
 
@@ -128,6 +128,7 @@ PileupJetIdProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			ids.push_back( puIdentifier );
 		} else {
 			puIdentifier = (*vmap)[jets.refAt(i)];  // FIXME energy (un-)corrections for plain reco::Jets
+			puIdentifier.jetPhi(jet.phi());         // for compatibility first MVA version
 			ialgo->set(puIdentifier); 
 			puIdentifier = ialgo->computeMva();
 		}
