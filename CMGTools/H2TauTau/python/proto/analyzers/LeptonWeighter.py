@@ -25,12 +25,6 @@ class LeptonWeighter( Analyzer ):
                                                  self.cfg_ana.effWeightMC )
             
             
-    def declareHandles(self):
-        super(LeptonWeighter, self).declareHandles()
-
-        self.mchandles['genParticles'] = AutoHandle( 'genParticlesStatus3',
-                                                     'std::vector<reco::GenParticle>' )
-    
     def beginLoop(self):
         print self, self.__class__
         super(LeptonWeighter,self).beginLoop()

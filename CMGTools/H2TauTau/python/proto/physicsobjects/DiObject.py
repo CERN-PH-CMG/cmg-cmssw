@@ -95,3 +95,34 @@ class TauMuon( DiObject ):
             self.leg1DeltaR = math.sqrt( dR2leg1Min )
             self.leg2DeltaR = math.sqrt( dR2leg2Min )
             return (self.leg1DeltaR, self.leg2DeltaR)        
+
+    def matchW(self, genParticles):
+        # print self
+        genTaus = []
+        for gen in genParticles:
+            # print '\t', gen
+            if abs(gen.pdgId())==15 and gen.mother().pdgId()==24: # W -> tau nu_tau
+                genTaus.append( gen )
+        # print 'Gen taus: '
+        # print '\n'.join( map( str, genTaus ) )
+        if len(genTaus)!=1:
+            #COLIN what about WW, ZZ? 
+            return (-1, -1)
+        else:
+            dR2leg1Min, self.leg1Gen = ( float('inf'), None)
+            dR2leg2Min, self.leg2Gen = ( float('inf'), None) 
+            for genTau in genTaus:
+                dR2leg1 = deltaR2(self.leg1().eta(), self.leg1().phi(),
+                                  genTau.eta(), genTau.phi() )
+                dR2leg2 = deltaR2(self.leg2().eta(), self.leg2().phi(),
+                                  genTau.eta(), genTau.phi() )
+                if dR2leg1 <  dR2leg1Min:
+                    dR2leg1Min, self.leg1Gen = (dR2leg1, genTau)
+                if dR2leg2 <  dR2leg2Min:
+                    dR2leg2Min, self.leg2Gen = (dR2leg2, genTau)
+            # print dR2leg1Min, dR2leg2Min
+            # print self.leg1Gen
+            # print self.leg2Gen
+            self.leg1DeltaR = math.sqrt( dR2leg1Min )
+            self.leg2DeltaR = math.sqrt( dR2leg2Min )
+            return (self.leg1DeltaR, self.leg2DeltaR)        
