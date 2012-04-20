@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.h,v 1.5 2012/03/20 17:21:57 malberti Exp $
+// $Id: JetAnalyzer.h,v 1.6 2012/03/26 09:11:17 musella Exp $
 //
 //
 
@@ -74,6 +74,8 @@ private:
   edm::InputTag JetTag_;
   edm::InputTag GenJetTag_;
   edm::InputTag MuonTag_; 
+  std::vector<edm::InputTag> MvaTags_;
+  std::vector<edm::InputTag> IdTags_;
 
   bool dataFlag_;
   bool computeTMVA_, requireZ_;
@@ -90,7 +92,9 @@ private:
   float PUoot_late_TrueNumInteractions  ;
   int PUit_NumInteractions            ;
   float PUit_TrueNumInteractions        ;
-
+  std::vector<float> mvas_;
+  std::vector<int> ids_;
+	
   PFJetIDSelectionFunctor  pfjetIdLoose_;
 
   /// output tree variables

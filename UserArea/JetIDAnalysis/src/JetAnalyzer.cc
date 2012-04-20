@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.cc,v 1.11 2012/03/26 13:37:10 musella Exp $
+// $Id: JetAnalyzer.cc,v 1.12 2012/03/30 20:35:04 musella Exp $
 //
 //
 
@@ -44,6 +44,9 @@ JetAnalyzer::JetAnalyzer(const edm::ParameterSet& iConfig)
   //--- PU jet identifier 
   puIdAlgo_ = new PileupJetIdNtupleAlgo(iConfig.getParameter<edm::ParameterSet>("puJetIDAlgo"));
   computeTMVA_ = iConfig.getUntrackedParameter<bool>("computeTMVA");
+
+  MvaTags_ = iConfig.getUntrackedParameter< std::vector<edm::InputTag> >("MvaTags", std::vector<edm::InputTag>() );
+  IdTags_ = iConfig.getUntrackedParameter< std::vector<edm::InputTag> >("IdTags", std::vector<edm::InputTag>() );
   
   requireZ_ = iConfig.getUntrackedParameter<bool>("requireZ",true);
   
@@ -58,7 +61,15 @@ JetAnalyzer::JetAnalyzer(const edm::ParameterSet& iConfig)
   tree =        fs -> make <TTree>("tree","tree"); 
 
   puIdAlgo_->bookBranches(tree);
-
+  for(std::vector<edm::InputTag>::iterator it=MvaTags_.begin(); it!=MvaTags_.end(); ++it) {
+	  mvas_.push_back(-2.);
+	  tree -> Branch (it->instance().c_str(),&mvas_.back(), (it->instance()+"/F").c_str());
+  }
+  for(std::vector<edm::InputTag>::iterator it=IdTags_.begin(); it!=IdTags_.end(); ++it) {
+	  ids_.push_back(0);
+	  tree -> Branch (it->instance().c_str(),&ids_.back(), (it->instance()+"/I").c_str());
+  }
+  
   tree -> Branch ("PUit_n",&PUit_n, "PUit_n/I");
   tree -> Branch ("PUit_nTrue",&PUit_nTrue, "PUit_nTrue/F");
   tree -> Branch ("PUoot_early_n",&PUoot_early_n, "PUoot_early_n/I");
@@ -207,6 +218,17 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     else {
       jetFlavour  = -999;
       isMatched   = false;
+    }
+
+    for(size_t itag=0; itag<MvaTags_.size(); ++itag) {
+	    Handle<ValueMap<float> > vmap;
+	    iEvent.getByLabel(MvaTags_[itag],vmap);
+	    mvas_[itag] = (*vmap)[jets.refAt(i)];
+    }
+    for(size_t itag=0; itag<IdTags_.size(); ++itag) {
+	    Handle<ValueMap<int> > vmap;
+	    iEvent.getByLabel(IdTags_[itag],vmap);
+	    ids_[itag] = (*vmap)[jets.refAt(i)];
     }
 
     //njets             = jetHandle -> size();
