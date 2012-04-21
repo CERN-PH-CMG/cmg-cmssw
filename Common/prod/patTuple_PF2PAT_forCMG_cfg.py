@@ -267,6 +267,16 @@ if runJetSubstructure:
     from CMGTools.Common.PAT.addJetSubstructure_cff import *
     addJetSubstructureSequence( process , jetCorrections , runOnMC )
 
+#Jose: electrons not supported by our V4 samples -> removing them completely !!
+if runOnV4:
+    print "!!!!!!!!!!!!!!!! removing pat electrons completely for V4 "
+    getattr(process,"patDefaultSequence"+postfixAK5).remove(getattr(process,"patElectronIDSequence"))
+    getattr(process,"patDefaultSequence"+postfixAK5).remove(getattr(process,"patElectronIsoDeposit"))
+    getattr(process,"patDefaultSequence"+postfixAK5).remove(getattr(process,"patElectrons"+postfixAK5))
+    getattr(process,"patDefaultSequence"+postfixAK5).remove(getattr(process,"selectedPatElectrons"+postfixAK5))
+    getattr(process,"patDefaultSequence"+postfixAK5).remove(getattr(process,"countPatElectrons"+postfixAK5))
+    getattr(process,"patDefaultSequence"+postfixAK5).remove(getattr(process,"countPatLeptons"+postfixAK5)) 
+
 # ---------------- Sequence AK5NoPUSub, pfNoPileUp switched off ---------------
 
 # PFBRECO+PAT sequence 2:
@@ -357,6 +367,11 @@ if runJetSubstructure:
 if runAK5NoPUSub:
     process.p += getattr(process,"patPF2PATSequence"+postfixAK5NoPUSub)
 
+#Jose: electrons not supported by our V4 samples -> removing them completely !!
+if runOnV4:
+    print "!!!!!!!!!!!!!!!! removing standard pat electrons completely for V4 "
+    getattr(process,"stdLeptonSequence").remove(getattr(process,"stdElectronSeq"))
+
 
 # event cleaning (in tagging mode, no event rejected)
 
@@ -395,6 +410,15 @@ if runCMG:
     #COLIN REMOVED CANNOT RUN
     process.cmgObjectSequence += process.cmgStdLeptonSequence
 
+    #Jose: electrons not supported by our V4 samples -> removing them completely !!
+    if runOnV4:
+        print "!!!!!!!!!!!!!!!! removing cmg electrons completely for V4 "
+        getattr(process,"cmgObjectSequence").remove(getattr(process,"electronSequence")) 
+        getattr(process,"skimSequence").remove(getattr(process,"electronSkimSequence")) 
+        getattr(process,"collectionSizeSequence").remove(getattr(process,"electronSelSize"))
+        getattr(process,"cmgStdLeptonSequence").remove(getattr(process,"electronSequenceStdLep"))
+        getattr(process,"cutSummarySequence").remove(getattr(process,"electronCutSummarySequence"))
+        
     if runAK5NoPUSub:
         cloneProcessingSnippet(process, getattr(process, 'analysisSequence'), 'AK5NoPUSubCMG')
         replacePostfix(getattr(process,"analysisSequenceAK5NoPUSubCMG"),'AK5','AK5NoPUSub') 
