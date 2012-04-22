@@ -25,4 +25,4 @@
   ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-02-16'),
   ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseNov14'),
   ('EGamma/EGammaAnalysisTools', 'UserCode/EGamma/EGammaAnalysisTools', 'V00-00-05')]
-  ]
+
