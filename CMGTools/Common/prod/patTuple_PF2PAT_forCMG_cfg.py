@@ -166,8 +166,10 @@ getattr(process,"pfSelectedElectronsAK5").cut="pt()>5"
 if doJetPileUpCorrection:
     from CommonTools.ParticleFlow.Tools.enablePileUpCorrection import enablePileUpCorrection
     enablePileUpCorrection( process, postfix=postfixAK5)
-    # avoid double calculation of rho
-    getattr(process,"patDefaultSequence"+postfixAK5).remove(getattr(process,"kt6PFJets"+postfixAK5))
+    # avoid double calculation of rho (introduced by jetTools in PAT)
+    getattr(process,'patDefaultSequence'+postfixAK5).remove(getattr(process,'ak5PFJets'+postfixAK5))
+    getattr(process,'patDefaultSequence'+postfixAK5).remove(getattr(process,'kt6PFJets'+postfixAK5))
+    getattr(process,'patDefaultSequence'+postfixAK5).remove(getattr(process,'kt6PFJets'+postfixAK5))
     getattr(process,"patJetCorrFactors"+postfixAK5).rho = cms.InputTag("kt6PFJets", "rho")
 
 #configure the taus
@@ -456,7 +458,6 @@ process.out.outputCommands.extend(['keep edmMergeableCounter_*_*_*',
 
 if runJetSubstructure:
     # keep collections needed for jet substructure studies
-    process.out.outputCommands.extend(['drop recoGenParticles_genParticlesPruned_*_*'])
     process.out.outputCommands.extend(['keep recoPFJets_ak5PrunedPFlow_SubJets_*'])
     process.out.outputCommands.extend(['keep patJets_selectedPatJetsAK5PrunedPF_*_*'])
     # save only one genjet collection instead of the two embedded in pat jets
