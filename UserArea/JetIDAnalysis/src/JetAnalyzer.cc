@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.cc,v 1.13 2012/04/20 11:31:35 musella Exp $
+// $Id: JetAnalyzer.cc,v 1.14 2012/04/20 12:34:35 musella Exp $
 //
 //
 
@@ -83,6 +83,7 @@ JetAnalyzer::JetAnalyzer(const edm::ParameterSet& iConfig)
   tree -> Branch ("jetGenPt",&jetGenPt, "jetGenPt/F");
   tree -> Branch ("jetGenDr",&jetGenDr, "jetGenDr/F");
   tree -> Branch ("njets",&njets, "njets/I");
+  tree -> Branch ("dimuonPt",&dimuonPt, "dimuonPt/F");
 
  }
 
@@ -102,7 +103,7 @@ void JetAnalyzer::ResetTreeVariables()
   jetGenPt   = -999;
   jetGenDr   = -999;
   njets      = -999;
-
+  dimuonPt   = -999; 
 }
 
 
@@ -156,8 +157,9 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   int goodMuon1=-1, goodMuon2=-1;
   bool isZ=false;
   DiMuonSelection(muons, goodMuon1, goodMuon2, isZ);
+
   if( ! isZ && requireZ_ ) { return; }
-  
+
   int numberOfJets = 0;
    
   // *** Loop over jets : to count the number of jets
@@ -240,7 +242,8 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     PUoot_early_nTrue = PUoot_early_TrueNumInteractions;
     PUoot_late_n      = PUoot_late_NumInteractions;
     PUoot_late_nTrue  = PUoot_late_TrueNumInteractions;
-        
+    dimuonPt          = (muons.at(goodMuon1).p4()+muons.at(goodMuon2).p4()).Pt();
+    
     tree->Fill();
   
   }
