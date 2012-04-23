@@ -67,7 +67,7 @@ JetAnalyzer::JetAnalyzer(const edm::ParameterSet& iConfig)
   }
   ids_.resize(IdTags_.size(),0);
   for(size_t itag=0; itag<IdTags_.size(); ++itag) {
-	  tree->Branch(IdTags_[itag].instance().c_str(),&ids_[itag], (IdTags_[itag].instance()+"/F").c_str());
+	  tree->Branch(IdTags_[itag].instance().c_str(),&ids_[itag], (IdTags_[itag].instance()+"/I").c_str());
   }
   
   tree -> Branch ("PUit_n",&PUit_n, "PUit_n/I");
