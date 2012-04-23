@@ -30,7 +30,10 @@
 #include <math.h>
 #include <vector>
 
+// *** 
+bool pass_level(int id, int level) { return ( id & (1 << level) ) != 0 ; }
 
+// *** MAIN
 int main(int argc, char** argv)
 { 
 
@@ -343,11 +346,43 @@ int main(int argc, char** argv)
   TH1F *hmva_NoPU = new TH1F("hmva_NoPU","mva (NoPU)", 200, -1, 1.);
   TH1F *hmva_PU   = new TH1F("hmva_PU","mva (PU)", 200, -1, 1.);
 
+  TH1F *hsimpleDiscriminant      = new TH1F("hsimpleDiscriminant","simpleDiscriminant", 200, -1, 1.);
+  TH1F *hsimpleDiscriminant_NoPU = new TH1F("hsimpleDiscriminant_NoPU","simpleDiscriminant (NoPU)", 200, -1, 1.);
+  TH1F *hsimpleDiscriminant_PU   = new TH1F("hsimpleDiscriminant_PU","simpleDiscriminant (PU)", 200, -1, 1.);
+
+  TH1F *hfullDiscriminant      = new TH1F("hfullDiscriminant","fullDiscriminant", 200, -1, 1.);
+  TH1F *hfullDiscriminant_NoPU = new TH1F("hfullDiscriminant_NoPU","fullDiscriminant (NoPU)", 200, -1, 1.);
+  TH1F *hfullDiscriminant_PU   = new TH1F("hfullDiscriminant_PU","fullDiscriminant (PU)", 200, -1, 1.);
+
+  TH1F *hphilv1Discriminant      = new TH1F("hphilv1Discriminant","philv1Discriminant", 200, -1, 1.);
+  TH1F *hphilv1Discriminant_NoPU = new TH1F("hphilv1Discriminant_NoPU","philv1Discriminant (NoPU)", 200, -1, 1.);
+  TH1F *hphilv1Discriminant_PU   = new TH1F("hphilv1Discriminant_PU","philv1Discriminant (PU)", 200, -1, 1.);
+
+
+  //--- for efficiency studies
+  TH1F *hPtRatio  = new TH1F("hPtRatio","Pt Ratio",100,0,10); 
+  
+  TH1F *hPtRatio_simpleId[3];
+  hPtRatio_simpleId[0] = new TH1F("hPtRatio_simpleId_Tight","hPtRatio_simpleId_Tight",100,0,10);
+  hPtRatio_simpleId[1] = new TH1F("hPtRatio_simpleId_Medium","hPtRatio_simpleId_Medium",100,0,10);
+  hPtRatio_simpleId[2] = new TH1F("hPtRatio_simpleId_Loose","hPtRatio_simpleId_Loose",100,0,10);
+
+  TH1F *hPtRatio_fullId[3];
+  hPtRatio_fullId[0] = new TH1F("hPtRatio_fullId_Tight","hPtRatio_fullId_Tight",100,0,10);
+  hPtRatio_fullId[1] = new TH1F("hPtRatio_fullId_Medium","hPtRatio_fullId_Medium",100,0,10);
+  hPtRatio_fullId[2] = new TH1F("hPtRatio_fullId_Loose","hPtRatio_fullId_Loose",100,0,10);
+
+  TH1F *hPtRatio_philv1Id[3];
+  hPtRatio_philv1Id[0] = new TH1F("hPtRatio_philv1Id_Tight","hPtRatio_philv1Id_Tight",100,0,10);
+  hPtRatio_philv1Id[1] = new TH1F("hPtRatio_philv1Id_Medium","hPtRatio_philv1Id_Medium",100,0,10);
+  hPtRatio_philv1Id[2] = new TH1F("hPtRatio_philv1Id_Loose","hPtRatio_philv1Id_Loose",100,0,10);
+
+
 
 
   float w = 1;  
 
-  for (int ientry = 0; ientry < chain->GetEntries(); ientry++ ){
+  for (int ientry = 0; ientry  < chain->GetEntries(); ientry++ ){
     
     t.GetEntry(ientry);
     
@@ -365,13 +400,19 @@ int main(int argc, char** argv)
     if (dataFlag_) w = 1;
     else w = lumiWeights_.weight( t.PUit_n );
     if (doNvtxReweighting)  w*=ww[int(t.nvtx)];
-    if (doPtReweighting)  {
-      if (t.isMatched) w*=1.770;
-      if (!t.isMatched) w*=0.685;
-    }
 
-    if ( t.ijet==1 ) hNvtx->Fill(t.nvtx,w);
-      
+    if ( t.ijet==1 ) {
+      hNvtx->Fill(t.nvtx,w);
+      if ( t.dimuonPt > 0. ){
+	hPtRatio -> Fill(t.jetPt/t.dimuonPt,w);   
+	for (int ilevel = 0; ilevel < 3; ilevel++){
+	  if ( pass_level(t.simpleId,ilevel) )  hPtRatio_simpleId[ilevel]-> Fill(t.jetPt/t.dimuonPt,w);   
+	  if ( pass_level(t.fullId,ilevel)   )  hPtRatio_fullId[ilevel]  -> Fill(t.jetPt/t.dimuonPt,w);   
+	  if ( pass_level(t.philv1Id,ilevel) )  hPtRatio_philv1Id[ilevel]-> Fill(t.jetPt/t.dimuonPt,w);   
+	}
+      }
+    }
+    
     hjetPt        -> Fill(t.jetPt,w);
     hjetEta       -> Fill(t.jetEta,w);
     hleadFrac     -> Fill(t.leadFrac,w); 
@@ -417,7 +458,9 @@ int main(int argc, char** argv)
     hbeta         -> Fill(t.beta,w);
     hbetaStar     -> Fill(t.betaStar,w);
     hmva          -> Fill(t.mva,w);
-    
+    hsimpleDiscriminant -> Fill(t.simpleDiscriminant,w);
+    hfullDiscriminant   -> Fill(t.fullDiscriminant,w);
+    hphilv1Discriminant -> Fill(t.philv1Discriminant,w);
 
     if ( t.isMatched ) {
       hjetPt_NoPU        -> Fill(t.jetPt,w);
@@ -465,6 +508,11 @@ int main(int argc, char** argv)
       hbeta_NoPU         -> Fill(t.beta,w);
       hbetaStar_NoPU     -> Fill(t.betaStar,w);
       hmva_NoPU          -> Fill(t.mva,w);
+
+      hsimpleDiscriminant_NoPU  -> Fill(t.simpleDiscriminant,w);
+      hfullDiscriminant_NoPU    -> Fill(t.fullDiscriminant,w);
+      hphilv1Discriminant_NoPU  -> Fill(t.philv1Discriminant,w);
+      
     }
     else{
       hjetPt_PU        -> Fill(t.jetPt,w);
@@ -512,11 +560,41 @@ int main(int argc, char** argv)
       hbeta_PU         -> Fill(t.beta,w);
       hbetaStar_PU     -> Fill(t.betaStar,w);
       hmva_PU          -> Fill(t.mva,w);
+
+      hsimpleDiscriminant_PU  -> Fill(t.simpleDiscriminant,w);
+      hfullDiscriminant_PU    -> Fill(t.fullDiscriminant,w);
+      hphilv1Discriminant_PU  -> Fill(t.philv1Discriminant,w);
+
     }
 
   }// end loop over entries
 
-  
+
+  // compute efficiencies
+   TH1F *hEff_vs_PtRatio_simpleId[3]; 
+   TH1F *hEff_vs_PtRatio_fullId[3]; 
+   TH1F *hEff_vs_PtRatio_philv1Id[3]; 
+   char hname[100];
+   std::string suff[3] = {"Tight","Medium","Loose"};
+
+   hPtRatio->Sumw2();
+
+   for (int ilevel = 0; ilevel < 3; ilevel++){
+     hPtRatio_simpleId[ilevel]->Sumw2();
+     sprintf(hname," hEff_vs_PtRatio_simpleId_%s",suff[ilevel].c_str());
+     hEff_vs_PtRatio_simpleId[ilevel]=(TH1F*)hPtRatio_simpleId[ilevel]->Clone(hname);
+     hEff_vs_PtRatio_simpleId[ilevel]->Divide(hPtRatio);
+     
+     hPtRatio_fullId[ilevel]->Sumw2();
+     sprintf(hname," hEff_vs_PtRatio_fullId_%s",suff[ilevel].c_str());
+     hEff_vs_PtRatio_fullId[ilevel]=(TH1F*)hPtRatio_fullId[ilevel]->Clone(hname);
+     hEff_vs_PtRatio_fullId[ilevel]->Divide(hPtRatio);
+
+     hPtRatio_philv1Id[ilevel]->Sumw2();
+     sprintf(hname," hEff_vs_PtRatio_philv1Id_%s",suff[ilevel].c_str());
+     hEff_vs_PtRatio_philv1Id[ilevel]=(TH1F*)hPtRatio_philv1Id[ilevel]->Clone(hname);
+     hEff_vs_PtRatio_philv1Id[ilevel]->Divide(hPtRatio);
+   }
 
   
   // save the histograms
@@ -524,8 +602,11 @@ int main(int argc, char** argv)
   std::cout << "Saving histograms on file ..." << std::endl;
    
  
+  std::cout << outputRootFilePath_+outputRootFileName_ << std::endl;
+    
 
   TFile* outputRootFile = new TFile((outputRootFilePath_+outputRootFileName_).c_str(), "RECREATE");
+
   outputRootFile -> cd();
 
   hNvtx ->Write();
@@ -573,6 +654,10 @@ int main(int argc, char** argv)
   hbeta         -> Write();
   hbetaStar     -> Write();
   hmva          -> Write();
+  hsimpleDiscriminant->Write();
+  hfullDiscriminant  ->Write();
+  hphilv1Discriminant->Write();
+
 
   hjetPt_NoPU       -> Write();
   hjetEta_NoPU      -> Write();
@@ -617,6 +702,9 @@ int main(int argc, char** argv)
   hbeta_NoPU        -> Write();
   hbetaStar_NoPU    -> Write();
   hmva_NoPU         -> Write();
+  hsimpleDiscriminant_NoPU->Write();
+  hfullDiscriminant_NoPU  ->Write();
+  hphilv1Discriminant_NoPU->Write();
 
   hjetPt_PU        -> Write();
   hjetEta_PU       -> Write();
@@ -661,10 +749,23 @@ int main(int argc, char** argv)
   hbeta_PU         -> Write();
   hbetaStar_PU     -> Write();
   hmva_PU          -> Write();
+  hsimpleDiscriminant_PU->Write();
+  hfullDiscriminant_PU  ->Write();
+  hphilv1Discriminant_PU->Write();
+
+  hPtRatio -> Write();   
+  for (int ilevel = 0; ilevel < 3; ilevel++){
+    hPtRatio_simpleId[ilevel]->Write();   
+    hPtRatio_fullId[ilevel]  ->Write();   
+    hPtRatio_philv1Id[ilevel]->Write();   
+
+    hEff_vs_PtRatio_simpleId[ilevel]->Write();   
+    hEff_vs_PtRatio_fullId[ilevel]->Write();   
+    hEff_vs_PtRatio_philv1Id[ilevel]->Write();   
+  }
 
   outputRootFile -> Close();
-  
-  
+    
   return 0;
 
 
