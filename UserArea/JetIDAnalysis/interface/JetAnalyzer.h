@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.h,v 1.7 2012/04/20 11:31:34 musella Exp $
+// $Id: JetAnalyzer.h,v 1.8 2012/04/23 10:38:21 malberti Exp $
 //
 //
 
@@ -130,6 +130,7 @@ private:
   int njets;
 
   float dimuonPt;
+  float dphiZJet;
 
   ////  float mva;
 

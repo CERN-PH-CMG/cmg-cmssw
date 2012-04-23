@@ -25,6 +25,7 @@
 // 
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/Math/interface/deltaPhi.h"
 
 //
 // constructors and destructor
@@ -84,6 +85,7 @@ JetAnalyzer::JetAnalyzer(const edm::ParameterSet& iConfig)
   tree -> Branch ("jetGenDr",&jetGenDr, "jetGenDr/F");
   tree -> Branch ("njets",&njets, "njets/I");
   tree -> Branch ("dimuonPt",&dimuonPt, "dimuonPt/F");
+  tree -> Branch ("dphiZJet",&dphiZJet, "dphiZJet/F");
 
  }
 
@@ -104,6 +106,7 @@ void JetAnalyzer::ResetTreeVariables()
   jetGenDr   = -999;
   njets      = -999;
   dimuonPt   = -999; 
+  dphiZJet   = -999; 
 }
 
 
@@ -231,6 +234,8 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    Handle<ValueMap<int> > vmap;
 	    iEvent.getByLabel(IdTags_[itag],vmap);
 	    ids_[itag] = (*vmap)[jets.refAt(i)];
+	    int a = ids_[itag] << PileupJetIdentifier::kTight;
+	    std::cout << a << std::endl;
     }
 
     //njets             = jetHandle -> size();
@@ -243,6 +248,7 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     PUoot_late_n      = PUoot_late_NumInteractions;
     PUoot_late_nTrue  = PUoot_late_TrueNumInteractions;
     dimuonPt          = (muons.at(goodMuon1).p4()+muons.at(goodMuon2).p4()).Pt();
+    dphiZJet          = deltaPhi( (muons.at(goodMuon1).p4()+muons.at(goodMuon2).p4()).Phi(),  patjet.phi()   );
     
     tree->Fill();
   
