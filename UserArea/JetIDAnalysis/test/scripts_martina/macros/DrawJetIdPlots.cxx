@@ -1,6 +1,6 @@
 #include <algorithm>
 
-void DrawJetIdPlots(Char_t* infile1 = 0, 
+void TestDrawJetIdPlots(Char_t* infile1 = 0, 
 		     Char_t* infile2 = 0, 
 		     Char_t* fileType = "png", 
 		     Char_t* dirName = ".")
@@ -18,25 +18,32 @@ void DrawJetIdPlots(Char_t* infile1 = 0,
     return;
   }
   
+
+   infile1 = "../rootfiles/plotsV00-00-07/histos_DYJetsToLL_pfjets_TK_pt20to30.root";
+   infile2 = "../rootfiles/plotsV00-00-07/histos_DoubleMu2011_pfjets_TK_pt20to30.root";
+
+
   cout << "Producing validation plots for: " << infile1 << " and " << infile2 << endl;
 
+  
   TFile* f[2]; 
   f[0] = new TFile(infile1); //MC
   f[1] = new TFile(infile2); //DATA
 
+   
 
-  TH1D *hjetPt[2];
+  TH1F *hjetPt[2];
   for (int i=0;i<2;i++)
-    hjetPt[i] = (TH1D*)f[i]->Get("hjetPt") ; 
-
+    hjetPt[i] = (TH1F*)f[i]->Get("hjetPt") ; 
+  
   float nEvents0 = hjetPt[0]->GetSumOfWeights();
   float nEvents1 = hjetPt[1]->GetSumOfWeights();
   float s        = nEvents1/nEvents0;
 
 
   // Define list of object names
-  const int nObj=44;
-  char *objName[nObj]={"hNvtx",
+  const int nObj=46;
+  string objName[nObj]={"hNvtx",
                        "hjetPt",
 		       "hjetEta",
 		       "hleadFrac",
@@ -79,22 +86,23 @@ void DrawJetIdPlots(Char_t* infile1 = 0,
 		       "hminW",
 		       "hbeta",
 		       "hbetaStar",
-		       "hmva"		       
+ 		       "hsimpleDiscriminant",
+  		       "hfullDiscriminant",
+ 		       "hphilv1Discriminant",
   };
 
-  char *objNamePU[nObj];
-  char *objNameNoPU[nObj];
+  string objNamePU[nObj];
+  string objNameNoPU[nObj];
   for (int i = 0; i < nObj; i++){
-    objNamePU[i] = new char;
-    strcpy(objNamePU[i],objName[i]);
-    strcat(objNamePU[i],"_PU" );
-    objNameNoPU[i] = new char;
-    strcpy(objNameNoPU[i],objName[i]);
-    strcat(objNameNoPU[i],"_NoPU" );
+    objNamePU[i]   = objName[i]+"_PU" ;
+    objNameNoPU[i] = objName[i]+"_NoPU" ;
+    //    cout << objName[i]<< endl;
+    //cout << objNamePU[i]<< endl;
+    //cout << objNameNoPU[i]<< endl;
   }
+ 
   
-
-  char *objTitle[nObj]={"Nvtx       ",
+  string objTitle[nObj]={"Nvtx       ",
 			"jetPt      ",
 			"jetEta     ",
 			"leadFrac   ",
@@ -137,7 +145,9 @@ void DrawJetIdPlots(Char_t* infile1 = 0,
 			"minW       ",
 			"beta       ",
 			"betaStar   ",
-			"mva        "	
+ 			"simpleDiscriminant",
+ 			"fullDiscriminant",
+ 			"philv1Discriminant"
   };
 
   char *labelX[nObj]={"number of vertices",
@@ -183,7 +193,9 @@ void DrawJetIdPlots(Char_t* infile1 = 0,
 		      "minW       ",
 		      "beta       ",
 		      "betaStar   ",
-		      "mva        "
+ 		      "mva        ",
+ 		      "mva        ",
+ 		      "mva        "
   };
   
   char *labelY[1]={"Number of entries"};
@@ -202,7 +214,7 @@ void DrawJetIdPlots(Char_t* infile1 = 0,
                      0, // ptD
 		     0, 0, 0, 0, // shapes
 		     0, 0, // beta 
-		     -1. // mva
+		     -1.,-1.,-1. // mva
   };
   
   double xMax[nObj]={40,  // nvtx
@@ -219,7 +231,7 @@ void DrawJetIdPlots(Char_t* infile1 = 0,
                      1, // ptD
 		     0.5, 0.5, 0.5, 0.5, // shapes
 		     1, 1, // beta 
-		     1. //mva
+		     1.,1.,1. //mva
   };
   
   int reBin[nObj]  = {1,  // nvtx
@@ -236,7 +248,7 @@ void DrawJetIdPlots(Char_t* infile1 = 0,
 		      2, // ptD
 		      4, 4, 4, 4, // shapes
 		      5, 5, // beta 
-		      5 //mva
+		      5, 5, 5 //mva
   };
 
   int optLogY[nObj] = {0,  // nvtx
@@ -253,7 +265,7 @@ void DrawJetIdPlots(Char_t* infile1 = 0,
 		       0, // ptD
 		       0, 0, 0, 0, // shapes
 		       1, 1, // beta 
-		       0 //mva
+		       0,0,0 //mva
   };
   
   TH1D* h[2][100]; 
@@ -265,20 +277,23 @@ void DrawJetIdPlots(Char_t* infile1 = 0,
  
   int iHisto = 0;
   while(iHisto<nObj){
+    cout << "Analyzing " << iHisto << " histogram" << endl;
     for (int ifile=0;ifile<2;ifile++){ 
-      h[ifile][iHisto] = (TH1D*)f[ifile]->Get(objName[iHisto]);
+
+      h[ifile][iHisto] = (TH1D*)f[ifile]->Get(objName[iHisto].c_str());
       h[ifile][iHisto]->Rebin(reBin[iHisto]);
 
       if (iHisto > 0){
-	hPU[ifile][iHisto] = (TH1D*)f[ifile]->Get(objNamePU[iHisto]);
-	hNoPU[ifile][iHisto] = (TH1D*)f[ifile]->Get(objNameNoPU[iHisto]);
+	hPU[ifile][iHisto] = (TH1D*)f[ifile]->Get(objNamePU[iHisto].c_str());
+	hNoPU[ifile][iHisto] = (TH1D*)f[ifile]->Get(objNameNoPU[iHisto].c_str());
 	hPU[ifile][iHisto]->Rebin(reBin[iHisto]);
 	hNoPU[ifile][iHisto]->Rebin(reBin[iHisto]);
       }
-      
+
+     
       if (ifile == 0) {
 	// open a new canvas
-	c[iHisto] = new TCanvas(objName[iHisto],objName[iHisto],50+iHisto*20,50+iHisto*5,500,400);
+	c[iHisto] = new TCanvas(objName[iHisto].c_str(),objName[iHisto].c_str(),50+iHisto*20,50+iHisto*5,500,400);
 	c[iHisto]->cd();
 	// customize and plot
 	h[ifile][iHisto]->GetYaxis()->SetTitleOffset(1.4);
@@ -286,7 +301,7 @@ void DrawJetIdPlots(Char_t* infile1 = 0,
 	h[ifile][iHisto]->GetXaxis()->SetTitle(labelX[iHisto]);
 	h[ifile][iHisto]->SetFillColor(kGray);
 	h[ifile][iHisto]->SetFillStyle(1001);
-	h[ifile][iHisto]->SetTitle(objTitle[iHisto]);
+	h[ifile][iHisto]->SetTitle(objTitle[iHisto].c_str());
 	h[ifile][iHisto]->Scale(s);
 	h[ifile][iHisto]->GetXaxis()->SetRangeUser(xMin[iHisto],xMax[iHisto]);
 	h[ifile][iHisto]->Draw();
@@ -321,7 +336,7 @@ void DrawJetIdPlots(Char_t* infile1 = 0,
 	  h[0][iHisto]->SetMaximum(maxy*100);
 	  h[0][iHisto]->SetMinimum(0.1);
 	}
-	else  h[0][iHisto]->SetMaximum(maxy*1.1);
+	else  h[0][iHisto]->SetMaximum(maxy*1.4);
 	
 	c[iHisto]->Update();
 	
@@ -347,15 +362,9 @@ void DrawJetIdPlots(Char_t* infile1 = 0,
     }
     
 
-    char *str = objName[iHisto];
+    string myname =  string(dirName) +"/"+objName[iHisto]+"."+fileType;
     
-    char myname[500];
-    sprintf (myname,"%s/",dirName);
-    strcat(myname,str);
-    strcat(myname,".");
-    strcat(myname,fileType);
-    
-    //cout << myname << endl;
+    cout << myname << endl;
     //    c[iHisto]->Print(myname,fileType);
     
     
@@ -365,7 +374,7 @@ void DrawJetIdPlots(Char_t* infile1 = 0,
   }
   
 
-
+  
  
 }
 
