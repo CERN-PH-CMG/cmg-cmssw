@@ -91,12 +91,15 @@ class SimpleJetPlots (Analyzer) :
         self.h_NoCHS_correction = TH2F ("h_NoCHS_correction", "", 48, -6, 6, 1000, 0, 100) ;
         self.h_YeCHS_correction = TH2F ("h_YeCHS_correction", "", 48, -6, 6, 1000, 0, 100) ;
 
+        self.YeNoCHSRatio_eta = TH2F ("YeNoCHSRatio_eta", "", 48, -6, 6, 100, 0, 2)
+
 
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
     def process (self, iEvent, event) :
         #read all the handles defined beforehand
         self.readCollections (iEvent)
+#        print '-------'
         
         jetEtaCut = 4.5 
         
@@ -133,15 +136,33 @@ class SimpleJetPlots (Analyzer) :
         for jet in event.cleanYeCHSJets :
             self.h_YeCHS_recjetspt       .Fill (jet.pt ()) ;
             self.h_YeCHS_recjetseta      .Fill (jet.eta ()) ; 
-            if (jet.pt () > 20 and len(event.vertices) > 10):
-                self.h_YeCHS_correction.Fill (jet.eta (), jet.jecFactor(0)) ;
+            if (abs(jet.pt () > 20) and len(event.vertices) > 10):
+                self.h_YeCHS_correction.Fill (jet.eta (), 1. / jet.jecFactor(0)) ;
+#                print 'Ev', event.iEv, 'YeCHS ', round (jet.eta (), 2), round (jet.phi (), 2), round (jet.pt () * jet.jecFactor(0), 2)#, round (jet.component (1).fraction (), 2)
                 
         for jet in event.cleanNoCHSJets:
             self.h_NoCHS_recjetspt       .Fill (jet.pt ()) ;
             self.h_NoCHS_recjetseta      .Fill (jet.eta ()) ; 
-            if (jet.pt () > 20 and len(event.vertices) > 10):
-                self.h_NoCHS_correction.Fill (jet.eta (), jet.jecFactor(0)) ;
+            if (abs(jet.pt () > 20) and len(event.vertices) > 10):
+                self.h_NoCHS_correction.Fill (jet.eta (), 1. / jet.jecFactor(0)) ;
+#                print 'Ev', event.iEv, 'NoCHS ', round (jet.eta (), 2), round (jet.phi (), 2), round (jet.pt () * jet.jecFactor(0), 2)#, round (jet.component (1).fraction (), 2)
                 
+        #PG removing negative correction jets
+        event.noNegCleanYeCHSJets = [ jet for jet in event.cleanYeCHSJets if (jet.jecFactor(0) > 0) ]
+        event.noNegCleanNoCHSJets = [ jet for jet in event.cleanNoCHSJets if (jet.jecFactor(0) > 0) ]
+        
+        #PG matching between CHS and non CHS
+        event.YeNoCHSmatch = matchObjectCollection2 (event.noNegCleanYeCHSJets, event.noNegCleanNoCHSJets, 0.1)
+        for yejet, nojet in event.YeNoCHSmatch.iteritems():
+            if nojet == None: 
+                continue ;
+            self.YeNoCHSRatio_eta.Fill (yejet.eta (), yejet.pt () * yejet.jecFactor(0) / (nojet.pt () * nojet.jecFactor(0)))
+#            if yejet.pt () * yejet.jecFactor(0) < 10: 
+#                continue ;
+#            if abs (yejet.eta ()) < 3:
+#                continue ;
+#            print round (yejet.eta (), 2), '\t', round (yejet.pt () * yejet.jecFactor(0), 2),  '\t',round (nojet.pt () * nojet.jecFactor(0), 2),  '\t',round (yejet.pt () * yejet.jecFactor(0) / (nojet.pt () * nojet.jecFactor(0)), 2)
+#            print round (yejet.eta (), 2), '\t', round (yejet.pt (), 2),  '\t',round (nojet.pt (), 2),  '\t',round (yejet.pt () * yejet.jecFactor(0) / (nojet.pt () * nojet.jecFactor(0)), 2)
         
         event.matchingCleanYeCHSJets = matchObjectCollection2 (event.cleanYeCHSJets, event.selYeCHSGenJets, 0.25)
         for jet in event.cleanYeCHSJets :
@@ -206,6 +227,8 @@ class SimpleJetPlots (Analyzer) :
         
         self.h_YeCHS_correction       .Write () ;
         self.h_NoCHS_correction       .Write () ;
+        
+        self.YeNoCHSRatio_eta         .Write () ;
         
         self.file.Close()
         
