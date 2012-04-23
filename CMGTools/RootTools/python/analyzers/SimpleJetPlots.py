@@ -88,6 +88,9 @@ class SimpleJetPlots (Analyzer) :
         self.h_YeCHS_response = TH1F ("h_YeCHSresponse", "" ,100, -2, 2) ;
         self.h_NoCHS_response = TH1F ("h_NoCHSresponse", "" ,100, -2, 2) ;
 
+        self.h_NoCHS_correction = TH2F ("h_NoCHS_correction", "", 48, -6, 6, 1000, 0, 100) ;
+        self.h_YeCHS_correction = TH2F ("h_YeCHS_correction", "", 48, -6, 6, 1000, 0, 100) ;
+
 
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
@@ -130,9 +133,15 @@ class SimpleJetPlots (Analyzer) :
         for jet in event.cleanYeCHSJets :
             self.h_YeCHS_recjetspt       .Fill (jet.pt ()) ;
             self.h_YeCHS_recjetseta      .Fill (jet.eta ()) ; 
+            if (jet.pt () > 20 and len(event.vertices) > 10):
+                self.h_YeCHS_correction.Fill (jet.eta (), jet.jecFactor(0)) ;
+                
         for jet in event.cleanNoCHSJets:
             self.h_NoCHS_recjetspt       .Fill (jet.pt ()) ;
             self.h_NoCHS_recjetseta      .Fill (jet.eta ()) ; 
+            if (jet.pt () > 20 and len(event.vertices) > 10):
+                self.h_NoCHS_correction.Fill (jet.eta (), jet.jecFactor(0)) ;
+                
         
         event.matchingCleanYeCHSJets = matchObjectCollection2 (event.cleanYeCHSJets, event.selYeCHSGenJets, 0.25)
         for jet in event.cleanYeCHSJets :
@@ -144,7 +153,7 @@ class SimpleJetPlots (Analyzer) :
             self.h_YeCHS_recjetseta_match.Fill (jet.eta ()) ;
             self.h_YeCHS_genjetspt_match .Fill (jet.gen.pt ()) ;
             self.h_YeCHS_genjetseta_match.Fill (jet.gen.eta ()) ;
-        
+
         event.matchingCleanNoCHSJets = matchObjectCollection2 (event.cleanNoCHSJets, event.selNoCHSGenJets, 0.25)
         for jet in event.cleanNoCHSJets :
             jet.gen = event.matchingCleanNoCHSJets[ jet ]
@@ -194,5 +203,9 @@ class SimpleJetPlots (Analyzer) :
         
         self.h_YeCHS_response         .Write () ;
         self.h_NoCHS_response         .Write () ;
+        
+        self.h_YeCHS_correction       .Write () ;
+        self.h_NoCHS_correction       .Write () ;
+        
         self.file.Close()
         
