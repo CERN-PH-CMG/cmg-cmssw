@@ -1,9 +1,54 @@
 import FWCore.ParameterSet.Config as cms
 
 import re
+import copy
 
 # This module provides some visitors for handling postfixes in PF2PAT
 # @author wreece
+
+class SeqVisitor(object):
+    
+    def __init__(self, type ):
+        self.type = type
+        
+    def enter(self, v):
+        if hasattr(v,'type_') and v.type_() == self.type:
+            print v.label()
+            
+    def leave(self, v):
+        pass
+
+
+class CloneVisitor(object):   
+    def __init__(self, postfix):
+        self.postfix = postfix
+        self.sequence = cms.Sequence()      
+        self.curSubSequence = None
+        
+    def enter(self, v):
+        # print v.label()
+        if isinstance(v,cms.Sequence):
+            self.curSubSequence = cms.Sequence()
+            self.curSubSequence.setLabel( ''.join( [v.label(), self.postfix] ) ) 
+            self.sequence += self.curSubSequence 
+        if isinstance(v,cms.EDProducer) or \
+           isinstance(v,cms.EDAnalyzer) or \
+           isinstance(v,cms.EDFilter):
+           # isinstance(v,cms.Sequence) or \
+            new = v.clone()
+            new.setLabel( ''.join( [v.moduleLabel_(), self.postfix] ) )
+            # params = v.parameters()
+            if self.curSubSequence is None:
+                self.sequence += new
+            else:
+                self.curSubSequence += new
+            
+    def leave(self, v):
+        pass
+
+# v = CloneVisitor('Test')
+# process.jetSequence.visit(v)
+# v.sequence
 
 class InputTagVisitor(object):
     """Iterates over the tree and finds any parameters that must be updated"""
@@ -79,12 +124,33 @@ It it ends with 'old_postfix', it replaces it with 'new_postfix.
                 #    v.setModuleLabel(new)
         return v
 
+
+class InputTagReplacer( InputTagVisitor ):
+    def __init__(self, oldSrc, newSrc):
+        super(InputTagReplacer, self).__init__()
+        self.oldSrc = oldSrc
+        self.newSrc = newSrc
+
+    def processInputTag(self, v):
+        label = v.getModuleLabel()
+        if label and label == self.oldSrc:
+            v.setModuleLabel( self.newSrc )
+        return v
+            
+
+def replaceSrc(sequencable, oldSrc, newSrc):
+    v = InputTagReplacer(oldSrc, newSrc)
+    sequencable.visit(v)
+    return sequencable
+
+
 def replacePostfix(sequencable, old_postfix, new_postfix):
     '''Utility function to run the InputTagPostfixVisitor visitor'''
     
     v = InputTagPostfixVisitor(old_postfix, new_postfix)
     sequencable.visit(v)
     return sequencable
+
 
 def dropAllOutputs(process):
     """Look into a process and turn off every output module found"""

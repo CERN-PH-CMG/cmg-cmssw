@@ -4,7 +4,7 @@ import FWCore.ParameterSet.Config as cms
 
 
 def lumiList( json ):
-    import PhysicsTools.PythonAnalysis.LumiList as LumiList
+    import FWCore.PythonUtilities.LumiList as LumiList
     myLumis = LumiList.LumiList(filename = json ).getCMSSWString().split(',')
     return myLumis
 
