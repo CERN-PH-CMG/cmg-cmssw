@@ -14,6 +14,7 @@
 #include "TFile.h"
 #include "TF1.h"
 #include "TH1.h"
+#include "TH2.h"
 #include "TCanvas.h"
 #include "TPaveStats.h"
 #include "TLegend.h"
@@ -118,18 +119,23 @@ int main(int argc, char** argv)
   //--- NVTX reweighting
   float ww[100];
   std::string filemc   = outputRootFileName_+".root";
-  std::string filedata = "histos_DoubleMu2011_pfjets"+etaRange_+"_pt"+argv[5]+"to"+argv[6]+".root";
+  std::string filedata = "histos_DoubleMu2011_pfjets_"+etaRange_+"_pt"+argv[5]+"to"+argv[6]+".root";
 
-  std::cout<< "file name mc: " << filemc << std::endl;
-  std::cout<< "file name data: " << filedata << std::endl;
-
+  
   if (doNvtxReweighting){
+    std::cout<< "file name mc: " << (outputRootFilePath_+filemc) << std::endl;
+    std::cout<< "file name data: " << (outputRootFilePath_+filedata)  << std::endl;
+
     TFile *fmc = TFile::Open( (outputRootFilePath_+filemc).c_str() );
-    TFile *fda = TFile::Open( (outputRootFilePath_+filemc).c_str() );
     TH1F *hmc = (TH1F*)fmc->Get("hNvtx");
+    hmc ->SetName("hmc");
+
+    TFile *fda = TFile::Open( (outputRootFilePath_+filedata).c_str() );
     TH1F *hda = (TH1F*)fda->Get("hNvtx");
+    hda ->SetName("hda");
+
     hda->Divide(hda, hmc, 1./hda->GetSumOfWeights(),1./hmc->GetSumOfWeights() );
-    for (int ibin = 1; ibin < hmc->GetNbinsX()+1; ibin++){
+    for (int ibin = 1; ibin < hda->GetNbinsX()+1; ibin++){
       ww[ibin] = hda->GetBinContent(ibin);
     }
     outputRootFileName_=outputRootFileName_+"_reweightedNvtx";
@@ -360,6 +366,8 @@ int main(int argc, char** argv)
 
 
   //--- for efficiency studies
+  TH2F *hPtRatio_vs_Dphi = new TH2F("hPtRatio_vs_Dphi","hPtRatio_vs_Dphi",100,-3.2,3.2,100,0,10);
+
   TH1F *hPtRatio  = new TH1F("hPtRatio","Pt Ratio",100,0,10); 
   
   TH1F *hPtRatio_simpleId[3];
@@ -403,7 +411,10 @@ int main(int argc, char** argv)
 
     if ( t.ijet==1 ) {
       hNvtx->Fill(t.nvtx,w);
-      if ( t.dimuonPt > 0. ){
+      if ( t.dimuonPt > 0. )
+	hPtRatio_vs_Dphi -> Fill(t.dphiZJet,t.jetPt/t.dimuonPt,w);
+      
+      if (t.dimuonPt > 0. && fabs(t.dphiZJet)>2.5){
 	hPtRatio -> Fill(t.jetPt/t.dimuonPt,w);   
 	for (int ilevel = 0; ilevel < 3; ilevel++){
 	  if ( pass_level(t.simpleId,ilevel) )  hPtRatio_simpleId[ilevel]-> Fill(t.jetPt/t.dimuonPt,w);   
@@ -581,17 +592,17 @@ int main(int argc, char** argv)
 
    for (int ilevel = 0; ilevel < 3; ilevel++){
      hPtRatio_simpleId[ilevel]->Sumw2();
-     sprintf(hname," hEff_vs_PtRatio_simpleId_%s",suff[ilevel].c_str());
+     sprintf(hname,"hEff_vs_PtRatio_simpleId_%s",suff[ilevel].c_str());
      hEff_vs_PtRatio_simpleId[ilevel]=(TH1F*)hPtRatio_simpleId[ilevel]->Clone(hname);
      hEff_vs_PtRatio_simpleId[ilevel]->Divide(hPtRatio);
      
      hPtRatio_fullId[ilevel]->Sumw2();
-     sprintf(hname," hEff_vs_PtRatio_fullId_%s",suff[ilevel].c_str());
+     sprintf(hname,"hEff_vs_PtRatio_fullId_%s",suff[ilevel].c_str());
      hEff_vs_PtRatio_fullId[ilevel]=(TH1F*)hPtRatio_fullId[ilevel]->Clone(hname);
      hEff_vs_PtRatio_fullId[ilevel]->Divide(hPtRatio);
 
      hPtRatio_philv1Id[ilevel]->Sumw2();
-     sprintf(hname," hEff_vs_PtRatio_philv1Id_%s",suff[ilevel].c_str());
+     sprintf(hname,"hEff_vs_PtRatio_philv1Id_%s",suff[ilevel].c_str());
      hEff_vs_PtRatio_philv1Id[ilevel]=(TH1F*)hPtRatio_philv1Id[ilevel]->Clone(hname);
      hEff_vs_PtRatio_philv1Id[ilevel]->Divide(hPtRatio);
    }
@@ -753,6 +764,7 @@ int main(int argc, char** argv)
   hfullDiscriminant_PU  ->Write();
   hphilv1Discriminant_PU->Write();
 
+  hPtRatio_vs_Dphi ->Write();
   hPtRatio -> Write();   
   for (int ilevel = 0; ilevel < 3; ilevel++){
     hPtRatio_simpleId[ilevel]->Write();   
