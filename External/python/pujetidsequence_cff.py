@@ -24,3 +24,63 @@ puJetMva = pileupJetIdProducer.clone(
     )
 
 puJetIdSqeuence = cms.Sequence(puJetId*puJetMva)
+
+##
+## utility function to build jet is sequence
+##
+def loadPujetId(process,collection,mvaOnly=False,isChs=False,release="44X"):
+
+    ## FIXME 52X and CHS options need to be properly filled
+    if release.startswith("4"):
+        if isChs:
+            algos = (PuJetIdMinMVA,PuJetIdOptMVA,PhilV1)
+        else:
+            algos = (PuJetIdMinMVA,PuJetIdOptMVA,PhilV1)
+    elif release == "52X":
+        if isChs:
+            algos = (PuJetIdMinMVA,PuJetIdOptMVA,PhilV1)
+        else:
+            algos = (PuJetIdMinMVA,PuJetIdOptMVA,PhilV1)
+
+    if not mvaOnly:
+        setattr(process,
+                "%s%s" % ("puJetId",collection), 
+                pileupJetIdProducer.clone(
+            produceJetIds = cms.bool(True),
+            jetids = cms.InputTag(""),
+            runMvas = cms.bool(False),
+            jets = cms.InputTag(collection),
+            vertexes = cms.InputTag("offlinePrimaryVertices"),
+            algos = cms.VPSet(algos[0])
+            )
+                )
+    setattr(process,
+            "%s%s" % ("puJetMva",collection), 
+            pileupJetIdProducer.clone(
+        produceJetIds = cms.bool(False),
+        jetids = cms.InputTag("%s%s" % ("puJetId",collection)),
+        runMvas = cms.bool(True),
+        jets = cms.InputTag("selectedPatJetsPFlowNoPuSub"),
+        vertexes = cms.InputTag("offlinePrimaryVertices"),
+        algos = cms.VPSet(*algos)
+        )
+            )
+    
+    if mvaOnly:
+        setattr(process, "%s%s" % ("puJetIdSequence",collection),
+                getattr(process,"%s%s" % ("puJetMva",collection)) )
+    else:
+        setattr(process, "%s%s" % ("puJetIdSequence",collection),
+                cms.Sequence(getattr(process,"%s%s" % ("puJetId",collection)) * getattr(process,"%s%s" % ("puJetMva",collection)) )
+                )
+
+    seqeuence = getattr(process, "%s%s" % ("puJetIdSequence",collection))
+    inputsTag = cms.InputTag("%s%s" % ("puJetId",collection))
+    mvaTags  = {}
+    idTags   = {}
+    for a in algos:
+        mvaTags[a.label.value()] = cms.InputTag("%s%s" % ("puJetMva",collection), "%sDiscriminant" % a.label.value())
+        idTags[a.label.value()] = cms.InputTag("%s%s" % ("puJetMva",collection), "%sId"           % a.label.value())
+    outputCommands = [ "keep *_%s%s_*_*" % ("puJetId",collection),  "keep *_%s%s_*_*" % ("puJetMva",collection) ]
+    
+    return seqeuence,inputsTag,mvaTags,idTags,outputCommands
