@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Pasquale Musella,40 2-A12,+41227671706,
 //         Created:  Wed Apr 18 15:48:47 CEST 2012
-// $Id: PileupJetIdProducer.cc,v 1.3 2012/04/20 08:30:39 musella Exp $
+// $Id: PileupJetIdProducer.cc,v 1.4 2012/04/20 10:30:46 musella Exp $
 //
 //
 
@@ -104,10 +104,11 @@ PileupJetIdProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	const View<Jet> & jets = *jetHandle;
 	
 	Handle<VertexCollection> vertexHandle;
-	iEvent.getByLabel(vertexes_, vertexHandle);
+	if(  produceJetIds_ ) {
+		iEvent.getByLabel(vertexes_, vertexHandle);
+	}
 	const VertexCollection & vertexes = *(vertexHandle.product());
-	const Vertex & vtx  = *(vertexes.begin());;
-
+	
 	Handle<ValueMap<StoredPileupJetIdentifier> > vmap;
 	if( ! produceJetIds_ ) {
 		iEvent.getByLabel(jetids_, vmap);
@@ -124,7 +125,7 @@ PileupJetIdProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
  
 		PileupJetIdentifier puIdentifier;
 		if( produceJetIds_ ) {
-			puIdentifier = ialgo->computeIdVariables(&jet, 0., &vtx, vertexes, runMvas_); // FIXME energy (un-)corrections for plain reco::Jets
+			puIdentifier = ialgo->computeIdVariables(&jet, 0.,  &*(vertexes.begin()), vertexes, runMvas_); // FIXME energy (un-)corrections for plain reco::Jets
 			ids.push_back( puIdentifier );
 		} else {
 			puIdentifier = (*vmap)[jets.refAt(i)];  // FIXME energy (un-)corrections for plain reco::Jets
