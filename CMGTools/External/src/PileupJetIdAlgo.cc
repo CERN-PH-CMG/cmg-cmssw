@@ -203,6 +203,7 @@ void PileupJetIdAlgo::runMva()
 	if(fabs(internalId_.jetEta_) > 2.75 && fabs(internalId_.jetEta_) < 3.0 ) etaId = 2; 
 	if(fabs(internalId_.jetEta_) > 3.0  && fabs(internalId_.jetEta_) < 5.0 ) etaId = 3; 
 	
+	internalId_.idFlag_ = 0;
 	if(internalId_.mva_  > mvacut_[PileupJetIdentifier::kTight ][ptId][etaId]) internalId_.idFlag_ += 1 << PileupJetIdentifier::kTight;
 	if(internalId_.mva_  > mvacut_[PileupJetIdentifier::kMedium][ptId][etaId]) internalId_.idFlag_ += 1 << PileupJetIdentifier::kMedium;
 	if(internalId_.mva_  > mvacut_[PileupJetIdentifier::kLoose ][ptId][etaId]) internalId_.idFlag_ += 1 << PileupJetIdentifier::kLoose;
