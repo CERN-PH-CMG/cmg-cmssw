@@ -69,6 +69,9 @@ public:
 	  kLoose  = 2
 	};
 
+	static bool passJetId(int flag, Id level) { return ( id & (1 << level) ) != 0 ; }
+	bool passJetId(Id level) { return passJetId(idFlag,level); }
+	
 	DECLARE_VARIABLE(idFlag   ,int); //Unfortunately has to be 
 	DECLARE_VARIABLE(mva      ,float);
 
