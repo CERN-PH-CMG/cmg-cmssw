@@ -74,7 +74,11 @@ If not entered, secure password prompt will appear.""",
         sys.exit(1)
         
     if options.password == None:
-    	password = getpass.getpass("Enter NICE Password: ")
+        try:
+    	    password = getpass.getpass("Enter NICE Password: ")
+    	except KeyboardInterrupt:
+    	    print "Authentication Failed, exiting\n\n"
+    	    sys.exit(1)
     	options.password = password
     if not validLogin(options.username, password):
     	print "Authentication Failed, exiting\n\n"
