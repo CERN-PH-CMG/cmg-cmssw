@@ -18,8 +18,8 @@ runOnV4 = False
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
    'CMS',
-   # '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM',
-   '/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V5-v1/AODSIM',
+   '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM',
+   # '/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V5-v1/AODSIM',
    # 'CMS',
    # '/DoubleMu/Run2012A-PromptReco-v1/AOD'
    )
@@ -45,16 +45,16 @@ if runOnMC is False:
     process.patMuons.addGenMatch = False
     process.makePatMuons.remove( process.muonMatch )
     
-    process.PATCMGSequence.remove( process.genJetSequence )
-    process.jetSequence.remove( process.jetMCSequence )
-    process.jetSequence.remove( process.patJetFlavourId )
+    process.PATCMGSequence.remove( process.PATCMGGenJetSequence )
+    process.PATCMGJetSequence.remove( process.jetMCSequence )
+    process.PATCMGJetSequence.remove( process.patJetFlavourId )
     process.patJets.addGenJetMatch = False
     process.patJets.addGenPartonMatch = False
 
-    process.tauSequence.remove( process.tauGenJets )
-    process.tauSequence.remove( process.tauGenJetsSelectorAllHadrons )
-    process.tauSequence.remove( process.tauGenJetMatch )
-    process.tauSequence.remove( process.tauMatch )
+    process.PATCMGTauSequence.remove( process.tauGenJets )
+    process.PATCMGTauSequence.remove( process.tauGenJetsSelectorAllHadrons )
+    process.PATCMGTauSequence.remove( process.tauGenJetMatch )
+    process.PATCMGTauSequence.remove( process.tauMatch )
     process.patTaus.addGenJetMatch = False
     process.patTaus.addGenMatch = False
 
@@ -73,17 +73,16 @@ if runOnMC is False:
     process.patJetCorrFactors.levels.append('L2L3Residual')
 
 if runOnV4 is True:
-    process.rhoSequence += process.kt6PFJets
+    process.PATCMGRhoSequence += process.kt6PFJets
 
 print 'cloning the jet sequence to build PU chs jets'
 
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
-# process.pfNoPileUpCHSSequence = cloneProcessingSnippet(process, process.pfNoPileUpSequence, 'CHS')
-process.jetCHSSequence = cloneProcessingSnippet(process, process.jetSequence, 'CHS')
-process.jetCHSSequence.insert( 0, process.ak5PFJetsCHS )
+process.PATCMGJetCHSSequence = cloneProcessingSnippet(process, process.PATCMGJetSequence, 'CHS')
+process.PATCMGJetCHSSequence.insert( 0, process.ak5PFJetsCHS )
 from CMGTools.Common.Tools.visitorUtils import replaceSrc
-replaceSrc( process.jetCHSSequence, 'ak5PFJets', 'ak5PFJetsCHS')
-replaceSrc( process.jetCHSSequence, 'particleFlow', 'pfNoPileUp')
+replaceSrc( process.PATCMGJetCHSSequence, 'ak5PFJets', 'ak5PFJetsCHS')
+replaceSrc( process.PATCMGJetCHSSequence, 'particleFlow', 'pfNoPileUp')
 process.patJetCorrFactorsCHS.payload = 'AK5PFchs'
 
 
@@ -91,24 +90,26 @@ process.patJetCorrFactorsCHS.payload = 'AK5PFchs'
 ## Path definition
 ########################################################
 
-
+process.dump = cms.EDAnalyzer('EventContentAnalyzer')
 
 process.p = cms.Path(
+    process.prePathCounter + 
     process.PATCMGSequence + 
-    process.jetCHSSequence
+    process.PATCMGJetCHSSequence +
+    process.postPathCounter
     )
 
 # For testing, you can remove some of the objects:
 # NOTE: there are a few dependencies between these sequences
-process.PATCMGSequence.remove(process.pileUpSubtractionSequence)
-process.PATCMGSequence.remove(process.rhoSequence)
-process.PATCMGSequence.remove(process.electronSequence)
-process.PATCMGSequence.remove(process.muonSequence)
-process.PATCMGSequence.remove(process.genJetSequence)
-process.PATCMGSequence.remove(process.jetSequence)
-process.PATCMGSequence.remove(process.tauSequence)
-process.p.remove(process.jetCHSSequence)
-# process.PATCMGSequence.remove(metSequence)
+# process.PATCMGSequence.remove(process.PATCMGPileUpSubtractionSequence)
+# process.PATCMGSequence.remove(process.PATCMGRhoSequence)
+# process.PATCMGSequence.remove(process.PATCMGMuonSequence)
+# process.PATCMGSequence.remove(process.PATCMGElectronSequence)
+# process.PATCMGSequence.remove(process.PATCMGGenJetSequence)
+# process.PATCMGSequence.remove(process.PATCMGJetSequence)
+# process.PATCMGSequence.remove(process.PATCMGTauSequence)
+# process.PATCMGSequence.remove(process.PATCMGMetSequence)
+# process.p.remove(process.PATCMGJetCHSSequence)
 
 
 ########################################################
@@ -125,9 +126,24 @@ process.out = cms.OutputModule("PoolOutputModule",
                                # unpack the list of commands 'patEventContent'
                                outputCommands = patEventContentCMG
                                )
+process.out.outputCommands.append('keep patTaus_selectedPatTaus_*_*')
 
 process.outpath = cms.EndPath(process.out)
 
+########################################################
+## CMG output definition
+########################################################
+
+from CMGTools.Common.eventContent.patEventContentCMG_cff import everything
+process.outcmg = cms.OutputModule(
+    "PoolOutputModule",
+    fileName = cms.untracked.string('cmgTuple.root'),
+    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
+    outputCommands = everything,
+    dropMetaData = cms.untracked.string('PRIOR')
+    )
+
+process.outpath += process.outcmg
 
 
 ########################################################
@@ -149,12 +165,14 @@ from Configuration.AlCa.autoCond import autoCond
 process.GlobalTag.globaltag = cms.string( autoCond[ 'startup' ] )
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
+print 'Global tag       : ', process.GlobalTag.globaltag
+
 ## MessageLogger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
 ## Options and Output Report
-process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
+process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 print sep_line
 

@@ -14,6 +14,7 @@ patObjects = cms.untracked.vstring(
     'drop patElectrons_*AK5NoPUSub_*_*',
     'drop patMuons_*AK5NoPUSub_*_*',    
     #COLIN : the following should be in traditional_cff
+    'keep edmMergeableCounter_*_*_*',
     'keep cmgPhotons_selectedPat*_*_*',
     'keep recoVertexs_offlinePrimaryVertices_*_*'
     )
