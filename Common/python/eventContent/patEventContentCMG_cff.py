@@ -1,6 +1,13 @@
 import FWCore.ParameterSet.Config as cms
 
-patEventContentCMG = cms.untracked.vstring(
+from PhysicsTools.PatAlgos.patEventContent_cff import patEventContentNoCleaning, patTriggerEventContent, patTriggerStandAloneEventContent
+
+patEventContentCMG = cms.untracked.vstring()
+patEventContentCMG.extend( patEventContentNoCleaning )
+patEventContentCMG.extend( patTriggerEventContent )
+patEventContentCMG.extend( patTriggerStandAloneEventContent )
+
+patEventContentCMG.extend([
     # all the commented lines are needed at CMG-tuple step if we do a simple cloning of the sequences. Need to see if we can gain time / disk space later by organizing the CMG sequences properly
     'keep *_selectedPatMuons*_*_*',
     'keep *_selectedPatElectrons*_*_*',
@@ -10,8 +17,8 @@ patEventContentCMG = cms.untracked.vstring(
     'drop *_selectedPatMuonsAK5NoPUSub_*_*',
     'drop *_selectedPatElectronsAK5NoPUSub_*_*',
     'drop CaloTowers_*_*_*',
-    'drop patMETs_*_*_*',
-    'keep patMETs_patMETsAK5_*_*',
+    # 'drop patMETs_*_*_*',
+    # 'keep patMETs_patMETsAK5_*_*',
     'drop patPFParticles_*_*_*',
     'keep recoVertexs_*_*_*',
     'keep recoPFCandidates_particleFlow_*_*',
@@ -28,6 +35,6 @@ patEventContentCMG = cms.untracked.vstring(
     # this guys is already present in the AK5 sequence
     'drop recoVertexs_goodOfflinePrimaryVerticesLC_*_*',
     'keep *_PFMETSignificance*_*_*',
-    'keep double_kt6PFJets*_rho_*',
-    )
+    'keep double_*_rho_*',
+    ])
 

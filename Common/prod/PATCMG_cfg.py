@@ -11,15 +11,17 @@ process = cms.Process("PAT")
 print 'querying database for source files'
 
 
-runOnMC = False
+runOnMC = True
+runOnV4 = False
 
 
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
-   # 'CMS',
-   # '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM'
    'CMS',
-   '/DoubleMu/Run2012A-PromptReco-v1/AOD'
+   # '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM',
+   '/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V5-v1/AODSIM',
+   # 'CMS',
+   # '/DoubleMu/Run2012A-PromptReco-v1/AOD'
    )
 
 if runOnMC is False:
@@ -34,6 +36,7 @@ print 'loading the main CMG sequence'
 process.load('CMGTools.Common.PAT.PATCMG_cff')
 
 if runOnMC is False:
+    # removing MC stuff
     print 'removing MC stuff, as we are running on Data'
 
     process.patElectrons.addGenMatch = False
@@ -56,21 +59,38 @@ if runOnMC is False:
     process.patTaus.addGenMatch = False
 
     process.patMETs.addGenMET = False 
-    
+    process.patMETsRaw.addGenMET = False 
+
+
+    # setting up JSON file
     json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/DCSOnly/json_DCSONLY.txt'
     print 'using json file: ', json
     from CMGTools.Common.Tools.applyJSON_cff import *
     applyJSON(process, json )
 
 
+    # adding L2L3Residual corrections
+    process.patJetCorrFactors.levels.append('L2L3Residual')
+
+if runOnV4 is True:
+    process.rhoSequence += process.kt6PFJets
+
 print 'cloning the jet sequence to build PU chs jets'
 
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
+# process.pfNoPileUpCHSSequence = cloneProcessingSnippet(process, process.pfNoPileUpSequence, 'CHS')
 process.jetCHSSequence = cloneProcessingSnippet(process, process.jetSequence, 'CHS')
 process.jetCHSSequence.insert( 0, process.ak5PFJetsCHS )
 from CMGTools.Common.Tools.visitorUtils import replaceSrc
 replaceSrc( process.jetCHSSequence, 'ak5PFJets', 'ak5PFJetsCHS')
-replaceSrc( process.jetCHSSequence, 'particleFlow', 'pfNoPileUpIso')
+replaceSrc( process.jetCHSSequence, 'particleFlow', 'pfNoPileUp')
+process.patJetCorrFactorsCHS.payload = 'AK5PFchs'
+
+
+########################################################
+## Path definition
+########################################################
+
 
 
 process.p = cms.Path(
@@ -78,16 +98,32 @@ process.p = cms.Path(
     process.jetCHSSequence
     )
 
+# For testing, you can remove some of the objects:
+# NOTE: there are a few dependencies between these sequences
+process.PATCMGSequence.remove(process.pileUpSubtractionSequence)
+process.PATCMGSequence.remove(process.rhoSequence)
+process.PATCMGSequence.remove(process.electronSequence)
+process.PATCMGSequence.remove(process.muonSequence)
+process.PATCMGSequence.remove(process.genJetSequence)
+process.PATCMGSequence.remove(process.jetSequence)
+process.PATCMGSequence.remove(process.tauSequence)
+process.p.remove(process.jetCHSSequence)
+# process.PATCMGSequence.remove(metSequence)
+
+
+########################################################
+## PAT output definition
+########################################################
 
 ## Output Module Configuration (expects a path 'p')
-from PhysicsTools.PatAlgos.patEventContent_cff import patEventContent
+from CMGTools.Common.eventContent.patEventContentCMG_cff import patEventContentCMG
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string('patTuple.root'),
                                # save only events passing the full path
                                SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
                                # save PAT Layer 1 output; you need a '*' to
                                # unpack the list of commands 'patEventContent'
-                               outputCommands = cms.untracked.vstring('drop *', *patEventContent )
+                               outputCommands = patEventContentCMG
                                )
 
 process.outpath = cms.EndPath(process.out)

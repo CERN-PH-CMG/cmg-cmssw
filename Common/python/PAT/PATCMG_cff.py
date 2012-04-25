@@ -4,8 +4,9 @@ import FWCore.ParameterSet.Config as cms
 from CommonTools.ParticleFlow.PFBRECO_cff import *
 from PhysicsTools.PatAlgos.patSequences_cff import *
 
+# FIXME add CMG sequence for each object. 
 
-# PILE-UP SUBTRACTION
+# PU SUB AND PARTICLES FOR ISO ---------------
 
 pileUpSubtractionSequence = cms.Sequence(
     pfNoPileUpSequence +
@@ -13,13 +14,13 @@ pileUpSubtractionSequence = cms.Sequence(
     )
 
 
-# RHO's 
+# RHO's            ----------------------------
 
 from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
 
-kt6PFJetsAOD = kt4PFJets.clone( rParam = cms.double(0.6),
-                                doAreaFastjet = cms.bool(True),
-                                doRhoFastjet = cms.bool(True) )
+# kt6PFJetsAOD = kt4PFJets.clone( rParam = cms.double(0.6),
+#                                doAreaFastjet = cms.bool(True),
+#                                doRhoFastjet = cms.bool(True) )
 kt6PFJetsForIso = kt6PFJets.clone( Rho_EtaMax = cms.double(2.5),
                                    Ghost_EtaMax = cms.double(2.5) )
 #NOTE: now taking the PU CHS subtracted PFCandidate collection in input,
@@ -37,7 +38,7 @@ rhoSequence = cms.Sequence(
     )
 
 
-# MUONS
+# MUONS           ----------------------------
 
 #FIXME add detector based iso, also for electrons
 
@@ -78,7 +79,7 @@ muonSequence = cms.Sequence(
     )
 
 
-# ELECTRONS
+# ELECTRONS      ----------------------------
 
 
 from CommonTools.ParticleFlow.Isolation.pfElectronIsolation_cff import *
@@ -100,7 +101,7 @@ electronSequence = cms.Sequence(
 
 
 
-# JETS NO PU CHS 
+# JETS NO PU CHS ----------------------------
 
 jetSource = 'ak5PFJets'
 
@@ -158,7 +159,7 @@ jetSequence = cms.Sequence(
     )
 
 
-# TAUS NO PU CHS
+# TAUS NO PU CHS  ----------------------------
 
 from RecoTauTag.Configuration.RecoPFTauTag_cff import *
 PFTau.remove( recoTauClassicShrinkingConeSequence )
@@ -211,32 +212,52 @@ tauSequence = cms.Sequence(
 
 
 
-# JETS CHS
+# JETS CHS ----------------------------
 
+# modifying PU charged hadron subtraction according to:
+# https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetEnCorPFnoPU
+pfPileUp.checkClosestZVertex = False
+pfPileUp.Vertices = 'goodOfflinePrimaryVertices'
+from CommonTools.ParticleFlow.goodOfflinePrimaryVertices_cfi import goodOfflinePrimaryVertices
+pfNoPileUpSequence.insert(0, goodOfflinePrimaryVertices)
+
+# taking all PFCandidates which are not PU charged hadron
 from RecoJets.JetProducers.ak5PFJets_cfi import *
 ak5PFJetsCHS = ak5PFJets.clone()
-ak5PFJetsCHS.src = 'pfNoPileUpIso'
+ak5PFJetsCHS.src = 'pfNoPileUp'
 
-#NOTE: please refer to the cfg, where the cloning of the main jet sequence is done
+ak5PFJetsCHS.doAreaFastjet = True
+ak5PFJetsCHS.doRhoFastjet = False
 
+#NOTE: please refer to the cfg, where the cloning of the PAT jet sequence is done
+# could be rewritten here, but painful...
 
-# MET
+# MET      ----------------------------
 
 #FIXME: do we still have access to raw MET? 
 patMETs.metSource = 'pfType1CorrectedMet'
-# dammit! 
+# dammit! the PAT MET sequence contains jet clustering modules... 
 producePFMETCorrections.remove( kt6PFJets )
 producePFMETCorrections.remove( ak5PFJets )
+patMETs.addMuonCorrections = False
+
+# adding raw PFMET
+patMETsRaw = patMETs.clone()
+patMETsRaw.addMuonCorrections = False
+patMETsRaw.metSource = 'pfMet'
 
 metSequence = cms.Sequence(
     producePFMETCorrections + 
-    patMETs
+    patMETs +
+    patMETsRaw
     )
 
 ####  FULL SEQUENCE  ####
 
+# NOTE: object sequences are defined so that they can be easily removed from the path
+# contrary to PAT layer-wise sequences
+
 PATCMGSequence = cms.Sequence(
-    # PFBRECO +
     pileUpSubtractionSequence +
     rhoSequence +
     electronSequence +
