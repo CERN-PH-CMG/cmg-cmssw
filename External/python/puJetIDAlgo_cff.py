@@ -1,7 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 from CMGTools.External.JetIdParams_cfi import *
 
-PuJetIdOptMVA = cms.PSet(
+####################################################################################################################  
+full = cms.PSet(
  impactParTkThreshold = cms.double(1.) ,
  tmvaWeights = cms.string("CMGTools/External/data/TMVAClassification_PuJetIdOptMVA.weights.xml"),
  tmvaMethod  = cms.string("PuJetIdOptMVA"),
@@ -27,7 +28,8 @@ PuJetIdOptMVA = cms.PSet(
  label = cms.string("full")
  )
 
-PuJetIdMinMVA = cms.PSet( 
+####################################################################################################################  
+simple = cms.PSet( 
  impactParTkThreshold = cms.double(1.) ,
  tmvaWeights = cms.string("CMGTools/External/data/TMVAClassification_PuJetIdMinMVA.weights.xml"),
  tmvaMethod  = cms.string("PuJetIdMinMVA"),
@@ -50,7 +52,7 @@ PuJetIdMinMVA = cms.PSet(
  label = cms.string("simple")
  )
 
-
+####################################################################################################################  
 PhilV0 = cms.PSet( 
  impactParTkThreshold = cms.double(1.) ,
  tmvaWeights = cms.string("CMGTools/External/data/mva_JetID.weights.xml"),
@@ -59,6 +61,8 @@ PhilV0 = cms.PSet(
  JetIdParams = EmptyJetIdParams
 )
 
+
+####################################################################################################################  
 PhilV1 = cms.PSet(
  impactParTkThreshold = cms.double(1.) ,
  tmvaWeights = cms.string("CMGTools/External/data/mva_JetID_v1.weights.xml"),

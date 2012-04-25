@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 from CMGTools.External.pujetidproducer_cfi import pileupJetIdProducer
-from CMGTools.External.puJetIDAlgo_cff import PhilV1, PuJetIdOptMVA, PuJetIdMinMVA
+from CMGTools.External.puJetIDAlgo_cff import PhilV1, full, simple
 
 puJetId = pileupJetIdProducer.clone(
     produceJetIds = cms.bool(True),
@@ -9,7 +9,7 @@ puJetId = pileupJetIdProducer.clone(
     runMvas = cms.bool(False),
     jets = cms.InputTag("selectedPatJets"),
     vertexes = cms.InputTag("offlinePrimaryVertices"),
-    algos = cms.VPSet(PuJetIdMinMVA)
+    algos = cms.VPSet(simple)
     )
 
 puJetMva = pileupJetIdProducer.clone(
@@ -18,9 +18,10 @@ puJetMva = pileupJetIdProducer.clone(
     runMvas = cms.bool(True),
     jets = cms.InputTag("selectedPatJets"),
     vertexes = cms.InputTag("offlinePrimaryVertices"),
-    algos = cms.VPSet(PuJetIdMinMVA,
+    algos = cms.VPSet(simple,
+                      full,
                       PhilV1,
-                      PuJetIdOptMVA)
+                      )
     )
 
 puJetIdSqeuence = cms.Sequence(puJetId*puJetMva)
@@ -33,14 +34,14 @@ def loadPujetId(process,collection,mvaOnly=False,isChs=False,release="44X"):
     ## FIXME 52X and CHS options need to be properly filled
     if release.startswith("4"):
         if isChs:
-            algos = (PuJetIdMinMVA,PuJetIdOptMVA,PhilV1)
+            algos = (simple,full,PhilV1)
         else:
-            algos = (PuJetIdMinMVA,PuJetIdOptMVA,PhilV1)
+            algos = (simple,full,PhilV1)
     elif release == "52X":
         if isChs:
-            algos = (PuJetIdMinMVA,PuJetIdOptMVA,PhilV1)
+            algos = (simple,full,PhilV1)
         else:
-            algos = (PuJetIdMinMVA,PuJetIdOptMVA,PhilV1)
+            algos = (simple,full,PhilV1)
 
     if not mvaOnly:
         setattr(process,
