@@ -43,12 +43,11 @@ def addElectronCustomIsoDeposit( process, sequenceName, postfix ):
 #    userIsoD.hcal = cms.InputTag("eleIsoDepositHcalFromTowers")
 #    print userIsoD ###
 
-
     process.load('CMGTools.Common.PAT.patLeptModifiedIsoDeposit_cff')
     
     getattr(process, sequenceName + postfix).replace(
             getattr(process, "patElectrons" + postfix),
-            process.patElectronIsoDeposit  + getattr(process, "patElectrons" + postfix) 
+            process.detElectronIsoDepositSequence  + getattr(process, "patElectrons" + postfix) 
             )
 
 def addMuonCustomIsoDeposit( process, sequenceName, postfix ):
@@ -75,7 +74,7 @@ def addMuonCustomIsoDeposit( process, sequenceName, postfix ):
     
     getattr(process, sequenceName + postfix).replace(
             getattr(process, "patMuons" + postfix),
-            process.patMuonIsoDeposit  + getattr(process, "patMuons" + postfix) 
+            process.detMuonIsoDepositSequence  + getattr(process, "patMuons" + postfix) 
             )
     
 

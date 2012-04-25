@@ -3,12 +3,31 @@ import FWCore.ParameterSet.Config as cms
 
 from CommonTools.ParticleFlow.PFBRECO_cff import *
 from PhysicsTools.PatAlgos.patSequences_cff import *
+from CMGTools.Common.PAT.patLeptModifiedIsoDeposit_cff import *
+from CMGTools.Common.analysis_cff import *
 
+# FIXME are pat conversions used in the other cfg? where? do I need to add them?
+# FIXME add jet substructure with Andreas
 # FIXME add CMG sequence for each object. 
+# FIXME check PAT content
+# FIXME check CMG content
+#           drop embedding collections? check they're empty
+# FIXME set new aliases
+# FIXME check detector based iso
+# FIXME make sure the old cfg runs 
+
+
+# TRIGGER          ---------------------------
+
+
+from PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff import *
+patTrigger.processName = cms.string('*')
+
+
 
 # PU SUB AND PARTICLES FOR ISO ---------------
 
-pileUpSubtractionSequence = cms.Sequence(
+PATCMGPileUpSubtractionSequence = cms.Sequence(
     pfNoPileUpSequence +
     pfParticleSelectionSequence 
     )
@@ -31,7 +50,7 @@ kt6PFJetsCHSForIso = kt6PFJetsForIso.clone(
     # Ghost_EtaMax = cms.double(2.5),
     src = cms.InputTag("pfNoPileUpIso") )
 
-rhoSequence = cms.Sequence(
+PATCMGRhoSequence = cms.Sequence(
     # kt6PFJets + #NOTE: needed for V4
     kt6PFJetsForIso +
     kt6PFJetsCHSForIso  
@@ -40,11 +59,12 @@ rhoSequence = cms.Sequence(
 
 # MUONS           ----------------------------
 
-#FIXME add detector based iso, also for electrons
 
 patMuons.embedCaloMETMuonCorrs = False
 patMuons.embedTcMETMuonCorrs = False
 patMuons.embedTrack = True
+
+# isolation (PF and custom detector based)
 
 from CommonTools.ParticleFlow.Isolation.pfMuonIsolation_cff import *
 
@@ -61,7 +81,10 @@ patMuons.isoDeposits = cms.PSet(
     pfChargedAll = cms.InputTag("muPFIsoDepositChargedAll" ),
     pfPUChargedHadrons = cms.InputTag("muPFIsoDepositPU" ),
     pfNeutralHadrons = cms.InputTag("muPFIsoDepositNeutral" ),
-    pfPhotons = cms.InputTag("muPFIsoDepositGamma" )
+    pfPhotons = cms.InputTag("muPFIsoDepositGamma" ),
+    tracker = cms.InputTag("muons","muIsoDepositTk"),
+    ecal    = cms.InputTag("muons","ecal"),
+    hcal    = cms.InputTag("muons","hcal"),
     )
 
 patMuons.isolationValues = cms.PSet(
@@ -69,18 +92,25 @@ patMuons.isolationValues = cms.PSet(
     pfChargedAll = cms.InputTag("muPFIsoValueChargedAll04"),
     pfPUChargedHadrons = cms.InputTag("muPFIsoValuePU04" ),
     pfNeutralHadrons = cms.InputTag("muPFIsoValueNeutral04" ),
-    pfPhotons = cms.InputTag("muPFIsoValueGamma04" )
+    pfPhotons = cms.InputTag("muPFIsoValueGamma04" ),
+    user = cms.VInputTag( cms.InputTag("muIsoFromDepsTkOptimized") )
     )
 
-muonSequence = cms.Sequence(
-    pfMuonIsolationSequence + 
+selectedPatMuons.cut = 'pt()>3'
+
+cmgMuon.cfg.inputCollection = 'selectedPatMuons'
+
+PATCMGMuonSequence = cms.Sequence(
+    pfMuonIsolationSequence +
+    detMuonIsoDepositSequence + 
     makePatMuons +
-    selectedPatMuons
+    selectedPatMuons +
+    muonSequence
     )
-
 
 # ELECTRONS      ----------------------------
 
+# PF isolation
 
 from CommonTools.ParticleFlow.Isolation.pfElectronIsolation_cff import *
 
@@ -92,11 +122,61 @@ elPFIsoDepositNeutral.src = sourceElectrons
 elPFIsoDepositGamma.src = sourceElectrons
 elPFIsoDepositPU.src = sourceElectrons
 
+patElectrons.isoDeposits = cms.PSet(
+    pfChargedHadrons = cms.InputTag("elPFIsoDepositCharged" ),
+    pfChargedAll = cms.InputTag("elPFIsoDepositChargedAll" ),
+    pfPUChargedHadrons = cms.InputTag("elPFIsoDepositPU" ),
+    pfNeutralHadrons = cms.InputTag("elPFIsoDepositNeutral" ),
+    pfPhotons = cms.InputTag("elPFIsoDepositGamma" ),
+    tracker = cms.InputTag("eleIsoDepositTk")
+    # FIXME no ecal and hcal?
+    )
 
-electronSequence = cms.Sequence(
-    pfElectronIsolationSequence + 
+electronUserIsolation  = cms.PSet(
+    user = cms.VPSet(
+    cms.PSet( src = cms.InputTag("eleIsoFromDepsTkOptimized5") ),
+    cms.PSet( src = cms.InputTag("eleIsoFromDepsTkOptimized7") ),
+    )         
+)
+patElectrons.isolationValues = cms.PSet(
+    pfChargedHadrons = cms.InputTag("elPFIsoValueCharged04PFId"),
+    pfChargedAll = cms.InputTag("elPFIsoValueChargedAll04PFId"),
+    pfPUChargedHadrons = cms.InputTag("elPFIsoValuePU04PFId" ),
+    pfNeutralHadrons = cms.InputTag("elPFIsoValueNeutral04PFId" ),
+    pfPhotons = cms.InputTag("elPFIsoValueGamma04PFId" ),
+    #FIXME I don't manage to use the PSet syntax... -> not adding the guy
+    # user = electronUserIsolation.user
+    )
+
+#NOTE the following should not be used for now, but we keep them just in case.
+patElectrons.isolationValuesNoPFId = cms.PSet(
+    pfChargedHadrons = cms.InputTag("elPFIsoValueCharged04NoPFId"),
+    pfChargedAll = cms.InputTag("elPFIsoValueChargedAll04NoPFId"),
+    pfPUChargedHadrons = cms.InputTag("elPFIsoValuePU04NoPFId" ),
+    pfNeutralHadrons = cms.InputTag("elPFIsoValueNeutral04NoPFId" ),
+    pfPhotons = cms.InputTag("elPFIsoValueGamma04NoPFId" )
+    )
+
+# identification
+
+from CMGTools.Common.PAT.patElectronID_cff import *
+patElectrons.addElectronID = True
+from CMGTools.Common.PAT.electronIDs_cfi import electronIDs
+patElectrons.electronIDSources  = electronIDs.clone()
+
+patElectrons.embedTrack = True
+
+selectedPatMuons.cut = 'pt()>5'
+
+cmgElectron.cfg.inputCollection = 'selectedPatElectrons'
+
+PATCMGElectronSequence = cms.Sequence(
+    pfElectronIsolationSequence +
+    detElectronIsoDepositSequence + 
+    patElectronIDSequence + 
     makePatElectrons +
-    selectedPatElectrons 
+    selectedPatElectrons +
+    electronSequence
     )
 
 
@@ -137,8 +217,11 @@ patJetGenJetMatch.matched = 'ak5GenJetsNoNu'
 from PhysicsTools.PatAlgos.mcMatchLayer0.jetFlavourId_cff import *
 patJetPartonAssociation.jets = jetSource
 
+cmgPFJet.cfg.inputCollection = 'selectedPatJets'
+cmgPFBaseJet.cfg.inputCollection = 'selectedPatJets'
+
 # we want GenJets without neutrinos!
-genJetSequence = cms.Sequence(
+PATCMGGenJetSequence = cms.Sequence(
     genParticlesForJetsNoNu +
     ak5GenJetsNoNu 
     )
@@ -148,14 +231,15 @@ jetMCSequence = cms.Sequence(
     patJetGenJetMatch
     )
 
-jetSequence = cms.Sequence(
+PATCMGJetSequence = cms.Sequence(
     jetMCSequence +
     ak5JetTracksAssociatorAtVertex + 
     btagging + 
     patJetCorrFactors +
     patJetFlavourId +
     patJets +
-    selectedPatJets 
+    selectedPatJets +
+    jetSequence
     )
 
 
@@ -202,12 +286,15 @@ patTaus.addGenMatch = True
 # for simplicity, now selecting at the end. check if this ok in terms of speed
 selectedPatTaus.cut = 'pt()>15 && tauID("decayModeFinding")'
 
-tauSequence = cms.Sequence(
+cmgTau.cfg.inputCollection = 'selectedPatTaus'
+
+PATCMGTauSequence = cms.Sequence(
     # add jet selection
     pfJetsForHPSTau + 
     PFTau + 
     makePatTaus +
-    selectedPatTaus
+    selectedPatTaus +
+    tauSequence
     )
 
 
@@ -246,11 +333,23 @@ patMETsRaw = patMETs.clone()
 patMETsRaw.addMuonCorrections = False
 patMETsRaw.metSource = 'pfMet'
 
-metSequence = cms.Sequence(
+#NOTE still using raw met
+# FIXME add a MET for type1 corrected MET
+cmgPFMET.cfg.inputCollection = 'patMETsRaw'
+
+PATCMGMetSequence = cms.Sequence(
     producePFMETCorrections + 
     patMETs +
-    patMETsRaw
+    patMETsRaw +
+    cmgPFMET
     )
+
+
+# COUNTERS  ----------------------------
+prePathCounter = cms.EDProducer("EventCountProducer")
+postPathCounter = cms.EDProducer("EventCountProducer")
+
+
 
 ####  FULL SEQUENCE  ####
 
@@ -258,12 +357,20 @@ metSequence = cms.Sequence(
 # contrary to PAT layer-wise sequences
 
 PATCMGSequence = cms.Sequence(
-    pileUpSubtractionSequence +
-    rhoSequence +
-    electronSequence +
-    muonSequence +
-    genJetSequence +
-    jetSequence +
-    tauSequence +
-    metSequence 
+    patTriggerDefaultSequence + 
+    PATCMGPileUpSubtractionSequence +
+    PATCMGRhoSequence +
+    PATCMGMuonSequence +
+    PATCMGElectronSequence +
+    PATCMGGenJetSequence +
+    PATCMGJetSequence +
+    PATCMGTauSequence +
+    PATCMGMetSequence 
     )
+
+
+
+
+
+# curing a configuration bug from PAT / EGamma
+eIdSequence = cms.Sequence()

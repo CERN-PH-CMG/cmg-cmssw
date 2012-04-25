@@ -70,6 +70,6 @@ muIsoFromDepsTkOptimized = cms.EDProducer("CandIsolatorFromDeposits",
    ))
 )
 
-patElectronIsoDeposit = cms.Sequence( vetoMuons + vetoElectrons5 + vetoElectrons7 + eleIsoDepositTk + eleIsoFromDepsTkOptimized5 + eleIsoFromDepsTkOptimized7)# + eleIsoDepositEcalFromHits+ eleIsoDepositHcalFromTowers)
-patMuonIsoDeposit = cms.Sequence(vetoMuons + vetoElectrons7 + muIsoFromDepsTkOptimized)
+detElectronIsoDepositSequence = cms.Sequence( vetoMuons + vetoElectrons5 + vetoElectrons7 + eleIsoDepositTk + eleIsoFromDepsTkOptimized5 + eleIsoFromDepsTkOptimized7)# + eleIsoDepositEcalFromHits+ eleIsoDepositHcalFromTowers)
+detMuonIsoDepositSequence = cms.Sequence(vetoMuons + vetoElectrons7 + muIsoFromDepsTkOptimized)
 

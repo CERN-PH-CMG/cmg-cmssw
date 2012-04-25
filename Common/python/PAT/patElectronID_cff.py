@@ -19,6 +19,10 @@ electronIDSequence = cms.Sequence(
     eidSuperTight
     )
 
-patElectronIDSequence = cms.Sequence( mvaIDSequence + simpleEleIdSequence + electronIDSequence ) 
+patElectronIDSequence = cms.Sequence(
+    mvaIDSequence + 
+    simpleEleIdSequence + 
+    electronIDSequence
+    ) 
 
 

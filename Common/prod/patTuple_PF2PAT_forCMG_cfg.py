@@ -60,26 +60,26 @@ print sep_line
 
 # print 'generate source'
 
-#from CMGTools.Production.datasetToSource import *
-#process.source = datasetToSource(
-#    'cmgtools_group',
-#    #'/Tau/Run2011A-May10ReReco-v1/AOD/V4',
-#    #'/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V4'
-#    #'/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM/V4'
-#    # 'CMS',
-#    # '/DoubleElectron/Run2012A-PromptReco-v1/AOD'
-#    )
+from CMGTools.Production.datasetToSource import *
+process.source = datasetToSource(
+   # 'cmgtools_group',
+   #'/Tau/Run2011A-May10ReReco-v1/AOD/V4',
+   #'/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V4'
+   'CMS',
+   '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM'
+   # '/DoubleElectron/Run2012A-PromptReco-v1/AOD'
+   )
 
 
 ## for testing in 5X
-process.source = cms.Source("PoolSource",
-      fileNames = cms.untracked.vstring([
-#   '/store/data/Run2012A/HT/RECO/PromptReco-v1/000/191/578/54BFD65B-B08A-E111-8D3D-BCAEC5364C93.root'
-    '/store/relval/CMSSW_5_2_0/RelValProdTTbar/AODSIM/START52_V4A-v1/0250/68FCD498-F969-E111-9366-002618943949.root'
-#    '/store/relval/CMSSW_5_1_2/RelValQCD_FlatPt_15_3000/GEN-SIM-RECO/START50_V15A-v1/0240/B830CB12-1861-E111-B1BD-001A92811728.root'
-#    '/store/relval/CMSSW_5_1_2/DoubleMu/RECO/GR_R_50_V12_RelVal_zMu2011B-v1/0237/182F7808-BD60-E111-943C-001A92810AEA.root'
-     ])
-)
+## process.source = cms.Source("PoolSource",
+##       fileNames = cms.untracked.vstring([
+## #   '/store/data/Run2012A/HT/RECO/PromptReco-v1/000/191/578/54BFD65B-B08A-E111-8D3D-BCAEC5364C93.root'
+##     '/store/relval/CMSSW_5_2_0/RelValProdTTbar/AODSIM/START52_V4A-v1/0250/68FCD498-F969-E111-9366-002618943949.root'
+## #    '/store/relval/CMSSW_5_1_2/RelValQCD_FlatPt_15_3000/GEN-SIM-RECO/START50_V15A-v1/0240/B830CB12-1861-E111-B1BD-001A92811728.root'
+## #    '/store/relval/CMSSW_5_1_2/DoubleMu/RECO/GR_R_50_V12_RelVal_zMu2011B-v1/0237/182F7808-BD60-E111-943C-001A92810AEA.root'
+##      ])
+## )
 
 # ProductionTasks.py will override this change
 process.source.fileNames = process.source.fileNames[:10]
