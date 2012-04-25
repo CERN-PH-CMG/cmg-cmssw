@@ -104,6 +104,11 @@ int main(int argc, char** argv)
       maxJetEta_=5.0;
     }
 
+    if (etaRange_=="ALL") {
+      minJetEta_=0.0;
+      maxJetEta_=5.0;
+    }
+
   }
   if (argc>7 ){
     doNvtxReweighting  = atoi(argv[7]);
@@ -368,6 +373,26 @@ int main(int argc, char** argv)
   //--- for efficiency studies
   TH2F *hPtRatio_vs_Dphi = new TH2F("hPtRatio_vs_Dphi","hPtRatio_vs_Dphi",100,-3.2,3.2,100,0,10);
 
+  //--- pt ratio for "true" jets (= matched jets)
+  TH1F *hPtRatio_matched  = new TH1F("hPtRatio_matched","Pt Ratio (MC matched jets)",100,0,10); 
+  
+  TH1F *hPtRatio_matched_simpleId[3];
+  hPtRatio_matched_simpleId[0] = new TH1F("hPtRatio_matched_simpleId_Tight","hPtRatio_matched_simpleId_Tight",100,0,10);
+  hPtRatio_matched_simpleId[1] = new TH1F("hPtRatio_matched_simpleId_Medium","hPtRatio_matched_simpleId_Medium",100,0,10);
+  hPtRatio_matched_simpleId[2] = new TH1F("hPtRatio_matched_simpleId_Loose","hPtRatio_matched_simpleId_Loose",100,0,10);
+
+  TH1F *hPtRatio_matched_fullId[3];
+  hPtRatio_matched_fullId[0] = new TH1F("hPtRatio_matched_fullId_Tight","hPtRatio_matched_fullId_Tight",100,0,10);
+  hPtRatio_matched_fullId[1] = new TH1F("hPtRatio_matched_fullId_Medium","hPtRatio_matched_fullId_Medium",100,0,10);
+  hPtRatio_matched_fullId[2] = new TH1F("hPtRatio_matched_fullId_Loose","hPtRatio_matched_fullId_Loose",100,0,10);
+
+  TH1F *hPtRatio_matched_philv1Id[3];
+  hPtRatio_matched_philv1Id[0] = new TH1F("hPtRatio_matched_philv1Id_Tight","hPtRatio_matched_philv1Id_Tight",100,0,10);
+  hPtRatio_matched_philv1Id[1] = new TH1F("hPtRatio_matched_philv1Id_Medium","hPtRatio_matched_philv1Id_Medium",100,0,10);
+  hPtRatio_matched_philv1Id[2] = new TH1F("hPtRatio_matched_philv1Id_Loose","hPtRatio_matched_philv1Id_Loose",100,0,10);
+
+
+  // -- pt ratio
   TH1F *hPtRatio  = new TH1F("hPtRatio","Pt Ratio",100,0,10); 
   
   TH1F *hPtRatio_simpleId[3];
@@ -385,7 +410,42 @@ int main(int argc, char** argv)
   hPtRatio_philv1Id[1] = new TH1F("hPtRatio_philv1Id_Medium","hPtRatio_philv1Id_Medium",100,0,10);
   hPtRatio_philv1Id[2] = new TH1F("hPtRatio_philv1Id_Loose","hPtRatio_philv1Id_Loose",100,0,10);
 
+  //-- jet pt
+  TH1F *hJetPt = new TH1F("hJetPt","hJetPt",100,0,100);
 
+  TH1F *hJetPt_simpleId[3];
+  hJetPt_simpleId[0] = new TH1F("hJetPt_simpleId_Tight","hJetPt_simpleId_Tight",100,0,100);
+  hJetPt_simpleId[1] = new TH1F("hJetPt_simpleId_Medium","hJetPt_simpleId_Medium",100,0,100);
+  hJetPt_simpleId[2] = new TH1F("hJetPt_simpleId_Loose","hJetPt_simpleId_Loose",100,0,100);
+
+  TH1F *hJetPt_fullId[3];
+  hJetPt_fullId[0] = new TH1F("hJetPt_fullId_Tight","hJetPt_fullId_Tight",100,0,100);
+  hJetPt_fullId[1] = new TH1F("hJetPt_fullId_Medium","hJetPt_fullId_Medium",100,0,100);
+  hJetPt_fullId[2] = new TH1F("hJetPt_fullId_Loose","hJetPt_fullId_Loose",100,0,100);
+
+  TH1F *hJetPt_philv1Id[3];
+  hJetPt_philv1Id[0] = new TH1F("hJetPt_philv1Id_Tight","hJetPt_philv1Id_Tight",100,0,100);
+  hJetPt_philv1Id[1] = new TH1F("hJetPt_philv1Id_Medium","hJetPt_philv1Id_Medium",100,0,100);
+  hJetPt_philv1Id[2] = new TH1F("hJetPt_philv1Id_Loose","hJetPt_philv1Id_Loose",100,0,100);
+
+
+  //-- jet eta
+  TH1F *hJetEta = new TH1F("hJetEta","hJetEta",100,-5,5);
+
+  TH1F *hJetEta_simpleId[3];
+  hJetEta_simpleId[0] = new TH1F("hJetEta_simpleId_Tight","hJetEta_simpleId_Tight",100,-5,5);
+  hJetEta_simpleId[1] = new TH1F("hJetEta_simpleId_Medium","hJetEta_simpleId_Medium",100,-5,5);
+  hJetEta_simpleId[2] = new TH1F("hJetEta_simpleId_Loose","hJetEta_simpleId_Loose",100,-5,5);
+
+  TH1F *hJetEta_fullId[3];
+  hJetEta_fullId[0] = new TH1F("hJetEta_fullId_Tight","hJetEta_fullId_Tight",100,-5,5);
+  hJetEta_fullId[1] = new TH1F("hJetEta_fullId_Medium","hJetEta_fullId_Medium",100,-5,5);
+  hJetEta_fullId[2] = new TH1F("hJetEta_fullId_Loose","hJetEta_fullId_Loose",100,-5,5);
+
+  TH1F *hJetEta_philv1Id[3];
+  hJetEta_philv1Id[0] = new TH1F("hJetEta_philv1Id_Tight","hJetEta_philv1Id_Tight",100,-5,5);
+  hJetEta_philv1Id[1] = new TH1F("hJetEta_philv1Id_Medium","hJetEta_philv1Id_Medium",100,-5,5);
+  hJetEta_philv1Id[2] = new TH1F("hJetEta_philv1Id_Loose","hJetEta_philv1Id_Loose",100,-5,5);
 
 
   float w = 1;  
@@ -408,22 +468,60 @@ int main(int argc, char** argv)
     if (dataFlag_) w = 1;
     else w = lumiWeights_.weight( t.PUit_n );
     if (doNvtxReweighting)  w*=ww[int(t.nvtx)];
-
+    
+    // -- fill histograms for leading jet
     if ( t.ijet==1 ) {
       hNvtx->Fill(t.nvtx,w);
-      if ( t.dimuonPt > 0. )
-	hPtRatio_vs_Dphi -> Fill(t.dphiZJet,t.jetPt/t.dimuonPt,w);
+      float ptratio = 0;
+      if ( t.dimuonPt > 0. ) ptratio = t.jetPt/t.dimuonPt;
+
+      if ( ptratio > 0. )
+	hPtRatio_vs_Dphi -> Fill(t.dphiZJet,ptratio,w);
       
-      if (t.dimuonPt > 0. && fabs(t.dphiZJet)>2.5){
-	hPtRatio -> Fill(t.jetPt/t.dimuonPt,w);   
+      // -- fill ptRatio 
+      if (ptratio > 0. && fabs(t.dphiZJet)>2.0){
+	hPtRatio -> Fill(ptratio,w);  
 	for (int ilevel = 0; ilevel < 3; ilevel++){
-	  if ( pass_level(t.simpleId,ilevel) )  hPtRatio_simpleId[ilevel]-> Fill(t.jetPt/t.dimuonPt,w);   
-	  if ( pass_level(t.fullId,ilevel)   )  hPtRatio_fullId[ilevel]  -> Fill(t.jetPt/t.dimuonPt,w);   
-	  if ( pass_level(t.philv1Id,ilevel) )  hPtRatio_philv1Id[ilevel]-> Fill(t.jetPt/t.dimuonPt,w);   
+	  if ( pass_level(t.simpleId,ilevel) )  hPtRatio_simpleId[ilevel]-> Fill(ptratio,w);   
+	  if ( pass_level(t.fullId,ilevel)   )  hPtRatio_fullId[ilevel]  -> Fill(ptratio,w);   
+	  if ( pass_level(t.philv1Id,ilevel) )  hPtRatio_philv1Id[ilevel]-> Fill(ptratio,w);   
 	}
       }
+
+      // -- fil ptRatio for matched jets
+      if ( dataFlag_==0 && ptratio > 0. && t.isMatched && t.jetGenPt > 10.){
+	hPtRatio_matched -> Fill(ptratio,w);  
+	for (int ilevel = 0; ilevel < 3; ilevel++){
+	  if ( pass_level(t.simpleId,ilevel) )  hPtRatio_matched_simpleId[ilevel]-> Fill(ptratio,w);   
+	  if ( pass_level(t.fullId,ilevel)   )  hPtRatio_matched_fullId[ilevel]  -> Fill(ptratio,w);   
+	  if ( pass_level(t.philv1Id,ilevel) )  hPtRatio_matched_philv1Id[ilevel]-> Fill(ptratio,w);   
+	}
+      }
+
+      // -- fill jet pT , eta
+      if ( ptratio > 0.5 && ptratio < 1.5 && fabs(t.dphiZJet) > 2.0 ) {
+	hJetPt   -> Fill(t.jetPt,w);  
+	hJetEta  -> Fill(t.jetEta,w);  
+	for (int ilevel = 0; ilevel < 3; ilevel++){
+	  if ( pass_level(t.simpleId,ilevel) )  {
+	    hJetPt_simpleId[ilevel]-> Fill(t.jetPt,w);  
+	    hJetEta_simpleId[ilevel]-> Fill(t.jetEta,w);  
+	  } 
+	  if ( pass_level(t.fullId,ilevel)   )  {
+	    hJetPt_fullId[ilevel]-> Fill(t.jetPt,w);  
+	    hJetEta_fullId[ilevel]-> Fill(t.jetEta,w);  
+	  }
+	  
+	  if ( pass_level(t.philv1Id,ilevel) ) {
+	    hJetPt_philv1Id[ilevel]-> Fill(t.jetPt,w);  
+	    hJetEta_philv1Id[ilevel]-> Fill(t.jetEta,w);  
+	  }
+	}
+      }
+      
     }
     
+    //-- kinematic and jet id variables 
     hjetPt        -> Fill(t.jetPt,w);
     hjetEta       -> Fill(t.jetEta,w);
     hleadFrac     -> Fill(t.leadFrac,w); 
@@ -581,41 +679,105 @@ int main(int argc, char** argv)
   }// end loop over entries
 
 
-  // compute efficiencies
-   TH1F *hEff_vs_PtRatio_simpleId[3]; 
-   TH1F *hEff_vs_PtRatio_fullId[3]; 
-   TH1F *hEff_vs_PtRatio_philv1Id[3]; 
-   char hname[100];
-   std::string suff[3] = {"Tight","Medium","Loose"};
+  //--- compute efficiencies
+  TH1F *hEff_vs_PtRatio_matched_simpleId[3]; 
+  TH1F *hEff_vs_PtRatio_matched_fullId[3]; 
+  TH1F *hEff_vs_PtRatio_matched_philv1Id[3]; 
 
-   hPtRatio->Sumw2();
+  TH1F *hEff_vs_PtRatio_simpleId[3]; 
+  TH1F *hEff_vs_PtRatio_fullId[3]; 
+  TH1F *hEff_vs_PtRatio_philv1Id[3]; 
 
-   for (int ilevel = 0; ilevel < 3; ilevel++){
-     hPtRatio_simpleId[ilevel]->Sumw2();
-     sprintf(hname,"hEff_vs_PtRatio_simpleId_%s",suff[ilevel].c_str());
-     hEff_vs_PtRatio_simpleId[ilevel]=(TH1F*)hPtRatio_simpleId[ilevel]->Clone(hname);
-     hEff_vs_PtRatio_simpleId[ilevel]->Divide(hPtRatio);
-     
-     hPtRatio_fullId[ilevel]->Sumw2();
-     sprintf(hname,"hEff_vs_PtRatio_fullId_%s",suff[ilevel].c_str());
-     hEff_vs_PtRatio_fullId[ilevel]=(TH1F*)hPtRatio_fullId[ilevel]->Clone(hname);
-     hEff_vs_PtRatio_fullId[ilevel]->Divide(hPtRatio);
+  TH1F *hEff_vs_JetPt_simpleId[3]; 
+  TH1F *hEff_vs_JetPt_fullId[3]; 
+  TH1F *hEff_vs_JetPt_philv1Id[3]; 
 
-     hPtRatio_philv1Id[ilevel]->Sumw2();
-     sprintf(hname,"hEff_vs_PtRatio_philv1Id_%s",suff[ilevel].c_str());
-     hEff_vs_PtRatio_philv1Id[ilevel]=(TH1F*)hPtRatio_philv1Id[ilevel]->Clone(hname);
-     hEff_vs_PtRatio_philv1Id[ilevel]->Divide(hPtRatio);
-   }
+  TH1F *hEff_vs_JetEta_simpleId[3]; 
+  TH1F *hEff_vs_JetEta_fullId[3]; 
+  TH1F *hEff_vs_JetEta_philv1Id[3]; 
+
+  char hname[100];
+  std::string suff[3] = {"Tight","Medium","Loose"};
+  
+  hPtRatio->Sumw2();
+  hPtRatio_matched->Sumw2();
+  hJetPt->Sumw2();
+  hJetEta->Sumw2();
+
+  for (int ilevel = 0; ilevel < 3; ilevel++){
+    // - pt ratio matched jets
+    if (dataFlag_==0){
+      hPtRatio_matched_simpleId[ilevel]->Sumw2();
+      sprintf(hname,"hEff_vs_PtRatio_matched_simpleId_%s",suff[ilevel].c_str());
+      hEff_vs_PtRatio_matched_simpleId[ilevel]=(TH1F*)hPtRatio_matched_simpleId[ilevel]->Clone(hname);
+      hEff_vs_PtRatio_matched_simpleId[ilevel]->Divide(hPtRatio_matched);
+      
+      hPtRatio_matched_fullId[ilevel]->Sumw2();
+      sprintf(hname,"hEff_vs_PtRatio_matched_fullId_%s",suff[ilevel].c_str());
+      hEff_vs_PtRatio_matched_fullId[ilevel]=(TH1F*)hPtRatio_matched_fullId[ilevel]->Clone(hname);
+      hEff_vs_PtRatio_matched_fullId[ilevel]->Divide(hPtRatio_matched);
+      
+      hPtRatio_matched_philv1Id[ilevel]->Sumw2();
+      sprintf(hname,"hEff_vs_PtRatio_matched_philv1Id_%s",suff[ilevel].c_str());
+      hEff_vs_PtRatio_matched_philv1Id[ilevel]=(TH1F*)hPtRatio_matched_philv1Id[ilevel]->Clone(hname);
+      hEff_vs_PtRatio_matched_philv1Id[ilevel]->Divide(hPtRatio_matched);
+    }
+
+    // -- ptRatio
+    hPtRatio_simpleId[ilevel]->Sumw2();
+    sprintf(hname,"hEff_vs_PtRatio_simpleId_%s",suff[ilevel].c_str());
+    hEff_vs_PtRatio_simpleId[ilevel]=(TH1F*)hPtRatio_simpleId[ilevel]->Clone(hname);
+    hEff_vs_PtRatio_simpleId[ilevel]->Divide(hPtRatio);
+    
+    hPtRatio_fullId[ilevel]->Sumw2();
+    sprintf(hname,"hEff_vs_PtRatio_fullId_%s",suff[ilevel].c_str());
+    hEff_vs_PtRatio_fullId[ilevel]=(TH1F*)hPtRatio_fullId[ilevel]->Clone(hname);
+    hEff_vs_PtRatio_fullId[ilevel]->Divide(hPtRatio);
+    
+    hPtRatio_philv1Id[ilevel]->Sumw2();
+    sprintf(hname,"hEff_vs_PtRatio_philv1Id_%s",suff[ilevel].c_str());
+    hEff_vs_PtRatio_philv1Id[ilevel]=(TH1F*)hPtRatio_philv1Id[ilevel]->Clone(hname);
+    hEff_vs_PtRatio_philv1Id[ilevel]->Divide(hPtRatio);
+
+    // -- jet pt
+    hJetPt_simpleId[ilevel]->Sumw2();
+    sprintf(hname,"hEff_vs_JetPt_simpleId_%s",suff[ilevel].c_str());
+    hEff_vs_JetPt_simpleId[ilevel]=(TH1F*)hJetPt_simpleId[ilevel]->Clone(hname);
+    hEff_vs_JetPt_simpleId[ilevel]->Divide(hJetPt);
+    
+    hJetPt_fullId[ilevel]->Sumw2();
+    sprintf(hname,"hEff_vs_JetPt_fullId_%s",suff[ilevel].c_str());
+    hEff_vs_JetPt_fullId[ilevel]=(TH1F*)hJetPt_fullId[ilevel]->Clone(hname);
+    hEff_vs_JetPt_fullId[ilevel]->Divide(hJetPt);
+    
+    hJetPt_philv1Id[ilevel]->Sumw2();
+    sprintf(hname,"hEff_vs_JetPt_philv1Id_%s",suff[ilevel].c_str());
+    hEff_vs_JetPt_philv1Id[ilevel]=(TH1F*)hJetPt_philv1Id[ilevel]->Clone(hname);
+    hEff_vs_JetPt_philv1Id[ilevel]->Divide(hJetPt);
+
+    // -- jet pt
+    hJetEta_simpleId[ilevel]->Sumw2();
+    sprintf(hname,"hEff_vs_JetEta_simpleId_%s",suff[ilevel].c_str());
+    hEff_vs_JetEta_simpleId[ilevel]=(TH1F*)hJetEta_simpleId[ilevel]->Clone(hname);
+    hEff_vs_JetEta_simpleId[ilevel]->Divide(hJetEta);
+    
+    hJetEta_fullId[ilevel]->Sumw2();
+    sprintf(hname,"hEff_vs_JetEta_fullId_%s",suff[ilevel].c_str());
+    hEff_vs_JetEta_fullId[ilevel]=(TH1F*)hJetEta_fullId[ilevel]->Clone(hname);
+    hEff_vs_JetEta_fullId[ilevel]->Divide(hJetEta);
+    
+    hJetEta_philv1Id[ilevel]->Sumw2();
+    sprintf(hname,"hEff_vs_JetEta_philv1Id_%s",suff[ilevel].c_str());
+    hEff_vs_JetEta_philv1Id[ilevel]=(TH1F*)hJetEta_philv1Id[ilevel]->Clone(hname);
+    hEff_vs_JetEta_philv1Id[ilevel]->Divide(hJetEta);
+
+  }
 
   
   // save the histograms
  
-  std::cout << "Saving histograms on file ..." << std::endl;
-   
- 
-  std::cout << outputRootFilePath_+outputRootFileName_ << std::endl;
+  std::cout << "Saving histograms on file : " << outputRootFilePath_+outputRootFileName_ << std::endl;
     
-
   TFile* outputRootFile = new TFile((outputRootFilePath_+outputRootFileName_).c_str(), "RECREATE");
 
   outputRootFile -> cd();
@@ -764,16 +926,52 @@ int main(int argc, char** argv)
   hfullDiscriminant_PU  ->Write();
   hphilv1Discriminant_PU->Write();
 
+
+
+  TDirectory *efficiency  =   outputRootFile -> mkdir("efficiency","efficiency");
+  efficiency->cd();
+
   hPtRatio_vs_Dphi ->Write();
   hPtRatio -> Write();   
+  hPtRatio_matched -> Write();   
+  hJetPt  -> Write();   
+  hJetEta -> Write();   
+
   for (int ilevel = 0; ilevel < 3; ilevel++){
+    if ( dataFlag_==0 ){
+      hPtRatio_matched_simpleId[ilevel]->Write();   
+      hPtRatio_matched_fullId[ilevel]  ->Write();   
+      hPtRatio_matched_philv1Id[ilevel]->Write();   
+    
+      hEff_vs_PtRatio_matched_simpleId[ilevel]->Write();   
+      hEff_vs_PtRatio_matched_fullId[ilevel]->Write();   
+      hEff_vs_PtRatio_matched_philv1Id[ilevel]->Write(); 
+      
+    }
+    
     hPtRatio_simpleId[ilevel]->Write();   
     hPtRatio_fullId[ilevel]  ->Write();   
     hPtRatio_philv1Id[ilevel]->Write();   
-
+    
+    hJetPt_simpleId[ilevel]->Write();   
+    hJetPt_fullId[ilevel]  ->Write();   
+    hJetPt_philv1Id[ilevel]->Write();   
+    
+    hJetEta_simpleId[ilevel]->Write();   
+    hJetEta_fullId[ilevel]  ->Write();   
+    hJetEta_philv1Id[ilevel]->Write();   
+        
     hEff_vs_PtRatio_simpleId[ilevel]->Write();   
     hEff_vs_PtRatio_fullId[ilevel]->Write();   
-    hEff_vs_PtRatio_philv1Id[ilevel]->Write();   
+    hEff_vs_PtRatio_philv1Id[ilevel]->Write(); 
+    
+    hEff_vs_JetPt_simpleId[ilevel]->Write();   
+    hEff_vs_JetPt_fullId[ilevel]->Write();   
+    hEff_vs_JetPt_philv1Id[ilevel]->Write();   
+
+    hEff_vs_JetEta_simpleId[ilevel]->Write();   
+    hEff_vs_JetEta_fullId[ilevel]->Write();   
+    hEff_vs_JetEta_philv1Id[ilevel]->Write();   
   }
 
   outputRootFile -> Close();
