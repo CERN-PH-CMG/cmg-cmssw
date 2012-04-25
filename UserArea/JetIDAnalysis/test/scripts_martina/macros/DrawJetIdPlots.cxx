@@ -1,9 +1,10 @@
 #include <algorithm>
 
-void TestDrawJetIdPlots(Char_t* infile1 = 0, 
-		     Char_t* infile2 = 0, 
-		     Char_t* fileType = "png", 
-		     Char_t* dirName = ".")
+void DrawJetIdPlots(string etaRange  = "TK", 
+		    string ptRange   = "pt20to30",
+		    string inputdir  = "rootfiles/V00-00-08",
+		    string outputdir = "./",
+		    bool nvtxRw      = false)
 {
   gROOT->Reset();
   gROOT->SetStyle("Plain");
@@ -12,23 +13,26 @@ void TestDrawJetIdPlots(Char_t* infile1 = 0,
   gStyle->SetPadTickX(1);
   gStyle->SetPadTickY(1);
   gStyle->SetTitleBorderSize(0);
+ 
+  string infile1 = inputdir+"/histos_DYJetsToLL_pfjets_"+etaRange+"_"+ptRange+".root";
+  string infile2 = inputdir+"/histos_DoubleMu2011_pfjets_"+etaRange+"_"+ptRange+".root";
+  string dirName = outputdir+"/"+etaRange+"_"+ptRange;
+  string fileType = "png";
 
-  if (!infile1 || !infile2) {
-    cout << " No input file specified !" << endl;
-    return;
+ 
+  if (nvtxRw){
+    infile1 = inputdir+"/histos_DYJetsToLL_pfjets_"+etaRange+"_"+ptRange+"_reweightedNvtx.root";
+    dirName = outputdir+"/"+etaRange+"_"+ptRange+"_reweightedNvtx";
   }
   
-
-   infile1 = "../rootfiles/plotsV00-00-07/histos_DYJetsToLL_pfjets_TK_pt20to30.root";
-   infile2 = "../rootfiles/plotsV00-00-07/histos_DoubleMu2011_pfjets_TK_pt20to30.root";
-
-
+  gSystem->mkdir(dirName.c_str(),true);
+  
   cout << "Producing validation plots for: " << infile1 << " and " << infile2 << endl;
 
   
   TFile* f[2]; 
-  f[0] = new TFile(infile1); //MC
-  f[1] = new TFile(infile2); //DATA
+  f[0] = new TFile(infile1.c_str()); //MC
+  f[1] = new TFile(infile2.c_str()); //DATA
 
    
 
@@ -277,7 +281,6 @@ void TestDrawJetIdPlots(Char_t* infile1 = 0,
  
   int iHisto = 0;
   while(iHisto<nObj){
-    cout << "Analyzing " << iHisto << " histogram" << endl;
     for (int ifile=0;ifile<2;ifile++){ 
 
       h[ifile][iHisto] = (TH1D*)f[ifile]->Get(objName[iHisto].c_str());
@@ -362,10 +365,8 @@ void TestDrawJetIdPlots(Char_t* infile1 = 0,
     }
     
 
-    string myname =  string(dirName) +"/"+objName[iHisto]+"."+fileType;
-    
-    cout << myname << endl;
-    //    c[iHisto]->Print(myname,fileType);
+    string myname =  (dirName+"/"+objName[iHisto]+"."+fileType).c_str();
+    c[iHisto]->Print(myname.c_str(),fileType.c_str());
     
     
     iHisto++;
