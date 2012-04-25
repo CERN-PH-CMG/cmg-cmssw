@@ -126,6 +126,7 @@ void DijetMass_chiyoung_2(){
   TH1F *hPulls_4par = (TH1F*)hDijetMass->Clone("Pulls_4par");
   TH1F *hPulls = (TH1F*)hDijetMass->Clone("Pulls");
   TH1F *hPulls_lowMassFit = (TH1F*)hDijetMass->Clone("Pulls_lowMassFit");
+
   //  TH1F *hPulls_add = (TH1F*)inputFile->Get("h_DijetMass_mc_wide");
   hPulls_add = (TH1F*) hQCD->Clone("hPulls_add");
 
@@ -285,6 +286,7 @@ void DijetMass_chiyoung_2(){
   f_qcd->SetParameter(3,6.33149e+00);
   hQCD_Xsec->Fit("fit_qcd", "R");
 
+
   cout << "NDF = " << fit_qcd->GetNDF() << " FCN = " << fit_qcd->GetChisquare() << endl;
 
   cout << "Fit QCD Up" << endl << endl << endl;
@@ -316,6 +318,7 @@ void DijetMass_chiyoung_2(){
   float n,nl,nh;
   float n, dm, mass, xl, xh;
   float vx[1000],vy[1000],vexl[1000],vexh[1000],veyl[1000],veyh[1000];
+  float vxWithSignal[1000],vyWithSignal[1000],vexlWithSignal[1000],vexhWithSignal[1000],veylWithSignal[1000],veyhWithSignal[1000];
   int i;
   float y, yplus, yminus, cplus, cminus,e;
 
@@ -403,6 +406,18 @@ void DijetMass_chiyoung_2(){
   fit->SetLineColor(4);
   g->Fit("fit","","",889.0,4171.0);	
    
+
+  TF1 *fitWithSignal = new TF1("fitWithSignal",fitQCD1,889.0,4171.0,4); // 4 Par. Fit
+  gStyle->SetOptFit(1111); 
+  fitWithSignal->SetParameter(0,1.73132e-05);
+  fitWithSignal->SetParameter(1,6.80678e+00);
+  fitWithSignal->SetParameter(2,6.33620e+00);
+  fitWithSignal->SetParameter(3,1.93728e-01);
+  fitWithSignal->SetLineWidth(2);
+  fitWithSignal->SetLineColor(4);
+
+
+
   //Alternate Fits 4 parameter
   TF1 *f_4par = new TF1("fit_4par",fitQCD,889.0,4171.0,4); // 4 Par. Fit
   gStyle->SetOptFit(1111); 
@@ -668,59 +683,204 @@ void DijetMass_chiyoung_2(){
   // Mass of excited quarks and strings
   float qstar1 = 1500;
   float qstar2 = 3200;
+  float qstar3 = 2500;
   float string1 = 1800;
   float string2 = 2600;
+  float string3 = 4000;
 
 
   unsigned int qbin1 = (qstar1 / 100) -5;
   unsigned int qbin2 = (qstar2 / 100) -5;
+  unsigned int qbin3 = (qstar3 / 100) -5;
   unsigned int sbin1 = (string1 / 100) -5;
   unsigned int sbin2 = (string2 / 100) - 5;
-   
+  unsigned int sbin3 = (string3 / 100) - 5; 
+
   std::vector<float> v_string1, v_string1_mjj, v_string2, v_string2_mjj, v_qstar1, v_qstar1_mjj, v_qstar2, v_qstar2_mjj, v_string1_2, v_string2_2, v_qstar1_2, v_qstar2_2, v_qstar1_3, v_qstar2_3;
 
   for(int i=0;i<hDijetMass->GetNbinsX();i++)
     {
+
+
+
       float dm = hDijetMass->GetBinWidth(i+1);
+      float xl   = hDijetMass->GetBinLowEdge(i+1);	
+      float xh   = xl+dm; 	
+      vxWithSignal[i]   = (xl+xh)/2.;
+      vexlWithSignal[i] = dm/2.;
+      vexhWithSignal[i] = dm/2.;
+
+      float n    =  fit->Eval(vxWithSignal[i],0,0)*dm*lumi; //
+      //float n  =  hDijetMass->GetBinContent(i+1);
+
+
       float mass = hDijetMass->GetBinCenter(i+1);
       float fitt = fit->Eval(mass,0,0);
       if(mass>0.6*qstar1 && mass<1.40*qstar1){
 	float prob = QstarBinnedProb(mass,qstar1);
-	cout << "mass = " << mass << "QstarBinnedProb(mass,qstar1) = " << prob << endl;
+	cout << "mass = " << mass << " QstarBinnedProb(mass,qstar1) = " << prob << endl;
 	if (QstarBinnedProb(mass,qstar1) > 1e-4){
 	  v_qstar1.push_back(prob * qstar_newcut[qbin1] / dm);
 	  v_qstar1_2.push_back(((prob * qstar_newcut[qbin1] / dm)+fitt)/fitt);
 	  v_qstar1_3.push_back(((prob * qstar_newcut[qbin1] / dm))/fitt);
 	  v_qstar1_mjj.push_back(mass);
+	
 	}
       }
+      
+
 
       if(mass>0.6*qstar2 && mass<1.40*qstar2){
 	
-	if (QstarBinnedProb(mass,qstar2) > 1e-4){
-	  v_qstar2.push_back(QstarBinnedProb(mass,qstar2) * qstar_newcut[qbin2] / dm);
-	  v_qstar2_2.push_back(((QstarBinnedProb(mass,qstar2) * qstar_newcut[qbin2] / dm)+fitt)/fitt); 
-	  v_qstar2_3.push_back(((QstarBinnedProb(mass,qstar2) * qstar_newcut[qbin2] / dm))/fitt); 
+	float prob = QstarBinnedProb(mass,qstar2);
+	if (prob > 1e-4){
+	  v_qstar2.push_back(prob * qstar_newcut[qbin2] / dm);
+	  v_qstar2_2.push_back(((prob * qstar_newcut[qbin2] / dm)+fitt)/fitt); 
+	  v_qstar2_3.push_back(((prob * qstar_newcut[qbin2] / dm))/fitt); 
 	  v_qstar2_mjj.push_back(mass);
+
 	}
       }
 
+
+      /*
+      if(mass>0.6*qstar3 && mass<1.40*qstar3){
+	
+	float prob = QstarBinnedProb(mass,qstar3);
+	if (prob > 1e-4){
+
+	}
+
+	n += prob * qstar_newcut[qbin3]*lumi ;
+
+      }
+      */
+      
+
+
+
+
+
       if(mass>0.6*string1 && mass<1.40*string1){
-	if (QstarBinnedProb(mass,string1) > 1e-4){
-	  v_string1.push_back(QstarBinnedProb(mass,string1) * string_newcut[sbin1] / dm);
-	  v_string1_2.push_back(((QstarBinnedProb(mass,string1) * string_newcut[sbin1] / dm)+fitt)/fitt);
+
+
+	float prob = QstarBinnedProb(mass,string1);
+
+	if (prob > 1e-4){
+	  v_string1.push_back(prob * string_newcut[sbin1] / dm);
+	  v_string1_2.push_back(((prob * string_newcut[sbin1] / dm)+fitt)/fitt);
 	  v_string1_mjj.push_back(mass);
 	}
       }
 
       if(mass>0.6*string2 && mass<1.40*string2){
-	if (QstarBinnedProb(mass,string2) > 1e-4){
-	  v_string2.push_back(QstarBinnedProb(mass,string2) * string_newcut[sbin2] / dm);
-	  v_string2_2.push_back(((QstarBinnedProb(mass,string2) * string_newcut[sbin2] / dm)+fitt)/fitt);
+
+	float prob = QstarBinnedProb(mass,string2);
+
+	if (prob > 1e-4){
+	  v_string2.push_back(prob * string_newcut[sbin2] / dm);
+	  v_string2_2.push_back(((prob * string_newcut[sbin2] / dm)+fitt)/fitt);
 	  v_string2_mjj.push_back(mass);
 	}
-      }		
+      }	
+
+      
+      if(mass>0.6*string3 && mass<1.40*string3){
+
+	float prob = QstarBinnedProb(mass,string3);
+	if (prob > 1e-4){
+	  cout << "cross section = " << string_newcut[sbin3] << " prob = " << prob << endl;
+	n += prob * string_newcut[sbin3]*lumi ;
+
+	}
+
+      }	
+      
+
+
+
+      vyWithSignal[i]   = n / (dm*lumi); 
+
+     
+      if (n<25 && mass>890 && mass<=4171){
+	nl = n-0.5*TMath::ChisquareQuantile(a,2*n);
+	nh = 0.5*TMath::ChisquareQuantile(1-a,2*(n+1))-n;
+	veylWithSignal[i] = nl/(lumi*dm);
+	veyhWithSignal[i] = nh/(lumi*dm);  
+      } 
+      else if (n<25 && mass<=890 && mass>4171 && n>0) {
+	nl = n-0.5*TMath::ChisquareQuantile(a,2*n);
+	nh = 0.5*TMath::ChisquareQuantile(1-a,2*(n+1))-n;
+	veylWithSignal[i] = nl/(lumi*dm);
+	veyhWithSignal[i] = nh/(lumi*dm);  
+      }
+      else if (n>=25 && mass >= 889){
+	veylWithSignal[i] = sqrt(n)/(lumi*dm);
+	veyhWithSignal[i] = sqrt(n)/(lumi*dm);
+      } 
+      else {     
+	vyWithSignal[i] = -1.0;
+	veylWithSignal[i] = 0;
+	veyhWithSignal[i] = 0;  
+      }
+	
     }
+
+
+  
+  TGraphAsymmErrors *gWithSignal = new TGraphAsymmErrors(i,vxWithSignal,vyWithSignal,vexlWithSignal,vexhWithSignal,veylWithSignal,veyhWithSignal);
+
+  cout << "Could we find a signal?" << endl;
+  gWithSignal->Fit("fitWithSignal","","",889.0,4171.0);
+
+
+
+
+  //Dijet Mass Cross Section with Fit	
+  TCanvas* cSignal = new TCanvas("cSignal","DijetMass Cross Section with Signal with Fit");
+  cSignal->SetLogy(1);
+  gWithSignal->SetTitle("");
+  gWithSignal->SetLineColor(1);
+  gWithSignal->SetFillColor(1);
+  gWithSignal->SetMarkerColor(1);
+  gWithSignal->SetMarkerStyle(20);
+  gWithSignal->GetXaxis()->SetTitle("Dijet Mass (GeV)");
+  gWithSignal->GetYaxis()->SetTitle("d#sigma/dm (pb/GeV)");
+  gWithSignal->GetXaxis()->SetRangeUser(700,4300.0);
+  gWithSignal->GetYaxis()->SetRangeUser(0.0000003,60);
+  gWithSignal->Draw("APZ");
+
+  TLegend *leg = new TLegend(0.25,0.77,0.48,0.92);
+  leg->SetTextSize(0.03146853);
+  leg->SetLineColor(1);
+  leg->SetLineStyle(1);
+  leg->SetLineWidth(1);
+  leg->SetFillColor(0);
+  leg->AddEntry(g,Form("CMS  (%.3f fb^{-1})", lumi/1000.),"PL"); 
+  leg->AddEntry(fit,"Fit","L");
+  leg->Draw("same");
+  pave_fit->Draw("same");
+  cSignal->SaveAs("Plots/ExpectedDijetMassCrossSectionWithFit_withString4000.png");
+  cSignal->SaveAs("Plots/ExpectedDijetMassCrossSectionWithFit_withString4000.eps");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   const unsigned size1 = v_qstar1.size();
   float q1[size1], q1_2[size1], q1_3[size1], mass1[size1];
