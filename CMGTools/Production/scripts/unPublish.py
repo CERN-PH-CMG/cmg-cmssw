@@ -128,5 +128,5 @@ If not entered, secure password prompt will appear.""",
     # For singular file input
     else:
         dataset = args[0].rstrip("/")
-        unPublish(dataset,options.fileown,options.username,password,options.checkGroups)
+        unPublish(dataset,options.fileown,options.username,password)
 
