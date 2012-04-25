@@ -113,6 +113,7 @@ public :
    Float_t         jetGenPt;
    Float_t         jetGenDr;
    Int_t           njets;
+   Float_t         dphiZJet;
    Float_t         dimuonPt;
    Float_t         simpleDiscriminant;
    Float_t         fullDiscriminant;
@@ -218,6 +219,7 @@ public :
    TBranch        *b_jetGenPt;   //!
    TBranch        *b_jetGenDr;   //!
    TBranch        *b_njets;   //!
+   TBranch        *b_dphiZJet;   //!
    TBranch        *b_dimuonPt;   //!
    TBranch        *b_simpleDiscriminant;   //!
    TBranch        *b_fullDiscriminant;   //!
@@ -393,6 +395,7 @@ void JetTree::Init(TTree *tree)
    fChain->SetBranchAddress("jetGenPt", &jetGenPt, &b_jetGenPt);
    fChain->SetBranchAddress("jetGenDr", &jetGenDr, &b_jetGenDr);
    fChain->SetBranchAddress("njets", &njets, &b_njets);
+   fChain->SetBranchAddress("dphiZJet", &dphiZJet, &b_dphiZJet);
    fChain->SetBranchAddress("dimuonPt", &dimuonPt, &b_dimuonPt);
    fChain->SetBranchAddress("simpleDiscriminant", &simpleDiscriminant, &b_simpleDiscriminant);
    fChain->SetBranchAddress("fullDiscriminant", &fullDiscriminant, &b_fullDiscriminant);
