@@ -1,22 +1,56 @@
 #include "CMGTools/Common/interface/PFJetFactory.h"
+#include "DataFormats/Common/interface/ValueMap.h"
 
 #include <iostream>
 
 using namespace std;
 
+cmg::PFJetFactory::PFJetFactory(const edm::ParameterSet& ps):
+  jetLabel_(ps.getParameter<edm::InputTag>("inputCollection")),
+  baseJetFactory_(ps.getParameter<edm::ParameterSet>("baseJetFactory")), 
+  puVariables_(ps.getParameter<edm::InputTag>("puVariables")), 
+  puMvas_(ps.getParameter<std::vector<edm::InputTag> >("puMvas")), 
+  puIds_(ps.getParameter<std::vector<edm::InputTag> >("puIds")), 
+  useConstituents_(ps.getParameter<bool>("useConstituents")) 
+{
+  // PU discrimination
+  // Make sure that MVAs and IDs are in synch and match expectations
+  assert( puMvas_.size() == cmg::PFJet::PuIdArray::static_size && 
+	  puMvas_.size() == puIds_.size() );
+  for(size_t ii=0; ii<puIds_.size(); ++ii){
+    std::string mvaLabel = puMvas_[ii].instance();
+    std::string idLabel = puIds_[ii].instance();
+    mvaLabel = mvaLabel.substr(0, mvaLabel.find("Discriminant")); 
+    idLabel  = idLabel.substr(0, idLabel.find("Id")); 
+    assert( mvaLabel == idLabel );
+    puNames_.push_back(mvaLabel);
+  }
+}
+
 cmg::PFJetFactory::event_ptr cmg::PFJetFactory::create(const edm::Event& iEvent, 
 						       const edm::EventSetup&){
-	
+  
   edm::Handle<pat::JetCollection> jetCands;
   
   cmg::PFJetFactory::event_ptr result(new cmg::PFJetFactory::collection);
   iEvent.getByLabel(jetLabel_,jetCands);
-
+  
+  // Read PU identification inputs
+  edm::Handle<edm::ValueMap<StoredPileupJetIdentifier> > puVariables;
+  iEvent.getByLabel(puVariables_,puVariables);
+  vector<edm::Handle<edm::ValueMap<int> > > puIds(puIds_.size());
+  vector<edm::Handle<edm::ValueMap<float> > > puMvas(puMvas_.size());
+  for(size_t ii=0; ii<puIds_.size(); ++ii ) {
+    iEvent.getByLabel(puIds_[ii],puIds[ii]);
+    iEvent.getByLabel(puMvas_[ii],puMvas[ii]);
+  }
+    
   long unsigned index = 0;
   for(pat::JetCollection::const_iterator mi = jetCands->begin();
       mi != jetCands->end(); ++mi, ++index ){
-    
+
     pat::JetPtr jetPtr( jetCands, index ); 
+    
     cmg::PFJet cmgjet( jetPtr );
     //set the basejet properties first
     baseJetFactory_.set(jetPtr,&cmgjet);
@@ -197,6 +231,15 @@ cmg::PFJetFactory::event_ptr cmg::PFJetFactory::create(const edm::Event& iEvent,
     cmgjet.components_[reco::PFCandidate::h_HF].setFraction(fractionHFHad);
 
     cmgjet.ptd_ = ptd;
+
+    // Fill PU discrimination variables
+    cmgjet.rms_  = (*puVariables)[jetPtr].dR2Mean();
+    cmgjet.beta_ = (*puVariables)[jetPtr].beta();
+    for(size_t ii=0; ii<puIds_.size(); ++ii ) {
+      cmgjet.puIdNames_[ii] = puNames_[ii];
+      cmgjet.puIds_[ii]  = (*puIds[ii])[jetPtr];
+      cmgjet.puMvas_[ii] = (*puMvas[ii])[jetPtr];
+    }
 
     result->push_back(cmgjet);
   }

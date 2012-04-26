@@ -15,17 +15,19 @@ namespace cmg{
 
 class PFJetFactory : public Factory<cmg::PFJet>{
   public:
-    PFJetFactory(const edm::ParameterSet& ps):
-      jetLabel_(ps.getParameter<edm::InputTag>("inputCollection")),
-      baseJetFactory_(ps.getParameter<edm::ParameterSet>("baseJetFactory")), 
-      useConstituents_(ps.getParameter<bool>("useConstituents")) {}
-
-      virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
+    PFJetFactory(const edm::ParameterSet& ps);
+    
+    virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
     
   private:
     const edm::InputTag jetLabel_;
     const BaseJetFactory baseJetFactory_;
+    edm::InputTag puVariables_;
+    std::vector<edm::InputTag> puMvas_;
+    std::vector<edm::InputTag> puIds_;
+    std::vector<std::string> puNames_;
     bool  useConstituents_;
+    
   };
 
 }

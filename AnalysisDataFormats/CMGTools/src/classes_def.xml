@@ -98,6 +98,9 @@
   <class name="std::vector<cmg::PFJet>"/>
   <class name="edm::Wrapper<cmg::PFJet>"/>
   <class name="edm::Wrapper<std::vector<cmg::PFJet> >"/>
+  <class name="boost::array<int,3>" />
+  <class name="boost::array<float,3>" />
+  <class name="boost::array<std::string,3>" />
 
   <class name="cmg::PFJetComponent"/>
   <class name="std::vector<cmg::PFJetComponent>"/>
