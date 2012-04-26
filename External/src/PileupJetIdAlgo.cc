@@ -193,21 +193,57 @@ void PileupJetIdAlgo::runMva()
 	if( ! reader_ ) { bookReader(); std::cerr << "Reader booked" << std::endl; }
 	if(fabs(internalId_.jetEta_) <  5.0) internalId_.mva_ = reader_->EvaluateMVA( tmvaMethod_.c_str() );
 	if(fabs(internalId_.jetEta_) >= 5.0) internalId_.mva_ = -2.;
-	int ptId = 0; 
-	if(internalId_.jetPt_ > 10 && internalId_.jetPt_ < 20) ptId = 1;
-	if(internalId_.jetPt_ > 20 && internalId_.jetPt_ < 30) ptId = 2;
-	if(internalId_.jetPt_ > 30                  ) ptId = 3;
+// 	int ptId = 0; 
+// 	if(internalId_.jetPt_ > 10 && internalId_.jetPt_ < 20) ptId = 1;
+// 	if(internalId_.jetPt_ > 20 && internalId_.jetPt_ < 30) ptId = 2;
+// 	if(internalId_.jetPt_ > 30                  ) ptId = 3;
 	
-	int etaId = 0;
-	if(fabs(internalId_.jetEta_) > 2.5  && fabs(internalId_.jetEta_) < 2.75) etaId = 1; 
-	if(fabs(internalId_.jetEta_) > 2.75 && fabs(internalId_.jetEta_) < 3.0 ) etaId = 2; 
-	if(fabs(internalId_.jetEta_) > 3.0  && fabs(internalId_.jetEta_) < 5.0 ) etaId = 3; 
+// 	int etaId = 0;
+// 	if(fabs(internalId_.jetEta_) > 2.5  && fabs(internalId_.jetEta_) < 2.75) etaId = 1; 
+// 	if(fabs(internalId_.jetEta_) > 2.75 && fabs(internalId_.jetEta_) < 3.0 ) etaId = 2; 
+// 	if(fabs(internalId_.jetEta_) > 3.0  && fabs(internalId_.jetEta_) < 5.0 ) etaId = 3; 
 	
-	internalId_.idFlag_ = 0;
-	if(internalId_.mva_  > mvacut_[PileupJetIdentifier::kTight ][ptId][etaId]) internalId_.idFlag_ += 1 << PileupJetIdentifier::kTight;
-	if(internalId_.mva_  > mvacut_[PileupJetIdentifier::kMedium][ptId][etaId]) internalId_.idFlag_ += 1 << PileupJetIdentifier::kMedium;
-	if(internalId_.mva_  > mvacut_[PileupJetIdentifier::kLoose ][ptId][etaId]) internalId_.idFlag_ += 1 << PileupJetIdentifier::kLoose;
+//	internalId_.idFlag_ = 0;
+// 	if(internalId_.mva_  > mvacut_[PileupJetIdentifier::kTight ][ptId][etaId]) internalId_.idFlag_ += 1 << PileupJetIdentifier::kTight;
+// 	if(internalId_.mva_  > mvacut_[PileupJetIdentifier::kMedium][ptId][etaId]) internalId_.idFlag_ += 1 << PileupJetIdentifier::kMedium;
+// 	if(internalId_.mva_  > mvacut_[PileupJetIdentifier::kLoose ][ptId][etaId]) internalId_.idFlag_ += 1 << PileupJetIdentifier::kLoose;
+
+	internalId_.idFlag_ = computeIDflag(internalId_.mva_,internalId_.jetPt_,internalId_.jetEta_);
 }
+
+// ------------------------------------------------------------------------------------------
+std::pair<int,int> PileupJetIdAlgo::getJetIdKey(float jetPt, float jetEta)
+{
+  int ptId = 0;                                                                                                                                    
+  if(jetPt > 10 && jetPt < 20) ptId = 1;                                                                                 
+  if(jetPt > 20 && jetPt < 30) ptId = 2;                                                                                 
+  if(jetPt > 30              ) ptId = 3;                                                                                          
+  
+  int etaId = 0;                                                                                                                                   
+  if(fabs(jetEta) > 2.5  && fabs(jetEta) < 2.75) etaId = 1;                                                              
+  if(fabs(jetEta) > 2.75 && fabs(jetEta) < 3.0 ) etaId = 2;                                                              
+  if(fabs(jetEta) > 3.0  && fabs(jetEta) < 5.0 ) etaId = 3;                                 
+
+  return std::pair<int,int>(ptId,etaId);
+}
+
+// ------------------------------------------------------------------------------------------
+int PileupJetIdAlgo::computeIDflag(float mva, float jetPt, float jetEta)
+{
+  std::pair<int,int> jetIdKey = getJetIdKey(jetPt,jetEta);
+  return computeIDflag(mva,jetIdKey.first,jetIdKey.second);
+}
+
+// ------------------------------------------------------------------------------------------
+int PileupJetIdAlgo::computeIDflag(float mva,int ptId,int etaId)
+{
+  int idFlag(0);
+  if(mva > mvacut_[PileupJetIdentifier::kTight ][ptId][etaId]) idFlag += 1 << PileupJetIdentifier::kTight;
+  if(mva > mvacut_[PileupJetIdentifier::kMedium][ptId][etaId]) idFlag += 1 << PileupJetIdentifier::kMedium;
+  if(mva > mvacut_[PileupJetIdentifier::kLoose ][ptId][etaId]) idFlag += 1 << PileupJetIdentifier::kLoose;
+  return idFlag;
+}
+
 
 // ------------------------------------------------------------------------------------------
 PileupJetIdentifier PileupJetIdAlgo::computeMva()

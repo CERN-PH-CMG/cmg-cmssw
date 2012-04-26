@@ -43,6 +43,10 @@ public:
 
 	typedef std::map<std::string,std::pair<float *,float> > variables_list_t;
 
+	std::pair<int,int> getJetIdKey(float jetPt, float jetEta);
+	int computeIDflag(float mva, float jetPt, float jetEta);
+	int computeIDflag(float mva,int ptId,int etaId);
+
 protected:
 
 	void setup(); 
