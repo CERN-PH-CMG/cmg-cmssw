@@ -3,7 +3,16 @@ from CMGTools.Common.factories.cmgBaseJet_cfi import baseJetFactory
 pfJetFactory = cms.PSet(
        inputCollection = cms.InputTag("selectedPatJetsAK5"),
        baseJetFactory = baseJetFactory.clone(),
-       useConstituents = cms.bool( True )
+       useConstituents = cms.bool( True ),
+       puVariables = cms.InputTag("puJetId"),
+       puMvas = cms.VInputTag(cms.InputTag("puJetMva","fullDiscriminant"),
+                              cms.InputTag("puJetMva","simpleDiscriminant"),
+                              cms.InputTag("puJetMva","philv1Discriminant"),
+                              ),
+       puIds = cms.VInputTag(cms.InputTag("puJetMva","fullId"),
+                             cms.InputTag("puJetMva","simpleId"),
+                             cms.InputTag("puJetMva","philv1Id"),
+                             )
        )
 from CMGTools.Common.selections.btaggedjet_cfi import trackCountingHighEffBJetTags
 from CMGTools.Common.selections.jetId_cfi import *
