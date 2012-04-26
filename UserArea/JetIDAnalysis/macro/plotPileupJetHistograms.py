@@ -90,7 +90,7 @@ def plot_jet_id(infile,hth,
                                    ### ("d0","dZ"),
                                    ],
                 helper_inputs =    [],
-                vtxlabels = [ "_vtx%s" % l for l in  mkBinLabels((1,10,20),addOFlow=False) ],
+                vtxlabels = [ "_vtx%s" % l for l in  mkBinLabels((10,20),addOFlow=True) ],
                 ## vtxlabels = [ "_vtx%s" % l for l in  mkBinLabels((15,20,30),addOFlow=False) ],
                 ptbins = [],
                 etalables = ["TK","HEin","HEout","HF"],
@@ -278,7 +278,7 @@ def save_rocs(rochelper, outdir):
 
 
 ## --------------------------------------------------------------------------------------------------------------------------------------------
-def main(infile,outdir):
+def main(infile,outdir,mvas=""):
 
     ## initialize ROOT style and set-up the html helper
     setStyle()
@@ -291,8 +291,12 @@ def main(infile,outdir):
 
     kh = plot_kin(infile,hth)
 
-    ih,rh = plot_jet_id(infile,hth)
-    
+    ih,rh = plot_jet_id(infile,hth,variables_to_plot=[
+        ("jetPt","jetEta","nvtx"),
+        ("dR2Mean","beta","betaStar","dZ"), ## "dR2Mean",
+        tuple(v for v in mvas.split(',') if v != ""),
+        ]
+        )     
     ## done: create images and html 
     hth.dump()
     save_rocs(rh,outdir)

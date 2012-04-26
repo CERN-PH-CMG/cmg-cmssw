@@ -38,10 +38,10 @@ def main(options,args):
             "nvtx"     : ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,.5,50.5),
             
             }
-        if options.tmva:
+        if options.mvas != "":
             for mva in options.mvas.split(","):
                 PileupJetHistograms.prototypes[mva] = ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,-1.,1.)
-        elif options.customPrototypes:
+        if options.customPrototypes:
             PileupJetHistograms.prototypes["mva"] = ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,-1.,1.)
 
     
