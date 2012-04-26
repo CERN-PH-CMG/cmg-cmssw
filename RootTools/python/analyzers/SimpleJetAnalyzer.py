@@ -4,11 +4,12 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.statistics.Average import Average
 from CMGTools.RootTools.statistics.Histograms import Histograms
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle,Jet, GenJet
-from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection, matchObjectCollection2, deltaR2
+from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection, matchObjectCollection2, deltaR2, deltaR
 from CMGTools.RootTools.utils.PileupJetHistograms import PileupJetHistograms
 ## from CMGTools.RootTools.RootTools import loadLibs
 
 from ROOT import TH1F, TH2F, TFile, THStack, TF1, TGraphErrors
+import math
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
@@ -332,8 +333,10 @@ class SimpleJetAnalyzer (Analyzer) :
         self.matchedCleanJetHistosResolution_endNOtk = ResolutionJetHistograms ('MatchedCleanJetsResolution_endNOtk', 50, 1)
         self.matchedCleanJetHistosResolution_fwd = ResolutionJetHistograms ('MatchedCleanJetsResolution_fwd', 50, 1)
 
+        print 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
         self.doJetIdHisto = False
         if self.cfg_ana.doJetIdHisto:
+            print 'doing jet ID'
             # histograms for pileup jet identification variables
             self.vtxBins   = (0,5,10,15,20,30) ## (0,2,4,6,10,15,20,30,35)
             self.ptBins    = (20,30,50) ## (20,30,40,50,100)
@@ -353,10 +356,14 @@ class SimpleJetAnalyzer (Analyzer) :
                                                               jetIdMva=self.cfg_ana.jetIdMva)
             
         self.h_nvtx = TH1F ("h_nvtx", "" ,50, 0, 50)
-        self.h_genjetspt = TH1F ("h_genjetspt", "" ,500, 0, 500) ; 
-        self.h_secondClosestVsPtratio = TH2F ("h_secondClosestVsPtratio", "" ,100, 0, 2, 100, 0, 6) ;
-        self.h_avedistanceVSNvtx = TH2F ("h_avedistanceVSNvtx", "" ,50, 0, 50, 100, 0, 6) ;
-
+        self.h_genjetspt = TH1F ("h_genjetspt", "" ,500, 0, 500)
+        self.h_secondClosestVsPtratio = TH2F ("h_secondClosestVsPtratio", "" ,100, 0, 2, 100, 0, 6)
+        self.h_avedistanceVSNvtx = TH2F ("h_avedistanceVSNvtx", "" ,50, 0, 50, 100, 0, 6)
+        self.h_PTRatioVSgenEta = TH2F ("h_PTRatioVSgenEta", "" ,150, -5, 5, 100, 0, 2)
+        self.h_PTRatioVSgenPt = TH2F ("h_PTRatioVSgenPt", "" ,200, 0, 100, 100, 0, 2)
+        self.h_matchDR = TH1F ("h_matchDR", "" ,60, 0, 0.30)
+        self.h_relPtVSmatchDR = TH2F ("h_relPtVSmatchDR", "" ,60, 0, 0.30, 100, 0, 2)
+        self.h_relPtVSchFrac = TH2F ("h_relPtVSchFrac", "" ,100, 0, 1, 100, 0, 2)
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
     def process (self, iEvent, event) :
@@ -378,7 +385,7 @@ class SimpleJetAnalyzer (Analyzer) :
         
         # get status 2 leptons
         if 'genParticlesPruned' in self.mchandles:
-            event.genLeptons = [ lep for lep in self.mchandles['genParticlesPruned'].product() if lep.status() == 2 and (abs(lep.pdgId()) == 11 or abs(lep.pdgId()) == 13 or abs(lep.pdgId()) == 15) ]  
+            event.genLeptons = [ lep for lep in self.mchandles['genParticlesPruned'].product() if lep.status() == 3 and (abs(lep.pdgId()) == 11 or abs(lep.pdgId()) == 13 or abs(lep.pdgId()) == 15) ]  
         else:
             event.genLeptons = [ lep for lep in self.mchandles['genParticles'].product() if lep.status() == 3 and (abs(lep.pdgId()) == 11 or abs(lep.pdgId()) == 13 or abs(lep.pdgId()) == 15) ]  
 # @ Pasquale: why level 3 and not level 2?
@@ -387,12 +394,14 @@ class SimpleJetAnalyzer (Analyzer) :
         # get genJets
         event.genJets = map (GenJet, self.mchandles['genJets'].product ())
         # filter genjets as for reco jets
-        event.selGenJets = [GenJet (jet) for jet in event.genJets if (jet.pt ()>self.cfg_ana.genPtCut)]
+        event.myGenJets = [GenJet (jet) for jet in event.genJets if (jet.pt ()>self.cfg_ana.genPtCut)]
+        event.selGenJets = cleanObjectCollection (event.myGenJets, event.genLeptons, 0.2)
         # event.selGenJets = event.genJets
         for jet in event.selGenJets : 
             self.h_genjetspt.Fill (jet.pt ())
         
         event.noNegJets = [ jet for jet in event.jets if (jet.jecFactor(0) > 0) ]
+#        event.noNegJets = [ jet for jet in event.jets]
         
         # first stats plots
         # print 'genLeptons : ' + repr (len (event.genLeptons)) + ' | genJets : ' + repr (len (event.genJets)) + ' | recoJets : ' + repr (len (event.jets))
@@ -406,6 +415,7 @@ class SimpleJetAnalyzer (Analyzer) :
 #        event.genOneLepton = [GenParticle (part) for part in event.genLeptons if abs (part.pdgId ()) == 15]
         # remove leptons from jets if closer than 0.2
         event.cleanJets = cleanObjectCollection (event.noNegJets, event.genLeptons, 0.2)
+#        event.cleanJets = event.noNegJets
         self.cleanJetHistos.fillEvent (event.cleanJets)
         
 #        print len (jets),len (event.jets), len (event.noNegJets), len (event.cleanJets), len (event.genLeptons),"-->",(len (event.noNegJets) - len (event.cleanJets) - len (event.genLeptons))
@@ -461,42 +471,59 @@ class SimpleJetAnalyzer (Analyzer) :
                 self.matchedCleanJetHistosResolution_fwd.fillJet (jet, len (event.vertices))
                 self.matchedCleanJetHistos_fwd.fillJet (jet)
 
-        #PG debugging for tails
-        for jet in event.matchedCleanJets :
-            minDelta = 10
-            secondClosest = jet
-            for recojet in event.cleanJets :
-                if recojet == jet :
-                    continue
-                dr2 = deltaR2( jet.gen.eta (), jet.gen.phi (), recojet.eta (), recojet.phi ())
-                if dr2 < minDelta :
-                    minDelta = dr2
-                    secondClosest = recojet 
-            if len(event.vertices) < 10 or abs (jet.gen.eta ()) < 1.6: continue
-            self.h_secondClosestVsPtratio.Fill (jet.pt () / jet.gen.pt (), math.sqrt (minDelta))
-            #if (jet.pt () / jet.gen.pt () < 0.2) :
-                #print '------------'
-                #print jet.pt (), jet.eta (), jet.phi ()
-                #print jet.gen.pt (), jet.gen.eta (), jet.gen.phi ()
-                #print 'second reco closest to gen at distance', minDelta
+        ##PG debugging for tails
+        #for jet in event.matchedCleanJets :
+            #deltaRR = deltaR( jet.eta (), jet.phi (), jet.gen.eta (), jet.gen.phi ())
+            #self.h_matchDR.Fill (deltaRR)
+            #self.h_relPtVSmatchDR.Fill (deltaRR, jet.pt () / jet.gen.pt ())
+            #if abs (jet.gen.eta ()) > 2.5 and abs (jet.gen.eta ()) < 3 :
+                #self.h_relPtVSchFrac.Fill (jet.chargedHadronEnergyFraction (), jet.pt () / jet.gen.pt ())
 
-        aveDeltaR = 0
-        num = 0
-        for recojet1 in event.cleanJets :
-            minDelta = 10
-            closest = recojet1
-            for recojet2 in event.cleanJets :
-                if recojet1 == recojet2 : continue
-                    dr2 = deltaR2( recojet1.eta (), recojet1.phi (), recojet2.eta (), recojet2.phi ())
-                    if dr2 < minDelta :
-                        minDelta = dr2
-                        closest = recojet2
-            if minDelta == 10 continue ;
-            aveDeltaR = aveDeltaR + math.sqrt (minDelta)
-            num = num + 1
-        if num > 0 :
-            aveDeltaR = aveDeltaR / num
-            self.h_avedistanceVSNvtx.Fill (len(event.vertices), aveDeltaR)
+            #if jet.gen.pt () > 20 and jet.gen.pt () < 40 :
+                #self.h_PTRatioVSgenEta.Fill (jet.gen.eta (), jet.pt () / jet.gen.pt ())
+            #if abs (jet.gen.eta ()) > 1.6 :
+                #self.h_PTRatioVSgenPt.Fill (jet.gen.pt (), jet.pt () / jet.gen.pt ())
+
+            #minDelta = 10
+            #secondClosest = jet
+            #for recojet in event.cleanJets :
+                #if recojet == jet : continue
+                #dr2 = deltaR2( jet.gen.eta (), jet.gen.phi (), recojet.eta (), recojet.phi ())
+                #if dr2 < minDelta :
+                    #minDelta = dr2
+                    #secondClosest = recojet 
+            ##if len(event.vertices) < 10 or abs (jet.gen.eta ()) < 1.6: continue
+            #self.h_secondClosestVsPtratio.Fill (jet.pt () / jet.gen.pt (), math.sqrt (minDelta))
+            #if jet.pt () / jet.gen.pt () < 0.2 and jet.gen.pt () > 20 and abs (jet.gen.eta ()) < 3 and abs (jet.gen.eta ()) > 2.5 :
+                #print '============',len(event.genLeptons)
+                #print jet.pt (), jet.eta (), jet.phi (), jet.jecFactor (0)
+                #print jet.gen.pt (), jet.gen.eta (), jet.gen.phi ()
+                #print '------------ leptons:'
+                #for lept in event.genLeptons :
+                    #print lept.pt (), lept.eta (), lept.phi ()
+                #print '------------'
+                #for recojet in event.cleanJets :
+                    #print "RECO",recojet.pt (), recojet.eta (), recojet.phi (), recojet.jecFactor (0)
+                #for genjet in event.selGenJets :
+                    #print "GEN ",genjet.pt (), genjet.eta (), genjet.phi ()
+
+        #aveDeltaR = 0
+        #num = 0
+        #for recojet1 in event.cleanJets :
+            #minDelta = 10
+            #closest = recojet1
+            #for recojet2 in event.cleanJets :
+                #if recojet1 == recojet2 : continue
+                #dr2 = deltaR2( recojet1.eta (), recojet1.phi (), recojet2.eta (), recojet2.phi ())
+                #if dr2 < minDelta :
+                    #minDelta = dr2
+                    #closest = recojet2
+            #if minDelta == 10 : continue
+            #aveDeltaR = aveDeltaR + math.sqrt (minDelta)
+            #num = num + 1
+        #if num > 0 :
+            #aveDeltaR = aveDeltaR / num
+            #self.h_avedistanceVSNvtx.Fill (len(event.vertices), aveDeltaR)
 
 
         if self.doJetIdHisto:
@@ -565,6 +592,11 @@ class SimpleJetAnalyzer (Analyzer) :
         self.h_genjetspt.Write ()
         self.h_secondClosestVsPtratio.Write ()
         self.h_avedistanceVSNvtx.Write ()
+        self.h_PTRatioVSgenEta.Write ()
+        self.h_PTRatioVSgenPt.Write ()
+        self.h_matchDR.Write ()
+        self.h_relPtVSmatchDR.Write ()
+        self.h_relPtVSchFrac.Write ()
         
         self.file.Close()
         
