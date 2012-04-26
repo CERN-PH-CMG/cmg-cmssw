@@ -385,7 +385,7 @@ class SimpleJetAnalyzer (Analyzer) :
         
         # get status 2 leptons
         if 'genParticlesPruned' in self.mchandles:
-            event.genLeptons = [ lep for lep in self.mchandles['genParticlesPruned'].product() if lep.status() == 3 and (abs(lep.pdgId()) == 11 or abs(lep.pdgId()) == 13 or abs(lep.pdgId()) == 15) ]  
+            event.genLeptons = [ lep for lep in self.mchandles['genParticlesPruned'].product() if lep.status() == 3 and (abs(lep.pdgId()) == 11 or abs(lep.pdgId()) == 13 or abs(lep.pdgId()) == 15) ]
         else:
             event.genLeptons = [ lep for lep in self.mchandles['genParticles'].product() if lep.status() == 3 and (abs(lep.pdgId()) == 11 or abs(lep.pdgId()) == 13 or abs(lep.pdgId()) == 15) ]  
 # @ Pasquale: why level 3 and not level 2?
