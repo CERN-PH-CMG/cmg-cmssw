@@ -17,5 +17,8 @@ patCMGEventContent = cms.untracked.vstring(
     # Trigger
     'keep L1GlobalTriggerObjectMapRecord_*_*_*',
     'keep *_TriggerResults_*_*',
-    'keep *_hltTriggerSummaryAOD_*_*'
+    'keep *_hltTriggerSummaryAOD_*_*',
+    # PU JetID
+    "keep *_puJetId_*_*", # input variables
+    "keep *_puJetMva_*_*" # final MVAs and working point flags
     )
