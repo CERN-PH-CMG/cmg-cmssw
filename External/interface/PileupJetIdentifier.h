@@ -50,6 +50,8 @@ public:
 	DECLARE_VARIABLE(betaClassic   ,float);  
 	DECLARE_VARIABLE(betaStarClassic   ,float);  
 	
+	DECLARE_VARIABLE(ptD        ,float);
+
 	DECLARE_VARIABLE(nvtx   ,float);  
 };
 
@@ -107,7 +109,6 @@ public:
 	DECLARE_VARIABLE(dRMeanEm   ,float);  
 	DECLARE_VARIABLE(dRMeanCh   ,float);  
 
-	DECLARE_VARIABLE(ptD        ,float);
 	DECLARE_VARIABLE(ptMean     ,float);
 	DECLARE_VARIABLE(ptRMS      ,float);
 	DECLARE_VARIABLE(pt2A       ,float);
@@ -163,7 +164,6 @@ public:
 	DECLARE_VARIABLE(emFrac05   ,float);  
 
 };
-
 
 #undef DECLARE_VARIABLE
 
