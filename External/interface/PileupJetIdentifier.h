@@ -37,6 +37,9 @@ public:
 	DECLARE_VARIABLE(nParticles ,float);  
 
 	DECLARE_VARIABLE(dR2Mean    ,float);  /// a.k.a RMS
+	void          RMS(const float val) { dR2Mean(val);     }
+	const float & RMS() const          { return dR2Mean(); }
+	
 	DECLARE_VARIABLE(dRMean     ,float);  
 
 	DECLARE_VARIABLE(frac01    ,float);  
@@ -44,6 +47,8 @@ public:
 	DECLARE_VARIABLE(frac03    ,float);  
 	DECLARE_VARIABLE(frac04    ,float);  
 	DECLARE_VARIABLE(frac05   ,float);  
+	DECLARE_VARIABLE(frac06   ,float);  
+	DECLARE_VARIABLE(frac07   ,float);  
 	
 	DECLARE_VARIABLE(beta       ,float);  
 	DECLARE_VARIABLE(betaStar   ,float);  
@@ -150,18 +155,24 @@ public:
 	DECLARE_VARIABLE(chFrac03    ,float);  
 	DECLARE_VARIABLE(chFrac04    ,float);  
 	DECLARE_VARIABLE(chFrac05   ,float);  
+	DECLARE_VARIABLE(chFrac06   ,float);  
+	DECLARE_VARIABLE(chFrac07   ,float);  
 
 	DECLARE_VARIABLE(neutFrac01    ,float);  
 	DECLARE_VARIABLE(neutFrac02    ,float);  
 	DECLARE_VARIABLE(neutFrac03    ,float);  
 	DECLARE_VARIABLE(neutFrac04    ,float);  
 	DECLARE_VARIABLE(neutFrac05   ,float);  
+	DECLARE_VARIABLE(neutFrac06   ,float);  
+	DECLARE_VARIABLE(neutFrac07   ,float);  
 
 	DECLARE_VARIABLE(emFrac01    ,float);  
 	DECLARE_VARIABLE(emFrac02    ,float);  
 	DECLARE_VARIABLE(emFrac03    ,float);  
 	DECLARE_VARIABLE(emFrac04    ,float);  
 	DECLARE_VARIABLE(emFrac05   ,float);  
+	DECLARE_VARIABLE(emFrac06   ,float);  
+	DECLARE_VARIABLE(emFrac07   ,float);  
 
 };
 

@@ -239,12 +239,16 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 	
 	reco::PFCandidatePtr lLead, lSecond, lLeadNeut, lLeadEm, lLeadCh, lTrail;
 	std::vector<float> frac, fracCh, fracEm, fracNeut;
-	float cones[] = { 0.1, 0.2, 0.3, 0.4, 0.5 };
+	float cones[] = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7 };
 	size_t ncones = sizeof(cones)/sizeof(float);
-	float * coneFracs[]     = { &internalId_.frac01_, &internalId_.frac02_, &internalId_.frac03_, &internalId_.frac04_, &internalId_.frac05_ }; 
-	float * coneEmFracs[]   = { &internalId_.emFrac01_, &internalId_.emFrac02_, &internalId_.emFrac03_, &internalId_.emFrac04_, &internalId_.emFrac05_ }; 
-	float * coneNeutFracs[] = { &internalId_.neutFrac01_, &internalId_.neutFrac02_, &internalId_.neutFrac03_, &internalId_.neutFrac04_, &internalId_.neutFrac05_ }; 
-	float * coneChFracs[]   = { &internalId_.chFrac01_, &internalId_.chFrac02_, &internalId_.chFrac03_, &internalId_.chFrac04_, &internalId_.chFrac05_ }; 
+	float * coneFracs[]     = { &internalId_.frac01_, &internalId_.frac02_, &internalId_.frac03_, &internalId_.frac04_, 
+				    &internalId_.frac05_,  &internalId_.frac06_,  &internalId_.frac07_ };
+	float * coneEmFracs[]   = { &internalId_.emFrac01_, &internalId_.emFrac02_, &internalId_.emFrac03_, &internalId_.emFrac04_, 
+				    &internalId_.emFrac05_, &internalId_.emFrac06_, &internalId_.emFrac07_ }; 
+	float * coneNeutFracs[] = { &internalId_.neutFrac01_, &internalId_.neutFrac02_, &internalId_.neutFrac03_, &internalId_.neutFrac04_, 
+				    &internalId_.neutFrac05_, &internalId_.neutFrac06_, &internalId_.neutFrac07_ }; 
+	float * coneChFracs[]   = { &internalId_.chFrac01_, &internalId_.chFrac02_, &internalId_.chFrac03_, &internalId_.chFrac04_, 
+				    &internalId_.chFrac05_, &internalId_.chFrac06_, &internalId_.chFrac07_ }; 
 	TMatrixDSym covMatrix(2); covMatrix = 0.;
 	
 	reco::TrackRef impactTrack;
@@ -272,11 +276,20 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 			lSecond = icand;
 		}
 
+		// average shapes
 		internalId_.dRMean_     += candPtDr;
 		internalId_.dR2Mean_    += candPtDr*candPtDr;
-
+		covMatrix(0,0) += candPt*candPt*candDeta*candDeta;
+		covMatrix(0,1) += candPt*candPt*candDeta*candDphi;
+		covMatrix(1,1) += candPt*candPt*candDphi*candDphi;
+		internalId_.ptD_ += candPt*candPt;
+		sumPt += candPt;
+		sumPt2 += candPt*candPt;
+		
+		// single most energetic candiates and jet shape profiles
 		frac.push_back(candPtFrac);
 		if( icone < ncones ) { *coneFracs[icone] += candPt; }
+		
 		// neutrals
 		if( icand->particleId() == reco::PFCandidate::h0 ) {
 			if (lLeadNeut.isNull() || candPt > lLeadNeut->pt()) { lLeadNeut = icand; }
@@ -303,60 +316,61 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 			fracCh.push_back(candPtFrac);
 			if( icone < ncones ) { *coneChFracs[icone] += candPt; }
 			sumPtCh                += candPt;
-			// beta and betastar		
-			if(  icand->trackRef().isNonnull() && icand->trackRef().isAvailable() ) {
-				try { 
-					float tkpt = icand->trackRef()->pt(); 
-					bool inVtx0 = find( vtx->tracks_begin(), vtx->tracks_end(), reco::TrackBaseRef(icand->trackRef()) ) != vtx->tracks_end();
-					bool inAnyOther = false;
-					sumTkPt += tkpt;
-					double dZ0 = fabs(icand->trackRef()->dz(vtx->position()));
-					double dZ = dZ0;
-					for(reco::VertexCollection::const_iterator  vi=allvtx.begin(); vi!=allvtx.end(); ++vi ) {
-						const reco::Vertex & iv = *vi;
-						if( iv.isFake() || iv.ndof() < 4 ) { continue; }
-						bool isVtx0  = (iv.position() - vtx->position()).r() < 0.02;
-						if( ! isVtx0 && ! inVtx0 && ! inAnyOther ) {
-							inAnyOther = find( iv.tracks_begin(), iv.tracks_end(), reco::TrackBaseRef(icand->trackRef()) ) != iv.tracks_end();
-						}
-						dZ = std::min(dZ,fabs(icand->trackRef()->dz(iv.position())));
+		}
+		// beta and betastar		
+		if(  icand->trackRef().isNonnull() && icand->trackRef().isAvailable() ) {
+			try { 
+				float tkpt = icand->trackRef()->pt(); 
+				sumTkPt += tkpt;
+				// 'classic' beta definition based on track-vertex association
+				bool inVtx0 = find( vtx->tracks_begin(), vtx->tracks_end(), reco::TrackBaseRef(icand->trackRef()) ) != vtx->tracks_end();
+				bool inAnyOther = false;
+				// alternative beta definition based on track-vertex distance of closest approach
+				double dZ0 = fabs(icand->trackRef()->dz(vtx->position()));
+				double dZ = dZ0;
+				for(reco::VertexCollection::const_iterator  vi=allvtx.begin(); vi!=allvtx.end(); ++vi ) {
+					const reco::Vertex & iv = *vi;
+					if( iv.isFake() || iv.ndof() < 4 ) { continue; }
+					// the primary vertex may have been copied by the user: check identity by position
+					bool isVtx0  = (iv.position() - vtx->position()).r() < 0.02;
+					// 'classic' beta definition: check if the track is associated with any vertex other than the primary one
+					if( ! isVtx0 && ! inAnyOther ) {
+						inAnyOther = find( iv.tracks_begin(), iv.tracks_end(), reco::TrackBaseRef(icand->trackRef()) ) != iv.tracks_end();
 					}
-					if( dZ0 < 0.2 ) {
-						internalId_.beta_ += tkpt;
-					} else if( dZ < 0.2 ) {
-						internalId_.betaStar_ += tkpt;
-					}
-					if( inVtx0 && ! inAnyOther ) {
-						internalId_.betaClassic_ += tkpt;
-					} else if( ! inVtx0 && inAnyOther ) {
-						internalId_.betaStarClassic_ += tkpt;
-					}
-				} catch (cms::Exception &e) {
-					if(printWarning-- > 0) { std::cerr << e << std::endl; }
+					// alternative beta: find closest vertex to the track
+					dZ = std::min(dZ,fabs(icand->trackRef()->dz(iv.position())));
 				}
+				// classic beta/betaStar
+				if( inVtx0 && ! inAnyOther ) {
+					internalId_.betaClassic_ += tkpt;
+				} else if( ! inVtx0 && inAnyOther ) {
+					internalId_.betaStarClassic_ += tkpt;
+				}
+				// alternative beta/betaStar
+				if( dZ0 < 0.2 ) {
+					internalId_.beta_ += tkpt;
+				} else if( dZ < 0.2 ) {
+					internalId_.betaStar_ += tkpt;
+				}
+			} catch (cms::Exception &e) {
+				if(printWarning-- > 0) { std::cerr << e << std::endl; }
 			}
 		}
+		// trailing candidate
 		if( lTrail.isNull() || candPt < lTrail->pt() ) {
 			lTrail = icand; 
 		}
-		
-		covMatrix(0,0) += candPt*candPt*candDeta*candDeta;
-		covMatrix(0,1) += candPt*candPt*candDeta*candDphi;
-		covMatrix(1,1) += candPt*candPt*candDphi*candDphi;
-		internalId_.ptD_ += candPt*candPt;
-		sumPt += candPt;
-		sumPt2 += candPt*candPt;
-		
 	}
-	assert( lLead.isNonnull() );
 	
+	// Finalize all variables
+	assert( lLead.isNonnull() );
+
 	if ( lSecond.isNull() )   { lSecond   = lTrail; }
 	if ( lLeadNeut.isNull() ) { lLeadNeut = lTrail; }
 	if ( lLeadEm.isNull() )   { lLeadEm   = lTrail; }
 	if ( lLeadCh.isNull() )   { lLeadCh   = lTrail; }
 	impactTrack = lLeadCh->trackRef();
-
-	// Finalize all variables
+	
 	internalId_.nCharged_  = pfjet ? pfjet->chargedMultiplicity() : patjet->chargedMultiplicity();
 	internalId_.nNeutrals_ = pfjet ? pfjet->neutralMultiplicity() : patjet->neutralMultiplicity();
 
@@ -565,24 +579,32 @@ void PileupJetIdAlgo::initVariables()
 	INIT_VARIABLE(frac03    ,"" ,0.);  
 	INIT_VARIABLE(frac04    ,"" ,0.);  
 	INIT_VARIABLE(frac05   ,"" ,0.);  
+	INIT_VARIABLE(frac06   ,"" ,0.);  
+	INIT_VARIABLE(frac07   ,"" ,0.);  
 	
 	INIT_VARIABLE(chFrac01    ,"" ,0.);  
 	INIT_VARIABLE(chFrac02    ,"" ,0.);  
 	INIT_VARIABLE(chFrac03    ,"" ,0.);  
 	INIT_VARIABLE(chFrac04    ,"" ,0.);  
 	INIT_VARIABLE(chFrac05   ,"" ,0.);  
+	INIT_VARIABLE(chFrac06   ,"" ,0.);  
+	INIT_VARIABLE(chFrac07   ,"" ,0.);  
 
 	INIT_VARIABLE(neutFrac01    ,"" ,0.);  
 	INIT_VARIABLE(neutFrac02    ,"" ,0.);  
 	INIT_VARIABLE(neutFrac03    ,"" ,0.);  
 	INIT_VARIABLE(neutFrac04    ,"" ,0.);  
 	INIT_VARIABLE(neutFrac05   ,"" ,0.);  
+	INIT_VARIABLE(neutFrac06   ,"" ,0.);  
+	INIT_VARIABLE(neutFrac07   ,"" ,0.);  
 
 	INIT_VARIABLE(emFrac01    ,"" ,0.);  
 	INIT_VARIABLE(emFrac02    ,"" ,0.);  
 	INIT_VARIABLE(emFrac03    ,"" ,0.);  
 	INIT_VARIABLE(emFrac04    ,"" ,0.);  
 	INIT_VARIABLE(emFrac05   ,"" ,0.);  
+	INIT_VARIABLE(emFrac06   ,"" ,0.);  
+	INIT_VARIABLE(emFrac07   ,"" ,0.);  
 
 	INIT_VARIABLE(beta   ,"" ,0.);  
 	INIT_VARIABLE(betaStar   ,"" ,0.);  
