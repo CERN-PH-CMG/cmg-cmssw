@@ -308,8 +308,8 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 			internalId_.ptDNe_    += candPt*candPt;
 			sumPtNe               += candPt;
 		}
-		// Charged hadrons
-		if( icand->particleId() == reco::PFCandidate::h ) {
+		// Charged  particles
+		if(  icand->trackRef().isNonnull() && icand->trackRef().isAvailable() ) {
 			if (lLeadCh.isNull() || candPt > lLeadCh->pt()) { lLeadCh = icand; }
 			internalId_.dRMeanCh_  += candPtDr;
 			internalId_.ptDCh_     += candPt*candPt;
