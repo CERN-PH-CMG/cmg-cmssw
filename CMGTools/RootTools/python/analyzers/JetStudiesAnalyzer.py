@@ -21,8 +21,8 @@ class ResolutionJetHistograms (Histograms) :
         self.histosEta = []
         self.histosPt = []
         for i in range (self.listLen) : 
-            self.histosEta.append (TH2F (name + '_h_dpt_eta_' + str (i), '', 48, -6, 6, 100, -2, 2))
-            self.histosPt.append (TH2F (name + '_h_dpt_pt_' + str (i), '', 20, 0, 200, 100, -2, 2))
+            self.histosEta.append (TH2F (name + '_h_dpt_eta_' + str (i), '', 24, -6, 6, 200, -2, 6))
+            self.histosPt.append (TH2F (name + '_h_dpt_pt_' + str (i), '', 20, 0, 200, 200, -2, 6))
         super (ResolutionJetHistograms, self).__init__ (name)
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
@@ -30,8 +30,8 @@ class ResolutionJetHistograms (Histograms) :
     def fillJet (self, jet, nVtx) :
         if nVtx < self.maxVtx : 
             index = int (nVtx) / int (self.vtxBinning)
-            self.histosEta[index].Fill (jet.gen.eta (), (jet.pt () - jet.gen.pt ()) / jet.gen.pt ())
-            self.histosPt[index].Fill (jet.gen.pt (), (jet.pt () - jet.gen.pt ()) / jet.gen.pt ())
+            self.histosEta[index].Fill (jet.gen.eta (), jet.pt () / jet.gen.pt ()
+            self.histosPt[index].Fill (jet.gen.pt (), jet.pt ()/ jet.gen.pt ()
         else : print 'the vertex number: ' + str (nVtx) + ' is too high'
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
@@ -189,19 +189,19 @@ class JetHistograms (Histograms):
         self.h_pt = TH1F (name + '_h_pt', '', 100, 0, 200)
         self.h_genpt = TH1F (name + '_h_genpt', '', 100, 0, 200)
         self.h_geneta = TH1F (name + '_h_geneta', '', 240, -6, 6)
-        self.h_dpt = TH1F (name + '_h_dpt', '', 100, -2, 2)
+        self.h_dpt = TH1F (name + '_h_dpt', '', 200, -2, 6)
         self.h_eta = TH1F (name + '_h_eta', '', 240, -6, 6)
         self.h_comp = TH1F (name + '_h_comp', '', 10, 0, 10)
         self.h_deltaEleMatch = TH1F (name + '_h_deltaEleMatch', '', 1000, 0, 6)
         self.h_deltaJetMatch = TH1F (name + '_h_deltaJetMatch', '', 1000, 0, 6)
         self.h_numGen_numReco = TH2F (name + '_h_numGen_numReco', '', 20, 0, 20, 20, 0, 20)
-        self.h_dpt_pt = TH2F (name + '_h_dpt_pt', '', 100, 0, 200, 100, -2, 2)
-        self.h_dpt_eta = TH2F (name + '_h_dpt_eta', '', 48, -6, 6, 100, -2, 2)
-        self.h_phi_eta = TH2F (name + '_h_phi_eta', '', 48, -6, 6, 360, -3.14, 3.14)
-        self.h_dpt_dR2 = TH2F (name + '_h_dpt_dR2', '', 100, 0, 6, 100, -2, 2)
+        self.h_dpt_pt = TH2F (name + '_h_dpt_pt', '', 100, 0, 200, 200, -2, 6)
+        self.h_dpt_eta = TH2F (name + '_h_dpt_eta', '', 240, -6, 6, 200, -2, 6)
+        self.h_phi_eta = TH2F (name + '_h_phi_eta', '', 240, -6, 6, 360, -3.14, 3.14)
+        self.h_dpt_dR2 = TH2F (name + '_h_dpt_dR2', '', 100, 0, 6, 200, -2, 6)
         self.h_ptr_ptg = TH2F (name + '_h_ptr_ptg', '', 100, 0, 200, 100, 0, 200)
         self.h_dR2_ptr = TH2F (name + '_h_dR2_ptr', '', 100, 0, 200, 100, 0, 6)
-        self.h_dR2_eta = TH2F (name + '_h_dR2_eta', '', 48, -6, 6, 100, 0, 6)
+        self.h_dR2_eta = TH2F (name + '_h_dR2_eta', '', 240, -6, 6, 100, 0, 6)
         self.h_frac_com = TH2F (name + '_h_frac_com', '', 8, 0, 8, 10, 0, 1) # fraction, component
         super (JetHistograms, self).__init__ (name) #FIXME check that the super has to be called within __init__
 
@@ -212,20 +212,20 @@ class JetHistograms (Histograms):
         # pdb.set_trace ()
         self.fillFrac (jet)
         self.h_pt.Fill (jet.pt ())
-        self.h_eta.Fill (jet.eta ())
+        if jet.pt () > 10 :  self.h_eta.Fill (jet.eta ()) #why cut on pt only here ?
         self.h_phi_eta.Fill (jet.eta (), jet.phi ()) 
         if hasattr (jet, 'gen') and jet.gen is not None:
             dR2 = deltaR2 (jet.gen.eta (), jet.gen.phi (), jet.eta (), jet.phi ())
             self.h_deltaJetMatch.Fill (dR2)
-            self.h_dpt_dR2.Fill (dR2, (jet.pt () - jet.gen.pt ()) / jet.gen.pt ())
+            self.h_dpt_dR2.Fill (dR2, jet.pt () / jet.gen.pt ())
             self.h_dR2_ptr.Fill (jet.gen.pt (), dR2)
             self.h_dR2_eta.Fill (jet.gen.eta (), dR2)
             if dR2 < 0.3 :
                 self.h_genpt.Fill (jet.gen.pt ())
                 self.h_geneta.Fill (jet.gen.pt ())
-                self.h_dpt.Fill ((jet.pt () - jet.gen.pt ()) / jet.gen.pt ())
-                self.h_dpt_pt.Fill (jet.gen.pt (), (jet.pt () - jet.gen.pt ()) / jet.gen.pt ()) 
-                self.h_dpt_eta.Fill (jet.gen.eta (), (jet.pt () - jet.gen.pt ()) / jet.gen.pt ()) 
+                self.h_dpt.Fill (jet.pt () / jet.gen.pt ())
+                self.h_dpt_pt.Fill (jet.gen.pt (), jet.pt () / jet.gen.pt ()) 
+                self.h_dpt_eta.Fill (jet.gen.eta (), jet.pt ()  / jet.gen.pt ()) 
                 self.h_ptr_ptg.Fill (jet.gen.pt (), jet.pt ()) 
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
@@ -274,8 +274,9 @@ class JetStudiesAnalyzer (Analyzer) :
             )
         if self.cfg_ana.useGenLeptons: 
             self.mchandles['genParticlesPruned'] =  AutoHandle (
-                'genParticlesPruned',
-                'std::vector<reco::GenParticle>'
+                *self.cfg_ana.GenParticlesCollection
+#                'genParticlesPruned',
+#                'std::vector<reco::GenParticle>'
                 )
         else:
             self.mchandles['genParticles'] =  AutoHandle (
@@ -287,8 +288,9 @@ class JetStudiesAnalyzer (Analyzer) :
             *self.cfg_ana.genJetsCollection
            )
         self.handles['vertices'] =  AutoHandle (
-            'offlinePrimaryVertices',
-            'std::vector<reco::Vertex>'
+            *self.cfg_ana.VtxCollection
+#            'offlinePrimaryVertices',
+#            'std::vector<reco::Vertex>'
           )
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
@@ -365,7 +367,8 @@ class JetStudiesAnalyzer (Analyzer) :
             
         self.h_nvtx = TH1F ("h_nvtx", "" ,50, 0, 50)
         self.h_genjetspt = TH1F ("h_genjetspt", "" ,500, 0, 500) ; 
-
+        self.h_secondClosestVsPtratio = TH2F ("h_secondClosestVsPtratio", "" ,100, 0, 2, 100, 0, 6) ;
+        self.h_avedistanceVSNvtx = TH2F ("h_avedistanceVSNvtx", "" ,50, 0, 50, 100, 0, 6) ;
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
     def process (self, iEvent, event) :
@@ -401,18 +404,23 @@ class JetStudiesAnalyzer (Analyzer) :
         for jet in event.selGenJets : 
             self.h_genjetspt.Fill (jet.pt ())
         
+        event.noNegJets = [ jet for jet in event.jets if (jet.jecFactor(0) > 0) ]
+
         # first stats plots
         # print 'genLeptons : ' + repr (len (event.genLeptons)) + ' | genJets : ' + repr (len (event.genJets)) + ' | recoJets : ' + repr (len (event.jets))
-        self.jetHistos.fillStats (len (event.selGenJets), len (event.jets))
+        self.jetHistos.fillStats (len (event.selGenJets), len (event.noNegJets))
         
         #FIXME why are there cases in which there's 4 or 6 leptons?
-        if len (event.genLeptons) != 2 :
+        if len (event.genLeptons) > 2 :
             return
         # in case I want to filter out taus
         # 11, 13, 15 : e, u, T
 #        event.genOneLepton = [GenParticle (part) for part in event.genLeptons if abs (part.pdgId ()) == 15]
         # remove leptons from jets if closer than 0.2
-        event.cleanJets = cleanObjectCollection (event.jets, event.genLeptons, 0.2)
+        event.cleanJets = cleanObjectCollection (event.noNegJets, event.genLeptons, 0.2)
+        self.cleanJetHistos.fillEvent (event.cleanJets)
+        
+#        print len (jets),len (event.jets), len (event.noNegJets), len (event.cleanJets), len (event.genLeptons),"-->",(len (event.noNegJets) - len (event.cleanJets) - len (event.genLeptons))
 
         event.matchingCleanJets = matchObjectCollection2 (event.cleanJets, event.selGenJets, 0.25)
         # assign to each jet its gen match (easy life :))
@@ -467,6 +475,44 @@ class JetStudiesAnalyzer (Analyzer) :
                 self.matchedCleanJetHistosResolution_fwd.fillJet (jet, len (event.vertices))
                 self.matchedCleanJetHistos_fwd.fillJet (jet)
 
+        #PG debugging for tails
+        for jet in event.matchedCleanJets :
+            minDelta = 10
+            secondClosest = jet
+            for recojet in event.cleanJets :
+                if recojet == jet :
+                    continue
+                dr2 = deltaR2( jet.gen.eta (), jet.gen.phi (), recojet.eta (), recojet.phi ())
+                if dr2 < minDelta :
+                    minDelta = dr2
+                    secondClosest = recojet 
+            if len(event.vertices) < 10 or abs (jet.gen.eta ()) < 1.6: continue
+            self.h_secondClosestVsPtratio.Fill (jet.pt () / jet.gen.pt (), math.sqrt (minDelta))
+            #if (jet.pt () / jet.gen.pt () < 0.2) :
+                #print '------------'
+                #print jet.pt (), jet.eta (), jet.phi ()
+                #print jet.gen.pt (), jet.gen.eta (), jet.gen.phi ()
+                #print 'second reco closest to gen at distance', minDelta
+
+        aveDeltaR = 0
+        num = 0
+        for recojet1 in event.cleanJets :
+            minDelta = 10
+            closest = recojet1
+            for recojet2 in event.cleanJets :
+                if recojet1 == recojet2 : continue
+                    dr2 = deltaR2( recojet1.eta (), recojet1.phi (), recojet2.eta (), recojet2.phi ())
+                    if dr2 < minDelta :
+                        minDelta = dr2
+                        closest = recojet2
+            if minDelta == 10 continue ;
+            aveDeltaR = aveDeltaR + math.sqrt (minDelta)
+            num = num + 1
+        if num > 0 :
+            aveDeltaR = aveDeltaR / num
+            self.h_avedistanceVSNvtx.Fill (len(event.vertices), aveDeltaR)
+
+#AB: fill eta-dependent responses (in bins of gen pt)
         for jet in event.matchedCleanJets :
             if abs (jet.gen.pt ()) < 20.0 :
                 self.matchedCleanJetHistosResolution_PtL.fillJet (jet, len (event.vertices))
@@ -562,6 +608,8 @@ class JetStudiesAnalyzer (Analyzer) :
         self.file.cd ()
         self.h_nvtx.Write ()
         self.h_genjetspt.Write ()
+        self.h_secondClosestVsPtratio.Write ()
+        self.h_avedistanceVSNvtx.Write ()
         
         self.file.Close()
         
