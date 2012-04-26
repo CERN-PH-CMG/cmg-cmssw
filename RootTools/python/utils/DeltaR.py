@@ -96,7 +96,7 @@ def matchObjectCollection( objects, matchCollection, deltaRMax):
     return pairs
 
 
-def matchObjectCollection2 ( objects, matchCollection, deltaR2Max = 0.3 ):
+def matchObjectCollection2 ( objects, matchCollection, deltaRMax = 0.3 ):
     '''Univoque association of an element from matchCollection to an element of objects.'''
     '''Reco and Gen objects get the "matched" attribute, true is they're part of a matched tulpe.'''
     '''By default, the matching is true only if delta R is smaller than 0.3.'''
@@ -116,7 +116,7 @@ def matchObjectCollection2 ( objects, matchCollection, deltaR2Max = 0.3 ):
     for match in matchCollection:
         match.matched = False
     
-    deltaR2Max = deltaR2Max * deltaR2Max
+    deltaR2Max = deltaRMax * deltaRMax
     for dR2, (object, match) in allPairs:
 	if dR2 > deltaR2Max:
 		break
