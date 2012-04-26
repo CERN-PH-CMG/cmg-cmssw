@@ -115,7 +115,8 @@ def matchObjectCollection2 ( objects, matchCollection, deltaR2Max = 0.3 ):
         object.matched = False
     for match in matchCollection:
         match.matched = False
-
+    
+    deltaR2Max = deltaR2Max * deltaR2Max
     for dR2, (object, match) in allPairs:
 	if dR2 > deltaR2Max:
 		break
