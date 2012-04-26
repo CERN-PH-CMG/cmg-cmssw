@@ -27,8 +27,7 @@ class SimpleJetPlots (Analyzer) :
             )
         if self.cfg_ana.useGenLeptons: 
             self.mchandles['genParticlesPruned'] =  AutoHandle (
-                'genParticlesPruned',
-                'std::vector<reco::GenParticle>'
+                *self.cfg_ana.GenParticlesCollection
                 )
         else:
             self.mchandles['genParticles'] =  AutoHandle (
@@ -43,9 +42,8 @@ class SimpleJetPlots (Analyzer) :
             *self.cfg_ana.YeCHSgenJetsCollection
            )
         self.handles['vertices'] =  AutoHandle (
-            'offlinePrimaryVertices',
-            'std::vector<reco::Vertex>'
-          )
+            *self.cfg_ana.VtxCollection
+           )
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
 
@@ -65,33 +63,43 @@ class SimpleJetPlots (Analyzer) :
         else:
             self.isPFLoose = lambda x : True
 
-        self.h_NoCHS_genjetspt        = TH1F ("h_NoCHS_genjetspt", "" ,500, 0, 500) ; 
-        self.h_NoCHS_genjetseta       = TH1F ("h_NoCHS_genjetseta", "" ,48, -6, 6) ; 
-        self.h_YeCHS_genjetspt        = TH1F ("h_YeCHS_genjetspt", "" ,500, 0, 500) ; 
-        self.h_YeCHS_genjetseta       = TH1F ("h_YeCHS_genjetseta", "" ,48, -6, 6) ; 
+        self.h_NVTXnum                = TH1F ("h_NVTXnum", "", 100, 0, 100)
+        self.h_NoCHS_genjetsnum       = TH1F ("h_NoCHS_genjetsnum", "", 100, 0, 100)
         
-        self.h_NoCHS_genjetspt_match  = TH1F ("h_NoCHS_genjetspt_match", "" ,500, 0, 500) ; 
-        self.h_NoCHS_genjetseta_match = TH1F ("h_NoCHS_genjetseta_match", "" ,48, -6, 6) ;
-        self.h_YeCHS_genjetspt_match  = TH1F ("h_YeCHS_genjetspt_match", "" ,500, 0, 500) ; 
-        self.h_YeCHS_genjetseta_match = TH1F ("h_YeCHS_genjetseta_match", "" ,48, -6, 6) ;
+        self.h_NoCHS_genjetspt        = TH1F ("h_NoCHS_genjetspt", "" ,500, 0, 500) 
+        self.h_NoCHS_genjetseta       = TH1F ("h_NoCHS_genjetseta", "" ,48, -6, 6) 
+        self.h_YeCHS_genjetspt        = TH1F ("h_YeCHS_genjetspt", "" ,500, 0, 500)
+        self.h_YeCHS_genjetseta       = TH1F ("h_YeCHS_genjetseta", "" ,48, -6, 6) 
         
-        self.h_NoCHS_recjetspt        = TH1F ("h_NoCHS_recjetspt", "" ,500, 0, 500) ; 
-        self.h_NoCHS_recjetspt_match  = TH1F ("h_NoCHS_recjetspt_match", "" ,500, 0, 500) ; 
-        self.h_NoCHS_recjetseta       = TH1F ("h_NoCHS_recjetseta", "" ,48, -6, 6) ; 
-        self.h_NoCHS_recjetseta_match = TH1F ("h_NoCHS_recjetseta_match", "" ,48, -6, 6) ;
+        self.h_NoCHS_genjetspt_match  = TH1F ("h_NoCHS_genjetspt_match", "" ,500, 0, 500)
+        self.h_NoCHS_genjetseta_match = TH1F ("h_NoCHS_genjetseta_match", "" ,48, -6, 6)
+        self.h_YeCHS_genjetspt_match  = TH1F ("h_YeCHS_genjetspt_match", "" ,500, 0, 500)
+        self.h_YeCHS_genjetseta_match = TH1F ("h_YeCHS_genjetseta_match", "" ,48, -6, 6)
         
-        self.h_YeCHS_recjetspt        = TH1F ("h_YeCHS_recjetspt", "" ,500, 0, 500) ; 
-        self.h_YeCHS_recjetspt_match  = TH1F ("h_YeCHS_recjetspt_match", "" ,500, 0, 500) ; 
-        self.h_YeCHS_recjetseta       = TH1F ("h_YeCHS_recjetseta", "" ,48, -6, 6) ; 
-        self.h_YeCHS_recjetseta_match = TH1F ("h_YeCHS_recjetseta_match", "" ,48, -6, 6) ;
+        self.h_NoCHS_recjetspt        = TH1F ("h_NoCHS_recjetspt", "" ,500, 0, 500)
+        self.h_NoCHS_recjetspt_match  = TH1F ("h_NoCHS_recjetspt_match", "" ,500, 0, 500)
+        self.h_NoCHS_recjetseta       = TH1F ("h_NoCHS_recjetseta", "" ,48, -6, 6)
+        self.h_NoCHS_recjetseta_match = TH1F ("h_NoCHS_recjetseta_match", "" ,48, -6, 6)
+        
+        self.h_YeCHS_recjetspt        = TH1F ("h_YeCHS_recjetspt", "" ,500, 0, 500)
+        self.h_YeCHS_recjetspt_match  = TH1F ("h_YeCHS_recjetspt_match", "" ,500, 0, 500)
+        self.h_YeCHS_recjetseta       = TH1F ("h_YeCHS_recjetseta", "" ,48, -6, 6)
+        self.h_YeCHS_recjetseta_match = TH1F ("h_YeCHS_recjetseta_match", "" ,48, -6, 6)
         
         self.h_YeCHS_response = TH1F ("h_YeCHSresponse", "" ,100, -2, 2) ;
         self.h_NoCHS_response = TH1F ("h_NoCHSresponse", "" ,100, -2, 2) ;
 
         self.h_NoCHS_correction = TH2F ("h_NoCHS_correction", "", 48, -6, 6, 1000, 0, 100) ;
         self.h_YeCHS_correction = TH2F ("h_YeCHS_correction", "", 48, -6, 6, 1000, 0, 100) ;
+        self.YeNoCHSRatio_eta   = TH2F ("YeNoCHSRatio_eta",   "", 48, -6, 6, 100,  0, 2)
 
-        self.YeNoCHSRatio_eta = TH2F ("YeNoCHSRatio_eta", "", 48, -6, 6, 100, 0, 2)
+        self.h_NoCHS_correction_ptcut = TH2F ("h_NoCHS_correction_ptcut", "", 48, -6, 6, 1000, 0, 100) ;
+        self.h_YeCHS_correction_ptcut = TH2F ("h_YeCHS_correction_ptcut", "", 48, -6, 6, 1000, 0, 100) ;
+        self.YeNoCHSRatio_eta_ptcut   = TH2F ("YeNoCHSRatio_eta_ptcut",   "", 48, -6, 6, 100,  0, 2)
+
+        self.h_NoCHS_correction_ptcut_PUcut = TH2F ("h_NoCHS_correction_ptcut_PUcut", "", 48, -6, 6, 1000, 0, 100) ;
+        self.h_YeCHS_correction_ptcut_PUcut = TH2F ("h_YeCHS_correction_ptcut_PUcut", "", 48, -6, 6, 1000, 0, 100) ;
+        self.YeNoCHSRatio_eta_ptcut_PUcut   = TH2F ("YeNoCHSRatio_eta_ptcut_PUcut",   "", 48, -6, 6, 100,  0, 2)
 
 
 
@@ -104,6 +112,7 @@ class SimpleJetPlots (Analyzer) :
         jetEtaCut = 4.5 
         
         event.vertices = self.handles['vertices'].product ()
+        self.h_NVTXnum.Fill (len (event.vertices))
         
         YeCHSjets = self.handles['YeCHSjets'].product ()
         event.YeCHSjets = [ jet for jet in YeCHSjets if ( abs(jet.eta()) < jetEtaCut and jet.pt()>self.cfg_ana.ptCut and self.isPFLoose(jet) ) ]
@@ -117,13 +126,17 @@ class SimpleJetPlots (Analyzer) :
             event.genLeptons = [ lep for lep in self.mchandles['genParticles'].product() if lep.status() == 3 and (abs(lep.pdgId()) == 11 or abs(lep.pdgId()) == 13 or abs(lep.pdgId()) == 15) ]  
         
         event.NoCHSgenJets = map (GenJet, self.mchandles['NoCHSgenJets'].product ())
-        event.selNoCHSGenJets = [GenJet (jet) for jet in event.NoCHSgenJets if (jet.pt ()>self.cfg_ana.genPtCut)]
+        event.myNoCHSGenJets = [GenJet (jet) for jet in event.NoCHSgenJets if (jet.pt ()>self.cfg_ana.genPtCut)]
+        event.selNoCHSGenJets = cleanObjectCollection (event.myNoCHSGenJets, event.genLeptons, 0.2)
         event.YeCHSgenJets = map (GenJet, self.mchandles['YeCHSgenJets'].product ())
-        event.selYeCHSGenJets = [GenJet (jet) for jet in event.YeCHSgenJets if (jet.pt ()>self.cfg_ana.genPtCut)]
+        event.myYeCHSGenJets = [GenJet (jet) for jet in event.YeCHSgenJets if (jet.pt ()>self.cfg_ana.genPtCut)]
+        event.selYeCHSGenJets = cleanObjectCollection (event.myYeCHSGenJets, event.genLeptons, 0.2)
         
-        if len (event.genLeptons) != 2 :
+        self.h_NoCHS_genjetsnum.Fill (len (event.selNoCHSGenJets)) 
+        
+        if len (event.genLeptons) > 2 :
             return
-        
+     
         for jet in event.selNoCHSGenJets:
             self.h_NoCHS_genjetspt.Fill (jet.pt ()) ;
             self.h_NoCHS_genjetseta.Fill (jet.eta ()) ;
@@ -136,15 +149,15 @@ class SimpleJetPlots (Analyzer) :
         for jet in event.cleanYeCHSJets :
             self.h_YeCHS_recjetspt       .Fill (jet.pt ()) ;
             self.h_YeCHS_recjetseta      .Fill (jet.eta ()) ; 
-            if (abs(jet.pt () > 20) and len(event.vertices) > 10):
-                self.h_YeCHS_correction.Fill (jet.eta (), 1. / jet.jecFactor(0)) ;
+#            if (abs(jet.pt () > 20) and len(event.vertices) > 10):
+#                self.h_YeCHS_correction.Fill (jet.eta (), 1. / jet.jecFactor(0)) ;
 #                print 'Ev', event.iEv, 'YeCHS ', round (jet.eta (), 2), round (jet.phi (), 2), round (jet.pt () * jet.jecFactor(0), 2)#, round (jet.component (1).fraction (), 2)
                 
         for jet in event.cleanNoCHSJets:
             self.h_NoCHS_recjetspt       .Fill (jet.pt ()) ;
             self.h_NoCHS_recjetseta      .Fill (jet.eta ()) ; 
-            if (abs(jet.pt () > 20) and len(event.vertices) > 10):
-                self.h_NoCHS_correction.Fill (jet.eta (), 1. / jet.jecFactor(0)) ;
+#            if (abs(jet.pt () > 20) and len(event.vertices) > 10):
+#                self.h_NoCHS_correction.Fill (jet.eta (), 1. / jet.jecFactor(0)) ;
 #                print 'Ev', event.iEv, 'NoCHS ', round (jet.eta (), 2), round (jet.phi (), 2), round (jet.pt () * jet.jecFactor(0), 2)#, round (jet.component (1).fraction (), 2)
                 
         #PG removing negative correction jets
@@ -155,8 +168,25 @@ class SimpleJetPlots (Analyzer) :
         event.YeNoCHSmatch = matchObjectCollection2 (event.noNegCleanYeCHSJets, event.noNegCleanNoCHSJets, 0.1)
         for yejet, nojet in event.YeNoCHSmatch.iteritems():
             if nojet == None: 
-                continue ;
+                continue
             self.YeNoCHSRatio_eta.Fill (yejet.eta (), yejet.pt () * yejet.jecFactor(0) / (nojet.pt () * nojet.jecFactor(0)))
+            self.h_NoCHS_correction.Fill (nojet.eta (), 1. / nojet.jecFactor(0))
+            self.h_YeCHS_correction.Fill (yejet.eta (), 1. / yejet.jecFactor(0))
+
+            if nojet.pt () < 40 or nojet.pt () > 60:
+                continue
+            self.YeNoCHSRatio_eta_ptcut.Fill (yejet.eta (), yejet.pt () * yejet.jecFactor(0) / (nojet.pt () * nojet.jecFactor(0)))
+            self.h_NoCHS_correction_ptcut.Fill (nojet.eta (), 1. / nojet.jecFactor(0))
+            self.h_YeCHS_correction_ptcut.Fill (yejet.eta (), 1. / yejet.jecFactor(0))
+
+            if len (event.vertices) < 5 or len (event.vertices) > 10:
+                continue
+            self.YeNoCHSRatio_eta_ptcut_PUcut.Fill (yejet.eta (), yejet.pt () * yejet.jecFactor(0) / (nojet.pt () * nojet.jecFactor(0)))
+            self.h_NoCHS_correction_ptcut_PUcut.Fill (nojet.eta (), 1. / nojet.jecFactor(0))
+            self.h_YeCHS_correction_ptcut_PUcut.Fill (yejet.eta (), 1. / yejet.jecFactor(0))
+
+
+
 #            if yejet.pt () * yejet.jecFactor(0) < 10: 
 #                continue ;
 #            if abs (yejet.eta ()) < 3:
@@ -202,33 +232,43 @@ class SimpleJetPlots (Analyzer) :
         from ROOT import gROOT
         gROOT.SetBatch(True)
         self.file.cd ()
-        self.h_NoCHS_genjetspt        .Write () ;
-        self.h_NoCHS_genjetseta       .Write () ;
-        self.h_YeCHS_genjetspt        .Write () ;
-        self.h_YeCHS_genjetseta       .Write () ;
+        self.h_NoCHS_genjetspt        .Write ()
+        self.h_NoCHS_genjetseta       .Write ()
+        self.h_YeCHS_genjetspt        .Write ()
+        self.h_YeCHS_genjetseta       .Write ()
         
-        self.h_NoCHS_genjetspt_match  .Write () ;
-        self.h_NoCHS_genjetseta_match .Write () ;
-        self.h_YeCHS_genjetspt_match  .Write () ;
-        self.h_YeCHS_genjetseta_match .Write () ;
+        self.h_NoCHS_genjetspt_match  .Write ()
+        self.h_NoCHS_genjetseta_match .Write ()
+        self.h_YeCHS_genjetspt_match  .Write ()
+        self.h_YeCHS_genjetseta_match .Write ()
         
-        self.h_NoCHS_recjetspt        .Write () ;
-        self.h_NoCHS_recjetspt_match  .Write () ;
-        self.h_NoCHS_recjetseta       .Write () ;
-        self.h_NoCHS_recjetseta_match .Write () ;
+        self.h_NoCHS_recjetspt        .Write ()
+        self.h_NoCHS_recjetspt_match  .Write ()
+        self.h_NoCHS_recjetseta       .Write ()
+        self.h_NoCHS_recjetseta_match .Write ()
         
-        self.h_YeCHS_recjetspt        .Write () ;
-        self.h_YeCHS_recjetspt_match  .Write () ;
-        self.h_YeCHS_recjetseta       .Write () ;
-        self.h_YeCHS_recjetseta_match .Write () ;
+        self.h_YeCHS_recjetspt        .Write ()
+        self.h_YeCHS_recjetspt_match  .Write ()
+        self.h_YeCHS_recjetseta       .Write ()
+        self.h_YeCHS_recjetseta_match .Write ()
         
-        self.h_YeCHS_response         .Write () ;
-        self.h_NoCHS_response         .Write () ;
+        self.h_YeCHS_response         .Write ()
+        self.h_NoCHS_response         .Write ()
         
-        self.h_YeCHS_correction       .Write () ;
-        self.h_NoCHS_correction       .Write () ;
+        self.h_YeCHS_correction       .Write ()
+        self.h_NoCHS_correction       .Write ()
+        self.YeNoCHSRatio_eta         .Write ()
         
-        self.YeNoCHSRatio_eta         .Write () ;
+        self.h_YeCHS_correction_ptcut .Write ()
+        self.h_NoCHS_correction_ptcut .Write ()
+        self.YeNoCHSRatio_eta_ptcut   .Write ()
+        
+        self.h_YeCHS_correction_ptcut_PUcut .Write ()
+        self.h_NoCHS_correction_ptcut_PUcut .Write ()
+        self.YeNoCHSRatio_eta_ptcut_PUcut   .Write ()
+        
+        self.h_NoCHS_genjetsnum       .Write ()
+        self.h_NVTXnum                .Write ()
         
         self.file.Close()
         
