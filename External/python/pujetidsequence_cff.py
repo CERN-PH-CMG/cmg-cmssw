@@ -3,6 +3,8 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.External.pujetidproducer_cfi import pileupJetIdProducer
 from CMGTools.External.puJetIDAlgo_cff import PhilV1, full, simple
 
+stdalgos = cms.VPSet(simple,full,PhilV1)
+
 puJetId = pileupJetIdProducer.clone(
     produceJetIds = cms.bool(True),
     jetids = cms.InputTag(""),
@@ -18,12 +20,8 @@ puJetMva = pileupJetIdProducer.clone(
     runMvas = cms.bool(True),
     jets = cms.InputTag("selectedPatJets"),
     vertexes = cms.InputTag("offlinePrimaryVertices"),
-    algos = cms.VPSet(simple,
-                      full,
-                      PhilV1,
-                      )
+    algos = stdalgos
     )
-
 puJetIdSqeuence = cms.Sequence(puJetId*puJetMva)
 
 ##
