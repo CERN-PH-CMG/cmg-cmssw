@@ -55,19 +55,35 @@ namespace cmg {
     /// \sum pt^2 / (\sum pt)^2
     float ptd() const {return ptd_;}
 
-    // Pile-Up discrimination
+    /// jet width
     float rms() const { return rms_; } 
+
+    /// fraction of charged hadron sum pt from charged hadrons from the primary vertex
     float beta() const { return beta_; } 
-    float puMva(int i) const { return puMvas_[i]; }
-    int   puId(int i) const { return puIds_[i]; }
+
+    /// mva ouptut value for pile-up jet id (name should be "full", "simple" or "cut-based")
     float puMva(const std::string & name) const;
+    float puMva(const char* name) const {return puMva(std::string(name));}
+    /// name should be "full", "simple" or "cut-based".
+    /// for this mva, returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)
     int   puId(const std::string & name) const;
-    bool passPuJetId(const std::string & name, PileupJetIdentifier::Id level) { return PileupJetIdentifier::passJetId(puId(name),level); } ;
+    int   puId(const char* name) const {return puId(std::string(name));}
+
+    /// returns true if the working point level is passed for mva name:
+    /// - level = loose, medium, tight
+    /// - name = "full", "simple" or "cut-based".
+    /// see  PileupJetIdentifier for more information
+    bool passPuJetId(const std::string & name, PileupJetIdentifier::Id level) const { return PileupJetIdentifier::passJetId(puId(name),level); } 
+    bool passPuJetId(const char* name, PileupJetIdentifier::Id level) const { 
+      return PileupJetIdentifier::passJetId(puId(std::string(name)),level); 
+    } 
 
     friend class PFJetFactory;
     
   private:
     int puIdIndex(const std::string & name) const;
+    float puMva(int i) const { return puMvas_[i]; }
+    int   puId(int i) const { return puIds_[i]; }
     
     ///contains one PFJetComponent for each type of PFCandidate. 
     ///see PFJetComponent
