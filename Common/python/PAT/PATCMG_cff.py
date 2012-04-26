@@ -2,19 +2,22 @@ import FWCore.ParameterSet.Config as cms
 
 
 from CommonTools.ParticleFlow.PFBRECO_cff import *
+from CommonTools.ParticleFlow.ParticleSelectors.genericPFJetSelector_cfi import selectedPfJets
 from PhysicsTools.PatAlgos.patSequences_cff import *
 from CMGTools.Common.PAT.patLeptModifiedIsoDeposit_cff import *
 from CMGTools.Common.analysis_cff import *
 
+# FIXME reinstall PU jet ID stuff
+# FIXME make sure embedded collections are kept in pat-tuple (CHS PF collection!)
 # FIXME are pat conversions used in the other cfg? where? do I need to add them?
 # FIXME add jet substructure with Andreas
-# FIXME add CMG sequence for each object. 
 # FIXME check PAT content
 # FIXME check CMG content
 #           drop embedding collections? check they're empty
-# FIXME set new aliases
+# FIXME set new aliases - Aliases don't work in 52 anyway!
 # FIXME check detector based iso
-# FIXME make sure the old cfg runs 
+# FIXME make sure the old cfg runs
+
 
 
 # TRIGGER          ---------------------------
@@ -166,7 +169,7 @@ patElectrons.electronIDSources  = electronIDs.clone()
 
 patElectrons.embedTrack = True
 
-selectedPatMuons.cut = 'pt()>5'
+selectedPatElectrons.cut = 'pt()>5'
 
 cmgElectron.cfg.inputCollection = 'selectedPatElectrons'
 
@@ -183,7 +186,12 @@ PATCMGElectronSequence = cms.Sequence(
 
 # JETS NO PU CHS ----------------------------
 
-jetSource = 'ak5PFJets'
+#FIXME: is this cut really necessary? does it play well with Phil's stuff?
+# NOTE cutting on uncorrected jets, but no bias for corrected jet pT>7
+ak5PFJetsSel = selectedPfJets.clone( src = 'ak5PFJets',
+                                     cut = 'pt()>5' )
+
+jetSource = 'ak5PFJetsSel'
 
 # corrections 
 from PhysicsTools.PatAlgos.recoLayer0.jetCorrFactors_cfi import *
@@ -217,8 +225,15 @@ patJetGenJetMatch.matched = 'ak5GenJetsNoNu'
 from PhysicsTools.PatAlgos.mcMatchLayer0.jetFlavourId_cff import *
 patJetPartonAssociation.jets = jetSource
 
+# FIXME is it ok for jet studies?
+selectedPatJets.cut = 'pt()>10'
+
 cmgPFJet.cfg.inputCollection = 'selectedPatJets'
 cmgPFBaseJet.cfg.inputCollection = 'selectedPatJets'
+
+# Pile-up jet ID
+from  CMGTools.External.pujetidsequence_cff import puJetId
+cmgPUJetMva.jets = 'selectedPatJets'
 
 # we want GenJets without neutrinos!
 PATCMGGenJetSequence = cms.Sequence(
@@ -232,6 +247,7 @@ jetMCSequence = cms.Sequence(
     )
 
 PATCMGJetSequence = cms.Sequence(
+    ak5PFJetsSel + 
     jetMCSequence +
     ak5JetTracksAssociatorAtVertex + 
     btagging + 
@@ -239,6 +255,7 @@ PATCMGJetSequence = cms.Sequence(
     patJetFlavourId +
     patJets +
     selectedPatJets +
+    puJetId +
     jetSequence
     )
 
@@ -252,7 +269,6 @@ PFTau.remove( recoTauHPSTancSequence )
 
 # will insert a jet selector before tau ID to speed up processing
 jetSelectionForTaus = 'pt()>15.0 && abs(eta())<3.0'
-from CommonTools.ParticleFlow.ParticleSelectors.genericPFJetSelector_cfi import selectedPfJets
 pfJetsForHPSTau = selectedPfJets.clone( src = 'ak5PFJets',
                                         cut = jetSelectionForTaus )
 # from CMGTools.Common.Tools.visitorUtils import replaceSrc

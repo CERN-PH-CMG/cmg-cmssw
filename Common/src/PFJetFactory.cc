@@ -25,6 +25,7 @@ cmg::PFJetFactory::PFJetFactory(const edm::ParameterSet& ps):
     assert( mvaLabel == idLabel );
     puNames_.push_back(mvaLabel);
   }
+  
 }
 
 cmg::PFJetFactory::event_ptr cmg::PFJetFactory::create(const edm::Event& iEvent, 
@@ -44,6 +45,7 @@ cmg::PFJetFactory::event_ptr cmg::PFJetFactory::create(const edm::Event& iEvent,
     iEvent.getByLabel(puIds_[ii],puIds[ii]);
     iEvent.getByLabel(puMvas_[ii],puMvas[ii]);
   }
+  
     
   long unsigned index = 0;
   for(pat::JetCollection::const_iterator mi = jetCands->begin();
@@ -103,7 +105,7 @@ cmg::PFJetFactory::event_ptr cmg::PFJetFactory::create(const edm::Event& iEvent,
       float sumpt = 0;
       for(unsigned i=0; i<pfCandPtrs.size(); ++i) {
 	const reco::PFCandidate& cand = *(pfCandPtrs[i]);
-	reco::Candidate::LorentzVector jetWithoutCand = jet.p4() - cand.p4();       
+// 	reco::Candidate::LorentzVector jetWithoutCand = jet.p4() - cand.p4();       
 
 	totalEnergyFromConst += cand.energy();
 
