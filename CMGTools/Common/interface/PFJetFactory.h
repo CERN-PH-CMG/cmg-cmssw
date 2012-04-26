@@ -26,7 +26,7 @@ class PFJetFactory : public Factory<cmg::PFJet>{
     std::vector<edm::InputTag> puMvas_;
     std::vector<edm::InputTag> puIds_;
     std::vector<std::string> puNames_;
-    bool  useConstituents_;
+    bool useConstituents_;
     
   };
 

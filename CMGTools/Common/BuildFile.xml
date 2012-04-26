@@ -12,15 +12,15 @@
 <use name="DataFormats/HepMCCandidate"/>
 <use name="HLTrigger/HLTcore"/>
 
-<use name="CMGTools/External"/>
-
 <use name="PhysicsTools/Utilities"/>
 
-<use   name="RecoEcal/EgammaCoreTools"/>
-<use   name="TrackingTools/IPTools"/>
+<use name="RecoEcal/EgammaCoreTools"/>
+<use name="TrackingTools/IPTools"/>
 
-<use   name="root"/>
-<use   name="roottmva"/>
+<use name="CMGTools/External"/>
+
+<use name="root"/>
+<use name="roottmva"/>
 <use name="rootrflx"/>
 <use name="roofitcore"/>
 

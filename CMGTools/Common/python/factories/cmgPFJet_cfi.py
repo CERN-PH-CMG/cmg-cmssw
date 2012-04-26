@@ -1,8 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 from CMGTools.Common.factories.cmgBaseJet_cfi import baseJetFactory
 
-import  CMGTools.External.pujetidsequence_cff
-
 from CMGTools.External.pujetidsequence_cff import stdalgos
 algolables = [ a.label.value() for a in stdalgos ]
 
@@ -11,8 +9,8 @@ pfJetFactory = cms.PSet(
        baseJetFactory = baseJetFactory.clone(),
        useConstituents = cms.bool( True ),
        puVariables = cms.InputTag("puJetId"),
-       puMvas = cms.VInputTag( cms.InputTag("puJetMva","%sDiscriminant" % a ) for a in algolables ),
-       puIds = cms.VInputTag( cms.InputTag("puJetMva","%sId" % a ) for a in algolables )
+       puMvas = cms.VInputTag( cms.InputTag("cmgPUJetMva","%sDiscriminant" % a ) for a in algolables ),
+       puIds = cms.VInputTag( cms.InputTag("cmgPUJetMva","%sId" % a ) for a in algolables )
        )
 
 
