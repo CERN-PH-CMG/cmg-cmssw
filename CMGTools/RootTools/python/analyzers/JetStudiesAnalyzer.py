@@ -21,8 +21,8 @@ class ResolutionJetHistograms (Histograms) :
         self.histosEta = []
         self.histosPt = []
         for i in range (self.listLen) : 
-            self.histosEta.append (TH2F (name + '_h_dpt_eta_' + str (i), '', 24, -6, 6, 200, -2, 6))
-            self.histosPt.append (TH2F (name + '_h_dpt_pt_' + str (i), '', 20, 0, 200, 200, -2, 6))
+            self.histosEta.append (TH2F (name + '_h_dpt_eta_' + str (i), '', 48, -6, 6, 200, -2, 6))
+            self.histosPt.append (TH2F (name + '_h_dpt_pt_' + str (i), '', 10, 0, 200, 200, -2, 6))
         super (ResolutionJetHistograms, self).__init__ (name)
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
@@ -30,7 +30,7 @@ class ResolutionJetHistograms (Histograms) :
     def fillJet (self, jet, nVtx) :
         if nVtx < self.maxVtx : 
             index = int (nVtx) / int (self.vtxBinning)
-            self.histosEta[index].Fill (jet.gen.eta (), jet.pt () / jet.gen.pt ()
+            self.histosEta[index].Fill (jet.gen.eta (), jet.pt () / jet.gen.pt ())
             self.histosPt[index].Fill (jet.gen.pt (), jet.pt ()/ jet.gen.pt ())
         else : print 'the vertex number: ' + str (nVtx) + ' is too high'
 
