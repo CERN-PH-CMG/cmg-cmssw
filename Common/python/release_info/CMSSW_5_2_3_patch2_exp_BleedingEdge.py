@@ -2,7 +2,7 @@
   ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_pujetid_26Apr12'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-00-09'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'joseApril21'),
-  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_forpietro_26Apr12'),
+  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_fixpietro_27Apr12'),
   ('CommonTools/ParticleFlow', 'CommonTools/ParticleFlow', 'V00-03-07-01'),
   ('DataFormats/PatCandidates', 'DataFormats/PatCandidates', 'cbern_25Apr12'),
   ('EGamma/EGammaAnalysisTools', 'UserCode/EGamma/EGammaAnalysisTools', 'V00-00-05'),
@@ -19,7 +19,3 @@
   ('PhysicsTools/Utilities', 'PhysicsTools/Utilities', 'V08-03-16'),
   ('RecoParticleFlow/PFProducer', 'RecoParticleFlow/PFProducer', 'V15-01-05'),
   ('RecoParticleFlow/PostProcessing', 'UserCode/RecoParticleFlow/PostProcessing', 'Colin_June23')]
-# The following packages were not in the input release_info.
-# Please make sure that the CVS module is correct!
-#	CMGTools/External                        V00-00-09
-#	FWCore/GuiBrowsers                       V00-00-60
