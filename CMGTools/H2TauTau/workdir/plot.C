@@ -55,7 +55,7 @@ void plot(){
   //analysis->plotInc("metpt",1,0,-1,50,0,200," MET   (GeV)","Events / 4 GeV",c);    
   //analysis->plotInc("metphi",1,1,-1,70,-3.5,3.5," MET  phi ","",c);    
   //analysis->plotInc("transversemass",1,0,-1,50,0,200,"m_{T}   (GeV)","Events / 4 GeV",c);
-  //analysis->plotInc("ditaumass",1,1,-1,60,0,300,"m_{vis}   (GeV)","Events / 5 GeV",c,0);
+  analysis->plotInc("ditaumass",1,1,-1,60,0,300,"","m_{vis}   (GeV)","Events / 5 GeV",c,0);
   //analysis->plotSM("ditaumass",1,1,-1,60,0,300,"","m_{vis}   (GeV)","",c);
   //analysis->plotSM("transversemass",1,0,-1,50,0,200,"","m_{T}   (GeV)","Events / 4 GeV",c);
  
@@ -153,7 +153,7 @@ void plot(){
 
   ////////////////////////////SM2/////
   //analysis->plotSM("transversemass",1,0,2,15,0,150,"","m_{T}   (GeV)","",c);
-  analysis->plotSM("ditaumass",1,1,2,12,0,300,"","m_{vis}   (GeV)","Events / 25 GeV",c);
+  //analysis->plotSM("ditaumass",1,1,2,12,0,300,"","m_{vis}   (GeV)","Events / 25 GeV",c);
   //analysis->plotSM("svfitmass",1,1,2,11,0,330,"","m_{vis}   (GeV)","Events / 30 GeV",c);
   //analysis->plotSM("taupt",1,1,2,10,0,100," #tau p_{T}   (GeV)","Events / 10 GeV",c);
   //analysis->plotSM("mupt",1,1,2,10,0,100," #mu p_{T}   (GeV)","Events / 10 GeV",c);
