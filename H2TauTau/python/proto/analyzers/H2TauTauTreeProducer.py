@@ -24,6 +24,8 @@ class H2TauTauTreeProducer( TreeAnalyzer ):
             var('{pName}Phi'.format(pName=pName))
             var('{pName}Charge'.format(pName=pName))
             var('{pName}Iso'.format(pName=pName))
+            var('{pName}Id'.format(pName=pName))
+            
             
         var('visMass')
         var('svfitMass')
@@ -51,6 +53,9 @@ class H2TauTauTreeProducer( TreeAnalyzer ):
 
         var('weight')
         var('vertexWeight')
+
+        var('nVert')
+        
         var('l1EffData')
         var('l1EffMC')
         var('l1Weight')
@@ -76,6 +81,9 @@ class H2TauTauTreeProducer( TreeAnalyzer ):
             fill('{pName}Charge'.format(pName=pName), particle.charge() )
             if hasattr( particle, 'relIso' ):
                 fill('{pName}Iso'.format(pName=pName), particle.relIso(0.5) )
+            if abs( particle.pdgId() )==11:
+                fill('{pName}Id'.format(pName=pName), particle.mvaDaniele() )
+                
            
         fill('visMass', event.diLepton.mass())
         fill('svfitMass', event.diLepton.massSVFit())
@@ -118,16 +126,22 @@ class H2TauTauTreeProducer( TreeAnalyzer ):
             fParticleVars('jet2', event.cleanJets[1] )
 
         fill('weight', event.eventWeight)
-        fill('vertexWeight', event.vertexWeight)
-        fill('l1EffData', event.leg1_eff)
-        fill('l1EffMC', event.leg1_effMC)
-        fill('l1Weight', event.leg1_weight)
-        fill('l2EffData', event.leg1_eff)
-        fill('l2EffMC', event.leg1_effMC)
-        fill('l2Weight', event.leg1_weight)
+        if hasattr( event, 'vertexWeight'): 
+            fill('vertexWeight', event.vertexWeight)
+            fill('nVert', len(event.vertices) ) 
+        if hasattr( event, 'leg1_eff'): 
+            fill('l1EffData', event.leg1_eff)
+            fill('l1EffMC', event.leg1_effMC)
+            fill('l1Weight', event.leg1_weight)
+        if hasattr( event, 'leg2_eff'): 
+            fill('l2EffData', event.leg2_eff)
+            fill('l2EffMC', event.leg2_effMC)
+            fill('l2Weight', event.leg2_weight)
 
         isFake = 1
-        if hasattr(event,'genMatched') and event.genMatched == 1: isFake = 0
+        if hasattr( event, 'genMatched'): 
+            if event.genMatched == 1:
+                isFake = 0
         fill('isFake', isFake)
 
         isPhoton = 0
