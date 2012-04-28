@@ -89,16 +89,16 @@ class SimpleJetPlots (Analyzer) :
         self.h_YeCHS_response = TH1F ("h_YeCHSresponse", "" ,100, -2, 2) ;
         self.h_NoCHS_response = TH1F ("h_NoCHSresponse", "" ,100, -2, 2) ;
 
-        self.h_NoCHS_correction = TH2F ("h_NoCHS_correction", "", 48, -6, 6, 1000, 0, 100) ;
-        self.h_YeCHS_correction = TH2F ("h_YeCHS_correction", "", 48, -6, 6, 1000, 0, 100) ;
+        self.h_NoCHS_correction = TH2F ("h_NoCHS_correction", "", 48, -6, 6, 1000, 0, 10) ;
+        self.h_YeCHS_correction = TH2F ("h_YeCHS_correction", "", 48, -6, 6, 1000, 0, 10) ;
         self.YeNoCHSRatio_eta   = TH2F ("YeNoCHSRatio_eta",   "", 48, -6, 6, 100,  0, 2)
 
-        self.h_NoCHS_correction_ptcut = TH2F ("h_NoCHS_correction_ptcut", "", 48, -6, 6, 1000, 0, 100) ;
-        self.h_YeCHS_correction_ptcut = TH2F ("h_YeCHS_correction_ptcut", "", 48, -6, 6, 1000, 0, 100) ;
+        self.h_NoCHS_correction_ptcut = TH2F ("h_NoCHS_correction_ptcut", "", 48, -6, 6, 1000, 0, 10) ;
+        self.h_YeCHS_correction_ptcut = TH2F ("h_YeCHS_correction_ptcut", "", 48, -6, 6, 1000, 0, 10) ;
         self.YeNoCHSRatio_eta_ptcut   = TH2F ("YeNoCHSRatio_eta_ptcut",   "", 48, -6, 6, 100,  0, 2)
 
-        self.h_NoCHS_correction_ptcut_PUcut = TH2F ("h_NoCHS_correction_ptcut_PUcut", "", 48, -6, 6, 1000, 0, 100) ;
-        self.h_YeCHS_correction_ptcut_PUcut = TH2F ("h_YeCHS_correction_ptcut_PUcut", "", 48, -6, 6, 1000, 0, 100) ;
+        self.h_NoCHS_correction_ptcut_PUcut = TH2F ("h_NoCHS_correction_ptcut_PUcut", "", 48, -6, 6, 1000, 0, 10) ;
+        self.h_YeCHS_correction_ptcut_PUcut = TH2F ("h_YeCHS_correction_ptcut_PUcut", "", 48, -6, 6, 1000, 0, 10) ;
         self.YeNoCHSRatio_eta_ptcut_PUcut   = TH2F ("YeNoCHSRatio_eta_ptcut_PUcut",   "", 48, -6, 6, 100,  0, 2)
 
 
