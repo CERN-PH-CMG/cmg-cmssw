@@ -12,8 +12,8 @@ class VBFAnalyzer( Analyzer ):
     def declareHandles(self):
         super(VBFAnalyzer, self).declareHandles()
 
-        self.handles['jets'] = AutoHandle( 'cmgPFBaseJetSel',
-                                           'std::vector<cmg::BaseJet>' )
+        self.handles['jets'] = AutoHandle( self.cfg_ana.jetCol,
+                                           'std::vector<cmg::PFJet>' )
 
     def beginLoop(self):
         super(VBFAnalyzer,self).beginLoop()
@@ -33,7 +33,7 @@ class VBFAnalyzer( Analyzer ):
         event.cleanJets = []
         for cmgJet in cmgJets:
             jet = Jet( cmgJet )
-            if self.cfg_comp.isMC:
+            if self.cfg_comp.isMC and hasattr( self.cfg_comp, 'jetScale'):
                 scale = random.gauss( self.cfg_comp.jetScale,
                                       self.cfg_comp.jetSmear )
                 jet.scaleEnergy( scale )
