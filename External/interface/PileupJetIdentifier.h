@@ -78,8 +78,10 @@ public:
 
 	static bool passJetId(int flag, Id level) { return ( flag & (1 << level) ) != 0 ; }
 	
-	DECLARE_VARIABLE(idFlag   ,int);
-	bool passJetId(Id level) { return passJetId(idFlag_,level); }
+	DECLARE_VARIABLE(idFlag      ,int);
+	bool passJetId   (Id level) { return passJetId(idFlag_,level); }	
+	DECLARE_VARIABLE(cutIdFlag   ,int);
+	bool passJetCutId(Id level) { return passJetId(cutIdFlag_,level); }
 
 	DECLARE_VARIABLE(mva      ,float);
 

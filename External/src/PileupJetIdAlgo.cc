@@ -24,20 +24,43 @@ PileupJetIdAlgo::PileupJetIdAlgo(const edm::ParameterSet & ps)
 	version_             = ps.getParameter<int>("version");
  
 	reader_              = 0;
-
+	cutBased_ = false;
+	std::string label    = ps.getParameter<std::string>("label");
+	if(label == "cut") cutBased_ = true;
 	edm::ParameterSet jetConfig = ps.getParameter<edm::ParameterSet>("JetIdParams");
 	for(int i0 = 0; i0 < 3; i0++) { 
 	  std::string lCutType                            = "Tight";
 	  if(i0 == PileupJetIdentifier::kMedium) lCutType = "Medium";
 	  if(i0 == PileupJetIdentifier::kLoose)  lCutType = "Loose";
-	  std::vector<double> pt010  = jetConfig.getParameter<std::vector<double> >(("Pt010_" +lCutType).c_str());
-	  std::vector<double> pt1020 = jetConfig.getParameter<std::vector<double> >(("Pt1020_"+lCutType).c_str());
-	  std::vector<double> pt2030 = jetConfig.getParameter<std::vector<double> >(("Pt2030_"+lCutType).c_str());
-	  std::vector<double> pt3050 = jetConfig.getParameter<std::vector<double> >(("Pt3050_"+lCutType).c_str());
-	  for(int i1 = 0; i1 < 4; i1++) mvacut_[i0][0][i1] = pt010 [i1];
-	  for(int i1 = 0; i1 < 4; i1++) mvacut_[i0][1][i1] = pt1020[i1];
-	  for(int i1 = 0; i1 < 4; i1++) mvacut_[i0][2][i1] = pt2030[i1];
-	  for(int i1 = 0; i1 < 4; i1++) mvacut_[i0][3][i1] = pt3050[i1];
+	  int nCut = 1;
+	  if(cutBased_) nCut++;
+	  for(int i1 = 0; i1 < nCut; i1++) {
+	    std::string lFullCutType = lCutType;
+	    if(cutBased_ && i1 == 0) lFullCutType = "BetaStar"+ lCutType; 
+	    if(cutBased_ && i1 == 1) lFullCutType = "RMS"     + lCutType; 
+	    std::vector<double> pt010  = jetConfig.getParameter<std::vector<double> >(("Pt010_" +lFullCutType).c_str());
+	    std::vector<double> pt1020 = jetConfig.getParameter<std::vector<double> >(("Pt1020_"+lFullCutType).c_str());
+	    std::vector<double> pt2030 = jetConfig.getParameter<std::vector<double> >(("Pt2030_"+lFullCutType).c_str());
+	    std::vector<double> pt3050 = jetConfig.getParameter<std::vector<double> >(("Pt3050_"+lFullCutType).c_str());
+	    if(!cutBased_) { 
+	      for(int i2 = 0; i2 < 4; i2++) mvacut_[i0][0][i2] = pt010 [i2];
+	      for(int i2 = 0; i2 < 4; i2++) mvacut_[i0][1][i2] = pt1020[i2];
+	      for(int i2 = 0; i2 < 4; i2++) mvacut_[i0][2][i2] = pt2030[i2];
+	      for(int i2 = 0; i2 < 4; i2++) mvacut_[i0][3][i2] = pt3050[i2];
+	    }
+	    if(cutBased_ && i1 == 0) { 
+	      for(int i2 = 0; i2 < 4; i2++) betaStarCut_[i0][0][i2] = pt010 [i2];
+	      for(int i2 = 0; i2 < 4; i2++) betaStarCut_[i0][1][i2] = pt1020[i2];
+	      for(int i2 = 0; i2 < 4; i2++) betaStarCut_[i0][2][i2] = pt2030[i2];
+	      for(int i2 = 0; i2 < 4; i2++) betaStarCut_[i0][3][i2] = pt3050[i2];
+	    }
+	    if(cutBased_ && i1 == 1) { 
+	      for(int i2 = 0; i2 < 4; i2++) rmsCut_[i0][0][i2] = pt010 [i2];
+	      for(int i2 = 0; i2 < 4; i2++) rmsCut_[i0][1][i2] = pt1020[i2];
+	      for(int i2 = 0; i2 < 4; i2++) rmsCut_[i0][2][i2] = pt2030[i2];
+	      for(int i2 = 0; i2 < 4; i2++) rmsCut_[i0][3][i2] = pt3050[i2];
+	    }
+	  }
 	}
 	setup();
 }
@@ -226,7 +249,25 @@ std::pair<int,int> PileupJetIdAlgo::getJetIdKey(float jetPt, float jetEta)
 
   return std::pair<int,int>(ptId,etaId);
 }
+// ------------------------------------------------------------------------------------------
+int PileupJetIdAlgo::computeCutIDflag(float betaStarClassic,float dR2Mean,float nvtx, float jetPt, float jetEta)
+{
+  std::pair<int,int> jetIdKey = getJetIdKey(jetPt,jetEta);
+  float betaStarModified = betaStarClassic/log(nvtx-0.64);
+  int idFlag(0);
+  if(betaStarModified < betaStarCut_[PileupJetIdentifier::kTight ][jetIdKey.first][jetIdKey.second] && 
+     dR2Mean          < rmsCut_     [PileupJetIdentifier::kTight ][jetIdKey.first][jetIdKey.second] 
+     ) idFlag += 1 <<  PileupJetIdentifier::kTight;
 
+  if(betaStarModified < betaStarCut_[PileupJetIdentifier::kMedium ][jetIdKey.first][jetIdKey.second] && 
+     dR2Mean          < rmsCut_     [PileupJetIdentifier::kMedium ][jetIdKey.first][jetIdKey.second] 
+     ) idFlag += 1 <<  PileupJetIdentifier::kMedium;
+  
+  if(betaStarModified < betaStarCut_[PileupJetIdentifier::kLoose  ][jetIdKey.first][jetIdKey.second] && 
+     dR2Mean          < rmsCut_     [PileupJetIdentifier::kLoose  ][jetIdKey.first][jetIdKey.second] 
+     ) idFlag += 1 <<  PileupJetIdentifier::kLoose;
+  return idFlag;
+}
 // ------------------------------------------------------------------------------------------
 int PileupJetIdAlgo::computeIDflag(float mva, float jetPt, float jetEta)
 {
@@ -489,11 +530,12 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 	} else {
 		assert( internalId_.beta_ == 0. && internalId_.betaStar_ == 0.&& internalId_.betaClassic_ == 0. && internalId_.betaStarClassic_ == 0. );
 	}
+	if(cutBased_) internalId_.cutIdFlag_ = computeCutIDflag(internalId_.betaStarClassic_,internalId_.dR2Mean_,internalId_.nvtx_,internalId_.jetPt_,internalId_.jetEta_);
 	
 	if( calculateMva ) {
 		runMva();
 	}
-
+	
 	return PileupJetIdentifier(internalId_);
 }
 
@@ -515,7 +557,8 @@ std::string PileupJetIdAlgo::dumpVariables() const
 // ------------------------------------------------------------------------------------------
 void PileupJetIdAlgo::resetVariables()
 {
-	internalId_.idFlag_ = 0;
+	internalId_.idFlag_    = 0;
+	internalId_.cutIdFlag_ = 0;
 	for(variables_list_t::iterator it=variables_.begin(); 
 	    it!=variables_.end(); ++it ) {
 		*it->second.first = it->second.second;
@@ -530,7 +573,8 @@ void PileupJetIdAlgo::resetVariables()
 // ------------------------------------------------------------------------------------------
 void PileupJetIdAlgo::initVariables()
 {
-	internalId_.idFlag_ = 0;
+	internalId_.idFlag_    = 0;
+	internalId_.cutIdFlag_ = 0;
   	INIT_VARIABLE(mva        , "", -100.);
 	INIT_VARIABLE(jetPt      , "jspt_1", 0.);
 	INIT_VARIABLE(jetEta     , "jseta_1", large_val);

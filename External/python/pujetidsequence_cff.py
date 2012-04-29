@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 from CMGTools.External.pujetidproducer_cfi import pileupJetIdProducer
-from CMGTools.External.puJetIDAlgo_cff import PhilV1, full, simple
+from CMGTools.External.puJetIDAlgo_cff import PhilV1, full, simple, cut
 
 stdalgos = cms.VPSet(simple,full,PhilV1)
 
@@ -32,14 +32,14 @@ def loadPujetId(process,collection,mvaOnly=False,isChs=False,release="44X"):
     ## FIXME 52X and CHS options need to be properly filled
     if release.startswith("4"):
         if isChs:
-            algos = (simple,full,PhilV1)
+            algos = (simple,full,PhilV1,cut)
         else:
-            algos = (simple,full,PhilV1)
+            algos = (simple,full,PhilV1,cut)
     elif release == "52X":
         if isChs:
-            algos = (simple,full,PhilV1)
+            algos = (simple,full,PhilV1,cut)
         else:
-            algos = (simple,full,PhilV1)
+            algos = (simple,full,PhilV1,cut)
 
     if not mvaOnly:
         setattr(process,

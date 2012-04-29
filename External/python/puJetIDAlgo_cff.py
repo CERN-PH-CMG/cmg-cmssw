@@ -51,6 +51,12 @@ simple = cms.PSet(
  JetIdParams = PuJetIdMinMVA_wp,
  label = cms.string("simple")
  )
+####################################################################################################################  
+cut = cms.PSet( 
+ impactParTkThreshold = cms.double(1.) ,
+ JetIdParams = PuJetIdCutBased_wp,
+ label = cms.string("cut")
+ )
 
 ####################################################################################################################  
 PhilV0 = cms.PSet( 
