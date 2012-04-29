@@ -102,13 +102,14 @@ PuJetIdCutBased_wp = cms.PSet(
     Pt2030_BetaStarMedium  = cms.vdouble( 0.2, 0.2,  0.2, 0.2),
     Pt3050_BetaStarMedium  = cms.vdouble( 0.2, 0.2,  0.2, 0.2),
     
-    #Loose Id    Pt010_BetaStarLoose    = cms.vdouble( 0.2 , 0.3,  0.3, 0.3),
+    #Loose Id
+    Pt010_BetaStarLoose    = cms.vdouble( 0.2 , 0.3,  0.3, 0.3),
     Pt1020_BetaStarLoose   = cms.vdouble( 0.2 , 0.3,  0.3, 0.3),
     Pt2030_BetaStarLoose   = cms.vdouble( 0.2 , 0.3,  0.3, 0.3),
-    Pt3050_BetaStarLoose   = cms.vdouble( 0.2 , 0.3,  0.3, 0.3)
+    Pt3050_BetaStarLoose   = cms.vdouble( 0.2 , 0.3,  0.3, 0.3),
 
     #RMS variable
-     #Tight Id
+    #Tight Id
     Pt010_RMSTight         = cms.vdouble( 0.06, 0.07, 0.04, 0.05),
     Pt1020_RMSTight        = cms.vdouble( 0.06, 0.07, 0.04, 0.05),
     Pt2030_RMSTight        = cms.vdouble( 0.05, 0.07, 0.03, 0.045),
