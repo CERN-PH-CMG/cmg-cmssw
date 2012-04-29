@@ -20,9 +20,11 @@ class ResolutionJetHistograms (Histograms) :
         self.listLen = int (self.maxVtx) / int (self.vtxBinning)
         self.histosEta = []
         self.histosPt = []
+        self.histosDEta = []
         for i in range (self.listLen) : 
             self.histosEta.append (TH2F (name + '_h_dpt_eta_' + str (i), '', 48, -6, 6, 200, -2, 6))
             self.histosPt.append (TH2F (name + '_h_dpt_pt_' + str (i), '', 10, 0, 200, 200, -2, 6))
+            self.histosDEta.append (TH2F (name + '_h_detares_pt_' + str (i), '', 10, 0, 200, 160, -2, 2))
         super (ResolutionJetHistograms, self).__init__ (name)
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
@@ -32,6 +34,7 @@ class ResolutionJetHistograms (Histograms) :
             index = int (nVtx) / int (self.vtxBinning)
             self.histosEta[index].Fill (jet.gen.eta (), jet.pt () / jet.gen.pt ())
             self.histosPt[index].Fill (jet.gen.pt (), jet.pt ()/ jet.gen.pt ())
+            self.histosDEta[index].Fill (jet.gen.pt (), jet.eta () - jet.gen.eta ())
         else : print 'the vertex number: ' + str (nVtx) + ' is too high'
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
@@ -46,9 +49,11 @@ class ResolutionJetHistograms (Histograms) :
         '''to be run after the event loop, before saving'''
         self.ptResolutions = []
         self.etaResolutions = []
+        #self.deltaEtaResolutions = []
         for i in range (self.listLen) :
             self.ptResolutions.append (self.GetSigmaGraph (self.histosPt[i]))
             self.etaResolutions.append (self.GetSigmaGraph (self.histosEta[i]))
+           # self.deltaEtaResolutions.append (self.GetSigmaGraph (self.histosDEta[i]))
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
 
@@ -58,8 +63,10 @@ class ResolutionJetHistograms (Histograms) :
         self.dir.cd ()
         for i in range (len (self.ptResolutions)) : self.ptResolutions[i].Write ('pt_graph_' + str (i))
         for i in range (len (self.etaResolutions)) : self.etaResolutions[i].Write ('eta_graph_' + str (i))
+       # for i in range (len (self.deltaEtaResolutions)) : self.deltaEtaResolutions[i].Write ('deltaEta_graph_' + str (i))
         for i in range (len (self.histosPt)) : self.histosPt[i].Write ()
         for i in range (len (self.histosEta)) : self.histosEta[i].Write ()
+        for i in range (len (self.histosDEta)) : self.histosDEta[i].Write ()
         dir.cd ()
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
@@ -314,6 +321,10 @@ class JetStudiesAnalyzer (Analyzer) :
         # general histograms
         self.jetHistos = JetHistograms ('Jets')
         self.cleanJetHistos = JetHistograms ('CleanJets')
+        self.cleanJetHistos_barrel = JetHistograms ('CleanJets_barrel')
+        self.cleanJetHistos_endtk = JetHistograms ('CleanJets_endtk')
+        self.cleanJetHistos_endNOtk = JetHistograms ('CleanJets_endNOtk')
+        self.cleanJetHistos_fwd = JetHistograms ('CleanJets_fwd')
         self.matchedCleanJetHistos = JetHistograms ('MatchedCleanJets')
         self.matchedCleanJetHistos_barrel = JetHistograms ('MatchedCleanJets_barrel')
         self.matchedCleanJetHistos_endtk = JetHistograms ('MatchedCleanJets_endtk')
@@ -367,6 +378,11 @@ class JetStudiesAnalyzer (Analyzer) :
             
         self.h_nvtx = TH1F ("h_nvtx", "" ,50, 0, 50)
         self.h_genjetspt = TH1F ("h_genjetspt", "" ,500, 0, 500)
+        self.h_genjetspt2 = TH1F ("h_genjetsptZOOM", "" ,100, 0, 200)
+        self.h_genjetspt_barrel = TH1F ("h_genjetspt_barrel", "" ,100, 0, 200)
+        self.h_genjetspt_endtk = TH1F ("h_genjetspt_endtk", "" ,100, 0, 200)
+        self.h_genjetspt_endNOtk = TH1F ("h_genjetspt_endNOtk", "" ,100, 0, 200)
+        self.h_genjetspt_fwd = TH1F ("h_genjetspt_fwd", "" ,100, 0, 200)
         self.h_secondClosestVsPtratio = TH2F ("h_secondClosestVsPtratio", "" ,100, 0, 2, 100, 0, 6)
         self.h_avedistanceVSNvtx = TH2F ("h_avedistanceVSNvtx", "" ,50, 0, 50, 100, 0, 6)
         self.h_PTRatioVSgenEta = TH2F ("h_PTRatioVSgenEta", "" ,150, -5, 5, 100, 0, 2)
@@ -410,7 +426,16 @@ class JetStudiesAnalyzer (Analyzer) :
         # event.selGenJets = event.genJets
         for jet in event.selGenJets : 
             self.h_genjetspt.Fill (jet.pt ())
-        
+            self.h_genjetspt2.Fill (jet.pt ())
+            if abs (jet.eta ()) < 1.4 :
+                self.h_genjetspt_barrel.Fill (jet.pt ())
+            elif 1.6 < abs (jet.eta ()) < 2.5 :
+                self.h_genjetspt_endtk.Fill (jet.pt ())
+            elif 2.6 < abs (jet.eta ()) < 2.9 :
+                self.h_genjetspt_endNOtk.Fill (jet.pt ())
+            elif 3.1 < abs (jet.eta ()) :
+                self.h_genjetspt_fwd.Fill (jet.pt ())
+                
         event.noNegJets = [ jet for jet in event.jets if (jet.jecFactor(0) > 0) ]
 
         # first stats plots
@@ -426,7 +451,17 @@ class JetStudiesAnalyzer (Analyzer) :
         # remove leptons from jets if closer than 0.2
         event.cleanJets = cleanObjectCollection (event.noNegJets, event.genLeptons, 0.2)
         self.cleanJetHistos.fillEvent (event.cleanJets)
-        
+        for jet in event.cleanJets :
+            if abs (jet.eta ()) < 1.4 :
+                self.cleanJetHistos_barrel.fillJet (jet)
+            elif 1.6 < abs (jet.eta ()) < 2.5 :    
+                self.cleanJetHistos_endtk.fillJet (jet)
+            elif 2.6 < abs (jet.eta ()) < 2.9 :    
+                self.cleanJetHistos_endNOtk.fillJet (jet)
+            elif 3.1 < abs (jet.eta ()) :    
+                self.cleanJetHistos_fwd.fillJet (jet)
+
+                
 #        print len (jets),len (event.jets), len (event.noNegJets), len (event.cleanJets), len (event.genLeptons),"-->",(len (event.noNegJets) - len (event.cleanJets) - len (event.genLeptons))
 
         event.matchingCleanJets = matchObjectCollection2 (event.cleanJets, event.selGenJets, 0.25)
@@ -549,6 +584,10 @@ class JetStudiesAnalyzer (Analyzer) :
         gROOT.SetBatch(True)
         self.jetHistos.Write (self.file)
         self.cleanJetHistos.Write (self.file)
+        self.cleanJetHistos_barrel.Write (self.file)
+        self.cleanJetHistos_endtk.Write (self.file)
+        self.cleanJetHistos_endNOtk.Write (self.file)
+        self.cleanJetHistos_fwd.Write (self.file)
         self.matchedCleanJetHistos.Write (self.file)
         self.matchedCleanJetHistos_barrel.Write (self.file)
         self.matchedCleanJetHistos_endtk.Write (self.file)
@@ -615,6 +654,11 @@ class JetStudiesAnalyzer (Analyzer) :
         self.file.cd ()
         self.h_nvtx.Write ()
         self.h_genjetspt.Write ()
+        self.h_genjetspt2.Write ()
+        self.h_genjetspt_barrel.Write ()
+        self.h_genjetspt_endtk.Write ()
+        self.h_genjetspt_endNOtk.Write ()
+        self.h_genjetspt_fwd.Write ()
         self.h_secondClosestVsPtratio.Write ()
         self.h_avedistanceVSNvtx.Write ()
         self.h_PTRatioVSgenEta.Write ()
