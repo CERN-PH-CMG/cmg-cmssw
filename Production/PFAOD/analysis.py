@@ -5,6 +5,8 @@ import pprint
 from stat import *
 
 
+VREF = 'V4'
+
 def nEvents(file):
     # could implement something using edmFileUtil
     return 2000.
@@ -19,11 +21,11 @@ def frac(num, denom):
 
 def printFile(file,aodFile, v2File ):
     fracAod = frac( file, aodFile )
-    fracV2 = frac( file, v2File )
-    return '{file:<40} size/evt = {size:6.1f} kB  ({fracAod:5.1f}% AOD) ({fracV2:5.1f}% V2)'.format( file=file,
+    fracVREF = frac( file, v2File )
+    return '{file:<40} size/evt = {size:6.1f} kB  ({fracAod:5.1f}% AOD) ({fracVREF:5.1f}% VREF)'.format( file=file,
                                                                                                     size=fileSize(file),
                                                                                                     fracAod=fracAod,
-                                                                                                    fracV2=fracV2)
+                                                                                                    fracVREF=fracVREF)
 
 def dumpCollections(file):
     colFile = os.path.splitext(file)[0] + '.txt'
@@ -57,12 +59,12 @@ def isAOD(file):
     else:
         return False
 
-def isV2(file):
+def isVREF(file):
     fields = os.path.splitext(file)[0].split('_')
     if len(fields)<3:
         return False
-    V2 = fields[2]
-    if V2 == 'V2':
+    version = fields[2]
+    if version == VREF:
         return True
     else:
         return False
@@ -82,8 +84,8 @@ def findAOD(files):
     return find( files, isAOD)
 
 
-def findV2(files):
-    return find( files, isV2)
+def findVREF(files):
+    return find( files, isVREF)
 
 
 def processDir(dir):
@@ -95,9 +97,9 @@ def processDir(dir):
     AOD = findAOD(rootFiles)
     aodCollections = dumpCollections( AOD )
 
-    V2 = findV2(rootFiles)
+    vref = findVREF(rootFiles)
     
-    v2Collections = dumpCollections( V2 )
+    v2Collections = dumpCollections( vref )
     #     print AOD, aodSize
 
     oFileSizeReport = open('size_report.txt','w')
@@ -107,17 +109,17 @@ def processDir(dir):
     for file in sorted(rootFiles):
         if file is not AOD:
             collections = dumpCollections(file)
-            oFile = os.path.splitext(file)[0] + '_vsAOD.txt'
+            oFile = os.path.splitext(file)[0] + '_vs_AOD.txt'
             analyzeCollections( collections,
                                 aodCollections,
                                 oFile )
-            if file is not V2:
-                oFileV2 = os.path.splitext(file)[0] + '_vsV2.txt'
+            if file is not vref:
+                oFileVREF = os.path.splitext(file)[0] + '_vs_{vref}.txt'.format(vref=VREF)
                 analyzeCollections( collections,
                                     v2Collections,
-                                    oFileV2 )
+                                    oFileVREF )
         
-        report = printFile(file, AOD, V2)
+        report = printFile(file, AOD, vref)
         print report 
         oFileSizeReport.write( report + '\n')
     os.chdir( baseDir )

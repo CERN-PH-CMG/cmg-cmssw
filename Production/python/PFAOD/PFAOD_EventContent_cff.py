@@ -205,6 +205,8 @@ V5.extend(
     'keep recoIsoDepositedmValueMap_muIsoDepositTk__*',
     'keep EcalRecHitsSorted_reducedEcalRecHitsES__*',
     #just for embedded samples
-    'keep *_tmfTracks_*_*'
+    'keep *_tmfTracks_*_*',
+    'keep recoCaloClusters_*_*_*',
+    'keep recoSuperClusters_*_*_*'
     ]
     )
