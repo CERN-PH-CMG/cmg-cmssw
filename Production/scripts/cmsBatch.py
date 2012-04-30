@@ -3,7 +3,7 @@
 # batch mode for cmsRun, March 2009
 
 
-import os, sys,  imp, re, pprint, string, time
+import os, sys,  imp, re, pprint, string, time,shutil,copy,pickle,math
 from optparse import OptionParser
 
 # particle flow specific
@@ -77,7 +77,7 @@ cp -r $jobdir $PBS_O_WORKDIR
    return script
 
 
-def batchScriptCERN( remoteDir, index ):
+def batchScriptCERN(  remoteDir, index ):
    '''prepare the LSF version of the batch script, to run on LSF'''
    script = """#!/bin/bash
 #BSUB -q 8nm
@@ -155,7 +155,7 @@ class MyBatchManager( BatchManager ):
       #prepare the batch script
       scriptFileName = jobDir+'/batchScript.sh'
       scriptFile = open(scriptFileName,'w')
-      storeDir = self.remoteOutputDir_.replace('/castor/cern.ch/cms','')
+      storeDir = '' # self.remoteOutputDir_.replace('/castor/cern.ch/cms','')
       mode = self.RunningMode(options.batch)
       if mode == 'LXPLUS':
          scriptFile.write( batchScriptCERN( storeDir, value) )
@@ -236,11 +236,15 @@ batchManager.parser_.add_option("-p", "--program", dest="prog",
 batchManager.parser_.add_option("-c", "--command-args", dest="cmdargs",
                                 help="command line arguments for the job",
                                 default=None)
+batchManager.parser_.add_option("--notagCVS", dest="tagPackages",
+                                default=True,action="store_false",
+                                help="tag the package on CVS (True)")
 
 (options,args) = batchManager.parser_.parse_args()
 batchManager.ParseOptions()
 
 prog = options.prog
+doCVSTag = options.tagPackages
 
 if len(args)!=2:
    batchManager.parser_.print_help()
@@ -332,6 +336,10 @@ os.chdir(batchManager.outputDir_)
 logDir = 'Logger'
 os.system( 'mkdir ' + logDir )
 log = logger( logDir )
+if doCVSTag==False:
+   print 'cmsBatch2L2Q will NOT tag CVS'
+
+log.tagPackage=doCVSTag
 log.logCMSSW()
 #COLIN not so elegant... but tar is behaving in a strange way.
 log.addFile( oldPwd + '/' + cfgFileName )

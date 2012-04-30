@@ -16,3 +16,20 @@ trackCountingHighPurBJetTags = trackCountingHighEffBJetTags.clone(
     medium = cms.string('btag(1) >= 1.93'),
     tight = cms.string('btag(1) >= 3.41')                                   
     )
+
+### for 2012
+# jetBProbabilityBJetTags is btag(3)
+# there are also "jetBProbabilityBJetTagsAODAK5" and  "jetBProbabilityBJetTagsAODAK5NoPUSub"
+jetProbabilityBJetTags = cms.PSet(
+    mcbparton = cms.string('abs(sourcePtr().partonFlavour()) == 5'),                                    
+    loose = cms.string('btag(2) >= 0.275'),                                   
+    medium = cms.string('btag(2) >= 0.545'),
+    tight = cms.string('btag(2) >= 0.790')                                   
+    )
+
+combinedSecondaryVertexBJetTags = cms.PSet(
+    mcbparton = cms.string('abs(sourcePtr().partonFlavour()) == 5'),                                    
+    loose = cms.string('btag(6) >= 0.244'),                                   
+    medium = cms.string('btag(6) >= 0.679'),
+    tight = cms.string('btag(6) >= 0.898')                                   
+    )

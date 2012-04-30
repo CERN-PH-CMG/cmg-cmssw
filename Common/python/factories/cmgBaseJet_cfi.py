@@ -24,7 +24,10 @@ cmgBaseJet = cms.EDFilter(
     "BaseJetPOProducer",
     cfg = baseJetFactory.clone(),
     cuts = cms.PSet(
-       btag = trackCountingHighEffBJetTags.clone(),
-       jetKinematics = kinematics.clone()
+#       btag = trackCountingHighEffBJetTags.clone(),
+#       jetKinematics = kinematics.clone()
+    tche = trackCountingHighEffBJetTags.clone(),
+    jp = jetProbabilityBJetTags.clone(),
+    csv = combinedSecondaryVertexBJetTags.clone()
        )
 )
