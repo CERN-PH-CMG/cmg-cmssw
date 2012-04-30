@@ -337,27 +337,29 @@ ak5PFJetsCHS.doRhoFastjet = False
 
 # MET      ----------------------------
 
-#FIXME: do we still have access to raw MET? 
+#produce type 1 corrected MET
 patMETs.metSource = 'pfType1CorrectedMet'
 # dammit! the PAT MET sequence contains jet clustering modules... 
 producePFMETCorrections.remove( kt6PFJets )
 producePFMETCorrections.remove( ak5PFJets )
 patMETs.addMuonCorrections = False
+#now the cmg part
+cmgPFMET.cfg.inputCollection = 'patMETs'
 
-# adding raw PFMET
+# adding raw PFMET also
 patMETsRaw = patMETs.clone()
 patMETsRaw.addMuonCorrections = False
 patMETsRaw.metSource = 'pfMet'
-
-#NOTE still using raw met
-# FIXME add a MET for type1 corrected MET
-cmgPFMET.cfg.inputCollection = 'patMETsRaw'
+#now the cmg part
+cmgPFMETRaw = cmgPFMET.clone()
+cmgPFMETRaw.cfg.inputCollection = 'patMETsRaw'
 
 PATCMGMetSequence = cms.Sequence(
     producePFMETCorrections + 
-    patMETs +
-    patMETsRaw +
-    cmgPFMET
+    patMETs *
+    cmgPFMET +
+    patMETsRaw *
+    cmgPFMETRaw
     )
 
 
