@@ -21,10 +21,12 @@ class ResolutionJetHistograms (Histograms) :
         self.histosEta = []
         self.histosPt = []
         self.histosDEta = []
+        self.histosDEta2 = []
         for i in range (self.listLen) : 
             self.histosEta.append (TH2F (name + '_h_dpt_eta_' + str (i), '', 48, -6, 6, 200, -2, 6))
-            self.histosPt.append (TH2F (name + '_h_dpt_pt_' + str (i), '', 10, 0, 200, 200, -2, 6))
-            self.histosDEta.append (TH2F (name + '_h_detares_pt_' + str (i), '', 10, 0, 200, 160, -2, 2))
+            self.histosPt.append (TH2F (name + '_h_dpt_pt_' + str (i), '', 20, 0, 200, 200, -2, 6))
+            self.histosDEta.append (TH2F (name + '_h_detares_pt_' + str (i), '', 20, 0, 200, 160, -2, 2))
+            self.histosDEta2.append (TH2F (name + '_h_detares_eta_' + str (i), '', 48, -6, 6, 160, -2, 2))
         super (ResolutionJetHistograms, self).__init__ (name)
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
@@ -35,6 +37,7 @@ class ResolutionJetHistograms (Histograms) :
             self.histosEta[index].Fill (jet.gen.eta (), jet.pt () / jet.gen.pt ())
             self.histosPt[index].Fill (jet.gen.pt (), jet.pt ()/ jet.gen.pt ())
             self.histosDEta[index].Fill (jet.gen.pt (), jet.eta () - jet.gen.eta ())
+            self.histosDEta2[index].Fill (jet.gen.eta (), jet.eta () - jet.gen.eta ())
         else : print 'the vertex number: ' + str (nVtx) + ' is too high'
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
@@ -67,6 +70,7 @@ class ResolutionJetHistograms (Histograms) :
         for i in range (len (self.histosPt)) : self.histosPt[i].Write ()
         for i in range (len (self.histosEta)) : self.histosEta[i].Write ()
         for i in range (len (self.histosDEta)) : self.histosDEta[i].Write ()
+        for i in range (len (self.histosDEta2)) : self.histosDEta2[i].Write ()
         dir.cd ()
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
@@ -383,6 +387,10 @@ class JetStudiesAnalyzer (Analyzer) :
         self.h_genjetspt_endtk = TH1F ("h_genjetspt_endtk", "" ,100, 0, 200)
         self.h_genjetspt_endNOtk = TH1F ("h_genjetspt_endNOtk", "" ,100, 0, 200)
         self.h_genjetspt_fwd = TH1F ("h_genjetspt_fwd", "" ,100, 0, 200)
+        self.h_genjetspt_MR_barrel = TH1F ("h_genjetspt_MatchedCleanReco_barrel", "" ,100, 0, 200)
+        self.h_genjetspt_MR_endtk = TH1F ("h_genjetspt_MatchedCleanReco_endtk", "" ,100, 0, 200)
+        self.h_genjetspt_MR_endNOtk = TH1F ("h_genjetspt_MatchedCleanReco_endNOtk", "" ,100, 0, 200)
+        self.h_genjetspt_MR_fwd = TH1F ("h_genjetspt_MatchedCleanReco_fwd", "" ,100, 0, 200)
         self.h_secondClosestVsPtratio = TH2F ("h_secondClosestVsPtratio", "" ,100, 0, 2, 100, 0, 6)
         self.h_avedistanceVSNvtx = TH2F ("h_avedistanceVSNvtx", "" ,50, 0, 50, 100, 0, 6)
         self.h_PTRatioVSgenEta = TH2F ("h_PTRatioVSgenEta", "" ,150, -5, 5, 100, 0, 2)
@@ -659,6 +667,10 @@ class JetStudiesAnalyzer (Analyzer) :
         self.h_genjetspt_endtk.Write ()
         self.h_genjetspt_endNOtk.Write ()
         self.h_genjetspt_fwd.Write ()
+        self.h_genjetspt_MR_barrel.Write ()
+        self.h_genjetspt_MR_endtk.Write ()
+        self.h_genjetspt_MR_endNOtk.Write ()
+        self.h_genjetspt_MR_fwd.Write ()
         self.h_secondClosestVsPtratio.Write ()
         self.h_avedistanceVSNvtx.Write ()
         self.h_PTRatioVSgenEta.Write ()
