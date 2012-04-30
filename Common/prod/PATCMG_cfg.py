@@ -11,7 +11,7 @@ process = cms.Process("PAT")
 print 'querying database for source files'
 
 
-runOnMC = False
+runOnMC = True
 runOnV4 = False
 
 
@@ -95,9 +95,18 @@ process.dump = cms.EDAnalyzer('EventContentAnalyzer')
 process.p = cms.Path(
     process.prePathCounter + 
     process.PATCMGSequence + 
-    process.PATCMGJetCHSSequence +
-    process.postPathCounter
+    process.PATCMGJetCHSSequence 
     )
+
+
+#load genJets, genParticlesPruned, vertex weights, ...
+if runOnMC:
+    process.load('CMGTools.Common.gen_cff')
+    process.genJet.cfg.inputCollection = cms.InputTag("selectedPatJets","genJets")
+    process.p += process.genSequence
+
+
+process.p += process.postPathCounter
 
 # For testing, you can remove some of the objects:
 # NOTE: there are a few dependencies between these sequences
