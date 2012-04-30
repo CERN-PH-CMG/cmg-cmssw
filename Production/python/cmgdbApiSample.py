@@ -44,8 +44,8 @@ class CmgdbApi(object):
     def clearDatasetMissingFiles(self, dsName, datasetID):
         """Clear all missing files from CMGDB pertaining to the given dataset ID
         
-        1st argument takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM 
-        2nd argument takes the unique CMGDB Dataset ID of the dataset as an int
+        'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM 
+        'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
         Returns None
         """
         try:
@@ -58,9 +58,9 @@ class CmgdbApi(object):
     def addMissingFile(self, dsName, datasetID, missingFileName):
         """Add name of given missing file to CMGDB and link it to a given dataset with the unique CMGDB Dataset ID
         
-        1st argument takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
-        2nd argument takes the unique CMGDB Dataset ID of the dataset as an int
-        3rd argument takes the name of the missing file as a string
+        'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
+        'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+        'missingFileName' takes the name of the missing file as a string
         Returns None
         """
         try:
@@ -74,8 +74,8 @@ class CmgdbApi(object):
     def clearDatasetBadFiles(self, dsName, datasetID):
         """Clear all bad files from CMGDB pertaining to the given dataset ID
         
-        1st argument takes the name of the dataset as a string, 
-        2nd argument takes unique CMGDB Dataset ID of the dataset as an int
+        'dsName' takes the name of the dataset as a string, 
+        'datasetID' takes unique CMGDB Dataset ID of the dataset as an int
         Returns None
         """
         try:
@@ -88,9 +88,9 @@ class CmgdbApi(object):
     def addBadFile(self, dsName, datasetID, badFileName):
         """Add name of given bad file to CMGDB and link it to a given dataset with the unique CMGDB Dataset ID
         
-        1st argument takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
-        2nd argument takes the unique CMGDB Dataset ID of the dataset as an int
-        3rd argument takes the name of the bad file as a string
+        'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
+        'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+        'badFileName' takes the name of the bad file as a string
         Returns None
         """
         try:
@@ -103,8 +103,8 @@ class CmgdbApi(object):
     def clearDatasetBadJobs(self, dsName, datasetID):
         """Clear all bad jobs from CMGDB pertaining to the given dataset ID
         
-        1st argument takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
-        2nd argument takes unique CMGDB Dataset ID of the dataset as an int
+        'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
+        'datasetID' takes unique CMGDB Dataset ID of the dataset as an int
         Returns None
         """
         try:
@@ -117,9 +117,9 @@ class CmgdbApi(object):
     def addBadJob(self, dsName, datasetID, badJobNum):
         """Add name of given bad job to CMGDB and link it to a given dataset with the unique CMGDB Dataset ID
         
-        1st argument takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
-        2nd argument takes the unique CMGDB Dataset ID of the dataset as an int
-        3rd argument takes the name of the bad job as an int
+        'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
+        'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+        'badJobNum' takes the name of the bad job as an int
         Returns None
         """
         try:
@@ -132,8 +132,8 @@ class CmgdbApi(object):
     def clearDatasetDuplicateFiles(self, dsName, datasetID):
         """Clear all duplicate files from CMGDB pertaining to the given dataset ID
         
-        1st argument takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM 
-        2nd argument takes the unique CMGDB Dataset ID of the dataset as an int
+        'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM 
+        'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
         Returns None
         """
         try:
@@ -147,9 +147,9 @@ class CmgdbApi(object):
     def addDuplicateFile(self, dsName, datasetID, duplicateFileName):
         """Add name of given duplicate file to CMGDB and link it to a given dataset with the unique CMGDB Dataset ID
         
-        1st argument takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
-        2nd argument takes the unique CMGDB Dataset ID of the dataset as an int
-        3rd argument takes the name of the duplicate file as a string
+        'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
+        'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+        'duplicateFileName' takes the name of the duplicate file as a string
         Returns None
         """
         try:
@@ -163,8 +163,8 @@ class CmgdbApi(object):
     def addTag(self, package, tag):
         """Add a tag and associated package to the 'tags' table in CMGDB with a unique ID
         
-        1st argument takes the name of the package as a string
-        2nd argument takes the name of the tag as a string
+        'package' takes the name of the package as a string
+        'tag' takes the name of the tag as a string
         Returns the unique CMGDB Tag ID
         
         First the function checks if the tag/package combination already exists in CMGDB
@@ -190,12 +190,12 @@ class CmgdbApi(object):
     def addDataset(self, dsName,eos,lfn, fileOwner, parentID, username):
         """Add a dataset with corresponding attributes to the 'dataset_details' table in CMGDB
         
-        1st argument takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
-        2nd argument takes the dataset name in EOS format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V3 
-        3rd argument takes the LFN of the dataset
-        4th argument takes the datasets owner on EOS e.g cmgtools
-        5th argument takes the unique CMGDB ID of the datasets parent. This is None if parent is a CMS dataset (like /DoubleMu/Run2011B-16Jan2012-v1/AOD)
-        6th argument takes the NICE username of the person publishing the dataset.
+        'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
+        'eos' takes the dataset name in EOS format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V3 
+        'lfn' takes the LFN of the dataset
+        'fileowner' takes the datasets owner on EOS e.g cmgtools
+        'parentID' takes the unique CMGDB ID of the datasets parent. This is None if parent is a CMS dataset (like /DoubleMu/Run2011B-16Jan2012-v1/AOD)
+        'username' takes the NICE username of the person publishing the dataset.
         RETURN the unique CMGDB Dataset ID
         
         First the function checks if the dataset already exists in CMGDB
@@ -221,7 +221,7 @@ class CmgdbApi(object):
     def closeDataset(self, dsName):
         """Change the dataset_open field of the dataset_details table to 'N' for given dataset name.
         
-        Only argument takes dataset name in CMGDB format e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
+        'dsName' takes dataset name in CMGDB format e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
         Returns None
         """
         try:
@@ -239,8 +239,8 @@ class CmgdbApi(object):
     def addPrimaryDatasetFraction(self,datasetID, fraction):
         """Update dataset_fraction relating to the given CMGDB Dataset ID in CMGDB table dataset_details, to new given value.
         
-        1st argument takes the unique CMGDB Dataset ID of the dataset as an int
-        2nd argument takes the dataset size as a fraction of the primary dataset as a float
+        'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+        'fraction' takes the dataset size as a fraction of the primary dataset as a float
         Returns None
         """
         try:
@@ -256,8 +256,8 @@ class CmgdbApi(object):
     def addDatasetSize(self,datasetID, size):
         """Update field dataset_size_in_tb relating to the given CMGDB Dataset ID in CMGDB table dataset_details, to new given value.
         
-        1st argument takes the unique CMGDB Dataset ID of the dataset as an int
-        2nd argument takes the dataset size in TB dataset as a float
+        'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+        'size' takes the dataset size in TB dataset as a float
         Returns None
         """
         try:
@@ -273,8 +273,8 @@ class CmgdbApi(object):
     def addFileEntries(self,datasetID, entries):
         """Update dataset_entries relating to the given datasetID in CMGDB table dataset_details, to new given value.
         
-        1st argument takes the unique CMGDB Dataset ID of the dataset as an int
-        2nd argument takes the number of file entries in the dataset as an int
+        'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+        'entries' takes the number of file entries in the dataset as an int
         Returns None
         """
         try:
@@ -291,7 +291,7 @@ class CmgdbApi(object):
     def getDatasetIDWithName(self, datasetName):
         """Return the unique CMGDB Dataset ID of a dataset with a given name.
         
-        Only argument takes dataset name in CMGDB format e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
+        'datasetName' takes dataset name in CMGDB format e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
         Return unique CMGDB Dataset ID of given dataset,
         Returns None if no dataset is found
         """
@@ -303,7 +303,7 @@ class CmgdbApi(object):
     def getParentsWithName(self, datasetName):
         """Return a list of potential parents of a given dataset
         
-        Only argument takes dataset name in CMGDB format e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
+        'datasetName' takes dataset name in CMGDB format e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
         Returns list of possible parents (usually only 1) as a list of lists:
             [0] of each dataset (row) in the list holds the dataset name in CMGDB format e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
             [1] of each dataset (row) in the list holds the unique CMGDB Dataset ID of the dataset.
@@ -331,8 +331,8 @@ class CmgdbApi(object):
     def getDatasetIDWithTaskID(self,taskID,test):
         """Return unique CMGDB Dataset ID of the dataset with the given task ID
         
-        1st argument takes the Savannah task ID as an int
-        2nd argument takes a boolean value of whether the task is a test task or not
+        'taskID' takes the Savannah task ID as an int
+        'test' takes a boolean value of whether the task is a test task or not
         RETURN unique dataset id
         if not found return None
         ### TODO: Colin, is test boolean needed? Seems obsolete now, could be removed to simplify code
@@ -351,9 +351,9 @@ class CmgdbApi(object):
     def addTaskID(self, datasetID, taskID, test):
         """Update columns in table dataset_details: last_commented and task_id of row pertaining to given dataset
         
-        1st argument takes the unique CMGDB Dataset ID of the dataset as an int
-        2nd argument takes the Savannah task ID as an int
-        3rd argument takes a boolean value of whether the task is a test task or not
+        'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+        'taskID' takes the Savannah task ID as an int
+        'test' takes a boolean value of whether the task is a test task or not
         ### TEST FIELD MAY BE SUBJECT TO REMOVAL
         """
         try:
@@ -379,8 +379,8 @@ class CmgdbApi(object):
     def addTagSetID(self, tagsetID, datasetID):
         """Update the column "tagset_id" in the table cms_cmgdb.dataset_details to the unique cmgdb tagset id of the given dataset
         
-        1st argument takes the unique CMGDB Tagset ID of the tagset as an int
-        2nd argument takes the unique CMGDB Dataset ID of the dataset as an int
+        'tagsetID' takes the unique CMGDB Tagset ID of the tagset as an int
+        'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
         Returns None
         
         Tagset id is a unique id which identifies a set of tags and a their CMSSW version
@@ -400,8 +400,8 @@ class CmgdbApi(object):
     def getTagID(self, package, tag):
         """Return the unique id of a tag
         
-        1st argument takes the name of the package as a string
-        2nd argument takes the name of the tag as a string
+        'package' takes the name of the package as a string
+        'tag' takes the name of the tag as a string
         Returns unique CMGDB tag ID as an int
         
         Allows you to lookup a tag id for use in searches and to add to new tagsets
@@ -425,8 +425,8 @@ class CmgdbApi(object):
     def getTaskID(self, datasetID, test):
         """Return the Savannah task ID related to the given dataset
         
-        1st argument takes the unique CMGDB dataset ID of the dataset as an int
-        2nd argument takes a boolean value determining whether the task ID you want is a test or not.
+        'datasetID' takes the unique CMGDB dataset ID of the dataset as an int
+        'test' takes a boolean value determining whether the task ID you want is a test or not.
         Returns unique Savannah task ID as an int
         ### TEST FIELD MAY BE SUBJECT TO REMOVAL
         """
@@ -440,7 +440,7 @@ class CmgdbApi(object):
     def getTags(self, datasetID):
         """Return a list of Dict objects, each containing a "Tag" field and a "Package" field, for all tags relating to a given dataset
         
-        Only argument takes the unique CMGDB Dataset ID of the dataset as an int.
+        'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int.
         Returns a list of Dict objects containing 2 fields:
             "Package" gives the name of the tags corresponding package as a string
             "Tag" gives the name of the tag as a string
@@ -463,8 +463,8 @@ class CmgdbApi(object):
     def addTagSet(self, release, hash):
         """INSERT a new tagset into the CMGDB dataset, containing the release and a hash of all tags
         
-        1st argument takes the CMSSW release relating to the tagset as a string
-        2nd argument takes a hash of all the tags in the tagset as an int
+        'release' takes the CMSSW release relating to the tagset as a string
+        'hash' takes a hash of all the tags in the tagset as an int
         Returns unique CMGDB Tagset ID as an int
         
         First checks if a tagset with a matching hash already exists, if yes returns that tagset's CMGDB Tagset ID
@@ -487,8 +487,8 @@ class CmgdbApi(object):
     def addTagToSet(self, tagID, tagSetID):
         """ Add a tag to a tagset by adding the unique CMGDG ID's of both the tagset and the tag to the table cms_cmgdb.tags_in_sets
         
-        1st argument takes the unique CMGDB Tag ID as an int
-        2nd argument takes the unique CMGDB Tagset ID as an int
+        'tagID' takes the unique CMGDB Tag ID as an int
+        'tagSetID' takes the unique CMGDB Tagset ID as an int
         """
         try:
             self.insertCur.execute("insert into cms_cmgdb.tags_in_sets values(:setID,:tag)",{"setID":tagSetID,"tag":tagID})
@@ -501,7 +501,7 @@ class CmgdbApi(object):
     def getTagSetID(self, hash):
         """Check if tagset already exists in system using a hash of the related tags, if yes, return its unique ID
         
-        Only argument is a hash of all the hashes of all the tags in the tagset as an int
+        'hash' takes a hash of all the hashes of all the tags in the tagset as an int
         Returns tagset's unique CMGDB Tagset ID
         if no tagset found, None is returned
         """
