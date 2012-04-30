@@ -173,7 +173,7 @@
           ]
 	},
 	{
-	"tag":"H(200)#rightarrow ZZ",
+	"tag":"ggH(200)#rightarrow ZZ",
         "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
@@ -190,7 +190,19 @@
 		"split":2,
                 "xsec":5.27,
 		"br":[0.256,0.0403896]
-		},
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(200)#rightarrow ZZ",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"800",
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
 		{	
 		"dtag":"MC_VBFtoH200toZZto2L2Nu",
 		"dset":"/VBF_ToHToZZTo2L2NU_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
@@ -203,13 +215,13 @@
 	   ]
 	},
 	{
-	"tag":"H(200)#rightarrow WW",
+	"tag":"ggH(200)#rightarrow WW",
         "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",
 	"lwidth":2,
-        "lstyle":2,
+        "lstyle":3,
 	"fill":0,
 	"marker":1,
 	"data":[
@@ -221,7 +233,20 @@
 		"split":2,
                 "xsec":5.27,
 		"br":[0.741,0.046656]
-		},
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(200)#rightarrow WW",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"800",
+	"lwidth":3,
+        "lstyle":3,
+	"fill":0,
+	"marker":1,
+	"data":[
 		{	
 		"dtag":"MC_VBFtoH200toWWto2L2Nu",
 		"dset":"/VBF_HToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
@@ -234,7 +259,7 @@
 	   ]
 	},
 	{
-	"tag":"H(250)#rightarrow ZZ",
+	"tag":"ggH(250)#rightarrow ZZ",
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",
@@ -250,7 +275,19 @@
 		"split":2,
                 "xsec":3.31,
 		"br":[0.297,0.0403896]
-		},
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(250)#rightarrow ZZ",
+	"isdata":false,
+	"spimpose":true,
+	"color":"800",
+	"lwidth":3,
+        "lstyle":2,
+	"fill":0,
+	"marker":1,
+	"data":[
 		{	
 		"dtag":"MC_VBFtoH250toZZto2L2Nu",
 		"dset":"/VBF_ToHToZZTo2L2NU_M-250_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
@@ -263,12 +300,13 @@
 	   ]
 	},
 	{
-	"tag":"H(250)#rightarrow WW",
+	"tag":"ggH(250)#rightarrow WW",
+        "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",
 	"lwidth":2,
-        "lstyle":2,
+        "lstyle":3,
 	"fill":0,
 	"marker":1,
 	"data":[
@@ -280,7 +318,20 @@
 		"split":2,
                 "xsec":3.31,
 		"br":[0.701,0.046656]
-		},
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(250)#rightarrow WW",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"800",
+	"lwidth":3,
+        "lstyle":3,
+	"fill":0,
+	"marker":1,
+	"data":[
 		{	
 		"dtag":"MC_VBFtoH250toWWto2L2Nu",
 		"dset":"/VBF_HToWWTo2L2Nu_M-250_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
@@ -293,7 +344,7 @@
 	   ]
 	},
 	{
-	"tag":"H(300)#rightarrow ZZ",
+	"tag":"ggH(300)#rightarrow ZZ",
         "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
@@ -310,7 +361,20 @@
 		"split":2,
                 "xsec":2.422,
 		"br":[0.307,0.0403896]
-		},
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(300)#rightarrow ZZ",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"803",
+        "lwidth":3,
+        "lstyle":2,
+	"fill":0,
+	"marker":1,
+	"data":[
 		{
 		"dtag":"MC_VBFtoH300toZZto2L2Nu",
                 "dset":"/VBF_ToHToZZTo2L2NU_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
@@ -323,13 +387,13 @@
 	   ]
 	},
 	{
-	"tag":"H(300)#rightarrow WW",
+	"tag":"ggH(300)#rightarrow WW",
         "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
 	"color":"803",
 	"lwidth":2,
-        "lstyle":2,
+        "lstyle":3,
 	"fill":0,
 	"marker":1,
 	"data":[
@@ -341,7 +405,20 @@
 		"split":2,
                 "xsec":2.422,
 		"br":[0.692,0.046656]
-		},
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(300)#rightarrow WW",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"803",
+	"lwidth":3,
+        "lstyle":3,
+	"fill":0,
+	"marker":1,
+	"data":[
 		{
 		"dtag":"MC_VBFtoH300toWWto2L2Nu",
                 "dset":"/VBF_HToWWTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
@@ -354,7 +431,7 @@
 	   ]
 	},
 	{
-	"tag":"H(350)#rightarrow ZZ",
+	"tag":"ggH(350)#rightarrow ZZ",
         "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
@@ -371,7 +448,20 @@
 		"split":2,
                 "xsec":2.31,
 		"br":[0.307,0.0403896]
-		},
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(350)#rightarrow ZZ",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"800",
+        "lwidth":3,
+        "lstyle":2,
+	"fill":0,
+	"marker":1,
+	"data":[
 		{	
 		"dtag":"MC_VBFtoH350toZZto2L2Nu",
 		"dset":"/VBF_ToHToZZTo2L2NU_M-350_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
@@ -384,13 +474,13 @@
 	   ]
 	},
 	{
-	"tag":"H(350)#rightarrow WW",
+	"tag":"ggH(350)#rightarrow WW",
         "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",
 	"lwidth":2,
-        "lstyle":2,
+        "lstyle":3,
 	"fill":0,
 	"marker":1,
 	"data":[
@@ -402,7 +492,20 @@
 		"split":2,
                 "xsec":2.31,
 		"br":[0.676,0.046656]
-		},
+		}
+	   ]
+	},
+        {
+	"tag":"qqH(350)#rightarrow WW",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"800",
+	"lwidth":3,
+        "lstyle":3,
+	"fill":0,
+	"marker":1,
+	"data":[
 		{	
 		"dtag":"MC_VBFtoH350toWWto2L2Nu",
 		"dset":"/VBF_HToWWTo2L2Nu_M-350_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
@@ -415,7 +518,7 @@
 	   ]
 	},
 	{
-	"tag":"H(400)#rightarrow ZZ",
+	"tag":"ggH(400)#rightarrow ZZ",
 	"isdata":false,
 	"spimpose":true,
 	"color":"805",
@@ -431,7 +534,19 @@
 		"split":2,
                 "xsec":2.03,
 		"br":[0.269,0.0403896]
-		},
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(400)#rightarrow ZZ",
+	"isdata":false,
+	"spimpose":true,
+	"color":"805",
+        "lwidth":3,
+        "lstyle":2,
+	"fill":0,
+	"marker":1,
+	"data":[
 		{
 		"dtag":"MC_VBFtoH400toZZto2L2Nu",
 		"dset":" /VBF_ToHToZZTo2L2NU_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
@@ -444,12 +559,13 @@
 	   ]
 	},
 	{
-	"tag":"H(400)#rightarrow WW",
+	"tag":"ggH(400)#rightarrow WW",
+        "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
 	"color":"805",
 	"lwidth":2,
-        "lstyle":2,
+        "lstyle":3,
 	"fill":0,
 	"marker":1,
 	"data":[
@@ -461,7 +577,20 @@
 		"split":2,
                 "xsec":2.03,
 		"br":[0.582,0.046656]
-		},
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(400)#rightarrow WW",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"805",
+	"lwidth":3,
+        "lstyle":3,
+	"fill":0,
+	"marker":1,
+	"data":[
 		{
 		"dtag":"MC_VBFtoH400toWWto2L2Nu",
 		"dset":" /VBF_HToWWTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
@@ -474,7 +603,7 @@
 	   ]
 	},
 	{
-	"tag":"H(450)#rightarrow ZZ",
+	"tag":"ggH(450)#rightarrow ZZ",
         "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
@@ -491,7 +620,20 @@
 		"split":2,
                 "xsec":1.24,
 		"br":[0.259,0.0403896]
-		},
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(450)#rightarrow ZZ",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"800",
+        "lwidth":3,
+        "lstyle":2,
+	"fill":0,
+	"marker":1,
+	"data":[
 		{	
 		"dtag":"MC_VBFtoH450toZZto2L2Nu",
 		"dset":"/VBF_ToHToZZTo2L2NU_M-450_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
@@ -504,13 +646,13 @@
 	   ]
 	},
 	{
-	"tag":"H(450)#rightarrow WW",
+	"tag":"ggH(450)#rightarrow WW",
         "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",
 	"lwidth":2,
-        "lstyle":2,
+        "lstyle":3,
 	"fill":0,
 	"marker":1,
 	"data":[
@@ -522,7 +664,20 @@
 		"split":2,
                 "xsec":1.24,
 		"br":[0.549,0.046656]
-		},
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(450)#rightarrow WW",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"800",
+	"lwidth":3,
+        "lstyle":3,
+	"fill":0,
+	"marker":1,
+	"data":[
 		{	
 		"dtag":"MC_VBFtoH450toWWto2L2Nu",
 		"dset":"/VBF_HToWWTo2L2Nu_M-450_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
@@ -535,7 +690,7 @@
 	   ]
 	},
 	{
-	"tag":"H(500)#rightarrow ZZ",
+	"tag":"ggH(500)#rightarrow ZZ",
         "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
@@ -552,26 +707,39 @@
 		"split":2,
                 "xsec":0.865,
 		"br":[0.261,0.0403896]
-		},
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(500)#rightarrow ZZ",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"797",
+        "lwidth":3,
+        "lstyle":2,
+	"fill":0,
+	"marker":1,
+	"data":[
 		{
-		"dtag":"MC_VBFtoH500toZZto2L2Nu",
-		"dset":" /VBF_ToHToZZTo2L2NU_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_ToHToZZTo2L2NU_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-500_7TeV-powheg-pythia6"],
+		"dtag":"MC_GGtoH500toZZto2L2Nu",
+		"dset":"/GluGluToHToZZTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-500_7TeV-powheg-pythia6"],
 		"split":2,
-                "xsec":0.0968,
+                "xsec":0.865,
 		"br":[0.261,0.0403896]
 		}
 	   ]
 	},
 	{
-	"tag":"H(500)#rightarrow WW",
+	"tag":"ggH(500)#rightarrow WW",
         "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
 	"color":"797",
 	"lwidth":2,
-        "lstyle":2,
+        "lstyle":3,
 	"fill":0,
 	"marker":1,
 	"data":[
@@ -583,7 +751,20 @@
 		"split":2,
                 "xsec":0.865,
 		"br":[0.546,0.046656]
-		},
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(500)#rightarrow WW",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"797",
+	"lwidth":3,
+        "lstyle":3,
+	"fill":0,
+	"marker":1,
+	"data":[
 		{
 		"dtag":"MC_VBFtoH500toWWto2L2Nu",
 		"dset":" /VBF_HToWWTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
@@ -596,7 +777,7 @@
 	   ]
 	},
 	{
-	"tag":"H(550)#rightarrow ZZ",
+	"tag":"ggH(550)#rightarrow ZZ",
         "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
@@ -613,7 +794,20 @@
 		"split":2,
                 "xsec":0.48,
 		"br":[0.267,0.0403896]
-		},
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(550)#rightarrow ZZ",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"800",
+        "lwidth":3,
+        "lstyle":2,
+	"fill":0,
+	"marker":1,
+	"data":[
 		{	
 		"dtag":"MC_VBFtoH550toZZto2L2Nu",
 		"dset":"/VBF_ToHToZZTo2L2NU_M-550_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
@@ -626,13 +820,13 @@
 	   ]
 	},
 	{
-	"tag":"H(550)#rightarrow WW",
+	"tag":"ggH(550)#rightarrow WW",
         "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",
 	"lwidth":2,
-        "lstyle":2,
+        "lstyle":3,
 	"fill":0,
 	"marker":1,
 	"data":[
@@ -644,7 +838,20 @@
 		"split":2,
                 "xsec":0.48,
 		"br":[0.552,0.046656]
-		},
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(550)#rightarrow WW",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"800",
+	"lwidth":3,
+        "lstyle":3,
+	"fill":0,
+	"marker":1,
+	"data":[
 		{	
 		"dtag":"MC_VBFtoH550toWWto2L2Nu",
 		"dset":"/VBF_HToWWTo2L2Nu_M-550_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
@@ -657,7 +864,7 @@
 	   ]
 	},
 	{
-	"tag":"H(600)#rightarrow ZZ",
+	"tag":"ggH(600)#rightarrow ZZ",
 	"isdata":false,
 	"spimpose":true,
 	"color":"807",
@@ -673,7 +880,19 @@
 		"split":2,
                 "xsec":0.3267,
 		"br":[0.272,0.0403896]
-		},
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(600)#rightarrow ZZ",
+	"isdata":false,
+	"spimpose":true,
+	"color":"807",
+        "lwidth":3,
+        "lstyle":2,
+	"fill":0,
+	"marker":1,
+	"data":[
 		{
 		"dtag":"MC_VBFtoH600toZZto2L2Nu",
 		"dset":"/VBF_ToHToZZTo2L2NU_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
@@ -686,12 +905,13 @@
 	   ]
 	},
 	{
-	"tag":"H(600)#rightarrow WW",
+	"tag":"ggH(600)#rightarrow WW",
+        "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
 	"color":"807",
 	"lwidth":2,
-        "lstyle":2,
+        "lstyle":3,
 	"fill":0,
 	"marker":1,
 	"data":[
@@ -703,7 +923,20 @@
 		"split":2,
                 "xsec":0.3267,
 		"br":[0.558,0.046656]
-		},
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(600)#rightarrow WW",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"807",
+	"lwidth":3,
+        "lstyle":3,
+	"fill":0,
+	"marker":1,
+	"data":[
 		{
 		"dtag":"MC_VBFtoH600toWWto2L2Nu",
 		"dset":" /VBF_HToWWTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",

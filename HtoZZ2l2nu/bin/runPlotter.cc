@@ -180,11 +180,17 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, Na
          PURescale_up  [(Samples[j])["dtag"].toString()] = PUUpnorm;
          //if(isMC)printf("PU Renormalization %25s Shift Down --> %6.2f  Central = %6.2f  Up Down --> %6.2f\n",(Samples[j])["dtag"].toString().c_str(),PUDownnorm, PUCentralnnorm, PUUpnorm);	
 
+
          double cnorm = 1.0;
          if(tmphist)cnorm = tmphist->GetBinContent(1);
          if(cnorm<=0 || !isMC)cnorm = 1.0;         
          if(cnorm==1 && isMC)printf("is there a problem with %s ? cnorm = %f\n",(Samples[j])["dtag"].toString().c_str(), cnorm);          
          if(!isMC)PUCentralnnorm = 1;
+
+   	  double VBFMCRescale = tmphist->GetBinContent(6) / tmphist->GetBinContent(2);
+          //printf("VBFMCRescale for sample %s is %f\n", (Samples[j])["dtag"].toString().c_str(), VBFMCRescale );
+          cnorm *= VBFMCRescale;
+
          initialNumberOfEvents[(Samples[j])["dtag"].toString()] = cnorm / PUCentralnnorm;
 
          delete tmphist;
