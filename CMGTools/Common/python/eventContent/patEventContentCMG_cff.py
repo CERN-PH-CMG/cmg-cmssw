@@ -43,6 +43,9 @@ patEventContentCMG.extend([
     'keep double_*_rho_*',
     # drop pat genjets embedding collections
     'drop recoGenJets_*Pat*_genJets_PAT',
+    # keep pruned jets
+    'keep recoPFJets_ak5PFJetsCHSpruned_SubJets_*',
+    'keep patJets_selectedPatJetsCHSpruned_*_*',
     ])
 
 patEventContentCMG.extend( everything )
