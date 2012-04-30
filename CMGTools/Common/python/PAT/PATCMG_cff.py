@@ -354,11 +354,22 @@ patMETsRaw.metSource = 'pfMet'
 cmgPFMETRaw = cmgPFMET.clone()
 cmgPFMETRaw.cfg.inputCollection = 'patMETsRaw'
 
+#Jose: adding PFMET significance
+from CMGTools.Common.miscProducers.metSignificance_cfi import metSignificance
+PFMETSignificance = metSignificance.clone()
+PFMETSignificance.inputPATElectrons = cms.InputTag('')   
+PFMETSignificance.inputPATMuons = cms.InputTag('')
+PFMETSignificance.inputPFJets = cms.InputTag('') #Jose: previously used pfJets here and pfNoJet below but now pfNoJet is no loger available 
+PFMETSignificance.inputPFCandidates = cms.InputTag('particleFlow')
+
+
+
 PATCMGMetSequence = cms.Sequence(
     producePFMETCorrections + 
     patMETs *
     cmgPFMET +
     patMETsRaw *
+    PFMETSignificance +
     cmgPFMETRaw
     )
 
