@@ -14,6 +14,7 @@ print 'querying database for source files'
 runOnMC = True
 runOnV4 = False
 
+runJetSubstructure = False
 
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
@@ -51,6 +52,10 @@ if runOnMC is False:
     process.patJets.addGenJetMatch = False
     process.patJets.addGenPartonMatch = False
 
+    process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
+    process.patJetsCHSpruned.addGenJetMatch = False
+    process.patJetsCHSpruned.addGenPartonMatch = False
+
     process.PATCMGTauSequence.remove( process.tauGenJets )
     process.PATCMGTauSequence.remove( process.tauGenJetsSelectorAllHadrons )
     process.PATCMGTauSequence.remove( process.tauGenJetMatch )
@@ -71,6 +76,7 @@ if runOnMC is False:
 
     # adding L2L3Residual corrections
     process.patJetCorrFactors.levels.append('L2L3Residual')
+    process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
 
 if runOnV4 is True:
     process.PATCMGRhoSequence += process.kt6PFJets
@@ -97,6 +103,9 @@ process.p = cms.Path(
     process.PATCMGSequence + 
     process.PATCMGJetCHSSequence 
     )
+if runJetSubstructure:
+    process.p += process.PATCMGJetSequenceCHSpruned
+process.p += process.postPathCounter
 
 
 #load genJets, genParticlesPruned, vertex weights, ...
