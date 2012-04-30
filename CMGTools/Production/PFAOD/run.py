@@ -3,7 +3,9 @@ import os
 # start from a PFAOD file
 
 inputs = [
-    'AOD_TTJets.root',
+    'AOD_RelValProdQCD.root',
+    'AOD_RelValProdTTbar.root',
+    'AOD_DYJetsToLL.root',
 #    'AOD_DoubleMu.root',
 #    'AOD_DoubleElectron.root',
 #    'AOD_HT.root'
@@ -12,15 +14,10 @@ inputs = [
 # run a set of cfgs on that file
 
 cfgs = [
-#    'photons_cfg.py',
-    'all_cfg.py',
-#    'noCastor_cfg.py',
-#    'tevMuons_cfg.py',
-    'bare_cfg.py',
-    'V2_cfg.py',
-    'V3_cfg.py',
-#    'ak7calo_cfg.py',
-#    'caloClusters_cfg.py'
+    # 'all_cfg.py',
+    # 'bare_cfg.py',
+    'V4_cfg.py',
+    'V5_cfg.py',
     ]
 
 # cfgs = cfgs[:1]
