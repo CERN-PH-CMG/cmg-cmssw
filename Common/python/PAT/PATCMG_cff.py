@@ -335,6 +335,11 @@ ak5PFJetsCHS.doRhoFastjet = False
 #NOTE: please refer to the cfg, where the cloning of the PAT jet sequence is done
 # could be rewritten here, but painful...
 
+
+# JETS CHS PRUNED ----------------------------
+
+from CMGTools.Common.PAT.addJetSubstructure_cff import *
+
 # MET      ----------------------------
 
 #produce type 1 corrected MET
