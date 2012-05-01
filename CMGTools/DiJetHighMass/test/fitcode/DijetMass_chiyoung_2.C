@@ -374,7 +374,9 @@ void DijetMass_chiyoung_2(){
   TGraphAsymmErrors *g = new TGraphAsymmErrors(i,vx,vy,vexl,vexh,veyl,veyh);
   TGraphAsymmErrors *g2 = new TGraphAsymmErrors(i,vx,vy,vexl,vexh,veyl,veyh);
   TGraphAsymmErrors *gFinal = new TGraphAsymmErrors(i,vx,vy,vexl,vexh,veyl,veyh);
-
+  TGraphAsymmErrors *gDefault = new TGraphAsymmErrors(i,vx,vy,vexl,vexh,veyl,veyh);
+  TGraphAsymmErrors *g_3par = new TGraphAsymmErrors(i,vx,vy,vexl,vexh,veyl,veyh);
+  TGraphAsymmErrors *g_4par = new TGraphAsymmErrors(i,vx,vy,vexl,vexh,veyl,veyh);
 
   // Fit to data    
   // Fit to data anly at low mass    
@@ -428,7 +430,7 @@ void DijetMass_chiyoung_2(){
 
   f_4par->SetLineWidth(2);
   f_4par->SetLineColor(TColor::GetColor("#009900"));
-
+  g_4par->Fit("fit_4par","","",889.0,4171.0);	
 
   //Alternate Fits 3 parameter
   TF1 *f_3par = new TF1("fit_3par",fitQCD2,889.0,4171.0,3); // 3 Par. Fit
@@ -439,6 +441,156 @@ void DijetMass_chiyoung_2(){
   f_3par->SetLineWidth(2);
   f_3par->SetLineColor(2);
   f_3par->SetLineStyle(2);
+  g_3par->Fit("fit_3par","","",889.0,4171.0);	
+
+  gStyle->SetOptFit(0000);
+
+
+  TObjArray* aData = new TObjArray(30);
+  TObjArray* aFit = new TObjArray(30);
+
+  TObjArray* aRatio = new TObjArray(30);
+
+  TGraphAsymmErrors *gRatio_4par = new TGraphAsymmErrors(*gDefault);
+  TGraphAsymmErrors *gRatio_3par = new TGraphAsymmErrors(*gDefault);
+  
+  for (int iWindow = 0; iWindow < 30; iWindow++){
+
+    TGraphAsymmErrors *gWindow = new TGraphAsymmErrors(*gDefault);
+    TGraphAsymmErrors *gRatio = new TGraphAsymmErrors(*gDefault);
+
+    TF1 *fit_window = new TF1(Form("fit_window_%d",iWindow),fitQCD1,890.0,4171.0,4); // 4 Par. Fit
+    fit_window->SetParameter(0,1.73132e-05);
+    fit_window->SetParameter(1,6.80678e+00);
+    fit_window->SetParameter(2,6.33620e+00);
+    fit_window->SetParameter(3,1.93728e-01);
+    fit_window->SetLineWidth(2);
+    fit_window->SetLineColor(4);
+
+    gWindow->SetPointEYhigh(37+iWindow, 1000);
+    gWindow->SetPointEYlow(37+iWindow, 1000);
+
+    gWindow->SetPointEYhigh(38+iWindow, 1000);
+    gWindow->SetPointEYlow(38+iWindow, 1000);
+
+    gWindow->SetPointEYhigh(39+iWindow, 1000);
+    gWindow->SetPointEYlow(39+iWindow, 1000);
+
+
+    aData->AddAt(gWindow, iWindow);
+    
+    gWindow->Fit(Form("fit_window_%d",iWindow),"","",890.0,4171.0);
+
+
+    double fMass, Xsec;
+
+    for (int i = 0; i < gRatio->GetN(); i++){
+      gRatio->GetPoint(i, fMass, Xsec);
+
+      float XsecWindow = fit_window->Eval(fMass,0,0);
+      float XsecDefault = fit->Eval(fMass,0,0);
+      
+      if (Xsec > 1e-10) gRatio->SetPoint(i, fMass, XsecWindow/XsecDefault); 
+      if (Xsec > 1e-10) gRatio->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+
+      if (Xsec < 1e-10) gRatio->SetPoint(i, fMass, 1.0); 
+      if (Xsec < 1e-10) gRatio->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+
+
+    if (iWindow == 0){
+
+	float XsecWindow_4par = f_4par->Eval(fMass,0,0);
+	float XsecWindow_3par = f_3par->Eval(fMass,0,0);
+
+	if (Xsec > 1e-10) gRatio_4par->SetPoint(i, fMass, XsecWindow_4par/XsecDefault); 
+	if (Xsec > 1e-10) gRatio_4par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+
+	if (Xsec > 1e-10) gRatio_3par->SetPoint(i, fMass, XsecWindow_3par/XsecDefault); 
+	if (Xsec > 1e-10) gRatio_3par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+
+	if (Xsec < 1e-10) gRatio_4par->SetPoint(i, fMass, 1.0); 
+	if (Xsec < 1e-10) gRatio_4par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+
+	if (Xsec < 1e-10) gRatio_3par->SetPoint(i, fMass, 1.0); 
+	if (Xsec < 1e-10) gRatio_3par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+
+      }
+
+
+    }
+
+
+    aFit->AddAt(fit, iWindow);
+    aRatio->AddAt(gRatio, iWindow);
+
+  }
+
+
+  //Dijet Mass Cross Section with Fit	
+  TCanvas* c0 = new TCanvas("c0","DijetMass Cross Section with Fit");
+  c0->SetLogy(1);
+  g->SetTitle("");
+  g->SetLineColor(1);
+  g->SetFillColor(1);
+  g->SetMarkerColor(1);
+  g->SetMarkerStyle(20);
+  g->GetXaxis()->SetTitle("Dijet Mass (GeV)");
+  g->GetYaxis()->SetTitle("d#sigma/dm (pb/GeV)");
+  g->GetXaxis()->SetRangeUser(700,4300.0);
+  g->GetYaxis()->SetRangeUser(0.0000003,60);
+  g->DrawClone("APZ");
+
+  for (int iWindow = 0; iWindow < 30; iWindow++){
+
+    ((TF1*) aFit->At(iWindow))->SetLineColor(iWindow+1);
+    ((TF1*) aFit->At(iWindow))->Draw("SAME");
+
+  }
+
+  c0->SaveAs("Plots/DijetMassCrossSectionWithWindowFit.png");
+  c0->SaveAs("Plots/DijetMassCrossSectionWithWindowFit.eps");
+
+
+
+ //Dijet Mass Cross Section with Fit	
+  TCanvas* c01 = new TCanvas("c01","DijetMass Cross Section with Window Fit");
+  c01->Divide(6,5);
+
+ for (int iWindow = 0; iWindow < 30; iWindow++){ 
+
+   c01->cd(iWindow+1);
+   ((TGraphAsymmErrors*) aData->At(iWindow))->SetTitle("");
+   ((TGraphAsymmErrors*) aData->At(iWindow))->SetLineColor(1);
+   ((TGraphAsymmErrors*) aData->At(iWindow))->SetFillColor(1);
+   ((TGraphAsymmErrors*) aData->At(iWindow))->SetMarkerColor(1);
+   ((TGraphAsymmErrors*) aData->At(iWindow))->SetMarkerStyle(20);
+   ((TGraphAsymmErrors*) aData->At(iWindow))->SetMarkerSize(0.5);
+   ((TGraphAsymmErrors*) aData->At(iWindow))->GetXaxis()->SetTitle("Dijet Mass (GeV)");
+   ((TGraphAsymmErrors*) aData->At(iWindow))->GetYaxis()->SetTitle("d#sigma/dm (pb/GeV)");
+   ((TGraphAsymmErrors*) aData->At(iWindow))->GetXaxis()->SetRangeUser(700,4300.0);
+   ((TGraphAsymmErrors*) aData->At(iWindow))->GetYaxis()->SetRangeUser(0.0000003,60);
+   ((TGraphAsymmErrors*) aData->At(iWindow))->Draw("APZ");
+
+   gPad->SetLogy();
+
+ }
+
+c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.png");
+c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
+
+
+
+
+
+
+
+
+
+
+
+    gStyle->SetOptFit(1111);
+
+
 
   //Dijet Mass Cross Section with Fit	
   TCanvas* c1 = new TCanvas("c1","DijetMass Cross Section with Fit");
@@ -452,7 +604,9 @@ void DijetMass_chiyoung_2(){
   g->GetYaxis()->SetTitle("d#sigma/dm (pb/GeV)");
   g->GetXaxis()->SetRangeUser(700,4300.0);
   g->GetYaxis()->SetRangeUser(0.0000003,60);
-  g->Draw("APZ");
+  g->DrawClone("APZ");
+
+
 
 
   TLegend *leg = new TLegend(0.25,0.77,0.48,0.92);
@@ -1153,6 +1307,56 @@ void DijetMass_chiyoung_2(){
   hratio->SetLineColor(1);	
   c5->SaveAs("Plots/DijetMassCrossSectionWithSignal.png");
   c5->SaveAs("Plots/DijetMassCrossSectionWithSignal.eps");
+
+
+
+
+
+
+ //Dijet Mass Cross Section with Fit	
+  TCanvas* c02 = new TCanvas("c02","DijetMass Cross Section with Window Fit");
+  ((TGraphAsymmErrors*) aRatio->At(0))->SetTitle("");
+  ((TGraphAsymmErrors*) aRatio->At(0))->SetLineColor(1);
+  ((TGraphAsymmErrors*) aRatio->At(0))->SetFillColor(1);
+  ((TGraphAsymmErrors*) aRatio->At(0))->GetXaxis()->SetTitle("Dijet Mass (GeV)");
+  ((TGraphAsymmErrors*) aRatio->At(0))->GetYaxis()->SetTitle("d#sigma/dm (pb/GeV)");
+  ((TGraphAsymmErrors*) aRatio->At(0))->GetXaxis()->SetRangeUser(700,4300.0);
+  ((TGraphAsymmErrors*) aRatio->At(0))->GetYaxis()->SetRangeUser(0.0,2.0);
+  ((TGraphAsymmErrors*) aRatio->At(0))->Draw("AL");
+
+  for (int iWindow = 1; iWindow < 30; iWindow++){
+
+    ((TGraphAsymmErrors*) aRatio->At(iWindow))->SetLineColor(iWindow+1);
+    ((TGraphAsymmErrors*) aRatio->At(iWindow))->Draw("SAME");
+
+  }
+
+  gRatio_4par->SetLineWidth(2);
+  gRatio_4par->SetLineStyle(1);
+  gRatio_4par->SetLineColor(TColor::GetColor("#009900"));
+
+
+  gRatio_3par->SetLineWidth(2);
+  gRatio_3par->SetLineStyle(1);
+  gRatio_3par->SetLineColor(kBlue);
+  
+  gRatio_4par->Draw("SAME");
+  gRatio_3par->Draw("SAME"); 
+
+  hratio->Draw("SAMEP");
+
+
+  c02->SaveAs("Plots/DijetMassCrossSectionWithWindowFitRatio.png");
+  c02->SaveAs("Plots/DijetMassCrossSectionWithWindowFitRatio.eps");
+
+
+
+
+
+
+
+
+
 
 
   TCanvas* c6 = new TCanvas("c6","(Data-Fit)/Fit");
