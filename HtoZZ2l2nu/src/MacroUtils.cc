@@ -86,3 +86,65 @@ double weightVBF(std::string SampleName, double m_gen, double mass){
    return toReturn;
 }
 
+
+//
+std::vector<TH1 *> defineOptimizationHistos(int version)
+{
+  std::vector<TH1 *> optimHistos;
+  
+  //##############################################
+  //######## STUFF FOR CUTS OPTIMIZATION  ########
+  //##############################################
+  std::vector<double> optim_Cuts1_met;
+   std::vector<double> optim_Cuts1_mtmin;
+   std::vector<double> optim_Cuts1_mtmax;
+   for(double met=65;met<160;met+=5.0){
+	 if(met>90 && int(met)%10!=0)continue;
+         if(met>120 && int(met)%20!=0)continue;
+         for(double mtmin_=150;mtmin_<500;mtmin_+=25){
+            double mtmin = mtmin_;
+            if(mtmin<=150)mtmin=0;
+	    if(mtmin>350 && int(mtmin)%50!=0)continue;
+            for(double mtmax=mtmin+100;mtmax<mtmin+350;mtmax+=25){
+               if(mtmax>=mtmin+325)mtmax=3000;
+               if(mtmin==0 && mtmax!=3000)continue;
+	       if(mtmin>350 && int(mtmax)%50!=0)continue;
+               if(mtmax-mtmin>200 && int(mtmax)%50!=0)continue;
+               optim_Cuts1_met    .push_back(met);
+               optim_Cuts1_mtmin  .push_back(mtmin);
+               optim_Cuts1_mtmax  .push_back(mtmax);
+            }
+      }
+   }
+  
+   //add last year cut
+  optim_Cuts1_met.push_back( 70); optim_Cuts1_mtmin.push_back(229); optim_Cuts1_mtmax.push_back(258);
+  optim_Cuts1_met.push_back( 77); optim_Cuts1_mtmin.push_back(245); optim_Cuts1_mtmax.push_back(293);
+  optim_Cuts1_met.push_back( 84); optim_Cuts1_mtmin.push_back(260); optim_Cuts1_mtmax.push_back(328);
+  optim_Cuts1_met.push_back( 91); optim_Cuts1_mtmin.push_back(276); optim_Cuts1_mtmax.push_back(364);
+  optim_Cuts1_met.push_back( 98); optim_Cuts1_mtmin.push_back(292); optim_Cuts1_mtmax.push_back(399);
+  optim_Cuts1_met.push_back(105); optim_Cuts1_mtmin.push_back(308); optim_Cuts1_mtmax.push_back(434);
+  optim_Cuts1_met.push_back(112); optim_Cuts1_mtmin.push_back(323); optim_Cuts1_mtmax.push_back(470);
+  optim_Cuts1_met.push_back(119); optim_Cuts1_mtmin.push_back(339); optim_Cuts1_mtmax.push_back(505);
+  optim_Cuts1_met.push_back(126); optim_Cuts1_mtmin.push_back(355); optim_Cuts1_mtmax.push_back(540);
+  optim_Cuts1_met.push_back(133); optim_Cuts1_mtmin.push_back(370); optim_Cuts1_mtmax.push_back(576);
+  optim_Cuts1_met.push_back(140); optim_Cuts1_mtmin.push_back(386); optim_Cuts1_mtmax.push_back(611);
+  optim_Cuts1_met.push_back(147); optim_Cuts1_mtmin.push_back(402); optim_Cuts1_mtmax.push_back(646);
+  optim_Cuts1_met.push_back(154); optim_Cuts1_mtmin.push_back(417); optim_Cuts1_mtmax.push_back(682);
+  optim_Cuts1_met.push_back(161); optim_Cuts1_mtmin.push_back(433); optim_Cuts1_mtmax.push_back(717);
+  optim_Cuts1_met.push_back(168); optim_Cuts1_mtmin.push_back(449); optim_Cuts1_mtmax.push_back(752);
+  
+  TH1F* Hoptim_cuts1_met     =  new TH1F ("optim_cut1_met"    , ";cut index;met"    ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ; 
+  TH1F* Hoptim_cuts1_mtmin   =  new TH1F ("optim_cut1_mtmin"  , ";cut index;mtmin"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ;
+  TH1F* Hoptim_cuts1_mtmax   =  new TH1F ("optim_cut1_mtmax"  , ";cut index;mtmax"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ;
+  for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
+    Hoptim_cuts1_met    ->Fill(index, optim_Cuts1_met[index]);    
+    Hoptim_cuts1_mtmin  ->Fill(index, optim_Cuts1_mtmin[index]);
+    Hoptim_cuts1_mtmax  ->Fill(index, optim_Cuts1_mtmax[index]);
+  }
+  optimHistos.push_back(Hoptim_cuts1_met);
+  optimHistos.push_back(Hoptim_cuts1_mtmin);
+  optimHistos.push_back(Hoptim_cuts1_mtmax);
+
+  return optimHistos;
+}

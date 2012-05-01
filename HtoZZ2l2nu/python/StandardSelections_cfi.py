@@ -101,7 +101,7 @@ BasePhotonsSelection = cms.PSet( source = cms.InputTag("photons"),
                                  ecalIsoCoeffsEB = cms.vdouble(4.2, 0.006,  0.183),
                                  ecalIsoCoeffsEE = cms.vdouble(4.2, 0.006,  0.090),
                                  hcalIsoCoeffsEB = cms.vdouble(2.2, 0.0025, 0.062),
-                                 hcalIsoCoeffsEE = cms.vdouble(2.2, 0.025,  0.180),
+                                 hcalIsoCoeffsEE = cms.vdouble(2.2, 0.0025,  0.180),
                                  trackSource = cms.InputTag("generalTracks"),
                                  gsfTrackSource = cms.InputTag("gsfElectronTracks")
                                  )

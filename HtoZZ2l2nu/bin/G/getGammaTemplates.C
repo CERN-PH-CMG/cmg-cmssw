@@ -14,8 +14,8 @@
 #include "TMultiGraph.h"
 #include "TPaveText.h"
 
-string cats[]      ={"eq0jets", "eq1jets", "eq2jets",  "geq3jets"};
-TString catLabels[]={"=0 jets", "=1 jets", "=2 jets", "#geq 3 jets"};
+string cats[]      ={"eq0jets", "eq1jets", "eq2jets",  "geq3jets","vbf"};
+TString catLabels[]={"=0 jets", "=1 jets", "=2 jets", "#geq 3 jets","VBF"};
 const size_t nCats=sizeof(cats)/sizeof(string);
 
 string dilCats[]       = {"ee","mumu"};
@@ -38,7 +38,7 @@ const size_t nGmcDirs=sizeof(gmcDirs)/sizeof(string);
 string gDir = "data (#gamma)";
 string sigDir ="H(300)#rightarrow ZZ";
 
-Int_t avgPu[]={5,8,12,15};
+Int_t avgPu[]={-1,5,8,12,15};
 
 
 TGraphErrors *getEfficiencyCurve(TH1 *bckg, TH1 *sig=0);
@@ -121,9 +121,77 @@ void getGammaWeights(TString inputFile="plotter.root",TString varname="qt")
 }
 
 
+//
+void getGammaMtShapes(TString inputFile="plotter.root", TString  cat="")
+{
+
+  TString outputFile(inputFile);
+  outputFile.ReplaceAll(".root","_templ.root");
+  TFile *fout = TFile::Open(outputFile,"RECREATE");
+  fout->cd();
+
+  TFile *fin = TFile::Open(inputFile);
+  fin->cd();
+  for(size_t id=0; id<nDilCats; id++)
+    {
+      string pName=dilCats[id]+"_mt_shapes_"; pName += cat.Data();
+      TH2F *hmcsig= (TH2F *) getObjectFromPath(fin,sigDir+"/"+pName,true);
+      TH2F *hdy   = (TH2F *) getObjectFromPath(fin,dyDir+"/"+pName,true);
+      TH2F *hmcdy = (TH2F *) getObjectFromPath(fin,dymcDir+"/"+pName,true);
+      TH2F *hg    = (TH2F *) getObjectFromPath(fin,gDir+"/"+pName,true);
+      TH2F *hmcg  = 0, *hmcpureg=0, *hmccontg=0;
+      for(size_t imc=0; imc<nGmcDirs; imc++)
+	{
+	  if(hmcg==0) hmcg =     (TH2F *) getObjectFromPath(fin, gmcDirs[imc]+"/"+pName,true);
+	  else        hmcg->Add( (TH2F *) getObjectFromPath(fin, gmcDirs[imc]+"/"+pName,false) ); 
+	  if( gmcPure[imc] )
+	    {
+	      if(hmcpureg==0) hmcpureg = (TH2F *) getObjectFromPath(fin, gmcDirs[imc]+"/"+pName,true);
+	      else            hmcpureg = (TH2F *) getObjectFromPath(fin, gmcDirs[imc]+"/"+pName,false);
+	    }
+	  else
+	    {
+	      if(hmccontg==0) hmccontg = (TH2F *) getObjectFromPath(fin, gmcDirs[imc]+"/"+pName,true);
+	      else            hmccontg = (TH2F *) getObjectFromPath(fin, gmcDirs[imc]+"/"+pName,false);
+	    }
+	}
+      
+      hmcsig->SetName(("signalmc_"+dilCats[id]).c_str());
+      hdy->SetName(("dydata_"+dilCats[id]).c_str());
+      hmcdy->SetName(("dymc_"+dilCats[id]).c_str());
+      hg->SetName(("gdata_"+dilCats[id]).c_str());
+      TH2F *hpureg = (TH2F *) hg->Clone(("puregdata_"+dilCats[id]).c_str()); hpureg->SetDirectory(0); hpureg->Add(hmccontg,-1);
+      for(int xbin=1; xbin<= hpureg->GetXaxis()->GetNbins(); xbin++)
+	{
+	  for(int ybin=1; ybin<=hpureg->GetXaxis()->GetNbins(); ybin++)
+	    {
+	      Float_t val=hpureg->GetBinContent(xbin,ybin);
+	      if(val>=0) continue;
+	      hpureg->SetBinContent(xbin,ybin,0);
+	    }
+	}
+      hmcg->SetName(("gmc_"+dilCats[id]).c_str());
+      hmcpureg->SetName(("puregmc_"+dilCats[id]).c_str());
+      if(hmccontg) hmccontg->SetName(("contgmc_"+dilCats[id]).c_str());
+      
+      fout->cd();
+      hmcsig->SetDirectory(fout);   hmcsig->Write();
+      hdy->SetDirectory(fout);      hdy->Write();
+      hmcdy->SetDirectory(fout);    hmcdy->Write();
+      hg->SetDirectory(fout);       hg->Write();
+      hpureg->SetDirectory(fout);   hpureg->Write();
+      hmcg->SetDirectory(fout);     hmcg->Write();
+      hmcpureg->SetDirectory(fout); hmcpureg->Write();
+
+      fin->cd();
+    }
+
+  fin->Close();   //delete fin;
+  fout->Close();  //delete fout;
+}
 
 //
-void getGammaTemplates(TString inputFile="plotter.root",TString varname="met_met_")
+void getGammaTemplates(TString inputFile="plotter.root",TString varname="met_met", TString  cat="")
 {
   setStyle();
 
@@ -132,7 +200,9 @@ void getGammaTemplates(TString inputFile="plotter.root",TString varname="met_met
   for(size_t id=0; id<nDilCats; id++)
     {
       //variable
-      string pName=dilCats[id]+"_"; pName+=varname.Data(); pName+="_vspu";
+      string pName=dilCats[id]+"_"; pName+=varname.Data();
+      if(cat!="") pName += "_"+cat;
+      pName+="_vspu";
       TH2F *hmcsig= (TH2F *) getObjectFromPath(fin,sigDir+"/"+pName,true);
       TH2F *hdy   = (TH2F *) getObjectFromPath(fin,dyDir+"/"+pName,true);
       TH2F *hmcdy = (TH2F *) getObjectFromPath(fin,dymcDir+"/"+pName,true);
@@ -154,6 +224,8 @@ void getGammaTemplates(TString inputFile="plotter.root",TString varname="met_met
 	    }
 	}
 
+      cout << hmcsig << " " << hdy << " " << hmcdy << " " << hg << endl;
+
       hmcsig->SetName(("signalmc_"+dilCats[id]).c_str());
       hdy->SetName(("dydata_"+dilCats[id]).c_str());
       hmcdy->SetName(("dymc_"+dilCats[id]).c_str());
@@ -161,7 +233,7 @@ void getGammaTemplates(TString inputFile="plotter.root",TString varname="met_met
       TH2F *hpureg = (TH2F *) hg->Clone(("puregdata_"+dilCats[id]).c_str()); hpureg->SetDirectory(0); hpureg->Add(hmccontg,-1);
       hmcg->SetName(("gmc_"+dilCats[id]).c_str());
       hmcpureg->SetName(("puregmc_"+dilCats[id]).c_str());
-      hmccontg->SetName(("contgmc_"+dilCats[id]).c_str());
+      if(hmccontg) hmccontg->SetName(("contgmc_"+dilCats[id]).c_str());
 
       //get templates for different pileup scenarios
       std::vector<TH1D *> hmcsigRwgt=getPUReweighted(hmcsig);
@@ -202,13 +274,14 @@ void getGammaTemplates(TString inputFile="plotter.root",TString varname="met_met
 	  leg->SetFillStyle(0);
 	  leg->SetTextFont(42);
 	  char scenarioTitle[100];
-	  sprintf(scenarioTitle,"<N_{vtx}>=%d",avgPu[iscenario]); 
+	  if(avgPu[iscenario]>0) sprintf(scenarioTitle,"<N_{vtx}>=%d",avgPu[iscenario]); 
+	  else                   sprintf(scenarioTitle,"2011 data");
 	  leg->SetHeader(scenarioTitle);
 	  frame->Draw("ap");
 	  frame->GetXaxis()->SetTitle(hmcdyRwgt[iscenario]->GetXaxis()->GetTitle());
 	  frame->GetYaxis()->SetTitle("Events (normalized)");
 	  leg->AddEntry(hmcdyRwgt[iscenario],"Z#rightarrow ll (MC)","l"); hmcdyRwgt[iscenario]->SetLineColor(kRed);      hmcdyRwgt[iscenario]->DrawNormalized("histsame");
-	  leg->AddEntry(hmcpuregRwgt[iscenario],"#gamma+jets (MC)","l");  hmcpuregRwgt[iscenario]->SetLineColor(kGreen); hmcpuregRwgt[iscenario]->DrawNormalized("histsame");
+	  //  leg->AddEntry(hmcpuregRwgt[iscenario],"#gamma+jets (MC)","l");  hmcpuregRwgt[iscenario]->SetLineColor(kGreen); hmcpuregRwgt[iscenario]->DrawNormalized("histsame");
 	  leg->AddEntry(hpuregRwgt[iscenario],"#gamma+jets (data)","l"); 
 	  hpuregRwgt[iscenario]->SetLineColor(kBlue);    
 	  hpuregRwgt[iscenario]->SetMarkerColor(kBlue);    
@@ -224,13 +297,13 @@ void getGammaTemplates(TString inputFile="plotter.root",TString varname="met_met
 	  frame2->GetYaxis()->SetTitle("Instrumental background efficiency");
 	  frame2->GetXaxis()->SetTitle("Signal efficiency");
 	  TGraphErrors *mcdyEff    = getEfficiencyCurve(hmcdyRwgt[iscenario],hmcsigRwgt[iscenario]);      mcdyEff->Draw("l");
-	  TGraphErrors *mcpuregEff = getEfficiencyCurve(hmcpuregRwgt[iscenario],hmcsigRwgt[iscenario]);   mcpuregEff->Draw("l");
+	  //  TGraphErrors *mcpuregEff = getEfficiencyCurve(hmcpuregRwgt[iscenario],hmcsigRwgt[iscenario]);   mcpuregEff->Draw("l");
 	  TGraphErrors *puregEff   = getEfficiencyCurve(hpuregRwgt[iscenario],hmcsigRwgt[iscenario]);     puregEff->Draw("p");
 	  p->SetLogy();
 
 
 	  //Int_t ipVec[]={5,7};
-	  Int_t ipVec[]={3,6};
+	  Int_t ipVec[]={3,5};
 	  for(size_t iip=0; iip<2; iip++)
 	    {
 	      Int_t ip=ipVec[iip];
@@ -259,7 +332,7 @@ void getGammaTemplates(TString inputFile="plotter.root",TString varname="met_met
 
 	  c->Modified();
 	  c->Update();
-	  TString cname("PuScenario_"); cname+= iscenario;
+	  TString cname("~/www/tmp/PuScenario_"); cname+= iscenario;
 	  c->SaveAs(cname + ".png");
 	}
       delete c;
@@ -379,7 +452,8 @@ std::vector<TH1D *> getPUReweighted(TH2F *h)
       for(int ibin=1; ibin<=puDist->GetXaxis()->GetNbins(); ibin++)
 	{
 	  Float_t npu=puDist->GetXaxis()->GetBinLowEdge(ibin);
-	  puDist->SetBinContent(ibin,TMath::Poisson(npu,avgPu[i]));
+	  if(avgPu[i]>0) puDist->SetBinContent(ibin,TMath::Poisson(npu,avgPu[i]));
+	  else           puDist->SetBinContent(ibin,puObs->GetBinContent(ibin));
 	}
       puDist->Scale(1./puDist->Integral());
       puWgts->Add(puDist);

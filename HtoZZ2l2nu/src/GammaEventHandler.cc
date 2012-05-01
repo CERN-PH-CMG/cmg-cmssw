@@ -27,7 +27,7 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
 
       if(wgtName!="")
 	{
-	  TString cats[]   =  {"eq0jets","eq1jets","eq2jets","geq3jets"};
+	  TString cats[]   =  {"eq0jets","eq1jets","eq2jets","geq3jets","vbf"};
 	  TString dilCats[] = {"ee","mumu","ll"};
 	  for(size_t ic=0; ic<sizeof(cats)/sizeof(TString); ic++)
 	    {

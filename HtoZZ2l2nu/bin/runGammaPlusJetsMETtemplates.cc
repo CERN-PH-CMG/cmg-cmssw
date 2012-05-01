@@ -64,11 +64,60 @@ int main(int argc, char* argv[])
   JetCorrectionUncertainty jecUnc(uncFile.Data());
 
   TRandom2 rndGen;
-  EventCategory eventClassifComp;
+  //  EventCategory eventClassifComp;
+  EventCategory eventClassifComp(3);
   GammaEventHandler gammaEvHandler(runProcess);  
 
   //book histograms
   SmartSelectionMonitor mon;
+
+  std::vector<double> optim_Cuts1_met;
+  std::vector<double> optim_Cuts1_mtmin;
+  std::vector<double> optim_Cuts1_mtmax;
+  for(double met=65;met<160;met+=5.0){
+    if(met>90 && int(met)%10!=0)continue;
+    if(met>120 && int(met)%20!=0)continue;
+    for(double mtmin_=150;mtmin_<500;mtmin_+=25){
+      double mtmin = mtmin_;
+      if(mtmin<=150)mtmin=0;
+      if(mtmin>350 && int(mtmin)%50!=0)continue;
+      for(double mtmax=mtmin+100;mtmax<mtmin+350;mtmax+=25){
+	if(mtmax>=mtmin+325)mtmax=3000;
+	if(mtmin==0 && mtmax!=3000)continue;
+	if(mtmin>350 && int(mtmax)%50!=0)continue;
+	if(mtmax-mtmin>200 && int(mtmax)%50!=0)continue;
+	optim_Cuts1_met    .push_back(met);
+	optim_Cuts1_mtmin  .push_back(mtmin);
+	optim_Cuts1_mtmax  .push_back(mtmax);
+      }
+    }
+  }
+  optim_Cuts1_met.push_back( 70); optim_Cuts1_mtmin.push_back(229); optim_Cuts1_mtmax.push_back(258);
+  optim_Cuts1_met.push_back( 77); optim_Cuts1_mtmin.push_back(245); optim_Cuts1_mtmax.push_back(293);
+  optim_Cuts1_met.push_back( 84); optim_Cuts1_mtmin.push_back(260); optim_Cuts1_mtmax.push_back(328);
+  optim_Cuts1_met.push_back( 91); optim_Cuts1_mtmin.push_back(276); optim_Cuts1_mtmax.push_back(364);
+  optim_Cuts1_met.push_back( 98); optim_Cuts1_mtmin.push_back(292); optim_Cuts1_mtmax.push_back(399);
+  optim_Cuts1_met.push_back(105); optim_Cuts1_mtmin.push_back(308); optim_Cuts1_mtmax.push_back(434);
+  optim_Cuts1_met.push_back(112); optim_Cuts1_mtmin.push_back(323); optim_Cuts1_mtmax.push_back(470);
+  optim_Cuts1_met.push_back(119); optim_Cuts1_mtmin.push_back(339); optim_Cuts1_mtmax.push_back(505);
+  optim_Cuts1_met.push_back(126); optim_Cuts1_mtmin.push_back(355); optim_Cuts1_mtmax.push_back(540);
+  optim_Cuts1_met.push_back(133); optim_Cuts1_mtmin.push_back(370); optim_Cuts1_mtmax.push_back(576);
+  optim_Cuts1_met.push_back(140); optim_Cuts1_mtmin.push_back(386); optim_Cuts1_mtmax.push_back(611);
+  optim_Cuts1_met.push_back(147); optim_Cuts1_mtmin.push_back(402); optim_Cuts1_mtmax.push_back(646);
+  optim_Cuts1_met.push_back(154); optim_Cuts1_mtmin.push_back(417); optim_Cuts1_mtmax.push_back(682);
+  optim_Cuts1_met.push_back(161); optim_Cuts1_mtmin.push_back(433); optim_Cuts1_mtmax.push_back(717);
+  optim_Cuts1_met.push_back(168); optim_Cuts1_mtmin.push_back(449); optim_Cuts1_mtmax.push_back(752);
+  const size_t nOptimCuts=optim_Cuts1_met.size();
+  TH1F* Hoptim_cuts1_met     =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_met"    , ";cut index;met"    ,nOptimCuts,0,nOptimCuts) ) ;
+  TH1F* Hoptim_cuts1_mtmin   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmin"  , ";cut index;mtmin"  ,nOptimCuts,0,nOptimCuts) ) ;
+  TH1F* Hoptim_cuts1_mtmax   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmax"  , ";cut index;mtmax"  ,nOptimCuts,0,nOptimCuts) ) ;
+  for(unsigned int index=0;index<nOptimCuts;index++){
+    Hoptim_cuts1_met    ->Fill(index, optim_Cuts1_met[index]);    
+    Hoptim_cuts1_mtmin  ->Fill(index, optim_Cuts1_mtmin[index]);
+    Hoptim_cuts1_mtmax  ->Fill(index, optim_Cuts1_mtmax[index]);
+  }
+
+
   mon.addHistogram( new TH1F ("njets",     ";Jet multiplicity (p_{T}>30 GeV/c);Events",5,0,5) );
   mon.addHistogram( new TH1F ("nsoftjets", ";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5) );
   mon.addHistogram( new TH1F ("nbtags",    ";b-tag multiplicity; Events", 5,0,5) );
@@ -81,7 +130,7 @@ int main(int argc, char* argv[])
     mon.getHisto("nbtags")->GetXaxis()->SetBinLabel(ibin,label);
   }
   
-  TString subCats[]={"eq0softjets","eq0hardjets","eq0jets","eq1jets","eq2jets","geq3jets",""};
+  TString subCats[]={"eq0softjets","eq0hardjets","eq0jets","eq1jets","eq2jets","geq3jets","vbf"};
   const size_t nSubCats=sizeof(subCats)/sizeof(TString);
   for(size_t isc=0; isc<nSubCats; isc++)
     {
@@ -107,8 +156,16 @@ int main(int argc, char* argv[])
       mon.addHistogram( new TH2F( TString("met_met_") + postfix + "_vspu"       , ";Vertices;E_{T}^{miss};Events", 50,0,50,50,0,500) );
       mon.addHistogram( new TH2F( TString("met_min3Met_") + postfix + "_vspu"       , ";Vertices;min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,50,50,0,500) );
       mon.addHistogram( new TH2F( TString("met_redMet_") + postfix + "_vspu"       , ";Vertices;red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,50,50,0,500) );
-    }
+
+      mon.addHistogram( new TH2F ("mt_shapes_"+postfix, ";cut index;M_{T} [GeV/c^{2}];",nOptimCuts,0,nOptimCuts, 32,150,950) );  
+  }
+
+  mon.addHistogram( new TH1F( "vbfmass", ";M(jet_{1},jet_{2});Events", 40,0,2000) );
+  mon.addHistogram( new TH1F( "vbfdphi", ";#delta #phi(jet_{1},jet_{2});Events", 0,-3.14,3.14) );
   TH1F* Hcutflow     = (TH1F*) mon.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,3,0,3) ) ;
+  
+  
+
 
   //open the file and get events tree
   TFile *file = TFile::Open(url);
@@ -230,6 +287,8 @@ int main(int argc, char* argv[])
 	}
       TString subcat("eq"); subcat+=njets30; subcat+= "jets";
       if(njets30>=3) subcat="geq3jets";
+      int evType=eventClassifComp.Get(phys);
+      if(evType==EventCategory::VBF) subcat="vbf";
 
 
       //
@@ -264,6 +323,7 @@ int main(int argc, char* argv[])
       bool passKinematics         (gamma.pt()>55);
       bool passEB                 (!isGammaEvent || fabs(gamma.eta())<1.4442);
       bool passR9                 (!isGammaEvent || r9<1.0);
+      bool passR9tight            (!isGammaEvent || r9>0.85); 
       bool passBveto              (nbtags==0);
       bool passMinDphiJmet        (mindphijmet>0.5);
       
@@ -299,6 +359,7 @@ int main(int argc, char* argv[])
 	  subCatsToFill.push_back(subcat);
 	  subCatsToFill.push_back("");
 	  if(njets30==0) subCatsToFill.push_back(njets15==0 ? "eq0softjets" : "eq0hardjets");
+	  
 	  for(size_t isc=0; isc<subCatsToFill.size(); isc++)
 	    {	 
 	      if(isGammaEvent)  
@@ -308,7 +369,7 @@ int main(int argc, char* argv[])
 		  mon.fillHisto("trkveto_"+subCatsToFill[isc],ctf, hasTrkVeto,iweight);
 		}
 
-	      if(hasTrkVeto) continue;
+	      if(hasTrkVeto || !passR9tight) continue;
 	      if(zvvs[0].pt()>70) mon.fillHisto("mindphijmet_"+subCatsToFill[isc],ctf, mindphijmet,iweight);	      
 	      if(passMinDphiJmet) continue;
 	      mon.fillHisto("met_rawmet_"+subCatsToFill[isc],ctf, rawZvv.pt(),iweight);
@@ -323,15 +384,21 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("met_redMetT_"+subCatsToFill[isc],ctf, redMetLs[0],iweight);
 	      mon.fillHisto("met_redMetL_"+subCatsToFill[isc],ctf, redMetTs[0],iweight);
 	      mon.fillHisto("mt_"+subCatsToFill[isc],ctf,mt,iweight);
+
+	      if(subCatsToFill[isc]=="vbf")
+		{
+		  LorentzVector VBFSyst=jetsP4[0]+jetsP4[1];
+		  mon.fillHisto("vbfmass",ctf,VBFSyst.mass(),iweight);
+		  mon.fillHisto("vbdphi",ctf,deltaPhi(jetsP4[0].phi(),jetsP4[1].phi()));
+		}
+
+	      for(unsigned int index=0;index<nOptimCuts;index++){
+		if(zvvs[0].pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
+		  {
+		    mon.fill2DHisto("mt_shapes_"+subCatsToFill[isc],ctf,index, mt,iweight);
+		  }
+	      }
 	    }
-	  
-	  // 	  if(njets30<1 && metP4.pt()>100)
-	  // 	    cout << isGammaEvent << " " << passMultiplicityVetoes << " " << mctruthmode << " "
-	  // 		 << " g=(" << gamma.pt() << "," << gamma.eta() << ") "
-	  // 		 << " MET=" << metP4.pt() << " Ng=" << ev.gn << " Nj=" << ev.jn 
-	  // 		 << " Nl=" << ev.ln << " Nl=" << phys.leptons.size()
-	  // 	        // << " l1=" << phys.leptons[0].pt() << " l2=" << phys.leptons[1].pt() 
-	  // 		 << endl;
 	}
     }
 

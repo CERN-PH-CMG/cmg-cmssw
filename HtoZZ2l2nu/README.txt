@@ -73,13 +73,13 @@ haddOverSamples.py -j data/photon-samples.json -d /store/cmst3/user/psilva/12_03
 
 ## generate unweigthed distributions
 
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples.json -d /store/cmst3/user/psilva/12_04_09_HZZ2l2v_ntuples -o ~/work/gamma/  -c test/runAnalysis_cfg.py.templ -s 8nh
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples.json -d /store/cmst3/user/querten/12_04_14_HZZ2l2v_ntuples -o ~/work/gamma/  -c test/runAnalysis_cfg.py.templ -s 8nh
 
 runPlotter --iLumi 4616 --inDir ~/work/gamma/ --outDir ~/work/gamma/plots --json data/photon-samples.json
 
 ## use bin/G/getGammaTemplates.C to generate the weights for the sampe
 
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples.json -d /store/cmst3/user/psilva/12_04_09_HZZ2l2v_ntuples -o ~/work/gamma/  -c test/runAnalysis_cfg.py.templ -s 8nh -p "@weightsFile=data/gammaqtweights.root"
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples.json -d /store/cmst3/user/querten/12_04_14_HZZ2l2v_ntuples -o ~/work/gamma-wgt/  -c test/runAnalysis_cfg.py.templ -s 8nh -p "@weightsFile=data/gammaqtweights.root"
 
 
 ## run the replacement

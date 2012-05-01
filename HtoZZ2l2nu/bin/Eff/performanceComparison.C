@@ -21,18 +21,20 @@ int colors[]  = {1,  kGreen-3, kGreen+3, kBlue, kBlue, kRed+3, kRed, kRed, kOran
 int styles[]  = {1,  2,        9,        9,     1,     1,      1,    1,    2,       1,     1};
 int markers[] = {20, 24,       21,       25,    22,    24,     20,   24,   25,      21,    20};
 
-double PUdata[] = {1.344651e+07,   5.90653e+07,   1.409027e+08,   2.413012e+08,   3.337449e+08,   3.98711e+08,   4.301064e+08,   4.32283e+08,   4.138202e+08,   3.82846e+08,   3.451637e+08,   3.043438e+08,   2.62555e+08,   2.213308e+08,   1.819826e+08,   1.456898e+08,   1.134134e+08,   8.577886e+07,   6.301239e+07,   4.495959e+07,   3.116904e+07,   2.100786e+07,   1.377588e+07,   8796407,   5474418,   3323776,   1970638,   1142040,   647538.6,   359547.2,   195673.2,   104459.9,   54745.15,   28185.57,   28005.55,   0.008};
+//double PUdata[] = {1.344651e+07,   5.90653e+07,   1.409027e+08,   2.413012e+08,   3.337449e+08,   3.98711e+08,   4.301064e+08,   4.32283e+08,   4.138202e+08,   3.82846e+08,   3.451637e+08,   3.043438e+08,   2.62555e+08,   2.213308e+08,   1.819826e+08,   1.456898e+08,   1.134134e+08,   8.577886e+07,   6.301239e+07,   4.495959e+07,   3.116904e+07,   2.100786e+07,   1.377588e+07,   8796407,   5474418,   3323776,   1970638,   1142040,   647538.6,   359547.2,   195673.2,   104459.9,   54745.15,   28185.57,   28005.55,   0.008};
+
+double PUdata[] = {1.344651e+07,   5.90653e+07,   1.409027e+08,   2.413012e+08,   3.337449e+08,   3.98711e+08,   4.301064e+08,   4.32283e+08,   4.138202e+08,   3.82846e+08,   3.451637e+08,   3.043438e+08,   2.62555e+08,   2.213308e+08,   1.819826e+08,   1.456898e+08,   1.134134e+08,   8.577886e+07,   6.301239e+07,   4.495959e+07,   3.116904e+07, 2.100786e+07,   1.377588e+07,   8796407,   5474418,   3323776,   1970638,   1142040,   647538.6,   359547.2,   195673.2,   104459.9,   54745.15,   28185.57,   28005.55,   0.008 }; 
 
 double PUReweightAvr05[36];
 double PUReweightAvr15[36];
 double PUReweightAvr25[36];
 
 double* PUScenaraio[] = {PUReweightAvr05, PUReweightAvr15, PUReweightAvr25};
-string  PUName[] = {"<PU> = 5", "<PU> = 15", "<PU> = 25"};
+string  PUName[] = {"<PU> = 10", "<PU> = 17", "<PU> = 25"};
 
 void initPU(){
-    GetWeights( 5 ,PUdata,PUReweightAvr05, 36);
-    GetWeights(15 ,PUdata,PUReweightAvr15, 36);
+    GetWeights(10 ,PUdata,PUReweightAvr05, 36);
+    GetWeights(17 ,PUdata,PUReweightAvr15, 36);
     GetWeights(25 ,PUdata,PUReweightAvr25, 36);
 }
 
@@ -197,7 +199,7 @@ stArray  makeArray(string evcat, string name, string title, string signal, strin
 
       TH2D *signalProc= NULL;
       //      signalProc = (TH2D*) GetObjectFromPath(f, signal    +"#rightarrow VV" + "/"+evcat+"_"+name+"_vspu", true);    
-      signalProc = (TH2D*) GetObjectFromPath(f, signal    +"#rightarrow ZZ" + "/"+evcat+"_"+name+"_vspu", true);    
+      signalProc = (TH2D*) GetObjectFromPath(f, signal + "/"+evcat+"_"+name+"_vspu", true);    
       std::vector<TH2D*> bckgProcVector;
       TH2D* bckgProc = NULL;
       char* BckgSamples = new char [background.size()+1];  strcpy (BckgSamples, background.c_str());
@@ -230,19 +232,20 @@ stArray  makeArray(string evcat, string name, string title, string signal, strin
       TH1*signalProj = ((TH2 *)signalProc)->ProjectionY((string("sig_py") + signal + pbuffer).c_str(),1,nxbins);
       printf("Integral : %f\n",signalProj->Integral());
       const float signalNorm=signalProj->Integral();
-      fixExtremities(signalProj,true,true);
+      // fixExtremities(signalProj,true,true);
       TH1*bckgProj   = ((TH2 *)bckgProc)->ProjectionY((string("bckg_py")+ background + pbuffer).c_str(),1,nxbins);
-      fixExtremities(bckgProj,true,true);
+      // fixExtremities(bckgProj,true,true);
 
       TGraph* cutGraph = getCutGraph(signalProj);
       double SeffCut = 1.0;
-      if(signal=="H(150)") SeffCut = 0.200;
-      if(signal=="H(200)") SeffCut = 0.204;
-      if(signal=="H(250)") SeffCut = 0.600;
-      if(signal=="H(300)") SeffCut = 0.633;
-      if(signal=="H(500)") SeffCut = 0.714;
+      if(signal.find("H(150)")!=string::npos) SeffCut = 0.200;
+      if(signal.find("H(200)")!=string::npos) SeffCut = 0.400;
+      if(signal.find("H(250)")!=string::npos) SeffCut = 0.600;
+      if(signal.find("H(300)")!=string::npos) SeffCut = 0.633;
+      if(signal.find("H(500)")!=string::npos) SeffCut = 0.714;
+      if(signal.find("H(600)")!=string::npos) SeffCut = 0.80;
       double Cut = cutGraph->Eval(SeffCut);
-      cout << "************** Cut=" << Cut << endl;
+      cout << "************** Cut=" << Cut << " " << SeffCut << endl;
       TH1* signalProjPU;
       TH1* bckgProjPU;
       if(PUReweightAvr){
@@ -252,9 +255,9 @@ stArray  makeArray(string evcat, string name, string title, string signal, strin
              signalProjPU->Add(tmpsignalProj,PUReweightAvr[p-1]);
          }
          //make sure that the inegral is unchanged
-	 //         signalProjPU->Scale(signalProj->Integral()/signalProjPU->Integral());
-         signalProjPU->Scale(signalNorm/signalProjPU->Integral());
-	 fixExtremities(signalProjPU,true,true);
+	 signalProjPU->Scale(signalProj->Integral()/signalProjPU->Integral());
+         //signalProjPU->Scale(signalNorm/signalProjPU->Integral());
+	 //fixExtremities(signalProjPU,true,true);	 
 
 
          bckgProjPU   = (TH1*)bckgProj  ->Clone((string("bckgProjPU") + background + pbuffer).c_str());   bckgProjPU->Reset();
@@ -272,7 +275,7 @@ stArray  makeArray(string evcat, string name, string title, string signal, strin
          }
          //make sure that the inegral is unchanged
 	 bckgProjPU->Scale(bckgProj->Integral()/bckgProjPU->Integral());
-         fixExtremities(bckgProjPU  ,true,true);
+	 //         fixExtremities(bckgProjPU  ,true,true);
 
          SeffCut = GetEfficiency(signalProjPU,Cut);
       }else{
@@ -337,8 +340,8 @@ void performanceSummary(string OutDir, string evcat, string signal, string backg
   TMultiGraph* mgraphSDY = new TMultiGraph();
   TMultiGraph* mgraphB   = new TMultiGraph();
   TMultiGraph* mgraphSB  = new TMultiGraph();
-  TLegend* leg  = new TLegend(0.20,0.73,0.55,0.50, "NDC");
-  leg->SetHeader("");leg->SetFillColor(0); leg->SetFillStyle(0); leg->SetLineColor(0);
+  TLegend* leg  = new TLegend(0.2,0.85,0.96,0.98, "NDC");
+  leg->SetHeader("");leg->SetFillColor(0); leg->SetFillStyle(0); leg->SetLineColor(0); leg->SetTextFont(42);
 
   TH1D** SHists = new TH1D*[(sizeof(PUScenaraio)/sizeof(double)) * ntouse];
   TH1D** BHists = new TH1D*[(sizeof(PUScenaraio)/sizeof(double)) * ntouse];
@@ -369,10 +372,16 @@ void performanceSummary(string OutDir, string evcat, string signal, string backg
 //        graphSB ->SetPoint(i, i, B .SB);    graphSB ->SetPointError(i, 0.0, 0.0); //B .SBError);
 
         graphS  ->SetPoint(i, i, DY.S);     graphS  ->SetPointError(i, 0.0, DY.SError);
+
         graphDY ->SetPoint(i, i, DY.B);     graphDY ->SetPointError(i, 0.0, DY.BError);
-        graphSDY->SetPoint(i, i, DY.SB);    graphSDY->SetPointError(i, 0.0, DY.SBError);
+	//        graphSDY->SetPoint(i, i, DY.SB);    graphSDY->SetPointError(i, 0.0, DY.SBError);
+        graphSDY->SetPoint(i, i, DY.SsqrtSB);    graphSDY->SetPointError(i, 0.0, DY.SsqrtSBError);
+
         graphB  ->SetPoint(i, i, B .B);     graphB  ->SetPointError(i, 0.0, B .BError);
-        graphSB ->SetPoint(i, i, B .SB);    graphSB ->SetPointError(i, 0.0, B .SBError);
+	//        graphSB ->SetPoint(i, i, B .SB);    graphSB ->SetPointError(i, 0.0, B .SBError);
+        graphSB ->SetPoint(i, i, B .SsqrtSB);    graphSB ->SetPointError(i, 0.0, B .SsqrtSBError);
+
+
         DY.SHist->SetName((PUName[pS] + DY.SHist->GetName()).c_str() );
         DY.BHist->SetName((PUName[pS] + DY.BHist->GetName()).c_str() );
         SHists[pS*ntouse + i] = (TH1D*) DY.SHist;
@@ -390,61 +399,55 @@ void performanceSummary(string OutDir, string evcat, string signal, string backg
      mgraphSB ->Add(graphSB ,"CP");
   }
 
-std::cout << "TESTA\n";
-
-     TH1* tmphisto = new TH1D("tmphisto","tmphisto", ntouse,0,ntouse-1);
-//     for(int i=0; i<ntouse; i++){tmphisto->GetXaxis()->SetBinLabel(i+1,titles[i]);}
-//     tmphisto->SetMinimum(MinSB*0.9);   tmphisto->SetMaximum(MaxSB*1.1); 
+  std::cout << "TESTA\n";
+  
+  TH1* tmphisto = new TH1D("tmphisto","tmphisto", ntouse,0,ntouse-1);
+  //     for(int i=0; i<ntouse; i++){tmphisto->GetXaxis()->SetBinLabel(i+1,titles[i]);}
+  //     tmphisto->SetMinimum(MinSB*0.9);   tmphisto->SetMaximum(MaxSB*1.1); 
 
   TVirtualPad* pad;
-  TCanvas* c1 = new TCanvas("c1","c1", ntouse*100, 1000); 
-  c1->Divide(1,3, 0, 0);
-   double Min=1E100;
-   double Max=-1E100;
-  pad = c1->cd(1);  pad->SetTopMargin(0.0); pad->SetRightMargin(0.00); pad->SetBottomMargin(0.00);  pad->SetLeftMargin(0.15); mgraphS  ->Draw("A"); tmphisto = mgraphS  ->GetHistogram();  tmphisto->GetYaxis()->SetTitle(signal.c_str());  tmphisto->SetTitleOffset(0.35,"Y");  Min = std::min(Min,tmphisto->GetMinimum());  Max=std::max(Max,tmphisto->GetMaximum());
+  TCanvas* c1 = new TCanvas("c1","c1", ntouse*100, 600); 
+  c1->Divide(1,2, 0, 0);
+  double Min=1E100;
+  double Max=-1E100;
+  //  pad = c1->cd(1);  pad->SetTopMargin(0.0); pad->SetRightMargin(0.00); pad->SetBottomMargin(0.00);  pad->SetLeftMargin(0.15); mgraphS  ->Draw("A"); tmphisto = mgraphS  ->GetHistogram();  tmphisto->GetYaxis()->SetTitle(signal.c_str());  tmphisto->SetTitleOffset(0.35,"Y");  Min = std::min(Min,tmphisto->GetMinimum());  Max=std::max(Max,tmphisto->GetMaximum());
+  pad = c1->cd(1);  pad->SetTopMargin(0.0); pad->SetRightMargin(0.00); pad->SetBottomMargin(0.00);  pad->SetLeftMargin(0.15); mgraphDY ->Draw("A"); tmphisto = mgraphDY ->GetHistogram();  tmphisto->GetYaxis()->SetTitle("DY");    tmphisto->SetTitleOffset(0.35,"Y"); Min = std::min(Min,tmphisto->GetMinimum());  Max=std::max(Max,tmphisto->GetMaximum());
   leg->Draw("same");
-  pad = c1->cd(2);  pad->SetTopMargin(0.0); pad->SetRightMargin(0.00); pad->SetBottomMargin(0.00);  pad->SetLeftMargin(0.15); mgraphDY ->Draw("A"); tmphisto = mgraphDY ->GetHistogram();  tmphisto->GetYaxis()->SetTitle("DY");    tmphisto->SetTitleOffset(0.35,"Y"); Min = std::min(Min,tmphisto->GetMinimum());  Max=std::max(Max,tmphisto->GetMaximum());
-  pad = c1->cd(3);  pad->SetTopMargin(0.0); pad->SetRightMargin(0.00); pad->SetBottomMargin(0.35);  pad->SetLeftMargin(0.15); mgraphSDY->Draw("A"); tmphisto = mgraphSDY->GetHistogram();  tmphisto->GetYaxis()->SetTitle("S/sqrt(S+DY)");  tmphisto->SetTitleOffset(0.35,"Y");
-//  pad = c1->cd(4);  pad->SetTopMargin(0.0); pad->SetRightMargin(0.0); pad->SetBottomMargin(0.00);  pad->SetLeftMargin(0.05); mgraphB  ->Draw("A"); tmphisto = mgraphB  ->GetHistogram();  tmphisto->GetYaxis()->SetTitle("B");     tmphisto->SetTitleOffset(0.35,"Y");     
-//  pad = c1->cd(5);  pad->SetTopMargin(0.0); pad->SetRightMargin(0.0); pad->SetBottomMargin(0.13);  pad->SetLeftMargin(0.05); mgraphSB ->Draw("A"); tmphisto = mgraphSB ->GetHistogram();  tmphisto->GetYaxis()->SetTitle("S/sqrt(S+B)");   tmphisto->SetTitleOffset(0.35,"Y");
-       for(int i=0; i<ntouse; i++){tmphisto->GetXaxis()->SetBinLabel(tmphisto->GetXaxis()->FindBin(i),titles[i]);} tmphisto->LabelsOption("u"); tmphisto->SetLabelSize(0.08,"X");  pad->SetGridy(true);
-
-std::cout << "TESTB\n";
-
-
-  mgraphS ->GetHistogram()->SetMinimum(0.9*Min);   mgraphS ->GetHistogram()->SetMaximum(1.1*Max);
-  mgraphDY->GetHistogram()->SetMinimum(0.9*Min);   mgraphDY->GetHistogram()->SetMaximum(1.1*Max);
+  leg->SetNColumns(3);
+  pad = c1->cd(2);  pad->SetTopMargin(0.0); pad->SetRightMargin(0.00); pad->SetBottomMargin(0.35);  pad->SetLeftMargin(0.15); mgraphSDY->Draw("A"); tmphisto = mgraphSDY->GetHistogram();  tmphisto->GetYaxis()->SetTitle("S/#sqrt{S+DY}");  tmphisto->SetTitleOffset(0.35,"Y");
+  //  pad = c1->cd(4);  pad->SetTopMargin(0.0); pad->SetRightMargin(0.0); pad->SetBottomMargin(0.00);  pad->SetLeftMargin(0.05); mgraphB  ->Draw("A"); tmphisto = mgraphB  ->GetHistogram();  tmphisto->GetYaxis()->SetTitle("B");     tmphisto->SetTitleOffset(0.35,"Y");     
+  //  pad = c1->cd(5);  pad->SetTopMargin(0.0); pad->SetRightMargin(0.0); pad->SetBottomMargin(0.13);  pad->SetLeftMargin(0.05); mgraphSB ->Draw("A"); tmphisto = mgraphSB ->GetHistogram();  tmphisto->GetYaxis()->SetTitle("S/sqrt(S+B)");   tmphisto->SetTitleOffset(0.35,"Y");
+  for(int i=0; i<ntouse; i++){tmphisto->GetXaxis()->SetBinLabel(tmphisto->GetXaxis()->FindBin(i),titles[i]);} tmphisto->LabelsOption("u"); tmphisto->SetLabelSize(0.08,"X");  pad->SetGridy(true);
+    
+  // mgraphS ->GetHistogram()->SetMinimum(0.9*Min);   mgraphS ->GetHistogram()->SetMaximum(1.1*Max);
+  mgraphDY->GetHistogram()->SetMinimum(0.9*Min);   mgraphDY->GetHistogram()->SetMaximum(1.1*Max); mgraphDY->GetYaxis()->SetTitleOffset(0.8); mgraphDY->GetYaxis()->SetTitleSize(0.08); mgraphDY->GetYaxis()->SetLabelSize(0.07);
+  mgraphSDY->GetYaxis()->SetTitleSize(0.08); mgraphSDY->GetYaxis()->SetTitleOffset(0.8); mgraphSDY->GetYaxis()->SetLabelSize(0.07);
   pad = c1->cd(0);
-  
-
-
   c1->SaveAs((OutDir + "summary_DY.png").c_str());
   c1->SaveAs((OutDir + "summary_DY.C").c_str());
   delete c1;
 
-std::cout << "TESTC\n";
-
 
    Min=1E100;
    Max=-1E100;
-  c1 = new TCanvas("c1","c1", ntouse*100, 1000);
-  c1->Divide(1,3, 0, 0);
-  pad = c1->cd(1);  pad->SetTopMargin(0.0); pad->SetRightMargin(0.00); pad->SetBottomMargin(0.00);  pad->SetLeftMargin(0.15); mgraphS  ->Draw("A"); tmphisto = mgraphS  ->GetHistogram();  tmphisto->GetYaxis()->SetTitle(signal.c_str());  tmphisto->SetTitleOffset(0.35,"Y"); Min = std::min(Min,tmphisto->GetMinimum());  Max=std::max(Max,tmphisto->GetMaximum());
-  leg->Draw("same");
-//  pad = c1->cd(2);  pad->SetTopMargin(0.0); pad->SetRightMargin(0.0); pad->SetBottomMargin(0.00);  pad->SetLeftMargin(0.05); mgraphDY ->Draw("A"); tmphisto = mgraphDY ->GetHistogram();  tmphisto->GetYaxis()->SetTitle("DY");    tmphisto->SetTitleOffset(0.35,"Y");
-//  pad = c1->cd(3);  pad->SetTopMargin(0.0); pad->SetRightMargin(0.0); pad->SetBottomMargin(0.00);  pad->SetLeftMargin(0.05); mgraphSDY->Draw("A"); tmphisto = mgraphSDY->GetHistogram();  tmphisto->GetYaxis()->SetTitle("S/sqrt(S+DY)");  tmphisto->SetTitleOffset(0.35,"Y");
-  pad = c1->cd(2);  pad->SetTopMargin(0.0); pad->SetRightMargin(0.00); pad->SetBottomMargin(0.00);  pad->SetLeftMargin(0.15); mgraphB  ->Draw("A"); tmphisto = mgraphB  ->GetHistogram();  tmphisto->GetYaxis()->SetTitle("B");     tmphisto->SetTitleOffset(0.35,"Y"); Min = std::min(Min,tmphisto->GetMinimum());  Max=std::max(Max,tmphisto->GetMaximum());
-  pad = c1->cd(3);  pad->SetTopMargin(0.0); pad->SetRightMargin(0.00); pad->SetBottomMargin(0.35);  pad->SetLeftMargin(0.15); mgraphSB ->Draw("A"); tmphisto = mgraphSB ->GetHistogram();  tmphisto->GetYaxis()->SetTitle("S/sqrt(S+B)");   tmphisto->SetTitleOffset(0.35,"Y");
-       for(int i=0; i<ntouse; i++){tmphisto->GetXaxis()->SetBinLabel(tmphisto->GetXaxis()->FindBin(i),titles[i]);} tmphisto->LabelsOption("u"); tmphisto->SetLabelSize(0.08,"X"); pad->SetGridy(true);
-  pad = c1->cd(0);
-  mgraphS ->GetHistogram()->SetMinimum(0.9*Min);   mgraphS ->GetHistogram()->SetMaximum(1.1*Max);
-  mgraphB ->GetHistogram()->SetMinimum(0.9*Min);   mgraphDY->GetHistogram()->SetMaximum(1.1*Max);
-  c1->SaveAs((OutDir + "summary_ALL.png").c_str());
-  c1->SaveAs((OutDir + "summary_ALL.C").c_str());
-  delete c1;
-
-std::cout << "TESTD\n";
-
+   c1 = new TCanvas("c1","c1", ntouse*100, 600);
+   c1->Divide(1,2, 0, 0);
+   //  pad = c1->cd(1);  pad->SetTopMargin(0.0); pad->SetRightMargin(0.00); pad->SetBottomMargin(0.00);  pad->SetLeftMargin(0.15); mgraphS  ->Draw("A"); tmphisto = mgraphS  ->GetHistogram();  tmphisto->GetYaxis()->SetTitle(signal.c_str());  tmphisto->SetTitleOffset(0.35,"Y"); Min = std::min(Min,tmphisto->GetMinimum());  Max=std::max(Max,tmphisto->GetMaximum());
+   //  pad = c1->cd(2);  pad->SetTopMargin(0.0); pad->SetRightMargin(0.0); pad->SetBottomMargin(0.00);  pad->SetLeftMargin(0.05); mgraphDY ->Draw("A"); tmphisto = mgraphDY ->GetHistogram();  tmphisto->GetYaxis()->SetTitle("DY");    tmphisto->SetTitleOffset(0.35,"Y");
+   //  pad = c1->cd(3);  pad->SetTopMargin(0.0); pad->SetRightMargin(0.0); pad->SetBottomMargin(0.00);  pad->SetLeftMargin(0.05); mgraphSDY->Draw("A"); tmphisto = mgraphSDY->GetHistogram();  tmphisto->GetYaxis()->SetTitle("S/sqrt(S+DY)");  tmphisto->SetTitleOffset(0.35,"Y");
+   pad = c1->cd(1);  pad->SetTopMargin(0.0); pad->SetRightMargin(0.00); pad->SetBottomMargin(0.00);  pad->SetLeftMargin(0.15); mgraphB  ->Draw("A"); tmphisto = mgraphB  ->GetHistogram();  tmphisto->GetYaxis()->SetTitle("B");     tmphisto->SetTitleOffset(0.35,"Y"); Min = std::min(Min,tmphisto->GetMinimum());  Max=std::max(Max,tmphisto->GetMaximum());
+   leg->Draw("same");  
+   leg->SetNColumns(3);
+   pad = c1->cd(2);  pad->SetTopMargin(0.0); pad->SetRightMargin(0.00); pad->SetBottomMargin(0.35);  pad->SetLeftMargin(0.15); mgraphSB ->Draw("A"); tmphisto = mgraphSB ->GetHistogram();  tmphisto->GetYaxis()->SetTitle("S/#sqrt{S+B}");   tmphisto->SetTitleOffset(0.35,"Y");
+   for(int i=0; i<ntouse; i++){tmphisto->GetXaxis()->SetBinLabel(tmphisto->GetXaxis()->FindBin(i),titles[i]);} tmphisto->LabelsOption("u"); tmphisto->SetLabelSize(0.08,"X"); pad->SetGridy(true);
+   pad = c1->cd(0);
+   //  mgraphS ->GetHistogram()->SetMinimum(0.9*Min);   mgraphS ->GetHistogram()->SetMaximum(1.1*Max);
+   mgraphB->GetHistogram()->SetMinimum(0.9*Min);   mgraphB->GetHistogram()->SetMaximum(1.1*Max); mgraphB->GetYaxis()->SetTitleOffset(0.8); mgraphB->GetYaxis()->SetTitleSize(0.08); mgraphB->GetYaxis()->SetLabelSize(0.07);
+   mgraphSB->GetYaxis()->SetTitleSize(0.08); mgraphSB->GetYaxis()->SetTitleOffset(0.8); mgraphSB->GetYaxis()->SetLabelSize(0.07);
+   c1->SaveAs((OutDir + "summary_ALL.png").c_str());
+   c1->SaveAs((OutDir + "summary_ALL.C").c_str());
+   delete c1;
+   
 
   leg->SetX1NDC(0.55);
   leg->SetX2NDC(0.90);
@@ -454,22 +457,22 @@ std::cout << "TESTD\n";
   for(int i=0; i<ntouse; i++){
     std::cout << "TESTE\n";
     TCanvas* c1 = new TCanvas("c1","c1", 800, 800);
-     BHists[0*ntouse + i]->SetMaximum(10*BHists[0*ntouse + i]->GetMaximum());
-     BHists[0*ntouse + i]->SetMinimum(1E-2);
-     BHists[0*ntouse + i]->SetAxisRange(0, 150, "X");
-     BHists[0*ntouse + i]->SetLineColor(colors[0]); BHists[0*ntouse + i]->SetLineWidth(2); BHists[0*ntouse + i]->SetMarkerColor(colors[0]); BHists[0*ntouse + i]->SetMarkerStyle(markers[0]);   BHists[0*ntouse + i]->Draw("HIST");     
-     BHists[1*ntouse + i]->SetLineColor(colors[1]); BHists[1*ntouse + i]->SetLineWidth(2); BHists[1*ntouse + i]->SetMarkerColor(colors[1]); BHists[1*ntouse + i]->SetMarkerStyle(markers[1]);   BHists[1*ntouse + i]->Draw("HIST same");
-     BHists[2*ntouse + i]->SetLineColor(colors[2]); BHists[2*ntouse + i]->SetLineWidth(2); BHists[2*ntouse + i]->SetMarkerColor(colors[1]); BHists[2*ntouse + i]->SetMarkerStyle(markers[2]);   BHists[2*ntouse + i]->Draw("HIST same");
-     leg->Draw("same");
-     TLine* l1 = new TLine(Cuts[0*ntouse + i], 0, Cuts[0*ntouse + i], BHists[0*ntouse + i]->GetMaximum());
-     l1->SetLineWidth(3);  l1->SetLineColor(1);
-     l1->Draw("same");
-     c1->SetLogy(true);
-     c1->SetBottomMargin(0.15);
-     c1->Update();
-     c1->SaveAs((OutDir + "summary_1DB" + names[i] + ".png").c_str());
-     delete l1;
-     delete c1;
+    BHists[0*ntouse + i]->SetMaximum(10*BHists[0*ntouse + i]->GetMaximum());
+    BHists[0*ntouse + i]->SetMinimum(1E-2);
+    BHists[0*ntouse + i]->SetAxisRange(0, 150, "X");
+    BHists[0*ntouse + i]->SetLineColor(colors[0]); BHists[0*ntouse + i]->SetLineWidth(2); BHists[0*ntouse + i]->SetMarkerColor(colors[0]); BHists[0*ntouse + i]->SetMarkerStyle(markers[0]);   BHists[0*ntouse + i]->Draw("HIST");     
+    BHists[1*ntouse + i]->SetLineColor(colors[1]); BHists[1*ntouse + i]->SetLineWidth(2); BHists[1*ntouse + i]->SetMarkerColor(colors[1]); BHists[1*ntouse + i]->SetMarkerStyle(markers[1]);   BHists[1*ntouse + i]->Draw("HIST same");
+    BHists[2*ntouse + i]->SetLineColor(colors[2]); BHists[2*ntouse + i]->SetLineWidth(2); BHists[2*ntouse + i]->SetMarkerColor(colors[1]); BHists[2*ntouse + i]->SetMarkerStyle(markers[2]);   BHists[2*ntouse + i]->Draw("HIST same");
+    leg->Draw("same");
+    TLine* l1 = new TLine(Cuts[0*ntouse + i], 0, Cuts[0*ntouse + i], BHists[0*ntouse + i]->GetMaximum());
+    l1->SetLineWidth(3);  l1->SetLineColor(1);
+    l1->Draw("same");
+    c1->SetLogy(true);
+    c1->SetBottomMargin(0.15);
+    c1->Update();
+    c1->SaveAs((OutDir + "summary_1DB" + names[i] + ".png").c_str());
+    delete l1;
+    delete c1;
 
 std::cout << "TESTF\n";
 
@@ -527,8 +530,8 @@ void performanceJetId(string OutDir, string evcat, string signal, string backgro
   int nybins=redMetBckgvsJetId->GetYaxis()->GetNbins();
   for(int ybin=1; ybin<=nybins; ybin+=2)
   {
-    TH1* signalProj = ((TH2 *)redMetSignalvsJetId)->ProjectionX("sig_py",ybin,ybin);    fixExtremities(signalProj,true,true);
-    TH1* bckgProj   = ((TH2 *)redMetBckgvsJetId)->ProjectionX("bckg_py",ybin,ybin);    fixExtremities(bckgProj,true,true);
+    TH1* signalProj = ((TH2 *)redMetSignalvsJetId)->ProjectionX("sig_py",ybin,ybin); //   fixExtremities(signalProj,true,true);
+    TH1* bckgProj   = ((TH2 *)redMetBckgvsJetId)->ProjectionX("bckg_py",ybin,ybin); //   fixExtremities(bckgProj,true,true);
     
     TGraphAsymmErrors *gr = getEfficiencyCurve(signalProj, bckgProj);
     TString name("jetidbin"); name+=ybin;
@@ -610,7 +613,7 @@ void performancePU(string OutDir, string evcat, string signal, string background
   effBins.push_back(std::pair<int,int>(15,30));
 
   evcat += "_met";
-  FILE* pFile = fopen((OutDir + "Eff.txt").c_str(),"w");
+  //  FILE* pFile = fopen((OutDir + "Eff.txt").c_str(),"w");
   for(int i=0; i<ntouse; i++)
     {
       string name=names[i];
@@ -619,10 +622,10 @@ void performancePU(string OutDir, string evcat, string signal, string background
       idxStr += i;
 
       //      std::cout <<  (string(signal)    +"#rightarrow VV" + "/"+evcat+"_"+name+"_vspu" ) << endl;
-      std::cout <<  (string(signal)    +"#rightarrow ZZ" + "/"+evcat+"_"+name+"_vspu" ) << endl;
+      std::cout <<  (string(signal)  + "/"+evcat+"_"+name+"_vspu" ) << endl;
 
       //TH2D *signalProc= (TH2D*) GetObjectFromPath(f, signal    +"#rightarrow VV" + "/"+evcat+"_"+name+"_vspu", true);    
-      TH2F *signalProc= (TH2F*) GetObjectFromPath(f, signal    +"#rightarrow ZZ" + "/"+evcat+"_"+name+"_vspu", true);    
+      TH2F *signalProc= (TH2F*) GetObjectFromPath(f, signal + "/"+evcat+"_"+name+"_vspu", true);    
       TH2F *bckgProc=NULL;
       char* BckgSamples = new char [background.size()+1];  strcpy (BckgSamples, background.c_str());
       char* BckgSubSample = strtok (BckgSamples,"|");
@@ -654,10 +657,10 @@ void performancePU(string OutDir, string evcat, string signal, string background
       TH1* signalProj = ((TH2 *)signalProc)->ProjectionY("sig_py",1,nxbins);
       printf("SignalIntegral = XXX = %f\n",signalProj->Integral());
 //      TH1*signalProj = ((TH2 *)signalProc)->ProjectionY("sig_py",1,11);
-      fixExtremities(signalProj,true,true);
+      //  fixExtremities(signalProj,true,true);
       TH1* bckgProj   = ((TH2 *)bckgProc)->ProjectionY("bckg_py",1,nxbins);
 //      TH1*bckgProj   = ((TH2 *)bckgProc)->ProjectionY("bckg_py",1,11);
-      fixExtremities(bckgProj,true,true);
+      //  fixExtremities(bckgProj,true,true);
 
       TGraphAsymmErrors *gr = getEfficiencyCurve(signalProj, bckgProj, names[i].find("metL")!=std::string::npos );
       gr->SetName((names[i]+"_eff").c_str());
@@ -676,10 +679,10 @@ void performancePU(string OutDir, string evcat, string signal, string background
       nxbins=bckgProc->GetXaxis()->GetNbins();
       signalProj = PUReweightAndProjection(((TH2 *)signalProc), "sig_py",PUReweightAvr25, nxbins);
       printf("SignalIntegral = XXX = %f",signalProj->Integral());
-      fixExtremities(signalProj,true,true);
+      // fixExtremities(signalProj,true,true);
       printf(" = %f\n",signalProj->Integral());
       bckgProj   = PUReweightAndProjection(((TH2 *)bckgProc),"bckg_py",PUReweightAvr25,nxbins);
-      fixExtremities(bckgProj,true,true);
+      //  fixExtremities(bckgProj,true,true);
 
       gr = getEfficiencyCurve(signalProj, bckgProj, names[i].find("metL")!=std::string::npos );
       gr->SetName((names[i]+"_eff").c_str());
@@ -700,9 +703,9 @@ void performancePU(string OutDir, string evcat, string signal, string background
       std::vector<TGraphAsymmErrors *> ieffGrList;
       for(size_t ibin=0; ibin<effBins.size(); ibin++){ 
 	  signalProj = ((TH2 *)signalProc)->ProjectionY("sig_py",effBins[ibin].first,effBins[ibin].second);
-	  fixExtremities(signalProj,true,true);
+	  //  fixExtremities(signalProj,true,true);
 	  bckgProj   = ((TH2 *)bckgProc)->ProjectionY("bckg_py",effBins[ibin].first,effBins[ibin].second);
-	  fixExtremities(bckgProj,true,true);
+	  // fixExtremities(bckgProj,true,true);
 
 	  //compute efficiency
 	  gr = getEfficiencyCurve(signalProj, bckgProj, names[i].find("metL")!=std::string::npos );
@@ -718,7 +721,8 @@ void performancePU(string OutDir, string evcat, string signal, string background
 	  ieffGrList.push_back( gr );
       }
       effGrList.push_back( ieffGrList );
-
+      cout << "Building efficiency curves" << endl;
+      
       //built the performance curves 
       TGraphAsymmErrors *bckgMean = new TGraphAsymmErrors;
       bckgMean->SetName((names[i]+"_mean").c_str());
@@ -741,13 +745,14 @@ void performancePU(string OutDir, string evcat, string signal, string background
       bckgRMS->SetMarkerStyle(markers[i]);
       bckgRMS->SetLineWidth(2);
       bckgRMSList.push_back(bckgRMS);
+      cout << signalProc << " " << bckgProc << endl;
       for(int ibin=1; ibin<=nxbins; ibin++) 
 	{ 
 	  signalProj = ((TH2 *)signalProc)->ProjectionY("sig_py",ibin,ibin); 
-	  fixExtremities(signalProj,true,true);
+	  //  fixExtremities(signalProj,true,true);
 	  bckgProj   = ((TH2 *)bckgProc)->ProjectionY("bckg_py",ibin,ibin); 
-	  fixExtremities(bckgProj,true,true);
-
+	  // fixExtremities(bckgProj,true,true);
+	  
 	  //check the evolution for pileup
 	  bckgMean->SetPoint(ibin-1,ibin-1,bckgProj->GetMean()); 
 	  bckgMean->SetPointError(ibin-1,0,0,bckgProj->GetMeanError(),bckgProj->GetMeanError());
@@ -759,217 +764,217 @@ void performancePU(string OutDir, string evcat, string signal, string background
       bckgMean->Fit(meanFitFunc,"Q+","",2,nxbins);
       bckgRMS->Fit(rmsFitFunc,"Q+","",2,nxbins);
     }
-    fclose(pFile);
+  //    fclose(pFile);
 
-  //pileup robustness
-  TCanvas *puC = new TCanvas("puC", "Pileup robustness", 1600,800);
-//getNewCanvas("puC","Pileup robustness",false);
-//puC->SetWindowSize(1000,500);
-  puC->Divide(2,1);  
+    //pileup robustness
+    cout << "Here" << endl;
+    TCanvas *puC = new TCanvas("puC", "Pileup robustness", 1600,800);
+    //getNewCanvas("puC","Pileup robustness",false);
+    //puC->SetWindowSize(1000,500);
+    puC->Divide(2,1);  
+    
+    TPad *p=(TPad *)puC->cd(1);
+    for(size_t ip=0; ip<bckgMeanList.size(); ip++)    bckgMeanList[ip]->Draw(ip==0 ? "ap" : "p" );
+    bckgMeanList[0]->GetXaxis()->SetTitle("Pileup");
+    bckgMeanList[0]->GetYaxis()->SetTitle("Average");
+    bckgMeanList[0]->SetMaximum(50);
+    bckgMeanList[0]->SetMinimum(0);
+    TLegend *leg=p->BuildLegend(0.20, 0.60, 0.60, 0.90);
+    formatForCmsPublic(p,leg,"CMS simulation, Z#rightarrow ll",ntouse);
+    
+    p=(TPad *)puC->cd(2);
+    for(size_t ip=0; ip<bckgRMSList.size(); ip++)    bckgRMSList[ip]->Draw(ip==0 ? "ap" : "p" );
+    bckgRMSList[0]->GetXaxis()->SetTitle("Pileup");
+    bckgRMSList[0]->GetYaxis()->SetTitle("RMS");
+    bckgRMSList[0]->SetMaximum(25);
+    bckgRMSList[0]->SetMinimum(0);
+    
+    TString legTit=TString(signal.c_str());
+    legTit.ReplaceAll(" ","");
+    legTit.ReplaceAll("Z","");
+    legTit.ReplaceAll("W","");
+    legTit.ReplaceAll("H(","m_{H^{0}}=");
+    legTit.ReplaceAll(")"," GeV/c^{2}");
+    legTit.ReplaceAll("#rightarrow","");
+    legTit = "CMS simulation, "+ legTit;
+    puC->SaveAs( (OutDir + "puC.png").c_str());
+    delete puC;
+    
+    cout << "Or here" << endl;
+    //inclusive efficiency
+    TCanvas *effC =  new TCanvas("effC", "Inclusive efficiency", 800,800);//getNewCanvas("effC","Inclusive efficiency",false);
+    //  effC->SetWindowSize(1000,1000);
+    effC->cd();
+    effC->SetLogy();
+    incEffGrList[0]->Draw("Apl");
+    incEffGrList[0]->GetXaxis()->SetTitle("Signal efficiency");
+    incEffGrList[0]->GetYaxis()->SetTitle("Background efficiency");
+    incEffGrList[0]->SetMinimum(1E-5);
+    incEffGrList[0]->SetMaximum(1.001);
+    
+    cout << "Perhaps here" << endl;
+    
+    TGraph *effFrame= new TGraph();;
+    effFrame->SetPoint(0,1e-5,1e-5);
+    effFrame->SetPoint(1,1e-5,1.001);
+    effFrame->SetPoint(2,1.001,1.001);
+    effFrame->SetPoint(3,1.001,1e-5);
+    effFrame->SetMarkerStyle(1);
+    //  effFrame->Draw("ap");
+    effFrame->GetXaxis()->SetTitle("Signal efficiency");
+    effFrame->GetYaxis()->SetTitle("Background efficiency");
+    
+    for(size_t ip=1; ip<incEffGrList.size(); ip++)   incEffGrList[ip]->Draw("pl");
+    leg=effC->BuildLegend(0.20, 0.60, 0.60, 0.90);
+    formatForCmsPublic(effC,leg,legTit,ntouse);
+    effC->SaveAs( (OutDir + "effC.png").c_str());
+    delete effC;
+    
+    cout << "Survived up to here" << endl;
 
-  TPad *p=(TPad *)puC->cd(1);
-  for(size_t ip=0; ip<bckgMeanList.size(); ip++)    bckgMeanList[ip]->Draw(ip==0 ? "ap" : "p" );
-  bckgMeanList[0]->GetXaxis()->SetTitle("Pileup");
-  bckgMeanList[0]->GetYaxis()->SetTitle("Average");
-  bckgMeanList[0]->SetMaximum(50);
-  bckgMeanList[0]->SetMinimum(0);
-  TLegend *leg=p->BuildLegend(0.20, 0.60, 0.60, 0.90);
-  formatForCmsPublic(p,leg,"CMS simulation, Z#rightarrow ll",ntouse);
-
-  p=(TPad *)puC->cd(2);
-  for(size_t ip=0; ip<bckgRMSList.size(); ip++)    bckgRMSList[ip]->Draw(ip==0 ? "ap" : "p" );
-  bckgRMSList[0]->GetXaxis()->SetTitle("Pileup");
-  bckgRMSList[0]->GetYaxis()->SetTitle("RMS");
-  bckgRMSList[0]->SetMaximum(25);
-  bckgRMSList[0]->SetMinimum(0);
-
-  TString legTit="CMS simulation "+TString(signal.c_str());
-  legTit.ReplaceAll("H(","m_{H^{0}}=");
-  legTit.ReplaceAll(")"," GeV/c^{2}");
-  puC->SaveAs( (OutDir + "puC.png").c_str());
-  delete puC;
-
-  //inclusive efficiency
-  TCanvas *effC =  new TCanvas("effC", "Inclusive efficiency", 800,800);//getNewCanvas("effC","Inclusive efficiency",false);
-//  effC->SetWindowSize(1000,1000);
-  effC->cd();
-  effC->SetLogy();
-  incEffGrList[0]->Draw("Apl");
-  incEffGrList[0]->GetXaxis()->SetTitle("#varepsilon(signal)");
-  incEffGrList[0]->GetYaxis()->SetTitle("#varepsilon(background)");
-  incEffGrList[0]->SetMinimum(1E-5);
-  incEffGrList[0]->SetMaximum(1.01);
-
-
-  TGraph *effFrame= new TGraph();;
-  effFrame->SetPoint(0,1e-5,1e-5);
-  effFrame->SetPoint(1,1e-5,1.01);
-  effFrame->SetPoint(2,1.01,1.01);
-  effFrame->SetPoint(3,1.01,1e-5);
-  effFrame->SetMarkerStyle(1);
-//  effFrame->Draw("ap");
-  effFrame->GetXaxis()->SetTitle("#varepsilon(signal)");
-  effFrame->GetYaxis()->SetTitle("#varepsilon(background)");
-
-  for(size_t ip=1; ip<incEffGrList.size(); ip++)   incEffGrList[ip]->Draw("pl");
-  leg=effC->BuildLegend(0.20, 0.60, 0.60, 0.90);
-  formatForCmsPublic(effC,leg,legTit,ntouse);
-  effC->SaveAs( (OutDir + "effC.png").c_str());
-  delete effC;
-
-
-
-
-
-
-
-
-
-  //inclusive efficiency
-  TCanvas *effC25pu =  new TCanvas("effC", "Inclusive efficiency", 800,800);//getNewCanvas("effC","Inclusive efficiency",false);
-//  effC->SetWindowSize(1000,1000);
-  effC25pu->cd();
-  effC25pu->SetLogy();
-  incEffGrList25pu[0]->Draw("Apl");
-  incEffGrList25pu[0]->GetXaxis()->SetTitle("#varepsilon(signal) with <pu>=25");
-  incEffGrList25pu[0]->GetYaxis()->SetTitle("#varepsilon(background) with <pu>=25");
-  incEffGrList25pu[0]->SetMinimum(1E-5);
-  incEffGrList25pu[0]->SetMaximum(1.01);
-
-
-  TGraph *effFrame25pu= new TGraph();;
-  effFrame25pu->SetPoint(0,1e-5,1e-5);
-  effFrame25pu->SetPoint(1,1e-5,1.01);
-  effFrame25pu->SetPoint(2,1.01,1.01);
-  effFrame25pu->SetPoint(3,1.01,1e-5);
-  effFrame25pu->SetMarkerStyle(1);
-//  effFrame->Draw("ap");
-  effFrame25pu->GetXaxis()->SetTitle("#varepsilon(signal) with <pu>=25");
-  effFrame25pu->GetYaxis()->SetTitle("#varepsilon(background) with <pu>=25");
-
-  for(size_t ip=1; ip<incEffGrList25pu.size(); ip++)   incEffGrList25pu[ip]->Draw("pl");
-  leg=effC25pu->BuildLegend(0.20, 0.60, 0.60, 0.90);
-  formatForCmsPublic(effC25pu,leg,legTit,ntouse);
-  effC25pu->SaveAs( (OutDir + "effC25pu.png").c_str());
-  delete effC25pu;
-
-
-
-
-  //efficiency degradation  
-  effC = new TCanvas("effpuC", "Differential efficiency", 800,800);//getNewCanvas("effpuC","Differential efficiency",false);
-  effC->Divide(effBins.size()/2,2);
-  for(size_t ip=0; ip<effBins.size(); ip++) 
-   {
-      p=(TPad *)effC->cd(ip+1);
-      p->SetLogy();
-      effFrame->Draw("ap");
-      
-      TString ybinTitle("");
-      ybinTitle += effBins[ip].first;
-      ybinTitle += "#leq PU #leq";
-      ybinTitle += effBins[ip].second;
-      TPaveText *pave = new TPaveText(0.05,0.96,0.5,0.99,"NDC");
-      pave->SetBorderSize(0);
-      pave->SetFillStyle(0);
-      pave->AddText(ybinTitle);
-      pave->Draw("same");
-
-      for(int i=0; i<ntouse; i++) effGrList[i][ip]->Draw("pl");
-
-      if(ip>0) continue;
-      leg=p->BuildLegend(0.15, 0.60, 0.60, 0.95);
-      formatForCmsPublic(p,leg,legTit,ntouse);
-    }
+    //inclusive efficiency
+    TCanvas *effC25pu =  new TCanvas("effC", "Inclusive efficiency", 800,800);//getNewCanvas("effC","Inclusive efficiency",false);
+    //  effC->SetWindowSize(1000,1000);
+    effC25pu->cd();
+    effC25pu->SetLogy();
+    incEffGrList25pu[0]->Draw("Apl");
+    incEffGrList25pu[0]->GetXaxis()->SetTitle("Signal efficiency with <pu>=25");
+    incEffGrList25pu[0]->GetYaxis()->SetTitle("Background efficiency with <pu>=25");
+    incEffGrList25pu[0]->SetMinimum(1E-5);
+    incEffGrList25pu[0]->SetMaximum(1.001);
+    
+    
+    TGraph *effFrame25pu= new TGraph();;
+    effFrame25pu->SetPoint(0,1e-5,1e-5);
+    effFrame25pu->SetPoint(1,1e-5,1.001);
+    effFrame25pu->SetPoint(2,1.001,1.001);
+    effFrame25pu->SetPoint(3,1.001,1e-5);
+    effFrame25pu->SetMarkerStyle(1);
+    //  effFrame->Draw("ap");
+    effFrame25pu->GetXaxis()->SetTitle("Signal efficiency with <pu>=25");
+    effFrame25pu->GetYaxis()->SetTitle("Background efficiency with <pu>=25");
+    
+    for(size_t ip=1; ip<incEffGrList25pu.size(); ip++)   incEffGrList25pu[ip]->Draw("pl");
+    leg=effC25pu->BuildLegend(0.20, 0.60, 0.60, 0.90);
+    formatForCmsPublic(effC25pu,leg,legTit,ntouse);
+    effC25pu->SaveAs( (OutDir + "effC25pu.png").c_str());
+    delete effC25pu;
+        
+    //efficiency degradation  
+    effC = new TCanvas("effpuC", "Differential efficiency", 800,800);//getNewCanvas("effpuC","Differential efficiency",false);
+    effC->Divide(effBins.size()/2,2);
+    for(size_t ip=0; ip<effBins.size(); ip++) 
+      {
+	p=(TPad *)effC->cd(ip+1);
+	p->SetLogy();
+	effFrame->Draw("ap");
+	
+	TString ybinTitle("");
+	ybinTitle += effBins[ip].first;
+	ybinTitle += "#leq PU #leq";
+	ybinTitle += effBins[ip].second;
+	TPaveText *pave = new TPaveText(0.05,0.96,0.5,0.99,"NDC");
+	pave->SetBorderSize(0);
+	pave->SetFillStyle(0);
+	pave->AddText(ybinTitle);
+	pave->Draw("same");
+	
+	for(int i=0; i<ntouse; i++) effGrList[i][ip]->Draw("pl");
+	
+	if(ip>0) continue;
+	leg=p->BuildLegend(0.15, 0.60, 0.60, 0.95);
+	formatForCmsPublic(p,leg,legTit,ntouse);
+      }
     effC->SaveAs((OutDir + "effpuC.png").c_str());
     delete effC;
-
-  //another view of efficiency degradation
-//  effC = getNewCanvas("effpertypeC","Differential efficiency per type",false);
-//  effC->SetWindowSize(400*ntouse,400);
-//  effC->Divide(ntouse,1);
-  for(int ip=0; ip<ntouse; ip++) 
-    {
-       effC = new TCanvas("effpertypeC","Differential efficiency per type",800,800);
-       effC->SetLogy();
-//      p=(TPad *)effC->cd(ip+1);
-//      p->SetLogy();
-      effFrame->Draw("ap");
+    
+    //another view of efficiency degradation
+    //  effC = getNewCanvas("effpertypeC","Differential efficiency per type",false);
+    //  effC->SetWindowSize(400*ntouse,400);
+    //  effC->Divide(ntouse,1);
+    for(int ip=0; ip<ntouse; ip++) 
+      {
+	effC = new TCanvas("effpertypeC","Differential efficiency per type",800,800);
+	effC->SetLogy();
+	//      p=(TPad *)effC->cd(ip+1);
+	//      p->SetLogy();
+	effFrame->Draw("ap");
+	
+	TPaveText *pave = new TPaveText(0.05,0.96,0.5,0.99,"NDC");
+	pave->SetBorderSize(0);
+	pave->SetFillStyle(0);
+	pave->AddText(effGrList[ip][0]->GetTitle());
+	pave->Draw("same");
+	
+	//
+	for(int np=0; np<effGrList[ip][0]->GetN(); np++)
+	  {
+	    TGraphAsymmErrors *dif_gr=new TGraphAsymmErrors;
+	    for(size_t i=0; i<effBins.size(); i++) 
+	      {
+		Double_t x(0),y(0);
+		effGrList[ip][i]->GetPoint(np,x,y);
+		dif_gr->SetPoint(i,x,y);
+	      }
+	    dif_gr->SetLineColor(6);
+	    dif_gr->SetLineWidth(3);
+	    dif_gr->Draw("l");
+	  }
+	
+	incEffGrList[ip]->Draw("p");
+	effC->SaveAs( (OutDir + "effpertypeC_" + names[ip] + ".png").c_str());
+	delete effC;
+      }
+    
+    //       if(ip>0) continue;
+    //       leg=p->BuildLegend();
+    //       formatForCmsPublic(p,leg,legTit,ntouse);
+    
+    effC = new TCanvas("effpertypeC","Differential efficiency per type",800,800);
+    effC->SetLogy();
+    effFrame->Draw("ap");
+    for(int ip=0; ip<ntouse; ip++)
+      {
+	//      p=(TPad *)effC->cd(ip+1);
+	//      p->SetLogy();
+	
+	//      TPaveText *pave = new TPaveText(0.05,0.96,0.5,0.99,"NDC");
+	//    pave->SetBorderSize(0); 
+	//      pave->SetFillStyle(0);
+	//      pave->AddText(effGrList[ip][0]->GetTitle());
+	//      pave->Draw("same");
+	
+	//
+	for(int np=0; np<effGrList[ip][0]->GetN(); np++)
+	  { 
+	    TGraphAsymmErrors *dif_gr=new TGraphAsymmErrors;
+	    for(size_t i=0; i<effBins.size(); i++)
+	      {
+		Double_t x(0),y(0);
+		effGrList[ip][i]->GetPoint(np,x,y);
+		dif_gr->SetPoint(i,x,y);
+	      }
+	    dif_gr->SetLineColor(6);
+	    dif_gr->SetLineWidth(3);
+	    dif_gr->Draw("l");
+	  }
       
-      TPaveText *pave = new TPaveText(0.05,0.96,0.5,0.99,"NDC");
-      pave->SetBorderSize(0);
-      pave->SetFillStyle(0);
-      pave->AddText(effGrList[ip][0]->GetTitle());
-      pave->Draw("same");
-
-      //
-      for(int np=0; np<effGrList[ip][0]->GetN(); np++)
-	{
-	  TGraphAsymmErrors *dif_gr=new TGraphAsymmErrors;
-	  for(size_t i=0; i<effBins.size(); i++) 
-	    {
-	      Double_t x(0),y(0);
-	      effGrList[ip][i]->GetPoint(np,x,y);
-	      dif_gr->SetPoint(i,x,y);
-	    }
-	  dif_gr->SetLineColor(6);
-	  dif_gr->SetLineWidth(3);
-	  dif_gr->Draw("l");
-	}
-      
-      incEffGrList[ip]->Draw("p");
-      effC->SaveAs( (OutDir + "effpertypeC_" + names[ip] + ".png").c_str());
-      delete effC;
-    }
-
-//       if(ip>0) continue;
-//       leg=p->BuildLegend();
-//       formatForCmsPublic(p,leg,legTit,ntouse);
-
-
-  effC = new TCanvas("effpertypeC","Differential efficiency per type",800,800);
-  effC->SetLogy();
-  effFrame->Draw("ap");
-  for(int ip=0; ip<ntouse; ip++)
-    {
-//      p=(TPad *)effC->cd(ip+1);
-//      p->SetLogy();
-       
-//      TPaveText *pave = new TPaveText(0.05,0.96,0.5,0.99,"NDC");
-  //    pave->SetBorderSize(0); 
-//      pave->SetFillStyle(0);
-//      pave->AddText(effGrList[ip][0]->GetTitle());
-//      pave->Draw("same");
-  
-      //
-      for(int np=0; np<effGrList[ip][0]->GetN(); np++)
-        { 
-          TGraphAsymmErrors *dif_gr=new TGraphAsymmErrors;
-          for(size_t i=0; i<effBins.size(); i++)
-            {
-              Double_t x(0),y(0);
-              effGrList[ip][i]->GetPoint(np,x,y);
-              dif_gr->SetPoint(i,x,y);
-            }
-          dif_gr->SetLineColor(6);
-          dif_gr->SetLineWidth(3);
-          dif_gr->Draw("l");
-        }
-      
-      incEffGrList[ip]->Draw("lp");
-    }
+	incEffGrList[ip]->Draw("lp");
+      }
     //leg=effC->BuildLegend(0.15, 0.60, 0.60, 0.95);
     //leg->Draw("same");
     effC->SaveAs( (OutDir + "effpertypeC.png").c_str());
     delete effC;
+
 }
+
 
 
 
 
 //
 //void performanceComparison(string OutDir="Img", string evcat="mumu", string signal="H(200)", string background="Z-#gamma^{*}+jets#rightarrow ll",  string fname="../../test/plotter.root")
-void performanceComparison(string OutDir="Img", string evcat="mumu", string signal="H(200)", string background="Z#rightarrow ll",  string fname="../../test/plotter.root")
+void performanceComparison(string OutDir="Img", string evcat="mumu", string signal="H(200)#rightarrow ZZ", string background="Z#rightarrow ll",  string fname="../../test/plotter.root")
 {
   setStyle();
   gStyle->SetOptFit(0);
@@ -1033,28 +1038,31 @@ void performanceComparison(string OutDir="Img", string evcat="mumu", string sign
   names.push_back("redminAssocMet"      );   titles.push_back("red(min(E_{T}^{miss},assoc-E_{T}^{miss}),clustered E_{T}^{miss})");
   performancePU(OutDir+"red_", evcat, signal, background,  fname, names, titles);
 */
-/*
+
+  string pre("");
+  pre="sideband";
+
+  //simple METs
+  /*
   names.clear();                             titles.clear();
-  names.push_back("met"                 );   titles.push_back("E_{T}^{miss}");
-  names.push_back("centralMet"          );   titles.push_back("central E_{T}^{miss}");
-  names.push_back("clusteredMet"        );   titles.push_back("clustered-E_{T}^{miss}");
-  names.push_back("assocChargedMet"     );   titles.push_back("assoc-E_{T}^{miss}(charged)");
-  names.push_back("assocMet"            );   titles.push_back("assoc-E_{T}^{miss}");
-  names.push_back("assocCMet"           );   titles.push_back("assoc-E_{T}^{miss} + #delta#beta");
-  names.push_back("assocFwdMet"         );   titles.push_back("assocFwd-E_{T}^{miss}" );
-  names.push_back("assocFwdCMet"        );   titles.push_back("assoFwdc-E_{T}^{miss} + #delta#beta");
+  names.push_back(pre+"met"                 );   titles.push_back("E_{T}^{miss}");
+  names.push_back(pre+"centralMet"          );   titles.push_back("central E_{T}^{miss}");
+  names.push_back(pre+"clusteredMet"        );   titles.push_back("clustered-E_{T}^{miss}");
+  names.push_back(pre+"assocChargedMet"     );   titles.push_back("assoc-E_{T}^{miss}(charged)");
+  names.push_back(pre+"assocMet"            );   titles.push_back("assoc-E_{T}^{miss}");
   performancePU(OutDir+"Simple_", evcat, signal, background,  fname, names, titles);
-*/
+  */
+
+  //pseudo-METs
   names.clear();                             titles.clear();
-  names.push_back("met"                 );   titles.push_back("E_{T}^{miss}");
-//   names.push_back("minAssocChargedMet"  );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))");
-//   names.push_back("minAssocFwdMet"      );   titles.push_back("min(E_{T}^{miss},assocFwd-E_{T}^{miss})");
-//   names.push_back("minClusteredMet"     );   titles.push_back("min(E_{T}^{miss},clustered-E_{T}^{miss})");
-  names.push_back("min3Met"             );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
-//   names.push_back("redAssocFwdMet"      );   titles.push_back("red(E_{T}^{miss},assocFwd-E_{T}^{miss})");
-//  names.push_back("redClusteredMet"     );   titles.push_back("red(E_{T}^{miss},clustered-E_{T}^{miss})");
-  names.push_back("redMet"     );   titles.push_back("red(E_{T}^{miss},clustered-E_{T}^{miss})");
-//   names.push_back("red3Met"             );   titles.push_back("red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
+  names.push_back(pre+"met"                 );   titles.push_back("E_{T}^{miss}");
+  names.push_back(pre+"minAssocChargedMet"  );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))");
+  names.push_back(pre+"minAssocMet"  );          titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss})");
+  names.push_back(pre+"min3Met"             );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
+  names.push_back(pre+"minProjAssocChargedMet"); titles.push_back("min(proj-E_{T}^{miss},proj-assoc-E_{T}^{miss}(charged))");
+  names.push_back(pre+"minProjAssocMet");        titles.push_back("min(proj-E_{T}^{miss},proj-assoc-E_{T}^{miss}");
+  names.push_back(pre+"redMet"     );            titles.push_back("red(E_{T}^{miss},clustered-E_{T}^{miss})");
+  names.push_back(pre+"red3Met"             );   titles.push_back("red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
   performancePU(OutDir+"Combined_", evcat, signal, background,  fname, names, titles);
   performanceSummary(OutDir, evcat, signal, background,  fname, names, titles);
 
