@@ -162,7 +162,7 @@ int main(int argc, char* argv[])
 
   mon.addHistogram( new TH1F( "vbfmass", ";M(jet_{1},jet_{2});Events", 40,0,2000) );
   mon.addHistogram( new TH1F( "vbfdphi", ";#delta #phi(jet_{1},jet_{2});Events", 0,-3.14,3.14) );
-  TH1F* Hcutflow     = (TH1F*) mon.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,3,0,3) ) ;
+  TH1F* Hcutflow     = (TH1F*) mon.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,6,0,6) ) ;
   
   
 
@@ -264,7 +264,7 @@ int main(int argc, char* argv[])
       LorentzVector metP4(phys.met[0]);
       int nbtags(0),njets30(0),njets15(0);
       double mindphijmet(9999.);
-      std::vector<LorentzVector> jetsP4;
+      PhysicsObjectJetCollection jetsP4;
       std::vector<double> genJetsPt;
       LorentzVector rawClusteredMet(gamma); 
       rawClusteredMet *= -1;
@@ -298,8 +298,8 @@ int main(int argc, char* argv[])
       LorentzVector rawRedMet(METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, gamma, 0, nullP4, 0, rawClusteredMet, rawZvv,true));
       LorentzVectorCollection zvvs,redMets,min3Mets;
       std::vector<Float_t>  redMetLs,redMetTs;
-      std::vector<LorentzVectorCollection> jets;
-      METUtils::computeVariation(jetsP4, genJetsPt, rawZvv, jets, zvvs, &jecUnc);
+      std::vector<PhysicsObjectJetCollection> jets;
+      METUtils::computeVariation(jetsP4, rawZvv, jets, zvvs, &jecUnc);
       for(size_t ivars=0; ivars<zvvs.size(); ivars++)
 	{
           LorentzVector clusteredMetP4(gamma); clusteredMetP4 *= -1;
@@ -317,6 +317,12 @@ int main(int argc, char* argv[])
       //if(!isMC && isGammaEvent) { weight = gammaEvHandler.getTriggerPrescaleWeight(); }
       Hcutflow->Fill(1,1);
       Hcutflow->Fill(2,weight);
+      Hcutflow->Fill(3,weight);
+      Hcutflow->Fill(4,weight);
+      Hcutflow->Fill(5,1);
+
+
+
       
       //select event
       bool passMultiplicityVetoes (isGammaEvent ? (phys.leptons.size()==0 && ev.ln==0 && phys.gammas.size()==1) : (ev.ln==0) );

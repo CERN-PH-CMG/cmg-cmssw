@@ -390,7 +390,7 @@ int main(int argc, char* argv[])
 
 
   //Renormalization
-  TH1F* Hcutflow     = (TH1F*) mon.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,5,0,5) ) ;
+  TH1F* Hcutflow     = (TH1F*) mon.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,6,0,6) ) ;
 
   
   //VBF
@@ -708,11 +708,12 @@ int main(int argc, char* argv[])
       float weight = 1.0;
       double TotalWeight_plus = 1.0;
       double TotalWeight_minus = 1.0;
+      double vbfweight = 1.0;
       if(isMC){
         weight = LumiWeights.weight( ev.ngenITpu );
         TotalWeight_plus = PShiftUp.ShiftWeight( ev.ngenITpu );
         TotalWeight_minus = PShiftDown.ShiftWeight( ev.ngenITpu );
-        if(isMC_VBF) weight *= weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );         
+        if(isMC_VBF){ vbfweight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=vbfweight;  }
         if(isMC_GG)  {
 	  for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
 	  weight *= ev.hptWeights[0];
@@ -724,6 +725,8 @@ int main(int argc, char* argv[])
       Hcutflow->Fill(2,weight);
       Hcutflow->Fill(3,weight*TotalWeight_minus);
       Hcutflow->Fill(4,weight*TotalWeight_plus);
+      Hcutflow->Fill(5,vbfweight);
+
 
       //##############################################
       //########            MC TRUTH          ########
@@ -1344,16 +1347,20 @@ int main(int argc, char* argv[])
 
          //computation for systematics
          LorentzVectorCollection metVars, redMetVars;
-         std::vector<LorentzVectorCollection> jetVars;
+         std::vector<PhysicsObjectJetCollection> jetVars;
          std::vector<int> eventCategoryVars;
          std::vector<Float_t>  mtVars;
          if(runSystematics){
-	   METUtils::computeVariation(jetsP4,genJetsPt,phys.met[0],jetVars, metVars,&jecUnc);
+	   METUtils::computeVariation(phys.jets,phys.met[0],jetVars, metVars,&jecUnc);
               for(size_t ivar=0; ivar<3; ivar++){
                 eventCategoryVars.push_back( eventCategoryInst.Get(phys, &(jetVars[ivar])) );
-              
+             
+
+		LorentzVectorCollection jetVarsLV;
+                for(size_t ijet=0; ijet<jetVars[ivar].size(); ijet++){jetVarsLV.push_back(jetVars[ivar][ijet]);}
+ 
                  METUtils::stRedMET temp_redMetInfo;
-                 LorentzVector temp_redMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetVars[ivar], metVars[ivar], isGammaEvent, &temp_redMetInfo);
+                 LorentzVector temp_redMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetVarsLV, metVars[ivar], isGammaEvent, &temp_redMetInfo);
                  redMetVars.push_back(temp_redMetP4);
               
                  Float_t imt     = METUtils::transverseMass(zll,metVars[ivar],true);

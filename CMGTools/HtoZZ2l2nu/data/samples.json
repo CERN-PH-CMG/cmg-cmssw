@@ -728,7 +728,7 @@
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-500_7TeV-powheg-pythia6"],
 		"split":2,
-                "xsec":0.865,
+                "xsec":0.0946,
 		"br":[0.261,0.0403896]
 		}
 	   ]

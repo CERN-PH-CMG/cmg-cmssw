@@ -4,8 +4,8 @@
 /** \class EventCategory
  *  No description available.
  *
- *  $Date: 2012/04/07 13:19:56 $
- *  $Revision: 1.6 $
+ *  $Date: 2012/04/10 08:06:07 $
+ *  $Revision: 1.7 $
  *  \author L. Quertenmont P. Silva
  */
 
@@ -32,7 +32,7 @@ public:
 
   int GetLabelSize(){return NStates;}
 
-  int Get(const PhysicsEvent_t& phys,LorentzVectorCollection *variedJetsP4=0);
+  int Get(const PhysicsEvent_t& phys, PhysicsObjectJetCollection* variedJetsP4=NULL);
   TString GetLabel(int CategoryType);
   TString GetLabel(const PhysicsEvent_t& phys);
 

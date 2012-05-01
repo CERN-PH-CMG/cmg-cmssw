@@ -76,6 +76,7 @@ struct DataCardInputs
   std::map<RateKey_t, Double_t> obs;
   std::map<RateKey_t, Double_t> rates;
   std::map<TString, std::map<RateKey_t,Double_t> > systs;
+  int nsignalproc;
 };
 
 
@@ -100,7 +101,8 @@ bool mergeWWandZZ = true;
 bool skipWW = true;
 std::vector<TString> AnalysisBins;
 bool fast = false;
-
+bool skipGGH = false;
+bool skipQQH = false;
 
 int indexvbf = -1;
 
@@ -120,6 +122,8 @@ void printHelp()
   printf("--closure  --> use this flag if you want to perform a MC closure test (use only MC simulation)\n");
   printf("--bins     --> list of bins to be used (they must be comma separated without space)\n");
   printf("--HWW      --> use this flag to consider HWW signal)\n");
+  printf("--skipGGH  --> use this flag to skip GGH signal)\n");
+  printf("--skipQQH  --> use this flag to skip GGH signal)\n");
   printf("--fast     --> use this flag to only do assymptotic prediction (very fast but inaccurate))\n");
 }
 
@@ -150,6 +154,8 @@ int main(int argc, char* argv[])
     else if(arg.find("--subNRB12")!=string::npos) { subNRB2012=true; skipWW=false; printf("subNRB2012 = True\n");}
     else if(arg.find("--subNRB")  !=string::npos) { subNRB2011=true; skipWW=true; printf("subNRB2011 = True\n");}
     else if(arg.find("--HWW")     !=string::npos) { skipWW=false; printf("HWW = True\n");}
+    else if(arg.find("--skipGGH") !=string::npos) { skipGGH=true; printf("skipGGH = True\n");}
+    else if(arg.find("--skipQQH") !=string::npos) { skipQQH=true; printf("skipQQH = True\n");}
     else if(arg.find("--closure") !=string::npos) { MCclosureTest=true; printf("MCclosureTest = True\n");}
     else if(arg.find("--indexvbf")!=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&indexvbf); i++; printf("indexVBF = %i\n", indexvbf);}
     else if(arg.find("--index")   !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&index); i++; printf("index = %i\n", index);}
@@ -483,7 +489,6 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
 	    if(varName=="")  shape.data=hshape;
 	    else continue;
 	 }else if(isSignal){
-
             if(skipWW && string(proc.Data()).find("WW")!=string::npos )continue;
             if(!skipWW && mergeWWandZZ){proc.ReplaceAll("WW","VV"); proc.ReplaceAll("ZZ","VV");}
 
@@ -664,7 +669,7 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
 	}
       dcF << endl
 	  << "process\t ";
-      int procCtr(0);
+      int procCtr(1-dci.nsignalproc);
       for(size_t j=1; j<=dci.procs.size(); j++) 
 	{
 	  if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
@@ -748,7 +753,8 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 
   //init globalVariables
   TString massStr(""); massStr += mass;
-  std::set<TString> allCh,allProcs;
+//  std::set<TString> allCh,allProcs;
+  std::vector<TString> allCh,allProcs;
 
   //open input file
   TFile* inF = TFile::Open(url);
@@ -798,8 +804,39 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
      TString chbin = selCh[ich]+AnalysisBins[b];
      fout->mkdir(chbin);
      fout->cd(chbin);
-     allCh.insert(chbin);
+     allCh.push_back(chbin);
      Shape_t shapeSt = allShapes.find(chbin+histo)->second;
+
+     //signals
+     dci.nsignalproc = 0;
+     size_t nsignal=allShapes.find(chbin+histo)->second.signal.size();
+     for(size_t isignal=0; isignal<nsignal; isignal++){
+	TH1* h=shapeSt.signal[isignal];
+	std::vector<std::pair<TString, TH1*> > vars = shapeSt.signalVars[h->GetTitle()];
+
+        std::vector<TString> systs;        
+	std::vector<TH1*>    hshapes;
+	systs.push_back("");
+        hshapes.push_back(shapeSt.signal[isignal]);
+	for(size_t v=0;v<vars.size();v++){
+           systs.push_back(vars[v].first);
+           hshapes.push_back(vars[v].second);
+        }
+
+        TString proc(h->GetTitle());
+	if(!proc.Contains(massStr))continue;
+	     if(proc.Contains("ggH") && proc.Contains("ZZ"))proc = "ggHZZ";
+        else if(proc.Contains("qqH") && proc.Contains("ZZ"))proc = "qqHZZ";
+        else if(proc.Contains("ggH") && proc.Contains("WW"))proc = "ggHWW";
+        else if(proc.Contains("qqH") && proc.Contains("WW"))proc = "qqHWW";
+
+	if(skipGGH && proc.Contains("ggH"))continue;
+        if(skipQQH && proc.Contains("qqH"))continue;
+
+        convertHistosForLimits_core(dci, proc, chbin, systs, hshapes, runSystematics, shape);
+        if(ich==0)allProcs.push_back(proc);
+        dci.nsignalproc++;
+     }
 
      //backgrounds
      size_t nbckg=allShapes.find(chbin+histo)->second.bckg.size();
@@ -818,32 +855,8 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 
         TString proc(h->GetTitle());
         convertHistosForLimits_core(dci, proc, chbin, systs, hshapes, runSystematics, shape);
-        allProcs.insert(proc);
+        if(ich==0)allProcs.push_back(proc);
      }
-
-
-     //signals
-     size_t nsignal=allShapes.find(chbin+histo)->second.signal.size();
-     for(size_t isignal=0; isignal<nsignal; isignal++){
-	TH1* h=shapeSt.signal[isignal];
-	std::vector<std::pair<TString, TH1*> > vars = shapeSt.signalVars[h->GetTitle()];
-
-        std::vector<TString> systs;        
-	std::vector<TH1*>    hshapes;
-	systs.push_back("");
-        hshapes.push_back(shapeSt.signal[isignal]);
-	for(size_t v=0;v<vars.size();v++){
-           systs.push_back(vars[v].first);
-           hshapes.push_back(vars[v].second);
-        }
-
-        TString proc(h->GetTitle());
-	if(!proc.Contains(massStr))continue;
-	proc = "asignal";
-        convertHistosForLimits_core(dci, proc, chbin, systs, hshapes, runSystematics, shape);
-        allProcs.insert(proc);
-     }
-
 
      //data
      TH1* h=shapeSt.data;

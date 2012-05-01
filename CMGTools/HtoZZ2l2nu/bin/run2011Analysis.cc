@@ -147,7 +147,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "otherpttagged", ";p_{T};Events", 50,30,250) );
   mon.addHistogram( new TH1F( "bcsv", ";CSV;Events", 50,-2,2) );
   mon.addHistogram( new TH1F( "othercsv", ";CSV;Events", 50,-2,2) );
- 
+
   for(size_t ibin=1; ibin<=5; ibin++){
     TString label("");
     if(ibin==5) label +="#geq";
@@ -172,11 +172,11 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 100,0,1000) );
   mon.addHistogram( new TH1F( "mtRaw"  , ";M_{T} (raw);Events", 100,0,1000) );
 
- 
   //##############################################
   //######## STUFF FOR CUTS OPTIMIZATION  ########
   //##############################################
-  std::vector<double> optim_Cuts1_met;
+
+   std::vector<double> optim_Cuts1_met;
    std::vector<double> optim_Cuts1_mtmin;
    std::vector<double> optim_Cuts1_mtmax;
    for(double met=65;met<160;met+=5.0){
@@ -197,8 +197,7 @@ int main(int argc, char* argv[])
             }
       }
    }
-  
-   //add last year cut
+  //add last year cut
   optim_Cuts1_met.push_back( 70); optim_Cuts1_mtmin.push_back(229); optim_Cuts1_mtmax.push_back(258);
   optim_Cuts1_met.push_back( 77); optim_Cuts1_mtmin.push_back(245); optim_Cuts1_mtmax.push_back(293);
   optim_Cuts1_met.push_back( 84); optim_Cuts1_mtmin.push_back(260); optim_Cuts1_mtmax.push_back(328);
@@ -214,34 +213,35 @@ int main(int argc, char* argv[])
   optim_Cuts1_met.push_back(154); optim_Cuts1_mtmin.push_back(417); optim_Cuts1_mtmax.push_back(682);
   optim_Cuts1_met.push_back(161); optim_Cuts1_mtmin.push_back(433); optim_Cuts1_mtmax.push_back(717);
   optim_Cuts1_met.push_back(168); optim_Cuts1_mtmin.push_back(449); optim_Cuts1_mtmax.push_back(752);
-  const size_t nOptimCuts=optim_Cuts1_met.size();
 
-  TH1F* Hoptim_cuts1_met     =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_met"    , ";cut index;met"    ,nOptimCuts,0,nOptimCuts) ) ;
-  TH1F* Hoptim_cuts1_mtmin   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmin"  , ";cut index;mtmin"  ,nOptimCuts,0,nOptimCuts) ) ;
-  TH1F* Hoptim_cuts1_mtmax   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmax"  , ";cut index;mtmax"  ,nOptimCuts,0,nOptimCuts) ) ;
-  for(unsigned int index=0;index<nOptimCuts;index++){
-    Hoptim_cuts1_met    ->Fill(index, optim_Cuts1_met[index]);    
-    Hoptim_cuts1_mtmin  ->Fill(index, optim_Cuts1_mtmin[index]);
-    Hoptim_cuts1_mtmax  ->Fill(index, optim_Cuts1_mtmax[index]);
-  }
-  
-  TH1F* Hoptim_systs     =  (TH1F*) mon.addHistogram( new TH1F ("optim_systs"    , ";syst;", nvarsToInclude,0,nvarsToInclude) ) ;
-  for(size_t ivar=0; ivar<nvarsToInclude; ivar++)
-    {
-      Hoptim_systs->GetXaxis()->SetBinLabel(ivar+1, varNames[ivar]);
-      mon.addHistogram( new TH2F (TString("mt_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",nOptimCuts,0,nOptimCuts, 32,150,950) );
-      if(ivar==0)mon.addHistogram( new TH2F (TString("mt_shapesBTagSB")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",nOptimCuts,0,nOptimCuts, 32,150,950) );
-      mon.addHistogram( new TH2F (TString("mt_redMet_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",nOptimCuts,0,nOptimCuts, 32,150,950) );
-      mon.addHistogram( new TH2F (TString("mt3")+varNames[ivar],";cut index;M_{T}^{3rd lepton} [GeV/c^{2}];",nOptimCuts,0,nOptimCuts, 50,0,250) );
-      TH2F *h=(TH2F *) mon.addHistogram( new TH2F ("nonresbckg_ctrl"+varNames[ivar],";cut index;Selection region;Events",nOptimCuts,0,nOptimCuts,6,0,6) );
-      h->GetYaxis()->SetBinLabel(1,"M_{in}^{ll}/=0 b-tags");
-      h->GetYaxis()->SetBinLabel(2,"M_{out}^{ll}/=0 b-tags");
-      h->GetYaxis()->SetBinLabel(3,"M_{out+}^{ll}/=0 b-tags");
-      h->GetYaxis()->SetBinLabel(4,"M_{in}^{ll}/#geq 1 b-tag");
-      h->GetYaxis()->SetBinLabel(5,"M_{out}^{ll}/#geq 1 b-tag");
-      h->GetYaxis()->SetBinLabel(6,"M_{out+}^{ll}/#geq 1 b-tag");
-    } 
-    
+
+   TH1F* Hoptim_cuts1_met     =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_met"    , ";cut index;met"    ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
+   TH1F* Hoptim_cuts1_mtmin   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmin"  , ";cut index;mtmin"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
+   TH1F* Hoptim_cuts1_mtmax   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmax"  , ";cut index;mtmax"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
+   for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
+      Hoptim_cuts1_met    ->Fill(index, optim_Cuts1_met[index]);    
+      Hoptim_cuts1_mtmin  ->Fill(index, optim_Cuts1_mtmin[index]);
+      Hoptim_cuts1_mtmax  ->Fill(index, optim_Cuts1_mtmax[index]);
+   }
+
+   TH1F* Hoptim_systs     =  (TH1F*) mon.addHistogram( new TH1F ("optim_systs"    , ";syst;", nvarsToInclude,0,nvarsToInclude) ) ;
+   for(size_t ivar=0; ivar<nvarsToInclude; ivar++)
+   {
+       Hoptim_systs->GetXaxis()->SetBinLabel(ivar+1, varNames[ivar]);
+       mon.addHistogram( new TH2F (TString("mt_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 32,150,950) );
+       if(ivar==0)mon.addHistogram( new TH2F (TString("mt_shapesBTagSB")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 32,150,950) );
+       mon.addHistogram( new TH2F (TString("mt_redMet_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 32,150,950) );
+       mon.addHistogram( new TH2F (TString("mt3")+varNames[ivar],";cut index;M_{T}^{3rd lepton} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 50,0,250) );
+       TH2F *h=(TH2F *) mon.addHistogram( new TH2F ("nonresbckg_ctrl"+varNames[ivar],";cut index;Selection region;Events",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(),6,0,6) );
+       h->GetYaxis()->SetBinLabel(1,"M_{in}^{ll}/=0 b-tags");
+       h->GetYaxis()->SetBinLabel(2,"M_{out}^{ll}/=0 b-tags");
+       h->GetYaxis()->SetBinLabel(3,"M_{out+}^{ll}/=0 b-tags");
+       h->GetYaxis()->SetBinLabel(4,"M_{in}^{ll}/#geq 1 b-tag");
+       h->GetYaxis()->SetBinLabel(5,"M_{out}^{ll}/#geq 1 b-tag");
+       h->GetYaxis()->SetBinLabel(6,"M_{out+}^{ll}/#geq 1 b-tag");
+   } 
+
+
   //##############################################
   //######## GET READY FOR THE EVENT LOOP ########
   //##############################################
@@ -301,9 +301,9 @@ int main(int argc, char* argv[])
     }
 
   //event Categorizer
-//  EventCategory eventCategoryInst(0); //inclusive analysis
-//  EventCategory eventCategoryInst(1); //jet binning
-//  EventCategory eventCategoryInst(2); //vbf binning
+  //EventCategory eventCategoryInst(0); //inclusive analysis
+  //EventCategory eventCategoryInst(1); //jet binning
+  //EventCategory eventCategoryInst(2); //vbf binning
   EventCategory eventCategoryInst(3); //jet+vbf binning
 
 
@@ -349,18 +349,6 @@ int main(int argc, char* argv[])
           tag_cat = "gamma";
 	}
      
-      int eventSubCat  = eventCategoryInst.Get(phys);
-      TString tag_subcat = eventCategoryInst.GetLabel(eventSubCat);
-
-      //prepare the tag's vectors for histo filling
-      std::vector<TString> tags_full;
-      tags_full.push_back("all");
-      tags_full.push_back(tag_cat);
-//      if(tag_subcat=="vbf") tags_full.push_back(tag_cat+"_"+tag_subcat);
-      if(tag_subcat!="")tags_full.push_back(tag_cat + tag_subcat);
-      if(tag_subcat=="geq2jets" || tag_subcat=="vbf")tags_full.push_back(tag_cat + "geq2jetsInc");
-      if(tag_subcat!="vbf")tags_full.push_back(tag_cat + "novbf");
-
       //pileup and Higgs pT weight
       //float weight=ev.puWeight;
       float weight = 1.0;
@@ -398,13 +386,16 @@ int main(int argc, char* argv[])
 	}
 
       //analyze JET/MET
-      LorentzVectorCollection jetsP4;
-      std::vector<double> genJetsPt;
-      for(size_t ijet=0; ijet<phys.ajets.size(); ijet++)
-	{
-	  jetsP4.push_back( phys.ajets[ijet] );
-	  genJetsPt.push_back( phys.ajets[ijet].genPt);
-	}
+      PhysicsObjectJetCollection jetsP4 = phys.ajets;
+//      LorentzVectorCollection jetsP4;
+//      std::vector<double> genJetsPt;
+//      for(size_t ijet=0; ijet<phys.ajets.size(); ijet++)
+//	{
+//	  jetsP4.push_back( phys.ajets[ijet] );
+//	  genJetsPt.push_back( phys.ajets[ijet].genPt);
+//	}
+      
+
       //base raw METs
       LorentzVector assocMetP4(phys.met[1]);
       LorentzVector zvvRaw(phys.met[0]);
@@ -416,23 +407,21 @@ int main(int argc, char* argv[])
       //prepare variations (first variation is the baseline, corrected for JER) 
       LorentzVectorCollection zvvs,redMets, min3Mets;
       std::vector<Float_t>  mts,mt3s,redMetLs,redMetTs;
-      std::vector<LorentzVectorCollection> jets;
-      METUtils::computeVariation(jetsP4, genJetsPt, zvvRaw, jets, zvvs, &jecUnc);
-      cout << ev.run << " " << ev.lumi << " " << ev.event << " " << redMetRaw.pt() << " ";
-      for(size_t ivars=0; ivars<zvvs.size(); ivars++)
-	{
+//      std::vector<LorentzVectorCollection> jets;
+      std::vector<PhysicsObjectJetCollection> jets;
+//      METUtils::computeVariation(jetsP4, genJetsPt, zvvRaw, jets, zvvs, &jecUnc);
+      METUtils::computeVariation(jetsP4, zvvRaw, jets, zvvs, &jecUnc);
+      for(size_t ivars=0; ivars<zvvs.size(); ivars++){
 	  LorentzVector clusteredMetP4(zll); clusteredMetP4 *= -1;
 	  for(size_t ijet=0; ijet<jets[ivars].size(); ijet++) clusteredMetP4 -= jets[ivars][ijet];
 	  METUtils::stRedMET redMetOut; 
 	  redMets.push_back(   METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, clusteredMetP4, zvvs[ivars],false,&redMetOut) );
-	  cout << redMets[ivars].pt() << " ";
 	  redMetLs.push_back( redMetOut.redMET_l );
 	  redMetTs.push_back( redMetOut.redMET_t );
 	  mts.push_back(METUtils::transverseMass(zll,zvvs[ivars],true));
 	  mt3s.push_back(phys.leptons.size()>2 ? METUtils::transverseMass(phys.leptons[2],zvvs[ivars],false) : 0. );
 	  min3Mets.push_back( min(zvvs[ivars], min(assocMetP4,clusteredMetP4)) );
 	}
-      cout << endl;
       
       //
       //run the variations
@@ -442,12 +431,13 @@ int main(int argc, char* argv[])
 	if(ivar==5)                        iweight *=TotalWeight_plus;        //pu up
 	if(ivar==6)                        iweight *=TotalWeight_minus;       //pu down
 	if(ivar<=10 && ivar>=7 && isMC_GG) iweight *=ev.hptWeights[ivar-6];   //ren/fact scales
-	
+
+
 	Float_t zmassraw=zllraw.mass();
 	Float_t zmass=zll.mass();
 	Float_t zpt=zll.pt();
 	Float_t zeta=zll.eta();
-	LorentzVectorCollection &origJetsP4=jets[ivar>4?0:ivar];            
+	PhysicsObjectJetCollection &origJetsP4=jets[ivar>4?0:ivar];            
 	LorentzVector zvv    = zvvs[ivar>4?0:ivar];
 	LorentzVector min3Met = min3Mets[ivar>4?0:ivar];
 	LorentzVector redMet = redMets[ivar>4?0:ivar];
@@ -464,31 +454,45 @@ int main(int argc, char* argv[])
 	  if(idphijmet<mindphijmet) mindphijmet=idphijmet;
 	  if(origJetsP4[ijet].pt()>30){
 	    njets++;
-	    if( fabs(phys.ajets[ijet].eta()<2.5) )
-	      {
-		nbtags += (phys.ajets[ijet].btag1>btagcut);
-		nBtaggedVsDisc[0] +=(phys.ajets[ijet].btag1>1.7);
-		nBtaggedVsDisc[1] +=(phys.ajets[ijet].btag1>2.0);
-		nBtaggedVsDisc[2] +=(phys.ajets[ijet].btag1>3.3);
-		nBtaggedVsDisc[3] +=(phys.ajets[ijet].btag2>0.244);
-		nBtaggedVsDisc[4] +=(phys.ajets[ijet].btag2>0.679);
-		nBtaggedVsDisc[5] +=(phys.ajets[ijet].btag2>0.898);
-		
-		if(ivar==0)
-		  {
-		    TString jetLabel(fabs(ev.ajn_genflav[ijet])==5 ? "b" : "other");
-		    mon.fillHisto(jetLabel+"csv","all",phys.ajets[ijet].btag2,iweight);
-		    mon.fillHisto(jetLabel+"ptpretagged","all",phys.ajets[ijet].pt(),iweight);
-		    mon.fillHisto(jetLabel+"etapretagged","all",phys.ajets[ijet].eta(),iweight);
-		    if(phys.ajets[ijet].btag2>0.244)
-		      {
-			mon.fillHisto(jetLabel+"pttagged","all",phys.ajets[ijet].pt(),iweight);
-			mon.fillHisto(jetLabel+"etatagged","all",phys.ajets[ijet].eta(),iweight);
-		      }
-		  }
-	      }
+            if( fabs(phys.ajets[ijet].eta()<2.5) ){
+ 	       nbtags += (phys.ajets[ijet].btag1>btagcut);
+	       nBtaggedVsDisc[0] +=(phys.ajets[ijet].btag1>1.7);
+	       nBtaggedVsDisc[1] +=(phys.ajets[ijet].btag1>2.0);
+	       nBtaggedVsDisc[2] +=(phys.ajets[ijet].btag1>3.3);
+	       nBtaggedVsDisc[3] +=(phys.ajets[ijet].btag2>0.244);
+	       nBtaggedVsDisc[4] +=(phys.ajets[ijet].btag2>0.679);
+	       nBtaggedVsDisc[5] +=(phys.ajets[ijet].btag2>0.898);
+
+               if(ivar==0){
+                  TString jetLabel(fabs(ev.ajn_genflav[ijet])==5 ? "b" : "other");
+                  mon.fillHisto(jetLabel+"csv","all",phys.ajets[ijet].btag2,iweight);
+                  mon.fillHisto(jetLabel+"ptpretagged","all",phys.ajets[ijet].pt(),iweight);
+                  mon.fillHisto(jetLabel+"etapretagged","all",phys.ajets[ijet].eta(),iweight);
+                  if(phys.ajets[ijet].btag2>0.244){
+                     mon.fillHisto(jetLabel+"pttagged","all",phys.ajets[ijet].pt(),iweight);
+                     mon.fillHisto(jetLabel+"etatagged","all",phys.ajets[ijet].eta(),iweight);
+                   }                                                                                                                                      
+                }                                                                                                                                          
+             }  
 	  }
 	}
+
+
+        //##############################################
+        //########  DEFINE EVENT CATEGORY       ########
+        //##############################################
+
+        int eventSubCat  = eventCategoryInst.Get(phys, &origJetsP4);
+        TString tag_subcat = eventCategoryInst.GetLabel(eventSubCat);
+        //prepare the tag's vectors for histo filling
+        std::vector<TString> tags_full;
+        tags_full.push_back("all");
+        tags_full.push_back(tag_cat);
+        //if(tag_subcat=="vbf") tags_full.push_back(tag_cat+"_"+tag_subcat);
+        if(tag_subcat!="")tags_full.push_back(tag_cat + tag_subcat);
+        if(tag_subcat=="geq2jets" || tag_subcat=="vbf")tags_full.push_back(tag_cat + "geq2jetsInc");
+        if(tag_subcat!="vbf")tags_full.push_back(tag_cat + "novbf");
+
 	
 	//##############################################
 	//########     PRESELECTION             ########
@@ -509,6 +513,8 @@ int main(int argc, char* argv[])
 // 	genRes += phys.genmet[0];
 // 	cout << genRes.mass() << " " << genRes.px() << " " << genRes.py() << " " << genRes.pz() << endl;
     
+
+
 	//##############################################  
 	//########         GENERAL PLOTS        ########                                                                                                                  
 	//##############################################  
@@ -573,7 +579,7 @@ int main(int argc, char* argv[])
           bool passPreselection             (passZmass && passZpt && pass3dLeptonVeto && passDphijmet && passBveto);
 	  bool passPreselectionMbvetoMzmass (             passZpt && pass3dLeptonVeto && passDphijmet             );          
 	  bool passPreselectionM3dlep       (passZmass && passZpt                     && passDphijmet && passBveto);
-          for(unsigned int index=0;index<nOptimCuts;index++){
+          for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
 	    
 	    if(redMet.pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
 	      if(passPreselection                                        )          mon.fillHisto(TString("mt_redMet_shapes")+varNames[ivar],tags_full,index, mt,iweight);
