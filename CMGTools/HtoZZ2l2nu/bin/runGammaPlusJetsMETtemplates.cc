@@ -289,7 +289,7 @@ int main(int argc, char* argv[])
 	}
       TString subcat("eq"); subcat+=njets30; subcat+= "jets";
       if(njets30>=3) subcat="geq3jets";
-      int evType=eventClassifComp.Get(phys);
+      int evType=eventClassifComp.Get(phys,&phys.jets);
       if(evType==EventCategory::VBF) subcat="vbf";
 
 
