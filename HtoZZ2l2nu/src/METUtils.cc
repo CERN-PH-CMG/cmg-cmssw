@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2012/04/03 19:56:04 $
- *  $Revision: 1.10 $
+ *  $Date: 2012/04/12 06:26:45 $
+ *  $Revision: 1.11 $
  *  \author G. Cerminara & D. Trocino & P. Silva & L. Quertenmont
  */
 
@@ -310,7 +310,7 @@ LorentzVector redMET(RedMetType Type, const LorentzVector& theLepton1, double si
 
 
   //
-  LorentzVector smearedJet(const LorentzVector &origJet, double genJetPt, int mode)
+  PhysicsObject_Jet smearedJet(const PhysicsObject_Jet &origJet, double genJetPt, int mode)
   {
     if(genJetPt<=0) return origJet;
 
@@ -335,14 +335,18 @@ LorentzVector redMET(RedMetType Type, const LorentzVector& theLepton1, double si
     
     double px(origJet.px()*ptSF), py(origJet.py()*ptSF), pz(origJet.pz()), mass(origJet.mass());
     double en = sqrt(mass*mass+px*px+py*py+pz*pz);
-    
+  
+    PhysicsObject_Jet toReturn = origJet;
+    toReturn.SetCoordinates(px, py, pz, en);
+    return toReturn;
+  
     //return new kinematics
-    return LorentzVector(px,py,pz,en);
+//    return LorentzVector(px,py,pz,en);
   }
 
   //
-  void computeVariation(LorentzVectorCollection& jets, std::vector<double> &genjetsPt, LorentzVector& met,   
-			std::vector<LorentzVectorCollection>& jetsVar, LorentzVectorCollection& metsVar,
+  void computeVariation(PhysicsObjectJetCollection& jets, LorentzVector& met,   
+			std::vector<PhysicsObjectJetCollection>& jetsVar, LorentzVectorCollection& metsVar,
 			JetCorrectionUncertainty *jecUnc)
   {
     jetsVar.clear();
@@ -351,12 +355,13 @@ LorentzVector redMET(RedMetType Type, const LorentzVector& theLepton1, double si
     int vars[]={JER, JER_UP, JER_DOWN, JES_UP, JES_DOWN};
     for(size_t ivar=0; ivar<sizeof(vars)/sizeof(int); ivar++)
       {
-	LorentzVectorCollection newJets;
+	PhysicsObjectJetCollection newJets;
 	LorentzVector newMet(met),jetDiff(0,0,0,0);
 	int mode(0); if(ivar==JER_UP) mode=1; if(ivar==JER_DOWN) mode=2;
 	for(size_t ijet=0; ijet<jets.size(); ijet++)
 	  {
-	    LorentzVector iSmearJet=METUtils::smearedJet(jets[ijet],genjetsPt[ijet],mode);
+//	    LorentzVector iSmearJet=METUtils::smearedJet(jets[ijet],genjetsPt[ijet],mode);
+            PhysicsObject_Jet iSmearJet=METUtils::smearedJet(jets[ijet],jets[ijet].genPt,mode);
 	    if(ivar==JER || ivar==JER_UP || ivar==JER_DOWN)
 	      {
 		newJets.push_back(iSmearJet);
@@ -373,6 +378,7 @@ LorentzVector redMET(RedMetType Type, const LorentzVector& theLepton1, double si
 		}
 		catch(std::exception &e){
 		  //cout << e.what() << ijet << " " << iSmearJet.pt() << " " << jets[ijet].pt() << " : " << genjetsPt[ijet] << endl;
+                  //cout << e.what() << ijet << " " << iSmearJet.pt() << " " << jets[ijet].pt() << " : " << jets[ijet].genPt << endl;
 		}
 		LorentzVector newJet = jetScale*iSmearJet;
 		newJets.push_back(newJet);
@@ -389,8 +395,10 @@ LorentzVector redMET(RedMetType Type, const LorentzVector& theLepton1, double si
         if(ivar==JER && newMet.pt()>2000){
            printf("%f - %f - %f : ",newMet.pt(), met.pt(), jetDiff.pt());
            for(size_t ijet=0; ijet<jets.size(); ijet++){
-              LorentzVector iSmearJet=METUtils::smearedJet(jets[ijet],genjetsPt[ijet],mode);
-              printf("Jet%i %f(%f)>%f  ", (int)ijet, jets[ijet].pt(), genjetsPt[ijet], iSmearJet.pt());
+//              LorentzVector iSmearJet=METUtils::smearedJet(jets[ijet],genjetsPt[ijet],mode);
+              LorentzVector iSmearJet=METUtils::smearedJet(jets[ijet],jets[ijet].genPt,mode);
+//              printf("Jet%i %f(%f)>%f  ", (int)ijet, jets[ijet].pt(), genjetsPt[ijet], iSmearJet.pt());
+              printf("Jet%i %f(%f)>%f  ", (int)ijet, jets[ijet].pt(), jets[ijet].genPt, iSmearJet.pt());
            }printf("\n");
         }
 

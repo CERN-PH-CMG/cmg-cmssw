@@ -267,7 +267,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "minmjz", ";min M(jet,Z) [GeV/c^{2}];Events",100,0,500) );
 
   //Renormalization
-  TH1F* Hcutflow     = (TH1F*) mon.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,5,0,5) ) ;
+  TH1F* Hcutflow     = (TH1F*) mon.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,6,0,6) ) ;
 
   //Met Optimization
   mon.addHistogram( new TH1F( "ZZ_RedMetInd_Best", ";IND RedMet [GeV];Events", 30,0,30) );
@@ -593,11 +593,12 @@ int main(int argc, char* argv[])
       float weight = 1.0;
       double TotalWeight_plus = 1.0;
       double TotalWeight_minus = 1.0;
+      double vbfweight = 1.0;
       if(isMC){
         weight = LumiWeights.weight( ev.ngenITpu );
         TotalWeight_plus = PShiftUp.ShiftWeight( ev.ngenITpu );
         TotalWeight_minus = PShiftDown.ShiftWeight( ev.ngenITpu );
-        if(isMC_VBF) weight *= weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );         
+        if(isMC_VBF){ vbfweight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=vbfweight;  }
         if(isMC_GG)  {
 	  for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
 	  weight *= ev.hptWeights[0];
@@ -608,6 +609,7 @@ int main(int argc, char* argv[])
       Hcutflow->Fill(2,weight);
       Hcutflow->Fill(3,weight*TotalWeight_minus);
       Hcutflow->Fill(4,weight*TotalWeight_plus);
+      Hcutflow->Fill(5,vbfweight);      
 
       //##############################################
       //########       GLOBAL VARIABLES       ########
@@ -763,11 +765,12 @@ int main(int argc, char* argv[])
       std::vector<double> genJetsPt;
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++)      genJetsPt.push_back( phys.jets[ijet].genPt );
       LorentzVectorCollection zvvs;
-      std::vector<LorentzVectorCollection> Jets;
-      if(/*runSystematics*/ true) METUtils::computeVariation(jetsP4, genJetsPt, redMetP4, Jets, zvvs,&jecUnc);
+      std::vector<PhysicsObjectJetCollection> Jets;
+      if(/*runSystematics*/ true) METUtils::computeVariation(phys.jets, redMetP4, Jets, zvvs,&jecUnc);
+
 
       zvvs.insert(zvvs.begin(),redMetP4);
-      Jets.insert(Jets.begin(),jetsP4);
+      Jets.insert(Jets.begin(),phys.jets);
       //std::vector<Float_t>  mts;
       //for(size_t ivar=0; ivar<(runSystematics?3:1); ivar++){
       //    Float_t imt     = METUtils::transverseMass(zll,zvvs[ivar],true);
@@ -782,16 +785,16 @@ int main(int argc, char* argv[])
       }
       //Same for PFMEt
       LorentzVectorCollection MetPF;
-      std::vector<LorentzVectorCollection> Jets1;
-      if(/*runSystematics*/ true) METUtils::computeVariation(jetsP4, genJetsPt, phys.met[0], Jets1, MetPF,&jecUnc);
+      std::vector<PhysicsObjectJetCollection> Jets1;
+      if(/*runSystematics*/ true) METUtils::computeVariation(phys.jets, phys.met[0], Jets1, MetPF,&jecUnc);
       MetPF.insert(MetPF.begin(),phys.met[0]);
-      Jets1.insert(Jets1.begin(),jetsP4);
+      Jets1.insert(Jets1.begin(),phys.jets);
       //Same for METD0
       LorentzVectorCollection MetD0;
-      std::vector<LorentzVectorCollection> Jets2;
-      if(/*runSystematics*/ true) METUtils::computeVariation(jetsP4, genJetsPt, redMetD0P4, Jets2, MetD0,&jecUnc);
+      std::vector<PhysicsObjectJetCollection> Jets2;
+      if(/*runSystematics*/ true) METUtils::computeVariation(phys.jets, redMetD0P4, Jets2, MetD0,&jecUnc);
       MetD0.insert(MetD0.begin(),redMetD0P4);
-      Jets2.insert(Jets2.begin(),jetsP4);
+      Jets2.insert(Jets2.begin(),phys.jets);
 
       //JER with association
       //vector<double> GenJet;

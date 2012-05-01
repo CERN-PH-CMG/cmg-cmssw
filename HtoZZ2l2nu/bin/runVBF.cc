@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
   SmartSelectionMonitor mon;
  
   //Renormalization
-  TH1F* Hcutflow     = (TH1F*) mon.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,5,0,5) ) ;
+  TH1F* Hcutflow     = (TH1F*) mon.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,6,0,6) ) ;
 
   
   //VBF
@@ -305,11 +305,12 @@ int main(int argc, char* argv[])
       float weight = 1.0;
       double TotalWeight_plus = 1.0;
       double TotalWeight_minus = 1.0;
+      double vbfweight = 1.0;
       if(isMC){
         weight = LumiWeights->weight( ev.ngenITpu );
         TotalWeight_plus = PShiftUp->ShiftWeight( ev.ngenITpu );
         TotalWeight_minus = PShiftDown->ShiftWeight( ev.ngenITpu );
-        if(isMC_VBF) weight *= weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );         
+        if(isMC_VBF){ vbfweight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=vbfweight;  }
         if(isMC_GG)  {
           for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
           weight *= ev.hptWeights[0];
@@ -319,7 +320,7 @@ int main(int argc, char* argv[])
       Hcutflow->Fill(2,weight);
       Hcutflow->Fill(3,weight*TotalWeight_minus);
       Hcutflow->Fill(4,weight*TotalWeight_plus);
-
+      Hcutflow->Fill(5,vbfweight);
 
       //analyze the leptons
       LorentzVector lep1=phys.leptons[0];
@@ -335,13 +336,7 @@ int main(int argc, char* argv[])
 	}
 
       //analyze JET/MET
-      LorentzVectorCollection jetsP4;
-      std::vector<double> genJetsPt;
-      for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
-	{
-	  jetsP4.push_back( phys.jets[ijet] );
-	  genJetsPt.push_back( phys.jets[ijet].genPt);
-	}
+      PhysicsObjectJetCollection jetsP4 = phys.ajets;
       //base raw METs
       LorentzVector rawZvv(phys.met[0]);
       LorentzVector rawClusteredMet(zll);            rawClusteredMet *= -1;
@@ -352,8 +347,8 @@ int main(int argc, char* argv[])
       //prepare variations (first variation is the baseline, corrected for JER) 
       LorentzVectorCollection zvvs,redMets;
       std::vector<Float_t>  mts,mt3s,redMetLs,redMetTs;
-      std::vector<LorentzVectorCollection> jets;
-      METUtils::computeVariation(jetsP4, genJetsPt, rawZvv, jets, zvvs, &jecUnc);
+      std::vector<PhysicsObjectJetCollection> jets;
+      METUtils::computeVariation(jetsP4, rawZvv, jets, zvvs, &jecUnc);
       for(size_t ivars=0; ivars<zvvs.size(); ivars++)
 	{
 	  LorentzVector clusteredMetP4(zll); clusteredMetP4 *= -1;
@@ -370,7 +365,7 @@ int main(int argc, char* argv[])
 	Float_t zmass=zll.mass();
 	Float_t zpt=zll.pt();
 	Float_t zeta=zll.eta();
-	LorentzVectorCollection &origJetsP4=jets[0];            
+	PhysicsObjectJetCollection &origJetsP4=jets[0];            
 	LorentzVector zvv    = zvvs[0];
 	LorentzVector redMet = redMets[0];
 	Float_t redMetL      = redMetLs[0];
