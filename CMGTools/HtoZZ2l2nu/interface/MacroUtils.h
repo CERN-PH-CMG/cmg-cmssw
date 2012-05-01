@@ -5,6 +5,8 @@
 #include<vector>
 #include <ext/hash_map>
 
+#include "TH1.h"
+
 #include "Math/LorentzVector.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
@@ -53,5 +55,8 @@ class DuplicatesChecker{
 
 //
 std::string toLatexRounded(double value, double error);
+
+//
+std::vector<TH1 *> defineOptimizationHistos(int version=0);
 
 #endif
