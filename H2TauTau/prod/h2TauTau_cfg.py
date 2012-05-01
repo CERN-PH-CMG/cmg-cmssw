@@ -8,7 +8,7 @@ sep_line = '-'*70
 process = cms.Process("H2TAUTAU")
 
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -19,9 +19,9 @@ numberOfFilesToProcess = 5
 
 debugEventContent = False
 
-dataset_user = 'cbern' 
-dataset_name = '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V3/PAT_CMG_TestMVAs_f0'
-
+#Jose: we'll need a flag to deal with 2011 data/MC because of name changes in 5_2_X
+#     this is probably not yet implemented right, currently only testing in 5_2
+year = '2012'
 
 ##########
 
@@ -32,21 +32,32 @@ dataset_name = '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14
 
 # process.setName_('H2TAUTAU')
 
+dataset_user = 'benitezj' 
+dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM/PATCMG_TEST52'
+
+dataset_files = 'cmgTuple.*root'
+if year=='2011':
+    dataset_files = 'tree.*root'
+
+
 # creating the source
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
     dataset_user,
     dataset_name,
-    'tree.*root',
-    True)
+    dataset_files,
+    )
 
-## process.source = cms.Source(
-##     "PoolSource",
-##     fileNames = cms.untracked.vstring(
-##     '/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/tree_CMG_1.root'
-## #    '/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/tree_CMG_1.root'
-##     )
-##     )
+
+#process.source = cms.Source(
+#    "PoolSource",
+#    fileNames = cms.untracked.vstring(
+#    #'/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/tree_CMG_1.root'
+#    #'/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/tree_CMG_1.root'
+#    'file:../../../Common/prod/TEST/cmgTuple_HToTauTau.root'
+#    )
+#    )
+
 
 # process.source.fileNames = ['file:ttjets.root']
 
@@ -62,8 +73,10 @@ runOnMC = process.source.fileNames[0].find('Run201')==-1 and process.source.file
 
 # Sequence & path definition -------------------------------------------------
 
-process.load('CMGTools.H2TauTau.h2TauTau_cff')
-
+# Message logger setup.
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 
 # set up JSON ---------------------------------------------------------------
@@ -71,42 +84,59 @@ if runOnMC==False:
     from CMGTools.H2TauTau.tools.setupJSON import setupJSON
     json = setupJSON(process)
 
-# setting up vertex weighting -----------------------------------------------
 
+# generator ----------------------------------------------
+process.generatorPath = cms.Path()
 if runOnMC:
-    #SIMULATION
+    # setting up vertex weighting 
     process.load('CMGTools.Common.generator.vertexWeight.vertexWeight_cff')
-    process.objectSequence += process.vertexWeightSequence
+    process.generatorPath += process.vertexWeightSequence 
+
+    # input needed for all recoil corrections 
+    process.load('CMGTools.Common.generator.metRecoilCorrection.metRecoilCorrection_cff')
+    process.generatorPath += process.cmgPFJetForRecoil 
+    process.generatorPath += process.genWorZ
+
+
+# load the channel paths -------------------------------------------
+process.load('CMGTools.H2TauTau.h2TauTau_cff')
+
+if year=='2011':
+    process.cmgTauMuCorSVFitPreSel.metsigSrc = cms.InputTag("PFMETSignificanceAK5")
+    process.cmgTauEleCorSVFitPreSel.metsigSrc = cms.InputTag("PFMETSignificanceAK5")
+    process.cmgMuEleCorSVFitPreSel.metsigSrc = cms.InputTag("PFMETSignificanceAK5")
+    process.cmgDiTauCorSVFitPreSel.metsigSrc = cms.InputTag("PFMETSignificanceAK5")
+
 
 # setting up the recoil correction according to the input file ---------------
+if runOnMC:
+    print sep_line
+    from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
+    setupRecoilCorrection( process )
 
-print sep_line
-from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
-setupRecoilCorrection( process )
 
 # OUTPUT definition ----------------------------------------------------------
-
 process.outpath = cms.EndPath()
 
-# Message logger setup.
-process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
-process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
-
+# create the full schedule
 process.schedule = cms.Schedule(
-    # this path corresponds to the basic preselection:
-    # process.tauMuPreSelPath,
-    # and this one to the full baseline selection
+    process.generatorPath, 
+    
     process.tauMuFullSelPath,    
-    # process.tauElePreSelPath,
+
+    #Jose: make sure that your sequence is properly configured, I've only looked at tauMu
     process.tauEleFullSelPath,    
-    # process.muElePreSelPath,
+    
     process.muEleFullSelPath,    
-    # process.diTauPreSelPath,
+    
     process.diTauFullSelPath,    
+    
     process.outpath
     )
+
+
+
 
 print sep_line
 print 'INPUT:'
@@ -133,6 +163,7 @@ justn = 30
 # you can enable printouts of most modules like this:
 # process.cmgTauMuCorPreSelSVFit.verbose = True
 
+# systematic shift on tau energy scale 
 # process.cmgTauScaler.cfg.nSigma = -1
 
 from CMGTools.H2TauTau.tools.setupOutput import *
@@ -143,13 +174,13 @@ addDiTauOutput( process, debugEventContent, addPreSel=False)
 
 
 # use standard leptons - could also clone the sequence.
-process.cmgTauMu.cfg.leg2Collection = 'cmgMuonSelStdLep'
+#process.cmgTauMu.cfg.leg2Collection = 'cmgMuonSelStdLep'
 # to relax mu ID:
-process.cmgTauMu.cuts.baseline.muLeg.id = cms.PSet()
+#process.cmgTauMu.cuts.baseline.muLeg.id = cms.PSet()
 
-process.cmgTauEle.cfg.leg2Collection = 'cmgElectronSelStdLep'
+#process.cmgTauEle.cfg.leg2Collection = 'cmgElectronSelStdLep'
 
-process.cmgMuEle.cfg.leg1Collection = 'cmgMuonSelStdLep'
-process.cmgMuEle.cfg.leg2Collection = 'cmgElectronSelStdLep'
+#process.cmgMuEle.cfg.leg1Collection = 'cmgMuonSelStdLep'
+#process.cmgMuEle.cfg.leg2Collection = 'cmgElectronSelStdLep'
 process.cmgMuEle.cuts.baseline.muLeg.id = cms.PSet()
 

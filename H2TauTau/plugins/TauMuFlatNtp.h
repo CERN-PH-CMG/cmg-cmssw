@@ -10,7 +10,7 @@
 
 #include "CMGTools/H2TauTau/interface/TriggerEfficiency.h"
 #include "CMGTools/H2TauTau/interface/SelectionEfficiency.h"
-#include "CMGTools/H2TauTau/interface/TauRate.h"
+//#include "CMGTools/H2TauTau/interface/TauRate.h"
 
 #include <TRandom2.h>
 
@@ -33,6 +33,7 @@ public:
 protected:
 
   edm::InputTag diTauTag_;
+  edm::InputTag genParticlesTag_;
   edm::Handle< std::vector<cmg::TauMu> > diTauList_;
   std::vector<cmg::TauMu> diTauSelList_;
   const cmg::TauMu * diTauSel_;

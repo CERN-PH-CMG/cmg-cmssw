@@ -4,6 +4,6 @@ diTauSVFit = cms.EDProducer(
     "TauTauWithSVFitProducer",
     diTauSrc = cms.InputTag("cmgDiTauCorPreSel"),
     # metSrc = cms.InputTag("cmgPFMET"),
-    metsigSrc = cms.InputTag("PFMETSignificanceAK5"),
+    metsigSrc = cms.InputTag("PFMETSignificance"),
     verbose = cms.untracked.bool( False )
     )

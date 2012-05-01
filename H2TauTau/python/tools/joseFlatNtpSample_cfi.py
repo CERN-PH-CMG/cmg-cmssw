@@ -18,6 +18,7 @@ flatNtp = cms.EDAnalyzer(
     trigPath9 = cms.InputTag(""),
     trigPath10 = cms.InputTag(""),
     diTauTag =  cms.InputTag(""),
+    genParticlesTag =  cms.InputTag("genParticlesPruned"),
     sampleGenEventType =   cms.int32( 0 ),
     sampleTruthEventType =  cms.int32( 0 ),
     randsigma = cms.double(0.),
