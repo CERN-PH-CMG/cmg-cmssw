@@ -107,6 +107,8 @@ int main(int argc, char* argv[])
   optim_Cuts1_met.push_back(154); optim_Cuts1_mtmin.push_back(417); optim_Cuts1_mtmax.push_back(682);
   optim_Cuts1_met.push_back(161); optim_Cuts1_mtmin.push_back(433); optim_Cuts1_mtmax.push_back(717);
   optim_Cuts1_met.push_back(168); optim_Cuts1_mtmin.push_back(449); optim_Cuts1_mtmax.push_back(752);
+  optim_Cuts1_met.push_back(0);   optim_Cuts1_mtmin.push_back(0); optim_Cuts1_mtmax.push_back(0);
+
   const size_t nOptimCuts=optim_Cuts1_met.size();
   TH1F* Hoptim_cuts1_met     =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_met"    , ";cut index;met"    ,nOptimCuts,0,nOptimCuts) ) ;
   TH1F* Hoptim_cuts1_mtmin   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmin"  , ";cut index;mtmin"  ,nOptimCuts,0,nOptimCuts) ) ;
@@ -332,7 +334,9 @@ int main(int argc, char* argv[])
       bool passR9tight            (!isGammaEvent || r9>0.85); 
       bool passBveto              (nbtags==0);
       bool passMinDphiJmet        (mindphijmet>0.5);
-      
+      bool passSMZZ(njets30==0 && redMets[0].pt()>50 && zvvs[0].pt()/gamma.pt() > 0.4 && zvvs[0].pt()/gamma.pt() < 1.8 && passBveto && passMinDphiJmet);  
+
+    
       //control plots
       std::map<TString, float> qtWeights;
       if(isGammaEvent) qtWeights = gammaEvHandler.getWeights(phys,subcat);
@@ -391,6 +395,15 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("met_redMetL_"+subCatsToFill[isc],ctf, redMetTs[0],iweight);
 	      mon.fillHisto("mt_"+subCatsToFill[isc],ctf,mt,iweight);
 
+	      if(passSMZZ)
+		{
+		  mon.fillHisto("metoverqt_"+subCatsToFill[isc],"ZZ"+ctf, zvvs[0].pt()/gamma.pt(),iweight);
+		  mon.fillHisto("met_met_"+subCatsToFill[isc],"ZZ"+ctf, zvvs[0].pt(),iweight);
+		  mon.fillHisto("met_redMet_"+subCatsToFill[isc],"ZZ"+ctf, redMets[0].pt(),iweight);
+		  mon.fillHisto("met_redMetT_"+subCatsToFill[isc],"ZZ"+ctf, redMetLs[0],iweight);
+		  mon.fillHisto("met_redMetL_"+subCatsToFill[isc],"ZZ"+ctf, redMetTs[0],iweight);
+		}
+
 	      if(subCatsToFill[isc]=="vbf")
 		{
 		  LorentzVector VBFSyst=jetsP4[0]+jetsP4[1];
@@ -399,10 +412,10 @@ int main(int argc, char* argv[])
 		}
 
 	      for(unsigned int index=0;index<nOptimCuts;index++){
-		if(zvvs[0].pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
-		  {
-		    mon.fill2DHisto("mt_shapes_"+subCatsToFill[isc],ctf,index, mt,iweight);
-		  }
+		if(index==nOptimCuts-1 && passSMZZ)
+		  mon.fill2DHisto("mt_shapes_"+subCatsToFill[isc],ctf,index, mt,iweight);
+		else if ( index<nOptimCuts-1 && zvvs[0].pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
+		  mon.fill2DHisto("mt_shapes_"+subCatsToFill[isc],ctf,index, mt,iweight);
 	      }
 	    }
 	}
