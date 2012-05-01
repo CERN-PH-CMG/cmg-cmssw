@@ -3,6 +3,6 @@ import FWCore.ParameterSet.Config as cms
 muEleSVFit = cms.EDProducer(
     "MuEleWithSVFitProducer",
     diTauSrc = cms.InputTag("cmgMuEleCorPreSel"),
-    metsigSrc = cms.InputTag("PFMETSignificanceAK5"),
+    metsigSrc = cms.InputTag("PFMETSignificance"),
     verbose = cms.untracked.bool( False )
     )

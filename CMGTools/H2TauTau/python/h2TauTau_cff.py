@@ -1,6 +1,12 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.H2TauTau.objects.object_cff import *
+
+from CMGTools.H2TauTau.objects.tauMuObjects_cff import *
+from CMGTools.H2TauTau.objects.tauEleObjects_cff import *
+from CMGTools.H2TauTau.objects.muEleObjects_cff import *
+from CMGTools.H2TauTau.objects.diTauObjects_cff import *
+
+#from CMGTools.H2TauTau.objects.object_cff import *
 from CMGTools.H2TauTau.skims.skim_cff import *
 
 #TODO:tau scaling could be general
@@ -9,13 +15,13 @@ from CMGTools.H2TauTau.skims.skim_cff import *
 
 # preselection
 tauMuPreSelPath = cms.Path(
-    objectSequence + 
+    tauMuSequence + 
     tauMuPreSelSkimSequence 
     )
 
 # full selection
 tauMuFullSelPath = cms.Path(
-    objectSequence + 
+    tauMuSequence + 
     tauMuFullSelSkimSequence
     )
 
@@ -24,13 +30,15 @@ tauMuFullSelPath = cms.Path(
 
 # preselection
 tauElePreSelPath = cms.Path(
-    objectSequence + 
+    #objectSequence +
+    tauEleSequence + 
     tauElePreSelSkimSequence 
     )
 
 # full selection
 tauEleFullSelPath = cms.Path(
-    objectSequence + 
+    #objectSequence +
+    tauEleSequence + 
     tauEleFullSelSkimSequence     
     )
 
@@ -39,13 +47,15 @@ tauEleFullSelPath = cms.Path(
 
 # preselection
 muElePreSelPath = cms.Path(
-    objectSequence + 
+    #objectSequence +
+    muEleSequence +
     muElePreSelSkimSequence 
     )
 
 # full selection
 muEleFullSelPath = cms.Path(
-    objectSequence + 
+    #objectSequence +
+    muEleSequence +
     muEleFullSelSkimSequence     
     )
 
@@ -54,13 +64,15 @@ muEleFullSelPath = cms.Path(
 
 # preselection
 diTauPreSelPath = cms.Path(
-    objectSequence + 
+    #objectSequence +
+    diTauSequence +
     diTauPreSelSkimSequence 
     )
 
 # full selection
 diTauFullSelPath = cms.Path(
-    objectSequence + 
+    #objectSequence +
+    diTauSequence +
     diTauFullSelSkimSequence     
     )
 
