@@ -3,17 +3,18 @@
 
 
   "categories" : [ 
-		 [ "abs(jetEta) < 2.5",                        "TK",    "" ],  
-		 [ "abs(jetEta) > 2.5 && abs(jetEta)  < 2.75", "HEin",  "" ],  
-		 [ "abs(jetEta) > 2.75 && abs(jetEta) < 3.0",  "HEout", "betaStar:beta:d0:dZ:nCharged" ],  
+		 [ "abs(jetEta) <= 2.5",                        "TK",    "" ],  
+		 [ "abs(jetEta) > 2.5 && abs(jetEta)  <= 2.75", "HEin",  "" ],  
+		 [ "abs(jetEta) > 2.75 && abs(jetEta) <= 3.0",  "HEout", "betaStar:beta:d0:dZ:nCharged" ],  
 		 [ "abs(jetEta) > 3.0",                        "HF",    "betaStar:beta:d0:dZ:nCharged" ]
                  ],
 
 
-  "sigwei"   : "0.162649 -0.00364556*jetPt +3.26647e-05*jetPt*jetPt + 12.3761*exp(-0.0955385*jetPt)",
+  "## sigwei"   : "0.162649 -0.00364556*jetPt +3.26647e-05*jetPt*jetPt + 12.3761*exp(-0.0955385*jetPt)",
+  "sigwei"   : "( 0.0568403 -0.000875495*jetPt +3.59185e-06*jetPt*jetPt + 2.08751*exp(-0.117242*jetPt) ) * ( 0.0169964 + 0.0376248*nvtx + 0.000303843*nvtx*nvtx )",
   "bkgwei"   : "1.",
   "### sigwei"   : "(jetPt^(2.09563))/2.74326e+06",
   "### bkgwei"   : "1./( 1.71983e+09*((jetPt^-(4.14048))+(0.660527*exp(-(0.00173749*((jetPt+61.8387)*(jetPt+61.8387)))))) )",
-  "sigcut"  : "nvtx>1. && jetPt>= 10. &&  isMatched  && abs(jetGenDr) < 0.3  && ( jetPt/jetGenPt > 0.7 || jetPt > 10 ) && abs(jetFlavour) <=3 && abs(jetFlavour) !=0",
-  "bkgcut"  : "nvtx>1. && jetPt>= 10. && ( !isMatched || ( abs(jetGenDr) > 0.3 && jetPt/jetGenPt < 0.7 ) )"
+  "sigcut"  : "nvtx>1. && jetPt>= 10. &&  isMatched  && abs(jetGenDr) < 0.3  && ( jetGenPt/jetPt > 0.7 || jetGenPt > 10 ) && abs(jetFlavour) <=3 && abs(jetFlavour) !=0",
+  "bkgcut"  : "nvtx>1. && jetPt>= 10. && ( !isMatched || ( abs(jetGenDr) > 0.3 && ( jetGenPt/jetPt < 0.7 && jetGenPt < 10 ) ) )"
 }

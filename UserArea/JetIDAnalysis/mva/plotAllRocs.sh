@@ -14,10 +14,22 @@
 
 ## ../macro/plotROCs.py ~/www/higgs/jetid_optimization_v5 'tkImpact/roc.root:beta:beta,tkImpact/roc.root:betaStar:betaStar,tkImpact/roc.root:Fisher_tkImpact:Fisher beta/betaStar,tkImpact/roc.root:BDT_tkImpact:BDT beta/betaStar' ~/www/higgs/jetid_optimization_v5/roc_tkImpact
 
-### ../macro/plotROCs.py ~/www/higgs/jetid_optimization_v5 'minimalTwoPtCats/roc.root:BDT_minimalTwoPtCats:Minimal BDT,safeTwoPtCats/roc.root:BDT_safeTwoPtCats:Safe BDT,optimalTwoPtCats/roc.root:BDT_optimalTwoPtCats:Minimal BDT+mult.,tkImpact/roc.root:BDT_tkImpact:BDT beta/betaStar,tkImpact/roc.root:dR2Mean:RMS' ~/www/higgs/jetid_optimization_v5/roc_options
+## ../macro/plotROCs.py ~/www/higgs/jetid_optimization_v5 'minimalTwoPtCats/roc.root:BDT_minimalTwoPtCats:simple BDT,optimalNoVtxCatsTwoPtCats/roc.root:BDT_optimalNoVtxCatsTwoPtCats:full MVA,tkImpact/roc.root:dR2Mean:RMS,tkImpact/roc.root:beta:beta' ~/www/higgs/jetid_optimization_v5/roc_xcheck
+
+### ../macro/plotROCs.py ~/www/higgs/jetid_optimization_5x_v1 'full/roc.root:BDT_full:full BDT,simple/roc.root:BDT_simple:simple BDT,simpleNoVtxCat/roc.root:BDT_simpleNoVtxCat:simpleNoVtxCat BDT,full/roc.root:dR2Mean:RMS,full/roc.root:beta:beta' ~/www/higgs/jetid_optimization_5x_v1/roc_options
+
+../macro/plotROCs.py ~/www/higgs/jetid_optimization_5x_v2 'full/roc.root:BDT_full:full BDT,simple/roc.root:BDT_simple:simple BDT,simpleNoVtxCat/roc.root:BDT_simpleNoVtxCat:simpleNoVtxCat BDT,full/roc.root:dR2Mean:RMS,full/roc.root:beta:beta' ~/www/higgs/jetid_optimization_5x_v2/roc_options
 
 ## ../macro/plotROCs.py ~/www/higgs/jetid_optimization_v5 'optimalTwoPtCats/roc.root:BDT_optimalTwoPtCats:Min.+mult. 2x3x4 cat.,optimalPtTwoPtCats/roc.root:BDT_optimalPtTwoPtCats:Min.+mult.+pt 2x3x4 cat.,optimalNoPtCats/roc.root:BDT_optimalNoPtCats:Min.+mult. 1x3x4 cat.,optimalNoVtxCatsTwoPtCats/roc.root:BDT_optimalNoVtxCatsTwoPtCats:Min.+mult.+nvtx 2x1x4 cat.' ~/www/higgs/jetid_optimization_v5/roc_trainings
 
+
+## ../macro/plotROCs.py ~/www/higgs/jetid_5x 'mc_42_1_V00-00-08/roc.root:fullDiscriminant:full BDT,mc_42_1_V00-00-08/roc.root:simpleDiscriminant:simple BDT,mc_42_1_V00-00-08/roc.root:beta:beta,mc_42_1_V00-00-08/roc.root:dR2Mean:RMS,mc_42_1_V00-00-08/roc.root:philv1Discriminant:santa' ~/www/higgs/jetid_optimization_v5/roc_2xV00-00-08 & 
+
+## ../macro/plotROCs.py ~/www/higgs/jetid_5x 'mc_51_1_V00-00-09/roc.root:fullDiscriminant:full BDT,mc_51_1_V00-00-09/roc.root:simpleDiscriminant:simple BDT,mc_51_1_V00-00-09/roc.root:beta:beta,mc_51_1_V00-00-09/roc.root:dR2Mean:RMS' ~/www/higgs/jetid_5x/roc_1_V00-00-09 &
+
+
+
+wait
 
 
 

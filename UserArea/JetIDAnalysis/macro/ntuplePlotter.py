@@ -131,7 +131,7 @@ def main(options,args):
             ## tr.weight = reweight[1](getattr(tr,reweight[0]))
             tr.weight = 1.
             
-            if tr.isMatched and tr.jetGenPt > genPtCut and tr.jetGenDr < genDrCut:
+            if tr.isMatched and tr.jetGenDr < 0.3 and ( tr.jetGenPt > 10 or tr.jetGenPt/tr.jetPt > 0.7 ):
                 reweiMatchedCleanHistosId.fillRootTuple(tr)
                 matchedCleanJetHistos.fillRootTuple(tr)
                 if abs(tr.jetFlavour) == 21:
@@ -139,7 +139,7 @@ def main(options,args):
                 elif abs(tr.jetFlavour) <=3 and abs(tr.jetFlavour) !=0:
                     quarkCleanHistosId.fillRootTuple(tr)
 
-            elif not tr.isMatched or ( tr.jetGenDr > genDrAntiCut and tr.jetGenPt < genPtCut ):
+            elif not tr.isMatched or ( tr.jetGenDr > 0.3 and r.jetGenPt/tr.jetPt < 0.5 ):
                 unmatchedCleanJetHistos.fillRootTuple(tr)
                 unmatchedCleanHistosId.fillRootTuple(tr)
 
@@ -150,9 +150,6 @@ def main(options,args):
         elif isinstance(obj,TH1) or isinstance(obj,TGraph):
             fout.cd()
             obj.Write()
-            
-        ### for h in matchedCleanJetHistos, unmatchedCleanJetHistos, gluCleanHistosId, quarkCleanHistosId, reweiMatchedCleanHistosId, unmatchedCleanHistosId:
-        ###     h.Write(fout)
         
     fout.Close()
     

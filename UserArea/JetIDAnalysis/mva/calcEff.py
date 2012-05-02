@@ -49,8 +49,8 @@ def main(options, args):
         ### chain.Draw("4*(%s & 1) + 2*( (%s & 2) / 2) + (%s & 8)/8:jetPt>>h_sig_%s(25,10,60,%s)" % (var, var, var, name, binning), TCut(cut)*TCut(options.sigcut),"goff")
         ### chain.Draw("4*(%s & 1) + 2*( (%s & 2) / 2) + (%s & 8)/8:jetPt>>h_bkg_%s(25,10,60,%s)" % (var, var, var, name, binning), TCut(cut)*TCut(options.bkgcut), "goff")
 
-        chain.Draw("%s:jetPt>>h_sig_%s(25,10,60,%s)" % (var, name, binning), TCut(cut)*TCut(options.sigcut),"goff")
-        chain.Draw("%s:jetPt>>h_bkg_%s(25,10,60,%s)" % (var, name, binning), TCut(cut)*TCut(options.bkgcut), "goff")
+        chain.Draw("%s:jetPt>>h_sig_%s(20,20,60,%s)" % (var, name, binning), TCut("nvtx>10 && nvtx<20")*TCut(cut)*TCut(options.sigcut),"goff")
+        chain.Draw("%s:jetPt>>h_bkg_%s(20,20,60,%s)" % (var, name, binning), TCut("nvtx>10 && nvtx<20")*TCut(cut)*TCut(options.bkgcut), "goff")
 
         h_sig = gDirectory.Get("h_sig_%s" % name)
         h_bkg =  gDirectory.Get("h_bkg_%s" % name)

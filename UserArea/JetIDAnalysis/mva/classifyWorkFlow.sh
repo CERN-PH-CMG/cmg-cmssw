@@ -17,9 +17,10 @@ mvas=BDT_$label
 
 ## inputDir=/store/cmst3/user/musella/JETID_NTUPLES/27_03_2012/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/
 ## inputDir=/store/cmst3/user/malberti/JETID_NTUPLES/29_03_2012/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/
-inputDir=/store/cmst3/user/musella/JETID_NTUPLES/18_04_2012/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/
-outputDir=/store/cmst3/user/musella/JETID_MVA_v5
-webDir=~/www/higgs/jetid_optimization_v5
+## inputDir=/store/cmst3/user/musella/JETID_NTUPLES/18_04_2012/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/
+inputDir=/store/cmst3/user/musella/JETID_NTUPLES/V00-00-09/DYJetsToLL-51/
+outputDir=/store/cmst3/user/musella/JETID_MVA_5x_v3
+webDir=~/www/higgs/jetid_optimization_5x_v3
 
 classify=$mydir/classify.py
 ntuplePlotter=$mydir/../macro/ntuplePlotter.py

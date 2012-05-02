@@ -31,7 +31,7 @@ def main(infile,outdir,label,variables="",mvas=""):
     if mvas == "":
         mvas = "BDT_%s" % label
     print mvas.split(',')
-    variables_to_plot = [ ("dR2Mean","beta","betaStar","dZ"), ## "dR2Mean",
+    variables_to_plot = [ ("dRMean","dR2Mean","beta","betaStar","nvtx"),
                           (v for v in variables.split(':') if v != "" and v != "dRMean" and v != "dR2Mean" ),
                           ## ("Fisher_%s" % label,"BDT_%s" % label)
                           tuple(v for v in mvas.split(',') if v != ""),

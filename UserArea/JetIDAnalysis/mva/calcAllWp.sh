@@ -10,8 +10,8 @@
 ### python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_v4 -v Fisher_tkImpact.root:100,-1,1 -f tmva_tkImpact.root              -t TestTree  -T common.json,testtree.json -o ~/www/higgs/jetid_wp/tkImpact &
 
 ## python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_v5 -v Fisher_tkImpact:100,-1,1 -f tmva_tkImpact.root              -t TestTree  -T common.json,testtree.json -o ~/www/higgs/jetid_optimization_v5/wp_Fisher_tkImpact -b &
-python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_v5 -v BDT_tkImpact:100,-1,1 -f tmva_tkImpact.root              -t TestTree  -T common.json,testtree.json -o ~/www/higgs/jetid_optimization_v5/wp_BDT_tkImpact -b &
-python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_v5 -v beta:200,0,1 -f tmva_tkImpact.root              -t TestTree  -T tmva_TK.json,testtree.json -o ~/www/higgs/jetid_optimization_v5/wp_beta_tkImpact -b &
+#### python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_v5 -v BDT_tkImpact:100,-1,1 -f tmva_tkImpact.root              -t TestTree  -T common.json,testtree.json -o ~/www/higgs/jetid_optimization_v5/wp_BDT_tkImpact -b &
+#### python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_v5 -v beta:200,0,1 -f tmva_tkImpact.root              -t TestTree  -T tmva_TK.json,testtree.json -o ~/www/higgs/jetid_optimization_v5/wp_beta_tkImpact -b &
 
 ### python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_v5 -v BDT_optimalTwoPtCats:100,-1,1 -f tmva_optimalTwoPtCats.root              -t TestTree  -T common.json,testtree.json -o ~/www/higgs/jetid_optimization_v5/wp_BDT_optimalTwoPtCats -b &
 ### python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_v5 -v BDT_optimalPtTwoPtCats:100,-1,1 -f tmva_optimalPtTwoPtCats.root              -t TestTree  -T common.json,testtree.json -o ~/www/higgs/jetid_optimization_v5/wp_BDT_optimalPtTwoPtCats -b &
@@ -21,6 +21,26 @@ python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_v5 -v beta:200,0,1 -f 
 ### python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_v5 -v BDT_minimalTwoPtCats:100,-1,1 -f tmva_minimalTwoPtCats.root              -t TestTree  -T common.json,testtree.json -o ~/www/higgs/jetid_optimization_v5/wp_BDT_minimalTwoPtCats -b &
 ### python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_v5 -v BDT_minimalPtTwoPtCats:100,-1,1 -f tmva_minimalPtTwoPtCats.root              -t TestTree  -T common.json,testtree.json -o ~/www/higgs/jetid_optimization_v5/wp_BDT_minimalPtTwoPtCats -b &
 ### python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_v5 -v BDT_minimalNoPtCats:100,-1,1 -f tmva_minimalNoPtCats.root              -t TestTree  -T common.json,testtree.json -o ~/www/higgs/jetid_optimization_v5/wp_BDT_minimalNoPtCats -b &
+
+
+#### python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_5x_v2 -v BDT_full:100,-1,1 -f tmva_full.root              -t TestTree  -T common.json,testtree.json -o ~/www/higgs/jetid_optimization_5x_v2/wp_BDT_full -b &
+#### 
+#### python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_5x_v2 -v BDT_simpleNoVtxCat:100,-1,1 -f tmva_simpleNoVtxCat.root              -t TestTree  -T common.json,testtree.json -o ~/www/higgs/jetid_optimization_5x_v2/wp_BDT_simpleNoVtxCat -b &
+#### 
+#### python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_5x_v2 -v BDT_simple:100,-1,1 -f tmva_simple.root              -t TestTree  -T common.json,testtree.json -o ~/www/higgs/jetid_optimization_5x_v2/wp_BDT_simple -b &
+#### 
+
+### python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_5x_v2 -v BDT_full:100,-1,1 -f tmva_full.root              -t TestTree  -T common.json,testtree.json -o ~/www/higgs/jetid_optimization_5x_v2/wp_BDT_full_int -a -b &
+### 
+### python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_5x_v2 -v BDT_simpleNoVtxCat:100,-1,1 -f tmva_simpleNoVtxCat.root              -t TestTree  -T common.json,testtree.json -o ~/www/higgs/jetid_optimization_5x_v2/wp_BDT_simpleNoVtxCat_int -a -b &
+### 
+### python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_5x_v2 -v BDT_simple:100,-1,1 -f tmva_simple.root              -t TestTree  -T common.json,testtree.json -o ~/www/higgs/jetid_optimization_5x_v2/wp_BDT_simple_int -a -b &
+### 
+python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_5x_v2 -v BDT_full:100,-1,1 -f tmva_full.root              -t TestTree  -T common.json,testtree.json -o ~/www/higgs/jetid_optimization_5x_v2/wp_BDT_full_nvtx -V -a -b &
+
+python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_5x_v2 -v BDT_simpleNoVtxCat:100,-1,1 -f tmva_simpleNoVtxCat.root              -t TestTree  -T common.json,testtree.json -o ~/www/higgs/jetid_optimization_5x_v2/wp_BDT_simpleNoVtxCat_nvtx -V -a -b &
+
+python calcWp.py  -i  /store/cmst3/user/musella/JETID_MVA_5x_v2 -v BDT_simple:100,-1,1 -f tmva_simple.root              -t TestTree  -T common.json,testtree.json -o ~/www/higgs/jetid_optimization_5x_v2/wp_BDT_simple_nvtx -V -a -b &
 
 wait
 

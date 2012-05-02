@@ -38,7 +38,8 @@ def plot_kin(infile,hth):
     ## histograms and plots
     variables = ["pt","eta","deltaJetMatch"]
 
-    histos_to_read = [ ( "%s_h_%s" % ("%(id)s",var), [ normalize, (xtitle,var) ], var ) for var in variables ]
+    ## normalize, 
+    histos_to_read = [ ( "%s_h_%s" % ("%(id)s",var), [ (xtitle,var) ], var ) for var in variables ]
     plots = [ ( [var], "histo", "pe", canvstyle,  (0.5,0.6,0.8,0.9),   0.5, "kin_%s" % var ) for var in variables ]
 
     ## read the histograms
@@ -54,6 +55,14 @@ def plot_kin(infile,hth):
         helper.reweight.Divide(pupt,nopupt)
         helper.reweight_f = ROOT.TF1("f","pol2(0)+expo(3)",20,100.)
         helper.reweight.Fit(helper.reweight_f,"R+")
+
+        punvtx = helper.histos["PU"]["nvtx"]
+        nopunvtx = helper.histos["NoPU"]["nvtx"]
+        
+        helper.reweightvtx = punvtx.Clone("reweight")
+        helper.reweightvtx.Divide(punvtx,nopunvtx)
+        helper.reweightvtx_f = ROOT.TF1("f","pol2(0)+expo(3)",20,100.)
+        helper.reweightvtx.Fit(helper.reweightvtx_f,"R+")
     except:
         pass
 
@@ -65,6 +74,11 @@ def plot_kin(infile,hth):
     canv.cd()
     helper.reweight.Draw()    
     tab.row().cell( HtmlPlot(canv,False,"",True,True,True) )
+
+    canvvtx = ROOT.TCanvas("reweightvtx","reweightvtx",800,600)
+    canvvtx.cd()
+    helper.reweightvtx.Draw()    
+    tab.row().cell( HtmlPlot(canvvtx,False,"",True,True,True) )
 
     return helper
 
@@ -105,9 +119,10 @@ def plot_jet_id(infile,hth,
             "file":infile, "dir":"UnmatchedCleanHistosId", "id":"UnmatchedCleanHistosId",
             "cat": vtx,  "label":"PU %s < N_{vtx} < %s" % tuple(vtx.replace("_vtx","").split("_")), "nostack" : 1 } for vtx in vtxlabels ] + [ { 
             "file":infile, "dir":"QuarkMatchedCleanHistosId",   "id":"QuarkMatchedCleanHistosId",
-            "cat": vtx,  "label":"u,d,s %s < N_{vtx} < %s"   % tuple(vtx.replace("_vtx","").split("_")), "nostack" : 1 } for vtx in vtxlabels ] + [ { 
-            "file":infile, "dir":"GluonMatchedCleanHistosId",   "id":"GluonMatchedCleanHistosId",
-            "cat": vtx,  "label":"glu %s < N_{vtx} < %s"   % tuple(vtx.replace("_vtx","").split("_")), "nostack" : 1 } for vtx in vtxlabels ]    
+            "cat": vtx,  "label":"u,d,s %s < N_{vtx} < %s"   % tuple(vtx.replace("_vtx","").split("_")), "nostack" : 1 } for vtx in vtxlabels ]
+        ### + [ { 
+        ###     "file":infile, "dir":"GluonMatchedCleanHistosId",   "id":"GluonMatchedCleanHistosId",
+        ###     "cat": vtx,  "label":"glu %s < N_{vtx} < %s"   % tuple(vtx.replace("_vtx","").split("_")), "nostack" : 1 } for vtx in vtxlabels ]    
     if len(ptbins) == 0:
         ## ptbins = (20,30,50)
         ptbins = (10,20,25,30,40,50)
@@ -293,7 +308,7 @@ def main(infile,outdir,mvas=""):
 
     ih,rh = plot_jet_id(infile,hth,variables_to_plot=[
         ("jetPt","jetEta","nvtx"),
-        ("dR2Mean","beta","betaStar","dZ"), ## "dR2Mean",
+        ("dR2Mean","dRMean","beta","betaStar","dZ"), ## "dR2Mean",
         tuple(v for v in mvas.split(',') if v != ""),
         ]
         )     
