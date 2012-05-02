@@ -708,12 +708,8 @@ int main(int argc, char* argv[])
         weight = LumiWeights.weight( ev.ngenITpu );
         TotalWeight_plus = PShiftUp.ShiftWeight( ev.ngenITpu );
         TotalWeight_minus = PShiftDown.ShiftWeight( ev.ngenITpu );
-<<<<<<< runOnEventSummary_ZZ.cc
         if(isMC_VBF){ vbfweight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=vbfweight; 
         }
-=======
-        if(isMC_VBF){ vbfweight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=vbfweight;  }
->>>>>>> 1.4
         if(isMC_GG)  {
 	  for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
 	  weight *= ev.hptWeights[0];
@@ -724,11 +720,7 @@ int main(int argc, char* argv[])
       Hcutflow->Fill(2,weight);
       Hcutflow->Fill(3,weight*TotalWeight_minus);
       Hcutflow->Fill(4,weight*TotalWeight_plus);
-<<<<<<< runOnEventSummary_ZZ.cc
       Hcutflow->Fill(5,vbfweight);
-=======
-      Hcutflow->Fill(5,vbfweight);      
->>>>>>> 1.4
 
       //##############################################
       //########       GLOBAL VARIABLES       ########
@@ -877,16 +869,9 @@ int main(int argc, char* argv[])
       std::vector<double> genJetsPt;
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++)      genJetsPt.push_back( phys.jets[ijet].genPt );
       LorentzVectorCollection zvvs;
-<<<<<<< runOnEventSummary_ZZ.cc
       //std::vector<LorentzVectorCollection> Jets;
       std::vector<PhysicsObjectJetCollection> Jets;
-=======
-      std::vector<PhysicsObjectJetCollection> Jets;
-      if(/*runSystematics*/ true) METUtils::computeVariation(phys.jets, redMetP4, Jets, zvvs,&jecUnc);
 
->>>>>>> 1.4
-
-<<<<<<< runOnEventSummary_ZZ.cc
       //Prepare Variation JER/JES   
       if(/*runSystematics*/ true) METUtils::computeVariation(phys.jets, zvv, Jets, zvvs, &jecUnc);
       LorentzVector MetSmeared        = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsP4, zvvs[0], isGammaEvent, &redMetInfo);
@@ -894,17 +879,7 @@ int main(int argc, char* argv[])
       LorentzVector MetSmeared_jerm   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsP4, zvvs[2], isGammaEvent, &redMetInfo);
       LorentzVector MetSmeared_jesp   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsP4, zvvs[3], isGammaEvent, &redMetInfo);
       LorentzVector MetSmeared_jesm   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsP4, zvvs[4], isGammaEvent, &redMetInfo);
-=======
-      zvvs.insert(zvvs.begin(),redMetP4);
-      Jets.insert(Jets.begin(),phys.jets);
-      //std::vector<Float_t>  mts;
-      //for(size_t ivar=0; ivar<(runSystematics?3:1); ivar++){
-      //    Float_t imt     = METUtils::transverseMass(zll,zvvs[ivar],true);
-      //    mts.push_back(imt);
-      //}
->>>>>>> 1.4
       if( tag_cat=="ee" || tag_cat=="mumu" ){
-<<<<<<< runOnEventSummary_ZZ.cc
         mon.fillHisto("Sys_NewMet_Jer",  tags_cat, isMC ? MetSmeared.pt()      : redMetP4.pt(), iweight);
         mon.fillHisto("Sys_NewMet_Jerp", tags_cat, isMC ? MetSmeared_jerp.pt() : redMetP4.pt(), iweight);
         mon.fillHisto("Sys_NewMet_Jerm", tags_cat, isMC ? MetSmeared_jerm.pt() : redMetP4.pt(), iweight);
@@ -919,32 +894,6 @@ int main(int argc, char* argv[])
       LorentzVector D0MetSmeared_jesm   = METUtils::redMET(METUtils::D0, lep1, 0, lep2, 0, jetsP4, zvvs[4], isGammaEvent, &redMetInfo);
 
       //JER My Way
-=======
-        if( zpt>55 ) mon.fillHisto("Sys_NewMet_Jer",  tags_cat, zvvs[1].pt(), iweight);
-        mon.fillHisto("Sys_NewMet_Jerp", tags_cat, zvvs[2].pt(), iweight);
-        mon.fillHisto("Sys_NewMet_Jerm", tags_cat, zvvs[3].pt(), iweight);
-        mon.fillHisto("Sys_NewMet_Jesp", tags_cat, zvvs[4].pt(), iweight);
-        mon.fillHisto("Sys_NewMet_Jesm", tags_cat, zvvs[5].pt(), iweight);
-      }
-      //Same for PFMEt
-      LorentzVectorCollection MetPF;
-      std::vector<PhysicsObjectJetCollection> Jets1;
-      if(/*runSystematics*/ true) METUtils::computeVariation(phys.jets, phys.met[0], Jets1, MetPF,&jecUnc);
-      MetPF.insert(MetPF.begin(),phys.met[0]);
-      Jets1.insert(Jets1.begin(),phys.jets);
-      //Same for METD0
-      LorentzVectorCollection MetD0;
-      std::vector<PhysicsObjectJetCollection> Jets2;
-      if(/*runSystematics*/ true) METUtils::computeVariation(phys.jets, redMetD0P4, Jets2, MetD0,&jecUnc);
-      MetD0.insert(MetD0.begin(),redMetD0P4);
-      Jets2.insert(Jets2.begin(),phys.jets);
-
-      //JER with association
-      //vector<double> GenJet;
-      //for(int ijet=0; ijet<ev.jn; ijet++){
-      //    GenJet.push_back(ev.jn_genpt[ijet]);
-      //}
->>>>>>> 1.4
       LorentzVector newMetJer;
       std::vector<LorentzVector> jetsJer;
       if(/*runSystematics*/ true) newMetJer = METUtils::SmearJetFormGen(jetsP4, zvv, genJetsPt, jetsJer);
