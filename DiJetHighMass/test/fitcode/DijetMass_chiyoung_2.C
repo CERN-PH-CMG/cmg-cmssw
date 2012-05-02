@@ -453,7 +453,9 @@ void DijetMass_chiyoung_2(){
 
   TGraphAsymmErrors *gRatio_4par = new TGraphAsymmErrors(*gDefault);
   TGraphAsymmErrors *gRatio_3par = new TGraphAsymmErrors(*gDefault);
-  
+  TGraphAsymmErrors *gRatio_lowMass = new TGraphAsymmErrors(*gDefault);
+
+
   for (int iWindow = 0; iWindow < 30; iWindow++){
 
     TGraphAsymmErrors *gWindow = new TGraphAsymmErrors(*gDefault);
@@ -501,6 +503,7 @@ void DijetMass_chiyoung_2(){
 
 	float XsecWindow_4par = f_4par->Eval(fMass,0,0);
 	float XsecWindow_3par = f_3par->Eval(fMass,0,0);
+	float XsecWindow_lowMass = fit_lowMass->Eval(fMass,0,0);
 
 	if (Xsec > 1e-10 || (fMass < 4500 && fMass > 890)) gRatio_4par->SetPoint(i, fMass, XsecWindow_4par/XsecDefault); 
 	if (Xsec > 1e-10 || (fMass < 4500 && fMass > 890)) gRatio_4par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
@@ -508,11 +511,18 @@ void DijetMass_chiyoung_2(){
 	if (Xsec > 1e-10 || (fMass < 4500 && fMass > 890)) gRatio_3par->SetPoint(i, fMass, XsecWindow_3par/XsecDefault); 
 	if (Xsec > 1e-10 || (fMass < 4500 && fMass > 890)) gRatio_3par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
 
+	if (Xsec > 1e-10 || (fMass < 4500 && fMass > 890)) gRatio_lowMass->SetPoint(i, fMass, XsecWindow_lowMass/XsecDefault); 
+	if (Xsec > 1e-10 || (fMass < 4500 && fMass > 890)) gRatio_lowMass->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+
+
 	if (Xsec < 1e-10 && (fMass > 4500 || fMass < 890)) gRatio_4par->SetPoint(i, fMass, 1.0); 
 	if (Xsec < 1e-10 && (fMass > 4500 || fMass < 890)) gRatio_4par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
 
 	if (Xsec < 1e-10 && (fMass > 4500 || fMass < 890)) gRatio_3par->SetPoint(i, fMass, 1.0); 
 	if (Xsec < 1e-10 && (fMass > 4500 || fMass < 890)) gRatio_3par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+
+	if (Xsec < 1e-10 && (fMass > 4500 || fMass < 890)) gRatio_lowMass->SetPoint(i, fMass, 1.0); 
+	if (Xsec < 1e-10 && (fMass > 4500 || fMass < 890)) gRatio_lowMass->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
 
       }
 
@@ -1319,7 +1329,7 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
   ((TGraphAsymmErrors*) aRatio->At(0))->SetLineColor(1);
   ((TGraphAsymmErrors*) aRatio->At(0))->SetFillColor(1);
   ((TGraphAsymmErrors*) aRatio->At(0))->GetXaxis()->SetTitle("Dijet Mass (GeV)");
-  ((TGraphAsymmErrors*) aRatio->At(0))->GetYaxis()->SetTitle("d#sigma/dm (pb/GeV)");
+  ((TGraphAsymmErrors*) aRatio->At(0))->GetYaxis()->SetTitle("Fit/Default fit");
   ((TGraphAsymmErrors*) aRatio->At(0))->GetXaxis()->SetRangeUser(700,4300.0);
   ((TGraphAsymmErrors*) aRatio->At(0))->GetYaxis()->SetRangeUser(0.0,2.0);
   ((TGraphAsymmErrors*) aRatio->At(0))->Draw("AL");
@@ -1340,10 +1350,30 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
   gRatio_3par->SetLineStyle(1);
   gRatio_3par->SetLineColor(kBlue);
   
+  gRatio_lowMass->SetLineWidth(2);
+  gRatio_lowMass->SetLineStyle(1);
+  gRatio_lowMass->SetLineColor(kMagenta);
+
   gRatio_4par->Draw("SAME");
   gRatio_3par->Draw("SAME"); 
+  gRatio_lowMass->Draw("SAME"); 
+
 
   hratio->Draw("SAMEP");
+
+  TLegend *legw = new TLegend(0.18,0.78,0.38,0.92);
+  legw->SetTextSize(0.03146853);
+  legw->SetLineColor(1);
+  legw->SetLineStyle(1);
+  legw->SetLineWidth(1);
+  legw->SetFillColor(0);
+  legw->AddEntry(hratio,Form("CMS  (%.3f fb^{-1})", lumi/1000.),"PL");
+  legw->AddEntry(((TGraphAsymmErrors*) aRatio->At(0)),"30 fits with window/Default Fit (4 par.)","L");
+  legw->AddEntry(gRatio_lowMass,"Default Fit up to 1.9 TeV/Default Fit (4 par.)","L");
+  legw->AddEntry(gRatio_4par,"Alternate Fit A (4 Par.)/Default Fit (4 par.)","L");
+  legw->AddEntry(gRatio_3par,"Alternate Fit B (3 Par.)/Default Fit (4 par.)","L");
+  legw->Draw("same");
+
 
 
   c02->SaveAs("Plots/DijetMassCrossSectionWithWindowFitRatio.png");
