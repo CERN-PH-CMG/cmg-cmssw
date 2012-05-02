@@ -281,11 +281,8 @@ int main(int argc, char* argv[])
 	  rawClusteredMet -= ijetP4;
 	  double idphijmet=fabs(deltaPhi(metP4.phi(),ijetP4.phi()));
 	  mindphijmet=min(idphijmet,mindphijmet);
-	  if(ijetP4.pt()>30)
-	    {
-	      if(fabs(ijetP4.eta())<2.5) nbtags += (phys.jets[ijet].btag1>2.0);
-	      njets30++;
-	    }
+	  if(ijetP4.pt()>20 && fabs(ijetP4.eta())<2.5) nbtags += (phys.jets[ijet].btag2>0.244);
+	  if(ijetP4.pt()>30)  njets30++;
 	}
       TString subcat("eq"); subcat+=njets30; subcat+= "jets";
       if(njets30>=3) subcat="geq3jets";
@@ -328,13 +325,13 @@ int main(int argc, char* argv[])
       
       //select event
       bool passMultiplicityVetoes (isGammaEvent ? (phys.leptons.size()==0 && ev.ln==0 && phys.gammas.size()==1) : (ev.ln==0) );
-      bool passKinematics         (gamma.pt()>55);
+      bool passKinematics         (gamma.pt()>30);//55);
       bool passEB                 (!isGammaEvent || fabs(gamma.eta())<1.4442);
       bool passR9                 (!isGammaEvent || r9<1.0);
       bool passR9tight            (!isGammaEvent || r9>0.85); 
       bool passBveto              (nbtags==0);
       bool passMinDphiJmet        (mindphijmet>0.5);
-      bool passSMZZ(njets30==0 && redMets[0].pt()>50 && zvvs[0].pt()/gamma.pt() > 0.4 && zvvs[0].pt()/gamma.pt() < 1.8 && passBveto && passMinDphiJmet);  
+      bool passSMZZ(njets30==0 /*&& redMets[0].pt()>50*/ && zvvs[0].pt()/gamma.pt() > 0.4 && zvvs[0].pt()/gamma.pt() < 1.8 && passBveto && passMinDphiJmet);  
 
     
       //control plots
