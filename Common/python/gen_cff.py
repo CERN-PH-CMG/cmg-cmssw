@@ -16,7 +16,7 @@ genSequence = cms.Sequence(
     totalKinematicsFilterCMG     
     #+genParticlesStatus3
     + genParticlesPruned
-    #+genLeptonsSequence
+    # + genLeptonsSequence
     + genJetsSequence
     + listParticles
     + vertexWeightSequence

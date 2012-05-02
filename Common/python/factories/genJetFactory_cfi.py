@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 genJetFactory = cms.PSet(
-       inputCollection = cms.InputTag("selectedPatJetsAK5","genJets")
+       inputCollection = cms.InputTag("ak5GenJetsNoNu")
        )
 from CMGTools.Common.selections.kinematics_cfi import kinematics
 genJet = cms.EDFilter(

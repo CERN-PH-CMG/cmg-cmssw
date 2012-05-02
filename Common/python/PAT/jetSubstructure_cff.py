@@ -23,8 +23,9 @@ from PhysicsTools.PatAlgos.recoLayer0.jetCorrFactors_cfi import *
 patJetCorrFactorsCHSpruned = patJetCorrFactors.clone()
 patJetCorrFactorsCHSpruned.src = jetSource
 # will need to add L2L3 corrections in the cfg
-patJetCorrFactorsCHSpruned.levels = ['L1Offset', 'L2Relative', 'L3Absolute']
+patJetCorrFactorsCHSpruned.levels = ['L1FastJet', 'L2Relative', 'L3Absolute']
 patJetCorrFactorsCHSpruned.payload = 'AK5PF'
+patJetCorrFactorsCHSpruned.useRho = True
 
 # parton and gen jet matching
 

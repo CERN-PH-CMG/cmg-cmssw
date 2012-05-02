@@ -7,6 +7,8 @@ from PhysicsTools.PatAlgos.patSequences_cff import *
 from CMGTools.Common.PAT.patLeptModifiedIsoDeposit_cff import *
 from CMGTools.Common.analysis_cff import *
 
+# FIXME GENJETS RESTORE EMBEDDING!!
+
 # FIXME reinstall PU jet ID stuff
 # FIXME make sure embedded collections are kept in pat-tuple (CHS PF collection!)
 # FIXME are pat conversions used in the other cfg? where? do I need to add them?
@@ -19,6 +21,23 @@ from CMGTools.Common.analysis_cff import *
 # FIXME make sure the old cfg runs
 
 
+# GEN              ---------------------------
+
+# we want GenJets without neutrinos!
+# will be added to the gen sequence later (see bottom of the file)
+PATCMGGenJetSequence = cms.Sequence(
+    genParticlesForJetsNoNu +
+    ak5GenJetsNoNu 
+)
+
+# importing CMG gen sequence
+from CMGTools.Common.gen_cff import *
+
+PATCMGGenSequence = cms.Sequence(
+    PATCMGGenJetSequence + 
+    genSequence
+    )
+    
 
 # TRIGGER          ---------------------------
 
@@ -35,6 +54,11 @@ PATCMGPileUpSubtractionSequence = cms.Sequence(
     pfParticleSelectionSequence 
     )
 
+
+# EVENT CLEANING   ----------------------------
+
+from CMGTools.Common.eventCleaning.eventCleaning_cff import *
+trackingFailureFilter.JetSource = 'ak5PFJets'
 
 # RHO's            ----------------------------
 
@@ -86,8 +110,8 @@ patMuons.isoDeposits = cms.PSet(
     pfNeutralHadrons = cms.InputTag("muPFIsoDepositNeutral" ),
     pfPhotons = cms.InputTag("muPFIsoDepositGamma" ),
     tracker = cms.InputTag("muons","muIsoDepositTk"),
-    ecal    = cms.InputTag("muons","ecal"),
-    hcal    = cms.InputTag("muons","hcal"),
+    # ecal    = cms.InputTag("muons","ecal"),
+    # hcal    = cms.InputTag("muons","hcal"),
     )
 
 patMuons.isolationValues = cms.PSet(
@@ -132,7 +156,6 @@ patElectrons.isoDeposits = cms.PSet(
     pfNeutralHadrons = cms.InputTag("elPFIsoDepositNeutral" ),
     pfPhotons = cms.InputTag("elPFIsoDepositGamma" ),
     tracker = cms.InputTag("eleIsoDepositTk")
-    # FIXME no ecal and hcal?
     )
 
 electronUserIsolation  = cms.PSet(
@@ -150,6 +173,8 @@ patElectrons.isolationValues = cms.PSet(
     #FIXME I don't manage to use the PSet syntax... -> not adding the guy
     # user = electronUserIsolation.user
     )
+
+patElectrons.userIsolation.user = electronUserIsolation.user
 
 #NOTE the following should not be used for now, but we keep them just in case.
 patElectrons.isolationValuesNoPFId = cms.PSet(
@@ -197,8 +222,9 @@ jetSource = 'ak5PFJetsSel'
 from PhysicsTools.PatAlgos.recoLayer0.jetCorrFactors_cfi import *
 patJetCorrFactors.src = jetSource
 # will need to add L2L3 corrections in the cfg
-patJetCorrFactors.levels = ['L1Offset', 'L2Relative', 'L3Absolute']
+patJetCorrFactors.levels = ['L1FastJet', 'L2Relative', 'L3Absolute']
 patJetCorrFactors.payload = 'AK5PF'
+patJetCorrFactors.useRho = True
 
 patJets.jetSource = jetSource
 patJets.addJetCharge = False
@@ -234,12 +260,6 @@ cmgPFBaseJet.cfg.inputCollection = 'selectedPatJets'
 # Pile-up jet ID
 from  CMGTools.External.pujetidsequence_cff import puJetId
 cmgPUJetMva.jets = 'selectedPatJets'
-
-# we want GenJets without neutrinos!
-PATCMGGenJetSequence = cms.Sequence(
-    genParticlesForJetsNoNu +
-    ak5GenJetsNoNu 
-    )
 
 jetMCSequence = cms.Sequence(
     patJetPartonMatch +
@@ -338,7 +358,7 @@ ak5PFJetsCHS.doRhoFastjet = False
 
 # JETS CHS PRUNED ----------------------------
 
-from CMGTools.Common.PAT.addJetSubstructure_cff import *
+from CMGTools.Common.PAT.jetSubstructure_cff import *
 
 # MET      ----------------------------
 
@@ -359,23 +379,32 @@ patMETsRaw.metSource = 'pfMet'
 cmgPFMETRaw = cmgPFMET.clone()
 cmgPFMETRaw.cfg.inputCollection = 'patMETsRaw'
 
-#Jose: adding PFMET significance
-from CMGTools.Common.miscProducers.metSignificance_cfi import metSignificance
-PFMETSignificance = metSignificance.clone()
-PFMETSignificance.inputPATElectrons = cms.InputTag('')   
-PFMETSignificance.inputPATMuons = cms.InputTag('')
-PFMETSignificance.inputPFJets = cms.InputTag('') #Jose: previously used pfJets here and pfNoJet below but now pfNoJet is no loger available 
-PFMETSignificance.inputPFCandidates = cms.InputTag('particleFlow')
-
-
-
 PATCMGMetSequence = cms.Sequence(
     producePFMETCorrections + 
-    patMETs *
+    patMETs + 
     cmgPFMET +
-    patMETsRaw *
-    PFMETSignificance +
-    cmgPFMETRaw
+    patMETsRaw +
+    cmgPFMETRaw 
+    )
+
+# MET  SIGNIFICANCE    ----------------------------
+
+from CMGTools.Common.miscProducers.metSignificance_cfi import metSignificance
+pfMetSignificance = metSignificance.clone()
+pfMetSignificance.inputPATElectrons = cms.InputTag('')   
+pfMetSignificance.inputPATMuons = cms.InputTag('')
+# pfMetSignificance.inputPFJets = cms.InputTag('') #Jose: previously used pfJets here and pfNoJet below but now pfNoJet is no loger available 
+# pfMetSignificance.inputPFCandidates = cms.InputTag('particleFlow')
+pfMetSignificance.inputPFJets = cms.InputTag('ak5PFJets') #Jose: previously used pfJets here and pfNoJet below but now pfNoJet is no loger available 
+
+from CommonTools.ParticleFlow.TopProjectors.pfNoJet_cfi import *
+pfNoJet.topCollection = 'ak5PFJets'
+pfNoJet.bottomCollection = 'particleFlow'
+pfMetSignificance.inputPFCandidates = cms.InputTag('pfNoJet')
+
+PATCMGMetSignificanceSequence = cms.Sequence(
+    pfNoJet + 
+    pfMetSignificance
     )
 
 
@@ -391,15 +420,17 @@ postPathCounter = cms.EDProducer("EventCountProducer")
 # contrary to PAT layer-wise sequences
 
 PATCMGSequence = cms.Sequence(
-    patTriggerDefaultSequence + 
+    PATCMGGenSequence +
+    patTriggerDefaultSequence +
+    eventCleaningSequence + 
     PATCMGPileUpSubtractionSequence +
     PATCMGRhoSequence +
     PATCMGMuonSequence +
     PATCMGElectronSequence +
-    PATCMGGenJetSequence +
     PATCMGJetSequence +
     PATCMGTauSequence +
-    PATCMGMetSequence 
+    PATCMGMetSequence +
+    PATCMGMetSignificanceSequence
     )
 
 
