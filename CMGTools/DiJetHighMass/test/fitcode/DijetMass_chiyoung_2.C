@@ -490,11 +490,11 @@ void DijetMass_chiyoung_2(){
       float XsecWindow = fit_window->Eval(fMass,0,0);
       float XsecDefault = fit->Eval(fMass,0,0);
       
-      if (Xsec > 1e-10) gRatio->SetPoint(i, fMass, XsecWindow/XsecDefault); 
-      if (Xsec > 1e-10) gRatio->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+      if (Xsec > 1e-10 || (fMass < 4500 && fMass > 890)) gRatio->SetPoint(i, fMass, XsecWindow/XsecDefault); 
+      if (Xsec > 1e-10 || (fMass < 4500 && fMass > 890)) gRatio->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
 
-      if (Xsec < 1e-10) gRatio->SetPoint(i, fMass, 1.0); 
-      if (Xsec < 1e-10) gRatio->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+      if (Xsec < 1e-10 && (fMass > 4500 || fMass < 890)) gRatio->SetPoint(i, fMass, 1.0); 
+      if (Xsec < 1e-10 && (fMass > 4500 || fMass < 890)) gRatio->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
 
 
     if (iWindow == 0){
@@ -502,17 +502,17 @@ void DijetMass_chiyoung_2(){
 	float XsecWindow_4par = f_4par->Eval(fMass,0,0);
 	float XsecWindow_3par = f_3par->Eval(fMass,0,0);
 
-	if (Xsec > 1e-10) gRatio_4par->SetPoint(i, fMass, XsecWindow_4par/XsecDefault); 
-	if (Xsec > 1e-10) gRatio_4par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+	if (Xsec > 1e-10 || (fMass < 4500 && fMass > 890)) gRatio_4par->SetPoint(i, fMass, XsecWindow_4par/XsecDefault); 
+	if (Xsec > 1e-10 || (fMass < 4500 && fMass > 890)) gRatio_4par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
 
-	if (Xsec > 1e-10) gRatio_3par->SetPoint(i, fMass, XsecWindow_3par/XsecDefault); 
-	if (Xsec > 1e-10) gRatio_3par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+	if (Xsec > 1e-10 || (fMass < 4500 && fMass > 890)) gRatio_3par->SetPoint(i, fMass, XsecWindow_3par/XsecDefault); 
+	if (Xsec > 1e-10 || (fMass < 4500 && fMass > 890)) gRatio_3par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
 
-	if (Xsec < 1e-10) gRatio_4par->SetPoint(i, fMass, 1.0); 
-	if (Xsec < 1e-10) gRatio_4par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+	if (Xsec < 1e-10 && (fMass > 4500 || fMass < 890)) gRatio_4par->SetPoint(i, fMass, 1.0); 
+	if (Xsec < 1e-10 && (fMass > 4500 || fMass < 890)) gRatio_4par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
 
-	if (Xsec < 1e-10) gRatio_3par->SetPoint(i, fMass, 1.0); 
-	if (Xsec < 1e-10) gRatio_3par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+	if (Xsec < 1e-10 && (fMass > 4500 || fMass < 890)) gRatio_3par->SetPoint(i, fMass, 1.0); 
+	if (Xsec < 1e-10 && (fMass > 4500 || fMass < 890)) gRatio_3par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
 
       }
 
