@@ -17,16 +17,18 @@ const float large_val = std::numeric_limits<float>::max();
 PileupJetIdAlgo::PileupJetIdAlgo(const edm::ParameterSet & ps) 
 {
 	impactParTkThreshod_ = 1.;/// ps.getParameter<double>("impactParTkThreshod");
-	tmvaWeights_         = edm::FileInPath(ps.getParameter<std::string>("tmvaWeights")).fullPath();
-	tmvaMethod_          = ps.getParameter<std::string>("tmvaMethod");
-	tmvaVariables_       = ps.getParameter<std::vector<std::string> >("tmvaVariables");
-	tmvaSpectators_      = ps.getParameter<std::vector<std::string> >("tmvaSpectators");
-	version_             = ps.getParameter<int>("version");
- 
-	reader_              = 0;
 	cutBased_ = false;
 	std::string label    = ps.getParameter<std::string>("label");
 	if(label == "cut") cutBased_ = true;
+	if(!cutBased_) 
+	  {
+	    tmvaWeights_         = edm::FileInPath(ps.getParameter<std::string>("tmvaWeights")).fullPath(); 
+	    tmvaMethod_          = ps.getParameter<std::string>("tmvaMethod");
+	    tmvaVariables_       = ps.getParameter<std::vector<std::string> >("tmvaVariables");
+	    tmvaSpectators_      = ps.getParameter<std::vector<std::string> >("tmvaSpectators");
+	    version_             = ps.getParameter<int>("version");
+	  }
+	reader_              = 0;
 	edm::ParameterSet jetConfig = ps.getParameter<edm::ParameterSet>("JetIdParams");
 	for(int i0 = 0; i0 < 3; i0++) { 
 	  std::string lCutType                            = "Tight";
