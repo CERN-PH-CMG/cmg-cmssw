@@ -207,6 +207,7 @@ V5.extend(
     #just for embedded samples
     'keep *_tmfTracks_*_*',
     'keep recoCaloClusters_*_*_*',
-    'keep recoSuperClusters_*_*_*'
+    'keep recoSuperClusters_*_*_*',
+    'drop recoGenJets_*_*_*'
     ]
     )
