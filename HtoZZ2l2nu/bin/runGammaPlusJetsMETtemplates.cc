@@ -143,7 +143,7 @@ int main(int argc, char* argv[])
       mon.addHistogram( new TH1F ("trkveto_"+postfix, ";Track veto;Events", 2,0,2) );
      
       mon.addHistogram( new TH1D( "qt_"+postfix,        ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", 100,0,500) );
-      mon.addHistogram( new TH1D( "metoverqt_"+postfix, ";E_{T}^{miss}/p_{T}^{#gamma} [GeV/c];Events", 100,0,3) );
+      mon.addHistogram( new TH1D( "metoverqt_"+postfix, ";E_{T}^{miss}/p_{T}^{#gamma} [GeV/c];Events", 25,0,2.5) );
       mon.addHistogram( new TH1D( "eta_"+postfix,       ";#eta;Events", 50,0,2.6) );  
       mon.addHistogram( new TH1F( "nvtx_"+postfix, ";Vertices;Events", 30,0,30) );  
       mon.addHistogram( new TH1F( "mt_"+postfix  , ";M_{T};Events", 100,0,1000) );
@@ -273,7 +273,8 @@ int main(int argc, char* argv[])
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
         {
 	  LorentzVector ijetP4=phys.jets[ijet];
-	  if(ijetP4.pt()<15 || fabs(ijetP4.eta())>5) continue;
+	  //	  if(ijetP4.pt()<15 || fabs(ijetP4.eta())>5) continue;
+	  if(ijetP4.pt()<15) continue;
 	  if(isGammaEvent && deltaR(ijetP4,gamma)<0.4) continue;
 	  njets15++;
 	  jetsP4.push_back(ijetP4);
@@ -286,7 +287,7 @@ int main(int argc, char* argv[])
 	}
       TString subcat("eq"); subcat+=njets30; subcat+= "jets";
       if(njets30>=3) subcat="geq3jets";
-      int evType=eventClassifComp.Get(phys,&phys.jets);
+      int evType=eventClassifComp.Get(phys,&jetsP4); //phys.jets);
       if(evType==EventCategory::VBF) subcat="vbf";
 
 

@@ -81,7 +81,7 @@ runPlotter --iLumi 4616 --inDir ~/work/gamma/ --outDir ~/work/gamma/plots --json
 
 runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples.json -d /store/cmst3/user/querten/12_04_14_HZZ2l2v_ntuples -o ~/work/gamma-wgt/  -c test/runAnalysis_cfg.py.templ -s 8nh -p "@weightsFile=data/gammaqtweights.root"
 
-runPlotter --iLumi 4616 --inDir ~/work/gamma-wgt/ --outDir ~/work/gamma-wgt/plots --json data/photon-samples-onlygamma.json --outFile ~/work/gamma/plotter_wgt.root
+runPlotter --iLumi 4616 --inDir ~/work/gamma-wgt/ --outDir ~/work/gamma-wgt/plots --json data/photon-samples-onlygamma.json --outFile ~/work/gamma-wgt/plotter_wgt.root
 
 ## run the replacement
 #runLocalAnalysisOverSamples.py -e runOnEventSummary -j data/samples-with-dy-replacement.json -o ~/scratch0/gamma-data/ -p "@weightsFile=/afs/cern.ch/user/p/psilva/public/GammaWeights/data_gammaptvsetaweight.root" -d /castor/cern.ch/cms/store/cmst3/user/querten/11_10_19_HtoZZ2l2nNTuples/ -c test/runAnalysis_cfg.py.templ -s True
@@ -89,3 +89,12 @@ runPlotter --iLumi 4616 --inDir ~/work/gamma-wgt/ --outDir ~/work/gamma-wgt/plot
 ## run the final plots
 #runPlotter --iLumi 5035 --inDir ~/scratch0/gamma-data/ --outDir /tmp/psilva/ --json data/samples-with-dy-replacement.json --only zmass
 #runPlotter --iLumi 5035 --inDir results/ --outDir results/plots/ --outFile plotter.root  --json ../data/samples.json --only zmass
+
+
+##
+## GRAVITON STUDIES
+##
+haddOverSamples.py -j data/samples-graviton.json -d /store/cmst3/user/psilva/12_05_01_HZZ2l2v_ntuples44x/split -o /store/cmst3/user/psilva/12_05_01_HZZ2l2v_ntuples44x/ -m 0 -t Graviton
+runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples-graviton.json -d /store/cmst3/user/psilva/12_05_01_HZZ2l2v_ntuples44x/ -o ~/work/gzz -c test/runAnalysis_cfg.py.templ -s 8nh -t Graviton
+runPlotter --iLumi 4616 --inDir ~/work/gzz/ --outDir ~/work/gzz/plots --json data/samples-graviton.json --outFile ~/work/gzz/plotter.root
+
