@@ -196,7 +196,9 @@ patElectrons.embedTrack = True
 
 selectedPatElectrons.cut = 'pt()>5'
 
-cmgElectron.cfg.inputCollection = 'selectedPatElectrons'
+from CMGTools.Common.PAT.patElectronsWithTrigger_cff import * 
+
+cmgElectron.cfg.inputCollection = 'patElectronsWithTrigger'
 
 PATCMGElectronSequence = cms.Sequence(
     pfElectronIsolationSequence +
@@ -204,6 +206,7 @@ PATCMGElectronSequence = cms.Sequence(
     patElectronIDSequence + 
     makePatElectrons +
     selectedPatElectrons +
+    patElectronsWithTriggerSequence +
     electronSequence
     )
 
