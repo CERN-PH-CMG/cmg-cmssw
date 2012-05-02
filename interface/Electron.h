@@ -34,8 +34,6 @@ class Electron : public cmg::Lepton<pat::ElectronPtr>{
     mva_(UnSet(float)),
     mvaTrigV0_(UnSet(float)),
     mvaNonTrigV0_(UnSet(float)),
-    mvaDaniele_(UnSet(float)),
-    mvaMIT_(UnSet(float)),
     sigmaIetaIeta_(UnSet(Double_t)),
     deltaPhiSuperClusterTrackAtVtx_(UnSet(Double_t)),
     deltaEtaSuperClusterTrackAtVtx_(UnSet(Double_t)),
@@ -57,12 +55,6 @@ class Electron : public cmg::Lepton<pat::ElectronPtr>{
     }
     float mvaNonTrigV0() const{
       return mvaNonTrigV0_;
-    }
-    float mvaDaniele() const { 
-      return mvaDaniele_;
-    }
-    float mvaMIT() const { 
-      return mvaMIT_;
     }
     Double_t sigmaIetaIeta() const{
       return sigmaIetaIeta_;
@@ -108,10 +100,6 @@ private:
     float mvaTrigV0_;
     // That's new mva for non-trigger object
     float mvaNonTrigV0_;
-    // That's Daniele's mva
-    float mvaDaniele_;
-    // And MIT's mva:
-    float mvaMIT_;    
     // variables needed for WP selections
     Double_t sigmaIetaIeta_;
     Double_t deltaPhiSuperClusterTrackAtVtx_;
