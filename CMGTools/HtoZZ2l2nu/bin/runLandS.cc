@@ -840,6 +840,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 
      //backgrounds
      size_t nbckg=allShapes.find(chbin+histo)->second.bckg.size();
+     size_t nNonNullBckg=0; 
      for(size_t ibckg=0; ibckg<nbckg; ibckg++){
 	TH1* h=shapeSt.bckg[ibckg];
 	std::vector<std::pair<TString, TH1*> > vars = shapeSt.bckgVars[h->GetTitle()];
@@ -856,7 +857,41 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
         TString proc(h->GetTitle());
         convertHistosForLimits_core(dci, proc, chbin, systs, hshapes, runSystematics, shape);
         if(ich==0 && b==0)allProcs.push_back(proc);
+
+        //remove backgrounds with rate=0 (but keep at least one background)
+        std::map<RateKey_t, Double_t>::iterator it = dci.rates.find(RateKey_t(proc,chbin));
+        if(it==dci.rates.end()){
+           printf("proc=%s not found --> THIS SHOULD NEVER HAPPENS.  PLEASE CHECK THE COD\n",proc.Data());
+        }else{
+           if(it->second>0){  nNonNullBckg++;
+           }else if(ibckg<nbckg-1 || nNonNullBckg>0){dci.rates.erase(dci.rates.find(RateKey_t(proc,chbin)));
+           }
+        }
+
      }
+/*
+     //remove all backgrounds with rate=0
+     size_t nNonNullBckg=0; 
+     for(size_t ibckg=0; ibckg<nbckg; ibckg++){        
+        TString proc(shapeSt.bckg[ibckg]->GetTitle());
+   proc.ReplaceAll("#bar{t}","tbar");
+   proc.ReplaceAll("Z-#gamma^{*}+jets#rightarrow ll","dy");
+   proc.ReplaceAll("(","");    proc.ReplaceAll(")","");    proc.ReplaceAll("+","");    proc.ReplaceAll(" ","");
+   proc.ToLower();
+
+        std::map<RateKey_t, Double_t>::iterator it = dci.rates.find(RateKey_t(proc,chbin));
+        if(it==dci.rates.end()){printf("proc=%s not found\n",proc.Data());continue;}
+        printf("Rates for %s-%s is %6.2E  - NonNull=%i\n",chbin.Data(), proc.Data(), it->second,(int) nNonNullBckg);
+        if(it->second>0){
+           nNonNullBckg++;
+	   printf("nNonNullBckg++\n");
+        }else{
+           printf("ibckg<nbckg-1=%i || nNonNullBckg=%i --> %i\n",(int)(ibckg<nbckg-1), (int)(nNonNullBckg>0), (int)(ibckg<nbckg-1 || nNonNullBckg>0));
+//           if(ibckg<nbckg-1 || nNonNullBckg>0){printf("Erase Rate %i --> ", (int)dci.rates.size());  dci.rates.erase(dci.rates.find(RateKey_t(proc,chbin))); printf("%i\n", (int)dci.rates.size());}
+           printf("Erase Rate %i --> ", (int)dci.rates.size());  dci.rates.erase(it); printf("%i\n", (int)dci.rates.size());
+        }
+     }
+*/
 
      //data
      TH1* h=shapeSt.data;
