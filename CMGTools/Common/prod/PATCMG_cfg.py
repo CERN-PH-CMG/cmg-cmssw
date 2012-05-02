@@ -11,7 +11,7 @@ process = cms.Process("PAT")
 print 'querying database for source files'
 
 
-runOnMC = False
+runOnMC = True
 
 runJetSubstructure = False
 
@@ -110,9 +110,6 @@ if runJetSubstructure:
 
 process.p += process.postPathCounter
 
-from CMGTools.Common.PAT.patCMGSchedule_cff import getSchedule
-process.schedule = getSchedule(process, runOnMC)
-
 # For testing, you can remove some of the objects:
 # NOTE: there are a few dependencies between these sequences
 # process.PATCMGSequence.remove(process.PATCMGPileUpSubtractionSequence)
@@ -173,6 +170,11 @@ process.outpath += process.outcmg
 
 
 ## Geometry and Detector Conditions (needed for a few patTuple production steps)
+
+from CMGTools.Common.PAT.patCMGSchedule_cff import getSchedule
+process.schedule = getSchedule(process, runOnMC)
+process.schedule.append( process.outpath )
+
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 from Configuration.AlCa.autoCond import autoCond
