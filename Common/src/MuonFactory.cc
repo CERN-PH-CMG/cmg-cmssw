@@ -25,6 +25,7 @@ void cmg::MuonFactory::set(const pat::MuonPtr& input, cmg::Muon* const output, c
     leptonFactory_.set(getTrackerTrack(input),output,iEvent,iSetup);
 
     //now the muon like ones
+    output->type_ = input->type();
     output->isGlobal_ = cmg::toTriBool(input->isGlobalMuon());
     output->isTracker_ = cmg::toTriBool(input->isTrackerMuon());
     output->muonID_ = cmg::toTriBool(input->muonID(muonIDType_));

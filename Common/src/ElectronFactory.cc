@@ -47,8 +47,6 @@ void cmg::ElectronFactory::set(const pat::ElectronPtr& input, cmg::Electron* con
   }else{
     output->mvaNonTrigV0_ = -999;
   }
-  output->mvaDaniele_ = mvaEstimator_.mva(*input,nVertices);
-  output->mvaMIT_ = input->userFloat("ElectronMVA_MIT");
     
   //see http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/PhysicsTools/SelectorUtils/interface/SimpleCutBasedElectronIDSelectionFunctor.h?view=markup    
   output->sigmaIetaIeta_ = input->sigmaIetaIeta();
