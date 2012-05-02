@@ -93,6 +93,7 @@ process.patJetCorrFactorsCHS.payload = 'AK5PFchs'
 
 process.dump = cms.EDAnalyzer('EventContentAnalyzer')
 
+process.load('CMGTools.Common.PAT.addFilterPaths_cff')
 process.p = cms.Path(
     process.prePathCounter + 
     process.PATCMGSequence + 
@@ -100,8 +101,6 @@ process.p = cms.Path(
     )
 if runJetSubstructure:
     process.p += process.PATCMGJetSequenceCHSpruned
-process.p += process.postPathCounter
-
 
 #load genJets, genParticlesPruned, vertex weights, ...
 # if runOnMC:
@@ -109,8 +108,10 @@ process.p += process.postPathCounter
 #    process.genJet.cfg.inputCollection = cms.InputTag("selectedPatJets","genJets")
 #    process.p += process.genSequence
 
-
 process.p += process.postPathCounter
+
+from CMGTools.Common.PAT.patCMGSchedule_cff import getSchedule
+process.schedule = getSchedule(process, runOnMC)
 
 # For testing, you can remove some of the objects:
 # NOTE: there are a few dependencies between these sequences
