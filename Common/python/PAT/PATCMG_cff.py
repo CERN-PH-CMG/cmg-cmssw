@@ -7,18 +7,13 @@ from PhysicsTools.PatAlgos.patSequences_cff import *
 from CMGTools.Common.PAT.patLeptModifiedIsoDeposit_cff import *
 from CMGTools.Common.analysis_cff import *
 
-# FIXME GENJETS RESTORE EMBEDDING!!
 
-# FIXME reinstall PU jet ID stuff
 # FIXME make sure embedded collections are kept in pat-tuple (CHS PF collection!)
 # FIXME are pat conversions used in the other cfg? where? do I need to add them?
-# FIXME add jet substructure with Andreas
 # FIXME check PAT content
 # FIXME check CMG content
 #           drop embedding collections? check they're empty
 # FIXME set new aliases - Aliases don't work in 52 anyway!
-# FIXME check detector based iso
-# FIXME make sure the old cfg runs
 
 
 # GEN              ---------------------------
@@ -44,8 +39,12 @@ PATCMGGenSequence = cms.Sequence(
 
 from PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff import *
 patTrigger.processName = cms.string('*')
+from CMGTools.Common.trigger_cff import *
 
-
+PATCMGTriggerSequence = cms.Sequence(
+    patTriggerDefaultSequence +
+    triggerSequence
+    ) 
 
 # PU SUB AND PARTICLES FOR ISO ---------------
 
@@ -125,13 +124,16 @@ patMuons.isolationValues = cms.PSet(
 
 selectedPatMuons.cut = 'pt()>3'
 
-cmgMuon.cfg.inputCollection = 'selectedPatMuons'
+from CMGTools.Common.PAT.patMuonsWithTrigger_cff import * 
+
+cmgMuon.cfg.inputCollection = 'patMuonsWithTrigger'
 
 PATCMGMuonSequence = cms.Sequence(
     pfMuonIsolationSequence +
     detMuonIsoDepositSequence + 
     makePatMuons +
     selectedPatMuons +
+    patMuonsWithTriggerSequence + 
     muonSequence
     )
 
@@ -170,8 +172,6 @@ patElectrons.isolationValues = cms.PSet(
     pfPUChargedHadrons = cms.InputTag("elPFIsoValuePU04PFId" ),
     pfNeutralHadrons = cms.InputTag("elPFIsoValueNeutral04PFId" ),
     pfPhotons = cms.InputTag("elPFIsoValueGamma04PFId" ),
-    #FIXME I don't manage to use the PSet syntax... -> not adding the guy
-    # user = electronUserIsolation.user
     )
 
 patElectrons.userIsolation.user = electronUserIsolation.user
@@ -421,7 +421,7 @@ postPathCounter = cms.EDProducer("EventCountProducer")
 
 PATCMGSequence = cms.Sequence(
     PATCMGGenSequence +
-    patTriggerDefaultSequence +
+    PATCMGTriggerSequence +
     eventCleaningSequence + 
     PATCMGPileUpSubtractionSequence +
     PATCMGRhoSequence +

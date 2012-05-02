@@ -23,6 +23,8 @@ patEventContentCMG.extend([
     'keep recoPFCandidates_*_*_RECO',
     # drop intermediate PFBRECO collections
     'drop recoPFCandidates_*_*_PAT',
+    # the following collection is the collection of PFCandidates used to build the no CHS jets. 
+    'keep recoPFCandidates_pfNoPileUp_*_*',
     'keep recoGenParticles_*_*_*',
     'keep recoBeamSpot_*_*_*',
     'keep L1GlobalTriggerObjectMapRecord_*_*_*',
@@ -35,6 +37,7 @@ patEventContentCMG.extend([
     'keep double_*_rho_*',
     # drop pat genjets embedding collections
     'drop recoGenJets_*Pat*_genJets_PAT',
+    'keep recoGenJets_ak5GenJetsNoNu_*_*',
     # keep pruned jets
     'keep recoPFJets_ak5PFJetsCHSpruned_SubJets_*',
     'keep patJets_selectedPatJetsCHSpruned_*_*',
