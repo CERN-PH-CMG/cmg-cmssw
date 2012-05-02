@@ -47,6 +47,7 @@ string outDir   = "PlotMet/";
 int ChooseMet = 1;
 int OptCut = 1;
 int CrossSec = 1;
+int SystGlob = 1;
 int SistDy = 1;
 int ComputeDy = 1;
 int hadd = 1;
@@ -66,12 +67,11 @@ double max(double x, double y);
 
 void FindMinAndVar(double *Chi2, double *sigma1 );
 
-string jsonFile = "../data/samples.json";
+string jsonFile = "../data/samples_ZZ.json";
 string cutflowhisto = "all_cutflow";
 std::map<string, double> PURescale_up;
 std::map<string, double> PURescale_down;
 std::map<string, double> initialNumberOfEvents;
-//std::map<string, double> FinalWeight;
 std::map<string, bool>   FileExist;
 
 TObject* GetObjectFromPath(TDirectory* File, std::string Path, bool GetACopy=false)
@@ -208,6 +208,7 @@ int main(int argc, char* argv[]){
         printf("--outDir    --> path of the directory that will contains the output plots and tables\n");
         printf("--hadd      --> 1 if you want to merge the dataset\n");
         printf("--CrossSec  --> 1 if you want to maximize S/sqrt(S+B)\n");
+        printf("--SystGlob  --> Cross sect with all uncertainties\n");
         printf("--ChooseMet --> 1 if you want to choose the Best Met\n");
         printf("--OptCut    --> 1 if you want to optimize variables\n");
         printf("--SistDy    --> containing list of process (and associated style) to process to process\n");
@@ -221,6 +222,7 @@ int main(int argc, char* argv[]){
      if(arg.find("--outDir" )!=string::npos && i+1<argc){ outDir   = argv[i+1];  i++;  printf("outDir = %s\n", outDir.c_str());  }
      if(arg.find("--hadd"  )!=string::npos && i+1<argc){ sscanf(argv[i+1],"%i",&hadd);  i++;  printf("hadd = %s\n", (hadd == 1)?"true":"false");  }
      if(arg.find("--CrossSec"  )!=string::npos && i+1<argc){ sscanf(argv[i+1],"%i",&CrossSec);  i++;  printf("CrossSec = %s\n", (CrossSec == 1)?"true":"false");  }   
+     if(arg.find("--SystGlob"  )!=string::npos && i+1<argc){ sscanf(argv[i+1],"%i",&SystGlob);  i++;  printf("SystGlob = %s\n", (SystGlob == 1)?"true":"false");  }   
      if(arg.find("--SistDy"  )!=string::npos && i+1<argc){ sscanf(argv[i+1],"%i",&SistDy);  i++;  printf("SistDy = %s\n", (SistDy == 1)?"true":"false");  }   
      if(arg.find("--ComputeDy"  )!=string::npos && i+1<argc){ sscanf(argv[i+1],"%i",&ComputeDy);  i++;  printf("ComputeDy = %s\n", (ComputeDy == 1)?"true":"false");  }   
      if(arg.find("--ChooseMet"  )!=string::npos && i+1<argc){ sscanf(argv[i+1],"%i",&ChooseMet);  i++;  printf("ChooseMet = %s\n", (ChooseMet == 1)?"true":"false");  }
@@ -299,6 +301,161 @@ double Br=0., NevTot=0.;
 Br = 20./100. * 3.36/100.; // valid for ee, mumu
 NevTot = 4191045*Br;  // valid for ee, mumu
 
+if( ChooseMet == 1 ){
+
+  cout<<"Comparing different Met"<<endl;
+  int Niter=5; // Num of variation
+  const int NEff = 30;
+  for(int it = 0; it<Niter; it++){
+  //Get Histo
+  string RedMet_IND_Best, RedMet_D0_Best, PFMet_Best;
+  if( it == 0 ){
+     RedMet_IND_Best = "all_ZZ_RedMetInd_Best";
+     RedMet_D0_Best = "all_ZZ_RedMetD0_Best";
+     PFMet_Best = "all_ZZ_PFMet_Best";
+     output = outDir + "BestMet.png";
+  }
+  if( it == 1 ){
+     RedMet_IND_Best = "all_ZZ_RedMetInd_Best_Jesp";
+     RedMet_D0_Best = "all_ZZ_RedMetD0_Best_Jesp";
+     PFMet_Best = "all_ZZ_PFMet_Best_Jesp";
+     output = outDir + "BestMet_Jesp.png";
+  }
+  if( it == 2 ){
+     RedMet_IND_Best = "all_ZZ_RedMetInd_Best_Jesm";
+     RedMet_D0_Best = "all_ZZ_RedMetD0_Best_Jesm";
+     PFMet_Best = "all_ZZ_PFMet_Best_Jesm";
+     output = outDir + "BestMet_Jesm.png";
+  }
+  if( it == 3 ){
+     RedMet_IND_Best = "all_ZZ_RedMetInd_BestPUp";
+     RedMet_D0_Best = "all_ZZ_RedMetD0_BestPUp";
+     PFMet_Best = "all_ZZ_PFMet_BestPUp";
+     output = outDir + "BestMet_PUp.png";
+  }
+  if( it == 4 ){
+     RedMet_IND_Best = "all_ZZ_RedMetInd_BestPUm";
+     RedMet_D0_Best = "all_ZZ_RedMetD0_BestPUm";
+     PFMet_Best = "all_ZZ_PFMet_BestPUm";
+     output = outDir + "BestMet_PUm.png";
+  }
+     TH1F *hBest_DY_IND = ( (TH1F*)File[DY]->Get( RedMet_IND_Best.c_str() ));
+     TH1F *hBest_DY_D0 = ( (TH1F*)File[DY]->Get( RedMet_D0_Best.c_str() ));
+     TH1F *hBest_DY_PF = ( (TH1F*)File[DY]->Get( PFMet_Best.c_str() ));
+     TH1F *hBest_ZZ_IND = ( (TH1F*)File[ZZ]->Get( RedMet_IND_Best.c_str() ));
+     TH1F *hBest_ZZ_D0 = ( (TH1F*)File[ZZ]->Get( RedMet_D0_Best.c_str() ));
+     TH1F *hBest_ZZ_PF = ( (TH1F*)File[ZZ]->Get( PFMet_Best.c_str() ));
+
+     double Eff_DY_IND[NEff] = {0.}, Eff_ZZ_IND[NEff] = {0.};
+     double Eff_DY_D0[NEff] = {0.}, Eff_ZZ_D0[NEff] = {0.};
+     double Eff_DY_PF[NEff] = {0.}, Eff_ZZ_PF[NEff] = {0.};
+     double NBefore_DY = hBest_DY_IND->GetBinContent(1);
+     double NBefore_ZZ = hBest_ZZ_D0->GetBinContent(1);
+
+     for(int i = 0; i < hBest_ZZ_IND->GetNbinsX()-1 ; i++){
+       Eff_DY_IND[i] = hBest_DY_IND->GetBinContent(i+2)/NBefore_DY;
+       Eff_ZZ_IND[i] = hBest_ZZ_IND->GetBinContent(i+2)/NBefore_ZZ;
+       Eff_DY_D0[i] = hBest_DY_D0->GetBinContent(i+2)/NBefore_DY;
+       Eff_ZZ_D0[i] = hBest_ZZ_D0->GetBinContent(i+2)/NBefore_ZZ;
+       Eff_DY_PF[i] = hBest_DY_PF->GetBinContent(i+2)/NBefore_DY;
+       Eff_ZZ_PF[i] = hBest_ZZ_PF->GetBinContent(i+2)/NBefore_ZZ;
+     }
+
+        TGraph *PFMet = new TGraph(NEff, Eff_DY_PF, Eff_ZZ_PF);
+        PFMet->SetLineColor(2);
+        PFMet->SetLineWidth(1);
+        PFMet->SetMarkerColor(2);
+        PFMet->SetMarkerStyle(20);
+        PFMet->SetMarkerSize(0.5);
+        PFMet->SetTitle("MET Efficiency");
+        PFMet->GetXaxis()->SetTitle("DY Efficiency");
+        PFMet->GetYaxis()->SetTitle("ZZ Efficiency");
+
+        TGraph *Met_IND = new TGraph(NEff, Eff_DY_IND, Eff_ZZ_IND);
+        Met_IND->SetLineColor(kBlue);
+        Met_IND->SetLineWidth(1);
+        Met_IND->SetMarkerColor(kBlue);
+        Met_IND->SetMarkerStyle(20);
+        Met_IND->SetMarkerSize(0.5);
+
+        TGraph *Met_D0 = new TGraph(NEff, Eff_DY_D0, Eff_ZZ_D0);
+        Met_D0->SetLineColor(3);
+        Met_D0->SetLineWidth(1);
+        Met_D0->SetMarkerColor(3);
+        Met_D0->SetMarkerStyle(20);
+        Met_D0->SetMarkerSize(0.5);
+
+     //Legend
+     TLegend *leg = new TLegend(0.15,0.7,0.48,0.87);
+     leg->SetFillColor(kWhite);
+     leg->AddEntry(PFMet,"PFMET","P");
+     leg->AddEntry(Met_IND,"REDMet IND","P");
+     leg->AddEntry(Met_D0,"REDMet D0","P");
+
+     myc1->cd();
+     myc1->SetLogx();
+     PFMet->Draw("ACP");
+     Met_IND->Draw("CPsame");
+     Met_D0->Draw("CPsame");
+     leg->Draw("same");
+     myc1->SaveAs(output.c_str());
+    
+ }//N iter
+
+cout<<"Done with Met comparison..."<<endl<<endl;
+}
+
+if( OptCut ){
+
+string MetOpt = "all_optim_eventflow1";
+TH1F *h_ZZ = ( (TH1F*)File[ZZ]->Get( MetOpt.c_str() ));
+TH1F *h_DY = ( (TH1F*)File[DY]->Get( MetOpt.c_str() ));
+TH1F *h_WW = ( (TH1F*)File[WW]->Get( MetOpt.c_str() ));
+TH1F *h_WZ = ( (TH1F*)File[WZ]->Get( MetOpt.c_str() ));
+TH1F *h_TT = ( (TH1F*)File[TT]->Get( MetOpt.c_str() ));
+TH1F *h_WJ = ( (TH1F*)File[WJ]->Get( MetOpt.c_str() ));
+
+     cout<<"Optimizing Cut... "<<endl;
+     const int Nbin = 475;//bin
+
+     double Bkg = 0., DYnum = 0., ZZnum = 0., WWnum = 0., WZnum = 0., WJnum = 0., TTnum = 0.;
+     double SB[Nbin]={0.}; //30.
+     double Val[Nbin]={0.};
+
+     for(int i = 0; i<h_ZZ->GetNbinsX(); i++){
+       DYnum = (double)(h_DY->GetBinContent(i))*iWeight[DY];
+       ZZnum = (double)(h_ZZ->GetBinContent(i))*iWeight[ZZ];
+       WWnum = (double)(h_WW->GetBinContent(i))*iWeight[WW];
+       WZnum = (double)(h_WZ->GetBinContent(i))*iWeight[WZ];
+       WJnum = (double)(h_WJ->GetBinContent(i))*iWeight[WJ];
+       TTnum = (double)(h_TT->GetBinContent(i))*iWeight[TT];
+       Bkg = DYnum+WWnum+WZnum+WJnum+TTnum;
+       if( (ZZnum+Bkg) != 0 ){
+         //cout<<"bin = "<<i<<"  Num of BKG: "<< Bkg<<"  Num of ZZ: "<< ZZnum <<"  S/sqrt(S+B): "<< ZZnum/(sqrt(ZZnum+Bkg)) <<endl;
+         SB[i] = ZZnum/(sqrt(ZZnum+Bkg));
+         Val[i] = i;
+       }
+       else{ SB[i] = 0.; Val[i] = i;}
+     }
+     TGraph *h_BestMet = new TGraph(Nbin, Val, SB);
+     myc1->cd();
+     myc1->SetLogx(0);
+     h_BestMet->GetXaxis()->SetTitle("Bin corresponding a set of cuts");
+     h_BestMet->GetYaxis()->SetTitle("S/sqrtr(B)");
+     h_BestMet->Draw("ACP");
+     output = outDir+ "BestMetValue.png";
+     myc1->SaveAs(output.c_str());
+     //cout<<"MET IND:----> S/sqrt(S+B) Max is: "<<max_array(SB,Nbin)<<endl<<endl;
+
+     int bestbin=-1;
+     for(int i=0; i<Nbin;i++){ if( SB[i]==max_array(SB,Nbin) ) bestbin=i;   }
+     TH1F *dmz = ( (TH1F*)File[ZZ]->Get( "all_optim_cut1_dmz" ));
+     TH1F *met = ( (TH1F*)File[ZZ]->Get( "all_optim_cut1_met" ));
+     cout<<"Bin: "<<bestbin<<endl;
+     cout<<"Taglio in MET: "<<met->GetBinContent(bestbin)/2.<<endl;
+     cout<<"Taglio in Dmz: "<<dmz->GetBinContent(bestbin)/2.<<endl;
+}
+
 if( SistDy == 1 ){
 
 Smear(File, myc1, "1");
@@ -333,281 +490,109 @@ Smear(File, myc1, "4");
 
 if( ComputeDy == 1 ){
 //taking histos
-TString filepath = "/afs/cern.ch/user/l/lpernie/work/gamma/plotter_wgt.root";
-TString Histo_ee = "ee_met_met_eq0jets";
-TString Histo_mu = "mumu_met_met_eq0jets";
+//TString filepath = "/afs/cern.ch/user/l/lpernie/work/gamma/plotter_wgt.root";
+TString filepath = "/afs/cern.ch/user/l/lpernie/scratch0/plotter.root";
+TString Histo_ee = "ZZee_met_redMet_eq0jets";
+TString Histo_mu = "ZZmumu_met_redMet_eq0jets";
 TString Dir_data = "data (#gamma)";
 TString Dir_Wga = "W#rightarrow l#nu";
 TString Dir_Wnu = "W#gamma#rightarrowl#nu#gamma";
 TString Dir_Zga = "Z#gamma#rightarrow#nu#nu#gamma";
 TFile *file = new TFile( filepath.Data() );
-file->cd( Dir_data.Data() );
-TH1F *hTOT_ee = (TH1F*) file->Get( Histo_ee.Data() );
-TH1F *hTOT_mu = (TH1F*) file->Get( Histo_mu.Data() );
-file->cd( Dir_Wga.Data() );
-TH1F *hWga_ee = (TH1F*) file->Get( Histo_ee.Data() );
-TH1F *hWga_mu = (TH1F*) file->Get( Histo_mu.Data() );
-file->cd( Dir_Wnu.Data() );
-TH1F *hWnu_ee = (TH1F*) file->Get( Histo_ee.Data() );
-TH1F *hWnu_mu = (TH1F*) file->Get( Histo_mu.Data() );
-file->cd( Dir_Zga.Data() );
-TH1F *hZga_ee = (TH1F*) file->Get( Histo_ee.Data() );
-TH1F *hZga_mu = (TH1F*) file->Get( Histo_mu.Data() );
+
+TH1F *hTOT_ee = (TH1F*) file->Get( Dir_data + "/" + Histo_ee );
+TH1F *hTOT_mu = (TH1F*) file->Get( Dir_data + "/" +Histo_mu );
+TH1F *hWga_ee = (TH1F*) file->Get( Dir_Wga + "/" + Histo_ee );
+TH1F *hWga_mu = (TH1F*) file->Get( Dir_Wga + "/" + Histo_mu );
+TH1F *hWnu_ee = (TH1F*) file->Get( Dir_Wnu + "/" + Histo_ee );
+TH1F *hWnu_mu = (TH1F*) file->Get( Dir_Wnu + "/" + Histo_mu );
+TH1F *hZga_ee = (TH1F*) file->Get( Dir_Zga + "/" + Histo_ee );
+TH1F *hZga_mu = (TH1F*) file->Get( Dir_Zga + "/" + Histo_mu );
 
 TH1F *FinalHistoDY_ee = new TH1F("FinalHistoDY_ee", "ee FinalHistoDY", 50, 0., 500. );
 TH1F *FinalHistoDY_mu = new TH1F("FinalHistoDY_mu", "mu FinalHistoDY", 50, 0., 500. );
+FinalHistoDY_ee->Add( hTOT_ee );
+FinalHistoDY_ee->Add( hWga_ee, -1. );
+FinalHistoDY_ee->Add( hWnu_ee, -1. );
+FinalHistoDY_ee->Add( hZga_ee, -1. );
+FinalHistoDY_mu->Add( hTOT_mu );
+FinalHistoDY_mu->Add( hWga_mu, -1. );
+FinalHistoDY_mu->Add( hWnu_mu, -1. );
+FinalHistoDY_mu->Add( hZga_mu, -1. );
 
 //subtracting
-for(int i=1; i<hTOT_ee->GetNbinsX(); i++){
-   double nTOT_ee = hTOT_ee->GetBinContent(i);
-   double nTOT_mu = hTOT_mu->GetBinContent(i);
-   double nWga_ee = hWga_ee->GetBinContent(i);
-   double nWga_mu = hWga_mu->GetBinContent(i);
-   double nWnu_ee = hWnu_ee->GetBinContent(i);
-   double nWnu_mu = hWnu_mu->GetBinContent(i);
-   double nZga_ee = hZga_ee->GetBinContent(i);
-   double nZga_mu = hZga_mu->GetBinContent(i);
-   double totaliBin_ee = TMath::Max( TMath::Max(nTOT_ee,0.) - TMath::Max(nWga_ee,0.) - TMath::Max(nWnu_ee,0.) - TMath::Max(nZga_ee,0.)   ,0.);
-   double totaliBin_mu = TMath::Max( TMath::Max(nTOT_mu,0.) - TMath::Max(nWga_mu,0.) - TMath::Max(nWnu_mu,0.) - TMath::Max(nZga_mu,0.)   ,0.);
-   FinalHistoDY_ee->SetBinContent(i,totaliBin_ee);
-   FinalHistoDY_mu->SetBinContent(i,totaliBin_mu);
+for(int i=1; i<FinalHistoDY_ee->GetNbinsX(); i++){
+   double BinVa_ee = FinalHistoDY_ee->GetBinContent(i);
+   if(BinVa_ee<0.) BinVa_ee=0.;
+   FinalHistoDY_ee->SetBinContent(i, BinVa_ee);
+
+   double BinVa_mu = FinalHistoDY_mu->GetBinContent(i);
+   if(BinVa_mu<0.) BinVa_mu=0.;
+   FinalHistoDY_mu->SetBinContent(i, BinVa_mu);
 }
+
 double cut = 50.;
 double maxcut = 500.;
 double err_ee=0., err_mu=0. ;
-double NbkgDY_ee = FinalHistoDY_ee->IntegralAndError( FinalHistoDY_ee->FindBin(cut),FinalHistoDY_ee->FindBin(maxcut), err_ee );
-double NbkgDY_mu = FinalHistoDY_mu->IntegralAndError( FinalHistoDY_mu->FindBin(cut),FinalHistoDY_mu->FindBin(maxcut), err_mu );
+double NbkgDY_ee = FinalHistoDY_ee->IntegralAndError( FinalHistoDY_ee->FindBin(cut)-1,FinalHistoDY_ee->FindBin(maxcut)-1, err_ee );
+double NbkgDY_mu = FinalHistoDY_mu->IntegralAndError( FinalHistoDY_mu->FindBin(cut)-1,FinalHistoDY_mu->FindBin(maxcut)-1, err_mu );
 
 cout<<"The Number of DY event in ee channel is: "<<NbkgDY_ee<<" +-  "<<err_ee<<endl;
 cout<<"The Number of DY event in mumu channel is: "<<NbkgDY_mu<<" +_ "<<err_mu<<endl;
 
+//Systematic *2
+TH1F *mFinalHistoDY_ee = new TH1F("mFinalHistoDY_ee", "ee FinalHistoDY min", 50, 0., 500. );
+TH1F *mFinalHistoDY_mu = new TH1F("mFinalHistoDY_mu", "mu FinalHistoDY min", 50, 0., 500. );
+mFinalHistoDY_ee->Add( hTOT_ee );
+mFinalHistoDY_ee->Add( hWga_ee, -2. );
+mFinalHistoDY_ee->Add( hWnu_ee, -2. );
+mFinalHistoDY_ee->Add( hZga_ee, -2. );
+mFinalHistoDY_mu->Add( hTOT_mu );
+mFinalHistoDY_mu->Add( hWga_mu, -2. );
+mFinalHistoDY_mu->Add( hWnu_mu, -2. );
+mFinalHistoDY_mu->Add( hZga_mu, -2. );
+//subtracting
+for(int i=1; i<mFinalHistoDY_ee->GetNbinsX(); i++){
+   double BinVa_ee = mFinalHistoDY_ee->GetBinContent(i);
+   if(BinVa_ee<0.) BinVa_ee=0.;
+   mFinalHistoDY_ee->SetBinContent(i, BinVa_ee);
+
+   double BinVa_mu = mFinalHistoDY_mu->GetBinContent(i);
+   if(BinVa_mu<0.) BinVa_mu=0.;
+   mFinalHistoDY_mu->SetBinContent(i, BinVa_mu);
 }
+err_ee=0., err_mu=0.;
+double mNbkgDY_ee = mFinalHistoDY_ee->IntegralAndError( mFinalHistoDY_ee->FindBin(cut)-1,mFinalHistoDY_ee->FindBin(maxcut)-1, err_ee );
+double mNbkgDY_mu = mFinalHistoDY_mu->IntegralAndError( mFinalHistoDY_mu->FindBin(cut)-1,mFinalHistoDY_mu->FindBin(maxcut)-1, err_mu );
+cout<<"The Systematic (bkg *2) for nDY in ee is: "<< (NbkgDY_ee-mNbkgDY_ee)*100/NbkgDY_ee <<"%  you have now:"<<mNbkgDY_ee<<" events"<<endl;
+cout<<"The Systematic (bkg *2) for nDY in mumu is: "<< (NbkgDY_mu-mNbkgDY_mu)*100/NbkgDY_mu <<"%  you have now"<<mNbkgDY_mu<<" events."<<endl;
 
-if( false ){
-  string emu_1nvtx = "emu_Sys_MetEff_RedMet_1nvtx";
-  string emu_2nvtx = "emu_Sys_MetEff_RedMet_2nvtx";
-  string emu_3nvtx = "emu_Sys_MetEff_RedMet_3nvtx";
-  string emu_4nvtx = "emu_Sys_MetEff_RedMet_Maxnvtx";
-  TH1F *h_TT_1nvtx = ( (TH1F*)File[TT]->Get( emu_1nvtx.c_str() )); //h_TT_1nvtx->Sumw2();
-  TH1F *h_DataEmu_1nvtx = ( (TH1F*)File[EMU]->Get( emu_1nvtx.c_str() ));
-  TH1F *h_TT_2nvtx = ( (TH1F*)File[TT]->Get( emu_2nvtx.c_str() ));
-  TH1F *h_DataEmu_2nvtx = ( (TH1F*)File[EMU]->Get( emu_2nvtx.c_str() ));
-  TH1F *h_TT_3nvtx = ( (TH1F*)File[TT]->Get( emu_3nvtx.c_str() ));
-  TH1F *h_DataEmu_3nvtx = ( (TH1F*)File[EMU]->Get( emu_3nvtx.c_str() ));
-  TH1F *h_TT_4nvtx = ( (TH1F*)File[TT]->Get( emu_4nvtx.c_str() ));
-  TH1F *h_DataEmu_4nvtx = ( (TH1F*)File[EMU]->Get( emu_4nvtx.c_str() ));
+//Systematic /2
+TH1F *pFinalHistoDY_ee = new TH1F("pFinalHistoDY_ee", "ee FinalHistoDY plus", 50, 0., 500. );
+TH1F *pFinalHistoDY_mu = new TH1F("pFinalHistoDY_mu", "mu FinalHistoDY plus", 50, 0., 500. );
+pFinalHistoDY_ee->Add( hTOT_ee );
+pFinalHistoDY_ee->Add( hWga_ee, -0.5 );
+pFinalHistoDY_ee->Add( hWnu_ee, -0.5 );
+pFinalHistoDY_ee->Add( hZga_ee, -0.5 );
+pFinalHistoDY_mu->Add( hTOT_mu );
+pFinalHistoDY_mu->Add( hWga_mu, -0.5 );
+pFinalHistoDY_mu->Add( hWnu_mu, -0.5 );
+pFinalHistoDY_mu->Add( hZga_mu, -0.5 );
+//subtracting
+for(int i=1; i<pFinalHistoDY_ee->GetNbinsX(); i++){
+   double BinVa_ee = pFinalHistoDY_ee->GetBinContent(i);
+   if(BinVa_ee<0.) BinVa_ee=0.;
+   pFinalHistoDY_ee->SetBinContent(i, BinVa_ee);
 
-  //singleGaus();
-  h_TT_1nvtx->Scale(h_DataEmu_1nvtx->Integral()/h_TT_1nvtx->Integral());
-  myc1->cd();
-  h_DataEmu_1nvtx->Draw();
-  h_TT_1nvtx->Draw("HISTOsame");
-  output = outDir + emu_1nvtx + ".png";
-  myc1->SaveAs(output.c_str());
-
-  const int NBin = 40;
-  double FakData[NBin]; for(int i=0 ; i<NBin; i++) FakData[i]=0;
-  double sigma1[100]; for(int i=0 ; i<100; i++) sigma1[i]=0;
-  double FunSig = 0.;
-
-  double Chi2[100]={0.};
-  double chi =  h_DataEmu_1nvtx->Chi2Test(h_TT_1nvtx,"UW CHI2 P");
-  cout<<"Initial: "<<chi<<endl;
-  cout<<"Initial Integral: "<<h_DataEmu_1nvtx->Integral()<<endl;
-  
-  double SUMprob=0.;
-  
-  TH1F *h1vtx = new TH1F("h1vtx", "", NBin, 0., 220.);
-   for(int isigma = 1 ; isigma < 100; isigma++ ){
-   double sigma = double(isigma)/2.;
-   FunSig = 0.;
-   for(int i=0 ; i<NBin; i++) FakData[i]=0;
-   for(int i=0 ; i<NBin; i++) h1vtx->SetBinContent(i,0.);
-  
-   for( int i = 1; i < h_TT_1nvtx->GetNbinsX(); i++  ){
-        SUMprob =0.;
-        for(int j = 1; j < h_TT_1nvtx->GetNbinsX(); j++  ){
-            
-  
-             double Prob = 0.5*fabs((TMath::Erf( (h_TT_1nvtx->GetBinCenter(h_TT_1nvtx->GetBin(j)) - h_TT_1nvtx->GetBinLowEdge(h_TT_1nvtx->GetBin(i)) )/sigma)-
-                      TMath::Erf( (h_TT_1nvtx->GetBinCenter(h_TT_1nvtx->GetBin(j)) - (h_TT_1nvtx->GetBinLowEdge(h_TT_1nvtx->GetBin(i))+h_TT_1nvtx->GetBinWidth(i) )) /sigma)));
-  
-             FakData[i] += h_TT_1nvtx->GetBinContent(j)*Prob;
-             SUMprob += Prob;
-       }
-    h1vtx->SetBinContent(i,FakData[i]);
-    }
-  chi = h_DataEmu_1nvtx->Chi2Test(h1vtx,"UW CHI2 P");
-  cout<<"Sigma  "<<sigma<<"Prob: "<<chi<<endl;
-  myc1->cd();
-  h1vtx->Draw();
-  stringstream ss;
-  ss << isigma;
-  output = outDir+ "Sigma_"+ss.str()+"_Smear_1vtx.png";
-  myc1->SaveAs(output.c_str());
-  Chi2[isigma] = chi;
-  sigma1[isigma] = sigma;
-   }
-    TGraph *h_Fsigma_1nvtx = new TGraph(99, sigma1, Chi2);
-    myc1->cd();
-    h_Fsigma_1nvtx->Draw("ACP");
-    output = outDir+ "Sigma_1vtx.png";
-    myc1->SaveAs(output.c_str());
-
-    FindMinAndVar(Chi2, sigma1 );
-  //2vtx
-  h_TT_2nvtx->Scale(h_DataEmu_2nvtx->Integral()/h_TT_2nvtx->Integral());
-  myc1->cd();
-  h_DataEmu_2nvtx->Draw();
-  h_TT_2nvtx->Draw("HISTOsame");
-  output = outDir + emu_2nvtx + ".png";
-  myc1->SaveAs(output.c_str());
-   for(int i=0 ; i<NBin; i++) Chi2[i] = 0.;
-  TH1F *h2vtx = new TH1F("h2vtx", "", NBin, 0., 220.);
-  TH1F *h2vtxbis = new TH1F("h2vtxbis", "", NBin, 0., 220.);
-   for(int isigma = 1 ; isigma < 100; isigma++ ){
-   double sigma = double(isigma)/2.;
-   FunSig = 0.;
-   for(int i=0 ; i<NBin; i++) FakData[i]=0;
-   for(int i=0 ; i<NBin; i++) h2vtx->SetBinContent(i,0.);
-  
-   for( int i = 1; i < h_TT_2nvtx->GetNbinsX(); i++  ){
-        for(int j = 1; j < h_TT_2nvtx->GetNbinsX(); j++  ){
-            
-             double Prob = 0.5*fabs((TMath::Erf( (h_TT_2nvtx->GetBinCenter(h_TT_2nvtx->GetBin(j)) - h_TT_2nvtx->GetBinLowEdge(h_TT_2nvtx->GetBin(i)) )/sigma)-
-                      TMath::Erf( (h_TT_2nvtx->GetBinCenter(h_TT_2nvtx->GetBin(j)) - (h_TT_2nvtx->GetBinLowEdge(h_TT_2nvtx->GetBin(i))+h_TT_2nvtx->GetBinWidth(i) )) /sigma)));
-  
-             FakData[i] += h_TT_2nvtx->GetBinContent(j)*Prob;
-       }
-    h2vtx->SetBinContent(i,FakData[i]);
-    }
-  if(sigma==18.5) h2vtxbis = h2vtx;
-  Chi2[isigma] = h_DataEmu_2nvtx->Chi2Test(h2vtx,"UW CHI2 P");
-  cout<<"Sigma  "<<sigma<<"Prob: "<<chi<<endl;
-  sigma1[isigma] = sigma;
-   }
-    TGraph *h_Fsigma_2nvtx = new TGraph(99, sigma1, Chi2);
-    myc1->cd();
-    h_Fsigma_2nvtx->Draw("ACP");
-    output = outDir+ "Sigma_2vtx.png";
-    myc1->SaveAs(output.c_str());
-    FindMinAndVar(Chi2, sigma1 );
-  //2vtx BIS
-  myc1->cd();
-  h_DataEmu_2nvtx->Draw();
-  h2vtxbis->Draw("HISTOsame");
-  output = outDir + emu_2nvtx + "BIS.png";
-  myc1->SaveAs(output.c_str());
-   for(int i=0 ; i<NBin; i++) Chi2[i] = 0.;
-   TH1F *h2vtxb = new TH1F("h2vtxb", "", NBin, 0., 220.);
-   for(int isigma = 1 ; isigma < 100; isigma++ ){
-   double sigma = double(isigma)/2.;
-   FunSig = 0.;
-   for(int i=0 ; i<NBin; i++) FakData[i]=0;
-   for(int i=0 ; i<NBin; i++) h2vtxb->SetBinContent(i,0.);
-  
-   for( int i = 1; i < h2vtxbis->GetNbinsX(); i++  ){
-        for(int j = 1; j < h2vtxbis->GetNbinsX(); j++  ){
-            
-             double Prob = 0.5*fabs((TMath::Erf( (h2vtxbis->GetBinCenter(h2vtxbis->GetBin(j)) - h2vtxbis->GetBinLowEdge(h2vtxbis->GetBin(i)) )/sigma)-
-                      TMath::Erf( (h2vtxbis->GetBinCenter(h2vtxbis->GetBin(j)) - (h2vtxbis->GetBinLowEdge(h2vtxbis->GetBin(i))+h2vtxbis->GetBinWidth(i) )) /sigma)));
-  
-             FakData[i] += h2vtxbis->GetBinContent(j)*Prob;
-       }
-    h2vtxb->SetBinContent(i,FakData[i]);
-    }
-  Chi2[isigma] = h_DataEmu_2nvtx->Chi2Test(h2vtxb,"UW CHI2 P");
-  cout<<"Sigma  "<<sigma<<"Prob: "<<chi<<endl;
-  sigma1[isigma] = sigma;
-   }
-    TGraph *h_Fsigma_2nvtxb = new TGraph(99, sigma1, Chi2);
-    myc1->cd();
-    h_Fsigma_2nvtxb->Draw("ACP");
-    output = outDir+ "Sigma_2vtxBIS.png";
-    myc1->SaveAs(output.c_str());
-    FindMinAndVar(Chi2, sigma1 );
-
-  //3vtx
-  h_TT_3nvtx->Scale(h_DataEmu_3nvtx->Integral()/h_TT_3nvtx->Integral());
-  myc1->cd();
-  h_DataEmu_3nvtx->Draw();
-  h_TT_3nvtx->Draw("HISTOsame");
-  output = outDir + emu_3nvtx + ".png";
-  myc1->SaveAs(output.c_str());
-   for(int i=0 ; i<NBin; i++) Chi2[i] = 0.;
-  TH1F *h3vtx = new TH1F("h3vtx", "", NBin, 0., 220.);
-   for(int isigma = 1 ; isigma < 100; isigma++ ){
-   double sigma = double(isigma)/2.;
-   FunSig = 0.;
-   for(int i=0 ; i<NBin; i++) FakData[i]=0;
-   for(int i=0 ; i<NBin; i++) h3vtx->SetBinContent(i,0.);
-  
-   for( int i = 1; i < h_TT_3nvtx->GetNbinsX(); i++  ){
-        for(int j = 1; j < h_TT_3nvtx->GetNbinsX(); j++  ){
-            
-             double Prob = 0.5*fabs((TMath::Erf( (h_TT_3nvtx->GetBinCenter(h_TT_3nvtx->GetBin(j)) - h_TT_3nvtx->GetBinLowEdge(h_TT_3nvtx->GetBin(i)) )/sigma)-
-                      TMath::Erf( (h_TT_3nvtx->GetBinCenter(h_TT_3nvtx->GetBin(j)) - (h_TT_3nvtx->GetBinLowEdge(h_TT_3nvtx->GetBin(i))+h_TT_3nvtx->GetBinWidth(i) )) /sigma)));
-  
-             FakData[i] += h_TT_3nvtx->GetBinContent(j)*Prob;
-       }
-    h3vtx->SetBinContent(i,FakData[i]);
-    }
-  Chi2[isigma] = h_DataEmu_3nvtx->Chi2Test(h3vtx,"UW CHI2 P");
-  cout<<"Sigma  "<<sigma<<"Prob: "<<chi<<endl;
-  sigma1[isigma] = sigma;
-   }
-    TGraph *h_Fsigma_3nvtx = new TGraph(99, sigma1, Chi2);
-    myc1->cd();
-    h_Fsigma_3nvtx->Draw("ACP");
-    output = outDir+ "Sigma_3vtx.png";
-    myc1->SaveAs(output.c_str());
-    FindMinAndVar(Chi2, sigma1 );
-
-  //4vtx
-  h_TT_4nvtx->Scale(h_DataEmu_4nvtx->Integral()/h_TT_4nvtx->Integral());
-  myc1->cd();
-  h_DataEmu_4nvtx->Draw();
-  h_TT_4nvtx->Draw("HISTOsame");
-  output = outDir + emu_4nvtx + ".png";
-  myc1->SaveAs(output.c_str());
-   for(int i=0 ; i<NBin; i++) Chi2[i] = 0.;
-  TH1F *h4vtx = new TH1F("h4vtx", "", NBin, 0., 220.);
-   for(int isigma = 1 ; isigma < 100; isigma++ ){
-   double sigma = double(isigma)/2.;
-   FunSig = 0.;
-   for(int i=0 ; i<NBin; i++) FakData[i]=0;
-   for(int i=0 ; i<NBin; i++) h4vtx->SetBinContent(i,0.);
-  
-   for( int i = 1; i < h_TT_4nvtx->GetNbinsX(); i++  ){
-        for(int j = 1; j < h_TT_4nvtx->GetNbinsX(); j++  ){
-            
-             double Prob = 0.5*fabs((TMath::Erf( (h_TT_4nvtx->GetBinCenter(h_TT_4nvtx->GetBin(j)) - h_TT_4nvtx->GetBinLowEdge(h_TT_4nvtx->GetBin(i)) )/sigma)-
-                      TMath::Erf( (h_TT_4nvtx->GetBinCenter(h_TT_4nvtx->GetBin(j)) - (h_TT_4nvtx->GetBinLowEdge(h_TT_4nvtx->GetBin(i))+h_TT_4nvtx->GetBinWidth(i) )) /sigma)));
-  
-             FakData[i] += h_TT_4nvtx->GetBinContent(j)*Prob;
-       }
-    h4vtx->SetBinContent(i,FakData[i]);
-    }
-  Chi2[isigma] = h_DataEmu_4nvtx->Chi2Test(h4vtx,"UW CHI2 P");
-  cout<<"Sigma  "<<sigma<<"Prob: "<<chi<<endl;
-  sigma1[isigma] = sigma;
-   }
-    TGraph *h_Fsigma_4nvtx = new TGraph(99, sigma1, Chi2);
-    myc1->cd();
-    h_Fsigma_4nvtx->Draw("ACP");
-    output = outDir+ "Sigma_4vtx.png";
-    myc1->SaveAs(output.c_str());
-    FindMinAndVar(Chi2, sigma1 );
-  
-  cout<<endl;
-  cout<<"Efficiency (ee): "<<((TH1F*)File[ZZ]->Get( "ee_Effic" ))->GetBinContent(1)/NevTot<<endl;
-  cout<<"Efficiency (mumu): "<<((TH1F*)File[ZZ]->Get( "mumu_Effic" ))->GetBinContent(1)/NevTot<<endl;
-  cout<<"New Efficiency (ee): "<<( (TH1F*)File[ZZ]->Get("ee_Effic_MetSmear"))->GetBinContent(1)/NevTot<<endl;
-  cout<<"New Efficiency (mumu): "<<( (TH1F*)File[ZZ]->Get("mumu_Effic_MetSmear"))->GetBinContent(1)/NevTot<<endl;
-  cout<<"New Efficiency minus (ee): "<<( (TH1F*)File[ZZ]->Get("ee_Effic_MetSmearm"))->GetBinContent(1)/NevTot<<endl;
-  cout<<"New Efficiency minus (mumu): "<<( (TH1F*)File[ZZ]->Get("mumu_Effic_MetSmearm"))->GetBinContent(1)/NevTot<<endl;
-  cout<<"New Efficiency plus (ee): "<<( (TH1F*)File[ZZ]->Get("ee_Effic_MetSmearp"))->GetBinContent(1)/NevTot<<endl;
-  cout<<"New Efficiency plus (mumu): "<<( (TH1F*)File[ZZ]->Get("mumu_Effic_MetSmearp"))->GetBinContent(1)/NevTot<<endl;
+   double BinVa_mu = pFinalHistoDY_mu->GetBinContent(i);
+   if(BinVa_mu<0.) BinVa_mu=0.;
+   pFinalHistoDY_mu->SetBinContent(i, BinVa_mu);
+}
+err_ee=0., err_mu=0.;
+double pNbkgDY_ee = pFinalHistoDY_ee->IntegralAndError( pFinalHistoDY_ee->FindBin(cut)-1,pFinalHistoDY_ee->FindBin(maxcut)-1, err_ee );
+double pNbkgDY_mu = pFinalHistoDY_mu->IntegralAndError( pFinalHistoDY_mu->FindBin(cut)-1,pFinalHistoDY_mu->FindBin(maxcut)-1, err_mu );
+cout<<"The Systematic (bkg /2) for nDY in ee is: "<< (NbkgDY_ee-pNbkgDY_ee)*100/NbkgDY_ee <<"%  you have now:"<<pNbkgDY_ee<<" events"<<endl;
+cout<<"The Systematic (bkg /2) for nDY in mumu is: "<< (NbkgDY_mu-pNbkgDY_mu)*100/NbkgDY_mu <<"%  you have now"<<pNbkgDY_mu<<" events."<<endl;
 }
 
 if( CrossSec == 1 ){
@@ -791,332 +776,16 @@ if( CrossSec == 1 ){
      cout<<endl; cout<<"Cross Section (Pt>140): Sigma x B.r.(pp-ZZ-mumuvv):  "<<CrossSection_mumu<< " /pm " << Error_mumu <<endl;
 }
 
-if( ChooseMet == 1 ){
+if( SystGlob==1 ){
+double ERR_stat=0.,ERR_syst=0.;
+//Stat
+double Ndy = 0., Nnres = 0., Nwz = 0., Nww = 0., Ndata = 0.;
+//Syst
+double NSdy = 0., NSnres = 0., NSwz = 0., NSww = 0.;
 
-  cout<<"Comparing different Met"<<endl;
+ERR_stat = sqrt( pow(Ndy,2) );
+ERR_syst = sqrt( pow(NSdy,2) );
 
-  int Niter=5; // Num of variation
-  const int NEff = 30;
-  /*double ZZ_RedCMSCentralEff[NEff] = {0.}, ZZ_RedD0CentralEff[NEff] = {0.}, ZZ_PFCentralEff[NEff] = {0.};
-  double DY_RedCMSCentralEff[NEff] = {0.}, DY_RedD0CentralEff[NEff] = {0.}, DY_PFCentralEff[NEff] = {0.};
-  double ZZ_RedCMSUpEff[NEff] = {0.}, ZZ_RedD0UpEff[NEff] = {0.}, ZZ_PFUpEff[NEff] = {0.};
-  double DY_RedCMSUpEff[NEff] = {0.}, DY_RedD0UpEff[NEff] = {0.}, DY_PFUpEff[NEff] = {0.};
-  double ZZ_RedCMSDownEff[NEff] = {0.}, ZZ_RedD0DownEff[NEff] = {0.}, ZZ_PFDownEff[NEff] = {0.};
-  double DY_RedCMSDownEff[NEff] = {0.}, DY_RedD0DownEff[NEff] = {0.}, DY_PFDownEff[NEff] = {0.}; */
-  for(int it = 0; it<Niter; it++){
-  //Get Histo
-  string RedMet_IND_Best, RedMet_D0_Best, PFMet_Best;
-  if( it == 0 ){
-     RedMet_IND_Best = "all_ZZ_RedMetInd_Best";
-     RedMet_D0_Best = "all_ZZ_RedMetD0_Best";
-     PFMet_Best = "all_ZZ_PFMet_Best";
-     output = outDir + "BestMet.png";
-  }
-  if( it == 1 ){
-     RedMet_IND_Best = "all_ZZ_RedMetInd_Best_Jesp";
-     RedMet_D0_Best = "all_ZZ_RedMetD0_Best_Jesp";
-     PFMet_Best = "all_ZZ_PFMet_Best_Jesp";
-     output = outDir + "BestMet_Jesp.png";
-  }
-  if( it == 2 ){
-     RedMet_IND_Best = "all_ZZ_RedMetInd_Best_Jesm";
-     RedMet_D0_Best = "all_ZZ_RedMetD0_Best_Jesm";
-     PFMet_Best = "all_ZZ_PFMet_Best_Jesm";
-     output = outDir + "BestMet_Jesm.png";
-  }
-  if( it == 3 ){
-     RedMet_IND_Best = "all_ZZ_RedMetInd_BestPUp";
-     RedMet_D0_Best = "all_ZZ_RedMetD0_BestPUp";
-     PFMet_Best = "all_ZZ_PFMet_BestPUp";
-     output = outDir + "BestMet_PUp.png";
-  }
-  if( it == 4 ){
-     RedMet_IND_Best = "all_ZZ_RedMetInd_BestPUm";
-     RedMet_D0_Best = "all_ZZ_RedMetD0_BestPUm";
-     PFMet_Best = "all_ZZ_PFMet_BestPUm";
-     output = outDir + "BestMet_PUm.png";
-  }
-     TH1F *hBest_DY_IND = ( (TH1F*)File[DY]->Get( RedMet_IND_Best.c_str() ));
-     TH1F *hBest_DY_D0 = ( (TH1F*)File[DY]->Get( RedMet_D0_Best.c_str() ));
-     TH1F *hBest_DY_PF = ( (TH1F*)File[DY]->Get( PFMet_Best.c_str() ));
-     TH1F *hBest_ZZ_IND = ( (TH1F*)File[ZZ]->Get( RedMet_IND_Best.c_str() ));
-     TH1F *hBest_ZZ_D0 = ( (TH1F*)File[ZZ]->Get( RedMet_D0_Best.c_str() ));
-     TH1F *hBest_ZZ_PF = ( (TH1F*)File[ZZ]->Get( PFMet_Best.c_str() ));
-
-     double Eff_DY_IND[NEff] = {0.}, Eff_ZZ_IND[NEff] = {0.};
-     double Eff_DY_D0[NEff] = {0.}, Eff_ZZ_D0[NEff] = {0.};
-     double Eff_DY_PF[NEff] = {0.}, Eff_ZZ_PF[NEff] = {0.};
-     double NBefore_DY = hBest_DY_IND->GetBinContent(1);
-     double NBefore_ZZ = hBest_ZZ_D0->GetBinContent(1);
-
-     for(int i = 0; i < hBest_ZZ_IND->GetNbinsX()-1 ; i++){
-       Eff_DY_IND[i] = hBest_DY_IND->GetBinContent(i+2)/NBefore_DY;
-       Eff_ZZ_IND[i] = hBest_ZZ_IND->GetBinContent(i+2)/NBefore_ZZ;
-       Eff_DY_D0[i] = hBest_DY_D0->GetBinContent(i+2)/NBefore_DY;
-       Eff_ZZ_D0[i] = hBest_ZZ_D0->GetBinContent(i+2)/NBefore_ZZ;
-       Eff_DY_PF[i] = hBest_DY_PF->GetBinContent(i+2)/NBefore_DY;
-       Eff_ZZ_PF[i] = hBest_ZZ_PF->GetBinContent(i+2)/NBefore_ZZ;
-     }
-/*     if( it == 0 ){
-     for(int j=0; j<NEff; j++) ZZ_RedCMSCentralEff[j] = Eff_ZZ_IND[j];
-     for(int j=0; j<NEff; j++) DY_RedCMSCentralEff[j] = Eff_DY_IND[j];
-     for(int j=0; j<NEff; j++) ZZ_RedD0CentralEff[j] = Eff_ZZ_D0[j];
-     for(int j=0; j<NEff; j++) DY_RedD0CentralEff[j] = Eff_DY_D0[j];
-     for(int j=0; j<NEff; j++) ZZ_PFCentralEff[j] = Eff_ZZ_PF[j];
-     for(int j=0; j<NEff; j++) DY_PFCentralEff[j] = Eff_DY_PF[j];
-     }
-     if( it == 1 ){
-     for(int j=0; j<NEff; j++){ ZZ_RedCMSUpEff[j] = fabs(Eff_ZZ_IND[j]-ZZ_RedCMSCentralEff[j]); cout<<ZZ_RedCMSUpEff[j]<<endl;}
-     for(int j=0; j<NEff; j++){ DY_RedCMSUpEff[j] = fabs(Eff_DY_IND[j]-DY_RedCMSCentralEff[j]); cout<<DY_RedCMSUpEff[j]<<endl;}
-     for(int j=0; j<NEff; j++) ZZ_RedD0UpEff[j] = fabs(Eff_ZZ_D0[j]-ZZ_RedD0CentralEff[j]);
-     for(int j=0; j<NEff; j++) DY_RedD0UpEff[j] = fabs(Eff_DY_D0[j]-DY_RedD0CentralEff[j]);
-     for(int j=0; j<NEff; j++) ZZ_PFUpEff[j] = fabs(Eff_ZZ_PF[j]-ZZ_PFCentralEff[j]);
-     for(int j=0; j<NEff; j++) DY_PFUpEff[j] = fabs(Eff_DY_PF[j]-DY_PFCentralEff[j]);
-     }
-     if( it == 2 ){
-     for(int j=0; j<NEff; j++) ZZ_RedCMSDownEff[j] = fabs(Eff_ZZ_IND[j]-ZZ_RedCMSCentralEff[j]);
-     for(int j=0; j<NEff; j++) DY_RedCMSDownEff[j] = fabs(Eff_DY_IND[j]-DY_RedCMSCentralEff[j]);
-     for(int j=0; j<NEff; j++) ZZ_RedD0DownEff[j] = fabs(Eff_ZZ_D0[j]-ZZ_RedD0CentralEff[j]);
-     for(int j=0; j<NEff; j++) DY_RedD0DownEff[j] = fabs(Eff_DY_D0[j]-DY_RedD0CentralEff[j]);
-     for(int j=0; j<NEff; j++) ZZ_PFDownEff[j] = fabs(Eff_ZZ_PF[j]-ZZ_PFCentralEff[j]);
-     for(int j=0; j<NEff; j++) DY_PFDownEff[j] = fabs(Eff_DY_PF[j]-DY_PFCentralEff[j]);
-     }*/
-
-
-        TGraph *PFMet = new TGraph(NEff, Eff_DY_PF, Eff_ZZ_PF);
-        PFMet->SetLineColor(2);
-        PFMet->SetLineWidth(1);
-        PFMet->SetMarkerColor(2);
-        PFMet->SetMarkerStyle(20);
-        PFMet->SetMarkerSize(0.5);
-        PFMet->SetTitle("MET Efficiency");
-        PFMet->GetXaxis()->SetTitle("DY Efficiency");
-        PFMet->GetYaxis()->SetTitle("ZZ Efficiency");
-
-        TGraph *Met_IND = new TGraph(NEff, Eff_DY_IND, Eff_ZZ_IND);
-        Met_IND->SetLineColor(kBlue);
-        Met_IND->SetLineWidth(1);
-        Met_IND->SetMarkerColor(kBlue);
-        Met_IND->SetMarkerStyle(20);
-        Met_IND->SetMarkerSize(0.5);
-
-        TGraph *Met_D0 = new TGraph(NEff, Eff_DY_D0, Eff_ZZ_D0);
-        Met_D0->SetLineColor(3);
-        Met_D0->SetLineWidth(1);
-        Met_D0->SetMarkerColor(3);
-        Met_D0->SetMarkerStyle(20);
-        Met_D0->SetMarkerSize(0.5);
-
-     //Legend
-     TLegend *leg = new TLegend(0.15,0.7,0.48,0.87);
-     leg->SetFillColor(kWhite);
-     leg->AddEntry(PFMet,"PFMET","P");
-     leg->AddEntry(Met_IND,"REDMet IND","P");
-     leg->AddEntry(Met_D0,"REDMet D0","P");
-
-     myc1->cd();
-     myc1->SetLogx();
-     PFMet->Draw("ACP");
-     Met_IND->Draw("CPsame");
-     Met_D0->Draw("CPsame");
-     leg->Draw("same");
-     myc1->SaveAs(output.c_str());
-    
- }//N iter
-
-cout<<"Done with Met comparison..."<<endl<<endl;
-/*
-//TGraphErrorBet
-myc1->cd();
-//TGraphBentErrors *gr = new TGraphBentErrors(NEff, DY_RedCMSCentralEff, ZZ_RedCMSCentralEff, exl, exh, eyl, ZZ_RedCMSUpEff, exld, exhd, eyld, DY_RedCMSUpEff);
-TGraphBentErrors *gr = new TGraphBentErrors(NEff, DY_RedCMSCentralEff, ZZ_RedCMSCentralEff, 0, 0, 0, ZZ_RedCMSUpEff, 0,0 ,0 , DY_RedCMSUpEff);
-gr->SetTitle("Best Met JER variation");
-gr->SetMarkerColor(4);
-gr->SetMarkerStyle(21);
-gr->SetMarkerSize(0.5);
-gr->Draw("ALP");
-myc1->SaveAs("Prova.png");
-*/
-}
-
-if( OptCut ){
-
-string MetOpt = "all_optim_eventflow1";
-TH1F *h_ZZ = ( (TH1F*)File[ZZ]->Get( MetOpt.c_str() ));
-TH1F *h_DY = ( (TH1F*)File[DY]->Get( MetOpt.c_str() ));
-TH1F *h_WW = ( (TH1F*)File[WW]->Get( MetOpt.c_str() ));
-TH1F *h_WZ = ( (TH1F*)File[WZ]->Get( MetOpt.c_str() ));
-TH1F *h_TT = ( (TH1F*)File[TT]->Get( MetOpt.c_str() ));
-TH1F *h_WJ = ( (TH1F*)File[WJ]->Get( MetOpt.c_str() ));
-
-     cout<<"Optimizing Cut... "<<endl;
-     const int Nbin = 475;//bin
-
-     double Bkg = 0., DYnum = 0., ZZnum = 0., WWnum = 0., WZnum = 0., WJnum = 0., TTnum = 0.;
-     double SB[Nbin]={0.}; //30.
-     double Val[Nbin]={0.};
-
-     for(int i = 0; i<h_ZZ->GetNbinsX(); i++){
-       DYnum = (double)(h_DY->GetBinContent(i))*iWeight[DY];
-       ZZnum = (double)(h_ZZ->GetBinContent(i))*iWeight[ZZ];
-       WWnum = (double)(h_WW->GetBinContent(i))*iWeight[WW];
-       WZnum = (double)(h_WZ->GetBinContent(i))*iWeight[WZ];
-       WJnum = (double)(h_WJ->GetBinContent(i))*iWeight[WJ];
-       TTnum = (double)(h_TT->GetBinContent(i))*iWeight[TT];
-       Bkg = DYnum+WWnum+WZnum+WJnum+TTnum;
-       if( (ZZnum+Bkg) != 0 ){
-         //cout<<"bin = "<<i<<"  Num of BKG: "<< Bkg<<"  Num of ZZ: "<< ZZnum <<"  S/sqrt(S+B): "<< ZZnum/(sqrt(ZZnum+Bkg)) <<endl;
-         SB[i] = ZZnum/(sqrt(ZZnum+Bkg));
-         Val[i] = i;
-       }
-       else{ SB[i] = 0.; Val[i] = i;}
-     }
-     TGraph *h_BestMet = new TGraph(Nbin, Val, SB);
-     myc1->cd();
-     myc1->SetLogx(0);
-     h_BestMet->GetXaxis()->SetTitle("Bin corresponding a set of cuts");
-     h_BestMet->GetYaxis()->SetTitle("S/sqrtr(B)");
-     h_BestMet->Draw("ACP");
-     output = outDir+ "BestMetValue.png";
-     myc1->SaveAs(output.c_str());
-     //cout<<"MET IND:----> S/sqrt(S+B) Max is: "<<max_array(SB,Nbin)<<endl<<endl;
-
-     int bestbin=-1;
-     for(int i=0; i<Nbin;i++){ if( SB[i]==max_array(SB,Nbin) ) bestbin=i;   }
-     TH1F *dmz = ( (TH1F*)File[ZZ]->Get( "all_optim_cut1_dmz" ));
-     TH1F *met = ( (TH1F*)File[ZZ]->Get( "all_optim_cut1_met" ));
-     cout<<"Bin: "<<bestbin<<endl;
-     cout<<"Taglio in MET: "<<met->GetBinContent(bestbin)/2.<<endl;
-     cout<<"Taglio in Dmz: "<<dmz->GetBinContent(bestbin)/2.<<endl;
-}
-
-if( false ){
-     string RedMet_IND_Hist = "all_ZZ_RedMetInd_Opt";
-     string RedMet_D0_Hist = "all_ZZ_RedMetD0_Opt";
-     string Mass_Hist = "all_ZZ_Mass_Opt";
-     string Dphi_Hist = "all_ZZ_Dphi_Opt";
-     //Histo
-     TH1F *h_DY_IND = ( (TH1F*)File[DY]->Get( RedMet_IND_Hist.c_str() ));
-     TH1F *h_ZZ_IND = ( (TH1F*)File[ZZ]->Get( RedMet_IND_Hist.c_str() ));
-     TH1F *h_WW_IND = ( (TH1F*)File[WW]->Get( RedMet_IND_Hist.c_str() ));
-     TH1F *h_WZ_IND = ( (TH1F*)File[WZ]->Get( RedMet_IND_Hist.c_str() ));
-     TH1F *h_WJ_IND = ( (TH1F*)File[WJ]->Get( RedMet_IND_Hist.c_str() ));
-     TH1F *h_TT_IND = ( (TH1F*)File[TT]->Get( RedMet_IND_Hist.c_str() ));
-
-     TH1F *h_DY_D0 = ( (TH1F*)File[DY]->Get( RedMet_D0_Hist.c_str() ));
-     TH1F *h_ZZ_D0 = ( (TH1F*)File[ZZ]->Get( RedMet_D0_Hist.c_str() ));
-     TH1F *h_WW_D0 = ( (TH1F*)File[WW]->Get( RedMet_D0_Hist.c_str() ));
-     TH1F *h_WZ_D0 = ( (TH1F*)File[WZ]->Get( RedMet_D0_Hist.c_str() ));
-     TH1F *h_WJ_D0 = ( (TH1F*)File[WJ]->Get( RedMet_D0_Hist.c_str() ));
-     TH1F *h_TT_D0 = ( (TH1F*)File[TT]->Get( RedMet_D0_Hist.c_str() ));
-
-     TH1F *h_DY_Mass = ( (TH1F*)File[DY]->Get( Mass_Hist.c_str() ));
-     TH1F *h_ZZ_Mass = ( (TH1F*)File[ZZ]->Get( Mass_Hist.c_str() ));
-     TH1F *h_WW_Mass = ( (TH1F*)File[WW]->Get( Mass_Hist.c_str() ));
-     TH1F *h_WZ_Mass = ( (TH1F*)File[WZ]->Get( Mass_Hist.c_str() ));
-     TH1F *h_WJ_Mass = ( (TH1F*)File[WJ]->Get( Mass_Hist.c_str() ));
-     TH1F *h_TT_Mass = ( (TH1F*)File[TT]->Get( Mass_Hist.c_str() ));
-
-     TH1F *h_DY_Dphi = ( (TH1F*)File[DY]->Get( Dphi_Hist.c_str() ));
-     TH1F *h_ZZ_Dphi = ( (TH1F*)File[ZZ]->Get( Dphi_Hist.c_str() ));
-     TH1F *h_WW_Dphi = ( (TH1F*)File[WW]->Get( Dphi_Hist.c_str() ));
-     TH1F *h_WZ_Dphi = ( (TH1F*)File[WZ]->Get( Dphi_Hist.c_str() ));
-     TH1F *h_WJ_Dphi = ( (TH1F*)File[WJ]->Get( Dphi_Hist.c_str() ));
-     TH1F *h_TT_Dphi = ( (TH1F*)File[TT]->Get( Dphi_Hist.c_str() ));
- 
-     cout<<"Optimizing IND Met Cut"<<endl;
-     double Bkg = 0., DYnum = 0., ZZnum = 0., WWnum = 0., WZnum = 0., WJnum = 0., TTnum = 0.;
-     double SB[30]={0.};
-     double Val[30]={0.};
-
-     for(int i = 0; i<h_ZZ_IND->GetNbinsX(); i++){
-       DYnum = (double)(h_DY_IND->GetBinContent(i+1))*iWeight[DY];
-       ZZnum = (double)(h_ZZ_IND->GetBinContent(i+1))*iWeight[ZZ];
-       WWnum = (double)(h_WW_IND->GetBinContent(i+1))*iWeight[WW];
-       WZnum = (double)(h_WZ_IND->GetBinContent(i+1))*iWeight[WZ];
-       WJnum = (double)(h_WJ_IND->GetBinContent(i+1))*iWeight[WJ];
-       TTnum = (double)(h_TT_IND->GetBinContent(i+1))*iWeight[TT];
-       Bkg = DYnum+WWnum+WZnum+WJnum+TTnum;
-       if( (ZZnum+Bkg) != 0 ){
-         cout<<"cut = "<<20+2*i<<"  Num of BKG: "<< Bkg<<"  Num of ZZ: "<< ZZnum <<"  S/sqrt(S+B): "<< ZZnum/(sqrt(ZZnum+Bkg)) <<endl;
-         SB[i] = ZZnum/(sqrt(ZZnum+Bkg));
-         Val[i] = 20+2*i;
-       }
-       else{ SB[i] = 0.; Val[i] = 20+2*i;}
-     }
-     TGraph *h_BestMet = new TGraph(30, Val, SB);
-     myc1->cd();
-     myc1->SetLogx(0);
-     h_BestMet->GetXaxis()->SetTitle("RedMet Ind [GeV]");
-     h_BestMet->GetYaxis()->SetTitle("Efficiency");
-     h_BestMet->Draw("ACP");
-     output = outDir+ "BestMetValue.png";
-     myc1->SaveAs(output.c_str());
-     cout<<"MET IND:----> S/sqrt(S+B) Max is: "<<max_array(SB,30)<<endl<<endl;
-
-     cout<<"Optimizing Mass Cut"<<endl;
-     for(int i=0; i<30; i++) SB[i]=0.;
-     for(int i = 0; i<h_ZZ_Mass->GetNbinsX(); i++){
-       DYnum = (double)(h_DY_Mass->GetBinContent(i+1))*iWeight[DY];
-       ZZnum = (double)(h_ZZ_Mass->GetBinContent(i+1))*iWeight[ZZ];
-       WWnum = (double)(h_WW_Mass->GetBinContent(i+1))*iWeight[WW];
-       WZnum = (double)(h_WZ_Mass->GetBinContent(i+1))*iWeight[WZ];
-       WJnum = (double)(h_WJ_Mass->GetBinContent(i+1))*iWeight[WJ];
-       TTnum = (double)(h_TT_Mass->GetBinContent(i+1))*iWeight[TT];
-       Bkg = DYnum+WWnum+WZnum+WJnum+TTnum;
-       if( (ZZnum+Bkg) != 0 ){
-         cout<<"cut = "<<5+0.5*i<<"  Num of BKG: "<< Bkg<<"  Num of ZZ: "<< ZZnum <<"  S/sqrt(S+B): "<< ZZnum/(sqrt(ZZnum+Bkg)) <<endl;
-         SB[i] = ZZnum/(sqrt(ZZnum+Bkg));
-         Val[i] = 5+0.5*i;
-       }
-       else{ SB[i] = 0.; Val[i] = 5+0.5*i;}
-     }
-     cout<<"Mass:----> S/sqrt(S+B) Max is: "<<max_array(SB,30)<<endl<<endl;
-     TGraph *h_BestMass = new TGraph(30, Val, SB);
-     myc1->cd();
-     h_BestMass->GetXaxis()->SetTitle("|M(Zll)-91.| [GeV]");
-     myc1->SetLogx(0);
-     h_BestMass->GetYaxis()->SetTitle("Efficiency");
-     h_BestMass->Draw("ACP");
-     output = outDir+ "BestMassValue.png";
-     myc1->SaveAs(output.c_str());
-/*
-     cout<<"Optimizing D0 Met Cut"<<endl;
-      Bkg = 0., DYnum = 0., ZZnum = 0., WWnum = 0., WZnum = 0., WJnum = 0., TTnum = 0.;
-     for(int i=0; i<30; i++) SB[i]=0.;
-
-     for(int i = 0; i<h_ZZ_D0->GetNbinsX(); i++){
-       DYnum = (double)(h_DY_D0->GetBinContent(i+1))*iWeight[DY];
-       ZZnum = (double)(h_ZZ_D0->GetBinContent(i+1))*iWeight[ZZ];
-       WWnum = (double)(h_WW_D0->GetBinContent(i+1))*iWeight[WW];
-       WZnum = (double)(h_WZ_D0->GetBinContent(i+1))*iWeight[WZ];
-       WJnum = (double)(h_WJ_D0->GetBinContent(i+1))*iWeight[WJ];
-       TTnum = (double)(h_TT_D0->GetBinContent(i+1))*iWeight[TT];
-       Bkg = DYnum+WWnum+WZnum+WJnum+TTnum;
-       if( (ZZnum+Bkg) != 0 ){
-         cout<<"cut = "<<20+2*i<<"  Num of BKG: "<< Bkg<<"  Num of ZZ: "<< ZZnum <<"  S/sqrt(S+B): "<< ZZnum/(sqrt(ZZnum+Bkg)) <<endl;
-         SB[i] = ZZnum/(sqrt(ZZnum+Bkg));
-       }
-     }
-     cout<<"MET D0:----> S/sqrt(S+B) Max is: "<<max_array(SB,30)<<endl<<endl;
-
-     cout<<"Optimizing Phi Cut"<<endl;
-     for(int i=0; i<30; i++) SB[i]=0.;
-     for(int i = 0; i<h_ZZ_Dphi->GetNbinsX(); i++){
-       DYnum = (double)(h_DY_Dphi->GetBinContent(i+1))*iWeight[DY];
-       ZZnum = (double)(h_ZZ_Dphi->GetBinContent(i+1))*iWeight[ZZ];
-       WWnum = (double)(h_WW_Dphi->GetBinContent(i+1))*iWeight[WW];
-       WZnum = (double)(h_WZ_Dphi->GetBinContent(i+1))*iWeight[WZ];
-       WJnum = (double)(h_WJ_Dphi->GetBinContent(i+1))*iWeight[WJ];
-       TTnum = (double)(h_TT_Dphi->GetBinContent(i+1))*iWeight[TT];
-       Bkg = DYnum+WWnum+WZnum+WJnum+TTnum;
-       if( (ZZnum+Bkg) != 0 ){
-         cout<<"cut = "<<1+i*0.071333 <<"  Num of DY: "<< DYnum<<"  Num of ZZ: "<< ZZnum <<"  S/sqrt(S+B): "<< ZZnum/(sqrt(ZZnum+Bkg)) <<endl;
-         SB[i] = ZZnum/(sqrt(ZZnum+Bkg));
-       }
-     }
-     cout<<"PHI:----> S/sqrt(S+B) Max is: "<<max_array(SB,30)<<endl<<endl;
-*/
 }
 
 }//End Main
