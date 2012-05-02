@@ -320,9 +320,6 @@ int main(int argc, char* argv[])
       Hcutflow->Fill(4,weight);
       Hcutflow->Fill(5,1);
 
-
-
-      
       //select event
       bool passMultiplicityVetoes (isGammaEvent ? (phys.leptons.size()==0 && ev.ln==0 && phys.gammas.size()==1) : (ev.ln==0) );
       bool passKinematics         (gamma.pt()>30);//55);
@@ -331,9 +328,10 @@ int main(int argc, char* argv[])
       bool passR9tight            (!isGammaEvent || r9>0.85); 
       bool passBveto              (nbtags==0);
       bool passMinDphiJmet        (mindphijmet>0.5);
-      bool passSMZZ(njets30==0 /*&& redMets[0].pt()>50*/ && zvvs[0].pt()/gamma.pt() > 0.4 && zvvs[0].pt()/gamma.pt() < 1.8 && passBveto && passMinDphiJmet);  
+      bool passSMZZpreSel(njets30==0 && passBveto && passMinDphiJmet);  
+      bool passSMZZredMet(redMets[0].pt()>50);
+      bool passSMZZbalance(zvvs[0].pt()/gamma.pt() > 0.4 && zvvs[0].pt()/gamma.pt() < 1.8);
 
-    
       //control plots
       std::map<TString, float> qtWeights;
       if(isGammaEvent) qtWeights = gammaEvHandler.getWeights(phys,subcat);
@@ -343,7 +341,7 @@ int main(int argc, char* argv[])
 	  float zmass=iboson.mass();
 	  //Float_t rawMt( METUtils::transverseMass(iboson,metP4,true) );
 	  Float_t mt( METUtils::transverseMass(iboson,zvvs[0],true) );
-
+	  
 	  TString ctf=dilCats[idc];
 	  float iweight=weight;
 	  if(isGammaEvent) iweight*=qtWeights[dilCats[idc]];
@@ -378,29 +376,36 @@ int main(int argc, char* argv[])
 
 	      if(hasTrkVeto || !passR9tight) continue;
 	      if(zvvs[0].pt()>70) mon.fillHisto("mindphijmet_"+subCatsToFill[isc],ctf, mindphijmet,iweight);	      
-	      if(passMinDphiJmet) continue;
-	      mon.fillHisto("met_rawmet_"+subCatsToFill[isc],ctf, rawZvv.pt(),iweight);
-	      mon.fillHisto("metoverqt_"+subCatsToFill[isc],ctf, zvvs[0].pt()/gamma.pt(),iweight);
-	      mon.fillHisto("met_met_"+subCatsToFill[isc],ctf, zvvs[0].pt(),iweight);
-	      mon.fillHisto("met_met_"+subCatsToFill[isc]+"_vspu",ctf, ev.nvtx,zvvs[0].pt(),iweight);
-	      mon.fillHisto("met_min3Met_"+subCatsToFill[isc],ctf, min3Mets[0].pt(),iweight);
-	      mon.fillHisto("met_min3Met_"+subCatsToFill[isc]+"_vspu",ctf, ev.nvtx,min3Mets[0].pt(),iweight);
-	      mon.fillHisto("met_rawRedMet_"+subCatsToFill[isc],ctf, rawRedMet.pt(),iweight);
-	      mon.fillHisto("met_redMet_"+subCatsToFill[isc],ctf, redMets[0].pt(),iweight);
-	      mon.fillHisto("met_redMet_"+subCatsToFill[isc]+"_vspu",ctf, ev.nvtx,redMets[0].pt(),iweight);
-	      mon.fillHisto("met_redMetT_"+subCatsToFill[isc],ctf, redMetLs[0],iweight);
-	      mon.fillHisto("met_redMetL_"+subCatsToFill[isc],ctf, redMetTs[0],iweight);
-	      mon.fillHisto("mt_"+subCatsToFill[isc],ctf,mt,iweight);
-
-	      if(passSMZZ)
+	      if(passMinDphiJmet)
 		{
-		  mon.fillHisto("metoverqt_"+subCatsToFill[isc],"ZZ"+ctf, zvvs[0].pt()/gamma.pt(),iweight);
-		  mon.fillHisto("met_met_"+subCatsToFill[isc],"ZZ"+ctf, zvvs[0].pt(),iweight);
-		  mon.fillHisto("met_redMet_"+subCatsToFill[isc],"ZZ"+ctf, redMets[0].pt(),iweight);
-		  mon.fillHisto("met_redMetT_"+subCatsToFill[isc],"ZZ"+ctf, redMetLs[0],iweight);
-		  mon.fillHisto("met_redMetL_"+subCatsToFill[isc],"ZZ"+ctf, redMetTs[0],iweight);
+		  mon.fillHisto("met_rawmet_"+subCatsToFill[isc],ctf, rawZvv.pt(),iweight);
+		  mon.fillHisto("metoverqt_"+subCatsToFill[isc],ctf, zvvs[0].pt()/gamma.pt(),iweight);
+		  mon.fillHisto("met_met_"+subCatsToFill[isc],ctf, zvvs[0].pt(),iweight);
+		  mon.fillHisto("met_met_"+subCatsToFill[isc]+"_vspu",ctf, ev.nvtx,zvvs[0].pt(),iweight);
+		  mon.fillHisto("met_min3Met_"+subCatsToFill[isc],ctf, min3Mets[0].pt(),iweight);
+		  mon.fillHisto("met_min3Met_"+subCatsToFill[isc]+"_vspu",ctf, ev.nvtx,min3Mets[0].pt(),iweight);
+		  mon.fillHisto("met_rawRedMet_"+subCatsToFill[isc],ctf, rawRedMet.pt(),iweight);
+		  mon.fillHisto("met_redMet_"+subCatsToFill[isc],ctf, redMets[0].pt(),iweight);
+		  mon.fillHisto("met_redMet_"+subCatsToFill[isc]+"_vspu",ctf, ev.nvtx,redMets[0].pt(),iweight);
+		  mon.fillHisto("met_redMetT_"+subCatsToFill[isc],ctf, redMetLs[0],iweight);
+		  mon.fillHisto("met_redMetL_"+subCatsToFill[isc],ctf, redMetTs[0],iweight);
+		  mon.fillHisto("mt_"+subCatsToFill[isc],ctf,mt,iweight);
 		}
-
+	      
+	      if(passSMZZpreSel)
+		{
+		  if(passSMZZredMet) mon.fillHisto("metoverqt_"+subCatsToFill[isc],"ZZ"+ctf, zvvs[0].pt()/gamma.pt(),iweight);
+		  if(passSMZZbalance)
+		    {
+		      mon.fillHisto("met_met_"+subCatsToFill[isc],"ZZ"+ctf, zvvs[0].pt(),iweight);
+		      mon.fillHisto("met_redMet_"+subCatsToFill[isc],"ZZ"+ctf, redMets[0].pt(),iweight);
+		      if(passSMZZredMet)
+			{
+			  mon.fillHisto("met_redMetT_"+subCatsToFill[isc],"ZZ"+ctf, redMetLs[0],iweight);
+			  mon.fillHisto("met_redMetL_"+subCatsToFill[isc],"ZZ"+ctf, redMetTs[0],iweight);
+			}
+		    }
+		}
 	      if(subCatsToFill[isc]=="vbf")
 		{
 		  LorentzVector VBFSyst=jetsP4[0]+jetsP4[1];
@@ -409,9 +414,7 @@ int main(int argc, char* argv[])
 		}
 
 	      for(unsigned int index=0;index<nOptimCuts;index++){
-		if(index==nOptimCuts-1 && passSMZZ)
-		  mon.fill2DHisto("mt_shapes_"+subCatsToFill[isc],ctf,index, mt,iweight);
-		else if ( index<nOptimCuts-1 && zvvs[0].pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
+		if ( index<nOptimCuts-1 && zvvs[0].pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
 		  mon.fill2DHisto("mt_shapes_"+subCatsToFill[isc],ctf,index, mt,iweight);
 	      }
 	    }
