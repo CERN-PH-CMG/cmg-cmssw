@@ -11,8 +11,7 @@ process = cms.Process("PAT")
 print 'querying database for source files'
 
 
-runOnMC = True
-runOnV4 = False
+runOnMC = False
 
 runJetSubstructure = False
 
@@ -46,7 +45,7 @@ if runOnMC is False:
     process.patMuons.addGenMatch = False
     process.makePatMuons.remove( process.muonMatch )
     
-    process.PATCMGSequence.remove( process.PATCMGGenJetSequence )
+    process.PATCMGSequence.remove( process.PATCMGGenSequence )
     process.PATCMGJetSequence.remove( process.jetMCSequence )
     process.PATCMGJetSequence.remove( process.patJetFlavourId )
     process.patJets.addGenJetMatch = False
@@ -66,20 +65,16 @@ if runOnMC is False:
     process.patMETs.addGenMET = False 
     process.patMETsRaw.addGenMET = False 
 
-
     # setting up JSON file
     json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/DCSOnly/json_DCSONLY.txt'
     print 'using json file: ', json
     from CMGTools.Common.Tools.applyJSON_cff import *
     applyJSON(process, json )
 
-
     # adding L2L3Residual corrections
     process.patJetCorrFactors.levels.append('L2L3Residual')
     process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
 
-if runOnV4 is True:
-    process.PATCMGRhoSequence += process.kt6PFJets
 
 print 'cloning the jet sequence to build PU chs jets'
 
@@ -109,10 +104,10 @@ process.p += process.postPathCounter
 
 
 #load genJets, genParticlesPruned, vertex weights, ...
-if runOnMC:
-    process.load('CMGTools.Common.gen_cff')
-    process.genJet.cfg.inputCollection = cms.InputTag("selectedPatJets","genJets")
-    process.p += process.genSequence
+# if runOnMC:
+#     process.load('CMGTools.Common.gen_cff')
+#    process.genJet.cfg.inputCollection = cms.InputTag("selectedPatJets","genJets")
+#    process.p += process.genSequence
 
 
 process.p += process.postPathCounter
@@ -190,7 +185,7 @@ process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
 ## Options and Output Report
-process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
+process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 print sep_line
 

@@ -71,16 +71,6 @@ process.source = datasetToSource(
    )
 
 
-## for testing in 5X
-## process.source = cms.Source("PoolSource",
-##       fileNames = cms.untracked.vstring([
-## #   '/store/data/Run2012A/HT/RECO/PromptReco-v1/000/191/578/54BFD65B-B08A-E111-8D3D-BCAEC5364C93.root'
-##     '/store/relval/CMSSW_5_2_0/RelValProdTTbar/AODSIM/START52_V4A-v1/0250/68FCD498-F969-E111-9366-002618943949.root'
-## #    '/store/relval/CMSSW_5_1_2/RelValQCD_FlatPt_15_3000/GEN-SIM-RECO/START50_V15A-v1/0240/B830CB12-1861-E111-B1BD-001A92811728.root'
-## #    '/store/relval/CMSSW_5_1_2/DoubleMu/RECO/GR_R_50_V12_RelVal_zMu2011B-v1/0237/182F7808-BD60-E111-943C-001A92810AEA.root'
-##      ])
-## )
-
 # ProductionTasks.py will override this change
 process.source.fileNames = process.source.fileNames[:10]
 
@@ -186,7 +176,6 @@ switchInputTausToPAT(process,postfix=postfixAK5)
 # embed just the tracks (PF candidates are saved in the patTuple)
 embedTracksInTaus(process,postfix=postfixAK5,enable=True)
 embedPFCandidatesInTaus(process,postfix=postfixAK5,enable=False)
-
    
 # curing a weird bug in PAT..
 from CMGTools.Common.PAT.removePhotonMatching import removePhotonMatching
@@ -202,6 +191,11 @@ getattr(process,"pfIsolatedElectrons"+postfixAK5).isolationCut = 999999
 # insert the PFMET sifnificance calculation
 from CMGTools.Common.PAT.addMETSignificance_cff import addMETSig
 addMETSig( process, postfixAK5 )
+
+from  CMGTools.External.pujetidsequence_cff import puJetId
+process.puJetIdAK5 = puJetId.clone( jets = 'selectedPatJetsAK5')
+process.patDefaultSequenceAK5.replace( process.selectedPatJetsAK5,
+                                       process.selectedPatJetsAK5 + process.puJetIdAK5 )
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -407,6 +401,9 @@ if runCMG:
     from CMGTools.Common.Tools.tuneCMGSequences import * 
     tuneCMGSequences(process, postpostfix='CMG')
 
+    process.cmgPUJetMva.jetids = 'puJetIdAK5'
+    process.cmgPFJet.cfg.puVariables = 'puJetIdAK5'
+
     process.p += process.analysisSequence
 
     from CMGTools.Common.PAT.addStdLeptons import addCmgMuons, addCmgElectrons
@@ -553,3 +550,7 @@ process.selectedPatElectronsAK5.cut = 'pt()>5'
 process.selectedPatMuons.cut = 'pt()>3'
 process.selectedPatElectrons.cut = 'pt()>5'
 # process.preselectedPatElectrons.cut = 'pt()>5'
+
+if runOnMC is False:
+    print 'OVERRIDING datasetToSource TO TEST RUNNING ON DATA'
+    process.source.fileNames = ['/store/data/Run2012A/DoubleMu/AOD/PromptReco-v1/000/191/859/66D9EE0B-EC8C-E111-9346-001D09F2AD84.root']
