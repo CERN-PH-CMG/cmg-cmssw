@@ -101,6 +101,10 @@ class SimpleJetPlots (Analyzer) :
         self.h_YeCHS_correction_ptcut_PUcut = TH2F ("h_YeCHS_correction_ptcut_PUcut", "", 48, -6, 6, 1000, 0, 10) ;
         self.YeNoCHSRatio_eta_ptcut_PUcut   = TH2F ("YeNoCHSRatio_eta_ptcut_PUcut",   "", 48, -6, 6, 100,  0, 2)
 
+        self.h_NoCHS_correction_PUcut = TH2F ("h_NoCHS_correction_PUcut", "", 48, -6, 6, 1000, 0, 10) ;
+        self.h_YeCHS_correction_PUcut = TH2F ("h_YeCHS_correction_PUcut", "", 48, -6, 6, 1000, 0, 10) ;
+        self.YeNoCHSRatio_eta_PUcut   = TH2F ("YeNoCHSRatio_eta_PUcut",   "", 48, -6, 6, 100,  0, 2)
+
 
 
 # .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... .... ....
@@ -173,13 +177,18 @@ class SimpleJetPlots (Analyzer) :
             self.h_NoCHS_correction.Fill (nojet.eta (), 1. / nojet.jecFactor(0))
             self.h_YeCHS_correction.Fill (yejet.eta (), 1. / yejet.jecFactor(0))
 
+            if len (event.vertices) > 8 and len (event.vertices) <= 10:
+                self.YeNoCHSRatio_eta_PUcut.Fill (yejet.eta (), yejet.pt () * yejet.jecFactor(0) / (nojet.pt () * nojet.jecFactor(0)))
+                self.h_NoCHS_correction_PUcut.Fill (nojet.eta (), 1. / nojet.jecFactor(0))
+                self.h_YeCHS_correction_PUcut.Fill (yejet.eta (), 1. / yejet.jecFactor(0))
+            
             if nojet.pt () < 40 or nojet.pt () > 60:
                 continue
             self.YeNoCHSRatio_eta_ptcut.Fill (yejet.eta (), yejet.pt () * yejet.jecFactor(0) / (nojet.pt () * nojet.jecFactor(0)))
             self.h_NoCHS_correction_ptcut.Fill (nojet.eta (), 1. / nojet.jecFactor(0))
             self.h_YeCHS_correction_ptcut.Fill (yejet.eta (), 1. / yejet.jecFactor(0))
 
-            if len (event.vertices) < 5 or len (event.vertices) > 10:
+            if len (event.vertices) < 8 or len (event.vertices) > 10:
                 continue
             self.YeNoCHSRatio_eta_ptcut_PUcut.Fill (yejet.eta (), yejet.pt () * yejet.jecFactor(0) / (nojet.pt () * nojet.jecFactor(0)))
             self.h_NoCHS_correction_ptcut_PUcut.Fill (nojet.eta (), 1. / nojet.jecFactor(0))
@@ -266,6 +275,10 @@ class SimpleJetPlots (Analyzer) :
         self.h_YeCHS_correction_ptcut_PUcut .Write ()
         self.h_NoCHS_correction_ptcut_PUcut .Write ()
         self.YeNoCHSRatio_eta_ptcut_PUcut   .Write ()
+        
+        self.h_YeCHS_correction_PUcut .Write ()
+        self.h_NoCHS_correction_PUcut .Write ()
+        self.YeNoCHSRatio_eta_PUcut   .Write ()
         
         self.h_NoCHS_genjetsnum       .Write ()
         self.h_NVTXnum                .Write ()
