@@ -9,12 +9,12 @@
 #include "DataFormats/JetReco/interface/Jet.h"
 
 
-class TrackingFailureFilter : public edm::EDFilter {
+class TrackingFailureFilterCMG : public edm::EDFilter {
 
   public:
 
-    explicit TrackingFailureFilter(const edm::ParameterSet & iConfig);
-    ~TrackingFailureFilter() {}
+    explicit TrackingFailureFilterCMG(const edm::ParameterSet & iConfig);
+    ~TrackingFailureFilterCMG() {}
 
   private:
 
@@ -28,7 +28,7 @@ class TrackingFailureFilter : public edm::EDFilter {
 };
 
 
-TrackingFailureFilter::TrackingFailureFilter(const edm::ParameterSet & iConfig) {
+TrackingFailureFilterCMG::TrackingFailureFilterCMG(const edm::ParameterSet & iConfig) {
   jetSrc_         = iConfig.getParameter<edm::InputTag>("JetSource");
   trackSrc_       = iConfig.getParameter<edm::InputTag>("TrackSource");
   vertexSrc_      = iConfig.getParameter<edm::InputTag>("VertexSource");
@@ -41,7 +41,7 @@ TrackingFailureFilter::TrackingFailureFilter(const edm::ParameterSet & iConfig) 
 }
 
 
-bool TrackingFailureFilter::filter(edm::Event & iEvent, const edm::EventSetup & iSetup) {
+bool TrackingFailureFilterCMG::filter(edm::Event & iEvent, const edm::EventSetup & iSetup) {
 
   edm::Handle<edm::View<reco::Jet> > jets;
   iEvent.getByLabel(jetSrc_, jets);
@@ -80,4 +80,4 @@ bool TrackingFailureFilter::filter(edm::Event & iEvent, const edm::EventSetup & 
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
-DEFINE_FWK_MODULE(TrackingFailureFilter);
+DEFINE_FWK_MODULE(TrackingFailureFilterCMG);

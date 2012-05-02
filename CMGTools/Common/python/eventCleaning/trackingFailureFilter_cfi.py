@@ -1,8 +1,8 @@
 
 import FWCore.ParameterSet.Config as cms
 
-trackingFailureFilter = cms.EDFilter(
-  "TrackingFailureFilter",
+trackingFailureFilterCMG = cms.EDFilter(
+  "TrackingFailureFilterCMG",
   # Steven was using AK5PFJets
   JetSource = cms.InputTag('pfJetsAK5'),
   TrackSource = cms.InputTag('generalTracks'),

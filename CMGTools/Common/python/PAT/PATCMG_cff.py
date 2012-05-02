@@ -58,7 +58,7 @@ PATCMGPileUpSubtractionSequence = cms.Sequence(
 # EVENT CLEANING   ----------------------------
 
 from CMGTools.Common.eventCleaning.eventCleaning_cff import *
-trackingFailureFilter.JetSource = 'ak5PFJets'
+trackingFailureFilterCMG.JetSource = 'ak5PFJets'
 
 # RHO's            ----------------------------
 

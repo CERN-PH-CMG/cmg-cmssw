@@ -51,7 +51,7 @@ eventCleaningTaggingSequence = cms.Sequence(
     selectGoodPFEventsTaggingSequence +
     recovRecHitFilter +
     eeNoiseFilter +
-    trackingFailureFilter +
+    trackingFailureFilterCMG +
     goodPrimaryVertexFilter +
     scrapingFilter 
     )
