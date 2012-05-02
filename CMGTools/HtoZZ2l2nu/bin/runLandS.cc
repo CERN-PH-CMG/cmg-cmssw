@@ -1085,42 +1085,36 @@ void doBackgroundSubtraction(TString dirurl, std::vector<TString>& selCh,TString
            val = val*alpha;
            err = err*alpha + val*alpha_err;
            NonResonant->SetBinContent(b, val );
-            NonResonant->SetBinError  (b, err );
+           NonResonant->SetBinError  (b, err );
         }
         shapeChan_SI.bckg.push_back(NonResonant);
-        shapeChan_SI.totalBckg->Add(NonResonant, 1);
-
-        printf("NBins = %i %i  %i\n",shapeChan_SI.totalBckg->GetNbinsX(), shapeChan_SI.bckg[0]->GetNbinsX(), NonResonant->GetNbinsX());
 
         Double_t valerr;
         Double_t val = NonResonant->IntegralAndError(1,NonResonant->GetXaxis()->GetNbins(),valerr);
         Lyield += string(" &") + toLatexRounded(val,valerr);
         Cval   += string(" &") + toLatexRounded(val,valerr);
 
-
-        TH1* MCNRB = (TH1*)shapeChan_SI.totalBckg->Clone("MCNRB"); MCNRB->Reset();
-
         //Clean background collection
-        size_t nbckg=shapeChan_SI.bckg.size();
-        for(size_t ibckg=0; ibckg<nbckg; ibckg++){           
+        TH1* MCNRB = (TH1*)shapeChan_SI.totalBckg->Clone("MCNRB"); MCNRB->Reset();
+        for(size_t ibckg=0; ibckg<shapeChan_SI.bckg.size(); ibckg++){           
            TString proc(shapeChan_SI.bckg[ibckg]->GetTitle());
 	   if(( subNRB2011 && (proc.Contains("t#bar{t}") || proc.Contains("Single top") || proc.Contains("WW") || proc.Contains("Z#rightarrow #tau#tau")) ) ||
               ( subNRB2012 && (proc.Contains("t#bar{t}") || proc.Contains("Single top") ) ) ){
-              shapeChan_SI.totalBckg->Add(shapeChan_SI.bckg[ibckg], -1);
               MCNRB->Add(shapeChan_SI.bckg[ibckg], 1);
 	      shapeChan_SI.bckg.erase(shapeChan_SI.bckg.begin()+ibckg);  ibckg--;
            }
         }
+        //recompute total background
+        shapeChan_SI.totalBckg->Reset();
+        for(size_t i=0; i<shapeChan_SI.bckg.size(); i++){shapeChan_SI.totalBckg->Add(shapeChan_SI.bckg[i]);}
 
         val = MCNRB->IntegralAndError(1,MCNRB->GetXaxis()->GetNbins(),valerr);
         LyieldMC += string(" &") + toLatexRounded(val,valerr);
         Cval     += string(" &") + toLatexRounded(val,valerr);
 
-
         if(pFile){
            fprintf(pFile,"%s\\\\\n", Cval.c_str());
         }
-
      }}
 
      if(pFile){
