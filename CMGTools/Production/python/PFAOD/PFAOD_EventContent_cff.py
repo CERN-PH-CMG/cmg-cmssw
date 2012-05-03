@@ -190,6 +190,7 @@ V5.extend(
     'keep *_ak7CaloJets_*_*',
     'keep double_kt6PFJets_rho_*',
     'keep recoPFJets_ak5PFJets_*_*',
+    'keep recoPFMETs_pfMet_*_*',
     'keep recoPhotonCores_photonCore__*',
     'keep recoPhotons_pfPhotonTranslator_pfphot_*',
     'keep recoPhotons_photons__*',
