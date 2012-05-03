@@ -4,7 +4,7 @@ eleTriggerMatchHLT = cms.EDProducer("PATTriggerMatcherDRDPtLessByR",
    src     = cms.InputTag( "selectedPatElectrons" ),
    matched = cms.InputTag( "patTrigger" ),
    andOr   = cms.bool( False ),
-   matchedCuts = cms.string(),
+   matchedCuts = cms.string('dummy'),
    maxDPtRel = cms.double( 0.5 ),
    maxDeltaR = cms.double( 0.5 ),
    resolveAmbiguities    = cms.bool( True ),
@@ -23,26 +23,21 @@ eleTriggerMatchHLT9= eleTriggerMatchHLT.clone(matchedCuts = cms.string('coll("hl
 eleTriggerMatchHLT10= eleTriggerMatchHLT.clone(matchedCuts = cms.string('coll("hltEle27WP80PixelMatchElectronsL1Seeded")'))  
 
 
-patTriggerMatchers1EleInputTags = [
-   cms.InputTag('eleTriggerMatchHLT1'),
-   cms.InputTag('eleTriggerMatchHLT2'),
-   cms.InputTag('eleTriggerMatchHLT3'),
-   cms.InputTag('eleTriggerMatchHLT4'),
-   cms.InputTag('eleTriggerMatchHLT5'),
-   cms.InputTag('eleTriggerMatchHLT6'),
-   cms.InputTag('eleTriggerMatchHLT7'),
-   cms.InputTag('eleTriggerMatchHLT8'),
-   cms.InputTag('eleTriggerMatchHLT9'),
-   cms.InputTag('eleTriggerMatchHLT10'),
-
-]
 
 ## ==== Embed ====
-patElectronsWithTrigger = cms.EDProducer( "PATTriggerMatchMuonEmbedder",
+patElectronsWithTrigger = cms.EDProducer( "PATTriggerMatchElectronEmbedder",
     src     = cms.InputTag( "selectedPatElectrons" ),
-    matches = cms.VInputTag()
+    matches = cms.VInputTag(  cms.InputTag('eleTriggerMatchHLT1'),
+                              cms.InputTag('eleTriggerMatchHLT2'),
+                              cms.InputTag('eleTriggerMatchHLT3'),
+                              cms.InputTag('eleTriggerMatchHLT4'),
+                              cms.InputTag('eleTriggerMatchHLT5'),
+                              cms.InputTag('eleTriggerMatchHLT6'),
+                              cms.InputTag('eleTriggerMatchHLT7'),
+                              cms.InputTag('eleTriggerMatchHLT8'),
+                              cms.InputTag('eleTriggerMatchHLT9'),
+                              cms.InputTag('eleTriggerMatchHLT10') )
 )
-patElectronsWithTrigger.matches += patTriggerMatchers1EleInputTags
 
 patElectronsWithTriggerSequence = cms.Sequence(
    eleTriggerMatchHLT1+

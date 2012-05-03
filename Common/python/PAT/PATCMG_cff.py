@@ -166,6 +166,7 @@ electronUserIsolation  = cms.PSet(
     cms.PSet( src = cms.InputTag("eleIsoFromDepsTkOptimized7") ),
     )         
 )
+
 patElectrons.isolationValues = cms.PSet(
     pfChargedHadrons = cms.InputTag("elPFIsoValueCharged04PFId"),
     pfChargedAll = cms.InputTag("elPFIsoValueChargedAll04PFId"),
