@@ -135,22 +135,6 @@ public:
     samples_.clear();
   }  
 
-protected:
- 
-
-private:
-
-  TString outputpath_;
-  std::vector<Sample*> samples_;   
-  Float_t QCDOStoSSRatio_;
-  Float_t QCDOStoSSRatioErr_;
-  Float_t QCDMuIsoSideRatio_;
-  Float_t QCDOSTauIsoSideRatio_;
-  Float_t QCDSSTauIsoSideRatio_;
-  Float_t WJetsOSSideCorr_;
-  Float_t WJetsSSSideCorr_;
-  Float_t WJetsOSSideCorrErr_;
-  Float_t WJetsSSSideCorrErr_;
 
   //selections used for each plot made inside this class
   Int_t Isocat_;
@@ -175,6 +159,24 @@ private:
   Int_t ZMuMuColor_;
   Int_t ZTauTauColor_;
   Int_t SignalColor_;
+
+
+protected:
+ 
+
+private:
+
+  TString outputpath_;
+  std::vector<Sample*> samples_;   
+  Float_t QCDOStoSSRatio_;
+  Float_t QCDOStoSSRatioErr_;
+  Float_t QCDMuIsoSideRatio_;
+  Float_t QCDOSTauIsoSideRatio_;
+  Float_t QCDSSTauIsoSideRatio_;
+  Float_t WJetsOSSideCorr_;
+  Float_t WJetsSSSideCorr_;
+  Float_t WJetsOSSideCorrErr_;
+  Float_t WJetsSSSideCorrErr_;
 
 
 

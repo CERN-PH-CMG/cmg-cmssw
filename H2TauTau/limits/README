@@ -64,3 +64,41 @@ c) To obtain observed limit: combine datacard.txt -M HybridNew --freq --testStat
  
 
 
+***Email from Roger on April 3
+*** Discussion title: Higgs Physics: H in 2 taus
+
+Dear all,
+
+let me bring to your attention that the code that has been used to
+calculate the limits for the HIG-11-029 paper and the PAS'es of last
+summer and fall has been migrated to an official CMSSW package with name:
+
+HiggsAnalysis/HiggsToTauTau
+
+To make full use of it please apply the following recipe to set up your
+local release area (based on CMSSW_4_4_4):
+
+cvs co -r V01-13-03 HiggsAnalysis/CombinedLimit
+cvs co -r V00-01-00 HiggsAnalysis/HiggsToTauTau
+cvs co -r V00-01-01 -d datacards UserCode/RWolf/MitLimits/Higgs2Tau/data
+scram b
+rehash
+init.py
+
+The last step is necessary to copy a bunch of input files, which are
+still located in UserCode into the package. The reason for this is that
+in official CMSSW packages for good reasons large rootfiles are not
+allowed to be stored.
+
+I try to compile some documentation in the usage and potential of the
+package over Easter. Don't hesitate to ask if you have any questions.
+
+Cheers,
+Roger
+
+********Jose: notes 
+*checkout did not work for me need to do:
+cvs co  HiggsAnalysis/CombinedLimit
+cd HiggsAnalysis/CombinedLimit
+cvs up -r V01-13-03
+But then no files seem to be in this tag so had to updated to HEAD

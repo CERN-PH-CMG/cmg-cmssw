@@ -1,16 +1,18 @@
-void plotLimits(long sm){
+#define NPOINTS 8
 
-  int mass[8]={110,115,120,125,130,135,140,145};
+void plotLimits(TString channel="muTau",long sm=0){
 
-  Float_t obs[8];
-  Float_t exp2[8];
-  Float_t exp16[8];
-  Float_t exp50[8];
-  Float_t exp84[8];
-  Float_t exp97[8];
+  int mass[NPOINTS]={110,115,120,125,130,135,140,145};
+
+  Float_t obs[NPOINTS];
+  Float_t exp2[NPOINTS];
+  Float_t exp16[NPOINTS];
+  Float_t exp50[NPOINTS];
+  Float_t exp84[NPOINTS];
+  Float_t exp97[NPOINTS];
 
 
-  for(Int_t m=0;m<8;m++){
+  for(Int_t m=0;m<NPOINTS;m++){
     float ob=0.;
     float ex2=0.;
     float ex16=0.;
@@ -18,13 +20,13 @@ void plotLimits(long sm){
     float ex84=0.;
     float ex97=0.;
 
-    char filenm[100];
-    if(sm==3)sprintf(filenm,"combine_%d.log",mass[m]);
-    else sprintf(filenm,"combine_%d_%d.log",sm,mass[m]);
-    cout<<"sm="<<sm<<" m="<<m<<" file="<<filenm<<endl;
+    TString filenm="";
+    if(sm==3)filenm=channel+"/combine_"+(long)(mass[m])+".log";
+    else filenm=channel+"/combine_"+(long)sm+"_"+(long)(mass[m])+".log";
+    cout<<"sm="<<sm<<" m="<<m<<" file="<<filenm.Data()<<endl;
 
     ifstream file;
-    file.open(filenm);  
+    file.open(filenm.Data());  
     std::string str;
     file>>str;
     while(!file.eof()){
@@ -71,12 +73,12 @@ void plotLimits(long sm){
   h.GetXaxis()->SetTitle("m_{H} (GeV)");
   h.SetStats(0);
 
-  TGraphAsymmErrors GObs(8);
-  TGraphAsymmErrors GExp(8);
-  TGraphAsymmErrors GExp1(8);
-  TGraphAsymmErrors GExp2(8);
+  TGraphAsymmErrors GObs(NPOINTS);
+  TGraphAsymmErrors GExp(NPOINTS);
+  TGraphAsymmErrors GExp1(NPOINTS);
+  TGraphAsymmErrors GExp2(NPOINTS);
 
-  for(Int_t m=0;m<8;m++){
+  for(Int_t m=0;m<NPOINTS;m++){
     GObs.SetPoint(m,mass[m],obs[m]);
     GExp.SetPoint(m,mass[m],exp50[m]);
     GExp1.SetPoint(m,mass[m],exp50[m]);
@@ -86,7 +88,7 @@ void plotLimits(long sm){
   }
   
   
-  TCanvas C(TString("limits_SM")+sm);
+  TCanvas C(channel+"limits_SM"+(long)sm);
   C.Clear();
   h.Draw("hist");
 
@@ -116,7 +118,7 @@ void plotLimits(long sm){
   legend.Draw("same");
 
   
-  C.Print(TString("plotLimit_SM")+(long)sm+".ps");
+  C.Print(channel+"/plotLimit_SM"+(long)sm+".ps");
 
   gROOT->ProcessLine(".q");
 }

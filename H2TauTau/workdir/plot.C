@@ -9,7 +9,7 @@ void plot(){
   analysis->setZTauTauColor(kOrange-4);
 
   //raw yields
-  //analysis->printRawYields("(categoryIso==1)*eventweight");
+  analysis->printRawYields("(categoryIso==1)*eventweight");
 
 
   ////////////Simple Tau fake rate ratios
@@ -55,7 +55,7 @@ void plot(){
   //analysis->plotInc("metpt",1,0,-1,50,0,200," MET   (GeV)","Events / 4 GeV",c);    
   //analysis->plotInc("metphi",1,1,-1,70,-3.5,3.5," MET  phi ","",c);    
   //analysis->plotInc("transversemass",1,0,-1,50,0,200,"m_{T}   (GeV)","Events / 4 GeV",c);
-  analysis->plotInc("ditaumass",1,1,-1,60,0,300,"","m_{vis}   (GeV)","Events / 5 GeV",c,0);
+  //analysis->plotInc("ditaumass",1,1,-1,60,0,300,"","m_{vis}   (GeV)","Events / 5 GeV",c,0);
   //analysis->plotSM("ditaumass",1,1,-1,60,0,300,"","m_{vis}   (GeV)","",c);
   //analysis->plotSM("transversemass",1,0,-1,50,0,200,"","m_{T}   (GeV)","Events / 4 GeV",c);
  
