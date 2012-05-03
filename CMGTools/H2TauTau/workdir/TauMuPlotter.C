@@ -16,6 +16,14 @@ TauMuPlotter::TauMuPlotter():
 TauMuPlotter::TauMuPlotter(const char * name):
   TNamed(name,name),
   smearHistoRes_(0.),
+  Isocat_(-1),
+  MTcat_(-1),
+  SMcat_(-1),
+  extrasel_("1"),
+  plotvar_("ditaumass"),
+  nbins_(100),
+  xmin_(0.),
+  xmax_(1000.),
   QCDOStoSSRatio_(1.11),
   QCDOStoSSRatioErr_(0.02),
   QCDMuIsoSideRatio_(0.),
@@ -24,15 +32,7 @@ TauMuPlotter::TauMuPlotter(const char * name):
   WJetsOSSideCorr_(1.),
   WJetsSSSideCorr_(1.),
   WJetsOSSideCorrErr_(0.),
-  WJetsSSSideCorrErr_(0.),
-  Isocat_(-1),
-  MTcat_(-1),
-  SMcat_(-1),
-  extrasel_("1"),
-  plotvar_("ditaumass"),
-  nbins_(100),
-  xmin_(0.),
-  xmax_(1000.)
+  WJetsSSSideCorrErr_(0.)
 {
  
   //qcdTauIsoRatio_="(0.190265-0.00241721*taupt)*(taupt<80)";
@@ -280,7 +280,7 @@ TH1F* TauMuPlotter::getTotalMC(){
 }
 
 TH1F* TauMuPlotter::getTotalMCSS(){
-  TString sel="eventweight*(categoryCh==1)";
+  TString sel="eventweight*(categoryCh==2)";
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
   if(MTcat_>0) sel += TString("*(categoryMT==")+(long)MTcat_+")";
   if(SMcat_>=0)sel+=TString("*(categorySM==")+(long)SMcat_+")";

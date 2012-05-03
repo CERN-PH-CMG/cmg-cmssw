@@ -70,7 +70,7 @@ void WJetsMCShape(){
   Sample s("WJetsToLNu","/data/benitezj/Samples/Mar19MuJet");
   
 //   TString sel="*1";
-  TString sel="*(njet==0)";
+  TString sel="*(njet==1)";
 //   TString sel="*(categorySM==1)";
 //   TString sel="*(categorySM==2)";
 

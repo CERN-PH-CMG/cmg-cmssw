@@ -37,6 +37,66 @@
 // njet=2 : 100/350  = 0.28 
 
 
+void MakeQCDShape(){
+
+  //Shapes studied in the SS samples
+
+  gROOT->ProcessLine(".L ./tauMuConfig.C");
+  TauMuPlotter *analysis =tauMuConfig("analysis");
+  analysis->plotvar_="svfitmass";
+  analysis->nbins_=30;
+  analysis->xmin_=0.;
+  analysis->xmax_=300.;
+
+  long njet=2;
+
+  //Anti-Iso QCD 
+  analysis->Isocat_=2;
+  analysis->MTcat_=1;
+  analysis->SMcat_=-1;
+  analysis->extrasel_=TString("(njet==")+njet+"&&muiso>0.1&&tauisodisc<2)";
+  if(!analysis->scaleSamplesLumi())return 0;
+  if(!analysis->correctSamplesInc())return 0;
+  TH1F*hDataAIso=analysis->getTotalDataSS();
+  hDataAIso->SetName("hDataAIso");
+  TH1F*hMCAIso=analysis->getTotalMCSS();
+  hMCAIso->SetName("hMCAIso");
+  hDataAIso->Add(hMCAIso,-1);
+  
+  //Anti-Iso QCD with Ratio
+  analysis->Isocat_=1;
+  analysis->MTcat_=1;
+  analysis->SMcat_=-1;
+  analysis->extrasel_=TString("(njet==")+njet+")";
+  if(!analysis->scaleSamplesLumi())return 0;
+  if(!analysis->correctSamplesInc())return 0;
+  TH1F*hQCDAIsoR=analysis->getQCDIsoSMSS();
+  hQCDAIsoR->SetName("hQCDAIsoR");
+
+  //Iso QCD
+  analysis->Isocat_=1;
+  analysis->MTcat_=1;
+  analysis->SMcat_=-1;
+  analysis->extrasel_=TString("(njet==")+njet+")";
+  if(!analysis->scaleSamplesLumi())return 0;
+  if(!analysis->correctSamplesInc())return 0;
+  TH1F*hDataIso=analysis->getTotalDataSS();
+  hDataIso->SetName("hDataIso");
+  TH1F*hDMCIso=analysis->getTotalMCSS();
+  hDMCIso->SetName("hDMCIso");
+  hDataIso->Add(hDMCIso,-1);
+
+
+  TFile F("QCDMassShape.root","recreate");
+  hDataAIso->SetName("hQCDAIso");
+  hDataAIso->Write();
+  hDataIso->SetName("hQCDIso");
+  hDataIso->Write();
+  hQCDAIsoR->Write();
+  F.ls();
+  F.Close();
+}
+
 void QCDMassShape(){
 
   TCanvas C;
@@ -46,46 +106,44 @@ void QCDMassShape(){
   ///njet=0
   
   
-  TFile FNJet0SS("FQCDSSIso.root","read");
-  TFile FNJet0RpT("FQCDSSAntiIsoTimesR.root","read");
-  TFile FNJet0Scale("FQCDSSAntiIso.root","read");
-  TH1F* HNJet0SS=(TH1F*)FNJet0SS.Get("hDiff");
-  TH1F* HNJet0Rpt=(TH1F*)FNJet0RpT.Get("hQCD");
-  TH1F* HNJet0Scale=(TH1F*)FNJet0Scale.Get("hDiff");
+  TFile RootFile("QCDMassShape.root","read");
+  TH1F* HQCDIso=(TH1F*)RootFile.Get("hQCDIso");
+  TH1F* HQCDAIso=(TH1F*)RootFile.Get("hQCDAIso");
+  TH1F* HQCDAIsoR=(TH1F*)RootFile.Get("hQCDAIsoR");
 
   C.Clear();
-  HNJet0SS->GetYaxis()->SetRangeUser(0,1.5*HNJet0SS->GetMaximum());
-  HNJet0SS->Draw("histpe");
-  HNJet0Rpt->SetLineColor(2);
-  //HNJet0Rpt->Scale(HNJet0SS->Integral()/HNJet0Rpt->Integral());
-  HNJet0Rpt->Draw("histsame");
-  HNJet0Scale->Scale(HNJet0SS->Integral()/HNJet0Scale->Integral());
-  HNJet0Scale->Draw("histsame");
+  HQCDIso->GetYaxis()->SetRangeUser(0,1.5*HQCDIso->GetMaximum());
+  HQCDIso->Draw("histpe");
+  HQCDAIsoR->SetLineColor(2);
+  HQCDAIsoR->Scale(HQCDIso->Integral()/HQCDAIsoR->Integral());
+  HQCDAIsoR->Draw("histsame");
+  HQCDAIso->Scale(HQCDIso->Integral()/HQCDAIso->Integral());
+  HQCDAIso->Draw("histsame");
   C.Print("QCDMassShape.ps");
 
 
-  TFile FBoostedRpT("/data/benitezj/Samples/Mar19MuJet/FQCDIsoSM_svfitmass_TauIso-1_MT1_SM1.root","read");
-  TFile FBoostedScale("/data/benitezj/Samples/Mar19MuJet/DiffFileInc_svfitmass1_TauIso2_MT1_SM1.root","read");
-  TH1F* HBoostedRpt=(TH1F*)FBoostedRpT.Get("hQCD");
-  TH1F* HBoostedScale=(TH1F*)FBoostedScale.Get("hDiff");
+//   TFile FBoostedRpT("/data/benitezj/Samples/Mar19MuJet/FQCDIsoSM_svfitmass_TauIso-1_MT1_SM1.root","read");
+//   TFile FBoostedScale("/data/benitezj/Samples/Mar19MuJet/DiffFileInc_svfitmass1_TauIso2_MT1_SM1.root","read");
+//   TH1F* HBoostedRpt=(TH1F*)FBoostedRpT.Get("hQCD");
+//   TH1F* HBoostedScale=(TH1F*)FBoostedScale.Get("hDiff");
 
-  C.Clear();
-  HBoostedRpt->Draw("histpe");
-  HBoostedScale->Scale(HBoostedRpt->Integral()/HBoostedScale->Integral());
-  HBoostedScale->Draw("histsame");
-  C.Print("QCDMassShape.ps");
+//   C.Clear();
+//   HBoostedRpt->Draw("histpe");
+//   HBoostedScale->Scale(HBoostedRpt->Integral()/HBoostedScale->Integral());
+//   HBoostedScale->Draw("histsame");
+//   C.Print("QCDMassShape.ps");
 
 
-  TFile FVBFRpT("/data/benitezj/Samples/Mar19MuJet/FQCDIsoSM_svfitmass_TauIso-1_MT1_SM2.root","read");
-  TFile FVBFScale("/data/benitezj/Samples/Mar19MuJet/DiffFileInc_svfitmass1_TauIso2_MT1_SM2.root","read");
-  TH1F* HVBFRpt=(TH1F*)FVBFRpT.Get("hQCD");
-  TH1F* HVBFScale=(TH1F*)FVBFScale.Get("hDiff");
+//   TFile FVBFRpT("/data/benitezj/Samples/Mar19MuJet/FQCDIsoSM_svfitmass_TauIso-1_MT1_SM2.root","read");
+//   TFile FVBFScale("/data/benitezj/Samples/Mar19MuJet/DiffFileInc_svfitmass1_TauIso2_MT1_SM2.root","read");
+//   TH1F* HVBFRpt=(TH1F*)FVBFRpT.Get("hQCD");
+//   TH1F* HVBFScale=(TH1F*)FVBFScale.Get("hDiff");
 
-  C.Clear();
-  HVBFRpt->Draw("histpe");
-  HVBFScale->Scale(HVBFRpt->Integral()/HVBFScale->Integral());
-  HVBFScale->Draw("histsame");
-  C.Print("QCDMassShape.ps");
+//   C.Clear();
+//   HVBFRpt->Draw("histpe");
+//   HVBFScale->Scale(HVBFRpt->Integral()/HVBFScale->Integral());
+//   HVBFScale->Draw("histsame");
+//   C.Print("QCDMassShape.ps");
 
 
   C.Print("QCDMassShape.ps]");  
