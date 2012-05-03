@@ -155,7 +155,7 @@ class MyBatchManager( BatchManager ):
       #prepare the batch script
       scriptFileName = jobDir+'/batchScript.sh'
       scriptFile = open(scriptFileName,'w')
-      storeDir = '' # self.remoteOutputDir_.replace('/castor/cern.ch/cms','')
+      storeDir = self.remoteOutputDir_.replace('/castor/cern.ch/cms','')
       mode = self.RunningMode(options.batch)
       if mode == 'LXPLUS':
          scriptFile.write( batchScriptCERN( storeDir, value) )
