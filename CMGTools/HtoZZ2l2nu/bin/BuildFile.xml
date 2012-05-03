@@ -12,5 +12,6 @@
  <bin name="run2011Analysis" file="run2011Analysis.cc"></bin>
  <bin name="run2011BckgEstimation" file="run2011BckgEstimation.cc"></bin>
  <bin name="runLandS" file="runLandS.cc"></bin>
+ <bin name="runGenScanner" file="runGenScanner.cc"></bin>
 </environment>
 <Flags CXXFLAGS="-g"/>
