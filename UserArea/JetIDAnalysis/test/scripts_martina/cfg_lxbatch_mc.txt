@@ -1,10 +1,10 @@
-DATASETPATH    = /store/cmst3/user/psilva/Data4/G/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola
+DATASETPATH    = /store/cmst3/user/musella/PATtuples/19_04_2012/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12-PU_S7_START50_V15-v1_AODSIM
 
 CFGTEMPLATE    = jetanalyzerTEMPLATE_mc_cfg.py
 
-JOBDIR         = DYJetsToLL
+JOBDIR         = DYJetsToLL-51
 
-OUTPUTDIR      = /store/cmst3/user/musella/JETID_NTUPLES/V00-01-00/DYJetsToLL-7TeV
+OUTPUTDIR      = /store/cmst3/user/musella/JETID_NTUPLES/V00-02-00/DYJetsToLL-51
 
 OUTPUTFILENAME = JetAnalysisTree
 

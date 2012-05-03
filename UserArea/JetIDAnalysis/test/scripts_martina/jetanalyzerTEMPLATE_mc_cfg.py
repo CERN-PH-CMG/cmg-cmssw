@@ -31,15 +31,15 @@ process.MuonsFilter = countPatMuons.clone(
 from CMG.JetIDAnalysis.jetanalyzer_cfi import *
 process.load("CMGTools.External.pujetidsequence_cff")
 
-# PF jet collection
 process.pfjetanalyzer = jetanalyzer.clone(
-    JetTag      = cms.InputTag("selectedPatJets",""),            
+    JetTag      = cms.InputTag("selectedPatJetsPFlowNoPuSub",""),
+    GenJetTag   = cms.InputTag("selectedPatJetsPFlowNoPuSub","genJets"),
     dataFlag = cms.untracked.bool(False),
 )
 
-# CHS jet collection
 process.chspfjetanalyzer = jetanalyzer.clone(
     JetTag      = cms.InputTag("selectedPatJetsPFlow",""),            
+    GenJetTag   = cms.InputTag("selectedPatJetsPFlow","genJets"), 
     dataFlag = cms.untracked.bool(False),
     MvaTags = cms.untracked.VInputTag(),
     IdTags = cms.untracked.VInputTag()
@@ -49,6 +49,12 @@ process.TFileService = cms.Service("TFileService",
     fileName = cms.string("OUTPUTFILENAME"),
     closeFileFast = cms.untracked.bool(True)
 )
+
+
+## jet id sequence
+process.load("CMGTools.External.pujetidsequence_cff")
+process.puJetId.jets = "selectedPatJetsPFlowNoPuSub"
+process.puJetMva.jets = "selectedPatJetsPFlowNoPuSub"
 
 process.ana = cms.Sequence(process.pfjetanalyzer+process.chspfjetanalyzer)
 process.p = cms.Path(process.MuonsFilter*process.puJetIdSqeuence*process.ana)

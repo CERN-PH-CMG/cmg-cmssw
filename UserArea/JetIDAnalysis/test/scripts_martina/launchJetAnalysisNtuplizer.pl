@@ -24,6 +24,7 @@ $OUTPUTFILENAME   = $User_Preferences{"OUTPUTFILENAME"} ;
 $JOBMODULO        = $User_Preferences{"JOBMODULO"} ;
 $QUEUE            = $User_Preferences{"QUEUE"} ;
 
+$SCRAM_ARCH = $ENV{"SCRAM_ARCH"};
 
 $LISTFile = "./list.txt" ;
 system ("cmsLs ".$DATASETPATH." | grep root | awk '{print \$5}' > ".$LISTFile."\n") ;
@@ -116,14 +117,18 @@ for($jobIt = 1; $jobIt <= $jobNumber; ++$jobIt)
   $command = "cd ".$currDir ;
   system ("echo ".$command." > ".$tempBjob) ;
   
-  $command = "source /afs/cern.ch/cms/sw/cmsset_default.sh" ;
-  system ("echo ".$command." >> ".$tempBjob) ;
+  ## Does not work for 52x
+  ### $command = "source /afs/cern.ch/cms/sw/cmsset_default.sh" ;
+  ### system ("echo ".$command." >> ".$tempBjob) ;
 
-  $command = "export SCRAM_ARCH=slc5_amd64_gcc434" ;
+  $command = "export SCRAM_ARCH=".$SCRAM_ARCH ;
   system ("echo ".$command." >> ".$tempBjob) ;
   
-  $command = "cmsenv" ;
+  $command = "eval '\$(scram ru -sh)'" ;
   system ("echo ".$command." >> ".$tempBjob) ;
+
+  ### $command = "cmsenv" ;
+  ### system ("echo ".$command." >> ".$tempBjob) ;
 
   $command = "" ;
   system ("echo ".$command." >> ".$tempBjob) ;
