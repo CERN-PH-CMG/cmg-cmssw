@@ -19,7 +19,7 @@ PileupJetIdAlgo::PileupJetIdAlgo(const edm::ParameterSet & ps)
 	impactParTkThreshod_ = 1.;/// ps.getParameter<double>("impactParTkThreshod");
 	cutBased_ = false;
 	std::string label    = ps.getParameter<std::string>("label");
-	if(label == "cut") cutBased_ = true;
+	cutBased_ =  ps.getParameter<bool>("cutBased");
 	if(!cutBased_) 
 	  {
 	    tmvaWeights_         = edm::FileInPath(ps.getParameter<std::string>("tmvaWeights")).fullPath(); 
@@ -156,7 +156,7 @@ void PileupJetIdAlgo::setup()
 		tmvaNames_["drem_1"] = "dRMeanEm";
 		tmvaNames_["drch_1"] = "dRMeanCh";
 
-	} else {
+	} else if( ! cutBased_ ){
 		assert( tmvaMethod_.empty() || (! tmvaVariables_.empty() && version_ == USER) );
 	}
 }
@@ -215,25 +215,14 @@ void PileupJetIdAlgo::set(const PileupJetIdentifier & id)
 // ------------------------------------------------------------------------------------------
 void PileupJetIdAlgo::runMva()
 {
-	if( ! reader_ ) { bookReader(); std::cerr << "Reader booked" << std::endl; }
-	if(fabs(internalId_.jetEta_) <  5.0) internalId_.mva_ = reader_->EvaluateMVA( tmvaMethod_.c_str() );
-	if(fabs(internalId_.jetEta_) >= 5.0) internalId_.mva_ = -2.;
-// 	int ptId = 0; 
-// 	if(internalId_.jetPt_ > 10 && internalId_.jetPt_ < 20) ptId = 1;
-// 	if(internalId_.jetPt_ > 20 && internalId_.jetPt_ < 30) ptId = 2;
-// 	if(internalId_.jetPt_ > 30                  ) ptId = 3;
-	
-// 	int etaId = 0;
-// 	if(fabs(internalId_.jetEta_) > 2.5  && fabs(internalId_.jetEta_) < 2.75) etaId = 1; 
-// 	if(fabs(internalId_.jetEta_) > 2.75 && fabs(internalId_.jetEta_) < 3.0 ) etaId = 2; 
-// 	if(fabs(internalId_.jetEta_) > 3.0  && fabs(internalId_.jetEta_) < 5.0 ) etaId = 3; 
-	
-//	internalId_.idFlag_ = 0;
-// 	if(internalId_.mva_  > mvacut_[PileupJetIdentifier::kTight ][ptId][etaId]) internalId_.idFlag_ += 1 << PileupJetIdentifier::kTight;
-// 	if(internalId_.mva_  > mvacut_[PileupJetIdentifier::kMedium][ptId][etaId]) internalId_.idFlag_ += 1 << PileupJetIdentifier::kMedium;
-// 	if(internalId_.mva_  > mvacut_[PileupJetIdentifier::kLoose ][ptId][etaId]) internalId_.idFlag_ += 1 << PileupJetIdentifier::kLoose;
-
-	internalId_.idFlag_ = computeIDflag(internalId_.mva_,internalId_.jetPt_,internalId_.jetEta_);
+	if( cutBased_ ) {
+		internalId_.idFlag_ = computeCutIDflag(internalId_.betaStarClassic_,internalId_.dR2Mean_,internalId_.nvtx_,internalId_.jetPt_,internalId_.jetEta_);
+	} else {
+		if( ! reader_ ) { bookReader(); std::cerr << "Reader booked" << std::endl; }
+		if(fabs(internalId_.jetEta_) <  5.0) internalId_.mva_ = reader_->EvaluateMVA( tmvaMethod_.c_str() );
+		if(fabs(internalId_.jetEta_) >= 5.0) internalId_.mva_ = -2.;
+		internalId_.idFlag_ = computeIDflag(internalId_.mva_,internalId_.jetPt_,internalId_.jetEta_);
+	}
 }
 
 // ------------------------------------------------------------------------------------------
@@ -532,8 +521,7 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 	} else {
 		assert( internalId_.beta_ == 0. && internalId_.betaStar_ == 0.&& internalId_.betaClassic_ == 0. && internalId_.betaStarClassic_ == 0. );
 	}
-	if(cutBased_) internalId_.cutIdFlag_ = computeCutIDflag(internalId_.betaStarClassic_,internalId_.dR2Mean_,internalId_.nvtx_,internalId_.jetPt_,internalId_.jetEta_);
-	
+
 	if( calculateMva ) {
 		runMva();
 	}
@@ -560,7 +548,6 @@ std::string PileupJetIdAlgo::dumpVariables() const
 void PileupJetIdAlgo::resetVariables()
 {
 	internalId_.idFlag_    = 0;
-	internalId_.cutIdFlag_ = 0;
 	for(variables_list_t::iterator it=variables_.begin(); 
 	    it!=variables_.end(); ++it ) {
 		*it->second.first = it->second.second;
@@ -576,7 +563,6 @@ void PileupJetIdAlgo::resetVariables()
 void PileupJetIdAlgo::initVariables()
 {
 	internalId_.idFlag_    = 0;
-	internalId_.cutIdFlag_ = 0;
   	INIT_VARIABLE(mva        , "", -100.);
 	INIT_VARIABLE(jetPt      , "jspt_1", 0.);
 	INIT_VARIABLE(jetEta     , "jseta_1", large_val);
