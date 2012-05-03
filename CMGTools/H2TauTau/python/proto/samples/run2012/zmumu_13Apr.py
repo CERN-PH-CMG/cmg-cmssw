@@ -19,6 +19,8 @@ data_Run2012A_PromptReco_v1.files = getFiles('/DoubleMu/Run2012A-PromptReco-v1/A
 DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM/V4/{pat}'.format(pat=pat), 'cmgtools', filePattern)
 DYJets.nGenEvents = 2165676 / 2.0
 
+data = [data_Run2012A_PromptReco_v1]
+MC = [DYJets]
 
 if __name__ == '__main__':
 
