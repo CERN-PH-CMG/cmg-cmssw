@@ -201,6 +201,9 @@ from CMGTools.Common.PAT.patElectronsWithTrigger_cff import *
 
 cmgElectron.cfg.inputCollection = 'patElectronsWithTrigger'
 
+# conversions
+from CMGTools.Common.PAT.patConversions_cfi import patConversions
+
 PATCMGElectronSequence = cms.Sequence(
     pfElectronIsolationSequence +
     detElectronIsoDepositSequence + 
@@ -208,6 +211,7 @@ PATCMGElectronSequence = cms.Sequence(
     makePatElectrons +
     selectedPatElectrons +
     patElectronsWithTriggerSequence +
+    patConversions +
     electronSequence
     )
 
