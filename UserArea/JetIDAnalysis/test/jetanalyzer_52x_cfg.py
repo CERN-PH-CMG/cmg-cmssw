@@ -50,11 +50,11 @@ process.pfjetanalyzer = jetanalyzer.clone(
     dataFlag = cms.untracked.bool(False),
     MvaTags = cms.untracked.VInputTag(cms.InputTag("puJetMva","simpleDiscriminant"),
                                       cms.InputTag("puJetMva","fullDiscriminant"),
-                                      cms.InputTag("puJetMva","philv1Discriminant"),
+                                      cms.InputTag("puJetMva","cutbasedDiscriminant"),
                                       ),
     IdTags = cms.untracked.VInputTag( cms.InputTag("puJetMva","simpleId"),
                                       cms.InputTag("puJetMva","fullId"),
-                                      cms.InputTag("puJetMva","philv1Id"),
+                                      cms.InputTag("puJetMva","cutbasedId"),
                                       ),
 )
 
