@@ -1,19 +1,18 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.External.pujetidproducer_cfi import pileupJetIdProducer
-from CMGTools.External.puJetIDAlgo_cff import PhilV1, full, simple, cut
+from CMGTools.External.pujetidproducer_cfi import pileupJetIdProducer, stdalgos_4x, stdalgos_5x, stdalgos, cutbased
 
-stdalgos = cms.VPSet(simple,full,PhilV1)
-
+# 
 puJetId = pileupJetIdProducer.clone(
     produceJetIds = cms.bool(True),
     jetids = cms.InputTag(""),
     runMvas = cms.bool(False),
     jets = cms.InputTag("selectedPatJets"),
     vertexes = cms.InputTag("offlinePrimaryVertices"),
-    algos = cms.VPSet(simple)
+    algos = cms.VPSet(cutbased)
     )
 
+# 
 puJetMva = pileupJetIdProducer.clone(
     produceJetIds = cms.bool(False),
     jetids = cms.InputTag("puJetId"),
@@ -22,24 +21,24 @@ puJetMva = pileupJetIdProducer.clone(
     vertexes = cms.InputTag("offlinePrimaryVertices"),
     algos = stdalgos
     )
+
+# 
 puJetIdSqeuence = cms.Sequence(puJetId*puJetMva)
 
-##
 ## utility function to build jet is sequence
-##
 def loadPujetId(process,collection,mvaOnly=False,isChs=False,release="44X"):
 
     ## FIXME 52X and CHS options need to be properly filled
     if release.startswith("4"):
         if isChs:
-            algos = (simple,full,PhilV1,cut)
+            algos = stdalgos_4x
         else:
-            algos = (simple,full,PhilV1,cut)
-    elif release == "52X":
+            algos = stdalgos_4x
+    elif release.startswith("5"):
         if isChs:
-            algos = (simple,full,PhilV1,cut)
+            algos = stdalgos_5x
         else:
-            algos = (simple,full,PhilV1,cut)
+            algos = stdalgos_5x
 
     if not mvaOnly:
         setattr(process,
@@ -59,7 +58,7 @@ def loadPujetId(process,collection,mvaOnly=False,isChs=False,release="44X"):
         produceJetIds = cms.bool(False),
         jetids = cms.InputTag("%s%s" % ("puJetId",collection)),
         runMvas = cms.bool(True),
-        jets = cms.InputTag("selectedPatJetsPFlowNoPuSub"),
+        jets = cms.InputTag(collection),
         vertexes = cms.InputTag("offlinePrimaryVertices"),
         algos = cms.VPSet(*algos)
         )
