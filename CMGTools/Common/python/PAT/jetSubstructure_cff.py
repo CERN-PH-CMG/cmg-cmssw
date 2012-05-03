@@ -13,6 +13,7 @@ import FWCore.ParameterSet.Config as cms
 from RecoJets.JetProducers.ak5PFJetsPruned_cfi import ak5PFJetsPruned
 ak5PFJetsCHSpruned = ak5PFJetsPruned.clone(
     src = 'pfNoPileUp',
+    jetPtMin = cms.double(10.0),
     doAreaFastjet = cms.bool(True)
     )
 
