@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.cc,v 1.14 2012/04/20 12:34:35 musella Exp $
+// $Id: JetAnalyzer.cc,v 1.17 2012/04/23 11:25:45 malberti Exp $
 //
 //
 
@@ -234,8 +234,6 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    Handle<ValueMap<int> > vmap;
 	    iEvent.getByLabel(IdTags_[itag],vmap);
 	    ids_[itag] = (*vmap)[jets.refAt(i)];
-	    int a = ids_[itag] << PileupJetIdentifier::kTight;
-	    std::cout << a << std::endl;
     }
 
     //njets             = jetHandle -> size();

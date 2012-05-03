@@ -1,8 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-
 from PhysicsTools.PatAlgos.selectionLayer1.muonCountFilter_cfi import *
-
 
 process = cms.Process("analysis")
 
@@ -28,36 +26,21 @@ process.MuonsFilter = countPatMuons.clone(
 )
 
 #jet analyzer 
-from CMGTools.External.puJetIDAlgo_cff import PuJetIdOptBDT, PuJetIdMinBDT, PhilV1 
 from CMG.JetIDAnalysis.jetanalyzer_cfi import *
-
+process.load("CMGTools.External.pujetidsequence_cff")
 
 # PF jet collection
 process.pfjetanalyzer = jetanalyzer.clone(
-    JetTag   = cms.InputTag("selectedPatJets",""),            
+    JetTag      = cms.InputTag("selectedPatJets",""),            
     dataFlag = cms.untracked.bool(True),
-    puJetIDAlgo = PuJetIdOptBDT
-)
-
-# PF jet collection
-process.pfjetanalyzer_minimal = jetanalyzer.clone(
-    JetTag   = cms.InputTag("selectedPatJets",""),            
-    dataFlag = cms.untracked.bool(True),
-    puJetIDAlgo = PuJetIdMinBDT
-)
-
-
-# PF jet collection
-process.pfjetanalyzer_philv1 = jetanalyzer.clone(
-    JetTag   = cms.InputTag("selectedPatJets",""),            
-    dataFlag = cms.untracked.bool(True),
-    puJetIDAlgo = PhilV1
 )
 
 # CHS jet collection
 process.chspfjetanalyzer = jetanalyzer.clone(
-    JetTag   = cms.InputTag("selectedPatJetsPFlow",""),
-    dataFlag = cms.untracked.bool(True)
+    JetTag      = cms.InputTag("selectedPatJetsPFlow",""),            
+    dataFlag = cms.untracked.bool(True),
+    MvaTags = cms.untracked.VInputTag(),
+    IdTags = cms.untracked.VInputTag()
 )
 
 process.TFileService = cms.Service("TFileService", 
@@ -65,6 +48,5 @@ process.TFileService = cms.Service("TFileService",
     closeFileFast = cms.untracked.bool(True)
 )
 
-process.ana = cms.Sequence(process.pfjetanalyzer+process.pfjetanalyzer_minimal+process.pfjetanalyzer_philv1+process.chspfjetanalyzer)
-#### process.ana = cms.Sequence(process.pfjetanalyzer+process.chspfjetanalyzer)
-process.p = cms.Path(process.MuonsFilter*process.ana)
+process.ana = cms.Sequence(process.pfjetanalyzer+process.chspfjetanalyzer)
+process.p = cms.Path(process.MuonsFilter*process.puJetIdSqeuence*process.ana)

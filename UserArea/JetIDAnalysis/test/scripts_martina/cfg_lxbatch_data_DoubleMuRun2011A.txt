@@ -4,7 +4,7 @@ CFGTEMPLATE    = jetanalyzerTEMPLATE_data_cfg.py
 
 JOBDIR         = DoubleMu2011A
 
-OUTPUTDIR      = /store/cmst3/user/musella/JETID_NTUPLES/V00-00-04/DoubleMu2011A/
+OUTPUTDIR      = /store/cmst3/user/musella/JETID_NTUPLES/V00-01-00/DoubleMu2011A/
 
 OUTPUTFILENAME = JetAnalysisTree
 

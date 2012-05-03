@@ -46,19 +46,13 @@ from CMG.JetIDAnalysis.jetanalyzer_cfi import *
 process.pfjetanalyzer = jetanalyzer.clone(
     JetTag      = cms.InputTag("selectedPatJets",""),            
     dataFlag = cms.untracked.bool(False),
-    MvaTags = cms.untracked.VInputTag(cms.InputTag("puJetMva","simpleDiscriminant"),
-                                      cms.InputTag("puJetMva","fullDiscriminant"),
-                                      cms.InputTag("puJetMva","philv1Discriminant"),
-                                      ),
-    IdTags = cms.untracked.VInputTag( cms.InputTag("puJetMva","simpleId"),
-                                      cms.InputTag("puJetMva","fullId"),
-                                      cms.InputTag("puJetMva","philv1Id"),
-                                      ),
 )
 
 process.chspfjetanalyzer = jetanalyzer.clone(
     JetTag      = cms.InputTag("selectedPatJetsPFlow",""),            
-    dataFlag = cms.untracked.bool(False)
+    dataFlag = cms.untracked.bool(False),
+    MvaTags = cms.untracked.VInputTag(),
+    IdTags = cms.untracked.VInputTag(),
 )
 
 process.TFileService = cms.Service("TFileService", 
@@ -71,8 +65,8 @@ process.load("CMGTools.External.pujetidsequence_cff")
 process.ana = cms.Sequence(process.pfjetanalyzer+process.chspfjetanalyzer)
 process.p = cms.Path(process.puJetIdSqeuence*process.ana)
 
-process.out = cms.OutputModule("PoolOutputModule",
-                               fileName = cms.untracked.string('patTuple.root'),
-                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
-                               outputCommands = cms.untracked.vstring('keep *'))
-process.e = cms.EndPath( process.out )
+###### process.out = cms.OutputModule("PoolOutputModule",
+######                                fileName = cms.untracked.string('patTuple.root'),
+######                                SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
+######                                outputCommands = cms.untracked.vstring('keep *'))
+###### process.e = cms.EndPath( process.out )

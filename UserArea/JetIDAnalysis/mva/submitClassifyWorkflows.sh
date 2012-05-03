@@ -1,4 +1,4 @@
-workFlow=/afs/cern.ch/user/m/musella/Analysis/CMGTools/CMSSW_4_4_3/src/CMG/JetIDAnalysis/mva/classifyWorkFlow.sh
+workFlow=$CMSSW_BASE/src/CMG/JetIDAnalysis/mva/classifyWorkFlow.sh
 
 bsub -o logs/fullPlusRMS.log -q 1nd $workFlow frac01:frac02:frac03:frac04:frac05:dR2Mean:nvtx:nNeutrals:beta:betaStar:dZ:nCharged fullPlusRMS tmva.json,tmva_twoptnovtxcat.json
 bsub -o logs/full.log -q 1nd $workFlow frac01:frac02:frac03:frac04:frac05:nvtx:nNeutrals:beta:betaStar:dZ:nCharged full tmva.json,tmva_twoptnovtxcat.json

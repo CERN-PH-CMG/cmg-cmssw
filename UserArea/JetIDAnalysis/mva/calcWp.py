@@ -50,18 +50,19 @@ def main(options, args):
 
     fitl =  TF1("fitl","pol1",12,19)
     fitr =  TF1("fitl","pol1",20,35)
-    fita =  TF1("fita","pol1",10,40)
+    fita =  TF1("fita","pol1",15,25)
 
-    wps = { "loose":[0,0.05,0.1,0.1,0.1], "medium":[0,0.10,0.2,0.2,0.2], "tight":[1,0.9,0.9,0.9,0.9] }
+    wps = { "loose":[0,0.05,0.1,0.1,0.1], "medium":[0,0.10,0.2,0.2,0.2], "tight":[1,0.95,0.9,0.9,0.9] }
     wpf = { }
     for a in wps.keys():
         wpf[a] = {}
-    wpref = 22.
+    wpref = 20.
 
     icat = 0
     for cut,name,vars in options.categories:
         print "Making TH2 ", name
 
+        icat += 1
         vtxbins = [  (10,20), (20,999), (1,999) ]
         if options.integrateall:
             vtxbins = [  (1,999) ]
@@ -97,8 +98,8 @@ def main(options, args):
                         quants[hname][0][i].Fit(fitl,"R+")
                         quants[hname][0][i].Fit(fitr,"R+")
                     for wpn,wp in wps.iteritems():
-                        if wp[0] == 0 and wp[icat+1] == sig_qvals[i]:
-                            wpf[wpn][name] = quants[hname][0][i].GetListOfFunctions()
+                        if wp[0] == 0 and wp[icat] == sig_qvals[i]:
+                            wpf[wpn]["%d_%s" % (icat,name)] = quants[hname][0][i].GetListOfFunctions(),quants[hname][0][i].GetTitle()
                 else:
                     quants[hname][0][i].SetTitle("%1.0f%% efficiency %d<N_{PV}<%d" % (((1.-sig_qvals[i])*100.,)+vtx) )
                 style = sig_style+[("SetLineColor",kBlue-2*ivtx), ("SetMarkerColor",kBlue-2*ivtx)]
@@ -116,8 +117,8 @@ def main(options, args):
                         quants[hname][1][i].Fit(fitl,"R+")
                         quants[hname][1][i].Fit(fitr,"R+")
                     for wpn,wp in wps.iteritems():
-                        if wp[0] == 1 and wp[icat+1] == bkg_qvals[i]:
-                            wpf[wpn][name] = quants[hname][1][i].GetListOfFunctions()
+                        if wp[0] == 1 and wp[icat] == bkg_qvals[i]:
+                            wpf[wpn]["%d_%s" % (icat,name)] = quants[hname][1][i].GetListOfFunctions(),quants[hname][1][i].GetTitle()
                 else:
                     quants[hname][1][i].SetTitle("%1.0f%% rejection  %d<N_{PV}<%d" % ((bkg_qvals[i]*100.,)+vtx) );
                 style = bkg_style+[("SetLineColor",kRed-2*ivtx), ("SetMarkerColor",kRed-2*ivtx)] 
@@ -180,11 +181,18 @@ def main(options, args):
             objs.append(leg2)
             objs.append(canv)
             
-    wpstr = "Working points\n"
+    wpstr  = "Working points\n"
+    wpstr += "--------------\n"
     for wpn,wpfs in wpf.iteritems():
-        wpstr += "%s\n" % wpn
-        for cat,funcs in wpfs.iteritems():
-            wpstr += "%s " % cat
+        wpstr += "\n%s\n" % wpn
+        wpstr += "-------\n"
+        keys = wpfs.keys()
+        keys.sort()
+        ## for cat,val in wpfs.iteritems():
+        ##    funcs,tit = val
+        for cat in keys:
+            funcs,tit = wpfs[cat]
+            wpstr += ("%s (%s) " % (cat.ljust(8),tit.ljust(14)))
             for f in funcs:
                 if options.vsnvtx:
                     wpstr += "%1.0f-%1.0f: %1.3f " % (f.GetXmin(), f.GetXmax(), f.GetParameter(1))
