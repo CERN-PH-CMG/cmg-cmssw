@@ -20,3 +20,4 @@
   ('RecoMET/METFilters', 'RecoMET/METFilters', 'lhx_14APR2012_v1'),
   ('RecoParticleFlow/PFProducer', 'RecoParticleFlow/PFProducer', 'V15-01-05'),
   ('RecoParticleFlow/PostProcessing', 'UserCode/RecoParticleFlow/PostProcessing', 'wreece_020512'),
+  ]
