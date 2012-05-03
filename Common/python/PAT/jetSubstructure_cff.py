@@ -24,7 +24,7 @@ patJetCorrFactorsCHSpruned = patJetCorrFactors.clone()
 patJetCorrFactorsCHSpruned.src = jetSource
 # will need to add L2L3 corrections in the cfg
 patJetCorrFactorsCHSpruned.levels = ['L1FastJet', 'L2Relative', 'L3Absolute']
-patJetCorrFactorsCHSpruned.payload = 'AK5PF'
+patJetCorrFactorsCHSpruned.payload = 'AK5PFchs'
 patJetCorrFactorsCHSpruned.useRho = True
 
 # parton and gen jet matching
