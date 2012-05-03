@@ -4,6 +4,7 @@ from CMGTools.External.JetIdParams_cfi import *
 ####################################################################################################################  
 full_5x = cms.PSet(
  impactParTkThreshold = cms.double(1.) ,
+ cutBased = cms.bool(False),
  tmvaWeights = cms.string("CMGTools/External/data/TMVAClassification_5x_BDT_fullPlusRMS.weights.xml"),
  tmvaMethod  = cms.string("BDT_fullPlusRMS"),
  version = cms.int32(-1),
@@ -32,6 +33,7 @@ full_5x = cms.PSet(
 ####################################################################################################################  
 simple_5x = cms.PSet(
  impactParTkThreshold = cms.double(1.) ,
+ cutBased = cms.bool(False),
  tmvaWeights = cms.string("CMGTools/External/data/TMVAClassification_5x_BDT_simpleNoVtxCat.weights.xml"),
  tmvaMethod  = cms.string("BDT_simpleNoVtxCat"),
  version = cms.int32(-1),
@@ -56,6 +58,7 @@ simple_5x = cms.PSet(
 ####################################################################################################################  
 full = cms.PSet(
  impactParTkThreshold = cms.double(1.) ,
+ cutBased = cms.bool(False),
  tmvaWeights = cms.string("CMGTools/External/data/TMVAClassification_PuJetIdOptMVA.weights.xml"),
  tmvaMethod  = cms.string("PuJetIdOptMVA"),
  version = cms.int32(-1),
@@ -83,6 +86,7 @@ full = cms.PSet(
 ####################################################################################################################  
 simple = cms.PSet( 
  impactParTkThreshold = cms.double(1.) ,
+ cutBased = cms.bool(False),
  tmvaWeights = cms.string("CMGTools/External/data/TMVAClassification_PuJetIdMinMVA.weights.xml"),
  tmvaMethod  = cms.string("PuJetIdMinMVA"),
  version = cms.int32(-1),
@@ -105,7 +109,8 @@ simple = cms.PSet(
  )
 ####################################################################################################################  
 cutbased = cms.PSet( 
- impactParTkThreshold = cms.double(1.) ,
+ impactParTkThreshold = cms.double(1.),
+ cutBased = cms.bool(True),
  JetIdParams = PuJetIdCutBased_wp,
  label = cms.string("cutbased")
  )
@@ -113,6 +118,7 @@ cutbased = cms.PSet(
 ####################################################################################################################  
 PhilV0 = cms.PSet( 
  impactParTkThreshold = cms.double(1.) ,
+ cutBased = cms.bool(False),
  tmvaWeights = cms.string("CMGTools/External/data/mva_JetID.weights.xml"),
  tmvaMethod  = cms.string("JetID"),
  version = cms.int32(0),
@@ -123,6 +129,7 @@ PhilV0 = cms.PSet(
 ####################################################################################################################  
 PhilV1 = cms.PSet(
  impactParTkThreshold = cms.double(1.) ,
+ cutBased = cms.bool(False),
  tmvaWeights = cms.string("CMGTools/External/data/mva_JetID_v1.weights.xml"),
  tmvaMethod  = cms.string("JetID"),
  version = cms.int32(-1),

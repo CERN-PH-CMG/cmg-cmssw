@@ -80,8 +80,6 @@ public:
 	
 	DECLARE_VARIABLE(idFlag      ,int);
 	bool passJetId   (Id level) { return passJetId(idFlag_,level); }	
-	DECLARE_VARIABLE(cutIdFlag   ,int);
-	bool passJetCutId(Id level) { return passJetId(cutIdFlag_,level); }
 
 	DECLARE_VARIABLE(mva      ,float);
 
