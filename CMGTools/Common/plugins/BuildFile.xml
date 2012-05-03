@@ -1,5 +1,6 @@
 <use name="AnalysisDataFormats/CMGTools"/>
 <use name="RecoMET/METAlgorithms"/>
+<use name="Muon/MuonAnalysisTools"/>
 
 <export></export>
 <library name="CMGToolsCommonPlugins" file="*.cc">

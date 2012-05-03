@@ -240,6 +240,10 @@ from CMGTools.Common.PAT.addMITElectronID import addMITElectronID
 # addMITElectronID( process, 'selectedPatElectrons', 'stdElectronSeq', '')
 
 
+
+
+
+
 # # adding custom detector based iso deposit ---> !!! this works only on V4 event content !!!
 from RecoLocalCalo.EcalRecAlgos.EcalSeverityLevelESProducer_cfi import *
 from CMGTools.Common.PAT.addLeptCustomIsoDeposit_cff import addMuonCustomIsoDeposit
@@ -366,6 +370,15 @@ if runJetSubstructure:
 if runAK5NoPUSub:
     process.p += getattr(process,"patPF2PATSequence"+postfixAK5NoPUSub)
 
+
+#Mike:Adding MIT MVA Isolation from muons
+process.load('CMGTools.Common.PAT.patMuonMVAIsolation_cff')
+process.p+=process.muonMVAIsolation
+
+
+
+
+
 #Jose: electrons not supported by our V4 samples -> removing them completely !!
 #Cristina: removing as well the conversions that require the electrons and the V5 reco conversions collection
 if runOnV4:
@@ -427,6 +440,8 @@ if runCMG:
         cloneProcessingSnippet(process, getattr(process, 'analysisSequence'), 'AK5NoPUSubCMG')
         replacePostfix(getattr(process,"analysisSequenceAK5NoPUSubCMG"),'AK5','AK5NoPUSub') 
         process.p += process.analysisSequenceAK5NoPUSubCMG
+
+
 
 
 ### OUTPUT DEFINITION #############################################
