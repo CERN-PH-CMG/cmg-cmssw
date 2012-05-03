@@ -139,6 +139,10 @@ PATCMGMuonSequence = cms.Sequence(
 
 # ELECTRONS      ----------------------------
 
+# NOTE dunno why this is needed, but necessary to run on V5 PFAOD
+# - Taejeong?
+patElectrons.pfElectronSource = 'particleFlow'
+
 # PF isolation
 
 from CommonTools.ParticleFlow.Isolation.pfElectronIsolation_cff import *
