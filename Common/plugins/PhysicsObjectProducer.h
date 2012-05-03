@@ -26,14 +26,14 @@ class PhysicsObjectProducer : public edm::EDFilter{
     verbose_(ps.getUntrackedParameter<bool>("verbose",false)),
     cutTree_("All Cuts") {
     
-    std::cout<<"Initializing PhysicsObjectProducer for "<<ps<<std::endl;
+    // std::cout<<"Initializing PhysicsObjectProducer for "<<ps<<std::endl;
     factory_.produces(this);//call hook for "produces"
 
     edm::ParameterSet cutsPSet = ps_.getParameter< edm::ParameterSet >("cuts");
     unpack( cutsPSet, "cuts", cutTree_); 
 
-    CutTreePrinter<CutTreeType> printer;
-    cutTree_.visit( &printer ); 
+    // CutTreePrinter<CutTreeType> printer;
+    // cutTree_.visit( &printer ); 
 
   }
   virtual bool filter(edm::Event&, const edm::EventSetup&);
