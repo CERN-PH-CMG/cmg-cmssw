@@ -14,7 +14,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
 
     def __init__(self, varName, directory, selComps, weights,
                  nbins = 50, xmin = 0, xmax=200, cut = '',
-                 weight='weight', embed = False, photon = True):
+                 weight='weight', embed = False, photon = True, electron = True):
         '''Data/MC plotter adapted to the H->tau tau analysis.
         The plotter takes a collection of trees in input. The trees are found according
         to the dictionary of selected components selComps.
@@ -35,12 +35,13 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.xmin = xmin
         self.xmax = xmax
 	self.photon = photon
+	self.electron = electron
         self.keeper = []
         
         super(H2TauTauDataMC, self).__init__(varName, directory, weights)
         offsetx = 0.55
         offsety = 0.1
-        self.legendBorders = 0.13+offsetx,0.66+offsety,0.44+offsetx,0.89+offsety
+        self.legendBorders = 0.13+offsetx,0.56+offsety,0.44+offsetx,0.89+offsety
 
         self.dataComponents = [ key for key, value in selComps.iteritems() \
                                 if value.isData is True ]
@@ -88,6 +89,8 @@ class H2TauTauDataMC( AnalysisDataMC ):
             if compName == 'DYJets':
 	        if self.photon:
 		    phot="&& isPhoton==0"
+	        elif self.electron:
+		    phot="&& isElectron==0"
                 else:
 		    phot=""
                 self._BuildHistogram(tree, comp, compName, self.varName,
@@ -101,6 +104,11 @@ class H2TauTauDataMC( AnalysisDataMC ):
                     self._BuildHistogram(tree, comp, photonCompName, self.varName,
                                          self.cut + ' && isPhoton', layer)
                     self.weights[photonCompName] = self.weights[compName]
+		if self.electron:
+                    electronCompName = 'DYJets_Electron'
+                    self._BuildHistogram(tree, comp, electronCompName, self.varName,
+                                         self.cut + ' && isElectron', layer)
+                    self.weights[electronCompName] = self.weights[compName]
             elif compName == 'WJets':
                 self._BuildHistogram(tree, comp, compName, self.varName,
                                      self.cut + ' && isFake==0', layer)
@@ -218,6 +226,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['DYJets'] = {'style':sYellow, 'layer':3}
         self.histPref['DYJets (emb)'] = {'style':sYellow, 'layer':3}
         self.histPref['DYJets_Photon'] = {'style':sOrange, 'layer':2.7}
+        self.histPref['DYJets_Electron'] = {'style':sRed, 'layer':2.6}
         self.histPref['DYJets_Fakes'] = {'style':sGreen, 'layer':2.5}
         self.histPref['QCD15'] = {'style':sBlack, 'layer':5.4}
         self.histPref['QCD30'] = {'style':sBlack, 'layer':5.3}

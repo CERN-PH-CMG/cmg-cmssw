@@ -44,9 +44,12 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             else:
                 event.genMatched = False
             event.isPhoton=False
+            event.isElectron=False
 	    for gen in genParticles:
                 if abs(gen.pdgId())==15 and (gen.mother().mass()<80 or gen.mother().mass()>100):
                     event.isPhoton=True
+                if abs(gen.pdgId())==11:
+                    event.isElectron=True
         if self.cfg_comp.isMC and "W" in self.cfg_comp.name:
             genParticles = self.mchandles['genParticles'].product()
             event.genParticles = map( GenParticle, genParticles)

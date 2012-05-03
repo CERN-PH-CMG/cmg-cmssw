@@ -30,6 +30,8 @@ if __name__ == '__main__':
                                  TGraph(npoints)),
                       tau35 = (triggerEfficiency.effIsoTau35,
                                  TGraph(npoints)),
+                      tau45 = (triggerEfficiency.effIsoTau45,
+                                 TGraph(npoints)),
                       )
     
     muCurves = dict( p2011A = (triggerEfficiency.effMu2011A,
