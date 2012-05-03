@@ -146,21 +146,32 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(1,"Preselected");
   h->GetXaxis()->SetBinLabel(2,"|M-M_{Z}|<15");
   h->GetXaxis()->SetBinLabel(3,"Z_{pT}>30");
-  h->GetXaxis()->SetBinLabel(4,"b-veto (cvs<0.244)");
-  h->GetXaxis()->SetBinLabel(5,"Jet-Veto (pt>30)");
+  h->GetXaxis()->SetBinLabel(4,"b-veto (cvs$<$0.244)");
+  h->GetXaxis()->SetBinLabel(5,"Jet-Veto (pt$>$30)");
   h->GetXaxis()->SetBinLabel(6,"red-E_{T}^{miss}>50");
   h->GetXaxis()->SetBinLabel(7,"Balance Cut");
   h->GetXaxis()->SetBinLabel(8,"Delta phi (Jet-Met)");
   h->GetXaxis()->SetBinLabel(9,"3^{rd}-lepton veto");
   //h->GetXaxis()->SetBinLabel(10,"Opp. flavor");
   mon.addHistogram( h );
-
+  //No Weight
+  h=new TH1F ("eventflow_NoWeight", ";;Events", 9,0,9);
+  h->GetXaxis()->SetBinLabel(1,"Preselected");
+  h->GetXaxis()->SetBinLabel(2,"|M-M_{Z}|<15");
+  h->GetXaxis()->SetBinLabel(3,"Z_{pT}>30");
+  h->GetXaxis()->SetBinLabel(4,"b-veto (cvs$<$0.244)");
+  h->GetXaxis()->SetBinLabel(5,"Jet-Veto (pt$>$30)");
+  h->GetXaxis()->SetBinLabel(6,"red-E_{T}^{miss}>50");
+  h->GetXaxis()->SetBinLabel(7,"Balance Cut");
+  h->GetXaxis()->SetBinLabel(8,"Delta phi (Jet-Met)");
+  h->GetXaxis()->SetBinLabel(9,"3^{rd}-lepton veto");
+  mon.addHistogram( h );
   //Reduced for Plot
   h=new TH1F ("ZZ_eventflow_red", ";;Events", 7,0,7);
   h->GetXaxis()->SetBinLabel(1,"Pres, |M-M_{Z}|<15");
   h->GetXaxis()->SetBinLabel(2,"Z_{pT}>30");
-  h->GetXaxis()->SetBinLabel(3,"b-veto (cvs<0.244)");
-  h->GetXaxis()->SetBinLabel(4,"Jet-Veto (pt>30)");
+  h->GetXaxis()->SetBinLabel(3,"b-veto (cvs$<$0.244)");
+  h->GetXaxis()->SetBinLabel(4,"Jet-Veto (pt$>$30)");
   h->GetXaxis()->SetBinLabel(5,"red-E_{T}^{miss}>50");
   h->GetXaxis()->SetBinLabel(6,"Bal.Cut, Dphi");
   h->GetXaxis()->SetBinLabel(7,"3^{rd}-lept veto");
@@ -171,8 +182,8 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(1,"Preselected");
   h->GetXaxis()->SetBinLabel(2,"|M-M_{Z}|<15");
   h->GetXaxis()->SetBinLabel(3,"Z_{pT}>30");
-  h->GetXaxis()->SetBinLabel(4,"b-veto (cvs<0.244)");
-  h->GetXaxis()->SetBinLabel(5,"Jet-Veto (pt>30)");
+  h->GetXaxis()->SetBinLabel(4,"b-veto (cvs$<40.244)");
+  h->GetXaxis()->SetBinLabel(5,"Jet-Veto (pt$>$30)");
   h->GetXaxis()->SetBinLabel(6,"red-E_{T}^{miss}>50");
   h->GetXaxis()->SetBinLabel(7,"Balance Cut");
   h->GetXaxis()->SetBinLabel(8,"Delta phi (Jet-Met)");
@@ -182,8 +193,8 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(1,"Preselected");
   h->GetXaxis()->SetBinLabel(2,"|M-M_{Z}|<15");
   h->GetXaxis()->SetBinLabel(3,"Z_{pT}>30");
-  h->GetXaxis()->SetBinLabel(4,"b-veto (cvs<0.244)");
-  h->GetXaxis()->SetBinLabel(5,"Jet-Veto (pt>30)");
+  h->GetXaxis()->SetBinLabel(4,"b-veto (cvs$<$0.244)");
+  h->GetXaxis()->SetBinLabel(5,"Jet-Veto (pt$>$30)");
   h->GetXaxis()->SetBinLabel(6,"red-E_{T}^{miss}>50");
   h->GetXaxis()->SetBinLabel(7,"Balance Cut");
   h->GetXaxis()->SetBinLabel(8,"Delta phi (Jet-Met)");
@@ -653,7 +664,7 @@ int main(int argc, char* argv[])
          case EMU : tag_cat = "emu";   break;
          case MUMU: tag_cat = "mumu";  break;
          case EE  : tag_cat = "ee";    break;
-         default  : tag_cat = "??";    break;
+         default  : continue;
 
       }
      if(isMC && mctruthmode==1 && !isDYToLL(ev.mccat) ) continue;
@@ -854,7 +865,7 @@ int main(int argc, char* argv[])
       //DPhi
       int DphiMet_Jet=0;
       for(size_t ijet=0; ijet<phys.jets.size(); ijet++){
-             if( fabs(deltaPhi(phys.jets[ijet].phi(),redMetP4.phi()))<0.5 && phys.jets[ijet].pt()>20. ) DphiMet_Jet++;
+             if( fabs(deltaPhi(phys.jets[ijet].phi(), zvv.phi()))<0.5 && phys.jets[ijet].pt()>20. ) DphiMet_Jet++;
       }
 
       //sum ETs
@@ -1160,45 +1171,54 @@ int main(int argc, char* argv[])
          mon.fillHisto("ZZ_eventflow",tags_cat,0,iweight);
          mon.fillHisto("eventflow_minus",tags_cat,0,iweight*TotalWeight_minus);
          mon.fillHisto("eventflow_plus",tags_cat,0,iweight*TotalWeight_plus);
+         mon.fillHisto("eventflow_NoWeight",tags_cat,0,1.);
       if( passZmass ){
          mon.fillHisto("ZZ_eventflow",tags_cat,1,iweight);
          mon.fillHisto("ZZ_eventflow_red",tags_cat,0,iweight);
          mon.fillHisto("eventflow_minus",tags_cat,1,iweight*TotalWeight_minus);
          mon.fillHisto("eventflow_plus",tags_cat,1,iweight*TotalWeight_plus);
+         mon.fillHisto("eventflow_NoWeight",tags_cat,1,1.);
       if( passZpt ){    
          mon.fillHisto("ZZ_eventflow",tags_cat,2,iweight);
          mon.fillHisto("ZZ_eventflow_red",tags_cat,1,iweight);
          mon.fillHisto("eventflow_minus",tags_cat,2,iweight*TotalWeight_minus);
          mon.fillHisto("eventflow_plus",tags_cat,2,iweight*TotalWeight_plus);
+         mon.fillHisto("eventflow_NoWeight",tags_cat,2,1.);
       if( passBveto ){
          mon.fillHisto("ZZ_eventflow",tags_cat,3,iweight);
          mon.fillHisto("ZZ_eventflow_red",tags_cat,2,iweight);
          mon.fillHisto("eventflow_minus",tags_cat,3,iweight*TotalWeight_minus);
          mon.fillHisto("eventflow_plus",tags_cat,3,iweight*TotalWeight_plus);
+         mon.fillHisto("eventflow_NoWeight",tags_cat,3,1.);
       if( JetVeto ){
          mon.fillHisto("ZZ_eventflow",tags_cat,4,iweight);
          mon.fillHisto("ZZ_eventflow_red",tags_cat,3,iweight);
          mon.fillHisto("eventflow_minus",tags_cat,4,iweight*TotalWeight_minus);
          mon.fillHisto("eventflow_plus",tags_cat,4,iweight*TotalWeight_plus);
+         mon.fillHisto("eventflow_NoWeight",tags_cat,4,1.);
       if( RedMetPt ){
          mon.fillHisto("ZZ_eventflow",tags_cat,5,iweight);
          mon.fillHisto("ZZ_eventflow_red",tags_cat,4,iweight);
          mon.fillHisto("eventflow_minus",tags_cat,5,iweight*TotalWeight_minus);
          mon.fillHisto("eventflow_plus",tags_cat,5,iweight*TotalWeight_plus);
+         mon.fillHisto("eventflow_NoWeight",tags_cat,5,1.);
       if( Balance ){
          mon.fillHisto("ZZ_eventflow",tags_cat,6,iweight);
          mon.fillHisto("eventflow_minus",tags_cat,6,iweight*TotalWeight_minus);
          mon.fillHisto("eventflow_plus",tags_cat,6,iweight*TotalWeight_plus);
+         mon.fillHisto("eventflow_NoWeight",tags_cat,6,1.);
       if( Dphi_J ){
          mon.fillHisto("ZZ_eventflow",tags_cat,7,iweight);
          mon.fillHisto("ZZ_eventflow_red",tags_cat,5,iweight);
          mon.fillHisto("eventflow_minus",tags_cat,7,iweight*TotalWeight_minus);
          mon.fillHisto("eventflow_plus",tags_cat,7,iweight*TotalWeight_plus);
+         mon.fillHisto("eventflow_NoWeight",tags_cat,7,1.);
       if( pass3dLeptonVeto ){
          mon.fillHisto("ZZ_eventflow",tags_cat,8,iweight);
          mon.fillHisto("ZZ_eventflow_red",tags_cat,6,iweight);
          mon.fillHisto("eventflow_minus",tags_cat,8,iweight*TotalWeight_minus);
          mon.fillHisto("eventflow_plus",tags_cat,8,iweight*TotalWeight_plus);
+         mon.fillHisto("eventflow_NoWeight",tags_cat,8,1.);
          //if( Flav )mon.fillHisto("ZZ_eventflow",tags_cat,9,iweight);
       }}}}}}}}}
 
