@@ -13,16 +13,16 @@ full_5x_wp = cms.PSet(
     Pt3050_Tight   = cms.vdouble(-0.38,-0.32,-0.14,-0.48),
 
     #Medium Id
-    Pt010_Medium   = cms.vdouble(-0.83,-0.92,-0.92,-0.94),
-    Pt1020_Medium  = cms.vdouble(-0.83,-0.92,-0.92,-0.94),
-    Pt2030_Medium  = cms.vdouble(-0.40,-0.49,-0.61,-0.74),
-    Pt3050_Medium  = cms.vdouble(-0.40,-0.49,-0.61,-0.74),
+    Pt010_Medium   = cms.vdouble(-0.83,-0.92,-0.90,-0.92),
+    Pt1020_Medium  = cms.vdouble(-0.83,-0.92,-0.90,-0.92),
+    Pt2030_Medium  = cms.vdouble(-0.40,-0.49,-0.53,-0.70),
+    Pt3050_Medium  = cms.vdouble(-0.40,-0.49,-0.53,-0.70),
 
     #Loose Id
-    Pt010_Loose    = cms.vdouble(-0.95,-0.96,-0.95,-0.96),
-    Pt1020_Loose   = cms.vdouble(-0.95,-0.96,-0.95,-0.96),
-    Pt2030_Loose   = cms.vdouble(-0.80,-0.74,-0.76,-0.81),
-    Pt3050_Loose   = cms.vdouble(-0.80,-0.74,-0.76,-0.81)
+    Pt010_Loose    = cms.vdouble(-0.95,-0.96,-0.94,-0.95),
+    Pt1020_Loose   = cms.vdouble(-0.95,-0.96,-0.94,-0.95),
+    Pt2030_Loose   = cms.vdouble(-0.80,-0.74,-0.68,-0.77),
+    Pt3050_Loose   = cms.vdouble(-0.80,-0.74,-0.68,-0.77)
 )
 
 simple_5x_wp = cms.PSet(
@@ -35,16 +35,16 @@ simple_5x_wp = cms.PSet(
     Pt3050_Tight   = cms.vdouble(-0.33,-0.30,-0.15,-0.49),
 
     #Medium Id
-    Pt010_Medium   = cms.vdouble(-0.85,-0.93,-0.93,-0.94),
-    Pt1020_Medium  = cms.vdouble(-0.85,-0.93,-0.93,-0.94),
-    Pt2030_Medium  = cms.vdouble(-0.40,-0.54,-0.63,-0.74),
-    Pt3050_Medium  = cms.vdouble(-0.40,-0.54,-0.63,-0.74),
+    Pt010_Medium   = cms.vdouble(-0.85,-0.93,-0.91,-0.92),
+    Pt1020_Medium  = cms.vdouble(-0.85,-0.93,-0.91,-0.92),
+    Pt2030_Medium  = cms.vdouble(-0.40,-0.54,-0.50,-0.69),
+    Pt3050_Medium  = cms.vdouble(-0.40,-0.54,-0.50,-0.69),
 
     #Loose Id
-    Pt010_Loose    = cms.vdouble(-0.95,-0.96,-0.95,-0.96),
-    Pt1020_Loose   = cms.vdouble(-0.95,-0.96,-0.95,-0.96),
-    Pt2030_Loose   = cms.vdouble(-0.80,-0.73,-0.74,-0.80),
-    Pt3050_Loose   = cms.vdouble(-0.80,-0.73,-0.74,-0.80)
+    Pt010_Loose    = cms.vdouble(-0.95,-0.96,-0.94,-0.95),
+    Pt1020_Loose   = cms.vdouble(-0.95,-0.96,-0.94,-0.95),
+    Pt2030_Loose   = cms.vdouble(-0.80,-0.73,-0.68,-0.77),
+    Pt3050_Loose   = cms.vdouble(-0.80,-0.73,-0.68,-0.77)
 )
 
 
