@@ -7,16 +7,9 @@ from PhysicsTools.PatAlgos.patSequences_cff import *
 from CMGTools.Common.PAT.patLeptModifiedIsoDeposit_cff import *
 from CMGTools.Common.analysis_cff import *
 
-# FIXME : taus are not correctly configured here! 
+# FIXME : include type1 met corrections
+# FIXME : check the taus in 44X and 52X
 # FIXME : adapt pile-up jet id to 44X
-# FIXME : check taus in 52X
-
-# FIXME make sure embedded collections are kept in pat-tuple (CHS PF collection!)
-# FIXME are pat conversions used in the other cfg? where? do I need to add them?
-# FIXME check PAT content
-# FIXME check CMG content
-#           drop embedding collections? check they're empty
-# FIXME set new aliases - Aliases don't work in 52 anyway!
 
 
 # GEN              ---------------------------
@@ -113,11 +106,15 @@ patMuons.isoDeposits = cms.PSet(
     pfPUChargedHadrons = cms.InputTag("muPFIsoDepositPU" ),
     pfNeutralHadrons = cms.InputTag("muPFIsoDepositNeutral" ),
     pfPhotons = cms.InputTag("muPFIsoDepositGamma" ),
-    # 44X does not work
+    # 44X does not work. the name must have changed?
     # tracker = cms.InputTag("muons","muIsoDepositTk"),
+    tracker = cms.InputTag("muIsoDepositTk"),
     # ecal    = cms.InputTag("muons","ecal"),
     # hcal    = cms.InputTag("muons","hcal"),
     )
+
+# needed in 44X:
+muIsoFromDepsTkOptimized.deposits[0].src = 'muIsoDepositTk'
 
 patMuons.isolationValues = cms.PSet(
     pfChargedHadrons = cms.InputTag("muPFIsoValueCharged04"),
@@ -125,8 +122,7 @@ patMuons.isolationValues = cms.PSet(
     pfPUChargedHadrons = cms.InputTag("muPFIsoValuePU04" ),
     pfNeutralHadrons = cms.InputTag("muPFIsoValueNeutral04" ),
     pfPhotons = cms.InputTag("muPFIsoValueGamma04" ),
-    # 44X does not work
-    # user = cms.VInputTag( cms.InputTag("muIsoFromDepsTkOptimized") )
+    user = cms.VInputTag( cms.InputTag("muIsoFromDepsTkOptimized") )
     )
 
 selectedPatMuons.cut = 'pt()>3'
@@ -137,8 +133,7 @@ cmgMuon.cfg.inputCollection = 'patMuonsWithTrigger'
 
 PATCMGMuonSequence = cms.Sequence(
     pfMuonIsolationSequence +
-    # 44X does not work
-    # detMuonIsoDepositSequence + 
+    detMuonIsoDepositSequence + 
     makePatMuons +
     selectedPatMuons +
     patMuonsWithTriggerSequence + 
@@ -419,7 +414,7 @@ ak5PFJetsCHS.doRhoFastjet = False
 
 # MET      ----------------------------
 
-# 44X does not work
+# 44X does not work - both METs are identical for now
 #produce type 1 corrected MET
 # patMETs.metSource = 'pfType1CorrectedMet'
 # dammit! the PAT MET sequence contains jet clustering modules... 
