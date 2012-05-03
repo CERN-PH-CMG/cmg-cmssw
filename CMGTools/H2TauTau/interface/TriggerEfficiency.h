@@ -299,6 +299,13 @@ public:
     return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);;
   }
 
+  double effIsoTau45(double pt, double eta){
+    double p0 = 0.94552;
+    double p1 = 56.6926;
+    double p2 = 1.30613;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);;
+  }
+
   double effTau1fb(double pt, double eta){
     float tau20w = 200.;
     float tau25w = 139.;
@@ -308,6 +315,24 @@ public:
 	     tau35w * effIsoTau35(pt,eta) ) / ( tau20w + tau25w + tau35w);
   }
   
+  double effTau5fb(double pt, double eta){
+    float tau20w = 200.;
+    float tau25w = 139.;
+    float tau35w = 790.;
+    float tau45w = 3500.;
+    return ( tau20w * effIsoTau20(pt,eta) + 
+	     tau25w * effIsoTau25(pt,eta) + 
+	     tau35w * effIsoTau35(pt,eta) + 
+	     tau45w * effIsoTau45(pt,eta) ) / ( tau20w + tau25w + tau35w + tau45w);
+  }
+  
+  double eff2012IsoTauL1(double pt, double eta){
+    double p0 = 0.979017;
+    double p1 = 31.2826;
+    double p2 = 1.027;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);;
+  }
+
 
 private:
 
