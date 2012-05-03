@@ -13,7 +13,7 @@ print 'querying database for source files'
 
 runOnMC = True
 
-runJetSubstructure = False
+runJetSubstructure = True
 
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
@@ -27,6 +27,10 @@ process.source = datasetToSource(
 if runOnMC is False:
     print 'OVERRIDING datasetToSource TO TEST RUNNING ON DATA'
     process.source.fileNames = ['/store/data/Run2012A/DoubleMu/AOD/PromptReco-v1/000/191/859/66D9EE0B-EC8C-E111-9346-001D09F2AD84.root']
+
+print sep_line
+print process.source.fileNames
+print sep_line 
 
 ## Maximal Number of Events
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2000) )
