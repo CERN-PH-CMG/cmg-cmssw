@@ -181,6 +181,19 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, st
 }
 
 enum Dataset { WW=0, ZZ, WZ, TT, WJ, DY, tw, tbw, ts, tbs, tt, tbt, EE, MuMu, EMU };
+
+//Cross and eff
+double Xsec_ee=0., Xsec_mumu=0., LeA_ee=0., LeA_mumu=0.;
+//Ndata Bkg
+double NData_ee=0.,NDY_ee=0., Nnonres_ee=0, NWZ_ee=0.;
+double NData_mumu=0.,NDY_mumu=0., Nnonres_mumu=0, NWZ_mumu=0.;
+//Stat
+double StatDy_ee=0.,ErNdata_ee=0.;
+double StatDy_mumu=0.,ErNdata_mumu=0.;
+//Syst
+double SystDy_ee=0.;
+double SystDy_mumu=0.;
+
 int main(int argc, char* argv[]){
 
    TCanvas* myc1 = new TCanvas("myc1", "CMS", 600, 600);
@@ -258,6 +271,8 @@ int main(int argc, char* argv[]){
          if( Samples[j].isTag("xsec")  )  Weight*= Samples[j]["xsec"].toDouble();
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
          Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
+         cout<<(Samples[j])["dtag"].toString()<<endl;
+         cout<<initialNumberOfEvents[(Samples[j])["dtag"].toString()]<<endl;
          //if((Samples[j])["dtag"].toString()=="MC_ZZ" ) cout<<"N tot ev. "<< initialNumberOfEvents[(Samples[j])["dtag"].toString()]<<endl;
          //FinalWeight[(Samples[j])["dtag"].toString()] = Weight;
          if( !Process[i]["isdata"].toBool() && Samples.size()==1  ){
@@ -297,9 +312,12 @@ int main(int argc, char* argv[]){
    GetListOfObject(Root,inDir,histlist);
 
 //Num Ev Gen: ZZ->llvv
-double Br=0., NevTot=0.;
-Br = 20./100. * 3.36/100.; // valid for ee, mumu
-NevTot = 4191045*Br;  // valid for ee, mumu
+double Br_ee=0., NNevTot_ee=0., Br_mumu=0., NNevTot_mumu=0.;
+Br_ee = (20./100.) * (3.363/100.) *2.;
+Br_mumu = (20./100.) * (3.366/100.) *2.;
+//NevTot form AOD = 4191045;
+NNevTot_ee = 4255560*Br_ee;  // valid for ee, mumu
+NNevTot_mumu = 4255560*Br_mumu;  // valid for ee, mumu
 
 if( ChooseMet == 1 ){
 
@@ -464,14 +482,14 @@ Smear(File, myc1, "3");
 Smear(File, myc1, "4");
 
   cout<<endl;
-  float Eff_in_ee = ((TH1F*)File[ZZ]->Get( "ee_Effic" ))->GetBinContent(1)/NevTot;
-  float Eff_in_mu = ((TH1F*)File[ZZ]->Get( "mumu_Effic" ))->GetBinContent(1)/NevTot;
-  float Eff_fin_ee = ((TH1F*)File[ZZ]->Get("ee_Effic_MetSmear"))->GetBinContent(1)/NevTot;
-  float Eff_fin_mu = ((TH1F*)File[ZZ]->Get("mumu_Effic_MetSmear"))->GetBinContent(1)/NevTot;
-  float Eff_fin_ee_m = ( (TH1F*)File[ZZ]->Get("ee_Effic_MetSmearm"))->GetBinContent(1)/NevTot;
-  float Eff_fin_mu_m = ( (TH1F*)File[ZZ]->Get("mumu_Effic_MetSmearm"))->GetBinContent(1)/NevTot;
-  float Eff_fin_ee_p = ( (TH1F*)File[ZZ]->Get("ee_Effic_MetSmearp"))->GetBinContent(1)/NevTot;
-  float Eff_fin_mu_p = ( (TH1F*)File[ZZ]->Get("mumu_Effic_MetSmearp"))->GetBinContent(1)/NevTot;
+  float Eff_in_ee = ((TH1F*)File[ZZ]->Get( "ee_Effic" ))->GetBinContent(1)/NNevTot_ee;
+  float Eff_in_mu = ((TH1F*)File[ZZ]->Get( "mumu_Effic" ))->GetBinContent(1)/NNevTot_mumu;
+  float Eff_fin_ee = ((TH1F*)File[ZZ]->Get("ee_Effic_MetSmear"))->GetBinContent(1)/NNevTot_ee;
+  float Eff_fin_mu = ((TH1F*)File[ZZ]->Get("mumu_Effic_MetSmear"))->GetBinContent(1)/NNevTot_mumu;
+  float Eff_fin_ee_m = ( (TH1F*)File[ZZ]->Get("ee_Effic_MetSmearm"))->GetBinContent(1)/NNevTot_ee;
+  float Eff_fin_mu_m = ( (TH1F*)File[ZZ]->Get("mumu_Effic_MetSmearm"))->GetBinContent(1)/NNevTot_mumu;
+  float Eff_fin_ee_p = ( (TH1F*)File[ZZ]->Get("ee_Effic_MetSmearp"))->GetBinContent(1)/NNevTot_ee;
+  float Eff_fin_mu_p = ( (TH1F*)File[ZZ]->Get("mumu_Effic_MetSmearp"))->GetBinContent(1)/NNevTot_mumu;
   cout<<"Efficiency (ee): "<<Eff_in_ee<<endl;
   cout<<"Efficiency (mumu): "<<Eff_in_ee<<endl;
   cout<<"New Efficiency (ee): "<<Eff_fin_ee<<endl;
@@ -591,13 +609,20 @@ for(int i=1; i<pFinalHistoDY_ee->GetNbinsX(); i++){
 err_ee=0., err_mu=0.;
 double pNbkgDY_ee = pFinalHistoDY_ee->IntegralAndError( pFinalHistoDY_ee->FindBin(cut)-1,pFinalHistoDY_ee->FindBin(maxcut)-1, err_ee );
 double pNbkgDY_mu = pFinalHistoDY_mu->IntegralAndError( pFinalHistoDY_mu->FindBin(cut)-1,pFinalHistoDY_mu->FindBin(maxcut)-1, err_mu );
-cout<<"The Systematic (bkg /2) for nDY in ee is: "<< (NbkgDY_ee-pNbkgDY_ee)*100/NbkgDY_ee <<"%  you have now:"<<pNbkgDY_ee<<" events"<<endl;
-cout<<"The Systematic (bkg /2) for nDY in mumu is: "<< (NbkgDY_mu-pNbkgDY_mu)*100/NbkgDY_mu <<"%  you have now"<<pNbkgDY_mu<<" events."<<endl;
+cout<<"The Systematic (bkg /2) for nDY in ee is: "<< (NbkgDY_ee-pNbkgDY_ee)*100/NbkgDY_ee <<"%  you have now: "<<pNbkgDY_ee<<" events"<<endl;
+cout<<"The Systematic (bkg /2) for nDY in mumu is: "<< (NbkgDY_mu-pNbkgDY_mu)*100/NbkgDY_mu <<"%  you have now: "<<pNbkgDY_mu<<" events."<<endl;
+
+//XS
+NDY_ee= NbkgDY_ee; NDY_mumu= NbkgDY_mu;
+SystDy_ee = max(mNbkgDY_ee-NbkgDY_ee, pNbkgDY_ee-NbkgDY_ee);
+SystDy_mumu = max(mNbkgDY_mu-NDY_mumu, pNbkgDY_mu-NDY_mumu);
+StatDy_ee = err_ee;
+StatDy_mumu = err_mu;
 }
 
 if( CrossSec == 1 ){
-     double NevTot_ee = NevTot;
-     double NevTot_mumu = NevTot;
+     double NevTot_ee = NNevTot_ee;
+     double NevTot_mumu = NNevTot_mumu;
      //double NevTot_ee = ((TH1F*)File[ZZ]->Get( "ee_Effic_tot" ))->GetBinContent(1);
      //double NevTot_mumu = ((TH1F*)File[ZZ]->Get( "mumu_Effic_tot" ))->GetBinContent(1);
      cout<<endl;
@@ -621,6 +646,22 @@ if( CrossSec == 1 ){
      double CrossSection_mumu = (Nevent_mumu[MuMu] - Nbkg_mumu)/(iLumi*EffZZ_mumu);
      double Error_mumu = ( sqrt(Nevent_mumu[MuMu] + Nbkg_mumu))/(iLumi*EffZZ_mumu);
      cout<<endl; cout<<"Cross Section: Sigma x B.r.(pp-ZZ-mumuvv):  "<<CrossSection_mumu<< " /pm " << Error_mumu <<endl;
+//XS
+//Cross and Eff
+Xsec_ee   = CrossSection_ee;
+Xsec_mumu = CrossSection_mumu;
+LeA_ee    = iLumi*EffZZ_ee;
+LeA_mumu  = iLumi*EffZZ_mumu;
+//Data and err stat data
+NData_ee  = Nevent_ee[EE];
+NData_mumu= Nevent_mumu[MuMu];
+ErNdata_ee  = sqrt(Nevent_ee[EE]);
+ErNdata_mumu= sqrt(Nevent_mumu[MuMu]);
+//nEv
+Nnonres_ee=Nevent_ee[WW]+Nevent_ee[TT]+Nevent_ee[WJ];  NWZ_ee=Nevent_ee[WZ];
+Nnonres_mumu=Nevent_mumu[WW]+Nevent_mumu[TT]+Nevent_mumu[WJ];  NWZ_mumu=Nevent_mumu[WZ];
+
+
 
      //Syst on Met (Jer)
      double EffZZJer_ee = ((TH1F*)File[ZZ]->Get( "ee_EfficJer" ))->GetBinContent(1)/NevTot_ee;
@@ -777,15 +818,27 @@ if( CrossSec == 1 ){
 }
 
 if( SystGlob==1 ){
-double ERR_stat=0.,ERR_syst=0.;
+double ERR_stat_ee=0.,ERR_syst_ee=0., ERR_stat_mumu=0.,ERR_syst_mumu=0.;
 //Stat
-double Ndy = 0., Nnres = 0., Nwz = 0., Nww = 0., Ndata = 0.;
+double Nnres_ee = 0., Nwz_ee = 0., Nww_ee = 0.;
+double Nnres_mu = 0., Nwz_mu = 0., Nww_mu = 0.;
 //Syst
-double NSdy = 0., NSnres = 0., NSwz = 0., NSww = 0.;
+double NSnres_ee = 0., NSwz_ee = 0., NSww_ee = 0.;
+double NSnres_mu = 0., NSwz_mu = 0., NSww_mu = 0.;
 
-ERR_stat = sqrt( pow(Ndy,2) );
-ERR_syst = sqrt( pow(NSdy,2) );
+Xsec_ee = (NData_ee - NDY_ee - Nnonres_ee - NWZ_ee)/LeA_ee;
+Xsec_mumu = (NData_mumu - NDY_mumu - Nnonres_mumu - NWZ_mumu)/LeA_mumu;
 
+ERR_stat_ee = sqrt( pow(StatDy_ee/LeA_ee,2) + pow(ErNdata_ee/LeA_ee,2) );
+ERR_syst_ee = sqrt( pow(SystDy_ee/LeA_ee,2) );
+ERR_stat_mumu = sqrt( pow(StatDy_mumu/LeA_mumu,2) + pow(ErNdata_mumu/LeA_mumu,2) );
+ERR_syst_mumu = sqrt( pow(SystDy_mumu/LeA_mumu,2) );
+
+cout<<endl;
+cout<<"_____________________________________________________________________________________"<<endl;
+cout<<"Xsec ee: "<<Xsec_ee<<" +- "<<ERR_stat_ee<<" (stat.) +- "<<ERR_syst_ee<<" (syst)"<<endl;
+cout<<"Xsec mumu: "<<Xsec_mumu<<" +- "<<ERR_stat_mumu<<" (stat.) +- "<<ERR_syst_mumu<<" (syst)"<<endl;
+cout<<"_____________________________________________________________________________________"<<endl;
 }
 
 }//End Main
