@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs52X
-if not cmsswIs52X():
-    raise ValueError('Sorry, you are not working in 52X. use the correct cfg')
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X
+if not cmsswIs44X():
+    raise ValueError('Sorry, you are not working in 44X. use the correct cfg')
 
 sep_line = '-'*67
 print sep_line
@@ -23,15 +23,14 @@ runOnMC = True
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
    'CMS',
-   '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM',
-   # '/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V5-v1/AODSIM',
-   # 'CMS',
-   # '/DoubleMu/Run2012A-PromptReco-v1/AOD'
+   '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM',
    )
 
 if runOnMC is False:
     print 'OVERRIDING datasetToSource TO TEST RUNNING ON DATA'
     process.source.fileNames = ['/store/data/Run2012A/DoubleMu/AOD/PromptReco-v1/000/191/859/66D9EE0B-EC8C-E111-9346-001D09F2AD84.root']
+
+process.source.fileNames = process.source.fileNames[:1]
 
 print sep_line
 print process.source.fileNames
@@ -42,7 +41,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2000) )
 
 print 'loading the main CMG sequence'
 
-process.load('CMGTools.Common.PAT.PATCMG_cff')
+process.load('CMGTools.Common.PAT.PATCMG_44X_cff')
 
 if runOnMC is False:
     # removing MC stuff
@@ -119,7 +118,7 @@ process.p += process.postPathCounter
 # process.PATCMGSequence.remove(process.PATCMGRhoSequence)
 # process.PATCMGSequence.remove(process.PATCMGMuonSequence)
 # process.PATCMGSequence.remove(process.PATCMGElectronSequence)
-# process.PATCMGSequence.remove(process.PATCMGGenJetSequence)
+# process.PATCMGSequence.remove(process.PATCMGGenSequence)
 # process.PATCMGSequence.remove(process.PATCMGJetSequence)
 # process.PATCMGSequence.remove(process.PATCMGTauSequence)
 # process.PATCMGSequence.remove(process.PATCMGMetSequence)
