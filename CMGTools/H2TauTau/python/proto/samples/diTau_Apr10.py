@@ -6,7 +6,7 @@ from CMGTools.H2TauTau.proto.samples.triggers_diTau import data_triggers_2011A, 
 
 aod = 'V2'
 pat = 'PAT_CMG_V2_5_0'
-htt = 'DITAU'
+htt = 'DITAU_loosee'
 filePattern = 'diTau.*fullsel.*root'
 
 # Data --------------------------------------------------------------------------------
@@ -45,17 +45,17 @@ WJets.nGenEvents = 81345381
 TTJets.files = getFiles('/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), 'hinzmann', filePattern)
 TTJets.nGenEvents = 3701947
 
-QCD15.files = getFiles('/QCD_Pt-15to30_TuneZ2_7TeV_pythia6/Fall11-PU_S6_START42_V14B-v3/AODSIM/V4/PAT_CMG_V4_0_0/{htt}'.format(aod=aod, pat=pat, htt=htt), 'hinzmann', filePattern)
-QCD15.nGenEvents = 10991904
+#QCD15.files = getFiles('/QCD_Pt-15to30_TuneZ2_7TeV_pythia6/Fall11-PU_S6_START42_V14B-v3/AODSIM/V4/PAT_CMG_V4_0_0/{htt}'.format(aod=aod, pat=pat, htt=htt), 'hinzmann', filePattern)
+#QCD15.nGenEvents = 10991904
 
-QCD30.files = getFiles('/QCD_Pt-30to50_TuneZ2_7TeV_pythia6/Fall11-PU_S6_START42_V14B-v3/AODSIM/V4/PAT_CMG_V4_0_0/{htt}'.format(aod=aod, pat=pat, htt=htt), 'hinzmann', filePattern)
-QCD30.nGenEvents = 6583068
+#QCD30.files = getFiles('/QCD_Pt-30to50_TuneZ2_7TeV_pythia6/Fall11-PU_S6_START42_V14B-v3/AODSIM/V4/PAT_CMG_V4_0_0/{htt}'.format(aod=aod, pat=pat, htt=htt), 'hinzmann', filePattern)
+#QCD30.nGenEvents = 6583068
 
-QCD50.files = getFiles('/QCD_Pt-50to80_TuneZ2_7TeV_pythia6/Fall11-PU_S6_START42_V14B-v2/AODSIM/V4/PAT_CMG_V4_0_0/{htt}'.format(aod=aod, pat=pat, htt=htt), 'hinzmann', filePattern)
-QCD50.nGenEvents = 6600000
+#QCD50.files = getFiles('/QCD_Pt-50to80_TuneZ2_7TeV_pythia6/Fall11-PU_S6_START42_V14B-v2/AODSIM/V4/PAT_CMG_V4_0_0/{htt}'.format(aod=aod, pat=pat, htt=htt), 'hinzmann', filePattern)
+#QCD50.nGenEvents = 6600000
 
-QCD80.files = getFiles('/QCD_Pt-80to120_TuneZ2_7TeV_pythia6/Fall11-PU_S6_START42_V14B-v3/AODSIM/V4/PAT_CMG_V4_0_0/{htt}'.format(aod=aod, pat=pat, htt=htt), 'hinzmann', filePattern)
-QCD80.nGenEvents = 6581772
+#QCD80.files = getFiles('/QCD_Pt-80to120_TuneZ2_7TeV_pythia6/Fall11-PU_S6_START42_V14B-v3/AODSIM/V4/PAT_CMG_V4_0_0/{htt}'.format(aod=aod, pat=pat, htt=htt), 'hinzmann', filePattern)
+#QCD80.nGenEvents = 6581772
 
 ggHTT125.files = getFiles('/GluGluToHToTauTau_M-125_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), 'hinzmann', filePattern)
 ggHTT125.nGenEvents = 199986

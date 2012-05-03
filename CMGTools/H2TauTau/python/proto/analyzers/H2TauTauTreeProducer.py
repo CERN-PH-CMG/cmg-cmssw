@@ -30,19 +30,27 @@ class H2TauTauTreeProducer( TreeAnalyzer ):
         var('visMass')
         var('svfitMass')
         var('mt')
+	var('pThiggs')
         
 	var('met')
-        var('mttj')
+	var('mttj')
+
         var('dRtt')
+        var('dPhitt')
 
         particleVars('diTau')
         particleVars('l1')
         particleVars('l2')
 
+        var('l1LooIso')
+        var('l2LooIso')
         var('l1MedIso')
         var('l2MedIso')
         var('l1TigIso')
         var('l2TigIso')
+
+        var('l1Prongs')
+        var('l2Prongs')
 
         var('genTauVisMass')
         var('genJetVisMass')
@@ -65,6 +73,7 @@ class H2TauTauTreeProducer( TreeAnalyzer ):
 
         var('isFake')
         var('isPhoton')
+        var('isElectron')
         
         self.tree.book()
 
@@ -88,18 +97,25 @@ class H2TauTauTreeProducer( TreeAnalyzer ):
         fill('visMass', event.diLepton.mass())
         fill('svfitMass', event.diLepton.massSVFit())
         fill('mt', event.diLepton.mTLeg2())
+        fill('pThiggs', sqrt(pow(event.diLepton.met().px()+event.diLepton.px(),2)+pow(event.diLepton.met().py()+event.diLepton.py(),2)))
 
         fill('met', event.diLepton.met().pt())
         fill('dRtt', sqrt(pow(deltaPhi(event.diLepton.leg1().phi(),event.diLepton.leg2().phi()),2)+pow(fabs(event.diLepton.leg1().eta()-event.diLepton.leg2().eta()),2)))
+        fill('dPhitt', deltaPhi(event.diLepton.leg1().phi(),event.diLepton.leg2().phi()))
             
         fParticleVars('diTau', event.diLepton)
         fParticleVars('l1', event.diLepton.leg1() )
         fParticleVars('l2', event.diLepton.leg2() )
 
+        fill('l1LooIso', event.diLepton.leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr") )
+        fill('l2LooIso', event.diLepton.leg2().tauID("byLooseCombinedIsolationDeltaBetaCorr") )
         fill('l1MedIso', event.diLepton.leg1().tauID("byMediumCombinedIsolationDeltaBetaCorr") )
         fill('l2MedIso', event.diLepton.leg2().tauID("byMediumCombinedIsolationDeltaBetaCorr") )
         fill('l1TigIso', event.diLepton.leg1().tauID("byTightCombinedIsolationDeltaBetaCorr") )
         fill('l2TigIso', event.diLepton.leg2().tauID("byTightCombinedIsolationDeltaBetaCorr") )
+
+        fill('l1Prongs', len(event.diLepton.leg1().signalPFCands()) )
+        fill('l2Prongs', len(event.diLepton.leg2().signalPFCands()) )
 
         if event.diLepton.leg1().genTaup4() and event.diLepton.leg2().genTaup4():
           fill('genTauVisMass', sqrt(
@@ -147,5 +163,9 @@ class H2TauTauTreeProducer( TreeAnalyzer ):
         isPhoton = 0
         if hasattr(event,'isPhoton') and event.isPhoton == 1: isPhoton = 1
         fill('isPhoton', isPhoton)
+
+        isElectron = 0
+        if hasattr(event,'isElectron') and event.isElectron == 1: isElectron = 1
+        fill('isElectron', isElectron)
 
         self.tree.fill()
