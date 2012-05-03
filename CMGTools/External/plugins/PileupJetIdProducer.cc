@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Pasquale Musella,40 2-A12,+41227671706,
 //         Created:  Wed Apr 18 15:48:47 CEST 2012
-// $Id: PileupJetIdProducer.cc,v 1.4 2012/04/20 10:30:46 musella Exp $
+// $Id: PileupJetIdProducer.cc,v 1.5 2012/04/24 15:32:25 musella Exp $
 //
 //
 
@@ -35,6 +35,7 @@ Implementation:
 
 #include "CMGTools/External/interface/PileupJetIdentifier.h"
 #include "CMGTools/External/interface/PileupJetIdAlgo.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 
 // ------------------------------------------------------------------------------------------
 class PileupJetIdProducer : public edm::EDProducer {
@@ -118,6 +119,13 @@ PileupJetIdProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	map<string, vector<float> > mvas;
 	map<string, vector<int> > idflags;
 
+	// require basic quality cuts on the vertexes
+	VertexCollection::const_iterator vtx = vertexes.begin();
+	while( vtx != vertexes.end() && ( vtx->isFake() || vtx->ndof() < 4 ) ) {
+		++vtx;
+	}
+	if( vtx == vertexes.end() ) { vtx = vertexes.begin(); }
+
 	for ( unsigned int i=0; i<jets.size(); ++i ) {
 		vector<pair<string,PileupJetIdAlgo *> >::iterator algoi = algos_.begin();
 		PileupJetIdAlgo * ialgo = algoi->second;
@@ -125,7 +133,7 @@ PileupJetIdProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
  
 		PileupJetIdentifier puIdentifier;
 		if( produceJetIds_ ) {
-			puIdentifier = ialgo->computeIdVariables(&jet, 0.,  &*(vertexes.begin()), vertexes, runMvas_); // FIXME energy (un-)corrections for plain reco::Jets
+			puIdentifier = ialgo->computeIdVariables(&jet, 0.,  &*(vtx), vertexes, runMvas_); // FIXME energy (un-)corrections for plain reco::Jets
 			ids.push_back( puIdentifier );
 		} else {
 			puIdentifier = (*vmap)[jets.refAt(i)];  // FIXME energy (un-)corrections for plain reco::Jets
