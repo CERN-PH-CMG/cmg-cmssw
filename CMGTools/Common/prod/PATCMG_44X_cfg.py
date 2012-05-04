@@ -17,13 +17,11 @@ print 'querying database for source files'
 
 runOnMC = True
 
-# does not work in 44X
-# runJetSubstructure = True
 
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
-   'CMS',
-   '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM',
+   'cmgtools_group',
+   '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5'
    )
 
 if runOnMC is False:
@@ -107,8 +105,6 @@ process.p = cms.Path(
     process.PATCMGSequence + 
     process.PATCMGJetCHSSequence 
     )
-# if runJetSubstructure:
-#    process.p += process.PATCMGJetSequenceCHSpruned
 
 process.p += process.postPathCounter
 
@@ -139,6 +135,7 @@ process.out = cms.OutputModule("PoolOutputModule",
                                # unpack the list of commands 'patEventContent'
                                outputCommands = patEventContentCMG
                                )
+# needed to override the CMG format, which drops the pat taus
 process.out.outputCommands.append('keep patTaus_selectedPatTaus_*_*')
 
 process.outpath = cms.EndPath(process.out)

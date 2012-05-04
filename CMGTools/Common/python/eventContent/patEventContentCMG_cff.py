@@ -16,6 +16,7 @@ patEventContentCMG.extend([
     'keep patConversions_patConversions_*_*',
     'drop patMuons_selectedPatMuons_*_*',
     'keep patMuons_patMuonsWithTrigger_*_*',
+    'drop patTriggerObjectStandAlonesedmAssociation_*_*_*',
     'keep *_selectedPatTaus_*_*',
     'keep *_selectedPatTausAK5*_*_*',
     'drop *_selectedPatMuonsAK5NoPUSub_*_*',
