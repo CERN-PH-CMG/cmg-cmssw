@@ -1,7 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 
+muonSource = cms.InputTag('patMuonsWithMVA')
+
 muonTriggerMatchHLT = cms.EDProducer( 'PATTriggerMatcherDRDPtLessByR',
-    src     = cms.InputTag( 'selectedPatMuons' ),
+    src     = muonSource,
     matched = cms.InputTag( 'patTrigger' ),
     matchedCuts = cms.string(''),
     maxDPtRel = cms.double( 0.5 ),
@@ -21,7 +23,7 @@ muonMatchHLTL3T = muonTriggerMatchHLT.clone(
 
 ## ==== Embed ====
 patMuonsWithTrigger = cms.EDProducer( "PATTriggerMatchMuonEmbedder",
-    src     = cms.InputTag( "selectedPatMuons" ),
+    src     = muonSource,
     matches = cms.VInputTag( cms.InputTag('muonMatchHLTL3'),
                              cms.InputTag('muonMatchHLTL3T') )
 )

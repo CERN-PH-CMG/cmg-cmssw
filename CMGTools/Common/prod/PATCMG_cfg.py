@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 from CMGTools.Common.Tools.cmsswRelease import cmsswIs52X
 if not cmsswIs52X():
-    raise ValueError('Sorry, you are not working in 52X. use the correct cfg')
+    raise ValueError('Sorry, you are not working in 52X. use the correct cfg - not the first time I tell you that ;-)')
 
 sep_line = '-'*67
 print sep_line
