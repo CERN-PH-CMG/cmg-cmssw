@@ -31,7 +31,6 @@ class PATMuonIsoMVAEmbedder : public edm::EDProducer{
   edm::InputTag srcRho_;
   edm::InputTag srcPF_;
   edm::InputTag srcElectrons_;
-  edm::InputTag srcMuons_;
   edm::InputTag srcVertices_;
   
 
@@ -44,7 +43,6 @@ PATMuonIsoMVAEmbedder::PATMuonIsoMVAEmbedder(const edm::ParameterSet& ps):
   srcRho_(ps.getParameter<edm::InputTag>("srcRho")), 
   srcPF_(ps.getParameter<edm::InputTag>("srcPF")), 
   srcElectrons_(ps.getParameter<edm::InputTag>("srcSelectedElectrons")), 
-  srcMuons_(ps.getParameter<edm::InputTag>("srcSelectedMuons")), 
   srcVertices_(ps.getParameter<edm::InputTag>("srcVertices")) 
 {
 
@@ -93,29 +91,18 @@ void PATMuonIsoMVAEmbedder::produce(edm::Event& iEvent, const edm::EventSetup& i
   iEvent.getByLabel(srcElectrons_,srcElectrons);
   const reco::GsfElectronCollection& selElectrons = *srcElectrons;
   
-//   //CONVERT TO RECO  COLLECTION.ARGHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH!!!!
-//   reco::GsfElectronCollection selElectrons;
-//   for(unsigned int i=0;i<srcElectrons->size();++i) {
-//     const reco::GsfElectron *e = &(srcElectrons->at(i));
-//     if(e!=0)
-//       selElectrons.push_back(*e);
-//   }
-
-
-  edm::Handle< reco::MuonCollection > srcMuons;
-  iEvent.getByLabel(srcMuons_,srcMuons);
-  const reco::MuonCollection& selMuons = *srcMuons;
-
-//   reco::MuonCollection selMuons;
-//   for(unsigned int i=0;i<srcMuons->size();++i) {
-//     const reco::Muon *mu = &(srcMuons->at(i));
-//     if(mu!=0)
-//       selMuons.push_back(*mu);
-//   }
-
+  reco::MuonCollection selMuons ;
 
   edm::Handle<reco::PFCandidateCollection> srcPF;
   iEvent.getByLabel(srcPF_,srcPF);
+
+  //put the PF muons in here:
+  for(unsigned int i=0;i<srcPF->size();++i)
+    if(abs(srcPF->at(i).pdgId())==13)
+      if(srcPF->at(i).muonRef().isNonnull())
+	if(srcPF->at(i).muonRef()->isTrackerMuon()||srcPF->at(i).muonRef()->isGlobalMuon())
+	  selMuons.push_back(*srcPF->at(i).muonRef());
+
 
   edm::Handle<reco::VertexCollection> vertices;
   iEvent.getByLabel(srcVertices_,vertices);
