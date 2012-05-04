@@ -4,7 +4,13 @@ from CMGTools.External.puJetIDAlgo_cff import PhilV1, full, simple, cutbased, fu
 
 stdalgos_4x = cms.VPSet(simple,   full,   cutbased)
 stdalgos_5x = cms.VPSet(simple_5x,full_5x,cutbased)
-stdalgos    = stdalgos_5x
+
+import os
+cmssw_version = os.environ["CMSSW_VERSION"].replace("CMSSW_","")
+if cmssw_version.startswith("4"):
+    stdalgos    = stdalgos_4x
+else:
+    stdalgos    = stdalgos_5x
 
 pileupJetIdProducer = cms.EDProducer('PileupJetIdProducer',
                          produceJetIds = cms.bool(True),
