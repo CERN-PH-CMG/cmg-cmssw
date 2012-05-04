@@ -53,5 +53,6 @@ MetRegressionSequence  = cms.Sequence (
     pfMetForRegression + 
     nopuMet +
     puMet + 
-    pcMet
+    pcMet +
+    tkMet
     )

@@ -48,7 +48,11 @@ patTaus.tauIDSources = cms.PSet(
     againstElectronMVA = cms.InputTag("hpsPFTauDiscriminationByMVAElectronRejection"),
     againstMuonLoose = cms.InputTag("hpsPFTauDiscriminationByLooseMuonRejection"),
     againstMuonMedium = cms.InputTag("hpsPFTauDiscriminationByMediumMuonRejection"),
-    againstMuonTight = cms.InputTag("hpsPFTauDiscriminationByTightMuonRejection")
+    againstMuonTight = cms.InputTag("hpsPFTauDiscriminationByTightMuonRejection"),
+    byRawIsoMVA = cms.InputTag('hpsPFTauDiscriminationByIsolationMVAraw'),
+    byLooseIsoMVA = cms.InputTag('hpsPFTauDiscriminationByTightIsolationMVA'),
+    byMediumIsoMVA = cms.InputTag('hpsPFTauDiscriminationByMediumIsolationMVA'),
+    byTightIsoMVA = cms.InputTag('hpsPFTauDiscriminationByTightIsolationMVA'),
     )
 
 
