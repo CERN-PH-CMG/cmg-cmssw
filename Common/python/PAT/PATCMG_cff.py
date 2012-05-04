@@ -145,6 +145,13 @@ from CMGTools.Common.PAT.MetSignificance_cff import *
 prePathCounter = cms.EDProducer("EventCountProducer")
 postPathCounter = cms.EDProducer("EventCountProducer")
 
+# MET REGRESSION       ----------------------------
+
+from CMGTools.Common.PAT.MetRegression_cff import *
+
+PATCMGMetRegressionSequence = cms.Sequence(
+    MetRegressionSequence
+    )
 
 ####  FULL SEQUENCE  ####
 
@@ -162,7 +169,8 @@ PATCMGSequence = cms.Sequence(
     PATCMGJetSequence +
     PATCMGTauSequence +
     PATCMGMetSequence +
-    MetSignificanceSequence
+    MetSignificanceSequence +
+    PATCMGMetRegressionSequence
     )
 
 if cmsswIs52X():

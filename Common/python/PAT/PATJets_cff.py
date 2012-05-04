@@ -9,7 +9,7 @@ from CommonTools.ParticleFlow.ParticleSelectors.genericPFJetSelector_cfi import 
 #FIXME: is this cut really necessary? does it play well with Phil's stuff?
 # NOTE cutting on uncorrected jets, but no bias for corrected jet pT>7
 ak5PFJetsSel = selectedPfJets.clone( src = 'ak5PFJets',
-                                     cut = 'pt()>5' )
+                                     cut = 'pt()>0' )
 
 jetSource = 'ak5PFJetsSel'
 
