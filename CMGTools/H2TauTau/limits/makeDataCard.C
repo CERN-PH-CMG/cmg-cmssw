@@ -71,9 +71,9 @@ void makeDataCard(TString channel="muTau",long sm=0, long mass=120){
   }
   rootfile.ls();
   
-  TH1F* VH=  (TH1F*)rootfile.Get(channel+"_SM"+sm+"/VH");
-  TH1F* SM=  (TH1F*)rootfile.Get(channel+"_SM"+sm+"/SM");
-  TH1F* VBF= (TH1F*)rootfile.Get(channel+"_SM"+sm+"/VBF");
+  TH1F* VH=  (TH1F*)rootfile.Get(channel+"_SM"+sm+"/VH"+mass);
+  TH1F* SM=  (TH1F*)rootfile.Get(channel+"_SM"+sm+"/SM"+mass);
+  TH1F* VBF= (TH1F*)rootfile.Get(channel+"_SM"+sm+"/VBF"+mass);
   TH1F* ZTT= (TH1F*)rootfile.Get(channel+"_SM"+sm+"/ZTT");
   TH1F* ZL=  (TH1F*)rootfile.Get(channel+"_SM"+sm+"/ZL");
   TH1F* ZJ=  (TH1F*)rootfile.Get(channel+"_SM"+sm+"/ZJ");
@@ -176,21 +176,21 @@ void makeDataCard(TString channel="muTau",long sm=0, long mass=120){
        <<fillString("-")
        <<"luminosity"<<endl;
 
-  ///tau energy scale systematic------------------------------------------------
-  //may need to turn off the shape systematics on the small backgrounds due to instabilities
-  file <<fillStringLong("CMS_scale_t")<<fillString("shape")
-       <<fillString(" ")
-       <<fillInt(1)
-       <<fillInt(1)
-       <<fillInt(1)
-       <<fillInt(1)
-       <<fillString("-")
-       <<fillInt(1)
-       <<fillString("-")
-       <<fillString("-")
-       <<fillString("-")
-       <<fillString("-")
-       <<"shape"<<endl;
+//   ///tau energy scale systematic------------------------------------------------
+//   //may need to turn off the shape systematics on the small backgrounds due to instabilities
+//   file <<fillStringLong("CMS_scale_t")<<fillString("shape")
+//        <<fillString(" ")
+//        <<fillInt(1)
+//        <<fillInt(1)
+//        <<fillInt(1)
+//        <<fillInt(1)
+//        <<fillString("-")
+//        <<fillInt(1)
+//        <<fillString("-")
+//        <<fillString("-")
+//        <<fillString("-")
+//        <<fillString("-")
+//        <<"shape"<<endl;
 
   /// mu efficiency systematic------------------------------------------------
   file <<fillStringLong("CMS_eff_m")<<fillString("lnN")
