@@ -18,7 +18,13 @@ patObjects = cms.untracked.vstring(
     #COLIN : the following should be in traditional_cff
     'keep edmMergeableCounter_*_*_*',
     'keep cmgPhotons_selectedPat*_*_*',
-    'keep recoVertexs_offlinePrimaryVertices_*_*'
+    'keep recoVertexs_offlinePrimaryVertices_*_*',
+    'keep recoPFMETs_pfMetForRegression__*',
+    'keep double_*_rho_*',
+    'keep recoPFMETs_nopuMet__*',
+    'keep recoPFMETs_puMet__*',
+    'keep recoPFMETs_pcMet__*',    
+    'keep recoPFMETs_tkMet__*',    
     )
 
 everything = particleFlow + traditional + patObjects + runInfoAccounting + trigger + gen + eventCleaning

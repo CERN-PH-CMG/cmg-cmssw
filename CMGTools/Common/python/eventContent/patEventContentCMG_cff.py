@@ -38,6 +38,11 @@ patEventContentCMG.extend([
     # this guys is already present in the AK5 sequence
     'drop recoVertexs_goodOfflinePrimaryVerticesLC_*_*',
     'keep *_PFMETSignificance*_*_*',
+    'keep recoPFMETs_pfMetForRegression__*',
+    'keep recoPFMETs_nopuMet__*',
+    'keep recoPFMETs_puMet__*',
+    'keep recoPFMETs_pcMet__*',    
+    'keep recoPFMETs_tkMet__*',    
     'keep double_*_rho_*',
     # drop pat genjets embedding collections
     'drop recoGenJets_*Pat*_genJets_PAT',
