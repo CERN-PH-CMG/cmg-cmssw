@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
 if not cmsswIs44X():
     raise ValueError('Sorry, you are not working in 44X. use the correct cfg')
 
@@ -15,20 +15,20 @@ process = cms.Process("PAT")
 print 'querying database for source files'
 
 
-runOnMC = True
+runOnMC = False
 
 
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
    'cmgtools_group',
-   '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5'
+   # '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5',
+   '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5'
    )
 
-if runOnMC is False:
-    print 'OVERRIDING datasetToSource TO TEST RUNNING ON DATA'
-    process.source.fileNames = ['/store/data/Run2012A/DoubleMu/AOD/PromptReco-v1/000/191/859/66D9EE0B-EC8C-E111-9346-001D09F2AD84.root']
-
-process.source.fileNames = process.source.fileNames[:1]
+## if runOnMC is False:
+##     print 'OVERRIDING datasetToSource TO TEST RUNNING ON DATA'
+##     process.source.fileNames = ['/store/data/Run2012A/DoubleMu/AOD/PromptReco-v1/000/191/859/66D9EE0B-EC8C-E111-9346-001D09F2AD84.root']
+## process.source.fileNames = process.source.fileNames[:1]
 
 print sep_line
 print process.source.fileNames
@@ -57,9 +57,10 @@ if runOnMC is False:
     process.patJets.addGenJetMatch = False
     process.patJets.addGenPartonMatch = False
 
-    process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
-    process.patJetsCHSpruned.addGenJetMatch = False
-    process.patJetsCHSpruned.addGenPartonMatch = False
+    if cmsswIs52X():
+        process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
+        process.patJetsCHSpruned.addGenJetMatch = False
+        process.patJetsCHSpruned.addGenPartonMatch = False
 
     process.PATCMGTauSequence.remove( process.tauGenJets )
     process.PATCMGTauSequence.remove( process.tauGenJetsSelectorAllHadrons )
@@ -72,14 +73,15 @@ if runOnMC is False:
     process.patMETsRaw.addGenMET = False 
 
     # setting up JSON file
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/DCSOnly/json_DCSONLY.txt'
-    print 'using json file: ', json
-    from CMGTools.Common.Tools.applyJSON_cff import *
-    applyJSON(process, json )
+    # json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/DCSOnly/json_DCSONLY.txt'
+    # print 'using json file: ', json
+    # from CMGTools.Common.Tools.applyJSON_cff import *
+    # applyJSON(process, json )
 
     # adding L2L3Residual corrections
     process.patJetCorrFactors.levels.append('L2L3Residual')
-    process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
+    if cmsswIs52X():
+        process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
 
 
 print 'cloning the jet sequence to build PU chs jets'
