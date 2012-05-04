@@ -91,8 +91,10 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
     if( i == NCMGTAUIDS)
       throw cms::Exception( " Trying to add too many tauIDs");
     //save only the names of the ids which are passed
-    if(it->second==1.0) 
-      output->tauID_[i++]=it->first;
+    // if(it->second==1.0) 
+    // output->tauID_[i++]=it->first;
+    output->tauIDLabels_.push_back( it->first);
+    output->tauID_.push_back( it->second);
   }
 
 
