@@ -13,14 +13,14 @@ mvaIDSequence = cms.Sequence(
 
 electronIDSequence = cms.Sequence(
     eidVeryLoose + 
-    eidLoose +                
+    eidLoose +              
     eidMedium +
     eidTight +
     eidSuperTight
-    )
+     )
 
 patElectronIDSequence = cms.Sequence(
-    mvaIDSequence + 
+    mvaIDSequence +
     simpleEleIdSequence + 
     electronIDSequence
     ) 

@@ -110,6 +110,7 @@ PATCMGTauSequence = cms.Sequence(
     )
 
 
+
 # JETS CHS ----------------------------
 
 from CMGTools.Common.PAT.PATJetsCHS_cff import *
@@ -118,6 +119,7 @@ from CMGTools.Common.PAT.PATJetsCHS_cff import *
 # JETS CHS PRUNED ----------------------------
 
 # 44X Does not work 
+
 from CMGTools.Common.PAT.jetSubstructure_cff import *
 
 # MET      ----------------------------
