@@ -6,7 +6,11 @@ stdalgos_4x = cms.VPSet(simple,   full,   cutbased)
 stdalgos_5x = cms.VPSet(simple_5x,full_5x,cutbased)
 
 import os
-cmssw_version = os.environ["CMSSW_VERSION"].replace("CMSSW_","")
+try:
+    cmssw_version = os.environ["CMSSW_VERSION"].replace("CMSSW_","")
+except:
+    cmssw_version = "5_X"
+
 if cmssw_version.startswith("4"):
     stdalgos    = stdalgos_4x
 else:
