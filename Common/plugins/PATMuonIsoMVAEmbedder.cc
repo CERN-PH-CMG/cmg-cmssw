@@ -89,27 +89,29 @@ void PATMuonIsoMVAEmbedder::produce(edm::Event& iEvent, const edm::EventSetup& i
   edm::Handle<pat::MuonCollection> src;
   iEvent.getByLabel(src_,src);
   
-  edm::Handle<pat::ElectronCollection> srcElectrons;
+  edm::Handle< reco::GsfElectronCollection > srcElectrons;
   iEvent.getByLabel(srcElectrons_,srcElectrons);
+  const reco::GsfElectronCollection& selElectrons = *srcElectrons;
+  
+//   //CONVERT TO RECO  COLLECTION.ARGHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH!!!!
+//   reco::GsfElectronCollection selElectrons;
+//   for(unsigned int i=0;i<srcElectrons->size();++i) {
+//     const reco::GsfElectron *e = &(srcElectrons->at(i));
+//     if(e!=0)
+//       selElectrons.push_back(*e);
+//   }
 
-  //CONVERT TO RECO  COLLECTION.ARGHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH!!!!
-  reco::GsfElectronCollection selElectrons;
-  for(unsigned int i=0;i<srcElectrons->size();++i) {
-    const reco::GsfElectron *e = &(srcElectrons->at(i));
-    if(e!=0)
-      selElectrons.push_back(*e);
-  }
 
-
-  edm::Handle<pat::MuonCollection > srcMuons;
+  edm::Handle< reco::MuonCollection > srcMuons;
   iEvent.getByLabel(srcMuons_,srcMuons);
+  const reco::MuonCollection& selMuons = *srcMuons;
 
-  reco::MuonCollection selMuons;
-  for(unsigned int i=0;i<srcMuons->size();++i) {
-    const reco::Muon *mu = &(srcMuons->at(i));
-    if(mu!=0)
-      selMuons.push_back(*mu);
-  }
+//   reco::MuonCollection selMuons;
+//   for(unsigned int i=0;i<srcMuons->size();++i) {
+//     const reco::Muon *mu = &(srcMuons->at(i));
+//     if(mu!=0)
+//       selMuons.push_back(*mu);
+//   }
 
 
   edm::Handle<reco::PFCandidateCollection> srcPF;
