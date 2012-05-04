@@ -128,13 +128,15 @@ def removeUseless( modName ):
         getattr(process, modName+postfixAK5)
         )
 
-removeUseless( "produceCaloMETCorrections" )
-removeUseless( "pfCandsNotInJet" )
-removeUseless( "pfJetMETcorr" )
-removeUseless( "pfCandMETcorr" )
-removeUseless( "pfchsMETcorr" )
-removeUseless( "pfType1CorrectedMet" )
-removeUseless( "pfType1p2CorrectedMet" )
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs52X
+if cmsswIs52X():
+    removeUseless( "produceCaloMETCorrections" )
+    removeUseless( "pfCandsNotInJet" )
+    removeUseless( "pfJetMETcorr" )
+    removeUseless( "pfCandMETcorr" )
+    removeUseless( "pfchsMETcorr" )
+    removeUseless( "pfType1CorrectedMet" )
+    removeUseless( "pfType1p2CorrectedMet" )
 
 # removing stupid useless stuff from our muons:
 getattr(process,"patMuons"+postfixAK5).embedCaloMETMuonCorrs = False 
@@ -157,9 +159,10 @@ if doJetPileUpCorrection:
     from CommonTools.ParticleFlow.Tools.enablePileUpCorrection import enablePileUpCorrection
     enablePileUpCorrection( process, postfix=postfixAK5)
     # avoid double calculation of rho (introduced by jetTools in PAT)
-    getattr(process,'patDefaultSequence'+postfixAK5).remove(getattr(process,'ak5PFJets'+postfixAK5))
-    getattr(process,'patDefaultSequence'+postfixAK5).remove(getattr(process,'kt6PFJets'+postfixAK5))
-    getattr(process,'patDefaultSequence'+postfixAK5).remove(getattr(process,'kt6PFJets'+postfixAK5))
+    if cmsswIs52X():
+        getattr(process,'patDefaultSequence'+postfixAK5).remove(getattr(process,'ak5PFJets'+postfixAK5))
+        getattr(process,'patDefaultSequence'+postfixAK5).remove(getattr(process,'kt6PFJets'+postfixAK5))
+        getattr(process,'patDefaultSequence'+postfixAK5).remove(getattr(process,'kt6PFJets'+postfixAK5))
     getattr(process,"patJetCorrFactors"+postfixAK5).rho = cms.InputTag("kt6PFJets", "rho")
 
 #configure the taus

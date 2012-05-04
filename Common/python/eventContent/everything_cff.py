@@ -9,10 +9,10 @@ from CMGTools.Common.eventContent.runInfoAccounting_cff import *
 
 patObjects = cms.untracked.vstring(
     'drop patTaus_selectedPat*_*_*',
-    'drop patElectrons_selectedPat*_*_*',
+    'drop patElectrons_*_*_*',
     'keep patElectrons_patElectronsWithTrigger_*_*',
-    'drop patMuons_selectedPatMuons_*_*',
-    'keep patMuons_patMuonsWithTrigger_*_*',
+    'drop patMuons_*_*_*',
+    'keep patMuons_patMuonsWithMVA_*_*',
     'drop patElectrons_*AK5NoPUSub_*_*',
     'drop patMuons_*AK5NoPUSub_*_*',    
     #COLIN : the following should be in traditional_cff
