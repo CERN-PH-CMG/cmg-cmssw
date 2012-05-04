@@ -54,6 +54,8 @@ namespace cmg
       isolationPFNeutralHadrCandsPtSum_( UnSet(double) ),
       isolationPFGammaCandsEtSum_( UnSet(double) ),
       decayMode_(UnSet(int)),
+      tauID_(NCMGTAUIDS, 0),
+      tauIDLabels_(NCMGTAUIDS, ""),      
       jetRefp4_(math::XYZTLorentzVector(0.,0.,0.,0.)),
       genJetp4_(math::XYZTLorentzVector(0.,0.,0.,0.)),
       genJetCharge_(0),
@@ -61,9 +63,9 @@ namespace cmg
       genTaup4_(math::XYZTLorentzVector(0.,0.,0.,0.))
     {
       
-      for(int i=0;i<NCMGTAUIDS;i++)	
-	tauID_[i]="";
- 
+      //      for(int i=0;i<NCMGTAUIDS;i++)	
+      //	tauID_[i]="";
+      
       
     }
 
@@ -91,13 +93,14 @@ namespace cmg
     const Constituent& leadPFChargedHadrCand() const {return leadPFChargedHadrCand_;}
 
     //tau ID's
-    bool tauID(const std::string& idname) const { 
-      for(int i=0;i<NCMGTAUIDS;i++)
-	if(tauID_[i]==idname) return 1; //passed
-      return 0;//failed
+    float tauID(const std::string& idname) const { 
+      for(unsigned i=0;i<tauIDLabels_.size();i++)
+	if(tauIDLabels_[i]==idname) 
+	  return tauID_[i]; //passed
+      return -99;//failed
     } 
 
-    bool tauID(const char* idname) const {
+    float tauID(const char* idname) const {
       return tauID( std::string(idname) );
     }
 
@@ -133,8 +136,9 @@ namespace cmg
     float isolationPFNeutralHadrCandsPtSum_;
     float isolationPFGammaCandsEtSum_;
     int decayMode_;
-    std::string tauID_[NCMGTAUIDS];
-
+    // std::string tauID_[NCMGTAUIDS];
+    std::vector<float>        tauID_;
+    std::vector<std::string>  tauIDLabels_;
     
     math::XYZTLorentzVector jetRefp4_;
 
