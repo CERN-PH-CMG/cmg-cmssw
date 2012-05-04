@@ -41,7 +41,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2000) )
 
 print 'loading the main CMG sequence'
 
-process.load('CMGTools.Common.PAT.PATCMG_44X_cff')
+process.load('CMGTools.Common.PAT.PATCMG_cff')
 
 if runOnMC is False:
     # removing MC stuff

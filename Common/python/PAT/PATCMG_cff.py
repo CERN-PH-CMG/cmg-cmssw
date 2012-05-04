@@ -38,6 +38,9 @@ from CommonTools.ParticleFlow.pfParticleSelection_cff import *
 # note pfPileUp modified according to JetMET's recommendations
 pfPileUp.checkClosestZVertex = False
 pfPileUp.Vertices = 'goodOfflinePrimaryVertices'
+pfPileUp.PFCandidates = 'particleFlow'
+pfNoPileUp.bottomCollection = 'particleFlow'
+
 from CommonTools.ParticleFlow.goodOfflinePrimaryVertices_cfi import goodOfflinePrimaryVertices
 pfNoPileUpSequence.insert(0, goodOfflinePrimaryVertices)
 
@@ -117,7 +120,7 @@ from CMGTools.Common.PAT.PATJetsCHS_cff import *
 
 # JETS CHS PRUNED ----------------------------
 
-# 44X Does not work 
+# 44X Does not work - in 44X case, importing nothing
 from CMGTools.Common.PAT.jetSubstructure_cff import *
 
 # MET      ----------------------------
@@ -162,3 +165,5 @@ PATCMGSequence = cms.Sequence(
     MetSignificanceSequence
     )
 
+if cmsswIs52X():
+    PATCMGSequence += PATCMGJetSequenceCHSpruned
