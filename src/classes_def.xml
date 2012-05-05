@@ -120,6 +120,12 @@
   <class name="edm::Wrapper<cmg::DiMuonDiElectron>"/>
   <class name="edm::Wrapper<std::vector<cmg::DiMuonDiElectron> >"/>
 
+  <class name="cmg::TriMuonMET"/>
+  <class name="std::vector<cmg::TriMuonMET>"/>
+  <class name="edm::Wrapper<cmg::TriMuonMET>"/>
+  <class name="edm::Wrapper<std::vector<cmg::TriMuonMET> >"/>
+
+
  
   <class name="cmg::BaseMET"/>
   <class name="std::vector<cmg::BaseMET>"/>
