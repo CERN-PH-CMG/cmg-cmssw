@@ -1,5 +1,5 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_tauid_04May12'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_tauid_04May12'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_tkmet_05May12'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-02'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_b_12Apr12'),
   ('CMGTools/HToZZTo4Leptons', 'UserCode/CMG/CMGTools/HToZZTo4Leptons', 'cbern_12Apr12'),
