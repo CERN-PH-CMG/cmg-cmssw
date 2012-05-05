@@ -29,7 +29,7 @@
   ('RecoEgamma/ElectronIdentification', 'RecoEgamma/ElectronIdentification', 'V00-03-32'),
   ('RecoLuminosity/LumiDB', 'RecoLuminosity/LumiDB', 'V03-03-07'),
   ('RecoParticleFlow/PostProcessing', 'UserCode/RecoParticleFlow/PostProcessing', 'Colin_June23'),
-  ('RecoTauTag/Configuration', 'RecoTauTag/Configuration', 'V01-04-02'),
+  ('RecoTauTag/Configuration', 'RecoTauTag/Configuration', 'V01-04-03'),
   ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-17'),
   ('RecoTauTag/TauTagTools', 'RecoTauTag/TauTagTools', 'CMSSW_5_2_4'),
   ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseNov14')]
