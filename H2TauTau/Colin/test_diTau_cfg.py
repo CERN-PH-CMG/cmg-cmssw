@@ -22,6 +22,9 @@ elif period == 'Period_2011AB':
     mc_tauEffWeight = 'effTau2011AB'
 
 mc_tauEffWeight='effTau1fb'
+#mc_tauEffWeight='effIsoTau25'
+#mc_tauEffWeight='eff2012IsoTauL1'
+#mc_tauEffWeight=None
 
 triggerAna = cfg.Analyzer(
     'TriggerAnalyzer'
