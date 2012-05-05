@@ -157,7 +157,7 @@ double MetFlavorProducer::pfCandDz(const PFCandidate* iPFCand, const Vertex *iPV
   return lDz;
 }
 double MetFlavorProducer::jetMVA (const Jet *iCorrJet,double iJec, const Vertex iPV, const reco::VertexCollection &iAllvtx,bool iPrintDebug) { 
-  PileupJetIdentifier lPUJetId =  fPUJetIdAlgo->computeIdVariables(iCorrJet,iJec,&iPV,iAllvtx,false);
+  PileupJetIdentifier lPUJetId =  fPUJetIdAlgo->computeIdVariables(iCorrJet,iJec,&iPV,iAllvtx, true);
   if(iPrintDebug) { std::cout << "Debug Jet MVA: "
 			      << lPUJetId.nvtx()      << " "
 			      << iCorrJet->pt()       << " "

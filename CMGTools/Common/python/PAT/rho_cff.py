@@ -26,4 +26,5 @@ rhoSequence = cms.Sequence(
 from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X
 
 if cmsswIs44X():
+    #FIXME if not done, the patMuonWithMVA cannot find the rho, while it is here!! (Mike?)
     rhoSequence += kt6PFJets
