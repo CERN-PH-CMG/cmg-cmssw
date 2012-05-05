@@ -145,6 +145,11 @@ namespace {
     edm::Wrapper<cmg::DiMuonDiElectron> eqme;
     edm::Wrapper<std::vector<cmg::DiMuonDiElectron> > eqmev;
 
+    cmg::TriMuonMET tm_;
+    std::vector<cmg::TriMuonMET> vtm;
+    edm::Wrapper<cmg::TriMuonMET> etm;
+    edm::Wrapper<std::vector<cmg::TriMuonMET> > tmvw;
+
 
     cmg::BaseMET met_;
     std::vector<cmg::BaseMET> metv_;

@@ -27,15 +27,21 @@ namespace cmg {
       DiObjectPair(const DiObject<T,U>& leg1, const DiObject<V,W>& leg2):
       AbstractPhysicsObject(reco::LeafCandidate(leg1.charge()+leg2.charge(),leg1.p4()+leg2.p4())),
       first_(leg1),
-      second_(leg2)
-	{
-    }
+      second_(leg2),
+      minOSMass_(999.),
+      minMass_(999.)
+      {
+
+
+      }
     
     /// copy constructor
       DiObjectPair(const DiObjectPair<T,U,V,W>& other):
 	AbstractPhysicsObject(other),
 	first_(other.first()),
-	second_(other.second()) 
+	second_(other.second()), 
+	minOSMass_(other.minOSMass()),
+	minMass_(other.minMass())
 	  {
 
 	
@@ -90,12 +96,23 @@ namespace cmg {
         return result;
    }
 
+
+   const double minOSMass() const {
+     return minOSMass_;
+   }
+
+   const double minMass() const {
+     return minMass_;
+   }
+
   private:
 
    DiObject<T,U>  first_;
    DiObject<V,W> second_;
 
-
+   //useful variables
+   Double_t minOSMass_;
+   Double_t minMass_;
 
    
    friend class cmg::DiObjectPairFactory<T,U,V,W >;

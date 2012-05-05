@@ -43,6 +43,7 @@ namespace cmg {
   typedef cmg::DiObjectPair<cmg::Muon, cmg::Muon,cmg::Muon,cmg::Muon > QuadMuon;
   typedef cmg::DiObjectPair<cmg::Muon, cmg::Muon,cmg::Electron,cmg::Electron > DiMuonDiElectron;
   typedef cmg::DiObjectPair<cmg::Electron, cmg::Electron,cmg::Electron,cmg::Electron > QuadElectron;
+  typedef cmg::DiObjectPair<cmg::Muon, cmg::Muon,cmg::Muon,cmg::BaseMET > TriMuonMET;
 
 
 }
