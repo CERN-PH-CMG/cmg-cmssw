@@ -94,7 +94,7 @@ runPlotter --iLumi 4616 --inDir ~/work/gamma-wgt/ --outDir ~/work/gamma-wgt/plot
 ##
 ## GRAVITON STUDIES
 ##
-haddOverSamples.py -j data/samples-graviton.json -d /store/cmst3/user/psilva/12_05_01_HZZ2l2v_ntuples44x/split -o /store/cmst3/user/psilva/12_05_01_HZZ2l2v_ntuples44x/ -m 0 -t Graviton
-runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples-graviton.json -d /store/cmst3/user/psilva/12_05_01_HZZ2l2v_ntuples44x/ -o ~/work/gzz -c test/runAnalysis_cfg.py.templ -s 8nh -t Graviton
+haddOverSamples.py -j data/samples-graviton.json -d /store/cmst3/user/psilva/12_05_06_HZZ2l2v_44x_ntuples/split/ -o /store/cmst3/user/psilva/12_05_06_HZZ2l2v_44x_ntuples/ -m 0 -t Graviton
+runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples-graviton.json -d /store/cmst3/user/psilva/12_05_06_HZZ2l2v_44x_ntuples/ -o ~/work/gzz -c test/runAnalysis_cfg.py.templ -s 8nh -t Graviton
 runPlotter --iLumi 4616 --inDir ~/work/gzz/ --outDir ~/work/gzz/plots --json data/samples-graviton.json --outFile ~/work/gzz/plotter.root
 

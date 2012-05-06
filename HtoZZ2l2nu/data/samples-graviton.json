@@ -177,7 +177,7 @@
         "isinvisible":false,
 	"isdata":false,
 	"spimpose":true,
-	"color":"800",
+	"color":"41",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
@@ -185,8 +185,9 @@
 		{
 		"dtag":"MC_Graviton250",
 		"dset":"",
-		"patdir":["/store/cmst3/user/psilva/Graviton/250"],
-		"split":2,
+		"aoddir":["/store/cmst3/user/psilva/JHU/Graviton/GravitonM250toZZto2l2nu"],
+		"patdir":["/store/cmst3/user/psilva/Graviton-FastSim/250"],
+		"split":1,
                 "xsec":1
 		}
 	   ]
@@ -196,7 +197,7 @@
         "isinvisible":false,
 	"isdata":false,
 	"spimpose":true,
-	"color":"801",
+	"color":"44",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
@@ -204,8 +205,9 @@
 		{
 		"dtag":"MC_Graviton500",
 		"dset":"",
-		"patdir":["/store/cmst3/user/psilva/Graviton/500"],
-		"split":2,
+		"aoddir":["/store/cmst3/user/psilva/JHU/Graviton/GravitonM500toZZto2l2nu"],
+		"patdir":["/store/cmst3/user/psilva/Graviton-FastSim/500"],
+		"split":1,
                 "xsec":1
 		}
 	   ]
@@ -215,7 +217,7 @@
         "isinvisible":false,
 	"isdata":false,
 	"spimpose":true,
-	"color":"802",
+	"color":"47",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
@@ -223,8 +225,9 @@
 		{
 		"dtag":"MC_Graviton750",
 		"dset":"",
-		"patdir":["/store/cmst3/user/psilva/Graviton/750"],
-		"split":2,
+		"aoddir":["/store/cmst3/user/psilva/JHU/Graviton/GravitonM750toZZto2l2nu"],
+		"patdir":["/store/cmst3/user/psilva/Graviton-FastSim/750"],
+		"split":1,
                 "xsec":1
 		}
 	   ]
@@ -234,7 +237,7 @@
         "isinvisible":false,
 	"isdata":false,
 	"spimpose":true,
-	"color":"803",
+	"color":"30",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
@@ -242,8 +245,9 @@
 		{
 		"dtag":"MC_Graviton1000",
 		"dset":"",
-		"patdir":["/store/cmst3/user/psilva/Graviton/1000"],
-		"split":2,
+	 	"aoddir":["/store/cmst3/user/psilva/JHU/Graviton/GravitonM1000toZZto2l2nu"],
+		"patdir":["/store/cmst3/user/psilva/Graviton-FastSim/1000"],
+		"split":1,
                 "xsec":1
 		}
 	   ]
@@ -253,7 +257,7 @@
         "isinvisible":false,
 	"isdata":false,
 	"spimpose":true,
-	"color":"804",
+	"color":"38",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
@@ -261,8 +265,9 @@
 		{
 		"dtag":"MC_Graviton1200",
 		"dset":"",
-		"patdir":["/store/cmst3/user/psilva/Graviton/1200"],
-		"split":2,
+		"aoddir":["/store/cmst3/user/psilva/JHU/Graviton/GravitonM1200toZZto2l2nu"],
+		"patdir":["/store/cmst3/user/psilva/Graviton-FastSim/1200"],
+		"split":1,
                 "xsec":1
 		}
 	   ]
@@ -272,7 +277,7 @@
         "isinvisible":false,
 	"isdata":false,
 	"spimpose":true,
-	"color":"805",
+	"color":"29",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
@@ -280,8 +285,9 @@
 		{
 		"dtag":"MC_Graviton1400",
 		"dset":"",
-		"patdir":["/store/cmst3/user/psilva/Graviton/1400"],
-		"split":2,
+		"aoddir":["/store/cmst3/user/psilva/JHU/Graviton/GravitonM1400toZZto2l2nu"],
+		"patdir":["/store/cmst3/user/psilva/Graviton-FastSim/1400"],
+		"split":1,
                 "xsec":1
 		}
 	   ]
@@ -291,7 +297,7 @@
         "isinvisible":false,
 	"isdata":false,
 	"spimpose":true,
-	"color":"806",
+	"color":"4",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
@@ -299,8 +305,9 @@
 		{
 		"dtag":"MC_Graviton1600",
 		"dset":"",
-		"patdir":["/store/cmst3/user/psilva/Graviton/1600"],
-		"split":2,
+		"aoddir":["/store/cmst3/user/psilva/JHU/Graviton/GravitonM1600toZZto2l2nu"],
+		"patdir":["/store/cmst3/user/psilva/Graviton-FastSim/1600"],
+		"split":1,
                 "xsec":1
 		}
 	   ]
