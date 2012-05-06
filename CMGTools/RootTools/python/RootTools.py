@@ -1,7 +1,7 @@
 """
 Load the libraries needed to use RootTools  
 """
-import ROOT as rt
+# import ROOT as rt
 
 def loadLibs():
     print 'loading FWLite.'
