@@ -208,8 +208,8 @@ print sep_line
 print 'starting CMSSW'
 
 # process.MessageLogger.cerr.threshold = 'ERROR'
-process.MessageLogger.suppressError = cms.untracked.vstring(
-    'cmgTriggerObject',
-    'patTrigger',
-    'cmgTriggerObjectList'
-    )
+# process.MessageLogger.suppressError = cms.untracked.vstring(
+#     'cmgTriggerObject',
+#    'patTrigger',
+#    'cmgTriggerObjectList'
+#    )

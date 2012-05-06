@@ -52,6 +52,8 @@ patEventContentCMG.extend([
     # keep pruned jets
     'keep recoPFJets_ak5PFJetsCHSpruned_SubJets_*',
     'keep patJets_selectedPatJetsCHSpruned_*_*',
+    'keep *_puJetId_*_*',
+    'keep *_puJetIdCHS_*_*'
     ])
 
 patEventContentCMG.extend( everything )
