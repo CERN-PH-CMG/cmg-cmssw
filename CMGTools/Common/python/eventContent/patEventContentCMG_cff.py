@@ -11,12 +11,14 @@ patEventContentCMG.extend( patTriggerStandAloneEventContent )
 
 patEventContentCMG.extend([
     # all the commented lines are needed at CMG-tuple step if we do a simple cloning of the sequences. Need to see if we can gain time / disk space later by organizing the CMG sequences properly
-    'drop patElectrons_selectedPat*_*_*',
-    'keep patElectrons_patElectronsWithTrigger_*_*',
+    # 'drop patElectrons_selectedPat*_*_*',
+    # 'keep patElectrons_patElectronsWithTrigger_*_*',
     'keep patConversions_patConversions_*_*',
-    'drop patMuons_selectedPatMuons_*_*',
-    'keep patMuons_patMuonsWithTrigger_*_*',
+    # 'drop patMuons_selectedPatMuons_*_*',
+    # 'keep patMuons_patMuonsWithMVA_*_*',
     'drop patTriggerObjectStandAlonesedmAssociation_*_*_*',
+    # FIXME trying to get access to tau lead track... external embedding maybe? 
+    # 'keep recoTracks_*_*_PAT',
     'keep *_selectedPatTaus_*_*',
     'keep *_selectedPatTausAK5*_*_*',
     'drop *_selectedPatMuonsAK5NoPUSub_*_*',
