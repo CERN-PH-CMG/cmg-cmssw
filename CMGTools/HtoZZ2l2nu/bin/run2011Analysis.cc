@@ -317,6 +317,8 @@ int main(int argc, char* argv[])
   printf("Progressing Bar     :0%%       20%%       40%%       60%%       80%%       100%%\n");
   printf("Scanning the ntuple :");
   int treeStep = (evEnd-evStart)/50;if(treeStep==0)treeStep=1;
+  DuplicatesChecker duplicatesChecker;
+  int nDuplicates(0);
   for( int iev=evStart; iev<evEnd; iev++){
       if((iev-evStart)%treeStep==0){printf(".");fflush(stdout);}
 
@@ -325,9 +327,9 @@ int main(int argc, char* argv[])
       //load the event content from tree
       evSummaryHandler.getEntry(iev);
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
+      if( duplicatesChecker.isDuplicate( ev.run, ev.lumi, ev.event) ) { nDuplicates++; continue; }
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
-      
-      
+            
       //categorize events
       TString tag_cat;
       switch(ev.cat){
@@ -601,7 +603,7 @@ int main(int argc, char* argv[])
       
       //##############################################   EVENT LOOP ENDS   ##############################################
   }
-  
+  printf("Found %d duplicates in file",nDuplicates);
   printf("\n"); 
   file->Close();
 
