@@ -51,7 +51,8 @@ patMuons.isolationValues = cms.PSet(
 
 selectedPatMuons.cut = 'pt()>3'
 
-from CMGTools.Common.PAT.patMuonsWithMVA_cff import * 
+from CMGTools.Common.PAT.patMuonsWithPF_cfi import * 
+from CMGTools.Common.PAT.patMuonsWithMVA_cfi import * 
 from CMGTools.Common.PAT.patMuonsWithTrigger_cff import * 
 
 PATMuonSequence = cms.Sequence(
@@ -59,6 +60,7 @@ PATMuonSequence = cms.Sequence(
     detMuonIsoDepositSequence + 
     makePatMuons +
     selectedPatMuons +
-    patMuonsWithMVASequence + 
+    patMuonsWithPF +
+    patMuonsWithMVA + 
     patMuonsWithTriggerSequence 
     )
