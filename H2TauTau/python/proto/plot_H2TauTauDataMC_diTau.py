@@ -20,8 +20,8 @@ def prepareComponents(dir, config):
     
     
 def QCDEstimate(plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS,
-                                       plotVarDataLowMETOS, plotVarDataLowMETSS, plotVarDataMiddleMETOS, plotVarDataMiddleMETSS, plotVarDataHighMETOS, plotVarDataHighMETSS,
-                                       plotVarDataLowMETLooseIsoOS, plotVarDataLowMETLooseIsoSS, plotVarDataMiddleMETLooseIsoOS, plotVarDataMiddleMETLooseIsoSS, plotVarDataHighMETLooseIsoOS, plotVarDataHighMETLooseIsoSS,
+                                       plotVarDataLowControlOS, plotVarDataLowControlSS, plotVarDataAverageControlOS, plotVarDataAverageControlSS, plotVarDataHighControlOS, plotVarDataHighControlSS,
+                                       plotVarDataLowControlLooseIsoOS, plotVarDataLowControlLooseIsoSS, plotVarDataAverageControlLooseIsoOS, plotVarDataAverageControlLooseIsoSS, plotVarDataHighControlLooseIsoOS, plotVarDataHighControlLooseIsoSS,
 				       log):
       ymax=plotVarDataSS.Hist("Data").GetMaximum()*1.5
       if log:
@@ -50,47 +50,47 @@ def QCDEstimate(plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS,
       else:
           plotVarDataLooseIsoSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      #gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcdLooseSS.png")
-      #gPad.WaitPrimitive()
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcdLooseSS.png")
+      gPad.WaitPrimitive()
       
-      ymax=plotVarDataLowMETOS.Hist("Data").GetMaximum()*1.5
+      ymax=plotVarDataLowControlOS.Hist("Data").GetMaximum()*1.5
       if log:
-          plotVarDataLowMETOS.DrawStack("HIST",xmin,xmax,0.1,ymax)
+          plotVarDataLowControlOS.DrawStack("HIST",xmin,xmax,0.1,ymax)
 	  gPad.SetLogy()
       else:
-          plotVarDataLowMETOS.DrawStack("HIST",xmin,xmax,0,ymax)
+          plotVarDataLowControlOS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      #gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLowMETOS.varName+"_qcdLooseLowMETOS.png")
+      #gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLowControlOS.varName+"_qcdLooseLowControlOS.png")
       #gPad.WaitPrimitive()
       
-      ymax=plotVarDataLowMETSS.Hist("Data").GetMaximum()*1.5
+      ymax=plotVarDataLowControlSS.Hist("Data").GetMaximum()*1.5
       if log:
-          plotVarDataLowMETSS.DrawStack("HIST",xmin,xmax,0.1,ymax)
+          plotVarDataLowControlSS.DrawStack("HIST",xmin,xmax,0.1,ymax)
 	  gPad.SetLogy()
       else:
-          plotVarDataLowMETSS.DrawStack("HIST",xmin,xmax,0,ymax)
+          plotVarDataLowControlSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      #gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLowMETSS.varName+"_qcdLooseLowMETSS.png")
+      #gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLowControlSS.varName+"_qcdLooseLowControlSS.png")
       #gPad.WaitPrimitive()
       
-      ymax=plotVarDataMiddleMETOS.Hist("Data").GetMaximum()*1.5
+      ymax=plotVarDataAverageControlOS.Hist("Data").GetMaximum()*1.5
       if log:
-          plotVarDataMiddleMETOS.DrawStack("HIST",xmin,xmax,0.1,ymax)
+          plotVarDataAverageControlOS.DrawStack("HIST",xmin,xmax,0.1,ymax)
 	  gPad.SetLogy()
       else:
-          plotVarDataMiddleMETOS.DrawStack("HIST",xmin,xmax,0,ymax)
+          plotVarDataAverageControlOS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      #gPad.SaveAs(prefix1+prefix+'_'+plotVarDataMiddleMETOS.varName+"_qcdLooseMiddleMETOS.png")
+      #gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlOS.varName+"_qcdLooseAverageControlOS.png")
       #gPad.WaitPrimitive()
       
-      ymax=plotVarDataMiddleMETSS.Hist("Data").GetMaximum()*1.5
+      ymax=plotVarDataAverageControlSS.Hist("Data").GetMaximum()*1.5
       if log:
-          plotVarDataMiddleMETSS.DrawStack("HIST",xmin,xmax,0.1,ymax)
+          plotVarDataAverageControlSS.DrawStack("HIST",xmin,xmax,0.1,ymax)
 	  gPad.SetLogy()
       else:
-          plotVarDataMiddleMETSS.DrawStack("HIST",xmin,xmax,0,ymax)
+          plotVarDataAverageControlSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      #gPad.SaveAs(prefix1+prefix+'_'+plotVarDataMiddleMETSS.varName+"_qcdLooseMiddleMETSS.png")
+      #gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlSS.varName+"_qcdLooseAverageControlSS.png")
       #gPad.WaitPrimitive()
       
       QCDtightSS=copy.deepcopy(plotVarDataSS.Hist("Data"))
@@ -120,179 +120,179 @@ def QCDEstimate(plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS,
       QCDlooseOS.Add(plotVarDataLooseIsoOS.Hist("WJets_Fakes"),-1)
       QCDlooseOS.Add(plotVarDataLooseIsoOS.Hist("TTJets"),-1)
 
-      QCDlooseLowMETOS=copy.deepcopy(plotVarDataLowMETOS.Hist("Data"))
-      QCDlooseLowMETOS.Add(plotVarDataLowMETOS.Hist("DYJets"),-1)
-      QCDlooseLowMETOS.Add(plotVarDataLowMETOS.Hist("DYJets_Fakes"),-1)
-      QCDlooseLowMETOS.Add(plotVarDataLowMETOS.Hist("DYJets_Photon"),-1)
-      QCDlooseLowMETOS.Add(plotVarDataLowMETOS.Hist("DYJets_Electron"),-1)
-      QCDlooseLowMETOS.Add(plotVarDataLowMETOS.Hist("WJets"),-1)
-      QCDlooseLowMETOS.Add(plotVarDataLowMETOS.Hist("WJets_Fakes"),-1)
-      QCDlooseLowMETOS.Add(plotVarDataLowMETOS.Hist("TTJets"),-1)
+      QCDlooseLowControlOS=copy.deepcopy(plotVarDataLowControlOS.Hist("Data"))
+      QCDlooseLowControlOS.Add(plotVarDataLowControlOS.Hist("DYJets"),-1)
+      QCDlooseLowControlOS.Add(plotVarDataLowControlOS.Hist("DYJets_Fakes"),-1)
+      QCDlooseLowControlOS.Add(plotVarDataLowControlOS.Hist("DYJets_Photon"),-1)
+      QCDlooseLowControlOS.Add(plotVarDataLowControlOS.Hist("DYJets_Electron"),-1)
+      QCDlooseLowControlOS.Add(plotVarDataLowControlOS.Hist("WJets"),-1)
+      QCDlooseLowControlOS.Add(plotVarDataLowControlOS.Hist("WJets_Fakes"),-1)
+      QCDlooseLowControlOS.Add(plotVarDataLowControlOS.Hist("TTJets"),-1)
 
-      QCDlooseLowMETSS=copy.deepcopy(plotVarDataLowMETSS.Hist("Data"))
-      QCDlooseLowMETSS.Add(plotVarDataLowMETSS.Hist("DYJets"),-1)
-      QCDlooseLowMETSS.Add(plotVarDataLowMETSS.Hist("DYJets_Fakes"),-1)
-      QCDlooseLowMETSS.Add(plotVarDataLowMETSS.Hist("DYJets_Photon"),-1)
-      QCDlooseLowMETSS.Add(plotVarDataLowMETSS.Hist("DYJets_Electron"),-1)
-      QCDlooseLowMETSS.Add(plotVarDataLowMETSS.Hist("WJets"),-1)
-      QCDlooseLowMETSS.Add(plotVarDataLowMETSS.Hist("WJets_Fakes"),-1)
-      QCDlooseLowMETSS.Add(plotVarDataLowMETSS.Hist("TTJets"),-1)
+      QCDlooseLowControlSS=copy.deepcopy(plotVarDataLowControlSS.Hist("Data"))
+      QCDlooseLowControlSS.Add(plotVarDataLowControlSS.Hist("DYJets"),-1)
+      QCDlooseLowControlSS.Add(plotVarDataLowControlSS.Hist("DYJets_Fakes"),-1)
+      QCDlooseLowControlSS.Add(plotVarDataLowControlSS.Hist("DYJets_Photon"),-1)
+      QCDlooseLowControlSS.Add(plotVarDataLowControlSS.Hist("DYJets_Electron"),-1)
+      QCDlooseLowControlSS.Add(plotVarDataLowControlSS.Hist("WJets"),-1)
+      QCDlooseLowControlSS.Add(plotVarDataLowControlSS.Hist("WJets_Fakes"),-1)
+      QCDlooseLowControlSS.Add(plotVarDataLowControlSS.Hist("TTJets"),-1)
 
-      QCDlooseMiddleMETOS=copy.deepcopy(plotVarDataMiddleMETOS.Hist("Data"))
-      QCDlooseMiddleMETOS.Add(plotVarDataMiddleMETOS.Hist("DYJets"),-1)
-      QCDlooseMiddleMETOS.Add(plotVarDataMiddleMETOS.Hist("DYJets_Fakes"),-1)
-      QCDlooseMiddleMETOS.Add(plotVarDataMiddleMETOS.Hist("DYJets_Photon"),-1)
-      QCDlooseMiddleMETOS.Add(plotVarDataMiddleMETOS.Hist("DYJets_Electron"),-1)
-      QCDlooseMiddleMETOS.Add(plotVarDataMiddleMETOS.Hist("WJets"),-1)
-      QCDlooseMiddleMETOS.Add(plotVarDataMiddleMETOS.Hist("WJets_Fakes"),-1)
-      QCDlooseMiddleMETOS.Add(plotVarDataMiddleMETOS.Hist("TTJets"),-1)
+      QCDlooseAverageControlOS=copy.deepcopy(plotVarDataAverageControlOS.Hist("Data"))
+      QCDlooseAverageControlOS.Add(plotVarDataAverageControlOS.Hist("DYJets"),-1)
+      QCDlooseAverageControlOS.Add(plotVarDataAverageControlOS.Hist("DYJets_Fakes"),-1)
+      QCDlooseAverageControlOS.Add(plotVarDataAverageControlOS.Hist("DYJets_Photon"),-1)
+      QCDlooseAverageControlOS.Add(plotVarDataAverageControlOS.Hist("DYJets_Electron"),-1)
+      QCDlooseAverageControlOS.Add(plotVarDataAverageControlOS.Hist("WJets"),-1)
+      QCDlooseAverageControlOS.Add(plotVarDataAverageControlOS.Hist("WJets_Fakes"),-1)
+      QCDlooseAverageControlOS.Add(plotVarDataAverageControlOS.Hist("TTJets"),-1)
 
-      QCDlooseMiddleMETSS=copy.deepcopy(plotVarDataMiddleMETSS.Hist("Data"))
-      QCDlooseMiddleMETSS.Add(plotVarDataMiddleMETSS.Hist("DYJets"),-1)
-      QCDlooseMiddleMETSS.Add(plotVarDataMiddleMETSS.Hist("DYJets_Fakes"),-1)
-      QCDlooseMiddleMETSS.Add(plotVarDataMiddleMETSS.Hist("DYJets_Photon"),-1)
-      QCDlooseMiddleMETSS.Add(plotVarDataMiddleMETSS.Hist("DYJets_Electron"),-1)
-      QCDlooseMiddleMETSS.Add(plotVarDataMiddleMETSS.Hist("WJets"),-1)
-      QCDlooseMiddleMETSS.Add(plotVarDataMiddleMETSS.Hist("WJets_Fakes"),-1)
-      QCDlooseMiddleMETSS.Add(plotVarDataMiddleMETSS.Hist("TTJets"),-1)
+      QCDlooseAverageControlSS=copy.deepcopy(plotVarDataAverageControlSS.Hist("Data"))
+      QCDlooseAverageControlSS.Add(plotVarDataAverageControlSS.Hist("DYJets"),-1)
+      QCDlooseAverageControlSS.Add(plotVarDataAverageControlSS.Hist("DYJets_Fakes"),-1)
+      QCDlooseAverageControlSS.Add(plotVarDataAverageControlSS.Hist("DYJets_Photon"),-1)
+      QCDlooseAverageControlSS.Add(plotVarDataAverageControlSS.Hist("DYJets_Electron"),-1)
+      QCDlooseAverageControlSS.Add(plotVarDataAverageControlSS.Hist("WJets"),-1)
+      QCDlooseAverageControlSS.Add(plotVarDataAverageControlSS.Hist("WJets_Fakes"),-1)
+      QCDlooseAverageControlSS.Add(plotVarDataAverageControlSS.Hist("TTJets"),-1)
 
-      QCDlooseHighMETOS=copy.deepcopy(plotVarDataHighMETOS.Hist("Data"))
-      QCDlooseHighMETOS.Add(plotVarDataHighMETOS.Hist("DYJets"),-1)
-      QCDlooseHighMETOS.Add(plotVarDataHighMETOS.Hist("DYJets_Fakes"),-1)
-      QCDlooseHighMETOS.Add(plotVarDataHighMETOS.Hist("DYJets_Photon"),-1)
-      QCDlooseHighMETOS.Add(plotVarDataHighMETOS.Hist("DYJets_Electron"),-1)
-      QCDlooseHighMETOS.Add(plotVarDataHighMETOS.Hist("WJets"),-1)
-      QCDlooseHighMETOS.Add(plotVarDataHighMETOS.Hist("WJets_Fakes"),-1)
-      QCDlooseHighMETOS.Add(plotVarDataHighMETOS.Hist("TTJets"),-1)
+      QCDlooseHighControlOS=copy.deepcopy(plotVarDataHighControlOS.Hist("Data"))
+      QCDlooseHighControlOS.Add(plotVarDataHighControlOS.Hist("DYJets"),-1)
+      QCDlooseHighControlOS.Add(plotVarDataHighControlOS.Hist("DYJets_Fakes"),-1)
+      QCDlooseHighControlOS.Add(plotVarDataHighControlOS.Hist("DYJets_Photon"),-1)
+      QCDlooseHighControlOS.Add(plotVarDataHighControlOS.Hist("DYJets_Electron"),-1)
+      QCDlooseHighControlOS.Add(plotVarDataHighControlOS.Hist("WJets"),-1)
+      QCDlooseHighControlOS.Add(plotVarDataHighControlOS.Hist("WJets_Fakes"),-1)
+      QCDlooseHighControlOS.Add(plotVarDataHighControlOS.Hist("TTJets"),-1)
 
-      QCDlooseHighMETSS=copy.deepcopy(plotVarDataHighMETSS.Hist("Data"))
-      QCDlooseHighMETSS.Add(plotVarDataHighMETSS.Hist("DYJets"),-1)
-      QCDlooseHighMETSS.Add(plotVarDataHighMETSS.Hist("DYJets_Fakes"),-1)
-      QCDlooseHighMETSS.Add(plotVarDataHighMETSS.Hist("DYJets_Photon"),-1)
-      QCDlooseHighMETSS.Add(plotVarDataHighMETSS.Hist("DYJets_Electron"),-1)
-      QCDlooseHighMETSS.Add(plotVarDataHighMETSS.Hist("WJets"),-1)
-      QCDlooseHighMETSS.Add(plotVarDataHighMETSS.Hist("WJets_Fakes"),-1)
-      QCDlooseHighMETSS.Add(plotVarDataHighMETSS.Hist("TTJets"),-1)
+      QCDlooseHighControlSS=copy.deepcopy(plotVarDataHighControlSS.Hist("Data"))
+      QCDlooseHighControlSS.Add(plotVarDataHighControlSS.Hist("DYJets"),-1)
+      QCDlooseHighControlSS.Add(plotVarDataHighControlSS.Hist("DYJets_Fakes"),-1)
+      QCDlooseHighControlSS.Add(plotVarDataHighControlSS.Hist("DYJets_Photon"),-1)
+      QCDlooseHighControlSS.Add(plotVarDataHighControlSS.Hist("DYJets_Electron"),-1)
+      QCDlooseHighControlSS.Add(plotVarDataHighControlSS.Hist("WJets"),-1)
+      QCDlooseHighControlSS.Add(plotVarDataHighControlSS.Hist("WJets_Fakes"),-1)
+      QCDlooseHighControlSS.Add(plotVarDataHighControlSS.Hist("TTJets"),-1)
 
-      QCDlooseLowMETLooseIsoOS=copy.deepcopy(plotVarDataLowMETLooseIsoOS.Hist("Data"))
-      QCDlooseLowMETLooseIsoOS.Add(plotVarDataLowMETLooseIsoOS.Hist("DYJets"),-1)
-      QCDlooseLowMETLooseIsoOS.Add(plotVarDataLowMETLooseIsoOS.Hist("DYJets_Fakes"),-1)
-      QCDlooseLowMETLooseIsoOS.Add(plotVarDataLowMETLooseIsoOS.Hist("DYJets_Photon"),-1)
-      QCDlooseLowMETLooseIsoOS.Add(plotVarDataLowMETLooseIsoOS.Hist("DYJets_Electron"),-1)
-      QCDlooseLowMETLooseIsoOS.Add(plotVarDataLowMETLooseIsoOS.Hist("WJets"),-1)
-      QCDlooseLowMETLooseIsoOS.Add(plotVarDataLowMETLooseIsoOS.Hist("WJets_Fakes"),-1)
-      QCDlooseLowMETLooseIsoOS.Add(plotVarDataLowMETLooseIsoOS.Hist("TTJets"),-1)
+      QCDlooseLowControlLooseIsoOS=copy.deepcopy(plotVarDataLowControlLooseIsoOS.Hist("Data"))
+      QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("DYJets"),-1)
+      QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("DYJets_Fakes"),-1)
+      QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("DYJets_Photon"),-1)
+      QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("DYJets_Electron"),-1)
+      QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("WJets"),-1)
+      QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("WJets_Fakes"),-1)
+      QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("TTJets"),-1)
 
-      QCDlooseLowMETLooseIsoSS=copy.deepcopy(plotVarDataLowMETLooseIsoSS.Hist("Data"))
-      QCDlooseLowMETLooseIsoSS.Add(plotVarDataLowMETLooseIsoSS.Hist("DYJets"),-1)
-      QCDlooseLowMETLooseIsoSS.Add(plotVarDataLowMETLooseIsoSS.Hist("DYJets_Fakes"),-1)
-      QCDlooseLowMETLooseIsoSS.Add(plotVarDataLowMETLooseIsoSS.Hist("DYJets_Photon"),-1)
-      QCDlooseLowMETLooseIsoSS.Add(plotVarDataLowMETLooseIsoSS.Hist("DYJets_Electron"),-1)
-      QCDlooseLowMETLooseIsoSS.Add(plotVarDataLowMETLooseIsoSS.Hist("WJets"),-1)
-      QCDlooseLowMETLooseIsoSS.Add(plotVarDataLowMETLooseIsoSS.Hist("WJets_Fakes"),-1)
-      QCDlooseLowMETLooseIsoSS.Add(plotVarDataLowMETLooseIsoSS.Hist("TTJets"),-1)
+      QCDlooseLowControlLooseIsoSS=copy.deepcopy(plotVarDataLowControlLooseIsoSS.Hist("Data"))
+      QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("DYJets"),-1)
+      QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("DYJets_Fakes"),-1)
+      QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("DYJets_Photon"),-1)
+      QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("DYJets_Electron"),-1)
+      QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("WJets"),-1)
+      QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("WJets_Fakes"),-1)
+      QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("TTJets"),-1)
 
-      QCDlooseMiddleMETLooseIsoOS=copy.deepcopy(plotVarDataMiddleMETLooseIsoOS.Hist("Data"))
-      QCDlooseMiddleMETLooseIsoOS.Add(plotVarDataMiddleMETLooseIsoOS.Hist("DYJets"),-1)
-      QCDlooseMiddleMETLooseIsoOS.Add(plotVarDataMiddleMETLooseIsoOS.Hist("DYJets_Fakes"),-1)
-      QCDlooseMiddleMETLooseIsoOS.Add(plotVarDataMiddleMETLooseIsoOS.Hist("DYJets_Photon"),-1)
-      QCDlooseMiddleMETLooseIsoOS.Add(plotVarDataMiddleMETLooseIsoOS.Hist("DYJets_Electron"),-1)
-      QCDlooseMiddleMETLooseIsoOS.Add(plotVarDataMiddleMETLooseIsoOS.Hist("WJets"),-1)
-      QCDlooseMiddleMETLooseIsoOS.Add(plotVarDataMiddleMETLooseIsoOS.Hist("WJets_Fakes"),-1)
-      QCDlooseMiddleMETLooseIsoOS.Add(plotVarDataMiddleMETLooseIsoOS.Hist("TTJets"),-1)
+      QCDlooseAverageControlLooseIsoOS=copy.deepcopy(plotVarDataAverageControlLooseIsoOS.Hist("Data"))
+      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("DYJets"),-1)
+      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("DYJets_Fakes"),-1)
+      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("DYJets_Photon"),-1)
+      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("DYJets_Electron"),-1)
+      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("WJets"),-1)
+      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("WJets_Fakes"),-1)
+      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("TTJets"),-1)
 
-      QCDlooseMiddleMETLooseIsoSS=copy.deepcopy(plotVarDataMiddleMETLooseIsoSS.Hist("Data"))
-      QCDlooseMiddleMETLooseIsoSS.Add(plotVarDataMiddleMETLooseIsoSS.Hist("DYJets"),-1)
-      QCDlooseMiddleMETLooseIsoSS.Add(plotVarDataMiddleMETLooseIsoSS.Hist("DYJets_Fakes"),-1)
-      QCDlooseMiddleMETLooseIsoSS.Add(plotVarDataMiddleMETLooseIsoSS.Hist("DYJets_Photon"),-1)
-      QCDlooseMiddleMETLooseIsoSS.Add(plotVarDataMiddleMETLooseIsoSS.Hist("DYJets_Electron"),-1)
-      QCDlooseMiddleMETLooseIsoSS.Add(plotVarDataMiddleMETLooseIsoSS.Hist("WJets"),-1)
-      QCDlooseMiddleMETLooseIsoSS.Add(plotVarDataMiddleMETLooseIsoSS.Hist("WJets_Fakes"),-1)
-      QCDlooseMiddleMETLooseIsoSS.Add(plotVarDataMiddleMETLooseIsoSS.Hist("TTJets"),-1)
+      QCDlooseAverageControlLooseIsoSS=copy.deepcopy(plotVarDataAverageControlLooseIsoSS.Hist("Data"))
+      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("DYJets"),-1)
+      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("DYJets_Fakes"),-1)
+      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("DYJets_Photon"),-1)
+      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("DYJets_Electron"),-1)
+      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("WJets"),-1)
+      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("WJets_Fakes"),-1)
+      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("TTJets"),-1)
 
-      QCDlooseHighMETLooseIsoOS=copy.deepcopy(plotVarDataHighMETLooseIsoOS.Hist("Data"))
-      QCDlooseHighMETLooseIsoOS.Add(plotVarDataHighMETLooseIsoOS.Hist("DYJets"),-1)
-      QCDlooseHighMETLooseIsoOS.Add(plotVarDataHighMETLooseIsoOS.Hist("DYJets_Fakes"),-1)
-      QCDlooseHighMETLooseIsoOS.Add(plotVarDataHighMETLooseIsoOS.Hist("DYJets_Photon"),-1)
-      QCDlooseHighMETLooseIsoOS.Add(plotVarDataHighMETLooseIsoOS.Hist("DYJets_Electron"),-1)
-      QCDlooseHighMETLooseIsoOS.Add(plotVarDataHighMETLooseIsoOS.Hist("WJets"),-1)
-      QCDlooseHighMETLooseIsoOS.Add(plotVarDataHighMETLooseIsoOS.Hist("WJets_Fakes"),-1)
-      QCDlooseHighMETLooseIsoOS.Add(plotVarDataHighMETLooseIsoOS.Hist("TTJets"),-1)
+      QCDlooseHighControlLooseIsoOS=copy.deepcopy(plotVarDataHighControlLooseIsoOS.Hist("Data"))
+      QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("DYJets"),-1)
+      QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("DYJets_Fakes"),-1)
+      QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("DYJets_Photon"),-1)
+      QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("DYJets_Electron"),-1)
+      QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("WJets"),-1)
+      QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("WJets_Fakes"),-1)
+      QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("TTJets"),-1)
 
-      QCDlooseHighMETLooseIsoSS=copy.deepcopy(plotVarDataHighMETLooseIsoSS.Hist("Data"))
-      QCDlooseHighMETLooseIsoSS.Add(plotVarDataHighMETLooseIsoSS.Hist("DYJets"),-1)
-      QCDlooseHighMETLooseIsoSS.Add(plotVarDataHighMETLooseIsoSS.Hist("DYJets_Fakes"),-1)
-      QCDlooseHighMETLooseIsoSS.Add(plotVarDataHighMETLooseIsoSS.Hist("DYJets_Photon"),-1)
-      QCDlooseHighMETLooseIsoSS.Add(plotVarDataHighMETLooseIsoSS.Hist("DYJets_Electron"),-1)
-      QCDlooseHighMETLooseIsoSS.Add(plotVarDataHighMETLooseIsoSS.Hist("WJets"),-1)
-      QCDlooseHighMETLooseIsoSS.Add(plotVarDataHighMETLooseIsoSS.Hist("WJets_Fakes"),-1)
-      QCDlooseHighMETLooseIsoSS.Add(plotVarDataHighMETLooseIsoSS.Hist("TTJets"),-1)
+      QCDlooseHighControlLooseIsoSS=copy.deepcopy(plotVarDataHighControlLooseIsoSS.Hist("Data"))
+      QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("DYJets"),-1)
+      QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("DYJets_Fakes"),-1)
+      QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("DYJets_Photon"),-1)
+      QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("DYJets_Electron"),-1)
+      QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("WJets"),-1)
+      QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("WJets_Fakes"),-1)
+      QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("TTJets"),-1)
 
       #print "QCDlooseSS:", QCDlooseSS.Integral()
       #print "QCDtightSS:", QCDtightSS.Integral()
-      #tightLoose=QCDtightSS.Integral()/QCDlooseSS.Integral()
-      #tightLooseErr=tightLoose*math.sqrt(1./QCDtightSS.Integral() + 1./QCDlooseSS.Integral())
-      #print "QCDtightSS / QCDlooseSS", tightLoose, "+-", tightLooseErr
+      tightLoose=QCDtightSS.Integral()/QCDlooseSS.Integral()
+      tightLooseErr=tightLoose*math.sqrt(1./QCDtightSS.Integral() + 1./QCDlooseSS.Integral())
+      print "QCDtightSS / QCDlooseSS", tightLoose, "+-", tightLooseErr
       
-      #print "QCDlooseLowMETOS:", QCDlooseLowMETOS.Integral()
-      #print "QCDlooseLowMETSS:", QCDlooseLowMETSS.Integral()
-      #osSSl=QCDlooseLowMETOS.Integral()/QCDlooseLowMETSS.Integral()
-      #osSSlErr=osSSl*math.sqrt(1./QCDlooseLowMETOS.Integral() + 1./QCDlooseLowMETSS.Integral())
-      #print "QCDlooseLowMETOS / QCDlooseLowMETSS",osSSl, "+-", osSSlErr
+      #print "QCDlooseLowControlOS:", QCDlooseLowControlOS.Integral()
+      #print "QCDlooseLowControlSS:", QCDlooseLowControlSS.Integral()
+      #osSSl=QCDlooseLowControlOS.Integral()/QCDlooseLowControlSS.Integral()
+      #osSSlErr=osSSl*math.sqrt(1./QCDlooseLowControlOS.Integral() + 1./QCDlooseLowControlSS.Integral())
+      #print "QCDlooseLowControlOS / QCDlooseLowControlSS",osSSl, "+-", osSSlErr
       
-      #print "QCDlooseMiddleMETOS:", QCDlooseMiddleMETOS.Integral()
-      #print "QCDlooseMiddleMETSS:", QCDlooseMiddleMETSS.Integral()
-      #osSSm=QCDlooseMiddleMETOS.Integral()/QCDlooseMiddleMETSS.Integral()
-      #osSSmErr=osSSm*math.sqrt(1./QCDlooseMiddleMETOS.Integral() + 1./QCDlooseMiddleMETSS.Integral())
-      #print "QCDlooseMiddleMETOS / QCDlooseMiddleMETSS",osSSm, "+-", osSSmErr
+      #print "QCDlooseAverageControlOS:", QCDlooseAverageControlOS.Integral()
+      #print "QCDlooseAverageControlSS:", QCDlooseAverageControlSS.Integral()
+      #osSSm=QCDlooseAverageControlOS.Integral()/QCDlooseAverageControlSS.Integral()
+      #osSSmErr=osSSm*math.sqrt(1./QCDlooseAverageControlOS.Integral() + 1./QCDlooseAverageControlSS.Integral())
+      #print "QCDlooseAverageControlOS / QCDlooseAverageControlSS",osSSm, "+-", osSSmErr
       
-      #print "QCDlooseHighMETOS:", QCDlooseHighMETOS.Integral()
-      #print "QCDlooseHighMETSS:", QCDlooseHighMETSS.Integral()
-      #osSSh=QCDlooseHighMETOS.Integral()/QCDlooseHighMETSS.Integral()
-      #osSShErr=osSSh*math.sqrt(1./QCDlooseHighMETOS.Integral() + 1./QCDlooseHighMETSS.Integral())
-      #print "QCDlooseHighMETOS / QCDlooseHighMETSS",osSSh, "+-", osSShErr
+      #print "QCDlooseHighControlOS:", QCDlooseHighControlOS.Integral()
+      #print "QCDlooseHighControlSS:", QCDlooseHighControlSS.Integral()
+      #osSSh=QCDlooseHighControlOS.Integral()/QCDlooseHighControlSS.Integral()
+      #osSShErr=osSSh*math.sqrt(1./QCDlooseHighControlOS.Integral() + 1./QCDlooseHighControlSS.Integral())
+      #print "QCDlooseHighControlOS / QCDlooseHighControlSS",osSSh, "+-", osSShErr
       
-      #print "QCDlooseLowMETLooseIsoSS:", QCDlooseLowMETLooseIsoSS.Integral()
-      #tightLoosel=QCDlooseLowMETSS.Integral()/QCDlooseLowMETLooseIsoSS.Integral()
-      #tightLooselErr=tightLoosel*math.sqrt(1./QCDlooseLowMETSS.Integral() + 1./QCDlooseLowMETLooseIsoSS.Integral())
-      #print "QCDlooseLowMETSS / QCDlooseLowMETLooseIsoSS",tightLoosel, "+-", tightLooselErr
+      #print "QCDlooseLowControlLooseIsoSS:", QCDlooseLowControlLooseIsoSS.Integral()
+      tightLoosel=QCDlooseLowControlSS.Integral()/QCDlooseLowControlLooseIsoSS.Integral()
+      tightLooselErr=tightLoosel*math.sqrt(1./QCDlooseLowControlSS.Integral() + 1./QCDlooseLowControlLooseIsoSS.Integral())
+      print "QCDlooseLowControlSS / QCDlooseLowControlLooseIsoSS",tightLoosel, "+-", tightLooselErr
       
-      #print "QCDlooseMiddleMETLooseIsoSS:", QCDlooseMiddleMETLooseIsoSS.Integral()
-      #tightLoosem=QCDlooseMiddleMETSS.Integral()/QCDlooseMiddleMETLooseIsoSS.Integral()
-      #tightLoosemErr=tightLoosem*math.sqrt(1./QCDlooseMiddleMETSS.Integral() + 1./QCDlooseMiddleMETLooseIsoSS.Integral())
-      #print "QCDlooseMiddleMETSS / QCDlooseMiddleMETLooseIsoSS",tightLoosem, "+-", tightLoosemErr
+      #print "QCDlooseAverageControlLooseIsoSS:", QCDlooseAverageControlLooseIsoSS.Integral()
+      tightLoosem=QCDlooseAverageControlSS.Integral()/QCDlooseAverageControlLooseIsoSS.Integral()
+      tightLoosemErr=tightLoosem*math.sqrt(1./QCDlooseAverageControlSS.Integral() + 1./QCDlooseAverageControlLooseIsoSS.Integral())
+      print "QCDlooseAverageControlSS / QCDlooseAverageControlLooseIsoSS",tightLoosem, "+-", tightLoosemErr
       
-      #print "QCDlooseHighMETLooseIsoSS:", QCDlooseHighMETLooseIsoSS.Integral()
-      #tightLooseh=QCDlooseHighMETSS.Integral()/QCDlooseHighMETLooseIsoSS.Integral()
-      #tightLoosehErr=tightLooseh*math.sqrt(1./QCDlooseHighMETSS.Integral() + 1./QCDlooseHighMETLooseIsoSS.Integral())
-      #print "QCDlooseHighMETSS / QCDlooseHighMETLooseIsoSS",tightLooseh, "+-", tightLoosehErr
+      #print "QCDlooseHighControlLooseIsoSS:", QCDlooseHighControlLooseIsoSS.Integral()
+      tightLooseh=QCDlooseHighControlSS.Integral()/QCDlooseHighControlLooseIsoSS.Integral()
+      tightLoosehErr=tightLooseh*math.sqrt(1./QCDlooseHighControlSS.Integral() + 1./QCDlooseHighControlLooseIsoSS.Integral())
+      print "QCDlooseHighControlSS / QCDlooseHighControlLooseIsoSS",tightLooseh, "+-", tightLoosehErr
 
       #QCDScale=tightLoosem*osSSm
       
-      tightOSLooseSSl=QCDlooseLowMETOS.Integral()/QCDlooseLowMETLooseIsoSS.Integral()
-      tightOSLooseSSlErr=tightOSLooseSSl*math.sqrt(1./QCDlooseLowMETOS.Integral() + 1./QCDlooseLowMETLooseIsoSS.Integral())
-      print "QCDlooseLowMETOS / QCDlooseLowMETLooseIsoSS",tightOSLooseSSl, "+-", tightOSLooseSSlErr
+      tightOSLooseSSl=QCDlooseLowControlOS.Integral()/QCDlooseLowControlLooseIsoSS.Integral()
+      tightOSLooseSSlErr=tightOSLooseSSl*math.sqrt(1./QCDlooseLowControlOS.Integral() + 1./QCDlooseLowControlLooseIsoSS.Integral())
+      print "QCDlooseLowControlOS / QCDlooseLowControlLooseIsoSS",tightOSLooseSSl, "+-", tightOSLooseSSlErr
       
-      tightOSLooseSSm=QCDlooseMiddleMETOS.Integral()/QCDlooseMiddleMETLooseIsoSS.Integral()
-      tightOSLooseSSmErr=tightOSLooseSSm*math.sqrt(1./QCDlooseMiddleMETOS.Integral() + 1./QCDlooseMiddleMETLooseIsoSS.Integral())
-      print "QCDlooseMiddleMETOS / QCDlooseMiddleMETLooseIsoSS",tightOSLooseSSm, "+-", tightOSLooseSSmErr
+      tightOSLooseSSm=QCDlooseAverageControlOS.Integral()/QCDlooseAverageControlLooseIsoSS.Integral()
+      tightOSLooseSSmErr=tightOSLooseSSm*math.sqrt(1./QCDlooseAverageControlOS.Integral() + 1./QCDlooseAverageControlLooseIsoSS.Integral())
+      print "QCDlooseAverageControlOS / QCDlooseAverageControlLooseIsoSS",tightOSLooseSSm, "+-", tightOSLooseSSmErr
       
-      tightOSLooseSSh=QCDlooseHighMETOS.Integral()/QCDlooseHighMETLooseIsoSS.Integral()
-      tightOSLooseSShErr=tightOSLooseSSh*math.sqrt(1./QCDlooseHighMETOS.Integral() + 1./QCDlooseHighMETLooseIsoSS.Integral())
-      print "QCDlooseHighMETOS / QCDlooseHighMETLooseIsoSS",tightOSLooseSSh, "+-", tightOSLooseSShErr
+      tightOSLooseSSh=QCDlooseHighControlOS.Integral()/QCDlooseHighControlLooseIsoSS.Integral()
+      tightOSLooseSShErr=tightOSLooseSSh*math.sqrt(1./QCDlooseHighControlOS.Integral() + 1./QCDlooseHighControlLooseIsoSS.Integral())
+      print "QCDlooseHighControlOS / QCDlooseHighControlLooseIsoSS",tightOSLooseSSh, "+-", tightOSLooseSShErr
       
       QCDScale=tightOSLooseSSm
       
       for i in range(QCDlooseSS.obj.GetXaxis().GetNbins()):
           if QCDlooseSS.obj.GetBinContent(i+1)<=0:
-	      QCDlooseSS.obj.SetBinContent(i+1,0.0001)
+	      QCDlooseSS.obj.SetBinContent(i+1,0.001)
           if QCDlooseSS.weighted.GetBinContent(i+1)<=0:
-	      QCDlooseSS.weighted.SetBinContent(i+1,0.0001)
+	      QCDlooseSS.weighted.SetBinContent(i+1,0.001)
 
       return QCDlooseSS,QCDScale
 
-def saveForLimit(plotVarDataOS):
-    rootfile=TFile("tauTau_SM1_mH125.root","RECREATE")
+def saveForLimit(plotVarDataOS, category="SM1"):
+    rootfile=TFile("tauTau_"+category+"_mH125.root","RECREATE")
     channel=rootfile.mkdir("tauTau_SM1")
     plotVarDataOS.Hist("ggHTT125").weighted.SetName("SM125")
     plotVarDataOS.Hist("VBFHTT125").weighted.SetName("VBF125")
@@ -425,16 +425,19 @@ if __name__ == '__main__':
     #selComps['data_Run2011A_PromptReco_v6'].intLumi = 0.
     #weights['data_Run2011A_PromptReco_v6'].intLumi = 0.
 
-    cuts=[#("ATLAS",'l1Pt>35 && l2Pt>25 && diTauCharge==0 && jet1Pt>40 && dRtt<2.2 && mttj>225',' && met>20',' && l1TigIso>0.5 && l2TigIso>0.5'),
-	  ("CMSl40met25j70dR2tm",'l1Pt>40 && l2Pt>40 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && jet1Pt>70 && dRtt<2.0',' && met>25',' && ((l1TigIso>0.5 && l2MedIso>0.5) || (l1MedIso>0.5 && l2TigIso>0.5))'),
+    cuts=[#("ATLAS",'l1Pt>35 && l2Pt>25 && diTauCharge==0 && jet1Pt>40 && dRtt<2.2 && mttj>225',' && met>20',' && l1TigIso>0.5 && l2TigIso>0.5',True),
+	  #("CMSl40met25j40dR2tm",'l1Pt>40 && l2Pt>40 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && jet1Pt>40',' && met>20',' && ((l1TigIso>0.5 && l2MedIso>0.5) || (l1MedIso>0.5 && l2TigIso>0.5)) && dRtt<2.0',True),
+	  #("CMSl40met25j40dR2tm",'l1Pt>40 && l2Pt>40 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && jet1Pt>40',' && dRtt<2.0',' && ((l1TigIso>0.5 && l2MedIso>0.5) || (l1MedIso>0.5 && l2TigIso>0.5)) && met>20',False),
+	  #("CMSl40met25j40dR2tt",'l1Pt>40 && l2Pt>40 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && jet1Pt>40 && dRtt<2.0',' && met>20',' && (l1TigIso>0.5 && l2TigIso>0.5)',True),
+	  ("CMSl40j40dR2tt",'l1Pt>40 && l2Pt>40 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && jet1Pt>40',' && dRtt<2.0',' && (l1TigIso>0.5 && l2TigIso>0.5)',False),
 	  ]
 
     prefix1="~/workspace/ditau/plots/IsoTauLoosee1fb_"
 
-    for prefix,cut,metcut,isocut in cuts:
+    for prefix,cut,antiqcdcut,isocut,qcdEstimate in cuts:
      for var, nx, xmin, xmax in [
-         ('svfitMass',30, 0, 300),
-         ('visMass',30, 0, 300),
+         ('svfitMass',15, 0, 300),
+         ('visMass',15, 0, 300),
          ('mt',20, 0, 200),
          ('pThiggs',20, 0, 300),
          ('diTauPt',20, 0, 300),
@@ -466,76 +469,94 @@ if __name__ == '__main__':
           log=True
       else:
           log=False
+
+      if qcdEstimate:
+        # MET based QCD estimation
+        looseisocut=" && l1LooIso>0.5 && l2LooIso>0.5"
+        lowcontrolcut=" && met<10"
+        averagecontrolcut=" && met<20"
+        highcontrolcut=" && met>10 && met<20"
+      else:
+        # dR based QCD estimation
+        looseisocut=" && l1LooIso>0.5 && l2LooIso>0.5"
+        lowcontrolcut=" && dRtt>3.0"
+        averagecontrolcut=" && dRtt>2.0"
+        highcontrolcut=" && dRtt>2.0 && dRtt<3.0"
+
+      cutSS=cut.replace("diTauCharge==0","diTauCharge!=0")
+      
       plotVarDataSS = H2TauTauDataMC(var, anaDir, selComps, weights,
      			    nx, xmin, xmax,
-     			    cut = cut.replace("diTauCharge==0","diTauCharge!=0")+isocut+metcut, weight=weight,
+     			    cut = cutSS+isocut+antiqcdcut, weight=weight,
      			    embed=options.embed)
+			    
       plotVarDataLooseIsoOS = H2TauTauDataMC(var, anaDir, selComps, weights,
      			    nx, xmin, xmax,
-     			    cut = cut+metcut, weight=weight,
+     			    cut = cut+antiqcdcut, weight=weight,
      			    embed=options.embed)
       plotVarDataLooseIsoSS = H2TauTauDataMC(var, anaDir, selComps, weights,
      			    nx, xmin, xmax,
-     			    cut = cut.replace("diTauCharge==0","diTauCharge!=0")+metcut, weight=weight,
+     			    cut = cutSS+antiqcdcut, weight=weight,
      			    embed=options.embed)
-      plotVarDataLowMETOS = H2TauTauDataMC(var, anaDir, selComps, weights,
+			    
+      plotVarDataLowControlOS = H2TauTauDataMC(var, anaDir, selComps, weights,
      			    nx, xmin, xmax,
-     			    cut = cut+isocut+" && met<10", weight=weight,
+     			    cut = cut+isocut+lowcontrolcut, weight=weight,
      			    embed=options.embed)
-      plotVarDataLowMETSS = H2TauTauDataMC(var, anaDir, selComps, weights,
+      plotVarDataLowControlSS = H2TauTauDataMC(var, anaDir, selComps, weights,
      			    nx, xmin, xmax,
-     			    cut = cut.replace("diTauCharge==0","diTauCharge!=0")+isocut+" && met<10", weight=weight,
+     			    cut = cutSS+isocut+lowcontrolcut, weight=weight,
      			    embed=options.embed)
-      plotVarDataMiddleMETOS = H2TauTauDataMC(var, anaDir, selComps, weights,
+      plotVarDataAverageControlOS = H2TauTauDataMC(var, anaDir, selComps, weights,
      			    nx, xmin, xmax,
-     			    cut = cut+isocut+" && met<20", weight=weight,
+     			    cut = cut+isocut+averagecontrolcut, weight=weight,
      			    embed=options.embed)
-      plotVarDataMiddleMETSS = H2TauTauDataMC(var, anaDir, selComps, weights,
+      plotVarDataAverageControlSS = H2TauTauDataMC(var, anaDir, selComps, weights,
      			    nx, xmin, xmax,
-     			    cut = cut.replace("diTauCharge==0","diTauCharge!=0")+isocut+" && met<20", weight=weight,
+     			    cut = cutSS+isocut+averagecontrolcut, weight=weight,
      			    embed=options.embed)
-      plotVarDataHighMETOS = H2TauTauDataMC(var, anaDir, selComps, weights,
+      plotVarDataHighControlOS = H2TauTauDataMC(var, anaDir, selComps, weights,
      			    nx, xmin, xmax,
-     			    cut = cut+isocut+" && met>10 && met<20", weight=weight,
+     			    cut = cut+isocut+highcontrolcut, weight=weight,
      			    embed=options.embed)
-      plotVarDataHighMETSS = H2TauTauDataMC(var, anaDir, selComps, weights,
+      plotVarDataHighControlSS = H2TauTauDataMC(var, anaDir, selComps, weights,
      			    nx, xmin, xmax,
-     			    cut = cut.replace("diTauCharge==0","diTauCharge!=0")+isocut+" && met>10 && met<20", weight=weight,
+     			    cut = cutSS+isocut+highcontrolcut, weight=weight,
      			    embed=options.embed)
 
-      plotVarDataLowMETLooseIsoOS = H2TauTauDataMC(var, anaDir, selComps, weights,
+      plotVarDataLowControlLooseIsoOS = H2TauTauDataMC(var, anaDir, selComps, weights,
      			    nx, xmin, xmax,
-     			    cut = cut+" && l1LooIso>0.5 && l2LooIso>0.5"+" && met<10", weight=weight,
+     			    cut = cut+looseisocut+lowcontrolcut, weight=weight,
      			    embed=options.embed)
-      plotVarDataLowMETLooseIsoSS = H2TauTauDataMC(var, anaDir, selComps, weights,
+      plotVarDataLowControlLooseIsoSS = H2TauTauDataMC(var, anaDir, selComps, weights,
      			    nx, xmin, xmax,
-     			    cut = cut.replace("diTauCharge==0","diTauCharge!=0")+" && l1LooIso>0.5 && l2LooIso>0.5"+" && met<10", weight=weight,
+     			    cut = cutSS+looseisocut+lowcontrolcut, weight=weight,
      			    embed=options.embed)
-      plotVarDataMiddleMETLooseIsoOS = H2TauTauDataMC(var, anaDir, selComps, weights,
+      plotVarDataAverageControlLooseIsoOS = H2TauTauDataMC(var, anaDir, selComps, weights,
      			    nx, xmin, xmax,
-     			    cut = cut+" && l1LooIso>0.5 && l2LooIso>0.5"+" && met<20", weight=weight,
+     			    cut = cut+looseisocut+averagecontrolcut, weight=weight,
      			    embed=options.embed)
-      plotVarDataMiddleMETLooseIsoSS = H2TauTauDataMC(var, anaDir, selComps, weights,
+      plotVarDataAverageControlLooseIsoSS = H2TauTauDataMC(var, anaDir, selComps, weights,
      			    nx, xmin, xmax,
-     			    cut = cut.replace("diTauCharge==0","diTauCharge!=0")+" && l1LooIso>0.5 && l2LooIso>0.5"+" && met<20", weight=weight,
+     			    cut = cutSS+looseisocut+averagecontrolcut, weight=weight,
      			    embed=options.embed)
-      plotVarDataHighMETLooseIsoOS = H2TauTauDataMC(var, anaDir, selComps, weights,
+      plotVarDataHighControlLooseIsoOS = H2TauTauDataMC(var, anaDir, selComps, weights,
      			    nx, xmin, xmax,
-     			    cut = cut+" && l1LooIso>0.5 && l2LooIso>0.5"+" && met>10 && met<20", weight=weight,
+     			    cut = cut+looseisocut+highcontrolcut, weight=weight,
      			    embed=options.embed)
-      plotVarDataHighMETLooseIsoSS = H2TauTauDataMC(var, anaDir, selComps, weights,
+      plotVarDataHighControlLooseIsoSS = H2TauTauDataMC(var, anaDir, selComps, weights,
      			    nx, xmin, xmax,
-     			    cut = cut.replace("diTauCharge==0","diTauCharge!=0")+" && l1LooIso>0.5 && l2LooIso>0.5"+" && met>10 && met<20", weight=weight,
+     			    cut = cutSS+looseisocut+highcontrolcut, weight=weight,
      			    embed=options.embed)
 
       QCDShape, QCDScale = QCDEstimate(plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS,
-                                       plotVarDataLowMETOS, plotVarDataLowMETSS, plotVarDataMiddleMETOS, plotVarDataMiddleMETSS, plotVarDataHighMETOS, plotVarDataHighMETSS,
-                                       plotVarDataLowMETLooseIsoOS, plotVarDataLowMETLooseIsoSS, plotVarDataMiddleMETLooseIsoOS, plotVarDataMiddleMETLooseIsoSS, plotVarDataHighMETLooseIsoOS, plotVarDataHighMETLooseIsoSS,
+                                       plotVarDataLowControlOS, plotVarDataLowControlSS, plotVarDataAverageControlOS, plotVarDataAverageControlSS, plotVarDataHighControlOS, plotVarDataHighControlSS,
+                                       plotVarDataLowControlLooseIsoOS, plotVarDataLowControlLooseIsoSS, plotVarDataAverageControlLooseIsoOS, plotVarDataAverageControlLooseIsoSS, plotVarDataHighControlLooseIsoOS, plotVarDataHighControlLooseIsoSS,
 				       log)
 
       plotVarDataOS = H2TauTauDataMC(var, anaDir, selComps, weights,
      			    nx, xmin, xmax,
-     			    cut = cut+isocut+metcut, weight=weight,
+     			    cut = cut+isocut+antiqcdcut, weight=weight,
      			    embed=options.embed)
       plotVarDataOS.AddHistogram("QCDdata",QCDShape.weighted)
       plotVarDataOS.Hist('QCDdata').stack = True
@@ -551,7 +572,8 @@ if __name__ == '__main__':
           plotVarDataOS.DrawStack("HIST",xmin,xmax,0,ymax)
       gPad.SaveAs(prefix1+prefix+'_'+plotVarDataOS.varName+"_data.png")
       if var=="svfitMass":
-          saveForLimit(copy.deepcopy(plotVarDataOS))
+        if prefix=="CMSl40j40dR2tt":
+          saveForLimit(copy.deepcopy(plotVarDataOS),"SM1")
       gPad.WaitPrimitive()
       print "Data:", plotVarDataOS.Hist("Data").Integral()
       print "TTJets:", plotVarDataOS.Hist("TTJets").Integral()
@@ -565,7 +587,7 @@ if __name__ == '__main__':
 
       plotVar = H2TauTauDataMC(var, anaDir, selCompsMC, weightsMC,
      			    nx, xmin, xmax,
-     			    cut = cut+isocut+metcut, weight=weight,
+     			    cut = cut+isocut+antiqcdcut, weight=weight,
      			    embed=options.embed)
       print "MC lumi:", plotVar.intLumi
       plotVar.AddHistogram("QCDdata",QCDShape.weighted)
@@ -589,4 +611,4 @@ if __name__ == '__main__':
       else:
           plotVar.DrawStack("HIST",xmin,xmax,0,ymax)
       gPad.SaveAs(prefix1+prefix+'_'+plotVar.varName+"_mc.png")
-      #gPad.WaitPrimitive()
+      gPad.WaitPrimitive()
