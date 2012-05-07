@@ -19,7 +19,7 @@ cmgDiTau.cfg.leg1Collection = 'cmgTauScaler'
 cmgDiTau.cfg.leg2Collection = 'cmgTauScaler'
 
 # preselection 
-cmgDiTauPreSel = cmgDiTauSel.clone( cut = 'getSelection("cuts_skimming")')
+cmgDiTauPreSel = cmgDiTauSel.clone( cut = 'getSelection("cuts_baseline")')
 
 # full selection
 cmgDiTauFullSel = cmgDiTauSel.clone( src = 'cmgDiTauPreSel',

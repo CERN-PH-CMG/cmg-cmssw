@@ -6,7 +6,7 @@ import FWCore.ParameterSet.Config as cms
 # muCuts.dxy = cms.string('abs(dxy)<0.045')
 # muCuts.dz = cms.string('abs(dz)<0.2')
 
-def getMuCuts( leg, channel='tauMu', skim=False):
+def getMuCuts( leg, channel='tauMu'):
     
     ptCut = None
     etaCut = None
@@ -24,33 +24,25 @@ def getMuCuts( leg, channel='tauMu', skim=False):
         eta = cms.string('abs({leg}().eta())<{etaCut}'.format(leg=leg, etaCut=etaCut))
         )
 
-    id = cms.PSet(
-        isGlobal = cms.string('{leg}().isGlobal()'.format(leg=leg)),
-        isTracker = cms.string('{leg}().isTracker()'.format(leg=leg)),
-        numberOfValidTrackerHits = cms.string('{leg}().numberOfValidTrackerHits() > 10'.format(leg=leg)),
-        numberOfValidPixelHits = cms.string('{leg}().numberOfValidPixelHits() > 0'.format(leg=leg)),
-        numberOfValidMuonHits = cms.string('{leg}().numberOfValidMuonHits() > 0'.format(leg=leg)),
-        numberOfMatches = cms.string('{leg}().numberOfMatches() > 1'.format(leg=leg)),
-        normalizedChi2 = cms.string('{leg}().normalizedChi2() < 10'.format(leg=leg)),
-        dxy = cms.string('abs({leg}().dxy()) < 0.045'.format(leg=leg)),
-        dz = cms.string('abs({leg}().dz()) < 0.2'.format(leg=leg))
-        )
+##     id = cms.PSet(
+##         isGlobal = cms.string('{leg}().isGlobal()'.format(leg=leg)),
+##         isTracker = cms.string('{leg}().isTracker()'.format(leg=leg)),
+##         numberOfValidTrackerHits = cms.string('{leg}().numberOfValidTrackerHits() > 10'.format(leg=leg)),
+##         numberOfValidPixelHits = cms.string('{leg}().numberOfValidPixelHits() > 0'.format(leg=leg)),
+##         numberOfValidMuonHits = cms.string('{leg}().numberOfValidMuonHits() > 0'.format(leg=leg)),
+##         numberOfMatches = cms.string('{leg}().numberOfMatches() > 1'.format(leg=leg)),
+##         normalizedChi2 = cms.string('{leg}().normalizedChi2() < 10'.format(leg=leg)),
+##         dxy = cms.string('abs({leg}().dxy()) < 0.045'.format(leg=leg)),
+##         dz = cms.string('abs({leg}().dz()) < 0.2'.format(leg=leg))
+##         )
 
-    iso = cms.PSet(
-        relIsoDBeta = cms.string('{leg}().relIso(0.5, 1)<100.0'.format(leg=leg))
-        )
+##     iso = cms.PSet(
+##         relIsoDBeta = cms.string('{leg}().relIso(0.5, 1)<100.0'.format(leg=leg))
+##         )
     
-    if not skim:
-        muCuts = cms.PSet(
-            kinematics = kinematics.clone(),
-            id = id.clone(),
-            iso = iso.clone()
-            )
-    else:
-        muCuts = cms.PSet(
-            kinematics = kinematics.clone(),
-            iso = iso.clone()
-            )
+    muCuts = cms.PSet(
+        kinematics = kinematics.clone(),
+        )
 
     return muCuts
 

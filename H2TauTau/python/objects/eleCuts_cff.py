@@ -24,12 +24,11 @@ def getEleCuts(leg, channel='tauEle', skim=False):
           pt = cms.string('{leg}().pt()>{ptCut}'.format(leg=leg, ptCut=ptCut)),
           eta = cms.string('abs({leg}().eta())<{etaCut}'.format(leg=leg, etaCut=etaCut))
         ),
-        iso = cms.PSet(
-          #COLIN the iso elest be done on charged particles, not charged hadrons
-          relIsoDBeta = cms.string('{leg}().relIso(0.5, 1)<100.0'.format(leg=leg))
-        )
+##         iso = cms.PSet(
+##           #COLIN the iso elest be done on charged particles, not charged hadrons
+##           relIsoDBeta = cms.string('{leg}().relIso(0.5, 1)<100.0'.format(leg=leg))
+##         )
     )
 
     return eleCuts
 
-# eleCuts = getEleCuts('leg2')

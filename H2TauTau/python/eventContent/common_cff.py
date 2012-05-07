@@ -15,7 +15,7 @@ common = [
     'drop cmgPFBaseJet*_*_*_*',
     'drop *_cmgPFJetForRecoil_*_*',
     'drop *_genWorZ_*_*',
-    'keep *_PFMETSignificance*_*_*',
+    'keep *_pfMetSignificance*_*_*',
     'keep double_*_*_*',
     'keep int_*_*_*',
     ]

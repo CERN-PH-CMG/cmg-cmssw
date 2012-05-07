@@ -11,11 +11,6 @@ tauEleCuts = cms.PSet(
          tauLeg = getTauCuts('leg1','tauEle').clone(),
          eleLeg = getEleCuts('leg2', 'tauEle').clone()
          ),
-    skimming = cms.PSet(
-         mass = cms.string('mass()>10'),
-         tauLegSkimCuts = getTauCuts('leg1','tauEle', skim=True).clone(),
-         eleLegSkimCuts = getEleCuts('leg2','tauEle', skim=True).clone()
-         )
     )
 
 if __name__ == '__main__':

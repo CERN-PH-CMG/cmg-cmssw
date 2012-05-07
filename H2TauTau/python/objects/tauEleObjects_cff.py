@@ -17,7 +17,7 @@ cmgTauEle.cuts = tauEleCuts.clone()
 cmgTauEle.cfg.leg1Collection = 'cmgTauScaler'
 
 # preselection 
-cmgTauElePreSel = cmgTauEleSel.clone( cut = 'getSelection("cuts_skimming")')
+cmgTauElePreSel = cmgTauEleSel.clone( cut = 'getSelection("cuts_baseline")')
 
 # full selection
 cmgTauEleFullSel = cmgTauEleSel.clone( src = 'cmgTauElePreSel',
