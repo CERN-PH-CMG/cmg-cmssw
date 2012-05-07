@@ -56,6 +56,60 @@ simple_5x = cms.PSet(
  )
 
 ####################################################################################################################  
+full_5x_chs = cms.PSet(
+ impactParTkThreshold = cms.double(1.) ,
+ cutBased = cms.bool(False),
+ tmvaWeights = cms.string("CMGTools/External/data/TMVAClassification_5x_BDT_chsFullPlusRMS.weights.xml"),
+ tmvaMethod  = cms.string("BDT_chsFullPlusRMS"),
+ version = cms.int32(-1),
+ tmvaVariables = cms.vstring(
+    "frac01",
+    "frac02",
+    "frac03",
+    "frac04",
+    "frac05",
+    "dR2Mean",
+    "nvtx",
+    "nNeutrals",
+    "beta",
+    "betaStar",
+    "dZ",
+    "nCharged",
+    ),
+ tmvaSpectators = cms.vstring(
+    "jetPt",
+    "jetEta",
+    ),
+ JetIdParams = full_5x_chs_wp,
+ label = cms.string("full")
+ )
+
+####################################################################################################################  
+simple_5x_chs = cms.PSet(
+ impactParTkThreshold = cms.double(1.) ,
+ cutBased = cms.bool(False),
+ tmvaWeights = cms.string("CMGTools/External/data/TMVAClassification_5x_BDT_chsSimpleNoVtxCat.weights.xml"),
+ tmvaMethod  = cms.string("BDT_chsSimpleNoVtxCat"),
+ version = cms.int32(-1),
+ tmvaVariables = cms.vstring(
+    "frac01",
+    "frac02",
+    "frac03",
+    "frac04",
+    "frac05",
+    "nvtx",
+    "beta",
+    "betaStar",
+    ),
+ tmvaSpectators = cms.vstring(
+    "jetPt",
+    "jetEta",
+    ),
+ JetIdParams = simple_5x_chs_wp,
+ label = cms.string("simple")
+ )
+
+####################################################################################################################  
 full = cms.PSet(
  impactParTkThreshold = cms.double(1.) ,
  cutBased = cms.bool(False),
