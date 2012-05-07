@@ -134,6 +134,57 @@ template< typename T, typename U, typename V,typename W>
 template<typename T, typename U,typename V, typename W>
   void cmg::DiObjectPairFactory<T, U,V,W>::set(const std::pair<DiObject<T,U>, DiObject<V,W> > & pair, cmg::DiObjectPair<T,U,V,W>* const obj) const{
 
+  std::vector<double> minMass;
+  std::vector<double> minOSMass;
+  
+
+  double m12= pair.first.mass();
+  int c12 = pair.first.charge();
+  double m34= pair.second.mass();
+  int c34 = pair.second.charge();
+  double m13= (pair.first.leg1().p4()+pair.second.leg1().p4()).M();
+  int c13   = pair.first.leg1().charge()+pair.second.leg1().charge();
+  double m14= (pair.first.leg1().p4()+pair.second.leg2().p4()).M();
+  int c14   = pair.first.leg1().charge()+pair.second.leg2().charge();
+  double m23= (pair.first.leg2().p4()+pair.second.leg1().p4()).M();
+  int c23   = pair.first.leg2().charge()+pair.second.leg1().charge();
+  double m24= (pair.first.leg2().p4()+pair.second.leg2().p4()).M();
+  int c24   = pair.first.leg2().charge()+pair.second.leg2().charge();
+
+  minMass.push_back(m12);
+  minMass.push_back(m34);
+  minMass.push_back(m13);
+  minMass.push_back(m14);
+  minMass.push_back(m23);
+  minMass.push_back(m24);
+  
+  std::sort(minMass.begin(),minMass.end());
+  obj->minMass_ = minMass.at(0);
+  
+  if(c12==0)
+    minOSMass.push_back(m12);
+  if(c34==0)
+    minOSMass.push_back(m34);
+  if(c13==0)
+    minOSMass.push_back(m13);
+  if(c14==0)
+    minOSMass.push_back(m14);
+  if(c23==0)
+    minOSMass.push_back(m23);
+  if(c24==0)
+    minOSMass.push_back(m24);
+
+  if(minOSMass.size()>0) {
+    std::sort(minOSMass.begin(),minOSMass.end());
+    obj->minOSMass_ = minOSMass.at(0);
+  }
+  else
+    {
+      obj->minOSMass_ = 999.;
+    }
+    
+
+
 
 }
 

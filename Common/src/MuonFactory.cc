@@ -28,6 +28,7 @@ void cmg::MuonFactory::set(const pat::MuonPtr& input, cmg::Muon* const output, c
     output->type_ = input->type();
     output->isGlobal_ = cmg::toTriBool(input->isGlobalMuon());
     output->isTracker_ = cmg::toTriBool(input->isTrackerMuon());
+    output->isPF_ = cmg::toTriBool(input->isPFMuon());
     output->muonID_ = cmg::toTriBool(input->muonID(muonIDType_));
     output->nMatches_ = input->numberOfMatches();
 

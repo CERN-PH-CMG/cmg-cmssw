@@ -133,6 +133,7 @@ typedef RecoilCorrectedMETProducer<cmg::DiTau> RecoilCorrectedMETProducerDiTau;
 typedef PhysicsObjectProducer<cmg::QuadMuonFactory> QuadMuonPOProducer;
 typedef PhysicsObjectProducer<cmg::DiMuonDiElectronFactory> DiMuonDiElectronPOProducer;
 typedef PhysicsObjectProducer<cmg::QuadElectronFactory> QuadElectronPOProducer;
+typedef PhysicsObjectProducer<cmg::TriMuonMETFactory> TriMuonMETPOProducer;
 
 //
 
@@ -347,6 +348,8 @@ typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<reco::GenPart
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::QuadMuon> > CmgQuadMuonSelector;
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiMuonDiElectron> > CmgDiMuonDiElectronSelector;
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::QuadElectron> > CmgQuadElectronSelector;
+
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::TriMuonMET> > CmgTriMuonMETSelector;
 
 
 typedef CollectionSizeProducer< std::vector<reco::Vertex> > VertexSizeProducer;
