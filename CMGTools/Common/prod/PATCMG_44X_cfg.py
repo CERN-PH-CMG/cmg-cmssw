@@ -15,14 +15,14 @@ process = cms.Process("PAT")
 print 'querying database for source files'
 
 
-runOnMC = True
+runOnMC = False
 
 
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
    'cmgtools_group',
-   '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5',
-   # '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5'
+   # '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5',
+   '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5'
    # 'CMS',
    # '/TauPlusX/Run2011A-03Oct2011-v1/AOD'
    )
@@ -183,9 +183,10 @@ process.schedule.append( process.outpath )
 
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-from Configuration.AlCa.autoCond import autoCond
-process.GlobalTag.globaltag = cms.string( autoCond[ 'startup' ] )
 process.load("Configuration.StandardSequences.MagneticField_cff")
+
+from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
+process.GlobalTag.globaltag = cms.string(getGlobalTag(runOnMC))
 
 print 'Global tag       : ', process.GlobalTag.globaltag
 
