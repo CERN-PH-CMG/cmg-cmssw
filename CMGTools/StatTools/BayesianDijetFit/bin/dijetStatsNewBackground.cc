@@ -10,6 +10,8 @@
 #include "RooHistPdf.h"
 #include "RooProdPdf.h"
 #include "RooUniform.h"
+#include "RooJeffreysPrior.h"
+#include "RooNumIntConfig.h"
 #include "RooBinning.h"
 #include "RooLognormal.h"
 #include "RooAbsPdf.h"
@@ -91,13 +93,13 @@ int main(int argc, char* argv[])
 
   //  double LUMIERROR=0.045; // relative error on luminosity
   double LUMIERROR=0.022; // relative error on luminosity
-
   double JES=1.0;        // JES "value"
   double JER=1.0;        // JER "value"
   double JESERROR=0.022;   // relative error on JES
   double JERERROR=0.1;   // relative error on JER
   double NSIGCUTOFF=3.0; // number of +/- "sigma" to cutoff integration of nuisance parameters
   bool USELOGNORM=true;  // use lognormal or gaussian nuisance prior pdfs
+  bool USEJEFFREYS=false;  // use lognormal or gaussian nuisance prior pdfs
 
   // histogram binning (for display only)
   const int NBINS=54;
@@ -129,6 +131,12 @@ int main(int argc, char* argv[])
   if (statlevel > 999 && statlevel < 1999) USELOGNORM=false;
   if (statlevel == 2000 || statlevel == 2100) doAggressiveBkgFit=false;
 
+
+  if (statlevel > 9999)
+  {
+      USEJEFFREYS=true;
+      statlevel=statlevel-10000;
+  }
 
   if (sResonance.find("RSGraviton_ak5_GGtoGG_fat30") != std::string::npos) iResonance = 11;
   else if (sResonance.find("RSGraviton_ak5_QQtoQQ_fat30") != std::string::npos) iResonance = 12;
@@ -182,13 +190,13 @@ int main(int argc, char* argv[])
     DATASETFN="../data/lumi46fb_dataMC_data_1JetMassTag.txt";
     MININVMASS = 890.;
     MAXINVMASS = 3279.;
-    LUMIERROR = sqrt(pow(LUMIERROR,2) + pow(0.13,2));
+    LUMIERROR = sqrt(pow(LUMIERROR,2) + pow(0.09,2));
   }
   if (iResonance > 2010 && iResonance < 2020)  {
     DATASETFN="../data/lumi46fb_dataMC_data_2JetMassTag.txt";
     MININVMASS = 890.;
     MAXINVMASS = 2037.;
-    LUMIERROR = sqrt(pow(LUMIERROR,2) + pow(0.13,2) + pow(0.13,2));
+    LUMIERROR = sqrt(pow(LUMIERROR,2) + pow(0.18,2));
   }
 
 
@@ -235,8 +243,7 @@ int main(int argc, char* argv[])
   ws->var("lumiM0")->setVal(LUMI);
   if(USELOGNORM) ws->var("lumiK0")->setVal(LUMIERROR+1);
   else           ws->var("lumiK0")->setVal(LUMI*LUMIERROR);
-  ws->factory("RooUniform::xs_prior(xs[0])");
-  ws->factory("prod::nsig(xs, lumi)");
+  ws->factory("prod::nsig(xs[1], lumi)");
 
   ws->factory("iResonance[1]");
   ws->var("iResonance")->setVal(iResonance);
@@ -278,6 +285,14 @@ int main(int argc, char* argv[])
   ws->factory("SUM::modelc(nsig*signal, nbkg[1000,0,1E8]*backgroundc)");
   ws->defineSet("observables","invmass");
   ws->defineSet("POI","xs");
+
+  if(USEJEFFREYS)
+  {
+      ws->factory("RooJeffreysPrior::xs_prior(modela,xs,invmass)");
+      ws->pdf("xs_prior")->specialIntegratorConfig(kTRUE)->getConfigSection("RooIntegrator1D").setRealValue("maxSteps",3);
+  }
+  else ws->factory("RooUniform::xs_prior(xs)");
+
   if(statlevel==0 || statlevel== 2000 || statlevel == 2100) ws->factory("PROD::prior(xs_prior)");
   if(statlevel==1) ws->factory("PROD::prior(xs_prior)");
   if(statlevel==2 || statlevel==1002) ws->factory("PROD::prior(xs_prior,lumi_prior)");
@@ -496,7 +511,7 @@ int main(int argc, char* argv[])
     printVal(*ws->var("pb3"));
     printVal(*ws->var("pc1"));
     printVal(*ws->var("pc2"));
-    if (verbose_) ws->writeToFile("ws.root");
+    ws->writeToFile("ws.root");
     
     double lower=-1, upper=-1;
     //    int niters=1000;
