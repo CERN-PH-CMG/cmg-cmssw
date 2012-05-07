@@ -198,34 +198,34 @@ void makeDataCard_diTau(TString channel="tauTau",long sm=0, long mass=125){
 //        <<fillString("-")
 //        <<"shape"<<endl;
 
-  /// mu efficiency systematic------------------------------------------------
-  file <<fillStringLong("CMS_eff_m")<<fillString("lnN")
-       <<fillString(" ")
+//  /// mu efficiency systematic------------------------------------------------
+//  file <<fillStringLong("CMS_eff_m")<<fillString("lnN")
+//       <<fillString(" ")
 //       <<fillFloat(1.020)
-       <<fillFloat(1.020)
-       <<fillFloat(1.020)
-       <<fillFloat(1.020)
-       <<fillString("-")
-       <<fillString("-")
-       <<fillFloat(1.020)
-       <<fillFloat(1.020)
-       <<fillFloat(1.020)
 //       <<fillFloat(1.020)
-       <<"Muon ID/HLT"<<endl;
+//       <<fillFloat(1.020)
+//       <<fillFloat(1.020)
+//       <<fillString("-")
+//       <<fillString("-")
+//       <<fillFloat(1.020)
+//       <<fillFloat(1.020)
+//       <<fillFloat(1.020)
+//       <<fillFloat(1.020)
+//       <<"Muon ID/HLT"<<endl;
 
   ///tau efficiency systematic------------------------------------------------
   file <<fillStringLong("CMS_eff_t")<<fillString("lnN")
        <<fillString(" ")
-//       <<fillFloat(1.06)
-       <<fillFloat(1.06)
-       <<fillFloat(1.06)
-       <<fillFloat(1.06)
+//       <<fillFloat(1.06*1.06)
+       <<fillFloat(1.06*1.06)
+       <<fillFloat(1.06*1.06)
+       <<fillFloat(1.06*1.06)
        <<fillString("-")
        <<fillString("-")
        <<fillString("-")
        <<fillString("-")
-       <<fillFloat(1.06)
-//       <<fillFloat(1.06)
+       <<fillFloat(1.06*1.06)
+//       <<fillFloat(1.06*1.06)
        <<"Tau ID"<<endl;
 
   /// ? systematic------------------------------------------------
