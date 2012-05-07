@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.External.puJetIDAlgo_cff import PhilV1, full, simple, cutbased, full_5x, simple_5x
+from CMGTools.External.puJetIDAlgo_cff import * 
 
 stdalgos_4x = cms.VPSet(simple,   full,   cutbased)
 stdalgos_5x = cms.VPSet(simple_5x,full_5x,cutbased)
@@ -17,8 +17,10 @@ except:
 
 if cmssw_version.startswith("4"):
     stdalgos    = stdalgos_4x
+    chsalgos    = chsalgos_4x
 else:
     stdalgos    = stdalgos_5x
+    chsalgos    = chsalgos_5x
 
 pileupJetIdProducer = cms.EDProducer('PileupJetIdProducer',
                          produceJetIds = cms.bool(True),
@@ -35,6 +37,6 @@ pileupJetIdProducerChs = cms.EDProducer('PileupJetIdProducer',
                          runMvas = cms.bool(True),
                          jets = cms.InputTag("selectedPatJetsPFlow"),
                          vertexes = cms.InputTag("offlinePrimaryVertices"),
-                         algos = cms.VPSet(stdalgos)
+                         algos = cms.VPSet(chsalgos)
 )
 
