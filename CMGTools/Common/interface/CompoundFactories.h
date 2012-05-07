@@ -32,6 +32,7 @@ namespace cmg{
   typedef DiObjectPairFactory< cmg::Muon, cmg::Muon, cmg::Muon, cmg::Muon> QuadMuonFactory;
   typedef DiObjectPairFactory< cmg::Muon, cmg::Muon, cmg::Electron, cmg::Electron> DiMuonDiElectronFactory;
   typedef DiObjectPairFactory< cmg::Electron,cmg::Electron, cmg::Electron, cmg::Electron> QuadElectronFactory;
+  typedef DiObjectPairFactory< cmg::Muon,cmg::Muon, cmg::Muon, cmg::BaseMET> TriMuonMETFactory;
 
 
   typedef DiObjectUpdateFactory< cmg::TauMu > TauMuUpdateFactory;

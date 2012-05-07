@@ -62,9 +62,11 @@ DEFINE_FWK_MODULE(TriggerResultHistogramsAnalyzer);
 DEFINE_FWK_MODULE(QuadMuonPOProducer);
 DEFINE_FWK_MODULE(DiMuonDiElectronPOProducer);
 DEFINE_FWK_MODULE(QuadElectronPOProducer);
+DEFINE_FWK_MODULE(TriMuonMETPOProducer);
 DEFINE_FWK_MODULE(CmgQuadMuonSelector);
 DEFINE_FWK_MODULE(CmgDiMuonDiElectronSelector);
 DEFINE_FWK_MODULE(CmgQuadElectronSelector);
+DEFINE_FWK_MODULE(CmgTriMuonMETSelector);
 
 
 DEFINE_FWK_MODULE(GenericBaseMETHistograms);

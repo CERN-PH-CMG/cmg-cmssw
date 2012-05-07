@@ -30,6 +30,7 @@ class MuonFactory;
 	   cmg::Lepton<value>::Lepton(m),
 	   isGlobal_(cmg::unset(cmg::TriBool())),
 	   isTracker_(cmg::unset(cmg::TriBool())),
+	   isPF_(cmg::unset(cmg::TriBool())),
 	   muonID_(cmg::unset(cmg::TriBool())),
 	   pixelHits_(UnSet(int)),
 	   trackerHits_(UnSet(int)),
@@ -80,7 +81,7 @@ class MuonFactory;
      bool isTrackerMuon()    const { return type_ & reco::Muon::TrackerMuon; }
      bool isStandAloneMuon() const { return type_ & reco::Muon::StandAloneMuon; }
      bool isCaloMuon() const { return type_ & reco::Muon::CaloMuon; }
-     bool isPFMuon() const {return type_ & reco::Muon::PFMuon;}
+     bool isPFMuon() const {return isPF_;}
      //bool isRPCMuon() const {return type_ & reco::Muon::RPCMuon;}
 	
     friend class cmg::MuonFactory;
@@ -90,6 +91,7 @@ class MuonFactory;
      //@see https://twiki.cern.ch/twiki/bin/viewauth/CMS/VbtfWmunuBaselineSelection
      cmg::TriBool isGlobal_;
      cmg::TriBool isTracker_;
+     cmg::TriBool isPF_;
      cmg::TriBool muonID_;
      Int_t pixelHits_;
      Int_t trackerHits_;
