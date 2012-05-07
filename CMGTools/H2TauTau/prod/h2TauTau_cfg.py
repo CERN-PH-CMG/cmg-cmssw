@@ -19,9 +19,6 @@ numberOfFilesToProcess = 5
 
 debugEventContent = False
 
-#Jose: we'll need a flag to deal with 2011 data/MC because of name changes in 5_2_X
-#     this is probably not yet implemented right, currently only testing in 5_2
-year = '2012'
 
 ##########
 
@@ -32,13 +29,11 @@ year = '2012'
 
 # process.setName_('H2TAUTAU')
 
-dataset_user = 'benitezj' 
-dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM/PATCMG_TEST52'
+dataset_user = 'cmgtools' 
+# dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_1_0'
+dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5/PAT_CMG_V5_1_0'
 
 dataset_files = 'cmgTuple.*root'
-if year=='2011':
-    dataset_files = 'tree.*root'
-
 
 # creating the source
 from CMGTools.Production.datasetToSource import *
@@ -73,11 +68,6 @@ runOnMC = process.source.fileNames[0].find('Run201')==-1 and process.source.file
 
 # Sequence & path definition -------------------------------------------------
 
-# Message logger setup.
-process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
-process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
-
 
 # set up JSON ---------------------------------------------------------------
 if runOnMC==False:
@@ -101,18 +91,10 @@ if runOnMC:
 # load the channel paths -------------------------------------------
 process.load('CMGTools.H2TauTau.h2TauTau_cff')
 
-if year=='2011':
-    process.cmgTauMuCorSVFitPreSel.metsigSrc = cms.InputTag("PFMETSignificanceAK5")
-    process.cmgTauEleCorSVFitPreSel.metsigSrc = cms.InputTag("PFMETSignificanceAK5")
-    process.cmgMuEleCorSVFitPreSel.metsigSrc = cms.InputTag("PFMETSignificanceAK5")
-    process.cmgDiTauCorSVFitPreSel.metsigSrc = cms.InputTag("PFMETSignificanceAK5")
-
-
 # setting up the recoil correction according to the input file ---------------
-if runOnMC:
-    print sep_line
-    from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
-    setupRecoilCorrection( process )
+print sep_line
+from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
+setupRecoilCorrection( process )
 
 
 # OUTPUT definition ----------------------------------------------------------
@@ -173,14 +155,9 @@ addMuEleOutput( process, debugEventContent, addPreSel=False)
 addDiTauOutput( process, debugEventContent, addPreSel=False)
 
 
-# use standard leptons - could also clone the sequence.
-#process.cmgTauMu.cfg.leg2Collection = 'cmgMuonSelStdLep'
-# to relax mu ID:
-#process.cmgTauMu.cuts.baseline.muLeg.id = cms.PSet()
 
-#process.cmgTauEle.cfg.leg2Collection = 'cmgElectronSelStdLep'
 
-#process.cmgMuEle.cfg.leg1Collection = 'cmgMuonSelStdLep'
-#process.cmgMuEle.cfg.leg2Collection = 'cmgElectronSelStdLep'
-process.cmgMuEle.cuts.baseline.muLeg.id = cms.PSet()
-
+# Message logger setup.
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )

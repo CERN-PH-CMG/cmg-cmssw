@@ -11,11 +11,6 @@ muEleCuts = cms.PSet(
          ),
     # this cut is kept out of the baseline for now, until it is studied.
     # caloMuVeto = cms.string('leg1().eOverP()>0.2'),
-    skimming = cms.PSet(
-         mass = cms.string('mass()>10'),
-         muLegSkimCuts = getMuCuts('leg1','muEle', skim=True).clone(),
-         eleLegSkimCuts = getEleCuts('leg2', 'muEle', skim=True).clone()
-         )
     )
 
 if __name__ == '__main__':
