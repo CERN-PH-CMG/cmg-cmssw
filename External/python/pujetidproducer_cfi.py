@@ -5,6 +5,10 @@ from CMGTools.External.puJetIDAlgo_cff import PhilV1, full, simple, cutbased, fu
 stdalgos_4x = cms.VPSet(simple,   full,   cutbased)
 stdalgos_5x = cms.VPSet(simple_5x,full_5x,cutbased)
 
+chsalgos_4x = cms.VPSet(simple,   full,   cutbased)
+chsalgos_5x = cms.VPSet(simple_5x_chs,full_5x_chs,cutbased)
+chsalgos = chsalgos_5x
+
 import os
 try:
     cmssw_version = os.environ["CMSSW_VERSION"].replace("CMSSW_","")
@@ -17,6 +21,15 @@ else:
     stdalgos    = stdalgos_5x
 
 pileupJetIdProducer = cms.EDProducer('PileupJetIdProducer',
+                         produceJetIds = cms.bool(True),
+                         jetids = cms.InputTag(""),
+                         runMvas = cms.bool(True),
+                         jets = cms.InputTag("selectedPatJetsPFlow"),
+                         vertexes = cms.InputTag("offlinePrimaryVertices"),
+                         algos = cms.VPSet(stdalgos)
+)
+
+pileupJetIdProducerChs = cms.EDProducer('PileupJetIdProducer',
                          produceJetIds = cms.bool(True),
                          jetids = cms.InputTag(""),
                          runMvas = cms.bool(True),

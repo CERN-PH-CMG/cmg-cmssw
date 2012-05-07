@@ -2,7 +2,9 @@ import FWCore.ParameterSet.Config as cms
 
 from CMGTools.External.pujetidproducer_cfi import pileupJetIdProducer, stdalgos_4x, stdalgos_5x, stdalgos, cutbased
 
-# 
+#
+# Standard pfJets
+#
 puJetId = pileupJetIdProducer.clone(
     produceJetIds = cms.bool(True),
     jetids = cms.InputTag(""),
@@ -25,6 +27,31 @@ puJetMva = pileupJetIdProducer.clone(
 # 
 puJetIdSqeuence = cms.Sequence(puJetId*puJetMva)
 
+#
+# Charged Hadron Subtraction
+#
+puJetIdChs = pileupJetIdProducer.clone(
+    produceJetIds = cms.bool(True),
+    jetids = cms.InputTag(""),
+    runMvas = cms.bool(False),
+    jets = cms.InputTag("selectedPatJets"),
+    vertexes = cms.InputTag("offlinePrimaryVertices"),
+    algos = cms.VPSet(cutbased)
+    )
+
+# 
+puJetMvaChs = pileupJetIdProducer.clone(
+    produceJetIds = cms.bool(False),
+    jetids = cms.InputTag("puJetIdChs"),
+    runMvas = cms.bool(True),
+    jets = cms.InputTag("selectedPatJets"),
+    vertexes = cms.InputTag("offlinePrimaryVertices"),
+    algos = chsalgos
+    )
+
+# 
+puJetIdSqeuenceChs = cms.Sequence(puJetIdChs*puJetMvaChs)
+
 ## utility function to build jet is sequence
 def loadPujetId(process,collection,mvaOnly=False,isChs=False,release="44X"):
 
@@ -36,7 +63,7 @@ def loadPujetId(process,collection,mvaOnly=False,isChs=False,release="44X"):
             algos = stdalgos_4x
     elif release.startswith("5"):
         if isChs:
-            algos = stdalgos_5x
+            algos = chsalgos_5x
         else:
             algos = stdalgos_5x
 
