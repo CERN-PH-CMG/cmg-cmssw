@@ -2,7 +2,7 @@
 import FWCore.ParameterSet.Config as cms
 import os
 
-process = cms.Process("HISTOGRAMER")
+process = cms.Process("FLATNTP")
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.maxLuminosityBlocks = cms.untracked.PSet(input = cms.untracked.int32(-1))
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
