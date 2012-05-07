@@ -58,7 +58,8 @@ void DijetMass_chiyoung_2Vtag(){
 //  lumi = 1025.;
 //  lumi = 2509.0;
   //  lumi = 2168.0;
-  lumi = 4677.0;
+//  lumi = 4677.0;
+  lumi = 5000.0;
 
 
   Int_t ci_g, ci_b;   // for color index setting
@@ -70,12 +71,12 @@ void DijetMass_chiyoung_2Vtag(){
   gROOT->ProcessLine("setTDRStyle()");
   
   // Input Files  
-  TFile *inputFile = TFile::Open("../../../../UserCode/hinzmann/graviton/plots/lumi46fb_dataMC_data_2tag.root", "READ");
+  TFile *inputFile = TFile::Open("lumi46fb_dataMC_data_2tag.root", "READ");
 
 
 
   // Histograms 
-  hDijetMass = (TH1F*) inputFile->Get("mjj norm-data 0False 2tags;1");
+  hDijetMass = (TH1F*) inputFile->Get("mjj norm-data-tagged 0False 2tags;1");
   //inputFileMC = TFile::Open("histograms_Fat30_summer11_mc_ak5.root", "UPDATE");
   //hQCD = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat;1");
   
@@ -120,14 +121,14 @@ void DijetMass_chiyoung_2Vtag(){
   hPulls_add->Reset();
   
   // Pave text
-  TPaveText *pave_fit = new TPaveText(0.18,0.15,0.40,0.27,"NDC");
+  TPaveText *pave_fit = new TPaveText(0.60,0.50,0.90,0.65,"NDC");
   //  pave_fit->AddText("CMS Preliminary");
 
   
   pave_fit->AddText(" #sqrt{s} = 7 TeV");
   pave_fit->AddText("|#eta| < 2.5, |#Delta#eta| < 1.3");
   //  pave_fit->AddText("M_{jj} > 890 GeV");
-  if (sReco.find("pf") != string::npos)   pave_fit->AddText("PF AK5 Jets");
+  if (sReco.find("pf") != string::npos)   pave_fit->AddText("Anti-K_{T} R=0.5");
   else   pave_fit->AddText("Wide Jets");
 
   pave_fit->SetFillColor(0);
@@ -135,7 +136,7 @@ void DijetMass_chiyoung_2Vtag(){
   pave_fit->SetFillStyle(0);
   pave_fit->SetBorderSize(0);
   pave_fit->SetTextFont(42);
-  pave_fit->SetTextSize(0.03);
+  pave_fit->SetTextSize(0.04);
   pave_fit->SetTextAlign(12); 
   
   TPaveText *pave = new TPaveText(0.55,0.72,0.9,0.9,"NDC");
@@ -143,7 +144,7 @@ void DijetMass_chiyoung_2Vtag(){
   //  pave->AddText("CMS Preliminary");
   
 
-  pave->AddText(Form("data (%.3f fb^{-1})", lumi/1000.)); 
+  pave->AddText(Form("data (%.1f fb^{-1})", lumi/1000.)); 
 //  pave->AddText("Coucou"); 
   pave->AddText(" #sqrt{s} = 7 TeV");
   pave->AddText(Form("M_{jj} > %.1f GeV", mMin));
@@ -155,7 +156,7 @@ void DijetMass_chiyoung_2Vtag(){
   pave->SetFillStyle(0);
   pave->SetBorderSize(0);
   pave->SetTextFont(42);
-  pave->SetTextSize(0.03);
+  pave->SetTextSize(0.04);
   pave->SetTextAlign(12); 
   
  
@@ -337,7 +338,7 @@ void DijetMass_chiyoung_2Vtag(){
 
     // Fit to data    
     TF1 *fit = new TF1("fit",fitQCD1,mMin,2050.0,3); // 3 Par. Fit
-    gStyle->SetOptFit(1111); 
+    gStyle->SetOptFit(0); 
     fit->SetParameter(0,1.73132e-04);
     fit->SetParameter(1,18.80678e+00);
     fit->SetParameter(2,3.33620e+00);
@@ -348,7 +349,7 @@ void DijetMass_chiyoung_2Vtag(){
     
     //Alternate Fits 3 Parameter
     TF1 *f_4par = new TF1("fit_4par",fitQCD,mMin,2050.0,4); // 4 Par. Fit
-    gStyle->SetOptFit(1111); 
+    gStyle->SetOptFit(0); 
     f_4par->SetParameter(0,1.73132e-05);
     f_4par->SetParameter(1,1.10678e+01);
     f_4par->SetParameter(2,3.33620e+00);
@@ -361,7 +362,7 @@ void DijetMass_chiyoung_2Vtag(){
 
     //Alternate Fits 2 Parameter
     TF1 *f_2par = new TF1("fit_2par",fitQCD2,mMin,2050.0,2); // 2 Par. Fit
-    gStyle->SetOptFit(1111);
+    gStyle->SetOptFit(0);
     f_2par->SetParameter(0,1.73132e-05);
     f_2par->SetParameter(1,6.80678e+00);
     f_2par->SetLineWidth(2);
@@ -391,7 +392,7 @@ void DijetMass_chiyoung_2Vtag(){
     leg->SetLineStyle(1);
     leg->SetLineWidth(1);
     leg->SetFillColor(0);
-    leg->AddEntry(g,Form("data (%.3f fb^{-1})", lumi/1000.),"PL"); 
+    leg->AddEntry(g,Form("Double W/Z-tag data (%.1f fb^{-1})", lumi/1000.),"PL"); 
     leg->AddEntry(fit,"Fit","L");
     leg->Draw("same");
     pave_fit->Draw("same");
@@ -425,7 +426,7 @@ void DijetMass_chiyoung_2Vtag(){
     leg->SetLineStyle(1);
     leg->SetLineWidth(1);
     leg->SetFillColor(0);
-    leg->AddEntry(g,Form("data (%.3f fb^{-1})", lumi/1000.),"PL");
+    leg->AddEntry(g,Form("Double W/Z-tag data (%.1f fb^{-1})", lumi/1000.),"PL");
     leg->AddEntry(fit,"Default Fit (3 Par.)","L");
     leg->AddEntry(fit_4par,"Alternate Fit A (4 Par.)","L");
     leg->AddEntry(fit_2par,"Alternate Fit B (2 Par.)","L");
@@ -500,7 +501,7 @@ void DijetMass_chiyoung_2Vtag(){
     leg->SetLineStyle(1);
     leg->SetLineWidth(1);
     leg->SetFillColor(0);
-    leg->AddEntry(g2, Form("data (%.3f fb^{-1})", lumi/1000.),"PL");
+    leg->AddEntry(g2, Form("data (%.1f fb^{-1})", lumi/1000.),"PL");
     leg->AddEntry(fit,"Fit","L");
     leg->AddEntry(f_qcd,Form("%.2f#times Pythia", scaleFactor),"L");
     leg->AddEntry(htmp,"JES Uncertainty","F");
@@ -568,7 +569,7 @@ void DijetMass_chiyoung_2Vtag(){
    leg->SetLineStyle(1);
    leg->SetLineWidth(1);
    leg->SetFillColor(0);
-   leg->AddEntry(gratio,Form("data (%.3f fb^{-1})", lumi/1000.),"PL"); 
+   leg->AddEntry(gratio,Form("data (%.1f fb^{-1})", lumi/1000.),"PL"); 
    leg->AddEntry(l,"QCD Pythia + CMS Simulation","L");
    leg->AddEntry(htmp2,"JES Uncertainty","F");
    leg->Draw("same");
@@ -742,6 +743,7 @@ void DijetMass_chiyoung_2Vtag(){
    //   gr_wprime2->Draw("csame");
 
    TPaveText *pt_c5_wprime1 = new TPaveText(0.35,0.7,0.50,0.8,"NDC");
+   pt_c5_wprime1->SetTextSize(0.04);
    pt_c5_wprime1->SetFillColor(0);
    pt_c5_wprime1->SetFillStyle(0);
    pt_c5_wprime1->SetBorderSize(0);
@@ -749,6 +751,7 @@ void DijetMass_chiyoung_2Vtag(){
    pt_c5_wprime1->AddText("RSG->ZZ (1 TeV)");
 
    TPaveText *pt_c5_wprime2 = new TPaveText(0.65,0.45,0.8,0.55,"NDC");
+   pt_c5_wprime2->SetTextSize(0.04);
    pt_c5_wprime2->SetFillColor(0);
    pt_c5_wprime2->SetFillStyle(0);
    pt_c5_wprime2->SetBorderSize(0);
@@ -756,13 +759,15 @@ void DijetMass_chiyoung_2Vtag(){
    pt_c5_wprime2->AddText("RSG->ZZ (1.5 TeV)");
 
    TPaveText *pt_c5_diquark1 = new TPaveText(0.18,0.35,0.33,0.45,"NDC");
+   pt_c5_diquark1->SetTextSize(0.04);
    pt_c5_diquark1->SetFillColor(0);
    pt_c5_diquark1->SetFillStyle(0);
    pt_c5_diquark1->SetBorderSize(0);
    pt_c5_diquark1->SetTextColor(2);
    pt_c5_diquark1->AddText("RSG->WW (1 TeV)");
 
-   TPaveText *pt_c5_diquark2 = new TPaveText(0.32,0.25,0.47,0.35,"NDC");
+   TPaveText *pt_c5_diquark2 = new TPaveText(0.25,0.25,0.47,0.35,"NDC");
+   pt_c5_diquark2->SetTextSize(0.04);
    pt_c5_diquark2->SetFillColor(0);
    pt_c5_diquark2->SetFillStyle(0);
    pt_c5_diquark2->SetBorderSize(0);
@@ -779,7 +784,7 @@ void DijetMass_chiyoung_2Vtag(){
    leg2->SetBorderSize(0);
    leg2->SetFillColor(0);
    leg2->SetFillStyle(0);
-   leg2->AddEntry(g,Form("data (%.3f fb^{-1})", lumi),"PL");
+   leg2->AddEntry(g,Form("Double W/Z-tag data (%.1f fb^{-1})", lumi),"PL");
    leg2->AddEntry(fit,"Fit","L");
    leg2->AddEntry(gr_diquark1,"RSG->WW","L");
    //leg2->AddEntry(gr_wprime1,"RSG->ZZ","L");
@@ -905,6 +910,7 @@ void DijetMass_chiyoung_2Vtag(){
    pave->Draw("same");
 
    TPaveText *pt_c6_diquark1 = new TPaveText(0.20,0.3,0.35,0.4,"NDC");
+   pt_c6_diquark1->SetTextSize(0.04);
    pt_c6_diquark1->SetFillColor(0);
    pt_c6_diquark1->SetTextColor(2);
    pt_c6_diquark1->SetFillStyle(0);
@@ -912,6 +918,7 @@ void DijetMass_chiyoung_2Vtag(){
    pt_c6_diquark1->AddText("q* (1 TeV)");
 
    TPaveText *pt_c6_diquark2 = new TPaveText(0.40,0.3,0.55,0.4,"NDC");
+   pt_c6_diquark2->SetTextSize(0.04);
    pt_c6_diquark2->SetFillColor(0);
    pt_c6_diquark2->SetTextColor(2);
    pt_c6_diquark2->SetFillStyle(0);
@@ -985,6 +992,7 @@ void DijetMass_chiyoung_2Vtag(){
    
 
    TPaveText *pt_c10_diquark1 = new TPaveText(0.2,0.5,0.35,0.6, "NDC");
+   pt_c10_diquark1->SetTextSize(0.04);
    pt_c10_diquark1->SetFillColor(0);
    pt_c10_diquark1->SetTextColor(2);
    pt_c10_diquark1->SetFillStyle(0);
@@ -992,6 +1000,7 @@ void DijetMass_chiyoung_2Vtag(){
    pt_c10_diquark1->AddText("q* (1 TeV)");
 
    TPaveText *pt_c10_diquark2 = new TPaveText(0.5,0.5,0.65,0.6,"NDC");
+   pt_c10_diquark2->SetTextSize(0.04);
    pt_c10_diquark2->SetFillColor(0);
    pt_c10_diquark2->SetTextColor(2);
    pt_c10_diquark2->SetFillStyle(0);
@@ -1043,7 +1052,7 @@ void DijetMass_chiyoung_2Vtag(){
    leg->SetLineStyle(1);
    leg->SetLineWidth(1);
    leg->SetFillColor(0);
-   leg->AddEntry(g,Form("data (%.3f fb^{-1})", lumi/1000.),"PL"); 
+   leg->AddEntry(g,Form("Double W/Z-tag data (%.1f fb^{-1})", lumi/1000.),"PL"); 
    leg->AddEntry(fit,"Fit","L");
    //leg->AddEntry(f_qcd,"QCD Pythia","L");
    //leg->AddEntry(htmp,"JES Uncertainty","F");
@@ -1059,6 +1068,7 @@ void DijetMass_chiyoung_2Vtag(){
    //   gr_wprime2->Draw("csame");
 
    TPaveText *pt_c11_wprime1 = new TPaveText(0.15,0.25,0.30,0.4,"NDC");
+   pt_c11_wprime1->SetTextSize(0.04);
    pt_c11_wprime1->SetFillColor(0);
    pt_c11_wprime1->SetFillStyle(0);
    pt_c11_wprime1->SetBorderSize(0);
@@ -1066,6 +1076,7 @@ void DijetMass_chiyoung_2Vtag(){
    pt_c11_wprime1->AddText("RSG->ZZ (1 TeV)");
 
    TPaveText *pt_c11_wprime2 = new TPaveText(0.60,0.45,0.75,0.55,"NDC");
+   pt_c11_wprime2->SetTextSize(0.04);
    pt_c11_wprime2->SetFillColor(0);
    pt_c11_wprime2->SetFillStyle(0);
    pt_c11_wprime2->SetBorderSize(0);
@@ -1073,13 +1084,15 @@ void DijetMass_chiyoung_2Vtag(){
    pt_c11_wprime2->AddText("RSG->ZZ (1.5 TeV)");
 
    TPaveText *pt_c11_diquark1 = new TPaveText(0.26,0.40,0.45,0.53,"NDC");
+   pt_c11_diquark1->SetTextSize(0.04);
    pt_c11_diquark1->SetFillColor(0);
    pt_c11_diquark1->SetFillStyle(0);
    pt_c11_diquark1->SetBorderSize(0);
    pt_c11_diquark1->SetTextColor(2);
    pt_c11_diquark1->AddText("RSG->WW (1 TeV)");
 
-   TPaveText *pt_c11_diquark2 = new TPaveText(0.40,0.27,0.60,0.32,"NDC");
+   TPaveText *pt_c11_diquark2 = new TPaveText(0.25,0.27,0.60,0.32,"NDC");
+   pt_c11_diquark2->SetTextSize(0.04);
    pt_c11_diquark2->SetFillColor(0);
    pt_c11_diquark2->SetFillStyle(0);
    pt_c11_diquark2->SetBorderSize(0);
@@ -1121,11 +1134,11 @@ void DijetMass_chiyoung_2Vtag(){
 
    TLine *line = new TLine(890.,0,2050,0);
    line->Draw("");
-   
-   c11->SaveAs("Plots_2Vtag/DefaultFitAndPull.png");
-   c11->SaveAs("Plots_2Vtag/DefaultFitAndPull.pdf");
 
-   
+   //c11->SaveAs("Plots_2Vtag/DefaultFitAndPull.png");
+   //c11->SaveAs("Plots_2Vtag/DefaultFitAndPull.pdf");
+   c11->SaveAs("Plots_2Vtag/DefaultFitAndPullNoStat.png");
+   c11->SaveAs("Plots_2Vtag/DefaultFitAndPullNoStat.pdf");
 
 }
 
