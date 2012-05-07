@@ -109,6 +109,8 @@ cat > ${plotdir}/index.html <<EOF
 <hr>
 <h3><A name="ALL_pt20to100"> ALL, pT = 20-100 GeV  </h3>
 
+<h4> SimpleID  </h4>
+
 <A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_simpleId_Loose.png"> </A>
 <A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_simpleId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_simpleId_Tight.png"> </A>
@@ -116,6 +118,12 @@ cat > ${plotdir}/index.html <<EOF
 <A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_simpleId_Loose.png"> </A>
 <A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_simpleId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_simpleId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_NumberOfVertices_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_NumberOfVertices_simpleId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_NumberOfVertices_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_NumberOfVertices_simpleId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_NumberOfVertices_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_NumberOfVertices_simpleId_Tight.png"> </A>
+
+<h4> FullID  </h4>
 
 <A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_fullId_Loose.png"> </A>
 <A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_fullId_Medium.png"> </A>
@@ -125,16 +133,29 @@ cat > ${plotdir}/index.html <<EOF
 <A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_fullId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_fullId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_philv1Id_Tight.png"> </A>
+<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_NumberOfVertices_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_NumberOfVertices_fullId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_NumberOfVertices_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_NumberOfVertices_fullId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_NumberOfVertices_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_NumberOfVertices_fullId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_philv1Id_Tight.png"> </A>
+<h4> CutBasedID  </h4>
+
+<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetPt_cutbasedId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_JetEta_cutbasedId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_NumberOfVertices_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_NumberOfVertices_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_NumberOfVertices_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_NumberOfVertices_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_NumberOfVertices_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/ALL_pt20to100/cEff_vs_NumberOfVertices_cutbasedId_Tight.png"> </A>
+
 <hr>
 
 <h3><A name="TK_pt10to20"> TK, pT = 10-20 GeV  </h3>
+
+<h4> SimpleID  </h4>
 
 <A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_simpleId_Loose.png"> </A>
 <A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_simpleId_Medium.png"> </A>
@@ -144,6 +165,12 @@ cat > ${plotdir}/index.html <<EOF
 <A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetEta_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetEta_simpleId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetEta_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetEta_simpleId_Tight.png"> </A>
 
+<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_NumberOfVertices_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_NumberOfVertices_simpleId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_NumberOfVertices_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_NumberOfVertices_simpleId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_NumberOfVertices_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_NumberOfVertices_simpleId_Tight.png"> </A>
+
+<h4> FullID  </h4>
+
 <A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_fullId_Loose.png"> </A>
 <A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_fullId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_fullId_Tight.png"> </A>
@@ -152,19 +179,30 @@ cat > ${plotdir}/index.html <<EOF
 <A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetEta_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetEta_fullId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetEta_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetEta_fullId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_philv1Id_Tight.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_NumberOfVertices_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_NumberOfVertices_fullId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_NumberOfVertices_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_NumberOfVertices_fullId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_NumberOfVertices_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_NumberOfVertices_fullId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetEta_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetEta_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetEta_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetEta_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetEta_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetEta_philv1Id_Tight.png"> </A>
+<h4> CutBasedID  </h4>
 
+<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetPt_cutbasedId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetEta_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetEta_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetEta_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetEta_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetEta_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_JetEta_cutbasedId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_NumberOfVertices_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_NumberOfVertices_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_NumberOfVertices_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_NumberOfVertices_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_NumberOfVertices_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt10to20/cEff_vs_NumberOfVertices_cutbasedId_Tight.png"> </A>
 
 <hr>
 
 
 <h3><A name="TK_pt20to30"> TK, pT = 20-30 GeV  </h3>
+
+<h4> simpleID  </h4>
 
 <A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_simpleId_Loose.png"> </A>
 <A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_simpleId_Medium.png"> </A>
@@ -174,26 +212,46 @@ cat > ${plotdir}/index.html <<EOF
 <A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_simpleId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_simpleId_Tight.png"> </A>
 
+<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_NumberOfVertices_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_NumberOfVertices_simpleId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_NumberOfVertices_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_NumberOfVertices_simpleId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_NumberOfVertices_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_NumberOfVertices_simpleId_Tight.png"> </A>
+
+
+<h4> fullID  </h4>
+
 <A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_fullId_Loose.png"> </A>
 <A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_fullId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_fullId_Tight.png"> </A>
+
 
 <A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_fullId_Loose.png"> </A>
 <A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_fullId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_fullId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_philv1Id_Tight.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_NumberOfVertices_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_NumberOfVertices_fullId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_NumberOfVertices_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_NumberOfVertices_fullId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_NumberOfVertices_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_NumberOfVertices_fullId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_philv1Id_Tight.png"> </A>
+<h4> CutBasedID  </h4>
+
+<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetPt_cutbasedId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_JetEta_cutbasedId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_NumberOfVertices_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_NumberOfVertices_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_NumberOfVertices_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_NumberOfVertices_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_NumberOfVertices_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt20to30/cEff_vs_NumberOfVertices_cutbasedId_Tight.png"> </A>
 
 <hr>
 
 
 <h3><A name="TK_pt30to50"> TK, pT = 30-50 GeV  </h3>
+
+<h4> SimpleID  </h4>
 
 <A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_simpleId_Loose.png"> </A>
 <A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_simpleId_Medium.png"> </A>
@@ -203,6 +261,12 @@ cat > ${plotdir}/index.html <<EOF
 <A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetEta_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetEta_simpleId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetEta_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetEta_simpleId_Tight.png"> </A>
 
+<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_NumberOfVertices_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_NumberOfVertices_simpleId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_NumberOfVertices_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_NumberOfVertices_simpleId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_NumberOfVertices_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_NumberOfVertices_simpleId_Tight.png"> </A>
+
+<h4> FullID  </h4>
+
 <A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_fullId_Loose.png"> </A>
 <A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_fullId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_fullId_Tight.png"> </A>
@@ -211,19 +275,32 @@ cat > ${plotdir}/index.html <<EOF
 <A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetEta_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetEta_fullId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetEta_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetEta_fullId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_philv1Id_Tight.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_NumberOfVertices_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_NumberOfVertices_fullId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_NumberOfVertices_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_NumberOfVertices_fullId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_NumberOfVertices_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_NumberOfVertices_fullId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetEta_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetEta_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetEta_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetEta_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetEta_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetEta_philv1Id_Tight.png"> </A>
+<h4> CutBasedID  </h4>
+
+<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetPt_cutbasedId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetEta_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetEta_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetEta_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetEta_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetEta_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_JetEta_cutbasedId_Tight.png"> </A>
+
+
+<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_NumberOfVertices_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_NumberOfVertices_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_NumberOfVertices_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_NumberOfVertices_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_NumberOfVertices_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/TK_pt30to50/cEff_vs_NumberOfVertices_cutbasedId_Tight.png"> </A>
 
 <hr> 
 
 
 
 <h3><A name="HEin_pt10to20"> HEin, pT = 10-20 GeV  </h3>
+
+<h4> SimpleID  </h4>
 
 <A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_simpleId_Loose.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_simpleId_Medium.png"> </A>
@@ -233,6 +310,12 @@ cat > ${plotdir}/index.html <<EOF
 <A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetEta_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetEta_simpleId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetEta_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetEta_simpleId_Tight.png"> </A>
 
+<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_NumberOfVertices_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_NumberOfVertices_simpleId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_NumberOfVertices_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_NumberOfVertices_simpleId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_NumberOfVertices_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_NumberOfVertices_simpleId_Tight.png"> </A>
+
+<h4> FullID  </h4>
+
 <A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_fullId_Loose.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_fullId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_fullId_Tight.png"> </A>
@@ -241,19 +324,31 @@ cat > ${plotdir}/index.html <<EOF
 <A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetEta_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetEta_fullId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetEta_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetEta_fullId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_philv1Id_Tight.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_NumberOfVertices_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_NumberOfVertices_fullId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_NumberOfVertices_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_NumberOfVertices_fullId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_NumberOfVertices_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_NumberOfVertices_fullId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetEta_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetEta_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetEta_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetEta_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetEta_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetEta_philv1Id_Tight.png"> </A>
+<h4> CutBasedID  </h4>
+
+<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetPt_cutbasedId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetEta_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetEta_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetEta_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetEta_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetEta_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_JetEta_cutbasedId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_NumberOfVertices_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_NumberOfVertices_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_NumberOfVertices_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_NumberOfVertices_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_NumberOfVertices_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt10to20/cEff_vs_NumberOfVertices_cutbasedId_Tight.png"> </A>
 
 
 <hr>
 
 
 <h3><A name="HEin_pt20to30"> HEin, pT = 20-30 GeV  </h3>
+
+<h4> SimpleID  </h4>
 
 <A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_simpleId_Loose.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_simpleId_Medium.png"> </A>
@@ -263,6 +358,12 @@ cat > ${plotdir}/index.html <<EOF
 <A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetEta_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetEta_simpleId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetEta_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetEta_simpleId_Tight.png"> </A>
 
+<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_NumberOfVertices_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_NumberOfVertices_simpleId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_NumberOfVertices_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_NumberOfVertices_simpleId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_NumberOfVertices_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_NumberOfVertices_simpleId_Tight.png"> </A>
+
+<h4> FullID  </h4>
+
 <A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_fullId_Loose.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_fullId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_fullId_Tight.png"> </A>
@@ -271,31 +372,74 @@ cat > ${plotdir}/index.html <<EOF
 <A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetEta_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetEta_fullId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetEta_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetEta_fullId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_philv1Id_Tight.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_NumberOfVertices_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_NumberOfVertices_fullId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_NumberOfVertices_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_NumberOfVertices_fullId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_NumberOfVertices_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_NumberOfVertices_fullId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetEta_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetEta_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetEta_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetEta_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetEta_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetEta_philv1Id_Tight.png"> </A>
+<h4> CutBasedID  </h4>
+
+<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetPt_cutbasedId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetEta_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetEta_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetEta_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetEta_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetEta_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_JetEta_cutbasedId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_NumberOfVertices_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_NumberOfVertices_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_NumberOfVertices_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_NumberOfVertices_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_NumberOfVertices_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt20to30/cEff_vs_NumberOfVertices_cutbasedId_Tight.png"> </A>
 
 <hr>
 
 
 <h3><A name="HEin_pt30to50"> HEin, pT = 30-50 GeV  </h3>
 
+<h4> SimpleID  </h4>
+
 <A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_simpleId_Loose.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_simpleId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_simpleId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetEta_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetEta_simpleId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetEta_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetEta_simpleId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetEta_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetEta_simpleId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_NumberOfVertices_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_NumberOfVertices_simpleId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_NumberOfVertices_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_NumberOfVertices_simpleId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_NumberOfVertices_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_NumberOfVertices_simpleId_Tight.png"> </A>
+
+<h4> FullID  </h4>
 
 <A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_fullId_Loose.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_fullId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_fullId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_philv1Id_Tight.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetEta_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetEta_fullId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetEta_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetEta_fullId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetEta_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetEta_fullId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_NumberOfVertices_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_NumberOfVertices_fullId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_NumberOfVertices_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_NumberOfVertices_fullId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_NumberOfVertices_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_NumberOfVertices_fullId_Tight.png"> </A>
+
+<h4> CutBasedID  </h4>
+
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetPt_cutbasedId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetEta_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetEta_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetEta_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetEta_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetEta_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_JetEta_cutbasedId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_NumberOfVertices_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_NumberOfVertices_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_NumberOfVertices_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_NumberOfVertices_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_NumberOfVertices_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEin_pt30to50/cEff_vs_NumberOfVertices_cutbasedId_Tight.png"> </A>
+
+
 <hr>
+
 
 
 <h3><A name="HEout_pt10to20"> HEout, pT = 10-20 GeV  </h3>
@@ -316,19 +460,21 @@ cat > ${plotdir}/index.html <<EOF
 <A HREF=${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetEta_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetEta_fullId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetEta_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetEta_fullId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetPt_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetPt_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetPt_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetPt_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetPt_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetPt_philv1Id_Tight.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetPt_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetPt_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetPt_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetPt_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetPt_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetPt_cutbasedId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetEta_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetEta_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetEta_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetEta_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetEta_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetEta_philv1Id_Tight.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetEta_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetEta_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetEta_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetEta_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetEta_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt10to20/cEff_vs_JetEta_cutbasedId_Tight.png"> </A>
 
 
 <hr>
 
 
 <h3><A name="HEout_pt20to30"> HEout, pT = 20-30 GeV  </h3>
+
+<h4> SimpleID  </h4>
 
 <A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_simpleId_Loose.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_simpleId_Medium.png"> </A>
@@ -338,6 +484,12 @@ cat > ${plotdir}/index.html <<EOF
 <A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetEta_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetEta_simpleId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetEta_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetEta_simpleId_Tight.png"> </A>
 
+<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_NumberOfVertices_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_NumberOfVertices_simpleId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_NumberOfVertices_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_NumberOfVertices_simpleId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_NumberOfVertices_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_NumberOfVertices_simpleId_Tight.png"> </A>
+
+<h4> FullID  </h4>
+
 <A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_fullId_Loose.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_fullId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_fullId_Tight.png"> </A>
@@ -346,30 +498,72 @@ cat > ${plotdir}/index.html <<EOF
 <A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetEta_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetEta_fullId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetEta_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetEta_fullId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_philv1Id_Tight.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_NumberOfVertices_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_NumberOfVertices_fullId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_NumberOfVertices_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_NumberOfVertices_fullId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_NumberOfVertices_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_NumberOfVertices_fullId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetEta_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetEta_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetEta_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetEta_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetEta_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetEta_philv1Id_Tight.png"> </A>
+
+<h4> CutBasedID  </h4>
+
+<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetPt_cutbasedId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetEta_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetEta_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetEta_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetEta_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetEta_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_JetEta_cutbasedId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_NumberOfVertices_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_NumberOfVertices_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_NumberOfVertices_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_NumberOfVertices_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_NumberOfVertices_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt20to30/cEff_vs_NumberOfVertices_cutbasedId_Tight.png"> </A>
 
 <hr>
 
 
 <h3><A name="HEout_pt30to50"> HEout, pT = 30-50 GeV  </h3>
 
+<h4> SimpleID  </h4>
+
 <A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_simpleId_Loose.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_simpleId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_simpleId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetEta_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetEta_simpleId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetEta_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetEta_simpleId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetEta_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetEta_simpleId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_NumberOfVertices_simpleId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_NumberOfVertices_simpleId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_NumberOfVertices_simpleId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_NumberOfVertices_simpleId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_NumberOfVertices_simpleId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_NumberOfVertices_simpleId_Tight.png"> </A>
+
+
+<h4> FullID  </h4>
 
 <A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_fullId_Loose.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_fullId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_fullId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_philv1Id_Tight.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetEta_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetEta_fullId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetEta_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetEta_fullId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetEta_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetEta_fullId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_NumberOfVertices_fullId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_NumberOfVertices_fullId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_NumberOfVertices_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_NumberOfVertices_fullId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_NumberOfVertices_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_NumberOfVertices_fullId_Tight.png"> </A>
+
+<h4> CutBasedID  </h4>
+
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetPt_cutbasedId_Tight.png"> </A>
+
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetEta_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetEta_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetEta_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetEta_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetEta_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_JetEta_cutbasedId_Tight.png"> </A>
+%
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_NumberOfVertices_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_NumberOfVertices_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_NumberOfVertices_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_NumberOfVertices_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_NumberOfVertices_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HEout_pt30to50/cEff_vs_NumberOfVertices_cutbasedId_Tight.png"> </A>
 <hr>
 
 
@@ -391,13 +585,13 @@ cat > ${plotdir}/index.html <<EOF
 <A HREF=${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetEta_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetEta_fullId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetEta_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetEta_fullId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetPt_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetPt_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetPt_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetPt_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetPt_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetPt_philv1Id_Tight.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetPt_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetPt_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetPt_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetPt_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetPt_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetPt_cutbasedId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetEta_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetEta_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetEta_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetEta_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetEta_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetEta_philv1Id_Tight.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetEta_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetEta_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetEta_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetEta_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetEta_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt10to20/cEff_vs_JetEta_cutbasedId_Tight.png"> </A>
 
 
 <hr>
@@ -421,13 +615,13 @@ cat > ${plotdir}/index.html <<EOF
 <A HREF=${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetEta_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetEta_fullId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetEta_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetEta_fullId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetPt_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetPt_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetPt_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetPt_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetPt_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetPt_philv1Id_Tight.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetPt_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetPt_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetPt_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetPt_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetPt_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetPt_cutbasedId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetEta_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetEta_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetEta_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetEta_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetEta_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetEta_philv1Id_Tight.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetEta_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetEta_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetEta_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetEta_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetEta_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt20to30/cEff_vs_JetEta_cutbasedId_Tight.png"> </A>
 
 <hr>
 
@@ -442,9 +636,9 @@ cat > ${plotdir}/index.html <<EOF
 <A HREF=${httpdir}/${outputdir}/HF_pt30to50/cEff_vs_JetPt_fullId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt30to50/cEff_vs_JetPt_fullId_Medium.png"> </A>
 <A HREF=${httpdir}/${outputdir}/HF_pt30to50/cEff_vs_JetPt_fullId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt30to50/cEff_vs_JetPt_fullId_Tight.png"> </A>
 
-<A HREF=${httpdir}/${outputdir}/HF_pt30to50/cEff_vs_JetPt_philv1Id_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt30to50/cEff_vs_JetPt_philv1Id_Loose.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HF_pt30to50/cEff_vs_JetPt_philv1Id_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt30to50/cEff_vs_JetPt_philv1Id_Medium.png"> </A>
-<A HREF=${httpdir}/${outputdir}/HF_pt30to50/cEff_vs_JetPt_philv1Id_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt30to50/cEff_vs_JetPt_philv1Id_Tight.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HF_pt30to50/cEff_vs_JetPt_cutbasedId_Loose.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt30to50/cEff_vs_JetPt_cutbasedId_Loose.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HF_pt30to50/cEff_vs_JetPt_cutbasedId_Medium.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt30to50/cEff_vs_JetPt_cutbasedId_Medium.png"> </A>
+<A HREF=${httpdir}/${outputdir}/HF_pt30to50/cEff_vs_JetPt_cutbasedId_Tight.png> <img height="300" src="${httpdir}/${outputdir}/HF_pt30to50/cEff_vs_JetPt_cutbasedId_Tight.png"> </A>
 <hr>
 
 

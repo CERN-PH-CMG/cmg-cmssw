@@ -92,7 +92,7 @@ void DrawJetIdPlots(string etaRange  = "TK",
 		       "hbetaStar",
  		       "hsimpleDiscriminant",
   		       "hfullDiscriminant",
- 		       "hphilv1Discriminant",
+ 		       "hcutbasedDiscriminant",
   };
 
   string objNamePU[nObj];
@@ -100,9 +100,9 @@ void DrawJetIdPlots(string etaRange  = "TK",
   for (int i = 0; i < nObj; i++){
     objNamePU[i]   = objName[i]+"_PU" ;
     objNameNoPU[i] = objName[i]+"_NoPU" ;
-    //    cout << objName[i]<< endl;
-    //cout << objNamePU[i]<< endl;
-    //cout << objNameNoPU[i]<< endl;
+//     cout << objName[i]<< endl;
+//     cout << objNamePU[i]<< endl;
+//     cout << objNameNoPU[i]<< endl;
   }
  
   
@@ -151,7 +151,7 @@ void DrawJetIdPlots(string etaRange  = "TK",
 			"betaStar   ",
  			"simpleDiscriminant",
  			"fullDiscriminant",
- 			"philv1Discriminant"
+ 			"cutbasedDiscriminant"
   };
 
   char *labelX[nObj]={"number of vertices",
@@ -283,6 +283,7 @@ void DrawJetIdPlots(string etaRange  = "TK",
   while(iHisto<nObj){
     for (int ifile=0;ifile<2;ifile++){ 
 
+      //cout << ifile<< "  " << iHisto << "  " << objName[iHisto] << endl;
       h[ifile][iHisto] = (TH1D*)f[ifile]->Get(objName[iHisto].c_str());
       h[ifile][iHisto]->Rebin(reBin[iHisto]);
 
