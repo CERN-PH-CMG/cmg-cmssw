@@ -243,7 +243,7 @@ int main(int argc, char* argv[])
   ws->var("lumiM0")->setVal(LUMI);
   if(USELOGNORM) ws->var("lumiK0")->setVal(LUMIERROR+1);
   else           ws->var("lumiK0")->setVal(LUMI*LUMIERROR);
-  ws->factory("prod::nsig(xs[1], lumi)");
+  ws->factory("prod::nsig(xs[0], lumi)");
 
   ws->factory("iResonance[1]");
   ws->var("iResonance")->setVal(iResonance);
@@ -281,8 +281,8 @@ int main(int argc, char* argv[])
   //  ws->factory("SUM::modela(nsig*signal, nbkg[181374,0,300000]*background)"); // background Jet-PF
   //  ws->factory("SUM::modela(nsig*signal, nbkg[87242,0,200000]*background)"); // background Jet-fat
   ws->factory("SUM::modela(nsig*signal, nbkg[1000,0,1E8]*background)");
-  ws->factory("SUM::modelb(nsig*signal, nbkg[1000,0,1E8]*backgroundb)");
-  ws->factory("SUM::modelc(nsig*signal, nbkg[1000,0,1E8]*backgroundc)");
+  ws->factory("SUM::modelb(nsig*signal, nbkg*backgroundb)");
+  ws->factory("SUM::modelc(nsig*signal, nbkg*backgroundc)");
   ws->defineSet("observables","invmass");
   ws->defineSet("POI","xs");
 
