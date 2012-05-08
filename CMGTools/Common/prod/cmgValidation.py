@@ -39,7 +39,7 @@ def printArgs(frame):
 
 def checkRootFile( file ):
     fileForEdmf = file
-    if not file.startwith('/store'):
+    if not file.startswith('/store'):
         file = ':'.join(['file',file])
     edmf = ['edmFileUtil', '-P', file]
     out = subprocess.Popen(edmf, stdout=subprocess.PIPE, stderr=subprocess.PIPE ).communicate()[0]
