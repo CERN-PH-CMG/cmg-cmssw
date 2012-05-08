@@ -1963,7 +1963,7 @@ void draw_2Vtag()
   g_xs_comparison_bw_stat_bg6_fat->Draw("samePL");;
   g_xs_comparison_bw_stat_bg7_fat->Draw("samePL");;
   //g_xs_comparison_bw_stat_bg8_fat->Draw("samePL");;
-  g_xs_comparison_bw_stat_prior_fat->Draw("samePL");;
+//  g_xs_comparison_bw_stat_prior_fat->Draw("samePL");;
   //g_xs_comparison_bw_stat_lumi_fat->Draw("samePL");
   //g_xs_comparison_bw_stat_JES_fat->Draw("samePL");
   //g_xs_comparison_bw_stat_JER_fat->Draw("samePL");
@@ -1987,7 +1987,7 @@ void draw_2Vtag()
   l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg4_fat,"bg +e2 / stat","pL");
   l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg6_fat,"bg -e1 / stat","pL");
   l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg7_fat,"bg -e2 / stat","pL");
-  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_prior_fat,"Jeffreys","pL");
+//  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_prior_fat,"Jeffreys prior","pL");
   l_xs_comparison_bw_stat_sys_fat2->Draw("sames");
 
   c_xs_comparison_bw_stat_sys_fat->Update();
@@ -1995,6 +1995,65 @@ void draw_2Vtag()
   c_xs_comparison_bw_stat_sys_fat->SaveAs(prefix+"Exclusions_WW_SysErrorsDependance2_2Vtag.root");
   c_xs_comparison_bw_stat_sys_fat->SaveAs(prefix+"Exclusions_WW_SysErrorsDependance2_2Vtag.png");
   c_xs_comparison_bw_stat_sys_fat->SaveAs(prefix+"Exclusions_WW_SysErrorsDependance2_2Vtag.pdf");
+
+
+
+  // c_xs_comparison_bw_stat_sys_fat
+
+  c_xs_comparison_bw_stat_sys_fat->cd(0);
+  TH1F *vFrame = gPad->DrawFrame(minMass,0.01,maxMass,maxXsec);
+  vFrame->SetTitle("");
+  vFrame->SetTitleSize(0.2);
+  vFrame->SetXTitle("Resonance mass (GeV)");
+  vFrame->GetXaxis()->SetTitleSize(0.06);
+  vFrame->SetYTitle("(sys.included 95% CL #sigma) / (stat.only 95% CL #sigma)");
+  vFrame->GetYaxis()->SetTitleSize(0.04);
+  vFrame->GetYaxis()->SetTitleOffset(1.60);
+  vFrame->SetMinimum(0.6);
+  vFrame->SetMaximum(1.4);
+  // vFrame->SetLogy();
+
+//  g_xs_comparison_bw_stat_bg_fat->Draw("PL");;
+//  g_xs_comparison_bw_stat_bg2_fat->Draw("samePL");;
+//  g_xs_comparison_bw_stat_bg3_fat->Draw("samePL");;
+//  g_xs_comparison_bw_stat_bg4_fat->Draw("samePL");;
+  //g_xs_comparison_bw_stat_bg5_fat->Draw("samePL");;
+//  g_xs_comparison_bw_stat_bg6_fat->Draw("samePL");;
+//  g_xs_comparison_bw_stat_bg7_fat->Draw("samePL");;
+  //g_xs_comparison_bw_stat_bg8_fat->Draw("samePL");;
+  g_xs_comparison_bw_stat_prior_fat->Draw("PL");;
+  //g_xs_comparison_bw_stat_lumi_fat->Draw("samePL");
+  //g_xs_comparison_bw_stat_JES_fat->Draw("samePL");
+  //g_xs_comparison_bw_stat_JER_fat->Draw("samePL");
+  //g_xs_comparison_bw_stat_sys_fat->Draw("samePL");
+	
+  //l_xs_comparison_bw_stat_sys_fat->SetFillColor(0);
+  //l_xs_comparison_bw_stat_sys_fat->SetFillStyle(0);
+  //l_xs_comparison_bw_stat_sys_fat->SetHeader("CMS Preliminary (5.0 fb^{-1})");
+  //l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_sys_fat, "all sys / stat","pL");
+  //l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_bg_fat,"bg #pm e1e2 / stat","pL");
+  //l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_lumi_fat,"Lumi #oplus W/Z-tag eff / stat","pL");
+  //l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_JES_fat,"JES / stat","pL");
+  //l_xs_comparison_bw_stat_sys_fat->AddEntry(g_xs_comparison_bw_stat_JER_fat,"JER / stat","pL");
+  //l_xs_comparison_bw_stat_sys_fat->Draw("sames");
+
+  l_xs_comparison_bw_stat_sys_fat2->Clear();
+  l_xs_comparison_bw_stat_sys_fat2->SetFillColor(0);
+  l_xs_comparison_bw_stat_sys_fat2->SetFillStyle(0);
+//  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg_fat,"bg #pm e1e2 / stat","pL");
+//  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg2_fat,"bg AB / stat","pL");
+//  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg3_fat,"bg +e1 / stat","pL");
+//  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg4_fat,"bg +e2 / stat","pL");
+//  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg6_fat,"bg -e1 / stat","pL");
+//  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg7_fat,"bg -e2 / stat","pL");
+  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_prior_fat,"Jeffreys prior","pL");
+  l_xs_comparison_bw_stat_sys_fat2->Draw("sames");
+
+  c_xs_comparison_bw_stat_sys_fat->Update();
+
+  c_xs_comparison_bw_stat_sys_fat->SaveAs(prefix+"Exclusions_WW_PriorDependance_2Vtag.root");
+  c_xs_comparison_bw_stat_sys_fat->SaveAs(prefix+"Exclusions_WW_PriorDependance_2Vtag.png");
+  c_xs_comparison_bw_stat_sys_fat->SaveAs(prefix+"Exclusions_WW_PriorDependance_2Vtag.pdf");
 
   // c_xs_WW_compare
   /*
