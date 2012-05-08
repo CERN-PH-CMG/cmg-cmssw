@@ -117,10 +117,10 @@ public :
    Float_t         dimuonPt;
    Float_t         simpleDiscriminant;
    Float_t         fullDiscriminant;
-   Float_t         philv1Discriminant;
+   Float_t         cutbasedDiscriminant;
    Int_t           simpleId;
    Int_t           fullId;
-   Int_t           philv1Id;
+   Int_t           cutbasedId;
 
 
    // List of branches
@@ -223,10 +223,10 @@ public :
    TBranch        *b_dimuonPt;   //!
    TBranch        *b_simpleDiscriminant;   //!
    TBranch        *b_fullDiscriminant;   //!
-   TBranch        *b_philv1Discriminant;   //!
+   TBranch        *b_cutbasedDiscriminant;   //!
    TBranch        *b_simpleId;   //!
    TBranch        *b_fullId;   //!
-   TBranch        *b_philv1Id;   //!
+   TBranch        *b_cutbasedId;   //!
 
 
    JetTree(TTree *tree=0);
@@ -399,10 +399,10 @@ void JetTree::Init(TTree *tree)
    fChain->SetBranchAddress("dimuonPt", &dimuonPt, &b_dimuonPt);
    fChain->SetBranchAddress("simpleDiscriminant", &simpleDiscriminant, &b_simpleDiscriminant);
    fChain->SetBranchAddress("fullDiscriminant", &fullDiscriminant, &b_fullDiscriminant);
-   fChain->SetBranchAddress("philv1Discriminant", &philv1Discriminant, &b_philv1Discriminant);
+   fChain->SetBranchAddress("cutbasedDiscriminant", &cutbasedDiscriminant, &b_cutbasedDiscriminant);
    fChain->SetBranchAddress("simpleId", &simpleId, &b_simpleId);
    fChain->SetBranchAddress("fullId", &fullId, &b_fullId);
-   fChain->SetBranchAddress("philv1Id", &philv1Id, &b_philv1Id);
+   fChain->SetBranchAddress("cutbasedId", &cutbasedId, &b_cutbasedId);
    Notify();
 }
 
