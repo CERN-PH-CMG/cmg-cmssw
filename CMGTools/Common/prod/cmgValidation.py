@@ -38,6 +38,9 @@ def printArgs(frame):
         print "    %s = %s" % (i, values[i])
 
 def checkRootFile( file ):
+    fileForEdmf = file
+    if not file.startwith('/store'):
+        file = ':'.join(['file',file])
     edmf = ['edmFileUtil', '-P', file]
     out = subprocess.Popen(edmf, stdout=subprocess.PIPE, stderr=subprocess.PIPE ).communicate()[0]
     # print out
@@ -48,6 +51,25 @@ def checkRootFile( file ):
     if nevents == 0:
         raise ValueError('no event in ' + file )
     return (nevents, kbytesPerEvent, branches)
+
+
+def fileAna( text ):
+    pattern = re.compile('.* (\d+) events, (\d+) bytes.*')
+    branches = []
+    bytes = -1
+    bytesPerEvent = -1
+    for line in text:
+        # print 'LINE', line
+        m = pattern.match(line)
+        if m:
+            # import pdb; pdb.set_trace()
+            nevents = int(m.group(1))
+            bytesPerEvent = int(m.group(2))
+        else:
+            words = line.split()
+            if len(words)>0 and words[0] == 'Branch':
+                branches.append( (words[5], int(words[9]) ) )
+    return (nevents, bytesPerEvent / 1024 / nevents, branches)        
 
  
 class FileInfo( object ):
@@ -204,24 +226,6 @@ def runCfg( cfg, idString, run=True, cmd='', mc=True, file=None ):
     return outDirName
 
 
-
-def fileAna( text ):
-    pattern = re.compile('.* (\d+) events, (\d+) bytes.*')
-    branches = []
-    bytes = -1
-    bytesPerEvent = -1
-    for line in text:
-        # print 'LINE', line
-        m = pattern.match(line)
-        if m:
-            # import pdb; pdb.set_trace()
-            nevents = int(m.group(1))
-            bytesPerEvent = int(m.group(2))
-        else:
-            words = line.split()
-            if len(words)>0 and words[0] == 'Branch':
-                branches.append( (words[5], int(words[9]) ) )
-    return (nevents, bytesPerEvent / 1024 / nevents, branches)        
 
 
 
