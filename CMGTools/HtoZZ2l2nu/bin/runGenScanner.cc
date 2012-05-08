@@ -160,7 +160,7 @@ int main(int argc, char* argv[])
       mon.fillHisto  ("zmass"    ,tags_full,zll.mass()   ,weight);
 
       if(zll.mass()>200){
-         printf("run=%6i Event=%9i %10s Zll=%6.2f Lep1=(Eta=%+6.2f Phi=%+6.2f pT=%6.2f)  Lep2=(Eta=%+6.2f Phi=%+6.2f pT=%6.2f)\n", ev.run, ev.event,  (type1+type2).c_str(), zll.mass(), lep1.eta(), lep1.phi(), lep1.pt(), lep2.eta(), lep2.phi(), lep2.pt() );
+         printf("run=%6i lumi=%4i event=%9i %10s Zll=%6.2f Lep1=(Eta=%+6.2f Phi=%+6.2f pT=%6.2f)  Lep2=(Eta=%+6.2f Phi=%+6.2f pT=%6.2f)\n", ev.run, ev.lumi, ev.event,  (type1+type2).c_str(), zll.mass(), lep1.eta(), lep1.phi(), lep1.pt(), lep2.eta(), lep2.phi(), lep2.pt() );
       }
 
       //##############################################   EVENT LOOP ENDS   ##############################################
