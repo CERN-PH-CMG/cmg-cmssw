@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs52X
-if not cmsswIs52X():
-    raise ValueError('Sorry, you are not working in 52X. use the correct cfg - not the first time I tell you that ;-)')
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
+# if not cmsswIs44X():
+#    raise ValueError('Sorry, you are not working in 44X. use the correct cfg')
 
 sep_line = '-'*67
 print sep_line
@@ -17,28 +17,29 @@ print 'querying database for source files'
 
 runOnMC = True
 
-# does not work in 44X
-# runJetSubstructure = True
 
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
+   # 'cmgtools_group',
+   # '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5',
    'CMS',
    '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM',
-   # '/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V5-v1/AODSIM',
+   # '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5'
    # 'CMS',
-   # '/DoubleMu/Run2012A-PromptReco-v1/AOD'
+   # '/TauPlusX/Run2011A-03Oct2011-v1/AOD'
    )
 
-if runOnMC is False:
-    print 'OVERRIDING datasetToSource TO TEST RUNNING ON DATA'
-    process.source.fileNames = ['/store/data/Run2012A/DoubleMu/AOD/PromptReco-v1/000/191/859/66D9EE0B-EC8C-E111-9346-001D09F2AD84.root']
+## if runOnMC is False:
+##     print 'OVERRIDING datasetToSource TO TEST RUNNING ON DATA'
+##     process.source.fileNames = ['/store/data/Run2012A/DoubleMu/AOD/PromptReco-v1/000/191/859/66D9EE0B-EC8C-E111-9346-001D09F2AD84.root']
+## process.source.fileNames = process.source.fileNames[:1]
 
 print sep_line
 print process.source.fileNames
 print sep_line 
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
 
 print 'loading the main CMG sequence'
 
@@ -60,9 +61,10 @@ if runOnMC is False:
     process.patJets.addGenJetMatch = False
     process.patJets.addGenPartonMatch = False
 
-    process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
-    process.patJetsCHSpruned.addGenJetMatch = False
-    process.patJetsCHSpruned.addGenPartonMatch = False
+    if cmsswIs52X():
+        process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
+        process.patJetsCHSpruned.addGenJetMatch = False
+        process.patJetsCHSpruned.addGenPartonMatch = False
 
     process.PATCMGTauSequence.remove( process.tauGenJets )
     process.PATCMGTauSequence.remove( process.tauGenJetsSelectorAllHadrons )
@@ -75,14 +77,15 @@ if runOnMC is False:
     process.patMETsRaw.addGenMET = False 
 
     # setting up JSON file
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/DCSOnly/json_DCSONLY.txt'
-    print 'using json file: ', json
-    from CMGTools.Common.Tools.applyJSON_cff import *
-    applyJSON(process, json )
+    # json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/DCSOnly/json_DCSONLY.txt'
+    # print 'using json file: ', json
+    # from CMGTools.Common.Tools.applyJSON_cff import *
+    # applyJSON(process, json )
 
     # adding L2L3Residual corrections
     process.patJetCorrFactors.levels.append('L2L3Residual')
-    process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
+    if cmsswIs52X():
+        process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
 
 
 print 'cloning the jet sequence to build PU chs jets'
@@ -108,8 +111,6 @@ process.p = cms.Path(
     process.PATCMGSequence + 
     process.PATCMGJetCHSSequence 
     )
-# if runJetSubstructure:
-#    process.p += process.PATCMGJetSequenceCHSpruned
 
 process.p += process.postPathCounter
 
@@ -119,7 +120,7 @@ process.p += process.postPathCounter
 # process.PATCMGSequence.remove(process.PATCMGRhoSequence)
 # process.PATCMGSequence.remove(process.PATCMGMuonSequence)
 # process.PATCMGSequence.remove(process.PATCMGElectronSequence)
-# process.PATCMGSequence.remove(process.PATCMGGenJetSequence)
+# process.PATCMGSequence.remove(process.PATCMGGenSequence)
 # process.PATCMGSequence.remove(process.PATCMGJetSequence)
 # process.PATCMGSequence.remove(process.PATCMGTauSequence)
 # process.PATCMGSequence.remove(process.PATCMGMetSequence)
@@ -140,7 +141,11 @@ process.out = cms.OutputModule("PoolOutputModule",
                                # unpack the list of commands 'patEventContent'
                                outputCommands = patEventContentCMG
                                )
+# needed to override the CMG format, which drops the pat taus
 process.out.outputCommands.append('keep patTaus_selectedPatTaus_*_*')
+
+#FIXME now keeping the whole event content...
+# process.out.outputCommands.append('keep *_*_*_*')
 
 process.outpath = cms.EndPath(process.out)
 
@@ -180,9 +185,10 @@ process.schedule.append( process.outpath )
 
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-from Configuration.AlCa.autoCond import autoCond
-process.GlobalTag.globaltag = cms.string( autoCond[ 'startup' ] )
 process.load("Configuration.StandardSequences.MagneticField_cff")
+
+from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
+process.GlobalTag.globaltag = cms.string(getGlobalTag(runOnMC))
 
 print 'Global tag       : ', process.GlobalTag.globaltag
 
