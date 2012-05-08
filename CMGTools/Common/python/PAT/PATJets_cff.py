@@ -46,10 +46,16 @@ patJetGenJetMatch.matched = 'ak5GenJetsNoNu'
 from PhysicsTools.PatAlgos.mcMatchLayer0.jetFlavourId_cff import *
 patJetPartonAssociation.jets = jetSource
 
+from CMGTools.Common.skims.cmgCandSel_cfi import cmgCandSel
+jetsPtGt1 = cmgCandSel.clone( src = 'patJets', cut = 'pt()>1')
+from CMGTools.Common.miscProducers.collectionSize.candidateSize_cfi import candidateSize
+nJetsPtGt1 = candidateSize.clone( src = 'jetsPtGt1' )
+
 # FIXME is it ok for jet studies?
 selectedPatJets.cut = 'pt()>10'
 
 from  CMGTools.External.pujetidsequence_cff import puJetId
+puJetId.jets = 'selectedPatJets'
 
 jetMCSequence = cms.Sequence(
     patJetPartonMatch +
@@ -64,6 +70,8 @@ PATJetSequence = cms.Sequence(
     patJetCorrFactors +
     patJetFlavourId +
     patJets +
+    jetsPtGt1 +
+    nJetsPtGt1 + 
     selectedPatJets +
     puJetId 
     )

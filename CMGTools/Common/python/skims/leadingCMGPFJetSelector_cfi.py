@@ -4,6 +4,6 @@ leadingCMGPFJetSelector = cms.EDProducer(
     "LeadingCMGPFJetSelector",
     inputCollection = cms.InputTag("cmgPFJetSel"),
     #copy all entries
-    index = cms.int32(3)
+    index = cms.int32(2)
     )
 

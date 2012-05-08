@@ -89,15 +89,30 @@ PATCMGElectronSequence = cms.Sequence(
 
 from CMGTools.Common.PAT.PATJets_cff import *
 
-cmgPFJet.cfg.inputCollection = 'selectedPatJets'
-cmgPFBaseJet.cfg.inputCollection = 'selectedPatJets'
+# cmgPFJet.cfg.inputCollection = 'selectedPatJets'
+# cmgPFBaseJet.cfg.inputCollection = 'selectedPatJets'
 
 # Pile-up jet ID
-cmgPUJetMva.jets = 'selectedPatJets'
+# cmgPUJetMva.jets = 'selectedPatJets'
+
+patJetSource = 'selectedPatJets'
+cmgPFJet.cfg.inputCollection = patJetSource
+cmgPUJetMva.jets = patJetSource
+
+# leading jets for MET regression
+from CMGTools.Common.factories.cmgBaseJet_cfi import cmgBaseJet
+cmgPFBaseJetAll = cmgBaseJet.clone()
+cmgPFBaseJetAll.cfg.inputCollection = 'patJets'
+
+from CMGTools.Common.skims.leadingCMGBaseJetSelector_cfi import leadingCMGBaseJetSelector
+cmgPFBaseJetLead = leadingCMGBaseJetSelector.clone()
+cmgPFBaseJetLead.inputCollection = 'cmgPFBaseJetAll'
 
 PATCMGJetSequence = cms.Sequence(
     PATJetSequence + 
-    jetSequence
+    jetSequence +
+    cmgPFBaseJetAll + 
+    cmgPFBaseJetLead
     )
 
 

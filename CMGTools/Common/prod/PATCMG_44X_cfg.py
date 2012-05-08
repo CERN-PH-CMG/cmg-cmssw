@@ -15,14 +15,14 @@ process = cms.Process("PAT")
 print 'querying database for source files'
 
 
-runOnMC = False
+runOnMC = True
 
 
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
    'cmgtools_group',
-   # '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5',
-   '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5'
+   '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5',
+   # '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5'
    # 'CMS',
    # '/TauPlusX/Run2011A-03Oct2011-v1/AOD'
    )
@@ -207,10 +207,3 @@ process.p.visit(v)
 print sep_line
 
 print 'starting CMSSW'
-
-# process.MessageLogger.cerr.threshold = 'ERROR'
-# process.MessageLogger.suppressError = cms.untracked.vstring(
-#     'cmgTriggerObject',
-#    'patTrigger',
-#    'cmgTriggerObjectList'
-#    )

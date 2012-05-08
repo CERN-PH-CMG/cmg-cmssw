@@ -31,6 +31,7 @@ DEFINE_FWK_MODULE(RecoilCorrectedMETProducerTauMu);
 DEFINE_FWK_MODULE(RecoilCorrectedMETProducerTauEle);
 DEFINE_FWK_MODULE(RecoilCorrectedMETProducerMuEle);
 DEFINE_FWK_MODULE(RecoilCorrectedMETProducerDiTau);
+DEFINE_FWK_MODULE(MVAMETProducerTauMu);
 DEFINE_FWK_MODULE(ElectronPOProducer);
 DEFINE_FWK_MODULE(MuonPOProducer);
 DEFINE_FWK_MODULE(TauPOProducer);
@@ -62,11 +63,11 @@ DEFINE_FWK_MODULE(TriggerResultHistogramsAnalyzer);
 DEFINE_FWK_MODULE(QuadMuonPOProducer);
 DEFINE_FWK_MODULE(DiMuonDiElectronPOProducer);
 DEFINE_FWK_MODULE(QuadElectronPOProducer);
-DEFINE_FWK_MODULE(TriMuonMETPOProducer);
+// DEFINE_FWK_MODULE(TriMuonMETPOProducer);
 DEFINE_FWK_MODULE(CmgQuadMuonSelector);
 DEFINE_FWK_MODULE(CmgDiMuonDiElectronSelector);
 DEFINE_FWK_MODULE(CmgQuadElectronSelector);
-DEFINE_FWK_MODULE(CmgTriMuonMETSelector);
+// DEFINE_FWK_MODULE(CmgTriMuonMETSelector);
 
 
 DEFINE_FWK_MODULE(GenericBaseMETHistograms);

@@ -85,10 +85,25 @@ void MetUtilities::cleanJets(std::vector<LorentzVector> &iVis,std::vector<JetInf
     bool lRemoveJet = false;
     for(int i1 = 0; i1 < int(iVis.size());  i1++) { 
       if(deltaR(iVis[i1],iJets[i0].p4) < 0.5 || iJets[i0].p4.pt() < fJetPtMin) {
-	lRemoveJet = true;
+	
       }
     }
     if(lRemoveJet) { iJets.erase (iJets.begin()+i0); i0--;}
+  }
+}
+void MetUtilities::cleanMet(std::vector<LorentzVector> &iVis,std::vector<JetInfo> &iJets,std::pair<LorentzVector,double> &iMet,bool iMVA,bool iAdd) { 
+  for(int i0   = 0; i0 < int(iJets.size()); i0++) { 
+    bool lRemoveJet = false;
+    for(int i1 = 0; i1 < int(iVis.size());  i1++) { 
+      if(deltaR(iVis[i1],iJets[i0].p4) < 0.5 || iJets[i0].p4.pt() < fJetPtMin) {
+	lRemoveJet = true;
+	std::pair<LorentzVector,double> pMVAInfo(iJets[i0].p4,iJets[i0].mva);
+	if(iMVA  && !passMVA(pMVAInfo)) lRemoveJet = false;
+	if(!iMVA &&  passMVA(pMVAInfo)) lRemoveJet = false;
+      }
+    }
+    if(lRemoveJet && iAdd)  { iMet.first += iJets[i0].p4;} //Add Jet back (ie removing it)
+    if(lRemoveJet && !iAdd) { iMet.first-= iJets[i0].p4;} //Add Jet back (when subtraced as in PUCMet)
   }
 }
 std::pair<MetUtilities::LorentzVector,double> MetUtilities::TKMet(std::vector<std::pair<LorentzVector,double> > &iCands,double iDZ,int iLowDz) { 

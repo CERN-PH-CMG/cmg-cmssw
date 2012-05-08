@@ -21,6 +21,7 @@ patObjects = cms.untracked.vstring(
     'keep recoVertexs_offlinePrimaryVertices_*_*',
     'keep recoPFMETs_pfMetForRegression__*',
     'keep double_*_rho_*',
+    'keep *_nJetsPtGt1_*_*',
     'keep recoPFMETs_nopuMet__*',
     'keep recoPFMETs_puMet__*',
     'keep recoPFMETs_pcMet__*',    

@@ -16,6 +16,7 @@
 
 #include "CMGTools/Common/interface/MetUtilities.h"
 
+//COLIN don't do that!!
 using namespace reco;
 
 namespace pat {
