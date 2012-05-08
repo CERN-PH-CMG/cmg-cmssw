@@ -1422,8 +1422,8 @@ int main(int argc, char* argv[])
                                    isMC_GG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_renDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] : iweight ,
                                    isMC_GG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factUp]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]  : iweight ,
                                    isMC_GG ? iweight*ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]/ev.hptWeights[ZZ2l2nuSummary_t::hKfactor]: iweight ,
-                                   iweight*TotalWeight_plus,
-                                   iweight*TotalWeight_minus};
+                                   (float)(iweight*TotalWeight_plus),
+                                   (float)(iweight*TotalWeight_minus)};
 
               if(ev.hptWeights[ZZ2l2nuSummary_t::hKfactor] <0.5)
                  cout << " " << phys.genhiggs[0].pt() << " " << isMC_GG 
