@@ -24,16 +24,20 @@ void DrawJetIdEfficiency(string etaRange  = "TK",
   
   gSystem->mkdir(dirName.c_str(),true);
 
-  cout << "Producing efficiency plots for: " << infile1 << " and " << infile2 << endl;
-
   
   TFile* f[2]; 
   f[0] = new TFile(infile1.c_str()); //MC
   f[1] = new TFile(infile2.c_str()); //DATA
 
+  cout << "Producing efficiency plots for: " << infile1 << " and " << infile2 << endl;
+
   TH1F *hEff_vs_JetPt[2][3][3]; 
   TH1F *hEff_vs_JetEta[2][3][3]; 
   TH1F *hEff_vs_NumberOfVertices[2][3][3]; 
+
+  TH1F *hEff_vs_JetPt_matched[3][3]; 
+  TH1F *hEff_vs_JetEta_matched[3][3]; 
+  TH1F *hEff_vs_NumberOfVertices_matched[3][3]; 
 
   TH1F *hRatio_vs_JetPt[3][3]; 
   TH1F *hRatio_vs_JetEta[3][3]; 
@@ -44,14 +48,16 @@ void DrawJetIdEfficiency(string etaRange  = "TK",
   int rebinNvtx = 1;
 
 
-  char hname[100];
+  char hname[200];
   std::string suffLevel[3] = {"Tight","Medium","Loose"};
   std::string suffId[3]    = {"simpleId","fullId","cutbasedId"};
  
   for ( int ifile = 0; ifile < 2 ; ifile++ ){
     for ( int iid = 0; iid < 3 ; iid++ ){
       for ( int ilevel = 0; ilevel < 3 ; ilevel++ ){
- 	sprintf(hname,"efficiency/hEff_vs_JetPt_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+ 
+	//eff plots
+	sprintf(hname,"efficiency/hEff_vs_JetPt_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
 	hEff_vs_JetPt[ifile][iid][ilevel] = (TH1F*)f[ifile]->Get(hname);
 	hEff_vs_JetPt[ifile][iid][ilevel] ->GetXaxis()->SetTitle("jet p^{T} (GeV)");
 	hEff_vs_JetPt[ifile][iid][ilevel] ->GetYaxis()->SetTitle("efficiency");
@@ -65,26 +71,47 @@ void DrawJetIdEfficiency(string etaRange  = "TK",
 	hEff_vs_JetEta[ifile][iid][ilevel] ->Rebin(rebinEta);
  	hEff_vs_JetEta[ifile][iid][ilevel] ->Scale(1./rebinEta);
 
-
  	sprintf(hname,"efficiency/hEff_vs_NumberOfVertices_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
 	hEff_vs_NumberOfVertices[ifile][iid][ilevel] = (TH1F*)f[ifile]->Get(hname);
 	hEff_vs_NumberOfVertices[ifile][iid][ilevel] ->GetXaxis()->SetTitle("number of vertices");
 	hEff_vs_NumberOfVertices[ifile][iid][ilevel] ->GetYaxis()->SetTitle("efficiency");
 
+	// true eff plots
+	if (ifile==0){
+	  sprintf(hname,"efficiency/hEff_vs_JetPt_matched_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+	  hEff_vs_JetPt_matched[iid][ilevel] = (TH1F*)f[ifile]->Get(hname);
+	  hEff_vs_JetPt_matched[iid][ilevel] ->Rebin(rebinPt);
+	  hEff_vs_JetPt_matched[iid][ilevel] ->Scale(1./rebinPt);
+	  
+	  sprintf(hname,"efficiency/hEff_vs_JetEta_matched_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+	  hEff_vs_JetEta_matched[iid][ilevel] = (TH1F*)f[ifile]->Get(hname);
+	  hEff_vs_JetEta_matched[iid][ilevel] ->Rebin(rebinEta);
+	  hEff_vs_JetEta_matched[iid][ilevel] ->Scale(1./rebinEta);
+	  
+	  sprintf(hname,"efficiency/hEff_vs_NumberOfVertices_matched_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+	  hEff_vs_NumberOfVertices_matched[iid][ilevel] = (TH1F*)f[ifile]->Get(hname);
+	}
+
  	if ( ifile == 0 ){
 	  hEff_vs_JetPt[ifile][iid][ilevel] ->SetLineColor(kPink+1);
  	  hEff_vs_JetEta[ifile][iid][ilevel]->SetLineColor(kPink+1);
 	  hEff_vs_NumberOfVertices[ifile][iid][ilevel]->SetLineColor(kPink+1);
+
 	  hEff_vs_JetPt[ifile][iid][ilevel] ->SetMarkerColor(kPink+1);
 	  hEff_vs_JetEta[ifile][iid][ilevel]->SetMarkerColor(kPink+1);
 	  hEff_vs_NumberOfVertices[ifile][iid][ilevel]->SetMarkerColor(kPink+1);
+
 	  hEff_vs_JetPt[ifile][iid][ilevel] ->SetFillColor(kPink+1);
  	  hEff_vs_JetEta[ifile][iid][ilevel]->SetFillColor(kPink+1);
 	  hEff_vs_NumberOfVertices[ifile][iid][ilevel]->SetFillColor(kPink+1);
+
 	  hEff_vs_JetPt[ifile][iid][ilevel] ->SetFillStyle(3001);
  	  hEff_vs_JetEta[ifile][iid][ilevel]->SetFillStyle(3001);
 	  hEff_vs_NumberOfVertices[ifile][iid][ilevel]->SetFillStyle(3001);
 
+	  hEff_vs_JetPt_matched[iid][ilevel] -> SetLineColor(kBlue);
+	  hEff_vs_JetEta_matched[iid][ilevel] -> SetLineColor(kBlue);
+	  hEff_vs_NumberOfVertices_matched[iid][ilevel] -> SetLineColor(kBlue);
  	}
  	if ( ifile == 1 ){
 	  hEff_vs_JetPt[ifile][iid][ilevel] ->SetMarkerStyle(20);
@@ -102,6 +129,7 @@ void DrawJetIdEfficiency(string etaRange  = "TK",
   TLegend *leg = new TLegend(0.5, 0.2, 0.8, 0.35);
   leg ->SetBorderSize(0);
   leg ->SetFillStyle(0);
+  leg -> AddEntry(hEff_vs_JetPt_matched[0][0],"MC truth","FL");
   leg -> AddEntry(hEff_vs_JetPt[0][0][0],"MC","FL");
   leg -> AddEntry(hEff_vs_JetPt[1][0][0],"DATA","PL");
 
@@ -142,6 +170,7 @@ void DrawJetIdEfficiency(string etaRange  = "TK",
       hEff_vs_JetPt[0][iid][ilevel] ->GetXaxis()->SetRangeUser(10.,100.);
       hEff_vs_JetPt[0][iid][ilevel] ->Draw("E4");
       hEff_vs_JetPt[1][iid][ilevel] ->Draw("esame");
+      hEff_vs_JetPt_matched[iid][ilevel] -> Draw("lsame");
       leg->Draw("same");
       
       cLowerPt-> cd();
@@ -185,6 +214,7 @@ void DrawJetIdEfficiency(string etaRange  = "TK",
       hEff_vs_JetEta[0][iid][ilevel] ->GetYaxis()->SetTitleOffset(tYoffset);
       hEff_vs_JetEta[0][iid][ilevel] ->Draw("E4");
       hEff_vs_JetEta[1][iid][ilevel] ->Draw("esame");
+      hEff_vs_JetEta_matched[iid][ilevel] -> Draw("lsame");
       leg->Draw("same");
       
       cLowerEta-> cd();
@@ -231,6 +261,7 @@ void DrawJetIdEfficiency(string etaRange  = "TK",
       hEff_vs_NumberOfVertices[0][iid][ilevel] ->GetYaxis()->SetRangeUser(0.,1.2);
       hEff_vs_NumberOfVertices[0][iid][ilevel] ->Draw("E4");
       hEff_vs_NumberOfVertices[1][iid][ilevel] ->Draw("esame");
+      hEff_vs_NumberOfVertices_matched[iid][ilevel]    -> Draw("lsame");   
       leg->Draw("same");
       
       cLowerNvtx-> cd();
