@@ -68,7 +68,7 @@ process.p = cms.Path(
 from CMGTools.Common.eventContent.patEventContentCMG_cff import everything
 process.outcmg = cms.OutputModule(
     "PoolOutputModule",
-    fileName = cms.untracked.string('cmgTuple.root'),
+    fileName = cms.untracked.string('cmgTuple_reload.root'),
     SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
     outputCommands = everything,
     dropMetaData = cms.untracked.string('PRIOR')

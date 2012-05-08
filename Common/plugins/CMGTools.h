@@ -44,6 +44,7 @@
 #include "CMGTools/Common/interface/GenericPhysicsObjectSelectorDefinition.h"
 
 #include "CMGTools/Common/interface/RecoilCorrectedMETProducer.h"
+#include "CMGTools/Common/interface/MVAMETProducer.h"
 
 // COLIN why not in plugins?
 #include "CMGTools/Common/interface/CutSummaryAnalyzer.h"
@@ -128,12 +129,14 @@ typedef RecoilCorrectedMETProducer<cmg::TauEle> RecoilCorrectedMETProducerTauEle
 typedef RecoilCorrectedMETProducer<cmg::MuEle> RecoilCorrectedMETProducerMuEle; 
 typedef RecoilCorrectedMETProducer<cmg::DiTau> RecoilCorrectedMETProducerDiTau; 
 
+typedef MVAMETProducer<cmg::TauMu> MVAMETProducerTauMu; 
+
 
 //Michalis : Four lepton Types and helpfull gen types
 typedef PhysicsObjectProducer<cmg::QuadMuonFactory> QuadMuonPOProducer;
 typedef PhysicsObjectProducer<cmg::DiMuonDiElectronFactory> DiMuonDiElectronPOProducer;
 typedef PhysicsObjectProducer<cmg::QuadElectronFactory> QuadElectronPOProducer;
-typedef PhysicsObjectProducer<cmg::TriMuonMETFactory> TriMuonMETPOProducer;
+// typedef PhysicsObjectProducer<cmg::TriMuonMETFactory> TriMuonMETPOProducer;
 
 //
 
@@ -349,7 +352,7 @@ typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::QuadMuon
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiMuonDiElectron> > CmgDiMuonDiElectronSelector;
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::QuadElectron> > CmgQuadElectronSelector;
 
-typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::TriMuonMET> > CmgTriMuonMETSelector;
+// typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::TriMuonMET> > CmgTriMuonMETSelector;
 
 
 typedef CollectionSizeProducer< std::vector<reco::Vertex> > VertexSizeProducer;

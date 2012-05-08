@@ -24,6 +24,8 @@ class MetUtilities {
   int               NJets    (std::vector<JetInfo> &iJets,double iPt);
   double            deltaR   (LorentzVector &iVec1,LorentzVector &iVec2);
   void              cleanJets(std::vector<LorentzVector> &iVis,std::vector<JetInfo> &iJets);
+  void              cleanMet (std::vector<LorentzVector> &iVis,std::vector<JetInfo> &iJets,std::pair<LorentzVector,double> &iMet,bool iMVA,bool iAdd);
+
   std::pair<LorentzVector,double> TKMet   (std::vector<std::pair<LorentzVector,double> > &iCands,double iDZ,int iLowDz);
   std::pair<LorentzVector,double> JetMet  (std::vector<JetInfo> &iJets ,bool iPassMVA);
   std::pair<LorentzVector,double> NoPUMet (std::vector<std::pair<LorentzVector,double> > &iCands,std::vector<JetInfo> &iJets,double iDZ);
