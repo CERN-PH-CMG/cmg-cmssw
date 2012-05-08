@@ -12,6 +12,7 @@ runProcess = cms.PSet(
     outdir = cms.string("@outdir"),
     isMC = cms.bool(@isMC),
     mctruthmode=cms.int32(@mctruthmode),
+    runBlinded = cms.bool(True),
     xsec = cms.double(@xsec),	
     saveSummaryTree = cms.bool(@saveSummaryTree),
     runSystematics = cms.bool(@runSystematics),	
