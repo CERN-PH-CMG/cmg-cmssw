@@ -14,7 +14,7 @@ import difflib
 from CMGTools.Production.datasetToSource import *
 from CMGTools.Production.dataset import Dataset
 
-patcmg_cfg = 'PATCMG_44X_cfg.py'
+patcmg_cfg = 'PATCMG_cfg.py'
 cmg_cfg = 'CMG_cfg.py'
 pattuple = 'patTuple.root'
 cmgtuple = 'cmgTuple.root'
@@ -26,7 +26,7 @@ dataset_owner_data = 'cmgtools'
 dataset_name_data = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5'
 patExt = '/PAT_CMG_V5_1_0'
 
-maxEvents = 10
+maxEvents = 100
 
 
 import inspect
