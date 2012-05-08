@@ -480,7 +480,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.g_iso3[ev.gn]  = pho->hcalTowerSumEtConeDR04();
 	ev.g_r9[ev.gn]    = pho->r9();
 	std::pair<double,double> cor(pho->energy(),1);
-	try{ cor = phocorr_.CorrectedEnergyWithErrorV2(*pho,*hVtx_,lazyTool,iSetup); } catch (std::exception &e){ }
+//	try{ cor = phocorr_.CorrectedEnergyWithErrorV2(*pho,*hVtx_,lazyTool,iSetup); } catch (std::exception &e){ }
+      try{ cor = phocorr_.CorrectedEnergyWithError(*pho,*hVtx_,lazyTool,iSetup); } catch (std::exception &e){ }
 	ev.g_corren[ev.gn] = cor.first;
 	ev.g_correnerr[ev.gn] = cor.second;
 	ev.g_conv[ev.gn] = false;
@@ -734,7 +735,8 @@ int DileptonPlusMETEventAnalyzer::setLeptonPidSummary(reco::CandidatePtr l,
       ev.en_detain[ev.en] = ele->deltaEtaSuperClusterTrackAtVtx();
       ev.en_sihih[ev.en]  = ele->sigmaIetaIeta();
       std::pair<double,double> cor (ele->energy(),0);
-      try{ cor = ecorr_.CorrectedEnergyWithErrorV2(*ele,*hVtx_,lazyTool,iSetup); } catch(std::exception &e){}
+//      try{ cor = ecorr_.CorrectedEnergyWithErrorV2(*ele,*hVtx_,lazyTool,iSetup); } catch(std::exception &e){}
+      try{ cor = ecorr_.CorrectedEnergyWithError(*ele,*hVtx_,lazyTool,iSetup); } catch(std::exception &e){}
       ev.en_corren[ev.en] = cor.first;
       ev.en_correnerr[ev.en] = cor.second;
 
