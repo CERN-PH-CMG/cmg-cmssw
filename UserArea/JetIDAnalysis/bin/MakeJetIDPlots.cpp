@@ -438,6 +438,8 @@ int main(int argc, char** argv)
 
   float w = 1;  
 
+  float dphiCut = 2.5;
+
   for (int ientry = 0; ientry  < chain->GetEntries(); ientry++ ){
     
     t.GetEntry(ientry);
@@ -467,7 +469,7 @@ int main(int argc, char** argv)
 	hPtRatio_vs_Dphi -> Fill(t.dphiZJet,ptratio,w);
       
       // -- fill ptRatio 
-      if (ptratio > 0. && fabs(t.dphiZJet)>2.0){
+      if (ptratio > 0. && fabs(t.dphiZJet)>dphiCut){
 	
 	// -- fill plost for jets matching to gen jets
 	if ( dataFlag_==0 && ptratio > 0. && t.isMatched && t.jetGenPt > 10.){
@@ -489,7 +491,7 @@ int main(int argc, char** argv)
       }
 
       // -- fill jet pT , eta, nvtx plots
-      if ( ptratio > 0.5 && ptratio < 1.5 && fabs(t.dphiZJet) > 2.0 ) {
+      if ( ptratio > 0.5 && ptratio < 1.5 && fabs(t.dphiZJet) > dphiCut ) {
 	
 	// -- fill plots for selected jets matching to gen jets
 	if ( dataFlag_==0 && ptratio > 0. && t.isMatched && t.jetGenPt > 10.){
