@@ -373,97 +373,68 @@ int main(int argc, char** argv)
   //--- for efficiency studies
   TH2F *hPtRatio_vs_Dphi = new TH2F("hPtRatio_vs_Dphi","hPtRatio_vs_Dphi",100,-3.2,3.2,100,0,10);
 
-  //--- pt ratio for "true" jets (= matched jets)
-  TH1F *hPtRatio_matched  = new TH1F("hPtRatio_matched","Pt Ratio (MC matched jets)",100,0,10); 
-  
-  TH1F *hPtRatio_matched_simpleId[3];
-  hPtRatio_matched_simpleId[0] = new TH1F("hPtRatio_matched_simpleId_Tight","hPtRatio_matched_simpleId_Tight",100,0,10);
-  hPtRatio_matched_simpleId[1] = new TH1F("hPtRatio_matched_simpleId_Medium","hPtRatio_matched_simpleId_Medium",100,0,10);
-  hPtRatio_matched_simpleId[2] = new TH1F("hPtRatio_matched_simpleId_Loose","hPtRatio_matched_simpleId_Loose",100,0,10);
-
-  TH1F *hPtRatio_matched_fullId[3];
-  hPtRatio_matched_fullId[0] = new TH1F("hPtRatio_matched_fullId_Tight","hPtRatio_matched_fullId_Tight",100,0,10);
-  hPtRatio_matched_fullId[1] = new TH1F("hPtRatio_matched_fullId_Medium","hPtRatio_matched_fullId_Medium",100,0,10);
-  hPtRatio_matched_fullId[2] = new TH1F("hPtRatio_matched_fullId_Loose","hPtRatio_matched_fullId_Loose",100,0,10);
-
-  TH1F *hPtRatio_matched_cutbasedId[3];
-  hPtRatio_matched_cutbasedId[0] = new TH1F("hPtRatio_matched_cutbasedId_Tight","hPtRatio_matched_cutbasedId_Tight",100,0,10);
-  hPtRatio_matched_cutbasedId[1] = new TH1F("hPtRatio_matched_cutbasedId_Medium","hPtRatio_matched_cutbasedId_Medium",100,0,10);
-  hPtRatio_matched_cutbasedId[2] = new TH1F("hPtRatio_matched_cutbasedId_Loose","hPtRatio_matched_cutbasedId_Loose",100,0,10);
+  char hname[100];
+  std::string suffLevel[3] = {"Tight","Medium","Loose"};
+  std::string suffId[3]    = {"simpleId","fullId","cutbasedId"};
 
 
-  // -- pt ratio
-  TH1F *hPtRatio  = new TH1F("hPtRatio","Pt Ratio",100,0,10); 
-  
-  TH1F *hPtRatio_simpleId[3];
-  hPtRatio_simpleId[0] = new TH1F("hPtRatio_simpleId_Tight","hPtRatio_simpleId_Tight",100,0,10);
-  hPtRatio_simpleId[1] = new TH1F("hPtRatio_simpleId_Medium","hPtRatio_simpleId_Medium",100,0,10);
-  hPtRatio_simpleId[2] = new TH1F("hPtRatio_simpleId_Loose","hPtRatio_simpleId_Loose",100,0,10);
+  //--- pt ratio 
+  TH1F *hPtRatio_matched_noId  = new TH1F("hPtRatio_matched_noId","Pt Ratio (MC matched jets)",100,0,10); 
+  TH1F *hPtRatio_noId          = new TH1F("hPtRatio_noId","Pt Ratio",100,0,10); 
+  TH1F* hPtRatio_matched[3][3];
+  TH1F* hPtRatio[3][3];
+   
+  for ( int iid = 0; iid < 3 ; iid++ ){
+    for ( int ilevel = 0; ilevel < 3 ; ilevel++ ){
+      sprintf(hname,"hPtRatio_matched_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+      hPtRatio_matched[iid][ilevel] = new TH1F(hname,hname,100,0,10); 
+      sprintf(hname,"hPtRatio_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+      hPtRatio[iid][ilevel] = new TH1F(hname,hname,100,0,10); 
+    }
+  }
 
-  TH1F *hPtRatio_fullId[3];
-  hPtRatio_fullId[0] = new TH1F("hPtRatio_fullId_Tight","hPtRatio_fullId_Tight",100,0,10);
-  hPtRatio_fullId[1] = new TH1F("hPtRatio_fullId_Medium","hPtRatio_fullId_Medium",100,0,10);
-  hPtRatio_fullId[2] = new TH1F("hPtRatio_fullId_Loose","hPtRatio_fullId_Loose",100,0,10);
+  //-- jet pt for "true" jets (= matched jets)
+  TH1F *hJetPt_matched_noId = new TH1F("hJetPt_matched_noId","hJetPt_matched",100,0,100);
+  TH1F *hJetPt_noId         = new TH1F("hJetPt_noId","hJetPt",100,0,100);
+  TH1F *hJetPt_matched[3][3];
+  TH1F *hJetPt[3][3];
+  for ( int iid = 0; iid < 3 ; iid++ ){
+    for ( int ilevel = 0; ilevel < 3 ; ilevel++ ){
+      sprintf(hname,"hJetPt_matched_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+      hJetPt_matched[iid][ilevel] = new TH1F(hname,hname,100,0,100);
+      sprintf(hname,"hJetPt_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+      hJetPt[iid][ilevel] = new TH1F(hname,hname,100,0,100);
+    }
+  }
 
-  TH1F *hPtRatio_cutbasedId[3];
-  hPtRatio_cutbasedId[0] = new TH1F("hPtRatio_cutbasedId_Tight","hPtRatio_cutbasedId_Tight",100,0,10);
-  hPtRatio_cutbasedId[1] = new TH1F("hPtRatio_cutbasedId_Medium","hPtRatio_cutbasedId_Medium",100,0,10);
-  hPtRatio_cutbasedId[2] = new TH1F("hPtRatio_cutbasedId_Loose","hPtRatio_cutbasedId_Loose",100,0,10);
-
-  //-- jet pt
-  TH1F *hJetPt = new TH1F("hJetPt","hJetPt",100,0,100);
-
-  TH1F *hJetPt_simpleId[3];
-  hJetPt_simpleId[0] = new TH1F("hJetPt_simpleId_Tight","hJetPt_simpleId_Tight",100,0,100);
-  hJetPt_simpleId[1] = new TH1F("hJetPt_simpleId_Medium","hJetPt_simpleId_Medium",100,0,100);
-  hJetPt_simpleId[2] = new TH1F("hJetPt_simpleId_Loose","hJetPt_simpleId_Loose",100,0,100);
-
-  TH1F *hJetPt_fullId[3];
-  hJetPt_fullId[0] = new TH1F("hJetPt_fullId_Tight","hJetPt_fullId_Tight",100,0,100);
-  hJetPt_fullId[1] = new TH1F("hJetPt_fullId_Medium","hJetPt_fullId_Medium",100,0,100);
-  hJetPt_fullId[2] = new TH1F("hJetPt_fullId_Loose","hJetPt_fullId_Loose",100,0,100);
-
-  TH1F *hJetPt_cutbasedId[3];
-  hJetPt_cutbasedId[0] = new TH1F("hJetPt_cutbasedId_Tight","hJetPt_cutbasedId_Tight",100,0,100);
-  hJetPt_cutbasedId[1] = new TH1F("hJetPt_cutbasedId_Medium","hJetPt_cutbasedId_Medium",100,0,100);
-  hJetPt_cutbasedId[2] = new TH1F("hJetPt_cutbasedId_Loose","hJetPt_cutbasedId_Loose",100,0,100);
-
-
-  //-- jet eta
-  TH1F *hJetEta = new TH1F("hJetEta","hJetEta",100,-5,5);
-
-  TH1F *hJetEta_simpleId[3];
-  hJetEta_simpleId[0] = new TH1F("hJetEta_simpleId_Tight","hJetEta_simpleId_Tight",100,-5,5);
-  hJetEta_simpleId[1] = new TH1F("hJetEta_simpleId_Medium","hJetEta_simpleId_Medium",100,-5,5);
-  hJetEta_simpleId[2] = new TH1F("hJetEta_simpleId_Loose","hJetEta_simpleId_Loose",100,-5,5);
-
-  TH1F *hJetEta_fullId[3];
-  hJetEta_fullId[0] = new TH1F("hJetEta_fullId_Tight","hJetEta_fullId_Tight",100,-5,5);
-  hJetEta_fullId[1] = new TH1F("hJetEta_fullId_Medium","hJetEta_fullId_Medium",100,-5,5);
-  hJetEta_fullId[2] = new TH1F("hJetEta_fullId_Loose","hJetEta_fullId_Loose",100,-5,5);
-
-  TH1F *hJetEta_cutbasedId[3];
-  hJetEta_cutbasedId[0] = new TH1F("hJetEta_cutbasedId_Tight","hJetEta_cutbasedId_Tight",100,-5,5);
-  hJetEta_cutbasedId[1] = new TH1F("hJetEta_cutbasedId_Medium","hJetEta_cutbasedId_Medium",100,-5,5);
-  hJetEta_cutbasedId[2] = new TH1F("hJetEta_cutbasedId_Loose","hJetEta_cutbasedId_Loose",100,-5,5);
+  //-- jet eta for "true" jets (= matched jets)
+  TH1F *hJetEta_matched_noId = new TH1F("hJetEta_matched_noId","hJetEta_matched",100,-5,5);
+  TH1F *hJetEta_noId         = new TH1F("hJetEta_noId","hJetEta",100,-5,5);
+  TH1F *hJetEta_matched[3][3];
+  TH1F *hJetEta[3][3];
+  for ( int iid = 0; iid < 3 ; iid++ ){
+    for ( int ilevel = 0; ilevel < 3 ; ilevel++ ){
+      sprintf(hname,"hJetEta_matched_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+      hJetEta_matched[iid][ilevel] = new TH1F(hname,hname,100,-5,5);
+      sprintf(hname,"hJetEta_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+      hJetEta[iid][ilevel] = new TH1F(hname,hname,100,-5,5);
+    }
+  }
 
   //-- nvtx
-  TH1F *hNumberOfVertices = new TH1F("hNumberOfVertices","Number of vertices", 100, 0, 100.);
+  TH1F *hNumberOfVertices_matched_noId = new TH1F("hNumberOfVertices_matched_noId","hNumberOfVertices_matched",100,0,100);
+  TH1F *hNumberOfVertices_noId         = new TH1F("hNumberOfVertices_noId","hNumberOfVertices",100,0,100);
+  TH1F *hNumberOfVertices_matched[3][3];
+  TH1F *hNumberOfVertices[3][3];
+  for ( int iid = 0; iid < 3 ; iid++ ){
+    for ( int ilevel = 0; ilevel < 3 ; ilevel++ ){
+      sprintf(hname,"hNumberOfVertices_matched_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+      hNumberOfVertices_matched[iid][ilevel] = new TH1F(hname,hname,100,0,100);
+      sprintf(hname,"hNumberOfVertices_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+      hNumberOfVertices[iid][ilevel] = new TH1F(hname,hname,100,0,100);
+    }
+  }
 
-  TH1F *hNumberOfVertices_simpleId[3];
-  hNumberOfVertices_simpleId[0] = new TH1F("hNumberOfVertices_simpleId_Tight","hNumberOfVertices_simpleId_Tight",100,0,100);
-  hNumberOfVertices_simpleId[1] = new TH1F("hNumberOfVertices_simpleId_Medium","hNumberOfVertices_simpleId_Medium",100,0,100);
-  hNumberOfVertices_simpleId[2] = new TH1F("hNumberOfVertices_simpleId_Loose","hNumberOfVertices_simpleId_Loose",100,0,100);
-
-  TH1F *hNumberOfVertices_fullId[3];
-  hNumberOfVertices_fullId[0] = new TH1F("hNumberOfVertices_fullId_Tight","hNumberOfVertices_fullId_Tight",100,0,100);
-  hNumberOfVertices_fullId[1] = new TH1F("hNumberOfVertices_fullId_Medium","hNumberOfVertices_fullId_Medium",100,0,100);
-  hNumberOfVertices_fullId[2] = new TH1F("hNumberOfVertices_fullId_Loose","hNumberOfVertices_fullId_Loose",100,0,100);
-
-  TH1F *hNumberOfVertices_cutbasedId[3];
-  hNumberOfVertices_cutbasedId[0] = new TH1F("hNumberOfVertices_cutbasedId_Tight","hNumberOfVertices_cutbasedId_Tight",100,0,100);
-  hNumberOfVertices_cutbasedId[1] = new TH1F("hNumberOfVertices_cutbasedId_Medium","hNumberOfVertices_cutbasedId_Medium",100,0,100);
-  hNumberOfVertices_cutbasedId[2] = new TH1F("hNumberOfVertices_cutbasedId_Loose","hNumberOfVertices_cutbasedId_Loose",100,0,100);
 
   float w = 1;  
 
@@ -497,45 +468,74 @@ int main(int argc, char** argv)
       
       // -- fill ptRatio 
       if (ptratio > 0. && fabs(t.dphiZJet)>2.0){
-	hPtRatio -> Fill(ptratio,w);  
+	
+	// -- fill plost for jets matching to gen jets
+	if ( dataFlag_==0 && ptratio > 0. && t.isMatched && t.jetGenPt > 10.){
+	  hPtRatio_matched_noId -> Fill(ptratio,w);  
+	  for (int ilevel = 0; ilevel < 3; ilevel++){
+	    if ( pass_level(t.simpleId,ilevel)  )    hPtRatio_matched[0][ilevel] -> Fill(ptratio,w);   
+	    if ( pass_level(t.fullId,ilevel)    )    hPtRatio_matched[1][ilevel] -> Fill(ptratio,w);   
+	    if ( pass_level(t.cutbasedId,ilevel))    hPtRatio_matched[2][ilevel] -> Fill(ptratio,w);   
+	  }
+	}
+	
+	// -- fill plost for selected jets
+	hPtRatio_noId -> Fill(ptratio,w);  
 	for (int ilevel = 0; ilevel < 3; ilevel++){
-	  if ( pass_level(t.simpleId,ilevel) )  hPtRatio_simpleId[ilevel]-> Fill(ptratio,w);   
-	  if ( pass_level(t.fullId,ilevel)   )  hPtRatio_fullId[ilevel]  -> Fill(ptratio,w);   
-	  if ( pass_level(t.cutbasedId,ilevel) )  hPtRatio_cutbasedId[ilevel]-> Fill(ptratio,w);   
+	  if ( pass_level(t.simpleId,ilevel)  )  hPtRatio[0][ilevel]-> Fill(ptratio,w);   
+	  if ( pass_level(t.fullId,ilevel)    )  hPtRatio[1][ilevel]-> Fill(ptratio,w);   
+	  if ( pass_level(t.cutbasedId,ilevel))  hPtRatio[2][ilevel]-> Fill(ptratio,w);   
 	}
       }
 
-      // -- fil ptRatio for matched jets
-      if ( dataFlag_==0 && ptratio > 0. && t.isMatched && t.jetGenPt > 10.){
-	hPtRatio_matched -> Fill(ptratio,w);  
-	for (int ilevel = 0; ilevel < 3; ilevel++){
-	  if ( pass_level(t.simpleId,ilevel) )  hPtRatio_matched_simpleId[ilevel]-> Fill(ptratio,w);   
-	  if ( pass_level(t.fullId,ilevel)   )  hPtRatio_matched_fullId[ilevel]  -> Fill(ptratio,w);   
-	  if ( pass_level(t.cutbasedId,ilevel) )  hPtRatio_matched_cutbasedId[ilevel]-> Fill(ptratio,w);   
-	}
-      }
-
-      // -- fill jet pT , eta
+      // -- fill jet pT , eta, nvtx plots
       if ( ptratio > 0.5 && ptratio < 1.5 && fabs(t.dphiZJet) > 2.0 ) {
-	hJetPt   -> Fill(t.jetPt,w);  
-	hJetEta  -> Fill(t.jetEta,w);
-	hNumberOfVertices->Fill(t.nvtx,w);
+	
+	// -- fill plots for selected jets matching to gen jets
+	if ( dataFlag_==0 && ptratio > 0. && t.isMatched && t.jetGenPt > 10.){
+	  hJetPt_matched_noId   -> Fill(t.jetPt,w);  
+	  hJetEta_matched_noId  -> Fill(t.jetEta,w);
+	  hNumberOfVertices_matched_noId->Fill(t.nvtx,w);
+	
+	  for (int ilevel = 0; ilevel < 3; ilevel++){
+	    if ( pass_level(t.simpleId,ilevel)  )  {
+	      hJetPt_matched[0][ilevel]   -> Fill(t.jetPt,w);  
+	      hJetEta_matched[0][ilevel]  -> Fill(t.jetEta,w);
+	      hNumberOfVertices_matched[0][ilevel]-> Fill(t.nvtx,w);
+	    }
+	    if ( pass_level(t.fullId,ilevel)    )  {
+	      hJetPt_matched[1][ilevel]   -> Fill(t.jetPt,w);  
+	      hJetEta_matched[1][ilevel]  -> Fill(t.jetEta,w);
+	      hNumberOfVertices_matched[1][ilevel]-> Fill(t.nvtx,w);
+	    }
+	    if ( pass_level(t.cutbasedId,ilevel))  {
+	      hJetPt_matched[2][ilevel]   -> Fill(t.jetPt,w);  
+	      hJetEta_matched[2][ilevel]  -> Fill(t.jetEta,w);
+	      hNumberOfVertices_matched[2][ilevel]-> Fill(t.nvtx,w);
+	    }
+	  }	
+	}
+	
+	//-- fill plots for all selected jets
+	hJetPt_noId   -> Fill(t.jetPt,w);  
+	hJetEta_noId  -> Fill(t.jetEta,w);
+	hNumberOfVertices_noId->Fill(t.nvtx,w);
+
 	for (int ilevel = 0; ilevel < 3; ilevel++){
 	  if ( pass_level(t.simpleId,ilevel) )  {
-	    hJetPt_simpleId[ilevel]-> Fill(t.jetPt,w);  
-	    hJetEta_simpleId[ilevel]-> Fill(t.jetEta,w); 
-	    hNumberOfVertices_simpleId[ilevel]->Fill(t.nvtx,w);
+	    hJetPt[0][ilevel]-> Fill(t.jetPt,w);  
+	    hJetEta[0][ilevel]-> Fill(t.jetEta,w); 
+	    hNumberOfVertices[0][ilevel]->Fill(t.nvtx,w);
 	  } 
 	  if ( pass_level(t.fullId,ilevel)   )  {
-	    hJetPt_fullId[ilevel]-> Fill(t.jetPt,w);  
-	    hJetEta_fullId[ilevel]-> Fill(t.jetEta,w);  
-	    hNumberOfVertices_fullId[ilevel]->Fill(t.nvtx,w);
+	    hJetPt[1][ilevel]-> Fill(t.jetPt,w);  
+	    hJetEta[1][ilevel]-> Fill(t.jetEta,w);  
+	    hNumberOfVertices[1][ilevel]->Fill(t.nvtx,w);
 	  }
-	  
 	  if ( pass_level(t.cutbasedId,ilevel) ) {
-	    hJetPt_cutbasedId[ilevel]-> Fill(t.jetPt,w);  
-	    hJetEta_cutbasedId[ilevel]-> Fill(t.jetEta,w);  
-	    hNumberOfVertices_cutbasedId[ilevel]->Fill(t.nvtx,w);
+	    hJetPt[2][ilevel]-> Fill(t.jetPt,w);  
+	    hJetEta[2][ilevel]-> Fill(t.jetEta,w);  
+	    hNumberOfVertices[2][ilevel]->Fill(t.nvtx,w);
 	  }
 	}
       }
@@ -701,118 +701,73 @@ int main(int argc, char** argv)
 
 
   //--- compute efficiencies
-  TH1F *hEff_vs_PtRatio_matched_simpleId[3]; 
-  TH1F *hEff_vs_PtRatio_matched_fullId[3]; 
-  TH1F *hEff_vs_PtRatio_matched_cutbasedId[3]; 
-
-  TH1F *hEff_vs_PtRatio_simpleId[3]; 
-  TH1F *hEff_vs_PtRatio_fullId[3]; 
-  TH1F *hEff_vs_PtRatio_cutbasedId[3]; 
-
-  TH1F *hEff_vs_JetPt_simpleId[3]; 
-  TH1F *hEff_vs_JetPt_fullId[3]; 
-  TH1F *hEff_vs_JetPt_cutbasedId[3]; 
-
-  TH1F *hEff_vs_JetEta_simpleId[3]; 
-  TH1F *hEff_vs_JetEta_fullId[3]; 
-  TH1F *hEff_vs_JetEta_cutbasedId[3]; 
-
-  TH1F *hEff_vs_NumberOfVertices_simpleId[3]; 
-  TH1F *hEff_vs_NumberOfVertices_fullId[3]; 
-  TH1F *hEff_vs_NumberOfVertices_cutbasedId[3]; 
-
-  char hname[100];
-  std::string suff[3] = {"Tight","Medium","Loose"};
+  TH1F *hEff_vs_PtRatio_matched[3][3]; 
+  TH1F *hEff_vs_PtRatio[3][3]; 
   
-  hPtRatio->Sumw2();
-  hPtRatio_matched->Sumw2();
-  hJetPt->Sumw2();
-  hJetEta->Sumw2();
+  TH1F *hEff_vs_JetPt_matched[3][3]; 
+  TH1F *hEff_vs_JetPt[3][3]; 
 
-  for (int ilevel = 0; ilevel < 3; ilevel++){
+  TH1F *hEff_vs_JetEta_matched[3][3]; 
+  TH1F *hEff_vs_JetEta[3][3]; 
+
+  TH1F *hEff_vs_NumberOfVertices_matched[3][3]; 
+  TH1F *hEff_vs_NumberOfVertices[3][3]; 
+
   
-    // - pt ratio matched jets
-    if (dataFlag_==0){
-      hPtRatio_matched_simpleId[ilevel]->Sumw2();
-      sprintf(hname,"hEff_vs_PtRatio_matched_simpleId_%s",suff[ilevel].c_str());
-      hEff_vs_PtRatio_matched_simpleId[ilevel]=(TH1F*)hPtRatio_matched_simpleId[ilevel]->Clone(hname);
-      hEff_vs_PtRatio_matched_simpleId[ilevel]->Divide(hEff_vs_PtRatio_matched_simpleId[ilevel],hPtRatio_matched,1,1,"B");
+  hPtRatio_noId->Sumw2();
+  hPtRatio_matched_noId->Sumw2();
+  hJetPt_noId->Sumw2();
+  hJetPt_matched_noId->Sumw2();
+  hJetEta_noId->Sumw2();
+  hJetEta_matched_noId->Sumw2();
+
+  for ( int iid = 0; iid < 3 ; iid++ ){
+    for (int ilevel = 0; ilevel < 3; ilevel++){
+  
+      // -  matched jets --> "true" efficiency
+      if (dataFlag_==0){
+	hPtRatio_matched[iid][ilevel]->Sumw2();
+	sprintf(hname,"hEff_vs_PtRatio_matched_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+	hEff_vs_PtRatio_matched[iid][ilevel]=(TH1F*)hPtRatio_matched[iid][ilevel]->Clone(hname);
+	hEff_vs_PtRatio_matched[iid][ilevel]->Divide(hEff_vs_PtRatio_matched[iid][ilevel],hPtRatio_matched_noId,1,1,"B");
+	
+	hJetPt_matched[iid][ilevel]->Sumw2();
+	sprintf(hname,"hEff_vs_JetPt_matched_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+	hEff_vs_JetPt_matched[iid][ilevel]=(TH1F*)hJetPt_matched[iid][ilevel]->Clone(hname);
+	hEff_vs_JetPt_matched[iid][ilevel]->Divide(hEff_vs_JetPt_matched[iid][ilevel],hJetPt_matched_noId,1,1,"B");
+
+	hJetEta_matched[iid][ilevel]->Sumw2();
+	sprintf(hname,"hEff_vs_JetEta_matched_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+	hEff_vs_JetEta_matched[iid][ilevel]=(TH1F*)hJetEta_matched[iid][ilevel]->Clone(hname);
+	hEff_vs_JetEta_matched[iid][ilevel]->Divide(hEff_vs_JetEta_matched[iid][ilevel],hJetEta_matched_noId,1,1,"B");
+
+	hNumberOfVertices_matched[iid][ilevel]->Sumw2();
+	sprintf(hname,"hEff_vs_NumberOfVertices_matched_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+	hEff_vs_NumberOfVertices_matched[iid][ilevel]=(TH1F*)hNumberOfVertices_matched[iid][ilevel]->Clone(hname);
+	hEff_vs_NumberOfVertices_matched[iid][ilevel]->Divide(hEff_vs_NumberOfVertices_matched[iid][ilevel],hNumberOfVertices_matched_noId,1,1,"B");
+      }
+
+      hPtRatio[iid][ilevel]->Sumw2();
+      sprintf(hname,"hEff_vs_PtRatio_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+      hEff_vs_PtRatio[iid][ilevel]=(TH1F*)hPtRatio[iid][ilevel]->Clone(hname);
+      hEff_vs_PtRatio[iid][ilevel]->Divide(hEff_vs_PtRatio[iid][ilevel],hPtRatio_noId,1,1,"B");
       
-      hPtRatio_matched_fullId[ilevel]->Sumw2();
-      sprintf(hname,"hEff_vs_PtRatio_matched_fullId_%s",suff[ilevel].c_str());
-      hEff_vs_PtRatio_matched_fullId[ilevel]=(TH1F*)hPtRatio_matched_fullId[ilevel]->Clone(hname);
-      hEff_vs_PtRatio_matched_fullId[ilevel]->Divide(hEff_vs_PtRatio_matched_fullId[ilevel],hPtRatio_matched,1,1,"B");
+      hJetPt[iid][ilevel]->Sumw2();
+      sprintf(hname,"hEff_vs_JetPt_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+      hEff_vs_JetPt[iid][ilevel]=(TH1F*)hJetPt[iid][ilevel]->Clone(hname);
+      hEff_vs_JetPt[iid][ilevel]->Divide(hEff_vs_JetPt[iid][ilevel],hJetPt_noId,1,1,"B");
       
-      hPtRatio_matched_cutbasedId[ilevel]->Sumw2();
-      sprintf(hname,"hEff_vs_PtRatio_matched_cutbasedId_%s",suff[ilevel].c_str());
-      hEff_vs_PtRatio_matched_cutbasedId[ilevel]=(TH1F*)hPtRatio_matched_cutbasedId[ilevel]->Clone(hname);
-      hEff_vs_PtRatio_matched_cutbasedId[ilevel]->Divide( hEff_vs_PtRatio_matched_cutbasedId[ilevel],hPtRatio_matched, 1,1,"B");
+      hJetEta[iid][ilevel]->Sumw2();
+      sprintf(hname,"hEff_vs_JetEta_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+      hEff_vs_JetEta[iid][ilevel]=(TH1F*)hJetEta[iid][ilevel]->Clone(hname);
+      hEff_vs_JetEta[iid][ilevel]->Divide(hEff_vs_JetEta[iid][ilevel],hJetEta_noId,1,1,"B");
+      
+      hNumberOfVertices[iid][ilevel]->Sumw2();
+      sprintf(hname,"hEff_vs_NumberOfVertices_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+      hEff_vs_NumberOfVertices[iid][ilevel]=(TH1F*)hNumberOfVertices[iid][ilevel]->Clone(hname);
+      hEff_vs_NumberOfVertices[iid][ilevel]->Divide(hEff_vs_NumberOfVertices[iid][ilevel],hNumberOfVertices_noId,1,1,"B");
+      
     }
-
-    // -- ptRatio
-    hPtRatio_simpleId[ilevel]->Sumw2();
-    sprintf(hname,"hEff_vs_PtRatio_simpleId_%s",suff[ilevel].c_str());
-    hEff_vs_PtRatio_simpleId[ilevel]=(TH1F*)hPtRatio_simpleId[ilevel]->Clone(hname);
-    hEff_vs_PtRatio_simpleId[ilevel]->Divide(hEff_vs_PtRatio_simpleId[ilevel],hPtRatio, 1,1,"B");
-    
-    hPtRatio_fullId[ilevel]->Sumw2();
-    sprintf(hname,"hEff_vs_PtRatio_fullId_%s",suff[ilevel].c_str());
-    hEff_vs_PtRatio_fullId[ilevel]=(TH1F*)hPtRatio_fullId[ilevel]->Clone(hname);
-    hEff_vs_PtRatio_fullId[ilevel]->Divide(hEff_vs_PtRatio_fullId[ilevel],hPtRatio, 1,1,"B");
-    
-    hPtRatio_cutbasedId[ilevel]->Sumw2();
-    sprintf(hname,"hEff_vs_PtRatio_cutbasedId_%s",suff[ilevel].c_str());
-    hEff_vs_PtRatio_cutbasedId[ilevel]=(TH1F*)hPtRatio_cutbasedId[ilevel]->Clone(hname);
-    hEff_vs_PtRatio_cutbasedId[ilevel]->Divide(hEff_vs_PtRatio_cutbasedId[ilevel],hPtRatio, 1,1,"B");
-
-    // -- jet pt
-    hJetPt_simpleId[ilevel]->Sumw2();
-    sprintf(hname,"hEff_vs_JetPt_simpleId_%s",suff[ilevel].c_str());
-    hEff_vs_JetPt_simpleId[ilevel]=(TH1F*)hJetPt_simpleId[ilevel]->Clone(hname);
-    hEff_vs_JetPt_simpleId[ilevel]->Divide(hEff_vs_JetPt_simpleId[ilevel],hJetPt, 1,1,"B");
-    
-    hJetPt_fullId[ilevel]->Sumw2();
-    sprintf(hname,"hEff_vs_JetPt_fullId_%s",suff[ilevel].c_str());
-    hEff_vs_JetPt_fullId[ilevel]=(TH1F*)hJetPt_fullId[ilevel]->Clone(hname);
-    hEff_vs_JetPt_fullId[ilevel]->Divide(hEff_vs_JetPt_fullId[ilevel],hJetPt, 1,1,"B");
-    
-    hJetPt_cutbasedId[ilevel]->Sumw2();
-    sprintf(hname,"hEff_vs_JetPt_cutbasedId_%s",suff[ilevel].c_str());
-    hEff_vs_JetPt_cutbasedId[ilevel]=(TH1F*)hJetPt_cutbasedId[ilevel]->Clone(hname);
-    hEff_vs_JetPt_cutbasedId[ilevel]->Divide(hEff_vs_JetPt_cutbasedId[ilevel],hJetPt, 1,1,"B");
-
-    // -- jet eta
-    hJetEta_simpleId[ilevel]->Sumw2();
-    sprintf(hname,"hEff_vs_JetEta_simpleId_%s",suff[ilevel].c_str());
-    hEff_vs_JetEta_simpleId[ilevel]=(TH1F*)hJetEta_simpleId[ilevel]->Clone(hname);
-    hEff_vs_JetEta_simpleId[ilevel]->Divide(hEff_vs_JetEta_simpleId[ilevel],hJetEta, 1,1,"B");
-    
-    hJetEta_fullId[ilevel]->Sumw2();
-    sprintf(hname,"hEff_vs_JetEta_fullId_%s",suff[ilevel].c_str());
-    hEff_vs_JetEta_fullId[ilevel]=(TH1F*)hJetEta_fullId[ilevel]->Clone(hname);
-    hEff_vs_JetEta_fullId[ilevel]->Divide(hEff_vs_JetEta_fullId[ilevel],hJetEta, 1,1,"B");
-    
-    hJetEta_cutbasedId[ilevel]->Sumw2();
-    sprintf(hname,"hEff_vs_JetEta_cutbasedId_%s",suff[ilevel].c_str());
-    hEff_vs_JetEta_cutbasedId[ilevel]=(TH1F*)hJetEta_cutbasedId[ilevel]->Clone(hname);
-    hEff_vs_JetEta_cutbasedId[ilevel]->Divide(hEff_vs_JetEta_cutbasedId[ilevel],hJetEta, 1,1,"B");
-
-    // -- nvtx
-    hNumberOfVertices_simpleId[ilevel]->Sumw2();
-    sprintf(hname,"hEff_vs_NumberOfVertices_simpleId_%s",suff[ilevel].c_str());
-    hEff_vs_NumberOfVertices_simpleId[ilevel]=(TH1F*)hNumberOfVertices_simpleId[ilevel]->Clone(hname);
-    hEff_vs_NumberOfVertices_simpleId[ilevel]->Divide(hEff_vs_NumberOfVertices_simpleId[ilevel],hNumberOfVertices, 1,1,"B");
-    
-    hNumberOfVertices_fullId[ilevel]->Sumw2();
-    sprintf(hname,"hEff_vs_NumberOfVertices_fullId_%s",suff[ilevel].c_str());
-    hEff_vs_NumberOfVertices_fullId[ilevel]=(TH1F*)hNumberOfVertices_fullId[ilevel]->Clone(hname);
-    hEff_vs_NumberOfVertices_fullId[ilevel]->Divide(hEff_vs_NumberOfVertices_fullId[ilevel],hNumberOfVertices, 1,1,"B");
-    
-    hNumberOfVertices_cutbasedId[ilevel]->Sumw2();
-    sprintf(hname,"hEff_vs_NumberOfVertices_cutbasedId_%s",suff[ilevel].c_str());
-    hEff_vs_NumberOfVertices_cutbasedId[ilevel]=(TH1F*)hNumberOfVertices_cutbasedId[ilevel]->Clone(hname);
-    hEff_vs_NumberOfVertices_cutbasedId[ilevel]->Divide(hEff_vs_NumberOfVertices_cutbasedId[ilevel],hNumberOfVertices, 1,1,"B");
-
   }
 
   
@@ -973,56 +928,41 @@ int main(int argc, char** argv)
   TDirectory *efficiency  =   outputRootFile -> mkdir("efficiency","efficiency");
   efficiency->cd();
 
+  hPtRatio_matched_noId -> Write();   
+  hJetPt_matched_noId -> Write();   
+  hJetEta_matched_noId -> Write();   
+  hNumberOfVertices_matched_noId -> Write();   
+
   hPtRatio_vs_Dphi ->Write();
-  hPtRatio -> Write();   
-  hPtRatio_matched -> Write();   
-  hJetPt  -> Write();   
-  hJetEta -> Write();   
-  hNumberOfVertices -> Write();   
-
-  for (int ilevel = 0; ilevel < 3; ilevel++){
-    if ( dataFlag_==0 ){
-      hPtRatio_matched_simpleId[ilevel]->Write();   
-      hPtRatio_matched_fullId[ilevel]  ->Write();   
-      hPtRatio_matched_cutbasedId[ilevel]->Write();   
-    
-      hEff_vs_PtRatio_matched_simpleId[ilevel]->Write();   
-      hEff_vs_PtRatio_matched_fullId[ilevel]->Write();   
-      hEff_vs_PtRatio_matched_cutbasedId[ilevel]->Write(); 
-      
+  hPtRatio_noId -> Write();   
+  hJetPt_noId  -> Write();   
+  hJetEta_noId -> Write();   
+  hNumberOfVertices_noId -> Write();   
+  
+  for ( int iid = 0; iid < 3 ; iid++ ){
+    for (int ilevel = 0; ilevel < 3; ilevel++){
+      if ( dataFlag_==0 ){
+	hPtRatio_matched[iid][ilevel]->Write();   
+	hJetPt_matched[iid][ilevel]->Write();   
+	hJetEta_matched[iid][ilevel]->Write();   
+	hNumberOfVertices_matched[iid][ilevel]->Write();   
+	
+	hEff_vs_PtRatio_matched[iid][ilevel]->Write(); 
+	hEff_vs_JetPt_matched[iid][ilevel]->Write(); 
+	hEff_vs_JetEta_matched[iid][ilevel]->Write(); 
+	hEff_vs_NumberOfVertices_matched[iid][ilevel]->Write(); 
     }
-    
-    hPtRatio_simpleId[ilevel]->Write();   
-    hPtRatio_fullId[ilevel]  ->Write();   
-    hPtRatio_cutbasedId[ilevel]->Write();   
-    
-    hJetPt_simpleId[ilevel]->Write();   
-    hJetPt_fullId[ilevel]  ->Write();   
-    hJetPt_cutbasedId[ilevel]->Write();   
-    
-    hJetEta_simpleId[ilevel]->Write();   
-    hJetEta_fullId[ilevel]  ->Write();   
-    hJetEta_cutbasedId[ilevel]->Write();   
-
-    hNumberOfVertices_simpleId[ilevel]->Write();   
-    hNumberOfVertices_fullId[ilevel]  ->Write();   
-    hNumberOfVertices_cutbasedId[ilevel]->Write();   
-        
-    hEff_vs_PtRatio_simpleId[ilevel]->Write();   
-    hEff_vs_PtRatio_fullId[ilevel]->Write();   
-    hEff_vs_PtRatio_cutbasedId[ilevel]->Write(); 
-    
-    hEff_vs_JetPt_simpleId[ilevel]->Write();   
-    hEff_vs_JetPt_fullId[ilevel]->Write();   
-    hEff_vs_JetPt_cutbasedId[ilevel]->Write();   
-
-    hEff_vs_JetEta_simpleId[ilevel]->Write();   
-    hEff_vs_JetEta_fullId[ilevel]->Write();   
-    hEff_vs_JetEta_cutbasedId[ilevel]->Write();   
-
-    hEff_vs_NumberOfVertices_simpleId[ilevel]->Write();   
-    hEff_vs_NumberOfVertices_fullId[ilevel]->Write();   
-    hEff_vs_NumberOfVertices_cutbasedId[ilevel]->Write();   
+      
+      hPtRatio[iid][ilevel]->Write();   
+      hJetPt[iid][ilevel]->Write();   
+      hJetEta[iid][ilevel]->Write();   
+      hNumberOfVertices[iid][ilevel]->Write();   
+      
+      hEff_vs_PtRatio[iid][ilevel]->Write(); 
+      hEff_vs_JetPt[iid][ilevel]->Write(); 
+      hEff_vs_JetEta[iid][ilevel]->Write(); 
+      hEff_vs_NumberOfVertices[iid][ilevel]->Write(); 
+    }
   }
 
   outputRootFile -> Close();
