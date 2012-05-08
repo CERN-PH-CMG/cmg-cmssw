@@ -3,13 +3,9 @@
 
 #include <vector>
 
-#include "Math/LorentzVector.h"
-#include "TVector2.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
 
-typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
-typedef std::vector<LorentzVector> LorentzVectorCollection;
 
 class PhysicsObject : public LorentzVector
 {
