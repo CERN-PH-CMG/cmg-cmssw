@@ -481,7 +481,7 @@ void ZZ2l2nuSummaryHandler::fillTree()
 bool ZZ2l2nuSummaryHandler::hasSpoilerAlert(bool isData)
 {
   if(!isData) return false;
-  if(evSummary_.cat!=1 || evSummary_.cat!=2)return false; //make sure that we clean only EE or MUMU events
+  if(evSummary_.cat!=1 && evSummary_.cat!=2)return false; //make sure that we clean only EE or MUMU events
 
   //compute the invariant mass
   LorentzVector l1(evSummary_.l1_px,evSummary_.l1_py,evSummary_.l1_pz,evSummary_.l1_en);
