@@ -254,10 +254,6 @@ int main(int argc, char* argv[])
       PShiftDown = new reweight::PoissonMeanShifter(-0.6);
     }
 
-  //event Categorizer
-  EventCategory eventCategoryInst(true);
-
-
   //##############################################
   //########           EVENT LOOP         ########
   //##############################################
@@ -297,9 +293,6 @@ int main(int argc, char* argv[])
           tag_cat = "gamma";
 	}
      
-      int eventSubCat  = eventCategoryInst.Get(phys);
-      TString tag_subcat = eventCategoryInst.GetLabel(eventSubCat);
-
       //pileup and Higgs pT weight
       //float weight=ev.puWeight;
       float weight = 1.0;
