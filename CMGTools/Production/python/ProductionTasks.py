@@ -534,7 +534,7 @@ class RunCMSBatch(Task):
         if self.options.run_batch:
             jname = "%s/%s" % (self.dataset,self.options.tier)
             jname = jname.replace("//","/") 
-            cmd.extend(['-b',"'bsub -q %s -J %s < ./batchScript.sh | tee job_id.txt'" % (self.options.queue,jname)])
+            cmd.extend(['-b',"'bsub -q %s -J %s -u cmgtoolslsf@gmail.com < ./batchScript.sh | tee job_id.txt'" % (self.options.queue,jname)])
         print " ".join(cmd)
         
         pwd = os.getcwd()
@@ -807,7 +807,7 @@ class WriteJobReport(Task):
                 continue
             for j in jobs:
                 jdir = os.path.join(jobdir,j)
-                output.write('pushd %s; bsub -q %s -J RESUB < ./batchScript.sh | tee job_id_resub.txt; popd\n' % (jdir,self.options.queue))
+                output.write('pushd %s; bsub -q %s -J RESUB -u cmgtoolslsf@gmail.com < ./batchScript.sh | tee job_id_resub.txt; popd\n' % (jdir,self.options.queue))
         output.close()
             
         return {'SummaryFile':report_file}
