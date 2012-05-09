@@ -77,13 +77,20 @@ Limit GetLimit(TString inFileName, TString plotName, TString sfile="bands", doub
 
 TCutG* GetErrorBand(string name, int N, double* Mass, double* Low, double* High)
 {
-   TCutG* cutg = new TCutG(name.c_str(),2*N);
+   TCutG* cutg = new TCutG(name.c_str(),2*N+2);
    cutg->SetFillColor(kGreen-7);
    int I = 0;
    for(int i=0;i<N;i++){
       cutg->SetPoint(I,Mass[i], Low[i]);
       I++;
    }
+
+   cutg->SetPoint(I,Mass[N-1], Low[N-1]);
+   I++;
+
+   cutg->SetPoint(I,Mass[N-1], High[N-1]);
+   I++;
+
    for(int i=0;i<N;i++){
         cutg->SetPoint(I,Mass[N-1-i], High[N-1-i]);
         I++;
@@ -215,7 +222,7 @@ void plotLimit(TString inputs=""){
 
    TCanvas* c1 = new TCanvas("c1", "c1",600,600);
    TMultiGraph* MG = new TMultiGraph();
-   MG->Add(TGObsLimit       ,"CP");
+   //MG->Add(TGObsLimit       ,"CP");
    MG->Add(TGExpLimit       ,"C");
    MG->Draw("AXIS");
    MG->SetTitle("");
@@ -223,12 +230,12 @@ void plotLimit(TString inputs=""){
    MG->GetYaxis()->SetTitle("#sigma_{95%}/#sigma_{SM}");
    MG->GetYaxis()->SetTitleOffset(1.70);
    MG->GetYaxis()->SetRangeUser(0.1,40.0);
-   TGExpLimit2S->Draw("f");
-   TGExpLimit1S->Draw("f");
+   TGExpLimit2S->Draw("fc");
+   TGExpLimit1S->Draw("fc");
    MG->Draw("same");
 
    char LumiLabel[1024];
-   sprintf(LumiLabel,"CMS preliminary,#sqrt{s}=7 TeV, #int L=%6.1ffb^{-1}",4.6);
+   sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=7 TeV, #int L=%6.1ffb^{-1}",5.035);
    TPaveText *pave = new TPaveText(0.5,0.96,0.94,0.99,"NDC");
    pave->SetBorderSize(0);
    pave->SetFillStyle(0);
@@ -248,7 +255,7 @@ void plotLimit(TString inputs=""){
    LEG->SetBorderSize(0);
    LEG->AddEntry(TGObsLimit  , "Observed"  ,"P");
    LEG->AddEntry(TGExpLimit  , "Expected"  ,"L");
-   LEG->Draw();
+//   LEG->Draw();
    c1->SetGridx(true);
    c1->SetGridy(true);
    c1->SetLogy(true);
