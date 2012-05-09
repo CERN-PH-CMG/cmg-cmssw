@@ -1,7 +1,7 @@
 import copy
-import os
+# import os
 import CMGTools.RootTools.fwlite.Config as cfg
-from   CMGTools.H2TauTau.proto.samples.getFiles import getFiles
+# from   CMGTools.H2TauTau.proto.samples.getFiles import getFiles
 
 #COLIN : need to add the correct cross-sections
 
@@ -55,7 +55,7 @@ HiggsVBF135 = cfg.MCComponent(
 
 
 
-higgs_vbf = [
+mc_higgs_vbf = [
     HiggsVBF110,
     HiggsVBF115,
     HiggsVBF120,
@@ -65,5 +65,5 @@ higgs_vbf = [
     ]
 
 
-higgs = higgs_vbf
+mc_higgs = copy.copy( mc_higgs_vbf ) 
 

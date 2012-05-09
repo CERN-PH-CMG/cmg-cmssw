@@ -43,16 +43,14 @@ class H2TauTauTreeProducer( TreeAnalyzer ):
         particleVars('l2')
 
         var('l1LooIso')
+        var('l2LooIso')
         var('l1MedIso')
+        var('l2MedIso')
         var('l1TigIso')
+        var('l2TigIso')
 
         var('l1Prongs')
-
-##         var('l2LooIso')
-##         var('l2MedIso')
-##         var('l2TigIso')
-
-##         var('l2Prongs')
+        var('l2Prongs')
 
         var('genTauVisMass')
         var('genJetVisMass')
@@ -110,32 +108,30 @@ class H2TauTauTreeProducer( TreeAnalyzer ):
         fParticleVars('l2', event.diLepton.leg2() )
 
         fill('l1LooIso', event.diLepton.leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr") )
+        fill('l2LooIso', event.diLepton.leg2().tauID("byLooseCombinedIsolationDeltaBetaCorr") )
         fill('l1MedIso', event.diLepton.leg1().tauID("byMediumCombinedIsolationDeltaBetaCorr") )
+        fill('l2MedIso', event.diLepton.leg2().tauID("byMediumCombinedIsolationDeltaBetaCorr") )
         fill('l1TigIso', event.diLepton.leg1().tauID("byTightCombinedIsolationDeltaBetaCorr") )
+        fill('l2TigIso', event.diLepton.leg2().tauID("byTightCombinedIsolationDeltaBetaCorr") )
 
         fill('l1Prongs', len(event.diLepton.leg1().signalPFCands()) )
+        fill('l2Prongs', len(event.diLepton.leg2().signalPFCands()) )
 
-##         fill('l2LooIso', event.diLepton.leg2().tauID("byLooseCombinedIsolationDeltaBetaCorr") )
-##         fill('l2MedIso', event.diLepton.leg2().tauID("byMediumCombinedIsolationDeltaBetaCorr") )
-##         fill('l2TigIso', event.diLepton.leg2().tauID("byTightCombinedIsolationDeltaBetaCorr") )
+        if event.diLepton.leg1().genTaup4() and event.diLepton.leg2().genTaup4():
+          fill('genTauVisMass', sqrt(
+	   pow(event.diLepton.leg1().genTaup4().energy()+event.diLepton.leg2().genTaup4().energy(),2)
+	   -pow(event.diLepton.leg1().genTaup4().px()+event.diLepton.leg2().genTaup4().px(),2)
+	   -pow(event.diLepton.leg1().genTaup4().py()+event.diLepton.leg2().genTaup4().py(),2)
+	   -pow(event.diLepton.leg1().genTaup4().pz()+event.diLepton.leg2().genTaup4().pz(),2)
+	   ))
 
-##         fill('l2Prongs', len(event.diLepton.leg2().signalPFCands()) )
-
-##         if event.diLepton.leg1().genTaup4() and event.diLepton.leg2().genTaup4():
-##           fill('genTauVisMass', sqrt(
-## 	   pow(event.diLepton.leg1().genTaup4().energy()+event.diLepton.leg2().genTaup4().energy(),2)
-## 	   -pow(event.diLepton.leg1().genTaup4().px()+event.diLepton.leg2().genTaup4().px(),2)
-## 	   -pow(event.diLepton.leg1().genTaup4().py()+event.diLepton.leg2().genTaup4().py(),2)
-## 	   -pow(event.diLepton.leg1().genTaup4().pz()+event.diLepton.leg2().genTaup4().pz(),2)
-## 	   ))
-
-##         if event.diLepton.leg1().genJetp4() and event.diLepton.leg2().genJetp4():
-##           fill('genJetVisMass', sqrt(
-## 	   pow(event.diLepton.leg1().genJetp4().energy()+event.diLepton.leg2().genJetp4().energy(),2)
-## 	   -pow(event.diLepton.leg1().genJetp4().px()+event.diLepton.leg2().genJetp4().px(),2)
-## 	   -pow(event.diLepton.leg1().genJetp4().py()+event.diLepton.leg2().genJetp4().py(),2)
-## 	   -pow(event.diLepton.leg1().genJetp4().pz()+event.diLepton.leg2().genJetp4().pz(),2)
-## 	   ))
+        if event.diLepton.leg1().genJetp4() and event.diLepton.leg2().genJetp4():
+          fill('genJetVisMass', sqrt(
+	   pow(event.diLepton.leg1().genJetp4().energy()+event.diLepton.leg2().genJetp4().energy(),2)
+	   -pow(event.diLepton.leg1().genJetp4().px()+event.diLepton.leg2().genJetp4().px(),2)
+	   -pow(event.diLepton.leg1().genJetp4().py()+event.diLepton.leg2().genJetp4().py(),2)
+	   -pow(event.diLepton.leg1().genJetp4().pz()+event.diLepton.leg2().genJetp4().pz(),2)
+	   ))
 
         nJets = len(event.cleanJets)
         fill('nJets', nJets )

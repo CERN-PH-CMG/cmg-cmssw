@@ -4,7 +4,7 @@ import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.H2TauTau.triggerMap import pathsAndFilters
 
 
-period = 'Period_2011AB'
+period = 'Period_2011B'
 
 baseDir = '2011'
 
@@ -37,11 +37,11 @@ TauMuAna = cfg.Analyzer(
     pt2 = 17,
     iso1 = 999,
     iso2 = 0.1,
-    eta1 = 999,
-    eta2 = 999,
+    eta1 = 2.3,
+    eta2 = 2.1,
     m_min = 10,
     m_max = 99999,
-    diLeptonCutString = 'cuts_baseline',
+    # diLeptonCutString = 'cuts_baseline',
     triggerMap = pathsAndFilters
     )
 
@@ -74,6 +74,7 @@ vbfKwargs = dict( Mjj = 400,
 
 vbfAna = cfg.Analyzer(
     'VBFAnalyzer',
+    jetCol = 'cmgPFJetSel',
     jetPt = 30,
     jetEta = 4.5,
     **vbfKwargs
@@ -96,7 +97,7 @@ treeProducer = cfg.Analyzer(
 
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.tauMu_march12 import * 
+from CMGTools.H2TauTau.proto.samples.tauMu_JoseMay8 import * 
 
 #########################################################################################
 
@@ -144,8 +145,9 @@ data_Run2011A_May10ReReco_v1.splitFactor = 2
 
 test = 1
 if test==1:
-#     comp = DYJets
-    comp = data_Run2011B_PromptReco_v1
+    comp = HiggsVBF120
+    # comp.files = ['/data/c/cbern/Tests/CMGTools/44X/May05/CMGTools/CMSSW_4_4_4/src/CMGTools/H2TauTau/prod/tauMu_fullsel_tree_CMG.root']
+    # comp = data_Run2011B_PromptReco_v1
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.files = comp.files[:10]
