@@ -22,11 +22,16 @@ PATMetSequence = cms.Sequence(
     patMETsRaw
     )
 
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs52X
+from CMGTools.Common.Tools.cmsswRelease import *
 if cmsswIs52X():
     from PhysicsTools.PatAlgos.recoLayer0.jetMETCorrections_cff import *
     producePFMETCorrections.remove( kt6PFJets )
     producePFMETCorrections.remove( ak5PFJets )
     patMETs.metSource = 'pfType1CorrectedMet'
     PATMetSequence.insert(0, producePFMETCorrections)
-    
+elif cmsswIs44X():
+    #I've taken the following from jetTools:
+    #http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/PhysicsTools/PatAlgos/python/tools/jetTools.py?revision=1.71&view=markup
+    from JetMETCorrections.Type1MET.MetType1Corrections_cff import metJESCorAK5PFJet
+    PATMetSequence.insert(0, metJESCorAK5PFJet)
+    patMETs.metSource = 'metJESCorAK5PFJet'
