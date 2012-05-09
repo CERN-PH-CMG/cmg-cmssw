@@ -101,6 +101,7 @@ echo 'sending the job directory back'
    if remoteDir != '':
       remoteDir = remoteDir.replace('/eos/cms','')
       script += """
+  
 for file in *.root; do
 newFileName=`echo $file | sed -r -e 's/\./_%s\./'`
 cmsStage -f $file %s/$newFileName 
