@@ -3,18 +3,16 @@ import FWCore.ParameterSet.Config as cms
 #this one
 def getSchedule(process, runOnMC):
 
-    
     result = cms.Schedule(
         process.p,
-        # 44X do not work
-        # process.EcalDeadCellBoundaryEnergyFilterPath,
-        # process.simpleDRfilterPath,
-        # process.EcalDeadCellTriggerPrimitiveFilter,
-        # process.greedyMuonPFCandidateFilterPath,
-        # process.hcalLaserEventFilterPath,
-        # process.inconsistentMuonPFCandidateFilterPath,
-        # process.trackingFailureFilterPath,
-        #process.CSCTightHaloFilterPath,
+        process.EcalDeadCellBoundaryEnergyFilterPath,
+        process.simpleDRfilterPath,
+        process.EcalDeadCellTriggerPrimitiveFilterPath,
+        process.greedyMuonPFCandidateFilterPath,
+        process.hcalLaserEventFilterPath,
+        process.inconsistentMuonPFCandidateFilterPath,
+        process.trackingFailureFilterPath,
+        process.CSCTightHaloFilterPath,
         process.HBHENoiseFilterPath,
         process.primaryVertexFilterPath,
         process.noscrapingFilterPath
