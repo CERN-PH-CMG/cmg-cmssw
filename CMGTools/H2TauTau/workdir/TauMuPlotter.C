@@ -466,8 +466,8 @@ TH1F* TauMuPlotter::getDiBosonSS(){
 
 
 TH1F* TauMuPlotter::getZToTauTau(){  
-  //TH1F*h=getSample("ZToTauTau");
-  TH1F*h=getTotalEmbedded(); 
+  TH1F*h=getSample("ZToTauTau");
+  //TH1F*h=getTotalEmbedded(); 
   return h;
 }
 
@@ -822,7 +822,7 @@ bool TauMuPlotter::plotInc(TString variable, Int_t Isocat, Int_t MTcat, Int_t SM
   xmax_=xmax;
   Isocat_=Isocat;
   MTcat_=MTcat;
-  SMcat_=SMcat;//can be -1,0
+  SMcat_=SMcat;
   if(extrasel.CompareTo("")!=0) extrasel_ += TString("*")+extrasel;
 
 
@@ -849,8 +849,9 @@ bool TauMuPlotter::plotInc(TString variable, Int_t Isocat, Int_t MTcat, Int_t SM
    
   
   TH1F*hQCD=0;
-  hQCD=getQCDInc();
-  //if(Isocat_==1)hQCD=getQCDIsoSM();
+  if(SMcat_==-1 || SMcat_==0 || Isocat_!=1) hQCD=getQCDInc();
+  else if(SMcat_==1 || SMcat_==2) hQCD=getQCDIsoSM();
+  else hQCD=0;
   if(hQCD){
     hQCD->SetLineWidth(1);
     hQCD->SetLineColor(QCDColor_);
