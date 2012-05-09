@@ -327,10 +327,10 @@ int main(int argc, char* argv[])
    
       //load the event content from tree
       evSummaryHandler.getEntry(iev);
-      if(runBlinded && evSummaryHandler.hasSpoilerAlert(!isMC))continue;
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
       //if( duplicatesChecker.isDuplicate( ev.run, ev.lumi, ev.event) ) { nDuplicates++; continue; }
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
+      bool mustBlind = (!isMC && runBlinded && evSummaryHandler.hasSpoilerAlert(!isMC));
             
       //categorize events
       TString tag_cat;
@@ -555,22 +555,24 @@ int main(int argc, char* argv[])
 
 		  if(passDphijmet){
 		    mon.fillHisto("eventflow",tags_full,5,iweight);
-		    mon.fillHisto("met_met",tags_full,zvv.pt(),iweight);
-		    mon.fillHisto("met_min3Met",tags_full,min3Met.pt(),iweight);
-		    mon.fillHisto("met_met_vspu",tags_full,ev.ngenITpu,zvv.pt(),iweight);
-		    mon.fillHisto("met_metRaw",tags_full,zvvRaw.pt(),iweight);
-		    mon.fillHisto("met_redMet",tags_full,redMet.pt(),iweight);
-		    mon.fillHisto("met_redMet_vspu",tags_full,ev.ngenITpu,redMet.pt(),iweight);
-		    mon.fillHisto("met_min3Met_vspu",tags_full,ev.ngenITpu,min3Met.pt(),iweight);
-		    mon.fillHisto("met_redMetL",tags_full,redMetT,iweight);
-		    mon.fillHisto("met_redMetT",tags_full,redMetL,iweight);
-		    mon.fillHisto("met_redMetRaw",tags_full,redMetRaw.pt(),iweight);
-		    mon.fillHisto("mt",tags_full,mt,iweight);
-		    mon.fillHisto("mtRaw",tags_full,mtRaw,iweight);
-				  
-		    if(passBaseMet){
-		      mon.fillHisto  ("eventflow",tags_full,6,iweight);
-		    }
+                    if(!mustBlind){
+                       mon.fillHisto("met_met",tags_full,zvv.pt(),iweight);
+                       mon.fillHisto("met_min3Met",tags_full,min3Met.pt(),iweight);
+                       mon.fillHisto("met_met_vspu",tags_full,ev.ngenITpu,zvv.pt(),iweight);
+                       mon.fillHisto("met_metRaw",tags_full,zvvRaw.pt(),iweight);
+                       mon.fillHisto("met_redMet",tags_full,redMet.pt(),iweight);
+                       mon.fillHisto("met_redMet_vspu",tags_full,ev.ngenITpu,redMet.pt(),iweight);
+                       mon.fillHisto("met_min3Met_vspu",tags_full,ev.ngenITpu,min3Met.pt(),iweight);
+                       mon.fillHisto("met_redMetL",tags_full,redMetT,iweight);
+                       mon.fillHisto("met_redMetT",tags_full,redMetL,iweight);
+                       mon.fillHisto("met_redMetRaw",tags_full,redMetRaw.pt(),iweight);
+                       mon.fillHisto("mt",tags_full,mt,iweight);
+                       mon.fillHisto("mtRaw",tags_full,mtRaw,iweight);
+
+                       if(passBaseMet){
+                         mon.fillHisto  ("eventflow",tags_full,6,iweight);
+                       }
+		    }	  
 		  }
 		}
 	      }
@@ -578,28 +580,29 @@ int main(int argc, char* argv[])
 	  }
 	}
 
-	  
-	  //Fill histogram for posterior optimization, or for control regions
-          bool passPreselection             (passZmass && passZpt && pass3dLeptonVeto && passDphijmet && passBveto);
-	  bool passPreselectionMbvetoMzmass (             passZpt && pass3dLeptonVeto && passDphijmet             );          
-	  bool passPreselectionM3dlep       (passZmass && passZpt                     && passDphijmet && passBveto);
-          for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
-	    
-	    if(redMet.pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
-	      if(passPreselection                                        )          mon.fillHisto(TString("mt_redMet_shapes")+varNames[ivar],tags_full,index, mt,iweight);
-	  	    
-	    if(zvv.pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
-	      {
-		if(passPreselection                                                    )   mon.fillHisto(TString("mt_shapes")+varNames[ivar],tags_full,index, mt,iweight);
-                if(passPreselectionMbvetoMzmass && passZmass   && !passBveto && ivar==0)   mon.fillHisto(TString("mt_shapesBTagSB")+varNames[ivar],tags_full,index, mt,iweight);
-		if(passPreselectionM3dlep       && !pass3dLeptonVeto && nExtraLep==1   )   mon.fillHisto(TString("mt3")+varNames[ivar],tags_full,index, mt3,iweight);
-		if(passPreselectionMbvetoMzmass && passZmass         && passBveto      )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,0,iweight);
-		if(passPreselectionMbvetoMzmass && isZsideBand       && passBveto      )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,1,iweight);
-		if(passPreselectionMbvetoMzmass && isZsideBandPlus   && passBveto      )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,2,iweight);
-		if(passPreselectionMbvetoMzmass && passZmass         && !passBveto     )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,3,iweight);
-		if(passPreselectionMbvetoMzmass && isZsideBand       && !passBveto     )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,4,iweight);
-		if(passPreselectionMbvetoMzmass && isZsideBandPlus   && !passBveto     )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,5,iweight);
-	     }
+ 	  if(!mustBlind){
+             //Fill histogram for posterior optimization, or for control regions
+             bool passPreselection             (passZmass && passZpt && pass3dLeptonVeto && passDphijmet && passBveto);
+             bool passPreselectionMbvetoMzmass (             passZpt && pass3dLeptonVeto && passDphijmet             );          
+             bool passPreselectionM3dlep       (passZmass && passZpt                     && passDphijmet && passBveto);
+             for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
+               
+               if(redMet.pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
+                 if(passPreselection                                        )          mon.fillHisto(TString("mt_redMet_shapes")+varNames[ivar],tags_full,index, mt,iweight);
+                       
+               if(zvv.pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
+                 {
+                   if(passPreselection                                                    )   mon.fillHisto(TString("mt_shapes")+varNames[ivar],tags_full,index, mt,iweight);
+                   if(passPreselectionMbvetoMzmass && passZmass   && !passBveto && ivar==0)   mon.fillHisto(TString("mt_shapesBTagSB")+varNames[ivar],tags_full,index, mt,iweight);
+                   if(passPreselectionM3dlep       && !pass3dLeptonVeto && nExtraLep==1   )   mon.fillHisto(TString("mt3")+varNames[ivar],tags_full,index, mt3,iweight);
+                   if(passPreselectionMbvetoMzmass && passZmass         && passBveto      )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,0,iweight);
+                   if(passPreselectionMbvetoMzmass && isZsideBand       && passBveto      )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,1,iweight);
+                   if(passPreselectionMbvetoMzmass && isZsideBandPlus   && passBveto      )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,2,iweight);
+                   if(passPreselectionMbvetoMzmass && passZmass         && !passBveto     )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,3,iweight);
+                   if(passPreselectionMbvetoMzmass && isZsideBand       && !passBveto     )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,4,iweight);
+                   if(passPreselectionMbvetoMzmass && isZsideBandPlus   && !passBveto     )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,5,iweight);
+                }
+             }
           }
       }
       
