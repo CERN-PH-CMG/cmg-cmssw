@@ -20,11 +20,13 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             'cmgMuonSel',
             'std::vector<cmg::Muon>'
             )
-        self.mchandles['genParticles'] = AutoHandle( 'genParticlesStatus3',
+        # FIXME reading the genparticlespruned collection. problem elsewhere?
+        self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
                                                      'std::vector<reco::GenParticle>' )
 
 
     def process(self, iEvent, event):
+        # import pdb; pdb.set_trace()
         result = super(TauMuAnalyzer, self).process(iEvent, event)
         
         if result is False:
@@ -46,12 +48,13 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         return True
         
     def testLeg1(self, leg):
+        # import pdb; pdb.set_trace()
         return self.testTau(leg) and \
                super( TauMuAnalyzer, self).testLeg1( leg )
 
 
     def testLeg2(self, leg):
-        return self.testMuon(leg) and \
+        return self.testMuonTight(leg) and \
                super( TauMuAnalyzer, self).testLeg2( leg )
 
     def testTau(self, tau):
@@ -64,11 +67,44 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             return False
         elif tau.tauID("byLooseCombinedIsolationDeltaBetaCorr")==False:
             return False
+        elif tau.tauID("againstMuonTight")==False:
+            return False
+        elif tau.tauID("againstElectronLoose")==False:
+            return False        
         else:
             return True
 
-#    def testMuon(self, muon):
-#        return muon.getSelection('cuts_vbtfmuon')
+    def testMuonID(self, muon):
+        return ( muon.looseId() and \
+                 abs(muon.dxy()) < 0.045 and \
+                 abs(muon.dz()) < 0.2 )
+
+
+    def testMuonTight(self, muon ):
+        '''basically recoding the muon selection of muCuts_cff.'''
+        if muon.pt()>self.cfg_ana.pt2 and \
+               abs( muon.eta() ) < self.cfg_ana.eta2 and \
+               self.testMuonID(muon) and \
+               self.muonIso(muon)<0.1:
+            return True
+        else:
+            return False
+
+    def muonIso(self, muon ):
+        return muon.relIso(0.5)
+
+    def testMuonLoose( self, muon ):
+        '''Loose muon selection, for the lepton veto'''
+        #COLIN: not sure the vertex constraints should be kept 
+        if muon.pt()>15 and \
+               abs( muon.eta() ) < 2.5 and \
+               self.testMuonID(muon) and \
+               self.muonIso(muon)<0.3:
+            return True
+        else:
+            return False
+    
 
     def leptonAccept(self, leptons):
-        return muonAccept( leptons )
+        looseLeptons = set(filter( self.testMuonLoose, leptons ))
+        return len(looseLeptons)<2

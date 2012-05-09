@@ -2,6 +2,7 @@ import copy
 import os
 import CMGTools.RootTools.fwlite.Config as cfg
 from   CMGTools.H2TauTau.proto.samples.getFiles import getFiles
+from   CMGTools.H2TauTau.proto.samples.higgs import *
 
 
 DYJets = cfg.MCComponent(
@@ -91,4 +92,6 @@ mc_fall11 = [
     ggHTT125,
     VBFHTT125,
     ]
+
+mc_fall11.extend( higgs )
 
