@@ -56,10 +56,10 @@ PATElectronIsoMVAEmbedder::PATElectronIsoMVAEmbedder(const edm::ParameterSet& ps
 
   vector<string> eleiso_weightfiles ;
 
-  edm::FileInPath a("UserCode/sixie/EGamma/EGammaAnalysisTools/data/ElectronIso_BDTG_V0_EndcapPt5To10.weights.xml");
-  edm::FileInPath b("UserCode/sixie/EGamma/EGammaAnalysisTools/data/ElectronIso_BDTG_V0_EndcapPt5To10.weights.xml");
-  edm::FileInPath c("UserCode/sixie/EGamma/EGammaAnalysisTools/data/ElectronIso_BDTG_V0_BarrelPt10ToInf.weights.xml");
-  edm::FileInPath d("UserCode/sixie/EGamma/EGammaAnalysisTools/data/ElectronIso_BDTG_V0_EndcapPt10ToInf.weights.xml");
+  edm::FileInPath a("EGamma/EGammaAnalysisToolsSiXie/data/ElectronIso_BDTG_V0_EndcapPt5To10.weights.xml");
+  edm::FileInPath b("EGamma/EGammaAnalysisToolsSiXie/data/ElectronIso_BDTG_V0_EndcapPt5To10.weights.xml");
+  edm::FileInPath c("EGamma/EGammaAnalysisToolsSiXie/data/ElectronIso_BDTG_V0_BarrelPt10ToInf.weights.xml");
+  edm::FileInPath d("EGamma/EGammaAnalysisToolsSiXie/data/ElectronIso_BDTG_V0_EndcapPt10ToInf.weights.xml");
 
   eleiso_weightfiles.push_back (a.fullPath ()) ;
   eleiso_weightfiles.push_back (b.fullPath ()) ;
@@ -93,7 +93,7 @@ void PATElectronIsoMVAEmbedder::produce(edm::Event& iEvent, const edm::EventSetu
   
   edm::Handle< reco::MuonCollection > srcMuons;
   iEvent.getByLabel(srcMuons_,srcMuons);
-  const reco::MuonCollection& selMuons = *srcMuons;
+  // const reco::MuonCollection& selMuons = *srcMuons;
   
   edm::Handle<reco::PFCandidateCollection> srcPF;
   iEvent.getByLabel(srcPF_,srcPF);
