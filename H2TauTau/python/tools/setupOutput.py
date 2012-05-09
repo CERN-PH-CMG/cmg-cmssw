@@ -2,8 +2,8 @@ import os
 import FWCore.ParameterSet.Config as cms
 
 
-def addOutput( process, type12, debugEventContent=False, addPreSel=True):
-
+def addOutput( process, type12, addDebugEventContent=False, addPreSel=True):
+    
     allowedTypes = ['tauMu', 'tauEle', 'muEle', 'diTau']
     if type12 not in allowedTypes:
         raise ValueError( type12 + ' not in allowed types: ', allowedTypes )
@@ -52,7 +52,7 @@ def addOutput( process, type12, debugEventContent=False, addPreSel=True):
         # unpack the list of commands 'patEventContent'
         outputCommands = cms.untracked.vstring('drop *')
         )
-    if debugEventContent:
+    if addDebugEventContent:
         out.outputCommands.extend( debugEventContent )
     else:
         out.outputCommands.extend( eventContent )

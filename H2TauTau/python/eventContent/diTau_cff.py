@@ -4,12 +4,7 @@ import copy
 from CMGTools.H2TauTau.eventContent.common_cff import * 
 
 diTauSpecific = [
-    'drop *_cmgDiTau_*_*',
-    'drop *_cmgDiTauPreSel_*_*',
-    'drop *_cmgDiTauFullSel_*_*',
-    'drop *_recoilCorMETDiTau_*_*',
-    'drop *_cmgDiTauCorPreSel_*_*',
-    'keep *_cmgDiTauCorSVFitPreSel_*_*',
+    'drop cmgTaucmgTaucmgDiObjects_*_*_*',
     'keep *_cmgDiTauCorSVFitFullSel_*_*',
     ]
 
