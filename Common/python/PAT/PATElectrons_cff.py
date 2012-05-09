@@ -110,3 +110,13 @@ PATElectronSequence = cms.Sequence(
     patConversions 
     )
 
+
+# Energy scale corrections and MC smearing
+from EgammaCalibratedGsfElectrons.CalibratedElectronProducers.calibratedGsfElectrons_cfi import *
+calibratedGsfElectrons.updateEnergyError = cms.bool(True)
+RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
+    calibratedGsfElectrons = cms.PSet(
+        initialSeed = cms.untracked.uint32(1),
+        engineName = cms.untracked.string('TRandom3')
+    ),
+)
