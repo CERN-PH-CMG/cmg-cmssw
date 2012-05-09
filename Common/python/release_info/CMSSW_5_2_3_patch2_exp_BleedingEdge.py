@@ -20,6 +20,7 @@
   ('PhysicsTools/PatUtils', 'PhysicsTools/PatUtils', 'V03-09-18-03'),
   ('PhysicsTools/Utilities', 'PhysicsTools/Utilities', 'V08-03-16'),
   ('RecoMET/METFilters', 'RecoMET/METFilters', 'lhx_14APR2012_v1'),
+  ('RecoMET/METAnalyzers', 'RecoMET/METAnalyzers', 'V00-00-08'),
   ('RecoParticleFlow/PFProducer', 'RecoParticleFlow/PFProducer', 'V15-01-05'),
   ('RecoParticleFlow/PostProcessing', 'UserCode/RecoParticleFlow/PostProcessing', 'wreece_020512'),
   ('RecoTauTag/Configuration', 'RecoTauTag/Configuration', 'V01-04-03'),
