@@ -103,6 +103,7 @@ cmgPFBaseJetAll.cfg.inputCollection = 'patJets'
 from CMGTools.Common.skims.leadingCMGBaseJetSelector_cfi import leadingCMGBaseJetSelector
 cmgPFBaseJetLead = leadingCMGBaseJetSelector.clone()
 cmgPFBaseJetLead.inputCollection = 'cmgPFBaseJetAll'
+cmgPFBaseJetLead.index = 4
 
 PATCMGJetSequence = cms.Sequence(
     PATJetSequence + 
