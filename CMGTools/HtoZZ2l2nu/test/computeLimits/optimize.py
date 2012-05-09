@@ -15,7 +15,10 @@ CWD=os.getcwd()
 phase=-1
 jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json'
 CMSSW_BASE=os.environ.get('CMSSW_BASE')
-LandSArg=''
+LandSArg=' --subNRB --indexvbf 78 '
+LandSArg+=' --bins eq0jets,eq1jets,geq2jets,vbf'
+
+
 cutList='' 
 def help() :
    print '\n\033[92m optimize.py \033[0m \n'
@@ -86,13 +89,11 @@ cuts1   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_met')
 cuts2   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_mtmin') 
 cuts3   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_mtmax') 
 
-#MASS = [200,300,400,500,600]
-#SUBMASS = [200,300,400,500,600]
-#MASS = [200,250, 300,350, 400,450, 500,550, 600]
-#SUBMASS = [200,250, 300,350, 400,450, 500,550, 600]
+#MASS = [200,400,600]
+#SUBMASS = [200,400,600]
+MASS = [200,250, 300,350, 400,450, 500,550, 600]
+SUBMASS = [200,250, 300,350, 400,450, 500,550, 600]
 #SUBMASS = [200, 225, 250, 275, 300, 325, 350, 375, 400, 425, 450, 475, 500, 525, 550, 575, 600, 625, 650];
-MASS    = [250, 500, 750, 1000, 1200]
-SUBMASS = [250, 500, 750, 1000, 1200]
 
 ######################################################################
 
@@ -194,7 +195,7 @@ elif(phase == 3 ):
       for m in MASS:
 
          #if you want to display more than 3 options edit -m3 field
-         cut_lines=commands.getstatusoutput("cat " + fileName + " | grep 'mH="+str(m)+"' -m10")[1].split('\n')
+         cut_lines=commands.getstatusoutput("cat " + fileName + " | grep 'mH="+str(m)+"' -m20")[1].split('\n')
          print 'mH='+str(m)+'\tOption \tR \tmin MET\tMT range' 
          ictr=1
          for c in cut_lines:
@@ -266,6 +267,7 @@ elif(phase == 3 ):
 	
    print 'YES'
    list = open(OUT+'list.txt',"w")
+   listcuts = open(OUT+'cuts.txt',"w")
    for m in SUBMASS:
         index = findCutIndex(Gmet.Eval(m,0,"S"), cuts1, Gtmin.Eval(m,0,"S"), cuts2,  Gtmax.Eval(m,0,"S"), cuts3);
         SCRIPT = open(OUT+'/script_mass_'+str(m)+'.sh',"w")
@@ -281,7 +283,9 @@ elif(phase == 3 ):
         os.system("bsub -q 2nd 'sh " + OUT+"script_mass_"+str(m)+".sh'")
 	if(shapeBased=='1'):   list.writelines('H'+str(m)+'_shape_'+str(index)+'\n'); 
 	else:                  list.writelines('H'+str(m)+'_count_'+str(index)+'\n');
+        listcuts.writelines(str(m)+' & ' + str(Gmet.Eval(m,0,"S")) + '<met & ' + str(Gtmin.Eval(m,0,"S"))+'<mt<'+ str(Gtmax.Eval(m,0,"S")) +'\n');
    list.close();
+   listcuts.close();
 
 ######################################################################
 
