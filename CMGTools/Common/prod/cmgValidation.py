@@ -26,7 +26,7 @@ dataset_owner_data = 'cmgtools'
 dataset_name_data = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5'
 patExt = '/PAT_CMG_V5_1_0'
 
-maxEvents = 3000
+maxEvents = 10
 
 
 import inspect

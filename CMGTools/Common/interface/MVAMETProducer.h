@@ -170,10 +170,10 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
     return;
   }
 
-  edm::Handle< JetCollectionType > jetH;
+  edm::Handle< std::vector<JetType> > jetH;
   iEvent.getByLabel(jetSrc_, jetH);
 
-  edm::Handle< JetCollectionType > leadJetH;
+  edm::Handle< std::vector<cmg::BaseJet> > leadJetH;
   iEvent.getByLabel(leadJetSrc_, leadJetH);
 
   assert( leadJetH->size() > 1 );
@@ -204,11 +204,18 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
   if(verbose_) {
     std::cout<<"---"<<std::endl;
     std::cout<<"MVAMETProducer"<<std::endl;
-    std::cout<<"\tnJetsGt1 = "<<nJetsPtGt1<<std::endl;
+    std::cout<<"\tpfmet = "<<pfmet->pt()<<std::endl;
+    std::cout<<"\ttkmet = "<<tkmet->pt()<<std::endl;
+    std::cout<<"\tnopumet = "<<nopumet->pt()<<std::endl;
+    std::cout<<"\tpucmet = "<<pucmet->pt()<<std::endl;
+    std::cout<<"\tpumet = "<<pumet->pt()<<std::endl;
+    std::cout<<"\tnJetsPtGt1 = "<<nJetsPtGt1<<std::endl;
     std::cout<<"\tnJetsPtGt30 = "<<nJetsPtGt30<<std::endl;
     std::cout<<"\tnGoodVtx = "<<nGoodVtx<<std::endl;
-    std::cout<<"\tnJetsPtGt1 = "<<nJetsPtGt1<<std::endl;
     std::cout<<"\trho = "<<rho<<std::endl;
+    std::cout<<"\tjet1 eta,pt= "<<leadJet.pt()<<","<<leadJet.eta()<<std::endl;
+    std::cout<<"\tjet2 eta,pt= "<<leadJet2.pt()<<","<<leadJet2.eta()<<std::endl;
+    
   }
 
   std::vector<MetUtilities::JetInfo> jetInfo; 
@@ -217,13 +224,6 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
   OutPtr pOut(new std::vector< MetType > ); 
   for( unsigned i=0; i<recBosonH->size(); ++i) {
     const RecBosonType& recBoson = recBosonH->at(i);
-
-    if(verbose_) {
-      std::cout<<"  ---------------- "<<std::endl;
-      std::cout<<"\trec boson: "<<recBoson<<std::endl;
-      std::cout<<"\t\tleg1: "<<recBoson.leg1()<<std::endl;
-      std::cout<<"\t\tleg2: "<<recBoson.leg2()<<std::endl;
-    }
     
     LorentzVector lCand0 = recBoson.leg1().p4();
     LorentzVector lCand1 = recBoson.leg2().p4();
@@ -250,6 +250,13 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
     pOut->push_back( met );
     pOut->back().setP4( lMVAMetInfo.first ); 
 
+    if(verbose_) {
+      std::cout<<"  ---------------- "<<std::endl;
+      std::cout<<"\trec boson: "<<recBoson<<std::endl;
+      std::cout<<"\t\tleg1: "<<recBoson.leg1()<<std::endl;
+      std::cout<<"\t\tleg2: "<<recBoson.leg2()<<std::endl;
+      std::cout<<"\t\tNEW MET: "<<lMVAMetInfo.first.pt()<<std::endl;
+    }
     // FIXME add matrix
   }
   
@@ -263,7 +270,7 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
 
 template< typename RecBosonType >
 void MVAMETProducer< RecBosonType >::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,
-					      const std::vector<cmg::PFJet>& iCJets,
+					      const std::vector<JetType>& iCJets,
 					      const reco::VertexCollection &iVertices,double iRho) const { 
   for(int i1 = 0; i1 < (int) iCJets .size(); i1++) {   // corrected jets collection                                         
     const JetType     *pCJet  = &(iCJets.at(i1));
