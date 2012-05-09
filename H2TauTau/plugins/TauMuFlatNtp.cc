@@ -53,6 +53,7 @@ void TauMuFlatNtp::beginJob(){
   tree_->Branch("tauantie",&tauantie_,"tauantie/I");
   tree_->Branch("tauantimu",&tauantimu_,"tauantimu/I");
   tree_->Branch("tauisodisc",&tauisodisc_,"tauisodisc/I");
+  tree_->Branch("tauisodiscmva",&tauisodiscmva_,"tauisodiscmva/I");
   tree_->Branch("tauiso",&tauiso_,"tauiso/F");
   tree_->Branch("taux",&taux_,"taux/F");
   tree_->Branch("tauy",&tauy_,"tauy/F");
@@ -64,6 +65,7 @@ void TauMuFlatNtp::beginJob(){
   tree_->Branch("mueta",&mueta_,"mueta/F");
   tree_->Branch("muphi",&muphi_,"muphi/F");
   tree_->Branch("muiso",&muiso_,"muiso/F");
+  tree_->Branch("muisomva",&muisomva_,"muisomva/F");
   tree_->Branch("mudz",&mudz_,"mudz/F");
   tree_->Branch("mudxy",&mudxy_,"mudxy/F");
   tree_->Branch("mux",&mux_,"mux/F");
@@ -100,11 +102,14 @@ void TauMuFlatNtp::beginJob(){
   counterev_=0;
   countergen_=0;
   counterveto_=0;
-  countereop_=0;
+  countertaueop_=0;
+  countertaumuveto_=0;
+  countertaueveto_=0;
+  countertauiso_=0;
   countertaumatch_=0;
+  countermuid_=0;
   countermuiso_=0;
   countermumatch_=0;
-  countertauiso_=0;
   counterditau_=0;
   countertruth_=0;
   counter_=0;
@@ -122,7 +127,8 @@ bool TauMuFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetu
   if(dataType_.compare("Embedded")==0){
     edm::Handle< double > embeddedGenWeight;
     iEvent.getByLabel(edm::InputTag("generator","weight",""),embeddedGenWeight);
-    embeddedGenWeight_=*embeddedGenWeight;
+    if(!embeddedGenWeight.failedToGet())
+      embeddedGenWeight_=*embeddedGenWeight;
   }  
  
   ///get the TauMu cands 
@@ -204,7 +210,49 @@ bool TauMuFlatNtp::applySelections(){
       if(cand->leg1().eOverP()<0.2) continue;
     diTauSelList_.push_back(*cand);
   }
-  if(diTauSelList_.size()>0)countereop_++;
+  if(diTauSelList_.size()>0)countertaueop_++;
+
+//   //tau vtx //vtx info not filled properly in V5_1_0
+//   tmpditaulist=diTauSelList_;
+//   diTauSelList_.clear();
+//   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+//     if(!(fabs(cand->leg1().dxy())<0.045)
+//        || !(fabs(cand->leg1().dz())<0.2)
+//        ) continue;    
+//     diTauSelList_.push_back(*cand);
+//   }
+//   if(diTauSelList_.size()>0)countertauvtx_++;
+
+  //Tau anti-mu cut
+  tmpditaulist=diTauSelList_;
+  diTauSelList_.clear();
+  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+    if(cand->leg1().tauID("againstMuonTight")<0.5) continue;
+    diTauSelList_.push_back(*cand);
+  }
+  if(diTauSelList_.size()>0)countertaumuveto_++;
+
+  //Tau anti-e cut
+  tmpditaulist=diTauSelList_;
+  diTauSelList_.clear();
+  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+    if(cand->leg1().tauID("againstElectronLoose")<0.5) continue;
+    diTauSelList_.push_back(*cand);
+  }
+  if(diTauSelList_.size()>0)countertaueveto_++;
+
+
+//   //isolation cut on the taus
+//   tmpditaulist=diTauSelList_;
+//   diTauSelList_.clear();
+//   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+//     //if(diTauSel_->leg1().tauID("byVLooseCombinedIsolationDeltaBetaCorr")<0.5)
+//     if(cand->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr") < 0.5) continue;
+//     //if(diTauSel_->leg1().tauID("byMediumCombinedIsolationDeltaBetaCorr")<0.5)
+//     //if(diTauSel_->leg1().tauID("byTightCombinedIsolationDeltaBetaCorr")<0.5)
+//     diTauSelList_.push_back(*cand);
+//   }
+
   
   //Tau Trig-Match
   tmpditaulist=diTauSelList_;
@@ -221,6 +269,40 @@ bool TauMuFlatNtp::applySelections(){
   }
   if(diTauSelList_.size()>0)countertaumatch_++;
   
+  //muon vtx 
+  tmpditaulist=diTauSelList_;
+  diTauSelList_.clear();
+  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+    if(!(fabs(cand->leg2().dxy())<0.045)
+       || !(fabs(cand->leg2().dz())<0.2)
+       ) continue;    
+    diTauSelList_.push_back(*cand);
+  }
+  if(diTauSelList_.size()>0)countermuvtx_++;
+
+
+  //muion id cuts
+  tmpditaulist=diTauSelList_;
+  diTauSelList_.clear();
+  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+    //VBTF cuts
+    if(!(cand->leg2().isGlobal())
+       || !(cand->leg2().isTracker())
+       || !(cand->leg2().numberOfValidTrackerHits() > 10)
+       || !(cand->leg2().numberOfValidPixelHits() > 0)
+       || !(cand->leg2().numberOfValidMuonHits() > 0)
+       || !(cand->leg2().numberOfMatches() > 1)
+       || !(cand->leg2().normalizedChi2() < 10)
+       ) continue;    
+
+    //PFMuon
+    //if(!(cand->leg2().sourcePtr()->userFloat("isPFMuon")))continue;
+
+    diTauSelList_.push_back(*cand);
+  }
+  if(diTauSelList_.size()>0)countermuid_++;
+
+
 //   //muon iso cut
 //   tmpditaulist=diTauSelList_;
 //   diTauSelList_.clear();
@@ -246,26 +328,20 @@ bool TauMuFlatNtp::applySelections(){
   if(diTauSelList_.size()>0)countermumatch_++;
 
 
-//   //apply the isolation cut on the taus
-//   tmpditaulist=diTauSelList_;
-//   diTauSelList_.clear();
-//   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-//     //if(diTauSel_->leg1().tauID("byVLooseCombinedIsolationDeltaBetaCorr")<0.5)
-//     if(cand->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr") < 0.5) continue;
-//     //if(diTauSel_->leg1().tauID("byMediumCombinedIsolationDeltaBetaCorr")<0.5)
-//     //if(diTauSel_->leg1().tauID("byTightCombinedIsolationDeltaBetaCorr")<0.5)
-//     diTauSelList_.push_back(*cand);
-//   }
-
-
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-    if(cand->leg2().relIso(0.5)>0.1) continue;   
+    //-------mu iso cut here:
+    if(cand->leg2().relIso(0.5)>0.1) continue;     
+    //if(cand->leg2().sourcePtr()->userFloat("mvaIsoRings")<.xx) continue;     
+
+    //------tau iso cut here
     //if(diTauSel_->leg1().tauID("byVLooseCombinedIsolationDeltaBetaCorr")<0.5)
     if(cand->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr") < 0.5) continue;
     //if(diTauSel_->leg1().tauID("byMediumCombinedIsolationDeltaBetaCorr")<0.5)
     //if(diTauSel_->leg1().tauID("byTightCombinedIsolationDeltaBetaCorr")<0.5)
+
+    
     diTauSelList_.push_back(*cand);
   }
 
@@ -273,8 +349,8 @@ bool TauMuFlatNtp::applySelections(){
 
   categoryIso_=1;//category gets set to "signal" by default
   nditau_=diTauSelList_.size();
-  if(diTauSelList_.size()==0){//no isolated taus were found, see if there are any anti-isolated ones
-    categoryIso_=2;//category gets set to "sideband" if there was no "signal"
+  if(diTauSelList_.size()==0){//no isolated candidates were found, see if there are any anti-isolated ones
+    categoryIso_=2;//category gets set to "sideband" if there was no candidate in the signal box
     for(std::vector<cmg::TauMu>::const_iterator cand = tmpditaulist.begin(); cand != tmpditaulist.end(); ++cand)
       diTauSelList_.push_back(*cand);
   }
@@ -364,6 +440,7 @@ bool TauMuFlatNtp::fill(){
   mueta_=diTauSel_->leg2().eta();
   muphi_=diTauSel_->leg2().phi();
   muiso_=diTauSel_->leg2().relIso(0.5);
+  //muisomva_=(*(diTauSel_->leg2().sourcePtr()))->userFloat("mvaIsoRings");
   mudz_=diTauSel_->leg2().dz();
   mudxy_=diTauSel_->leg2().dxy();
   mux_=diTauSel_->leg2().vertex().x();
@@ -397,6 +474,7 @@ bool TauMuFlatNtp::fill(){
   if(diTauSel_->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr")>0.5)tauisodisc_=2;
   if(diTauSel_->leg1().tauID("byMediumCombinedIsolationDeltaBetaCorr")>0.5)tauisodisc_=3;
   if(diTauSel_->leg1().tauID("byTightCombinedIsolationDeltaBetaCorr")>0.5)tauisodisc_=4;
+  tauisodiscmva_=diTauSel_->leg1().tauID("byRawIsoMVA");
 
   
   ditaumass_=diTauSel_->mass();
@@ -439,7 +517,7 @@ bool TauMuFlatNtp::fill(){
     pfJetList_.push_back(&(*jet));
   }
 
-  //lepton clean the jet list
+  //lepton clean the jet list //need to fill njet_ here 
   fillPFJetListLC(diTauSel_);
   njet_=pfJetListLC_.size();
   
@@ -489,7 +567,7 @@ bool TauMuFlatNtp::fill(){
 
   
   //////////////////////
-  ////SM event categories
+  ////SM event categories //use mu-tau cleaned jet list
   //////////////////////
   categorySM_=-1;
   if(pfJetListLC_.size()>=2){//VBF: two leading jets must have  m>400, |eta1-eta2| < 4 and no other jet high pt in between    
@@ -641,11 +719,16 @@ void TauMuFlatNtp::endJob(){
   cout<<"counterev = "<<counterev_<<endl;
   cout<<"countergen = "<<countergen_<<endl;
   cout<<"counterveto = "<<counterveto_<<endl;
-  cout<<"countereop = "<<countereop_<<endl;
+  cout<<"countertaueop = "<<countertaueop_<<endl;
+  cout<<"countertauvtx = "<<countertauvtx_<<endl;
+  cout<<"countertaumuveto = "<<countertaumuveto_<<endl;
+  cout<<"countertaueveto = "<<countertaueveto_<<endl;
+  cout<<"countertauiso = "<<countertauiso_<<endl;
   cout<<"countertaumatch = "<<countertaumatch_<<endl;
+  cout<<"countermuvtx = "<<countermuvtx_<<endl;
+  cout<<"countermuid = "<<countermuid_<<endl;
   cout<<"countermuiso = "<<countermuiso_<<endl;
   cout<<"countermumatch = "<<countermumatch_<<endl;
-  cout<<"countertauiso = "<<countertauiso_<<endl;
   cout<<"counterditau = "<<counterditau_<<endl;
   cout<<"countertruth = "<<countertruth_<<endl;
   cout<<"counter = "<<counter_<<endl;

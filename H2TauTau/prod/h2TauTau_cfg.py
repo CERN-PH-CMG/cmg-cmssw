@@ -19,7 +19,8 @@ numberOfFilesToProcess = 5
 
 debugEventContent = False
 
-
+#1=mu-tau, 2=e-tau, 3=e-mu, 4=tau-tau, -1=all
+channel = -1
 ##########
 
 
@@ -97,21 +98,45 @@ setupRecoilCorrection( process )
 # OUTPUT definition ----------------------------------------------------------
 process.outpath = cms.EndPath()
 
-# create the full schedule
-process.schedule = cms.Schedule(
-    process.generatorPath, 
-    
-    process.tauMuFullSelPath,    
 
-    #Jose: make sure that your sequence is properly configured, I've only looked at tauMu
-    process.tauEleFullSelPath,    
-    
-    process.muEleFullSelPath,    
-    
-    process.diTauFullSelPath,    
-    
-    process.outpath
-    )
+#Jose: process.schedule doesn't have a += operator?
+if channel==-1:
+    process.schedule = cms.Schedule(
+        process.generatorPath,
+        process.tauMuFullSelPath,
+        process.tauEleFullSelPath,
+        process.muEleFullSelPath,    
+        process.diTauFullSelPath,
+        process.outpath
+        )
+elif channel==1:
+    process.schedule = cms.Schedule(
+        process.generatorPath,
+        process.tauMuFullSelPath,
+        process.outpath
+        )
+elif channel==2:
+    process.schedule = cms.Schedule(
+        process.generatorPath,
+        process.tauEleFullSelPath,
+        process.outpath
+        )
+elif channel==3:
+    process.schedule = cms.Schedule(
+        process.generatorPath,
+        process.muEleFullSelPath,
+        process.outpath
+        )
+elif channel==4:
+    process.schedule = cms.Schedule(
+        process.generatorPath,
+        process.diTauFullSelPath,
+        process.outpath
+        )
+else:
+    raise ValueError('unrecognized channel')    
+
+
 
 
 # process.tauMuFullSelPath += process.mvaMETSequence
@@ -146,10 +171,14 @@ justn = 30
 # process.cmgTauScaler.cfg.nSigma = -1
 
 from CMGTools.H2TauTau.tools.setupOutput import *
-addTauMuOutput( process, debugEventContent, addPreSel=False)
-addTauEleOutput( process, debugEventContent, addPreSel=False)
-addMuEleOutput( process, debugEventContent, addPreSel=False)
-addDiTauOutput( process, debugEventContent, addPreSel=False)
+if channel==1 or channel==-1:
+    addTauMuOutput( process, debugEventContent, addPreSel=False)
+if channel==2 or channel==-1:
+    addTauEleOutput( process, debugEventContent, addPreSel=False)
+if channel==3 or channel==-1:
+    addMuEleOutput( process, debugEventContent, addPreSel=False)
+if channel==4 or channel==-1:
+    addDiTauOutput( process, debugEventContent, addPreSel=False)
 
 
 

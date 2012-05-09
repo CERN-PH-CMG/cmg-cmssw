@@ -15,9 +15,11 @@ def setupRecoilCorrection( process ):
             return True
         else:
             return False
-    
+
+#recoil correction does not handle WH_ZH_TTH_HToTauTau, because there are two bosons
     if lookup( fileName, '/DYJets' ) or \
-           lookup( fileName, 'HToTauTau' ):
+           lookup( fileName, 'GluGluToHToTauTau' ) or \
+           lookup( fileName, 'VBF_HToTauTau' ):
         print '\tENABLED : Z->l tau mode (tau is true)'
         if hasattr( process, 'recoilCorMETTauMu'):
             process.recoilCorMETTauMu.enable = True

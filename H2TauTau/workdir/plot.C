@@ -1,5 +1,6 @@
 void plot(){  
-  gROOT->ProcessLine(".L ./tauMuConfig.C");
+  //gROOT->ProcessLine(".L ./tauMuConfig.C");
+  gROOT->ProcessLine(".L ./tauMuConfig2011Reload.C");
 
   TauMuPlotter*analysis=tauMuConfig("");
   analysis->setQCDColor(kMagenta-10);
@@ -9,7 +10,7 @@ void plot(){
   analysis->setZTauTauColor(kOrange-4);
 
   //raw yields
-  analysis->printRawYields("(categoryIso==1)*eventweight");
+  //analysis->printRawYields("(categoryIso==1)*eventweight");
 
 
   ////////////Simple Tau fake rate ratios
@@ -83,7 +84,7 @@ void plot(){
   
 
   //////////// //////////////SM0/////////////////////////
-  //analysis->plotInc("ditaumass",1,1,0,60,0,300,"m_{vis}   (GeV)","Events / 5 GeV",c);
+  //analysis->plotInc("ditaumass",1,1,0,60,0,300,"","m_{vis}   (GeV)","Events / 5 GeV",c);
   //analysis->plotSM("ditaumass",1,1,0,60,0,300,"","m_{vis}   (GeV)","",c);
   //analysis->plotInc("taupt",1,1,0,8,20,100," #tau p_{T}   (GeV)","",c);  
   //analysis->plotSM("taujetpt",1,1,-1,8,20,100,"(njet==0)"," #tau jet  p_{T}   (GeV)","",c);  
@@ -109,7 +110,7 @@ void plot(){
 
   ////////////////////////////SM1//////////////////////////
   //analysis->plotSM("transversemass",1,0,1,20,0,200,"","m_{T}   (GeV)","",c);
-  //analysis->plotSM("ditaumass",1,1,1,12,0,300,"","m_{vis}   (GeV)","Events / 25 GeV",c);
+  analysis->plotInc("ditaumass",1,1,1,12,0,300,"","m_{vis}   (GeV)","Events / 25 GeV",c);
   //analysis->plotSM("transversemass",1,0,-1,20,0,200,"(njet==1)","m_{T}   (GeV)","",c);
   //analysis->plotSM("mupt",1,1,-1,20,0,100,"(njet==1)"," #mu p_{T}   (GeV)","",c);
   //analysis->plotSM("taupt",1,1,-1,20,0,100,"(njet==1)"," #tau p_{T}   (GeV)","",c);  

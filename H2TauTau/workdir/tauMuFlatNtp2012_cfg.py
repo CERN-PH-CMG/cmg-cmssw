@@ -20,33 +20,16 @@ process.load('CMGTools.H2TauTau.tools.joseFlatNtpSample_cfi')
 from CMGTools.H2TauTau.tools.joseFlatNtpSample_cff import *
 configureFlatNtpSample(process.flatNtp,sampleName,year='2012')
 
-
 dataset_user = 'benitezj'
-#sampleTag = "/PAT_CMG_V2_4_1/H2TAUTAU_Oct26"
-#sampleTag = "/PAT_CMG_V2_4_1/H2TAUTAU_Jan26TauIso"
-#inputfiles = 'h2TauTau_fullsel_tree_CMG_.*root'
-
-#sampleTag = "/PAT_CMG_V2_5_0/H2TAUTAU_Feb11"
-#sampleTag = "/PAT_CMG_V2_5_0/H2TAUTAU_Feb11TauIso"
-
-#######QCD samples(consistent with H2TAUTAU_Feb11TauIso) ##These samples had Tau Iso applied
-#sampleTag = "/PAT_CMG_V2_5_0/H2TAUTAU_Mar21" ##following sample had the macthingCone cut removed
-#sampleTag = "/PAT_CMG_443_Mar21/H2TAUTAU_QCD_Mar23" 
-
-#sampleTag = "/PAT_CMG_V2_5_0/H2TAUTAU_Mar27"
-
-#################2012 samples
 sampleTag = "/PATCMG_TEST52/H2TAUTAU_TEST52"
-
-##which channel
 inputfiles = "tauMu_fullsel_tree_CMG_.*root"
 
 
 
 #########################
 dataset_name = process.flatNtp.path.value() + sampleTag
-firstfile = sampleJobIdx * 10 
-lastfile = (sampleJobIdx + 1 )*10
+firstfile = sampleJobIdx * 5
+lastfile = (sampleJobIdx + 1 )*5
 
 print dataset_user
 print dataset_name
@@ -58,18 +41,6 @@ print lastfile
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource( dataset_user, dataset_name, inputfiles)
 process.source.fileNames = process.source.fileNames[firstfile:lastfile]
-
-
-#process.source = cms.Source(
-#    "PoolSource",
-#    fileNames = cms.untracked.vstring(
-#    #'/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/tree_CMG_1.root'
-#    #    '/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/tree_CMG_1.root'
-#    'file:../../prod/TEST52/tauMu_fullsel_tree_CMG.root'
-#    )
-#    )
-
-
 print process.source.fileNames
 
 ##

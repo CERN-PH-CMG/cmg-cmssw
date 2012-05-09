@@ -67,9 +67,10 @@ protected:
   float taux_;
   float tauy_;
   float tauz_;
-  int   tauantie_;//"againstElectronLoose" , "againstElectronMedium" ,"againstElectronTight" ,
-  int   tauantimu_;//"againstMuonLoose"   , "againstMuonTight"  ,
-  int   tauisodisc_;//"byVLooseCombinedIsolationDeltaBetaCorr",    "byLooseCombinedIsolationDeltaBetaCorr",    "byMediumCombinedIsolationDeltaBetaCorr",    "byTightCombinedIsolationDeltaBetaCorr"; not using this sequence: "byLooseIsolation"  ,    "byMediumIsolation" ,    "byTightIsolation"  ,    "byVLooseIsolation"  ,    "decayModeFinding"  ,
+  int   tauantie_;
+  int   tauantimu_;
+  int   tauisodisc_;
+  int   tauisodiscmva_;
   float tauiso_;
   float taujetpt_;
   float taujeteta_;
@@ -78,6 +79,7 @@ protected:
   float mueta_;
   float muphi_;
   float muiso_;
+  float muisomva_;
   float mudz_;
   float mudxy_;
   float mux_;
@@ -137,11 +139,16 @@ private:
   int counterev_;
   int countergen_;
   int counterveto_;
-  int countereop_;
+  int countertaueop_;
+  int countertauvtx_;
+  int countertaumuveto_;
+  int countertaueveto_;
+  int countertauiso_;
   int countertaumatch_;
+  int countermuvtx_;
+  int countermuid_;
   int countermuiso_;
   int countermumatch_;
-  int countertauiso_;
   int counterditau_;
   int countertruth_;
   int counter_;
