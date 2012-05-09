@@ -1,5 +1,16 @@
 import FWCore.ParameterSet.Config as cms
 
+
+# Energy scale corrections and MC smearing
+from EgammaCalibratedGsfElectrons.CalibratedElectronProducers.calibratedGsfElectrons_cfi import calibratedGsfElectrons as gsfElectrons
+gsfElectrons.updateEnergyError = cms.bool(True)
+RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
+    gsfElectrons = cms.PSet(
+        initialSeed = cms.untracked.uint32(1),
+        engineName = cms.untracked.string('TRandom3')
+    ),
+)
+
 # prepare reco information
 # from PhysicsTools.PatAlgos.recoLayer0.electronId_cff import *
 from PhysicsTools.PatAlgos.recoLayer0.electronIsolation_cff import *
@@ -110,13 +121,6 @@ PATElectronSequence = cms.Sequence(
     patConversions 
     )
 
-
-# Energy scale corrections and MC smearing
-from EgammaCalibratedGsfElectrons.CalibratedElectronProducers.calibratedGsfElectrons_cfi import *
-calibratedGsfElectrons.updateEnergyError = cms.bool(True)
-RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
-    calibratedGsfElectrons = cms.PSet(
-        initialSeed = cms.untracked.uint32(1),
-        engineName = cms.untracked.string('TRandom3')
-    ),
-)
+if cmsswIs44X():
+    # the calibration doesn't exist yet for 52X
+    PATElectronSequence.insert( 0, gsfElectrons )

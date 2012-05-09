@@ -1,4 +1,4 @@
-import os
+import FWCore.ParameterSet.Config as cms
 
 def getEleEnergyCorrectionType(fileName):
     """Return the string to be used to configure calibratedGsfElectrons"""    
@@ -27,3 +27,13 @@ def getEleEnergyCorrectionType(fileName):
         return "Prompt"
     else :
         return "Unknown"
+
+
+def setupGsfElectronCalibration( process, runOnMC ):
+    eleCorrectionType = getEleEnergyCorrectionType(process.source.fileNames[0])
+    if (eleCorrectionType=="Unknown"):
+        err = 'ERROR: Could not determine electron scale correction to be applied from dataset name {file}'.format(process.source.fileNames[0])
+        raise ValueError(err)
+    print "Setting process.calibratedGsfElectrons.inputDataset = ", eleCorrectionType
+    process.gsfElectrons.inputDataset = eleCorrectionType
+    process.gsfElectrons.isMC = cms.bool(runOnMC)

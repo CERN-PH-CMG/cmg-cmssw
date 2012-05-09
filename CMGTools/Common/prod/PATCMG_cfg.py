@@ -39,7 +39,7 @@ print process.source.fileNames
 print sep_line 
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 print 'loading the main CMG sequence'
 
@@ -129,35 +129,12 @@ process.p += process.postPathCounter
 
 ########################################################
 ## Setup electron energy corrections
-## (must be done after the path set up)
 ########################################################
 
-# eleCorrectionType = "Fall11" # uncomment this to override the automatic search.
-from CMGTools.Common.Tools.getEleEnergyCorrectionType import getEleEnergyCorrectionType
-try:
-    eleCorrectionType
-except NameError:
-    eleCorrectionType = getEleEnergyCorrectionType(process.source.fileNames[0])
-if (eleCorrectionType=="Unknown"):
-    print "ERROR: Could not determine electron scale correction to be applied from dataset name:"
-    print process.source.fileNames[0]
-    print "You can override the value setting manually e.g. eleCorrectionType = 'None' in the cfg."
-    exit()
-elif (eleCorrectionType!="None"):
-    print "Setting process.calibratedGsfElectrons.inputDataset = ", eleCorrectionType
-    process.calibratedGsfElectrons.inputDataset = eleCorrectionType
-    process.calibratedGsfElectrons.isMC = cms.bool(runOnMC)
-    # print "Replacing gsfElectrons with calibratedGsfElectrons..."
-    for modulename in process.p.moduleNames():
-        module = getattr(process, modulename)
-        ml = dir(module)
-        for attr in ml:
-            v = getattr(module,attr)
-            if (isinstance(v, cms.InputTag) and v == cms.InputTag("gsfElectrons")):
-                setattr(module,attr,"calibratedGsfElectrons")
-                #print "Setting ", module, ".", attr, " = ", getattr(module,attr)
-    process.PATCMGSequence.replace(process.PATCMGElectronSequence,
-                                   process.calibratedGsfElectrons + process.PATCMGElectronSequence )
+if cmsswIs44X():
+    from CMGTools.Common.Tools.setupGsfElectronCalibration import setupGsfElectronCalibration
+    setupGsfElectronCalibration( process, runOnMC )
+
 
 ########################################################
 ## PAT output definition
