@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <map>
 #include <set>
+#include <iostream>
 
 cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
@@ -34,7 +35,7 @@ cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm
     const edm::TriggerNames& triggerNames = iEvent.triggerNames(*triggerResults);
     edm::TriggerNames::Strings const& names = triggerNames.triggerNames();
     
-    unsigned int pset = hlt_.prescaleSet(iEvent,iSetup);
+    int pset = hlt_.prescaleSet(iEvent,iSetup);
 
     // Store which triggers passed and failed.
     std::map<std::string,bool> triggerMap;
@@ -82,7 +83,7 @@ cmg::TriggerObjectFactory::event_ptr cmg::TriggerObjectFactory::create(const edm
         // passed.
         cmg::TriggerObject to;
         for(std::map<std::string,bool>::const_iterator jt = triggerMap.begin(); jt != triggerMap.end(); ++jt) {
-            const int prescale = (pset > 0) ? hlt_.prescaleValue(pset,jt->first) : pset;
+            const int prescale = (pset < 0) ? pset : hlt_.prescaleValue(pset,jt->first);
             to.addSelectionWithPrescale(jt->first,jt->second,prescale);
             //std::cout << "Prescale: " << jt->first << ":" << prescale << "\t - " << jt->second << " " << to.getPrescale(jt->first) << std::endl;
         }
