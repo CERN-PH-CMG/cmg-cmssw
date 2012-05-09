@@ -1,5 +1,5 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_unification_08May12'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_mvaisoe_09May12'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_lead4_10May2012'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-02'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_eventContent_09May12'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_09May12'),
@@ -11,12 +11,12 @@
   ('DataFormats/TauReco', 'DataFormats/TauReco', 'CMSSW_5_2_4'),
   ('EGamma/EGammaAnalysisTools', 'UserCode/EGamma/EGammaAnalysisTools', 'V00-00-08'),
   ('EGamma/EGammaAnalysisToolsSiXie', 'UserCode/sixie/EGamma/EGammaAnalysisTools', 'cbern_09May12'),
-  ('EgammaCalibratedGsfElectrons/CalibratedElectronAlgos',
-   'UserCode/EGamma/EgammaCalibratedGsfElectrons/CalibratedElectronAlgos',
-   'Shervin20022012_2011Jan16ReRec0_and_Shervin05032012_Fall11MC_smearing_V01'),
-  ('EgammaCalibratedGsfElectrons/CalibratedElectronProducers',
-   'UserCode/EGamma/EgammaCalibratedGsfElectrons/CalibratedElectronProducers',
-   'Shervin20022012_2011Jan16ReRec0_and_Shervin05032012_Fall11MC_smearing_V01'),
+  ( 'EgammaCalibratedGsfElectrons/CalibratedElectronAlgos',
+    'UserCode/EGamma/EgammaCalibratedGsfElectrons/CalibratedElectronAlgos',
+    'Shervin20022012_2011Jan16ReRec0_and_Shervin05032012_Fall11MC_smearing_V01'),
+  ( 'EgammaCalibratedGsfElectrons/CalibratedElectronProducers',
+    'UserCode/EGamma/EgammaCalibratedGsfElectrons/CalibratedElectronProducers',
+    'Shervin20022012_2011Jan16ReRec0_and_Shervin05032012_Fall11MC_smearing_V01'),
   ('FWCore/GuiBrowsers', 'FWCore/GuiBrowsers', 'V00-00-63'),
   ('GeneratorInterface/GenFilters', 'GeneratorInterface/GenFilters', 'V00-11-00-01'),
   ('JetMETAnalysis/ecalDeadCellTools', 'JetMETAnalysis/ecalDeadCellTools', 'Colin_TaggingMode_June30'),
@@ -35,6 +35,3 @@
   ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-17'),
   ('RecoTauTag/TauTagTools', 'RecoTauTag/TauTagTools', 'CMSSW_5_2_4'),
   ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseNov14')]
-# The following packages were not in the input release_info.
-# Please make sure that the CVS module is correct!
-#	EGamma/EGammaAnalysisToolsSiXie          cbern_09May12
