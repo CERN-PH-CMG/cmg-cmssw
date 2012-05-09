@@ -30,8 +30,8 @@ debugEventContent = False
 # process.setName_('H2TAUTAU')
 
 dataset_user = 'cmgtools' 
-# dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_1_0'
-dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5/PAT_CMG_V5_1_0'
+dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_1_0'
+# dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5/PAT_CMG_V5_1_0'
 
 dataset_files = 'cmgTuple.*root'
 
@@ -52,9 +52,6 @@ process.source = datasetToSource(
 #    'file:../../../Common/prod/TEST/cmgTuple_HToTauTau.root'
 #    )
 #    )
-
-
-# process.source.fileNames = ['file:ttjets.root']
 
 # restricting the number of files to process to a given number
 if numberOfFilesToProcess>0:
@@ -100,7 +97,6 @@ setupRecoilCorrection( process )
 # OUTPUT definition ----------------------------------------------------------
 process.outpath = cms.EndPath()
 
-
 # create the full schedule
 process.schedule = cms.Schedule(
     process.generatorPath, 
@@ -118,7 +114,8 @@ process.schedule = cms.Schedule(
     )
 
 
-
+# process.tauMuFullSelPath += process.mvaMETSequence
+# process.mvaMETTauMu.verbose = True
 
 print sep_line
 print 'INPUT:'
@@ -160,4 +157,5 @@ addDiTauOutput( process, debugEventContent, addPreSel=False)
 # Message logger setup.
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
-process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
+process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
+

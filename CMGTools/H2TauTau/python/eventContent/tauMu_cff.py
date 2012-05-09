@@ -4,12 +4,7 @@ import copy
 from CMGTools.H2TauTau.eventContent.common_cff import * 
 
 tauMuSpecific = [
-    'drop *_cmgTauMu_*_*',
-    'drop *_cmgTauMuPreSel_*_*',
-    'drop *_cmgTauMuFullSel_*_*',
-    'drop *_recoilCorMETTauMu_*_*',
-    'drop *_cmgTauMuCorPreSel_*_*',
-    'keep *_cmgTauMuCorSVFitPreSel_*_*',
+    'drop cmgTaucmgMuoncmgDiObjects_*_*_*',
     'keep *_cmgTauMuCorSVFitFullSel_*_*',
     ]
 

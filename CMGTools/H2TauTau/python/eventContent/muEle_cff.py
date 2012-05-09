@@ -4,12 +4,7 @@ import copy
 from CMGTools.H2TauTau.eventContent.common_cff import * 
 
 muEleSpecific = [
-    'drop *_cmgMuEle_*_*',
-    'drop *_cmgMuElePreSel_*_*',
-    'drop *_cmgMuEleFullSel_*_*',
-    'drop *_recoilCorMETMuEle_*_*',
-    'drop *_cmgMuEleCorPreSel_*_*',
-    'keep *_cmgMuEleCorSVFitPreSel_*_*',
+    'drop cmgMuoncmgElectroncmgDiObjects_*_*_*',
     'keep *_cmgMuEleCorSVFitFullSel_*_*',
     ]
 

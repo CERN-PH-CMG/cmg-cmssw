@@ -42,6 +42,17 @@ cmgTauMuCorPreSel = cmgTauMuCor.clone()
 cmgTauMuCorPreSel.cfg.metCollection = 'recoilCorMETTauMu'
 cmgTauMuCorPreSel.cfg.diObjectCollection = 'cmgTauMuPreSel'
 
+# mva MET
+
+from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
+from CMGTools.Common.miscProducers.mvaMET.mvaMET_cff import *
+mvaMETTauMu.recBosonSrc = 'cmgTauMuPreSel'
+
+mvaMETSequence = cms.Sequence(
+    goodPVFilter + 
+    mvaMETTauMu
+    )
+
 # SVFit
 
 cmgTauMuCorSVFitPreSel = tauMuSVFit.clone()
