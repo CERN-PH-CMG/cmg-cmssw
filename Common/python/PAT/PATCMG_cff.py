@@ -50,11 +50,6 @@ PATCMGPileUpSubtractionSequence = cms.Sequence(
     pfParticleSelectionSequence 
     )
 
-# EVENT CLEANING   ----------------------------
-
-from CMGTools.Common.eventCleaning.eventCleaning_cff import *
-trackingFailureFilterCMG.JetSource = 'ak5PFJets'
-
 # RHO's            ----------------------------
 
 from CMGTools.Common.PAT.rho_cff import *
@@ -177,7 +172,6 @@ PATCMGMetRegressionSequence = cms.Sequence(
 PATCMGSequence = cms.Sequence(
     PATCMGGenSequence +
     PATCMGTriggerSequence +
-    eventCleaningSequence + 
     PATCMGPileUpSubtractionSequence +
     PATCMGRhoSequence +
     PATCMGMuonSequence +
