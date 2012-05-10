@@ -54,6 +54,8 @@ process.source = datasetToSource(
 #    )
 #    )
 
+process.source.fileNames = ['file:DYJets.root']
+
 # restricting the number of files to process to a given number
 if numberOfFilesToProcess>0:
     process.source.fileNames = process.source.fileNames[:numberOfFilesToProcess]

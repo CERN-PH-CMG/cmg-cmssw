@@ -34,24 +34,44 @@ tauMuStdSequence = cms.Sequence( cmgTauScaler +
 
 # this is done for preselected di-taus
 
-# recoil correction
+# mva MET
 
-recoilCorMETTauMu =  recoilCorrectedMETTauMu.clone( recBosonSrc = 'cmgTauMuPreSel')
+from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
+from CMGTools.Common.miscProducers.mvaMET.mvaMET_cff import *
+from CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi import cmgBaseMETFromPFMET
+mvaMETTauMu.recBosonSrc = 'cmgTauMuPreSel'
+
+mvaBaseMETTauMu = cmgBaseMETFromPFMET.clone()
+mvaBaseMETTauMu.cfg.inputCollection = 'mvaMETTauMu'
+
+cmgTauMuMVAPreSel = cmgTauMuCor.clone()
+cmgTauMuMVAPreSel.cfg.metCollection = 'mvaBaseMETTauMu'
+cmgTauMuMVAPreSel.cfg.diObjectCollection = 'cmgTauMuPreSel'
+
+mvaMETSequence = cms.Sequence(
+    goodPVFilter + 
+    mvaMETTauMu +
+    mvaBaseMETTauMu+
+    cmgTauMuMVAPreSel
+    )
+
+# recoil correction
+doMVAMet = False
+metForRecoil = 'cmgPFMET'
+diTausForRecoil = 'cmgTauMuPreSel'
+if doMVAMet:
+    # in this case the MET will be taken from the di-tau
+    metForRecoil = 'mvaBaseMETTauMu'
+    diTausForRecoil = 'cmgTauMuMVAPreSel'
+
+recoilCorMETTauMu =  recoilCorrectedMETTauMu.clone(
+    recBosonSrc = diTausForRecoil,
+    metSrc = metForRecoil
+    )
 
 cmgTauMuCorPreSel = cmgTauMuCor.clone()
 cmgTauMuCorPreSel.cfg.metCollection = 'recoilCorMETTauMu'
-cmgTauMuCorPreSel.cfg.diObjectCollection = 'cmgTauMuPreSel'
-
-## mva MET
-#
-#from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
-#from CMGTools.Common.miscProducers.mvaMET.mvaMET_cff import *
-#mvaMETTauMu.recBosonSrc = 'cmgTauMuPreSel'
-#
-#mvaMETSequence = cms.Sequence(
-#    goodPVFilter + 
-#    mvaMETTauMu
-#    )
+cmgTauMuCorPreSel.cfg.diObjectCollection = diTausForRecoil
 
 # SVFit
 
@@ -65,6 +85,9 @@ tauMuCorSVFitSequence = cms.Sequence( recoilCorMETTauMu +
                                       cmgTauMuCorPreSel +
                                       cmgTauMuCorSVFitPreSel +
                                       cmgTauMuCorSVFitFullSel )
+
+if doMVAMet:
+    tauMuCorSVFitSequence.insert(0, mvaMETSequence)
 
 tauMuSequence = cms.Sequence( tauMuStdSequence +
                               tauMuCorSVFitSequence
