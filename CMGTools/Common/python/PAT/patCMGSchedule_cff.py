@@ -1,4 +1,5 @@
 import FWCore.ParameterSet.Config as cms
+from CMGTools.Common.Tools.cmsswRelease import *
 
 #this one
 def getSchedule(process, runOnMC):
@@ -19,4 +20,6 @@ def getSchedule(process, runOnMC):
         )
     if runOnMC:
         result.append(process.totalKinematicsFilterPath)
+    if cmsswIs52X():
+        result.append(process.hcalLaserFilterFromAODPath)
     return result

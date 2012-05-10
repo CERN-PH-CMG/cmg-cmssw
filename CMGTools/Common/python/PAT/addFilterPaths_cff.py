@@ -1,4 +1,5 @@
 import FWCore.ParameterSet.Config as cms
+import sys
 
 #in this file, we run the various filters and store the results
 
@@ -44,3 +45,11 @@ primaryVertexFilterPath = cms.Path(primaryVertexFilter)
 
 from DPGAnalysis.Skims.goodvertexSkim_cff import noscraping
 noscrapingFilterPath = cms.Path(noscraping)
+
+#the HCal noise filter only works on AOD in 5.2
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs52X
+if cmsswIs52X():
+    hcalLaserFilterFromAOD = cms.EDFilter("HcalLaserFilterFromAOD")
+    hcalLaserFilterFromAODPath = cms.Path(hcalLaserFilterFromAOD)
+else:
+    print >> sys.stderr, 'hcalLaserFilterFromAOD only available in releases >= 5.2'
