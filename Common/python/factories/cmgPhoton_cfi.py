@@ -6,10 +6,10 @@ from CMGTools.Common.selections.kinematics_cfi import kinematics
 
 photonFactory = cms.PSet(
     inputCollection = cms.InputTag("pfSelectedPhotons"),
-    isoDepWithCharged = cms.InputTag("isoDepPhotonWithCharged"),
-    isoDepWithPhotons = cms.InputTag("isoDepPhotonWithPhotons"),
-    isoDepWithNeutral = cms.InputTag("isoDepPhotonWithNeutral"),
-    isoDepWithPU = cms.InputTag("isoDepPhotonWithPU"),
+    isoDepWithCharged = cms.InputTag("phPFIsoDepositCharged"),
+    isoDepWithPhotons = cms.InputTag("phPFIsoDepositGamma"),
+    isoDepWithNeutral = cms.InputTag("phPFIsoDepositNeutral"),
+    isoDepWithPU = cms.InputTag("phPFIsoDepositPU"),
     #maxAbsoluteIsolation = cms.double(10.),
     #maxRelativeIsolation = cms.double(1.0),
     maxAbsoluteIsolation = cms.double(1E9),
