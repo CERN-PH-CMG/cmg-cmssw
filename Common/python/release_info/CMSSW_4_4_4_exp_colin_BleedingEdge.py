@@ -1,5 +1,5 @@
-[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_unification_08May12'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_lead4_10May2012'),
+[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_metreg_10May12'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_metreg_10May12'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-02'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_eventContent_09May12'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_09May12'),
