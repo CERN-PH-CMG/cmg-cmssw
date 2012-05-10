@@ -53,7 +53,11 @@ patEventContentCMG.extend([
     'keep recoPFJets_ak5PFJetsCHSpruned_SubJets_*',
     'keep patJets_selectedPatJetsCHSpruned_*_*',
     'keep *_puJetId_*_*',
-    'keep *_puJetIdCHS_*_*'
+    'keep *_puJetIdCHS_*_*',
+    'keep *_isoDepPhotonWithCharged_*_*',
+    'keep *_isoDepPhotonWithNeutral_*_*',
+    'keep *_isoDepPhotonWithPhotons_*_*',
+    'keep *_pfSelectedPhotons_*_*'
     ])
 
 patEventContentCMG.extend( everything )
