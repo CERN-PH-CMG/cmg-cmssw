@@ -91,6 +91,7 @@ RecoilCorrectedMETProducer< RecBosonType >::RecoilCorrectedMETProducer(const edm
     throw cms::Exception( err ); 
   }
   
+
   corrector_ = new RecoilCorrector(fileCorrectTo);
   corrector_->addDataFile( fileZmmData );
   corrector_->addMCFile( fileZmmMC );
@@ -107,15 +108,16 @@ void RecoilCorrectedMETProducer<RecBosonType>::produce(edm::Event & iEvent, cons
 
   edm::Handle< std::vector<MetType> > metH;
   iEvent.getByLabel(metSrc_, metH);
-
+  
   edm::Handle< std::vector<RecBosonType> > recBosonH;
   iEvent.getByLabel(recBosonSrc_, recBosonH);
 
 
-  if( metH->size()!=1) 
-    throw cms::Exception("Input MET collection should have size 1.");
+  if( metH->size()!=1 && metH->size()!=recBosonH->size() ) 
+    throw cms::Exception("Input MET collection should have size 1, or have a size equal to the size of the rec boson collection");
 
-  if( ! enable_ ) {
+  if( ! enable_ && metH->size()>0) {
+    assert( metH->size()==1 );
     const MetType& met = (*metH)[0];
     // when disabled, put one copy of the MET in the output collection
     // for each rec boson in input. 
@@ -133,12 +135,9 @@ void RecoilCorrectedMETProducer<RecBosonType>::produce(edm::Event & iEvent, cons
   if( genBosonH->size()!=1) 
     throw cms::Exception("Input GenBoson collection should have size 1.");
  
-  const MetType& metObj = (*metH)[0];
-  double uncMet = metObj.et();
-  double uncMetPhi = metObj.phi();
-  const reco::GenParticle& genBoson = (*genBosonH)[0];
-  double genPt = genBoson.pt(); 
-  double genPhi = genBoson.phi();
+    const reco::GenParticle& genBoson = (*genBosonH)[0];
+    double genPt = genBoson.pt(); 
+    double genPhi = genBoson.phi();
 
 
   // check that the user is doing nothing wrong. 
@@ -178,16 +177,25 @@ void RecoilCorrectedMETProducer<RecBosonType>::produce(edm::Event & iEvent, cons
     for( unsigned iJet = 0; iJet<jetH->size(); ++iJet) {
       std::cout<<"\t"<<jetH->at(iJet)<<std::endl;
     }
-    std::cout<<"unc MET :  pt="<<uncMet<<", phi="<<uncMetPhi<<std::endl;
+    //    std::cout<<"unc MET :  pt="<<uncMet<<", phi="<<uncMetPhi<<std::endl;
     std::cout<<"Looping on reconstructed bosons:"<<std::endl;
   }
   
   OutPtr pOut(new std::vector< MetType > ); 
   for( unsigned i=0; i<recBosonH->size(); ++i) {
     const RecBosonType& recBoson = recBosonH->at(i);
+    
+    MetType metObj = (*metH)[0];
+    
+    if(metH->size()==recBosonH->size())
+      metObj = (*metH)[i];
+
+    double uncMet = metObj.et();
+    double uncMetPhi = metObj.phi();
 
     if(verbose_) {
       std::cout<<"  ---------------- "<<std::endl;
+      std::cout<<"\told MET (et,phi): "<<uncMet<<","<<uncMetPhi<<std::endl;
       std::cout<<"\trec boson: "<<recBoson<<std::endl;
       std::cout<<"\t\tleg1: "<<recBoson.leg1()<<std::endl;
       std::cout<<"\t\tleg2: "<<recBoson.leg2()<<std::endl;

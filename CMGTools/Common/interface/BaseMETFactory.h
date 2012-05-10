@@ -52,9 +52,30 @@ BaseMETFactory<pat::MET>::event_ptr BaseMETFactory<pat::MET>::create(const edm::
   }
 
   return result;
-}
+ }
   
-}
+
+template <>
+BaseMETFactory<reco::PFMET>::event_ptr BaseMETFactory<reco::PFMET>::create(const edm::Event& iEvent, const edm::EventSetup&){
+  // here read a view 
+  typedef edm::View<reco::PFMET> ViewType; 
+  edm::Handle< ViewType > inputs;
+  iEvent.getByLabel(inputLabel_,inputs);
+  
+  BaseMETFactory<reco::PFMET>::event_ptr result(new BaseMETFactory<reco::PFMET>::collection);
+  for(ViewType::const_iterator met = inputs->begin(); met != inputs->end(); ++met) {
+
+    const reco::PFMET& cand = *met;
+    cmg::BaseMET m(cand);
+    m.sumEt_ = cand.sumEt();
+    result->push_back(m);
+  }
+
+  return result;
+ }
+  
+
+
 
 template <class T>
 void cmg::BaseMETFactory<T>::calcET(const reco::Candidate& cand, double* ex, double* ey, double* et){
@@ -72,7 +93,7 @@ void cmg::BaseMETFactory<T>::calcET(const reco::Candidate& cand, double* ex, dou
     *ex = (*et)*cosphi;
     *ey = (*et)*sinphi;
     
-}
+ }
 
 
 ///Recalculate the MET using any collection of candidates
@@ -117,6 +138,7 @@ typename cmg::BaseMETFactory<T>::event_ptr cmg::BaseMETFactory<T>::create(const 
   result->push_back(met);
 
   return result;
+ }
 }
 
 #endif /*_CMGTools_CommonTools_BaseMetFactory_H_*/
