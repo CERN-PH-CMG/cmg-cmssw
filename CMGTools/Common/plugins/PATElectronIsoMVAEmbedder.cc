@@ -266,7 +266,7 @@ void PATElectronIsoMVAEmbedder::produce(edm::Event& iEvent, const edm::EventSetu
     double isomva = fElectronIsoMVA_->isoMvaValue (electron.pt (),
                                     electron.eta (),
                                     *rho,
-                                    ElectronEffectiveArea::kEleEANoCorr, //PG FIXME THIS IS DUMMY
+                                    ElectronEffectiveArea::kEleEAData2011,
                                     tmpChargedIso_DR0p0To0p1,
                                     tmpChargedIso_DR0p1To0p2,
                                     tmpChargedIso_DR0p2To0p3,
