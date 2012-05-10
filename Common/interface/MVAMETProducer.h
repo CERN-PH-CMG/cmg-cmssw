@@ -255,7 +255,7 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
       std::cout<<"\trec boson: "<<recBoson<<std::endl;
       std::cout<<"\t\tleg1: "<<recBoson.leg1()<<std::endl;
       std::cout<<"\t\tleg2: "<<recBoson.leg2()<<std::endl;
-      std::cout<<"\t\tNEW MET: "<<lMVAMetInfo.first.pt()<<std::endl;
+      std::cout<<"\t\tNEW MET: "<<lMVAMetInfo.first.Et()<<std::endl;
     }
     // FIXME add matrix
   }

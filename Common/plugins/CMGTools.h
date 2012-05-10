@@ -106,6 +106,7 @@ typedef PhysicsObjectProducer<cmg::PFJetFactory> PFJetPOProducer;
 typedef PhysicsObjectProducer<cmg::BaseMETFactory<> > BaseMETPOProducer;
 typedef PhysicsObjectProducer<cmg::BaseMETModificationFactory> BaseMETModifier;
 typedef PhysicsObjectProducer<cmg::BaseMETFactory<pat::MET> > PATMETPOProducer;
+typedef PhysicsObjectProducer<cmg::BaseMETFactory<reco::PFMET> > PFMETPOProducer;
 typedef PhysicsObjectProducer<cmg::METScaler> METPOScaler;
 typedef PhysicsObjectProducer<cmg::PFCandidateFactory> PFCandidatePOProducer;
 typedef PhysicsObjectProducer<cmg::GenParticleFactory> GenParticlePOProducer;

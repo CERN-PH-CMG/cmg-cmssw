@@ -60,7 +60,7 @@ class LeptonSettingTool : public SettingTool<LeptonType,cmg::Lepton<LeptonType> 
      void set(const TrackType& track, cmg::Lepton<LeptonType>* const obj, const edm::Event&, const edm::EventSetup&) const;
 
    //Set the dxy and dz using a vertex point for the object obtained from the PAT object
-   void set(const reco::TrackBase::Point objvertex, cmg::Lepton<LeptonType>* const obj, const edm::Event&, const edm::EventSetup&) const;
+   void set(const reco::TrackBase::Point& objvertex, cmg::Lepton<LeptonType>* const obj, const edm::Event&, const edm::EventSetup&) const;
    
    enum vertex_types {Primary=0,BeamSpot,Other=-1};
    
@@ -177,7 +177,7 @@ void cmg::LeptonSettingTool<LeptonType>::set(const TrackType& track, cmg::Lepton
 }
 
 template <class LeptonType>
-void cmg::LeptonSettingTool<LeptonType>::set(const reco::TrackBase::Point objvertex, cmg::Lepton<LeptonType>* const obj,
+void cmg::LeptonSettingTool<LeptonType>::set(const reco::TrackBase::Point& objvertex, cmg::Lepton<LeptonType>* const obj,
 	 const edm::Event& iEvent, const edm::EventSetup& iSetup) const{
   
   reco::TrackBase::Point vertex = getVertex(iEvent,iSetup);
