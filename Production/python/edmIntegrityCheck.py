@@ -238,7 +238,10 @@ class IntegrityCheck(object):
                     print '\t\t %s: %s (Valid duplicate)' % (name, str(status))
         print 'Total entries in DBS: %i' % self.eventsTotal
         print 'Total entries in processed files: %i' % self.eventsSeen
-        print 'Fraction of dataset processed: %f' % (self.eventsSeen/(1.*self.eventsTotal))
+        if self.eventsTotal>0:
+            print 'Fraction of dataset processed: %f' % (self.eventsSeen/(1.*self.eventsTotal))
+        else:
+            print 'Total entries in DBS not determined' 
         if self.bad_jobs:
             print "Bad Crab Jobs: '%s'" % ','.join([str(j) for j in self.bad_jobs])
         
@@ -277,7 +280,10 @@ class IntegrityCheck(object):
                     totalBad += 1
                 
         report['PrimaryDatasetEntries'] = self.eventsTotal
-        report['PrimaryDatasetFraction'] = (self.eventsSeen/(1.*self.eventsTotal))
+        if self.eventsTotal>0:
+            report['PrimaryDatasetFraction'] = (self.eventsSeen/(1.*self.eventsTotal))
+        else:
+            report['PrimaryDatasetFraction'] = -1.
         report['FilesEntries'] = self.eventsSeen
 
         report['FilesGood'] = totalGood
