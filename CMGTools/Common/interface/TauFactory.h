@@ -36,7 +36,7 @@ namespace cmg{
         
     LeptonSettingTool<pat::TauPtr> leptonFactory_;
     
- 
+
   };
 
 }
