@@ -24,9 +24,6 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
   //set the generic quantities first
   leptonFactory_.set(input,output,iEvent,iSetup);
 
-  //in standard PAT need to use pat::Tau::vertex() to set the vertex
-  output->leadChargedHadrVertex_ = input->vertex();
-  leptonFactory_.set(input->vertex(),output,iEvent,iSetup);   //dz and dxy 
 
   reco::PFCandidateRef leadChargedHadrCand=input->leadPFChargedHadrCand();
   if(leadChargedHadrCand.isNonnull()){
@@ -34,6 +31,12 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
     output->leadPFChargedHadrCand_ = cmg::Tau::Constituent( cand.pdgId(), 
 							    cand.p4().pt(), cand.p4().eta(), 
 							    cand.p4().phi(),  cand.p4().mass());
+
+    if(cand.trackRef().isNonnull() && cand.trackRef().isAvailable()){
+      output->leadChargedHadrVertex_ = cand.trackRef()->vertex();
+      leptonFactory_.set(cand.trackRef(),output,iEvent,iSetup);   //dz and dxy 
+    }
+
 
     //COLIN a bit of redundancy here ... should clean up at some point
     output->leadChargedHadrPt_  = leadChargedHadrCand->pt();
