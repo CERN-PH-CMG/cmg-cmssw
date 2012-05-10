@@ -15,9 +15,9 @@ def setupRecoilCorrection( process ):
             return True
         else:
             return False
-
-#recoil correction does not handle WH_ZH_TTH_HToTauTau, because there are two bosons
-    if lookup( fileName, '/DYJets' ) or \
+        
+    #recoil correction does not handle WH_ZH_TTH_HToTauTau, because there are two bosons
+    if lookup( fileName, 'DYJets' ) or \
            lookup( fileName, 'GluGluToHToTauTau' ) or \
            lookup( fileName, 'VBF_HToTauTau' ):
         print '\tENABLED : Z->l tau mode (tau is true)'
@@ -36,7 +36,7 @@ def setupRecoilCorrection( process ):
             process.recoilCorMETMuEle.fileCorrectTo = '/'.join([rootfile_dir,
                                                                 'recoilfit_zjets_ltau_njet.root'])
             process.recoilCorMETMuEle.leptonLeg = 0
-    elif lookup( fileName, '/WJetsToLNu' ):
+    elif lookup( fileName, 'WJetsToLNu' ):
         print '\tENABLED : W+jet mode (tau is fake)'
         if hasattr( process, 'recoilCorMETTauMu'):
             process.recoilCorMETTauMu.enable = True
