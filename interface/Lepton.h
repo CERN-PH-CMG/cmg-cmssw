@@ -119,7 +119,8 @@ class Lepton : public cmg::PhysicsObjectWithPtr< LeptonType >{
   /// error on 3d impact parameter
   float edB3D_;
 
- private:
+  /// Photon is now inheriting from Lepton -> protected instead of private.
+  //private:
   ///COLIN: why a charge_ datamember here? should already be in a base class
   int charge_;
 
