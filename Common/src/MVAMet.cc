@@ -388,8 +388,8 @@ std::pair<MVAMet::LorentzVector,TMatrixD> MVAMet::GetMet(std::vector<LorentzVect
 							 const reco::PFMET *iNoPUMet,		
 							 const reco::PFMET *iPUMet,
 							 const reco::PFMET *iPUCMet,
-							 LorentzVector *iLeadJet,
-							 LorentzVector *i2ndJet,
+							 const LorentzVector *iLeadJet,
+							 const LorentzVector *i2ndJet,
 							 int iNJetsGt30,
 							 int iNJetsGt1,
 							 int iNGoodVtx,
@@ -455,8 +455,8 @@ std::pair<MVAMet::LorentzVector,TMatrixD> MVAMet::GetMet(std::vector<LorentzVect
   TLorentzVector lVVec (0,0,0,0);   lVVec .SetPtEtaPhiM(lPtVis ,0,lPhiVis ,0);
   if(lMVA < 0) lUVec .RotateZ(TMath::Pi());                                                   
   lUVec      -= lVVec;
-
-  LorentzVector  lMetVec (0,0,0,0);   lMetVec.SetCoordinates(lUVec.Px(),lUVec.Py(),lUVec.Pz(),lUVec.E());
+  TLorentzVector lFinal  (0,0,0,0); lFinal.SetPtEtaPhiM(lUVec.Pt(),0.,lUVec.Phi(),0);
+  LorentzVector  lMetVec (0,0,0,0);   lMetVec.SetCoordinates(lFinal.Px(),lFinal.Py(),lFinal.Pz(),lFinal.E());
   TMatrixD     lCov(2,2);
 
   //Covariance matrix perpendicular and parallel to the recoil (sort of correct)

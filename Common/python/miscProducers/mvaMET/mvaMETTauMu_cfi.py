@@ -16,7 +16,7 @@ mvaMETTauMu = cms.EDProducer(
     nJetsPtGt1Src = cms.InputTag('nJetsPtGt1'),
     rhoSrc = cms.InputTag('kt6PFJets','rho'),
     enable = cms.bool(True),
-    verbose = cms.untracked.bool( False )
+    verbose = cms.untracked.bool( True )
     #COLIN: make delta R a parameter
     )
 

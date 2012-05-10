@@ -32,6 +32,7 @@ DEFINE_FWK_MODULE(RecoilCorrectedMETProducerTauEle);
 DEFINE_FWK_MODULE(RecoilCorrectedMETProducerMuEle);
 DEFINE_FWK_MODULE(RecoilCorrectedMETProducerDiTau);
 DEFINE_FWK_MODULE(MVAMETProducerTauMu);
+DEFINE_FWK_MODULE(MVAMETProducerDiMuon);
 DEFINE_FWK_MODULE(ElectronPOProducer);
 DEFINE_FWK_MODULE(MuonPOProducer);
 DEFINE_FWK_MODULE(TauPOProducer);
