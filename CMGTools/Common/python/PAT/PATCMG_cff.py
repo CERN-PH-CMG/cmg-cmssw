@@ -81,6 +81,19 @@ PATCMGElectronSequence = cms.Sequence(
 
 
 
+# PHOTONS        ----------------------------
+
+from CMGTools.Common.PAT.PATPhotons_cff import *
+
+cmgPhoton.cfg.inputCollection = 'pfSelectedPhotons'
+
+PATCMGPhotonSequence = cms.Sequence(
+    PATPhotonSequence 
+    +photonSequence
+    )
+
+
+
 # JETS NO PU CHS ----------------------------
 
 from CMGTools.Common.PAT.PATJets_cff import *
@@ -177,6 +190,7 @@ PATCMGSequence = cms.Sequence(
     PATCMGRhoSequence +
     PATCMGMuonSequence +
     PATCMGElectronSequence +
+    PATCMGPhotonSequence +
     PATCMGJetSequence +
     PATCMGTauSequence +
     PATCMGMetSequence +
