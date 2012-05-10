@@ -9,6 +9,7 @@
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/PatCandidates/interface/TriggerObject.h"
 #include "DataFormats/PatCandidates/interface/Photon.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 
 namespace pat {
 
@@ -19,7 +20,8 @@ namespace pat {
   typedef pat::METRef METPtr;
   typedef pat::TauRef TauPtr;
   typedef pat::TriggerObjectStandAloneRef TriggerObjectPtr;
-  typedef pat::PhotonRef PhotonPtr;
+  //typedef pat::PhotonRef PhotonPtr;
+  typedef reco::PFCandidateRef PhotonPtr;
 
 }
 
