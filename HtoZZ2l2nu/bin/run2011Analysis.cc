@@ -496,7 +496,7 @@ int main(int argc, char* argv[])
         if(tag_subcat!="")tags_full.push_back(tag_cat + tag_subcat);
         if(tag_subcat=="geq2jets" || tag_subcat=="vbf")tags_full.push_back(tag_cat + "geq2jetsInc");
         if(tag_subcat!="vbf")tags_full.push_back(tag_cat + "novbf");
-
+        mustBlind |= (ivar==0 && !isMC && runBlinded && tag_subcat=="vbf" && zvv.pt()>70);
 	
 	//##############################################
 	//########     PRESELECTION             ########
