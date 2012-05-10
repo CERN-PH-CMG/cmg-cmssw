@@ -176,9 +176,11 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
   edm::Handle< std::vector<cmg::BaseJet> > leadJetH;
   iEvent.getByLabel(leadJetSrc_, leadJetH);
 
-  assert( leadJetH->size() > 1 );
-  LorentzVector leadJet = (*leadJetH)[0].p4();
-  LorentzVector leadJet2 = (*leadJetH)[1].p4();
+  //assert( leadJetH->size() > 1 );
+  const LorentzVector *leadJet   =0; 
+  const LorentzVector *leadJet2 = 0; 
+  if(leadJetH->size() > 0 ) leadJet  = &(*leadJetH)[0].p4();
+  if(leadJetH->size() > 1 ) leadJet2 = &(*leadJetH)[1].p4();
 
   int nJetsPtGt30 = 0; 
   for( unsigned i=0; i<jetH->size(); ++i) {
@@ -213,8 +215,8 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
     std::cout<<"\tnJetsPtGt30 = "<<nJetsPtGt30<<std::endl;
     std::cout<<"\tnGoodVtx = "<<nGoodVtx<<std::endl;
     std::cout<<"\trho = "<<rho<<std::endl;
-    std::cout<<"\tjet1 eta,pt= "<<leadJet.pt()<<","<<leadJet.eta()<<std::endl;
-    std::cout<<"\tjet2 eta,pt= "<<leadJet2.pt()<<","<<leadJet2.eta()<<std::endl;
+    if(leadJet  != 0) std::cout<<"\tjet1 eta,pt= "<<leadJet->Et()<<","<<leadJet->eta()<<std::endl;
+    if(leadJet2 != 0) std::cout<<"\tjet2 eta,pt= "<<leadJet2->Et()<<","<<leadJet2->eta()<<std::endl;
     
   }
 
@@ -231,6 +233,28 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
     lVisible.push_back(lCand0);
     lVisible.push_back(lCand1);
 
+    //Redefine Lead Jet
+    const LorentzVector *cleanLeadJet  = leadJet;
+    const LorentzVector *cleanLeadJet2 = leadJet2;
+    int lIndex = 0;
+    for(int i0 = 0; i0 < 2; i0++) {
+      if(cleanLeadJet  == 0)            continue;
+      if(cleanLeadJet2 == 0 && i0 == 1) continue;
+      bool pClean = false;
+      if(i0 == 0 && deltaR(*cleanLeadJet,recBoson.leg1().p4()) < 0.5) pClean = true;
+      if(i0 == 0 && deltaR(*cleanLeadJet,recBoson.leg2().p4()) < 0.5) pClean = true;
+      if(i0 == 1 && deltaR(*cleanLeadJet2,recBoson.leg1().p4()) < 0.5) pClean = true;
+      if(i0 == 1 && deltaR(*cleanLeadJet2,recBoson.leg2().p4()) < 0.5) pClean = true;
+      if(pClean) { 
+	lIndex++;
+	if(i0 == 0 && int(leadJetH->size())  > lIndex   ) cleanLeadJet  = &(*leadJetH)[lIndex].p4();
+	if(           int(leadJetH->size())  > lIndex+1 ) cleanLeadJet2 = &(*leadJetH)[lIndex+1].p4();
+	if(i0 == 0 && int(leadJetH->size())  < lIndex+1 ) cleanLeadJet  = 0;
+	if(           int(leadJetH->size())  < lIndex+2 ) cleanLeadJet2 = 0;
+	i0--; 
+      }
+    }
+
     // FIXME clean up the jets? 
     std::pair<LorentzVector,TMatrixD> lMVAMetInfo
       = mvaMet_->GetMet( lVisible,
@@ -239,8 +263,8 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
 			 nopumet,
 			 pumet,
 			 pucmet,
-			 &leadJet,
-			 &leadJet2,
+			 cleanLeadJet,
+			 cleanLeadJet2,
 			 nJetsPtGt30,
 			 nJetsPtGt1,
 			 nGoodVtx,
@@ -282,7 +306,7 @@ void MVAMETProducer< RecBosonType >::makeJets(std::vector<MetUtilities::JetInfo>
     if( ! pCJet->getSelection("cuts_looseJetId") ) continue;
     double lMVA = pCJet->passPuJetId("full", PileupJetIdentifier::kMedium );
     // FIXME compute properly, according to what Phil does
-    double lNeuFrac = pCJet->component( reco::PFCandidate::gamma ).fraction() + pCJet->component( reco::PFCandidate::h0 ).fraction() + pCJet->component( reco::PFCandidate::h_HF ).fraction() + pCJet->component( reco::PFCandidate::egamma_HF ).fraction();
+    double lNeuFrac = pCJet->component( reco::PFCandidate::gamma ).fraction() + pCJet->component( reco::PFCandidate::h0 ).fraction() + pCJet->component( reco::PFCandidate::egamma_HF ).fraction();
     MetUtilities::JetInfo pJetObject; 
     pJetObject.p4       = pCJet->p4(); 
     pJetObject.mva      = lMVA;

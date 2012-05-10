@@ -130,7 +130,8 @@ typedef RecoilCorrectedMETProducer<cmg::TauEle> RecoilCorrectedMETProducerTauEle
 typedef RecoilCorrectedMETProducer<cmg::MuEle> RecoilCorrectedMETProducerMuEle; 
 typedef RecoilCorrectedMETProducer<cmg::DiTau> RecoilCorrectedMETProducerDiTau; 
 
-typedef MVAMETProducer<cmg::TauMu> MVAMETProducerTauMu; 
+typedef MVAMETProducer<cmg::TauMu>    MVAMETProducerTauMu; 
+typedef MVAMETProducer<cmg::DiMuon>   MVAMETProducerDiMuon; 
 
 
 //Michalis : Four lepton Types and helpfull gen types
