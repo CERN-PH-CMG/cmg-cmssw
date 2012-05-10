@@ -6,8 +6,8 @@ from CMGTools.Common.skims.cmgPhotonSel_cfi import *
 from CMGTools.Common.histograms.cmgPhotonHistograms_cfi import *
 
 photonSequence = cms.Sequence(
-    cmgPhoton +
-    cmgPhotonSel +
+    cmgPhoton 
+    +cmgPhotonSel 
 #     cmgPhotonCount +
-    cmgPhotonHistograms
+#   +cmgPhotonHistograms
 )
