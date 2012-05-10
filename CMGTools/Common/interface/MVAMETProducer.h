@@ -255,7 +255,6 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
       }
     }
 
-    // FIXME clean up the jets? 
     std::pair<LorentzVector,TMatrixD> lMVAMetInfo
       = mvaMet_->GetMet( lVisible,
 			 pfmet,
