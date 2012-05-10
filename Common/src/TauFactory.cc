@@ -1,4 +1,5 @@
 #include "CMGTools/Common/interface/TauFactory.h"
+#include "CMGTools/Common/interface/LeptonSettingTool.h"
 #include "PhysicsTools/JetMCUtils/interface/JetMCTag.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
@@ -23,15 +24,9 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
   //set the generic quantities first
   leptonFactory_.set(input,output,iEvent,iSetup);
 
-  //track related
-  reco::TrackRef chHadrtrk=input->leadTrack();
-  if(chHadrtrk.isNonnull()){
-    output->leadChargedHadrVertex_ = chHadrtrk->referencePoint();
-    
-    //this method sets dxy and dz for the cmgTau
-    //will not work unless tracks are saved in the patTuple because there is isAvailable() check inside
-    leptonFactory_.set(chHadrtrk,output,iEvent,iSetup);    
-  }
+  //in standard PAT need to use pat::Tau::vertex() to set the vertex
+  output->leadChargedHadrVertex_ = input->vertex();
+  leptonFactory_.set(input->vertex(),output,iEvent,iSetup);   //dz and dxy 
 
   reco::PFCandidateRef leadChargedHadrCand=input->leadPFChargedHadrCand();
   if(leadChargedHadrCand.isNonnull()){
