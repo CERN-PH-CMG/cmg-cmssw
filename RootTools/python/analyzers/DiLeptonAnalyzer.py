@@ -185,7 +185,8 @@ class DiLeptonAnalyzer( Analyzer ):
     def testMuon(self, muon):
         '''Returns True if a muon passes a set of cuts.
         Can be used in testLeg1 and testLeg2, in child classes.'''
-        return True
+        # return True
+        return muon.looseId()
 
     
     def testElectron(self, electron):

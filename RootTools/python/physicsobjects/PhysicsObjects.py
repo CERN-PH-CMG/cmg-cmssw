@@ -41,6 +41,12 @@ class Lepton( PhysicsObject):
 
 
 class Muon( Lepton ):
+
+    def looseId( self ):
+        return self.isPFMuon() and ( self.isGlobalMuon() or self.isTrackerMuon() )
+
+    def mvaIso( self ):
+        return self.sourcePtr().userFloat('mvaIsoRings')
     
     def detIso( self, rho ):
         '''Rho corrected detector-based isolation, for the H->ZZ->4l baseline analysis'''

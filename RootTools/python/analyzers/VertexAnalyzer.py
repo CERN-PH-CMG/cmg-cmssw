@@ -11,12 +11,10 @@ class VertexAnalyzer( Analyzer ):
             'offlinePrimaryVertices',
             'std::vector<reco::Vertex>'
             )
-        self.fixedWeight = None
+        self.fixedWeight = 1
         if self.cfg_comp.isMC and not hasattr( self.cfg_ana, 'fixedWeight'): 
             self.mchandles['vertexWeight'] = AutoHandle( self.cfg_ana.vertexWeight,
                                                          'double' )
-        else:
-            self.fixedWeight = self.cfg_ana.fixedWeight
 
     def beginLoop(self):
         super(VertexAnalyzer,self).beginLoop()
