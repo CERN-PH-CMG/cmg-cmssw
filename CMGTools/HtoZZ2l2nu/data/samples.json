@@ -174,7 +174,6 @@
 	},
 	{
 	"tag":"ggH(200)#rightarrow ZZ",
-        "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",
@@ -195,7 +194,6 @@
 	},
 	{
 	"tag":"qqH(200)#rightarrow ZZ",
-        "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",
@@ -260,6 +258,7 @@
 	},
 	{
 	"tag":"ggH(250)#rightarrow ZZ",
+        "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",
@@ -280,6 +279,7 @@
 	},
 	{
 	"tag":"qqH(250)#rightarrow ZZ",
+        "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",
