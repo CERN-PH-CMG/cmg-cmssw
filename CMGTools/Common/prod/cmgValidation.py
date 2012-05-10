@@ -28,7 +28,6 @@ patExt = '/PAT_CMG_V5_1_0'
 
 maxEvents = 10
 
-
 import inspect
 
 def printArgs(frame):
