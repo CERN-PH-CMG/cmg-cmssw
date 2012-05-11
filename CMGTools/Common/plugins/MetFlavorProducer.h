@@ -51,6 +51,7 @@ class MetFlavorProducer : public edm::EDProducer {
   double                  fJetPtMin;
   double                  fDZMin;
   PileupJetIdAlgo        *fPUJetIdAlgo;
+  PileupJetIdAlgo        *fPUJetIdAlgoLowPt;
   MetUtilities           *fUtils;
   int                     fMetFlavor;
 
