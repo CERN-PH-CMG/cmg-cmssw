@@ -11,12 +11,12 @@ class EleEleFourLeptonAnalyzer( FourLeptonAnalyzer ):
         super(EleEleFourLeptonAnalyzer, self).declareHandles()
 
         self.handles['leptons1'] = AutoHandle(
-            'cmgElectronSelStdLep',
+            'cmgElectronSel',
             'std::vector<cmg::Electron>'
             )
 
         self.handles['leptons2'] = AutoHandle(
-            'cmgElectronSelStdLep',
+            'cmgElectronSel',
             'std::vector<cmg::Electron>'
             )
         
@@ -28,12 +28,17 @@ class EleEleFourLeptonAnalyzer( FourLeptonAnalyzer ):
         result = super(EleEleFourLeptonAnalyzer, self).process(iEvent, event)
         return result
         
-    def testLepton1(self, leg):
-        return self.testElectron(leg) and \
-               super( EleEleFourLeptonAnalyzer, self).testLepton1( leg )
 
 
-    def testLepton2(self, leg):
-        return self.testElectron(leg) and \
-               super( EleEleFourLeptonAnalyzer, self).testLepton2( leg )
 
+
+
+
+
+    def testLeptonTight1(self, leg,sel=None):
+        return self.testElectronTight(leg) and \
+               super( EleEleFourLeptonAnalyzer, self).testLeptonTight1( leg,sel )
+
+    def testLeptonTight2(self, leg,sel=None):
+        return self.testElectronTight(leg) and \
+               super( EleEleFourLeptonAnalyzer, self).testLeptonTight2( leg,sel )

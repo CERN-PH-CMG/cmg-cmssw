@@ -24,4 +24,11 @@ class SkimOperator( Analyzer ):
             self.count.inc('passing')
 
         event.skim = theOR
-        return True
+
+        if hasattr(self.cfg_ana,"applySkim"):
+            if self.cfg_ana.applySkim==True:
+                return theOR
+            else:
+                return True
+        else:
+            return True

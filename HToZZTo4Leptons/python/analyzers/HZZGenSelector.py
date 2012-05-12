@@ -46,8 +46,8 @@ class HZZGenSelector( Analyzer ):
             allDaus = self.allDaughters( higgs, allDaus, 0 )
             print 'Event', event.iEv
             print 'Higgs', higgs
-            for dau in allDaus:
-                print dau.rank*'\t', GenParticle( dau )
+#            for dau in allDaus:
+#                print dau.rank*'\t', GenParticle( dau )
             self.count.inc('weird')
             return False
             # import pdb; pdb.set_trace()
