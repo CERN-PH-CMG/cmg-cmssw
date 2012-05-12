@@ -39,6 +39,36 @@ class Lepton( PhysicsObject):
         patLepton = self.physObj.sourcePtr()
         return abs( patLepton.dB(2) ) / patLepton.edB(2) 
 
+    def absIsoFromEA(self,rho,effectiveArea1 = None,effectiveArea2 = None):
+
+        ea1 = rho
+        ea2 = rho
+        if effectiveArea1 is not None:
+            for element in effectiveArea1:
+                if abs(self.eta())>= element['etaMin'] and \
+                   abs(self.eta())< element['etaMax']:
+                    ea1 = ea1 * element['area']
+                    break
+        else:
+            return self.chargedHadronIso()+max(0.,self.photonIso()+self.neutralHadronIso()-ea1)
+
+        if effectiveArea2 is not None:
+            for element in effectiveArea2:
+                if abs(self.eta())>= element['etaMin'] and \
+                   abs(self.eta())< element['etaMax']:
+                    ea2 = ea2 * element['area']
+            return self.chargedHadronIso()+max(0.,self.photonIso()-ea1)+max(0.,self.neutralHadronIso()-ea2)
+        else:
+            return self.chargedHadronIso()+max(0.,self.photonIso()+self.neutralHadronIso()-ea1)
+                
+
+
+    def relEffAreaIso(self,rho):
+        return 0
+
+    def relEffAreaIso(self,rho):
+        return self.absEffAreaIso(rho)/self.pt()
+
 
 class Muon( Lepton ):
 
@@ -73,10 +103,15 @@ class Muon( Lepton ):
         hcalIso = hcalIso - AreaHcal[ifid] * rho
         return ecalIso, hcalIso
 
+    def absEffAreaIso(self,rho,effectiveAreas):
+        return self.absIsoFromEA(rho,effectiveAreas.muon)
+
+
         
 class Electron( Lepton ):
-    '''FIXME: add detector based isolation'''
-    pass
+    def absEffAreaIso(self,rho,effectiveAreas):
+        return self.absIsoFromEA(rho,effectiveAreas.eGamma)
+
 
 
 class GenParticle( PhysicsObject):
@@ -90,6 +125,18 @@ class GenLepton( GenParticle ):
         '''Just to make generic code work on GenParticles'''
         return 0
     def relIso(self, dummy):
+        '''Just to make generic code work on GenParticles'''
+        return 0
+
+    def absIso(self, dummy):
+        '''Just to make generic code work on GenParticles'''
+        return 0
+
+    def absEffAreaIso(self,rho):
+        '''Just to make generic code work on GenParticles'''
+        return 0
+
+    def relEffAreaIso(self,rho):
         '''Just to make generic code work on GenParticles'''
         return 0
 
