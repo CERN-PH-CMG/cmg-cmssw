@@ -72,11 +72,11 @@ class H2TauTauDataMC( AnalysisDataMC ):
         for layer, (compName, comp) in enumerate( self.selComps.iteritems() ) : 
             fileName = '/'.join([ directory,
                                   compName,
-                                  'H2TauTauTreeProducer',
-                                  'H2TauTauTreeProducer_tree.root'])
+                                  'H2TauTauTreeProducerTauMu',
+                                  'H2TauTauTreeProducerTauMu_tree.root'])
             file = TFile(fileName)
             self.keeper.append( file )
-            tree = file.Get('H2TauTauTreeProducer')
+            tree = file.Get('H2TauTauTreeProducerTauMu')
             
             if compName == 'DYJets':
                 self._BuildHistogram(tree, comp, compName, self.varName,
@@ -143,6 +143,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         The resulting integrated luminosity is used to scale all the
         MC components.
         '''
+        # import pdb; pdb.set_trace()
         
         self.intLumi = 0
         # self.dataComponents = dataComponents
