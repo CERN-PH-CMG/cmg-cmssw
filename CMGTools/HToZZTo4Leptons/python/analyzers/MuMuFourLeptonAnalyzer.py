@@ -1,8 +1,8 @@
-from CMGTools.HToZZTo4Leptons.analyzers.FourLeptonAnalyzer import FourLeptonAnalyzer
+from CMGTools.HToZZTo4Leptons.analyzers.FourLeptonAnalyzer import FourLeptonAnalyzer 
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, GenParticle
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 
-class MuMuFourLeptonAnalyzer( FourLeptonAnalyzer ):
+class MuMuFourLeptonAnalyzer( FourLeptonAnalyzer):
 
     LeptonClass1 = Muon
     LeptonClass2 = Muon
@@ -32,12 +32,35 @@ class MuMuFourLeptonAnalyzer( FourLeptonAnalyzer ):
         result = super(MuMuFourLeptonAnalyzer, self).process(iEvent, event)
         return result
         
-    def testLepton1(self, leg):
-        return self.testMuon(leg) and \
-               super( MuMuFourLeptonAnalyzer, self).testLepton1( leg )
 
 
-    def testLepton2(self, leg):
-        return self.testMuon(leg) and \
-               super( MuMuFourLeptonAnalyzer, self).testLepton2( leg )
+
+    def testLeptonSkim1(self, leg,sel = None):
+        return self.testMuonLoose(leg) and \
+               super( MuMuFourLeptonAnalyzer, self).testLeptonSkim1( leg,sel )
+
+    def testLeptonSkim2(self,leg,sel = None):
+        return self.testMuonLoose(leg) and \
+               super( MuMuFourLeptonAnalyzer, self).testLeptonSkim2( leg,sel )
+
+
+    def testLeptonLoose1(self, leg,sel=None):
+        return self.testMuonLoose(leg) and \
+               super( MuMuFourLeptonAnalyzer, self).testLeptonLoose1( leg,sel )
+
+    def testLeptonLoose2(self, leg,sel=None):
+        return self.testMuonLoose(leg) and \
+               super( MuMuFourLeptonAnalyzer, self).testLeptonLoose2( leg,sel )
+
+
+    def testLeptonTight1(self, leg,sel=None):
+        return self.testMuonTight(leg) and \
+               super( MuMuFourLeptonAnalyzer, self).testLeptonTight1( leg,sel ) 
+
+    def testLeptonTight2(self, leg,sel=None):
+        return self.testMuonTight(leg) and \
+               super( MuMuFourLeptonAnalyzer, self).testLeptonTight2( leg,sel )
+
+
+
 
