@@ -26,7 +26,6 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
 
 
     def process(self, iEvent, event):
-        # import pdb; pdb.set_trace()
         result = super(TauMuAnalyzer, self).process(iEvent, event)
         
         if result is False:
@@ -48,12 +47,12 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         return True
         
     def testLeg1(self, leg):
-        # import pdb; pdb.set_trace()
         return self.testTau(leg) and \
                super( TauMuAnalyzer, self).testLeg1( leg )
 
 
     def testLeg2(self, leg):
+        # import pdb; pdb.set_trace()
         return self.testMuonTight(leg) and \
                super( TauMuAnalyzer, self).testLeg2( leg )
 
@@ -85,13 +84,11 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         if muon.pt()>self.cfg_ana.pt2 and \
                abs( muon.eta() ) < self.cfg_ana.eta2 and \
                self.testMuonID(muon) and \
-               self.muonIso(muon)<0.1:
+               self.muonIso(muon)<9999: #WARNING MUON ISO RELAXED
             return True
         else:
             return False
 
-    def muonIso(self, muon ):
-        return muon.relIso(0.5)
 
     def testMuonLoose( self, muon ):
         '''Loose muon selection, for the lepton veto'''
@@ -103,6 +100,11 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             return True
         else:
             return False
+
+
+    def muonIso(self, muon ):
+        return muon.relIso(0.5)
+
     
 
     def leptonAccept(self, leptons):
