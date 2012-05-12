@@ -1,7 +1,7 @@
 import imp
 from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
 from CMGTools.H2TauTau.proto.H2TauTauDataMC import H2TauTauDataMC
-from CMGTools.RootTools.Style import formatPad
+from CMGTools.RootTools.Style import *
 from ROOT import kPink
 
 def prepareComponents(dir, config):
@@ -22,6 +22,7 @@ def wJetScale( mtplot, dataName ):
         wjet.Add(mtplot.Hist('DYJets_Fakes'), -1)
     except:
         pass
+    # FIXME
     wjet.Add(mtplot.Hist('TTJets'), -1)
 
     # adding the WJets_data estimation to the stack
@@ -65,6 +66,7 @@ def getQCD( plotSS, plotOS, dataName ):
         print plotSS
         pass
 
+    #FIXME
     qcd.Add(plotSSWithQCD.Hist('TTJets'), -1)
     qcd.Add(plotSSWithQCD.Hist('WJets'), -1)
 
@@ -103,14 +105,14 @@ def makePlot( hist, weights, wJetScaleSS, wJetScaleOS,
 
     osign = H2TauTauDataMC(hist, anaDir,
                            selComps, weights, nbins, xmin, xmax,
-                           cut=cut+' && diTauCharge==0', weight=weight,
+                           cut=cut+' && diTau_charge==0', weight=weight,
                            embed=embed)
     osign.Hist('WJets').Scale( wJetScaleOS ) 
 
     # boxss = box.replace('OS','SS')
     ssign = H2TauTauDataMC(hist, anaDir,
                            selComps, weights, nbins, xmin, xmax,
-                           cut=cut+' && diTauCharge!=0', weight=weight,
+                           cut=cut+' && diTau_charge!=0', weight=weight,
                            embed=embed)
     ssign.Hist('WJets').Scale( wJetScaleSS ) 
     ssQCD, osQCD = getQCD( ssign, osign, 'Data' )    
@@ -142,30 +144,14 @@ if __name__ == '__main__':
     anaDir: analysis directory containing all components, see CMGTools.H2TauTau.macros.MultiLoop.
     hist: histogram you want to plot
     '''
-    parser.add_option("-B", "--box", 
-                      dest="box", 
-                      help="box. Default is Inclusive",
-                      default='Inclusive')
-    parser.add_option("-M", "--mtregion", 
-                      dest="mtregion", 
-                      help="mT region. Default is LowMT",
-                      default='LowMT')
-    parser.add_option("-H", "--histlist", 
-                      dest="histlist", 
+    parser.add_option("-H", "--hist", 
+                      dest="hist", 
                       help="histogram list",
                       default=None)
     parser.add_option("-C", "--cut", 
                       dest="cut", 
                       help="cut to apply in TTree::Draw",
                       default='1')
-    parser.add_option("-G", "--histgroup", 
-                      dest="histgroup", 
-                      help="histogram group",
-                      default=None)
-    parser.add_option("-R", "--rebin", 
-                      dest="rebin", 
-                      help="rebinning factor",
-                      default=None)
     parser.add_option("-E", "--embed", 
                       dest="embed", 
                       help="Use embedd samples.",
@@ -182,7 +168,6 @@ if __name__ == '__main__':
     weight='weight'
 
     anaDir = args[0]
-    hists = histogramSet( options )
     cfgFileName = args[1]
     file = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
@@ -192,7 +177,7 @@ if __name__ == '__main__':
     # get WJet scaling factor for same sign
     mtSS = H2TauTauDataMC('mt', anaDir, selComps, weights,
                           NBINS, XMIN, XMAX,
-                          cut = 'mt>60 && diTauCharge!=0', weight=weight,
+                          cut = 'mt>60 && diTau_charge!=0', weight=weight,
                           embed=options.embed)
     wJetScaleSS = wJetScale( mtSS, dataName)
 
@@ -200,15 +185,14 @@ if __name__ == '__main__':
     # get WJet scaling factor for opposite sign
     mtOS = H2TauTauDataMC('mt', anaDir, selComps, weights,
                           NBINS, XMIN, XMAX, 
-                          cut = 'mt>60 && diTauCharge==0', weight=weight,
+                          cut = 'mt>60 && diTau_charge==0', weight=weight,
                           embed=options.embed)
 
     
     wJetScaleOS = wJetScale( mtOS, dataName)
 
-    for hist in sorted(hists):
-        ssign, osign, ssQCD, osQCD = makePlot( hist, weights, wJetScaleSS, wJetScaleOS, NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed)
-    
+    ssign, osign, ssQCD, osQCD = makePlot( options.hist, weights, wJetScaleSS, wJetScaleOS, NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed)
+    osQCD.DrawStack('HIST')
 
 # Below, some obsolete code
 

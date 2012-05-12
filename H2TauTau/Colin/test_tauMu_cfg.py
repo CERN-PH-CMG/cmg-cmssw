@@ -4,7 +4,7 @@ import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.H2TauTau.triggerMap import pathsAndFilters
 
 
-period = 'Period_2011B'
+period = 'Period_2011AB'
 
 baseDir = '2011'
 
@@ -36,7 +36,7 @@ TauMuAna = cfg.Analyzer(
     pt1 = 20,
     pt2 = 17,
     iso1 = 999,
-    iso2 = 0.1,
+    iso2 = 999,
     eta1 = 2.3,
     eta2 = 2.1,
     m_min = 10,
@@ -63,6 +63,7 @@ muonWeighter = cfg.Analyzer(
 
 vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
+    fixedWeight = 1,
     vertexWeight = mc_vertexWeight,
     verbose = False
     )
@@ -92,12 +93,12 @@ eventSorter = cfg.Analyzer(
     )
 
 treeProducer = cfg.Analyzer(
-    'H2TauTauTreeProducer'
+    'H2TauTauTreeProducerTauMu'
     )
 
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.tauMu_JoseMay8 import * 
+from CMGTools.H2TauTau.proto.samples.tauMu_JoseMay9 import * 
 
 #########################################################################################
 
@@ -109,7 +110,9 @@ for mc in MC:
     mc.jetSmear = mc_jet_smear
 
 
+MC = [DYJets, WJets, TTJets]
 selectedComponents =  copy.copy(MC)
+
 if period == 'Period_2011A':
     selectedComponents.extend( data_2011A )
     # selectedComponents.extend( embed_2011A )    
@@ -135,17 +138,19 @@ sequence = cfg.Sequence( [
 
 
 DYJets.fakes = True
-DYJets.splitFactor = 8
-WJets.splitFactor = 2
-TTJets.splitFactor = 2 
-data_Run2011B_PromptReco_v1.splitFactor = 8
-data_Run2011A_PromptReco_v4.splitFactor = 2 
-data_Run2011A_03Oct2011_v1.splitFactor = 2
-data_Run2011A_May10ReReco_v1.splitFactor = 2
+DYJets.splitFactor = 40
+WJets.splitFactor = 10
+TTJets.splitFactor = 100 
+data_Run2011B_PromptReco_v1.splitFactor = 50
+data_Run2011A_PromptReco_v4.splitFactor = 20
+data_Run2011A_May10ReReco_v1.splitFactor = 20
+data_Run2011A_05Aug2011_v1.splitFactor = 10
+data_Run2011A_03Oct2011_v1.splitFactor = 10
 
-test = 1
+test = 0
 if test==1:
     comp = HiggsVBF120
+    # comp.files = ['tauMu_fullsel_tree_CMG.root']
     # comp.files = ['/data/c/cbern/Tests/CMGTools/44X/May05/CMGTools/CMSSW_4_4_4/src/CMGTools/H2TauTau/prod/tauMu_fullsel_tree_CMG.root']
     # comp = data_Run2011B_PromptReco_v1
     selectedComponents = [comp]
