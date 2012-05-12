@@ -43,7 +43,12 @@ class Lepton( PhysicsObject):
 class Muon( Lepton ):
 
     def looseId( self ):
+        '''Loose ID as recommended by mu POG.'''
         return self.isPFMuon() and ( self.isGlobalMuon() or self.isTrackerMuon() )
+
+    def tightId( self ):
+        '''Tight ID as recommended by mu POG.'''
+        return None
 
     def mvaIso( self ):
         return self.sourcePtr().userFloat('mvaIsoRings')
