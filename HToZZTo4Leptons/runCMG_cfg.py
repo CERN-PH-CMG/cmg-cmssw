@@ -37,18 +37,6 @@ eleEleGenSel = cfg.Analyzer(
     channel = 'ele-ele'
     )
 
-#SKIMMING
-aFourSkim = cfg.Analyzer('A4Skim',
-                         muons = 'cmgMuonSel',
-                         electrons='cmgElectronSel'
-)
-
-
-skimmer = cfg.Analyzer(
-    'SkimOperator',
-    skims = [ 'A4Skim'],
-    applySkim=False 
-    )
 
 #Trigger Information
 triggerAna = cfg.Analyzer(
@@ -123,6 +111,13 @@ def createTreeProducer( ana ):
                        )
     return tp
 
+def createTriggerTreeProducer( ana ):
+    tp = cfg.Analyzer( '_'.join( ['FourLeptonTreeProducer',ana.name] ),
+                       anaName = ana.name,
+
+                       )
+    return tp
+
 
 ####################################################################################
 
@@ -177,8 +172,6 @@ elif channel == 'ele_ele':
 
 mcSequence = [
 #   theGenSel,    #uncomment to preselect events in gen level 
-    aFourSkim,
-    skimmer,
     triggerAna,
     vertexAna,
 #    theGenAna,
@@ -188,8 +181,6 @@ mcSequence = [
     ]
 
 dataSequence=[
-    aFourSkim,
-    skimmer,
     jsonFilter,
     triggerAna,
     vertexAna,
