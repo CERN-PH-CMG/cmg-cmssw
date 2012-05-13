@@ -41,6 +41,7 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.bookLepton("ZFR_probe")
         self.var("ZFR_nProbes",int)
 
+
     def process(self, iEvent, event):
         self.reset()
 
@@ -59,6 +60,7 @@ class FourLeptonTreeProducer( TreeProducer ):
             self.fillLepton("H_Z1_leg2",subevent.higgsCand.leg1.leg2,subevent)
             self.fillLepton("H_Z2_leg1",subevent.higgsCand.leg2.leg1,subevent)
             self.fillLepton("H_Z2_leg2",subevent.higgsCand.leg2.leg2,subevent)
+            
 
         if hasattr( subevent, 'higgsCandLoose' ):
             self.fillBoson("H",subevent.higgsCandLoose)

@@ -24,13 +24,17 @@ class TreeProducer( Analyzer ):
             self.tree.Branch(varName,self.vars[varName],varName+'/I')
         else:
             print 'Unknown type '
+
+    def struct(self, varName,type=float ):
+        a=type() 
+        self.vars[varName]=a
+        self.tree.Branch(varName,self.vars[varName],32000,99)
             
-    
 
     def fill(self, varName, value ):
         self.vars[varName][0]=value
-        
 
+        
 
     def bookLepton(self, pName ):
         self.var('{pName}_Pt'.format(pName=pName))
