@@ -50,7 +50,10 @@ class TriggerAnalyzer( Analyzer ):
         if not passed:
             return False
         # import pdb; pdb.set_trace()
+
         event.hltPath = hltPath 
+
+
         if hltPath is not None:
             trigObjs = self.handles['cmgTriggerObjectListSel'].product()
             # selecting the trigger objects used in this path
