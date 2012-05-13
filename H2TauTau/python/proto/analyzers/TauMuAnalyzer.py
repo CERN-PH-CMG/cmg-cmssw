@@ -81,6 +81,7 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
 
     def testMuonTight(self, muon ):
         '''basically recoding the muon selection of muCuts_cff.'''
+        import pdb; pdb.set_trace()
         if muon.pt()>self.cfg_ana.pt2 and \
                abs( muon.eta() ) < self.cfg_ana.eta2 and \
                self.testMuonID(muon) and \
