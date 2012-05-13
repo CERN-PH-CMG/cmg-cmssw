@@ -206,6 +206,20 @@ def fileExists( path ):
     return result
 
 
+def eosDirSize(path):
+    '''Returns the size of a directory on EOS in GB.'''
+    lfn = eosToLFN(path)
+    res = runEOSCommand(lfn, 'find', '--size')
+    output = res[0].split('\n')
+    size = 0
+    for file in output:
+        try:
+            size += float(file.split('=')[2])
+        except IndexError:
+            pass
+    return size/1024/1024/1024
+
+
 def createEOSDir( path ):
     """Makes a directory in EOS
 

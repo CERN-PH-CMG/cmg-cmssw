@@ -77,6 +77,9 @@ if __name__ == '__main__':
                       action = 'store_true',
                       default=False,
                       help='Read from the cache.')
+    parser.add_option("-j", "--badjobs", dest="badjoblists",
+                      default=None,
+                      help='Lists of bad jobs, as [1,5];[2,5,7]')
     
     (options,args) = parser.parse_args()
 
@@ -102,17 +105,28 @@ if __name__ == '__main__':
     # print jobNumbers
 
     badJobs = []
-    prev = 0
-    for job in jobNumbers:
-        if job - prev != 1 and job!=0:
-            for mj in range(prev+1, job):
-                badJobs.append( mj ) 
-                # print mj
-        prev = job
-
-
+    if options.badjoblists is None:
+        prev = 0
+        for job in jobNumbers:
+            if job - prev != 1 and job!=0:
+                for mj in range(prev+1, job):
+                    badJobs.append( mj ) 
+                    # print mj
+            prev = job
+    else:
+        # import pdb; pdb.set_trace()
+        bjlsstr = options.badjoblists.split(';')
+        bjlsstr = filter(lambda x: len(x)>0, bjlsstr)
+        bjls = map(eval, bjlsstr)
+        setOfBadJobs = set()
+        for bjl in bjls:
+            setOfBadJobs.update( set(bjl) )
+        # print setOfBadJobs
+        # sys.exit(1)
+        
     # print len(badJobs), 'bad jobs'
     # print badJobs
+    badJobs = sorted( setOfBadJobs )
 
     if options.report:
         for job in badJobs:
