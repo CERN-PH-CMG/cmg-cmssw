@@ -98,7 +98,7 @@ treeProducer = cfg.Analyzer(
 
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.tauMu_JoseMay9 import * 
+from CMGTools.H2TauTau.proto.samples.tauMu_ColinMay12 import * 
 
 #########################################################################################
 
@@ -147,7 +147,7 @@ data_Run2011A_May10ReReco_v1.splitFactor = 20
 data_Run2011A_05Aug2011_v1.splitFactor = 10
 data_Run2011A_03Oct2011_v1.splitFactor = 10
 
-test = 0
+test = 1
 if test==1:
     comp = HiggsVBF120
     # comp.files = ['tauMu_fullsel_tree_CMG.root']
