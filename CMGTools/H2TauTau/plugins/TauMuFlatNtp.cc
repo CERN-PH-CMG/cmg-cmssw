@@ -1,7 +1,8 @@
 #include "CMGTools/H2TauTau/plugins/TauMuFlatNtp.h"
 #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
 #include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
-#include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
+//#include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
+
 
 TauMuFlatNtp::TauMuFlatNtp(const edm::ParameterSet & iConfig):
   BaseFlatNtp(iConfig),
@@ -286,22 +287,31 @@ bool TauMuFlatNtp::applySelections(){
   diTauSelList_.clear();
   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
 
-    //old VBTF cuts
+    //     //old VBTF cuts
+    //     if(cand->leg2().isGlobal()
+    //        &&cand->leg2().isTracker()
+    //        &&cand->leg2().numberOfValidTrackerHits() > 10
+    //        &&cand->leg2().numberOfValidPixelHits() > 0
+    //        &&cand->leg2().numberOfValidMuonHits() > 0
+    //        &&cand->leg2().numberOfMatches() > 1
+    //        &&cand->leg2().normalizedChi2() < 10
+    //        ){
+      
+    //     //"Loose Muon" 
+    //     if((*(cand->leg2().sourcePtr()))->userFloat("isPFMuon")>0.5
+    //        && (cand->leg2().isGlobal() || cand->leg2().isTracker())
+    //        ){      
+      
+    //"Tight Muon" 
     if(cand->leg2().isGlobal()
-       &&cand->leg2().isTracker()
-       &&cand->leg2().numberOfValidTrackerHits() > 10
-       &&cand->leg2().numberOfValidPixelHits() > 0
-       &&cand->leg2().numberOfValidMuonHits() > 0
-       &&cand->leg2().numberOfMatches() > 1
-       &&cand->leg2().normalizedChi2() < 10
-       ){
-      
-      //     //"Loose Muon" 
-      //     if((*(cand->leg2().sourcePtr()))->userFloat("isPFMuon")>0.5
-      //        && (cand->leg2().isGlobal() || cand->leg2().isTracker())
-      //        ){      
-      
-      
+       && (*(cand->leg2().sourcePtr()))->userFloat("isPFMuon")>0.5
+       && cand->leg2().normalizedChi2() < 10
+       && cand->leg2().numberOfValidMuonHits() > 0
+       && cand->leg2().numberOfMatches() > 1
+       && cand->leg2().numberOfValidPixelHits() > 0
+       && cand->leg2().trackerLayersWithMeasurement() > 5
+       ){      
+            
       diTauSelList_.push_back(*cand);
     }
       
@@ -710,9 +720,12 @@ bool TauMuFlatNtp::vetoDiLepton(){
     if(m->pt()<=15.0)continue;
     if(fabs(m->eta())>=2.5)continue;
     if(m->relIso(0.5)>=0.3)continue;    
-    if(m->isGlobal()<0.5)continue; 
+    if(!(m->isGlobal()||m->isTrackter()))continue; 
+    if((*(m->sourcePtr()))->userFloat("isPFMuon")<0.5) continue;
     if(fabs(m->dxy())>=0.045)continue; 
     if(fabs(m->dz())>=0.2)continue; 
+
+
     nmuons++;
   }
   

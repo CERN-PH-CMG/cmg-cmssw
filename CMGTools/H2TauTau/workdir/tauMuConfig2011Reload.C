@@ -7,6 +7,7 @@ TauMuPlotter * tauMuConfig(const char * name){
   //TString outpath="output/JoseMay9";
   //TString outpath="/data/benitezj/Samples/JoseMay9mva";
   //TString outpath="/data/benitezj/Samples/JoseMay9PFMuon";
+  TString outpath="output2/ColinMay12MetRaw";
   analysis->setOutputPath(outpath);
   analysis->setQCDOStoSSRatio(1.11);//value from AN-11-390 v4
 
@@ -23,22 +24,26 @@ TauMuPlotter * tauMuConfig(const char * name){
 
   Sample* TauPlusXv4 = new Sample("TauPlusXv4",outpath.Data());
   TauPlusXv4->setDataType("Data");
-  TauPlusXv4->setSampleLumi(929.748*0.978);//V5_1_0 missing files: 20/891=0.022
+  //TauPlusXv4->setSampleLumi(929.748*0.978);//V5_1_0 missing files: 20/891=0.022
+  TauPlusXv4->setSampleLumi(929.748);
   analysis->addSample(TauPlusXv4);
 
   Sample* TauPlusXAug = new Sample("TauPlusXAug",outpath.Data());
   TauPlusXAug->setDataType("Data");
-  TauPlusXAug->setSampleLumi(373.349*0.946);//V5_1_0 missing files: 9/166=0.054
+  //TauPlusXAug->setSampleLumi(373.349*0.946);//V5_1_0 missing files: 9/166=0.054
+  TauPlusXAug->setSampleLumi(373.349);
   analysis->addSample(TauPlusXAug);
 
   Sample* TauPlusXOct3 = new Sample("TauPlusXOct3",outpath.Data());
   TauPlusXOct3->setDataType("Data");
-  TauPlusXOct3->setSampleLumi(658.886*0.958);//V5_1_0 missing files: 1/24=0.042
+  //TauPlusXOct3->setSampleLumi(658.886*0.958);//V5_1_0 missing files: 1/24=0.042
+  TauPlusXOct3->setSampleLumi(658.886);
   analysis->addSample(TauPlusXOct3);
 
   Sample* TauPlusX2011B = new Sample("TauPlusX2011B",outpath.Data());
   TauPlusX2011B->setDataType("Data");
-  TauPlusX2011B->setSampleLumi(2511*0.973);//V5_1_0 missing files: 38/1417=0.027
+  //TauPlusX2011B->setSampleLumi(2511*0.973);//V5_1_0 missing files: 38/1417=0.027
+  TauPlusX2011B->setSampleLumi(2511);
   analysis->addSample(TauPlusX2011B);
 
 
