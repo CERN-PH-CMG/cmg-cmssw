@@ -57,6 +57,7 @@ int main(int argc, char* argv[])
   gSystem->Exec("mkdir -p " + outUrl);
 
   bool isMC = runProcess.getParameter<bool>("isMC");
+  bool runBlinded = runProcess.getParameter<bool>("runBlinded");
   int mctruthmode=runProcess.getParameter<int>("mctruthmode");
   
   TString outTxtUrl= outUrl + "/" + gSystem->BaseName(url) + ".txt";
@@ -269,6 +270,7 @@ int main(int argc, char* argv[])
       //##############################################   EVENT LOOP STARTS   ##############################################
       //load the event content from tree
       evSummaryHandler.getEntry(iev);
+      if(runBlinded && evSummaryHandler.hasSpoilerAlert(!isMC))continue;
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
       
@@ -330,6 +332,7 @@ int main(int argc, char* argv[])
 
       //analyze JET/MET
       PhysicsObjectJetCollection jetsP4 = phys.ajets;
+
       //base raw METs
       LorentzVector rawZvv(phys.met[0]);
       LorentzVector rawClusteredMet(zll);            rawClusteredMet *= -1;
@@ -340,12 +343,14 @@ int main(int argc, char* argv[])
       //prepare variations (first variation is the baseline, corrected for JER) 
       LorentzVectorCollection zvvs,redMets;
       std::vector<Float_t>  mts,mt3s,redMetLs,redMetTs;
-      std::vector<PhysicsObjectJetCollection> jets;
-      METUtils::computeVariation(jetsP4, rawZvv, jets, zvvs, &jecUnc);
+      std::vector<PhysicsObjectJetCollection> jetsSTD;
+      std::vector<PhysicsObjectJetCollection> jetsCHS;
+      METUtils::computeVariation(phys. jets, rawZvv, jetsCHS, zvvs, &jecUnc);
+      METUtils::computeVariation(phys.ajets, rawZvv, jetsSTD, zvvs, &jecUnc);
       for(size_t ivars=0; ivars<zvvs.size(); ivars++)
 	{
 	  LorentzVector clusteredMetP4(zll); clusteredMetP4 *= -1;
-	  for(size_t ijet=0; ijet<jets[ivars].size(); ijet++) clusteredMetP4 -= jets[ivars][ijet];
+	  for(size_t ijet=0; ijet<jetsSTD[ivars].size(); ijet++) clusteredMetP4 -= jetsSTD[ivars][ijet];
 	  METUtils::stRedMET redMetOut; 
 	  redMets.push_back(   METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, clusteredMetP4, zvvs[ivars],false,&redMetOut) );
 	  redMetLs.push_back( redMetOut.redMET_l );
@@ -358,7 +363,7 @@ int main(int argc, char* argv[])
 	Float_t zmass=zll.mass();
 	Float_t zpt=zll.pt();
 	Float_t zeta=zll.eta();
-	PhysicsObjectJetCollection &origJetsP4=jets[0];            
+	PhysicsObjectJetCollection &origJetsP4=jetsSTD[0];            
 	LorentzVector zvv    = zvvs[0];
 	LorentzVector redMet = redMets[0];
 	Float_t redMetL      = redMetLs[0];
@@ -373,7 +378,7 @@ int main(int argc, char* argv[])
 	  if(idphijmet<mindphijmet) mindphijmet=idphijmet;
 	  if(origJetsP4[ijet].pt()>30){
 	    njets++;
-	    nbtags += (phys.jets[ijet].btag1>btagcut);
+	    nbtags += (origJetsP4[ijet].btag1>btagcut);
 	  }
 	}
 	
@@ -410,10 +415,12 @@ int main(int argc, char* argv[])
          PhysicsObjectJetCollection jets;
          if(jetColl%2==0){
             jetCollName="_STD";
-            jets = phys.ajets;               
+//            jets = phys.ajets; 
+            jets = jetsSTD[0]; 
          }else{
             jetCollName="_CHS";
-            jets = phys.jets;
+            jets = jetsCHS[0];  
+//            jets = phys.jets;
          }
 
          if(jetColl>=2){
