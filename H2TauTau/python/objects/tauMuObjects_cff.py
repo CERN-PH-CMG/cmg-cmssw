@@ -57,7 +57,7 @@ mvaMETSequence = cms.Sequence(
 
 # recoil correction
 doMVAMet = False
-metForRecoil = 'cmgPFMET'
+metForRecoil = 'cmgPFMETRaw'
 diTausForRecoil = 'cmgTauMuPreSel'
 if doMVAMet:
     # in this case the MET will be taken from the di-tau

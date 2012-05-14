@@ -56,6 +56,7 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         return self.testMuonTight(leg) and \
                super( TauMuAnalyzer, self).testLeg2( leg )
 
+
     def testTau(self, tau):
         '''Returns True if a tau passes a set of cuts.
         Can be used in testLeg1 and testLeg2, in child classes.
@@ -64,14 +65,12 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         if tau.decayMode() == 0 and \
                tau.calcEOverP() < 0.2: #reject muons faking taus in 2011B
             return False
-        elif tau.tauID("byLooseCombinedIsolationDeltaBetaCorr")==False:
-            return False
-        elif tau.tauID("againstMuonTight")==False:
-            return False
-        elif tau.tauID("againstElectronLoose")==False:
-            return False        
-        else:
-            return True
+        return tau.tauID("byLooseCombinedIsolationDeltaBetaCorr")==True and \
+               tau.tauID("againstMuonTight")==True and \
+               tau.tauID("againstElectronLoose")==True and \
+               abs(tau.dxy()) < 0.045 and \
+               abs(tau.dz()) < 0.2
+
 
     def testMuonID(self, muon):
         return ( muon.looseId() and \
@@ -81,7 +80,6 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
 
     def testMuonTight(self, muon ):
         '''basically recoding the muon selection of muCuts_cff.'''
-        import pdb; pdb.set_trace()
         if muon.pt()>self.cfg_ana.pt2 and \
                abs( muon.eta() ) < self.cfg_ana.eta2 and \
                self.testMuonID(muon) and \

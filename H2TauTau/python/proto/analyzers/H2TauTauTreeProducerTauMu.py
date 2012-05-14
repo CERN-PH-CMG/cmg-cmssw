@@ -46,13 +46,12 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzer ):
        fillMuon(tr, 'l2', event.diLepton.leg2() )
 
 
-##         nJets = len(event.cleanJets)
-##         fill('nJets', nJets )
-##         if nJets>=1:
-##             fParticleVars('jet1', event.cleanJets[0] )
-## 	    fill('mttj', sqrt(pow(event.diLepton.energy()+event.cleanJets[0].energy(),2) - pow(event.diLepton.px()+event.cleanJets[0].px(),2) - pow(event.diLepton.py()+event.cleanJets[0].py(),2) - pow(event.diLepton.pz()+event.cleanJets[0].pz(),2)))
-##         if nJets>=2:
-##             fParticleVars('jet2', event.cleanJets[1] )
+       nJets = len(event.cleanJets)
+       fill(tr, 'nJets', nJets )
+       if nJets>=1:
+           fillJet(tr, 'jet1', event.cleanJets[0] )
+       if nJets>=2:
+           fillJet(tr, 'jet2', event.cleanJets[1] )
 
        fill(tr, 'weight', event.eventWeight)
 ##         if hasattr( event, 'leg1_eff'): 
