@@ -7,7 +7,8 @@ TauMuPlotter * tauMuConfig(const char * name){
   //TString outpath="output/JoseMay9";
   //TString outpath="/data/benitezj/Samples/JoseMay9mva";
   //TString outpath="/data/benitezj/Samples/JoseMay9PFMuon";
-  TString outpath="output2/ColinMay12MetRaw";
+  //TString outpath="output2/ColinMay12MetRaw";
+  TString outpath="output/JoseMay14";
   analysis->setOutputPath(outpath);
   analysis->setQCDOStoSSRatio(1.11);//value from AN-11-390 v4
 
