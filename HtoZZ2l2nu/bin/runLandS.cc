@@ -1254,10 +1254,10 @@ void doDYReplacement(TString dirurl, std::vector<TString>& selCh,TString ctrlCh,
            TH1* gjets1Dshape  = gjets2Dshape->ProjectionY("tmpName",indexcut_,indexcut_);
            shapeChan_SI.bckg[ibckg]->SetTitle(DYProcName + " (data)");    
            for(int i=0;i<shapeChan_SI.bckg[ibckg]->GetNbinsX();i++){
-//              gjets2Dshape->SetBinContent(i, rescaleFactor*gjets1Dshape->GetBinContent(i)/2);  
-//              gjets2Dshape->SetBinError  (i, rescaleFactor*gjets1Dshape->GetBinContent(i)/2);
-              shapeChan_SI.bckg[ibckg]->SetBinContent(i, rescaleFactor*gjets1Dshape->GetBinContent(i));  
-              shapeChan_SI.bckg[ibckg]->SetBinError  (i, rescaleFactor*gjets1Dshape->GetBinError(i));
+              double val = rescaleFactor*gjets1Dshape->GetBinContent(i);
+              double err = sqrt(pow(rescaleFactor*gjets1Dshape->GetBinError(i),2) + pow(val/2,2));
+              shapeChan_SI.bckg[ibckg]->SetBinContent(i, val);  
+              shapeChan_SI.bckg[ibckg]->SetBinError  (i, err);
            } 
            delete gjets1Dshape;
 
