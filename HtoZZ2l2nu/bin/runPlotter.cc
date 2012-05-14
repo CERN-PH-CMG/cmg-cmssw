@@ -534,9 +534,9 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
             if(HistoProperties.isIndexPlot && cutIndex>=0){
                TH2* tmp2D = (TH2*) GetObjectFromPath(File,HistoProperties.name);
                if(tmp2D){tmptmphist = tmp2D->ProjectionY((string(tmp2D->GetName())+cutIndexStr).c_str(),cutIndex,cutIndex); delete tmp2D;}
-            }else if(HistoProperties.name.find("mt_shape")){
-               TH2* tmp2D = (TH2*) GetObjectFromPath(File,HistoProperties.name);
-               if(tmp2D){tmp2D->GetXaxis()->SetTitle("#events"); tmptmphist = tmp2D->ProjectionX((string(tmp2D->GetName())+cutIndexStr).c_str()); delete tmp2D;}
+//            }else if(HistoProperties.name.find("mt_shape")){
+//               TH2* tmp2D = (TH2*) GetObjectFromPath(File,HistoProperties.name);
+//               if(tmp2D){tmp2D->GetXaxis()->SetTitle("#events"); tmptmphist = tmp2D->ProjectionX((string(tmp2D->GetName())+cutIndexStr).c_str()); delete tmp2D;}
             }else if(!HistoProperties.isIndexPlot){
                tmptmphist = (TH1*) GetObjectFromPath(File,HistoProperties.name);
             }
