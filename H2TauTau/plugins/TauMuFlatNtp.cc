@@ -720,7 +720,7 @@ bool TauMuFlatNtp::vetoDiLepton(){
     if(m->pt()<=15.0)continue;
     if(fabs(m->eta())>=2.5)continue;
     if(m->relIso(0.5)>=0.3)continue;    
-    if(!(m->isGlobal()||m->isTrackter()))continue; 
+    if(!(m->isGlobal()||m->isTracker()))continue; 
     if((*(m->sourcePtr()))->userFloat("isPFMuon")<0.5) continue;
     if(fabs(m->dxy())>=0.045)continue; 
     if(fabs(m->dz())>=0.2)continue; 
