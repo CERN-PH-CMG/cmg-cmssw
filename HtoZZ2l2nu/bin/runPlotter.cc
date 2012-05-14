@@ -56,8 +56,8 @@ std::map<string, bool>   FileExist;
 struct NameAndType{
    std::string name;
    bool type; 
-   bool cutIndex;
-   NameAndType(std::string name_,  bool type_, bool cutIndex_){name = name_; type = type_; cutIndex = cutIndex_;}
+   bool isIndexPlot;
+   NameAndType(std::string name_,  bool type_, bool isIndexPlot_){name = name_; type = type_; isIndexPlot = isIndexPlot_;}
 
    bool operator==(const NameAndType& a){ return a.name == name;}
    bool operator< (const NameAndType& a){ return a.name < name;}
@@ -132,8 +132,8 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::list<N
          GetListOfObject(Root,RootDir,histlist,(TDirectory*)tmp,parentPath+ list->At(i)->GetName()+"/" );
       }else if(tmp->InheritsFrom("TH1")){
         bool isTH1 = !(tmp->InheritsFrom("TH2") || tmp->InheritsFrom("TH3"));
-        bool hasIndex = string(((TH1*)tmp)->GetXaxis()->GetTitle()) =="cut index";
-        if(hasIndex && !isTH1){isTH1=true;}
+        bool hasIndex = string(((TH1*)tmp)->GetXaxis()->GetTitle()).find("cut index")<string::npos;
+        if(hasIndex){isTH1=true;}
 	histlist.push_back(NameAndType(parentPath+list->At(i)->GetName(), isTH1, hasIndex ) );
       }
 
@@ -285,7 +285,7 @@ void fixExtremities(TH1* h,bool addOverflow, bool addUnderflow)
 
 
 void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, NameAndType HistoProperties){
-   if(HistoProperties.cutIndex && cutIndex<0)return;
+   if(HistoProperties.isIndexPlot && cutIndex<0)return;
 
    std::string SaveName = "";
 
@@ -379,7 +379,7 @@ void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, 
 
 
 void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType HistoProperties){
-   if(HistoProperties.cutIndex && cutIndex<0)return;
+   if(HistoProperties.isIndexPlot && cutIndex<0)return;
 
    std::string SaveName = "";
 
@@ -483,7 +483,7 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
 
 
 void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType HistoProperties){
-   if(HistoProperties.cutIndex && cutIndex<0)return;
+   if(HistoProperties.isIndexPlot && cutIndex<0)return;
 
    TCanvas* c1 = new TCanvas("c1","c1",800,800);
    TPad* t1 = new TPad("t1","t1", 0.0, 0.20, 1.0, 1.0);
@@ -531,10 +531,13 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = NULL; 
-            if(HistoProperties.cutIndex && cutIndex>=0){
+            if(HistoProperties.isIndexPlot && cutIndex>=0){
                TH2* tmp2D = (TH2*) GetObjectFromPath(File,HistoProperties.name);
                if(tmp2D){tmptmphist = tmp2D->ProjectionY((string(tmp2D->GetName())+cutIndexStr).c_str(),cutIndex,cutIndex); delete tmp2D;}
-            }else if(!HistoProperties.cutIndex){
+            }else if(HistoProperties.name.find("mt_shape")){
+               TH2* tmp2D = (TH2*) GetObjectFromPath(File,HistoProperties.name);
+               if(tmp2D){tmp2D->GetXaxis()->SetTitle("#events"); tmptmphist = tmp2D->ProjectionX((string(tmp2D->GetName())+cutIndexStr).c_str()); delete tmp2D;}
+            }else if(!HistoProperties.isIndexPlot){
                tmptmphist = (TH1*) GetObjectFromPath(File,HistoProperties.name);
             }
 	    if(!tmptmphist){delete File;continue;}
@@ -709,7 +712,7 @@ std::string toLatexRounded(double value, double error){
 
 
 void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, NameAndType HistoProperties){
-   if(HistoProperties.cutIndex && cutIndex<0)return;
+   if(HistoProperties.isIndexPlot && cutIndex<0)return;
 
    FILE* pFile = NULL;
 
@@ -745,10 +748,10 @@ void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, NameAndType Hi
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = NULL;
-            if(HistoProperties.cutIndex && cutIndex>=0){
+            if(HistoProperties.isIndexPlot && cutIndex>=0){
                TH2* tmp2D = (TH2*) GetObjectFromPath(File,HistoProperties.name);
                if(tmp2D){tmptmphist = tmp2D->ProjectionY("_py",cutIndex,cutIndex); delete tmp2D;}
-            }else if(!HistoProperties.cutIndex){
+            }else if(!HistoProperties.isIndexPlot){
                tmptmphist = (TH1*) GetObjectFromPath(File,HistoProperties.name);
             }
             if(!tmptmphist){delete File;continue;}
@@ -921,9 +924,11 @@ int main(int argc, char* argv[]){
        if(ictr%TreeStep==0){printf(".");fflush(stdout);}
        if(objectSearchKey != "" && it->name.find(objectSearchKey)==std::string::npos)continue;
        system(("echo \"" + it->name + "\" >> " + csvFile).c_str());
+
        if(doTex && it->name.find("eventflow")!=std::string::npos && it->name.find("optim_eventflow")==std::string::npos){    ConvertToTex(Root,inDir,*it); }
        if(doPlot && do2D  && !it->type){                      if(!splitCanvas){Draw2DHistogram(Root,inDir,*it); }else{Draw2DHistogramSplitCanvas(Root,inDir,*it);}}
        if(doPlot && do1D  &&  it->type){                                       Draw1DHistogram(Root,inDir,*it); }
+
       
        if(StoreInFile && do2D  && !it->type){                                  SavingToFile(Root,inDir,*it, OutputFile); }
        if(StoreInFile && do1D  &&  it->type){                                  SavingToFile(Root,inDir,*it, OutputFile); }
