@@ -11,10 +11,13 @@ class VertexAnalyzer( Analyzer ):
             'offlinePrimaryVertices',
             'std::vector<reco::Vertex>'
             )
-        self.fixedWeight = 1
-        if self.cfg_comp.isMC and not hasattr( self.cfg_ana, 'fixedWeight'): 
-            self.mchandles['vertexWeight'] = AutoHandle( self.cfg_ana.vertexWeight,
-                                                         'double' )
+        self.fixedWeight = None
+        if self.cfg_comp.isMC:
+            if hasattr( self.cfg_ana, 'fixedWeight'):
+                self.fixedWeight = self.cfg_ana.fixedWeight
+            else:
+                self.mchandles['vertexWeight'] = AutoHandle( self.cfg_ana.vertexWeight,
+                                                             'double' )
 
     def beginLoop(self):
         super(VertexAnalyzer,self).beginLoop()
@@ -25,10 +28,11 @@ class VertexAnalyzer( Analyzer ):
         self.readCollections( iEvent )
         event.vertices = self.handles['vertices'].product()
         event.vertexWeight = 1
-        if self.fixedWeight is None:
-            event.vertexWeight = self.mchandles['vertexWeight'].product()[0]
-        else:
-            event.vertexWeight = self.fixedWeight
+        if self.cfg_comp.isMC:
+            if self.fixedWeight is None:
+                event.vertexWeight = self.mchandles['vertexWeight'].product()[0]
+            else:
+                event.vertexWeight = self.fixedWeight
         event.eventWeight *= event.vertexWeight
             
         self.averages['vertexWeight'].add( event.vertexWeight )
