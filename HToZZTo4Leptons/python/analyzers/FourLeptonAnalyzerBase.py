@@ -11,6 +11,7 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton
 
 from CMGTools.HToZZTo4Leptons.analyzers.DiObject import DiObject
+from CMGTools.HToZZTo4Leptons.analyzers.DiObjectPair import DiObjectPair
 
 
 
@@ -64,7 +65,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
         out = []
         for l1, l2,l3,l4 in itertools.permutations(leptons, 4):
             if l1.pt()>l2.pt() and l3.pt()>l4.pt():
-                out.append( DiObject(DiObject(l1, l2),DiObject(l3,l4),False) )
+                out.append( DiObjectPair(l1, l2,l3,l4))
         return out
 
 
@@ -234,13 +235,9 @@ class FourLeptonAnalyzerBase( Analyzer ):
         return self.testZOS(fourLepton.leg1) and self.testZOS(fourLepton.leg2)
 
     def testFourLeptonPtThr(self, fourLepton):
-        pts = [fourLepton.leg1.leg1.pt(),\
-               fourLepton.leg1.leg2.pt(),\
-               fourLepton.leg2.leg1.pt(),\
-               fourLepton.leg2.leg2.pt()]
-
-        pts.sort(reverse=True)
-        return pts[0]>self.cfg_ana.z1_pt1 and pts[1]>self.cfg_ana.z1_pt2
+        leading_pt = fourLepton.sortedPtLeg(0) 
+        subleading_pt = fourLepton.sortedPtLeg(1) 
+        return leading_pt>self.cfg_ana.z1_pt1  and subleading_pt>self.cfg_ana.z1_pt2
 
     def testFourLeptonZ1(self, fourLepton):
         return self.testZ1Mass(fourLepton.leg1) and self.testZSF(fourLepton.leg1) and \
@@ -253,21 +250,9 @@ class FourLeptonAnalyzerBase( Analyzer ):
     def testFourLeptonMassZ1(self, fourLepton):
         return self.testZ1Mass(fourLepton.leg1)
 
-
-    def calculateMassCombinations(self, fL):
-        masses=[]
-        masses.append(fL.leg1.mass())
-        masses.append(fL.leg2.mass())
-        masses.append((fL.leg1.leg1.p4()+fL.leg2.leg1.p4()).M())
-        masses.append((fL.leg1.leg2.p4()+fL.leg2.leg1.p4()).M())
-        masses.append((fL.leg1.leg1.p4()+fL.leg2.leg2.p4()).M())
-        masses.append((fL.leg1.leg2.p4()+fL.leg2.leg2.p4()).M())
-        fL.minMass = min(masses)
-        fL.maxMass = max(masses)
         
     def testFourLeptonMinMass(self, fourLepton):
-        self.calculateMassCombinations(fourLepton)
-        return fourLepton.minMass> self.cfg_ana.minMass
+        return fourLepton.minPairMass()>self.cfg_ana.minMass
 
     def testFourLeptonMassZ(self, fourLepton):
         return fourLepton.mass()>=70.

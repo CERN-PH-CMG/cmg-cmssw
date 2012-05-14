@@ -25,11 +25,6 @@ class TreeProducer( Analyzer ):
         else:
             print 'Unknown type '
 
-    def struct(self, varName,type=float ):
-        a=type() 
-        self.vars[varName]=a
-        self.tree.Branch(varName,self.vars[varName],32000,99)
-            
 
     def fill(self, varName, value ):
         self.vars[varName][0]=value
@@ -90,6 +85,8 @@ class TreeProducer( Analyzer ):
             self.fill('step',event.step)
         if hasattr(event,'skim'):
             self.fill('skim',event.skim)
+
+            
         
     def bookBoson(self, pName ):
         self.var('{pName}_Pt'.format(pName=pName))
@@ -98,9 +95,24 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_Charge'.format(pName=pName))
         self.var('{pName}_Mass'.format(pName=pName))
 
+    def bookHiggs(self, pName ):
+        self.var('{pName}_Pt'.format(pName=pName))
+        self.var('{pName}_Eta'.format(pName=pName))
+        self.var('{pName}_Phi'.format(pName=pName))
+        self.var('{pName}_Charge'.format(pName=pName))
+        self.var('{pName}_Mass'.format(pName=pName))
+        self.var('{pName}_MinPairMass'.format(pName=pName))
+        self.var('{pName}_MinOSPairMass'.format(pName=pName))
+
+
     def fillBoson(self, pName,particle ):
         self.fillBasic(pName,particle)
 
+    def fillHiggs(self, pName,particle ):
+        self.fillBasic(pName,particle)
+        self.fill('{pName}_MinPairMass'.format(pName=pName), particle.minPairMass() )
+        self.fill('{pName}_MinOSPairMass'.format(pName=pName), particle.minOSPairMass() )
+        
 
 
     def bookEventInfo(self):    
@@ -111,13 +123,14 @@ class TreeProducer( Analyzer ):
         self.var('rho')
         self.var('step')
         self.var('skim')
+
             
 
     
 
     def reset(self):
         for name,value in self.vars.iteritems():
-            value=-99
+            value[0]=-99
 
     def write(self):
         super(TreeProducer, self).write()
