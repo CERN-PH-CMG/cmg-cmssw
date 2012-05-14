@@ -1,6 +1,7 @@
 import os
 import pprint
 import pickle
+import shutil
 
 def haddPck(file, odir, idirs):
     '''add pck files in directories idirs to a directory outdir.
@@ -76,7 +77,7 @@ def haddRec(odir, idirs):
         for file in files:
             hadd('/'.join([root, file]), odir, idirs)
 
-def haddChunks(idir):
+def haddChunks(idir, removeDestDir):
     chunks = {}
     for file in sorted(os.listdir(idir)):
         filepath = '/'.join( [idir, file] )
@@ -97,6 +98,8 @@ def haddChunks(idir):
     for comp, chunks in chunks.iteritems():
         odir = '/'.join( [idir, comp] )
         print odir, chunks
+        if removeDestDir:
+            shutil.rmtree(odir)
         haddRec(odir, chunks)
 
     

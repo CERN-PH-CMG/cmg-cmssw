@@ -17,6 +17,9 @@ if __name__ == '__main__':
     DYJets_Chunk0/, DYJets_Chunk1/ ... -> hadd -> DYJets/
     WJets_Chunk0/, WJets_Chunk1/ ... -> hadd -> WJets/
     """
+    parser.add_option("-r","--remove", dest="remove",
+                      default=False,action="store_true",
+                      help="remove existing destination directories.")
 
     (options,args) = parser.parse_args()
 
@@ -26,14 +29,14 @@ if __name__ == '__main__':
 
     dir = args[0]
 
-    haddChunks(dir)
+    haddChunks(dir, options.remove)
 
-    # below, a hack for Colin's analysis. 
-    os.chdir( dir )
-    dy = 'DYJets'
-    if dy in os.listdir('.') and os.environ['USER']=='cbern':
-        fakes = '/'.join([dy,'Fakes'])
-        if os.path.exists( fakes ):
-            os.rename( fakes, '_'.join([dy,'Fakes']))
-        else:
-            print 'warning: DYJets/Fakes not found. Maybe you ran hadd already?'
+##     # below, a hack for Colin's analysis. 
+##     os.chdir( dir )
+##     dy = 'DYJets'
+##     if dy in os.listdir('.') and os.environ['USER']=='cbern':
+##         fakes = '/'.join([dy,'Fakes'])
+##         if os.path.exists( fakes ):
+##             os.rename( fakes, '_'.join([dy,'Fakes']))
+##         else:
+##             print 'warning: DYJets/Fakes not found. Maybe you ran hadd already?'

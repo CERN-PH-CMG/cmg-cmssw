@@ -123,10 +123,9 @@ if __name__ == '__main__':
             setOfBadJobs.update( set(bjl) )
         # print setOfBadJobs
         # sys.exit(1)
-        
-    # print len(badJobs), 'bad jobs'
-    # print badJobs
-    badJobs = sorted( setOfBadJobs )
+        # print len(badJobs), 'bad jobs'
+        # print badJobs
+        badJobs = sorted( setOfBadJobs )
 
     if options.report:
         for job in badJobs:
