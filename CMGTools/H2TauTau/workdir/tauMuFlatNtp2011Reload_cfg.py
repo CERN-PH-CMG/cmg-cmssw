@@ -8,8 +8,12 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 evReportFreq = 100
 
 #######Define the samples to process
-dataset_user = 'benitezj'
-sampleTag = "/PAT_CMG_V5_1_0/H2TAUTAU_JoseMay8"
+#dataset_user = 'benitezj'
+#sampleTag = "/PAT_CMG_V5_1_0/H2TAUTAU_JoseMay8"
+#sampleTag = "/PAT_CMG_V5_1_0/H2TAUTAU_JoseMay9"
+dataset_user = 'cbern'
+#sampleTag = "/PAT_CMG_V5_2_0/H2TAUTAU_ColinMay12"
+sampleTag = "/PAT_CMG_V5_2_0/H2TAUTAU_TauMu_MetRaw_ColinMay12"
 
 
 #########################
@@ -23,7 +27,7 @@ process.flatNtp.diTauTag = "cmgTauMuCorSVFitFullSel"
 inputfiles = "tauMu_fullsel_tree_CMG_.*root"
 dataset_name = process.flatNtp.path.value() + sampleTag
 firstfile = sampleJobIdx * 5
-lastfile = (sampleJobIdx + 1 )* 5
+lastfile = (sampleJobIdx + 1 ) * 5
 
 print dataset_user
 print dataset_name

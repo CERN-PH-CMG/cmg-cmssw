@@ -68,8 +68,7 @@ def configureFlatNtpSample(module,sampleAlias):
         module.randsigma = 0.10
 
     if sampleAlias == 'TTJets' : 
-        module.path = "/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5/HTTSKIM10"
-        #module.path = "/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5/HTTSKIM1"
+        module.path = "/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5/HTTSKIM1"
         module.dataType = "MC"
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")

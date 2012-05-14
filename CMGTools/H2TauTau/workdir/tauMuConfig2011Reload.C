@@ -3,7 +3,10 @@ TauMuPlotter * tauMuConfig(const char * name){
   TauMuPlotter * analysis = new TauMuPlotter(TString("analysis")+name);
   //TString outpath="/data/benitezj/Samples/Mar19MuJet";
   //TString outpath="./output/ColinMay7A";
-  TString outpath="/data/benitezj/Samples/JoseMay8";
+  //TString outpath="/data/benitezj/Samples/JoseMay8";
+  //TString outpath="output/JoseMay9";
+  //TString outpath="/data/benitezj/Samples/JoseMay9mva";
+  //TString outpath="/data/benitezj/Samples/JoseMay9PFMuon";
   analysis->setOutputPath(outpath);
   analysis->setQCDOStoSSRatio(1.11);//value from AN-11-390 v4
 
@@ -15,27 +18,27 @@ TauMuPlotter * tauMuConfig(const char * name){
   //2011 Data samples
   Sample* TauPlusXMay = new Sample("TauPlusXMay",outpath.Data());
   TauPlusXMay->setDataType("Data");
-  TauPlusXMay->setSampleLumi(168.597);
+  TauPlusXMay->setSampleLumi(168.597);//V5_1_0 missing files: 0/209
   analysis->addSample(TauPlusXMay);
 
   Sample* TauPlusXv4 = new Sample("TauPlusXv4",outpath.Data());
   TauPlusXv4->setDataType("Data");
-  TauPlusXv4->setSampleLumi(929.748);
+  TauPlusXv4->setSampleLumi(929.748*0.978);//V5_1_0 missing files: 20/891=0.022
   analysis->addSample(TauPlusXv4);
 
   Sample* TauPlusXAug = new Sample("TauPlusXAug",outpath.Data());
   TauPlusXAug->setDataType("Data");
-  TauPlusXAug->setSampleLumi(373.349);
+  TauPlusXAug->setSampleLumi(373.349*0.946);//V5_1_0 missing files: 9/166=0.054
   analysis->addSample(TauPlusXAug);
 
   Sample* TauPlusXOct3 = new Sample("TauPlusXOct3",outpath.Data());
   TauPlusXOct3->setDataType("Data");
-  TauPlusXOct3->setSampleLumi(658.886);
+  TauPlusXOct3->setSampleLumi(658.886*0.958);//V5_1_0 missing files: 1/24=0.042
   analysis->addSample(TauPlusXOct3);
 
   Sample* TauPlusX2011B = new Sample("TauPlusX2011B",outpath.Data());
   TauPlusX2011B->setDataType("Data");
-  TauPlusX2011B->setSampleLumi(2511);
+  TauPlusX2011B->setSampleLumi(2511*0.973);//V5_1_0 missing files: 38/1417=0.027
   analysis->addSample(TauPlusX2011B);
 
 
@@ -63,19 +66,19 @@ TauMuPlotter * tauMuConfig(const char * name){
   Sample * WJetsToLNu=new Sample("WJetsToLNu",outpath.Data());
   WJetsToLNu->setDataType("MC");
   WJetsToLNu->setCrossection(31314);
-  WJetsToLNu->setSampleGenEvents(81308780);                                  
+  WJetsToLNu->setSampleGenEvents(81308780*0.99);//V5_1_0 missing files: 1/91                                  
   analysis->addSample(WJetsToLNu);  
    
   Sample* TTJets = new Sample("TTJets",outpath.Data());
   TTJets->setDataType("MC");
   TTJets->setCrossection(165.8);//157.5=NLO theory, 165.8=CMS TOP-11-024
-  TTJets->setSampleGenEvents(59591548); 
+  TTJets->setSampleGenEvents(59591548); //V5_1_0 missing files: 2/536 + 1/535
   analysis->addSample(TTJets);
 
   Sample* ZToTauTau = new Sample("ZToTauTau",outpath.Data());
   ZToTauTau->setDataType("MC");
   ZToTauTau->setCrossection(3048);
-  ZToTauTau->setSampleGenEvents(36189241);// 28480417 need to revise this, this number was changing in the tau scale processings 
+  ZToTauTau->setSampleGenEvents(36189241);//V5_1_0 missing files: 1/2751
   analysis->addSample(ZToTauTau);
 
   Sample* ZToMuMu = new Sample("ZToMuMu",outpath.Data());
@@ -128,7 +131,8 @@ TauMuPlotter * tauMuConfig(const char * name){
   Float_t HiggsZHcross[8]={  0.4721,  0.4107,   0.3598,   0.3158,   0.2778,  0.2453,  0.2172,  0.1930};
   Float_t HiggsttHcross[8]={  0.1257,  0.1106,  0.09756,  0.08634,  0.07658, 0.06810, 0.06072, 0.05435};
   //Int_t   HiggsVHNevt[8]={  201334,  195000,   183147,   205000,   214501,   220000,  218704, 216885};//number of events varies due to bad crab jobs
-  Int_t HiggsVHNevt=214501;//V5_1_0
+  Int_t   HiggsVHNevt[8]={  220000,  220000,   2200000,   220000,   220000,   220000,  220000, 220000};//V5_1_0 , M=120 has 10x ?
+
 
 
   char nam[100];
@@ -149,12 +153,12 @@ TauMuPlotter * tauMuConfig(const char * name){
     HiggsVBF->setSampleGenEvents(HiggsVBFNevt);//[i]);
     analysis->addSample(HiggsVBF);    
 
-//     sprintf(nam,"HiggsVH%d",HiggsMass[i]);
-//     Sample* HiggsVH=new Sample(nam,outpath.Data());
-//     HiggsVH->setDataType("Signal");
-//     HiggsVH->setCrossection((HiggsWHcross[i]+HiggsZHcross[i]+HiggsttHcross[i])*HiggsTauTauBF[i]);
-//     HiggsVH->setSampleGenEvents(HiggsVHNevt);//[i]);
-//     analysis->addSample(HiggsVH);    
+    sprintf(nam,"HiggsVH%d",HiggsMass[i]);
+    Sample* HiggsVH=new Sample(nam,outpath.Data());
+    HiggsVH->setDataType("Signal");
+    HiggsVH->setCrossection((HiggsWHcross[i]+HiggsZHcross[i]+HiggsttHcross[i])*HiggsTauTauBF[i]);
+    HiggsVH->setSampleGenEvents(HiggsVHNevt[i]);
+    analysis->addSample(HiggsVH);    
   }
 
   return analysis;
