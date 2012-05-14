@@ -169,8 +169,8 @@ elif test==2:
      comp.splitFactor = 1
      comp.files = comp.files[2]
 
-selectedComponents = data_2011
-selectedComponents.extend(MC)
+# selectedComponents = data_2011
+# selectedComponents.extend(MC)
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
