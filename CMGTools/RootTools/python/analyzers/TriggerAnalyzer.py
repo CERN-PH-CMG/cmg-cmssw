@@ -26,6 +26,11 @@ class TriggerAnalyzer( Analyzer ):
     def beginLoop(self):
         super(TriggerAnalyzer,self).beginLoop()
         self.triggerList = TriggerList( self.cfg_comp.triggers )
+        if hasattr(self.cfg_comp,'vetoTriggers'):
+            self.vetoTriggerList = TriggerList( self.cfg_comp.vetoTriggers )
+        else:
+            self.vetoTriggerList = None
+            
         self.counters.addCounter('Trigger')
         self.counters.counter('Trigger').register('All events')
         self.counters.counter('Trigger').register('HLT')
@@ -47,7 +52,13 @@ class TriggerAnalyzer( Analyzer ):
         passed, hltPath = self.triggerList.triggerPassed(event.triggerObject,
                                                          run, self.cfg_comp.isData,
                                                          usePrescaled = usePrescaled)
-        if not passed:
+        #Check the veto!
+        veto=False
+        if self.vetoTriggerList is not None:
+            veto,hltVetoPath = self.vetoTriggerList.triggerPassed(event.triggerObject,
+                                                         run, self.cfg_comp.isData,
+                                                         usePrescaled = usePrescaled)
+        if not passed or (passed and veto):
             return False
         # import pdb; pdb.set_trace()
 
