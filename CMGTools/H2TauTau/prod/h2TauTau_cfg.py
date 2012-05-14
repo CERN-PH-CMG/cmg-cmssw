@@ -19,8 +19,8 @@ numberOfFilesToProcess = 5
 
 debugEventContent = False
 
-#1=mu-tau, 2=e-tau, 3=e-mu, 4=tau-tau, -1=all
-channel = -1
+#tau-mu, tau-ele, mu-ele, di-tau, all
+channel = 'tau-mu'
 ##########
 
 
@@ -31,9 +31,10 @@ channel = -1
 # process.setName_('H2TAUTAU')
 
 dataset_user = 'cmgtools' 
-dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_1_0'
-# dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5/PAT_CMG_V5_1_0'
-
+# dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0'
+# dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5/PAT_CMG_V5_2_0'
+# dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/V5/PAT_CMG_V5_2_0'
+dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/V5/PAT_CMG_V5_2_0'
 dataset_files = 'cmgTuple.*root'
 
 # creating the source
@@ -54,7 +55,7 @@ process.source = datasetToSource(
 #    )
 #    )
 
-process.source.fileNames = ['file:DYJets.root']
+# process.source.fileNames = ['file:DYJets.root']
 
 # restricting the number of files to process to a given number
 if numberOfFilesToProcess>0:
@@ -102,7 +103,7 @@ process.outpath = cms.EndPath()
 
 
 #Jose: process.schedule doesn't have a += operator?
-if channel==-1:
+if channel=='all':
     process.schedule = cms.Schedule(
         process.generatorPath,
         process.tauMuFullSelPath,
@@ -111,25 +112,25 @@ if channel==-1:
         process.diTauFullSelPath,
         process.outpath
         )
-elif channel==1:
+elif channel=='tau-mu':
     process.schedule = cms.Schedule(
         process.generatorPath,
         process.tauMuFullSelPath,
         process.outpath
         )
-elif channel==2:
+elif channel=='tau-ele':
     process.schedule = cms.Schedule(
         process.generatorPath,
         process.tauEleFullSelPath,
         process.outpath
         )
-elif channel==3:
+elif channel=='mu-ele':
     process.schedule = cms.Schedule(
         process.generatorPath,
         process.muEleFullSelPath,
         process.outpath
         )
-elif channel==4:
+elif channel=='di-tau':
     process.schedule = cms.Schedule(
         process.generatorPath,
         process.diTauFullSelPath,
@@ -173,13 +174,13 @@ justn = 30
 # process.cmgTauScaler.cfg.nSigma = -1
 
 from CMGTools.H2TauTau.tools.setupOutput import *
-if channel==1 or channel==-1:
+if channel=='tau-mu' or channel=='all':
     addTauMuOutput( process, debugEventContent, addPreSel=False)
-if channel==2 or channel==-1:
+if channel=='tau-ele' or channel=='all':
     addTauEleOutput( process, debugEventContent, addPreSel=False)
-if channel==3 or channel==-1:
+if channel=='mu-ele' or channel=='all':
     addMuEleOutput( process, debugEventContent, addPreSel=False)
-if channel==4 or channel==-1:
+if channel=='di-tau' or channel=='all':
     addDiTauOutput( process, debugEventContent, addPreSel=False)
 
 

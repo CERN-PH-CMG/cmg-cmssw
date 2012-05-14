@@ -26,7 +26,10 @@ def jsonPick( dataset, samplesAndJSONs=None):
     jsonDictFile = open( samplesAndJSONs )
     jsons = {}
     for line in jsonDictFile:
-        sample, json = line.split()
+        try:
+            sample, json = line.split()
+        except ValueError:
+            continue
         jsons[sample] = json
     # dir = dirReprocessing
     # if 'Prompt' in dataset:
