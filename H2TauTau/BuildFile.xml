@@ -20,6 +20,7 @@
 <use name="AnalysisDataFormats/CMGTools"/>
 
 <use name="TauAnalysis/SVFitStandAlone"/>
+<use name="TauAnalysis/CandidateTools"/>
 
 <use name="CMGTools/Common"/>
 

@@ -7,13 +7,16 @@ void histosForLimit(long sm=0, long mass=120){
 
   TString rootfilename=TString("muTau/muTau_SM")+(long)sm+"_mH"+(long)mass+".root";
 
-  gROOT->ProcessLine(".L ./tauMuConfig.C");
+  //gROOT->ProcessLine(".L ./tauMuConfig.C");
+  gROOT->ProcessLine(".L ./tauMuConfig2011Reload.C");
   TauMuPlotter *analysis =tauMuConfig("analysis");
   analysis->plotvar_="svfitmass";
   analysis->nbins_=30;
   analysis->xmin_=0.;
   analysis->xmax_=300.;
-  analysis->Isocat_=1;
+  //analysis->Isocat_=1;
+  //analysis->Isocat_=0; analysis->extrasel_="(((abs(mueta)<1.479)*(muisomva>0.96)+(abs(mueta)>1.479)*(muisomva>0.95))&&tauisodisc>=2)";
+  analysis->Isocat_=0; analysis->extrasel_="(((abs(mueta)<1.479)*(muisomva>0.96)+(abs(mueta)>1.479)*(muisomva>0.95))&&tauisomva>0.884)";
   analysis->MTcat_=1;
   analysis->SMcat_=sm;
   if(!analysis->scaleSamplesLumi())return 0;

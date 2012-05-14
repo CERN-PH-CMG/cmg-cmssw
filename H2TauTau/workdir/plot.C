@@ -45,28 +45,34 @@ void plot(){
   //Float_t c[4]={0,0,0,0};
   //Float_t r[4]={160000,175000,0,400};
   //analysis->plot("runNumberHisto",0,"","",c,r);
-  //analysis->plotInc("nvertex",1,1,-1,50,-.5,49.5," # of reco. vertices ","",c);
+  //analysis->plotInc("nvtx",1,1,-1,50,-.5,49.5,""," # of reco. vertices ","",c);
   //analysis->plotInc("mupt",1,1,-1,100,0,100," #mu p_{T}   (GeV)","Events / 1 GeV",c);
-  //analysis->plot("muEtaHisto",2," #eta_{#mu}","Events / 0.1",c,r);
-  //analysis->plot("muiso",0,1,-1,100,0,1," muon relIso(0.5)"," Events / 0.005",c,1);
+  //analysis->plotInc("muEtaHisto",2," #eta_{#mu}","Events / 0.1",c,r);
+  //analysis->plotInc("muiso",0,1,-1,100,0,1," muon relIso(0.5)"," Events / 0.005",c,1);
   //analysis->plotInc("taupt",1,1,-1,50,0,100," #tau p_{T}   (GeV)","Events / 2 GeV",c);
-  //analysis->plot("tauEtaHisto",2," #eta_{#tau}","Events / 0.1",c,r); 
-  //analysis->plot("metHisto",4," MET   (GeV)","Events / 4 GeV",c,r);    
+  //analysis->plotInc("tauEtaHisto",2," #eta_{#tau}","Events / 0.1",c,r); 
+  //analysis->plotInc("metHisto",4," MET   (GeV)","Events / 4 GeV",c,r);    
   //analysis->plotInc("nditau",1,1,-1,5,-.5,4.5,"number of candidates","",c);
   //analysis->plotInc("metpt",1,0,-1,50,0,200," MET   (GeV)","Events / 4 GeV",c);    
   //analysis->plotInc("metphi",1,1,-1,70,-3.5,3.5," MET  phi ","",c);    
   //analysis->plotInc("transversemass",1,0,-1,50,0,200,"m_{T}   (GeV)","Events / 4 GeV",c);
-  //analysis->plotInc("ditaumass",1,1,-1,60,0,300,"","m_{vis}   (GeV)","Events / 5 GeV",c,0);
-  //analysis->plotSM("ditaumass",1,1,-1,60,0,300,"","m_{vis}   (GeV)","",c);
-  //analysis->plotSM("transversemass",1,0,-1,50,0,200,"","m_{T}   (GeV)","Events / 4 GeV",c);
- 
+  analysis->plotInc("ditaumass",1,1,-1,40,0,200,"","m_{vis}   (GeV)","Events / 5 GeV",c,0);
+  //analysis->plotInc("leadJetPt",1,1,-1,200,0,200,""," jet p_{T}   (GeV)","",c);
+  //analysis->plotInc("leadJetEta",1,1,-1,100,-5,5,""," jet #eta","",c); 
+  //analysis->plotInc("mueta",1,1,-1,100,-2.5,2.5,""," muon  #eta","",c); 
+//   Float_t sigY=0;
+//   sigY+=analysis->getSample("HiggsGG120")->Integral();
+//   sigY+=analysis->getSample("HiggsVBF120")->Integral();
+//   sigY+=analysis->getSample("HiggsVH120")->Integral();
+//   cout<<"Signal yield "<<sigY<<endl;
+
   /////////////inclusive SS
   //analysis->plotIncSS("ditaumass",1,1,-1,60,0,300,"m_{vis}   (GeV)","Events / 5 GeV",c,0);
   //analysis->plotIncSS("taupt",1,1,-1,8,20,100," #tau p_{T}   (GeV)","",c);
   //analysis->plotIncSS("muiso",-1,1,-1,100,0,2," #mu relIsoDB","",c);
   //analysis->plotIncSS("tauiso",-1,1,-1,100,0,2," #tau relIso","",c);
   //analysis->plotIncSS("tauisodisc",-1,1,-1,6,-0.5,5.5," #tau iso disc.","",c);
-  //analysis->plotIncSS("transversemass",1,0,-1,30,0,150,"m_{T}   (GeV)","",c);
+  //analysis->plotIncSS("transversemass",1,0,-1,30,0,150,"","m_{T}   (GeV)","",c);
   //analysis->plotIncSS("nditau",1,1,-1,5,-.5,4.5,"number of candidates","",c);
   //analysis->plotIncSS("metpt",1,0,-1,50,0,200," MET   (GeV)","Events / 4 GeV",c);    
   //////////////inclusive anti
@@ -85,109 +91,122 @@ void plot(){
 
   //////////// //////////////SM0/////////////////////////
   //analysis->plotInc("ditaumass",1,1,0,60,0,300,"","m_{vis}   (GeV)","Events / 5 GeV",c);
-  //analysis->plotSM("ditaumass",1,1,0,60,0,300,"","m_{vis}   (GeV)","",c);
   //analysis->plotInc("taupt",1,1,0,8,20,100," #tau p_{T}   (GeV)","",c);  
-  //analysis->plotSM("taujetpt",1,1,-1,8,20,100,"(njet==0)"," #tau jet  p_{T}   (GeV)","",c);  
-  //analysis->plotSM("transversemass",1,0,-1,20,0,200,"(njet==0)","m_{T}   (GeV)","",c);
-  //analysis->plotSM("ditaumass",1,1,-1,60,0,300,"(njet==0)","m_{vis}   (GeV)","",c);
-  //analysis->plotSM("mupt",1,1,-1,20,0,100,"(njet==0)"," #mu p_{T}   (GeV)","",c);
-  //analysis->plotSM("taupt",1,1,-1,20,0,100,"(njet==0)"," #tau p_{T}   (GeV)","",c);  
-  //analysis->plotSM("metpt",1,1,-1,12,0,60,"(njet==0)"," MET   (GeV)","",c);    
+  //analysis->plotInc("taujetpt",1,1,-1,8,20,100,"(njet==0)"," #tau jet  p_{T}   (GeV)","",c);  
+  //analysis->plotInc("transversemass",1,0,-1,20,0,200,"(njet==0)","m_{T}   (GeV)","",c);
+  //analysis->plotInc("ditaumass",1,1,-1,60,0,300,"(njet==0)","m_{vis}   (GeV)","",c);
+  //analysis->plotInc("mupt",1,1,-1,20,0,100,"(njet==0)"," #mu p_{T}   (GeV)","",c);
+  //analysis->plotInc("taupt",1,1,-1,20,0,100,"(njet==0)"," #tau p_{T}   (GeV)","",c);  
+  //analysis->plotInc("metpt",1,1,-1,12,0,60,"(njet==0)"," MET   (GeV)","",c);    
   /////SS
-  //analysis->plotSMSS("transversemass",1,0,-1,20,0,200,"(njet==0)","m_{T}   (GeV)","",c);
-  //analysis->plotSMSS("taujetpt",1,1,-1,16,20,100,"(njet==0)"," #tau jet  p_{T}   (GeV)","",c);  
-  //analysis->plotSMSS("taupt",1,1,-1,6,0,60,"(njet==0)"," #tau p_{T}   (GeV)","",c);  
+  //analysis->plotIncSS("transversemass",1,0,-1,20,0,200,"(njet==0)","m_{T}   (GeV)","",c);
+  //analysis->plotIncSS("taujetpt",1,1,-1,16,20,100,"(njet==0)"," #tau jet  p_{T}   (GeV)","",c);  
+  //analysis->plotIncSS("taupt",1,1,-1,6,0,60,"(njet==0)"," #tau p_{T}   (GeV)","",c);  
   ////Anti
-  //analysis->plotSM("transversemass",2,0,-1,20,0,200,"(njet==0&&muiso<0.1)","m_{T}   (GeV)","",c);
-  //analysis->plotSM("transversemass",2,0,-1,20,0,200,"(njet==0&&tauisodisc>=2)","m_{T}   (GeV)","",c);
-  //analysis->plotSM("transversemass",2,0,-1,20,0,200,"(njet==0&&muiso>0.1&&tauisodisc<2)","m_{T}   (GeV)","",c);
-  //analysis->plotSM("taupt",2,1,-1,6,0,60,"(njet==0)"," #tau p_{T}   (GeV)","",c);  
+  //analysis->plotInc("transversemass",2,0,-1,20,0,200,"(njet==0&&muiso<0.1)","m_{T}   (GeV)","",c);
+  //analysis->plotInc("transversemass",2,0,-1,20,0,200,"(njet==0&&tauisodisc>=2)","m_{T}   (GeV)","",c);
+  //analysis->plotInc("transversemass",2,0,-1,20,0,200,"(njet==0&&muiso>0.1&&tauisodisc<2)","m_{T}   (GeV)","",c);
+  //analysis->plotInc("taupt",2,1,-1,6,0,60,"(njet==0)"," #tau p_{T}   (GeV)","",c);  
   ////SS anti
-  //analysis->plotSMSS("transversemass",2,0,-1,20,0,200,"(njet==0)","m_{T}   (GeV)","",c);
-  //analysis->plotSMSS("metpt",2,1,-1,12,0,60,"(njet==0)"," MET   (GeV)","",c);  
-  //analysis->plotSMSS("taupt",2,1,-1,6,0,60,"(njet==0)"," #tau p_{T}   (GeV)","",c);  
-  //analysis->plotSMSS("taujetpt",2,1,-1,16,20,100,"(njet==0)"," #tau jet  p_{T}   (GeV)","",c);  
+  //analysis->plotIncSS("transversemass",2,0,-1,20,0,200,"(njet==0)","m_{T}   (GeV)","",c);
+  //analysis->plotIncSS("metpt",2,1,-1,12,0,60,"(njet==0)"," MET   (GeV)","",c);  
+  //analysis->plotIncSS("taupt",2,1,-1,6,0,60,"(njet==0)"," #tau p_{T}   (GeV)","",c);  
+  //analysis->plotIncSS("taujetpt",2,1,-1,16,20,100,"(njet==0)"," #tau jet  p_{T}   (GeV)","",c);  
 
   ////////////////////////////SM1//////////////////////////
-  //analysis->plotSM("transversemass",1,0,1,20,0,200,"","m_{T}   (GeV)","",c);
-  analysis->plotInc("ditaumass",1,1,1,12,0,300,"","m_{vis}   (GeV)","Events / 25 GeV",c);
-  //analysis->plotSM("transversemass",1,0,-1,20,0,200,"(njet==1)","m_{T}   (GeV)","",c);
-  //analysis->plotSM("mupt",1,1,-1,20,0,100,"(njet==1)"," #mu p_{T}   (GeV)","",c);
-  //analysis->plotSM("taupt",1,1,-1,20,0,100,"(njet==1)"," #tau p_{T}   (GeV)","",c);  
-  //analysis->plotSM("ditaumass",1,1,-1,30,0,300,"(njet==1)","m_{vis}   (GeV)","Events / 20 GeV",c);
-  //analysis->plotSM("metpt",1,1,-1,15,0,150,"(njet==1)"," MET   (GeV)","",c);    
-  //analysis->plotSM("taujetpt",1,1,-1,8,20,100,"(njet==1)"," #tau jet  p_{T}   (GeV)","",c);  
-  //Float_t c[4]={.4,.65,.42,.81};  analysis->plotSM("(1-cos(muphi-metphi))",1,1,-1,21,0,2.1,"(njet==1)","1-cos#Delta#phi","",c);
-  //analysis->plotSM("cos(tauphi-muphi)",1,1,-1,20,-1,1.001,"(njet==1)","cos(#mu_#phi-#tau_#phi)","",c);
-  ////////////////////////////SM1 SS
-  //analysis->plotSMSS("transversemass",1,0,1,20,0,200,"","m_{T}   (GeV)","",c);
-  //analysis->plotSMSS("taupt",1,1,1,20,0,200," #tau p_{T}   (GeV)","",c);
-  //analysis->plotSMSS("ditaumass",1,1,1,12,0,300,"m_{vis}   (GeV)","Events / 25 GeV",c);
-  //analysis->plotSMSS("transversemass",1,0,-1,20,0,200,"(njet==1)","m_{T}   (GeV)","",c);
-  //analysis->plotSMSS("mupt",1,1,-1,8,10,50,"(njet==1)"," #mu p_{T}   (GeV)","",c);
-  //analysis->plotSMSS("abs(taueta)",1,0,10,6,0,3," |#eta_{#tau}| ","",c); 
-  //analysis->plotSMSS("metpt",1,1,-1,12,0,60,"(njet==1)"," MET   (GeV)","",c);    
-  //Float_t c[4]={.4,.65,.42,.81};  analysis->plotSMSS("(1-cos(muphi-metphi))",1,1,-1,21,0,2.1,"(njet==1)","1-cos#Delta#phi","",c);
-  //analysis->plotSMSS("taujetpt",1,1,-1,16,20,100,"(njet==1)"," #tau jet  p_{T}   (GeV)","",c);  
-  //////////////////////////////SM1 anti
-  //analysis->plotSM("transversemass",2,0,1,20,0,200,"","m_{T}   (GeV)","",c);
-  //analysis->plotSM("tauisodisc",2,1,1,6,-.5,5.5,"tau isolation discriminator ","",c,0);
-  //analysis->plotSM("taupt",2,1,1,20,0,200," #tau p_{T}   (GeV)","Events / 10 GeV",c);
-  //analysis->plotSM("taujetpt",2,1,1,10,0,100,""," #tau jet  p_{T}   (GeV)","",c);
-  //analysis->plotSM("mupt",2,1,1,10,0,100,""," #mu p_{T}   (GeV)","",c);  
-  //analysis->plotSM("ditaumass",2,1,1,15,0,300,"","m_{vis}   (GeV)","Events / 20 GeV",c);
-  //analysis->plotSM("transversemass",2,0,-1,20,0,200,"(njet==1)","m_{T}   (GeV)","",c);
-  //analysis->plotSM("metpt",2,1,-1,12,0,60,"(njet==1)"," MET   (GeV)","",c);    
-  //analysis->plotSM("metpt",2,3,-1,40,0,200,"(njet==1)"," MET   (GeV)","",c);    
-  //analysis->plotSM("mupt",2,1,-1,10,0,50,"(njet==1)"," #mu p_{T}   (GeV)","",c);
-  //Float_t c[4]={.4,.65,.42,.81};  analysis->plotSM("(1-cos(muphi-metphi))",2,1,-1,21,0,2.1,"(njet==1)","1-cos#Delta#phi","",c);
-  ////////////////////////////SM1 SS anti
-  //analysis->plotSMSS("taupt",2,1,1,20,0,200," #tau p_{T}   (GeV)","",c);
-  //analysis->plotSMSS("ditaumass",2,1,1,12,0,300,"m_{vis}   (GeV)","Events / 25 GeV",c);
-  //analysis->plotSMSS("transversemass",2,0,1,20,0,200,"","m_{T}   (GeV)","",c);
-  //analysis->plotSMSS("abs(taueta)",2,0,10,6,0,3," |#eta_{#tau}| ","",c); 
-  //analysis->plotSMSS("transversemass",2,0,-1,15,0,150,"(njet==1)","m_{T}   (GeV)","",c);
-  //analysis->plotSMSS("metpt",2,1,-1,12,0,60,"(njet==1)"," MET   (GeV)","",c);    
-  //analysis->plotSMSS("mupt",2,1,-1,10,0,50,"(njet==1)"," #mu p_{T}   (GeV)","",c);
-  //Float_t c[4]={.4,.65,.42,.81};  analysis->plotSMSS("(1-cos(muphi-metphi))",2,1,-1,21,0,2.1,"(njet==1)","1-cos#Delta#phi","",c);
+  //analysis->plotInc("transversemass",1,0,1,20,0,200,"","m_{T}   (GeV)","",c);
+  //analysis->plotInc("ditaumass",1,1,1,12,0,300,"","m_{vis}   (GeV)","Events / 25 GeV",c);
+  //analysis->plotInc("transversemass",1,0,-1,20,0,200,"(njet==1)","m_{T}   (GeV)","",c);
+  //analysis->plotInc("mupt",1,1,-1,20,0,100,"(njet==1)"," #mu p_{T}   (GeV)","",c);
+  //analysis->plotInc("taupt",1,1,-1,20,0,100,"(njet==1)"," #tau p_{T}   (GeV)","",c);  
+  //analysis->plotInc("ditaumass",1,1,-1,30,0,300,"(njet==1)","m_{vis}   (GeV)","",c);
+  //analysis->plotInc("metpt",1,1,-1,15,0,150,"(njet==1)"," MET   (GeV)","",c);    
+  //analysis->plotInc("taujetpt",1,1,-1,8,20,100,"(njet==1)"," #tau jet  p_{T}   (GeV)","",c);  
+  //Float_t c[4]={.4,.65,.42,.81};  analysis->plotInc("(1-cos(muphi-metphi))",1,1,-1,21,0,2.1,"(njet==1)","1-cos#Delta#phi","",c);
+  //analysis->plotInc("cos(tauphi-muphi)",1,1,-1,20,-1,1.001,"(njet==1)","cos(#mu_#phi-#tau_#phi)","",c);
+  ////////////////////////////SS
+  //analysis->plotIncSS("transversemass",1,0,1,20,0,200,"","m_{T}   (GeV)","",c);
+  //analysis->plotIncSS("taupt",1,1,1,20,0,200," #tau p_{T}   (GeV)","",c);
+  //analysis->plotIncSS("ditaumass",1,1,1,12,0,300,"m_{vis}   (GeV)","Events / 25 GeV",c);
+  //analysis->plotIncSS("transversemass",1,0,-1,20,0,200,"(njet==1)","m_{T}   (GeV)","",c);
+  //analysis->plotIncSS("mupt",1,1,-1,8,10,50,"(njet==1)"," #mu p_{T}   (GeV)","",c);
+  //analysis->plotIncSS("abs(taueta)",1,0,10,6,0,3," |#eta_{#tau}| ","",c); 
+  //analysis->plotIncSS("metpt",1,1,-1,12,0,60,"(njet==1)"," MET   (GeV)","",c);    
+  //Float_t c[4]={.4,.65,.42,.81};  analysis->plotIncSS("(1-cos(muphi-metphi))",1,1,-1,21,0,2.1,"(njet==1)","1-cos#Delta#phi","",c);
+  //analysis->plotIncSS("taujetpt",1,1,-1,16,20,100,"(njet==1)"," #tau jet  p_{T}   (GeV)","",c);  
+  //////////////////////////////anti
+  //analysis->plotInc("transversemass",2,0,1,20,0,200,"","m_{T}   (GeV)","",c);
+  //analysis->plotInc("tauisodisc",2,1,1,6,-.5,5.5,"tau isolation discriminator ","",c,0);
+  //analysis->plotInc("taupt",2,1,1,20,0,200," #tau p_{T}   (GeV)","Events / 10 GeV",c);
+  //analysis->plotInc("taujetpt",2,1,1,10,0,100,""," #tau jet  p_{T}   (GeV)","",c);
+  //analysis->plotInc("mupt",2,1,1,10,0,100,""," #mu p_{T}   (GeV)","",c);  
+  //analysis->plotInc("ditaumass",2,1,1,15,0,300,"","m_{vis}   (GeV)","Events / 20 GeV",c);
+  //analysis->plotInc("transversemass",2,0,-1,20,0,200,"(njet==1)","m_{T}   (GeV)","",c);
+  //analysis->plotInc("metpt",2,1,-1,12,0,60,"(njet==1)"," MET   (GeV)","",c);    
+  //analysis->plotInc("metpt",2,3,-1,40,0,200,"(njet==1)"," MET   (GeV)","",c);    
+  //analysis->plotInc("mupt",2,1,-1,10,0,50,"(njet==1)"," #mu p_{T}   (GeV)","",c);
+  //Float_t c[4]={.4,.65,.42,.81};  analysis->plotInc("(1-cos(muphi-metphi))",2,1,-1,21,0,2.1,"(njet==1)","1-cos#Delta#phi","",c);
+  ////////////////////////////SS anti
+  //analysis->plotIncSS("taupt",2,1,1,20,0,200," #tau p_{T}   (GeV)","",c);
+  //analysis->plotIncSS("ditaumass",2,1,1,12,0,300,"m_{vis}   (GeV)","Events / 25 GeV",c);
+  //analysis->plotIncSS("transversemass",2,0,1,20,0,200,"","m_{T}   (GeV)","",c);
+  //analysis->plotIncSS("abs(taueta)",2,0,10,6,0,3," |#eta_{#tau}| ","",c); 
+  //analysis->plotIncSS("transversemass",2,0,-1,15,0,150,"(njet==1)","m_{T}   (GeV)","",c);
+  //analysis->plotIncSS("metpt",2,1,-1,12,0,60,"(njet==1)"," MET   (GeV)","",c);    
+  //analysis->plotIncSS("mupt",2,1,-1,10,0,50,"(njet==1)"," #mu p_{T}   (GeV)","",c);
+  //Float_t c[4]={.4,.65,.42,.81};  analysis->plotIncSS("(1-cos(muphi-metphi))",2,1,-1,21,0,2.1,"(njet==1)","1-cos#Delta#phi","",c);
 
 
-  ////////////////////////////SM2/////
-  //analysis->plotSM("transversemass",1,0,2,15,0,150,"","m_{T}   (GeV)","",c);
-  //analysis->plotSM("ditaumass",1,1,2,12,0,300,"","m_{vis}   (GeV)","Events / 25 GeV",c);
-  //analysis->plotSM("svfitmass",1,1,2,11,0,330,"","m_{vis}   (GeV)","Events / 30 GeV",c);
-  //analysis->plotSM("taupt",1,1,2,10,0,100," #tau p_{T}   (GeV)","Events / 10 GeV",c);
-  //analysis->plotSM("mupt",1,1,2,10,0,100," #mu p_{T}   (GeV)","Events / 10 GeV",c);
-  //analysis->plotSM("nditau",1,1,2,5,-.5,4.5,"number of candidates","",c);
-  //analysis->plotSM("transversemass",1,0,-1,20,0,200,"(njet==2)","m_{T}   (GeV)","",c);
-  //analysis->plotSM("mupt",1,1,-1,10,0,100,"(njet==2)"," #mu p_{T}   (GeV)","",c);
-  //analysis->plotSM("taupt",1,1,-1,10,0,100,"(njet==2)","#tau  p_{T}   (GeV)","",c);
-  //analysis->plotSM("ditaumass",1,1,-1,15,0,300,"(njet==2)","m_{vis}   (GeV)","Events / 20 GeV",c);
-  ///////////////////////////SM2 SS///
-  //analysis->plotSMSS("transversemass",1,0,2,20,0,200,"","m_{T}   (GeV)","",c);
-  //analysis->plotSMSS("ditaumass",1,1,2,12,0,300,"","m_{vis}   (GeV)","Events / 25 GeV",c);
-  //analysis->plotSMSS("nditau",1,1,2,5,-.5,4.5,"number of candidates","",c);
-  //analysis->plotSMSS("transversemass",1,0,-1,15,0,150,"(njet==2)","m_{T}   (GeV)","",c);
-  //analysis->plotSMSS("abs(taueta)",1,0,20,6,0,3," #eta_{#tau} ","",c); 
-  //analysis->plotSMSS("metpt",1,0,20,20,0,200," MET   (GeV)","Events / 5 GeV",c);    
-  //analysis->plotSMSS("taujetpt",1,1,-1,8,20,100,"(njet==2)"," #tau jet  p_{T}   (GeV)","",c);  
-  ///////////////////////////SM2 anti
-  //analysis->plotSM("transversemass",2,0,2,15,0,150,"","m_{T}   (GeV)","",c);
-  //analysis->plotSM("taupt",2,1,2,10,0,100," #tau p_{T}   (GeV)","Events / 10 GeV",c);
-  //analysis->plotSM("ditaumass",2,1,2,15,0,300,"","m_{vis}   (GeV)","Events / 20 GeV",c);
-  //analysis->plotSM("nditau",2,1,2,5,-.5,4.5,"number of candidates","",c);
-  //analysis->plotSM("transversemass",2,0,-1,15,0,150,"(njet==2)","m_{T}   (GeV)","",c);
-  //analysis->plotSM("ditaumass",2,1,20,12,0,300,"m_{vis}   (GeV)","Events / 25 GeV",c);
-  ///////////////////////////SM2 SS anti
-  //analysis->plotSMSS("transversemass",2,0,2,20,0,200,"","m_{T}   (GeV)","",c);
-  //analysis->plotSMSS("nditau",2,1,2,5,-.5,4.5,"number of candidates","",c);
-  //analysis->plotSMSS("ditaumass",2,1,2,12,0,300,"","m_{vis}   (GeV)","Events / 25 GeV",c);
-  //analysis->plotSMSS("taupt",2,1,2,8,20,100," #tau p_{T}   (GeV)","",c);
-  //analysis->plotSMSS("abs(taueta)",2,1,2,6,0,3," #eta_{#tau} ","",c); 
-  //analysis->plotSMSS("transversemass",2,0,-1,20,0,200,"(njet==2)","m_{T}   (GeV)","",c);
-  //analysis->plotSMSS("abs(taueta)",2,0,20,6,0,3," #eta_{#tau} ","",c); 
-  //analysis->plotSMSS("metpt",2,0,20,20,0,200," MET   (GeV)","Events / 5 GeV",c);    
+  ////////////////////////////SM2
+  //analysis->plotInc("transversemass",1,0,2,15,0,150,"","m_{T}   (GeV)","",c);
+  //analysis->plotInc("ditaumass",1,1,2,12,0,300,"","m_{vis}   (GeV)","Events / 25 GeV",c);
+  //analysis->plotInc("ditaumass",1,1,2,12,0,300,"","m_{vis}   (GeV)","Events / 25 GeV",c);
+  //analysis->plotInc("svfitmass",1,1,2,11,0,330,"","m_{vis}   (GeV)","Events / 30 GeV",c);
+  //analysis->plotInc("taupt",1,1,2,10,0,100," #tau p_{T}   (GeV)","Events / 10 GeV",c);
+  //analysis->plotInc("mupt",1,1,2,10,0,100," #mu p_{T}   (GeV)","Events / 10 GeV",c);
+  //analysis->plotInc("nditau",1,1,2,5,-.5,4.5,"number of candidates","",c);
+  //analysis->plotInc("transversemass",1,0,-1,20,0,200,"(njet==2)","m_{T}   (GeV)","",c);
+  //analysis->plotInc("mupt",1,1,-1,10,0,100,"(njet==2)"," #mu p_{T}   (GeV)","",c);
+  //analysis->plotInc("taupt",1,1,-1,10,0,100,"(njet==2)","#tau  p_{T}   (GeV)","",c);
+  //analysis->plotInc("ditaumass",1,1,-1,15,0,300,"(njet==2)","m_{vis}   (GeV)","",c);
+  ///////////////////////////SS
+  //analysis->plotIncSS("transversemass",1,0,2,20,0,200,"","m_{T}   (GeV)","",c);
+  //analysis->plotIncSS("ditaumass",1,1,2,12,0,300,"","m_{vis}   (GeV)","Events / 25 GeV",c);
+  //analysis->plotIncSS("nditau",1,1,2,5,-.5,4.5,"number of candidates","",c);
+  //analysis->plotIncSS("transversemass",1,0,-1,15,0,150,"(njet==2)","m_{T}   (GeV)","",c);
+  //analysis->plotIncSS("abs(taueta)",1,0,20,6,0,3," #eta_{#tau} ","",c); 
+  //analysis->plotIncSS("metpt",1,0,20,20,0,200," MET   (GeV)","Events / 5 GeV",c);    
+  //analysis->plotIncSS("taujetpt",1,1,-1,8,20,100,"(njet==2)"," #tau jet  p_{T}   (GeV)","",c);  
+  ///////////////////////////anti
+  //analysis->plotInc("transversemass",2,0,2,15,0,150,"","m_{T}   (GeV)","",c);
+  //analysis->plotInc("taupt",2,1,2,10,0,100," #tau p_{T}   (GeV)","Events / 10 GeV",c);
+  //analysis->plotInc("ditaumass",2,1,2,15,0,300,"","m_{vis}   (GeV)","Events / 20 GeV",c);
+  //analysis->plotInc("nditau",2,1,2,5,-.5,4.5,"number of candidates","",c);
+  //analysis->plotInc("transversemass",2,0,-1,15,0,150,"(njet==2)","m_{T}   (GeV)","",c);
+  //analysis->plotInc("ditaumass",2,1,20,12,0,300,"m_{vis}   (GeV)","Events / 25 GeV",c);
+  ///////////////////////////SS anti
+  //analysis->plotIncSS("transversemass",2,0,2,20,0,200,"","m_{T}   (GeV)","",c);
+  //analysis->plotIncSS("nditau",2,1,2,5,-.5,4.5,"number of candidates","",c);
+  //analysis->plotIncSS("ditaumass",2,1,2,12,0,300,"","m_{vis}   (GeV)","Events / 25 GeV",c);
+  //analysis->plotIncSS("taupt",2,1,2,8,20,100," #tau p_{T}   (GeV)","",c);
+  //analysis->plotIncSS("abs(taueta)",2,1,2,6,0,3," #eta_{#tau} ","",c); 
+  //analysis->plotIncSS("transversemass",2,0,-1,20,0,200,"(njet==2)","m_{T}   (GeV)","",c);
+  //analysis->plotIncSS("abs(taueta)",2,0,20,6,0,3," #eta_{#tau} ","",c); 
+  //analysis->plotIncSS("metpt",2,0,20,20,0,200," MET   (GeV)","Events / 5 GeV",c);    
 
+
+
+  //////Tau Iso studies: LooseMVA=0.795, MediumMVA=0.884, TightMVA=0.921
+  //inclusive
+  //analysis->plotIncSS("transversemass",1,0,-1,30,0,150,"","m_{T}   (GeV)","",c);//Reference Loose deltaBetaCorr
+  //analysis->plotIncSS("transversemass",0,0,-1,30,0,150,"(muiso<0.1&&tauisomva>0.795)","m_{T}   (GeV)","",c);//Loose MVA
+  //analysis->plotIncSS("transversemass",0,0,-1,30,0,150,"(muiso<0.1&&tauisomva>0.884)","m_{T}   (GeV)","",c);//Medium MVA
+  //analysis->plotIncSS("transversemass",0,0,-1,30,0,150,"(muiso<0.1&&tauisomva>0.921)","m_{T}   (GeV)","",c);//Tight MVA
+  //analysis->plotInc("ditaumass",0,1,-1,40,0,200,"(muiso<0.1&&tauisomva>0.884)","m_{vis}   (GeV)","Events / 5 GeV",c);
+  //////Muon Iso studies
+  //analysis->plotInc("ditaumass",0,1,-1,40,0,200,"(muiso<0.1&&tauisodisc>=2)","m_{vis}   (GeV)","Events / 5 GeV",c);
+  //analysis->plotInc("ditaumass",0,1,-1,40,0,200,"(((abs(mueta)<1.479)*(muisomva>0.96)+(abs(mueta)>1.479)*(muisomva>0.95))&&tauisodisc>=2)","m_{vis}   (GeV)","Events / 5 GeV",c);
+  
 
   gROOT->ProcessLine(".q");
 }
