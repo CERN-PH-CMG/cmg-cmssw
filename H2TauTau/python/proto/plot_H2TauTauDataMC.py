@@ -1,4 +1,6 @@
 import imp
+import math
+
 from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
 from CMGTools.H2TauTau.proto.H2TauTauDataMC import H2TauTauDataMC
 from CMGTools.RootTools.Style import *
@@ -128,8 +130,11 @@ def savePlot(name):
     gPad.SaveAs( fileName )   
 
 
-
-
+def simpleSignificance(plot, sigName, bgdName, min, max):
+    nSig = plot.Hist(sigName).Integral(True, min, max)
+    nBgd = plot.Hist(bgdName).Integral(True, min, max)
+    return nSig / math.sqrt(nBgd), nSig, nBgd
+    
 if __name__ == '__main__':
 
     import copy
@@ -193,3 +198,22 @@ if __name__ == '__main__':
 
     ssign, osign, ssQCD, osQCD = makePlot( options.hist, weights, wJetScaleSS, wJetScaleOS, NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed)
     osQCD.DrawStack('HIST')
+
+    signalMu = 'l2_relIso05<0.1 && l2_tightId>0.5'
+    signalMt = 'mt<40'
+
+    muIsoMVA_template = '((l2_pt < 20 && abs(l2_eta)<1.479 && l2_mvaIso > {mva1}) || (l2_pt < 20 && abs(l2_eta)>1.479 && l2_mvaIso > {mva2}) || (l2_pt > 20 && abs(l2_eta)<1.479 && l2_mvaIso > {mva3}) || (l2_pt > 20 && abs(l2_eta)>1.479 && l2_mvaIso > {mva4}))'
+    muIsoMVA_WP1 =  muIsoMVA_template.format( mva1 = 0.922,
+                                              mva2 = 0.929,
+                                              mva3 = 0.921,
+                                              mva4 = 0.9)
+    muIsoMVA_WP2 =  muIsoMVA_template.format( mva1 = 0.91,
+                                              mva2 = 0.91,
+                                              mva3 = 0.897,
+                                              mva4 = 0.864)
+    muIsoMVA_WP3 =  muIsoMVA_template.format( mva1 = 0.957,
+                                              mva2 = 0.96,
+                                              mva3 = 0.981,
+                                              mva4 = 0.971)
+
+    

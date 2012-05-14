@@ -79,10 +79,11 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
 
 
     def testMuonTight(self, muon ):
-        '''basically recoding the muon selection of muCuts_cff.'''
+        '''Tight muon selection'''
         if muon.pt()>self.cfg_ana.pt2 and \
                abs( muon.eta() ) < self.cfg_ana.eta2 and \
                self.testMuonID(muon) and \
+               muon.getSelection('cuts_vbtfmuon') and \ 
                self.muonIso(muon)<9999: #WARNING MUON ISO RELAXED
             return True
         else:
