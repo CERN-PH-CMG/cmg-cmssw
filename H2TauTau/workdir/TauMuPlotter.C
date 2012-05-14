@@ -848,7 +848,7 @@ bool TauMuPlotter::plotInc(TString variable, Int_t Isocat, Int_t MTcat, Int_t SM
 
    
   
-  TH1F*hQCD= getQCDInc(); //0;
+  TH1F*hQCD = getQCDInc(); //0;
 //   if(SMcat_==-1 || SMcat_==0 || Isocat_!=1) hQCD=getQCDInc();
 //   else if(SMcat_==1 || SMcat_==2) hQCD=getQCDIsoSM();
 //   else hQCD=0;
@@ -884,11 +884,11 @@ bool TauMuPlotter::plotInc(TString variable, Int_t Isocat, Int_t MTcat, Int_t SM
   TH1F*hEWK=(TH1F*)hWJetsToLNu->Clone("hElectroWeak");
   delete hWJetsToLNu;
 
-  //combine Di-Bosons
-  TH1F*hVV=getDiBoson();
-  if(!hVV)return 0;
-  hEWK->Add(hVV);
-  delete hVV;
+//   //combine Di-Bosons
+//   TH1F*hVV=getDiBoson();
+//   if(!hVV)return 0;
+//   hEWK->Add(hVV);
+//   delete hVV;
 
   //combine ZLJet
   //TH1F*hZToLJet=getSample("ZToLJet");
