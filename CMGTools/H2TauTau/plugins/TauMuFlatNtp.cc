@@ -1,7 +1,7 @@
 #include "CMGTools/H2TauTau/plugins/TauMuFlatNtp.h"
 #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
 #include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
-//#include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
 
 
 TauMuFlatNtp::TauMuFlatNtp(const edm::ParameterSet & iConfig):
@@ -107,6 +107,7 @@ void TauMuFlatNtp::beginJob(){
   countergen_=0;
   counterveto_=0;
   countertaueop_=0;
+  countertauvtx_=0;
   countertaumuveto_=0;
   countertaueveto_=0;
   countertauiso_=0;
@@ -189,30 +190,30 @@ bool TauMuFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetu
 bool TauMuFlatNtp::applySelections(){
   counterall_++;
 
+  //if none are selected returns 0
+  diTauSel_=NULL;
+
   if(!BaseFlatNtp::applySelections()) return 0;
   counterev_++;
 
-  //if none are selected returns 0
-  diTauSel_=NULL;
-  
   //apply gen level separation here
-  if( sampleGenEventType_!=0
-      && sampleGenEventType_!=genEventType_) return 0;
+  if( sampleGenEventType_!=0 && sampleGenEventType_!=genEventType_) return 0;
   countergen_++;
 
   ////other 
   if(vetoDiLepton()) return 0;
   counterveto_++;
 
-
+  std::vector<cmg::TauMu> tmpditaulist=*diTauList_;
   diTauSelList_.clear();
   
   //Tau E/P cut
-  std::vector<cmg::TauMu> tmpditaulist=*diTauList_;
   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
     if(cand->leg1().decayMode()==0&&cand->leg1().p()>0.)
-      if(cand->leg1().eOverP()>0.2)
-	diTauSelList_.push_back(*cand);
+      if(cand->leg1().eOverP()<0.2)
+	continue;
+    
+    diTauSelList_.push_back(*cand);
   }
   if(diTauSelList_.size()>0)countertaueop_++;
 
@@ -502,18 +503,18 @@ bool TauMuFlatNtp::fill(){
   ditaucharge_=diTauSel_->charge();
   ditaueta_=diTauSel_->eta();
   ditaupt_=diTauSel_->pt();
-  svfitmass_=diTauSel_->massSVFit();
+  //svfitmass_=diTauSel_->massSVFit();
 
-//   //new svfit
-//   edm::Handle< cmg::METSignificance > metsig;
-//   iEvent_->getByLabel(edm::InputTag("pfMetSignificance"),metsig); 
-//   std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
-//   measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay, diTauSel_->leg2().p4()));
-//   measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kHadDecay, diTauSel_->leg1().p4()));
-//   NSVfitStandaloneAlgorithm algo(measuredTauLeptons, diTauSel_->met().p4().Vect(), *(metsig->significance()), 0);
-//   algo.addLogM(false);
-//   algo.integrate();
-//   svfitmass_ = algo.getMass();
+  //new svfit
+  edm::Handle< cmg::METSignificance > metsig;
+  iEvent_->getByLabel(edm::InputTag("pfMetSignificance"),metsig); 
+  std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
+  measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay, diTauSel_->leg2().p4()));
+  measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kHadDecay, diTauSel_->leg1().p4()));
+  NSVfitStandaloneAlgorithm algo(measuredTauLeptons, diTauSel_->met().p4().Vect(), *(metsig->significance()), 0);
+  algo.addLogM(false);
+  algo.integrate();
+  svfitmass_ = algo.getMass();
 
 
   ///get the jets //need the jets here because of randomization of mT
