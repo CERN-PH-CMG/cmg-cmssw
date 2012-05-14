@@ -12,8 +12,6 @@ print 'FourLeptonAnalyzer.py'
 
 
 
-
-
 period = 'Period_2011AB'
 channel = 'mu_ele'
 

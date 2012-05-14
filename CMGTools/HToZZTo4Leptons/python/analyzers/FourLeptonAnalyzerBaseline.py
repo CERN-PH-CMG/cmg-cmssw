@@ -11,7 +11,7 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton
 from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
 
-from CMGTools.HToZZTo4Leptons.analyzers.DiObject import DiObject
+from CMGTools.HToZZTo4Leptons.analyzers.DiObjectPair import DiObjectPair
 #from CMGTools.HToZZTo4Leptons.analyzers.helpers import applyCut,applyDoubleCut
 from CMGTools.HToZZTo4Leptons.analyzers.CutFlowMaker import CutFlowMaker
 

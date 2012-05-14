@@ -13,7 +13,7 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.bookEventInfo()
 
         #Book the Higgs
-        self.bookBoson("H")
+        self.bookHiggs("H")
 
         #Book the Z daughters
         self.bookBoson("H_Z1")
@@ -26,7 +26,7 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.bookLepton("H_Z2_leg2")
 
         #Book the Loose H for fake rate application
-        self.bookBoson("HLoose")
+        self.bookHiggs("HLoose")
         self.bookBoson("HLoose_Z1")
         self.bookBoson("HLoose_Z2")
         self.bookLepton("HLoose_Z1_leg1")
@@ -42,18 +42,27 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.var("ZFR_nProbes",int)
 
 
+
+        self.var("vertices",int)
+
+
     def process(self, iEvent, event):
         self.reset()
 
         #get the analyzer event
         subevent = getattr( event, self.cfg_ana.anaName )
 
+        #get the vertex analyzer event and fill the vertices
+        self.fill('vertices',len(event.vertices))
+
+
+
         #Fill run,lumi,event
         self.fillEventInfo(iEvent,subevent)
 
         #Fill the Higgs and legs
         if hasattr( subevent, 'higgsCand' ):
-            self.fillBoson("H",subevent.higgsCand)
+            self.fillHiggs("H",subevent.higgsCand)
             self.fillBoson("H_Z1",subevent.higgsCand.leg1)
             self.fillBoson("H_Z2",subevent.higgsCand.leg2)
             self.fillLepton("H_Z1_leg1",subevent.higgsCand.leg1.leg1,subevent)
@@ -63,7 +72,7 @@ class FourLeptonTreeProducer( TreeProducer ):
             
 
         if hasattr( subevent, 'higgsCandLoose' ):
-            self.fillBoson("H",subevent.higgsCandLoose)
+            self.fillHiggs("H",subevent.higgsCandLoose)
             self.fillBoson("HLoose_Z1",subevent.higgsCandLoose.leg1)
             self.fillBoson("HLoose_Z2",subevent.higgsCandLoose.leg2)
             self.fillLepton("HLoose_Z1_leg1",subevent.higgsCandLoose.leg1.leg1,subevent)
