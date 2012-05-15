@@ -335,6 +335,9 @@ void getYieldsFromShape(TString dirurl, std::vector<TString> ch, const map<TStri
     for(size_t ibckg=0; ibckg<nbckg; ibckg++){
        TH1* h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.bckg[ibckg];       
        TString procTitle(h->GetTitle()); procTitle.ReplaceAll("#","\\");
+       if(procTitle.Contains("QCD"))continue;
+       if(procTitle.Contains("W#rightarrow l#nu"))continue;
+       if(procTitle.Contains("Z#rightarrow #tau#tau"))continue;
        if(b==0&&ich==0)Ccol  += "c|";
        if(b==0&&ich==0)Cname += "&$" + procTitle + "$";
 
