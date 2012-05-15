@@ -249,7 +249,9 @@ void draw_1Vtag()
 
 
  TFile* file_qW_bg = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_Qstar_qW_ak5_fat_1.root", "READ");
- TFile* file_qW_bg2 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_Qstar_qW_ak5_fat_12.root", "READ");
+ TFile* file_qW_bg2 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_Qstar_qW_ak5_fat_11.root", "READ");
+ TFile* file_qW_bg2a = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_Qstar_qW_ak5_fat_13.root", "READ");
+ TFile* file_qW_bg2b = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_Qstar_qW_ak5_fat_14.root", "READ");
  TFile* file_qW_bg3 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_Qstar_qW_ak5_fat_100.root", "READ");
  TFile* file_qW_bg4 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_Qstar_qW_ak5_fat_101.root", "READ");
  TFile* file_qW_bg5 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_Qstar_qW_ak5_fat_102.root", "READ");
@@ -264,6 +266,8 @@ void draw_1Vtag()
  
  TH1F* limit_qW_bg = file_qW_bg->Get("limit;1");
  TH1F* limit_qW_bg2 = file_qW_bg2->Get("limit;1");
+ TH1F* limit_qW_bg2a = file_qW_bg2a->Get("limit;1");
+ TH1F* limit_qW_bg2b = file_qW_bg2b->Get("limit;1");
  TH1F* limit_qW_bg3 = file_qW_bg3->Get("limit;1");
  TH1F* limit_qW_bg4 = file_qW_bg4->Get("limit;1");
  TH1F* limit_qW_bg5 = file_qW_bg5->Get("limit;1");
@@ -280,6 +284,8 @@ void draw_1Vtag()
 
    limit_qW_bg->SetBinContent(i, limit_qW_bg->GetBinContent(i) / limit_efficiencies_qW->GetBinContent(i));
    limit_qW_bg2->SetBinContent(i, limit_qW_bg2->GetBinContent(i) / limit_efficiencies_qW->GetBinContent(i));
+   limit_qW_bg2a->SetBinContent(i, limit_qW_bg2a->GetBinContent(i) / limit_efficiencies_qW->GetBinContent(i));
+   limit_qW_bg2b->SetBinContent(i, limit_qW_bg2b->GetBinContent(i) / limit_efficiencies_qW->GetBinContent(i));
    limit_qW_bg3->SetBinContent(i, limit_qW_bg3->GetBinContent(i) / limit_efficiencies_qW->GetBinContent(i));
    limit_qW_bg4->SetBinContent(i, limit_qW_bg4->GetBinContent(i) / limit_efficiencies_qW->GetBinContent(i));
    limit_qW_bg5->SetBinContent(i, limit_qW_bg5->GetBinContent(i) / limit_efficiencies_qW->GetBinContent(i));
@@ -296,6 +302,8 @@ void draw_1Vtag()
   // fat-stat only --
  double* xs_HT_fat_qW_1010_bg = new double[nEBins];
  double* xs_HT_fat_qW_1010_bg2 = new double[nEBins];
+ double* xs_HT_fat_qW_1010_bg2a = new double[nEBins];
+ double* xs_HT_fat_qW_1010_bg2b = new double[nEBins];
  double* xs_HT_fat_qW_1010_bg3 = new double[nEBins];
  double* xs_HT_fat_qW_1010_bg4 = new double[nEBins];
  double* xs_HT_fat_qW_1010_bg5 = new double[nEBins];
@@ -310,6 +318,8 @@ void draw_1Vtag()
  for (int i = 0 ; i < nEBins; i++){
    xs_HT_fat_qW_1010_bg[i] = limit_qW_bg->GetBinContent(i+1);
    xs_HT_fat_qW_1010_bg2[i] = limit_qW_bg2->GetBinContent(i+1);
+   xs_HT_fat_qW_1010_bg2a[i] = limit_qW_bg2a->GetBinContent(i+1);
+   xs_HT_fat_qW_1010_bg2b[i] = limit_qW_bg2b->GetBinContent(i+1);
    xs_HT_fat_qW_1010_bg3[i] = limit_qW_bg3->GetBinContent(i+1);
    xs_HT_fat_qW_1010_bg4[i] = limit_qW_bg4->GetBinContent(i+1);
    xs_HT_fat_qW_1010_bg5[i] = limit_qW_bg5->GetBinContent(i+1);
@@ -324,6 +334,8 @@ void draw_1Vtag()
 
  file_qW_bg->Close();
  file_qW_bg2->Close();
+ file_qW_bg2a->Close();
+ file_qW_bg2b->Close();
  file_qW_bg3->Close();
  file_qW_bg4->Close();
  file_qW_bg5->Close();
@@ -492,7 +504,7 @@ void draw_1Vtag()
 // double gg_ratio[nEBins] = {0.44, 0.44, 0.44, 0.44, 0.44, 0.44, 0.44, 0.44, 0.44, 0.44, 0.44, 0.45, 0.46, 0.47, 0.48}; //{0.5561,0.5116,0.4671, 0.42, 0.38};
 // double qZ_ratio[nEBins] = {0.56, 0.56, 0.56, 0.56, 0.56, 0.56, 0.56, 0.56, 0.56, 0.56, 0.56, 0.55, 0.55, 0.53, 0.52};
  
- double xs_HT_pf_qW_compare[nEBins], xs_HT_pf_gg_compare[nEBins], xs_HT_pf_qZ_compare[nEBins], xs_HT_fat_qW_compare[nEBins], xs_HT_fat_gg_compare[nEBins], xs_HT_fat_qZ_compare[nEBins], xs_comparison_bw_stat_bg_fat[nEBins], xs_comparison_bw_stat_bg2_fat[nEBins], xs_comparison_bw_stat_bg3_fat[nEBins], xs_comparison_bw_stat_bg4_fat[nEBins], xs_comparison_bw_stat_bg5_fat[nEBins], xs_comparison_bw_stat_bg6_fat[nEBins], xs_comparison_bw_stat_bg7_fat[nEBins], xs_comparison_bw_stat_bg8_fat[nEBins], xs_comparison_bw_stat_prior_fat[nEBins], xs_comparison_bw_stat_lumi_fat[nEBins], xs_comparison_bw_stat_JES_fat[nEBins], xs_comparison_bw_stat_JER_fat[nEBins], xs_comparison_bw_stat_sys_fat[nEBins], xs_RSG_for_limit_fat[nEBins], xs_qstar_qW_over_qW_fat[nEBins], xs_string_over_qW_fat[nEBins], xs_diquark_over_qZ_fat[nEBins], xs_qstar_qZ_over_qZ_fat[nEBins], xs_zprime_over_qZ_fat[nEBins], xs_wprime_over_qZ_fat[nEBins], xs_rsg_over_gg_fat[nEBins];
+ double xs_HT_pf_qW_compare[nEBins], xs_HT_pf_gg_compare[nEBins], xs_HT_pf_qZ_compare[nEBins], xs_HT_fat_qW_compare[nEBins], xs_HT_fat_gg_compare[nEBins], xs_HT_fat_qZ_compare[nEBins], xs_comparison_bw_stat_bg_fat[nEBins], xs_comparison_bw_stat_bg2_fat[nEBins], xs_comparison_bw_stat_bg2a_fat[nEBins], xs_comparison_bw_stat_bg2b_fat[nEBins], xs_comparison_bw_stat_bg3_fat[nEBins], xs_comparison_bw_stat_bg4_fat[nEBins], xs_comparison_bw_stat_bg5_fat[nEBins], xs_comparison_bw_stat_bg6_fat[nEBins], xs_comparison_bw_stat_bg7_fat[nEBins], xs_comparison_bw_stat_bg8_fat[nEBins], xs_comparison_bw_stat_prior_fat[nEBins], xs_comparison_bw_stat_lumi_fat[nEBins], xs_comparison_bw_stat_JES_fat[nEBins], xs_comparison_bw_stat_JER_fat[nEBins], xs_comparison_bw_stat_sys_fat[nEBins], xs_RSG_for_limit_fat[nEBins], xs_qstar_qW_over_qW_fat[nEBins], xs_string_over_qW_fat[nEBins], xs_diquark_over_qZ_fat[nEBins], xs_qstar_qZ_over_qZ_fat[nEBins], xs_zprime_over_qZ_fat[nEBins], xs_wprime_over_qZ_fat[nEBins], xs_rsg_over_gg_fat[nEBins];
 
  std::cout << "wide stat only" << std::endl;
  for (int  i = 0 ; i < nEBins ; i++) 
@@ -537,6 +549,8 @@ void draw_1Vtag()
      
    xs_comparison_bw_stat_bg_fat[i] = xs_HT_fat_qW_1010_bg[i]/xs_HT_fat_qW_1010[i];
    xs_comparison_bw_stat_bg2_fat[i] = xs_HT_fat_qW_1010_bg2[i]/xs_HT_fat_qW_1010[i];
+   xs_comparison_bw_stat_bg2a_fat[i] = xs_HT_fat_qW_1010_bg2a[i]/xs_HT_fat_qW_1010[i];
+   xs_comparison_bw_stat_bg2b_fat[i] = xs_HT_fat_qW_1010_bg2b[i]/xs_HT_fat_qW_1010[i];
    xs_comparison_bw_stat_bg3_fat[i] = xs_HT_fat_qW_1010_bg3[i]/xs_HT_fat_qW_1010[i];
    xs_comparison_bw_stat_bg4_fat[i] = xs_HT_fat_qW_1010_bg4[i]/xs_HT_fat_qW_1010[i];
    xs_comparison_bw_stat_bg5_fat[i] = xs_HT_fat_qW_1010_bg5[i]/xs_HT_fat_qW_1010[i];
@@ -589,6 +603,8 @@ void draw_1Vtag()
 
   g_xs_comparison_bw_stat_bg_fat = new TGraph(nEBins,x,xs_comparison_bw_stat_bg_fat);
   g_xs_comparison_bw_stat_bg2_fat = new TGraph(nEBins,x,xs_comparison_bw_stat_bg2_fat);
+  g_xs_comparison_bw_stat_bg2a_fat = new TGraph(nEBins,x,xs_comparison_bw_stat_bg2a_fat);
+  g_xs_comparison_bw_stat_bg2b_fat = new TGraph(nEBins,x,xs_comparison_bw_stat_bg2b_fat);
   g_xs_comparison_bw_stat_bg3_fat = new TGraph(nEBins,x,xs_comparison_bw_stat_bg3_fat);
   g_xs_comparison_bw_stat_bg4_fat = new TGraph(nEBins,x,xs_comparison_bw_stat_bg4_fat);
   g_xs_comparison_bw_stat_bg5_fat = new TGraph(nEBins,x,xs_comparison_bw_stat_bg5_fat);
@@ -774,50 +790,62 @@ void draw_1Vtag()
   g_xs_comparison_bw_stat_bg_fat->SetMarkerColor(2);
 
   g_xs_comparison_bw_stat_bg2_fat->SetLineColor(9);
-  g_xs_comparison_bw_stat_bg2_fat->SetLineStyle(2);
+  g_xs_comparison_bw_stat_bg2_fat->SetLineStyle(1);
   g_xs_comparison_bw_stat_bg2_fat->SetLineWidth(3);
   g_xs_comparison_bw_stat_bg2_fat->SetMarkerStyle(24);
   g_xs_comparison_bw_stat_bg2_fat->SetMarkerColor(9);
 
+  g_xs_comparison_bw_stat_bg2a_fat->SetLineColor(6);
+  g_xs_comparison_bw_stat_bg2a_fat->SetLineStyle(2);
+  g_xs_comparison_bw_stat_bg2a_fat->SetLineWidth(2);
+  g_xs_comparison_bw_stat_bg2a_fat->SetMarkerStyle(24);
+  g_xs_comparison_bw_stat_bg2a_fat->SetMarkerColor(6);
+
+  g_xs_comparison_bw_stat_bg2b_fat->SetLineColor(7);
+  g_xs_comparison_bw_stat_bg2b_fat->SetLineStyle(2);
+  g_xs_comparison_bw_stat_bg2b_fat->SetLineWidth(2);
+  g_xs_comparison_bw_stat_bg2b_fat->SetMarkerStyle(24);
+  g_xs_comparison_bw_stat_bg2b_fat->SetMarkerColor(7);
+
   g_xs_comparison_bw_stat_bg3_fat->SetLineColor(8);
   g_xs_comparison_bw_stat_bg3_fat->SetLineStyle(2);
-  g_xs_comparison_bw_stat_bg3_fat->SetLineWidth(3);
+  g_xs_comparison_bw_stat_bg3_fat->SetLineWidth(2);
   g_xs_comparison_bw_stat_bg3_fat->SetMarkerStyle(24);
   g_xs_comparison_bw_stat_bg3_fat->SetMarkerColor(8);
 
   g_xs_comparison_bw_stat_bg4_fat->SetLineColor(8);
   g_xs_comparison_bw_stat_bg4_fat->SetLineStyle(3);
-  g_xs_comparison_bw_stat_bg4_fat->SetLineWidth(3);
+  g_xs_comparison_bw_stat_bg4_fat->SetLineWidth(2);
   g_xs_comparison_bw_stat_bg4_fat->SetMarkerStyle(24);
   g_xs_comparison_bw_stat_bg4_fat->SetMarkerColor(8);
 
   g_xs_comparison_bw_stat_bg5_fat->SetLineColor(8);
   g_xs_comparison_bw_stat_bg5_fat->SetLineStyle(4);
-  g_xs_comparison_bw_stat_bg5_fat->SetLineWidth(3);
+  g_xs_comparison_bw_stat_bg5_fat->SetLineWidth(2);
   g_xs_comparison_bw_stat_bg5_fat->SetMarkerStyle(24);
   g_xs_comparison_bw_stat_bg5_fat->SetMarkerColor(8);
 
   g_xs_comparison_bw_stat_bg6_fat->SetLineColor(8);
   g_xs_comparison_bw_stat_bg6_fat->SetLineStyle(5);
-  g_xs_comparison_bw_stat_bg6_fat->SetLineWidth(3);
+  g_xs_comparison_bw_stat_bg6_fat->SetLineWidth(2);
   g_xs_comparison_bw_stat_bg6_fat->SetMarkerStyle(24);
   g_xs_comparison_bw_stat_bg6_fat->SetMarkerColor(8);
 
   g_xs_comparison_bw_stat_bg7_fat->SetLineColor(8);
   g_xs_comparison_bw_stat_bg7_fat->SetLineStyle(6);
-  g_xs_comparison_bw_stat_bg7_fat->SetLineWidth(3);
+  g_xs_comparison_bw_stat_bg7_fat->SetLineWidth(2);
   g_xs_comparison_bw_stat_bg7_fat->SetMarkerStyle(24);
   g_xs_comparison_bw_stat_bg7_fat->SetMarkerColor(8);
 
   g_xs_comparison_bw_stat_bg8_fat->SetLineColor(8);
   g_xs_comparison_bw_stat_bg8_fat->SetLineStyle(7);
-  g_xs_comparison_bw_stat_bg8_fat->SetLineWidth(3);
+  g_xs_comparison_bw_stat_bg8_fat->SetLineWidth(2);
   g_xs_comparison_bw_stat_bg8_fat->SetMarkerStyle(24);
   g_xs_comparison_bw_stat_bg8_fat->SetMarkerColor(8);
 
   g_xs_comparison_bw_stat_prior_fat->SetLineColor(4);
   g_xs_comparison_bw_stat_prior_fat->SetLineStyle(1);
-  g_xs_comparison_bw_stat_prior_fat->SetLineWidth(3);
+  g_xs_comparison_bw_stat_prior_fat->SetLineWidth(2);
   g_xs_comparison_bw_stat_prior_fat->SetMarkerStyle(24);
   g_xs_comparison_bw_stat_prior_fat->SetMarkerColor(4);
 
@@ -1509,6 +1537,8 @@ void draw_1Vtag()
 
   g_xs_comparison_bw_stat_bg_fat->Draw("PL");;
   g_xs_comparison_bw_stat_bg2_fat->Draw("samePL");;
+  g_xs_comparison_bw_stat_bg2a_fat->Draw("samePL");;
+  g_xs_comparison_bw_stat_bg2b_fat->Draw("samePL");;
   g_xs_comparison_bw_stat_bg3_fat->Draw("samePL");;
   g_xs_comparison_bw_stat_bg4_fat->Draw("samePL");;
   g_xs_comparison_bw_stat_bg5_fat->Draw("samePL");;
@@ -1533,14 +1563,16 @@ void draw_1Vtag()
 
   l_xs_comparison_bw_stat_sys_fat2->SetFillColor(0);
   l_xs_comparison_bw_stat_sys_fat2->SetFillStyle(0);
-  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg_fat,"bg #pm e1e2e3 / stat","pL");
-  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg2_fat,"bg AB / stat","pL");
-  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg3_fat,"bg +e1 / stat","pL");
-  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg4_fat,"bg +e2 / stat","pL");
-  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg5_fat,"bg +e3 / stat","pL");
-  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg6_fat,"bg -e1 / stat","pL");
-  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg7_fat,"bg -e2 / stat","pL");
-  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg8_fat,"bg -e3 / stat","pL");
+  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg_fat,"bg #pm e1e2e3 sys / stat","pL");
+  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg2_fat,"bg AB sys / stat","pL");
+  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg2a_fat,"bg A fit","pL");
+  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg2b_fat,"bg B fit","pL");
+  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg3_fat,"bg +e1 fit","pL");
+  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg4_fat,"bg +e2 fit","pL");
+  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg5_fat,"bg +e3 fit","pL");
+  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg6_fat,"bg -e1 fit","pL");
+  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg7_fat,"bg -e2 fit","pL");
+  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg8_fat,"bg -e3 fit","pL");
 //  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_prior_fat,"Jeffreys prior","pL");
   l_xs_comparison_bw_stat_sys_fat2->Draw("sames");
 
@@ -1558,7 +1590,7 @@ void draw_1Vtag()
   vFrame->SetTitleSize(0.2);
   vFrame->SetXTitle("Resonance mass (GeV)");
   vFrame->GetXaxis()->SetTitleSize(0.06);
-  vFrame->SetYTitle("(sys.included 95% CL #sigma) / (stat.only 95% CL #sigma)");
+  vFrame->SetYTitle("Jeffreys / flat prior (stat.only 95% CL #sigma)");
   vFrame->GetYaxis()->SetTitleSize(0.04);
   vFrame->GetYaxis()->SetTitleOffset(1.60);
   vFrame->SetMinimum(0.6);
