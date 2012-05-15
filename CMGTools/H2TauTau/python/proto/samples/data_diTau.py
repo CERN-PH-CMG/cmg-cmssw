@@ -52,7 +52,7 @@ data_2011A = [
     data_Run2011A_May10ReReco_v1,
     data_Run2011A_PromptReco_v4,
     data_Run2011A_05Aug2011_v1,
-    data_Run2011A_PromptReco_v6
+    #data_Run2011A_PromptReco_v6
     ]
 
 data_2011B = [
