@@ -11,6 +11,8 @@ effectiveAreas = effectiveAreas2011()
 period = 'Period_2011AB'
 channel = 'mu_ele'
 
+
+
 mc_vertexWeight = None
 if period == 'Period_2011A':
     mc_vertexWeight = 'vertexWeightFall112invfb'
@@ -128,7 +130,7 @@ from CMGTools.HToZZTo4Leptons.samples.samples_V4_0_0 import *
 
 jsonFilter = cfg.Analyzer(
     'JSONAnalyzer',
-    json = json,
+    json =json
     )
 
 # selectedComponents = Fall11
@@ -176,7 +178,7 @@ mcSequence = [
     vertexAna,
 #    theGenAna,
     theAna,
-    createTreeProducer( theAna ),
+    createTreeProducer( theAna )
 #   createTreeProducer( theGenAna )
     ]
 

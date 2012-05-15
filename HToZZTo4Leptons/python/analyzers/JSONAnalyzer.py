@@ -1,9 +1,12 @@
 import json
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
+from CMGTools.RootTools.analyzers.TreeAnalyzer import TreeAnalyzer
+
+
+from FWCore.PythonUtilities.LumiList import LumiList
 
 #FIXME put in root tools
 
-class JSONAnalyzer( Analyzer ):
+class JSONAnalyzer( TreeAnalyzer ):
     '''Apply a json filter.
 
     example:
@@ -15,37 +18,61 @@ class JSONAnalyzer( Analyzer ):
     '''
 
     def __init__(self, cfg_ana, cfg_comp, looperName):
-        super(JSONAnalyzer, self).__init__(cfg_ana, cfg_comp, looperName)
-        jsonFile = open( self.cfg_ana.json )
-        self.json = json.loads( jsonFile.read() )
 
+        self.lumiList = LumiList(cfg_ana.json)
+        self.run=0
+        self.lumi=0
+        super(JSONAnalyzer, self).__init__(cfg_ana, cfg_comp, looperName)
+
+    def declareVariables(self):
+        self.tree.addVar('int', 'RUN')
+        self.tree.addVar('int', 'LUMI')
+        self.tree.addVar('int', 'Passed')
+        self.tree.book()
 
     def beginLoop(self):
         super(JSONAnalyzer,self).beginLoop()
         self.counters.addCounter('JSON')
         self.count = self.counters.counter('JSON')
-        self.count.register('All events')
-        self.count.register('Passed')
+        self.count.register('All Lumis')
+        self.count.register('Passed Lumis')
 
+
+    def fill(self, varName, value ):
+        setattr( self.tree.s, varName, value )
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
-        self.count.inc('All events')
-
-        if self.cfg_comp.isMC:
-            return True
         run = iEvent.eventAuxiliary().id().run()
         lumi = iEvent.eventAuxiliary().id().luminosityBlock()
-        # print run, lumi
-        # print self.json
-        lumis = self.json.get( str(run), None)
-        if lumis is None:
-            return False
-        # print lumis 
-        for range in lumis:
-            min = range[0]
-            max = range[1]
-            if lumi>=min and lumi<=max:
-                self.count.inc('Passed')
+        #If MC just pass
+#        if self.cfg_comp.isMC:
+#            return True
+
+        if self.lumiList is None:
+            return True
+
+        #Do the job only if 
+        # run or lumi changed 
+
+        if run != self.run or lumi !=self.lumi:
+            self.run=run
+            self.lumi=lumi
+            #increase the counter for all Lumis
+            self.count.inc('All Lumis')
+
+            #Fill the tree
+            self.fill('RUN',run)
+            self.fill('LUMI',lumi)
+            #check the Json file
+            if self.lumiList.contains(run,lumi):
+                self.fill('Passed',1)
+                self.tree.fill()
+                self.count.register('Passed Lumis')
                 return True
-        return False 
+            else:
+                self.fill('Passed',0)
+                self.tree.fill()
+                return False
+
+
