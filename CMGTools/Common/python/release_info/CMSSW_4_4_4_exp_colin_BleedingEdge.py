@@ -1,9 +1,9 @@
-[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_metreg_10May12'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'colin_metregclean_10May12'),
+[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'michalis_100512_PFMuon'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_gt_15May12'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-02'),
-  ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'colin_metregclean_10May12'),
-  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_09May12'),
-  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_init_06May12'),
+  ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_jec_15May12'),
+  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_15May12'),
+  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_yr_15May12'),
   ('CommonTools/ParticleFlow', 'CommonTools/ParticleFlow', 'V00-03-05-08'),
   ('CondFormats/EgammaObjects', 'CondFormats/EgammaObjects', 'V00-04-01'),
   ('DataFormats/METReco', 'DataFormats/METReco', 'lhx_12JAN2012_v1'),
@@ -34,4 +34,8 @@
   ('RecoTauTag/Configuration', 'RecoTauTag/Configuration', 'V01-04-03'),
   ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-17'),
   ('RecoTauTag/TauTagTools', 'RecoTauTag/TauTagTools', 'CMSSW_5_2_4'),
-  ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseNov14')]
+  ('TauAnalysis/CandidateTools', 'TauAnalysis/CandidateTools', 'bMinimalSVfit_2012May13'),
+  ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseMay14')]
+# The following packages were not in the input release_info.
+# Please make sure that the CVS module is correct!
+#	TauAnalysis/CandidateTools               bMinimalSVfit_2012May13
