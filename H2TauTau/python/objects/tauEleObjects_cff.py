@@ -55,13 +55,6 @@ tauEleCorSVFitSequence = cms.Sequence( recoilCorMETTauEle +
                                       cmgTauEleCorSVFitFullSel )
 
 tauEleSequence = cms.Sequence( tauEleStdSequence +
-                              tauEleCorSVFitSequence
+                               tauEleCorSVFitSequence
                               )
 
-
-# the following sequence is generic
-metRecoilCorInputSequence = cms.Sequence( cmgPFJetForRecoil +
-                                          genWorZ )
-
-objectSequence = cms.Sequence( metRecoilCorInputSequence + 
-                               tauEleSequence )

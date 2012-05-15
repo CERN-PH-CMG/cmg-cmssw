@@ -62,7 +62,7 @@ def addOutput( process, type12, addDebugEventContent=False, addPreSel=True):
 
     outBaseline = out.clone()
     outBaseline.SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('{type12}FullSelPath'.format(type12=type12))
+        SelectEvents = cms.vstring('{type12}Path'.format(type12=type12))
         )
     baselineName = '{type12}_fullsel_tree_{ext}.root'.format(
         type12 = type12,

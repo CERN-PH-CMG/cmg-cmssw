@@ -61,9 +61,3 @@ muEleSequence = cms.Sequence( muEleStdSequence +
                               )
 
 
-# the following sequence is generic
-metRecoilCorInputSequence = cms.Sequence( cmgPFJetForRecoil +
-                                          genWorZ )
-
-objectSequence = cms.Sequence( metRecoilCorInputSequence + 
-                               muEleSequence )

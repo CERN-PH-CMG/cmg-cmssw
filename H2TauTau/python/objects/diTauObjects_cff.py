@@ -62,9 +62,3 @@ diTauSequence = cms.Sequence( diTauStdSequence +
                               )
 
 
-# the following sequence is generic
-metRecoilCorInputSequence = cms.Sequence( cmgPFJetForRecoil +
-                                          genWorZ )
-
-objectSequence = cms.Sequence( metRecoilCorInputSequence + 
-                               diTauSequence )

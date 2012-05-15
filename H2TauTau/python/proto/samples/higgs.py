@@ -1,9 +1,7 @@
 import copy
-# import os
+import re 
 import CMGTools.RootTools.fwlite.Config as cfg
-# from   CMGTools.H2TauTau.proto.samples.getFiles import getFiles
-
-#COLIN : need to add the correct cross-sections
+from CMGTools.RootTools.yellowreport.YRParser import yrparser
 
 HiggsVBF110 = cfg.MCComponent(
     name = 'HiggsVBF110',
@@ -64,6 +62,13 @@ mc_higgs_vbf = [
     HiggsVBF135,
     ]
 
+pattern = re.compile('Higgs(\D+)(\d+)')
+for h in mc_higgs_vbf:
+    m = pattern.match( h.name )
+    process = m.group(1)
+    mass = float(m.group(2))
+    h.xSection = yrparser.get(mass)['VBF']['sigma']
+    print h.name, 'sigma = ', h.xSection
 
 mc_higgs = copy.copy( mc_higgs_vbf ) 
 
