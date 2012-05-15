@@ -283,7 +283,8 @@ elif(phase == 3 ):
         os.system("bsub -q 2nd 'sh " + OUT+"script_mass_"+str(m)+".sh'")
 	if(shapeBased=='1'):   list.writelines('H'+str(m)+'_shape_'+str(index)+'\n'); 
 	else:                  list.writelines('H'+str(m)+'_count_'+str(index)+'\n');
-        listcuts.writelines(str(m)+' & ' + str(Gmet.Eval(m,0,"S")) + '<met & ' + str(Gtmin.Eval(m,0,"S"))+'<mt<'+ str(Gtmax.Eval(m,0,"S")) +'\n');
+        #listcuts.writelines(str(m)+' & ' + str(Gmet.Eval(m,0,"S")) + '<met & ' + str(Gtmin.Eval(m,0,"S"))+'<mt<'+ str(Gtmax.Eval(m,0,"S")) +'\n');
+        listcuts.writelines(str(m)+' ' + str(Gmet.Eval(m,0,"S")) + ' ' + str(Gtmin.Eval(m,0,"S"))+' '+ str(Gtmax.Eval(m,0,"S")) +'\n');
    list.close();
    listcuts.close();
 
