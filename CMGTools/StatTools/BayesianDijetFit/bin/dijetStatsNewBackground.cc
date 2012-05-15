@@ -303,8 +303,7 @@ int main(int argc, char* argv[])
   if(statlevel==7) ws->factory("PROD::prior(xs_prior,sigMassDelta_prior)");
   if(statlevel==8) ws->factory("PROD::prior(xs_prior,lumi_prior,sigMassDelta_prior)");
   if(statlevel==9) ws->factory("PROD::prior(xs_prior,lumi_prior)");
-  if(statlevel==11) ws->factory("PROD::prior(xs_prior)");
-  if(statlevel==12) ws->factory("PROD::prior(xs_prior)");
+  if(statlevel==11 || statlevel==12 || statlevel==13 || statlevel==14) ws->factory("PROD::prior(xs_prior)");
   if(statlevel>=100 && statlevel < 1000) ws->factory("PROD::prior(xs_prior)");
 
   if(statlevel==0 || statlevel== 2000 || statlevel == 2100) ws->defineSet("nuisSet","");
@@ -317,8 +316,7 @@ int main(int argc, char* argv[])
   if(statlevel==7) ws->defineSet("nuisSet","sigMassDelta");
   if(statlevel==8) ws->defineSet("nuisSet","lumi,sigMassDelta");
   if(statlevel==9) ws->defineSet("nuisSet","lumi");
-  if(statlevel==11) ws->defineSet("nuisSet","");
-  if(statlevel==12) ws->defineSet("nuisSet","");
+  if(statlevel==11 || statlevel==12 || statlevel==13 || statlevel==14) ws->defineSet("nuisSet","");
   if(statlevel>=100 && statlevel < 1000) ws->defineSet("nuisSet","");
 
   // do a background-only fit first
@@ -445,7 +443,7 @@ int main(int argc, char* argv[])
     }
 
     // set parameters for limit calculation
-    if(statlevel==1 || statlevel==11 || statlevel==12 || (statlevel>=100 && statlevel < 1000)) {
+    if(statlevel==1 || statlevel==11 || statlevel==12 || statlevel==13 || statlevel==14 || (statlevel>=100 && statlevel < 1000)) {
     } else if(statlevel==2 || statlevel==1002) {
       ws->var("lumi")->setConstant(false);
     } else if(statlevel==3 || statlevel==1003) {
@@ -539,7 +537,7 @@ int main(int argc, char* argv[])
 
     TH1D* histA=dynamic_cast<TH1D*>(mcA.GetPosteriorHist()->Clone("histA"));
 
-    if(statlevel==1 || statlevel==5 || statlevel==6 || statlevel==7 || statlevel==9 || statlevel==11 || statlevel==12 || (statlevel>=100 &&  statlevel<1000)) {
+    if(statlevel==1 || statlevel==5 || statlevel==6 || statlevel==7 || statlevel==9 || statlevel==11 || statlevel==12 || statlevel==13 || statlevel==14 || (statlevel>=100 &&  statlevel<1000)) {
 
       if (statlevel==11){
         TH1D* histB=dynamic_cast<TH1D*>(mcB.GetPosteriorHist()->Clone("histB"));
@@ -554,6 +552,18 @@ int main(int argc, char* argv[])
 	TH1D* histB=dynamic_cast<TH1D*>(mcB.GetPosteriorHist()->Clone("histB"));
 	histA->Add(histB);
 	delete histB;
+      }
+      
+      else if (statlevel==13){
+	TH1D* histB=dynamic_cast<TH1D*>(mcB.GetPosteriorHist()->Clone("histB"));
+	delete histA;
+	histA=histB;
+      }
+      
+      else if (statlevel==14){
+	TH1D* histC=dynamic_cast<TH1D*>(mcC.GetPosteriorHist()->Clone("histC"));
+	delete histA;
+	histA=histC;
       }
       
       else {
