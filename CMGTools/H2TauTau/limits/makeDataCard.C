@@ -161,6 +161,7 @@ void makeDataCard(TString channel="muTau",long sm=0, long mass=120){
   file <<"-------------------------------"<<endl;
 
 
+
   ///lumi systematic------------------------------------------------
   file <<fillStringLong("lumi")<<fillString("lnN")
        <<fillString(" ")
@@ -195,99 +196,33 @@ void makeDataCard(TString channel="muTau",long sm=0, long mass=120){
   /// mu efficiency systematic------------------------------------------------
   file <<fillStringLong("CMS_eff_m")<<fillString("lnN")
        <<fillString(" ")
-       <<fillFloat(1.020)
-       <<fillFloat(1.020)
-       <<fillFloat(1.020)
-       <<fillFloat(1.020)
+       <<fillFloat(1.010)
+       <<fillFloat(1.010)
+       <<fillFloat(1.010)
+       <<fillFloat(1.010)
        <<fillString("-")
        <<fillString("-")
-       <<fillFloat(1.020)
-       <<fillFloat(1.020)
-       <<fillFloat(1.020)
-       <<fillFloat(1.020)
+       <<fillFloat(1.010)
+       <<fillFloat(1.010)
+       <<fillFloat(1.010)
+       <<fillFloat(1.010)
        <<"Muon ID/HLT"<<endl;
 
   ///tau efficiency systematic------------------------------------------------
   file <<fillStringLong("CMS_eff_t")<<fillString("lnN")
        <<fillString(" ")
-       <<fillFloat(1.06)
-       <<fillFloat(1.06)
-       <<fillFloat(1.06)
-       <<fillFloat(1.06)
+       <<fillFloat(1.062)
+       <<fillFloat(1.062)
+       <<fillFloat(1.062)
+       <<fillFloat(1.062)
        <<fillString("-")
        <<fillString("-")
        <<fillString("-")
        <<fillString("-")
-       <<fillFloat(1.06)
-       <<fillFloat(1.06)
+       <<fillFloat(1.062)
+       <<fillFloat(1.062)
        <<"Tau ID"<<endl;
 
-  /// ? systematic------------------------------------------------
-  file <<fillStringLong("CMS_scale_j")<<fillString("lnN")
-       <<fillString(" ")
-       <<fillFloat(0.96)
-       <<fillFloat(0.99)
-       <<fillFloat(0.92)
-       <<fillString("-")
-       <<fillString("-")
-       <<fillString("-")
-       <<fillString("-")
-       <<fillString("-")
-       <<fillFloat(0.97)
-       <<fillFloat(0.94)
-       <<"Jet scale"<<endl;
-
-  ///W+jets systematic------------------------------------------------
-  if(sm==0){
-    ///This assumes we calculate W+jets from the high m_T region
-    std::string wsys=(TString("CMS_htt_muTau_SM")+sm+"_WNorm").Data();
-    file <<fillStringLong(wsys)<<fillString("gmN")
-	 <<fillInt(W->Integral()/WJetsScaleFactor)
-	 <<fillString("-")
-	 <<fillString("-")
-	 <<fillString("-")
-	 <<fillString("-")
-	 <<fillString("-")
-	 <<fillFloat(WJetsScaleFactor)
-	 <<fillString("-")
-	 <<fillString("-")
-	 <<fillString("-")
-	 <<fillString("-")
-	 <<"W Background"<<endl;
-  }
-  if(sm==1 || sm==2){
-    std::string wsys=(TString("CMS_htt_muTau_SM")+sm+"_WNorm").Data();
-    file <<fillStringLong(wsys)<<fillString("lnN")
-	 <<fillString(" ")
-	 <<fillString("-")
-	 <<fillString("-")
-	 <<fillString("-")
-	 <<fillString("-")
-	 <<fillString("-")
-	 <<fillFloat(1.3)
-	 <<fillString("-")
-	 <<fillString("-")
-	 <<fillString("-")
-	 <<fillString("-")
-	 <<"W Background"<<endl;
-  }
-  
-  ///QCD systematic------------------------------------------------
-  std::string qcdsys=(TString("CMS_htt_muTau_SM")+sm+"_QCDNorm").Data();
-  file <<fillStringLong(qcdsys)<<fillString("lnN")
-       <<fillString(" ")
-       <<fillString("-")
-       <<fillString("-")
-       <<fillString("-")
-       <<fillString("-")
-       <<fillFloat(1.3)
-       <<fillString("-")
-       <<fillString("-")
-       <<fillString("-")
-       <<fillString("-")
-       <<fillString("-")
-       <<"QCD Background"<<endl;
-  
   ///Z crossection systematic------------------------------------------------
   file <<fillStringLong("CMS_htt_zttNorm")<<fillString("lnN")
        <<fillString(" ")
@@ -302,6 +237,41 @@ void makeDataCard(TString channel="muTau",long sm=0, long mass=120){
        <<fillString("-")
        <<fillString("-")
        <<"Norm Ztt"<<endl;
+ 
+
+  if(sm==1){
+    ///ZTT extrapolation------------------------------------------------
+    file <<fillStringLong("CMS_htt_ztt_extrap_boost")<<fillString("lnN")
+	 <<fillString(" ")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillFloat(1.025)
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillFloat(1.025)
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<"ZTT Extrapolation"<<endl;
+  }
+  if(sm==2){
+    ///ZTT extrapolation------------------------------------------------
+    file <<fillStringLong("CMS_htt_ztt_extrap_vbf")<<fillString("lnN")
+	 <<fillString(" ")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillFloat(1.028)
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillFloat(1.028)
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<"ZTT Extrapolation"<<endl;
+  }
+
 
   ///t-tbar crossection systematic------------------------------------------------
   file <<fillStringLong("CMS_htt_ttbarNorm")<<fillString("lnN")
@@ -314,7 +284,7 @@ void makeDataCard(TString channel="muTau",long sm=0, long mass=120){
        <<fillString("-")
        <<fillString("-")
        <<fillString("-")
-       <<fillFloat(1.075)
+       <<fillFloat((sm==0)*1.086 + (sm==1)*1.095 + (sm==2)*1.261)
        <<fillString("-")
        <<"Norm ttbar"<<endl;
 
@@ -330,11 +300,96 @@ void makeDataCard(TString channel="muTau",long sm=0, long mass=120){
        <<fillString("-")
        <<fillString("-")
        <<fillString("-")
-       <<fillFloat(1.30)
+       <<fillFloat((sm==0)*1.30 + (sm==1)*1.447 + (sm==2)*1.990)
        <<"Norm DiBoson"<<endl;
+  
 
-  ///jet fake rate systematic------------------------------------------------
-  file <<fillStringLong("CMS_htt_ZJetFakeTau")<<fillString("lnN")
+  ///W+jets systematic------------------------------------------------
+  std::string wsys=(TString("CMS_htt_muTau_SM")+sm+"_WNorm").Data();
+  file <<fillStringLong(wsys)<<fillString("lnN")
+       <<fillString(" ")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillFloat(1.066)
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<"W Background"<<endl;
+  if(sm==1){
+    std::string wsys=(TString("CMS_htt_W_extrap_boost")).Data();
+    file <<fillStringLong(wsys)<<fillString("lnN")
+	 <<fillString(" ")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillFloat(1.032)
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<" W Extrapolation"<<endl;
+  }
+  if(sm==2){
+    std::string wsys=(TString("CMS_htt_W_extrap_vbf")).Data();
+    file <<fillStringLong(wsys)<<fillString("lnN")
+	 <<fillString(" ")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillFloat(1.044)
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<" W Extrapolation"<<endl;
+  }
+  
+
+
+  ///QCD systematic------------------------------------------------
+  if(sm==0){
+    std::string qcdsys=(TString("CMS_htt_muTau_SM")+sm+"_QCDNorm").Data();
+    file <<fillStringLong(qcdsys)<<fillString("gmN")
+	 <<fillInt(QCD->Integral()/1.110)
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillFloat(1.110)
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<"QCD Background"<<endl;
+  }
+  std::string qcdsys=(TString("CMS_htt_muTau_SM")+sm+"_QCDSyst").Data();
+  file <<fillStringLong(qcdsys)<<fillString("lnN")
+       <<fillString(" ")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillFloat((sm==0)*1.018 + (sm==1)*1.083 + (sm==2)*1.101)
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<"QCD Background"<<endl;
+  
+
+  ///Z jet->tau fake rate systematic------------------------------------------------
+  std::string zjetsys=(TString("CMS_htt_muTau_SM")+sm+"_ZJetFakeTau").Data();
+  file <<fillStringLong(zjetsys)<<fillString("lnN")
        <<fillString(" ")
        <<fillString("-")
        <<fillString("-")
@@ -342,14 +397,16 @@ void makeDataCard(TString channel="muTau",long sm=0, long mass=120){
        <<fillString("-")
        <<fillString("-")
        <<fillString("-")
-       <<fillFloat(1.10)
+       <<fillFloat(1.110)
        <<fillString("-")
        <<fillString("-")
        <<fillString("-")
        <<"Z(jet->tau) background"<<endl;
 
+
   ///muon fake rate systematic------------------------------------------------
-  file <<fillStringLong("CMS_htt_ZLeptonFakeTau")<<fillString("lnN")
+  std::string zlepsys=(TString("CMS_htt_muTau_SM")+sm+"_ZLeptonFakeTau").Data();
+  file <<fillStringLong(zlepsys)<<fillString("lnN")
        <<fillString(" ")
        <<fillString("-")
        <<fillString("-")
@@ -358,10 +415,27 @@ void makeDataCard(TString channel="muTau",long sm=0, long mass=120){
        <<fillString("-")
        <<fillString("-")
        <<fillString("-")
-       <<fillFloat(1.10)
+       <<fillFloat(1.112)
        <<fillString("-")
        <<fillString("-")
        <<"Z(lepton->tau) background"<<endl;
+ 
+
+  /// Jets systematic------------------------------------------------
+  file <<fillStringLong("CMS_scale_j")<<fillString("lnN")
+       <<fillString(" ")
+       <<fillFloat((sm==0)*0.96 + (sm==1)*1.02 + (sm==2)*1.20)
+       <<fillFloat((sm==0)*0.99 + (sm==1)*1.02 + (sm==2)*1.03)
+       <<fillFloat((sm==0)*0.92 + (sm==1)*1.05 + (sm==2)*1.08)
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillFloat((sm==0)*0.94 + (sm==1)*1.03 + (sm==2)*1.15)
+       <<fillFloat((sm==0)*0.97 + (sm==1)*1.08 + (sm==2)*1.10)
+       <<"Jet scale"<<endl;
+
 
   ///MET systematic------------------------------------------------
   file <<fillStringLong("CMS_scale_met")<<fillString("lnN")
@@ -378,7 +452,22 @@ void makeDataCard(TString channel="muTau",long sm=0, long mass=120){
        <<fillFloat(1.06)
        <<"Jet scale"<<endl;
 
-  ///? systematic------------------------------------------------
+
+  ///------------------------------------------------
+  file <<fillStringLong("pdf_qqbar")<<fillString("lnN")
+       <<fillString(" ")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillFloat(1.08)
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<fillString("-")
+       <<"PDF VBF"<<endl;
+
   file <<fillStringLong("pdf_vh")<<fillString("lnN")
        <<fillString(" ")
        <<fillFloat(1.08)
@@ -396,22 +485,8 @@ void makeDataCard(TString channel="muTau",long sm=0, long mass=120){
   file <<fillStringLong("pdf_gg")<<fillString("lnN")
        <<fillString(" ")
        <<fillString("-")
-       <<fillFloat(1.03)
+       <<fillFloat(1.08)
        <<fillString("-")
-       <<fillString("-")
-       <<fillString("-")
-       <<fillString("-")
-       <<fillString("-")
-       <<fillString("-")
-       <<fillString("-")
-       <<fillString("-")
-       <<"PDF VBF"<<endl;
-
-  file <<fillStringLong("pdf_qqbar")<<fillString("lnN")
-       <<fillString(" ")
-       <<fillString("-")
-       <<fillString("-")
-       <<fillFloat(1.03)
        <<fillString("-")
        <<fillString("-")
        <<fillString("-")
@@ -440,7 +515,7 @@ void makeDataCard(TString channel="muTau",long sm=0, long mass=120){
        <<fillString(" ")
        <<fillString("-")
        <<fillString("-")
-       <<fillFloat(1.035)
+       <<fillFloat(sm==0 ? 1.035 : 1.04)
        <<fillString("-")
        <<fillString("-")
        <<fillString("-")
@@ -450,6 +525,21 @@ void makeDataCard(TString channel="muTau",long sm=0, long mass=120){
        <<fillString("-")
        <<"QCD scale VBF"<<endl;
 
+  if(sm==1){
+    file <<fillStringLong("QCDscale_ggH1in")<<fillString("lnN")
+	 <<fillString(" ")
+	 <<fillString("-")
+	 <<fillFloat(1.25)
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<fillString("-")
+	 <<"QCD scale"<<endl;
+  }
 
   file <<fillStringLong("UEPS")<<fillString("lnN")
        <<fillString(" ")

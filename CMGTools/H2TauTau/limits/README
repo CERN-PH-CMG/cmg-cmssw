@@ -1,35 +1,21 @@
 
-***Quick running instructions:
-rm -f *.ps *.txt *.root *.log
-source createDataCards.sh
+***Quick running instructions for muTau channel only:
+1) check out:
+cvs co -r V01-13-03 HiggsAnalysis/CombinedLimit
+This package compiles only in 5_X_X, in the past I've had trouble with this tag (with no files being checked out), if it doesnt work use the HEAD.
+2) Create a directory called muTau in H2TauTau/limits/
+ Use this one as example: /afs/cern.ch/user/b/benitezj/public/muTau
+3) In H2TauTau/limits/   execute this sequence:
+root -b createDataCards.C
 source combineCards.sh
-source computeLimits.sh 
-root -b plotLimits.C\(0\)
-root -b plotLimits.C\(1\)
-root -b plotLimits.C\(2\)
-root -b plotLimits.C\(3\)
+source computeLimits.sh
+root -b plotLimits.C
+The last one is configurable for the category you want to plot.
+
 
 
 ***For up to date info see the Twiki
 https://twiki.cern.ch/twiki/bin/viewauth/CMS/%20SWGuideHiggsAnalysisCombinedLimit)
-
-***Installation instructions:
-
-cd CMSSW_4_2_8/src 
-cmsenv
-cvs co  HiggsAnalysis/CombinedLimit
-scramv1 b
-
-
-***Notes macros:
-
--histosForLimit.C macro will create the datacard and the rootfile for on particular category and higgs mass.
--the "combine" command will compute the limit for one data card.
--the above shell scripts combine the cards and compute all the limits
--the plotLimits.C makes the plot as a function of mass
-
-***data cards for different categories/channels are combined like this:
-combineCards.py Name1=card1.txt Name2=card2.txt .... > card.txt 
 
 
 ***Notes on the types of limit computations
@@ -96,9 +82,9 @@ package over Easter. Don't hesitate to ask if you have any questions.
 Cheers,
 Roger
 
-********Jose: notes 
+********Jose notes 
 *checkout did not work for me need to do:
 cvs co  HiggsAnalysis/CombinedLimit
 cd HiggsAnalysis/CombinedLimit
 cvs up -r V01-13-03
-But then no files seem to be in this tag so had to updated to HEAD
+But then no files seem to be in this tag so had to update to HEAD

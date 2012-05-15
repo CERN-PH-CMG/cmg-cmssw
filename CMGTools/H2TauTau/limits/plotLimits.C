@@ -1,6 +1,6 @@
 #define NPOINTS 8
 
-void plotLimits(TString channel="muTau",long sm=0){
+void plotLimits(TString channel="muTau",long sm=0,bool plotobs=0){
 
   int mass[NPOINTS]={110,115,120,125,130,135,140,145};
 
@@ -102,7 +102,7 @@ void plotLimits(TString channel="muTau",long sm=0){
   GExp.Draw("lsame");
 
   GObs.SetFillColor(0);
-  GObs.Draw("plsame");
+  if(plotobs)GObs.Draw("plsame");
 
   TLegend legend;
   legend.SetFillColor(0);
@@ -113,7 +113,7 @@ void plotLimits(TString channel="muTau",long sm=0){
   legend.SetX2NDC(.3);
   legend.SetY1NDC(.7);
   legend.SetY2NDC(.8);
-  legend.AddEntry(&GObs,"observed","pl");
+  if(plotobs)legend.AddEntry(&GObs,"observed","pl");
   legend.AddEntry(&GExp,"expected","l");
   legend.Draw("same");
 
