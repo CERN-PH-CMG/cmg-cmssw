@@ -94,9 +94,3 @@ tauMuSequence = cms.Sequence( tauMuStdSequence +
                               )
 
 
-# the following sequence is generic
-metRecoilCorInputSequence = cms.Sequence( cmgPFJetForRecoil +
-                                          genWorZ )
-
-objectSequence = cms.Sequence( metRecoilCorInputSequence + 
-                               tauMuSequence )

@@ -19,7 +19,7 @@ numberOfFilesToProcess = 5
 
 debugEventContent = False
 
-#tau-mu, tau-ele, mu-ele, di-tau, all
+#tau-mu, tau-ele, di-tau, all
 channel = 'tau-mu'
 ##########
 
@@ -34,7 +34,8 @@ dataset_user = 'cmgtools'
 # dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0'
 # dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5/PAT_CMG_V5_2_0'
 # dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/V5/PAT_CMG_V5_2_0'
-dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/V5/PAT_CMG_V5_2_0'
+# dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/V5/PAT_CMG_V5_2_0'
+dataset_name = '/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0'
 dataset_files = 'cmgTuple.*root'
 
 # creating the source
@@ -76,18 +77,6 @@ if runOnMC==False:
     json = setupJSON(process)
 
 
-# generator ----------------------------------------------
-process.generatorPath = cms.Path()
-if runOnMC:
-    # setting up vertex weighting 
-    process.load('CMGTools.Common.generator.vertexWeight.vertexWeight_cff')
-    process.generatorPath += process.vertexWeightSequence 
-
-    # input needed for all recoil corrections 
-    process.load('CMGTools.Common.generator.metRecoilCorrection.metRecoilCorrection_cff')
-    process.generatorPath += process.cmgPFJetForRecoil 
-    process.generatorPath += process.genWorZ
-
 
 # load the channel paths -------------------------------------------
 process.load('CMGTools.H2TauTau.h2TauTau_cff')
@@ -101,49 +90,46 @@ setupRecoilCorrection( process )
 # OUTPUT definition ----------------------------------------------------------
 process.outpath = cms.EndPath()
 
+# generator ----------------------------------------------
+if not runOnMC:
+    process.tauMuPath.remove( process.genSequence )
+    process.tauElePath.remove( process.genSequence )
+    process.diTauPath.remove( process.genSequence )
+    
 
 #Jose: process.schedule doesn't have a += operator?
 if channel=='all':
     process.schedule = cms.Schedule(
-        process.generatorPath,
-        process.tauMuFullSelPath,
-        process.tauEleFullSelPath,
-        process.muEleFullSelPath,    
-        process.diTauFullSelPath,
+        process.tauMuPath,
+        process.tauElePath,
+        # process.muElePath,    
+        process.diTauPath,
         process.outpath
         )
 elif channel=='tau-mu':
     process.schedule = cms.Schedule(
-        process.generatorPath,
-        process.tauMuFullSelPath,
+        process.tauMuPath,
         process.outpath
         )
 elif channel=='tau-ele':
     process.schedule = cms.Schedule(
-        process.generatorPath,
-        process.tauEleFullSelPath,
+        process.tauElePath,
         process.outpath
         )
-elif channel=='mu-ele':
-    process.schedule = cms.Schedule(
-        process.generatorPath,
-        process.muEleFullSelPath,
-        process.outpath
-        )
+## elif channel=='mu-ele':
+##     process.schedule = cms.Schedule(
+##         process.muElePath,
+##         process.outpath
+##         )
 elif channel=='di-tau':
     process.schedule = cms.Schedule(
-        process.generatorPath,
-        process.diTauFullSelPath,
+        process.diTauPath,
         process.outpath
         )
 else:
     raise ValueError('unrecognized channel')    
 
 
-
-
-# process.tauMuFullSelPath += process.mvaMETSequence
-# process.mvaMETTauMu.verbose = True
 
 print sep_line
 print 'INPUT:'
@@ -178,8 +164,8 @@ if channel=='tau-mu' or channel=='all':
     addTauMuOutput( process, debugEventContent, addPreSel=False)
 if channel=='tau-ele' or channel=='all':
     addTauEleOutput( process, debugEventContent, addPreSel=False)
-if channel=='mu-ele' or channel=='all':
-    addMuEleOutput( process, debugEventContent, addPreSel=False)
+## if channel=='mu-ele' or channel=='all':
+##     addMuEleOutput( process, debugEventContent, addPreSel=False)
 if channel=='di-tau' or channel=='all':
     addDiTauOutput( process, debugEventContent, addPreSel=False)
 
@@ -191,3 +177,20 @@ process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
+
+# Jet recalibration
+
+process.load('Configuration.StandardSequences.Services_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+GT = None
+if runOnMC:
+    GT = 'START44_V13::All'
+else:
+    GT = 'GR_R_44_V15::All'
+process.GlobalTag.globaltag = GT
+from CMGTools.Common.miscProducers.cmgPFJetCorrector_cfi import cmgPFJetCorrector
+process.cmgPFJetSel = cmgPFJetCorrector.clone()
+
+process.tauMuPath.insert(0, process.cmgPFJetSel)
+
+print 'GLOBAL TAG', GT

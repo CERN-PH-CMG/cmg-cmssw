@@ -31,8 +31,6 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         if result is False:
             return result
 
-        # Simone, that's what you probably want to check.
-        # Also have a look at CMGTools.RootTools.physicsobjects.DiObject
         event.genMatched = None
         if self.cfg_comp.isMC:
             genParticles = self.mchandles['genParticles'].product()
@@ -83,7 +81,7 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         if muon.pt()>self.cfg_ana.pt2 and \
                abs( muon.eta() ) < self.cfg_ana.eta2 and \
                self.testMuonID(muon) and \
-               muon.getSelection('cuts_vbtfmuon') and \ 
+               muon.getSelection('cuts_vbtfmuon') and \
                self.muonIso(muon)<9999: #WARNING MUON ISO RELAXED
             return True
         else:
@@ -104,7 +102,6 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
 
     def muonIso(self, muon ):
         return muon.relIso(0.5)
-
     
 
     def leptonAccept(self, leptons):

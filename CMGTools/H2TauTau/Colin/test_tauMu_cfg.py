@@ -112,6 +112,7 @@ for mc in MC:
 
 
 MC = [DYJets, WJets, TTJets]
+MC.extend( mc_higgs )
 selectedComponents =  copy.copy(MC)
 
 if period == 'Period_2011A':
@@ -156,7 +157,7 @@ embed_Run2011A_03Oct2011_v1.splitFactor = 2
 
 test = 0
 if test==1:
-    comp = embed_Run2011B_PromptReco_v1
+    comp = HiggsVBF120
     # comp.files = ['tauMu_fullsel_tree_CMG.root']
     # comp.files = ['/data/c/cbern/Tests/CMGTools/44X/May05/CMGTools/CMSSW_4_4_4/src/CMGTools/H2TauTau/prod/tauMu_fullsel_tree_CMG.root']
     # comp = data_Run2011B_PromptReco_v1
@@ -169,7 +170,7 @@ elif test==2:
      comp.splitFactor = 1
      comp.files = comp.files[2]
 
-# selectedComponents = data_2011
+# selectedComponents = mc_higgs
 # selectedComponents.extend(MC)
 
 config = cfg.Config( components = selectedComponents,

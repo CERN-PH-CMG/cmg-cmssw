@@ -195,3 +195,9 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['DYJets'] = {'style':sYellow, 'layer':3}
         self.histPref['DYJets (emb)'] = {'style':sYellow, 'layer':3}
         self.histPref['DYJets_Fakes'] = {'style':sBlack, 'layer':2.5}
+        self.histPref['HiggsVBF110'] = {'style':sBlack, 'layer':4}
+        self.histPref['HiggsVBF115'] = {'style':sBlack, 'layer':5}
+        self.histPref['HiggsVBF120'] = {'style':sBlack, 'layer':6}
+        self.histPref['HiggsVBF125'] = {'style':sBlack, 'layer':7}
+        self.histPref['HiggsVBF130'] = {'style':sBlack, 'layer':8}
+        self.histPref['HiggsVBF135'] = {'style':sBlack, 'layer':9}
