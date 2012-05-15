@@ -110,6 +110,7 @@ TString inFileUrl(""),jsonFile(""), histo("");
 
 int indexvbf = -1;
 int indexcut   = -1;
+int mass=-1; 
 
 void printHelp()
 {
@@ -150,7 +151,7 @@ int main(int argc, char* argv[])
   gStyle->SetOptFit(0);
 
   //get input arguments
-  int mass=-1; bool runSystematics = false; bool shape = false;
+  bool runSystematics = false; bool shape = false;
   for(int i=1;i<argc;i++){
     string arg(argv[i]);
     if(arg.find("--help")         !=string::npos) { printHelp(); return -1;} 
@@ -257,7 +258,7 @@ void getYieldsFromShape(TString dirurl, std::vector<TString> ch, const map<TStri
 	  h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.bckg[ibckg];
 	  Double_t valerr;
 	  Double_t val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
-          if(val<1E-9){val=0.0; valerr=0.0;}
+          if(val<1E-6){val=0.0; valerr=0.0;}
 	  cutflow << " & " << toLatexRounded(val,valerr);
 	}}
       cutflow << "\\\\";
@@ -271,7 +272,7 @@ void getYieldsFromShape(TString dirurl, std::vector<TString> ch, const map<TStri
       TH1 *h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.totalBckg;
       Double_t valerr;
       Double_t val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
-      if(val<1E-9){val=0.0; valerr=0.0;}
+      if(val<1E-6){val=0.0; valerr=0.0;}
       cutflow << " & " << toLatexRounded(val,valerr);
   }}
   cutflow << "\\\\\\hline" << flush;
@@ -287,7 +288,7 @@ void getYieldsFromShape(TString dirurl, std::vector<TString> ch, const map<TStri
           h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.signal[isig];
           Double_t valerr;
           Double_t val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
-          if(val<1E-9){val=0.0; valerr=0.0;}
+          if(val<1E-6){val=0.0; valerr=0.0;}
           cutflow << " & " << toLatexRounded(val,valerr);
         }}
       cutflow << "\\\\";
@@ -306,8 +307,89 @@ void getYieldsFromShape(TString dirurl, std::vector<TString> ch, const map<TStri
        << "\\end{tabular}" << endl
        << "\\end{center}" << endl
        << "\\end{table}" << endl;
-
   cutflow.close();
+
+
+/////////////////////////////////////////
+
+  FILE* pFile = fopen((dirurl+"/Yields2.tex").Data(),"w");
+  fprintf(pFile,"\\begin{sidewaystable}[htp]\n\\begin{center}\n\\caption{Event yields expected for background and signal processes and observed in data.}\n\\label{tab:table}\n");
+
+  string Ccol   = "\\begin{tabular}{|l|";
+  string Cname  = "channel";
+  string Cval   = "";
+
+  TString massStr(""); massStr += mass;
+
+
+  TH1* h;
+  Double_t valerr, val;
+  for(size_t b=0; b<AnalysisBins.size(); b++){
+  for(size_t ich=0; ich<nch; ich++) {
+    TString icol(AnalysisBins[b]+"-"+ch[ich]);
+    icol.ReplaceAll("mu","\\mu"); icol.ReplaceAll("_"," ");
+    Cval = "$ "+icol+" $";
+
+    //bckg
+    size_t nbckg=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.bckg.size();
+    for(size_t ibckg=0; ibckg<nbckg; ibckg++){
+       TH1* h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.bckg[ibckg];       
+       TString procTitle(h->GetTitle()); procTitle.ReplaceAll("#","\\");
+       if(b==0&&ich==0)Ccol  += "c|";
+       if(b==0&&ich==0)Cname += "&$" + procTitle + "$";
+
+       val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+       if(val<1E-6){val=0.0; valerr=0.0;}
+       Cval += "&" + toLatexRounded(val,valerr);
+    }
+
+    //total bckg
+    if(b==0&&ich==0)Ccol  += "c|";
+    if(b==0&&ich==0)Cname += "&$Total$";
+    h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.totalBckg;
+    val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+    if(val<1E-6){val=0.0; valerr=0.0;}
+    Cval += "&\\boldmath " + toLatexRounded(val,valerr);
+
+    //signal
+    size_t nsig=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.signal.size();
+    for(size_t isig=0; isig<nsig; isig++){
+       h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.signal[isig];
+       TString procTitle(h->GetTitle()); procTitle.ReplaceAll("#","\\");
+
+       if(!procTitle.Contains(massStr))continue;
+            if(procTitle.Contains("ggH") && procTitle.Contains("ZZ"))procTitle = "ggH("+massStr+")";
+       else if(procTitle.Contains("qqH") && procTitle.Contains("ZZ"))procTitle = "qqH("+massStr+")";
+       else if(procTitle.Contains("ggH") && procTitle.Contains("WW"))procTitle = "ggH("+massStr+")WW";
+       else if(procTitle.Contains("qqH") && procTitle.Contains("WW"))procTitle = "qqH("+massStr+")WW";
+
+       if(b==0&&ich==0)Ccol  += "c|";
+       if(b==0&&ich==0)Cname += "&$" + procTitle+"$";
+
+       val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+       if(val<1E-6){val=0.0; valerr=0.0;}
+       Cval += "&" + toLatexRounded(val,valerr);
+    }
+
+    //data
+    if(b==0&&ich==0)Ccol  += "c|";
+    if(b==0&&ich==0)Cname += "&$Data$";
+    h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.data;
+    val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+    if(val<1E-6){val=0.0; valerr=0.0;}
+    Cval += "&\\boldmath " + toLatexRounded(val,valerr);
+
+    //endline
+    if(b==0&&ich==0)fprintf(pFile,"%s}\\hline\n", Ccol.c_str());
+    if(b==0&&ich==0)fprintf(pFile,"%s\\\\\\hline\n", Cname.c_str());
+    fprintf(pFile,"%s\\\\\n", Cval.c_str());
+  }}
+  fprintf(pFile,"\\hline\n");
+  fprintf(pFile,"\\end{tabular}\n\\end{center}\n\\end{sidewaystable}\n");
+  fprintf(pFile,"\n\n\n\n");
+  fclose(pFile);
+
+
 }
 
 
@@ -1045,8 +1127,8 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch
         if(temp->Integral()!=0)dci.systs[systName][RateKey_t(proc,ch)]=1.0;
           delete temp;
         }else if(proc=="asignal" && syst==""){dci.rates[RateKey_t(proc,ch)]=hshape->Integral();
-//        }else if(proc!="data" && syst==""){if(hshape->Integral()>1E-9)dci.rates[RateKey_t(proc,ch)]=hshape->Integral();
-        }else if(proc!="data" && syst==""){dci.rates[RateKey_t(proc,ch)]= hshape->Integral()>1E-9 ? hshape->Integral() : 0.0;
+//        }else if(proc!="data" && syst==""){if(hshape->Integral()>1E-6)dci.rates[RateKey_t(proc,ch)]=hshape->Integral();
+        }else if(proc!="data" && syst==""){dci.rates[RateKey_t(proc,ch)]= hshape->Integral()>1E-6 ? hshape->Integral() : 0.0;
         }else if(proc=="data" && syst==""){dci.obs[RateKey_t("obs",ch)]=hshape->Integral();
         }
    }
