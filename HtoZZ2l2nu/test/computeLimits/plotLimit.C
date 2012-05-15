@@ -196,7 +196,8 @@ void plotLimit(TString inputs=""){
       int mass; sscanf(massStr.c_str(),"%d",&mass);
       Limit limits = GetLimit(files[i],string("Higgs")+massStr.c_str());
 
-         fprintf(pFileSum, "Mass=%s --> Limits are %lf %lf %lf %lf %lf %lf %lf\n",massStr.c_str(), limits.Obs,limits.Exp_minus2s, limits.Exp_minus1s, limits.Exp_Mean, limits.Exp_plus1s, limits.Exp_plus2s, limits.Exp_Median);
+         //fprintf(pFileSum, "Mass=%s --> Limits are %lf %lf %lf %lf %lf %lf %lf\n",massStr.c_str(), limits.Obs,limits.Exp_minus2s, limits.Exp_minus1s, limits.Exp_Mean, limits.Exp_plus1s, limits.Exp_plus2s, limits.Exp_Median);
+         fprintf(pFileSum, "$%s$ & $%6.2f$ & $[%6.2f,%6.2f]$ & $[%6.2f,%6.2f]$ & $%6.2f$ \\\\\\hline\n",massStr.c_str(), limits.Exp_Median, limits.Exp_minus1s, limits.Exp_plus1s, limits.Exp_minus2s,  limits.Exp_plus2s, limits.Obs );
          MassAxis[i]   = mass;
          ObsLimit[i]   = limits.Obs;
 
@@ -207,7 +208,7 @@ void plotLimit(TString inputs=""){
             ExpLimit[NExp]   = limits.Exp_Mean;
             ExpLimitp1[NExp] = limits.Exp_plus1s;
             ExpLimitp2[NExp] = limits.Exp_plus2s;
-            fprintf(pFileSum,"%f %f %f+-%f\n",MassAxis[i],ObsLimit[i],ExpLimit[NExp],(ExpLimitp1[NExp]-ExpLimitm1[NExp])/2.0);
+           // fprintf(pFileSum,"%f %f %f+-%f\n",MassAxis[i],ObsLimit[i],ExpLimit[NExp],(ExpLimitp1[NExp]-ExpLimitm1[NExp])/2.0);
             NExp++;
          }
    }
