@@ -57,32 +57,29 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
 
     def testTau(self, tau):
         '''Returns True if a tau passes a set of cuts.
-        Can be used in testLeg1 and testLeg2, in child classes.
-        
-        WARNING: the muon filter should be used only in the muon channel.'''
+        Can be used in testLeg1 and testLeg2, in child classes.'''
         if tau.decayMode() == 0 and \
                tau.calcEOverP() < 0.2: #reject muons faking taus in 2011B
             return False
         return tau.tauID("byLooseCombinedIsolationDeltaBetaCorr")==True and \
                tau.tauID("againstMuonTight")==True and \
                tau.tauID("againstElectronLoose")==True and \
-               abs(tau.dxy()) < 0.045 and \
-               abs(tau.dz()) < 0.2
+               self.testVertex( tau )
 
 
-    def testMuonID(self, muon):
-        return ( muon.looseId() and \
-                 abs(muon.dxy()) < 0.045 and \
-                 abs(muon.dz()) < 0.2 )
+    def testVertex(self, lepton):
+        '''Tests vertex constraints, for mu and tau'''
+        return abs(lepton.dxy()) < 0.045 and \
+               abs(lepton.dz()) < 0.2 
 
 
     def testMuonTight(self, muon ):
         '''Tight muon selection'''
-        if muon.pt()>self.cfg_ana.pt2 and \
-               abs( muon.eta() ) < self.cfg_ana.eta2 and \
-               self.testMuonID(muon) and \
-               muon.getSelection('cuts_vbtfmuon') and \
-               self.muonIso(muon)<9999: #WARNING MUON ISO RELAXED
+        if muon.pt() > self.cfg_ana.pt2 and \
+           abs( muon.eta() ) < self.cfg_ana.eta2 and \
+           muon.tightId() and \
+           self.testVertex( muon ) and \
+           self.muonIso(muon)<self.cfg_ana.iso2: #WARNING MUON ISO RELAXED
             return True
         else:
             return False
@@ -91,9 +88,10 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
     def testMuonLoose( self, muon ):
         '''Loose muon selection, for the lepton veto'''
         #COLIN: not sure the vertex constraints should be kept 
-        if muon.pt()>15 and \
+        if muon.pt() > 15 and \
                abs( muon.eta() ) < 2.5 and \
-               self.testMuonID(muon) and \
+               muon.looseId() and \
+               self.testVertex( muon ) and \
                self.muonIso(muon)<0.3:
             return True
         else:

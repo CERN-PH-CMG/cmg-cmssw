@@ -34,11 +34,11 @@ triggerAna = cfg.Analyzer(
 TauMuAna = cfg.Analyzer(
     'TauMuAnalyzer',
     pt1 = 20,
-    pt2 = 17,
-    iso1 = 999,
-    iso2 = 999,
     eta1 = 2.3,
+    iso1 = 999,
+    pt2 = 17,
     eta2 = 2.1,
+    iso2 = 999,
     m_min = 10,
     m_max = 99999,
     # diLeptonCutString = 'cuts_baseline',
@@ -155,7 +155,7 @@ embed_Run2011A_May10ReReco_v1.splitFactor = 2
 embed_Run2011A_05Aug2011_v1.splitFactor = 2
 embed_Run2011A_03Oct2011_v1.splitFactor = 2
 
-test = 0
+test = 1
 if test==1:
     comp = HiggsVBF120
     # comp.files = ['tauMu_fullsel_tree_CMG.root']
