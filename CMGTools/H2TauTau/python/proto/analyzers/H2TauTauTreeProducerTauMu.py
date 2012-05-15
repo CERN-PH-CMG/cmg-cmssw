@@ -29,6 +29,7 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzer ):
        var( tr, 'nVert')
        
        var( tr, 'isFake')
+       var( tr, 'isSignal')
        
        self.tree.book()
 
@@ -72,5 +73,6 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzer ):
           if event.genMatched == 1:
              isFake = 0
        fill(tr, 'isFake', isFake)
+       fill(tr, 'isSignal', event.isSignal)
        
        self.tree.fill()
