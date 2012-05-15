@@ -1191,7 +1191,7 @@ void doBackgroundSubtraction(TString dirurl, std::vector<TString>& selCh,TString
         printf("alpha %s=%f+-%f\n", (selCh[i]+AnalysisBins[b]).Data(),alpha, alpha_err);
 
         //add 100% syst uncertainty on alpha
-        alpha_err = sqrt(alpha*alpha+alpha_err*alpha_err);
+        alpha_err = sqrt(pow(alpha*1.0,2)+pow(alpha_err,2));
 
         Lalph2 += string(" &") + toLatexRounded(alpha,alpha_err);
         Cval   += string(" &") + toLatexRounded(alpha,alpha_err);
@@ -1210,7 +1210,7 @@ void doBackgroundSubtraction(TString dirurl, std::vector<TString>& selCh,TString
            double val = NonResonant->GetBinContent(b);
            double err = NonResonant->GetBinError(b);
            val = val*alpha;
-           err = err*alpha + val*alpha_err;
+           err = sqrt(pow(err*alpha,2) + pow(val*alpha_err,2));
            NonResonant->SetBinContent(b, val );
            NonResonant->SetBinError  (b, err );
         }
