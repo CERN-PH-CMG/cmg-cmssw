@@ -8,7 +8,13 @@ from CMGTools.RootTools.DataMC.AnalysisDataMCPlot import AnalysisDataMC
 from CMGTools.RootTools.fwlite.Weight import Weight
 from CMGTools.RootTools.fwlite.Weight import printWeights
 from CMGTools.RootTools.Style import *
+from ROOT import kPink, kOrange, kViolet
 
+sOrange = Style(lineColor=1, markerColor=kOrange, fillColor=kOrange)
+sViolet = Style(lineColor=1, markerColor=kViolet, fillColor=kViolet)
+
+sRedLine = Style(lineColor=2, markerColor=2, fillStyle=0)
+sBlueLine = Style(lineColor=4, markerColor=4, fillStyle=0)
 
 class H2TauTauDataMC( AnalysisDataMC ):
 
@@ -80,11 +86,12 @@ class H2TauTauDataMC( AnalysisDataMC ):
         for layer, (compName, comp) in enumerate( self.selComps.iteritems() ) : 
             fileName = '/'.join([ directory,
                                   compName,
-                                  'H2TauTauTreeProducer',
-                                  'H2TauTauTreeProducer_tree.root'])
+                                  'H2TauTauTreeProducerTauTau',
+                                  'H2TauTauTreeProducerTauTau_tree.root'])
             file = TFile(fileName)
             self.keeper.append( file )
-            tree = file.Get('H2TauTauTreeProducer')
+            tree = file.Get('H2TauTauTreeProducerTauTau')
+	    print fileName, tree
             
             if compName == 'DYJets':
 	        if self.photon:
@@ -219,7 +226,6 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['embed_Run2011A_03Oct2011_v1'] = {'style':sYellow, 'layer':-1105}
         self.histPref['embed_Run2011A_05Aug2011_v1'] = {'style':sBlack, 'layer':-1150}
         self.histPref['embed_Run2011B_PromptReco_v1'] = {'style':sViolet, 'layer':-1200}
-        self.histPref['dMay10ReReco_v1'] = {'style':sGreen, 'layer':-1200}
         self.histPref['TTJets'] = {'style':sRed, 'layer':1} 
         self.histPref['WJets'] = {'style':sBlue, 'layer':2}  
         self.histPref['WJets_Fakes'] = {'style':sViolet, 'layer':1.5}  
@@ -232,5 +238,5 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['QCD30'] = {'style':sBlack, 'layer':5.3}
         self.histPref['QCD50'] = {'style':sBlack, 'layer':5.2}
         self.histPref['QCD80'] = {'style':sBlack, 'layer':5.1}
-        self.histPref['ggHTT125'] = {'style':sRedLine, 'layer':6.1}
-        self.histPref['VBFHTT125'] = {'style':sBlueLine, 'layer':6.2}
+        self.histPref['Higgsgg125'] = {'style':sRedLine, 'layer':6.1}
+        self.histPref['HiggsVBF125'] = {'style':sBlueLine, 'layer':6.2}
