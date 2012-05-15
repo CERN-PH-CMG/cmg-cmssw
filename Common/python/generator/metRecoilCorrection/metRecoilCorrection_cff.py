@@ -12,9 +12,13 @@ cmgPFJetForRecoil = cmgPFJetSel.clone( cut = 'pt()>30 && abs(eta)<4.5',
                                        src = 'cmgPFJetSel')
 
 
-metRecoilCorrectionSequence= cms.Sequence(
+metRecoilCorrectionInputSequence = cms.Sequence(
     cmgPFJetForRecoil +
-    genWorZ +
+    genWorZ 
+    )
+
+metRecoilCorrectionSequence= cms.Sequence(
+    metRecoilCorrectionInputSequence +
     recoilCorrectedMETTauMu + 
     recoilCorrectedMETTauEle +
     recoilCorrectedMETMuEle
