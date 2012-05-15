@@ -32,10 +32,10 @@ channel = 'tau-mu'
 
 dataset_user = 'cmgtools' 
 # dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0'
-# dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5/PAT_CMG_V5_2_0'
+dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5/PAT_CMG_V5_2_0'
 # dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/V5/PAT_CMG_V5_2_0'
 # dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/V5/PAT_CMG_V5_2_0'
-dataset_name = '/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0'
+# dataset_name = '/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0'
 dataset_files = 'cmgTuple.*root'
 
 # creating the source
@@ -84,7 +84,7 @@ process.load('CMGTools.H2TauTau.h2TauTau_cff')
 # setting up the recoil correction according to the input file ---------------
 print sep_line
 from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
-setupRecoilCorrection( process )
+setupRecoilCorrection( process, runOnMC )
 
 
 # OUTPUT definition ----------------------------------------------------------

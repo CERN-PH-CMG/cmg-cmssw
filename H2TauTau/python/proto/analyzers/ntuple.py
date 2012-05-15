@@ -44,8 +44,7 @@ def fillMuon( tree, pName, muon ):
     fillLepton(tree, pName, muon)
     fill(tree, '{pName}_mvaIso'.format(pName=pName), muon.mvaIso() )
     fill(tree, '{pName}_looseId'.format(pName=pName), muon.looseId() )
-    fill(tree, '{pName}_tightId'.format(pName=pName),
-         muon.getSelection('cuts_vbtfmuon') )
+    fill(tree, '{pName}_tightId'.format(pName=pName), muon.tightId() )
 
 # electron
 
@@ -56,6 +55,10 @@ def bookTau( tree, pName ):
     var(tree, '{pName}_looseIso'.format(pName=pName))
     var(tree, '{pName}_mediumIso'.format(pName=pName))
     var(tree, '{pName}_tightId'.format(pName=pName))
+
+    var(tree, '{pName}_againstMuonTight'.format(pName=pName))    
+    var(tree, '{pName}_againstElectronLoose'.format(pName=pName))    
+
     var(tree, '{pName}_rawMvaIso'.format(pName=pName))
     var(tree, '{pName}_looseMvaIso'.format(pName=pName))
     var(tree, '{pName}_mediumMvaIso'.format(pName=pName))
@@ -72,6 +75,11 @@ def fillTau( tree, pName, tau ):
          tau.tauID("byMediumCombinedIsolationDeltaBetaCorr"))
     fill(tree, '{pName}_tightIso'.format(pName=pName),
          tau.tauID("byTightCombinedIsolationDeltaBetaCorr"))
+
+    fill(tree, '{pName}_againstMuonTight'.format(pName=pName),
+         tau.tauID("againstMuonTight"))
+    fill(tree, '{pName}_againstElectronLoose'.format(pName=pName),
+         tau.tauID("againstElectronLoose"))
 
     fill(tree, '{pName}_rawMvaIso'.format(pName=pName),
          tau.tauID("byRawIsoMVA"))

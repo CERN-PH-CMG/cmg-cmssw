@@ -29,7 +29,16 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         result = super(TauMuAnalyzer, self).process(iEvent, event)
         
         if result is False:
-            return result
+            selDiLeptons = [ diL for diL in event.diLeptons if \
+                             self.testMass(diL) ]
+            if len(selDiLeptons)==0:
+                return False
+            event.diLepton = self.bestDiLepton( selDiLeptons )
+            event.leg1 = event.diLepton.leg1()
+            event.leg2 = event.diLepton.leg1()
+            event.isSignal = False
+        else:
+            event.isSignal = True
 
         event.genMatched = None
         if self.cfg_comp.isMC:
@@ -79,7 +88,7 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
            abs( muon.eta() ) < self.cfg_ana.eta2 and \
            muon.tightId() and \
            self.testVertex( muon ) and \
-           self.muonIso(muon)<self.cfg_ana.iso2: #WARNING MUON ISO RELAXED
+           self.muonIso(muon)<self.cfg_ana.iso2: 
             return True
         else:
             return False
