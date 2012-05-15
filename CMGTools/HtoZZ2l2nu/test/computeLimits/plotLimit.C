@@ -44,7 +44,7 @@ Limit GetLimit(TString inFileName, TString plotName, TString sfile="bands", doub
 	double m1s =	extractLimitAtQuantile(inFileName, plotName+"_-1sigma", 0.16 );
 //	double m1s_err = limitErr;
 	double med =	extractLimitAtQuantile(inFileName, plotName+"_median", 0.5 );
-//	double med_err = limitErr;
+	double med_err = limitErr;
 	double p1s =	extractLimitAtQuantile(inFileName, plotName+"_1sigma", 0.84 );
 //	double p1s_err = limitErr;
 	double p2s =	extractLimitAtQuantile(inFileName, plotName+"_2sigma", 0.975 );
@@ -63,6 +63,10 @@ Limit GetLimit(TString inFileName, TString plotName, TString sfile="bands", doub
 	cout<<"expected median limit: "<<med<<" +/- "<<med_err<<endl;
 	SaveResults(sfile, mH, dat, dat_err, 0, 0, m2s, m1s, med, 0, p1s, p2s);
 */
+
+printf("XXX ERRRO = %f\n",med_err);
+
+
         toReturn.Obs = dat;
         toReturn.Exp_minus2s = m2s;
         toReturn.Exp_minus1s = m1s;
@@ -261,6 +265,7 @@ void plotLimit(TString inputs=""){
    c1->SetLogy(true);
    c1->SaveAs("Limit.png");
    c1->SaveAs("Limit.C");
+   c1->SaveAs("Limit.pdf");
    delete c1;
 
 
