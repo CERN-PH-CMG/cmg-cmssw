@@ -30,6 +30,7 @@ for dir in dirs:
     logName  = '/'.join([dir, 'log.txt'])
     if not os.path.isfile( logName ):
         print dir, ': log.txt does not exist'
+        badDirs.append(dir)
         continue
     logFile = open(logName)
     nEvents = -1
