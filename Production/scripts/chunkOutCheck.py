@@ -1,3 +1,5 @@
+#!/bin/env python
+
 import sys
 import re
 import os
@@ -51,7 +53,7 @@ if options.batch is not None:
     for dir in badDirs:
         oldPwd = os.getcwd()
         os.chdir( dir )
-        cmd =  [options.batch, ' < batchScript.sh']
+        cmd =  [options.batch, '-J', dir, ' < batchScript.sh' ]
         print 'resubmitting in', os.getcwd()
         cmds = ' '.join( cmd )
         print cmds
