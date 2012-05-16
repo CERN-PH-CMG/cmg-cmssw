@@ -384,7 +384,7 @@ void getYieldsFromShape(TString dirurl, std::vector<TString> ch, const map<TStri
     h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.data;
     val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
     if(val<1E-6){val=0.0; valerr=0.0;}
-    Cval += "&\\boldmath " + toLatexRounded(val,valerr);
+    Cval += "&\\boldmath " + toLatexRounded(val,0.0);
 
     //endline
     if(b==0&&ich==0)fprintf(pFile,"%s}\\hline\n", Ccol.c_str());
