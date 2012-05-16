@@ -6,7 +6,7 @@
   ('CommonTools/ParticleFlow', 'CommonTools/ParticleFlow', 'V00-03-11'),
   ('CondFormats/EgammaObjects', 'CondFormats/EgammaObjects', 'V00-04-01'),
   ('DataFormats/PatCandidates', 'DataFormats/PatCandidates', 'cbern_25Apr12'),
-  ('EGamma/EGammaAnalysisTools', 'UserCode/EGamma/EGammaAnalysisTools', 'V00-00-08'),
+  ('EGamma/EGammaAnalysisTools', 'UserCode/EGamma/EGammaAnalysisTools', 'V00-00-13'),
   ('EGamma/EGammaAnalysisToolsSiXie', 'UserCode/sixie/EGamma/EGammaAnalysisTools', 'cbern_09May12'),
   ( 'EgammaCalibratedGsfElectrons/CalibratedElectronAlgos',
     'UserCode/EGamma/EgammaCalibratedGsfElectrons/CalibratedElectronAlgos',
@@ -23,7 +23,7 @@
   ('PhysicsTools/Utilities', 'PhysicsTools/Utilities', 'V08-03-16'),
   ('RecoMET/METFilters', 'RecoMET/METFilters', 'lhx_14APR2012_v1'),
   ('RecoMET/METAnalyzers', 'RecoMET/METAnalyzers', 'V00-00-08'),
-  ('RecoParticleFlow/PFProducer', 'RecoParticleFlow/PFProducer', 'V15-01-06-01'),
+  ('RecoParticleFlow/PFProducer', 'RecoParticleFlow/PFProducer', 'V15-01-08'),
   ('RecoParticleFlow/PostProcessing', 'UserCode/RecoParticleFlow/PostProcessing', 'wreece_020512'),
   ('RecoTauTag/Configuration', 'RecoTauTag/Configuration', 'V01-04-03'),
   ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-17')]
