@@ -113,6 +113,25 @@ class Electron( Lepton ):
     def absEffAreaIso(self,rho,effectiveAreas):
         return self.absIsoFromEA(rho,effectiveAreas.eGamma)
 
+    def mvaIDZZ(self):
+        mvaRegions = [{'ptMin':0,'ptMax':10, 'etaMin':0.0, 'etaMax':0.8,'mva':0.47},\
+                      {'ptMin':0,'ptMax':10, 'etaMin':0.8 ,'etaMax':1.479,'mva':0.004},\
+                      {'ptMin':0,'ptMax':10, 'etaMin':1.479, 'etaMax':2.5,'mva':0.295},\
+                      {'ptMin':10,'ptMax':99999999, 'etaMin':0.0, 'etaMax':0.8,'mva':0.5},\
+                      {'ptMin':10,'ptMax':99999999, 'etaMin':0.8, 'etaMax':1.479,'mva':0.12},\
+                      {'ptMin':10,'ptMax':99999999, 'etaMin':1.479, 'etaMax':2.5,'mva':0.6}]
+
+        ID=False 
+
+        for element in mvaRegions:
+            if self.pt()>= element['ptMin'] and \
+               self.pt()< element['ptMax'] and \
+               abs(self.eta())>=element['etaMin'] and \
+               abs(self.eta())<element['etaMax'] and \
+               self.mvaNonTrigV0()> element['mva']: 
+                ID=True
+
+        return ID and (self.numberOfHits<=1)
 
 
 class GenParticle( PhysicsObject):
