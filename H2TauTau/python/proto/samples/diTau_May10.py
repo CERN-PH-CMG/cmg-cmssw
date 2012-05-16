@@ -1,7 +1,145 @@
 from CMGTools.H2TauTau.proto.samples.data_diTau import *
 # from CMGTools.H2TauTau.proto.samples.embed import *
 from CMGTools.H2TauTau.proto.samples.ewk import *
-from CMGTools.H2TauTau.proto.samples.higgs import *
+
+import copy
+import re 
+import CMGTools.RootTools.fwlite.Config as cfg
+#from CMGTools.RootTools.yellowreport.YRParser import yrparser
+
+Higgsgg110 = cfg.MCComponent(
+    name = 'Higgsgg110',
+    files = [],
+    xSection = 19.84*6.37e-2,
+    nGenEvents = 200000,
+    triggers = [],
+    effCorrFactor = 1 )
+
+Higgsgg115 = cfg.MCComponent(
+    name = 'Higgsgg115',
+    files = [],
+    xSection = 18.13*6.37e-2,
+    nGenEvents = 200000,
+    triggers = [],
+    effCorrFactor = 1 )
+
+Higgsgg120 = cfg.MCComponent(
+    name = 'Higgsgg120',
+    files = [],
+    xSection = 16.63*6.37e-2,
+    nGenEvents = 200000,
+    triggers = [],
+    effCorrFactor = 1 )
+
+Higgsgg125 = cfg.MCComponent(
+    name = 'Higgsgg125',
+    files = [],
+    xSection = 15.31*6.37e-2,
+    nGenEvents = 200000,
+    triggers = [],
+    effCorrFactor = 1 )
+
+Higgsgg130 = cfg.MCComponent(
+    name = 'Higgsgg130',
+    files = [],
+    xSection = 14.12*6.37e-2,
+    nGenEvents = 200000,
+    triggers = [],
+    effCorrFactor = 1 )
+
+Higgsgg135 = cfg.MCComponent(
+    name = 'Higgsgg135',
+    files = [],
+    xSection = 13.08*6.37e-2,
+    nGenEvents = 200000,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVBF110 = cfg.MCComponent(
+    name = 'HiggsVBF110',
+    files = [],
+    xSection = 1.398*6.37e-2, 
+    nGenEvents = 200000,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVBF115 = cfg.MCComponent(
+    name = 'HiggsVBF115',
+    files = [],
+    xSection = 1.332*6.37e-2, 
+    nGenEvents = 200000,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVBF120 = cfg.MCComponent(
+    name = 'HiggsVBF120',
+    files = [],
+    xSection = 1.263*6.37e-2, 
+    nGenEvents = 200000,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVBF125 = cfg.MCComponent(
+    name = 'HiggsVBF125',
+    files = [],
+    xSection = 1.211*6.37e-2, 
+    nGenEvents = 200000,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVBF130 = cfg.MCComponent(
+    name = 'HiggsVBF130',
+    files = [],
+    xSection = 1.154*6.37e-2, 
+    nGenEvents = 200000,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVBF135 = cfg.MCComponent(
+    name = 'HiggsVBF135',
+    files = [],
+    xSection = 1.100*6.37e-2, 
+    nGenEvents = 200000,
+    triggers = [],
+    effCorrFactor = 1 )
+
+
+
+mc_higgs_gg = [
+    Higgsgg110,
+    Higgsgg115,
+    Higgsgg120,
+    Higgsgg125,
+    Higgsgg130,
+    Higgsgg135,
+    ]
+
+#pattern = re.compile('Higgs(\D+)(\d+)')
+#for h in mc_higgs_vbf:
+#    m = pattern.match( h.name )
+#    process = m.group(1)
+#    mass = float(m.group(2))
+#    h.xSection = yrparser.get(mass)['gg']['sigma']
+#    print h.name, 'sigma = ', h.xSection
+
+mc_higgs_vbf = [
+    HiggsVBF110,
+    HiggsVBF115,
+    HiggsVBF120,
+    HiggsVBF125,
+    HiggsVBF130,
+    HiggsVBF135,
+    ]
+
+#pattern = re.compile('Higgs(\D+)(\d+)')
+#for h in mc_higgs_vbf:
+#    m = pattern.match( h.name )
+#    process = m.group(1)
+#    mass = float(m.group(2))
+#    h.xSection = yrparser.get(mass)['VBF']['sigma']
+#    print h.name, 'sigma = ', h.xSection
+
+mc_higgs = copy.copy( mc_higgs_gg ) + copy.copy( mc_higgs_vbf ) 
 
 from CMGTools.H2TauTau.proto.samples.triggers_diTau import data_triggers_2011A, data_triggers_2011B, mc_triggers_fall11
 
