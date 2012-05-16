@@ -7,5 +7,7 @@ CMS%/SingleMu/Run2012A-PromptReco-v1/AOD
 CMS%/Tau/Run2012A-PromptReco-v1/AOD
 CMS%/TauPlusX/Run2012A-PromptReco-v1/AOD
 CMS%/HT/Run2012A-PromptReco-v1/AOD
+CMS%/MuHad/Run2012A-PromptReco-v1/AOD
+CMS%/ElectronHad/Run2012A-PromptReco-v1/AOD
 
 
