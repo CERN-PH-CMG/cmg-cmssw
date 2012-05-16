@@ -210,7 +210,7 @@ sequence = cfg.Sequence(mcSequence)
 
 test = True
 if test:
-    dataset = ZZTo2e2mu
+    dataset = ZZ4mu
     selectedComponents = [dataset]
     dataset.splitFactor = 1
     dataset.files = dataset.files[:10]

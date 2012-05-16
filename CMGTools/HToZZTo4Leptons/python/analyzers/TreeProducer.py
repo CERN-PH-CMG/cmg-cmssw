@@ -45,7 +45,9 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_muPixelHits'.format(pName=pName))
         self.var('{pName}_muMatches'.format(pName=pName))
         self.var('{pName}_eleMVA'.format(pName=pName))
+        self.var('{pName}_eleMVAID'.format(pName=pName))
         self.var('{pName}_eleConvHits'.format(pName=pName))
+        self.var('{pName}_ID'.format(pName=pName))
 
 
     def fillBasic(self, pName,particle ):
@@ -64,11 +66,14 @@ class TreeProducer( Analyzer ):
             self.fill('{pName}_IsoEA'.format(pName=pName), particle.absEffAreaIso(event.rho,self.cfg_ana.effectiveAreas) )
         if abs(particle.pdgId())==11:
             self.fill('{pName}_eleMVA'.format(pName=pName), particle.mvaNonTrigV0())
+            self.fill('{pName}_eleMVAID'.format(pName=pName), particle.mvaIDZZ())
             self.fill('{pName}_eleConvHits'.format(pName=pName), particle.numberOfHits())
+            self.fill('{pName}_ID'.format(pName=pName), particle.mvaIDZZ())
         if abs(particle.pdgId())==13:
             self.fill('{pName}_muPF'.format(pName=pName), particle.sourcePtr().userFloat("isPFMuon"))
             self.fill('{pName}_muPixelHits'.format(pName=pName), particle.numberOfValidPixelHits())
             self.fill('{pName}_muMatches'.format(pName=pName), particle.numberOfMatches())
+            self.fill('{pName}_ID'.format(pName=pName), particle.sourcePtr().userFloat("isPFMuon"))
 
             
             

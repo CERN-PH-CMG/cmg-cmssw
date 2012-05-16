@@ -19,7 +19,11 @@ class JSONAnalyzer( TreeAnalyzer ):
 
     def __init__(self, cfg_ana, cfg_comp, looperName):
 
-        self.lumiList = LumiList(cfg_ana.json)
+        if not cfg_comp.isMC:
+            self.lumiList = LumiList(cfg_ana.json)
+        else:
+            self.lumiList = None
+        
         self.run=0
         self.lumi=0
         super(JSONAnalyzer, self).__init__(cfg_ana, cfg_comp, looperName)
@@ -45,9 +49,10 @@ class JSONAnalyzer( TreeAnalyzer ):
         self.readCollections( iEvent )
         run = iEvent.eventAuxiliary().id().run()
         lumi = iEvent.eventAuxiliary().id().luminosityBlock()
-        #If MC just pass
-#        if self.cfg_comp.isMC:
-#            return True
+
+
+        if self.cfg_comp.isMC:
+            return True
 
         if self.lumiList is None:
             return True
@@ -56,6 +61,7 @@ class JSONAnalyzer( TreeAnalyzer ):
         # run or lumi changed 
 
         if run != self.run or lumi !=self.lumi:
+
             self.run=run
             self.lumi=lumi
             #increase the counter for all Lumis
@@ -66,9 +72,10 @@ class JSONAnalyzer( TreeAnalyzer ):
             self.fill('LUMI',lumi)
             #check the Json file
             if self.lumiList.contains(run,lumi):
+
                 self.fill('Passed',1)
                 self.tree.fill()
-                self.count.register('Passed Lumis')
+                self.count.inc('Passed Lumis')
                 return True
             else:
                 self.fill('Passed',0)

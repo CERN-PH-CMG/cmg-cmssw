@@ -136,36 +136,15 @@ class FourLeptonAnalyzerBase( Analyzer ):
         '''Returns True if a muon passes a set of cuts.
         Can be used in testLepton1 and testLepton2, in child classes.'''
 
-        iso  = muon.absEffAreaIso(self.rho,self.cfg_ana.effectiveAreas)/muon.pt()<0.25 #warning:you need to set the self.rho !!!
+        iso  = muon.absEffAreaIso(self.rho,self.cfg_ana.effectiveAreas)/muon.pt()<0.4 #warning:you need to set the self.rho !!!
         return self.testMuonLoose(muon) and self.testMuonPF(muon) and iso
 
     def testElectronTight(self, electron):
         '''Returns True if a electron passes a set of cuts.
         Can be used in testLepton1 and testLepton2, in child classes.'''
-        mvaRegions = [{'ptMin':0,'ptMax':10, 'etaMin':0.0, 'etaMax':0.8,'mva':0.47},\
-                      {'ptMin':0,'ptMax':10, 'etaMin':0.8 ,'etaMax':1.479,'mva':0.004},\
-                      {'ptMin':0,'ptMax':10, 'etaMin':1.479, 'etaMax':2.5,'mva':0.295},\
-                      {'ptMin':10,'ptMax':99999999, 'etaMin':0.0, 'etaMax':0.8,'mva':0.5},\
-                      {'ptMin':10,'ptMax':99999999, 'etaMin':0.8, 'etaMax':1.479,'mva':0.12},\
-                      {'ptMin':10,'ptMax':99999999, 'etaMin':1.479, 'etaMax':2.5,'mva':0.6}]
-
-        ID=False 
-
-
-        for element in mvaRegions:
-            if electron.pt()>= element['ptMin'] and \
-               electron.pt()< element['ptMax'] and \
-               abs(electron.eta())>=element['etaMin'] and \
-               abs(electron.eta())<element['etaMax'] and \
-               electron.mvaNonTrigV0()> element['mva']: 
-                ID=True
-
-
-        iso  = electron.absEffAreaIso(self.rho,self.cfg_ana.effectiveAreas)/electron.pt()<0.25 #warning:you need to set the self.rho !!!
-
-        conv = (electron.numberOfHits()<=1)
-        
-        return iso and ID and conv
+        id = electron.mvaIDZZ()
+        iso  = electron.absEffAreaIso(self.rho,self.cfg_ana.effectiveAreas)/electron.pt()<0.4 #warning:you need to set the self.rho !!!
+        return iso and id 
 
 
         

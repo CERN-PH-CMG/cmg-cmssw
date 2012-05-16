@@ -123,7 +123,7 @@ def createTriggerTreeProducer( ana ):
 
 ####################################################################################
 
-from CMGTools.HToZZTo4Leptons.samples.samples_V4_0_0 import * 
+from CMGTools.HToZZTo4Leptons.samples.samples_V5_2_0 import * 
 
 ####################################################################################
 
@@ -137,13 +137,18 @@ jsonFilter = cfg.Analyzer(
 #selectedComponents = copy.copy(mc_zz)
 #selectedComponents.append( Hig120GluGlu )
 # selectedComponents.extend( Fall11 )
+selectedSamples=[]
 
-selectedComponents=[ZZTo4mu]
-
-for comp in selectedComponents:
+for comp in mcSamples:
+    comp.isMC = True
     comp.splitFactor = 10
 DYJets.splitFactor = 300
-for comp in data_DoubleMu_2011:
+DYJetsLowMass.splitFactor = 100
+
+for comp in dataSamplesMu:
+    comp.splitFactor = 100
+    
+for comp in dataSamplesE:
     comp.splitFactor = 100
     
 theAna = None
@@ -151,24 +156,37 @@ if channel == 'mu_mu':
     theGenSel = muMuGenSel
     theAna = muMuAna
     theGenAna = muMuGenAna
-    for data in data_DoubleMu_2011:
-        data.triggers = triggers_2011_mu_mu
-    for mc in Fall11:
-        mc.triggers = triggers_fall11_mu_mu
+    for data in dataSamplesMu:
+        data.triggers = triggers_mumu
+    for mc in mcSamples:
+        mc.triggers = triggers_mumu
+    selectedComponents=mcSamples+dataSamplesMu
+    
 elif channel == 'mu_ele':
     theGenSel = muEleGenSel
     theAna = muEleAna
     theGenAna = muEleGenAna
 
-    for mc in Fall11:
-        mc.triggers = triggers_fall11_mu_ele
+    for data in dataSamplesMu:
+        data.triggers = triggers_mumu
+    for data in dataSamplesE:
+        data.triggers = triggers_ee
+        data.vetoTriggers = triggers_mumu
+    for mc in mcSamples:
+        mc.triggers = triggers_mue
+    selectedComponents=mcSamples+dataSamplesMu+dataSamplesE
+
+
 
 elif channel == 'ele_ele':
     theGenSel = eleEleGenSel
     theAna = eleEleAna
     theGenAna = eleEleGenAna
-    for mc in Fall11:
-        mc.triggers = triggers_fall11_ele_ele
+    for data in dataSamplesE:
+        data.triggers = triggers_ee
+    for mc in mcSamples:
+        mc.triggers = triggers_ee
+    selectedComponents=mcSamples+dataSamplesE
 
 #Define Sequences for data and MC
 
@@ -192,18 +210,31 @@ dataSequence=[
 
 
 
+#for full production use data sequence
+sequence = cfg.Sequence(dataSequence)
 
-sequence = cfg.Sequence(mcSequence)
 
-
-test = True
-if test:
-    dataset = ZZTo2e2mu
+test = 0
+if test==1:
+    dataset = ZZ4mu
     selectedComponents = [dataset]
     dataset.splitFactor = 1
     dataset.files = dataset.files[:10]
     dataset.files = ['root://lxcms00//data3/HZZ_Pattuple/CMG/V5_1_0/cmgTuple.root']
-    
+if test ==2:
+    selectedComponents=selectedComponents[:1]
+    print selectedComponents
+    for comp in selectedComponents:
+        comp.splitFactor = 1
+        comp.files = comp.files[:10]
+
+if test ==3:
+    selectedComponents=selectedComponents[-1:]
+    print selectedComponents
+    for comp in selectedComponents:
+        comp.splitFactor = 1
+        comp.files = comp.files[:10]
+
 
 
     

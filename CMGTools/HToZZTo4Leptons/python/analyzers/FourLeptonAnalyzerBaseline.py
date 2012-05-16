@@ -135,3 +135,24 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
 
     def testLeptonLoose2(self, lepton,sel=None):
         return  abs(lepton.sip3D())<4. 
+
+
+
+
+###In the cross check we used 0.25 for isolation
+    def testMuonTight(self, muon):
+        '''Returns True if a muon passes a set of cuts.
+        Can be used in testLepton1 and testLepton2, in child classes.'''
+
+        iso  = muon.absEffAreaIso(self.rho,self.cfg_ana.effectiveAreas)/muon.pt()<0.25 #warning:you need to set the self.rho !!!
+        return self.testMuonLoose(muon) and self.testMuonPF(muon) and iso
+
+    def testElectronTight(self, electron):
+        '''Returns True if a electron passes a set of cuts.
+        Can be used in testLepton1 and testLepton2, in child classes.'''
+        id = electron.mvaIDZZ()
+        iso  = electron.absEffAreaIso(self.rho,self.cfg_ana.effectiveAreas)/electron.pt()<0.25 #warning:you need to set the self.rho !!!
+
+        conv = (electron.numberOfHits()<=1)
+        
+        return iso and id and conv

@@ -13,6 +13,7 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.bookEventInfo()
 
         #Book the Higgs
+        self.var("HExists")
         self.bookHiggs("H")
 
         #Book the Z daughters
@@ -26,6 +27,7 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.bookLepton("H_Z2_leg2")
 
         #Book the Loose H for fake rate application
+        self.var("HLooseExists")
         self.bookHiggs("HLoose")
         self.bookBoson("HLoose_Z1")
         self.bookBoson("HLoose_Z2")
@@ -44,6 +46,7 @@ class FourLeptonTreeProducer( TreeProducer ):
 
 
         self.var("vertices",int)
+        self.var("vertexWeight")
 
 
     def process(self, iEvent, event):
@@ -54,14 +57,19 @@ class FourLeptonTreeProducer( TreeProducer ):
 
         #get the vertex analyzer event and fill the vertices
         self.fill('vertices',len(event.vertices))
-
+        self.fill('vertexWeight',(event.vertexWeight))
+        
 
 
         #Fill run,lumi,event
         self.fillEventInfo(iEvent,subevent)
 
         #Fill the Higgs and legs
+        self.fill('HExists',0)
+        
         if hasattr( subevent, 'higgsCand' ):
+            self.fill('HExists',1)
+
             self.fillHiggs("H",subevent.higgsCand)
             self.fillBoson("H_Z1",subevent.higgsCand.leg1)
             self.fillBoson("H_Z2",subevent.higgsCand.leg2)
@@ -81,7 +89,9 @@ class FourLeptonTreeProducer( TreeProducer ):
             self.fillLepton("HLoose_Z2_leg2",subevent.higgsCandLoose.leg2.leg2,subevent)
 
         #Fill the fake rate measurement info
+        self.fill('HLooseExists',0)
         if hasattr( subevent, 'bestZForFakeRate' ):
+            self.fill('HLooseExists',1)
             self.fillBoson("ZFR",subevent.bestZForFakeRate)
             self.fillLepton("ZFR_leg1",subevent.bestZForFakeRate.leg1,subevent)
             self.fillLepton("ZFR_leg2",subevent.bestZForFakeRate.leg2,subevent)
