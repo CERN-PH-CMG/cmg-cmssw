@@ -428,7 +428,7 @@ class RunTestEvents(Task):
         output = file(source,'w')
         toInsert = ['\n',
                     'process.maxEvents.input = cms.untracked.int32(5)\n',
-                    'if hasattr(process,"source"): process.source.fileNames = process.source.fileNames[:1]\n'
+                    'if hasattr(process,"source"): process.source.fileNames = process.source.fileNames[:10]\n'
                     ]
         config = insertLines( config, toInsert )
         output.writelines(config)
