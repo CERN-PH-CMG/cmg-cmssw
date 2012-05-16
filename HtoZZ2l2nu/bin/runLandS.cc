@@ -1213,10 +1213,10 @@ void doBackgroundSubtraction(TString dirurl, std::vector<TString>& selCh,TString
         for(int b=0;b<=NonResonant->GetXaxis()->GetNbins()+1;b++){
            double val = NonResonant->GetBinContent(b);
            double err = NonResonant->GetBinError(b);
-           val = val*alpha;
-           err = sqrt(pow(err*alpha,2) + pow(val*alpha_err,2));
-           NonResonant->SetBinContent(b, val );
-           NonResonant->SetBinError  (b, err );
+           double newval = val*alpha;
+           double newerr = sqrt(pow(err*alpha,2) + pow(val*alpha_err,2));
+           NonResonant->SetBinContent(b, newval );
+           NonResonant->SetBinError  (b, newerr );
         }
         shapeChan_SI.bckg.push_back(NonResonant);
 
@@ -1340,10 +1340,12 @@ void doDYReplacement(TString dirurl, std::vector<TString>& selCh,TString ctrlCh,
            TH1* gjets1Dshape  = gjets2Dshape->ProjectionY("tmpName",indexcut_,indexcut_);
            shapeChan_SI.bckg[ibckg]->SetTitle(DYProcName + " (data)");    
            for(int i=0;i<shapeChan_SI.bckg[ibckg]->GetNbinsX();i++){
-              double val = rescaleFactor*gjets1Dshape->GetBinContent(i);
-              double err = sqrt(pow(rescaleFactor*gjets1Dshape->GetBinError(i),2) + pow(val/2,2));
-              shapeChan_SI.bckg[ibckg]->SetBinContent(i, val);  
-              shapeChan_SI.bckg[ibckg]->SetBinError  (i, err);
+              double val = gjets1Dshape->GetBinContent(i);
+              double err = gjets1Dshape->GetBinError(i);
+              double newval = rescaleFactor*val;
+              double newerr = sqrt(pow(rescaleFactor*err,2) + pow(val/2,2));
+              shapeChan_SI.bckg[ibckg]->SetBinContent(i, newval);  
+              shapeChan_SI.bckg[ibckg]->SetBinError  (i, newerr);
            } 
            delete gjets1Dshape;
 
