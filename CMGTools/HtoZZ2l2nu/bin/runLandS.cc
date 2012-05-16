@@ -55,7 +55,8 @@ TString landsExe("$CMSSW_BASE/src/UserCode/mschen/LandS/test/lands.exe");
   gSystem->Exec(cmd);
 
 
-
+double NonResonnantSyst = 1.0;
+double GammaJetSyst = 0.5;
 
 //wrapper for a projected shape for a given set of cuts
 struct Shape_t
@@ -323,7 +324,7 @@ void getYieldsFromShape(TString dirurl, std::vector<TString> ch, const map<TStri
 
 
   TH1* h;
-  Double_t valerr, val;
+  Double_t valerr, val, syst;
   for(size_t b=0; b<AnalysisBins.size(); b++){
   for(size_t ich=0; ich<nch; ich++) {
     TString icol(AnalysisBins[b]+"-"+ch[ich]);
@@ -343,8 +344,9 @@ void getYieldsFromShape(TString dirurl, std::vector<TString> ch, const map<TStri
        if(b==0&&ich==0)Cname += "&$" + procTitle + "$";
 
        val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
-       if(val<1E-6){val=0.0; valerr=0.0;}
-       Cval += "&" + toLatexRounded(val,valerr);
+       syst = h->GetBinError(0)<=0 ? -1 : h->GetBinError(0); 
+       if(val<1E-6){val=0.0; valerr=0.0; syst=-1;}
+       Cval += "&" + toLatexRounded(val,valerr, syst);
     }
 
     //total bckg
@@ -352,8 +354,9 @@ void getYieldsFromShape(TString dirurl, std::vector<TString> ch, const map<TStri
     if(b==0&&ich==0)Cname += "&$Total$";
     h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.totalBckg;
     val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
-    if(val<1E-6){val=0.0; valerr=0.0;}
-    Cval += "&\\boldmath " + toLatexRounded(val,valerr);
+    syst = h->GetBinError(0)<=0 ? -1 : h->GetBinError(0);
+    if(val<1E-6){val=0.0; valerr=0.0; syst=-1;}
+    Cval += "&\\boldmath " + toLatexRounded(val,valerr,syst);
 
     //signal
     size_t nsig=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.signal.size();
@@ -806,11 +809,35 @@ if(runSystematics){
 	  dcF << 1.03 << "  ";
 	}
       dcF << endl;
+
+
+      //SystematicUncertainty
+      std::map<TString, std::map<RateKey_t,Double_t> >::iterator itsyst = dci.systs.find("syst");
+      if(itsyst!=dci.systs.end()){
+         dcF << itsyst->first << "\t lnN\t";
+          for(size_t j=1; j<=dci.procs.size(); j++){
+             if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
+             if(itsyst->second.find(RateKey_t(dci.procs[j-1],dci.ch[i-1])) != itsyst->second.end()){
+                Double_t systUnc = itsyst->second[RateKey_t(dci.procs[j-1],dci.ch[i-1])];
+                if(systUnc<=0){ 
+                   systUnc=1.0;
+                }else{
+                   systUnc = 1.0+ (systUnc / dci.rates[RateKey_t(dci.procs[j-1],dci.ch[i-1])]);
+                }
+                dcF << systUnc;
+             }else
+                dcF << "-";
+             dcF << " ";
+          }
+          dcF << endl;
+      }
+
 }
       
       //systematics with shape description
       for(std::map<TString, std::map<RateKey_t,Double_t> >::iterator it=dci.systs.begin(); it!=dci.systs.end(); it++)
 	{
+          if(string(it->first.Data())=="syst" )continue; //already run as a normalization factor
           if(!runSystematics && string(it->first.Data())!="stat" )continue;
 
           //temporary placed there to speed up computation
@@ -1071,6 +1098,8 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch
        syst.ReplaceAll("up","Up");
        if(syst.Contains("btag")) continue;
 
+       double systUncertainty = hshape->GetBinError(0);
+
        //If cut&count keep only 1 bin in the histo
        if(!shape){
 //          hshape = hshape->Rebin(hshape->GetXaxis()->GetNbins(), TString(hshape->GetName())+"_Rebin"); 
@@ -1101,6 +1130,7 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch
             statup  ->Write(proc+"_stat"+"Up");
             statdown->Write(proc+"_stat"+"Down");
             dci.systs["stat"][RateKey_t(proc,ch)]=0.333;
+            dci.systs["syst"][RateKey_t(proc,ch)]=systUncertainty;
          }
 
        }else if(runSystematics && proc!="data" && (syst.Contains("Up") || syst.Contains("Down"))){
@@ -1176,26 +1206,23 @@ void doBackgroundSubtraction(TString dirurl, std::vector<TString>& selCh,TString
         Shape_t& shapeChan_SI = allShapes.find(selCh[i]+AnalysisBins[b]+mainHisto)->second;
 //        TH1* hChan_SI=shapeChan_SI.data;
 
-	printf("Channel = %s\n", selCh[i].Data());
-        printf("Bin %f %f %f %f %f %f\n", hCtrl_SB->GetBinContent(1), hCtrl_SB->GetBinContent(2), hCtrl_SB->GetBinContent(3), hCtrl_SB->GetBinContent(4), hCtrl_SB->GetBinContent(5), hCtrl_SB->GetBinContent(6) );
-        printf("Bin %f %f %f %f %f %f\n", hChan_SB->GetBinContent(1), hChan_SB->GetBinContent(2), hChan_SB->GetBinContent(3), hChan_SB->GetBinContent(4), hChan_SB->GetBinContent(5), hChan_SB->GetBinContent(6) );
+	//printf("Channel = %s\n", selCh[i].Data());
+        //printf("Bin %f %f %f %f %f %f\n", hCtrl_SB->GetBinContent(1), hCtrl_SB->GetBinContent(2), hCtrl_SB->GetBinContent(3), hCtrl_SB->GetBinContent(4), hCtrl_SB->GetBinContent(5), hCtrl_SB->GetBinContent(6) );
+        //printf("Bin %f %f %f %f %f %f\n", hChan_SB->GetBinContent(1), hChan_SB->GetBinContent(2), hChan_SB->GetBinContent(3), hChan_SB->GetBinContent(4), hChan_SB->GetBinContent(5), hChan_SB->GetBinContent(6) );
         double alpha=0 ,alpha_err=0;
         if(hCtrl_SB->GetBinContent(5)>0){
            alpha     = hChan_SB->GetBinContent(5) / hCtrl_SB->GetBinContent(5);
            alpha_err = ( fabs( hChan_SB->GetBinContent(5) * hCtrl_SB->GetBinError(5) ) + fabs(hChan_SB->GetBinError(5) * hCtrl_SB->GetBinContent(5) )  ) / pow(hCtrl_SB->GetBinContent(5), 2);        
         }
-        printf("alpha %s=%f+-%f\n", (selCh[i]+AnalysisBins[b]).Data(),alpha, alpha_err);
 
         Lalph1 += string(" &") + toLatexRounded(alpha,alpha_err);
         Cval   += string(" &") + toLatexRounded(alpha,alpha_err);
 
-	printf("force alpha to the computed value in lowest bin\n");
         if(selCh[i].First("ee"  )!=kNPOS){alpha = 0.339286; alpha_err=0.043549;}
         if(selCh[i].First("mumu")!=kNPOS){alpha = 0.529018; alpha_err=0.059357;}
-        printf("alpha %s=%f+-%f\n", (selCh[i]+AnalysisBins[b]).Data(),alpha, alpha_err);
 
         //add 100% syst uncertainty on alpha
-        alpha_err = sqrt(pow(alpha*1.0,2)+pow(alpha_err,2));
+        //alpha_err = sqrt(pow(alpha*1.0,2)+pow(alpha_err,2));
 
         Lalph2 += string(" &") + toLatexRounded(alpha,alpha_err);
         Cval   += string(" &") + toLatexRounded(alpha,alpha_err);
@@ -1209,8 +1236,11 @@ void doBackgroundSubtraction(TString dirurl, std::vector<TString>& selCh,TString
         }else{                  return;
         }
 
+        double valvalerr, valval;
+        valval = NonResonant->IntegralAndError(1,NonResonant->GetXaxis()->GetNbins(),valvalerr);
+
         NonResonant->SetTitle("NonResonant");
-        for(int b=0;b<=NonResonant->GetXaxis()->GetNbins()+1;b++){
+        for(int b=1;b<=NonResonant->GetXaxis()->GetNbins()+1;b++){
            double val = NonResonant->GetBinContent(b);
            double err = NonResonant->GetBinError(b);
            double newval = val*alpha;
@@ -1218,12 +1248,15 @@ void doBackgroundSubtraction(TString dirurl, std::vector<TString>& selCh,TString
            NonResonant->SetBinContent(b, newval );
            NonResonant->SetBinError  (b, newerr );
         }
-        shapeChan_SI.bckg.push_back(NonResonant);
-
         Double_t valerr;
         Double_t val = NonResonant->IntegralAndError(1,NonResonant->GetXaxis()->GetNbins(),valerr);
-        Lyield += string(" &") + toLatexRounded(val,valerr);
-        Cval   += string(" &") + toLatexRounded(val,valerr);
+        Double_t systError = val*NonResonnantSyst;
+        NonResonant->SetBinError(0,systError);//save syst error in underflow bin that is always empty
+        Lyield += string(" &") + toLatexRounded(val,valerr,systError);
+        Cval   += string(" &") + toLatexRounded(val,valerr,systError);
+
+        shapeChan_SI.bckg.push_back(NonResonant);
+
 
         //Clean background collection
         TH1* MCNRB = (TH1*)shapeChan_SI.totalBckg->Clone("MCNRB"); MCNRB->Reset();
@@ -1343,14 +1376,16 @@ void doDYReplacement(TString dirurl, std::vector<TString>& selCh,TString ctrlCh,
               double val = gjets1Dshape->GetBinContent(i);
               double err = gjets1Dshape->GetBinError(i);
               double newval = rescaleFactor*val;
-              double newerr = sqrt(pow(rescaleFactor*err,2) + pow(val/2,2));
+              double newerr = rescaleFactor*err;
               shapeChan_SI.bckg[ibckg]->SetBinContent(i, newval);  
               shapeChan_SI.bckg[ibckg]->SetBinError  (i, newerr);
            } 
            delete gjets1Dshape;
 
            val  = shapeChan_SI.bckg[ibckg]->IntegralAndError(1,shapeChan_SI.bckg[ibckg]->GetXaxis()->GetNbins(),valerr);
-           Cval+= string(" &") + toLatexRounded(val,valerr) +" & " + MCTruth;
+           double systError = GammaJetSyst * val;
+           shapeChan_SI.bckg[ibckg]->SetBinError(0,systError);//save syst error in underflow bin that is always empty
+           Cval+= string(" &") + toLatexRounded(val,valerr,systError) +" & " + MCTruth;
 
            //erase Systematic relatated to DY background
            std::map<TString,std::vector<std::pair<TString, TH1*> > >::iterator dyvars = shapeChan_SI.bckgVars.find(DYProcName);
