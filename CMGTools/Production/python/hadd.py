@@ -99,7 +99,8 @@ def haddChunks(idir, removeDestDir):
         odir = '/'.join( [idir, comp] )
         print odir, chunks
         if removeDestDir:
-            shutil.rmtree(odir)
+            if os.path.isdir( odir ):
+                shutil.rmtree(odir)
         haddRec(odir, chunks)
 
     
