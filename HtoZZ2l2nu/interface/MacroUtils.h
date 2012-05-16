@@ -54,7 +54,7 @@ class DuplicatesChecker{
 };
 
 //
-std::string toLatexRounded(double value, double error);
+std::string toLatexRounded(double value, double error, double systError=-1);
 
 //
 std::vector<TH1 *> defineOptimizationHistos(int version=0);
