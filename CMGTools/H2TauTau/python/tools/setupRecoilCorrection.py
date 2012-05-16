@@ -56,7 +56,7 @@ def setupRecoilCorrection( process, runOnMC ):
     else:
         print '\tDISABLED'
         if runOnMC:
-            process.metRecoilCorInputSequence.remove( process.genWorZ ) 
+            process.metRecoilCorrectionInputSequence.remove( process.genWorZ ) 
         if hasattr( process, 'recoilCorMETTauMu'):
             process.recoilCorMETTauMu.enable = False            
         if hasattr( process, 'recoilCorMETTauEle'):
