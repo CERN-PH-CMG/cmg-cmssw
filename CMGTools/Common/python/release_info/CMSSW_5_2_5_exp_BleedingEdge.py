@@ -1,5 +1,5 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'michalis_100512_PFMuon'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_gt_15May12'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'patrick_gt_16May12'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-02'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_15May12'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_yr_15May12'),
