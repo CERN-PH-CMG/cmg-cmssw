@@ -9,7 +9,7 @@ LorentzVector min(const LorentzVector& a, const LorentzVector& b){
 }
 
 
-std::string toLatexRounded(double value, double error)
+std::string toLatexRounded(double value, double error, double systError)
 {
   using namespace std;
   if(value==0.0 && error==0.0)return string("");
@@ -21,14 +21,29 @@ std::string toLatexRounded(double value, double error)
   
    value = value / pow(10,power);
    error = error / pow(10,power);
-   int ValueFloating = 1+std::max(-1*log10(error),0.0);
+   if(systError>=0)systError = systError / pow(10,power);
+   int ValueFloating;
+   if(systError<0){
+      ValueFloating = 1 + std::max(-1*log10(error),0.0);
+   }else{
+      ValueFloating = 1 + std::max(-1*log10(systError), std::max(-1*log10(error),0.0));
+   }
    int ErrorFloating = ValueFloating;
    
    char tmpchar[255];
    if(power!=0){
-     sprintf(tmpchar,"$(%.*f\\pm%.*f)\\times 10^{%g}$",ValueFloating,value,ErrorFloating,error,power);
+     if(systError<0){
+        sprintf(tmpchar,"$(%.*f\\pm%.*f)\\times 10^{%g}$",ValueFloating,value,ErrorFloating,error,power);
+     }else{
+        sprintf(tmpchar,"$(%.*f\\pm%.*f\\pm%.*f)\\times 10^{%g}$",ValueFloating,value,ErrorFloating,error,ErrorFloating,systError,power);
+     }
+
    }else{
-     sprintf(tmpchar,"$%.*f\\pm%.*f$",ValueFloating,value,ErrorFloating,error);
+     if(systError<0){
+        sprintf(tmpchar,"$%.*f\\pm%.*f$",ValueFloating,value,ErrorFloating,error);
+     }else{
+        sprintf(tmpchar,"$%.*f\\pm%.*f\\pm%.*f$",ValueFloating,value,ErrorFloating,error,ErrorFloating,systError);
+     }
    }
    return string(tmpchar);
 }
