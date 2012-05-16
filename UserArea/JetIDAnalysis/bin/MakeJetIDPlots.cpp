@@ -15,6 +15,7 @@
 #include "TF1.h"
 #include "TH1.h"
 #include "TH2.h"
+#include "TProfile.h"
 #include "TCanvas.h"
 #include "TPaveStats.h"
 #include "TLegend.h"
@@ -124,7 +125,7 @@ int main(int argc, char** argv)
   //--- NVTX reweighting
   float ww[100];
   std::string filemc   = outputRootFileName_+".root";
-  std::string filedata = "histos_DoubleMu2011_pfjets_"+etaRange_+"_pt"+argv[5]+"to"+argv[6]+".root";
+  std::string filedata = "histos_DoubleMu2012_pfjets_"+etaRange_+"_pt"+argv[5]+"to"+argv[6]+".root";
 
   
   if (doNvtxReweighting){
@@ -436,6 +437,19 @@ int main(int argc, char** argv)
   }
 
 
+  //--- profile of  ptratio vs ptz 
+  TProfile *pPtRatio_noId = new TProfile("pPtRatio_noId","Pt Ratio vs ptZ",100,0,100,0,10); 
+  TProfile *pPtRatio[3][3];
+   
+  for ( int iid = 0; iid < 3 ; iid++ ){
+    for ( int ilevel = 0; ilevel < 3 ; ilevel++ ){
+      sprintf(hname,"pPtRatio_%s_%s", suffId[iid].c_str(), suffLevel[ilevel].c_str());
+      pPtRatio[iid][ilevel] = new TProfile(hname,hname,100,0,100,0,10); 
+    }
+  }
+
+
+
   float w = 1;  
 
   float dphiCut = 2.5;
@@ -456,7 +470,8 @@ int main(int argc, char** argv)
 
     
     if (dataFlag_) w = 1;
-    else w = lumiWeights_.weight( t.PUit_n );
+    //else w = lumiWeights_.weight( t.PUit_n );
+    else w = lumiWeights_.weight( t.PUit_nTrue );// NB : for 2012 re-weigting based on true num interactions is recommended
     if (doNvtxReweighting)  w*=ww[int(t.nvtx)];
     
     // -- fill histograms for leading jet
@@ -519,22 +534,26 @@ int main(int argc, char** argv)
 	}
 	
 	//-- fill plots for all selected jets
+	pPtRatio_noId -> Fill(t.dimuonPt, ptratio, w);
 	hJetPt_noId   -> Fill(t.jetPt,w);  
 	hJetEta_noId  -> Fill(t.jetEta,w);
 	hNumberOfVertices_noId->Fill(t.nvtx,w);
 
 	for (int ilevel = 0; ilevel < 3; ilevel++){
 	  if ( pass_level(t.simpleId,ilevel) )  {
+	    pPtRatio[0][ilevel] -> Fill(t.dimuonPt, ptratio, w);
 	    hJetPt[0][ilevel]-> Fill(t.jetPt,w);  
 	    hJetEta[0][ilevel]-> Fill(t.jetEta,w); 
 	    hNumberOfVertices[0][ilevel]->Fill(t.nvtx,w);
 	  } 
 	  if ( pass_level(t.fullId,ilevel)   )  {
+	    pPtRatio[1][ilevel] -> Fill(t.dimuonPt, ptratio, w);
 	    hJetPt[1][ilevel]-> Fill(t.jetPt,w);  
 	    hJetEta[1][ilevel]-> Fill(t.jetEta,w);  
 	    hNumberOfVertices[1][ilevel]->Fill(t.nvtx,w);
 	  }
 	  if ( pass_level(t.cutbasedId,ilevel) ) {
+	    pPtRatio[2][ilevel] -> Fill(t.dimuonPt, ptratio, w);
 	    hJetPt[2][ilevel]-> Fill(t.jetPt,w);  
 	    hJetEta[2][ilevel]-> Fill(t.jetEta,w);  
 	    hNumberOfVertices[2][ilevel]->Fill(t.nvtx,w);
@@ -715,13 +734,15 @@ int main(int argc, char** argv)
   TH1F *hEff_vs_NumberOfVertices_matched[3][3]; 
   TH1F *hEff_vs_NumberOfVertices[3][3]; 
 
-  
+    
   hPtRatio_noId->Sumw2();
   hPtRatio_matched_noId->Sumw2();
   hJetPt_noId->Sumw2();
   hJetPt_matched_noId->Sumw2();
   hJetEta_noId->Sumw2();
   hJetEta_matched_noId->Sumw2();
+
+
 
   for ( int iid = 0; iid < 3 ; iid++ ){
     for (int ilevel = 0; ilevel < 3; ilevel++){
@@ -940,6 +961,9 @@ int main(int argc, char** argv)
   hJetPt_noId  -> Write();   
   hJetEta_noId -> Write();   
   hNumberOfVertices_noId -> Write();   
+
+  pPtRatio_noId -> Write();
+  
   
   for ( int iid = 0; iid < 3 ; iid++ ){
     for (int ilevel = 0; ilevel < 3; ilevel++){
@@ -955,6 +979,7 @@ int main(int argc, char** argv)
 	hEff_vs_NumberOfVertices_matched[iid][ilevel]->Write(); 
     }
       
+      pPtRatio[iid][ilevel]->Write();   
       hPtRatio[iid][ilevel]->Write();   
       hJetPt[iid][ilevel]->Write();   
       hJetEta[iid][ilevel]->Write();   
