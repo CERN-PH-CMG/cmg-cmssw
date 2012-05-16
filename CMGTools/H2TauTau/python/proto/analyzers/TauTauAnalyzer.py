@@ -5,6 +5,7 @@ from CMGTools.RootTools.physicsobjects.DiObject import TauTau
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Tau, GenParticle
 from CMGTools.H2TauTau.proto.analyzers.CountLeptons import electronAccept
 from CMGTools.RootTools.utils.DeltaR import deltaR2
+from ROOT import TFile
 
 class TauTauAnalyzer( DiLeptonAnalyzer ):
 
@@ -22,11 +23,13 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
         #    'cmgTauSel',
         #    'std::vector<cmg::Tau>'
         #    )
-        if self.cfg_comp.isMC and ("DY" in self.cfg_comp.name or "W" in self.cfg_comp.name or "ggHTT" in self.cfg_comp.name):
+        if self.cfg_comp.isMC and ("DY" in self.cfg_comp.name or "W" in self.cfg_comp.name or "Higgsgg" in self.cfg_comp.name):
             self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
                                                      'std::vector<reco::GenParticle>' )
-        self.higgsPt125WeightFile=TFile("$CMSSW_BASE/src/CMGTools/H2TauTau/data/weight_ptH_125.root")
-        self.higgsPt125WeightHistogram=self.higgsPt125WeightFile.Get("powheg_weight/weight_hqt_fehipro_fit_125")
+	if "Higgsgg" in self.cfg_comp.name:
+	    masspoint=self.cfg_comp.name[7:10]
+            self.higgsPtWeightFile=TFile("$CMSSW_BASE/src/CMGTools/H2TauTau/data/weight_ptH_"+masspoint+".root")
+            self.higgsPtWeightHistogram=self.higgsPtWeightFile.Get("powheg_weight/weight_hqt_fehipro_fit_"+masspoint)
 
     def process(self, iEvent, event):
         result = super(TauTauAnalyzer, self).process(iEvent, event)
@@ -79,7 +82,7 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
                    (leg2DeltaR>-1 and leg2DeltaR < 0.1):
                      event.genMatched = True
 		
-        if self.cfg_comp.isMC and "ggHTT125" in self.cfg_comp.name:
+        if self.cfg_comp.isMC and "Higgsgg" in self.cfg_comp.name:
             genParticles = self.mchandles['genParticles'].product()
             event.genParticles = map( GenParticle, genParticles)
 	    higgsPt=-1
@@ -87,7 +90,7 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
                 if abs(gen.pdgId())==25:
 		    higgsPt = gen.pt()
 		    break
-	    event.higgsPtWeight = self.higgsPt125WeightHistogram.GetBinContent(self.higgsPt125WeightHistogram.FindBin(higgsPt))
+	    event.higgsPtWeight = self.higgsPtWeightHistogram.GetBinContent(self.higgsPtWeightHistogram.FindBin(higgsPt))
             event.eventWeight *= event.higgsPtWeight
 		
         return True

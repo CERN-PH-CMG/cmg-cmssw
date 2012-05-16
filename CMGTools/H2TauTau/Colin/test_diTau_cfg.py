@@ -3,8 +3,10 @@ import os
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.H2TauTau.triggerMap import pathsAndFilters
 
+runOnData = False
+runOnMC = False
 
-period = 'Period_2011AB'
+period = 'Period_2011A'
 
 baseDir = '2011'
 
@@ -21,10 +23,8 @@ elif period == 'Period_2011AB':
     mc_vertexWeight = 'vertexWeightFall112011AB'
     mc_tauEffWeight = 'effTau2011AB'
 
-mc_tauEffWeight='effTau1fb'
-#mc_tauEffWeight='effIsoTau25'
-#mc_tauEffWeight='eff2012IsoTauL1'
-#mc_tauEffWeight=None
+if runOnMC:
+    mc_tauEffWeight='effTau1fb'
 
 triggerAna = cfg.Analyzer(
     'TriggerAnalyzer'
@@ -48,7 +48,7 @@ TauTauAna = cfg.Analyzer(
 tau1Weighter = cfg.Analyzer(
     'LeptonWeighter_tau1',
     effWeight = mc_tauEffWeight,
-    #effWeightMC = mc_tauEffWeight_mc,
+    effWeightMC = mc_tauEffWeight_mc,
     lepton = 'leg1',
     verbose = False
     )
@@ -56,12 +56,19 @@ tau1Weighter = cfg.Analyzer(
 tau2Weighter = cfg.Analyzer(
     'LeptonWeighter_tau2',
     effWeight = mc_tauEffWeight,
-    #effWeightMC = mc_tauEffWeight_mc,
+    effWeightMC = mc_tauEffWeight_mc,
     lepton = 'leg2',
     verbose = False
     )
 
-vertexAna = cfg.Analyzer(
+if runOnData:
+  vertexAna = cfg.Analyzer(
+    'VertexAnalyzer',
+    fixedWeight = 1,
+    verbose = False
+    )
+else:
+  vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
     vertexWeight = mc_vertexWeight,
     verbose = False
@@ -74,18 +81,19 @@ vbfKwargs = dict( Mjj = 400,
 
 vbfAna = cfg.Analyzer(
     'VBFAnalyzer',
+    jetCol = 'cmgPFJetSel2',
     jetPt = 30,
     jetEta = 4.5,
     **vbfKwargs
     )
 
 treeProducer = cfg.Analyzer(
-    'H2TauTauTreeProducer',
+    'H2TauTauTreeProducerTauTau',
     )
 
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.diTau_Apr10 import * 
+from CMGTools.H2TauTau.proto.samples.diTau_May10 import * 
 
 #########################################################################################
 
@@ -96,22 +104,21 @@ for mc in MC:
     mc.jetScale = mc_jet_scale
     mc.jetSmear = mc_jet_smear
 
+selectedComponents = data_2011 + [DYJets, WJets, TTJets]
+selectedComponents += [Higgsgg125, HiggsVBF125]
+selectedComponents += [Higgsgg110, Higgsgg115, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135,
+                       HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135]
 
-selectedComponents =  copy.copy(MC)
-if period == 'Period_2011A':
-    selectedComponents.extend( data_2011A )
-    # selectedComponents.extend( embed_2011A )    
-elif period == 'Period_2011B':
-    selectedComponents.extend( data_2011B )
-    # selectedComponents.extend( embed_2011B )    
-elif period == 'Period_2011AB':
-    selectedComponents.extend( data_2011 )
-    # selectedComponents.extend( embed_2011 )    
+if runOnData:
+    selectedComponents = data_2011
+if runOnMC:
+    selectedComponents = [DYJets, WJets, TTJets]
+    selectedComponents += [Higgsgg110, Higgsgg115, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135,
+                           HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135]
 
-
+print [c.name for c in selectedComponents]
 
 sequence = cfg.Sequence( [
-    triggerAna,
     TauTauAna,
     vbfAna,
     vertexAna,
@@ -122,28 +129,25 @@ sequence = cfg.Sequence( [
 
 
 DYJets.fakes = True
-DYJets.splitFactor = 16
+DYJets.splitFactor = 50
 WJets.fakes = True
-WJets.splitFactor = 2
-TTJets.splitFactor = 2 
-QCD15.splitFactor = 2 
-QCD30.splitFactor = 2 
-QCD50.splitFactor = 2 
-QCD80.splitFactor = 2 
-ggHTT125.splitFactor = 1
-VBFHTT125.splitFactor = 1
-data_Run2011B_PromptReco_v1.splitFactor = 8
-data_Run2011A_05Aug2011_v1.splitFactor = 2
-data_Run2011A_PromptReco_v4.splitFactor = 2 
-data_Run2011A_PromptReco_v6.splitFactor = 2
-data_Run2011A_May10ReReco_v1.splitFactor = 2
+WJets.splitFactor = 50
+TTJets.splitFactor = 50 
+data_Run2011A_May10ReReco_v1.splitFactor = 50
+data_Run2011A_PromptReco_v4.splitFactor = 50 
+data_Run2011A_05Aug2011_v1.splitFactor = 50
+#data_Run2011A_PromptReco_v6.splitFactor = 50
+#data_Run2011B_PromptReco_v1.splitFactor = 50
 
 test = 0
 if test==1:
-    comp = DYJets
+    #comp = DYJets
+    #comp = WJets
+    #comp = data_Run2011A_05Aug2011_v1
+    comp = Higgsgg125
     selectedComponents = [comp]
-    comp.splitFactor = 1
-    comp.files = comp.files[:10]
+    comp.splitFactor = 10
+    comp.files = comp.files[:1]
 elif test==2:
     for comp in selectedComponents:
      comp.splitFactor = 1
