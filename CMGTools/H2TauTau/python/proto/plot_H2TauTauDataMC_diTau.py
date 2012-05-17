@@ -141,49 +141,49 @@ if __name__ == '__main__':
        rebin = 1
      for var, nx, xmin, xmax in [
         ('svfitMass'        ,int(15/rebin), 0 , 300    ), 
-#         ('svfitMass*1.03'   ,int(15/rebin), 0 , 300    ),
-#         ('svfitMass*0.97'   ,int(15/rebin), 0 , 300    ),
-#         ('visMass'          ,int(15/rebin), 0 , 300    ),
-#         ('visMass*1.03'     ,int(15/rebin), 0 , 300    ),
-#         ('visMass*0.97'     ,int(15/rebin), 0 , 300    ),
-#         ('nVert'            ,int(50/rebin), 0 , 50     ),
-#         ('mt'               ,int(20/rebin), 0 , 200    ),
-#         ('pThiggs'          ,int(20/rebin), 0 , 300    ),
-#         ('diTauPt'          ,int(20/rebin), 0 , 300    ),
-#         ('l1Pt'             ,int(75/rebin), 0 , 250    ),   # was 25 bins
-#         ('l2Pt'             ,int(75/rebin), 0 , 250    ),   # was 25 bins
-#         ('l1Eta'            ,int(40/rebin), -3, 3      ),   # was 20 bins
-#         ('l2Eta'            ,int(40/rebin), -3, 3      ),   # was 20 bins
-#         ('jet1Eta'          ,int(20/rebin), -5, 5      ),
-#         ('jet1Pt'           ,int(20/rebin), 0 , 500    ),
-#         ('jet2Eta'          ,int(20/rebin), -5, 5      ),
-#         ('jet2Pt'           ,int(20/rebin), 0 , 500    ),
-#         ('mjj'              ,int(32/rebin), 0 , 800    ),
-#         ('dRtt'             ,int(20/rebin), 0 , 5      ),
-#         ('dPhitt'           ,int(20/rebin), 0 , 3.15   ),
-#         ('mttj'             ,int(20/rebin), 0 , 1000   ),
-#         ('met'              ,int(20/rebin), 0 , 200    ),
-#         ('diTauCharge'      ,7            , -3, 3      ),
-#         ('l1LooIso'         ,3            , -1, 2      ),
-#         ('l2LooIso'         ,3            , -1, 2      ),
-#         ('l1MedIso'         ,3            , -1, 2      ),
-#         ('l2MedIso'         ,3            , -1, 2      ),
-#         ('l1TigIso'         ,3            , -1, 2      ),
-#         ('l2TigIso'         ,3            , -1, 2      ),
-#         ('l1Prongs'         ,5            , -1, 4      ),
-#         ('l2Prongs'         ,5            , -1, 4      ),
-#         ('l1RawMVAIso'      ,100          , 0 , 1.00001),
-#         ('l1MedMVAIso'      ,2            , 0 , 2      ),
-#         ('l1TigMVAIso'      ,2            , 0 , 2      ),
-#         ('l1LooseEle'       ,2            , 0 , 2      ),
-#         ('l1MVAEle'         ,2            , 0 , 2      ),
-#         ('l1LooseMu'        ,2            , 0 , 2      ),
-#         ('l2RawMVAIso'      ,100          , 0 , 1.00001),
-#         ('l2MedMVAIso'      ,2            , 0 , 2      ),
-#         ('l2TigMVAIso'      ,2            , 0 , 2      ),
-#         ('l2LooseEle'       ,2            , 0 , 2      ),
-#         ('l2MVAEle'         ,2            , 0 , 2      ),
-#         ('l2LooseMu'        ,2            , 0 , 2      ),
+        ('svfitMass*1.03'   ,int(15/rebin), 0 , 300    ),
+        ('svfitMass*0.97'   ,int(15/rebin), 0 , 300    ),
+        ('visMass'          ,int(15/rebin), 0 , 300    ),
+        ('visMass*1.03'     ,int(15/rebin), 0 , 300    ),
+        ('visMass*0.97'     ,int(15/rebin), 0 , 300    ),
+        ('nVert'            ,int(50/rebin), 0 , 50     ),
+        ('mt'               ,int(20/rebin), 0 , 200    ),
+        ('pThiggs'          ,int(20/rebin), 0 , 300    ),
+        ('diTauPt'          ,int(20/rebin), 0 , 300    ),
+        ('l1Pt'             ,int(75/rebin), 0 , 250    ),   # was 25 bins
+        ('l2Pt'             ,int(75/rebin), 0 , 250    ),   # was 25 bins
+        ('l1Eta'            ,int(40/rebin), -3, 3      ),   # was 20 bins
+        ('l2Eta'            ,int(40/rebin), -3, 3      ),   # was 20 bins
+        ('jet1Eta'          ,int(20/rebin), -5, 5      ),
+        ('jet1Pt'           ,int(20/rebin), 0 , 500    ),
+        ('jet2Eta'          ,int(20/rebin), -5, 5      ),
+        ('jet2Pt'           ,int(20/rebin), 0 , 500    ),
+        ('mjj'              ,int(32/rebin), 0 , 800    ),
+        ('dRtt'             ,int(20/rebin), 0 , 5      ),
+        ('dPhitt'           ,int(20/rebin), 0 , 3.15   ),
+        ('mttj'             ,int(20/rebin), 0 , 1000   ),
+        ('met'              ,int(20/rebin), 0 , 200    ),
+        ('diTauCharge'      ,7            , -3, 3      ),
+        ('l1LooIso'         ,3            , -1, 2      ),
+        ('l2LooIso'         ,3            , -1, 2      ),
+        ('l1MedIso'         ,3            , -1, 2      ),
+        ('l2MedIso'         ,3            , -1, 2      ),
+        ('l1TigIso'         ,3            , -1, 2      ),
+        ('l2TigIso'         ,3            , -1, 2      ),
+        ('l1Prongs'         ,5            , -1, 4      ),
+        ('l2Prongs'         ,5            , -1, 4      ),
+        ('l1RawMVAIso'      ,100          , 0 , 1.00001),
+        ('l1MedMVAIso'      ,2            , 0 , 2      ),
+        ('l1TigMVAIso'      ,2            , 0 , 2      ),
+        ('l1LooseEle'       ,2            , 0 , 2      ),
+        ('l1MVAEle'         ,2            , 0 , 2      ),
+        ('l1LooseMu'        ,2            , 0 , 2      ),
+        ('l2RawMVAIso'      ,100          , 0 , 1.00001),
+        ('l2MedMVAIso'      ,2            , 0 , 2      ),
+        ('l2TigMVAIso'      ,2            , 0 , 2      ),
+        ('l2LooseEle'       ,2            , 0 , 2      ),
+        ('l2MVAEle'         ,2            , 0 , 2      ),
+        ('l2LooseMu'        ,2            , 0 , 2      ),
       ]:
       
       prefix1 = os.getcwd()+"/"+prefix+"/IsoTauTight1fb_"
@@ -345,12 +345,12 @@ if __name__ == '__main__':
         #####################################################
         ###            BLINDING DATA ABOVE Z PEAK         ###
         #####################################################
-        if var=="svfitMass":
+        if ( var=="svfitMass" or var=="svfitMass*0.97" or var=="svfitMass*1.03" ):
          for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
            if plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>100:
               plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
 
-        if var=="visMass":
+        if (var=="visMass" or var=="visMass*0.97" or var=="visMass*1.03" ):
          for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
            if plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>80:
               plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
