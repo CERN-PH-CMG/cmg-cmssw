@@ -4,7 +4,7 @@ CFGTEMPLATE    = jetanalyzerTEMPLATE_mc_cfg.py
 
 JOBDIR         = DYJetsToLL-51
 
-OUTPUTDIR      = /store/cmst3/user/musella/JETID_NTUPLES/V00-02-00/DYJetsToLL-51
+OUTPUTDIR      = /store/cmst3/user/musella/JETID_NTUPLES/V00-02-03_newJec/DYJetsToLL-51
 
 OUTPUTFILENAME = JetAnalysisTree
 

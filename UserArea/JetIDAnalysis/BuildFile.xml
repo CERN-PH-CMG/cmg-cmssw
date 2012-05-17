@@ -5,6 +5,11 @@
 <use name="PhysicsTools/UtilAlgos"/>
 <use name="DataFormats/PatCandidates"/>
 <use name="DataFormats/EgammaCandidates"/>
+
+<use name="CondFormats/PhysicsToolsObjects"/>
+<use name="CondFormats/JetMETObjects"/>
+<use name="JetMETCorrections/Objects"/>
+
 <export>
 <lib name="1"/>
 </export>

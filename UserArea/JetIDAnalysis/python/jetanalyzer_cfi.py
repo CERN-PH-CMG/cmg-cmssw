@@ -13,6 +13,10 @@ jetanalyzer = cms.EDAnalyzer('JetAnalyzer',
                              PVTag       = cms.InputTag("offlinePrimaryVertices",""),
                              dataFlag    = cms.untracked.bool(False),
                              computeTMVA = cms.untracked.bool(True),
+
+                             RhoTag = cms.InputTag("kt6PFJets","rho"),
+                             jecTag = cms.string(""),
+                             applyJec = cms.bool(False),
                              
                              puJetIDAlgo = full_5x,
                              
@@ -24,9 +28,6 @@ jetanalyzer = cms.EDAnalyzer('JetAnalyzer',
                              jetPtThreshold = cms.untracked.double(10.),                          
                              
                              #PFtoPAT ntuple (Colin)
-                             #JetTag     = cms.InputTag("selectedPatJetsAK5",""),                        
-                             #GenJetTag  = cms.InputTag("selectedPatJetsAK5","genJets"),
-                             
                              MvaTags = cms.untracked.VInputTag(cms.InputTag("puJetMva","simpleDiscriminant"),
                                                                cms.InputTag("puJetMva","fullDiscriminant"),
                                                                cms.InputTag("puJetMva","cutbasedDiscriminant"),

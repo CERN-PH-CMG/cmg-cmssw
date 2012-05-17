@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.cc,v 1.17 2012/04/23 11:25:45 malberti Exp $
+// $Id: JetAnalyzer.cc,v 1.18 2012/05/03 10:55:58 musella Exp $
 //
 //
 
@@ -27,6 +27,8 @@
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
 
+#include "TROOT.h"
+
 //
 // constructors and destructor
 //
@@ -39,6 +41,10 @@ JetAnalyzer::JetAnalyzer(const edm::ParameterSet& iConfig)
   JetTag_      = iConfig.getParameter<edm::InputTag>("JetTag");
   GenJetTag_   = iConfig.getParameter<edm::InputTag>("GenJetTag");
   MuonTag_     = iConfig.getParameter<edm::InputTag>("MuonTag");
+
+  applyJec_   = iConfig.getParameter<bool>("applyJec");
+  jecTag_     = iConfig.getParameter<std::string>("jecTag");
+  RhoTag_     = iConfig.getParameter<edm::InputTag>("RhoTag");
 
   dataFlag_    = iConfig.getUntrackedParameter<bool>("dataFlag");
 
@@ -56,7 +62,13 @@ JetAnalyzer::JetAnalyzer(const edm::ParameterSet& iConfig)
 
   //-- jet pt threshold : only jets above this thr are saved in the tree
   jetPtThreshold_ = iConfig.getUntrackedParameter<double>("jetPtThreshold");
-  
+
+  jecCor_ = 0;
+  bookTree();
+}
+
+void JetAnalyzer::bookTree()
+{
   //-- output tree
   edm::Service<TFileService> fs ;
   tree =        fs -> make <TTree>("tree","tree"); 
@@ -87,7 +99,9 @@ JetAnalyzer::JetAnalyzer(const edm::ParameterSet& iConfig)
   tree -> Branch ("dimuonPt",&dimuonPt, "dimuonPt/F");
   tree -> Branch ("dphiZJet",&dphiZJet, "dphiZJet/F");
 
- }
+
+}
+
 
 void JetAnalyzer::ResetTreeVariables()
 {
@@ -126,7 +140,19 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
   using namespace edm;
+
+  std::vector<float> jecs;
+  double rho = 0.;
+  if( applyJec_  ) {
+    edm::Handle< double > rhoH;
+    iEvent.getByLabel(RhoTag_,rhoH);
+    rho = *rhoH;
+    if( jecCor_ == 0 ) {
+      initJetEnergyCorrector( iSetup, iEvent.isRealData() );
+    }
+  }
   
+  /// if( tree == 0 ) { bookTree(); }
 
   // *** PILEUP INFO
   if (!dataFlag_) FillMCPileUpInfo(iEvent, iSetup);
@@ -136,9 +162,15 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel(PVTag_, vertexHandle);
   reco::VertexCollection vertexCollection = *(vertexHandle.product());
   
-  //-- first vtx 
-  const reco::Vertex vtx  = *(vertexCollection.begin());;
-
+  //-- primary vtx 
+  //   require basic quality cuts on the vertexes
+  reco::VertexCollection::const_iterator ivtx = vertexCollection.begin();
+  while( ivtx != vertexCollection.end() && ( ivtx->isFake() || ivtx->ndof() < 4 ) ) {
+	  ++ivtx;
+  }
+  if( ivtx == vertexCollection.end() ) { ivtx = vertexCollection.begin(); }
+  const reco::Vertex * vtx  = &*(ivtx);
+  
   // *** MUONS
   edm::Handle<edm::View<pat::Muon> > muonHandle;
   iEvent.getByLabel(MuonTag_,muonHandle);
@@ -164,13 +196,21 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   if( ! isZ && requireZ_ ) { return; }
 
   int numberOfJets = 0;
-   
+  
   // *** Loop over jets : to count the number of jets
   for ( unsigned int i=0; i<jets.size(); ++i ) {
   
     const pat::Jet patjet = jets.at(i);
-    
-    if ( patjet.pt() <  jetPtThreshold_ )  continue;
+    float jec = 1.;
+    if( applyJec_ ) {
+      jecCor_->setJetPt(patjet.correctedJet(0).pt());
+      jecCor_->setJetEta(patjet.eta());
+      jecCor_->setJetA(patjet.jetArea());
+      jecCor_->setRho(rho);
+      jec = jecCor_->getCorrection() * patjet.correctedJet(0).energy() / patjet.energy() ;
+      jecs.push_back(jec);
+    }
+    if ( patjet.pt()*jec <  jetPtThreshold_ )  continue;
  
     //-- remove muons from jets 
     if (isZ) {
@@ -191,9 +231,20 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     ResetTreeVariables();
     
-    const pat::Jet patjet = jets.at(i);
+    pat::Jet patjet = jets.at(i);
     
-    if ( patjet.pt() <  jetPtThreshold_ )  continue;
+    //-- loose jet ID 
+    pat::strbitset ret = pfjetIdLoose_.getBitTemplate(); // ? a cosa serve ?
+    jetLooseID = pfjetIdLoose_(patjet, ret);
+    if( ! jetLooseID ) { continue; }
+
+    float jec = 0.;
+    if( applyJec_ ) {
+	    jec = jecs[i];
+	    patjet.scaleEnergy(jec);
+    }
+    if ( patjet.pt() <  jetPtThreshold_ )  { continue; }
+    ++ijet;
  
     //-- remove muons from jets 
     if (isZ) {
@@ -205,14 +256,9 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
     }
 
-    //-- loose jet ID 
-    pat::strbitset ret = pfjetIdLoose_.getBitTemplate(); // ? a cosa serve ?
-    jetLooseID = pfjetIdLoose_(patjet, ret);
-    if( ! jetLooseID ) { continue; }
-    ++ijet;
 
     //-- pu jet identifier
-    PileupJetIdentifier puIdentifier = puIdAlgo_->computeIdVariables(&patjet, 0, &vtx, vertexCollection, computeTMVA_);
+    PileupJetIdentifier puIdentifier = puIdAlgo_->computeIdVariables(&patjet, jec, vtx, vertexCollection, computeTMVA_);
 
     // --- fill jet variables
     puIdAlgo_->setIJetIEvent(ijet,iEvent.id().event());
@@ -361,6 +407,32 @@ bool JetAnalyzer::matchingToGenJet( const pat::Jet jet, edm::View<reco::GenJet> 
    return (isMcMatched);
 }
 
+// ------------------------------------------------------------------------------------------
+void 
+JetAnalyzer::initJetEnergyCorrector(const edm::EventSetup &iSetup, bool isData)
+{
+	//jet energy correction levels to apply on raw jet
+	std::vector<std::string> jecLevels;
+	jecLevels.push_back("L1FastJet");
+	jecLevels.push_back("L2Relative");
+	jecLevels.push_back("L3Absolute");
+	if(isData) jecLevels.push_back("L2L3Residual");
+
+	//check the corrector parameters needed according to the correction levels
+	edm::ESHandle<JetCorrectorParametersCollection> parameters;
+	iSetup.get<JetCorrectionsRecord>().get("AK5PFchs",parameters);
+	for(std::vector<std::string>::const_iterator ll = jecLevels.begin(); ll != jecLevels.end(); ++ll)
+	{ 
+		const JetCorrectorParameters& ip = (*parameters)[*ll];
+		jetCorPars_.push_back(ip); 
+	} 
+
+	//instantiate the jet corrector
+	jecCor_ = new FactorizedJetCorrector(jetCorPars_);
+	std::cout << " jecC" << jecCor_ << std::endl;
+	gDirectory->ls();
+}
+
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
@@ -373,5 +445,6 @@ void
 JetAnalyzer::endJob() 
 {
   //tree->Write();
+  if(jecCor_) { delete jecCor_; }
 }
 

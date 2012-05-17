@@ -53,6 +53,8 @@ def main(options, args):
     fita =  TF1("fita","pol1",15,25)
 
     wps = { "loose":[0,0.05,0.1,0.1,0.1], "medium":[0,0.10,0.2,0.2,0.2], "tight":[1,0.95,0.9,0.9,0.9] }
+    if options.chs:
+        wps = { "loose":[0,0.02,0.1,0.1,0.1], "medium":[0,0.05,0.2,0.2,0.2], "tight":[1,0.95,0.9,0.9,0.9] }
     wpf = { }
     for a in wps.keys():
         wpf[a] = {}

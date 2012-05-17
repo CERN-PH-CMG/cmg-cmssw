@@ -48,20 +48,14 @@ process.pfjetanalyzer = jetanalyzer.clone(
     JetTag      = cms.InputTag("selectedPatJetsPFlowNoPuSub",""),
     GenJetTag   = cms.InputTag("selectedPatJetsPFlowNoPuSub","genJets"),
     dataFlag = cms.untracked.bool(False),
-    MvaTags = cms.untracked.VInputTag(cms.InputTag("puJetMva","simpleDiscriminant"),
-                                      cms.InputTag("puJetMva","fullDiscriminant"),
-                                      cms.InputTag("puJetMva","cutbasedDiscriminant"),
-                                      ),
-    IdTags = cms.untracked.VInputTag( cms.InputTag("puJetMva","simpleId"),
-                                      cms.InputTag("puJetMva","fullId"),
-                                      cms.InputTag("puJetMva","cutbasedId"),
-                                      ),
 )
 
 process.chspfjetanalyzer = jetanalyzer.clone(
     JetTag      = cms.InputTag("selectedPatJetsPFlow",""),
     GenJetTag   = cms.InputTag("selectedPatJetsPFlow","genJets"),
-    dataFlag = cms.untracked.bool(False)
+    dataFlag = cms.untracked.bool(False),
+    MvaTags = cms.untracked.VInputTag(),
+    IdTags = cms.untracked.VInputTag(),
 )
 
 process.TFileService = cms.Service("TFileService", 

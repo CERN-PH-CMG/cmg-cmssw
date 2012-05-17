@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.h,v 1.8 2012/04/23 10:38:21 malberti Exp $
+// $Id: JetAnalyzer.h,v 1.9 2012/04/23 11:25:58 malberti Exp $
 //
 //
 
@@ -32,6 +32,11 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
+#include "FWCore/Framework/interface/ESHandle.h"
+#include "FWCore/Framework/interface/EventSetup.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+#include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
+#include "JetMETCorrections/Objects/interface/JetCorrectionsRecord.h"
 
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
@@ -59,6 +64,7 @@ private:
   virtual void beginJob() ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
+  void bookTree();
   void ResetTreeVariables();
   void FillMCPileUpInfo(const edm::Event&, const edm::EventSetup&);
   bool matchingToGenJet( const pat::Jet jet, edm::View<reco::GenJet> genJets , float& genPt, float& genDr);
@@ -77,7 +83,14 @@ private:
   edm::InputTag MuonTag_; 
   std::vector<edm::InputTag> MvaTags_;
   std::vector<edm::InputTag> IdTags_;
-
+  edm::InputTag RhoTag_;
+  std::string jecTag_;
+  bool applyJec_;
+  
+  void initJetEnergyCorrector(const edm::EventSetup &iSetup, bool isData);
+  FactorizedJetCorrector *jecCor_;
+  std::vector<JetCorrectorParameters> jetCorPars_;
+  
   bool dataFlag_;
   bool computeTMVA_, requireZ_;
 
@@ -112,15 +125,6 @@ private:
   float PUoot_late_nTrue ;
   
   int nvtx ;
-
-  //// float jetPt, jetEta, jetPhi, jetM;
-  //// float nCharged, nNeutrals, chgEMfrac, neuEMfrac, chgHadrfrac, neuHadrfrac, nParticles;
-  //// float leadPt, leadEta, secondPt, secondEta, leadNeutPt, leadNeutEta, leadEmPt, leadEmEta, leadChPt, leadChEta;
-  //// float dRLeadCent, dRLead2nd, dRMean, dRMeanNeut, dRMeanEm, dRMeanCh, ptD;
-  //// 
-  //// float leadFrac, leadChFrac, leadNeutFrac;
-  //// float majW, minW; 
-      
 
   bool jetLooseID;
   bool isMatched;

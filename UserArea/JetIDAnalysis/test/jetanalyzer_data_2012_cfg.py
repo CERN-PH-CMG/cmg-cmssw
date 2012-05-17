@@ -1,26 +1,22 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.External.jec_2012_cff import use2012JecPreview
+from PhysicsTools.PatAlgos.selectionLayer1.muonCountFilter_cfi import *
 
+process = cms.Process("analysis")
+
+from CMGTools.External.jec_2012_cff import use2012JecPreview
 from Configuration.AlCa.autoCond import autoCond
 if(runOnMC) : process.GlobalTag.globaltag=cms.string(autoCond.get('startup',autoCond['mc']))
 else        : process.GlobalTag.globaltag=cms.string(autoCond['com10'])
 use2012JecPreview(process)
 
-from PhysicsTools.PatAlgos.selectionLayer1.muonCountFilter_cfi import *
-
-
-process = cms.Process("analysis")
-
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
 
-
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
-
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(LISTOFFILES),
+    fileNames = cms.untracked.vstring(),
     skipEvents = cms.untracked.uint32(0)                        
 )
 
@@ -37,17 +33,17 @@ process.MuonsFilter = countPatMuons.clone(
 from CMG.JetIDAnalysis.jetanalyzer_cfi import *
 process.load("CMGTools.External.pujetidsequence_cff")
 
+# PF jet collection
 process.pfjetanalyzer = jetanalyzer.clone(
     JetTag      = cms.InputTag("selectedPatJetsPFlowNoPuSub",""),
     GenJetTag   = cms.InputTag("selectedPatJetsPFlowNoPuSub","genJets"),
-    dataFlag = cms.untracked.bool(False),
-    applyJec = cms.bool(True)
+    dataFlag = cms.untracked.bool(True),
 )
 
 process.chspfjetanalyzer = jetanalyzer.clone(
     JetTag      = cms.InputTag("selectedPatJetsPFlow",""),            
-    GenJetTag   = cms.InputTag("selectedPatJetsPFlow","genJets"), 
-    dataFlag = cms.untracked.bool(False),
+    GenJetTag   = cms.InputTag("selectedPatJetsPFlow","genJets"),
+    dataFlag = cms.untracked.bool(True),
     MvaTags = cms.untracked.VInputTag(cms.InputTag("puJetMvaChs","simpleDiscriminant"),
                                       cms.InputTag("puJetMvaChs","fullDiscriminant"),
                                       cms.InputTag("puJetMvaChs","cutbasedDiscriminant"),
@@ -56,11 +52,12 @@ process.chspfjetanalyzer = jetanalyzer.clone(
                                       cms.InputTag("puJetMvaChs","fullId"),
                                       cms.InputTag("puJetMvaChs","cutbasedId"),
                                       ),
+    applyJec = cms.bool(True)
 )
 
 process.TFileService = cms.Service("TFileService", 
-    fileName = cms.string("OUTPUTFILENAME"),
-    closeFileFast = cms.untracked.bool(False)
+    fileName = cms.string("myTree.root"),
+    closeFileFast = cms.untracked.bool(True)
 )
 
 
@@ -70,7 +67,6 @@ process.puJetId.jets = "selectedPatJetsPFlowNoPuSub"
 process.puJetMva.jets = "selectedPatJetsPFlowNoPuSub"
 process.puJetId.applyJec = True
 process.puJetMva.applyJec = True
-
 process.puJetIdChs.jets = "selectedPatJetsPFlow"
 process.puJetMvaChs.jets = "selectedPatJetsPFlow"
 

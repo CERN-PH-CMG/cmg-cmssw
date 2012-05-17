@@ -40,8 +40,14 @@ process.chspfjetanalyzer = jetanalyzer.clone(
     JetTag      = cms.InputTag("selectedPatJetsPFlow",""),            
     GenJetTag   = cms.InputTag("selectedPatJetsPFlow","genJets"),
     dataFlag = cms.untracked.bool(True),
-    MvaTags = cms.untracked.VInputTag(),
-    IdTags = cms.untracked.VInputTag()
+    MvaTags = cms.untracked.VInputTag(cms.InputTag("puJetMvaChs","simpleDiscriminant"),
+                                      cms.InputTag("puJetMvaChs","fullDiscriminant"),
+                                      cms.InputTag("puJetMvaChs","cutbasedDiscriminant"),
+                                      ),
+    IdTags = cms.untracked.VInputTag( cms.InputTag("puJetMvaChs","simpleId"),
+                                      cms.InputTag("puJetMvaChs","fullId"),
+                                      cms.InputTag("puJetMvaChs","cutbasedId"),
+                                      ),
 )
 
 process.TFileService = cms.Service("TFileService", 
@@ -56,4 +62,4 @@ process.puJetId.jets = "selectedPatJetsPFlowNoPuSub"
 process.puJetMva.jets = "selectedPatJetsPFlowNoPuSub"
 
 process.ana = cms.Sequence(process.pfjetanalyzer+process.chspfjetanalyzer)
-process.p = cms.Path(process.MuonsFilter*process.puJetIdSqeuence*process.ana)
+process.p = cms.Path(process.MuonsFilter*process.puJetIdSqeuence*process.puJetIdSqeuenceChs*process.ana)
