@@ -68,10 +68,10 @@ void DijetMass_chiyoung_mu10(){
   inputFile = new TFile("../../data/histograms_data_HT_Run2011AB_160404_180252_Fat30_ak5_4677pbm1.root", "READ");
   //  inputFile = TFile::Open("histograms_data_HT_340fb_Fat_ak5.root", "UPDATE");
   // Histograms 
-  hDijetMass = (TH1F*) inputFile->Get("h_DijetMass_data_fat_mu30;1");
+  hDijetMass = (TH1F*) inputFile->Get("h_DijetMass_data_fat_mu10;1");
   //  TH1F *hQCDMC = (TH1F*)inputFile->Get("fit_DijetMass_mc_wide");
   inputFileMC = new TFile("../../data/histograms_summer11_mc_ak5.root", "UPDATE");
-  hQCD = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat_mu30;1");
+  hQCD = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat_mu10;1");
   
   cout <<"Calc scale factor" << endl;
   scaleFactor = hDijetMass->Integral(36, hDijetMass->GetNbinsX()) / hQCD->Integral(36, hDijetMass->GetNbinsX()) / lumi;
