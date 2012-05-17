@@ -28,7 +28,12 @@ pileupJetIdProducer = cms.EDProducer('PileupJetIdProducer',
                          runMvas = cms.bool(True),
                          jets = cms.InputTag("selectedPatJetsPFlow"),
                          vertexes = cms.InputTag("offlinePrimaryVertices"),
-                         algos = cms.VPSet(stdalgos)
+                         algos = cms.VPSet(stdalgos),
+                                     
+                         rho     = cms.InputTag("kt6PFJets","rho"),
+                         jec     = cms.string("AK5PF"),
+                         applyJec = cms.bool(False),
+                         inputIsCorrected = cms.bool(True),                                     
 )
 
 pileupJetIdProducerChs = cms.EDProducer('PileupJetIdProducer',
@@ -37,6 +42,12 @@ pileupJetIdProducerChs = cms.EDProducer('PileupJetIdProducer',
                          runMvas = cms.bool(True),
                          jets = cms.InputTag("selectedPatJetsPFlow"),
                          vertexes = cms.InputTag("offlinePrimaryVertices"),
-                         algos = cms.VPSet(chsalgos)
+                         algos = cms.VPSet(chsalgos),
+                                        
+                         rho     = cms.InputTag("kt6PFJets","rho"),
+                         jec     = cms.string("AK5PFchs"),
+                         applyJec = cms.bool(False),
+                         inputIsCorrected = cms.bool(True),
+
 )
 
