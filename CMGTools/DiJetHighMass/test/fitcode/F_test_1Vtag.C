@@ -132,6 +132,9 @@ void F_test_1Vtag (double alpha=0.1) {
   Data0->Fit("Pol0","QN");
   Data1->Fit("Pol1","QN");
   Data2->Fit("Pol2","QN");
+  Data2->Fit("Pol2","QN");
+  Data3->Fit("Pol3","QN");
+  Data3->Fit("Pol3","QN");
   Data3->Fit("Pol3","QN");
 
   // Calculate residual sums of squares for the three hypotheses
