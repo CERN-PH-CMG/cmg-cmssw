@@ -91,7 +91,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
             file = TFile(fileName)
             self.keeper.append( file )
             tree = file.Get('H2TauTauTreeProducerTauTau')
-	    print fileName, tree
+	    #print fileName, tree
             
             if compName == 'DYJets':
 	        if self.photon:
