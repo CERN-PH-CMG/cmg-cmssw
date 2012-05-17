@@ -7,6 +7,9 @@
 <use name="DataFormats/PatCandidates"/>
 <use name="DataFormats/EgammaCandidates"/>
 
+<use name="CondFormats/PhysicsToolsObjects"/>
+<use name="CondFormats/JetMETObjects"/>
+<use name="JetMETCorrections/Objects"/>
 
 <library   name="CMGToolsExternalsplugins" file="*.cc">
   <use   name="CMGTools/External" />
