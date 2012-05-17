@@ -543,7 +543,7 @@ void DijetMass_chiyoung_2Vtag(){
   }
 
   c0->SaveAs("Plots_2Vtag/DijetMassCrossSectionWithWindowFit.png");
-  c0->SaveAs("Plots_2Vtag/DijetMassCrossSectionWithWindowFit.eps");
+  c0->SaveAs("Plots_2Vtag/DijetMassCrossSectionWithWindowFit.pdf");
 
 
 
@@ -571,7 +571,7 @@ void DijetMass_chiyoung_2Vtag(){
  }
 
 c01->SaveAs("Plots_2Vtag/DijetMassCrossSectionWithWindowFits.png");
-c01->SaveAs("Plots_2Vtag/DijetMassCrossSectionWithWindowFits.eps");
+c01->SaveAs("Plots_2Vtag/DijetMassCrossSectionWithWindowFits.pdf");
 
 
 
@@ -640,7 +640,7 @@ c01->SaveAs("Plots_2Vtag/DijetMassCrossSectionWithWindowFits.eps");
     leg->SetFillColor(0);
     leg->AddEntry(g,Form("Double W/Z-tag data (%.1f fb^{-1})", lumi/1000.),"PL");
     leg->AddEntry(fit,"Default Fit (3 Par.)","L");
-    leg->AddEntry(fit_lowMass,"Default Fit up to 1.9 TeV","L");
+    leg->AddEntry(fit_lowMass,"Default Fit up to 1.4 TeV","L");
     leg->AddEntry(fit_4par,"Alternate Fit A (4 Par.)","L");
     leg->AddEntry(fit_2par,"Alternate Fit B (2 Par.)","L");
     leg->Draw("same");
@@ -1185,7 +1185,7 @@ c01->SaveAs("Plots_2Vtag/DijetMassCrossSectionWithWindowFits.eps");
 
 
   c02->SaveAs("Plots_2Vtag/DijetMassCrossSectionWithWindowFitRatio.png");
-  c02->SaveAs("Plots_2Vtag/DijetMassCrossSectionWithWindowFitRatio.eps");
+  c02->SaveAs("Plots_2Vtag/DijetMassCrossSectionWithWindowFitRatio.pdf");
 
 
 
@@ -1281,7 +1281,7 @@ c01->SaveAs("Plots_2Vtag/DijetMassCrossSectionWithWindowFits.eps");
    TLegend *leg = new TLegend(0.65,0.7,0.92,0.92);
    leg->SetFillColor(0);
    leg->AddEntry(hPulls,"Default Fit (3 Par.)","PL");
-   leg->AddEntry(hPulls_lowMassFit,"Default Fit up to 1.9 TeV (4 Par.)","PL");
+   leg->AddEntry(hPulls_lowMassFit,"Default Fit up to 1.4 TeV (4 Par.)","PL");
    leg->AddEntry(hPulls_4par,"Alternate Fit A (4 Par.)","PL");
    leg->AddEntry(hPulls_2par,"Alternate Fit B (2 Par.)","PL");
    leg->Draw("same");
