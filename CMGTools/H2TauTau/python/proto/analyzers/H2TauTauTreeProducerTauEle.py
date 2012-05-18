@@ -1,14 +1,14 @@
-from CMGTools.RootTools.analyzers.TreeAnalyzer import TreeAnalyzer
+from CMGTools.RootTools.analyzers.TreeAnalyzerNumpy import TreeAnalyzerNumpy
 from CMGTools.H2TauTau.proto.analyzers.ntuple import *
 
 
-class H2TauTauTreeProducerTauEle( TreeAnalyzer ):
+class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
     '''Tree producer for the H->tau tau analysis.
 
     Some of the functions in this class should be made available to everybody.'''
     
     def declareVariables(self):
-       # print 'PIETRO in H2TauTauTreeProducerTauEle'
+       print 'PIETRO in H2TauTauTreeProducerTauEle'
 
        tr = self.tree
        var( tr, 'visMass')
@@ -31,8 +31,6 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzer ):
        
        var( tr, 'isFake')
        
-       self.tree.book()
-
 
     def process(self, iEvent, event):
             
@@ -74,4 +72,4 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzer ):
              isFake = 0
        fill(tr, 'isFake', isFake)
        
-       self.tree.fill()
+       self.tree.tree.Fill()
