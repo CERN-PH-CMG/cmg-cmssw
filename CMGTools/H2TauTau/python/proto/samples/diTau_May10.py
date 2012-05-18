@@ -146,7 +146,7 @@ from CMGTools.H2TauTau.proto.samples.triggers_diTau import data_triggers_2011A, 
 user = 'hinzmann'
 aod = 'V5'
 pat = 'PAT_CMG_V5_2_0'
-htt = 'H2TAUTAU_hinzmann15May12'
+htt = 'H2TAUTAU_hinzmann18May12'
 filePattern = 'diTau.*fullsel.*root'
 
 # Data --------------------------------------------------------------------------------
@@ -186,6 +186,38 @@ WJets.nGenEvents = 81345381
 TTJets.files = getFiles('/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 TTJets.nGenEvents = 59613991
 
+WW = cfg.MCComponent(
+    name = 'WW',
+    files = [],
+    xSection = 43.,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+WW.files = getFiles('/WW_TuneZ2_7TeV_pythia6_tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+WW.nGenEvents = 4225916
+
+WZ = cfg.MCComponent(
+    name = 'WZ',
+    files = [],
+    xSection = 18.2,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+WZ.files = getFiles('/WZ_TuneZ2_7TeV_pythia6_tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+WZ.nGenEvents = 4265243
+
+ZZ = cfg.MCComponent(
+    name = 'ZZ',
+    files = [],
+    xSection = 5.9,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+ZZ.files = getFiles('/ZZ_TuneZ2_7TeV_pythia6_tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+ZZ.nGenEvents = 4191045
 
 # Higgs Summer11 ----------------------------------------------------------------------------
 
@@ -205,6 +237,7 @@ HiggsVBF135.files = getFiles('/VBF_HToTauTau_M-135_7TeV-powheg-pythia6-tauola/Fa
 
 mc_fall11 = copy.copy( mc_ewk )
 mc_fall11.extend( mc_higgs ) 
+mc_fall11.extend([WW, WZ, ZZ])
 
 for data in data_2011A:
     data.triggers = data_triggers_2011A
