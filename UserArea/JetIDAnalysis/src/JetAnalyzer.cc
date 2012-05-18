@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.cc,v 1.18 2012/05/03 10:55:58 musella Exp $
+// $Id: JetAnalyzer.cc,v 1.19 2012/05/17 22:25:02 musella Exp $
 //
 //
 
@@ -244,8 +244,7 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    patjet.scaleEnergy(jec);
     }
     if ( patjet.pt() <  jetPtThreshold_ )  { continue; }
-    ++ijet;
- 
+  
     //-- remove muons from jets 
     if (isZ) {
       float dr1 = deltaR( muons.at(goodMuon1).eta(),  muons.at(goodMuon1).phi(),  patjet.eta(),  patjet.phi());
@@ -255,6 +254,7 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	continue;
       }
     }
+    ++ijet;
 
 
     //-- pu jet identifier
