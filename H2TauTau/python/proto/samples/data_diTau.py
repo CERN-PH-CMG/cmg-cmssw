@@ -10,7 +10,7 @@ H2TauTauPackage = '/'.join( [ os.environ['CMSSW_BASE'],
 data_Run2011A_May10ReReco_v1 = cfg.DataComponent(
     name = 'data_Run2011A_May10ReReco_v1',
     files = [],
-    intLumi = 168.597,
+    intLumi = 168.538,
     triggers = [],
     json = '{H2TauTauPackage}/json/finalTauPlusXMay.txt'.format(H2TauTauPackage=H2TauTauPackage)
     )
@@ -18,7 +18,7 @@ data_Run2011A_May10ReReco_v1 = cfg.DataComponent(
 data_Run2011A_PromptReco_v4 = cfg.DataComponent(
     name = 'data_Run2011A_PromptReco_v4',
     files = [],
-    intLumi = 929.748,
+    intLumi = 955.001,
     triggers = [],
     json = '{H2TauTauPackage}/json/finalTauPlusXv4.txt'.format(H2TauTauPackage=H2TauTauPackage)
     )
@@ -26,7 +26,7 @@ data_Run2011A_PromptReco_v4 = cfg.DataComponent(
 data_Run2011A_05Aug2011_v1 = cfg.DataComponent(
     name = 'data_Run2011A_05Aug2011_v1',
     files = [],
-    intLumi = 373.349,
+    intLumi = 386.825,
     triggers = [],
     json = '{H2TauTauPackage}/json/finalTauPlusXAug5.txt'.format(H2TauTauPackage=H2TauTauPackage)
     )
@@ -34,7 +34,7 @@ data_Run2011A_05Aug2011_v1 = cfg.DataComponent(
 data_Run2011A_PromptReco_v6 = cfg.DataComponent(
     name = 'data_Run2011A_PromptReco_v6',
     files = [],
-    intLumi = 658.886,
+    intLumi = 701.129,
     triggers = [],
     json = '{H2TauTauPackage}/json/finalTauPlusXOct3.txt'.format(H2TauTauPackage=H2TauTauPackage)
     )
@@ -42,7 +42,7 @@ data_Run2011A_PromptReco_v6 = cfg.DataComponent(
 data_Run2011B_PromptReco_v1 = cfg.DataComponent(
     name = 'data_Run2011B_PromptReco_v1',
     files = [],
-    intLumi = 2511.0,
+    intLumi = 2706.0,
     triggers = [],
     json = '{H2TauTauPackage}/json/finalTauPlusX2011B.txt'.format(H2TauTauPackage=H2TauTauPackage)
     )
