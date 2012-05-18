@@ -24,6 +24,8 @@
 #include "AnalysisDataFormats/CMGTools/interface/Photon.h"
 #include "AnalysisDataFormats/CMGTools/interface/NamedObject.h"
 #include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/Common/interface/ValueMap.h"
 
 #include <vector>
 
@@ -289,6 +291,14 @@ namespace {
     edm::Wrapper<cmg::MuEle> wmue_;
     edm::Wrapper<std::vector<cmg::MuEle> > wmuev_;
 
+    // Correspondence between PFCandidates and Primary Vertices
+    std::vector<reco::Vertex> vtxvec_;
+    std::vector<edm::Ref<std::vector<reco::Vertex>,reco::Vertex,edm::refhelper::FindUsingAdvance<std::vector<reco::Vertex>,reco::Vertex> > > vtxrefvec_;
+    edm::ValueMap<edm::Ref<std::vector<reco::Vertex>,reco::Vertex,edm::refhelper::FindUsingAdvance<std::vector<reco::Vertex>,reco::Vertex> > > vtxvmap_;
+    edm::Wrapper<edm::ValueMap<edm::Ref<std::vector<reco::Vertex>,reco::Vertex,edm::refhelper::FindUsingAdvance<std::vector<reco::Vertex>,reco::Vertex> > > > vtxvmapw_;
+    reco::VertexRefVector vtxrefvec2_;
+    edm::ValueMap<reco::VertexRefVector> vtxvmap2_;
+    edm::Wrapper<edm::ValueMap<reco::VertexRefVector> > vtxvmapw2_;
 
   };
   
