@@ -98,8 +98,8 @@ treeProducer = cfg.Analyzer(
 
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.tauMu_ColinMay12 import * 
-# from CMGTools.H2TauTau.proto.samples.tauMu_JoseMay9 import * 
+from CMGTools.H2TauTau.proto.samples.tauMu_ColinMay18 import * 
+# from CMGTools.H2TauTau.proto.samples.tauMu_ColinMay15 import * 
 
 #########################################################################################
 
@@ -112,7 +112,7 @@ for mc in MC:
 
 
 MC = [DYJets, WJets, TTJets]
-MC.extend( mc_higgs )
+# MC.extend( mc_higgs )
 selectedComponents =  copy.copy(MC)
 
 if period == 'Period_2011A':
@@ -134,7 +134,6 @@ sequence = cfg.Sequence( [
     vertexAna,
     tauWeighter, 
     muonWeighter, 
-    # eventSorter,
     treeProducer
    ] )
 
@@ -150,17 +149,18 @@ data_Run2011A_05Aug2011_v1.splitFactor = 20
 data_Run2011A_03Oct2011_v1.splitFactor = 20
 
 embed_Run2011B_PromptReco_v1.splitFactor = 10
-embed_Run2011A_PromptReco_v4.splitFactor = 5
-embed_Run2011A_May10ReReco_v1.splitFactor = 2
-embed_Run2011A_05Aug2011_v1.splitFactor = 2
-embed_Run2011A_03Oct2011_v1.splitFactor = 2
+embed_Run2011A_PromptReco_v4.splitFactor = 10
+embed_Run2011A_May10ReReco_v1.splitFactor = 5
+embed_Run2011A_05Aug2011_v1.splitFactor = 5
+embed_Run2011A_03Oct2011_v1.splitFactor = 5
 
-test = 1
+test = 0
+# selectedComponents = embed_2011
 if test==1:
-    comp = HiggsVBF120
+    # comp = HiggsVBF120
     # comp.files = ['tauMu_fullsel_tree_CMG.root']
     # comp.files = ['/data/c/cbern/Tests/CMGTools/44X/May05/CMGTools/CMSSW_4_4_4/src/CMGTools/H2TauTau/prod/tauMu_fullsel_tree_CMG.root']
-    # comp = data_Run2011B_PromptReco_v1
+    comp = embed_Run2011A_May10ReReco_v1
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.files = comp.files[:5]
@@ -168,9 +168,8 @@ if test==1:
 elif test==2:
     for comp in selectedComponents:
      comp.splitFactor = 1
-     comp.files = comp.files[2]
+     # comp.files = comp.files[:2]
 
-# selectedComponents = mc_higgs
 # selectedComponents.extend(MC)
 
 config = cfg.Config( components = selectedComponents,
