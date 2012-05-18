@@ -8,7 +8,12 @@ TauMuPlotter * tauMuConfig(const char * name){
   //TString outpath="/data/benitezj/Samples/JoseMay9mva";
   //TString outpath="/data/benitezj/Samples/JoseMay9PFMuon";
   //TString outpath="output2/ColinMay12MetRaw";
-  TString outpath="output/JoseMay14";
+  //TString outpath="output/JoseMay14";
+  //TString outpath="/data/benitezj/Samples/JoseMay14nosvfit";
+  //TString outpath="output/JoseMay16norecoilCut";
+  //TString outpath="output/JoseMay16rawJetPt";
+  //TString outpath="/data/benitezj/Samples/JoseMay16chs";
+  TString outpath="/data/benitezj/Samples/JoseMay16recoil";
   analysis->setOutputPath(outpath);
   analysis->setQCDOStoSSRatio(1.11);//value from AN-11-390 v4
 
@@ -72,7 +77,7 @@ TauMuPlotter * tauMuConfig(const char * name){
   Sample * WJetsToLNu=new Sample("WJetsToLNu",outpath.Data());
   WJetsToLNu->setDataType("MC");
   WJetsToLNu->setCrossection(31314);
-  WJetsToLNu->setSampleGenEvents(81308780*0.99);//V5_1_0 missing files: 1/91                                  
+  WJetsToLNu->setSampleGenEvents(81308780);//V5_1_0 missing files: 1/91                                  
   analysis->addSample(WJetsToLNu);  
    
   Sample* TTJets = new Sample("TTJets",outpath.Data());

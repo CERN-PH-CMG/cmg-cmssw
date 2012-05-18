@@ -12,6 +12,8 @@
 #include "CMGTools/H2TauTau/interface/SelectionEfficiency.h"
 //#include "CMGTools/H2TauTau/interface/TauRate.h"
 
+#include "CMGTools/Common/interface/RecoilCorrector.h"
+
 #include <TRandom2.h>
 
 
@@ -34,6 +36,7 @@ protected:
 
   edm::InputTag diTauTag_;
   edm::InputTag genParticlesTag_;
+  edm::InputTag pfJetListTag_;
   edm::Handle< std::vector<cmg::TauMu> > diTauList_;
   std::vector<cmg::TauMu> diTauSelList_;
   const cmg::TauMu * diTauSel_;
@@ -94,12 +97,14 @@ protected:
   float pfmetpt_;
   float pfmetphi_;
   float transversemass_;
-  float metpt_;
-  float metphi_;
+  double metpt_;//double needed by recoil corrector
+  double metphi_;
   
   int njet_;
   float leadJetPt_;
   float leadJetEta_;
+  float subleadJetPt_;
+  float subleadJetEta_;
   float diJetMass_;
   float diJetDeltaEta_;
   float diJetEta1Eta2_;
@@ -135,6 +140,12 @@ private:
   TRandom2 randEngine_; 
   double randsigma_;
   
+  
+  RecoilCorrector corrector_;
+  int recoilCorreciton_;
+  std::string fileCorrectTo_;
+  std::string fileZmmData_;
+  std::string fileZmmMC_;
 
   int counterall_;
   int counterev_;
@@ -151,6 +162,7 @@ private:
   int countermuiso_;
   int countermumatch_;
   int counterditau_;
+  int counterbestcand_;
   int countertruth_;
   int counter_;
 

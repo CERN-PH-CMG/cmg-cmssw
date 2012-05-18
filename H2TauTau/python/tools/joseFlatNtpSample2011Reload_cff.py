@@ -3,6 +3,10 @@ from PhysicsTools.PatAlgos.tools.helpers import applyPostfix
 
 HiggsMass = cms.vstring(['110','115','120','125','130','135','140','145'])
 
+import os 
+recoilrootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/Common/data/metRecoilCorrection/'
+
+
 #def loadFlatNtpSamples(process):
 def configureFlatNtpSample(module,sampleAlias):
     if sampleAlias == 'TauPlusXMay' : 
@@ -66,6 +70,8 @@ def configureFlatNtpSample(module,sampleAlias):
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
         module.randsigma = 0.10
+        module.recoilCorrection = 0 #recoil corrector has memory leak and makes this sample fail
+        module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_wjets_njet.root' 
 
     if sampleAlias == 'TTJets' : 
         module.path = "/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5/HTTSKIM1"
@@ -79,6 +85,8 @@ def configureFlatNtpSample(module,sampleAlias):
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.sampleGenEventType = 5
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
+        module.recoilCorrection = 1
+        module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_zjets_ltau_njet.root' 
 
     if sampleAlias == 'ZToMuMu' : 
         module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"
@@ -120,13 +128,17 @@ def configureFlatNtpSample(module,sampleAlias):
             module.dataType = "MC"
             module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
             module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
-
+            module.recoilCorrection = 1
+            module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+            
         if sampleAlias == "HiggsVBF"+HiggsMass[i] :
             module.path = "/VBF_HToTauTau_M-%s_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5" % HiggsMass[i]
             module.dataType = "MC"
             module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
             module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
-
+            module.recoilCorrection = 1
+            module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+            
         if sampleAlias == "HiggsVH"+HiggsMass[i] : 
             module.path = "/WH_ZH_TTH_HToTauTau_M-%s_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5" % HiggsMass[i]
             module.dataType = "MC"
