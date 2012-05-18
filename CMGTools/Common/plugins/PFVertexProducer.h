@@ -16,6 +16,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
 
 #include <string>
 
@@ -30,10 +31,16 @@ class PFVertexProducer : public edm::EDProducer {
 
   virtual void beginRun(edm::Run& run,const edm::EventSetup & es);
 
+  int chargedHadronVertex( const reco::VertexCollection& vertices, 
+			   const reco::PFCandidate& pfcand ) const;
+
  private:
 
   /// Input PFCandidates
   edm::InputTag       inputTagPFCandidates_;
+  edm::InputTag       inputTagVertices_;
+
+  bool checkClosestZVertex_;
 
 };
 

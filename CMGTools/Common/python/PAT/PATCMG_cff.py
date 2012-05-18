@@ -31,10 +31,17 @@ PATCMGTriggerSequence = cms.Sequence(
     triggerSequence
     ) 
 
+
+# Add the one-to-one correspondence between PFCandidates and Primary Vertices
+
+from CMGTools.Common.PFVertexProducer_cfi import particleFlow
+PATCMGVertexSequence = cms.Sequence ( particleFlow )
+
+
 # PU SUB AND PARTICLES FOR ISO ---------------
 
 from CommonTools.ParticleFlow.pfNoPileUp_cff import * 
-from CommonTools.ParticleFlow.pfParticleSelection_cff import * 
+from CommonTools.ParticleFlow.pfParticleSelection_cff import *
 
 # note pfPileUp modified according to JetMET's recommendations
 pfPileUp.checkClosestZVertex = False
@@ -47,7 +54,7 @@ pfNoPileUpSequence.insert(0, goodOfflinePrimaryVertices)
 
 PATCMGPileUpSubtractionSequence = cms.Sequence(
     pfNoPileUpSequence +
-    pfParticleSelectionSequence 
+    pfParticleSelectionSequence
     )
 
 # RHO's            ----------------------------
@@ -194,6 +201,7 @@ PATCMGMetRegressionSequence = cms.Sequence(
 PATCMGSequence = cms.Sequence(
     PATCMGGenSequence +
     PATCMGTriggerSequence +
+    PATCMGVertexSequence +
     PATCMGPileUpSubtractionSequence +
     PATCMGRhoSequence +
     PATCMGMuonSequence +

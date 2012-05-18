@@ -59,7 +59,8 @@ patEventContentCMG.extend([
     'keep *_phPFIsoDepositNeutral_*_*',
     'keep *_phPFIsoDepositGamma_*_*',
     'keep *_phPFIsoDepositPU_*_*',
-    'keep *_pfSelectedPhotons_*_*'
+    'keep *_pfSelectedPhotons_*_*',
+    'keep *_particleFlow_*_PAT'
     ])
 
 patEventContentCMG.extend( everything )
