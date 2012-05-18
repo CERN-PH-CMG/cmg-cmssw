@@ -29,6 +29,36 @@ class TreeProducer( Analyzer ):
     def fill(self, varName, value ):
         self.vars[varName][0]=value
 
+    def bookGenFSR(self, pName ):
+        self.var('{pName}_Pt'.format(pName=pName))
+        self.var('{pName}_Eta'.format(pName=pName))
+        self.var('{pName}_Phi'.format(pName=pName))
+
+    def bookRecoFSR(self, pName ):
+        self.var('{pName}_Pt'.format(pName=pName))
+        self.var('{pName}_Eta'.format(pName=pName))
+        self.var('{pName}_Phi'.format(pName=pName))
+        self.var('{pName}_Match'.format(pName=pName))
+        self.var('{pName}_IsoCharged'.format(pName=pName))
+        self.var('{pName}_IsoGamma'.format(pName=pName))
+        self.var('{pName}_IsoNeutral'.format(pName=pName))
+        self.var('{pName}_IsoPU'.format(pName=pName))
+        self.var('{pName}_IsoDB'.format(pName=pName))
+
+    def fillGenFSR(self, pName,particle ):
+        self.fill('{pName}_Pt'.format(pName=pName), particle.pt() )
+        self.fill('{pName}_Eta'.format(pName=pName), particle.eta() )
+        self.fill('{pName}_Phi'.format(pName=pName), particle.phi() )
+
+    def fillRecoFSR(self, pName,particle ):
+        self.fillGenFSR(pName,particle)
+        if hasattr(particle,'match'):
+            self.fill('{pName}_Match'.format(pName=pName), particle.match )
+        self.fill('{pName}_IsoCharged'.format(pName=pName), particle.chargedHadronIso() )
+        self.fill('{pName}_IsoGamma'.format(pName=pName), particle.photonIso() )
+        self.fill('{pName}_IsoNeutral'.format(pName=pName), particle.neutralHadronIso() )
+        self.fill('{pName}_IsoPU'.format(pName=pName), particle.puChargedHadronIso() )
+        self.fill('{pName}_IsoDB'.format(pName=pName), particle.absIso(0.5) )
         
 
     def bookLepton(self, pName ):
@@ -99,6 +129,16 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_Phi'.format(pName=pName))
         self.var('{pName}_Charge'.format(pName=pName))
         self.var('{pName}_Mass'.format(pName=pName))
+        self.var('{pName}_FSR_Exists'.format(pName=pName))
+        self.var('{pName}_FSR_UncorrMass'.format(pName=pName))
+        self.var('{pName}_FSR_Theta1'.format(pName=pName))
+        self.var('{pName}_FSR_Theta2'.format(pName=pName))
+        self.var('{pName}_FSR_DR1'.format(pName=pName))
+        self.var('{pName}_FSR_DR2'.format(pName=pName))
+        self.var('{pName}_FSR_ThetaStar'.format(pName=pName))
+        self.var('{pName}_FSR_DRStar'.format(pName=pName))
+        self.var('{pName}_FSR_Match'.format(pName=pName))
+        self.bookRecoFSR('{pName}_FSR'.format(pName=pName))
 
     def bookHiggs(self, pName ):
         self.var('{pName}_Pt'.format(pName=pName))
@@ -108,15 +148,35 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_Mass'.format(pName=pName))
         self.var('{pName}_MinPairMass'.format(pName=pName))
         self.var('{pName}_MinOSPairMass'.format(pName=pName))
+        self.var('{pName}_FSRExists'.format(pName=pName))
+        self.var('{pName}_FSRUncorrMass'.format(pName=pName))
 
 
     def fillBoson(self, pName,particle ):
         self.fillBasic(pName,particle)
+        self.fill('{pName}_FSR_UncorrMass'.format(pName=pName), particle.fsrUncorrected().M() )
 
+        if particle.hasFSR():
+            self.fill('{pName}_FSR_Exists'.format(pName=pName), 1.0 )
+            self.fill('{pName}_FSR_Theta1'.format(pName=pName), particle.fsrTheta1() )
+            self.fill('{pName}_FSR_Theta2'.format(pName=pName), particle.fsrTheta2() )
+            self.fill('{pName}_FSR_DR1'.format(pName=pName), particle.fsrDR1() )
+            self.fill('{pName}_FSR_DR2'.format(pName=pName), particle.fsrDR2() )
+            self.fill('{pName}_FSR_ThetaStar'.format(pName=pName), particle.fsrThetaStar() )
+            self.fill('{pName}_FSR_DRStar'.format(pName=pName), particle.fsrDRStar() )
+            self.fillRecoFSR('{pName}_FSR'.format(pName=pName),particle.fsrPhoton )
+
+
+
+                
+        else:
+            self.fill('{pName}_FSR_Exists'.format(pName=pName), 0.0 )
+            
     def fillHiggs(self, pName,particle ):
         self.fillBasic(pName,particle)
         self.fill('{pName}_MinPairMass'.format(pName=pName), particle.minPairMass() )
         self.fill('{pName}_MinOSPairMass'.format(pName=pName), particle.minOSPairMass() )
+        self.fill('{pName}_FSRUncorrMass'.format(pName=pName), particle.fsrUncorrected().M() )
         
 
 

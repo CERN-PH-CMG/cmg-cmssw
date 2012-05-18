@@ -1,4 +1,6 @@
 from ROOT import TLorentzVector
+from math import pi,acos,asin
+from CMGTools.RootTools.utils.DeltaR import deltaR
 
 class DiObject( TLorentzVector ):
     '''Class used for Zs, and also for Higgs candidates'''
@@ -38,3 +40,62 @@ class DiObject( TLorentzVector ):
         
     def __str__(self):
         return ', '.join( ['DiObject:', str(self.leg1), str(self.leg2)] )
+
+
+############FSR variables
+    def fsrUncorrected(self):
+        if not hasattr(self,'fsrPhoton'):
+            return self
+        else:
+            gamma = TLorentzVector( self.fsrPhoton.px(), self.fsrPhoton.py(), self.fsrPhoton.pz(), self.fsrPhoton.energy() )
+            return self-gamma
+    
+    def setFSR(self,photon):
+        self.fsrPhoton=photon
+        gamma = TLorentzVector( photon.px(), photon.py(), photon.pz(), photon.energy() )
+        self=self+gamma
+        
+
+    def hasFSR(self):
+        return hasattr(self,'fsrPhoton')
+
+    def fsrTheta1(self):
+        if hasattr(self,'fsrPhoton'):
+            photon=self.fsrPhoton
+            return acos(self.leg1.p4().Vect().Dot(photon.p4().Vect())/(self.leg1.p4().P()*photon.p4().P()))*180/pi
+
+
+    def fsrTheta2(self):
+        if hasattr(self,'fsrPhoton'):
+            photon=self.fsrPhoton
+            return acos(self.leg2.p4().Vect().Dot(photon.p4().Vect())/(self.leg2.p4().P()*photon.p4().P()))*180/pi
+
+
+    def fsrDR1(self):
+        if hasattr(self,'fsrPhoton'):
+            photon=self.fsrPhoton
+            return deltaR(self.leg1.eta(),self.leg1.phi(),photon.eta(),photon.phi())
+
+    def fsrDR2(self):
+        if hasattr(self,'fsrPhoton'):
+            photon=self.fsrPhoton
+            return deltaR(self.leg2.eta(),self.leg2.phi(),photon.eta(),photon.phi())
+
+
+    def fsrThetaStar(self):
+        if hasattr(self,'fsrPhoton'):
+            photon=self.fsrPhoton
+            plane = (self.leg1.p4().Vect().Cross(self.leg2.p4().Vect())).unit()
+            angle = asin(plane.Dot(photon.p4().Vect())/(photon.p4().P()))*180/pi
+            return angle
+
+    def fsrDRStar(self):
+        if hasattr(self,'fsrPhoton'):
+            photon=self.fsrPhoton
+            plane = self.leg1.p4().Vect().Cross(self.leg2.p4().Vect()).unit()
+            return deltaR(plane.eta(),plane.phi(),photon.eta(),photon.phi())
+
+
+        
+
+        

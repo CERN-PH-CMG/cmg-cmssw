@@ -12,6 +12,7 @@ from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton
 
 from CMGTools.HToZZTo4Leptons.analyzers.DiObject import DiObject
 from CMGTools.HToZZTo4Leptons.analyzers.DiObjectPair import DiObjectPair
+from CMGTools.HToZZTo4Leptons.analyzers.FSRRecovery import FSRRecovery
 
 
 
@@ -49,6 +50,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
         else:
             event.leptons2 = event.leptons1
 
+            
        
     def process(self, iEvent, event):
         return True
@@ -60,12 +62,50 @@ class FourLeptonAnalyzerBase( Analyzer ):
         return out
 
 
+    def findPairsWithFSR(self, leptons,photons):
+        out = []
+        for l1, l2 in itertools.combinations(leptons, 2):
+            z = DiObject(l1, l2)
+            if not hasattr(self.cfg_ana,"FSR"):
+                print "NO FSR Configuration Found"
+                print "Running without FSR"
+                out.append(z)
+            else:    
+                fsrAlgo=FSRRecovery(self.cfg_ana.FSR)
+                fsrAlgo.setPhotons(photons)
+                fsrAlgo.setZ(z)
+                fsrAlgo.recover()
+                out.append(z)
+        return out
+
+
     #this function is different for the ee/mumu
     def findQuads(self, leptons):
         out = []
         for l1, l2,l3,l4 in itertools.permutations(leptons, 4):
             if l1.pt()>l2.pt() and l3.pt()>l4.pt():
                 out.append( DiObjectPair(l1, l2,l3,l4))
+        return out
+
+    def findQuadsWithFSR(self, leptons,photons):
+        out = []
+        for l1, l2,l3,l4 in itertools.permutations(leptons, 4):
+            if l1.pt()>l2.pt() and l3.pt()>l4.pt():
+                quadObject =DiObjectPair(l1, l2,l3,l4)
+                if not hasattr(self.cfg_ana,"FSR"):
+                    print "NO FSR Configuration Found"
+                    print "Running without FSR"
+                    out.append(quadObject)
+                else:    
+                    fsrAlgo=FSRRecovery(self.cfg_ana.FSR)
+                    fsrAlgo.setPhotons(photons)
+                    fsrAlgo.setZ(quadObject.leg1)
+                    #recover FSR photons
+                    fsrAlgo.recover()
+                    #Now Z 2
+                    fsrAlgo.setZ(quadObject.leg2)
+                    fsrAlgo.recover()
+                    out.append(quadObject)
         return out
 
 
@@ -270,3 +310,14 @@ class FourLeptonAnalyzerBase( Analyzer ):
             
         
 
+
+
+
+
+       
+
+                                                                                                           
+
+
+
+                                                                                                       

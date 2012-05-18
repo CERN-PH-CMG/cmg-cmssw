@@ -4,12 +4,14 @@ import CMGTools.RootTools.fwlite.Config as cfg
 
 
 from CMGTools.HToZZTo4Leptons.analyzers.EffectiveAreas import effectiveAreas2011 
-
 effectiveAreas = effectiveAreas2011()
+
+from CMGTools.HToZZTo4Leptons.analyzers.FSRRecovery import FSRConfig
+fsr = FSRConfig()
 
 
 period = 'Period_2011AB'
-channel = 'mu_ele'
+channel = 'mu_mu'
 
 
 
@@ -67,7 +69,8 @@ muMuAna = cfg.Analyzer(
     minMass=4.,
     PF=True,
     keep=False,
-    effectiveAreas=effectiveAreas
+    effectiveAreas=effectiveAreas,
+    FSR=fsr
     )
 
 
@@ -214,13 +217,16 @@ dataSequence=[
 sequence = cfg.Sequence(dataSequence)
 
 
-test = 0
+test = 1
 if test==1:
     dataset = ZZ4mu
     selectedComponents = [dataset]
     dataset.splitFactor = 1
     dataset.files = dataset.files[:10]
-    dataset.files = ['root://lxcms00//data3/HZZ_Pattuple/CMG/V5_1_0/cmgTuple.root']
+    dataset.files = ['root://cmsphys08//data/bachtis/CMGTools/CMSSW_5_2_5/src/patTuple.root']
+#    dataset.files = ['file:/afs/cern.ch/work/p/pjanot/CMGTools/CMSSW_5_2_3_patch2/src/CMGTools/Common/prod/hzz125_patTuple_1.root']
+
+   
 if test ==2:
     selectedComponents=selectedComponents[:1]
     print selectedComponents

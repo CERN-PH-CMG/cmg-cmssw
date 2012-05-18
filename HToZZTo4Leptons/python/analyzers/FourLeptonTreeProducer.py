@@ -48,6 +48,10 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.var("vertices",int)
         self.var("vertexWeight")
 
+        #For FSR study
+        self.bookGenFSR("genFSR")
+        self.bookRecoFSR("matchFSR")
+
 
     def process(self, iEvent, event):
         self.reset()
@@ -58,11 +62,17 @@ class FourLeptonTreeProducer( TreeProducer ):
         #get the vertex analyzer event and fill the vertices
         self.fill('vertices',len(event.vertices))
         self.fill('vertexWeight',(event.vertexWeight))
-        
-
 
         #Fill run,lumi,event
         self.fillEventInfo(iEvent,subevent)
+
+        if hasattr( subevent, 'bestGenPhoton' ):
+            self.fillGenFSR('genFSR',subevent.bestGenPhoton)
+
+        if hasattr( subevent, 'matchedPhoton' ):
+            self.fillRecoFSR('matchFSR',subevent.matchedPhoton)
+            
+            
 
         #Fill the Higgs and legs
         self.fill('HExists',0)
@@ -87,6 +97,8 @@ class FourLeptonTreeProducer( TreeProducer ):
             self.fillLepton("HLoose_Z1_leg2",subevent.higgsCandLoose.leg1.leg2,subevent)
             self.fillLepton("HLoose_Z2_leg1",subevent.higgsCandLoose.leg2.leg1,subevent)
             self.fillLepton("HLoose_Z2_leg2",subevent.higgsCandLoose.leg2.leg2,subevent)
+
+
 
         #Fill the fake rate measurement info
         self.fill('HLooseExists',0)

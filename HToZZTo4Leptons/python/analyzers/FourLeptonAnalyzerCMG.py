@@ -12,7 +12,6 @@ from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton
 from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
 
 from CMGTools.HToZZTo4Leptons.analyzers.DiObjectPair import DiObjectPair
-#from CMGTools.HToZZTo4Leptons.analyzers.helpers import applyCut,applyDoubleCut
 from CMGTools.HToZZTo4Leptons.analyzers.CutFlowMaker import CutFlowMaker
 
 from CMGTools.HToZZTo4Leptons.analyzers.FourLeptonAnalyzerBase import FourLeptonAnalyzerBase
@@ -54,10 +53,8 @@ class FourLeptonAnalyzerCMG( FourLeptonAnalyzerBase ):
         #Build lepton lists and apply skim
         self.buildLeptonList( event )
 
-
         #create a cut flow
         cutFlow = CutFlowMaker(self.counters.counter("FourLepton"),event,event.leptons1,event.leptons2)
-
 
         #Cuts :Apply minimal criteria like sip<100 and min Pt and eta and require at least two leptons 
         passed=cutFlow.applyDoubleCut(self.testLeptonSkim1,self.testLeptonSkim2,'lepton preselection',2,'skimmedLeptons1','skimmedLeptons2')
@@ -75,7 +72,7 @@ class FourLeptonAnalyzerCMG( FourLeptonAnalyzerBase ):
 
 
         #make lepton combinations 
-        event.leptonPairs = self.findPairs(cutFlow.obj1 )
+        event.leptonPairs = self.findPairs(cutFlow.obj1)
         cutFlow.setSource1(event.leptonPairs)
         
         #require that   M>40 and OS/SF
