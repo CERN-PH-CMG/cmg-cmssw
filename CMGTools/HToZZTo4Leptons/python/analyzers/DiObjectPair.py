@@ -66,6 +66,11 @@ class DiObjectPair( TLorentzVector ):
     def __str__(self):
         return ', '.join( ['DiObjectPair:', str(self.leg1), str(self.leg2)] )
 
+
+    def fsrUncorrected(self):
+        return self.leg1.fsrUncorrected()+self.leg2.fsrUncorrected()
+
+
         ###MELA#########################################
 
 

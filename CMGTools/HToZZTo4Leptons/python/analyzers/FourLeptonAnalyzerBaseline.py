@@ -12,7 +12,6 @@ from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton
 from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
 
 from CMGTools.HToZZTo4Leptons.analyzers.DiObjectPair import DiObjectPair
-#from CMGTools.HToZZTo4Leptons.analyzers.helpers import applyCut,applyDoubleCut
 from CMGTools.HToZZTo4Leptons.analyzers.CutFlowMaker import CutFlowMaker
 
 from CMGTools.HToZZTo4Leptons.analyzers.FourLeptonAnalyzerBase import FourLeptonAnalyzerBase
@@ -118,9 +117,6 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
 
         #ZZ->4l phase space
         passed=cutFlow.applyCut(self.testFourLeptonMass,'ZZ 4l phase space',1,'fLZZ4l')
-
-        if iEvent.eventAuxiliary().id().event()==202931:
-            print event
 
         if passed:
             event.higgsCand = cutFlow.obj1[0]
