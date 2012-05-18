@@ -1,6 +1,5 @@
 #TODO NO TRIGGER MAPPING YET! 
 #NO MC TRIGGER SELECTION YET! should now be ok
-#NEED TO TRY MIT MVA
 #GET EMBEDDED SAMPLES
 
 import copy
@@ -16,7 +15,7 @@ baseDir = '2011'
 mc_vertexWeight = None
 mc_tauEffWeight = None
 mc_eleEffWeight = None
-mc_tauEffWeight_mc = 'effMediumIsoTau20MC'
+mc_tauEffWeight_mc = 'effLooseTau15MC'
 mc_eleEffWeight_mc = 'effEle18MC'
 if period == 'Period_2011A':
     mc_vertexWeight = 'vertexWeightFall112invfb'
@@ -42,7 +41,7 @@ tauEleAna = cfg.Analyzer(
     pt2 = 20,
     iso1 = 999,
     iso2 = 0.1,
-    eta1 = 999,
+    eta1 = 2.3,
     eta2 = 2.1,
     m_min = 10,
     m_max = 99999,
@@ -80,6 +79,7 @@ vbfKwargs = dict( Mjj = 400,
 
 vbfAna = cfg.Analyzer(
     'VBFAnalyzer',
+    jetCol = 'cmgPFJetSel',
     jetPt = 30,
     jetEta = 4.5,
     **vbfKwargs
@@ -96,9 +96,13 @@ eventSorter = cfg.Analyzer(
     **vbfKwargs
     )
 
+treeProducer = cfg.Analyzer(
+    'H2TauTauTreeProducerTauEle'
+    )
+
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.tauEle_march12 import * 
+from CMGTools.H2TauTau.proto.samples.tauEle_ColinMay15 import * 
 
 #########################################################################################
 
@@ -110,7 +114,10 @@ for mc in MC:
     mc.jetSmear = mc_jet_smear
 
 
+MC = [DYJets, WJets, TTJets]
+MC.extend( mc_higgs )
 selectedComponents =  copy.copy(MC)
+
 if period == 'Period_2011A':
     selectedComponents.extend( data_2011A )
     # selectedComponents.extend( embed_2011A )    
@@ -130,7 +137,8 @@ sequence = cfg.Sequence( [
     vertexAna,
     tauWeighter, 
     eleWeighter, 
-    eventSorter
+    # eventSorter,
+    treeProducer
    ] )
 
 DYJets.fakes = True
@@ -146,12 +154,13 @@ data_Run2011A_PromptReco_v4.splitFactor = 2
 ## embed_Run2011A_03Oct2011_v1.splitFactor = 2
 ## embed_Run2011B_PromptReco_v1.splitFactor = 8
 
-test = 0
+test = 1
 if test==1:
-    comp = DYJets
+#    comp = DYJets
+    comp = HiggsVBF120
     selectedComponents = [comp]
     comp.splitFactor = 1
-    comp.files = comp.files[:2]
+    comp.files = comp.files[:1]
     # TTJets.files = TTJets.files[:1]
 elif test==2:
     for comp in selectedComponents:
