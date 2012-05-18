@@ -79,8 +79,16 @@ class Muon( Lepton ):
 
     def tightId( self ):
         '''Tight ID as recommended by mu POG.'''
-        return muon.getSelection('cuts_vbtfmuon')
-
+        return self.looseId() and \
+               self.isGlobalMuon() and \
+               self.normalizedChi2() < 10 and \
+               self.numberOfValidMuonHits() > 0 and \
+               self.numberOfMatches() > 1 and \
+               self.dxy() < 0.2 and \
+               self.dz() < 0.5 and \
+               self.numberOfValidPixelHits() > 0 and \
+               self.trackerLayersWithMeasurement() > 5 
+    
     def mvaIso( self ):
         return self.sourcePtr().userFloat('mvaIsoRings')
     

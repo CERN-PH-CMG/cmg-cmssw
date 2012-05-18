@@ -97,8 +97,19 @@ class DiLeptonAnalyzer( Analyzer ):
                 return False
             else:
                 self.counters.counter('DiLepton').inc('leg2 trig matched')
-        
 
+        # mass cut 
+        selDiLeptons = [ diL for diL in selDiLeptons if \
+                         self.testMass(diL) ]
+        if len(selDiLeptons)==0:
+            return False
+        else:
+            self.counters.counter('DiLepton').inc(
+                '{min:3.1f} < m < {max:3.1f}'.format( min = self.cfg_ana.m_min,
+                                                      max = self.cfg_ana.m_max )
+                )
+
+        # exactly one? 
         if len(selDiLeptons)==0:
             return False
         elif len(selDiLeptons)==1:
@@ -107,15 +118,6 @@ class DiLeptonAnalyzer( Analyzer ):
         event.diLepton = self.bestDiLepton( selDiLeptons )
         event.leg1 = event.diLepton.leg1()
         event.leg2 = event.diLepton.leg2()
-
-        mass = event.diLepton.mass()
-        if self.cfg_ana.m_min < mass and mass < self.cfg_ana.m_max:
-            self.counters.counter('DiLepton').inc(
-                '{min:3.1f} < m < {max:3.1f}'.format( min = self.cfg_ana.m_min,
-                                                      max = self.cfg_ana.m_max )
-                )
-        else:
-            return False
 
         return True
 
@@ -201,6 +203,11 @@ class DiLeptonAnalyzer( Analyzer ):
 
         WARNING: the muon filter should be used only in the muon channel.'''
         return True
+
+
+    def testMass(self, diLepton):
+        mass = diLepton.mass()
+        return self.cfg_ana.m_min < mass and mass < self.cfg_ana.m_max
 
     
     def bestDiLepton(self, diLeptons):

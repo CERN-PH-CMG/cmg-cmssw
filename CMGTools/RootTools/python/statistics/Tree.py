@@ -42,34 +42,14 @@ class Tree(object):
 def main():
   # Make a tree
   f = TFile('myTest.root','RECREATE')
-  t = TTree('MyTree','My test tree')
   t2 = Tree('Colin', 'Another test tree')
   t2.addVar('double', 'a')
   t2.addVar('double', 'b')
+  
   t2.book()
   t2.s.a = 2
   t2.s.b = 50
   t2.fill()
-  
-
-  # Create a struct
-  gROOT.ProcessLine(\
-    "struct MyStruct{\
-      Int_t someInt;\
-      Double_t someDouble;\
-    };")
-  from ROOT import MyStruct
-
-  # Create branches in the tree
-  s = MyStruct()
-  t.Branch('rootInt',AddressOf(s,'someInt'),'someInt/I')
-  t.Branch('rootDouble',AddressOf(s,'someDouble'),'someDouble/D')
-
-  # Fill tree
-  for i in range(100000):
-    s.someInt = i
-    s.someDouble = i
-    t.Fill()
 
   f.Write()
   f.Close()
