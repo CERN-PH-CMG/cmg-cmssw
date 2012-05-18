@@ -1,5 +1,5 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'patrick_pfchargedhadronvertex_18May12'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'sezen_18may12'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'patrick_allphotons_18may12'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-02'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'sezen_18may12'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_rltinfo_18May12'),
