@@ -121,6 +121,13 @@ class Electron( Lepton ):
     def absEffAreaIso(self,rho,effectiveAreas):
         return self.absIsoFromEA(rho,effectiveAreas.eGamma)
 
+    def mvaIso( self ):
+        return self.sourcePtr().userFloat('mvaIsoRings')
+    
+#    def ElectronMVA_MIT( self ):
+#        return self.sourcePtr().userFloat('ElectronMVA_MIT')
+    
+
     def mvaIDZZ(self):
         mvaRegions = [{'ptMin':0,'ptMax':10, 'etaMin':0.0, 'etaMax':0.8,'mva':0.47},\
                       {'ptMin':0,'ptMax':10, 'etaMin':0.8 ,'etaMax':1.479,'mva':0.004},\
