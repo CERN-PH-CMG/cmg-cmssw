@@ -2,12 +2,16 @@
 
 cmg::PhotonFactory::event_ptr
 cmg::PhotonFactory::create(const edm::Event& iEvent,
-                           const edm::EventSetup&)
+                           const edm::EventSetup& iSetup)
 {
   edm::Handle<reco::PFCandidateCollection> cands;
+  edm::Handle<reco::PFCandidateCollection> pfCands;
+  edm::Handle<pat::MuonCollection> muonCands;
 
   cmg::PhotonFactory::event_ptr result(new cmg::PhotonFactory::collection);
   iEvent.getByLabel(photonLabel_, cands);
+  iEvent.getByLabel(pfLabel_,pfCands);
+  iEvent.getByLabel(muonLabel_, muonCands);
   iEvent.getByLabel(isoDepWithChargedLabel_, isoDepWithCharged);
   iEvent.getByLabel(isoDepWithPhotonsLabel_, isoDepWithPhotons);
   iEvent.getByLabel(isoDepWithNeutralLabel_, isoDepWithNeutral);
@@ -21,7 +25,59 @@ cmg::PhotonFactory::create(const edm::Event& iEvent,
 
     result->push_back(photon);
   }
+
+  // Now add the ECAL energy swallowed by the muons
+  unsigned index = 0;
+  for(pat::MuonCollection::const_iterator m = muonCands->begin();
+      m != muonCands->end(); ++m, ++index){
+  			
+    pat::MuonPtr muonPtr(muonCands, index);
+
+    edm::Ptr<reco::Candidate> muonref = muonPtr->originalObjectRef();
+    
+    // Find the corresponding PF muon
+    bool isPF = false;
+    unsigned int indexPF = 0;
+    for (unsigned i = 0, end = pfCands->size(); i!=end; ++i) { 
+      pat::PhotonPtr pfCand(pfCands,i);
+      if ( abs(pfCand->pdgId()) != 13 ) continue;
+      const reco::MuonRef mref = pfCand->muonRef();
+      if (mref.isNonnull() ) {
+	if (muonref.key() == mref.key()) {
+	  isPF = true; 
+	  indexPF = i;
+	  break;
+	}
+      }
+    }
+	
+    // Found !
+    if( !isPF  ) continue;
+    pat::PhotonPtr pfmuon(pfCands, indexPF);
+    cmg::Photon photon(pfmuon);
+
+    // Keep only those with a swallowed ECAL energy > 2 GeV
+    if ( pfmuon->ecalEnergy() < 2.0 ) continue;
+    // Request the pt to be in excess of 2 GeV/c
+    double sintet = pfmuon->pt()/pfmuon->energy();
+    double phpt = pfmuon->ecalEnergy() * sintet;
+    if ( phpt < 2.0 ) continue;
+
+    double ratio = pfmuon->ecalEnergy()/pfmuon->energy();
+    photon.setP4(photon.p4() * ratio);
+    photon.chargedHadronIso_ = muonPtr->userIsolation(pat::PfChargedHadronIso);
+    photon.chargedAllIso_ = muonPtr->userIsolation(pat::PfChargedAllIso);
+    photon.puChargedHadronIso_ = muonPtr->userIsolation(pat::PfPUChargedHadronIso);
+    photon.neutralHadronIso_ = muonPtr->userIsolation(pat::PfNeutralHadronIso);
+    photon.photonIso_ = muonPtr->userIsolation(pat::PfGammaIso);
+    photon.charge_ = muonPtr->charge();
+
+    result->push_back(photon);
+
+  }
+
   return result;
+
 }
 
 //--------------------------------------------------------------------
