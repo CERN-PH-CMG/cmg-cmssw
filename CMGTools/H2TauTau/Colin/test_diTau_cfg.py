@@ -81,7 +81,7 @@ vbfKwargs = dict( Mjj = 400,
 
 vbfAna = cfg.Analyzer(
     'VBFAnalyzer',
-    jetCol = 'cmgPFJetSel2',
+    jetCol = 'cmgPFJetSelCHS2',
     jetPt = 30,
     jetEta = 4.5,
     **vbfKwargs
@@ -104,15 +104,14 @@ for mc in MC:
     mc.jetScale = mc_jet_scale
     mc.jetSmear = mc_jet_smear
 
-selectedComponents = data_2011 + [DYJets, WJets, TTJets]
-selectedComponents += [Higgsgg125, HiggsVBF125]
+selectedComponents = data_2011 + [DYJets, WJets, TTJets, WW, WZ, ZZ]
 selectedComponents += [Higgsgg110, Higgsgg115, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135,
                        HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135]
 
 if runOnData:
     selectedComponents = data_2011
 if runOnMC:
-    selectedComponents = [DYJets, WJets, TTJets]
+    selectedComponents = [DYJets, WJets, TTJets, WW, WZ, ZZ]
     selectedComponents += [Higgsgg110, Higgsgg115, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135,
                            HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135]
 
@@ -143,8 +142,8 @@ test = 0
 if test==1:
     #comp = DYJets
     #comp = WJets
-    #comp = data_Run2011A_05Aug2011_v1
-    comp = Higgsgg125
+    comp = data_Run2011A_05Aug2011_v1
+    #comp = Higgsgg125
     selectedComponents = [comp]
     comp.splitFactor = 10
     comp.files = comp.files[:1]
