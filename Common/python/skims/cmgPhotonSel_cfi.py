@@ -6,8 +6,10 @@ import FWCore.ParameterSet.Config as cms
 cmgPhotonSel = cms.EDFilter(
     "CmgPhotonSelector",
     src = cms.InputTag("cmgPhoton"),
-    #cut = cms.string("pt()>2")
-    cut = cms.string("pt()>2&&relIsoCor(0.5)<1.0")
+    cut = cms.string("pt()>2")
+    #cut = cms.string("pt()>2&&relIsoCor(0.5)<1.0")
+    #cut = cms.string("pt()>2&&relIsoCor(0.5)<1.5")
+    #cut = cms.string("pt()>2&&chargedHadronIso()<4.")
     )
 
 
