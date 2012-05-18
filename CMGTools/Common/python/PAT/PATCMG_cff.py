@@ -125,6 +125,14 @@ PATCMGJetSequence = cms.Sequence(
     cmgPFBaseJetLead
     )
 
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X
+from RecoJets.JetProducers.ak5PFJets_cfi import ak5PFJets
+
+if cmsswIs44X():
+    # ak5PFJets in 42X Fall11 MC samples are missing the jet area
+    # add them to rho sequence, so they don't get duplicated for the CHS jets
+    PATCMGRhoSequence += ak5PFJets
+
 
 # TAUS NO PU CHS  ----------------------------
 
