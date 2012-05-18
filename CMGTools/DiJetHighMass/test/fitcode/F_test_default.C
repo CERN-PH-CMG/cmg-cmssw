@@ -67,16 +67,23 @@ void F_test_default (double alpha=0.1) {
   // Input Files  
   TFile *inputFile = TFile::Open("../../data/histograms_data_HT_Run2011AB_160404_180252_Fat30_ak5_4677pbm1.root", "READ");
 
+
   // Histograms 
   hDijetMass = (TH1F*) inputFile->Get("h_DijetMass_data_fat;1");
+
+
 
 
   TH1D * Data = hDijetMass.Clone("Data");
   double mMin = 890.0;
   double mMax = 4300.0;
+
   double binMin = hDijetMass->FindBin(mMin);
   double binMax = hDijetMass->FindBin(mMax);
   double Nbins = binMax-binMin;
+
+  cout << "binMin = " << binMin << " binMax = " << binMax << " Nbins = " << Nbins << endl;
+
 
   hDijetMass->GetXaxis().SetRangeUser(mMin,mMax);
 
@@ -101,14 +108,14 @@ void F_test_default (double alpha=0.1) {
       vy[i]   = n / dm; 
 
      
-      if (n<25 && mass>890 && mass<=4171)
+      if (n<25 && mass>mMin && mass<=mMax)
        	{
 	  nl = n-0.5*TMath::ChisquareQuantile(a,2*n);
 	  nh = 0.5*TMath::ChisquareQuantile(1-a,2*(n+1))-n;
 	  veyl[i] = nl/dm;
 	  veyh[i] = nh/dm;  
 	}
-      else if (n<25 && mass<=890 && mass>4171 && n>0)
+      else if (n<25 && mass<=mMin && mass>mMax && n>0)
 	{
 	  nl = n-0.5*TMath::ChisquareQuantile(a,2*n);
 	  nh = 0.5*TMath::ChisquareQuantile(1-a,2*(n+1))-n;
@@ -167,13 +174,13 @@ void F_test_default (double alpha=0.1) {
   TF1 * Pol1 = new TF1("Pol1",fitQCD2,mMin,mMax,2);
   TF1 * Pol2 = new TF1("Pol2",fitQCD3,mMin,mMax,3);
   TF1 * Pol3 = new TF1("Pol3",fitQCD4,mMin,mMax,4);
-  Pol0->SetParameter(0,1.73132e-05*lumi);
-  Pol1->SetParameter(0,1.73132e-05*lumi);
+  Pol0->SetParameter(0,1.73132e-05*lumi/1.3);
+  Pol1->SetParameter(0,1.73132e-05*lumi/1.3);
   Pol1->SetParameter(1,6.80678e+00);
-  Pol2->SetParameter(0,1.73132e-05*lumi);
+  Pol2->SetParameter(0,1.73132e-05*lumi/1.3);
   Pol2->SetParameter(1,6.80678e+00);
   Pol2->SetParameter(2,6.33620e+00);
-  Pol3->SetParameter(0,1.73132e-05*lumi);
+  Pol3->SetParameter(0,1.73132e-05*lumi/1.3);
   Pol3->SetParameter(1,6.80678e+00);
   Pol3->SetParameter(2,6.33620e+00);
   Pol3->SetParameter(3,1.93728e-01);
