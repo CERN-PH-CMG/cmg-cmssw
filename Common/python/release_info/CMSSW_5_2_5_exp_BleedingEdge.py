@@ -1,5 +1,5 @@
-[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'jose_TauAntiEleMVAs'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'hinzmann_jetarea_18May12'),
+[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'patrick_pfchargedhadronvertex_18May12'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'patrick_pfchargedhadronvertex_18May12'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-02'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_chunkoutcheck_18May12'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_rltinfo_18May12'),
