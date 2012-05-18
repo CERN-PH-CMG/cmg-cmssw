@@ -4,6 +4,7 @@ import re
 from CMGTools.RootTools.statistics.Counter import Counter 
 from CMGTools.RootTools.utils.triggerevo import Menus
 from CMGTools.RootTools.utils.TriggerJSON import TriggerJSON
+from CMGTools.RootTools.utils.RLTInfo import RLTInfo
 
 
 
@@ -29,6 +30,7 @@ class TriggerList( object ):
         self.menus = Menus( fileName, datasets )
         self.run = -1
         self.triggerJSON = TriggerJSON()
+        self.rltInfo = RLTInfo()
 
     def restrictList(self, run, triggerList ):
         '''Restrict the trigger list to the list of unprescaled triggers in this run.
@@ -55,7 +57,8 @@ class TriggerList( object ):
             self.restrictedTriggerList = self.triggerList
         return self.restrictedTriggerList
         
-    def triggerPassed(self, triggerObject, run, isData, usePrescaled=False):
+    def triggerPassed(self, triggerObject, run, lumi, 
+                      isData, usePrescaled=False):
         '''returns true if at least one of the triggers in the triggerlist passes.
 
         run is provided to call restrictList.
@@ -83,6 +86,7 @@ class TriggerList( object ):
                     if firstTrigger is None:
                         firstTrigger = trigger.name
                         self.triggerJSON.setdefault(trigger.name, set()).add( run )
+                        self.rltInfo.add( trigger.name, run, lumi )
                 # don't break, need to test all triggers in the list
                 # break
         return passed, firstTrigger
@@ -111,6 +115,7 @@ class TriggerList( object ):
                     
     def write(self, dirName ):
         self.triggerJSON.write( dirName )
+        self.rltInfo.write( dirName )
         map( lambda x: x.write(dirName), self.triggerList)
 
 

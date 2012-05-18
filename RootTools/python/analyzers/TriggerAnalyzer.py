@@ -40,6 +40,7 @@ class TriggerAnalyzer( Analyzer ):
         self.readCollections( iEvent )
         event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
         run = iEvent.eventAuxiliary().id().run()
+        lumi = iEvent.eventAuxiliary().id().luminosityBlock()
 
         if self.cfg_ana.verbose:
             self.printTriggerObject( event.triggerObject )
@@ -50,7 +51,7 @@ class TriggerAnalyzer( Analyzer ):
         if hasattr( self.cfg_ana, 'usePrescaled'):
             usePrescaled = self.cfg_ana.usePrescaled
         passed, hltPath = self.triggerList.triggerPassed(event.triggerObject,
-                                                         run, self.cfg_comp.isData,
+                                                         run, lumi, self.cfg_comp.isData,
                                                          usePrescaled = usePrescaled)
         #Check the veto!
         veto=False
@@ -77,10 +78,10 @@ class TriggerAnalyzer( Analyzer ):
         print 'writing TriggerAnalyzer'
         super(TriggerAnalyzer, self).write()
         self.triggerList.write( self.dirName )
-        if self.cfg_comp.isData:
-            self.triggerList.computeLumi( self.cfg_comp.json )
-        elif self.cfg_comp.isMC is False:
-            print 'cannot compute lumi, json is not present in component configuration.'
+#        if self.cfg_comp.isData:
+#            self.triggerList.computeLumi( self.cfg_comp.json )
+#        elif self.cfg_comp.isMC is False:
+#            print 'cannot compute lumi, json is not present in component configuration.'
 
     def __str__(self):
         tmp = super(TriggerAnalyzer,self).__str__()
