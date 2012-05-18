@@ -1,10 +1,10 @@
 #!/bin/env python
 
 def var( tree, varName ):
-    tree.addVar('float', varName)
+    tree.var(varName, float)
 
 def fill( tree, varName, value ):
-    setattr( tree.s, varName, value )
+    tree.fill( varName, value )
 
 # simple particle
 
@@ -25,10 +25,24 @@ def fillParticle( tree, pName, particle ):
 def bookLepton( tree, pName ):
     bookParticle(tree, pName )
     var(tree, '{pName}_relIso05'.format(pName=pName))
+    var(tree, '{pName}_dxy'.format(pName=pName))
+    var(tree, '{pName}_dz'.format(pName=pName))
+    var(tree, '{pName}_weight'.format(pName=pName))
+    var(tree, '{pName}_triggerWeight'.format(pName=pName))
+    var(tree, '{pName}_triggerEffData'.format(pName=pName))
+    var(tree, '{pName}_triggerEffMC'.format(pName=pName))
+    var(tree, '{pName}_recEffWeight'.format(pName=pName))
 
 def fillLepton( tree, pName, lepton ):
     fillParticle(tree, pName, lepton )
     fill(tree, '{pName}_relIso05'.format(pName=pName), lepton.relIso(0.5) )
+    fill(tree, '{pName}_dxy'.format(pName=pName), lepton.dxy() )
+    fill(tree, '{pName}_dz'.format(pName=pName), lepton.dz() )
+    fill(tree, '{pName}_weight'.format(pName=pName), lepton.weight )
+    fill(tree, '{pName}_triggerWeight'.format(pName=pName), lepton.triggerWeight )
+    fill(tree, '{pName}_triggerEffData'.format(pName=pName), lepton.triggerEffData )
+    fill(tree, '{pName}_triggerEffMC'.format(pName=pName), lepton.triggerEffMC )
+    fill(tree, '{pName}_recEffWeight'.format(pName=pName), lepton.recEffWeight )
 
 
 # muon
@@ -52,9 +66,10 @@ def fillMuon( tree, pName, muon ):
 
 def bookTau( tree, pName ):
     bookLepton(tree, pName )
+    var(tree, '{pName}_veryLooseIso'.format(pName=pName))
     var(tree, '{pName}_looseIso'.format(pName=pName))
     var(tree, '{pName}_mediumIso'.format(pName=pName))
-    var(tree, '{pName}_tightId'.format(pName=pName))
+    var(tree, '{pName}_tightIso'.format(pName=pName))
 
     var(tree, '{pName}_againstMuonTight'.format(pName=pName))    
     var(tree, '{pName}_againstElectronLoose'.format(pName=pName))    
@@ -69,6 +84,8 @@ def bookTau( tree, pName ):
 
 def fillTau( tree, pName, tau ):
     fillLepton(tree, pName, tau)
+    fill(tree, '{pName}_veryLooseIso'.format(pName=pName),
+         tau.tauID("byVLooseCombinedIsolationDeltaBetaCorr"))
     fill(tree, '{pName}_looseIso'.format(pName=pName),
          tau.tauID("byLooseCombinedIsolationDeltaBetaCorr"))
     fill(tree, '{pName}_mediumIso'.format(pName=pName),
@@ -113,3 +130,17 @@ def fillJet( tree, pName, jet ):
     fill(tree, '{pName}_puMvaSimple'.format(pName=pName), jet.puMva('simple'))
     fill(tree, '{pName}_puMvaCutBased'.format(pName=pName), jet.puMva('cut-based'))
     fill(tree, '{pName}_looseJetId'.format(pName=pName), jet.getSelection('cuts_looseJetId'))
+
+
+# vbf
+
+def bookVBF( tree, pName ):
+    var(tree, '{pName}_mjj'.format(pName=pName))
+    var(tree, '{pName}_deta'.format(pName=pName))
+    var(tree, '{pName}_nCentral'.format(pName=pName))
+    
+def fillVBF( tree, pName, vbf ):
+    fill(tree, '{pName}_mjj'.format(pName=pName), vbf.mjj )
+    fill(tree, '{pName}_deta'.format(pName=pName), vbf.deta )
+    fill(tree, '{pName}_nCentral'.format(pName=pName), len(vbf.centralJets) )
+    

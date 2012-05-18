@@ -1,8 +1,8 @@
-from CMGTools.RootTools.analyzers.TreeAnalyzer import TreeAnalyzer
+from CMGTools.RootTools.analyzers.TreeAnalyzerNumpy import TreeAnalyzerNumpy
 from CMGTools.H2TauTau.proto.analyzers.ntuple import *
 
 
-class H2TauTauTreeProducerTauMu( TreeAnalyzer ):
+class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
     '''Tree producer for the H->tau tau analysis.
 
     Some of the functions in this class should be made available to everybody.'''
@@ -22,6 +22,8 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzer ):
        var( tr, 'nJets')
        bookJet(tr, 'jet1')
        bookJet(tr, 'jet2')
+
+       bookVBF( tr, 'VBF' )
        
        var( tr, 'weight')
        var( tr, 'vertexWeight')
@@ -31,8 +33,6 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzer ):
        var( tr, 'isFake')
        var( tr, 'isSignal')
        
-       self.tree.book()
-
 
     def process(self, iEvent, event):
             
@@ -54,15 +54,10 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzer ):
        if nJets>=2:
            fillJet(tr, 'jet2', event.cleanJets[1] )
 
+       if hasattr( event, 'vbf'):
+           fillVBF( tr, 'VBF', event.vbf )
+
        fill(tr, 'weight', event.eventWeight)
-##         if hasattr( event, 'leg1_eff'): 
-##             fill('l1EffData', event.leg1_eff)
-##             fill('l1EffMC', event.leg1_effMC)
-##             fill('l1Weight', event.leg1_weight)
-##         if hasattr( event, 'leg2_eff'): 
-##             fill('l2EffData', event.leg2_eff)
-##             fill('l2EffMC', event.leg2_effMC)
-##             fill('l2Weight', event.leg2_weight)
 
        if hasattr( event, 'vertexWeight'): 
           fill(tr, 'vertexWeight', event.vertexWeight)
@@ -75,4 +70,4 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzer ):
        fill(tr, 'isFake', isFake)
        fill(tr, 'isSignal', event.isSignal)
        
-       self.tree.fill()
+       self.tree.tree.Fill()
