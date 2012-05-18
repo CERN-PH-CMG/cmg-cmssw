@@ -1,4 +1,4 @@
-
+from CMGTools.RootTools.utils.DeltaR import deltaR
 
 ## def leptonsFromDiTaus( diTaus ):
 ##     '''Returns a dictionary of leptons used as leg2 in a collection of diTaus.
@@ -95,21 +95,72 @@ def muonAccept( allLeptons ):
     return nLeptons<2
     
 
+def testEleLoose( ele, ptCut=15 ):
+    '''Loose electron selection, for the lepton veto'''
+    if ele.pt()<ptCut : return False
+    eleID = int(ele.sourcePtr().electronID('simpleEleId95relIso'))
+    # print 'TEST',eleID,eleID&1,ele.sourcePtr().passConversionVeto()
+    if (eleID&1 == 1 ) : return True   
+    return False
+    
+
+def testEleLooseLorenzo( ele, ptCut=15 ):
+    '''Loose electron selection, for the lepton veto, according to Lorenzo prescription'''
+    if ele.pt() < ptCut : return False
+#    eop = ele.sourcePtr().eSuperClusterOverP()
+    hoe = ele.sourcePtr().hcalOverEcal()
+    deta = ele.sourcePtr().deltaEtaSuperClusterTrackAtVtx()
+    dphi = ele.sourcePtr().deltaPhiSuperClusterTrackAtVtx()
+#    nhits = ele.sourcePtr().gsfTrack().recHitsSize() #PG all the hits
+    nvhits = ele.sourcePtr().gsfTrack().found() #PG valid hits
+    sihih = ele.sourcePtr().sigmaIetaIeta() 
+#    print 'TEST',hoe,deta,dphi,nvhits,sihih,ele.dxy(),ele.dz(),ele.sourcePtr().isEB()
+    if ele.dxy() >= 0.045 : return False
+    if ele.dz()  >= 0.2   : return False
+    if nhits     >  999   : return False
+    if deta      >= 0.10  : return False
+    if hoe       >= 999   : return False
+    if ele.sourcePtr().isEB() :
+        if deta  >= 0.007     : return False
+        if hoe   >= 0.15      : return False
+        if sihih >= 0.010     : return False
+        if dphi  >= 0.80      : return False 
+    return True
+
+
+def testEleLoosePhil( ele, ptCut = 15, isoCut = 0.3 ):
+    '''Loose electron selection, for the lepton veto, according to Phil sync prescription'''
+    if ele.pt()        < ptCut  : return False
+    if ele.relIso(0.5) > isoCut : return False
+    if ele.dxy()       >= 0.045 : return False
+    if ele.dz()        >= 0.2   : return False
+#    eop = ele.sourcePtr().eSuperClusterOverP()
+    hoe = ele.sourcePtr().hcalOverEcal()
+    deta = ele.sourcePtr().deltaEtaSuperClusterTrackAtVtx()
+    dphi = ele.sourcePtr().deltaPhiSuperClusterTrackAtVtx()
+#    nvhits = ele.sourcePtr().gsfTrack().found() #PG valid hits
+    sihih = ele.sourcePtr().sigmaIetaIeta() 
+    if ele.sourcePtr().isEB() :
+        if sihih >= 0.010     : return False
+        if dphi  >= 0.80      : return False 
+        if deta  >= 0.007     : return False
+        if hoe   >= 0.15      : return False
+    elif ele.sourcePtr().isEE() :
+        if sihih >= 0.030     : return False
+        if dphi  >= 0.70      : return False 
+        if deta  >= 0.010     : return False
+    else : return False
+    return True
+
 
 def electronAccept( allLeptons ):
-    # print 'from leptonsq'
-##     tightLeptons = set(filter( testMuonTight, allLeptons ))
-##     looseLeptons = set(filter( testMuonLoose, allLeptons ))
-##     if not tightLeptons.issubset( looseLeptons):
-##         #COLIN: hehe not sure about that 
-##         raise ValueError('tight leptons must be a subset of loose leptons')
-##     # return noOppositeChargePair( leptons )
-##     #COLIN: the following works if the previous exception didn't fire
-##     # otherwise, could do an xor
-##     nLeptons = len(looseLeptons)
-##     return nLeptons<2
-    #TODO implement electronAccept
-    # print 'implement electronAccept'
-    return True
+    ''' returns True if the additional lepton veto is successful'''
+    looseLeptons = filter( testEleLoosePhil, allLeptons )
+    nLeptons = len(looseLeptons)
+    if nLeptons < 2 : return True
+    if nLeptons > 2 : return False
+    if looseLeptons[0].charge() == looseLeptons[1].charge() : return True
+    if deltaR (looseLeptons[0].eta(), looseLeptons[0].phi(), looseLeptons[1].eta(), looseLeptons[1].phi()) < 0.15 : return True 
+    else : return False
     
 
