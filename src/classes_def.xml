@@ -263,6 +263,13 @@
   <class name="edm::Wrapper<cmg::MuEle>"/>
   <class name="edm::Wrapper<std::vector<cmg::MuEle> >"/>
   
+  <class name="std::vector<reco::Vertex>"/>
+  <class name="std::vector<edm::Ref<std::vector<reco::Vertex>,reco::Vertex,edm::refhelper::FindUsingAdvance<std::vector<reco::Vertex>,reco::Vertex> > >"/>
+  <class name="edm::ValueMap<edm::Ref<std::vector<reco::Vertex>,reco::Vertex,edm::refhelper::FindUsingAdvance<std::vector<reco::Vertex>,reco::Vertex> > >"/>
+  <class name="edm::Wrapper<edm::ValueMap<edm::Ref<std::vector<reco::Vertex>,reco::Vertex,edm::refhelper::FindUsingAdvance<std::vector<reco::Vertex>,reco::Vertex> > > >"/>
+  <class name="reco::VertexRefVector"/>
+  <class name="edm::ValueMap<reco::VertexRefVector>"/>
+  <class name="edm::Wrapper<edm::ValueMap<reco::VertexRefVector> >"/>;
 
 
 </lcgdict>
