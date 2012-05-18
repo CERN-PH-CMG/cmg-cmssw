@@ -17,13 +17,20 @@ TauMuFlatNtp::TauMuFlatNtp(const edm::ParameterSet & iConfig):
   deltaRTruth_(0.3),
   genBoson_(0),
   genBosonL1_(0),
-  genBosonL2_(0)
+  genBosonL2_(0),
+  corrector_(iConfig.getParameter<std::string>("fileCorrectTo"))
 {
-  diTauTag_          = iConfig.getParameter<edm::InputTag>("diTauTag");
-  genParticlesTag_          = iConfig.getParameter<edm::InputTag>("genParticlesTag");
-  sampleGenEventType_= iConfig.getParameter<int>("sampleGenEventType");
-  sampleTruthEventType_= iConfig.getParameter<int>("sampleTruthEventType");
-  randsigma_=iConfig.getParameter<double>("randsigma");
+  diTauTag_               = iConfig.getParameter<edm::InputTag>("diTauTag");
+  genParticlesTag_        = iConfig.getParameter<edm::InputTag>("genParticlesTag");
+  pfJetListTag_           = iConfig.getParameter<edm::InputTag>("pfJetListTag");
+  sampleGenEventType_     = iConfig.getParameter<int>("sampleGenEventType");
+  sampleTruthEventType_   = iConfig.getParameter<int>("sampleTruthEventType");
+  randsigma_              = iConfig.getParameter<double>("randsigma");
+
+  recoilCorreciton_ =  iConfig.getParameter<int>("recoilCorrection");
+  fileCorrectTo_ = iConfig.getParameter<std::string>("fileCorrectTo");
+  fileZmmData_ = iConfig.getParameter<std::string>("fileZmmData");
+  fileZmmMC_ = iConfig.getParameter<std::string>("fileZmmMC");
 
 }
 
@@ -88,6 +95,8 @@ void TauMuFlatNtp::beginJob(){
   tree_->Branch("njet",&njet_,"njet/I");
   tree_->Branch("leadJetPt",&leadJetPt_,"leadJetPt/F");
   tree_->Branch("leadJetEta",&leadJetEta_,"leadJetEta/F");
+  tree_->Branch("subleadJetPt",&subleadJetPt_,"subleadJetPt/F");
+  tree_->Branch("subleadJetEta",&subleadJetEta_,"subleadJetEta/F");
   tree_->Branch("diJetMass",&diJetMass_,"diJetMass/F");
   tree_->Branch("diJetDeltaEta",&diJetDeltaEta_,"diJetDeltaEta/F");
   tree_->Branch("diJetEta1Eta2",&diJetEta1Eta2_,"diJetEta1Eta2/F");
@@ -112,10 +121,12 @@ void TauMuFlatNtp::beginJob(){
   countertaueveto_=0;
   countertauiso_=0;
   countertaumatch_=0;
+  countermuvtx_=0;
   countermuid_=0;
   countermuiso_=0;
   countermumatch_=0;
   counterditau_=0;
+  counterbestcand_=0;
   countertruth_=0;
   counter_=0;
 }
@@ -151,7 +162,7 @@ bool TauMuFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetu
     iEvent.getByLabel(genParticlesTag_,genParticles_);    
     for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){    
       //cout<<g->pdgId()<<" "<<g->p4().pt()<<endl;
-      if((abs(g->pdgId())==23 || abs(g->pdgId())==24) && genBoson_==NULL )
+      if((abs(g->pdgId())==23 || abs(g->pdgId())==24 ||  abs(g->pdgId())==25 ) && genBoson_==NULL )
 	genBoson_=&(*g);
     }
     //if(genBoson_)cout<<"genBoson_ ref = "<<genBoson_<<endl;
@@ -206,8 +217,21 @@ bool TauMuFlatNtp::applySelections(){
 
   std::vector<cmg::TauMu> tmpditaulist=*diTauList_;
   diTauSelList_.clear();
-  
+
+  ///basic skims which should have been applied in H2TAUTAU step  
+  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+    if(cand->leg1().pt() > 20.0
+       && fabs(cand->leg1().eta()) < 2.3
+       && cand->leg1().tauID("decayModeFinding") > 0.5
+       && cand->leg2().pt() > 17.0
+       && fabs(cand->leg2().eta()) < 2.1
+       )     
+      diTauSelList_.push_back(*cand);
+  }
+
   //Tau E/P cut
+  tmpditaulist=diTauSelList_;
+  diTauSelList_.clear();
   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
     if(cand->leg1().decayMode()==0&&cand->leg1().p()>0.)
       if(cand->leg1().eOverP()<0.2)
@@ -255,7 +279,7 @@ bool TauMuFlatNtp::applySelections(){
 //     //if(diTauSel_->leg1().tauID("byTightCombinedIsolationDeltaBetaCorr")<0.5)
 //     diTauSelList_.push_back(*cand);
 //   }
-
+//   if(diTauSelList_.size()>0)countertauiso_++;
   
   //Tau Trig-Match
   tmpditaulist=diTauSelList_;
@@ -349,21 +373,24 @@ bool TauMuFlatNtp::applySelections(){
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-    //-------mu iso cut here:
-    if(cand->leg2().relIso(0.5)>0.1) continue;     
-    //if(cand->leg2().sourcePtr()->userFloat("mvaIsoRings")<.xx) continue;     
 
-    //------tau iso cut here
-    //if(diTauSel_->leg1().tauID("byVLooseCombinedIsolationDeltaBetaCorr")<0.5)
-    if(cand->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr") < 0.5) continue;
-    //if(diTauSel_->leg1().tauID("byMediumCombinedIsolationDeltaBetaCorr")<0.5)
-    //if(diTauSel_->leg1().tauID("byTightCombinedIsolationDeltaBetaCorr")<0.5)
-
-    
-    diTauSelList_.push_back(*cand);
+    if(
+       //-------mu iso cut here:
+       cand->leg2().relIso(0.5)<0.1
+       //if(cand->leg2().sourcePtr()->userFloat("mvaIsoRings")<.xx) continue;     
+       
+       //------tau iso cut here
+       //if(diTauSel_->leg1().tauID("byVLooseCombinedIsolationDeltaBetaCorr")<0.5)
+       //if(cand->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr") < 0.5) continue;
+       //if(diTauSel_->leg1().tauID("byMediumCombinedIsolationDeltaBetaCorr")<0.5)
+       //if(diTauSel_->leg1().tauID("byTightCombinedIsolationDeltaBetaCorr")<0.5)
+       
+       && cand->leg1().tauID("byLooseIsoMVA")>0.5
+       ){
+      diTauSelList_.push_back(*cand);
+    }
   }
-
-  if(diTauSelList_.size()>0)countertauiso_++;
+  if(diTauSelList_.size()>0)counterditau_++;
 
   categoryIso_=1;//category gets set to "signal" by default
   nditau_=diTauSelList_.size();
@@ -373,7 +400,7 @@ bool TauMuFlatNtp::applySelections(){
       diTauSelList_.push_back(*cand);
   }
   if(diTauSelList_.size()==0) return 0;//there was no event in the signal or sideband
-  counterditau_++;
+  
   
   //choose the best candidate
   nditau_=diTauSelList_.size();//keep track of the number of candidates per event
@@ -384,8 +411,8 @@ bool TauMuFlatNtp::applySelections(){
       diTauSel_=&(*cand);
       highsumpt=diTauSel_->leg1().pt()+diTauSel_->leg2().pt();
     }
-
-
+  
+  counterbestcand_++;
 
   //truth match 
   truthEventType_=0;
@@ -477,7 +504,7 @@ bool TauMuFlatNtp::fill(){
   taux_=diTauSel_->leg1().leadChargedHadrVertex().x();
   tauy_=diTauSel_->leg1().leadChargedHadrVertex().y();
   tauz_=diTauSel_->leg1().leadChargedHadrVertex().z();
-  tauiso_=diTauSel_->leg1().relIso();
+  tauiso_=diTauSel_->leg1().relIso(0.5);
   tauisomva_=diTauSel_->leg1().tauID("byRawIsoMVA");
 
   tauantie_=0;
@@ -503,23 +530,94 @@ bool TauMuFlatNtp::fill(){
   ditaucharge_=diTauSel_->charge();
   ditaueta_=diTauSel_->eta();
   ditaupt_=diTauSel_->pt();
-  //svfitmass_=diTauSel_->massSVFit();
+  svfitmass_=diTauSel_->massSVFit();
 
-  //new svfit
-  edm::Handle< cmg::METSignificance > metsig;
-  iEvent_->getByLabel(edm::InputTag("pfMetSignificance"),metsig); 
-  std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
-  measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay, diTauSel_->leg2().p4()));
-  measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kHadDecay, diTauSel_->leg1().p4()));
-  NSVfitStandaloneAlgorithm algo(measuredTauLeptons, diTauSel_->met().p4().Vect(), *(metsig->significance()), 0);
-  algo.addLogM(false);
-  algo.integrate();
-  svfitmass_ = algo.getMass();
-
+  pfmetpt_=diTauSel_->met().pt();
+  pfmetphi_=diTauSel_->met().phi();
+  pftransversemass_=diTauSel_->mTLeg2();
+  metpt_=pfmetpt_;//default values 
+  metphi_=pfmetphi_;//default values
 
   ///get the jets //need the jets here because of randomization of mT
   edm::Handle< std::vector<cmg::PFJet> > fulljetlist;
-  iEvent_->getByLabel(edm::InputTag("cmgPFJetSel"),fulljetlist);
+  iEvent_->getByLabel(pfJetListTag_,fulljetlist);
+  
+  //apply pt and eta cuts on jets
+  pfJetList_.clear();
+  for(std::vector<cmg::PFJet>::const_iterator jet=fulljetlist->begin(); jet!=fulljetlist->end(); ++jet){
+    //Do we need to apply Jet energy corrections here ????
+    if(jet->pt()<30.0)continue;  //*jet->rawFactor()
+    if(fabs(jet->eta())>4.5)continue;        
+    pfJetList_.push_back(&(*jet));
+  }
+
+  //lepton clean the jet list //need to fill njet_ here 
+  fillPFJetListLC(diTauSel_);
+  njet_=pfJetListLC_.size();
+
+  //Also the list cleaned only with the muon
+  fillPFJetListLepLC(diTauSel_);
+  int njetLepLC_=pfJetListLepLC_.size();
+  
+  
+  if(recoilCorreciton_>0){
+    corrector_.addDataFile( fileZmmData_);
+    corrector_.addMCFile( fileZmmMC_);
+    double u1 = 0;
+    double u2 = 0;
+    double fluc = 0;
+    
+    double lepPt  =diTauSel_->pt();
+    double lepPhi =diTauSel_->phi();
+    int jetMult = njet_;
+    if(recoilCorreciton_==2){//for W+jets
+      lepPt  =mupt_;
+      lepPhi =muphi_;
+      jetMult = njetLepLC_;
+    }
+
+    //cout<<fileCorrectTo_<<" "<<metpt_<<" "<<metphi_<<endl;
+    corrector_.CorrectType1( metpt_, metphi_,  genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, jetMult );
+    //cout<<fileCorrectTo_<<" "<<metpt_<<" "<<metphi_<<endl;
+    //reco::Candidate::PolarLorentzVector newMETP4( met,0, metphi, 0);
+  }
+
+  //smeared met and keep also the unsmeared one
+  //metpt_=diTauSel_->met().pt()*( (randsigma_>0. && njet_>0  ) ? randEngine_.Gaus(1.,randsigma_) : 1.);
+  //metphi_=diTauSel_->met().phi();
+  transversemass_=sqrt(2*mupt_*metpt_*(1-cos(muphi_-metphi_)));
+  
+
+
+  //   //new svfit
+//   edm::Handle< cmg::METSignificance > metsig;
+//   iEvent_->getByLabel(edm::InputTag("pfMetSignificance"),metsig); 
+//   std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
+//   measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay, diTauSel_->leg2().p4()));
+//   measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kHadDecay, diTauSel_->leg1().p4()));
+//   NSVfitStandaloneAlgorithm algo(measuredTauLeptons, diTauSel_->met().p4().Vect(), *(metsig->significance()), 0);
+//   algo.addLogM(false);
+//   algo.integrate();
+//   svfitmass_ = algo.getMass();
+
+
+  ///define control samples
+  categoryCh_=0;
+  if(fabs(ditaucharge_)==0.)categoryCh_=1;
+  if(fabs(ditaucharge_)==2.)categoryCh_=2;
+
+  categoryMT_=0;
+  if(transversemass_<=40.0)categoryMT_=1;
+  if(40.0<transversemass_&&transversemass_<=60.0)categoryMT_=2;
+  if(transversemass_>60.0)categoryMT_=3;
+
+//   categoryIso_=0;
+//   if( muiso_ <= 0.1) categoryIso_=1;
+//   if(0.1 < muiso_ &&  muiso_ <= 0.3) categoryIso_=2;
+//   if(0.3 < muiso_ &&  muiso_ <= 0.5) categoryIso_=3;
+//   if( muiso_ > 0.5) categoryIso_=4;
+
+ 
 
   //find the jet matching to the mu
   mujetpt_=0.;
@@ -540,59 +638,21 @@ bool TauMuFlatNtp::fill(){
       taujeteta_=jet->eta();
     }
   }
-  
-  //apply pt and eta cuts on jets
-  pfJetList_.clear();
-  for(std::vector<cmg::PFJet>::const_iterator jet=fulljetlist->begin(); jet!=fulljetlist->end(); ++jet){
-    //Do we need to apply Jet energy corrections here ????
-    if(jet->pt()<30.0)continue;  
-    if(fabs(jet->eta())>4.5)continue;        
-    pfJetList_.push_back(&(*jet));
-  }
 
-  //lepton clean the jet list //need to fill njet_ here 
-  fillPFJetListLC(diTauSel_);
-  njet_=pfJetListLC_.size();
-  
-  //smeared met and keep also the unsmeared one
-  pfmetpt_=diTauSel_->met().pt();
-  pfmetphi_=diTauSel_->met().phi();
-  pftransversemass_=diTauSel_->mTLeg2();
-  metpt_=diTauSel_->met().pt()*( (randsigma_>0. && njet_>0  ) ? randEngine_.Gaus(1.,randsigma_) : 1.);
-  metphi_=diTauSel_->met().phi();
-  transversemass_=sqrt(2*mupt_*metpt_*(1-cos(muphi_-metphi_)));
-  
-
-  ///define control samples
-  categoryCh_=0;
-  if(fabs(ditaucharge_)==0.)categoryCh_=1;
-  if(fabs(ditaucharge_)==2.)categoryCh_=2;
-
-  categoryMT_=0;
-  if(transversemass_<=40.0)categoryMT_=1;
-  if(40.0<transversemass_&&transversemass_<=60.0)categoryMT_=2;
-  if(transversemass_>60.0)categoryMT_=3;
-
-//   categoryIso_=0;
-//   if( muiso_ <= 0.1) categoryIso_=1;
-//   if(0.1 < muiso_ &&  muiso_ <= 0.3) categoryIso_=2;
-//   if(0.3 < muiso_ &&  muiso_ <= 0.5) categoryIso_=3;
-//   if( muiso_ > 0.5) categoryIso_=4;
-
- 
   //jet quantities independent of SM category
   if(pfJetListLC_.size()>=1){
     leadJetPt_=pfJetListLC_[0]->pt();
     leadJetEta_=pfJetListLC_[0]->eta();
   }
   if(pfJetListLC_.size()>=2){
+    subleadJetPt_=pfJetListLC_[1]->pt();
+    subleadJetEta_=pfJetListLC_[1]->eta();
     diJetMass_=(pfJetListLC_[0]->p4()+pfJetListLC_[1]->p4()).mass();
     diJetDeltaEta_=pfJetListLC_[0]->eta() - pfJetListLC_[1]->eta();
     diJetEta1Eta2_=(pfJetListLC_[0]->eta())*(pfJetListLC_[1]->eta());
   }
 
   //Jets where only the muon has been removed
-  fillPFJetListLepLC(diTauSel_);
   if(pfJetListLepLC_.size()>=1){
     muLCleadJetPt_=pfJetListLepLC_[0]->pt();
     muLCleadJetEta_=pfJetListLepLC_[0]->eta();
@@ -766,6 +826,7 @@ void TauMuFlatNtp::endJob(){
   cout<<"countermuiso = "<<countermuiso_<<endl;
   cout<<"countermumatch = "<<countermumatch_<<endl;
   cout<<"counterditau = "<<counterditau_<<endl;
+  cout<<"counterbestcand = "<<counterbestcand_<<endl;
   cout<<"countertruth = "<<countertruth_<<endl;
   cout<<"counter = "<<counter_<<endl;
 

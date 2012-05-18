@@ -83,6 +83,7 @@ private:
   TString outputpath_;
 
   TChain* ntpChain_;
+  Int_t NMAXFILES_;
 
   TString dataType_;
   Int_t color_;

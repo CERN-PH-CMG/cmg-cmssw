@@ -12,6 +12,8 @@
 #include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
 #include "TauAnalysis/SVFitStandAlone/interface/NSVfitStandaloneAlgorithm2011.h"
 
+///New SVFit
+#include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
 
 #include <sstream>
 
@@ -36,16 +38,18 @@ private:
   edm::InputTag metsigSrc_;
 
   bool verbose_;
+  int SVFitVersion_;
 };
 
 
 template< typename DiTauType >
 DiTauWithSVFitProducer<DiTauType>::DiTauWithSVFitProducer(const edm::ParameterSet & iConfig) : 
   diTauSrc_( iConfig.getParameter<edm::InputTag>("diTauSrc") ),
-//   metSrc_( iConfig.getParameter<edm::InputTag>("metSrc") ),
+  //   metSrc_( iConfig.getParameter<edm::InputTag>("metSrc") ),
   metsigSrc_( iConfig.getParameter<edm::InputTag>("metsigSrc") ),
-  verbose_( iConfig.getUntrackedParameter<bool>("verbose", false ) ) {
-  
+  verbose_( iConfig.getUntrackedParameter<bool>("verbose", false ) ),
+  SVFitVersion_( iConfig.getParameter<int>("SVFitVersion") ) {
+
   // will produce a collection containing a copy of each di-object in input, 
   // with the SVFit mass set. 
   produces< std::vector< DiTauType > >();
@@ -87,18 +91,35 @@ void DiTauWithSVFitProducer<DiTauType>::produce(edm::Event & iEvent, const edm::
       std::cout<<"\t\tMET = "<<met.et()<<", phi_MET = "<<met.phi()<<std::endl;      
     }
 
-    
-    //Note that this works only for di-objects where the tau is the leg1 and mu is leg2
-    NSVfitStandalone2011::Vector measuredMET( met.p4().x(), met.p4().y(), 0);
-    std::vector<NSVfitStandalone2011::MeasuredTauLepton> measuredTauLeptons;
-    NSVfitStandalone2011::LorentzVector p1(diTau.leg1().p4());
-    measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton(NSVfitStandalone2011::kHadDecay,p1));    
-    NSVfitStandalone2011::LorentzVector p2(diTau.leg2().p4());
-    measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton(NSVfitStandalone2011::kLepDecay,p2));
-    NSVfitStandaloneAlgorithm2011 algo(measuredTauLeptons,measuredMET,metsig->significance(),0);
-    algo.maxObjFunctionCalls(5000);
-    algo.fit();
-    double massSVFit = algo.fittedDiTauSystem().mass();
+    double massSVFit=0.;
+
+    if(SVFitVersion_==1){
+      //Note that this works only for di-objects where the tau is the leg1 and mu is leg2
+      NSVfitStandalone2011::Vector measuredMET( met.p4().x(), met.p4().y(), 0);
+      std::vector<NSVfitStandalone2011::MeasuredTauLepton2011> measuredTauLeptons;
+      NSVfitStandalone2011::LorentzVector p1(diTau.leg1().p4());
+      measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(NSVfitStandalone2011::kHadDecay,p1));    
+      NSVfitStandalone2011::LorentzVector p2(diTau.leg2().p4());
+      measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(NSVfitStandalone2011::kLepDecay,p2));
+      NSVfitStandaloneAlgorithm2011 algo(measuredTauLeptons,measuredMET,metsig->significance(),0);
+      algo.maxObjFunctionCalls(5000);
+      algo.fit();
+      massSVFit = algo.fittedDiTauSystem().mass();
+    }else if(SVFitVersion_==2){
+      //Note that this works only for di-objects where the tau is the leg1 and mu is leg2
+      std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
+      measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kHadDecay, diTau.leg1().p4()));
+      measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay, diTau.leg2().p4()));
+      NSVfitStandaloneAlgorithm algo(measuredTauLeptons, met.p4().Vect(), *(metsig->significance()), 0);
+      algo.addLogM(false);
+      algo.integrate();
+      massSVFit = algo.getMass();
+    }else {
+      std::cout<<" Unrecognized SVFitVersion !!!!!!!!!!!!"<<std::endl;    
+    }
+
+
+
 
     pOut->push_back( diTau );
     pOut->back().setMassSVFit( massSVFit );

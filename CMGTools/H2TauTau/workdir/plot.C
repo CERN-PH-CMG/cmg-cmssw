@@ -41,25 +41,22 @@ void plot(){
   Float_t c[4]={.6,.85,.42,.81};//default legend coordinates
   analysis->setSmearHistoRes(0);//default smearing for mass
 
-  //can only do one plot at a time for now 
-  //Float_t c[4]={0,0,0,0};
-  //Float_t r[4]={160000,175000,0,400};
-  //analysis->plot("runNumberHisto",0,"","",c,r);
+
   //analysis->plotInc("nvtx",1,1,-1,50,-.5,49.5,""," # of reco. vertices ","",c);
-  //analysis->plotInc("mupt",1,1,-1,100,0,100," #mu p_{T}   (GeV)","Events / 1 GeV",c);
-  //analysis->plotInc("muEtaHisto",2," #eta_{#mu}","Events / 0.1",c,r);
-  //analysis->plotInc("muiso",0,1,-1,100,0,1," muon relIso(0.5)"," Events / 0.005",c,1);
-  //analysis->plotInc("taupt",1,1,-1,50,0,100," #tau p_{T}   (GeV)","Events / 2 GeV",c);
-  //analysis->plotInc("tauEtaHisto",2," #eta_{#tau}","Events / 0.1",c,r); 
-  //analysis->plotInc("metHisto",4," MET   (GeV)","Events / 4 GeV",c,r);    
-  //analysis->plotInc("nditau",1,1,-1,5,-.5,4.5,"number of candidates","",c);
-  //analysis->plotInc("metpt",1,0,-1,50,0,200," MET   (GeV)","Events / 4 GeV",c);    
-  //analysis->plotInc("metphi",1,1,-1,70,-3.5,3.5," MET  phi ","",c);    
-  //analysis->plotInc("transversemass",1,0,-1,50,0,200,"m_{T}   (GeV)","Events / 4 GeV",c);
-  analysis->plotInc("ditaumass",1,1,-1,40,0,200,"","m_{vis}   (GeV)","Events / 5 GeV",c,0);
-  //analysis->plotInc("leadJetPt",1,1,-1,200,0,200,""," jet p_{T}   (GeV)","",c);
-  //analysis->plotInc("leadJetEta",1,1,-1,100,-5,5,""," jet #eta","",c); 
+  //analysis->plotInc("mupt",1,1,-1,50,0,100,""," mu pt   (GeV)","",c);
   //analysis->plotInc("mueta",1,1,-1,100,-2.5,2.5,""," muon  #eta","",c); 
+  //analysis->plotInc("muiso",0,1,-1,100,0,.5,"(tauisodisc>=2)"," muon relIso(0.5)"," Events / 0.005",c);
+  //analysis->plotInc("taupt",1,1,-1,50,0,100,""," tau pt   (GeV)","",c,0);
+  //analysis->plotInc("mueta",1,1,-1,100,-2.5,2.5,""," muon  #eta","",c); 
+  //analysis->plotInc("metpt",1,1,-1,50,0,200,""," MET   (GeV)","Events / 4 GeV",c);    
+  //analysis->plotInc("metphi",1,1,-1,70,-3.5,3.5," MET  phi ","",c);    
+  //analysis->plotInc("transversemass",1,0,-1,50,0,200,"","m_{T}   (GeV)","Events / 4 GeV",c);
+  //analysis->plotInc("ditaumass",1,1,-1,40,0,200,"","m_{vis}   (GeV)","",c,0);
+  //analysis->plotInc("njet",1,1,-1,7,-.5,6.5,""," njet ","",c,0);
+  //analysis->plotInc("leadJetPt",1,1,-1,100,0,200,"(njet>0)"," jet p_{T}   (GeV)","",c);
+  analysis->plotInc("leadJetEta",1,1,-1,20,-5,5,"(njet>0)"," jet #eta","",c); 
+
+
 //   Float_t sigY=0;
 //   sigY+=analysis->getSample("HiggsGG120")->Integral();
 //   sigY+=analysis->getSample("HiggsVBF120")->Integral();
@@ -68,7 +65,7 @@ void plot(){
 
   /////////////inclusive SS
   //analysis->plotIncSS("ditaumass",1,1,-1,60,0,300,"m_{vis}   (GeV)","Events / 5 GeV",c,0);
-  //analysis->plotIncSS("taupt",1,1,-1,8,20,100," #tau p_{T}   (GeV)","",c);
+  //analysis->plotIncSS("taupt",1,1,-1,50,0,100,""," #tau p_{T}   (GeV)","",c);
   //analysis->plotIncSS("muiso",-1,1,-1,100,0,2," #mu relIsoDB","",c);
   //analysis->plotIncSS("tauiso",-1,1,-1,100,0,2," #tau relIso","",c);
   //analysis->plotIncSS("tauisodisc",-1,1,-1,6,-0.5,5.5," #tau iso disc.","",c);
@@ -160,7 +157,6 @@ void plot(){
   ////////////////////////////SM2
   //analysis->plotInc("transversemass",1,0,2,15,0,150,"","m_{T}   (GeV)","",c);
   //analysis->plotInc("ditaumass",1,1,2,12,0,300,"","m_{vis}   (GeV)","Events / 25 GeV",c);
-  //analysis->plotInc("ditaumass",1,1,2,12,0,300,"","m_{vis}   (GeV)","Events / 25 GeV",c);
   //analysis->plotInc("svfitmass",1,1,2,11,0,330,"","m_{vis}   (GeV)","Events / 30 GeV",c);
   //analysis->plotInc("taupt",1,1,2,10,0,100," #tau p_{T}   (GeV)","Events / 10 GeV",c);
   //analysis->plotInc("mupt",1,1,2,10,0,100," #mu p_{T}   (GeV)","Events / 10 GeV",c);
@@ -169,6 +165,9 @@ void plot(){
   //analysis->plotInc("mupt",1,1,-1,10,0,100,"(njet==2)"," #mu p_{T}   (GeV)","",c);
   //analysis->plotInc("taupt",1,1,-1,10,0,100,"(njet==2)","#tau  p_{T}   (GeV)","",c);
   //analysis->plotInc("ditaumass",1,1,-1,15,0,300,"(njet==2)","m_{vis}   (GeV)","",c);
+  //analysis->plotInc("leadJetPt",1,1,-1,20,0,400,"(njet>=2)"," jet p_{T}   (GeV)","",c);
+  //analysis->plotInc("leadJetEta",1,1,-1,18,-4.5,4.5,"(njet>=2)"," jet #eta","",c); 
+
   ///////////////////////////SS
   //analysis->plotIncSS("transversemass",1,0,2,20,0,200,"","m_{T}   (GeV)","",c);
   //analysis->plotIncSS("ditaumass",1,1,2,12,0,300,"","m_{vis}   (GeV)","Events / 25 GeV",c);

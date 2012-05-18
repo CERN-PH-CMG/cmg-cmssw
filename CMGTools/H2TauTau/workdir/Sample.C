@@ -14,6 +14,7 @@ Sample::Sample(const char * name, const char * path):
   genEvents_(0.),
   outputpath_(path),
   ntpChain_(NULL),
+  NMAXFILES_(500),
   dataType_(""),
   color_(0),
   lcolor_(0),
@@ -68,7 +69,7 @@ bool Sample::openNtpFile(){
   //ntpChain_=new TChain(TString("flatNtp")+GetName()+"/tree");
   ntpChain_=new TChain("flatNtp/tree");
 
-  for(Int_t i=0;i<200;i++){
+  for(Int_t i=0;i<NMAXFILES_;i++){
     TString fname=TString(GetTitle())+"/flatNtp_"+GetName()+"_"+(long)i+".root";
     
     struct stat st;
@@ -94,8 +95,8 @@ bool Sample::openNtpFile(){
     cout<<"Sample "<<GetName()<<" 0 files chained"<<endl;
     return 0;
   }
-  if(ntpChain_->GetNtrees()==200){
-    cout<<"Number of files added for sample "<<GetName()<<" is at max"<<endl;
+  if(ntpChain_->GetNtrees()==NMAXFILES_){
+    cout<<"Number of files added for sample "<<GetName()<<" is at max "<<NMAXFILES_<<endl;
     return 0;
   }
 
