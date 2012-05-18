@@ -60,7 +60,22 @@ def fillMuon( tree, pName, muon ):
     fill(tree, '{pName}_looseId'.format(pName=pName), muon.looseId() )
     fill(tree, '{pName}_tightId'.format(pName=pName), muon.tightId() )
 
+
 # electron
+
+
+def bookEle( tree, pName ):
+    bookLepton(tree, pName )
+    var(tree, '{pName}_mvaIso'.format(pName=pName))
+    var(tree, '{pName}_mvaTrigV0'.format(pName=pName))
+    var(tree, '{pName}_mvaNonTrigV0'.format(pName=pName))
+
+def fillEle( tree, pName, ele ):
+    fillLepton(tree, pName, ele)
+    fill(tree, '{pName}_mvaIso'.format(pName=pName), ele.mvaIso() )
+    fill(tree, '{pName}_mvaTrigV0'.format(pName=pName), ele.sourcePtr().electronID("mvaTrigV0") )
+    fill(tree, '{pName}_mvaNonTrigV0'.format(pName=pName), ele.sourcePtr().electronID("mvaNonTrigV0") )
+
 
 # tau 
 
