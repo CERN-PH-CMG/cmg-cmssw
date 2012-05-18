@@ -39,23 +39,24 @@ class LeptonWeighter( Analyzer ):
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
-        self.eff = 1
-        self.effMC = 1 
-        self.weight = 1
-        self.triggerWeight = 1
-        self.recEffWeight = 1
+        self.lepton = getattr( event, self.leptonName )
+        self.lepton.weight = 1
+        self.lepton.triggerWeight = 1
+        self.lepton.triggerEffData = 1
+        self.lepton.triggerEffMC = 1 
+        self.lepton.recEffWeight = 1
         if self.cfg_comp.isMC or self.cfg_comp.isEmbed:
-            
-            self.lepton = getattr( event, self.leptonName )
-
             if self.trigEff is not None:
-                self.eff = self.trigEff.lepEff( self.lepton.pt(),
-                                                self.lepton.eta() )
-                self.triggerWeight = self.eff
+                self.lepton.triggerEffData = self.trigEff.lepEff( self.lepton.pt(),
+                                                                  self.lepton.eta() )
+                self.lepton.triggerWeight = self.lepton.triggerEffData
                 if self.trigEff.lepEffMC is not None:
-                    self.effMC = self.trigEff.lepEffMC( self.lepton.pt(),
-                                                        self.lepton.eta() )
-                    self.triggerWeight /= self.effMC
+                    self.lepton.triggerEffMC = self.trigEff.lepEffMC( self.lepton.pt(),
+                                                                           self.lepton.eta() )
+                    if self.lepton.triggerEffMC>0:
+                        self.lepton.triggerWeight /= self.lepton.triggerEffMC
+                    else:
+                        self.lepton.triggerWeight = 1.
 
             recEffMap = None
             if abs(self.lepton.pdgId()) == 11:
@@ -67,30 +68,30 @@ class LeptonWeighter( Analyzer ):
             else:
                 raise ValueError('bad lepton pdgid: {pdgid}'.format(pdgid = self.lepton.pdgId()))
             if recEffMap is not None:
-                self.recEffWeight = recEffMap.effCor( self.lepton.pt(), self.lepton.eta())[0]
+                self.lepton.recEffWeight = recEffMap.effCor( self.lepton.pt(), self.lepton.eta())[0]
             
 
-        self.weight = self.triggerWeight * self.recEffWeight
+        self.lepton.weight = self.lepton.triggerWeight * self.lepton.recEffWeight
         
-        varName = '_'.join([self.leptonName, 'eff'])
-        setattr( event, varName, self.eff )
+##        varName = '_'.join([self.leptonName, 'eff'])
+##         setattr( event, varName, self.lepton.triggerEffData )
 
-        varName = '_'.join([self.leptonName, 'effMC'])
-        setattr( event, varName, self.effMC )
+##         varName = '_'.join([self.leptonName, 'effMC'])
+##         setattr( event, varName, self.triggerEffMC )
 
-        varName = '_'.join([self.leptonName, 'triggerWeight'])
-        setattr( event, varName, self.triggerWeight )
+##         varName = '_'.join([self.leptonName, 'triggerWeight'])
+##         setattr( event, varName, self.lepton.triggerWeight )
 
-        varName = '_'.join([self.leptonName, 'recEffWeight'])
-        setattr( event, varName, self.recEffWeight )
+##         varName = '_'.join([self.leptonName, 'recEffWeight'])
+##         setattr( event, varName, self.lepton.recEffWeight )
 
-        varName = '_'.join([self.leptonName, 'weight'])
-        setattr( event, varName, self.weight )
+##         varName = '_'.join([self.leptonName, 'weight'])
+##         setattr( event, varName, self.lepton.weight )
 
-        event.eventWeight *= self.weight
-        self.averages['weight'].add( self.weight )
-        self.averages['triggerWeight'].add( self.triggerWeight )
-        self.averages['eff_data'].add( self.eff )
-        self.averages['eff_MC'].add( self.effMC )
-        self.averages['recEffWeight'].add( self.recEffWeight )
+        event.eventWeight *= self.lepton.weight
+        self.averages['weight'].add( self.lepton.weight )
+        self.averages['triggerWeight'].add( self.lepton.triggerWeight )
+        self.averages['eff_data'].add( self.lepton.triggerEffData )
+        self.averages['eff_MC'].add( self.lepton.triggerEffMC )
+        self.averages['recEffWeight'].add( self.lepton.recEffWeight )
                 

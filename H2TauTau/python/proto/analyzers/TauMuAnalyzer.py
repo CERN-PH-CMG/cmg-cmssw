@@ -35,7 +35,7 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
                 return False
             event.diLepton = self.bestDiLepton( selDiLeptons )
             event.leg1 = event.diLepton.leg1()
-            event.leg2 = event.diLepton.leg1()
+            event.leg2 = event.diLepton.leg2()
             event.isSignal = False
         else:
             event.isSignal = True
@@ -70,10 +70,11 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         if tau.decayMode() == 0 and \
                tau.calcEOverP() < 0.2: #reject muons faking taus in 2011B
             return False
-        return tau.tauID("byLooseCombinedIsolationDeltaBetaCorr")==True and \
-               tau.tauID("againstMuonTight")==True and \
-               tau.tauID("againstElectronLoose")==True and \
+        return tau.tauID("byLooseIsoMVA")>0.5 and \ 
+               tau.tauID("againstMuonTight")>0.5 and \
+               tau.tauID("againstElectronLoose")>0.5 and \
                self.testVertex( tau )
+               # tau.tauID("byLooseCombinedIsolationDeltaBetaCorr")>0.5 and \   
 
 
     def testVertex(self, lepton):

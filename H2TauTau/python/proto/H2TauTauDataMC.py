@@ -165,6 +165,9 @@ class H2TauTauDataMC( AnalysisDataMC ):
             self.Hist(name).Add( hist )
             # compute integrated luminosity for all data samples
         # print intLumi
+        if self.intLumi == 0:
+            self.intLumi = 1000.
+        # self.Hist(name).intLumi = intLumi
         # set lumi for all MC samples:
         for component, weight in self.weights.iteritems():
             if component not in dataComponents:
