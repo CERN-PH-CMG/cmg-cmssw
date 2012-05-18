@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Pasquale Musella,40 2-A12,+41227671706,
 //         Created:  Wed Apr 18 15:48:47 CEST 2012
-// $Id: PileupJetIdProducer.cc,v 1.7 2012/05/03 12:54:15 musella Exp $
+// $Id: PileupJetIdProducer.cc,v 1.8 2012/05/17 22:22:44 musella Exp $
 //
 //
 
@@ -302,7 +302,7 @@ PileupJetIdProducer::initJetEnergyCorrector(const edm::EventSetup &iSetup, bool 
 
 	//check the corrector parameters needed according to the correction levels
 	edm::ESHandle<JetCorrectorParametersCollection> parameters;
-	iSetup.get<JetCorrectionsRecord>().get("AK5PFchs",parameters);
+	iSetup.get<JetCorrectionsRecord>().get(jec_,parameters);
 	for(std::vector<std::string>::const_iterator ll = jecLevels.begin(); ll != jecLevels.end(); ++ll)
 	{ 
 		const JetCorrectorParameters& ip = (*parameters)[*ll];
