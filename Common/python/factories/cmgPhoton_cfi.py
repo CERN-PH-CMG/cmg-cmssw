@@ -6,6 +6,8 @@ from CMGTools.Common.selections.kinematics_cfi import kinematics
 
 photonFactory = cms.PSet(
     inputCollection = cms.InputTag("pfSelectedPhotons"),
+    pfCollection = cms.InputTag("particleFlow"),
+    muonCollection = cms.InputTag("patMuonsWithTrigger"),
     isoDepWithCharged = cms.InputTag("phPFIsoDepositCharged"),
     isoDepWithPhotons = cms.InputTag("phPFIsoDepositGamma"),
     isoDepWithNeutral = cms.InputTag("phPFIsoDepositNeutral"),
@@ -22,12 +24,6 @@ photonFactory = cms.PSet(
       coneSize=cms.double(0.3),
       vetoes=cms.VPSet(
          cms.PSet(
-            #see task #15859 for discussion of this veto
-            type=cms.string("RectangularEtaPhiVeto"),
-            dEta=cms.double(0.01),# eta width of the strip to be vetoed
-            dPhi=cms.double(0.20) # phi width of the strip to be vetoed
-         ),
-         cms.PSet(
             type=cms.string("ThresholdVeto"),
             threshold=cms.double(0.2)# pt of the particles to be vetoed
          ),
@@ -38,14 +34,8 @@ photonFactory = cms.PSet(
       coneSize=cms.double(0.3),
       vetoes=cms.VPSet(
          cms.PSet(
-            #see task #15859 for discussion of this veto
-            type=cms.string("RectangularEtaPhiVeto"),
-            dEta=cms.double(0.01),# eta width of the strip to be vetoed
-            dPhi=cms.double(0.20) # phi width of the strip to be vetoed
-         ),
-         cms.PSet(
             type=cms.string("ThresholdVeto"),
-            threshold=cms.double(0.2)# pt of the particles to be vetoed
+            threshold=cms.double(0.5)# pt of the particles to be vetoed
          ),
       ),
     ),
@@ -54,14 +44,8 @@ photonFactory = cms.PSet(
       coneSize=cms.double(0.3),
       vetoes=cms.VPSet(
          cms.PSet(
-            #see task #15859 for discussion of this veto
-            type=cms.string("RectangularEtaPhiVeto"),
-            dEta=cms.double(0.01),# eta width of the strip to be vetoed
-            dPhi=cms.double(0.20) # phi width of the strip to be vetoed
-         ),
-         cms.PSet(
             type=cms.string("ThresholdVeto"),
-            threshold=cms.double(0.2)# pt of the particles to be vetoed
+            threshold=cms.double(0.5)# pt of the particles to be vetoed
          ),
       ),
     ),                          

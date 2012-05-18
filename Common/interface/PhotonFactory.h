@@ -5,6 +5,7 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 
 #include "AnalysisDataFormats/CMGTools/interface/Photon.h"
+#include "AnalysisDataFormats/CMGTools/interface/PatTypes.h"
 #include "CMGTools/Common/interface/Factory.h"
 
 #include "DataFormats/RecoCandidate/interface/IsoDepositVetos.h"
@@ -25,6 +26,8 @@ namespace cmg {
   public:
     PhotonFactory(const edm::ParameterSet& ps):
       photonLabel_(ps.getParameter<edm::InputTag>("inputCollection")),
+      pfLabel_(ps.getParameter<edm::InputTag>("pfCollection")),
+      muonLabel_(ps.getParameter<edm::InputTag>("muonCollection")),
       isoDepWithChargedLabel_(ps.getParameter<edm::InputTag>("isoDepWithCharged")),
       isoDepWithPhotonsLabel_(ps.getParameter<edm::InputTag>("isoDepWithPhotons")),
       isoDepWithNeutralLabel_(ps.getParameter<edm::InputTag>("isoDepWithPU")),
@@ -44,6 +47,8 @@ namespace cmg {
 
   private:
     const edm::InputTag photonLabel_;
+    const edm::InputTag pfLabel_;
+    const edm::InputTag muonLabel_;
     const edm::InputTag isoDepWithChargedLabel_;
     const edm::InputTag isoDepWithPhotonsLabel_;
     const edm::InputTag isoDepWithNeutralLabel_;
