@@ -37,6 +37,8 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
     def process(self, iEvent, event):
             
        tr = self.tree
+       tr.reset()
+       
        fill(tr, 'visMass', event.diLepton.mass())
        fill(tr, 'svfitMass', event.diLepton.massSVFit())
        fill(tr, 'mt', event.diLepton.mTLeg2())

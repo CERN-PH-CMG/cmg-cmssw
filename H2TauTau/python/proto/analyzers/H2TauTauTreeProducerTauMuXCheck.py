@@ -122,7 +122,8 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
         if not event.isSignal:
             return False
         tr = self.tree
-
+        tr.reset()
+        
         fill( tr, 'run', event.run) 
         fill( tr, 'lumi',event.lumi)
         fill( tr, 'evt', event.eventId)
