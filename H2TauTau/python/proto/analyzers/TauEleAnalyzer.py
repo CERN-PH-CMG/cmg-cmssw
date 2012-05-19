@@ -22,6 +22,16 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             'cmgElectronSel',
             'std::vector<cmg::Electron>'
             )
+        self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
+                                                     'std::vector<reco::GenParticle>' )
+
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
+    def process(self, iEvent, event):
+        result = super(TauEleAnalyzer, self).process(iEvent, event)
+        return result
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
