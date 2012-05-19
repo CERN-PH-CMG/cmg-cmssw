@@ -101,6 +101,7 @@ bool MCclosureTest = false;
 
 bool mergeWWandZZ = true;
 bool skipWW = true;
+std::vector<TString> Channels;
 std::vector<TString> AnalysisBins;
 bool fast = false;
 bool skipGGH = false;
@@ -108,6 +109,7 @@ bool skipQQH = false;
 bool subDY = false;
 TString DYFile ="";
 TString inFileUrl(""),jsonFile(""), histo("");
+
 
 int indexvbf = -1;
 int indexcut   = -1;
@@ -173,10 +175,13 @@ int main(int argc, char* argv[])
     else if(arg.find("--histo")   !=string::npos && i+1<argc)  { histo     = argv[i+1];  i++;  printf("histo = %s\n", histo.Data()); }
     else if(arg.find("--m")       !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&mass ); i++; printf("mass = %i\n", mass);}
     else if(arg.find("--bins")    !=string::npos && i+1<argc)  { char* pch = strtok(argv[i+1],",");printf("bins are : ");while (pch!=NULL){printf(" %s ",pch); AnalysisBins.push_back(pch);  pch = strtok(NULL,",");}printf("\n"); i++; }
+    else if(arg.find("--channels")!=string::npos && i+1<argc)  { char* pch = strtok(argv[i+1],",");printf("channels are : ");while (pch!=NULL){printf(" %s ",pch); Channels.push_back(pch);  pch = strtok(NULL,",");}printf("\n"); i++; }
     else if(arg.find("--fast")    !=string::npos) { fast=true; printf("fast = True\n");}
   }
   if(jsonFile.IsNull() || inFileUrl.IsNull() || histo.IsNull() || indexcut == -1 || mass==-1) { printHelp(); return -1; }
   if(AnalysisBins.size()==0)AnalysisBins.push_back("");
+  if(Channels.size()==0){Channels.push_back("ee");Channels.push_back("mumu");}
+
 
 
   //prepare the output directory
@@ -448,7 +453,7 @@ int findBinFor(TFile* inF, Float_t minMet, Float_t minMt, Float_t maxMt)
 //
 Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, JSONWrapper::Object &Root)
 {
-  Shape_t shape; shape.totalBckg=0;
+  Shape_t shape; shape.totalBckg=NULL;shape.data=NULL;
 
   //iterate over the processes required
   std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
@@ -470,6 +475,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
       int marker(20);     if(Process[i].isTag("marker") ) marker = (int)Process[i]["marker"].toDouble();
   
       TH1* syst = (TH1*)pdir->Get("optim_systs");
+      if(syst==NULL){syst=new TH1F("optim_systs","optim_systs",1,0,1);syst->GetXaxis()->SetBinLabel(1,"");}
       for(int ivar = 1; ivar<=syst->GetNbinsX();ivar++){
 	 TH1D* hshape   = NULL;
 
@@ -539,8 +545,14 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
     }
 
   if(MCclosureTest){
-     shape.data->Reset();
-     shape.data->Add(shape.totalBckg, 1);
+     if(shape.totalBckg){
+        if(!shape.data){
+           shape.data=(TH1F*)shape.totalBckg->Clone("data"); shape.data->SetDirectory(0); shape.data->SetTitle("data");
+        }else{
+           shape.data->Reset();
+           shape.data->Add(shape.totalBckg, 1);
+        }
+     }
   }
 
   //all done
@@ -821,8 +833,8 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 
 
   //define vector for search
-  std::vector<TString> selCh;
-  selCh.push_back("ee"); selCh.push_back("mumu");
+  std::vector<TString>& selCh = Channels;
+//  selCh.push_back("ee"); selCh.push_back("mumu");
 
   //non-resonant background estimation
   //estimateNonResonantBackground(selCh,"emu",allShapes,"nonresbckg_ctrl");
@@ -900,7 +912,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
         //remove backgrounds with rate=0 (but keep at least one background)
         std::map<RateKey_t, Double_t>::iterator it = dci.rates.find(RateKey_t(proc,chbin));
         if(it==dci.rates.end()){
-           printf("proc=%s not found --> THIS SHOULD NEVER HAPPENS.  PLEASE CHECK THE COD\n",proc.Data());
+           printf("proc=%s not found --> THIS SHOULD NEVER HAPPENS.  PLEASE CHECK THE CODE\n",proc.Data());
         }else{
            if(it->second>0){  nNonNullBckg++;
            }else if(ibckg<nbckg-1 || nNonNullBckg>0){dci.rates.erase(dci.rates.find(RateKey_t(proc,chbin)));
@@ -1033,7 +1045,6 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& ch
          hshape->SetName(proc); 
          if(proc=="data")  hshape->SetName("data_obs");
          hshape->Write();
-
 
          if(hshape->Integral()>0){
             hshape->SetName(proc+syst);
