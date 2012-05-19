@@ -133,6 +133,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         
         according to Phil sync prescription for the sync exercise 16/05/12
         """
+        if ele.isConv()    != 1     : return False
         if ele.pt()        < ptCut  : return False
         if ele.relIso(0.5) > isoCut : return False
         if ele.dxy()       >= 0.045 : return False
@@ -150,7 +151,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             if sihih >= 0.030     : return False
             if dphi  >= 0.70      : return False 
             if deta  >= 0.010     : return False
-        else : return False
+        else : return False #PG is this correct? does this take cracks into consideration?
         return True
 
 
@@ -165,10 +166,11 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         if tau.decayMode() == 0 and \
                tau.calcEOverP() < 0.2: #reject muons faking taus in 2011B #PG FIXME should I put this in?
             return False
+        if tau.dz() > 0.2 : return False
         return tau.tauID("byLooseIsoMVA")==True and \
                tau.tauID("againstElectronMVA")==True and \
                tau.tauID("againstElectronMedium")==True and \
-               tau.tauID("againstElectronMVA")==True
+               tau.tauID("againstMuonLoose")==True
         # byLooseCombinedIsolationDeltaBetaCorr
 
 
