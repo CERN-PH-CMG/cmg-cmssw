@@ -41,6 +41,11 @@ class TriggerAnalyzer( Analyzer ):
         event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
         run = iEvent.eventAuxiliary().id().run()
         lumi = iEvent.eventAuxiliary().id().luminosityBlock()
+        eventId = iEvent.eventAuxiliary().id().event()
+
+        event.run = run
+        event.lumi = lumi
+        event.eventId = eventId
 
         if self.cfg_ana.verbose:
             self.printTriggerObject( event.triggerObject )
