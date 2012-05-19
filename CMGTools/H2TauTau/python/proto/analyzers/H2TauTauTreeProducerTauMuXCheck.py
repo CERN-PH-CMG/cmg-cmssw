@@ -1,0 +1,236 @@
+from CMGTools.RootTools.analyzers.TreeAnalyzerNumpy import TreeAnalyzerNumpy
+from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
+from CMGTools.H2TauTau.proto.analyzers.ntuple import *
+
+
+class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
+    '''Tree producer for the H->tau tau analysis.
+
+    Some of the functions in this class should be made available to everybody.'''
+    
+    def declareVariables(self):
+
+        tr = self.tree
+
+        var( tr, 'run', int)
+        var( tr, 'lumi', int)
+        var( tr, 'evt', int)
+        
+        var( tr, 'npv', int)
+        var( tr, 'npu', int)
+        var( tr, 'rho')
+        
+        var( tr, 'mcweight')
+        var( tr, 'puweight')
+        var( tr, 'effweight')
+        var( tr, 'weight')
+        
+        var( tr, 'm_sv')
+        var( tr, 'm_sv_Up')
+        var( tr, 'm_sv_Down')
+        
+        var( tr, 'pt_1')
+        var( tr, 'phi_1')
+        var( tr, 'eta_1')
+        var( tr, 'm_1')
+        var( tr, 'iso_1')
+        var( tr, 'mva_1')
+        var( tr, 'd0_1')
+        var( tr, 'dZ_1')
+        var( tr, 'passid_1', int)
+        var( tr, 'passiso_1', int)
+        var( tr, 'mt_1')
+        
+        var( tr, 'pt_2')
+        var( tr, 'phi_2')
+        var( tr, 'eta_2')
+        var( tr, 'm_2')
+        var( tr, 'iso_2')
+        var( tr, 'mva_2')
+        var( tr, 'passid_2', int)
+        var( tr, 'passiso_2', int)
+        var( tr, 'mt_2')
+        
+        var( tr, 'met')
+        var( tr, 'metphi')
+        var( tr, 'mvamet')
+        var( tr, 'mvametphi')
+        var( tr, 'pzetavis')
+        var( tr, 'pzetamiss')
+
+        var( tr, 'metcov00')
+        var( tr, 'metcov01')
+        var( tr, 'metcov10')
+        var( tr, 'metcov11')
+        
+        var( tr, 'mvacov00')
+        var( tr, 'mvacov01')
+        var( tr, 'mvacov10')
+        var( tr, 'mvacov11')
+      
+        var( tr, 'jpt_1')
+        var( tr, 'jeta_1')
+        var( tr, 'jphi_1')
+        var( tr, 'jptraw_1')
+        var( tr, 'jptunc_1')
+        var( tr, 'jmva_1')
+        var( tr, 'jpass_1', int)
+        
+        var( tr, 'jpt_2')
+        var( tr, 'jeta_2')
+        var( tr, 'jphi_2')
+        var( tr, 'jptraw_2')
+        var( tr, 'jptunc_2')
+        var( tr, 'jmva_2')
+        var( tr, 'jpass_2', int)
+        
+        var( tr, 'bpt')
+        var( tr, 'beta')
+        var( tr, 'bphi')
+        
+        var( tr, 'mjj')
+        var( tr, 'jdeta')
+        var( tr, 'njetingap', int)
+        var( tr, 'mva')
+        
+        var( tr, 'jdphi')
+        var( tr, 'dijetpt')
+        var( tr, 'dijetphi')
+        var( tr, 'hdijetphi')
+        var( tr, 'visjeteta')
+        var( tr, 'ptvis')
+        
+        var( tr, 'lNBTag', int)
+        var( tr, 'lNJets', int)
+
+
+    def declareHandles(self):
+        super(H2TauTauTreeProducerTauMuXCheck, self).declareHandles()
+        self.handles['pfmetraw'] = AutoHandle(
+            'pfMetForRegression',
+            'std::vector<reco::PFMET>' 
+            )        
+        self.handles['pfmetsig'] = AutoHandle(
+            'pfMetSignificance',
+            'cmg::METSignificance' 
+            )        
+        
+
+    def process(self, iEvent, event):
+        self.readCollections( iEvent )
+        
+        if not event.isSignal:
+            return False
+        tr = self.tree
+
+        fill( tr, 'run', event.run) 
+        fill( tr, 'lumi',event.lumi)
+        fill( tr, 'evt', event.eventId)
+        
+        fill( tr, 'npv', len(event.vertices)) 
+        fill( tr, 'npu', event.pileUpInfo[1].nPU()) 
+        fill( tr, 'rho', event.rho)
+        
+        fill( tr, 'mcweight', -1) # where do I get the pt weight for ggHiggs? hardcode xs and nevents
+        fill( tr, 'puweight', event.vertexWeight) #OK
+        # warning: phil's leg definition is different from ours!
+        # for him, leg1 = muon, leg2 = tau
+        leg1 = event.diLepton.leg2()
+        leg2 = event.diLepton.leg1()
+        fill( tr, 'effweight', leg1.weight*leg2.weight) 
+        fill( tr, 'weight', event.eventWeight ) 
+        
+        fill( tr, 'm_sv', event.diLepton.massSVFit() ) 
+        fill( tr, 'm_sv_Up', -1) #? tau up 3%
+        fill( tr, 'm_sv_Down', -1) #? tau down 3%
+        
+        fill( tr, 'pt_1', leg1.pt())
+        fill( tr, 'phi_1', leg1.phi())
+        fill( tr, 'eta_1', leg1.eta())
+        fill( tr, 'm_1', leg1.mass())
+        fill( tr, 'iso_1', leg1.relIso(0.5))
+        fill( tr, 'mva_1', 0) # should be filled for e-tau
+        fill( tr, 'd0_1', leg1.dxy() )
+        fill( tr, 'dZ_1', leg1.dz())
+        fill( tr, 'passid_1', leg1.tightId() )
+        fill( tr, 'passiso_1', leg1.relIso(0.5)<0.1 )
+        fill( tr, 'mt_1', event.diLepton.mTLeg2())
+        
+        fill( tr, 'pt_2', leg2.pt())
+        fill( tr, 'phi_2', leg2.phi())
+        fill( tr, 'eta_2', leg2.eta())
+        fill( tr, 'm_2', leg2.mass())
+        fill( tr, 'iso_2', leg2.tauID("byRawIsoMVA"))
+        fill( tr, 'mva_2', leg2.tauID("againstElectronMVA")) # we probably need the mva output here. I guess this is a working point
+        fill( tr, 'passid_2',  1)
+        fill( tr, 'passiso_2', 1)
+        fill( tr, 'mt_2', event.diLepton.mTLeg1())
+        
+        met = self.handles['pfmetraw'].product()[0]
+        fill( tr, 'met', met.et()) # raw 
+        fill( tr, 'metphi', met.phi()) # raw
+        fill( tr, 'mvamet', -1) # raw MVA, deactivate recoil corrections
+        fill( tr, 'mvametphi', -1)
+        fill( tr, 'pzetavis', event.diLepton.pZetaVis())
+        fill( tr, 'pzetamiss', event.diLepton.pZetaMET())
+
+        metsig = self.handles['pfmetsig'].product().significance()
+        fill( tr, 'metcov00', metsig(0,0))
+        fill( tr, 'metcov01', metsig(0,1))
+        fill( tr, 'metcov10', metsig(1,0))
+        fill( tr, 'metcov11', metsig(1,1))
+        
+        fill( tr, 'mvacov00', -1)
+        fill( tr, 'mvacov01', -1)
+        fill( tr, 'mvacov10', -1)
+        fill( tr, 'mvacov11', -1)
+        
+        nJets = len(event.cleanJets)
+        if nJets>=1:
+            j1 = event.cleanJets[0]
+            fill( tr, 'jpt_1', j1.pt())
+            fill( tr, 'jeta_1', j1.eta())
+            fill( tr, 'jphi_1', j1.phi())
+            fill( tr, 'jptraw_1', j1.pt()*j1.rawFactor())
+            fill( tr, 'jptunc_1', j1.uncOnFourVectorScale())
+            fill( tr, 'jmva_1', j1.puMva("full"))
+            # 2 is the loose working point
+            fill( tr, 'jpass_1', j1.passPuJetId("full", 2))
+
+        if nJets>=2:
+            j2 = event.cleanJets[0]
+            fill( tr, 'jpt_2', j2.pt())
+            fill( tr, 'jeta_2', j2.eta())
+            fill( tr, 'jphi_2', j2.phi())
+            fill( tr, 'jptraw_2', j2.pt()*j2.rawFactor())
+            fill( tr, 'jptunc_2', j2.uncOnFourVectorScale())
+            fill( tr, 'jmva_2', j2.puMva("full"))
+            # 2 is the loose working point
+            fill( tr, 'jpass_2', j2.passPuJetId("full", 2))
+
+        if len(event.bJets)>0:
+            fill( tr, 'bpt', event.bJets[0].pt())
+            fill( tr, 'beta', event.bJets[0].eta())
+            fill( tr, 'bphi', event.bJets[0].phi())
+
+        if hasattr( event, 'vbf'):
+            vbf = event.vbf
+            # import pdb; pdb.set_trace()
+            fill( tr, 'mjj', vbf.mjj)
+            fill( tr, 'jdeta', vbf.deta)
+            fill( tr, 'njetingap', len(vbf.centralJets))
+            fill( tr, 'mva', -99)
+            
+            # add the following variables to the vbf object in VBFAnalyzer
+            fill( tr, 'jdphi', vbf.dphi)
+            fill( tr, 'dijetpt', vbf.dijetpt)
+            fill( tr, 'dijetphi', vbf.dijetphi)
+            fill( tr, 'hdijetphi', vbf.dphidijethiggs) # higgs p = p1 + p2 + met
+            fill( tr, 'visjeteta', vbf.visjeteta)
+            fill( tr, 'ptvis', vbf.ptvis)
+
+        fill( tr, 'lNBTag', len(event.bJets))
+        fill( tr, 'lNJets', len(event.cleanJets))
+       
+        self.tree.tree.Fill()
+        return True

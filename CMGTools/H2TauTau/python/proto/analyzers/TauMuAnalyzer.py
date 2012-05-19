@@ -70,7 +70,7 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         if tau.decayMode() == 0 and \
                tau.calcEOverP() < 0.2: #reject muons faking taus in 2011B
             return False
-        return tau.tauID("byLooseIsoMVA")>0.5 and \ 
+        return tau.tauID("byLooseIsoMVA")>0.5 and \
                tau.tauID("againstMuonTight")>0.5 and \
                tau.tauID("againstElectronLoose")>0.5 and \
                self.testVertex( tau )

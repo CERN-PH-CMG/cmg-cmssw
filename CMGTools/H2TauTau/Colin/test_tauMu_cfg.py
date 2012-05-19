@@ -75,7 +75,7 @@ vbfKwargs = dict( Mjj = 400,
 
 vbfAna = cfg.Analyzer(
     'VBFAnalyzer',
-    jetCol = 'cmgPFJetSel',
+    jetCol = 'cmgPFJetSelCHS',
     jetPt = 30,
     jetEta = 4.5,
     **vbfKwargs
@@ -98,7 +98,8 @@ treeProducer = cfg.Analyzer(
 
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.tauMu_ColinMay18 import * 
+from CMGTools.H2TauTau.proto.samples.tauMu_ColinMay18_CHS import * 
+# from CMGTools.H2TauTau.proto.samples.tauMu_ColinMay18 import * 
 # from CMGTools.H2TauTau.proto.samples.tauMu_ColinMay15 import * 
 
 #########################################################################################
@@ -160,15 +161,15 @@ if test==1:
     # comp = HiggsVBF120
     # comp.files = ['tauMu_fullsel_tree_CMG.root']
     # comp.files = ['/data/c/cbern/Tests/CMGTools/44X/May05/CMGTools/CMSSW_4_4_4/src/CMGTools/H2TauTau/prod/tauMu_fullsel_tree_CMG.root']
-    comp = embed_Run2011A_May10ReReco_v1
+    comp = data_Run2011A_May10ReReco_v1
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.files = comp.files[:5]
     # TTJets.files = TTJets.files[:1]
 elif test==2:
     for comp in selectedComponents:
-     comp.splitFactor = 1
-     # comp.files = comp.files[:2]
+        comp.splitFactor = 1
+        # comp.files = comp.files[:2]
 
 # selectedComponents.extend(MC)
 

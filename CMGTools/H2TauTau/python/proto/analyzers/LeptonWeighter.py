@@ -46,17 +46,19 @@ class LeptonWeighter( Analyzer ):
         self.lepton.triggerEffMC = 1 
         self.lepton.recEffWeight = 1
         if self.cfg_comp.isMC or self.cfg_comp.isEmbed:
-            if self.trigEff is not None:
-                self.lepton.triggerEffData = self.trigEff.lepEff( self.lepton.pt(),
+            assert( self.trigEff is not None )
+            self.lepton.triggerEffData = self.trigEff.lepEff( self.lepton.pt(),
+                                                              self.lepton.eta() )
+            self.lepton.triggerWeight = self.lepton.triggerEffData
+
+            if self.trigEff.lepEffMC is not None and \
+                   len(self.cfg_comp.triggers)>0:
+                self.lepton.triggerEffMC = self.trigEff.lepEffMC( self.lepton.pt(),
                                                                   self.lepton.eta() )
-                self.lepton.triggerWeight = self.lepton.triggerEffData
-                if self.trigEff.lepEffMC is not None:
-                    self.lepton.triggerEffMC = self.trigEff.lepEffMC( self.lepton.pt(),
-                                                                           self.lepton.eta() )
-                    if self.lepton.triggerEffMC>0:
-                        self.lepton.triggerWeight /= self.lepton.triggerEffMC
-                    else:
-                        self.lepton.triggerWeight = 1.
+                if self.lepton.triggerEffMC>0:
+                    self.lepton.triggerWeight /= self.lepton.triggerEffMC
+                else:
+                    self.lepton.triggerWeight = 1.                    
 
             recEffMap = None
             if abs(self.lepton.pdgId()) == 11:

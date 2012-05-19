@@ -7,7 +7,14 @@ from CMGTools.RootTools.physicsobjects.VBF import VBF
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 
 class VBFAnalyzer( Analyzer ):
-    '''Analyze jets, and in particular VBF.'''
+    '''Analyze jets, and in particular VBF.
+    This analyzer filters the jets that do not correspond to the di-lepton
+    legs, and stores in the event:
+    - jets: all jets passing the pt and eta cuts
+    - cleanJets: the collection of clean jets
+    - vbf: the VBF object with all necessary variables, if it can be defined
+    - bJets: the bjets passing testBJet (see this method)
+    '''
 
     def declareHandles(self):
         super(VBFAnalyzer, self).declareHandles()
@@ -31,8 +38,10 @@ class VBFAnalyzer( Analyzer ):
         cmgJets = self.handles['jets'].product()
         event.jets = []
         event.cleanJets = []
+        allJets = []
         for cmgJet in cmgJets:
             jet = Jet( cmgJet )
+            allJets.append( jet )
             if self.cfg_comp.isMC and hasattr( self.cfg_comp, 'jetScale'):
                 scale = random.gauss( self.cfg_comp.jetScale,
                                       self.cfg_comp.jetSmear )
@@ -41,6 +50,9 @@ class VBFAnalyzer( Analyzer ):
                 continue
             event.jets.append(jet)
         self.counters.counter('VBF').inc('all events')
+
+        event.bJets = filter( self.testBJet, allJets )
+
         if len( event.jets )<2:
             return True
         self.counters.counter('VBF').inc('at least 2 good jets')
@@ -54,7 +66,7 @@ class VBFAnalyzer( Analyzer ):
             return True
         self.counters.counter('VBF').inc('at least 2 clean jets')
 
-        event.vbf = VBF( event.cleanJets )
+        event.vbf = VBF( event.cleanJets, event.diLepton)
         if event.vbf.mjj > self.cfg_ana.Mjj:
             self.counters.counter('VBF').inc('M_jj > {cut:3.1f}'.format(cut=self.cfg_ana.Mjj) )
         else:
@@ -78,3 +90,8 @@ class VBFAnalyzer( Analyzer ):
         else:
             return False
 
+    def testBJet(self, jet):
+        # import pdb; pdb.set_trace()
+        # medium csv working point
+        # https://twiki.cern.ch/twiki/bin/viewauth/CMS/BTagPerformanceOP#B_tagging_Operating_Points_for_3
+        return jet.pt()>20 and jet.btag("combinedSecondaryVertexBJetTags")>0.679
