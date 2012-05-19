@@ -1,7 +1,7 @@
 #!/bin/env python
 
-def var( tree, varName ):
-    tree.var(varName, float)
+def var( tree, varName, type=float ):
+    tree.var(varName, type)
 
 def fill( tree, varName, value ):
     tree.fill( varName, value )
