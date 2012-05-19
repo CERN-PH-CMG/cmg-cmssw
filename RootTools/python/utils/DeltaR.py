@@ -97,9 +97,11 @@ def matchObjectCollection( objects, matchCollection, deltaRMax):
 
 
 def matchObjectCollection2 ( objects, matchCollection, deltaRMax = 0.3 ):
-    '''Univoque association of an element from matchCollection to an element of objects.'''
-    '''Reco and Gen objects get the "matched" attribute, true is they're part of a matched tulpe.'''
-    '''By default, the matching is true only if delta R is smaller than 0.3.'''
+    '''Univoque association of an element from matchCollection to an element of objects.
+    Reco and Gen objects get the "matched" attribute, true is they are re part of a matched tulpe.
+    By default, the matching is true only if delta R is smaller than 0.3.
+    '''
+    
     pairs = {}
     if len(objects)==0:
             return pairs
