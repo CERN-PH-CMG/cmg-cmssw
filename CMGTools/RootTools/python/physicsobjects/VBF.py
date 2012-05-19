@@ -11,7 +11,7 @@ class VBF( object ):
         self.jets = jets
         # the MET is taken from the di-lepton, because it can depend on it
         # e.g. recoil corrections, mva met
-        self.met = diLepton.met
+        self.met = diLepton.met()
         self.leadJets = jets[:2] # taking first 2 jets (leading ones)
         self.otherJets = jets[2:]
         self.centralJets = self.findCentralJets( self.leadJets, self.otherJets )
@@ -31,7 +31,7 @@ class VBF( object ):
         self.dijetphi = dijetp4.phi()
         # higgs momentum (defined as the di-lepton momentum + the met momentum)
         # don't access longitudinal quantities!
-        self.higgsp4 = diLepton.p4() + met.p4()
+        self.higgsp4 = diLepton.p4() + self.met.p4()
         # delta phi between dijet system and higgs system
         self.dphidijethiggs = deltaPhi( self.dijetphi, self.higgsp4.phi() )
         # ? 
