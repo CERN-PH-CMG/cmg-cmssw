@@ -4,6 +4,17 @@ from CMGTools.H2TauTau.proto.H2TauTauDataMC_diTau import *
 from CMGTools.RootTools.RootInit import *
 import math
 
+def substractMCbackground(QCDtightSS, plotVarDataSS):
+      QCDtightSS.Add(plotVarDataSS.Hist("DYJets"),-1)
+      QCDtightSS.Add(plotVarDataSS.Hist("DYJets_Fakes"),-1)
+      QCDtightSS.Add(plotVarDataSS.Hist("DYJets_Photon"),-1)
+      QCDtightSS.Add(plotVarDataSS.Hist("DYJets_Electron"),-1)
+      QCDtightSS.Add(plotVarDataSS.Hist("WJets"),-1)
+      QCDtightSS.Add(plotVarDataSS.Hist("WJets_Fakes"),-1)
+      QCDtightSS.Add(plotVarDataSS.Hist("WW"),-1)
+      QCDtightSS.Add(plotVarDataSS.Hist("WZ"),-1)
+      QCDtightSS.Add(plotVarDataSS.Hist("ZZ"),-1)
+      QCDtightSS.Add(plotVarDataSS.Hist("TTJets"),-1)
 
 def QCDEstimate(prefix,prefix1,xmin,xmax,\
                 plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS,\
@@ -64,139 +75,49 @@ def QCDEstimate(prefix,prefix1,xmin,xmax,\
       gPad.WaitPrimitive()
       
       QCDtightSS=copy.deepcopy(plotVarDataSS.Hist("Data"))
-      QCDtightSS.Add(plotVarDataSS.Hist("DYJets"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("DYJets_Fakes"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("DYJets_Photon"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("DYJets_Electron"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("WJets"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("WJets_Fakes"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("TTJets"),-1)
+      substractMCbackground(QCDtightSS, plotVarDataSS)
 
       QCDlooseSS=copy.deepcopy(plotVarDataLooseIsoSS.Hist("Data"))
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("DYJets"),-1)
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("DYJets_Fakes"),-1)
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("DYJets_Photon"),-1)
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("DYJets_Electron"),-1)
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("WJets"),-1)
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("WJets_Fakes"),-1)
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("TTJets"),-1)
+      substractMCbackground(QCDlooseSS, plotVarDataLooseIsoSS)
 
       QCDlooseOS=copy.deepcopy(plotVarDataLooseIsoOS.Hist("Data"))
-      QCDlooseOS.Add(plotVarDataLooseIsoOS.Hist("DYJets"),-1)
-      QCDlooseOS.Add(plotVarDataLooseIsoOS.Hist("DYJets_Fakes"),-1)
-      QCDlooseOS.Add(plotVarDataLooseIsoOS.Hist("DYJets_Photon"),-1)
-      QCDlooseOS.Add(plotVarDataLooseIsoOS.Hist("DYJets_Electron"),-1)
-      QCDlooseOS.Add(plotVarDataLooseIsoOS.Hist("WJets"),-1)
-      QCDlooseOS.Add(plotVarDataLooseIsoOS.Hist("WJets_Fakes"),-1)
-      QCDlooseOS.Add(plotVarDataLooseIsoOS.Hist("TTJets"),-1)
+      substractMCbackground(QCDlooseOS, plotVarDataLooseIsoOS)
 
       QCDlooseLowControlOS=copy.deepcopy(plotVarDataLowControlOS.Hist("Data"))
-      QCDlooseLowControlOS.Add(plotVarDataLowControlOS.Hist("DYJets"),-1)
-      QCDlooseLowControlOS.Add(plotVarDataLowControlOS.Hist("DYJets_Fakes"),-1)
-      QCDlooseLowControlOS.Add(plotVarDataLowControlOS.Hist("DYJets_Photon"),-1)
-      QCDlooseLowControlOS.Add(plotVarDataLowControlOS.Hist("DYJets_Electron"),-1)
-      QCDlooseLowControlOS.Add(plotVarDataLowControlOS.Hist("WJets"),-1)
-      QCDlooseLowControlOS.Add(plotVarDataLowControlOS.Hist("WJets_Fakes"),-1)
-      QCDlooseLowControlOS.Add(plotVarDataLowControlOS.Hist("TTJets"),-1)
+      substractMCbackground(QCDlooseLowControlOS, plotVarDataLowControlOS)
 
       QCDlooseLowControlSS=copy.deepcopy(plotVarDataLowControlSS.Hist("Data"))
-      QCDlooseLowControlSS.Add(plotVarDataLowControlSS.Hist("DYJets"),-1)
-      QCDlooseLowControlSS.Add(plotVarDataLowControlSS.Hist("DYJets_Fakes"),-1)
-      QCDlooseLowControlSS.Add(plotVarDataLowControlSS.Hist("DYJets_Photon"),-1)
-      QCDlooseLowControlSS.Add(plotVarDataLowControlSS.Hist("DYJets_Electron"),-1)
-      QCDlooseLowControlSS.Add(plotVarDataLowControlSS.Hist("WJets"),-1)
-      QCDlooseLowControlSS.Add(plotVarDataLowControlSS.Hist("WJets_Fakes"),-1)
-      QCDlooseLowControlSS.Add(plotVarDataLowControlSS.Hist("TTJets"),-1)
+      substractMCbackground(QCDlooseLowControlSS, plotVarDataLowControlSS)
 
       QCDlooseAverageControlOS=copy.deepcopy(plotVarDataAverageControlOS.Hist("Data"))
-      QCDlooseAverageControlOS.Add(plotVarDataAverageControlOS.Hist("DYJets"),-1)
-      QCDlooseAverageControlOS.Add(plotVarDataAverageControlOS.Hist("DYJets_Fakes"),-1)
-      QCDlooseAverageControlOS.Add(plotVarDataAverageControlOS.Hist("DYJets_Photon"),-1)
-      QCDlooseAverageControlOS.Add(plotVarDataAverageControlOS.Hist("DYJets_Electron"),-1)
-      QCDlooseAverageControlOS.Add(plotVarDataAverageControlOS.Hist("WJets"),-1)
-      QCDlooseAverageControlOS.Add(plotVarDataAverageControlOS.Hist("WJets_Fakes"),-1)
-      QCDlooseAverageControlOS.Add(plotVarDataAverageControlOS.Hist("TTJets"),-1)
+      substractMCbackground(QCDlooseAverageControlOS, plotVarDataAverageControlOS)
 
       QCDlooseAverageControlSS=copy.deepcopy(plotVarDataAverageControlSS.Hist("Data"))
-      QCDlooseAverageControlSS.Add(plotVarDataAverageControlSS.Hist("DYJets"),-1)
-      QCDlooseAverageControlSS.Add(plotVarDataAverageControlSS.Hist("DYJets_Fakes"),-1)
-      QCDlooseAverageControlSS.Add(plotVarDataAverageControlSS.Hist("DYJets_Photon"),-1)
-      QCDlooseAverageControlSS.Add(plotVarDataAverageControlSS.Hist("DYJets_Electron"),-1)
-      QCDlooseAverageControlSS.Add(plotVarDataAverageControlSS.Hist("WJets"),-1)
-      QCDlooseAverageControlSS.Add(plotVarDataAverageControlSS.Hist("WJets_Fakes"),-1)
-      QCDlooseAverageControlSS.Add(plotVarDataAverageControlSS.Hist("TTJets"),-1)
+      substractMCbackground(QCDlooseAverageControlSS, plotVarDataAverageControlSS)
 
       QCDlooseHighControlOS=copy.deepcopy(plotVarDataHighControlOS.Hist("Data"))
-      QCDlooseHighControlOS.Add(plotVarDataHighControlOS.Hist("DYJets"),-1)
-      QCDlooseHighControlOS.Add(plotVarDataHighControlOS.Hist("DYJets_Fakes"),-1)
-      QCDlooseHighControlOS.Add(plotVarDataHighControlOS.Hist("DYJets_Photon"),-1)
-      QCDlooseHighControlOS.Add(plotVarDataHighControlOS.Hist("DYJets_Electron"),-1)
-      QCDlooseHighControlOS.Add(plotVarDataHighControlOS.Hist("WJets"),-1)
-      QCDlooseHighControlOS.Add(plotVarDataHighControlOS.Hist("WJets_Fakes"),-1)
-      QCDlooseHighControlOS.Add(plotVarDataHighControlOS.Hist("TTJets"),-1)
+      substractMCbackground(QCDlooseHighControlOS, plotVarDataHighControlOS)
 
       QCDlooseHighControlSS=copy.deepcopy(plotVarDataHighControlSS.Hist("Data"))
-      QCDlooseHighControlSS.Add(plotVarDataHighControlSS.Hist("DYJets"),-1)
-      QCDlooseHighControlSS.Add(plotVarDataHighControlSS.Hist("DYJets_Fakes"),-1)
-      QCDlooseHighControlSS.Add(plotVarDataHighControlSS.Hist("DYJets_Photon"),-1)
-      QCDlooseHighControlSS.Add(plotVarDataHighControlSS.Hist("DYJets_Electron"),-1)
-      QCDlooseHighControlSS.Add(plotVarDataHighControlSS.Hist("WJets"),-1)
-      QCDlooseHighControlSS.Add(plotVarDataHighControlSS.Hist("WJets_Fakes"),-1)
-      QCDlooseHighControlSS.Add(plotVarDataHighControlSS.Hist("TTJets"),-1)
+      substractMCbackground(QCDlooseHighControlSS, plotVarDataHighControlSS)
 
       QCDlooseLowControlLooseIsoOS=copy.deepcopy(plotVarDataLowControlLooseIsoOS.Hist("Data"))
-      QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("DYJets"),-1)
-      QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("DYJets_Fakes"),-1)
-      QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("DYJets_Photon"),-1)
-      QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("DYJets_Electron"),-1)
-      QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("WJets"),-1)
-      QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("WJets_Fakes"),-1)
-      QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("TTJets"),-1)
+      substractMCbackground(QCDlooseLowControlLooseIsoOS, plotVarDataLowControlLooseIsoOS)
 
       QCDlooseLowControlLooseIsoSS=copy.deepcopy(plotVarDataLowControlLooseIsoSS.Hist("Data"))
-      QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("DYJets"),-1)
-      QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("DYJets_Fakes"),-1)
-      QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("DYJets_Photon"),-1)
-      QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("DYJets_Electron"),-1)
-      QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("WJets"),-1)
-      QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("WJets_Fakes"),-1)
-      QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("TTJets"),-1)
+      substractMCbackground(QCDlooseLowControlLooseIsoSS, plotVarDataLowControlLooseIsoSS)
 
       QCDlooseAverageControlLooseIsoOS=copy.deepcopy(plotVarDataAverageControlLooseIsoOS.Hist("Data"))
-      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("DYJets"),-1)
-      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("DYJets_Fakes"),-1)
-      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("DYJets_Photon"),-1)
-      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("DYJets_Electron"),-1)
-      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("WJets"),-1)
-      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("WJets_Fakes"),-1)
-      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("TTJets"),-1)
+      substractMCbackground(QCDlooseAverageControlLooseIsoOS, plotVarDataAverageControlLooseIsoOS)
 
       QCDlooseAverageControlLooseIsoSS=copy.deepcopy(plotVarDataAverageControlLooseIsoSS.Hist("Data"))
-      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("DYJets"),-1)
-      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("DYJets_Fakes"),-1)
-      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("DYJets_Photon"),-1)
-      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("DYJets_Electron"),-1)
-      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("WJets"),-1)
-      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("WJets_Fakes"),-1)
-      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("TTJets"),-1)
+      substractMCbackground(QCDlooseAverageControlLooseIsoSS, plotVarDataAverageControlLooseIsoSS)
 
       QCDlooseHighControlLooseIsoOS=copy.deepcopy(plotVarDataHighControlLooseIsoOS.Hist("Data"))
-      QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("DYJets"),-1)
-      QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("DYJets_Fakes"),-1)
-      QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("DYJets_Photon"),-1)
-      QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("DYJets_Electron"),-1)
-      QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("WJets"),-1)
-      QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("WJets_Fakes"),-1)
-      QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("TTJets"),-1)
+      substractMCbackground(QCDlooseHighControlLooseIsoOS, plotVarDataHighControlLooseIsoOS)
 
       QCDlooseHighControlLooseIsoSS=copy.deepcopy(plotVarDataHighControlLooseIsoSS.Hist("Data"))
-      QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("DYJets"),-1)
-      QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("DYJets_Fakes"),-1)
-      QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("DYJets_Photon"),-1)
-      QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("DYJets_Electron"),-1)
-      QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("WJets"),-1)
-      QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("WJets_Fakes"),-1)
-      QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("TTJets"),-1)
+      substractMCbackground(QCDlooseHighControlLooseIsoSS, plotVarDataHighControlLooseIsoSS)
 
       #print "QCDlooseSS:", QCDlooseSS.Integral()
       #print "QCDtightSS:", QCDtightSS.Integral()
@@ -318,78 +239,52 @@ def QCDEstimate1(prefix,prefix1,xmin,xmax,\
 	  gPad.SetLogy(False)
       gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlLooseIsoSS.varName+"_qcdAverageControlLooseIsoSS.png")
       #gPad.WaitPrimitive()
-      
+
+
       QCDtightSS=copy.deepcopy(plotVarDataSS.Hist("Data"))
-      QCDtightSS.Add(plotVarDataSS.Hist("DYJets"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("DYJets_Fakes"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("DYJets_Photon"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("DYJets_Electron"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("WJets"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("WJets_Fakes"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("TTJets"),-1)
+      substractMCbackground(QCDtightSS, plotVarDataSS)
 
       QCDlooseSS=copy.deepcopy(plotVarDataLooseIsoSS.Hist("Data"))
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("DYJets"),-1)
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("DYJets_Fakes"),-1)
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("DYJets_Photon"),-1)
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("DYJets_Electron"),-1)
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("WJets"),-1)
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("WJets_Fakes"),-1)
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("TTJets"),-1)
+      substractMCbackground(QCDlooseSS, plotVarDataLooseIsoSS)
+
+      #QCDlooseOS=copy.deepcopy(plotVarDataLooseIsoOS.Hist("Data"))
+      #substractMCbackground(QCDlooseOS, plotVarDataLooseIsoOS)
+
+      #QCDlooseLowControlOS=copy.deepcopy(plotVarDataLowControlOS.Hist("Data"))
+      #substractMCbackground(QCDlooseLowControlOS, plotVarDataLowControlOS)
+
+      #QCDlooseLowControlSS=copy.deepcopy(plotVarDataLowControlSS.Hist("Data"))
+      #substractMCbackground(QCDlooseLowControlSS, plotVarDataLowControlSS)
+
+      #QCDlooseAverageControlOS=copy.deepcopy(plotVarDataAverageControlOS.Hist("Data"))
+      #substractMCbackground(QCDlooseAverageControlOS, plotVarDataAverageControlOS)
+
+      #QCDlooseAverageControlSS=copy.deepcopy(plotVarDataAverageControlSS.Hist("Data"))
+      #substractMCbackground(QCDlooseAverageControlSS, plotVarDataAverageControlSS)
+
+      #QCDlooseHighControlOS=copy.deepcopy(plotVarDataHighControlOS.Hist("Data"))
+      #substractMCbackground(QCDlooseHighControlOS, plotVarDataHighControlOS)
+
+      #QCDlooseHighControlSS=copy.deepcopy(plotVarDataHighControlSS.Hist("Data"))
+      #substractMCbackground(QCDlooseHighControlSS, plotVarDataHighControlSS)
 
       #QCDlooseLowControlLooseIsoOS=copy.deepcopy(plotVarDataLowControlLooseIsoOS.Hist("Data"))
-      #QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("DYJets"),-1)
-      #QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("DYJets_Fakes"),-1)
-      #QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("DYJets_Photon"),-1)
-      #QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("DYJets_Electron"),-1)
-      #QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("WJets"),-1)
-      #QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("WJets_Fakes"),-1)
-      #QCDlooseLowControlLooseIsoOS.Add(plotVarDataLowControlLooseIsoOS.Hist("TTJets"),-1)
+      #substractMCbackground(QCDlooseLowControlLooseIsoOS, plotVarDataLowControlLooseIsoOS)
 
       #QCDlooseLowControlLooseIsoSS=copy.deepcopy(plotVarDataLowControlLooseIsoSS.Hist("Data"))
-      #QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("DYJets"),-1)
-      #QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("DYJets_Fakes"),-1)
-      #QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("DYJets_Photon"),-1)
-      #QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("DYJets_Electron"),-1)
-      #QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("WJets"),-1)
-      #QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("WJets_Fakes"),-1)
-      #QCDlooseLowControlLooseIsoSS.Add(plotVarDataLowControlLooseIsoSS.Hist("TTJets"),-1)
+      #substractMCbackground(QCDlooseLowControlLooseIsoSS, plotVarDataLowControlLooseIsoSS)
 
       QCDlooseAverageControlLooseIsoOS=copy.deepcopy(plotVarDataAverageControlLooseIsoOS.Hist("Data"))
-      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("DYJets"),-1)
-      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("DYJets_Fakes"),-1)
-      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("DYJets_Photon"),-1)
-      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("DYJets_Electron"),-1)
-      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("WJets"),-1)
-      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("WJets_Fakes"),-1)
-      QCDlooseAverageControlLooseIsoOS.Add(plotVarDataAverageControlLooseIsoOS.Hist("TTJets"),-1)
+      substractMCbackground(QCDlooseAverageControlLooseIsoOS, plotVarDataAverageControlLooseIsoOS)
 
       QCDlooseAverageControlLooseIsoSS=copy.deepcopy(plotVarDataAverageControlLooseIsoSS.Hist("Data"))
-      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("DYJets"),-1)
-      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("DYJets_Fakes"),-1)
-      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("DYJets_Photon"),-1)
-      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("DYJets_Electron"),-1)
-      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("WJets"),-1)
-      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("WJets_Fakes"),-1)
-      QCDlooseAverageControlLooseIsoSS.Add(plotVarDataAverageControlLooseIsoSS.Hist("TTJets"),-1)
+      substractMCbackground(QCDlooseAverageControlLooseIsoSS, plotVarDataAverageControlLooseIsoSS)
 
       #QCDlooseHighControlLooseIsoOS=copy.deepcopy(plotVarDataHighControlLooseIsoOS.Hist("Data"))
-      #QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("DYJets"),-1)
-      #QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("DYJets_Fakes"),-1)
-      #QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("DYJets_Photon"),-1)
-      #QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("DYJets_Electron"),-1)
-      #QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("WJets"),-1)
-      #QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("WJets_Fakes"),-1)
-      #QCDlooseHighControlLooseIsoOS.Add(plotVarDataHighControlLooseIsoOS.Hist("TTJets"),-1)
+      #substractMCbackground(QCDlooseHighControlLooseIsoOS, plotVarDataHighControlLooseIsoOS)
 
       #QCDlooseHighControlLooseIsoSS=copy.deepcopy(plotVarDataHighControlLooseIsoSS.Hist("Data"))
-      #QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("DYJets"),-1)
-      #QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("DYJets_Fakes"),-1)
-      #QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("DYJets_Photon"),-1)
-      #QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("DYJets_Electron"),-1)
-      #QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("WJets"),-1)
-      #QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("WJets_Fakes"),-1)
-      #QCDlooseHighControlLooseIsoSS.Add(plotVarDataHighControlLooseIsoSS.Hist("TTJets"),-1)
+      #substractMCbackground(QCDlooseHighControlLooseIsoSS, plotVarDataHighControlLooseIsoSS)
 
       #print "QCDlooseSS:", QCDlooseSS.Integral()
       #print "QCDtightSS:", QCDtightSS.Integral()
@@ -459,31 +354,13 @@ def QCDEstimate2(prefix,prefix1,xmin,xmax,\
       #gPad.WaitPrimitive()
       
       QCDlooseOS=copy.deepcopy(plotVarDataLooseIsoOS.Hist("Data"))
-      QCDlooseOS.Add(plotVarDataLooseIsoOS.Hist("DYJets"),-1)
-      QCDlooseOS.Add(plotVarDataLooseIsoOS.Hist("DYJets_Fakes"),-1)
-      QCDlooseOS.Add(plotVarDataLooseIsoOS.Hist("DYJets_Photon"),-1)
-      QCDlooseOS.Add(plotVarDataLooseIsoOS.Hist("DYJets_Electron"),-1)
-      QCDlooseOS.Add(plotVarDataLooseIsoOS.Hist("WJets"),-1)
-      QCDlooseOS.Add(plotVarDataLooseIsoOS.Hist("WJets_Fakes"),-1)
-      QCDlooseOS.Add(plotVarDataLooseIsoOS.Hist("TTJets"),-1)
+      substractMCbackground(QCDlooseOS, plotVarDataLooseIsoOS)
 
       QCDlooseSS=copy.deepcopy(plotVarDataLooseIsoSS.Hist("Data"))
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("DYJets"),-1)
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("DYJets_Fakes"),-1)
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("DYJets_Photon"),-1)
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("DYJets_Electron"),-1)
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("WJets"),-1)
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("WJets_Fakes"),-1)
-      QCDlooseSS.Add(plotVarDataLooseIsoSS.Hist("TTJets"),-1)
+      substractMCbackground(QCDlooseSS, plotVarDataLooseIsoSS)
 
       QCDtightSS=copy.deepcopy(plotVarDataSS.Hist("Data"))
-      QCDtightSS.Add(plotVarDataSS.Hist("DYJets"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("DYJets_Fakes"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("DYJets_Photon"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("DYJets_Electron"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("WJets"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("WJets_Fakes"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("TTJets"),-1)
+      substractMCbackground(QCDtightSS, plotVarDataSS)
 
       #print "QCDlooseSS:", QCDlooseSS.Integral()
       #print "QCDtightSS:", QCDtightSS.Integral()
@@ -500,3 +377,86 @@ def QCDEstimate2(prefix,prefix1,xmin,xmax,\
 	      QCDlooseOS.weighted.SetBinContent(i+1,0.001)
 
       return QCDlooseOS,QCDScale
+
+def QCDEstimate3(prefix,prefix1,xmin,xmax,\
+                 plotVarDataLooseIsoOS, plotVarDataLooseIsoSS,\
+                 plotVarDataAverageControlSS,\
+                 plotVarDataAverageControlLooseIsoSS,\
+                 log):
+      ymax=plotVarDataLooseIsoSS.Hist("Data").GetMaximum()*1.5
+      if log:
+          plotVarDataLooseIsoSS.DrawStack("HIST",xmin,xmax,0.1,ymax)
+	  gPad.SetLogy()
+      else:
+          plotVarDataLooseIsoSS.DrawStack("HIST",xmin,xmax,0,ymax)
+	  gPad.SetLogy(False)
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcdLooseSS.png")
+      #gPad.WaitPrimitive()
+      
+      ymax=plotVarDataLooseIsoOS.Hist("Data").GetMaximum()*1.5
+      if log:
+          plotVarDataLooseIsoOS.DrawStack("HIST",xmin,xmax,0.1,ymax)
+	  gPad.SetLogy()
+      else:
+          plotVarDataLooseIsoOS.DrawStack("HIST",xmin,xmax,0,ymax)
+	  gPad.SetLogy(False)
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoOS.varName+"_qcdLooseOS.png")
+      #gPad.WaitPrimitive()
+      
+      ymax=plotVarDataAverageControlSS.Hist("Data").GetMaximum()*1.5
+      if log:
+          plotVarDataAverageControlSS.DrawStack("HIST",xmin,xmax,0.1,ymax)
+	  gPad.SetLogy()
+      else:
+          plotVarDataAverageControlSS.DrawStack("HIST",xmin,xmax,0,ymax)
+	  gPad.SetLogy(False)
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlSS.varName+"_qcdAverageControlSS.png")
+      #gPad.WaitPrimitive()
+      
+      ymax=plotVarDataAverageControlLooseIsoSS.Hist("Data").GetMaximum()*1.5
+      if log:
+          plotVarDataAverageControlLooseIsoSS.DrawStack("HIST",xmin,xmax,0.1,ymax)
+	  gPad.SetLogy()
+      else:
+          plotVarDataAverageControlLooseIsoSS.DrawStack("HIST",xmin,xmax,0,ymax)
+	  gPad.SetLogy(False)
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlLooseIsoSS.varName+"_qcdAverageControlLooseIsoSS.png")
+      #gPad.WaitPrimitive()
+
+
+      QCDlooseOS=copy.deepcopy(plotVarDataLooseIsoOS.Hist("Data"))
+      substractMCbackground(QCDlooseOS, plotVarDataLooseIsoOS)
+
+      QCDlooseSS=copy.deepcopy(plotVarDataLooseIsoSS.Hist("Data"))
+      substractMCbackground(QCDlooseSS, plotVarDataLooseIsoSS)
+
+      QCDlooseAverageControlSS=copy.deepcopy(plotVarDataAverageControlSS.Hist("Data"))
+      substractMCbackground(QCDlooseAverageControlSS, plotVarDataAverageControlSS)
+
+      QCDlooseAverageControlLooseIsoSS=copy.deepcopy(plotVarDataAverageControlLooseIsoSS.Hist("Data"))
+      substractMCbackground(QCDlooseAverageControlLooseIsoSS, plotVarDataAverageControlLooseIsoSS)
+
+      tightLoose=QCDlooseAverageControlSS.Integral()/QCDlooseAverageControlLooseIsoSS.Integral()
+      tightLooseErr=tightLoose*math.sqrt(1./QCDlooseAverageControlSS.Integral() + 1./QCDlooseAverageControlLooseIsoSS.Integral())
+      print "QCDlooseAverageControlSS / QCDlooseAverageControlLooseIsoSS", tightLoose, "+-", tightLooseErr
+      
+      osSSm=QCDlooseOS.Integral()/QCDlooseSS.Integral()
+      osSSmErr=osSSm*math.sqrt(1./QCDlooseOS.Integral() + 1./QCDlooseSS.Integral())
+      print "QCDlooseOS / QCDlooseSS",osSSm, "+-", osSSmErr
+      
+      #print "QCDlooseHighControlLooseIsoOS:", QCDlooseHighControlLooseIsoOS.Integral()
+      #print "QCDlooseHighControlLooseIsoSS:", QCDlooseHighControlLooseIsoSS.Integral()
+      #osSSh=QCDlooseHighControlLooseIsoOS.Integral()/QCDlooseHighControlLooseIsoSS.Integral()
+      #osSShErr=osSSh*math.sqrt(1./QCDlooseHighControlLooseIsoOS.Integral() + 1./QCDlooseHighControlLooseIsoSS.Integral())
+      #print "QCDlooseHighControlLooseIsoOS / QCDlooseHighControlLooseIsoSS",osSSh, "+-", osSShErr
+      
+      QCDScale=osSSm*tightLoose
+      
+      for i in range(QCDlooseSS.obj.GetXaxis().GetNbins()):
+          if QCDlooseSS.obj.GetBinContent(i+1)<=0:
+	      QCDlooseSS.obj.SetBinContent(i+1,0.001)
+          if QCDlooseSS.weighted.GetBinContent(i+1)<=0:
+	      QCDlooseSS.weighted.SetBinContent(i+1,0.001)
+
+      return QCDlooseSS,QCDScale
+
