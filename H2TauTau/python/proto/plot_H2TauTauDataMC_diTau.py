@@ -85,10 +85,10 @@ if __name__ == '__main__':
 
     selComps, weights = prepareComponents(anaDir, cfg.config)
     #print [co for co in selComps]
-
+    
     # 1fb
-    selComps['data_Run2011A_05Aug2011_v1'].intLumi = 30.8
-    weights['data_Run2011A_05Aug2011_v1'].intLumi = 30.8
+    selComps['data_Run2011A_05Aug2011_v1'].intLumi = 31.9
+    weights['data_Run2011A_05Aug2011_v1'].intLumi = 31.9
     #selComps['data_Run2011A_PromptReco_v6'].intLumi = 0.
     #weights['data_Run2011A_PromptReco_v6'].intLumi = 0.
     
@@ -97,8 +97,8 @@ if __name__ == '__main__':
     #weights['data_Run2011A_PromptReco_v4'].intLumi = 31.5
 
     # IsoTau25
-    #selComps['data_Run2011A_May10ReReco_v1'].intLumi = 0.+30.8
-    #weights['data_Run2011A_May10ReReco_v1'].intLumi = 0.+30.8
+    #selComps['data_Run2011A_May10ReReco_v1'].intLumi = 0.+31.9
+    #weights['data_Run2011A_May10ReReco_v1'].intLumi = 0.+31.9
     #selComps['data_Run2011A_PromptReco_v4'].intLumi = 139.+31.5
     #weights['data_Run2011A_PromptReco_v4'].intLumi = 139.+31.5
     #selComps['data_Run2011A_05Aug2011_v1'].intLumi = 0.
@@ -111,8 +111,8 @@ if __name__ == '__main__':
     #weights['data_Run2011A_May10ReReco_v1'].intLumi = 0.
     #selComps['data_Run2011A_PromptReco_v4'].intLumi = 759.2
     #weights['data_Run2011A_PromptReco_v4'].intLumi = 759.2
-    #selComps['data_Run2011A_05Aug2011_v1'].intLumi = 30.8
-    #weights['data_Run2011A_05Aug2011_v1'].intLumi = 30.8
+    #selComps['data_Run2011A_05Aug2011_v1'].intLumi = 31.9
+    #weights['data_Run2011A_05Aug2011_v1'].intLumi = 31.9
     #selComps['data_Run2011A_PromptReco_v6'].intLumi = 0.
     #weights['data_Run2011A_PromptReco_v6'].intLumi = 0.
 
@@ -131,7 +131,7 @@ if __name__ == '__main__':
     #isolation=' && l1RawMVAIso>0.93 && l2RawMVAIso>0.93'
 
     cuts=[
-        ("CMS_l45_j50_dR20_tt_Met00_BOOSTED",baseline,' && dRtt<2.0',isolation,1),
+        ("CMS_l45_j50_dR20_tt_Met00_BOOSTED",baseline,' && dRtt<2.0',isolation,2),
 	  ]
         
     for prefix,cut,antiqcdcut,isocut,qcdEstimate in cuts:
@@ -164,26 +164,26 @@ if __name__ == '__main__':
         ('mttj'             ,int(20/rebin), 0 , 1000   ),
         ('met'              ,int(20/rebin), 0 , 200    ),
         ('diTauCharge'      ,7            , -3, 3      ),
-        ('l1LooIso'         ,3            , -1, 2      ),
-        ('l2LooIso'         ,3            , -1, 2      ),
-        ('l1MedIso'         ,3            , -1, 2      ),
-        ('l2MedIso'         ,3            , -1, 2      ),
-        ('l1TigIso'         ,3            , -1, 2      ),
-        ('l2TigIso'         ,3            , -1, 2      ),
-        ('l1Prongs'         ,5            , -1, 4      ),
-        ('l2Prongs'         ,5            , -1, 4      ),
+        ('l1LooIso'         ,2            , 0,  2      ),
+        ('l2LooIso'         ,2            , 0,  2      ),
+        ('l1MedIso'         ,2            , 0,  2      ),
+        ('l2MedIso'         ,2            , 0,  2      ),
+        ('l1TigIso'         ,2            , 0,  2      ),
+        ('l2TigIso'         ,2            , 0,  2      ),
+        ('l1DecayMode'      ,12           , 0 , 12     ),
+        ('l2DecayMode'      ,12           , 0 , 12     ),
         ('l1RawMVAIso'      ,100          , 0 , 1.00001),
         ('l1MedMVAIso'      ,2            , 0 , 2      ),
         ('l1TigMVAIso'      ,2            , 0 , 2      ),
-        ('l1LooseEle'       ,2            , 0 , 2      ),
+        #('l1LooseEle'       ,2            , 0 , 2      ),
         ('l1MVAEle'         ,2            , 0 , 2      ),
-        ('l1LooseMu'        ,2            , 0 , 2      ),
+        #('l1LooseMu'        ,2            , 0 , 2      ),
         ('l2RawMVAIso'      ,100          , 0 , 1.00001),
         ('l2MedMVAIso'      ,2            , 0 , 2      ),
         ('l2TigMVAIso'      ,2            , 0 , 2      ),
-        ('l2LooseEle'       ,2            , 0 , 2      ),
+        #('l2LooseEle'       ,2            , 0 , 2      ),
         ('l2MVAEle'         ,2            , 0 , 2      ),
-        ('l2LooseMu'        ,2            , 0 , 2      ),
+        #('l2LooseMu'        ,2            , 0 , 2      ),
       ]:
       
       prefix1 = os.getcwd()+"/"+prefix+"/IsoTauTight1fb_"
@@ -215,6 +215,12 @@ if __name__ == '__main__':
       elif qcdEstimate==2:
         # Loose based QCD estimation
         looseisocut=""#" && l1LooIso<0.5 && l2LooIso<0.5"
+      elif qcdEstimate==3:
+        # OS/SS from loose. tight/loose from dR SS
+        looseisocut=""#" && l1LooIso>0.5 && l2LooIso>0.5"
+        lowcontrolcut=" && dRtt>3.0"
+        averagecontrolcut=" && dRtt>2.0"
+        highcontrolcut=" && dRtt>2.0 && dRtt<3.0"
 
       cutSS=cut.replace("diTauCharge==0","diTauCharge!=0")
       
@@ -222,17 +228,18 @@ if __name__ == '__main__':
      			    nx, xmin, xmax,
      			    cut = cutSS+isocut+antiqcdcut, weight=weight,
      			    embed=options.embed)
-			    
-      plotVarDataLooseIsoOS = 0#H2TauTauDataMC(var, anaDir, selComps, weights,
-     	#		    nx, xmin, xmax,
-     	#		    cut = cut+looseisocut+antiqcdcut, weight=weight,
-     	#		    embed=options.embed)
       plotVarDataLooseIsoSS = H2TauTauDataMC(var, anaDir, selComps, weights,
      			    nx, xmin, xmax,
      			    cut = cutSS+looseisocut+antiqcdcut, weight=weight,
      			    embed=options.embed)
+			    
+      if qcdEstimate==2 or qcdEstimate==3:
+       plotVarDataLooseIsoOS = H2TauTauDataMC(var, anaDir, selComps, weights,
+     			    nx, xmin, xmax,
+     			    cut = cut+looseisocut+antiqcdcut, weight=weight,
+     			    embed=options.embed)
 
-      if qcdEstimate==0 or qcdEstimate==1:
+      if qcdEstimate==0 or qcdEstimate==3:
        plotVarDataLowControlOS = 0#H2TauTauDataMC(var, anaDir, selComps, weights,
      	#		    nx, xmin, xmax,
      	#		    cut = cut+isocut+lowcontrolcut, weight=weight,
@@ -245,10 +252,10 @@ if __name__ == '__main__':
      	#		    nx, xmin, xmax,
      	#		    cut = cut+isocut+averagecontrolcut, weight=weight,
      	#		    embed=options.embed)
-       plotVarDataAverageControlSS = 0#H2TauTauDataMC(var, anaDir, selComps, weights,
-     	#		    nx, xmin, xmax,
-     	#		    cut = cutSS+isocut+averagecontrolcut, weight=weight,
-     	#		    embed=options.embed)
+       plotVarDataAverageControlSS = H2TauTauDataMC(var, anaDir, selComps, weights,
+     			    nx, xmin, xmax,
+     			    cut = cutSS+isocut+averagecontrolcut, weight=weight,
+     			    embed=options.embed)
        plotVarDataHighControlOS = 0#H2TauTauDataMC(var, anaDir, selComps, weights,
      	#		    nx, xmin, xmax,
      	#		    cut = cut+isocut+highcontrolcut, weight=weight,
@@ -257,31 +264,34 @@ if __name__ == '__main__':
      	#		    nx, xmin, xmax,
      	#		    cut = cutSS+isocut+highcontrolcut, weight=weight,
      	#		    embed=options.embed)
+      if qcdEstimate==0 or qcdEstimate==1:
        plotVarDataLowControlLooseIsoOS = 0#H2TauTauDataMC(var, anaDir, selComps, weights,
      	#		    nx, xmin, xmax,
      	#		    cut = cut+looseisocut+lowcontrolcut, weight=weight,
-     	#		    embed=options.embed)
-       plotVarDataLowControlLooseIsoSS = 0#H2TauTauDataMC(var, anaDir, selComps, weights,
-      	#		    nx, xmin, xmax,
-     	#		    cut = cutSS+looseisocut+lowcontrolcut, weight=weight,
      	#		    embed=options.embed)
        plotVarDataAverageControlLooseIsoOS = H2TauTauDataMC(var, anaDir, selComps, weights,
      			    nx, xmin, xmax,
      			    cut = cut+looseisocut+averagecontrolcut, weight=weight,
      			    embed=options.embed)
-       plotVarDataAverageControlLooseIsoSS = H2TauTauDataMC(var, anaDir, selComps, weights,
-     			    nx, xmin, xmax,
-     			    cut = cutSS+looseisocut+averagecontrolcut, weight=weight,
-     			    embed=options.embed)
        plotVarDataHighControlLooseIsoOS = 0#H2TauTauDataMC(var, anaDir, selComps, weights,
      	#		    nx, xmin, xmax,
      	#		    cut = cut+looseisocut+highcontrolcut, weight=weight,
      	#		    embed=options.embed)
+      if qcdEstimate==0 or qcdEstimate==1 or qcdEstimate==3:
+       plotVarDataLowControlLooseIsoSS = 0#H2TauTauDataMC(var, anaDir, selComps, weights,
+      	#		    nx, xmin, xmax,
+     	#		    cut = cutSS+looseisocut+lowcontrolcut, weight=weight,
+     	#		    embed=options.embed)
+       plotVarDataAverageControlLooseIsoSS = H2TauTauDataMC(var, anaDir, selComps, weights,
+     			    nx, xmin, xmax,
+     			    cut = cutSS+looseisocut+averagecontrolcut, weight=weight,
+     			    embed=options.embed)
        plotVarDataHighControlLooseIsoSS = 0#H2TauTauDataMC(var, anaDir, selComps, weights,
      	#		    nx, xmin, xmax,
      	#		    cut = cutSS+looseisocut+highcontrolcut, weight=weight,
      	#		    embed=options.embed)
 
+      if qcdEstimate==1:
        QCDShape, QCDScale = QCDEstimate1(prefix,prefix1,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS,
                                        plotVarDataLowControlOS, plotVarDataLowControlSS, plotVarDataAverageControlOS, plotVarDataAverageControlSS, plotVarDataHighControlOS, plotVarDataHighControlSS,
                                        plotVarDataLowControlLooseIsoOS, plotVarDataLowControlLooseIsoSS, plotVarDataAverageControlLooseIsoOS, plotVarDataAverageControlLooseIsoSS, plotVarDataHighControlLooseIsoOS, plotVarDataHighControlLooseIsoSS,
@@ -290,13 +300,15 @@ if __name__ == '__main__':
       if qcdEstimate==2:
        QCDShape, QCDScale = QCDEstimate2(prefix,prefix1,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, log)
 
+      if qcdEstimate==3:
+       QCDShape, QCDScale = QCDEstimate3(prefix,prefix1,xmin,xmax,plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, plotVarDataAverageControlSS, plotVarDataAverageControlLooseIsoSS, log)
 
 
       #######################################################
       ################# PLOTTING DATA/MC ####################
       #######################################################
 
-      for mIndex in [110,115,120,125,130,135] :
+      for mIndex in [125]:#[110,115,120,125,130,135] :
 
         plotVarDataOS = H2TauTauDataMC(var, anaDir, selCompsDataMass[mIndex], weightsDataMass[mIndex],
      			    nx, xmin, xmax,
@@ -316,6 +328,7 @@ if __name__ == '__main__':
         print "DYJets_Electron:"         , plotVarDataOS.Hist("DYJets_Electron").Integral()
         print "DYJets_Fakes:"            , plotVarDataOS.Hist("DYJets_Fakes").Integral()
         print "WJets:"                   , plotVarDataOS.Hist("WJets").Integral()+plotVarDataOS.Hist("WJets_Fakes").Integral()
+        print "DiBoson:"                 , plotVarDataOS.Hist("WW").Integral()+plotVarDataOS.Hist("WZ").Integral()+plotVarDataOS.Hist("ZZ").Integral()
         print "QCDdata:"                 , plotVarDataOS.Hist("QCDdata").Integral()
         print str('Higgsgg'+str(mIndex)) , plotVarDataOS.Hist(str('Higgsgg'+str(mIndex))).Integral()
         print str('HiggsVBF'+str(mIndex)), plotVarDataOS.Hist(str('HiggsVBF'+str(mIndex))).Integral()
@@ -373,7 +386,7 @@ if __name__ == '__main__':
         #####################################################
         ###  SAVE ROOT FILE FOR PLOTTING PRETTIER HISTOS  ###
         #####################################################
-        saveForPlotting(copy.deepcopy(plotVarDataOS),prefix,mIndex)
+        #saveForPlotting(copy.deepcopy(plotVarDataOS),prefix,mIndex)
         
 '''
         #######################################################
@@ -396,12 +409,18 @@ if __name__ == '__main__':
         plotMass.Hist(str('HiggsVBF'+str(mIndex))).Scale(5)
         ymax = (plotMass.Hist("QCDdata").GetMaximum()+
         plotMass.Hist("TTJets").GetMaximum()+
+        plotMass.Hist("WW").GetMaximum()+
+        plotMass.Hist("WZ").GetMaximum()+
+        plotMass.Hist("ZZ").GetMaximum()+
         plotMass.Hist("DYJets").GetMaximum()+
         plotMass.Hist("DYJets_Fakes").GetMaximum()+
         plotMass.Hist("DYJets_Photon").GetMaximum()+
         plotMass.Hist("DYJets_Electron").GetMaximum()+
         plotMass.Hist("WJets").GetMaximum()+
-        plotMass.Hist("WJets_Fakes").GetMaximum())*1.5
+        plotMass.Hist("WJets_Fakes").GetMaximum()+
+        plotMass.Hist("WW").GetMaximum()+
+        plotMass.Hist("WZ").GetMaximum()+
+        plotMass.Hist("ZZ").GetMaximum())*1.5
 
         if log:
           plotMass.DrawStack("HIST",xmin,xmax,0.1,ymax)
@@ -417,6 +436,7 @@ if __name__ == '__main__':
 #         print "DYJets_Electron:"         , plotVar.Hist("DYJets_Electron").Integral()
 #         print "DYJets_Fakes:"            , plotVar.Hist("DYJets_Fakes").Integral()
 #         print "WJets:"                   , plotVar.Hist("WJets").Integral()+plotVar.Hist("WJets_Fakes").Integral()
+#         print "DiBoson:"                 , plotVar.Hist("WW").Integral()+plotVar.Hist("WZ").Integral()+plotVar.Hist("ZZ").Integral()
 #         print "QCDdata:"                 , plotVar.Hist("QCDdata").Integral()
 #         print str('Higgsgg'+str(mIndex)) , plotVar.Hist(str('Higgsgg'+str(mIndex))).Integral()
 #         print str('HiggsVBF'+str(mIndex)), plotVar.Hist(str('HiggsVBF'+str(mIndex))).Integral()
