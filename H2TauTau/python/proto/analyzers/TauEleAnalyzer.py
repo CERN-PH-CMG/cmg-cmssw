@@ -133,6 +133,9 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         
         according to Phil sync prescription for the sync exercise 16/05/12
         """
+        nInnerHits = ele.sourcePtr().gsfTrack().trackerExpectedHitsInner().numberOfHits()
+        if nInnerHits != 0 : return False
+        if ele.sourcePtr().passConversionVeto() == False : return False 
         if ele.isConv()    != 1     : return False
         if ele.pt()        < ptCut  : return False
         if ele.relIso(0.5) > isoCut : return False
