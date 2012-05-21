@@ -167,7 +167,7 @@ class Electron( Lepton ):
         '''Initializing tightIdResult to None. The user is responsible
         for setting this attribute externally if he wants to use the tightId
         function.'''
-        super(self, Electron).__init__(*args, **kwargs)
+        super(Electron, self).__init__(*args, **kwargs)
         self.tightIdResult = None
     
     def absEffAreaIso(self,rho,effectiveAreas):
