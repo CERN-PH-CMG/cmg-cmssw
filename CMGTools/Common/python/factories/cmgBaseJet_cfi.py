@@ -9,10 +9,11 @@ baseJetFactory = cms.PSet(
                               'trackCountingHighEffBJetTags',#0
                               'trackCountingHighPurBJetTags',#1
                               'jetProbabilityBJetTags',#2
-                              'simpleSecondaryVertexHighEffBJetTags',#3
-                              'simpleSecondaryVertexHighPurBJetTags',#4
-                              'combinedSecondaryVertexBJetTags',#5
-                              'combinedSecondaryVertexMVABJetTags'#6
+                              'jetBProbabilityBJetTags',#3
+                              'simpleSecondaryVertexHighEffBJetTags',#4
+                              'simpleSecondaryVertexHighPurBJetTags',#5
+                              'combinedSecondaryVertexBJetTags',#6
+                              'combinedSecondaryVertexMVABJetTags'#7
                               ),
        fillJec = cms.bool(True),
        fillJecUncertainty = cms.bool(True),
