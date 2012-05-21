@@ -93,9 +93,11 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             else :          
                 lmvaID = 0.975
                 lmvaIS = 0.705
-        return testEleLooseLorenzo(leg) and \
-               leg.sourcePtr().electronID('mvaNonTrigV0') > lmvaID and \
-               leg.sourcePtr().userFloat('mvaIsoRings') > lmvaIS
+        result =  testEleLooseLorenzo(leg) and \
+                 leg.mvaId() > lmvaID and \
+                 leg.mvaIso() > lmvaIS
+        leg.tightIdResult = result
+        return result
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----

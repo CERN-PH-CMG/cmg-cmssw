@@ -150,7 +150,7 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
         fill( tr, 'eta_1', leg1.eta())
         fill( tr, 'm_1', leg1.mass())
         fill( tr, 'iso_1', leg1.relIso(0.5))
-        fill( tr, 'mva_1', 0) # should be filled for e-tau
+        fill( tr, 'mva_1', leg1.mvaId()) # should be filled for e-tau: mva id
         fill( tr, 'd0_1', leg1.dxy() )
         fill( tr, 'dZ_1', leg1.dz())
         fill( tr, 'passid_1', leg1.tightId() )
