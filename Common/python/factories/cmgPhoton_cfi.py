@@ -12,10 +12,6 @@ photonFactory = cms.PSet(
     isoDepWithPhotons = cms.InputTag("phPFIsoDepositGamma"),
     isoDepWithNeutral = cms.InputTag("phPFIsoDepositNeutral"),
     isoDepWithPU = cms.InputTag("phPFIsoDepositPU"),
-    #maxAbsoluteIsolation = cms.double(10.),
-    #maxRelativeIsolation = cms.double(1.0),
-    maxAbsoluteIsolation = cms.double(1E9),
-    maxRelativeIsolation = cms.double(1E9),
     ## each IsoPar has a coneSize parameter (radius of the cone inside which
     ## the isolation is computed) plus a VPSet called vetoes, made of any of the following
     ## vetoes: ThresholdVeto, ConeVeto, RectangularEtaPhiVeto (more vetoes can be implemented if needed)
@@ -60,15 +56,6 @@ photonFactory = cms.PSet(
       ),
     ),                          
 
-    allIsoPar=cms.PSet(
-      coneSize=cms.double(0.3),
-      vetoes=cms.VPSet(
-         cms.PSet(
-            type=cms.string("ThresholdVeto"),
-            threshold=cms.double(0.2)# pt of the particles to be vetoed
-         ),
-      ),
-    ),                          
 )
 
 cmgPhoton = cms.EDFilter("PhotonPOProducer",

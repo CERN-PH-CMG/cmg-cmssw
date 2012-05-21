@@ -70,7 +70,8 @@ cmg::PhotonFactory::create(const edm::Event& iEvent,
     photon.puChargedHadronIso_ = muonPtr->userIsolation(pat::PfPUChargedHadronIso);
     photon.neutralHadronIso_ = muonPtr->userIsolation(pat::PfNeutralHadronIso);
     photon.photonIso_ = muonPtr->userIsolation(pat::PfGammaIso);
-    photon.charge_ = muonPtr->charge();
+    photon.charge_ = 0.;
+    photon.isFromMuon_ = true;
 
     result->push_back(photon);
 
@@ -102,7 +103,6 @@ cmg::PhotonFactory::set(const pat::PhotonPtr& input, cmg::Photon* const output) 
   AbsVetos neutralHadronVetos = neutralHadronIsoPar_.getAbsVetoes();
   AbsVetos photonsVetos = photonsIsoPar_.getAbsVetoes();
   AbsVetos puVetos = puIsoPar_.getAbsVetoes();
-  AbsVetos allVetos = allIsoPar_.getAbsVetoes();
 
   // center the vetoes around the lepton
   for(unsigned int i = 0; i<chargedHadronVetos.size(); i++){
@@ -117,26 +117,12 @@ cmg::PhotonFactory::set(const pat::PhotonPtr& input, cmg::Photon* const output) 
   for(unsigned int i = 0; i<puVetos.size(); i++){
     puVetos[i]->centerOn(Eta,Phi);
   }
-  for(unsigned int i = 0; i<allVetos.size(); i++){
-    allVetos[i]->centerOn(Eta,Phi);
-  }
 
   output->chargedHadronIso_ = (*isoDepWithCharged)[input].depositAndCountWithin( chargedHadronIsoPar_.coneSize(), chargedHadronVetos, false ).first;
   output->neutralHadronIso_ = (*isoDepWithNeutral)[input].depositAndCountWithin( neutralHadronIsoPar_.coneSize(), neutralHadronVetos, false ).first;
   output->photonIso_        = (*isoDepWithPhotons)[input].depositAndCountWithin( photonsIsoPar_.coneSize(), photonsVetos, false ).first;
   output->puChargedHadronIso_ = (*isoDepWithPU)[input].depositAndCountWithin( puIsoPar_.coneSize(), puVetos, false ).first;
 
-  output->chargedHadronVeto_ = (*isoDepWithCharged)[input].depositAndCountWithin( chargedHadronIsoPar_.coneSize(), allVetos, false ).first;
-  output->neutralHadronVeto_ = (*isoDepWithNeutral)[input].depositAndCountWithin( neutralHadronIsoPar_.coneSize(), allVetos, false ).first;
-  output->photonVeto_        = (*isoDepWithPhotons)[input].depositAndCountWithin( photonsIsoPar_.coneSize(), allVetos, false ).first;
-
-  output->chargedHadronVeto_ -= output->chargedHadronIso_;
-  output->neutralHadronVeto_ -= output->neutralHadronIso_;
-  output->photonVeto_ -= output->photonIso_;
-
-  //std::cout << "pt, eta, phi = " << output->pt() << " " << output->eta() << " " << output->phi() << std::endl;
-  //std::cout << "Isolations   = " << output->chargedHadronIso() << " " << output->neutralHadronIso() << " " << output->photonIso() << std::endl;
-  //std::cout << "Vetoes       = " << output->chargedHadronVeto() << " " << output->neutralHadronVeto() << " " << output->photonVeto() << std::endl;
 }
 
 //--------------------------------------------------------------------
