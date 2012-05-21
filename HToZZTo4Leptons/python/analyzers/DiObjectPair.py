@@ -71,6 +71,13 @@ class DiObjectPair( TLorentzVector ):
         return self.leg1.fsrUncorrected()+self.leg2.fsrUncorrected()
 
 
+    def updateP4(self):
+        
+        z1     = TLorentzVector(self.leg1.Px(),self.leg1.Py(),self.leg1.Pz(),self.leg1.Energy())
+        z2     = TLorentzVector(self.leg2.Px(),self.leg2.Py(),self.leg2.Pz(),self.leg2.Energy())
+        new=z1+z2
+        self.SetPxPyPzE(new.Px(),new.Py(),new.Pz(),new.Energy())
+
         ###MELA#########################################
 
 

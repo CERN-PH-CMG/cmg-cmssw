@@ -54,6 +54,9 @@ class TreeProducer( Analyzer ):
         self.fillGenFSR(pName,particle)
         if hasattr(particle,'match'):
             self.fill('{pName}_Match'.format(pName=pName), particle.match )
+        else:    
+            self.fill('{pName}_Match'.format(pName=pName), -99 )
+
         self.fill('{pName}_IsoCharged'.format(pName=pName), particle.chargedHadronIso() )
         self.fill('{pName}_IsoGamma'.format(pName=pName), particle.photonIso() )
         self.fill('{pName}_IsoNeutral'.format(pName=pName), particle.neutralHadronIso() )
@@ -137,7 +140,6 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_FSR_DR2'.format(pName=pName))
         self.var('{pName}_FSR_ThetaStar'.format(pName=pName))
         self.var('{pName}_FSR_DRStar'.format(pName=pName))
-        self.var('{pName}_FSR_Match'.format(pName=pName))
         self.bookRecoFSR('{pName}_FSR'.format(pName=pName))
 
     def bookHiggs(self, pName ):
@@ -149,6 +151,7 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_MinPairMass'.format(pName=pName))
         self.var('{pName}_MinOSPairMass'.format(pName=pName))
         self.var('{pName}_FSRExists'.format(pName=pName))
+        self.var('{pName}_FSRMatch'.format(pName=pName))
         self.var('{pName}_FSRUncorrMass'.format(pName=pName))
 
 
@@ -165,10 +168,6 @@ class TreeProducer( Analyzer ):
             self.fill('{pName}_FSR_ThetaStar'.format(pName=pName), particle.fsrThetaStar() )
             self.fill('{pName}_FSR_DRStar'.format(pName=pName), particle.fsrDRStar() )
             self.fillRecoFSR('{pName}_FSR'.format(pName=pName),particle.fsrPhoton )
-
-
-
-                
         else:
             self.fill('{pName}_FSR_Exists'.format(pName=pName), 0.0 )
             
@@ -176,6 +175,8 @@ class TreeProducer( Analyzer ):
         self.fillBasic(pName,particle)
         self.fill('{pName}_MinPairMass'.format(pName=pName), particle.minPairMass() )
         self.fill('{pName}_MinOSPairMass'.format(pName=pName), particle.minOSPairMass() )
+        self.fill('{pName}_FSRUncorrMass'.format(pName=pName), particle.fsrUncorrected().M() )
+        self.fill('{pName}_FSRExists'.format(pName=pName), particle.leg1.hasFSR() or particle.leg2.hasFSR() )
         self.fill('{pName}_FSRUncorrMass'.format(pName=pName), particle.fsrUncorrected().M() )
         
 

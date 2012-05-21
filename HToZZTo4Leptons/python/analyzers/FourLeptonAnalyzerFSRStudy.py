@@ -18,7 +18,7 @@ from CMGTools.HToZZTo4Leptons.analyzers.FourLeptonAnalyzerBase import FourLepton
 from CMGTools.HToZZTo4Leptons.analyzers.OverlapCleaner import OverlapCleaner 
 from CMGTools.HToZZTo4Leptons.analyzers.IsoDepositCreator import IsoDepositCreator
 
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton,PhysicsObject
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton,Photon,Electron
 
 from CMGTools.RootTools.utils.DeltaR import deltaR
 
@@ -30,9 +30,8 @@ class FourLeptonAnalyzerFSRStudy( FourLeptonAnalyzerBase ):
 
     def declareHandles(self):
         super(FourLeptonAnalyzerFSRStudy, self).declareHandles()
-        self.handles['pf'] = AutoHandle( ('particleFlow',''),'std::vector<reco::PFCandidate>')
-        self.handles['vertices'] = AutoHandle( ('offlinePrimaryVertices',''),'std::vector<reco::Vertex>')
-        self.handles['photons'] = AutoHandle( ('cmgPhotonSel',''),'std::vector<cmg::Photon>')
+
+
 
 
     def beginLoop(self):
@@ -59,27 +58,31 @@ class FourLeptonAnalyzerFSRStudy( FourLeptonAnalyzerBase ):
         self.buildLeptonList( event )
 
         #Get photons
-        event.photons = self.handles['photons'].product()
+        self.buildPhotonList( event )
 
+        event.selectedPhotons = copy.copy(event.photons)
+        
         #generator
         event.genPhotons = self.getGeneratedFSR(2.0)
         if len(event.genPhotons)>0:
             #find the highest
             event.bestGenPhoton=max(event.genPhotons,key=lambda x: x.pt())
 
-            for gamma in event.photons:
+            for gamma in event.selectedPhotons:
                 dr=deltaR(gamma.eta(),gamma.phi(),event.bestGenPhoton.eta(),event.bestGenPhoton.phi())
                 if dr<0.08:
                     event.matchedPhoton=gamma
-                match=False
-                for mcgamma in event.genPhotons:
-                    dr=deltaR(mcgamma.eta(),mcgamma.phi(),gamma.eta(),gamma.phi())
-                    if dr < 0.08:
-                        match=True
-                        break
+                    break
+                
+            for gamma in event.selectedPhotons:
+                match=0
+                if len(event.genPhotons)>0:
+                    for mcgamma in event.genPhotons:
+                        dr=deltaR(mcgamma.eta(),mcgamma.phi(),gamma.eta(),gamma.phi())
+                        if dr < 0.08:
+                            match=1
+                            break
                 gamma.match=match        
-        #Apply MC matching to the photons
-
 
         #create a cut flow
         cutFlow = CutFlowMaker(self.counters.counter("FourLepton"),event,event.leptons1,event.leptons2)
@@ -96,7 +99,7 @@ class FourLeptonAnalyzerFSRStudy( FourLeptonAnalyzerBase ):
         passed = cutFlow.applyCut(cleanOverlap,'electron cross cleaning',2,'cleanLeptons')
 
         #make lepton combinations 
-        event.leptonPairs = self.findPairsWithFSR(cutFlow.obj1,event.photons)
+        event.leptonPairs = self.findPairsWithFSR(cutFlow.obj1,event.selectedPhotons)
         cutFlow.setSource1(event.leptonPairs)
         
         #require that   M>40 and OS/SF
@@ -131,7 +134,7 @@ class FourLeptonAnalyzerFSRStudy( FourLeptonAnalyzerBase ):
 
         #Now create four Lepton candidtes upstream. Use all permutations and not combinations
         #of leptons so we can pick the best Z1 and Z2
-        event.fourLeptons = self.findQuadsWithFSR(event.cleanLeptons,event.photons)
+        event.fourLeptons = self.findQuadsWithFSR(event.cleanLeptons,event.selectedPhotons)
         #Sort them by M1 near Z and My highest Pt sum
         self.sortFourLeptons(event.fourLeptons)
         cutFlow.setSource1(event.fourLeptons)
@@ -199,8 +202,6 @@ class FourLeptonAnalyzerFSRStudy( FourLeptonAnalyzerBase ):
            trueFSR.append(ptc)
 
        return trueFSR    
-
-
 
 #    def buildPhotonList(self,minpt):
 #
