@@ -59,7 +59,7 @@ namespace cmg {
   private:
  
     /// b tagging discriminators
-    typedef boost::array<double,7> TagArray;
+    typedef boost::array<double,8> TagArray;
     typedef boost::array<std::string,TagArray::static_size> TagNameArray;
     TagArray btag_;
     TagNameArray btagNames_;
