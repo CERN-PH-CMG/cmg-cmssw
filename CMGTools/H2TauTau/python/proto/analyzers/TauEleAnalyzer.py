@@ -1,7 +1,7 @@
 from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.DiObject import TauElectron
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Electron
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import Electron, GenParticle
 from CMGTools.RootTools.utils.DeltaR import deltaR
 
 
@@ -31,7 +31,30 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
     def process(self, iEvent, event):
         result = super(TauEleAnalyzer, self).process(iEvent, event)
-        return result
+
+        if result is False:
+            selDiLeptons = [ diL for diL in event.diLeptons if \
+                             self.testMass(diL) ]
+            if len(selDiLeptons)==0:
+                return False
+            event.diLepton = self.bestDiLepton( selDiLeptons )
+            event.leg1 = event.diLepton.leg1()
+            event.leg2 = event.diLepton.leg2()
+            event.isSignal = False
+        else:
+            event.isSignal = True
+
+        if self.cfg_comp.isMC:
+            genParticles = self.mchandles['genParticles'].product()
+            event.genParticles = map( GenParticle, genParticles)
+            leg1DeltaR, leg2DeltaR = event.diLepton.match( event.genParticles ) 
+            if leg1DeltaR > -1 and leg1DeltaR < 0.1 and \
+               leg2DeltaR > -1 and leg2DeltaR < 0.1:
+                event.genMatched = True
+            else:
+                event.genMatched = False
+
+        return True
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
@@ -46,15 +69,14 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
 
     def testLeg2(self, leg):
-        if leg.dxy() >= 0.045 : return False
-        if leg.dz()  >= 0.2   : return False
-        if leg.pt () > self.cfg_ana.pt2 and \
-           abs( leg.eta() ) < self.cfg_ana.eta2 and \
-           self.testEleLoosePhil (leg, self.cfg_ana.pt2) and \
-           leg.relIso (0.5) < self.cfg_ana.iso2: # contains the dbeta correction, factor 0.5
-            return True
-        else:
-            return False
+        leg.tightIdResult = self.testElectronTwiki_2012(leg) 
+        if abs (leg.dxy())  >= 0.045                         : return False
+        if abs (leg.dz())   >= 0.2                           : return False
+        if leg.pt ()        <= self.cfg_ana.pt2              : return False
+        if abs( leg.eta()) >= self.cfg_ana.eta2              : return False 
+        if not self.testEleLoosePhil (leg, self.cfg_ana.pt2) : return False
+        if leg.relIso (0.5) >= self.cfg_ana.iso2             : return False
+        return True
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
@@ -63,8 +85,8 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
     def testElectronTwiki_2012(self, leg):
         """reference numbers form the Htautau twiki, to be updated
         
-         https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#2012_Baseline_Selection
-         """
+        https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#2012_Baseline_Selection
+        """
         nInnerHits = leg.sourcePtr().gsfTrack().trackerExpectedHitsInner().numberOfHits()
         if nInnerHits != 0 : return False
         if leg.sourcePtr().passConversionVeto() == False : return False 
@@ -93,10 +115,9 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             else :          
                 lmvaID = 0.975
                 lmvaIS = 0.705
-        result =  testEleLooseLorenzo(leg) and \
-                 leg.mvaId() > lmvaID and \
+        result =  self.testEleLoosePhil(leg) and \
+                 leg.mvaId()  > lmvaID and \
                  leg.mvaIso() > lmvaIS
-        leg.tightIdResult = result
         return result
 
 
@@ -114,11 +135,11 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         nvhits = ele.sourcePtr().gsfTrack().found() #PG valid hits
         sihih = ele.sourcePtr().sigmaIetaIeta() 
 #        print 'TEST',hoe,deta,dphi,nvhits,sihih,ele.dxy(),ele.dz(),ele.sourcePtr().isEB()
-        if ele.dxy() >= 0.045 : return False
-        if ele.dz()  >= 0.2   : return False
-        if nhits     >  999   : return False
-        if deta      >= 0.10  : return False
-        if hoe       >= 999   : return False
+        if abs(ele.dxy()) >= 0.045 : return False
+        if abs(ele.dz())  >= 0.2   : return False
+        if nhits          >  999   : return False
+        if deta           >= 0.10  : return False
+        if hoe            >= 999   : return False
         if ele.sourcePtr().isEB() :
             if deta  >= 0.007     : return False
             if hoe   >= 0.15      : return False
@@ -138,11 +159,11 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         nInnerHits = ele.sourcePtr().gsfTrack().trackerExpectedHitsInner().numberOfHits()
         if nInnerHits != 0 : return False
         if ele.sourcePtr().passConversionVeto() == False : return False 
-        if ele.isConv()    != 1     : return False
-        if ele.pt()        < ptCut  : return False
-        if ele.relIso(0.5) > isoCut : return False
-        if ele.dxy()       >= 0.045 : return False
-        if ele.dz()        >= 0.2   : return False
+#PG this is broken        if ele.isConv()         != 1     : return False
+        if ele.pt()             < ptCut  : return False
+        if ele.relIso(0.5)      > isoCut : return False
+        if abs(ele.dxy())       >= 0.045 : return False
+        if abs(ele.dz())        >= 0.2   : return False
         hoe = ele.hadronicOverEm()
         deta = ele.deltaEtaSuperClusterTrackAtVtx()
         dphi = ele.deltaPhiSuperClusterTrackAtVtx()
@@ -171,11 +192,11 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         if tau.decayMode() == 0 and \
                tau.calcEOverP() < 0.2: #reject muons faking taus in 2011B #PG FIXME should I put this in?
             return False
-        if tau.dz() > 0.2 : return False
-        return tau.tauID("byLooseIsoMVA")==True and \
-               tau.tauID("againstElectronMVA")==True and \
-               tau.tauID("againstElectronMedium")==True and \
-               tau.tauID("againstMuonLoose")==True
+        if abs (tau.dz()) > 0.2 : return False
+        return tau.tauID("byLooseIsoMVA")         == True and \
+               tau.tauID("againstElectronMVA")    == True and \
+               tau.tauID("againstElectronMedium") == True and \
+               tau.tauID("againstMuonLoose")      == True
         # byLooseCombinedIsolationDeltaBetaCorr
 
 
