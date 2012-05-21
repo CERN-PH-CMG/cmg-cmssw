@@ -18,8 +18,8 @@ trackCountingHighPurBJetTags = trackCountingHighEffBJetTags.clone(
     )
 
 ### for 2012
-# jetBProbabilityBJetTags is btag(3)
-# there are also "jetBProbabilityBJetTagsAODAK5" and  "jetBProbabilityBJetTagsAODAK5NoPUSub"
+# From https://twiki.cern.ch/twiki/bin/viewauth/CMS/BTagPerformanceOP#B_tagging_Operating_Points_for_5
+# TCHPT is also recommended for 2012
 jetProbabilityBJetTags = cms.PSet(
     mcbparton = cms.string('abs(sourcePtr().partonFlavour()) == 5'),                                    
     loose = cms.string('btag(2) >= 0.275'),                                   
@@ -29,7 +29,7 @@ jetProbabilityBJetTags = cms.PSet(
 
 combinedSecondaryVertexBJetTags = cms.PSet(
     mcbparton = cms.string('abs(sourcePtr().partonFlavour()) == 5'),                                    
-    loose = cms.string('btag(6) >= 0.244'),                                   
-    medium = cms.string('btag(6) >= 0.679'),
-    tight = cms.string('btag(6) >= 0.898')                                   
+    loose = cms.string('btag(5) >= 0.244'),                                   
+    medium = cms.string('btag(5) >= 0.679'),
+    tight = cms.string('btag(5) >= 0.898')                                   
     )
