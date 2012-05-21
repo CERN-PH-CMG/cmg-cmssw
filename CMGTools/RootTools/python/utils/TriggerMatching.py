@@ -7,7 +7,11 @@ def triggerMatched( object, triggerObjects, path, filter, dR2Max=0.089999):
     phi = object.phi()
     # to speed up the code, could sort the triggerObjects by decreasing pT
     # when they are produced
+    # print path, filter, eta, phi
     for trigObj in triggerObjects:
+        # print 'trig', trigObj.eta(), trigObj.phi(), trigObj.pt()
+        # print trigObj.hasSelection( path ), trigObj.hasSelection( filter )
+        # print deltaR2( eta, phi, trigObj.eta(), trigObj.phi() ), dR2Max       
         if trigObj.hasSelection( path ) and \
                trigObj.hasSelection( filter ) and \
                deltaR2( eta, phi, trigObj.eta(), trigObj.phi() ) < dR2Max:
