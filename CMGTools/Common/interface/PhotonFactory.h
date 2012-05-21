@@ -31,15 +31,12 @@ namespace cmg {
       isoDepWithChargedLabel_(ps.getParameter<edm::InputTag>("isoDepWithCharged")),
       isoDepWithPhotonsLabel_(ps.getParameter<edm::InputTag>("isoDepWithPhotons")),
       isoDepWithNeutralLabel_(ps.getParameter<edm::InputTag>("isoDepWithPU")),
-      isoDepWithPULabel_(ps.getParameter<edm::InputTag>("isoDepWithNeutral")),
-      maxAbsoluteIsolation_(ps.getParameter<double>("maxAbsoluteIsolation")),
-      maxRelativeIsolation_(ps.getParameter<double>("maxRelativeIsolation"))
+      isoDepWithPULabel_(ps.getParameter<edm::InputTag>("isoDepWithNeutral"))
 	{
 	  chargedHadronIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("chargedHadronIsoPar"));
 	  neutralHadronIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("neutralHadronIsoPar"));
 	  photonsIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("photonsIsoPar"));
 	  puIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("puIsoPar"));
-	  allIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("allIsoPar"));
 	}
 
     virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
@@ -67,12 +64,6 @@ namespace cmg {
    
     /// parameters for PU isolation value
     SpecificIsolation puIsoPar_;
-   
-    /// parameters for particle isolation without strip veto.
-    SpecificIsolation allIsoPar_;
-
-    double maxAbsoluteIsolation_;
-    double maxRelativeIsolation_;
    
   };
 
