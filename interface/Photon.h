@@ -18,11 +18,13 @@ namespace cmg {
   class Photon;
 
   class Photon : public cmg::Lepton<pat::PhotonPtr> {
+
   public:
 
     Photon() {}
     Photon(const value& m):
-      cmg::Lepton<value>::Lepton(m)
+      cmg::Lepton<value>::Lepton(m),
+      isFromMuon_(false)
       {}
     virtual ~Photon()
       {}
@@ -33,33 +35,13 @@ namespace cmg {
       return true;
     }
 
-    /// charged hadron isolation    
-    double chargedHadronVeto() const{
-      return chargedHadronVeto_;
+    virtual bool isFromMuon() const {
+      return isFromMuon_;
     }
-    
-    /// neutral hadron isolation
-    double neutralHadronVeto() const{
-      return neutralHadronVeto_;
-    }
-    
-    /// photon isolation
-    double photonVeto() const{
-      return photonVeto_;
-    }
-    
-    /// Corrected relative isolation (adding the vetoes to the photon itself). 
-    double relIsoCor(float dBetaFactor=0, int allCharged=0) const{
-      double corPt = this->pt() + this->chargedHadronVeto() + this->neutralHadronVeto() + this->photonVeto();
-      double abs = absIso(dBetaFactor, allCharged)/corPt;
-      return abs >=0 ? abs : -1;
-    }
-    
+
   private:
 
-    double chargedHadronVeto_;
-    double neutralHadronVeto_;
-    double photonVeto_;
+    bool isFromMuon_;
 
   };
 }
