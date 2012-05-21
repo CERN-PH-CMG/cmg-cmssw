@@ -50,6 +50,9 @@ class DiLeptonAnalyzer( Analyzer ):
         # if not self.triggerList.triggerPassed(event.triggerObject):
         #    return False
         # self.counters.counter('DiLepton').inc('trigger passed ')
+
+        # if event.eventId == 155035:
+        #    import pdb; pdb.set_trace()
             
         if len(event.diLeptons) == 0:
             return False
@@ -70,7 +73,6 @@ class DiLeptonAnalyzer( Analyzer ):
             return False
         else:
             self.counters.counter('DiLepton').inc('leg1 offline cuts passed')
-
 
         if len(self.cfg_comp.triggers)>0:
             # trigger matching leg1
