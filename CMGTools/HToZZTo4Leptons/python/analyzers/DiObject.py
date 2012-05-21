@@ -53,7 +53,9 @@ class DiObject( TLorentzVector ):
     def setFSR(self,photon):
         self.fsrPhoton=photon
         gamma = TLorentzVector( photon.px(), photon.py(), photon.pz(), photon.energy() )
-        self=self+gamma
+        z     = TLorentzVector(self.Px(),self.Py(),self.Pz(),self.Energy())
+        new=gamma+z
+        self.SetPxPyPzE(new.Px(),new.Py(),new.Pz(),new.Energy())
         
 
     def hasFSR(self):
@@ -62,14 +64,17 @@ class DiObject( TLorentzVector ):
     def fsrTheta1(self):
         if hasattr(self,'fsrPhoton'):
             photon=self.fsrPhoton
-            return acos(self.leg1.p4().Vect().Dot(photon.p4().Vect())/(self.leg1.p4().P()*photon.p4().P()))*180/pi
+            return acos(round(self.leg1.p4().Vect().Dot(photon.p4().Vect())/(self.leg1.p4().P()*photon.p4().P()),5))*180/pi
+        else:
+            return -99
 
 
     def fsrTheta2(self):
         if hasattr(self,'fsrPhoton'):
             photon=self.fsrPhoton
-            return acos(self.leg2.p4().Vect().Dot(photon.p4().Vect())/(self.leg2.p4().P()*photon.p4().P()))*180/pi
-
+            return acos(round(self.leg2.p4().Vect().Dot(photon.p4().Vect())/(self.leg2.p4().P()*photon.p4().P()),5))*180/pi
+        else:
+            return -99
 
     def fsrDR1(self):
         if hasattr(self,'fsrPhoton'):
@@ -86,8 +91,8 @@ class DiObject( TLorentzVector ):
         if hasattr(self,'fsrPhoton'):
             photon=self.fsrPhoton
             plane = (self.leg1.p4().Vect().Cross(self.leg2.p4().Vect())).unit()
-            angle = asin(plane.Dot(photon.p4().Vect())/(photon.p4().P()))*180/pi
-            return angle
+            angle = asin(round(plane.Dot(photon.p4().Vect())/(photon.p4().P()),5))*180/pi
+            return abs(angle)
 
     def fsrDRStar(self):
         if hasattr(self,'fsrPhoton'):

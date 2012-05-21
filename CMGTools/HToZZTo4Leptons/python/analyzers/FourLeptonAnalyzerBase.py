@@ -8,7 +8,7 @@ from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.Event import Event
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton,Photon,Electron
 
 from CMGTools.HToZZTo4Leptons.analyzers.DiObject import DiObject
 from CMGTools.HToZZTo4Leptons.analyzers.DiObjectPair import DiObjectPair
@@ -33,6 +33,9 @@ class FourLeptonAnalyzerBase( Analyzer ):
                                           'double')
         self.handles['met'] = AutoHandle( ('cmgPFMET',''),'std::vector<cmg::BaseMET>')
 
+        self.handles['photons'] = AutoHandle( ('cmgPhotonSel',''),'std::vector<cmg::Photon>')
+        self.handles['electrons'] = AutoHandle( ('cmgElectronSel',''),'std::vector<cmg::Electron>')
+
 
     def beginLoop(self):
         super(FourLeptonAnalyzerBase,self).beginLoop()
@@ -40,6 +43,15 @@ class FourLeptonAnalyzerBase( Analyzer ):
         count = self.counters.counter('FourLepton')
         count.register('all events')
         
+    def buildPhotonList(self, event):
+        ##I SHOULDNT NEED TO REDIFNE THE CLASS HERE
+#        Photon.match=0
+#        Electron.match=0
+
+        event.photons = map( Photon,self.handles['photons'].product() )
+        #append the electrons
+        event.photons.extend(map( Electron,self.handles['electrons'].product()))
+
 
     def buildLeptonList(self, event):
         event.leptons1 = map( self.__class__.LeptonClass1,
@@ -50,7 +62,9 @@ class FourLeptonAnalyzerBase( Analyzer ):
         else:
             event.leptons2 = event.leptons1
 
-            
+
+
+
        
     def process(self, iEvent, event):
         return True
@@ -67,8 +81,6 @@ class FourLeptonAnalyzerBase( Analyzer ):
         for l1, l2 in itertools.combinations(leptons, 2):
             z = DiObject(l1, l2)
             if not hasattr(self.cfg_ana,"FSR"):
-                print "NO FSR Configuration Found"
-                print "Running without FSR"
                 out.append(z)
             else:    
                 fsrAlgo=FSRRecovery(self.cfg_ana.FSR)
@@ -93,18 +105,17 @@ class FourLeptonAnalyzerBase( Analyzer ):
             if l1.pt()>l2.pt() and l3.pt()>l4.pt():
                 quadObject =DiObjectPair(l1, l2,l3,l4)
                 if not hasattr(self.cfg_ana,"FSR"):
-                    print "NO FSR Configuration Found"
-                    print "Running without FSR"
                     out.append(quadObject)
                 else:    
                     fsrAlgo=FSRRecovery(self.cfg_ana.FSR)
                     fsrAlgo.setPhotons(photons)
                     fsrAlgo.setZ(quadObject.leg1)
                     #recover FSR photons
-                    fsrAlgo.recover()
+                    fsrAlgo.recover(True)
                     #Now Z 2
                     fsrAlgo.setZ(quadObject.leg2)
                     fsrAlgo.recover()
+                    quadObject.updateP4()
                     out.append(quadObject)
         return out
 
