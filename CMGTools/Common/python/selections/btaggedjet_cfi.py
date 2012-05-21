@@ -29,7 +29,7 @@ jetProbabilityBJetTags = cms.PSet(
 
 combinedSecondaryVertexBJetTags = cms.PSet(
     mcbparton = cms.string('abs(sourcePtr().partonFlavour()) == 5'),                                    
-    loose = cms.string('btag(5) >= 0.244'),                                   
-    medium = cms.string('btag(5) >= 0.679'),
-    tight = cms.string('btag(5) >= 0.898')                                   
+    loose = cms.string('btag(6) >= 0.244'),                                   
+    medium = cms.string('btag(6) >= 0.679'),
+    tight = cms.string('btag(6) >= 0.898')                                   
     )
