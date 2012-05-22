@@ -100,8 +100,8 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
         var( tr, 'visjeteta')
         var( tr, 'ptvis')
         
-        var( tr, 'lNBTag', int)
-        var( tr, 'lNJets', int)
+        var( tr, 'nbtag', int)
+        var( tr, 'njets', int)
 
 
     def declareHandles(self):
@@ -168,10 +168,10 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
         fill( tr, 'mt_2', event.diLepton.mTLeg1())
         
         met = self.handles['pfmetraw'].product()[0]
-        fill( tr, 'met', met.et()) # raw 
+        fill( tr, 'met', met.pt()) # raw 
         fill( tr, 'metphi', met.phi()) # raw
-        fill( tr, 'mvamet', -1) # raw MVA, deactivate recoil corrections
-        fill( tr, 'mvametphi', -1)
+        fill( tr, 'mvamet', event.diLepton.met().pt()) 
+        fill( tr, 'mvametphi', event.diLepton.met().phi())
         fill( tr, 'pzetavis', event.diLepton.pZetaVis())
         fill( tr, 'pzetamiss', event.diLepton.pZetaMET())
 
@@ -180,11 +180,12 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
         fill( tr, 'metcov01', metsig(0,1))
         fill( tr, 'metcov10', metsig(1,0))
         fill( tr, 'metcov11', metsig(1,1))
-        
-        fill( tr, 'mvacov00', -1)
-        fill( tr, 'mvacov01', -1)
-        fill( tr, 'mvacov10', -1)
-        fill( tr, 'mvacov11', -1)
+
+        mvametsig = event.diLepton.mvaMetSig.significance()
+        fill( tr, 'mvacov00', mvametsig(0,0))
+        fill( tr, 'mvacov01', mvametsig(0,1))
+        fill( tr, 'mvacov10', mvametsig(1,0))
+        fill( tr, 'mvacov11', mvametsig(1,1))
         
         nJets = len(event.cleanJets)
         if nJets>=1:
@@ -230,8 +231,8 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
             fill( tr, 'visjeteta', vbf.visjeteta)
             fill( tr, 'ptvis', vbf.ptvis)
 
-        fill( tr, 'lNBTag', len(event.bJets))
-        fill( tr, 'lNJets', len(event.cleanJets))
+        fill( tr, 'nbtag', len(event.bJets))
+        fill( tr, 'njets', len(event.cleanJets))
        
         self.tree.tree.Fill()
         return True

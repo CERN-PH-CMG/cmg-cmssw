@@ -68,9 +68,10 @@ void DiTauWithSVFitProducer<DiTauType>::produce(edm::Event & iEvent, const edm::
   }
     
   //get the MET significance
-  edm::Handle< cmg::METSignificance > metsig;
+  edm::Handle< std::vector<cmg::METSignificance> > metsig;
   iEvent.getByLabel(metsigSrc_,metsig); 
 
+  assert(diTauH->size()==metsig->size());
 
   typedef std::auto_ptr< DiTauCollection >  OutPtr;
   OutPtr pOut( new DiTauCollection() );
@@ -101,7 +102,7 @@ void DiTauWithSVFitProducer<DiTauType>::produce(edm::Event & iEvent, const edm::
       measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(NSVfitStandalone2011::kHadDecay,p1));    
       NSVfitStandalone2011::LorentzVector p2(diTau.leg2().p4());
       measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(NSVfitStandalone2011::kLepDecay,p2));
-      NSVfitStandaloneAlgorithm2011 algo(measuredTauLeptons,measuredMET,metsig->significance(),0);
+      NSVfitStandaloneAlgorithm2011 algo(measuredTauLeptons,measuredMET,metsig->at(i).significance(),0);
       algo.maxObjFunctionCalls(5000);
       algo.fit();
       massSVFit = algo.fittedDiTauSystem().mass();
@@ -110,7 +111,7 @@ void DiTauWithSVFitProducer<DiTauType>::produce(edm::Event & iEvent, const edm::
       std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
       measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kHadDecay, diTau.leg1().p4()));
       measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay, diTau.leg2().p4()));
-      NSVfitStandaloneAlgorithm algo(measuredTauLeptons, met.p4().Vect(), *(metsig->significance()), 0);
+      NSVfitStandaloneAlgorithm algo(measuredTauLeptons, met.p4().Vect(), *(metsig->at(i).significance()), 0);
       algo.addLogM(false);
       algo.integrate();
       massSVFit = algo.getMass();

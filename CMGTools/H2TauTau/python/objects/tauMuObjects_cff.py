@@ -21,13 +21,15 @@ cmgTauMu.cfg.leg1Collection = 'cmgTauScaler'
 cmgTauMuPreSel = cmgTauMuSel.clone( cut = 'getSelection("cuts_baseline")')
 
 # full selection
-cmgTauMuFullSel = cmgTauMuSel.clone( src = 'cmgTauMuPreSel',
-                                     cut = 'getSelection("cuts_baseline")' )
+## cmgTauMuFullSel = cmgTauMuSel.clone( src = 'cmgTauMuPreSel',
+##                                      cut = 'getSelection("cuts_baseline")' )
 
 tauMuStdSequence = cms.Sequence( cmgTauScaler +
                                  cmgTauMu +
-                                 cmgTauMuPreSel +
-                                 cmgTauMuFullSel )
+                                 cmgTauMuPreSel
+                                 # +
+                                 # cmgTauMuFullSel
+                                 )
 
 
 # correction and svfit ------------------------------------------------------
@@ -40,6 +42,7 @@ from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
 from CMGTools.Common.miscProducers.mvaMET.mvaMET_cff import *
 from CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi import cmgBaseMETFromPFMET
 mvaMETTauMu.recBosonSrc = 'cmgTauMuPreSel'
+#WARNING: jet collections have to be redone if correction wrong
 
 mvaBaseMETTauMu = cmgBaseMETFromPFMET.clone()
 mvaBaseMETTauMu.cfg.inputCollection = 'mvaMETTauMu'
@@ -51,43 +54,46 @@ cmgTauMuMVAPreSel.cfg.diObjectCollection = 'cmgTauMuPreSel'
 mvaMETSequence = cms.Sequence(
     goodPVFilter + 
     mvaMETTauMu +
-    mvaBaseMETTauMu+
-    cmgTauMuMVAPreSel
+    mvaBaseMETTauMu
+    # +
+    # cmgTauMuMVAPreSel
     )
 
 # recoil correction
-doMVAMet = False
-metForRecoil = 'cmgPFMETRaw'
-diTausForRecoil = 'cmgTauMuPreSel'
-if doMVAMet:
-    # in this case the MET will be taken from the di-tau
-    metForRecoil = 'mvaBaseMETTauMu'
-    diTausForRecoil = 'cmgTauMuMVAPreSel'
+## doMVAMet = True
+## metForRecoil = 'cmgPFMETRaw'
+## diTausForRecoil = 'cmgTauMuPreSel'
+## if doMVAMet:
+##     # in this case the MET will be taken from the di-tau
+##     metForRecoil = 'mvaBaseMETTauMu'
+##     diTausForRecoil = 'cmgTauMuMVAPreSel'
 
-recoilCorMETTauMu =  recoilCorrectedMETTauMu.clone(
-    recBosonSrc = diTausForRecoil,
-    metSrc = metForRecoil
-    )
+## recoilCorMETTauMu =  recoilCorrectedMETTauMu.clone(
+##     recBosonSrc = diTausForRecoil,
+##     metSrc = metForRecoil
+##     )
 
 cmgTauMuCorPreSel = cmgTauMuCor.clone()
-cmgTauMuCorPreSel.cfg.metCollection = 'recoilCorMETTauMu'
-cmgTauMuCorPreSel.cfg.diObjectCollection = diTausForRecoil
+cmgTauMuCorPreSel.cfg.metCollection = 'mvaBaseMETTauMu'
+cmgTauMuCorPreSel.cfg.diObjectCollection = 'cmgTauMuPreSel'
 
 # SVFit
 
 cmgTauMuCorSVFitPreSel = tauMuSVFit.clone()
 cmgTauMuCorSVFitPreSel.diTauSrc = 'cmgTauMuCorPreSel'
+cmgTauMuCorSVFitFullSel = cmgTauMuSel.clone( src = 'cmgTauMuCorSVFitPreSel',
+                                             cut = 'getSelection("cuts_baseline")' ) 
+#WARNING here, need to read MET significance from MVA!
 
-cmgTauMuCorSVFitFullSel = cmgTauMuFullSel.clone( src = 'cmgTauMuCorSVFitPreSel' ) 
+tauMuCorSVFitSequence = cms.Sequence( # recoilCorMETTauMu +
+    mvaMETSequence + 
+    cmgTauMuCorPreSel +
+    cmgTauMuCorSVFitPreSel +
+    cmgTauMuCorSVFitFullSel
+    )
 
-
-tauMuCorSVFitSequence = cms.Sequence( recoilCorMETTauMu +
-                                      cmgTauMuCorPreSel +
-                                      cmgTauMuCorSVFitPreSel +
-                                      cmgTauMuCorSVFitFullSel )
-
-if doMVAMet:
-    tauMuCorSVFitSequence.insert(0, mvaMETSequence)
+## if doMVAMet:
+##     tauMuCorSVFitSequence.insert(0, mvaMETSequence)
 
 tauMuSequence = cms.Sequence( tauMuStdSequence +
                               tauMuCorSVFitSequence

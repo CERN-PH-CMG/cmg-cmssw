@@ -21,6 +21,15 @@ debugEventContent = False
 
 #tau-mu, tau-ele, di-tau, all
 channel = 'tau-mu'
+jetRecalib = False
+useCHS = False 
+newSVFit = True
+
+print sep_line
+print 'channel', channel
+print 'jet recalib', jetRecalib
+print 'useCHS', useCHS
+print 'newSVFit', newSVFit
 ##########
 
 
@@ -32,10 +41,12 @@ channel = 'tau-mu'
 
 dataset_user = 'cmgtools' 
 # dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0'
-dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5/PAT_CMG_V5_2_0'
+# dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5/PAT_CMG_V5_2_0'
 # dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/V5/PAT_CMG_V5_2_0'
 # dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/V5/PAT_CMG_V5_2_0'
-# dataset_name = '/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0'
+dataset_name = '/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0'
+# dataset_name = '/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5/HTTSKIM1/PAT_CMG_V5_2_0'
+
 dataset_files = 'cmgTuple.*root'
 
 # creating the source
@@ -82,9 +93,9 @@ if runOnMC==False:
 process.load('CMGTools.H2TauTau.h2TauTau_cff')
 
 # setting up the recoil correction according to the input file ---------------
-print sep_line
-from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
-setupRecoilCorrection( process, runOnMC )
+## print sep_line
+## from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
+## setupRecoilCorrection( process, runOnMC )
 
 
 # OUTPUT definition ----------------------------------------------------------
@@ -180,17 +191,45 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 # Jet recalibration
 
-process.load('Configuration.StandardSequences.Services_cff')
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-GT = None
-if runOnMC:
-    GT = 'START44_V13::All'
-else:
-    GT = 'GR_R_44_V15::All'
-process.GlobalTag.globaltag = GT
-from CMGTools.Common.miscProducers.cmgPFJetCorrector_cfi import cmgPFJetCorrector
-process.cmgPFJetSel = cmgPFJetCorrector.clone()
+if jetRecalib: 
+    process.load('Configuration.StandardSequences.Services_cff')
+    process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+    GT = None
+    if runOnMC:
+        GT = 'START44_V13::All'
+    else:
+        GT = 'GR_R_44_V15::All'
+    process.GlobalTag.globaltag = GT
+    from CMGTools.Common.miscProducers.cmgPFJetCorrector_cfi import cmgPFJetCorrector
+    process.cmgPFJetSel = cmgPFJetCorrector.clone(src='cmgPFJetSel',
+                                                  payload='AK5PF')
+    process.cmgPFJetSelCHS = cmgPFJetCorrector.clone(src='cmgPFJetSelCHS',
+                                                     payload='AK5PFchs')
 
-process.tauMuPath.insert(0, process.cmgPFJetSel)
+    if runOnMC:
+        process.cmgPFJetSel.levels = cms.vstring('L1FastJet','L2Relative','L3Absolute')
+        process.cmgPFJetSelCHS.levels = cms.vstring('L1FastJet','L2Relative','L3Absolute')
+    else:
+        process.cmgPFJetSel.levels = cms.vstring('L1FastJet','L2Relative','L3Absolute','L2L3Residual')
+        process.cmgPFJetSelCHS.levels = cms.vstring('L1FastJet','L2Relative','L3Absolute','L2L3Residual')
 
-print 'GLOBAL TAG', GT
+    process.tauMuPath.insert(0, process.cmgPFJetSel)
+    process.tauElePath.insert(0, process.cmgPFJetSel)
+    process.diTauPath.insert(0, process.cmgPFJetSel)
+
+    process.tauMuPath.insert(0, process.cmgPFJetSelCHS)
+    process.tauElePath.insert(0, process.cmgPFJetSelCHS)
+    process.diTauPath.insert(0, process.cmgPFJetSelCHS)
+
+    print 'GLOBAL TAG', GT
+
+if useCHS:
+    process.cmgPFJetForRecoil.src = 'cmgPFJetSelCHS'
+
+if newSVFit:
+    process.cmgTauMuCorSVFitPreSel.SVFitVersion = 2
+    process.MessageLogger.cerr.FwkReport.reportEvery = 1
+
+#process.tauMuPath.remove(process.cmgTauMuCorSVFitPreSel)
+#process.tauMuPath.remove(process.cmgTauMuCorSVFitFullSel)
+#process.tauMuPath.remove(process.tauMuFullSelCount)
