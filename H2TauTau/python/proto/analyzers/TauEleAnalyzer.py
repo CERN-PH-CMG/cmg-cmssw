@@ -75,7 +75,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         if leg.pt ()        <= self.cfg_ana.pt2              : return False
         if abs( leg.eta()) >= self.cfg_ana.eta2              : return False 
         if not self.testEleLoosePhil (leg, self.cfg_ana.pt2) : return False
-        if leg.relIso (0.5) >= self.cfg_ana.iso2             : return False
+        if leg.relIsoAllChargedDB05() >= self.cfg_ana.iso2             : return False
         return True
 
 
@@ -161,7 +161,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         if ele.sourcePtr().passConversionVeto() == False : return False 
 #PG this is broken        if ele.isConv()         != 1     : return False
         if ele.pt()             < ptCut  : return False
-        if ele.relIso(0.5)      > isoCut : return False
+        if ele.relIsoAllChargedDB05() > isoCut : return False
         if abs(ele.dxy())       >= 0.045 : return False
         if abs(ele.dz())        >= 0.2   : return False
         hoe = ele.hadronicOverEm()

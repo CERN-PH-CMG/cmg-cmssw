@@ -2,7 +2,6 @@ from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.DiObject import MuonElectron
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Electron
-from CMGTools.H2TauTau.proto.analyzers.CountLeptons import electronAccept
 
 class MuEleAnalyzer( DiLeptonAnalyzer ):
 
@@ -33,4 +32,4 @@ class MuEleAnalyzer( DiLeptonAnalyzer ):
 
 
     def leptonAccept(self, leptons):
-        return electronAccept( leptons )
+        pass
