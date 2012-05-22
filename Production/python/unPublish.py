@@ -11,7 +11,7 @@ from CMGTools.Production.nameOps import *
 from CMGTools.Production.findDSOnSav import *
 
 
-def unPublish(dsName,fileown,user,password, checkGroups):
+def unPublish(dsName,fileown,user,password):
     
     if re.search("---",dsName):
         fileown = getDbsUser(dsName)
