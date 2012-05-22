@@ -91,6 +91,9 @@ namespace cmg
 
     const Constituents& signalPFCands() const {return signalPFCands_;}
     const Constituent& leadPFChargedHadrCand() const {return leadPFChargedHadrCand_;}
+    /// Energy fraction carried by charged signal PFCandidates, 
+    /// wrt all signal PFCandidates
+    float signalChargedFraction() const;
 
     //tau ID's
     float tauID(const std::string& idname) const { 

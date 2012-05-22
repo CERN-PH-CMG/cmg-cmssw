@@ -20,6 +20,8 @@ namespace cmg {
 
     int type() const {return type_;}
 
+    float charge() const;
+
   private:
     int type_;
   };
