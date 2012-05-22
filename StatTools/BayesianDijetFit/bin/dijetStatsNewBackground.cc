@@ -100,6 +100,8 @@ int main(int argc, char* argv[])
   double NSIGCUTOFF=3.0; // number of +/- "sigma" to cutoff integration of nuisance parameters
   bool USELOGNORM=true;  // use lognormal or gaussian nuisance prior pdfs
   bool USEJEFFREYS=false;  // use lognormal or gaussian nuisance prior pdfs
+  bool WRITE=false;
+
 
   // histogram binning (for display only)
   const int NBINS=54;
@@ -128,6 +130,8 @@ int main(int argc, char* argv[])
   std::string sResonance(cResonance);
   int iResonance = 0;
 
+  WRITE = verbose_;
+
   if (statlevel > 999 && statlevel < 1999) USELOGNORM=false;
   if (statlevel == 2000 || statlevel == 2100) doAggressiveBkgFit=false;
 
@@ -136,6 +140,7 @@ int main(int argc, char* argv[])
   {
       USEJEFFREYS=true;
       statlevel=statlevel-10000;
+      WRITE = true;
   }
 
   if (sResonance.find("RSGraviton_ak5_GGtoGG_fat30") != std::string::npos) iResonance = 11;
@@ -149,7 +154,44 @@ int main(int argc, char* argv[])
   else if (sResonance.find("RSGraviton_HLT_ak5_QQtoQQ_pf") != std::string::npos) iResonance = 122;
   else if (sResonance.find("Qstar_HLT_ak5_pf") != std::string::npos) iResonance = 123;   
 
-  else if (sResonance.find("QBH_ak5_fat") != std::string::npos) iResonance = 1001; 
+  else if (sResonance.find("ZprimeToTTbar") != std::string::npos) iResonance = 201;
+
+  else if (sResonance.find("QBH5_ak5_fat") != std::string::npos) iResonance = 1005; 
+  else if (sResonance.find("QBH6_ak5_fat") != std::string::npos) iResonance = 1006; 
+  else if (sResonance.find("QBH7_ak5_fat") != std::string::npos) iResonance = 1007; 
+  else if (sResonance.find("QBH8_ak5_fat") != std::string::npos) iResonance = 1008; 
+  else if (sResonance.find("QBH9_ak5_fat") != std::string::npos) iResonance = 1009; 
+  else if (sResonance.find("QBH10_ak5_fat") != std::string::npos) iResonance = 1010; 
+
+  else if (sResonance.find("QBH52_ak5_fat") != std::string::npos) iResonance = 1502; 
+  else if (sResonance.find("QBH53_ak5_fat") != std::string::npos) iResonance = 1503; 
+  else if (sResonance.find("QBH54_ak5_fat") != std::string::npos) iResonance = 1504; 
+  else if (sResonance.find("QBH55_ak5_fat") != std::string::npos) iResonance = 1505; 
+
+  else if (sResonance.find("QBH62_ak5_fat") != std::string::npos) iResonance = 1602; 
+  else if (sResonance.find("QBH63_ak5_fat") != std::string::npos) iResonance = 1603; 
+  else if (sResonance.find("QBH64_ak5_fat") != std::string::npos) iResonance = 1604; 
+  else if (sResonance.find("QBH65_ak5_fat") != std::string::npos) iResonance = 1605; 
+
+  else if (sResonance.find("QBH72_ak5_fat") != std::string::npos) iResonance = 1702; 
+  else if (sResonance.find("QBH73_ak5_fat") != std::string::npos) iResonance = 1703; 
+  else if (sResonance.find("QBH74_ak5_fat") != std::string::npos) iResonance = 1704; 
+  else if (sResonance.find("QBH75_ak5_fat") != std::string::npos) iResonance = 1705; 
+
+  else if (sResonance.find("QBH82_ak5_fat") != std::string::npos) iResonance = 1802; 
+  else if (sResonance.find("QBH83_ak5_fat") != std::string::npos) iResonance = 1803; 
+  else if (sResonance.find("QBH84_ak5_fat") != std::string::npos) iResonance = 1804; 
+  else if (sResonance.find("QBH85_ak5_fat") != std::string::npos) iResonance = 1805; 
+
+  else if (sResonance.find("QBH92_ak5_fat") != std::string::npos) iResonance = 1902; 
+  else if (sResonance.find("QBH93_ak5_fat") != std::string::npos) iResonance = 1903; 
+  else if (sResonance.find("QBH94_ak5_fat") != std::string::npos) iResonance = 1904; 
+  else if (sResonance.find("QBH95_ak5_fat") != std::string::npos) iResonance = 1905; 
+
+  else if (sResonance.find("QBH102_ak5_fat") != std::string::npos) iResonance = 1102; 
+  else if (sResonance.find("QBH103_ak5_fat") != std::string::npos) iResonance = 1103; 
+  else if (sResonance.find("QBH104_ak5_fat") != std::string::npos) iResonance = 1104; 
+  else if (sResonance.find("QBH105_ak5_fat") != std::string::npos) iResonance = 1105; 
 
   else if (sResonance.find("Qstar_qW_ak5_fat") != std::string::npos) iResonance = 2001; 
   else if (sResonance.find("Qstar_qZ_ak5_fat") != std::string::npos) iResonance = 2002; 
@@ -157,6 +199,19 @@ int main(int argc, char* argv[])
   else if (sResonance.find("RSGraviton_WZ_ak5_fat") != std::string::npos) iResonance = 2012; 
   else if (sResonance.find("RSGraviton_ZZ_ak5_fat") != std::string::npos) iResonance = 2013; 
   else if (sResonance.find("RSGraviton_ZZ_01_ak5_fat") != std::string::npos) iResonance = 2014; 
+
+
+  else if (sResonance.find("RSGravitonGG_k0p1_fat30_ak5") != std::string::npos) iResonance = 3111;
+  else if (sResonance.find("RSGravitonGG_k0p3_fat30_ak5") != std::string::npos) iResonance = 3311;
+  else if (sResonance.find("RSGravitonGG_k0p5_fat30_ak5") != std::string::npos) iResonance = 3511;
+  else if (sResonance.find("RSGravitonGG_k0p7_fat30_ak5") != std::string::npos) iResonance = 3711;
+  else if (sResonance.find("RSGravitonGG_k0p9_fat30_ak5") != std::string::npos) iResonance = 3911;
+
+  else if (sResonance.find("RSGravitonQQ_k0p1_fat30_ak5") != std::string::npos) iResonance = 3112;
+  else if (sResonance.find("RSGravitonQQ_k0p3_fat30_ak5") != std::string::npos) iResonance = 3312;
+  else if (sResonance.find("RSGravitonQQ_k0p5_fat30_ak5") != std::string::npos) iResonance = 3512;
+  else if (sResonance.find("RSGravitonQQ_k0p7_fat30_ak5") != std::string::npos) iResonance = 3712;
+  else if (sResonance.find("RSGravitonQQ_k0p9_fat30_ak5") != std::string::npos) iResonance = 3912;
 
 
   if (iResonance > 20 && iResonance < 29)  {
@@ -180,11 +235,18 @@ int main(int argc, char* argv[])
     JERERROR=0.11;   // relative error on JER
   }
      
-  if (iResonance > 1000 && iResonance < 1010)  {
+  if (iResonance > 1000 && iResonance < 1020)  {
     MININVMASS = 890.;
-    MAXINVMASS = 5000.;
+    MAXINVMASS = 5500.;
   }
 
+
+  if (iResonance > 200 && iResonance < 210)  {
+    DATASETFN="../data/ds_data_2011-nominal.txt";
+    MININVMASS = 500.;
+    MAXINVMASS = 2500.;
+//    LUMIERROR = sqrt(pow(LUMIERROR,2) + pow(0.13,2));
+  }
 
   if (iResonance > 2000 && iResonance < 2010)  {
     DATASETFN="../data/lumi46fb_dataMC_data_1JetMassTag.txt";
@@ -224,8 +286,9 @@ int main(int argc, char* argv[])
     ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[5.1,0,100],pb2[5.72,-100,100], pb3[-0.0547,-1,1],invmass)");
     ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,0)',pc1[7.8,-100,100],pc2[0,0,0],invmass)");
   } else {
+
     ws->factory("EXPR::background('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*log(invmass/7000.0))', p1[7.460,-30,30], p2[5.882,-20,20], p3[0.106,-5,5],invmass)");
-    ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[5.1,0,100],pb2[5.72,-100,100], pb3[-0.0547,-1,1],invmass)");
+    ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[8.41,0,100],pb2[5.20,-100,100], pb3[-0.017,-1,1],invmass)");
     ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,pc2)',pc1[7.8,-100,100],pc2[5.4,-100,100],invmass)");
   }
 
@@ -328,9 +391,13 @@ int main(int argc, char* argv[])
   RooFitResult* fita;
   RooFitResult* fit;
 
-  
+  cout << "Do fit A" << endl;
   fita=doFit(std::string("bfita")+label, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
+
+  cout << "Do fit B" << endl;
   fit=doFit(std::string("bfitb")+label, ws->pdf("modelb"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
+
+  cout << "Do fit C" << endl;
   fit=doFit(std::string("bfitc")+label, ws->pdf("modelc"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
   
 
@@ -509,8 +576,13 @@ int main(int argc, char* argv[])
     printVal(*ws->var("pb3"));
     printVal(*ws->var("pc1"));
     printVal(*ws->var("pc2"));
-    ws->writeToFile("ws.root");
-    
+    if (verbose_) ws->writeToFile("ws.root");
+    else if (!verbose_ && WRITE){
+      string title("ws");
+      title = title + "_" + sResonance + "_" + Form("%f", signalMass) + "_" + Form("%d",statlevel) + ".root";
+      ws->writeToFile(title.c_str());
+    }
+
     double lower=-1, upper=-1;
     //    int niters=1000;
     //    int niters=200;
@@ -567,6 +639,7 @@ int main(int argc, char* argv[])
       }
       
       else {
+
         // Code taken from TFitResult.RandomizePars
         Int_t nPar= fita->floatParsFinal().getSize();
         // calculate the elements of the upper-triangular matrix L that gives Lt*L = C
