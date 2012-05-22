@@ -407,6 +407,7 @@ void DijetMass_chiyoung_2(){
   fit->SetLineWidth(2);
   fit->SetLineColor(4);
   g->Fit("fit","","",889.0,4171.0);	
+  TFitResultPtr fitResult=g->Fit("fit","S","",889.0,4171.0);	
    
 
   TF1 *fitWithSignal = new TF1("fitWithSignal",fitQCD1,889.0,4171.0,4); // 4 Par. Fit
@@ -455,11 +456,91 @@ void DijetMass_chiyoung_2(){
   TGraphAsymmErrors *gRatio_3par = new TGraphAsymmErrors(*gDefault);
   TGraphAsymmErrors *gRatio_lowMass = new TGraphAsymmErrors(*gDefault);
 
+  TObjArray* aPull = new TObjArray(30);
+
+  TGraphAsymmErrors *gPull_4par = new TGraphAsymmErrors(*gDefault);
+  TGraphAsymmErrors *gPull_3par = new TGraphAsymmErrors(*gDefault);
+  TGraphAsymmErrors *gPull_lowMass = new TGraphAsymmErrors(*gDefault);
+
+  double nbkgval=fit->GetParameter(0);
+  double p1val=fit->GetParameter(1);
+  double p2val=fit->GetParameter(2);
+  double p3val=fit->GetParameter(3);
+
+  TMatrixDSym covarianceMatrix=fitResult->GetCovarianceMatrix();
+
+        // Code taken from TFitResult.RandomizePars
+        Int_t nPar= fit->GetNpar();
+        // calculate the elements of the upper-triangular matrix L that gives Lt*L = C
+        // where Lt is the transpose of L (the "square-root method")
+        TMatrix L(nPar,nPar);
+        for(Int_t iPar= 0; iPar < nPar; iPar++) {
+     	  // calculate the diagonal term first
+     	  L(iPar,iPar)= covarianceMatrix(iPar,iPar);
+     	  for(Int_t k= 0; k < iPar; k++) {
+     	    Double_t tmp= L(k,iPar);
+     	    L(iPar,iPar)-= tmp*tmp;
+     	  }
+     	  L(iPar,iPar)= sqrt(L(iPar,iPar));
+     	  // then the off-diagonal terms
+     	  for(Int_t jPar= iPar+1; jPar < nPar; jPar++) {
+     	    L(iPar,jPar)= covarianceMatrix(iPar,jPar);
+     	    for(Int_t k= 0; k < iPar; k++) {
+     	      L(iPar,jPar)-= L(k,iPar)*L(k,jPar);
+     	    }
+     	    L(iPar,jPar)/= L(iPar,iPar);
+     	  }
+        }
+        // remember Lt
+        TMatrix* _Lt= new TMatrix(TMatrix::kTransposed,L);
+        TVectorD eigenValues(4);
+        TMatrixD eigenVectors=covarianceMatrix.EigenVectors(eigenValues);
+        std::cout << "EigenVectors" << std::endl;
+        for(Int_t k= 0; k < nPar; k++) {
+     	  std::cout << k << ": ";
+     	  for(Int_t lv= 0; lv < nPar; lv++) {
+     	    std::cout << eigenVectors[k][lv] << " ";
+     	  }
+     	  std::cout << std::endl;
+        }
+
+        TF1* variations[6];
+      
+         TVector gv(nPar);
+         Double_t pars[4];
+	 for(Int_t vi=1; vi<nPar;vi++){
+	  for(Int_t k= 0; k < nPar; k++) gv(k)=eigenVectors[vi][k];
+	  // multiply this vector by Lt to introduce the appropriate correlations
+	  gv*= (*_Lt);
+	  stringstream ss;
+	  ss << "up" << vi;
+	  TF1* variationUp=new TF1(ss.str().c_str(),fitQCD1,889.0,4171.0,4);
+	  pars[0]=nbkgval;
+	  pars[1]=p1val+gv(1);
+	  pars[2]=p2val+gv(2);
+	  pars[3]=p3val+gv(3);
+	  variationUp->SetParameters(pars);
+	  variations[2*vi-2]=variationUp;
+	  for(Int_t k= 0; k < nPar; k++) gv(k)=-eigenVectors[vi][k];
+	  // multiply tLos vector by Lt to introduce the appropriate correlations
+	  gv*= (*_Lt);
+	  ss << "down";
+	  TF1* variationDown=new TF1(ss.str().c_str(),fitQCD1,889.0,4171.0,4);
+	  pars[0]=nbkgval;
+	  pars[1]=p1val+gv(1);
+	  pars[2]=p2val+gv(2);
+	  pars[3]=p3val+gv(3);
+	  variationDown->SetParameters(pars);
+	  variations[2*vi-1]=variationDown;
+	 }
+
+  double fMass, Xsec;
 
   for (int iWindow = 0; iWindow < 30; iWindow++){
 
     TGraphAsymmErrors *gWindow = new TGraphAsymmErrors(*gDefault);
     TGraphAsymmErrors *gRatio = new TGraphAsymmErrors(*gDefault);
+    TGraphAsymmErrors *gPull = new TGraphAsymmErrors(*gDefault);
 
     TF1 *fit_window = new TF1(Form("fit_window_%d",iWindow),fitQCD1,890.0,4171.0,4); // 4 Par. Fit
     fit_window->SetParameter(0,1.73132e-05);
@@ -483,8 +564,6 @@ void DijetMass_chiyoung_2(){
     
     gWindow->Fit(Form("fit_window_%d",iWindow),"","",890.0,4171.0);
 
-
-    double fMass, Xsec;
 
     for (int i = 0; i < gRatio->GetN(); i++){
       gRatio->GetPoint(i, fMass, Xsec);
@@ -526,12 +605,58 @@ void DijetMass_chiyoung_2(){
 
       }
 
+    }
+
+    for (int i = 0; i < gPull->GetN(); i++){
+      gPull->GetPoint(i, fMass, Xsec);
+
+      float XsecWindow = fit_window->Eval(fMass,0,0);
+      float XsecDefault = fit->Eval(fMass,0,0);
+      float XsecVariationDefault = 0;
+      for(Int_t k= 0; k < (nPar-1)*2; k++) XsecVariationDefault+=pow(variations[k]->Eval(fMass)-XsecDefault,2);
+      XsecVariationDefault=sqrt(XsecVariationDefault);
+      
+      if (Xsec > 1e-10 || (fMass < 4500.0 && fMass > 890.0)) gPull->SetPoint(i, fMass, (XsecWindow-XsecDefault)/XsecVariationDefault); 
+      if (Xsec > 1e-10 || (fMass < 4500.0 && fMass > 890.0)) gPull->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+
+      if (Xsec < 1e-10 && (fMass > 4500.0 || fMass < 890.0)) gPull->SetPoint(i, fMass, 0.0); 
+      if (Xsec < 1e-10 && (fMass > 4500.0 || fMass < 890.0)) gPull->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+
+
+    if (iWindow == 0){
+
+	float XsecWindow_4par = f_4par->Eval(fMass,0,0);
+	float XsecWindow_3par = f_3par->Eval(fMass,0,0);
+	float XsecWindow_lowMass = fit_lowMass->Eval(fMass,0,0);
+
+	if (Xsec > 1e-10 || (fMass < 4500.0 && fMass > 890.0)) gPull_4par->SetPoint(i, fMass, (XsecWindow_4par-XsecDefault)/XsecVariationDefault); 
+	if (Xsec > 1e-10 || (fMass < 4500.0 && fMass > 890.0)) gPull_4par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+
+	if (Xsec > 1e-10 || (fMass < 4500.0 && fMass > 890.0)) gPull_3par->SetPoint(i, fMass, (XsecWindow_3par-XsecDefault)/XsecVariationDefault); 
+	if (Xsec > 1e-10 || (fMass < 4500.0 && fMass > 890.0)) gPull_3par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+
+	if (Xsec > 1e-10 || (fMass < 4500.0 && fMass > 890.0)) gPull_lowMass->SetPoint(i, fMass, (XsecWindow_lowMass-XsecDefault)/XsecVariationDefault); 
+	if (Xsec > 1e-10 || (fMass < 4500.0 && fMass > 890.0)) gPull_lowMass->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+
+
+	if (Xsec < 1e-10 && (fMass > 4500.0 || fMass < 890.0)) gPull_4par->SetPoint(i, fMass, 0.0); 
+	if (Xsec < 1e-10 && (fMass > 4500.0 || fMass < 890.0)) gPull_4par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+
+	if (Xsec < 1e-10 && (fMass > 4500.0 || fMass < 890.0)) gPull_3par->SetPoint(i, fMass, 0.0); 
+	if (Xsec < 1e-10 && (fMass > 4500.0 || fMass < 890.0)) gPull_3par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+
+	if (Xsec < 1e-10 && (fMass > 4500.0 || fMass < 890.0)) gPull_lowMass->SetPoint(i, fMass, 0.0); 
+	if (Xsec < 1e-10 && (fMass > 4500.0 || fMass < 890.0)) gPull_lowMass->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+
+      }
+
 
     }
 
 
     aFit->AddAt(fit, iWindow);
     aRatio->AddAt(gRatio, iWindow);
+    aPull->AddAt(gPull, iWindow);
 
   }
 
@@ -1381,6 +1506,62 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
 
 
 
+
+
+
+
+
+
+ //Dijet Mass Cross Section with Fit pulls
+  TCanvas* c100 = new TCanvas("c100","DijetMass Cross Section with Window Fit");
+  ((TGraphAsymmErrors*) aPull->At(0))->SetTitle("");
+  ((TGraphAsymmErrors*) aPull->At(0))->SetLineColor(1);
+  ((TGraphAsymmErrors*) aPull->At(0))->SetFillColor(1);
+  ((TGraphAsymmErrors*) aPull->At(0))->GetXaxis()->SetTitle("Dijet Mass (GeV)");
+  ((TGraphAsymmErrors*) aPull->At(0))->GetYaxis()->SetTitle("(Fit-Default fit)/(Default fit variation)");
+  ((TGraphAsymmErrors*) aPull->At(0))->GetXaxis()->SetRangeUser(890,4171.0);
+  ((TGraphAsymmErrors*) aPull->At(0))->GetYaxis()->SetRangeUser(-6.0,6.0);
+  ((TGraphAsymmErrors*) aPull->At(0))->Draw("AL");
+
+  for (int iWindow = 1; iWindow < 15; iWindow++){
+
+    ((TGraphAsymmErrors*) aPull->At(iWindow))->SetLineColor(iWindow+1);
+    ((TGraphAsymmErrors*) aPull->At(iWindow))->Draw("SAME");
+
+  }
+
+  gPull_4par->SetLineWidth(3);
+  gPull_4par->SetLineStyle(1);
+  gPull_4par->SetLineColor(TColor::GetColor("#009900"));
+
+  gPull_3par->SetLineWidth(3);
+  gPull_3par->SetLineStyle(1);
+  gPull_3par->SetLineColor(kBlue);
+  
+  gPull_lowMass->SetLineWidth(3);
+  gPull_lowMass->SetLineStyle(1);
+  gPull_lowMass->SetLineColor(kMagenta);
+
+  gPull_4par->Draw("SAME");
+  gPull_3par->Draw("SAME"); 
+  gPull_lowMass->Draw("SAME"); 
+
+  TLegend *legw2 = new TLegend(0.18,0.78,0.38,0.92);
+  legw2->SetTextSize(0.03146853);
+  legw2->SetLineColor(1);
+  legw2->SetLineStyle(1);
+  legw2->SetLineWidth(1);
+  legw2->SetFillColor(0);
+  legw2->AddEntry(((TGraphAsymmErrors*) aPull->At(0)),"15 fits with window - Default Fit (4 par.)","L");
+  legw2->AddEntry(gPull_lowMass,"Default Fit up to 1.9 TeV - Default Fit (4 par.)","L");
+  legw2->AddEntry(gPull_4par,"Alternate Fit A (4 Par.) - Default Fit (4 par.)","L");
+  legw2->AddEntry(gPull_3par,"Alternate Fit B (3 Par.) - Default Fit (4 par.)","L");
+  legw2->Draw("same");
+
+
+
+  c100->SaveAs("Plots/DijetMassCrossSectionWithWindowFitPull.png");
+  c100->SaveAs("Plots/DijetMassCrossSectionWithWindowFitPull.pdf");
 
 
 
