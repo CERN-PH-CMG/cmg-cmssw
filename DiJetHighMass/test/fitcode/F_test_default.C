@@ -426,17 +426,17 @@ void F_test_default (double alpha=0.1) {
   TCanvas * P2 = new TCanvas ("P2","",300,600);
   P2->Divide(2,2);
   P2->cd(1);
-  Data0->Fit("Pol0", "Q");
   Data0->Draw("APE");
+  Data0->Fit("Pol0", "Q");
   P2->cd(2);
+  Data1->Draw("APE");
   Data1->Fit("Pol1", "Q");
-  Data1->Draw("PE");
   P2->cd(3);
-  Data2->Fit("Pol2", "Q");
   Data2->Draw("APE");
+  Data2->Fit("Pol2", "Q");
   P2->cd(4);
-  Data3->Fit("Pol3", "Q");
   Data3->Draw("APE");
+  Data3->Fit("Pol3", "Q");
   P2->Print("F_test_0.jpg");
   
 }

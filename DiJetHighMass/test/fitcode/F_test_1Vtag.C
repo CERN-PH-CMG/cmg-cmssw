@@ -33,27 +33,29 @@ Double_t fitQCD3( Double_t *m, Double_t *p)
     double x=m[0]/7000.;
     return p[0]*pow(1.-x,p[1])/pow(x,p[2]);
 }
-/*
+
 // 2 parameters
 Double_t fitQCD2( Double_t *m, Double_t *p)
 {
     double x=m[0]/7000.;
     return p[0]*pow(1.-x,p[1]);
 }
-*/
+/*
 // 2 parameters alternative
 Double_t fitQCD2( Double_t *m, Double_t *p)
 {
     double x=m[0]/7000.;
     return p[0]/pow(x,p[1]);
 }
-
+*/
 // 1 parameter
 Double_t fitQCD1( Double_t *m, Double_t *p)
 {
     double x=m[0]/7000.;
     return p[0];
 }
+
+double lumi = 4997.0;
 
 void F_test_1Vtag (double alpha=0.1) {
 
@@ -80,10 +82,61 @@ void F_test_1Vtag (double alpha=0.1) {
   double Nbins = binMax-binMin;
 
   hDijetMass->GetXaxis().SetRangeUser(mMin,mMax);
-  TH1D * Data0 = hDijetMass.Clone("Data0");
-  TH1D * Data1 = hDijetMass.Clone("Data1");
-  TH1D * Data2 = hDijetMass.Clone("Data2");
-  TH1D * Data3 = hDijetMass.Clone("Data3");
+
+  float a = 0.3173/2;
+  float n,nl,nh;
+  float n, dm, mass, xl, xh;
+  float vx[1000],vy[1000],vexl[1000],vexh[1000],veyl[1000],veyh[1000];
+  int i;
+  float y, yplus, yminus, cplus, cminus,e;
+
+  for(i=0;i<hDijetMass->GetNbinsX();i++)
+    {
+      n    = hDijetMass->GetBinContent(i+1);
+      dm   = hDijetMass->GetBinWidth(i+1);
+      mass = hDijetMass->GetBinCenter(i+1);
+      xl   = hDijetMass->GetBinLowEdge(i+1);	
+      xh   = xl+dm; 	
+      vx[i]   = (xl+xh)/2.;
+      vexl[i] = dm/2.;
+      vexh[i] = dm/2.;
+      vy[i]   = n / dm; 
+
+     
+      if (n<25 && mass>mMin && mass<=mMax)
+       	{
+	  nl = n-0.5*TMath::ChisquareQuantile(a,2*n);
+	  nh = 0.5*TMath::ChisquareQuantile(1-a,2*(n+1))-n;
+	  veyl[i] = nl/dm;
+	  veyh[i] = nh/dm;  
+	}
+      else if (n<25 && mass<=mMin && mass>mMax && n>0)
+	{
+	  nl = n-0.5*TMath::ChisquareQuantile(a,2*n);
+	  nh = 0.5*TMath::ChisquareQuantile(1-a,2*(n+1))-n;
+	  veyl[i] = nl/(dm);
+	  veyh[i] = nh/(dm);  
+	}
+      else if (n>=25 && mass >= mMin-1)
+	{
+	  veyl[i] = sqrt(n)/(dm);
+	  veyh[i] = sqrt(n)/(dm);
+	} 
+      else 
+	{     
+	  vy[i] = -1.0;
+	  veyl[i] = 0;
+	  veyh[i] = 0;  
+	}
+
+ 
+    }
+  // these are the graph format of data.
+
+  TGraphAsymmErrors *Data0 = new TGraphAsymmErrors(i,vx,vy,vexl,vexh,veyl,veyh);
+  TGraphAsymmErrors *Data1 = new TGraphAsymmErrors(i,vx,vy,vexl,vexh,veyl,veyh);
+  TGraphAsymmErrors *Data2 = new TGraphAsymmErrors(i,vx,vy,vexl,vexh,veyl,veyh);
+  TGraphAsymmErrors *Data3 = new TGraphAsymmErrors(i,vx,vy,vexl,vexh,veyl,veyh);
 
   // F distributions
   // ---------------
@@ -104,23 +157,25 @@ void F_test_1Vtag (double alpha=0.1) {
   double y2[3000];
   double y3[3000];
   for (int i=binMin; i<binMax+1; i++) {
-    y0[i] = Data0->GetBinContent(i+1);
-    y1[i] = Data1->GetBinContent(i+1);
-    y2[i] = Data2->GetBinContent(i+1);
-    y3[i] = Data3->GetBinContent(i+1);
+    double x, yP;
+    Data0->GetPoint(i, x,yP);
+    y0[i] = yP;
+    y1[i] = yP;
+    y2[i] = yP;
+    y3[i] = yP;
   }
 
   TF1 * Pol0 = new TF1("Pol0",fitQCD1,mMin,mMax,1);
   TF1 * Pol1 = new TF1("Pol1",fitQCD2,mMin,mMax,2);
   TF1 * Pol2 = new TF1("Pol2",fitQCD3,mMin,mMax,3);
   TF1 * Pol3 = new TF1("Pol3",fitQCD4,mMin,mMax,4);
-  Pol0->SetParameter(0,1.73132e-05);
-  Pol1->SetParameter(0,1.73132e-05);
+  Pol0->SetParameter(0,1.73132e-05*lumi);
+  Pol1->SetParameter(0,1.73132e-05*lumi);
   Pol1->SetParameter(1,6.80678e+00);
-  Pol2->SetParameter(0,1.73132e-05);
+  Pol2->SetParameter(0,1.73132e-05*lumi);
   Pol2->SetParameter(1,6.80678e+00);
   Pol2->SetParameter(2,6.33620e+00);
-  Pol3->SetParameter(0,1.73132e-05);
+  Pol3->SetParameter(0,1.73132e-05*lumi);
   Pol3->SetParameter(1,6.80678e+00);
   Pol3->SetParameter(2,6.33620e+00);
   Pol3->SetParameter(3,1.93728e-01);
@@ -129,13 +184,13 @@ void F_test_1Vtag (double alpha=0.1) {
   double Npar2=3.;
   double Npar3=4.;
 
-  Data0->Fit("Pol0","QN");
-  Data1->Fit("Pol1","QN");
+  Data0->Fit("Pol0","N");
+  Data1->Fit("Pol1","N");
   Data2->Fit("Pol2","QN");
-  Data2->Fit("Pol2","QN");
+  Data2->Fit("Pol2","N");
   Data3->Fit("Pol3","QN");
   Data3->Fit("Pol3","QN");
-  Data3->Fit("Pol3","QN");
+  Data3->Fit("Pol3","N");
 
   // Calculate residual sums of squares for the three hypotheses
   // -----------------------------------------------------------
@@ -144,7 +199,8 @@ void F_test_1Vtag (double alpha=0.1) {
   double rss2=0;
   double rss3=0;
   for (int i=binMin; i<binMax+1; i++) {
-    double x = Data0->GetBinCenter(i+1);
+    double x, yP;
+    Data0->GetPoint(i, x,yP);
     rss0+= pow(y0[i]-Pol0->Eval(x),2);
     rss1+= pow(y1[i]-Pol1->Eval(x),2);
     rss2+= pow(y2[i]-Pol2->Eval(x),2);
@@ -163,13 +219,13 @@ void F_test_1Vtag (double alpha=0.1) {
   double Ftest_21 = (rss1-rss2)/p1_21 / (rss2/p2_21);
   double Ftest_32 = (rss2-rss3)/p1_32 / (rss3/p2_32);
 
-/*   cout << "Rss0 = " << rss0 << endl; */
-/*   cout << "Rss1 = " << rss1 << endl; */
-/*   cout << "Rss2 = " << rss2 << endl; */
-/*   cout << "Rss3 = " << rss3 << endl; */
-/*   cout << "Ftest 10 result = " << Ftest_10 << endl; */
-/*   cout << "Ftest 21 result = " << Ftest_21 << endl; */
-/*   cout << "Ftest 32 result = " << Ftest_32 << endl; */
+  cout << "Rss0 = " << rss0 << endl; 
+  cout << "Rss1 = " << rss1 << endl; 
+  cout << "Rss2 = " << rss2 << endl; 
+  cout << "Rss3 = " << rss3 << endl; 
+  cout << "Ftest 10 result = " << Ftest_10 << endl; 
+  cout << "Ftest 21 result = " << Ftest_21 << endl; 
+  cout << "Ftest 32 result = " << Ftest_32 << endl; 
 
   double good_CL10 =  1.-TMath::FDistI(Ftest_10,p1_10,p2_10);
   double good_CL21 =  1.-TMath::FDistI(Ftest_21,p1_21,p2_21);
@@ -281,7 +337,7 @@ void F_test_1Vtag (double alpha=0.1) {
   Data0->SetMinimum(0);
   Data0->SetMarkerStyle(20);
   Data0->SetMarkerSize(0.7);
-  Data0->Draw("PE");
+  Data0->Draw("APE");
   Pol0->SetLineColor(kRed);
   Pol0->SetLineWidth(1);
   Pol0->Draw("SAME");
@@ -289,7 +345,7 @@ void F_test_1Vtag (double alpha=0.1) {
   Data1->SetMinimum(0);
   Data1->SetMarkerStyle(20);
   Data1->SetMarkerSize(0.7);
-  Data1->Draw("PE");
+  Data1->Draw("APE");
   Pol1->SetLineColor(kRed);
   Pol1->SetLineWidth(1);
   Pol1->Draw("SAME");
@@ -310,7 +366,7 @@ void F_test_1Vtag (double alpha=0.1) {
   Data1->SetMinimum(0);
   Data1->SetMarkerStyle(20);
   Data1->SetMarkerSize(0.7);
-  Data1->Draw("PE");
+  Data1->Draw("APE");
   Pol1->SetLineColor(kRed);
   Pol1->SetLineWidth(1);
   Pol1->Draw("SAME");
@@ -318,7 +374,7 @@ void F_test_1Vtag (double alpha=0.1) {
   Data2->SetMinimum(0);
   Data2->SetMarkerStyle(20);
   Data2->SetMarkerSize(0.7);
-  Data2->Draw("PE");
+  Data2->Draw("APE");
   Pol2->SetLineColor(kRed);
   Pol2->SetLineWidth(1);
   Pol2->Draw("SAME");
@@ -339,7 +395,7 @@ void F_test_1Vtag (double alpha=0.1) {
   Data2->SetMinimum(0);
   Data2->SetMarkerStyle(20);
   Data2->SetMarkerSize(0.7);
-  Data2->Draw("PE");
+  Data2->Draw("APE");
   Pol2->SetLineColor(kRed);
   Pol2->SetLineWidth(1);
   Pol2->Draw("SAME");
@@ -347,7 +403,7 @@ void F_test_1Vtag (double alpha=0.1) {
   Data3->SetMinimum(0);
   Data3->SetMarkerStyle(20);
   Data3->SetMarkerSize(0.7);
-  Data3->Draw("PE");
+  Data3->Draw("APE");
   Pol3->SetLineColor(kRed);
   Pol3->SetLineWidth(1);
   Pol3->Draw("SAME");
@@ -365,17 +421,17 @@ void F_test_1Vtag (double alpha=0.1) {
   TCanvas * P2 = new TCanvas ("P2","",300,600);
   P2->Divide(2,2);
   P2->cd(1);
+  Data0->Draw("APE");
   Data0->Fit("Pol0", "Q");
-  Data0->Draw("PE");
   P2->cd(2);
+  Data1->Draw("APE");
   Data1->Fit("Pol1", "Q");
-  Data1->Draw("PE");
   P2->cd(3);
+  Data2->Draw("APE");
   Data2->Fit("Pol2", "Q");
-  Data2->Draw("PE");
   P2->cd(4);
+  Data3->Draw("APE");
   Data3->Fit("Pol3", "Q");
-  Data3->Draw("PE");
   P2->Print("F_test_0.jpg");
   
 }
