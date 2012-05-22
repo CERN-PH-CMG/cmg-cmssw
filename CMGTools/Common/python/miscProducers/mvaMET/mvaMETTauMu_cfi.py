@@ -9,9 +9,7 @@ mvaMETTauMu = cms.EDProducer(
     pumetSrc = cms.InputTag('puMet'),
     recBosonSrc = cms.InputTag('cmgTauMuSel'),
     jetSrc = cms.InputTag('cmgPFJetSel'),
-    # FIXME need leading jets
     leadJetSrc = cms.InputTag('cmgPFBaseJetLead'),
-    # FIXME need the list of good vertices, reuse cleaning module.
     vertexSrc = cms.InputTag('goodPVFilter'),
     nJetsPtGt1Src = cms.InputTag('nJetsPtGt1'),
     rhoSrc = cms.InputTag('kt6PFJets','rho'),

@@ -21,8 +21,8 @@ runOnMC = True
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
    'cmgtools_group',
-    '/GluGluToHToZZTo4L_M-126_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5'
-   # '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5',
+   # '/GluGluToHToZZTo4L_M-126_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5'
+   '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5',
    # 'CMS',
    # '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM',
    #'/TauPlusX/Run2011A-PromptReco-v4/AOD/V5'
@@ -30,17 +30,12 @@ process.source = datasetToSource(
    # '/TauPlusX/Run2011A-03Oct2011-v1/AOD'
    )
 
-## if runOnMC is False:
-##     print 'OVERRIDING datasetToSource TO TEST RUNNING ON DATA'
-##     process.source.fileNames = ['/store/data/Run2012A/DoubleMu/AOD/PromptReco-v1/000/191/859/66D9EE0B-EC8C-E111-9346-001D09F2AD84.root']
-## process.source.fileNames = process.source.fileNames[:1]
-
 print sep_line
 print process.source.fileNames
 print sep_line 
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 print 'loading the main CMG sequence'
 
