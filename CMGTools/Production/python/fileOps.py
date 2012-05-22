@@ -11,10 +11,20 @@ from CMGTools.Production.edmIntegrityCheck import IntegrityCheck
 from optparse import Values as CheckValues
 	        
 class FileOps(object):
-
+    
+    """Class gives access to attributes of the dataset that are stored on disk"""
     
     def __init__(self, setName,user, force, checkGroups):
-
+        """Initialises attributes of object, and validates existence of dataset
+        'setName' takes the name of the dataset in the EOS format e.g. /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3
+        'user' takes the files owner on EOS e.g. cmgtools
+        'force' takes True/False on whether the dataset should be considered valid if there is no logger file found
+        'checkGroups' takes True/False on whether the corresponding group area should be checked if the dataset is not found. e.g. cmgtools_group
+        
+        init function uses the checkDirectory method, to establish whether the directory of the dataset is valid.
+        """
+        
+        
         self._setName = setName.rstrip("/")
         self._user = user
         self._castor=None
@@ -26,13 +36,16 @@ class FileOps(object):
         self._valid = False
         self._castorGroups = None
         self._force = force
+        
+        # If group space is specified, get EOS path using this, otherwise, use user space
         if re.search('group',user):
             castor = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user.rstrip("_group"), "group"))+self._setName
         else:
             castor = eostools.lfnToEOS(castorBaseDir.castorBaseDir(user))+self._setName
         try:
-            
+            # Check the directory is valid
             self.checkDirectory(castor)
+        # If An error occurs and checkGroups is True, check the group section
         except (NameError, ValueError) as ex:
             print ex.args[0] + "\n"
             if not re.search('group',user) and checkGroups:
@@ -47,9 +60,13 @@ class FileOps(object):
             else:
                 raise
                 
-        
-	        
     def checkDirectory(self, castor):
+        """Checks if dataset files and logger file exist in a given directory
+        
+        'castor' takes the datasets path name in full EOS form e.g. /eos/cms/store/cmst3/group/cmgtools/DoubleMu/Run2011B-16Jan2012-v1/AOD/V2
+        
+        Sets class variables LFN castor (EOS), and also gets the tags root files and checks the contiguity of the dataset.
+        """
         # Check if on castor next
         if eostools.isDirectory(castor) and len(eostools.matchingFiles(eostools.eosToLFN(castor), "Logger.tgz$"))==1:
             self._castor =  castor
@@ -76,22 +93,32 @@ class FileOps(object):
             if not re.search("group",self._user):raise NameError("Directory not found check input details?")
             else: raise NameError('No valid directory found for dataset: '+self._setName)    
             return None
+    
     def getUser(self):
+        """Return the file's owner on EOS e.g. cmgtools"""
         return self._user
     
     def getIntegrity(self):
+        """Return the dictionary object returned by Wills edm integrity check"""
         return self._integrity
         
     def isValid(self):
+        """Return True/False on whether the dataset is valid"""
         return self._valid
 
     # Return tags
     def getTags(self):
+        """Return the tags in CVS at the time the dataset was created
+        
+        return as a list of dict() objects in the form:
+        [{"tag":"tag","package":"package"}]
+        """
         return self._tags
         
         
   	# Return all root files in directory
     def getRootFiles(self):
+        """Returns a list of the root files in the datasets directory"""
         if self._castor is not None:				# If is file on Castor
         	return eostools.matchingFiles(self._LFN, ".*root$")
         else:										# If local
@@ -99,6 +126,11 @@ class FileOps(object):
   	    
     # Stage in the Logger.tgz file in a tmp file, load the showtags file and split it on newlines
     def _castorTags(self):
+        """Sets the self._tags variable to a list of dict() objects containing the tags tags in CVS at the time the dataset was created
+        
+        Variable is set in the form:
+        [{"tag":"tag","package":"package"}]
+        """
         # Create temporary file to get logger info
         f = tempfile.NamedTemporaryFile()
         # Stage logger file to temp file and extract
@@ -114,27 +146,44 @@ class FileOps(object):
  
     # Return castor directory name
     def getCastor(self):
+        """Return the EOS path that was stored when the checkDirectory command was executed
+        
+        Returns a string
+        """
         return self._castor
         
     # Return LFN on castor
     def getLFN(self):
+        """Return the LFN that was stored when the checkDirectory command was executed
+        
+        Returns a string
+        """
         return self._LFN
     
     def getLFNGroups(self):
+        """Returns the groups of root files in a dataset e.g. histograms, PAT, CMG tuples and data about those groups labelled by LFN"""
         return self._groups
         
     def getCastorGroups(self):
+        """Returns the groups of root files in a dataset e.g. histograms, PAT, CMG tuples and data about those groups labelled by EOS name"""
         return self._castorGroups
     
     def getMC(self):
+        """Returns True/False on whether the sample is a Monte Carlo sample"""
         return self._MC
             
     # Get CMSSW release
     def getRelease(self):
+        """Returns a string of the name of the CMSSW release"""
         return self._release
     
     # Get tags
     def _findTags(self, showtags):
+        """Append all tags to the _tags class variable and the _release variable
+        
+        'showtags' takes the output from the showtags file in the Logger folder on EOS as a string
+        """
+        #Sets tags and release 
         try:
             # Get the release from the first line of showtags
             self._release = showtags[0].split(":")[1].lstrip().rstrip()
@@ -155,27 +204,44 @@ class FileOps(object):
         except: print "No tags found"
     
     def getDatasetSize(self):
-	    output = None
-	    commandOut = eostools.runEOSCommand(self._castor,"find","--size")[0]
-	    files = commandOut.split("\npath=")
-	    if re.search("PAT_CMG", self._setName.split("/")[-1]):
-	        output = 0
-	        for file in files:
-	            if re.search('PAT_CMG',file):
-	                if re.search(".root",file):
-	                    output += float(float(file.split('size=')[1].split("\n")[0])/1000/1000/1000/1000)
-	    elif re.search("V", self._setName.split("/")[-1]):
-	        output = 0
-	        for file in files:
-	            if re.search('PFAOD',file):
-	                if re.search(".root",file):
-	                    output += float(float(file.split('size=')[1].split("\n")[0])/1000/1000/1000/1000)
+        """Returns the size of the dataset in TB as an int"""
+        output = None
+        # Get the command output as a string
+        commandOut = eostools.runEOSCommand(self._castor,"find","--size")[0]
+        # Separate the string into the required parts
+        files = commandOut.split("\npath=")
+        # If the root file is a PAT_CMG file
+        if re.search("PAT_CMG", self._setName.split("/")[-1]):
+            output = 0
+            # Add the size of each file to the total size variable
+            for file in files:
+                if re.search('PAT_CMG',file):
+                    if re.search(".root",file):
+                        # convert output to TB
+                        output += float(float(file.split('size=')[1].split("\n")[0])/1000/1000/1000/1000)
+	# If the root file is a PFAOD file
+	elif re.search("V", self._setName.split("/")[-1]):
+	    output = 0
+	    # Add the size of each file to the total size variable
+	    for file in files:
+	        if re.search('PFAOD',file):
+	            if re.search(".root",file):
+	                # convert output to TB
+	                output += float(float(file.split('size=')[1].split("\n")[0])/1000/1000/1000/1000)
 	                    
-	    if output is not None: print "Dataset size =",output,"TB"
-	    return output
+	if output is not None: print "Dataset size =",output,"TB"
+	return output
 
 	# Method to check validity of root files, returns python dict
     def _checkContiguity(self):
+        """Checks the contiguity of the files
+        
+        Run the integrity check script and format the output into a dict() object, set this as the _integrity class variable
+        Run a contiguity check on the .root file names and find any duplicates and missing files,
+        these will be recorded in the self._groups dict() 
+        """
+        ### This method could be much more simple
+        
         #GET ALL ROOT NAMES
         fileNames = self.getRootFiles()
         fileGroups = []
@@ -302,9 +368,12 @@ class FileOps(object):
     
     # Check if group is valid and return python dictionary with details
     def _checkGroup(self, group):
+        """Runs a contiguity check on a group of filenames found in the dataset's directory, all files must have similar names
         
+        'group' takes a list object containing the file names in the 'group' of files
+        """
         groupInfo = self._makeGroupInfo(group)
-        
+        ### SIMPLIFY WITH REGEXP
         if groupInfo['qFiles']>1:
             count = groupInfo['bottom']
             if groupInfo['bottom'] > 1: count = 1
@@ -346,6 +415,20 @@ class FileOps(object):
         
     # Create python dictionary with groups properties
     def _makeGroupInfo(self, group):
+        """Creates a dictionary holding information about the group of files
+        
+        'group' takes a list of file names
+        returns dict() object with the following elements:
+            'name' = a generic name that applies to all files in the group
+            'valid' = True/False if the group is valid
+            'files' = a list of the files in the group
+            'missing files' = a list of the files missing from the group
+            'duplicate files' = a list of the duplicated files in the group
+            'qFiles' = how many files are in the group
+            'numbers' = a list of the file numbers, e.g. numbers[-1] is the highest number in the group
+            'top' = numbers[-1]
+            'bottom' = numbers[0]
+        """
     	# Check if manually named (not numbered)
     	if checkIfUnique(group[0]):
     		return {"name":group[0],"valid":True, "qFiles":1}
@@ -384,6 +467,10 @@ class FileOps(object):
         
 ###### 4 HELPER METHODS #####      
 def checkRootType(name):
+    """Checks if the group matches the CRAB file type or not
+    
+    'name' takes a file name as a string
+    """
     crab = re.compile(".*_\d+_\d+_\w+$")
     if crab.match(name.rstrip(".root")):
         return True
@@ -391,11 +478,20 @@ def checkRootType(name):
 
 # Turns a grid name into a name that is easy to compare. (helper method)
 def reformatGridName(name):
+    """Normalises a file name so that it is easier to compare to others
+    
+    'name' takes a file name
+    strips the numbers and letters and '.root' suffix from the end of the filename
+    """
     a = re.sub("_\d+_\w+$", "",name.rstrip(".root"))
     return a
 
 # Returns true if the item is not from the grid
 def checkIfUnique(name):
+    """Checks if the filename is unique by checking if it fails to match both crab and batch formats
+    
+    'name' takes the file name
+    """
     num = re.compile("^\d+$")
     	
     if num.match(name.rstrip(".root").split("_")[-1]) or num.match(name.rstrip(".root").split("_")[-2]) or num.match(name.rstrip(".root").split("_")[-3]):
