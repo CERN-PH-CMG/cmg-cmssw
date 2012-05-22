@@ -22,7 +22,7 @@ class DiLeptonAnalyzer( Analyzer ):
         count = self.counters.counter('DiLepton')
         count.register('all events')
         count.register('> 0 di-lepton')
-        count.register('di-lepton cut string ok')
+        # count.register('di-lepton cut string ok')
         count.register('lepton accept')
         count.register('leg1 offline cuts passed')
         count.register('leg1 trig matched')
@@ -31,6 +31,13 @@ class DiLeptonAnalyzer( Analyzer ):
         count.register('exactly 1 di-lepton')
         count.register('{min:3.1f} < m < {max:3.1f}'.format( min = self.cfg_ana.m_min,
                                                              max = self.cfg_ana.m_max ))
+        
+
+    def buildDiLeptons(self, cmgDiLeptons):
+        '''Creates python DiLeptons from the di-leptons read from the disk.
+        to be overloaded if needed.'''
+        return map( self.__class__.DiObjectClass, cmgDiLeptons )
+
         
     def process(self, iEvent, event):
         # access di-object collection
@@ -43,7 +50,7 @@ class DiLeptonAnalyzer( Analyzer ):
         self.readCollections( iEvent )
         # trigger stuff could be put in a separate analyzer
         # event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
-        event.diLeptons = map( self.__class__.DiObjectClass, self.handles['diLeptons'].product() )
+        event.diLeptons = self.buildDiLeptons( self.handles['diLeptons'].product() )
         event.leptons = map( self.__class__.LeptonClass, self.handles['leptons'].product() ) 
 
         self.counters.counter('DiLepton').inc('all events')
@@ -60,7 +67,7 @@ class DiLeptonAnalyzer( Analyzer ):
 
         # testing di-lepton itself
         selDiLeptons = event.diLeptons
-        selDiLeptons = self.selectDiLeptons( selDiLeptons ) 
+        # selDiLeptons = self.selectDiLeptons( selDiLeptons ) 
         
         if not self.leptonAccept( event.leptons ):
             return False
@@ -136,18 +143,18 @@ class DiLeptonAnalyzer( Analyzer ):
         return True
 
 
-    def selectDiLeptons(self, diLeptons, cutString=None):
-        '''Returns the list of input di-leptons which verify the cutstring'''
-        if cutString is None:
-            if not hasattr( self.cfg_ana, 'diLeptonCutString' ):
-                return diLeptons
-            else:
-                cutString = self.cfg_ana.diLeptonCutString 
-        selDiLeptons = [ diL for diL in diLeptons if \
-                         diL.getSelection(cutString) ]
-        if len(selDiLeptons) > 0:
-            self.counters.counter('DiLepton').inc( 'di-lepton cut string ok')
-        return selDiLeptons
+##     def selectDiLeptons(self, diLeptons, cutString=None):
+##         '''Returns the list of input di-leptons which verify the cutstring'''
+##         if cutString is None:
+##             if not hasattr( self.cfg_ana, 'diLeptonCutString' ):
+##                 return diLeptons
+##             else:
+##                 cutString = self.cfg_ana.diLeptonCutString 
+##         selDiLeptons = [ diL for diL in diLeptons if \
+##                          diL.getSelection(cutString) ]
+##         if len(selDiLeptons) > 0:
+##             self.counters.counter('DiLepton').inc( 'di-lepton cut string ok')
+##         return selDiLeptons
 
 
     def testLeg(self, leg, pt, eta, iso, sel=None):
