@@ -37,18 +37,17 @@ class GenJet( PhysicsObject):
 
 
 class Lepton( PhysicsObject):
+    
     def sip3D(self):
         patLepton = self.physObj.sourcePtr()
         return abs( patLepton.dB(2) ) / patLepton.edB(2) 
 
     def absIsoFromEA(self,rho,effectiveArea1 = None,effectiveArea2 = None):
-
         #First remove FSR
         photonIso = self.photonIso()
         if hasattr(self,'fsrPhoton'):
             photon=self.fsrPhoton
-            photonIso=photonIso-photon.pt()
-                
+            photonIso=photonIso-photon.pt()                
         ea1 = rho
         ea2 = rho
         if effectiveArea1 is not None:
@@ -59,7 +58,6 @@ class Lepton( PhysicsObject):
                     break
         else:
             return self.chargedHadronIso()+max(0.,photonIso+self.neutralHadronIso()-ea1)
-
         if effectiveArea2 is not None:
             for element in effectiveArea2:
                 if abs(self.eta())>= element['etaMin'] and \
@@ -81,17 +79,12 @@ class Lepton( PhysicsObject):
             photon=self.fsrPhoton
             neutralIso=neutralIso-photon.pt()
         
-
-
         corNeutralIso = neutralIso - dBetaFactor * self.puChargedHadronIso();
         charged = self.chargedHadronIso();
         if  allCharged:
             charged = self.chargedAllIso();
 
-
         return charged + max(corNeutralIso,0)
-
-  
 
     def  relIso(self,dBetaFactor=0, allCharged=0):
          abs = self.absIso(dBetaFactor, allCharged)/self.pt();
@@ -100,6 +93,9 @@ class Lepton( PhysicsObject):
          else:
              return -1
 
+    def relIsoAllChargedDB05(self):
+        '''Used in the H2TauTau analysis: rel iso, dbeta=0.5, using all charged particles.'''
+        return self.relIso( 0.5, 1 )
 
     def relEffAreaIso(self,rho):
         return 0
