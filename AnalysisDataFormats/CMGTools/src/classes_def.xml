@@ -2,6 +2,8 @@
 
   <class name="cmg::METSignificance" />
   <class name="edm::Wrapper<cmg::METSignificance>" />
+  <class name="std::vector<cmg::METSignificance>" />
+  <class name="edm::Wrapper<std::vector<cmg::METSignificance> >" />
 
   <class name="TMatrixD" />
   <class name="edm::Wrapper<TMatrixD>" />

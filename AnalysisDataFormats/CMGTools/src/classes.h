@@ -36,6 +36,8 @@ namespace {
 
     cmg::METSignificance metsig_;
     edm::Wrapper<cmg::METSignificance> metsige_;
+    std::vector<cmg::METSignificance> metsigv_;
+    edm::Wrapper<std::vector<cmg::METSignificance> > metsigve_;
 
     TMatrixD  matrix_;
     edm::Wrapper<TMatrixD> matrixe_;
