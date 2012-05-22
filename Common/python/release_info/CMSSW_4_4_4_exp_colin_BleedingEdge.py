@@ -1,8 +1,8 @@
-[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'patrick_pfchargedhadronvertex_18May12'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'patrick_allPhotons_18May12'),
+[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_mvamet_22May12'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_mvamet_22May12'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-02'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'sezen_18may12'),
-  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_rltinfo_18May12'),
+  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_mvamet_22May12'),
   ('CommonTools/ParticleFlow', 'CommonTools/ParticleFlow', 'V00-03-05-08'),
   ('CondFormats/EgammaObjects', 'CondFormats/EgammaObjects', 'V00-04-01'),
   ('DataFormats/METReco', 'DataFormats/METReco', 'lhx_12JAN2012_v1'),
@@ -34,7 +34,4 @@
   ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-17'),
   ('RecoTauTag/TauTagTools', 'RecoTauTag/TauTagTools', 'CMSSW_5_2_4'),
   ('TauAnalysis/CandidateTools', 'TauAnalysis/CandidateTools', 'bMinimalSVfit_2012May13'),
-  ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseMay14')]
-# The following packages were not in the input release_info.
-# Please make sure that the CVS module is correct!
-#	TauAnalysis/CandidateTools               bMinimalSVfit_2012May13
+  ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseMay18')]
