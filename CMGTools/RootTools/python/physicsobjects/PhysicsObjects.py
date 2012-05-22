@@ -173,7 +173,8 @@ class Electron( Lepton ):
         return self.sourcePtr().userFloat('mvaIsoRings')
 
     def mvaId( self ):
-        return self.sourcePtr().userFloat('mvaNonTrigV0')
+        return self.mvaNonTrigV0()
+        #return self.sourcePtr().userFloat('mvaNonTrigV0')
         
     #    def ElectronMVA_MIT( self ):
     #        return self.sourcePtr().userFloat('ElectronMVA_MIT')
