@@ -52,12 +52,24 @@ Qstar_qg_3::Qstar_qg_3(const char *name, const char *title,
   if ( (uR > 20 && uR < 29) ||(uR > 120 && uR < 129)) M_CUT = 526.0;
   if ( (uR > 20 && uR < 29) ||(uR > 120 && uR < 129)) INIT_MASS = 600.0;
 
+  if ( uR > 200 && uR < 2010 ) M_CUT = 500.0;
+  if ( uR > 200 && uR < 2010 ) INIT_MASS = 600.0;
+
+
   if ( uR > 1000 && uR < 2000 ) M_CUT = 890.0;
-  if ( uR > 1000 && uR < 2000 ) INIT_MASS = 3000.0;
+  if ( uR > 1000 && uR < 1020 ) INIT_MASS = 1000.0;
+  if ( uR > 1100 && uR < 2000 ) {
+    int nDim = (uR-1000)/100;
+    int mD = (uR-1000) - nDim*100;
+    INIT_MASS = mD*1000.0;
+
+  }
 
   if ( uR > 2000 && uR < 3000 ) M_CUT = 890.0;
   if ( uR > 2000 && uR < 3000 ) INIT_MASS = 1000.0;
 
+  if ( uR > 3000 && uR < 4000 ) M_CUT = 890.0;
+  if ( uR > 3000 && uR < 4000 ) INIT_MASS = 1000.0;
 
   cout << "M_CUT = " << M_CUT << " INIT_MASS = " << INIT_MASS << endl;
 
@@ -101,8 +113,98 @@ Qstar_qg_3::Qstar_qg_3(const char *name, const char *title,
   case 123:   
     stitle = string("Qstar_HLT_ak5_pf"); 
      break;
-  case 1001:
-    stitle = string("QBH_ak5_fat"); 
+  case 201:
+    stitle = string("ZprimeToTTbar");
+     break;
+  case 1005:
+    stitle = string("QBH5_ak5_fat"); 
+    break;
+  case 1006:
+    stitle = string("QBH6_ak5_fat"); 
+    break;
+  case 1007:
+    stitle = string("QBH7_ak5_fat"); 
+    break;
+  case 1008:
+    stitle = string("QBH8_ak5_fat"); 
+    break;
+  case 1009:
+    stitle = string("QBH9_ak5_fat"); 
+    break;
+  case 1010:
+    stitle = string("QBH10_ak5_fat"); 
+    break;
+  case 1502: 
+    stitle = string("QBH52_ak5_fat");
+    break;
+  case 1503: 
+    stitle = string("QBH53_ak5_fat");
+    break;
+  case 1504: 
+    stitle = string("QBH54_ak5_fat");
+    break;
+  case 1505: 
+    stitle = string("QBH55_ak5_fat");
+    break;
+  case 1602: 
+    stitle = string("QBH62_ak5_fat");
+    break;
+  case 1603: 
+    stitle = string("QBH63_ak5_fat");
+    break;
+  case 1604: 
+    stitle = string("QBH64_ak5_fat");
+    break;
+  case 1605: 
+    stitle = string("QBH65_ak5_fat");
+    break;
+  case 1702: 
+    stitle = string("QBH72_ak5_fat");
+    break;
+  case 1703: 
+    stitle = string("QBH73_ak5_fat");
+    break;
+  case 1704: 
+    stitle = string("QBH74_ak5_fat");
+    break;
+  case 1705: 
+    stitle = string("QBH75_ak5_fat");
+    break;
+  case 1802: 
+    stitle = string("QBH82_ak5_fat");
+    break;
+  case 1803: 
+    stitle = string("QBH83_ak5_fat");
+    break;
+  case 1804: 
+    stitle = string("QBH84_ak5_fat");
+    break;
+  case 1805: 
+    stitle = string("QBH85_ak5_fat");
+    break;
+  case 1902: 
+    stitle = string("QBH92_ak5_fat");
+    break;
+  case 1903: 
+    stitle = string("QBH93_ak5_fat");
+    break;
+  case 1904: 
+    stitle = string("QBH94_ak5_fat");
+    break;
+  case 1905: 
+    stitle = string("QBH95_ak5_fat");
+    break;
+  case 1102: 
+    stitle = string("QBH102_ak5_fat");
+    break;
+  case 1103: 
+    stitle = string("QBH103_ak5_fat");
+    break;
+  case 1104: 
+    stitle = string("QBH104_ak5_fat");
+    break;
+  case 1105: 
+    stitle = string("QBH105_ak5_fat");
     break;
   case 2001:
     stitle = string("Qstar_qW_ak5_fat"); 
@@ -119,7 +221,36 @@ Qstar_qg_3::Qstar_qg_3(const char *name, const char *title,
   case 2013:
     stitle = string("RSGraviton_ZZ_ak5_fat");
     break;
-
+  case 3111:
+    stitle = string("RSGravitonGG_k0p1_fat30_ak5");
+    break;
+  case 3311:
+    stitle = string("RSGravitonGG_k0p3_fat30_ak5");
+    break;
+  case 3511:
+    stitle = string("RSGravitonGG_k0p5_fat30_ak5");
+    break;
+  case 3711:
+    stitle = string("RSGravitonGG_k0p7_fat30_ak5");
+    break;
+  case 3911:
+    stitle = string("RSGravitonGG_k0p9_fat30_ak5");
+    break;
+  case 3112:
+    stitle = string("RSGravitonQQ_k0p1_fat30_ak5");
+    break;
+  case 3312:
+    stitle = string("RSGravitonQQ_k0p3_fat30_ak5");
+    break;
+  case 3512:
+    stitle = string("RSGravitonQQ_k0p5_fat30_ak5");
+    break;
+  case 3712:
+    stitle = string("RSGravitonQQ_k0p7_fat30_ak5");
+    break;
+  case 3912:
+    stitle = string("RSGravitonQQ_k0p9_fat30_ak5");
+    break;
   default:
     std::cout << "Nothing would crash" << std::endl; 
     break;

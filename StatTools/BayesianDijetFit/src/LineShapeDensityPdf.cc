@@ -13,8 +13,8 @@
 // global variables -- shame on you, Sertac! ;)
 
 double mass;
-TObjArray* vy = new TObjArray(6);
-
+TObjArray* vy = new TObjArray(12);
+TObjArray* vyBH = new TObjArray(12);
 
 //================================= 1 jets tag Summer 11 D6T shape FatJets =======================================//
 
@@ -344,6 +344,8 @@ std::vector<double> v;
 
 std::vector<double> mqstar;
 
+std::vector<double> vmBH;
+
 const unsigned int nMassBins = 103;
 double massBoundaries[nMassBins+1] = {1, 3, 6, 10, 16, 23, 31, 40, 50, 61, 74, 88, 103, 119, 137, 156, 176, 197, 220, 244, 270, 296, 325,
 				      354, 386, 419, 453, 489, 526, 565, 606, 649, 693, 740, 788, 838, 890, 944, 1000, 1058, 1118, 1181, 1246, 1313, 1383, 1455, 1530, 1607, 1687,
@@ -368,7 +370,7 @@ double f[n];
 void LineShapeDensity_pdf(double mass, int iResonance){
 
 
-  TArrayD *dv500, *dv700, *dv750, *dv1000, *dv1200, *dv1500, *dv2000, *dv3000, *dv3500, *dv4000, *dv5000;
+  TArrayD *dv500, *dv700, *dv750, *dv1000, *dv1200, *dv1250, *dv1500, *dv2000, *dv2500, *dv3000, *dv3500, *dv4000, *dv5000;
 
   std::cout << "iResonance = " << iResonance << std::endl;
 
@@ -458,16 +460,102 @@ void LineShapeDensity_pdf(double mass, int iResonance){
     dv4000 = new TArrayD(50, finalResults_QstarToJJ_M_2000_qg_M_PFJet1PFJet2_shifted_4);
     std::cout << "End of sample filling" << std::endl;
     break;
-  case 1001:
+  case 201:
+      {
+      std::cout << "ZprimeToTTbar" << std::endl;
+      TFile* TTbar = new TFile("../data/Zprime_to_TTBar.root");
+    
+      TH1D* h500 = (TH1D*) TTbar->Get("histograms_ZprimeToTTbar_histograms_ZprimeToTTbar_500;1"); dv500 = new TArrayD(50);
+      for (int i = 1; i < 51; i++) dv500->AddAt(h500->GetBinContent(i), i-1);
+      TH1D* h750 = (TH1D*) TTbar->Get("histograms_ZprimeToTTbar_histograms_ZprimeToTTbar_750;1"); dv750 = new TArrayD(50);
+      for (int i = 1; i < 51; i++) dv750->AddAt(h750->GetBinContent(i), i-1);
+      TH1D* h1000 = (TH1D*) TTbar->Get("histograms_ZprimeToTTbar_histograms_ZprimeToTTbar_1000;1"); dv1000 = new TArrayD(50);
+      for (int i = 1; i < 51; i++) dv1000->AddAt(h1000->GetBinContent(i), i-1);
+      TH1D* h1250 = (TH1D*) TTbar->Get("histograms_ZprimeToTTbar_histograms_ZprimeToTTbar_1250;1"); dv1250 = new TArrayD(50);
+      for (int i = 1; i < 51; i++) dv1250->AddAt(h1250->GetBinContent(i), i-1);
+      TH1D* h1500 = (TH1D*) TTbar->Get("histograms_ZprimeToTTbar_histograms_ZprimeToTTbar_1500;1"); dv1500 = new TArrayD(50);
+      for (int i = 1; i < 51; i++) dv1500->AddAt(h1500->GetBinContent(i), i-1);
+  
+      TTbar->Close();
+    }
+    break;
+  case 1005:
+  case 1006:
+  case 1007:
+  case 1008:
+  case 1009:
+  case 1010:
     {
       std::cout << "QBH_ak5_fat" << std::endl; 
-      TFile* QBH = new TFile("../data/MassShapes_QuantumBlackHoles_ak5Fat.root");
-      TH1D* h633 = (TH1D*) QBH->Get("h633;1"); dv3000 = new TArrayD(50);
-      for (int i = 1; i < 51; i++) dv3000->AddAt(h633->GetBinContent(i), i-1);
-      TH1D* h644 = (TH1D*) QBH->Get("h644;1"); dv4000 = new TArrayD(50);
-      for (int i = 1; i < 51; i++) dv4000->AddAt(h644->GetBinContent(i), i-1);
-      TH1D* h655 = (TH1D*) QBH->Get("h655;1"); dv5000 = new TArrayD(50);
-      for (int i = 1; i < 51; i++) dv5000->AddAt(h655->GetBinContent(i), i-1);
+      TFile* QBH = new TFile("../data/histograms_qbh_All.root");
+      
+      int nDim = iResonance-1000;
+
+      TH1D* h11 = (TH1D*) QBH->Get(Form("histograms_qbh%d11_ak5;1",nDim)); dv1000 = new TArrayD(50);
+      for (int i = 1; i < 51; i++) dv1000->AddAt(h11->GetBinContent(i), i-1);
+      TH1D* h22 = (TH1D*) QBH->Get(Form("histograms_qbh%d22_ak5;1",nDim)); dv2000 = new TArrayD(50);
+      for (int i = 1; i < 51; i++) dv2000->AddAt(h22->GetBinContent(i), i-1);
+      TH1D* h33 = (TH1D*) QBH->Get(Form("histograms_qbh%d33_ak5;1",nDim)); dv3000 = new TArrayD(50);
+      for (int i = 1; i < 51; i++) dv3000->AddAt(h33->GetBinContent(i), i-1);
+      TH1D* h44 = (TH1D*) QBH->Get(Form("histograms_qbh%d44_ak5;1",nDim)); dv4000 = new TArrayD(50);
+      for (int i = 1; i < 51; i++) dv4000->AddAt(h44->GetBinContent(i), i-1);
+      TH1D* h55 = (TH1D*) QBH->Get(Form("histograms_qbh%d55_ak5;1",nDim)); dv5000 = new TArrayD(50);
+      for (int i = 1; i < 51; i++) dv5000->AddAt(h55->GetBinContent(i), i-1);
+      
+      QBH->Close();   
+    } 
+    break;
+  case 1502:
+  case 1503:
+  case 1504:
+  case 1505:
+  case 1602:
+  case 1603:
+  case 1604:
+  case 1605:
+  case 1702:
+  case 1703:
+  case 1704:
+  case 1705:
+  case 1802:
+  case 1803:
+  case 1804:
+  case 1805:
+  case 1902:
+  case 1903:
+  case 1904:
+  case 1905:
+  case 1102:
+  case 1103:
+  case 1104:
+  case 1105:
+    {
+      vmBH.clear();
+      vyBH->Clear();
+
+      std::cout << "QBH_ak5_fat" << std::endl; 
+      TFile* QBH = new TFile("../data/histograms_qbh_Full.root");
+      
+      int nDim = (iResonance-1000)/100;
+      int mD = (iResonance-1000) - nDim*100;
+
+      if (nDim == 1) nDim = 10;
+
+      //histograms_qbh9235_ak5;1
+
+      for (int imBH = mD*2; imBH < 13; imBH++){
+	int mBH = imBH*5;
+	if (imBH == mD*2) mBH = mD;
+	TH1D* hmBH = (TH1D*) QBH->Get(Form("histograms_qbh%d%d%d_ak5;1",nDim,mD,mBH)); 
+	TArrayD* dvmDmBH = new TArrayD(50);
+	for (int i = 1; i < 51; i++) dvmDmBH->AddAt(hmBH->GetBinContent(i), i-1);
+	vmBH.push_back(imBH*500);
+	vyBH->Add((TObject*) dvmDmBH);
+
+	std::cout << Form("histograms_qbh%d%d%d_ak5;1",nDim,mD,mBH) << " mass = " << imBH*500 << std::endl;
+
+      }
+
       QBH->Close();   
     } 
     break;
@@ -504,6 +592,64 @@ void LineShapeDensity_pdf(double mass, int iResonance){
     dv2000 = new TArrayD(50,  RSGraviton_ZZ_2TeV_ak5_fat);
     dv3000 = new TArrayD(50,  RSGraviton_ZZ_3TeV_ak5_fat);
     break;
+
+  case 3111:
+  case 3311:
+  case 3511:
+  case 3711:
+  case 3911:
+    {
+      std::cout << "RSGravitonGG_fat30_ak5" << std::endl; 
+      TFile* RSGravitonToGG = new TFile("../data/histograms_RSGravitonToGG_TuneZ2_7TeV_pythia6_FASTSIM_ak5.root");
+      
+      int k = (iResonance-3011)/100;
+
+      std::cout << "k = " << k << std::endl; 
+
+      TH1D* h10 = (TH1D*) RSGravitonToGG->Get(Form("kMpl_0p%d_M_1000;1",k)); dv1000 = new TArrayD(50);
+      for (int i = 1; i < 51; i++) dv1000->AddAt(h10->GetBinContent(i), i-1);
+      TH1D* h15 = (TH1D*) RSGravitonToGG->Get(Form("kMpl_0p%d_M_1500;1",k)); dv1500 = new TArrayD(50);
+      for (int i = 1; i < 51; i++) dv1500->AddAt(h15->GetBinContent(i), i-1);
+      TH1D* h20 = (TH1D*) RSGravitonToGG->Get(Form("kMpl_0p%d_M_2000;1",k)); dv2000 = new TArrayD(50);
+      for (int i = 1; i < 51; i++) dv2000->AddAt(h20->GetBinContent(i), i-1);
+      TH1D* h25 = (TH1D*) RSGravitonToGG->Get(Form("kMpl_0p%d_M_2500;1",k)); dv2500 = new TArrayD(50);
+      for (int i = 1; i < 51; i++) dv2500->AddAt(h25->GetBinContent(i), i-1);
+      TH1D* h30 = (TH1D*) RSGravitonToGG->Get(Form("kMpl_0p%d_M_3000;1",k)); dv3000 = new TArrayD(50);
+      for (int i = 1; i < 51; i++) dv3000->AddAt(h30->GetBinContent(i), i-1);
+      
+      RSGravitonToGG->Close();   
+    } 
+    break;
+
+  case 3112:
+  case 3312:
+  case 3512:
+  case 3712:
+  case 3912:
+    {
+      std::cout << "RSGravitonQQ_fat30_ak5" << std::endl; 
+      TFile* RSGravitonToQQ = new TFile("../data/histograms_RSGravitonToQQ_TuneZ2_7TeV_pythia6_FASTSIM_ak5.root");
+      
+      int k = (iResonance-3012)/100;
+
+      std::cout << "k = " << k << std::endl; 
+
+      TH1D* h10 = (TH1D*) RSGravitonToQQ->Get(Form("kMpl_0p%d_M_1000;1",k)); dv1000 = new TArrayD(50);
+      for (int i = 1; i < 51; i++) dv1000->AddAt(h10->GetBinContent(i), i-1);
+      TH1D* h15 = (TH1D*) RSGravitonToQQ->Get(Form("kMpl_0p%d_M_1500;1",k)); dv1500 = new TArrayD(50);
+      for (int i = 1; i < 51; i++) dv1500->AddAt(h15->GetBinContent(i), i-1);
+      TH1D* h20 = (TH1D*) RSGravitonToQQ->Get(Form("kMpl_0p%d_M_2000;1",k)); dv2000 = new TArrayD(50);
+      for (int i = 1; i < 51; i++) dv2000->AddAt(h20->GetBinContent(i), i-1);
+      TH1D* h25 = (TH1D*) RSGravitonToQQ->Get(Form("kMpl_0p%d_M_2500;1",k)); dv2500 = new TArrayD(50);
+      for (int i = 1; i < 51; i++) dv2500->AddAt(h25->GetBinContent(i), i-1);
+      TH1D* h30 = (TH1D*) RSGravitonToQQ->Get(Form("kMpl_0p%d_M_3000;1",k)); dv3000 = new TArrayD(50);
+      for (int i = 1; i < 51; i++) dv3000->AddAt(h30->GetBinContent(i), i-1);
+      
+      RSGravitonToQQ->Close();   
+    } 
+    break;
+
+
   default:
     std::cout << "Nothing would crash" << std::endl; 
     break;
@@ -512,7 +658,7 @@ void LineShapeDensity_pdf(double mass, int iResonance){
   vy->Clear();
   mqstar.clear();
 
-  if (iResonance < 1000){
+  if (iResonance < 1000 && iResonance > 210 || (iResonance < 200)){
 
     mqstar.push_back(500.);  mqstar.push_back(700.); mqstar.push_back(1200.); 
     mqstar.push_back(2000.); mqstar.push_back(3500.); mqstar.push_back(4000.);
@@ -522,11 +668,33 @@ void LineShapeDensity_pdf(double mass, int iResonance){
     vy->Add((TObject*) dv3500); vy->Add((TObject*) dv4000);
 
   } 
-  else if (iResonance > 1000 && iResonance < 2000){
-    
-    mqstar.push_back(3000.);  mqstar.push_back(4000.); mqstar.push_back(5000.); 
-    vy->Add((TObject*) dv3000); vy->Add((TObject*) dv4000); vy->Add((TObject*) dv5000);
+  else if (iResonance > 200 && iResonance < 210){
+
+    mqstar.push_back(500.); mqstar.push_back(750.); mqstar.push_back(1000.); 
+    mqstar.push_back(1250.); mqstar.push_back(1500.); 
+
+    vy->Add((TObject*) dv500); vy->Add((TObject*) dv750); vy->Add((TObject*) dv1000);
+    vy->Add((TObject*) dv1250); vy->Add((TObject*) dv1500);
+
+
   }
+  else if (iResonance > 1000 && iResonance < 1011){
+    
+    mqstar.push_back(1000.); mqstar.push_back(2000.); mqstar.push_back(3000.); 
+    mqstar.push_back(4000.); mqstar.push_back(5000.); 
+
+    vy->Add((TObject*) dv1000); vy->Add((TObject*) dv2000); vy->Add((TObject*) dv3000);
+    vy->Add((TObject*) dv4000); vy->Add((TObject*) dv5000);
+  }
+  else if (iResonance > 1100 && iResonance < 2000){
+    
+    for (unsigned int k = 0; k < vmBH.size(); k++){
+      mqstar.push_back(vmBH[k]);
+      vy->Add((TObject*) vyBH->At(k));
+    }
+
+  }
+
   else if (iResonance > 2000 && iResonance < 2010){
     
     mqstar.push_back(750.);  mqstar.push_back(1500.);   mqstar.push_back(3000.); 
@@ -537,6 +705,16 @@ void LineShapeDensity_pdf(double mass, int iResonance){
     mqstar.push_back(1000.);  mqstar.push_back(1500.);  mqstar.push_back(2000.);  mqstar.push_back(3000.); 
     vy->Add((TObject*) dv1000); vy->Add((TObject*) dv1500); vy->Add((TObject*) dv2000); vy->Add((TObject*) dv3000);
   }
+
+  else if (iResonance > 3000 && iResonance < 4000){
+    
+    mqstar.push_back(1000.); mqstar.push_back(1500.); mqstar.push_back(2000.); 
+    mqstar.push_back(2500.); mqstar.push_back(3000.); 
+
+    vy->Add((TObject*) dv1000); vy->Add((TObject*) dv1500); vy->Add((TObject*) dv2000);
+    vy->Add((TObject*) dv2500); vy->Add((TObject*) dv3000);
+  }
+
 
 
   for (unsigned int bin = 0; bin < mqstar.size(); bin++){
