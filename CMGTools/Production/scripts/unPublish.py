@@ -21,7 +21,7 @@ if __name__ == '__main__':
 
 Use this script to close dataset tasks on CmgDB and savannah.
 Example:
-publish.py -F cbern /VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0_Test_v2
+unPublish.py -F cbern /VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0_Test_v2
 """
     
     group = OptionGroup(parser, "unPublish Options", """These options affect the way you publish to Savannah and CMGDB""")
