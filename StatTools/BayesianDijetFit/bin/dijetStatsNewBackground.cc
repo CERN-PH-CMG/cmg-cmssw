@@ -281,9 +281,42 @@ int main(int argc, char* argv[])
   cout << "Verbose = " << verbose_ << endl;
 
   // background
+
+    if (statlevel==63)
+    {
+        // swap fita and fitb
+  if (iResonance > 2010 && iResonance < 2020)  {
+    ws->factory("EXPR::backgroundb('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*0)', p1[12,-30,30], p2[2,-20,20], p3[0,0,0],invmass)");
+    ws->factory("EXPR::background('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[5.1,0,100],pb2[5.72,-100,100], pb3[-0.0547,-1,1],invmass)");
+//    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,0)/pow(invmass/7000,pc2)',pc1[0,0,0],pc2[5.4,-100,100],invmass)");
+    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,0)',pc1[7.8,-100,100],pc2[0,0,0],invmass)");
+  } else {
+
+    ws->factory("EXPR::backgroundb('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*log(invmass/7000.0))', p1[7.460,-30,30], p2[5.882,-20,20], p3[0.106,-5,5],invmass)");
+    ws->factory("EXPR::background('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[8.41,0,100],pb2[5.20,-100,100], pb3[-0.017,-1,1],invmass)");
+    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,pc2)',pc1[7.8,-100,100],pc2[5.4,-100,100],invmass)");
+  }
+    } else
+    if (statlevel==64)
+  {
+        // swap fita and fitc
+  if (iResonance > 2010 && iResonance < 2020)  {
+    ws->factory("EXPR::backgroundc('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*0)', p1[12,-30,30], p2[2,-20,20], p3[0,0,0],invmass)");
+    ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[5.1,0,100],pb2[5.72,-100,100], pb3[-0.0547,-1,1],invmass)");
+//    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,0)/pow(invmass/7000,pc2)',pc1[0,0,0],pc2[5.4,-100,100],invmass)");
+    ws->factory("EXPR::background('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,0)',pc1[7.8,-100,100],pc2[0,0,0],invmass)");
+  } else {
+
+    ws->factory("EXPR::backgroundc('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*log(invmass/7000.0))', p1[7.460,-30,30], p2[5.882,-20,20], p3[0.106,-5,5],invmass)");
+    ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[8.41,0,100],pb2[5.20,-100,100], pb3[-0.017,-1,1],invmass)");
+    ws->factory("EXPR::background('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,pc2)',pc1[7.8,-100,100],pc2[5.4,-100,100],invmass)");
+  }
+    } else
+    {
   if (iResonance > 2010 && iResonance < 2020)  {
     ws->factory("EXPR::background('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*0)', p1[12,-30,30], p2[2,-20,20], p3[0,0,0],invmass)");
     ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[5.1,0,100],pb2[5.72,-100,100], pb3[-0.0547,-1,1],invmass)");
+//    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,0)/pow(invmass/7000,pc2)',pc1[0,0,0],pc2[5.4,-100,100],invmass)");
     ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,0)',pc1[7.8,-100,100],pc2[0,0,0],invmass)");
   } else {
 
@@ -291,6 +324,7 @@ int main(int argc, char* argv[])
     ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[8.41,0,100],pb2[5.20,-100,100], pb3[-0.017,-1,1],invmass)");
     ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,pc2)',pc1[7.8,-100,100],pc2[5.4,-100,100],invmass)");
   }
+    }
 
   // data
   int ndatabins=(MAXINVMASS-MININVMASS);
@@ -362,7 +396,7 @@ int main(int argc, char* argv[])
   if(statlevel==3 || statlevel==1003) ws->factory("PROD::prior(xs_prior,sigMassDelta_prior)");
   if(statlevel==4 || statlevel==1004) ws->factory("PROD::prior(xs_prior,sigWidthDelta_prior)");
   if(statlevel==5) ws->factory("PROD::prior(xs_prior,lumi_prior,sigMassDelta_prior)");
-  if(statlevel==6) ws->factory("PROD::prior(xs_prior,lumi_prior,sigMassDelta_prior,sigWidthDelta_prior)");
+  if(statlevel==6 || statlevel==63 || statlevel==64) ws->factory("PROD::prior(xs_prior,lumi_prior,sigMassDelta_prior,sigWidthDelta_prior)");
   if(statlevel==7) ws->factory("PROD::prior(xs_prior,sigMassDelta_prior)");
   if(statlevel==8) ws->factory("PROD::prior(xs_prior,lumi_prior,sigMassDelta_prior)");
   if(statlevel==9) ws->factory("PROD::prior(xs_prior,lumi_prior)");
@@ -375,7 +409,7 @@ int main(int argc, char* argv[])
   if(statlevel==3 || statlevel==1003) ws->defineSet("nuisSet","sigMassDelta");
   if(statlevel==4 || statlevel==1004) ws->defineSet("nuisSet","sigWidthDelta");
   if(statlevel==5) ws->defineSet("nuisSet","lumi,sigMassDelta");
-  if(statlevel==6) ws->defineSet("nuisSet","lumi,sigMassDelta,sigWidthDelta");
+  if(statlevel==6 || statlevel==63 || statlevel==64) ws->defineSet("nuisSet","lumi,sigMassDelta,sigWidthDelta");
   if(statlevel==7) ws->defineSet("nuisSet","sigMassDelta");
   if(statlevel==8) ws->defineSet("nuisSet","lumi,sigMassDelta");
   if(statlevel==9) ws->defineSet("nuisSet","lumi");
@@ -520,7 +554,7 @@ int main(int argc, char* argv[])
     } else if(statlevel==5) {
       ws->var("lumi")->setConstant(false);
       ws->var("sigMassDelta")->setConstant(false);
-    } else if(statlevel==6) {
+    } else if(statlevel==6 || statlevel==63 || statlevel==64) {
       ws->var("lumi")->setConstant(false);
       ws->var("sigMassDelta")->setConstant(false);
       ws->var("sigWidthDelta")->setConstant(false);
@@ -609,7 +643,7 @@ int main(int argc, char* argv[])
 
     TH1D* histA=dynamic_cast<TH1D*>(mcA.GetPosteriorHist()->Clone("histA"));
 
-    if(statlevel==1 || statlevel==5 || statlevel==6 || statlevel==7 || statlevel==9 || statlevel==11 || statlevel==12 || statlevel==13 || statlevel==14 || (statlevel>=100 &&  statlevel<1000)) {
+    if(statlevel==1 || statlevel==5 || statlevel==6 || statlevel==7 || statlevel==9 || statlevel==11 || statlevel==12 || statlevel==13 || statlevel==14 || statlevel==63 || statlevel==64 || (statlevel>=100 &&  statlevel<1000)) {
 
       if (statlevel==11){
         TH1D* histB=dynamic_cast<TH1D*>(mcB.GetPosteriorHist()->Clone("histB"));
