@@ -8,6 +8,7 @@ os.system("source /afs/cern.ch/cms/slc5_amd64_gcc434/external/oracle/11.2.0.1.0p
 os.system("source /afs/cern.ch/cms/slc5_amd64_gcc434/external/python/2.6.4-cms16/etc/profile.d/init.sh")
 os.system("source /afs/cern.ch/cms/slc5_amd64_gcc434/external/py2-cx-oracle/5.1/etc/profile.d/init.sh") 
 import CMGTools.Production.cx_Oracle as cx_Oracle
+from CMGTools.Production.cmgdbApi import CmgdbApi
 
 # Make sure is being used as a script
 if __name__ == '__main__':
@@ -31,6 +32,9 @@ Table Structure:
         -tagset_id
         -dataset_size_in_tb
         -dataset_is_open
+        -number_files_missing
+        -number_jobs_bad
+        -number_files_good
     tag_sets
         -tagset_id
         -release
@@ -146,13 +150,8 @@ getInfo.py -a getTags /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6
         parser.print_help()
         sys.exit(1)
         
-    # Connect to database
-    conn = cx_Oracle.connect("cms_cmgdb_r/Chocolate100@(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = int9r1-v.cern.ch)(PORT = 10121)) (ADDRESS = (PROTOCOL = TCP)(HOST = int9r2-v.cern.ch)(PORT = 10121)) (LOAD_BALANCE = yes) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = int9r_lb.cern.ch) (FAILOVER_MODE = (TYPE = SELECT)(METHOD = BASIC)(RETRIES = 200)(DELAY = 15))))")
-    
-    cur = conn.cursor()
-    cur.execute("ALTER SESSION SET CURRENT_SCHEMA=CMS_CMGDB")
-    # Names of columns for results init
-    colnames = ""
+    cmgdbApi = CmgdbApi()
+    cmgdbApi.connect()
     # Dict of query alias'
     aliasDict = {"getTags":"SELECT distinct(tags.tag_id), tags.tag, tags.package_name from tags INNER JOIN tags_in_sets ON tags.tag_id = tags_in_sets.tag_id JOIN dataset_details ON dataset_details.tagset_id = tags_in_sets.tagset_id WHERE dataset_details.path_name = 'ARG1' ORDER BY tags.tag_id",
                  "getDatasetsAtDate":"SELECT distinct(dataset_id), path_name FROM dataset_details WHERE trunc(date_recorded) = TO_TIMESTAMP('ARG1','DD-MM-YYYY') ORDER BY dataset_id",
@@ -198,18 +197,17 @@ getInfo.py -a getTags /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6
             sys.exit(1)
     
     # Execute the Query
-    try:
-        cur.execute(query)  
-    except:
-        raise
+      
+    columns, rows = cmgdbApi.sql(query)
     
     # Print out the column names
-    for column in cur.description:
-        colnames += column[0] + "\t"
+    colnames = ""
+    for column in columns:
+        colnames += str(column) + "\t"
     print colnames
     
     # Print out the results
-    for row in cur:
+    for row in rows:
         string = ""
         for column in row:
             string += str(column) + " ||\t"
