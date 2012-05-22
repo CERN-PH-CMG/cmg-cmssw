@@ -185,7 +185,7 @@ TH1D* JPMCCalculator::GetPosteriorHistInternal(int testtype, double poiVal, int 
       TIterator* it=genset->createIterator();
       RooAbsReal* arg;
       while((arg=(RooAbsReal*)it->Next())) {
-	//	std::cout << arg->GetName() << " " << arg->getVal() << std::endl;
+	std::cout << " ------------------------------------------- "<< arg->GetName() << " " << arg->getVal() << std::endl;
 	fNuisanceParameters.setRealValue(arg->GetName(), arg->getVal());
       }
     }
