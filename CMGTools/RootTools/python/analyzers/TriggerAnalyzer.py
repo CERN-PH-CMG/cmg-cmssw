@@ -38,6 +38,7 @@ class TriggerAnalyzer( Analyzer ):
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
+        
         event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
         run = iEvent.eventAuxiliary().id().run()
         lumi = iEvent.eventAuxiliary().id().luminosityBlock()
@@ -58,6 +59,7 @@ class TriggerAnalyzer( Analyzer ):
         passed, hltPath = self.triggerList.triggerPassed(event.triggerObject,
                                                          run, lumi, self.cfg_comp.isData,
                                                          usePrescaled = usePrescaled)
+
         #Check the veto!
         veto=False
         if self.vetoTriggerList is not None:
@@ -66,7 +68,6 @@ class TriggerAnalyzer( Analyzer ):
                                                          usePrescaled = usePrescaled)
         if not passed or (passed and veto):
             return False
-        # import pdb; pdb.set_trace()
 
         event.hltPath = hltPath 
 
