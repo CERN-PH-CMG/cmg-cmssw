@@ -85,7 +85,7 @@ if __name__ == '__main__':
 
     selComps, weights = prepareComponents(anaDir, cfg.config)
     #print [co for co in selComps]
-    
+
     # 1fb
     selComps['data_Run2011A_05Aug2011_v1'].intLumi = 31.9
     weights['data_Run2011A_05Aug2011_v1'].intLumi = 31.9
@@ -122,16 +122,21 @@ if __name__ == '__main__':
     tauScale='0.03'
     shiftedMet = 'sqrt(pow(mex+'+tauScale+'*l1Px+'+tauScale+'*l2Px,2)+pow(mey+'+tauScale+'*l1Py+'+tauScale+'*l2Py,2))' 
 
-    baseline='l1Pt>45 && l2Pt>45 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && jet1Pt>50'
-    baseline+=' && l1LooseEle>0.5 && l2LooseEle>0.5 && (l1MVAEle>0.5 || l2MVAEle>0.5)'
-    #isolation=' && l1TigIso>0.5 && l2TigIso>0.5'
-    #isolation=' &&((l1TigIso>0.5 && l2MedIso>0.5) || (l1MedIso>0.5 && l2TigIso>0.5))'
-    isolation=' && l1TigMVAIso>0.5 && l2TigMVAIso>0.5'
-    #isolation=' &&((l1TigMVAIso>0.5 && l2MedMVAIso>0.5) || (l1MedMVAIso>0.5 && l2TigMVAIso>0.5))'
-    #isolation=' && l1RawMVAIso>0.93 && l2RawMVAIso>0.93'
+    baseline           =  'l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0'
+    baseline           += ' && l2MVAEle>0.5'
+    l1Pt45l2Pt45       =  ' && l1Pt>45 && l2Pt>45'
+    isolationMT        =  ' && ((l1MedMVAIso>0.5 && l2TigMVAIso>0.5) || (l1MedMVAIso>0.5 && l2TigMVAIso>0.5))'
+    isolationTT        =  ' && l1TigMVAIso>0.5 && l2TigMVAIso>0.5'
+    Jet0               =  ' && jet1Pt<50'
+    BOOSTED            =  ' && jet1Pt>50'
+    VBF                =  ' && jet1Pt>30 && jet2Pt>30 && abs(jet1Eta - jet2Eta)>2.5 && (jet1Eta*jet2Eta)<0 && mjj>250 '
+    NOVBF              =  ' && (jet1Pt<30 || jet2Pt<30 || abs(jet1Eta - jet2Eta)<2.5 || (jet1Eta*jet2Eta)>0 || mjj<250)'
 
     cuts=[
-        ("CMS_l45_j50_dR20_tt_Met00_BOOSTED",baseline,' && dRtt<2.0',isolation,2),
+        #("CMS_review_loose_l45_j50_dR20_tt_Met00_Inclusive",baseline+l1Pt45l2Pt45,'',isolationTT,2),
+        ("CMS_review_l45_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt45l2Pt45+BOOSTED+NOVBF,' && dRtt<2.0',isolationMT,2),
+        ("CMS_review_l35_j50_dR20_tt_Met00_VBF",baseline+VBF,' && dRtt<2.0',isolationMT,2),
+        ("CMS_review_l45_j50_dR20_tt_Met00_0Jet",baseline+l1Pt45l2Pt45+Jet0+NOVBF,'',isolationTT,2),
 	  ]
         
     for prefix,cut,antiqcdcut,isocut,qcdEstimate in cuts:
@@ -140,6 +145,10 @@ if __name__ == '__main__':
      else :
        rebin = 1
      for var, nx, xmin, xmax in [
+        ('met'              ,int(20/rebin), 0 , 200    ),
+        ('l1Pt'             ,int(50/rebin), 0 , 250    ),   # was 75 bins
+        ('l2Pt'             ,int(50/rebin), 0 , 250    ),   # was 75 bins
+        ('jet1Pt'           ,int(20/rebin), 0 , 500    ),
         ('svfitMass'        ,int(15/rebin), 0 , 300    ), 
         ('svfitMass*1.03'   ,int(15/rebin), 0 , 300    ),
         ('svfitMass*0.97'   ,int(15/rebin), 0 , 300    ),
@@ -150,39 +159,35 @@ if __name__ == '__main__':
         ('mt'               ,int(20/rebin), 0 , 200    ),
         ('pThiggs'          ,int(20/rebin), 0 , 300    ),
         ('diTauPt'          ,int(20/rebin), 0 , 300    ),
-        ('l1Pt'             ,int(75/rebin), 0 , 250    ),   # was 25 bins
-        ('l2Pt'             ,int(75/rebin), 0 , 250    ),   # was 25 bins
-        ('l1Eta'            ,int(40/rebin), -3, 3      ),   # was 20 bins
-        ('l2Eta'            ,int(40/rebin), -3, 3      ),   # was 20 bins
+        ('l1Eta'            ,int(20/rebin), -3, 3      ),   # was 40 bins
+        ('l2Eta'            ,int(20/rebin), -3, 3      ),   # was 40 bins
         ('jet1Eta'          ,int(20/rebin), -5, 5      ),
-        ('jet1Pt'           ,int(20/rebin), 0 , 500    ),
         ('jet2Eta'          ,int(20/rebin), -5, 5      ),
         ('jet2Pt'           ,int(20/rebin), 0 , 500    ),
         ('mjj'              ,int(32/rebin), 0 , 800    ),
         ('dRtt'             ,int(20/rebin), 0 , 5      ),
         ('dPhitt'           ,int(20/rebin), 0 , 3.15   ),
-        ('mttj'             ,int(20/rebin), 0 , 1000   ),
-        ('met'              ,int(20/rebin), 0 , 200    ),
-        ('diTauCharge'      ,7            , -3, 3      ),
-        ('l1LooIso'         ,2            , 0,  2      ),
-        ('l2LooIso'         ,2            , 0,  2      ),
-        ('l1MedIso'         ,2            , 0,  2      ),
-        ('l2MedIso'         ,2            , 0,  2      ),
-        ('l1TigIso'         ,2            , 0,  2      ),
-        ('l2TigIso'         ,2            , 0,  2      ),
-        ('l1DecayMode'      ,12           , 0 , 12     ),
-        ('l2DecayMode'      ,12           , 0 , 12     ),
-        ('l1RawMVAIso'      ,100          , 0 , 1.00001),
-        ('l1MedMVAIso'      ,2            , 0 , 2      ),
-        ('l1TigMVAIso'      ,2            , 0 , 2      ),
+        #('mttj'             ,int(20/rebin), 0 , 1000   ),
+        #('diTauCharge'      ,7            , -3, 3      ),
+        #('l1LooIso'         ,2            , 0,  2      ),
+        #('l2LooIso'         ,2            , 0,  2      ),
+        #('l1MedIso'         ,2            , 0,  2      ),
+        #('l2MedIso'         ,2            , 0,  2      ),
+        #('l1TigIso'         ,2            , 0,  2      ),
+        #('l2TigIso'         ,2            , 0,  2      ),
+        #('l1DecayMode'      ,12           , 0 , 12     ),
+        #('l2DecayMode'      ,12           , 0 , 12     ),
+        #('l1RawMVAIso'      ,100          , 0 , 1.00001),
+        #('l1MedMVAIso'      ,2            , 0 , 2      ),
+        #('l1TigMVAIso'      ,2            , 0 , 2      ),
         #('l1LooseEle'       ,2            , 0 , 2      ),
-        ('l1MVAEle'         ,2            , 0 , 2      ),
+        #('l1MVAEle'         ,2            , 0 , 2      ),
         #('l1LooseMu'        ,2            , 0 , 2      ),
-        ('l2RawMVAIso'      ,100          , 0 , 1.00001),
-        ('l2MedMVAIso'      ,2            , 0 , 2      ),
-        ('l2TigMVAIso'      ,2            , 0 , 2      ),
+        #('l2RawMVAIso'      ,100          , 0 , 1.00001),
+        #('l2MedMVAIso'      ,2            , 0 , 2      ),
+        #('l2TigMVAIso'      ,2            , 0 , 2      ),
         #('l2LooseEle'       ,2            , 0 , 2      ),
-        ('l2MVAEle'         ,2            , 0 , 2      ),
+        #('l2MVAEle'         ,2            , 0 , 2      ),
         #('l2LooseMu'        ,2            , 0 , 2      ),
       ]:
       
@@ -200,24 +205,24 @@ if __name__ == '__main__':
       else:
           log=False
 
+      looseisocut=" && (l1RawMVAIso>0.795 || l2RawMVAIso>0.795) && !(1 "+isocut+")"
+      #looseisocut=" && l1RawMVAIso>0.795 && l2TigMVAIso<0.5"
+      #looseisocut=" && l1MedMVAIso>0.5 && l2MedMVAIso<0.5"
       if qcdEstimate==0:
         # MET based QCD estimation
-        looseisocut=""#" && l1LooIso>0.5 && l2LooIso>0.5"
         lowcontrolcut=" && met<10"
         averagecontrolcut=" && met<20"
         highcontrolcut=" && met>10 && met<20"
       elif qcdEstimate==1:
         # dR based QCD estimation
-        looseisocut=""#" && l1LooIso>0.5 && l2LooIso>0.5"
         lowcontrolcut=" && dRtt>3.0"
         averagecontrolcut=" && dRtt>2.0"
         highcontrolcut=" && dRtt>2.0 && dRtt<3.0"
       elif qcdEstimate==2:
         # Loose based QCD estimation
-        looseisocut=""#" && l1LooIso<0.5 && l2LooIso<0.5"
+        pass
       elif qcdEstimate==3:
         # OS/SS from loose. tight/loose from dR SS
-        looseisocut=""#" && l1LooIso>0.5 && l2LooIso>0.5"
         lowcontrolcut=" && dRtt>3.0"
         averagecontrolcut=" && dRtt>2.0"
         highcontrolcut=" && dRtt>2.0 && dRtt<3.0"
@@ -318,7 +323,7 @@ if __name__ == '__main__':
         plotVarDataOS.AddHistogram("QCDdata",QCDShape.weighted)
         plotVarDataOS.Hist('QCDdata').stack = True
         plotVarDataOS.Hist('QCDdata').SetStyle( sBlack )
-        plotVarDataOS.Hist('QCDdata').layer = 5
+        plotVarDataOS.Hist('QCDdata').layer = 0.99
         plotVarDataOS.Hist('QCDdata').Scale(QCDScale)
 
         print "Yields for MC and Data Higgs Mass = "+str(mIndex)+" GeV"
@@ -358,19 +363,19 @@ if __name__ == '__main__':
         #####################################################
         ###            BLINDING DATA ABOVE Z PEAK         ###
         #####################################################
-        if ( var=="svfitMass" or var=="svfitMass*0.97" or var=="svfitMass*1.03" ):
+        if ( var=="svfitMass" or var=="svfitMass*0.97" or var=="svfitMass*1.03" ) and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
          for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
            if plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>100:
               plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
 
-        if (var=="visMass" or var=="visMass*0.97" or var=="visMass*1.03" ):
+        if (var=="visMass" or var=="visMass*0.97" or var=="visMass*1.03" ) and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
          for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
            if plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>80:
               plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
 
-        if var=="dRtt":
+        if var=="dRtt" and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
          for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
-           if plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)<2:
+           if plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>1:
               plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
       
         ymax = plotVarDataOS.Hist("Data").GetMaximum()*1.5
@@ -402,7 +407,7 @@ if __name__ == '__main__':
         plotMass.AddHistogram("QCDdata",QCDShape.weighted)
         plotMass.Hist('QCDdata').stack = True
         plotMass.Hist('QCDdata').SetStyle( sBlack )
-        plotMass.Hist('QCDdata').layer = 5
+        plotMass.Hist('QCDdata').layer = 0.99
         plotMass.Hist('QCDdata').Scale(plotMass.intLumi/plotVarDataOS.intLumi)
         plotMass.Hist('QCDdata').Scale(QCDScale)
         plotMass.Hist(str('Higgsgg'+str(mIndex))).Scale(5)
