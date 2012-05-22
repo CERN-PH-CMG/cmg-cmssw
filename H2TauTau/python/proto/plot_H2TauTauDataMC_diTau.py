@@ -125,7 +125,7 @@ if __name__ == '__main__':
     baseline           =  'l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0'
     baseline           += ' && l2MVAEle>0.5'
     l1Pt45l2Pt45       =  ' && l1Pt>45 && l2Pt>45'
-    isolationMT        =  ' && ((l1MedMVAIso>0.5 && l2TigMVAIso>0.5) || (l1MedMVAIso>0.5 && l2TigMVAIso>0.5))'
+    isolationMT        =  ' && ((l1MedMVAIso>0.5 && l2TigMVAIso>0.5) || (l1TigMVAIso>0.5 && l2MedMVAIso>0.5))'
     isolationTT        =  ' && l1TigMVAIso>0.5 && l2TigMVAIso>0.5'
     Jet0               =  ' && jet1Pt<50'
     BOOSTED            =  ' && jet1Pt>50'
