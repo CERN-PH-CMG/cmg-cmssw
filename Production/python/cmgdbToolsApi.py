@@ -19,6 +19,21 @@ class CmgdbToolsApi(CmgdbApi):
 
     """ A class for interacting with the CMGDB database through a structured API"""
 
+    # Log num of bad files
+    def addGoodFileNum(self,datasetID,number):
+        """Record the quantity of bad files
+        
+        'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
+        'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+        'number' takes the number of good files as an int"""
+        
+        try:
+            self.insertCur.execute("UPDATE cms_cmgdb.dataset_details set number_files_good=%d where dataset_id = %d" % (number, datasetID))
+            self.insertConn.commit()
+            print "Number of files good: ",number
+        except cx_Oracle.IntegrityError:
+            print "Dataset not found"
+            
     def clearDatasetMissingFiles(self, dsName, datasetID):
         """Clear all missing files from CMGDB pertaining to the given dataset ID
         
@@ -31,7 +46,22 @@ class CmgdbToolsApi(CmgdbApi):
             self.insertConn.commit()
         except cx_Oracle.IntegrityError:
             print "Unable to delete missing file record"
-            
+    
+    # Log num of missing files
+    def addMissingFileNum(self,datasetID,number):
+        """Record the quantity of bad files
+        
+        'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
+        'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+        'number' takes the number of missing files as an int"""
+        
+        try:
+            self.insertCur.execute("UPDATE cms_cmgdb.dataset_details set number_files_missing=%d where dataset_id = %d" % (number, datasetID))
+            self.insertConn.commit()
+            print "Number of files missing: ",number
+        except cx_Oracle.IntegrityError:
+            print "Dataset not found"        
+    
     # Log missing files
     def addMissingFile(self, dsName, datasetID, missingFileName):
         """Add name of given missing file to CMGDB and link it to a given dataset with the unique CMGDB Dataset ID
@@ -61,6 +91,21 @@ class CmgdbToolsApi(CmgdbApi):
             self.insertConn.commit()
         except cx_Oracle.IntegrityError:
             print "Unable to delete file entries"
+    
+    # Log num of bad files
+    def addBadFileNum(self,datasetID,number):
+        """Record the quantity of bad files
+        
+        'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
+        'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+        'number' takes the number of bad files as an int"""
+        
+        try:
+            self.insertCur.execute("UPDATE cms_cmgdb.dataset_details set number_files_bad=%d where dataset_id = %d" % (number, datasetID))
+            self.insertConn.commit()
+            print "Number of files bad: ",number
+        except cx_Oracle.IntegrityError:
+            print "Dataset not found"
             
     # Log bad files
     def addBadFile(self, dsName, datasetID, badFileName):
@@ -77,6 +122,7 @@ class CmgdbToolsApi(CmgdbApi):
         except cx_Oracle.IntegrityError:
             # If exception is thrown display error message and ignore
             print 'File: '+badFileName+ " in dataset " + dsName + " is already logged as bad on the system"
+    
     # Clear bad jobs entries
     def clearDatasetBadJobs(self, dsName, datasetID):
         """Clear all bad jobs from CMGDB pertaining to the given dataset ID
