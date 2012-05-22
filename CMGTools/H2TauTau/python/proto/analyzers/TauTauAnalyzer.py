@@ -3,7 +3,7 @@ from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.DiObject import TauTau
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Tau, GenParticle
-from CMGTools.H2TauTau.proto.analyzers.CountLeptons import electronAccept
+# from CMGTools.H2TauTau.proto.analyzers.CountLeptons import electronAccept
 from CMGTools.RootTools.utils.DeltaR import deltaR2
 from ROOT import TFile
 
@@ -106,5 +106,5 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
                super( TauTauAnalyzer, self).testLeg2( leg )
 
 
-    def leptonAccept(self, leptons):
-        return electronAccept( leptons )
+##     def leptonAccept(self, leptons):
+##         return electronAccept( leptons )

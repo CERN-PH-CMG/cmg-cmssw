@@ -2,7 +2,6 @@ from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.DiObject import TauMuon
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, GenParticle
-from CMGTools.H2TauTau.proto.analyzers.CountLeptons import muonAccept
 
 class TauMuAnalyzer( DiLeptonAnalyzer ):
 
@@ -123,7 +122,7 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
 
 
     def muonIso(self, muon ):
-        return muon.relIso(0.5)
+        return muon.relIsoAllChargedDB05()
     
 
     def leptonAccept(self, leptons):

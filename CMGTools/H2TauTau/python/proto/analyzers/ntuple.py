@@ -35,7 +35,7 @@ def bookLepton( tree, pName ):
 
 def fillLepton( tree, pName, lepton ):
     fillParticle(tree, pName, lepton )
-    fill(tree, '{pName}_relIso05'.format(pName=pName), lepton.relIso(0.5) )
+    fill(tree, '{pName}_relIso05'.format(pName=pName), lepton.relIsoAllChargedDB05() )
     fill(tree, '{pName}_dxy'.format(pName=pName), lepton.dxy() )
     fill(tree, '{pName}_dz'.format(pName=pName), lepton.dz() )
     fill(tree, '{pName}_weight'.format(pName=pName), lepton.weight )

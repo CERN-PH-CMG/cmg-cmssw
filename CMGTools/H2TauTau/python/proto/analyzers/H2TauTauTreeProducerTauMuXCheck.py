@@ -149,12 +149,12 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
         fill( tr, 'phi_1', leg1.phi())
         fill( tr, 'eta_1', leg1.eta())
         fill( tr, 'm_1', leg1.mass())
-        fill( tr, 'iso_1', leg1.relIso(0.5))
+        fill( tr, 'iso_1', leg1.relIsoAllChargedDB05())
         fill( tr, 'mva_1', leg1.mvaId()) # should be filled for e-tau: mva id
         fill( tr, 'd0_1', leg1.dxy() )
         fill( tr, 'dZ_1', leg1.dz())
         fill( tr, 'passid_1', leg1.tightId() )
-        fill( tr, 'passiso_1', leg1.relIso(0.5)<0.1 )
+        fill( tr, 'passiso_1', leg1.relIsoAllChargedDB05()<0.1 )
         fill( tr, 'mt_1', event.diLepton.mTLeg2())
         
         fill( tr, 'pt_2', leg2.pt())
