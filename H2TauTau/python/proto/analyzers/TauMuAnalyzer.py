@@ -16,6 +16,12 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             'cmgTauMuCorSVFitFullSel',
             'std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>'
             )
+        
+        self.handles['mvametsigs'] = AutoHandle(
+            'mvaMETTauMu',
+            'std::vector<cmg::METSignificance>'
+            )
+        
         self.handles['leptons'] = AutoHandle(
             'cmgMuonSel',
             'std::vector<cmg::Muon>'
@@ -24,6 +30,13 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
                                                      'std::vector<reco::GenParticle>' )
 
+    def buildDiLeptons(self, cmgDiLeptons):
+        diLeptons = []
+        for index, dil in enumerate(cmgDiLeptons):
+            pydil = self.__class__.DiObjectClass(dil)
+            pydil.mvaMetSig = mvaMetSig = self.handles['mvametsigs'].product()[index]
+            diLeptons.append( pydil )
+        return diLeptons
 
     def process(self, iEvent, event):
 

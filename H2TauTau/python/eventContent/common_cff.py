@@ -18,7 +18,8 @@ common = [
     'drop cmgTaus_*_*_*',
     'drop *_cmgPFJetForRecoil_*_*',
     'drop *_genWorZ_*_*',
-    'keep *_pfMetSignificance*_*_*',
+    'keep recoPFMETs_*_*_*',
+    'keep cmgMETSignificance*_*_*_*',
     'keep double_*_*_*',
     'keep int_*_*_*',
     ]
