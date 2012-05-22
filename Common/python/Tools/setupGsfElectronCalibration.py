@@ -29,8 +29,10 @@ def getEleEnergyCorrectionType(fileName):
         return "Unknown"
 
 
-def setupGsfElectronCalibration( process, runOnMC ):
-    eleCorrectionType = getEleEnergyCorrectionType(process.source.fileNames[0])
+def setupGsfElectronCalibration( process, runOnMC, type=None):
+    eleCorrectionType = type
+    if eleCorrectionType is None:
+        eleCorrectionType = getEleEnergyCorrectionType(process.source.fileNames[0])
     if (eleCorrectionType=="Unknown"):
         err = 'ERROR: Could not determine electron scale correction to be applied from dataset name {file}'.format(process.source.fileNames[0])
         raise ValueError(err)

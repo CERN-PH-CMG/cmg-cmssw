@@ -15,6 +15,7 @@
 // #include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
 #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
 #include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
+#include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
 
 #include "CMGTools/Common/interface/MVAMet.h"
 #include "CMGTools/Common/interface/MetUtilities.h"
@@ -111,6 +112,7 @@ MVAMETProducer< RecBosonType >::MVAMETProducer(const edm::ParameterSet & iConfig
    
   // will produce one BaseMET for each recBoson 
   produces< std::vector<MetType> >();
+  produces< std::vector<cmg::METSignificance> >();
 }
 
 
@@ -224,6 +226,8 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
   makeJets( jetInfo, *jetH, *vertexH, rho );
   
   OutPtr pOut(new std::vector< MetType > ); 
+  std::auto_ptr< std::vector<cmg::METSignificance> > pOutSig( new std::vector<cmg::METSignificance>() );
+
   for( unsigned i=0; i<recBosonH->size(); ++i) {
     const RecBosonType& recBoson = recBosonH->at(i);
     
@@ -255,13 +259,48 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
       }
     }
 
+    math::XYZPoint dummyVertex;
+
+    // need to clean up the MET from di-lepton legs. 
+    LorentzVector cleanpfmetp4 = pfmet->p4();
+    cleanpfmetp4 += recBoson.leg1().p4();
+    cleanpfmetp4 += recBoson.leg2().p4();
+    double cleanpfmetsumet = pfmet->sumEt() - recBoson.leg1().et() - recBoson.leg2().et();
+    reco::PFMET cleanpfmet( pfmet->getSpecific(),
+			    cleanpfmetsumet, cleanpfmetp4, dummyVertex);
+
+    LorentzVector cleanpucmetp4 = pucmet->p4();
+    cleanpucmetp4 += recBoson.leg1().p4();
+    cleanpucmetp4 += recBoson.leg2().p4();
+    double cleanpucmetsumet = pucmet->sumEt() - recBoson.leg1().et() - recBoson.leg2().et();    
+    reco::PFMET cleanpucmet( pucmet->getSpecific(),
+			     cleanpucmetsumet, cleanpucmetp4, dummyVertex);
+
+    LorentzVector tauChargedp4 = recBoson.leg1().p4()*recBoson.leg1().signalChargedFraction();
+    
+    LorentzVector cleantkmetp4 = tkmet->p4();
+    cleantkmetp4 += tauChargedp4;
+    cleantkmetp4 += recBoson.leg2().p4();
+    double cleantkmetsumet = tkmet->sumEt() - tauChargedp4.Et() - recBoson.leg2().et();    
+    reco::PFMET cleantkmet( tkmet->getSpecific(),
+			    cleantkmetsumet, cleantkmetp4, dummyVertex);
+
+    LorentzVector cleannopumetp4 = nopumet->p4();
+    cleannopumetp4 += tauChargedp4;
+    cleannopumetp4 += recBoson.leg2().p4();
+    double cleannopumetsumet = nopumet->sumEt() - tauChargedp4.Et() - recBoson.leg2().et();    
+    reco::PFMET cleannopumet( nopumet->getSpecific(),
+			      cleannopumetsumet, cleannopumetp4, dummyVertex);
+
+
+
     std::pair<LorentzVector,TMatrixD> lMVAMetInfo
       = mvaMet_->GetMet( lVisible,
-			 pfmet,
-			 tkmet,
-			 nopumet,
+			 &cleanpfmet,
+			 &cleantkmet,
+			 &cleannopumet,
 			 pumet,
-			 pucmet,
+			 &cleanpucmet,
 			 cleanLeadJet,
 			 cleanLeadJet2,
 			 nJetsPtGt30,
@@ -270,7 +309,9 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
 			 jetInfo, 
 			 false );
 
+    // if I do that, sumEt is incorrect...
     pOut->push_back( met );
+    pOutSig->push_back( lMVAMetInfo.second );
     pOut->back().setP4( lMVAMetInfo.first ); 
 
     if(verbose_) {
@@ -278,12 +319,13 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
       std::cout<<"\trec boson: "<<recBoson<<std::endl;
       std::cout<<"\t\tleg1: "<<recBoson.leg1()<<std::endl;
       std::cout<<"\t\tleg2: "<<recBoson.leg2()<<std::endl;
-      std::cout<<"\t\tNEW MET: "<<lMVAMetInfo.first.Et()<<std::endl;
+      std::cout<<"\t\tNEW MET: "<<lMVAMetInfo.first.Pt()<<std::endl;
     }
     // FIXME add matrix
   }
   
   iEvent.put( pOut ); 
+  iEvent.put( pOutSig ); 
 
   if(verbose_) {
     std::cout<<"MVAMETProducer done"<<std::endl;
@@ -313,47 +355,3 @@ void MVAMETProducer< RecBosonType >::makeJets(std::vector<MetUtilities::JetInfo>
     iJetInfo.push_back(pJetObject);
   }
 }
-
-/* template< typename RecBosonType > */
-/* int  MVAMETProducer< RecBosonType >::nJets( const JetCollectionType& jets,  */
-/* 							const RecBosonType& boson, float deltaR) { */
-  
-/*   //COLIN : check that I should really remove jets matched to both legs */
-/*   // when working with Ws. */
-/*   if(verbose_) { */
-/*     std::cout<<"\tMatching jets to boson legs"<<std::endl; */
-/*   } */
-/*   float deltaR2 = deltaR*deltaR;  */
-  
-/*   unsigned nJets = 0; */
-/*   for(unsigned iJet = 0; iJet<jets.size(); ++iJet ) { */
-/*     const JetType& jet = jets[iJet];  */
-
-/*     double dR2leg1 = reco::deltaR2( jet.eta(), jet.phi(),  */
-/* 				    boson.leg1().eta(), boson.leg1().phi() ) ; */
-/*     double dR2leg2 = reco::deltaR2( jet.eta(), jet.phi(),  */
-/* 				    boson.leg2().eta(), boson.leg2().phi() ) ; */
-    
-/*     if( dR2leg1 > deltaR2 && dR2leg2 > deltaR2) { */
-/*       // this jet is far enough from both boson legs, and counted as such */
-/*       nJets++; */
-/*     } */
-/*     else{ */
-/*       if(verbose_) { */
-/* 	std::cout<<"\t\texcluding jet "<<jet<<", dR1,dR2=" */
-/* 		 <<sqrt(dR2leg1)<<", "<<sqrt(dR2leg2)<<std::endl; */
-/* 	//       std::cout<<jet.rawFactor()<<std::endl; */
-/* 	//       for(int ic=0; ic<jet.nConstituents(); ++ic) { */
-/* 	// 	const cmg::PFJetComponent& comp = jet.component(ic); */
-/* 	// 	std::cout<<comp<<std::endl; */
-/*       } */
-/*     } */
-/*   }   */
-
-/*   return nJets; */
-/* } */
-
-
-// #include "FWCore/Framework/interface/MakerMacros.h"
-
-// DEFINE_FWK_MODULE(MVAMETProducer);

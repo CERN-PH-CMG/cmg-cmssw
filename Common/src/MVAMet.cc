@@ -414,10 +414,14 @@ std::pair<MVAMet::LorentzVector,TMatrixD> MVAMet::GetMet(std::vector<LorentzVect
   fUtils->cleanMet(iVis,iJets,lPUCMet ,false,false);
   fUtils->cleanMet(iVis,iJets,lPUMet  ,false,true);
 
-  std::pair<LorentzVector,double> lPFRec  = fUtils->Recoil(lSumEtVis,lPtVis,lPhiVis,lPFMet);
-  std::pair<LorentzVector,double> lTKRec  = fUtils->Recoil(lSumEtVis,lPtVis,lPhiVis,lTKMet);
-  std::pair<LorentzVector,double> lNPRec  = fUtils->Recoil(lSumEtVis,lPtVis,lPhiVis,lNoPUMet);
-  std::pair<LorentzVector,double> lPCRec  = fUtils->Recoil(lSumEtVis,lPtVis,lPhiVis,lPUCMet);
+//   std::pair<LorentzVector,double> lPFRec  = fUtils->Recoil(lSumEtVis,lPtVis,lPhiVis,lPFMet);
+//   std::pair<LorentzVector,double> lTKRec  = fUtils->Recoil(lSumEtVis,lPtVis,lPhiVis,lTKMet);
+//   std::pair<LorentzVector,double> lNPRec  = fUtils->Recoil(lSumEtVis,lPtVis,lPhiVis,lNoPUMet);
+//   std::pair<LorentzVector,double> lPCRec  = fUtils->Recoil(lSumEtVis,lPtVis,lPhiVis,lPUCMet);
+  std::pair<LorentzVector,double> lPFRec  = lPFMet;
+  std::pair<LorentzVector,double> lTKRec  = lTKMet;
+  std::pair<LorentzVector,double> lNPRec  = lNoPUMet;
+  std::pair<LorentzVector,double> lPCRec  = lPUCMet;
   
  
   fSumEt   = lPFRec.second;
