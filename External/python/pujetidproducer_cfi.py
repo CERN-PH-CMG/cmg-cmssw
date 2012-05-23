@@ -34,6 +34,8 @@ pileupJetIdProducer = cms.EDProducer('PileupJetIdProducer',
                          jec     = cms.string("AK5PF"),
                          applyJec = cms.bool(False),
                          inputIsCorrected = cms.bool(True),                                     
+                         residualsFromTxt = cms.bool(False),
+                         residualsTxt     = cms.FileInPath("CMGTools/External/data/dummy.txt"),
 )
 
 pileupJetIdProducerChs = cms.EDProducer('PileupJetIdProducer',
@@ -48,6 +50,8 @@ pileupJetIdProducerChs = cms.EDProducer('PileupJetIdProducer',
                          jec     = cms.string("AK5PFchs"),
                          applyJec = cms.bool(False),
                          inputIsCorrected = cms.bool(True),
+                         residualsFromTxt = cms.bool(False),
+                         residualsTxt     = cms.FileInPath("CMGTools/External/data/dummy.txt"),
 
 )
 
