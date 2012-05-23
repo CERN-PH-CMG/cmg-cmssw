@@ -124,7 +124,10 @@ if __name__ == '__main__':
 
     baseline           =  'l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0'
     baseline           += ' && l2MVAEle>0.5'
+    l1Pt40l2Pt40       =  ' && l1Pt>40 && l2Pt>40'
     l1Pt45l2Pt45       =  ' && l1Pt>45 && l2Pt>45'
+    isolationML        =  ' && ((l1MedMVAIso>0.5 && l2RawMVAIso>0.795) || (l1RawMVAIso>0.795 && l2MedMVAIso>0.5))'
+    isolationMM        =  ' && l1MedMVAIso>0.5 && l2MedMVAIso>0.5'
     isolationMT        =  ' && ((l1MedMVAIso>0.5 && l2TigMVAIso>0.5) || (l1TigMVAIso>0.5 && l2MedMVAIso>0.5))'
     isolationTT        =  ' && l1TigMVAIso>0.5 && l2TigMVAIso>0.5'
     Jet0               =  ' && jet1Pt<50'
@@ -133,10 +136,12 @@ if __name__ == '__main__':
     NOVBF              =  ' && (jet1Pt<30 || jet2Pt<30 || abs(jet1Eta - jet2Eta)<2.5 || (jet1Eta*jet2Eta)>0 || mjj<250)'
 
     cuts=[
-        #("CMS_review_loose_l45_j50_dR20_tt_Met00_Inclusive",baseline+l1Pt45l2Pt45,'',isolationTT,2),
-        ("CMS_review_l45_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt45l2Pt45+BOOSTED+NOVBF,' && dRtt<2.0',isolationMT,2),
-        ("CMS_review_l35_j50_dR20_tt_Met00_VBF",baseline+VBF,' && dRtt<2.0',isolationMT,2),
-        ("CMS_review_l45_j50_dR20_tt_Met00_0Jet",baseline+l1Pt45l2Pt45+Jet0+NOVBF,'',isolationTT,2),
+        #("CMS_review_loose_l45_j50_dR20_tt_Met00_Inclusive",baseline+l1Pt40l2Pt40,'',isolationTT,1),
+        ("CMS_review_l40_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt40l2Pt40+BOOSTED+NOVBF,' && dRtt<2.0',isolationMT,2),
+        ("CMS_review_l40_j50_dR20_tt_Met00_VBF",baseline+l1Pt40l2Pt40+VBF,' && dRtt<2.0',isolationMT,2),
+        #("CMS_review_l45_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt45l2Pt45+BOOSTED+NOVBF,' && dRtt<2.0',isolationMT,2),
+        #("CMS_review_l35_j50_dR20_tt_Met00_VBF",baseline+VBF,' && dRtt<2.0',isolationMT,2),
+        ("CMS_review_l40_j50_dR20_tt_Met00_0Jet",baseline+l1Pt45l2Pt45+Jet0+NOVBF,'',isolationTT,2),
 	  ]
         
     for prefix,cut,antiqcdcut,isocut,qcdEstimate in cuts:
@@ -205,8 +210,10 @@ if __name__ == '__main__':
       else:
           log=False
 
-      looseisocut=" && (l1RawMVAIso>0.795 || l2RawMVAIso>0.795) && !(1 "+isocut+")"
-      #looseisocut=" && l1RawMVAIso>0.795 && l2TigMVAIso<0.5"
+      looseisocut=""
+      #looseisocut=" && !(1 "+isocut+")"
+      #looseisocut=" && (l1RawMVAIso>0.795 || l2RawMVAIso>0.795) && !(1 "+isocut+")"
+      #looseisocut=" && (l1RawMVAIso>0.795 || l2RawMVAIso>0.795)"
       #looseisocut=" && l1MedMVAIso>0.5 && l2MedMVAIso<0.5"
       if qcdEstimate==0:
         # MET based QCD estimation
@@ -238,13 +245,13 @@ if __name__ == '__main__':
      			    cut = cutSS+looseisocut+antiqcdcut, weight=weight,
      			    embed=options.embed)
 			    
-      if qcdEstimate==2 or qcdEstimate==3:
+      if qcdEstimate==0 or qcdEstimate==1 or qcdEstimate==2 or qcdEstimate==3:
        plotVarDataLooseIsoOS = H2TauTauDataMC(var, anaDir, selComps, weights,
      			    nx, xmin, xmax,
      			    cut = cut+looseisocut+antiqcdcut, weight=weight,
      			    embed=options.embed)
 
-      if qcdEstimate==0 or qcdEstimate==3:
+      if qcdEstimate==0 or qcdEstimate==1 or qcdEstimate==3:
        plotVarDataLowControlOS = 0#H2TauTauDataMC(var, anaDir, selComps, weights,
      	#		    nx, xmin, xmax,
      	#		    cut = cut+isocut+lowcontrolcut, weight=weight,
