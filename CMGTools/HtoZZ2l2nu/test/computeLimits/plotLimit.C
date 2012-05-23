@@ -104,7 +104,7 @@ TCutG* GetErrorBand(string name, int N, double* Mass, double* Low, double* High)
 
 
 
-void plotLimit(TString inputs=""){
+void plotLimit(TString outputName="Limit", TString inputs=""){
   gStyle->SetCanvasBorderMode(0);
   gStyle->SetCanvasColor(kWhite);
   gStyle->SetFrameBorderMode(0);
@@ -188,7 +188,7 @@ void plotLimit(TString inputs=""){
    double* MassAxisExp= new double[N];
 
 
-   FILE* pFileSum = fopen("LimitSummary","w");
+   FILE* pFileSum = fopen((outputName+"_LimitSummary").Data(),"w");
 
    int NExp = 0;
    for(int i=0;i<N;i++){
@@ -264,9 +264,9 @@ void plotLimit(TString inputs=""){
    c1->SetGridx(true);
    c1->SetGridy(true);
    c1->SetLogy(true);
-   c1->SaveAs("Limit.png");
-   c1->SaveAs("Limit.C");
-   c1->SaveAs("Limit.pdf");
+   c1->SaveAs(outputName+"_Limit.png");
+   c1->SaveAs(outputName+"_Limit.C");
+   c1->SaveAs(outputName+"_Limit.pdf");
    delete c1;
 
 
