@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.cc,v 1.19 2012/05/17 22:25:02 musella Exp $
+// $Id: JetAnalyzer.cc,v 1.20 2012/05/18 09:48:55 malberti Exp $
 //
 //
 
@@ -45,6 +45,8 @@ JetAnalyzer::JetAnalyzer(const edm::ParameterSet& iConfig)
   applyJec_   = iConfig.getParameter<bool>("applyJec");
   jecTag_     = iConfig.getParameter<std::string>("jecTag");
   RhoTag_     = iConfig.getParameter<edm::InputTag>("RhoTag");
+  residualsFromTxt_ = iConfig.getParameter<bool>("residualsFromTxt");
+  residualsTxt_ = iConfig.getParameter<edm::FileInPath>("residualsTxt");
 
   dataFlag_    = iConfig.getUntrackedParameter<bool>("dataFlag");
 
@@ -207,8 +209,12 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       jecCor_->setJetEta(patjet.eta());
       jecCor_->setJetA(patjet.jetArea());
       jecCor_->setRho(rho);
-      jec = jecCor_->getCorrection() * patjet.correctedJet(0).energy() / patjet.energy() ;
+      float thejec = jecCor_->getCorrection();
+      jec = thejec * patjet.correctedJet(0).energy() / patjet.energy() ;
       jecs.push_back(jec);
+      ////// if( i < 2 ) { std::cout << "JEC " << patjet.correctedJet(0).pt() << " " << patjet.eta() << " " << patjet.jetArea() << " " 
+      ////// 			      << rho << " " <<  thejec
+      ////// 			      << " " << jec << std::endl; }
     }
     if ( patjet.pt()*jec <  jetPtThreshold_ )  continue;
  
@@ -241,7 +247,9 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     float jec = 0.;
     if( applyJec_ ) {
 	    jec = jecs[i];
+	    float rawpt = patjet.correctedJet(0).pt();
 	    patjet.scaleEnergy(jec);
+	    jec = patjet.pt() / rawpt ;
     }
     if ( patjet.pt() <  jetPtThreshold_ )  { continue; }
   
@@ -411,26 +419,28 @@ bool JetAnalyzer::matchingToGenJet( const pat::Jet jet, edm::View<reco::GenJet> 
 void 
 JetAnalyzer::initJetEnergyCorrector(const edm::EventSetup &iSetup, bool isData)
 {
+	std::cout << "initJetEnergyCorrector " << " isData " << isData << " " << "jecTag_ " << jecTag_ << std::endl; 
 	//jet energy correction levels to apply on raw jet
 	std::vector<std::string> jecLevels;
 	jecLevels.push_back("L1FastJet");
 	jecLevels.push_back("L2Relative");
 	jecLevels.push_back("L3Absolute");
-	if(isData) jecLevels.push_back("L2L3Residual");
+	if(isData && ! residualsFromTxt_ ) jecLevels.push_back("L2L3Residual");
 
 	//check the corrector parameters needed according to the correction levels
 	edm::ESHandle<JetCorrectorParametersCollection> parameters;
-	iSetup.get<JetCorrectionsRecord>().get("AK5PFchs",parameters);
+	iSetup.get<JetCorrectionsRecord>().get(jecTag_,parameters);
 	for(std::vector<std::string>::const_iterator ll = jecLevels.begin(); ll != jecLevels.end(); ++ll)
 	{ 
 		const JetCorrectorParameters& ip = (*parameters)[*ll];
 		jetCorPars_.push_back(ip); 
 	} 
+	if( isData && residualsFromTxt_ ) {
+		jetCorPars_.push_back(JetCorrectorParameters(residualsTxt_.fullPath())); 
+	}
 
 	//instantiate the jet corrector
 	jecCor_ = new FactorizedJetCorrector(jetCorPars_);
-	std::cout << " jecC" << jecCor_ << std::endl;
-	gDirectory->ls();
 }
 
 

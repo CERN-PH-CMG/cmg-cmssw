@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.h,v 1.9 2012/04/23 11:25:58 malberti Exp $
+// $Id: JetAnalyzer.h,v 1.10 2012/05/17 22:25:01 musella Exp $
 //
 //
 
@@ -86,6 +86,8 @@ private:
   edm::InputTag RhoTag_;
   std::string jecTag_;
   bool applyJec_;
+  bool residualsFromTxt_;
+  edm::FileInPath residualsTxt_;
   
   void initJetEnergyCorrector(const edm::EventSetup &iSetup, bool isData);
   FactorizedJetCorrector *jecCor_;
