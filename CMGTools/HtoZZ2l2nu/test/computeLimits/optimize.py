@@ -15,9 +15,8 @@ CWD=os.getcwd()
 phase=-1
 jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json'
 CMSSW_BASE=os.environ.get('CMSSW_BASE')
-LandSArg=' --subNRB --indexvbf 78 '
+LandSArg=' --indexvbf 78 '
 LandSArg+=' --bins eq0jets,eq1jets,geq2jets,vbf'
-
 
 cutList='' 
 def help() :
@@ -120,11 +119,18 @@ if( phase == 1 ):
       for m in MASS:
          shapeBasedOpt=''
          if(shapeBased=='1') : shapeBasedOpt='--shape'
+         cardsdir = 'H'+ str(m);
+         if(shapeBased=='0'): cardsdir+='_count_'+str(i)
+         if(shapeBased=='1'): cardsdir+='_shape_'+str(i)
+         SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
          SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName  + " --in " + inUrl + " " + shapeBasedOpt + " --index " + str(i) + " --json " + jsonUrl +" --fast " + LandSArg + " ;\n")
+         SCRIPT.writelines("sh combineCards.sh;\n")
+         SCRIPT.writelines("$CMSSW_BASE/src/UserCode/mschen/LandS/test/lands.exe -d Shapes_*.dat  -M Hybrid --ExpectationHints Asymptotic > LANDS.log;\n")
          if(shapeBased=='1'):
-            SCRIPT.writelines('cat H' +str(m)+'_shape_'+str(i)+'/combined/*.log | grep BAND &> ' +OUT+str(m)+'_'+str(i)+'.log;\n')
+            SCRIPT.writelines('cat *.log | grep BAND &> ' +OUT+str(m)+'_'+str(i)+'.log;\n')
          else:
-            SCRIPT.writelines('cat H' +str(m)+'_count_'+str(i)+'/combined/*.log | grep BAND &> ' +OUT+str(m)+'_'+str(i)+'.log;\n')
+            SCRIPT.writelines('cat *.log | grep BAND &> ' +OUT+str(m)+'_'+str(i)+'.log;\n')
+         SCRIPT.writelines('cd ..;\n\n')
       SCRIPT.close()
       commandToRun.append("bsub -q 8nh -J optim"+str(i)+" 'sh " + OUT+"script_"+str(i)+".sh &> "+OUT+"script_"+str(i)+".log'")
 #      print("bsub -q 8nh -J optim"+str(i)+" 'sh " + OUT+"script_"+str(i)+".sh &> "+OUT+"script_"+str(i)+".log'")
@@ -160,7 +166,7 @@ elif(phase == 2):
          if(len(exp)<=0):continue
          median = exp.split()[6]
          index = int(f[f.rfind("_")+1:f.rfind(".log")])
-         BestLimit.append("mH="+str(m)+ " --> " + str(median).rjust(8) + " " + str(index).rjust(5) + " " + str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + " " + str(cuts3.GetBinContent(index)).rjust(5))
+         BestLimit.append("mH="+str(m)+ " --> " + ('%07.3f' % float(median)) + " " + str(index).rjust(5) + " " + str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + " " + str(cuts3.GetBinContent(index)).rjust(5))
 
       #sort the limits for this mass
       BestLimit.sort()
@@ -277,7 +283,16 @@ elif(phase == 3 ):
         SCRIPT.writelines('cd ' + CWD + ';\n')
         shapeBasedOpt=''
         if(shapeBased=='1') : shapeBasedOpt='--shape'
-	SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " --syst " + shapeBasedOpt + " --index " + str(index) + " --json " + jsonUrl + " " + LandSArg + " ;\n")
+
+        cardsdir = 'H'+ str(m);
+        if(shapeBased=='0'): cardsdir+='_count_'+str(index)
+        if(shapeBased=='1'): cardsdir+='_shape_'+str(index)
+        SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
+        #SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " " + " --syst " + shapeBasedOpt + " --index " + str(index) + " --json " + jsonUrl + " " + LandSArg + " ;\n")
+        SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " " + shapeBasedOpt + " --index " + str(index) + " --json " + jsonUrl + " " + LandSArg + " ;\n")
+        SCRIPT.writelines("sh combineCards.sh;\n")
+        SCRIPT.writelines("$CMSSW_BASE/src/UserCode/mschen/LandS/test/lands.exe -d Shapes_*.dat  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 4000 --nToysForCLb 2000 --seed 1234 -rMax 50 -rMin 0.1 > LANDS.log;\n")
+        SCRIPT.writelines('cd ..;\n\n') 
 	SCRIPT.close()
 #	os.system("bsub -q 8nh 'sh " + OUT+"script_mass_"+str(m)+".sh'")
         os.system("bsub -q 2nd 'sh " + OUT+"script_mass_"+str(m)+".sh'")
@@ -300,13 +315,16 @@ elif(phase == 4 ):
    files = ""
    for m in SUBMASS:   
 	#line = CWD+'/'+list.readline().split()[0]+'/combined/*m2lnQ.root'
-        line = list.readline().split()[0]+'/combined/*m2lnQ.root'
+        line = list.readline().split()[0]+'/*m2lnQ.root'
 	print line
 	out = commands.getstatusoutput("ls " + line)[1] 
 	if(out.find("No such file or directory")>=0):continue
 	files += " " + out;
    list.close();
-   os.system("root -l -b -q plotLimit.C++'(\""+files+"\")'") 
+   ouputName = 'COUNT'
+   if(shapeBased=='1'):ouputName='SHAPE'
+
+   os.system("root -l -b -q plotLimit.C++'(\""+ouputName+"\",\""+files+"\")'")
    os.system("rm *.gif");
 
 ######################################################################
