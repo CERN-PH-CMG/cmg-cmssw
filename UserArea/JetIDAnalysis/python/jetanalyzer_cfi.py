@@ -15,8 +15,10 @@ jetanalyzer = cms.EDAnalyzer('JetAnalyzer',
                              computeTMVA = cms.untracked.bool(True),
 
                              RhoTag = cms.InputTag("kt6PFJets","rho"),
-                             jecTag = cms.string(""),
+                             jecTag = cms.string("AK5PF"),
                              applyJec = cms.bool(False),
+                             residualsFromTxt = cms.bool(False),
+                             residualsTxt     = cms.FileInPath("CMGTools/External/data/dummy.txt"),
                              
                              puJetIDAlgo = full_5x,
                              
