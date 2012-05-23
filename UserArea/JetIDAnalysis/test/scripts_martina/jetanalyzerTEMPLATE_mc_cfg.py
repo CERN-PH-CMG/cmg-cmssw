@@ -1,16 +1,17 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.External.jec_2012_cff import use2012JecPreview
+from PhysicsTools.PatAlgos.selectionLayer1.muonCountFilter_cfi import *
 
+process = cms.Process("analysis")
+
+runOnMC=True
+
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+from CMGTools.External.jec_2012_cff import use2012JecPreview
 from Configuration.AlCa.autoCond import autoCond
 if(runOnMC) : process.GlobalTag.globaltag=cms.string(autoCond.get('startup',autoCond['mc']))
 else        : process.GlobalTag.globaltag=cms.string(autoCond['com10'])
 use2012JecPreview(process)
-
-from PhysicsTools.PatAlgos.selectionLayer1.muonCountFilter_cfi import *
-
-
-process = cms.Process("analysis")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
