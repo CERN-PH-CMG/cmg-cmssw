@@ -362,10 +362,10 @@ def QCDEstimate2(prefix,prefix1,xmin,xmax,\
       QCDtightSS=copy.deepcopy(plotVarDataSS.Hist("Data"))
       substractMCbackground(QCDtightSS, plotVarDataSS)
 
-      #print "QCDlooseSS:", QCDlooseSS.Integral()
-      #print "QCDtightSS:", QCDtightSS.Integral()
+      print "QCDlooseSS:", QCDlooseSS.Integral()
+      print "QCDtightSS:", QCDtightSS.Integral()
       tightLoose=QCDtightSS.Integral()/QCDlooseSS.Integral()
-      tightLooseErr=tightLoose*math.sqrt(1./QCDtightSS.Integral() + 1./QCDlooseSS.Integral())
+      tightLooseErr=tightLoose*math.sqrt(1./abs(QCDtightSS.Integral()) + 1./abs(QCDlooseSS.Integral()))
       print "QCDtightSS / QCDlooseSS", tightLoose, "+-", tightLooseErr
       
       QCDScale=tightLoose
