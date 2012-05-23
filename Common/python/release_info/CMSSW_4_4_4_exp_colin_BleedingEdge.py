@@ -1,5 +1,5 @@
-[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_mvamet_22May12'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_mvamet_22May12'),
+[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'patrick_cmgFromPat_23May12'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'patrick_cmgFromPat_23May12'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-02'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'sezen_18may12'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_mvamet_22May12'),

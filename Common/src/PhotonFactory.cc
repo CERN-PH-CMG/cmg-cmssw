@@ -54,7 +54,7 @@ cmg::PhotonFactory::create(const edm::Event& iEvent,
     // Found !
     if( !isPF  ) continue;
     pat::PhotonPtr pfmuon(pfCands, indexPF);
-    cmg::Photon photon(pfmuon);
+    cmg::Photon photon(muonPtr);
 
     // Keep only those with a swallowed ECAL energy > 2 GeV
     if ( pfmuon->ecalEnergy() < 2.0 ) continue;
@@ -64,7 +64,7 @@ cmg::PhotonFactory::create(const edm::Event& iEvent,
     if ( phpt < 2.0 ) continue;
 
     double ratio = pfmuon->ecalEnergy()/pfmuon->energy();
-    photon.setP4(photon.p4() * ratio);
+    photon.setP4(pfmuon->p4() * ratio);
     photon.chargedHadronIso_ = muonPtr->userIsolation(pat::PfChargedHadronIso);
     photon.chargedAllIso_ = muonPtr->userIsolation(pat::PfChargedAllIso);
     photon.puChargedHadronIso_ = muonPtr->userIsolation(pat::PfPUChargedHadronIso);
@@ -74,6 +74,7 @@ cmg::PhotonFactory::create(const edm::Event& iEvent,
     photon.isFromMuon_ = true;
 
     result->push_back(photon);
+    
 
   }
 

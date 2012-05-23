@@ -1,8 +1,8 @@
-[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'patrick_pfchargedhadronvertex_18May12'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'patrick_allPhotons_18May12'),
+[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'patrick_cmgFromPat_23May12'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'patrick_cmgFromPat_23May12'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-02'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'sezen_18may12'),
-  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_rltinfo_18May12'),
+  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_mvamet_22May12'),
   ('CommonTools/ParticleFlow', 'CommonTools/ParticleFlow', 'V00-03-11'),
   ('CondFormats/EgammaObjects', 'CondFormats/EgammaObjects', 'V00-04-01'),
   ('DataFormats/PatCandidates', 'DataFormats/PatCandidates', 'cbern_25Apr12'),
@@ -27,4 +27,6 @@
   ('RecoParticleFlow/PFProducer', 'RecoParticleFlow/PFProducer', 'V15-01-08'),
   ('RecoParticleFlow/PostProcessing', 'UserCode/RecoParticleFlow/PostProcessing', 'wreece_020512'),
   ('RecoTauTag/Configuration', 'RecoTauTag/Configuration', 'V01-04-03'),
-  ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-17')]
+  ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-17'),
+  ('TauAnalysis/CandidateTools', 'TauAnalysis/CandidateTools', 'bMinimalSVfit_2012May13'),
+  ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseMay18')]
