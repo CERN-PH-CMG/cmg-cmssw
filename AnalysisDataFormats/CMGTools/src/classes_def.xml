@@ -187,8 +187,6 @@
   <class name="edm::Wrapper<std::vector<cmg::FatJet> >"/>
 
   <class name="cmg::Photon"/>
-  <class name="cmg::Lepton<pat::PhotonPtr>" />
-  <class name="cmg::PhysicsObjectWithPtr<pat::PhotonPtr>" />
   <class name="std::vector<cmg::Photon>"/>
   <class name="edm::Wrapper<cmg::Photon>"/>
   <class name="edm::Wrapper<std::vector<cmg::Photon> >"/>
