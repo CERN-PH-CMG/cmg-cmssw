@@ -247,9 +247,13 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['Higgsgg125'] = {'style':sRedLine, 'layer':6.1}
         self.histPref['Higgsgg130'] = {'style':sRedLine, 'layer':6.1}
         self.histPref['Higgsgg135'] = {'style':sRedLine, 'layer':6.1}
+        self.histPref['Higgsgg140'] = {'style':sRedLine, 'layer':6.1}
+        self.histPref['Higgsgg145'] = {'style':sRedLine, 'layer':6.1}
         self.histPref['HiggsVBF110'] = {'style':sBlueLine, 'layer':6.2}
         self.histPref['HiggsVBF115'] = {'style':sBlueLine, 'layer':6.2}
         self.histPref['HiggsVBF120'] = {'style':sBlueLine, 'layer':6.2}
         self.histPref['HiggsVBF125'] = {'style':sBlueLine, 'layer':6.2}
         self.histPref['HiggsVBF130'] = {'style':sBlueLine, 'layer':6.2}
         self.histPref['HiggsVBF135'] = {'style':sBlueLine, 'layer':6.2}
+        self.histPref['HiggsVBF140'] = {'style':sBlueLine, 'layer':6.2}
+        self.histPref['HiggsVBF145'] = {'style':sBlueLine, 'layer':6.2}

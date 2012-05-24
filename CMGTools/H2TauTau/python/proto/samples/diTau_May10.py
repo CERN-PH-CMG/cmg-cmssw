@@ -55,6 +55,22 @@ Higgsgg135 = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
+Higgsgg140 = cfg.MCComponent(
+    name = 'Higgsgg140',
+    files = [],
+    xSection = 12.13*6.37e-2,
+    nGenEvents = 200000,
+    triggers = [],
+    effCorrFactor = 1 )
+
+Higgsgg145 = cfg.MCComponent(
+    name = 'Higgsgg145',
+    files = [],
+    xSection = 11.27*6.37e-2,
+    nGenEvents = 200000,
+    triggers = [],
+    effCorrFactor = 1 )
+
 HiggsVBF110 = cfg.MCComponent(
     name = 'HiggsVBF110',
     files = [],
@@ -103,6 +119,22 @@ HiggsVBF135 = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
+HiggsVBF140 = cfg.MCComponent(
+    name = 'HiggsVBF140',
+    files = [],
+    xSection = 1.052*6.37e-2, 
+    nGenEvents = 200000,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVBF145 = cfg.MCComponent(
+    name = 'HiggsVBF145',
+    files = [],
+    xSection = 1.004*6.37e-2, 
+    nGenEvents = 200000,
+    triggers = [],
+    effCorrFactor = 1 )
+
 
 
 mc_higgs_gg = [
@@ -112,6 +144,8 @@ mc_higgs_gg = [
     Higgsgg125,
     Higgsgg130,
     Higgsgg135,
+    Higgsgg140,
+    Higgsgg145,
     ]
 
 #pattern = re.compile('Higgs(\D+)(\d+)')
@@ -129,6 +163,8 @@ mc_higgs_vbf = [
     HiggsVBF125,
     HiggsVBF130,
     HiggsVBF135,
+    HiggsVBF140,
+    HiggsVBF145,
     ]
 
 #pattern = re.compile('Higgs(\D+)(\d+)')
@@ -227,12 +263,16 @@ Higgsgg120.files = getFiles('/GluGluToHToTauTau_M-120_7TeV-powheg-pythia6/Fall11
 Higgsgg125.files = getFiles('/GluGluToHToTauTau_M-125_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 Higgsgg130.files = getFiles('/GluGluToHToTauTau_M-130_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 Higgsgg135.files = getFiles('/GluGluToHToTauTau_M-135_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+Higgsgg140.files = getFiles('/GluGluToHToTauTau_M-140_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+Higgsgg145.files = getFiles('/GluGluToHToTauTau_M-145_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVBF110.files = getFiles('/VBF_HToTauTau_M-110_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVBF115.files = getFiles('/VBF_HToTauTau_M-115_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVBF120.files = getFiles('/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVBF130.files = getFiles('/VBF_HToTauTau_M-130_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVBF135.files = getFiles('/VBF_HToTauTau_M-135_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVBF140.files = getFiles('/VBF_HToTauTau_M-140_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVBF145.files = getFiles('/VBF_HToTauTau_M-145_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
 
 mc_fall11 = copy.copy( mc_ewk )

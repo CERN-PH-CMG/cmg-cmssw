@@ -18,6 +18,9 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         def var( varName ):
             self.tree.addVar('float', varName)
 
+        def varInt( varName ):
+            self.tree.addVar('int', varName)
+
         def particleVars( pName ):
             var('{pName}Px'.format(pName=pName))
             var('{pName}Py'.format(pName=pName))
@@ -27,8 +30,8 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
             var('{pName}Eta'.format(pName=pName))
             var('{pName}Phi'.format(pName=pName))
             var('{pName}Charge'.format(pName=pName))
-            var('{pName}Iso'.format(pName=pName))
-            var('{pName}Id'.format(pName=pName))
+            #var('{pName}Iso'.format(pName=pName))
+            #var('{pName}Id'.format(pName=pName))
             
             
         var('visMass')
@@ -40,7 +43,10 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
 	var('mey')
 	var('met')
 	var('mttj')
+
 	var('mjj')
+	var('deltaEta')
+	varInt('nCentralJets')
 
         var('dRtt')
         var('dPhitt')
@@ -50,40 +56,38 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         particleVars('l2')
 
         var('l1DecayMode')
-        var('l1Prongs')
-        var('l1LooIso')
-        var('l1MedIso')
-        var('l1TigIso')
+        #varInt('l1LooIso')
+        #varInt('l1MedIso')
+        #varInt('l1TigIso')
         var('l1RawMVAIso')
-        var('l1MedMVAIso')
-        var('l1TigMVAIso')
-        var('l1LooseEle')
-        var('l1MVAEle')
-        var('l1LooseMu')
+        varInt('l1MedMVAIso')
+        varInt('l1TigMVAIso')
+        #varInt('l1LooseEle')
+        varInt('l1MVAEle')
+        #varInt('l1LooseMu')
 
         var('l2DecayMode')
-        var('l2Prongs')
-        var('l2LooIso')
-        var('l2MedIso')
-        var('l2TigIso')
+        #varInt('l2LooIso')
+        #varInt('l2MedIso')
+        #varInt('l2TigIso')
         var('l2RawMVAIso')
-        var('l2MedMVAIso')
-        var('l2TigMVAIso')
-        var('l2LooseEle')
-        var('l2MVAEle')
-        var('l2LooseMu')
+        varInt('l2MedMVAIso')
+        varInt('l2TigMVAIso')
+        #varInt('l2LooseEle')
+        varInt('l2MVAEle')
+        #varInt('l2LooseMu')
 
         var('genTauVisMass')
         var('genJetVisMass')
 
-        var('nJets')
+        varInt('nJets')
         particleVars('jet1')
         particleVars('jet2')
 
         var('weight')
         var('vertexWeight')
 
-        var('nVert')
+        varInt('nVert')
         
         var('l1EffData')
         var('l1EffMC')
@@ -92,70 +96,95 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         var('l2EffMC')
         var('l2Weight')
 
-        var('isFake')
-        var('isPhoton')
-        var('isElectron')
-        
+        varInt('isFake')
+        varInt('isPhoton')
+        varInt('isElectron')
+	
         self.tree.book()
 
 
     def process(self, iEvent, event):
 
+        scale=1.0
+
         def fill( varName, value ):
             setattr( self.tree.s, varName, value )
 
         def fParticleVars( pName, particle ):
-            fill('{pName}Px'.format(pName=pName), particle.px() )
-            fill('{pName}Py'.format(pName=pName), particle.py() )
-            fill('{pName}Pz'.format(pName=pName), particle.pz() )
-            fill('{pName}E'.format(pName=pName), particle.energy() )
-            fill('{pName}Pt'.format(pName=pName), particle.pt() )
+            fill('{pName}Px'.format(pName=pName), particle.px()*scale )
+            fill('{pName}Py'.format(pName=pName), particle.py()*scale )
+            fill('{pName}Pz'.format(pName=pName), particle.pz()*scale )
+            fill('{pName}E'.format(pName=pName), particle.energy()*scale )
+            fill('{pName}Pt'.format(pName=pName), particle.pt()*scale )
             fill('{pName}Eta'.format(pName=pName), particle.eta() )
             fill('{pName}Phi'.format(pName=pName), particle.phi() )
             fill('{pName}Charge'.format(pName=pName), particle.charge() )
-            if hasattr( particle, 'relIso' ):
-                fill('{pName}Iso'.format(pName=pName), particle.relIso(0.5) )
-            if abs( particle.pdgId() )==11:
-                fill('{pName}Id'.format(pName=pName), particle.mvaDaniele() )
-                
-        fill('visMass', event.diLepton.mass())
-        fill('svfitMass', event.diLepton.massSVFit())
-        fill('mt', event.diLepton.mTLeg2())
-        fill('pThiggs', sqrt(pow(event.diLepton.met().px()+event.diLepton.px(),2)+pow(event.diLepton.met().py()+event.diLepton.py(),2)))
+            #if hasattr( particle, 'relIso' ):
+            #    fill('{pName}Iso'.format(pName=pName), particle.relIso(0.5) )
+            #if abs( particle.pdgId() )==11:
+            #    fill('{pName}Id'.format(pName=pName), particle.mvaDaniele() )
 
-        fill('mex', event.diLepton.met().px())
-        fill('mey', event.diLepton.met().py())
-        fill('met', event.diLepton.met().pt())
+        # SKIMMING here:
+        #if not (event.diLepton.leg1().pt>20 and \
+	#   event.diLepton.leg2().pt>20 and \
+	#   event.diLepton.leg1().tauID("decayModeFinding")>0.5 and \
+	#   event.diLepton.leg2().tauID("decayModeFinding")>0.5 and \
+	#   (event.diLepton.leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr")>0.5 or \
+	#    event.diLepton.leg2().tauID("byLooseCombinedIsolationDeltaBetaCorr")>0.5) and \
+	#   event.diLepton.leg1().tauID("againstElectronLoose")>0.5 and \
+	#   event.diLepton.leg2().tauID("againstElectronLoose")>0.5 and \
+	#   event.diLepton.leg1().tauID("againstMuonLoose")>0.5 and \
+	#   event.diLepton.leg2().tauID("againstMuonLoose")>0.5): return
+                
+        #if "TTJets" in self.cfg_comp.name and not (event.diLepton.leg1().tauID("byMediumIsoMVA")>0.5 and \
+	#   event.diLepton.leg2().tauID("byMediumIsoMVA")>0.5): return
+                
+        fill('visMass', event.diLepton.mass()*scale)
+        fill('svfitMass', event.diLepton.massSVFit()*scale)
+        fill('mt', event.diLepton.mTLeg2()*scale)
+        fill('pThiggs', sqrt(pow(event.diLepton.met().px()+event.diLepton.px(),2)+pow(event.diLepton.met().py()+event.diLepton.py(),2))*scale)
+
+        fill('mex', event.diLepton.met().px()*scale)
+        fill('mey', event.diLepton.met().py()*scale)
+        fill('met', event.diLepton.met().pt()*scale)
         fill('dRtt', sqrt(pow(deltaPhi(event.diLepton.leg1().phi(),event.diLepton.leg2().phi()),2)+pow(fabs(event.diLepton.leg1().eta()-event.diLepton.leg2().eta()),2)))
         fill('dPhitt', deltaPhi(event.diLepton.leg1().phi(),event.diLepton.leg2().phi()))
             
         fParticleVars('diTau', event.diLepton)
-        fParticleVars('l1', event.diLepton.leg1() )
-        fParticleVars('l2', event.diLepton.leg2() )
+	
+	#if event.diLepton.leg1().pt()>event.diLepton.leg2().pt():
+	#    leg1=event.diLepton.leg1()
+	#    leg2=event.diLepton.leg2()
+        #else:
+	#    leg1=event.diLepton.leg2()
+	#    leg2=event.diLepton.leg1()
+	leg1=event.diLepton.leg1()
+	leg2=event.diLepton.leg2()
+	
+        fParticleVars('l1', leg1 )
+        fParticleVars('l2', leg2 )
 
-        fill('l1DecayMode', event.diLepton.leg1().decayMode() )
-        fill('l1Prongs', len(event.diLepton.leg1().signalPFCands()) )
-        fill('l1LooIso', event.diLepton.leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr") )
-        fill('l1MedIso', event.diLepton.leg1().tauID("byMediumCombinedIsolationDeltaBetaCorr") )
-        fill('l1TigIso', event.diLepton.leg1().tauID("byTightCombinedIsolationDeltaBetaCorr") )
-        fill('l1RawMVAIso', event.diLepton.leg1().tauID("byRawIsoMVA") )
-        fill('l1MedMVAIso', event.diLepton.leg1().tauID("byMediumIsoMVA") )
-        fill('l1TigMVAIso', event.diLepton.leg1().tauID("byTightIsoMVA") )
-        fill('l1LooseEle', event.diLepton.leg1().tauID("againstElectronLoose") )
-        fill('l1MVAEle', event.diLepton.leg1().tauID("againstElectronMVA") )
-        fill('l1LooseMu', event.diLepton.leg1().tauID("againstMuonLoose") )
+        fill('l1DecayMode', leg1.decayMode() )
+        #fill('l1LooIso', leg1.tauID("byLooseCombinedIsolationDeltaBetaCorr") )
+        #fill('l1MedIso', leg1.tauID("byMediumCombinedIsolationDeltaBetaCorr") )
+        #fill('l1TigIso', leg1.tauID("byTightCombinedIsolationDeltaBetaCorr") )
+        fill('l1RawMVAIso', leg1.tauID("byRawIsoMVA") )
+        fill('l1MedMVAIso', leg1.tauID("byMediumIsoMVA") )
+        fill('l1TigMVAIso', leg1.tauID("byTightIsoMVA") )
+        #fill('l1LooseEle', leg1.tauID("againstElectronLoose") )
+        fill('l1MVAEle', leg1.tauID("againstElectronMVA") )
+        #fill('l1LooseMu', leg1.tauID("againstMuonLoose") )
 
-        fill('l2DecayMode', event.diLepton.leg2().decayMode() )
-        fill('l2Prongs', len(event.diLepton.leg2().signalPFCands()) )
-        fill('l2LooIso', event.diLepton.leg2().tauID("byLooseCombinedIsolationDeltaBetaCorr") )
-        fill('l2MedIso', event.diLepton.leg2().tauID("byMediumCombinedIsolationDeltaBetaCorr") )
-        fill('l2TigIso', event.diLepton.leg2().tauID("byTightCombinedIsolationDeltaBetaCorr") )
-        fill('l2RawMVAIso', event.diLepton.leg2().tauID("byRawIsoMVA") )
-        fill('l2MedMVAIso', event.diLepton.leg2().tauID("byMediumIsoMVA") )
-        fill('l2TigMVAIso', event.diLepton.leg2().tauID("byTightIsoMVA") )
-        fill('l2LooseEle', event.diLepton.leg2().tauID("againstElectronLoose") )
-        fill('l2MVAEle', event.diLepton.leg2().tauID("againstElectronMVA") )
-        fill('l2LooseMu', event.diLepton.leg2().tauID("againstMuonLoose") )
+        fill('l2DecayMode', leg2.decayMode() )
+        #fill('l2LooIso', leg2.tauID("byLooseCombinedIsolationDeltaBetaCorr") )
+        #fill('l2MedIso', leg2.tauID("byMediumCombinedIsolationDeltaBetaCorr") )
+        #fill('l2TigIso', leg2.tauID("byTightCombinedIsolationDeltaBetaCorr") )
+        fill('l2RawMVAIso', leg2.tauID("byRawIsoMVA") )
+        fill('l2MedMVAIso', leg2.tauID("byMediumIsoMVA") )
+        fill('l2TigMVAIso', leg2.tauID("byTightIsoMVA") )
+        #fill('l2LooseEle', leg2.tauID("againstElectronLoose") )
+        fill('l2MVAEle', leg2.tauID("againstElectronMVA") )
+        #fill('l2LooseMu', leg2.tauID("againstMuonLoose") )
 
         #if event.diLepton.leg1().genTaup4() and event.diLepton.leg2().genTaup4():
         #  fill('genTauVisMass', sqrt(
@@ -180,10 +209,13 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
 	    fill('mttj', sqrt(pow(event.diLepton.energy()+event.cleanJets[0].energy(),2) - pow(event.diLepton.px()+event.cleanJets[0].px(),2) - pow(event.diLepton.py()+event.cleanJets[0].py(),2) - pow(event.diLepton.pz()+event.cleanJets[0].pz(),2)))
         if nJets>=2:
             fParticleVars('jet2', event.cleanJets[1] )
-	    fill('mjj', sqrt(pow(event.cleanJets[0].energy()+event.cleanJets[1].energy(),2) -
-	                     pow(event.cleanJets[0].px()+event.cleanJets[1].px(),2) - 
-			     pow(event.cleanJets[0].py()+event.cleanJets[1].py(),2) - 
-			     pow(event.cleanJets[0].pz()+event.cleanJets[1].pz(),2)))
+	    fill('mjj', event.vbf.mjj)
+	    fill('deltaEta', event.vbf.deta)
+	    fill('nCentralJets', len(event.vbf.centralJets))
+	    #fill('mjj', sqrt(pow(event.cleanJets[0].energy()+event.cleanJets[1].energy(),2) -
+	    #                 pow(event.cleanJets[0].px()+event.cleanJets[1].px(),2) - 
+		#	     pow(event.cleanJets[0].py()+event.cleanJets[1].py(),2) - 
+		#	     pow(event.cleanJets[0].pz()+event.cleanJets[1].pz(),2)))
 
         fill('weight', event.eventWeight)
         if hasattr( event, 'vertexWeight'): 
@@ -212,13 +244,4 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         if hasattr(event,'isElectron') and event.isElectron == 1: isElectron = 1
         fill('isElectron', isElectron)
 
-        # SKIMMING here:
-        if event.diLepton.leg1().pt>20 and \
-	   event.diLepton.leg2().pt>20 and \
-	   event.diLepton.leg1().tauID("decayModeFinding")>0.5 and \
-	   event.diLepton.leg2().tauID("decayModeFinding")>0.5 and \
-	   event.diLepton.leg1().tauID("againstElectronLoose")>0.5 and \
-	   event.diLepton.leg2().tauID("againstElectronLoose")>0.5 and \
-	   event.diLepton.leg1().tauID("againstMuonLoose")>0.5 and \
-	   event.diLepton.leg2().tauID("againstMuonLoose")>0.5:
-            self.tree.fill()
+        self.tree.fill()
