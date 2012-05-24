@@ -218,6 +218,49 @@ elif(phase == 3 ):
          Gtmin.SetPoint(mi, m, mtMinCut);
          Gtmax.SetPoint(mi, m, mtMaxCut);
          mi+=1
+
+      #display cuts chosen
+      c1 = ROOT.TCanvas("c1", "c1",900,300);
+      ROOT.gROOT.SetStyle('Plain')
+      ROOT.gStyle.SetOptStat(False);
+
+      c1 = ROOT.TCanvas("c1", "c1",900,300);
+      c1.Divide(3);
+      c1.cd(1);
+      Gmet.SetMarkerStyle(20);
+      Gmet.SetTitle("MET");
+      Gmet.Draw("APC");
+      Gmet.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
+      Gmet.GetYaxis().SetTitle("met cut");
+
+      c1.cd(2);
+      Gtmin.SetMarkerStyle(20);
+      Gtmin.SetTitle("MT min");
+      Gtmin.Draw("APC");
+      Gtmin.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
+      Gtmin.GetYaxis().SetTitle("mt_{min} cut");
+
+      c1.cd(3);
+      Gtmax.SetMarkerStyle(20);
+      Gtmax.SetTitle("MT max");
+      Gtmax.Draw("APC");
+      Gtmax.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
+      Gtmax.GetYaxis().SetTitle("mt_{max} cut");
+      c1.cd(0);
+      c1.Update();
+      c1.SaveAs("OptimizedCuts.png")
+
+      #run limits for the cuts chosen (for intermediate masses use spline interpolation)
+      for m in SUBMASS:
+           index = findCutIndex(Gmet.Eval(m,0,"S"), cuts1, Gtmin.Eval(m,0,"S"), cuts2,  Gtmax.Eval(m,0,"S"), cuts3);
+           print("mH="+str(m).rjust(3)+ " met>"+str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + "<mt<"+str(cuts3.GetBinContent(index)).rjust(5) )
+
+      while True:
+           ans = raw_input('Use this fit and compute final limits? (y or n)\n')
+           if(ans=='y' or ans == 'Y'): break;
+           else:			    sys.exit(0);           
+      print 'YES'
+
    else :
       mi=0
       f= open(cutList,'r')
@@ -229,49 +272,11 @@ elif(phase == 3 ):
          mi+=1
       f.close()
 
-   #display cuts chosen
-   c1 = ROOT.TCanvas("c1", "c1",900,300);
-   ROOT.gROOT.SetStyle('Plain')
-   ROOT.gStyle.SetOptStat(False);
+      for m in SUBMASS:
+           index = findCutIndex(Gmet.Eval(m,0,"S"), cuts1, Gtmin.Eval(m,0,"S"), cuts2,  Gtmax.Eval(m,0,"S"), cuts3);
+           print("mH="+str(m).rjust(3)+ " met>"+str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + "<mt<"+str(cuts3.GetBinContent(index)).rjust(5) )
 
-   c1 = ROOT.TCanvas("c1", "c1",900,300);
-   c1.Divide(3);
-   c1.cd(1);
-   Gmet.SetMarkerStyle(20);
-   Gmet.SetTitle("MET");
-   Gmet.Draw("APC");
-   Gmet.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
-   Gmet.GetYaxis().SetTitle("met cut");
 
-   c1.cd(2);
-   Gtmin.SetMarkerStyle(20);
-   Gtmin.SetTitle("MT min");
-   Gtmin.Draw("APC");
-   Gtmin.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
-   Gtmin.GetYaxis().SetTitle("mt_{min} cut");
-
-   c1.cd(3);
-   Gtmax.SetMarkerStyle(20);
-   Gtmax.SetTitle("MT max");
-   Gtmax.Draw("APC");
-   Gtmax.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
-   Gtmax.GetYaxis().SetTitle("mt_{max} cut");
-   c1.cd(0);
-   c1.Update();
-   c1.SaveAs("OptimizedCuts.png")
-
-   #run limits for the cuts chosen (for intermediate masses use spline interpolation)
-   for m in SUBMASS:
-      	index = findCutIndex(Gmet.Eval(m,0,"S"), cuts1, Gtmin.Eval(m,0,"S"), cuts2,  Gtmax.Eval(m,0,"S"), cuts3);
-	#print("best mH="+str(m).rjust(3)+ " met>"+str(int(Gmet.Eval(m,0,"S"))).rjust(5) + " " + str(int(Gtmin.Eval(m,0,"S"))).rjust(5) + "<mt<"+str(int(Gtmax.Eval(m,0,"S"))).rjust(5) ) 
-      	print("mH="+str(m).rjust(3)+ " met>"+str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + "<mt<"+str(cuts3.GetBinContent(index)).rjust(5) )
-
-   while True:
-	ans = raw_input('Use this fit and compute final limits? (y or n)\n')
-	if(ans=='y' or ans == 'Y'): break;
-	else:			    sys.exit(0);
-	
-   print 'YES'
    list = open(OUT+'list.txt',"w")
    listcuts = open(OUT+'cuts.txt',"w")
    for m in SUBMASS:
@@ -289,7 +294,6 @@ elif(phase == 3 ):
         if(shapeBased=='1'): cardsdir+='_shape_'+str(index)
         SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
         SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " " + " --syst " + shapeBasedOpt + " --index " + str(index) + " --json " + jsonUrl + " " + LandSArg + " ;\n")
-        #SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " " + shapeBasedOpt + " --index " + str(index) + " --json " + jsonUrl + " " + LandSArg + " ;\n")
         SCRIPT.writelines("sh combineCards.sh;\n")
         SCRIPT.writelines("$CMSSW_BASE/src/UserCode/mschen/LandS/test/lands.exe -d Shapes_*.dat  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 4000 --nToysForCLb 2000 --seed 1234 -rMax 50 -rMin 0.1 > LANDS.log;\n")
         SCRIPT.writelines('cd ..;\n\n') 
