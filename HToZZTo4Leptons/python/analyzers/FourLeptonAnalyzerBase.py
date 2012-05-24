@@ -44,13 +44,9 @@ class FourLeptonAnalyzerBase( Analyzer ):
         count.register('all events')
         
     def buildPhotonList(self, event):
-        ##I SHOULDNT NEED TO REDIFNE THE CLASS HERE
-#        Photon.match=0
-#        Electron.match=0
 
         event.photons = map( Photon,self.handles['photons'].product() )
-        #append the electrons
-        event.photons.extend(map( Electron,self.handles['electrons'].product()))
+#        event.photons.extend(map( Photon,self.handles['electrons'].product()))
 
 
     def buildLeptonList(self, event):
@@ -83,10 +79,15 @@ class FourLeptonAnalyzerBase( Analyzer ):
             if not hasattr(self.cfg_ana,"FSR"):
                 out.append(z)
             else:    
+
                 fsrAlgo=FSRRecovery(self.cfg_ana.FSR)
+
                 fsrAlgo.setPhotons(photons)
+
                 fsrAlgo.setZ(z)
-                fsrAlgo.recover()
+
+                fsrAlgo.recoverZ(True)
+
                 out.append(z)
         return out
 
@@ -109,12 +110,10 @@ class FourLeptonAnalyzerBase( Analyzer ):
                 else:    
                     fsrAlgo=FSRRecovery(self.cfg_ana.FSR)
                     fsrAlgo.setPhotons(photons)
-                    fsrAlgo.setZ(quadObject.leg1)
+                    fsrAlgo.setZZ(quadObject)
                     #recover FSR photons
-                    fsrAlgo.recover(True)
+                    fsrAlgo.recoverZZ()
                     #Now Z 2
-                    fsrAlgo.setZ(quadObject.leg2)
-                    fsrAlgo.recover()
                     quadObject.updateP4()
                     out.append(quadObject)
         return out
@@ -311,12 +310,22 @@ class FourLeptonAnalyzerBase( Analyzer ):
             return max(zBosons, key = lambda x: x.leg1.pt()+x.leg2.pt())
 
 
+    def testZBosonSumPt(self, zBoson):
+        sum=0
+        if zBoson.hasFSR():
+            sum = zBoson.leg1.pt()+zBoson.leg2.pt()+zBoson.fsrPhoton.pt()
+        else:    
+            sum = zBoson.leg1.pt()+zBoson.leg2.pt()
+        return sum    
+
+
 
     def sortFourLeptons(self, fourLeptons):
         #sort the first one by Z mass and if there
         #are more than one take the two highest pt ones
         if len(fourLeptons)>1 :
-            fourLeptons=sorted(fourLeptons,key=lambda x: x.leg2.leg1.pt()+x.leg2.leg2.pt(),reverse=True)
+            
+            fourLeptons=sorted(fourLeptons,key=lambda x: self.testZBosonSumPt,reverse=True)
             fourLeptons=sorted(fourLeptons,key=lambda x: abs(x.leg1.mass()-91.2))
             
         

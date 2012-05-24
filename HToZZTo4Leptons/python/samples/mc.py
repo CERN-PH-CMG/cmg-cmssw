@@ -8,6 +8,15 @@ GGH120 = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1)
 
+GGH125 = cfg.MCComponent(
+    name = 'GGH125',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+
 GGH130 = cfg.MCComponent(
     name = 'GGH130',
     files = [],

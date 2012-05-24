@@ -60,7 +60,8 @@ class FourLeptonAnalyzerFSRStudy( FourLeptonAnalyzerBase ):
         #Get photons
         self.buildPhotonList( event )
 
-        event.selectedPhotons = copy.copy(event.photons)
+
+        EVN=iEvent.eventAuxiliary().id().event()
         
         #generator
         event.genPhotons = self.getGeneratedFSR(2.0)
@@ -68,21 +69,45 @@ class FourLeptonAnalyzerFSRStudy( FourLeptonAnalyzerBase ):
             #find the highest
             event.bestGenPhoton=max(event.genPhotons,key=lambda x: x.pt())
 
-            for gamma in event.selectedPhotons:
+                
+        for gamma in event.photons:
+
+#            if EVN==9318 or EVN==9390:
+#                print "EVENT=%d\n"  % EVN
+#                print gamma.pt()
+#                print gamma.eta()
+#                print gamma.phi()
+            
+            match=0
+            matched=None
+            if len(event.genPhotons)>0:
+                dr0=100.
+                for mcgamma in event.genPhotons:
+                    dr=deltaR(mcgamma.eta(),mcgamma.phi(),gamma.eta(),gamma.phi())
+                    if dr < dr0 and dr<0.1:
+                        dr0=dr
+                        match=1
+                        matched=mcgamma
+            gamma.match=match
+            if match:
+                gamma.matchedE = matched.energy()
+            else:
+                gamma.matchedE=-99
+            #add the type
+            if abs(gamma.pdgId())==22:
+                gamma.type=0
+            elif abs(gamma.pdgId())==11:
+                gamma.type=1
+            elif gamma.charge() != 0:
+                gamma.type=2
+
+        if hasattr(event,'bestGenPhoton '):   
+            for gamma in event.photons:
                 dr=deltaR(gamma.eta(),gamma.phi(),event.bestGenPhoton.eta(),event.bestGenPhoton.phi())
                 if dr<0.08:
                     event.matchedPhoton=gamma
                     break
-                
-            for gamma in event.selectedPhotons:
-                match=0
-                if len(event.genPhotons)>0:
-                    for mcgamma in event.genPhotons:
-                        dr=deltaR(mcgamma.eta(),mcgamma.phi(),gamma.eta(),gamma.phi())
-                        if dr < 0.08:
-                            match=1
-                            break
-                gamma.match=match        
+
 
         #create a cut flow
         cutFlow = CutFlowMaker(self.counters.counter("FourLepton"),event,event.leptons1,event.leptons2)
@@ -99,7 +124,7 @@ class FourLeptonAnalyzerFSRStudy( FourLeptonAnalyzerBase ):
         passed = cutFlow.applyCut(cleanOverlap,'electron cross cleaning',2,'cleanLeptons')
 
         #make lepton combinations 
-        event.leptonPairs = self.findPairsWithFSR(cutFlow.obj1,event.selectedPhotons)
+        event.leptonPairs = self.findPairsWithFSR(cutFlow.obj1,event.photons)
         cutFlow.setSource1(event.leptonPairs)
         
         #require that   M>40 and OS/SF
@@ -134,7 +159,7 @@ class FourLeptonAnalyzerFSRStudy( FourLeptonAnalyzerBase ):
 
         #Now create four Lepton candidtes upstream. Use all permutations and not combinations
         #of leptons so we can pick the best Z1 and Z2
-        event.fourLeptons = self.findQuadsWithFSR(event.cleanLeptons,event.selectedPhotons)
+        event.fourLeptons = self.findQuadsWithFSR(event.cleanLeptons,event.photons)
         #Sort them by M1 near Z and My highest Pt sum
         self.sortFourLeptons(event.fourLeptons)
         cutFlow.setSource1(event.fourLeptons)
@@ -145,6 +170,7 @@ class FourLeptonAnalyzerFSRStudy( FourLeptonAnalyzerBase ):
         
         #Next Step : Apply Loose Lepton Selection
         passed=cutFlow.applyCut(self.testFourLeptonLooseID,'4l loose lepton id',1,'fourLeptonsLooseID')
+        
         #Require Z1 OS/SF and mass cuts
         passed=cutFlow.applyCut(self.testFourLeptonZ1,'4l pair 1 built',1,'fourLeptonsZ1')
         #Apply Tight ID for Z1
@@ -165,7 +191,7 @@ class FourLeptonAnalyzerFSRStudy( FourLeptonAnalyzerBase ):
         passed=cutFlow.applyCut(self.testFourLeptonTightID,'4l tight lepton tightid',1,'fourLeptonsTightID')
         
         #QCD suppression
-        passed=cutFlow.applyCut(self.testFourLeptonMinMass,'4l QCD suppression',1,'fourLeptonsQCDSuppression')
+#        passed=cutFlow.applyCut(self.testFourLeptonMinMass,'4l QCD suppression',1,'fourLeptonsQCDSuppression')
 
 
         #The other analyzer has cuts on M>70 or M>100 . I am totally against a cut at M>100 so I am not
@@ -174,7 +200,10 @@ class FourLeptonAnalyzerFSRStudy( FourLeptonAnalyzerBase ):
         
 
         if passed:
-            event.higgsCand = cutFlow.obj1[0]
+         #   if EVN==9318 or EVN==9390:
+          #      for object in cutFlow.obj1:
+#                    print "mass before={before} mass after={after} z1before={zbefore} z1after={zafter}  z1hasPhoton={photon} z2 hasPhoton={photon2} dr={dr}".format(before=object.fsrUncorrected().M(),after=object.mass(),zbefore=object.leg1.fsrUncorrected().M(),zafter=object.leg1.mass(),photon=object.leg1.hasFSR(),photon2=object.leg2.hasFSR(),dr=min(object.leg2.fsrDR1(),object.leg2.fsrDR2()))
+             event.higgsCand = cutFlow.obj1[0]
         
         return True
     
@@ -186,19 +215,7 @@ class FourLeptonAnalyzerFSRStudy( FourLeptonAnalyzerBase ):
            if abs(ptc.pdgId()) != 22 or ptc.pt() <ptmin  or abs(ptc.eta())>2.5: continue
            if not(ptc.numberOfMothers()) : continue
            moth = ptc.mother(0)
-           if abs(moth.pdgId()) != 13 and \
-           abs(moth.pdgId()) != 13 : continue
-           # Check that the grand-mother is a Z
-           if not(moth.numberOfMothers()) : continue
-           grandma = moth.mother(0)
-           while grandma.pdgId() == moth.pdgId():
-               grandma = grandma.mother(0)
-           if ( grandma.pdgId() != 23 ) : continue
-           # check that the grand-grand-mother is a Higgs
-           if not(grandma.numberOfMothers()) : continue
-           aieule = grandma.mother(0)
-           if aieule.pdgId() != 25 :continue
-           # store the true FSR photons             
+           if not ((abs(moth.pdgId()) == 13) or (abs(moth.pdgId()) == 11) or (abs(moth.pdgId()) == 15)): continue  
            trueFSR.append(ptc)
 
        return trueFSR    
