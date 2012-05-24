@@ -51,13 +51,6 @@ class FSRRecovery(object):
         #Prefilter
         photons = filter(self.photonPreFilter,self.photons)
 
-        #take the Closest
-#        photons=sorted(photons,key=self.compareDistance)
-#        if len(photons):
-#            photons=[photons[0]]
-#        else:
-#            photons=[]
-            
 #        print "Photons after Prefilter = %d\n" % len(self.photons)
         # filter wrt Z candidate
         photons = filter(self.photonFilter,photons)
@@ -177,8 +170,7 @@ class FSRRecovery(object):
         if min(theta1,theta2) > self.cfg.maxLeptonPhotonAngle:
             return False
 
-#        if min(dr1,dr2) > self.cfg.maxLeptonPhotonDRTight and photon.relIso(0.5)>self.cfg.maxPhotonDBIso:
-        if  photon.relIso(0.5)>self.cfg.maxPhotonDBIso:
+        if min(dr1,dr2) > self.cfg.maxLeptonPhotonDRTight and photon.relIso(0.5)>self.cfg.maxPhotonDBIso:
             return False
 
         if photon.pt() < self.cfg.minPhotonPtTight and min(dr1,dr2) > self.cfg.maxLeptonPhotonDRTight:

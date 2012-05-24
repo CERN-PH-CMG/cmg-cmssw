@@ -64,7 +64,7 @@ class FourLeptonAnalyzerFSRStudy( FourLeptonAnalyzerBase ):
         EVN=iEvent.eventAuxiliary().id().event()
         
         #generator
-        event.genPhotons = self.getGeneratedFSR(2.0)
+        event.genPhotons = self.getGeneratedFSR(0.5)
         if len(event.genPhotons)>0:
             #find the highest
             event.bestGenPhoton=max(event.genPhotons,key=lambda x: x.pt())
