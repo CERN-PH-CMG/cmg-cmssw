@@ -105,19 +105,30 @@ for mc in MC:
     mc.jetSmear = mc_jet_smear
 
 selectedComponents = data_2011 + [DYJets, WJets, TTJets, WW, WZ, ZZ]
-selectedComponents += [Higgsgg110, Higgsgg115, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135,
-                       HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135]
+selectedComponents += [Higgsgg110, Higgsgg115, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135, Higgsgg140, Higgsgg145,
+                       HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145]
 
 if runOnData:
     selectedComponents = data_2011
 if runOnMC:
     selectedComponents = [DYJets, WJets, TTJets, WW, WZ, ZZ]
-    selectedComponents += [Higgsgg110, Higgsgg115, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135,
-                           HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135]
+    selectedComponents += [Higgsgg110, Higgsgg115, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135, Higgsgg140, Higgsgg145,
+                           HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145]
 
 print [c.name for c in selectedComponents]
 
-sequence = cfg.Sequence( [
+if runOnMC:
+  sequence = cfg.Sequence( [
+    TauTauAna,
+    vbfAna,
+    vertexAna,
+    tau1Weighter, 
+    tau2Weighter, 
+    treeProducer
+   ] )
+else:
+  sequence = cfg.Sequence( [
+    triggerAna,
     TauTauAna,
     vbfAna,
     vertexAna,
@@ -126,12 +137,14 @@ sequence = cfg.Sequence( [
     treeProducer
    ] )
 
-
 DYJets.fakes = True
 DYJets.splitFactor = 50
 WJets.fakes = True
 WJets.splitFactor = 50
 TTJets.splitFactor = 50 
+WW.splitFactor = 10
+WZ.splitFactor = 10
+ZZ.splitFactor = 10
 data_Run2011A_May10ReReco_v1.splitFactor = 50
 data_Run2011A_PromptReco_v4.splitFactor = 50 
 data_Run2011A_05Aug2011_v1.splitFactor = 50
@@ -140,9 +153,9 @@ data_Run2011A_05Aug2011_v1.splitFactor = 50
 
 test = 0
 if test==1:
-    #comp = DYJets
+    comp = DYJets
     #comp = WJets
-    comp = data_Run2011A_05Aug2011_v1
+    #comp = data_Run2011A_05Aug2011_v1
     #comp = Higgsgg125
     selectedComponents = [comp]
     comp.splitFactor = 10
