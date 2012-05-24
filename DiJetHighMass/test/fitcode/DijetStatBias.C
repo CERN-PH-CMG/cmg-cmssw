@@ -19,7 +19,7 @@
 
 using namespace std;
 
-void DijetStatBias (int Npexp = 500, bool fixp4=true, double kappa=0.001)
+void DijetStatBias (int Npexp = 250, bool fixp4=false, double kappa=0)
 {
 
   // This macro checks the result of exo-11-095
@@ -73,10 +73,14 @@ void DijetStatBias (int Npexp = 500, bool fixp4=true, double kappa=0.001)
   P4G->SetLineWidth(1);
 
   TH1D * Pull[10];
+  TH1D * Chi2[10];
   char name[20];
+  char nameChi2[10];
   for (int i=0; i<5; i++) {
     sprintf (name, "Pull%d", i);
-    Pull[i]= new TH1D (name, name, 100, -10., 10.);
+    sprintf (nameChi2, "Chi2%d", i);
+    Pull[i]= new TH1D (name, name, 50, -10., 10.);
+    Chi2[i]= new TH1D (nameChi2, nameChi2, 50, 0, 200.);
   }
   TH1D * M12[10];
   for (int i=0; i<5; i++) {
@@ -115,14 +119,21 @@ void DijetStatBias (int Npexp = 500, bool fixp4=true, double kappa=0.001)
     // and normalization set by user (see kappa)
     // -----------------------------------------
     double gp1 = (double)i*400+1600;
-    double gp2 = gp1/10.;  
-    double gp0 = kappa*P4->Eval(gp1); // NNBB P4 for now
+    double gp2 = gp1/20.;  
+    double gp0 = P4->Eval(gp1); // NNBB P4 for now
+
+
     double f = 0;
+    f = sqrt(P4->Integral(gp1, gp1+100)/100)*kappa;
+       
+    /*
     if (i == 0) f = 1000.;
     if (i == 1) f = 500.;
     if (i == 2) f = 250.;
     if (i == 3) f = 100.;
     if (i == 4) f = 20.;
+    */
+    
 
 
     G->SetParameters(gp0,gp1,gp2);
@@ -138,7 +149,7 @@ void DijetStatBias (int Npexp = 500, bool fixp4=true, double kappa=0.001)
     G->FixParameter(1,gp1);
     G->FixParameter(2,gp2);
 
-    cout << "gp1 = " << gp1 << " gp2 = " << gp2 << " gp0 = " << gp0 << " P4->Eval(gp1) = " << P4->Eval(gp1)*100 << " integral = " << dint << " gint = " << gint << endl;
+    cout << "gp1 = " << gp1 << " gp2 = " << gp2 << " gp0 = " << gp0 << " P4 total integral = " << P4->Integral(xmin, xmax) << " integral = " << dint << " gint = " << gint << endl;
 
     double binMiddle = 0;
 
@@ -147,6 +158,7 @@ void DijetStatBias (int Npexp = 500, bool fixp4=true, double kappa=0.001)
       P4->SetParameters(p40,p41,p42,p43);
       double P4GParam = gp0*(xmax-xmin)/(double)Nbins;
       P4G->SetParameters(p40,p41,p42,p43,P4GParam,gp1,gp2);
+      P4G->SetParLimits(4,0, 1e5);
       P4G->FixParameter(5,gp1);
       P4G->FixParameter(6,gp2);
 
@@ -160,17 +172,20 @@ void DijetStatBias (int Npexp = 500, bool fixp4=true, double kappa=0.001)
 
       if (j==0) {
 	binMiddle = M12_meas->FindBin(gp1);
-	cout << "binMiddle = " << binMiddle << " binCenter = " << M12_meas->GetBinCenter(binMiddle) << endl;
+	cout << "binMiddle = " << binMiddle << " binCenter = " << M12_meas->GetBinCenter(binMiddle) << " binContent = "
+	     << M12_meas->GetBinContent(binMiddle) << endl;
       }
 
-      M12_meas->Sumw2();
+      //      M12_meas->Sumw2();
 
-      M12_meas->SetBinError(binMiddle-2, 1.e10);
-      M12_meas->SetBinError(binMiddle-1, 1.e10);
-      M12_meas->SetBinError(binMiddle, 1.e10);
-      M12_meas->SetBinError(binMiddle+1, 1.e10);
+      //      M12_meas->SetBinError(binMiddle-2, 1.e10);
+      //      M12_meas->SetBinError(binMiddle-1, 1.e10);
+      //      M12_meas->SetBinError(binMiddle, 1.e10);
+      //      M12_meas->SetBinError(binMiddle+1, 1.e10);
       
-      M12_meas->Fit("P4","QN");
+      M12_meas->Fit("P4","QNLL");
+
+      double chi2 = P4->GetChisquare();
 
       if (fixp4) {
         P4G->FixParameter(0,P4->GetParameter(0));
@@ -178,15 +193,21 @@ void DijetStatBias (int Npexp = 500, bool fixp4=true, double kappa=0.001)
         P4G->FixParameter(2,P4->GetParameter(2));
         P4G->FixParameter(3,P4->GetParameter(3));
       }
-
+      
       //      M12_meas->SetBinError(binMiddle-2, sqrt(M12_meas->GetBinContent(binMiddle-2)));
-      M12_meas->SetBinError(binMiddle-1, sqrt(M12_meas->GetBinContent(binMiddle-1)));
-      M12_meas->SetBinError(binMiddle, sqrt(M12_meas->GetBinContent(binMiddle)));
+      //      M12_meas->SetBinError(binMiddle-1, sqrt(M12_meas->GetBinContent(binMiddle-1)));
+      //      M12_meas->SetBinError(binMiddle, sqrt(M12_meas->GetBinContent(binMiddle)));
       //      M12_meas->SetBinError(binMiddle+1, sqrt(M12_meas->GetBinContent(binMiddle+1)));
       
       M12_meas->Fit("P4G","QNLL");
+      if (!fixp4) chi2 = P4G->GetChisquare();
+
+
       //      M12_meas->Draw("H");
       double pull;
+
+      if (!fixp4) chi2 = P4G->GetChisquare();
+
       if (P4G->GetParError(4) > 0) {
 	double binWidth = (xmax-xmin)/Nbins;
 	double fittedRate = gp0*binWidth;
@@ -197,7 +218,9 @@ void DijetStatBias (int Npexp = 500, bool fixp4=true, double kappa=0.001)
 	//	if (j%50 == 0 && i < 4) 
 	cout << param << " " << fittedRate << " bin width = " << binWidth << " P4G error " << paramErr << " integral = " << gint << " total number of events = " << totNumEvents << endl;
         Pull[i]->Fill(pull);
+	Chi2[i]->Fill(chi2);
       }
+
       // Store one spectrum for display purpose
       // --------------------------------------
       if (j==0) {
@@ -211,12 +234,12 @@ void DijetStatBias (int Npexp = 500, bool fixp4=true, double kappa=0.001)
 	M12[i]->Sumw2();
 	
 
-	M12[i]->SetBinError(binMiddle-2, 1e10);
-	M12[i]->SetBinError(binMiddle-1, 1e10);
-	M12[i]->SetBinError(binMiddle, 1e10);
-	M12[i]->SetBinError(binMiddle+1, 1e10);
+	//	M12[i]->SetBinError(binMiddle-2, 1e10);
+	//	M12[i]->SetBinError(binMiddle-1, 1e10);
+	//	M12[i]->SetBinError(binMiddle, 1e10);
+	//	M12[i]->SetBinError(binMiddle+1, 1e10);
 
-	M12[i]->Fit("P4G","LL");
+	M12[i]->Fit("P4G","QLL");
 	
       }
     }
@@ -224,22 +247,81 @@ void DijetStatBias (int Npexp = 500, bool fixp4=true, double kappa=0.001)
 
   // Plot results
   // ------------
-  TCanvas * Res = new TCanvas ("Res","Res", 500, 500);
-  Res->Divide(2,5);
+
+  TF1* gauss = new TF1("gauss", "[2]*TMath::Gaus(x, [0], [1])");
+
+  TCanvas * Res = new TCanvas ("Res","Res", 1200, 800);
+  Res->Divide(4,5);
   for (int i=1; i<=5; i++) {
-    Res->cd(i*2-1);
+    Res->cd(i*4-3);
+
+    Pull[i-1]->SetLabelSize(0.07, "X");
+
     Pull[i-1]->Draw();
-    Res->cd(i*2);
-    Res->GetPad(i*2)->SetLogy();
+
+    gauss->SetParameters(Pull[i-1]->GetMean(), 1, Pull[i-1]->Integral()*sqrt(2*TMath::Pi())* 1);
+    //    Pull[i-1]->Fit("gauss");
+
+    TPaveText* p = new TPaveText(0.2, 0.7, 0.4, 0.9,"NDC");
+    //    p->AddText(Form("Bias = %.1f",gauss->GetParameter(0)));
+    p->AddText(Form("Bias = %.1f",Pull[i-1]->GetMean()));
+    p->Draw();
+
+    Res->cd(i*4-2);
+    Res->GetPad(i*4-2)->SetLogy();
+    if (fixp4) M12[i-1]->Fit("P4");
+    if (!fixp4) M12[i-1]->Fit("P4G");
     M12[i-1]->Draw("PE");
-//     P4->SetParameters(p400[i],p410[i],p420[i],p430[i]);
-//     P4->Draw("SAME");
+
+    Res->cd(i*4-1);
+    TH1F* LocalPull = M12[i-1]->Clone("LocalPull");
+    LocalPull->Clear();
+    
+    
+    for (int k = 1; k < LocalPull->GetNbinsX()+1; k++){
+
+      double binCenter = M12[i-1]->GetBinCenter(k);
+      double bkg =  P4->Eval(binCenter);
+      if (!fixp4) bkg =  P4G->Eval(binCenter);
+      double val =  M12[i-1]->GetBinContent(k);
+
+      if (val > 0.1) {
+	LocalPull->SetBinContent(k, (val-bkg)/sqrt(val));
+	LocalPull->SetBinError(k, 1);
+      }
+
+    }
+
+    LocalPull->SetMaximum(6);
+    LocalPull->SetMinimum(-4);
+    LocalPull->Draw();
+    LocalPull->SetStats(0);
+
+    TLine* L = new TLine(xmin, 0, xmax, 0);
+    L->SetLineColor(kRed);
+    L->SetLineStyle(1);
+    L->Draw("SAME");
+
+    TPaveText* p3 = new TPaveText(0.2, 0.7, 0.4, 0.9,"NDC");
+    if (fixp4) p3->AddText(Form("chi2 = %.1f",P4->GetChisquare()));
+    else p3->AddText(Form("chi2 = %.1f",P4G->GetChisquare()));
+    p3->Draw();
+
+    Res->cd(i*4);
+    Chi2[i-1]->Draw();
+    TPaveText* p4 = new TPaveText(0.6, 0.7, 0.9, 0.9,"NDC");
+    p4->AddText(Form("Mean #chi2 = %.1f",Chi2[i-1]->GetMean()));
+    p4->Draw();
+
+
   }
   if (fixp4) {
-    Res->Print("EXO11095noBias_withExclusion_10pct.png");
+    Res->Print(Form("EXO11095Bias_5pct_%.0fSqrtB.png",kappa));
   } else {
-    Res->Print("EXO11095noBias_10pct.png");
+    Res->Print(Form("EXO11095noBias_5pct_%.0fSqrtB.png",kappa));
   }
+
+
   // End of program
   // --------------
   gROOT->Time();
