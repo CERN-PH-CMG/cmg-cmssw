@@ -37,7 +37,6 @@ class GenJet( PhysicsObject):
 
 
 class Lepton( PhysicsObject):
-    
     def sip3D(self):
         patLepton = self.physObj.sourcePtr()
         return abs( patLepton.dB(2) ) / patLepton.edB(2) 
@@ -106,7 +105,9 @@ class Lepton( PhysicsObject):
 
 
 
-
+class Photon(Lepton):
+    pass
+    
 class Muon( Lepton ):
 
     def looseId( self ):
@@ -200,7 +201,7 @@ class Electron( Lepton ):
                self.mvaNonTrigV0()> element['mva']: 
                 ID=True
 
-        return ID and (self.numberOfHits<=1)
+        return ID and (self.numberOfHits()<=1)
 
 
 class GenParticle( PhysicsObject):
