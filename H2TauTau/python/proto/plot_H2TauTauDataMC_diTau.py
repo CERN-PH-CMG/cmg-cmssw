@@ -126,6 +126,7 @@ if __name__ == '__main__':
     baseline           += ' && l2MVAEle>0.5'
     l1Pt40l2Pt40       =  ' && l1Pt>40 && l2Pt>40'
     l1Pt45l2Pt45       =  ' && l1Pt>45 && l2Pt>45'
+    isolationLL        =  ' && l1RawMVAIso>0.5 && l2RawMVAIso>0.795'
     isolationML        =  ' && ((l1MedMVAIso>0.5 && l2RawMVAIso>0.795) || (l1RawMVAIso>0.795 && l2MedMVAIso>0.5))'
     isolationMM        =  ' && l1MedMVAIso>0.5 && l2MedMVAIso>0.5'
     isolationMT        =  ' && ((l1MedMVAIso>0.5 && l2TigMVAIso>0.5) || (l1TigMVAIso>0.5 && l2MedMVAIso>0.5))'
@@ -134,14 +135,15 @@ if __name__ == '__main__':
     BOOSTED            =  ' && jet1Pt>50'
     VBF                =  ' && jet1Pt>30 && jet2Pt>30 && abs(jet1Eta - jet2Eta)>2.5 && (jet1Eta*jet2Eta)<0 && mjj>250 '
     NOVBF              =  ' && (jet1Pt<30 || jet2Pt<30 || abs(jet1Eta - jet2Eta)<2.5 || (jet1Eta*jet2Eta)>0 || mjj<250)'
+    VBFtight           =  ' && jet1Pt>30 && jet2Pt>30 && abs(jet1Eta - jet2Eta)>4.0 && (jet1Eta*jet2Eta)<0 && mjj>400 && nCentralJets==0'
 
     cuts=[
-        #("CMS_review_loose_l45_j50_dR20_tt_Met00_Inclusive",baseline+l1Pt40l2Pt40,'',isolationTT,1),
-        ("CMS_review_l40_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt40l2Pt40+BOOSTED+NOVBF,' && dRtt<2.0',isolationMT,2),
-        ("CMS_review_l40_j50_dR20_tt_Met00_VBF",baseline+l1Pt40l2Pt40+VBF,' && dRtt<2.0',isolationMT,2),
-        #("CMS_review_l45_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt45l2Pt45+BOOSTED+NOVBF,' && dRtt<2.0',isolationMT,2),
-        #("CMS_review_l35_j50_dR20_tt_Met00_VBF",baseline+VBF,' && dRtt<2.0',isolationMT,2),
-        ("CMS_review_l40_j50_dR20_tt_Met00_0Jet",baseline+l1Pt45l2Pt45+Jet0+NOVBF,'',isolationTT,2),
+        ("CMS_review24_l40_j50_dR20_tt_Met00_VBFtight",baseline+l1Pt40l2Pt40+VBFtight,' && dRtt<2.0',isolationML,2),
+        #("CMS_review24_l40_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt40l2Pt40+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,2),
+        #("CMS_review24_l40_j50_dR20_tt_Met00_VBF",baseline+l1Pt40l2Pt40+VBF,' && dRtt<2.0',isolationMM,2),
+        #("CMS_review24_l40_j50_dR20_tt_Met00_0Jet",baseline+l1Pt40l2Pt40+Jet0+NOVBF,'',isolationTT,2),
+        #("CMS_reviewI_l45_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt45l2Pt45+BOOSTED+NOVBF,' && dRtt<2.0',isolationMT,2),
+        #("CMS_reviewI_l35_j50_dR20_tt_Met00_VBF",baseline+VBF,' && dRtt<2.0',isolationMT,2),
 	  ]
         
     for prefix,cut,antiqcdcut,isocut,qcdEstimate in cuts:
@@ -333,6 +335,7 @@ if __name__ == '__main__':
         plotVarDataOS.Hist('QCDdata').layer = 0.99
         plotVarDataOS.Hist('QCDdata').Scale(QCDScale)
 
+        print "Data lumi:", plotVarDataOS.intLumi
         print "Yields for MC and Data Higgs Mass = "+str(mIndex)+" GeV"
         print "Data:"                    , plotVarDataOS.Hist("Data").Integral()
         print "TTJets:"                  , plotVarDataOS.Hist("TTJets").Integral()

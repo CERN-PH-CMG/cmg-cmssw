@@ -3,7 +3,7 @@ from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.DiObject import TauTau
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Tau, GenParticle
-# from CMGTools.H2TauTau.proto.analyzers.CountLeptons import electronAccept
+from CMGTools.H2TauTau.proto.analyzers.CountLeptons import electronAccept
 from CMGTools.RootTools.utils.DeltaR import deltaR2
 from ROOT import TFile
 
@@ -32,13 +32,27 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             self.higgsPtWeightHistogram=self.higgsPtWeightFile.Get("powheg_weight/weight_hqt_fehipro_fit_"+masspoint)
 
     def process(self, iEvent, event):
-        result = super(TauTauAnalyzer, self).process(iEvent, event)
+        # select signal dileptons with all cuts on both legs
+	result = super(TauTauAnalyzer, self).process(iEvent, event)
         
+        # select non signal dileptons with loose cuts
         if result is False:
-            return result
+            selDiLeptons = [ diL for diL in event.diLeptons if \
+                             self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
+			     self.testLooseLeg( diL.leg1() ) and self.testLooseLeg( diL.leg2() ) ]
+            if len(selDiLeptons)==0:
+                selDiLeptons = [ diL for diL in event.diLeptons if \
+                             self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
+			     self.testNonLeg( diL.leg1() ) and self.testNonLeg( diL.leg2() ) ]
+            if len(selDiLeptons)==0:
+                return False
+            event.diLepton = self.bestDiLepton( selDiLeptons )
+            event.leg1 = event.diLepton.leg1()
+            event.leg2 = event.diLepton.leg2()
+            event.isSignal = False
+        else:
+            event.isSignal = True
 
-        # Simone, that's what you probably want to check.
-        # Also have a look at CMGTools.RootTools.physicsobjects.DiObject
         event.genMatched = None
         if self.cfg_comp.isMC and "DY" in self.cfg_comp.name:
             genParticles = self.mchandles['genParticles'].product()
@@ -97,14 +111,36 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
         
 
     def testLeg1(self, leg):
-        return self.testTau(leg) and \
-               super( TauTauAnalyzer, self).testLeg1( leg )
+        return (leg.pt()>35 and abs(leg.eta())<2.1 and \
+	   leg.tauID("decayModeFinding")>0.5 and \
+	   leg.tauID("byMediumIsoMVA")>0.5 and \
+	   leg.tauID("againstElectronLoose")>0.5 and \
+	   leg.tauID("againstMuonLoose")>0.5)
 
 
     def testLeg2(self, leg):
-        return self.testTau(leg) and \
-               super( TauTauAnalyzer, self).testLeg2( leg )
+        return (leg.pt()>35 and abs(leg.eta())<2.1 and \
+	   leg.tauID("decayModeFinding")>0.5 and \
+	   leg.tauID("byMediumIsoMVA")>0.5 and \
+	   leg.tauID("againstElectronLoose")>0.5 and \
+	   leg.tauID("againstMuonLoose")>0.5)
 
+    #def selectDiLeptons(self, diLeptons, cutString=None):
+    #    selDiLeptons = [ diL for diL in diLeptons if \
+    #                     (diL.leg1().tauID("byTightIsoMVA")>0.5 or diL.leg2().tauID("byTightIsoMVA")>0.5)]
+    #    if len(selDiLeptons) > 0:
+    #        self.counters.counter('DiLepton').inc( 'di-lepton cut string ok')
+    #    return selDiLeptons
 
-##     def leptonAccept(self, leptons):
-##         return electronAccept( leptons )
+    def testLooseLeg(self, leg):
+        return (leg.pt()>35 and abs(leg.eta())<2.1 and \
+	   leg.tauID("decayModeFinding")>0.5 and \
+	   leg.tauID("byRawIsoMVA")>0.795 and \
+	   leg.tauID("againstElectronLoose")>0.5 and \
+	   leg.tauID("againstMuonLoose")>0.5)
+
+    def testNonLeg(self, leg):
+        return (leg.pt()>35 and abs(leg.eta())<2.1 and \
+	   leg.tauID("decayModeFinding")>0.5 and \
+	   leg.tauID("againstElectronLoose")>0.5 and \
+	   leg.tauID("againstMuonLoose")>0.5)
