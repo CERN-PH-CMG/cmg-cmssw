@@ -33,12 +33,16 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_Pt'.format(pName=pName))
         self.var('{pName}_Eta'.format(pName=pName))
         self.var('{pName}_Phi'.format(pName=pName))
+        self.var('{pName}_E'.format(pName=pName))
 
     def bookRecoFSR(self, pName ):
         self.var('{pName}_Pt'.format(pName=pName))
         self.var('{pName}_Eta'.format(pName=pName))
         self.var('{pName}_Phi'.format(pName=pName))
+        self.var('{pName}_E'.format(pName=pName))
         self.var('{pName}_Match'.format(pName=pName))
+        self.var('{pName}_MatchE'.format(pName=pName))
+        self.var('{pName}_Type'.format(pName=pName))
         self.var('{pName}_IsoCharged'.format(pName=pName))
         self.var('{pName}_IsoGamma'.format(pName=pName))
         self.var('{pName}_IsoNeutral'.format(pName=pName))
@@ -49,20 +53,27 @@ class TreeProducer( Analyzer ):
         self.fill('{pName}_Pt'.format(pName=pName), particle.pt() )
         self.fill('{pName}_Eta'.format(pName=pName), particle.eta() )
         self.fill('{pName}_Phi'.format(pName=pName), particle.phi() )
+        self.fill('{pName}_E'.format(pName=pName), particle.energy() )
 
     def fillRecoFSR(self, pName,particle ):
         self.fillGenFSR(pName,particle)
         if hasattr(particle,'match'):
             self.fill('{pName}_Match'.format(pName=pName), particle.match )
+            self.fill('{pName}_MatchE'.format(pName=pName), particle.matchedE )
         else:    
             self.fill('{pName}_Match'.format(pName=pName), -99 )
 
+            
         self.fill('{pName}_IsoCharged'.format(pName=pName), particle.chargedHadronIso() )
         self.fill('{pName}_IsoGamma'.format(pName=pName), particle.photonIso() )
         self.fill('{pName}_IsoNeutral'.format(pName=pName), particle.neutralHadronIso() )
         self.fill('{pName}_IsoPU'.format(pName=pName), particle.puChargedHadronIso() )
         self.fill('{pName}_IsoDB'.format(pName=pName), particle.absIso(0.5) )
-        
+        if hasattr(particle,'type'):
+            self.fill('{pName}_Type'.format(pName=pName), particle.type )
+        else:
+            print "There is no type  particle of ID={id}".format(id=particle.pdgId())
+            
 
     def bookLepton(self, pName ):
         self.var('{pName}_Pt'.format(pName=pName))
