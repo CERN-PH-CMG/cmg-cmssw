@@ -20,36 +20,63 @@ cmgTauEle.cfg.leg1Collection = 'cmgTauScaler'
 cmgTauElePreSel = cmgTauEleSel.clone( cut = 'getSelection("cuts_baseline")')
 
 # full selection
-cmgTauEleFullSel = cmgTauEleSel.clone( src = 'cmgTauElePreSel',
-                                     cut = 'getSelection("cuts_baseline")' )
+# cmgTauEleFullSel = cmgTauEleSel.clone( src = 'cmgTauElePreSel',
+#                                     cut = 'getSelection("cuts_baseline")' )
 
 tauEleStdSequence = cms.Sequence( cmgTauScaler +
                                  cmgTauEle +
-                                 cmgTauElePreSel +
-                                 cmgTauEleFullSel )
+                                 cmgTauElePreSel
+                                 # +
+                                 # cmgTauEleFullSel
+                                  )
 
 
 # correction and svfit ------------------------------------------------------
 
 # this is done for preselected di-taus
 
+# mva MET
+
+from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
+from CMGTools.Common.miscProducers.mvaMET.mvaMET_cff import *
+from CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi import cmgBaseMETFromPFMET
+mvaMETTauEle.recBosonSrc = 'cmgTauElePreSel'
+#WARNING: jet collections have to be redone if correction wrong
+
+mvaBaseMETTauEle = cmgBaseMETFromPFMET.clone()
+mvaBaseMETTauEle.cfg.inputCollection = 'mvaMETTauEle'
+
+cmgTauEleMVAPreSel = cmgTauEleCor.clone()
+cmgTauEleMVAPreSel.cfg.metCollection = 'mvaBaseMETTauEle'
+cmgTauEleMVAPreSel.cfg.diObjectCollection = 'cmgTauElePreSel'
+
+mvaMETSequence = cms.Sequence(
+    goodPVFilter + 
+    mvaMETTauEle +
+    mvaBaseMETTauEle
+    # +
+    # cmgTauEleMVAPreSel
+    )
+
 # recoil correction
 
-recoilCorMETTauEle =  recoilCorrectedMETTauEle.clone( recBosonSrc = 'cmgTauElePreSel')
+# recoilCorMETTauEle =  recoilCorrectedMETTauEle.clone( recBosonSrc = 'cmgTauElePreSel')
 
 cmgTauEleCorPreSel = cmgTauEleCor.clone()
-cmgTauEleCorPreSel.cfg.metCollection = 'recoilCorMETTauEle'
+cmgTauEleCorPreSel.cfg.metCollection = 'mvaBaseMETTauEle'
 cmgTauEleCorPreSel.cfg.diObjectCollection = 'cmgTauElePreSel'
 
 # SVFit
 
 cmgTauEleCorSVFitPreSel = tauEleSVFit.clone()
 cmgTauEleCorSVFitPreSel.diTauSrc = 'cmgTauEleCorPreSel'
+cmgTauEleCorSVFitFullSel = cmgTauEleSel.clone( src = 'cmgTauEleCorSVFitPreSel',
+                                               cut = 'getSelection("cuts_baseline")' ) 
+#WARNING here, need to read MET significance from MVA!
 
-cmgTauEleCorSVFitFullSel = cmgTauEleFullSel.clone( src = 'cmgTauEleCorSVFitPreSel' ) 
 
-
-tauEleCorSVFitSequence = cms.Sequence( recoilCorMETTauEle +
+tauEleCorSVFitSequence = cms.Sequence(# recoilCorMETTauEle +
+                                      mvaMETSequence + 
                                       cmgTauEleCorPreSel +
                                       cmgTauEleCorSVFitPreSel +
                                       cmgTauEleCorSVFitFullSel )

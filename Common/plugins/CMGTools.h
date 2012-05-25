@@ -131,6 +131,7 @@ typedef RecoilCorrectedMETProducer<cmg::MuEle> RecoilCorrectedMETProducerMuEle;
 typedef RecoilCorrectedMETProducer<cmg::DiTau> RecoilCorrectedMETProducerDiTau; 
 
 typedef MVAMETProducer<cmg::TauMu>    MVAMETProducerTauMu; 
+typedef MVAMETProducer<cmg::TauEle>    MVAMETProducerTauEle; 
 // typedef MVAMETProducer<cmg::DiMuon>   MVAMETProducerDiMuon; 
 
 

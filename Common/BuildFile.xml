@@ -14,6 +14,7 @@
 
 <use name="PhysicsTools/Utilities"/>
 
+<use name="RecoEgamma/EgammaTools"/>
 <use name="RecoEcal/EgammaCoreTools"/>
 <use name="TrackingTools/IPTools"/>
 

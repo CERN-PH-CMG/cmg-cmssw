@@ -18,6 +18,12 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             'cmgTauEleCorSVFitFullSel',
             'std::vector<cmg::DiObject<cmg::Tau,cmg::Electron>>'
             )
+
+        self.handles['mvametsigs'] = AutoHandle(
+            'mvaMETTauEle',
+            'std::vector<cmg::METSignificance>'
+            )
+        
         self.handles['leptons'] = AutoHandle(
             'cmgElectronSel',
             'std::vector<cmg::Electron>'
@@ -29,8 +35,27 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
+    def buildDiLeptons(self, cmgDiLeptons):
+        diLeptons = []
+        for index, dil in enumerate(cmgDiLeptons):
+            pydil = self.__class__.DiObjectClass(dil)
+            pydil.mvaMetSig = mvaMetSig = self.handles['mvametsigs'].product()[index]
+            diLeptons.append( pydil )
+        return diLeptons
+
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
     def process(self, iEvent, event):
+
         result = super(TauEleAnalyzer, self).process(iEvent, event)
+
+#        import pdb; pdb.set_trace()
+#        if event.eventId == 61939 : 
+#            print 'STOPPING'
+#            import pdb
+#            pdb.set_trace()
 
         if result is False:
             selDiLeptons = [ diL for diL in event.diLeptons if \
@@ -73,9 +98,9 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         if abs (leg.dxy())  >= 0.045                         : return False
         if abs (leg.dz())   >= 0.2                           : return False
         if leg.pt ()        <= self.cfg_ana.pt2              : return False
-        if abs( leg.eta()) >= self.cfg_ana.eta2              : return False 
+        if abs( leg.eta())  >= self.cfg_ana.eta2             : return False 
         if not self.testEleLoosePhil (leg, self.cfg_ana.pt2) : return False
-        if leg.relIsoAllChargedDB05() >= self.cfg_ana.iso2             : return False
+        if leg.relIsoAllChargedDB05() >= self.cfg_ana.iso2   : return False
         return True
 
 
@@ -87,9 +112,9 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         
         https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#2012_Baseline_Selection
         """
-        nInnerHits = leg.sourcePtr().gsfTrack().trackerExpectedHitsInner().numberOfHits()
+        nInnerHits = leg.numberOfHits()
         if nInnerHits != 0 : return False
-        if leg.sourcePtr().passConversionVeto() == False : return False 
+        if leg.passConversionVeto() == False : return False 
         if abs(leg.dz()) > 0.1 : return False
         eta = abs( leg.eta() )
         if eta > 2.1 : return False
@@ -156,14 +181,14 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         
         according to Phil sync prescription for the sync exercise 16/05/12
         """
-        nInnerHits = ele.sourcePtr().gsfTrack().trackerExpectedHitsInner().numberOfHits()
+        nInnerHits = ele.numberOfHits()
         if nInnerHits != 0 : return False
-        if ele.sourcePtr().passConversionVeto() == False : return False 
+        if ele.passConversionVeto() == False : return False 
 #PG this is broken        if ele.isConv()         != 1     : return False
-        if ele.pt()             < ptCut  : return False
+        if ele.pt()                   < ptCut  : return False
         if ele.relIsoAllChargedDB05() > isoCut : return False
-        if abs(ele.dxy())       >= 0.045 : return False
-        if abs(ele.dz())        >= 0.2   : return False
+        if abs(ele.dxy())             >= 0.045 : return False
+        if abs(ele.dz())              >= 0.2   : return False
         hoe = ele.hadronicOverEm()
         deta = ele.deltaEtaSuperClusterTrackAtVtx()
         dphi = ele.deltaPhiSuperClusterTrackAtVtx()
@@ -177,6 +202,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             if sihih >= 0.030     : return False
             if dphi  >= 0.70      : return False 
             if deta  >= 0.010     : return False
+            if hoe   >= 0.07      : return False
         else : return False #PG is this correct? does this take cracks into consideration?
         return True
 
