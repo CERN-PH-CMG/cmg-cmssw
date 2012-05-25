@@ -107,6 +107,7 @@ bool skipGGH = false;
 bool skipQQH = false;
 bool subDY = false;
 bool subWZ = false;
+double DDRescale = 1.0;
 TString DYFile ="";
 TString inFileUrl(""),jsonFile(""), histo("");
 TString prefix="";
@@ -118,25 +119,26 @@ int mass=-1;
 void printHelp()
 {
   printf("Options\n");
-  printf("--in       --> input file with from plotter\n");
-  printf("--json     --> json file with the sample descriptor\n");
-  printf("--histo    --> name of histogram to be used\n");
-  printf("--index    --> index of selection to be used (Xbin in histogram to be used)\n");
-  printf("--indexvbf --> index of selection to be used for the vbf bin (if unspecified same as --index)\n");
-  printf("--m        --> higgs mass to be considered\n");
-  printf("--syst     --> use this flag if you want to run systematics, default is no systematics\n");
-  printf("--shape    --> use this flag if you want to run shapeBased analysis, default is cut&count\n");
-  printf("--subNRB   --> use this flag if you want to subtract non-resonant-backgounds similarly to what was done in 2011 (will also remove H->WW)\n");
-  printf("--subNRB12 --> use this flag if you want to subtract non-resonant-backgounds using a new technique that keep H->WW\n");
-  printf("--subDY    --> histogram that contains the Z+Jets background estimated from Gamma+Jets)\n");
-  printf("--subWZ    --> use this flag if you want to subtract WZ background by the 3rd lepton SB)\n");
-  printf("--closure  --> use this flag if you want to perform a MC closure test (use only MC simulation)\n");
-  printf("--bins     --> list of bins to be used (they must be comma separated without space)\n");
-  printf("--HWW      --> use this flag to consider HWW signal)\n");
-  printf("--skipGGH  --> use this flag to skip GGH signal)\n");
-  printf("--skipQQH  --> use this flag to skip GGH signal)\n");
-  printf("--fast     --> use this flag to only do assymptotic prediction (very fast but inaccurate))\n");
-  printf("--prefix   --> use this to specify a prefix that will be added to the process names)\n");
+  printf("--in        --> input file with from plotter\n");
+  printf("--json      --> json file with the sample descriptor\n");
+  printf("--histo     --> name of histogram to be used\n");
+  printf("--index     --> index of selection to be used (Xbin in histogram to be used)\n");
+  printf("--indexvbf  --> index of selection to be used for the vbf bin (if unspecified same as --index)\n");
+  printf("--m         --> higgs mass to be considered\n");
+  printf("--syst      --> use this flag if you want to run systematics, default is no systematics\n");
+  printf("--shape     --> use this flag if you want to run shapeBased analysis, default is cut&count\n");
+  printf("--subNRB    --> use this flag if you want to subtract non-resonant-backgounds similarly to what was done in 2011 (will also remove H->WW)\n");
+  printf("--subNRB12  --> use this flag if you want to subtract non-resonant-backgounds using a new technique that keep H->WW\n");
+  printf("--subDY     --> histogram that contains the Z+Jets background estimated from Gamma+Jets)\n");
+  printf("--subWZ     --> use this flag if you want to subtract WZ background by the 3rd lepton SB)\n");
+  printf("--DDRescale --> factor to be used in order to multiply/rescale datadriven estimations\n");
+  printf("--closure   --> use this flag if you want to perform a MC closure test (use only MC simulation)\n");
+  printf("--bins      --> list of bins to be used (they must be comma separated without space)\n");
+  printf("--HWW       --> use this flag to consider HWW signal)\n");
+  printf("--skipGGH   --> use this flag to skip GGH signal)\n");
+  printf("--skipQQH   --> use this flag to skip GGH signal)\n");
+  printf("--fast      --> use this flag to only do assymptotic prediction (very fast but inaccurate))\n");
+  printf("--prefix    --> use this to specify a prefix that will be added to the process names)\n");
 }
 
 //
@@ -159,28 +161,28 @@ int main(int argc, char* argv[])
   bool runSystematics = false; bool shape = false;
   for(int i=1;i<argc;i++){
     string arg(argv[i]);
-    if(arg.find("--help")         !=string::npos) { printHelp(); return -1;} 
-    else if(arg.find("--syst")    !=string::npos) { runSystematics=true; printf("syst = True\n");}
-    else if(arg.find("--shape")   !=string::npos) { shape=true; printf("shapeBased = True\n");}
-    else if(arg.find("--subNRB12")!=string::npos) { subNRB2012=true; skipWW=false; printf("subNRB2012 = True\n");}
-    else if(arg.find("--subNRB")  !=string::npos) { subNRB2011=true; skipWW=true; printf("subNRB2011 = True\n");}
-    else if(arg.find("--subDY")   !=string::npos) { subDY=true; DYFile=argv[i+1];  i++; printf("Z+Jets will be replaced by %s\n",DYFile.Data());}
-    else if(arg.find("--subWZ")   !=string::npos) { subWZ=true; printf("WZ will be estimated from 3rd lepton SB\n");}
-    else if(arg.find("--HWW")     !=string::npos) { skipWW=false; printf("HWW = True\n");}
-    else if(arg.find("--skipGGH") !=string::npos) { skipGGH=true; printf("skipGGH = True\n");}
-    else if(arg.find("--skipQQH") !=string::npos) { skipQQH=true; printf("skipQQH = True\n");}
-    else if(arg.find("--closure") !=string::npos) { MCclosureTest=true; printf("MCclosureTest = True\n");}
-    else if(arg.find("--indexvbf")!=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&indexvbf); i++; printf("indexVBF = %i\n", indexvbf);}
-    else if(arg.find("--index")   !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&indexcut); i++;
- printf("index = %i\n", indexcut);}
-    else if(arg.find("--in")      !=string::npos && i+1<argc)  { inFileUrl = argv[i+1];  i++;  printf("in = %s\n", inFileUrl.Data());  }
-    else if(arg.find("--json")    !=string::npos && i+1<argc)  { jsonFile  = argv[i+1];  i++;  printf("json = %s\n", jsonFile.Data()); }
-    else if(arg.find("--histo")   !=string::npos && i+1<argc)  { histo     = argv[i+1];  i++;  printf("histo = %s\n", histo.Data()); }
-    else if(arg.find("--m")       !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&mass ); i++; printf("mass = %i\n", mass);}
-    else if(arg.find("--bins")    !=string::npos && i+1<argc)  { char* pch = strtok(argv[i+1],",");printf("bins are : ");while (pch!=NULL){printf(" %s ",pch); AnalysisBins.push_back(pch);  pch = strtok(NULL,",");}printf("\n"); i++; }
-    else if(arg.find("--channels")!=string::npos && i+1<argc)  { char* pch = strtok(argv[i+1],",");printf("channels are : ");while (pch!=NULL){printf(" %s ",pch); Channels.push_back(pch);  pch = strtok(NULL,",");}printf("\n"); i++; }
-    else if(arg.find("--fast")    !=string::npos) { fast=true; printf("fast = True\n");}
-    else if(arg.find("--prefix")  !=string::npos && i+1<argc)  { prefix = argv[i+1];  i++;  printf("prefix '%s' will be used\n", prefix.Data());  }
+    if(arg.find("--help")          !=string::npos) { printHelp(); return -1;} 
+    else if(arg.find("--syst")     !=string::npos) { runSystematics=true; printf("syst = True\n");}
+    else if(arg.find("--shape")    !=string::npos) { shape=true; printf("shapeBased = True\n");}
+    else if(arg.find("--subNRB12") !=string::npos) { subNRB2012=true; skipWW=false; printf("subNRB2012 = True\n");}
+    else if(arg.find("--subNRB")   !=string::npos) { subNRB2011=true; skipWW=true; printf("subNRB2011 = True\n");}
+    else if(arg.find("--subDY")    !=string::npos) { subDY=true; DYFile=argv[i+1];  i++; printf("Z+Jets will be replaced by %s\n",DYFile.Data());}
+    else if(arg.find("--subWZ")    !=string::npos) { subWZ=true; printf("WZ will be estimated from 3rd lepton SB\n");}
+    else if(arg.find("--DDRescale")!=string::npos && i+1<argc)  { sscanf(argv[i+1],"%lf",&DDRescale); i++;}
+    else if(arg.find("--HWW")      !=string::npos) { skipWW=false; printf("HWW = True\n");}
+    else if(arg.find("--skipGGH")  !=string::npos) { skipGGH=true; printf("skipGGH = True\n");}
+    else if(arg.find("--skipQQH")  !=string::npos) { skipQQH=true; printf("skipQQH = True\n");}
+    else if(arg.find("--closure")  !=string::npos) { MCclosureTest=true; printf("MCclosureTest = True\n");}
+    else if(arg.find("--indexvbf") !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&indexvbf); i++; printf("indexVBF = %i\n", indexvbf);}
+    else if(arg.find("--index")    !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&indexcut); i++; printf("index = %i\n", indexcut);}
+    else if(arg.find("--in")       !=string::npos && i+1<argc)  { inFileUrl = argv[i+1];  i++;  printf("in = %s\n", inFileUrl.Data());  }
+    else if(arg.find("--json")     !=string::npos && i+1<argc)  { jsonFile  = argv[i+1];  i++;  printf("json = %s\n", jsonFile.Data()); }
+    else if(arg.find("--histo")    !=string::npos && i+1<argc)  { histo     = argv[i+1];  i++;  printf("histo = %s\n", histo.Data()); }
+    else if(arg.find("--m")        !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&mass ); i++; printf("mass = %i\n", mass);}
+    else if(arg.find("--bins")     !=string::npos && i+1<argc)  { char* pch = strtok(argv[i+1],",");printf("bins are : ");while (pch!=NULL){printf(" %s ",pch); AnalysisBins.push_back(pch);  pch = strtok(NULL,",");}printf("\n"); i++; }
+    else if(arg.find("--channels") !=string::npos && i+1<argc)  { char* pch = strtok(argv[i+1],",");printf("channels are : ");while (pch!=NULL){printf(" %s ",pch); Channels.push_back(pch);  pch = strtok(NULL,",");}printf("\n"); i++; }
+    else if(arg.find("--fast")     !=string::npos) { fast=true; printf("fast = True\n");}
+    else if(arg.find("--prefix")   !=string::npos && i+1<argc)  { prefix = argv[i+1];  i++;  printf("prefix '%s' will be used\n", prefix.Data());  }
   }
   if(jsonFile.IsNull() || inFileUrl.IsNull() || histo.IsNull() || indexcut == -1 || mass==-1) { printHelp(); return -1; }
   if(AnalysisBins.size()==0)AnalysisBins.push_back("");
@@ -1160,6 +1162,8 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
            NonResonant->SetBinContent(b, newval );
            NonResonant->SetBinError  (b, newerr );
         }
+        NonResonant->Scale(DDRescale);
+
         Double_t valerr;
         Double_t val = NonResonant->IntegralAndError(1,NonResonant->GetXaxis()->GetNbins(),valerr);
         Double_t systError = val*NonResonnantSyst;
@@ -1295,6 +1299,9 @@ void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
               shapeChan_SI.bckg[ibckg]->SetBinError  (i, newerr);
            } 
            delete gjets1Dshape;
+
+           shapeChan_SI.bckg[ibckg]->Scale(DDRescale);
+
 
            val  = shapeChan_SI.bckg[ibckg]->IntegralAndError(1,shapeChan_SI.bckg[ibckg]->GetXaxis()->GetNbins(),valerr);
            double systError = GammaJetSyst * val;
