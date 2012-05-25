@@ -15,6 +15,8 @@ def componentsWithData (selComps, weights) :
     selCompsData125 = {}
     selCompsData130 = {}
     selCompsData135 = {}
+    selCompsData140 = {}
+    selCompsData145 = {}
 
     weightsData110 = {}
     weightsData115 = {}
@@ -22,11 +24,13 @@ def componentsWithData (selComps, weights) :
     weightsData125 = {}
     weightsData130 = {}
     weightsData135 = {}
+    weightsData140 = {}
+    weightsData145 = {}
 
-    selCompsDataMass = {110:selCompsData110,115:selCompsData115,120:selCompsData120,125:selCompsData125,130:selCompsData130,135:selCompsData135}
-    weightsDataMass  = {110:weightsData110,115:weightsData115,120:weightsData120,125:weightsData125,130:weightsData130,135:weightsData135}
+    selCompsDataMass = {110:selCompsData110,115:selCompsData115,120:selCompsData120,125:selCompsData125,130:selCompsData130,135:selCompsData135,140:selCompsData140,145:selCompsData145}
+    weightsDataMass  = {110:weightsData110,115:weightsData115,120:weightsData120,125:weightsData125,130:weightsData130,135:weightsData135,140:weightsData140,145:weightsData145}
 
-    for mPoint in [110,115,120,125,130,135] :
+    for mPoint in [110,115,120,125,130,135,140,145] :
 
       selCompsDataMass[mPoint]['data_Run2011A_May10ReReco_v1'] = copy.deepcopy(selComps['data_Run2011A_May10ReReco_v1'])
       selCompsDataMass[mPoint]['data_Run2011A_PromptReco_v4']  = copy.deepcopy(selComps['data_Run2011A_PromptReco_v4'])
@@ -64,6 +68,8 @@ def componentsWithOutData (selComps, weights) :
     selCompsMC125 = {}
     selCompsMC130 = {}
     selCompsMC135 = {}
+    selCompsMC140 = {}
+    selCompsMC145 = {}
 
     weightsMC110 = {}
     weightsMC115 = {}
@@ -71,26 +77,28 @@ def componentsWithOutData (selComps, weights) :
     weightsMC125 = {}
     weightsMC130 = {}
     weightsMC135 = {}
+    weightsMC140 = {}
+    weightsMC145 = {}
 
-    selCompsMCMass = {110:selCompsMC110,115:selCompsMC115,120:selCompsMC120,125:selCompsMC125,130:selCompsMC130,135:selCompsMC135}
-    weightsMCMass  = {110:weightsMC110,115:weightsMC115,120:weightsMC120,125:weightsMC125,130:weightsMC130,135:weightsMC135}
+    selCompsMCMass = {110:selCompsData110,115:selCompsData115,120:selCompsData120,125:selCompsData125,130:selCompsData130,135:selCompsData135,140:selCompsData140,145:selCompsData145}
+    weightsMCMass  = {110:weightsData110,115:weightsData115,120:weightsData120,125:weightsData125,130:weightsData130,135:weightsData135,140:weightsData140,145:weightsData145}
 
-    for mPoint in [110,115,120,125,130,135] :
+    for mPoint in [110,115,120,125,130,135,140,145] :
     
       selCompsMCMass[mPoint]['DYJets']               = copy.deepcopy(selComps['DYJets'])
       selCompsMCMass[mPoint]['WJets']                = copy.deepcopy(selComps['WJets'])
-      selCompsMCMass[mPoint]['WW']                = copy.deepcopy(selComps['WW'])
-      selCompsMCMass[mPoint]['WZ']                = copy.deepcopy(selComps['WZ'])
-      selCompsMCMass[mPoint]['ZZ']                = copy.deepcopy(selComps['ZZ'])
+      selCompsMCMass[mPoint]['WW']                   = copy.deepcopy(selComps['WW'])
+      selCompsMCMass[mPoint]['WZ']                   = copy.deepcopy(selComps['WZ'])
+      selCompsMCMass[mPoint]['ZZ']                   = copy.deepcopy(selComps['ZZ'])
       selCompsMCMass[mPoint]['TTJets']               = copy.deepcopy(selComps['TTJets'])
       selCompsMCMass[mPoint]['Higgsgg'+str(mPoint)]  = copy.deepcopy(selComps['Higgsgg'+str(mPoint)])
       selCompsMCMass[mPoint]['HiggsVBF'+str(mPoint)] = copy.deepcopy(selComps['HiggsVBF'+str(mPoint)])
 
       weightsMCMass[mPoint]['DYJets']                = copy.deepcopy(weights['DYJets'])
       weightsMCMass[mPoint]['WJets']                 = copy.deepcopy(weights['WJets'])
-      weightsMCMass[mPoint]['WW']                 = copy.deepcopy(weights['WW'])
-      weightsMCMass[mPoint]['WZ']                 = copy.deepcopy(weights['WZ'])
-      weightsMCMass[mPoint]['ZZ']                 = copy.deepcopy(weights['ZZ'])
+      weightsMCMass[mPoint]['WW']                    = copy.deepcopy(weights['WW'])
+      weightsMCMass[mPoint]['WZ']                    = copy.deepcopy(weights['WZ'])
+      weightsMCMass[mPoint]['ZZ']                    = copy.deepcopy(weights['ZZ'])
       weightsMCMass[mPoint]['TTJets']                = copy.deepcopy(weights['TTJets'])
       weightsMCMass[mPoint]['Higgsgg'+str(mPoint)]   = copy.deepcopy(weights['Higgsgg'+str(mPoint)])
       weightsMCMass[mPoint]['HiggsVBF'+str(mPoint)]  = copy.deepcopy(weights['HiggsVBF'+str(mPoint)])
