@@ -31,7 +31,10 @@ class ElectronFactory : public Factory<cmg::Electron>, public SettingTool<pat::E
 	};
       
       virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
-      virtual void set(const pat::ElectronPtr& input, cmg::Electron* const output, int nVertices);
+
+      virtual void set(const pat::ElectronPtr& input, cmg::Electron* const output, int nVertices,
+                       const reco::BeamSpot &beamspot, 
+                       edm::Handle<reco::ConversionCollection> & hConversions);
 
   private: 
       const edm::InputTag electronLabel_;

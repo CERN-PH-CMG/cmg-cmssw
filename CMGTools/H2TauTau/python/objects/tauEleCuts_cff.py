@@ -7,7 +7,7 @@ from CMGTools.H2TauTau.objects.tauCuts_cff import getTauCuts
 
 tauEleCuts = cms.PSet(
     baseline = cms.PSet(
-         mass = cms.string('mass()>10'),
+         #mass = cms.string('mass()>10'),
          tauLeg = getTauCuts('leg1','tauEle').clone(),
          eleLeg = getEleCuts('leg2', 'tauEle').clone()
          ),

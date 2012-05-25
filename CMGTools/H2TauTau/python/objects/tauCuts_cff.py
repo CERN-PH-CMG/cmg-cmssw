@@ -7,6 +7,9 @@ def getTauCuts( leg, channel='tauMu'):
     etaCut = 2.3
     muVeto = None
     eVeto = None
+    if channel == 'tauEle':
+        ptCut = 10.
+        etaCut = 2.5
 ##     if channel == 'tauMu':
 ##         muVeto = cms.string('{leg}().tauID("againstMuonTight")'.format(leg=leg))
 ##         eVeto = cms.string('{leg}().tauID("againstElectronLoose")'.format(leg=leg))

@@ -41,7 +41,9 @@ class Electron : public cmg::Lepton<pat::ElectronPtr>{
     numberOfHits_(UnSet(Double_t)),
     convDist_(UnSet(Double_t)),
     convDcot_(UnSet(Double_t)),
-    isEcalDriven_(UnSet(cmg::TriBool)){
+    isEcalDriven_(UnSet(cmg::TriBool)),
+    chargedAllIsoWithConeVeto_(UnSet(Double_t)),
+    passConversionVeto_(UnSet(bool)){
   }
 
     virtual ~Electron(){
@@ -91,6 +93,13 @@ class Electron : public cmg::Lepton<pat::ElectronPtr>{
     virtual bool isElectron() const {
       return true;
     }
+    bool passConversionVeto() const {
+      return passConversionVeto_;
+    }
+    Double_t chargedAllIsoWithConeVeto() const {
+      return chargedAllIsoWithConeVeto_;
+    }
+
     
 private:
     
@@ -109,6 +118,8 @@ private:
     Double_t convDist_;
     Double_t convDcot_;
     cmg::TriBool isEcalDriven_;
+    Double_t chargedAllIsoWithConeVeto_;
+    bool passConversionVeto_;
           
     friend class cmg::ElectronFactory;    
 
