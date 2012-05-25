@@ -230,6 +230,12 @@ int main(int argc, char* argv[])
    {
        Hoptim_systs->GetXaxis()->SetBinLabel(ivar+1, varNames[ivar]);
        mon.addHistogram( new TH2F (TString("mt_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 32,150,950) );
+       mon.addHistogram( new TH2F (TString("mt_shapesZ10")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 1,150,950) );//only cut&count
+       mon.addHistogram( new TH2F (TString("mt_shapesZ5")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 1,150,950) );//only cut&count
+
+       //3lepton SB
+       mon.addHistogram( new TH2F (TString("mt_shapes_3rdLepton")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 1,150,950) );
+
        if(ivar==0)mon.addHistogram( new TH2F (TString("mt_shapesBTagSB")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 32,150,950) );
        mon.addHistogram( new TH2F (TString("mt_redMet_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 32,150,950) );
        mon.addHistogram( new TH2F (TString("mt3")+varNames[ivar],";cut index;M_{T}^{3rd lepton} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 50,0,250) );
@@ -503,6 +509,8 @@ int main(int argc, char* argv[])
 	//##############################################
 	if(zmass<40) continue; // this is required by the HZZ skim anyhow
 	bool passZmass(fabs(zmass-91)<15);
+        bool passZmass10(fabs(zmass-91)<10);
+        bool passZmass5(fabs(zmass-91)<5);
 	bool isZsideBand( (zmass>40 && zmass<70) || (zmass>110 && zmass<200));
 	bool isZsideBandPlus( (zmass>110 && zmass<200));
 	bool passDphijmet(mindphijmet>0.5); 
@@ -510,7 +518,11 @@ int main(int argc, char* argv[])
 	bool pass3dLeptonVeto(true); int nExtraLep(0); for(unsigned int i=2;i<phys.leptons.size();i++) { if(phys.leptons[i].pt()>10){ nExtraLep++; pass3dLeptonVeto=false;} }
 	bool passBveto(nbtags==0);
 	bool passBaseMet(zvv.pt()>70);
-     
+      
+        bool passZmass3dLepton = false;        
+        if( fabs((phys.leptons[0]+phys.leptons[2]).mass()-91)<15 && phys.leptons[0].id!=phys.leptons[2].id)passZmass3dLepton=true;
+        if( fabs((phys.leptons[1]+phys.leptons[2]).mass()-91)<15 && phys.leptons[1].id!=phys.leptons[2].id)passZmass3dLepton=true;
+ 
 
 // 	LorentzVector genRes(0,0,0,0);
 // 	for(size_t igl=0;igl<phys.genleptons.size(); igl++) genRes+= phys.genleptons[igl];
@@ -593,6 +605,12 @@ int main(int argc, char* argv[])
                if(zvv.pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
                  {
                    if(passPreselection                                                    )   mon.fillHisto(TString("mt_shapes")+varNames[ivar],tags_full,index, mt,iweight);
+                   if(passPreselection && passZmass10                                     )   mon.fillHisto(TString("mt_shapesZ10")+varNames[ivar],tags_full,index, mt,iweight);
+                   if(passPreselection && passZmass5                                      )   mon.fillHisto(TString("mt_shapesZ5")+varNames[ivar],tags_full,index, mt,iweight);
+
+//                   if(passPreselectionM3dlep       && !pass3dLeptonVeto && nExtraLep==1 && passZmass3dLepton && ivar==0)   mon.fillHisto(TString("mt_shapes_3rdLepton")+varNames[ivar],tags_full,index, mt,iweight);
+                   if(passPreselectionM3dlep       && !pass3dLeptonVeto && nExtraLep==1 && ivar==0)   mon.fillHisto(TString("mt_shapes_3rdLepton")+varNames[ivar],tags_full,index, mt,iweight);
+
                    if(passPreselectionMbvetoMzmass && passZmass   && !passBveto && ivar==0)   mon.fillHisto(TString("mt_shapesBTagSB")+varNames[ivar],tags_full,index, mt,iweight);
                    if(passPreselectionM3dlep       && !pass3dLeptonVeto && nExtraLep==1   )   mon.fillHisto(TString("mt3")+varNames[ivar],tags_full,index, mt3,iweight);
                    if(passPreselectionMbvetoMzmass && passZmass         && passBveto      )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,0,iweight);
